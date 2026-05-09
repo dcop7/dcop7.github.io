@@ -1,7 +1,730 @@
 <!DOCTYPE html>
-<html>
-<head><title>O meu site</title></head>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portugal Hoje</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F6F2EB;
+      --surface: #FFFFFF;
+      --text: #1A1612;
+      --muted: #6B6460;
+      --accent: #B8001F;
+      --accent-light: #F5E6E9;
+      --border: #DDD9D2;
+      --shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--text);
+      color: #fff;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .header-left {
+      padding: 1.2rem 0;
+    }
+
+    .site-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .site-title span {
+      color: var(--accent);
+    }
+
+    .site-tagline {
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #AAA;
+      margin-top: 3px;
+    }
+
+    .header-date {
+      font-size: 0.8rem;
+      color: #AAA;
+      text-align: right;
+      font-weight: 300;
+    }
+
+    .header-date strong {
+      display: block;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #EEE;
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.5rem;
+      max-width: 1280px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ── WEATHER CARD ── */
+    .weather-card {
+      background: var(--text);
+      color: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .weather-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #AAA;
+      margin-bottom: 0.75rem;
+    }
+
+    .city-select {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 1.25rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+
+    .city-select option { color: var(--text); background: #fff; }
+
+    .weather-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .weather-icon { font-size: 3.5rem; line-height: 1; }
+
+    .weather-temp {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .weather-temp sup { font-size: 1.2rem; vertical-align: super; }
+
+    .weather-desc {
+      font-size: 0.85rem;
+      color: #CCC;
+      margin-top: 0.3rem;
+    }
+
+    .weather-feels {
+      font-size: 0.78rem;
+      color: #AAA;
+      margin-bottom: 1.25rem;
+    }
+
+    .weather-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #888;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .weather-minmax {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.82rem;
+      color: #CCC;
+    }
+
+    .weather-loading, .weather-error {
+      padding: 1rem 0;
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    /* ── SOURCES LEGEND ── */
+    .sources-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .sources-title {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .source-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0;
+      font-size: 0.83rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .source-item:last-child { border-bottom: none; }
+    .source-item:hover { opacity: 0.7; }
+
+    .source-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .source-status {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* ── MAIN NEWS ── */
+    .main { min-width: 0; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .article-count {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* Filter tabs */
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* News grid */
+    .news-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .article-card {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: start;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      color: inherit;
+      border-left: 3px solid transparent;
+    }
+
+    .article-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .article-source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+      color: var(--muted);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .article-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 0.35rem;
+    }
+
+    .article-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .article-time {
+      font-size: 0.7rem;
+      color: #BBB;
+      margin-top: 0.5rem;
+    }
+
+    .article-img {
+      width: 90px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 7px;
+      flex-shrink: 0;
+    }
+
+    .article-img-placeholder {
+      width: 90px;
+      height: 70px;
+      border-radius: 7px;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-card {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .sk-line { height: 12px; margin-bottom: 8px; }
+    .sk-line.title { height: 18px; width: 80%; }
+    .sk-line.short { width: 40%; }
+    .sk-line.mid { width: 65%; }
+
+    .news-error {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .weather-card { position: static; }
+      header { flex-direction: column; align-items: flex-start; padding: 1rem; gap: 0.25rem; }
+      .header-date { text-align: left; }
+    }
+  </style>
+</head>
 <body>
-  <h1>Olá</h1>
+
+<header>
+  <div class="header-left">
+    <div class="site-title">Portugal<span>Hoje</span></div>
+    <div class="site-tagline">Notícias &amp; Meteorologia em tempo real</div>
+  </div>
+  <div class="header-date">
+    <strong id="date-display">—</strong>
+    <span id="time-display">—</span>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="weather-card">
+      <div class="weather-label">Meteorologia</div>
+      <select class="city-select" id="city-select">
+        <option value="38.7223,-9.1393">Lisboa</option>
+        <option value="41.1579,-8.6291">Porto</option>
+        <option value="41.5454,-8.4265">Braga</option>
+        <option value="40.2033,-8.4103">Coimbra</option>
+        <option value="37.0193,-7.9304">Faro</option>
+        <option value="38.5667,-7.9000">Évora</option>
+        <option value="40.6405,-8.6538">Aveiro</option>
+        <option value="38.5244,-8.8882">Setúbal</option>
+        <option value="40.6566,-7.9122">Viseu</option>
+        <option value="39.7436,-8.8071">Leiria</option>
+        <option value="39.2333,-8.6833">Santarém</option>
+        <option value="32.6669,-16.9241">Funchal</option>
+        <option value="37.7412,-25.6756">Ponta Delgada</option>
+      </select>
+      <div id="weather-content">
+        <div class="weather-loading">A carregar meteorologia…</div>
+      </div>
+    </div>
+
+    <div class="sources-card">
+      <div class="sources-title">Fontes</div>
+      <div id="sources-list"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="section-header">
+      <div class="section-title">Top Notícias</div>
+      <div class="article-count" id="article-count">A carregar…</div>
+    </div>
+
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" data-source="all">Todas</button>
+    </div>
+
+    <div class="news-grid" id="news-grid">
+      <!-- Skeleton placeholders -->
+      <div class="skeleton-card">
+        <div class="skeleton sk-line short"></div>
+        <div class="skeleton sk-line title"></div>
+        <div class="skeleton sk-line mid"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton sk-line short"></div>
+        <div class="skeleton sk-line title"></div>
+        <div class="skeleton sk-line mid"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton sk-line short"></div>
+        <div class="skeleton sk-line title"></div>
+        <div class="skeleton sk-line mid"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── DATE & TIME ──────────────────────────────────────────────────
+const weekdays = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const months   = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+function updateClock() {
+  const now = new Date();
+  const d = `${weekdays[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+  const t = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('date-display').textContent = d;
+  document.getElementById('time-display').textContent = t;
+}
+updateClock();
+setInterval(updateClock, 60000);
+
+// ── WEATHER ──────────────────────────────────────────────────────
+const WMO = {
+  0:  { label: 'Sol',               icon: '☀️'  },
+  1:  { label: 'Principalmente sol',icon: '🌤️'  },
+  2:  { label: 'Parcialmente nublado', icon: '⛅' },
+  3:  { label: 'Nublado',           icon: '☁️'  },
+  45: { label: 'Nevoeiro',          icon: '🌫️'  },
+  48: { label: 'Nevoeiro gelado',   icon: '🌫️'  },
+  51: { label: 'Chuvisco leve',     icon: '🌦️'  },
+  53: { label: 'Chuvisco',          icon: '🌦️'  },
+  55: { label: 'Chuvisco forte',    icon: '🌧️'  },
+  61: { label: 'Chuva leve',        icon: '🌧️'  },
+  63: { label: 'Chuva',             icon: '🌧️'  },
+  65: { label: 'Chuva forte',       icon: '🌧️'  },
+  71: { label: 'Neve leve',         icon: '🌨️'  },
+  73: { label: 'Neve',              icon: '❄️'  },
+  75: { label: 'Neve forte',        icon: '❄️'  },
+  80: { label: 'Aguaceiros',        icon: '🌦️'  },
+  81: { label: 'Aguaceiros',        icon: '🌧️'  },
+  82: { label: 'Aguaceiros fortes', icon: '⛈️'  },
+  95: { label: 'Trovoada',          icon: '⛈️'  },
+  96: { label: 'Trovoada c/ granizo', icon: '⛈️' },
+  99: { label: 'Trovoada intensa',  icon: '⛈️'  },
+};
+
+function getWMO(code) {
+  return WMO[code] || { label: 'Desconhecido', icon: '🌡️' };
+}
+
+async function loadWeather(latlon) {
+  const [lat, lon] = latlon.split(',');
+  const el = document.getElementById('weather-content');
+  el.innerHTML = '<div class="weather-loading">A carregar…</div>';
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,relative_humidity_2m,weather_code` +
+      `&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FLisbon&forecast_days=1`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const c = d.current;
+    const daily = d.daily;
+    const wmo = getWMO(c.weather_code);
+
+    el.innerHTML = `
+      <div class="weather-main">
+        <div>
+          <div class="weather-icon">${wmo.icon}</div>
+          <div class="weather-desc">${wmo.label}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="weather-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
+        </div>
+      </div>
+      <div class="weather-feels">Sensação térmica: ${Math.round(c.apparent_temperature)}°C</div>
+      <div class="weather-stats">
+        <div class="stat">
+          <div class="stat-label">Vento</div>
+          <div class="stat-value">${Math.round(c.wind_speed_10m)} km/h</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Humidade</div>
+          <div class="stat-value">${c.relative_humidity_2m}%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Precipitação</div>
+          <div class="stat-value">${c.precipitation} mm</div>
+        </div>
+      </div>
+      <div class="weather-minmax">
+        <span>↓ Mín ${Math.round(daily.temperature_2m_min[0])}°C</span>
+        <span>↑ Máx ${Math.round(daily.temperature_2m_max[0])}°C</span>
+      </div>
+    `;
+  } catch (e) {
+    el.innerHTML = '<div class="weather-error">Não foi possível carregar o tempo.</div>';
+  }
+}
+
+document.getElementById('city-select').addEventListener('change', e => loadWeather(e.target.value));
+loadWeather('38.7223,-9.1393');
+
+// ── NEWS ─────────────────────────────────────────────────────────
+const SOURCES = [
+  { name: 'Observador', color: '#E63946', url: 'https://observador.pt/feed/' },
+  { name: 'RTP Notícias', color: '#2D6A4F', url: 'https://www.rtp.pt/noticias/rss' },
+  { name: 'Jornal de Notícias', color: '#1D3557', url: 'https://www.jn.pt/rss/' },
+  { name: 'Público', color: '#E76F51', url: 'https://feeds.feedburner.com/PublicoRSS' },
+];
+
+// Build sources legend
+const sourcesList = document.getElementById('sources-list');
+SOURCES.forEach(s => {
+  const div = document.createElement('div');
+  div.className = 'source-item';
+  div.innerHTML = `
+    <span class="source-dot" style="background:${s.color}"></span>
+    <span>${s.name}</span>
+    <span class="source-status" id="status-${s.name.replace(/\s/g,'_')}">…</span>
+  `;
+  sourcesList.appendChild(div);
+});
+
+// Build filter buttons
+const filterBar = document.getElementById('filter-bar');
+SOURCES.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.dataset.source = s.name;
+  btn.textContent = s.name;
+  btn.style.setProperty('--src-color', s.color);
+  filterBar.appendChild(btn);
+});
+
+let allArticles = [];
+let activeFilter = 'all';
+
+filterBar.addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  activeFilter = btn.dataset.source;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderArticles();
+});
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = (Date.now() - new Date(dateStr)) / 60000;
+  if (diff < 1) return 'agora mesmo';
+  if (diff < 60) return `há ${Math.round(diff)} min`;
+  if (diff < 1440) return `há ${Math.round(diff/60)}h`;
+  return `há ${Math.round(diff/1440)} dias`;
+}
+
+function renderArticles() {
+  const grid = document.getElementById('news-grid');
+  const filtered = activeFilter === 'all' ? allArticles : allArticles.filter(a => a.source === activeFilter);
+
+  document.getElementById('article-count').textContent =
+    `${filtered.length} artigo${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="news-error">Sem artigos disponíveis de momento.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(a => {
+    const src = SOURCES.find(s => s.name === a.source);
+    const color = src ? src.color : '#999';
+    const imgHtml = a.image
+      ? `<img class="article-img" src="${a.image}" alt="" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="article-img-placeholder"></div>`;
+    return `
+      <a class="article-card" href="${a.link}" target="_blank" rel="noopener"
+         style="border-left-color:${color}">
+        <div>
+          <div class="article-source-badge">
+            <span class="badge-dot" style="background:${color}"></span>
+            ${a.source}
+          </div>
+          <div class="article-title">${a.title}</div>
+          ${a.desc ? `<div class="article-desc">${a.desc}</div>` : ''}
+          <div class="article-time">${timeAgo(a.pubDate)}</div>
+        </div>
+        ${imgHtml}
+      </a>
+    `;
+  }).join('');
+}
+
+function stripHtml(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+  return tmp.textContent.trim();
+}
+
+async function fetchSource(source) {
+  const statusEl = document.getElementById(`status-${source.name.replace(/\s/g,'_')}`);
+  try {
+    const encoded = encodeURIComponent(source.url);
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encoded}&count=8`);
+    const data = await res.json();
+    if (data.status !== 'ok' || !data.items?.length) throw new Error('No items');
+
+    const articles = data.items.map(item => ({
+      source: source.name,
+      title: stripHtml(item.title),
+      desc: stripHtml(item.description).slice(0, 180),
+      link: item.link,
+      pubDate: item.pubDate,
+      image: item.thumbnail || item.enclosure?.link || null,
+    }));
+
+    allArticles.push(...articles);
+    allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    statusEl.textContent = `${articles.length} artigos`;
+    statusEl.style.color = '#4CAF50';
+    renderArticles();
+  } catch {
+    statusEl.textContent = 'Erro';
+    statusEl.style.color = '#E63946';
+  }
+}
+
+async function loadNews() {
+  await Promise.allSettled(SOURCES.map(fetchSource));
+  if (allArticles.length === 0) {
+    document.getElementById('news-grid').innerHTML =
+      '<div class="news-error">Não foi possível carregar notícias. Tente mais tarde.</div>';
+    document.getElementById('article-count').textContent = '0 artigos';
+  }
+}
+
+loadNews();
+</script>
 </body>
 </html>
