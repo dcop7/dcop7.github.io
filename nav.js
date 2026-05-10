@@ -36,10 +36,6 @@ const Nav = (function () {
 
     sb.innerHTML = `
       <div class="sb-head">
-        <div class="brand">
-          <span class="brand-name">Diogo's</span>
-          <span class="brand-site">website</span>
-        </div>
         <button class="sb-pin-btn${_pinned ? ' pinned' : ''}" id="sb-pin" title="${_pinned ? 'Desafixar' : 'Fixar'} painel">
           ${ICONS.pin}
         </button>

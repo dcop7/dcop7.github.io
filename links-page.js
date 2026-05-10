@@ -5,6 +5,13 @@ const LinksPage = (function () {
     const el = document.getElementById('lp-cat-list');
     if (!el || typeof LINKS_DATA === 'undefined') return;
 
+    if (el.dataset.built === '1') {
+      el.querySelectorAll('.lp-cat-item').forEach(btn =>
+        btn.classList.toggle('active', (btn.dataset.cat || '') === (currentId || '')));
+      return;
+    }
+
+    el.dataset.built = '1';
     el.innerHTML = `
       <button class="lp-cat-item${!currentId ? ' active' : ''}" data-cat="">
         <span class="lp-cat-icon">✨</span>

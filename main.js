@@ -543,22 +543,22 @@ function haAnimHTML(code) {
   if (c >= 51 && c <= 55)
     return `<div class="ha-wrap">
       ${haCloud(false, 88, 52, 10, 31)}
-      ${haDrops([[42,72,13,.96,0],[56,70,12,1.1,.32],[70,73,13,.9,.65]])}
+      ${haDrops([[42,63,13,.96,0],[56,61,12,1.1,.32],[70,64,13,.9,.65]])}
     </div>`;
   if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
     return `<div class="ha-wrap">
       ${haCloud(true, 100, 56, 8, 25)}
-      ${haDrops([[34,74,15,.72,0],[49,72,16,.78,.16],[63,75,15,.7,.38],[77,73,16,.74,.24],[90,76,13,.68,.52]])}
+      ${haDrops([[34,65,15,.72,0],[49,63,16,.78,.16],[63,66,15,.7,.38],[77,64,16,.74,.24],[90,67,13,.68,.52]])}
     </div>`;
   if (c >= 71 && c <= 75)
     return `<div class="ha-wrap">
       ${haCloud(true, 92, 54, 8, 29)}
-      ${haFlakes([[40,72,8,1.5,0,3],[55,70,7,1.3,.45,-3],[70,74,8,1.55,.85,4],[85,71,6,1.4,.25,-2]])}
+      ${haFlakes([[40,63,8,1.5,0,3],[55,61,7,1.3,.45,-3],[70,65,8,1.55,.85,4],[85,62,6,1.4,.25,-2]])}
     </div>`;
   if (c >= 95)
     return `<div class="ha-wrap">
       ${haCloud(true, 102, 58, 8, 24)}
-      ${haDrops([[36,74,14,.7,0],[52,72,15,.72,.2],[68,76,14,.68,.42]])}
+      ${haDrops([[36,67,14,.7,0],[52,65,15,.72,.2],[68,68,14,.68,.42]])}
       <div class="ha-bolt" style="bottom:6px;left:50%;transform:translateX(-50%)">⚡</div>
     </div>`;
   return `<div class="ha-wrap" style="font-size:3rem;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
