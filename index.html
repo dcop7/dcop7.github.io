@@ -123,13 +123,13 @@ header{
 }
 
 /* Hero 3-column body */
-.hero-body{display:grid;grid-template-columns:190px 1fr auto;gap:1.2rem;align-items:center;position:relative;z-index:1}
-.hero-left{display:flex;flex-direction:column;gap:.55rem;flex-shrink:0}
-.hero-city-img-wrap{width:190px;height:138px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);flex-shrink:0}
-.hero-city-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .4s}
+.hero-body{display:grid;grid-template-columns:200px 1fr 230px;gap:1.4rem;align-items:stretch;position:relative;z-index:1;min-height:170px}
+.hero-left{display:flex;flex-direction:column;gap:.5rem;flex-shrink:0}
+.hero-city-img-wrap{width:200px;height:142px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);flex-shrink:0;flex:1;max-height:155px}
+.hero-city-img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-city-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted)}
-.hero-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.06rem;padding:.2rem 0}
-.hero-right{}
+.hero-center{display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;text-align:center;padding:.1rem 0;min-height:100%}
+.hero-right{display:flex;flex-direction:column;justify-content:center}
 .hero-temp{font-size:5rem;font-weight:700;line-height:1;letter-spacing:-4px}
 .hero-temp sup{font-size:1.7rem;font-weight:400;vertical-align:super;letter-spacing:0}
 .hero-cond{font-size:.92rem;color:rgba(255,255,255,.65);margin-top:.18rem;font-weight:500}
@@ -139,31 +139,53 @@ header{
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.42rem}
 
 /* ── WEATHER ANIMATIONS ── */
-.w-anim{width:74px;height:74px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:.3rem}
-/* Sun */
-.wa-sun{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
-.wa-sun::before{content:'';position:absolute;inset:3px;border-radius:50%;background:conic-gradient(rgba(245,158,11,.55) 0deg 15deg,transparent 15deg 30deg,rgba(245,158,11,.55) 30deg 45deg,transparent 45deg 60deg,rgba(245,158,11,.55) 60deg 75deg,transparent 75deg 90deg,rgba(245,158,11,.55) 90deg 105deg,transparent 105deg 120deg,rgba(245,158,11,.55) 120deg 135deg,transparent 135deg 150deg,rgba(245,158,11,.55) 150deg 165deg,transparent 165deg 180deg,rgba(245,158,11,.55) 180deg 195deg,transparent 195deg 210deg,rgba(245,158,11,.55) 210deg 225deg,transparent 225deg 240deg,rgba(245,158,11,.55) 240deg 255deg,transparent 255deg 270deg,rgba(245,158,11,.55) 270deg 285deg,transparent 285deg 300deg,rgba(245,158,11,.55) 300deg 315deg,transparent 315deg 330deg,rgba(245,158,11,.55) 330deg 345deg,transparent 345deg 360deg);animation:wa-spin 9s linear infinite;mask-image:radial-gradient(transparent 42%,black 44%);-webkit-mask-image:radial-gradient(transparent 42%,black 44%)}
-.wa-sun::after{content:'';width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fde68a,#f59e0b);position:absolute;box-shadow:0 0 12px rgba(245,158,11,.55);animation:wa-glow 3s ease-in-out infinite}
-@keyframes wa-spin{to{transform:rotate(360deg)}}
-@keyframes wa-glow{0%,100%{box-shadow:0 0 10px rgba(245,158,11,.4)}50%{box-shadow:0 0 22px rgba(245,158,11,.8)}}
-/* Partly cloudy */
-.wa-pcloudy{position:relative}
-.wa-pcloudy .wa-sun{position:absolute;inset:0;opacity:.72;transform:scale(.8) translate(-9px,-6px)}
-/* Cloud */
-.wa-has-cloud{position:absolute;inset:0}
-.wa-has-cloud::before{content:'';position:absolute;width:44px;height:18px;border-radius:30px;background:rgba(148,163,184,.55);top:14px;left:14px;animation:wa-bob 4s ease-in-out infinite}
-.wa-has-cloud::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:rgba(148,163,184,.55);top:4px;left:20px;animation:wa-bob 4s ease-in-out infinite}
-.wa-dark.wa-has-cloud::before,.wa-dark.wa-has-cloud::after{background:rgba(71,85,105,.7)}
-@keyframes wa-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-/* Rain */
+.w-anim{width:80px;height:80px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:.2rem}
+/* Sun: rotating wrapper + individual rays + glowing core */
+.wa-sun-wrap{width:80px;height:80px;position:relative;display:flex;align-items:center;justify-content:center;animation:wa-sun-rot 18s linear infinite}
+.wa-sun-core{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff9c0,#fbbf24 45%,#f59e0b);box-shadow:0 0 14px rgba(245,158,11,.65),0 0 32px rgba(245,158,11,.3);position:relative;z-index:1;animation:wa-sun-pulse 3s ease-in-out infinite;flex-shrink:0}
+.wa-sun-ray{position:absolute;width:3px;height:12px;background:linear-gradient(to bottom,rgba(253,230,138,.95),rgba(253,230,138,0));border-radius:2px;top:50%;left:50%;margin:-6px -1.5px;transform-origin:50% 6px;transform:rotate(var(--ra)) translateY(-23px);animation:wa-ray-sh 2.4s ease-in-out infinite var(--rd,0s)}
+@keyframes wa-sun-rot{to{transform:rotate(360deg)}}
+@keyframes wa-sun-pulse{0%,100%{box-shadow:0 0 14px rgba(245,158,11,.65),0 0 32px rgba(245,158,11,.3)}50%{box-shadow:0 0 22px rgba(245,158,11,.9),0 0 52px rgba(245,158,11,.45)}}
+@keyframes wa-ray-sh{0%,100%{opacity:.65;transform:rotate(var(--ra)) translateY(-23px) scaleY(1)}50%{opacity:1;transform:rotate(var(--ra)) translateY(-20px) scaleY(1.25)}}
+/* Partly cloudy: small sun behind cloud */
+.wa-pcloudy-sun{position:absolute;width:46px;height:46px;top:2px;left:2px;display:flex;align-items:center;justify-content:center;animation:wa-sun-rot 20s linear infinite;opacity:.85}
+.wa-pcloudy-sun .wa-sun-core{width:18px;height:18px}
+.wa-pcloudy-sun .wa-sun-ray{height:8px;margin:-4px -1.5px;transform:rotate(var(--ra)) translateY(-15px)}
+/* Cloud: multi-puff shape */
+.wa-cloud-grp{position:relative;width:52px;height:32px}
+.wa-cl-body{position:absolute;width:48px;height:20px;border-radius:20px;bottom:0;left:2px;background:var(--cl-bg,rgba(148,163,184,.6));animation:wa-bob 4.5s ease-in-out infinite}
+.wa-cl-p1{position:absolute;width:24px;height:24px;border-radius:50%;bottom:10px;left:7px;background:var(--cl-bg,rgba(148,163,184,.6));animation:wa-bob 4.5s ease-in-out infinite}
+.wa-cl-p2{position:absolute;width:18px;height:18px;border-radius:50%;bottom:12px;left:22px;background:var(--cl-bg,rgba(148,163,184,.55));animation:wa-bob 4.5s ease-in-out infinite .4s}
+.wa-cloud-dark{--cl-bg:rgba(71,85,105,.75)}
+.wa-cloud-grp::after{content:'';position:absolute;width:40px;height:6px;border-radius:0 0 12px 12px;bottom:-4px;left:6px;background:rgba(0,0,0,.12);filter:blur(3px)}
+@keyframes wa-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+/* Rain drops */
 .wa-drop{position:absolute;width:2px;border-radius:2px;background:linear-gradient(transparent,rgba(147,197,253,.9));animation:wa-rain var(--spd,.75s) linear infinite var(--dly,0s)}
-@keyframes wa-rain{from{transform:translateY(0);opacity:0}25%{opacity:1}to{transform:translateY(36px);opacity:0}}
-/* Snow */
-.wa-flake{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(219,234,254,.9);animation:wa-snow var(--spd,1.2s) linear infinite var(--dly,0s)}
-@keyframes wa-snow{from{transform:translateY(0) rotate(0deg);opacity:0}25%{opacity:1}to{transform:translateY(34px) rotate(180deg);opacity:0}}
+@keyframes wa-rain{from{transform:translateY(0) rotate(-10deg);opacity:0}20%{opacity:.9}to{transform:translateY(38px) rotate(-10deg);opacity:0}}
+/* Snow flakes */
+.wa-flake{position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,#fff 40%,rgba(219,234,254,.7));box-shadow:0 0 3px rgba(219,234,254,.6);animation:wa-snow var(--spd,1.3s) ease-in infinite var(--dly,0s)}
+@keyframes wa-snow{from{transform:translateY(0) translateX(0);opacity:0}20%{opacity:1}to{transform:translateY(36px) translateX(var(--sx,4px));opacity:0}}
 /* Lightning */
-.wa-bolt{position:absolute;font-size:1.25rem;line-height:1;top:34px;left:27px;animation:wa-flash 2.5s ease-in-out infinite}
-@keyframes wa-flash{0%,82%,100%{opacity:.15}86%,94%{opacity:1}}
+.wa-bolt{position:absolute;font-size:1.4rem;line-height:1;bottom:4px;left:50%;transform:translateX(-50%);animation:wa-flash 3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(253,224,71,.8))}
+@keyframes wa-flash{0%,80%,100%{opacity:.1}84%,90%,96%{opacity:1}87%,93%{opacity:.3}}
+/* Fog streaks */
+.wa-fog-line{position:absolute;height:2px;border-radius:2px;background:linear-gradient(to right,transparent,rgba(148,163,184,.45),transparent);animation:wa-fog var(--fd,4s) ease-in-out infinite var(--fdl,0s)}
+@keyframes wa-fog{0%,100%{opacity:.4;transform:translateX(-8px)}50%{opacity:.8;transform:translateX(8px)}}
+
+/* ── HERO BACKGROUND WEATHER EFFECT ── */
+.weather-hero::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;transition:opacity .8s}
+.weather-hero[data-wx="sun"]::before{background:conic-gradient(from 0deg at 105% -15%,transparent 0deg,rgba(245,158,11,.06) 25deg,rgba(253,230,138,.04) 50deg,transparent 75deg,rgba(245,158,11,.05) 100deg,transparent 130deg);animation:bg-sun-sweep 25s linear infinite}
+@keyframes bg-sun-sweep{to{transform:rotate(360deg);transform-origin:105% -15%}}
+.weather-hero[data-wx="pcloudy"]::before{background:radial-gradient(ellipse 70% 50% at 80% 30%,rgba(245,158,11,.05) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 20% 60%,rgba(148,163,184,.04) 0%,transparent 70%);animation:bg-pcl 10s ease-in-out infinite alternate}
+@keyframes bg-pcl{from{opacity:.7}to{opacity:1}}
+.weather-hero[data-wx="cloud"]::before,.weather-hero[data-wx="fog"]::before{background:radial-gradient(ellipse 80% 60% at 35% 40%,rgba(148,163,184,.06) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 75% 65%,rgba(148,163,184,.04) 0%,transparent 70%);animation:bg-cloud-drift 12s ease-in-out infinite alternate}
+@keyframes bg-cloud-drift{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
+.weather-hero[data-wx="drizzle"]::before,.weather-hero[data-wx="rain"]::before{background:repeating-linear-gradient(-68deg,transparent 0,transparent 13px,rgba(147,197,253,.04) 13px,rgba(147,197,253,.04) 14px,transparent 14px,transparent 27px,rgba(147,197,253,.03) 27px,rgba(147,197,253,.03) 28px);animation:bg-rain-fall 2s linear infinite}
+@keyframes bg-rain-fall{from{background-position:0 0}to{background-position:-30px 56px}}
+.weather-hero[data-wx="snow"]::before{background:radial-gradient(circle,rgba(219,234,254,.22) 1px,transparent 1px) 0 0/24px 24px,radial-gradient(circle,rgba(219,234,254,.14) 1px,transparent 1px) 12px 12px/24px 24px;animation:bg-snow-drift 5s linear infinite}
+@keyframes bg-snow-drift{from{background-position:0 0,12px 12px}to{background-position:6px 24px,18px 36px}}
+.weather-hero[data-wx="storm"]::before{background:rgba(59,130,246,0);animation:bg-storm-flash 5s ease-in-out infinite}
+@keyframes bg-storm-flash{0%,83%,100%{background:rgba(59,130,246,0)}86%,92%{background:rgba(147,197,253,.06)}}
 .stat-box{
   background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);
   border-radius:10px;padding:.5rem .6rem;
@@ -172,8 +194,41 @@ header{
 .sbox-label{font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:.08rem}
 .sbox-val{font-size:.82rem;font-weight:700;color:#fff}
 .sbox-sub{font-size:.58rem;color:rgba(255,255,255,.28);margin-top:.03rem}
+.stat-box[data-gauge]{cursor:help}
 
 .uv-low{color:#4ade80}.uv-mod{color:#facc15}.uv-high{color:#fb923c}.uv-vhigh{color:#f87171}.uv-extreme{color:#c084fc}
+
+/* ── GAUGE POPUP ── */
+.gauge-pop{
+  position:fixed;z-index:9002;
+  background:#0e1d33;border:1px solid var(--border2);
+  border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.75);
+  padding:.75rem 1rem;width:210px;
+  pointer-events:none;opacity:0;transform:translateY(6px);
+  transition:opacity .14s,transform .14s;
+}
+.gauge-pop.show{opacity:1;transform:translateY(0)}
+.gp-lbl{font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+.gp-val{font-size:1.1rem;font-weight:700;margin-bottom:.06rem;display:flex;align-items:baseline;gap:.28rem}
+.gp-cat{font-size:.72rem;font-weight:600}
+.gp-bar-bg{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin:.45rem 0}
+.gp-bar-fill{height:100%;border-radius:4px;transition:width .4s,background .3s}
+.gp-scale{display:flex;flex-wrap:wrap;gap:.22rem .55rem;font-size:.57rem;color:var(--muted);line-height:1.7}
+.gp-sc-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:.2rem;vertical-align:middle}
+
+/* ── DAILY CONTENT (4th col) ── */
+.dc-sec{padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.dc-sec:last-child{border-bottom:none}
+.dc-sec-ttl{font-size:.52rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.38rem}
+.dc-quote{font-size:.72rem;color:var(--text);line-height:1.55;font-style:italic;border-left:2px solid var(--accent);padding-left:.6rem;margin:0 0 .28rem}
+.dc-author{font-size:.63rem;color:var(--accent);font-weight:600;text-align:right}
+.dc-riddle-q{font-size:.72rem;color:var(--text);line-height:1.5;margin-bottom:.38rem}
+.dc-reveal{background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.28);color:var(--accent);font-family:'Inter',sans-serif;font-size:.64rem;font-weight:600;padding:.25rem .6rem;border-radius:6px;cursor:pointer;transition:background .15s;display:inline-block}
+.dc-reveal:hover{background:rgba(59,130,246,.26)}
+.dc-answer{font-size:.72rem;color:var(--green);font-weight:600;margin-top:.32rem;display:none}
+.dc-joke-setup{font-size:.72rem;color:var(--text);line-height:1.5;display:block}
+.dc-joke-punchline{font-size:.72rem;color:var(--accent);font-weight:500;font-style:italic;line-height:1.5;display:block;margin-top:.28rem}
+.dc-joke-single{font-size:.72rem;color:var(--text);line-height:1.52;display:block}
 
 /* ── SECTION LABEL ── */
 .s-label{font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
@@ -321,11 +376,12 @@ header{
   .fc-ico{font-size:1.45rem}
   #windy-map{height:320px}
 }
-@media(max-width:640px){
-  .hero-body{grid-template-columns:1fr;gap:.75rem}
-  .hero-city-img-wrap{width:100%;height:100px}
-  .hero-center{align-items:center}
+@media(max-width:700px){
+  .hero-body{grid-template-columns:1fr;gap:.75rem;min-height:auto}
+  .hero-city-img-wrap{width:100%;height:100px;flex:none}
+  .hero-center{padding:.4rem 0;justify-content:center;gap:.3rem}
   .hero-right{width:100%}
+  .wa-sun-wrap,.w-anim{width:60px;height:60px}
 }
 @media(max-width:540px){
   .history-cols{grid-template-columns:1fr}
@@ -381,7 +437,7 @@ header{
       <div class="h-col-content" id="hist-tech"><div class="h-loading">A carregar…</div></div>
     </div>
     <div class="h-col">
-      <div class="h-col-title">😄 <span>Piadas</span></div>
+      <div class="h-col-title">✨ <span>Do Dia</span></div>
       <div class="h-col-content" id="hist-jokes"><div class="h-loading">A carregar…</div></div>
     </div>
   </div>
@@ -467,6 +523,7 @@ header{
 </div>
 
 <div class="popup" id="popup"></div>
+<div class="gauge-pop" id="gauge-pop"></div>
 
 <script>
 // ── CONSTANTS ──────────────────────────────────────────────────────
@@ -525,39 +582,28 @@ const PT_EN_KEYS = [
   'mozambique independence','cape verde','east timor','lusophone',
   'portuguese revolution','estado novo','portuguese republic',
 ];
-// Science, technology & culture keywords — EN Wikipedia
+// Ciência e tecnologia — palavras-chave em português (PT Wikipedia)
 const TECH_KEYS = [
-  // Computing & internet
-  'computer','software','internet','web','digital','algorithm','programming',
-  'artificial intelligence','machine learning','transistor','microchip','processor',
-  'cpu','semiconductor','integrated circuit','hard disk','world wide web',
-  'browser','email','wi-fi','bluetooth','smartphone','operating system',
-  // Tech companies & products
+  'computador','software','internet','digital','algoritmo','programação',
+  'inteligência artificial','transistor','microchip','processador',
+  'circuito integrado','world wide web','smartphone','sistema operativo',
   'apple','microsoft','google','ibm','linux','nintendo','atari','sega',
-  'iphone','android','playstation','xbox','macintosh','windows','tetris',
-  'pac-man','pong','video game','space invaders','minecraft',
-  // Space & astronomy
-  'nasa','esa','space','spacecraft','satellite','rocket','astronaut','cosmonaut',
-  'moon','mars','venus','sputnik','apollo','hubble','telescope','observatory',
-  'space shuttle','space station','iss','voyager','orbit',
-  // Physics & energy
-  'relativity','quantum','nuclear','fission','fusion','atomic','laser',
-  'radar','fiber optic','led','superconductor','electricity','electromagnetic',
-  // Biology & medicine
-  'vaccine','vaccination','dna','gene','genome','genetics','evolution',
-  'penicillin','antibiotic','insulin','transplant','cloning','x-ray','mri',
-  'surgery','bacteria','virus','pandemic',
-  // Transport
-  'airplane','aircraft','flight','helicopter','jet','automobile','locomotive',
-  'submarine','wright brothers','zeppelin','motor','engine',
-  // Famous scientists & inventors
+  'iphone','playstation','xbox','macintosh','windows','videojogo',
+  'nasa','esa','espaço','nave espacial','satélite','foguetão','foguete',
+  'astronauta','cosmonauta','lua','marte','sputnik','hubble','telescópio',
+  'estação espacial','ônibus espacial','órbita','voyager',
+  'relatividade','quântico','nuclear','fissão','fusão','atómica','laser',
+  'radar','fibra óptica','eletricidade','eletromagnético',
+  'vacina','vacinação','adn','gene','genoma','genética','evolução',
+  'penicilina','antibiótico','insulina','transplante','raio-x','ressonância',
+  'cirurgia','bactéria','vírus','pandemia',
+  'avião','aeronave','helicóptero','submarino','locomotiva','automóvel',
+  'irmãos wright','zeppelin','motor',
   'einstein','newton','darwin','tesla','edison','turing','faraday','curie',
-  'pasteur','galileo','copernicus','hawking','feynman','oppenheimer',
-  'von braun','heisenberg','planck','bohr','lovelace','babbage',
-  // Media & communication
-  'radio','television','broadcast','film','cinema','photograph','photography',
-  'gramophone','streaming','invention','invented','inventor','discovered',
-  'discovery','patent','world record','first human',
+  'pasteur','galileu','copérnico','hawking','oppenheimer','heisenberg',
+  'planck','bohr','babbage',
+  'rádio','televisão','cinema','fotografia','fonógrafo','streaming',
+  'invenção','inventor','descoberta','patente','recorde mundial',
 ];
 
 function hEventHTML(ev, wikiBase) {
@@ -579,98 +625,152 @@ async function loadHistory() {
   const d = String(n.getDate()).padStart(2,'0');
   document.getElementById('history-date-label').textContent = `${n.getDate()} de ${MO[n.getMonth()]}`;
 
-  const PT = 'https://pt.wikipedia.org/api/rest_v1/feed/onthisday';
-  const EN = 'https://en.wikipedia.org/api/rest_v1/feed/onthisday';
+  const PT_BASE = 'https://pt.wikipedia.org/api/rest_v1/feed/onthisday';
 
-  // 3 parallel fetches: EN curated, EN all events, PT all events
-  const [enSelRes, enEvRes, ptEvRes] = await Promise.allSettled([
-    fetch(`${EN}/selected/${m}/${d}`).then(r=>r.json()),
-    fetch(`${EN}/events/${m}/${d}`).then(r=>r.json()),
-    fetch(`${PT}/events/${m}/${d}`).then(r=>r.json()),
+  // Fetch PT Wikipedia: curated selected + all events (fully in Portuguese)
+  const [ptSelRes, ptEvRes] = await Promise.allSettled([
+    fetch(`${PT_BASE}/selected/${m}/${d}`).then(r=>r.json()),
+    fetch(`${PT_BASE}/events/${m}/${d}`).then(r=>r.json()),
   ]);
 
-  const enSel = enSelRes.status==='fulfilled' ? (enSelRes.value.selected||[]) : [];
-  const enEvs = enEvRes.status==='fulfilled'  ? (enEvRes.value.events||[])    : [];
+  const ptSel = ptSelRes.status==='fulfilled' ? (ptSelRes.value.selected||[]) : [];
   const ptEvs = ptEvRes.status==='fulfilled'  ? (ptEvRes.value.events||[])    : [];
 
-  // Sort helper: most recent events first
   const byYearDesc = (a,b) => (b.year||0) - (a.year||0);
 
-  // ── MUNDO ──
-  // EN selected (curated, globally important) first; fill to 20 from EN events
-  const selKeys = new Set(enSel.map(e => e.text?.slice(0,50)));
+  // ── MUNDO ── PT curated (selected) first, fill from PT events not Portugal-specific
+  const selKeys = new Set(ptSel.map(e => e.text?.slice(0,50)));
   const worldEvs = [
-    ...enSel.sort(byYearDesc),
-    ...enEvs.filter(e => !selKeys.has(e.text?.slice(0,50))).sort(byYearDesc),
+    ...ptSel.sort(byYearDesc),
+    ...ptEvs.filter(e =>
+      !selKeys.has(e.text?.slice(0,50)) &&
+      !PT_KEYS.some(k => (e.text||'').toLowerCase().includes(k))
+    ).sort(byYearDesc),
   ].slice(0, 20);
 
-  // ── PORTUGAL ──
-  // PT Wikipedia events (Portuguese text) filtered by PT_KEYS
-  // + EN events matching PT_EN_KEYS — combined, deduplicated, year DESC
-  const portFromPT = ptEvs.filter(e => PT_KEYS.some(k => (e.text||'').toLowerCase().includes(k)));
-  const portFromEN = enEvs.filter(e => PT_EN_KEYS.some(k => (e.text||'').toLowerCase().includes(k)));
-  const portSeen = new Set();
-  const portEvs = [...portFromPT, ...portFromEN]
-    .filter(e => { const k=(e.text||'').slice(0,50); return portSeen.has(k)?false:(portSeen.add(k),true); })
+  // ── PORTUGAL ── PT events matching PT_KEYS, year DESC
+  const portEvs = ptEvs
+    .filter(e => PT_KEYS.some(k => (e.text||'').toLowerCase().includes(k)))
     .sort(byYearDesc)
     .slice(0, 20);
 
-  // ── CIÊNCIA & TECNOLOGIA ──
-  // EN events matching TECH_KEYS, sorted year DESC
-  const techEvs = enEvs
+  // ── CIÊNCIA & TECNOLOGIA ── PT events matching TECH_KEYS (Portuguese), year DESC
+  const techEvs = ptEvs
     .filter(e => TECH_KEYS.some(k => (e.text||'').toLowerCase().includes(k)))
     .sort(byYearDesc)
     .slice(0, 20);
 
-  const renderEl = (id, evs, base, empty) => {
+  const renderEl = (id, evs, empty) => {
     document.getElementById(id).innerHTML = evs.length
-      ? evs.map(e => hEventHTML(e, base)).join('')
+      ? evs.map(e => hEventHTML(e, 'https://pt.wikipedia.org/wiki/')).join('')
       : `<div class="h-loading">${empty}</div>`;
   };
 
-  renderEl('hist-world', worldEvs, 'https://en.wikipedia.org/wiki/', 'Sem eventos disponíveis.');
-  renderEl('hist-pt',    portEvs,  'https://pt.wikipedia.org/wiki/', 'Sem eventos de Portugal encontrados.');
-  renderEl('hist-tech',  techEvs,  'https://en.wikipedia.org/wiki/', 'Sem eventos encontrados.');
+  renderEl('hist-world', worldEvs, 'Sem eventos disponíveis.');
+  renderEl('hist-pt',    portEvs,  'Sem eventos de Portugal encontrados.');
+  renderEl('hist-tech',  techEvs,  'Sem eventos encontrados.');
 }
 loadHistory();
 
-// ── JOKES ─────────────────────────────────────────────────────────
-async function loadJokes() {
-  const el = document.getElementById('hist-jokes');
+// ── DAILY CONTENT (inspiração + adivinha + piada) ─────────────────
+const QUOTES = [
+  {t:'O único modo de fazer um excelente trabalho é amar o que se faz.',a:'Steve Jobs'},
+  {t:'A vida é o que acontece enquanto estás ocupado a fazer outros planos.',a:'John Lennon'},
+  {t:'Sê a mudança que queres ver no mundo.',a:'Mahatma Gandhi'},
+  {t:'Tudo parece impossível até que seja feito.',a:'Nelson Mandela'},
+  {t:'A imaginação é mais importante do que o conhecimento.',a:'Albert Einstein'},
+  {t:'O futuro pertence àqueles que acreditam na beleza dos seus sonhos.',a:'Eleanor Roosevelt'},
+  {t:'A persistência é o caminho do êxito.',a:'Charlie Chaplin'},
+  {t:'Não deixes que o barulho das opiniões dos outros abafe a tua própria voz interior.',a:'Steve Jobs'},
+  {t:'A felicidade não é algo pronto. Vem das tuas próprias ações.',a:'Dalai Lama'},
+  {t:'Nunca é tarde para ser o que poderias ter sido.',a:'George Eliot'},
+  {t:'Acredita que podes e já estás a meio caminho.',a:'Theodore Roosevelt'},
+  {t:'O modo de começar é parar de falar e começar a fazer.',a:'Walt Disney'},
+  {t:'O sucesso não é definitivo, o fracasso não é fatal: é a coragem de continuar que conta.',a:'Winston Churchill'},
+  {t:'Vive como se fosses morrer amanhã. Aprende como se fosses viver para sempre.',a:'Mahatma Gandhi'},
+  {t:'A educação é a arma mais poderosa que podes usar para mudar o mundo.',a:'Nelson Mandela'},
+  {t:'O que sabemos é uma gota, o que ignoramos é um oceano.',a:'Isaac Newton'},
+  {t:'Sê tu mesmo; todos os outros papéis já estão tomados.',a:'Oscar Wilde'},
+  {t:'Duas coisas são infinitas: o universo e a estupidez humana.',a:'Albert Einstein'},
+  {t:'A arte é a mentira que nos permite perceber a verdade.',a:'Pablo Picasso'},
+  {t:'Há apenas dois dias no ano em que nada pode ser feito: ontem e amanhã.',a:'Dalai Lama'},
+  {t:'Não são os anos de vida que contam, mas a vida nos anos.',a:'Abraham Lincoln'},
+  {t:'A coragem não é a ausência de medo, mas o julgamento de que algo mais importante existe.',a:'Ambrose Redmoon'},
+  {t:'Em cada amanhecer há uma nova oportunidade de ser feliz.',a:'Ralph Waldo Emerson'},
+  {t:'Não tenhas medo de ir devagar; tem medo apenas de ficar parado.',a:'Provérbio Chinês'},
+  {t:'A única coisa pior do que ser cego é ter visão sem ter objetivo.',a:'Helen Keller'},
+  {t:'O sucesso é a soma de pequenos esforços repetidos dia após dia.',a:'Robert Collier'},
+  {t:'Não é o mais forte que sobrevive, mas o mais adaptável às mudanças.',a:'Charles Darwin'},
+  {t:'A dificuldade é uma desculpa que a história nunca aceita.',a:'Edward R. Murrow'},
+  {t:'O homem sábio não diz tudo o que pensa, mas pensa tudo o que diz.',a:'Aristóteles'},
+  {t:'Quanto mais te elevas, mais pequeno pareces aos olhos daqueles que não sabem voar.',a:'Friedrich Nietzsche'},
+];
 
-  function renderJokes(jokes) {
-    if (!jokes.length) {
-      el.innerHTML = '<div class="h-loading">Sem piadas disponíveis.</div>';
-      return;
-    }
-    el.innerHTML = jokes.map(j =>
-      j.type === 'twopart'
-        ? `<div class="h-joke">
-             <span class="h-joke-setup">${j.setup}</span>
-             <span class="h-joke-punchline">${j.delivery}</span>
-           </div>`
-        : `<div class="h-joke"><span class="h-joke-text">${j.joke}</span></div>`
-    ).join('');
-  }
+const RIDDLES = [
+  {q:'O que tem cidades sem casas, florestas sem árvores e água sem peixes?',a:'Um mapa'},
+  {q:'Quanto mais me tiras, maior fico. O que sou?',a:'Uma cova'},
+  {q:'Tenho mãos mas não consigo bater palmas. O que sou?',a:'Um relógio'},
+  {q:'O que é que fica no canto mas viaja por todo o mundo?',a:'Um selo postal'},
+  {q:'O que é que tens tu que toda a gente usa mais do que tu?',a:'O teu nome'},
+  {q:'Deito-me mas não durmo, tenho boca mas não falo. O que sou?',a:'Um rio'},
+  {q:'O que é que voa sem ter asas e chora sem ter olhos?',a:'Uma nuvem'},
+  {q:'Quanto mais seco, mais molhado fico. O que sou?',a:'Uma toalha'},
+  {q:'O que é que o pobre tem, o rico precisa e se comeres morre?',a:'O nada'},
+  {q:'Tenho ramos mas não sou árvore, tenho folhas mas não sou planta. O que sou?',a:'Um livro'},
+  {q:'Sou leve como pena mas o homem mais forte não me consegue segurar por muito tempo. O que sou?',a:'O fôlego'},
+  {q:'O que é que a neve tem de branco, o carvão tem de preto e o fogo tem de vermelho?',a:'A cor'},
+  {q:'Sou filho do teu pai mas não sou teu irmão. Quem sou?',a:'Tu próprio'},
+  {q:'O que nasce com quatro pernas, anda com duas e morre com três?',a:'O ser humano'},
+  {q:'Qual é o único lugar onde sexta-feira vem antes de quinta-feira?',a:'No dicionário'},
+  {q:'O que é que tem um pescoço mas não tem cabeça?',a:'Uma garrafa'},
+  {q:'O que é que está sempre à tua frente mas não podes ver?',a:'O futuro'},
+  {q:'O que é que quanto mais partilhas, mais tens?',a:'O conhecimento'},
+  {q:'Tenho olhos mas não vejo, tenho nariz mas não cheiro. O que sou?',a:'Uma batata'},
+  {q:'Qual é o animal que anda de manhã com quatro pés, ao meio-dia com dois e à tarde com três?',a:'O ser humano'},
+  {q:'O que é que corre mas não tem pernas?',a:'A água'},
+  {q:'Sou cheio quando estou vazio e vazio quando estou cheio. O que sou?',a:'Um buraco'},
+];
+
+async function loadDailyContent() {
+  const el = document.getElementById('hist-jokes');
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const q = pick(QUOTES);
+  const r = pick(RIDDLES);
 
   const bust = `&_=${Date.now()}`;
+  let jokeHTML = '<div class="dc-sec-ttl">😄 Piada do Dia</div><div class="h-loading">A carregar…</div>';
+
   try {
-    // Try Portuguese jokes first
-    const ptRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&amount=5&safe-mode${bust}`, {cache:'no-store'});
+    const ptRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
     const ptData = await ptRes.json();
-    const ptJokes = ptData.error ? [] : (ptData.jokes || [ptData]);
+    if (!ptData.error) {
+      jokeHTML = ptData.type === 'twopart'
+        ? `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-setup">${ptData.setup}</span><span class="dc-joke-punchline">${ptData.delivery}</span>`
+        : `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-single">${ptData.joke}</span>`;
+    } else {
+      const enRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
+      const enData = await enRes.json();
+      jokeHTML = enData.type === 'twopart'
+        ? `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-setup">${enData.setup}</span><span class="dc-joke-punchline">${enData.delivery}</span>`
+        : `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-single">${enData.joke||'—'}</span>`;
+    }
+  } catch { /* keep loading text */ }
 
-    if (ptJokes.length >= 2) { renderJokes(ptJokes); return; }
-
-    // Fallback: English jokes
-    const enRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&amount=5&safe-mode${bust}`, {cache:'no-store'});
-    const enData = await enRes.json();
-    renderJokes(enData.error ? [] : (enData.jokes || [enData]));
-  } catch {
-    el.innerHTML = '<div class="h-loading">Não foi possível carregar piadas.</div>';
-  }
+  el.innerHTML = `
+    <div class="dc-sec">
+      <div class="dc-sec-ttl">💡 Inspiração</div>
+      <blockquote class="dc-quote">"${q.t}"</blockquote>
+      <div class="dc-author">— ${q.a}</div>
+    </div>
+    <div class="dc-sec">
+      <div class="dc-sec-ttl">🤔 Adivinha</div>
+      <div class="dc-riddle-q">${r.q}</div>
+      <button class="dc-reveal" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">Ver resposta</button>
+      <div class="dc-answer">${r.a}</div>
+    </div>
+    <div class="dc-sec">${jokeHTML}</div>`;
 }
-loadJokes();
+loadDailyContent();
 
 // ── WINDY MAP ─────────────────────────────────────────────────────
 let mapLatLon = [39.7436, -8.8071];
@@ -717,6 +817,77 @@ function hidePopup() {
   clearTimeout(popT);
   popT = setTimeout(() => popup.classList.remove('show'), 130);
 }
+
+// ── GAUGE POPUP ───────────────────────────────────────────────────
+const gaugePop = document.getElementById('gauge-pop');
+let gaugeT;
+
+const GAUGES = {
+  wind:{lbl:'Vento',unit:'km/h',min:0,max:120,
+    ticks:[{v:0,l:'Calmo',c:'#4ade80'},{v:20,l:'Suave',c:'#86efac'},{v:39,l:'Moderado',c:'#facc15'},{v:62,l:'Forte',c:'#fb923c'},{v:89,l:'Tempestade',c:'#f87171'}]},
+  humidity:{lbl:'Humidade',unit:'%',min:0,max:100,
+    ticks:[{v:0,l:'Seca',c:'#fcd34d'},{v:30,l:'Confortável',c:'#4ade80'},{v:60,l:'Húmida',c:'#60a5fa'},{v:80,l:'Muito Húmida',c:'#818cf8'}]},
+  pressure:{lbl:'Pressão',unit:'hPa',min:960,max:1040,
+    ticks:[{v:960,l:'Muito Baixa',c:'#93c5fd'},{v:980,l:'Baixa',c:'#60a5fa'},{v:1000,l:'Normal',c:'#4ade80'},{v:1020,l:'Alta',c:'#fb923c'}]},
+  cloud:{lbl:'Nebulosidade',unit:'%',min:0,max:100,
+    ticks:[{v:0,l:'Limpo',c:'#fcd34d'},{v:25,l:'Pouco Nublado',c:'#a5b4fc'},{v:50,l:'Parcialmente Nublado',c:'#94a3b8'},{v:87,l:'Nublado',c:'#64748b'}]},
+  uv:{lbl:'Índice UV',unit:'',min:0,max:12,
+    ticks:[{v:0,l:'Baixo',c:'#4ade80'},{v:3,l:'Moderado',c:'#facc15'},{v:6,l:'Alto',c:'#fb923c'},{v:8,l:'Muito Alto',c:'#f87171'},{v:11,l:'Extremo',c:'#c084fc'}]},
+  precipitation:{lbl:'Precipitação',unit:'mm',min:0,max:30,
+    ticks:[{v:0,l:'Sem chuva',c:'#4ade80'},{v:2.5,l:'Ligeira',c:'#93c5fd'},{v:7.5,l:'Moderada',c:'#60a5fa'},{v:15,l:'Forte',c:'#3b82f6'}]},
+  sunrise:{lbl:'Nascer do Sol',unit:''},
+  sunset:{lbl:'Pôr do Sol',unit:''},
+};
+
+function getGaugeCat(g, val) {
+  let cat = g.ticks?.[0];
+  if (!g.ticks) return null;
+  for (const t of g.ticks) { if (val >= t.v) cat = t; }
+  return cat;
+}
+
+function showGaugePop(anchor, key, val) {
+  const g = GAUGES[key];
+  if (!g || !g.ticks) return;
+  clearTimeout(gaugeT);
+  const cat = getGaugeCat(g, val);
+  const pct = Math.min(100, Math.max(0, ((val - g.min) / (g.max - g.min)) * 100));
+  const scaleHTML = g.ticks.map(t =>
+    `<span><span class="gp-sc-dot" style="background:${t.c}"></span>${t.l}</span>`).join('');
+  gaugePop.innerHTML = `
+    <div class="gp-lbl">${g.lbl}</div>
+    <div class="gp-val">${val}${g.unit ? '<span style="font-size:.7rem;opacity:.5;margin-left:.1rem">'+g.unit+'</span>' : ''}
+      ${cat ? `<span class="gp-cat" style="color:${cat.c}">${cat.l}</span>` : ''}</div>
+    <div class="gp-bar-bg"><div class="gp-bar-fill" style="width:${pct}%;background:${cat?.c||'var(--accent)'}"></div></div>
+    <div class="gp-scale">${scaleHTML}</div>`;
+
+  const r = anchor.getBoundingClientRect();
+  const pw = 210;
+  let left = r.left + r.width/2 - pw/2;
+  let top  = r.top - 160;
+  if (left < 8) left = 8;
+  if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+  if (top < 8) top = r.bottom + 6;
+  gaugePop.style.left = `${left}px`;
+  gaugePop.style.top  = `${top}px`;
+  gaugePop.classList.add('show');
+}
+
+function hideGaugePop() {
+  clearTimeout(gaugeT);
+  gaugeT = setTimeout(() => gaugePop.classList.remove('show'), 130);
+}
+
+// Gauge event delegation on hero (survives innerHTML rebuilds)
+document.getElementById('weather-hero').addEventListener('mouseover', e => {
+  const b = e.target.closest('.stat-box[data-gauge]');
+  if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
+});
+document.getElementById('weather-hero').addEventListener('click', e => {
+  const b = e.target.closest('.stat-box[data-gauge]');
+  if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
+});
+document.getElementById('weather-hero').addEventListener('mouseleave', hideGaugePop);
 
 // Forecast (7-day) popup
 function showForecastPopup(anchor, data, dayAlerts) {
@@ -873,35 +1044,65 @@ const CITY_META = {
   '37.7412,-25.6756':{name:'Ponta Delgada',wiki:'Ponta_Delgada'},
 };
 
+function sunWrap(scale=1, opacity=1) {
+  const rays = [0,45,90,135,180,225,270,315].map((ra,i) =>
+    `<div class="wa-sun-ray" style="--ra:${ra}deg;--rd:${(i*0.15).toFixed(2)}s"></div>`).join('');
+  const sz = Math.round(18*scale);
+  return `<div class="wa-sun-wrap" style="opacity:${opacity}">
+    ${rays}<div class="wa-sun-core" style="width:${sz}px;height:${sz}px"></div>
+  </div>`;
+}
+function cloudGrp(dark=false) {
+  return `<div class="wa-cloud-grp${dark?' wa-cloud-dark':''}">
+    <div class="wa-cl-body"></div><div class="wa-cl-p1"></div><div class="wa-cl-p2"></div>
+  </div>`;
+}
+function drops(configs) {
+  return configs.map(([x,h,spd,dly])=>
+    `<div class="wa-drop" style="left:${x}px;top:32px;height:${h}px;--spd:${spd}s;--dly:${dly}s"></div>`
+  ).join('');
+}
+function flakes(configs) {
+  return configs.map(([x,spd,dly,sx])=>
+    `<div class="wa-flake" style="left:${x}px;top:30px;--spd:${spd}s;--dly:${dly}s;--sx:${sx||4}px"></div>`
+  ).join('');
+}
+
 function getAnimHTML(code) {
   const c = +code;
-  const drop = (x, h, spd, dly) =>
-    `<div class="wa-drop" style="left:${x}px;top:30px;height:${h}px;--spd:${spd}s;--dly:${dly}s"></div>`;
-  const flake = (x, spd, dly) =>
-    `<div class="wa-flake" style="left:${x}px;top:28px;--spd:${spd}s;--dly:${dly}s"></div>`;
 
   if (c === 0 || c === 1)
-    return `<div class="w-anim"><div class="wa-sun"></div></div>`;
+    return `<div class="w-anim">${sunWrap()}</div>`;
 
   if (c === 2)
-    return `<div class="w-anim wa-pcloudy"><div class="wa-sun"></div><div class="wa-has-cloud"></div></div>`;
+    return `<div class="w-anim" style="position:relative">
+      <div class="wa-pcloudy-sun">${[0,45,90,135,180,225,270,315].map((ra,i)=>`<div class="wa-sun-ray" style="--ra:${ra}deg;--rd:${(i*.12).toFixed(2)}s"></div>`).join('')}<div class="wa-sun-core" style="width:16px;height:16px"></div></div>
+      <div style="position:absolute;bottom:4px;right:4px">${cloudGrp()}</div>
+    </div>`;
 
-  if (c === 3 || c === 45 || c === 48)
-    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div></div>`;
+  if (c === 3)
+    return `<div class="w-anim">${cloudGrp(true)}</div>`;
+
+  if (c === 45 || c === 48)
+    return `<div class="w-anim" style="position:relative">
+      ${cloudGrp(true)}
+      <div class="wa-fog-line" style="width:50px;left:8px;top:46px;--fd:3.5s;--fdl:0s"></div>
+      <div class="wa-fog-line" style="width:38px;left:16px;top:54px;--fd:4.5s;--fdl:.8s"></div>
+    </div>`;
 
   if (c >= 51 && c <= 55)
-    return `<div class="w-anim"><div class="wa-has-cloud"></div>${drop(22,8,.9,0)}${drop(33,10,1.1,.3)}${drop(44,8,.85,.6)}</div>`;
+    return `<div class="w-anim" style="position:relative">${cloudGrp()}${drops([[24,9,.95,0],[34,11,1.15,.35],[44,9,.9,.7]])}</div>`;
 
   if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
-    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div>${drop(20,10,.7,0)}${drop(30,12,.8,.2)}${drop(40,10,.75,.45)}${drop(50,11,.7,.15)}</div>`;
+    return `<div class="w-anim" style="position:relative">${cloudGrp(true)}${drops([[18,12,.68,0],[28,14,.76,.18],[38,11,.7,.42],[50,12,.65,.28]])}</div>`;
 
   if (c >= 71 && c <= 75)
-    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div>${flake(22,1.4,0)}${flake(34,1.2,.4)}${flake(46,1.5,.8)}</div>`;
+    return `<div class="w-anim" style="position:relative">${cloudGrp(true)}${flakes([[20,1.45,0,3],[33,1.25,.4,-3],[46,1.55,.75,4]])}</div>`;
 
   if (c >= 95)
-    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div>${drop(20,10,.65,0)}${drop(32,12,.7,.25)}${drop(44,10,.6,.5)}<div class="wa-bolt">⚡</div></div>`;
+    return `<div class="w-anim" style="position:relative">${cloudGrp(true)}${drops([[20,12,.62,0],[33,14,.68,.22],[46,11,.6,.48]])}<div class="wa-bolt">⚡</div></div>`;
 
-  return `<div class="w-anim" style="font-size:2.8rem;line-height:1;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
+  return `<div class="w-anim" style="font-size:2.6rem;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
 }
 
 // City options HTML (defined once, injected when rebuilding hero)
@@ -988,6 +1189,12 @@ async function loadWeather(latlon) {
     ? `<img class="hero-city-img" src="${wikiThumb}" alt="${meta.name}">`
     : `<div class="hero-city-img-ph">📷 ${meta.name}</div>`;
 
+  const wxCat = (+c.weather_code)<=1?'sun':(+c.weather_code)===2?'pcloudy':(+c.weather_code)<=48?((+c.weather_code)>=45?'fog':'cloud'):(+c.weather_code)<=55?'drizzle':(+c.weather_code)<=82?'rain':(+c.weather_code)<=75?'snow':'storm';
+  hero.setAttribute('data-wx', wxCat);
+  const windVal = Math.round(c.wind_speed_10m);
+  const uvVal   = uv0 ?? 0;
+  const precVal = +(c.precipitation||0);
+
   hero.innerHTML = `<div class="hero-body">
     ${heroLeft(imgHTML)}
     <div class="hero-center">
@@ -999,31 +1206,31 @@ async function loadWeather(latlon) {
     </div>
     <div class="hero-right">
       <div class="stat-grid">
-        <div class="stat-box">
+        <div class="stat-box" data-gauge="wind" data-gv="${windVal}">
           <div class="sbox-icon">💨</div><div class="sbox-label">Vento</div>
-          <div class="sbox-val">${Math.round(c.wind_speed_10m)} km/h</div>
+          <div class="sbox-val">${windVal} km/h</div>
           <div class="sbox-sub">${compass(c.wind_direction_10m)}</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box" data-gauge="humidity" data-gv="${c.relative_humidity_2m}">
           <div class="sbox-icon">💧</div><div class="sbox-label">Humidade</div>
           <div class="sbox-val">${c.relative_humidity_2m}%</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box" data-gauge="pressure" data-gv="${Math.round(c.surface_pressure)}">
           <div class="sbox-icon">🌡️</div><div class="sbox-label">Pressão</div>
           <div class="sbox-val">${Math.round(c.surface_pressure)}</div>
           <div class="sbox-sub">hPa</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box" data-gauge="cloud" data-gv="${c.cloud_cover}">
           <div class="sbox-icon">☁️</div><div class="sbox-label">Nuvens</div>
           <div class="sbox-val">${c.cloud_cover}%</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box" data-gauge="uv" data-gv="${uvVal}">
           <div class="sbox-icon">🌞</div><div class="sbox-label">Índice UV</div>
           <div class="sbox-val ${uv0!=null?uvCls(uv0):''}">${uv0??'—'}</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box" data-gauge="precipitation" data-gv="${precVal}">
           <div class="sbox-icon">🌧️</div><div class="sbox-label">Precipitação</div>
-          <div class="sbox-val">${c.precipitation}</div>
+          <div class="sbox-val">${precVal}</div>
           <div class="sbox-sub">mm</div>
         </div>
         <div class="stat-box">
