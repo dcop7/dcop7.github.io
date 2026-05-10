@@ -1,218 +1,340 @@
 const BombGame = (function () {
   'use strict';
 
-  let container, timerInt, timeLeft, stage, gameState;
-  const TOTAL_TIME = 90;
+  let container, timerInt, timeLeft, stageIdx, stages, diff, gameState;
 
-  function init(cont) {
-    container = cont;
-    render();
-  }
+  const DIFFS = {
+    easy:    { label:'Fácil',   emoji:'🟢', time:120, wires:3, codeLen:3, codeShow:6, seqLen:3, seqShow:5,
+               stages:['wires','code','sequence'] },
+    medium:  { label:'Médio',   emoji:'🟡', time:90,  wires:4, codeLen:4, codeShow:4, seqLen:4, seqShow:4,
+               stages:['wires','code','sequence'] },
+    hard:    { label:'Difícil', emoji:'🟠', time:75,  wires:4, codeLen:5, codeShow:3, seqLen:5, seqShow:3,
+               stages:['wires','code','math','sequence'] },
+    extreme: { label:'Extremo', emoji:'🔴', time:60,  wires:5, codeLen:6, codeShow:2, seqLen:6, seqShow:2,
+               stages:['wires','code','math','pattern','sequence'] },
+  };
 
-  function render() {
+  const STAGE_LABELS = { wires:'Fios', code:'Código', sequence:'Sequência', math:'Cálculo', pattern:'Padrão' };
+
+  function init(cont) { container = cont; renderMenu(); }
+
+  function renderMenu() {
     container.innerHTML = `
       <div class="hf-card bomb-card">
-        <div class="hf-top">
-          <span class="hf-title">💣 Desarmar a Bomba</span>
-          <span style="font-size:.65rem;color:var(--muted)">3 desafios • 90 segundos</span>
-        </div>
-        <div class="bomb-hud">
-          <div class="bomb-timer-wrap">
-            <div class="bomb-timer" id="bomb-timer">1:30</div>
-            <div class="bomb-timer-lbl">TEMPO RESTANTE</div>
-          </div>
-        </div>
+        <div class="hf-top"><span class="hf-title">💣 Desarmar a Bomba</span></div>
         <div class="bomb-stage" id="bomb-stage">
           <div class="bomb-idle">
-            <div style="font-size:3rem;margin-bottom:.5rem">💣</div>
-            <div style="font-size:1.1rem;color:var(--muted);margin-bottom:1.2rem">A bomba está ativa.<br>Tens 90 segundos para a desarmar.</div>
-            <button class="hf-new-btn bomb-start-btn" id="bomb-start">▶ Começar</button>
+            <div style="font-size:2.8rem;margin-bottom:.7rem">💣</div>
+            <div style="font-size:.95rem;color:var(--muted);margin-bottom:1.4rem">Escolhe o nível de dificuldade</div>
+            <div class="bomb-diff-grid">
+              ${Object.entries(DIFFS).map(([k,d]) => `
+                <button class="bomb-diff-btn" data-diff="${k}">
+                  <span class="bdb-emoji">${d.emoji}</span>
+                  <span class="bdb-label">${d.label}</span>
+                  <span class="bdb-info">${d.stages.length} desafios · ${d.time}s</span>
+                </button>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="bomb-hud" id="bomb-hud" style="display:none">
+          <div class="bomb-timer-wrap">
+            <div class="bomb-timer" id="bomb-timer">—</div>
+            <div class="bomb-timer-lbl">TEMPO RESTANTE</div>
           </div>
         </div>
         <div class="bomb-progress" id="bomb-progress"></div>
       </div>`;
-
-    container.querySelector('#bomb-start').addEventListener('click', startGame);
+    container.querySelectorAll('.bomb-diff-btn').forEach(btn =>
+      btn.addEventListener('click', () => startGame(btn.dataset.diff)));
   }
 
-  function startGame() {
-    stage = 0;
+  function startGame(diffKey) {
+    diff = DIFFS[diffKey] || DIFFS.medium;
+    stages = diff.stages;
+    stageIdx = 0;
     gameState = 'running';
-    timeLeft = TOTAL_TIME;
+    timeLeft = diff.time;
     clearInterval(timerInt);
+    container.querySelector('#bomb-hud').style.display = '';
     timerInt = setInterval(tick, 1000);
-    updateTimerDisplay();
+    updateTimer();
     showStage(0);
   }
 
   function tick() {
     timeLeft--;
-    updateTimerDisplay();
+    updateTimer();
     if (timeLeft <= 0) { clearInterval(timerInt); explode(); }
   }
 
-  function updateTimerDisplay() {
+  function updateTimer() {
     const el = container.querySelector('#bomb-timer');
     if (!el) return;
     const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-    el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
     el.className = 'bomb-timer' + (timeLeft <= 15 ? ' bomb-urgent' : '');
   }
 
   function showStage(n) {
     updateProgress(n);
-    if (n === 0) renderWires();
-    else if (n === 1) renderCode();
-    else if (n === 2) renderSequence();
+    const name = stages[n];
+    if      (name === 'wires')    renderWires();
+    else if (name === 'code')     renderCode();
+    else if (name === 'sequence') renderSequence();
+    else if (name === 'math')     renderMath();
+    else if (name === 'pattern')  renderPattern();
   }
 
   function updateProgress(n) {
     const el = container.querySelector('#bomb-progress');
     if (!el) return;
-    const labels = ['Fios', 'Código', 'Sequência'];
-    el.innerHTML = labels.map((l, i) =>
-      `<span class="bp-dot ${i < n ? 'done' : i === n ? 'active' : ''}">${i < n ? '✓' : i + 1} ${l}</span>`
+    el.innerHTML = stages.map((s, i) =>
+      `<span class="bp-dot ${i < n ? 'done' : i === n ? 'active' : ''}">${i < n ? '✓' : i+1} ${STAGE_LABELS[s]}</span>`
     ).join('');
   }
 
-  // Stage 0: Cut the correct wire
-  const WIRE_COLORS = ['#ef4444','#3b82f6','#22c55e','#facc15','#a855f7'];
-  const WIRE_NAMES  = ['Vermelho','Azul','Verde','Amarelo','Roxo'];
+  // ── Stage: Wire cut ────────────────────────────────────────────────
+  const WIRE_COLORS = ['#ef4444','#3b82f6','#22c55e','#facc15','#a855f7','#f97316'];
+  const WIRE_NAMES  = ['Vermelho','Azul','Verde','Amarelo','Roxo','Laranja'];
 
   function renderWires() {
-    let correctIdx;
-    const stageEl = container.querySelector('#bomb-stage');
-    const shuffled = [...WIRE_COLORS.keys()].sort(() => Math.random() - .5).slice(0, 4);
-    correctIdx = shuffled[Math.floor(Math.random() * shuffled.length)];
+    const stEl = container.querySelector('#bomb-stage');
+    const count = diff.wires;
+    const pool = [...Array(WIRE_COLORS.length).keys()].sort(() => Math.random() - .5).slice(0, count);
+    const correct = pool[Math.floor(Math.random() * pool.length)];
+    const clue = diff === DIFFS.extreme
+      ? `Corta o fio ${WIRE_NAMES[correct].toUpperCase()}. Não te enganares — há ${count} fios.`
+      : `Corta o fio ${WIRE_NAMES[correct].toUpperCase()}.`;
 
-    const clue = `Corta o fio ${WIRE_NAMES[correctIdx].toUpperCase()}.`;
-    stageEl.innerHTML = `
+    stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio 1 — Cortar o Fio</div>
+        <div class="bc-title">Desafio ${stageIdx+1} — Cortar o Fio</div>
         <div class="bc-clue">${clue}</div>
-        <div class="bc-wires" id="bc-wires">
-          ${shuffled.map(i => `
-            <div class="bc-wire-row" data-idx="${i}">
+        <div class="bc-wires">
+          ${pool.map(i => `
+            <div class="bc-wire-row">
               <div class="bc-wire-line" style="background:${WIRE_COLORS[i]}"></div>
               <button class="bc-cut-btn" data-idx="${i}" style="border-color:${WIRE_COLORS[i]};color:${WIRE_COLORS[i]}">Cortar</button>
             </div>`).join('')}
         </div>
       </div>`;
 
-    stageEl.querySelectorAll('.bc-cut-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = +btn.dataset.idx;
-        if (idx === correctIdx) { nextStage(); }
-        else { showError(stageEl, 'Fio errado! A bomba ficou instável.'); explode(); }
-      });
-    });
+    stEl.querySelectorAll('.bc-cut-btn').forEach(btn =>
+      btn.addEventListener('click', () =>
+        +btn.dataset.idx === correct ? nextStage() : explode()));
   }
 
-  // Stage 1: Memorize code
+  // ── Stage: Memorize code ───────────────────────────────────────────
   function renderCode() {
-    const code = Array.from({length: 4}, () => Math.floor(Math.random() * 10)).join('');
-    const stageEl = container.querySelector('#bomb-stage');
-    stageEl.innerHTML = `
+    const len = diff.codeLen, showFor = diff.codeShow;
+    const code = Array.from({length:len}, () => Math.floor(Math.random()*10)).join('');
+    const stEl = container.querySelector('#bomb-stage');
+
+    stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio 2 — Memorizar o Código</div>
-        <div class="bc-clue">Memoriza este código e introduz-o abaixo:</div>
+        <div class="bc-title">Desafio ${stageIdx+1} — Código Secreto</div>
+        <div class="bc-clue">Memoriza. Desaparece em <span id="bc-cd">${showFor}</span>s.</div>
         <div class="bc-code-display" id="bc-code">${code}</div>
-        <div id="bc-code-phase2" style="display:none">
-          <input class="bc-code-input" id="bc-code-inp" maxlength="4" inputmode="numeric" placeholder="Código">
-          <button class="hf-new-btn" id="bc-code-submit" style="margin-top:.6rem">Confirmar</button>
+        <div id="bc-phase2" style="display:none">
+          <div class="bc-clue" style="margin-bottom:.5rem">Introduz o código:</div>
+          <input class="bc-code-input" id="bc-inp" maxlength="${len}" inputmode="numeric" placeholder="${'•'.repeat(len)}">
+          <button class="hf-new-btn" id="bc-ok" style="margin-top:.6rem">Confirmar</button>
         </div>
       </div>`;
 
-    setTimeout(() => {
-      const d = stageEl.querySelector('#bc-code');
-      if (d) d.textContent = '????';
-      const p2 = stageEl.querySelector('#bc-code-phase2');
-      if (p2) p2.style.display = 'block';
-    }, 4000);
+    let cd = showFor;
+    const cdInt = setInterval(() => {
+      cd--;
+      const cdEl = stEl.querySelector('#bc-cd');
+      if (cdEl) cdEl.textContent = cd;
+      if (cd <= 0) {
+        clearInterval(cdInt);
+        const d = stEl.querySelector('#bc-code');
+        if (d) d.textContent = '?'.repeat(len);
+        const p2 = stEl.querySelector('#bc-phase2');
+        if (p2) p2.style.display = 'block';
+        stEl.querySelector('#bc-inp')?.focus();
+      }
+    }, 1000);
 
-    stageEl.querySelector('#bc-code-submit').addEventListener('click', () => {
-      const val = stageEl.querySelector('#bc-code-inp').value.trim();
-      if (val === code) { nextStage(); }
-      else { showError(stageEl, 'Código errado! A bomba ficou instável.'); explode(); }
+    stEl.querySelector('#bc-ok').addEventListener('click', () => {
+      clearInterval(cdInt);
+      stEl.querySelector('#bc-inp').value.trim() === code ? nextStage() : explode();
     });
-
-    stageEl.querySelector('#bc-code-inp').addEventListener('keydown', e => {
-      if (e.key === 'Enter') stageEl.querySelector('#bc-code-submit').click();
+    stEl.querySelector('#bc-inp').addEventListener('keydown', e => {
+      if (e.key === 'Enter') stEl.querySelector('#bc-ok').click();
     });
   }
 
-  // Stage 2: Press buttons in correct order
+  // ── Stage: Sequence (memory) ───────────────────────────────────────
   function renderSequence() {
-    const stageEl = container.querySelector('#bomb-stage');
-    const labels = ['A','B','C','D'];
-    const order = [...labels].sort(() => Math.random() - .5);
+    const stEl = container.querySelector('#bomb-stage');
+    const len = diff.seqLen, showFor = diff.seqShow;
+    const pool = ['A','B','C','D','E','F'].slice(0, Math.max(4, len));
+    const order = [...pool].sort(() => Math.random() - .5).slice(0, len);
     let step = 0;
 
-    stageEl.innerHTML = `
+    stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio 3 — Sequência Correta</div>
-        <div class="bc-clue">Carrega nos botões nesta ordem: <strong>${order.join(' → ')}</strong></div>
+        <div class="bc-title">Desafio ${stageIdx+1} — Sequência</div>
+        <div class="bc-clue">Memoriza a ordem. Esconde em <span id="bc-scd">${showFor}</span>s.</div>
+        <div class="bc-seq-reveal" id="bc-seq-reveal">${order.join(' → ')}</div>
         <div class="bc-seq-btns" id="bc-seq-btns">
-          ${labels.map(l => `<button class="bc-seq-btn" data-l="${l}">${l}</button>`).join('')}
+          ${pool.map(l => `<button class="bc-seq-btn" data-l="${l}">${l}</button>`).join('')}
         </div>
         <div class="bc-seq-progress" id="bc-seq-prog"></div>
       </div>`;
 
-    stageEl.querySelectorAll('.bc-seq-btn').forEach(btn => {
+    let cd = showFor;
+    const revEl = stEl.querySelector('#bc-seq-reveal');
+    const cluEl = stEl.querySelector('.bc-clue');
+    const cdInt = setInterval(() => {
+      cd--;
+      const cdEl = stEl.querySelector('#bc-scd');
+      if (cdEl) cdEl.textContent = cd;
+      if (cd <= 0) {
+        clearInterval(cdInt);
+        if (revEl) { revEl.style.filter = 'blur(8px)'; revEl.style.userSelect = 'none'; }
+        if (cluEl) cluEl.textContent = 'Sequência oculta — confia na memória!';
+      }
+    }, 1000);
+
+    stEl.querySelectorAll('.bc-seq-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const l = btn.dataset.l;
-        if (l === order[step]) {
-          step++;
-          const prog = stageEl.querySelector('#bc-seq-prog');
-          if (prog) prog.textContent = order.slice(0, step).join(' → ');
-          btn.classList.add('bc-seq-done');
-          if (step === order.length) { setTimeout(win, 300); }
-        } else {
-          showError(stageEl, 'Sequência errada!'); explode();
-        }
+        if (l !== order[step]) { clearInterval(cdInt); explode(); return; }
+        step++;
+        btn.classList.add('bc-seq-done');
+        const prog = stEl.querySelector('#bc-seq-prog');
+        if (prog) prog.textContent = order.slice(0, step).join(' → ');
+        if (step === order.length) { clearInterval(cdInt); setTimeout(nextStage, 300); }
       });
     });
   }
 
+  // ── Stage: Math ────────────────────────────────────────────────────
+  function renderMath() {
+    const stEl = container.querySelector('#bomb-stage');
+    let question, answer;
+
+    if (diff === DIFFS.extreme) {
+      const a = Math.floor(Math.random()*12)+3, b = Math.floor(Math.random()*9)+2, c = Math.floor(Math.random()*8)+1;
+      answer = String(a * b - c);
+      question = `${a} × ${b} − ${c} = ?`;
+    } else {
+      const a = Math.floor(Math.random()*20)+10, b = Math.floor(Math.random()*12)+3;
+      const plus = Math.random() > .4;
+      answer = String(plus ? a + b : a - b);
+      question = `${a} ${plus ? '+' : '−'} ${b} = ?`;
+    }
+
+    stEl.innerHTML = `
+      <div class="bomb-challenge">
+        <div class="bc-title">Desafio ${stageIdx+1} — Cálculo Rápido</div>
+        <div class="bc-clue">Resolve mentalmente:</div>
+        <div class="bc-code-display">${question}</div>
+        <input class="bc-code-input" id="bc-math" type="number" placeholder="Resposta" style="margin-top:.8rem">
+        <button class="hf-new-btn" id="bc-math-ok" style="margin-top:.6rem">Confirmar</button>
+      </div>`;
+
+    stEl.querySelector('#bc-math-ok').addEventListener('click', () =>
+      stEl.querySelector('#bc-math').value.trim() === answer ? nextStage() : explode());
+    stEl.querySelector('#bc-math').addEventListener('keydown', e => {
+      if (e.key === 'Enter') stEl.querySelector('#bc-math-ok').click();
+    });
+    stEl.querySelector('#bc-math').focus();
+  }
+
+  // ── Stage: Color pattern (extreme) ────────────────────────────────
+  function renderPattern() {
+    const stEl = container.querySelector('#bomb-stage');
+    const PCOLORS = ['🔴','🟡','🟢','🔵'];
+    const len = 5, showFor = diff.seqShow;
+    const pattern = Array.from({length:len}, () => PCOLORS[Math.floor(Math.random()*PCOLORS.length)]);
+    let answer = [];
+
+    stEl.innerHTML = `
+      <div class="bomb-challenge">
+        <div class="bc-title">Desafio ${stageIdx+1} — Padrão de Cores</div>
+        <div class="bc-clue">Memoriza o padrão. Esconde em <span id="bc-pcd">${showFor}</span>s.</div>
+        <div class="bc-pattern-disp" id="bc-pat-disp">${pattern.map(c=>`<span class="bc-pat-c">${c}</span>`).join('')}</div>
+        <div id="bc-pat-phase2" style="display:none">
+          <div class="bc-clue" style="margin-bottom:.4rem">Recria os ${len} círculos em ordem:</div>
+          <div class="bc-pat-btns">${PCOLORS.map(c=>`<button class="bc-pat-pick" data-c="${c}">${c}</button>`).join('')}</div>
+          <div class="bc-pat-ans" id="bc-pat-ans"></div>
+          <div style="display:flex;gap:.5rem;justify-content:center;margin-top:.5rem">
+            <button class="hf-new-btn bc-ctrl-sm" id="bc-pat-undo">↩ Apagar</button>
+            <button class="hf-new-btn" id="bc-pat-ok">Confirmar</button>
+          </div>
+        </div>
+      </div>`;
+
+    let cd = showFor;
+    const cdInt = setInterval(() => {
+      cd--;
+      const cdEl = stEl.querySelector('#bc-pcd');
+      if (cdEl) cdEl.textContent = cd;
+      if (cd <= 0) {
+        clearInterval(cdInt);
+        const d = stEl.querySelector('#bc-pat-disp');
+        if (d) d.style.filter = 'blur(10px)';
+        const p2 = stEl.querySelector('#bc-pat-phase2');
+        if (p2) p2.style.display = 'block';
+      }
+    }, 1000);
+
+    function refreshAns() {
+      const el = stEl.querySelector('#bc-pat-ans');
+      if (el) el.textContent = answer.length ? answer.join(' ') : '—';
+    }
+    refreshAns();
+
+    stEl.querySelectorAll('.bc-pat-pick').forEach(btn =>
+      btn.addEventListener('click', () => {
+        if (answer.length < len) { answer.push(btn.dataset.c); refreshAns(); }
+      }));
+    stEl.querySelector('#bc-pat-undo').addEventListener('click', () => { answer.pop(); refreshAns(); });
+    stEl.querySelector('#bc-pat-ok').addEventListener('click', () => {
+      clearInterval(cdInt);
+      answer.join(',') === pattern.join(',') ? nextStage() : explode();
+    });
+  }
+
+  // ── Flow ───────────────────────────────────────────────────────────
   function nextStage() {
-    stage++;
-    if (stage >= 3) { win(); return; }
-    showStage(stage);
+    stageIdx++;
+    if (stageIdx >= stages.length) { win(); return; }
+    showStage(stageIdx);
   }
 
   function win() {
-    clearInterval(timerInt);
-    gameState = 'won';
-    const stageEl = container.querySelector('#bomb-stage');
-    if (stageEl) stageEl.innerHTML = `
+    clearInterval(timerInt); gameState = 'won';
+    container.querySelector('#bomb-hud').style.display = 'none';
+    const stEl = container.querySelector('#bomb-stage');
+    if (stEl) stEl.innerHTML = `
       <div class="bomb-win">
         <div style="font-size:3rem">🎉</div>
         <div style="font-size:1.3rem;font-weight:700;color:#4ade80;margin:.4rem 0">Bomba desarmada!</div>
-        <div style="color:var(--muted);margin-bottom:1rem">Sobraram ${timeLeft}s — missão cumprida.</div>
+        <div style="color:var(--muted);margin-bottom:.4rem">Sobraram ${timeLeft}s — missão cumprida!</div>
+        <div style="font-size:.8rem;color:var(--accent);margin-bottom:1rem">Nível: ${diff.label} ${diff.emoji}</div>
         <button class="hf-new-btn" id="bomb-again">▶ Jogar de Novo</button>
       </div>`;
-    container.querySelector('#bomb-again').addEventListener('click', startGame);
-    updateProgress(3);
+    updateProgress(stages.length);
+    container.querySelector('#bomb-again').addEventListener('click', renderMenu);
   }
 
   function explode() {
-    clearInterval(timerInt);
-    gameState = 'lost';
-    const stageEl = container.querySelector('#bomb-stage');
-    if (stageEl) stageEl.innerHTML = `
+    clearInterval(timerInt); gameState = 'lost';
+    container.querySelector('#bomb-hud').style.display = 'none';
+    const stEl = container.querySelector('#bomb-stage');
+    if (stEl) stEl.innerHTML = `
       <div class="bomb-dead">
         <div style="font-size:3rem">💥</div>
         <div style="font-size:1.3rem;font-weight:700;color:#f87171;margin:.4rem 0">KABOOM!</div>
         <div style="color:var(--muted);margin-bottom:1rem">A bomba explodiu. Tenta outra vez.</div>
         <button class="hf-new-btn" id="bomb-again">↺ Tentar de Novo</button>
       </div>`;
-    container.querySelector('#bomb-again').addEventListener('click', startGame);
-  }
-
-  function showError(parent, msg) {
-    const e = document.createElement('div');
-    e.className = 'bc-error'; e.textContent = msg;
-    parent.appendChild(e);
+    container.querySelector('#bomb-again').addEventListener('click', renderMenu);
   }
 
   return { init };

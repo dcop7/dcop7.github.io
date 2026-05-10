@@ -110,6 +110,38 @@ const RIDDLES = [
   {q:'O que é que corre mas não tem pernas?',a:'A água'},
 ];
 
+const WELCOME_MSGS = [
+  'Pronto para conquistar mais um dia? 🚀',
+  'O que vamos explorar hoje? ✨',
+  'Hoje pode ser o teu melhor dia desta semana. 💪',
+  'Cada dia é uma nova oportunidade de fazer algo incrível. 🌟',
+  'Bem-vindo de volta! O que está nos planos? 🎯',
+  'A consistência é o segredo do sucesso. Segue em frente! 🔥',
+  'Um passo de cada vez constrói grandes conquistas. 🏔️',
+  'Hoje é um excelente dia para aprender algo novo. 📚',
+  'Faz hoje o que outros deixam para amanhã. ⚡',
+  'A melhor altura para começar é agora. ⏰',
+  'Pequenos progressos diários levam a grandes resultados. 📈',
+  'A tua jornada continua aqui. 🗺️',
+  'Inspira, expira e vai em frente! 🌊',
+  'O esforço de hoje é o sucesso de amanhã. 🌅',
+  'Foco, determinação e ação. Vamos lá! 🎪',
+  'Não há dias maus — só dias de aprendizagem. 🧠',
+  'Cada manhã é uma nova página em branco. Escreve algo bom. ✍️',
+  'O sucesso adora quem aparece todos os dias. 🏆',
+];
+
+function renderWelcome() {
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Bom dia! ☀️' : h < 19 ? 'Boa tarde! 🌤️' : 'Boa noite! 🌙';
+  const msg = WELCOME_MSGS[Math.floor(Math.random() * WELCOME_MSGS.length)];
+  const gEl = document.getElementById('wc-greeting');
+  const mEl = document.getElementById('wc-msg');
+  if (gEl) gEl.textContent = greeting;
+  if (mEl) mEl.textContent = msg;
+}
+renderWelcome();
+
 async function fetchJoke() {
   const bust = `&_=${Date.now()}`;
   try {
@@ -503,31 +535,31 @@ function haAnimHTML(code) {
     return `<div class="ha-wrap">${haCloud(false, 104, 62, 44, 23)}</div>`;
   if (c === 45 || c === 48)
     return `<div class="ha-wrap">
-      ${haCloud(false, 92, 56, 28, 29)}
-      <div class="ha-fog-b" style="width:82px;left:34px;top:96px;--hfd:3.5s;--hfdl:0s"></div>
-      <div class="ha-fog-b" style="width:66px;left:42px;top:109px;--hfd:4.3s;--hfdl:.7s"></div>
-      <div class="ha-fog-b" style="width:72px;left:36px;top:122px;--hfd:3.8s;--hfdl:1.4s"></div>
+      ${haCloud(false, 90, 54, 10, 30)}
+      <div class="ha-fog-b" style="width:82px;left:34px;top:74px;--hfd:3.5s;--hfdl:0s"></div>
+      <div class="ha-fog-b" style="width:66px;left:42px;top:87px;--hfd:4.3s;--hfdl:.7s"></div>
+      <div class="ha-fog-b" style="width:72px;left:36px;top:100px;--hfd:3.8s;--hfdl:1.4s"></div>
     </div>`;
   if (c >= 51 && c <= 55)
     return `<div class="ha-wrap">
-      ${haCloud(false, 90, 54, 26, 30)}
-      ${haDrops([[44,88,12,.96,0],[58,86,11,1.1,.32],[72,90,12,.9,.65]])}
+      ${haCloud(false, 88, 52, 10, 31)}
+      ${haDrops([[42,72,13,.96,0],[56,70,12,1.1,.32],[70,73,13,.9,.65]])}
     </div>`;
   if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
     return `<div class="ha-wrap">
-      ${haCloud(true, 98, 58, 22, 26)}
-      ${haDrops([[36,90,14,.72,0],[50,88,15,.78,.16],[64,91,14,.7,.38],[77,89,15,.74,.24],[90,92,12,.68,.52]])}
+      ${haCloud(true, 100, 56, 8, 25)}
+      ${haDrops([[34,74,15,.72,0],[49,72,16,.78,.16],[63,75,15,.7,.38],[77,73,16,.74,.24],[90,76,13,.68,.52]])}
     </div>`;
   if (c >= 71 && c <= 75)
     return `<div class="ha-wrap">
-      ${haCloud(true, 94, 56, 22, 28)}
-      ${haFlakes([[40,90,8,1.5,0,3],[56,88,7,1.3,.45,-3],[72,93,8,1.55,.85,4],[87,90,6,1.4,.25,-2]])}
+      ${haCloud(true, 92, 54, 8, 29)}
+      ${haFlakes([[40,72,8,1.5,0,3],[55,70,7,1.3,.45,-3],[70,74,8,1.55,.85,4],[85,71,6,1.4,.25,-2]])}
     </div>`;
   if (c >= 95)
     return `<div class="ha-wrap">
-      ${haCloud(true, 100, 60, 18, 25)}
-      ${haDrops([[38,90,13,.7,0],[54,88,14,.72,.2],[70,92,13,.68,.42]])}
-      <div class="ha-bolt" style="bottom:8px;left:50%;transform:translateX(-50%)">⚡</div>
+      ${haCloud(true, 102, 58, 8, 24)}
+      ${haDrops([[36,74,14,.7,0],[52,72,15,.72,.2],[68,76,14,.68,.42]])}
+      <div class="ha-bolt" style="bottom:6px;left:50%;transform:translateX(-50%)">⚡</div>
     </div>`;
   return `<div class="ha-wrap" style="font-size:3rem;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
 }
