@@ -273,6 +273,9 @@
 
   // ── PHYSICAL KEYBOARD ─────────────────────────────────────────────
   document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const pane = document.getElementById('pane-hangman');
+    if (pane && !pane.classList.contains('active')) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
     const l = norm(e.key);
     if (l.length === 1 && l >= 'A' && l <= 'Z') handleGuess(l);

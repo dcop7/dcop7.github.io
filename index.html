@@ -16,10 +16,19 @@
   <div class="bg-orb orb-3"></div>
 </div>
 
-<header>
-  <div class="brand">
-    <span class="brand-name">Diogo's</span>
-    <span class="brand-site">website</span>
+<header id="site-header">
+  <div class="hdr-left">
+    <button class="sb-toggle" id="sb-toggle" aria-label="Abrir menu">☰</button>
+    <div class="brand">
+      <span class="brand-name">Diogo's</span>
+      <span class="brand-site">website</span>
+    </div>
+  </div>
+  <div class="hdr-center">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="search" id="search-input" class="search-input" placeholder="Pesquisar jogos, sites, secções…" autocomplete="off"/>
+    </div>
   </div>
   <div class="hdr-right">
     <div class="clock">
@@ -42,157 +51,206 @@
   </div>
 </header>
 
-<!-- HANGMAN + DAILY CONTENT (side by side) -->
-<div class="top-section">
+<div id="search-dropdown" class="search-dropdown" role="listbox" aria-label="Resultados de pesquisa"></div>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
 
-  <!-- JOGO DA FORCA -->
-  <div class="hf-card">
-    <div class="hf-top">
-      <span class="hf-title">🎮 Jogo da Forca</span>
-      <div class="hf-age-wrap">
-        <span class="hf-age-lbl">Faixa etária:</span>
-        <div class="hf-age-btns">
-          <button class="hf-age-btn" data-age="5">5–7 anos</button>
-          <button class="hf-age-btn active" data-age="7">7–9 anos</button>
-          <button class="hf-age-btn" data-age="10">10–12 anos</button>
-          <button class="hf-age-btn" data-age="13">13+ anos</button>
-        </div>
-      </div>
-    </div>
-    <div class="hf-body">
-      <div class="hf-gallows-col">
-        <svg class="hf-svg" id="hf-svg" viewBox="0 0 130 185" xmlns="http://www.w3.org/2000/svg">
-          <line x1="10" y1="175" x2="120" y2="175"/>
-          <line x1="40" y1="175" x2="40" y2="10"/>
-          <line x1="40" y1="10" x2="95" y2="10"/>
-          <line x1="95" y1="10" x2="95" y2="30"/>
-          <circle id="hf-head" class="hf-part" cx="95" cy="46" r="16"/>
-          <line   id="hf-body-line" class="hf-part" x1="95" y1="62" x2="95" y2="112"/>
-          <line   id="hf-arm-l"     class="hf-part" x1="95" y1="76" x2="68" y2="98"/>
-          <line   id="hf-arm-r"     class="hf-part" x1="95" y1="76" x2="122" y2="98"/>
-          <line   id="hf-leg-l"     class="hf-part" x1="95" y1="112" x2="68" y2="148"/>
-          <line   id="hf-leg-r"     class="hf-part" x1="95" y1="112" x2="122" y2="148"/>
-        </svg>
-        <div class="hf-lives" id="hf-lives"></div>
-      </div>
-      <div class="hf-game-col">
-        <div class="hf-cat-row">
-          <span class="hf-cat-lbl">Categoria:</span>
-          <span class="hf-cat-val" id="hf-category">—</span>
-        </div>
-        <div class="hf-word-row" id="hf-word-row"></div>
-        <div class="hf-wrong-row">
-          <span class="hf-wrong-lbl">Letras erradas:</span>
-          <span class="hf-wrong-val" id="hf-wrong-letters">—</span>
-        </div>
-        <div class="hf-keyboard" id="hf-keyboard"></div>
-        <div class="hf-msg" id="hf-msg"></div>
-        <button class="hf-new-btn" id="hf-new-btn">🔄 Nova Palavra</button>
-      </div>
-    </div>
-  </div>
+<div class="app-shell">
 
-  <!-- CONTEÚDO DO DIA (right column) -->
-  <div class="top-daily">
-    <div class="daily-card">
-      <div class="daily-ttl">💡 Inspiração do Dia</div>
-      <div id="dc-quote-wrap"><span class="dc-loading">A carregar…</span></div>
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-hdr">🎮 Mini Jogos</div>
+      <button class="sb-game-btn active" data-game="hangman">🪢 Jogo da Forca</button>
+      <button class="sb-game-btn" data-game="runner">🦊 Corredor Infinito</button>
+      <button class="sb-game-btn" data-game="minesweeper">💣 Campo de Minas</button>
+      <button class="sb-game-btn" data-game="bomb">💥 Desarmar Bomba</button>
     </div>
-    <div class="daily-card">
-      <div class="daily-ttl">🤔 Adivinha do Dia</div>
-      <div id="dc-riddle-wrap"><span class="dc-loading">A carregar…</span></div>
-    </div>
-    <div class="daily-card">
-      <div class="daily-ttl">😄 Piada do Dia</div>
-      <div id="dc-joke-wrap"><span class="dc-loading">A carregar…</span></div>
-    </div>
-  </div>
-
-</div><!-- /top-section -->
-
-<!-- MAIN LAYOUT -->
-<div class="layout">
-  <div class="weather-col">
-
-    <!-- HERO -->
-    <div class="weather-hero" id="weather-hero">
-      <div class="hero-body">
-        <div class="hero-left">
-          <div class="hero-city-img-wrap"><div class="hero-city-img-ph">📷</div></div>
-          <select class="hero-city-select">
-            <option value="38.7223,-9.1393">Lisboa</option>
-            <option value="41.1579,-8.6291">Porto</option>
-            <option value="41.5454,-8.4265">Braga</option>
-            <option value="40.2033,-8.4103">Coimbra</option>
-            <option value="37.0193,-7.9304">Faro</option>
-            <option value="38.5667,-7.9000">Évora</option>
-            <option value="40.6405,-8.6538">Aveiro</option>
-            <option value="38.5244,-8.8882">Setúbal</option>
-            <option value="40.6566,-7.9122">Viseu</option>
-            <option value="39.7436,-8.8071" selected>Leiria</option>
-            <option value="39.2333,-8.6833">Santarém</option>
-            <option value="32.6669,-16.9241">Funchal</option>
-            <option value="37.7412,-25.6756">Ponta Delgada</option>
-          </select>
-        </div>
-        <div class="hero-center" style="color:rgba(107,125,160,.8);font-size:.85rem">A carregar meteorologia…</div>
-        <div class="hero-right"></div>
-      </div>
-    </div>
-
-    <!-- HOURLY -->
-    <div>
-      <div class="s-label">Próximas 24 Horas</div>
-      <div class="hourly-scroll" id="hourly-scroll">
-        <div class="hourly-row" id="hourly-row"></div>
-      </div>
-    </div>
-
-    <!-- 7-DAY -->
-    <div>
-      <div class="s-label">Previsão 7 Dias</div>
-      <div class="forecast-row" id="forecast-row"></div>
-    </div>
-
-    <!-- MAP -->
-    <div class="map-card">
-      <div class="map-hdr">
-        <span class="map-hdr-title">🌍 Mapa em Tempo Real</span>
-        <div class="map-tabs" id="map-tabs">
-          <button class="map-tab active" data-ov="rain">🌧️ Chuva</button>
-          <button class="map-tab" data-ov="wind">💨 Vento</button>
-          <button class="map-tab" data-ov="clouds">☁️ Nuvens</button>
-          <button class="map-tab" data-ov="temp">🌡️ Temp</button>
-          <button class="map-tab" data-ov="pressure">📊 Pressão</button>
-        </div>
-      </div>
-      <iframe id="windy-map" allowfullscreen></iframe>
-    </div>
-
-  </div><!-- /weather-col -->
-
-  <!-- HOLIDAYS -->
-  <aside class="holidays-col">
-    <div class="hol-card">
-      <div class="hol-year-nav">
-        <button class="hol-nav-btn" id="hol-prev">&#8249;</button>
-        <span class="hol-year-label" id="hol-year-label">—</span>
-        <button class="hol-nav-btn" id="hol-next">&#8250;</button>
-      </div>
-      <div class="hol-title">🇵🇹 Feriados Nacionais</div>
-      <div id="nat-hols"></div>
-    </div>
-    <div class="hol-card">
-      <div class="hol-title">🏛️ Feriados Municipais</div>
-      <div id="mun-hols"></div>
+    <div class="sb-section sb-links-wrap">
+      <div class="sb-section-hdr">🔗 Sites Úteis</div>
+      <div id="sb-links-section"></div>
     </div>
   </aside>
-</div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- GAMES + DAILY CONTENT -->
+    <div class="top-section">
+
+      <!-- GAME HOST (left column) -->
+      <div class="game-host">
+
+        <!-- HANGMAN PANE -->
+        <div class="game-pane active" id="pane-hangman">
+          <div class="hf-card">
+            <div class="hf-top">
+              <span class="hf-title">🎮 Jogo da Forca</span>
+              <div class="hf-age-wrap">
+                <span class="hf-age-lbl">Faixa etária:</span>
+                <div class="hf-age-btns">
+                  <button class="hf-age-btn" data-age="5">5–7 anos</button>
+                  <button class="hf-age-btn active" data-age="7">7–9 anos</button>
+                  <button class="hf-age-btn" data-age="10">10–12 anos</button>
+                  <button class="hf-age-btn" data-age="13">13+ anos</button>
+                </div>
+              </div>
+            </div>
+            <div class="hf-body">
+              <div class="hf-gallows-col">
+                <svg class="hf-svg" id="hf-svg" viewBox="0 0 130 185" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="10" y1="175" x2="120" y2="175"/>
+                  <line x1="40" y1="175" x2="40" y2="10"/>
+                  <line x1="40" y1="10" x2="95" y2="10"/>
+                  <line x1="95" y1="10" x2="95" y2="30"/>
+                  <circle id="hf-head" class="hf-part" cx="95" cy="46" r="16"/>
+                  <line   id="hf-body-line" class="hf-part" x1="95" y1="62" x2="95" y2="112"/>
+                  <line   id="hf-arm-l"     class="hf-part" x1="95" y1="76" x2="68" y2="98"/>
+                  <line   id="hf-arm-r"     class="hf-part" x1="95" y1="76" x2="122" y2="98"/>
+                  <line   id="hf-leg-l"     class="hf-part" x1="95" y1="112" x2="68" y2="148"/>
+                  <line   id="hf-leg-r"     class="hf-part" x1="95" y1="112" x2="122" y2="148"/>
+                </svg>
+                <div class="hf-lives" id="hf-lives"></div>
+              </div>
+              <div class="hf-game-col">
+                <div class="hf-cat-row">
+                  <span class="hf-cat-lbl">Categoria:</span>
+                  <span class="hf-cat-val" id="hf-category">—</span>
+                </div>
+                <div class="hf-word-row" id="hf-word-row"></div>
+                <div class="hf-wrong-row">
+                  <span class="hf-wrong-lbl">Letras erradas:</span>
+                  <span class="hf-wrong-val" id="hf-wrong-letters">—</span>
+                </div>
+                <div class="hf-keyboard" id="hf-keyboard"></div>
+                <div class="hf-msg" id="hf-msg"></div>
+                <button class="hf-new-btn" id="hf-new-btn">🔄 Nova Palavra</button>
+              </div>
+            </div>
+          </div>
+        </div><!-- /pane-hangman -->
+
+        <!-- RUNNER PANE -->
+        <div class="game-pane" id="pane-runner"></div>
+
+        <!-- MINESWEEPER PANE -->
+        <div class="game-pane" id="pane-minesweeper"></div>
+
+        <!-- BOMB PANE -->
+        <div class="game-pane" id="pane-bomb"></div>
+
+      </div><!-- /game-host -->
+
+      <!-- DAILY CONTENT (right column) -->
+      <div class="top-daily">
+        <div class="daily-card">
+          <div class="daily-ttl">💡 Inspiração do Dia</div>
+          <div id="dc-quote-wrap"><span class="dc-loading">A carregar…</span></div>
+        </div>
+        <div class="daily-card">
+          <div class="daily-ttl">🤔 Adivinha do Dia</div>
+          <div id="dc-riddle-wrap"><span class="dc-loading">A carregar…</span></div>
+        </div>
+        <div class="daily-card">
+          <div class="daily-ttl">😄 Piada do Dia</div>
+          <div id="dc-joke-wrap"><span class="dc-loading">A carregar…</span></div>
+        </div>
+      </div>
+
+    </div><!-- /top-section -->
+
+    <!-- WEATHER + HOLIDAYS -->
+    <div class="layout">
+      <div class="weather-col">
+
+        <!-- WEATHER HERO -->
+        <div class="weather-hero" id="weather-hero">
+          <div class="hero-body">
+            <div class="hero-left">
+              <div class="hero-city-img-wrap"><div class="hero-city-img-ph">📷</div></div>
+              <select class="hero-city-select">
+                <option value="38.7223,-9.1393">Lisboa</option>
+                <option value="41.1579,-8.6291">Porto</option>
+                <option value="41.5454,-8.4265">Braga</option>
+                <option value="40.2033,-8.4103">Coimbra</option>
+                <option value="37.0193,-7.9304">Faro</option>
+                <option value="38.5667,-7.9000">Évora</option>
+                <option value="40.6405,-8.6538">Aveiro</option>
+                <option value="38.5244,-8.8882">Setúbal</option>
+                <option value="40.6566,-7.9122">Viseu</option>
+                <option value="39.7436,-8.8071" selected>Leiria</option>
+                <option value="39.2333,-8.6833">Santarém</option>
+                <option value="32.6669,-16.9241">Funchal</option>
+                <option value="37.7412,-25.6756">Ponta Delgada</option>
+              </select>
+            </div>
+            <div class="hero-center" style="color:rgba(107,125,160,.8);font-size:.85rem">A carregar meteorologia…</div>
+            <div class="hero-right"></div>
+          </div>
+        </div>
+
+        <!-- HOURLY -->
+        <div>
+          <div class="s-label">Próximas 24 Horas</div>
+          <div class="hourly-scroll" id="hourly-scroll">
+            <div class="hourly-row" id="hourly-row"></div>
+          </div>
+        </div>
+
+        <!-- 7-DAY -->
+        <div>
+          <div class="s-label">Previsão 7 Dias</div>
+          <div class="forecast-row" id="forecast-row"></div>
+        </div>
+
+        <!-- MAP -->
+        <div class="map-card">
+          <div class="map-hdr">
+            <span class="map-hdr-title">🌍 Mapa em Tempo Real</span>
+            <div class="map-tabs" id="map-tabs">
+              <button class="map-tab active" data-ov="rain">🌧️ Chuva</button>
+              <button class="map-tab" data-ov="wind">💨 Vento</button>
+              <button class="map-tab" data-ov="clouds">☁️ Nuvens</button>
+              <button class="map-tab" data-ov="temp">🌡️ Temp</button>
+              <button class="map-tab" data-ov="pressure">📊 Pressão</button>
+            </div>
+          </div>
+          <iframe id="windy-map" allowfullscreen></iframe>
+        </div>
+
+      </div><!-- /weather-col -->
+
+      <!-- HOLIDAYS -->
+      <aside class="holidays-col">
+        <div class="hol-card">
+          <div class="hol-year-nav">
+            <button class="hol-nav-btn" id="hol-prev">&#8249;</button>
+            <span class="hol-year-label" id="hol-year-label">—</span>
+            <button class="hol-nav-btn" id="hol-next">&#8250;</button>
+          </div>
+          <div class="hol-title">🇵🇹 Feriados Nacionais</div>
+          <div id="nat-hols"></div>
+        </div>
+        <div class="hol-card">
+          <div class="hol-title">🏛️ Feriados Municipais</div>
+          <div id="mun-hols"></div>
+        </div>
+      </aside>
+    </div><!-- /layout -->
+
+  </main><!-- /main-content -->
+</div><!-- /app-shell -->
 
 <div class="popup" id="popup"></div>
 <div class="gauge-pop" id="gauge-pop"></div>
 
+<script src="links-data.js" defer></script>
+<script src="runner.js" defer></script>
+<script src="minesweeper.js" defer></script>
+<script src="bomb.js" defer></script>
+<script src="game-host.js" defer></script>
 <script src="hangman.js" defer></script>
 <script src="main.js" defer></script>
+<script src="sidebar.js" defer></script>
+<script src="search.js" defer></script>
 </body>
 </html>
