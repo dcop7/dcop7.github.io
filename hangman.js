@@ -86,7 +86,7 @@
   let guessed = new Set();     // normalized A-Z letters guessed
   let wrongCount = 0;
   let gameOver = false;
-  let currentAge = 5;
+  let currentAge = 7;
 
   // ── DOM REFS ──────────────────────────────────────────────────────
   const wordRow   = document.getElementById('hf-word-row');

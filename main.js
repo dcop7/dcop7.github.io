@@ -61,6 +61,98 @@ function tick() {
 tick();
 setInterval(tick, 30000);
 
+// ── DAILY CONTENT ─────────────────────────────────────────────────
+const QUOTES = [
+  {t:'O único modo de fazer um excelente trabalho é amar o que se faz.',a:'Steve Jobs'},
+  {t:'A vida é o que acontece enquanto estás ocupado a fazer outros planos.',a:'John Lennon'},
+  {t:'Sê a mudança que queres ver no mundo.',a:'Mahatma Gandhi'},
+  {t:'Tudo parece impossível até que seja feito.',a:'Nelson Mandela'},
+  {t:'A imaginação é mais importante do que o conhecimento.',a:'Albert Einstein'},
+  {t:'O futuro pertence àqueles que acreditam na beleza dos seus sonhos.',a:'Eleanor Roosevelt'},
+  {t:'A persistência é o caminho do êxito.',a:'Charlie Chaplin'},
+  {t:'A felicidade não é algo pronto. Vem das tuas próprias ações.',a:'Dalai Lama'},
+  {t:'Nunca é tarde para ser o que poderias ter sido.',a:'George Eliot'},
+  {t:'Acredita que podes e já estás a meio caminho.',a:'Theodore Roosevelt'},
+  {t:'O modo de começar é parar de falar e começar a fazer.',a:'Walt Disney'},
+  {t:'O sucesso não é definitivo, o fracasso não é fatal: é a coragem de continuar que conta.',a:'Winston Churchill'},
+  {t:'Vive como se fosses morrer amanhã. Aprende como se fosses viver para sempre.',a:'Mahatma Gandhi'},
+  {t:'O que sabemos é uma gota, o que ignoramos é um oceano.',a:'Isaac Newton'},
+  {t:'Sê tu mesmo; todos os outros papéis já estão tomados.',a:'Oscar Wilde'},
+  {t:'A arte é a mentira que nos permite perceber a verdade.',a:'Pablo Picasso'},
+  {t:'Há apenas dois dias no ano em que nada pode ser feito: ontem e amanhã.',a:'Dalai Lama'},
+  {t:'Não são os anos de vida que contam, mas a vida nos anos.',a:'Abraham Lincoln'},
+  {t:'Em cada amanhecer há uma nova oportunidade de ser feliz.',a:'Ralph Waldo Emerson'},
+  {t:'O sucesso é a soma de pequenos esforços repetidos dia após dia.',a:'Robert Collier'},
+  {t:'Não é o mais forte que sobrevive, mas o mais adaptável às mudanças.',a:'Charles Darwin'},
+  {t:'O homem sábio não diz tudo o que pensa, mas pensa tudo o que diz.',a:'Aristóteles'},
+];
+
+const RIDDLES = [
+  {q:'O que tem cidades sem casas, florestas sem árvores e água sem peixes?',a:'Um mapa'},
+  {q:'Quanto mais me tiras, maior fico. O que sou?',a:'Uma cova'},
+  {q:'Tenho mãos mas não consigo bater palmas. O que sou?',a:'Um relógio'},
+  {q:'O que é que fica no canto mas viaja por todo o mundo?',a:'Um selo postal'},
+  {q:'O que é que tens tu que toda a gente usa mais do que tu?',a:'O teu nome'},
+  {q:'Deito-me mas não durmo, tenho boca mas não falo. O que sou?',a:'Um rio'},
+  {q:'O que é que voa sem ter asas e chora sem ter olhos?',a:'Uma nuvem'},
+  {q:'Quanto mais seco, mais molhado fico. O que sou?',a:'Uma toalha'},
+  {q:'O que é que o pobre tem, o rico precisa e se comeres morre?',a:'O nada'},
+  {q:'Tenho ramos mas não sou árvore, tenho folhas mas não sou planta. O que sou?',a:'Um livro'},
+  {q:'Sou leve como pena mas o homem mais forte não me consegue segurar por muito tempo. O que sou?',a:'O fôlego'},
+  {q:'O que é que a neve tem de branco, o carvão tem de preto e o fogo tem de vermelho?',a:'A cor'},
+  {q:'Sou filho do teu pai mas não sou teu irmão. Quem sou?',a:'Tu próprio'},
+  {q:'O que nasce com quatro pernas, anda com duas e morre com três?',a:'O ser humano'},
+  {q:'Qual é o único lugar onde sexta-feira vem antes de quinta-feira?',a:'No dicionário'},
+  {q:'O que é que tem um pescoço mas não tem cabeça?',a:'Uma garrafa'},
+  {q:'O que é que está sempre à tua frente mas não podes ver?',a:'O futuro'},
+  {q:'O que é que quanto mais partilhas, mais tens?',a:'O conhecimento'},
+  {q:'Tenho olhos mas não vejo, tenho nariz mas não cheiro. O que sou?',a:'Uma batata'},
+  {q:'O que é que corre mas não tem pernas?',a:'A água'},
+];
+
+async function fetchJoke() {
+  const bust = `&_=${Date.now()}`;
+  try {
+    const ptRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
+    const pt = await ptRes.json();
+    if (!pt.error) return pt;
+    const enRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
+    return await enRes.json();
+  } catch { return null; }
+}
+
+function jokeHTML(j) {
+  if (!j || j.error) return '<span class="dc-joke-single" style="color:var(--muted)">—</span>';
+  return j.type === 'twopart'
+    ? `<span class="dc-joke-setup">${j.setup}</span><span class="dc-joke-punchline">${j.delivery}</span>`
+    : `<span class="dc-joke-single">${j.joke || '—'}</span>`;
+}
+
+async function loadDailyContent() {
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const q = pick(QUOTES);
+  const r = pick(RIDDLES);
+
+  const qEl = document.getElementById('dc-quote-wrap');
+  const rEl = document.getElementById('dc-riddle-wrap');
+  const jEl = document.getElementById('dc-joke-wrap');
+
+  if (qEl) qEl.innerHTML = `
+    <blockquote class="dc-quote">"${q.t}"</blockquote>
+    <div class="dc-author">— ${q.a}</div>`;
+
+  if (rEl) rEl.innerHTML = `
+    <div class="dc-riddle-q">${r.q}</div>
+    <button class="dc-reveal" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">Ver resposta</button>
+    <div class="dc-answer">${r.a}</div>`;
+
+  if (jEl) {
+    const j = await fetchJoke();
+    jEl.innerHTML = jokeHTML(j);
+  }
+}
+loadDailyContent();
+
 // ── WINDY MAP ─────────────────────────────────────────────────────
 let mapLatLon = [39.7436, -8.8071];
 
@@ -485,11 +577,13 @@ async function loadWeather(latlon) {
   hero.innerHTML = `<div class="hero-body">
     ${heroLeft(imgHTML)}
     <div class="hero-center">
-      ${getAnimHTML(c.weather_code)}
-      <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
-      <div class="hero-cond">${cw.l}</div>
-      <div class="hero-feels">Sensação: ${Math.round(c.apparent_temperature)}°C</div>
-      <div class="hero-minmax">↑ ${maxToday}° · ↓ ${minToday}°</div>
+      <div class="hero-wx-icon">${getAnimHTML(c.weather_code)}</div>
+      <div class="hero-temp-block">
+        <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
+        <div class="hero-cond">${cw.l}</div>
+        <div class="hero-feels">Sensação: ${Math.round(c.apparent_temperature)}°C</div>
+        <div class="hero-minmax">↑ ${maxToday}° · ↓ ${minToday}°</div>
+      </div>
     </div>
     <div class="hero-right">
       <div class="stat-grid">
