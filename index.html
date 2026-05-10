@@ -10,7 +10,6 @@
 </head>
 <body>
 
-<!-- Background animated orbs -->
 <div class="bg-canvas" aria-hidden="true">
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
@@ -43,8 +42,10 @@
   </div>
 </header>
 
-<!-- JOGO DA FORCA -->
-<section class="hangman-section">
+<!-- HANGMAN + DAILY CONTENT (side by side) -->
+<div class="top-section">
+
+  <!-- JOGO DA FORCA -->
   <div class="hf-card">
     <div class="hf-top">
       <span class="hf-title">🎮 Jogo da Forca</span>
@@ -61,12 +62,10 @@
     <div class="hf-body">
       <div class="hf-gallows-col">
         <svg class="hf-svg" id="hf-svg" viewBox="0 0 130 185" xmlns="http://www.w3.org/2000/svg">
-          <!-- Gallows structure (always visible) -->
           <line x1="10" y1="175" x2="120" y2="175"/>
           <line x1="40" y1="175" x2="40" y2="10"/>
           <line x1="40" y1="10" x2="95" y2="10"/>
           <line x1="95" y1="10" x2="95" y2="30"/>
-          <!-- Body parts (shown as wrong guesses accumulate) -->
           <circle id="hf-head" class="hf-part" cx="95" cy="46" r="16"/>
           <line   id="hf-body-line" class="hf-part" x1="95" y1="62" x2="95" y2="112"/>
           <line   id="hf-arm-l"     class="hf-part" x1="95" y1="76" x2="68" y2="98"/>
@@ -92,25 +91,24 @@
       </div>
     </div>
   </div>
-</section>
 
-<!-- CONTEÚDO DO DIA -->
-<section class="daily-section">
-  <div class="daily-row">
+  <!-- CONTEÚDO DO DIA (right column) -->
+  <div class="top-daily">
     <div class="daily-card">
       <div class="daily-ttl">💡 Inspiração do Dia</div>
-      <div id="dc-quote-wrap"><span style="color:var(--muted);font-size:.75rem">A carregar…</span></div>
+      <div id="dc-quote-wrap"><span class="dc-loading">A carregar…</span></div>
     </div>
     <div class="daily-card">
       <div class="daily-ttl">🤔 Adivinha do Dia</div>
-      <div id="dc-riddle-wrap"><span style="color:var(--muted);font-size:.75rem">A carregar…</span></div>
+      <div id="dc-riddle-wrap"><span class="dc-loading">A carregar…</span></div>
     </div>
     <div class="daily-card">
       <div class="daily-ttl">😄 Piada do Dia</div>
-      <div id="dc-joke-wrap"><span style="color:var(--muted);font-size:.75rem">A carregar…</span></div>
+      <div id="dc-joke-wrap"><span class="dc-loading">A carregar…</span></div>
     </div>
   </div>
-</section>
+
+</div><!-- /top-section -->
 
 <!-- MAIN LAYOUT -->
 <div class="layout">

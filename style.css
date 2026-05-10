@@ -60,15 +60,20 @@ header > *{position:relative;z-index:3}
 
 .brand{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.02em;display:flex;align-items:baseline;gap:.3em}
 .brand-name{
-  background:linear-gradient(90deg,#f0abfc,#818cf8,#60a5fa,#34d399,#fbbf24,#f87171,#f0abfc,#818cf8,#60a5fa);
+  background:linear-gradient(90deg,#00f5ff,#0ea5e9,#00b4d8,#4fc3f7,#00e5ff,#22d3ee,#0ea5e9,#00f5ff);
   background-size:400% auto;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:brand-flow 3.5s linear infinite, brand-lift 4s ease-in-out infinite;
+  animation:brand-flow 3s linear infinite, brand-glitch 9s ease-in-out infinite;
   display:inline-block;
-  filter:drop-shadow(0 0 10px rgba(168,85,247,.35));
+  filter:drop-shadow(0 0 12px rgba(0,229,255,.55)) drop-shadow(0 0 28px rgba(14,165,233,.22));
 }
 @keyframes brand-flow{0%{background-position:0% center}100%{background-position:400% center}}
-@keyframes brand-lift{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-3px) scale(1.04)}60%{transform:translateY(1px) scale(.98)}80%{transform:translateY(-1px) scale(1.01)}}
+@keyframes brand-glitch{
+  0%,84%,100%{transform:translateX(0) skewX(0);filter:drop-shadow(0 0 12px rgba(0,229,255,.55)) drop-shadow(0 0 28px rgba(14,165,233,.22))}
+  86%{transform:translateX(-3px) skewX(-4deg);filter:drop-shadow(3px 0 0 rgba(0,255,255,.85)) drop-shadow(-3px 0 0 rgba(0,140,255,.85)) drop-shadow(0 0 18px rgba(0,229,255,.75))}
+  88%{transform:translateX(2px) skewX(2.5deg)}
+  90%{transform:translateX(-1px) skewX(0);filter:drop-shadow(0 0 12px rgba(0,229,255,.55)) drop-shadow(0 0 28px rgba(14,165,233,.22))}
+}
 .brand-site{
   color:var(--text);font-weight:500;font-size:1.05rem;display:inline-block;
   animation:site-dance 5s ease-in-out infinite;
@@ -125,8 +130,9 @@ body.light .gp-bar-bg{background:rgba(0,0,0,.07)}
 body.light .popup{background:#f0f5ff;border-color:rgba(0,0,0,.12);box-shadow:0 24px 64px rgba(0,0,0,.18)}
 body.light .fc:hover{box-shadow:0 8px 24px rgba(0,0,0,.12)}
 
-/* ── HANGMAN SECTION ── */
-.hangman-section{max-width:1440px;margin:1rem auto 0;padding:0 1.25rem}
+/* ── TOP SECTION ── */
+.top-section{max-width:1440px;margin:1rem auto 0;padding:0 1.25rem;display:grid;grid-template-columns:1fr 300px;gap:1rem;align-items:start}
+.top-daily{display:flex;flex-direction:column;gap:.6rem}
 .hf-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.2rem 1.5rem}
 .hf-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
 .hf-title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;color:var(--amber);letter-spacing:-.01em}
@@ -219,9 +225,7 @@ body.light .hf-key:hover:not([disabled]){background:rgba(59,130,246,.18)}
 .hf-new-btn:hover{background:rgba(59,130,246,.22);border-color:rgba(59,130,246,.5);transform:translateY(-1px)}
 body.light .hf-new-btn{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.25)}
 
-/* ── DAILY CONTENT SECTION ── */
-.daily-section{max-width:1440px;margin:.8rem auto 0;padding:0 1.25rem}
-.daily-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+/* ── DAILY CONTENT ── */
 .daily-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem}
 .daily-ttl{font-size:.56rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .dc-quote{font-size:.77rem;color:var(--text);line-height:1.55;font-style:italic;border-left:2px solid var(--accent);padding-left:.6rem;margin:0}
@@ -278,12 +282,15 @@ body.light .weather-hero .sbox-bar{background:rgba(30,58,138,.08)}
 .hero-refresh-badge{font-size:.6rem;color:rgba(255,255,255,.3);margin-left:auto}
 .hero-body{display:grid;grid-template-columns:200px 1fr 230px;gap:1rem;align-items:center;position:relative;z-index:1}
 .hero-left{display:flex;flex-direction:column;gap:.5rem;flex-shrink:0}
-.hero-city-img-wrap{width:200px;height:142px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);flex-shrink:0;flex:1;max-height:155px}
+.hero-city-img-wrap{width:200px;height:142px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);flex-shrink:0;flex:1;max-height:155px;position:relative;cursor:pointer}
+.city-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 10%,rgba(0,0,0,.84) 100%);opacity:0;transition:opacity .28s;display:flex;flex-direction:column;justify-content:flex-end;padding:.55rem .65rem;pointer-events:none}
+.hero-city-img-wrap:hover .city-overlay,.hero-city-img-wrap.co-shown .city-overlay{opacity:1}
+.co-name{font-size:.78rem;font-weight:700;color:#fff;margin-bottom:.22rem;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.co-desc{font-size:.6rem;line-height:1.45;color:rgba(255,255,255,.86);text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .hero-city-img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-city-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:rgba(107,125,160,.8)}
 .hero-center{display:flex;align-items:center;justify-content:center;gap:1.2rem;padding:.3rem 0;flex-wrap:wrap}
-.hero-wx-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:120px;height:120px}
-.hero-wx-icon .w-anim{transform:scale(1.45);transform-origin:center}
+.hero-wx-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:150px;height:150px}
 .hero-temp-block{display:flex;flex-direction:column;text-align:left}
 .hero-right{display:flex;flex-direction:column;justify-content:center}
 .hero-temp{font-size:4.8rem;font-weight:700;line-height:1;letter-spacing:-4px;color:#fff}
@@ -319,6 +326,43 @@ body.light .weather-hero .sbox-bar{background:rgba(30,58,138,.08)}
 @keyframes wa-flash{0%,80%,100%{opacity:.1}84%,90%,96%{opacity:1}87%,93%{opacity:.3}}
 .wa-fog-line{position:absolute;height:2px;border-radius:2px;background:linear-gradient(to right,transparent,rgba(148,163,184,.45),transparent);animation:wa-fog var(--fd,4s) ease-in-out infinite var(--fdl,0s)}
 @keyframes wa-fog{0%,100%{opacity:.4;transform:translateX(-8px)}50%{opacity:.8;transform:translateX(8px)}}
+
+/* ── HERO WEATHER (ha-* large animations) ── */
+.ha-wrap{width:150px;height:150px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Sun rays ring */
+.ha-rays-ring{position:absolute;width:130px;height:130px;top:10px;left:10px;animation:ha-rot 22s linear infinite}
+.ha-ray{position:absolute;width:4px;border-radius:2px;background:linear-gradient(to bottom,rgba(255,230,70,.92),rgba(255,200,30,.5),rgba(255,180,0,0));animation:ha-ray-p 2.8s ease-in-out infinite var(--rd,0s)}
+@keyframes ha-rot{to{transform:rotate(360deg)}}
+@keyframes ha-ray-p{0%,100%{opacity:.45}50%{opacity:1}}
+/* Sun glow halo */
+.ha-corona{position:absolute;width:92px;height:92px;border-radius:50%;background:radial-gradient(circle,rgba(255,190,0,.22) 0%,rgba(255,130,0,.09) 55%,transparent 73%);animation:ha-corona-p 3s ease-in-out infinite}
+@keyframes ha-corona-p{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+/* Sun core */
+.ha-core{position:absolute;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fffde0,#ffd600 28%,#ffa500 58%,#e65100);box-shadow:0 0 28px rgba(255,185,0,.95),0 0 56px rgba(255,120,0,.65),0 0 90px rgba(255,70,0,.35);animation:ha-core-p 2.5s ease-in-out infinite}
+@keyframes ha-core-p{0%,100%{box-shadow:0 0 28px rgba(255,185,0,.95),0 0 56px rgba(255,120,0,.65),0 0 90px rgba(255,70,0,.35)}50%{box-shadow:0 0 42px rgba(255,210,0,1),0 0 80px rgba(255,155,0,.82),0 0 118px rgba(255,90,0,.46);transform:scale(1.05)}}
+/* Cloud group */
+.ha-cloud-g{position:absolute;animation:ha-bob 5s ease-in-out infinite}
+.ha-cb{position:absolute;border-radius:26px;background:var(--hcl,linear-gradient(145deg,#d2eaf8 0%,#a6cce6 100%))}
+.ha-cp{position:absolute;border-radius:50%;background:var(--hcl,linear-gradient(145deg,#d2eaf8 0%,#a6cce6 100%))}
+.ha-cshadow{position:absolute;background:rgba(0,0,0,.14);border-radius:50%;filter:blur(7px)}
+.ha-dark{--hcl:linear-gradient(145deg,rgba(58,78,115,.9) 0%,rgba(38,56,90,.82) 100%)}
+@keyframes ha-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+/* Mini sun (partly cloudy) */
+.ha-ms-wrap{position:absolute;display:flex;align-items:center;justify-content:center}
+.ha-ms-ring{position:absolute;animation:ha-rot 26s linear infinite}
+.ha-ms-core{position:absolute;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fffde0,#ffd600 28%,#ffa500 58%,#e65100);animation:ha-core-p 2.5s ease-in-out infinite}
+/* Rain drops */
+.ha-drop{position:absolute;width:3px;border-radius:3px;background:linear-gradient(to bottom,transparent,rgba(96,165,250,.92),rgba(59,130,246,.55));box-shadow:0 0 4px rgba(96,165,250,.4);animation:ha-rain var(--hspd,.85s) linear infinite var(--hdly,0s)}
+@keyframes ha-rain{from{opacity:0;transform:translateY(-4px) rotate(-12deg)}18%{opacity:.9}to{transform:translateY(54px) rotate(-12deg);opacity:0}}
+/* Snowflakes */
+.ha-flake{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff 50%,rgba(219,234,254,.5));box-shadow:0 0 4px rgba(200,225,255,.7);animation:ha-snow var(--hspd,1.5s) ease-in infinite var(--hdly,0s)}
+@keyframes ha-snow{from{opacity:0;transform:translateY(0) translateX(0)}25%{opacity:1}to{transform:translateY(52px) translateX(var(--hsx,4px));opacity:0}}
+/* Fog bands */
+.ha-fog-b{position:absolute;height:3px;border-radius:3px;background:linear-gradient(to right,transparent,rgba(148,163,184,.55),transparent);animation:ha-fog-d var(--hfd,4s) ease-in-out infinite var(--hfdl,0s)}
+@keyframes ha-fog-d{0%,100%{opacity:.4;transform:translateX(-10px)}50%{opacity:.88;transform:translateX(10px)}}
+/* Lightning */
+.ha-bolt{position:absolute;font-size:2.2rem;line-height:1;animation:ha-flash 4s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(253,224,71,.95)) drop-shadow(0 0 18px rgba(253,224,71,.5))}
+@keyframes ha-flash{0%,77%,100%{opacity:.06}79%,85%,91%{opacity:1}82%,88%{opacity:.12}}
 
 /* ── HERO BACKGROUND EFFECTS ── */
 .weather-hero::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;transition:opacity .8s}
@@ -455,9 +499,7 @@ body.light .weather-hero .sbox-bar{background:rgba(30,58,138,.08)}
   .hdr-right{gap:.55rem}
   .clock strong{font-size:.75rem}
   .clock span{font-size:.65rem}
-  .hangman-section{margin-top:.7rem;padding:0 .9rem}
-  .daily-section{padding:0 .9rem}
-  .daily-row{grid-template-columns:1fr;gap:.5rem}
+  .top-section{margin-top:.7rem;padding:0 .9rem;grid-template-columns:1fr;gap:.7rem}
   .layout{padding:0 .9rem;gap:.8rem}
   .holidays-col{grid-template-columns:1fr}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
@@ -471,8 +513,7 @@ body.light .weather-hero .sbox-bar{background:rgba(30,58,138,.08)}
   .hero-body{grid-template-columns:1fr;gap:.75rem;min-height:auto}
   .hero-city-img-wrap{width:100%;height:100px;flex:none}
   .hero-center{padding:.4rem 0;gap:.8rem;justify-content:center}
-  .hero-wx-icon{width:90px;height:90px}
-  .hero-wx-icon .w-anim{transform:scale(1.1)}
+  .hero-wx-icon{width:110px;height:110px;overflow:hidden}
   .hero-temp-block{text-align:left}
   .hero-right{width:100%}
 }
@@ -502,7 +543,7 @@ body.light .weather-hero .sbox-bar{background:rgba(30,58,138,.08)}
   .font-size-lbl{display:none}
   .font-hint{display:none}
   .clock strong,.clock span{display:none}
-  .hangman-section,.layout{padding:0 .65rem}
+  .top-section,.layout{padding:0 .65rem}
 }
 @media(pointer:coarse){
   .popup{display:none!important}

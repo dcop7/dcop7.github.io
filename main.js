@@ -260,6 +260,8 @@ document.getElementById('weather-hero').addEventListener('mouseover', e => {
   if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
 });
 document.getElementById('weather-hero').addEventListener('click', e => {
+  const wrap = e.target.closest('.hero-city-img-wrap');
+  if (wrap) { wrap.classList.toggle('co-shown'); return; }
   const b = e.target.closest('.stat-box[data-gauge]');
   if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
 });
@@ -407,21 +409,108 @@ function getAlertsForDay(dateStr) {
 
 // ── WEATHER ───────────────────────────────────────────────────────
 const CITY_META = {
-  '38.7223,-9.1393': {name:'Lisboa',        wiki:'Lisbon'},
-  '41.1579,-8.6291': {name:'Porto',         wiki:'Porto'},
-  '41.5454,-8.4265': {name:'Braga',         wiki:'Braga'},
-  '40.2033,-8.4103': {name:'Coimbra',       wiki:'Coimbra'},
-  '37.0193,-7.9304': {name:'Faro',          wiki:'Faro,_Portugal'},
-  '38.5667,-7.9000': {name:'Évora',         wiki:'Évora'},
-  '40.6405,-8.6538': {name:'Aveiro',        wiki:'Aveiro,_Portugal'},
-  '38.5244,-8.8882': {name:'Setúbal',       wiki:'Setúbal'},
-  '40.6566,-7.9122': {name:'Viseu',         wiki:'Viseu'},
-  '39.7436,-8.8071': {name:'Leiria',        wiki:'Leiria'},
-  '39.2333,-8.6833': {name:'Santarém',      wiki:'Santarém,_Portugal'},
-  '32.6669,-16.9241':{name:'Funchal',       wiki:'Funchal'},
-  '37.7412,-25.6756':{name:'Ponta Delgada', wiki:'Ponta_Delgada'},
+  '38.7223,-9.1393': {name:'Lisboa',        wiki:'Lisbon',         desc:'Fundada c. 138 a.C. · ~547 000 hab. · Torre de Belém, Mosteiro dos Jerónimos, Alfama, Oceanário'},
+  '41.1579,-8.6291': {name:'Porto',         wiki:'Porto',          desc:'Fundada c. 300 d.C. · ~237 000 hab. · Centro Histórico (UNESCO), Caves do Vinho do Porto, Livraria Lello'},
+  '41.5454,-8.4265': {name:'Braga',         wiki:'Braga',          desc:'Fundada em 16 a.C. · ~193 000 hab. · Bom Jesus do Monte, Sé de Braga, Termas Romanas do Alto da Cividade'},
+  '40.2033,-8.4103': {name:'Coimbra',       wiki:'Coimbra',        desc:'Fundada em 138 a.C. · ~106 000 hab. · Universidade (UNESCO), Biblioteca Joanina, Mosteiro de Santa Cruz'},
+  '37.0193,-7.9304': {name:'Faro',          wiki:'Faro,_Portugal', desc:'Fundada pelos Mouros séc. X · ~64 000 hab. · Cidade Velha, Ria Formosa (Parque Natural), Praia de Faro'},
+  '38.5667,-7.9000': {name:'Évora',         wiki:'Évora',          desc:'Fundada pelos Romanos · ~57 000 hab. · Templo Romano (UNESCO), Aqueduto da Prata, Cromeleque dos Almendres'},
+  '40.6405,-8.6538': {name:'Aveiro',        wiki:'Aveiro,_Portugal',desc:'Fundada séc. XI · ~81 000 hab. · Moliceiros nos canais, Art Nouveau, Costa Nova, Museu de Aveiro'},
+  '38.5244,-8.8882': {name:'Setúbal',       wiki:'Setúbal',        desc:'Fundada em 1249 · ~121 000 hab. · Parque Natural da Arrábida, Baía de Setúbal, Castelo de Palmela'},
+  '40.6566,-7.9122': {name:'Viseu',         wiki:'Viseu',          desc:'Fundada na era pré-romana · ~100 000 hab. · Museu Grão Vasco, Sé de Viseu, Centro Histórico Medieval'},
+  '39.7436,-8.8071': {name:'Leiria',        wiki:'Leiria',         desc:'Fundada em 1135 · ~127 000 hab. · Castelo de Leiria, Mosteiro da Batalha, Pinhal de Leiria, Nazaré'},
+  '39.2333,-8.6833': {name:'Santarém',      wiki:'Santarém,_Portugal',desc:'Fundada pelos Romanos · ~63 000 hab. · Capital do Gótico Português, Feira Nacional da Agricultura'},
+  '32.6669,-16.9241':{name:'Funchal',       wiki:'Funchal',        desc:'Fundada em 1424 · ~112 000 hab. · Mercado dos Lavradores, Monte, Jardim Botânico, Levadas da Madeira'},
+  '37.7412,-25.6756':{name:'Ponta Delgada', wiki:'Ponta_Delgada',  desc:'Fundada em 1546 · ~68 000 hab. · Portas da Cidade, Sete Cidades, Lagoa das Furnas, Termas da Ribeira Grande'},
 };
 
+// ── HERO WEATHER ANIMATIONS (ha-*) ────────────────────────────────
+function haRays(n = 10, innerR = 32, container = 130) {
+  const cx = container / 2;
+  return Array.from({length: n}, (_, i) => {
+    const angle = (360 / n) * i;
+    const h = i % 2 === 0 ? 22 : 16;
+    const top = cx - innerR - h;
+    const toY = h + innerR;
+    return `<div class="ha-ray" style="height:${h}px;top:${top}px;left:${cx - 2}px;transform-origin:2px ${toY}px;transform:rotate(${angle}deg);--rd:${(i * (2.8 / n)).toFixed(2)}s"></div>`;
+  }).join('');
+}
+
+function haCloud(dark = false, w = 96, h = 58, top = 56, left = 27) {
+  const dk = dark ? ' ha-dark' : '';
+  const p1w = Math.round(w * .42), p2w = Math.round(w * .52), p3w = Math.round(w * .36);
+  const bH = Math.round(h * .52);
+  return `<div class="ha-cloud-g${dk}" style="top:${top}px;left:${left}px">
+    <div class="ha-cp" style="width:${p1w}px;height:${p1w}px;bottom:${bH}px;left:${Math.round(w*.06)}px"></div>
+    <div class="ha-cp" style="width:${p2w}px;height:${p2w}px;bottom:${bH}px;left:${Math.round(w*.25)}px"></div>
+    <div class="ha-cp" style="width:${p3w}px;height:${p3w}px;bottom:${bH}px;left:${Math.round(w*.58)}px"></div>
+    <div class="ha-cb" style="width:${w}px;height:${bH + 6}px;bottom:0;left:0"></div>
+    <div class="ha-cshadow" style="width:${Math.round(w*.65)}px;height:${Math.round(h*.2)}px;bottom:-${Math.round(h*.13)}px;left:${Math.round(w*.18)}px"></div>
+  </div>`;
+}
+
+function haDrops(cfgs) {
+  return cfgs.map(([l, t, h, spd, dly]) =>
+    `<div class="ha-drop" style="left:${l}px;top:${t}px;height:${h}px;--hspd:${spd}s;--hdly:${dly}s"></div>`
+  ).join('');
+}
+
+function haFlakes(cfgs) {
+  return cfgs.map(([l, t, sz, spd, dly, sx]) =>
+    `<div class="ha-flake" style="left:${l}px;top:${t}px;width:${sz}px;height:${sz}px;--hspd:${spd}s;--hdly:${dly}s;--hsx:${sx}px"></div>`
+  ).join('');
+}
+
+function haAnimHTML(code) {
+  const c = +code;
+  if (c <= 1)
+    return `<div class="ha-wrap">
+      <div class="ha-rays-ring">${haRays(10)}</div>
+      <div class="ha-corona"></div>
+      <div class="ha-core"></div>
+    </div>`;
+  if (c === 2)
+    return `<div class="ha-wrap">
+      <div class="ha-ms-wrap" style="top:8px;left:6px;width:62px;height:62px">
+        <div class="ha-ms-ring" style="width:62px;height:62px;top:0;left:0">${haRays(8, 16, 62)}</div>
+        <div class="ha-ms-core" style="width:28px;height:28px;box-shadow:0 0 14px rgba(255,185,0,.9),0 0 28px rgba(255,120,0,.55)"></div>
+      </div>
+      ${haCloud(false, 90, 54, 72, 24)}
+    </div>`;
+  if (c === 3)
+    return `<div class="ha-wrap">${haCloud(false, 104, 62, 44, 23)}</div>`;
+  if (c === 45 || c === 48)
+    return `<div class="ha-wrap">
+      ${haCloud(false, 92, 56, 28, 29)}
+      <div class="ha-fog-b" style="width:82px;left:34px;top:96px;--hfd:3.5s;--hfdl:0s"></div>
+      <div class="ha-fog-b" style="width:66px;left:42px;top:109px;--hfd:4.3s;--hfdl:.7s"></div>
+      <div class="ha-fog-b" style="width:72px;left:36px;top:122px;--hfd:3.8s;--hfdl:1.4s"></div>
+    </div>`;
+  if (c >= 51 && c <= 55)
+    return `<div class="ha-wrap">
+      ${haCloud(false, 90, 54, 26, 30)}
+      ${haDrops([[44,88,12,.96,0],[58,86,11,1.1,.32],[72,90,12,.9,.65]])}
+    </div>`;
+  if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
+    return `<div class="ha-wrap">
+      ${haCloud(true, 98, 58, 22, 26)}
+      ${haDrops([[36,90,14,.72,0],[50,88,15,.78,.16],[64,91,14,.7,.38],[77,89,15,.74,.24],[90,92,12,.68,.52]])}
+    </div>`;
+  if (c >= 71 && c <= 75)
+    return `<div class="ha-wrap">
+      ${haCloud(true, 94, 56, 22, 28)}
+      ${haFlakes([[40,90,8,1.5,0,3],[56,88,7,1.3,.45,-3],[72,93,8,1.55,.85,4],[87,90,6,1.4,.25,-2]])}
+    </div>`;
+  if (c >= 95)
+    return `<div class="ha-wrap">
+      ${haCloud(true, 100, 60, 18, 25)}
+      ${haDrops([[38,90,13,.7,0],[54,88,14,.72,.2],[70,92,13,.68,.42]])}
+      <div class="ha-bolt" style="bottom:8px;left:50%;transform:translateX(-50%)">⚡</div>
+    </div>`;
+  return `<div class="ha-wrap" style="font-size:3rem;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
+}
+
+// ── SMALL WEATHER ANIMATIONS (wa-* for other uses) ────────────────
 function sunWrap(scale = 1, opacity = 1) {
   const rays = [0, 45, 90, 135, 180, 225, 270, 315].map((ra, i) =>
     `<div class="wa-sun-ray" style="--ra:${ra}deg;--rd:${(i * 0.15).toFixed(2)}s"></div>`).join('');
@@ -502,9 +591,13 @@ async function loadWeather(latlon) {
   const curVal = latlon;
   const meta   = CITY_META[latlon] || {name: latlon, wiki: null};
 
+  const overlayHTML = meta.desc
+    ? `<div class="city-overlay"><div class="co-name">${meta.name}</div><div class="co-desc">${meta.desc}</div></div>`
+    : '';
+
   const heroLeft = imgHTML => `
     <div class="hero-left">
-      <div class="hero-city-img-wrap">${imgHTML}</div>
+      <div class="hero-city-img-wrap">${imgHTML}${overlayHTML}</div>
       <select class="hero-city-select">${CITY_OPTIONS}</select>
     </div>`;
 
@@ -577,7 +670,7 @@ async function loadWeather(latlon) {
   hero.innerHTML = `<div class="hero-body">
     ${heroLeft(imgHTML)}
     <div class="hero-center">
-      <div class="hero-wx-icon">${getAnimHTML(c.weather_code)}</div>
+      <div class="hero-wx-icon">${haAnimHTML(c.weather_code)}</div>
       <div class="hero-temp-block">
         <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
         <div class="hero-cond">${cw.l}</div>
