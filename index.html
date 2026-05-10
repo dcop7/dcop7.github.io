@@ -194,6 +194,8 @@ header{
 .sbox-label{font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:.08rem}
 .sbox-val{font-size:.82rem;font-weight:700;color:#fff}
 .sbox-sub{font-size:.58rem;color:rgba(255,255,255,.28);margin-top:.03rem}
+.sbox-bar{height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:.35rem;overflow:hidden}
+.sbox-bar-fill{height:100%;border-radius:2px;transition:width .6s}
 .stat-box[data-gauge]{cursor:help}
 
 .uv-low{color:#4ade80}.uv-mod{color:#facc15}.uv-high{color:#fb923c}.uv-vhigh{color:#f87171}.uv-extreme{color:#c084fc}
@@ -252,22 +254,26 @@ header{
 .h-prcp{font-size:.58rem;color:var(--accent);margin-top:.16rem;min-height:.85rem}
 
 /* ── 7-DAY FORECAST ── */
-.forecast-row{display:flex;gap:.55rem}
+.forecast-row{display:flex;gap:.5rem}
 .fc{
-  flex:1;background:var(--card);border:1px solid var(--border);border-radius:13px;
-  padding:.8rem .45rem .75rem;text-align:center;cursor:default;
+  flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:.7rem .4rem .65rem;text-align:center;cursor:default;
   transition:border-color .15s,transform .15s,box-shadow .15s;
-  display:flex;flex-direction:column;align-items:center;gap:.18rem;min-width:0;
+  display:flex;flex-direction:column;align-items:center;gap:.14rem;min-width:0;
 }
-.fc:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.fc:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.45)}
 .fc.fc-today{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.32)}
-.fc-day{font-size:.66rem;font-weight:700;color:var(--muted);line-height:1}
-.fc-date{font-size:.57rem;color:rgba(107,125,160,.55)}
-.fc-ico{font-size:1.65rem;line-height:1;margin:.18rem 0}
-.fc-hi{font-size:.88rem;font-weight:700;color:var(--text)}
-.fc-lo{font-size:.72rem;color:var(--muted)}
-.fc-rain{font-size:.58rem;color:var(--accent);min-height:.82rem}
-.fc-alert-dot{font-size:.68rem;margin-top:.04rem}
+.fc-day{font-size:.58rem;font-weight:700;color:var(--muted);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;padding:0 .15rem}
+.fc-date{font-size:.53rem;color:rgba(107,125,160,.5);margin-bottom:.06rem}
+.fc-ico{font-size:1.7rem;line-height:1;margin:.12rem 0 .06rem}
+.fc-temps{display:flex;align-items:center;justify-content:center;gap:.28rem;margin:.04rem 0}
+.fc-hi-v{font-size:.86rem;font-weight:700;color:var(--text)}
+.fc-lo-v{font-size:.72rem;color:var(--muted)}
+.fc-sep{font-size:.6rem;color:rgba(107,125,160,.3)}
+.fc-rain{font-size:.6rem;color:#60a5fa;min-height:.82rem;display:flex;align-items:center;justify-content:center;gap:.18rem}
+.fc-rain-bar{width:28px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle}
+.fc-rain-fill{height:100%;border-radius:2px;background:#60a5fa}
+.fc-alert-dot{font-size:.62rem;margin-top:.06rem}
 
 /* ── MAP ── */
 .map-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
@@ -731,30 +737,29 @@ const RIDDLES = [
   {q:'Sou cheio quando estou vazio e vazio quando estou cheio. O que sou?',a:'Um buraco'},
 ];
 
+async function fetchJoke() {
+  const bust = `&_=${Date.now()}`;
+  try {
+    const ptRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
+    const pt = await ptRes.json();
+    if (!pt.error) return pt;
+    const enRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
+    return await enRes.json();
+  } catch { return null; }
+}
+
+function jokeBodyHTML(j) {
+  if (!j || j.error) return '<span class="dc-joke-single" style="color:var(--muted)">—</span>';
+  return j.type === 'twopart'
+    ? `<span class="dc-joke-setup">${j.setup}</span><span class="dc-joke-punchline">${j.delivery}</span>`
+    : `<span class="dc-joke-single">${j.joke||'—'}</span>`;
+}
+
 async function loadDailyContent() {
   const el = document.getElementById('hist-jokes');
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const q = pick(QUOTES);
   const r = pick(RIDDLES);
-
-  const bust = `&_=${Date.now()}`;
-  let jokeHTML = '<div class="dc-sec-ttl">😄 Piada do Dia</div><div class="h-loading">A carregar…</div>';
-
-  try {
-    const ptRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
-    const ptData = await ptRes.json();
-    if (!ptData.error) {
-      jokeHTML = ptData.type === 'twopart'
-        ? `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-setup">${ptData.setup}</span><span class="dc-joke-punchline">${ptData.delivery}</span>`
-        : `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-single">${ptData.joke}</span>`;
-    } else {
-      const enRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
-      const enData = await enRes.json();
-      jokeHTML = enData.type === 'twopart'
-        ? `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-setup">${enData.setup}</span><span class="dc-joke-punchline">${enData.delivery}</span>`
-        : `<div class="dc-sec-ttl">😄 Piada do Dia</div><span class="dc-joke-single">${enData.joke||'—'}</span>`;
-    }
-  } catch { /* keep loading text */ }
 
   el.innerHTML = `
     <div class="dc-sec">
@@ -768,7 +773,25 @@ async function loadDailyContent() {
       <button class="dc-reveal" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">Ver resposta</button>
       <div class="dc-answer">${r.a}</div>
     </div>
-    <div class="dc-sec">${jokeHTML}</div>`;
+    <div class="dc-sec" id="dc-joke-sec">
+      <div class="dc-sec-ttl" style="display:flex;align-items:center;justify-content:space-between">
+        <span>😄 Piada</span>
+        <button class="dc-reveal" id="dc-joke-btn" style="font-size:.58rem;padding:.18rem .5rem">↺ Nova</button>
+      </div>
+      <div id="dc-joke-body"><span class="dc-joke-single" style="color:var(--muted)">A carregar…</span></div>
+    </div>`;
+
+  const j = await fetchJoke();
+  const jb = document.getElementById('dc-joke-body');
+  if (jb) jb.innerHTML = jokeBodyHTML(j);
+
+  document.getElementById('dc-joke-btn')?.addEventListener('click', async function() {
+    this.textContent = '…';
+    const jb2 = document.getElementById('dc-joke-body');
+    const j2 = await fetchJoke();
+    if (jb2) jb2.innerHTML = jokeBodyHTML(j2);
+    this.textContent = '↺ Nova';
+  });
 }
 loadDailyContent();
 
@@ -798,18 +821,15 @@ function positionPopup(anchor) {
   const r = anchor.getBoundingClientRect();
   const pw = 268;
   let left = r.left + r.width/2 - pw/2;
-  let top  = r.top - 400; // overestimate so popup sits above
   if (left < 8) left = 8;
   if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-  if (top < 8) top = r.bottom + 8;
+  // Place below first so we can measure rendered height, then move above if room
   popup.style.left = `${left}px`;
-  popup.style.top  = `${top}px`;
-  // After paint, correct if overflowing top
+  popup.style.top  = `${r.bottom + 8}px`;
   requestAnimationFrame(() => {
-    const pr = popup.getBoundingClientRect();
-    if (pr.top < 8) {
-      popup.style.top = `${r.bottom + 8}px`;
-    }
+    const ph = popup.getBoundingClientRect().height;
+    const topAbove = r.top - ph - 10;
+    if (topAbove >= 8) popup.style.top = `${topAbove}px`;
   });
 }
 
@@ -901,9 +921,15 @@ function showForecastPopup(anchor, data, dayAlerts) {
 
   const aLvl = {yellow:'pill-y', orange:'pill-o', red:'pill-r'};
   const aTxt = {yellow:'Amarelo', orange:'Laranja', red:'Vermelho'};
-  const alertsHTML = dayAlerts?.length ? `
+  // Deduplicate alerts by type+level before rendering
+  const seenAlerts = new Set();
+  const uniqueAlerts = (dayAlerts||[]).filter(a => {
+    const k = `${(a.awarenessLevelID||a.awarenessLevel||'')}|${a.awarenessTypeName||''}`;
+    return seenAlerts.has(k) ? false : (seenAlerts.add(k), true);
+  });
+  const alertsHTML = uniqueAlerts.length ? `
     <div class="pop-alerts">
-      ${dayAlerts.map(a => {
+      ${uniqueAlerts.map(a => {
         const lvl = (a.awarenessLevelID||a.awarenessLevel||'yellow').toLowerCase();
         const type = a.awarenessTypeName || 'Aviso';
         const areas = (a.areas||[]).filter(Boolean).join(', ');
@@ -1189,6 +1215,13 @@ async function loadWeather(latlon) {
     ? `<img class="hero-city-img" src="${wikiThumb}" alt="${meta.name}">`
     : `<div class="hero-city-img-ph">📷 ${meta.name}</div>`;
 
+  function statBar(key, val) {
+    const g = GAUGES[key]; if (!g?.ticks) return '';
+    const pct = Math.min(100, Math.max(0, ((val-(g.min||0))/((g.max||100)-(g.min||0)))*100));
+    const cat = getGaugeCat(g, val);
+    return `<div class="sbox-bar"><div class="sbox-bar-fill" style="width:${pct}%;background:${cat?.c||'var(--accent)'}"></div></div>`;
+  }
+
   const wxCat = (+c.weather_code)<=1?'sun':(+c.weather_code)===2?'pcloudy':(+c.weather_code)<=48?((+c.weather_code)>=45?'fog':'cloud'):(+c.weather_code)<=55?'drizzle':(+c.weather_code)<=82?'rain':(+c.weather_code)<=75?'snow':'storm';
   hero.setAttribute('data-wx', wxCat);
   const windVal = Math.round(c.wind_speed_10m);
@@ -1208,30 +1241,34 @@ async function loadWeather(latlon) {
       <div class="stat-grid">
         <div class="stat-box" data-gauge="wind" data-gv="${windVal}">
           <div class="sbox-icon">💨</div><div class="sbox-label">Vento</div>
-          <div class="sbox-val">${windVal} km/h</div>
+          <div class="sbox-val">${windVal} <span style="font-size:.6rem;opacity:.5">km/h</span></div>
           <div class="sbox-sub">${compass(c.wind_direction_10m)}</div>
+          ${statBar('wind',windVal)}
         </div>
         <div class="stat-box" data-gauge="humidity" data-gv="${c.relative_humidity_2m}">
           <div class="sbox-icon">💧</div><div class="sbox-label">Humidade</div>
-          <div class="sbox-val">${c.relative_humidity_2m}%</div>
+          <div class="sbox-val">${c.relative_humidity_2m}<span style="font-size:.6rem;opacity:.5">%</span></div>
+          ${statBar('humidity',c.relative_humidity_2m)}
         </div>
         <div class="stat-box" data-gauge="pressure" data-gv="${Math.round(c.surface_pressure)}">
           <div class="sbox-icon">🌡️</div><div class="sbox-label">Pressão</div>
-          <div class="sbox-val">${Math.round(c.surface_pressure)}</div>
-          <div class="sbox-sub">hPa</div>
+          <div class="sbox-val">${Math.round(c.surface_pressure)} <span style="font-size:.6rem;opacity:.5">hPa</span></div>
+          ${statBar('pressure',Math.round(c.surface_pressure))}
         </div>
         <div class="stat-box" data-gauge="cloud" data-gv="${c.cloud_cover}">
           <div class="sbox-icon">☁️</div><div class="sbox-label">Nuvens</div>
-          <div class="sbox-val">${c.cloud_cover}%</div>
+          <div class="sbox-val">${c.cloud_cover}<span style="font-size:.6rem;opacity:.5">%</span></div>
+          ${statBar('cloud',c.cloud_cover)}
         </div>
         <div class="stat-box" data-gauge="uv" data-gv="${uvVal}">
           <div class="sbox-icon">🌞</div><div class="sbox-label">Índice UV</div>
           <div class="sbox-val ${uv0!=null?uvCls(uv0):''}">${uv0??'—'}</div>
+          ${statBar('uv',uvVal)}
         </div>
         <div class="stat-box" data-gauge="precipitation" data-gv="${precVal}">
           <div class="sbox-icon">🌧️</div><div class="sbox-label">Precipitação</div>
-          <div class="sbox-val">${precVal}</div>
-          <div class="sbox-sub">mm</div>
+          <div class="sbox-val">${precVal} <span style="font-size:.6rem;opacity:.5">mm</span></div>
+          ${statBar('precipitation',precVal)}
         </div>
         <div class="stat-box">
           <div class="sbox-icon">🌅</div><div class="sbox-label">Nascer do sol</div>
@@ -1269,7 +1306,7 @@ async function loadWeather(latlon) {
   fcRow.innerHTML = '';
   dl.time.forEach((dateStr, i) => {
     const dt  = new Date(dateStr + 'T12:00:00');
-    const dn  = i===0 ? 'Hoje' : DS[dt.getDay()];
+    const dn  = i===0 ? 'Hoje' : WD[dt.getDay()];   // full day name
     const dw  = wmo(dl.weather_code[i]);
     const maxT    = Math.round(dl.temperature_2m_max[i]);
     const minT    = Math.round(dl.temperature_2m_min[i]);
@@ -1290,9 +1327,10 @@ async function loadWeather(latlon) {
        : dayAlerts[0].lvl==='orange' ? 'rgba(249,115,22,.35)'
        : 'rgba(245,158,11,.35)')
       : '';
-    const alertDot = hasAlert
-      ? (dayAlerts[0].lvl==='red'   ? '🔴'
-       : dayAlerts[0].lvl==='orange' ? '🟠' : '🟡')
+
+    const rainPct = Math.min(100, rain);
+    const rainBar = rain > 5
+      ? `<span class="fc-rain-bar"><span class="fc-rain-fill" style="width:${rainPct}%"></span></span> ${rain}%`
       : '';
 
     const card = document.createElement('div');
@@ -1302,10 +1340,9 @@ async function loadWeather(latlon) {
       <div class="fc-day">${dn}</div>
       <div class="fc-date">${dt.getDate()} ${MS[dt.getMonth()]}</div>
       <div class="fc-ico">${dw.i}</div>
-      <div class="fc-hi">${maxT}°</div>
-      <div class="fc-lo">${minT}°</div>
-      <div class="fc-rain">${rain>5 ? '🌧️ '+rain+'%' : ''}</div>
-      ${hasAlert ? `<div class="fc-alert-dot">${alertDot}</div>` : ''}`;
+      <div class="fc-temps"><span class="fc-hi-v">↑ ${maxT}°</span><span class="fc-sep">/</span><span class="fc-lo-v">↓ ${minT}°</span></div>
+      <div class="fc-rain">${rainBar}</div>
+      ${hasAlert ? `<div class="fc-alert-dot">${dayAlerts[0].lvl==='red'?'🔴':dayAlerts[0].lvl==='orange'?'🟠':'🟡'}</div>` : ''}`;
 
     card.addEventListener('mouseenter', () => showForecastPopup(card, {
       date:dateStr, dayName:dn, code:dl.weather_code[i],
