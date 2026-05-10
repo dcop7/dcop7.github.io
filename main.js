@@ -142,15 +142,43 @@ function renderWelcome() {
 }
 renderWelcome();
 
+const LOCAL_JOKES = [
+  {type:'twopart',setup:'Porque é que os programadores confundem o Halloween com o Natal?',delivery:'Porque Oct 31 = Dec 25!'},
+  {type:'single',joke:'Um cientista entra num bar e pede H2O. O segundo cientista pede H2O também. O segundo morreu.'},
+  {type:'twopart',setup:'O que é que um biólogo disse quando viu uma ameba comer outra ameba?',delivery:'Oh well, c\'est la vie!'},
+  {type:'single',joke:'Pergunta ao Google qual é a melhor piada do mundo e ele responde: "Os resultados da pesquisa."'},
+  {type:'twopart',setup:'Porque é que o espantalho ganhou um prémio?',delivery:'Porque era o melhor no seu campo!'},
+  {type:'single',joke:'Um homem diz ao médico que se sente como se fosse uma baralha de cartas. O médico diz: "Vou mandá-lo para um especialista."'},
+  {type:'twopart',setup:'O que disse o zero ao oito?',delivery:'Gostas muito de cinto!'},
+  {type:'single',joke:'Fui ao médico e ele disse-me que tenho de parar de jogar golfe. Perguntei porquê. Ele disse: "Para eu poder jogar!"'},
+  {type:'twopart',setup:'Porque é que os elefantes não usam computadores?',delivery:'Porque têm medo do rato!'},
+  {type:'single',joke:'Um peixe bate na parede e diz: "Droga!"'},
+  {type:'twopart',setup:'O que é que fica no canto e viaja por todo o mundo?',delivery:'Um selo!'},
+  {type:'single',joke:'Perguntei a uma amiga se ia à prova de matemática. Ela disse: "Não sei, são muitas dúvidas."'},
+  {type:'twopart',setup:'Como se chama um aluno que não estuda e passa?',delivery:'Passalho!'},
+  {type:'single',joke:'O médico disse-me que sou viciado em Twitter. Estranhei muito, não é o tipo de diagnóstico que recebo todos os dias.'},
+  {type:'twopart',setup:'O que é que a chuva disse ao milho?',delivery:'Olá, milho!'},
+  {type:'single',joke:'Tentei escrever um livro sobre relógios mas demorei muito. Era uma perca de tempo.'},
+  {type:'twopart',setup:'Porque é que o esqueleto não foi à festa?',delivery:'Porque não tinha corpo para isso!'},
+  {type:'single',joke:'Comprei umas sapatilhas a um traficante. Não sei o que ele meteu nelas mas fiquei a correr o dia todo.'},
+  {type:'twopart',setup:'O que é que a chávena disse ao café?',delivery:'Estou cheio de ti!'},
+  {type:'single',joke:'Um homem vai ao psicólogo e diz que se sente invisível. O psicólogo diz: "Próximo!"'},
+];
+
 async function fetchJoke() {
+  // Always show a random local joke immediately; API is a bonus
+  const local = LOCAL_JOKES[Math.floor(Math.random() * LOCAL_JOKES.length)];
   const bust = `&_=${Date.now()}`;
   try {
-    const ptRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 4000);
+    const ptRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&type=single,twopart&safe-mode${bust}`, {cache:'no-store',signal:ctrl.signal});
     const pt = await ptRes.json();
     if (!pt.error) return pt;
-    const enRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&type=single,twopart&safe-mode${bust}`, {cache:'no-store'});
-    return await enRes.json();
-  } catch { return null; }
+    const enRes = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&type=single,twopart&safe-mode${bust}`, {cache:'no-store',signal:ctrl.signal});
+    const en = await enRes.json();
+    return en.error ? local : en;
+  } catch { return local; }
 }
 
 function jokeHTML(j) {
@@ -179,8 +207,11 @@ async function loadDailyContent() {
     <div class="dc-answer">${r.a}</div>`;
 
   if (jEl) {
-    const j = await fetchJoke();
-    jEl.innerHTML = jokeHTML(j);
+    // Show random local joke immediately (no loading delay)
+    const localJ = LOCAL_JOKES[Math.floor(Math.random() * LOCAL_JOKES.length)];
+    jEl.innerHTML = jokeHTML(localJ);
+    // Replace with API joke in background if available
+    fetchJoke().then(j => { if (jEl && j !== localJ) jEl.innerHTML = jokeHTML(j); }).catch(()=>{});
   }
 }
 loadDailyContent();

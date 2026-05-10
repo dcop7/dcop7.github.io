@@ -20,6 +20,7 @@ const LINKS_DATA = [
   {
     id: 'financas', cat: 'Finanças & Poupança', icon: '💰',
     links: [
+      { name:'Preços Combustíveis',     url:'https://precoscombustiveis.dgeg.gov.pt/',     desc:'Preços dos combustíveis em Portugal (DGEG)',      tags:['combustível','gasolina','gasóleo','preços','dgeg','portaria','portugal'] },
       { name:'Doutor Finanças',        url:'https://www.doutorfinancas.pt/',              desc:'Saúde financeira, crédito e habitação',           tags:['finanças','crédito','habitação','seguros','poupança','dinheiro'] },
       { name:'Contas Poupança',        url:'https://contaspoupanca.pt/',                  desc:'Dicas de poupança por Pedro Andersson',           tags:['poupança','finanças','dicas','investimento','dinheiro'] },
       { name:'E-Konomista',            url:'https://ekonomista.pt/',                      desc:'Guia prático de economia e direitos do consumidor',tags:['economia','direitos','consumidor','finanças','prático'] },
@@ -87,6 +88,7 @@ const LINKS_DATA = [
       { name:'r/portugal',             url:'https://www.reddit.com/r/portugal/',           desc:'Reddit geral sobre Portugal',                    tags:['portugal','reddit','comunidade','discussão','português'] },
       { name:'r/literaciafinanceira',  url:'https://www.reddit.com/r/literaciafinanceira/',desc:'Finanças pessoais e investimentos em PT',        tags:['finanças','investimentos','reddit','portugal','poupança','literacia'] },
       { name:'r/devpt',                url:'https://www.reddit.com/r/devpt/',              desc:'Comunidade de programadores portugueses',         tags:['programação','ti','dev','portugal','tech','desenvolvimento'] },
+      { name:'Fórum ZWAME',             url:'https://forum.zwame.pt/',                     desc:'Maior fórum de tecnologia e comunidade de Portugal',tags:['fórum','tecnologia','comunidade','portugal','discussão','zwame','tech'] },
       { name:'r/ajuda',                url:'https://www.reddit.com/r/ajuda/',              desc:'Pedidos de ajuda e suporte geral',               tags:['ajuda','suporte','reddit','dúvidas','perguntas'] },
       { name:'r/portugalcaralho',      url:'https://www.reddit.com/r/portugalcaralho/',   desc:'Humor e memes sobre Portugal',                   tags:['humor','portugal','memes','reddit','engraçado'] },
     ]

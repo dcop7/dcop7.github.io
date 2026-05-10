@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f1f38"/>
+      <stop offset="100%" stop-color="#0d1c30"/>
+    </linearGradient>
+    <linearGradient id="dg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="40%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="0.8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+  <text
+    x="16" y="23.5"
+    font-family="'Space Grotesk', 'Segoe UI', system-ui, sans-serif"
+    font-size="21"
+    font-weight="700"
+    text-anchor="middle"
+    fill="url(#dg)"
+    filter="url(#glow)"
+    letter-spacing="-0.5">D</text>
+</svg>
