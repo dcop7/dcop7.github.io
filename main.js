@@ -174,10 +174,11 @@ document.getElementById('map-tabs').addEventListener('click', e => {
 // ── POPUP ─────────────────────────────────────────────────────────
 const popup = document.getElementById('popup');
 let popT;
+let currentCityMeta = null;
 
-function positionPopup(anchor) {
+function positionPopup(anchor, pw = 268) {
   const r = anchor.getBoundingClientRect();
-  const pw = 268;
+  popup.style.width = pw + 'px';
   let left = r.left + r.width / 2 - pw / 2;
   if (left < 8) left = 8;
   if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
@@ -192,7 +193,28 @@ function positionPopup(anchor) {
 
 function hidePopup() {
   clearTimeout(popT);
-  popT = setTimeout(() => popup.classList.remove('show'), 130);
+  popT = setTimeout(() => { popup.classList.remove('show', 'city-pop'); popup.style.width = ''; }, 130);
+}
+
+function showCityPopup(anchor, meta) {
+  if (!meta) return;
+  clearTimeout(popT);
+  const wikiUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(meta.wiki)}`;
+  const knownHTML = (meta.known || []).map(k => `<li>${k}</li>`).join('');
+  popup.classList.add('city-pop');
+  popup.innerHTML = `
+    <div class="pop-city-hdr"><span class="pop-city-hdr-icon">🏙️</span>${meta.name}</div>
+    <div class="pop-city-stats">
+      ${meta.founded ? `<div class="pop-city-row"><span class="pop-city-lbl">Fundada em</span><span class="pop-city-val">${meta.founded}</span></div>` : ''}
+      ${meta.pop    ? `<div class="pop-city-row"><span class="pop-city-lbl">Habitantes</span><span class="pop-city-val">${meta.pop}</span></div>` : ''}
+    </div>
+    ${knownHTML ? `<div class="pop-city-known">
+      <div class="pop-city-known-ttl">Mais conhecido por</div>
+      <ul class="pop-city-list">${knownHTML}</ul>
+    </div>` : ''}
+    <a class="pop-city-wiki" href="${wikiUrl}" target="_blank" rel="noopener">Ver na Wikipedia &rarr;</a>`;
+  positionPopup(anchor, 300);
+  popup.classList.add('show');
 }
 
 // ── GAUGE POPUP ───────────────────────────────────────────────────
@@ -261,7 +283,7 @@ document.getElementById('weather-hero').addEventListener('mouseover', e => {
 });
 document.getElementById('weather-hero').addEventListener('click', e => {
   const wrap = e.target.closest('.hero-city-img-wrap');
-  if (wrap) { wrap.classList.toggle('co-shown'); return; }
+  if (wrap) { showCityPopup(wrap, currentCityMeta); return; }
   const b = e.target.closest('.stat-box[data-gauge]');
   if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
 });
@@ -409,19 +431,19 @@ function getAlertsForDay(dateStr) {
 
 // ── WEATHER ───────────────────────────────────────────────────────
 const CITY_META = {
-  '38.7223,-9.1393': {name:'Lisboa',        wiki:'Lisbon',         desc:'Fundada c. 138 a.C. · ~547 000 hab. · Torre de Belém, Mosteiro dos Jerónimos, Alfama, Oceanário'},
-  '41.1579,-8.6291': {name:'Porto',         wiki:'Porto',          desc:'Fundada c. 300 d.C. · ~237 000 hab. · Centro Histórico (UNESCO), Caves do Vinho do Porto, Livraria Lello'},
-  '41.5454,-8.4265': {name:'Braga',         wiki:'Braga',          desc:'Fundada em 16 a.C. · ~193 000 hab. · Bom Jesus do Monte, Sé de Braga, Termas Romanas do Alto da Cividade'},
-  '40.2033,-8.4103': {name:'Coimbra',       wiki:'Coimbra',        desc:'Fundada em 138 a.C. · ~106 000 hab. · Universidade (UNESCO), Biblioteca Joanina, Mosteiro de Santa Cruz'},
-  '37.0193,-7.9304': {name:'Faro',          wiki:'Faro,_Portugal', desc:'Fundada pelos Mouros séc. X · ~64 000 hab. · Cidade Velha, Ria Formosa (Parque Natural), Praia de Faro'},
-  '38.5667,-7.9000': {name:'Évora',         wiki:'Évora',          desc:'Fundada pelos Romanos · ~57 000 hab. · Templo Romano (UNESCO), Aqueduto da Prata, Cromeleque dos Almendres'},
-  '40.6405,-8.6538': {name:'Aveiro',        wiki:'Aveiro,_Portugal',desc:'Fundada séc. XI · ~81 000 hab. · Moliceiros nos canais, Art Nouveau, Costa Nova, Museu de Aveiro'},
-  '38.5244,-8.8882': {name:'Setúbal',       wiki:'Setúbal',        desc:'Fundada em 1249 · ~121 000 hab. · Parque Natural da Arrábida, Baía de Setúbal, Castelo de Palmela'},
-  '40.6566,-7.9122': {name:'Viseu',         wiki:'Viseu',          desc:'Fundada na era pré-romana · ~100 000 hab. · Museu Grão Vasco, Sé de Viseu, Centro Histórico Medieval'},
-  '39.7436,-8.8071': {name:'Leiria',        wiki:'Leiria',         desc:'Fundada em 1135 · ~127 000 hab. · Castelo de Leiria, Mosteiro da Batalha, Pinhal de Leiria, Nazaré'},
-  '39.2333,-8.6833': {name:'Santarém',      wiki:'Santarém,_Portugal',desc:'Fundada pelos Romanos · ~63 000 hab. · Capital do Gótico Português, Feira Nacional da Agricultura'},
-  '32.6669,-16.9241':{name:'Funchal',       wiki:'Funchal',        desc:'Fundada em 1424 · ~112 000 hab. · Mercado dos Lavradores, Monte, Jardim Botânico, Levadas da Madeira'},
-  '37.7412,-25.6756':{name:'Ponta Delgada', wiki:'Ponta_Delgada',  desc:'Fundada em 1546 · ~68 000 hab. · Portas da Cidade, Sete Cidades, Lagoa das Furnas, Termas da Ribeira Grande'},
+  '38.7223,-9.1393': {name:'Lisboa',        wiki:'Lisbon',            founded:'c. 138 a.C.',pop:'547 000',  known:['Torre de Belém','Mosteiro dos Jerónimos','Alfama e Castelo de São Jorge','Oceanário de Lisboa','Tram 28']},
+  '41.1579,-8.6291': {name:'Porto',         wiki:'Porto',             founded:'c. 300 d.C.', pop:'237 000', known:['Centro Histórico (Património UNESCO)','Caves do Vinho do Porto','Livraria Lello','Ponte D. Luís I','Ribeira']},
+  '41.5454,-8.4265': {name:'Braga',         wiki:'Braga',             founded:'16 a.C.',     pop:'193 000', known:['Bom Jesus do Monte','Sé de Braga (mais antiga de Portugal)','Termas Romanas do Alto da Cividade','Braga Romana']},
+  '40.2033,-8.4103': {name:'Coimbra',       wiki:'Coimbra',           founded:'c. 138 a.C.', pop:'106 000', known:['Universidade (Património UNESCO)','Biblioteca Joanina','Fado de Coimbra','Mosteiro de Santa Cruz','Rio Mondego']},
+  '37.0193,-7.9304': {name:'Faro',          wiki:'Faro,_Portugal',    founded:'séc. X (mouros)',pop:'64 000',known:['Cidade Velha amuralhada','Parque Natural da Ria Formosa','Praia de Faro','Sé Catedral','Museu Municipal']},
+  '38.5667,-7.9000': {name:'Évora',         wiki:'Évora',             founded:'séc. I a.C.', pop:'57 000',  known:['Templo Romano (Património UNESCO)','Aqueduto da Prata','Cromeleque dos Almendres','Catedral de Évora']},
+  '40.6405,-8.6538': {name:'Aveiro',        wiki:'Aveiro,_Portugal',  founded:'séc. XI',     pop:'81 000',  known:['Canais e Moliceiros (Veneza Portuguesa)','Arte Nova','Praia da Costa Nova','Museu de Aveiro','Ovos Moles']},
+  '38.5244,-8.8882': {name:'Setúbal',       wiki:'Setúbal',           founded:'1249',        pop:'121 000', known:['Parque Natural da Arrábida','Baía e Estuário do Sado','Castelo de Palmela','Mercado do Livramento','Peixinhos da Horta']},
+  '40.6566,-7.9122': {name:'Viseu',         wiki:'Viseu',             founded:'séc. I a.C.', pop:'100 000', known:['Museu Grão Vasco','Sé Catedral de Viseu','Centro Histórico Medieval','Vinho Dão','Festas da Cidade']},
+  '39.7436,-8.8071': {name:'Leiria',        wiki:'Leiria',            founded:'1135',        pop:'127 000', known:['Castelo de Leiria','Mosteiro da Batalha (UNESCO)','Pinhal de Leiria (Rei D. Dinis)','Praia da Nazaré','Museu de Arte Islâmica']},
+  '39.2333,-8.6833': {name:'Santarém',      wiki:'Santarém,_Portugal',founded:'séc. I a.C.', pop:'63 000',  known:['Capital do Gótico Português','Feira Nacional da Agricultura','Torre das Cabaças','Jardas da Ribeira de Santarém']},
+  '32.6669,-16.9241':{name:'Funchal',       wiki:'Funchal',           founded:'1424',        pop:'112 000', known:['Mercado dos Lavradores','Carros de Cesto do Monte','Jardim Botânico da Madeira','Levadas da Madeira','Vinho Madeira']},
+  '37.7412,-25.6756':{name:'Ponta Delgada', wiki:'Ponta_Delgada',     founded:'1546',        pop:'68 000',  known:['Portas da Cidade','Caldeira das Sete Cidades','Lagoa das Furnas','Termas da Ribeira Grande','Cozido das Furnas']},
 };
 
 // ── HERO WEATHER ANIMATIONS (ha-*) ────────────────────────────────
@@ -591,13 +613,11 @@ async function loadWeather(latlon) {
   const curVal = latlon;
   const meta   = CITY_META[latlon] || {name: latlon, wiki: null};
 
-  const overlayHTML = meta.desc
-    ? `<div class="city-overlay"><div class="co-name">${meta.name}</div><div class="co-desc">${meta.desc}</div></div>`
-    : '';
+  currentCityMeta = meta;
 
   const heroLeft = imgHTML => `
     <div class="hero-left">
-      <div class="hero-city-img-wrap">${imgHTML}${overlayHTML}</div>
+      <div class="hero-city-img-wrap">${imgHTML}</div>
       <select class="hero-city-select">${CITY_OPTIONS}</select>
     </div>`;
 
@@ -724,6 +744,12 @@ async function loadWeather(latlon) {
   </div>`;
 
   hero.querySelector('.hero-city-select').value = curVal;
+
+  const cityWrap = hero.querySelector('.hero-city-img-wrap');
+  if (cityWrap) {
+    cityWrap.addEventListener('mouseenter', () => { clearTimeout(popT); showCityPopup(cityWrap, currentCityMeta); });
+    cityWrap.addEventListener('mouseleave', hidePopup);
+  }
 
   // ── HOURLY ──
   const nowTs = Date.now();
