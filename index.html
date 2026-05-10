@@ -122,21 +122,48 @@ header{
   font-size:.6rem;color:rgba(255,255,255,.3);margin-left:auto;
 }
 
-.hero-main{
-  display:flex;align-items:center;gap:1.25rem;
-  margin-bottom:1.1rem;position:relative;z-index:1;
-}
-.hero-icon{font-size:3.8rem;line-height:1;filter:drop-shadow(0 0 22px rgba(255,255,255,.18));flex-shrink:0}
-.hero-temps{flex:1}
-.hero-temp{font-size:4.2rem;font-weight:700;line-height:1;letter-spacing:-3px}
-.hero-temp sup{font-size:1.4rem;font-weight:400;vertical-align:super;letter-spacing:0}
+/* Hero 3-column body */
+.hero-body{display:grid;grid-template-columns:190px 1fr auto;gap:1.2rem;align-items:center;position:relative;z-index:1}
+.hero-left{display:flex;flex-direction:column;gap:.55rem;flex-shrink:0}
+.hero-city-img-wrap{width:190px;height:138px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.hero-city-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .4s}
+.hero-city-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted)}
+.hero-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.06rem;padding:.2rem 0}
+.hero-right{}
+.hero-temp{font-size:5rem;font-weight:700;line-height:1;letter-spacing:-4px}
+.hero-temp sup{font-size:1.7rem;font-weight:400;vertical-align:super;letter-spacing:0}
 .hero-cond{font-size:.92rem;color:rgba(255,255,255,.65);margin-top:.18rem;font-weight:500}
 .hero-feels{font-size:.73rem;color:rgba(255,255,255,.38);margin-top:.05rem}
 .hero-minmax{font-size:.73rem;color:rgba(255,255,255,.42);margin-top:.04rem;font-weight:500}
 
-.stat-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;position:relative;z-index:1;
-}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.42rem}
+
+/* ── WEATHER ANIMATIONS ── */
+.w-anim{width:74px;height:74px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:.3rem}
+/* Sun */
+.wa-sun{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.wa-sun::before{content:'';position:absolute;inset:3px;border-radius:50%;background:conic-gradient(rgba(245,158,11,.55) 0deg 15deg,transparent 15deg 30deg,rgba(245,158,11,.55) 30deg 45deg,transparent 45deg 60deg,rgba(245,158,11,.55) 60deg 75deg,transparent 75deg 90deg,rgba(245,158,11,.55) 90deg 105deg,transparent 105deg 120deg,rgba(245,158,11,.55) 120deg 135deg,transparent 135deg 150deg,rgba(245,158,11,.55) 150deg 165deg,transparent 165deg 180deg,rgba(245,158,11,.55) 180deg 195deg,transparent 195deg 210deg,rgba(245,158,11,.55) 210deg 225deg,transparent 225deg 240deg,rgba(245,158,11,.55) 240deg 255deg,transparent 255deg 270deg,rgba(245,158,11,.55) 270deg 285deg,transparent 285deg 300deg,rgba(245,158,11,.55) 300deg 315deg,transparent 315deg 330deg,rgba(245,158,11,.55) 330deg 345deg,transparent 345deg 360deg);animation:wa-spin 9s linear infinite;mask-image:radial-gradient(transparent 42%,black 44%);-webkit-mask-image:radial-gradient(transparent 42%,black 44%)}
+.wa-sun::after{content:'';width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fde68a,#f59e0b);position:absolute;box-shadow:0 0 12px rgba(245,158,11,.55);animation:wa-glow 3s ease-in-out infinite}
+@keyframes wa-spin{to{transform:rotate(360deg)}}
+@keyframes wa-glow{0%,100%{box-shadow:0 0 10px rgba(245,158,11,.4)}50%{box-shadow:0 0 22px rgba(245,158,11,.8)}}
+/* Partly cloudy */
+.wa-pcloudy{position:relative}
+.wa-pcloudy .wa-sun{position:absolute;inset:0;opacity:.72;transform:scale(.8) translate(-9px,-6px)}
+/* Cloud */
+.wa-has-cloud{position:absolute;inset:0}
+.wa-has-cloud::before{content:'';position:absolute;width:44px;height:18px;border-radius:30px;background:rgba(148,163,184,.55);top:14px;left:14px;animation:wa-bob 4s ease-in-out infinite}
+.wa-has-cloud::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:rgba(148,163,184,.55);top:4px;left:20px;animation:wa-bob 4s ease-in-out infinite}
+.wa-dark.wa-has-cloud::before,.wa-dark.wa-has-cloud::after{background:rgba(71,85,105,.7)}
+@keyframes wa-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+/* Rain */
+.wa-drop{position:absolute;width:2px;border-radius:2px;background:linear-gradient(transparent,rgba(147,197,253,.9));animation:wa-rain var(--spd,.75s) linear infinite var(--dly,0s)}
+@keyframes wa-rain{from{transform:translateY(0);opacity:0}25%{opacity:1}to{transform:translateY(36px);opacity:0}}
+/* Snow */
+.wa-flake{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(219,234,254,.9);animation:wa-snow var(--spd,1.2s) linear infinite var(--dly,0s)}
+@keyframes wa-snow{from{transform:translateY(0) rotate(0deg);opacity:0}25%{opacity:1}to{transform:translateY(34px) rotate(180deg);opacity:0}}
+/* Lightning */
+.wa-bolt{position:absolute;font-size:1.25rem;line-height:1;top:34px;left:27px;animation:wa-flash 2.5s ease-in-out infinite}
+@keyframes wa-flash{0%,82%,100%{opacity:.15}86%,94%{opacity:1}}
 .stat-box{
   background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);
   border-radius:10px;padding:.5rem .6rem;
@@ -294,14 +321,18 @@ header{
   .fc-ico{font-size:1.45rem}
   #windy-map{height:320px}
 }
+@media(max-width:640px){
+  .hero-body{grid-template-columns:1fr;gap:.75rem}
+  .hero-city-img-wrap{width:100%;height:100px}
+  .hero-center{align-items:center}
+  .hero-right{width:100%}
+}
 @media(max-width:540px){
   .history-cols{grid-template-columns:1fr}
   .h-col-content{max-height:160px}
   .forecast-row{flex-wrap:wrap;gap:.4rem}
   .fc{flex:0 0 calc(50% - .2rem);min-width:calc(50% - .2rem)}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
-  .hero-main{gap:.9rem}
-  .hero-icon{font-size:3.2rem}
   .hero-temp{font-size:3.2rem}
   .map-tabs{gap:.2rem}
   .map-tab{font-size:.62rem;padding:.2rem .44rem}
@@ -362,24 +393,28 @@ header{
 
     <!-- HERO -->
     <div class="weather-hero" id="weather-hero">
-      <div class="hero-city-row">
-        <select class="hero-city-select" id="city-select">
-          <option value="38.7223,-9.1393">Lisboa</option>
-          <option value="41.1579,-8.6291">Porto</option>
-          <option value="41.5454,-8.4265">Braga</option>
-          <option value="40.2033,-8.4103">Coimbra</option>
-          <option value="37.0193,-7.9304">Faro</option>
-          <option value="38.5667,-7.9000">Évora</option>
-          <option value="40.6405,-8.6538">Aveiro</option>
-          <option value="38.5244,-8.8882">Setúbal</option>
-          <option value="40.6566,-7.9122">Viseu</option>
-          <option value="39.7436,-8.8071" selected>Leiria</option>
-          <option value="39.2333,-8.6833">Santarém</option>
-          <option value="32.6669,-16.9241">Funchal</option>
-          <option value="37.7412,-25.6756">Ponta Delgada</option>
-        </select>
+      <div class="hero-body">
+        <div class="hero-left">
+          <div class="hero-city-img-wrap"><div class="hero-city-img-ph">📷</div></div>
+          <select class="hero-city-select">
+            <option value="38.7223,-9.1393">Lisboa</option>
+            <option value="41.1579,-8.6291">Porto</option>
+            <option value="41.5454,-8.4265">Braga</option>
+            <option value="40.2033,-8.4103">Coimbra</option>
+            <option value="37.0193,-7.9304">Faro</option>
+            <option value="38.5667,-7.9000">Évora</option>
+            <option value="40.6405,-8.6538">Aveiro</option>
+            <option value="38.5244,-8.8882">Setúbal</option>
+            <option value="40.6566,-7.9122">Viseu</option>
+            <option value="39.7436,-8.8071" selected>Leiria</option>
+            <option value="39.2333,-8.6833">Santarém</option>
+            <option value="32.6669,-16.9241">Funchal</option>
+            <option value="37.7412,-25.6756">Ponta Delgada</option>
+          </select>
+        </div>
+        <div class="hero-center" style="color:var(--muted);font-size:.85rem">A carregar meteorologia…</div>
+        <div class="hero-right"></div>
       </div>
-      <div style="color:var(--muted);padding:2.5rem 0;text-align:center;font-size:.85rem">A carregar meteorologia…</div>
     </div>
 
     <!-- HOURLY -->
@@ -618,16 +653,17 @@ async function loadJokes() {
     ).join('');
   }
 
+  const bust = `&_=${Date.now()}`;
   try {
     // Try Portuguese jokes first
-    const ptRes  = await fetch('https://v2.jokeapi.dev/joke/Any?lang=pt&amount=8&safe-mode');
+    const ptRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=pt&amount=5&safe-mode${bust}`, {cache:'no-store'});
     const ptData = await ptRes.json();
     const ptJokes = ptData.error ? [] : (ptData.jokes || [ptData]);
 
-    if (ptJokes.length) { renderJokes(ptJokes); return; }
+    if (ptJokes.length >= 2) { renderJokes(ptJokes); return; }
 
     // Fallback: English jokes
-    const enRes  = await fetch('https://v2.jokeapi.dev/joke/Any?lang=en&amount=8&safe-mode');
+    const enRes  = await fetch(`https://v2.jokeapi.dev/joke/Any?lang=en&amount=5&safe-mode${bust}`, {cache:'no-store'});
     const enData = await enRes.json();
     renderJokes(enData.error ? [] : (enData.jokes || [enData]));
   } catch {
@@ -821,6 +857,53 @@ function getAlertsForDay(dateStr) {
 }
 
 // ── WEATHER ───────────────────────────────────────────────────────
+const CITY_META = {
+  '38.7223,-9.1393': {name:'Lisboa',       wiki:'Lisbon'},
+  '41.1579,-8.6291': {name:'Porto',        wiki:'Porto'},
+  '41.5454,-8.4265': {name:'Braga',        wiki:'Braga'},
+  '40.2033,-8.4103': {name:'Coimbra',      wiki:'Coimbra'},
+  '37.0193,-7.9304': {name:'Faro',         wiki:'Faro,_Portugal'},
+  '38.5667,-7.9000': {name:'Évora',        wiki:'Évora'},
+  '40.6405,-8.6538': {name:'Aveiro',       wiki:'Aveiro,_Portugal'},
+  '38.5244,-8.8882': {name:'Setúbal',      wiki:'Setúbal'},
+  '40.6566,-7.9122': {name:'Viseu',        wiki:'Viseu'},
+  '39.7436,-8.8071': {name:'Leiria',       wiki:'Leiria'},
+  '39.2333,-8.6833': {name:'Santarém',     wiki:'Santarém,_Portugal'},
+  '32.6669,-16.9241':{name:'Funchal',      wiki:'Funchal'},
+  '37.7412,-25.6756':{name:'Ponta Delgada',wiki:'Ponta_Delgada'},
+};
+
+function getAnimHTML(code) {
+  const c = +code;
+  const drop = (x, h, spd, dly) =>
+    `<div class="wa-drop" style="left:${x}px;top:30px;height:${h}px;--spd:${spd}s;--dly:${dly}s"></div>`;
+  const flake = (x, spd, dly) =>
+    `<div class="wa-flake" style="left:${x}px;top:28px;--spd:${spd}s;--dly:${dly}s"></div>`;
+
+  if (c === 0 || c === 1)
+    return `<div class="w-anim"><div class="wa-sun"></div></div>`;
+
+  if (c === 2)
+    return `<div class="w-anim wa-pcloudy"><div class="wa-sun"></div><div class="wa-has-cloud"></div></div>`;
+
+  if (c === 3 || c === 45 || c === 48)
+    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div></div>`;
+
+  if (c >= 51 && c <= 55)
+    return `<div class="w-anim"><div class="wa-has-cloud"></div>${drop(22,8,.9,0)}${drop(33,10,1.1,.3)}${drop(44,8,.85,.6)}</div>`;
+
+  if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
+    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div>${drop(20,10,.7,0)}${drop(30,12,.8,.2)}${drop(40,10,.75,.45)}${drop(50,11,.7,.15)}</div>`;
+
+  if (c >= 71 && c <= 75)
+    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div>${flake(22,1.4,0)}${flake(34,1.2,.4)}${flake(46,1.5,.8)}</div>`;
+
+  if (c >= 95)
+    return `<div class="w-anim"><div class="wa-has-cloud wa-dark"></div>${drop(20,10,.65,0)}${drop(32,12,.7,.25)}${drop(44,10,.6,.5)}<div class="wa-bolt">⚡</div></div>`;
+
+  return `<div class="w-anim" style="font-size:2.8rem;line-height:1;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
+}
+
 // City options HTML (defined once, injected when rebuilding hero)
 const CITY_OPTIONS = `
   <option value="38.7223,-9.1393">Lisboa</option>
@@ -849,19 +932,26 @@ async function loadWeather(latlon) {
 
   const hero = document.getElementById('weather-hero');
   const curVal = latlon;
+  const meta = CITY_META[latlon] || {name: latlon, wiki: null};
 
-  // Show loading state (preserve city select)
-  hero.innerHTML = `
-    <div class="hero-city-row">
+  const heroLeft = (imgHTML) => `
+    <div class="hero-left">
+      <div class="hero-city-img-wrap">${imgHTML}</div>
       <select class="hero-city-select">${CITY_OPTIONS}</select>
-    </div>
-    <div style="color:var(--muted);padding:2.5rem 0;text-align:center;font-size:.85rem">A carregar meteorologia…</div>`;
+    </div>`;
+
+  // Loading state
+  hero.innerHTML = `<div class="hero-body">
+    ${heroLeft('<div class="hero-city-img-ph">📷</div>')}
+    <div class="hero-center" style="color:var(--muted);font-size:.85rem">A carregar meteorologia…</div>
+    <div class="hero-right"></div>
+  </div>`;
   hero.querySelector('.hero-city-select').value = curVal;
 
   document.getElementById('hourly-row').innerHTML = '';
   document.getElementById('forecast-row').innerHTML = '';
 
-  const [weatherRes] = await Promise.allSettled([
+  const [weatherRes, wikiRes] = await Promise.allSettled([
     fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
       `&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,surface_pressure,cloud_cover` +
@@ -869,15 +959,18 @@ async function loadWeather(latlon) {
       `&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,relative_humidity_2m_max,uv_index_max,sunrise,sunset` +
       `&timezone=Europe%2FLisbon&forecast_days=7`
     ).then(r => r.json()),
+    meta.wiki
+      ? fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(meta.wiki)}`).then(r => r.json())
+      : Promise.resolve(null),
     fetchAlerts(),
   ]);
 
   if (weatherRes.status !== 'fulfilled') {
-    hero.innerHTML = `
-      <div class="hero-city-row">
-        <select class="hero-city-select">${CITY_OPTIONS}</select>
-      </div>
-      <div style="color:var(--red);padding:2rem;text-align:center">Erro ao carregar meteorologia. Tente de novo.</div>`;
+    hero.innerHTML = `<div class="hero-body">
+      ${heroLeft('<div class="hero-city-img-ph">📷</div>')}
+      <div class="hero-center" style="color:var(--red);font-size:.85rem">Erro ao carregar meteorologia. Tente de novo.</div>
+      <div class="hero-right"></div>
+    </div>`;
     hero.querySelector('.hero-city-select').value = curVal;
     return;
   }
@@ -890,56 +983,60 @@ async function loadWeather(latlon) {
   const maxToday = Math.round(dl.temperature_2m_max[0]);
   const minToday = Math.round(dl.temperature_2m_min[0]);
 
-  hero.innerHTML = `
-    <div class="hero-city-row">
-      <select class="hero-city-select">${CITY_OPTIONS}</select>
+  const wikiThumb = wikiRes.status === 'fulfilled' && wikiRes.value?.thumbnail?.source;
+  const imgHTML = wikiThumb
+    ? `<img class="hero-city-img" src="${wikiThumb}" alt="${meta.name}">`
+    : `<div class="hero-city-img-ph">📷 ${meta.name}</div>`;
+
+  hero.innerHTML = `<div class="hero-body">
+    ${heroLeft(imgHTML)}
+    <div class="hero-center">
+      ${getAnimHTML(c.weather_code)}
+      <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
+      <div class="hero-cond">${cw.l}</div>
+      <div class="hero-feels">Sensação: ${Math.round(c.apparent_temperature)}°C</div>
+      <div class="hero-minmax">↑ ${maxToday}° · ↓ ${minToday}°</div>
     </div>
-    <div class="hero-main">
-      <div class="hero-icon">${cw.i}</div>
-      <div class="hero-temps">
-        <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
-        <div class="hero-cond">${cw.l}</div>
-        <div class="hero-feels">Sensação: ${Math.round(c.apparent_temperature)}°C</div>
-        <div class="hero-minmax">↑ ${maxToday}° · ↓ ${minToday}°</div>
+    <div class="hero-right">
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="sbox-icon">💨</div><div class="sbox-label">Vento</div>
+          <div class="sbox-val">${Math.round(c.wind_speed_10m)} km/h</div>
+          <div class="sbox-sub">${compass(c.wind_direction_10m)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">💧</div><div class="sbox-label">Humidade</div>
+          <div class="sbox-val">${c.relative_humidity_2m}%</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">🌡️</div><div class="sbox-label">Pressão</div>
+          <div class="sbox-val">${Math.round(c.surface_pressure)}</div>
+          <div class="sbox-sub">hPa</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">☁️</div><div class="sbox-label">Nuvens</div>
+          <div class="sbox-val">${c.cloud_cover}%</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">🌞</div><div class="sbox-label">Índice UV</div>
+          <div class="sbox-val ${uv0!=null?uvCls(uv0):''}">${uv0??'—'}</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">🌧️</div><div class="sbox-label">Precipitação</div>
+          <div class="sbox-val">${c.precipitation}</div>
+          <div class="sbox-sub">mm</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">🌅</div><div class="sbox-label">Nascer do sol</div>
+          <div class="sbox-val">${fmtT(dl.sunrise?.[0])}</div>
+        </div>
+        <div class="stat-box">
+          <div class="sbox-icon">🌇</div><div class="sbox-label">Pôr do sol</div>
+          <div class="sbox-val">${fmtT(dl.sunset?.[0])}</div>
+        </div>
       </div>
     </div>
-    <div class="stat-grid">
-      <div class="stat-box">
-        <div class="sbox-icon">💨</div><div class="sbox-label">Vento</div>
-        <div class="sbox-val">${Math.round(c.wind_speed_10m)} km/h</div>
-        <div class="sbox-sub">${compass(c.wind_direction_10m)}</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">💧</div><div class="sbox-label">Humidade</div>
-        <div class="sbox-val">${c.relative_humidity_2m}%</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">🌡️</div><div class="sbox-label">Pressão</div>
-        <div class="sbox-val">${Math.round(c.surface_pressure)}</div>
-        <div class="sbox-sub">hPa</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">☁️</div><div class="sbox-label">Nuvens</div>
-        <div class="sbox-val">${c.cloud_cover}%</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">🌞</div><div class="sbox-label">Índice UV</div>
-        <div class="sbox-val ${uv0!=null?uvCls(uv0):''}">${uv0??'—'}</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">🌧️</div><div class="sbox-label">Precipitação</div>
-        <div class="sbox-val">${c.precipitation}</div>
-        <div class="sbox-sub">mm</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">🌅</div><div class="sbox-label">Nascer do sol</div>
-        <div class="sbox-val">${fmtT(dl.sunrise?.[0])}</div>
-      </div>
-      <div class="stat-box">
-        <div class="sbox-icon">🌇</div><div class="sbox-label">Pôr do sol</div>
-        <div class="sbox-val">${fmtT(dl.sunset?.[0])}</div>
-      </div>
-    </div>`;
+  </div>`;
 
   hero.querySelector('.hero-city-select').value = curVal;
 
