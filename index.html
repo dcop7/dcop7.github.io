@@ -40,6 +40,54 @@ header{
 .clock{text-align:right}
 .clock strong{display:block;font-size:.82rem;font-weight:600}
 .clock span{font-size:.72rem;color:var(--muted)}
+/* ── HEADER CONTROLS ── */
+.hdr-right{display:flex;align-items:center;gap:.9rem}
+.font-ctrl{display:flex;align-items:center;gap:.28rem}
+.font-btn{
+  background:rgba(255,255,255,.06);border:1px solid var(--border2);
+  color:var(--text);font-size:.9rem;font-weight:700;
+  width:24px;height:24px;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;padding:0;
+  transition:background .15s;line-height:1;font-family:'Inter',sans-serif;
+}
+.font-btn:hover:not(:disabled){background:rgba(255,255,255,.14)}
+.font-btn:disabled{opacity:.25;cursor:default}
+.font-size-lbl{font-size:.65rem;color:var(--muted);width:1.6rem;text-align:center;font-weight:700;letter-spacing:.06em}
+.toggle-wrap{display:flex;align-items:center;gap:.38rem;cursor:pointer}
+.toggle-icon{font-size:.82rem;line-height:1;opacity:.75;user-select:none}
+.toggle-track{
+  width:34px;height:18px;border-radius:9px;
+  background:rgba(255,255,255,.1);border:1px solid var(--border2);
+  position:relative;transition:background .25s,border-color .25s;flex-shrink:0;
+}
+.toggle-track.active{background:var(--accent);border-color:var(--accent)}
+.toggle-thumb{
+  position:absolute;top:2px;left:2px;width:12px;height:12px;
+  border-radius:50%;background:#fff;transition:transform .25s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.toggle-track.active .toggle-thumb{transform:translateX(16px)}
+/* ── LIGHT MODE ── */
+body.light{
+  --bg:#EEF3FB;--card:#FFFFFF;--card2:#E2ECF8;
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
+  --text:#192038;--muted:#5A6E8A;
+}
+body.light header{background:rgba(238,243,251,.96);border-bottom-color:rgba(0,0,0,.1)}
+body.light .font-btn{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.13)}
+body.light .font-btn:hover:not(:disabled){background:rgba(0,0,0,.09)}
+body.light .toggle-track:not(.active){background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.15)}
+body.light .h-event{border-bottom-color:rgba(0,0,0,.05)}
+body.light .h-joke{border-bottom-color:rgba(0,0,0,.05)}
+body.light .dc-sec{border-bottom-color:rgba(0,0,0,.05)}
+body.light .h-col-content{scrollbar-color:rgba(0,0,0,.1) transparent}
+body.light .h-col-content::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12)}
+body.light .hol-nav-btn{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12)}
+body.light .hol-nav-btn:hover{background:rgba(0,0,0,.09)}
+body.light .gauge-pop{background:#f0f5ff;border-color:rgba(0,0,0,.12);box-shadow:0 20px 50px rgba(0,0,0,.15)}
+body.light .gp-bar-bg{background:rgba(0,0,0,.07)}
+body.light .popup{background:#f0f5ff;border-color:rgba(0,0,0,.12);box-shadow:0 24px 64px rgba(0,0,0,.18)}
+body.light .fc:hover{box-shadow:0 8px 24px rgba(0,0,0,.12)}
 
 /* ── HISTORY SECTION ── */
 .history-section{max-width:1440px;margin:1rem auto 0;padding:0 1.25rem}
@@ -365,9 +413,11 @@ header{
   .map-hdr{flex-direction:column;align-items:flex-start}
 }
 @media(max-width:768px){
-  body{font-size:13px}
   header{padding:.6rem 1rem}
   .brand{font-size:1.1rem}
+  .hdr-right{gap:.55rem}
+  .clock strong{font-size:.75rem}
+  .clock span{font-size:.65rem}
   .history-section{margin-top:.7rem;padding:0 .9rem}
   .history-cols{grid-template-columns:repeat(2,1fr);gap:.5rem}
   .h-col-content{max-height:200px}
@@ -400,6 +450,9 @@ header{
 @media(max-width:380px){
   header{padding:.5rem .75rem}
   .brand{font-size:1rem}
+  .hdr-right{gap:.35rem}
+  .font-size-lbl{display:none}
+  .clock strong,.clock span{display:none}
   .history-section,.layout{padding:0 .65rem}
 }
 /* No hover popup on touch-only screens */
@@ -415,9 +468,21 @@ header{
     <span class="brand-name">Diogo's</span>
     <span class="brand-site">website</span>
   </div>
-  <div class="clock">
-    <strong id="date-el">—</strong>
-    <span id="time-el">—</span>
+  <div class="hdr-right">
+    <div class="clock">
+      <strong id="date-el">—</strong>
+      <span id="time-el">—</span>
+    </div>
+    <div class="font-ctrl">
+      <button class="font-btn" id="font-dec" title="Diminuir fonte">−</button>
+      <span class="font-size-lbl" id="font-lbl">M</span>
+      <button class="font-btn" id="font-inc" title="Aumentar fonte">+</button>
+    </div>
+    <div class="toggle-wrap" id="theme-wrap" title="Modo claro / escuro" onclick="toggleTheme()">
+      <span class="toggle-icon">🌙</span>
+      <div class="toggle-track" id="theme-track"><div class="toggle-thumb"></div></div>
+      <span class="toggle-icon">☀️</span>
+    </div>
   </div>
 </header>
 
@@ -530,6 +595,32 @@ header{
 <div class="gauge-pop" id="gauge-pop"></div>
 
 <script>
+// ── FONT SIZE ─────────────────────────────────────────────────────
+const FONT_SIZES = [13,14,15,16,17];
+const FONT_LBLS  = ['XS','S','M','L','XL'];
+let fontIdx = Math.min(Math.max(parseInt(localStorage.getItem('fontSize') ?? '2', 10) || 2, 0), FONT_SIZES.length-1);
+function applyFont() {
+  document.body.style.fontSize = FONT_SIZES[fontIdx]+'px';
+  const l=document.getElementById('font-lbl'); if(l) l.textContent=FONT_LBLS[fontIdx];
+  const dec=document.getElementById('font-dec'),inc=document.getElementById('font-inc');
+  if(dec) dec.disabled=fontIdx===0;
+  if(inc) inc.disabled=fontIdx===FONT_SIZES.length-1;
+  localStorage.setItem('fontSize',fontIdx);
+}
+applyFont();
+document.getElementById('font-dec').addEventListener('click',()=>{if(fontIdx>0){fontIdx--;applyFont();}});
+document.getElementById('font-inc').addEventListener('click',()=>{if(fontIdx<FONT_SIZES.length-1){fontIdx++;applyFont();}});
+
+// ── THEME ─────────────────────────────────────────────────────────
+let isDark=(localStorage.getItem('theme')??(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark';
+function applyTheme(){
+  document.body.classList.toggle('light',!isDark);
+  const t=document.getElementById('theme-track'); if(t) t.classList.toggle('active',!isDark);
+  localStorage.setItem('theme',isDark?'dark':'light');
+}
+function toggleTheme(){isDark=!isDark;applyTheme();}
+applyTheme();
+
 // ── CONSTANTS ──────────────────────────────────────────────────────
 const WD = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 const MO = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
