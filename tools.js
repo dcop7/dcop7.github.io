@@ -307,7 +307,7 @@ const ToolsPage = (function () {
       // BOTTOM: trapezoid accumulates from base up
       const botFill = 1 - pct;
       const botSurfY = BOT - botFill * (BOT - NECK);
-      const bHW = HW * (BOT - botSurfY) / (BOT - NECK);
+      const bHW = HW * (botSurfY - NECK) / (BOT - NECK);
       const bL = (50 - bHW).toFixed(1), bR = (50 + bHW).toFixed(1);
       sb.setAttribute('points', botFill <= 0
         ? '50,208 50,208 50,208'
