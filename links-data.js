@@ -24,16 +24,15 @@ const LINKS_DATA = [
       { name:'Doutor Finanças',        url:'https://www.doutorfinancas.pt/',              desc:'Saúde financeira, crédito e habitação',           tags:['finanças','crédito','habitação','seguros','poupança','dinheiro'] },
       { name:'Contas Poupança',        url:'https://contaspoupanca.pt/',                  desc:'Dicas de poupança por Pedro Andersson',           tags:['poupança','finanças','dicas','investimento','dinheiro'] },
       { name:'E-Konomista',            url:'https://ekonomista.pt/',                      desc:'Guia prático de economia e direitos do consumidor',tags:['economia','direitos','consumidor','finanças','prático'] },
-      { name:'MoneyLab',               url:'#',                                           desc:'Educação financeira e investimentos pessoais',    tags:['finanças','investimentos','educação','dinheiro'] },
-      { name:'Tiago Felícia',          url:'#',                                           desc:'Literacia financeira e estratégias de investimento',tags:['literacia','finanças','investimentos','educação'] },
+      { name:'MoneyLab',               url:'https://moneylab.pt/',                        desc:'Educação financeira e investimentos pessoais',    tags:['finanças','investimentos','educação','dinheiro'] },
+      { name:'Tiago Felícia',          url:'https://www.tiagofelicia.pt/',                desc:'Literacia financeira e estratégias de investimento',tags:['literacia','finanças','investimentos','educação'] },
     ]
   },
   {
     id: 'habitacao', cat: 'Habitação & Bricolage', icon: '🏠',
     links: [
       { name:'Fórum da Casa',          url:'https://www.forumdacasa.com/',                desc:'Maior comunidade de construção e obras em Portugal',tags:['construção','obras','habitação','diy','casa','comunidade','bricolage'] },
-      { name:'A Nossa Casa',           url:'#',                                           desc:'Gestão e organização do lar',                    tags:['casa','gestão','organização','habitação','lar'] },
-      { name:'Bricolage Total',        url:'#',                                           desc:'Projetos DIY e manutenção doméstica',             tags:['bricolage','diy','manutenção','projetos','casa','ferramentas'] },
+      { name:'r/TudoCasa',             url:'https://www.reddit.com/r/TudoCasa/',          desc:'Comunidade Reddit sobre casa, obras e decoração em PT', tags:['casa','reddit','comunidade','obras','decoração','diy','portugal'] },
     ]
   },
   {
@@ -42,7 +41,7 @@ const LINKS_DATA = [
       { name:'Pplware',                url:'https://pplware.sapo.pt/',                    desc:'Software, apps e notícias digitais',              tags:['tecnologia','software','apps','digital','tech','sapo'] },
       { name:'4gnews',                 url:'https://www.4gnews.pt/',                      desc:'Tecnologia de consumo e gadgets',                 tags:['tecnologia','gadgets','smartphones','tech','consumer'] },
       { name:'Lifehacker',             url:'https://lifehacker.com/',                     desc:'Dicas de eficiência tecnológica e produtividade', tags:['produtividade','tecnologia','dicas','eficiência','lifehacks'] },
-      { name:'Aberto até de Madrugada',url:'#',                                           desc:'Gadgets e domótica — tecnologia inteligente',    tags:['gadgets','domótica','smart home','tecnologia','iot'] },
+      { name:'Aberto até de Madrugada',url:'https://abertoatedemadrugada.com/',           desc:'Gadgets e domótica — tecnologia inteligente',    tags:['gadgets','domótica','smart home','tecnologia','iot'] },
       { name:'HirensBootCD',           url:'https://www.hirensbootcd.org/',               desc:'Ferramenta de recuperação e diagnóstico de sistemas',tags:['recuperação','boot','sistema','diagnóstico','técnico','windows'] },
       { name:'Ultimate Boot CD',       url:'https://www.ultimatebootcd.com/',             desc:'Diagnóstico de hardware em ambiente bootável',    tags:['diagnóstico','hardware','boot','técnico','manutenção'] },
       { name:'CrystalDiskInfo',        url:'https://crystalmark.info/en/software/crystaldiskinfo/', desc:'Saúde e temperatura dos discos rígidos/SSD',tags:['disco','ssd','saúde','hardware','diagnóstico','temperatura'] },

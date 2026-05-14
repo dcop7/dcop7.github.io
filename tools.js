@@ -78,39 +78,81 @@ const ToolsPage = (function () {
           </div>
 
           <div class="cd-hg-wrap" id="cd-hw" style="display:none">
-            <svg class="cd-hg-svg" id="cd-hg-svg" viewBox="0 0 80 165" xmlns="http://www.w3.org/2000/svg">
+            <svg class="cd-hg-svg" id="cd-hg-svg" viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="hg-gt" x1="0.5" y1="0" x2="0.5" y2="1">
                   <stop offset="0%" stop-color="${cdColor}" stop-opacity="1" id="hg-gt0"/>
-                  <stop offset="100%" stop-color="${cdColor}" stop-opacity="0.65" id="hg-gt1"/>
+                  <stop offset="100%" stop-color="${cdColor}" stop-opacity="0.4" id="hg-gt1"/>
                 </linearGradient>
                 <linearGradient id="hg-gb" x1="0.5" y1="0" x2="0.5" y2="1">
-                  <stop offset="0%" stop-color="${cdColor}" stop-opacity="0.65" id="hg-gb0"/>
+                  <stop offset="0%" stop-color="${cdColor}" stop-opacity="0.5" id="hg-gb0"/>
                   <stop offset="100%" stop-color="${cdColor}" stop-opacity="1" id="hg-gb1"/>
                 </linearGradient>
-                <filter id="hg-glow">
-                  <feGaussianBlur stdDeviation="1.5" result="b"/>
+                <linearGradient id="hg-cap" x1="0.5" y1="0" x2="0.5" y2="1">
+                  <stop offset="0%" stop-color="rgba(255,255,255,.22)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,.06)"/>
+                </linearGradient>
+                <filter id="hg-glow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="2.5" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="hg-neck-glow" x="-300%" y="-300%" width="700%" height="700%">
+                  <feGaussianBlur stdDeviation="5" result="b"/>
                   <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
               </defs>
-              <!-- Glass frame bars -->
-              <rect x="5" y="2" width="70" height="6" rx="3" fill="rgba(148,163,184,.22)"/>
-              <rect x="5" y="157" width="70" height="6" rx="3" fill="rgba(148,163,184,.22)"/>
-              <!-- Glass sides -->
-              <line x1="8" y1="5" x2="40" y2="82" stroke="rgba(148,163,184,.18)" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="72" y1="5" x2="40" y2="82" stroke="rgba(148,163,184,.18)" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="8" y1="160" x2="40" y2="82" stroke="rgba(148,163,184,.18)" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="72" y1="160" x2="40" y2="82" stroke="rgba(148,163,184,.18)" stroke-width="1.5" stroke-linecap="round"/>
-              <!-- Sand top (drains from full triangle to empty) -->
-              <polygon id="cd-sand-top" points="8,8 72,8 40,82" fill="url(#hg-gt)" filter="url(#hg-glow)"/>
-              <!-- Sand bottom (fills from empty to full triangle) -->
-              <polygon id="cd-sand-bot" points="40,160 40,160 40,160" fill="url(#hg-gb)" filter="url(#hg-glow)"/>
-              <!-- Sand grain drip particles at neck -->
-              <circle class="hg-grain" cx="40" cy="83" r="2" fill="${cdColor}" opacity="0"/>
-              <circle class="hg-grain" cx="40" cy="88" r="1.5" fill="${cdColor}" opacity="0"/>
-              <circle class="hg-grain" cx="40" cy="93" r="1.5" fill="${cdColor}" opacity="0"/>
-              <circle class="hg-grain" cx="40" cy="98" r="1" fill="${cdColor}" opacity="0"/>
-              <circle class="hg-grain" cx="40" cy="103" r="1" fill="${cdColor}" opacity="0"/>
+
+              <!-- Glass body subtle fill -->
+              <polygon points="5,12 95,12 50,110" fill="rgba(148,163,184,.04)"/>
+              <polygon points="5,208 95,208 50,110" fill="rgba(148,163,184,.03)"/>
+
+              <!-- Glass edge lines -->
+              <line x1="5" y1="12" x2="50" y2="110" stroke="rgba(148,163,184,.30)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="95" y1="12" x2="50" y2="110" stroke="rgba(148,163,184,.30)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="5" y1="208" x2="50" y2="110" stroke="rgba(148,163,184,.30)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="95" y1="208" x2="50" y2="110" stroke="rgba(148,163,184,.30)" stroke-width="1.5" stroke-linecap="round"/>
+
+              <!-- Glass highlight sheen -->
+              <line x1="9" y1="13" x2="52" y2="107" stroke="rgba(255,255,255,.16)" stroke-width="1"/>
+              <line x1="9" y1="207" x2="52" y2="113" stroke="rgba(255,255,255,.11)" stroke-width="1"/>
+
+              <!-- Sand top (drains toward neck as timer runs) -->
+              <polygon id="cd-sand-top" points="5,12 95,12 50,110" fill="url(#hg-gt)" filter="url(#hg-glow)"/>
+              <!-- Sand bottom (accumulates at base) -->
+              <polygon id="cd-sand-bot" points="50,208 50,208 50,208" fill="url(#hg-gb)" filter="url(#hg-glow)"/>
+
+              <!-- Neck glow dot -->
+              <circle cx="50" cy="110" r="5" fill="${cdColor}" filter="url(#hg-neck-glow)" opacity=".45" class="hg-fc"/>
+
+              <!-- SMIL-animated falling grains -->
+              <circle cx="50" cy="113" r="2.4" fill="${cdColor}" class="hg-fc">
+                <animate attributeName="cy" from="113" to="204" dur="1.5s" begin="-0.0s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;1;0.85;0" keyTimes="0;0.06;0.72;1" dur="1.5s" begin="-0.0s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="2.4;2.1;1.6;0.9" keyTimes="0;0.2;0.65;1" dur="1.5s" begin="-0.0s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="50" cy="113" r="2" fill="${cdColor}" class="hg-fc">
+                <animate attributeName="cy" from="113" to="204" dur="1.5s" begin="-0.375s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;1;0.85;0" keyTimes="0;0.06;0.72;1" dur="1.5s" begin="-0.375s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="2;1.8;1.3;0.7" keyTimes="0;0.2;0.65;1" dur="1.5s" begin="-0.375s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="50" cy="113" r="2.2" fill="${cdColor}" class="hg-fc">
+                <animate attributeName="cy" from="113" to="204" dur="1.5s" begin="-0.75s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;1;0.85;0" keyTimes="0;0.06;0.72;1" dur="1.5s" begin="-0.75s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="2.2;1.9;1.4;0.8" keyTimes="0;0.2;0.65;1" dur="1.5s" begin="-0.75s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="50" cy="113" r="1.7" fill="${cdColor}" class="hg-fc">
+                <animate attributeName="cy" from="113" to="204" dur="1.5s" begin="-1.125s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;1;0.85;0" keyTimes="0;0.06;0.72;1" dur="1.5s" begin="-1.125s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="1.7;1.5;1.1;0.6" keyTimes="0;0.2;0.65;1" dur="1.5s" begin="-1.125s" repeatCount="indefinite"/>
+              </circle>
+
+              <!-- Top cap with highlight -->
+              <rect x="2" y="2" width="96" height="12" rx="6" fill="url(#hg-cap)" stroke="rgba(200,220,255,.2)" stroke-width=".7"/>
+              <rect x="7" y="4" width="52" height="4" rx="2" fill="rgba(255,255,255,.12)"/>
+
+              <!-- Bottom cap -->
+              <rect x="2" y="206" width="96" height="12" rx="6" fill="rgba(148,163,184,.15)" stroke="rgba(200,220,255,.15)" stroke-width=".7"/>
+              <rect x="7" y="208" width="40" height="4" rx="2" fill="rgba(255,255,255,.09)"/>
             </svg>
             <div class="cd-time-big" id="cd-hg-disp" style="margin-top:.8rem">05:00</div>
           </div>
@@ -141,11 +183,11 @@ const ToolsPage = (function () {
       b.classList.add('active');
       const fill = root.querySelector('#cd-fill');
       if (fill) fill.style.stroke = cdColor;
-      // Update SVG gradient stops and grain colors
+      // Update SVG gradient stops and grain/neck colors
       ['#hg-gt0','#hg-gt1','#hg-gb0','#hg-gb1'].forEach(id => {
         const s = root.querySelector(id); if (s) s.setAttribute('stop-color', cdColor);
       });
-      root.querySelectorAll('.hg-grain').forEach(g => g.setAttribute('fill', cdColor));
+      root.querySelectorAll('.hg-fc').forEach(g => g.setAttribute('fill', cdColor));
     }));
 
     // Sound
@@ -169,6 +211,8 @@ const ToolsPage = (function () {
     root.querySelector('#cd-reset').addEventListener('click', () => resetCD(root));
 
     setCD(root);
+    // Ensure SMIL grains start paused (timer is idle)
+    setTimeout(() => { const s = root.querySelector('#cd-hg-svg'); s?.pauseAnimations?.(); }, 0);
   }
 
   function setCD(root) {
@@ -229,7 +273,10 @@ const ToolsPage = (function () {
 
   function updateHgGrains(root) {
     const svg = root.querySelector('#cd-hg-svg');
-    if (svg) svg.classList.toggle('hg-running', cdState === 'running' && cdRemaining > 0);
+    if (!svg) return;
+    const running = cdState === 'running' && cdRemaining > 0;
+    if (running) svg.unpauseAnimations?.();
+    else svg.pauseAnimations?.();
   }
 
   function renderCdDisplay(root) {
@@ -242,36 +289,29 @@ const ToolsPage = (function () {
     const d = root.querySelector('#cd-disp'); if (d) d.textContent = tStr;
     const p = root.querySelector('#cd-pct');  if (p) p.textContent = Math.round(pct*100)+'%';
 
-    // Hourglass SVG polygon — viewBox "0 0 80 165", neck at y=82, base at y=160
+    // Hourglass SVG polygon — viewBox "0 0 100 220", neck at y=110, top at y=12, base at y=208
     const hd = root.querySelector('#cd-hg-disp'); if (hd) hd.textContent = tStr;
     const st = root.querySelector('#cd-sand-top');
     const sb = root.querySelector('#cd-sand-bot');
     if (st && sb) {
-      const NECK = 82, TOP = 8, BOT = 160;
-      const topSpan = NECK - TOP;   // 74
-      const botSpan = BOT - NECK;   // 78
-      const halfW = 32;             // x=8..72 → halfW each side from center(40)
+      const NECK = 110, TOP = 12, BOT = 208, HW = 45; // HW = max half-width at rim
 
-      // TOP: sand surface descends as pct drops (triangle shrinks toward neck)
-      const topSurfY = TOP + (1 - pct) * topSpan;
-      const tRatio = (topSurfY - TOP) / topSpan; // 0=full, 1=empty
-      const tL = (8  + halfW * tRatio).toFixed(1);
-      const tR = (72 - halfW * tRatio).toFixed(1);
+      // TOP: flat surface descends toward neck as timer drains
+      const topSurfY = TOP + (1 - pct) * (NECK - TOP);
+      const tHW = HW * (NECK - topSurfY) / (NECK - TOP);
+      const tL = (50 - tHW).toFixed(1), tR = (50 + tHW).toFixed(1);
       st.setAttribute('points', pct <= 0
-        ? '40,82 40,82 40,82'
-        : `${tL},${topSurfY.toFixed(1)} ${tR},${topSurfY.toFixed(1)} 40,82`);
+        ? '50,110 50,110 50,110'
+        : `${tL},${topSurfY.toFixed(1)} ${tR},${topSurfY.toFixed(1)} 50,110`);
 
-      // BOTTOM: sand surface rises from base as pct drops
-      // botFill = 1-pct: how much bottom chamber is filled
+      // BOTTOM: trapezoid accumulates from base up
       const botFill = 1 - pct;
-      const botSurfY = BOT - botFill * botSpan;  // 160 (empty) → 82 (full)
-      const bRatio = (BOT - botSurfY) / botSpan; // 0=empty, 1=full
-      const bL = (40 - halfW * bRatio).toFixed(1);
-      const bR = (40 + halfW * bRatio).toFixed(1);
-      // Polygon: surface → base-right → base-left (trapezoid from surface to bottom)
+      const botSurfY = BOT - botFill * (BOT - NECK);
+      const bHW = HW * (BOT - botSurfY) / (BOT - NECK);
+      const bL = (50 - bHW).toFixed(1), bR = (50 + bHW).toFixed(1);
       sb.setAttribute('points', botFill <= 0
-        ? '40,160 40,160 40,160'
-        : `${bL},${botSurfY.toFixed(1)} ${bR},${botSurfY.toFixed(1)} 72,160 8,160`);
+        ? '50,208 50,208 50,208'
+        : `${bL},${botSurfY.toFixed(1)} ${bR},${botSurfY.toFixed(1)} 95,208 5,208`);
     }
 
     updateHgGrains(root);

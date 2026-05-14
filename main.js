@@ -207,11 +207,8 @@ async function loadDailyContent() {
     <div class="dc-answer">${r.a}</div>`;
 
   if (jEl) {
-    // Show random local joke immediately (no loading delay)
     const localJ = LOCAL_JOKES[Math.floor(Math.random() * LOCAL_JOKES.length)];
     jEl.innerHTML = jokeHTML(localJ);
-    // Replace with API joke in background if available
-    fetchJoke().then(j => { if (jEl && j !== localJ) jEl.innerHTML = jokeHTML(j); }).catch(()=>{});
   }
 }
 loadDailyContent();
