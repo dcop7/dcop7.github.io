@@ -4,11 +4,12 @@ const Nav = (function () {
   let _pinned = localStorage.getItem('sb-pinned') === 'true';
 
   const GAME_LIST = [
-    { id: 'hangman',     name: 'Jogo da Forca',    icon: '🪢' },
-    { id: 'runner',      name: 'Corredor Infinito', icon: '🦊' },
-    { id: 'minesweeper', name: 'Campo de Minas',    icon: '💣' },
-    { id: 'bomb',        name: 'Desarmar Bomba',    icon: '💥' },
+    { id: 'hangman',     key: 'game.hangman',     icon: '🪢' },
+    { id: 'runner',      key: 'game.runner',      icon: '🦊' },
+    { id: 'minesweeper', key: 'game.minesweeper', icon: '💣' },
+    { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
   ];
+  const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
   function svg(d, w, h) {
     return `<svg width="${w||16}" height="${h||16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -43,25 +44,25 @@ const Nav = (function () {
       </div>
       <div class="sb-scroll">
         <nav class="sb-main-nav">
-          <a class="sb-nav-item" data-route="home" href="#home">${ICONS.home}<span>Início</span></a>
-          <a class="sb-nav-item" data-route="games" href="#games">${ICONS.games}<span>Jogos</span></a>
-          <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>Sites Úteis</span></a>
-          <a class="sb-nav-item" data-route="tools" href="#tools">${ICONS.tools}<span>Ferramentas</span></a>
-          <a class="sb-nav-item" data-route="workout" href="#workout">${ICONS.workout}<span>Treino</span></a>
-          <a class="sb-nav-item" data-route="media" href="#media">${ICONS.media}<span>Entretenimento</span></a>
+          <a class="sb-nav-item" data-route="home" href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
+          <a class="sb-nav-item" data-route="games" href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
+          <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
+          <a class="sb-nav-item" data-route="tools" href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
+          <a class="sb-nav-item" data-route="workout" href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
+          <a class="sb-nav-item" data-route="media" href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
         </nav>
         <div class="sb-divider"></div>
         <div class="sb-group">
-          <div class="sb-group-label">Jogos</div>
+          <div class="sb-group-label">${TN('nav.games.label')}</div>
           ${GAME_LIST.map(g => `
             <a class="sb-item" data-route="games/${g.id}" href="#games/${g.id}">
               <span class="sb-item-icon">${g.icon}</span>
-              <span class="sb-item-label">${g.name}</span>
+              <span class="sb-item-label">${TN(g.key)}</span>
             </a>`).join('')}
         </div>
         <div class="sb-divider"></div>
         <div class="sb-group">
-          <div class="sb-group-label">Sites Úteis</div>
+          <div class="sb-group-label">${TN('nav.links.label')}</div>
           ${linkCats}
         </div>
       </div>`;
@@ -183,6 +184,21 @@ const Nav = (function () {
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+
+  document.addEventListener('langchange', () => {
+    const routes = ['home','games','links','tools','workout','media'];
+    routes.forEach(r => {
+      const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
+      if (el) el.textContent = TN(`nav.${r}`);
+    });
+    GAME_LIST.forEach(g => {
+      const el = document.querySelector(`[data-route="games/${g.id}"] .sb-item-label`);
+      if (el) el.textContent = TN(g.key);
+    });
+    const grpLabels = document.querySelectorAll('.sb-group-label');
+    if (grpLabels[0]) grpLabels[0].textContent = TN('nav.games.label');
+    if (grpLabels[1]) grpLabels[1].textContent = TN('nav.links.label');
+  });
 
   return { go, renderView };
 })();

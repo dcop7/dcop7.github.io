@@ -29,20 +29,21 @@ function toggleTheme() { isDark = !isDark; applyTheme(); }
 applyTheme();
 
 // ── CONSTANTS ──────────────────────────────────────────────────────
-const WD = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-const MO = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-const MS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const WD    = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+const MO    = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const MS    = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const WD_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MO_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const lang  = () => typeof I18n !== 'undefined' ? I18n.getLang() : 'en';
+const t     = (key, vars) => typeof I18n !== 'undefined' ? I18n.t(key, vars) : key;
+const wd    = () => lang() === 'pt' ? WD : WD_EN;
+const mo    = () => lang() === 'pt' ? MO : MO_EN;
+const ms    = () => lang() === 'pt' ? MS : MS_EN;
 
-const WMO_MAP = {
-  0:{l:'Sol',i:'☀️'},1:{l:'Principalmente sol',i:'🌤️'},2:{l:'Parcialmente nublado',i:'⛅'},
-  3:{l:'Nublado',i:'☁️'},45:{l:'Nevoeiro',i:'🌫️'},48:{l:'Nevoeiro gelado',i:'🌫️'},
-  51:{l:'Chuvisco leve',i:'🌦️'},53:{l:'Chuvisco',i:'🌦️'},55:{l:'Chuvisco forte',i:'🌧️'},
-  61:{l:'Chuva leve',i:'🌧️'},63:{l:'Chuva',i:'🌧️'},65:{l:'Chuva forte',i:'🌧️'},
-  71:{l:'Neve leve',i:'🌨️'},73:{l:'Neve',i:'❄️'},75:{l:'Neve forte',i:'❄️'},
-  80:{l:'Aguaceiros',i:'🌦️'},81:{l:'Aguaceiros',i:'🌧️'},82:{l:'Aguaceiros fortes',i:'⛈️'},
-  95:{l:'Trovoada',i:'⛈️'},96:{l:'Trovoada c/ granizo',i:'⛈️'},99:{l:'Trovoada intensa',i:'⛈️'},
-};
-const wmo = c => WMO_MAP[c] || {l:'Desconhecido',i:'🌡️'};
+const WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+const WMO_KEYS  = new Set([0,1,2,3,45,48,51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
+const wmo = c => ({ l: WMO_KEYS.has(+c) ? t(`wc.${+c}`) : t('wc.unknown'), i: WMO_ICONS[+c] || '🌡️' });
 
 function compass(d) {
   return ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'][Math.round(d / 22.5) % 16];
@@ -53,10 +54,12 @@ function fmtT(iso) { return iso ? iso.slice(11, 16) : '—'; }
 // ── CLOCK ──────────────────────────────────────────────────────────
 function tick() {
   const n = new Date();
-  document.getElementById('date-el').textContent =
-    `${WD[n.getDay()]}, ${n.getDate()} de ${MO[n.getMonth()]} de ${n.getFullYear()}`;
+  const l = lang();
+  document.getElementById('date-el').textContent = l === 'pt'
+    ? `${WD[n.getDay()]}, ${n.getDate()} de ${MO[n.getMonth()]} de ${n.getFullYear()}`
+    : `${WD_EN[n.getDay()]}, ${MO_EN[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
   document.getElementById('time-el').textContent =
-    n.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    n.toLocaleTimeString(l === 'pt' ? 'pt-PT' : 'en-US', { hour: '2-digit', minute: '2-digit' });
 }
 tick();
 setInterval(tick, 30000);
@@ -131,10 +134,32 @@ const WELCOME_MSGS = [
   'O sucesso adora quem aparece todos os dias. 🏆',
 ];
 
+const WELCOME_MSGS_EN = [
+  'Ready to conquer another day? 🚀',
+  'What are we exploring today? ✨',
+  'Today could be your best day this week. 💪',
+  'Every day is a new opportunity to do something amazing. 🌟',
+  'Welcome back! What\'s on the plan? 🎯',
+  'Consistency is the secret to success. Keep going! 🔥',
+  'One step at a time builds great achievements. 🏔️',
+  'Today is a great day to learn something new. 📚',
+  'Do today what others leave for tomorrow. ⚡',
+  'The best time to start is now. ⏰',
+  'Small daily progress leads to great results. 📈',
+  'Your journey continues here. 🗺️',
+  'Breathe in, breathe out, and move forward! 🌊',
+  'Today\'s effort is tomorrow\'s success. 🌅',
+  'Focus, determination and action. Let\'s go! 🎪',
+  'There are no bad days — only learning days. 🧠',
+  'Every morning is a blank page. Write something good. ✍️',
+  'Success loves those who show up every day. 🏆',
+];
+
 function renderWelcome() {
   const h = new Date().getHours();
-  const greeting = h < 12 ? 'Bom dia! ☀️' : h < 19 ? 'Boa tarde! 🌤️' : 'Boa noite! 🌙';
-  const msg = WELCOME_MSGS[Math.floor(Math.random() * WELCOME_MSGS.length)];
+  const greeting = h < 12 ? t('home.greet.morning') : h < 19 ? t('home.greet.afternoon') : t('home.greet.evening');
+  const pool = lang() === 'pt' ? WELCOME_MSGS : WELCOME_MSGS_EN;
+  const msg  = pool[Math.floor(Math.random() * pool.length)];
   const gEl = document.getElementById('wc-greeting');
   const mEl = document.getElementById('wc-msg');
   if (gEl) gEl.textContent = greeting;
@@ -203,7 +228,7 @@ async function loadDailyContent() {
 
   if (rEl) rEl.innerHTML = `
     <div class="dc-riddle-q">${r.q}</div>
-    <button class="dc-reveal" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">Ver resposta</button>
+    <button class="dc-reveal" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">${t('home.reveal')}</button>
     <div class="dc-answer">${r.a}</div>`;
 
   if (jEl) {
@@ -281,22 +306,24 @@ function showCityPopup(anchor, meta) {
 const gaugePop = document.getElementById('gauge-pop');
 let gaugeT;
 
-const GAUGES = {
-  wind:{lbl:'Vento',unit:'km/h',min:0,max:120,
-    ticks:[{v:0,l:'Calmo',c:'#4ade80'},{v:20,l:'Suave',c:'#86efac'},{v:39,l:'Moderado',c:'#facc15'},{v:62,l:'Forte',c:'#fb923c'},{v:89,l:'Tempestade',c:'#f87171'}]},
-  humidity:{lbl:'Humidade',unit:'%',min:0,max:100,
-    ticks:[{v:0,l:'Seca',c:'#fcd34d'},{v:30,l:'Confortável',c:'#4ade80'},{v:60,l:'Húmida',c:'#60a5fa'},{v:80,l:'Muito Húmida',c:'#818cf8'}]},
-  pressure:{lbl:'Pressão',unit:'hPa',min:960,max:1040,
-    ticks:[{v:960,l:'Muito Baixa',c:'#93c5fd'},{v:980,l:'Baixa',c:'#60a5fa'},{v:1000,l:'Normal',c:'#4ade80'},{v:1020,l:'Alta',c:'#fb923c'}]},
-  cloud:{lbl:'Nebulosidade',unit:'%',min:0,max:100,
-    ticks:[{v:0,l:'Limpo',c:'#fcd34d'},{v:25,l:'Pouco Nublado',c:'#a5b4fc'},{v:50,l:'Parcialmente Nublado',c:'#94a3b8'},{v:87,l:'Nublado',c:'#64748b'}]},
-  uv:{lbl:'Índice UV',unit:'',min:0,max:12,
-    ticks:[{v:0,l:'Baixo',c:'#4ade80'},{v:3,l:'Moderado',c:'#facc15'},{v:6,l:'Alto',c:'#fb923c'},{v:8,l:'Muito Alto',c:'#f87171'},{v:11,l:'Extremo',c:'#c084fc'}]},
-  precipitation:{lbl:'Precipitação',unit:'mm',min:0,max:30,
-    ticks:[{v:0,l:'Sem chuva',c:'#4ade80'},{v:2.5,l:'Ligeira',c:'#93c5fd'},{v:7.5,l:'Moderada',c:'#60a5fa'},{v:15,l:'Forte',c:'#3b82f6'}]},
-  sunrise:{lbl:'Nascer do Sol',unit:''},
-  sunset:{lbl:'Pôr do Sol',unit:''},
-};
+function getGAUGES() {
+  return {
+    wind:{lbl:t('wx.wind'),unit:'km/h',min:0,max:120,
+      ticks:[{v:0,l:t('gauge.wind.calm'),c:'#4ade80'},{v:20,l:t('gauge.wind.light'),c:'#86efac'},{v:39,l:t('gauge.wind.mod'),c:'#facc15'},{v:62,l:t('gauge.wind.strong'),c:'#fb923c'},{v:89,l:t('gauge.wind.storm'),c:'#f87171'}]},
+    humidity:{lbl:t('wx.humidity'),unit:'%',min:0,max:100,
+      ticks:[{v:0,l:t('gauge.hum.dry'),c:'#fcd34d'},{v:30,l:t('gauge.hum.ok'),c:'#4ade80'},{v:60,l:t('gauge.hum.humid'),c:'#60a5fa'},{v:80,l:t('gauge.hum.vhum'),c:'#818cf8'}]},
+    pressure:{lbl:t('wx.pressure'),unit:'hPa',min:960,max:1040,
+      ticks:[{v:960,l:t('gauge.pres.vlow'),c:'#93c5fd'},{v:980,l:t('gauge.pres.low'),c:'#60a5fa'},{v:1000,l:t('gauge.pres.norm'),c:'#4ade80'},{v:1020,l:t('gauge.pres.high'),c:'#fb923c'}]},
+    cloud:{lbl:t('wx.cloud'),unit:'%',min:0,max:100,
+      ticks:[{v:0,l:t('gauge.cloud.clear'),c:'#fcd34d'},{v:25,l:t('gauge.cloud.pcloud'),c:'#a5b4fc'},{v:50,l:t('gauge.cloud.mostcloud'),c:'#94a3b8'},{v:87,l:t('gauge.cloud.cloud'),c:'#64748b'}]},
+    uv:{lbl:t('wx.uv'),unit:'',min:0,max:12,
+      ticks:[{v:0,l:t('gauge.uv.low'),c:'#4ade80'},{v:3,l:t('gauge.uv.mod'),c:'#facc15'},{v:6,l:t('gauge.uv.high'),c:'#fb923c'},{v:8,l:t('gauge.uv.vhigh'),c:'#f87171'},{v:11,l:t('gauge.uv.extreme'),c:'#c084fc'}]},
+    precipitation:{lbl:t('wx.precip'),unit:'mm',min:0,max:30,
+      ticks:[{v:0,l:t('gauge.rain.none'),c:'#4ade80'},{v:2.5,l:t('gauge.rain.light'),c:'#93c5fd'},{v:7.5,l:t('gauge.rain.mod'),c:'#60a5fa'},{v:15,l:t('gauge.rain.heavy'),c:'#3b82f6'}]},
+    sunrise:{lbl:t('wx.sunrise'),unit:''},
+    sunset:{lbl:t('wx.sunset'),unit:''},
+  };
+}
 
 function getGaugeCat(g, val) {
   let cat = g.ticks?.[0];
@@ -306,7 +333,7 @@ function getGaugeCat(g, val) {
 }
 
 function showGaugePop(anchor, key, val) {
-  const g = GAUGES[key];
+  const g = getGAUGES()[key];
   if (!g || !g.ticks) return;
   clearTimeout(gaugeT);
   const cat = getGaugeCat(g, val);
@@ -354,11 +381,13 @@ function showForecastPopup(anchor, data, dayAlerts) {
   clearTimeout(popT);
   const w = wmo(data.code);
   const dt = new Date(data.date + 'T12:00:00');
-  const dayLabel  = data.dayName === 'Hoje' ? 'Hoje' : WD[dt.getDay()];
-  const dateLabel = `${dt.getDate()} de ${MO[dt.getMonth()]}`;
+  const dayLabel  = data.dayName === 'Hoje' ? t('wx.today') : wd()[dt.getDay()];
+  const dateLabel = lang() === 'pt'
+    ? `${dt.getDate()} de ${mo()[dt.getMonth()]}`
+    : `${mo()[dt.getMonth()]} ${dt.getDate()}`;
 
   const aLvl = {yellow:'pill-y', orange:'pill-o', red:'pill-r'};
-  const aTxt = {yellow:'Amarelo', orange:'Laranja', red:'Vermelho'};
+  const aTxt = {yellow:t('alert.yellow'), orange:t('alert.orange'), red:t('alert.red')};
   const seenAlerts = new Set();
   const uniqueAlerts = (dayAlerts || []).filter(a => {
     const k = `${a.awarenessLevelID || a.awarenessLevel || ''}|${a.awarenessTypeName || ''}`;
@@ -368,12 +397,12 @@ function showForecastPopup(anchor, data, dayAlerts) {
     <div class="pop-alerts">
       ${uniqueAlerts.map(a => {
         const lvl  = (a.awarenessLevelID || a.awarenessLevel || 'yellow').toLowerCase();
-        const type = a.awarenessTypeName || 'Aviso';
+        const type = a.awarenessTypeName || 'Alert';
         const areas = (a.areas || []).filter(Boolean).join(', ');
         const end  = a.endTime || '';
         return `<div class="pop-alert-row">
-          <span class="alert-pill ${aLvl[lvl] || 'pill-y'}">⚠️ ${aTxt[lvl] || 'Aviso'}</span>
-          <span>${type}${areas ? ' · ' + areas : ''}${end ? ' até ' + fmtT(end) : ''}</span>
+          <span class="alert-pill ${aLvl[lvl] || 'pill-y'}">⚠️ ${aTxt[lvl] || t('alert.yellow')}</span>
+          <span>${type}${areas ? ' · ' + areas : ''}${end ? ' — ' + fmtT(end) : ''}</span>
         </div>`;
       }).join('')}
     </div>` : '';
@@ -385,20 +414,20 @@ function showForecastPopup(anchor, data, dayAlerts) {
       <div class="pop-icon">${w.i}</div>
       <div>
         <div class="pop-hi">${data.maxT}°C</div>
-        <div class="pop-lo">Mín ${data.minT}°C</div>
-        ${data.feelsMax != null ? `<div class="pop-feels">Sensação até ${data.feelsMax}°C</div>` : ''}
+        <div class="pop-lo">${t('wx.min')} ${data.minT}°C</div>
+        ${data.feelsMax != null ? `<div class="pop-feels">${t('wx.feels.hi')} ${data.feelsMax}°C</div>` : ''}
         <div class="pop-cond">${w.l}</div>
       </div>
     </div>
     <div class="pop-grid">
-      <div class="pop-stat"><div class="ps-l">Vento máx.</div><div class="ps-v">${data.wind} km/h</div></div>
-      <div class="pop-stat"><div class="ps-l">Rajadas</div><div class="ps-v">${data.gusts ?? '—'} km/h</div></div>
-      <div class="pop-stat"><div class="ps-l">Humidade</div><div class="ps-v">${data.hum ?? '—'}%</div></div>
-      <div class="pop-stat"><div class="ps-l">Prob. chuva</div><div class="ps-v">${data.rain}%</div></div>
-      <div class="pop-stat"><div class="ps-l">Precipitação</div><div class="ps-v">${(+data.precip || 0).toFixed(1)} mm</div></div>
-      ${data.uv != null ? `<div class="pop-stat"><div class="ps-l">Índice UV</div><div class="ps-v ${uvCls(data.uv)}">${data.uv}</div></div>` : ''}
+      <div class="pop-stat"><div class="ps-l">${t('wx.wind.max')}</div><div class="ps-v">${data.wind} km/h</div></div>
+      <div class="pop-stat"><div class="ps-l">${t('wx.gusts')}</div><div class="ps-v">${data.gusts ?? '—'} km/h</div></div>
+      <div class="pop-stat"><div class="ps-l">${t('wx.humidity')}</div><div class="ps-v">${data.hum ?? '—'}%</div></div>
+      <div class="pop-stat"><div class="ps-l">${t('wx.rain.prob')}</div><div class="ps-v">${data.rain}%</div></div>
+      <div class="pop-stat"><div class="ps-l">${t('wx.precip')}</div><div class="ps-v">${(+data.precip || 0).toFixed(1)} mm</div></div>
+      ${data.uv != null ? `<div class="pop-stat"><div class="ps-l">${t('wx.uv')}</div><div class="ps-v ${uvCls(data.uv)}">${data.uv}</div></div>` : ''}
     </div>
-    ${data.sunrise ? `<div class="pop-sun"><span>🌅 Nascer ${fmtT(data.sunrise)}</span><span>🌇 Pôr ${fmtT(data.sunset)}</span></div>` : ''}
+    ${data.sunrise ? `<div class="pop-sun"><span>🌅 ${t('wx.sunrise')} ${fmtT(data.sunrise)}</span><span>🌇 ${t('wx.sunset')} ${fmtT(data.sunset)}</span></div>` : ''}
     ${alertsHTML}`;
 
   positionPopup(anchor);
@@ -411,9 +440,9 @@ let hourlyStore = null;
 function showHourlyPopup(anchor, idx) {
   clearTimeout(popT);
   if (!hourlyStore) return;
-  const hr = hourlyStore;
-  const t  = hr.time[idx] || '';
-  const hw = wmo(hr.weather_code[idx]);
+  const hr   = hourlyStore;
+  const ts   = hr.time[idx] || '';
+  const hw   = wmo(hr.weather_code[idx]);
   const temp   = Math.round(hr.temperature_2m[idx]);
   const feels  = hr.apparent_temperature ? Math.round(hr.apparent_temperature[idx]) : null;
   const rain   = hr.precipitation_probability[idx] ?? 0;
@@ -422,25 +451,25 @@ function showHourlyPopup(anchor, idx) {
   const wDir   = compass(hr.wind_direction_10m[idx]);
   const cloud  = hr.cloud_cover?.[idx] ?? '—';
   const gusts  = hr.wind_gusts_10m ? Math.round(hr.wind_gusts_10m[idx]) : null;
-  const hour   = t.slice(11, 16) || '—';
+  const hour   = ts.slice(11, 16) || '—';
 
   popup.innerHTML = `
-    <div class="pop-day">${hour === '—' ? 'Agora' : hour}</div>
+    <div class="pop-day">${hour === '—' ? t('wx.now') : hour}</div>
     <div class="pop-date">${hw.l}</div>
     <div class="pop-hero">
       <div class="pop-icon">${hw.i}</div>
       <div>
         <div class="pop-hi">${temp}°C</div>
-        ${feels != null ? `<div class="pop-lo">Sensação ${feels}°C</div>` : ''}
+        ${feels != null ? `<div class="pop-lo">${t('wx.feels.cur')} ${feels}°C</div>` : ''}
       </div>
     </div>
     <div class="pop-grid">
-      <div class="pop-stat"><div class="ps-l">Vento</div><div class="ps-v">${wind} km/h</div></div>
-      <div class="pop-stat"><div class="ps-l">Direção</div><div class="ps-v">${wDir}</div></div>
-      ${gusts != null ? `<div class="pop-stat"><div class="ps-l">Rajadas</div><div class="ps-v">${gusts} km/h</div></div>` : ''}
-      <div class="pop-stat"><div class="ps-l">Nuvens</div><div class="ps-v">${cloud}%</div></div>
-      <div class="pop-stat"><div class="ps-l">Prob. chuva</div><div class="ps-v">${rain}%</div></div>
-      ${precip > 0 ? `<div class="pop-stat"><div class="ps-l">Precipitação</div><div class="ps-v">${precip.toFixed(1)} mm</div></div>` : ''}
+      <div class="pop-stat"><div class="ps-l">${t('wx.wind')}</div><div class="ps-v">${wind} km/h</div></div>
+      <div class="pop-stat"><div class="ps-l">${t('wx.dir')}</div><div class="ps-v">${wDir}</div></div>
+      ${gusts != null ? `<div class="pop-stat"><div class="ps-l">${t('wx.gusts')}</div><div class="ps-v">${gusts} km/h</div></div>` : ''}
+      <div class="pop-stat"><div class="ps-l">${t('wx.clouds')}</div><div class="ps-v">${cloud}%</div></div>
+      <div class="pop-stat"><div class="ps-l">${t('wx.rain.prob')}</div><div class="ps-v">${rain}%</div></div>
+      ${precip > 0 ? `<div class="pop-stat"><div class="ps-l">${t('wx.precip')}</div><div class="ps-v">${precip.toFixed(1)} mm</div></div>` : ''}
     </div>`;
 
   positionPopup(anchor);
@@ -683,7 +712,7 @@ async function loadWeather(latlon) {
 
   hero.innerHTML = `<div class="hero-body">
     ${heroLeft('<div class="hero-city-img-ph">📷</div>')}
-    <div class="hero-center" style="color:rgba(107,125,160,.8);font-size:.85rem">A carregar meteorologia…</div>
+    <div class="hero-center" style="color:rgba(107,125,160,.8);font-size:.85rem">${t('wx.loading')}</div>
     <div class="hero-right"></div>
   </div>`;
   hero.querySelector('.hero-city-select').value = curVal;
@@ -708,7 +737,7 @@ async function loadWeather(latlon) {
   if (weatherRes.status !== 'fulfilled') {
     hero.innerHTML = `<div class="hero-body">
       ${heroLeft('<div class="hero-city-img-ph">📷</div>')}
-      <div class="hero-center" style="color:#ef4444;font-size:.85rem">Erro ao carregar meteorologia.</div>
+      <div class="hero-center" style="color:#ef4444;font-size:.85rem">${t('wx.error')}</div>
       <div class="hero-right"></div>
     </div>`;
     hero.querySelector('.hero-city-select').value = curVal;
@@ -729,7 +758,7 @@ async function loadWeather(latlon) {
     : `<div class="hero-city-img-ph">📷 ${meta.name}</div>`;
 
   function statBar(key, val) {
-    const g = GAUGES[key]; if (!g?.ticks) return '';
+    const g = getGAUGES()[key]; if (!g?.ticks) return '';
     const pct = Math.min(100, Math.max(0, ((val - (g.min || 0)) / ((g.max || 100) - (g.min || 0))) * 100));
     const cat = getGaugeCat(g, val);
     return `<div class="sbox-bar"><div class="sbox-bar-fill" style="width:${pct}%;background:${cat?.c || 'var(--accent)'}"></div></div>`;
@@ -754,49 +783,49 @@ async function loadWeather(latlon) {
       <div class="hero-temp-block">
         <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
         <div class="hero-cond">${cw.l}</div>
-        <div class="hero-feels">Sensação: ${Math.round(c.apparent_temperature)}°C</div>
+        <div class="hero-feels">${t('wx.feels.cur')} ${Math.round(c.apparent_temperature)}°C</div>
         <div class="hero-minmax">↑ ${maxToday}° · ↓ ${minToday}°</div>
       </div>
     </div>
     <div class="hero-right">
       <div class="stat-grid">
         <div class="stat-box" data-gauge="wind" data-gv="${windVal}">
-          <div class="sbox-icon">💨</div><div class="sbox-label">Vento</div>
+          <div class="sbox-icon">💨</div><div class="sbox-label">${t('wx.wind')}</div>
           <div class="sbox-val">${windVal} <span style="font-size:.6rem;opacity:.5">km/h</span></div>
           <div class="sbox-sub">${compass(c.wind_direction_10m)}</div>
           ${statBar('wind', windVal)}
         </div>
         <div class="stat-box" data-gauge="humidity" data-gv="${c.relative_humidity_2m}">
-          <div class="sbox-icon">💧</div><div class="sbox-label">Humidade</div>
+          <div class="sbox-icon">💧</div><div class="sbox-label">${t('wx.humidity')}</div>
           <div class="sbox-val">${c.relative_humidity_2m}<span style="font-size:.6rem;opacity:.5">%</span></div>
           ${statBar('humidity', c.relative_humidity_2m)}
         </div>
         <div class="stat-box" data-gauge="pressure" data-gv="${Math.round(c.surface_pressure)}">
-          <div class="sbox-icon">🌡️</div><div class="sbox-label">Pressão</div>
+          <div class="sbox-icon">🌡️</div><div class="sbox-label">${t('wx.pressure')}</div>
           <div class="sbox-val">${Math.round(c.surface_pressure)} <span style="font-size:.6rem;opacity:.5">hPa</span></div>
           ${statBar('pressure', Math.round(c.surface_pressure))}
         </div>
         <div class="stat-box" data-gauge="cloud" data-gv="${c.cloud_cover}">
-          <div class="sbox-icon">☁️</div><div class="sbox-label">Nuvens</div>
+          <div class="sbox-icon">☁️</div><div class="sbox-label">${t('wx.clouds')}</div>
           <div class="sbox-val">${c.cloud_cover}<span style="font-size:.6rem;opacity:.5">%</span></div>
           ${statBar('cloud', c.cloud_cover)}
         </div>
         <div class="stat-box" data-gauge="uv" data-gv="${uvVal}">
-          <div class="sbox-icon">🌞</div><div class="sbox-label">Índice UV</div>
+          <div class="sbox-icon">🌞</div><div class="sbox-label">${t('wx.uv')}</div>
           <div class="sbox-val ${uv0 != null ? uvCls(uv0) : ''}">${uv0 ?? '—'}</div>
           ${statBar('uv', uvVal)}
         </div>
         <div class="stat-box" data-gauge="precipitation" data-gv="${precVal}">
-          <div class="sbox-icon">🌧️</div><div class="sbox-label">Precipitação</div>
+          <div class="sbox-icon">🌧️</div><div class="sbox-label">${t('wx.precip')}</div>
           <div class="sbox-val">${precVal} <span style="font-size:.6rem;opacity:.5">mm</span></div>
           ${statBar('precipitation', precVal)}
         </div>
         <div class="stat-box">
-          <div class="sbox-icon">🌅</div><div class="sbox-label">Nascer do sol</div>
+          <div class="sbox-icon">🌅</div><div class="sbox-label">${t('wx.sunrise')}</div>
           <div class="sbox-val">${fmtT(dl.sunrise?.[0])}</div>
         </div>
         <div class="stat-box">
-          <div class="sbox-icon">🌇</div><div class="sbox-label">Pôr do sol</div>
+          <div class="sbox-icon">🌇</div><div class="sbox-label">${t('wx.sunset')}</div>
           <div class="sbox-val">${fmtT(dl.sunset?.[0])}</div>
         </div>
       </div>
@@ -813,15 +842,15 @@ async function loadWeather(latlon) {
 
   // ── HOURLY ──
   const nowTs = Date.now();
-  let hi = hr.time.findIndex(t => new Date(t).getTime() >= nowTs);
+  let hi = hr.time.findIndex(ts => new Date(ts).getTime() >= nowTs);
   if (hi < 0) hi = 0;
 
-  document.getElementById('hourly-row').innerHTML = hr.time.slice(hi, hi + 24).map((t, i) => {
+  document.getElementById('hourly-row').innerHTML = hr.time.slice(hi, hi + 24).map((ts, i) => {
     const idx  = hi + i;
     const hw   = wmo(hr.weather_code[idx]);
     const rain = hr.precipitation_probability[idx] ?? 0;
     return `<div class="h-card${i === 0 ? ' h-now' : ''}" data-idx="${idx}">
-      <div class="h-time">${i === 0 ? 'Agora' : t.slice(11, 16)}</div>
+      <div class="h-time">${i === 0 ? t('wx.now') : ts.slice(11, 16)}</div>
       <div class="h-ico">${hw.i}</div>
       <div class="h-tmp">${Math.round(hr.temperature_2m[idx])}°</div>
       <div class="h-prcp">${rain > 0 ? rain + '%' : ''}</div>
@@ -833,7 +862,7 @@ async function loadWeather(latlon) {
   fcRow.innerHTML = '';
   dl.time.forEach((dateStr, i) => {
     const dt       = new Date(dateStr + 'T12:00:00');
-    const dn       = i === 0 ? 'Hoje' : WD[dt.getDay()];
+    const dn       = i === 0 ? t('wx.today') : wd()[dt.getDay()];
     const dw       = wmo(dl.weather_code[i]);
     const maxT     = Math.round(dl.temperature_2m_max[i]);
     const minT     = Math.round(dl.temperature_2m_min[i]);
@@ -861,7 +890,7 @@ async function loadWeather(latlon) {
     if (hasAlert) card.style.borderColor = alertColor;
     card.innerHTML = `
       <div class="fc-day">${dn}</div>
-      <div class="fc-date">${dt.getDate()} ${MS[dt.getMonth()]}</div>
+      <div class="fc-date">${dt.getDate()} ${ms()[dt.getMonth()]}</div>
       <div class="fc-ico">${dw.i}</div>
       <div class="fc-temps"><span class="fc-hi-v">↑ ${maxT}°</span><span class="fc-sep">/</span><span class="fc-lo-v">↓ ${minT}°</span></div>
       <div class="fc-rain">${rainBar}</div>
@@ -932,11 +961,11 @@ function holHTML(date, name, sub) {
   return `<div class="hol-item${isPast ? ' hol-past' : ''}${isToday ? ' hol-today' : ''}">
     <div class="hol-box">
       <div class="hol-num">${date.getDate()}</div>
-      <div class="hol-mon">${MS[date.getMonth()]}</div>
+      <div class="hol-mon">${ms()[date.getMonth()]}</div>
     </div>
     <div>
       <div class="hol-name">${name}</div>
-      <div class="hol-sub">${sub} · ${WD[date.getDay()]}</div>
+      <div class="hol-sub">${sub} · ${wd()[date.getDay()]}</div>
     </div>
   </div>`;
 }
@@ -945,7 +974,7 @@ function renderHolidays() {
   const y = holYear;
   document.getElementById('hol-year-label').textContent = y;
   const nat = ptNat(y).sort((a, b) => a.d - b.d);
-  document.getElementById('nat-hols').innerHTML = nat.map(h => holHTML(h.d, h.n, 'Nacional')).join('');
+  document.getElementById('nat-hols').innerHTML = nat.map(h => holHTML(h.d, h.n, t('hol.nat.lbl'))).join('');
   const mun = MUN.map(m => ({date: new Date(y, m.m - 1, m.d), n: m.n, c: m.c}))
     .sort((a, b) => a.date - b.date);
   document.getElementById('mun-hols').innerHTML = mun.map(h => holHTML(h.date, h.n, h.c)).join('');
@@ -954,3 +983,12 @@ function renderHolidays() {
 document.getElementById('hol-prev').addEventListener('click', () => { holYear--; renderHolidays(); });
 document.getElementById('hol-next').addEventListener('click', () => { holYear++; renderHolidays(); });
 renderHolidays();
+
+document.addEventListener('langchange', () => {
+  tick();
+  renderWelcome();
+  loadDailyContent();
+  renderHolidays();
+  const city = document.querySelector('.hero-city-select')?.value || '39.7436,-8.8071';
+  loadWeather(city);
+});
