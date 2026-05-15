@@ -551,7 +551,7 @@ function haCloud(dark = false, w = 96, h = 58, top = 56, left = 27) {
   const dk = dark ? ' ha-dark' : '';
   const p1w = Math.round(w * .42), p2w = Math.round(w * .52), p3w = Math.round(w * .36);
   const bH = Math.round(h * .52);
-  return `<div class="ha-cloud-g${dk}" style="top:${top}px;left:${left}px">
+  return `<div class="ha-cloud-g${dk}" style="top:${top}px;left:${left}px;height:${h}px">
     <div class="ha-cp" style="width:${p1w}px;height:${p1w}px;bottom:${bH}px;left:${Math.round(w*.06)}px"></div>
     <div class="ha-cp" style="width:${p2w}px;height:${p2w}px;bottom:${bH}px;left:${Math.round(w*.25)}px"></div>
     <div class="ha-cp" style="width:${p3w}px;height:${p3w}px;bottom:${bH}px;left:${Math.round(w*.58)}px"></div>

@@ -1346,6 +1346,21 @@ body.light .md-days-in{background:rgba(0,0,0,.04)}
 .md-compact .mb{font-size:.5rem;padding:.1rem .35rem}
 .md-compact .mc-title{font-size:.72rem;-webkit-line-clamp:1}
 .md-compact .md-cols .md-body{max-height:calc(100vh - var(--header-h,60px) - 200px)}
+/* ── Ultra-compact: no images, tight text rows ── */
+.md-ultracompact .media-grid{grid-template-columns:1fr;gap:.18rem}
+.md-ultracompact .mc{flex-direction:row;border-radius:6px;border:none;background:transparent;border-bottom:1px solid var(--border)}
+.md-ultracompact .mc:last-child{border-bottom:none}
+.md-ultracompact .mc:hover{transform:none;box-shadow:none;background:rgba(255,255,255,.03)}
+.md-ultracompact .mc-img{display:none}
+.md-ultracompact .mc-body{padding:.28rem .15rem;flex-direction:row;align-items:center;gap:.5rem;flex-wrap:wrap}
+.md-ultracompact .mc-badges{flex-shrink:0;gap:.15rem}
+.md-ultracompact .mb{font-size:.46rem;padding:.08rem .28rem}
+.md-ultracompact .mc-title{font-size:.7rem;font-weight:600;-webkit-line-clamp:1;flex:1;min-width:0}
+.md-ultracompact .mc-sub{font-size:.6rem;flex-shrink:0}
+.md-ultracompact .mc-desc{display:none}
+.md-ultracompact .mc-meta{padding-top:0;gap:.2rem .4rem;margin-top:0}
+.md-ultracompact .mc-meta span{font-size:.55rem}
+.md-ultracompact .md-cols .md-body{max-height:calc(100vh - var(--header-h,60px) - 200px)}
 .media-loading{display:flex;align-items:center;gap:.55rem;color:var(--muted);font-size:.78rem;padding:.4rem 0}
 .media-spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:md-spin .65s linear infinite;flex-shrink:0}
 @keyframes md-spin{to{transform:rotate(360deg)}}
@@ -1373,5 +1388,5 @@ body.light .yt-close{background:rgba(0,0,0,.05)}
 .lang-btn:hover{border-color:var(--accent);color:var(--accent)}
 body.light .lang-btn{background:#fff}
 @media(max-width:1400px){.md-cols{grid-template-columns:1fr 1fr}}
-@media(max-width:900px){.md-cols{grid-template-columns:1fr}.md-page-hdr{flex-direction:column;align-items:flex-start}.media-grid{grid-template-columns:repeat(2,1fr)}.md-compact .media-grid{grid-template-columns:1fr}.md-body{max-height:300px}.md-settings-panel{right:auto;left:0;width:calc(100vw - 2rem)}}
+@media(max-width:900px){.md-cols{grid-template-columns:1fr}.md-page-hdr{flex-direction:column;align-items:flex-start}.media-grid{grid-template-columns:repeat(2,1fr)}.md-compact .media-grid{grid-template-columns:1fr}.md-body{max-height:300px}}
 @media(max-width:480px){.media-grid{grid-template-columns:1fr;gap:.45rem}}
