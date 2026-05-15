@@ -358,7 +358,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'g' || e.key === 'G') { _gKey = Date.now(); return; }
 
   if (_gKey && Date.now() - _gKey < 1500 && typeof Nav !== 'undefined') {
-    const map = { h:'home', g:'games', l:'links', t:'tools', f:'feed', c:'cheatsheets', m:'media', w:'workout' };
+    const map = { h:'home', g:'games', l:'links', t:'tools', c:'cheatsheets', m:'media', w:'workout' };
     const dest = map[e.key.toLowerCase()];
     if (dest) { e.preventDefault(); Nav.go(dest); }
     _gKey = null;
@@ -366,6 +366,78 @@ document.addEventListener('keydown', e => {
   }
   _gKey = null;
 });
+
+// ── WEATHER ───────────────────────────────────────────────────────
+const WMO_MAP = {
+  0:['☀️','Céu limpo'],1:['🌤️','Maioritariamente limpo'],2:['⛅','Parcialmente nublado'],
+  3:['☁️','Nublado'],45:['🌫️','Nevoeiro'],48:['🌫️','Nevoeiro gelado'],
+  51:['🌦️','Garoa leve'],53:['🌦️','Garoa moderada'],55:['🌦️','Garoa intensa'],
+  61:['🌧️','Chuva leve'],63:['🌧️','Chuva moderada'],65:['🌧️','Chuva forte'],
+  71:['🌨️','Neve leve'],73:['🌨️','Neve moderada'],75:['🌨️','Neve forte'],
+  77:['🌨️','Granizo'],80:['🌧️','Aguaceiros leves'],81:['🌧️','Aguaceiros moderados'],
+  82:['🌧️','Aguaceiros fortes'],85:['🌨️','Neve em aguaceiros'],86:['🌨️','Neve intensa'],
+  95:['⛈️','Trovoada'],96:['⛈️','Trovoada com granizo'],99:['⛈️','Trovoada intensa'],
+};
+function wmoInfo(code) { return WMO_MAP[code] || WMO_MAP[Math.floor(code/10)*10] || ['🌡️','—']; }
+
+async function loadWeather() {
+  const el = document.getElementById('widget-weather');
+  if (!el) return;
+  try {
+    const abrt = ms => { const c = new AbortController(); setTimeout(() => c.abort(), ms); return c.signal; };
+
+    let lat, lon, city;
+    try {
+      const g = await (await fetch('https://ip-api.com/json/?fields=lat,lon,city', {signal:abrt(4000)})).json();
+      if (g.lat) { lat = g.lat; lon = g.lon; city = g.city; }
+    } catch {}
+    if (!lat) throw new Error('no-location');
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relative_humidity_2m` +
+      `&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
+    const d = await (await fetch(url, {signal:abrt(6000)})).json();
+    const c = d.current, dl = d.daily;
+
+    const [icon, desc] = wmoInfo(c.weathercode);
+    const temp   = Math.round(c.temperature_2m);
+    const feels  = Math.round(c.apparent_temperature);
+    const wind   = Math.round(c.windspeed_10m);
+    const hum    = c.relative_humidity_2m;
+
+    const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const fcHTML = dl.time.slice(1,4).map((date, i) => {
+      const [fi] = wmoInfo(dl.weathercode[i+1]);
+      const dow = new Date(date + 'T12:00:00').getDay();
+      return `<div class="wt-fc-day">
+        <div class="wt-fc-name">${DAY_NAMES[dow]}</div>
+        <div class="wt-fc-icon">${fi}</div>
+        <div class="wt-fc-hi">${Math.round(dl.temperature_2m_max[i+1])}°</div>
+        <div class="wt-fc-lo">${Math.round(dl.temperature_2m_min[i+1])}°</div>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = `<div class="wt-body">
+      ${city ? `<div class="wt-city">📍 ${city}</div>` : ''}
+      <div class="wt-main">
+        <div class="wt-icon">${icon}</div>
+        <div>
+          <div><span class="wt-temp">${temp}</span><span class="wt-unit">°C</span></div>
+          <div class="wt-desc">${desc}</div>
+        </div>
+      </div>
+      <div class="wt-details">
+        <span>💧 ${hum}%</span>
+        <span>💨 ${wind} km/h</span>
+        <span>Sensação ${feels}°C</span>
+      </div>
+      <div class="wt-forecast">${fcHTML}</div>
+    </div>`;
+  } catch {
+    el.innerHTML = `<div class="wt-error">Não foi possível carregar o tempo.</div>`;
+  }
+}
+loadWeather();
 
 // ── HOLIDAYS ──────────────────────────────────────────────────────
 function getEaster(y) {

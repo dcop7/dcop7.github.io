@@ -89,10 +89,6 @@
         <span class="shortcut-label">Go tools</span>
       </div>
       <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>F</kbd></span>
-        <span class="shortcut-label">Go feed</span>
-      </div>
-      <div class="shortcut-item">
         <span class="shortcut-keys"><kbd>G</kbd><kbd>C</kbd></span>
         <span class="shortcut-label">Go cheatsheets</span>
       </div>
@@ -186,9 +182,6 @@
             </div>
           </div>
           <div class="quick-actions">
-            <button class="qa-item" onclick="Nav.go('feed')">
-              <span class="qa-item-icon">📰</span>Feed
-            </button>
             <button class="qa-item" onclick="Nav.go('cheatsheets')">
               <span class="qa-item-icon">📋</span>Cheatsheets
             </button>
@@ -230,15 +223,9 @@
               </div>
             </div>
 
-            <!-- HN widget -->
-            <div class="widget" id="widget-hn">
-              <div class="widget-hdr">
-                <span class="widget-title">🔥 Hacker News</span>
-                <button class="widget-link" onclick="Nav.go('feed')">See all →</button>
-              </div>
-              <div id="hn-widget-list" class="hn-widget-list">
-                <div class="hn-loading"><div class="hn-spinner"></div>Loading…</div>
-              </div>
+            <!-- Weather widget -->
+            <div class="widget" id="widget-weather">
+              <div class="wt-loading"><div class="hn-spinner"></div>A carregar o tempo…</div>
             </div>
           </div>
 
@@ -262,13 +249,6 @@
           </div>
 
         </div><!-- /home-grid -->
-      </div>
-    </div>
-
-    <!-- ── FEED VIEW ── -->
-    <div id="view-feed" class="view">
-      <div class="view-inner">
-        <div id="feed-page"></div>
       </div>
     </div>
 
@@ -334,7 +314,7 @@
                 </div>
               </div>
             </div>
-            <div class="game-pane" id="pane-runner"></div>
+            <div class="game-pane" id="pane-snake"></div>
             <div class="game-pane" id="pane-minesweeper"></div>
             <div class="game-pane" id="pane-bomb"></div>
           </div>
@@ -373,7 +353,7 @@
 <div class="popup" id="popup"></div>
 
 <script src="links-data.js" defer></script>
-<script src="runner.js" defer></script>
+<script src="snake.js" defer></script>
 <script src="minesweeper.js" defer></script>
 <script src="bomb.js" defer></script>
 <script src="game-host.js" defer></script>
@@ -384,7 +364,6 @@
 <script src="tools.js" defer></script>
 <script src="workout.js" defer></script>
 <script src="media.js" defer></script>
-<script src="rss.js" defer></script>
 <script src="cheatsheets.js" defer></script>
 <script src="command-palette.js" defer></script>
 <script src="nav.js" defer></script>

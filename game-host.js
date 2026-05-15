@@ -2,19 +2,19 @@ const GameHost = (function () {
   'use strict';
 
   const GAMES = [
-    { id: 'hangman',     name: 'Jogo da Forca',    icon: '🪢', color: '#3b82f6',
+    { id: 'hangman',     name: 'Jogo da Forca',  icon: '🪢', color: '#3b82f6',
       desc: 'Adivinha a palavra letra a letra. Quantas tentativas precisas?' },
-    { id: 'runner',      name: 'Corredor Infinito', icon: '🦊', color: '#f97316',
-      desc: 'Corre pela floresta e desvia os obstáculos que aparecem pela frente.' },
-    { id: 'minesweeper', name: 'Campo de Minas',    icon: '💣', color: '#10b981',
+    { id: 'snake',       name: 'Snake',           icon: '🐍', color: '#22c55e',
+      desc: 'Guia a cobra, come as maçãs e não batas nas paredes. Clássico viciante!' },
+    { id: 'minesweeper', name: 'Campo de Minas',  icon: '💣', color: '#10b981',
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
-    { id: 'bomb',        name: 'Desarmar Bomba',    icon: '💥', color: '#ef4444',
+    { id: 'bomb',        name: 'Desarmar Bomba',  icon: '💥', color: '#ef4444',
       desc: '3 desafios, 90 segundos. Consegues desarmar a bomba a tempo?' },
   ];
 
   const registry = {
     hangman:     { initialized: true },
-    runner:      { init: () => RunnerGame.init(document.getElementById('pane-runner')),           initialized: false },
+    snake:       { init: () => SnakeGame.init(document.getElementById('pane-snake')),             initialized: false },
     minesweeper: { init: () => MinesweeperGame.init(document.getElementById('pane-minesweeper')), initialized: false },
     bomb:        { init: () => BombGame.init(document.getElementById('pane-bomb')),               initialized: false },
   };

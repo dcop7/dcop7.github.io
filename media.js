@@ -42,13 +42,11 @@ const MediaPage = (function () {
 
   const _days = {
     tv:       +(localStorage.getItem('md-tv')       || 7),
-    trailers: +(localStorage.getItem('md-trailers') || 14),
     theaters: +(localStorage.getItem('md-theaters') || 30),
     digital:  +(localStorage.getItem('md-digital')  || 7),
   };
   const _open = {
     tv:       localStorage.getItem('md-open-tv')       !== 'false',
-    trailers: localStorage.getItem('md-open-trailers') !== 'false',
     theaters: localStorage.getItem('md-open-theaters') !== 'false',
     digital:  localStorage.getItem('md-open-digital')  !== 'false',
   };
@@ -332,7 +330,7 @@ const MediaPage = (function () {
     setBadge('digital', movies.length);
   }
 
-  const LOADERS = {tv:loadTV, trailers:loadTrailers, theaters:loadTheaters, digital:loadDigital};
+  const LOADERS = {tv:loadTV, theaters:loadTheaters, digital:loadDigital};
 
   // ── YOUTUBE MODAL ──────────────────────────────────────────────────
   function openYT(key, title) {
@@ -430,7 +428,6 @@ const MediaPage = (function () {
 
       <div class="md-cols">
         ${mkSection('tv',       '📺','md.tv',       'tv')}
-        ${mkSection('trailers', '🎬','md.trailers',  'trailers')}
         ${mkSection('theaters', '🍿','md.theaters',  'theaters')}
         ${mkSection('digital',  '💿','md.digital',   'digital')}
       </div>
@@ -483,7 +480,6 @@ const MediaPage = (function () {
     if (!_loaded) {
       _loaded = true;
       loadTV();
-      loadTrailers();
       loadTheaters();
       loadDigital();
     }

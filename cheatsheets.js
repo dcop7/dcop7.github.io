@@ -179,6 +179,49 @@ const CheatsheetsPage = (function () {
           { cmd: 'zip -r out.zip dir/', desc: 'Create zip archive' },
           { cmd: 'unzip file.zip -d /target/', desc: 'Extract zip to dir' },
         ]},
+        { title: 'systemd Services', items: [
+          { cmd: 'systemctl status nginx', desc: 'Show service status' },
+          { cmd: 'systemctl start / stop / restart nginx', desc: 'Start / stop / restart service' },
+          { cmd: 'systemctl enable / disable nginx', desc: 'Enable / disable at boot' },
+          { cmd: 'systemctl reload nginx', desc: 'Reload config without downtime' },
+          { cmd: 'systemctl list-units --type=service', desc: 'List all services' },
+          { cmd: 'systemctl list-units --failed', desc: 'List failed units' },
+          { cmd: 'journalctl -u nginx -f', desc: 'Follow service logs' },
+          { cmd: 'journalctl -u nginx --since "1 hour ago"', desc: 'Logs from last hour' },
+          { cmd: 'journalctl -p err -b', desc: 'Errors since last boot' },
+          { cmd: 'systemctl daemon-reload', desc: 'Reload unit file changes' },
+          { cmd: 'systemctl mask nginx', desc: 'Prevent service from starting' },
+          { cmd: 'systemctl cat nginx', desc: 'Show unit file' },
+        ]},
+        { title: 'Package Management', items: [
+          { cmd: 'apt update && apt upgrade', desc: 'Update and upgrade (Debian/Ubuntu)' },
+          { cmd: 'apt install pkg', desc: 'Install package' },
+          { cmd: 'apt remove / purge pkg', desc: 'Remove / remove + config files' },
+          { cmd: 'apt search keyword', desc: 'Search for package' },
+          { cmd: 'apt show pkg', desc: 'Package info' },
+          { cmd: 'dpkg -l | grep pkg', desc: 'List installed packages' },
+          { cmd: 'dpkg -L pkg', desc: 'Files installed by package' },
+          { cmd: 'apt-mark hold pkg', desc: 'Prevent package from upgrading' },
+          { cmd: 'dnf install pkg', desc: 'Install package (RHEL/Fedora)' },
+          { cmd: 'dnf update / upgrade', desc: 'Update packages (RHEL/Fedora)' },
+          { cmd: 'dnf search / info pkg', desc: 'Search / info (RHEL/Fedora)' },
+          { cmd: 'rpm -qa | grep pkg', desc: 'List installed RPM packages' },
+        ]},
+        { title: 'System Info', items: [
+          { cmd: 'uname -r', desc: 'Kernel version' },
+          { cmd: 'lsb_release -a', desc: 'Distribution info' },
+          { cmd: 'cat /etc/os-release', desc: 'OS identification' },
+          { cmd: 'uptime', desc: 'System uptime and load average' },
+          { cmd: 'free -h', desc: 'RAM usage (human readable)' },
+          { cmd: 'vmstat 1 5', desc: 'CPU, memory, I/O stats (5 samples)' },
+          { cmd: 'iostat -xz 1', desc: 'Disk I/O statistics' },
+          { cmd: 'lsblk', desc: 'List block devices (disks/partitions)' },
+          { cmd: 'lscpu', desc: 'CPU info' },
+          { cmd: 'lspci', desc: 'PCI devices' },
+          { cmd: 'dmesg | tail -20', desc: 'Kernel messages (recent)' },
+          { cmd: 'env', desc: 'All environment variables' },
+          { cmd: 'printenv PATH', desc: 'Print specific environment variable' },
+        ]},
       ]
     },
 
@@ -414,6 +457,30 @@ const CheatsheetsPage = (function () {
           { cmd: 'getopts "hf:v" opt', desc: 'Parse options' },
           { cmd: '[[ "${BASH_SOURCE[0]}" == "$0" ]] && main "$@"', desc: 'Run main only if not sourced' },
         ]},
+        { title: 'Advanced Bash', items: [
+          { cmd: 'declare -A map; map[key]="val"; echo "${map[key]}"', desc: 'Associative array (requires Bash 4+)' },
+          { cmd: 'diff <(cmd1) <(cmd2)', desc: 'Process substitution — compare command outputs' },
+          { cmd: "cat <<'EOF'\n...\nEOF", desc: "Here-doc (single quotes = no variable expansion)" },
+          { cmd: 'cat <<EOF\nHello $NAME\nEOF', desc: "Here-doc with variable expansion" },
+          { cmd: 'printf "%-10s %5d\\n" "$name" "$count"', desc: 'Formatted output (prefer over echo)' },
+          { cmd: 'mapfile -t lines < file.txt', desc: 'Read file into array' },
+          { cmd: 'mapfile -t arr < <(cmd)', desc: 'Read command output into array' },
+          { cmd: 'time_start=$SECONDS; ...; echo "$((SECONDS - time_start))s"', desc: 'Measure elapsed time' },
+          { cmd: 'wait $pid', desc: 'Wait for background process' },
+          { cmd: 'kill %1', desc: 'Kill background job 1' },
+          { cmd: 'exec 3>&1; exec >&logfile 2>&1', desc: 'Redirect all output to log, keep fd 3 as stdout' },
+        ]},
+        { title: 'Debugging', items: [
+          { cmd: 'set -x', desc: 'Print each command before executing (trace mode)' },
+          { cmd: 'set +x', desc: 'Turn off trace mode' },
+          { cmd: 'bash -n script.sh', desc: 'Syntax check without executing' },
+          { cmd: 'bash -x script.sh', desc: 'Run with trace mode from the start' },
+          { cmd: 'PS4=\'+$LINENO: \' bash -x script.sh', desc: 'Show line numbers in trace' },
+          { cmd: 'shellcheck script.sh', desc: 'Static analysis for common bugs' },
+          { cmd: 'echo "${PIPESTATUS[@]}"', desc: 'Exit codes of all commands in last pipeline' },
+          { cmd: 'echo "cmd at line $LINENO failed with code $?"', desc: 'Error reporting' },
+          { cmd: 'strace -e trace=file cmd', desc: 'Trace file-related syscalls' },
+        ]},
       ]
     },
 
@@ -581,6 +648,7 @@ const CheatsheetsPage = (function () {
     regex: {
       label: 'Regex', icon: '🔍',
       sections: [
+        { type: 'tester' },
         { title: 'Anchors', items: [
           { cmd: '^', desc: 'Start of line (or string in single-line)' },
           { cmd: '$', desc: 'End of line (or string)' },
@@ -760,7 +828,7 @@ const CheatsheetsPage = (function () {
     },
 
     sql: {
-      label: 'SQL', icon: '🗄️',
+      label: 'PostgreSQL', icon: '🐘',
       sections: [
         { title: 'Queries', items: [
           { cmd: 'SELECT col1, col2 FROM table WHERE col = val ORDER BY col DESC LIMIT 10', desc: 'Basic SELECT' },
@@ -796,14 +864,70 @@ const CheatsheetsPage = (function () {
           { cmd: 'MERGE INTO target USING source ON ... WHEN MATCHED ...', desc: 'Merge/upsert (SQL standard)' },
         ]},
         { title: 'Schema', items: [
-          { cmd: 'CREATE TABLE t (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW())', desc: 'Create table (PostgreSQL)' },
+          { cmd: 'CREATE TABLE t (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW())', desc: 'Create table' },
+          { cmd: 'CREATE TABLE t (id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, ...)', desc: 'Identity column (modern)' },
           { cmd: 'ALTER TABLE t ADD COLUMN col TYPE', desc: 'Add column' },
           { cmd: 'ALTER TABLE t DROP COLUMN col', desc: 'Drop column' },
           { cmd: 'ALTER TABLE t RENAME COLUMN old TO new', desc: 'Rename column' },
+          { cmd: 'ALTER TABLE t ALTER COLUMN col SET NOT NULL', desc: 'Add NOT NULL constraint' },
           { cmd: 'CREATE INDEX idx ON t (col)', desc: 'Create index' },
           { cmd: 'CREATE UNIQUE INDEX idx ON t (col)', desc: 'Unique index' },
+          { cmd: 'CREATE INDEX CONCURRENTLY idx ON t (col)', desc: 'Index without locking (production-safe)' },
           { cmd: 'DROP TABLE IF EXISTS t', desc: 'Drop table if exists' },
           { cmd: 'EXPLAIN ANALYZE SELECT ...', desc: 'Query execution plan + timing' },
+          { cmd: 'VACUUM ANALYZE t', desc: 'Reclaim space and update statistics' },
+        ]},
+        { title: 'JSONB', items: [
+          { cmd: "col->'key'", desc: "Get JSON field as JSON" },
+          { cmd: "col->>'key'", desc: "Get JSON field as text" },
+          { cmd: "col#>>'{a,b}'", desc: "Get nested path as text" },
+          { cmd: "col @> '{\"key\":\"val\"}'::jsonb", desc: "JSONB contains (uses GIN index)" },
+          { cmd: "col ? 'key'", desc: "JSONB has key" },
+          { cmd: "jsonb_set(col, '{key}', '\"new\"')", desc: "Update a JSONB field" },
+          { cmd: "col || '{\"extra\":1}'::jsonb", desc: "Merge JSONB objects" },
+          { cmd: "jsonb_each(col)", desc: "Expand JSONB object to rows" },
+          { cmd: "jsonb_array_elements(col->'arr')", desc: "Expand JSON array to rows" },
+          { cmd: "CREATE INDEX idx ON t USING gin(col)", desc: "GIN index for JSONB queries" },
+        ]},
+        { title: 'Arrays', items: [
+          { cmd: "col = ARRAY['a','b']", desc: "Array literal" },
+          { cmd: "col[1]", desc: "Array element (1-indexed)" },
+          { cmd: "col[1:3]", desc: "Array slice" },
+          { cmd: "array_length(col, 1)", desc: "Length of 1st dimension" },
+          { cmd: "'val' = ANY(col)", desc: "Value in array" },
+          { cmd: "col @> ARRAY['a']", desc: "Array contains element" },
+          { cmd: "col && ARRAY['a','b']", desc: "Arrays overlap" },
+          { cmd: "array_append(col, 'new')", desc: "Append element" },
+          { cmd: "unnest(col)", desc: "Expand array to rows" },
+          { cmd: "string_to_array('a,b,c', ',')", desc: "Split string to array" },
+          { cmd: "array_to_string(col, ',')", desc: "Array to delimited string" },
+        ]},
+        { title: 'psql CLI', items: [
+          { cmd: 'psql -h host -U user -d dbname', desc: 'Connect to database' },
+          { cmd: 'psql "postgresql://user:pass@host/db"', desc: 'Connect via URL' },
+          { cmd: '\\l', desc: 'List databases' },
+          { cmd: '\\c dbname', desc: 'Switch database' },
+          { cmd: '\\dt', desc: 'List tables' },
+          { cmd: '\\d tablename', desc: 'Describe table schema' },
+          { cmd: '\\di', desc: 'List indexes' },
+          { cmd: '\\df', desc: 'List functions' },
+          { cmd: '\\x', desc: 'Toggle expanded (vertical) display' },
+          { cmd: '\\timing', desc: 'Toggle query execution timing' },
+          { cmd: '\\i file.sql', desc: 'Execute SQL from file' },
+          { cmd: '\\o output.txt', desc: 'Redirect output to file' },
+          { cmd: '\\q', desc: 'Quit psql' },
+          { cmd: 'COPY t FROM STDIN CSV HEADER', desc: 'Bulk import CSV' },
+          { cmd: "\\copy t TO 'out.csv' CSV HEADER", desc: 'Export table to CSV (client-side)' },
+        ]},
+        { title: 'Performance', items: [
+          { cmd: "SELECT * FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 10", desc: 'Slowest queries (requires extension)' },
+          { cmd: "SELECT * FROM pg_stat_activity WHERE state = 'active'", desc: 'Active connections' },
+          { cmd: "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE ...", desc: 'Kill a connection' },
+          { cmd: "SELECT * FROM pg_indexes WHERE tablename = 't'", desc: 'List table indexes' },
+          { cmd: "SELECT * FROM pg_stat_user_tables", desc: 'Table statistics (seq scans, rows, etc.)' },
+          { cmd: "SELECT pg_size_pretty(pg_total_relation_size('t'))", desc: 'Table size including indexes' },
+          { cmd: "CREATE EXTENSION IF NOT EXISTS pg_stat_statements", desc: 'Enable query statistics extension' },
+          { cmd: "SET work_mem = '256MB'", desc: 'Sort/hash memory for this session' },
         ]},
       ]
     },
@@ -870,6 +994,37 @@ const CheatsheetsPage = (function () {
           { cmd: 'Shift+Enter', desc: 'Insert newline in input' },
           { cmd: '↑ / ↓', desc: 'Navigate command history' },
           { cmd: 'Tab', desc: 'Autocomplete file paths' },
+        ]},
+        { title: 'MCP Servers', items: [
+          { cmd: 'claude mcp add -- npx -y @modelcontextprotocol/server-filesystem /path', desc: 'Add filesystem MCP server' },
+          { cmd: 'claude mcp add -s user -- npx -y @modelcontextprotocol/server-github', desc: 'Add GitHub MCP (user scope, all projects)' },
+          { cmd: 'claude mcp add -s local -- python server.py', desc: 'Add local MCP server (project scope)' },
+          { cmd: 'claude mcp list', desc: 'List configured MCP servers' },
+          { cmd: 'claude mcp get <name>', desc: 'Show MCP server details' },
+          { cmd: 'claude mcp remove <name>', desc: 'Remove an MCP server' },
+          { cmd: '/mcp', desc: 'List available MCP tools in current session' },
+          { cmd: 'Scopes: local (project) → user (~/.claude) → global', desc: 'MCP server scope hierarchy' },
+        ]},
+        { title: 'Settings & Hooks', items: [
+          { cmd: 'ANTHROPIC_API_KEY=sk-ant-...', desc: 'API key (env var or keychain)' },
+          { cmd: 'ANTHROPIC_BASE_URL=https://...', desc: 'Custom API endpoint (proxies, etc.)' },
+          { cmd: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS', desc: 'Override max output tokens' },
+          { cmd: 'claude config set preferredNotifChannel browser', desc: 'Set config value' },
+          { cmd: 'claude config list', desc: 'List all config values' },
+          { cmd: '~/.claude/settings.json', desc: 'Global settings file (allowedTools, etc.)' },
+          { cmd: '.claude/settings.json', desc: 'Project-level settings (version-controlled)' },
+          { cmd: 'hooks.PreToolUse / PostToolUse', desc: 'Shell commands that run before/after tool calls' },
+          { cmd: 'hooks.UserPromptSubmit', desc: 'Hook that runs when user submits a message' },
+          { cmd: 'hooks.Stop', desc: 'Hook that runs when Claude finishes a response' },
+        ]},
+        { title: 'Automation & CI', items: [
+          { cmd: 'claude -p "task" --output-format json', desc: 'Output structured JSON (for pipelines)' },
+          { cmd: 'claude -p "$(cat prompt.txt)" < context.txt', desc: 'Pipe file content as stdin context' },
+          { cmd: 'git diff | claude -p "review this diff"', desc: 'Review git diff in CI' },
+          { cmd: 'claude --max-turns 5 -p "task"', desc: 'Limit agent to 5 turns (safety for CI)' },
+          { cmd: 'claude --model claude-haiku-4-5-20251001 -p "task"', desc: 'Use Haiku for fast/cheap tasks' },
+          { cmd: 'CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1', desc: 'Disable telemetry (CI/offline)' },
+          { cmd: '#!/usr/bin/env -S claude -p', desc: 'Use Claude Code as script interpreter' },
         ]},
       ]
     },
@@ -1022,6 +1177,19 @@ const CheatsheetsPage = (function () {
     if (!sheet) return '<div class="cs-empty">Not found.</div>';
     const lq = q.toLowerCase();
     const html = sheet.sections.map(sec => {
+      if (sec.type === 'tester') return `<div class="cs-regex-tester">
+        <div class="cs-regex-tester-title">🧪 Regex Tester</div>
+        <div class="cs-regex-row">
+          <input class="cs-regex-pattern" id="cs-rx-pat" type="text" placeholder="^[a-z]+$" spellcheck="false" autocomplete="off">
+          <div class="rx-flags">
+            <button class="rx-flag-btn" data-flag="i" title="case insensitive">i</button>
+            <button class="rx-flag-btn" data-flag="m" title="multiline">m</button>
+            <button class="rx-flag-btn" data-flag="s" title="dotAll">s</button>
+          </div>
+        </div>
+        <div class="cs-regex-test"><textarea id="cs-rx-txt" placeholder="Type or paste test text here…" rows="4"></textarea></div>
+        <div class="cs-regex-matches" id="cs-rx-out"><span class="cs-regex-match-count">—</span></div>
+      </div>`;
       const filtered = lq
         ? sec.items.filter(i => i.cmd.toLowerCase().includes(lq) || i.desc.toLowerCase().includes(lq))
         : sec.items;
@@ -1050,6 +1218,32 @@ const CheatsheetsPage = (function () {
     });
   }
 
+  function bindTesterEvents(container) {
+    const pat = container.querySelector('#cs-rx-pat');
+    const txt = container.querySelector('#cs-rx-txt');
+    const out = container.querySelector('#cs-rx-out');
+    if (!pat || !txt || !out) return;
+    function runTest() {
+      const p = pat.value.trim();
+      const t = txt.value;
+      if (!p || !t) { out.innerHTML = '<span class="cs-regex-match-count">—</span>'; return; }
+      const extraFlags = ['i','m','s'].filter(f => container.querySelector(`.rx-flag-btn[data-flag="${f}"]`)?.classList.contains('on')).join('');
+      let re;
+      try { re = new RegExp(p, 'g' + extraFlags); } catch(e) {
+        out.innerHTML = `<span class="cs-regex-match-count" style="color:var(--red)">⚠ ${esc(e.message)}</span>`;
+        return;
+      }
+      const ms = [...t.matchAll(re)];
+      if (!ms.length) { out.innerHTML = '<span class="cs-regex-match-count">No matches</span>'; return; }
+      const tags = ms.slice(0,40).map(m => `<span class="cs-regex-match-tag">${esc(m[0]||'ε')}</span>`).join('');
+      const more = ms.length > 40 ? `<span class="cs-regex-match-tag" style="opacity:.5">+${ms.length-40} more</span>` : '';
+      out.innerHTML = `<span class="cs-regex-match-count">${ms.length} match${ms.length===1?'':'es'}</span><div class="cs-regex-match-list">${tags}${more}</div>`;
+    }
+    container.querySelectorAll('.rx-flag-btn').forEach(b => b.addEventListener('click', () => { b.classList.toggle('on'); runTest(); }));
+    pat.addEventListener('input', runTest);
+    txt.addEventListener('input', runTest);
+  }
+
   function updateActive(page, id) {
     _activeId = id;
     page.querySelectorAll('.cs-cat-item').forEach(el => {
@@ -1059,6 +1253,7 @@ const CheatsheetsPage = (function () {
     if (content) {
       content.innerHTML = renderSections(_activeId, _query);
       bindCopyBtns(content);
+      bindTesterEvents(content);
       content.scrollTop = 0;
     }
   }
@@ -1087,6 +1282,7 @@ const CheatsheetsPage = (function () {
 
     const content = page.querySelector('#cs-content');
     bindCopyBtns(content);
+    bindTesterEvents(content);
 
     page.querySelectorAll('.cs-cat-item').forEach(el => {
       el.addEventListener('click', () => updateActive(page, el.dataset.csId));
@@ -1099,6 +1295,7 @@ const CheatsheetsPage = (function () {
         _query = searchInput.value.trim();
         content.innerHTML = renderSections(_activeId, _query);
         bindCopyBtns(content);
+        bindTesterEvents(content);
       });
     }
 

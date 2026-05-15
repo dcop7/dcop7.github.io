@@ -5,7 +5,7 @@ const Nav = (function () {
 
   const GAME_LIST = [
     { id: 'hangman',     key: 'game.hangman',     icon: '🪢' },
-    { id: 'runner',      key: 'game.runner',      icon: '🦊' },
+    { id: 'snake',       key: 'game.snake',       icon: '🐍' },
     { id: 'minesweeper', key: 'game.minesweeper', icon: '💣' },
     { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
   ];
@@ -47,7 +47,6 @@ const Nav = (function () {
       <div class="sb-scroll">
         <nav class="sb-main-nav">
           <a class="sb-nav-item" data-route="home" href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
-          <a class="sb-nav-item" data-route="feed" href="#feed">${ICONS.feed}<span>Feed</span></a>
           <a class="sb-nav-item" data-route="cheatsheets" href="#cheatsheets">${ICONS.cheatsheets}<span>Cheatsheets</span></a>
           <a class="sb-nav-item" data-route="games" href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
@@ -140,10 +139,7 @@ const Nav = (function () {
 
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
-    if (page === 'feed') {
-      document.getElementById('view-feed')?.classList.add('active');
-      typeof RssPage !== 'undefined' && RssPage.show();
-    } else if (page === 'cheatsheets') {
+    if (page === 'cheatsheets') {
       document.getElementById('view-cheatsheets')?.classList.add('active');
       typeof CheatsheetsPage !== 'undefined' && CheatsheetsPage.show();
     } else if (page === 'games') {
