@@ -19,6 +19,7 @@ const Nav = (function () {
     links:   svg('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
     tools:   svg('<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>'),
     workout: svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
+    media:   svg('<path d="M19.82 2H4.18A2.18 2.18 0 0 0 2 4.18v15.64A2.18 2.18 0 0 0 4.18 22h15.64A2.18 2.18 0 0 0 22 19.82V4.18A2.18 2.18 0 0 0 19.82 2z"/><polygon points="10 15 15 12 10 9 10 15"/>'),
     pin:     `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
   };
 
@@ -47,6 +48,7 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>Sites Úteis</span></a>
           <a class="sb-nav-item" data-route="tools" href="#tools">${ICONS.tools}<span>Ferramentas</span></a>
           <a class="sb-nav-item" data-route="workout" href="#workout">${ICONS.workout}<span>Treino</span></a>
+          <a class="sb-nav-item" data-route="media" href="#media">${ICONS.media}<span>Entretenimento</span></a>
         </nav>
         <div class="sb-divider"></div>
         <div class="sb-group">
@@ -147,6 +149,9 @@ const Nav = (function () {
     } else if (page === 'workout') {
       document.getElementById('view-workout')?.classList.add('active');
       typeof WorkoutPage !== 'undefined' && WorkoutPage.show();
+    } else if (page === 'media') {
+      document.getElementById('view-media')?.classList.add('active');
+      typeof MediaPage !== 'undefined' && MediaPage.show();
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
