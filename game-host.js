@@ -27,23 +27,16 @@ const GameHost = (function () {
         <h1 class="page-title">🎮 Jogos</h1>
         <p class="page-subtitle">Escolhe um jogo para começar a jogar</p>
       </div>
-      <div class="games-grid">
+      <div class="games-hub-grid">
         ${GAMES.map(g => `
-          <button class="game-card" data-game="${g.id}" style="--gc:${g.color}">
-            <div class="game-card-glow"></div>
-            <div class="game-card-icon">${g.icon}</div>
-            <div class="game-card-info">
-              <div class="game-card-name">${g.name}</div>
-              <div class="game-card-desc">${g.desc}</div>
-            </div>
-            <div class="game-card-cta">
-              Jogar
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
+          <button class="game-hub-card" data-game="${g.id}">
+            <div class="game-hub-card-icon">${g.icon}</div>
+            <div class="game-hub-card-name">${g.name}</div>
+            <div class="game-hub-card-desc">${g.desc}</div>
           </button>`).join('')}
       </div>`;
 
-    hub.querySelectorAll('.game-card').forEach(btn => {
+    hub.querySelectorAll('.game-hub-card').forEach(btn => {
       btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));
     });
   }

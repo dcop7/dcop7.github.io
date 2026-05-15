@@ -1,6 +1,6 @@
 {
-  "name": "Dev Hub",
-  "short_name": "DevHub",
+  "name": "Diogo's website",
+  "short_name": "Diogo",
   "description": "Personal developer productivity dashboard",
   "start_url": "/",
   "display": "standalone",
