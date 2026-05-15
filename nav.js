@@ -15,13 +15,15 @@ const Nav = (function () {
     return `<svg width="${w||16}" height="${h||16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   }
   const ICONS = {
-    home:    svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
-    games:   svg('<rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M7 10v4M5 12h4M17 11l2 1-2 1"/>'),
-    links:   svg('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
-    tools:   svg('<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>'),
-    workout: svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
-    media:   svg('<path d="M19.82 2H4.18A2.18 2.18 0 0 0 2 4.18v15.64A2.18 2.18 0 0 0 4.18 22h15.64A2.18 2.18 0 0 0 22 19.82V4.18A2.18 2.18 0 0 0 19.82 2z"/><polygon points="10 15 15 12 10 9 10 15"/>'),
-    pin:     `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+    home:        svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
+    feed:        svg('<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>'),
+    cheatsheets: svg('<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/>'),
+    games:       svg('<rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M7 10v4M5 12h4M17 11l2 1-2 1"/>'),
+    links:       svg('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
+    tools:       svg('<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>'),
+    workout:     svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
+    media:       svg('<path d="M19.82 2H4.18A2.18 2.18 0 0 0 2 4.18v15.64A2.18 2.18 0 0 0 4.18 22h15.64A2.18 2.18 0 0 0 22 19.82V4.18A2.18 2.18 0 0 0 19.82 2z"/><polygon points="10 15 15 12 10 9 10 15"/>'),
+    pin:         `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
   };
 
   function buildSidebar() {
@@ -45,6 +47,8 @@ const Nav = (function () {
       <div class="sb-scroll">
         <nav class="sb-main-nav">
           <a class="sb-nav-item" data-route="home" href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
+          <a class="sb-nav-item" data-route="feed" href="#feed">${ICONS.feed}<span>Feed</span></a>
+          <a class="sb-nav-item" data-route="cheatsheets" href="#cheatsheets">${ICONS.cheatsheets}<span>Cheatsheets</span></a>
           <a class="sb-nav-item" data-route="games" href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools" href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
@@ -129,16 +133,20 @@ const Nav = (function () {
     const [page, sub] = path.split('/');
     const q = new URLSearchParams(qs).get('q') || '';
 
-    // Active states
     document.querySelectorAll('[data-route]').forEach(el => {
       const r = el.dataset.route;
       el.classList.toggle('active', r === path || (r === page && !r.includes('/')));
     });
 
-    // Switch view — remove active from all, then add to target so animation triggers
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
-    if (page === 'games') {
+    if (page === 'feed') {
+      document.getElementById('view-feed')?.classList.add('active');
+      typeof RssPage !== 'undefined' && RssPage.show();
+    } else if (page === 'cheatsheets') {
+      document.getElementById('view-cheatsheets')?.classList.add('active');
+      typeof CheatsheetsPage !== 'undefined' && CheatsheetsPage.show();
+    } else if (page === 'games') {
       document.getElementById('view-games')?.classList.add('active');
       typeof GameHost !== 'undefined' && GameHost.show(sub || null);
     } else if (page === 'links') {

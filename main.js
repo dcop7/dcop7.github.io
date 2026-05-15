@@ -17,16 +17,47 @@ applyFont();
 document.getElementById('font-dec').addEventListener('click', () => { if (fontIdx > 0) { fontIdx--; applyFont(); } });
 document.getElementById('font-inc').addEventListener('click', () => { if (fontIdx < FONT_SIZES.length - 1) { fontIdx++; applyFont(); } });
 
-// ── THEME ─────────────────────────────────────────────────────────
-let isDark = (localStorage.getItem('theme') ?? (window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light')) === 'dark';
-function applyTheme() {
-  document.body.classList.toggle('light', !isDark);
-  const t = document.getElementById('theme-track');
-  if (t) t.classList.toggle('active', !isDark);
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-function toggleTheme() { isDark = !isDark; applyTheme(); }
-applyTheme();
+// ── THEME MANAGER ─────────────────────────────────────────────────
+const ThemeManager = (function () {
+  const ALL_CLASSES = ['light', 'theme-cyberpunk', 'theme-terminal', 'theme-retro'];
+
+  function _apply(theme) {
+    document.body.classList.remove(...ALL_CLASSES);
+    if (theme === 'light') document.body.classList.add('light');
+    else if (theme !== 'dark') document.body.classList.add(`theme-${theme}`);
+    localStorage.setItem('site-theme', theme);
+    document.querySelectorAll('.theme-option').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+  }
+
+  function openPanel() {
+    const panel = document.getElementById('theme-panel');
+    if (panel) panel.classList.toggle('open');
+  }
+
+  function closePanel() {
+    document.getElementById('theme-panel')?.classList.remove('open');
+  }
+
+  const saved = localStorage.getItem('site-theme') || 'dark';
+  _apply(saved);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.theme-option').forEach(btn => {
+      btn.addEventListener('click', () => { _apply(btn.dataset.theme); closePanel(); });
+    });
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (themeBtn) themeBtn.addEventListener('click', openPanel);
+    document.addEventListener('click', e => {
+      const panel = document.getElementById('theme-panel');
+      if (!panel?.classList.contains('open')) return;
+      if (!panel.contains(e.target) && e.target !== themeBtn) closePanel();
+    });
+  });
+
+  return { apply: _apply, openPanel, closePanel };
+})();
 
 // ── CONSTANTS ──────────────────────────────────────────────────────
 const WD    = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -41,24 +72,16 @@ const wd    = () => lang() === 'pt' ? WD : WD_EN;
 const mo    = () => lang() === 'pt' ? MO : MO_EN;
 const ms    = () => lang() === 'pt' ? MS : MS_EN;
 
-const WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
-const WMO_KEYS  = new Set([0,1,2,3,45,48,51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
-const wmo = c => ({ l: WMO_KEYS.has(+c) ? t(`wc.${+c}`) : t('wc.unknown'), i: WMO_ICONS[+c] || '🌡️' });
-
-function compass(d) {
-  return ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'][Math.round(d / 22.5) % 16];
-}
-function uvCls(v) { return v <= 2 ? 'uv-low' : v <= 5 ? 'uv-mod' : v <= 7 ? 'uv-high' : v <= 10 ? 'uv-vhigh' : 'uv-extreme'; }
-function fmtT(iso) { return iso ? iso.slice(11, 16) : '—'; }
-
 // ── CLOCK ──────────────────────────────────────────────────────────
 function tick() {
   const n = new Date();
   const l = lang();
-  document.getElementById('date-el').textContent = l === 'pt'
+  const dateEl = document.getElementById('date-el');
+  const timeEl = document.getElementById('time-el');
+  if (dateEl) dateEl.textContent = l === 'pt'
     ? `${WD[n.getDay()]}, ${n.getDate()} de ${MO[n.getMonth()]} de ${n.getFullYear()}`
     : `${WD_EN[n.getDay()]}, ${MO_EN[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
-  document.getElementById('time-el').textContent =
+  if (timeEl) timeEl.textContent =
     n.toLocaleTimeString(l === 'pt' ? 'pt-PT' : 'en-US', { hour: '2-digit', minute: '2-digit' });
 }
 tick();
@@ -191,7 +214,6 @@ const LOCAL_JOKES = [
 ];
 
 async function fetchJoke() {
-  // Always show a random local joke immediately; API is a bonus
   const local = LOCAL_JOKES[Math.floor(Math.random() * LOCAL_JOKES.length)];
   const bust = `&_=${Date.now()}`;
   try {
@@ -238,674 +260,112 @@ async function loadDailyContent() {
 }
 loadDailyContent();
 
-// ── WINDY MAP ─────────────────────────────────────────────────────
-let mapLatLon = [39.7436, -8.8071];
-
-function setMap(lat, lon, ov = 'rain') {
-  document.getElementById('windy-map').src =
-    `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}` +
-    `&zoom=6&level=surface&overlay=${ov}&product=ecmwf&menu=&message=true&marker=true` +
-    `&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
-}
-
-document.getElementById('map-tabs').addEventListener('click', e => {
-  const b = e.target.closest('.map-tab');
-  if (!b) return;
-  document.querySelectorAll('.map-tab').forEach(t => t.classList.remove('active'));
-  b.classList.add('active');
-  setMap(mapLatLon[0], mapLatLon[1], b.dataset.ov);
-});
-
-// ── POPUP ─────────────────────────────────────────────────────────
-const popup = document.getElementById('popup');
-let popT;
-let currentCityMeta = null;
-
-function positionPopup(anchor, pw = 268) {
-  const r = anchor.getBoundingClientRect();
-  popup.style.width = pw + 'px';
-  let left = r.left + r.width / 2 - pw / 2;
-  if (left < 8) left = 8;
-  if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-  popup.style.left = `${left}px`;
-  popup.style.top  = `${r.bottom + 8}px`;
-  requestAnimationFrame(() => {
-    const ph = popup.getBoundingClientRect().height;
-    const topAbove = r.top - ph - 10;
-    if (topAbove >= 8) popup.style.top = `${topAbove}px`;
-  });
-}
-
-function hidePopup() {
-  clearTimeout(popT);
-  popT = setTimeout(() => { popup.classList.remove('show', 'city-pop'); popup.style.width = ''; }, 130);
-}
-
-function showCityPopup(anchor, meta) {
-  if (!meta) return;
-  clearTimeout(popT);
-  const wikiUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(meta.wiki)}`;
-  const knownHTML = (meta.known || []).map(k => `<li>${k}</li>`).join('');
-  popup.classList.add('city-pop');
-  popup.innerHTML = `
-    <div class="pop-city-hdr"><span class="pop-city-hdr-icon">🏙️</span>${meta.name}</div>
-    <div class="pop-city-stats">
-      ${meta.founded ? `<div class="pop-city-row"><span class="pop-city-lbl">Fundada em</span><span class="pop-city-val">${meta.founded}</span></div>` : ''}
-      ${meta.pop    ? `<div class="pop-city-row"><span class="pop-city-lbl">Habitantes</span><span class="pop-city-val">${meta.pop}</span></div>` : ''}
-    </div>
-    ${knownHTML ? `<div class="pop-city-known">
-      <div class="pop-city-known-ttl">Mais conhecido por</div>
-      <ul class="pop-city-list">${knownHTML}</ul>
-    </div>` : ''}
-    <a class="pop-city-wiki" href="${wikiUrl}" target="_blank" rel="noopener">Ver na Wikipedia &rarr;</a>`;
-  positionPopup(anchor, 300);
-  popup.classList.add('show');
-}
-
-// ── GAUGE POPUP ───────────────────────────────────────────────────
-const gaugePop = document.getElementById('gauge-pop');
-let gaugeT;
-
-function getGAUGES() {
-  return {
-    wind:{lbl:t('wx.wind'),unit:'km/h',min:0,max:120,
-      ticks:[{v:0,l:t('gauge.wind.calm'),c:'#4ade80'},{v:20,l:t('gauge.wind.light'),c:'#86efac'},{v:39,l:t('gauge.wind.mod'),c:'#facc15'},{v:62,l:t('gauge.wind.strong'),c:'#fb923c'},{v:89,l:t('gauge.wind.storm'),c:'#f87171'}]},
-    humidity:{lbl:t('wx.humidity'),unit:'%',min:0,max:100,
-      ticks:[{v:0,l:t('gauge.hum.dry'),c:'#fcd34d'},{v:30,l:t('gauge.hum.ok'),c:'#4ade80'},{v:60,l:t('gauge.hum.humid'),c:'#60a5fa'},{v:80,l:t('gauge.hum.vhum'),c:'#818cf8'}]},
-    pressure:{lbl:t('wx.pressure'),unit:'hPa',min:960,max:1040,
-      ticks:[{v:960,l:t('gauge.pres.vlow'),c:'#93c5fd'},{v:980,l:t('gauge.pres.low'),c:'#60a5fa'},{v:1000,l:t('gauge.pres.norm'),c:'#4ade80'},{v:1020,l:t('gauge.pres.high'),c:'#fb923c'}]},
-    cloud:{lbl:t('wx.cloud'),unit:'%',min:0,max:100,
-      ticks:[{v:0,l:t('gauge.cloud.clear'),c:'#fcd34d'},{v:25,l:t('gauge.cloud.pcloud'),c:'#a5b4fc'},{v:50,l:t('gauge.cloud.mostcloud'),c:'#94a3b8'},{v:87,l:t('gauge.cloud.cloud'),c:'#64748b'}]},
-    uv:{lbl:t('wx.uv'),unit:'',min:0,max:12,
-      ticks:[{v:0,l:t('gauge.uv.low'),c:'#4ade80'},{v:3,l:t('gauge.uv.mod'),c:'#facc15'},{v:6,l:t('gauge.uv.high'),c:'#fb923c'},{v:8,l:t('gauge.uv.vhigh'),c:'#f87171'},{v:11,l:t('gauge.uv.extreme'),c:'#c084fc'}]},
-    precipitation:{lbl:t('wx.precip'),unit:'mm',min:0,max:30,
-      ticks:[{v:0,l:t('gauge.rain.none'),c:'#4ade80'},{v:2.5,l:t('gauge.rain.light'),c:'#93c5fd'},{v:7.5,l:t('gauge.rain.mod'),c:'#60a5fa'},{v:15,l:t('gauge.rain.heavy'),c:'#3b82f6'}]},
-    sunrise:{lbl:t('wx.sunrise'),unit:''},
-    sunset:{lbl:t('wx.sunset'),unit:''},
-  };
-}
-
-function getGaugeCat(g, val) {
-  let cat = g.ticks?.[0];
-  if (!g.ticks) return null;
-  for (const t of g.ticks) { if (val >= t.v) cat = t; }
-  return cat;
-}
-
-function showGaugePop(anchor, key, val) {
-  const g = getGAUGES()[key];
-  if (!g || !g.ticks) return;
-  clearTimeout(gaugeT);
-  const cat = getGaugeCat(g, val);
-  const pct = Math.min(100, Math.max(0, ((val - g.min) / (g.max - g.min)) * 100));
-  const scaleHTML = g.ticks.map(t =>
-    `<span><span class="gp-sc-dot" style="background:${t.c}"></span>${t.l}</span>`).join('');
-  gaugePop.innerHTML = `
-    <div class="gp-lbl">${g.lbl}</div>
-    <div class="gp-val">${val}${g.unit ? '<span style="font-size:.7rem;opacity:.5;margin-left:.1rem">' + g.unit + '</span>' : ''}
-      ${cat ? `<span class="gp-cat" style="color:${cat.c}">${cat.l}</span>` : ''}</div>
-    <div class="gp-bar-bg"><div class="gp-bar-fill" style="width:${pct}%;background:${cat?.c || 'var(--accent)'}"></div></div>
-    <div class="gp-scale">${scaleHTML}</div>`;
-
-  const r = anchor.getBoundingClientRect();
-  const pw = 210;
-  let left = r.left + r.width / 2 - pw / 2;
-  let top  = r.top - 160;
-  if (left < 8) left = 8;
-  if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-  if (top < 8) top = r.bottom + 6;
-  gaugePop.style.left = `${left}px`;
-  gaugePop.style.top  = `${top}px`;
-  gaugePop.classList.add('show');
-}
-
-function hideGaugePop() {
-  clearTimeout(gaugeT);
-  gaugeT = setTimeout(() => gaugePop.classList.remove('show'), 130);
-}
-
-document.getElementById('weather-hero').addEventListener('mouseover', e => {
-  const b = e.target.closest('.stat-box[data-gauge]');
-  if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
-});
-document.getElementById('weather-hero').addEventListener('click', e => {
-  const wrap = e.target.closest('.hero-city-img-wrap');
-  if (wrap) { showCityPopup(wrap, currentCityMeta); return; }
-  const b = e.target.closest('.stat-box[data-gauge]');
-  if (b) showGaugePop(b, b.dataset.gauge, +b.dataset.gv);
-});
-document.getElementById('weather-hero').addEventListener('mouseleave', hideGaugePop);
-
-// ── FORECAST POPUP ────────────────────────────────────────────────
-function showForecastPopup(anchor, data, dayAlerts) {
-  clearTimeout(popT);
-  const w = wmo(data.code);
-  const dt = new Date(data.date + 'T12:00:00');
-  const dayLabel  = data.dayName === 'Hoje' ? t('wx.today') : wd()[dt.getDay()];
-  const dateLabel = lang() === 'pt'
-    ? `${dt.getDate()} de ${mo()[dt.getMonth()]}`
-    : `${mo()[dt.getMonth()]} ${dt.getDate()}`;
-
-  const aLvl = {yellow:'pill-y', orange:'pill-o', red:'pill-r'};
-  const aTxt = {yellow:t('alert.yellow'), orange:t('alert.orange'), red:t('alert.red')};
-  const seenAlerts = new Set();
-  const uniqueAlerts = (dayAlerts || []).filter(a => {
-    const k = `${a.awarenessLevelID || a.awarenessLevel || ''}|${a.awarenessTypeName || ''}`;
-    return seenAlerts.has(k) ? false : (seenAlerts.add(k), true);
-  });
-  const alertsHTML = uniqueAlerts.length ? `
-    <div class="pop-alerts">
-      ${uniqueAlerts.map(a => {
-        const lvl  = (a.awarenessLevelID || a.awarenessLevel || 'yellow').toLowerCase();
-        const type = a.awarenessTypeName || 'Alert';
-        const areas = (a.areas || []).filter(Boolean).join(', ');
-        const end  = a.endTime || '';
-        return `<div class="pop-alert-row">
-          <span class="alert-pill ${aLvl[lvl] || 'pill-y'}">⚠️ ${aTxt[lvl] || t('alert.yellow')}</span>
-          <span>${type}${areas ? ' · ' + areas : ''}${end ? ' — ' + fmtT(end) : ''}</span>
-        </div>`;
-      }).join('')}
-    </div>` : '';
-
-  popup.innerHTML = `
-    <div class="pop-day">${dayLabel}</div>
-    <div class="pop-date">${dateLabel}</div>
-    <div class="pop-hero">
-      <div class="pop-icon">${w.i}</div>
-      <div>
-        <div class="pop-hi">${data.maxT}°C</div>
-        <div class="pop-lo">${t('wx.min')} ${data.minT}°C</div>
-        ${data.feelsMax != null ? `<div class="pop-feels">${t('wx.feels.hi')} ${data.feelsMax}°C</div>` : ''}
-        <div class="pop-cond">${w.l}</div>
-      </div>
-    </div>
-    <div class="pop-grid">
-      <div class="pop-stat"><div class="ps-l">${t('wx.wind.max')}</div><div class="ps-v">${data.wind} km/h</div></div>
-      <div class="pop-stat"><div class="ps-l">${t('wx.gusts')}</div><div class="ps-v">${data.gusts ?? '—'} km/h</div></div>
-      <div class="pop-stat"><div class="ps-l">${t('wx.humidity')}</div><div class="ps-v">${data.hum ?? '—'}%</div></div>
-      <div class="pop-stat"><div class="ps-l">${t('wx.rain.prob')}</div><div class="ps-v">${data.rain}%</div></div>
-      <div class="pop-stat"><div class="ps-l">${t('wx.precip')}</div><div class="ps-v">${(+data.precip || 0).toFixed(1)} mm</div></div>
-      ${data.uv != null ? `<div class="pop-stat"><div class="ps-l">${t('wx.uv')}</div><div class="ps-v ${uvCls(data.uv)}">${data.uv}</div></div>` : ''}
-    </div>
-    ${data.sunrise ? `<div class="pop-sun"><span>🌅 ${t('wx.sunrise')} ${fmtT(data.sunrise)}</span><span>🌇 ${t('wx.sunset')} ${fmtT(data.sunset)}</span></div>` : ''}
-    ${alertsHTML}`;
-
-  positionPopup(anchor);
-  popup.classList.add('show');
-}
-
-// ── HOURLY POPUP ──────────────────────────────────────────────────
-let hourlyStore = null;
-
-function showHourlyPopup(anchor, idx) {
-  clearTimeout(popT);
-  if (!hourlyStore) return;
-  const hr   = hourlyStore;
-  const ts   = hr.time[idx] || '';
-  const hw   = wmo(hr.weather_code[idx]);
-  const temp   = Math.round(hr.temperature_2m[idx]);
-  const feels  = hr.apparent_temperature ? Math.round(hr.apparent_temperature[idx]) : null;
-  const rain   = hr.precipitation_probability[idx] ?? 0;
-  const precip = hr.precipitation ? +(hr.precipitation[idx] ?? 0) : 0;
-  const wind   = Math.round(hr.wind_speed_10m[idx]);
-  const wDir   = compass(hr.wind_direction_10m[idx]);
-  const cloud  = hr.cloud_cover?.[idx] ?? '—';
-  const gusts  = hr.wind_gusts_10m ? Math.round(hr.wind_gusts_10m[idx]) : null;
-  const hour   = ts.slice(11, 16) || '—';
-
-  popup.innerHTML = `
-    <div class="pop-day">${hour === '—' ? t('wx.now') : hour}</div>
-    <div class="pop-date">${hw.l}</div>
-    <div class="pop-hero">
-      <div class="pop-icon">${hw.i}</div>
-      <div>
-        <div class="pop-hi">${temp}°C</div>
-        ${feels != null ? `<div class="pop-lo">${t('wx.feels.cur')} ${feels}°C</div>` : ''}
-      </div>
-    </div>
-    <div class="pop-grid">
-      <div class="pop-stat"><div class="ps-l">${t('wx.wind')}</div><div class="ps-v">${wind} km/h</div></div>
-      <div class="pop-stat"><div class="ps-l">${t('wx.dir')}</div><div class="ps-v">${wDir}</div></div>
-      ${gusts != null ? `<div class="pop-stat"><div class="ps-l">${t('wx.gusts')}</div><div class="ps-v">${gusts} km/h</div></div>` : ''}
-      <div class="pop-stat"><div class="ps-l">${t('wx.clouds')}</div><div class="ps-v">${cloud}%</div></div>
-      <div class="pop-stat"><div class="ps-l">${t('wx.rain.prob')}</div><div class="ps-v">${rain}%</div></div>
-      ${precip > 0 ? `<div class="pop-stat"><div class="ps-l">${t('wx.precip')}</div><div class="ps-v">${precip.toFixed(1)} mm</div></div>` : ''}
-    </div>`;
-
-  positionPopup(anchor);
-  popup.classList.add('show');
-}
-
-document.getElementById('hourly-scroll').addEventListener('mouseover', e => {
-  const card = e.target.closest('.h-card');
-  if (!card || !('idx' in card.dataset)) return;
-  showHourlyPopup(card, +card.dataset.idx);
-});
-document.getElementById('hourly-scroll').addEventListener('mouseleave', hidePopup);
-
-// ── IPMA ALERTS ───────────────────────────────────────────────────
-let activeAlerts = [];
-
-async function fetchAlerts() {
-  try {
-    const r   = await fetch('https://api.ipma.pt/open-data/forecast/warnings/warnings_www.json');
-    const raw = await r.json();
-    const now = Date.now();
-    const map = {};
-    (Array.isArray(raw) ? raw : []).forEach(w => {
-      const lvl = (w.awarenessLevelID || w.awarenessLevel || '').toLowerCase();
-      if (!['yellow','orange','red'].includes(lvl)) return;
-      const key = `${lvl}|${w.awarenessTypeName}|${w.startTime || ''}|${w.endTime || ''}`;
-      if (!map[key]) map[key] = {...w, lvl, areas:[]};
-      const area = w.area_name_pt || w.regionName || '';
-      if (area && !map[key].areas.includes(area)) map[key].areas.push(area);
-    });
-    activeAlerts = Object.values(map).filter(w => {
-      const s = new Date(w.startTime || w.start_time || 0).getTime();
-      const e = new Date(w.endTime   || w.end_time   || 0).getTime();
-      return now >= s && now <= e;
-    });
-  } catch { activeAlerts = []; }
-}
-
-function getAlertsForDay(dateStr) {
-  const s = new Date(dateStr + 'T00:00:00').getTime();
-  const e = new Date(dateStr + 'T23:59:59').getTime();
-  return activeAlerts.filter(a => {
-    const as = new Date(a.startTime || a.start_time || 0).getTime();
-    const ae = new Date(a.endTime   || a.end_time   || 0).getTime();
-    return as <= e && ae >= s;
-  });
-}
-
-// ── WEATHER ───────────────────────────────────────────────────────
-const CITY_META = {
-  '38.7223,-9.1393': {name:'Lisboa',        wiki:'Lisbon',            founded:'c. 138 a.C.',pop:'547 000',  known:['Torre de Belém','Mosteiro dos Jerónimos','Alfama e Castelo de São Jorge','Oceanário de Lisboa','Tram 28']},
-  '41.1579,-8.6291': {name:'Porto',         wiki:'Porto',             founded:'c. 300 d.C.', pop:'237 000', known:['Centro Histórico (Património UNESCO)','Caves do Vinho do Porto','Livraria Lello','Ponte D. Luís I','Ribeira']},
-  '41.5454,-8.4265': {name:'Braga',         wiki:'Braga',             founded:'16 a.C.',     pop:'193 000', known:['Bom Jesus do Monte','Sé de Braga (mais antiga de Portugal)','Termas Romanas do Alto da Cividade','Braga Romana']},
-  '40.2033,-8.4103': {name:'Coimbra',       wiki:'Coimbra',           founded:'c. 138 a.C.', pop:'106 000', known:['Universidade (Património UNESCO)','Biblioteca Joanina','Fado de Coimbra','Mosteiro de Santa Cruz','Rio Mondego']},
-  '37.0193,-7.9304': {name:'Faro',          wiki:'Faro,_Portugal',    founded:'séc. X (mouros)',pop:'64 000',known:['Cidade Velha amuralhada','Parque Natural da Ria Formosa','Praia de Faro','Sé Catedral','Museu Municipal']},
-  '38.5667,-7.9000': {name:'Évora',         wiki:'Évora',             founded:'séc. I a.C.', pop:'57 000',  known:['Templo Romano (Património UNESCO)','Aqueduto da Prata','Cromeleque dos Almendres','Catedral de Évora']},
-  '40.6405,-8.6538': {name:'Aveiro',        wiki:'Aveiro,_Portugal',  founded:'séc. XI',     pop:'81 000',  known:['Canais e Moliceiros (Veneza Portuguesa)','Arte Nova','Praia da Costa Nova','Museu de Aveiro','Ovos Moles']},
-  '38.5244,-8.8882': {name:'Setúbal',       wiki:'Setúbal',           founded:'1249',        pop:'121 000', known:['Parque Natural da Arrábida','Baía e Estuário do Sado','Castelo de Palmela','Mercado do Livramento','Peixinhos da Horta']},
-  '40.6566,-7.9122': {name:'Viseu',         wiki:'Viseu',             founded:'séc. I a.C.', pop:'100 000', known:['Museu Grão Vasco','Sé Catedral de Viseu','Centro Histórico Medieval','Vinho Dão','Festas da Cidade']},
-  '39.7436,-8.8071': {name:'Leiria',        wiki:'Leiria',            founded:'1135',        pop:'127 000', known:['Castelo de Leiria','Mosteiro da Batalha (UNESCO)','Pinhal de Leiria (Rei D. Dinis)','Praia da Nazaré','Museu de Arte Islâmica']},
-  '39.2333,-8.6833': {name:'Santarém',      wiki:'Santarém,_Portugal',founded:'séc. I a.C.', pop:'63 000',  known:['Capital do Gótico Português','Feira Nacional da Agricultura','Torre das Cabaças','Jardas da Ribeira de Santarém']},
-  '32.6669,-16.9241':{name:'Funchal',       wiki:'Funchal',           founded:'1424',        pop:'112 000', known:['Mercado dos Lavradores','Carros de Cesto do Monte','Jardim Botânico da Madeira','Levadas da Madeira','Vinho Madeira']},
-  '37.7412,-25.6756':{name:'Ponta Delgada', wiki:'Ponta_Delgada',     founded:'1546',        pop:'68 000',  known:['Portas da Cidade','Caldeira das Sete Cidades','Lagoa das Furnas','Termas da Ribeira Grande','Cozido das Furnas']},
+// ── HERO SEARCH ────────────────────────────────────────────────────
+const ENGINES = {
+  'g:':   q => `https://www.google.com/search?q=${encodeURIComponent(q)}`,
+  'yt:':  q => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
+  'gh:':  q => `https://github.com/search?q=${encodeURIComponent(q)}`,
+  'r:':   q => `https://www.reddit.com/search/?q=${encodeURIComponent(q)}`,
+  'ai:':  q => `https://chatgpt.com/?q=${encodeURIComponent(q)}`,
 };
+const ENGINE_NAMES = { 'g:':'Google','yt:':'YouTube','gh:':'GitHub','r:':'Reddit','ai:':'ChatGPT',''  :'Web' };
 
-// ── HERO WEATHER ANIMATIONS (ha-*) ────────────────────────────────
-function haRays(n = 10, innerR = 32, container = 130) {
-  const cx = container / 2;
-  return Array.from({length: n}, (_, i) => {
-    const angle = (360 / n) * i;
-    const h = i % 2 === 0 ? 22 : 16;
-    const top = cx - innerR - h;
-    const toY = h + innerR;
-    return `<div class="ha-ray" style="height:${h}px;top:${top}px;left:${cx - 2}px;transform-origin:2px ${toY}px;transform:rotate(${angle}deg);--rd:${(i * (2.8 / n)).toFixed(2)}s"></div>`;
-  }).join('');
+function parseSearch(raw) {
+  for (const pfx of Object.keys(ENGINES)) {
+    if (raw.toLowerCase().startsWith(pfx)) return { pfx, q: raw.slice(pfx.length).trim() };
+  }
+  return { pfx: '', q: raw.trim() };
 }
 
-function haCloud(dark = false, w = 96, h = 58, top = 56, left = 27) {
-  const dk = dark ? ' ha-dark' : '';
-  const p1w = Math.round(w * .42), p2w = Math.round(w * .52), p3w = Math.round(w * .36);
-  const bH = Math.round(h * .52);
-  return `<div class="ha-cloud-g${dk}" style="top:${top}px;left:${left}px;height:${h}px">
-    <div class="ha-cp" style="width:${p1w}px;height:${p1w}px;bottom:${bH}px;left:${Math.round(w*.06)}px"></div>
-    <div class="ha-cp" style="width:${p2w}px;height:${p2w}px;bottom:${bH}px;left:${Math.round(w*.25)}px"></div>
-    <div class="ha-cp" style="width:${p3w}px;height:${p3w}px;bottom:${bH}px;left:${Math.round(w*.58)}px"></div>
-    <div class="ha-cb" style="width:${w}px;height:${bH + 6}px;bottom:0;left:0"></div>
-    <div class="ha-cshadow" style="width:${Math.round(w*.65)}px;height:${Math.round(h*.2)}px;bottom:-${Math.round(h*.13)}px;left:${Math.round(w*.18)}px"></div>
-  </div>`;
+function doSearch(raw) {
+  const { pfx, q } = parseSearch(raw);
+  if (!q) return;
+  const url = pfx
+    ? ENGINES[pfx](q)
+    : `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+  window.open(url, '_blank', 'noopener');
 }
 
-function haDrops(cfgs) {
-  return cfgs.map(([l, t, h, spd, dly]) =>
-    `<div class="ha-drop" style="left:${l}px;top:${t}px;height:${h}px;--hspd:${spd}s;--hdly:${dly}s"></div>`
-  ).join('');
-}
+document.addEventListener('DOMContentLoaded', () => {
+  const heroInput = document.getElementById('hero-search');
+  const heroBadge = document.getElementById('hero-engine-label');
+  const heroBtn   = document.getElementById('hero-search-btn');
 
-function haFlakes(cfgs) {
-  return cfgs.map(([l, t, sz, spd, dly, sx]) =>
-    `<div class="ha-flake" style="left:${l}px;top:${t}px;width:${sz}px;height:${sz}px;--hspd:${spd}s;--hdly:${dly}s;--hsx:${sx}px"></div>`
-  ).join('');
-}
+  if (heroInput) {
+    heroInput.addEventListener('input', () => {
+      const { pfx } = parseSearch(heroInput.value);
+      if (heroBadge) heroBadge.textContent = ENGINE_NAMES[pfx] || 'Web';
+    });
+    heroInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); doSearch(heroInput.value); }
+    });
+  }
+  if (heroBtn) heroBtn.addEventListener('click', () => doSearch(heroInput?.value || ''));
 
-function haAnimHTML(code) {
-  const c = +code;
-  if (c <= 1)
-    return `<div class="ha-wrap">
-      <div class="ha-rays-ring">${haRays(10)}</div>
-      <div class="ha-corona"></div>
-      <div class="ha-core"></div>
-    </div>`;
-  if (c === 2)
-    return `<div class="ha-wrap">
-      <div class="ha-ms-wrap" style="top:8px;left:6px;width:62px;height:62px">
-        <div class="ha-ms-ring" style="width:62px;height:62px;top:0;left:0">${haRays(8, 16, 62)}</div>
-        <div class="ha-ms-core" style="width:28px;height:28px;box-shadow:0 0 14px rgba(255,185,0,.9),0 0 28px rgba(255,120,0,.55)"></div>
-      </div>
-      ${haCloud(false, 90, 54, 72, 24)}
-    </div>`;
-  if (c === 3)
-    return `<div class="ha-wrap">${haCloud(false, 104, 62, 44, 23)}</div>`;
-  if (c === 45 || c === 48)
-    return `<div class="ha-wrap">
-      ${haCloud(false, 90, 54, 10, 30)}
-      <div class="ha-fog-b" style="width:82px;left:34px;top:74px;--hfd:3.5s;--hfdl:0s"></div>
-      <div class="ha-fog-b" style="width:66px;left:42px;top:87px;--hfd:4.3s;--hfdl:.7s"></div>
-      <div class="ha-fog-b" style="width:72px;left:36px;top:100px;--hfd:3.8s;--hfdl:1.4s"></div>
-    </div>`;
-  if (c >= 51 && c <= 55)
-    return `<div class="ha-wrap">
-      ${haCloud(false, 88, 52, 10, 31)}
-      ${haDrops([[42,63,13,.96,0],[56,61,12,1.1,.32],[70,64,13,.9,.65]])}
-    </div>`;
-  if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
-    return `<div class="ha-wrap">
-      ${haCloud(true, 100, 56, 8, 25)}
-      ${haDrops([[34,65,15,.72,0],[49,63,16,.78,.16],[63,66,15,.7,.38],[77,64,16,.74,.24],[90,67,13,.68,.52]])}
-    </div>`;
-  if (c >= 71 && c <= 75)
-    return `<div class="ha-wrap">
-      ${haCloud(true, 92, 54, 8, 29)}
-      ${haFlakes([[40,63,8,1.5,0,3],[55,61,7,1.3,.45,-3],[70,65,8,1.55,.85,4],[85,62,6,1.4,.25,-2]])}
-    </div>`;
-  if (c >= 95)
-    return `<div class="ha-wrap">
-      ${haCloud(true, 102, 58, 8, 24)}
-      ${haDrops([[36,67,14,.7,0],[52,65,15,.72,.2],[68,68,14,.68,.42]])}
-      <div class="ha-bolt" style="bottom:6px;left:50%;transform:translateX(-50%)">⚡</div>
-    </div>`;
-  return `<div class="ha-wrap" style="font-size:3rem;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
-}
+  const qaPalette = document.getElementById('qa-palette');
+  if (qaPalette) qaPalette.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('cp:open'));
+  });
 
-// ── SMALL WEATHER ANIMATIONS (wa-* for other uses) ────────────────
-function sunWrap(scale = 1, opacity = 1) {
-  const rays = [0, 45, 90, 135, 180, 225, 270, 315].map((ra, i) =>
-    `<div class="wa-sun-ray" style="--ra:${ra}deg;--rd:${(i * 0.15).toFixed(2)}s"></div>`).join('');
-  const sz = Math.round(18 * scale);
-  return `<div class="wa-sun-wrap" style="opacity:${opacity}">
-    ${rays}<div class="wa-sun-core" style="width:${sz}px;height:${sz}px"></div>
-  </div>`;
-}
-function cloudGrp(dark = false) {
-  return `<div class="wa-cloud-grp${dark ? ' wa-cloud-dark' : ''}">
-    <div class="wa-cl-body"></div><div class="wa-cl-p1"></div><div class="wa-cl-p2"></div>
-  </div>`;
-}
-function drops(configs) {
-  return configs.map(([x, h, spd, dly]) =>
-    `<div class="wa-drop" style="left:${x}px;top:32px;height:${h}px;--spd:${spd}s;--dly:${dly}s"></div>`
-  ).join('');
-}
-function flakes(configs) {
-  return configs.map(([x, spd, dly, sx]) =>
-    `<div class="wa-flake" style="left:${x}px;top:30px;--spd:${spd}s;--dly:${dly}s;--sx:${sx || 4}px"></div>`
-  ).join('');
-}
-
-function getAnimHTML(code) {
-  const c = +code;
-  if (c === 0 || c === 1)
-    return `<div class="w-anim">${sunWrap()}</div>`;
-  if (c === 2)
-    return `<div class="w-anim" style="position:relative">
-      <div class="wa-pcloudy-sun">${[0,45,90,135,180,225,270,315].map((ra,i)=>`<div class="wa-sun-ray" style="--ra:${ra}deg;--rd:${(i*.12).toFixed(2)}s"></div>`).join('')}<div class="wa-sun-core" style="width:16px;height:16px"></div></div>
-      <div style="position:absolute;bottom:4px;right:4px">${cloudGrp()}</div>
-    </div>`;
-  if (c === 3)
-    return `<div class="w-anim">${cloudGrp(true)}</div>`;
-  if (c === 45 || c === 48)
-    return `<div class="w-anim" style="position:relative">
-      ${cloudGrp(true)}
-      <div class="wa-fog-line" style="width:50px;left:8px;top:46px;--fd:3.5s;--fdl:0s"></div>
-      <div class="wa-fog-line" style="width:38px;left:16px;top:54px;--fd:4.5s;--fdl:.8s"></div>
-    </div>`;
-  if (c >= 51 && c <= 55)
-    return `<div class="w-anim" style="position:relative">${cloudGrp()}${drops([[24,9,.95,0],[34,11,1.15,.35],[44,9,.9,.7]])}</div>`;
-  if ((c >= 61 && c <= 65) || (c >= 80 && c <= 82))
-    return `<div class="w-anim" style="position:relative">${cloudGrp(true)}${drops([[18,12,.68,0],[28,14,.76,.18],[38,11,.7,.42],[50,12,.65,.28]])}</div>`;
-  if (c >= 71 && c <= 75)
-    return `<div class="w-anim" style="position:relative">${cloudGrp(true)}${flakes([[20,1.45,0,3],[33,1.25,.4,-3],[46,1.55,.75,4]])}</div>`;
-  if (c >= 95)
-    return `<div class="w-anim" style="position:relative">${cloudGrp(true)}${drops([[20,12,.62,0],[33,14,.68,.22],[46,11,.6,.48]])}<div class="wa-bolt">⚡</div></div>`;
-  return `<div class="w-anim" style="font-size:2.6rem;display:flex;align-items:center;justify-content:center">${wmo(c).i}</div>`;
-}
-
-const CITY_OPTIONS = `
-  <option value="38.7223,-9.1393">Lisboa</option>
-  <option value="41.1579,-8.6291">Porto</option>
-  <option value="41.5454,-8.4265">Braga</option>
-  <option value="40.2033,-8.4103">Coimbra</option>
-  <option value="37.0193,-7.9304">Faro</option>
-  <option value="38.5667,-7.9000">Évora</option>
-  <option value="40.6405,-8.6538">Aveiro</option>
-  <option value="38.5244,-8.8882">Setúbal</option>
-  <option value="40.6566,-7.9122">Viseu</option>
-  <option value="39.7436,-8.8071">Leiria</option>
-  <option value="39.2333,-8.6833">Santarém</option>
-  <option value="32.6669,-16.9241">Funchal</option>
-  <option value="37.7412,-25.6756">Ponta Delgada</option>`;
-
-document.getElementById('weather-hero').addEventListener('change', e => {
-  if (e.target.matches('.hero-city-select')) loadWeather(e.target.value);
+  const shortcutsBtn = document.getElementById('shortcuts-btn');
+  if (shortcutsBtn) shortcutsBtn.addEventListener('click', toggleShortcuts);
+  document.getElementById('shortcuts-overlay')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) toggleShortcuts();
+  });
 });
 
-async function loadWeather(latlon) {
-  const [lat, lon] = latlon.split(',').map(Number);
-  mapLatLon = [lat, lon];
-  setMap(lat, lon, document.querySelector('.map-tab.active')?.dataset.ov || 'rain');
+function toggleShortcuts() {
+  const overlay = document.getElementById('shortcuts-overlay');
+  if (overlay) overlay.hidden = !overlay.hidden;
+}
 
-  const hero   = document.getElementById('weather-hero');
-  const curVal = latlon;
-  const meta   = CITY_META[latlon] || {name: latlon, wiki: null};
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────────
+let _gKey = null;
+document.addEventListener('keydown', e => {
+  const active = document.activeElement;
+  const typing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+  const cpOpen = !document.getElementById('cp-overlay')?.hidden;
+  const shOpen = !document.getElementById('shortcuts-overlay')?.hidden;
 
-  currentCityMeta = meta;
-
-  const heroLeft = imgHTML => `
-    <div class="hero-left">
-      <div class="hero-city-img-wrap">${imgHTML}</div>
-      <select class="hero-city-select">${CITY_OPTIONS}</select>
-    </div>`;
-
-  hero.innerHTML = `<div class="hero-body">
-    ${heroLeft('<div class="hero-city-img-ph">📷</div>')}
-    <div class="hero-center" style="color:rgba(107,125,160,.8);font-size:.85rem">${t('wx.loading')}</div>
-    <div class="hero-right"></div>
-  </div>`;
-  hero.querySelector('.hero-city-select').value = curVal;
-
-  document.getElementById('hourly-row').innerHTML = '';
-  document.getElementById('forecast-row').innerHTML = '';
-
-  const [weatherRes, wikiRes] = await Promise.allSettled([
-    fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-      `&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,surface_pressure,cloud_cover` +
-      `&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover` +
-      `&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,relative_humidity_2m_max,uv_index_max,sunrise,sunset` +
-      `&timezone=Europe%2FLisbon&forecast_days=7`
-    ).then(r => r.json()),
-    meta.wiki
-      ? fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(meta.wiki)}`).then(r => r.json())
-      : Promise.resolve(null),
-    fetchAlerts(),
-  ]);
-
-  if (weatherRes.status !== 'fulfilled') {
-    hero.innerHTML = `<div class="hero-body">
-      ${heroLeft('<div class="hero-city-img-ph">📷</div>')}
-      <div class="hero-center" style="color:#ef4444;font-size:.85rem">${t('wx.error')}</div>
-      <div class="hero-right"></div>
-    </div>`;
-    hero.querySelector('.hero-city-select').value = curVal;
+  if (e.key === 'Escape') {
+    if (cpOpen) { document.dispatchEvent(new CustomEvent('cp:close')); return; }
+    if (shOpen) { toggleShortcuts(); return; }
+    const srInput = document.getElementById('search-input');
+    if (document.activeElement === srInput) { srInput.blur(); srInput.value = ''; }
     return;
   }
 
-  const {current: c, daily: dl, hourly: hr} = weatherRes.value;
-  hourlyStore = hr;
-
-  const cw  = wmo(c.weather_code);
-  const uv0 = dl.uv_index_max?.[0] ?? null;
-  const maxToday = Math.round(dl.temperature_2m_max[0]);
-  const minToday = Math.round(dl.temperature_2m_min[0]);
-
-  const wikiThumb = wikiRes.status === 'fulfilled' && wikiRes.value?.thumbnail?.source;
-  const imgHTML = wikiThumb
-    ? `<img class="hero-city-img" src="${wikiThumb}" alt="${meta.name}">`
-    : `<div class="hero-city-img-ph">📷 ${meta.name}</div>`;
-
-  function statBar(key, val) {
-    const g = getGAUGES()[key]; if (!g?.ticks) return '';
-    const pct = Math.min(100, Math.max(0, ((val - (g.min || 0)) / ((g.max || 100) - (g.min || 0))) * 100));
-    const cat = getGaugeCat(g, val);
-    return `<div class="sbox-bar"><div class="sbox-bar-fill" style="width:${pct}%;background:${cat?.c || 'var(--accent)'}"></div></div>`;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.dispatchEvent(new CustomEvent('cp:open'));
+    return;
   }
 
-  const wxCat = (+c.weather_code) <= 1 ? 'sun'
-    : (+c.weather_code) === 2 ? 'pcloudy'
-    : (+c.weather_code) <= 48 ? ((+c.weather_code) >= 45 ? 'fog' : 'cloud')
-    : (+c.weather_code) <= 55 ? 'drizzle'
-    : (+c.weather_code) <= 82 ? 'rain'
-    : (+c.weather_code) <= 75 ? 'snow' : 'storm';
-  hero.setAttribute('data-wx', wxCat);
-
-  const windVal = Math.round(c.wind_speed_10m);
-  const uvVal   = uv0 ?? 0;
-  const precVal = +(c.precipitation || 0);
-
-  hero.innerHTML = `<div class="hero-body">
-    ${heroLeft(imgHTML)}
-    <div class="hero-center">
-      <div class="hero-wx-icon">${haAnimHTML(c.weather_code)}</div>
-      <div class="hero-temp-block">
-        <div class="hero-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
-        <div class="hero-cond">${cw.l}</div>
-        <div class="hero-feels">${t('wx.feels.cur')} ${Math.round(c.apparent_temperature)}°C</div>
-        <div class="hero-minmax">↑ ${maxToday}° · ↓ ${minToday}°</div>
-      </div>
-    </div>
-    <div class="hero-right">
-      <div class="stat-grid">
-        <div class="stat-box" data-gauge="wind" data-gv="${windVal}">
-          <div class="sbox-icon">💨</div><div class="sbox-label">${t('wx.wind')}</div>
-          <div class="sbox-val">${windVal} <span style="font-size:.6rem;opacity:.5">km/h</span></div>
-          <div class="sbox-sub">${compass(c.wind_direction_10m)}</div>
-          ${statBar('wind', windVal)}
-        </div>
-        <div class="stat-box" data-gauge="humidity" data-gv="${c.relative_humidity_2m}">
-          <div class="sbox-icon">💧</div><div class="sbox-label">${t('wx.humidity')}</div>
-          <div class="sbox-val">${c.relative_humidity_2m}<span style="font-size:.6rem;opacity:.5">%</span></div>
-          ${statBar('humidity', c.relative_humidity_2m)}
-        </div>
-        <div class="stat-box" data-gauge="pressure" data-gv="${Math.round(c.surface_pressure)}">
-          <div class="sbox-icon">🌡️</div><div class="sbox-label">${t('wx.pressure')}</div>
-          <div class="sbox-val">${Math.round(c.surface_pressure)} <span style="font-size:.6rem;opacity:.5">hPa</span></div>
-          ${statBar('pressure', Math.round(c.surface_pressure))}
-        </div>
-        <div class="stat-box" data-gauge="cloud" data-gv="${c.cloud_cover}">
-          <div class="sbox-icon">☁️</div><div class="sbox-label">${t('wx.clouds')}</div>
-          <div class="sbox-val">${c.cloud_cover}<span style="font-size:.6rem;opacity:.5">%</span></div>
-          ${statBar('cloud', c.cloud_cover)}
-        </div>
-        <div class="stat-box" data-gauge="uv" data-gv="${uvVal}">
-          <div class="sbox-icon">🌞</div><div class="sbox-label">${t('wx.uv')}</div>
-          <div class="sbox-val ${uv0 != null ? uvCls(uv0) : ''}">${uv0 ?? '—'}</div>
-          ${statBar('uv', uvVal)}
-        </div>
-        <div class="stat-box" data-gauge="precipitation" data-gv="${precVal}">
-          <div class="sbox-icon">🌧️</div><div class="sbox-label">${t('wx.precip')}</div>
-          <div class="sbox-val">${precVal} <span style="font-size:.6rem;opacity:.5">mm</span></div>
-          ${statBar('precipitation', precVal)}
-        </div>
-        <div class="stat-box">
-          <div class="sbox-icon">🌅</div><div class="sbox-label">${t('wx.sunrise')}</div>
-          <div class="sbox-val">${fmtT(dl.sunrise?.[0])}</div>
-        </div>
-        <div class="stat-box">
-          <div class="sbox-icon">🌇</div><div class="sbox-label">${t('wx.sunset')}</div>
-          <div class="sbox-val">${fmtT(dl.sunset?.[0])}</div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-
-  hero.querySelector('.hero-city-select').value = curVal;
-
-  const cityWrap = hero.querySelector('.hero-city-img-wrap');
-  if (cityWrap) {
-    cityWrap.addEventListener('mouseenter', () => { clearTimeout(popT); showCityPopup(cityWrap, currentCityMeta); });
-    cityWrap.addEventListener('mouseleave', hidePopup);
+  if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+    e.preventDefault();
+    toggleShortcuts();
+    return;
   }
 
-  // ── HOURLY ──
-  const nowTs = Date.now();
-  let hi = hr.time.findIndex(ts => new Date(ts).getTime() >= nowTs);
-  if (hi < 0) hi = 0;
+  if (typing || cpOpen) return;
 
-  document.getElementById('hourly-row').innerHTML = hr.time.slice(hi, hi + 24).map((ts, i) => {
-    const idx  = hi + i;
-    const hw   = wmo(hr.weather_code[idx]);
-    const rain = hr.precipitation_probability[idx] ?? 0;
-    return `<div class="h-card${i === 0 ? ' h-now' : ''}" data-idx="${idx}">
-      <div class="h-time">${i === 0 ? t('wx.now') : ts.slice(11, 16)}</div>
-      <div class="h-ico">${hw.i}</div>
-      <div class="h-tmp">${Math.round(hr.temperature_2m[idx])}°</div>
-      <div class="h-prcp">${rain > 0 ? rain + '%' : ''}</div>
-    </div>`;
-  }).join('');
+  if (e.key === '/') {
+    e.preventDefault();
+    document.getElementById('search-input')?.focus();
+    return;
+  }
 
-  // ── 7-DAY FORECAST ──
-  const fcRow = document.getElementById('forecast-row');
-  fcRow.innerHTML = '';
-  dl.time.forEach((dateStr, i) => {
-    const dt       = new Date(dateStr + 'T12:00:00');
-    const dn       = i === 0 ? t('wx.today') : wd()[dt.getDay()];
-    const dw       = wmo(dl.weather_code[i]);
-    const maxT     = Math.round(dl.temperature_2m_max[i]);
-    const minT     = Math.round(dl.temperature_2m_min[i]);
-    const rain     = dl.precipitation_probability_max?.[i] ?? 0;
-    const wind     = Math.round(dl.wind_speed_10m_max?.[i] ?? 0);
-    const gusts    = dl.wind_gusts_10m_max?.[i] != null ? Math.round(dl.wind_gusts_10m_max[i]) : null;
-    const hum      = dl.relative_humidity_2m_max?.[i] ?? null;
-    const precip   = dl.precipitation_sum?.[i] ?? 0;
-    const uv       = dl.uv_index_max?.[i] != null ? Math.round(dl.uv_index_max[i]) : null;
-    const feelsMax = dl.apparent_temperature_max?.[i] != null ? Math.round(dl.apparent_temperature_max[i]) : null;
-    const sunrise  = dl.sunrise?.[i] ?? '';
-    const sunset   = dl.sunset?.[i] ?? '';
+  if (e.key === 'g' || e.key === 'G') { _gKey = Date.now(); return; }
 
-    const dayAlerts  = getAlertsForDay(dateStr);
-    const hasAlert   = dayAlerts.length > 0;
-    const alertColor = hasAlert
-      ? (dayAlerts[0].lvl === 'red'    ? 'rgba(239,68,68,.35)'
-       : dayAlerts[0].lvl === 'orange' ? 'rgba(249,115,22,.35)'
-       : 'rgba(245,158,11,.35)')
-      : '';
-    const rainBar = rain > 5 ? `🌧️ ${rain}%` : '';
-
-    const card = document.createElement('div');
-    card.className = 'fc' + (i === 0 ? ' fc-today' : '');
-    if (hasAlert) card.style.borderColor = alertColor;
-    card.innerHTML = `
-      <div class="fc-day">${dn}</div>
-      <div class="fc-date">${dt.getDate()} ${ms()[dt.getMonth()]}</div>
-      <div class="fc-ico">${dw.i}</div>
-      <div class="fc-temps"><span class="fc-hi-v">↑ ${maxT}°</span><span class="fc-sep">/</span><span class="fc-lo-v">↓ ${minT}°</span></div>
-      <div class="fc-rain">${rainBar}</div>
-      ${hasAlert ? `<div class="fc-alert-dot">${dayAlerts[0].lvl === 'red' ? '🔴' : dayAlerts[0].lvl === 'orange' ? '🟠' : '🟡'}</div>` : ''}`;
-
-    card.addEventListener('mouseenter', () => showForecastPopup(card, {
-      date:dateStr, dayName:dn, code:dl.weather_code[i],
-      maxT, minT, feelsMax, wind, gusts, hum, rain, precip, uv, sunrise, sunset
-    }, dayAlerts));
-    card.addEventListener('mouseleave', hidePopup);
-    fcRow.appendChild(card);
-  });
-}
-
-loadWeather('39.7436,-8.8071');
+  if (_gKey && Date.now() - _gKey < 1500 && typeof Nav !== 'undefined') {
+    const map = { h:'home', g:'games', l:'links', t:'tools', f:'feed', c:'cheatsheets', m:'media', w:'workout' };
+    const dest = map[e.key.toLowerCase()];
+    if (dest) { e.preventDefault(); Nav.go(dest); }
+    _gKey = null;
+    return;
+  }
+  _gKey = null;
+});
 
 // ── HOLIDAYS ──────────────────────────────────────────────────────
 function getEaster(y) {
@@ -972,23 +432,26 @@ function holHTML(date, name, sub) {
 
 function renderHolidays() {
   const y = holYear;
-  document.getElementById('hol-year-label').textContent = y;
+  const lbl = document.getElementById('hol-year-label');
+  if (lbl) lbl.textContent = y;
   const nat = ptNat(y).sort((a, b) => a.d - b.d);
-  document.getElementById('nat-hols').innerHTML = nat.map(h => holHTML(h.d, h.n, t('hol.nat.lbl'))).join('');
+  const natEl = document.getElementById('nat-hols');
+  if (natEl) natEl.innerHTML = nat.map(h => holHTML(h.d, h.n, t('hol.nat.lbl'))).join('');
   const mun = MUN.map(m => ({date: new Date(y, m.m - 1, m.d), n: m.n, c: m.c}))
     .sort((a, b) => a.date - b.date);
-  document.getElementById('mun-hols').innerHTML = mun.map(h => holHTML(h.date, h.n, h.c)).join('');
+  const munEl = document.getElementById('mun-hols');
+  if (munEl) munEl.innerHTML = mun.map(h => holHTML(h.date, h.n, h.c)).join('');
 }
 
-document.getElementById('hol-prev').addEventListener('click', () => { holYear--; renderHolidays(); });
-document.getElementById('hol-next').addEventListener('click', () => { holYear++; renderHolidays(); });
-renderHolidays();
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('hol-prev')?.addEventListener('click', () => { holYear--; renderHolidays(); });
+  document.getElementById('hol-next')?.addEventListener('click', () => { holYear++; renderHolidays(); });
+  renderHolidays();
+});
 
 document.addEventListener('langchange', () => {
   tick();
   renderWelcome();
   loadDailyContent();
   renderHolidays();
-  const city = document.querySelector('.hero-city-select')?.value || '39.7436,-8.8071';
-  loadWeather(city);
 });

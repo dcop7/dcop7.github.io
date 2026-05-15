@@ -5,11 +5,13 @@ const Search = (function () {
   let _input, _dropdown;
 
   const SECTIONS = [
-    { label: 'Início',       id: 'home',    icon: '🏠', tags: ['início','home','tempo','meteorologia','clima','previsão'] },
-    { label: 'Jogos',        id: 'games',   icon: '🎮', tags: ['jogos','games','jogar'] },
-    { label: 'Sites Úteis',  id: 'links',   icon: '🔗', tags: ['sites','links','úteis'] },
-    { label: 'Ferramentas',  id: 'tools',   icon: '🛠️', tags: ['ferramentas','temporizador','cronómetro','timer','stopwatch','pomodoro','produtividade','ampulheta'] },
-    { label: 'Treino',       id: 'workout', icon: '💪', tags: ['treino','workout','exercício','fitness','cardio','força','core'] },
+    { label: 'Início',       id: 'home',         icon: '🏠', tags: ['início','home','dashboard','início'] },
+    { label: 'Feed',         id: 'feed',         icon: '📰', tags: ['feed','hacker news','hn','rss','noticias','tech','news'] },
+    { label: 'Cheatsheets',  id: 'cheatsheets',  icon: '📋', tags: ['cheatsheets','git','linux','docker','vim','bash','regex','claude','comandos','atalhos'] },
+    { label: 'Jogos',        id: 'games',        icon: '🎮', tags: ['jogos','games','jogar'] },
+    { label: 'Sites Úteis',  id: 'links',        icon: '🔗', tags: ['sites','links','úteis'] },
+    { label: 'Ferramentas',  id: 'tools',        icon: '🛠️', tags: ['ferramentas','temporizador','cronómetro','timer','stopwatch','pomodoro','produtividade','ampulheta'] },
+    { label: 'Treino',       id: 'workout',      icon: '💪', tags: ['treino','workout','exercício','fitness','cardio','força','core'] },
   ];
 
   const GAMES = [

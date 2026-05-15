@@ -1,0 +1,12 @@
+{
+  "name": "Dev Hub",
+  "short_name": "DevHub",
+  "description": "Personal developer productivity dashboard",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080c14",
+  "theme_color": "#6366f1",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Diogo's Website</title>
+<title>Dev Hub</title>
+<meta name="description" content="Personal developer productivity dashboard"/>
+<meta name="theme-color" content="#6366f1"/>
 <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 <link rel="shortcut icon" href="favicon.svg"/>
+<link rel="manifest" href="manifest.json"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 <script src="i18n.js"></script>
 </head>
@@ -17,6 +20,92 @@
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
   <div class="bg-orb orb-3"></div>
+</div>
+
+<!-- ── COMMAND PALETTE ── -->
+<div id="cp-overlay" class="cp-overlay" hidden role="dialog" aria-label="Command Palette" aria-modal="true">
+  <div class="cp-modal">
+    <div class="cp-input-wrap">
+      <svg class="cp-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="cp-input" class="cp-input" placeholder="Search commands, bookmarks, tools…" autocomplete="off" spellcheck="false"/>
+      <kbd class="cp-esc">Esc</kbd>
+    </div>
+    <div id="cp-results" class="cp-results" role="listbox"></div>
+    <div class="cp-footer">
+      <span><kbd>↑↓</kbd> navigate</span>
+      <span><kbd>↵</kbd> select</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── THEME PANEL ── -->
+<div id="theme-panel" class="theme-panel">
+  <div class="theme-panel-title">Theme</div>
+  <div class="theme-grid">
+    <button class="theme-option" data-theme="dark">Dark</button>
+    <button class="theme-option" data-theme="light">Light</button>
+    <button class="theme-option" data-theme="cyberpunk">Cyberpunk</button>
+    <button class="theme-option" data-theme="terminal">Terminal</button>
+    <button class="theme-option" data-theme="retro">Retro</button>
+  </div>
+</div>
+
+<!-- ── KEYBOARD SHORTCUTS ── -->
+<div id="shortcuts-overlay" class="shortcuts-overlay" hidden role="dialog" aria-modal="true">
+  <div class="shortcuts-modal">
+    <div class="shortcuts-title">Keyboard Shortcuts</div>
+    <div class="shortcuts-grid">
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>K</kbd></span>
+        <span class="shortcut-label">Command palette</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>/</kbd></span>
+        <span class="shortcut-label">Keyboard shortcuts</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>/</kbd></span>
+        <span class="shortcut-label">Focus search</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>Esc</kbd></span>
+        <span class="shortcut-label">Close / clear</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>H</kbd></span>
+        <span class="shortcut-label">Go home</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>G</kbd></span>
+        <span class="shortcut-label">Go games</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>L</kbd></span>
+        <span class="shortcut-label">Go links</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>T</kbd></span>
+        <span class="shortcut-label">Go tools</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>F</kbd></span>
+        <span class="shortcut-label">Go feed</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>C</kbd></span>
+        <span class="shortcut-label">Go cheatsheets</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>M</kbd></span>
+        <span class="shortcut-label">Go media</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-keys"><kbd>G</kbd><kbd>W</kbd></span>
+        <span class="shortcut-label">Go workout</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="sidebar-overlay" class="sidebar-overlay"></div>
@@ -32,14 +121,14 @@
         </svg>
       </button>
       <div class="brand">
-        <span class="brand-name">Diogo's</span>
-        <span class="brand-site">website</span>
+        <span class="brand-name">Dev</span>
+        <span class="brand-site">Hub</span>
       </div>
     </div>
     <div class="hdr-center">
       <div class="search-wrap">
         <svg class="search-icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="search-input" class="search-input" placeholder="Search games, sites, sections…" data-i18n-ph="hdr.search" autocomplete="off"/>
+        <input type="search" id="search-input" class="search-input" placeholder="Search…" data-i18n-ph="hdr.search" autocomplete="off"/>
         <kbd class="search-kbd">↵</kbd>
       </div>
     </div>
@@ -48,20 +137,20 @@
         <strong id="date-el">—</strong>
         <span id="time-el">—</span>
       </div>
-      <div class="font-ctrl-wrap" title="Tamanho do texto">
+      <div class="font-ctrl-wrap" title="Text size">
         <div class="font-ctrl">
           <button class="font-btn" id="font-dec">−</button>
           <span class="font-size-lbl" id="font-lbl">M</span>
           <button class="font-btn" id="font-inc">+</button>
         </div>
-        <span class="font-hint">texto</span>
       </div>
-      <button class="lang-btn" id="lang-btn" onclick="I18n.toggle()" title="Switch language / Mudar idioma">PT</button>
-      <div class="toggle-wrap" id="theme-wrap" title="Modo claro/escuro" onclick="toggleTheme()">
-        <span class="toggle-icon">🌙</span>
-        <div class="toggle-track" id="theme-track"><div class="toggle-thumb"></div></div>
-        <span class="toggle-icon">☀️</span>
-      </div>
+      <button class="icon-btn" id="theme-toggle-btn" title="Change theme">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button class="lang-btn" id="lang-btn" onclick="I18n.toggle()" title="Switch language">PT</button>
+      <button class="icon-btn" id="shortcuts-btn" title="Keyboard shortcuts (Ctrl+/)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/></svg>
+      </button>
     </div>
   </header>
 
@@ -72,91 +161,121 @@
     <!-- ── HOME VIEW ── -->
     <div id="view-home" class="view">
       <div class="view-inner">
-        <div class="welcome-hero">
+
+        <!-- Hero search -->
+        <div class="home-hero">
           <div id="wc-greeting" class="wc-greeting"></div>
           <div id="wc-msg" class="wc-msg"></div>
-        </div>
-        <div class="home-daily">
-          <div class="daily-card">
-            <div class="daily-ttl" data-i18n="home.quote">💡 Daily Quote</div>
-            <div id="dc-quote-wrap"><span class="dc-loading">A carregar…</span></div>
+          <div class="hero-search-wrap">
+            <div class="hero-search-box">
+              <span class="hero-search-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <input type="text" id="hero-search" class="hero-search-input" placeholder="Search the web… (g: yt: gh: r: ai:)" autocomplete="off" spellcheck="false"/>
+              <div class="hero-search-engine" id="hero-engine-badge">
+                <span id="hero-engine-label">Web</span>
+              </div>
+              <button class="hero-search-btn" id="hero-search-btn" aria-label="Search">→</button>
+            </div>
+            <div class="search-hints">
+              <span class="search-hint-item"><kbd>g:</kbd> Google</span>
+              <span class="search-hint-item"><kbd>yt:</kbd> YouTube</span>
+              <span class="search-hint-item"><kbd>gh:</kbd> GitHub</span>
+              <span class="search-hint-item"><kbd>r:</kbd> Reddit</span>
+              <span class="search-hint-item"><kbd>ai:</kbd> ChatGPT</span>
+            </div>
           </div>
-          <div class="daily-card">
-            <div class="daily-ttl" data-i18n="home.riddle">🤔 Daily Riddle</div>
-            <div id="dc-riddle-wrap"><span class="dc-loading">A carregar…</span></div>
-          </div>
-          <div class="daily-card">
-            <div class="daily-ttl" data-i18n="home.joke">😄 Daily Joke</div>
-            <div id="dc-joke-wrap"><span class="dc-loading">A carregar…</span></div>
+          <div class="quick-actions">
+            <button class="qa-item" onclick="Nav.go('feed')">
+              <span class="qa-item-icon">📰</span>Feed
+            </button>
+            <button class="qa-item" onclick="Nav.go('cheatsheets')">
+              <span class="qa-item-icon">📋</span>Cheatsheets
+            </button>
+            <button class="qa-item" onclick="Nav.go('tools')">
+              <span class="qa-item-icon">🔧</span>Tools
+            </button>
+            <button class="qa-item" onclick="Nav.go('links')">
+              <span class="qa-item-icon">🔗</span>Links
+            </button>
+            <button class="qa-item" onclick="Nav.go('games')">
+              <span class="qa-item-icon">🎮</span>Games
+            </button>
+            <button class="qa-item" onclick="Nav.go('media')">
+              <span class="qa-item-icon">🎬</span>Media
+            </button>
+            <button class="qa-item" id="qa-palette">
+              <span class="qa-item-icon">⌘</span>Palette <kbd style="font-size:.55rem;opacity:.6;margin-left:.2rem">Ctrl K</kbd>
+            </button>
           </div>
         </div>
 
-        <div class="layout">
-          <div class="weather-col">
-            <div class="weather-hero" id="weather-hero">
-              <div class="hero-body">
-                <div class="hero-left">
-                  <div class="hero-city-img-wrap"><div class="hero-city-img-ph">📷</div></div>
-                  <select class="hero-city-select">
-                    <option value="38.7223,-9.1393">Lisboa</option>
-                    <option value="41.1579,-8.6291">Porto</option>
-                    <option value="41.5454,-8.4265">Braga</option>
-                    <option value="40.2033,-8.4103">Coimbra</option>
-                    <option value="37.0193,-7.9304">Faro</option>
-                    <option value="38.5667,-7.9000">Évora</option>
-                    <option value="40.6405,-8.6538">Aveiro</option>
-                    <option value="38.5244,-8.8882">Setúbal</option>
-                    <option value="40.6566,-7.9122">Viseu</option>
-                    <option value="39.7436,-8.8071" selected>Leiria</option>
-                    <option value="39.2333,-8.6833">Santarém</option>
-                    <option value="32.6669,-16.9241">Funchal</option>
-                    <option value="37.7412,-25.6756">Ponta Delgada</option>
-                  </select>
-                </div>
-                <div class="hero-center" style="color:rgba(107,125,160,.8);font-size:.85rem">A carregar meteorologia…</div>
-                <div class="hero-right"></div>
+        <!-- Home content grid -->
+        <div class="home-grid">
+
+          <!-- Left: daily + HN -->
+          <div class="home-left">
+            <div class="home-daily">
+              <div class="daily-card">
+                <div class="daily-ttl" data-i18n="home.quote">💡 Daily Quote</div>
+                <div id="dc-quote-wrap"><span class="dc-loading">Loading…</span></div>
+              </div>
+              <div class="daily-card">
+                <div class="daily-ttl" data-i18n="home.riddle">🤔 Daily Riddle</div>
+                <div id="dc-riddle-wrap"><span class="dc-loading">Loading…</span></div>
+              </div>
+              <div class="daily-card">
+                <div class="daily-ttl" data-i18n="home.joke">😄 Daily Joke</div>
+                <div id="dc-joke-wrap"><span class="dc-loading">Loading…</span></div>
               </div>
             </div>
-            <div>
-              <div class="s-label" data-i18n="wx.next24">Next 24 Hours</div>
-              <div class="hourly-scroll" id="hourly-scroll">
-                <div class="hourly-row" id="hourly-row"></div>
+
+            <!-- HN widget -->
+            <div class="widget" id="widget-hn">
+              <div class="widget-hdr">
+                <span class="widget-title">🔥 Hacker News</span>
+                <button class="widget-link" onclick="Nav.go('feed')">See all →</button>
               </div>
-            </div>
-            <div>
-              <div class="s-label" data-i18n="wx.forecast">7-Day Forecast</div>
-              <div class="forecast-row" id="forecast-row"></div>
-            </div>
-            <div class="map-card">
-              <div class="map-hdr">
-                <span class="map-hdr-title" data-i18n="wx.map">🌍 Real-Time Map</span>
-                <div class="map-tabs" id="map-tabs">
-                  <button class="map-tab active" data-ov="rain">🌧️ Chuva</button>
-                  <button class="map-tab" data-ov="wind">💨 Vento</button>
-                  <button class="map-tab" data-ov="clouds">☁️ Nuvens</button>
-                  <button class="map-tab" data-ov="temp">🌡️ Temp</button>
-                  <button class="map-tab" data-ov="pressure">📊 Pressão</button>
-                </div>
+              <div id="hn-widget-list" class="hn-widget-list">
+                <div class="hn-loading"><div class="hn-spinner"></div>Loading…</div>
               </div>
-              <iframe id="windy-map" allowfullscreen></iframe>
             </div>
           </div>
-          <aside class="holidays-col">
-            <div class="hol-card">
-              <div class="hol-year-nav">
-                <button class="hol-nav-btn" id="hol-prev">&#8249;</button>
-                <span class="hol-year-label" id="hol-year-label">—</span>
-                <button class="hol-nav-btn" id="hol-next">&#8250;</button>
+
+          <!-- Right: holidays -->
+          <div class="holidays-col">
+            <div class="widget" id="widget-hol">
+              <div class="widget-hdr">
+                <span class="widget-title" data-i18n="hol.nat">National Holidays</span>
+                <div class="hol-year-nav" style="margin:0">
+                  <button class="hol-nav-btn" id="hol-prev">‹</button>
+                  <span class="hol-year-label" id="hol-year-label">—</span>
+                  <button class="hol-nav-btn" id="hol-next">›</button>
+                </div>
               </div>
-              <div class="hol-title" data-i18n="hol.nat">🇵🇹 National Holidays</div>
-              <div id="nat-hols"></div>
+              <div class="hol-widget-body">
+                <div id="nat-hols"></div>
+                <div class="hol-mun-ttl" data-i18n="hol.mun">Municipal Holidays</div>
+                <div id="mun-hols"></div>
+              </div>
             </div>
-            <div class="hol-card">
-              <div class="hol-title" data-i18n="hol.mun">🏛️ Municipal Holidays</div>
-              <div id="mun-hols"></div>
-            </div>
-          </aside>
-        </div>
+          </div>
+
+        </div><!-- /home-grid -->
+      </div>
+    </div>
+
+    <!-- ── FEED VIEW ── -->
+    <div id="view-feed" class="view">
+      <div class="view-inner">
+        <div id="feed-page"></div>
+      </div>
+    </div>
+
+    <!-- ── CHEATSHEETS VIEW ── -->
+    <div id="view-cheatsheets" class="view">
+      <div class="view-inner">
+        <div id="cheatsheets-page"></div>
       </div>
     </div>
 
@@ -252,7 +371,6 @@
 </div>
 
 <div class="popup" id="popup"></div>
-<div class="gauge-pop" id="gauge-pop"></div>
 
 <script src="links-data.js" defer></script>
 <script src="runner.js" defer></script>
@@ -266,6 +384,9 @@
 <script src="tools.js" defer></script>
 <script src="workout.js" defer></script>
 <script src="media.js" defer></script>
+<script src="rss.js" defer></script>
+<script src="cheatsheets.js" defer></script>
+<script src="command-palette.js" defer></script>
 <script src="nav.js" defer></script>
 </body>
 </html>
