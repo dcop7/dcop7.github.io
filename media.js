@@ -42,7 +42,7 @@ const MediaPage = (function () {
 
   const _days = {
     tv:       +(localStorage.getItem('md-tv')       || 7),
-    trailers: +(localStorage.getItem('md-trailers') || 7),
+    trailers: +(localStorage.getItem('md-trailers') || 14),
     theaters: +(localStorage.getItem('md-theaters') || 30),
     digital:  +(localStorage.getItem('md-digital')  || 7),
   };
@@ -77,6 +77,11 @@ const MediaPage = (function () {
     return ctrl.signal;
   }
 
+  const BAD_TYPES = new Set([
+    'Talk Show','News','Reality','Documentary','Sports','Variety',
+    'Panel Show','Award Show','Game Show',
+  ]);
+
   // ── TV ─────────────────────────────────────────────────────────────
   async function fetchTV(days) {
     const dates = [];
@@ -95,6 +100,8 @@ const MediaPage = (function () {
     const out  = [];
     batches.flat().forEach(ep => {
       if (!ep?.show || !ep?.airdate) return;
+      const showType = ep.show.type || '';
+      if (BAD_TYPES.has(showType)) return;
       const genres = ep.show.genres || [];
       if (genres.some(g => BAD_GENRES.has(g))) return;
       if (genres.length > 0 && !genres.some(g => GOOD_GENRES.has(g))) return;
@@ -112,32 +119,34 @@ const MediaPage = (function () {
 
   // ── TRAILERS ───────────────────────────────────────────────────────
   async function ytRSS(channelId) {
-    const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-    let text = null;
-    try {
-      const r = await fetch(url, {signal:abortFetch(4000)});
-      if (r.ok) text = await r.text();
-    } catch {}
-    if (!text) {
+    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    const proxies = [
+      `https://corsproxy.io/?url=${encodeURIComponent(feedUrl)}`,
+      PROXY(feedUrl),
+    ];
+    for (const proxyUrl of proxies) {
       try {
-        const r = await fetch(PROXY(url), {signal:abortFetch(8000)});
-        if (r.ok) text = await r.text();
+        const r = await fetch(proxyUrl, {signal:abortFetch(10000)});
+        if (!r.ok) continue;
+        const text = await r.text();
+        if (!text?.includes('<entry>')) continue;
+        const doc = new DOMParser().parseFromString(text, 'text/xml');
+        const entries = [...doc.querySelectorAll('entry')];
+        if (!entries.length) continue;
+        return entries.map(e => {
+          const raw = e.querySelector('id')?.textContent || '';
+          const vid = raw.split(':').pop();
+          return {
+            vid,
+            title:     e.querySelector('title')?.textContent?.trim() || '',
+            published: (e.querySelector('published')?.textContent || '').slice(0,10),
+            author:    e.querySelector('author name')?.textContent?.trim() || '',
+            thumb:     vid ? `https://i.ytimg.com/vi/${vid}/hqdefault.jpg` : '',
+          };
+        }).filter(v => v.vid && v.title);
       } catch {}
     }
-    if (!text) return [];
-    const doc = new DOMParser().parseFromString(text, 'text/xml');
-    return [...doc.querySelectorAll('entry')].map(e => {
-      const raw = e.querySelector('id')?.textContent || '';
-      const vid = raw.includes(':') ? raw.split(':').pop() : raw;
-      return {
-        vid,
-        title:     e.querySelector('title')?.textContent?.trim() || '',
-        published: (e.querySelector('published')?.textContent || '').slice(0,10),
-        author:    e.querySelector('author name, name')?.textContent?.trim() || '',
-        thumb:     e.querySelector('thumbnail')?.getAttribute('url') ||
-                   (vid ? `https://i.ytimg.com/vi/${vid}/hqdefault.jpg` : ''),
-      };
-    }).filter(v => v.vid && v.title);
+    return [];
   }
 
   async function fetchTrailers(days) {
@@ -150,7 +159,8 @@ const MediaPage = (function () {
       seen.add(v.vid);
       if (v.published && v.published < since) return;
       const lc = v.title.toLowerCase();
-      if (!lc.includes('trailer') && !lc.includes('teaser') && !lc.includes('official')) return;
+      if (!lc.includes('trailer') && !lc.includes('teaser') && !lc.includes('official') &&
+          !lc.includes('clip') && !lc.includes('featurette')) return;
       out.push(v);
     });
     out.sort((a,b) => (b.published||'').localeCompare(a.published||''));
