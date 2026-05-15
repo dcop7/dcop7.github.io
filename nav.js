@@ -134,7 +134,7 @@ const Nav = (function () {
       el.classList.toggle('active', r === path || (r === page && !r.includes('/')));
     });
 
-    // Switch view
+    // Switch view — remove active from all, then add to target so animation triggers
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
     if (page === 'games') {
