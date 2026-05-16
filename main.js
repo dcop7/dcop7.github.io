@@ -235,7 +235,7 @@ function renderWelcome() {
   if (gEl) gEl.textContent = greeting;
   if (mEl) mEl.textContent = msg;
 }
-renderWelcome();
+document.addEventListener('DOMContentLoaded', renderWelcome);
 
 const LOCAL_JOKES = [
   {type:'twopart',setup:'Porque é que os programadores confundem o Halloween com o Natal?',delivery:'Porque Oct 31 = Dec 25!'},
@@ -305,12 +305,13 @@ async function loadDailyContent() {
     jEl.innerHTML = jokeHTML(localJ);
   }
 }
-loadDailyContent();
+document.addEventListener('DOMContentLoaded', loadDailyContent);
 
 // ── HERO SEARCH (Google-only with autocomplete) ────────────────────
 function doSearch(q) {
   if (!q.trim()) return;
-  window.open(`https://www.google.com/search?q=${encodeURIComponent(q.trim())}`, '_blank', 'noopener');
+  const domain = lang() === 'pt' ? 'google.pt' : 'google.com';
+  window.open(`https://www.${domain}/search?q=${encodeURIComponent(q.trim())}`, '_blank', 'noopener');
 }
 
 let _acTimer = null;
@@ -359,6 +360,10 @@ function closeAC() {
 document.addEventListener('DOMContentLoaded', () => {
   const heroInput = document.getElementById('hero-search');
   const heroBtn   = document.getElementById('hero-search-btn');
+
+  if (heroInput) {
+    heroInput.placeholder = lang() === 'pt' ? 'Pesquisar no Google.pt…' : 'Search Google…';
+  }
 
   if (heroInput) {
     heroInput.addEventListener('input', () => {

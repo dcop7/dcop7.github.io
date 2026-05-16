@@ -10,6 +10,10 @@ const I18n = (function () {
       // Games
       'game.hangman':'Hangman','game.runner':'Infinite Runner',
       'game.minesweeper':'Minesweeper','game.bomb':'Defuse Bomb',
+      'game.memory':'Memory Cards','game.tictactoe':'Tic-tac-toe',
+      'game.wordle':'Word of the Day','game.aimtrainer':'Aim Trainer',
+      'game.reaction':'Reaction Test','game.fireworks':'Fireworks',
+      'game.neon':'Neon Drawing',
       // Header
       'hdr.search':'Search games, sites, sections…','hdr.lang':'PT',
       // Home
@@ -83,6 +87,10 @@ const I18n = (function () {
       // Games
       'game.hangman':'Jogo da Forca','game.runner':'Corredor Infinito',
       'game.minesweeper':'Campo de Minas','game.bomb':'Desarmar Bomba',
+      'game.memory':'Memória','game.tictactoe':'Jogo do Galo',
+      'game.wordle':'Palavra do Dia','game.aimtrainer':'Treino de Mira',
+      'game.reaction':'Teste de Reação','game.fireworks':'Fogos de Artifício',
+      'game.neon':'Neon Drawing',
       // Header
       'hdr.search':'Pesquisar jogos, sites, secções…','hdr.lang':'EN',
       // Home

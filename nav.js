@@ -4,9 +4,16 @@ const Nav = (function () {
   const _pinned = false;
 
   const GAME_LIST = [
-    { id: 'hangman',     key: 'game.hangman',     icon: '🪢' },
-    { id: 'minesweeper', key: 'game.minesweeper', icon: '💣' },
-    { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
+    { id: 'hangman',    key: 'game.hangman',    icon: '🪢' },
+    { id: 'minesweeper',key: 'game.minesweeper',icon: '💣' },
+    { id: 'bomb',       key: 'game.bomb',       icon: '💥' },
+    { id: 'memory',     key: 'game.memory',     icon: '🃏' },
+    { id: 'tictactoe',  key: 'game.tictactoe',  icon: '⭕' },
+    { id: 'wordle',     key: 'game.wordle',     icon: '📝' },
+    { id: 'aimtrainer', key: 'game.aimtrainer', icon: '🎯' },
+    { id: 'reaction',   key: 'game.reaction',   icon: '⚡' },
+    { id: 'fireworks',  key: 'game.fireworks',  icon: '🎆' },
+    { id: 'neon',       key: 'game.neon',       icon: '✨' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
@@ -81,6 +88,22 @@ const Nav = (function () {
     if (window.innerWidth < 900 && !_pinned) closeSb();
   }
 
+  function wireMobileNav() {
+    const mob = document.getElementById('mob-nav');
+    if (!mob) return;
+    mob.addEventListener('click', e => {
+      const btn = e.target.closest('[data-route]');
+      if (!btn) return;
+      go(btn.dataset.route);
+    });
+    document.addEventListener('routechange', e => {
+      const page = (e.detail || '').split('/')[0] || 'home';
+      mob.querySelectorAll('.mob-nav-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.route === page);
+      });
+    });
+  }
+
   function wireEvents() {
     document.getElementById('sb-toggle')?.addEventListener('click', toggleSb);
     document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
@@ -109,6 +132,7 @@ const Nav = (function () {
   function go(hash) {
     history.pushState(null, '', '#' + hash);
     renderView(hash);
+    document.dispatchEvent(new CustomEvent('routechange', { detail: hash }));
   }
 
   function renderView(raw) {
@@ -169,6 +193,7 @@ const Nav = (function () {
   function init() {
     buildSidebar();
     wireEvents();
+    wireMobileNav();
 
     if (_pinned) {
       document.body.classList.add('sb-open', 'sb-pinned');
@@ -178,8 +203,14 @@ const Nav = (function () {
 
     measureHeader();
     window.addEventListener('resize', measureHeader);
-    window.addEventListener('hashchange', () => renderView(location.hash.slice(1) || 'home'));
-    renderView(location.hash.slice(1) || 'home');
+    window.addEventListener('hashchange', () => {
+      const h = location.hash.slice(1) || 'home';
+      renderView(h);
+      document.dispatchEvent(new CustomEvent('routechange', { detail: h }));
+    });
+    const _initRoute = location.hash.slice(1) || 'home';
+    renderView(_initRoute);
+    document.dispatchEvent(new CustomEvent('routechange', { detail: _initRoute }));
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

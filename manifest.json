@@ -1,12 +1,20 @@
 {
-  "name": "Diogo's website",
+  "name": "Diogo's Homepage",
   "short_name": "Diogo",
-  "description": "Personal developer productivity dashboard",
+  "description": "Futuristic personal productivity homepage",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#080c14",
   "theme_color": "#6366f1",
+  "orientation": "any",
+  "categories": ["productivity", "utilities"],
   "icons": [
-    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Tools", "url": "/#tools", "description": "Open tools" },
+    { "name": "Links", "url": "/#links", "description": "Open links" },
+    { "name": "Games", "url": "/#games", "description": "Open games" }
   ]
 }
