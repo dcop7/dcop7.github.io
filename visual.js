@@ -290,18 +290,22 @@ const VisualPage = (function () {
         <div class="t-row" style="margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
           <div class="tool-seg">
             <button class="tsb active" data-tool="pen">✏️ Caneta</button>
-            <button class="tsb" data-tool="eraser">🗑 Borracha</button>
+            <button class="tsb" data-tool="rect">▭ Rect</button>
+            <button class="tsb" data-tool="circle">○ Círculo</button>
+            <button class="tsb" data-tool="triangle">△ Triângulo</button>
+            <button class="tsb" data-tool="line">/ Linha</button>
+            <button class="tsb" data-tool="eraser">⬜ Borracha</button>
           </div>
           <div class="tool-opts-grp">
             <span class="tool-opts-lbl">Cor</span>
             <div class="tool-colors" id="wb-colors">
-              ${['#6366f1','#ef4444','#22c55e','#f59e0b','#fff','#e2e8f0'].map((c,i)=>`<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c}"></button>`).join('')}
+              ${['#6366f1','#ef4444','#22c55e','#f59e0b','#e2e8f0','#0f172a'].map((c,i)=>`<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c}"></button>`).join('')}
             </div>
           </div>
           <div class="tool-opts-grp">
             <span class="tool-opts-lbl">Espessura</span>
             <div class="tool-seg" id="wb-size">
-              ${[2,4,8,14].map((s,i)=>`<button class="tsb${i===1?' active':''}" data-s="${s}">${s}</button>`).join('')}
+              ${[1,2,4,8,14].map((s,i)=>`<button class="tsb${i===2?' active':''}" data-s="${s}">${s}</button>`).join('')}
             </div>
           </div>
           <button class="t-btn t-btn-ghost" id="wb-clear">🗑 Limpar</button>
@@ -313,50 +317,98 @@ const VisualPage = (function () {
     const canvas=root.querySelector('#wb-canvas');
     const ctx=canvas.getContext('2d');
     let drawing=false, tool='pen', color='#6366f1', size=4;
+    let startX=0, startY=0, snapshot=null;
 
     function resize() {
-      const W=canvas.parentElement.clientWidth-2; const H=Math.max(450,window.innerHeight*0.55);
-      const img=ctx.getImageData(0,0,canvas.width,canvas.height);
-      canvas.width=W; canvas.height=H;
-      ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
-      try{ctx.putImageData(img,0,0);}catch{}
+      const dpr = window.devicePixelRatio || 1;
+      const cssW = canvas.parentElement.clientWidth - 2;
+      const cssH = Math.max(450, window.innerHeight * 0.55);
+      const prevImg = canvas.toDataURL();
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+      canvas.style.width = cssW + 'px';
+      canvas.style.height = cssH + 'px';
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, cssW, cssH);
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0, cssW, cssH);
+      img.src = prevImg;
     }
     resize();
 
     function pos(e) {
-      const r=canvas.getBoundingClientRect(), scale=canvas.width/r.width;
-      const src=e.touches?e.touches[0]:e;
-      return {x:(src.clientX-r.left)*scale, y:(src.clientY-r.top)*scale};
+      const r = canvas.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : e;
+      return { x: (src.clientX - r.left), y: (src.clientY - r.top) };
     }
-    function down(e){e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}
-    function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();}
-    function up(){drawing=false;ctx.beginPath();}
 
-    function applyStyle(){
-      ctx.strokeStyle=tool==='eraser'?'#fff':color;
-      ctx.lineWidth=tool==='eraser'?size*4:size;
-      ctx.lineCap='round'; ctx.lineJoin='round';
+    function down(e) {
+      e.preventDefault();
+      drawing = true;
+      const p = pos(e);
+      startX = p.x; startY = p.y;
+      if (tool === 'pen' || tool === 'eraser') {
+        ctx.beginPath(); ctx.moveTo(p.x, p.y);
+      } else {
+        snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function move(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const p = pos(e);
+      if (tool === 'pen' || tool === 'eraser') {
+        ctx.lineTo(p.x, p.y); ctx.stroke();
+      } else {
+        ctx.putImageData(snapshot, 0, 0);
+        applyStyle();
+        const dx = p.x - startX, dy = p.y - startY;
+        ctx.beginPath();
+        if (tool === 'rect') { ctx.strokeRect(startX, startY, dx, dy); }
+        else if (tool === 'circle') { ctx.ellipse(startX + dx/2, startY + dy/2, Math.abs(dx)/2, Math.abs(dy)/2, 0, 0, 2*Math.PI); ctx.stroke(); }
+        else if (tool === 'triangle') {
+          ctx.moveTo(startX + dx/2, startY);
+          ctx.lineTo(startX + dx, startY + dy);
+          ctx.lineTo(startX, startY + dy);
+          ctx.closePath(); ctx.stroke();
+        }
+        else if (tool === 'line') { ctx.moveTo(startX, startY); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+      }
+    }
+
+    function up() { drawing = false; snapshot = null; if (tool === 'pen' || tool === 'eraser') ctx.beginPath(); }
+
+    function applyStyle() {
+      ctx.strokeStyle = tool === 'eraser' ? '#fff' : color;
+      ctx.lineWidth = tool === 'eraser' ? size * 4 : size;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     }
     applyStyle();
 
-    canvas.addEventListener('mousedown',down); canvas.addEventListener('mousemove',move);
-    canvas.addEventListener('mouseup',up); canvas.addEventListener('mouseleave',up);
-    canvas.addEventListener('touchstart',down,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false});
-    canvas.addEventListener('touchend',up);
+    canvas.addEventListener('mousedown', down); canvas.addEventListener('mousemove', move);
+    canvas.addEventListener('mouseup', up); canvas.addEventListener('mouseleave', up);
+    canvas.addEventListener('touchstart', down, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false});
+    canvas.addEventListener('touchend', up);
 
-    root.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>{
-      tool=b.dataset.tool; root.querySelectorAll('[data-tool]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); applyStyle();
+    root.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => {
+      tool = b.dataset.tool;
+      root.querySelectorAll('[data-tool]').forEach(x => x.classList.remove('active')); b.classList.add('active');
+      applyStyle();
     }));
-    root.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{
-      color=b.dataset.c; tool='pen'; root.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-      root.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('active',x.dataset.tool==='pen')); applyStyle();
+    root.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => {
+      color = b.dataset.c;
+      if (tool === 'eraser') { tool = 'pen'; root.querySelectorAll('[data-tool]').forEach(x => x.classList.toggle('active', x.dataset.tool === 'pen')); }
+      root.querySelectorAll('[data-c]').forEach(x => x.classList.remove('active')); b.classList.add('active');
+      applyStyle();
     }));
-    root.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{
-      size=+b.dataset.s; root.querySelectorAll('[data-s]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); applyStyle();
+    root.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => {
+      size = +b.dataset.s; root.querySelectorAll('[data-s]').forEach(x => x.classList.remove('active')); b.classList.add('active'); applyStyle();
     }));
-    root.querySelector('#wb-clear').addEventListener('click',()=>{ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);});
-    root.querySelector('#wb-dl').addEventListener('click',()=>{const a=document.createElement('a');a.download='whiteboard.png';a.href=canvas.toDataURL();a.click();});
-    window.addEventListener('resize',resize);
+    root.querySelector('#wb-clear').addEventListener('click', () => { ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width/((window.devicePixelRatio||1)),canvas.height/((window.devicePixelRatio||1))); });
+    root.querySelector('#wb-dl').addEventListener('click', () => { const a=document.createElement('a'); a.download='whiteboard.png'; a.href=canvas.toDataURL(); a.click(); });
+    window.addEventListener('resize', resize);
   }
 
   // ── Main ──────────────────────────────────────────────────────────

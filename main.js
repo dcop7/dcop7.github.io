@@ -51,7 +51,7 @@ const ThemeManager = (function () {
     document.addEventListener('click', e => {
       const panel = document.getElementById('theme-panel');
       if (!panel?.classList.contains('open')) return;
-      if (!panel.contains(e.target) && e.target !== themeBtn) closePanel();
+      if (!panel.contains(e.target) && !themeBtn.contains(e.target)) closePanel();
     });
   });
 
@@ -81,7 +81,7 @@ function tick() {
     ? `${WD[n.getDay()]}, ${n.getDate()} de ${MO[n.getMonth()]} de ${n.getFullYear()}`
     : `${WD_EN[n.getDay()]}, ${MO_EN[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
   if (timeEl) timeEl.textContent =
-    n.toLocaleTimeString(l === 'pt' ? 'pt-PT' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+    n.toLocaleTimeString(l === 'pt' ? 'pt-PT' : 'en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 tick();
 setInterval(tick, 30000);
@@ -456,32 +456,138 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.Bookmarks = { get: getBookmarks, save: saveBookmarks, render: renderBookmarks, favUrl };
 
+// ── FAVORITE TOOLS WIDGET ─────────────────────────────────────────
+const ALL_TOOLS = [
+  { id:'countdown',  label:'Temporizador',     icon:'⏳', route:'tools' },
+  { id:'stopwatch',  label:'Cronómetro',       icon:'⏱️', route:'tools' },
+  { id:'pomodoro',   label:'Pomodoro',         icon:'🍅', route:'tools' },
+  { id:'json',       label:'JSON',             icon:'{}', route:'tools' },
+  { id:'base64',     label:'Base64',           icon:'⌗',  route:'tools' },
+  { id:'markdown',   label:'Markdown',         icon:'M↓', route:'tools' },
+  { id:'regex',      label:'Regex',            icon:'.*', route:'tools' },
+  { id:'uuid',       label:'UUID',             icon:'#',  route:'tools' },
+  { id:'timestamp',  label:'Timestamp',        icon:'🕐', route:'tools' },
+  { id:'calculator', label:'Calculadora',      icon:'🔢', route:'tools' },
+  { id:'colors',     label:'Paleta de Cores',  icon:'🎨', route:'tools' },
+  { id:'unitconv',   label:'Conversor',        icon:'⟷', route:'tools' },
+];
+const DEFAULT_FAV_TOOLS = ['countdown','json','regex','calculator'];
+
+function getFavTools() {
+  try { return JSON.parse(localStorage.getItem('home-fav-tools') || 'null') || DEFAULT_FAV_TOOLS; }
+  catch { return DEFAULT_FAV_TOOLS; }
+}
+
+function renderFavTools() {
+  const grid = document.getElementById('wft-grid');
+  if (!grid) return;
+  const favIds = getFavTools();
+  const favItems = favIds.map(id => ALL_TOOLS.find(t => t.id === id)).filter(Boolean);
+  if (!favItems.length) {
+    grid.innerHTML = '<div class="wft-empty">Sem ferramentas favoritas.</div>';
+    return;
+  }
+  grid.innerHTML = favItems.map(t => `
+    <button class="wft-item" data-tool="${t.id}" title="${t.label}">
+      <span class="wft-icon">${t.icon}</span>
+      <span class="wft-label">${t.label}</span>
+    </button>`).join('');
+  grid.querySelectorAll('.wft-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      Nav.go('tools');
+      setTimeout(() => {
+        document.querySelector(`.tool-nav-btn[data-tid="${btn.dataset.tool}"]`)?.click();
+      }, 150);
+    });
+  });
+}
+
+function openFavToolsEditor() {
+  const favIds = getFavTools();
+  const checked = ALL_TOOLS.map(t => `
+    <label class="wft-chk-item">
+      <input type="checkbox" value="${t.id}" ${favIds.includes(t.id) ? 'checked' : ''}> ${t.icon} ${t.label}
+    </label>`).join('');
+
+  let modal = document.getElementById('wft-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'wft-modal';
+    modal.className = 'ph-modal-overlay';
+    modal.innerHTML = `<div class="ph-modal-box" style="max-width:400px">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">Ferramentas Favoritas</span>
+        <button class="ph-modal-close" id="wft-modal-close">✕</button>
+      </div>
+      <div style="padding:1rem" id="wft-chk-list"></div>
+      <div style="padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end">
+        <button class="t-btn t-btn-ghost" id="wft-modal-close2">Cancelar</button>
+        <button class="t-btn" id="wft-modal-save">Guardar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('#wft-chk-list').innerHTML = checked;
+  modal.hidden = false;
+
+  const close = () => { modal.hidden = true; };
+  modal.querySelector('#wft-modal-close').onclick = close;
+  modal.querySelector('#wft-modal-close2').onclick = close;
+  modal.onclick = e => { if (e.target === modal) close(); };
+  modal.querySelector('#wft-modal-save').onclick = () => {
+    const ids = [...modal.querySelectorAll('input:checked')].map(i => i.value);
+    localStorage.setItem('home-fav-tools', JSON.stringify(ids));
+    renderFavTools();
+    close();
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFavTools();
+  document.getElementById('wft-edit')?.addEventListener('click', openFavToolsEditor);
+});
+
 // ── TIMEZONE CLOCKS ───────────────────────────────────────────────
 const TZ_ZONES = [
-  { label: 'Portugal',  tz: 'Europe/Lisbon' },
-  { label: 'UTC',       tz: 'UTC' },
-  { label: 'New York',  tz: 'America/New_York' },
+  { label: 'Portugal / Lisboa', tz: 'Europe/Lisbon' },
+  { label: 'UTC / GMT',         tz: 'UTC' },
 ];
+
+function gmtOffset(tz) {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMs = new Date(new Intl.DateTimeFormat('en-US',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(now) + ':00').getTime();
+  const d = new Date(now.toLocaleString('en-US', {timeZone: tz}));
+  const offset = (d - new Date(now.toLocaleString('en-US', {timeZone: 'UTC'}))) / 3600000;
+  const sign = offset >= 0 ? '+' : '-';
+  const h = Math.floor(Math.abs(offset));
+  const m = Math.round((Math.abs(offset) - h) * 60);
+  return `GMT${sign}${h}${m ? ':' + String(m).padStart(2,'0') : ''}`;
+}
 
 function renderTimezones() {
   const grid = document.getElementById('wtz-grid');
   if (!grid) return;
   const now = new Date();
+  const l = lang();
   grid.innerHTML = TZ_ZONES.map(z => {
-    const fmt = new Intl.DateTimeFormat('pt-PT', {timeZone: z.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
-    const dateFmt = new Intl.DateTimeFormat('pt-PT', {timeZone: z.tz, day:'2-digit', month:'short'});
+    const timeFmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: z.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const dateFmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: z.tz, weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'});
+    const offset = gmtOffset(z.tz);
     return `<div class="wtz-item">
       <div class="wtz-label">${z.label}</div>
-      <div class="wtz-time" data-tz="${z.tz}">${fmt.format(now)}</div>
+      <div class="wtz-time" data-tz="${z.tz}">${timeFmt.format(now)}</div>
       <div class="wtz-date">${dateFmt.format(now)}</div>
+      <div class="wtz-gmt">${offset}</div>
     </div>`;
   }).join('');
 }
 
 function tickTimezones() {
   const now = new Date();
+  const l = lang();
   document.querySelectorAll('.wtz-time[data-tz]').forEach(el => {
-    const fmt = new Intl.DateTimeFormat('pt-PT', {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const fmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
     el.textContent = fmt.format(now);
   });
 }
@@ -505,20 +611,20 @@ function ptNat(y) {
   const e   = getEaster(y);
   const add = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
   return [
-    {d:new Date(y,0,1),   n:'Ano Novo'},
-    {d:add(e,-47),        n:'Carnaval'},
-    {d:add(e,-2),         n:'Sexta-feira Santa'},
-    {d:e,                 n:'Páscoa'},
-    {d:new Date(y,3,25),  n:'Dia da Liberdade'},
-    {d:new Date(y,4,1),   n:'Dia do Trabalhador'},
-    {d:add(e,60),         n:'Corpo de Deus'},
-    {d:new Date(y,5,10),  n:'Dia de Portugal'},
-    {d:new Date(y,7,15),  n:'Assunção de Nossa Senhora'},
-    {d:new Date(y,9,5),   n:'Implantação da República'},
-    {d:new Date(y,10,1),  n:'Dia de Todos os Santos'},
-    {d:new Date(y,11,1),  n:'Restauração da Independência'},
-    {d:new Date(y,11,8),  n:'Imaculada Conceição'},
-    {d:new Date(y,11,25), n:'Natal'},
+    {d:new Date(y,0,1),   n:'Ano Novo',                    r:'Celebração do início do novo ano civil.'},
+    {d:add(e,-47),        n:'Carnaval',                    r:'Período festivo anterior à Quaresma, com desfiles e mascaras.'},
+    {d:add(e,-2),         n:'Sexta-feira Santa',            r:'Morte de Jesus Cristo na cruz, segundo a tradição cristã.'},
+    {d:e,                 n:'Páscoa',                      r:'Ressurreição de Jesus Cristo, festa central do calendário cristão.'},
+    {d:new Date(y,3,25),  n:'Dia da Liberdade',            r:'Aniversário da Revolução dos Cravos (1974) que restaurou a democracia em Portugal.'},
+    {d:new Date(y,4,1),   n:'Dia do Trabalhador',          r:'Celebração internacional dos direitos dos trabalhadores.'},
+    {d:add(e,60),         n:'Corpo de Deus',               r:'Festa católica que celebra a presença de Cristo na Eucaristia.'},
+    {d:new Date(y,5,10),  n:'Dia de Portugal',             r:'Data da morte de Luís de Camões (1580), símbolo da cultura e identidade portuguesa.'},
+    {d:new Date(y,7,15),  n:'Assunção de Nossa Senhora',   r:'Dogma católico da ascensão da Virgem Maria ao Céu.'},
+    {d:new Date(y,9,5),   n:'Implantação da República',    r:'Aniversário da proclamação da República Portuguesa (1910).'},
+    {d:new Date(y,10,1),  n:'Dia de Todos os Santos',      r:'Dia em que a Igreja Católica honra todos os santos e bem-aventurados.'},
+    {d:new Date(y,11,1),  n:'Restauração da Independência',r:'Aniversário da separação de Portugal da Espanha e restauração da monarquia (1640).'},
+    {d:new Date(y,11,8),  n:'Imaculada Conceição',         r:'Dogma católico segundo o qual a Virgem Maria foi concebida sem pecado original.'},
+    {d:new Date(y,11,25), n:'Natal',                       r:'Celebração do nascimento de Jesus Cristo.'},
   ];
 }
 
@@ -537,7 +643,7 @@ const MUN = [
 
 let holYear = new Date().getFullYear();
 
-function holHTML(date, name, sub) {
+function holHTML(date, name, sub, reason) {
   const today = new Date(); today.setHours(0,0,0,0);
   const curYear  = today.getFullYear();
   const isPast   = holYear === curYear && date < today;
@@ -547,9 +653,10 @@ function holHTML(date, name, sub) {
       <div class="hol-num">${date.getDate()}</div>
       <div class="hol-mon">${ms()[date.getMonth()]}</div>
     </div>
-    <div>
+    <div class="hol-info">
       <div class="hol-name">${name}</div>
       <div class="hol-sub">${sub} · ${wd()[date.getDay()]}</div>
+      ${reason ? `<div class="hol-reason">${reason}</div>` : ''}
     </div>
   </div>`;
 }
@@ -560,17 +667,26 @@ function renderHolidays() {
   if (lbl) lbl.textContent = y;
   const nat = ptNat(y).sort((a, b) => a.d - b.d);
   const natEl = document.getElementById('nat-hols');
-  if (natEl) natEl.innerHTML = nat.map(h => holHTML(h.d, h.n, t('hol.nat.lbl'))).join('');
+  if (natEl) natEl.innerHTML = nat.map(h => holHTML(h.d, h.n, t('hol.nat.lbl'), h.r)).join('');
   const mun = MUN.map(m => ({date: new Date(y, m.m - 1, m.d), n: m.n, c: m.c}))
     .sort((a, b) => a.date - b.date);
   const munEl = document.getElementById('mun-hols');
-  if (munEl) munEl.innerHTML = mun.map(h => holHTML(h.date, h.n, h.c)).join('');
+  if (munEl) munEl.innerHTML = mun.map(h => holHTML(h.date, h.n, h.c, '')).join('');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('hol-prev')?.addEventListener('click', () => { holYear--; renderHolidays(); });
-  document.getElementById('hol-next')?.addEventListener('click', () => { holYear++; renderHolidays(); });
+  document.getElementById('hol-prev')?.addEventListener('click', e => { e.stopPropagation(); holYear--; renderHolidays(); });
+  document.getElementById('hol-next')?.addEventListener('click', e => { e.stopPropagation(); holYear++; renderHolidays(); });
   renderHolidays();
+
+  const holToggle = document.getElementById('hol-toggle');
+  const holBody   = document.getElementById('hol-body');
+  const holChev   = document.getElementById('hol-chevron');
+  holToggle?.addEventListener('click', () => {
+    const open = holBody.hidden;
+    holBody.hidden = !open;
+    if (holChev) holChev.textContent = open ? '▾' : '▸';
+  });
 });
 
 document.addEventListener('langchange', () => {

@@ -115,22 +115,22 @@
           </div>
           <div class="quick-actions">
             <button class="qa-item" onclick="Nav.go('cheatsheets')">
-              <span class="qa-item-icon">📋</span>Cheatsheets
+              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></span>Cheatsheets
             </button>
             <button class="qa-item" onclick="Nav.go('tools')">
-              <span class="qa-item-icon">🔧</span>Tools
+              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span>Tools
             </button>
             <button class="qa-item" onclick="Nav.go('links')">
-              <span class="qa-item-icon">🔗</span>Links
+              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>Links
             </button>
             <button class="qa-item" onclick="Nav.go('games')">
-              <span class="qa-item-icon">🎮</span>Games
+              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M7 10v4M5 12h4M17 11l2 1-2 1"/></svg></span>Games
             </button>
             <button class="qa-item" onclick="Nav.go('media')">
-              <span class="qa-item-icon">🎬</span>Media
+              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.82 2H4.18A2.18 2.18 0 0 0 2 4.18v15.64A2.18 2.18 0 0 0 4.18 22h15.64A2.18 2.18 0 0 0 22 19.82V4.18A2.18 2.18 0 0 0 19.82 2z"/><polygon points="10 15 15 12 10 9 10 15"/></svg></span>Media
             </button>
             <button class="qa-item" id="qa-palette">
-              <span class="qa-item-icon">⌘</span>Palette <kbd style="font-size:.55rem;opacity:.6;margin-left:.2rem">Ctrl K</kbd>
+              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Palette <kbd style="font-size:.55rem;opacity:.6;margin-left:.2rem">Ctrl K</kbd>
             </button>
           </div>
         </div>
@@ -164,6 +164,15 @@
               <div id="wbm-grid" class="wbm-grid"></div>
             </div>
 
+            <!-- Favorite Tools widget -->
+            <div class="widget" id="widget-fav-tools">
+              <div class="widget-hdr">
+                <span class="widget-title">🔧 Ferramentas Favoritas</span>
+                <button class="wbm-add-btn" id="wft-edit" title="Editar favoritos">✎</button>
+              </div>
+              <div id="wft-grid" class="wft-grid"></div>
+            </div>
+
             <!-- Timezone widget -->
             <div class="widget" id="widget-tz">
               <div class="widget-hdr">
@@ -176,15 +185,18 @@
           <!-- Right: holidays -->
           <div class="holidays-col">
             <div class="widget" id="widget-hol">
-              <div class="widget-hdr">
+              <div class="widget-hdr hol-hdr-toggle" id="hol-toggle" style="cursor:pointer">
                 <span class="widget-title" data-i18n="hol.nat">National Holidays</span>
-                <div class="hol-year-nav" style="margin:0">
-                  <button class="hol-nav-btn" id="hol-prev">‹</button>
-                  <span class="hol-year-label" id="hol-year-label">—</span>
-                  <button class="hol-nav-btn" id="hol-next">›</button>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <div class="hol-year-nav" style="margin:0">
+                    <button class="hol-nav-btn" id="hol-prev">‹</button>
+                    <span class="hol-year-label" id="hol-year-label">—</span>
+                    <button class="hol-nav-btn" id="hol-next">›</button>
+                  </div>
+                  <span class="hol-chevron" id="hol-chevron">▸</span>
                 </div>
               </div>
-              <div class="hol-widget-body">
+              <div class="hol-widget-body" id="hol-body" hidden>
                 <div id="nat-hols"></div>
                 <div class="hol-mun-ttl" data-i18n="hol.mun">Municipal Holidays</div>
                 <div id="mun-hols"></div>
@@ -260,6 +272,13 @@
             </div>
             <div class="game-pane" id="pane-minesweeper"></div>
             <div class="game-pane" id="pane-bomb"></div>
+            <div class="game-pane" id="pane-memory"></div>
+            <div class="game-pane" id="pane-tictactoe"></div>
+            <div class="game-pane" id="pane-wordle"></div>
+            <div class="game-pane" id="pane-aimtrainer"></div>
+            <div class="game-pane" id="pane-reaction"></div>
+            <div class="game-pane" id="pane-fireworks"></div>
+            <div class="game-pane" id="pane-neon"></div>
           </div>
         </div>
       </div>
@@ -268,8 +287,8 @@
     <!-- ── LINKS VIEW ── -->
     <div id="view-links" class="view">
       <div class="lp-page">
-        <div class="lp-tab-bar" id="lp-cat-list"></div>
-        <div class="lp-content view-inner" id="lp-content"></div>
+        <aside class="lp-sidebar" id="lp-cat-list"></aside>
+        <div class="lp-content" id="lp-content"></div>
       </div>
     </div>
 
@@ -304,6 +323,13 @@
 <script src="links-data.js" defer></script>
 <script src="minesweeper.js" defer></script>
 <script src="bomb.js" defer></script>
+<script src="game-memory.js" defer></script>
+<script src="game-tictactoe.js" defer></script>
+<script src="game-wordle.js" defer></script>
+<script src="game-aimtrainer.js" defer></script>
+<script src="game-reaction.js" defer></script>
+<script src="game-fireworks.js" defer></script>
+<script src="game-neon.js" defer></script>
 <script src="game-host.js" defer></script>
 <script src="hangman.js" defer></script>
 <script src="main.js" defer></script>

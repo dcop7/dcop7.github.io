@@ -12,6 +12,10 @@ const SettingsPage = (function () {
   }
 
   function _build(el) {
+    const curLang = typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
+    const mediaMode = localStorage.getItem('media-view') || 'comfortable';
+    const mediaDays = localStorage.getItem('media-days') || '14';
+    const hangAge   = localStorage.getItem('hangman-age') || '7';
     el.innerHTML = `
       <div class="view-inner">
         <div class="page-header">
@@ -41,6 +45,57 @@ const SettingsPage = (function () {
                 <button class="st-font-btn" id="st-font-dec">−</button>
                 <span class="st-font-lbl" id="st-font-lbl">M</span>
                 <button class="st-font-btn" id="st-font-inc">+</button>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">Língua</div>
+                <div class="st-row-desc">Idioma da interface</div>
+              </div>
+              <div class="tool-seg" id="st-lang-seg">
+                <button class="tsb${curLang==='pt'?' active':''}" data-lang="pt">🇵🇹 PT</button>
+                <button class="tsb${curLang==='en'?' active':''}" data-lang="en">🇬🇧 EN</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="st-section">
+            <div class="st-section-title">🎬 Entretenimento</div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">Dias de histórico</div>
+                <div class="st-row-desc">Quantos dias de episódios mostrar</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <input type="range" id="st-media-days" min="3" max="30" step="1" value="${mediaDays}" style="width:100px">
+                <span class="st-days-lbl" id="st-days-lbl">${mediaDays} dias</span>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">Vista</div>
+                <div class="st-row-desc">Densidade de informação</div>
+              </div>
+              <div class="tool-seg" id="st-media-view">
+                <button class="tsb${mediaMode==='comfortable'?' active':''}" data-view="comfortable">Confortável</button>
+                <button class="tsb${mediaMode==='compact'?' active':''}" data-view="compact">Compacta</button>
+                <button class="tsb${mediaMode==='ultra'?' active':''}" data-view="ultra">Ultra</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="st-section">
+            <div class="st-section-title">🪢 Jogo da Forca</div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">Faixa etária padrão</div>
+                <div class="st-row-desc">Dificuldade das palavras ao iniciar</div>
+              </div>
+              <div class="tool-seg" id="st-hang-age">
+                <button class="tsb${hangAge==='5'?' active':''}" data-age="5">5–7 anos</button>
+                <button class="tsb${hangAge==='7'?' active':''}" data-age="7">7–9 anos</button>
+                <button class="tsb${hangAge==='10'?' active':''}" data-age="10">10–12 anos</button>
+                <button class="tsb${hangAge==='13'?' active':''}" data-age="13">13+ anos</button>
               </div>
             </div>
           </div>
@@ -75,6 +130,37 @@ const SettingsPage = (function () {
       document.getElementById('font-inc')?.click();
       _syncFont();
     });
+
+    el.querySelectorAll('#st-lang-seg .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        if (typeof I18n !== 'undefined' && I18n.getLang() !== btn.dataset.lang) I18n.toggle();
+        el.querySelectorAll('#st-lang-seg .tsb').forEach(b => b.classList.toggle('active', b === btn));
+      })
+    );
+
+    const daysSlider = el.querySelector('#st-media-days');
+    const daysLbl    = el.querySelector('#st-days-lbl');
+    daysSlider?.addEventListener('input', () => {
+      const v = daysSlider.value;
+      daysLbl.textContent = v + ' dias';
+      localStorage.setItem('media-days', v);
+    });
+
+    el.querySelectorAll('#st-media-view .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        localStorage.setItem('media-view', btn.dataset.view);
+        el.querySelectorAll('#st-media-view .tsb').forEach(b => b.classList.toggle('active', b === btn));
+      })
+    );
+
+    el.querySelectorAll('#st-hang-age .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        localStorage.setItem('hangman-age', btn.dataset.age);
+        el.querySelectorAll('#st-hang-age .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        const hfAgeBtn = document.querySelector(`.hf-age-btn[data-age="${btn.dataset.age}"]`);
+        if (hfAgeBtn) hfAgeBtn.click();
+      })
+    );
 
     el.querySelector('#st-bm-add')?.addEventListener('click', _addBm);
     el.querySelector('#st-bm-reset')?.addEventListener('click', () => {

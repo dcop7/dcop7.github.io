@@ -43,7 +43,7 @@ const ToolsPage = (function () {
     { id:'dice',      cat:'fun',   icon:'🎲', label:'Dados' },
     { id:'coin',      cat:'fun',   icon:'🪙', label:'Moeda' },
   ];
-  const CAT_LABELS = { time:'⏱ Tempo', text:'📝 Texto', dev:'🔍 Dev', math:'🔢 Cálculo', fun:'🎲 Diversão' };
+  const CAT_LABELS = { time:'⏱ Tempo & Datas', text:'📝 Texto', dev:'💻 Dev & Código', math:'🔢 Cálculo', fun:'🎲 Diversão' };
   const CATS = ['time','text','dev','math','fun'];
 
   // ── State ──────────────────────────────────────────────────────────

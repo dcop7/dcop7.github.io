@@ -97,7 +97,8 @@ const PhotographyPage = (function () {
             <label class="ph-label">Sensor (círculo de confusão, mm)</label>
             <select class="ph-select" id="dof-coc">
               <option value="0.029">Full Frame 35mm (0.029mm)</option>
-              <option value="0.019" selected>APS-C (0.019mm)</option>
+              <option value="0.018" selected>Canon APS-C — M50 Mark II (0.018mm)</option>
+              <option value="0.019">APS-C Nikon/Sony (0.019mm)</option>
               <option value="0.015">MFT (0.015mm)</option>
               <option value="0.010">1" sensor (0.010mm)</option>
               <option value="0.005">1/2.3" (0.005mm)</option>
@@ -142,8 +143,8 @@ const PhotographyPage = (function () {
             <label class="ph-label">Crop factor</label>
             <select class="ph-select" id="fc-crop">
               <option value="1">Full Frame (1×)</option>
-              <option value="1.5" selected>APS-C Nikon (1.5×)</option>
-              <option value="1.6">APS-C Canon (1.6×)</option>
+              <option value="1.5">APS-C Nikon/Sony (1.5×)</option>
+              <option value="1.6" selected>APS-C Canon (1.6×) — M50 Mark II</option>
               <option value="2">Micro 4/3 (2×)</option>
               <option value="2.7">1" sensor (2.7×)</option>
               <option value="5.6">1/2.3" (5.6×)</option>
@@ -164,7 +165,7 @@ const PhotographyPage = (function () {
           </div>
           <div class="ph-field">
             <label class="ph-label">CoC (mm)</label>
-            <input type="number" class="ph-input" id="hf-coc" value="0.019" step="0.001" min="0.001">
+            <input type="number" class="ph-input" id="hf-coc" value="0.018" step="0.001" min="0.001">
           </div>
         </div>
         <div id="hf-result" class="ph-result"></div>
@@ -383,6 +384,42 @@ const PhotographyPage = (function () {
       draw(ctx,W,H){ctx.fillStyle='rgba(99,102,241,.08)';ctx.fillRect(W*0.05,H*0.05,W*0.55,H*0.9);ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1;ctx.strokeRect(W*0.05,H*0.05,W*0.55,H*0.9);ctx.fillStyle='rgba(99,102,241,.25)';ctx.beginPath();ctx.arc(W*0.72,H/2,W*0.1,0,2*Math.PI);ctx.fill();ctx.strokeStyle='rgba(99,102,241,.6)';ctx.stroke();}},
   ];
 
+  function drawCompCanvas(canvas, comp) {
+    const ctx2 = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx2.fillStyle = document.body.classList.contains('light') ? '#f1f5f9' : '#0b1020';
+    ctx2.fillRect(0, 0, W, H);
+    ctx2.save();
+    comp.draw(ctx2, W, H);
+    ctx2.restore();
+  }
+
+  function openCompModal(comp) {
+    let modal = document.getElementById('ph-comp-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'ph-comp-modal';
+      modal.className = 'ph-modal-overlay';
+      modal.innerHTML = `<div class="ph-modal-box">
+        <div class="ph-modal-hdr">
+          <span class="ph-modal-title" id="ph-modal-title"></span>
+          <button class="ph-modal-close" id="ph-modal-close">✕</button>
+        </div>
+        <canvas class="ph-modal-canvas" id="ph-modal-canvas"></canvas>
+        <div class="ph-modal-desc" id="ph-modal-desc"></div>
+      </div>`;
+      document.body.appendChild(modal);
+      document.getElementById('ph-modal-close').addEventListener('click', () => { modal.hidden = true; });
+      modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
+    }
+    modal.hidden = false;
+    document.getElementById('ph-modal-title').textContent = comp.name;
+    document.getElementById('ph-modal-desc').textContent = comp.desc;
+    const canvas = document.getElementById('ph-modal-canvas');
+    canvas.width = 700; canvas.height = 460;
+    requestAnimationFrame(() => drawCompCanvas(canvas, comp));
+  }
+
   function buildComposition(root) {
     root.innerHTML=`
       <div>
@@ -394,6 +431,8 @@ const PhotographyPage = (function () {
     COMPOSITIONS.forEach((comp,idx)=>{
       const item=document.createElement('div');
       item.className='ph-comp-item';
+      item.style.cursor='pointer';
+      item.title='Clica para ampliar';
       item.innerHTML=`
         <div class="ph-comp-canvas-wrap"><canvas class="ph-comp-canvas" id="ph-comp-${idx}" width="300" height="200"></canvas></div>
         <div class="ph-comp-name">${comp.name}</div>
@@ -401,14 +440,11 @@ const PhotographyPage = (function () {
       grid.appendChild(item);
 
       requestAnimationFrame(()=>{
-        const canvas=item.querySelector('canvas'), ctx2=canvas.getContext('2d');
-        const W=300, H=200;
-        ctx2.fillStyle=document.body.classList.contains('light')?'#f1f5f9':'#0b1020';
-        ctx2.fillRect(0,0,W,H);
-        ctx2.save();
-        comp.draw(ctx2,W,H);
-        ctx2.restore();
+        const canvas=item.querySelector('canvas');
+        drawCompCanvas(canvas, comp);
       });
+
+      item.addEventListener('click', () => openCompModal(comp));
     });
   }
 
@@ -420,7 +456,7 @@ const PhotographyPage = (function () {
     if (!_built) {
       _built = true;
 
-      const sections = [
+      const calcSections = [
         { id:'exposure',     fn:buildExposure,     title:'Exposição' },
         { id:'dof',          fn:buildDof,           title:'Profundidade de Campo' },
         { id:'focal',        fn:buildFocal,         title:'Focal & Crop' },
@@ -428,26 +464,26 @@ const PhotographyPage = (function () {
         { id:'flash',        fn:buildFlash,         title:'Flash' },
         { id:'longexp',      fn:buildLongExposure,  title:'Longa Exposição' },
         { id:'goldenhour',   fn:buildGoldenHour,    title:'Hora Dourada' },
-        { id:'composition',  fn:buildComposition,   title:'Composição' },
       ];
 
       view.innerHTML=`
         <div class="view-inner">
           <div class="page-header">
             <h1 class="page-title">📸 Fotografia</h1>
-            <p class="page-subtitle">Calculadoras e referências técnicas</p>
+            <p class="page-subtitle">Composições, calculadoras e referências técnicas · Canon M50 Mark II (APS-C 1.6×)</p>
           </div>
+          <div id="ph-comp-section" style="margin-bottom:2rem"></div>
           <div class="ph-grid" id="ph-grid"></div>
         </div>`;
 
-      const grid = view.querySelector('#ph-grid');
-      const compWrap = document.createElement('div');
-      compWrap.style.cssText='grid-column:1/-1';
+      const compSection = view.querySelector('#ph-comp-section');
+      buildComposition(compSection);
 
-      sections.forEach(s=>{
+      const grid = view.querySelector('#ph-grid');
+      calcSections.forEach(s=>{
         const wrapper = document.createElement('div');
-        if (s.id==='composition') { buildComposition(compWrap); grid.appendChild(compWrap); }
-        else { s.fn(wrapper); grid.appendChild(wrapper); }
+        s.fn(wrapper);
+        grid.appendChild(wrapper);
       });
     }
   }

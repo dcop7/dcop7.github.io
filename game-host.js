@@ -8,12 +8,33 @@ const GameHost = (function () {
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
     { id: 'bomb',        name: 'Desarmar Bomba',  icon: '💥', color: '#ef4444',
       desc: '3 desafios, 90 segundos. Consegues desarmar a bomba a tempo?' },
+    { id: 'memory',      name: 'Memória',         icon: '🃏', color: '#a855f7',
+      desc: 'Encontra todos os pares de cartas. Treina a memória!' },
+    { id: 'tictactoe',   name: 'Jogo do Galo',    icon: '⭕', color: '#f59e0b',
+      desc: 'O clássico X e O contra a IA. Consegues ganhar?' },
+    { id: 'wordle',      name: 'Palavra do Dia',  icon: '📝', color: '#22c55e',
+      desc: 'Adivinha a palavra de 5 letras em 6 tentativas.' },
+    { id: 'aimtrainer',  name: 'Treino de Mira',  icon: '🎯', color: '#ef4444',
+      desc: 'Clica nos alvos o mais rápido possível. 30 segundos.' },
+    { id: 'reaction',    name: 'Teste de Reação',  icon: '⚡', color: '#22d3ee',
+      desc: 'Quanto tempo demoras a reagir? Testa os teus reflexos.' },
+    { id: 'fireworks',   name: 'Fogos de Artifício', icon: '🎆', color: '#f97316',
+      desc: 'Cria o teu espetáculo de fogos. Clica para lançar!' },
+    { id: 'neon',        name: 'Neon Drawing',    icon: '✨', color: '#a855f7',
+      desc: 'Desenha com efeito neon brilhante. Arte digital!' },
   ];
 
   const registry = {
     hangman:     { initialized: true },
     minesweeper: { init: () => MinesweeperGame.init(document.getElementById('pane-minesweeper')), initialized: false },
     bomb:        { init: () => BombGame.init(document.getElementById('pane-bomb')),               initialized: false },
+    memory:      { init: () => MemoryGame.init(document.getElementById('pane-memory')),           initialized: false },
+    tictactoe:   { init: () => TicTacToeGame.init(document.getElementById('pane-tictactoe')),    initialized: false },
+    wordle:      { init: () => WordleGame.init(document.getElementById('pane-wordle')),           initialized: false },
+    aimtrainer:  { init: () => AimTrainerGame.init(document.getElementById('pane-aimtrainer')),   initialized: false },
+    reaction:    { init: () => ReactionGame.init(document.getElementById('pane-reaction')),       initialized: false },
+    fireworks:   { init: () => FireworksGame.init(document.getElementById('pane-fireworks')),     initialized: false },
+    neon:        { init: () => NeonGame.init(document.getElementById('pane-neon')),               initialized: false },
   };
 
   function renderHub() {
