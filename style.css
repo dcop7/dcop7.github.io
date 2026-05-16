@@ -1234,13 +1234,7 @@ body.light .t-input,body.light .t-textarea,body.light .t-select{background:#f8fa
 .wbm-add-btn:hover{border-color:rgba(var(--accent-rgb),.3);color:var(--accent)}
 .wbm-empty{padding:.75rem 1rem;color:var(--muted);font-size:.78rem;text-align:center}
 
-/* ── HOME TIMEZONE ──────────────────────────────────────────────── */
-.wtz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;padding:.5rem 1rem .85rem}
-.wtz-item{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .75rem;text-align:center}
-.wtz-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.3rem;line-height:1.3}
-.wtz-time{font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:var(--accent)}
-.wtz-date{font-size:.72rem;color:var(--text2);margin-top:.2rem;font-weight:500}
-.wtz-gmt{font-size:.6rem;color:var(--muted);margin-top:.1rem;font-family:var(--font-mono)}
+/* ── HOME TIMEZONE (defined at end of file) ─────────────────────── */
 
 /* ── HERO AUTOCOMPLETE ──────────────────────────────────────────── */
 .hero-autocomplete{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card-solid);border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.4)}
@@ -1421,7 +1415,8 @@ body.light .tools-sidebar{background:rgba(248,250,252,.98)}
 .ph-modal-title{font-family:var(--font-head);font-size:.95rem;font-weight:700}
 .ph-modal-close{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:.2rem .5rem;border-radius:4px;transition:color var(--ease)}
 .ph-modal-close:hover{color:var(--text)}
-.ph-modal-canvas{width:100%;display:block;aspect-ratio:700/460}
+.ph-modal-canvas{width:100%;display:block;aspect-ratio:4/3}
+@media(max-width:640px){.ph-modal-box .ph-comp-grid-2{grid-template-columns:1fr!important}}
 .ph-modal-desc{padding:.65rem 1rem;font-size:.78rem;color:var(--muted);border-top:1px solid var(--border)}
 
 /* ── MEMORY GAME ────────────────────────────────────────────────── */
@@ -1434,8 +1429,8 @@ body.light .tools-sidebar{background:rgba(248,250,252,.98)}
 .mem-inner{position:relative;width:100%;height:100%;transition:transform .4s;transform-style:preserve-3d}
 .mem-card.flipped .mem-inner,.mem-card.matched .mem-inner{transform:rotateY(180deg)}
 .mem-front,.mem-back{position:absolute;inset:0;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;backface-visibility:hidden;border:1px solid var(--border)}
-.mem-front{background:var(--card2);color:var(--muted);font-size:1.1rem;font-weight:700}
-.mem-back{background:var(--accent-soft);font-size:1.4rem;transform:rotateY(180deg)}
+.mem-front{background:var(--card2);color:var(--muted);font-size:1.3rem;font-weight:700}
+.mem-back{background:var(--accent-soft);font-size:2rem;transform:rotateY(180deg)}
 .mem-card.matched .mem-back{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.35)}
 .mem-msg{text-align:center;font-size:.9rem;font-weight:700;color:var(--accent);min-height:1.5rem}
 
@@ -1836,14 +1831,7 @@ body.light .skel{
 }
 .icon-btn:hover{border-color:rgba(var(--accent-rgb),.4);color:var(--accent);background:var(--accent-soft)}
 
-/* ── WORLD CLOCKS ────────────────────────────────────────────────── */
-.wtz-grid{display:flex;flex-direction:column;gap:0;padding:.5rem .75rem .75rem}
-.wtz-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border)}
-.wtz-item:last-child{border-bottom:none}
-.wtz-label{font-size:.78rem;color:var(--text2);font-weight:500}
-.wtz-time{font-family:var(--font-mono);font-size:.88rem;font-weight:600;color:var(--accent)}
-.wtz-date{font-size:.66rem;color:var(--muted);display:none}
-.wtz-gmt{font-size:.65rem;color:var(--muted);background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.1rem .4rem}
+/* ── WORLD CLOCKS (defined at end of file) ───────────────────────── */
 
 /* ── PWA INSTALL PROMPT ──────────────────────────────────────────── */
 .pwa-prompt{
@@ -1878,3 +1866,17 @@ body.light .skel{
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* ── SHOOTING GAME ───────────────────────────────────────────────── */
+.sg-hdr{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem;padding:.25rem 0}
+.sg-stat{display:flex;flex-direction:column;align-items:center;gap:.1rem;min-width:50px}
+.sg-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.sg-val{font-family:var(--font-mono);font-size:.95rem;font-weight:700;color:var(--accent)}
+
+/* ── WORLD TIMES (compact list) ─────────────────────────────────── */
+.wtz-grid{display:flex;flex-direction:column;gap:0;padding:.35rem .75rem .65rem}
+.wtz-item{display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border)}
+.wtz-item:last-child{border-bottom:none}
+.wtz-label{font-size:.78rem;color:var(--text2);font-weight:500}
+.wtz-time{font-family:var(--font-mono);font-size:.88rem;font-weight:600;color:var(--accent)}
+.wtz-gmt{font-size:.62rem;color:var(--muted);background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.1rem .35rem;font-family:var(--font-mono)}

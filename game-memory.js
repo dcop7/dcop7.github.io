@@ -40,7 +40,8 @@ const MemoryGame = (function () {
       flipped = []; matched = []; moves = 0; timer = 0; locked = false; started = false;
       stopTimer();
       const cards = getCards(pairs);
-      const cols = pairs <= 6 ? 3 : pairs <= 8 ? 4 : 5;
+      const cols = pairs <= 6 ? 3 : pairs <= 8 ? 4 : 6;
+      const cardW = pairs <= 8 ? 82 : 72;
 
       root.innerHTML = `
         <div class="game-card">
@@ -54,7 +55,7 @@ const MemoryGame = (function () {
               <button class="hf-new-btn" id="mem-new12">12 pares</button>
             </div>
           </div>
-          <div class="mem-grid" id="mem-grid" style="grid-template-columns:repeat(${cols},1fr)">
+          <div class="mem-grid" id="mem-grid" style="grid-template-columns:repeat(${cols},minmax(0,${cardW}px));justify-content:center">
             ${cards.map((e, i) => `<div class="mem-card" data-idx="${i}" data-emoji="${e}"><div class="mem-inner"><div class="mem-front">?</div><div class="mem-back">${e}</div></div></div>`).join('')}
           </div>
           <div class="mem-msg" id="mem-msg"></div>

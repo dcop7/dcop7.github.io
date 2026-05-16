@@ -151,7 +151,7 @@
             <!-- Sites Favoritos widget -->
             <div class="widget" id="widget-bookmarks">
               <div class="widget-hdr">
-                <span class="widget-title">🌐 Sites Favoritos</span>
+                <span class="widget-title" data-i18n="home.fav.sites">🌐 Sites Favoritos</span>
                 <button class="wbm-add-btn" id="wbm-add" title="Editar favoritos">✎</button>
               </div>
               <div id="wbm-grid" class="wbm-grid"></div>
@@ -160,7 +160,7 @@
             <!-- Favorite Tools widget -->
             <div class="widget" id="widget-fav-tools">
               <div class="widget-hdr">
-                <span class="widget-title">🔧 Ferramentas Favoritas</span>
+                <span class="widget-title" data-i18n="home.fav.tools">🔧 Ferramentas Favoritas</span>
                 <button class="wbm-add-btn" id="wft-edit" title="Editar favoritos">✎</button>
               </div>
               <div id="wft-grid" class="wft-grid"></div>
@@ -169,7 +169,7 @@
             <!-- Favorite Games widget -->
             <div class="widget" id="widget-fav-games">
               <div class="widget-hdr">
-                <span class="widget-title">🎮 Jogos Favoritos</span>
+                <span class="widget-title" data-i18n="home.fav.games">🎮 Jogos Favoritos</span>
                 <button class="wbm-add-btn" id="wfg-edit" title="Editar favoritos">✎</button>
               </div>
               <div id="wfg-grid" class="wft-grid"></div>
@@ -178,7 +178,7 @@
             <!-- Timezone widget -->
             <div class="widget" id="widget-tz">
               <div class="widget-hdr">
-                <span class="widget-title">🕐 Horas Mundiais</span>
+                <span class="widget-title" data-i18n="home.world.times">🕐 Horas Mundiais</span>
               </div>
               <div class="wtz-grid" id="wtz-grid"></div>
             </div>
@@ -279,6 +279,7 @@
                   </div>
                   <div class="hf-game-col">
                     <div class="hf-cat-row"><span class="hf-cat-lbl">Categoria:</span><span class="hf-cat-val" id="hf-category">—</span></div>
+                    <div class="hf-cat-row"><span class="hf-cat-lbl">Letras:</span><span class="hf-cat-val" id="hf-letter-count">—</span></div>
                     <div class="hf-word-row" id="hf-word-row"></div>
                     <div class="hf-wrong-row"><span class="hf-wrong-lbl">Letras erradas:</span><span class="hf-wrong-val" id="hf-wrong-letters">—</span></div>
                     <div class="hf-keyboard" id="hf-keyboard"></div>
@@ -293,9 +294,8 @@
             <div class="game-pane" id="pane-memory"></div>
             <div class="game-pane" id="pane-tictactoe"></div>
             <div class="game-pane" id="pane-wordle"></div>
-            <div class="game-pane" id="pane-aimtrainer"></div>
+            <div class="game-pane" id="pane-shooting"></div>
             <div class="game-pane" id="pane-reaction"></div>
-            <div class="game-pane" id="pane-fireworks"></div>
             <div class="game-pane" id="pane-neon"></div>
           </div>
         </div>
@@ -370,9 +370,8 @@
 <script src="game-memory.js" defer></script>
 <script src="game-tictactoe.js" defer></script>
 <script src="game-wordle.js" defer></script>
-<script src="game-aimtrainer.js" defer></script>
+<script src="game-shooting.js" defer></script>
 <script src="game-reaction.js" defer></script>
-<script src="game-fireworks.js" defer></script>
 <script src="game-neon.js" defer></script>
 <script src="game-host.js" defer></script>
 <script src="hangman.js" defer></script>

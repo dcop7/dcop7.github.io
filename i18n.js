@@ -11,16 +11,20 @@ const I18n = (function () {
       'game.hangman':'Hangman','game.runner':'Infinite Runner',
       'game.minesweeper':'Minesweeper','game.bomb':'Defuse Bomb',
       'game.memory':'Memory Cards','game.tictactoe':'Tic-tac-toe',
-      'game.wordle':'Word of the Day','game.aimtrainer':'Aim Trainer',
-      'game.reaction':'Reaction Test','game.fireworks':'Fireworks',
-      'game.neon':'Neon Drawing',
+      'game.wordle':'Word of the Day','game.shooting':'Space Shooter',
+      'game.reaction':'Reaction Test','game.neon':'Neon Drawing',
       // Header
       'hdr.search':'Search games, sites, sections…','hdr.lang':'PT',
-      // Home
+      // Home widgets
+      'home.fav.sites':'🌐 Favourite Sites',
+      'home.fav.tools':'🔧 Favourite Tools',
+      'home.fav.games':'🎮 Favourite Games',
+      'home.world.times':'🕐 World Times',
+      // Home daily content
       'home.quote':'💡 Daily Quote','home.riddle':'🤔 Daily Riddle',
       'home.joke':'😄 Daily Joke','home.reveal':'Show answer',
       'home.greet.morning':'Good morning! ☀️','home.greet.afternoon':'Good afternoon! 🌤️',
-      'home.greet.evening':'Good night! 🌙',
+      'home.greet.evening':'Good evening! 🌙',
       // Weather labels
       'wx.next24':'Next 24 Hours','wx.forecast':'7-Day Forecast',
       'wx.map':'🌍 Real-Time Map','wx.now':'Now','wx.today':'Today',
@@ -88,12 +92,16 @@ const I18n = (function () {
       'game.hangman':'Jogo da Forca','game.runner':'Corredor Infinito',
       'game.minesweeper':'Campo de Minas','game.bomb':'Desarmar Bomba',
       'game.memory':'Memória','game.tictactoe':'Jogo do Galo',
-      'game.wordle':'Palavra do Dia','game.aimtrainer':'Treino de Mira',
-      'game.reaction':'Teste de Reação','game.fireworks':'Fogos de Artifício',
-      'game.neon':'Neon Drawing',
+      'game.wordle':'Palavra do Dia','game.shooting':'Space Shooter',
+      'game.reaction':'Teste de Reação','game.neon':'Neon Drawing',
       // Header
       'hdr.search':'Pesquisar jogos, sites, secções…','hdr.lang':'EN',
-      // Home
+      // Home widgets
+      'home.fav.sites':'🌐 Sites Favoritos',
+      'home.fav.tools':'🔧 Ferramentas Favoritas',
+      'home.fav.games':'🎮 Jogos Favoritos',
+      'home.world.times':'🕐 Horas Mundiais',
+      // Home daily content
       'home.quote':'💡 Inspiração do Dia','home.riddle':'🤔 Adivinha do Dia',
       'home.joke':'😄 Piada do Dia','home.reveal':'Ver resposta',
       'home.greet.morning':'Bom dia! ☀️','home.greet.afternoon':'Boa tarde! 🌤️',

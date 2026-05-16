@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroBtn   = document.getElementById('hero-search-btn');
 
   if (heroInput) {
-    heroInput.placeholder = lang() === 'pt' ? 'Pesquisar no Google.pt…' : 'Search Google…';
+    heroInput.placeholder = lang() === 'pt' ? 'Pesquisar no Google.pt…' : 'Search Google.com…';
   }
 
   if (heroInput) {
@@ -650,12 +650,11 @@ const ALL_GAMES = [
   { id:'memory',     key:'game.memory',     icon:'🃏' },
   { id:'tictactoe',  key:'game.tictactoe',  icon:'⭕' },
   { id:'wordle',     key:'game.wordle',     icon:'📝' },
-  { id:'aimtrainer', key:'game.aimtrainer', icon:'🎯' },
+  { id:'shooting',   key:'game.shooting',   icon:'🚀' },
   { id:'reaction',   key:'game.reaction',   icon:'⚡' },
-  { id:'fireworks',  key:'game.fireworks',  icon:'🎆' },
   { id:'neon',       key:'game.neon',       icon:'✨' },
 ];
-const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','aimtrainer'];
+const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','shooting'];
 
 function getFavGames() {
   try { return JSON.parse(localStorage.getItem('home-fav-games') || 'null') || DEFAULT_FAV_GAMES; }
@@ -727,8 +726,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── TIMEZONE CLOCKS ───────────────────────────────────────────────
 const TZ_ZONES = [
-  { label: 'Portugal / Lisboa', tz: 'Europe/Lisbon' },
-  { label: 'UTC / GMT',         tz: 'UTC' },
+  { pt: '🇵🇹 Lisboa',        en: '🇵🇹 Lisbon',        tz: 'Europe/Lisbon'       },
+  { pt: '🇬🇧 Londres',       en: '🇬🇧 London',        tz: 'Europe/London'       },
+  { pt: '🇺🇸 Nova Iorque',   en: '🇺🇸 New York',      tz: 'America/New_York'    },
+  { pt: '🇺🇸 São Francisco', en: '🇺🇸 San Francisco', tz: 'America/Los_Angeles' },
+  { pt: '🇧🇷 São Paulo',     en: '🇧🇷 São Paulo',     tz: 'America/Sao_Paulo'   },
+  { pt: '🇩🇪 Berlim',       en: '🇩🇪 Berlin',        tz: 'Europe/Berlin'       },
+  { pt: '🇦🇪 Dubai',        en: '🇦🇪 Dubai',         tz: 'Asia/Dubai'          },
+  { pt: '🇯🇵 Tóquio',       en: '🇯🇵 Tokyo',         tz: 'Asia/Tokyo'          },
+  { pt: '🇦🇺 Sydney',       en: '🇦🇺 Sydney',        tz: 'Australia/Sydney'    },
+  { pt: '🌐 UTC',           en: '🌐 UTC',            tz: 'UTC'                 },
 ];
 
 function gmtOffset(tz) {
@@ -747,14 +754,15 @@ function renderTimezones() {
   const now = new Date();
   const l = lang();
   grid.innerHTML = TZ_ZONES.map(z => {
-    const timeFmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: z.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
-    const dateFmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: z.tz, weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'});
+    const label = l === 'pt' ? z.pt : z.en;
+    const timeFmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: z.tz, hour:'2-digit', minute:'2-digit', hour12:false});
     const offset = gmtOffset(z.tz);
     return `<div class="wtz-item">
-      <div class="wtz-label">${z.label}</div>
-      <div class="wtz-time" data-tz="${z.tz}">${timeFmt.format(now)}</div>
-      <div class="wtz-date">${dateFmt.format(now)}</div>
-      <div class="wtz-gmt">${offset}</div>
+      <span class="wtz-label">${label}</span>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span class="wtz-time" data-tz="${z.tz}">${timeFmt.format(now)}</span>
+        <span class="wtz-gmt">${offset}</span>
+      </div>
     </div>`;
   }).join('');
 }
@@ -763,7 +771,7 @@ function tickTimezones() {
   const now = new Date();
   const l = lang();
   document.querySelectorAll('.wtz-time[data-tz]').forEach(el => {
-    const fmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const fmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', hour12:false});
     el.textContent = fmt.format(now);
   });
 }
@@ -871,4 +879,8 @@ document.addEventListener('langchange', () => {
   loadDailyContent();
   renderHolidays();
   renderFavGames();
+  renderTimezones();
+  // Update hero search placeholder for active language
+  const heroInput = document.getElementById('hero-search');
+  if (heroInput) heroInput.placeholder = lang() === 'pt' ? 'Pesquisar no Google.pt…' : 'Search Google.com…';
 });

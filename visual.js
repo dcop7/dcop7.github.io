@@ -285,62 +285,111 @@ const VisualPage = (function () {
 
   // ── Whiteboard ────────────────────────────────────────────────────
   function buildWhiteboard(root) {
-    root.innerHTML=`
+    const COLORS = ['#1e293b','#ef4444','#f97316','#f59e0b','#22c55e','#06b6d4','#6366f1','#a855f7','#ec4899','#ffffff'];
+    const SIZES  = [1, 2, 4, 7, 12, 20];
+
+    root.innerHTML = `
       <div>
-        <div class="t-row" style="margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
+        <div class="t-row" style="margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem;align-items:center">
           <div class="tool-seg">
-            <button class="tsb active" data-tool="pen">✏️ Caneta</button>
-            <button class="tsb" data-tool="rect">▭ Rect</button>
-            <button class="tsb" data-tool="circle">○ Círculo</button>
-            <button class="tsb" data-tool="triangle">△ Triângulo</button>
-            <button class="tsb" data-tool="line">/ Linha</button>
-            <button class="tsb" data-tool="eraser">⬜ Borracha</button>
+            <button class="tsb active" data-tool="pen" title="Caneta (P)">✏️</button>
+            <button class="tsb" data-tool="line" title="Linha (L)">/</button>
+            <button class="tsb" data-tool="rect" title="Retângulo (R)">▭</button>
+            <button class="tsb" data-tool="circle" title="Círculo (C)">○</button>
+            <button class="tsb" data-tool="triangle" title="Triângulo">△</button>
+            <button class="tsb" data-tool="fill-rect" title="Rect. Preenchido">▪</button>
+            <button class="tsb" data-tool="eraser" title="Borracha (E)">⬜</button>
           </div>
           <div class="tool-opts-grp">
             <span class="tool-opts-lbl">Cor</span>
             <div class="tool-colors" id="wb-colors">
-              ${['#6366f1','#ef4444','#22c55e','#f59e0b','#e2e8f0','#0f172a'].map((c,i)=>`<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c}"></button>`).join('')}
+              ${COLORS.map((c,i)=>`<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c};${c==='#ffffff'?'border:1.5px solid #64748b':''}" title="${c}"></button>`).join('')}
+              <input type="color" id="wb-color-custom" title="Cor personalizada" style="width:22px;height:22px;padding:0;border:none;border-radius:4px;cursor:pointer;background:none">
             </div>
           </div>
           <div class="tool-opts-grp">
             <span class="tool-opts-lbl">Espessura</span>
             <div class="tool-seg" id="wb-size">
-              ${[1,2,4,8,14].map((s,i)=>`<button class="tsb${i===2?' active':''}" data-s="${s}">${s}</button>`).join('')}
+              ${SIZES.map((s,i)=>`<button class="tsb${i===2?' active':''}" data-s="${s}" style="font-size:.65rem">${s}</button>`).join('')}
             </div>
           </div>
-          <button class="t-btn t-btn-ghost" id="wb-clear">🗑 Limpar</button>
-          <button class="t-btn t-btn-ghost" id="wb-dl">💾 PNG</button>
+          <div style="display:flex;gap:.35rem;margin-left:auto">
+            <button class="t-btn t-btn-ghost" id="wb-undo" title="Desfazer (Ctrl+Z)" style="font-size:.72rem">↩ Desfazer</button>
+            <button class="t-btn t-btn-ghost" id="wb-redo" title="Refazer (Ctrl+Y)" style="font-size:.72rem">↪ Refazer</button>
+            <button class="t-btn t-btn-ghost" id="wb-clear" title="Limpar tudo" style="font-size:.72rem">🗑 Limpar</button>
+            <button class="t-btn t-btn-ghost" id="wb-dl" title="Guardar PNG" style="font-size:.72rem">💾 PNG</button>
+          </div>
         </div>
-        <canvas id="wb-canvas" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);cursor:crosshair;display:block;width:100%;touch-action:none"></canvas>
+        <canvas id="wb-canvas" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:crosshair;display:block;width:100%;touch-action:none"></canvas>
+        <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem;text-align:right">Atalhos: P=caneta · L=linha · R=rect · C=círculo · E=borracha · Ctrl+Z=desfazer</div>
       </div>`;
 
-    const canvas=root.querySelector('#wb-canvas');
-    const ctx=canvas.getContext('2d');
-    let drawing=false, tool='pen', color='#6366f1', size=4;
-    let startX=0, startY=0, snapshot=null;
+    const canvas = root.querySelector('#wb-canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false, tool = 'pen', color = '#1e293b', size = 4;
+    let startX = 0, startY = 0, snapshot = null;
+    const history = [], redo_stack = [];
+    const MAX_HISTORY = 30;
+    let dpr = 1, cssW = 0, cssH = 0;
 
     function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      const cssW = canvas.parentElement.clientWidth - 2;
-      const cssH = Math.max(450, window.innerHeight * 0.55);
-      const prevImg = canvas.toDataURL();
-      canvas.width = cssW * dpr;
+      dpr = window.devicePixelRatio || 1;
+      const newCssW = (canvas.parentElement.clientWidth || 600) - 2;
+      const newCssH = Math.max(420, window.innerHeight * 0.54);
+      if (newCssW === cssW && newCssH === cssH) return; // no real change
+      // Save current content
+      const saved = history.length ? null : null; // we'll use a temp canvas
+      const tmp = document.createElement('canvas');
+      tmp.width = canvas.width; tmp.height = canvas.height;
+      tmp.getContext('2d').drawImage(canvas, 0, 0);
+
+      cssW = newCssW; cssH = newCssH;
+      canvas.width  = cssW * dpr;
       canvas.height = cssH * dpr;
-      canvas.style.width = cssW + 'px';
+      canvas.style.width  = cssW + 'px';
       canvas.style.height = cssH + 'px';
       ctx.scale(dpr, dpr);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, cssW, cssH);
-      const img = new Image();
-      img.onload = () => ctx.drawImage(img, 0, 0, cssW, cssH);
-      img.src = prevImg;
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cssW, cssH);
+      if (tmp.width > 0 && tmp.height > 0) {
+        ctx.drawImage(tmp, 0, 0, tmp.width, tmp.height, 0, 0, cssW, cssH);
+      }
+      applyStyle();
     }
-    resize();
 
     function pos(e) {
       const r = canvas.getBoundingClientRect();
       const src = e.touches ? e.touches[0] : e;
-      return { x: (src.clientX - r.left), y: (src.clientY - r.top) };
+      return {
+        x: (src.clientX - r.left) * (cssW / r.width),
+        y: (src.clientY - r.top)  * (cssH / r.height),
+      };
+    }
+
+    function saveHistory() {
+      history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      if (history.length > MAX_HISTORY) history.shift();
+      redo_stack.length = 0;
+    }
+
+    function undo() {
+      if (!history.length) return;
+      redo_stack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const img = history.pop();
+      ctx.putImageData(img, 0, 0);
+    }
+
+    function redo() {
+      if (!redo_stack.length) return;
+      history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const img = redo_stack.pop();
+      ctx.putImageData(img, 0, 0);
+    }
+
+    function applyStyle() {
+      ctx.strokeStyle = (tool === 'eraser') ? '#ffffff' : color;
+      ctx.fillStyle   = color;
+      ctx.lineWidth   = (tool === 'eraser') ? size * 3.5 : size;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     }
 
     function down(e) {
@@ -349,6 +398,7 @@ const VisualPage = (function () {
       const p = pos(e);
       startX = p.x; startY = p.y;
       if (tool === 'pen' || tool === 'eraser') {
+        saveHistory();
         ctx.beginPath(); ctx.moveTo(p.x, p.y);
       } else {
         snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -359,6 +409,7 @@ const VisualPage = (function () {
       if (!drawing) return;
       e.preventDefault();
       const p = pos(e);
+      applyStyle();
       if (tool === 'pen' || tool === 'eraser') {
         ctx.lineTo(p.x, p.y); ctx.stroke();
       } else {
@@ -367,9 +418,13 @@ const VisualPage = (function () {
         const dx = p.x - startX, dy = p.y - startY;
         ctx.beginPath();
         if (tool === 'rect') { ctx.strokeRect(startX, startY, dx, dy); }
-        else if (tool === 'circle') { ctx.ellipse(startX + dx/2, startY + dy/2, Math.abs(dx)/2, Math.abs(dy)/2, 0, 0, 2*Math.PI); ctx.stroke(); }
+        else if (tool === 'fill-rect') { ctx.fillRect(startX, startY, dx, dy); }
+        else if (tool === 'circle') {
+          ctx.ellipse(startX + dx / 2, startY + dy / 2, Math.abs(dx) / 2, Math.abs(dy) / 2, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
         else if (tool === 'triangle') {
-          ctx.moveTo(startX + dx/2, startY);
+          ctx.moveTo(startX + dx / 2, startY);
           ctx.lineTo(startX + dx, startY + dy);
           ctx.lineTo(startX, startY + dy);
           ctx.closePath(); ctx.stroke();
@@ -378,37 +433,94 @@ const VisualPage = (function () {
       }
     }
 
-    function up() { drawing = false; snapshot = null; if (tool === 'pen' || tool === 'eraser') ctx.beginPath(); }
-
-    function applyStyle() {
-      ctx.strokeStyle = tool === 'eraser' ? '#fff' : color;
-      ctx.lineWidth = tool === 'eraser' ? size * 4 : size;
-      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    function up() {
+      if (!drawing) return;
+      drawing = false;
+      if (tool !== 'pen' && tool !== 'eraser' && snapshot) {
+        saveHistory();
+        snapshot = null;
+      }
+      ctx.beginPath();
     }
-    applyStyle();
 
-    canvas.addEventListener('mousedown', down); canvas.addEventListener('mousemove', move);
-    canvas.addEventListener('mouseup', up); canvas.addEventListener('mouseleave', up);
-    canvas.addEventListener('touchstart', down, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false});
+    applyStyle();
+    resize();
+
+    canvas.addEventListener('mousedown', down);
+    canvas.addEventListener('mousemove', move);
+    canvas.addEventListener('mouseup', up);
+    canvas.addEventListener('mouseleave', up);
+    canvas.addEventListener('touchstart', down, { passive: false });
+    canvas.addEventListener('touchmove',  move, { passive: false });
     canvas.addEventListener('touchend', up);
 
     root.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => {
       tool = b.dataset.tool;
-      root.querySelectorAll('[data-tool]').forEach(x => x.classList.remove('active')); b.classList.add('active');
+      root.querySelectorAll('[data-tool]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
       applyStyle();
     }));
+
     root.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => {
       color = b.dataset.c;
-      if (tool === 'eraser') { tool = 'pen'; root.querySelectorAll('[data-tool]').forEach(x => x.classList.toggle('active', x.dataset.tool === 'pen')); }
-      root.querySelectorAll('[data-c]').forEach(x => x.classList.remove('active')); b.classList.add('active');
+      if (tool === 'eraser') {
+        tool = 'pen';
+        root.querySelectorAll('[data-tool]').forEach(x => x.classList.toggle('active', x.dataset.tool === 'pen'));
+      }
+      root.querySelectorAll('[data-c]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
       applyStyle();
     }));
+
+    root.querySelector('#wb-color-custom').addEventListener('input', e => {
+      color = e.target.value;
+      root.querySelectorAll('[data-c]').forEach(x => x.classList.remove('active'));
+      if (tool === 'eraser') {
+        tool = 'pen';
+        root.querySelectorAll('[data-tool]').forEach(x => x.classList.toggle('active', x.dataset.tool === 'pen'));
+      }
+      applyStyle();
+    });
+
     root.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => {
-      size = +b.dataset.s; root.querySelectorAll('[data-s]').forEach(x => x.classList.remove('active')); b.classList.add('active'); applyStyle();
+      size = +b.dataset.s;
+      root.querySelectorAll('[data-s]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      applyStyle();
     }));
-    root.querySelector('#wb-clear').addEventListener('click', () => { ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width/((window.devicePixelRatio||1)),canvas.height/((window.devicePixelRatio||1))); });
-    root.querySelector('#wb-dl').addEventListener('click', () => { const a=document.createElement('a'); a.download='whiteboard.png'; a.href=canvas.toDataURL(); a.click(); });
-    window.addEventListener('resize', resize);
+
+    root.querySelector('#wb-undo').addEventListener('click', undo);
+    root.querySelector('#wb-redo').addEventListener('click', redo);
+    root.querySelector('#wb-clear').addEventListener('click', () => {
+      saveHistory();
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cssW, cssH);
+    });
+    root.querySelector('#wb-dl').addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.download = 'whiteboard.png'; a.href = canvas.toDataURL(); a.click();
+    });
+
+    // Keyboard shortcuts
+    function onKey(e) {
+      const pane = document.getElementById('pane-whiteboard') || root;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+        if (e.key === 'y' || e.key === 'Y') { e.preventDefault(); redo(); }
+        return;
+      }
+      const map = { p:'pen', l:'line', r:'rect', c:'circle', e:'eraser' };
+      const t = map[e.key.toLowerCase()];
+      if (t) {
+        tool = t;
+        root.querySelectorAll('[data-tool]').forEach(x => x.classList.toggle('active', x.dataset.tool === t));
+        applyStyle();
+      }
+    }
+    document.addEventListener('keydown', onKey);
+
+    const _ro = new ResizeObserver(() => resize());
+    _ro.observe(canvas.parentElement);
   }
 
   // ── Main ──────────────────────────────────────────────────────────

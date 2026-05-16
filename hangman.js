@@ -88,6 +88,10 @@
   let gameOver = false;
   let currentAge = 7;
 
+  // Track recently used words to avoid repetition
+  const _recentWords = { 5: [], 7: [], 10: [], 13: [] };
+  const AVOID_REPEAT = 8;
+
   // ── DOM REFS ──────────────────────────────────────────────────────
   const wordRow   = document.getElementById('hf-word-row');
   const keyboard  = document.getElementById('hf-keyboard');
@@ -238,7 +242,18 @@
   // ── NEW GAME ──────────────────────────────────────────────────────
   function newGame() {
     const pool = WORDS[currentAge] || WORDS[5];
-    const entry = rand(pool);
+    const recent = _recentWords[currentAge] || [];
+
+    // Pick from words not recently used; fall back to full pool if needed
+    let available = pool.filter(item => !recent.includes(item.w));
+    if (available.length === 0) available = pool;
+    const entry = rand(available);
+
+    // Track recent
+    recent.push(entry.w);
+    if (recent.length > AVOID_REPEAT) recent.shift();
+    _recentWords[currentAge] = recent;
+
     currentWord = entry.w.toUpperCase();
     currentCat  = entry.c;
     guessed     = new Set();
@@ -246,6 +261,16 @@
     gameOver    = false;
 
     catEl.textContent = currentCat;
+
+    // Show letter count
+    const countEl = document.getElementById('hf-letter-count');
+    if (countEl) {
+      const words = currentWord.split(' ').filter(w => w.length > 0);
+      countEl.textContent = words.length > 1
+        ? words.map(w => w.length).join(' + ') + ' = ' + words.reduce((s, w) => s + w.length, 0) + ' letras'
+        : currentWord.replace(/\s/g, '').length + ' letras';
+    }
+
     hideMsg();
     renderGallows();
     renderLives();

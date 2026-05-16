@@ -10,9 +10,8 @@ const Nav = (function () {
     { id: 'memory',     key: 'game.memory',     icon: '🃏' },
     { id: 'tictactoe',  key: 'game.tictactoe',  icon: '⭕' },
     { id: 'wordle',     key: 'game.wordle',     icon: '📝' },
-    { id: 'aimtrainer', key: 'game.aimtrainer', icon: '🎯' },
+    { id: 'shooting',   key: 'game.shooting',   icon: '🚀' },
     { id: 'reaction',   key: 'game.reaction',   icon: '⚡' },
-    { id: 'fireworks',  key: 'game.fireworks',  icon: '🎆' },
     { id: 'neon',       key: 'game.neon',       icon: '✨' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;

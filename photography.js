@@ -366,8 +366,9 @@ const PhotographyPage = (function () {
 
   // ── Composition Guides ────────────────────────────────────────────
   const COMPOSITIONS = [
-    { name:'Regra dos Terços', desc:'Divide o enquadramento em 9 partes iguais. Os pontos de cruzamento são os pontos focais ideais — mais naturais e dinâmicos que o centro.',
-      tips:'Horizontes: coloca na linha de 1/3. Rostos: olho no cruzamento superior. Reserva o centro apenas para simetria proposital.',
+    { name:'Regra dos Terços', desc:'Divide o enquadramento em 9 partes iguais com 2 linhas horizontais e 2 verticais. Os 4 pontos de cruzamento são os pontos focais ideais — o olho humano navega naturalmente por eles, tornando a imagem mais dinâmica e equilibrada do que colocar o sujeito ao centro.',
+      tips:'Horizontes: coloca na linha 1/3 superior (céu dramático) ou inferior (terra/água em destaque). Rostos: olho mais próximo no cruzamento superior. Sujeitos em movimento: posiciona-os no terço oposto à direção do movimento — dá espaço de respiração.',
+      examples:'Fotografia de paisagem (horizonte a 1/3), retratos (olhos no cruzamento superior), fotografia de street (sujeito no terço lateral).',
       draw(ctx,W,H){
         ctx.strokeStyle='rgba(99,102,241,.55)';ctx.lineWidth=1;
         [1/3,2/3].forEach(f=>{
@@ -381,8 +382,9 @@ const PhotographyPage = (function () {
           ctx.strokeStyle='rgba(99,102,241,.55)';ctx.lineWidth=1;
         }));
       }},
-    { name:'Proporção Áurea (Phi)', desc:'Proporção 1:1.618 — ligeiramente diferente dos terços, mais harmoniosa. Os pontos phi são considerados os mais naturais ao olho humano.',
-      tips:'Mais subtil que os terços. Ótima para retratos e composições que precisam de elegância clássica. Usa os 4 pontos de cruzamento como pontos focais.',
+    { name:'Proporção Áurea (Phi)', desc:'Proporção 1:1.618 (número phi) — ligeiramente diferente dos terços mas considerada a mais harmoniosa pela natureza. As linhas divisórias criam a mesma proporção entre os segmentos que se encontra em conchas, galáxias e flores. Os 4 pontos de cruzamento são mais precisos e naturais que os dos terços.',
+      tips:'Mais subtil e elegante que os terços. Ideal para retratos formais, fotografia de produto e composições arquitetónicas. A divisão phi não está a 1/3 (33.3%) mas a 38.2% e 61.8% do lado — note a diferença subtil mas importante.',
+      examples:'Retratos clássicos (estilo Rembrandt, Caravaggio), fotografia de produto de luxo, arquitetura com proporções geométricas.',
       draw(ctx,W,H){
         const phi=1.618;const gx=W/phi,gy=H/phi;
         ctx.strokeStyle='rgba(245,158,11,.55)';ctx.lineWidth=1;
@@ -392,26 +394,41 @@ const PhotographyPage = (function () {
           ctx.beginPath();ctx.arc(x,y,5,0,2*Math.PI);ctx.fillStyle='rgba(245,158,11,.8)';ctx.fill();
         }));
       }},
-    { name:'Espiral Dourada', desc:'Espiral logarítmica — o olhar percorre naturalmente a espiral até ao ponto focal. Cresce por φ=1.618 a cada 90°.',
-      tips:'Roda o enquadramento para que o ponto focal coincida com o centro da espiral. Usada em retratos e paisagens com caminhos em S.',
+    { name:'Espiral Dourada', desc:'Espiral logarítmica baseada na proporção áurea — o olhar segue naturalmente a curva até ao ponto focal no centro. O raio cresce por um fator de φ=1.618 a cada 90°. É a mesma proporção que se encontra em conchas de nautilus, galáxias espirais e em obras de Da Vinci.',
+      tips:'Roda o enquadramento (ou o telemóvel/câmara) para que o elemento principal coincida com o centro apertado da espiral. O movimento da curva deve guiar o olhar. Funciona melhor quando há uma linha natural em curva (estrada, rio, braço, silhueta).',
+      examples:'Retratos de beleza (rosto no centro da espiral), paisagens com rios sinuosos, macro de flores, composições arquitetónicas com escadas em espiral.',
       draw(ctx,W,H){
         const phi=1.618033988749895,b=Math.log(phi)/(Math.PI/2);
-        const cx=W/phi,cy=H/phi;
-        // Phi grid (subtle)
+        // Focal point at the phi-division intersection (upper-left quadrant anchor)
+        const cx=W/phi, cy=H/phi;
+        // Subtle phi grid
         ctx.strokeStyle='rgba(245,158,11,.18)';ctx.lineWidth=0.7;
-        [cx,W-cx].forEach(gx=>{ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();});
-        [cy,H-cy].forEach(gy=>{ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();});
-        // Logarithmic spiral: draw from outer (large t) to center
+        [W/phi,W-W/phi].forEach(gx=>{ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();});
+        [H/phi,H-H/phi].forEach(gy=>{ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();});
+        // Compute max r such that spiral stays in canvas over 3 turns (tMax = 3π)
+        // At t=3π the spiral points left: need r*1 ≤ cx
+        // At t=5π/2 (down): r*1 ≤ H-cy
+        // At t=2π (right): r*1 ≤ W-cx
+        // At t=3π/2 (up): r*1 ≤ cy
+        const tMax=Math.PI*3;
+        const r0=Math.min(
+          (W-cx) / Math.exp(b*Math.PI*2),
+          (H-cy) / Math.exp(b*Math.PI*5/2),
+          cx      / Math.exp(b*Math.PI*3),
+          cy      / Math.exp(b*Math.PI*3/2)
+        )*0.88;
+        // Draw spiral from center outward
         ctx.strokeStyle='rgba(245,158,11,.9)';ctx.lineWidth=2;ctx.beginPath();
-        let first=true;
-        for(let i=0;i<=600;i++){
-          const t=Math.PI*5*(1-i/600);
-          const r=1.8*Math.exp(b*t);
+        for(let i=0;i<=800;i++){
+          const t=(i/800)*tMax;
+          const r=r0*Math.exp(b*t);
           const x=cx+r*Math.cos(t),y=cy+r*Math.sin(t);
-          if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);
+          if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
         }
         ctx.stroke();
-        ctx.fillStyle='rgba(245,158,11,.85)';ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();
+        // Focal point dot
+        ctx.fillStyle='rgba(245,158,11,.9)';ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;ctx.stroke();
       }},
     { name:'Diagonal Principal', desc:'Elementos ao longo da diagonal criam tensão, energia e movimento — muito mais dinâmicos que horizontais ou verticais.',
       tips:'Diagonal ↗: lida como movimento natural no sentido de leitura. Diagonal ↙: tensão e drama. Estradas, rios, sombras e braços funcionam bem.',
@@ -512,14 +529,19 @@ const PhotographyPage = (function () {
       modal = document.createElement('div');
       modal.id = 'ph-comp-modal';
       modal.className = 'ph-modal-overlay';
-      modal.innerHTML = `<div class="ph-modal-box">
+      modal.innerHTML = `<div class="ph-modal-box" style="max-width:820px">
         <div class="ph-modal-hdr">
           <span class="ph-modal-title" id="ph-modal-title"></span>
           <button class="ph-modal-close" id="ph-modal-close">✕</button>
         </div>
-        <canvas class="ph-modal-canvas" id="ph-modal-canvas"></canvas>
-        <div class="ph-modal-desc" id="ph-modal-desc"></div>
-        <div class="ph-modal-tips" id="ph-modal-tips"></div>
+        <div class="ph-comp-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+          <canvas class="ph-modal-canvas" id="ph-modal-canvas" style="aspect-ratio:4/3;border-right:1px solid var(--border)"></canvas>
+          <div style="padding:1rem;overflow-y:auto;max-height:420px;display:flex;flex-direction:column;gap:.75rem">
+            <div id="ph-modal-desc" style="font-size:.82rem;color:var(--text2);line-height:1.6"></div>
+            <div id="ph-modal-tips" style="padding:.65rem .75rem;background:var(--accent-soft);border-radius:var(--radius-sm);font-size:.78rem;color:var(--text2);line-height:1.6"></div>
+            <div id="ph-modal-examples" style="font-size:.78rem;color:var(--muted);line-height:1.6"></div>
+          </div>
+        </div>
       </div>`;
       document.body.appendChild(modal);
       document.getElementById('ph-modal-close').addEventListener('click', () => { modal.hidden = true; });
@@ -527,16 +549,22 @@ const PhotographyPage = (function () {
     }
     modal.hidden = false;
     document.getElementById('ph-modal-title').textContent = comp.name;
-    document.getElementById('ph-modal-desc').textContent = comp.desc;
+    document.getElementById('ph-modal-desc').innerHTML = comp.desc;
     const tipsEl = document.getElementById('ph-modal-tips');
     if (comp.tips) {
-      tipsEl.innerHTML = `<strong>💡 Dica:</strong> ${comp.tips}`;
+      tipsEl.innerHTML = `<strong>💡 Dica prática:</strong> ${comp.tips}`;
       tipsEl.style.display = '';
     } else {
       tipsEl.style.display = 'none';
     }
+    const examplesEl = document.getElementById('ph-modal-examples');
+    if (comp.examples) {
+      examplesEl.innerHTML = `<strong>📷 Exemplos:</strong> ${comp.examples}`;
+    } else {
+      examplesEl.textContent = '';
+    }
     const canvas = document.getElementById('ph-modal-canvas');
-    canvas.width = 700; canvas.height = 460;
+    canvas.width = 560; canvas.height = 420;
     requestAnimationFrame(() => drawCompCanvas(canvas, comp));
   }
 

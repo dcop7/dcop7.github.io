@@ -2,25 +2,23 @@ const GameHost = (function () {
   'use strict';
 
   const GAMES = [
-    { id: 'hangman',     name: 'Jogo da Forca',  icon: '🪢', color: '#3b82f6',
+    { id: 'hangman',     name: 'Jogo da Forca',   icon: '🪢', color: '#3b82f6',
       desc: 'Adivinha a palavra letra a letra. Quantas tentativas precisas?' },
-    { id: 'minesweeper', name: 'Campo de Minas',  icon: '💣', color: '#10b981',
+    { id: 'minesweeper', name: 'Campo de Minas',   icon: '💣', color: '#10b981',
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
-    { id: 'bomb',        name: 'Desarmar Bomba',  icon: '💥', color: '#ef4444',
+    { id: 'bomb',        name: 'Desarmar Bomba',   icon: '💥', color: '#ef4444',
       desc: '3 desafios, 90 segundos. Consegues desarmar a bomba a tempo?' },
-    { id: 'memory',      name: 'Memória',         icon: '🃏', color: '#a855f7',
+    { id: 'memory',      name: 'Memória',          icon: '🃏', color: '#a855f7',
       desc: 'Encontra todos os pares de cartas. Treina a memória!' },
-    { id: 'tictactoe',   name: 'Jogo do Galo',    icon: '⭕', color: '#f59e0b',
+    { id: 'tictactoe',   name: 'Jogo do Galo',     icon: '⭕', color: '#f59e0b',
       desc: 'O clássico X e O contra a IA. Consegues ganhar?' },
-    { id: 'wordle',      name: 'Palavra do Dia',  icon: '📝', color: '#22c55e',
+    { id: 'wordle',      name: 'Palavra do Dia',   icon: '📝', color: '#22c55e',
       desc: 'Adivinha a palavra de 5 letras em 6 tentativas.' },
-    { id: 'aimtrainer',  name: 'Treino de Mira',  icon: '🎯', color: '#ef4444',
-      desc: 'Clica nos alvos o mais rápido possível. 30 segundos.' },
+    { id: 'shooting',    name: 'Space Shooter',    icon: '🚀', color: '#6366f1',
+      desc: 'Elimina ondas de inimigos! Move o rato, esquiva e destrói tudo.' },
     { id: 'reaction',    name: 'Teste de Reação',  icon: '⚡', color: '#22d3ee',
       desc: 'Quanto tempo demoras a reagir? Testa os teus reflexos.' },
-    { id: 'fireworks',   name: 'Fogos de Artifício', icon: '🎆', color: '#f97316',
-      desc: 'Cria o teu espetáculo de fogos. Clica para lançar!' },
-    { id: 'neon',        name: 'Neon Drawing',    icon: '✨', color: '#a855f7',
+    { id: 'neon',        name: 'Neon Drawing',     icon: '✨', color: '#a855f7',
       desc: 'Desenha com efeito neon brilhante. Arte digital!' },
   ];
 
@@ -31,9 +29,8 @@ const GameHost = (function () {
     memory:      { init: () => MemoryGame.init(document.getElementById('pane-memory')),           initialized: false },
     tictactoe:   { init: () => TicTacToeGame.init(document.getElementById('pane-tictactoe')),    initialized: false },
     wordle:      { init: () => WordleGame.init(document.getElementById('pane-wordle')),           initialized: false },
-    aimtrainer:  { init: () => AimTrainerGame.init(document.getElementById('pane-aimtrainer')),   initialized: false },
+    shooting:    { init: () => ShootingGame.init(document.getElementById('pane-shooting')),       initialized: false },
     reaction:    { init: () => ReactionGame.init(document.getElementById('pane-reaction')),       initialized: false },
-    fireworks:   { init: () => FireworksGame.init(document.getElementById('pane-fireworks')),     initialized: false },
     neon:        { init: () => NeonGame.init(document.getElementById('pane-neon')),               initialized: false },
   };
 
