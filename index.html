@@ -45,62 +45,6 @@
   <div class="theme-grid">
     <button class="theme-option" data-theme="dark">Dark</button>
     <button class="theme-option" data-theme="light">Light</button>
-    <button class="theme-option" data-theme="cyberpunk">Cyberpunk</button>
-    <button class="theme-option" data-theme="terminal">Terminal</button>
-    <button class="theme-option" data-theme="retro">Retro</button>
-  </div>
-</div>
-
-<!-- ── KEYBOARD SHORTCUTS ── -->
-<div id="shortcuts-overlay" class="shortcuts-overlay" hidden role="dialog" aria-modal="true">
-  <div class="shortcuts-modal">
-    <div class="shortcuts-title">Keyboard Shortcuts</div>
-    <div class="shortcuts-grid">
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>K</kbd></span>
-        <span class="shortcut-label">Command palette</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>/</kbd></span>
-        <span class="shortcut-label">Keyboard shortcuts</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>/</kbd></span>
-        <span class="shortcut-label">Focus search</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>Esc</kbd></span>
-        <span class="shortcut-label">Close / clear</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>H</kbd></span>
-        <span class="shortcut-label">Go home</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>G</kbd></span>
-        <span class="shortcut-label">Go games</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>L</kbd></span>
-        <span class="shortcut-label">Go links</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>T</kbd></span>
-        <span class="shortcut-label">Go tools</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>C</kbd></span>
-        <span class="shortcut-label">Go cheatsheets</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>M</kbd></span>
-        <span class="shortcut-label">Go media</span>
-      </div>
-      <div class="shortcut-item">
-        <span class="shortcut-keys"><kbd>G</kbd><kbd>W</kbd></span>
-        <span class="shortcut-label">Go workout</span>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -144,9 +88,6 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
       <button class="lang-btn" id="lang-btn" onclick="I18n.toggle()" title="Switch language">PT</button>
-      <button class="icon-btn" id="shortcuts-btn" title="Keyboard shortcuts (Ctrl+/)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/></svg>
-      </button>
     </div>
   </header>
 
@@ -167,19 +108,10 @@
               <span class="hero-search-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </span>
-              <input type="text" id="hero-search" class="hero-search-input" placeholder="Search the web… (g: yt: gh: r: ai:)" autocomplete="off" spellcheck="false"/>
-              <div class="hero-search-engine" id="hero-engine-badge">
-                <span id="hero-engine-label">Web</span>
-              </div>
+              <input type="text" id="hero-search" class="hero-search-input" placeholder="Pesquisar no Google…" autocomplete="off" spellcheck="false"/>
               <button class="hero-search-btn" id="hero-search-btn" aria-label="Search">→</button>
             </div>
-            <div class="search-hints">
-              <span class="search-hint-item"><kbd>g:</kbd> Google</span>
-              <span class="search-hint-item"><kbd>yt:</kbd> YouTube</span>
-              <span class="search-hint-item"><kbd>gh:</kbd> GitHub</span>
-              <span class="search-hint-item"><kbd>r:</kbd> Reddit</span>
-              <span class="search-hint-item"><kbd>ai:</kbd> ChatGPT</span>
-            </div>
+            <div id="hero-autocomplete" class="hero-autocomplete" hidden role="listbox"></div>
           </div>
           <div class="quick-actions">
             <button class="qa-item" onclick="Nav.go('cheatsheets')">
@@ -206,7 +138,7 @@
         <!-- Home content grid -->
         <div class="home-grid">
 
-          <!-- Left: daily + HN -->
+          <!-- Left: daily + bookmarks + timezone -->
           <div class="home-left">
             <div class="home-daily">
               <div class="daily-card">
@@ -223,9 +155,21 @@
               </div>
             </div>
 
-            <!-- Weather widget -->
-            <div class="widget" id="widget-weather">
-              <div class="wt-loading"><div class="hn-spinner"></div>A carregar o tempo…</div>
+            <!-- Bookmarks widget -->
+            <div class="widget" id="widget-bookmarks">
+              <div class="widget-hdr">
+                <span class="widget-title">⭐ Favoritos</span>
+                <button class="wbm-add-btn" id="wbm-add" title="Adicionar favorito">+</button>
+              </div>
+              <div id="wbm-grid" class="wbm-grid"></div>
+            </div>
+
+            <!-- Timezone widget -->
+            <div class="widget" id="widget-tz">
+              <div class="widget-hdr">
+                <span class="widget-title">🕐 Horas Mundiais</span>
+              </div>
+              <div class="wtz-grid" id="wtz-grid"></div>
             </div>
           </div>
 
@@ -314,7 +258,6 @@
                 </div>
               </div>
             </div>
-            <div class="game-pane" id="pane-snake"></div>
             <div class="game-pane" id="pane-minesweeper"></div>
             <div class="game-pane" id="pane-bomb"></div>
           </div>
@@ -324,11 +267,8 @@
 
     <!-- ── LINKS VIEW ── -->
     <div id="view-links" class="view">
-      <div class="links-layout">
-        <aside class="lp-sidebar">
-          <div class="lp-sidebar-title">Categorias</div>
-          <div id="lp-cat-list"></div>
-        </aside>
+      <div class="lp-page">
+        <div class="lp-tab-bar" id="lp-cat-list"></div>
         <div class="lp-content view-inner" id="lp-content"></div>
       </div>
     </div>
@@ -353,7 +293,6 @@
 <div class="popup" id="popup"></div>
 
 <script src="links-data.js" defer></script>
-<script src="snake.js" defer></script>
 <script src="minesweeper.js" defer></script>
 <script src="bomb.js" defer></script>
 <script src="game-host.js" defer></script>

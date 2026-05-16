@@ -1,11 +1,10 @@
 const Nav = (function () {
   'use strict';
 
-  let _pinned = localStorage.getItem('sb-pinned') === 'true';
+  const _pinned = false;
 
   const GAME_LIST = [
     { id: 'hangman',     key: 'game.hangman',     icon: '🪢' },
-    { id: 'snake',       key: 'game.snake',       icon: '🐍' },
     { id: 'minesweeper', key: 'game.minesweeper', icon: '💣' },
     { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
   ];
@@ -39,11 +38,6 @@ const Nav = (function () {
       : '';
 
     sb.innerHTML = `
-      <div class="sb-head">
-        <button class="sb-pin-btn${_pinned ? ' pinned' : ''}" id="sb-pin" title="${_pinned ? 'Desafixar' : 'Fixar'} painel">
-          ${ICONS.pin}
-        </button>
-      </div>
       <div class="sb-scroll">
         <nav class="sb-main-nav">
           <a class="sb-nav-item" data-route="home" href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
@@ -71,7 +65,6 @@ const Nav = (function () {
       </div>`;
 
     sb.addEventListener('click', onSidebarClick);
-    document.getElementById('sb-pin')?.addEventListener('click', togglePin);
   }
 
   function onSidebarClick(e) {
@@ -105,18 +98,6 @@ const Nav = (function () {
   function syncOverlay(open) {
     const ov = document.getElementById('sidebar-overlay');
     if (ov) ov.classList.toggle('show', open && !_pinned && window.innerWidth < 900);
-  }
-
-  function togglePin() {
-    _pinned = !_pinned;
-    localStorage.setItem('sb-pinned', _pinned);
-    document.body.classList.toggle('sb-pinned', _pinned);
-    const btn = document.getElementById('sb-pin');
-    if (btn) {
-      btn.classList.toggle('pinned', _pinned);
-      btn.title = (_pinned ? 'Desafixar' : 'Fixar') + ' painel';
-    }
-    syncOverlay(document.body.classList.contains('sb-open'));
   }
 
   function go(hash) {

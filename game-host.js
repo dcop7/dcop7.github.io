@@ -4,8 +4,6 @@ const GameHost = (function () {
   const GAMES = [
     { id: 'hangman',     name: 'Jogo da Forca',  icon: '🪢', color: '#3b82f6',
       desc: 'Adivinha a palavra letra a letra. Quantas tentativas precisas?' },
-    { id: 'snake',       name: 'Snake',           icon: '🐍', color: '#22c55e',
-      desc: 'Guia a cobra, come as maçãs e não batas nas paredes. Clássico viciante!' },
     { id: 'minesweeper', name: 'Campo de Minas',  icon: '💣', color: '#10b981',
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
     { id: 'bomb',        name: 'Desarmar Bomba',  icon: '💥', color: '#ef4444',
@@ -14,7 +12,6 @@ const GameHost = (function () {
 
   const registry = {
     hangman:     { initialized: true },
-    snake:       { init: () => SnakeGame.init(document.getElementById('pane-snake')),             initialized: false },
     minesweeper: { init: () => MinesweeperGame.init(document.getElementById('pane-minesweeper')), initialized: false },
     bomb:        { init: () => BombGame.init(document.getElementById('pane-bomb')),               initialized: false },
   };

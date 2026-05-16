@@ -8,6 +8,8 @@ const LinksPage = (function () {
     if (el.dataset.built === '1') {
       el.querySelectorAll('.lp-cat-item').forEach(btn =>
         btn.classList.toggle('active', (btn.dataset.cat || '') === (currentId || '')));
+      const active = el.querySelector('.lp-cat-item.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
       return;
     }
 
@@ -77,7 +79,7 @@ const LinksPage = (function () {
           </div>
         </div>
       </div>
-      <div class="lp-links-grid">
+      <div class="lp-links-list">
         ${cat.links.map(link => linkCard(link)).join('')}
       </div>`;
   }

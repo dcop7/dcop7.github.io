@@ -19,12 +19,11 @@ document.getElementById('font-inc').addEventListener('click', () => { if (fontId
 
 // ── THEME MANAGER ─────────────────────────────────────────────────
 const ThemeManager = (function () {
-  const ALL_CLASSES = ['light', 'theme-cyberpunk', 'theme-terminal', 'theme-retro'];
+  const ALL_CLASSES = ['light'];
 
   function _apply(theme) {
     document.body.classList.remove(...ALL_CLASSES);
     if (theme === 'light') document.body.classList.add('light');
-    else if (theme !== 'dark') document.body.classList.add(`theme-${theme}`);
     localStorage.setItem('site-theme', theme);
     document.querySelectorAll('.theme-option').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.theme === theme);
@@ -260,64 +259,98 @@ async function loadDailyContent() {
 }
 loadDailyContent();
 
-// ── HERO SEARCH ────────────────────────────────────────────────────
-const ENGINES = {
-  'g:':   q => `https://www.google.com/search?q=${encodeURIComponent(q)}`,
-  'yt:':  q => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
-  'gh:':  q => `https://github.com/search?q=${encodeURIComponent(q)}`,
-  'r:':   q => `https://www.reddit.com/search/?q=${encodeURIComponent(q)}`,
-  'ai:':  q => `https://chatgpt.com/?q=${encodeURIComponent(q)}`,
-};
-const ENGINE_NAMES = { 'g:':'Google','yt:':'YouTube','gh:':'GitHub','r:':'Reddit','ai:':'ChatGPT',''  :'Web' };
-
-function parseSearch(raw) {
-  for (const pfx of Object.keys(ENGINES)) {
-    if (raw.toLowerCase().startsWith(pfx)) return { pfx, q: raw.slice(pfx.length).trim() };
-  }
-  return { pfx: '', q: raw.trim() };
+// ── HERO SEARCH (Google-only with autocomplete) ────────────────────
+function doSearch(q) {
+  if (!q.trim()) return;
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(q.trim())}`, '_blank', 'noopener');
 }
 
-function doSearch(raw) {
-  const { pfx, q } = parseSearch(raw);
-  if (!q) return;
-  const url = pfx
-    ? ENGINES[pfx](q)
-    : `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-  window.open(url, '_blank', 'noopener');
+let _acTimer = null;
+let _acIdx = -1;
+let _acItems = [];
+
+async function fetchAC(q) {
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(q)}&type=json`, {signal: ctrl.signal});
+    const data = await res.json();
+    return (data || []).slice(0, 8).map(x => x.phrase || '');
+  } catch { return []; }
+}
+
+function renderAC(items, input) {
+  const box = document.getElementById('hero-autocomplete');
+  if (!box) return;
+  _acItems = items;
+  _acIdx = -1;
+  if (!items.length) { box.hidden = true; return; }
+  box.innerHTML = items.map((s, i) =>
+    `<div class="hero-ac-item" data-i="${i}" role="option">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      ${s}
+    </div>`).join('');
+  box.hidden = false;
+  box.querySelectorAll('.hero-ac-item').forEach(el => {
+    el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      input.value = _acItems[+el.dataset.i];
+      closeAC();
+      doSearch(input.value);
+    });
+  });
+}
+
+function closeAC() {
+  const box = document.getElementById('hero-autocomplete');
+  if (box) box.hidden = true;
+  _acIdx = -1;
+  _acItems = [];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const heroInput = document.getElementById('hero-search');
-  const heroBadge = document.getElementById('hero-engine-label');
   const heroBtn   = document.getElementById('hero-search-btn');
 
   if (heroInput) {
     heroInput.addEventListener('input', () => {
-      const { pfx } = parseSearch(heroInput.value);
-      if (heroBadge) heroBadge.textContent = ENGINE_NAMES[pfx] || 'Web';
+      const q = heroInput.value.trim();
+      clearTimeout(_acTimer);
+      if (!q) { closeAC(); return; }
+      _acTimer = setTimeout(async () => {
+        const items = await fetchAC(q);
+        renderAC(items, heroInput);
+      }, 220);
     });
     heroInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); doSearch(heroInput.value); }
+      const box = document.getElementById('hero-autocomplete');
+      const visible = box && !box.hidden;
+      if (e.key === 'ArrowDown' && visible) {
+        e.preventDefault();
+        _acIdx = Math.min(_acIdx + 1, _acItems.length - 1);
+        heroInput.value = _acItems[_acIdx] || heroInput.value;
+        box.querySelectorAll('.hero-ac-item').forEach((el, i) => el.classList.toggle('ac-active', i === _acIdx));
+        return;
+      }
+      if (e.key === 'ArrowUp' && visible) {
+        e.preventDefault();
+        _acIdx = Math.max(_acIdx - 1, -1);
+        heroInput.value = _acIdx >= 0 ? _acItems[_acIdx] : heroInput.value;
+        box.querySelectorAll('.hero-ac-item').forEach((el, i) => el.classList.toggle('ac-active', i === _acIdx));
+        return;
+      }
+      if (e.key === 'Escape') { closeAC(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); closeAC(); doSearch(heroInput.value); }
     });
+    heroInput.addEventListener('blur', () => setTimeout(closeAC, 150));
   }
-  if (heroBtn) heroBtn.addEventListener('click', () => doSearch(heroInput?.value || ''));
+  if (heroBtn) heroBtn.addEventListener('click', () => { closeAC(); doSearch(heroInput?.value || ''); });
 
   const qaPalette = document.getElementById('qa-palette');
   if (qaPalette) qaPalette.addEventListener('click', () => {
     document.dispatchEvent(new CustomEvent('cp:open'));
   });
-
-  const shortcutsBtn = document.getElementById('shortcuts-btn');
-  if (shortcutsBtn) shortcutsBtn.addEventListener('click', toggleShortcuts);
-  document.getElementById('shortcuts-overlay')?.addEventListener('click', e => {
-    if (e.target === e.currentTarget) toggleShortcuts();
-  });
 });
-
-function toggleShortcuts() {
-  const overlay = document.getElementById('shortcuts-overlay');
-  if (overlay) overlay.hidden = !overlay.hidden;
-}
 
 // ── KEYBOARD SHORTCUTS ────────────────────────────────────────────
 let _gKey = null;
@@ -325,11 +358,9 @@ document.addEventListener('keydown', e => {
   const active = document.activeElement;
   const typing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
   const cpOpen = !document.getElementById('cp-overlay')?.hidden;
-  const shOpen = !document.getElementById('shortcuts-overlay')?.hidden;
 
   if (e.key === 'Escape') {
     if (cpOpen) { document.dispatchEvent(new CustomEvent('cp:close')); return; }
-    if (shOpen) { toggleShortcuts(); return; }
     const srInput = document.getElementById('search-input');
     if (document.activeElement === srInput) { srInput.blur(); srInput.value = ''; }
     return;
@@ -338,12 +369,6 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault();
     document.dispatchEvent(new CustomEvent('cp:open'));
-    return;
-  }
-
-  if ((e.ctrlKey || e.metaKey) && e.key === '/') {
-    e.preventDefault();
-    toggleShortcuts();
     return;
   }
 
@@ -367,77 +392,102 @@ document.addEventListener('keydown', e => {
   _gKey = null;
 });
 
-// ── WEATHER ───────────────────────────────────────────────────────
-const WMO_MAP = {
-  0:['☀️','Céu limpo'],1:['🌤️','Maioritariamente limpo'],2:['⛅','Parcialmente nublado'],
-  3:['☁️','Nublado'],45:['🌫️','Nevoeiro'],48:['🌫️','Nevoeiro gelado'],
-  51:['🌦️','Garoa leve'],53:['🌦️','Garoa moderada'],55:['🌦️','Garoa intensa'],
-  61:['🌧️','Chuva leve'],63:['🌧️','Chuva moderada'],65:['🌧️','Chuva forte'],
-  71:['🌨️','Neve leve'],73:['🌨️','Neve moderada'],75:['🌨️','Neve forte'],
-  77:['🌨️','Granizo'],80:['🌧️','Aguaceiros leves'],81:['🌧️','Aguaceiros moderados'],
-  82:['🌧️','Aguaceiros fortes'],85:['🌨️','Neve em aguaceiros'],86:['🌨️','Neve intensa'],
-  95:['⛈️','Trovoada'],96:['⛈️','Trovoada com granizo'],99:['⛈️','Trovoada intensa'],
-};
-function wmoInfo(code) { return WMO_MAP[code] || WMO_MAP[Math.floor(code/10)*10] || ['🌡️','—']; }
+// ── BOOKMARKS ────────────────────────────────────────────────────
+const DEFAULT_BOOKMARKS = [
+  { name:'GitHub',      url:'https://github.com' },
+  { name:'Google',      url:'https://google.com' },
+  { name:'YouTube',     url:'https://youtube.com' },
+  { name:'ChatGPT',     url:'https://chatgpt.com' },
+  { name:'MDN',         url:'https://developer.mozilla.org' },
+  { name:'StackOverflow', url:'https://stackoverflow.com' },
+];
 
-async function loadWeather() {
-  const el = document.getElementById('widget-weather');
-  if (!el) return;
-  try {
-    const abrt = ms => { const c = new AbortController(); setTimeout(() => c.abort(), ms); return c.signal; };
-
-    let lat, lon, city;
-    try {
-      const g = await (await fetch('https://ip-api.com/json/?fields=lat,lon,city', {signal:abrt(4000)})).json();
-      if (g.lat) { lat = g.lat; lon = g.lon; city = g.city; }
-    } catch {}
-    if (!lat) throw new Error('no-location');
-
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-      `&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relative_humidity_2m` +
-      `&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
-    const d = await (await fetch(url, {signal:abrt(6000)})).json();
-    const c = d.current, dl = d.daily;
-
-    const [icon, desc] = wmoInfo(c.weathercode);
-    const temp   = Math.round(c.temperature_2m);
-    const feels  = Math.round(c.apparent_temperature);
-    const wind   = Math.round(c.windspeed_10m);
-    const hum    = c.relative_humidity_2m;
-
-    const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-    const fcHTML = dl.time.slice(1,4).map((date, i) => {
-      const [fi] = wmoInfo(dl.weathercode[i+1]);
-      const dow = new Date(date + 'T12:00:00').getDay();
-      return `<div class="wt-fc-day">
-        <div class="wt-fc-name">${DAY_NAMES[dow]}</div>
-        <div class="wt-fc-icon">${fi}</div>
-        <div class="wt-fc-hi">${Math.round(dl.temperature_2m_max[i+1])}°</div>
-        <div class="wt-fc-lo">${Math.round(dl.temperature_2m_min[i+1])}°</div>
-      </div>`;
-    }).join('');
-
-    el.innerHTML = `<div class="wt-body">
-      ${city ? `<div class="wt-city">📍 ${city}</div>` : ''}
-      <div class="wt-main">
-        <div class="wt-icon">${icon}</div>
-        <div>
-          <div><span class="wt-temp">${temp}</span><span class="wt-unit">°C</span></div>
-          <div class="wt-desc">${desc}</div>
-        </div>
-      </div>
-      <div class="wt-details">
-        <span>💧 ${hum}%</span>
-        <span>💨 ${wind} km/h</span>
-        <span>Sensação ${feels}°C</span>
-      </div>
-      <div class="wt-forecast">${fcHTML}</div>
-    </div>`;
-  } catch {
-    el.innerHTML = `<div class="wt-error">Não foi possível carregar o tempo.</div>`;
-  }
+function getBookmarks() {
+  try { return JSON.parse(localStorage.getItem('home-bookmarks') || 'null') || DEFAULT_BOOKMARKS; }
+  catch { return DEFAULT_BOOKMARKS; }
 }
-loadWeather();
+
+function saveBookmarks(bm) {
+  localStorage.setItem('home-bookmarks', JSON.stringify(bm));
+}
+
+function favUrl(url) {
+  try { return `https://www.google.com/s2/favicons?sz=32&domain=${new URL(url).hostname}`; }
+  catch { return ''; }
+}
+
+function renderBookmarks() {
+  const grid = document.getElementById('wbm-grid');
+  if (!grid) return;
+  const bm = getBookmarks();
+  if (!bm.length) {
+    grid.innerHTML = '<div class="wbm-empty">Sem favoritos. Clica + para adicionar.</div>';
+    return;
+  }
+  grid.innerHTML = bm.map((b, i) => {
+    const fav = favUrl(b.url);
+    return `<a class="wbm-item" href="${b.url}" target="_blank" rel="noopener" data-i="${i}">
+      ${fav ? `<img class="wbm-favicon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <span class="wbm-favicon-ph"${fav ? ' style="display:none"' : ''}>🌐</span>
+      <span class="wbm-name">${b.name}</span>
+    </a>`;
+  }).join('');
+}
+
+function addBookmark() {
+  const urlRaw = prompt('URL do site:');
+  if (!urlRaw) return;
+  let url = urlRaw.trim();
+  if (!url.startsWith('http')) url = 'https://' + url;
+  let name;
+  try { name = new URL(url).hostname.replace('www.', ''); } catch { name = url; }
+  const label = prompt('Nome:', name);
+  if (!label) return;
+  const bm = getBookmarks();
+  bm.push({ name: label.trim(), url });
+  saveBookmarks(bm);
+  renderBookmarks();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderBookmarks();
+  document.getElementById('wbm-add')?.addEventListener('click', addBookmark);
+});
+
+// ── TIMEZONE CLOCKS ───────────────────────────────────────────────
+const TZ_ZONES = [
+  { label: 'Portugal',  tz: 'Europe/Lisbon' },
+  { label: 'UTC',       tz: 'UTC' },
+  { label: 'New York',  tz: 'America/New_York' },
+];
+
+function renderTimezones() {
+  const grid = document.getElementById('wtz-grid');
+  if (!grid) return;
+  const now = new Date();
+  grid.innerHTML = TZ_ZONES.map(z => {
+    const fmt = new Intl.DateTimeFormat('pt-PT', {timeZone: z.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const dateFmt = new Intl.DateTimeFormat('pt-PT', {timeZone: z.tz, day:'2-digit', month:'short'});
+    return `<div class="wtz-item">
+      <div class="wtz-label">${z.label}</div>
+      <div class="wtz-time" data-tz="${z.tz}">${fmt.format(now)}</div>
+      <div class="wtz-date">${dateFmt.format(now)}</div>
+    </div>`;
+  }).join('');
+}
+
+function tickTimezones() {
+  const now = new Date();
+  document.querySelectorAll('.wtz-time[data-tz]').forEach(el => {
+    const fmt = new Intl.DateTimeFormat('pt-PT', {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    el.textContent = fmt.format(now);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTimezones();
+  setInterval(tickTimezones, 1000);
+});
 
 // ── HOLIDAYS ──────────────────────────────────────────────────────
 function getEaster(y) {

@@ -45,11 +45,6 @@ const MediaPage = (function () {
     theaters: +(localStorage.getItem('md-theaters') || 30),
     digital:  +(localStorage.getItem('md-digital')  || 7),
   };
-  const _open = {
-    tv:       localStorage.getItem('md-open-tv')       !== 'false',
-    theaters: localStorage.getItem('md-open-theaters') !== 'false',
-    digital:  localStorage.getItem('md-open-digital')  !== 'false',
-  };
 
   const ago   = n => { const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); };
   const esc   = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -293,7 +288,7 @@ const MediaPage = (function () {
     const bd = getBody('tv'); if (!bd) return;
     bd.innerHTML = mkLoad(T('md.loadingEp'));
     const eps = await fetchTV(_days.tv);
-    const top = eps.slice(0, 80);
+    const top = eps.slice(0, 200);
     bd.innerHTML = mkGrid(top.map(tvCard), T('md.noEp', {n: _days.tv}));
     setBadge('tv', top.length);
   }
@@ -354,15 +349,6 @@ const MediaPage = (function () {
     document.body.style.overflow = '';
   }
 
-  // ── COLLAPSE ───────────────────────────────────────────────────────
-  function setCollapse(sid, open) {
-    _open[sid] = open;
-    localStorage.setItem(`md-open-${sid}`, open);
-    const sec = document.querySelector(`[data-section="${sid}"]`);
-    sec?.classList.toggle('md-collapsed', !open);
-    sec?.querySelector('.md-toggle')?.setAttribute('aria-expanded', open);
-  }
-
   // ── VIEW MODE ──────────────────────────────────────────────────────
   function applyView() {
     const page = document.getElementById('view-media');
@@ -377,15 +363,13 @@ const MediaPage = (function () {
 
   // ── BUILD ──────────────────────────────────────────────────────────
   function mkSection(sid, icon, labelKey, daysKey) {
-    const open = _open[sid];
-    return `<div class="md-section${open ? '' : ' md-collapsed'}" data-section="${sid}">
+    return `<div class="md-section" data-section="${sid}">
       <div class="md-section-hdr">
-        <button class="md-toggle" data-sid="${sid}" aria-expanded="${open}">
+        <div class="md-s-hdr-left">
           <span class="md-s-icon">${icon}</span>
           <span class="md-s-label">${T(labelKey)}</span>
           <span class="md-count">—</span>
-          <svg class="md-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
+        </div>
         <div class="md-ctrl">
           <input class="md-days-in" type="number" min="1" max="180" value="${_days[daysKey]}" data-key="${daysKey}" data-sid="${sid}" title="${T('md.last')} N ${T('md.days')}">
           <span class="md-ctrl-lbl">d</span>
@@ -453,8 +437,6 @@ const MediaPage = (function () {
     );
 
     view.addEventListener('click', e => {
-      const tog = e.target.closest('.md-toggle');
-      if (tog) { setCollapse(tog.dataset.sid, !_open[tog.dataset.sid]); return; }
       const rel = e.target.closest('.md-reload');
       if (rel) LOADERS[rel.dataset.sid]?.();
     });
