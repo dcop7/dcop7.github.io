@@ -383,7 +383,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'g' || e.key === 'G') { _gKey = Date.now(); return; }
 
   if (_gKey && Date.now() - _gKey < 1500 && typeof Nav !== 'undefined') {
-    const map = { h:'home', g:'games', l:'links', t:'tools', c:'cheatsheets', m:'media', w:'workout' };
+    const map = { h:'home', g:'games', l:'links', t:'tools', c:'cheatsheets', m:'media', w:'workout', v:'visual', p:'photography', s:'settings' };
     const dest = map[e.key.toLowerCase()];
     if (dest) { e.preventDefault(); Nav.go(dest); }
     _gKey = null;
@@ -453,6 +453,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBookmarks();
   document.getElementById('wbm-add')?.addEventListener('click', addBookmark);
 });
+
+window.Bookmarks = { get: getBookmarks, save: saveBookmarks, render: renderBookmarks, favUrl };
 
 // ── TIMEZONE CLOCKS ───────────────────────────────────────────────
 const TZ_ZONES = [

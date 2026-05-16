@@ -22,6 +22,9 @@ const Nav = (function () {
     tools:       svg('<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>'),
     workout:     svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
     media:       svg('<path d="M19.82 2H4.18A2.18 2.18 0 0 0 2 4.18v15.64A2.18 2.18 0 0 0 4.18 22h15.64A2.18 2.18 0 0 0 22 19.82V4.18A2.18 2.18 0 0 0 19.82 2z"/><polygon points="10 15 15 12 10 9 10 15"/>'),
+    visual:      svg('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
+    photography: svg('<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'),
+    settings:    svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
     pin:         `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
   };
 
@@ -45,8 +48,11 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="games" href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools" href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
+          <a class="sb-nav-item" data-route="visual" href="#visual">${ICONS.visual}<span>Visual</span></a>
+          <a class="sb-nav-item" data-route="photography" href="#photography">${ICONS.photography}<span>Fotografia</span></a>
           <a class="sb-nav-item" data-route="workout" href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
           <a class="sb-nav-item" data-route="media" href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
+          <a class="sb-nav-item" data-route="settings" href="#settings">${ICONS.settings}<span>Definições</span></a>
         </nav>
         <div class="sb-divider"></div>
         <div class="sb-group">
@@ -132,12 +138,21 @@ const Nav = (function () {
     } else if (page === 'tools') {
       document.getElementById('view-tools')?.classList.add('active');
       typeof ToolsPage !== 'undefined' && ToolsPage.show();
+    } else if (page === 'visual') {
+      document.getElementById('view-visual')?.classList.add('active');
+      typeof VisualPage !== 'undefined' && VisualPage.show();
+    } else if (page === 'photography') {
+      document.getElementById('view-photography')?.classList.add('active');
+      typeof PhotographyPage !== 'undefined' && PhotographyPage.show();
     } else if (page === 'workout') {
       document.getElementById('view-workout')?.classList.add('active');
       typeof WorkoutPage !== 'undefined' && WorkoutPage.show();
     } else if (page === 'media') {
       document.getElementById('view-media')?.classList.add('active');
       typeof MediaPage !== 'undefined' && MediaPage.show();
+    } else if (page === 'settings') {
+      document.getElementById('view-settings')?.classList.add('active');
+      typeof SettingsPage !== 'undefined' && SettingsPage.show();
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
