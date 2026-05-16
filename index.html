@@ -16,6 +16,7 @@
 </head>
 <body>
 
+<div id="bg-wallpaper" class="bg-wallpaper" aria-hidden="true"></div>
 <div class="bg-canvas" aria-hidden="true">
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
@@ -109,7 +110,7 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </span>
               <input type="text" id="hero-search" class="hero-search-input" placeholder="Pesquisar no Google…" autocomplete="off" spellcheck="false"/>
-              <button class="hero-search-btn" id="hero-search-btn" aria-label="Search">→</button>
+              <button class="hero-search-btn" id="hero-search-btn" aria-label="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
             </div>
             <div id="hero-autocomplete" class="hero-autocomplete" hidden role="listbox"></div>
           </div>
@@ -138,8 +139,47 @@
         <!-- Home content grid -->
         <div class="home-grid">
 
-          <!-- Left: daily + bookmarks + timezone -->
+          <!-- Left: favorites + timezone -->
           <div class="home-left">
+
+            <!-- Sites Favoritos widget -->
+            <div class="widget" id="widget-bookmarks">
+              <div class="widget-hdr">
+                <span class="widget-title">🌐 Sites Favoritos</span>
+                <button class="wbm-add-btn" id="wbm-add" title="Editar favoritos">✎</button>
+              </div>
+              <div id="wbm-grid" class="wbm-grid"></div>
+            </div>
+
+            <!-- Favorite Tools widget -->
+            <div class="widget" id="widget-fav-tools">
+              <div class="widget-hdr">
+                <span class="widget-title">🔧 Ferramentas Favoritas</span>
+                <button class="wbm-add-btn" id="wft-edit" title="Editar favoritos">✎</button>
+              </div>
+              <div id="wft-grid" class="wft-grid"></div>
+            </div>
+
+            <!-- Favorite Games widget -->
+            <div class="widget" id="widget-fav-games">
+              <div class="widget-hdr">
+                <span class="widget-title">🎮 Jogos Favoritos</span>
+                <button class="wbm-add-btn" id="wfg-edit" title="Editar favoritos">✎</button>
+              </div>
+              <div id="wfg-grid" class="wft-grid"></div>
+            </div>
+
+            <!-- Timezone widget -->
+            <div class="widget" id="widget-tz">
+              <div class="widget-hdr">
+                <span class="widget-title">🕐 Horas Mundiais</span>
+              </div>
+              <div class="wtz-grid" id="wtz-grid"></div>
+            </div>
+          </div>
+
+          <!-- Right: daily content + holidays -->
+          <div class="home-right">
             <div class="home-daily">
               <div class="daily-card">
                 <div class="daily-ttl" data-i18n="home.quote">💡 Daily Quote</div>
@@ -155,35 +195,7 @@
               </div>
             </div>
 
-            <!-- Bookmarks widget -->
-            <div class="widget" id="widget-bookmarks">
-              <div class="widget-hdr">
-                <span class="widget-title">⭐ Favoritos</span>
-                <button class="wbm-add-btn" id="wbm-add" title="Adicionar favorito">+</button>
-              </div>
-              <div id="wbm-grid" class="wbm-grid"></div>
-            </div>
-
-            <!-- Favorite Tools widget -->
-            <div class="widget" id="widget-fav-tools">
-              <div class="widget-hdr">
-                <span class="widget-title">🔧 Ferramentas Favoritas</span>
-                <button class="wbm-add-btn" id="wft-edit" title="Editar favoritos">✎</button>
-              </div>
-              <div id="wft-grid" class="wft-grid"></div>
-            </div>
-
-            <!-- Timezone widget -->
-            <div class="widget" id="widget-tz">
-              <div class="widget-hdr">
-                <span class="widget-title">🕐 Horas Mundiais</span>
-              </div>
-              <div class="wtz-grid" id="wtz-grid"></div>
-            </div>
-          </div>
-
-          <!-- Right: holidays -->
-          <div class="holidays-col">
+            <!-- Holidays -->
             <div class="widget" id="widget-hol">
               <div class="widget-hdr hol-hdr-toggle" id="hol-toggle" style="cursor:pointer">
                 <span class="widget-title" data-i18n="hol.nat">National Holidays</span>

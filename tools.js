@@ -979,8 +979,74 @@ const ToolsPage = (function () {
   // ============================================================
   // DICE ROLLER
   // ============================================================
-  const DICE_FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  const D6_PIPS = {
+    1:[[50,50]],
+    2:[[30,30],[70,70]],
+    3:[[30,30],[50,50],[70,70]],
+    4:[[30,30],[70,30],[30,70],[70,70]],
+    5:[[30,30],[70,30],[50,50],[30,70],[70,70]],
+    6:[[30,25],[70,25],[30,50],[70,50],[30,75],[70,75]],
+  };
+  const D6_FACE_VALS = {front:1,back:6,right:3,left:4,top:2,bottom:5};
+  const D6_TRANSFORMS = {
+    1:'rotateX(0deg) rotateY(0deg)',
+    2:'rotateX(-90deg) rotateY(0deg)',
+    3:'rotateY(-90deg)',
+    4:'rotateY(90deg)',
+    5:'rotateX(90deg) rotateY(0deg)',
+    6:'rotateY(180deg)',
+  };
+
+  function dieSVG(sides, val) {
+    const clr = '#4338ca', lite = 'rgba(255,255,255,.08)', stroke = 'rgba(255,255,255,.28)';
+    const txt = `<text x="60" y="78" text-anchor="middle" fill="#fff" font-size="30" font-weight="700" font-family="Inter,sans-serif">${val}</text>`;
+    const smTxt = `<text x="60" y="75" text-anchor="middle" fill="#fff" font-size="26" font-weight="700" font-family="Inter,sans-serif">${val}</text>`;
+    if (sides===4) {
+      return `<svg viewBox="0 0 120 120" width="120" height="120">
+        <polygon points="60,8 112,104 8,104" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
+        <polygon points="60,8 112,104 60,66" fill="${lite}"/>
+        <line x1="60" y1="8" x2="60" y2="104" stroke="${stroke}" stroke-width=".8"/>
+        <text x="60" y="96" text-anchor="middle" fill="#fff" font-size="26" font-weight="700" font-family="Inter,sans-serif">${val}</text>
+      </svg>`;
+    }
+    if (sides===8) {
+      return `<svg viewBox="0 0 120 120" width="120" height="120">
+        <polygon points="60,5 112,60 60,115 8,60" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
+        <polygon points="60,5 112,60 60,60" fill="${lite}"/>
+        <line x1="8" y1="60" x2="112" y2="60" stroke="${stroke}" stroke-width=".8"/>
+        ${txt}
+      </svg>`;
+    }
+    if (sides===10) {
+      return `<svg viewBox="0 0 120 120" width="120" height="120">
+        <polygon points="60,5 110,48 92,108 28,108 10,48" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
+        <polygon points="60,5 110,48 60,56" fill="${lite}"/>
+        ${smTxt}
+      </svg>`;
+    }
+    if (sides===12) {
+      const pts = Array.from({length:5},(_,i)=>{const a=Math.PI*2*i/5-Math.PI/2;return `${60+52*Math.cos(a)},${60+52*Math.sin(a)}`;}).join(' ');
+      const a1 = -Math.PI/2, a2 = a1 + Math.PI*2/5;
+      return `<svg viewBox="0 0 120 120" width="120" height="120">
+        <polygon points="${pts}" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
+        <polygon points="60,${60+52*Math.sin(a1)} ${60+52*Math.cos(a2)},${60+52*Math.sin(a2)} 60,60" fill="${lite}"/>
+        ${txt}
+      </svg>`;
+    }
+    if (sides===20) {
+      return `<svg viewBox="0 0 120 120" width="120" height="120">
+        <polygon points="60,6 112,92 8,92" fill="${clr}" stroke="${stroke}" stroke-width="2"/>
+        <polygon points="60,6 112,92 60,62" fill="${lite}"/>
+        <line x1="60" y1="6" x2="60" y2="92" stroke="${stroke}" stroke-width=".8"/>
+        <line x1="8" y1="92" x2="112" y2="92" stroke="${stroke}" stroke-width=".8"/>
+        <text x="60" y="78" text-anchor="middle" fill="#fff" font-size="24" font-weight="700" font-family="Inter,sans-serif">${val}</text>
+      </svg>`;
+    }
+    return `<svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="55" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>${txt}</svg>`;
+  }
+
   function initDice(root) {
+    const TYPES = [4,6,8,10,12,20];
     root.innerHTML=`
       <div class="tool-card">
         <div class="tool-hdr">🎲 Dados</div>
@@ -989,7 +1055,7 @@ const ToolsPage = (function () {
             <div class="tool-opts-grp">
               <span class="tool-opts-lbl">Tipo de dado</span>
               <div class="tool-seg">
-                ${[4,6,8,10,12,20,100].map((d,i)=>`<button class="tsb${i===1?' active':''}" data-d="${d}">D${d}</button>`).join('')}
+                ${TYPES.map((d,i)=>`<button class="tsb${i===1?' active':''}" data-d="${d}">D${d}</button>`).join('')}
               </div>
             </div>
             <div class="tool-opts-grp">
@@ -997,26 +1063,74 @@ const ToolsPage = (function () {
               <input type="number" class="cd-inp" id="dice-n" value="1" min="1" max="20" style="width:52px">
             </div>
           </div>
-          <div class="dice-display" id="dice-face">🎲</div>
+
+          <div id="dice-d6-wrap" class="dice-3d-container">
+            <div class="dice-scene">
+              <div class="dice-cube" id="dice-cube">
+                <div class="dice-face dice-face-front" data-fk="front"></div>
+                <div class="dice-face dice-face-back" data-fk="back"></div>
+                <div class="dice-face dice-face-right" data-fk="right"></div>
+                <div class="dice-face dice-face-left" data-fk="left"></div>
+                <div class="dice-face dice-face-top" data-fk="top"></div>
+                <div class="dice-face dice-face-bottom" data-fk="bottom"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="dice-svg-wrap" class="dice-svg-container" style="display:none">
+            <div id="dice-svg-el" class="dice-svg-el"></div>
+          </div>
+
           <div class="dice-result-row" id="dice-vals"></div>
           <div class="dice-total" id="dice-total"></div>
           <button class="tool-btn" id="dice-roll" style="margin-top:.35rem">🎲 Lançar</button>
         </div>
       </div>`;
-    let sides=6;
-    root.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{
-      sides=+b.dataset.d;
-      root.querySelectorAll('[data-d]').forEach(x=>x.classList.remove('active'));
+
+    // Build D6 pip faces
+    root.querySelectorAll('.dice-face').forEach(face => {
+      const key = face.dataset.fk;
+      const val = D6_FACE_VALS[key];
+      const pips = D6_PIPS[val] || [];
+      face.innerHTML = pips.map(([x,y])=>`<div class="dice-dot" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%)"></div>`).join('');
+    });
+
+    let sides = 6;
+
+    root.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => {
+      sides = +b.dataset.d;
+      root.querySelectorAll('[data-d]').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
+      root.querySelector('#dice-d6-wrap').style.display = sides===6 ? '' : 'none';
+      root.querySelector('#dice-svg-wrap').style.display = sides!==6 ? '' : 'none';
     }));
-    root.querySelector('#dice-roll').addEventListener('click',()=>{
-      const n=Math.min(20,Math.max(1,+root.querySelector('#dice-n').value||1));
-      const vals=Array.from({length:n},()=>Math.floor(Math.random()*sides)+1);
-      const face=root.querySelector('#dice-face');
-      face.textContent=sides===6?DICE_FACES[vals[0]-1]:vals[0];
-      face.style.transform='scale(1.2)'; setTimeout(()=>face.style.transform='',150);
-      root.querySelector('#dice-vals').innerHTML=n>1?vals.map(v=>`<div class="dice-val">${v}</div>`).join(''):'';
-      root.querySelector('#dice-total').textContent=n>1?`Total: ${vals.reduce((a,b)=>a+b,0)}`:'';
+
+    root.querySelector('#dice-roll').addEventListener('click', () => {
+      const n = Math.min(20, Math.max(1, +root.querySelector('#dice-n').value||1));
+      const vals = Array.from({length:n}, ()=>Math.floor(Math.random()*sides)+1);
+
+      if (sides===6) {
+        const cube = root.querySelector('#dice-cube');
+        cube.classList.remove('rolling');
+        cube.style.transition = 'none';
+        cube.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        void cube.offsetWidth;
+        cube.style.transition = '';
+        cube.classList.add('rolling');
+        setTimeout(() => {
+          cube.classList.remove('rolling');
+          cube.style.transform = D6_TRANSFORMS[vals[0]];
+        }, 650);
+      } else {
+        const svgEl = root.querySelector('#dice-svg-el');
+        svgEl.innerHTML = dieSVG(sides, vals[0]);
+        svgEl.classList.remove('die-shake');
+        void svgEl.offsetWidth;
+        svgEl.classList.add('die-shake');
+      }
+
+      root.querySelector('#dice-vals').innerHTML = n>1 ? vals.map(v=>`<div class="dice-val">${v}</div>`).join('') : '';
+      root.querySelector('#dice-total').textContent = n>1 ? `Total: ${vals.reduce((a,b)=>a+b,0)}` : '';
     });
   }
 
@@ -1028,22 +1142,38 @@ const ToolsPage = (function () {
       <div class="tool-card">
         <div class="tool-hdr">🪙 Moeda</div>
         <div class="dice-wrap">
-          <div class="coin-display" id="coin-face">🪙</div>
-          <div class="coin-result" id="coin-res"></div>
-          <button class="tool-btn" id="coin-flip">🪙 Lançar</button>
-          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem" id="coin-stats"></div>
+          <div class="coin-3d-container">
+            <div class="coin-3d">
+              <div class="coin-inner" id="coin-inner">
+                <div class="coin-face coin-heads">CARA</div>
+                <div class="coin-face coin-tails">COROA</div>
+              </div>
+            </div>
+          </div>
+          <div class="coin-result" id="coin-res" style="font-size:1.1rem;font-weight:700;min-height:1.4rem;text-align:center"></div>
+          <button class="tool-btn" id="coin-flip-btn">🪙 Lançar</button>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;text-align:center" id="coin-stats"></div>
         </div>
       </div>`;
-    let heads=0,tails=0;
-    root.querySelector('#coin-flip').addEventListener('click',()=>{
-      const h=Math.random()<0.5;
-      const face=root.querySelector('#coin-face');
-      face.textContent=h?'🌕':'🌑';
-      face.style.transform='rotateY(360deg)'; setTimeout(()=>face.style.transform='',300);
-      if(h) heads++; else tails++;
-      root.querySelector('#coin-res').textContent=h?'Cara':'Coroa';
-      root.querySelector('#coin-res').style.color=h?'var(--accent)':'var(--amber)';
-      root.querySelector('#coin-stats').textContent=`Cara: ${heads} | Coroa: ${tails} | Total: ${heads+tails}`;
+    let heads=0, tails=0;
+    root.querySelector('#coin-flip-btn').addEventListener('click', () => {
+      const isHeads = Math.random()<0.5;
+      const inner = root.querySelector('#coin-inner');
+      inner.classList.remove('flipping');
+      inner.style.transition = 'none';
+      inner.style.transform = 'rotateY(0deg)';
+      void inner.offsetWidth;
+      inner.style.transition = '';
+      inner.classList.add('flipping');
+      setTimeout(() => {
+        inner.classList.remove('flipping');
+        inner.style.transform = isHeads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+        if (isHeads) heads++; else tails++;
+        const res = root.querySelector('#coin-res');
+        res.textContent = isHeads ? 'Cara' : 'Coroa';
+        res.style.color = isHeads ? 'var(--accent)' : 'var(--amber)';
+        root.querySelector('#coin-stats').textContent = `Cara: ${heads} | Coroa: ${tails} | Total: ${heads+tails}`;
+      }, 850);
     });
   }
 

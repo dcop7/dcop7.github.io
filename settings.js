@@ -16,6 +16,8 @@ const SettingsPage = (function () {
     const mediaMode = localStorage.getItem('media-view') || 'comfortable';
     const mediaDays = localStorage.getItem('media-days') || '14';
     const hangAge   = localStorage.getItem('hangman-age') || '7';
+    const iconStyle = localStorage.getItem('icon-style') || 'colored';
+    const wpEnabled = localStorage.getItem('wallpaper-enabled') === 'true';
     el.innerHTML = `
       <div class="view-inner">
         <div class="page-header">
@@ -35,6 +37,26 @@ const SettingsPage = (function () {
                 <button class="theme-option" data-theme="dark">Dark</button>
                 <button class="theme-option" data-theme="light">Light</button>
               </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">Ícones</div>
+                <div class="st-row-desc">Coloridos ou monocromáticos</div>
+              </div>
+              <div class="tool-seg" id="st-icon-style">
+                <button class="tsb${iconStyle==='colored'?' active':''}" data-style="colored">🌈 Coloridos</button>
+                <button class="tsb${iconStyle==='mono'?' active':''}" data-style="mono">◾ Mono</button>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">Wallpaper dinâmico</div>
+                <div class="st-row-desc">Imagem de fundo adaptada ao tema (requer internet)</div>
+              </div>
+              <label class="st-toggle-wrap">
+                <input type="checkbox" id="st-wp-toggle" ${wpEnabled?'checked':''} style="display:none">
+                <div class="st-toggle" id="st-wp-track"><div class="st-toggle-knob"></div></div>
+              </label>
             </div>
             <div class="st-row">
               <div class="st-row-info">
@@ -100,15 +122,6 @@ const SettingsPage = (function () {
             </div>
           </div>
 
-          <div class="st-section">
-            <div class="st-section-title">⭐ Favoritos</div>
-            <div id="st-bm-list" class="st-bm-list"></div>
-            <div class="st-bm-actions">
-              <button class="tool-btn" id="st-bm-add">+ Adicionar</button>
-              <button class="tool-btn tool-btn-sec" id="st-bm-reset">↺ Repor padrão</button>
-            </div>
-          </div>
-
         </div>
       </div>`;
     _wire(el);
@@ -121,6 +134,27 @@ const SettingsPage = (function () {
         _syncTheme();
       })
     );
+
+    el.querySelectorAll('#st-icon-style .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const style = btn.dataset.style;
+        localStorage.setItem('icon-style', style);
+        document.body.classList.toggle('icons-mono', style === 'mono');
+        el.querySelectorAll('#st-icon-style .tsb').forEach(b => b.classList.toggle('active', b === btn));
+      })
+    );
+
+    const wpToggle = el.querySelector('#st-wp-toggle');
+    const wpTrack  = el.querySelector('#st-wp-track');
+    function syncWpTrack() {
+      wpTrack?.classList.toggle('on', wpToggle?.checked);
+    }
+    wpToggle?.addEventListener('change', () => {
+      localStorage.setItem('wallpaper-enabled', wpToggle.checked ? 'true' : 'false');
+      if (window.applyWallpaper) window.applyWallpaper();
+      syncWpTrack();
+    });
+    syncWpTrack();
 
     el.querySelector('#st-font-dec')?.addEventListener('click', () => {
       document.getElementById('font-dec')?.click();
@@ -161,63 +195,6 @@ const SettingsPage = (function () {
         if (hfAgeBtn) hfAgeBtn.click();
       })
     );
-
-    el.querySelector('#st-bm-add')?.addEventListener('click', _addBm);
-    el.querySelector('#st-bm-reset')?.addEventListener('click', () => {
-      if (!confirm('Repor os favoritos para o padrão?')) return;
-      localStorage.removeItem('home-bookmarks');
-      window.Bookmarks?.render();
-      _renderBmList();
-    });
-
-    _renderBmList();
-  }
-
-  function _addBm() {
-    const urlRaw = prompt('URL do site (ex: https://github.com):');
-    if (!urlRaw) return;
-    let url = urlRaw.trim();
-    if (!url.startsWith('http')) url = 'https://' + url;
-    let name;
-    try { name = new URL(url).hostname.replace('www.', ''); } catch { name = url; }
-    const label = prompt('Nome:', name);
-    if (!label) return;
-    const bm = window.Bookmarks.get();
-    bm.push({ name: label.trim(), url });
-    window.Bookmarks.save(bm);
-    window.Bookmarks.render();
-    _renderBmList();
-  }
-
-  function _renderBmList() {
-    const list = _el?.querySelector('#st-bm-list');
-    if (!list) return;
-    const bm = window.Bookmarks?.get() || [];
-    if (!bm.length) {
-      list.innerHTML = '<div class="st-empty">Sem favoritos guardados.</div>';
-      return;
-    }
-    list.innerHTML = bm.map((b, i) => {
-      const fav = window.Bookmarks?.favUrl(b.url) || '';
-      return `<div class="st-bm-row" data-idx="${i}">
-        ${fav
-          ? `<img src="${fav}" class="st-bm-icon" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'st-bm-icon',textContent:'🌐'}))">`
-          : '<span class="st-bm-icon" style="font-size:.9rem">🌐</span>'}
-        <span class="st-bm-name" title="${b.name}">${b.name}</span>
-        <span class="st-bm-url" title="${b.url}">${b.url}</span>
-        <button class="st-bm-del" data-idx="${i}" title="Remover">✕</button>
-      </div>`;
-    }).join('');
-
-    list.querySelectorAll('.st-bm-del').forEach(btn =>
-      btn.addEventListener('click', () => {
-        const bm2 = window.Bookmarks.get();
-        bm2.splice(+btn.dataset.idx, 1);
-        window.Bookmarks.save(bm2);
-        window.Bookmarks.render();
-        _renderBmList();
-      })
-    );
   }
 
   function _syncTheme() {
@@ -236,7 +213,6 @@ const SettingsPage = (function () {
   function _syncAll() {
     _syncTheme();
     _syncFont();
-    _renderBmList();
   }
 
   return { show };

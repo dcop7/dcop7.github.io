@@ -28,6 +28,8 @@ const ThemeManager = (function () {
     document.querySelectorAll('.theme-option').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.theme === theme);
     });
+    document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+    if (window.applyWallpaper) window.applyWallpaper();
   }
 
   function openPanel() {
@@ -47,16 +49,62 @@ const ThemeManager = (function () {
       btn.addEventListener('click', () => { _apply(btn.dataset.theme); closePanel(); });
     });
     const themeBtn = document.getElementById('theme-toggle-btn');
-    if (themeBtn) themeBtn.addEventListener('click', openPanel);
-    document.addEventListener('click', e => {
-      const panel = document.getElementById('theme-panel');
-      if (!panel?.classList.contains('open')) return;
-      if (!panel.contains(e.target) && !themeBtn.contains(e.target)) closePanel();
+    if (themeBtn) themeBtn.addEventListener('click', () => {
+      _apply((localStorage.getItem('site-theme') || 'dark') === 'dark' ? 'light' : 'dark');
     });
   });
 
   return { apply: _apply, openPanel, closePanel };
 })();
+
+// ── WALLPAPER ──────────────────────────────────────────────────────
+const WALLPAPERS = {
+  dark: [
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80',
+    'https://images.unsplash.com/photo-1534796636912-3b952d9cd9e4?w=1920&q=80',
+    'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1920&q=80',
+    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80',
+    'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=1920&q=80',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
+    'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=1920&q=80',
+    'https://images.unsplash.com/photo-1511884484798-1fbeeb1dcf83?w=1920&q=80',
+  ],
+  light: [
+    'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1920&q=80',
+    'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1920&q=80',
+    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1920&q=80',
+    'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=1920&q=80',
+    'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&q=80',
+    'https://images.unsplash.com/photo-1490750967868-88df5691cc7d?w=1920&q=80',
+    'https://images.unsplash.com/photo-1559827291-72ee739d0d9a?w=1920&q=80',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80',
+  ],
+};
+
+function applyWallpaper() {
+  const enabled = localStorage.getItem('wallpaper-enabled') === 'true';
+  const el = document.getElementById('bg-wallpaper');
+  if (!el) return;
+  if (!enabled) {
+    el.style.backgroundImage = '';
+    el.classList.remove('wp-active');
+    return;
+  }
+  const theme = localStorage.getItem('site-theme') || 'dark';
+  const list = WALLPAPERS[theme];
+  const url = list[Math.floor(Math.random() * list.length)];
+  el.classList.add('wp-active');
+  el.style.backgroundImage = `url('${url}')`;
+}
+window.applyWallpaper = applyWallpaper;
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyWallpaper();
+  // Apply saved icon style
+  if (localStorage.getItem('icon-style') === 'mono') {
+    document.body.classList.add('icons-mono');
+  }
+});
 
 // ── CONSTANTS ──────────────────────────────────────────────────────
 const WD    = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -392,23 +440,22 @@ document.addEventListener('keydown', e => {
   _gKey = null;
 });
 
-// ── BOOKMARKS ────────────────────────────────────────────────────
-const DEFAULT_BOOKMARKS = [
-  { name:'GitHub',      url:'https://github.com' },
-  { name:'Google',      url:'https://google.com' },
-  { name:'YouTube',     url:'https://youtube.com' },
-  { name:'ChatGPT',     url:'https://chatgpt.com' },
-  { name:'MDN',         url:'https://developer.mozilla.org' },
-  { name:'StackOverflow', url:'https://stackoverflow.com' },
+// ── SITES FAVORITOS (from LINKS_DATA) ────────────────────────────
+const DEFAULT_FAV_LINKS = [
+  'https://www.notion.so/',
+  'https://excalidraw.com/',
+  'https://pplware.sapo.pt/',
+  'https://lifehacker.com/',
 ];
 
-function getBookmarks() {
-  try { return JSON.parse(localStorage.getItem('home-bookmarks') || 'null') || DEFAULT_BOOKMARKS; }
-  catch { return DEFAULT_BOOKMARKS; }
+function getFavLinks() {
+  try { return JSON.parse(localStorage.getItem('home-fav-links') || 'null') || DEFAULT_FAV_LINKS; }
+  catch { return DEFAULT_FAV_LINKS; }
 }
 
-function saveBookmarks(bm) {
-  localStorage.setItem('home-bookmarks', JSON.stringify(bm));
+function allLinksFlat() {
+  if (typeof LINKS_DATA === 'undefined') return [];
+  return LINKS_DATA.flatMap(c => c.links);
 }
 
 function favUrl(url) {
@@ -416,45 +463,87 @@ function favUrl(url) {
   catch { return ''; }
 }
 
-function renderBookmarks() {
+function setDynGrid(el, count, minPx) {
+  const min = minPx || 110;
+  el.style.gridTemplateColumns = count <= 2
+    ? `repeat(${count || 1},1fr)`
+    : `repeat(auto-fill,minmax(${min}px,1fr))`;
+}
+
+function renderFavLinks() {
   const grid = document.getElementById('wbm-grid');
   if (!grid) return;
-  const bm = getBookmarks();
-  if (!bm.length) {
-    grid.innerHTML = '<div class="wbm-empty">Sem favoritos. Clica + para adicionar.</div>';
+  const urls = getFavLinks();
+  const all = allLinksFlat();
+  const items = urls.map(url => {
+    const found = all.find(l => l.url === url);
+    let hostname = url;
+    try { hostname = new URL(url).hostname.replace('www.', ''); } catch {}
+    return { name: found ? found.name : hostname, url };
+  });
+  setDynGrid(grid, items.length, 130);
+  if (!items.length) {
+    grid.innerHTML = '<div class="wft-empty">Sem favoritos. Clica ✎ para adicionar.</div>';
     return;
   }
-  grid.innerHTML = bm.map((b, i) => {
+  grid.innerHTML = items.map(b => {
     const fav = favUrl(b.url);
-    return `<a class="wbm-item" href="${b.url}" target="_blank" rel="noopener" data-i="${i}">
+    return `<a class="wbm-item" href="${b.url}" target="_blank" rel="noopener">
       ${fav ? `<img class="wbm-favicon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-      <span class="wbm-favicon-ph"${fav ? ' style="display:none"' : ''}>🌐</span>
       <span class="wbm-name">${b.name}</span>
     </a>`;
   }).join('');
 }
 
-function addBookmark() {
-  const urlRaw = prompt('URL do site:');
-  if (!urlRaw) return;
-  let url = urlRaw.trim();
-  if (!url.startsWith('http')) url = 'https://' + url;
-  let name;
-  try { name = new URL(url).hostname.replace('www.', ''); } catch { name = url; }
-  const label = prompt('Nome:', name);
-  if (!label) return;
-  const bm = getBookmarks();
-  bm.push({ name: label.trim(), url });
-  saveBookmarks(bm);
-  renderBookmarks();
+function openFavLinksEditor() {
+  const urls = getFavLinks();
+  if (typeof LINKS_DATA === 'undefined' || !LINKS_DATA.length) {
+    alert('A carregar dados de links…');
+    return;
+  }
+  let modal = document.getElementById('wfl-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'wfl-modal';
+    modal.className = 'ph-modal-overlay';
+    modal.innerHTML = `<div class="ph-modal-box" style="max-width:480px">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">Sites Favoritos</span>
+        <button class="ph-modal-close" id="wfl-modal-close">✕</button>
+      </div>
+      <div style="padding:1rem;max-height:60vh;overflow-y:auto" id="wfl-chk-list"></div>
+      <div style="padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end">
+        <button class="t-btn t-btn-ghost" id="wfl-modal-close2">Cancelar</button>
+        <button class="t-btn" id="wfl-modal-save">Guardar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('#wfl-chk-list').innerHTML = LINKS_DATA.map(cat => `
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:.7rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem">${cat.icon} ${cat.cat}</div>
+      ${cat.links.map(l => `<label class="wft-chk-item"><input type="checkbox" value="${l.url}" ${urls.includes(l.url) ? 'checked' : ''}> ${l.name}</label>`).join('')}
+    </div>`).join('');
+  modal.hidden = false;
+
+  const close = () => { modal.hidden = true; };
+  modal.querySelector('#wfl-modal-close').onclick = close;
+  modal.querySelector('#wfl-modal-close2').onclick = close;
+  modal.onclick = e => { if (e.target === modal) close(); };
+  modal.querySelector('#wfl-modal-save').onclick = () => {
+    const selected = [...modal.querySelectorAll('input:checked')].map(i => i.value);
+    localStorage.setItem('home-fav-links', JSON.stringify(selected));
+    renderFavLinks();
+    close();
+  };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderBookmarks();
-  document.getElementById('wbm-add')?.addEventListener('click', addBookmark);
+  renderFavLinks();
+  document.getElementById('wbm-add')?.addEventListener('click', openFavLinksEditor);
 });
 
-window.Bookmarks = { get: getBookmarks, save: saveBookmarks, render: renderBookmarks, favUrl };
+window.Bookmarks = { get: getFavLinks, render: renderFavLinks, favUrl };
 
 // ── FAVORITE TOOLS WIDGET ─────────────────────────────────────────
 const ALL_TOOLS = [
@@ -483,6 +572,7 @@ function renderFavTools() {
   if (!grid) return;
   const favIds = getFavTools();
   const favItems = favIds.map(id => ALL_TOOLS.find(t => t.id === id)).filter(Boolean);
+  setDynGrid(grid, favItems.length, 110);
   if (!favItems.length) {
     grid.innerHTML = '<div class="wft-empty">Sem ferramentas favoritas.</div>';
     return;
@@ -545,6 +635,89 @@ function openFavToolsEditor() {
 document.addEventListener('DOMContentLoaded', () => {
   renderFavTools();
   document.getElementById('wft-edit')?.addEventListener('click', openFavToolsEditor);
+});
+
+// ── FAVORITE GAMES WIDGET ─────────────────────────────────────────
+const ALL_GAMES = [
+  { id:'hangman',    key:'game.hangman',    icon:'🪢' },
+  { id:'minesweeper',key:'game.minesweeper',icon:'💣' },
+  { id:'bomb',       key:'game.bomb',       icon:'💥' },
+  { id:'memory',     key:'game.memory',     icon:'🃏' },
+  { id:'tictactoe',  key:'game.tictactoe',  icon:'⭕' },
+  { id:'wordle',     key:'game.wordle',     icon:'📝' },
+  { id:'aimtrainer', key:'game.aimtrainer', icon:'🎯' },
+  { id:'reaction',   key:'game.reaction',   icon:'⚡' },
+  { id:'fireworks',  key:'game.fireworks',  icon:'🎆' },
+  { id:'neon',       key:'game.neon',       icon:'✨' },
+];
+const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','aimtrainer'];
+
+function getFavGames() {
+  try { return JSON.parse(localStorage.getItem('home-fav-games') || 'null') || DEFAULT_FAV_GAMES; }
+  catch { return DEFAULT_FAV_GAMES; }
+}
+
+function renderFavGames() {
+  const grid = document.getElementById('wfg-grid');
+  if (!grid) return;
+  const favIds = getFavGames();
+  const favItems = favIds.map(id => ALL_GAMES.find(g => g.id === id)).filter(Boolean);
+  setDynGrid(grid, favItems.length, 100);
+  if (!favItems.length) {
+    grid.innerHTML = '<div class="wft-empty">Sem jogos favoritos.</div>';
+    return;
+  }
+  grid.innerHTML = favItems.map(g => `
+    <button class="wft-item" data-game="${g.id}" title="${t(g.key)}">
+      <span class="wft-icon">${g.icon}</span>
+      <span class="wft-label">${t(g.key)}</span>
+    </button>`).join('');
+  grid.querySelectorAll('.wft-item').forEach(btn => {
+    btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));
+  });
+}
+
+function openFavGamesEditor() {
+  const favIds = getFavGames();
+  let modal = document.getElementById('wfg-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'wfg-modal';
+    modal.className = 'ph-modal-overlay';
+    modal.innerHTML = `<div class="ph-modal-box" style="max-width:400px">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">Jogos Favoritos</span>
+        <button class="ph-modal-close" id="wfg-modal-close">✕</button>
+      </div>
+      <div style="padding:1rem" id="wfg-chk-list"></div>
+      <div style="padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end">
+        <button class="t-btn t-btn-ghost" id="wfg-modal-close2">Cancelar</button>
+        <button class="t-btn" id="wfg-modal-save">Guardar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('#wfg-chk-list').innerHTML = ALL_GAMES.map(g => `
+    <label class="wft-chk-item">
+      <input type="checkbox" value="${g.id}" ${favIds.includes(g.id) ? 'checked' : ''}> ${g.icon} ${t(g.key)}
+    </label>`).join('');
+  modal.hidden = false;
+
+  const close = () => { modal.hidden = true; };
+  modal.querySelector('#wfg-modal-close').onclick = close;
+  modal.querySelector('#wfg-modal-close2').onclick = close;
+  modal.onclick = e => { if (e.target === modal) close(); };
+  modal.querySelector('#wfg-modal-save').onclick = () => {
+    const ids = [...modal.querySelectorAll('input:checked')].map(i => i.value);
+    localStorage.setItem('home-fav-games', JSON.stringify(ids));
+    renderFavGames();
+    close();
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFavGames();
+  document.getElementById('wfg-edit')?.addEventListener('click', openFavGamesEditor);
 });
 
 // ── TIMEZONE CLOCKS ───────────────────────────────────────────────
@@ -692,4 +865,5 @@ document.addEventListener('langchange', () => {
   renderWelcome();
   loadDailyContent();
   renderHolidays();
+  renderFavGames();
 });
