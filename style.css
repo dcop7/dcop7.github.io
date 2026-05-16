@@ -1873,10 +1873,12 @@ body.light .skel{
 .sg-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .sg-val{font-family:var(--font-mono);font-size:.95rem;font-weight:700;color:var(--accent)}
 
-/* ── WORLD TIMES (compact list) ─────────────────────────────────── */
+/* ── WORLD TIMES ─────────────────────────────────────────────────── */
 .wtz-grid{display:flex;flex-direction:column;gap:0;padding:.35rem .75rem .65rem}
 .wtz-item{display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border)}
-.wtz-item:last-child{border-bottom:none}
-.wtz-label{font-size:.78rem;color:var(--text2);font-weight:500}
+.wtz-right{display:flex;align-items:center;gap:.5rem}
+.wtz-primary .wtz-label{font-size:.84rem;color:var(--text1);font-weight:700}
+.wtz-primary .wtz-time{font-size:1.05rem;color:var(--accent)}
+.wtz-label{font-size:.75rem;color:var(--text2);font-weight:500}
 .wtz-time{font-family:var(--font-mono);font-size:.88rem;font-weight:600;color:var(--accent)}
 .wtz-gmt{font-size:.62rem;color:var(--muted);background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:.1rem .35rem;font-family:var(--font-mono)}

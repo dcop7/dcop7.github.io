@@ -19,7 +19,7 @@ const I18n = (function () {
       'home.fav.sites':'🌐 Favourite Sites',
       'home.fav.tools':'🔧 Favourite Tools',
       'home.fav.games':'🎮 Favourite Games',
-      'home.world.times':'🕐 World Times',
+      'home.world.times':'🕐 Portugal Time',
       // Home daily content
       'home.quote':'💡 Daily Quote','home.riddle':'🤔 Daily Riddle',
       'home.joke':'😄 Daily Joke','home.reveal':'Show answer',
@@ -100,7 +100,7 @@ const I18n = (function () {
       'home.fav.sites':'🌐 Sites Favoritos',
       'home.fav.tools':'🔧 Ferramentas Favoritas',
       'home.fav.games':'🎮 Jogos Favoritos',
-      'home.world.times':'🕐 Horas Mundiais',
+      'home.world.times':'🕐 Hora de Portugal',
       // Home daily content
       'home.quote':'💡 Inspiração do Dia','home.riddle':'🤔 Adivinha do Dia',
       'home.joke':'😄 Piada do Dia','home.reveal':'Ver resposta',

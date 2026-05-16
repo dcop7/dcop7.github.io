@@ -725,27 +725,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── TIMEZONE CLOCKS ───────────────────────────────────────────────
-const TZ_ZONES = [
-  { pt: '🇵🇹 Lisboa',        en: '🇵🇹 Lisbon',        tz: 'Europe/Lisbon'       },
-  { pt: '🇬🇧 Londres',       en: '🇬🇧 London',        tz: 'Europe/London'       },
-  { pt: '🇺🇸 Nova Iorque',   en: '🇺🇸 New York',      tz: 'America/New_York'    },
-  { pt: '🇺🇸 São Francisco', en: '🇺🇸 San Francisco', tz: 'America/Los_Angeles' },
-  { pt: '🇧🇷 São Paulo',     en: '🇧🇷 São Paulo',     tz: 'America/Sao_Paulo'   },
-  { pt: '🇩🇪 Berlim',       en: '🇩🇪 Berlin',        tz: 'Europe/Berlin'       },
-  { pt: '🇦🇪 Dubai',        en: '🇦🇪 Dubai',         tz: 'Asia/Dubai'          },
-  { pt: '🇯🇵 Tóquio',       en: '🇯🇵 Tokyo',         tz: 'Asia/Tokyo'          },
-  { pt: '🇦🇺 Sydney',       en: '🇦🇺 Sydney',        tz: 'Australia/Sydney'    },
-  { pt: '🌐 UTC',           en: '🌐 UTC',            tz: 'UTC'                 },
-];
+function ptTzAbbr() {
+  const parts = new Intl.DateTimeFormat('en', {timeZoneName: 'short', timeZone: 'Europe/Lisbon'})
+    .formatToParts(new Date());
+  return (parts.find(p => p.type === 'timeZoneName') || {}).value || '';
+}
 
-function gmtOffset(tz) {
+function utcOffset(tz) {
   const now = new Date();
   const d = new Date(now.toLocaleString('en-US', {timeZone: tz}));
   const offset = (d - new Date(now.toLocaleString('en-US', {timeZone: 'UTC'}))) / 3600000;
   const sign = offset >= 0 ? '+' : '-';
   const h = Math.floor(Math.abs(offset));
   const m = Math.round((Math.abs(offset) - h) * 60);
-  return `GMT${sign}${h}${m ? ':' + String(m).padStart(2,'0') : ''}`;
+  return `UTC${sign}${h}${m ? ':' + String(m).padStart(2,'0') : ''}`;
 }
 
 function renderTimezones() {
@@ -753,25 +746,42 @@ function renderTimezones() {
   if (!grid) return;
   const now = new Date();
   const l = lang();
-  grid.innerHTML = TZ_ZONES.map(z => {
-    const label = l === 'pt' ? z.pt : z.en;
-    const timeFmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: z.tz, hour:'2-digit', minute:'2-digit', hour12:false});
-    const offset = gmtOffset(z.tz);
-    return `<div class="wtz-item">
-      <span class="wtz-label">${label}</span>
-      <div style="display:flex;align-items:center;gap:.5rem">
-        <span class="wtz-time" data-tz="${z.tz}">${timeFmt.format(now)}</span>
-        <span class="wtz-gmt">${offset}</span>
+  const locale = l === 'pt' ? 'pt-PT' : 'en-GB';
+  const fmtPT  = new Intl.DateTimeFormat(locale, {timeZone: 'Europe/Lisbon', hour:'2-digit', minute:'2-digit', hour12:false});
+  const fmtUTC = new Intl.DateTimeFormat(locale, {timeZone: 'UTC',            hour:'2-digit', minute:'2-digit', hour12:false});
+  const abbr   = ptTzAbbr();
+  const ptOffset = utcOffset('Europe/Lisbon');
+  const ptLabel  = l === 'pt' ? '🇵🇹 Lisboa' : '🇵🇹 Lisbon';
+  grid.innerHTML = `
+    <div class="wtz-item wtz-primary">
+      <span class="wtz-label">${ptLabel}</span>
+      <div class="wtz-right">
+        <span class="wtz-time" data-tz="Europe/Lisbon">${fmtPT.format(now)}</span>
+        <span class="wtz-gmt">${abbr} · ${ptOffset}</span>
+      </div>
+    </div>
+    <div class="wtz-item">
+      <span class="wtz-label">GMT</span>
+      <div class="wtz-right">
+        <span class="wtz-time" data-tz="UTC">${fmtUTC.format(now)}</span>
+        <span class="wtz-gmt">UTC+0</span>
+      </div>
+    </div>
+    <div class="wtz-item" style="border-bottom:none">
+      <span class="wtz-label">UTC</span>
+      <div class="wtz-right">
+        <span class="wtz-time" data-tz="UTC">${fmtUTC.format(now)}</span>
+        <span class="wtz-gmt">UTC+0</span>
       </div>
     </div>`;
-  }).join('');
 }
 
 function tickTimezones() {
   const now = new Date();
   const l = lang();
+  const locale = l === 'pt' ? 'pt-PT' : 'en-GB';
   document.querySelectorAll('.wtz-time[data-tz]').forEach(el => {
-    const fmt = new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', hour12:false});
+    const fmt = new Intl.DateTimeFormat(locale, {timeZone: el.dataset.tz, hour:'2-digit', minute:'2-digit', hour12:false});
     el.textContent = fmt.format(now);
   });
 }
