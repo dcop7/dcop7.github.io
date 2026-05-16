@@ -6,7 +6,11 @@ const I18n = (function () {
       // Nav
       'nav.home':'Home','nav.games':'Games','nav.links':'Useful Sites',
       'nav.tools':'Tools','nav.workout':'Workout','nav.media':'Entertainment',
+      'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
+      'nav.photography':'Photography','nav.settings':'Settings',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
+      'lp.all':'All','lp.title':'🔗 Useful Sites',
+      'lp.count':'{n} sites in {m} categories',
       // Games
       'game.hangman':'Hangman','game.runner':'Infinite Runner',
       'game.minesweeper':'Minesweeper','game.bomb':'Defuse Bomb',
@@ -87,7 +91,11 @@ const I18n = (function () {
       // Nav
       'nav.home':'Início','nav.games':'Jogos','nav.links':'Sites Úteis',
       'nav.tools':'Ferramentas','nav.workout':'Treino','nav.media':'Entretenimento',
+      'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
+      'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
+      'lp.all':'Todos','lp.title':'🔗 Sites Úteis',
+      'lp.count':'{n} sites em {m} categorias',
       // Games
       'game.hangman':'Jogo da Forca','game.runner':'Corredor Infinito',
       'game.minesweeper':'Campo de Minas','game.bomb':'Desarmar Bomba',

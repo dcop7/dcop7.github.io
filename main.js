@@ -82,19 +82,23 @@ const WALLPAPERS = {
 };
 
 function applyWallpaper() {
-  const enabled = localStorage.getItem('wallpaper-enabled') === 'true';
-  const el = document.getElementById('bg-wallpaper');
-  if (!el) return;
-  if (!enabled) {
-    el.style.backgroundImage = '';
-    el.classList.remove('wp-active');
-    return;
-  }
-  const theme = localStorage.getItem('site-theme') || 'dark';
-  const list = WALLPAPERS[theme];
-  const url = list[Math.floor(Math.random() * list.length)];
-  el.classList.add('wp-active');
-  el.style.backgroundImage = `url('${url}')`;
+  try {
+    const enabled = localStorage.getItem('wallpaper-enabled') === 'true';
+    const el = document.getElementById('bg-wallpaper');
+    if (!el) return;
+    if (!enabled) {
+      el.style.backgroundImage = '';
+      el.classList.remove('wp-active');
+      document.body.classList.remove('wp-active');
+      return;
+    }
+    const theme = localStorage.getItem('site-theme') || 'dark';
+    const list = WALLPAPERS[theme] || WALLPAPERS.dark;
+    const url = list[Math.floor(Math.random() * list.length)];
+    el.classList.add('wp-active');
+    document.body.classList.add('wp-active');
+    el.style.backgroundImage = `url('${url}')`;
+  } catch {}
 }
 window.applyWallpaper = applyWallpaper;
 

@@ -320,7 +320,10 @@ const VisualPage = (function () {
             <button class="t-btn t-btn-ghost" id="wb-dl" title="Guardar PNG" style="font-size:.72rem">💾 PNG</button>
           </div>
         </div>
-        <canvas id="wb-canvas" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:crosshair;display:block;width:100%;touch-action:none"></canvas>
+        <div style="position:relative;display:block">
+          <canvas id="wb-canvas" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:none;display:block;width:100%;touch-action:none"></canvas>
+          <div id="wb-cursor" style="position:absolute;pointer-events:none;display:none;border-radius:50%;box-shadow:0 0 0 1.5px rgba(255,255,255,.9);transform:translate(-50%,-50%);transition:width .08s,height .08s"></div>
+        </div>
         <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem;text-align:right">Atalhos: P=caneta · L=linha · R=rect · C=círculo · E=borracha · Ctrl+Z=desfazer</div>
       </div>`;
 
@@ -453,6 +456,25 @@ const VisualPage = (function () {
     canvas.addEventListener('touchstart', down, { passive: false });
     canvas.addEventListener('touchmove',  move, { passive: false });
     canvas.addEventListener('touchend', up);
+
+    // Custom cursor (visible on white background)
+    const wbCursor = root.querySelector('#wb-cursor');
+    function updateCursor(e) {
+      if (!wbCursor) return;
+      const r = canvas.getBoundingClientRect();
+      wbCursor.style.left = (e.clientX - r.left) + 'px';
+      wbCursor.style.top  = (e.clientY - r.top)  + 'px';
+      const isEraser = tool === 'eraser';
+      const sz = Math.max(8, (isEraser ? size * 3.5 : size) * 1.4 + 6);
+      wbCursor.style.width  = sz + 'px';
+      wbCursor.style.height = sz + 'px';
+      wbCursor.style.borderRadius = isEraser ? '3px' : '50%';
+      wbCursor.style.background = isEraser ? 'rgba(255,255,255,.6)' : 'transparent';
+      wbCursor.style.border = `2px solid ${isEraser ? '#64748b' : color}`;
+      wbCursor.style.display = '';
+    }
+    canvas.addEventListener('mousemove', updateCursor);
+    canvas.addEventListener('mouseleave', () => { if (wbCursor) wbCursor.style.display = 'none'; });
 
     root.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => {
       tool = b.dataset.tool;

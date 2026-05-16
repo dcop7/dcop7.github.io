@@ -1489,6 +1489,9 @@ body.light .tools-sidebar{background:rgba(248,250,252,.98)}
 .bg-wallpaper{position:fixed;inset:0;z-index:-2;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 1.5s ease;pointer-events:none}
 body:not(.light) .bg-wallpaper.wp-active{opacity:.16}
 body.light .bg-wallpaper.wp-active{opacity:.2}
+/* When wallpaper is active, ensure widgets remain readable by increasing opacity */
+body.wp-active:not(.light) .widget{background:rgba(8,12,28,.68);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+body.wp-active.light .widget{background:rgba(255,255,255,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 
 /* ── 3D DICE ─────────────────────────────────────────────────────── */
 .dice-3d-container{display:flex;justify-content:center;align-items:center;padding:1.5rem 0;min-height:140px}
@@ -1513,15 +1516,15 @@ body.light .bg-wallpaper.wp-active{opacity:.2}
 }
 /* SVG dice (D4/D8/D10/D12/D20) */
 .dice-svg-container{display:flex;justify-content:center;align-items:center;padding:1.5rem 0;min-height:140px}
-.dice-svg-el{transition:filter .1s}
-.dice-svg-el.die-shake{animation:die-shake .55s cubic-bezier(.36,.07,.19,.97)}
-@keyframes die-shake{
-  0%,100%{transform:rotate(0deg) scale(1) translateY(0)}
-  12%{transform:rotate(-14deg) scale(1.1) translateY(-10px)}
-  28%{transform:rotate(10deg) scale(1.18) translateY(-16px)}
-  44%{transform:rotate(-8deg) scale(1.12) translateY(-8px)}
-  60%{transform:rotate(5deg) scale(1.06) translateY(-4px)}
-  76%{transform:rotate(-3deg) scale(1.02) translateY(-1px)}
+.dice-svg-el{transition:filter .1s;transform-origin:center center}
+.dice-svg-el.die-shake{animation:die-roll-3d .65s cubic-bezier(.22,.61,.36,1)}
+@keyframes die-roll-3d{
+  0%  {transform:perspective(500px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1) translateY(0)}
+  18% {transform:perspective(500px) rotateX(-55deg) rotateY(40deg) rotateZ(-15deg) scale(1.12) translateY(-14px)}
+  38% {transform:perspective(500px) rotateX(35deg) rotateY(-70deg) rotateZ(10deg) scale(1.18) translateY(-20px)}
+  58% {transform:perspective(500px) rotateX(-20deg) rotateY(50deg) rotateZ(-6deg) scale(1.08) translateY(-8px)}
+  78% {transform:perspective(500px) rotateX(10deg) rotateY(-25deg) rotateZ(3deg) scale(1.03) translateY(-3px)}
+  100%{transform:perspective(500px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1) translateY(0)}
 }
 
 /* ── 3D COIN ─────────────────────────────────────────────────────── */

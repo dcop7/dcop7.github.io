@@ -1,39 +1,38 @@
 const LinksPage = (function () {
   'use strict';
 
+  let _currentCat = null;
+  const lang = () => typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
+  const t    = (k, vars) => typeof I18n !== 'undefined' ? I18n.t(k, vars) : k;
+
+  function catName(c)  { return lang() === 'en' && c.cat_en ? c.cat_en : c.cat; }
+  function linkDesc(l) { return lang() === 'en' && l.desc_en ? l.desc_en : l.desc; }
+
   function renderCatList(currentId) {
     const el = document.getElementById('lp-cat-list');
     if (!el || typeof LINKS_DATA === 'undefined') return;
 
-    if (el.dataset.built === '1') {
-      el.querySelectorAll('.lp-cat-item').forEach(btn =>
-        btn.classList.toggle('active', (btn.dataset.cat || '') === (currentId || '')));
-      const active = el.querySelector('.lp-cat-item.active');
-      if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-      return;
-    }
-
-    el.dataset.built = '1';
     el.innerHTML = `
       <button class="lp-cat-item${!currentId ? ' active' : ''}" data-cat="">
         <span class="lp-cat-icon">✨</span>
-        <span class="lp-cat-label">Todos</span>
+        <span class="lp-cat-label">${t('lp.all')}</span>
       </button>
       ${LINKS_DATA.map(c => `
         <button class="lp-cat-item${currentId === c.id ? ' active' : ''}" data-cat="${c.id}">
           <span class="lp-cat-icon">${c.icon}</span>
-          <span class="lp-cat-label">${c.cat}</span>
+          <span class="lp-cat-label">${catName(c)}</span>
           <span class="lp-cat-count">${c.links.length}</span>
         </button>`).join('')}`;
 
-    el.addEventListener('click', e => {
+    el.onclick = e => {
       const btn = e.target.closest('.lp-cat-item');
       if (!btn) return;
       Nav.go(btn.dataset.cat ? 'links/' + btn.dataset.cat : 'links');
-    });
+    };
   }
 
   function show(catId) {
+    _currentCat = catId || null;
     renderCatList(catId);
     const content = document.getElementById('lp-content');
     if (!content || typeof LINKS_DATA === 'undefined') return;
@@ -51,14 +50,14 @@ const LinksPage = (function () {
     const total = LINKS_DATA.reduce((s, c) => s + c.links.length, 0);
     el.innerHTML = `
       <div class="page-header">
-        <h1 class="page-title">🔗 Sites Úteis</h1>
-        <p class="page-subtitle">${total} sites organizados em ${LINKS_DATA.length} categorias</p>
+        <h1 class="page-title">${t('lp.title')}</h1>
+        <p class="page-subtitle">${t('lp.count', { n: total, m: LINKS_DATA.length })}</p>
       </div>
       <div class="lp-overview-grid">
         ${LINKS_DATA.map(c => `
           <button class="lp-overview-card" data-cat="${c.id}">
             <div class="lp-ov-icon">${c.icon}</div>
-            <div class="lp-ov-name">${c.cat}</div>
+            <div class="lp-ov-name">${catName(c)}</div>
             <div class="lp-ov-count">${c.links.length} sites</div>
           </button>`).join('')}
       </div>`;
@@ -74,7 +73,7 @@ const LinksPage = (function () {
         <div class="lp-cat-title-row">
           <span class="lp-cat-title-icon">${cat.icon}</span>
           <div>
-            <h1 class="page-title">${cat.cat}</h1>
+            <h1 class="page-title">${catName(cat)}</h1>
             <p class="page-subtitle">${cat.links.length} sites</p>
           </div>
         </div>
@@ -90,8 +89,8 @@ const LinksPage = (function () {
     if (isReal) {
       try { domain = new URL(link.url).hostname.replace('www.', ''); } catch {}
     }
-    const tagsHTML = (link.tags || []).slice(0, 4).map(t =>
-      `<span class="lp-tag">${t}</span>`).join('');
+    const tagsHTML = (link.tags || []).slice(0, 4).map(tg =>
+      `<span class="lp-tag">${tg}</span>`).join('');
 
     return `
       <a class="lp-link-card${isReal ? '' : ' lp-link-soon'}"
@@ -105,7 +104,7 @@ const LinksPage = (function () {
         </div>
         <div class="lp-link-body">
           <div class="lp-link-name">${link.name}</div>
-          <div class="lp-link-desc">${link.desc}</div>
+          <div class="lp-link-desc">${linkDesc(link)}</div>
           ${tagsHTML ? `<div class="lp-link-tags">${tagsHTML}</div>` : ''}
         </div>
         <div class="lp-link-cta">
@@ -116,12 +115,11 @@ const LinksPage = (function () {
       </a>`;
   }
 
-  function init() {
-    // category list starts empty; rendered on show()
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  document.addEventListener('langchange', () => {
+    if (document.getElementById('view-links')?.classList.contains('active')) {
+      show(_currentCat);
+    }
+  });
 
   return { show };
 })();

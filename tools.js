@@ -998,51 +998,84 @@ const ToolsPage = (function () {
   };
 
   function dieSVG(sides, val) {
-    const clr = '#4338ca', lite = 'rgba(255,255,255,.08)', stroke = 'rgba(255,255,255,.28)';
-    const txt = `<text x="60" y="78" text-anchor="middle" fill="#fff" font-size="30" font-weight="700" font-family="Inter,sans-serif">${val}</text>`;
-    const smTxt = `<text x="60" y="75" text-anchor="middle" fill="#fff" font-size="26" font-weight="700" font-family="Inter,sans-serif">${val}</text>`;
+    const c0='#6366f1',c1='#4338ca',c2='#312e81',c3='#1e1b4b';
+    const hi='rgba(255,255,255,.55)',sh='rgba(0,0,0,.4)';
+    const fnt=`fill="#fff" font-weight="700" font-family="Inter,sans-serif" text-anchor="middle" dominant-baseline="middle"`;
+    const num=(x,y,sz=28)=>`<text x="${x}" y="${y}" font-size="${sz}" ${fnt}>${val}</text>`;
+    const filt=`<defs><filter id="ds" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="rgba(0,0,0,.55)"/></filter></defs>`;
+
     if (sides===4) {
-      return `<svg viewBox="0 0 120 120" width="120" height="120">
-        <polygon points="60,8 112,104 8,104" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
-        <polygon points="60,8 112,104 60,66" fill="${lite}"/>
-        <line x1="60" y1="8" x2="60" y2="104" stroke="${stroke}" stroke-width=".8"/>
-        <text x="60" y="96" text-anchor="middle" fill="#fff" font-size="26" font-weight="700" font-family="Inter,sans-serif">${val}</text>
-      </svg>`;
+      // Tetrahedron: 3 visible triangular faces from front-above
+      return `<svg viewBox="0 0 120 118" width="120" height="120">${filt}
+        <g filter="url(#ds)">
+        <polygon points="10,108 110,108 60,72" fill="${c3}"/>
+        <polygon points="60,8 110,108 60,72" fill="${c2}"/>
+        <polygon points="10,108 60,8 60,72" fill="${c1}"/>
+        <line x1="10" y1="108" x2="60" y2="8" stroke="${hi}" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="60" cy="8" r="3" fill="${hi}"/>
+        </g>${num(44,84,24)}</svg>`;
     }
     if (sides===8) {
-      return `<svg viewBox="0 0 120 120" width="120" height="120">
-        <polygon points="60,5 112,60 60,115 8,60" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
-        <polygon points="60,5 112,60 60,60" fill="${lite}"/>
-        <line x1="8" y1="60" x2="112" y2="60" stroke="${stroke}" stroke-width=".8"/>
-        ${txt}
-      </svg>`;
+      // Octahedron: 4 triangular faces visible (diamond split)
+      return `<svg viewBox="0 0 120 120" width="120" height="120">${filt}
+        <g filter="url(#ds)">
+        <polygon points="8,60 60,8 60,60" fill="${c3}"/>
+        <polygon points="60,8 112,60 60,60" fill="${c0}"/>
+        <polygon points="8,60 60,60 60,112" fill="${c2}"/>
+        <polygon points="60,60 112,60 60,112" fill="${c1}"/>
+        <line x1="60" y1="8" x2="112" y2="60" stroke="${hi}" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="60" cy="8" r="3" fill="${hi}"/>
+        </g>${num(76,82,26)}</svg>`;
     }
     if (sides===10) {
-      return `<svg viewBox="0 0 120 120" width="120" height="120">
-        <polygon points="60,5 110,48 92,108 28,108 10,48" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
-        <polygon points="60,5 110,48 60,56" fill="${lite}"/>
-        ${smTxt}
-      </svg>`;
+      // D10: kite shape with 3 visible faces
+      return `<svg viewBox="0 0 120 120" width="120" height="120">${filt}
+        <g filter="url(#ds)">
+        <polygon points="12,50 60,6 108,50 88,108 32,108" fill="${c1}"/>
+        <polygon points="60,6 108,50 60,55" fill="${c0}"/>
+        <polygon points="108,50 88,108 60,55" fill="${c2}"/>
+        <polygon points="12,50 60,55 32,108" fill="${c2}"/>
+        <line x1="60" y1="6" x2="108" y2="50" stroke="${hi}" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="60" cy="6" r="3" fill="${hi}"/>
+        </g>${num(60,82,26)}</svg>`;
     }
     if (sides===12) {
-      const pts = Array.from({length:5},(_,i)=>{const a=Math.PI*2*i/5-Math.PI/2;return `${60+52*Math.cos(a)},${60+52*Math.sin(a)}`;}).join(' ');
-      const a1 = -Math.PI/2, a2 = a1 + Math.PI*2/5;
-      return `<svg viewBox="0 0 120 120" width="120" height="120">
-        <polygon points="${pts}" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>
-        <polygon points="60,${60+52*Math.sin(a1)} ${60+52*Math.cos(a2)},${60+52*Math.sin(a2)} 60,60" fill="${lite}"/>
-        ${txt}
-      </svg>`;
+      // Dodecahedron: pentagon with 5 trapezoidal facets
+      const R=52,r=28;
+      const ov=i=>[+(60+R*Math.cos(Math.PI*2*i/5-Math.PI/2)).toFixed(1),+(60+R*Math.sin(Math.PI*2*i/5-Math.PI/2)).toFixed(1)];
+      const iv=i=>[+(60+r*Math.cos(Math.PI*2*i/5-Math.PI/2)).toFixed(1),+(60+r*Math.sin(Math.PI*2*i/5-Math.PI/2)).toFixed(1)];
+      const o=Array.from({length:5},(_,i)=>ov(i));
+      const v=Array.from({length:5},(_,i)=>iv(i));
+      const p=pts=>pts.map(([x,y])=>`${x},${y}`).join(' ');
+      const fill=['#6366f1','#4338ca','#312e81','#312e81','#3730a3'];
+      const facets=[0,1,2,3,4].map(i=>`<polygon points="${p([o[i],o[(i+1)%5],v[(i+1)%5],v[i]])}" fill="${fill[i]}"/>`).join('');
+      return `<svg viewBox="0 0 120 120" width="120" height="120">${filt}
+        <g filter="url(#ds)">
+        <polygon points="${p(o)}" fill="${c1}"/>
+        ${facets}
+        <polygon points="${p(v)}" fill="${c1}"/>
+        <line x1="${o[4][0]}" y1="${o[4][1]}" x2="${o[0][0]}" y2="${o[0][1]}" stroke="${hi}" stroke-width="1.8" stroke-linecap="round"/>
+        </g>${num(60,64,26)}</svg>`;
     }
     if (sides===20) {
-      return `<svg viewBox="0 0 120 120" width="120" height="120">
-        <polygon points="60,6 112,92 8,92" fill="${clr}" stroke="${stroke}" stroke-width="2"/>
-        <polygon points="60,6 112,92 60,62" fill="${lite}"/>
-        <line x1="60" y1="6" x2="60" y2="92" stroke="${stroke}" stroke-width=".8"/>
-        <line x1="8" y1="92" x2="112" y2="92" stroke="${stroke}" stroke-width=".8"/>
-        <text x="60" y="78" text-anchor="middle" fill="#fff" font-size="24" font-weight="700" font-family="Inter,sans-serif">${val}</text>
-      </svg>`;
+      // Icosahedron: main triangle with visible sub-face pattern
+      return `<svg viewBox="0 0 120 120" width="120" height="120">${filt}
+        <g filter="url(#ds)">
+        <polygon points="60,6 114,102 6,102" fill="${c1}"/>
+        <polygon points="60,6 87,54 33,54" fill="${c0}"/>
+        <polygon points="87,54 114,102 60,72" fill="${c1}"/>
+        <polygon points="33,54 60,72 6,102" fill="${c2}"/>
+        <polygon points="33,54 87,54 60,72" fill="${c1}"/>
+        <line x1="33" y1="54" x2="87" y2="54" stroke="rgba(255,255,255,.2)" stroke-width=".9"/>
+        <line x1="33" y1="54" x2="60" y2="72" stroke="rgba(255,255,255,.2)" stroke-width=".9"/>
+        <line x1="87" y1="54" x2="60" y2="72" stroke="rgba(255,255,255,.2)" stroke-width=".9"/>
+        <line x1="6" y1="102" x2="60" y2="6" stroke="${hi}" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="60" cy="6" r="3" fill="${hi}"/>
+        </g>${num(60,80,24)}</svg>`;
     }
-    return `<svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="55" fill="${clr}" stroke="${stroke}" stroke-width="1.5"/>${txt}</svg>`;
+    return `<svg viewBox="0 0 120 120" width="120" height="120">${filt}
+      <circle cx="60" cy="60" r="54" fill="${c1}" filter="url(#ds)"/>
+      ${num(60,60)}</svg>`;
   }
 
   function initDice(root) {
