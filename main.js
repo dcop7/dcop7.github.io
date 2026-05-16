@@ -555,8 +555,6 @@ const TZ_ZONES = [
 
 function gmtOffset(tz) {
   const now = new Date();
-  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
-  const localMs = new Date(new Intl.DateTimeFormat('en-US',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(now) + ':00').getTime();
   const d = new Date(now.toLocaleString('en-US', {timeZone: tz}));
   const offset = (d - new Date(now.toLocaleString('en-US', {timeZone: 'UTC'}))) / 3600000;
   const sign = offset >= 0 ? '+' : '-';
