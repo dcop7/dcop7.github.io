@@ -1247,6 +1247,7 @@ body.light .t-input,body.light .t-textarea,body.light .t-select{background:#f8fa
 .st-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
 .st-row:last-child,.st-row:only-child{border-bottom:none}
 .st-row-info{flex:1;min-width:0}
+.st-age-seg{display:flex;flex-wrap:wrap;gap:.25rem;justify-content:flex-end;max-width:200px}
 .st-row-label{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
 .st-row-desc{font-size:.7rem;color:var(--muted)}
 .st-font-ctrl{display:flex;align-items:center;gap:.35rem;flex-shrink:0}

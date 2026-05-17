@@ -22,7 +22,8 @@ const SettingsPage = (function () {
     const tvDays       = localStorage.getItem('md-tv')       || '7';
     const theatersDays = localStorage.getItem('md-theaters') || '30';
     const digitalDays  = localStorage.getItem('md-digital')  || '7';
-    const gameAge      = localStorage.getItem('game-age-default') || '7';
+    const _rawAge      = localStorage.getItem('game-age-default') || '8';
+    const gameAge      = ['6','7','8','9','10','11','12','13','14'].includes(_rawAge) ? _rawAge : '8';
     const iconStyle  = localStorage.getItem('icon-style') || 'colored';
     const wpEnabled  = localStorage.getItem('wallpaper-enabled') === 'true';
     const density    = localStorage.getItem('site-density') || 'comfortable';
@@ -115,11 +116,10 @@ const SettingsPage = (function () {
                 <div class="st-row-label">${T('st.age')}</div>
                 <div class="st-row-desc">${T('st.age.desc')}</div>
               </div>
-              <div class="tool-seg" id="st-game-age">
-                <button class="tsb${gameAge==='5'?' active':''}" data-age="5">${T('st.age.5')}</button>
-                <button class="tsb${gameAge==='7'?' active':''}" data-age="7">${T('st.age.7')}</button>
-                <button class="tsb${gameAge==='10'?' active':''}" data-age="10">${T('st.age.10')}</button>
-                <button class="tsb${gameAge==='13'?' active':''}" data-age="13">${T('st.age.13')}</button>
+              <div class="st-age-seg" id="st-game-age">
+                ${[6,7,8,9,10,11,12,13,14].map(a =>
+                  `<button class="tsb${gameAge===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
+                ).join('')}
               </div>
             </div>
           </div>
