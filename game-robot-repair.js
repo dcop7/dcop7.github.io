@@ -323,7 +323,7 @@ const RobotRepairGame = (function () {
   };
 
   let _root, _st;
-  function defSt() { return { age: null, step: 0, score: 0, totalHints: 0, startTime: null, bests: {} }; }
+  function defSt() { const dfAge = parseInt(localStorage.getItem('game-age-default') || '0') || null; return { age: dfAge, step: 0, score: 0, totalHints: 0, startTime: null, bests: {} }; }
   function loadSt() { try { const s = JSON.parse(localStorage.getItem('rr-st')); if (s?.bests) _st.bests = s.bests; } catch {} }
   function saveSt() { try { localStorage.setItem('rr-st', JSON.stringify({ bests: _st.bests })); } catch {} }
 

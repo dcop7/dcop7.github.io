@@ -268,3 +268,21 @@
   88%  { transform: rotateY(1380deg) scaleX(.95); }
   100% { transform: rotateY(1440deg) scaleX(1); }
 }
+
+/* ── DENSITY MODIFIERS — game hub ── */
+body.density-compact .games-hub-grid {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .65rem;
+}
+body.density-compact .game-hub-card { padding: .85rem .75rem; }
+body.density-compact .game-hub-card-icon { font-size: 2rem; margin-bottom: .45rem; }
+
+body.density-list .games-hub-grid { grid-template-columns: 1fr; gap: .35rem; }
+body.density-list .game-hub-card {
+  display: flex; align-items: center; gap: .85rem;
+  text-align: left; padding: .6rem .85rem;
+  transform: none !important;
+}
+body.density-list .game-hub-card:hover { transform: none !important; box-shadow: none; border-color: rgba(var(--accent-rgb),.3); }
+body.density-list .game-hub-card-icon { font-size: 1.6rem; margin-bottom: 0; flex-shrink: 0; }
+body.density-list .game-hub-card-name { font-size: .82rem; }
+body.density-list .game-hub-card-desc { display: none; }

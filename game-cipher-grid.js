@@ -369,7 +369,8 @@ const CipherGridGame = (function () {
   let _root, _kh;
 
   function defSt() {
-    return { age: null, level: 0, score: 0, streak: 0, totalHints: 0, startTime: null, bests: {} };
+    const dfAge = parseInt(localStorage.getItem('game-age-default') || '0') || null;
+    return { age: dfAge, level: 0, score: 0, streak: 0, totalHints: 0, startTime: null, bests: {} };
   }
 
   let _st = defSt();

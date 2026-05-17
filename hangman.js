@@ -94,7 +94,7 @@
   let guessed = new Set();
   let wrongCount = 0;
   let gameOver = false;
-  let currentAge = 8;
+  let currentAge = parseInt(localStorage.getItem('game-age-default') || localStorage.getItem('hangman-age') || '8', 10);
 
   const _recentWords = { easy: [], medium: [], hard: [], expert: [] };
   const AVOID_REPEAT = 8;

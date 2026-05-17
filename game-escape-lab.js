@@ -312,7 +312,8 @@ const EscapeLabGame = (function () {
   let _root, _kh;
 
   function defSt() {
-    return { age: null, room: 0, score: 0, totalHints: 0, startTime: null, bests: {} };
+    const dfAge = parseInt(localStorage.getItem('game-age-default') || '0') || null;
+    return { age: dfAge, room: 0, score: 0, totalHints: 0, startTime: null, bests: {} };
   }
 
   let _st = defSt();

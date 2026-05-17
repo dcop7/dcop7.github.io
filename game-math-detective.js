@@ -75,7 +75,7 @@ const MathDetectiveGame = (function () {
 
   let _root, _kh, _st;
 
-  function defSt() { return { age: null, step: 0, score: 0, totalHints: 0, startTime: null, bests: {} }; }
+  function defSt() { const dfAge = parseInt(localStorage.getItem('game-age-default') || '0') || null; return { age: dfAge, step: 0, score: 0, totalHints: 0, startTime: null, bests: {} }; }
   function saveSt() { try { localStorage.setItem('dt-st', JSON.stringify({ bests: _st.bests })); } catch {} }
   function loadSt() { try { const d = JSON.parse(localStorage.getItem('dt-st') || '{}'); if (d.bests) _st.bests = d.bests; } catch {} }
 

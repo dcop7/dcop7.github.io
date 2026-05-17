@@ -38,7 +38,8 @@ const MediaPage = (function () {
   let _built  = false;
   let _loaded = false;
   let _yt     = null;
-  let _view   = localStorage.getItem('md-view') || 'compact';
+  const _densityMap = { comfortable: 'comfortable', compact: 'compact', list: 'ultracompact' };
+  let _view   = localStorage.getItem('md-view') || _densityMap[localStorage.getItem('site-density')] || 'compact';
 
   const _days = {
     tv:       +(localStorage.getItem('md-tv')       || 7),
@@ -475,5 +476,12 @@ const MediaPage = (function () {
     if (view?.classList.contains('active')) show();
   });
 
-  return { show };
+  function syncDensity(d) {
+    const map = { comfortable: 'comfortable', compact: 'compact', list: 'ultracompact' };
+    _view = map[d] || 'compact';
+    localStorage.setItem('md-view', _view);
+    applyView();
+  }
+
+  return { show, syncDensity };
 })();

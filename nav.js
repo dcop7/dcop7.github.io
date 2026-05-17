@@ -38,43 +38,22 @@ const Nav = (function () {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
 
-    const _ln = typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
-    const linkCats = typeof LINKS_DATA !== 'undefined'
-      ? LINKS_DATA.map(c => `
-          <a class="sb-item" data-route="links/${c.id}" href="#links/${c.id}">
-            <span class="sb-item-icon">${c.icon}</span>
-            <span class="sb-item-label">${_ln === 'en' && c.cat_en ? c.cat_en : c.cat}</span>
-          </a>`).join('')
-      : '';
-
     sb.innerHTML = `
       <div class="sb-scroll">
         <nav class="sb-main-nav">
-          <a class="sb-nav-item" data-route="home" href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
-          <a class="sb-nav-item" data-route="cheatsheets" href="#cheatsheets">${ICONS.cheatsheets}<span>${TN('nav.cheatsheets')}</span></a>
-          <a class="sb-nav-item" data-route="games" href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
-          <a class="sb-nav-item" data-route="links" href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
-          <a class="sb-nav-item" data-route="tools" href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
-          <a class="sb-nav-item" data-route="visual" href="#visual">${ICONS.visual}<span>${TN('nav.visual')}</span></a>
-          <a class="sb-nav-item" data-route="photography" href="#photography">${ICONS.photography}<span>${TN('nav.photography')}</span></a>
-          <a class="sb-nav-item" data-route="workout" href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
-          <a class="sb-nav-item" data-route="media" href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
-          <a class="sb-nav-item" data-route="settings" href="#settings">${ICONS.settings}<span>${TN('nav.settings')}</span></a>
+          <a class="sb-nav-item" data-route="home"         href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
+          <a class="sb-nav-item" data-route="tools"        href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
+          <a class="sb-nav-item" data-route="games"        href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
+          <a class="sb-nav-item" data-route="links"        href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
+          <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${ICONS.cheatsheets}<span>${TN('nav.cheatsheets')}</span></a>
+          <div class="sb-sep"></div>
+          <a class="sb-nav-item" data-route="media"        href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
+          <a class="sb-nav-item" data-route="workout"      href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
+          <a class="sb-nav-item" data-route="photography"  href="#photography">${ICONS.photography}<span>${TN('nav.photography')}</span></a>
+          <a class="sb-nav-item" data-route="visual"       href="#visual">${ICONS.visual}<span>${TN('nav.visual')}</span></a>
+          <div class="sb-sep"></div>
+          <a class="sb-nav-item" data-route="settings"     href="#settings">${ICONS.settings}<span>${TN('nav.settings')}</span></a>
         </nav>
-        <div class="sb-divider"></div>
-        <div class="sb-group">
-          <div class="sb-group-label">${TN('nav.games.label')}</div>
-          ${GAME_LIST.map(g => `
-            <a class="sb-item" data-route="games/${g.id}" href="#games/${g.id}">
-              <span class="sb-item-icon">${g.icon}</span>
-              <span class="sb-item-label">${TN(g.key)}</span>
-            </a>`).join('')}
-        </div>
-        <div class="sb-divider"></div>
-        <div class="sb-group">
-          <div class="sb-group-label">${TN('nav.links.label')}</div>
-          ${linkCats}
-        </div>
       </div>`;
 
     sb.addEventListener('click', onSidebarClick);
@@ -217,26 +196,11 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','games','links','tools','workout','media','cheatsheets','visual','photography','settings'];
+    const routes = ['home','tools','games','links','cheatsheets','media','workout','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);
     });
-    GAME_LIST.forEach(g => {
-      const el = document.querySelector(`[data-route="games/${g.id}"] .sb-item-label`);
-      if (el) el.textContent = TN(g.key);
-    });
-    const grpLabels = document.querySelectorAll('.sb-group-label');
-    if (grpLabels[0]) grpLabels[0].textContent = TN('nav.games.label');
-    if (grpLabels[1]) grpLabels[1].textContent = TN('nav.links.label');
-    // Update link category labels
-    if (typeof LINKS_DATA !== 'undefined') {
-      const curLang = typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
-      LINKS_DATA.forEach(c => {
-        const el = document.querySelector(`[data-route="links/${c.id}"] .sb-item-label`);
-        if (el) el.textContent = curLang === 'en' && c.cat_en ? c.cat_en : c.cat;
-      });
-    }
   });
 
   return { go, renderView };
