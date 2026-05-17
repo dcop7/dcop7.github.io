@@ -20,6 +20,10 @@ const GameHost = (function () {
       desc: 'Quanto tempo demoras a reagir? Testa os teus reflexos.' },
     { id: 'neon',        name: 'Neon Drawing',     icon: '✨', color: '#a855f7',
       desc: 'Desenha com efeito neon brilhante. Arte digital!' },
+    { id: 'escape-lab',  name: 'Math Escape Lab',  icon: '🧪', color: '#00cc70',
+      desc: 'Foge do laboratório resolvendo puzzles matemáticos. Idades 7–13+.' },
+    { id: 'cipher-grid', name: 'Cipher Grid',      icon: '🔷', color: '#22d3ee',
+      desc: 'Decifra padrões, sequências e grelhas misteriosas. Idades 7–13+.' },
   ];
 
   const registry = {
@@ -32,6 +36,8 @@ const GameHost = (function () {
     shooting:    { init: () => ShootingGame.init(document.getElementById('pane-shooting')),       initialized: false },
     reaction:    { init: () => ReactionGame.init(document.getElementById('pane-reaction')),       initialized: false },
     neon:        { init: () => NeonGame.init(document.getElementById('pane-neon')),               initialized: false },
+    'escape-lab':  { init: () => EscapeLabGame.init(document.getElementById('pane-escape-lab')),  initialized: false },
+    'cipher-grid': { init: () => CipherGridGame.init(document.getElementById('pane-cipher-grid')),initialized: false },
   };
 
   function renderHub() {
