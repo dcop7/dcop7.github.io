@@ -105,7 +105,14 @@ const ChainReactionGame = (function () {
     buildTray();
 
     cv.addEventListener('click', onGridClick);
-    cv.addEventListener('touchstart', e => { e.preventDefault(); const t=e.touches[0]; const r=cv.getBoundingClientRect(); onGridClickAt(t.clientX-r.left, t.clientY-r.top); }, {passive:false});
+    cv.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const t=e.touches[0]; const r=cv.getBoundingClientRect();
+      const sx=cv.width/r.width, sy=cv.height/r.height;
+      onGridClickAt((t.clientX-r.left)*sx, (t.clientY-r.top)*sy);
+    }, {passive:false});
+    // Recalculate tile sizes after first paint to get actual canvas dimensions
+    requestAnimationFrame(() => resize(cols, rows));
 
     root.querySelector('#cr-f').addEventListener('click', launch);
     root.querySelector('#cr-r').addEventListener('click', () => { cancelAnimationFrame(raf); playLevel(idx); });
@@ -160,7 +167,8 @@ const ChainReactionGame = (function () {
 
   function onGridClick(e) {
     const r = cv.getBoundingClientRect();
-    onGridClickAt(e.clientX - r.left, e.clientY - r.top);
+    const scaleX = cv.width / r.width, scaleY = cv.height / r.height;
+    onGridClickAt((e.clientX - r.left) * scaleX, (e.clientY - r.top) * scaleY);
   }
 
   function onGridClickAt(px, py) {

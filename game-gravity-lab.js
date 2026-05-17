@@ -2,16 +2,15 @@ const GravityLabGame = (function () {
   'use strict';
 
   let root, cv, cx, raf, W, H, G;
+  let _keyHandler = null;
 
   const TILE = 40;
 
-  // Each level: W×H grid of tiles + ball start + exit + gravity dir
-  // Tile codes: 0=empty, 1=wall, 2=start, 3=exit, 4=switch
   const LEVELS = [
-    { title:'Level 1', hint:'Flip gravity to fall up!',
+    { title:'Level 1', hint:'Use arrow keys or tap to change gravity!',
       grid:['#####','#S  #','#   #','# E #','#####'],
       flips:3, gravStart:'down' },
-    { title:'Level 2', hint:'Use the switch to change gravity direction',
+    { title:'Level 2', hint:'Use the switch to restore flip charges',
       grid:['######','#S   #','## # #','#W   #','# E  #','######'],
       flips:3, gravStart:'down' },
     { title:'Level 3', hint:'Time your flips carefully',
@@ -49,13 +48,15 @@ const GravityLabGame = (function () {
 .gl-hud-flips{font-size:.8rem;color:#7dd3fc;display:flex;gap:4px;align-items:center}
 .gl-flip-dot{width:9px;height:9px;border-radius:50%;background:#22d3ee;box-shadow:0 0 6px #22d3ee}
 .gl-flip-dot.used{background:#1e293b;box-shadow:none}
+.gl-hud-btn{background:transparent;border:1px solid #1e40af;color:#7dd3fc;border-radius:6px;padding:3px 8px;font-size:.75rem;cursor:pointer;pointer-events:all;flex-shrink:0;transition:all .15s}
+.gl-hud-btn:hover{border-color:#22d3ee;color:#22d3ee}
 .gl-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 40%,#020d1c 0%,#000 80%);z-index:10}
 .gl-title{font-size:2rem;font-weight:900;background:linear-gradient(120deg,#22d3ee,#38bdf8,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center}
 .gl-btn{background:linear-gradient(135deg,#0891b2,#22d3ee);color:#fff;border:none;border-radius:12px;padding:13px 36px;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 0 20px rgba(34,211,238,.35);transition:transform .15s}
 .gl-btn:hover{transform:scale(1.05)}
 .gl-btn-sm{background:transparent;border:1.5px solid #22d3ee;color:#22d3ee;border-radius:10px;padding:9px 24px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .15s}
 .gl-btn-sm:hover{background:rgba(34,211,238,.1)}
-.gl-tip{font-size:.75rem;color:#334155;text-align:center;max-width:240px;line-height:1.5}
+.gl-tip{font-size:.75rem;color:#334155;text-align:center;max-width:260px;line-height:1.5}
 .gl-level-num{font-size:3rem;filter:drop-shadow(0 0 16px #22d3ee)}
 .gl-lv-done{font-size:2.5rem;filter:drop-shadow(0 0 20px #22d3ee)}
 .gl-complete-title{font-size:1.6rem;font-weight:900;color:#22d3ee;text-align:center}
@@ -71,6 +72,7 @@ const GravityLabGame = (function () {
   function init(r) { root = r; if (!r) return; injectCSS(); showMenu(); }
 
   function showMenu() {
+    _removeKeyHandler();
     const saved = +localStorage.getItem('gl-lvl') || 0;
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div class="gl-level-num">🔬</div>
@@ -78,7 +80,7 @@ const GravityLabGame = (function () {
       <div class="gl-progress">${LEVELS.map((_,i)=>`<div class="gl-prog-dot ${i<saved?'done':''}"></div>`).join('')}</div>
       <button class="gl-btn" id="gl-play">▶ ${saved>0?'Continue':'Play'}</button>
       ${saved>0?`<button class="gl-btn-sm" id="gl-reset">↺ Restart from Level 1</button>`:''}
-      <div class="gl-tip">Tap / click to flip gravity<br>Guide the ball to the exit portal</div>
+      <div class="gl-tip">Arrow keys ↑↓←→ to set gravity<br>Or tap / click to cycle direction<br>Guide the ball to the exit portal</div>
     </div></div>`;
     root.querySelector('#gl-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#gl-reset')?.addEventListener('click', () => { localStorage.removeItem('gl-lvl'); showMenu(); });
@@ -86,6 +88,7 @@ const GravityLabGame = (function () {
 
   function playLevel(idx) {
     if (idx >= LEVELS.length) { showAllDone(); return; }
+    _removeKeyHandler();
     const lvl = LEVELS[idx];
     root.innerHTML = `<div class="gl-host">
       <canvas class="gl-cv" id="gl-cv"></canvas>
@@ -93,6 +96,7 @@ const GravityLabGame = (function () {
         <div class="gl-hud-title">${lvl.title}</div>
         <div class="gl-hud-grav" id="gl-grav">${GRAV_LABELS[lvl.gravStart]}</div>
         <div class="gl-hud-flips" id="gl-flips"></div>
+        <button class="gl-hud-btn" id="gl-hud-new">↺ New</button>
       </div>
     </div>`;
     cv = root.querySelector('#gl-cv');
@@ -102,7 +106,32 @@ const GravityLabGame = (function () {
     updateFlipHUD();
     cv.addEventListener('click', flipGravity);
     cv.addEventListener('touchstart', e => { e.preventDefault(); flipGravity(); }, { passive: false });
+    root.querySelector('#gl-hud-new').addEventListener('click', () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+      _removeKeyHandler();
+      showMenu();
+    });
+    _keyHandler = function(e) {
+      const map = { ArrowDown:'down', ArrowUp:'up', ArrowLeft:'left', ArrowRight:'right' };
+      if (map[e.key]) { e.preventDefault(); setGrav(map[e.key]); return; }
+      if (e.key === ' ') { e.preventDefault(); flipGravity(); }
+    };
+    document.addEventListener('keydown', _keyHandler);
     raf = requestAnimationFrame(loop);
+  }
+
+  function _removeKeyHandler() {
+    if (_keyHandler) { document.removeEventListener('keydown', _keyHandler); _keyHandler = null; }
+  }
+
+  function setGrav(dir) {
+    if (!G || G.state !== 'playing' || dir === G.grav) return;
+    if (G.flipsLeft <= 0) { shakeHUD(); return; }
+    G.grav = dir;
+    G.flipsLeft--; G.flipsUsed++;
+    updateFlipHUD();
+    spawnGravParticles();
   }
 
   function resize() {
@@ -141,7 +170,7 @@ const GravityLabGame = (function () {
       grav: lvl.gravStart,
       flipsLeft: lvl.flips, flipsUsed: 0,
       startBall: { ...ball },
-      state: 'playing', // 'playing', 'won', 'dead'
+      state: 'playing',
       particles: [], resetTimer: 0,
       trail: [],
       switchFlash: []
@@ -155,7 +184,6 @@ const GravityLabGame = (function () {
     G.tile = tile;
     G.offX = (W - tile * gridW) / 2;
     G.offY = (H - tile * gridH) / 2;
-    // Rebuild walls/exit/switches
     G.walls = []; G.exit = null; G.switches = [];
     rows.forEach((row, ri) => {
       for (let ci = 0; ci < row.length; ci++) {
@@ -169,7 +197,7 @@ const GravityLabGame = (function () {
   }
 
   function flipGravity() {
-    if (G.state !== 'playing') return;
+    if (!G || G.state !== 'playing') return;
     if (G.flipsLeft <= 0) { shakeHUD(); return; }
     const dirs = ['down','up','left','right'];
     const idx = dirs.indexOf(G.grav);
@@ -190,7 +218,6 @@ const GravityLabGame = (function () {
   function shakeHUD() {
     const fd = root.querySelector('#gl-flips');
     if (!fd) return;
-    fd.style.animation = 'none';
     fd.style.cssText += ';filter:drop-shadow(0 0 4px red)';
     setTimeout(() => fd.style.filter = '', 400);
   }
@@ -214,17 +241,14 @@ const GravityLabGame = (function () {
     const spd = Math.sqrt(b.vx*b.vx+b.vy*b.vy);
     if (spd > BALL_SPEED) { b.vx = b.vx/spd*BALL_SPEED; b.vy = b.vy/spd*BALL_SPEED; }
 
-    // Move & collide
     b.x += b.vx * dt;
     resolveWalls(b, 'x');
     b.y += b.vy * dt;
     resolveWalls(b, 'y');
 
-    // Trail
     G.trail.unshift({ x: b.x, y: b.y });
     if (G.trail.length > 14) G.trail.pop();
 
-    // Check exit
     if (G.exit && b.x > G.exit.x && b.x < G.exit.x+G.exit.w && b.y > G.exit.y && b.y < G.exit.y+G.exit.h) {
       G.state = 'won'; spawnWinParticles();
       cancelAnimationFrame(raf);
@@ -232,7 +256,6 @@ const GravityLabGame = (function () {
       return;
     }
 
-    // Check switches
     G.switches.forEach(sw => {
       if (!sw.used && dist(b.x, b.y, sw.x, sw.y) < b.r + sw.r) {
         sw.used = true; G.flipsLeft = Math.min(G.lvl.flips, G.flipsLeft + 2);
@@ -241,7 +264,6 @@ const GravityLabGame = (function () {
       }
     });
 
-    // Check out of bounds (fell off)
     if (b.x < G.offX - 20 || b.x > G.offX + G.gridW*G.tile + 20 ||
         b.y < G.offY - 20 || b.y > G.offY + G.gridH*G.tile + 20) {
       resetBall();
@@ -299,6 +321,7 @@ const GravityLabGame = (function () {
   function levelComplete() {
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', resize);
+    _removeKeyHandler();
     const next = G.idx + 1;
     if (next > +localStorage.getItem('gl-lvl')||0) localStorage.setItem('gl-lvl', next);
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
@@ -310,12 +333,15 @@ const GravityLabGame = (function () {
         ? `<button class="gl-btn" id="gl-next">▶ Next Level</button>`
         : `<button class="gl-btn" id="gl-next">🏆 All Done!</button>`}
       <button class="gl-btn-sm" id="gl-retry">↺ Replay</button>
+      <button class="gl-btn-sm" id="gl-menu2">☰ Menu</button>
     </div></div>`;
     root.querySelector('#gl-next').addEventListener('click', () => playLevel(next));
     root.querySelector('#gl-retry').addEventListener('click', () => playLevel(G.idx));
+    root.querySelector('#gl-menu2').addEventListener('click', showMenu);
   }
 
   function showAllDone() {
+    _removeKeyHandler();
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div style="font-size:3rem">🏆</div>
       <div class="gl-title">Lab Complete!</div>
@@ -395,7 +421,6 @@ const GravityLabGame = (function () {
 
   function drawBall() {
     const b = G.ball, t = performance.now()/1000;
-    // Outer glow
     glow('#22d3ee', 22);
     cx.fillStyle = '#22d3ee';
     cx.beginPath(); cx.arc(b.x, b.y, b.r, 0, Math.PI*2); cx.fill();
@@ -404,7 +429,6 @@ const GravityLabGame = (function () {
     cx.fillStyle = '#0891b2';
     cx.beginPath(); cx.arc(b.x, b.y, b.r*0.25, 0, Math.PI*2); cx.fill();
     noGlow();
-    // Gravity arrow indicator
     drawGravIndicator(b.x, b.y + b.r + 14);
   }
 
@@ -414,7 +438,6 @@ const GravityLabGame = (function () {
     glow('#22d3ee', 6);
     cx.strokeStyle = '#22d3ee'; cx.lineWidth = 2;
     cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x+gx*len, y+gy*len); cx.stroke();
-    // Arrowhead
     const angle = Math.atan2(gy, gx);
     cx.fillStyle = '#22d3ee'; cx.beginPath();
     cx.moveTo(x+gx*len, y+gy*len);

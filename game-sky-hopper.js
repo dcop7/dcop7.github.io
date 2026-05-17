@@ -3,6 +3,12 @@ const SkyHopperGame = (function () {
 
   let root, cv, cx, raf, W, H, G;
 
+  const DIFFS = {
+    easy:   { speed: 2.4, gravity: 0.42, jumpForce: -8.5,  gapMin: 145, gapMax: 210, pipeInterval: 130 },
+    medium: { speed: 3.2, gravity: 0.55, jumpForce: -9.5,  gapMin: 110, gapMax: 180, pipeInterval: 105 },
+    hard:   { speed: 4.2, gravity: 0.68, jumpForce: -10.5, gapMin: 75,  gapMax: 120, pipeInterval: 80  },
+  };
+
   function injectCSS() {
     if (document.getElementById('sh-css')) return;
     const s = document.createElement('style'); s.id = 'sh-css';
@@ -17,7 +23,14 @@ const SkyHopperGame = (function () {
 .sh-tip{font-size:.75rem;color:#333;text-align:center;line-height:1.6}
 .sh-score-live{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:1.4rem;font-weight:900;color:#00ffdd;font-family:monospace;text-shadow:0 0 12px #00ffdd;pointer-events:none;z-index:5}
 .sh-score-big{font-size:2.5rem;font-weight:900;color:#00ffdd;font-family:monospace;text-shadow:0 0 16px rgba(0,255,221,.5)}
-.sh-medal{font-size:3rem;filter:drop-shadow(0 0 16px #a855f7)}`;
+.sh-medal{font-size:3rem;filter:drop-shadow(0 0 16px #a855f7)}
+.sh-new-btn{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);border:1px solid #222;color:#555;border-radius:8px;padding:6px 12px;font-size:.75rem;cursor:pointer;z-index:6;transition:all .15s}
+.sh-new-btn:hover{border-color:#444;color:#888}
+.sh-diff-row{display:flex;gap:8px;justify-content:center}
+.sh-diff-btn{background:transparent;border:1.5px solid #222;color:#444;border-radius:8px;padding:7px 18px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s}
+.sh-diff-btn.active{border-color:#06b6d4;color:#00ffdd;background:rgba(6,182,212,.12)}
+.sh-diff-btn:hover:not(.active){border-color:#333;color:#666}
+.sh-diff-label{font-size:.7rem;color:#333;text-align:center;letter-spacing:.08em;text-transform:uppercase}`;
     document.head.appendChild(s);
   }
 
@@ -25,25 +38,44 @@ const SkyHopperGame = (function () {
 
   function showMenu() {
     const best = localStorage.getItem('sh-best') || 0;
+    const diff = localStorage.getItem('sh-diff') || 'medium';
     root.innerHTML = `<div class="sh-host"><div class="sh-overlay">
       <div style="font-size:3.2rem;filter:drop-shadow(0 0 18px #06b6d4)">🌟</div>
       <div class="sh-title">Sky Hopper</div>
       <div class="sh-best">Best: ${best}</div>
+      <div class="sh-diff-label">Difficulty</div>
+      <div class="sh-diff-row">
+        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Easy</button>
+        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Medium</button>
+        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Hard</button>
+      </div>
       <button class="sh-btn" id="sh-play">▶ Play</button>
       <div class="sh-tip">Tap / click to fly upward<br>Collect ⚡ orbs for bonus points</div>
     </div></div>`;
-    root.querySelector('#sh-play').addEventListener('click', startGame);
+    root.querySelectorAll('.sh-diff-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        localStorage.setItem('sh-diff', b.dataset.d);
+        root.querySelectorAll('.sh-diff-btn').forEach(x => x.classList.toggle('active', x === b));
+      });
+    });
+    root.querySelector('#sh-play').addEventListener('click', () => startGame(localStorage.getItem('sh-diff') || 'medium'));
   }
 
-  function startGame() {
+  function startGame(diff) {
     root.innerHTML = `<div class="sh-host">
       <canvas class="sh-cv" id="sh-cv"></canvas>
       <div class="sh-score-live" id="sh-slive">0</div>
+      <button class="sh-new-btn" id="sh-new">↺ New</button>
     </div>`;
     cv = root.querySelector('#sh-cv');
     cx = cv.getContext('2d');
     resize(); window.addEventListener('resize', resize);
-    G = newG();
+    G = newG(diff || 'medium');
+    root.querySelector('#sh-new').addEventListener('click', () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+      showMenu();
+    });
     setupControls();
     raf = requestAnimationFrame(loop);
   }
@@ -53,32 +85,28 @@ const SkyHopperGame = (function () {
     cv.width = W; cv.height = H;
   }
 
-  function newG() {
+  function newG(diff) {
+    const d = DIFFS[diff] || DIFFS.medium;
     return {
+      diff,
       alive: true, score: 0, frame: 0,
-      speed: 3.2,            // initial scroll speed px/frame
-      gravity: 0.55,
-      jumpForce: -9.5,
-      // player
+      speed: d.speed,
+      gravity: d.gravity,
+      jumpForce: d.jumpForce,
       px: W * 0.28, py: H * 0.5, pvy: 0, pRadius: 13, pAngle: 0,
-      // trail
       trail: [],
-      // pipes (obstacles)
       pipes: [],
-      pipeTimer: 0, pipeInterval: 105, gapMin: 110, gapMax: 180,
-      // orbs
+      pipeTimer: 0, pipeInterval: d.pipeInterval, gapMin: d.gapMin, gapMax: d.gapMax,
       orbs: [],
-      // bg layers
       bgStars: Array.from({length:80}, () => ({
         x: Math.random()*1000, y: Math.random()*1000,
         s: Math.random()*1.8+.3, sp: Math.random()*0.6+0.1, br: Math.random()
       })),
-      bgClouds: Array.from({length:6}, (_, i) => ({
+      bgClouds: Array.from({length:6}, () => ({
         x: Math.random()*1000, y: 50+Math.random()*(800-100),
         w: 60+Math.random()*80, sp: 0.3+Math.random()*0.4, a: 0.06+Math.random()*0.1
       })),
       particles: [],
-      alive: true,
       highScore: +localStorage.getItem('sh-best') || 0
     };
   }
@@ -106,54 +134,43 @@ const SkyHopperGame = (function () {
   function update(dt) {
     G.frame++;
 
-    // Increase speed gradually
-    G.speed = 3.2 + G.score * 0.008;
-    if (G.speed > 9) G.speed = 9;
+    G.speed = DIFFS[G.diff].speed + G.score * 0.008;
+    const maxSpeed = G.diff === 'hard' ? 12 : G.diff === 'medium' ? 9 : 7;
+    if (G.speed > maxSpeed) G.speed = maxSpeed;
 
-    // Player physics
     G.pvy += G.gravity * dt;
     G.py += G.pvy * dt;
-    G.pAngle = G.pvy * 3; // tilt based on velocity
+    G.pAngle = G.pvy * 3;
 
-    // Trail
     G.trail.unshift({ x: G.px, y: G.py, a: 1 });
     if (G.trail.length > 18) G.trail.pop();
 
-    // Death: out of bounds
     if (G.py - G.pRadius < 0 || G.py + G.pRadius > H) { die(); return; }
 
-    // Stars BG
     G.bgStars.forEach(s => { s.x -= s.sp * dt * G.speed * 0.15; if (s.x < 0) { s.x = W; s.y = Math.random()*H; } });
     G.bgClouds.forEach(c => { c.x -= c.sp * dt * G.speed * 0.25; if (c.x + c.w < 0) { c.x = W + c.w; c.y = 40+Math.random()*(H-80); } });
 
-    // Pipes
     G.pipeTimer++;
     if (G.pipeTimer >= G.pipeInterval) {
       G.pipeTimer = 0;
       const gapSize = G.gapMin + Math.random() * (G.gapMax - G.gapMin);
       const gapY = 80 + Math.random() * (H - gapSize - 160);
       G.pipes.push({ x: W + 20, gapY, gapH: gapSize, w: 52, scored: false });
-      // Spawn orb in gap center
       if (Math.random() < 0.7) G.orbs.push({ x: W + 46, y: gapY + gapSize * 0.5, r: 9, collected: false, rot: 0 });
     }
     G.pipes.forEach(p => { p.x -= G.speed * dt; });
     G.pipes = G.pipes.filter(p => p.x + p.w > -10);
 
-    // Orbs
     G.orbs.forEach(o => { o.x -= G.speed * dt; o.rot += 0.06 * dt; });
     G.orbs = G.orbs.filter(o => { if (o.collected) return false; if (o.x + o.r < 0) return false; return true; });
 
-    // Collision & scoring
     for (const p of G.pipes) {
-      // Score when pipe passes player
       if (!p.scored && p.x + p.w < G.px) { p.scored = true; G.score++; const sl = root.querySelector('#sh-slive'); if (sl) sl.textContent = G.score; }
-      // Collision
       if (G.px + G.pRadius > p.x && G.px - G.pRadius < p.x + p.w) {
         if (G.py - G.pRadius < p.gapY || G.py + G.pRadius > p.gapY + p.gapH) { die(); return; }
       }
     }
 
-    // Orb collection
     for (const o of G.orbs) {
       const dx = o.x - G.px, dy = o.y - G.py;
       if (Math.sqrt(dx*dx+dy*dy) < G.pRadius + o.r + 4) {
@@ -163,7 +180,6 @@ const SkyHopperGame = (function () {
       }
     }
 
-    // Particles
     G.particles = G.particles.filter(p => {
       p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 0.18 * dt;
       p.life -= dt; p.vx *= 0.98; return p.life > 0;
@@ -200,11 +216,9 @@ const SkyHopperGame = (function () {
   /* ── RENDER ───────────────────────────── */
   function render() {
     if (!cx) return;
-    // BG gradient
     const bg = cx.createLinearGradient(0,0,0,H);
     bg.addColorStop(0, '#000118'); bg.addColorStop(1, '#000a1a');
     cx.fillStyle = bg; cx.fillRect(0,0,W,H);
-
     drawBG();
     G.pipes.forEach(drawPipe);
     G.orbs.forEach(drawOrb);
@@ -217,18 +231,15 @@ const SkyHopperGame = (function () {
   function noGlow() { cx.shadowBlur = 0; }
 
   function drawBG() {
-    // Stars
     G.bgStars.forEach(s => {
       cx.fillStyle = `rgba(255,255,255,${0.3+s.br*0.6})`;
       cx.beginPath(); cx.arc(s.x%W, s.y%H, s.s, 0, Math.PI*2); cx.fill();
     });
-    // Cloud/nebula shapes
     G.bgClouds.forEach(c => {
       const grad = cx.createRadialGradient(c.x+c.w/2, c.y, 0, c.x+c.w/2, c.y, c.w);
       grad.addColorStop(0, `rgba(100,0,200,${c.a})`); grad.addColorStop(1, 'rgba(0,0,0,0)');
       cx.fillStyle = grad; cx.beginPath(); cx.ellipse(c.x+c.w/2, c.y, c.w, c.w*0.4, 0, 0, Math.PI*2); cx.fill();
     });
-    // Ground line (bottom)
     glow('#a855f7', 4);
     cx.strokeStyle = 'rgba(168,85,247,.25)'; cx.lineWidth = 1;
     cx.beginPath(); cx.moveTo(0, H-1); cx.lineTo(W, H-1); cx.stroke();
@@ -237,19 +248,15 @@ const SkyHopperGame = (function () {
   }
 
   function drawPipe(p) {
-    // Top pipe
     const grad1 = cx.createLinearGradient(p.x, 0, p.x+p.w, 0);
     grad1.addColorStop(0,'#0a0a2a'); grad1.addColorStop(0.5,'#151540'); grad1.addColorStop(1,'#0a0a2a');
     cx.fillStyle = grad1;
     cx.fillRect(p.x, 0, p.w, p.gapY);
-    // Bottom pipe
     cx.fillRect(p.x, p.gapY + p.gapH, p.w, H - p.gapY - p.gapH);
-    // Neon edge glow
     glow('#06b6d4', 8);
     cx.strokeStyle = '#06b6d4'; cx.lineWidth = 1.5;
     cx.strokeRect(p.x, 0, p.w, p.gapY);
     cx.strokeRect(p.x, p.gapY + p.gapH, p.w, H - p.gapY - p.gapH);
-    // Gap opening highlights
     glow('#00ffdd', 14);
     cx.strokeStyle = '#00ffdd'; cx.lineWidth = 2;
     cx.beginPath(); cx.moveTo(p.x, p.gapY); cx.lineTo(p.x+p.w, p.gapY); cx.stroke();
@@ -282,14 +289,11 @@ const SkyHopperGame = (function () {
 
   function drawPlayer() {
     cx.save(); cx.translate(G.px, G.py); cx.rotate(G.pAngle * Math.PI / 180);
-    // Outer glow
     glow('#00ffdd', 20);
     cx.fillStyle = '#00ffdd';
     cx.beginPath(); cx.arc(0, 0, G.pRadius, 0, Math.PI*2); cx.fill();
-    // Inner
     glow('#ffffff', 8); cx.fillStyle = '#ffffff';
     cx.beginPath(); cx.arc(0, 0, G.pRadius * 0.55, 0, Math.PI*2); cx.fill();
-    // Core
     cx.fillStyle = '#a855f7'; cx.beginPath(); cx.arc(0, 0, G.pRadius * 0.25, 0, Math.PI*2); cx.fill();
     noGlow(); cx.restore();
   }
@@ -308,16 +312,29 @@ const SkyHopperGame = (function () {
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', resize);
     const best = localStorage.getItem('sh-best') || 0;
+    const diff = G.diff || 'medium';
     const medal = G.score >= 20 ? '🥇' : G.score >= 10 ? '🥈' : G.score >= 5 ? '🥉' : '🌟';
     root.innerHTML = `<div class="sh-host"><div class="sh-overlay">
       <div class="sh-medal">${medal}</div>
       <div class="sh-title" style="font-size:1.7rem">Nice Flight!</div>
       <div class="sh-score-big">${G.score}</div>
       <div style="font-size:.8rem;color:#444">Best: ${best} · Orbs are worth 3 pts</div>
+      <div class="sh-diff-label">Difficulty</div>
+      <div class="sh-diff-row">
+        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Easy</button>
+        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Medium</button>
+        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Hard</button>
+      </div>
       <button class="sh-btn" id="sh-retry">🔄 Fly Again</button>
       <button style="background:transparent;border:1px solid #222;color:#444;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="sh-menu">Menu</button>
     </div></div>`;
-    root.querySelector('#sh-retry').addEventListener('click', startGame);
+    root.querySelectorAll('.sh-diff-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        localStorage.setItem('sh-diff', b.dataset.d);
+        root.querySelectorAll('.sh-diff-btn').forEach(x => x.classList.toggle('active', x === b));
+      });
+    });
+    root.querySelector('#sh-retry').addEventListener('click', () => startGame(localStorage.getItem('sh-diff') || diff));
     root.querySelector('#sh-menu').addEventListener('click', showMenu);
   }
 

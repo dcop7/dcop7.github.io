@@ -66,7 +66,12 @@ const MinesweeperGame = (function () {
   }
 
   function buildGrid() {
-    gridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    const wrap = container.querySelector('.ms-grid-wrap');
+    const availW = (wrap ? wrap.clientWidth : container.clientWidth || 380) - 8;
+    const availH = Math.min(window.innerHeight * 0.52, 440);
+    const cellSize = Math.max(18, Math.min(32, Math.floor(availW / cols), Math.floor(availH / rows)));
+
+    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
     gridEl.innerHTML = '';
     for (let r = 0; r < rows; r++) {
       board[r] = [];
@@ -74,6 +79,7 @@ const MinesweeperGame = (function () {
         board[r][c] = { mine: false, revealed: false, flagged: false, adj: 0 };
         const cell = document.createElement('div');
         cell.className = 'ms-cell';
+        cell.style.cssText = `width:${cellSize}px;height:${cellSize}px;font-size:${Math.max(9,Math.floor(cellSize*.58))}px`;
         cell.dataset.r = r; cell.dataset.c = c;
         cell.addEventListener('click', onLeft);
         cell.addEventListener('contextmenu', onRight);
@@ -184,7 +190,9 @@ const MinesweeperGame = (function () {
   function renderCell(r, c) {
     const cell = board[r][c];
     const el = gridEl.children[r * cols + c];
+    const savedStyle = el.style.cssText;
     el.className = 'ms-cell';
+    el.style.cssText = savedStyle;
     el.textContent = '';
     if (cell.flagged) { el.classList.add('ms-flag'); el.textContent = '🚩'; return; }
     if (!cell.revealed) return;

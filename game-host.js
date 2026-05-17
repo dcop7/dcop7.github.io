@@ -2,47 +2,50 @@ const GameHost = (function () {
   'use strict';
 
   const GAMES = [
-    { id: 'hangman',       name: 'Jogo da Forca',       icon: '🪢', color: '#3b82f6',
+    { id: 'hangman',       name: 'Jogo da Forca',       icon: '🪢', color: '#3b82f6', group: 'Clássicos',
       desc: 'Adivinha a palavra letra a letra. Quantas tentativas precisas?' },
-    { id: 'minesweeper',   name: 'Campo de Minas',       icon: '💣', color: '#10b981',
+    { id: 'minesweeper',   name: 'Campo de Minas',       icon: '💣', color: '#10b981', group: 'Clássicos',
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
-    { id: 'bomb',          name: 'Desarmar Bomba',       icon: '💥', color: '#ef4444',
+    { id: 'bomb',          name: 'Desarmar Bomba',       icon: '💥', color: '#ef4444', group: 'Clássicos',
       desc: '5–7 desafios, conta decrescente. Consegues desarmar a bomba a tempo?' },
-    { id: 'memory',        name: 'Memória',              icon: '🃏', color: '#a855f7',
+    { id: 'memory',        name: 'Memória',              icon: '🃏', color: '#a855f7', group: 'Clássicos',
       desc: 'Encontra todos os pares de cartas. Até 32 pares!' },
-    { id: 'tictactoe',     name: 'Jogo do Galo',         icon: '⭕', color: '#f59e0b',
+    { id: 'tictactoe',     name: 'Jogo do Galo',         icon: '⭕', color: '#f59e0b', group: 'Clássicos',
       desc: 'O clássico X e O contra a IA. Consegues ganhar?' },
-    { id: 'shooting',      name: 'Space Shooter',        icon: '🚀', color: '#6366f1',
-      desc: 'Elimina ondas de inimigos! Move o rato, esquiva e destrói tudo.' },
-    { id: 'reaction',      name: 'Teste de Reação',      icon: '⚡', color: '#22d3ee',
+    { id: 'reaction',      name: 'Teste de Reação',      icon: '⚡', color: '#22d3ee', group: 'Clássicos',
       desc: 'Quanto tempo demoras a reagir? Testa os teus reflexos.' },
-    { id: 'neon',          name: 'Neon Drawing',         icon: '✨', color: '#a855f7',
-      desc: 'Desenha com efeito neon brilhante. Arte digital!' },
-    { id: 'escape-lab',    name: 'Math Escape Lab',      icon: '🧪', color: '#00cc70',
-      desc: 'Foge do laboratório resolvendo puzzles matemáticos. Idades 6–14+.' },
-    { id: 'cipher-grid',   name: 'Cipher Grid',          icon: '🔷', color: '#22d3ee',
-      desc: 'Decifra padrões, sequências e grelhas misteriosas. Idades 6–14+.' },
-    { id: 'robot-repair',  name: 'Robot Repair Lab',     icon: '🤖', color: '#7c3aed',
-      desc: 'Repara robôs resolvendo puzzles de lógica. Idades 6–14+.' },
-    { id: 'space-code',    name: 'Space Code Academy',   icon: '🛸', color: '#1d4ed8',
-      desc: 'Decifra transmissões alienígenas com matemática espacial. Idades 6–14+.' },
-    { id: 'math-detective',name: 'Math Detective',       icon: '🔍', color: '#b45309',
-      desc: 'Resolve mistérios usando pistas matemáticas. Idades 6–14+.' },
-    { id: 'treasure-vault',name: 'Treasure Vault',       icon: '🏺', color: '#d97706',
-      desc: 'Abre cofres antigos com combinações matemáticas. Idades 6–14+.' },
-    { id: 'cyber-maze',    name: 'Cyber Maze',           icon: '🌀', color: '#db2777',
-      desc: 'Navega num labirinto cibernético resolvendo puzzles. Idades 6–14+.' },
-    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7',
+    { id: 'shooting',      name: 'Space Shooter',        icon: '🚀', color: '#6366f1', group: 'Ação',
+      desc: 'Elimina ondas de inimigos! Move o rato, esquiva e destrói tudo.' },
+    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Ação',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
-    { id: 'sky-hopper',    name: 'Sky Hopper',           icon: '🌟', color: '#06b6d4',
+    { id: 'sky-hopper',    name: 'Sky Hopper',           icon: '🌟', color: '#06b6d4', group: 'Ação',
       desc: 'Toca para voar, desvia dos obstáculos e apanha orbes de energia!' },
-    { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee',
+    { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee', group: 'Puzzle',
       desc: 'Muda a direção da gravidade para guiar a bola até à saída. 8 níveis!' },
-    { id: 'chain-reaction',name: 'Chain Reaction',       icon: '⚙️', color: '#6366f1',
+    { id: 'chain-reaction',name: 'Chain Reaction',       icon: '⚙️', color: '#6366f1', group: 'Puzzle',
       desc: 'Coloca peças no tabuleiro para criar reações em cadeia explosivas!' },
-    { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8',
-      desc: 'Constrói pontes para os robôs atravessarem. Física real!' },
+    { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8', group: 'Puzzle',
+      desc: 'Constrói pontes para os robôs atravessarem. Triângulos são a chave!' },
+    { id: 'escape-lab',    name: 'Math Escape Lab',      icon: '🧪', color: '#00cc70', group: 'Educativo',
+      desc: 'Foge do laboratório resolvendo puzzles matemáticos. Idades 6–14+.' },
+    { id: 'cipher-grid',   name: 'Cipher Grid',          icon: '🔷', color: '#22d3ee', group: 'Educativo',
+      desc: 'Decifra padrões, sequências e grelhas misteriosas. Idades 6–14+.' },
+    { id: 'robot-repair',  name: 'Robot Repair Lab',     icon: '🤖', color: '#7c3aed', group: 'Educativo',
+      desc: 'Repara robôs resolvendo puzzles de lógica. Idades 6–14+.' },
+    { id: 'space-code',    name: 'Space Code Academy',   icon: '🛸', color: '#1d4ed8', group: 'Educativo',
+      desc: 'Decifra transmissões alienígenas com matemática espacial. Idades 6–14+.' },
+    { id: 'math-detective',name: 'Math Detective',       icon: '🔍', color: '#b45309', group: 'Educativo',
+      desc: 'Resolve mistérios usando pistas matemáticas. Idades 6–14+.' },
+    { id: 'treasure-vault',name: 'Treasure Vault',       icon: '🏺', color: '#d97706', group: 'Educativo',
+      desc: 'Abre cofres antigos com combinações matemáticas. Idades 6–14+.' },
+    { id: 'cyber-maze',    name: 'Cyber Maze',           icon: '🌀', color: '#db2777', group: 'Educativo',
+      desc: 'Navega num labirinto cibernético resolvendo puzzles. Idades 6–14+.' },
+    { id: 'neon',          name: 'Neon Drawing',         icon: '✨', color: '#a855f7', group: 'Criativo',
+      desc: 'Desenha com efeito neon brilhante. Arte digital!' },
   ];
+
+  const GROUP_ORDER = ['Clássicos', 'Ação', 'Puzzle', 'Educativo', 'Criativo'];
+  const GROUP_ICONS = { 'Clássicos': '🎲', 'Ação': '⚡', 'Puzzle': '🧩', 'Educativo': '📚', 'Criativo': '🎨' };
 
   const registry = {
     hangman:        { initialized: true },
@@ -70,19 +73,30 @@ const GameHost = (function () {
   function renderHub() {
     const hub = document.getElementById('games-hub');
     if (!hub) return;
+
+    const groups = {};
+    GAMES.forEach(g => {
+      if (!groups[g.group]) groups[g.group] = [];
+      groups[g.group].push(g);
+    });
+
     hub.innerHTML = `
       <div class="page-header">
         <h1 class="page-title">🎮 Jogos</h1>
         <p class="page-subtitle">Escolhe um jogo para começar a jogar</p>
       </div>
-      <div class="games-hub-grid">
-        ${GAMES.map(g => `
-          <button class="game-hub-card" data-game="${g.id}">
-            <div class="game-hub-card-icon">${g.icon}</div>
-            <div class="game-hub-card-name">${g.name}</div>
-            <div class="game-hub-card-desc">${g.desc}</div>
-          </button>`).join('')}
-      </div>`;
+      ${GROUP_ORDER.filter(g => groups[g]).map(gName => `
+        <div class="games-group">
+          <div class="games-group-title">${GROUP_ICONS[gName]} ${gName}</div>
+          <div class="games-hub-grid">
+            ${groups[gName].map(g => `
+              <button class="game-hub-card" data-game="${g.id}">
+                <div class="game-hub-card-icon">${g.icon}</div>
+                <div class="game-hub-card-name">${g.name}</div>
+                <div class="game-hub-card-desc">${g.desc}</div>
+              </button>`).join('')}
+          </div>
+        </div>`).join('')}`;
 
     hub.querySelectorAll('.game-hub-card').forEach(btn => {
       btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));

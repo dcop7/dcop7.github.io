@@ -67,9 +67,13 @@
 .hf-msg.hf-show { display: block; }
 .hf-win { color: var(--green); }
 .hf-lose { color: var(--red); }
-.hf-new-btn { background: var(--accent); border: none; color: #fff; font-size: .78rem; font-weight: 600; padding: .5rem 1.1rem; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--ease); font-family: inherit; }
+.hf-new-btn { background: var(--accent); border: none; color: #fff; font-size: .78rem; font-weight: 600; padding: .5rem 1.1rem; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--ease); font-family: inherit; align-self: flex-start; width: fit-content; }
 .hf-new-btn:hover { opacity: .88; }
 @media (max-width: 900px) { .hf-body { grid-template-columns: 1fr; } }
+
+/* ── GAME GROUPS ── */
+.games-group { margin-bottom: 1.75rem; }
+.games-group-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: .65rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .4rem; }
 
 /* ── MINESWEEPER ── */
 .ms-card { max-width: 700px; margin: 0 auto; }

@@ -4,29 +4,31 @@ const BridgeBuilderGame = (function () {
   let root, cv, cx, raf, W, H, G;
 
   const LEVELS = [
-    { title:'Level 1 — First Bridge', hint:'Connect the gap — draw beams between anchor points',
+    { title:'Level 1 — First Bridge', hint:'Connect anchor points with beams to build a bridge',
       anchors:[{x:.1,y:.55},{x:.3,y:.55},{x:.5,y:.55},{x:.7,y:.55},{x:.9,y:.55}],
       startAnchor:0, endAnchor:4, gap:[{x:.3,y:.55},{x:.7,y:.55}],
-      maxBeams:6, robotSpeed:80 },
-    { title:'Level 2 — The Chasm', hint:'Build a longer bridge — add support beams',
+      maxBeams:8, robotSpeed:70 },
+    { title:'Level 2 — The Chasm', hint:'Long spans need support beams beneath',
       anchors:[{x:.08,y:.5},{x:.25,y:.5},{x:.42,y:.5},{x:.58,y:.5},{x:.75,y:.5},{x:.92,y:.5},
                {x:.25,y:.7},{x:.42,y:.7},{x:.58,y:.7},{x:.75,y:.7}],
       startAnchor:0, endAnchor:5, gap:[{x:.25,y:.5},{x:.75,y:.5}],
-      maxBeams:10, robotSpeed:70 },
-    { title:'Level 3 — Cross the Valley', hint:'Use the lower anchors for triangular support',
+      maxBeams:12, robotSpeed:60 },
+    { title:'Level 3 — Cross the Valley', hint:'Use the lower anchors to form triangular trusses',
       anchors:[{x:.1,y:.45},{x:.3,y:.45},{x:.5,y:.45},{x:.7,y:.45},{x:.9,y:.45},
                {x:.2,y:.65},{x:.4,y:.65},{x:.6,y:.65},{x:.8,y:.65}],
       startAnchor:0, endAnchor:4, gap:[{x:.3,y:.45},{x:.7,y:.45}],
-      maxBeams:12, robotSpeed:65 },
-    { title:'Level 4 — Advanced Structure', hint:'The heavier robot needs strong triangular trusses',
+      maxBeams:14, robotSpeed:55 },
+    { title:'Level 4 — Advanced Structure', hint:'Triangular trusses spread the load — flat bridges will collapse',
       anchors:[{x:.05,y:.42},{x:.22,y:.42},{x:.39,y:.42},{x:.56,y:.42},{x:.73,y:.42},{x:.9,y:.42},
                {x:.14,y:.62},{x:.31,y:.62},{x:.48,y:.62},{x:.65,y:.62},{x:.82,y:.62}],
       startAnchor:0, endAnchor:5, gap:[{x:.22,y:.42},{x:.73,y:.42}],
-      maxBeams:16, robotSpeed:55 },
+      maxBeams:18, robotSpeed:50 },
   ];
 
-  const BEAM_MAX_STRESS = 3.2; // normalized stress above which beam breaks
+  const BEAM_MAX_STRESS = 1.6;
   const ROBOT_RADIUS = 16;
+  // Beams longer than this fraction of screen width will be extra weak
+  const MAX_BEAM_FRACTION = 0.55;
 
   function injectCSS() {
     if (document.getElementById('bb-css')) return;
@@ -41,6 +43,8 @@ const BridgeBuilderGame = (function () {
 .bb-btn:hover{transform:scale(1.04)}
 .bb-btn-clear{background:transparent;border:1.5px solid #0369a1;color:#38bdf8;border-radius:8px;padding:8px 14px;font-size:.85rem;cursor:pointer;transition:all .15s}
 .bb-btn-clear:hover{background:rgba(3,105,161,.2)}
+.bb-btn-new{background:transparent;border:1.5px solid #334155;color:#64748b;border-radius:8px;padding:8px 14px;font-size:.85rem;cursor:pointer;transition:all .15s}
+.bb-btn-new:hover{border-color:#38bdf8;color:#38bdf8}
 .bb-mode-row{display:flex;gap:6px;align-items:center}
 .bb-mode-btn{padding:6px 12px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s}
 .bb-mode-btn.active{box-shadow:0 0 10px currentColor}
@@ -67,7 +71,7 @@ const BridgeBuilderGame = (function () {
       <div class="bb-prog">${LEVELS.map((_,i)=>`<div class="bb-pd ${i<saved?'done':''}"></div>`).join('')}</div>
       <button class="bb-main-btn" id="bb-play">▶ ${saved>0?'Continue':'Play'}</button>
       ${saved>0?`<button class="bb-sm-btn" id="bb-reset">↺ Start Over</button>`:''}
-      <div class="bb-tip">Click anchor points to connect beams<br>Then test if your bridge holds the robot!</div>
+      <div class="bb-tip">Click anchor points to connect beams<br>Long flat beams collapse — use triangles!<br>Then test if your bridge holds the robot.</div>
     </div></div>`;
     root.querySelector('#bb-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#bb-reset')?.addEventListener('click', () => { localStorage.removeItem('bb-lvl'); showMenu(); });
@@ -87,6 +91,7 @@ const BridgeBuilderGame = (function () {
         </div>
         <button class="bb-btn-clear" id="bb-clear">Clear</button>
         <button class="bb-btn" id="bb-test">🤖 Test!</button>
+        <button class="bb-btn-new" id="bb-new">☰</button>
       </div>
       <canvas class="bb-cv" id="bb-cv"></canvas>
     </div>`;
@@ -104,6 +109,11 @@ const BridgeBuilderGame = (function () {
     root.querySelector('#bb-clear').addEventListener('click', () => { G.beams=[]; G.selectedAnchor=-1; G.beamsUsed=0; updateBeamHUD(); });
     root.querySelector('#bb-m-build').addEventListener('click', () => { G.mode='build'; setModeUI(); });
     root.querySelector('#bb-m-del').addEventListener('click', () => { G.mode='delete'; setModeUI(); });
+    root.querySelector('#bb-new').addEventListener('click', () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+      showMenu();
+    });
 
     raf = requestAnimationFrame(loop);
   }
@@ -142,7 +152,6 @@ const BridgeBuilderGame = (function () {
     if (ai === -1) { G.selectedAnchor = -1; return; }
 
     if (G.mode === 'delete') {
-      // Delete beams touching this anchor
       const before = G.beams.length;
       G.beams = G.beams.filter(b => b.a !== ai && b.b !== ai);
       G.beamsUsed -= before - G.beams.length;
@@ -151,8 +160,15 @@ const BridgeBuilderGame = (function () {
 
     if (G.selectedAnchor === -1) { G.selectedAnchor = ai; return; }
     if (G.selectedAnchor === ai) { G.selectedAnchor = -1; return; }
-    // Add beam
+
     const a1 = G.selectedAnchor, a2 = ai;
+    const pa = G.anchors[a1], pb = G.anchors[a2];
+    const beamLen = Math.sqrt((pa.px-pb.px)**2+(pa.py-pb.py)**2);
+    if (beamLen > W * MAX_BEAM_FRACTION) {
+      flashMsg('Beam too long — add intermediate anchors!', '#fbbf24');
+      G.selectedAnchor = -1; return;
+    }
+
     if (!G.beams.some(b => (b.a===a1&&b.b===a2)||(b.a===a2&&b.b===a1))) {
       if (G.beamsUsed < G.lvl.maxBeams) {
         G.beams.push({ a:a1, b:a2, stress:0, broken:false });
@@ -160,7 +176,7 @@ const BridgeBuilderGame = (function () {
         updateBeamHUD();
       }
     }
-    G.selectedAnchor = a2; // chain
+    G.selectedAnchor = a2;
   }
 
   function onMouseMove(e) {
@@ -185,13 +201,11 @@ const BridgeBuilderGame = (function () {
 
   function testBridge() {
     if (G.state !== 'build') return;
-    // Check bridge spans from start to end anchor
     const start = G.lvl.startAnchor, end = G.lvl.endAnchor;
     const connected = isConnected(start, end);
     if (!connected) {
       flashMsg('Build a path from 🚀 to 🏁 first!', '#f87171'); return;
     }
-    // Launch robot
     G.state = 'testing';
     const sa = G.anchors[start];
     G.robot = { x: sa.px - ROBOT_RADIUS*2, y: sa.py - ROBOT_RADIUS, vx: G.lvl.robotSpeed * 0.016, vy:0, alive:true, crossed:false };
@@ -233,16 +247,14 @@ const BridgeBuilderGame = (function () {
     const rob = G.robot;
     if (!rob || !rob.alive) return;
 
-    rob.vy += 320 * dt; // gravity
+    rob.vy += 320 * dt;
     rob.x += rob.vx * W * dt;
     rob.y += rob.vy * dt;
 
-    // Find beam the robot is sitting on
     let supported = false;
     G.beams.forEach(b => {
       if (b.broken) return;
       const a = G.anchors[b.a], bpt = G.anchors[b.b];
-      // Check if robot is above beam
       const minX = Math.min(a.px, bpt.px), maxX = Math.max(a.px, bpt.px);
       if (rob.x + ROBOT_RADIUS > minX && rob.x - ROBOT_RADIUS < maxX) {
         const t = (rob.x - a.px) / (bpt.px - a.px || 1);
@@ -250,9 +262,9 @@ const BridgeBuilderGame = (function () {
         if (rob.y + ROBOT_RADIUS > beamY - 4 && rob.y + ROBOT_RADIUS < beamY + 18 && rob.vy >= 0) {
           rob.y = beamY - ROBOT_RADIUS; rob.vy = 0;
           supported = true;
-          // Stress = robot weight / beam count
-          const load = 1 / Math.max(1, G.beams.filter(x=>!x.broken).length * 0.3);
-          b.stress += load * dt * 4;
+          // Stress scales with beam length — long horizontal beams fail quickly
+          const beamLen = Math.sqrt((bpt.px-a.px)**2+(bpt.py-a.py)**2);
+          b.stress += (beamLen / 70) * dt * 3.0;
           if (b.stress > BEAM_MAX_STRESS) {
             b.broken = true;
             spawnBreak(a.px+(bpt.px-a.px)/2, a.py+(bpt.py-a.py)/2);
@@ -261,14 +273,12 @@ const BridgeBuilderGame = (function () {
       }
     });
 
-    // Check if fell off
     if (rob.y > H + 60 && !rob.crossed) {
       rob.alive = false; spawnExplode(rob.x, rob.y - 40, '#f87171');
       setTimeout(() => failTest(), 600);
       return;
     }
 
-    // Check if reached end anchor
     const ea = G.anchors[G.lvl.endAnchor];
     if (rob.x > ea.px - ROBOT_RADIUS*2 && !rob.crossed) {
       rob.crossed = true; spawnWin(ea.px, ea.py);
@@ -293,7 +303,7 @@ const BridgeBuilderGame = (function () {
     G.state = 'build';
     root.querySelector('#bb-test').disabled = false;
     G.beams.forEach(b => b.stress = 0);
-    flashMsg('Bridge collapsed! Reinforce it.', '#f87171');
+    flashMsg('Bridge collapsed! Try triangular trusses.', '#f87171');
     G.robot = null;
   }
 
@@ -311,9 +321,11 @@ const BridgeBuilderGame = (function () {
         ? `<button class="bb-main-btn" id="bb-next">▶ Next Level</button>`
         : `<button class="bb-main-btn" id="bb-next">🏆 All Done!</button>`}
       <button class="bb-sm-btn" id="bb-re">↺ Replay</button>
+      <button class="bb-sm-btn" id="bb-men">☰ Menu</button>
     </div></div>`;
     root.querySelector('#bb-next').addEventListener('click', () => playLevel(next));
     root.querySelector('#bb-re').addEventListener('click', () => playLevel(G.idx));
+    root.querySelector('#bb-men').addEventListener('click', showMenu);
   }
 
   function showAllDone() {
@@ -328,7 +340,6 @@ const BridgeBuilderGame = (function () {
   /* ── RENDER ───────────────────────────── */
   function render() {
     if (!cx) return;
-    // Sky background
     const bg = cx.createLinearGradient(0,0,0,H);
     bg.addColorStop(0,'#040d18'); bg.addColorStop(1,'#061828');
     cx.fillStyle = bg; cx.fillRect(0,0,W,H);
@@ -342,23 +353,18 @@ const BridgeBuilderGame = (function () {
   function noGlow() { cx.shadowBlur=0; }
 
   function drawGround() {
-    // Cliff edges on left/right
     const sa = G.anchors[G.lvl.startAnchor], ea = G.anchors[G.lvl.endAnchor];
     glow('#0284c7', 4);
     cx.fillStyle = '#0c1a30'; cx.strokeStyle = '#0369a1'; cx.lineWidth = 2;
-    // Left cliff
     cx.fillRect(0, sa.py, sa.px + 10, H - sa.py);
     cx.beginPath(); cx.moveTo(0, sa.py); cx.lineTo(sa.px+10, sa.py); cx.stroke();
-    // Right cliff
     cx.fillRect(ea.px - 10, ea.py, W - ea.px + 10, H - ea.py);
     cx.beginPath(); cx.moveTo(ea.px-10, ea.py); cx.lineTo(W, ea.py); cx.stroke();
     noGlow();
-    // Water / chasm
     const wg = cx.createLinearGradient(0, sa.py+20, 0, H);
     wg.addColorStop(0,'rgba(2,132,199,.15)'); wg.addColorStop(1,'rgba(2,132,199,.04)');
     cx.fillStyle = wg;
     cx.fillRect(sa.px+10, sa.py+20, ea.px-sa.px-20, H-sa.py-20);
-    // Shimmer lines
     const t = performance.now()/1000;
     for (let i=0;i<3;i++) {
       const ly = sa.py + 30 + i*20 + Math.sin(t+i)*6;
@@ -373,13 +379,11 @@ const BridgeBuilderGame = (function () {
       const a = G.anchors[b.a], bpt = G.anchors[b.b];
       const stress = Math.min(1, b.stress / BEAM_MAX_STRESS);
       const color = stress < 0.4 ? '#38bdf8' : stress < 0.75 ? '#fbbf24' : '#f87171';
-      const gloSize = 4 + stress * 12;
-      glow(color, gloSize);
+      glow(color, 4 + stress * 12);
       cx.strokeStyle = color; cx.lineWidth = 2.5 + stress * 1.5;
       cx.beginPath(); cx.moveTo(a.px, a.py); cx.lineTo(bpt.px, bpt.py); cx.stroke();
       noGlow();
     });
-    // Broken beams (faded)
     G.beams.filter(b=>b.broken).forEach(b => {
       const a = G.anchors[b.a], bpt = G.anchors[b.b];
       cx.strokeStyle = 'rgba(248,113,113,.2)'; cx.lineWidth = 1.5;
@@ -407,16 +411,12 @@ const BridgeBuilderGame = (function () {
     cx.save(); cx.translate(rob.x, rob.y);
     glow('#38bdf8', 14);
     cx.fillStyle = '#38bdf8';
-    // Body
     cx.fillRect(-ROBOT_RADIUS, -ROBOT_RADIUS, ROBOT_RADIUS*2, ROBOT_RADIUS*1.5);
-    // Head
     cx.fillStyle = '#0ea5e9';
     cx.fillRect(-ROBOT_RADIUS*.6, -ROBOT_RADIUS*1.7, ROBOT_RADIUS*1.2, ROBOT_RADIUS*.8);
-    // Eyes
     cx.fillStyle = '#fff';
     cx.fillRect(-ROBOT_RADIUS*.45, -ROBOT_RADIUS*1.6, ROBOT_RADIUS*.35, ROBOT_RADIUS*.35);
     cx.fillRect(ROBOT_RADIUS*.1, -ROBOT_RADIUS*1.6, ROBOT_RADIUS*.35, ROBOT_RADIUS*.35);
-    // Wheels
     cx.fillStyle = '#0284c7';
     cx.beginPath(); cx.arc(-ROBOT_RADIUS*.5, ROBOT_RADIUS*.5+2, ROBOT_RADIUS*.4, 0, Math.PI*2); cx.fill();
     cx.beginPath(); cx.arc(ROBOT_RADIUS*.5, ROBOT_RADIUS*.5+2, ROBOT_RADIUS*.4, 0, Math.PI*2); cx.fill();
@@ -427,7 +427,10 @@ const BridgeBuilderGame = (function () {
     if (G.state !== 'build' || G.mode !== 'build') return;
     if (G.selectedAnchor !== -1 && G.hoverAnchor !== -1 && G.hoverAnchor !== G.selectedAnchor) {
       const a = G.anchors[G.selectedAnchor], b = G.anchors[G.hoverAnchor];
-      cx.strokeStyle = 'rgba(56,189,248,.35)'; cx.lineWidth = 2; cx.setLineDash([6,6]);
+      const beamLen = Math.sqrt((a.px-b.px)**2+(a.py-b.py)**2);
+      const tooLong = beamLen > W * MAX_BEAM_FRACTION;
+      cx.strokeStyle = tooLong ? 'rgba(248,113,113,.4)' : 'rgba(56,189,248,.35)';
+      cx.lineWidth = 2; cx.setLineDash([6,6]);
       cx.beginPath(); cx.moveTo(a.px,a.py); cx.lineTo(b.px,b.py); cx.stroke();
       cx.setLineDash([]);
     } else if (G.selectedAnchor !== -1) {
