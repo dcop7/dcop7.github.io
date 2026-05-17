@@ -1,0 +1,99 @@
+/* ══════════════════════════════════════════════════════════════════
+   BASE — Reset, typography, body, background system
+══════════════════════════════════════════════════════════════════ */
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1rem;
+  overflow-x: hidden;
+}
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; color: var(--text); }
+select {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+select option { background: var(--card-solid); color: var(--text); }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* ── BACKGROUND SYSTEM ── */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none; overflow: hidden;
+}
+.bg-orb {
+  position: absolute; border-radius: 50%; filter: blur(110px);
+}
+.orb-1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),.07) 0%, transparent 70%);
+  top: -250px; left: -200px;
+  animation: orb-drift1 28s ease-in-out infinite alternate;
+}
+.orb-2 {
+  width: 550px; height: 550px;
+  background: radial-gradient(circle, rgba(139,92,246,.05) 0%, transparent 70%);
+  bottom: -150px; right: -150px;
+  animation: orb-drift2 35s ease-in-out infinite alternate;
+}
+.orb-3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(6,182,212,.04) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  animation: orb-drift3 22s ease-in-out infinite alternate;
+}
+@keyframes orb-drift1 { to { transform: translate(70px,50px); } }
+@keyframes orb-drift2 { to { transform: translate(-60px,-40px); } }
+@keyframes orb-drift3 { to { transform: translate(calc(-50% + 40px),calc(-50% - 30px)); } }
+body.light .bg-orb { opacity: .3; }
+
+/* ── WALLPAPER SYSTEM ── */
+.bg-wallpaper {
+  position: fixed; inset: 0; z-index: -2;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  opacity: 0; transition: opacity 1.5s ease; pointer-events: none;
+}
+body:not(.light) .bg-wallpaper.wp-active { opacity: .16; }
+body.light .bg-wallpaper.wp-active { opacity: .2; }
+body.wp-active:not(.light) .widget {
+  background: rgba(8,12,28,.68);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+body.wp-active.light .widget {
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+
+/* ── SHARED KEYFRAMES ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulse-soft { 0%,100% { opacity: .7; } 50% { opacity: 1; } }
+@keyframes view-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes hero-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes slide-up { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes skeleton { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes skel-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes skel-shimmer-light { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ── REDUCED MOTION ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

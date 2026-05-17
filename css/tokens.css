@@ -1,0 +1,70 @@
+/* ══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — CSS custom properties & themes
+   Edit here to change the entire look of the site.
+══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Backgrounds ── */
+  --bg: #080c14;
+  --bg2: #0b1020;
+  --card: rgba(255,255,255,.035);
+  --card2: rgba(255,255,255,.055);
+  --card-solid: #0f1623;
+
+  /* ── Borders ── */
+  --border: rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.14);
+
+  /* ── Text ── */
+  --text: #e2e8f0;
+  --text2: #cbd5e1;
+  --muted: #64748b;
+
+  /* ── Accent ── */
+  --accent: #6366f1;
+  --accent2: #22d3ee;
+  --accent-rgb: 99,102,241;
+  --accent-soft: rgba(99,102,241,.12);
+  --accent-glow: rgba(99,102,241,.25);
+
+  /* ── Status ── */
+  --red: #ef4444;
+  --green: #22c55e;
+  --amber: #f59e0b;
+
+  /* ── Shape ── */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+
+  /* ── Layout ── */
+  --sb-w: 224px;
+  --hdr-h: 56px;
+
+  /* ── Typography ── */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-head: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Motion ── */
+  --ease: 150ms ease;
+  --ease-out: 200ms cubic-bezier(.4,0,.2,1);
+}
+
+/* ── LIGHT THEME ── */
+body.light {
+  --bg: #f8fafc;
+  --bg2: #f1f5f9;
+  --card: rgba(255,255,255,.9);
+  --card2: #f8fafc;
+  --card-solid: #fff;
+  --border: rgba(0,0,0,.07);
+  --border2: rgba(0,0,0,.13);
+  --text: #0f172a;
+  --text2: #334155;
+  --muted: #64748b;
+  --accent: #6366f1;
+  --accent2: #0891b2;
+  --accent-soft: rgba(99,102,241,.08);
+  --accent-glow: rgba(99,102,241,.15);
+}
