@@ -158,14 +158,13 @@ const TreasureVaultGame = (function () {
   }
 
   function showMenu() {
-    const tier = _st.age ? tierFor(_st.age) : null;
+    _st.age = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+    const tier = tierFor(_st.age);
     const tierLabel = tier === 'easy'
       ? _t('Beginner (ages 6–8)', 'Iniciante (idades 6–8)')
       : tier === 'med'
         ? _t('Intermediate (ages 9–11)', 'Intermédio (idades 9–11)')
-        : tier === 'hard'
-          ? _t('Advanced (ages 12–14+)', 'Avançado (idades 12–14+)')
-          : '';
+        : _t('Advanced (ages 12–14+)', 'Avançado (idades 12–14+)');
 
     const bestRows = Object.entries(_st.bests).map(([t, scores]) => {
       const label = t === 'easy' ? _t('Beginner', 'Iniciante') : t === 'med' ? _t('Intermediate', 'Intermédio') : _t('Advanced', 'Avançado');
@@ -176,23 +175,15 @@ const TreasureVaultGame = (function () {
       <div class="tv-title">🏺 ${_t('Treasure Vault', 'Cofre do Tesouro')}</div>
       <div class="tv-subtitle">${_t('Unlock ancient vaults with math!', 'Abre cofres antigos com matemática!')}</div>
       <div class="tv-menu">
-        <h2>${_t('Select your age:', 'Seleciona a tua idade:')}</h2>
-        <div class="tv-age-grid">
-          ${[6,7,8,9,10,11,12,13,14].map(a => `
-            <button class="tv-age-btn${_st.age==a?' active':''}" data-age="${a}">${a}${a===14?'+':''}</button>
-          `).join('')}
-        </div>
+        <div class="tv-age-lbl">${_t('Age', 'Idade')}: <strong>${_st.age}</strong></div>
         <div class="tv-tier-hint">${tierLabel}</div>
-        <button class="tv-start-btn"${!_st.age?' disabled':''}>🏺 ${_t('Open the Vault!', 'Abrir o Cofre!')}</button>
+        <button class="tv-start-btn">🏺 ${_t('Open the Vault!', 'Abrir o Cofre!')}</button>
         ${bestRows ? `<div class="tv-bests"><h3>🏆 ${_t('Best Scores','Melhores Pontuações')}</h3>${bestRows}</div>` : ''}
       </div>
     </div>`;
 
-    _root.querySelectorAll('.tv-age-btn').forEach(b => b.addEventListener('click', () => {
-      _st.age = +b.dataset.age; showMenu();
-    }));
     _root.querySelector('.tv-start-btn')?.addEventListener('click', () => {
-      if (_st.age) startGame(_st.age);
+      startGame(_st.age);
     });
   }
 

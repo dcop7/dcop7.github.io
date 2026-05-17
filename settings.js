@@ -18,9 +18,11 @@ const SettingsPage = (function () {
   }
 
   function _build(el) {
-    const curLang  = typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
-    const mediaDays  = localStorage.getItem('media-days') || '14';
-    const gameAge    = localStorage.getItem('game-age-default') || '7';
+    const curLang      = typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
+    const tvDays       = localStorage.getItem('md-tv')       || '7';
+    const theatersDays = localStorage.getItem('md-theaters') || '30';
+    const digitalDays  = localStorage.getItem('md-digital')  || '7';
+    const gameAge      = localStorage.getItem('game-age-default') || '7';
     const iconStyle  = localStorage.getItem('icon-style') || 'colored';
     const wpEnabled  = localStorage.getItem('wallpaper-enabled') === 'true';
     const density    = localStorage.getItem('site-density') || 'comfortable';
@@ -127,12 +129,32 @@ const SettingsPage = (function () {
             <div class="st-section-title">🎬 ${T('st.entertainment')}</div>
             <div class="st-row">
               <div class="st-row-info">
-                <div class="st-row-label">${T('st.mediadays')}</div>
+                <div class="st-row-label">${T('md.tv')}</div>
                 <div class="st-row-desc">${T('st.mediadays.desc')}</div>
               </div>
               <div style="display:flex;align-items:center;gap:.6rem">
-                <input type="range" id="st-media-days" min="3" max="30" step="1" value="${mediaDays}" style="width:100px">
-                <span id="st-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${mediaDays} ${T('st.mediadays.unit')}</span>
+                <input type="range" id="st-tv-days" min="3" max="30" step="1" value="${tvDays}" style="width:100px">
+                <span id="st-tv-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${tvDays} ${T('st.mediadays.unit')}</span>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${T('md.theaters')}</div>
+                <div class="st-row-desc">${T('st.mediadays.desc')}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <input type="range" id="st-theaters-days" min="7" max="90" step="1" value="${theatersDays}" style="width:100px">
+                <span id="st-theaters-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${theatersDays} ${T('st.mediadays.unit')}</span>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${T('md.digital')}</div>
+                <div class="st-row-desc">${T('st.mediadays.desc')}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <input type="range" id="st-digital-days" min="3" max="30" step="1" value="${digitalDays}" style="width:100px">
+                <span id="st-digital-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${digitalDays} ${T('st.mediadays.unit')}</span>
               </div>
             </div>
           </div>
@@ -200,19 +222,22 @@ const SettingsPage = (function () {
         const age = btn.dataset.age;
         localStorage.setItem('game-age-default', age);
         el.querySelectorAll('#st-game-age .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        /* sync hangman if active */
-        const hfAgeBtn = document.querySelector(`.hf-age-btn[data-age="${age}"]`);
-        if (hfAgeBtn) hfAgeBtn.click();
+        /* update hangman age indicator if visible */
+        const hfAgeVal = document.getElementById('hf-age-val');
+        if (hfAgeVal) hfAgeVal.textContent = age;
       })
     );
 
-    /* Media days */
-    const daysSlider = el.querySelector('#st-media-days');
-    const daysLbl    = el.querySelector('#st-days-lbl');
-    daysSlider?.addEventListener('input', () => {
-      const v = daysSlider.value;
-      daysLbl.textContent = v + ' ' + T('st.mediadays.unit');
-      localStorage.setItem('media-days', v);
+    /* Media days — three separate */
+    [['tv','#st-tv-days','#st-tv-days-lbl'],
+     ['theaters','#st-theaters-days','#st-theaters-days-lbl'],
+     ['digital','#st-digital-days','#st-digital-days-lbl']].forEach(([key, slId, lblId]) => {
+      const sl  = el.querySelector(slId);
+      const lbl = el.querySelector(lblId);
+      sl?.addEventListener('input', () => {
+        lbl.textContent = sl.value + ' ' + T('st.mediadays.unit');
+        localStorage.setItem('md-' + key, sl.value);
+      });
     });
   }
 

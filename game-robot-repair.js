@@ -334,10 +334,11 @@ const RobotRepairGame = (function () {
   }
 
   function showMenu() {
-    const tier = _st.age ? tierFor(_st.age) : null;
+    _st.age = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+    const tier = tierFor(_st.age);
     const tierLabel = tier === 'easy' ? _t('Beginner · Basic counting & patterns','Iniciante · Contagem e padrões básicos')
       : tier === 'med' ? _t('Engineer · Algebra & fractions','Engenheiro · Álgebra e frações')
-      : tier === 'hard' ? _t('Master · Powers & systems','Mestre · Potências e sistemas') : '';
+      : _t('Master · Powers & systems','Mestre · Potências e sistemas');
 
     const bestStr = Object.entries(_st.bests).map(([t,v]) => {
       const lbl = t === 'easy' ? _t('Beginner','Iniciante') : t === 'med' ? _t('Engineer','Engenheiro') : _t('Master','Mestre');
@@ -348,27 +349,13 @@ const RobotRepairGame = (function () {
       <div class="rr-logo">🤖</div>
       <div class="rr-title">Robot Repair Lab</div>
       <div class="rr-sub">${_t('Fix broken robots using math!','Repara robôs avariados usando matemática!')}</div>
-      <div class="rr-age-lbl">${_t('Your age','A tua idade')}</div>
-      <div class="rr-age-grid">
-        ${[6,7,8,9,10,11,12,13,14].map(a =>
-          `<button class="rr-ab${_st.age==a?' sel':''}" data-age="${a}">${a===14?'14+':a}</button>`).join('')}
-      </div>
+      <div class="rr-age-lbl">${_t('Age','Idade')}: <strong>${_st.age}</strong></div>
       <div class="rr-tier-hint" id="rr-th">${tierLabel}</div>
-      <button class="rr-start-btn" id="rr-go"${!_st.age?' disabled':''}>▶ ${_t('Start Repairs','Iniciar Reparações')}</button>
+      <button class="rr-start-btn" id="rr-go">▶ ${_t('Start Repairs','Iniciar Reparações')}</button>
       ${bestStr ? `<div class="rr-bests">🏆 ${bestStr}</div>` : ''}
     </div></div>`;
 
-    const th = _root.querySelector('#rr-th');
-    _root.querySelectorAll('.rr-ab').forEach(b => b.addEventListener('click', () => {
-      _root.querySelectorAll('.rr-ab').forEach(x => x.classList.remove('sel'));
-      b.classList.add('sel'); _st.age = +b.dataset.age;
-      const t2 = tierFor(_st.age);
-      th.textContent = t2 === 'easy' ? _t('Beginner · Basic counting & patterns','Iniciante · Contagem e padrões básicos')
-        : t2 === 'med' ? _t('Engineer · Algebra & fractions','Engenheiro · Álgebra e frações')
-        : _t('Master · Powers & systems','Mestre · Potências e sistemas');
-      const btn = _root.querySelector('#rr-go'); if (btn) btn.disabled = false;
-    }));
-    _root.querySelector('#rr-go')?.addEventListener('click', () => { if (_st.age) startGame(_st.age); });
+    _root.querySelector('#rr-go')?.addEventListener('click', () => { startGame(_st.age); });
   }
 
   function startGame(age) {

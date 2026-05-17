@@ -38,8 +38,11 @@ const MediaPage = (function () {
   let _built  = false;
   let _loaded = false;
   let _yt     = null;
-  const _densityMap = { comfortable: 'comfortable', compact: 'compact', list: 'ultracompact' };
-  let _view   = localStorage.getItem('md-view') || _densityMap[localStorage.getItem('site-density')] || 'compact';
+  const _densityMap = { comfortable: 'comfortable', compact: 'compact', list: 'list' };
+  let _view   = (() => {
+    const v = localStorage.getItem('md-view') || _densityMap[localStorage.getItem('site-density')] || 'compact';
+    return v === 'ultracompact' ? 'list' : v; // migrate old stored value
+  })();
 
   const _days = {
     tv:       +(localStorage.getItem('md-tv')       || 7),
@@ -354,9 +357,9 @@ const MediaPage = (function () {
   function applyView() {
     const page = document.getElementById('view-media');
     if (!page) return;
-    page.classList.toggle('md-compact',      _view === 'compact');
-    page.classList.toggle('md-comfortable',  _view === 'comfortable');
-    page.classList.toggle('md-ultracompact', _view === 'ultracompact');
+    page.classList.toggle('md-compact',     _view === 'compact');
+    page.classList.toggle('md-comfortable', _view === 'comfortable');
+    page.classList.toggle('md-list',        _view === 'list');
     page.querySelectorAll('.md-vbtn[data-view]').forEach(b =>
       b.classList.toggle('active', b.dataset.view === _view)
     );
@@ -372,8 +375,7 @@ const MediaPage = (function () {
           <span class="md-count">—</span>
         </div>
         <div class="md-ctrl">
-          <input class="md-days-in" type="number" min="1" max="180" value="${_days[daysKey]}" data-key="${daysKey}" data-sid="${sid}" title="${T('md.last')} N ${T('md.days')}">
-          <span class="md-ctrl-lbl">d</span>
+          <span class="md-days-lbl" data-days-key="${daysKey}">${T('md.last')} ${_days[daysKey]} ${T('md.days')}</span>
           <button class="md-reload" data-sid="${sid}" title="${T('md.reload')}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
           </button>
@@ -404,9 +406,9 @@ const MediaPage = (function () {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
             <span>${T('md.compact')}</span>
           </button>
-          <button class="md-vbtn${_view==='ultracompact'?' active':''}" data-view="ultracompact" title="${T('md.ultracompact')}">
+          <button class="md-vbtn${_view==='list'?' active':''}" data-view="list" title="${T('md.list')}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="14" x2="21" y2="14"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            <span>${T('md.ultracompact')}</span>
+            <span>${T('md.list')}</span>
           </button>
         </div>
       </div>
@@ -442,15 +444,6 @@ const MediaPage = (function () {
       if (rel) LOADERS[rel.dataset.sid]?.();
     });
 
-    view.addEventListener('change', e => {
-      const inp = e.target.closest('.md-days-in');
-      if (!inp) return;
-      const v = clamp(parseInt(inp.value), 1, 180);
-      inp.value = v;
-      _days[inp.dataset.key] = v;
-      localStorage.setItem(`md-${inp.dataset.key}`, v);
-    });
-
     document.getElementById('yt-close')?.addEventListener('click', closeYT);
     view.querySelector('.yt-backdrop')?.addEventListener('click', closeYT);
     document.addEventListener('keydown', e => { if (e.key==='Escape' && _yt) closeYT(); });
@@ -459,6 +452,19 @@ const MediaPage = (function () {
   }
 
   function show() {
+    const newDays = {
+      tv:       +(localStorage.getItem('md-tv')       || 7),
+      theaters: +(localStorage.getItem('md-theaters') || 30),
+      digital:  +(localStorage.getItem('md-digital')  || 7),
+    };
+    const daysChanged = newDays.tv !== _days.tv || newDays.theaters !== _days.theaters || newDays.digital !== _days.digital;
+    Object.assign(_days, newDays);
+    if (daysChanged) {
+      _built = false;
+      _loaded = false;
+      const view = document.getElementById('view-media');
+      if (view) view.innerHTML = '';
+    }
     build();
     if (!_loaded) {
       _loaded = true;
@@ -477,7 +483,7 @@ const MediaPage = (function () {
   });
 
   function syncDensity(d) {
-    const map = { comfortable: 'comfortable', compact: 'compact', list: 'ultracompact' };
+    const map = { comfortable: 'comfortable', compact: 'compact', list: 'list' };
     _view = map[d] || 'compact';
     localStorage.setItem('md-view', _view);
     applyView();

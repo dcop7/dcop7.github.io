@@ -94,7 +94,7 @@
   let guessed = new Set();
   let wrongCount = 0;
   let gameOver = false;
-  let currentAge = parseInt(localStorage.getItem('game-age-default') || localStorage.getItem('hangman-age') || '8', 10);
+  let currentAge = parseInt(localStorage.getItem('game-age-default') || '8', 10);
 
   const _recentWords = { easy: [], medium: [], hard: [], expert: [] };
   const AVOID_REPEAT = 8;
@@ -205,6 +205,9 @@
   }
 
   function newGame() {
+    currentAge = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+    const ageEl = document.getElementById('hf-age-val');
+    if (ageEl) ageEl.textContent = currentAge;
     const tier = tierFor(currentAge);
     const pool = WORDS[tier];
     const recent = _recentWords[tier] || [];
@@ -232,16 +235,6 @@
     hideMsg();
     renderGallows(); renderLives(); renderWord(false); renderWrong(); renderKeyboard();
   }
-
-  // ── AGE BUTTONS ───────────────────────────────────────────────────
-  document.querySelectorAll('.hf-age-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.hf-age-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentAge = parseInt(btn.dataset.age, 10);
-      newGame();
-    });
-  });
 
   keyboard.addEventListener('click', e => {
     const btn = e.target.closest('.hf-key');

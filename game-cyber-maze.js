@@ -158,14 +158,13 @@ const CyberMazeGame = (function () {
   }
 
   function showMenu() {
-    const tier = _st.age ? tierFor(_st.age) : null;
+    _st.age = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+    const tier = tierFor(_st.age);
     const tierLabel = tier === 'easy'
       ? _t('Beginner (ages 6–8)', 'Iniciante (idades 6–8)')
       : tier === 'med'
         ? _t('Intermediate (ages 9–11)', 'Intermédio (idades 9–11)')
-        : tier === 'hard'
-          ? _t('Advanced (ages 12–14+)', 'Avançado (idades 12–14+)')
-          : '';
+        : _t('Advanced (ages 12–14+)', 'Avançado (idades 12–14+)');
 
     const bestRows = Object.entries(_st.bests).map(([t, scores]) => {
       const label = t === 'easy' ? _t('Beginner', 'Iniciante') : t === 'med' ? _t('Intermediate', 'Intermédio') : _t('Advanced', 'Avançado');
@@ -176,21 +175,13 @@ const CyberMazeGame = (function () {
       <div class="cm-title">🌀 ${_t('Cyber Maze', 'Labirinto Cibernético')}</div>
       <div class="cm-subtitle">${_t('Navigate the neon maze with math!', 'Navega no labirinto neon com matemática!')}</div>
       <div class="cm-menu">
-        <h2>${_t('Select your age:', 'Seleciona a tua idade:')}</h2>
-        <div class="cm-age-grid">
-          ${[6,7,8,9,10,11,12,13,14].map(a => `
-            <button class="cm-age-btn${_st.age==a?' active':''}" data-age="${a}">${a}${a===14?'+':''}</button>
-          `).join('')}
-        </div>
+        <div class="cm-age-lbl">${_t('Age', 'Idade')}: <strong>${_st.age}</strong></div>
         <div class="cm-tier-hint">${tierLabel}</div>
-        <button class="cm-start-btn"${!_st.age?' disabled':''}>🌀 ${_t('Enter the Maze!', 'Entrar no Labirinto!')}</button>
+        <button class="cm-start-btn">🌀 ${_t('Enter the Maze!', 'Entrar no Labirinto!')}</button>
         ${bestRows ? `<div class="cm-bests"><h3>🏆 ${_t('Best Scores','Melhores Pontuações')}</h3>${bestRows}</div>` : ''}
       </div>
     </div>`;
 
-    _root.querySelectorAll('.cm-age-btn').forEach(b => b.addEventListener('click', () => {
-      _st.age = +b.dataset.age; showMenu();
-    }));
     _root.querySelector('.cm-start-btn')?.addEventListener('click', () => {
       if (_st.age) startGame(_st.age);
     });

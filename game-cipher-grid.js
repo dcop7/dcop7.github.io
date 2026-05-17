@@ -408,9 +408,9 @@ const CipherGridGame = (function () {
       '10': _t('Primes · Symbol ciphers · Logic grids','Primos · Cifras de símbolos · Grelhas lógicas'),
       '13': _t('Binary · Modular math · Algebra ciphers','Binário · Matemática modular · Cifras algébricas')
     };
-    const selectedAge = _st.age || 9;
+    const selectedAge = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+    _st.age = selectedAge;
     const currentTier = tierFor(selectedAge);
-    const ages = [6,7,8,9,10,11,12,13,14];
 
     _root.innerHTML = `
 <div class="game-card cg-wrap" style="padding:0" id="cg-root">
@@ -422,10 +422,7 @@ const CipherGridGame = (function () {
       <div class="cg-logo-em">🔷</div>
       <div class="cg-logo-t">Cipher Grid</div>
       <div class="cg-logo-s">${_t('Code-Breaking Mystery','Mistério de Decifrar Códigos')}</div>
-      <div class="cg-age-lbl">${_t('Choose your age','Escolhe a tua idade')}</div>
-      <div class="cg-age-grid">
-        ${ages.map(a => `<button class="cg-ab${a === selectedAge ? ' sel' : ''}" data-age="${a}">${a === 14 ? '14+' : a}</button>`).join('')}
-      </div>
+      <div class="cg-age-lbl">${_t('Age','Idade')}: <strong style="color:#22d3ee">${selectedAge}</strong></div>
       <div class="cg-age-hint" id="cg-age-hint">${ageHints[currentTier]}</div>
       <button class="cg-start-btn" id="cg-start">▶ ${_t('Start','Começar')}</button>
       ${bestStr ? `<div class="cg-bests">${bestStr}</div>` : ''}
@@ -433,17 +430,7 @@ const CipherGridGame = (function () {
   </div>
 </div>`;
 
-    let selAge = selectedAge;
-    _root.querySelectorAll('.cg-ab').forEach(b => {
-      b.addEventListener('click', () => {
-        _root.querySelectorAll('.cg-ab').forEach(x => x.classList.remove('sel'));
-        b.classList.add('sel');
-        selAge = +b.dataset.age;
-        const hint = _root.querySelector('#cg-age-hint');
-        if (hint) hint.textContent = ageHints[tierFor(selAge)];
-      });
-    });
-    _root.querySelector('#cg-start').addEventListener('click', () => startGame(selAge));
+    _root.querySelector('#cg-start').addEventListener('click', () => startGame(selectedAge));
   }
 
   function startGame(age) {

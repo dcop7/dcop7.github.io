@@ -357,13 +357,13 @@ const EscapeLabGame = (function () {
       ? '💾 Best: ' + Object.entries(_st.bests).map(([t, v]) => tierLabels[t] + ': ' + v + 'pts').join(' | ')
       : '';
 
-    const ages = [6,7,8,9,10,11,12,13,14];
     const ageHints = {
       '7':  _t('Counting · Patterns · Arithmetic','Contagem · Padrões · Aritmética'),
       '10': _t('Sequences · Fractions · Algebra intro','Sequências · Frações · Álgebra'),
       '13': _t('Algebra · Modular arithmetic · Systems','Álgebra · Aritmética modular · Sistemas')
     };
-    const selectedAge = _st.age || 9;
+    const selectedAge = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+    _st.age = selectedAge;
     const currentTier = tierFor(selectedAge);
 
     _root.innerHTML = `
@@ -376,10 +376,7 @@ const EscapeLabGame = (function () {
       <div class="el-logo-em">🧪</div>
       <div class="el-logo-t">Math Escape Lab</div>
       <div class="el-logo-s">${_t('Interactive Puzzle Adventure','Aventura de Puzzles')}</div>
-      <div class="el-age-lbl">${_t('Choose your age','Escolhe a tua idade')}</div>
-      <div class="el-age-grid">
-        ${ages.map(a => `<button class="el-ab${a === selectedAge ? ' sel' : ''}" data-age="${a}">${a === 14 ? '14+' : a}</button>`).join('')}
-      </div>
+      <div class="el-age-lbl">${_t('Age','Idade')}: <strong>${selectedAge}</strong></div>
       <div class="el-age-hint" id="el-age-hint">${ageHints[currentTier]}</div>
       <button class="el-start-btn" id="el-start">▶ ${_t('Start','Começar')}</button>
       ${bestStr ? `<div class="el-bests">${bestStr}</div>` : ''}
@@ -387,17 +384,7 @@ const EscapeLabGame = (function () {
   </div>
 </div>`;
 
-    let selAge = selectedAge;
-    _root.querySelectorAll('.el-ab').forEach(b => {
-      b.addEventListener('click', () => {
-        _root.querySelectorAll('.el-ab').forEach(x => x.classList.remove('sel'));
-        b.classList.add('sel');
-        selAge = +b.dataset.age;
-        const hint = _root.querySelector('#el-age-hint');
-        if (hint) hint.textContent = ageHints[tierFor(selAge)];
-      });
-    });
-    _root.querySelector('#el-start').addEventListener('click', () => startGame(selAge));
+    _root.querySelector('#el-start').addEventListener('click', () => startGame(selectedAge));
   }
 
   // ══ START GAME ══════════════════════════════════════════════════════
