@@ -32,6 +32,16 @@ const GameHost = (function () {
       desc: 'Abre cofres antigos com combinações matemáticas. Idades 6–14+.' },
     { id: 'cyber-maze',    name: 'Cyber Maze',           icon: '🌀', color: '#db2777',
       desc: 'Navega num labirinto cibernético resolvendo puzzles. Idades 6–14+.' },
+    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7',
+      desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
+    { id: 'sky-hopper',    name: 'Sky Hopper',           icon: '🌟', color: '#06b6d4',
+      desc: 'Toca para voar, desvia dos obstáculos e apanha orbes de energia!' },
+    { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee',
+      desc: 'Muda a direção da gravidade para guiar a bola até à saída. 8 níveis!' },
+    { id: 'chain-reaction',name: 'Chain Reaction',       icon: '⚙️', color: '#6366f1',
+      desc: 'Coloca peças no tabuleiro para criar reações em cadeia explosivas!' },
+    { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8',
+      desc: 'Constrói pontes para os robôs atravessarem. Física real!' },
   ];
 
   const registry = {
@@ -49,7 +59,12 @@ const GameHost = (function () {
     'space-code':   { init: () => SpaceCodeGame.init(document.getElementById('pane-space-code')),      initialized: false },
     'math-detective':{ init: () => MathDetectiveGame.init(document.getElementById('pane-math-detective')), initialized: false },
     'treasure-vault':{ init: () => TreasureVaultGame.init(document.getElementById('pane-treasure-vault')), initialized: false },
-    'cyber-maze':   { init: () => CyberMazeGame.init(document.getElementById('pane-cyber-maze')),      initialized: false },
+    'cyber-maze':    { init: () => CyberMazeGame.init(document.getElementById('pane-cyber-maze')),       initialized: false },
+    'neon-shooter':  { init: () => NeonShooterGame.init(document.getElementById('pane-neon-shooter')),   initialized: false },
+    'sky-hopper':    { init: () => SkyHopperGame.init(document.getElementById('pane-sky-hopper')),       initialized: false },
+    'gravity-lab':   { init: () => GravityLabGame.init(document.getElementById('pane-gravity-lab')),     initialized: false },
+    'chain-reaction':{ init: () => ChainReactionGame.init(document.getElementById('pane-chain-reaction')), initialized: false },
+    'bridge-builder':{ init: () => BridgeBuilderGame.init(document.getElementById('pane-bridge-builder')), initialized: false },
   };
 
   function renderHub() {
