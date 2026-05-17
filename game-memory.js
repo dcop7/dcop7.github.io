@@ -1,7 +1,12 @@
 const MemoryGame = (function () {
   'use strict';
 
-  const EMOJIS = ['🍎','🍌','🍇','🍓','🍒','🍑','🥝','🍍','🥭','🍋','🍊','🍐','🫐','🍉','🥑','🌽'];
+  const EMOJIS = [
+    '🍎','🍌','🍇','🍓','🍒','🍑','🥝','🍍',
+    '🥭','🍋','🍊','🍐','🫐','🍉','🥑','🌽',
+    '🐶','🐱','🐭','🐰','🦊','🐻','🐼','🐨',
+    '🐯','🦁','🐮','🐷','🐸','🐵','🦋','🌈'
+  ];
 
   function shuffle(arr) {
     const a = [...arr];
@@ -32,16 +37,14 @@ const MemoryGame = (function () {
       }, 1000);
     }
 
-    function stopTimer() {
-      clearInterval(timerInt);
-    }
+    function stopTimer() { clearInterval(timerInt); }
 
     function render(pairs = 8) {
       flipped = []; matched = []; moves = 0; timer = 0; locked = false; started = false;
       stopTimer();
       const cards = getCards(pairs);
-      const cols = pairs <= 6 ? 3 : pairs <= 8 ? 4 : 6;
-      const cardW = pairs <= 8 ? 82 : 72;
+      const cols = pairs <= 6 ? 3 : pairs <= 8 ? 4 : pairs <= 12 ? 6 : 8;
+      const cardW = pairs <= 8 ? 82 : pairs <= 12 ? 72 : pairs <= 16 ? 60 : pairs <= 24 ? 52 : 46;
 
       root.innerHTML = `
         <div class="game-card">
@@ -50,9 +53,12 @@ const MemoryGame = (function () {
             <div class="mem-stat"><span class="mem-lbl">Movimentos</span><span class="mem-val" id="mem-moves">0</span></div>
             <div class="mem-stat"><span class="mem-lbl">Tempo</span><span class="mem-val" id="mem-timer">0s</span></div>
             <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-              <button class="hf-new-btn" id="mem-new6">6 pares</button>
-              <button class="hf-new-btn" id="mem-new8">8 pares</button>
-              <button class="hf-new-btn" id="mem-new12">12 pares</button>
+              <button class="hf-new-btn mem-nb" data-p="6">6 pares</button>
+              <button class="hf-new-btn mem-nb" data-p="8">8 pares</button>
+              <button class="hf-new-btn mem-nb" data-p="12">12 pares</button>
+              <button class="hf-new-btn mem-nb" data-p="16">16 pares</button>
+              <button class="hf-new-btn mem-nb" data-p="24">24 pares</button>
+              <button class="hf-new-btn mem-nb" data-p="32">32 pares</button>
             </div>
           </div>
           <div class="mem-grid" id="mem-grid" style="grid-template-columns:repeat(${cols},minmax(0,${cardW}px));justify-content:center">
@@ -61,8 +67,8 @@ const MemoryGame = (function () {
           <div class="mem-msg" id="mem-msg"></div>
         </div>`;
 
-      root.querySelectorAll('[id^="mem-new"]').forEach(btn => {
-        btn.addEventListener('click', () => render(+btn.id.replace('mem-new', '')));
+      root.querySelectorAll('.mem-nb').forEach(btn => {
+        btn.addEventListener('click', () => render(+btn.dataset.p));
       });
 
       root.querySelector('#mem-grid').addEventListener('click', e => {
@@ -88,7 +94,9 @@ const MemoryGame = (function () {
             flipped = []; locked = false;
             if (matched.length === cards.length) {
               stopTimer();
-              root.querySelector('#mem-msg').textContent = `🎉 Parabéns! ${moves} movimentos em ${timer}s`;
+              const msgEl = root.querySelector('#mem-msg');
+              msgEl.innerHTML = `🎉 Parabéns! ${moves} movimentos em ${timer}s<br><button class="hf-new-btn" style="margin-top:.6rem">🔄 Novo Jogo</button>`;
+              msgEl.querySelector('button').addEventListener('click', () => render(pairs));
             }
           } else {
             setTimeout(() => {

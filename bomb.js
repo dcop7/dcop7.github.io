@@ -4,14 +4,14 @@ const BombGame = (function () {
   let container, timerInt, timeLeft, stageIdx, stages, diff, gameState;
 
   const DIFFS = {
-    easy:    { label:'Fácil',   emoji:'🟢', time:120, wires:3, codeLen:3, codeShow:6, seqLen:3, seqShow:5,
-               stages:['wires','code','sequence'] },
-    medium:  { label:'Médio',   emoji:'🟡', time:90,  wires:4, codeLen:4, codeShow:4, seqLen:4, seqShow:4,
-               stages:['wires','code','sequence'] },
-    hard:    { label:'Difícil', emoji:'🟠', time:75,  wires:4, codeLen:5, codeShow:3, seqLen:5, seqShow:3,
-               stages:['wires','code','math','sequence'] },
-    extreme: { label:'Extremo', emoji:'🔴', time:60,  wires:5, codeLen:6, codeShow:2, seqLen:6, seqShow:2,
-               stages:['wires','code','math','pattern','sequence'] },
+    easy:    { label:'Fácil',   emoji:'🟢', time:180, wires:3, codeLen:3, codeShow:6, seqLen:3, seqShow:5,
+               stages:['wires','code','sequence','wires','code'] },
+    medium:  { label:'Médio',   emoji:'🟡', time:150, wires:4, codeLen:4, codeShow:4, seqLen:4, seqShow:4,
+               stages:['wires','code','sequence','math','wires'] },
+    hard:    { label:'Difícil', emoji:'🟠', time:130, wires:4, codeLen:5, codeShow:3, seqLen:5, seqShow:3,
+               stages:['wires','code','math','sequence','wires','code'] },
+    extreme: { label:'Extremo', emoji:'🔴', time:105, wires:5, codeLen:6, codeShow:2, seqLen:6, seqShow:2,
+               stages:['wires','code','math','pattern','sequence','wires','math'] },
   };
 
   const STAGE_LABELS = { wires:'Fios', code:'Código', sequence:'Sequência', math:'Cálculo', pattern:'Padrão' };

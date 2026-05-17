@@ -1,9 +1,9 @@
 (function () {
   'use strict';
 
-  // ── WORD LISTS BY AGE GROUP ────────────────────────────────────────
+  // ── WORD LISTS BY DIFFICULTY TIER ─────────────────────────────────────
   const WORDS = {
-    5: [
+    easy: [
       {w:'GATO',c:'Animal'},{w:'CÃO',c:'Animal'},{w:'SOL',c:'Natureza'},
       {w:'LUA',c:'Natureza'},{w:'MAR',c:'Natureza'},{w:'PÃO',c:'Comida'},
       {w:'RIO',c:'Natureza'},{w:'BOLA',c:'Brinquedo'},{w:'CASA',c:'Lugar'},
@@ -13,13 +13,13 @@
       {w:'PORTA',c:'Objeto'},{w:'ESCOLA',c:'Lugar'},{w:'AMIGO',c:'Pessoa'},
       {w:'LIVRO',c:'Objeto'},{w:'COPO',c:'Objeto'},{w:'FLOR',c:'Planta'},
       {w:'ÁRVORE',c:'Planta'},{w:'PERA',c:'Fruta'},{w:'MAÇÃ',c:'Fruta'},
-      {w:'UVA',c:'Fruta'},{w:'LARANJA',c:'Fruta'},{w:'MOTA',c:'Transporte'},
-      {w:'LÁPIS',c:'Objeto'},{w:'COELHO',c:'Animal'},{w:'PATO',c:'Animal'},
-      {w:'BOLO',c:'Comida'},{w:'SUMO',c:'Bebida'},{w:'ÁGUA',c:'Bebida'},
-      {w:'CHUVA',c:'Tempo'},{w:'NUVEM',c:'Tempo'},{w:'NEVE',c:'Tempo'},
-      {w:'VENTO',c:'Tempo'},{w:'PRAIA',c:'Lugar'},{w:'CAMPO',c:'Lugar'},
+      {w:'UVA',c:'Fruta'},{w:'LARANJA',c:'Fruta'},{w:'LÁPIS',c:'Objeto'},
+      {w:'COELHO',c:'Animal'},{w:'BOLO',c:'Comida'},{w:'SUMO',c:'Bebida'},
+      {w:'ÁGUA',c:'Bebida'},{w:'CHUVA',c:'Tempo'},{w:'NUVEM',c:'Tempo'},
+      {w:'NEVE',c:'Tempo'},{w:'VENTO',c:'Tempo'},{w:'PRAIA',c:'Lugar'},
+      {w:'CAMPO',c:'Lugar'},{w:'MOTA',c:'Transporte'},{w:'TREM',c:'Transporte'},
     ],
-    7: [
+    medium: [
       {w:'JARDIM',c:'Lugar'},{w:'BARCO',c:'Transporte'},{w:'CARRO',c:'Transporte'},
       {w:'PONTE',c:'Estrutura'},{w:'MONTE',c:'Natureza'},{w:'JANELA',c:'Objeto'},
       {w:'CANETA',c:'Objeto'},{w:'MOCHILA',c:'Objeto'},{w:'CHAPÉU',c:'Roupa'},
@@ -28,14 +28,14 @@
       {w:'CARACOL',c:'Animal'},{w:'TARTARUGA',c:'Animal'},{w:'CAVALO',c:'Animal'},
       {w:'ELEFANTE',c:'Animal'},{w:'GIRAFA',c:'Animal'},{w:'GOLFINHO',c:'Animal'},
       {w:'PINGUIM',c:'Animal'},{w:'FAMÍLIA',c:'Pessoas'},{w:'CIDADE',c:'Lugar'},
-      {w:'FLORESTA',c:'Natureza'},{w:'CASTELO',c:'Construção'},{w:'PALHAÇO',c:'Pessoa'},
-      {w:'CIRCO',c:'Espetáculo'},{w:'BICICLETA',c:'Transporte'},{w:'COMBOIO',c:'Transporte'},
-      {w:'AVIÃO',c:'Transporte'},{w:'FOGUETE',c:'Transporte'},{w:'BALÃO',c:'Objeto'},
-      {w:'ARCO-ÍRIS',c:'Natureza'},{w:'ESTRELA',c:'Astronomia'},{w:'PLANETA',c:'Astronomia'},
-      {w:'OCEANO',c:'Natureza'},{w:'DESERTO',c:'Natureza'},{w:'VULCÃO',c:'Natureza'},
-      {w:'CASCATA',c:'Natureza'},{w:'ILHA',c:'Lugar'},{w:'MONTANHA',c:'Natureza'},
+      {w:'FLORESTA',c:'Natureza'},{w:'CASTELO',c:'Construção'},{w:'BICICLETA',c:'Transporte'},
+      {w:'COMBOIO',c:'Transporte'},{w:'AVIÃO',c:'Transporte'},{w:'FOGUETE',c:'Transporte'},
+      {w:'BALÃO',c:'Objeto'},{w:'ARCO-ÍRIS',c:'Natureza'},{w:'ESTRELA',c:'Astronomia'},
+      {w:'PLANETA',c:'Astronomia'},{w:'OCEANO',c:'Natureza'},{w:'DESERTO',c:'Natureza'},
+      {w:'VULCÃO',c:'Natureza'},{w:'CASCATA',c:'Natureza'},{w:'ILHA',c:'Lugar'},
+      {w:'MONTANHA',c:'Natureza'},{w:'CIRCO',c:'Espetáculo'},{w:'PALHAÇO',c:'Pessoa'},
     ],
-    10: [
+    hard: [
       {w:'AVENTURA',c:'Conceito'},{w:'MISTÉRIO',c:'Conceito'},{w:'VIAGEM',c:'Atividade'},
       {w:'CIÊNCIA',c:'Área'},{w:'PINTURA',c:'Arte'},{w:'COMPUTADOR',c:'Tecnologia'},
       {w:'PROGRAMA',c:'Tecnologia'},{w:'INTERNET',c:'Tecnologia'},{w:'FOTOGRAFIA',c:'Arte'},
@@ -54,7 +54,7 @@
       {w:'ATMOSFERA',c:'Ciência'},{w:'GRAVIDADE',c:'Física'},
       {w:'ELECTRICIDADE',c:'Física'},{w:'MAGNETISMO',c:'Física'},
     ],
-    13: [
+    expert: [
       {w:'FOTOSSÍNTESE',c:'Biologia'},{w:'METAMORFOSE',c:'Biologia'},
       {w:'HIBERNAÇÃO',c:'Biologia'},{w:'BIODIVERSIDADE',c:'Ambiente'},
       {w:'ECOSSISTEMA',c:'Ambiente'},{w:'SUSTENTABILIDADE',c:'Ambiente'},
@@ -76,6 +76,14 @@
     ],
   };
 
+  function tierFor(age) {
+    const a = +age;
+    if (a <= 7)  return 'easy';
+    if (a <= 9)  return 'medium';
+    if (a <= 12) return 'hard';
+    return 'expert';
+  }
+
   // ── GALLOWS PARTS ─────────────────────────────────────────────────
   const PARTS = ['hf-head','hf-body-line','hf-arm-l','hf-arm-r','hf-leg-l','hf-leg-r'];
   const MAX_WRONG = 6;
@@ -83,13 +91,12 @@
   // ── STATE ─────────────────────────────────────────────────────────
   let currentWord = '';
   let currentCat = '';
-  let guessed = new Set();     // normalized A-Z letters guessed
+  let guessed = new Set();
   let wrongCount = 0;
   let gameOver = false;
-  let currentAge = 7;
+  let currentAge = 8;
 
-  // Track recently used words to avoid repetition
-  const _recentWords = { 5: [], 7: [], 10: [], 13: [] };
+  const _recentWords = { easy: [], medium: [], hard: [], expert: [] };
   const AVOID_REPEAT = 8;
 
   // ── DOM REFS ──────────────────────────────────────────────────────
@@ -106,48 +113,33 @@
     return ch.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
   }
 
-  function normWord(w) {
-    return [...w].map(norm);
-  }
+  function normWord(w) { return [...w].map(norm); }
 
-  function rand(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
+  function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   // ── GALLOWS RENDER ────────────────────────────────────────────────
   function renderGallows() {
     PARTS.forEach((id, i) => {
       const el = document.getElementById(id);
       if (!el) return;
-      if (i < wrongCount) {
-        if (!el.classList.contains('hf-show')) {
-          el.classList.add('hf-show');
-        }
-      } else {
-        el.classList.remove('hf-show');
-      }
+      if (i < wrongCount) { if (!el.classList.contains('hf-show')) el.classList.add('hf-show'); }
+      else el.classList.remove('hf-show');
     });
   }
 
-  // ── LIVES RENDER ──────────────────────────────────────────────────
   function renderLives() {
     const rem = MAX_WRONG - wrongCount;
-    livesEl.innerHTML =
-      '❤️'.repeat(rem) + '<span style="opacity:.25">🖤</span>'.repeat(wrongCount);
+    livesEl.innerHTML = '❤️'.repeat(rem) + '<span style="opacity:.25">🖤</span>'.repeat(wrongCount);
   }
 
   function isLetter(n) { return n >= 'A' && n <= 'Z'; }
 
-  // ── WORD RENDER ───────────────────────────────────────────────────
   function renderWord(revealAll) {
     const norm_letters = normWord(currentWord);
     wordRow.innerHTML = [...currentWord].map((ch, i) => {
       const n = norm_letters[i];
       if (ch === ' ') return '<span class="hf-space"></span>';
-      // Non-letter characters (hyphen, etc.) always visible
-      if (!isLetter(n)) {
-        return `<span class="hf-letter hf-revealed" style="animation:none">${ch}</span>`;
-      }
+      if (!isLetter(n)) return `<span class="hf-letter hf-revealed" style="animation:none">${ch}</span>`;
       const revealed = guessed.has(n);
       const showLoss = revealAll && !revealed;
       let cls = 'hf-letter';
@@ -157,23 +149,19 @@
     }).join('');
   }
 
-  // ── WRONG LETTERS ─────────────────────────────────────────────────
   function renderWrong() {
     const norm_letters = normWord(currentWord).filter(isLetter);
     const wrongs = [...guessed].filter(g => !norm_letters.includes(g)).sort();
     wrongEl.textContent = wrongs.length ? wrongs.join('  ') : '—';
   }
 
-  // ── KEYBOARD ─────────────────────────────────────────────────────
   function renderKeyboard() {
     const norm_letters = normWord(currentWord);
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     keyboard.innerHTML = [...letters].map(l => {
-      let cls = 'hf-key';
-      let disabled = '';
+      let cls = 'hf-key', disabled = '';
       if (guessed.has(l)) {
-        const isCorrect = norm_letters.includes(l);
-        cls += isCorrect ? ' hf-correct' : ' hf-wrong-key';
+        cls += normWord(currentWord).includes(l) ? ' hf-correct' : ' hf-wrong-key';
         disabled = 'disabled';
       }
       if (gameOver) disabled = 'disabled';
@@ -181,78 +169,51 @@
     }).join('');
   }
 
-  // ── WIN / LOSE CHECK ─────────────────────────────────────────────
   function checkWin() {
-    const norm_letters = normWord(currentWord);
-    return norm_letters.filter(isLetter).every(c => guessed.has(c));
+    return normWord(currentWord).filter(isLetter).every(c => guessed.has(c));
   }
 
-  // ── SHOW MESSAGE ─────────────────────────────────────────────────
   function showMsg(text, type) {
     msgEl.textContent = text;
     msgEl.className = 'hf-msg hf-show ' + (type === 'win' ? 'hf-win' : 'hf-lose');
   }
 
-  function hideMsg() {
-    msgEl.className = 'hf-msg';
-    msgEl.textContent = '';
-  }
+  function hideMsg() { msgEl.className = 'hf-msg'; msgEl.textContent = ''; }
 
-  // ── GUESS HANDLER ─────────────────────────────────────────────────
   function handleGuess(letter) {
     if (gameOver || guessed.has(letter)) return;
     guessed.add(letter);
-
-    const norm_letters = normWord(currentWord);
-    const hit = norm_letters.includes(letter);
-
-    if (!hit) wrongCount++;
-
-    renderGallows();
-    renderLives();
-    renderWord(false);
-    renderWrong();
-    renderKeyboard();
-
+    if (!normWord(currentWord).includes(letter)) wrongCount++;
+    renderGallows(); renderLives(); renderWord(false); renderWrong(); renderKeyboard();
     if (checkWin()) {
-      gameOver = true;
-      renderKeyboard();
+      gameOver = true; renderKeyboard();
       showMsg('🎉 Parabéns! Acertaste!', 'win');
       celebrateWin();
     } else if (wrongCount >= MAX_WRONG) {
-      gameOver = true;
-      renderWord(true);
-      renderKeyboard();
+      gameOver = true; renderWord(true); renderKeyboard();
       showMsg(`😢 Perdeste! A palavra era: ${currentWord}`, 'lose');
     }
   }
 
-  // ── WIN CELEBRATION ───────────────────────────────────────────────
   function celebrateWin() {
-    const letters = wordRow.querySelectorAll('.hf-letter.hf-revealed');
-    letters.forEach((el, i) => {
+    wordRow.querySelectorAll('.hf-letter.hf-revealed').forEach((el, i) => {
       setTimeout(() => {
-        el.style.animation = 'none';
-        el.offsetHeight; // reflow
+        el.style.animation = 'none'; el.offsetHeight;
         el.style.animation = 'hf-pop .4s cubic-bezier(.34,1.56,.64,1)';
       }, i * 60);
     });
   }
 
-  // ── NEW GAME ──────────────────────────────────────────────────────
   function newGame() {
-    const pool = WORDS[currentAge] || WORDS[5];
-    const recent = _recentWords[currentAge] || [];
-
-    // Pick from words not recently used; fall back to full pool if needed
+    const tier = tierFor(currentAge);
+    const pool = WORDS[tier];
+    const recent = _recentWords[tier] || [];
     let available = pool.filter(item => !recent.includes(item.w));
     if (available.length === 0) available = pool;
     const entry = rand(available);
-
-    // Track recent
     recent.push(entry.w);
     if (recent.length > AVOID_REPEAT) recent.shift();
-    _recentWords[currentAge] = recent;
+    _recentWords[tier] = recent;
 
     currentWord = entry.w.toUpperCase();
     currentCat  = entry.c;
@@ -261,8 +222,6 @@
     gameOver    = false;
 
     catEl.textContent = currentCat;
-
-    // Show letter count
     const countEl = document.getElementById('hf-letter-count');
     if (countEl) {
       const words = currentWord.split(' ').filter(w => w.length > 0);
@@ -270,13 +229,8 @@
         ? words.map(w => w.length).join(' + ') + ' = ' + words.reduce((s, w) => s + w.length, 0) + ' letras'
         : currentWord.replace(/\s/g, '').length + ' letras';
     }
-
     hideMsg();
-    renderGallows();
-    renderLives();
-    renderWord(false);
-    renderWrong();
-    renderKeyboard();
+    renderGallows(); renderLives(); renderWord(false); renderWrong(); renderKeyboard();
   }
 
   // ── AGE BUTTONS ───────────────────────────────────────────────────
@@ -289,14 +243,12 @@
     });
   });
 
-  // ── KEYBOARD CLICKS ───────────────────────────────────────────────
   keyboard.addEventListener('click', e => {
     const btn = e.target.closest('.hf-key');
     if (!btn || btn.disabled) return;
     handleGuess(btn.dataset.letter);
   });
 
-  // ── PHYSICAL KEYBOARD ─────────────────────────────────────────────
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     const pane = document.getElementById('pane-hangman');
@@ -306,9 +258,6 @@
     if (l.length === 1 && l >= 'A' && l <= 'Z') handleGuess(l);
   });
 
-  // ── NEW GAME BUTTON ───────────────────────────────────────────────
   newBtn.addEventListener('click', newGame);
-
-  // ── INIT ──────────────────────────────────────────────────────────
   newGame();
 })();
