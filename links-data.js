@@ -113,6 +113,7 @@ const LINKS_DATA = [
       { name:'Productivity.directory', url:'https://productivity.directory/',             desc:'Diretório de recursos de produtividade',         desc_en:'Productivity resources directory',                   tags:['produtividade','ferramentas','apps','diretório','recursos'] },
       { name:'Humanize AI',            url:'https://www.humanizeai.io/',                  desc:'Naturaliza e humaniza texto gerado por IA',      desc_en:'Naturalizes and humanizes AI-generated text',         tags:['ia','texto','escrita','ai','naturalizar','humanizar'] },
       { name:'Aixploria',              url:'https://www.aixploria.com/en/ultimate-list-ai/',desc:'Lista definitiva de ferramentas de Inteligência Artificial',desc_en:'Ultimate list of Artificial Intelligence tools',tags:['ia','ferramentas','ai','lista','inteligência artificial','tools'] },
+      { name:'FMHY',                   url:'https://fmhy.net/',                            desc:'Wiki enorme de recursos gratuitos — software, media e ferramentas',desc_en:'Massive wiki of free resources — software, media and tools',tags:['grátis','recursos','software','media','wiki','ferramentas','free','diretório'] },
     ]
   },
   {
