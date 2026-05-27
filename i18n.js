@@ -8,6 +8,7 @@ const I18n = (function () {
       'nav.tools':'Tools','nav.workout':'Workout','nav.media':'Entertainment',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
+      'nav.quiz':'Quizzes',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
       'lp.all':'All','lp.title':'🔗 Useful Sites',
       'lp.count':'{n} sites in {m} categories',
@@ -29,6 +30,23 @@ const I18n = (function () {
       'home.joke':'😄 Daily Joke','home.reveal':'Show answer',
       'home.greet.morning':'Good morning! ☀️','home.greet.afternoon':'Good afternoon! 🌤️',
       'home.greet.evening':'Good evening! 🌙',
+      // Quiz
+      'quiz.title':'Quizzes','quiz.sub':'Learning through play',
+      'quiz.search':'Search quizzes…','quiz.start':'Start','quiz.retry':'Try again',
+      'quiz.back':'Back to quizzes','quiz.score':'Score','quiz.highscore':'High score',
+      'quiz.next':'Next','quiz.finish':'Finish','quiz.loading':'Loading questions…',
+      'quiz.error':'Failed to load questions. Try again.',
+      'quiz.correct':'Correct!','quiz.wrong':'Wrong!',
+      'quiz.final.title':'Quiz complete!','quiz.final.great':'Excellent!',
+      'quiz.final.good':'Well done!','quiz.final.ok':'Keep practising!',
+      'quiz.question':'Question','quiz.of':'of',
+      'quiz.age':'Age','quiz.lang':'Language',
+      'quiz.settings.title':'Quiz Settings','quiz.settings.sub':'Customise quizzes',
+      'quiz.settings.age':'Quiz age','quiz.settings.age.desc':'Adjusts question difficulty and vocabulary',
+      'quiz.settings.lang':'Quiz language','quiz.settings.lang.desc':'Language used in quizzes',
+      'quiz.cat.geografia':'Geography','quiz.cat.natureza':'Nature & Science',
+      'quiz.cat.escola':'School','quiz.cat.cultura':'General Knowledge',
+      'quiz.cat.visual':'Visual & Fun','quiz.cat.tecnologia':'Technology',
       // Weather labels
       'wx.next24':'Next 24 Hours','wx.forecast':'7-Day Forecast',
       'wx.map':'🌍 Real-Time Map','wx.now':'Now','wx.today':'Today',
@@ -103,6 +121,10 @@ const I18n = (function () {
       'st.entertainment':'Entertainment',
       'st.mediadays':'History window','st.mediadays.desc':'How many days of episodes to show',
       'st.mediadays.unit':'days',
+      // Quiz settings
+      'st.quiz':'Quizzes',
+      'st.quiz.age':'Quiz age','st.quiz.age.desc':'Question difficulty and vocabulary level',
+      'st.quiz.lang':'Quiz language','st.quiz.lang.desc':'Language used inside quizzes',
     },
     pt: {
       // Nav
@@ -110,6 +132,7 @@ const I18n = (function () {
       'nav.tools':'Ferramentas','nav.workout':'Treino','nav.media':'Entretenimento',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
+      'nav.quiz':'Quizzes',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
       'lp.all':'Todos','lp.title':'🔗 Sites Úteis',
       'lp.count':'{n} sites em {m} categorias',
@@ -127,10 +150,27 @@ const I18n = (function () {
       'home.fav.games':'🎮 Jogos Favoritos',
       'home.world.times':'🕐 Hora de Portugal',
       // Home daily content
-      'home.quote':'💡 Inspiração do Dia','home.riddle':'🤔 Adivinha do Dia',
+      'home.quote':'💡 Frase do Dia','home.riddle':'🤔 Adivinha do Dia',
       'home.joke':'😄 Piada do Dia','home.reveal':'Ver resposta',
       'home.greet.morning':'Bom dia! ☀️','home.greet.afternoon':'Boa tarde! 🌤️',
       'home.greet.evening':'Boa noite! 🌙',
+      // Quiz
+      'quiz.title':'Quizzes','quiz.sub':'Aprender a brincar',
+      'quiz.search':'Pesquisar quizzes…','quiz.start':'Começar','quiz.retry':'Tentar novamente',
+      'quiz.back':'Voltar aos quizzes','quiz.score':'Pontuação','quiz.highscore':'Recorde',
+      'quiz.next':'Seguinte','quiz.finish':'Terminar','quiz.loading':'A carregar perguntas…',
+      'quiz.error':'Não foi possível carregar as perguntas. Tenta novamente.',
+      'quiz.correct':'Correcto!','quiz.wrong':'Errado!',
+      'quiz.final.title':'Quiz concluído!','quiz.final.great':'Excelente!',
+      'quiz.final.good':'Muito bem!','quiz.final.ok':'Continua a praticar!',
+      'quiz.question':'Pergunta','quiz.of':'de',
+      'quiz.age':'Idade','quiz.lang':'Idioma',
+      'quiz.settings.title':'Definições de Quizzes','quiz.settings.sub':'Personaliza os quizzes',
+      'quiz.settings.age':'Idade dos quizzes','quiz.settings.age.desc':'Ajusta a dificuldade e o vocabulário das perguntas',
+      'quiz.settings.lang':'Idioma dos quizzes','quiz.settings.lang.desc':'Idioma utilizado dentro dos quizzes',
+      'quiz.cat.geografia':'Geografia','quiz.cat.natureza':'Natureza e Ciência',
+      'quiz.cat.escola':'Escola','quiz.cat.cultura':'Cultura Geral',
+      'quiz.cat.visual':'Visual e Divertido','quiz.cat.tecnologia':'Tecnologia',
       // Weather labels
       'wx.next24':'Próximas 24 Horas','wx.forecast':'Previsão 7 Dias',
       'wx.map':'🌍 Mapa em Tempo Real','wx.now':'Agora','wx.today':'Hoje',
@@ -205,6 +245,10 @@ const I18n = (function () {
       'st.entertainment':'Entretenimento',
       'st.mediadays':'Dias de histórico','st.mediadays.desc':'Quantos dias de episódios mostrar',
       'st.mediadays.unit':'dias',
+      // Quiz settings
+      'st.quiz':'Quizzes',
+      'st.quiz.age':'Idade dos quizzes','st.quiz.age.desc':'Nível de dificuldade e vocabulário das perguntas',
+      'st.quiz.lang':'Idioma dos quizzes','st.quiz.lang.desc':'Idioma utilizado dentro dos quizzes',
     }
   };
 

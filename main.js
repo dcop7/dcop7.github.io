@@ -403,50 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (heroBtn) heroBtn.addEventListener('click', () => { closeAC(); doSearch(heroInput?.value || ''); });
 
-  const qaPalette = document.getElementById('qa-palette');
-  if (qaPalette) qaPalette.addEventListener('click', () => {
-    document.dispatchEvent(new CustomEvent('cp:open'));
-  });
 });
 
 // ── KEYBOARD SHORTCUTS ────────────────────────────────────────────
-let _gKey = null;
 document.addEventListener('keydown', e => {
-  const active = document.activeElement;
-  const typing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
-  const cpOpen = !document.getElementById('cp-overlay')?.hidden;
-
   if (e.key === 'Escape') {
-    if (cpOpen) { document.dispatchEvent(new CustomEvent('cp:close')); return; }
     const srInput = document.getElementById('search-input');
     if (document.activeElement === srInput) { srInput.blur(); srInput.value = ''; }
-    return;
   }
-
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-    e.preventDefault();
-    document.dispatchEvent(new CustomEvent('cp:open'));
-    return;
-  }
-
-  if (typing || cpOpen) return;
-
-  if (e.key === '/') {
-    e.preventDefault();
-    document.getElementById('search-input')?.focus();
-    return;
-  }
-
-  if (e.key === 'g' || e.key === 'G') { _gKey = Date.now(); return; }
-
-  if (_gKey && Date.now() - _gKey < 1500 && typeof Nav !== 'undefined') {
-    const map = { h:'home', g:'games', l:'links', t:'tools', c:'cheatsheets', m:'media', w:'workout', v:'visual', p:'photography', s:'settings' };
-    const dest = map[e.key.toLowerCase()];
-    if (dest) { e.preventDefault(); Nav.go(dest); }
-    _gKey = null;
-    return;
-  }
-  _gKey = null;
 });
 
 // ── SITES FAVORITOS (from LINKS_DATA) ────────────────────────────

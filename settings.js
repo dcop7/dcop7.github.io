@@ -24,6 +24,9 @@ const SettingsPage = (function () {
     const digitalDays  = localStorage.getItem('md-digital')  || '7';
     const _rawAge      = localStorage.getItem('game-age-default') || '8';
     const gameAge      = ['6','7','8','9','10','11','12','13','14'].includes(_rawAge) ? _rawAge : '8';
+    const _rawQuizAge  = localStorage.getItem('quiz-age') || '8';
+    const quizAge      = ['6','7','8','9','10','11','12','13','14'].includes(_rawQuizAge) ? _rawQuizAge : '8';
+    const quizLang     = localStorage.getItem('quiz-lang') || 'pt';
     const iconStyle  = localStorage.getItem('icon-style') || 'colored';
     const wpEnabled  = localStorage.getItem('wallpaper-enabled') === 'true';
     const density    = localStorage.getItem('site-density') || 'comfortable';
@@ -120,6 +123,32 @@ const SettingsPage = (function () {
                 ${[6,7,8,9,10,11,12,13,14].map(a =>
                   `<button class="tsb${gameAge===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
                 ).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz settings -->
+          <div class="st-section">
+            <div class="st-section-title">🧩 ${T('st.quiz')}</div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${T('st.quiz.age')}</div>
+                <div class="st-row-desc">${T('st.quiz.age.desc')}</div>
+              </div>
+              <div class="st-age-seg" id="st-quiz-age">
+                ${[6,7,8,9,10,11,12,13,14].map(a =>
+                  `<button class="tsb${quizAge===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
+                ).join('')}
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${T('st.quiz.lang')}</div>
+                <div class="st-row-desc">${T('st.quiz.lang.desc')}</div>
+              </div>
+              <div class="tool-seg" id="st-quiz-lang">
+                <button class="tsb${quizLang==='pt'?' active':''}" data-lang="pt">🇵🇹 Português</button>
+                <button class="tsb${quizLang==='en'?' active':''}" data-lang="en">🇬🇧 English</button>
               </div>
             </div>
           </div>
@@ -222,9 +251,28 @@ const SettingsPage = (function () {
         const age = btn.dataset.age;
         localStorage.setItem('game-age-default', age);
         el.querySelectorAll('#st-game-age .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        /* update hangman age indicator if visible */
         const hfAgeVal = document.getElementById('hf-age-val');
         if (hfAgeVal) hfAgeVal.textContent = age;
+      })
+    );
+
+    /* Quiz age */
+    el.querySelectorAll('#st-quiz-age .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const age = btn.dataset.age;
+        localStorage.setItem('quiz-age', age);
+        el.querySelectorAll('#st-quiz-age .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { age } }));
+      })
+    );
+
+    /* Quiz language */
+    el.querySelectorAll('#st-quiz-lang .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const qlang = btn.dataset.lang;
+        localStorage.setItem('quiz-lang', qlang);
+        el.querySelectorAll('#st-quiz-lang .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { lang: qlang } }));
       })
     );
 

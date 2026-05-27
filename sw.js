@@ -1,8 +1,7 @@
-const CACHE = 'dcop7-v2';
+const CACHE = 'dcop7-v3';
 const STATIC = [
   '/',
   '/index.html',
-  '/style.css',
   '/main.js',
   '/nav.js',
   '/i18n.js',
@@ -14,7 +13,9 @@ const STATIC = [
   '/workout.js',
   '/media.js',
   '/cheatsheets.js',
-  '/command-palette.js',
+  '/quiz-engine.js',
+  '/quiz-providers.js',
+  '/quiz-page.js',
   '/search.js',
   '/links-page.js',
   '/game-host.js',
@@ -23,10 +24,10 @@ const STATIC = [
   '/bomb.js',
   '/game-memory.js',
   '/game-tictactoe.js',
-  '/game-wordle.js',
   '/game-shooting.js',
   '/game-reaction.js',
   '/game-neon.js',
+  '/css/views/quiz.css',
   '/favicon.svg',
   '/manifest.json',
 ];
