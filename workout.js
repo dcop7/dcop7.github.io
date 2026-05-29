@@ -13,9 +13,11 @@ const WorkoutPage = (function () {
       osc.start(); osc.stop(ctx.currentTime + dur);
     } catch {}
   }
-  function chime() { beep(784,.15); setTimeout(()=>beep(1047,.25),170); }
-  function gong()  { beep(523,.3,.5); }
-  function done()  { beep(523,.12); setTimeout(()=>beep(659,.12),130); setTimeout(()=>beep(784,.12),260); setTimeout(()=>beep(1047,.4),390); }
+  /* Don't play cues if the user has navigated away from the workout mid-session. */
+  function _audible() { return document.getElementById('view-workout')?.classList.contains('active'); }
+  function chime() { if (!_audible()) return; beep(784,.15); setTimeout(()=>beep(1047,.25),170); }
+  function gong()  { if (!_audible()) return; beep(523,.3,.5); }
+  function done()  { if (!_audible()) return; beep(523,.12); setTimeout(()=>beep(659,.12),130); setTimeout(()=>beep(784,.12),260); setTimeout(()=>beep(1047,.4),390); }
 
   // ── 3D SVG Figures ─────────────────────────────────────────────────
   // viewBox="0 0 80 120" — 3/4 front-right view for standing, side view for floor

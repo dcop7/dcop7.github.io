@@ -524,7 +524,9 @@ const VisualPage = (function () {
 
     // Keyboard shortcuts
     function onKey(e) {
-      const pane = document.getElementById('pane-whiteboard') || root;
+      /* Only act when the Whiteboard tab is actually on screen. */
+      if (_activeTab !== 'whiteboard') return;
+      if (!document.getElementById('view-visual')?.classList.contains('active')) return;
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }

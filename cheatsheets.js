@@ -1,6 +1,9 @@
 const CheatsheetsPage = (function () {
   'use strict';
 
+  /* UI chrome localisation (command content stays English by convention). */
+  const _t = (en, pt) => (typeof I18n !== 'undefined' && I18n.getLang() === 'pt') ? pt : en;
+
   const DATA = {
     git: {
       label: 'Git', icon: '🌿',
@@ -1265,12 +1268,12 @@ const CheatsheetsPage = (function () {
       btn.textContent = '✓';
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1200);
-    } catch { btn.textContent = '✗'; setTimeout(() => { btn.textContent = 'Copy'; }, 1200); }
+    } catch { btn.textContent = '✗'; setTimeout(() => { btn.textContent = _t('Copy', 'Copiar'); }, 1200); }
   }
 
   function renderSections(sheetId, q) {
     const sheet = DATA[sheetId];
-    if (!sheet) return '<div class="cs-empty">Not found.</div>';
+    if (!sheet) return `<div class="cs-empty">${_t('Not found.', 'Não encontrado.')}</div>`;
     const lq = q.toLowerCase();
     const html = sheet.sections.map(sec => {
       if (sec.type === 'tester') return `<div class="cs-regex-tester">
@@ -1283,7 +1286,7 @@ const CheatsheetsPage = (function () {
             <button class="rx-flag-btn" data-flag="s" title="dotAll">s</button>
           </div>
         </div>
-        <div class="cs-regex-test"><textarea id="cs-rx-txt" placeholder="Type or paste test text here…" rows="4"></textarea></div>
+        <div class="cs-regex-test"><textarea id="cs-rx-txt" placeholder="${_t('Type or paste test text here…', 'Escreve ou cola o texto de teste aqui…')}" rows="4"></textarea></div>
         <div class="cs-regex-matches" id="cs-rx-out"><span class="cs-regex-match-count">—</span></div>
       </div>`;
       const filtered = lq
@@ -1300,12 +1303,12 @@ const CheatsheetsPage = (function () {
             <div class="cs-item">
               <code class="cs-cmd">${highlight(item.cmd, lq)}</code>
               <span class="cs-desc">${highlight(item.desc, lq)}</span>
-              <button class="cs-copy" data-cmd="${esc(item.cmd)}">Copy</button>
+              <button class="cs-copy" data-cmd="${esc(item.cmd)}">${_t('Copy', 'Copiar')}</button>
             </div>`).join('')}
         </div>
       </div>`;
     }).join('');
-    return html || '<div class="cs-empty">No results for this filter.</div>';
+    return html || `<div class="cs-empty">${_t('No results for this filter.', 'Sem resultados para este filtro.')}</div>`;
   }
 
   function bindCopyBtns(container) {
@@ -1330,10 +1333,11 @@ const CheatsheetsPage = (function () {
         return;
       }
       const ms = [...t.matchAll(re)];
-      if (!ms.length) { out.innerHTML = '<span class="cs-regex-match-count">No matches</span>'; return; }
+      if (!ms.length) { out.innerHTML = `<span class="cs-regex-match-count">${_t('No matches', 'Sem correspondências')}</span>`; return; }
       const tags = ms.slice(0,40).map(m => `<span class="cs-regex-match-tag">${esc(m[0]||'ε')}</span>`).join('');
-      const more = ms.length > 40 ? `<span class="cs-regex-match-tag" style="opacity:.5">+${ms.length-40} more</span>` : '';
-      out.innerHTML = `<span class="cs-regex-match-count">${ms.length} match${ms.length===1?'':'es'}</span><div class="cs-regex-match-list">${tags}${more}</div>`;
+      const more = ms.length > 40 ? `<span class="cs-regex-match-tag" style="opacity:.5">+${ms.length-40} ${_t('more','mais')}</span>` : '';
+      const lbl = _t(`${ms.length} match${ms.length===1?'':'es'}`, `${ms.length} correspondência${ms.length===1?'':'s'}`);
+      out.innerHTML = `<span class="cs-regex-match-count">${lbl}</span><div class="cs-regex-match-list">${tags}${more}</div>`;
     }
     container.querySelectorAll('.rx-flag-btn').forEach(b => b.addEventListener('click', () => { b.classList.toggle('on'); runTest(); }));
     pat.addEventListener('input', runTest);
@@ -1362,7 +1366,7 @@ const CheatsheetsPage = (function () {
       <div class="cs-layout">
         <div class="cs-sidebar">
           <div class="cs-search-wrap">
-            <input type="search" class="cs-search" id="cs-search" placeholder="Filter commands…" autocomplete="off"/>
+            <input type="search" class="cs-search" id="cs-search" placeholder="${_t('Filter commands…', 'Filtrar comandos…')}" autocomplete="off"/>
           </div>
           <div class="cs-cat-list">
             ${Object.entries(DATA).map(([id, s]) => `
@@ -1401,6 +1405,11 @@ const CheatsheetsPage = (function () {
   function show() {
     if (!_rendered) render();
   }
+
+  /* Re-render chrome in the new language if the sheet is already on screen. */
+  document.addEventListener('langchange', () => {
+    if (_rendered && document.getElementById('view-cheatsheets')?.classList.contains('active')) render();
+  });
 
   return { show };
 })();
