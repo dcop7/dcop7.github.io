@@ -1475,7 +1475,7 @@
   gap: .5rem;
   font-size: .92rem;
   font-weight: 700;
-  color: var(--fg);
+  color: var(--text);
   margin-bottom: .65rem;
 }
 
@@ -1491,12 +1491,12 @@
 
 .pt-search-input {
   flex: 1;
-  background: var(--bg3);
+  background: var(--card2);
   border: 1px solid var(--border2);
   border-radius: var(--radius-sm);
   padding: .38rem .65rem;
   font-size: .78rem;
-  color: var(--fg);
+  color: var(--text);
   font-family: var(--font-sans);
   outline: none;
   transition: border-color var(--ease);
@@ -1545,7 +1545,7 @@
 }
 
 .pt-district-chip:hover {
-  background: var(--bg3);
+  background: var(--card2);
 }
 
 .pt-district-chip.active {
@@ -1562,7 +1562,7 @@
   flex: 1;
   font-size: .82rem;
   font-weight: 600;
-  color: var(--fg);
+  color: var(--text);
 }
 
 .pt-dc-region {
@@ -1604,7 +1604,7 @@
   right: 0;
   bottom: 0;
   width: 320px;
-  background: var(--bg1);
+  background: var(--card-solid);
   border-left: 1px solid var(--border2);
   transform: translateX(100%);
   transition: transform .32s cubic-bezier(.4,0,.2,1);
@@ -1625,7 +1625,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--bg3);
+  background: var(--card2);
   border: 1px solid var(--border2);
   color: var(--muted);
   font-size: .78rem;
@@ -1649,7 +1649,7 @@
 
 .pt-info-hero {
   padding: 1.4rem 1.1rem 1rem;
-  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+  background: linear-gradient(135deg, var(--bg2) 0%, var(--card2) 100%);
   border-bottom: 1px solid var(--border2);
 }
 
@@ -1662,8 +1662,8 @@
 .pt-info-name {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--fg);
-  font-family: var(--font-display);
+  color: var(--text);
+  font-family: var(--font-head);
 }
 
 .pt-info-tagline {
@@ -1698,7 +1698,7 @@
 .pt-stat-val {
   font-size: .88rem;
   font-weight: 700;
-  color: var(--fg);
+  color: var(--text);
 }
 
 .pt-info-row {
@@ -1716,7 +1716,7 @@
 }
 
 .pt-info-row-val {
-  color: var(--fg);
+  color: var(--text);
   font-weight: 500;
 }
 
@@ -1743,7 +1743,7 @@
 .pt-tag {
   background: var(--accent-soft);
   border: 1px solid rgba(var(--accent-rgb), .2);
-  color: var(--fg);
+  color: var(--text);
   font-size: .74rem;
   padding: .22rem .6rem;
   border-radius: 99px;
@@ -1751,7 +1751,7 @@
 
 .pt-history-text {
   font-size: .8rem;
-  color: var(--fg);
+  color: var(--text);
   line-height: 1.6;
   opacity: .9;
 }
@@ -1760,7 +1760,7 @@
   display: flex;
   gap: .5rem;
   font-size: .79rem;
-  color: var(--fg);
+  color: var(--text);
   line-height: 1.4;
   padding: .3rem 0;
 }
@@ -1772,13 +1772,13 @@
 
 /* Map marker popups */
 .pt-marker-tooltip {
-  background: var(--bg1);
+  background: var(--card-solid);
   border: 1px solid var(--border2);
   border-radius: var(--radius-sm);
   padding: .4rem .7rem;
   font-size: .78rem;
   font-family: var(--font-sans);
-  color: var(--fg);
+  color: var(--text);
   box-shadow: var(--shadow-md);
 }
 

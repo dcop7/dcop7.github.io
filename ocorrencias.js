@@ -98,6 +98,15 @@ const OcorrenciasPage = (function () {
   let _detailInc         = null;
 
   /* ── Session cache ── */
+  function _cacheTimeStr(key) {
+    try {
+      const raw = sessionStorage.getItem(key);
+      if (!raw) return null;
+      const { ts } = JSON.parse(raw);
+      if (!ts) return null;
+      return new Date(ts).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    } catch { return null; }
+  }
   function _fromCache(key) {
     try {
       const raw = sessionStorage.getItem(key);
@@ -219,7 +228,7 @@ const OcorrenciasPage = (function () {
 
   async function _fetchEarthquakes() {
     const cached = _fromCache(CACHE.eq);
-    if (cached) { _prov.eq.ok = true; return cached; }
+    if (cached) { _prov.eq = { ok: true, time: _cacheTimeStr(CACHE.eq) || _nowTime() }; return cached; }
     try {
       const r = await _fetch(USGS_URL);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -257,7 +266,7 @@ const OcorrenciasPage = (function () {
 
   async function _fetchWildfires() {
     const cached = _fromCache(CACHE.fire);
-    if (cached) { _prov.fire.ok = true; return cached; }
+    if (cached) { _prov.fire = { ok: true, time: _cacheTimeStr(CACHE.fire) || _nowTime() }; return cached; }
     try {
       const r = await _fetch(FOGOS_URL);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -297,7 +306,7 @@ const OcorrenciasPage = (function () {
 
   async function _fetchWarnings() {
     const cached = _fromCache(CACHE.warn);
-    if (cached) { _prov.warn.ok = true; return cached; }
+    if (cached) { _prov.warn = { ok: true, time: _cacheTimeStr(CACHE.warn) || _nowTime() }; return cached; }
     try {
       const r = await _fetch(IPMA_URL);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -612,7 +621,7 @@ const OcorrenciasPage = (function () {
       const p   = PROVIDERS[key];
       const s   = _prov[key];
       const cls = s.ok === null ? 'loading' : s.ok ? 'ok' : 'err';
-      const tim = s.ok === null ? 'A carregar…' : s.ok ? `Atualizado às ${s.time}` : 'Falha na ligação';
+      const tim = s.ok === null ? 'A carregar…' : s.ok ? `Atualizado às ${s.time || '—'}` : 'Falha na ligação';
       return `<div class="oc-provider-card ${cls}">
         <div class="oc-provider-header">
           <span class="oc-provider-dot ${cls}"></span>
@@ -862,6 +871,22 @@ const OcorrenciasPage = (function () {
     };
   }
 
+  /* ════════════════════════════════ AUTO-REFRESH ════════════════════ */
+
+  let _autoTimer = null;
+  function _startAutoRefresh() {
+    if (_autoTimer) return;
+    /* Re-fetch every TTL so the panel stays current; the TTL-aware cache
+       prevents unnecessary network calls if the user is jumping back and forth. */
+    _autoTimer = setInterval(() => {
+      const view = document.getElementById('view-ocorrencias');
+      if (!view?.classList.contains('active')) return;
+      /* Invalidate caches so we get fresh data on this tick. */
+      Object.values(CACHE).forEach(k => sessionStorage.removeItem(k));
+      _load();
+    }, TTL);
+  }
+
   /* ════════════════════════════════ PUBLIC ══════════════════════════ */
 
   async function show() {
@@ -876,6 +901,7 @@ const OcorrenciasPage = (function () {
       _wireFilters();
       _inited = true;
       _load();
+      _startAutoRefresh();
     } else {
       _map?.invalidateSize();
     }

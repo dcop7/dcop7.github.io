@@ -115,14 +115,17 @@ const ParallaxSystem = (function () {
       canvas.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px)`;
     }
 
-    /* Layer 2 – content (very subtle, skip in perf mode) */
+    /* Layer 2 – content (very subtle, skip in perf mode).
+       Snap to integer pixels: sub-pixel transforms on a will-change layer
+       cause text rendering to soften on most displays. The motion is only
+       ±3px max, so rounding preserves the effect while keeping text crisp. */
     if (!perf) {
       const active = document.querySelector('.view.active');
       const inner  = active?.querySelector('.view-inner, .qp-page');
       if (inner) {
-        const dx = -_cx * 3 * intensity;
-        const dy = -_cy * 2 * intensity;
-        inner.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px)`;
+        const dx = Math.round(-_cx * 3 * intensity);
+        const dy = Math.round(-_cy * 2 * intensity);
+        inner.style.transform = `translate(${dx}px, ${dy}px)`;
         inner.style.willChange = 'transform';
       }
     }

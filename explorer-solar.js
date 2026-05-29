@@ -310,9 +310,9 @@ const SolarExplorer = (function () {
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
     _scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, sizeAttenuation: true })));
 
-    /* Lighting */
-    _scene.add(new THREE.AmbientLight(0x111122, 0.8));
-    const sunLight = new THREE.PointLight(0xfff5e0, 3, 0, 1);
+    /* Lighting — neutral mid-ambient + non-decaying point sun so outer planets stay legible */
+    _scene.add(new THREE.AmbientLight(0x404050, 1.4));
+    const sunLight = new THREE.PointLight(0xfff5e0, 4.5, 0, 0);
     sunLight.position.set(0, 0, 0);
     _scene.add(sunLight);
 
@@ -347,7 +347,9 @@ const SolarExplorer = (function () {
     const loader = new THREE.TextureLoader();
     _planetMeshes = PLANETS.map(p => {
       const geo = new THREE.SphereGeometry(p.displayR, 32, 32);
-      const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: new THREE.Color(0, 0, 0), shininess: 15 });
+      /* Baseline emissive in the planet's own colour keeps it visible even on the dark side. */
+      const baseEmissive = new THREE.Color(p.color).multiplyScalar(0.18);
+      const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: baseEmissive, shininess: 15 });
       loader.load(
         TEX_BASE + p.textureFile,
         tex => { mat.map = tex; mat.needsUpdate = true; },
@@ -539,7 +541,7 @@ const SolarExplorer = (function () {
       /* Apply/remove emissive glow */
       if (prevHov !== _hovered) {
         _planetMeshes.forEach((m, i) => {
-          m.material.emissive?.set(_hovered === i ? new THREE.Color(PLANETS[i].color).multiplyScalar(0.35) : new THREE.Color(0, 0, 0));
+          m.material.emissive?.set(new THREE.Color(PLANETS[i].color).multiplyScalar(_hovered === i ? 0.45 : 0.18));
         });
         if (_sunMesh) _sunMesh.material.color?.set(_hovered === 'sun' ? 0xffee44 : 0xffd700);
       }
