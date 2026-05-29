@@ -251,11 +251,24 @@
   background: rgba(56,189,248,.1);
   border-color: rgba(56,189,248,.3);
 }
-.oc-layer-btn[data-layer="wildfire"].active {
+.oc-layer-btn[data-layer="wildfire"].active,
+.oc-layer-btn[data-layer="fire"].active {
   color: #ef4444;
   background: rgba(239,68,68,.1);
   border-color: rgba(239,68,68,.3);
 }
+
+/* Small colored dot inside layer buttons */
+.oc-layer-btn-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.oc-layer-btn-dot.eq   { background: #f97316; box-shadow: 0 0 4px rgba(249,115,22,.6); }
+.oc-layer-btn-dot.fire { background: #ef4444; box-shadow: 0 0 4px rgba(239,68,68,.6); }
+.oc-layer-btn-dot.wx   { background: #38bdf8; box-shadow: 0 0 4px rgba(56,189,248,.5); }
+
 .oc-layer-btn-icon { font-size: .85rem; }
 
 /* Map legend */
@@ -290,6 +303,40 @@
 .oc-legend-dot.fire { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.5); }
 .oc-legend-dot.eq   { background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,.5); }
 .oc-legend-dot.wx   { background: #38bdf8; box-shadow: 0 0 6px rgba(56,189,248,.4); }
+
+.oc-legend-title {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  margin-bottom: .3rem;
+}
+.oc-legend-section {
+  padding-top: .3rem;
+  margin-top: .25rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+.oc-legend-section:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.oc-legend-label {
+  font-size: .6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin-bottom: .1rem;
+}
+.oc-legend-tri {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid #eab308;
+  flex-shrink: 0;
+}
 
 /* ── EARTHQUAKE POPUP ── */
 .oc-eq-popup .leaflet-popup-content-wrapper {
@@ -494,6 +541,39 @@
 .oc-stat-delta.up   { color: #ef4444; }
 .oc-stat-delta.down { color: #22c55e; }
 .oc-stat-delta.same { color: var(--muted); }
+
+/* ── PROVIDERS ── */
+.oc-providers-section {
+  padding: .65rem .9rem .55rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.oc-providers-label {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  margin-bottom: .5rem;
+}
+.oc-providers { display: flex; flex-direction: column; gap: .3rem; }
+.oc-provider-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .68rem;
+}
+.oc-provider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.oc-provider-dot.ok      { background: var(--green); box-shadow: 0 0 5px var(--green); }
+.oc-provider-dot.err     { background: var(--red);   animation: none; }
+.oc-provider-dot.loading { background: var(--amber); animation: pulse-soft 1.5s ease infinite; }
+.oc-provider-name { color: var(--text2); flex: 1; }
+.oc-provider-time { color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
 /* ── INCIDENTS LIST ── */
 .oc-incidents-section {
