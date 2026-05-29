@@ -337,6 +337,14 @@
   border-bottom: 10px solid #eab308;
   flex-shrink: 0;
 }
+/* Filled square for polygon-based warning legend entries */
+.oc-legend-fill {
+  width: 12px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
 
 /* ── EARTHQUAKE POPUP ── */
 .oc-eq-popup .leaflet-popup-content-wrapper {
@@ -556,12 +564,25 @@
   color: var(--muted);
   margin-bottom: .5rem;
 }
-.oc-providers { display: flex; flex-direction: column; gap: .3rem; }
-.oc-provider-item {
+.oc-providers { display: flex; flex-direction: column; gap: .45rem; }
+
+/* ── Provider card (rich transparency panel) ── */
+.oc-provider-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color .18s;
+}
+.oc-provider-card.ok      { border-left: 2px solid var(--green); }
+.oc-provider-card.err     { border-left: 2px solid var(--red); }
+.oc-provider-card.loading { border-left: 2px solid var(--amber); }
+
+.oc-provider-header {
   display: flex;
   align-items: center;
-  gap: .5rem;
-  font-size: .68rem;
+  gap: .42rem;
+  padding: .42rem .6rem .28rem;
 }
 .oc-provider-dot {
   width: 6px;
@@ -570,9 +591,75 @@
   flex-shrink: 0;
 }
 .oc-provider-dot.ok      { background: var(--green); box-shadow: 0 0 5px var(--green); }
-.oc-provider-dot.err     { background: var(--red);   animation: none; }
+.oc-provider-dot.err     { background: var(--red); }
 .oc-provider-dot.loading { background: var(--amber); animation: pulse-soft 1.5s ease infinite; }
-.oc-provider-name { color: var(--text2); flex: 1; }
+
+.oc-provider-name {
+  color: var(--text2);
+  font-size: .7rem;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oc-provider-badge {
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: .1rem .38rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.oc-provider-badge.official {
+  background: rgba(34,197,94,.1);
+  border: 1px solid rgba(34,197,94,.25);
+  color: #22c55e;
+}
+.oc-provider-badge.civic {
+  background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.25);
+  color: #f59e0b;
+}
+
+.oc-provider-meta {
+  padding: 0 .6rem .42rem;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+.oc-provider-row {
+  font-size: .65rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.oc-provider-label {
+  color: rgba(255,255,255,.3);
+  font-weight: 600;
+  margin-right: .2rem;
+}
+.oc-provider-status { color: var(--text2); font-variant-numeric: tabular-nums; }
+.oc-provider-note {
+  margin-top: .2rem;
+  padding: .32rem .45rem;
+  background: rgba(245,158,11,.06);
+  border: 1px solid rgba(245,158,11,.15);
+  border-radius: 3px;
+  font-size: .62rem;
+  color: rgba(245,158,11,.8);
+  line-height: 1.45;
+  font-style: italic;
+}
+
+/* Legacy oc-provider-item kept for backwards compat */
+.oc-provider-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .68rem;
+}
 .oc-provider-time { color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
 /* ── INCIDENTS LIST ── */
@@ -1155,6 +1242,28 @@
 .oc-detail-status {
   color: #22c55e;
   font-weight: 600;
+}
+.oc-detail-status-badge {
+  display: inline-block;
+  margin-top: .22rem;
+  padding: .12rem .5rem;
+  border-radius: 999px;
+  background: rgba(34,197,94,.1);
+  border: 1px solid rgba(34,197,94,.25);
+  color: #22c55e;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.oc-detail-warn-level {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: .15rem;
+}
+.oc-geo-loading {
+  opacity: .7;
 }
 .oc-detail-source {
   font-size: .65rem;

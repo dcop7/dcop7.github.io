@@ -6,32 +6,98 @@ const OcorrenciasPage = (function () {
   'use strict';
 
   /* ── API endpoints ── */
-  const USGS_URL  = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=39.5&longitude=-8&maxradiuskm=1200&minmagnitude=1.0&limit=50&orderby=time';
+  /* USGS real-time feed — filtered client-side to Portugal/Atlantic bbox */
+  const USGS_URL  = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson';
   const FOGOS_URL = 'https://api.fogos.pt/v2/incidents/active';
   const IPMA_URL  = 'https://api.ipma.pt/open-data/forecast/warnings/warnings_www.json';
   const TTL       = 10 * 60 * 1000;
   const CACHE     = { eq: 'oc3-eq', fire: 'oc3-fire', warn: 'oc3-warn' };
 
-  /* ── Provider status ── */
+  /* Portugal + Atlantic seismic zones bounding box (covers mainland, Azores, Madeira) */
+  const PT_BBOX = { minLat: 30, maxLat: 43, minLon: -31, maxLon: -6 };
+
+  /* IPMA official area codes → district name (18 mainland + island groups) */
+  const IPMA_AREA_TO_DISTRICT = {
+    AVR: 'Aveiro',           BJA: 'Beja',             BRG: 'Braga',
+    BGC: 'Bragança',         CBO: 'Castelo Branco',   CBR: 'Coimbra',
+    EVR: 'Évora',            FAR: 'Faro',             GDA: 'Guarda',
+    LRA: 'Leiria',           LSB: 'Lisboa',           PTO: 'Porto',
+    PTG: 'Portalegre',       STB: 'Setúbal',          STM: 'Santarém',
+    VCT: 'Viana do Castelo', VIS: 'Viseu',            VRL: 'Vila Real',
+    MCN: 'Madeira',          MCS: 'Madeira',          MRM: 'Madeira',  MPS: 'Madeira',
+    ACE: 'Açores',           AOC: 'Açores',           AOR: 'Açores',
+  };
+
+  /* Severity ordering and fill colours for warning polygon fills */
+  const WARN_SEV = { red: 4, vermelho: 4, orange: 3, laranja: 3, yellow: 2, amarelo: 2 };
+  const WARN_CLR = { red: '#ef4444', vermelho: '#ef4444', orange: '#f97316', laranja: '#f97316', yellow: '#eab308', amarelo: '#eab308' };
+
+  /* Provider metadata for transparency panel */
+  const PROVIDERS = {
+    eq: {
+      name: 'USGS Earthquake Hazards',
+      icon: '🔴',
+      official: true,
+      freq: 'Tempo real (5 min)',
+      scope: 'Sismos M≥1.0 — últimos 7 dias, Portugal e Atlântico',
+      note: null,
+    },
+    fire: {
+      name: 'fogos.pt',
+      icon: '🔥',
+      official: false,
+      freq: 'Tempo real (sistema SADO da ANEPC)',
+      scope: 'Portugal continental — ocorrências ativas de proteção civil',
+      note: 'Projeto cívico de código aberto. Agrega dados do sistema SADO da ANEPC — não é uma fonte governamental direta.',
+    },
+    warn: {
+      name: 'IPMA',
+      icon: '⚠',
+      official: true,
+      freq: 'Contínua (avisos emitidos e retirados em tempo real)',
+      scope: 'Portugal — avisos por distrito (18 continentais + ilhas)',
+      note: null,
+    },
+  };
+
+  /* Approximate district centroids for flyTo when clicking a warning in the list */
+  const DISTRICT_CENTROIDS = {
+    'Aveiro':           [40.64, -8.65],  'Beja':             [37.96, -7.87],
+    'Braga':            [41.55, -8.42],  'Bragança':         [40.67, -7.50],
+    'Castelo Branco':   [39.83, -7.49],  'Coimbra':          [40.21, -8.43],
+    'Évora':            [38.57, -7.91],  'Faro':             [37.01, -7.93],
+    'Guarda':           [40.53, -7.27],  'Leiria':           [39.74, -8.81],
+    'Lisboa':           [38.72, -9.14],  'Porto':            [41.16, -8.62],
+    'Portalegre':       [39.30, -8.57],  'Setúbal':          [38.52, -8.89],
+    'Santarém':         [39.23, -8.69],  'Viana do Castelo': [41.69, -8.83],
+    'Viseu':            [40.66, -7.91],  'Vila Real':        [41.30, -7.74],
+    'Madeira':          [32.75, -17.00], 'Açores':           [37.74, -25.67],
+  };
+
+  /* ── Provider fetch status ── */
   const _prov = {
     eq:   { ok: null, time: null },
     fire: { ok: null, time: null },
     warn: { ok: null, time: null },
   };
 
-  /* ── State ── */
-  let _map          = null;
-  let _inited       = false;
-  let _layers       = { earthquake: true, fire: true, weather: true };
-  let _incidents    = [];
-  let _activeFilter = 'all';
-  let _lEq = null, _lFire = null, _lWarn = null;
-  let _tileLayer    = null;
-  let _themeObs     = null;
-  let _refreshing   = false;
-  let _detailInc    = null;   /* currently open in detail panel */
+  /* ── Module state ── */
+  let _map               = null;
+  let _inited            = false;
+  let _layers            = { earthquake: true, fire: true, weather: true };
+  let _incidents         = [];
+  let _activeFilter      = 'all';
+  let _lEq               = null;
+  let _lFire             = null;
+  let _districtGeoData   = null;
+  let _districtBorderLayer = null;
+  let _warnFillLayer     = null;
+  let _tileLayer         = null;
+  let _themeObs          = null;
+  let _refreshing        = false;
+  let _detailInc         = null;
 
-  /* ── Cache ── */
+  /* ── Session cache ── */
   function _fromCache(key) {
     try {
       const raw = sessionStorage.getItem(key);
@@ -45,7 +111,7 @@ const OcorrenciasPage = (function () {
     try { sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
   }
 
-  /* ── Fetch with timeout ── */
+  /* ── Fetch with abort timeout ── */
   function _fetch(url, ms = 12000) {
     const ctrl = new AbortController();
     const tid  = setTimeout(() => ctrl.abort(), ms);
@@ -74,7 +140,6 @@ const OcorrenciasPage = (function () {
   /* ── Theme helpers ── */
   function _isDark() { return !document.body.classList.contains('light'); }
   function _tileUrl() {
-    /* dark_matter gives visible contrast without being so dark incidents are lost */
     return _isDark()
       ? 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
@@ -88,37 +153,42 @@ const OcorrenciasPage = (function () {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
         subdomains: 'abcd',
       }).addTo(_map);
+      _renderDistrictBorders();
     });
     _themeObs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   }
 
-  /* ── Portugal district boundary overlay ── */
+  /* ── District boundary GeoJSON (click_that_hood, 18 mainland districts) ── */
   const PT_DISTRICTS_GEO = 'https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/portugal.geojson';
-  let _districtLayer = null;
 
-  async function _loadDistrictBoundaries() {
-    if (_districtLayer || !_map) return;
+  async function _loadDistrictGeoData() {
+    if (_districtGeoData || !_map) return;
     try {
       const ctrl = new AbortController();
       setTimeout(() => ctrl.abort(), 15000);
       const r = await fetch(PT_DISTRICTS_GEO, { signal: ctrl.signal });
       if (!r.ok) return;
-      const gj = await r.json();
-      _districtLayer = L.geoJSON(gj, {
-        style: () => ({
-          fillColor: 'transparent',
-          color: _isDark() ? 'rgba(180,200,255,.35)' : 'rgba(60,80,140,.3)',
-          weight: 1.2,
-          fillOpacity: 0,
-          interactive: false,
-        }),
+      _districtGeoData = await r.json();
+      _renderDistrictBorders();
+    } catch (e) { /* silently skip — map still functional without boundary overlay */ }
+  }
+
+  function _renderDistrictBorders() {
+    if (!_map || !_districtGeoData) return;
+    if (_districtBorderLayer) { _districtBorderLayer.remove(); _districtBorderLayer = null; }
+    _districtBorderLayer = L.geoJSON(_districtGeoData, {
+      style: () => ({
+        fillColor:   'transparent',
+        color:       _isDark() ? 'rgba(180,200,255,.35)' : 'rgba(60,80,140,.3)',
+        weight:      1.2,
+        fillOpacity: 0,
         interactive: false,
-      }).addTo(_map);
-      /* Keep incident markers on top */
-      _lEq?.bringToFront();
-      _lFire?.bringToFront();
-      _lWarn?.bringToFront();
-    } catch (e) { /* Silently skip — map is still functional */ }
+      }),
+      interactive: false,
+    }).addTo(_map);
+    _lEq?.bringToFront();
+    _lFire?.bringToFront();
+    _warnFillLayer?.bringToFront();
   }
 
   /* ── Nominatim reverse geocoding ── */
@@ -145,7 +215,7 @@ const OcorrenciasPage = (function () {
     } catch (e) { return null; }
   }
 
-  /* ════════════════════════════════ PROVIDERS ══════════════════════ */
+  /* ════════════════════════════════ DATA PROVIDERS ═════════════════ */
 
   async function _fetchEarthquakes() {
     const cached = _fromCache(CACHE.eq);
@@ -154,19 +224,28 @@ const OcorrenciasPage = (function () {
       const r = await _fetch(USGS_URL);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const json = await r.json();
-      const data = (json.features || []).map(f => ({
-        type:     'earthquake',
-        id:       `eq-${f.id}`,
-        mag:      parseFloat(f.properties.mag  || 0),
-        magType:  f.properties.magType || 'M',
-        lat:      f.geometry.coordinates[1],
-        lon:      f.geometry.coordinates[0],
-        depth:    Math.round(f.geometry.coordinates[2] || 0),
-        time:     new Date(f.properties.time).toISOString(),
-        title:    f.properties.place || 'Sismo',
-        district: f.properties.place || '—',
-        url:      f.properties.url   || '',
-      })).filter(e => !isNaN(e.lat) && !isNaN(e.lon));
+      const data = (json.features || [])
+        .filter(f => {
+          const lat = f.geometry?.coordinates?.[1];
+          const lon = f.geometry?.coordinates?.[0];
+          return lat != null && lon != null &&
+            lat >= PT_BBOX.minLat && lat <= PT_BBOX.maxLat &&
+            lon >= PT_BBOX.minLon && lon <= PT_BBOX.maxLon;
+        })
+        .map(f => ({
+          type:     'earthquake',
+          id:       `eq-${f.id}`,
+          mag:      parseFloat(f.properties.mag || 0),
+          magType:  f.properties.magType || 'M',
+          lat:      f.geometry.coordinates[1],
+          lon:      f.geometry.coordinates[0],
+          depth:    Math.round(f.geometry.coordinates[2] || 0),
+          time:     new Date(f.properties.time).toISOString(),
+          title:    f.properties.place || 'Sismo',
+          district: f.properties.place || '—',
+          url:      f.properties.url   || '',
+        }))
+        .filter(e => !isNaN(e.lat) && !isNaN(e.lon));
       _toCache(CACHE.eq, data);
       _prov.eq = { ok: true, time: _nowTime() };
       return data;
@@ -188,22 +267,23 @@ const OcorrenciasPage = (function () {
         const lat = parseFloat(ev.lat);
         const lon = parseFloat(ev.lon);
         if (isNaN(lat) || isNaN(lon)) return null;
+        /* fogos.pt API uses man/terrain/aerial; fall back to legacy field names */
         return {
-          type:          'fire',
-          id:            `fire-${ev.id || Math.random()}`,
+          type:         'fire',
+          id:           `fire-${ev.id || Math.random()}`,
           lat, lon,
-          title:         ev.natureza || ev.tipo || 'Incêndio',
-          municipio:     ev.municipio || null,
-          freguesia:     ev.freguesia || null,
-          status:        ev.status || null,
-          operacionais:  ev.operacionais != null ? +ev.operacionais : null,
-          veiculos:      ev.veiculos    != null ? +ev.veiculos    : null,
-          aereos:        ev.aereos      != null ? +ev.aereos      : null,
-          area:          ev.area        != null ? +ev.area        : null,
-          time:          ev.criacao     || null,
-          lastUpdate:    ev.atualizacao || null,
-          district:      ev.municipio   || ev.freguesia || '—',
-          source:        'fogos.pt',
+          title:        ev.natureza  || ev.tipo || 'Incêndio',
+          municipio:    ev.concelho  || ev.municipio  || null,
+          freguesia:    ev.freguesia || null,
+          status:       ev.status    || null,
+          operacionais: ev.man     != null ? +ev.man     : ev.operacionais != null ? +ev.operacionais : null,
+          veiculos:     ev.terrain != null ? +ev.terrain : ev.veiculos     != null ? +ev.veiculos     : null,
+          aereos:       ev.aerial  != null ? +ev.aerial  : ev.aereos       != null ? +ev.aereos       : null,
+          area:         ev.area    != null ? +ev.area    : null,
+          time:         ev.criacao     || null,
+          lastUpdate:   ev.atualizacao || null,
+          district:     ev.district || ev.concelho || ev.municipio || ev.freguesia || '—',
+          source:       'fogos.pt',
         };
       }).filter(Boolean);
       _toCache(CACHE.fire, data);
@@ -231,21 +311,24 @@ const OcorrenciasPage = (function () {
           return end > now && lvl !== 'green' && lvl !== 'verde';
         })
         .map(w => {
-          const areaId = w.idAreaAviso ?? w.area?.id ?? w.district?.id;
+          const areaCode     = w.idAreaAviso ?? w.area?.id ?? null;
+          const districtName = IPMA_AREA_TO_DISTRICT[areaCode] || w.area?.name || w.district?.name || w.local || '—';
+          const centroid     = DISTRICT_CENTROIDS[districtName];
+          const level        = (w.awarenessLevel || w.level || 'yellow').toLowerCase();
           return {
             type:     'weather',
-            id:       `wx-${w.idAreaAviso || w.warningId || Math.random()}`,
-            title:    `${w.awarenessTypeName || w.awarenessType || 'Aviso'} — ${w.area?.name || w.district?.name || w.local || '—'}`,
-            level:    (w.awarenessLevel || w.level || 'yellow').toLowerCase(),
+            id:       `wx-${areaCode || w.warningId || Math.random()}`,
+            title:    `${w.awarenessTypeName || w.awarenessType || 'Aviso'} — ${districtName}`,
+            level,
             warnType: w.awarenessTypeName || w.awarenessType || '',
-            district: w.area?.name || w.district?.name || w.local || '—',
+            areaCode,
+            district: districtName,
             time:     w.startTime || '',
             endTime:  w.endTime   || '',
-            lat:      _districtLat(areaId),
-            lon:      _districtLon(areaId),
+            lat:      centroid?.[0] ?? null,
+            lon:      centroid?.[1] ?? null,
           };
-        })
-        .filter(w => w.lat);
+        });
       _toCache(CACHE.warn, data);
       _prov.warn = { ok: true, time: _nowTime() };
       return data;
@@ -254,23 +337,6 @@ const OcorrenciasPage = (function () {
       return _fromCache(CACHE.warn) || [];
     }
   }
-
-  /* ── District centroids ── */
-  const DISTRICT_COORDS = {
-    AVR: [40.64, -8.65], BJA: [37.96, -7.87], BRG: [41.55, -8.42], BGC: [40.67, -7.50],
-    CBR: [40.21, -8.43], CTB: [39.83, -7.49], FAR: [37.01, -7.93], GRD: [40.53, -7.27],
-    LEI: [39.74, -8.81], LIS: [38.72, -9.14], PTM: [39.30, -8.57], PRT: [41.16, -8.62],
-    STB: [38.52, -8.89], STM: [39.23, -8.69], VST: [38.57, -7.91], VRL: [41.30, -7.74],
-    VIS: [40.66, -7.91], MAD: [32.75, -17.00], AZR: [37.74, -25.67],
-    '1': [38.72, -9.14],  '2': [38.52, -8.89],  '3': [40.21, -8.43],
-    '4': [41.55, -8.42],  '5': [41.30, -7.74],  '6': [39.83, -7.49],
-    '7': [37.96, -7.87],  '8': [37.01, -7.93],  '9': [39.74, -8.81],
-    '10': [41.16, -8.62], '11': [38.72, -9.14], '12': [39.30, -8.57],
-    '13': [41.55, -8.42], '14': [40.67, -7.50], '15': [40.53, -7.27],
-    '16': [40.66, -7.91], '17': [38.57, -7.91], '18': [40.64, -8.65],
-  };
-  function _districtLat(id) { return DISTRICT_COORDS[String(id)]?.[0] ?? null; }
-  function _districtLon(id) { return DISTRICT_COORDS[String(id)]?.[1] ?? null; }
 
   /* ════════════════════════════════ MAP ═════════════════════════════ */
 
@@ -290,9 +356,8 @@ const OcorrenciasPage = (function () {
 
     _lEq   = L.layerGroup().addTo(_map);
     _lFire = L.layerGroup().addTo(_map);
-    _lWarn = L.layerGroup().addTo(_map);
     _watchTheme();
-    _loadDistrictBoundaries();
+    _loadDistrictGeoData();
   }
 
   function _magClass(mag) {
@@ -337,35 +402,54 @@ const OcorrenciasPage = (function () {
     });
   }
 
-  function _renderWarnMarkers(warns) {
-    if (!_lWarn) return;
-    _lWarn.clearLayers();
-    if (!_layers.weather) return;
+  /* Warning areas rendered as district polygon fills, not point markers */
+  function _renderWarnPolygons(warns) {
+    if (_warnFillLayer) { _warnFillLayer.remove(); _warnFillLayer = null; }
+    if (!_layers.weather || !_districtGeoData || !_map) return;
+
+    /* Reduce to worst warning per district */
+    const districtWorst = {};
     warns.forEach(w => {
-      if (!w.lat || !w.lon) return;
-      const clrMap = { yellow: '#eab308', orange: '#f97316', red: '#ef4444', amarelo: '#eab308', laranja: '#f97316', vermelho: '#ef4444' };
-      const clr  = clrMap[w.level] || '#eab308';
-      const icon = L.divIcon({
-        className: '',
-        html: `<div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:16px solid ${clr};filter:drop-shadow(0 0 5px ${clr}88);cursor:pointer"></div>`,
-        iconSize: [18, 16], iconAnchor: [9, 16],
-      });
-      L.marker([w.lat, w.lon], { icon })
-        .on('click', () => _openDetail(w))
-        .addTo(_lWarn);
+      const name = w.district;
+      if (!name || name === '—') return;
+      const sev = WARN_SEV[w.level] || 0;
+      if (!districtWorst[name] || sev > districtWorst[name].sev) {
+        districtWorst[name] = { sev, warning: w };
+      }
     });
+
+    if (!Object.keys(districtWorst).length) return;
+
+    _warnFillLayer = L.geoJSON(_districtGeoData, {
+      filter: f => Boolean(districtWorst[f.properties?.name]),
+      style: f => {
+        const dw  = districtWorst[f.properties?.name];
+        const clr = dw ? (WARN_CLR[dw.warning.level] || '#eab308') : '#eab308';
+        return { fillColor: clr, fillOpacity: 0.35, color: clr, weight: 2 };
+      },
+      onEachFeature: (f, layer) => {
+        const dw = districtWorst[f.properties?.name];
+        if (dw) layer.on('click', () => _openDetail(dw.warning));
+      },
+    }).addTo(_map);
+
+    _lEq?.bringToFront();
+    _lFire?.bringToFront();
   }
 
   /* ════════════════════════════════ DETAIL PANEL ═══════════════════ */
 
   function _openDetail(inc) {
     _detailInc = inc;
-    _map?.flyTo([inc.lat, inc.lon], Math.max(_map.getZoom(), 9), { duration: 0.7 });
+    if (inc.lat != null && inc.lon != null) {
+      _map?.flyTo([inc.lat, inc.lon], Math.max(_map.getZoom(), 9), { duration: 0.7 });
+    }
     _renderDetail(inc, null);
-    /* Reverse-geocode and update panel with location context */
-    _reverseGeocode(inc.lat, inc.lon).then(geo => {
-      if (geo && _detailInc === inc) _renderDetail(inc, geo);
-    });
+    if (inc.lat != null && inc.lon != null) {
+      _reverseGeocode(inc.lat, inc.lon).then(geo => {
+        if (geo && _detailInc === inc) _renderDetail(inc, geo);
+      });
+    }
   }
 
   function _val(v, unit) {
@@ -426,7 +510,7 @@ const OcorrenciasPage = (function () {
         </div>
         <div class="oc-detail-rows">
           <div class="oc-detail-row"><span class="oc-detail-label">Natureza</span><span>${_val(inc.title)}</span></div>
-          ${_geoRows(geo || { district: inc.municipio || inc.district, municipality: inc.municipio, parish: inc.freguesia })}
+          ${_geoRows(geo || { district: inc.district, municipality: inc.municipio, parish: inc.freguesia })}
           <div class="oc-detail-row"><span class="oc-detail-label">Área ardida</span><span>${_val(inc.area != null ? inc.area.toFixed(2) : null, ' ha')}</span></div>
           ${hasResources ? `
           <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">👷 Operacionais</span><span>${_val(inc.operacionais)}</span></div>
@@ -437,7 +521,7 @@ const OcorrenciasPage = (function () {
           <div class="oc-detail-row"><span class="oc-detail-label">Última atualização</span><span>${_fmtTime(inc.lastUpdate)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">fogos.pt</span></div>
         </div>
-        <div class="oc-detail-notice">Dados em tempo real via API fogos.pt.</div>`;
+        <div class="oc-detail-notice">Dados via fogos.pt (integra sistema SADO da ANEPC).</div>`;
 
     } else if (inc.type === 'weather') {
       const clrMap = { yellow: '#eab308', orange: '#f97316', red: '#ef4444', amarelo: '#eab308', laranja: '#f97316', vermelho: '#ef4444' };
@@ -453,7 +537,6 @@ const OcorrenciasPage = (function () {
         <div class="oc-detail-rows">
           <div class="oc-detail-row"><span class="oc-detail-label">Tipo</span><span>${_val(inc.warnType)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">🗺 Distrito</span><span>${_val(inc.district)}</span></div>
-          ${_geoRows(geo)}
           <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fim previsto</span><span>${_fmtTime(inc.endTime)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">IPMA</span></div>
@@ -525,18 +608,23 @@ const OcorrenciasPage = (function () {
   function _renderProviders() {
     const el = document.querySelector('.oc-providers');
     if (!el) return;
-    el.innerHTML = [
-      { key: 'eq',   icon: '🔴', name: 'USGS — Sismos' },
-      { key: 'fire', icon: '🔥', name: 'fogos.pt — Incêndios' },
-      { key: 'warn', icon: '⚠',  name: 'IPMA — Avisos' },
-    ].map(p => {
-      const s   = _prov[p.key];
+    el.innerHTML = ['eq', 'fire', 'warn'].map(key => {
+      const p   = PROVIDERS[key];
+      const s   = _prov[key];
       const cls = s.ok === null ? 'loading' : s.ok ? 'ok' : 'err';
-      const lbl = s.ok === null ? '…' : s.ok ? `OK · ${s.time}` : 'Erro';
-      return `<div class="oc-provider-item">
-        <span class="oc-provider-dot ${cls}"></span>
-        <span class="oc-provider-name">${p.icon} ${p.name}</span>
-        <span class="oc-provider-time">${lbl}</span>
+      const tim = s.ok === null ? 'A carregar…' : s.ok ? `Atualizado às ${s.time}` : 'Falha na ligação';
+      return `<div class="oc-provider-card ${cls}">
+        <div class="oc-provider-header">
+          <span class="oc-provider-dot ${cls}"></span>
+          <span class="oc-provider-name">${p.icon} ${p.name}</span>
+          <span class="oc-provider-badge ${p.official ? 'official' : 'civic'}">${p.official ? 'Oficial' : 'Cívico'}</span>
+        </div>
+        <div class="oc-provider-meta">
+          <div class="oc-provider-row"><span class="oc-provider-label">Atualização:</span> ${p.freq}</div>
+          <div class="oc-provider-row"><span class="oc-provider-label">Âmbito:</span> ${p.scope}</div>
+          <div class="oc-provider-row oc-provider-status"><span class="oc-provider-label">Estado:</span> ${tim}</div>
+          ${p.note ? `<div class="oc-provider-note">${p.note}</div>` : ''}
+        </div>
       </div>`;
     }).join('');
   }
@@ -611,7 +699,7 @@ const OcorrenciasPage = (function () {
     if (dot) dot.className = 'oc-status-dot';
   }
 
-  /* ── Wire layer toggles ── */
+  /* ── Layer toggle buttons ── */
   function _wireLayerBar() {
     document.querySelectorAll('.oc-layer-btn').forEach(btn => {
       const layer = btn.dataset.layer;
@@ -619,9 +707,15 @@ const OcorrenciasPage = (function () {
       btn.addEventListener('click', () => {
         _layers[layer] = !_layers[layer];
         btn.classList.toggle('active', _layers[layer]);
-        const lg = { earthquake: _lEq, fire: _lFire, weather: _lWarn }[layer];
-        if (!lg || !_map) return;
-        if (_layers[layer]) lg.addTo(_map); else _map.removeLayer(lg);
+        if (layer === 'earthquake') {
+          if (_layers.earthquake) _lEq?.addTo(_map); else _lEq && _map?.removeLayer(_lEq);
+        } else if (layer === 'fire') {
+          if (_layers.fire) _lFire?.addTo(_map); else _lFire && _map?.removeLayer(_lFire);
+        } else if (layer === 'weather') {
+          if (_warnFillLayer) {
+            if (_layers.weather) _warnFillLayer.addTo(_map); else _map?.removeLayer(_warnFillLayer);
+          }
+        }
       });
     });
   }
@@ -658,7 +752,7 @@ const OcorrenciasPage = (function () {
 
     _renderEqMarkers(eqs);
     _renderFireMarkers(fires);
-    _renderWarnMarkers(warns);
+    _renderWarnPolygons(warns);
     _renderStats(eqs, fires, warns);
     _renderProviders();
     _renderList();
@@ -715,9 +809,9 @@ const OcorrenciasPage = (function () {
               <div class="oc-legend-section">
                 <div class="oc-legend-label">Outros</div>
                 <div class="oc-legend-row"><span style="font-size:11px;line-height:1">🔥</span>Incêndio ativo</div>
-                <div class="oc-legend-row"><div class="oc-legend-tri" style="border-bottom-color:#eab308"></div>Aviso amarelo</div>
-                <div class="oc-legend-row"><div class="oc-legend-tri" style="border-bottom-color:#f97316"></div>Aviso laranja</div>
-                <div class="oc-legend-row"><div class="oc-legend-tri" style="border-bottom-color:#ef4444"></div>Aviso vermelho</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#eab30855;border-color:#eab308"></div>Aviso amarelo</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#f9731655;border-color:#f97316"></div>Aviso laranja</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#ef444455;border-color:#ef4444"></div>Aviso vermelho</div>
               </div>
             </div>
 
