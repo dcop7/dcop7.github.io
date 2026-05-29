@@ -1,0 +1,586 @@
+/* ══════════════════════════════════════════════════════════════════
+   PORTUGAL EXPLORER — Interactive District & Municipality Guide
+══════════════════════════════════════════════════════════════════ */
+const PortugalExplorer = (function () {
+  'use strict';
+
+  /* ── District cultural data ── */
+  const DISTRICTS = [
+    {
+      id: 'aveiro', name: 'Aveiro',
+      region: 'Centro', nuts2: 'Centro',
+      pop: 714200, area: 2808, munic: 19,
+      capital: 'Aveiro', lat: 40.6405, lon: -8.6538,
+      emoji: '🌊', tagline: 'A Veneza Portuguesa',
+      color: '#3b82f6',
+      landmarks: ['Ria de Aveiro', 'Costa Nova (casas listradas)', 'Universidade de Aveiro', 'Museu de Aveiro (Santa Joana)', 'Praia de Mira'],
+      food: ['Ovos moles de Aveiro (IGP)', 'Enguias da Ria', 'Caldeirada de enguias', 'Saraiva', 'Tripas à moda de Aveiro'],
+      traditions: ['Moliceiros na Ria', 'Cortejo de São Gonçalinho', 'Carnaval de Ovar', 'Festival do Marisco de Mira'],
+      history: 'Aveiro ganhou o nome de "Veneza Portuguesa" pelos seus canais e embarcações tradicionais. Foi um dos maiores portos de pesca do bacalhau nos mares do Norte, e a Ria de Aveiro foi essencial para a produção de sal e o transporte de mercadorias. A chegada do caminho de ferro no século XIX impulsionou a industrialização da região.',
+      facts: ['A Ria de Aveiro tem 45 km de comprimento e até 11 km de largura', 'Os ovos moles são produzidos desde o século XVI por monjas do Convento de Jesus', 'Costa Nova foi construída por pescadores que decoraram as suas casas com listas coloridas'],
+    },
+    {
+      id: 'beja', name: 'Beja',
+      region: 'Alentejo', nuts2: 'Alentejo',
+      pop: 152800, area: 10225, munic: 14,
+      capital: 'Beja', lat: 38.0153, lon: -7.8630,
+      emoji: '🌾', tagline: 'O Celeiro do Alentejo',
+      color: '#f59e0b',
+      landmarks: ['Castelo de Beja', 'Museu Regional de Beja', 'Castro Verde', 'Mértola (vila museu)', 'Barragem do Alqueva'],
+      food: ['Ensopado de borrego', 'Migas alentejanas', 'Carne de porco à alentejana', 'Queijo de ovelha', 'Carolo'],
+      traditions: ['Festa da Espiga', 'Cante Alentejano (UNESCO)', 'Festas de Santo António em Serpa'],
+      history: 'Beja tem mais de 2500 anos de história. Fora capital da Lusitânia na época romana sob o nome de Pax Julia. A cidade foi reconquistada aos mouros em 1162 por Afonso Henriques. O Alentejo foi durante séculos o "celeiro" de Portugal, produzindo a maior parte dos cereais do país.',
+      facts: ['Mértola é conhecida como a "Vila Museu" por ter o maior número de museus per capita de Portugal', 'O Alqueva é o maior lago artificial da Europa Ocidental', 'O cante alentejano é Património Imaterial da Humanidade pela UNESCO desde 2014'],
+    },
+    {
+      id: 'braga', name: 'Braga',
+      region: 'Minho', nuts2: 'Norte',
+      pop: 848200, area: 2673, munic: 14,
+      capital: 'Braga', lat: 41.5454, lon: -8.4265,
+      emoji: '⛪', tagline: 'A Cidade dos Arcebispos',
+      color: '#8b5cf6',
+      landmarks: ['Bom Jesus do Monte', 'Sé de Braga', 'Santuário do Sameiro', 'Braga Romana', 'Parque Nacional Peneda-Gerês'],
+      food: ['Rojões à minhota', 'Bacalhau à Braga', 'Papas de sarrabulho', 'Vinho verde', 'Torta de Viana'],
+      traditions: ['Semana Santa de Braga (a mais antiga de Portugal)', 'Festas de São João', 'Viagem Medieval de Barcelos'],
+      history: 'Braga é uma das cidades mais antigas da Península Ibérica. Fundada pelos romanos como Bracara Augusta no século I a.C., foi capital da Gallaecia. Foi um dos principais centros do Cristianismo na Península. Os seus arcebispos tiveram enorme influência política e religiosa ao longo da história portuguesa.',
+      facts: ['O Bom Jesus do Monte tem a mais antiga Via Sacra do mundo ainda em funcionamento', 'Braga tem a Semana Santa mais antiga de Portugal, com mais de 500 anos', 'É a terceira cidade mais populosa de Portugal'],
+    },
+    {
+      id: 'braganca', name: 'Bragança',
+      region: 'Trás-os-Montes', nuts2: 'Norte',
+      pop: 136000, area: 6608, munic: 12,
+      capital: 'Bragança', lat: 41.8061, lon: -6.7587,
+      emoji: '🏰', tagline: 'A Capital de Trás-os-Montes',
+      color: '#6b7280',
+      landmarks: ['Castelo de Bragança (Domus Municipalis)', 'Cidadela Medieval', 'Parque Natural de Montesinho', 'Museu do Abade de Baçal'],
+      food: ['Alheira de Mirandela (IGP)', 'Presunto de Vinhais (IGP)', 'Butelo e casulas', 'Posta mirandesa', 'Mel de Trás-os-Montes'],
+      traditions: ['Máscaras de Lazarim (Carnaval)', 'Festa de Santo António', 'Pauliteiros de Miranda'],
+      history: 'Bragança foi fundada no séc. XII e tornou-se capital do ducado de Bragança, cujos duques viriam a ser os últimos reis de Portugal. A Casa de Bragança reinou em Portugal de 1640 a 1910. O município preserva uma das cidadelas medievais melhor conservadas do país.',
+      facts: ['A Domus Municipalis de Bragança é o único edifício municipal românico civil da Península Ibérica', 'O Parque Natural de Montesinho tem mais de 600 espécies de fauna', 'A alheira foi inventada pelos Judeus portugueses para dissimular a sua identidade perante a Inquisição'],
+    },
+    {
+      id: 'castelo-branco', name: 'Castelo Branco',
+      region: 'Beira Interior', nuts2: 'Centro',
+      pop: 196000, area: 6675, munic: 11,
+      capital: 'Castelo Branco', lat: 39.8231, lon: -7.4972,
+      emoji: '🧵', tagline: 'Terra dos Colchas Bordadas',
+      color: '#10b981',
+      landmarks: ['Jardim do Paço Episcopal', 'Museu Francisco Tavares Proença Júnior', 'Monsanto (aldeia histórica)', 'Idanha-a-Velha (cidade romana)'],
+      food: ['Queijo da Serra da Estrela', 'Migas com entrecosto', 'Chanfana', 'Ensopado de borrego'],
+      traditions: ['Colchas bordadas de Castelo Branco', 'Festa dos Rapazes (Navidades no Nordeste)'],
+      history: 'Castelo Branco foi um importante posto militar na Idade Média, disputado entre Portugal e Castela. O Jardim do Paço, construído no século XVIII, é um dos jardins formais mais belos de Portugal. A região é conhecida pelos bordados de Castelo Branco, tradição de séculos.',
+      facts: ['Os bordados de Castelo Branco são uma das mais antigas tradições artesanais de Portugal', 'Monsanto foi eleita "a aldeia mais portuguesa de Portugal" em 1938', 'Idanha-a-Velha tem ruínas de uma cidade romana e visigótica'],
+    },
+    {
+      id: 'coimbra', name: 'Coimbra',
+      region: 'Beira Litoral', nuts2: 'Centro',
+      pop: 430000, area: 3947, munic: 17,
+      capital: 'Coimbra', lat: 40.2057, lon: -8.4194,
+      emoji: '🎓', tagline: 'A Cidade do Conhecimento',
+      color: '#dc2626',
+      landmarks: ['Universidade de Coimbra (UNESCO)', 'Biblioteca Joanina', 'Mosteiro de Santa Cruz', 'Portugal dos Pequenitos', 'Convento de Cristo (Tomar)'],
+      food: ['Chanfana de cabrito', 'Leitão da Bairrada', 'Arroz de lampreia', 'Pastéis de Tentúgal', 'Raivas de Coimbra'],
+      traditions: ['Fado de Coimbra', 'Queima das Fitas', 'Serenata Monumental'],
+      history: 'Coimbra foi a capital de Portugal no séc. XII e XIII. A sua universidade, fundada em 1290, é uma das mais antigas do mundo e a mais antiga de Portugal. A Biblioteca Joanina, construída no século XVIII, é considerada uma das mais belas bibliotecas do mundo.',
+      facts: ['A Universidade de Coimbra é Património Mundial da UNESCO desde 2013', 'A Biblioteca Joanina tem morcegos que vivem lá para proteger os livros dos insetos', 'O Fado de Coimbra tem uma tradição diferente do Fado de Lisboa — é cantado exclusivamente por homens'],
+    },
+    {
+      id: 'evora', name: 'Évora',
+      region: 'Alto Alentejo', nuts2: 'Alentejo',
+      pop: 166700, area: 7393, munic: 14,
+      capital: 'Évora', lat: 38.5710, lon: -7.9097,
+      emoji: '🏛', tagline: 'A Cidade Museu',
+      color: '#d97706',
+      landmarks: ['Templo Romano de Évora', 'Catedral de Évora', 'Cromeleque dos Almendres', 'Aqueduto da Prata', 'Casa dos Ossos'],
+      food: ['Açorda alentejana', 'Sopa de cação', 'Carne de porco à alentejana', 'Queijo de Évora (DOP)', 'Encharcada'],
+      traditions: ['Cante Alentejano', 'São João de Évora', 'Festa da Cidade'],
+      history: 'Évora é Património Mundial da UNESCO desde 1986. Fundada pelos romanos, a cidade tem uma das melhores coleções de monumentos da Antiguidade em Portugal. O Cromeleque dos Almendres, a 12 km da cidade, é o maior conjunto megalítico da Península Ibérica.',
+      facts: ['Évora foi capital do Reino do Algarve antes de Faro', 'O Templo Romano de Diana é o mais bem preservado da Península Ibérica', 'O Cromeleque dos Almendres é mais antigo que Stonehenge'],
+    },
+    {
+      id: 'faro', name: 'Faro',
+      region: 'Algarve', nuts2: 'Algarve',
+      pop: 444900, area: 4960, munic: 16,
+      capital: 'Faro', lat: 37.0194, lon: -7.9304,
+      emoji: '🌞', tagline: 'O Algarve — Sol e História',
+      color: '#f97316',
+      landmarks: ['Ria Formosa (Reserva Natural)', 'Sagres e Cabo de São Vicente', 'Silves (castelo mourisco)', 'Praia da Marinha', 'Lagoa dos Salgados'],
+      food: ['Cataplana de marisco', 'Amêijoas na cataplana', 'Caranguejo', 'Figos do Algarve (IGP)', 'Medronho'],
+      traditions: ['Festas do Mar', 'Festival de Silves Medieval', 'Carnaval de Loulé'],
+      history: 'O Algarve (do árabe Al-Gharb — "o ocidente") foi o último território português reconquistado aos mouros em 1249. Sob o reinado de D. Henrique o Navegador, Sagres tornou-se o ponto de partida das Descobertas Portuguesas. O Algarve moderno é um dos destinos turísticos mais visitados da Europa.',
+      facts: ['Sagres foi onde Henrique o Navegador estabeleceu a sua escola de navegação', 'A Ria Formosa é um dos mais importantes santuários de aves da Europa', 'O caranguejo do Algarve é exportado para toda a Europa'],
+    },
+    {
+      id: 'guarda', name: 'Guarda',
+      region: 'Beira Interior', nuts2: 'Centro',
+      pop: 160900, area: 5518, munic: 14,
+      capital: 'Guarda', lat: 40.5364, lon: -7.2676,
+      emoji: '🏔', tagline: 'A Mais Alta, Fria, Forte e Fiel',
+      color: '#6b7280',
+      landmarks: ['Catedral da Guarda', 'Torre de Menagem', 'Serra da Estrela', 'Sortelha (aldeia histórica)', 'Belmonte (terra de Álvares Cabral)'],
+      food: ['Queijo Serra da Estrela (DOP)', 'Chouriço de carne da Serra', 'Bacalhau à moda da Serra', 'Mel da Serra da Estrela'],
+      traditions: ['Festas da Cidade (Novembro)', 'Feira de S. Mateus', 'Sabores da Serra'],
+      history: 'Guarda foi fundada em 1199 por D. Sancho I como posto de defesa contra as invasões de Castela. O seu brasão tem as palavras "Forte, Fria, Farta, Fiel" que descrevem o seu carácter. A Serra da Estrela, ponto mais alto de Portugal Continental (1993 m), domina o horizonte.',
+      facts: ['Guarda é a cidade mais alta de Portugal, a 1056 m de altitude', 'A Serra da Estrela dá nome ao queijo mais famoso de Portugal', 'Belmonte tem uma das mais antigas comunidades judaicas de Portugal'],
+    },
+    {
+      id: 'leiria', name: 'Leiria',
+      region: 'Beira Litoral', nuts2: 'Centro',
+      pop: 470600, area: 3517, munic: 16,
+      capital: 'Leiria', lat: 39.7437, lon: -8.8071,
+      emoji: '🏰', tagline: 'Terra de Reis e Pinheiros',
+      color: '#22c55e',
+      landmarks: ['Castelo de Leiria', 'Mosteiro de Alcobaça (UNESCO)', 'Mosteiro da Batalha (UNESCO)', 'Fátima (Santuário)', 'Óbidos (vila medieval)'],
+      food: ['Leitão da Bairrada', 'Caldeirada de peixe da Nazaré', 'Doces conventuais de Alcobaça', 'Pão de ló de Margaride'],
+      traditions: ['Peregrinação de Fátima (13 de cada mês)', 'Festa das Cruzes de Barcelos', 'Óbidos Medieval'],
+      history: 'Leiria tem uma das maiores concentrações de Patrimónios da Humanidade UNESCO de Portugal. O Mosteiro de Alcobaça, fundado em 1153 por Afonso Henriques, e o Mosteiro da Batalha, construído para celebrar a vitória de Aljubarrota (1385), são dois dos mais importantes edifícios góticos da Península Ibérica.',
+      facts: ['Fátima recebe cerca de 6 milhões de peregrinos por ano', 'Óbidos foi oferecida como presente de casamento a várias rainhas de Portugal', 'A Floresta de Leiria (Pinhal de Leiria) foi plantada por D. Dinis no século XIII'],
+    },
+    {
+      id: 'lisboa', name: 'Lisboa',
+      region: 'Área Metropolitana de Lisboa', nuts2: 'AML',
+      pop: 2275000, area: 2761, munic: 18,
+      capital: 'Lisboa', lat: 38.7167, lon: -9.1333,
+      emoji: '🌉', tagline: 'A Cidade das Sete Colinas',
+      color: '#6366f1',
+      landmarks: ['Torre de Belém (UNESCO)', 'Mosteiro dos Jerónimos (UNESCO)', 'Castelo de São Jorge', 'Alfama', 'Oceanário de Lisboa'],
+      food: ['Pastéis de Belém', 'Bacalhau à Brás', 'Sardinhas assadas', 'Caldo verde', 'Bitoque'],
+      traditions: ['Santos Populares (Festas de Lisboa)', 'Fado de Lisboa', 'Carnaval de Torres Vedras'],
+      history: 'Lisboa é uma das capitais mais antigas da Europa, habitada há mais de 3000 anos. Tornou-se a capital de Portugal no século XIII. No século XVI, era uma das maiores e mais ricas cidades do mundo, como centro do comércio das especiarias. O terramoto de 1755 destruiu grande parte da cidade, que foi reconstruída pela visão do Marquês de Pombal.',
+      facts: ['Lisboa é a única capital europeia com acesso direto ao Atlântico', 'O elétrico 28 é o transporte público mais icónico da cidade', 'O Marquês de Pombal reconstruiu o centro de Lisboa num tempo recorde após o terramoto de 1755'],
+    },
+    {
+      id: 'portalegre', name: 'Portalegre',
+      region: 'Alto Alentejo', nuts2: 'Alentejo',
+      pop: 118500, area: 6065, munic: 15,
+      capital: 'Portalegre', lat: 39.2960, lon: -7.4289,
+      emoji: '🪡', tagline: 'Terra dos Tapetes e da Cortiça',
+      color: '#84cc16',
+      landmarks: ['Castelo de Portalegre', 'Museu da Tapeçaria de Guy Fino', 'Serra de São Mamede', 'Marvão (aldeia histórica)', 'Castelo de Vide'],
+      food: ['Sopa de cação', 'Migas com entrecosto', 'Queijo de ovelha alentejano', 'Encharcada'],
+      traditions: ['Tapeçaria de Portalegre', 'Festas da Cidade', 'Feira do Artesanato'],
+      history: 'Portalegre foi um importante centro têxtil nos séculos XVII-XIX. A sua Manufactura de Tapeçarias, fundada em 1947, produz algumas das mais belas tapeçarias do mundo. A Serra de São Mamede é o ponto mais alto do Alentejo e abriga fauna única.',
+      facts: ['Marvão, a 862m de altitude, tem as melhores vistas do Alentejo', 'As tapeçarias de Portalegre são exportadas para museus de todo o mundo', 'A cortiça do Alentejo representa 50% da produção mundial'],
+    },
+    {
+      id: 'porto', name: 'Porto',
+      region: 'Douro Litoral', nuts2: 'Norte',
+      pop: 1817000, area: 2395, munic: 18,
+      capital: 'Porto', lat: 41.1579, lon: -8.6291,
+      emoji: '🍷', tagline: 'A Invicta',
+      color: '#dc2626',
+      landmarks: ['Ribeira do Porto (UNESCO)', 'Caves de Vinho do Porto', 'Livraria Lello', 'Torre dos Clérigos', 'Palácio da Bolsa', 'Serralves'],
+      food: ['Francesinha', 'Tripas à moda do Porto', 'Vinho do Porto', 'Pastel de Chaves', 'Bacalhau à Gomes de Sá'],
+      traditions: ['Festa de São João do Porto', 'Queima das Fitas', 'Regata das Barcos Rabelos'],
+      history: 'Porto é a segunda maior cidade de Portugal e deu nome ao país — "Portus Cale". A sua Ribeira e o conjunto das Caves de Vinho do Porto em Vila Nova de Gaia são Património Mundial da UNESCO desde 1996. O Vinho do Porto, exportado para todo o mundo desde o século XVII, é um dos produtos portugueses mais famosos.',
+      facts: ['Porto deu o nome a Portugal — o país chama-se Portucale', 'A Livraria Lello, inaugurada em 1906, é uma das mais belas do mundo e inspirou J.K. Rowling', 'A Francesinha foi inventada em 1952 por Daniel da Silva'],
+    },
+    {
+      id: 'santarem', name: 'Santarém',
+      region: 'Ribatejo', nuts2: 'Alentejo',
+      pop: 454000, area: 6747, munic: 21,
+      capital: 'Santarém', lat: 39.2369, lon: -8.6860,
+      emoji: '🐂', tagline: 'Capital do Gótico e da Toirada',
+      color: '#ef4444',
+      landmarks: ['Portas do Sol', 'Igreja de Santa Cruz', 'Almourol (castelo fluvial)', 'Vale do Tejo', 'Constância'],
+      food: ['Sopa da pedra de Almeirim', 'Morcela de arroz de Benfica do Ribatejo', 'Tomatada com ovos', 'Queijo de Abrantes'],
+      traditions: ['Feira Nacional de Agricultura', 'Festival Nacional de Gastronomia', 'Colete Encarnado (Vila Franca de Xira)'],
+      history: 'Santarém foi um dos primeiros territórios conquistados por Afonso Henriques aos mouros (1147). Conhecida como a "Capital do Gótico" pela abundância de monumentos desta época, e o "Celeiro de Portugal" pela fertilidade dos seus campos do Tejo. O Ribatejo é também o coração da cultura tauromáquica portuguesa.',
+      facts: ['Santarém tem mais igrejas góticas por km² do que qualquer outra cidade de Portugal', 'A Feira Nacional de Agricultura é o maior evento agropecuário ibérico', 'O Festival Nacional de Gastronomia é o mais antigo de Portugal'],
+    },
+    {
+      id: 'setubal', name: 'Setúbal',
+      region: 'Área Metropolitana de Lisboa', nuts2: 'AML',
+      pop: 851300, area: 5064, munic: 13,
+      capital: 'Setúbal', lat: 38.5236, lon: -8.8939,
+      emoji: '🐬', tagline: 'Terra de Golfinhos e Muscat',
+      color: '#06b6d4',
+      landmarks: ['Serra da Arrábida (Parque Natural)', 'Palácio Nacional de Sintra', 'Cabo Espichel', 'Sesimbra', 'Palmela'],
+      food: ['Choco frito de Setúbal', 'Moscatel de Setúbal (DOP)', 'Azeitona Maçanilha', 'Queijadas de Sintra'],
+      traditions: ['Festas de São Luís', 'Feira de Março de Palmela', 'Vindimas do Moscatel'],
+      history: 'Setúbal tem uma das mais ricas histórias marítimas de Portugal. A Serra da Arrábida, classificada como Parque Natural, tem algumas das praias mais belas de Portugal Continental. Sintra, com os seus palácios românticos, é Património Mundial da UNESCO desde 1995.',
+      facts: ['A baía de Setúbal tem uma das maiores populações de golfinhos da Europa', 'Sintra foi descrita por Lord Byron como "o Éden glorioso"', 'O Moscatel de Setúbal é produzido há mais de 2000 anos'],
+    },
+    {
+      id: 'viana-do-castelo', name: 'Viana do Castelo',
+      region: 'Minho', nuts2: 'Norte',
+      pop: 244800, area: 2255, munic: 10,
+      capital: 'Viana do Castelo', lat: 41.6918, lon: -8.8340,
+      emoji: '🎣', tagline: 'Senhora da Agonia e do Mar',
+      color: '#0ea5e9',
+      landmarks: ['Basílica de Santa Luzia', 'Vila do Conde (Mosteiro)', 'Parque Nacional Peneda-Gerês', 'Afife', 'Rio Minho'],
+      food: ['Papas de sarrabulho', 'Vinho verde', 'Arroz de sarrabulho', 'Broas de mel'],
+      traditions: ['Festas de Nossa Senhora da Agonia (agosto — maiores festas regionais do Norte)', 'Viana Folk', 'Romaria de Stª Luzia'],
+      history: 'Viana do Castelo é conhecida pelas suas festas de Nossa Senhora da Agonia, consideradas as maiores festas populares do norte de Portugal. A cidade foi um importante porto de pesca e comércio com o Brasil. A Basílica de Santa Luzia, construída no séc. XX, domina a cidade a partir do Monte de Santa Luzia.',
+      facts: ['As Festas de Viana são Imaterial Cultural Heritage da UNESCO', 'O traje típico de Viana é o mais rico e elaborado de Portugal', 'Viana foi um dos maiores portos exportadores de bacalhau seco para o Brasil'],
+    },
+    {
+      id: 'vila-real', name: 'Vila Real',
+      region: 'Trás-os-Montes', nuts2: 'Norte',
+      pop: 206700, area: 4328, munic: 14,
+      capital: 'Vila Real', lat: 41.3000, lon: -7.7457,
+      emoji: '🍇', tagline: 'Terra do Vinho e da Louça de Bisalhães',
+      color: '#7c3aed',
+      landmarks: ['Solar de Mateus', 'Parque Natural do Alvão', 'Montalegre (Terras de Barroso)', 'Vidago Palace'],
+      food: ['Posta mirandesa', 'Presunto de Barroso (IGP)', 'Vinho de Chaves', 'Mel de Barroso (DOP)', 'Queijo de Cabra Transmontano (DOP)'],
+      traditions: ['Carnaval de Chaves', 'Feira de São Mateus', 'Festas de Barroso'],
+      history: 'Vila Real é conhecida pela louça preta de Bisalhães, técnica neolítica única no mundo. O Solar de Mateus, construído no séc. XVIII, está representado na garrafa do famoso Mateus Rosé. A região de Barroso foi classificada como Reserva da Biosfera da UNESCO.',
+      facts: ['A louça preta de Bisalhães usa uma técnica neolítica única declarada Património Imaterial da UNESCO', 'O Solar de Mateus é um dos edifícios barrocos mais importantes de Portugal', 'A carne mirandesa é uma das raças bovinas mais antigas da Península Ibérica'],
+    },
+    {
+      id: 'viseu', name: 'Viseu',
+      region: 'Beira Alta', nuts2: 'Centro',
+      pop: 377600, area: 5010, munic: 24,
+      capital: 'Viseu', lat: 40.6566, lon: -7.9122,
+      emoji: '🎨', tagline: 'Cidade Jardim de Portugal',
+      color: '#059669',
+      landmarks: ['Sé de Viseu', 'Museu Grão Vasco', 'Quinta das Vendas', 'Serra da Estrela', 'Cávado'],
+      food: ['Vinho Dão (DOC)', 'Vitela de Lafões (IGP)', 'Queijo de Azeitão', 'Bôla de Lamego'],
+      traditions: ['Feira de São Mateus (a maior do Interior Norte)', 'Festas da Cidade', 'Festival MED de Loulé'],
+      history: 'Viseu é conhecida como a "Cidade Jardim" de Portugal pela sua qualidade de vida e espaços verdes. O Museu Grão Vasco possui a maior coleção de obras do pintor Vasco Fernandes (Grão Vasco), um dos maiores pintores renascentistas portugueses.',
+      facts: ['O Vinho Dão é considerado um dos melhores vinhos tintos de Portugal', 'Grão Vasco pintou algumas das mais importantes obras do Renascimento português', 'Viseu é consistentemente classificada como uma das melhores cidades para viver em Portugal'],
+    },
+    {
+      id: 'madeira', name: 'Madeira',
+      region: 'Região Autónoma da Madeira', nuts2: 'RAM',
+      pop: 254000, area: 741, munic: 11,
+      capital: 'Funchal', lat: 32.7607, lon: -16.9595,
+      emoji: '🌺', tagline: 'Ilha das Flores no Atlântico',
+      color: '#ec4899',
+      landmarks: ['Monte (teleférico e carros de cesto)', 'Levadas da Madeira', 'Cabo Girão (maior falésia da Europa)', 'Funchal (mercado dos Lavradores)', 'Porto Moniz'],
+      food: ['Espada com banana', 'Bolo de mel da Madeira', 'Vinho Madeira (DOC)', 'Poncha', 'Espetada'],
+      traditions: ['Festa da Flor', 'Réveillon da Madeira (o maior de Portugal)', 'Festival do Atlântico'],
+      history: 'A Madeira foi descoberta pelos portugueses em 1419 e foi o primeiro grande sucesso da Expansão Portuguesa. A ilha tornou-se um importante entreposto comercial para a cana-de-açúcar. O Vinho Madeira, produzido há 500 anos, é um dos vinhos mais históricos do mundo.',
+      facts: ['O Réveillon da Madeira tem os maiores fogos de artifício da Europa e está no Guinness', 'As Levadas são canais de irrigação com mais de 2500 km de extensão, escavados à mão', 'Cristiano Ronaldo nasceu no Funchal'],
+    },
+    {
+      id: 'acores', name: 'Açores',
+      region: 'Região Autónoma dos Açores', nuts2: 'RAA',
+      pop: 236000, area: 2333, munic: 19,
+      capital: 'Ponta Delgada', lat: 37.7412, lon: -25.6756,
+      emoji: '🌋', tagline: 'Nove Ilhas, Um Paraíso',
+      color: '#06b6d4',
+      landmarks: ['Sete Cidades (São Miguel)', 'Furnas (termas e cozido)', 'Caldeira do Faial', 'Fajã dos Cubres (Jogo)', 'Pico (vulcão mais alto de Portugal)'],
+      food: ['Cozido das Furnas', 'Alcatra de terceira', 'Queijo São Jorge (DOP)', 'Ananás dos Açores', 'Licor de maracujá'],
+      traditions: ['Festas do Espírito Santo (século XII)', 'Tourada à corda (Terceira)', 'Semana do Mar de Horta'],
+      history: 'Os Açores foram descobertos pelos portugueses por volta de 1427 e são o ponto mais ocidental da Europa. As ilhas têm origem vulcânica e o Pico é o ponto mais alto de Portugal (2351m). O arquipélago foi uma paragem essencial nas rotas marítimas entre a Europa, América e África.',
+      facts: ['O Pico é o ponto mais alto de Portugal a 2351 m', 'A Lagoa das Sete Cidades tem duas cores diferentes devido a uma diferença de pH', 'Os Açores são o único local da Europa onde se cultivam ananases em estufas aquecidas por fontes geotérmicas'],
+    },
+  ];
+
+  /* ── State ── */
+  let _map       = null;
+  let _inited    = false;
+  let _markers   = [];
+  let _geoLayer  = null;
+  let _selected  = null;
+  let _container = null;
+
+  /* ── GeoJSON URL to try ── */
+  const PT_GEOJSON = 'https://raw.githubusercontent.com/nmota/caop_GIS/master/distritos.geojson';
+
+  /* ── Leaflet lazy load ── */
+  async function _loadLeaflet() {
+    if (window.L) return;
+    return new Promise((resolve, reject) => {
+      if (!document.querySelector('link[href*="leaflet"]')) {
+        const link = Object.assign(document.createElement('link'),
+          { rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' });
+        document.head.appendChild(link);
+      }
+      const s = Object.assign(document.createElement('script'),
+        { src: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' });
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  function _isDark() { return !document.body.classList.contains('light'); }
+  function _tileUrl() {
+    return _isDark()
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  }
+
+  /* ── Mount ── */
+  async function mount(container) {
+    _container = container;
+    container.innerHTML = `
+      <div class="pt-explorer-wrap">
+        <div class="pt-map-area" id="pt-map-area">
+          <div id="pt-leaflet-map"></div>
+          <div class="pt-loading" id="pt-loading">
+            <div class="pt-loading-spinner"></div>
+            <div class="pt-loading-txt">A carregar mapa de Portugal…</div>
+          </div>
+        </div>
+
+        <div class="pt-sidebar" id="pt-sidebar">
+          <div class="pt-sidebar-header">
+            <div class="pt-sidebar-title">
+              <span class="pt-sidebar-flag">🇵🇹</span>
+              <span>Explorar Portugal</span>
+            </div>
+            <div class="pt-search-bar">
+              <input class="pt-search-input" id="pt-search" type="text" placeholder="Pesquisar distrito…" autocomplete="off"/>
+              <button class="pt-discover-btn" id="pt-discover" title="Descobrir distrito aleatório">🎲</button>
+            </div>
+          </div>
+
+          <div class="pt-district-list" id="pt-district-list">
+            ${DISTRICTS.map(d => `
+              <button class="pt-district-chip" data-id="${d.id}">
+                <span class="pt-dc-emoji">${d.emoji}</span>
+                <span class="pt-dc-name">${d.name}</span>
+                <span class="pt-dc-region">${d.region}</span>
+              </button>`).join('')}
+          </div>
+        </div>
+
+        <div class="pt-info-panel" id="pt-info-panel">
+          <button class="pt-info-close" id="pt-info-close">✕</button>
+          <div class="pt-info-content" id="pt-info-content"></div>
+        </div>
+      </div>`;
+
+    await _loadLeaflet();
+    _initMap(container);
+    _wireSearch(container);
+    _wireSidebar(container);
+    document.getElementById('pt-loading')?.remove();
+    _inited = true;
+  }
+
+  function resume() {
+    setTimeout(() => _map?.invalidateSize(), 80);
+  }
+
+  function stop() {}
+
+  /* ── Map init ── */
+  function _initMap(container) {
+    const el = container.querySelector('#pt-leaflet-map');
+    if (!el) return;
+
+    _map = L.map(el, {
+      center: [39.6, -8.0], zoom: 7, minZoom: 6, maxZoom: 13,
+      zoomControl: false,
+    });
+    L.control.zoom({ position: 'bottomright' }).addTo(_map);
+    L.tileLayer(_tileUrl(), {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',
+      subdomains: 'abcd',
+    }).addTo(_map);
+
+    _addDistrictMarkers();
+
+    /* Try loading GeoJSON boundaries */
+    _tryLoadGeoJSON();
+  }
+
+  function _addDistrictMarkers() {
+    DISTRICTS.forEach(d => {
+      const m = L.circleMarker([d.lat, d.lon], {
+        radius: _markerRadius(d),
+        fillColor: d.color,
+        color: d.color,
+        weight: 2,
+        opacity: 0.85,
+        fillOpacity: 0.35,
+      }).addTo(_map);
+      m.bindTooltip(d.name, { permanent: false, direction: 'top', offset: [0, -8] });
+      m.on('click', () => _select(d));
+      _markers.push({ dist: d, marker: m });
+    });
+  }
+
+  function _markerRadius(d) {
+    const base = Math.sqrt(d.pop / 1000);
+    return Math.max(8, Math.min(28, base));
+  }
+
+  async function _tryLoadGeoJSON() {
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 12000);
+      const r = await fetch(PT_GEOJSON, { signal: ctrl.signal });
+      clearTimeout(tid);
+      if (!r.ok) return;
+      const gj = await r.json();
+
+      /* Find which property has district names */
+      const sample = gj.features?.[0]?.properties || {};
+      const nameKey = ['Dico','DICO','NAME_1','name','Distrito','distrito','NME','NOME'].find(k => k in sample);
+      if (!nameKey) return;
+
+      _geoLayer = L.geoJSON(gj, {
+        style: () => ({
+          fillColor: 'rgba(99,102,241,.12)',
+          color: _isDark() ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)',
+          weight: 1,
+          fillOpacity: 0.12,
+        }),
+        onEachFeature(feature, layer) {
+          const rawName = feature.properties[nameKey];
+          const d = _findDistrict(rawName);
+          if (!d) return;
+          layer.on({
+            mouseover(e) {
+              if (d !== _selected) e.target.setStyle({ fillOpacity: 0.28, weight: 1.5 });
+            },
+            mouseout(e) {
+              if (d !== _selected) _geoLayer?.resetStyle(e.target);
+            },
+            click() { _select(d); },
+          });
+        },
+      }).addTo(_map);
+
+      /* Bring markers on top */
+      _markers.forEach(({ marker }) => marker.bringToFront());
+
+    } catch (e) {
+      /* Silently fail — markers are still interactive */
+    }
+  }
+
+  function _normalizeStr(s) {
+    return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  }
+
+  function _findDistrict(name) {
+    const n = _normalizeStr(name);
+    return DISTRICTS.find(d => _normalizeStr(d.name) === n) || null;
+  }
+
+  /* ── Selection ── */
+  function _select(d) {
+    _selected = d;
+
+    /* Highlight marker */
+    _markers.forEach(({ dist, marker }) => {
+      marker.setStyle({
+        fillOpacity: dist === d ? 0.75 : 0.35,
+        weight:      dist === d ? 3    : 2,
+        radius:      dist === d ? _markerRadius(dist) + 4 : _markerRadius(dist),
+      });
+    });
+
+    /* Fly to */
+    if (_map) {
+      const lat = d.lat + (d.region === 'Norte' || d.id === 'acores' ? 0 : 0);
+      _map.flyTo([d.lat, d.lon], 9, { duration: 0.9 });
+    }
+
+    /* Show panel */
+    _renderInfo(d);
+    document.getElementById('pt-info-panel')?.classList.add('open');
+
+    /* Highlight list item */
+    document.querySelectorAll('.pt-district-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.id === d.id);
+    });
+  }
+
+  /* ── Info panel ── */
+  function _renderInfo(d) {
+    const el = document.getElementById('pt-info-content');
+    if (!el) return;
+
+    const pop  = (d.pop || 0).toLocaleString('pt');
+    const area = (d.area || 0).toLocaleString('pt') + ' km²';
+
+    el.innerHTML = `
+      <div class="pt-info-hero" style="--dist-color:${d.color}">
+        <div class="pt-info-emoji">${d.emoji}</div>
+        <div class="pt-info-title-group">
+          <div class="pt-info-name">${d.name}</div>
+          <div class="pt-info-tagline">${d.tagline}</div>
+        </div>
+      </div>
+
+      <div class="pt-info-stats">
+        <div class="pt-info-stat"><span class="pt-stat-val">${pop}</span><span class="pt-stat-lbl">habitantes</span></div>
+        <div class="pt-info-stat"><span class="pt-stat-val">${area}</span><span class="pt-stat-lbl">área</span></div>
+        <div class="pt-info-stat"><span class="pt-stat-val">${d.munic}</span><span class="pt-stat-lbl">concelhos</span></div>
+        <div class="pt-info-stat"><span class="pt-stat-val">${d.region}</span><span class="pt-stat-lbl">região</span></div>
+      </div>
+
+      <div class="pt-info-rows">
+        <div class="pt-info-row"><span class="pt-row-icon">🏙</span><span class="pt-row-lbl">Capital</span><span class="pt-row-val">${d.capital}</span></div>
+        <div class="pt-info-row"><span class="pt-row-icon">🌍</span><span class="pt-row-lbl">NUTS II</span><span class="pt-row-val">${d.nuts2}</span></div>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">📍 Pontos de Interesse</div>
+        <div class="pt-tags-wrap">${(d.landmarks || []).map(l => `<span class="pt-tag">${l}</span>`).join('')}</div>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">🍽 Gastronomia</div>
+        <div class="pt-tags-wrap">${(d.food || []).map(f => `<span class="pt-tag food">${f}</span>`).join('')}</div>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">🎉 Tradições</div>
+        <div class="pt-tags-wrap">${(d.traditions || []).map(t => `<span class="pt-tag trad">${t}</span>`).join('')}</div>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">📖 História</div>
+        <p class="pt-history-text">${d.history}</p>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">💡 Sabia que…</div>
+        <div class="pt-facts-list">
+          ${(d.facts || []).map(f => `<div class="pt-fact-item">• ${f}</div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  /* ── Search + controls ── */
+  function _wireSearch(container) {
+    const input = container.querySelector('#pt-search');
+    if (!input) return;
+    input.addEventListener('input', () => {
+      const q = _normalizeStr(input.value);
+      container.querySelectorAll('.pt-district-chip').forEach(c => {
+        const name = _normalizeStr(c.querySelector('.pt-dc-name')?.textContent || '');
+        c.style.display = !q || name.includes(q) ? '' : 'none';
+      });
+    });
+
+    container.querySelector('#pt-discover')?.addEventListener('click', () => {
+      const d = DISTRICTS[Math.floor(Math.random() * DISTRICTS.length)];
+      _select(d);
+    });
+
+    container.querySelector('#pt-info-close')?.addEventListener('click', () => {
+      document.getElementById('pt-info-panel')?.classList.remove('open');
+      _selected = null;
+      _markers.forEach(({ dist, marker }) => {
+        marker.setStyle({ fillOpacity: 0.35, weight: 2, radius: _markerRadius(dist) });
+      });
+      document.querySelectorAll('.pt-district-chip').forEach(c => c.classList.remove('active'));
+    });
+  }
+
+  function _wireSidebar(container) {
+    container.querySelectorAll('.pt-district-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const d = DISTRICTS.find(x => x.id === chip.dataset.id);
+        if (d) _select(d);
+      });
+    });
+  }
+
+  /* ── Public discover ── */
+  function discoverRandom() {
+    const d = DISTRICTS[Math.floor(Math.random() * DISTRICTS.length)];
+    _select(d);
+    return d.name;
+  }
+
+  return { mount, resume, stop, discoverRandom };
+})();

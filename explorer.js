@@ -317,6 +317,11 @@ const ExplorerPage = (function () {
             <div class="ex-feature-card-title">Globo 3D</div>
             <div class="ex-feature-card-desc">Globo WebGL realista com atmosfera, texturas e modos político e noturno.</div>
           </div>
+          <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
+            <span class="ex-feature-card-icon">🇵🇹</span>
+            <div class="ex-feature-card-title">Portugal</div>
+            <div class="ex-feature-card-desc">Explora os 20 distritos com história, gastronomia, tradições e curiosidades de cada região.</div>
+          </div>
           <div class="ex-feature-card" data-tab="solar">
             <span class="ex-feature-card-icon">☀</span>
             <div class="ex-feature-card-title">Sistema Solar</div>
@@ -341,12 +346,7 @@ const ExplorerPage = (function () {
           </div>` : ''}
       </div>`;
 
-    sub.querySelector('#ex-discover-btn').onclick = () => {
-      if (!_countriesOk) return;
-      const c = _countries[Math.floor(Math.random() * _countries.length)];
-      _switchTab('map');
-      setTimeout(() => showCountryPanel(c, '#ex-country-panel'), 400);
-    };
+    sub.querySelector('#ex-discover-btn').onclick = () => _discoverRandom();
     sub.querySelectorAll('.ex-feature-card').forEach(card => {
       card.onclick = () => _switchTab(card.dataset.tab);
     });
@@ -771,8 +771,14 @@ const ExplorerPage = (function () {
         if (sel) sel.textContent = f ? (_byCca3[f.id]?.name.common || f.id) : '—';
       })
       .onPolygonClick(f => {
-        const c = _byCca3[f?.id];
-        if (c) showCountryPanel(c, '#ex-country-panel-globe');
+        if (!f) return;
+        const c = _byCca3[f.id];
+        if (c) {
+          showCountryPanel(c, '#ex-country-panel-globe');
+        } else {
+          /* Country data unavailable — show minimal panel from GeoJSON feature */
+          _showGlobeMinimalPanel(f);
+        }
       });
 
     _updateGlobeColors = () => {
@@ -815,6 +821,50 @@ const ExplorerPage = (function () {
     _updateGlobeColors?.();
   }
 
+  /* ════════════════════════════════ DISCOVER ════════════════════════ */
+  function _discoverRandom() {
+    const modes = ['map', 'globe', 'portugal', 'solar'];
+    if (typeof PortugalExplorer === 'undefined') modes.splice(modes.indexOf('portugal'), 1);
+
+    const mode = modes[Math.floor(Math.random() * modes.length)];
+
+    if ((mode === 'map' || mode === 'globe') && _countriesOk && _countries.length) {
+      const c = _countries[Math.floor(Math.random() * _countries.length)];
+      const panelSel = mode === 'globe' ? '#ex-country-panel-globe' : '#ex-country-panel';
+      _switchTab(mode);
+      setTimeout(() => showCountryPanel(c, panelSel), 500);
+    } else if (mode === 'portugal' && typeof PortugalExplorer !== 'undefined') {
+      _switchTab('portugal');
+      setTimeout(() => PortugalExplorer.discoverRandom(), 500);
+    } else if (mode === 'solar') {
+      _switchTab('solar');
+    } else if (_countriesOk && _countries.length) {
+      /* Fallback: show random country on map */
+      const c = _countries[Math.floor(Math.random() * _countries.length)];
+      _switchTab('map');
+      setTimeout(() => showCountryPanel(c, '#ex-country-panel'), 500);
+    }
+  }
+
+  function _showGlobeMinimalPanel(feature) {
+    const panel = document.querySelector('#ex-country-panel-globe');
+    if (!panel) return;
+    const name = feature.properties?.name || feature.id || 'País desconhecido';
+    panel.innerHTML = `
+      <button class="ex-panel-close" id="ex-panel-close">✕</button>
+      <div class="ex-panel-flag-placeholder" style="font-size:3rem;display:flex;align-items:center;justify-content:center;height:120px;background:linear-gradient(135deg,var(--accent-soft),var(--bg2))">🌍</div>
+      <div class="ex-panel-body">
+        <div class="ex-panel-name">${name}</div>
+        <div style="font-size:.8rem;color:var(--muted);margin:.5rem 0 1rem">ID GeoJSON: ${feature.id || '—'}</div>
+        <div class="ex-panel-rows">
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">⚠</span><span class="ex-panel-label" style="color:var(--muted)">Dados detalhados indisponíveis de momento. Tenta novamente mais tarde.</span></div>
+        </div>
+        <a class="ex-wiki-btn" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-flex">📖 Wikipedia</a>
+      </div>`;
+    panel.classList.add('open');
+    panel.querySelector('#ex-panel-close').onclick = () => panel.classList.remove('open');
+  }
+
   /* ════════════════════════════════ TAB SYSTEM ══════════════════════ */
   function _buildShell(view) {
     view.innerHTML = `
@@ -823,12 +873,14 @@ const ExplorerPage = (function () {
           <button class="ex-tab active" data-tab="hub"><span class="ex-tab-icon">🏠</span> Início</button>
           <button class="ex-tab" data-tab="map"><span class="ex-tab-icon">🗺</span> Mapa</button>
           <button class="ex-tab" data-tab="globe"><span class="ex-tab-icon">🌍</span> Globo</button>
+          <button class="ex-tab" data-tab="portugal"><span class="ex-tab-icon">🇵🇹</span> Portugal</button>
           <button class="ex-tab" data-tab="solar"><span class="ex-tab-icon">☀</span> Sistema Solar</button>
         </div>
         <div class="ex-content">
           <div class="ex-sub active" id="ex-sub-hub"></div>
           <div class="ex-sub" id="ex-sub-map"></div>
           <div class="ex-sub" id="ex-sub-globe"></div>
+          <div class="ex-sub" id="ex-sub-portugal"></div>
           <div class="ex-sub" id="ex-sub-solar"></div>
         </div>
       </div>`;
@@ -844,6 +896,7 @@ const ExplorerPage = (function () {
   function _switchTab(tab) {
     if (!_shell) return;
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
+    if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     _curTab = tab;
 
     _shell.querySelectorAll('.ex-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -859,6 +912,11 @@ const ExplorerPage = (function () {
       else setTimeout(() => _lMap?.invalidateSize(), 80);
     } else if (tab === 'globe') {
       if (!_globeInited) { _renderGlobeShell(sub); _initGlobe(); }
+    } else if (tab === 'portugal') {
+      if (typeof PortugalExplorer !== 'undefined') {
+        if (!sub.querySelector('.pt-explorer-wrap')) PortugalExplorer.mount(sub);
+        else PortugalExplorer.resume();
+      }
     } else if (tab === 'solar') {
       if (typeof SolarExplorer !== 'undefined') {
         if (!sub.querySelector('.ex-solar-wrap')) SolarExplorer.mount(sub);
