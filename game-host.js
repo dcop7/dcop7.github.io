@@ -70,10 +70,18 @@ const GameHost = (function () {
     'bridge-builder':{ init: () => BridgeBuilderGame.init(document.getElementById('pane-bridge-builder')), initialized: false },
   };
 
+  const AGES = [6,7,8,9,10,11,12,13,14];
+
+  function getGameAge() {
+    const raw = localStorage.getItem('game-age-default') || '8';
+    return AGES.map(String).includes(raw) ? raw : '8';
+  }
+
   function renderHub() {
     const hub = document.getElementById('games-hub');
     if (!hub) return;
 
+    const age    = getGameAge();
     const groups = {};
     GAMES.forEach(g => {
       if (!groups[g.group]) groups[g.group] = [];
@@ -84,6 +92,14 @@ const GameHost = (function () {
       <div class="page-header">
         <h1 class="page-title">🎮 Jogos</h1>
         <p class="page-subtitle">Escolhe um jogo para começar a jogar</p>
+      </div>
+      <div class="gh-settings-bar">
+        <span class="gh-settings-lbl">Idade / Dificuldade</span>
+        <div class="gh-age-seg" id="gh-age-seg">
+          ${AGES.map(a =>
+            `<button class="gh-age-btn${age===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
+          ).join('')}
+        </div>
       </div>
       ${GROUP_ORDER.filter(g => groups[g]).map(gName => `
         <div class="games-group">
@@ -97,6 +113,18 @@ const GameHost = (function () {
               </button>`).join('')}
           </div>
         </div>`).join('')}`;
+
+    /* Age selector */
+    hub.querySelectorAll('#gh-age-seg .gh-age-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = btn.dataset.age;
+        localStorage.setItem('game-age-default', a);
+        hub.querySelectorAll('#gh-age-seg .gh-age-btn').forEach(b => b.classList.toggle('active', b === btn));
+        /* sync hangman's in-game age display if visible */
+        const hfAgeVal = document.getElementById('hf-age-val');
+        if (hfAgeVal) hfAgeVal.textContent = a;
+      });
+    });
 
     hub.querySelectorAll('.game-hub-card').forEach(btn => {
       btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));

@@ -22,14 +22,15 @@ const SettingsPage = (function () {
     const tvDays       = localStorage.getItem('md-tv')       || '7';
     const theatersDays = localStorage.getItem('md-theaters') || '30';
     const digitalDays  = localStorage.getItem('md-digital')  || '7';
-    const _rawAge      = localStorage.getItem('game-age-default') || '8';
-    const gameAge      = ['6','7','8','9','10','11','12','13','14'].includes(_rawAge) ? _rawAge : '8';
-    const _rawQuizAge  = localStorage.getItem('quiz-age') || '8';
-    const quizAge      = ['6','7','8','9','10','11','12','13','14'].includes(_rawQuizAge) ? _rawQuizAge : '8';
-    const quizLang     = localStorage.getItem('quiz-lang') || 'pt';
     const iconStyle  = localStorage.getItem('icon-style') || 'colored';
     const wpEnabled  = localStorage.getItem('wallpaper-enabled') === 'true';
     const density    = localStorage.getItem('site-density') || 'comfortable';
+    const bgEffects  = localStorage.getItem('bg-effects')  || 'medium';
+    const parallaxOn = localStorage.getItem('parallax-enabled') !== 'false';
+    const motionPref = localStorage.getItem('motion-pref') || 'normal';
+    const perfMode   = localStorage.getItem('perf-mode') === 'true';
+    const isPt       = curLang === 'pt';
+    const VT = (pt, en) => isPt ? pt : en;
 
     el.innerHTML = `
       <div class="view-inner">
@@ -111,44 +112,49 @@ const SettingsPage = (function () {
             </div>
           </div>
 
-          <!-- Games (global age) -->
+          <!-- Visual Effects -->
           <div class="st-section">
-            <div class="st-section-title">🎮 ${T('st.games')}</div>
+            <div class="st-section-title">✨ ${VT('Efeitos Visuais', 'Visual Effects')}</div>
             <div class="st-row">
               <div class="st-row-info">
-                <div class="st-row-label">${T('st.age')}</div>
-                <div class="st-row-desc">${T('st.age.desc')}</div>
+                <div class="st-row-label">${VT('Fundo Animado', 'Background Effects')}</div>
+                <div class="st-row-desc">${VT('Intensidade dos orbes de luz em fundo.', 'Intensity of the background light orbs.')}</div>
               </div>
-              <div class="st-age-seg" id="st-game-age">
-                ${[6,7,8,9,10,11,12,13,14].map(a =>
-                  `<button class="tsb${gameAge===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
-                ).join('')}
-              </div>
-            </div>
-          </div>
-
-          <!-- Quiz settings -->
-          <div class="st-section">
-            <div class="st-section-title">🧩 ${T('st.quiz')}</div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${T('st.quiz.age')}</div>
-                <div class="st-row-desc">${T('st.quiz.age.desc')}</div>
-              </div>
-              <div class="st-age-seg" id="st-quiz-age">
-                ${[6,7,8,9,10,11,12,13,14].map(a =>
-                  `<button class="tsb${quizAge===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
-                ).join('')}
+              <div class="tool-seg" id="st-bg-effects">
+                <button class="tsb${bgEffects==='disabled'?' active':''}" data-val="disabled">${VT('Desligado','Off')}</button>
+                <button class="tsb${bgEffects==='low'?' active':''}" data-val="low">${VT('Baixo','Low')}</button>
+                <button class="tsb${bgEffects==='medium'?' active':''}" data-val="medium">${VT('Médio','Medium')}</button>
+                <button class="tsb${bgEffects==='high'?' active':''}" data-val="high">${VT('Alto','High')}</button>
               </div>
             </div>
             <div class="st-row">
               <div class="st-row-info">
-                <div class="st-row-label">${T('st.quiz.lang')}</div>
-                <div class="st-row-desc">${T('st.quiz.lang.desc')}</div>
+                <div class="st-row-label">${VT('Paralaxe', 'Parallax')}</div>
+                <div class="st-row-desc">${VT('Efeito de profundidade com o rato.', 'Mouse-driven depth effect.')}</div>
               </div>
-              <div class="tool-seg" id="st-quiz-lang">
-                <button class="tsb${quizLang==='pt'?' active':''}" data-lang="pt">🇵🇹 Português</button>
-                <button class="tsb${quizLang==='en'?' active':''}" data-lang="en">🇬🇧 English</button>
+              <div class="tool-seg" id="st-parallax">
+                <button class="tsb${!parallaxOn?' active':''}" data-val="false">${VT('Desligado','Off')}</button>
+                <button class="tsb${parallaxOn?' active':''}" data-val="true">${VT('Ligado','On')}</button>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${VT('Movimento', 'Motion')}</div>
+                <div class="st-row-desc">${VT('Reduz animações e transições.', 'Reduces animations and transitions.')}</div>
+              </div>
+              <div class="tool-seg" id="st-motion">
+                <button class="tsb${motionPref==='normal'?' active':''}" data-val="normal">${VT('Normal','Normal')}</button>
+                <button class="tsb${motionPref==='reduced'?' active':''}" data-val="reduced">${VT('Reduzido','Reduced')}</button>
+              </div>
+            </div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${VT('Modo Desempenho', 'Performance Mode')}</div>
+                <div class="st-row-desc">${VT('Simplifica efeitos para melhor fluidez.', 'Simplifies effects for better performance.')}</div>
+              </div>
+              <div class="tool-seg" id="st-perf-mode">
+                <button class="tsb${!perfMode?' active':''}" data-val="false">${VT('Normal','Normal')}</button>
+                <button class="tsb${perfMode?' active':''}" data-val="true">${VT('Ativado','On')}</button>
               </div>
             </div>
           </div>
@@ -245,34 +251,39 @@ const SettingsPage = (function () {
       })
     );
 
-    /* Game age */
-    el.querySelectorAll('#st-game-age .tsb').forEach(btn =>
+    /* Background effects */
+    el.querySelectorAll('#st-bg-effects .tsb').forEach(btn =>
       btn.addEventListener('click', () => {
-        const age = btn.dataset.age;
-        localStorage.setItem('game-age-default', age);
-        el.querySelectorAll('#st-game-age .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        const hfAgeVal = document.getElementById('hf-age-val');
-        if (hfAgeVal) hfAgeVal.textContent = age;
+        localStorage.setItem('bg-effects', btn.dataset.val);
+        el.querySelectorAll('#st-bg-effects .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        if (window.ParallaxSystem) ParallaxSystem.update();
       })
     );
 
-    /* Quiz age */
-    el.querySelectorAll('#st-quiz-age .tsb').forEach(btn =>
+    /* Parallax */
+    el.querySelectorAll('#st-parallax .tsb').forEach(btn =>
       btn.addEventListener('click', () => {
-        const age = btn.dataset.age;
-        localStorage.setItem('quiz-age', age);
-        el.querySelectorAll('#st-quiz-age .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { age } }));
+        localStorage.setItem('parallax-enabled', btn.dataset.val);
+        el.querySelectorAll('#st-parallax .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        if (window.ParallaxSystem) ParallaxSystem.update();
       })
     );
 
-    /* Quiz language */
-    el.querySelectorAll('#st-quiz-lang .tsb').forEach(btn =>
+    /* Motion */
+    el.querySelectorAll('#st-motion .tsb').forEach(btn =>
       btn.addEventListener('click', () => {
-        const qlang = btn.dataset.lang;
-        localStorage.setItem('quiz-lang', qlang);
-        el.querySelectorAll('#st-quiz-lang .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { lang: qlang } }));
+        localStorage.setItem('motion-pref', btn.dataset.val);
+        el.querySelectorAll('#st-motion .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        if (window.ParallaxSystem) ParallaxSystem.update();
+      })
+    );
+
+    /* Performance mode */
+    el.querySelectorAll('#st-perf-mode .tsb').forEach(btn =>
+      btn.addEventListener('click', () => {
+        localStorage.setItem('perf-mode', btn.dataset.val);
+        el.querySelectorAll('#st-perf-mode .tsb').forEach(b => b.classList.toggle('active', b === btn));
+        if (window.ParallaxSystem) ParallaxSystem.update();
       })
     );
 

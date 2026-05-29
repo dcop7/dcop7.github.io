@@ -35,40 +35,71 @@
   margin: 0 0 1rem;
 }
 
-.qp-meta-bar {
+
+/* ── INLINE SETTINGS PANEL ── */
+.qp-inline-settings {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  margin-bottom: 1rem;
+  padding: .75rem 1rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.qp-is-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: .5rem;
-  margin-bottom: 1rem;
 }
 
-.qp-meta-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: .25rem .75rem;
-  font-size: .78rem;
-  color: var(--text2);
+.qp-is-lbl {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  min-width: 52px;
+  flex-shrink: 0;
 }
 
-.qp-settings-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
+.qp-is-ages,
+.qp-is-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .28rem;
+}
+
+.qp-is-btn {
   background: var(--card2);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: .25rem .75rem;
-  font-size: .78rem;
+  border-radius: var(--radius-xs);
   color: var(--text2);
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .28rem .5rem;
   cursor: pointer;
   transition: all var(--ease);
+  font-family: inherit;
+  min-width: 30px;
+  text-align: center;
+  white-space: nowrap;
 }
-.qp-settings-btn:hover { border-color: var(--border2); color: var(--text); }
+.qp-is-btn:hover { border-color: rgba(var(--accent-rgb),.4); color: var(--accent); background: var(--accent-soft); }
+.qp-is-btn.active {
+  background: var(--accent-soft);
+  border-color: rgba(var(--accent-rgb),.45);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .qp-inline-settings { padding: .6rem .75rem; }
+  .qp-is-lbl { min-width: 44px; font-size: .68rem; }
+  .qp-is-btn { font-size: .72rem; padding: .25rem .42rem; }
+}
 
 .qp-search {
   width: 100%;

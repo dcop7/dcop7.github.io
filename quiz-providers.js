@@ -414,8 +414,8 @@ const _TRIVIA = {
     const n    = QuizEngine.optionCount(age);
     const pool = QuizEngine.shuffle(bank).slice(0, count || 10);
     return pool.map((item, i) => {
-      const options    = item.opts.slice(0, n);
-      const correctIdx = options.indexOf(item.a);
+      const distractors = item.opts.filter(o => o !== item.a);
+      const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
       return {
         id: `bank-${i}`,
         question: item.q,
@@ -667,8 +667,8 @@ QuizEngine.register('clocks', {
       const d  = DATA[lang] || DATA.en;
       const pool = QuizEngine.shuffle(d).slice(0, count||10);
       return pool.map((item, i) => {
-        const options = item.opts.slice(0, n);
-        const correctIdx = options.indexOf(item.a);
+        const distractors = item.opts.filter(o => o !== item.a);
+        const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
         return { id:`space-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
       });
     }
@@ -716,8 +716,9 @@ QuizEngine.register('clocks', {
       const d = DATA[lang] || DATA.en;
       const pool = QuizEngine.shuffle(d).slice(0, count||10);
       return pool.map((item, i) => {
-        const options = item.opts.slice(0, n);
-        return { id:`body-${i}`, question:item.q, options, correctIdx:options.indexOf(item.a), explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
+        const distractors = item.opts.filter(o => o !== item.a);
+        const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
+        return { id:`body-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
       });
     }
   });
@@ -882,8 +883,9 @@ QuizEngine.register('clocks', {
       const d = DATA[lang] || DATA.en;
       const pool = QuizEngine.shuffle(d).slice(0, count||10);
       return pool.map((item, i) => {
-        const options = item.opts.slice(0, n);
-        return { id:`tech-${i}`, question:item.q, options, correctIdx:options.indexOf(item.a), explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
+        const distractors = item.opts.filter(o => o !== item.a);
+        const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
+        return { id:`tech-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
       });
     }
   });
@@ -926,8 +928,9 @@ QuizEngine.register('clocks', {
       const n = QuizEngine.optionCount(age);
       const pool = QuizEngine.shuffle(ORTHO_PT).slice(0, count||10);
       return pool.map((item, i) => {
-        const options = item.opts.slice(0, n);
-        return { id:`spell-${i}`, question:item.q, options, correctIdx:options.indexOf(item.a), explanation:item.exp, difficulty:age<=10?'easy':'medium', lang:'pt' };
+        const distractors = item.opts.filter(o => o !== item.a);
+        const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
+        return { id:`spell-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang:'pt' };
       });
     }
   });
@@ -938,8 +941,9 @@ QuizEngine.register('clocks', {
       const n = QuizEngine.optionCount(age);
       const pool = QuizEngine.shuffle(VOCAB_EN).slice(0, count||8);
       return pool.map((item, i) => {
-        const options = item.opts.slice(0, n);
-        return { id:`vocab-${i}`, question:item.q, options, correctIdx:options.indexOf(item.a), explanation:item.exp, difficulty:age<=10?'easy':'medium', lang:'en' };
+        const distractors = item.opts.filter(o => o !== item.a);
+        const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
+        return { id:`vocab-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang:'en' };
       });
     }
   });

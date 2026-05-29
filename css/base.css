@@ -97,3 +97,41 @@ body.wp-active.light .widget {
     transition-duration: .01ms !important;
   }
 }
+body.motion-reduced *, body.motion-reduced *::before, body.motion-reduced *::after {
+  animation-duration: .01ms !important;
+  transition-duration: .01ms !important;
+}
+
+/* ── PARALLAX SYSTEM ── */
+/* Smooth transform for wallpaper and orbs canvas */
+#bg-wallpaper    { transition: background-position .05s linear; }
+.bg-canvas       { transition: transform .05s linear; will-change: transform; }
+
+/* Performance mode — pause orb drift animations */
+body.perf-mode .bg-orb { animation-play-state: paused; }
+
+/* Background effects intensity */
+body.bg-effects-disabled .bg-canvas { opacity: 0; pointer-events: none; }
+body.bg-effects-low  .bg-canvas { opacity: 0.35; }
+/* medium = default, no override needed */
+body.bg-effects-high .bg-orb {
+  filter: blur(90px) brightness(1.5);
+}
+body.bg-effects-high .orb-1 {
+  background: radial-gradient(circle, rgba(var(--accent-rgb),.13) 0%, transparent 70%);
+}
+body.bg-effects-high .orb-2 {
+  background: radial-gradient(circle, rgba(139,92,246,.10) 0%, transparent 70%);
+}
+body.bg-effects-high .orb-3 {
+  background: radial-gradient(circle, rgba(6,182,212,.09) 0%, transparent 70%);
+}
+
+/* Content layer: subtle depth shift */
+.view-inner, .qp-page { transition: transform .06s linear; will-change: transform; }
+
+/* Disable content parallax in perf mode or parallax-off */
+body.perf-mode .view-inner,
+body.perf-mode .qp-page,
+body.parallax-off .view-inner,
+body.parallax-off .qp-page { transform: none !important; will-change: auto; }

@@ -69,6 +69,56 @@
 .hf-new-btn:hover { opacity: .88; }
 @media (max-width: 900px) { .hf-body { grid-template-columns: 1fr; } }
 
+/* ── GAME HUB SETTINGS BAR ── */
+.gh-settings-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-bottom: 1.5rem;
+  padding: .75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.gh-settings-lbl {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  flex-shrink: 0;
+}
+
+.gh-age-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+
+.gh-age-btn {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text2);
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .3rem .55rem;
+  cursor: pointer;
+  transition: all var(--ease);
+  font-family: inherit;
+  min-width: 30px;
+  text-align: center;
+}
+.gh-age-btn:hover { border-color: rgba(var(--accent-rgb),.4); color: var(--accent); background: var(--accent-soft); }
+.gh-age-btn.active {
+  background: var(--accent-soft);
+  border-color: rgba(var(--accent-rgb),.45);
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* ── GAME GROUPS ── */
 .games-group { margin-bottom: 1.75rem; }
 .games-group-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: .65rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .4rem; }

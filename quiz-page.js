@@ -107,25 +107,30 @@ const QuizPage = (function () {
     const lang = getLang();
     const ql   = lang === 'pt' ? 'pt' : 'en';
 
+    const AGES_Q = [6,7,8,9,10,11,12,13,14];
+
     _el.innerHTML = `
       <div class="qp-page">
         <div class="qp-hero">
           <div class="qp-hero-inner">
             <h1 class="qp-title">🧩 Quizzes</h1>
             <p class="qp-sub">${lang === 'pt' ? 'Aprender a brincar' : 'Learning through play'}</p>
-            <div class="qp-meta-bar">
-              <span class="qp-meta-chip">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                ${lang === 'pt' ? 'Idade' : 'Age'}: <strong>${age === '14' ? '14+' : age}</strong>
-              </span>
-              <span class="qp-meta-chip">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                ${lang === 'pt' ? '🇵🇹 Português' : '🇬🇧 English'}
-              </span>
-              <button class="qp-settings-btn" id="qp-settings-btn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                ${lang === 'pt' ? 'Definições' : 'Settings'}
-              </button>
+            <div class="qp-inline-settings">
+              <div class="qp-is-row">
+                <span class="qp-is-lbl">${lang === 'pt' ? 'Idade' : 'Age'}</span>
+                <div class="qp-is-ages" id="qp-is-ages">
+                  ${AGES_Q.map(a =>
+                    `<button class="qp-is-btn${age===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
+                  ).join('')}
+                </div>
+              </div>
+              <div class="qp-is-row">
+                <span class="qp-is-lbl">${lang === 'pt' ? 'Língua' : 'Language'}</span>
+                <div class="qp-is-langs" id="qp-is-langs">
+                  <button class="qp-is-btn${lang==='pt'?' active':''}" data-lang="pt">🇵🇹 PT</button>
+                  <button class="qp-is-btn${lang==='en'?' active':''}" data-lang="en">🇬🇧 EN</button>
+                </div>
+              </div>
             </div>
             <input type="search" class="qp-search" id="qp-search" placeholder="${lang === 'pt' ? 'Pesquisar quizzes…' : 'Search quizzes…'}" value="${_search}" autocomplete="off"/>
           </div>
@@ -133,8 +138,25 @@ const QuizPage = (function () {
         <div class="qp-cats" id="qp-cats"></div>
       </div>`;
 
-    _el.querySelector('#qp-settings-btn')?.addEventListener('click', () => {
-      if (typeof Nav !== 'undefined') Nav.go('settings');
+    /* Age selector */
+    _el.querySelectorAll('#qp-is-ages .qp-is-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = btn.dataset.age;
+        localStorage.setItem('quiz-age', a);
+        _el.querySelectorAll('#qp-is-ages .qp-is-btn').forEach(b => b.classList.toggle('active', b === btn));
+        renderCats(getLang() === 'pt' ? 'pt' : 'en');
+        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { age: a } }));
+      });
+    });
+
+    /* Language selector */
+    _el.querySelectorAll('#qp-is-langs .qp-is-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const l = btn.dataset.lang;
+        localStorage.setItem('quiz-lang', l);
+        renderBrowse();
+        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { lang: l } }));
+      });
     });
 
     const searchInput = _el.querySelector('#qp-search');
