@@ -251,78 +251,78 @@ function _flagUrl(cca2) {
 const _TRIVIA = {
   pt: {
     gk: [
-      {q:'Quantos planetas tem o Sistema Solar?',a:'8',opts:['6','7','8','9'],exp:'Os 8 planetas: Mercúrio, Vénus, Terra, Marte, Júpiter, Saturno, Urano e Neptuno.'},
-      {q:'Qual é o maior oceano do mundo?',a:'Pacífico',opts:['Atlântico','Índico','Pacífico','Ártico'],exp:'O oceano Pacífico cobre mais de 165 milhões de km².'},
-      {q:'Em que país fica a Torre Eiffel?',a:'França',opts:['Itália','Espanha','França','Alemanha'],exp:'A Torre Eiffel fica em Paris, França, e foi construída em 1889.'},
-      {q:'Qual é o animal mais rápido do mundo?',a:'Guepardo',opts:['Leão','Águia','Guepardo','Leopardo'],exp:'O guepardo pode atingir 112 km/h em corrida.'},
-      {q:'Quantos continentes tem a Terra?',a:'7',opts:['5','6','7','8'],exp:'Os 7 continentes: África, Antárctica, Ásia, Europa, América do Norte, América do Sul e Oceânia.'},
-      {q:'Qual é o rio mais longo do mundo?',a:'Nilo',opts:['Amazonas','Nilo','Yangtzé','Mississípi'],exp:'O Nilo tem cerca de 6 650 km de comprimento.'},
-      {q:'Quantos lados tem um hexágono?',a:'6',opts:['4','5','6','8'],exp:'Hexa significa seis em grego.'},
-      {q:'Qual é a capital da Austrália?',a:'Camberra',opts:['Sydney','Melbourne','Camberra','Perth'],exp:'Camberra é a capital da Austrália, não Sydney.'},
-      {q:'De que material é feita a teia da aranha?',a:'Seda',opts:['Algodão','Seda','Nylon','Lã'],exp:'A teia de aranha é feita de seda proteica — mais resistente que o aço do mesmo peso.'},
-      {q:'Quantas horas tem um dia?',a:'24',opts:['12','20','24','48'],exp:'Um dia tem 24 horas, que é o tempo que a Terra demora a dar uma volta completa sobre si mesma.'},
-      {q:'Qual é o metal mais leve?',a:'Lítio',opts:['Alumínio','Ferro','Cobre','Lítio'],exp:'O lítio é o metal mais leve da tabela periódica.'},
-      {q:'Quantas asas tem uma borboleta?',a:'4',opts:['2','4','6','8'],exp:'As borboletas têm 4 asas: duas anteriores e duas posteriores.'},
-      {q:'Qual é o osso mais longo do corpo humano?',a:'Fémur',opts:['Tíbia','Fémur','Húmero','Rádio'],exp:'O fémur é o osso da coxa e o mais longo do corpo.'},
-      {q:'Quem escreveu "Os Lusíadas"?',a:'Luís de Camões',opts:['Fernando Pessoa','Eça de Queirós','Luís de Camões','José Saramago'],exp:'"Os Lusíadas" é o épico nacional de Portugal, escrito por Luís de Camões no século XVI.'},
-      {q:'Que instrumento usa um astrónomo?',a:'Telescópio',opts:['Microscópio','Telescópio','Barómetro','Bússola'],exp:'O telescópio permite observar objetos distantes no espaço.'},
+      {q:'Quantos planetas tem o Sistema Solar?',a:'8',opts:['6','7','8','9'],exp:'Os 8 planetas: Mercúrio, Vénus, Terra, Marte, Júpiter, Saturno, Urano e Neptuno.',d:1},
+      {q:'Qual é o maior oceano do mundo?',a:'Pacífico',opts:['Atlântico','Índico','Pacífico','Ártico'],exp:'O oceano Pacífico cobre mais de 165 milhões de km².',d:2},
+      {q:'Em que país fica a Torre Eiffel?',a:'França',opts:['Itália','Espanha','França','Alemanha'],exp:'A Torre Eiffel fica em Paris, França, e foi construída em 1889.',d:1},
+      {q:'Qual é o animal mais rápido do mundo?',a:'Guepardo',opts:['Leão','Águia','Guepardo','Leopardo'],exp:'O guepardo pode atingir 112 km/h em corrida.',d:1},
+      {q:'Quantos continentes tem a Terra?',a:'7',opts:['5','6','7','8'],exp:'Os 7 continentes: África, Antárctica, Ásia, Europa, América do Norte, América do Sul e Oceânia.',d:1},
+      {q:'Qual é o rio mais longo do mundo?',a:'Nilo',opts:['Amazonas','Nilo','Yangtzé','Mississípi'],exp:'O Nilo tem cerca de 6 650 km de comprimento.',d:2},
+      {q:'Quantos lados tem um hexágono?',a:'6',opts:['4','5','6','8'],exp:'Hexa significa seis em grego.',d:1},
+      {q:'Qual é a capital da Austrália?',a:'Camberra',opts:['Sydney','Melbourne','Camberra','Perth'],exp:'Camberra é a capital da Austrália, não Sydney.',d:3},
+      {q:'De que material é feita a teia da aranha?',a:'Seda',opts:['Algodão','Seda','Nylon','Lã'],exp:'A teia de aranha é feita de seda proteica — mais resistente que o aço do mesmo peso.',d:2},
+      {q:'Quantas horas tem um dia?',a:'24',opts:['12','20','24','48'],exp:'Um dia tem 24 horas, que é o tempo que a Terra demora a dar uma volta completa sobre si mesma.',d:1},
+      {q:'Qual é o metal mais leve?',a:'Lítio',opts:['Alumínio','Ferro','Cobre','Lítio'],exp:'O lítio é o metal mais leve da tabela periódica.',d:3},
+      {q:'Quantas asas tem uma borboleta?',a:'4',opts:['2','4','6','8'],exp:'As borboletas têm 4 asas: duas anteriores e duas posteriores.',d:1},
+      {q:'Qual é o osso mais longo do corpo humano?',a:'Fémur',opts:['Tíbia','Fémur','Húmero','Rádio'],exp:'O fémur é o osso da coxa e o mais longo do corpo.',d:2},
+      {q:'Quem escreveu "Os Lusíadas"?',a:'Luís de Camões',opts:['Fernando Pessoa','Eça de Queirós','Luís de Camões','José Saramago'],exp:'"Os Lusíadas" é o épico nacional de Portugal, escrito por Luís de Camões no século XVI.',d:3},
+      {q:'Que instrumento usa um astrónomo?',a:'Telescópio',opts:['Microscópio','Telescópio','Barómetro','Bússola'],exp:'O telescópio permite observar objetos distantes no espaço.',d:1},
     ],
     science: [
-      {q:'O que estuda a biologia?',a:'Os seres vivos',opts:['As rochas','Os seres vivos','Os planetas','Os números'],exp:'A biologia é a ciência que estuda todos os seres vivos.'},
-      {q:'Qual é o símbolo químico do ouro?',a:'Au',opts:['Or','Go','Au','Ag'],exp:'Au vem do latim "aurum".'},
-      {q:'O que é a fotossíntese?',a:'Processo pelo qual as plantas produzem alimento',opts:['A respiração dos animais','Processo pelo qual as plantas produzem alimento','A digestão dos insetos','O ciclo da água'],exp:'As plantas usam luz solar, CO₂ e água para produzir glucose e oxigénio.'},
-      {q:'De que é composta a água?',a:'Hidrogénio e oxigénio',opts:['Hidrogénio e azoto','Hidrogénio e oxigénio','Oxigénio e carbono','Azoto e oxigénio'],exp:'H₂O = 2 átomos de hidrogénio + 1 átomo de oxigénio.'},
-      {q:'Qual é a força que nos mantém na Terra?',a:'Gravidade',opts:['Magnetismo','Fricção','Gravidade','Electricidade'],exp:'A gravidade é a força de atracção entre massas. A Terra atrai tudo para o seu centro.'},
-      {q:'Quantas células tem o corpo humano?',a:'Cerca de 37 biliões',opts:['Cerca de 1 milhão','Cerca de 1 bilião','Cerca de 37 biliões','Cerca de 1 trilião'],exp:'Estima-se que o corpo humano tenha cerca de 37,2 biliões de células.'},
-      {q:'O que é um átomo?',a:'A menor unidade da matéria',opts:['Uma molécula de água','A menor unidade da matéria','Um tipo de célula','Uma partícula de luz'],exp:'Os átomos são os blocos fundamentais de toda a matéria.'},
-      {q:'Qual é o planeta mais próximo do Sol?',a:'Mercúrio',opts:['Vénus','Terra','Mercúrio','Marte'],exp:'Mercúrio é o primeiro planeta do Sistema Solar.'},
-      {q:'O que é um vulcão?',a:'Uma abertura na crosta terrestre que liberta magma',opts:['Uma montanha com neve','Uma abertura na crosta terrestre que liberta magma','Um tipo de nuvem','Um canal submarino'],exp:'Quando o magma sai pelo vulcão, chama-se lava.'},
-      {q:'Qual é a velocidade da luz?',a:'300 000 km/s',opts:['150 000 km/s','300 000 km/s','600 000 km/s','100 000 km/s'],exp:'A luz percorre cerca de 300 000 km por segundo no vácuo.'},
-      {q:'O que estuda a meteorologia?',a:'O tempo e o clima',opts:['Os meteoros','O tempo e o clima','Os oceanos','Os vulcões'],exp:'A meteorologia estuda a atmosfera e os fenómenos climáticos.'},
+      {q:'O que estuda a biologia?',a:'Os seres vivos',opts:['As rochas','Os seres vivos','Os planetas','Os números'],exp:'A biologia é a ciência que estuda todos os seres vivos.',d:1},
+      {q:'Qual é o símbolo químico do ouro?',a:'Au',opts:['Or','Go','Au','Ag'],exp:'Au vem do latim "aurum".',d:2},
+      {q:'O que é a fotossíntese?',a:'Processo pelo qual as plantas produzem alimento',opts:['A respiração dos animais','Processo pelo qual as plantas produzem alimento','A digestão dos insetos','O ciclo da água'],exp:'As plantas usam luz solar, CO₂ e água para produzir glucose e oxigénio.',d:2},
+      {q:'De que é composta a água?',a:'Hidrogénio e oxigénio',opts:['Hidrogénio e azoto','Hidrogénio e oxigénio','Oxigénio e carbono','Azoto e oxigénio'],exp:'H₂O = 2 átomos de hidrogénio + 1 átomo de oxigénio.',d:2},
+      {q:'Qual é a força que nos mantém na Terra?',a:'Gravidade',opts:['Magnetismo','Fricção','Gravidade','Electricidade'],exp:'A gravidade é a força de atracção entre massas. A Terra atrai tudo para o seu centro.',d:2},
+      {q:'Quantas células tem o corpo humano?',a:'Cerca de 37 biliões',opts:['Cerca de 1 milhão','Cerca de 1 bilião','Cerca de 37 biliões','Cerca de 1 trilião'],exp:'Estima-se que o corpo humano tenha cerca de 37,2 biliões de células.',d:3},
+      {q:'O que é um átomo?',a:'A menor unidade da matéria',opts:['Uma molécula de água','A menor unidade da matéria','Um tipo de célula','Uma partícula de luz'],exp:'Os átomos são os blocos fundamentais de toda a matéria.',d:2},
+      {q:'Qual é o planeta mais próximo do Sol?',a:'Mercúrio',opts:['Vénus','Terra','Mercúrio','Marte'],exp:'Mercúrio é o primeiro planeta do Sistema Solar.',d:1},
+      {q:'O que é um vulcão?',a:'Uma abertura na crosta terrestre que liberta magma',opts:['Uma montanha com neve','Uma abertura na crosta terrestre que liberta magma','Um tipo de nuvem','Um canal submarino'],exp:'Quando o magma sai pelo vulcão, chama-se lava.',d:2},
+      {q:'Qual é a velocidade da luz?',a:'300 000 km/s',opts:['150 000 km/s','300 000 km/s','600 000 km/s','100 000 km/s'],exp:'A luz percorre cerca de 300 000 km por segundo no vácuo.',d:3},
+      {q:'O que estuda a meteorologia?',a:'O tempo e o clima',opts:['Os meteoros','O tempo e o clima','Os oceanos','Os vulcões'],exp:'A meteorologia estuda a atmosfera e os fenómenos climáticos.',d:2},
     ],
     history: [
-      {q:'Em que ano terminou a Segunda Guerra Mundial?',a:'1945',opts:['1939','1942','1945','1950'],exp:'A Segunda Guerra Mundial terminou em 1945 com a rendição da Alemanha (maio) e do Japão (agosto).'},
-      {q:'Quem foi o primeiro presidente dos EUA?',a:'George Washington',opts:['Abraham Lincoln','Thomas Jefferson','George Washington','Benjamin Franklin'],exp:'George Washington foi o primeiro presidente dos Estados Unidos (1789–1797).'},
-      {q:'Em que ano chegou o Homem à Lua?',a:'1969',opts:['1959','1965','1969','1972'],exp:'Neil Armstrong e Buzz Aldrin chegaram à Lua a 20 de julho de 1969, na missão Apollo 11.'},
-      {q:'Quem descobriu o Brasil?',a:'Pedro Álvares Cabral',opts:['Cristóvão Colombo','Vasco da Gama','Pedro Álvares Cabral','Fernão de Magalhães'],exp:'Pedro Álvares Cabral chegou ao Brasil a 22 de abril de 1500.'},
-      {q:'Em que ano ocorreu a Revolução dos Cravos em Portugal?',a:'1974',opts:['1968','1970','1974','1976'],exp:'A Revolução dos Cravos aconteceu a 25 de abril de 1974, restaurando a democracia em Portugal.'},
-      {q:'Quem foi Napoleão Bonaparte?',a:'Imperador de França',opts:['Rei de Espanha','Imperador de França','Czar da Rússia','Chanceler da Alemanha'],exp:'Napoleão Bonaparte foi Imperador de França de 1804 a 1814/1815.'},
-      {q:'Qual é a civilização que construiu as pirâmides do Egipto?',a:'Egípcia',opts:['Romana','Grega','Egípcia','Mesopotâmica'],exp:'As pirâmides foram construídas pelos antigos Egípcios há cerca de 4 500 anos.'},
-      {q:'Em que continente nasceu a humanidade?',a:'África',opts:['Ásia','Europa','África','América'],exp:'Os fósseis mais antigos de humanos modernos foram encontrados em África.'},
-      {q:'Quando começou a Primeira Guerra Mundial?',a:'1914',opts:['1910','1914','1918','1920'],exp:'A Primeira Guerra Mundial começou em julho de 1914 e terminou em novembro de 1918.'},
-      {q:'Quem foi Júlio César?',a:'General e ditador romano',opts:['Rei da Grécia','General e ditador romano','Faraó do Egipto','Imperador da China'],exp:'Júlio César foi um dos mais importantes líderes da Roma Antiga, assassinado em 44 a.C.'},
+      {q:'Em que ano terminou a Segunda Guerra Mundial?',a:'1945',opts:['1939','1942','1945','1950'],exp:'A Segunda Guerra Mundial terminou em 1945 com a rendição da Alemanha (maio) e do Japão (agosto).',d:2},
+      {q:'Quem foi o primeiro presidente dos EUA?',a:'George Washington',opts:['Abraham Lincoln','Thomas Jefferson','George Washington','Benjamin Franklin'],exp:'George Washington foi o primeiro presidente dos Estados Unidos (1789–1797).',d:2},
+      {q:'Em que ano chegou o Homem à Lua?',a:'1969',opts:['1959','1965','1969','1972'],exp:'Neil Armstrong e Buzz Aldrin chegaram à Lua a 20 de julho de 1969, na missão Apollo 11.',d:1},
+      {q:'Quem descobriu o Brasil?',a:'Pedro Álvares Cabral',opts:['Cristóvão Colombo','Vasco da Gama','Pedro Álvares Cabral','Fernão de Magalhães'],exp:'Pedro Álvares Cabral chegou ao Brasil a 22 de abril de 1500.',d:2},
+      {q:'Em que ano ocorreu a Revolução dos Cravos em Portugal?',a:'1974',opts:['1968','1970','1974','1976'],exp:'A Revolução dos Cravos aconteceu a 25 de abril de 1974, restaurando a democracia em Portugal.',d:2},
+      {q:'Quem foi Napoleão Bonaparte?',a:'Imperador de França',opts:['Rei de Espanha','Imperador de França','Czar da Rússia','Chanceler da Alemanha'],exp:'Napoleão Bonaparte foi Imperador de França de 1804 a 1814/1815.',d:3},
+      {q:'Qual é a civilização que construiu as pirâmides do Egipto?',a:'Egípcia',opts:['Romana','Grega','Egípcia','Mesopotâmica'],exp:'As pirâmides foram construídas pelos antigos Egípcios há cerca de 4 500 anos.',d:1},
+      {q:'Em que continente nasceu a humanidade?',a:'África',opts:['Ásia','Europa','África','América'],exp:'Os fósseis mais antigos de humanos modernos foram encontrados em África.',d:2},
+      {q:'Quando começou a Primeira Guerra Mundial?',a:'1914',opts:['1910','1914','1918','1920'],exp:'A Primeira Guerra Mundial começou em julho de 1914 e terminou em novembro de 1918.',d:3},
+      {q:'Quem foi Júlio César?',a:'General e ditador romano',opts:['Rei da Grécia','General e ditador romano','Faraó do Egipto','Imperador da China'],exp:'Júlio César foi um dos mais importantes líderes da Roma Antiga, assassinado em 44 a.C.',d:3},
     ],
     animals: [
-      {q:'O que come um coelho?',a:'Ervas e vegetais',opts:['Carne','Ervas e vegetais','Peixes','Insectos'],exp:'Os coelhos são herbívoros — comem ervas, cenouras, folhas e outros vegetais.'},
-      {q:'Qual é o maior animal terrestre?',a:'Elefante-africano',opts:['Hipopótamo','Girafa','Elefante-africano','Rinoceronte'],exp:'O elefante-africano é o maior animal terrestre, podendo pesar mais de 6 toneladas.'},
-      {q:'Quantas patas tem uma aranha?',a:'8',opts:['6','8','10','4'],exp:'As aranhas têm 8 patas, o que as distingue dos insectos (que têm 6).'},
-      {q:'Que som faz um gato?',a:'Mia',opts:['Late','Muge','Mia','Grasna'],exp:'Os gatos miam para comunicar com os humanos — é um comportamento aprendido.'},
-      {q:'Qual é o peixe mais rápido?',a:'Peixe-vela',opts:['Tubarão','Atum','Peixe-vela','Espadarte'],exp:'O peixe-vela pode atingir 110 km/h, sendo o peixe mais rápido do mundo.'},
-      {q:'De que se alimenta o panda gigante?',a:'Bambu',opts:['Peixe','Bambu','Mel','Frutos'],exp:'O panda gigante come quase exclusivamente bambu, consumindo até 40 kg por dia.'},
-      {q:'Qual animal tem a maior língua?',a:'Girafa',opts:['Camaleão','Girafa','Formigueiro','Elefante'],exp:'A língua da girafa tem cerca de 45 cm de comprimento.'},
-      {q:'Quantas asas tem uma abelha?',a:'4',opts:['2','4','6','0'],exp:'As abelhas têm 4 asas — 2 anteriores e 2 posteriores que se ligam em voo.'},
-      {q:'O que é um mamífero?',a:'Animal que amamenta as crias',opts:['Animal que bota ovos','Animal que amamenta as crias','Animal que vive na água','Animal com escamas'],exp:'Os mamíferos são animais de sangue quente que amamentam as crias com leite.'},
-      {q:'Qual é o maior animal do mundo?',a:'Baleia-azul',opts:['Elefante-africano','Tubarão-baleia','Baleia-azul','Crocodilo'],exp:'A baleia-azul pode atingir 30 metros de comprimento e 180 toneladas de peso.'},
+      {q:'O que come um coelho?',a:'Ervas e vegetais',opts:['Carne','Ervas e vegetais','Peixes','Insectos'],exp:'Os coelhos são herbívoros — comem ervas, cenouras, folhas e outros vegetais.',d:1},
+      {q:'Qual é o maior animal terrestre?',a:'Elefante-africano',opts:['Hipopótamo','Girafa','Elefante-africano','Rinoceronte'],exp:'O elefante-africano é o maior animal terrestre, podendo pesar mais de 6 toneladas.',d:1},
+      {q:'Quantas patas tem uma aranha?',a:'8',opts:['6','8','10','4'],exp:'As aranhas têm 8 patas, o que as distingue dos insectos (que têm 6).',d:1},
+      {q:'Que som faz um gato?',a:'Mia',opts:['Late','Muge','Mia','Grasna'],exp:'Os gatos miam para comunicar com os humanos — é um comportamento aprendido.',d:1},
+      {q:'Qual é o peixe mais rápido?',a:'Peixe-vela',opts:['Tubarão','Atum','Peixe-vela','Espadarte'],exp:'O peixe-vela pode atingir 110 km/h, sendo o peixe mais rápido do mundo.',d:2},
+      {q:'De que se alimenta o panda gigante?',a:'Bambu',opts:['Peixe','Bambu','Mel','Frutos'],exp:'O panda gigante come quase exclusivamente bambu, consumindo até 40 kg por dia.',d:1},
+      {q:'Qual animal tem a maior língua?',a:'Girafa',opts:['Camaleão','Girafa','Formigueiro','Elefante'],exp:'A língua da girafa tem cerca de 45 cm de comprimento.',d:3},
+      {q:'Quantas asas tem uma abelha?',a:'4',opts:['2','4','6','0'],exp:'As abelhas têm 4 asas — 2 anteriores e 2 posteriores que se ligam em voo.',d:2},
+      {q:'O que é um mamífero?',a:'Animal que amamenta as crias',opts:['Animal que bota ovos','Animal que amamenta as crias','Animal que vive na água','Animal com escamas'],exp:'Os mamíferos são animais de sangue quente que amamentam as crias com leite.',d:2},
+      {q:'Qual é o maior animal do mundo?',a:'Baleia-azul',opts:['Elefante-africano','Tubarão-baleia','Baleia-azul','Crocodilo'],exp:'A baleia-azul pode atingir 30 metros de comprimento e 180 toneladas de peso.',d:1},
     ],
     sport: [
-      {q:'Quantos jogadores tem uma equipa de futebol?',a:'11',opts:['9','10','11','12'],exp:'Cada equipa de futebol tem 11 jogadores em campo, incluindo o guarda-redes.'},
-      {q:'Em que desporto se usa uma raquete e uma rede baixa?',a:'Ténis',opts:['Basquetebol','Badminton','Ténis','Squash'],exp:'No ténis usa-se uma raquete para rebater uma bola por cima de uma rede.'},
-      {q:'Quantos anos separam cada Jogos Olímpicos de Verão?',a:'4',opts:['2','4','5','6'],exp:'Os Jogos Olímpicos de Verão realizam-se de 4 em 4 anos.'},
-      {q:'Em que país nasceu o futebol moderno?',a:'Inglaterra',opts:['Brasil','Alemanha','Inglaterra','Espanha'],exp:'O futebol moderno foi codificado em Inglaterra em 1863.'},
-      {q:'Que desporto se joga com um volante?',a:'Badminton',opts:['Squash','Ténis','Paddle','Badminton'],exp:'O volante é o projéctil usado no badminton, feito de penas ou plástico.'},
-      {q:'Quantos pontos vale uma cesta de 3 pontos no basquetebol?',a:'3',opts:['1','2','3','4'],exp:'O lançamento de trás da linha de 3 pontos vale 3 pontos no basquetebol.'},
-      {q:'Em que desporto se usa um taco para bater numa bola?',a:'Golfe',opts:['Hóquei','Polo','Golfe','Cricket'],exp:'No golfe, o objectivo é introduzir a bola no buraco com o menor número de tacadas.'},
-      {q:'Qual é o maior torneio de ténis realizado em Wimbledon?',a:'Grand Slam',opts:['Copa Davis','Masters','Grand Slam','Liga ATP'],exp:'Wimbledon é um dos 4 torneios Grand Slam do ténis mundial.'},
+      {q:'Quantos jogadores tem uma equipa de futebol?',a:'11',opts:['9','10','11','12'],exp:'Cada equipa de futebol tem 11 jogadores em campo, incluindo o guarda-redes.',d:1},
+      {q:'Em que desporto se usa uma raquete e uma rede baixa?',a:'Ténis',opts:['Basquetebol','Badminton','Ténis','Squash'],exp:'No ténis usa-se uma raquete para rebater uma bola por cima de uma rede.',d:1},
+      {q:'Quantos anos separam cada Jogos Olímpicos de Verão?',a:'4',opts:['2','4','5','6'],exp:'Os Jogos Olímpicos de Verão realizam-se de 4 em 4 anos.',d:2},
+      {q:'Em que país nasceu o futebol moderno?',a:'Inglaterra',opts:['Brasil','Alemanha','Inglaterra','Espanha'],exp:'O futebol moderno foi codificado em Inglaterra em 1863.',d:2},
+      {q:'Que desporto se joga com um volante?',a:'Badminton',opts:['Squash','Ténis','Paddle','Badminton'],exp:'O volante é o projéctil usado no badminton, feito de penas ou plástico.',d:2},
+      {q:'Quantos pontos vale uma cesta de 3 pontos no basquetebol?',a:'3',opts:['1','2','3','4'],exp:'O lançamento de trás da linha de 3 pontos vale 3 pontos no basquetebol.',d:2},
+      {q:'Em que desporto se usa um taco para bater numa bola?',a:'Golfe',opts:['Hóquei','Polo','Golfe','Cricket'],exp:'No golfe, o objectivo é introduzir a bola no buraco com o menor número de tacadas.',d:2},
+      {q:'Qual é o maior torneio de ténis realizado em Wimbledon?',a:'Grand Slam',opts:['Copa Davis','Masters','Grand Slam','Liga ATP'],exp:'Wimbledon é um dos 4 torneios Grand Slam do ténis mundial.',d:3},
     ],
     music: [
-      {q:'Quantas cordas tem um violino?',a:'4',opts:['3','4','5','6'],exp:'O violino tem 4 cordas: Sol, Ré, Lá e Mi.'},
-      {q:'Qual instrumento é considerado "o rei dos instrumentos"?',a:'Órgão',opts:['Piano','Violino','Órgão','Harpa'],exp:'O órgão é chamado "o rei dos instrumentos" pela sua grandiosidade e variedade de sons.'},
-      {q:'De que país é o fado?',a:'Portugal',opts:['Espanha','Brasil','Portugal','Argentina'],exp:'O fado é o género musical tradicional português, classificado como Património da UNESCO.'},
-      {q:'Quantas teclas brancas tem um piano normal?',a:'52',opts:['48','52','56','60'],exp:'Um piano de 88 teclas tem 52 teclas brancas e 36 teclas pretas.'},
-      {q:'O que é uma sinfonia?',a:'Uma composição para orquestra',opts:['Uma canção popular','Uma composição para orquestra','Um dueto de piano','Uma dança tradicional'],exp:'Uma sinfonia é uma composição musical extensa para orquestra, geralmente com 4 andamentos.'},
-      {q:'Quem foi Beethoven?',a:'Um compositor alemão',opts:['Um cantor inglês','Um compositor alemão','Um violinista italiano','Um pianista francês'],exp:'Ludwig van Beethoven foi um dos maiores compositores da história, que continuou a compor mesmo depois de ficar surdo.'},
-      {q:'Que instrumento toca-se com um arco?',a:'Violino',opts:['Guitarra','Flauta','Violino','Saxofone'],exp:'O violino, viola, violoncelo e contrabaixo tocam-se com um arco.'},
-      {q:'O que é o jazz?',a:'Um género musical americano',opts:['Música clássica europeia','Um género musical americano','Dança tradicional africana','Música folclórica portuguesa'],exp:'O jazz nasceu nos Estados Unidos no início do século XX, com raízes na música africana-americana.'},
+      {q:'Quantas cordas tem um violino?',a:'4',opts:['3','4','5','6'],exp:'O violino tem 4 cordas: Sol, Ré, Lá e Mi.',d:2},
+      {q:'Qual instrumento é considerado "o rei dos instrumentos"?',a:'Órgão',opts:['Piano','Violino','Órgão','Harpa'],exp:'O órgão é chamado "o rei dos instrumentos" pela sua grandiosidade e variedade de sons.',d:3},
+      {q:'De que país é o fado?',a:'Portugal',opts:['Espanha','Brasil','Portugal','Argentina'],exp:'O fado é o género musical tradicional português, classificado como Património da UNESCO.',d:1},
+      {q:'Quantas teclas brancas tem um piano normal?',a:'52',opts:['48','52','56','60'],exp:'Um piano de 88 teclas tem 52 teclas brancas e 36 teclas pretas.',d:3},
+      {q:'O que é uma sinfonia?',a:'Uma composição para orquestra',opts:['Uma canção popular','Uma composição para orquestra','Um dueto de piano','Uma dança tradicional'],exp:'Uma sinfonia é uma composição musical extensa para orquestra, geralmente com 4 andamentos.',d:2},
+      {q:'Quem foi Beethoven?',a:'Um compositor alemão',opts:['Um cantor inglês','Um compositor alemão','Um violinista italiano','Um pianista francês'],exp:'Ludwig van Beethoven foi um dos maiores compositores da história, que continuou a compor mesmo depois de ficar surdo.',d:2},
+      {q:'Que instrumento toca-se com um arco?',a:'Violino',opts:['Guitarra','Flauta','Violino','Saxofone'],exp:'O violino, viola, violoncelo e contrabaixo tocam-se com um arco.',d:1},
+      {q:'O que é o jazz?',a:'Um género musical americano',opts:['Música clássica europeia','Um género musical americano','Dança tradicional africana','Música folclórica portuguesa'],exp:'O jazz nasceu nos Estados Unidos no início do século XX, com raízes na música africana-americana.',d:2},
     ],
   },
   en: {
@@ -409,10 +409,33 @@ const _TRIVIA = {
     });
   }
 
+  /* Age → content band: 1 = younger, 2 = middle, 3 = older. */
+  function _ageBand(age) {
+    const a = parseInt(age) || 8;
+    if (a <= 8)  return 1;
+    if (a <= 11) return 2;
+    return 3;
+  }
+
+  /* When a bank carries `d` difficulty tags (1/2/3), pick age-appropriate items:
+     younger get only easy; middle get easy+medium; older get medium+hard.
+     Widens the pool automatically if a band has too few items for the count. */
+  function _selectForAge(bank, age, need) {
+    if (!bank.some(it => it.d)) return QuizEngine.shuffle(bank).slice(0, need);
+    const band = _ageBand(age);
+    const d = it => it.d || 2;
+    let pool = band === 1 ? bank.filter(it => d(it) <= 1)
+             : band === 2 ? bank.filter(it => d(it) <= 2)
+             :              bank.filter(it => d(it) >= 2);
+    if (pool.length < need) pool = band === 3 ? bank : bank.filter(it => d(it) <= 2);
+    if (pool.length < need) pool = bank;
+    return QuizEngine.shuffle(pool).slice(0, need);
+  }
+
   function fromBank(bank, opts) {
     const { age, lang, count } = opts;
     const n    = QuizEngine.optionCount(age);
-    const pool = QuizEngine.shuffle(bank).slice(0, count || 10);
+    const pool = _selectForAge(bank, age, count || 10);
     return pool.map((item, i) => {
       const distractors = item.opts.filter(o => o !== item.a);
       const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
@@ -421,7 +444,7 @@ const _TRIVIA = {
         question: item.q,
         options, correctIdx,
         explanation: item.exp,
-        difficulty: 'medium',
+        difficulty: item.d === 1 ? 'easy' : item.d === 3 ? 'hard' : 'medium',
         lang,
       };
     });

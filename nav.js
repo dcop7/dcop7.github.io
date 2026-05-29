@@ -181,7 +181,9 @@ const Nav = (function () {
 
   function measureHeader() {
     const h = document.getElementById('site-header');
-    if (h) document.documentElement.style.setProperty('--header-h', h.offsetHeight + 'px');
+    /* CSS consumes --hdr-h (tokens.css default 56px); keep it in sync with the
+       real header height so layouts stay correct at larger font sizes. */
+    if (h && h.offsetHeight) document.documentElement.style.setProperty('--hdr-h', h.offsetHeight + 'px');
   }
 
   function init() {

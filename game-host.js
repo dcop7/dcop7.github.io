@@ -10,6 +10,8 @@ const GameHost = (function () {
       desc: '5–7 desafios, conta decrescente. Consegues desarmar a bomba a tempo?' },
     { id: 'memory',        name: 'Memória',              icon: '🃏', color: '#a855f7', group: 'Clássicos',
       desc: 'Encontra todos os pares de cartas. Até 32 pares!' },
+    { id: 'wordle',        name: 'Palavra do Dia',       icon: '📝', color: '#10b981', group: 'Clássicos',
+      desc: 'Descobre a palavra de 5 letras em 6 tentativas. Estilo Wordle!' },
     { id: 'tictactoe',     name: 'Jogo do Galo',         icon: '⭕', color: '#f59e0b', group: 'Clássicos',
       desc: 'O clássico X e O contra a IA. Consegues ganhar?' },
     { id: 'reaction',      name: 'Teste de Reação',      icon: '⚡', color: '#22d3ee', group: 'Clássicos',
@@ -52,6 +54,7 @@ const GameHost = (function () {
     minesweeper:    { init: () => MinesweeperGame.init(document.getElementById('pane-minesweeper')),   initialized: false },
     bomb:           { init: () => BombGame.init(document.getElementById('pane-bomb')),                 initialized: false },
     memory:         { init: () => MemoryGame.init(document.getElementById('pane-memory')),             initialized: false },
+    wordle:         { init: () => WordleGame.init(document.getElementById('pane-wordle')),             initialized: false },
     tictactoe:      { init: () => TicTacToeGame.init(document.getElementById('pane-tictactoe')),       initialized: false },
     shooting:       { init: () => ShootingGame.init(document.getElementById('pane-shooting')),         initialized: false },
     reaction:       { init: () => ReactionGame.init(document.getElementById('pane-reaction')),         initialized: false },
@@ -145,6 +148,15 @@ const GameHost = (function () {
     hub.hidden  = true;
     area.hidden = false;
 
+    const entry = registry[gameId];
+    if (!entry) {
+      /* Unknown id (stale favourite or bad hash) — fall back to the hub */
+      hub.hidden  = false;
+      area.hidden = true;
+      Nav.go('games');
+      return;
+    }
+
     const g = GAMES.find(x => x.id === gameId);
     const bcName = document.getElementById('game-bc-name');
     if (bcName) bcName.textContent = g?.name || gameId;
@@ -152,9 +164,9 @@ const GameHost = (function () {
     document.querySelectorAll('.game-pane').forEach(p => p.classList.remove('active'));
     document.getElementById('pane-' + gameId)?.classList.add('active');
 
-    if (!registry[gameId].initialized) {
-      registry[gameId].init();
-      registry[gameId].initialized = true;
+    if (!entry.initialized) {
+      entry.init();
+      entry.initialized = true;
     }
 
     setTimeout(() => window.dispatchEvent(new Event('resize')), 60);

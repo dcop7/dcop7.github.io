@@ -252,7 +252,7 @@ const I18n = (function () {
     }
   };
 
-  let _lang = localStorage.getItem('site-lang') || 'en';
+  let _lang = localStorage.getItem('site-lang') || 'pt';
   document.documentElement.lang = _lang;
 
   function t(key, vars) {
