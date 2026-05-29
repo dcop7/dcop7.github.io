@@ -1,44 +1,75 @@
 /* ══════════════════════════════════════════════════════════════════
-   EXPLORER PAGE — World Map, Canvas Globe, Solar System
+   EXPLORER PAGE — World Map, WebGL Globe, Solar System
 ══════════════════════════════════════════════════════════════════ */
 const ExplorerPage = (function () {
   'use strict';
 
   /* ── Shared data ── */
   let _countries   = [];
-  let _geoJson     = null;    // memory-only, no sessionStorage (too large)
+  let _geoJson     = null;
   let _favorites   = [];
   let _recent      = [];
   let _countriesOk = false;
   let _geoJsonOk   = false;
 
-  /* ── Globe state (module-level for projection helpers) ── */
-  let _gRotX    = 0.3;
-  let _gRotY    = 0;
-  let _gRotYVel = 0.0015;
-  let _gPolygons = [];
-  let _gHovered  = null;
-  let _gRaf      = null;
-  let _gCanvas   = null;
-  let _gInited   = false;
+  /* ── Globe state (globe.gl) ── */
+  let _globeGL       = null;
+  let _globeInited   = false;
+  let _globeView     = 'realistic';   /* 'realistic' | 'night' | 'political' */
+  let _globeHovered  = null;
+  let _byCca3        = {};
+  let _updateGlobeColors = null;
 
   /* ── Leaflet state ── */
-  let _lMap      = null;
-  let _lTile     = null;
-  let _lLayer    = null;
-  let _lInited   = false;
+  let _lMap        = null;
+  let _lTile       = null;
+  let _lLayer      = null;
+  let _lInited     = false;
   let _lDataLoaded = false;
   let _contFilter  = 'all';
   let _themeObs    = null;
+  let _mapView     = 'political';   /* 'political' | 'satellite' | 'night' */
+  let _nightOverlay = null;
+  let _nightLayer   = null;
 
   /* ── Tab/shell ── */
-  let _shell   = null;
-  let _curTab  = 'hub';
+  let _shell  = null;
+  let _curTab = 'hub';
 
   /* ── Constants ── */
   const TTL = 86400000;
   const COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,cca2,cca3,flag,capital,population,currencies,languages,area,continents,flags,timezones,borders';
   const GEOJSON_URL   = 'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
+
+  const GLOBE_TEX = {
+    day:   'https://unpkg.com/three@0.160.0/examples/textures/planets/earth_atmos_2048.jpg',
+    night: 'https://unpkg.com/three@0.160.0/examples/textures/planets/earth_lights_2048.png',
+    bump:  'https://unpkg.com/three@0.160.0/examples/textures/planets/earth_normal_2048.jpg',
+    space: 'https://unpkg.com/three@0.160.0/examples/textures/2294472375_24a3b8ef46_o.jpg',
+  };
+
+  const CONT_COLORS = {
+    Africa:     'rgba(245,158,11,.55)',
+    Americas:   'rgba(34,197,94,.55)',
+    Asia:       'rgba(239,68,68,.55)',
+    Europe:     'rgba(99,102,241,.55)',
+    Oceania:    'rgba(6,182,212,.55)',
+    Antarctica: 'rgba(148,163,184,.45)',
+  };
+
+  const MAP_TILES = {
+    political: {
+      dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      attr:  '© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',
+      sub:   'abcd',
+    },
+    satellite: {
+      url:  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attr: '© <a href="https://esri.com">Esri</a>, Maxar, Earthstar Geographics',
+      sub:  '',
+    },
+  };
 
   /* ════════════════════════════════ UTILS ══════════════════════════ */
   function _byCode() {
@@ -58,11 +89,40 @@ const ExplorerPage = (function () {
     } finally { clearTimeout(tid); }
   }
 
+  function _loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+      const s = Object.assign(document.createElement('script'), { src });
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
   function _isDark() { return !document.body.classList.contains('light'); }
-  function _tileUrl() {
-    return _isDark()
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+  function _cartoPoliticalUrl() {
+    return _isDark() ? MAP_TILES.political.dark : MAP_TILES.political.light;
+  }
+
+  /* ── Solar position (Julian day math) ── */
+  function _sunPos() {
+    const d = Date.now() / 86400000 + 2440587.5 - 2451545;
+    const M = (357.5291 + 0.98560028 * d) * Math.PI / 180;
+    const C = (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) * Math.PI / 180;
+    const lsun = M + C + (283.0 + 180) * Math.PI / 180;
+    const dec  = Math.asin(Math.sin(23.4397 * Math.PI / 180) * Math.sin(lsun));
+    const ra   = Math.atan2(Math.cos(23.4397 * Math.PI / 180) * Math.sin(lsun), Math.cos(lsun));
+    const LMST = (280.46061837 + 360.98564736629 * d) * Math.PI / 180;
+    return {
+      lat: dec * 180 / Math.PI,
+      lon: (180 - ((LMST - ra) * 180 / Math.PI % 360 + 360) % 360),
+    };
+  }
+
+  function _sunAlt(sunLat, sunLon, lat, lon) {
+    const φ1 = sunLat * Math.PI / 180, φ2 = lat * Math.PI / 180;
+    const Δλ = (lon - sunLon) * Math.PI / 180;
+    return Math.asin(Math.sin(φ1) * Math.sin(φ2) + Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ)) * 180 / Math.PI;
   }
 
   /* ════════════════════════════════ STORAGE ════════════════════════ */
@@ -82,10 +142,12 @@ const ExplorerPage = (function () {
     if (idx >= 0) _favorites.splice(idx, 1); else _favorites.unshift(cca3);
     _saveFaves();
     const btn = panel?.querySelector('#ex-fave-btn');
-    if (!btn) return;
-    const on = _favorites.includes(cca3);
-    btn.classList.toggle('active', on);
-    btn.innerHTML = `<span class="ex-fave-btn-icon">${on ? '❤' : '🤍'}</span> ${on ? 'Guardado' : 'Favorito'}`;
+    if (btn) {
+      const on = _favorites.includes(cca3);
+      btn.classList.toggle('active', on);
+      btn.innerHTML = `<span class="ex-fave-btn-icon">${on ? '❤' : '🤍'}</span> ${on ? 'Guardado' : 'Favorito'}`;
+    }
+    _updateGlobeColors?.();
   }
 
   /* ════════════════════════════════ DATA FETCH ══════════════════════ */
@@ -136,17 +198,6 @@ const ExplorerPage = (function () {
       s.onload = resolve; s.onerror = reject;
       document.head.appendChild(s);
     });
-  }
-
-  function _buildPolygons(gj) {
-    return (gj.features || []).map(f => {
-      const rings = [];
-      const g = f.geometry;
-      if (!g) return null;
-      if (g.type === 'Polygon')           rings.push(...g.coordinates);
-      else if (g.type === 'MultiPolygon') g.coordinates.forEach(p => rings.push(...p));
-      return { cca3: f.id, rings };
-    }).filter(Boolean);
   }
 
   /* ════════════════════════════════ COUNTRY PANEL ══════════════════ */
@@ -264,12 +315,12 @@ const ExplorerPage = (function () {
           <div class="ex-feature-card" data-tab="globe">
             <span class="ex-feature-card-icon">🌍</span>
             <div class="ex-feature-card-title">Globo 3D</div>
-            <div class="ex-feature-card-desc">Roda o globo interativo, clica nos países e explora o mundo em perspetiva.</div>
+            <div class="ex-feature-card-desc">Globo WebGL realista com atmosfera, texturas e modos político e noturno.</div>
           </div>
           <div class="ex-feature-card" data-tab="solar">
             <span class="ex-feature-card-icon">☀</span>
             <div class="ex-feature-card-title">Sistema Solar</div>
-            <div class="ex-feature-card-desc">Vê os planetas em órbita e descobre factos, luas e comparações.</div>
+            <div class="ex-feature-card-desc">Vê os planetas em 3D com texturas reais, clica para explorar factos e comparações.</div>
           </div>
         </div>
         ${recents.length ? `
@@ -324,6 +375,11 @@ const ExplorerPage = (function () {
           </div>
           <div class="ex-search-results" id="ex-map-search-results"></div>
         </div>
+        <div class="ex-map-view-btns" id="ex-map-view-btns">
+          <button class="ex-map-view-btn active" data-view="political">Político</button>
+          <button class="ex-map-view-btn" data-view="satellite">Satélite</button>
+          <button class="ex-map-view-btn" data-view="night">Dia/Noite</button>
+        </div>
         <div class="ex-map-controls">
           <button class="ex-map-btn" id="ex-map-random"><span class="ex-map-btn-icon">🎲</span> Aleatório</button>
         </div>
@@ -357,6 +413,52 @@ const ExplorerPage = (function () {
     }
   }
 
+  /* ── Night overlay (custom Leaflet layer) ── */
+  function _createNightOverlayClass() {
+    return L.Layer.extend({
+      onAdd(map) {
+        this._map = map;
+        const pane = map.getPane('overlayPane');
+        this._canvas = document.createElement('canvas');
+        Object.assign(this._canvas.style, {
+          position: 'absolute', top: '0', left: '0',
+          pointerEvents: 'none', zIndex: '300',
+        });
+        pane.appendChild(this._canvas);
+        map.on('moveend zoomend resize viewreset', this._draw, this);
+        this._draw();
+        this._tid = setInterval(() => this._draw(), 60000);
+      },
+      onRemove(map) {
+        this._canvas?.remove();
+        map.off('moveend zoomend resize viewreset', this._draw, this);
+        clearInterval(this._tid);
+      },
+      _draw() {
+        if (!this._map) return;
+        const sz  = this._map.getSize();
+        const cvs = this._canvas;
+        cvs.width  = sz.x; cvs.height = sz.y;
+        cvs.style.width  = sz.x + 'px';
+        cvs.style.height = sz.y + 'px';
+        const ctx = cvs.getContext('2d');
+        const sun = _sunPos();
+        const RES = 6;
+        for (let y = 0; y < sz.y; y += RES) {
+          for (let x = 0; x < sz.x; x += RES) {
+            const ll  = this._map.containerPointToLatLng([x + RES / 2, y + RES / 2]);
+            const alt = _sunAlt(sun.lat, sun.lon, ll.lat, ll.lng);
+            if (alt < 6) {
+              const t = Math.max(0, Math.min(1, (-alt + 6) / 12));
+              ctx.fillStyle = `rgba(0,5,25,${(t * 0.72).toFixed(3)})`;
+              ctx.fillRect(x, y, RES, RES);
+            }
+          }
+        }
+      },
+    });
+  }
+
   async function _initMap() {
     if (_lInited) {
       setTimeout(() => { _lMap?.invalidateSize(); }, 80);
@@ -377,38 +479,82 @@ const ExplorerPage = (function () {
       return;
     }
 
-    /* Create base map (always works after Leaflet loads) */
     const mapEl = document.getElementById('ex-leaflet-map');
     if (!mapEl) return;
 
     _lMap = L.map(mapEl, { center: [20, 10], zoom: 2, minZoom: 1, maxZoom: 6, zoomControl: false });
     L.control.zoom({ position: 'bottomright' }).addTo(_lMap);
 
-    _lTile = L.tileLayer(_tileUrl(), {
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',
-      subdomains: 'abcd',
+    _lTile = L.tileLayer(_cartoPoliticalUrl(), {
+      attribution: MAP_TILES.political.attr,
+      subdomains: MAP_TILES.political.sub,
     }).addTo(_lMap);
 
-    /* Watch for theme changes */
+    _nightOverlay = _createNightOverlayClass();
+
     if (_themeObs) _themeObs.disconnect();
     _themeObs = new MutationObserver(() => {
       if (!_lMap || !_lTile) return;
-      _lMap.removeLayer(_lTile);
-      _lTile = L.tileLayer(_tileUrl(), { attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd' }).addTo(_lMap);
+      if (_mapView === 'political') {
+        _lMap.removeLayer(_lTile);
+        _lTile = L.tileLayer(_cartoPoliticalUrl(), {
+          attribution: MAP_TILES.political.attr,
+          subdomains: MAP_TILES.political.sub,
+        }).addTo(_lMap);
+      }
     });
     _themeObs.observe(document.body, { attributeFilter: ['class'] });
 
-    /* Map is showing — remove the full-screen overlay */
     document.getElementById('ex-map-loading')?.remove();
     _lInited = true;
 
-    /* Wire controls that work without data */
     document.getElementById('ex-map-random')?.addEventListener('click', () => {
       if (_countriesOk) showCountryPanel(_countries[Math.floor(Math.random() * _countries.length)], '#ex-country-panel');
     });
 
-    /* Phase 2: load data in background */
+    _wireMapViewBtns();
     _loadMapData();
+  }
+
+  function _wireMapViewBtns() {
+    const bar = document.getElementById('ex-map-view-btns');
+    if (!bar) return;
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.ex-map-view-btn');
+      if (!btn) return;
+      _setMapView(btn.dataset.view);
+      bar.querySelectorAll('.ex-map-view-btn').forEach(b => b.classList.toggle('active', b === btn));
+    });
+  }
+
+  function _setMapView(view) {
+    if (!_lMap) return;
+    _mapView = view;
+
+    /* Remove existing tile and night layer */
+    if (_lTile) { _lMap.removeLayer(_lTile); _lTile = null; }
+    if (_nightLayer) { _lMap.removeLayer(_nightLayer); _nightLayer = null; }
+
+    if (view === 'satellite') {
+      _lTile = L.tileLayer(MAP_TILES.satellite.url, {
+        attribution: MAP_TILES.satellite.attr,
+        maxZoom: 18,
+      }).addTo(_lMap);
+    } else if (view === 'night') {
+      _lTile = L.tileLayer(_cartoPoliticalUrl(), {
+        attribution: MAP_TILES.political.attr,
+        subdomains: MAP_TILES.political.sub,
+      }).addTo(_lMap);
+      _nightLayer = new _nightOverlay().addTo(_lMap);
+    } else {
+      _lTile = L.tileLayer(_cartoPoliticalUrl(), {
+        attribution: MAP_TILES.political.attr,
+        subdomains: MAP_TILES.political.sub,
+      }).addTo(_lMap);
+    }
+
+    /* Bring country layer to front if present */
+    if (_lLayer) _lLayer.bringToFront();
   }
 
   async function _loadMapData() {
@@ -421,11 +567,7 @@ const ExplorerPage = (function () {
     ]);
 
     if (cr.status === 'fulfilled') { _countries = cr.value; _countriesOk = true; }
-    if (gr.status === 'fulfilled') {
-      _geoJson   = gr.value;
-      _geoJsonOk = true;
-      _gPolygons = _buildPolygons(_geoJson);
-    }
+    if (gr.status === 'fulfilled') { _geoJson = gr.value; _geoJsonOk = true; }
 
     if (!_geoJsonOk) {
       _setDataStatus('error', 'Erro ao carregar contornos dos países.', _loadMapData);
@@ -443,7 +585,12 @@ const ExplorerPage = (function () {
     const byCca3 = _byCode();
 
     _lLayer = L.geoJSON(_geoJson, {
-      style: () => ({ fillColor: '#6366f1', fillOpacity: 0.12, color: _isDark() ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.18)', weight: 0.8 }),
+      style: () => ({
+        fillColor: '#6366f1',
+        fillOpacity: 0.12,
+        color: _isDark() ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.18)',
+        weight: 0.8,
+      }),
       onEachFeature(feature, layer) {
         const c = byCca3[feature.id];
         if (!c) return;
@@ -469,9 +616,12 @@ const ExplorerPage = (function () {
       bar.querySelectorAll('.ex-continent-btn').forEach(b => b.classList.toggle('active', b === btn));
       if (!_lLayer) return;
       _lLayer.eachLayer(layer => {
-        const c = byCca3[layer.feature?.id];
+        const c  = byCca3[layer.feature?.id];
         const ok = _contFilter === 'all' || (c?.continents || []).includes(_contFilter);
-        layer.setStyle({ fillOpacity: ok ? 0.12 : 0.03, color: ok ? (_isDark() ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.15)') : 'rgba(128,128,128,.05)' });
+        layer.setStyle({
+          fillOpacity: ok ? 0.12 : 0.03,
+          color: ok ? (_isDark() ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.15)') : 'rgba(128,128,128,.05)',
+        });
       });
     });
   }
@@ -486,7 +636,9 @@ const ExplorerPage = (function () {
     input.addEventListener('input', () => {
       const q = input.value.trim().toLowerCase();
       if (!q) { results.classList.remove('open'); return; }
-      const hits = _countries.filter(c => c.name.common.toLowerCase().includes(q) || (c.cca3 || '').toLowerCase().includes(q)).slice(0, 8);
+      const hits = _countries.filter(c =>
+        c.name.common.toLowerCase().includes(q) || (c.cca3 || '').toLowerCase().includes(q)
+      ).slice(0, 8);
       if (!hits.length) { results.classList.remove('open'); return; }
       results._hits = hits;
       results.innerHTML = hits.map((c, i) => `
@@ -506,9 +658,9 @@ const ExplorerPage = (function () {
     input.addEventListener('keydown', e => {
       const items = results.querySelectorAll('.ex-search-result');
       if (e.key === 'ArrowDown')  _fi = Math.min(_fi + 1, items.length - 1);
-      else if (e.key === 'ArrowUp')   _fi = Math.max(_fi - 1, 0);
+      else if (e.key === 'ArrowUp')  _fi = Math.max(_fi - 1, 0);
       else if (e.key === 'Enter') { items[Math.max(_fi, 0)]?.click(); return; }
-      else if (e.key === 'Escape'){ results.classList.remove('open'); return; }
+      else if (e.key === 'Escape') { results.classList.remove('open'); return; }
       items.forEach((it, i) => it.classList.toggle('focused', i === _fi));
     });
     clear.onclick = () => { input.value = ''; results.classList.remove('open'); };
@@ -517,14 +669,19 @@ const ExplorerPage = (function () {
     }, { capture: true });
   }
 
-  /* ════════════════════════════════ GLOBE ═══════════════════════════ */
+  /* ════════════════════════════════ GLOBE (globe.gl) ════════════════ */
   function _renderGlobeShell(sub) {
     sub.innerHTML = `
       <div class="ex-globe-wrap">
-        <canvas id="ex-globe-canvas"></canvas>
+        <div id="ex-globe-container"></div>
         <div class="ex-loading" id="ex-globe-loading">
           <div class="ex-loading-spinner"></div>
           <div class="ex-loading-text" id="ex-globe-loading-txt">A carregar o globo…</div>
+        </div>
+        <div class="ex-globe-view-bar" id="ex-globe-view-bar">
+          <button class="ex-globe-view-btn active" data-view="realistic">Realista</button>
+          <button class="ex-globe-view-btn" data-view="night">Noturno</button>
+          <button class="ex-globe-view-btn" data-view="political">Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
         <div class="ex-globe-stats">
@@ -535,56 +692,8 @@ const ExplorerPage = (function () {
       </div>`;
   }
 
-  /* Inverse projection: screen → lon/lat */
-  function _globeInverseProject(mx, my, rect) {
-    const W = rect.width, H = rect.height;
-    const R = Math.min(W, H) * 0.42;
-    const cx = W / 2, cy = H / 2;
-    const nx = (mx - cx) / R;
-    const ny = (cy - my) / R;
-    const z2 = 1 - nx * nx - ny * ny;
-    if (z2 < 0) return null;
-    const nz = Math.sqrt(z2);
-    /* undo X rotation */
-    const cxr = Math.cos(-_gRotX), sxr = Math.sin(-_gRotX);
-    const y1  = ny * cxr - nz * sxr;
-    const z1  = ny * sxr + nz * cxr;
-    /* undo Y rotation */
-    const cyr = Math.cos(-_gRotY), syr = Math.sin(-_gRotY);
-    const x1  = nx * cyr - z1 * syr;
-    const z0  = nx * syr + z1 * cyr;
-    return {
-      lat: Math.asin(Math.max(-1, Math.min(1, y1))) * 180 / Math.PI,
-      lon: Math.atan2(z0, x1) * 180 / Math.PI,
-    };
-  }
-
-  function _lonLatPip(lon, lat, ring) {
-    let inside = false;
-    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-      const [xi, yi] = ring[i], [xj, yj] = ring[j];
-      if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi))
-        inside = !inside;
-    }
-    return inside;
-  }
-
-  function _globePickCountry(mx, my) {
-    const rect = _gCanvas?.getBoundingClientRect();
-    if (!rect) return null;
-    const geo = _globeInverseProject(mx, my, rect);
-    if (!geo) return null;
-    for (const { cca3, rings } of _gPolygons) {
-      for (const ring of rings) {
-        if (_lonLatPip(geo.lon, geo.lat, ring)) return cca3;
-      }
-    }
-    return null;
-  }
-
   async function _initGlobe() {
-    if (_gInited) {
-      if (!_gRaf) _startGlobeTick();
+    if (_globeInited) {
       document.getElementById('ex-globe-loading')?.remove();
       return;
     }
@@ -592,18 +701,14 @@ const ExplorerPage = (function () {
     const setTxt = t => { const el = document.getElementById('ex-globe-loading-txt'); if (el) el.textContent = t; };
     setTxt('A carregar dados dos países…');
 
+    /* Load data */
     try {
       if (!_countriesOk) { _countries = await _fetchCountries(); _countriesOk = true; }
-    } catch (e) {
-      /* countries optional for globe */
-    }
+    } catch (e) { /* globe works without country data */ }
+
     try {
       setTxt('A carregar mapa do mundo…');
-      if (!_geoJsonOk) {
-        _geoJson   = await _fetchGeoJson();
-        _geoJsonOk = true;
-        _gPolygons = _buildPolygons(_geoJson);
-      }
+      if (!_geoJsonOk) { _geoJson = await _fetchGeoJson(); _geoJsonOk = true; }
     } catch (e) {
       const ld = document.getElementById('ex-globe-loading');
       if (ld) ld.innerHTML = `
@@ -614,160 +719,100 @@ const ExplorerPage = (function () {
       return;
     }
 
-    _gCanvas = document.getElementById('ex-globe-canvas');
-    if (!_gCanvas) return;
-    const countEl = document.getElementById('ex-globe-count');
-    if (countEl) countEl.textContent = _countries.length;
-    document.getElementById('ex-globe-loading')?.remove();
-    _gInited = true;
-    _wireGlobeEvents();
-    _startGlobeTick();
-  }
-
-  function _gProject(lon, lat) {
-    const lonR = lon * Math.PI / 180, latR = lat * Math.PI / 180;
-    let x = Math.cos(latR) * Math.cos(lonR);
-    let y = Math.sin(latR);
-    let z = Math.cos(latR) * Math.sin(lonR);
-    const cy = Math.cos(_gRotY), sy = Math.sin(_gRotY);
-    const x1 = x * cy - z * sy, z1 = x * sy + z * cy;
-    const cx = Math.cos(_gRotX), sx = Math.sin(_gRotX);
-    const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
-    return { x: x1, y: y1, z: z2 };
-  }
-
-  function _startGlobeTick() {
-    const canvas = _gCanvas;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-
-    function resize() {
-      const { width, height } = canvas.getBoundingClientRect();
-      canvas.width  = width  * dpr;
-      canvas.height = height * dpr;
+    /* Load globe.gl */
+    setTxt('A inicializar globo 3D…');
+    try {
+      await _loadScript('https://unpkg.com/globe.gl/dist/globe.gl.min.js');
+    } catch (e) {
+      const ld = document.getElementById('ex-globe-loading');
+      if (ld) ld.innerHTML = `
+        <div class="ex-error-icon">⚠</div>
+        <div class="ex-error-msg">Erro ao carregar globo WebGL.</div>
+        <button class="ex-retry-btn" id="ex-globe-retry2">Tentar novamente</button>`;
+      document.getElementById('ex-globe-retry2')?.addEventListener('click', _initGlobe);
+      return;
     }
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
 
-    function draw() {
-      const W = canvas.width / dpr, H = canvas.height / dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const R = Math.min(W, H) * 0.42, cx = W / 2, cy = H / 2;
-      ctx.clearRect(0, 0, W, H);
+    const container = document.getElementById('ex-globe-container');
+    if (!container || typeof Globe === 'undefined') return;
 
-      /* Base globe */
-      const g = ctx.createRadialGradient(cx + R * 0.12, cy - R * 0.18, 0, cx, cy, R);
-      g.addColorStop(0, '#1e2d5c'); g.addColorStop(1, '#040810');
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+    _byCca3 = _byCode();
 
-      /* Country polygons */
-      _gPolygons.forEach(({ cca3, rings }) => {
-        const hov  = cca3 === _gHovered;
-        const fave = _favorites.includes(cca3);
-        rings.forEach(ring => {
-          ctx.beginPath();
-          let started = false;
-          for (let k = 0; k < ring.length; k++) {
-            const p = _gProject(ring[k][0], ring[k][1]);
-            if (p.z < 0) { started = false; continue; }
-            const sx = cx + p.x * R, sy = cy - p.y * R;
-            if (!started) { ctx.moveTo(sx, sy); started = true; } else ctx.lineTo(sx, sy);
-          }
-          if (!started) return;
-          ctx.closePath();
-          ctx.fillStyle   = hov ? 'rgba(99,102,241,.65)' : fave ? 'rgba(239,68,68,.35)' : 'rgba(55,78,150,.4)';
-          ctx.strokeStyle = hov ? 'rgba(99,102,241,1)'   : 'rgba(100,140,220,.3)';
-          ctx.lineWidth   = hov ? 1.2 : 0.5;
-          ctx.fill(); ctx.stroke();
-        });
+    const getCapColor = f => {
+      if (!f) return 'rgba(0,0,0,0)';
+      if (f === _globeHovered) return 'rgba(255,255,255,0.85)';
+      if (_favorites.includes(f.id)) return 'rgba(239,68,68,0.55)';
+      if (_globeView === 'political') {
+        const c = _byCca3[f.id];
+        return CONT_COLORS[(c?.continents || [''])[0]] || 'rgba(150,150,150,0.45)';
+      }
+      return 'rgba(99,102,241,0.08)';
+    };
+    const getCapAlt = f => f === _globeHovered ? 0.006 : (_globeView === 'political' ? 0.003 : 0.001);
+
+    _globeGL = Globe({ animateIn: true })(container)
+      .width(container.clientWidth)
+      .height(container.clientHeight)
+      .globeImageUrl(GLOBE_TEX.day)
+      .bumpImageUrl(GLOBE_TEX.bump)
+      .backgroundImageUrl(GLOBE_TEX.space)
+      .showAtmosphere(true)
+      .atmosphereColor('lightskyblue')
+      .atmosphereAltitude(0.15)
+      .polygonsData(_geoJson.features)
+      .polygonCapColor(getCapColor)
+      .polygonSideColor(() => 'rgba(0,0,0,0.1)')
+      .polygonStrokeColor(() => 'rgba(255,255,255,0.15)')
+      .polygonAltitude(getCapAlt)
+      .onPolygonHover(f => {
+        _globeHovered = f;
+        _globeGL.polygonCapColor(getCapColor);
+        const sel = document.getElementById('ex-globe-sel');
+        if (sel) sel.textContent = f ? (_byCca3[f.id]?.name.common || f.id) : '—';
+      })
+      .onPolygonClick(f => {
+        const c = _byCca3[f?.id];
+        if (c) showCountryPanel(c, '#ex-country-panel-globe');
       });
 
-      /* Glow rim */
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(99,102,241,.2)'; ctx.lineWidth = 3; ctx.stroke();
+    _updateGlobeColors = () => {
+      if (!_globeGL) return;
+      _globeGL.polygonCapColor(getCapColor);
+    };
 
-      /* Night side subtle gradient */
-      const ng = ctx.createLinearGradient(cx - R, cy, cx + R, cy);
-      ng.addColorStop(0, 'rgba(0,0,20,.28)'); ng.addColorStop(0.48, 'rgba(0,0,0,0)'); ng.addColorStop(1, 'rgba(0,0,10,.12)');
-      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
-      ctx.fillStyle = ng; ctx.fillRect(cx - R, cy - R, R * 2, R * 2); ctx.restore();
-
-      /* Hover label */
-      if (_gHovered && _countriesOk) {
-        const c = _countries.find(x => x.cca3 === _gHovered);
-        if (c) {
-          const lbl = `${c.flag || ''} ${c.name.common}`;
-          ctx.font = `600 ${Math.max(11, Math.min(13, W / 55))}px Inter, sans-serif`;
-          ctx.textAlign = 'center';
-          const tw = ctx.measureText(lbl).width;
-          ctx.fillStyle = 'rgba(8,12,20,.82)';
-          ctx.beginPath(); ctx.roundRect(cx - tw / 2 - 10, H - 44, tw + 20, 26, 6); ctx.fill();
-          ctx.fillStyle = '#fff'; ctx.fillText(lbl, cx, H - 26);
-        }
-      }
+    /* Wire view buttons */
+    const bar = document.getElementById('ex-globe-view-bar');
+    if (bar) {
+      bar.addEventListener('click', e => {
+        const btn = e.target.closest('.ex-globe-view-btn');
+        if (!btn) return;
+        bar.querySelectorAll('.ex-globe-view-btn').forEach(b => b.classList.toggle('active', b === btn));
+        _setGlobeView(btn.dataset.view);
+      });
     }
 
-    function tick() {
-      _gRotY += _gRotYVel;
-      draw();
-      _gRaf = requestAnimationFrame(tick);
+    /* ResizeObserver */
+    new ResizeObserver(() => {
+      if (!_globeGL || !container) return;
+      _globeGL.width(container.clientWidth).height(container.clientHeight);
+    }).observe(container);
+
+    const countEl = document.getElementById('ex-globe-count');
+    if (countEl) countEl.textContent = _countries.length;
+
+    document.getElementById('ex-globe-loading')?.remove();
+    _globeInited = true;
+  }
+
+  function _setGlobeView(view) {
+    if (!_globeGL) return;
+    _globeView = view;
+    if (view === 'night') {
+      _globeGL.globeImageUrl(GLOBE_TEX.night).bumpImageUrl(null);
+    } else {
+      _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump);
     }
-    _gRaf = requestAnimationFrame(tick);
-  }
-
-  function _stopGlobeTick() {
-    if (_gRaf) { cancelAnimationFrame(_gRaf); _gRaf = null; }
-  }
-
-  function _wireGlobeEvents() {
-    const canvas = _gCanvas;
-    if (!canvas) return;
-    let dragging = false, lx = 0, ly = 0;
-
-    canvas.addEventListener('mousedown', e => {
-      dragging = true; lx = e.clientX; ly = e.clientY; _gRotYVel = 0;
-      canvas.classList.add('dragging');
-    });
-    window.addEventListener('mousemove', e => {
-      const r = canvas.getBoundingClientRect();
-      if (dragging) {
-        _gRotY += (e.clientX - lx) * 0.005;
-        _gRotX  = Math.max(-1.4, Math.min(1.4, _gRotX + (e.clientY - ly) * 0.005));
-        lx = e.clientX; ly = e.clientY;
-      } else {
-        _gHovered = _globePickCountry(e.clientX - r.left, e.clientY - r.top);
-      }
-    });
-    window.addEventListener('mouseup', () => {
-      dragging = false; canvas.classList.remove('dragging'); _gRotYVel = 0.0015;
-    });
-
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      const t = e.touches[0]; lx = t.clientX; ly = t.clientY; _gRotYVel = 0;
-    }, { passive: false });
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      const t = e.touches[0];
-      _gRotY += (t.clientX - lx) * 0.005;
-      _gRotX  = Math.max(-1.4, Math.min(1.4, _gRotX + (t.clientY - ly) * 0.005));
-      lx = t.clientX; ly = t.clientY;
-    }, { passive: false });
-    canvas.addEventListener('touchend', () => { _gRotYVel = 0.0015; });
-
-    canvas.addEventListener('click', e => {
-      const r    = canvas.getBoundingClientRect();
-      const cca3 = _globePickCountry(e.clientX - r.left, e.clientY - r.top);
-      if (!cca3) return;
-      const sel = document.getElementById('ex-globe-sel');
-      if (sel) {
-        const c = _countries.find(x => x.cca3 === cca3);
-        if (sel) sel.textContent = c ? c.name.common : cca3;
-        if (c) showCountryPanel(c, '#ex-country-panel-globe');
-      }
-    });
+    _updateGlobeColors?.();
   }
 
   /* ════════════════════════════════ TAB SYSTEM ══════════════════════ */
@@ -798,7 +843,6 @@ const ExplorerPage = (function () {
 
   function _switchTab(tab) {
     if (!_shell) return;
-    if (tab !== 'globe') _stopGlobeTick();
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
     _curTab = tab;
 
@@ -814,8 +858,7 @@ const ExplorerPage = (function () {
       if (!_lInited) { _renderMapShell(sub); _initMap(); }
       else setTimeout(() => _lMap?.invalidateSize(), 80);
     } else if (tab === 'globe') {
-      if (!_gInited) { _renderGlobeShell(sub); _initGlobe(); }
-      else if (!_gRaf) _startGlobeTick();
+      if (!_globeInited) { _renderGlobeShell(sub); _initGlobe(); }
     } else if (tab === 'solar') {
       if (typeof SolarExplorer !== 'undefined') {
         if (!sub.querySelector('.ex-solar-wrap')) SolarExplorer.mount(sub);

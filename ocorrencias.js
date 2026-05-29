@@ -1,16 +1,16 @@
 /* ══════════════════════════════════════════════════════════════════
    OCORRÊNCIAS PORTUGAL — Civil alerts & incidents dashboard
-   Providers: USGS (earthquakes), NASA EONET (wildfires), IPMA (weather warnings)
+   Providers: USGS (earthquakes), fogos.pt (wildfires), IPMA (weather warnings)
 ══════════════════════════════════════════════════════════════════ */
 const OcorrenciasPage = (function () {
   'use strict';
 
   /* ── API endpoints ── */
   const USGS_URL  = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=39.5&longitude=-8&maxradiuskm=1200&minmagnitude=1.0&limit=50&orderby=time';
-  const EONET_URL = 'https://eonet.gsfc.nasa.gov/api/v3/events?status=open&category=wildfires&bbox=-9.5,36.9,-6.1,42.2';
+  const FOGOS_URL = 'https://api.fogos.pt/v2/incidents/active';
   const IPMA_URL  = 'https://api.ipma.pt/open-data/forecast/warnings/warnings_www.json';
   const TTL       = 10 * 60 * 1000;
-  const CACHE     = { eq: 'oc2-eq', fire: 'oc2-fire', warn: 'oc2-warn' };
+  const CACHE     = { eq: 'oc3-eq', fire: 'oc3-fire', warn: 'oc3-warn' };
 
   /* ── Provider status ── */
   const _prov = {
@@ -20,15 +20,16 @@ const OcorrenciasPage = (function () {
   };
 
   /* ── State ── */
-  let _map       = null;
-  let _inited    = false;
-  let _layers    = { earthquake: true, fire: true, weather: true };
-  let _incidents = [];
+  let _map          = null;
+  let _inited       = false;
+  let _layers       = { earthquake: true, fire: true, weather: true };
+  let _incidents    = [];
   let _activeFilter = 'all';
   let _lEq = null, _lFire = null, _lWarn = null;
-  let _tileLayer = null;
-  let _themeObs  = null;
-  let _refreshing = false;
+  let _tileLayer    = null;
+  let _themeObs     = null;
+  let _refreshing   = false;
+  let _detailInc    = null;   /* currently open in detail panel */
 
   /* ── Cache ── */
   function _fromCache(key) {
@@ -100,17 +101,17 @@ const OcorrenciasPage = (function () {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const json = await r.json();
       const data = (json.features || []).map(f => ({
-        type:    'earthquake',
-        id:      `eq-${f.id}`,
-        mag:     parseFloat(f.properties.mag  || 0),
-        magType: f.properties.magType || 'M',
-        lat:     f.geometry.coordinates[1],
-        lon:     f.geometry.coordinates[0],
-        depth:   Math.round(f.geometry.coordinates[2] || 0),
-        time:    new Date(f.properties.time).toISOString(),
-        title:   f.properties.place || 'Sismo',
+        type:     'earthquake',
+        id:       `eq-${f.id}`,
+        mag:      parseFloat(f.properties.mag  || 0),
+        magType:  f.properties.magType || 'M',
+        lat:      f.geometry.coordinates[1],
+        lon:      f.geometry.coordinates[0],
+        depth:    Math.round(f.geometry.coordinates[2] || 0),
+        time:     new Date(f.properties.time).toISOString(),
+        title:    f.properties.place || 'Sismo',
         district: f.properties.place || '—',
-        url:     f.properties.url   || '',
+        url:      f.properties.url   || '',
       })).filter(e => !isNaN(e.lat) && !isNaN(e.lon));
       _toCache(CACHE.eq, data);
       _prov.eq = { ok: true, time: _nowTime() };
@@ -125,25 +126,32 @@ const OcorrenciasPage = (function () {
     const cached = _fromCache(CACHE.fire);
     if (cached) { _prov.fire.ok = true; return cached; }
     try {
-      const r = await _fetch(EONET_URL);
+      const r = await _fetch(FOGOS_URL);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const json = await r.json();
-      const data = (json.events || []).flatMap(ev => {
-        const geomArr = Array.isArray(ev.geometry) ? ev.geometry : [ev.geometry];
-        const g = geomArr[0];
-        if (!g?.coordinates) return [];
-        const [lon, lat] = g.coordinates;
-        if (isNaN(lat) || isNaN(lon)) return [];
-        return [{
-          type:     'fire',
-          id:       `fire-${ev.id}`,
+      const raw  = Array.isArray(json) ? json : (json.data || json.incidents || []);
+      const data = raw.map(ev => {
+        const lat = parseFloat(ev.lat);
+        const lon = parseFloat(ev.lon);
+        if (isNaN(lat) || isNaN(lon)) return null;
+        return {
+          type:          'fire',
+          id:            `fire-${ev.id || Math.random()}`,
           lat, lon,
-          title:    ev.title || 'Incêndio',
-          district: ev.title || '—',
-          time:     g.date || new Date().toISOString(),
-          source:   ev.sources?.[0]?.url || '',
-        }];
-      });
+          title:         ev.natureza || ev.tipo || 'Incêndio',
+          municipio:     ev.municipio || null,
+          freguesia:     ev.freguesia || null,
+          status:        ev.status || null,
+          operacionais:  ev.operacionais != null ? +ev.operacionais : null,
+          veiculos:      ev.veiculos    != null ? +ev.veiculos    : null,
+          aereos:        ev.aereos      != null ? +ev.aereos      : null,
+          area:          ev.area        != null ? +ev.area        : null,
+          time:          ev.criacao     || null,
+          lastUpdate:    ev.atualizacao || null,
+          district:      ev.municipio   || ev.freguesia || '—',
+          source:        'fogos.pt',
+        };
+      }).filter(Boolean);
       _toCache(CACHE.fire, data);
       _prov.fire = { ok: true, time: _nowTime() };
       return data;
@@ -253,19 +261,7 @@ const OcorrenciasPage = (function () {
         iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
       });
       L.marker([eq.lat, eq.lon], { icon })
-        .bindPopup(`<div class="oc-eq-popup-inner">
-          <div class="oc-eq-popup-header">
-            <div class="oc-mag-badge mag-${cls}">${eq.mag.toFixed(1)}</div>
-            <div class="oc-eq-popup-title">${eq.title}</div>
-          </div>
-          <div class="oc-eq-popup-rows">
-            <div class="oc-eq-popup-row"><span>Profundidade</span><span class="oc-eq-popup-val">${eq.depth} km</span></div>
-            <div class="oc-eq-popup-row"><span>Tipo</span><span class="oc-eq-popup-val">${eq.magType}</span></div>
-            <div class="oc-eq-popup-row"><span>Data/hora</span><span class="oc-eq-popup-val">${_fmtTime(eq.time)}</span></div>
-            <div class="oc-eq-popup-row"><span>Fonte</span><span class="oc-eq-popup-val">USGS</span></div>
-          </div>
-          ${eq.url ? `<a class="oc-eq-popup-link" href="${eq.url}" target="_blank" rel="noopener">Ver detalhe ↗</a>` : ''}
-        </div>`, { className: 'oc-eq-popup' })
+        .on('click', () => _openDetail(eq))
         .addTo(_lEq);
     });
   }
@@ -277,21 +273,11 @@ const OcorrenciasPage = (function () {
     fires.forEach(f => {
       const icon = L.divIcon({
         className: '',
-        html: `<div style="font-size:18px;line-height:1;filter:drop-shadow(0 0 6px #ff6600cc);cursor:pointer" title="${f.title}">🔥</div>`,
-        iconSize: [20, 20], iconAnchor: [10, 10],
+        html: `<div style="font-size:20px;line-height:1;filter:drop-shadow(0 0 6px #ff6600cc);cursor:pointer" title="${f.title}">🔥</div>`,
+        iconSize: [22, 22], iconAnchor: [11, 11],
       });
       L.marker([f.lat, f.lon], { icon })
-        .bindPopup(`<div class="oc-eq-popup-inner">
-          <div class="oc-eq-popup-header">
-            <div style="font-size:1.5rem;line-height:1">🔥</div>
-            <div class="oc-eq-popup-title">${f.title}</div>
-          </div>
-          <div class="oc-eq-popup-rows">
-            <div class="oc-eq-popup-row"><span>Data/hora</span><span class="oc-eq-popup-val">${_fmtTime(f.time)}</span></div>
-            <div class="oc-eq-popup-row"><span>Fonte</span><span class="oc-eq-popup-val">NASA EONET</span></div>
-          </div>
-          ${f.source ? `<a class="oc-eq-popup-link" href="${f.source}" target="_blank" rel="noopener">Ver fonte ↗</a>` : ''}
-        </div>`, { className: 'oc-eq-popup' })
+        .on('click', () => _openDetail(f))
         .addTo(_lFire);
     });
   }
@@ -310,21 +296,96 @@ const OcorrenciasPage = (function () {
         iconSize: [18, 16], iconAnchor: [9, 16],
       });
       L.marker([w.lat, w.lon], { icon })
-        .bindPopup(`<div class="oc-eq-popup-inner">
-          <div class="oc-eq-popup-header">
-            <div style="font-size:1.3rem;line-height:1">⚠</div>
-            <div class="oc-eq-popup-title">${w.title}</div>
-          </div>
-          <div class="oc-eq-popup-rows">
-            <div class="oc-eq-popup-row"><span>Tipo</span><span class="oc-eq-popup-val">${w.warnType || '—'}</span></div>
-            <div class="oc-eq-popup-row"><span>Nível</span><span class="oc-eq-popup-val" style="color:${clr}">${w.level}</span></div>
-            <div class="oc-eq-popup-row"><span>Início</span><span class="oc-eq-popup-val">${_fmtTime(w.time)}</span></div>
-            <div class="oc-eq-popup-row"><span>Fim</span><span class="oc-eq-popup-val">${w.endTime ? _fmtTime(w.endTime) : '—'}</span></div>
-            <div class="oc-eq-popup-row"><span>Fonte</span><span class="oc-eq-popup-val">IPMA</span></div>
-          </div>
-        </div>`, { className: 'oc-eq-popup' })
+        .on('click', () => _openDetail(w))
         .addTo(_lWarn);
     });
+  }
+
+  /* ════════════════════════════════ DETAIL PANEL ═══════════════════ */
+
+  function _openDetail(inc) {
+    _detailInc = inc;
+    _map?.flyTo([inc.lat, inc.lon], Math.max(_map.getZoom(), 9), { duration: 0.7 });
+    _renderDetail(inc);
+  }
+
+  function _val(v, unit) {
+    if (v == null || v === '' || v === '—' || (typeof v === 'number' && isNaN(v))) {
+      return '<span class="oc-detail-na">Dados indisponíveis</span>';
+    }
+    return `${v}${unit || ''}`;
+  }
+
+  function _renderDetail(inc) {
+    const panel = document.querySelector('.oc-detail-panel');
+    if (!panel) return;
+
+    let content = '';
+
+    if (inc.type === 'earthquake') {
+      const cls = _magClass(inc.mag);
+      const clr = { low: '#22c55e', mod: '#eab308', high: '#f97316', severe: '#ef4444' }[cls];
+      content = `
+        <div class="oc-detail-hero eq">
+          <div class="oc-detail-mag-badge" style="background:${clr}22;color:${clr};border-color:${clr}44">
+            ${inc.mag.toFixed(1)} ${inc.magType || 'M'}
+          </div>
+          <div class="oc-detail-type-lbl">Sismo</div>
+        </div>
+        <div class="oc-detail-rows">
+          <div class="oc-detail-row"><span class="oc-detail-label">Local</span><span>${_val(inc.title)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Magnitude</span><span style="color:${clr}">${_val(inc.mag?.toFixed(1))} ${inc.magType || ''}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Profundidade</span><span>${_val(inc.depth, ' km')}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span>${inc.lat.toFixed(4)}°, ${inc.lon.toFixed(4)}°</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Data/hora</span><span>${_fmtTime(inc.time)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">USGS</span></div>
+        </div>
+        ${inc.url ? `<a class="oc-detail-link" href="${inc.url}" target="_blank" rel="noopener">Ver relatório USGS ↗</a>` : ''}`;
+
+    } else if (inc.type === 'fire') {
+      const statusMap = { active: 'Ativo', resolved: 'Resolvido', 'em curso': 'Em curso', 'conclusão': 'Em conclusão' };
+      const statusLbl = statusMap[(inc.status || '').toLowerCase()] || inc.status;
+      content = `
+        <div class="oc-detail-hero fire">
+          <div class="oc-detail-fire-icon">🔥</div>
+          <div class="oc-detail-type-lbl">Incêndio Florestal</div>
+        </div>
+        <div class="oc-detail-rows">
+          <div class="oc-detail-row"><span class="oc-detail-label">Natureza</span><span>${_val(inc.title)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Município</span><span>${_val(inc.municipio)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Freguesia</span><span>${_val(inc.freguesia)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Estado</span><span class="${inc.status ? 'oc-detail-status' : ''}">${_val(statusLbl)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Área ardida</span><span>${_val(inc.area != null ? inc.area.toFixed(2) : null, ' ha')}</span></div>
+          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">👷 Operacionais</span><span>${_val(inc.operacionais)}</span></div>
+          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">🚒 Veículos</span><span>${_val(inc.veiculos)}</span></div>
+          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">✈️ Meios aéreos</span><span>${_val(inc.aereos)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span>${inc.lat.toFixed(4)}°, ${inc.lon.toFixed(4)}°</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Última atualização</span><span>${_fmtTime(inc.lastUpdate)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">fogos.pt</span></div>
+        </div>
+        <div class="oc-detail-notice">Dados em tempo real via API fogos.pt. Campos não reportados são assinalados como indisponíveis.</div>`;
+
+    } else if (inc.type === 'weather') {
+      const clrMap = { yellow: '#eab308', orange: '#f97316', red: '#ef4444', amarelo: '#eab308', laranja: '#f97316', vermelho: '#ef4444' };
+      const clr    = clrMap[inc.level] || '#eab308';
+      content = `
+        <div class="oc-detail-hero weather">
+          <div class="oc-detail-warn-icon" style="color:${clr}">⚠</div>
+          <div class="oc-detail-type-lbl">Aviso Meteorológico</div>
+        </div>
+        <div class="oc-detail-rows">
+          <div class="oc-detail-row"><span class="oc-detail-label">Tipo</span><span>${_val(inc.warnType)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Nível</span><span style="color:${clr};font-weight:600">${_val(inc.level)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Distrito</span><span>${_val(inc.district)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Fim previsto</span><span>${_fmtTime(inc.endTime)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">IPMA</span></div>
+        </div>`;
+    }
+
+    panel.querySelector('.oc-detail-content').innerHTML = content;
+    panel.classList.add('open');
   }
 
   /* ════════════════════════════════ UI ══════════════════════════════ */
@@ -356,7 +417,7 @@ const OcorrenciasPage = (function () {
   function _renderStats(eqs, fires, warns) {
     const statGrid = document.querySelector('.oc-stat-grid');
     if (!statGrid) return;
-    const big  = eqs.filter(e => e.mag >= 3).length;
+    const big = eqs.filter(e => e.mag >= 3).length;
     statGrid.innerHTML = `
       <div class="oc-stat-card all">
         <div class="oc-stat-header"><span class="oc-stat-icon">📊</span></div>
@@ -390,7 +451,7 @@ const OcorrenciasPage = (function () {
     if (!el) return;
     el.innerHTML = [
       { key: 'eq',   icon: '🔴', name: 'USGS — Sismos' },
-      { key: 'fire', icon: '🔥', name: 'NASA EONET — Incêndios' },
+      { key: 'fire', icon: '🔥', name: 'fogos.pt — Incêndios' },
       { key: 'warn', icon: '⚠',  name: 'IPMA — Avisos' },
     ].map(p => {
       const s   = _prov[p.key];
@@ -425,7 +486,7 @@ const OcorrenciasPage = (function () {
       const extra  = inc.type === 'earthquake'
         ? `<span class="oc-incident-mag ${_magClass(inc.mag)}">${inc.mag?.toFixed(1) || '?'}</span>` : '';
       const t = _relTime(inc.time);
-      return `<div class="oc-incident-item" data-lat="${inc.lat}" data-lon="${inc.lon}" data-id="${inc.id}">
+      return `<div class="oc-incident-item" data-id="${inc.id}">
         <div class="oc-incident-dot ${dotCls}"></div>
         <div class="oc-incident-body">
           <div class="oc-incident-title">${inc.title}</div>
@@ -440,13 +501,11 @@ const OcorrenciasPage = (function () {
 
     list.querySelectorAll('.oc-incident-item').forEach(item => {
       item.onclick = () => {
-        const lat = parseFloat(item.dataset.lat);
-        const lon = parseFloat(item.dataset.lon);
-        if (_map && !isNaN(lat) && !isNaN(lon)) {
-          _map.flyTo([lat, lon], 9, { duration: 0.8 });
-          list.querySelectorAll('.oc-incident-item').forEach(el => el.classList.remove('selected'));
-          item.classList.add('selected');
-        }
+        const inc = filtered.find(i => i.id === item.dataset.id);
+        if (!inc) return;
+        list.querySelectorAll('.oc-incident-item').forEach(el => el.classList.remove('selected'));
+        item.classList.add('selected');
+        _openDetail(inc);
       };
     });
   }
@@ -585,6 +644,11 @@ const OcorrenciasPage = (function () {
                 <div class="oc-legend-row"><div class="oc-legend-tri" style="border-bottom-color:#ef4444"></div>Aviso vermelho</div>
               </div>
             </div>
+
+            <div class="oc-detail-panel" id="oc-detail-panel">
+              <button class="oc-detail-close" id="oc-detail-close">✕</button>
+              <div class="oc-detail-content"></div>
+            </div>
           </div>
 
           <div class="oc-stats-panel">
@@ -620,6 +684,11 @@ const OcorrenciasPage = (function () {
     document.querySelector('#oc-refresh').onclick = () => {
       Object.values(CACHE).forEach(k => sessionStorage.removeItem(k));
       _load();
+    };
+
+    document.querySelector('#oc-detail-close').onclick = () => {
+      document.querySelector('.oc-detail-panel')?.classList.remove('open');
+      _detailInc = null;
     };
   }
 

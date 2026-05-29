@@ -1,12 +1,18 @@
 /* ══════════════════════════════════════════════════════════════════
-   SOLAR EXPLORER — Canvas-based Solar System visualizer
+   SOLAR EXPLORER — Three.js 3D Solar System
 ══════════════════════════════════════════════════════════════════ */
 const SolarExplorer = (function () {
   'use strict';
 
+  const THREE_CDN  = 'https://unpkg.com/three@0.160.0/build/three.min.js';
+  const TEX_BASE   = 'https://unpkg.com/three@0.160.0/examples/textures/planets/';
+  const SPACE_TEX  = 'https://unpkg.com/three@0.160.0/examples/textures/2294472375_24a3b8ef46_o.jpg';
+
+  /* ── Planet data ── */
   const PLANETS = [
     {
-      id: 'mercury', name: 'Mercúrio', color: '#b5b5b5', r: 4, orbit: 0.38, period: 88,
+      id: 'mercury', name: 'Mercúrio', color: '#b5b5b5', textureFile: 'mercury_1024.jpg',
+      displayR: 2.2, orbitR: 30, period: 88,
       info: { dist: '0.39 UA', radius: '2 439 km', period: '88 dias', temp: '−170 / +430°C', moons: '0', gravity: '3.7 m/s²' },
       moonList: [],
       facts: [
@@ -18,7 +24,8 @@ const SolarExplorer = (function () {
       compare: { size: 0.38, gravity: 0.38, distance: 0.39, period: 0.24 },
     },
     {
-      id: 'venus', name: 'Vénus', color: '#e8cda0', r: 9, orbit: 0.58, period: 225,
+      id: 'venus', name: 'Vénus', color: '#e8cda0', textureFile: 'venus_2048.jpg',
+      displayR: 3.8, orbitR: 45, period: 225,
       info: { dist: '0.72 UA', radius: '6 051 km', period: '225 dias', temp: '+465°C', moons: '0', gravity: '8.9 m/s²' },
       moonList: [],
       facts: [
@@ -30,7 +37,8 @@ const SolarExplorer = (function () {
       compare: { size: 0.95, gravity: 0.91, distance: 0.72, period: 0.62 },
     },
     {
-      id: 'earth', name: 'Terra', color: '#4b9cd3', r: 10, orbit: 0.73, period: 365,
+      id: 'earth', name: 'Terra', color: '#4b9cd3', textureFile: 'earth_atmos_2048.jpg',
+      displayR: 4, orbitR: 60, period: 365,
       info: { dist: '1.00 UA', radius: '6 371 km', period: '365 dias', temp: '−89 / +56°C', moons: '1', gravity: '9.8 m/s²' },
       moonList: [
         { name: 'Lua', dist: '384 400 km', period: '27.3 dias', r: '1 737 km' },
@@ -44,7 +52,8 @@ const SolarExplorer = (function () {
       compare: { size: 1, gravity: 1, distance: 1, period: 1 },
     },
     {
-      id: 'mars', name: 'Marte', color: '#c1440e', r: 6, orbit: 0.88, period: 687,
+      id: 'mars', name: 'Marte', color: '#c1440e', textureFile: 'mars_1024.jpg',
+      displayR: 2.8, orbitR: 80, period: 687,
       info: { dist: '1.52 UA', radius: '3 389 km', period: '687 dias', temp: '−125 / +20°C', moons: '2', gravity: '3.7 m/s²' },
       moonList: [
         { name: 'Fobos', dist: '9 376 km', period: '7.7 horas', r: '11 km' },
@@ -59,7 +68,8 @@ const SolarExplorer = (function () {
       compare: { size: 0.53, gravity: 0.38, distance: 1.52, period: 1.88 },
     },
     {
-      id: 'jupiter', name: 'Júpiter', color: '#c88b3a', r: 22, orbit: 1.05, period: 4333,
+      id: 'jupiter', name: 'Júpiter', color: '#c88b3a', textureFile: 'jupiter_2048.jpg',
+      displayR: 10, orbitR: 115, period: 4333,
       info: { dist: '5.20 UA', radius: '69 911 km', period: '11.9 anos', temp: '−108°C', moons: '95', gravity: '24.8 m/s²' },
       moonList: [
         { name: 'Io', dist: '421 700 km', period: '1.8 dias', r: '1 822 km' },
@@ -76,7 +86,8 @@ const SolarExplorer = (function () {
       compare: { size: 11.2, gravity: 2.53, distance: 5.2, period: 11.86 },
     },
     {
-      id: 'saturn', name: 'Saturno', color: '#e4d191', r: 18, orbit: 1.22, period: 10759,
+      id: 'saturn', name: 'Saturno', color: '#e4d191', textureFile: 'saturn_2048.jpg',
+      displayR: 8.5, orbitR: 150, period: 10759, hasRings: true,
       info: { dist: '9.58 UA', radius: '58 232 km', period: '29.5 anos', temp: '−178°C', moons: '146', gravity: '10.4 m/s²' },
       moonList: [
         { name: 'Titã', dist: '1 221 870 km', period: '15.9 dias', r: '2 575 km' },
@@ -93,7 +104,8 @@ const SolarExplorer = (function () {
       compare: { size: 9.45, gravity: 1.07, distance: 9.58, period: 29.46 },
     },
     {
-      id: 'uranus', name: 'Urano', color: '#7de8e8', r: 14, orbit: 1.37, period: 30687,
+      id: 'uranus', name: 'Urano', color: '#7de8e8', textureFile: 'uranus_2048.jpg',
+      displayR: 6, orbitR: 185, period: 30687,
       info: { dist: '19.2 UA', radius: '25 362 km', period: '84 anos', temp: '−220°C', moons: '27', gravity: '8.7 m/s²' },
       moonList: [
         { name: 'Titânia', dist: '435 910 km', period: '8.7 dias', r: '789 km' },
@@ -102,7 +114,7 @@ const SolarExplorer = (function () {
         { name: 'Ariel', dist: '191 020 km', period: '2.5 dias', r: '579 km' },
       ],
       facts: [
-        'Roda de lado — o eixo está inclinado 98° em relação ao plano orbital.',
+        'Rota de lado — o eixo está inclinado 98° em relação ao plano orbital.',
         'As suas luas têm nomes de personagens de Shakespeare e Alexander Pope.',
         'Registou −224°C, os ventos mais frios do Sistema Solar.',
         'Possui 13 anéis estreitos, descobertos por ocultação estelar em 1977.',
@@ -110,7 +122,8 @@ const SolarExplorer = (function () {
       compare: { size: 4.01, gravity: 0.89, distance: 19.2, period: 84 },
     },
     {
-      id: 'neptune', name: 'Neptuno', color: '#5b86e5', r: 13, orbit: 1.52, period: 60190,
+      id: 'neptune', name: 'Neptuno', color: '#5b86e5', textureFile: 'neptune_2048.jpg',
+      displayR: 5.5, orbitR: 220, period: 60190,
       info: { dist: '30.1 UA', radius: '24 622 km', period: '165 anos', temp: '−218°C', moons: '16', gravity: '11.2 m/s²' },
       moonList: [
         { name: 'Tritão', dist: '354 759 km', period: '−5.9 dias', r: '1 353 km' },
@@ -138,25 +151,64 @@ const SolarExplorer = (function () {
     ],
   };
 
-  /* ── state ── */
-  let _raf     = null;
-  let _canvas  = null;
-  let _ctx     = null;
+  /* ── Module state ── */
+  let _renderer   = null;
+  let _scene      = null;
+  let _camera     = null;
+  let _raf        = null;
+  let _mounted    = false;
+  let _container  = null;
+
+  /* Planet meshes */
+  let _sunMesh    = null;
+  let _planetMeshes = [];   /* parallel to PLANETS */
+  let _angles     = PLANETS.map(() => Math.random() * Math.PI * 2);
+
+  /* Camera orbit */
+  let _camTheta   = 0.3;
+  let _camPhi     = 1.1;
+  let _camDist    = 280;
+  let _camDistT   = 280;
+  let _camThetaT  = 0.3;
+  let _camPhiT    = 1.1;
+  let _camFocusX  = 0;
+  let _camFocusY  = 0;
+  let _camFocusZ  = 0;
+  let _camFocusXT = 0;
+  let _camFocusYT = 0;
+  let _camFocusZT = 0;
+
+  /* Animation */
   let _speed   = 1;
   let _paused  = false;
-  let _t       = 0;
-  let _sel     = null;   /* number | 'sun' | null */
-  let _angles  = PLANETS.map(() => Math.random() * Math.PI * 2);
-  let _mounted = false;
-  let _zoom    = 1;
-  let _zoomTarget = 1;
+  let _sel     = null;    /* index | 'sun' | null */
   let _curTab  = 'overview';
 
-  /* ── Build HTML ── */
-  function mount(container) {
+  /* Drag state */
+  let _dragging = false;
+  let _lastX    = 0;
+  let _lastY    = 0;
+
+  /* ═════════════════════════════ LOAD THREE ═════════════════════════ */
+  function _loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+      const s = Object.assign(document.createElement('script'), { src });
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ═════════════════════════════ MOUNT ══════════════════════════════ */
+  async function mount(container) {
+    _container = container;
     container.innerHTML = `
       <div class="ex-solar-wrap">
-        <canvas id="ex-solar-canvas"></canvas>
+        <div class="ex-solar-viewport" id="ss-viewport"></div>
+        <div class="ex-solar-loading" id="ss-loading">
+          <div class="ex-loading-spinner"></div>
+          <div class="ex-solar-loading-txt">A inicializar Sistema Solar 3D…</div>
+        </div>
         <div class="ex-solar-controls">
           <button class="ex-solar-btn" id="ss-slower" title="Mais lento">⏪</button>
           <button class="ex-solar-btn" id="ss-pause"  title="Pausar/Continuar">⏸</button>
@@ -181,14 +233,22 @@ const SolarExplorer = (function () {
         <div class="ex-solar-hint" id="ss-hint">Clica num planeta para explorar · Scroll para zoom</div>
       </div>`;
 
-    _canvas  = container.querySelector('#ex-solar-canvas');
-    _ctx     = _canvas.getContext('2d');
     _mounted = true;
     _wireControls(container);
-    _wireClick(container);
     _wirePanelTabs(container);
-    _resize();
-    window.addEventListener('resize', _resize);
+
+    try {
+      await _loadScript(THREE_CDN);
+    } catch (e) {
+      document.getElementById('ss-loading').innerHTML = `
+        <div class="ex-error-icon">⚠</div>
+        <div class="ex-error-msg">Erro ao carregar Three.js.</div>`;
+      return;
+    }
+
+    _buildScene(container);
+    document.getElementById('ss-loading')?.remove();
+    _wirePointer(container);
     _start();
   }
 
@@ -198,15 +258,274 @@ const SolarExplorer = (function () {
     if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
   }
 
-  /* ── Controls ── */
+  /* ═════════════════════════════ SCENE ══════════════════════════════ */
+  function _buildScene(container) {
+    const viewport = container.querySelector('#ss-viewport');
+    const W = viewport.clientWidth  || 800;
+    const H = viewport.clientHeight || 600;
+
+    /* Renderer */
+    _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    _renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    _renderer.setSize(W, H);
+    _renderer.setClearColor(0x000005, 1);
+    viewport.appendChild(_renderer.domElement);
+
+    /* Scene */
+    _scene = new THREE.Scene();
+
+    /* Space background */
+    const spaceLoader = new THREE.TextureLoader();
+    spaceLoader.load(SPACE_TEX, tex => {
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      _scene.background = tex;
+    }, undefined, () => {
+      _scene.background = new THREE.Color(0x000008);
+    });
+
+    /* Starfield */
+    const starCount = 5000;
+    const starPos   = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i++) starPos[i] = (Math.random() - 0.5) * 2000;
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    _scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, sizeAttenuation: true })));
+
+    /* Lighting */
+    _scene.add(new THREE.AmbientLight(0x111122, 0.8));
+    const sunLight = new THREE.PointLight(0xfff5e0, 3, 0, 1);
+    sunLight.position.set(0, 0, 0);
+    _scene.add(sunLight);
+
+    /* Camera */
+    _camera = new THREE.PerspectiveCamera(55, W / H, 0.5, 3000);
+    _updateCamera();
+
+    /* Sun */
+    const sunGeo  = new THREE.SphereGeometry(8, 32, 32);
+    const sunMat  = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+    _sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    _scene.add(_sunMesh);
+
+    /* Sun glow (additive sprite) */
+    const glowGeo = new THREE.SphereGeometry(12, 32, 32);
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0xff9900, transparent: true, opacity: 0.15, side: THREE.FrontSide });
+    _scene.add(new THREE.Mesh(glowGeo, glowMat));
+
+    /* Orbit lines */
+    const orbitMat = new THREE.LineBasicMaterial({ color: 0x334466, transparent: true, opacity: 0.4 });
+    PLANETS.forEach(p => {
+      const pts = [];
+      for (let i = 0; i <= 128; i++) {
+        const a = (i / 128) * Math.PI * 2;
+        pts.push(new THREE.Vector3(Math.cos(a) * p.orbitR, 0, Math.sin(a) * p.orbitR));
+      }
+      const orbitGeo = new THREE.BufferGeometry().setFromPoints(pts);
+      _scene.add(new THREE.LineLoop(orbitGeo, orbitMat));
+    });
+
+    /* Planet meshes */
+    const loader = new THREE.TextureLoader();
+    _planetMeshes = PLANETS.map(p => {
+      const geo = new THREE.SphereGeometry(p.displayR, 32, 32);
+      const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), shininess: 15 });
+      loader.load(
+        TEX_BASE + p.textureFile,
+        tex => { mat.map = tex; mat.needsUpdate = true; },
+        undefined,
+        () => {}
+      );
+      const mesh = new THREE.Mesh(geo, mat);
+      _scene.add(mesh);
+
+      /* Saturn rings */
+      if (p.hasRings) {
+        const ringGeo = new THREE.RingGeometry(p.displayR * 1.35, p.displayR * 2.3, 64);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: 0xc8a05a,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.55,
+        });
+        /* Rotate ring to lie flat */
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2;
+        mesh.add(ring);
+      }
+
+      return mesh;
+    });
+
+    /* ResizeObserver */
+    new ResizeObserver(() => {
+      if (!_renderer || !_camera) return;
+      const el = container.querySelector('#ss-viewport');
+      if (!el) return;
+      const w = el.clientWidth, h = el.clientHeight;
+      _camera.aspect = w / h;
+      _camera.updateProjectionMatrix();
+      _renderer.setSize(w, h);
+    }).observe(viewport);
+  }
+
+  /* ═════════════════════════════ CAMERA ═════════════════════════════ */
+  function _updateCamera() {
+    if (!_camera) return;
+    const x = _camDist * Math.sin(_camPhi) * Math.sin(_camTheta) + _camFocusX;
+    const y = _camDist * Math.cos(_camPhi) + _camFocusY;
+    const z = _camDist * Math.sin(_camPhi) * Math.cos(_camTheta) + _camFocusZ;
+    _camera.position.set(x, y, z);
+    _camera.lookAt(_camFocusX, _camFocusY, _camFocusZ);
+  }
+
+  function _focusPlanet(idx) {
+    const p = PLANETS[idx];
+    const mesh = _planetMeshes[idx];
+    if (!mesh) return;
+    _camFocusXT = mesh.position.x;
+    _camFocusYT = 0;
+    _camFocusZT = mesh.position.z;
+    _camDistT   = p.displayR * 8;
+  }
+
+  function _focusSun() {
+    _camFocusXT = 0; _camFocusYT = 0; _camFocusZT = 0;
+    _camDistT   = 50;
+  }
+
+  /* ═════════════════════════════ ANIMATION ══════════════════════════ */
+  function _start() {
+    function tick() {
+      _raf = requestAnimationFrame(tick);
+      if (!_renderer || !_scene || !_camera) return;
+
+      /* Update planet positions */
+      PLANETS.forEach((p, i) => {
+        if (!_paused) _angles[i] += 0.0003 * _speed * (365 / p.period);
+        const mesh = _planetMeshes[i];
+        if (mesh) {
+          mesh.position.x = Math.cos(_angles[i]) * p.orbitR;
+          mesh.position.z = Math.sin(_angles[i]) * p.orbitR;
+          mesh.rotation.y += 0.002 * _speed;
+        }
+      });
+
+      /* Lerp camera towards target */
+      const lf = 0.06;
+      _camDist   += (_camDistT   - _camDist)   * lf;
+      _camTheta  += (_camThetaT  - _camTheta)  * lf;
+      _camPhi    += (_camPhiT    - _camPhi)    * lf;
+      _camFocusX += (_camFocusXT - _camFocusX) * lf;
+      _camFocusY += (_camFocusYT - _camFocusY) * lf;
+      _camFocusZ += (_camFocusZT - _camFocusZ) * lf;
+      _updateCamera();
+
+      _renderer.render(_scene, _camera);
+    }
+    _raf = requestAnimationFrame(tick);
+  }
+
+  /* ═════════════════════════════ POINTER ════════════════════════════ */
+  function _wirePointer(container) {
+    const viewport = container.querySelector('#ss-viewport');
+    if (!viewport) return;
+    const canvas = () => viewport.querySelector('canvas');
+
+    /* Drag to orbit */
+    viewport.addEventListener('mousedown', e => {
+      _dragging = true; _lastX = e.clientX; _lastY = e.clientY;
+    });
+    window.addEventListener('mousemove', e => {
+      if (!_dragging) return;
+      const dx = e.clientX - _lastX;
+      const dy = e.clientY - _lastY;
+      _camThetaT += dx * 0.005;
+      _camPhiT    = Math.max(0.2, Math.min(Math.PI - 0.2, _camPhiT + dy * 0.005));
+      _lastX = e.clientX; _lastY = e.clientY;
+    });
+    window.addEventListener('mouseup', () => { _dragging = false; });
+
+    /* Touch drag */
+    viewport.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        _dragging = true; _lastX = e.touches[0].clientX; _lastY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+    viewport.addEventListener('touchmove', e => {
+      if (!_dragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - _lastX;
+      const dy = e.touches[0].clientY - _lastY;
+      _camThetaT += dx * 0.005;
+      _camPhiT    = Math.max(0.2, Math.min(Math.PI - 0.2, _camPhiT + dy * 0.005));
+      _lastX = e.touches[0].clientX; _lastY = e.touches[0].clientY;
+    }, { passive: true });
+    viewport.addEventListener('touchend', () => { _dragging = false; });
+
+    /* Scroll to zoom */
+    viewport.addEventListener('wheel', e => {
+      e.preventDefault();
+      _camDistT = Math.max(20, Math.min(600, _camDistT + e.deltaY * 0.3));
+    }, { passive: false });
+
+    /* Click: pick planet */
+    viewport.addEventListener('click', e => {
+      if (_dragging) return;
+      const cvs = canvas();
+      if (!cvs) return;
+      const rect = cvs.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(mouse, _camera);
+
+      /* Check sun */
+      const sunHits = ray.intersectObject(_sunMesh);
+      if (sunHits.length) {
+        _sel = 'sun';
+        _focusSun();
+        _openPanel(SUN, container);
+        return;
+      }
+
+      /* Check planets */
+      const planetHits = ray.intersectObjects(_planetMeshes, false);
+      if (planetHits.length) {
+        const idx = _planetMeshes.indexOf(planetHits[0].object);
+        if (idx >= 0) {
+          _sel = idx;
+          _focusPlanet(idx);
+          _openPanel(PLANETS[idx], container);
+          return;
+        }
+      }
+
+      /* Click empty: deselect */
+      _sel = null;
+      container.querySelector('#ss-panel')?.classList.remove('open');
+    });
+  }
+
+  /* ═════════════════════════════ CONTROLS ═══════════════════════════ */
   function _wireControls(container) {
-    container.querySelector('#ss-slower').onclick  = () => { _speed = Math.max(0.25, _speed / 2); _updateSpeedLabel(container); };
-    container.querySelector('#ss-faster').onclick  = () => { _speed = Math.min(64,   _speed * 2); _updateSpeedLabel(container); };
-    container.querySelector('#ss-zoom-in').onclick  = () => { _zoomTarget = Math.min(3, _zoomTarget * 1.4); };
-    container.querySelector('#ss-zoom-out').onclick = () => { _zoomTarget = Math.max(0.4, _zoomTarget / 1.4); };
-    container.querySelector('#ss-reset').onclick    = () => {
-      _angles = PLANETS.map(() => Math.random() * Math.PI * 2);
-      _t = 0; _speed = 1; _zoom = 1; _zoomTarget = 1;
+    container.querySelector('#ss-slower').onclick = () => {
+      _speed = Math.max(0.25, _speed / 2);
+      _updateSpeedLabel(container);
+    };
+    container.querySelector('#ss-faster').onclick = () => {
+      _speed = Math.min(64, _speed * 2);
+      _updateSpeedLabel(container);
+    };
+    container.querySelector('#ss-zoom-in').onclick  = () => { _camDistT = Math.max(20, _camDistT * 0.7); };
+    container.querySelector('#ss-zoom-out').onclick = () => { _camDistT = Math.min(600, _camDistT * 1.4); };
+    container.querySelector('#ss-reset').onclick = () => {
+      _angles   = PLANETS.map(() => Math.random() * Math.PI * 2);
+      _speed    = 1;
+      _camThetaT = 0.3; _camPhiT = 1.1; _camDistT = 280;
+      _camFocusXT = 0; _camFocusYT = 0; _camFocusZT = 0;
+      _sel = null;
+      container.querySelector('#ss-panel')?.classList.remove('open');
       _updateSpeedLabel(container);
     };
     container.querySelector('#ss-pause').onclick = e => {
@@ -216,11 +535,11 @@ const SolarExplorer = (function () {
   }
 
   function _updateSpeedLabel(container) {
-    const sp = container.querySelector('#ss-speed');
-    if (sp) sp.textContent = `${_speed}×`;
+    const el = container.querySelector('#ss-speed');
+    if (el) el.textContent = `${_speed}×`;
   }
 
-  /* ── Panel tabs ── */
+  /* ═════════════════════════════ PANEL ══════════════════════════════ */
   function _wirePanelTabs(container) {
     container.addEventListener('click', e => {
       const tab = e.target.closest('.ex-solar-panel-tab');
@@ -237,43 +556,6 @@ const SolarExplorer = (function () {
     };
   }
 
-  /* ── Canvas click ── */
-  function _wireClick(container) {
-    _canvas.addEventListener('click', e => {
-      const rect = _canvas.getBoundingClientRect();
-      const mx   = e.clientX - rect.left;
-      const my   = e.clientY - rect.top;
-      const W    = rect.width, H = rect.height;
-      const cx   = W / 2, cy = H / 2;
-      const maxR = Math.min(W, H) * 0.44 * _zoom;
-
-      if (Math.hypot(mx - cx, my - cy) < 28 * _zoom) {
-        _sel = 'sun';
-        _openPanel(SUN, container);
-        return;
-      }
-      for (let i = 0; i < PLANETS.length; i++) {
-        const p  = PLANETS[i];
-        const or = p.orbit * maxR;
-        const px = cx + or * Math.cos(_angles[i]);
-        const py = cy + or * Math.sin(_angles[i]);
-        if (Math.hypot(mx - px, my - py) <= p.r * _zoom + 8) {
-          _sel = i;
-          _openPanel(p, container);
-          return;
-        }
-      }
-      _sel = null;
-      container.querySelector('#ss-panel')?.classList.remove('open');
-    });
-
-    _canvas.addEventListener('wheel', e => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? 1 / 1.15 : 1.15;
-      _zoomTarget = Math.max(0.4, Math.min(3, _zoomTarget * delta));
-    }, { passive: false });
-  }
-
   function _openPanel(body, container) {
     const hint = container.querySelector('#ss-hint');
     if (hint) hint.style.display = 'none';
@@ -284,10 +566,8 @@ const SolarExplorer = (function () {
     container.querySelectorAll('.ex-solar-panel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'overview'));
     const moonTab    = panel.querySelector('[data-tab="moons"]');
     const compareTab = panel.querySelector('[data-tab="compare"]');
-    const hasMoons   = body.moonList !== undefined;
-    const hasCompare = body.compare !== undefined;
-    if (moonTab)    moonTab.style.display    = hasMoons   ? '' : 'none';
-    if (compareTab) compareTab.style.display = hasCompare ? '' : 'none';
+    if (moonTab)    moonTab.style.display    = body.moonList !== undefined ? '' : 'none';
+    if (compareTab) compareTab.style.display = body.compare  !== undefined ? '' : 'none';
     _renderPanelHeader(body, container);
     _renderPanelBody(container);
   }
@@ -310,10 +590,17 @@ const SolarExplorer = (function () {
     if (!body) return;
 
     if (_curTab === 'overview') {
-      const rows = Object.entries(body.info).map(([k, v]) => {
-        const label = ({ dist: 'Distância ao Sol', radius: 'Raio médio', period: 'Período orbital', temp: 'Temperatura', moons: 'Nº de luas', gravity: 'Gravidade', type: 'Tipo', age: 'Idade' })[k] || k;
-        return `<div class="ex-solar-info-row"><span class="ex-solar-info-label">${label}</span><span>${v}</span></div>`;
-      }).join('');
+      const LABELS = {
+        dist: 'Distância ao Sol', radius: 'Raio médio', period: 'Período orbital',
+        temp: 'Temperatura', moons: 'Nº de luas', gravity: 'Gravidade',
+        type: 'Tipo', age: 'Idade',
+      };
+      const rows = Object.entries(body.info).map(([k, v]) =>
+        `<div class="ex-solar-info-row">
+           <span class="ex-solar-info-label">${LABELS[k] || k}</span>
+           <span>${v}</span>
+         </div>`
+      ).join('');
       bodyEl.innerHTML = `<div class="ex-solar-overview">${rows}</div>`;
 
     } else if (_curTab === 'moons') {
@@ -330,9 +617,9 @@ const SolarExplorer = (function () {
             <span>Raio: ${m.r}</span>
           </div>
         </div>`).join('');
-      const shown = body.moonList.length;
       const total = parseInt(body.info?.moons || 0);
-      const more  = total > shown ? `<div class="ex-solar-moons-more">+ ${total - shown} luas menores catalogadas</div>` : '';
+      const more  = total > body.moonList.length
+        ? `<div class="ex-solar-moons-more">+ ${total - body.moonList.length} luas menores catalogadas</div>` : '';
       bodyEl.innerHTML = `<div class="ex-solar-moons">${items}${more}</div>`;
 
     } else if (_curTab === 'facts') {
@@ -367,141 +654,6 @@ const SolarExplorer = (function () {
         ${bars}
       </div>`;
     }
-  }
-
-  /* ── Resize ── */
-  function _resize() {
-    if (!_canvas) return;
-    const rect = _canvas.getBoundingClientRect();
-    const dpr  = window.devicePixelRatio || 1;
-    _canvas.width  = rect.width  * dpr;
-    _canvas.height = rect.height * dpr;
-  }
-
-  /* ── Animation loop ── */
-  function _start() {
-    const dpr = window.devicePixelRatio || 1;
-
-    function tick() {
-      _raf = requestAnimationFrame(tick);
-      if (!_canvas || !_ctx) return;
-
-      _zoom += (_zoomTarget - _zoom) * 0.08;
-
-      const W  = _canvas.width  / dpr;
-      const H  = _canvas.height / dpr;
-      const cx = W / 2, cy = H / 2;
-      const maxR = Math.min(W, H) * 0.44 * _zoom;
-
-      _ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      _ctx.clearRect(0, 0, W, H);
-
-      _drawStars(W, H);
-
-      /* Orbit rings */
-      PLANETS.forEach(p => {
-        _ctx.beginPath();
-        _ctx.arc(cx, cy, p.orbit * maxR, 0, Math.PI * 2);
-        _ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-        _ctx.lineWidth   = 0.5;
-        _ctx.stroke();
-      });
-
-      /* Saturn's rings */
-      const satI   = 5;
-      const satOr  = PLANETS[satI].orbit * maxR;
-      const satX   = cx + satOr * Math.cos(_angles[satI]);
-      const satY   = cy + satOr * Math.sin(_angles[satI]);
-      _ctx.save();
-      _ctx.translate(satX, satY);
-      _ctx.scale(1, 0.3);
-      _ctx.beginPath();
-      _ctx.arc(0, 0, (PLANETS[satI].r + 10) * _zoom, 0, Math.PI * 2);
-      _ctx.strokeStyle = 'rgba(228,209,145,0.5)';
-      _ctx.lineWidth   = 5 * _zoom;
-      _ctx.stroke();
-      _ctx.restore();
-
-      /* Sun */
-      const sunR    = 28 * _zoom;
-      const sunGlow = _ctx.createRadialGradient(cx, cy, 0, cx, cy, sunR * 1.3);
-      sunGlow.addColorStop(0, '#fff9c4');
-      sunGlow.addColorStop(0.3, '#ffd700');
-      sunGlow.addColorStop(0.7, '#ff8c00');
-      sunGlow.addColorStop(1, 'rgba(255,100,0,0)');
-      _ctx.beginPath();
-      _ctx.arc(cx, cy, sunR * 1.3, 0, Math.PI * 2);
-      _ctx.fillStyle = sunGlow;
-      _ctx.fill();
-
-      if (_sel === 'sun') {
-        _ctx.beginPath();
-        _ctx.arc(cx, cy, sunR + 5, 0, Math.PI * 2);
-        _ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-        _ctx.lineWidth   = 1.5;
-        _ctx.stroke();
-      }
-
-      /* Planets */
-      PLANETS.forEach((p, i) => {
-        if (!_paused) {
-          _angles[i] += 0.0002 * _speed * (365 / p.period);
-        }
-        const or = p.orbit * maxR;
-        const px = cx + or * Math.cos(_angles[i]);
-        const py = cy + or * Math.sin(_angles[i]);
-        const pr = p.r * _zoom;
-
-        const glow = _ctx.createRadialGradient(px, py, 0, px, py, pr * 2.2);
-        glow.addColorStop(0, p.color);
-        glow.addColorStop(1, 'transparent');
-        _ctx.beginPath();
-        _ctx.arc(px, py, pr * 2.2, 0, Math.PI * 2);
-        _ctx.fillStyle = glow;
-        _ctx.fill();
-
-        _ctx.beginPath();
-        _ctx.arc(px, py, pr, 0, Math.PI * 2);
-        _ctx.fillStyle = p.color;
-        _ctx.fill();
-
-        if (_sel === i) {
-          _ctx.beginPath();
-          _ctx.arc(px, py, pr + 5, 0, Math.PI * 2);
-          _ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-          _ctx.lineWidth   = 1.5;
-          _ctx.stroke();
-        }
-
-        if (maxR > 150) {
-          _ctx.fillStyle  = 'rgba(255,255,255,0.55)';
-          _ctx.font       = `${Math.max(9, Math.min(11, W / 80))}px Inter, sans-serif`;
-          _ctx.textAlign  = 'center';
-          _ctx.fillText(p.name, px, py + pr + 13);
-        }
-      });
-
-      _t++;
-    }
-
-    _raf = requestAnimationFrame(tick);
-  }
-
-  /* Seeded starfield */
-  const _stars = Array.from({ length: 200 }, (_, i) => ({
-    x: Math.sin(i * 127.3) * 0.5 + 0.5,
-    y: Math.cos(i * 83.7)  * 0.5 + 0.5,
-    s: 0.4 + (i % 5) * 0.3,
-    a: 0.2 + (i % 7) * 0.1,
-  }));
-
-  function _drawStars(W, H) {
-    _stars.forEach(s => {
-      _ctx.beginPath();
-      _ctx.arc(s.x * W, s.y * H, s.s, 0, Math.PI * 2);
-      _ctx.fillStyle = `rgba(255,255,255,${s.a})`;
-      _ctx.fill();
-    });
   }
 
   return { mount, resume, stop };
