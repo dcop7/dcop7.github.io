@@ -277,7 +277,8 @@ const PortugalExplorer = (function () {
   let _container = null;
 
   /* ── GeoJSON URL to try ── */
-  const PT_GEOJSON = 'https://raw.githubusercontent.com/nmota/caop_GIS/master/distritos.geojson';
+  /* Verified working 2025-05 — property "name" matches district names exactly */
+  const PT_GEOJSON = 'https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/portugal.geojson';
 
   /* ── Leaflet lazy load ── */
   async function _loadLeaflet() {
@@ -402,7 +403,7 @@ const PortugalExplorer = (function () {
   async function _tryLoadGeoJSON() {
     try {
       const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 12000);
+      const tid  = setTimeout(() => ctrl.abort(), 20000);
       const r = await fetch(PT_GEOJSON, { signal: ctrl.signal });
       clearTimeout(tid);
       if (!r.ok) return;
@@ -410,23 +411,31 @@ const PortugalExplorer = (function () {
 
       /* Find which property has district names */
       const sample = gj.features?.[0]?.properties || {};
-      const nameKey = ['Dico','DICO','NAME_1','name','Distrito','distrito','NME','NOME'].find(k => k in sample);
+      const nameKey = ['name','NAME_1','Dico','DICO','Distrito','distrito','NME','NOME','Desig'].find(k => k in sample);
       if (!nameKey) return;
 
       _geoLayer = L.geoJSON(gj, {
-        style: () => ({
-          fillColor: 'rgba(99,102,241,.12)',
-          color: _isDark() ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)',
-          weight: 1,
-          fillOpacity: 0.12,
-        }),
+        style(feature) {
+          const d = _findDistrict(feature.properties[nameKey]);
+          const base = d ? d.color : '#6366f1';
+          return {
+            fillColor: base,
+            color: _isDark() ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.25)',
+            weight: 1.2,
+            fillOpacity: d === _selected ? 0.55 : 0.15,
+          };
+        },
         onEachFeature(feature, layer) {
           const rawName = feature.properties[nameKey];
           const d = _findDistrict(rawName);
           if (!d) return;
+          layer.bindTooltip(d.name, { sticky: true, direction: 'top', className: 'pt-geo-tooltip' });
           layer.on({
             mouseover(e) {
-              if (d !== _selected) e.target.setStyle({ fillOpacity: 0.28, weight: 1.5 });
+              if (d !== _selected) {
+                e.target.setStyle({ fillOpacity: 0.38, weight: 2 });
+                e.target.bringToFront();
+              }
             },
             mouseout(e) {
               if (d !== _selected) _geoLayer?.resetStyle(e.target);
@@ -436,11 +445,14 @@ const PortugalExplorer = (function () {
         },
       }).addTo(_map);
 
-      /* Bring markers on top */
-      _markers.forEach(({ marker }) => marker.bringToFront());
+      /* Once GeoJSON loads, shrink circle markers to small accent dots */
+      _markers.forEach(({ marker }) => {
+        marker.setStyle({ radius: 5, fillOpacity: 0.6, weight: 1 });
+        marker.bringToFront();
+      });
 
     } catch (e) {
-      /* Silently fail — markers are still interactive */
+      /* Silently fail — markers remain the interactive fallback */
     }
   }
 
@@ -457,20 +469,44 @@ const PortugalExplorer = (function () {
   function _select(d) {
     _selected = d;
 
-    /* Highlight marker */
+    /* Highlight / reset circle markers */
+    const hasGeo = !!_geoLayer;
     _markers.forEach(({ dist, marker }) => {
-      marker.setStyle({
-        fillOpacity: dist === d ? 0.75 : 0.35,
-        weight:      dist === d ? 3    : 2,
-        radius:      dist === d ? _markerRadius(dist) + 4 : _markerRadius(dist),
-      });
+      if (hasGeo) {
+        /* GeoJSON loaded — markers are small accent dots */
+        marker.setStyle({
+          radius:      dist === d ? 8 : 5,
+          fillOpacity: dist === d ? 1 : 0.6,
+          weight:      dist === d ? 2 : 1,
+        });
+      } else {
+        marker.setStyle({
+          fillOpacity: dist === d ? 0.75 : 0.35,
+          weight:      dist === d ? 3    : 2,
+          radius:      dist === d ? _markerRadius(dist) + 4 : _markerRadius(dist),
+        });
+      }
     });
 
-    /* Fly to */
-    if (_map) {
-      const lat = d.lat + (d.region === 'Norte' || d.id === 'acores' ? 0 : 0);
-      _map.flyTo([d.lat, d.lon], 9, { duration: 0.9 });
+    /* Re-style GeoJSON polygons */
+    if (_geoLayer) {
+      _geoLayer.eachLayer(layer => {
+        const props = layer.feature?.properties || {};
+        const nameKey = Object.keys(props).find(k => props[k] && typeof props[k] === 'string');
+        const fd = _findDistrict(Object.values(props).find(v => typeof v === 'string'));
+        const isSelected = fd === d;
+        const base = fd ? fd.color : '#6366f1';
+        layer.setStyle({
+          fillColor: base,
+          fillOpacity: isSelected ? 0.55 : 0.15,
+          weight: isSelected ? 2 : 1.2,
+        });
+        if (isSelected) layer.bringToFront();
+      });
     }
+
+    /* Fly to district */
+    if (_map) _map.flyTo([d.lat, d.lon], 9, { duration: 0.8 });
 
     /* Show panel */
     _renderInfo(d);

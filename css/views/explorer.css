@@ -822,8 +822,6 @@
 }
 #ex-globe-container canvas {
   display: block;
-  width: 100% !important;
-  height: 100% !important;
 }
 
 /* Globe view mode bar */

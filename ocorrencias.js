@@ -74,9 +74,10 @@ const OcorrenciasPage = (function () {
   /* ── Theme helpers ── */
   function _isDark() { return !document.body.classList.contains('light'); }
   function _tileUrl() {
+    /* dark_matter gives visible contrast without being so dark incidents are lost */
     return _isDark()
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+      ? 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
   }
   function _watchTheme() {
     if (_themeObs) return;
@@ -89,6 +90,59 @@ const OcorrenciasPage = (function () {
       }).addTo(_map);
     });
     _themeObs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  /* ── Portugal district boundary overlay ── */
+  const PT_DISTRICTS_GEO = 'https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/portugal.geojson';
+  let _districtLayer = null;
+
+  async function _loadDistrictBoundaries() {
+    if (_districtLayer || !_map) return;
+    try {
+      const ctrl = new AbortController();
+      setTimeout(() => ctrl.abort(), 15000);
+      const r = await fetch(PT_DISTRICTS_GEO, { signal: ctrl.signal });
+      if (!r.ok) return;
+      const gj = await r.json();
+      _districtLayer = L.geoJSON(gj, {
+        style: () => ({
+          fillColor: 'transparent',
+          color: _isDark() ? 'rgba(180,200,255,.35)' : 'rgba(60,80,140,.3)',
+          weight: 1.2,
+          fillOpacity: 0,
+          interactive: false,
+        }),
+        interactive: false,
+      }).addTo(_map);
+      /* Keep incident markers on top */
+      _lEq?.bringToFront();
+      _lFire?.bringToFront();
+      _lWarn?.bringToFront();
+    } catch (e) { /* Silently skip — map is still functional */ }
+  }
+
+  /* ── Nominatim reverse geocoding ── */
+  async function _reverseGeocode(lat, lon) {
+    const key = `oc-geo-${lat.toFixed(4)}-${lon.toFixed(4)}`;
+    try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=pt`;
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'diogo-website-explorer/1.0' },
+        signal: AbortSignal.timeout(6000),
+      });
+      if (!r.ok) return null;
+      const d = await r.json();
+      const result = {
+        district:     d.address?.county || d.address?.state_district || null,
+        municipality: d.address?.municipality || d.address?.city || d.address?.town || d.address?.village || null,
+        parish:       d.address?.suburb || d.address?.neighbourhood || d.address?.hamlet || null,
+        region:       d.address?.state || null,
+        display:      d.display_name || null,
+      };
+      try { sessionStorage.setItem(key, JSON.stringify(result)); } catch (e) {}
+      return result;
+    } catch (e) { return null; }
   }
 
   /* ════════════════════════════════ PROVIDERS ══════════════════════ */
@@ -238,6 +292,7 @@ const OcorrenciasPage = (function () {
     _lFire = L.layerGroup().addTo(_map);
     _lWarn = L.layerGroup().addTo(_map);
     _watchTheme();
+    _loadDistrictBoundaries();
   }
 
   function _magClass(mag) {
@@ -306,7 +361,11 @@ const OcorrenciasPage = (function () {
   function _openDetail(inc) {
     _detailInc = inc;
     _map?.flyTo([inc.lat, inc.lon], Math.max(_map.getZoom(), 9), { duration: 0.7 });
-    _renderDetail(inc);
+    _renderDetail(inc, null);
+    /* Reverse-geocode and update panel with location context */
+    _reverseGeocode(inc.lat, inc.lon).then(geo => {
+      if (geo && _detailInc === inc) _renderDetail(inc, geo);
+    });
   }
 
   function _val(v, unit) {
@@ -316,7 +375,17 @@ const OcorrenciasPage = (function () {
     return `${v}${unit || ''}`;
   }
 
-  function _renderDetail(inc) {
+  function _geoRows(geo) {
+    if (!geo) return `<div class="oc-detail-row oc-geo-loading"><span class="oc-detail-label">📍 Localização</span><span style="color:var(--muted);font-size:.78rem">A identificar…</span></div>`;
+    const rows = [];
+    if (geo.district)     rows.push(`<div class="oc-detail-row"><span class="oc-detail-label">🗺 Distrito</span><span>${geo.district}</span></div>`);
+    if (geo.municipality) rows.push(`<div class="oc-detail-row"><span class="oc-detail-label">🏙 Município</span><span>${geo.municipality}</span></div>`);
+    if (geo.parish)       rows.push(`<div class="oc-detail-row"><span class="oc-detail-label">🏘 Freguesia</span><span>${geo.parish}</span></div>`);
+    if (geo.region)       rows.push(`<div class="oc-detail-row"><span class="oc-detail-label">📌 Região</span><span>${geo.region}</span></div>`);
+    return rows.join('');
+  }
+
+  function _renderDetail(inc, geo) {
     const panel = document.querySelector('.oc-detail-panel');
     if (!panel) return;
 
@@ -334,37 +403,41 @@ const OcorrenciasPage = (function () {
         </div>
         <div class="oc-detail-rows">
           <div class="oc-detail-row"><span class="oc-detail-label">Local</span><span>${_val(inc.title)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Magnitude</span><span style="color:${clr}">${_val(inc.mag?.toFixed(1))} ${inc.magType || ''}</span></div>
+          ${_geoRows(geo)}
+          <div class="oc-detail-row"><span class="oc-detail-label">Magnitude</span><span style="color:${clr};font-weight:700">${_val(inc.mag?.toFixed(1))} ${inc.magType || ''}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Profundidade</span><span>${_val(inc.depth, ' km')}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span>${inc.lat.toFixed(4)}°, ${inc.lon.toFixed(4)}°</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span style="font-family:var(--font-mono);font-size:.78rem">${inc.lat.toFixed(4)}°N, ${Math.abs(inc.lon).toFixed(4)}°W</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Data/hora</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">USGS</span></div>
         </div>
         ${inc.url ? `<a class="oc-detail-link" href="${inc.url}" target="_blank" rel="noopener">Ver relatório USGS ↗</a>` : ''}`;
 
     } else if (inc.type === 'fire') {
-      const statusMap = { active: 'Ativo', resolved: 'Resolvido', 'em curso': 'Em curso', 'conclusão': 'Em conclusão' };
+      const statusMap = { active: 'Ativo', resolved: 'Resolvido', 'em curso': 'Em curso', 'conclusão': 'Em conclusão', despacho: 'Em despacho' };
       const statusLbl = statusMap[(inc.status || '').toLowerCase()] || inc.status;
+      const hasResources = inc.operacionais != null || inc.veiculos != null || inc.aereos != null;
       content = `
         <div class="oc-detail-hero fire">
           <div class="oc-detail-fire-icon">🔥</div>
-          <div class="oc-detail-type-lbl">Incêndio Florestal</div>
+          <div>
+            <div class="oc-detail-type-lbl">Incêndio Florestal</div>
+            ${statusLbl ? `<div class="oc-detail-status-badge">${statusLbl}</div>` : ''}
+          </div>
         </div>
         <div class="oc-detail-rows">
           <div class="oc-detail-row"><span class="oc-detail-label">Natureza</span><span>${_val(inc.title)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Município</span><span>${_val(inc.municipio)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Freguesia</span><span>${_val(inc.freguesia)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Estado</span><span class="${inc.status ? 'oc-detail-status' : ''}">${_val(statusLbl)}</span></div>
+          ${_geoRows(geo || { district: inc.municipio || inc.district, municipality: inc.municipio, parish: inc.freguesia })}
           <div class="oc-detail-row"><span class="oc-detail-label">Área ardida</span><span>${_val(inc.area != null ? inc.area.toFixed(2) : null, ' ha')}</span></div>
+          ${hasResources ? `
           <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">👷 Operacionais</span><span>${_val(inc.operacionais)}</span></div>
           <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">🚒 Veículos</span><span>${_val(inc.veiculos)}</span></div>
-          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">✈️ Meios aéreos</span><span>${_val(inc.aereos)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span>${inc.lat.toFixed(4)}°, ${inc.lon.toFixed(4)}°</span></div>
+          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">✈️ Meios aéreos</span><span>${_val(inc.aereos)}</span></div>` : ''}
+          <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span style="font-family:var(--font-mono);font-size:.78rem">${inc.lat.toFixed(4)}°N, ${Math.abs(inc.lon).toFixed(4)}°W</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Última atualização</span><span>${_fmtTime(inc.lastUpdate)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">fogos.pt</span></div>
         </div>
-        <div class="oc-detail-notice">Dados em tempo real via API fogos.pt. Campos não reportados são assinalados como indisponíveis.</div>`;
+        <div class="oc-detail-notice">Dados em tempo real via API fogos.pt.</div>`;
 
     } else if (inc.type === 'weather') {
       const clrMap = { yellow: '#eab308', orange: '#f97316', red: '#ef4444', amarelo: '#eab308', laranja: '#f97316', vermelho: '#ef4444' };
@@ -372,12 +445,15 @@ const OcorrenciasPage = (function () {
       content = `
         <div class="oc-detail-hero weather">
           <div class="oc-detail-warn-icon" style="color:${clr}">⚠</div>
-          <div class="oc-detail-type-lbl">Aviso Meteorológico</div>
+          <div>
+            <div class="oc-detail-type-lbl">Aviso Meteorológico</div>
+            <div class="oc-detail-warn-level" style="color:${clr}">${inc.level?.toUpperCase() || ''}</div>
+          </div>
         </div>
         <div class="oc-detail-rows">
           <div class="oc-detail-row"><span class="oc-detail-label">Tipo</span><span>${_val(inc.warnType)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Nível</span><span style="color:${clr};font-weight:600">${_val(inc.level)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Distrito</span><span>${_val(inc.district)}</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">🗺 Distrito</span><span>${_val(inc.district)}</span></div>
+          ${_geoRows(geo)}
           <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fim previsto</span><span>${_fmtTime(inc.endTime)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">IPMA</span></div>

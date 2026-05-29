@@ -13,11 +13,12 @@ const ExplorerPage = (function () {
   let _geoJsonOk   = false;
 
   /* ── Globe state (globe.gl) ── */
-  let _globeGL       = null;
-  let _globeInited   = false;
-  let _globeView     = 'realistic';   /* 'realistic' | 'night' | 'political' */
-  let _globeHovered  = null;
-  let _byCca3        = {};
+  let _globeGL         = null;
+  let _globeInited     = false;
+  let _globeResizeObs  = null;
+  let _globeView       = 'realistic';   /* 'realistic' | 'night' | 'political' */
+  let _globeHovered    = null;
+  let _byCca3          = {};
   let _updateGlobeColors = null;
 
   /* ── Leaflet state ── */
@@ -41,11 +42,12 @@ const ExplorerPage = (function () {
   const COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,cca2,cca3,flag,capital,population,currencies,languages,area,continents,flags,timezones,borders';
   const GEOJSON_URL   = 'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
 
+  /* three-globe CDN — confirmed working 2025 */
   const GLOBE_TEX = {
-    day:   'https://unpkg.com/three@0.160.0/examples/textures/planets/earth_atmos_2048.jpg',
-    night: 'https://unpkg.com/three@0.160.0/examples/textures/planets/earth_lights_2048.png',
-    bump:  'https://unpkg.com/three@0.160.0/examples/textures/planets/earth_normal_2048.jpg',
-    space: 'https://unpkg.com/three@0.160.0/examples/textures/2294472375_24a3b8ef46_o.jpg',
+    day:   'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
+    night: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
+    bump:  'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png',
+    space: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
   };
 
   const CONT_COLORS = {
@@ -593,11 +595,18 @@ const ExplorerPage = (function () {
       }),
       onEachFeature(feature, layer) {
         const c = byCca3[feature.id];
-        if (!c) return;
         layer.on({
           mouseover(e) { e.target.setStyle({ fillOpacity: 0.42, color: 'rgba(99,102,241,0.85)', weight: 1.4 }); },
           mouseout(e)  { _lLayer?.resetStyle(e.target); },
-          click()      { showCountryPanel(c, '#ex-country-panel'); },
+          click() {
+            /* Fly to country bounds */
+            try { _lMap.flyToBounds(layer.getBounds(), { padding: [30, 30], maxZoom: 6, duration: 0.7 }); } catch (e) {}
+            if (c) {
+              showCountryPanel(c, '#ex-country-panel');
+            } else {
+              _showMapMinimalPanel(feature);
+            }
+          },
         });
       },
     }).addTo(_lMap);
@@ -692,6 +701,19 @@ const ExplorerPage = (function () {
       </div>`;
   }
 
+  /* Wait until an element has non-zero clientWidth (rAF poll, max ~2 s) */
+  function _waitForSize(el) {
+    return new Promise(resolve => {
+      if (el.clientWidth > 0 && el.clientHeight > 0) { resolve(); return; }
+      let tries = 0;
+      const check = () => {
+        if (el.clientWidth > 0 && el.clientHeight > 0) { resolve(); return; }
+        if (++tries < 60) requestAnimationFrame(check); else resolve();
+      };
+      requestAnimationFrame(check);
+    });
+  }
+
   async function _initGlobe() {
     if (_globeInited) {
       document.getElementById('ex-globe-loading')?.remove();
@@ -719,15 +741,15 @@ const ExplorerPage = (function () {
       return;
     }
 
-    /* Load globe.gl */
+    /* Load globe.gl (pinned version — confirmed working) */
     setTxt('A inicializar globo 3D…');
     try {
-      await _loadScript('https://unpkg.com/globe.gl/dist/globe.gl.min.js');
+      await _loadScript('https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js');
     } catch (e) {
       const ld = document.getElementById('ex-globe-loading');
       if (ld) ld.innerHTML = `
         <div class="ex-error-icon">⚠</div>
-        <div class="ex-error-msg">Erro ao carregar globo WebGL.</div>
+        <div class="ex-error-msg">Erro ao carregar globo WebGL.<br>Verifica a ligação à internet.</div>
         <button class="ex-retry-btn" id="ex-globe-retry2">Tentar novamente</button>`;
       document.getElementById('ex-globe-retry2')?.addEventListener('click', _initGlobe);
       return;
@@ -735,6 +757,9 @@ const ExplorerPage = (function () {
 
     const container = document.getElementById('ex-globe-container');
     if (!container || typeof Globe === 'undefined') return;
+
+    /* Wait for container to have real pixel dimensions before WebGL init */
+    await _waitForSize(container);
 
     _byCca3 = _byCode();
 
@@ -797,11 +822,19 @@ const ExplorerPage = (function () {
       });
     }
 
-    /* ResizeObserver */
-    new ResizeObserver(() => {
+    /* ResizeObserver — stored so it can be disconnected on shell rebuild */
+    _globeResizeObs = new ResizeObserver(() => {
       if (!_globeGL || !container) return;
       _globeGL.width(container.clientWidth).height(container.clientHeight);
-    }).observe(container);
+    });
+    _globeResizeObs.observe(container);
+
+    /* Force correct size after init (handles late-layout edge cases) */
+    setTimeout(() => {
+      if (_globeGL && container.clientWidth > 0) {
+        _globeGL.width(container.clientWidth).height(container.clientHeight);
+      }
+    }, 300);
 
     const countEl = document.getElementById('ex-globe-count');
     if (countEl) countEl.textContent = _countries.length;
@@ -844,6 +877,24 @@ const ExplorerPage = (function () {
       _switchTab('map');
       setTimeout(() => showCountryPanel(c, '#ex-country-panel'), 500);
     }
+  }
+
+  function _showMapMinimalPanel(feature) {
+    const panel = document.querySelector('#ex-country-panel');
+    if (!panel) return;
+    const name = feature.properties?.name || feature.id || 'País desconhecido';
+    panel.innerHTML = `
+      <button class="ex-panel-close" id="ex-panel-close">✕</button>
+      <div class="ex-panel-flag-placeholder" style="font-size:3rem;display:flex;align-items:center;justify-content:center;height:120px;background:linear-gradient(135deg,var(--accent-soft),var(--bg2))">🌍</div>
+      <div class="ex-panel-body">
+        <div class="ex-panel-name">${name}</div>
+        <div class="ex-panel-rows" style="margin-top:.75rem">
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">⚠</span><span class="ex-panel-label" style="color:var(--muted);font-size:.78rem">Dados detalhados indisponíveis. A ligar ao servidor…</span></div>
+        </div>
+        <a class="ex-wiki-btn" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-flex">📖 Wikipedia</a>
+      </div>`;
+    panel.classList.add('open');
+    panel.querySelector('#ex-panel-close').onclick = () => panel.classList.remove('open');
   }
 
   function _showGlobeMinimalPanel(feature) {
@@ -931,6 +982,12 @@ const ExplorerPage = (function () {
     if (!view) return;
     if (!_shell || !view.contains(_shell)) {
       _loadStorage();
+      /* Disconnect old globe observer and reset state before rebuilding DOM */
+      if (_globeResizeObs) { _globeResizeObs.disconnect(); _globeResizeObs = null; }
+      _globeGL         = null;
+      _globeInited     = false;
+      _globeHovered    = null;
+      _updateGlobeColors = null;
       _buildShell(view);
     }
     _switchTab(sub || 'hub');

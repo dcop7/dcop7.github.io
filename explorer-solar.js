@@ -13,7 +13,7 @@ const SolarExplorer = (function () {
     {
       id: 'mercury', name: 'Mercúrio', color: '#b5b5b5', textureFile: 'mercury_1024.jpg',
       displayR: 2.2, orbitR: 30, period: 88,
-      info: { dist: '0.39 UA', radius: '2 439 km', period: '88 dias', temp: '−170 / +430°C', moons: '0', gravity: '3.7 m/s²' },
+      info: { dist: '0.39 UA', radius: '2 439 km', mass: '3.30 × 10²³ kg', period: '88 dias', day: '176 dias T.', temp: '−170 / +430°C', moons: '0', gravity: '3.7 m/s²', atmos: 'Ínfima (Na, O₂, H₂)' },
       moonList: [],
       facts: [
         'O planeta mais pequeno do Sistema Solar desde a reclassificação de Plutão em 2006.',
@@ -26,7 +26,7 @@ const SolarExplorer = (function () {
     {
       id: 'venus', name: 'Vénus', color: '#e8cda0', textureFile: 'venus_2048.jpg',
       displayR: 3.8, orbitR: 45, period: 225,
-      info: { dist: '0.72 UA', radius: '6 051 km', period: '225 dias', temp: '+465°C', moons: '0', gravity: '8.9 m/s²' },
+      info: { dist: '0.72 UA', radius: '6 051 km', mass: '4.87 × 10²⁴ kg', period: '225 dias', day: '243 dias T.', temp: '+465°C', moons: '0', gravity: '8.9 m/s²', atmos: 'Densa (CO₂ 96%, N₂)' },
       moonList: [],
       facts: [
         'O planeta mais quente, apesar de Mercúrio estar mais perto do Sol.',
@@ -39,7 +39,7 @@ const SolarExplorer = (function () {
     {
       id: 'earth', name: 'Terra', color: '#4b9cd3', textureFile: 'earth_atmos_2048.jpg',
       displayR: 4, orbitR: 60, period: 365,
-      info: { dist: '1.00 UA', radius: '6 371 km', period: '365 dias', temp: '−89 / +56°C', moons: '1', gravity: '9.8 m/s²' },
+      info: { dist: '1.00 UA', radius: '6 371 km', mass: '5.97 × 10²⁴ kg', period: '365 dias', day: '23 h 56 min', temp: '−89 / +56°C', moons: '1', gravity: '9.8 m/s²', atmos: 'N₂ 78%, O₂ 21%' },
       moonList: [
         { name: 'Lua', dist: '384 400 km', period: '27.3 dias', r: '1 737 km' },
       ],
@@ -54,7 +54,7 @@ const SolarExplorer = (function () {
     {
       id: 'mars', name: 'Marte', color: '#c1440e', textureFile: 'mars_1024.jpg',
       displayR: 2.8, orbitR: 80, period: 687,
-      info: { dist: '1.52 UA', radius: '3 389 km', period: '687 dias', temp: '−125 / +20°C', moons: '2', gravity: '3.7 m/s²' },
+      info: { dist: '1.52 UA', radius: '3 389 km', mass: '6.39 × 10²³ kg', period: '687 dias', day: '24 h 37 min', temp: '−125 / +20°C', moons: '2', gravity: '3.7 m/s²', atmos: 'Fina (CO₂ 95%)' },
       moonList: [
         { name: 'Fobos', dist: '9 376 km', period: '7.7 horas', r: '11 km' },
         { name: 'Deimos', dist: '23 458 km', period: '30.3 horas', r: '6 km' },
@@ -70,7 +70,7 @@ const SolarExplorer = (function () {
     {
       id: 'jupiter', name: 'Júpiter', color: '#c88b3a', textureFile: 'jupiter_2048.jpg',
       displayR: 10, orbitR: 115, period: 4333,
-      info: { dist: '5.20 UA', radius: '69 911 km', period: '11.9 anos', temp: '−108°C', moons: '95', gravity: '24.8 m/s²' },
+      info: { dist: '5.20 UA', radius: '69 911 km', mass: '1.90 × 10²⁷ kg', period: '11.9 anos', day: '9 h 56 min', temp: '−108°C', moons: '95', gravity: '24.8 m/s²', atmos: 'H₂ 90%, He 10%' },
       moonList: [
         { name: 'Io', dist: '421 700 km', period: '1.8 dias', r: '1 822 km' },
         { name: 'Europa', dist: '671 000 km', period: '3.6 dias', r: '1 561 km' },
@@ -88,7 +88,7 @@ const SolarExplorer = (function () {
     {
       id: 'saturn', name: 'Saturno', color: '#e4d191', textureFile: 'saturn_2048.jpg',
       displayR: 8.5, orbitR: 150, period: 10759, hasRings: true,
-      info: { dist: '9.58 UA', radius: '58 232 km', period: '29.5 anos', temp: '−178°C', moons: '146', gravity: '10.4 m/s²' },
+      info: { dist: '9.58 UA', radius: '58 232 km', mass: '5.68 × 10²⁶ kg', period: '29.5 anos', day: '10 h 33 min', temp: '−178°C', moons: '146', gravity: '10.4 m/s²', atmos: 'H₂ 96%, He 3%' },
       moonList: [
         { name: 'Titã', dist: '1 221 870 km', period: '15.9 dias', r: '2 575 km' },
         { name: 'Réia', dist: '527 068 km', period: '4.5 dias', r: '764 km' },
@@ -106,7 +106,7 @@ const SolarExplorer = (function () {
     {
       id: 'uranus', name: 'Urano', color: '#7de8e8', textureFile: 'uranus_2048.jpg',
       displayR: 6, orbitR: 185, period: 30687,
-      info: { dist: '19.2 UA', radius: '25 362 km', period: '84 anos', temp: '−220°C', moons: '27', gravity: '8.7 m/s²' },
+      info: { dist: '19.2 UA', radius: '25 362 km', mass: '8.68 × 10²⁵ kg', period: '84 anos', day: '17 h 14 min', temp: '−220°C', moons: '27', gravity: '8.7 m/s²', atmos: 'H₂, He, CH₄ (azul-esverdeado)' },
       moonList: [
         { name: 'Titânia', dist: '435 910 km', period: '8.7 dias', r: '789 km' },
         { name: 'Oberão', dist: '583 520 km', period: '13.5 dias', r: '761 km' },
@@ -124,7 +124,7 @@ const SolarExplorer = (function () {
     {
       id: 'neptune', name: 'Neptuno', color: '#5b86e5', textureFile: 'neptune_2048.jpg',
       displayR: 5.5, orbitR: 220, period: 60190,
-      info: { dist: '30.1 UA', radius: '24 622 km', period: '165 anos', temp: '−218°C', moons: '16', gravity: '11.2 m/s²' },
+      info: { dist: '30.1 UA', radius: '24 622 km', mass: '1.02 × 10²⁶ kg', period: '165 anos', day: '16 h 6 min', temp: '−218°C', moons: '16', gravity: '11.2 m/s²', atmos: 'H₂, He, CH₄ (azul profundo)' },
       moonList: [
         { name: 'Tritão', dist: '354 759 km', period: '−5.9 dias', r: '1 353 km' },
         { name: 'Proteu', dist: '117 647 km', period: '1.1 dias', r: '210 km' },
@@ -189,6 +189,12 @@ const SolarExplorer = (function () {
   let _lastX    = 0;
   let _lastY    = 0;
 
+  /* Label overlays */
+  let _labelEls   = [];   /* HTML divs, parallel to PLANETS + sun */
+  let _sunLabelEl = null;
+  let _hovered    = null; /* index | 'sun' | null */
+  let _autoOpenDone = false;
+
   /* ═════════════════════════════ LOAD THREE ═════════════════════════ */
   function _loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -247,15 +253,28 @@ const SolarExplorer = (function () {
     }
 
     _buildScene(container);
+    _buildLabels(container);
     document.getElementById('ss-loading')?.remove();
     _wirePointer(container);
+    _wireHover(container);
     _start();
+
+    /* Auto-open Sun panel on first load */
+    if (!_autoOpenDone) {
+      _autoOpenDone = true;
+      setTimeout(() => {
+        _sel = 'sun';
+        _focusSun();
+        _openPanel(SUN, container);
+      }, 800);
+    }
   }
 
   function resume() { if (!_raf && _mounted) _start(); }
 
   function stop() {
     if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
+    /* Labels are inside ex-sub which goes display:none — no explicit cleanup needed */
   }
 
   /* ═════════════════════════════ SCENE ══════════════════════════════ */
@@ -328,7 +347,7 @@ const SolarExplorer = (function () {
     const loader = new THREE.TextureLoader();
     _planetMeshes = PLANETS.map(p => {
       const geo = new THREE.SphereGeometry(p.displayR, 32, 32);
-      const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), shininess: 15 });
+      const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: new THREE.Color(0, 0, 0), shininess: 15 });
       loader.load(
         TEX_BASE + p.textureFile,
         tex => { mat.map = tex; mat.needsUpdate = true; },
@@ -419,10 +438,112 @@ const SolarExplorer = (function () {
       _camFocusY += (_camFocusYT - _camFocusY) * lf;
       _camFocusZ += (_camFocusZT - _camFocusZ) * lf;
       _updateCamera();
+      _updateLabels();
 
       _renderer.render(_scene, _camera);
     }
     _raf = requestAnimationFrame(tick);
+  }
+
+  /* ═════════════════════════════ LABELS ════════════════════════════ */
+  function _buildLabels(container) {
+    const viewport = container.querySelector('#ss-viewport');
+    if (!viewport) return;
+    _labelEls = PLANETS.map(p => {
+      const el = document.createElement('div');
+      el.className = 'ss-planet-label';
+      el.textContent = p.name;
+      el.dataset.idx = PLANETS.indexOf(p);
+      el.style.cssText = 'position:absolute;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-size:.7rem;font-family:var(--font-sans);font-weight:600;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.8);transition:color .2s,font-size .15s;z-index:5;';
+      viewport.appendChild(el);
+      return el;
+    });
+    _sunLabelEl = document.createElement('div');
+    _sunLabelEl.className = 'ss-planet-label';
+    _sunLabelEl.textContent = '☀ Sol';
+    _sunLabelEl.style.cssText = 'position:absolute;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-size:.75rem;font-family:var(--font-sans);font-weight:700;color:rgba(255,215,0,.9);text-shadow:0 1px 6px rgba(255,140,0,.6);z-index:5;';
+    viewport.appendChild(_sunLabelEl);
+  }
+
+  function _updateLabels() {
+    if (!_camera || !_renderer) return;
+    const canvas = _renderer.domElement;
+    const W = canvas.clientWidth  || canvas.width;
+    const H = canvas.clientHeight || canvas.height;
+
+    const project = (wx, wy, wz) => {
+      const v = new THREE.Vector3(wx, wy, wz).project(_camera);
+      return {
+        x: (v.x * 0.5 + 0.5) * W,
+        y: (-v.y * 0.5 + 0.5) * H,
+        behind: v.z > 1,
+      };
+    };
+
+    PLANETS.forEach((p, i) => {
+      const el  = _labelEls[i];
+      const mesh = _planetMeshes[i];
+      if (!el || !mesh) return;
+      const sc = project(mesh.position.x, mesh.position.y + p.displayR * 1.5, mesh.position.z);
+      if (sc.behind) { el.style.display = 'none'; return; }
+      el.style.display = '';
+      el.style.left = sc.x + 'px';
+      el.style.top  = sc.y + 'px';
+      const isHov = _hovered === i;
+      el.style.color    = isHov ? p.color : 'rgba(255,255,255,.65)';
+      el.style.fontSize = isHov ? '.8rem' : '.7rem';
+    });
+
+    if (_sunLabelEl && _sunMesh) {
+      const sc = project(0, 10, 0);
+      if (sc.behind) { _sunLabelEl.style.display = 'none'; }
+      else {
+        _sunLabelEl.style.display = '';
+        _sunLabelEl.style.left = sc.x + 'px';
+        _sunLabelEl.style.top  = sc.y + 'px';
+      }
+    }
+  }
+
+  /* Hover: raycasting on pointermove for glow effect */
+  function _wireHover(container) {
+    const viewport = container.querySelector('#ss-viewport');
+    if (!viewport) return;
+    viewport.addEventListener('pointermove', e => {
+      if (_dragging || !_camera || !_renderer) return;
+      const rect = _renderer.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((e.clientX - rect.left)  / rect.width)  * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(mouse, _camera);
+
+      const prevHov = _hovered;
+
+      /* Check sun */
+      if (ray.intersectObject(_sunMesh).length) {
+        _hovered = 'sun';
+        viewport.style.cursor = 'pointer';
+      } else {
+        const hits = ray.intersectObjects(_planetMeshes, false);
+        if (hits.length) {
+          _hovered = _planetMeshes.indexOf(hits[0].object);
+          viewport.style.cursor = 'pointer';
+        } else {
+          _hovered = null;
+          viewport.style.cursor = '';
+        }
+      }
+
+      /* Apply/remove emissive glow */
+      if (prevHov !== _hovered) {
+        _planetMeshes.forEach((m, i) => {
+          m.material.emissive?.set(_hovered === i ? new THREE.Color(PLANETS[i].color).multiplyScalar(0.35) : new THREE.Color(0, 0, 0));
+        });
+        if (_sunMesh) _sunMesh.material.color?.set(_hovered === 'sun' ? 0xffee44 : 0xffd700);
+      }
+    });
   }
 
   /* ═════════════════════════════ POINTER ════════════════════════════ */
@@ -591,9 +712,10 @@ const SolarExplorer = (function () {
 
     if (_curTab === 'overview') {
       const LABELS = {
-        dist: 'Distância ao Sol', radius: 'Raio médio', period: 'Período orbital',
-        temp: 'Temperatura', moons: 'Nº de luas', gravity: 'Gravidade',
-        type: 'Tipo', age: 'Idade',
+        dist: 'Distância ao Sol', radius: 'Raio médio', mass: 'Massa',
+        period: 'Período orbital', day: 'Duração do dia',
+        temp: 'Temperatura', moons: 'Nº de luas', gravity: 'Gravidade superficial',
+        atmos: 'Atmosfera', type: 'Tipo', age: 'Idade',
       };
       const rows = Object.entries(body.info).map(([k, v]) =>
         `<div class="ex-solar-info-row">
