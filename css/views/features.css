@@ -8,7 +8,7 @@
 .lp-sidebar {
   width: 200px; flex-shrink: 0;
   border-right: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(8,12,20,.98), rgba(10,16,26,.98));
+  background: linear-gradient(180deg, var(--glass-strong), var(--glass-strong));
   min-height: calc(100vh - var(--hdr-h));
   padding: .75rem 0;
   position: sticky; top: var(--hdr-h);

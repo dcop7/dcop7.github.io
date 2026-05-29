@@ -49,6 +49,13 @@
   /* ── Motion ── */
   --ease: 150ms ease;
   --ease-out: 200ms cubic-bezier(.4,0,.2,1);
+
+  /* ── Theme-aware overlay glass (used by Explorer, Ocorrências, etc.) ── */
+  --glass:        rgba(8,12,20,.88);
+  --glass-strong: rgba(8,12,20,.95);
+  --glass-hover:  rgba(11,16,32,.95);
+  --map-bg:       #0d1b2e;
+  --tile-filter:  brightness(.85) saturate(.7);
 }
 
 /* ── LIGHT THEME ── */
@@ -67,4 +74,11 @@ body.light {
   --accent2: #0891b2;
   --accent-soft: rgba(99,102,241,.08);
   --accent-glow: rgba(99,102,241,.15);
+
+  /* Light-mode glass overlays */
+  --glass:        rgba(255,255,255,.92);
+  --glass-strong: rgba(255,255,255,.97);
+  --glass-hover:  rgba(241,245,249,.98);
+  --map-bg:       #e2e8f0;
+  --tile-filter:  none;
 }

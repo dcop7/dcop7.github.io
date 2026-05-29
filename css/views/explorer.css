@@ -20,7 +20,7 @@
   align-items: center;
   gap: .25rem;
   padding: .45rem .85rem;
-  background: linear-gradient(180deg, rgba(8,12,20,.98), rgba(11,16,32,.96));
+  background: linear-gradient(180deg, var(--glass-strong), var(--glass-hover));
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   position: relative;
@@ -306,10 +306,10 @@
 
 /* ── LEAFLET OVERRIDES ── */
 .leaflet-container {
-  background: #0d1b2e !important;
+  background: var(--map-bg) !important;
   font-family: var(--font-sans);
 }
-.leaflet-tile-pane { filter: brightness(.85) saturate(.7); }
+.leaflet-tile-pane { filter: var(--tile-filter); }
 
 .leaflet-control-zoom {
   border: none !important;
@@ -318,7 +318,7 @@
   box-shadow: 0 4px 16px rgba(0,0,0,.4) !important;
 }
 .leaflet-control-zoom a {
-  background: rgba(8,12,20,.9) !important;
+  background: var(--glass-strong) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border2) !important;
@@ -330,13 +330,13 @@
   transition: all var(--ease);
 }
 .leaflet-control-zoom a:hover {
-  background: rgba(11,16,32,.95) !important;
+  background: var(--glass-hover) !important;
   color: var(--accent) !important;
   border-color: rgba(var(--accent-rgb),.35) !important;
 }
 .leaflet-control-zoom-in { border-bottom: 1px solid var(--border) !important; }
 .leaflet-control-attribution {
-  background: rgba(8,12,20,.7) !important;
+  background: var(--glass) !important;
   color: var(--muted) !important;
   font-size: .55rem !important;
   backdrop-filter: blur(8px);
@@ -344,14 +344,14 @@
 }
 .leaflet-control-attribution a { color: var(--muted) !important; }
 .leaflet-popup-content-wrapper {
-  background: rgba(8,12,20,.92) !important;
+  background: var(--glass-strong) !important;
   border: 1px solid var(--border2) !important;
   border-radius: var(--radius-sm) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,.5) !important;
   backdrop-filter: blur(16px);
   color: var(--text) !important;
 }
-.leaflet-popup-tip { background: rgba(8,12,20,.92) !important; }
+.leaflet-popup-tip { background: var(--glass-strong) !important; }
 
 /* ── SEARCH BAR ── */
 .ex-search-bar {
@@ -364,7 +364,7 @@
 .ex-search-inner {
   display: flex;
   align-items: center;
-  background: rgba(8,12,20,.88);
+  background: var(--glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border2);
@@ -415,7 +415,7 @@
   top: calc(100% + 5px);
   left: 0;
   right: 0;
-  background: rgba(8,12,20,.95);
+  background: var(--glass-strong);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border2);
@@ -466,7 +466,7 @@
   align-items: center;
   gap: .45rem;
   padding: .48rem .75rem;
-  background: rgba(8,12,20,.88);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border2);
@@ -481,7 +481,7 @@
   box-shadow: 0 2px 12px rgba(0,0,0,.3);
 }
 .ex-map-btn:hover {
-  background: rgba(11,16,32,.95);
+  background: var(--glass-hover);
   border-color: rgba(var(--accent-rgb),.35);
   color: var(--accent);
 }
@@ -500,7 +500,7 @@
   z-index: 10;
   display: flex;
   gap: .2rem;
-  background: rgba(8,12,20,.88);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border2);
@@ -536,7 +536,7 @@
   z-index: 10;
   display: flex;
   gap: .3rem;
-  background: rgba(8,12,20,.88);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border2);
@@ -574,7 +574,7 @@
   bottom: 0;
   width: 380px;
   z-index: 20;
-  background: rgba(8,12,20,.92);
+  background: var(--glass-strong);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid var(--border2);
@@ -783,7 +783,7 @@
   right: .6rem;
   width: 28px;
   height: 28px;
-  background: rgba(8,12,20,.7);
+  background: var(--glass);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border2);
   border-radius: 50%;
@@ -832,7 +832,7 @@
   z-index: 10;
   display: flex;
   gap: .2rem;
-  background: rgba(8,12,20,.82);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border2);
@@ -864,7 +864,7 @@
   bottom: 1.1rem;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(8,12,20,.75);
+  background: var(--glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
@@ -883,7 +883,7 @@
   top: .9rem;
   left: .9rem;
   z-index: 5;
-  background: rgba(8,12,20,.8);
+  background: var(--glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
@@ -958,7 +958,7 @@
   display: flex;
   align-items: center;
   gap: .5rem;
-  background: rgba(8,12,20,.82);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border2);
@@ -1002,7 +1002,7 @@
   top: .9rem;
   right: .9rem;
   z-index: 5;
-  background: rgba(8,12,20,.85);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border2);
@@ -1065,7 +1065,7 @@
   bottom: 4.5rem;
   z-index: 10;
   width: 260px;
-  background: rgba(8,12,20,.9);
+  background: var(--glass-strong);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border2);
@@ -1283,7 +1283,7 @@
   justify-content: center;
   gap: 1rem;
   z-index: 50;
-  background: rgba(8,12,20,.85);
+  background: var(--glass);
   backdrop-filter: blur(8px);
 }
 .ex-loading-spinner {
@@ -1308,7 +1308,7 @@
   justify-content: center;
   gap: .85rem;
   z-index: 50;
-  background: rgba(8,12,20,.9);
+  background: var(--glass-strong);
   backdrop-filter: blur(8px);
   padding: 2rem;
   text-align: center;
