@@ -829,6 +829,12 @@ const _TRIVIA_EXTRA = {
   QuizEngine.register('ciencia-pt',      makeDataProvider('ciencia'));
   QuizEngine.register('historia-pt',     makeDataProvider('historia'));
   QuizEngine.register('portugal-quiz',   makeDataProvider('portugal'));
+  /* Image-based (local-asset pipeline) + expanded text categories */
+  QuizEngine.register('tech-logos',      makeDataProvider('logos-tech'));
+  QuizEngine.register('car-logos',       makeDataProvider('logos-car'));
+  QuizEngine.register('tecnologia-pt',   makeDataProvider('tecnologia'));
+  QuizEngine.register('monumentos-img',  makeDataProvider('monumentos'));
+  QuizEngine.register('f1',              makeDataProvider('f1'));
 })();
 
 /* ══════════════════════════════════════════════════════════════════

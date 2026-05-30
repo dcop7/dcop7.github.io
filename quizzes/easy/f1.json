@@ -1,0 +1,9 @@
+[
+  { "q": "Quantas rodas tem um carro de Fórmula 1?", "a": "4", "opts": ["4", "3", "6", "8"], "exp": "Um monolugar de F1 tem 4 rodas descobertas." },
+  { "q": "Que cor de bandeira indica o fim de uma corrida de F1?", "a": "Bandeira axadrezada", "opts": ["Bandeira axadrezada", "Bandeira vermelha", "Bandeira amarela", "Bandeira verde"], "exp": "A bandeira axadrezada (preta e branca) assinala o fim da corrida." },
+  { "q": "Que piloto britânico tem sete títulos mundiais de F1?", "a": "Lewis Hamilton", "opts": ["Lewis Hamilton", "Jenson Button", "Nigel Mansell", "Damon Hill"], "exp": "Lewis Hamilton igualou o recorde de 7 títulos de Michael Schumacher." },
+  { "q": "Que equipa italiana é a mais antiga e icónica da F1?", "a": "Ferrari", "opts": ["Ferrari", "McLaren", "Williams", "Red Bull"], "exp": "A Ferrari compete na F1 desde o primeiro campeonato, em 1950." },
+  { "q": "De que país é o piloto Max Verstappen?", "a": "Países Baixos", "opts": ["Países Baixos", "Bélgica", "Alemanha", "Áustria"], "exp": "Max Verstappen é neerlandês e corre pela Red Bull." },
+  { "q": "O que faz um piloto durante uma 'paragem nas boxes' (pit stop)?", "a": "Troca de pneus", "opts": ["Troca de pneus", "Reabastece combustível", "Almoça", "Muda de carro"], "exp": "Nas boxes troca-se de pneus (o reabastecimento está proibido desde 2010)." },
+  { "q": "Quantos pilotos tem normalmente cada equipa de F1 numa corrida?", "a": "2", "opts": ["2", "1", "3", "4"], "exp": "Cada equipa alinha 2 pilotos em cada Grande Prémio." }
+]

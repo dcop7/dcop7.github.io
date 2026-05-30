@@ -1,0 +1,12 @@
+[
+  { "q": "Quem é considerada a primeira programadora da história?", "a": "Ada Lovelace", "opts": ["Ada Lovelace", "Grace Hopper", "Margaret Hamilton", "Hedy Lamarr"], "exp": "Ada Lovelace escreveu, no séc. XIX, o que é tido como o primeiro algoritmo para a máquina de Babbage." },
+  { "q": "Que estrutura de dados funciona com a regra LIFO (último a entrar, primeiro a sair)?", "a": "Pilha (stack)", "opts": ["Pilha (stack)", "Fila (queue)", "Árvore", "Grafo"], "exp": "Numa pilha (stack), o último elemento inserido é o primeiro a sair (LIFO)." },
+  { "q": "Qual é a complexidade temporal média da pesquisa binária?", "a": "O(log n)", "opts": ["O(log n)", "O(n)", "O(n²)", "O(1)"], "exp": "A pesquisa binária divide o intervalo a cada passo, dando O(log n)." },
+  { "q": "Que protocolo traduz nomes de domínio em endereços IP?", "a": "DNS", "opts": ["DNS", "DHCP", "HTTP", "TCP"], "exp": "O DNS (Domain Name System) resolve nomes como exemplo.com em endereços IP." },
+  { "q": "Quantos bits tem um endereço IPv4?", "a": "32", "opts": ["32", "64", "128", "16"], "exp": "Um endereço IPv4 tem 32 bits; o IPv6 tem 128 bits." },
+  { "q": "Que paradigma descreve a linguagem Haskell?", "a": "Programação funcional", "opts": ["Programação funcional", "Programação imperativa", "Programação orientada a objetos", "Programação lógica"], "exp": "Haskell é uma linguagem puramente funcional com avaliação preguiçosa." },
+  { "q": "Que algoritmo de chave pública é amplamente usado em criptografia?", "a": "RSA", "opts": ["RSA", "AES", "SHA-256", "MD5"], "exp": "O RSA é um algoritmo de criptografia assimétrica (chave pública/privada). AES é simétrico." },
+  { "q": "O que representa o teorema CAP em sistemas distribuídos?", "a": "Consistência, Disponibilidade e Tolerância a partições", "opts": ["Consistência, Disponibilidade e Tolerância a partições", "Cache, API e Protocolo", "Computação, Armazenamento e Rede", "Classe, Atributo e Propriedade"], "exp": "O teorema CAP afirma que um sistema distribuído só pode garantir 2 das 3 propriedades em simultâneo." },
+  { "q": "Que empresa desenvolveu a linguagem TypeScript?", "a": "Microsoft", "opts": ["Microsoft", "Google", "Meta", "Mozilla"], "exp": "O TypeScript, um superconjunto tipado de JavaScript, foi criado pela Microsoft." },
+  { "q": "Em notação binária, quanto vale o número 1010?", "a": "10", "opts": ["10", "8", "12", "5"], "exp": "1010 em binário = 8 + 0 + 2 + 0 = 10 em decimal." }
+]
