@@ -27,6 +27,8 @@ const ExplorerPage = (function () {
   let _lMap        = null;
   let _lTile       = null;
   let _lLayer      = null;
+  let _lLabels     = null;          /* country-name label layer (progressive by zoom) */
+  let _lSatLabels  = null;          /* Esri reference overlay shown in satellite mode */
   let _lInited     = false;
   let _lDataLoaded = false;
   let _contFilter  = 'all';
@@ -114,6 +116,8 @@ const ExplorerPage = (function () {
       url:  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       attr: '© <a href="https://esri.com">Esri</a>, Maxar, Earthstar Geographics',
       sub:  '',
+      /* Place/boundary reference labels drawn on top of the imagery. */
+      ref:  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
     },
   };
 
@@ -267,10 +271,24 @@ const ExplorerPage = (function () {
     const curr    = Object.values(country.currencies || {}).map(c => `${c.name}${c.symbol ? ` (${c.symbol})` : ''}`).join(', ') || '—';
     const langs   = Object.values(country.languages || {}).join(', ') || '—';
     const cont    = (country.continents || [])[0] || '—';
-    const tz      = (country.timezones || []).slice(0, 2).join(', ') || '—';
+    const tzList  = country.timezones || [];
+    const tz      = tzList.length ? tzList.join(', ') : '—';
+    const region  = [country.region, country.subregion].filter(Boolean).join(' · ') || '—';
+    const ll      = country.latlng || [];
+    const coords  = ll.length === 2
+      ? `${Math.abs(ll[0]).toFixed(1)}°${ll[0] >= 0 ? 'N' : 'S'}, ${Math.abs(ll[1]).toFixed(1)}°${ll[1] >= 0 ? 'E' : 'W'}`
+      : '—';
+    const density = (country.area > 0 && country.population > 0)
+      ? Math.round(country.population / country.area).toLocaleString('pt') + ' hab/km²' : '—';
     const isFave  = _favorites.includes(country.cca3);
     const flag    = country.flags?.svg || country.flags?.png || '';
     const facts   = _countryFacts(country);
+    /* Resolve neighbour codes to {flag, name} for richer border chips. */
+    const byCca3  = (_byCca3 && Object.keys(_byCca3).length) ? _byCca3 : _byCode();
+    const neighbours = (country.borders || []).map(code => {
+      const n = byCca3[code];
+      return { code, name: n?.name?.common || code, flag: n?.flag || '' };
+    });
 
     panel.innerHTML = `
       <button class="ex-panel-close" id="ex-panel-close">✕</button>
@@ -294,8 +312,11 @@ const ExplorerPage = (function () {
           <div class="ex-panel-row"><span class="ex-panel-row-icon">📐</span><span class="ex-panel-label">Área</span><span class="ex-panel-value">${area}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">💰</span><span class="ex-panel-label">Moeda</span><span class="ex-panel-value">${curr}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🗣</span><span class="ex-panel-label">Línguas</span><span class="ex-panel-value">${langs}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">👣</span><span class="ex-panel-label">Densidade</span><span class="ex-panel-value">${density}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🌍</span><span class="ex-panel-label">Continente</span><span class="ex-panel-value">${cont}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🕐</span><span class="ex-panel-label">Fuso horário</span><span class="ex-panel-value">${tz}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">🗺</span><span class="ex-panel-label">Região</span><span class="ex-panel-value">${region}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">📍</span><span class="ex-panel-label">Coordenadas</span><span class="ex-panel-value" style="font-family:var(--font-mono);font-size:.76rem">${coords}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">🕐</span><span class="ex-panel-label">Fuso${tzList.length > 1 ? 's' : ''} horário${tzList.length > 1 ? 's' : ''}</span><span class="ex-panel-value">${tz}</span></div>
         </div>
         ${facts.length ? `<div class="ex-panel-facts">
           ${facts.map(f => `<div class="ex-panel-fact">💡 ${f}</div>`).join('')}
@@ -303,11 +324,13 @@ const ExplorerPage = (function () {
         <div class="ex-panel-excerpt" id="ex-panel-excerpt">
           <div class="ex-panel-excerpt-loading">A carregar…</div>
         </div>
-        ${(country.borders || []).length ? `
-          <div class="ex-panel-borders-label">Fronteiras</div>
+        ${neighbours.length ? `
+          <div class="ex-panel-borders-label">Países vizinhos (${neighbours.length})</div>
           <div class="ex-panel-borders">
-            ${country.borders.map(b => `<button class="ex-panel-border-chip" data-cca3="${b}">${b}</button>`).join('')}
-          </div>` : ''}
+            ${neighbours.map(n => `<button class="ex-panel-border-chip" data-cca3="${n.code}">${n.flag ? `<span class="ex-border-chip-flag">${n.flag}</span>` : ''}${n.name}</button>`).join('')}
+          </div>`
+          : `<div class="ex-panel-borders-label">Fronteiras</div>
+             <div class="ex-panel-island-note">🏝 Sem fronteiras terrestres${country.area && country.area < 1000000 ? ' — nação ilha' : ''}.</div>`}
       </div>`;
 
     panel.classList.add('open');
@@ -569,8 +592,9 @@ const ExplorerPage = (function () {
     if (!_lMap) return;
     _mapView = view;
 
-    /* Remove existing tile and night layer */
+    /* Remove existing tile, satellite labels, and night layer */
     if (_lTile) { _lMap.removeLayer(_lTile); _lTile = null; }
+    if (_lSatLabels) { _lMap.removeLayer(_lSatLabels); _lSatLabels = null; }
     if (_nightLayer) { _lMap.removeLayer(_nightLayer); _nightLayer = null; }
 
     if (view === 'satellite') {
@@ -578,6 +602,8 @@ const ExplorerPage = (function () {
         attribution: MAP_TILES.satellite.attr,
         maxZoom: 18,
       }).addTo(_lMap);
+      /* Reference labels overlay so satellite mode isn't label-less. */
+      _lSatLabels = L.tileLayer(MAP_TILES.satellite.ref, { maxZoom: 18, pane: 'shadowPane' }).addTo(_lMap);
     } else if (view === 'night') {
       _lTile = L.tileLayer(_cartoPoliticalUrl(), {
         attribution: MAP_TILES.political.attr,
@@ -621,6 +647,7 @@ const ExplorerPage = (function () {
   function _addCountryLayer() {
     if (!_lMap || !_geoJson) return;
     const byCca3 = _byCode();
+    _lLabels = L.layerGroup();
 
     _lLayer = L.geoJSON(_geoJson, {
       style: () => ({
@@ -644,11 +671,44 @@ const ExplorerPage = (function () {
             }
           },
         });
+        /* Progressive label: flag emoji + name, placed at the polygon centre.
+           minZoom scales with country size so large countries label first. */
+        if (c) {
+          let center;
+          try { center = layer.getBounds().getCenter(); } catch (e) { return; }
+          const area = c.area || 0;
+          const minZoom = area > 3e6 ? 2 : area > 7e5 ? 3 : area > 1.2e5 ? 4 : 5;
+          const marker = L.marker(center, {
+            interactive: false,
+            keyboard: false,
+            icon: L.divIcon({
+              className: 'ex-country-label',
+              html: `<span class="ex-cl-flag">${c.flag || ''}</span><span class="ex-cl-name">${c.name.common}</span>`,
+              iconSize: [0, 0],
+            }),
+          });
+          marker._minZoom = minZoom;
+          _lLabels.addLayer(marker);
+        }
       },
     }).addTo(_lMap);
 
+    _lLabels.addTo(_lMap);
+    _lMap.on('zoomend', _updateLabelVisibility);
+    _updateLabelVisibility();
+
     _wireMapSearch(byCca3);
     _wireContinent(byCca3);
+  }
+
+  /* Show only labels whose size-based threshold is met at the current zoom. */
+  function _updateLabelVisibility() {
+    if (!_lLabels || !_lMap) return;
+    const z = _lMap.getZoom();
+    _lLabels.eachLayer(m => {
+      const el = m.getElement();
+      if (el) el.style.display = z >= (m._minZoom || 5) ? '' : 'none';
+    });
   }
 
   function _wireContinent(byCca3) {
