@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é a capital do Cazaquistão (desde 2019, com novo nome)?", "a": "Astana", "opts": ["Astana", "Almaty", "Bishkek", "Tashkent"], "exp": "A capital chama-se Astana (foi Nur-Sultan entre 2019 e 2022)." },
+  { "q": "Qual é o lago de água doce mais profundo do mundo?", "a": "Lago Baikal", "opts": ["Lago Baikal", "Lago Tanganica", "Lago Superior", "Lago Vitória"], "exp": "O Baikal, na Sibéria, atinge mais de 1640 m de profundidade." },
+  { "q": "Que país tem o maior número de fusos horários (incluindo territórios)?", "a": "França", "opts": ["França", "Rússia", "Estados Unidos", "China"], "exp": "Com os territórios ultramarinos, a França abrange 12 fusos horários." },
+  { "q": "Qual é o ponto mais baixo de terra firme exposta no planeta?", "a": "Margem do Mar Morto", "opts": ["Margem do Mar Morto", "Vale da Morte", "Depressão de Qattara", "Lago Assal"], "exp": "A costa do Mar Morto está cerca de 430 m abaixo do nível do mar." },
+  { "q": "Que corrente oceânica quente suaviza o clima da Europa Ocidental?", "a": "Corrente do Golfo", "opts": ["Corrente do Golfo", "Corrente de Humboldt", "Corrente do Labrador", "Corrente de Benguela"], "exp": "A Corrente do Golfo transporta águas quentes do Golfo do México para o Atlântico Norte." },
+  { "q": "Qual é a capital da Nova Zelândia?", "a": "Wellington", "opts": ["Wellington", "Auckland", "Christchurch", "Hamilton"], "exp": "Wellington é a capital; Auckland é a maior cidade." },
+  { "q": "Que país africano nunca foi colonizado por uma potência europeia (com exceção de uma breve ocupação italiana)?", "a": "Etiópia", "opts": ["Etiópia", "Quénia", "Gana", "Senegal"], "exp": "A Etiópia manteve a independência, salvo a ocupação italiana de 1936-1941." },
+  { "q": "Qual é o maior país sem litoral (interior) do mundo?", "a": "Cazaquistão", "opts": ["Cazaquistão", "Mongólia", "Chade", "Bolívia"], "exp": "O Cazaquistão é o maior país totalmente sem acesso ao mar aberto." }
+]

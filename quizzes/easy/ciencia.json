@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é o planeta mais próximo do Sol?", "a": "Mercúrio", "opts": ["Mercúrio", "Vénus", "Terra", "Marte"], "exp": "Mercúrio é o primeiro planeta do Sistema Solar." },
+  { "q": "Que gás respiramos para viver?", "a": "Oxigénio", "opts": ["Oxigénio", "Dióxido de carbono", "Hidrogénio", "Hélio"], "exp": "Inspiramos oxigénio e expiramos dióxido de carbono." },
+  { "q": "Quantas patas tem um insecto?", "a": "6", "opts": ["6", "4", "8", "10"], "exp": "Todos os insectos adultos têm 6 patas." },
+  { "q": "Qual é o estado da água quando congela?", "a": "Sólido", "opts": ["Sólido", "Líquido", "Gasoso", "Plasma"], "exp": "Ao congelar (0 °C), a água passa a gelo, no estado sólido." },
+  { "q": "Que órgão bombeia o sangue pelo corpo?", "a": "Coração", "opts": ["Coração", "Pulmão", "Fígado", "Cérebro"], "exp": "O coração bombeia o sangue por todo o corpo." },
+  { "q": "Qual é a estrela do nosso Sistema Solar?", "a": "Sol", "opts": ["Sol", "Lua", "Sírius", "Polar"], "exp": "O Sol é a estrela no centro do Sistema Solar." },
+  { "q": "Que parte da planta absorve a água do solo?", "a": "As raízes", "opts": ["As raízes", "As folhas", "As flores", "Os frutos"], "exp": "As raízes absorvem água e nutrientes do solo." },
+  { "q": "Quantos planetas tem o Sistema Solar?", "a": "8", "opts": ["8", "7", "9", "10"], "exp": "São 8 planetas, desde a reclassificação de Plutão em 2006." }
+]

@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é a partícula subatómica com carga negativa?", "a": "Electrão", "opts": ["Electrão", "Protão", "Neutrão", "Positrão"], "exp": "O electrão tem carga negativa; o protão positiva e o neutrão é neutro." },
+  { "q": "Que enzima copia o ADN durante a replicação?", "a": "ADN polimerase", "opts": ["ADN polimerase", "ARN polimerase", "Ligase", "Helicase"], "exp": "A ADN polimerase sintetiza a nova cadeia durante a replicação do ADN." },
+  { "q": "Qual é a segunda lei de Newton?", "a": "F = m × a", "opts": ["F = m × a", "E = m c²", "F = G m₁m₂/r²", "PV = nRT"], "exp": "A força resultante é igual à massa vezes a aceleração (F = m·a)." },
+  { "q": "Qual é o elemento químico mais abundante no Universo?", "a": "Hidrogénio", "opts": ["Hidrogénio", "Hélio", "Oxigénio", "Carbono"], "exp": "O hidrogénio constitui cerca de 75% da matéria bariónica do Universo." },
+  { "q": "Que tipo de radiação tem maior energia e menor comprimento de onda?", "a": "Raios gama", "opts": ["Raios gama", "Microondas", "Infravermelhos", "Ondas de rádio"], "exp": "Os raios gama têm o comprimento de onda mais curto e a maior energia do espectro." },
+  { "q": "Qual é o nome do limite de uma região do espaço de onde nem a luz escapa?", "a": "Horizonte de eventos", "opts": ["Horizonte de eventos", "Singularidade", "Nebulosa", "Quasar"], "exp": "O horizonte de eventos é a fronteira de um buraco negro." },
+  { "q": "Que ácido está presente no estômago e ajuda a digestão?", "a": "Ácido clorídrico", "opts": ["Ácido clorídrico", "Ácido sulfúrico", "Ácido cítrico", "Ácido acético"], "exp": "O suco gástrico contém ácido clorídrico (HCl)." },
+  { "q": "Quem formulou a tabela periódica organizada por propriedades periódicas?", "a": "Dmitri Mendeleev", "opts": ["Dmitri Mendeleev", "Marie Curie", "John Dalton", "Antoine Lavoisier"], "exp": "Mendeleev publicou a tabela periódica em 1869, prevendo elementos ainda por descobrir." }
+]

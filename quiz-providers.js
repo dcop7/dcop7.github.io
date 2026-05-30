@@ -766,6 +766,72 @@ const _TRIVIA_EXTRA = {
 })();
 
 /* ══════════════════════════════════════════════════════════════════
+   DATA-BACKED PROVIDERS — powered by the lazy-loaded split database
+   (/quizzes/{difficulty}/{category}.json via QuizData). Each provider
+   loads the file for the chosen difficulty on demand, and falls back to
+   a small embedded set (same item shape) so it always works offline even
+   if the file is missing. New visual/symbology categories use this path.
+══════════════════════════════════════════════════════════════════ */
+(function registerDataProviders() {
+  /* embedded fallbacks: { easy:[...], medium:[...], hard:[...] } in bank shape.
+     The full content lives in the JSON files; these are a safety net only. */
+  function makeDataProvider(category, embedded) {
+    return {
+      async getQuestions(opts) {
+        const diff = opts.difficulty || 'easy';
+        let items = (typeof QuizData !== 'undefined')
+          ? await QuizData.loadBank(category, diff) : null;
+        if (!items || !items.length) {
+          items = (embedded && (embedded[diff] || embedded.easy)) || [];
+        }
+        if (typeof QuizData !== 'undefined') return QuizData.buildFromBank(items, opts);
+        /* QuizData unavailable — degrade gracefully with the engine helpers */
+        const pool = QuizEngine.shuffle(items).slice(0, opts.count || 10);
+        return pool.map((it, i) => {
+          const { options, correctIdx } = QuizEngine.buildOptions(it.a, it.opts.filter(o => o !== it.a), 4);
+          const out = { id:`d-${i}`, question:it.q, options, correctIdx, explanation:it.exp||'', difficulty:diff, lang:opts.lang||'pt' };
+          if (it.img) { out.image = it.img; out.imageType = it.imgType || 'svg'; }
+          return out;
+        });
+      }
+    };
+  }
+
+  /* Tiny SVG helpers for road-sign fallbacks (full set is in the JSON files). */
+  const SIGN = {
+    stop: `<svg viewBox="0 0 120 120" width="150" height="150"><polygon points="36,8 84,8 112,36 112,84 84,112 36,112 8,84 8,36" fill="#c1121f" stroke="#fff" stroke-width="5"/><text x="60" y="72" font-family="Arial" font-weight="bold" font-size="26" fill="#fff" text-anchor="middle">STOP</text></svg>`,
+    yield: `<svg viewBox="0 0 120 120" width="150" height="150"><polygon points="60,108 6,16 114,16" fill="#fff" stroke="#c1121f" stroke-width="9"/></svg>`,
+  };
+
+  const EMB = {
+    sinais: {
+      easy: [
+        { q:'Que sinal de trânsito é este?', a:'STOP (paragem obrigatória)', opts:['STOP (paragem obrigatória)','Cedência de passagem','Sentido proibido','Estacionamento'], exp:'O sinal octogonal vermelho obriga a parar e ceder a passagem.', img:SIGN.stop, imgType:'svg' },
+        { q:'Que sinal de trânsito é este?', a:'Cedência de passagem', opts:['Cedência de passagem','STOP','Proibição de ultrapassar','Curva perigosa'], exp:'O triângulo invertido indica que deve ceder a passagem.', img:SIGN.yield, imgType:'svg' },
+      ],
+    },
+    carros: {
+      easy: [
+        { q:'De que país é originária a marca BMW?', a:'Alemanha', opts:['Alemanha','Itália','Japão','EUA'], exp:'A BMW foi fundada em Munique, na Alemanha, em 1916.' },
+      ],
+    },
+    simbolos: {
+      easy: [
+        { q:'Qual é o símbolo químico do oxigénio?', a:'O', opts:['O','Ox','Og','O₂'], exp:'O oxigénio é representado pela letra O na tabela periódica.' },
+      ],
+    },
+  };
+
+  QuizEngine.register('sinais-transito', makeDataProvider('sinais',   EMB.sinais));
+  QuizEngine.register('car-brands',      makeDataProvider('carros',   EMB.carros));
+  QuizEngine.register('symbols',         makeDataProvider('simbolos', EMB.simbolos));
+  QuizEngine.register('geografia-pt',    makeDataProvider('geografia'));
+  QuizEngine.register('ciencia-pt',      makeDataProvider('ciencia'));
+  QuizEngine.register('historia-pt',     makeDataProvider('historia'));
+  QuizEngine.register('portugal-quiz',   makeDataProvider('portugal'));
+})();
+
+/* ══════════════════════════════════════════════════════════════════
    MATH QUIZ  — generated locally
 ══════════════════════════════════════════════════════════════════ */
 QuizEngine.register('math', {

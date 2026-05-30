@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é o planeta mais quente do Sistema Solar?", "a": "Vénus", "opts": ["Vénus", "Mercúrio", "Marte", "Júpiter"], "exp": "Apesar de mais distante do Sol que Mercúrio, Vénus é mais quente devido ao efeito de estufa (≈465 °C)." },
+  { "q": "Quantos ossos tem o esqueleto de um adulto humano?", "a": "206", "opts": ["206", "186", "226", "150"], "exp": "Um adulto tem 206 ossos; os bebés nascem com cerca de 270 que depois se fundem." },
+  { "q": "Que cientista propôs a teoria da relatividade?", "a": "Albert Einstein", "opts": ["Albert Einstein", "Isaac Newton", "Galileu Galilei", "Nikola Tesla"], "exp": "Einstein publicou a relatividade restrita (1905) e geral (1915)." },
+  { "q": "Qual é a velocidade aproximada da luz no vácuo?", "a": "300 000 km/s", "opts": ["300 000 km/s", "30 000 km/s", "3 000 km/s", "3 milhões km/s"], "exp": "A luz viaja a cerca de 299 792 km/s no vácuo." },
+  { "q": "Que processo permite às plantas produzir o seu alimento?", "a": "Fotossíntese", "opts": ["Fotossíntese", "Respiração", "Digestão", "Fermentação"], "exp": "Na fotossíntese, as plantas usam luz, CO₂ e água para produzir glicose e oxigénio." },
+  { "q": "Qual é a unidade básica da hereditariedade?", "a": "O gene", "opts": ["O gene", "A célula", "O átomo", "A proteína"], "exp": "Os genes, feitos de ADN, transmitem características hereditárias." },
+  { "q": "Que força mantém os planetas em órbita à volta do Sol?", "a": "Gravidade", "opts": ["Gravidade", "Magnetismo", "Atrito", "Eletricidade"], "exp": "A gravidade do Sol curva as trajetórias dos planetas, mantendo-os em órbita." },
+  { "q": "Quantos cromossomas tem uma célula humana normal?", "a": "46", "opts": ["46", "23", "48", "92"], "exp": "As células humanas têm 46 cromossomas, organizados em 23 pares." }
+]

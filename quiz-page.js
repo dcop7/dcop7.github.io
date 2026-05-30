@@ -48,13 +48,17 @@ const QuizPage = (function () {
         { id: 'professions', icon: '👷', labelPt: 'Profissões',        labelEn: 'Professions',        provider: 'professions',count: 10 },
         { id: 'vehicles',    icon: '🚗', labelPt: 'Transportes',       labelEn: 'Transport',          provider: 'vehicles',  count: 10 },
         { id: 'food',        icon: '🍎', labelPt: 'Alimentos',         labelEn: 'Food',               provider: 'food',      count: 10 },
+        { id: 'portugal',    icon: '🇵🇹', labelPt: 'Portugal',          labelEn: 'Portugal',           provider: 'portugal-quiz', count: 8 },
+        { id: 'car-brands',  icon: '🏎️', labelPt: 'Marcas de Automóveis', labelEn: 'Car Brands',      provider: 'car-brands', count: 8 },
       ]
     },
     {
       id: 'visual', icon: '🎨', labelKey: 'quiz.cat.visual',
       quizzes: [
-        { id: 'emoji',   icon: '😊', labelPt: 'Quiz de Emojis',    labelEn: 'Emoji Quiz',      provider: 'emoji',   count: 10 },
-        { id: 'colours', icon: '🎨', labelPt: 'Cores',             labelEn: 'Colours',         provider: 'colours', count: 10 },
+        { id: 'emoji',    icon: '😊', labelPt: 'Quiz de Emojis',     labelEn: 'Emoji Quiz',      provider: 'emoji',          count: 10 },
+        { id: 'colours',  icon: '🎨', labelPt: 'Cores',              labelEn: 'Colours',         provider: 'colours',        count: 10 },
+        { id: 'sinais',   icon: '🚦', labelPt: 'Sinais de Trânsito', labelEn: 'Traffic Signs',   provider: 'sinais-transito', count: 8 },
+        { id: 'symbols',  icon: '🔣', labelPt: 'Símbolos',           labelEn: 'Symbols',         provider: 'symbols',        count: 8 },
       ]
     },
     {
@@ -76,8 +80,8 @@ const QuizPage = (function () {
   let _search = '';
 
   /* ── Getters ── */
-  function getAge()  { return QuizEngine.getAge(); }
-  function getLang() { return QuizEngine.getLang(); }
+  function getDifficulty() { return QuizEngine.getDifficulty(); }
+  function getLang()       { return QuizEngine.getLang(); }
 
   /* ── Entry point ── */
   function show(sub) {
@@ -103,11 +107,15 @@ const QuizPage = (function () {
   ══════════════════════════════════════════════════════════════════ */
   function renderBrowse() {
     _state = 'browse';
-    const age  = getAge();
+    const diff = getDifficulty();
     const lang = getLang();
     const ql   = lang === 'pt' ? 'pt' : 'en';
 
-    const AGES_Q = [6,7,8,9,10,11,12,13,14];
+    const DIFFS = [
+      { id: 'easy',   pt: 'Fácil',   en: 'Easy'   },
+      { id: 'medium', pt: 'Médio',   en: 'Medium' },
+      { id: 'hard',   pt: 'Difícil', en: 'Hard'   },
+    ];
 
     _el.innerHTML = `
       <div class="qp-page">
@@ -117,10 +125,10 @@ const QuizPage = (function () {
             <p class="qp-sub">${lang === 'pt' ? 'Aprender a brincar' : 'Learning through play'}</p>
             <div class="qp-inline-settings">
               <div class="qp-is-row">
-                <span class="qp-is-lbl">${lang === 'pt' ? 'Idade' : 'Age'}</span>
-                <div class="qp-is-ages" id="qp-is-ages">
-                  ${AGES_Q.map(a =>
-                    `<button class="qp-is-btn${age===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
+                <span class="qp-is-lbl">${lang === 'pt' ? 'Dificuldade' : 'Difficulty'}</span>
+                <div class="qp-is-diffs" id="qp-is-diffs">
+                  ${DIFFS.map(d =>
+                    `<button class="qp-is-btn qp-is-diff-${d.id}${diff===d.id?' active':''}" data-diff="${d.id}">${ql==='pt'?d.pt:d.en}</button>`
                   ).join('')}
                 </div>
               </div>
@@ -138,14 +146,14 @@ const QuizPage = (function () {
         <div class="qp-cats" id="qp-cats"></div>
       </div>`;
 
-    /* Age selector */
-    _el.querySelectorAll('#qp-is-ages .qp-is-btn').forEach(btn => {
+    /* Difficulty selector */
+    _el.querySelectorAll('#qp-is-diffs .qp-is-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const a = btn.dataset.age;
-        localStorage.setItem('quiz-age', a);
-        _el.querySelectorAll('#qp-is-ages .qp-is-btn').forEach(b => b.classList.toggle('active', b === btn));
+        const d = btn.dataset.diff;
+        QuizEngine.setDifficulty(d);
+        _el.querySelectorAll('#qp-is-diffs .qp-is-btn').forEach(b => b.classList.toggle('active', b === btn));
         renderCats(getLang() === 'pt' ? 'pt' : 'en');
-        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { age: a } }));
+        document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { difficulty: d } }));
       });
     });
 
@@ -228,10 +236,12 @@ const QuizPage = (function () {
     renderLoading();
 
     try {
-      const age  = getAge();
+      const difficulty = getDifficulty();
       const lang = getLang();
       _qs = await QuizEngine.getQuestions(quiz.provider, {
-        age, lang, count: quiz.count || 10
+        difficulty, lang, count: quiz.count || 10,
+        /* legacy compatibility shim for providers still written against age */
+        age: QuizEngine.diffToLegacyAge(difficulty),
       });
       if (!_qs || !_qs.length) throw new Error('empty');
       renderQuestion();
@@ -269,10 +279,29 @@ const QuizPage = (function () {
     _el.querySelector('#qg-retry-err')?.addEventListener('click', () => startQuiz(_quiz));
   }
 
+  /* Render a question's media. Inline SVG is trusted (authored locally);
+     hotlinked images (imageType 'img', e.g. Wikimedia Commons) lazy-load
+     and fall back to a labelled placeholder if the asset is unavailable,
+     so layouts never break. Optional `imageCredit` shows attribution. */
+  function renderImage(q) {
+    const t = q.imageType;
+    if (t === 'flag') {
+      return `<img class="qg-flag" src="${q.image}" alt="" loading="lazy"
+                onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'qg-img-ph',textContent:'🏳️'}))"/>`;
+    }
+    if (t === 'img') {
+      const credit = q.imageCredit
+        ? `<span class="qg-img-credit">${q.imageCredit}</span>` : '';
+      return `<img class="qg-photo" src="${q.image}" alt="" loading="lazy"
+                onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'qg-img-ph',textContent:'🖼️'}))"/>${credit}`;
+    }
+    /* 'svg' or inline markup — authored locally, safe to inject. */
+    return q.image;
+  }
+
   function renderQuestion() {
     const q    = _qs[_qIdx];
     const lang = getLang();
-    const age  = parseInt(getAge()) || 8;
     const n    = _qs.length;
     const pct  = Math.round((_qIdx / n) * 100);
     const label = lang === 'pt' ? _quiz.labelPt : _quiz.labelEn;
@@ -303,7 +332,7 @@ const QuizPage = (function () {
 
           <!-- Question body -->
           <div class="qg-body">
-            ${q.image ? `<div class="qg-image-area">${q.imageType === 'flag' ? `<img class="qg-flag" src="${q.image}" alt="flag" loading="lazy"/>` : q.image}</div>` : ''}
+            ${q.image ? `<div class="qg-image-area">${renderImage(q)}</div>` : ''}
             <div class="qg-question">${q.question}</div>
 
             <!-- Answer options -->

@@ -1,0 +1,10 @@
+[
+  { "q": "Que marca produziu o lendário F40, apresentado em 1987?", "a": "Ferrari", "opts": ["Ferrari", "Lamborghini", "Maserati", "Pagani"], "exp": "O Ferrari F40 foi o último carro aprovado por Enzo Ferrari." },
+  { "q": "Quem fundou a Lamborghini?", "a": "Ferruccio Lamborghini", "opts": ["Ferruccio Lamborghini", "Enzo Ferrari", "Ferdinand Porsche", "Horacio Pagani"], "exp": "Ferruccio Lamborghini, fabricante de tractores, criou a marca em 1963." },
+  { "q": "Que empresa japonesa detém as marcas Lexus?", "a": "Toyota", "opts": ["Toyota", "Honda", "Nissan", "Mazda"], "exp": "A Lexus é a marca de luxo da Toyota, lançada em 1989." },
+  { "q": "Qual era a designação interna do primeiro Porsche 911 antes de mudar o nome?", "a": "901", "opts": ["901", "356", "904", "911 Turbo"], "exp": "Estreou como '901', mas a Peugeot detinha direitos sobre nomes com '0' ao centro, daí '911'." },
+  { "q": "Que construtor produz o modelo Huayra?", "a": "Pagani", "opts": ["Pagani", "Koenigsegg", "Bugatti", "Ferrari"], "exp": "O Huayra é um hipercarro da italiana Pagani." },
+  { "q": "De que país é originária a marca de hipercarros Koenigsegg?", "a": "Suécia", "opts": ["Suécia", "Alemanha", "Itália", "Dinamarca"], "exp": "A Koenigsegg foi fundada em 1994 na Suécia." },
+  { "q": "Que grupo automóvel detém a Bentley?", "a": "Volkswagen", "opts": ["Volkswagen", "BMW", "Stellantis", "Toyota"], "exp": "A Bentley pertence ao Grupo Volkswagen desde 1998." },
+  { "q": "Qual destes modelos é um clássico desportivo da Nissan dos anos 1990 com motor RB26?", "a": "Skyline GT-R R34", "opts": ["Skyline GT-R R34", "Toyota AE86", "Mazda RX-7", "Honda NSX"], "exp": "O Nissan Skyline GT-R R34 (motor RB26DETT) é um ícone dos anos 90." }
+]

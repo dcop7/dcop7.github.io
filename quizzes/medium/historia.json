@@ -1,0 +1,10 @@
+[
+  { "q": "Em que ano terminou a Segunda Guerra Mundial?", "a": "1945", "opts": ["1945", "1939", "1918", "1950"], "exp": "A guerra terminou em 1945, com a rendição da Alemanha (Maio) e do Japão (Setembro)." },
+  { "q": "Quem liderou a primeira viagem de circum-navegação (1519-1522)?", "a": "Fernão de Magalhães", "opts": ["Fernão de Magalhães", "Vasco da Gama", "Cristóvão Colombo", "Francis Drake"], "exp": "Magalhães iniciou a viagem; Elcano completou-a após a sua morte." },
+  { "q": "Que revolução começou em 1789 com a tomada da Bastilha?", "a": "Revolução Francesa", "opts": ["Revolução Francesa", "Revolução Russa", "Revolução Industrial", "Revolução Americana"], "exp": "A Revolução Francesa transformou a sociedade europeia a partir de 1789." },
+  { "q": "Quem foi o primeiro imperador de Roma?", "a": "Augusto", "opts": ["Augusto", "Júlio César", "Nero", "Constantino"], "exp": "Octávio tornou-se Augusto, o primeiro imperador romano, em 27 a.C." },
+  { "q": "Que documento de 1215 limitou o poder do rei de Inglaterra?", "a": "Magna Carta", "opts": ["Magna Carta", "Declaração dos Direitos", "Bula Áurea", "Constituição"], "exp": "A Magna Carta impôs limites ao poder do rei João Sem Terra." },
+  { "q": "Que civilização pré-colombiana dominava o México central com capital em Tenochtitlán?", "a": "Astecas", "opts": ["Astecas", "Incas", "Maias", "Olmecas"], "exp": "Os Astecas tinham a capital Tenochtitlán, na atual Cidade do México." },
+  { "q": "Em que ano começou a Primeira Guerra Mundial?", "a": "1914", "opts": ["1914", "1912", "1918", "1905"], "exp": "A Primeira Guerra Mundial decorreu de 1914 a 1918." },
+  { "q": "Quem foi o líder da independência da Índia através da não-violência?", "a": "Mahatma Gandhi", "opts": ["Mahatma Gandhi", "Nelson Mandela", "Jawaharlal Nehru", "Winston Churchill"], "exp": "Gandhi liderou o movimento de independência indiano de forma pacífica." }
+]

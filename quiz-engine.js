@@ -33,24 +33,35 @@ const QuizEngine = (function () {
     return p.getQuestions(opts);
   }
 
-  /* ── Age helpers ── */
-  function ageGroup(age) {
-    const a = parseInt(age) || 8;
-    if (a <= 7)  return 'very_easy';
-    if (a <= 9)  return 'easy';
-    if (a <= 12) return 'medium';
-    return 'hard';
+  /* ── Difficulty model ──────────────────────────────────────────────
+     The quiz uses three difficulty levels — 'easy' | 'medium' | 'hard'
+     (Fácil / Médio / Difícil) — instead of age groups. Knowledge varies
+     too much between users for age to be a good proxy.
+  ── */
+  const DIFFICULTIES = ['easy', 'medium', 'hard'];
+
+  function getDifficulty() {
+    const d = localStorage.getItem('quiz-difficulty');
+    return DIFFICULTIES.includes(d) ? d : 'easy';
+  }
+  function setDifficulty(d) {
+    if (DIFFICULTIES.includes(d)) localStorage.setItem('quiz-difficulty', d);
   }
 
-  function optionCount(age) {
-    const a = parseInt(age) || 8;
-    if (a <= 7) return 2;
-    if (a <= 9) return 3;
-    return 4;
-  }
+  /* Numeric rank 1..3 — used to filter banks tagged with `d` (1/2/3). */
+  function diffRank(d) { return d === 'hard' ? 3 : d === 'medium' ? 2 : 1; }
+
+  /* Compatibility shim: legacy providers were written against a numeric
+     `age`. We derive a representative age from the chosen difficulty so
+     those providers keep selecting the right tier with no rewrite, while
+     the entire user-facing model is difficulty-based. */
+  function diffToLegacyAge(d) { return d === 'hard' ? 14 : d === 'medium' ? 11 : 8; }
+
+  /* Multiple-choice is standardised: every quiz always offers exactly 4
+     options (1 correct + 3 plausible distractors). */
+  function optionCount() { return 4; }
 
   /* ── Quiz settings helpers ── */
-  function getAge()  { return localStorage.getItem('quiz-age')  || '8'; }
   function getLang() { return localStorage.getItem('quiz-lang') || 'pt'; }
 
   /* ── Array utilities ── */
@@ -109,9 +120,12 @@ const QuizEngine = (function () {
     getQuestions,
     getCache,
     setCache,
-    ageGroup,
+    DIFFICULTIES,
+    getDifficulty,
+    setDifficulty,
+    diffRank,
+    diffToLegacyAge,
     optionCount,
-    getAge,
     getLang,
     shuffle,
     pick,

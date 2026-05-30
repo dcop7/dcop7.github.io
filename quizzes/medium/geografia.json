@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é a capital da Austrália?", "a": "Camberra", "opts": ["Camberra", "Sydney", "Melbourne", "Perth"], "exp": "A capital é Camberra, não Sydney — foi planeada como cidade-capital." },
+  { "q": "Qual é a montanha mais alta do mundo?", "a": "Evereste", "opts": ["Evereste", "K2", "Mont Blanc", "Kilimanjaro"], "exp": "O Evereste tem 8849 m, na fronteira entre o Nepal e a China." },
+  { "q": "Que cordilheira separa a Europa da Ásia a leste?", "a": "Montes Urais", "opts": ["Montes Urais", "Alpes", "Cárpatos", "Cáucaso"], "exp": "Os Montes Urais são a fronteira convencional entre a Europa e a Ásia." },
+  { "q": "Qual é o país mais populoso do mundo?", "a": "Índia", "opts": ["Índia", "China", "Estados Unidos", "Indonésia"], "exp": "A Índia ultrapassou a China como país mais populoso em 2023." },
+  { "q": "Qual é o maior país do mundo em área?", "a": "Rússia", "opts": ["Rússia", "Canadá", "China", "Estados Unidos"], "exp": "A Rússia abrange cerca de 17 milhões de km² e 11 fusos horários." },
+  { "q": "Em que país se encontra o rio Amazonas na sua maior parte?", "a": "Brasil", "opts": ["Brasil", "Peru", "Colômbia", "Venezuela"], "exp": "Embora nasça no Peru, a maior parte do Amazonas corre no Brasil." },
+  { "q": "Qual é a capital do Canadá?", "a": "Otava", "opts": ["Otava", "Toronto", "Montreal", "Vancouver"], "exp": "A capital do Canadá é Otava (Ottawa), não Toronto." },
+  { "q": "Que estreito separa a Europa de África no extremo oeste do Mediterrâneo?", "a": "Estreito de Gibraltar", "opts": ["Estreito de Gibraltar", "Estreito de Bósforo", "Canal da Mancha", "Estreito de Ormuz"], "exp": "O Estreito de Gibraltar separa Espanha de Marrocos por cerca de 14 km." }
+]
