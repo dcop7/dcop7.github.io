@@ -1626,6 +1626,36 @@ body.light .ex-country-label {
   color: var(--muted);
 }
 
+/* District-capital labels on the Portugal map (shown when zoomed in) */
+.pt-capital-label {
+  display: flex !important;
+  align-items: center;
+  gap: .25rem;
+  white-space: nowrap;
+  pointer-events: none;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.85);
+}
+.pt-capital-label .pt-cap-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.5);
+  flex: none;
+}
+body.light .pt-capital-label {
+  color: #1a2230;
+  text-shadow: 0 1px 3px rgba(255,255,255,.9), 0 0 2px rgba(255,255,255,.85);
+}
+body.light .pt-capital-label .pt-cap-dot {
+  background: #1a2230; box-shadow: 0 0 0 2px rgba(255,255,255,.6);
+}
+
 /* Info panel (slides from right) */
 .pt-info-panel {
   position: absolute;

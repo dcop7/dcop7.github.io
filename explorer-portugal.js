@@ -272,6 +272,7 @@ const PortugalExplorer = (function () {
   let _map       = null;
   let _inited    = false;
   let _markers   = [];
+  let _capitalMarkers = [];
   let _geoLayer  = null;
   let _selected  = null;
   let _container = null;
@@ -374,9 +375,52 @@ const PortugalExplorer = (function () {
     }).addTo(_map);
 
     _addDistrictMarkers();
+    _addCapitalLabels();
+
+    /* As the user zooms in, fade the district fills so the underlying roads,
+       labels and terrain stay readable (was a fixed, heavy overlay). */
+    _map.on('zoomend', _onZoom);
 
     /* Try loading GeoJSON boundaries */
     _tryLoadGeoJSON();
+  }
+
+  /* District fill opacity, attenuated by zoom so detail shows through up close. */
+  function _fillFor(selected) {
+    const z = _map ? _map.getZoom() : 7;
+    if (selected) return z >= 10 ? 0.22 : z >= 8 ? 0.38 : 0.5;
+    return z >= 10 ? 0.04 : z >= 8 ? 0.09 : 0.15;
+  }
+
+  function _onZoom() {
+    if (!_geoLayer) return;
+    _geoLayer.eachLayer(layer => {
+      const props = layer.feature?.properties || {};
+      const d = _findDistrict(Object.values(props).find(v => typeof v === 'string'));
+      layer.setStyle({ fillOpacity: _fillFor(d === _selected) });
+    });
+    /* Capital labels only when zoomed in enough to be useful. */
+    const showCaps = _map.getZoom() >= 8;
+    _capitalMarkers.forEach(m => {
+      const el = m.getElement();
+      if (el) el.style.display = showCaps ? '' : 'none';
+    });
+  }
+
+  /* Permanent capital labels (real coordinates from district data — no fabrication). */
+  function _addCapitalLabels() {
+    DISTRICTS.forEach(d => {
+      const m = L.marker([d.lat, d.lon], {
+        interactive: false, keyboard: false,
+        icon: L.divIcon({
+          className: 'pt-capital-label',
+          html: `<span class="pt-cap-dot"></span><span class="pt-cap-name">${d.capital}</span>`,
+          iconSize: [0, 0],
+        }),
+      }).addTo(_map);
+      const el = m.getElement(); if (el) el.style.display = 'none';
+      _capitalMarkers.push(m);
+    });
   }
 
   function _addDistrictMarkers() {
@@ -422,7 +466,7 @@ const PortugalExplorer = (function () {
             fillColor: base,
             color: _isDark() ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.25)',
             weight: 1.2,
-            fillOpacity: d === _selected ? 0.55 : 0.15,
+            fillOpacity: _fillFor(d === _selected),
           };
         },
         onEachFeature(feature, layer) {
@@ -498,15 +542,25 @@ const PortugalExplorer = (function () {
         const base = fd ? fd.color : '#6366f1';
         layer.setStyle({
           fillColor: base,
-          fillOpacity: isSelected ? 0.55 : 0.15,
+          fillOpacity: _fillFor(isSelected),
           weight: isSelected ? 2 : 1.2,
         });
         if (isSelected) layer.bringToFront();
       });
     }
 
-    /* Fly to district */
-    if (_map) _map.flyTo([d.lat, d.lon], 9, { duration: 0.8 });
+    /* Fly to district. Guard against a zero-size map (not yet laid out), where
+       Leaflet's flyTo animation can throw on NaN — fall back to setView, and
+       never let a map error block the info panel. */
+    if (_map) {
+      try {
+        const sz = _map.getSize();
+        if (sz.x > 0 && sz.y > 0) _map.flyTo([d.lat, d.lon], 9, { duration: 0.8 });
+        else _map.setView([d.lat, d.lon], 9);
+      } catch (e) {
+        try { _map.setView([d.lat, d.lon], 9); } catch (e2) {}
+      }
+    }
 
     /* Show panel */
     _renderInfo(d);
@@ -525,6 +579,8 @@ const PortugalExplorer = (function () {
 
     const pop  = (d.pop || 0).toLocaleString('pt');
     const area = (d.area || 0).toLocaleString('pt') + ' km²';
+    const density = (d.pop && d.area)
+      ? Math.round(d.pop / d.area).toLocaleString('pt') + ' hab/km²' : '—';
 
     el.innerHTML = `
       <div class="pt-info-hero" style="--dist-color:${d.color}">
@@ -544,6 +600,7 @@ const PortugalExplorer = (function () {
 
       <div class="pt-info-rows">
         <div class="pt-info-row"><span class="pt-row-icon">🏙</span><span class="pt-row-lbl">Capital</span><span class="pt-row-val">${d.capital}</span></div>
+        <div class="pt-info-row"><span class="pt-row-icon">👣</span><span class="pt-row-lbl">Densidade</span><span class="pt-row-val">${density}</span></div>
         <div class="pt-info-row"><span class="pt-row-icon">🌍</span><span class="pt-row-lbl">NUTS II</span><span class="pt-row-val">${d.nuts2}</span></div>
       </div>
 
