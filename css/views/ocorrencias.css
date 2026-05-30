@@ -171,6 +171,69 @@
 .oc-map-side .leaflet-tile-pane {
   filter: var(--tile-filter);
 }
+/* Satellite imagery must not be dimmed by the dark-theme tile filter */
+#oc-leaflet-map.oc-sat .leaflet-tile-pane { filter: none; }
+
+/* ── BASEMAP STYLE SELECTOR (top-right) ── */
+.oc-basemap-bar {
+  position: absolute;
+  top: .8rem;
+  right: .8rem;
+  z-index: 10;
+  display: flex;
+  gap: .25rem;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: .3rem .35rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  max-width: calc(100% - 1.6rem);
+  flex-wrap: wrap;
+}
+.oc-basemap-btn {
+  padding: .3rem .6rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-size: .7rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--ease);
+  white-space: nowrap;
+}
+.oc-basemap-btn:hover { color: var(--text2); background: rgba(255,255,255,.06); }
+.oc-basemap-btn.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: rgba(var(--accent-rgb),.35);
+}
+
+/* ── DISTRICT NAME LABELS (always-on, zoom-scaled) ── */
+.oc-district-label {
+  background: none !important;
+  border: none !important;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.oc-district-label span {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: .7rem;
+  letter-spacing: .01em;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 4px rgba(0,0,0,.8), 0 0 8px rgba(0,0,0,.6);
+  white-space: nowrap;
+}
+.oc-district-label.light span {
+  color: #1e293b;
+  text-shadow: 0 0 3px rgba(255,255,255,.95), 0 1px 4px rgba(255,255,255,.85);
+}
 .oc-map-side .leaflet-control-zoom {
   border: none !important;
   border-radius: var(--radius-sm) !important;
@@ -481,6 +544,11 @@
   grid-template-columns: 1fr 1fr;
   gap: .5rem;
 }
+/* Compact 4-across stat strip (map-first: stats are secondary) */
+.oc-stat-grid--compact { grid-template-columns: repeat(4, 1fr); gap: .4rem; }
+.oc-stat-grid--compact .oc-stat-card { padding: .5rem .4rem; align-items: center; text-align: center; gap: .1rem; }
+.oc-stat-grid--compact .oc-stat-num { font-size: 1.2rem; }
+.oc-stat-grid--compact .oc-stat-label { font-size: .58rem; text-align: center; }
 
 .oc-stat-card {
   background: var(--card);
@@ -550,20 +618,39 @@
 .oc-stat-delta.down { color: #22c55e; }
 .oc-stat-delta.same { color: var(--muted); }
 
-/* ── PROVIDERS ── */
+/* ── PROVIDERS (collapsible "Fontes de dados", collapsed by default) ── */
 .oc-providers-section {
-  padding: .65rem .9rem .55rem;
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
   flex-shrink: 0;
 }
+.oc-providers-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .6rem .9rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background var(--ease);
+}
+.oc-providers-toggle:hover { background: rgba(255,255,255,.03); }
 .oc-providers-label {
   font-size: .6rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
   color: var(--muted);
-  margin-bottom: .5rem;
 }
+.oc-providers-chevron {
+  color: var(--muted);
+  font-size: .7rem;
+  transition: transform .2s ease;
+}
+.oc-providers-section:not(.collapsed) .oc-providers-chevron { transform: rotate(90deg); }
+.oc-providers-body { padding: 0 .9rem .65rem; }
+.oc-providers-section.collapsed .oc-providers-body { display: none; }
 .oc-providers { display: flex; flex-direction: column; gap: .45rem; }
 
 /* ── Provider card (rich transparency panel) ── */

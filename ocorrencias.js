@@ -91,8 +91,11 @@ const OcorrenciasPage = (function () {
   let _lFire             = null;
   let _districtGeoData   = null;
   let _districtBorderLayer = null;
+  let _districtLabelLayer = null;
   let _warnFillLayer     = null;
-  let _tileLayer         = null;
+  let _baseTile          = null;
+  let _satLabelTile      = null;
+  let _baseStyle         = 'standard';
   let _themeObs          = null;
   let _refreshing        = false;
   let _detailInc         = null;
@@ -148,21 +151,56 @@ const OcorrenciasPage = (function () {
 
   /* ── Theme helpers ── */
   function _isDark() { return !document.body.classList.contains('light'); }
-  function _tileUrl() {
-    return _isDark()
-      ? 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+  /* ── Basemaps (user-selectable layer styles for geographic context) ── */
+  const CARTO_ATTR = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>';
+  const ESRI_ATTR  = 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics';
+  const BASEMAPS = {
+    standard: { name: 'Padrão',   url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: CARTO_ATTR },
+    dark:     { name: 'Escuro',   url: 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png',          sub: 'abcd', attr: CARTO_ATTR },
+    satellite:{ name: 'Satélite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: ESRI_ATTR },
+  };
+  /* Esri reference overlay (boundaries + place names) for the satellite+labels mode */
+  const SAT_LABELS_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+
+  /* Apply a basemap style. Satellite modes disable the tile dimming filter and
+     switch district borders/labels to a light, high-contrast treatment. */
+  function _setBasemap(style) {
+    if (!_map) return;
+    if (!BASEMAPS[style]) style = 'standard';
+    _baseStyle = style;
+    const sat = style === 'satellite' || style === 'satellite-labels';
+
+    if (_baseTile)     { _map.removeLayer(_baseTile);     _baseTile = null; }
+    if (_satLabelTile) { _map.removeLayer(_satLabelTile); _satLabelTile = null; }
+
+    const base = BASEMAPS[sat ? 'satellite' : style];
+    _baseTile = L.tileLayer(base.url, { attribution: base.attr, subdomains: base.sub, maxZoom: 19 });
+    _baseTile.addTo(_map);
+    _baseTile.bringToBack();
+
+    if (style === 'satellite-labels') {
+      _satLabelTile = L.tileLayer(SAT_LABELS_URL, { attribution: ESRI_ATTR, maxZoom: 19, pane: 'shadowPane' });
+      _satLabelTile.addTo(_map);
+    }
+
+    const el = document.getElementById('oc-leaflet-map');
+    if (el) el.classList.toggle('oc-sat', sat);
+    document.querySelectorAll('.oc-basemap-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.base === style));
+
+    _renderDistrictBorders();
+    _renderDistrictLabels();
   }
+
   function _watchTheme() {
     if (_themeObs) return;
+    /* The basemap is user-controlled now; the theme observer only restyles the
+       vector overlays (borders + labels) so they stay legible after a theme flip. */
     _themeObs = new MutationObserver(() => {
-      if (!_map || !_tileLayer) return;
-      _map.removeLayer(_tileLayer);
-      _tileLayer = L.tileLayer(_tileUrl(), {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
-      }).addTo(_map);
+      if (!_map) return;
       _renderDistrictBorders();
+      _renderDistrictLabels();
     });
     _themeObs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   }
@@ -185,20 +223,60 @@ const OcorrenciasPage = (function () {
   function _renderDistrictBorders() {
     if (!_map || !_districtGeoData) return;
     if (_districtBorderLayer) { _districtBorderLayer.remove(); _districtBorderLayer = null; }
+    const sat = _baseStyle === 'satellite' || _baseStyle === 'satellite-labels';
+    const color = sat ? 'rgba(255,255,255,.6)'
+                : _isDark() ? 'rgba(180,200,255,.45)' : 'rgba(60,80,140,.4)';
     _districtBorderLayer = L.geoJSON(_districtGeoData, {
       style: () => ({
         fillColor:   'transparent',
-        color:       _isDark() ? 'rgba(180,200,255,.4)' : 'rgba(60,80,140,.35)',
-        weight:      1.2,
+        color,
+        weight:      sat ? 1.4 : 1.2,
         fillOpacity: 0,
         interactive: false,
       }),
       interactive: false,
     }).addTo(_map);
-    /* Both are GeoJSON layers (vector overlayPane); markers render above them
-       via the markerPane regardless. layerGroups have no bringToFront(). */
     _districtBorderLayer.bringToFront();
     _warnFillLayer?.bringToFront();
+  }
+
+  /* ── Always-visible district name labels (scale with zoom, no overlap) ── */
+  const _LABEL_MAJOR = new Set(['Lisboa', 'Porto', 'Faro', 'Braga', 'Coimbra', 'Évora', 'Bragança', 'Funchal']);
+
+  function _renderDistrictLabels() {
+    if (!_map) return;
+    if (_districtLabelLayer) { _districtLabelLayer.remove(); _districtLabelLayer = null; }
+    const sat = _baseStyle === 'satellite' || _baseStyle === 'satellite-labels';
+    /* On satellite+labels the Esri overlay already prints place names, so skip
+       ours to avoid double labelling. */
+    if (_baseStyle === 'satellite-labels') return;
+    const cls = 'oc-district-label' + (sat || _isDark() ? '' : ' light');
+    _districtLabelLayer = L.layerGroup();
+    Object.entries(DISTRICT_CENTROIDS).forEach(([name, ll]) => {
+      const icon = L.divIcon({
+        className: cls,
+        html: `<span>${name}</span>`,
+        iconSize: [80, 16], iconAnchor: [40, 8],
+      });
+      const m = L.marker(ll, { icon, interactive: false, keyboard: false });
+      m._major = _LABEL_MAJOR.has(name);
+      m.addTo(_districtLabelLayer);
+    });
+    _districtLabelLayer.addTo(_map);
+    _updateDistrictLabelZoom();
+  }
+
+  /* Progressive labels: at low zoom only major districts; font grows with zoom. */
+  function _updateDistrictLabelZoom() {
+    if (!_districtLabelLayer || !_map) return;
+    const z = _map.getZoom();
+    const fs = z >= 9 ? '.8rem' : z >= 7 ? '.72rem' : '.66rem';
+    _districtLabelLayer.eachLayer(m => {
+      const el = m.getElement();
+      if (!el) return;
+      el.style.display = (z < 7 && !m._major) ? 'none' : '';
+      el.style.fontSize = fs;
+    });
   }
 
   /* ── Nominatim reverse geocoding ── */
@@ -384,17 +462,18 @@ const OcorrenciasPage = (function () {
     if (!el || _map) return;
 
     _map = L.map(el, {
-      center: [39.5, -8.0], zoom: 6, minZoom: 5, maxZoom: 13,
+      center: [39.6, -8.2], zoom: 7, minZoom: 5, maxZoom: 17,
       zoomControl: false,
     });
     L.control.zoom({ position: 'bottomright' }).addTo(_map);
-    _tileLayer = L.tileLayer(_tileUrl(), {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd',
-    }).addTo(_map);
+
+    /* Default to the context-rich standard basemap so Portugal sits within
+       visible surrounding territory (Spain, coastline) rather than floating. */
+    _setBasemap('standard');
 
     _lEq   = L.layerGroup().addTo(_map);
     _lFire = L.layerGroup().addTo(_map);
+    _map.on('zoomend', _updateDistrictLabelZoom);
     _watchTheme();
     _loadDistrictGeoData();
   }
@@ -630,32 +709,22 @@ const OcorrenciasPage = (function () {
   function _renderStats(eqs, fires, warns) {
     const statGrid = document.querySelector('.oc-stat-grid');
     if (!statGrid) return;
-    const big = eqs.filter(e => e.mag >= 3).length;
     statGrid.innerHTML = `
       <div class="oc-stat-card all">
-        <div class="oc-stat-header"><span class="oc-stat-icon">📊</span></div>
         <div class="oc-stat-num">${eqs.length + fires.length + warns.length}</div>
         <div class="oc-stat-label">Total</div>
       </div>
       <div class="oc-stat-card eq">
-        <div class="oc-stat-header"><span class="oc-stat-icon">🔴</span></div>
         <div class="oc-stat-num">${eqs.length}</div>
         <div class="oc-stat-label">Sismos</div>
       </div>
       <div class="oc-stat-card fire">
-        <div class="oc-stat-header"><span class="oc-stat-icon">🔥</span></div>
         <div class="oc-stat-num">${fires.length}</div>
         <div class="oc-stat-label">Incêndios</div>
       </div>
       <div class="oc-stat-card wx">
-        <div class="oc-stat-header"><span class="oc-stat-icon">⚠</span></div>
         <div class="oc-stat-num">${warns.length}</div>
         <div class="oc-stat-label">Avisos</div>
-      </div>
-      <div class="oc-stat-card eq">
-        <div class="oc-stat-header"><span class="oc-stat-icon">💥</span></div>
-        <div class="oc-stat-num">${big}</div>
-        <div class="oc-stat-label">Mag ≥ 3</div>
       </div>`;
   }
 
@@ -784,6 +853,24 @@ const OcorrenciasPage = (function () {
     });
   }
 
+  /* ── Basemap style selector ── */
+  function _wireBasemapBar() {
+    document.querySelectorAll('.oc-basemap-btn').forEach(btn => {
+      btn.onclick = () => _setBasemap(btn.dataset.base);
+    });
+  }
+
+  /* ── Collapsible "Fontes de dados" (data sources) — collapsed by default ── */
+  function _wireProvidersToggle() {
+    const sec = document.getElementById('oc-providers-section');
+    const btn = document.getElementById('oc-providers-toggle');
+    if (!sec || !btn) return;
+    btn.onclick = () => {
+      const collapsed = sec.classList.toggle('collapsed');
+      btn.setAttribute('aria-expanded', String(!collapsed));
+    };
+  }
+
   /* ════════════════════════════════ LOAD ════════════════════════════ */
 
   async function _load() {
@@ -839,6 +926,13 @@ const OcorrenciasPage = (function () {
           <div class="oc-map-side">
             <div id="oc-leaflet-map"></div>
 
+            <div class="oc-basemap-bar">
+              <button class="oc-basemap-btn active" data-base="standard">Padrão</button>
+              <button class="oc-basemap-btn" data-base="dark">Escuro</button>
+              <button class="oc-basemap-btn" data-base="satellite">Satélite</button>
+              <button class="oc-basemap-btn" data-base="satellite-labels">Satélite + Rótulos</button>
+            </div>
+
             <div class="oc-layer-bar">
               <button class="oc-layer-btn active" data-layer="earthquake">
                 <span class="oc-layer-btn-dot eq"></span>Sismos
@@ -876,21 +970,10 @@ const OcorrenciasPage = (function () {
           </div>
 
           <div class="oc-stats-panel">
-            <div class="oc-stat-section">
-              <div class="oc-stat-section-label">Estatísticas</div>
-              <div class="oc-stat-grid">
-                ${Array(5).fill('<div class="oc-stat-card all"><div class="oc-stat-num">—</div><div class="oc-stat-label">…</div></div>').join('')}
-              </div>
-            </div>
-
-            <div class="oc-providers-section">
-              <div class="oc-providers-label">Fontes de dados</div>
-              <div class="oc-providers"></div>
-            </div>
-
+            <!-- Map-first priority: Occurrences are the primary side content -->
             <div class="oc-incidents-section">
               <div class="oc-incidents-header">
-                <span class="oc-incidents-title">Ocorrências</span>
+                <span class="oc-incidents-title">Ocorrências ativas</span>
                 <span class="oc-incidents-count">—</span>
               </div>
               <div class="oc-incidents-filter">
@@ -900,6 +983,22 @@ const OcorrenciasPage = (function () {
                 <button class="oc-filter-btn" data-filter="weather">Avisos</button>
               </div>
               <div class="oc-incidents-list"></div>
+            </div>
+
+            <div class="oc-stat-section">
+              <div class="oc-stat-grid oc-stat-grid--compact">
+                ${Array(4).fill('<div class="oc-stat-card all"><div class="oc-stat-num">—</div><div class="oc-stat-label">…</div></div>').join('')}
+              </div>
+            </div>
+
+            <div class="oc-providers-section collapsed" id="oc-providers-section">
+              <button class="oc-providers-toggle" id="oc-providers-toggle" aria-expanded="false">
+                <span class="oc-providers-label">Fontes de dados</span>
+                <span class="oc-providers-chevron">▸</span>
+              </button>
+              <div class="oc-providers-body">
+                <div class="oc-providers"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -944,6 +1043,8 @@ const OcorrenciasPage = (function () {
       _initMap();
       _wireLayerBar();
       _wireFilters();
+      _wireBasemapBar();
+      _wireProvidersToggle();
       _inited = true;
       _load();
       _startAutoRefresh();
