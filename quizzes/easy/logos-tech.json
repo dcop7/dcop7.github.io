@@ -1,0 +1,12 @@
+[
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "GitHub", "opts": ["GitHub", "GitLab", "Bitbucket", "Docker"], "exp": "O GitHub é a maior plataforma de alojamento de código com Git, propriedade da Microsoft.", "imgType": "logo", "img": "quizzes/assets/icons/github.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Python", "opts": ["Python", "Java", "Ruby", "Go"], "exp": "Python é uma linguagem de programação criada por Guido van Rossum em 1991.", "imgType": "logo", "img": "quizzes/assets/icons/python.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Linux", "opts": ["Linux", "Ubuntu", "Windows", "macOS"], "exp": "O pinguim Tux é a mascote do núcleo Linux, criado por Linus Torvalds.", "imgType": "logo", "img": "quizzes/assets/icons/linux.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Firefox", "opts": ["Firefox", "Chrome", "Opera", "Safari"], "exp": "O Firefox é o navegador da Mozilla.", "imgType": "logo", "img": "quizzes/assets/icons/firefoxbrowser.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Google Chrome", "opts": ["Google Chrome", "Firefox", "Edge", "Brave"], "exp": "O Chrome é o navegador da Google e o mais utilizado no mundo.", "imgType": "logo", "img": "quizzes/assets/icons/googlechrome.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Android", "opts": ["Android", "iOS", "Windows", "Linux"], "exp": "O Android é o sistema operativo móvel da Google.", "imgType": "logo", "img": "quizzes/assets/icons/android.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Discord", "opts": ["Discord", "Slack", "Telegram", "Skype"], "exp": "O Discord é uma plataforma de comunicação por voz, vídeo e texto.", "imgType": "logo", "img": "quizzes/assets/icons/discord.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Reddit", "opts": ["Reddit", "Twitter", "Facebook", "Pinterest"], "exp": "O Reddit é uma rede de fóruns organizada em comunidades (subreddits).", "imgType": "logo", "img": "quizzes/assets/icons/reddit.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Spotify", "opts": ["Spotify", "SoundCloud", "Deezer", "Tidal"], "exp": "O Spotify é um serviço sueco de streaming de música.", "imgType": "logo", "img": "quizzes/assets/icons/spotify.svg" },
+  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Steam", "opts": ["Steam", "Epic Games", "GOG", "Origin"], "exp": "O Steam é a plataforma de jogos da Valve.", "imgType": "logo", "img": "quizzes/assets/icons/steam.svg" }
+]

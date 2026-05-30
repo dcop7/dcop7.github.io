@@ -1,0 +1,10 @@
+[
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Porsche", "opts": ["Porsche", "Ferrari", "Lamborghini", "Audi"], "exp": "O brasão da Porsche integra as armas de Estugarda e do estado de Württemberg.", "imgType": "logo", "img": "quizzes/assets/icons/porsche.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Volkswagen", "opts": ["Volkswagen", "Audi", "Opel", "Skoda"], "exp": "Volkswagen significa 'carro do povo' em alemão.", "imgType": "logo", "img": "quizzes/assets/icons/volkswagen.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Honda", "opts": ["Honda", "Toyota", "Hyundai", "Nissan"], "exp": "A Honda é também a maior fabricante de motociclos do mundo.", "imgType": "logo", "img": "quizzes/assets/icons/honda.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Nissan", "opts": ["Nissan", "Mazda", "Mitsubishi", "Subaru"], "exp": "A Nissan é uma fabricante japonesa, parte da aliança Renault-Nissan-Mitsubishi.", "imgType": "logo", "img": "quizzes/assets/icons/nissan.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Renault", "opts": ["Renault", "Peugeot", "Citroën", "Fiat"], "exp": "A Renault é uma das maiores fabricantes francesas (losango).", "imgType": "logo", "img": "quizzes/assets/icons/renault.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Peugeot", "opts": ["Peugeot", "Renault", "Citroën", "Opel"], "exp": "O leão é o símbolo histórico da Peugeot.", "imgType": "logo", "img": "quizzes/assets/icons/peugeot.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Fiat", "opts": ["Fiat", "Alfa Romeo", "Lancia", "Seat"], "exp": "Fiat = Fabbrica Italiana Automobili Torino.", "imgType": "logo", "img": "quizzes/assets/icons/fiat.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Mazda", "opts": ["Mazda", "Toyota", "Honda", "Subaru"], "exp": "A Mazda é uma fabricante japonesa conhecida pelo motor rotativo Wankel.", "imgType": "logo", "img": "quizzes/assets/icons/mazda.svg" }
+]

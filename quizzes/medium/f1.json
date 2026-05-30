@@ -1,0 +1,9 @@
+[
+  { "q": "Que piloto alemão venceu sete campeonatos do mundo entre 1994 e 2004?", "a": "Michael Schumacher", "opts": ["Michael Schumacher", "Sebastian Vettel", "Nico Rosberg", "Ralf Schumacher"], "exp": "Michael Schumacher conquistou 7 títulos, dois pela Benetton e cinco pela Ferrari." },
+  { "q": "Em que circuito se corre o GP do Mónaco?", "a": "Monte Carlo", "opts": ["Monte Carlo", "Spa", "Monza", "Silverstone"], "exp": "O GP do Mónaco disputa-se nas ruas de Monte Carlo desde 1929." },
+  { "q": "Que bandeira azul é mostrada a um piloto que vai ser ultrapassado por um mais rápido?", "a": "Bandeira azul", "opts": ["Bandeira azul", "Bandeira amarela", "Bandeira branca", "Bandeira preta"], "exp": "A bandeira azul avisa um piloto retardatário para deixar passar quem o vai dobrar." },
+  { "q": "Que equipa austríaca dominou a F1 no início dos anos 2020 com Verstappen?", "a": "Red Bull", "opts": ["Red Bull", "Mercedes", "Ferrari", "Alpine"], "exp": "A Red Bull Racing conquistou vários títulos com Max Verstappen." },
+  { "q": "Quantos pontos recebe o vencedor de um Grande Prémio (desde 2010)?", "a": "25", "opts": ["25", "10", "20", "30"], "exp": "Desde 2010, o vencedor soma 25 pontos." },
+  { "q": "Que circuito italiano é conhecido como o 'Templo da Velocidade'?", "a": "Monza", "opts": ["Monza", "Ímola", "Mugello", "Misano"], "exp": "O Autódromo de Monza é célebre pelas suas retas rápidas." },
+  { "q": "Que piloto português correu na F1 e venceu provas como o GP do México de 1991... pela Ferrari?", "a": "Nenhum (Portugal não teve vencedor de GP)", "opts": ["Nenhum (Portugal não teve vencedor de GP)", "Pedro Lamy", "Tiago Monteiro", "Pedro Chaves"], "exp": "Pilotos portugueses como Pedro Lamy e Tiago Monteiro competiram na F1, mas nenhum venceu um Grande Prémio." }
+]

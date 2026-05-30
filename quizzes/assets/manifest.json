@@ -1,0 +1,58 @@
+{
+  "_README": "Declares the reusable image assets for image-based quizzes. Run `node quizzes/assets/fetch-assets.mjs` to download them locally into icons/ and monuments/. Nothing here is fetched automatically by the site — assets are local-first. See README.md for licensing.",
+
+  "icons": {
+    "source": "Simple Icons — https://simpleicons.org",
+    "license": "CC0 1.0 (public domain dedication) — no attribution required, reuse for any purpose",
+    "cdn": "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/{slug}.svg",
+    "dest": "icons/{slug}.svg",
+    "note": "Some company icons may have been removed from Simple Icons at the trademark holder's request; the fetch script skips any that 404. Logo quizzes reference icons/{slug}.svg and fall back to a placeholder if missing.",
+    "slugs": [
+      "github", "gitlab", "docker", "kubernetes", "linux", "ubuntu", "debian",
+      "fedora", "redhat", "archlinux", "python", "rust", "go", "nodedotjs",
+      "react", "vuedotjs", "angular", "svelte", "mongodb", "postgresql", "mysql",
+      "redis", "git", "firefoxbrowser", "googlechrome", "brave", "opera",
+      "discord", "reddit", "stackoverflow", "android", "kotlin", "swift",
+      "php", "ruby", "cplusplus", "c", "typescript", "javascript", "html5",
+      "css3", "sass", "tailwindcss", "bootstrap", "webpack", "vite", "npm",
+      "figma", "blender", "gimp", "vlcmediaplayer", "wikipedia", "telegram",
+      "signal", "spotify", "steam", "raspberrypi", "arduino", "nginx",
+      "apache", "elasticsearch", "graphql", "django", "flask", "laravel",
+      "dotnet", "unity", "godotengine", "wordpress"
+    ],
+    "carSlugs": [
+      "bmw", "audi", "mercedes", "volkswagen", "porsche", "ferrari",
+      "lamborghini", "toyota", "honda", "nissan", "mazda", "subaru",
+      "ford", "chevrolet", "tesla", "volvo", "renault", "peugeot",
+      "fiat", "skoda", "seat", "jaguar", "landrover", "mini",
+      "ducati", "yamahamotorcorporation", "harleydavidson"
+    ]
+  },
+
+  "monuments": {
+    "source": "Wikipedia REST summary API → resolves the article's lead image (normally hosted on Wikimedia Commons under a free licence).",
+    "license": "Per-file — the script records the resolved image URL in IMAGE-CREDITS.md; verify each is PD/CC before relying on it.",
+    "api": "https://{wiki}.wikipedia.org/api/rest_v1/page/summary/{title}",
+    "dest": "monuments/{slug}.jpg",
+    "items": [
+      { "slug": "torre-belem",      "wiki": "pt", "title": "Torre de Belém" },
+      { "slug": "mosteiro-jeronimos","wiki": "pt", "title": "Mosteiro dos Jerónimos" },
+      { "slug": "palacio-pena",     "wiki": "pt", "title": "Palácio Nacional da Pena" },
+      { "slug": "torre-clerigos",   "wiki": "pt", "title": "Torre dos Clérigos" },
+      { "slug": "torre-eiffel",     "wiki": "pt", "title": "Torre Eiffel" },
+      { "slug": "coliseu",          "wiki": "pt", "title": "Coliseu de Roma" },
+      { "slug": "sagrada-familia",  "wiki": "pt", "title": "Sagrada Família" },
+      { "slug": "big-ben",          "wiki": "pt", "title": "Big Ben" },
+      { "slug": "brandenburg",      "wiki": "pt", "title": "Portão de Brandemburgo" },
+      { "slug": "partenon",         "wiki": "pt", "title": "Pártenon" },
+      { "slug": "machu-picchu",     "wiki": "pt", "title": "Machu Picchu" },
+      { "slug": "cristo-redentor",  "wiki": "pt", "title": "Cristo Redentor" },
+      { "slug": "estatua-liberdade","wiki": "pt", "title": "Estátua da Liberdade" },
+      { "slug": "muralha-china",    "wiki": "pt", "title": "Grande Muralha da China" },
+      { "slug": "taj-mahal",        "wiki": "pt", "title": "Taj Mahal" },
+      { "slug": "piramide-queops",  "wiki": "pt", "title": "Pirâmide de Quéops" },
+      { "slug": "opera-sydney",     "wiki": "pt", "title": "Casa de Ópera de Sydney" },
+      { "slug": "petra",            "wiki": "pt", "title": "Petra" }
+    ]
+  }
+}

@@ -345,6 +345,19 @@
   box-shadow: 0 4px 18px rgba(0,0,0,.3);
   object-fit: contain;
 }
+/* Brand/tech logo on a light tile (monochrome marks stay visible on dark UI) */
+.qg-logo-tile {
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0,0,0,.3);
+  min-width: 120px;
+  min-height: 90px;
+}
+.qg-logo { max-width: 170px; max-height: 90px; object-fit: contain; }
 .qg-img-credit {
   font-size: .6rem;
   color: var(--muted);

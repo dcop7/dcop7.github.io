@@ -1,0 +1,9 @@
+[
+  { "q": "Quem foi o primeiro campeão do mundo de Fórmula 1, em 1950?", "a": "Giuseppe Farina", "opts": ["Giuseppe Farina", "Juan Manuel Fangio", "Alberto Ascari", "Stirling Moss"], "exp": "O italiano Giuseppe 'Nino' Farina foi o primeiro campeão, pela Alfa Romeo, em 1950." },
+  { "q": "Quantos títulos mundiais conquistou Juan Manuel Fangio?", "a": "5", "opts": ["5", "3", "4", "7"], "exp": "Fangio venceu 5 títulos nos anos 1950, recorde que durou décadas." },
+  { "q": "Que construtor detém o recorde de mais títulos de construtores na F1?", "a": "Ferrari", "opts": ["Ferrari", "Williams", "McLaren", "Mercedes"], "exp": "A Ferrari é a equipa com mais títulos de construtores na história da F1." },
+  { "q": "Em que ano morreu Ayrton Senna, no GP de San Marino?", "a": "1994", "opts": ["1994", "1991", "1988", "1997"], "exp": "Ayrton Senna faleceu em Ímola, a 1 de maio de 1994." },
+  { "q": "O que é o sistema DRS introduzido em 2011?", "a": "Sistema de redução de arrasto da asa traseira", "opts": ["Sistema de redução de arrasto da asa traseira", "Sistema de travagem regenerativa", "Controlo de tração eletrónico", "Direção assistida dupla"], "exp": "O DRS (Drag Reduction System) abre a asa traseira para facilitar ultrapassagens." },
+  { "q": "Que motor (configuração) equipa os carros de F1 desde 2014?", "a": "V6 turbo-híbrido", "opts": ["V6 turbo-híbrido", "V8 atmosférico", "V10 atmosférico", "V12 turbo"], "exp": "Desde 2014, a F1 usa unidades de potência V6 turbo-híbridas de 1,6 litros." },
+  { "q": "Que circuito belga é famoso pela curva 'Eau Rouge'?", "a": "Spa-Francorchamps", "opts": ["Spa-Francorchamps", "Zandvoort", "Hungaroring", "Hockenheim"], "exp": "A subida de Eau Rouge/Raidillon é uma das curvas mais icónicas, em Spa." }
+]

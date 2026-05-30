@@ -1,0 +1,10 @@
+[
+  { "q": "Que marca de automóveis é este logótipo?", "a": "BMW", "opts": ["BMW", "Audi", "Mercedes-Benz", "Volkswagen"], "exp": "A BMW é uma fabricante alemã fundada em 1916, em Munique.", "imgType": "logo", "img": "quizzes/assets/icons/bmw.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Audi", "opts": ["Audi", "BMW", "Opel", "Toyota"], "exp": "Os quatro anéis da Audi representam a fusão de quatro fabricantes em 1932.", "imgType": "logo", "img": "quizzes/assets/icons/audi.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Mercedes-Benz", "opts": ["Mercedes-Benz", "BMW", "Audi", "Volvo"], "exp": "A estrela de três pontas simboliza motorização em terra, mar e ar.", "imgType": "logo", "img": "quizzes/assets/icons/mercedes.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Toyota", "opts": ["Toyota", "Honda", "Nissan", "Mazda"], "exp": "A Toyota é a maior fabricante japonesa e uma das maiores do mundo.", "imgType": "logo", "img": "quizzes/assets/icons/toyota.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Ford", "opts": ["Ford", "Chevrolet", "Fiat", "Renault"], "exp": "A Ford, fundada por Henry Ford, popularizou a linha de montagem.", "imgType": "logo", "img": "quizzes/assets/icons/ford.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Volvo", "opts": ["Volvo", "Volkswagen", "Saab", "Skoda"], "exp": "A Volvo é uma marca sueca conhecida pela segurança automóvel.", "imgType": "logo", "img": "quizzes/assets/icons/volvo.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Ferrari", "opts": ["Ferrari", "Lamborghini", "Maserati", "Alfa Romeo"], "exp": "O cavallino rampante (cavalo a empinar) é o símbolo da Ferrari.", "imgType": "logo", "img": "quizzes/assets/icons/ferrari.svg" },
+  { "q": "Que marca de automóveis é este logótipo?", "a": "Tesla", "opts": ["Tesla", "Rivian", "Lucid", "Polestar"], "exp": "A Tesla, de Elon Musk, popularizou os automóveis elétricos.", "imgType": "logo", "img": "quizzes/assets/icons/tesla.svg" }
+]

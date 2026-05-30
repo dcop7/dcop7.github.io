@@ -16,7 +16,7 @@ const QuizPage = (function () {
         { id: 'capitals',   icon: '🏛️', labelPt: 'Capitais do Mundo',        labelEn: 'World Capitals',           provider: 'capitals',  count: 10 },
         { id: 'continents', icon: '🗺️', labelPt: 'Continentes',              labelEn: 'Continents',               provider: 'continents',count: 10 },
         { id: 'population', icon: '👥', labelPt: 'Maior População',           labelEn: 'Larger Population',        provider: 'population',count: 10 },
-        { id: 'monuments',  icon: '🗼', labelPt: 'Monumentos Famosos',        labelEn: 'Famous Monuments',         provider: 'monuments', count: 10 },
+        { id: 'monuments',  icon: '🗼', labelPt: 'Monumentos Famosos',        labelEn: 'Famous Monuments',         provider: 'monumentos-img', count: 8 },
       ]
     },
     {
@@ -50,6 +50,7 @@ const QuizPage = (function () {
         { id: 'food',        icon: '🍎', labelPt: 'Alimentos',         labelEn: 'Food',               provider: 'food',      count: 10 },
         { id: 'portugal',    icon: '🇵🇹', labelPt: 'Portugal',          labelEn: 'Portugal',           provider: 'portugal-quiz', count: 8 },
         { id: 'car-brands',  icon: '🏎️', labelPt: 'Marcas de Automóveis', labelEn: 'Car Brands',      provider: 'car-brands', count: 8 },
+        { id: 'f1',          icon: '🏁', labelPt: 'Fórmula 1',         labelEn: 'Formula 1',          provider: 'f1',         count: 8 },
       ]
     },
     {
@@ -59,12 +60,15 @@ const QuizPage = (function () {
         { id: 'colours',  icon: '🎨', labelPt: 'Cores',              labelEn: 'Colours',         provider: 'colours',        count: 10 },
         { id: 'sinais',   icon: '🚦', labelPt: 'Sinais de Trânsito', labelEn: 'Traffic Signs',   provider: 'sinais-transito', count: 8 },
         { id: 'symbols',  icon: '🔣', labelPt: 'Símbolos',           labelEn: 'Symbols',         provider: 'symbols',        count: 8 },
+        { id: 'car-logos',icon: '🚘', labelPt: 'Logótipos de Automóveis', labelEn: 'Car Logos',  provider: 'car-logos',      count: 8 },
       ]
     },
     {
       id: 'tecnologia', icon: '💻', labelKey: 'quiz.cat.tecnologia',
       quizzes: [
-        { id: 'tech', icon: '🖥️', labelPt: 'Tecnologia e Computadores', labelEn: 'Technology & Computers', provider: 'technology', count: 10 },
+        { id: 'tech',        icon: '🖥️', labelPt: 'Tecnologia e Computadores', labelEn: 'Technology & Computers', provider: 'technology',    count: 10 },
+        { id: 'tecnologia',  icon: '🧠', labelPt: 'Tecnologia (PT)',           labelEn: 'Technology (PT)',        provider: 'tecnologia-pt', count: 10 },
+        { id: 'tech-logos',  icon: '🔣', labelPt: 'Logótipos Tecnológicos',    labelEn: 'Tech Logos',             provider: 'tech-logos',    count: 8  },
       ]
     },
   ];
@@ -280,14 +284,23 @@ const QuizPage = (function () {
   }
 
   /* Render a question's media. Inline SVG is trusted (authored locally);
-     hotlinked images (imageType 'img', e.g. Wikimedia Commons) lazy-load
-     and fall back to a labelled placeholder if the asset is unavailable,
-     so layouts never break. Optional `imageCredit` shows attribution. */
+     image types ('img' photo, 'logo' brand mark) point at LOCAL assets
+     under quizzes/assets/ (populated by the fetch script) or a verified
+     reusable URL. They lazy-load and fall back to a labelled placeholder
+     if the asset is unavailable, so layouts never break and we never show
+     a broken image. Optional `imageCredit` shows attribution. */
   function renderImage(q) {
     const t = q.imageType;
     if (t === 'flag') {
       return `<img class="qg-flag" src="${q.image}" alt="" loading="lazy"
                 onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'qg-img-ph',textContent:'🏳️'}))"/>`;
+    }
+    if (t === 'logo') {
+      /* Logos render on a light tile so monochrome marks stay visible. */
+      const credit = q.imageCredit
+        ? `<span class="qg-img-credit">${q.imageCredit}</span>` : '';
+      return `<div class="qg-logo-tile"><img class="qg-logo" src="${q.image}" alt="" loading="lazy"
+                onerror="this.closest('.qg-logo-tile').replaceWith(Object.assign(document.createElement('div'),{className:'qg-img-ph',textContent:'🔳'}))"/></div>${credit}`;
     }
     if (t === 'img') {
       const credit = q.imageCredit
