@@ -1,8 +1,11 @@
-const CACHE = 'dcop7-v3';
+const CACHE = 'dcop7-v4';
 const STATIC = [
   '/',
   '/index.html',
   '/main.js',
+  '/data/countries.json',
+  '/data/world-countries.geojson',
+  '/data/pt-districts.geojson',
   '/nav.js',
   '/i18n.js',
   '/links-data.js',
