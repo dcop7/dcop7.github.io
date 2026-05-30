@@ -1,10 +1,1014 @@
 [
-  { "q": "Qual é a capital do Cazaquistão (desde 2019, com novo nome)?", "a": "Astana", "opts": ["Astana", "Almaty", "Bishkek", "Tashkent"], "exp": "A capital chama-se Astana (foi Nur-Sultan entre 2019 e 2022)." },
-  { "q": "Qual é o lago de água doce mais profundo do mundo?", "a": "Lago Baikal", "opts": ["Lago Baikal", "Lago Tanganica", "Lago Superior", "Lago Vitória"], "exp": "O Baikal, na Sibéria, atinge mais de 1640 m de profundidade." },
-  { "q": "Que país tem o maior número de fusos horários (incluindo territórios)?", "a": "França", "opts": ["França", "Rússia", "Estados Unidos", "China"], "exp": "Com os territórios ultramarinos, a França abrange 12 fusos horários." },
-  { "q": "Qual é o ponto mais baixo de terra firme exposta no planeta?", "a": "Margem do Mar Morto", "opts": ["Margem do Mar Morto", "Vale da Morte", "Depressão de Qattara", "Lago Assal"], "exp": "A costa do Mar Morto está cerca de 430 m abaixo do nível do mar." },
-  { "q": "Que corrente oceânica quente suaviza o clima da Europa Ocidental?", "a": "Corrente do Golfo", "opts": ["Corrente do Golfo", "Corrente de Humboldt", "Corrente do Labrador", "Corrente de Benguela"], "exp": "A Corrente do Golfo transporta águas quentes do Golfo do México para o Atlântico Norte." },
-  { "q": "Qual é a capital da Nova Zelândia?", "a": "Wellington", "opts": ["Wellington", "Auckland", "Christchurch", "Hamilton"], "exp": "Wellington é a capital; Auckland é a maior cidade." },
-  { "q": "Que país africano nunca foi colonizado por uma potência europeia (com exceção de uma breve ocupação italiana)?", "a": "Etiópia", "opts": ["Etiópia", "Quénia", "Gana", "Senegal"], "exp": "A Etiópia manteve a independência, salvo a ocupação italiana de 1936-1941." },
-  { "q": "Qual é o maior país sem litoral (interior) do mundo?", "a": "Cazaquistão", "opts": ["Cazaquistão", "Mongólia", "Chade", "Bolívia"], "exp": "O Cazaquistão é o maior país totalmente sem acesso ao mar aberto." }
+  {
+    "q": "Em que continente se localiza Vanuatu?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Sul",
+      "Oceânia",
+      "América do Norte",
+      "África"
+    ],
+    "exp": "Vanuatu fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Nova Caledónia?",
+    "a": "Oceânia",
+    "opts": [
+      "África",
+      "Oceânia",
+      "Ásia",
+      "Europa"
+    ],
+    "exp": "Nova Caledónia fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Polinésia Francesa?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Sul",
+      "Oceânia",
+      "África",
+      "América do Norte"
+    ],
+    "exp": "Polinésia Francesa fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza São Tomé e Príncipe?",
+    "a": "África",
+    "opts": [
+      "Europa",
+      "Ásia",
+      "América do Sul",
+      "África"
+    ],
+    "exp": "São Tomé e Príncipe fica em África."
+  },
+  {
+    "q": "Em que continente se localiza Samoa?",
+    "a": "Oceânia",
+    "opts": [
+      "Ásia",
+      "América do Sul",
+      "Oceânia",
+      "África"
+    ],
+    "exp": "Samoa fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Guam?",
+    "a": "Oceânia",
+    "opts": [
+      "Oceânia",
+      "América do Sul",
+      "Ásia",
+      "América do Norte"
+    ],
+    "exp": "Guam fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Kiribati?",
+    "a": "Oceânia",
+    "opts": [
+      "Oceânia",
+      "Europa",
+      "África",
+      "Ásia"
+    ],
+    "exp": "Kiribati fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Seicheles?",
+    "a": "África",
+    "opts": [
+      "Oceânia",
+      "América do Sul",
+      "África",
+      "América do Norte"
+    ],
+    "exp": "Seicheles fica em África."
+  },
+  {
+    "q": "Em que continente se localiza Micronésia?",
+    "a": "Oceânia",
+    "opts": [
+      "Oceânia",
+      "África",
+      "América do Sul",
+      "Europa"
+    ],
+    "exp": "Micronésia fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Tonga?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Sul",
+      "África",
+      "Ásia",
+      "Oceânia"
+    ],
+    "exp": "Tonga fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Ilha de Man?",
+    "a": "Europa",
+    "opts": [
+      "América do Norte",
+      "América do Sul",
+      "Europa",
+      "Ásia"
+    ],
+    "exp": "Ilha de Man fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Andorra?",
+    "a": "Europa",
+    "opts": [
+      "Europa",
+      "África",
+      "Ásia",
+      "América do Norte"
+    ],
+    "exp": "Andorra fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Faroé?",
+    "a": "Europa",
+    "opts": [
+      "Europa",
+      "África",
+      "América do Sul",
+      "América do Norte"
+    ],
+    "exp": "Ilhas Faroé fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Samoa Americana?",
+    "a": "Oceânia",
+    "opts": [
+      "Oceânia",
+      "América do Sul",
+      "Europa",
+      "África"
+    ],
+    "exp": "Samoa Americana fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Marianas Setentrionais?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Norte",
+      "Oceânia",
+      "América do Sul",
+      "Europa"
+    ],
+    "exp": "Marianas Setentrionais fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Liechtenstein?",
+    "a": "Europa",
+    "opts": [
+      "África",
+      "Ásia",
+      "América do Norte",
+      "Europa"
+    ],
+    "exp": "Liechtenstein fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Gibraltar?",
+    "a": "Europa",
+    "opts": [
+      "África",
+      "Europa",
+      "América do Norte",
+      "Ásia"
+    ],
+    "exp": "Gibraltar fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Mónaco?",
+    "a": "Europa",
+    "opts": [
+      "Oceânia",
+      "América do Norte",
+      "Europa",
+      "América do Sul"
+    ],
+    "exp": "Mónaco fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Marshall?",
+    "a": "Oceânia",
+    "opts": [
+      "Europa",
+      "América do Sul",
+      "América do Norte",
+      "Oceânia"
+    ],
+    "exp": "Ilhas Marshall fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza San Marino?",
+    "a": "Europa",
+    "opts": [
+      "Europa",
+      "África",
+      "América do Norte",
+      "América do Sul"
+    ],
+    "exp": "San Marino fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Palau?",
+    "a": "Oceânia",
+    "opts": [
+      "Ásia",
+      "Oceânia",
+      "América do Sul",
+      "América do Norte"
+    ],
+    "exp": "Palau fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Nauru?",
+    "a": "Oceânia",
+    "opts": [
+      "África",
+      "América do Sul",
+      "Oceânia",
+      "Ásia"
+    ],
+    "exp": "Nauru fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Tuvalu?",
+    "a": "Oceânia",
+    "opts": [
+      "África",
+      "Oceânia",
+      "Europa",
+      "Ásia"
+    ],
+    "exp": "Tuvalu fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Alândia?",
+    "a": "Europa",
+    "opts": [
+      "América do Sul",
+      "Europa",
+      "Oceânia",
+      "América do Norte"
+    ],
+    "exp": "Alândia fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Antártida?",
+    "a": "Antárctida",
+    "opts": [
+      "Oceânia",
+      "Antárctida",
+      "América do Norte",
+      "Europa"
+    ],
+    "exp": "Antártida fica em Antárctida."
+  },
+  {
+    "q": "Em que continente se localiza Ilha Bouvet?",
+    "a": "Antárctida",
+    "opts": [
+      "Ásia",
+      "Oceânia",
+      "Antárctida",
+      "América do Sul"
+    ],
+    "exp": "Ilha Bouvet fica em Antárctida."
+  },
+  {
+    "q": "Em que continente se localiza Território Britânico do Oceano Índico?",
+    "a": "África",
+    "opts": [
+      "América do Sul",
+      "Europa",
+      "América do Norte",
+      "África"
+    ],
+    "exp": "Território Britânico do Oceano Índico fica em África."
+  },
+  {
+    "q": "Em que continente se localiza Ilha do Natal?",
+    "a": "Oceânia",
+    "opts": [
+      "Oceânia",
+      "Europa",
+      "África",
+      "América do Sul"
+    ],
+    "exp": "Ilha do Natal fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Cocos (Keeling)?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Norte",
+      "Ásia",
+      "Oceânia",
+      "África"
+    ],
+    "exp": "Ilhas Cocos (Keeling) fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Cook?",
+    "a": "Oceânia",
+    "opts": [
+      "Europa",
+      "Ásia",
+      "Oceânia",
+      "África"
+    ],
+    "exp": "Ilhas Cook fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Terras Austrais e Antárticas Francesas?",
+    "a": "Antárctida",
+    "opts": [
+      "África",
+      "América do Sul",
+      "Antárctida",
+      "Europa"
+    ],
+    "exp": "Terras Austrais e Antárticas Francesas fica em Antárctida."
+  },
+  {
+    "q": "Em que continente se localiza Guernsey?",
+    "a": "Europa",
+    "opts": [
+      "Europa",
+      "África",
+      "Ásia",
+      "América do Norte"
+    ],
+    "exp": "Guernsey fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Ilha Heard e Ilhas McDonald?",
+    "a": "Antárctida",
+    "opts": [
+      "Ásia",
+      "América do Norte",
+      "Antárctida",
+      "Europa"
+    ],
+    "exp": "Ilha Heard e Ilhas McDonald fica em Antárctida."
+  },
+  {
+    "q": "Em que continente se localiza Jersey?",
+    "a": "Europa",
+    "opts": [
+      "Europa",
+      "África",
+      "Ásia",
+      "Oceânia"
+    ],
+    "exp": "Jersey fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Kosovo?",
+    "a": "Europa",
+    "opts": [
+      "Europa",
+      "Ásia",
+      "América do Norte",
+      "América do Sul"
+    ],
+    "exp": "Kosovo fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Mayotte?",
+    "a": "África",
+    "opts": [
+      "Europa",
+      "América do Norte",
+      "Ásia",
+      "África"
+    ],
+    "exp": "Mayotte fica em África."
+  },
+  {
+    "q": "Em que continente se localiza Niue?",
+    "a": "Oceânia",
+    "opts": [
+      "África",
+      "América do Norte",
+      "Europa",
+      "Oceânia"
+    ],
+    "exp": "Niue fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Ilha Norfolk?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Norte",
+      "Europa",
+      "Ásia",
+      "Oceânia"
+    ],
+    "exp": "Ilha Norfolk fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Pitcairn?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Sul",
+      "Oceânia",
+      "Ásia",
+      "América do Norte"
+    ],
+    "exp": "Ilhas Pitcairn fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Reunião?",
+    "a": "África",
+    "opts": [
+      "América do Norte",
+      "Oceânia",
+      "África",
+      "Europa"
+    ],
+    "exp": "Reunião fica em África."
+  },
+  {
+    "q": "Em que continente se localiza Santa Helena, Ascensão e Tristão da Cunha?",
+    "a": "África",
+    "opts": [
+      "África",
+      "Europa",
+      "América do Sul",
+      "Oceânia"
+    ],
+    "exp": "Santa Helena, Ascensão e Tristão da Cunha fica em África."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Geórgia do Sul e Sandwich do Sul?",
+    "a": "Antárctida",
+    "opts": [
+      "África",
+      "Antárctida",
+      "América do Norte",
+      "Europa"
+    ],
+    "exp": "Ilhas Geórgia do Sul e Sandwich do Sul fica em Antárctida."
+  },
+  {
+    "q": "Em que continente se localiza Ilhas Svalbard e Jan Mayen?",
+    "a": "Europa",
+    "opts": [
+      "América do Norte",
+      "Oceânia",
+      "América do Sul",
+      "Europa"
+    ],
+    "exp": "Ilhas Svalbard e Jan Mayen fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Ilha Formosa?",
+    "a": "Ásia",
+    "opts": [
+      "América do Sul",
+      "África",
+      "Ásia",
+      "Europa"
+    ],
+    "exp": "Ilha Formosa fica em Ásia."
+  },
+  {
+    "q": "Em que continente se localiza Tokelau?",
+    "a": "Oceânia",
+    "opts": [
+      "Oceânia",
+      "América do Norte",
+      "América do Sul",
+      "África"
+    ],
+    "exp": "Tokelau fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Cidade do Vaticano?",
+    "a": "Europa",
+    "opts": [
+      "Oceânia",
+      "África",
+      "Europa",
+      "América do Sul"
+    ],
+    "exp": "Cidade do Vaticano fica em Europa."
+  },
+  {
+    "q": "Em que continente se localiza Wallis e Futuna?",
+    "a": "Oceânia",
+    "opts": [
+      "América do Norte",
+      "Oceânia",
+      "Ásia",
+      "África"
+    ],
+    "exp": "Wallis e Futuna fica em Oceânia."
+  },
+  {
+    "q": "Em que continente se localiza Saara Ocidental?",
+    "a": "África",
+    "opts": [
+      "Ásia",
+      "Europa",
+      "América do Norte",
+      "África"
+    ],
+    "exp": "Saara Ocidental fica em África."
+  },
+  {
+    "q": "De que país é capital a cidade de Moscovo?",
+    "a": "Rússia",
+    "opts": [
+      "Coreia do Sul",
+      "Estados Unidos",
+      "Indonésia",
+      "Rússia"
+    ],
+    "exp": "Moscovo é a capital de Rússia."
+  },
+  {
+    "q": "De que país é capital a cidade de Kiev?",
+    "a": "Ucrânia",
+    "opts": [
+      "Ucrânia",
+      "Paquistão",
+      "Grécia",
+      "Hungria"
+    ],
+    "exp": "Kiev é a capital de Ucrânia."
+  },
+  {
+    "q": "De que país é capital a cidade de Ancara?",
+    "a": "Turquia",
+    "opts": [
+      "Turquia",
+      "Estados Unidos",
+      "Roménia",
+      "Luxemburgo"
+    ],
+    "exp": "Ancara é a capital de Turquia."
+  },
+  {
+    "q": "De que país é capital a cidade de Zagrebe?",
+    "a": "Croácia",
+    "opts": [
+      "Índia",
+      "Vietname",
+      "Brasil",
+      "Croácia"
+    ],
+    "exp": "Zagrebe é a capital de Croácia."
+  },
+  {
+    "q": "De que país é capital a cidade de Washington, D.C.?",
+    "a": "Estados Unidos",
+    "opts": [
+      "Estados Unidos",
+      "Moçambique",
+      "Austrália",
+      "Malásia"
+    ],
+    "exp": "Washington, D.C. é a capital de Estados Unidos."
+  },
+  {
+    "q": "De que país é capital a cidade de Otava?",
+    "a": "Canadá",
+    "opts": [
+      "África do Sul",
+      "Paquistão",
+      "Canadá",
+      "França"
+    ],
+    "exp": "Otava é a capital de Canadá."
+  },
+  {
+    "q": "De que país é capital a cidade de Cidade do México?",
+    "a": "México",
+    "opts": [
+      "Israel",
+      "México",
+      "Croácia",
+      "Indonésia"
+    ],
+    "exp": "Cidade do México é a capital de México."
+  },
+  {
+    "q": "De que país é capital a cidade de Brasília?",
+    "a": "Brasil",
+    "opts": [
+      "Indonésia",
+      "Egito",
+      "Brasil",
+      "Reino Unido"
+    ],
+    "exp": "Brasília é a capital de Brasil."
+  },
+  {
+    "q": "De que país é capital a cidade de Buenos Aires?",
+    "a": "Argentina",
+    "opts": [
+      "Angola",
+      "México",
+      "Malásia",
+      "Argentina"
+    ],
+    "exp": "Buenos Aires é a capital de Argentina."
+  },
+  {
+    "q": "De que país é capital a cidade de Santiago?",
+    "a": "Chile",
+    "opts": [
+      "Irão",
+      "Chile",
+      "Israel",
+      "Espanha"
+    ],
+    "exp": "Santiago é a capital de Chile."
+  },
+  {
+    "q": "De que país é capital a cidade de Bogotá?",
+    "a": "Colômbia",
+    "opts": [
+      "Colômbia",
+      "Indonésia",
+      "Ucrânia",
+      "Luxemburgo"
+    ],
+    "exp": "Bogotá é a capital de Colômbia."
+  },
+  {
+    "q": "De que país é capital a cidade de Lima?",
+    "a": "Perú",
+    "opts": [
+      "Alemanha",
+      "Nova Zelândia",
+      "África do Sul",
+      "Perú"
+    ],
+    "exp": "Lima é a capital de Perú."
+  },
+  {
+    "q": "De que país é capital a cidade de Caracas?",
+    "a": "Venezuela",
+    "opts": [
+      "Paquistão",
+      "Argentina",
+      "Venezuela",
+      "China"
+    ],
+    "exp": "Caracas é a capital de Venezuela."
+  },
+  {
+    "q": "De que país é capital a cidade de Havana?",
+    "a": "Cuba",
+    "opts": [
+      "Cuba",
+      "Noruega",
+      "Rússia",
+      "Espanha"
+    ],
+    "exp": "Havana é a capital de Cuba."
+  },
+  {
+    "q": "De que país é capital a cidade de Montevideu?",
+    "a": "Uruguai",
+    "opts": [
+      "Turquia",
+      "Singapura",
+      "Uruguai",
+      "China"
+    ],
+    "exp": "Montevideu é a capital de Uruguai."
+  },
+  {
+    "q": "De que país é capital a cidade de Pequim?",
+    "a": "China",
+    "opts": [
+      "China",
+      "Venezuela",
+      "Irlanda",
+      "Tailândia"
+    ],
+    "exp": "Pequim é a capital de China."
+  },
+  {
+    "q": "De que país é capital a cidade de Tóquio?",
+    "a": "Japão",
+    "opts": [
+      "Japão",
+      "Brasil",
+      "Arábia Saudita",
+      "Roménia"
+    ],
+    "exp": "Tóquio é a capital de Japão."
+  },
+  {
+    "q": "De que país é capital a cidade de Seul?",
+    "a": "Coreia do Sul",
+    "opts": [
+      "Japão",
+      "Suécia",
+      "Coreia do Sul",
+      "Cuba"
+    ],
+    "exp": "Seul é a capital de Coreia do Sul."
+  },
+  {
+    "q": "De que país é capital a cidade de Nova Deli?",
+    "a": "Índia",
+    "opts": [
+      "Brasil",
+      "França",
+      "Índia",
+      "Nova Zelândia"
+    ],
+    "exp": "Nova Deli é a capital de Índia."
+  },
+  {
+    "q": "De que país é capital a cidade de Jacarta?",
+    "a": "Indonésia",
+    "opts": [
+      "Etiópia",
+      "Indonésia",
+      "Angola",
+      "Alemanha"
+    ],
+    "exp": "Jacarta é a capital de Indonésia."
+  },
+  {
+    "q": "De que país é capital a cidade de Riade?",
+    "a": "Arábia Saudita",
+    "opts": [
+      "Finlândia",
+      "Arábia Saudita",
+      "Paquistão",
+      "Gana"
+    ],
+    "exp": "Riade é a capital de Arábia Saudita."
+  },
+  {
+    "q": "De que país é capital a cidade de Teerão?",
+    "a": "Irão",
+    "opts": [
+      "Dinamarca",
+      "Brasil",
+      "Canadá",
+      "Irão"
+    ],
+    "exp": "Teerão é a capital de Irão."
+  },
+  {
+    "q": "De que país é capital a cidade de Bagdade?",
+    "a": "Iraque",
+    "opts": [
+      "Japão",
+      "México",
+      "Iraque",
+      "Angola"
+    ],
+    "exp": "Bagdade é a capital de Iraque."
+  },
+  {
+    "q": "De que país é capital a cidade de Jerusalém?",
+    "a": "Israel",
+    "opts": [
+      "Suécia",
+      "Perú",
+      "Israel",
+      "Alemanha"
+    ],
+    "exp": "Jerusalém é a capital de Israel."
+  },
+  {
+    "q": "De que país é capital a cidade de Islamabade?",
+    "a": "Paquistão",
+    "opts": [
+      "Egito",
+      "Paquistão",
+      "Alemanha",
+      "Suécia"
+    ],
+    "exp": "Islamabade é a capital de Paquistão."
+  },
+  {
+    "q": "De que país é capital a cidade de Banguecoque?",
+    "a": "Tailândia",
+    "opts": [
+      "Uruguai",
+      "Vietname",
+      "Tailândia",
+      "Quénia"
+    ],
+    "exp": "Banguecoque é a capital de Tailândia."
+  },
+  {
+    "q": "De que país é capital a cidade de Hanói?",
+    "a": "Vietname",
+    "opts": [
+      "Nigéria",
+      "Coreia do Sul",
+      "Vietname",
+      "Suíça"
+    ],
+    "exp": "Hanói é a capital de Vietname."
+  },
+  {
+    "q": "De que país é capital a cidade de Manila?",
+    "a": "Filipinas",
+    "opts": [
+      "Nova Zelândia",
+      "Israel",
+      "Filipinas",
+      "Bélgica"
+    ],
+    "exp": "Manila é a capital de Filipinas."
+  },
+  {
+    "q": "De que país é capital a cidade de Kuala Lumpur?",
+    "a": "Malásia",
+    "opts": [
+      "Holanda",
+      "Iraque",
+      "Indonésia",
+      "Malásia"
+    ],
+    "exp": "Kuala Lumpur é a capital de Malásia."
+  },
+  {
+    "q": "De que país é capital a cidade de Singapura?",
+    "a": "Singapura",
+    "opts": [
+      "Marrocos",
+      "Gana",
+      "Angola",
+      "Singapura"
+    ],
+    "exp": "Singapura é a capital de Singapura."
+  },
+  {
+    "q": "De que país é capital a cidade de Cairo?",
+    "a": "Egito",
+    "opts": [
+      "Turquia",
+      "Egito",
+      "Chéquia",
+      "Irão"
+    ],
+    "exp": "Cairo é a capital de Egito."
+  },
+  {
+    "q": "De que país é capital a cidade de Abuja?",
+    "a": "Nigéria",
+    "opts": [
+      "Nigéria",
+      "Vietname",
+      "Estados Unidos",
+      "Reino Unido"
+    ],
+    "exp": "Abuja é a capital de Nigéria."
+  },
+  {
+    "q": "De que país é capital a cidade de Pretória?",
+    "a": "África do Sul",
+    "opts": [
+      "África do Sul",
+      "Egito",
+      "Paquistão",
+      "Marrocos"
+    ],
+    "exp": "Pretória é a capital de África do Sul."
+  },
+  {
+    "q": "De que país é capital a cidade de Nairóbi?",
+    "a": "Quénia",
+    "opts": [
+      "Quénia",
+      "Canadá",
+      "Coreia do Sul",
+      "China"
+    ],
+    "exp": "Nairóbi é a capital de Quénia."
+  },
+  {
+    "q": "De que país é capital a cidade de Adis Abeba?",
+    "a": "Etiópia",
+    "opts": [
+      "Nigéria",
+      "Ucrânia",
+      "Portugal",
+      "Etiópia"
+    ],
+    "exp": "Adis Abeba é a capital de Etiópia."
+  },
+  {
+    "q": "De que país é capital a cidade de Acra?",
+    "a": "Gana",
+    "opts": [
+      "Gana",
+      "Indonésia",
+      "Paquistão",
+      "Uruguai"
+    ],
+    "exp": "Acra é a capital de Gana."
+  },
+  {
+    "q": "De que país é capital a cidade de Rabat?",
+    "a": "Marrocos",
+    "opts": [
+      "Singapura",
+      "Marrocos",
+      "Japão",
+      "Alemanha"
+    ],
+    "exp": "Rabat é a capital de Marrocos."
+  },
+  {
+    "q": "De que país é capital a cidade de Luanda?",
+    "a": "Angola",
+    "opts": [
+      "Angola",
+      "Bélgica",
+      "Irão",
+      "Moçambique"
+    ],
+    "exp": "Luanda é a capital de Angola."
+  },
+  {
+    "q": "De que país é capital a cidade de Maputo?",
+    "a": "Moçambique",
+    "opts": [
+      "Moçambique",
+      "Malásia",
+      "Luxemburgo",
+      "Bélgica"
+    ],
+    "exp": "Maputo é a capital de Moçambique."
+  },
+  {
+    "q": "De que país é capital a cidade de Dacar?",
+    "a": "Senegal",
+    "opts": [
+      "Finlândia",
+      "Nigéria",
+      "Paquistão",
+      "Senegal"
+    ],
+    "exp": "Dacar é a capital de Senegal."
+  },
+  {
+    "q": "De que país é capital a cidade de Camberra?",
+    "a": "Austrália",
+    "opts": [
+      "Austrália",
+      "Luxemburgo",
+      "Polónia",
+      "Suécia"
+    ],
+    "exp": "Camberra é a capital de Austrália."
+  },
+  {
+    "q": "De que país é capital a cidade de Wellington?",
+    "a": "Nova Zelândia",
+    "opts": [
+      "Malásia",
+      "Suíça",
+      "Nova Zelândia",
+      "Vietname"
+    ],
+    "exp": "Wellington é a capital de Nova Zelândia."
+  },
+  {
+    "q": "De que país é capital a cidade de Reiquiavique?",
+    "a": "Islândia",
+    "opts": [
+      "Islândia",
+      "Chéquia",
+      "Austrália",
+      "Hungria"
+    ],
+    "exp": "Reiquiavique é a capital de Islândia."
+  },
+  {
+    "q": "De que país é capital a cidade de Luxemburgo?",
+    "a": "Luxemburgo",
+    "opts": [
+      "Luxemburgo",
+      "Coreia do Sul",
+      "Canadá",
+      "Irlanda"
+    ],
+    "exp": "Luxemburgo é a capital de Luxemburgo."
+  }
 ]

@@ -1,12 +1,1237 @@
 [
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Docker", "opts": ["Docker", "Kubernetes", "Podman", "Vagrant"], "exp": "O Docker popularizou os contentores de software (a baleia é a sua mascote).", "imgType": "logo", "img": "quizzes/assets/icons/docker.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Kubernetes", "opts": ["Kubernetes", "Docker", "OpenShift", "Terraform"], "exp": "O Kubernetes (o 'leme') orquestra contentores em escala; nasceu na Google.", "imgType": "logo", "img": "quizzes/assets/icons/kubernetes.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "React", "opts": ["React", "Vue", "Angular", "Svelte"], "exp": "O React é uma biblioteca de interfaces criada pela Meta (Facebook).", "imgType": "logo", "img": "quizzes/assets/icons/react.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Node.js", "opts": ["Node.js", "Deno", "Python", "PHP"], "exp": "O Node.js executa JavaScript fora do navegador, sobre o motor V8.", "imgType": "logo", "img": "quizzes/assets/icons/nodedotjs.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "PostgreSQL", "opts": ["PostgreSQL", "MySQL", "MongoDB", "SQLite"], "exp": "O PostgreSQL é uma base de dados relacional de código aberto (o elefante 'Slonik').", "imgType": "logo", "img": "quizzes/assets/icons/postgresql.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "MongoDB", "opts": ["MongoDB", "PostgreSQL", "Redis", "Cassandra"], "exp": "O MongoDB é uma base de dados de documentos (NoSQL).", "imgType": "logo", "img": "quizzes/assets/icons/mongodb.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Rust", "opts": ["Rust", "Go", "C++", "Zig"], "exp": "Rust é uma linguagem focada em segurança de memória e desempenho.", "imgType": "logo", "img": "quizzes/assets/icons/rust.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Go", "opts": ["Go", "Rust", "Python", "Kotlin"], "exp": "Go (Golang) foi criada na Google; a mascote é o 'Gopher'.", "imgType": "logo", "img": "quizzes/assets/icons/go.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Vue.js", "opts": ["Vue.js", "React", "Angular", "Ember"], "exp": "O Vue.js é uma framework progressiva de interfaces criada por Evan You.", "imgType": "logo", "img": "quizzes/assets/icons/vuedotjs.svg" },
-  { "q": "Que tecnologia ou marca é este logótipo?", "a": "Ubuntu", "opts": ["Ubuntu", "Debian", "Fedora", "Arch Linux"], "exp": "O Ubuntu é uma distribuição Linux popular baseada em Debian, da Canonical.", "imgType": "logo", "img": "quizzes/assets/icons/ubuntu.svg" }
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Anaconda",
+    "opts": [
+      "OBS Studio",
+      "Anaconda",
+      "Scala",
+      "Erlang"
+    ],
+    "exp": "Este é o logótipo de Anaconda.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/anaconda.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Angular",
+    "opts": [
+      "R",
+      "Angular",
+      "scikit-learn",
+      "Clojure"
+    ],
+    "exp": "Este é o logótipo de Angular.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/angular.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Apache",
+    "opts": [
+      ".NET",
+      "Apache",
+      "SolidJS",
+      "Ghost"
+    ],
+    "exp": "Este é o logótipo de Apache.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/apache.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Arch Linux",
+    "opts": [
+      "Vite",
+      "Unity",
+      "Arch Linux",
+      "Lua"
+    ],
+    "exp": "Este é o logótipo de Arch Linux.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/archlinux.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Audacity",
+    "opts": [
+      "Opera",
+      "Bitbucket",
+      "WebAssembly",
+      "Audacity"
+    ],
+    "exp": "Este é o logótipo de Audacity.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/audacity.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Babel",
+    "opts": [
+      "PyTorch",
+      "Podman",
+      "Babel",
+      "Redux"
+    ],
+    "exp": "Este é o logótipo de Babel.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/babel.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Bitbucket",
+    "opts": [
+      "Bitbucket",
+      "openSUSE",
+      "Jupyter",
+      "Matrix"
+    ],
+    "exp": "Este é o logótipo de Bitbucket.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/bitbucket.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Blender",
+    "opts": [
+      "Yarn",
+      "Blender",
+      "Jenkins",
+      "scikit-learn"
+    ],
+    "exp": "Este é o logótipo de Blender.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/blender.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Bootstrap",
+    "opts": [
+      "Ionic",
+      "pnpm",
+      "Bootstrap",
+      "C"
+    ],
+    "exp": "Este é o logótipo de Bootstrap.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/bootstrap.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "C",
+    "opts": [
+      "Go",
+      "Trello",
+      "C",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de C.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/c.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Cloudflare",
+    "opts": [
+      "Raspberry Pi",
+      "Deno",
+      "Cloudflare",
+      "Brave"
+    ],
+    "exp": "Este é o logótipo de Cloudflare.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/cloudflare.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "C++",
+    "opts": [
+      "Netlify",
+      "MariaDB",
+      "Stack Overflow",
+      "C++"
+    ],
+    "exp": "Este é o logótipo de C++.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/cplusplus.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "C#",
+    "opts": [
+      "C#",
+      "Webpack",
+      "Qt",
+      "Arduino"
+    ],
+    "exp": "Este é o logótipo de C#.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/csharp.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Dart",
+    "opts": [
+      "PowerShell",
+      "Bun",
+      "Keras",
+      "Dart"
+    ],
+    "exp": "Este é o logótipo de Dart.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/dart.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Debian",
+    "opts": [
+      "Debian",
+      "Vercel",
+      "WordPress",
+      "Manjaro"
+    ],
+    "exp": "Este é o logótipo de Debian.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/debian.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "DigitalOcean",
+    "opts": [
+      "Unreal Engine",
+      "Inkscape",
+      "DigitalOcean",
+      "Vim"
+    ],
+    "exp": "Este é o logótipo de DigitalOcean.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/digitalocean.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Django",
+    "opts": [
+      "Raspberry Pi",
+      "Audacity",
+      "Django",
+      "Keras"
+    ],
+    "exp": "Este é o logótipo de Django.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/django.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Docker",
+    "opts": [
+      "Terraform",
+      "GitHub",
+      "Docker",
+      "Wasmer"
+    ],
+    "exp": "Este é o logótipo de Docker.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/docker.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": ".NET",
+    "opts": [
+      "Drupal",
+      "FastAPI",
+      ".NET",
+      "Elixir"
+    ],
+    "exp": "Este é o logótipo de .NET.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/dotnet.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Elasticsearch",
+    "opts": [
+      "Cloudflare",
+      "Nginx",
+      "Kali Linux",
+      "Elasticsearch"
+    ],
+    "exp": "Este é o logótipo de Elasticsearch.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/elasticsearch.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Elixir",
+    "opts": [
+      "Bitbucket",
+      "Webpack",
+      "Linux",
+      "Elixir"
+    ],
+    "exp": "Este é o logótipo de Elixir.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/elixir.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Express",
+    "opts": [
+      "Redis",
+      "Express",
+      "RabbitMQ",
+      "Telegram"
+    ],
+    "exp": "Este é o logótipo de Express.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/express.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Fedora",
+    "opts": [
+      "Arduino",
+      "Google Chrome",
+      "WebAssembly",
+      "Fedora"
+    ],
+    "exp": "Este é o logótipo de Fedora.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/fedora.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Figma",
+    "opts": [
+      "React",
+      "Perl",
+      "Supabase",
+      "Figma"
+    ],
+    "exp": "Este é o logótipo de Figma.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/figma.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Firebase",
+    "opts": [
+      "FastAPI",
+      "Firebase",
+      "JavaScript",
+      "Firefox"
+    ],
+    "exp": "Este é o logótipo de Firebase.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/firebase.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Flask",
+    "opts": [
+      "MySQL",
+      "Flask",
+      "Redux",
+      "R"
+    ],
+    "exp": "Este é o logótipo de Flask.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/flask.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Flutter",
+    "opts": [
+      "Vagrant",
+      "Trello",
+      "Flutter",
+      "Jupyter"
+    ],
+    "exp": "Este é o logótipo de Flutter.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/flutter.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "GIMP",
+    "opts": [
+      "Ansible",
+      "jQuery",
+      "OCaml",
+      "GIMP"
+    ],
+    "exp": "Este é o logótipo de GIMP.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/gimp.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "GitLab",
+    "opts": [
+      "Slack",
+      "Python",
+      "OCaml",
+      "GitLab"
+    ],
+    "exp": "Este é o logótipo de GitLab.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/gitlab.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Bash",
+    "opts": [
+      "Bash",
+      "Anaconda",
+      "Tauri",
+      "Erlang"
+    ],
+    "exp": "Este é o logótipo de Bash.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/gnubash.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Go",
+    "opts": [
+      "esbuild",
+      "Haskell",
+      "Go",
+      "Wireshark"
+    ],
+    "exp": "Este é o logótipo de Go.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/go.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "GraphQL",
+    "opts": [
+      "Bun",
+      "Linux",
+      "Gitea",
+      "GraphQL"
+    ],
+    "exp": "Este é o logótipo de GraphQL.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/graphql.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Hugging Face",
+    "opts": [
+      "Neo4j",
+      "Clojure",
+      "Hugging Face",
+      "Bitbucket"
+    ],
+    "exp": "Este é o logótipo de Hugging Face.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/huggingface.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Inkscape",
+    "opts": [
+      "Inkscape",
+      "Docker",
+      "Arduino",
+      "Elasticsearch"
+    ],
+    "exp": "Este é o logótipo de Inkscape.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/inkscape.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Insomnia",
+    "opts": [
+      "Qt",
+      "Joomla",
+      "Insomnia",
+      "Flutter"
+    ],
+    "exp": "Este é o logótipo de Insomnia.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/insomnia.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Jenkins",
+    "opts": [
+      "Steam",
+      "Jenkins",
+      "Keras",
+      "Audacity"
+    ],
+    "exp": "Este é o logótipo de Jenkins.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/jenkins.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Jira",
+    "opts": [
+      "Jira",
+      "Caddy",
+      "Ruby on Rails",
+      "Git"
+    ],
+    "exp": "Este é o logótipo de Jira.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/jira.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "jQuery",
+    "opts": [
+      "jQuery",
+      "DigitalOcean",
+      "Crystal",
+      "Vue.js"
+    ],
+    "exp": "Este é o logótipo de jQuery.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/jquery.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "JSON",
+    "opts": [
+      "JSON",
+      "Gitea",
+      "Nuxt.js",
+      "Bun"
+    ],
+    "exp": "Este é o logótipo de JSON.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/json.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Jupyter",
+    "opts": [
+      "Laravel",
+      "Express",
+      "Jupyter",
+      "Android"
+    ],
+    "exp": "Este é o logótipo de Jupyter.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/jupyter.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Kotlin",
+    "opts": [
+      "Ubuntu",
+      "Kotlin",
+      "Steam",
+      "Proxmox"
+    ],
+    "exp": "Este é o logótipo de Kotlin.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/kotlin.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Kubernetes",
+    "opts": [
+      "Nim",
+      "Kubernetes",
+      "Insomnia",
+      "Vim"
+    ],
+    "exp": "Este é o logótipo de Kubernetes.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/kubernetes.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Laravel",
+    "opts": [
+      "Wireshark",
+      "Linux",
+      "Python",
+      "Laravel"
+    ],
+    "exp": "Este é o logótipo de Laravel.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/laravel.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Less",
+    "opts": [
+      "Electron",
+      "Next.js",
+      "Ghost",
+      "Less"
+    ],
+    "exp": "Este é o logótipo de Less.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/less.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Linux Mint",
+    "opts": [
+      "SQLite",
+      "Linux Mint",
+      "Flask",
+      "Elixir"
+    ],
+    "exp": "Este é o logótipo de Linux Mint.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/linuxmint.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Lua",
+    "opts": [
+      "Netlify",
+      "Svelte",
+      "Linux Mint",
+      "Lua"
+    ],
+    "exp": "Este é o logótipo de Lua.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/lua.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "MariaDB",
+    "opts": [
+      "MariaDB",
+      "Electron",
+      "Crystal",
+      "Steam"
+    ],
+    "exp": "Este é o logótipo de MariaDB.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mariadb.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Markdown",
+    "opts": [
+      "Tauri",
+      "Elixir",
+      "Markdown",
+      "WordPress"
+    ],
+    "exp": "Este é o logótipo de Markdown.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/markdown.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "MongoDB",
+    "opts": [
+      "GitLab",
+      "MongoDB",
+      "Vim",
+      "JSON"
+    ],
+    "exp": "Este é o logótipo de MongoDB.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mongodb.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Neovim",
+    "opts": [
+      "openSUSE",
+      "Neovim",
+      "Keras",
+      "Audacity"
+    ],
+    "exp": "Este é o logótipo de Neovim.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/neovim.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Next.js",
+    "opts": [
+      "Tailwind CSS",
+      "Next.js",
+      "Vagrant",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de Next.js.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/nextdotjs.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Node.js",
+    "opts": [
+      "Crystal",
+      "Redis",
+      "Node.js",
+      "Google Chrome"
+    ],
+    "exp": "Este é o logótipo de Node.js.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/nodedotjs.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "npm",
+    "opts": [
+      "Bash",
+      "Red Hat",
+      "npm",
+      "Gitea"
+    ],
+    "exp": "Este é o logótipo de npm.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/npm.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "NumPy",
+    "opts": [
+      "NumPy",
+      "Terraform",
+      "RabbitMQ",
+      "Krita"
+    ],
+    "exp": "Este é o logótipo de NumPy.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/numpy.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "OBS Studio",
+    "opts": [
+      "Trello",
+      "Java",
+      "GNU",
+      "OBS Studio"
+    ],
+    "exp": "Este é o logótipo de OBS Studio.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/obsstudio.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "pandas",
+    "opts": [
+      "Wasmer",
+      "Proxmox",
+      "FreeBSD",
+      "pandas"
+    ],
+    "exp": "Este é o logótipo de pandas.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/pandas.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Perl",
+    "opts": [
+      "C#",
+      "jQuery",
+      "Perl",
+      "FastAPI"
+    ],
+    "exp": "Este é o logótipo de Perl.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/perl.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Podman",
+    "opts": [
+      "Java",
+      "Podman",
+      "Raspberry Pi",
+      "Git"
+    ],
+    "exp": "Este é o logótipo de Podman.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/podman.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "PostgreSQL",
+    "opts": [
+      "Svelte",
+      "Vagrant",
+      "VirtualBox",
+      "PostgreSQL"
+    ],
+    "exp": "Este é o logótipo de PostgreSQL.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/postgresql.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Postman",
+    "opts": [
+      "LaTeX",
+      "Postman",
+      "Arduino",
+      "GIMP"
+    ],
+    "exp": "Este é o logótipo de Postman.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/postman.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "PowerShell",
+    "opts": [
+      "PowerShell",
+      "Arduino",
+      "Podman",
+      "Caddy"
+    ],
+    "exp": "Este é o logótipo de PowerShell.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/powershell.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "PyTorch",
+    "opts": [
+      "Vivaldi",
+      "Kubernetes",
+      "PyTorch",
+      "Nuxt.js"
+    ],
+    "exp": "Este é o logótipo de PyTorch.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/pytorch.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "R",
+    "opts": [
+      "QEMU",
+      "Python",
+      "R",
+      "Qt"
+    ],
+    "exp": "Este é o logótipo de R.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/r.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "React",
+    "opts": [
+      "Linux",
+      "Tailwind CSS",
+      "React",
+      "Perl"
+    ],
+    "exp": "Este é o logótipo de React.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/react.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Red Hat",
+    "opts": [
+      "Bash",
+      "Vercel",
+      "Julia",
+      "Red Hat"
+    ],
+    "exp": "Este é o logótipo de Red Hat.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/redhat.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Redis",
+    "opts": [
+      "Reddit",
+      "Redis",
+      "Nginx",
+      "GitHub"
+    ],
+    "exp": "Este é o logótipo de Redis.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/redis.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Redux",
+    "opts": [
+      "Redux",
+      "Markdown",
+      "VLC",
+      "Netlify"
+    ],
+    "exp": "Este é o logótipo de Redux.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/redux.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Ruby",
+    "opts": [
+      "Vue.js",
+      "Microsoft Edge",
+      "Ruby",
+      "Vivaldi"
+    ],
+    "exp": "Este é o logótipo de Ruby.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/ruby.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Ruby on Rails",
+    "opts": [
+      "Bootstrap",
+      "Jupyter",
+      "Figma",
+      "Ruby on Rails"
+    ],
+    "exp": "Este é o logótipo de Ruby on Rails.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/rubyonrails.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Rust",
+    "opts": [
+      "WebAssembly",
+      "Neo4j",
+      "Rust",
+      "Jupyter"
+    ],
+    "exp": "Este é o logótipo de Rust.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/rust.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Sass",
+    "opts": [
+      "CentOS",
+      "Sass",
+      "Jupyter",
+      "Reddit"
+    ],
+    "exp": "Este é o logótipo de Sass.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/sass.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Scala",
+    "opts": [
+      "FastAPI",
+      "Scala",
+      "Unreal Engine",
+      "OCaml"
+    ],
+    "exp": "Este é o logótipo de Scala.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/scala.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Signal",
+    "opts": [
+      "Jupyter",
+      "Signal",
+      "Git",
+      "GIMP"
+    ],
+    "exp": "Este é o logótipo de Signal.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/signal.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Spring",
+    "opts": [
+      "GraphQL",
+      "Vercel",
+      "QEMU",
+      "Spring"
+    ],
+    "exp": "Este é o logótipo de Spring.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/spring.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "SQLite",
+    "opts": [
+      "pnpm",
+      "Elasticsearch",
+      "Astro",
+      "SQLite"
+    ],
+    "exp": "Este é o logótipo de SQLite.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/sqlite.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Stack Overflow",
+    "opts": [
+      "Yarn",
+      "Stack Overflow",
+      "Ruby",
+      "Go"
+    ],
+    "exp": "Este é o logótipo de Stack Overflow.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/stackoverflow.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Svelte",
+    "opts": [
+      "Angular",
+      "Svelte",
+      "Go",
+      "Webpack"
+    ],
+    "exp": "Este é o logótipo de Svelte.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/svelte.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Swift",
+    "opts": [
+      "Kubernetes",
+      "Swift",
+      "Discord",
+      "Qt"
+    ],
+    "exp": "Este é o logótipo de Swift.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/swift.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Tailwind CSS",
+    "opts": [
+      "Tailwind CSS",
+      "Tauri",
+      "OCaml",
+      "GNU"
+    ],
+    "exp": "Este é o logótipo de Tailwind CSS.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/tailwindcss.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "TensorFlow",
+    "opts": [
+      "Python",
+      "Terraform",
+      "pnpm",
+      "TensorFlow"
+    ],
+    "exp": "Este é o logótipo de TensorFlow.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/tensorflow.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Tor Browser",
+    "opts": [
+      "Tor Browser",
+      "R",
+      "Brave",
+      "YAML"
+    ],
+    "exp": "Este é o logótipo de Tor Browser.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/torbrowser.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "TypeScript",
+    "opts": [
+      "TypeScript",
+      "Swift",
+      "Vite",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de TypeScript.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/typescript.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Unity",
+    "opts": [
+      "Stack Overflow",
+      "Unity",
+      "Neo4j",
+      "HTML5"
+    ],
+    "exp": "Este é o logótipo de Unity.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/unity.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Unreal Engine",
+    "opts": [
+      "Sass",
+      "Bitbucket",
+      "Unreal Engine",
+      "Tailwind CSS"
+    ],
+    "exp": "Este é o logótipo de Unreal Engine.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/unrealengine.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Vim",
+    "opts": [
+      "Raspberry Pi",
+      "Preact",
+      "Grafana",
+      "Vim"
+    ],
+    "exp": "Este é o logótipo de Vim.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/vim.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "VirtualBox",
+    "opts": [
+      "Unity",
+      "Vivaldi",
+      "Flask",
+      "VirtualBox"
+    ],
+    "exp": "Este é o logótipo de VirtualBox.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/virtualbox.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Vite",
+    "opts": [
+      "Joomla",
+      "Cloudflare",
+      "PyTorch",
+      "Vite"
+    ],
+    "exp": "Este é o logótipo de Vite.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/vite.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Vivaldi",
+    "opts": [
+      "pnpm",
+      "Kotlin",
+      "Vivaldi",
+      "Nuxt.js"
+    ],
+    "exp": "Este é o logótipo de Vivaldi.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/vivaldi.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "VLC",
+    "opts": [
+      "Ruby on Rails",
+      "Haskell",
+      "MariaDB",
+      "VLC"
+    ],
+    "exp": "Este é o logótipo de VLC.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/vlcmediaplayer.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "VMware",
+    "opts": [
+      "Electron",
+      "GIMP",
+      "VMware",
+      "GNU"
+    ],
+    "exp": "Este é o logótipo de VMware.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/vmware.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Vue.js",
+    "opts": [
+      "scikit-learn",
+      "Vue.js",
+      "Vim",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de Vue.js.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/vuedotjs.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Webpack",
+    "opts": [
+      "Preact",
+      "Cloudflare",
+      "Google Chrome",
+      "Webpack"
+    ],
+    "exp": "Este é o logótipo de Webpack.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/webpack.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Wireshark",
+    "opts": [
+      "Firebase",
+      "Wireshark",
+      "Reddit",
+      "Rust"
+    ],
+    "exp": "Este é o logótipo de Wireshark.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/wireshark.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "YAML",
+    "opts": [
+      "GraphQL",
+      "YAML",
+      "Brave",
+      "Astro"
+    ],
+    "exp": "Este é o logótipo de YAML.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/yaml.svg"
+  },
+  {
+    "q": "Que tecnologia ou marca é este logótipo?",
+    "a": "Yarn",
+    "opts": [
+      "Grafana",
+      "Yarn",
+      "Sass",
+      "C#"
+    ],
+    "exp": "Este é o logótipo de Yarn.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/yarn.svg"
+  }
 ]

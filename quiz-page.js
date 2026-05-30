@@ -12,6 +12,7 @@ const QuizPage = (function () {
     {
       id: 'geografia', icon: '🌍', labelKey: 'quiz.cat.geografia',
       quizzes: [
+        { id: 'geografia',  icon: '🌐', labelPt: 'Geografia Mundial',       labelEn: 'World Geography',          provider: 'geografia-pt', count: 10 },
         { id: 'flags',      icon: '🚩', labelPt: 'Bandeiras do Mundo',      labelEn: 'Flags of the World',       provider: 'flags',     count: 10 },
         { id: 'capitals',   icon: '🏛️', labelPt: 'Capitais do Mundo',        labelEn: 'World Capitals',           provider: 'capitals',  count: 10 },
         { id: 'continents', icon: '🗺️', labelPt: 'Continentes',              labelEn: 'Continents',               provider: 'continents',count: 10 },

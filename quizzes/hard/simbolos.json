@@ -1,11 +1,489 @@
 [
-  { "q": "Qual é o símbolo químico do chumbo?", "a": "Pb", "opts": ["Pb", "Ch", "Pl", "Cb"], "exp": "O chumbo tem o símbolo Pb, do latim plumbum." },
-  { "q": "Qual é o símbolo químico do estanho?", "a": "Sn", "opts": ["Sn", "Es", "St", "Sa"], "exp": "O estanho tem o símbolo Sn, do latim stannum." },
-  { "q": "Qual é o símbolo químico do tungsténio (volfrâmio)?", "a": "W", "opts": ["W", "Tu", "Tg", "Vo"], "exp": "O tungsténio tem o símbolo W, de wolfram." },
-  { "q": "Qual é o símbolo químico do mercúrio?", "a": "Hg", "opts": ["Hg", "Me", "Mr", "My"], "exp": "O mercúrio tem o símbolo Hg, do latim hydrargyrum." },
-  { "q": "O que representa o símbolo ∑ (sigma maiúsculo) em matemática?", "a": "Somatório", "opts": ["Somatório", "Produto", "Integral", "Limite"], "exp": "∑ indica a soma de uma sequência de termos.", "imgType": "svg", "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='88' font-family='Georgia' font-size='90' fill='currentColor' text-anchor='middle'>&#931;</text></svg>" },
-  { "q": "O que representa o símbolo ∫ em matemática?", "a": "Integral", "opts": ["Integral", "Somatório", "Derivada", "Raiz"], "exp": "∫ representa o integral, base do cálculo integral.", "imgType": "svg", "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='92' font-family='Georgia' font-size='96' fill='currentColor' text-anchor='middle'>&#8747;</text></svg>" },
-  { "q": "Qual é a unidade SI de pressão e o seu símbolo?", "a": "Pascal (Pa)", "opts": ["Pascal (Pa)", "Newton (N)", "Bar (bar)", "Joule (J)"], "exp": "A pressão mede-se em pascais (Pa) no Sistema Internacional; 1 Pa = 1 N/m²." },
-  { "q": "Em física, que grandeza é normalmente representada pela letra grega λ (lambda)?", "a": "Comprimento de onda", "opts": ["Comprimento de onda", "Frequência", "Densidade", "Aceleração"], "exp": "λ designa o comprimento de onda de uma onda." },
-  { "q": "O que representa a constante 'c' em física?", "a": "Velocidade da luz no vácuo", "opts": ["Velocidade da luz no vácuo", "Carga do electrão", "Constante de gravitação", "Calor específico"], "exp": "c ≈ 299 792 458 m/s é a velocidade da luz no vácuo." }
+  {
+    "q": "Qual é o símbolo químico do chumbo?",
+    "a": "Pb",
+    "opts": [
+      "Pb",
+      "Ch",
+      "Pl",
+      "Cb"
+    ],
+    "exp": "O chumbo tem o símbolo Pb, do latim plumbum."
+  },
+  {
+    "q": "Qual é o símbolo químico do estanho?",
+    "a": "Sn",
+    "opts": [
+      "Sn",
+      "Es",
+      "St",
+      "Sa"
+    ],
+    "exp": "O estanho tem o símbolo Sn, do latim stannum."
+  },
+  {
+    "q": "Qual é o símbolo químico do tungsténio (volfrâmio)?",
+    "a": "W",
+    "opts": [
+      "W",
+      "Tu",
+      "Tg",
+      "Vo"
+    ],
+    "exp": "O tungsténio tem o símbolo W, de wolfram."
+  },
+  {
+    "q": "Qual é o símbolo químico do mercúrio?",
+    "a": "Hg",
+    "opts": [
+      "Hg",
+      "Me",
+      "Mr",
+      "My"
+    ],
+    "exp": "O mercúrio tem o símbolo Hg, do latim hydrargyrum."
+  },
+  {
+    "q": "O que representa o símbolo ∑ (sigma maiúsculo) em matemática?",
+    "a": "Somatório",
+    "opts": [
+      "Somatório",
+      "Produto",
+      "Integral",
+      "Limite"
+    ],
+    "exp": "∑ indica a soma de uma sequência de termos.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='88' font-family='Georgia' font-size='90' fill='currentColor' text-anchor='middle'>&#931;</text></svg>"
+  },
+  {
+    "q": "O que representa o símbolo ∫ em matemática?",
+    "a": "Integral",
+    "opts": [
+      "Integral",
+      "Somatório",
+      "Derivada",
+      "Raiz"
+    ],
+    "exp": "∫ representa o integral, base do cálculo integral.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='92' font-family='Georgia' font-size='96' fill='currentColor' text-anchor='middle'>&#8747;</text></svg>"
+  },
+  {
+    "q": "Qual é a unidade SI de pressão e o seu símbolo?",
+    "a": "Pascal (Pa)",
+    "opts": [
+      "Pascal (Pa)",
+      "Newton (N)",
+      "Bar (bar)",
+      "Joule (J)"
+    ],
+    "exp": "A pressão mede-se em pascais (Pa) no Sistema Internacional; 1 Pa = 1 N/m²."
+  },
+  {
+    "q": "Em física, que grandeza é normalmente representada pela letra grega λ (lambda)?",
+    "a": "Comprimento de onda",
+    "opts": [
+      "Comprimento de onda",
+      "Frequência",
+      "Densidade",
+      "Aceleração"
+    ],
+    "exp": "λ designa o comprimento de onda de uma onda."
+  },
+  {
+    "q": "O que representa a constante 'c' em física?",
+    "a": "Velocidade da luz no vácuo",
+    "opts": [
+      "Velocidade da luz no vácuo",
+      "Carga do electrão",
+      "Constante de gravitação",
+      "Calor específico"
+    ],
+    "exp": "c ≈ 299 792 458 m/s é a velocidade da luz no vácuo."
+  },
+  {
+    "q": "Qual é o símbolo químico de Berílio?",
+    "a": "Be",
+    "opts": [
+      "Br",
+      "Be",
+      "S",
+      "Na"
+    ],
+    "exp": "O símbolo químico de Berílio é Be.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Be?",
+    "a": "Berílio",
+    "opts": [
+      "Árgon",
+      "Carbono",
+      "Hélio",
+      "Berílio"
+    ],
+    "exp": "O símbolo Be corresponde ao Berílio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Escândio?",
+    "a": "Sc",
+    "opts": [
+      "Ti",
+      "Cu",
+      "Ni",
+      "Sc"
+    ],
+    "exp": "O símbolo químico de Escândio é Sc.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Sc?",
+    "a": "Escândio",
+    "opts": [
+      "Cloro",
+      "Árgon",
+      "Alumínio",
+      "Escândio"
+    ],
+    "exp": "O símbolo Sc corresponde ao Escândio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Vanádio?",
+    "a": "V",
+    "opts": [
+      "Ge",
+      "V",
+      "Sc",
+      "Ti"
+    ],
+    "exp": "O símbolo químico de Vanádio é V.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo V?",
+    "a": "Vanádio",
+    "opts": [
+      "Magnésio",
+      "Iodo",
+      "Vanádio",
+      "Hidrogénio"
+    ],
+    "exp": "O símbolo V corresponde ao Vanádio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Manganês?",
+    "a": "Mn",
+    "opts": [
+      "Se",
+      "S",
+      "Pb",
+      "Mn"
+    ],
+    "exp": "O símbolo químico de Manganês é Mn.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Mn?",
+    "a": "Manganês",
+    "opts": [
+      "Ouro",
+      "Prata",
+      "Zinco",
+      "Manganês"
+    ],
+    "exp": "O símbolo Mn corresponde ao Manganês.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Gálio?",
+    "a": "Ga",
+    "opts": [
+      "Cd",
+      "Cl",
+      "Zn",
+      "Ga"
+    ],
+    "exp": "O símbolo químico de Gálio é Ga.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ga?",
+    "a": "Gálio",
+    "opts": [
+      "Gálio",
+      "Cádmio",
+      "Cobalto",
+      "Magnésio"
+    ],
+    "exp": "O símbolo Ga corresponde ao Gálio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Germânio?",
+    "a": "Ge",
+    "opts": [
+      "Cr",
+      "Ge",
+      "Ga",
+      "Bi"
+    ],
+    "exp": "O símbolo químico de Germânio é Ge.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ge?",
+    "a": "Germânio",
+    "opts": [
+      "Plutónio",
+      "Gálio",
+      "Cálcio",
+      "Germânio"
+    ],
+    "exp": "O símbolo Ge corresponde ao Germânio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Selénio?",
+    "a": "Se",
+    "opts": [
+      "Se",
+      "Be",
+      "Ge",
+      "W"
+    ],
+    "exp": "O símbolo químico de Selénio é Se.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Se?",
+    "a": "Selénio",
+    "opts": [
+      "Selénio",
+      "Hidrogénio",
+      "Bismuto",
+      "Crípton"
+    ],
+    "exp": "O símbolo Se corresponde ao Selénio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Crípton?",
+    "a": "Kr",
+    "opts": [
+      "Kr",
+      "B",
+      "Fe",
+      "Cr"
+    ],
+    "exp": "O símbolo químico de Crípton é Kr.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Kr?",
+    "a": "Crípton",
+    "opts": [
+      "Urânio",
+      "Potássio",
+      "Crípton",
+      "Hélio"
+    ],
+    "exp": "O símbolo Kr corresponde ao Crípton.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Cádmio?",
+    "a": "Cd",
+    "opts": [
+      "Pb",
+      "Rn",
+      "Ni",
+      "Cd"
+    ],
+    "exp": "O símbolo químico de Cádmio é Cd.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Cd?",
+    "a": "Cádmio",
+    "opts": [
+      "Flúor",
+      "Escândio",
+      "Cádmio",
+      "Vanádio"
+    ],
+    "exp": "O símbolo Cd corresponde ao Cádmio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Antimónio?",
+    "a": "Sb",
+    "opts": [
+      "Ni",
+      "Sb",
+      "Br",
+      "W"
+    ],
+    "exp": "O símbolo químico de Antimónio é Sb.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Sb?",
+    "a": "Antimónio",
+    "opts": [
+      "Arsénio",
+      "Potássio",
+      "Antimónio",
+      "Cobre"
+    ],
+    "exp": "O símbolo Sb corresponde ao Antimónio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Xénon?",
+    "a": "Xe",
+    "opts": [
+      "Se",
+      "Xe",
+      "Mn",
+      "Cu"
+    ],
+    "exp": "O símbolo químico de Xénon é Xe.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Xe?",
+    "a": "Xénon",
+    "opts": [
+      "Xénon",
+      "Potássio",
+      "Escândio",
+      "Carbono"
+    ],
+    "exp": "O símbolo Xe corresponde ao Xénon.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Césio?",
+    "a": "Cs",
+    "opts": [
+      "Cu",
+      "Ga",
+      "Cs",
+      "H"
+    ],
+    "exp": "O símbolo químico de Césio é Cs.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Cs?",
+    "a": "Césio",
+    "opts": [
+      "Iodo",
+      "Césio",
+      "Árgon",
+      "Germânio"
+    ],
+    "exp": "O símbolo Cs corresponde ao Césio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Tungsténio?",
+    "a": "W",
+    "opts": [
+      "W",
+      "Cl",
+      "Ge",
+      "Co"
+    ],
+    "exp": "O símbolo químico de Tungsténio é W.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo W?",
+    "a": "Tungsténio",
+    "opts": [
+      "Prata",
+      "Flúor",
+      "Rádio",
+      "Tungsténio"
+    ],
+    "exp": "O símbolo W corresponde ao Tungsténio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Bismuto?",
+    "a": "Bi",
+    "opts": [
+      "U",
+      "Ge",
+      "Cu",
+      "Bi"
+    ],
+    "exp": "O símbolo químico de Bismuto é Bi.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Bi?",
+    "a": "Bismuto",
+    "opts": [
+      "Cádmio",
+      "Bismuto",
+      "Manganês",
+      "Césio"
+    ],
+    "exp": "O símbolo Bi corresponde ao Bismuto.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Rádon?",
+    "a": "Rn",
+    "opts": [
+      "Sb",
+      "K",
+      "U",
+      "Rn"
+    ],
+    "exp": "O símbolo químico de Rádon é Rn.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Rn?",
+    "a": "Rádon",
+    "opts": [
+      "Rádon",
+      "Arsénio",
+      "Crómio",
+      "Potássio"
+    ],
+    "exp": "O símbolo Rn corresponde ao Rádon.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Plutónio?",
+    "a": "Pu",
+    "opts": [
+      "Mg",
+      "Xe",
+      "Pu",
+      "V"
+    ],
+    "exp": "O símbolo químico de Plutónio é Pu.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Pu?",
+    "a": "Plutónio",
+    "opts": [
+      "Árgon",
+      "Plutónio",
+      "Platina",
+      "Bismuto"
+    ],
+    "exp": "O símbolo Pu corresponde ao Plutónio.",
+    "gen": "chem"
+  }
 ]

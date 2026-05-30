@@ -51,7 +51,12 @@ async function fetchIcons(slugs, label) {
   }
 }
 
-/* ── Monuments (Wikipedia lead image) ── */
+/* ── Monuments (Wikipedia lead image, sized thumbnail to keep repo lean) ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+/* Rescale a Commons thumbnail URL (".../320px-File.jpg") to a target width. */
+function sizeThumb(url, w) {
+  return url.replace(/\/(\d+)px-/, `/${w}px-`);
+}
 async function fetchMonuments(items) {
   const dir = join(HERE, 'monuments');
   await mkdir(dir, { recursive: true });
@@ -59,19 +64,35 @@ async function fetchMonuments(items) {
   for (const it of items) {
     const dest = join(dir, `${it.slug}.jpg`);
     if (await exists(dest)) { skip++; continue; }
-    try {
-      const api = manifest.monuments.api
-        .replace('{wiki}', it.wiki).replace('{title}', encodeURIComponent(it.title));
-      const meta = JSON.parse(await get(api, true));
-      const src = (meta.originalimage && meta.originalimage.source) ||
-                  (meta.thumbnail && meta.thumbnail.source);
-      if (!src) throw new Error('no lead image');
-      const img = await get(src, false);
-      await writeFile(dest, img);
-      credits.push(`| Monumentos | monuments/${it.slug}.jpg | ${it.title} | ${src} | verify on Commons | via ${it.wiki}.wikipedia.org |`);
-      ok++; console.log(`  ✓ monument: ${it.title}`);
-    } catch (e) {
-      miss++; console.log(`  ✗ monument: ${it.title} (${e.message}) — skipped`);
+    let attempt = 0, done = false;
+    while (attempt < 4 && !done) {
+      attempt++;
+      try {
+        await sleep(1200); // Wikipedia REST rate-limits aggressively
+        const api = manifest.monuments.api
+          .replace('{wiki}', it.wiki).replace('{title}', encodeURIComponent(it.title));
+        const meta = JSON.parse(await get(api, true));
+        const thumb = meta.thumbnail && meta.thumbnail.source;
+        /* Prefer a ~640px render of the thumbnail; fall back to the raw
+           thumbnail (always valid) if the resize is rejected (HTTP 400). */
+        const candidates = thumb
+          ? [sizeThumb(thumb, 640), thumb]
+          : (meta.originalimage ? [meta.originalimage.source] : []);
+        if (!candidates.length) throw new Error('no lead image');
+        let img = null, used = null;
+        for (const url of candidates) {
+          try { img = await get(url, false); used = url; break; } catch (_) {}
+        }
+        if (!img) throw new Error('image fetch failed');
+        await writeFile(dest, img);
+        credits.push(`| Monumentos | monuments/${it.slug}.jpg | ${it.title} | ${used} | verify on Commons | via ${it.wiki}.wikipedia.org |`);
+        ok++; console.log(`  ✓ monument: ${it.title}`);
+        done = true;
+      } catch (e) {
+        if (String(e.message).includes('429') && attempt < 4) { await sleep(4000); continue; }
+        miss++; console.log(`  ✗ monument: ${it.title} (${e.message}) — skipped`);
+        done = true;
+      }
     }
   }
   if (credits.length) {
