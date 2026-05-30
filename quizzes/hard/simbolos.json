@@ -1,0 +1,11 @@
+[
+  { "q": "Qual é o símbolo químico do chumbo?", "a": "Pb", "opts": ["Pb", "Ch", "Pl", "Cb"], "exp": "O chumbo tem o símbolo Pb, do latim plumbum." },
+  { "q": "Qual é o símbolo químico do estanho?", "a": "Sn", "opts": ["Sn", "Es", "St", "Sa"], "exp": "O estanho tem o símbolo Sn, do latim stannum." },
+  { "q": "Qual é o símbolo químico do tungsténio (volfrâmio)?", "a": "W", "opts": ["W", "Tu", "Tg", "Vo"], "exp": "O tungsténio tem o símbolo W, de wolfram." },
+  { "q": "Qual é o símbolo químico do mercúrio?", "a": "Hg", "opts": ["Hg", "Me", "Mr", "My"], "exp": "O mercúrio tem o símbolo Hg, do latim hydrargyrum." },
+  { "q": "O que representa o símbolo ∑ (sigma maiúsculo) em matemática?", "a": "Somatório", "opts": ["Somatório", "Produto", "Integral", "Limite"], "exp": "∑ indica a soma de uma sequência de termos.", "imgType": "svg", "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='88' font-family='Georgia' font-size='90' fill='currentColor' text-anchor='middle'>&#931;</text></svg>" },
+  { "q": "O que representa o símbolo ∫ em matemática?", "a": "Integral", "opts": ["Integral", "Somatório", "Derivada", "Raiz"], "exp": "∫ representa o integral, base do cálculo integral.", "imgType": "svg", "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='92' font-family='Georgia' font-size='96' fill='currentColor' text-anchor='middle'>&#8747;</text></svg>" },
+  { "q": "Qual é a unidade SI de pressão e o seu símbolo?", "a": "Pascal (Pa)", "opts": ["Pascal (Pa)", "Newton (N)", "Bar (bar)", "Joule (J)"], "exp": "A pressão mede-se em pascais (Pa) no Sistema Internacional; 1 Pa = 1 N/m²." },
+  { "q": "Em física, que grandeza é normalmente representada pela letra grega λ (lambda)?", "a": "Comprimento de onda", "opts": ["Comprimento de onda", "Frequência", "Densidade", "Aceleração"], "exp": "λ designa o comprimento de onda de uma onda." },
+  { "q": "O que representa a constante 'c' em física?", "a": "Velocidade da luz no vácuo", "opts": ["Velocidade da luz no vácuo", "Carga do electrão", "Constante de gravitação", "Calor específico"], "exp": "c ≈ 299 792 458 m/s é a velocidade da luz no vácuo." }
+]

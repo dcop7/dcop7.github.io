@@ -48,13 +48,17 @@ const QuizPage = (function () {
         { id: 'professions', icon: '👷', labelPt: 'Profissões',        labelEn: 'Professions',        provider: 'professions',count: 10 },
         { id: 'vehicles',    icon: '🚗', labelPt: 'Transportes',       labelEn: 'Transport',          provider: 'vehicles',  count: 10 },
         { id: 'food',        icon: '🍎', labelPt: 'Alimentos',         labelEn: 'Food',               provider: 'food',      count: 10 },
+        { id: 'portugal',    icon: '🇵🇹', labelPt: 'Portugal',          labelEn: 'Portugal',           provider: 'portugal-quiz', count: 8 },
+        { id: 'car-brands',  icon: '🏎️', labelPt: 'Marcas de Automóveis', labelEn: 'Car Brands',      provider: 'car-brands', count: 8 },
       ]
     },
     {
       id: 'visual', icon: '🎨', labelKey: 'quiz.cat.visual',
       quizzes: [
-        { id: 'emoji',   icon: '😊', labelPt: 'Quiz de Emojis',    labelEn: 'Emoji Quiz',      provider: 'emoji',   count: 10 },
-        { id: 'colours', icon: '🎨', labelPt: 'Cores',             labelEn: 'Colours',         provider: 'colours', count: 10 },
+        { id: 'emoji',    icon: '😊', labelPt: 'Quiz de Emojis',     labelEn: 'Emoji Quiz',      provider: 'emoji',          count: 10 },
+        { id: 'colours',  icon: '🎨', labelPt: 'Cores',              labelEn: 'Colours',         provider: 'colours',        count: 10 },
+        { id: 'sinais',   icon: '🚦', labelPt: 'Sinais de Trânsito', labelEn: 'Traffic Signs',   provider: 'sinais-transito', count: 8 },
+        { id: 'symbols',  icon: '🔣', labelPt: 'Símbolos',           labelEn: 'Symbols',         provider: 'symbols',        count: 8 },
       ]
     },
     {

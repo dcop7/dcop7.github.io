@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é o maior oceano do mundo?", "a": "Pacífico", "opts": ["Pacífico", "Atlântico", "Índico", "Ártico"], "exp": "O Pacífico cobre mais de 165 milhões de km², mais do que toda a terra firme junta." },
+  { "q": "Quantos continentes existem na Terra?", "a": "7", "opts": ["7", "5", "6", "8"], "exp": "África, América do Norte, América do Sul, Antárctida, Ásia, Europa e Oceânia." },
+  { "q": "Qual é a capital de França?", "a": "Paris", "opts": ["Paris", "Lyon", "Marselha", "Nice"], "exp": "Paris é a capital e maior cidade de França." },
+  { "q": "Qual é o maior continente?", "a": "Ásia", "opts": ["Ásia", "África", "Europa", "América"], "exp": "A Ásia é o maior continente em área e população." },
+  { "q": "Em que continente fica o Egipto?", "a": "África", "opts": ["África", "Ásia", "Europa", "Oceânia"], "exp": "O Egipto fica no nordeste de África (com a península do Sinai na Ásia)." },
+  { "q": "Qual é a capital de Espanha?", "a": "Madrid", "opts": ["Madrid", "Barcelona", "Sevilha", "Valência"], "exp": "Madrid é a capital de Espanha e fica no centro do país." },
+  { "q": "Qual é o rio mais longo do mundo?", "a": "Nilo", "opts": ["Nilo", "Amazonas", "Yangtzé", "Mississípi"], "exp": "O Nilo (cerca de 6650 km) é geralmente considerado o rio mais longo, em disputa com o Amazonas." },
+  { "q": "Qual é o deserto mais quente e extenso do mundo?", "a": "Sara", "opts": ["Sara", "Gobi", "Kalahari", "Atacama"], "exp": "O deserto do Sara, no norte de África, é o maior deserto quente do mundo." }
+]

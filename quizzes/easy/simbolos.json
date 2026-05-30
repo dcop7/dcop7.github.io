@@ -1,0 +1,10 @@
+[
+  { "q": "Qual é o símbolo químico do oxigénio?", "a": "O", "opts": ["O", "Ox", "Og", "Oo"], "exp": "O oxigénio é representado pela letra O na tabela periódica." },
+  { "q": "Qual é o símbolo químico do hidrogénio?", "a": "H", "opts": ["H", "Hi", "Hy", "Hg"], "exp": "O hidrogénio é o elemento mais leve e tem o símbolo H." },
+  { "q": "Qual é o símbolo químico do carbono?", "a": "C", "opts": ["C", "Ca", "Cb", "Co"], "exp": "O carbono, base da vida, tem o símbolo C." },
+  { "q": "O que representa a fórmula H₂O?", "a": "Água", "opts": ["Água", "Sal", "Oxigénio puro", "Dióxido de carbono"], "exp": "H₂O = dois átomos de hidrogénio e um de oxigénio, a molécula da água." },
+  { "q": "O que significa o símbolo matemático mostrado?", "a": "Mais (adição)", "opts": ["Mais (adição)", "Menos (subtracção)", "Multiplicação", "Divisão"], "exp": "O sinal + representa a adição.", "imgType": "svg", "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='90' font-family='Arial' font-weight='bold' font-size='100' fill='currentColor' text-anchor='middle'>+</text></svg>" },
+  { "q": "O que significa o símbolo % ?", "a": "Percentagem", "opts": ["Percentagem", "Divisão", "Raiz quadrada", "Infinito"], "exp": "O símbolo % indica uma proporção em cada cem (por cento)." },
+  { "q": "O que significa o símbolo = ?", "a": "Igual a", "opts": ["Igual a", "Diferente de", "Maior que", "Aproximadamente"], "exp": "O sinal = indica que dois valores são iguais." },
+  { "q": "Qual é o símbolo químico do azoto?", "a": "N", "opts": ["N", "Az", "Ni", "An"], "exp": "O azoto (nitrogénio) tem o símbolo N e compõe ~78% do ar." }
+]

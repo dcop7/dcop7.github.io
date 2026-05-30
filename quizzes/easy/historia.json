@@ -1,0 +1,10 @@
+[
+  { "q": "Que civilização construiu as pirâmides de Gizé?", "a": "Egípcios", "opts": ["Egípcios", "Romanos", "Gregos", "Maias"], "exp": "As pirâmides de Gizé foram erguidas pelos antigos egípcios há cerca de 4500 anos." },
+  { "q": "Em que ano chegou o Homem à Lua pela primeira vez?", "a": "1969", "opts": ["1969", "1959", "1975", "1981"], "exp": "A missão Apollo 11 levou Neil Armstrong à Lua em 1969." },
+  { "q": "Que império construiu o Coliseu?", "a": "Império Romano", "opts": ["Império Romano", "Império Grego", "Império Persa", "Império Otomano"], "exp": "O Coliseu foi construído em Roma no século I d.C." },
+  { "q": "Quem descobriu o caminho marítimo até à América em 1492?", "a": "Cristóvão Colombo", "opts": ["Cristóvão Colombo", "Vasco da Gama", "Fernão de Magalhães", "Américo Vespúcio"], "exp": "Colombo chegou às Caraíbas em 1492, ao serviço da Coroa de Castela." },
+  { "q": "Que muro dividiu a cidade de Berlim até 1989?", "a": "Muro de Berlim", "opts": ["Muro de Berlim", "Muralha da China", "Linha Maginot", "Cortina de Ferro"], "exp": "O Muro de Berlim caiu em 1989, símbolo do fim da Guerra Fria na Europa." },
+  { "q": "Em que continente surgiram os primeiros seres humanos?", "a": "África", "opts": ["África", "Ásia", "Europa", "América"], "exp": "Os fósseis humanos mais antigos foram encontrados em África." },
+  { "q": "Que meio de transporte tornou as viagens muito mais rápidas na Revolução Industrial?", "a": "O comboio a vapor", "opts": ["O comboio a vapor", "O automóvel", "O avião", "O barco à vela"], "exp": "A locomotiva a vapor revolucionou os transportes no século XIX." },
+  { "q": "Quem foi a rainha do antigo Egipto conhecida pela sua aliança com Roma?", "a": "Cleópatra", "opts": ["Cleópatra", "Nefertiti", "Hatchepsut", "Isis"], "exp": "Cleópatra VII foi a última faraó do Egipto." }
+]

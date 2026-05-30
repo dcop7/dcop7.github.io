@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v4';
+const CACHE = 'dcop7-v5';
 const STATIC = [
   '/',
   '/index.html',
@@ -17,6 +17,7 @@ const STATIC = [
   '/media.js',
   '/cheatsheets.js',
   '/quiz-engine.js',
+  '/quiz-data.js',
   '/quiz-providers.js',
   '/quiz-page.js',
   '/search.js',
