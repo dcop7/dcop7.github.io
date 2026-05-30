@@ -181,6 +181,16 @@ const SolarExplorer = (function () {
   /* Animation */
   let _speed   = 1;
   let _paused  = false;
+
+  /* Respect the user's reduced-motion preference (app setting or OS).
+     When reduced, planets hold position/spin but the scene still renders
+     and stays fully interactive (drag, zoom, selection). */
+  function _reducedMotion() {
+    try {
+      if (localStorage.getItem('motion-pref') === 'reduced') return true;
+    } catch (_) {}
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
   let _sel     = null;    /* index | 'sun' | null */
   let _curTab  = 'overview';
 
@@ -454,15 +464,16 @@ const SolarExplorer = (function () {
       _raf = requestAnimationFrame(tick);
       if (!_renderer || !_scene || !_camera) return;
 
-      /* Update planet positions */
+      /* Update planet positions (frozen under reduced-motion / pause) */
+      const animate = !_paused && !_reducedMotion();
       PLANETS.forEach((p, i) => {
-        if (!_paused) _angles[i] += 0.0003 * _speed * (365 / p.period);
+        if (animate) _angles[i] += 0.0003 * _speed * (365 / p.period);
         const mesh = _planetMeshes[i];
         if (mesh) {
           mesh.position.x = Math.cos(_angles[i]) * p.orbitR;
           mesh.position.z = Math.sin(_angles[i]) * p.orbitR;
           /* Spin about the planet's own (tilted) axis, preserving axial tilt. */
-          mesh.rotateY(0.002 * _speed);
+          if (animate) mesh.rotateY(0.002 * _speed);
         }
       });
 
