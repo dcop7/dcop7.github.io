@@ -276,9 +276,9 @@ const PortugalExplorer = (function () {
   let _selected  = null;
   let _container = null;
 
-  /* ── GeoJSON URL to try ── */
-  /* Verified working 2025-05 — property "name" matches district names exactly */
-  const PT_GEOJSON = 'https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/portugal.geojson';
+  /* ── District boundaries (bundled locally, simplified) — property "name"
+     matches the district names in DISTRICTS exactly. ── */
+  const PT_GEOJSON = 'data/pt-districts.geojson';
 
   /* ── Leaflet lazy load ── */
   async function _loadLeaflet() {

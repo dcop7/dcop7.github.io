@@ -16,10 +16,12 @@ const ExplorerPage = (function () {
   let _globeGL         = null;
   let _globeInited     = false;
   let _globeResizeObs  = null;
-  let _globeView       = 'realistic';   /* 'realistic' | 'night' | 'political' */
+  let _globeView       = 'realistic';   /* 'realistic' | 'daynight' | 'political' */
   let _globeHovered    = null;
   let _byCca3          = {};
   let _updateGlobeColors = null;
+  let _globeMatUniforms = null;         /* day/night ShaderMaterial uniforms, if active */
+  let _globeSunTimer    = null;
 
   /* ── Leaflet state ── */
   let _lMap        = null;
@@ -39,8 +41,11 @@ const ExplorerPage = (function () {
 
   /* ── Constants ── */
   const TTL = 86400000;
-  const COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,cca2,cca3,flag,capital,population,currencies,languages,area,continents,flags,timezones,borders';
-  const GEOJSON_URL   = 'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
+  /* Country data + boundaries are bundled locally (data/*) — no runtime dependency
+     on third-party APIs, instant load, works offline. Generated from mledoze/countries
+     + World Bank population + moment-timezone (see git history). */
+  const COUNTRIES_URL = 'data/countries.json';
+  const GEOJSON_URL   = 'data/world-countries.geojson';
 
   /* three-globe CDN — confirmed working 2025 */
   const GLOBE_TEX = {
@@ -49,6 +54,45 @@ const ExplorerPage = (function () {
     bump:  'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png',
     space: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
   };
+
+  /* Day/night globe shader (after vasturiano's globe.gl night-day example).
+     Blends day + night textures by the real sun direction; the `dayNight`
+     uniform forces full daylight (0) or the live terminator (1). */
+  const GLOBE_VERT = `
+    varying vec3 vNormal;
+    varying vec2 vUv;
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }`;
+  const GLOBE_FRAG = `
+    #define PI 3.1415926538
+    uniform sampler2D dayTexture;
+    uniform sampler2D nightTexture;
+    uniform vec2 sunPosition;
+    uniform vec2 globeRotation;
+    uniform float dayNight;
+    varying vec3 vNormal;
+    varying vec2 vUv;
+    float toRad(in float a) { return a * PI / 180.0; }
+    vec3 polar2Cartesian(in vec2 c) {
+      float theta = toRad(90.0 - c.x);
+      float phi   = toRad(90.0 - c.y);
+      return vec3(sin(phi) * cos(theta), cos(phi), sin(phi) * sin(theta));
+    }
+    void main() {
+      float invLon = toRad(globeRotation.x);
+      float invLat = -toRad(globeRotation.y);
+      mat3 rotX = mat3(1, 0, 0, 0, cos(invLat), -sin(invLat), 0, sin(invLat), cos(invLat));
+      mat3 rotY = mat3(cos(invLon), 0, sin(invLon), 0, 1, 0, -sin(invLon), 0, cos(invLon));
+      vec3 sunDir = rotX * rotY * polar2Cartesian(sunPosition);
+      float intensity = dot(normalize(vNormal), normalize(sunDir));
+      vec4 dayColor   = texture2D(dayTexture, vUv);
+      vec4 nightColor = texture2D(nightTexture, vUv);
+      float blend = mix(1.0, smoothstep(-0.12, 0.18, intensity), dayNight);
+      gl_FragColor = mix(nightColor, dayColor, blend);
+    }`;
 
   const CONT_COLORS = {
     Africa:     'rgba(245,158,11,.55)',
@@ -154,22 +198,14 @@ const ExplorerPage = (function () {
 
   /* ════════════════════════════════ DATA FETCH ══════════════════════ */
   async function _fetchCountries() {
-    try {
-      const raw = localStorage.getItem('ex-countries');
-      if (raw) {
-        const { ts, data } = JSON.parse(raw);
-        if (Date.now() - ts < TTL && Array.isArray(data) && data.length > 100) return data;
-      }
-    } catch (e) {}
-    const r    = await _fetchTimeout(COUNTRIES_URL, 15000);
-    const data = await r.json();
-    try { localStorage.setItem('ex-countries', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
-    return data;
+    /* Bundled same-origin file — fast, cached by the SW, available offline. */
+    const r = await _fetchTimeout(COUNTRIES_URL, 12000);
+    return r.json();
   }
 
   async function _fetchGeoJson() {
     if (_geoJson) return _geoJson;
-    const r = await _fetchTimeout(GEOJSON_URL, 25000);
+    const r = await _fetchTimeout(GEOJSON_URL, 12000);
     return r.json();
   }
 
@@ -689,7 +725,7 @@ const ExplorerPage = (function () {
         </div>
         <div class="ex-globe-view-bar" id="ex-globe-view-bar">
           <button class="ex-globe-view-btn active" data-view="realistic">Realista</button>
-          <button class="ex-globe-view-btn" data-view="night">Noturno</button>
+          <button class="ex-globe-view-btn" data-view="daynight">☀ Dia/Noite</button>
           <button class="ex-globe-view-btn" data-view="political">Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
@@ -743,6 +779,9 @@ const ExplorerPage = (function () {
 
     /* Load globe.gl (pinned version — confirmed working) */
     setTxt('A inicializar globo 3D…');
+    /* Load THREE first (same version SolarExplorer uses, usually cached) so we
+       can build the day/night ShaderMaterial. Non-fatal if it fails. */
+    try { await _loadScript('https://unpkg.com/three@0.160.0/build/three.min.js'); } catch (e) {}
     try {
       await _loadScript('https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js');
     } catch (e) {
@@ -771,23 +810,22 @@ const ExplorerPage = (function () {
         const c = _byCca3[f.id];
         return CONT_COLORS[(c?.continents || [''])[0]] || 'rgba(150,150,150,0.45)';
       }
-      return 'rgba(99,102,241,0.08)';
+      /* Realistic / day-night: transparent caps so the Earth texture shows through. */
+      return 'rgba(0,0,0,0)';
     };
     const getCapAlt = f => f === _globeHovered ? 0.006 : (_globeView === 'political' ? 0.003 : 0.001);
 
     _globeGL = Globe({ animateIn: true })(container)
       .width(container.clientWidth)
       .height(container.clientHeight)
-      .globeImageUrl(GLOBE_TEX.day)
-      .bumpImageUrl(GLOBE_TEX.bump)
       .backgroundImageUrl(GLOBE_TEX.space)
       .showAtmosphere(true)
-      .atmosphereColor('lightskyblue')
-      .atmosphereAltitude(0.15)
+      .atmosphereColor('#7fb8ff')
+      .atmosphereAltitude(0.18)
       .polygonsData(_geoJson.features)
       .polygonCapColor(getCapColor)
       .polygonSideColor(() => 'rgba(0,0,0,0.1)')
-      .polygonStrokeColor(() => 'rgba(255,255,255,0.15)')
+      .polygonStrokeColor(() => 'rgba(255,255,255,0.22)')
       .polygonAltitude(getCapAlt)
       .onPolygonHover(f => {
         _globeHovered = f;
@@ -798,13 +836,18 @@ const ExplorerPage = (function () {
       .onPolygonClick(f => {
         if (!f) return;
         const c = _byCca3[f.id];
-        if (c) {
-          showCountryPanel(c, '#ex-country-panel-globe');
-        } else {
-          /* Country data unavailable — show minimal panel from GeoJSON feature */
-          _showGlobeMinimalPanel(f);
+        /* Smooth fly-to using the country's bundled centroid when available. */
+        const ll = c?.latlng;
+        if (ll && ll.length === 2) {
+          _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
         }
+        if (c) showCountryPanel(c, '#ex-country-panel-globe');
+        else   _showGlobeMinimalPanel(f);
       });
+
+    /* Vivid day/night globe material (raw textures, no Phong wash). Falls back to
+       the classic textured material if THREE / the shader is unavailable. */
+    _setupGlobeMaterial();
 
     _updateGlobeColors = () => {
       if (!_globeGL) return;
@@ -843,13 +886,59 @@ const ExplorerPage = (function () {
     _globeInited = true;
   }
 
+  /* Build the day/night ShaderMaterial and wire its uniforms. Falls back to the
+     classic textured globe if THREE or the shader is unavailable. */
+  function _setupGlobeMaterial() {
+    const T = window.THREE;
+    if (!T || !_globeGL) { _globeFallbackMaterial(); return; }
+    try {
+      const loader   = new T.TextureLoader();
+      const dayTex   = loader.load(GLOBE_TEX.day);
+      const nightTex = loader.load(GLOBE_TEX.night);
+      if (T.SRGBColorSpace) { dayTex.colorSpace = T.SRGBColorSpace; nightTex.colorSpace = T.SRGBColorSpace; }
+      const uniforms = {
+        dayTexture:    { value: dayTex },
+        nightTexture:  { value: nightTex },
+        sunPosition:   { value: new T.Vector2() },
+        globeRotation: { value: new T.Vector2() },
+        dayNight:      { value: 0 },
+      };
+      const mat = new T.ShaderMaterial({ uniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
+      _globeGL.globeMaterial(mat);
+      _globeMatUniforms = uniforms;
+      /* Keep the shader's sun direction aligned with the camera POV. */
+      _globeGL.onZoom(pov => {
+        if (_globeMatUniforms && pov) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
+      });
+      _updateSunUniform();
+      if (_globeSunTimer) clearInterval(_globeSunTimer);
+      _globeSunTimer = setInterval(_updateSunUniform, 60000);
+    } catch (e) {
+      _globeFallbackMaterial();
+    }
+  }
+
+  function _updateSunUniform() {
+    if (!_globeMatUniforms) return;
+    const s = _sunPos();
+    _globeMatUniforms.sunPosition.value.set(s.lon, s.lat);
+  }
+
+  function _globeFallbackMaterial() {
+    /* No shader — use the classic textured material so the globe still works. */
+    try { _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump); } catch (e) {}
+  }
+
   function _setGlobeView(view) {
     if (!_globeGL) return;
     _globeView = view;
-    if (view === 'night') {
-      _globeGL.globeImageUrl(GLOBE_TEX.night).bumpImageUrl(null);
+    if (_globeMatUniforms) {
+      _globeMatUniforms.dayNight.value = (view === 'daynight') ? 1 : 0;
+      _updateSunUniform();
     } else {
-      _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump);
+      /* Fallback material mode (no shader). */
+      if (view === 'daynight') _globeGL.globeImageUrl(GLOBE_TEX.night).bumpImageUrl(null);
+      else                     _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump);
     }
     _updateGlobeColors?.();
   }
@@ -984,6 +1073,8 @@ const ExplorerPage = (function () {
       _loadStorage();
       /* Disconnect old globe observer and reset state before rebuilding DOM */
       if (_globeResizeObs) { _globeResizeObs.disconnect(); _globeResizeObs = null; }
+      if (_globeSunTimer) { clearInterval(_globeSunTimer); _globeSunTimer = null; }
+      _globeMatUniforms = null;
       _globeGL         = null;
       _globeInited     = false;
       _globeHovered    = null;
