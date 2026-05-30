@@ -1,10 +1,262 @@
 [
-  { "q": "Que marca de automóveis é este logótipo?", "a": "BMW", "opts": ["BMW", "Audi", "Mercedes-Benz", "Volkswagen"], "exp": "A BMW é uma fabricante alemã fundada em 1916, em Munique.", "imgType": "logo", "img": "quizzes/assets/icons/bmw.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Audi", "opts": ["Audi", "BMW", "Opel", "Toyota"], "exp": "Os quatro anéis da Audi representam a fusão de quatro fabricantes em 1932.", "imgType": "logo", "img": "quizzes/assets/icons/audi.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Mercedes-Benz", "opts": ["Mercedes-Benz", "BMW", "Audi", "Volvo"], "exp": "A estrela de três pontas simboliza motorização em terra, mar e ar.", "imgType": "logo", "img": "quizzes/assets/icons/mercedes.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Toyota", "opts": ["Toyota", "Honda", "Nissan", "Mazda"], "exp": "A Toyota é a maior fabricante japonesa e uma das maiores do mundo.", "imgType": "logo", "img": "quizzes/assets/icons/toyota.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Ford", "opts": ["Ford", "Chevrolet", "Fiat", "Renault"], "exp": "A Ford, fundada por Henry Ford, popularizou a linha de montagem.", "imgType": "logo", "img": "quizzes/assets/icons/ford.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Volvo", "opts": ["Volvo", "Volkswagen", "Saab", "Skoda"], "exp": "A Volvo é uma marca sueca conhecida pela segurança automóvel.", "imgType": "logo", "img": "quizzes/assets/icons/volvo.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Ferrari", "opts": ["Ferrari", "Lamborghini", "Maserati", "Alfa Romeo"], "exp": "O cavallino rampante (cavalo a empinar) é o símbolo da Ferrari.", "imgType": "logo", "img": "quizzes/assets/icons/ferrari.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Tesla", "opts": ["Tesla", "Rivian", "Lucid", "Polestar"], "exp": "A Tesla, de Elon Musk, popularizou os automóveis elétricos.", "imgType": "logo", "img": "quizzes/assets/icons/tesla.svg" }
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Audi",
+    "opts": [
+      "Subaru",
+      "Ford",
+      "Audi",
+      "BMW"
+    ],
+    "exp": "Este é o logótipo de Audi.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/audi.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "BMW",
+    "opts": [
+      "Maserati",
+      "Ferrari",
+      "Vauxhall",
+      "BMW"
+    ],
+    "exp": "Este é o logótipo de BMW.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/bmw.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Ferrari",
+    "opts": [
+      "Ferrari",
+      "Suzuki",
+      "MINI",
+      "Yamaha"
+    ],
+    "exp": "Este é o logótipo de Ferrari.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/ferrari.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Fiat",
+    "opts": [
+      "Polestar",
+      "Ford",
+      "BMW",
+      "Fiat"
+    ],
+    "exp": "Este é o logótipo de Fiat.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/fiat.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Ford",
+    "opts": [
+      "Volkswagen",
+      "Ford",
+      "Ferrari",
+      "Nissan"
+    ],
+    "exp": "Este é o logótipo de Ford.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/ford.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Honda",
+    "opts": [
+      "Koenigsegg",
+      "Bentley",
+      "Honda",
+      "Hyundai"
+    ],
+    "exp": "Este é o logótipo de Honda.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/honda.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Hyundai",
+    "opts": [
+      "Hyundai",
+      "Mercedes-Benz",
+      "Vespa",
+      "Jaguar"
+    ],
+    "exp": "Este é o logótipo de Hyundai.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/hyundai.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Jeep",
+    "opts": [
+      "Fiat",
+      "Ducati",
+      "Alfa Romeo",
+      "Jeep"
+    ],
+    "exp": "Este é o logótipo de Jeep.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/jeep.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Kia",
+    "opts": [
+      "Polestar",
+      "Kia",
+      "Dacia",
+      "Vespa"
+    ],
+    "exp": "Este é o logótipo de Kia.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/kia.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Mazda",
+    "opts": [
+      "Mazda",
+      "Yamaha",
+      "Ford",
+      "Audi"
+    ],
+    "exp": "Este é o logótipo de Mazda.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mazda.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Mercedes-Benz",
+    "opts": [
+      "Chevrolet",
+      "Porsche",
+      "Citroën",
+      "Mercedes-Benz"
+    ],
+    "exp": "Este é o logótipo de Mercedes-Benz.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mercedes.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "MINI",
+    "opts": [
+      "Vauxhall",
+      "Volvo",
+      "MINI",
+      "Nissan"
+    ],
+    "exp": "Este é o logótipo de MINI.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mini.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Nissan",
+    "opts": [
+      "Vespa",
+      "Land Rover",
+      "Nissan",
+      "Peugeot"
+    ],
+    "exp": "Este é o logótipo de Nissan.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/nissan.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Peugeot",
+    "opts": [
+      "Vespa",
+      "MINI",
+      "Jeep",
+      "Peugeot"
+    ],
+    "exp": "Este é o logótipo de Peugeot.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/peugeot.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Porsche",
+    "opts": [
+      "Porsche",
+      "Vespa",
+      "Ducati",
+      "Peugeot"
+    ],
+    "exp": "Este é o logótipo de Porsche.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/porsche.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Renault",
+    "opts": [
+      "Renault",
+      "SEAT",
+      "Yamaha",
+      "Citroën"
+    ],
+    "exp": "Este é o logótipo de Renault.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/renault.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Tesla",
+    "opts": [
+      "Land Rover",
+      "Opel",
+      "Tesla",
+      "Suzuki"
+    ],
+    "exp": "Este é o logótipo de Tesla.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/tesla.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Toyota",
+    "opts": [
+      "Citroën",
+      "Toyota",
+      "Honda",
+      "Volkswagen"
+    ],
+    "exp": "Este é o logótipo de Toyota.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/toyota.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Volkswagen",
+    "opts": [
+      "Bentley",
+      "Ducati",
+      "Lamborghini",
+      "Volkswagen"
+    ],
+    "exp": "Este é o logótipo de Volkswagen.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/volkswagen.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Volvo",
+    "opts": [
+      "Volvo",
+      "Ducati",
+      "Toyota",
+      "Infiniti"
+    ],
+    "exp": "Este é o logótipo de Volvo.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/volvo.svg"
+  }
 ]

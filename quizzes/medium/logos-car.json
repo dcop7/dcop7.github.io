@@ -1,10 +1,275 @@
 [
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Porsche", "opts": ["Porsche", "Ferrari", "Lamborghini", "Audi"], "exp": "O brasão da Porsche integra as armas de Estugarda e do estado de Württemberg.", "imgType": "logo", "img": "quizzes/assets/icons/porsche.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Volkswagen", "opts": ["Volkswagen", "Audi", "Opel", "Skoda"], "exp": "Volkswagen significa 'carro do povo' em alemão.", "imgType": "logo", "img": "quizzes/assets/icons/volkswagen.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Honda", "opts": ["Honda", "Toyota", "Hyundai", "Nissan"], "exp": "A Honda é também a maior fabricante de motociclos do mundo.", "imgType": "logo", "img": "quizzes/assets/icons/honda.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Nissan", "opts": ["Nissan", "Mazda", "Mitsubishi", "Subaru"], "exp": "A Nissan é uma fabricante japonesa, parte da aliança Renault-Nissan-Mitsubishi.", "imgType": "logo", "img": "quizzes/assets/icons/nissan.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Renault", "opts": ["Renault", "Peugeot", "Citroën", "Fiat"], "exp": "A Renault é uma das maiores fabricantes francesas (losango).", "imgType": "logo", "img": "quizzes/assets/icons/renault.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Peugeot", "opts": ["Peugeot", "Renault", "Citroën", "Opel"], "exp": "O leão é o símbolo histórico da Peugeot.", "imgType": "logo", "img": "quizzes/assets/icons/peugeot.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Fiat", "opts": ["Fiat", "Alfa Romeo", "Lancia", "Seat"], "exp": "Fiat = Fabbrica Italiana Automobili Torino.", "imgType": "logo", "img": "quizzes/assets/icons/fiat.svg" },
-  { "q": "Que marca de automóveis é este logótipo?", "a": "Mazda", "opts": ["Mazda", "Toyota", "Honda", "Subaru"], "exp": "A Mazda é uma fabricante japonesa conhecida pelo motor rotativo Wankel.", "imgType": "logo", "img": "quizzes/assets/icons/mazda.svg" }
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Alfa Romeo",
+    "opts": [
+      "KTM",
+      "Tesla",
+      "Alfa Romeo",
+      "BMW"
+    ],
+    "exp": "Este é o logótipo de Alfa Romeo.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/alfaromeo.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Aston Martin",
+    "opts": [
+      "Citroën",
+      "Aston Martin",
+      "Infiniti",
+      "Lamborghini"
+    ],
+    "exp": "Este é o logótipo de Aston Martin.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/astonmartin.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Bentley",
+    "opts": [
+      "Mercedes-Benz",
+      "Bentley",
+      "Bugatti",
+      "McLaren"
+    ],
+    "exp": "Este é o logótipo de Bentley.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/bentley.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Cadillac",
+    "opts": [
+      "Škoda",
+      "Cadillac",
+      "Suzuki",
+      "Mitsubishi"
+    ],
+    "exp": "Este é o logótipo de Cadillac.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/cadillac.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Chevrolet",
+    "opts": [
+      "SEAT",
+      "Renault",
+      "Jeep",
+      "Chevrolet"
+    ],
+    "exp": "Este é o logótipo de Chevrolet.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/chevrolet.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Chrysler",
+    "opts": [
+      "Mazda",
+      "Chrysler",
+      "Nissan",
+      "Tesla"
+    ],
+    "exp": "Este é o logótipo de Chrysler.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/chrysler.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Citroën",
+    "opts": [
+      "SEAT",
+      "Renault",
+      "Ford",
+      "Citroën"
+    ],
+    "exp": "Este é o logótipo de Citroën.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/citroen.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Ducati",
+    "opts": [
+      "Vauxhall",
+      "Ducati",
+      "Porsche",
+      "MINI"
+    ],
+    "exp": "Este é o logótipo de Ducati.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/ducati.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Jaguar",
+    "opts": [
+      "Hyundai",
+      "Lucid",
+      "Mazda",
+      "Jaguar"
+    ],
+    "exp": "Este é o logótipo de Jaguar.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/jaguar.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Lamborghini",
+    "opts": [
+      "Yamaha",
+      "Lamborghini",
+      "Kia",
+      "Ducati"
+    ],
+    "exp": "Este é o logótipo de Lamborghini.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/lamborghini.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Land Rover",
+    "opts": [
+      "Land Rover",
+      "Ducati",
+      "Jeep",
+      "Porsche"
+    ],
+    "exp": "Este é o logótipo de Land Rover.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/landrover.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Maserati",
+    "opts": [
+      "Koenigsegg",
+      "Lamborghini",
+      "Maserati",
+      "Peugeot"
+    ],
+    "exp": "Este é o logótipo de Maserati.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/maserati.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "McLaren",
+    "opts": [
+      "Suzuki",
+      "McLaren",
+      "Alfa Romeo",
+      "Mitsubishi"
+    ],
+    "exp": "Este é o logótipo de McLaren.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mclaren.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Mitsubishi",
+    "opts": [
+      "Bentley",
+      "Mitsubishi",
+      "Volkswagen",
+      "Bugatti"
+    ],
+    "exp": "Este é o logótipo de Mitsubishi.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/mitsubishi.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Opel",
+    "opts": [
+      "Lamborghini",
+      "Fiat",
+      "Opel",
+      "KTM"
+    ],
+    "exp": "Este é o logótipo de Opel.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/opel.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Rolls-Royce",
+    "opts": [
+      "Fiat",
+      "Rolls-Royce",
+      "SEAT",
+      "Kia"
+    ],
+    "exp": "Este é o logótipo de Rolls-Royce.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/rollsroyce.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "SEAT",
+    "opts": [
+      "Aston Martin",
+      "Citroën",
+      "SEAT",
+      "Chevrolet"
+    ],
+    "exp": "Este é o logótipo de SEAT.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/seat.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Škoda",
+    "opts": [
+      "Opel",
+      "Vauxhall",
+      "Škoda",
+      "SEAT"
+    ],
+    "exp": "Este é o logótipo de Škoda.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/skoda.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Subaru",
+    "opts": [
+      "Mitsubishi",
+      "Land Rover",
+      "Subaru",
+      "Renault"
+    ],
+    "exp": "Este é o logótipo de Subaru.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/subaru.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Suzuki",
+    "opts": [
+      "Toyota",
+      "Suzuki",
+      "Tesla",
+      "Hyundai"
+    ],
+    "exp": "Este é o logótipo de Suzuki.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/suzuki.svg"
+  },
+  {
+    "q": "Que marca de veículos é este logótipo?",
+    "a": "Yamaha",
+    "opts": [
+      "Polestar",
+      "Renault",
+      "Yamaha",
+      "Dacia"
+    ],
+    "exp": "Este é o logótipo de Yamaha.",
+    "imgType": "logo",
+    "img": "quizzes/assets/icons/yamahamotorcorporation.svg"
+  }
 ]

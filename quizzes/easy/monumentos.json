@@ -1,10 +1,114 @@
 [
-  { "q": "Em que país fica a Torre Eiffel?", "a": "França", "opts": ["França", "Itália", "Espanha", "Bélgica"], "exp": "A Torre Eiffel foi construída em Paris em 1889.", "imgType": "img", "img": "quizzes/assets/monuments/torre-eiffel.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que cidade fica a Torre de Belém?", "a": "Lisboa", "opts": ["Lisboa", "Porto", "Sintra", "Faro"], "exp": "A Torre de Belém (séc. XVI, estilo manuelino) fica em Lisboa.", "imgType": "img", "img": "quizzes/assets/monuments/torre-belem.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que país fica o Coliseu?", "a": "Itália", "opts": ["Itália", "Grécia", "Espanha", "Turquia"], "exp": "O Coliseu, anfiteatro romano, fica em Roma, Itália.", "imgType": "img", "img": "quizzes/assets/monuments/coliseu.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que país fica a Grande Muralha?", "a": "China", "opts": ["China", "Japão", "Índia", "Mongólia"], "exp": "A Grande Muralha da China estende-se por mais de 21 000 km.", "imgType": "img", "img": "quizzes/assets/monuments/muralha-china.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que país fica o Taj Mahal?", "a": "Índia", "opts": ["Índia", "Paquistão", "Irão", "Turquia"], "exp": "O Taj Mahal é um mausoléu em Agra, na Índia.", "imgType": "img", "img": "quizzes/assets/monuments/taj-mahal.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que cidade fica o Cristo Redentor?", "a": "Rio de Janeiro", "opts": ["Rio de Janeiro", "São Paulo", "Lisboa", "Buenos Aires"], "exp": "O Cristo Redentor está no morro do Corcovado, no Rio de Janeiro.", "imgType": "img", "img": "quizzes/assets/monuments/cristo-redentor.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que país fica a Estátua da Liberdade?", "a": "Estados Unidos", "opts": ["Estados Unidos", "França", "Canadá", "Reino Unido"], "exp": "A Estátua da Liberdade, em Nova Iorque, foi uma oferta da França em 1886.", "imgType": "img", "img": "quizzes/assets/monuments/estatua-liberdade.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que cidade fica o Big Ben?", "a": "Londres", "opts": ["Londres", "Manchester", "Dublin", "Edimburgo"], "exp": "O Big Ben é o sino da torre do Palácio de Westminster, em Londres.", "imgType": "img", "img": "quizzes/assets/monuments/big-ben.jpg", "imgCredit": "Wikimedia Commons" }
+  {
+    "q": "Em que cidade portuguesa se encontra Torre de Belém?",
+    "a": "Lisboa",
+    "opts": [
+      "Guimarães",
+      "Batalha",
+      "Lisboa",
+      "Évora"
+    ],
+    "exp": "Torre de Belém encontra-se em Lisboa, Portugal.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/torre-belem.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Coliseu?",
+    "a": "Itália",
+    "opts": [
+      "França",
+      "Grécia",
+      "Itália",
+      "Emirados Árabes Unidos"
+    ],
+    "exp": "Coliseu encontra-se em Roma, Itália.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/coliseu.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Big Ben?",
+    "a": "Reino Unido",
+    "opts": [
+      "Vaticano",
+      "Reino Unido",
+      "Brasil",
+      "Peru"
+    ],
+    "exp": "Big Ben encontra-se em Londres, Reino Unido.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/big-ben.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Taj Mahal?",
+    "a": "Índia",
+    "opts": [
+      "Emirados Árabes Unidos",
+      "EUA",
+      "Peru",
+      "Índia"
+    ],
+    "exp": "Taj Mahal encontra-se em Agra, Índia.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/taj-mahal.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Pirâmide de Quéops?",
+    "a": "Egipto",
+    "opts": [
+      "México",
+      "Egipto",
+      "Brasil",
+      "Bélgica"
+    ],
+    "exp": "Pirâmide de Quéops encontra-se em Gizé, Egipto.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/piramide-queops.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Estátua da Liberdade?",
+    "a": "EUA",
+    "opts": [
+      "Egipto",
+      "Reino Unido",
+      "Portugal",
+      "EUA"
+    ],
+    "exp": "Estátua da Liberdade encontra-se em Nova Iorque, EUA.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/estatua-liberdade.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Cristo Redentor?",
+    "a": "Brasil",
+    "opts": [
+      "Brasil",
+      "Vaticano",
+      "México",
+      "Índia"
+    ],
+    "exp": "Cristo Redentor encontra-se em Rio de Janeiro, Brasil.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/cristo-redentor.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Machu Picchu?",
+    "a": "Peru",
+    "opts": [
+      "Egipto",
+      "Vaticano",
+      "Peru",
+      "México"
+    ],
+    "exp": "Machu Picchu encontra-se em Peru.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/machu-picchu.jpg",
+    "imgCredit": "Wikimedia Commons"
+  }
 ]

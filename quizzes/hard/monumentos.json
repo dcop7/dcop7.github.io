@@ -1,10 +1,114 @@
 [
-  { "q": "Em que país se encontra a cidade nabateia de Petra, esculpida na rocha?", "a": "Jordânia", "opts": ["Jordânia", "Egipto", "Israel", "Síria"], "exp": "Petra, na Jordânia, foi a capital do reino nabateu.", "imgType": "img", "img": "quizzes/assets/monuments/petra.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Qual destas pirâmides do Egipto é a maior, em Gizé?", "a": "Pirâmide de Quéops", "opts": ["Pirâmide de Quéops", "Pirâmide de Quéfren", "Pirâmide de Miquerinos", "Pirâmide de Djoser"], "exp": "A Grande Pirâmide de Quéops é a maior de Gizé e a mais antiga das sete maravilhas.", "imgType": "img", "img": "quizzes/assets/monuments/piramide-queops.jpg", "imgCredit": "Wikimedia Commons" },
-  { "q": "Em que cidade portuguesa está o Mosteiro da Batalha?", "a": "Batalha", "opts": ["Batalha", "Alcobaça", "Tomar", "Mafra"], "exp": "O Mosteiro da Batalha celebra a vitória de Aljubarrota (1385) e é gótico-manuelino." },
-  { "q": "Que monumento de Tomar foi sede dos Templários em Portugal?", "a": "Convento de Cristo", "opts": ["Convento de Cristo", "Mosteiro da Batalha", "Sé de Braga", "Palácio de Mafra"], "exp": "O Convento de Cristo, em Tomar, está ligado à Ordem do Templo e à de Cristo." },
-  { "q": "Em que país fica o templo de Angkor Wat?", "a": "Camboja", "opts": ["Camboja", "Tailândia", "Vietname", "Índia"], "exp": "Angkor Wat, no Camboja, é o maior monumento religioso do mundo." },
-  { "q": "Em que cidade italiana fica a Torre Inclinada?", "a": "Pisa", "opts": ["Pisa", "Florença", "Bolonha", "Génova"], "exp": "A Torre de Pisa inclina-se devido a fundações instáveis no solo arenoso." },
-  { "q": "Que antiga cidade romana foi soterrada pela erupção do Vesúvio em 79 d.C.?", "a": "Pompeia", "opts": ["Pompeia", "Óstia", "Herculano", "Cápua"], "exp": "Pompeia (e Herculano) foram soterradas pelo Vesúvio; Pompeia é a mais conhecida." },
-  { "q": "Em que país fica o complexo de templos de Bagan?", "a": "Myanmar (Birmânia)", "opts": ["Myanmar (Birmânia)", "Tailândia", "Laos", "Nepal"], "exp": "Bagan, em Myanmar, possui milhares de templos budistas." }
+  {
+    "q": "Em que cidade portuguesa se encontra Torre dos Clérigos?",
+    "a": "Porto",
+    "opts": [
+      "Coimbra",
+      "Faro",
+      "Batalha",
+      "Porto"
+    ],
+    "exp": "Torre dos Clérigos encontra-se em Porto, Portugal.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/torre-clerigos.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que cidade portuguesa se encontra Mosteiro da Batalha?",
+    "a": "Batalha",
+    "opts": [
+      "Porto",
+      "Lisboa",
+      "Batalha",
+      "Braga"
+    ],
+    "exp": "Mosteiro da Batalha encontra-se em Batalha, Portugal.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/mosteiro-batalha.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que cidade portuguesa se encontra Convento de Cristo?",
+    "a": "Tomar",
+    "opts": [
+      "Lisboa",
+      "Braga",
+      "Tomar",
+      "Batalha"
+    ],
+    "exp": "Convento de Cristo encontra-se em Tomar, Portugal.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/convento-cristo.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que cidade portuguesa se encontra Bom Jesus do Monte?",
+    "a": "Braga",
+    "opts": [
+      "Braga",
+      "Porto",
+      "Évora",
+      "Coimbra"
+    ],
+    "exp": "Bom Jesus do Monte encontra-se em Braga, Portugal.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/bom-jesus.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que cidade portuguesa se encontra Aqueduto das Águas Livres?",
+    "a": "Lisboa",
+    "opts": [
+      "Lisboa",
+      "Sintra",
+      "Porto",
+      "Batalha"
+    ],
+    "exp": "Aqueduto das Águas Livres encontra-se em Lisboa, Portugal.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/aqueduto-aguas-livres.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Palácio de Versalhes?",
+    "a": "França",
+    "opts": [
+      "Portugal",
+      "França",
+      "Brasil",
+      "Jordânia"
+    ],
+    "exp": "Palácio de Versalhes encontra-se em Versalhes, França.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/versalhes.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Atomium?",
+    "a": "Bélgica",
+    "opts": [
+      "México",
+      "Itália",
+      "Vaticano",
+      "Bélgica"
+    ],
+    "exp": "Atomium encontra-se em Bruxelas, Bélgica.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/atomium.jpg",
+    "imgCredit": "Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Esfinge de Gizé?",
+    "a": "Egipto",
+    "opts": [
+      "Vaticano",
+      "Reino Unido",
+      "Grécia",
+      "Egipto"
+    ],
+    "exp": "Esfinge de Gizé encontra-se em Gizé, Egipto.",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/esfinge.jpg",
+    "imgCredit": "Wikimedia Commons"
+  }
 ]

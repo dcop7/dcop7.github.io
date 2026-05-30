@@ -1,10 +1,572 @@
 [
-  { "q": "Qual é o símbolo químico do oxigénio?", "a": "O", "opts": ["O", "Ox", "Og", "Oo"], "exp": "O oxigénio é representado pela letra O na tabela periódica." },
-  { "q": "Qual é o símbolo químico do hidrogénio?", "a": "H", "opts": ["H", "Hi", "Hy", "Hg"], "exp": "O hidrogénio é o elemento mais leve e tem o símbolo H." },
-  { "q": "Qual é o símbolo químico do carbono?", "a": "C", "opts": ["C", "Ca", "Cb", "Co"], "exp": "O carbono, base da vida, tem o símbolo C." },
-  { "q": "O que representa a fórmula H₂O?", "a": "Água", "opts": ["Água", "Sal", "Oxigénio puro", "Dióxido de carbono"], "exp": "H₂O = dois átomos de hidrogénio e um de oxigénio, a molécula da água." },
-  { "q": "O que significa o símbolo matemático mostrado?", "a": "Mais (adição)", "opts": ["Mais (adição)", "Menos (subtracção)", "Multiplicação", "Divisão"], "exp": "O sinal + representa a adição.", "imgType": "svg", "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='90' font-family='Arial' font-weight='bold' font-size='100' fill='currentColor' text-anchor='middle'>+</text></svg>" },
-  { "q": "O que significa o símbolo % ?", "a": "Percentagem", "opts": ["Percentagem", "Divisão", "Raiz quadrada", "Infinito"], "exp": "O símbolo % indica uma proporção em cada cem (por cento)." },
-  { "q": "O que significa o símbolo = ?", "a": "Igual a", "opts": ["Igual a", "Diferente de", "Maior que", "Aproximadamente"], "exp": "O sinal = indica que dois valores são iguais." },
-  { "q": "Qual é o símbolo químico do azoto?", "a": "N", "opts": ["N", "Az", "Ni", "An"], "exp": "O azoto (nitrogénio) tem o símbolo N e compõe ~78% do ar." }
+  {
+    "q": "Qual é o símbolo químico do oxigénio?",
+    "a": "O",
+    "opts": [
+      "O",
+      "Ox",
+      "Og",
+      "Oo"
+    ],
+    "exp": "O oxigénio é representado pela letra O na tabela periódica."
+  },
+  {
+    "q": "Qual é o símbolo químico do hidrogénio?",
+    "a": "H",
+    "opts": [
+      "H",
+      "Hi",
+      "Hy",
+      "Hg"
+    ],
+    "exp": "O hidrogénio é o elemento mais leve e tem o símbolo H."
+  },
+  {
+    "q": "Qual é o símbolo químico do carbono?",
+    "a": "C",
+    "opts": [
+      "C",
+      "Ca",
+      "Cb",
+      "Co"
+    ],
+    "exp": "O carbono, base da vida, tem o símbolo C."
+  },
+  {
+    "q": "O que representa a fórmula H₂O?",
+    "a": "Água",
+    "opts": [
+      "Água",
+      "Sal",
+      "Oxigénio puro",
+      "Dióxido de carbono"
+    ],
+    "exp": "H₂O = dois átomos de hidrogénio e um de oxigénio, a molécula da água."
+  },
+  {
+    "q": "O que significa o símbolo matemático mostrado?",
+    "a": "Mais (adição)",
+    "opts": [
+      "Mais (adição)",
+      "Menos (subtracção)",
+      "Multiplicação",
+      "Divisão"
+    ],
+    "exp": "O sinal + representa a adição.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='120' height='120'><text x='60' y='90' font-family='Arial' font-weight='bold' font-size='100' fill='currentColor' text-anchor='middle'>+</text></svg>"
+  },
+  {
+    "q": "O que significa o símbolo % ?",
+    "a": "Percentagem",
+    "opts": [
+      "Percentagem",
+      "Divisão",
+      "Raiz quadrada",
+      "Infinito"
+    ],
+    "exp": "O símbolo % indica uma proporção em cada cem (por cento)."
+  },
+  {
+    "q": "O que significa o símbolo = ?",
+    "a": "Igual a",
+    "opts": [
+      "Igual a",
+      "Diferente de",
+      "Maior que",
+      "Aproximadamente"
+    ],
+    "exp": "O sinal = indica que dois valores são iguais."
+  },
+  {
+    "q": "Qual é o símbolo químico do azoto?",
+    "a": "N",
+    "opts": [
+      "N",
+      "Az",
+      "Ni",
+      "An"
+    ],
+    "exp": "O azoto (nitrogénio) tem o símbolo N e compõe ~78% do ar."
+  },
+  {
+    "q": "Qual é o símbolo químico de Hidrogénio?",
+    "a": "H",
+    "opts": [
+      "C",
+      "Ar",
+      "O",
+      "H"
+    ],
+    "exp": "O símbolo químico de Hidrogénio é H.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo H?",
+    "a": "Hidrogénio",
+    "opts": [
+      "Oxigénio",
+      "Hidrogénio",
+      "Urânio",
+      "Hélio"
+    ],
+    "exp": "O símbolo H corresponde ao Hidrogénio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Hélio?",
+    "a": "He",
+    "opts": [
+      "N",
+      "He",
+      "Cr",
+      "Si"
+    ],
+    "exp": "O símbolo químico de Hélio é He.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo He?",
+    "a": "Hélio",
+    "opts": [
+      "Carbono",
+      "Hélio",
+      "Arsénio",
+      "Cobalto"
+    ],
+    "exp": "O símbolo He corresponde ao Hélio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Carbono?",
+    "a": "C",
+    "opts": [
+      "C",
+      "B",
+      "Cs",
+      "Hg"
+    ],
+    "exp": "O símbolo químico de Carbono é C.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo C?",
+    "a": "Carbono",
+    "opts": [
+      "Arsénio",
+      "Iodo",
+      "Carbono",
+      "Níquel"
+    ],
+    "exp": "O símbolo C corresponde ao Carbono.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Azoto?",
+    "a": "N",
+    "opts": [
+      "Ni",
+      "N",
+      "He",
+      "Ra"
+    ],
+    "exp": "O símbolo químico de Azoto é N.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo N?",
+    "a": "Azoto",
+    "opts": [
+      "Azoto",
+      "Chumbo",
+      "Manganês",
+      "Cloro"
+    ],
+    "exp": "O símbolo N corresponde ao Azoto.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Oxigénio?",
+    "a": "O",
+    "opts": [
+      "Ge",
+      "Cr",
+      "O",
+      "F"
+    ],
+    "exp": "O símbolo químico de Oxigénio é O.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo O?",
+    "a": "Oxigénio",
+    "opts": [
+      "Oxigénio",
+      "Prata",
+      "Platina",
+      "Níquel"
+    ],
+    "exp": "O símbolo O corresponde ao Oxigénio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Sódio?",
+    "a": "Na",
+    "opts": [
+      "Ba",
+      "Si",
+      "Ni",
+      "Na"
+    ],
+    "exp": "O símbolo químico de Sódio é Na.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Na?",
+    "a": "Sódio",
+    "opts": [
+      "Árgon",
+      "Tungsténio",
+      "Sódio",
+      "Hidrogénio"
+    ],
+    "exp": "O símbolo Na corresponde ao Sódio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Magnésio?",
+    "a": "Mg",
+    "opts": [
+      "Cl",
+      "Mg",
+      "K",
+      "Si"
+    ],
+    "exp": "O símbolo químico de Magnésio é Mg.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Mg?",
+    "a": "Magnésio",
+    "opts": [
+      "Antimónio",
+      "Cloro",
+      "Fósforo",
+      "Magnésio"
+    ],
+    "exp": "O símbolo Mg corresponde ao Magnésio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Alumínio?",
+    "a": "Al",
+    "opts": [
+      "Ti",
+      "Pb",
+      "H",
+      "Al"
+    ],
+    "exp": "O símbolo químico de Alumínio é Al.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Al?",
+    "a": "Alumínio",
+    "opts": [
+      "Silício",
+      "Bismuto",
+      "Rádon",
+      "Alumínio"
+    ],
+    "exp": "O símbolo Al corresponde ao Alumínio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Fósforo?",
+    "a": "P",
+    "opts": [
+      "Pb",
+      "P",
+      "U",
+      "Ge"
+    ],
+    "exp": "O símbolo químico de Fósforo é P.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo P?",
+    "a": "Fósforo",
+    "opts": [
+      "Germânio",
+      "Estanho",
+      "Fósforo",
+      "Hélio"
+    ],
+    "exp": "O símbolo P corresponde ao Fósforo.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Enxofre?",
+    "a": "S",
+    "opts": [
+      "Cd",
+      "Pb",
+      "S",
+      "Ag"
+    ],
+    "exp": "O símbolo químico de Enxofre é S.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo S?",
+    "a": "Enxofre",
+    "opts": [
+      "Vanádio",
+      "Alumínio",
+      "Enxofre",
+      "Níquel"
+    ],
+    "exp": "O símbolo S corresponde ao Enxofre.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Cloro?",
+    "a": "Cl",
+    "opts": [
+      "H",
+      "F",
+      "Bi",
+      "Cl"
+    ],
+    "exp": "O símbolo químico de Cloro é Cl.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Cl?",
+    "a": "Cloro",
+    "opts": [
+      "Rádio",
+      "Cloro",
+      "Vanádio",
+      "Potássio"
+    ],
+    "exp": "O símbolo Cl corresponde ao Cloro.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Cálcio?",
+    "a": "Ca",
+    "opts": [
+      "Ca",
+      "Au",
+      "Cl",
+      "Pu"
+    ],
+    "exp": "O símbolo químico de Cálcio é Ca.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ca?",
+    "a": "Cálcio",
+    "opts": [
+      "Árgon",
+      "Cálcio",
+      "Enxofre",
+      "Fósforo"
+    ],
+    "exp": "O símbolo Ca corresponde ao Cálcio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ferro?",
+    "a": "Fe",
+    "opts": [
+      "As",
+      "Mg",
+      "Fe",
+      "I"
+    ],
+    "exp": "O símbolo químico de Ferro é Fe.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Fe?",
+    "a": "Ferro",
+    "opts": [
+      "Crípton",
+      "Ferro",
+      "Rádon",
+      "Magnésio"
+    ],
+    "exp": "O símbolo Fe corresponde ao Ferro.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Cobre?",
+    "a": "Cu",
+    "opts": [
+      "Al",
+      "Ne",
+      "Ca",
+      "Cu"
+    ],
+    "exp": "O símbolo químico de Cobre é Cu.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Cu?",
+    "a": "Cobre",
+    "opts": [
+      "Plutónio",
+      "Crípton",
+      "Hélio",
+      "Cobre"
+    ],
+    "exp": "O símbolo Cu corresponde ao Cobre.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Zinco?",
+    "a": "Zn",
+    "opts": [
+      "Zn",
+      "Mg",
+      "Li",
+      "I"
+    ],
+    "exp": "O símbolo químico de Zinco é Zn.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Zn?",
+    "a": "Zinco",
+    "opts": [
+      "Titânio",
+      "Sódio",
+      "Zinco",
+      "Berílio"
+    ],
+    "exp": "O símbolo Zn corresponde ao Zinco.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Prata?",
+    "a": "Ag",
+    "opts": [
+      "I",
+      "Ag",
+      "Al",
+      "Be"
+    ],
+    "exp": "O símbolo químico de Prata é Ag.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ag?",
+    "a": "Prata",
+    "opts": [
+      "Antimónio",
+      "Prata",
+      "Crómio",
+      "Silício"
+    ],
+    "exp": "O símbolo Ag corresponde ao Prata.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Iodo?",
+    "a": "I",
+    "opts": [
+      "Ra",
+      "Kr",
+      "I",
+      "Bi"
+    ],
+    "exp": "O símbolo químico de Iodo é I.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo I?",
+    "a": "Iodo",
+    "opts": [
+      "Zinco",
+      "Manganês",
+      "Bário",
+      "Iodo"
+    ],
+    "exp": "O símbolo I corresponde ao Iodo.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ouro?",
+    "a": "Au",
+    "opts": [
+      "Au",
+      "Ge",
+      "Cs",
+      "Ni"
+    ],
+    "exp": "O símbolo químico de Ouro é Au.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Au?",
+    "a": "Ouro",
+    "opts": [
+      "Ouro",
+      "Zinco",
+      "Escândio",
+      "Cobalto"
+    ],
+    "exp": "O símbolo Au corresponde ao Ouro.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Mercúrio?",
+    "a": "Hg",
+    "opts": [
+      "Ba",
+      "Xe",
+      "Rn",
+      "Hg"
+    ],
+    "exp": "O símbolo químico de Mercúrio é Hg.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Hg?",
+    "a": "Mercúrio",
+    "opts": [
+      "Estanho",
+      "Níquel",
+      "Antimónio",
+      "Mercúrio"
+    ],
+    "exp": "O símbolo Hg corresponde ao Mercúrio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Chumbo?",
+    "a": "Pb",
+    "opts": [
+      "Mg",
+      "Pb",
+      "Ag",
+      "Co"
+    ],
+    "exp": "O símbolo químico de Chumbo é Pb.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Pb?",
+    "a": "Chumbo",
+    "opts": [
+      "Bismuto",
+      "Xénon",
+      "Urânio",
+      "Chumbo"
+    ],
+    "exp": "O símbolo Pb corresponde ao Chumbo.",
+    "gen": "chem"
+  }
 ]
