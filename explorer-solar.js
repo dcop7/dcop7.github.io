@@ -343,10 +343,17 @@ const SolarExplorer = (function () {
       _scene.add(new THREE.LineLoop(orbitGeo, orbitMat));
     });
 
+    /* Real axial tilts (degrees) — gives the planets and rings a believable
+       3D pose instead of a flat plane. Uranus famously rolls on its side. */
+    const AXIAL_TILT = {
+      mercury: 0.03, venus: 177.4, earth: 23.4, mars: 25.2,
+      jupiter: 3.1, saturn: 26.7, uranus: 97.8, neptune: 28.3,
+    };
+
     /* Planet meshes */
     const loader = new THREE.TextureLoader();
     _planetMeshes = PLANETS.map(p => {
-      const geo = new THREE.SphereGeometry(p.displayR, 32, 32);
+      const geo = new THREE.SphereGeometry(p.displayR, 48, 48);
       /* Baseline emissive in the planet's own colour keeps it visible even on the dark side. */
       const baseEmissive = new THREE.Color(p.color).multiplyScalar(0.18);
       const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: baseEmissive, shininess: 15 });
@@ -357,25 +364,31 @@ const SolarExplorer = (function () {
         () => {}
       );
       const mesh = new THREE.Mesh(geo, mat);
+      /* Apply axial tilt about the Z axis so rotation + rings look correct. */
+      mesh.rotation.z = (AXIAL_TILT[p.id] || 0) * Math.PI / 180;
       _scene.add(mesh);
 
-      /* Saturn rings */
+      /* Saturn rings — tilt with the planet so they read as a 3D ring system. */
       if (p.hasRings) {
-        const ringGeo = new THREE.RingGeometry(p.displayR * 1.35, p.displayR * 2.3, 64);
+        const ringGeo = new THREE.RingGeometry(p.displayR * 1.35, p.displayR * 2.3, 96);
+        /* Remap UVs so a radial gradient texture would sit correctly; also gives
+           the flat-shaded ring a subtle inner/outer tone via vertex distance. */
         const ringMat = new THREE.MeshBasicMaterial({
-          color: 0xc8a05a,
+          color: 0xd8b878,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.55,
+          opacity: 0.7,
         });
-        /* Rotate ring to lie flat */
         const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = Math.PI / 2;
-        mesh.add(ring);
+        ring.rotation.x = Math.PI / 2;   /* lie in the planet's equatorial plane */
+        mesh.add(ring);                   /* inherits the planet's axial tilt */
       }
 
       return mesh;
     });
+
+    /* Asteroid belt between Mars and Jupiter (decorative, ~Kirkwood gap region). */
+    _buildAsteroidBelt(PLANETS);
 
     /* ResizeObserver */
     new ResizeObserver(() => {
@@ -387,6 +400,27 @@ const SolarExplorer = (function () {
       _camera.updateProjectionMatrix();
       _renderer.setSize(w, h);
     }).observe(viewport);
+  }
+
+  /* Scatter a faint ring of points between Mars and Jupiter. */
+  function _buildAsteroidBelt(PLANETS) {
+    const mars = PLANETS.find(p => p.id === 'mars');
+    const jup  = PLANETS.find(p => p.id === 'jupiter');
+    if (!mars || !jup) return;
+    const rMin = mars.orbitR + 6, rMax = jup.orbitR - 7;
+    const N = 1400;
+    const pos = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = rMin + Math.random() * (rMax - rMin);
+      pos[i * 3]     = Math.cos(a) * r;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 3;   /* thin vertical spread */
+      pos[i * 3 + 2] = Math.sin(a) * r;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const mat = new THREE.PointsMaterial({ color: 0x9a8f7a, size: 0.6, sizeAttenuation: true, transparent: true, opacity: 0.7 });
+    _scene.add(new THREE.Points(geo, mat));
   }
 
   /* ═════════════════════════════ CAMERA ═════════════════════════════ */
@@ -427,7 +461,8 @@ const SolarExplorer = (function () {
         if (mesh) {
           mesh.position.x = Math.cos(_angles[i]) * p.orbitR;
           mesh.position.z = Math.sin(_angles[i]) * p.orbitR;
-          mesh.rotation.y += 0.002 * _speed;
+          /* Spin about the planet's own (tilted) axis, preserving axial tilt. */
+          mesh.rotateY(0.002 * _speed);
         }
       });
 
