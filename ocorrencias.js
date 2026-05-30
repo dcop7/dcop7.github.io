@@ -195,10 +195,10 @@ const OcorrenciasPage = (function () {
       }),
       interactive: false,
     }).addTo(_map);
+    /* Both are GeoJSON layers (vector overlayPane); markers render above them
+       via the markerPane regardless. layerGroups have no bringToFront(). */
     _districtBorderLayer.bringToFront();
     _warnFillLayer?.bringToFront();
-    _lEq?.bringToFront();
-    _lFire?.bringToFront();
   }
 
   /* ── Nominatim reverse geocoding ── */
@@ -471,9 +471,8 @@ const OcorrenciasPage = (function () {
         if (dw) layer.on('click', () => _openDetail(dw.warning));
       },
     }).addTo(_map);
-
-    _lEq?.bringToFront();
-    _lFire?.bringToFront();
+    /* Markers live in Leaflet's markerPane (z-index 600), above the overlayPane
+       (400) where these polygons render, so they already sit on top. */
   }
 
   /* ════════════════════════════════ DETAIL PANEL ═══════════════════ */
