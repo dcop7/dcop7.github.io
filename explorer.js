@@ -16,15 +16,19 @@ const ExplorerPage = (function () {
   let _globeGL         = null;
   let _globeInited     = false;
   let _globeResizeObs  = null;
-  let _globeView       = 'realistic';   /* 'realistic' | 'night' | 'political' */
+  let _globeView       = 'realistic';   /* 'realistic' | 'daynight' | 'political' */
   let _globeHovered    = null;
   let _byCca3          = {};
   let _updateGlobeColors = null;
+  let _globeMatUniforms = null;         /* day/night ShaderMaterial uniforms, if active */
+  let _globeSunTimer    = null;
 
   /* ── Leaflet state ── */
   let _lMap        = null;
   let _lTile       = null;
   let _lLayer      = null;
+  let _lLabels     = null;          /* country-name label layer (progressive by zoom) */
+  let _lSatLabels  = null;          /* Esri reference overlay shown in satellite mode */
   let _lInited     = false;
   let _lDataLoaded = false;
   let _contFilter  = 'all';
@@ -39,8 +43,11 @@ const ExplorerPage = (function () {
 
   /* ── Constants ── */
   const TTL = 86400000;
-  const COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,cca2,cca3,flag,capital,population,currencies,languages,area,continents,flags,timezones,borders';
-  const GEOJSON_URL   = 'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
+  /* Country data + boundaries are bundled locally (data/*) — no runtime dependency
+     on third-party APIs, instant load, works offline. Generated from mledoze/countries
+     + World Bank population + moment-timezone (see git history). */
+  const COUNTRIES_URL = 'data/countries.json';
+  const GEOJSON_URL   = 'data/world-countries.geojson';
 
   /* three-globe CDN — confirmed working 2025 */
   const GLOBE_TEX = {
@@ -49,6 +56,45 @@ const ExplorerPage = (function () {
     bump:  'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png',
     space: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
   };
+
+  /* Day/night globe shader (after vasturiano's globe.gl night-day example).
+     Blends day + night textures by the real sun direction; the `dayNight`
+     uniform forces full daylight (0) or the live terminator (1). */
+  const GLOBE_VERT = `
+    varying vec3 vNormal;
+    varying vec2 vUv;
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }`;
+  const GLOBE_FRAG = `
+    #define PI 3.1415926538
+    uniform sampler2D dayTexture;
+    uniform sampler2D nightTexture;
+    uniform vec2 sunPosition;
+    uniform vec2 globeRotation;
+    uniform float dayNight;
+    varying vec3 vNormal;
+    varying vec2 vUv;
+    float toRad(in float a) { return a * PI / 180.0; }
+    vec3 polar2Cartesian(in vec2 c) {
+      float theta = toRad(90.0 - c.x);
+      float phi   = toRad(90.0 - c.y);
+      return vec3(sin(phi) * cos(theta), cos(phi), sin(phi) * sin(theta));
+    }
+    void main() {
+      float invLon = toRad(globeRotation.x);
+      float invLat = -toRad(globeRotation.y);
+      mat3 rotX = mat3(1, 0, 0, 0, cos(invLat), -sin(invLat), 0, sin(invLat), cos(invLat));
+      mat3 rotY = mat3(cos(invLon), 0, sin(invLon), 0, 1, 0, -sin(invLon), 0, cos(invLon));
+      vec3 sunDir = rotX * rotY * polar2Cartesian(sunPosition);
+      float intensity = dot(normalize(vNormal), normalize(sunDir));
+      vec4 dayColor   = texture2D(dayTexture, vUv);
+      vec4 nightColor = texture2D(nightTexture, vUv);
+      float blend = mix(1.0, smoothstep(-0.12, 0.18, intensity), dayNight);
+      gl_FragColor = mix(nightColor, dayColor, blend);
+    }`;
 
   const CONT_COLORS = {
     Africa:     'rgba(245,158,11,.55)',
@@ -70,6 +116,8 @@ const ExplorerPage = (function () {
       url:  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       attr: '© <a href="https://esri.com">Esri</a>, Maxar, Earthstar Geographics',
       sub:  '',
+      /* Place/boundary reference labels drawn on top of the imagery. */
+      ref:  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
     },
   };
 
@@ -154,22 +202,14 @@ const ExplorerPage = (function () {
 
   /* ════════════════════════════════ DATA FETCH ══════════════════════ */
   async function _fetchCountries() {
-    try {
-      const raw = localStorage.getItem('ex-countries');
-      if (raw) {
-        const { ts, data } = JSON.parse(raw);
-        if (Date.now() - ts < TTL && Array.isArray(data) && data.length > 100) return data;
-      }
-    } catch (e) {}
-    const r    = await _fetchTimeout(COUNTRIES_URL, 15000);
-    const data = await r.json();
-    try { localStorage.setItem('ex-countries', JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
-    return data;
+    /* Bundled same-origin file — fast, cached by the SW, available offline. */
+    const r = await _fetchTimeout(COUNTRIES_URL, 12000);
+    return r.json();
   }
 
   async function _fetchGeoJson() {
     if (_geoJson) return _geoJson;
-    const r = await _fetchTimeout(GEOJSON_URL, 25000);
+    const r = await _fetchTimeout(GEOJSON_URL, 12000);
     return r.json();
   }
 
@@ -231,10 +271,24 @@ const ExplorerPage = (function () {
     const curr    = Object.values(country.currencies || {}).map(c => `${c.name}${c.symbol ? ` (${c.symbol})` : ''}`).join(', ') || '—';
     const langs   = Object.values(country.languages || {}).join(', ') || '—';
     const cont    = (country.continents || [])[0] || '—';
-    const tz      = (country.timezones || []).slice(0, 2).join(', ') || '—';
+    const tzList  = country.timezones || [];
+    const tz      = tzList.length ? tzList.join(', ') : '—';
+    const region  = [country.region, country.subregion].filter(Boolean).join(' · ') || '—';
+    const ll      = country.latlng || [];
+    const coords  = ll.length === 2
+      ? `${Math.abs(ll[0]).toFixed(1)}°${ll[0] >= 0 ? 'N' : 'S'}, ${Math.abs(ll[1]).toFixed(1)}°${ll[1] >= 0 ? 'E' : 'W'}`
+      : '—';
+    const density = (country.area > 0 && country.population > 0)
+      ? Math.round(country.population / country.area).toLocaleString('pt') + ' hab/km²' : '—';
     const isFave  = _favorites.includes(country.cca3);
     const flag    = country.flags?.svg || country.flags?.png || '';
     const facts   = _countryFacts(country);
+    /* Resolve neighbour codes to {flag, name} for richer border chips. */
+    const byCca3  = (_byCca3 && Object.keys(_byCca3).length) ? _byCca3 : _byCode();
+    const neighbours = (country.borders || []).map(code => {
+      const n = byCca3[code];
+      return { code, name: n?.name?.common || code, flag: n?.flag || '' };
+    });
 
     panel.innerHTML = `
       <button class="ex-panel-close" id="ex-panel-close">✕</button>
@@ -258,8 +312,11 @@ const ExplorerPage = (function () {
           <div class="ex-panel-row"><span class="ex-panel-row-icon">📐</span><span class="ex-panel-label">Área</span><span class="ex-panel-value">${area}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">💰</span><span class="ex-panel-label">Moeda</span><span class="ex-panel-value">${curr}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🗣</span><span class="ex-panel-label">Línguas</span><span class="ex-panel-value">${langs}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">👣</span><span class="ex-panel-label">Densidade</span><span class="ex-panel-value">${density}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🌍</span><span class="ex-panel-label">Continente</span><span class="ex-panel-value">${cont}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🕐</span><span class="ex-panel-label">Fuso horário</span><span class="ex-panel-value">${tz}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">🗺</span><span class="ex-panel-label">Região</span><span class="ex-panel-value">${region}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">📍</span><span class="ex-panel-label">Coordenadas</span><span class="ex-panel-value" style="font-family:var(--font-mono);font-size:.76rem">${coords}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">🕐</span><span class="ex-panel-label">Fuso${tzList.length > 1 ? 's' : ''} horário${tzList.length > 1 ? 's' : ''}</span><span class="ex-panel-value">${tz}</span></div>
         </div>
         ${facts.length ? `<div class="ex-panel-facts">
           ${facts.map(f => `<div class="ex-panel-fact">💡 ${f}</div>`).join('')}
@@ -267,11 +324,13 @@ const ExplorerPage = (function () {
         <div class="ex-panel-excerpt" id="ex-panel-excerpt">
           <div class="ex-panel-excerpt-loading">A carregar…</div>
         </div>
-        ${(country.borders || []).length ? `
-          <div class="ex-panel-borders-label">Fronteiras</div>
+        ${neighbours.length ? `
+          <div class="ex-panel-borders-label">Países vizinhos (${neighbours.length})</div>
           <div class="ex-panel-borders">
-            ${country.borders.map(b => `<button class="ex-panel-border-chip" data-cca3="${b}">${b}</button>`).join('')}
-          </div>` : ''}
+            ${neighbours.map(n => `<button class="ex-panel-border-chip" data-cca3="${n.code}">${n.flag ? `<span class="ex-border-chip-flag">${n.flag}</span>` : ''}${n.name}</button>`).join('')}
+          </div>`
+          : `<div class="ex-panel-borders-label">Fronteiras</div>
+             <div class="ex-panel-island-note">🏝 Sem fronteiras terrestres${country.area && country.area < 1000000 ? ' — nação ilha' : ''}.</div>`}
       </div>`;
 
     panel.classList.add('open');
@@ -533,8 +592,9 @@ const ExplorerPage = (function () {
     if (!_lMap) return;
     _mapView = view;
 
-    /* Remove existing tile and night layer */
+    /* Remove existing tile, satellite labels, and night layer */
     if (_lTile) { _lMap.removeLayer(_lTile); _lTile = null; }
+    if (_lSatLabels) { _lMap.removeLayer(_lSatLabels); _lSatLabels = null; }
     if (_nightLayer) { _lMap.removeLayer(_nightLayer); _nightLayer = null; }
 
     if (view === 'satellite') {
@@ -542,6 +602,8 @@ const ExplorerPage = (function () {
         attribution: MAP_TILES.satellite.attr,
         maxZoom: 18,
       }).addTo(_lMap);
+      /* Reference labels overlay so satellite mode isn't label-less. */
+      _lSatLabels = L.tileLayer(MAP_TILES.satellite.ref, { maxZoom: 18, pane: 'shadowPane' }).addTo(_lMap);
     } else if (view === 'night') {
       _lTile = L.tileLayer(_cartoPoliticalUrl(), {
         attribution: MAP_TILES.political.attr,
@@ -585,6 +647,7 @@ const ExplorerPage = (function () {
   function _addCountryLayer() {
     if (!_lMap || !_geoJson) return;
     const byCca3 = _byCode();
+    _lLabels = L.layerGroup();
 
     _lLayer = L.geoJSON(_geoJson, {
       style: () => ({
@@ -608,11 +671,44 @@ const ExplorerPage = (function () {
             }
           },
         });
+        /* Progressive label: flag emoji + name, placed at the polygon centre.
+           minZoom scales with country size so large countries label first. */
+        if (c) {
+          let center;
+          try { center = layer.getBounds().getCenter(); } catch (e) { return; }
+          const area = c.area || 0;
+          const minZoom = area > 3e6 ? 2 : area > 7e5 ? 3 : area > 1.2e5 ? 4 : 5;
+          const marker = L.marker(center, {
+            interactive: false,
+            keyboard: false,
+            icon: L.divIcon({
+              className: 'ex-country-label',
+              html: `<span class="ex-cl-flag">${c.flag || ''}</span><span class="ex-cl-name">${c.name.common}</span>`,
+              iconSize: [0, 0],
+            }),
+          });
+          marker._minZoom = minZoom;
+          _lLabels.addLayer(marker);
+        }
       },
     }).addTo(_lMap);
 
+    _lLabels.addTo(_lMap);
+    _lMap.on('zoomend', _updateLabelVisibility);
+    _updateLabelVisibility();
+
     _wireMapSearch(byCca3);
     _wireContinent(byCca3);
+  }
+
+  /* Show only labels whose size-based threshold is met at the current zoom. */
+  function _updateLabelVisibility() {
+    if (!_lLabels || !_lMap) return;
+    const z = _lMap.getZoom();
+    _lLabels.eachLayer(m => {
+      const el = m.getElement();
+      if (el) el.style.display = z >= (m._minZoom || 5) ? '' : 'none';
+    });
   }
 
   function _wireContinent(byCca3) {
@@ -689,7 +785,7 @@ const ExplorerPage = (function () {
         </div>
         <div class="ex-globe-view-bar" id="ex-globe-view-bar">
           <button class="ex-globe-view-btn active" data-view="realistic">Realista</button>
-          <button class="ex-globe-view-btn" data-view="night">Noturno</button>
+          <button class="ex-globe-view-btn" data-view="daynight">☀ Dia/Noite</button>
           <button class="ex-globe-view-btn" data-view="political">Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
@@ -743,6 +839,9 @@ const ExplorerPage = (function () {
 
     /* Load globe.gl (pinned version — confirmed working) */
     setTxt('A inicializar globo 3D…');
+    /* Load THREE first (same version SolarExplorer uses, usually cached) so we
+       can build the day/night ShaderMaterial. Non-fatal if it fails. */
+    try { await _loadScript('https://unpkg.com/three@0.160.0/build/three.min.js'); } catch (e) {}
     try {
       await _loadScript('https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js');
     } catch (e) {
@@ -771,23 +870,22 @@ const ExplorerPage = (function () {
         const c = _byCca3[f.id];
         return CONT_COLORS[(c?.continents || [''])[0]] || 'rgba(150,150,150,0.45)';
       }
-      return 'rgba(99,102,241,0.08)';
+      /* Realistic / day-night: transparent caps so the Earth texture shows through. */
+      return 'rgba(0,0,0,0)';
     };
     const getCapAlt = f => f === _globeHovered ? 0.006 : (_globeView === 'political' ? 0.003 : 0.001);
 
     _globeGL = Globe({ animateIn: true })(container)
       .width(container.clientWidth)
       .height(container.clientHeight)
-      .globeImageUrl(GLOBE_TEX.day)
-      .bumpImageUrl(GLOBE_TEX.bump)
       .backgroundImageUrl(GLOBE_TEX.space)
       .showAtmosphere(true)
-      .atmosphereColor('lightskyblue')
-      .atmosphereAltitude(0.15)
+      .atmosphereColor('#7fb8ff')
+      .atmosphereAltitude(0.18)
       .polygonsData(_geoJson.features)
       .polygonCapColor(getCapColor)
       .polygonSideColor(() => 'rgba(0,0,0,0.1)')
-      .polygonStrokeColor(() => 'rgba(255,255,255,0.15)')
+      .polygonStrokeColor(() => 'rgba(255,255,255,0.22)')
       .polygonAltitude(getCapAlt)
       .onPolygonHover(f => {
         _globeHovered = f;
@@ -798,13 +896,18 @@ const ExplorerPage = (function () {
       .onPolygonClick(f => {
         if (!f) return;
         const c = _byCca3[f.id];
-        if (c) {
-          showCountryPanel(c, '#ex-country-panel-globe');
-        } else {
-          /* Country data unavailable — show minimal panel from GeoJSON feature */
-          _showGlobeMinimalPanel(f);
+        /* Smooth fly-to using the country's bundled centroid when available. */
+        const ll = c?.latlng;
+        if (ll && ll.length === 2) {
+          _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
         }
+        if (c) showCountryPanel(c, '#ex-country-panel-globe');
+        else   _showGlobeMinimalPanel(f);
       });
+
+    /* Vivid day/night globe material (raw textures, no Phong wash). Falls back to
+       the classic textured material if THREE / the shader is unavailable. */
+    _setupGlobeMaterial();
 
     _updateGlobeColors = () => {
       if (!_globeGL) return;
@@ -843,13 +946,59 @@ const ExplorerPage = (function () {
     _globeInited = true;
   }
 
+  /* Build the day/night ShaderMaterial and wire its uniforms. Falls back to the
+     classic textured globe if THREE or the shader is unavailable. */
+  function _setupGlobeMaterial() {
+    const T = window.THREE;
+    if (!T || !_globeGL) { _globeFallbackMaterial(); return; }
+    try {
+      const loader   = new T.TextureLoader();
+      const dayTex   = loader.load(GLOBE_TEX.day);
+      const nightTex = loader.load(GLOBE_TEX.night);
+      if (T.SRGBColorSpace) { dayTex.colorSpace = T.SRGBColorSpace; nightTex.colorSpace = T.SRGBColorSpace; }
+      const uniforms = {
+        dayTexture:    { value: dayTex },
+        nightTexture:  { value: nightTex },
+        sunPosition:   { value: new T.Vector2() },
+        globeRotation: { value: new T.Vector2() },
+        dayNight:      { value: 0 },
+      };
+      const mat = new T.ShaderMaterial({ uniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
+      _globeGL.globeMaterial(mat);
+      _globeMatUniforms = uniforms;
+      /* Keep the shader's sun direction aligned with the camera POV. */
+      _globeGL.onZoom(pov => {
+        if (_globeMatUniforms && pov) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
+      });
+      _updateSunUniform();
+      if (_globeSunTimer) clearInterval(_globeSunTimer);
+      _globeSunTimer = setInterval(_updateSunUniform, 60000);
+    } catch (e) {
+      _globeFallbackMaterial();
+    }
+  }
+
+  function _updateSunUniform() {
+    if (!_globeMatUniforms) return;
+    const s = _sunPos();
+    _globeMatUniforms.sunPosition.value.set(s.lon, s.lat);
+  }
+
+  function _globeFallbackMaterial() {
+    /* No shader — use the classic textured material so the globe still works. */
+    try { _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump); } catch (e) {}
+  }
+
   function _setGlobeView(view) {
     if (!_globeGL) return;
     _globeView = view;
-    if (view === 'night') {
-      _globeGL.globeImageUrl(GLOBE_TEX.night).bumpImageUrl(null);
+    if (_globeMatUniforms) {
+      _globeMatUniforms.dayNight.value = (view === 'daynight') ? 1 : 0;
+      _updateSunUniform();
     } else {
-      _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump);
+      /* Fallback material mode (no shader). */
+      if (view === 'daynight') _globeGL.globeImageUrl(GLOBE_TEX.night).bumpImageUrl(null);
+      else                     _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump);
     }
     _updateGlobeColors?.();
   }
@@ -984,6 +1133,8 @@ const ExplorerPage = (function () {
       _loadStorage();
       /* Disconnect old globe observer and reset state before rebuilding DOM */
       if (_globeResizeObs) { _globeResizeObs.disconnect(); _globeResizeObs = null; }
+      if (_globeSunTimer) { clearInterval(_globeSunTimer); _globeSunTimer = null; }
+      _globeMatUniforms = null;
       _globeGL         = null;
       _globeInited     = false;
       _globeHovered    = null;

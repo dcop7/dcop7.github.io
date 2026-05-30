@@ -776,6 +776,35 @@
   border-color: rgba(var(--accent-rgb),.3);
   color: var(--accent);
 }
+.ex-border-chip-flag { font-size: .85rem; line-height: 1; }
+
+/* Progressive country labels on the Leaflet world map */
+.ex-country-label {
+  display: flex !important;
+  align-items: center;
+  gap: .25rem;
+  white-space: nowrap;
+  pointer-events: none;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8);
+}
+.ex-country-label .ex-cl-flag { font-size: .9rem; line-height: 1; }
+body.light .ex-country-label {
+  color: #1a2230;
+  text-shadow: 0 1px 3px rgba(255,255,255,.9), 0 0 2px rgba(255,255,255,.8);
+}
+.ex-panel-island-note {
+  font-size: .75rem;
+  color: var(--muted);
+  padding: .4rem .2rem;
+}
 
 .ex-panel-close {
   position: absolute;
@@ -1595,6 +1624,36 @@
 .pt-loading-txt {
   font-size: .82rem;
   color: var(--muted);
+}
+
+/* District-capital labels on the Portugal map (shown when zoomed in) */
+.pt-capital-label {
+  display: flex !important;
+  align-items: center;
+  gap: .25rem;
+  white-space: nowrap;
+  pointer-events: none;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.85);
+}
+.pt-capital-label .pt-cap-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.5);
+  flex: none;
+}
+body.light .pt-capital-label {
+  color: #1a2230;
+  text-shadow: 0 1px 3px rgba(255,255,255,.9), 0 0 2px rgba(255,255,255,.85);
+}
+body.light .pt-capital-label .pt-cap-dot {
+  background: #1a2230; box-shadow: 0 0 0 2px rgba(255,255,255,.6);
 }
 
 /* Info panel (slides from right) */

@@ -168,7 +168,7 @@ const OcorrenciasPage = (function () {
   }
 
   /* ── District boundary GeoJSON (click_that_hood, 18 mainland districts) ── */
-  const PT_DISTRICTS_GEO = 'https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/portugal.geojson';
+  const PT_DISTRICTS_GEO = 'data/pt-districts.geojson';
 
   async function _loadDistrictGeoData() {
     if (_districtGeoData || !_map) return;
@@ -188,15 +188,16 @@ const OcorrenciasPage = (function () {
     _districtBorderLayer = L.geoJSON(_districtGeoData, {
       style: () => ({
         fillColor:   'transparent',
-        color:       _isDark() ? 'rgba(180,200,255,.35)' : 'rgba(60,80,140,.3)',
+        color:       _isDark() ? 'rgba(180,200,255,.4)' : 'rgba(60,80,140,.35)',
         weight:      1.2,
         fillOpacity: 0,
         interactive: false,
       }),
       interactive: false,
     }).addTo(_map);
-    _lEq?.bringToFront();
-    _lFire?.bringToFront();
+    /* Both are GeoJSON layers (vector overlayPane); markers render above them
+       via the markerPane regardless. layerGroups have no bringToFront(). */
+    _districtBorderLayer.bringToFront();
     _warnFillLayer?.bringToFront();
   }
 
@@ -264,6 +265,23 @@ const OcorrenciasPage = (function () {
     }
   }
 
+  /* fogos.pt sends numbers as comma-decimal strings ("39,4738") and counts as
+     strings; normalise to JS numbers. Returns null when not parseable. */
+  function _num(v) {
+    if (v == null || v === '') return null;
+    const n = parseFloat(String(v).replace(',', '.'));
+    return isNaN(n) ? null : n;
+  }
+  /* Timestamps arrive as { sec, usec } (Unix) or as ISO strings — normalise to ms epoch. */
+  function _fogosTime(v) {
+    if (v == null) return null;
+    if (typeof v === 'object' && v.sec != null) return Number(v.sec) * 1000;
+    const n = Number(v);
+    if (!isNaN(n) && n > 1e9) return n < 1e12 ? n * 1000 : n;
+    const t = Date.parse(v);
+    return isNaN(t) ? null : t;
+  }
+
   async function _fetchWildfires() {
     const cached = _fromCache(CACHE.fire);
     if (cached) { _prov.fire = { ok: true, time: _cacheTimeStr(CACHE.fire) || _nowTime() }; return cached; }
@@ -273,25 +291,35 @@ const OcorrenciasPage = (function () {
       const json = await r.json();
       const raw  = Array.isArray(json) ? json : (json.data || json.incidents || []);
       const data = raw.map(ev => {
-        const lat = parseFloat(ev.lat);
-        const lon = parseFloat(ev.lon);
-        if (isNaN(lat) || isNaN(lon)) return null;
-        /* fogos.pt API uses man/terrain/aerial; fall back to legacy field names */
+        /* Real fogos.pt v2 fields: lng (not lon), comma-decimal strings,
+           man/terrain/aerial/meios_aquaticos resources, created/updated {sec}. */
+        const lat = _num(ev.lat);
+        const lon = _num(ev.lng != null ? ev.lng : ev.lon);
+        if (lat == null || lon == null) return null;
         return {
           type:         'fire',
-          id:           `fire-${ev.id || Math.random()}`,
+          id:           `fire-${ev.id || ev.sadoId || Math.random()}`,
           lat, lon,
-          title:        ev.natureza  || ev.tipo || 'Incêndio',
-          municipio:    ev.concelho  || ev.municipio  || null,
+          title:        ev.natureza || ev.especieName || ev.tipo || 'Ocorrência',
+          especie:      ev.especieName || null,
+          familia:      ev.familiaName || null,
+          district:     ev.district  || '—',
+          municipio:    ev.concelho  || ev.municipio || null,
           freguesia:    ev.freguesia || null,
+          localidade:   ev.localidade || ev.detailLocation || null,
+          regiao:       ev.regiao    || null,
           status:       ev.status    || null,
-          operacionais: ev.man     != null ? +ev.man     : ev.operacionais != null ? +ev.operacionais : null,
-          veiculos:     ev.terrain != null ? +ev.terrain : ev.veiculos     != null ? +ev.veiculos     : null,
-          aereos:       ev.aerial  != null ? +ev.aerial  : ev.aereos       != null ? +ev.aereos       : null,
-          area:         ev.area    != null ? +ev.area    : null,
-          time:         ev.criacao     || null,
-          lastUpdate:   ev.atualizacao || null,
-          district:     ev.district || ev.concelho || ev.municipio || ev.freguesia || '—',
+          statusColor:  ev.statusColor || null,
+          important:    !!ev.important,
+          operacionais: _num(ev.man),
+          veiculos:     _num(ev.terrain),
+          aereos:       _num(ev.aerial),
+          aquaticos:    _num(ev.meios_aquaticos),
+          heli:         _num(ev.heliFight),
+          aviao:        _num(ev.planeFight),
+          time:         _fogosTime(ev.created),
+          lastUpdate:   _fogosTime(ev.updated),
+          url:          ev.id ? `https://fogos.pt/fogo/${ev.id}` : null,
           source:       'fogos.pt',
         };
       }).filter(Boolean);
@@ -316,20 +344,22 @@ const OcorrenciasPage = (function () {
       const data = raw
         .filter(w => {
           const end = w.endTime ? new Date(w.endTime).getTime() : Infinity;
-          const lvl = (w.awarenessLevel || w.level || '').toLowerCase();
+          /* Real IPMA field is awarenessLevelID (e.g. "yellow"); keep legacy fallbacks. */
+          const lvl = (w.awarenessLevelID || w.awarenessLevel || w.level || '').toLowerCase();
           return end > now && lvl !== 'green' && lvl !== 'verde';
         })
         .map(w => {
           const areaCode     = w.idAreaAviso ?? w.area?.id ?? null;
           const districtName = IPMA_AREA_TO_DISTRICT[areaCode] || w.area?.name || w.district?.name || w.local || '—';
           const centroid     = DISTRICT_CENTROIDS[districtName];
-          const level        = (w.awarenessLevel || w.level || 'yellow').toLowerCase();
+          const level        = (w.awarenessLevelID || w.awarenessLevel || w.level || 'yellow').toLowerCase();
           return {
             type:     'weather',
-            id:       `wx-${areaCode || w.warningId || Math.random()}`,
+            id:       `wx-${areaCode || w.warningId || Math.random()}-${level}-${w.awarenessTypeName || ''}`,
             title:    `${w.awarenessTypeName || w.awarenessType || 'Aviso'} — ${districtName}`,
             level,
             warnType: w.awarenessTypeName || w.awarenessType || '',
+            descr:    w.text || '',
             areaCode,
             district: districtName,
             time:     w.startTime || '',
@@ -441,9 +471,8 @@ const OcorrenciasPage = (function () {
         if (dw) layer.on('click', () => _openDetail(dw.warning));
       },
     }).addTo(_map);
-
-    _lEq?.bringToFront();
-    _lFire?.bringToFront();
+    /* Markers live in Leaflet's markerPane (z-index 600), above the overlayPane
+       (400) where these polygons render, so they already sit on top. */
   }
 
   /* ════════════════════════════════ DETAIL PANEL ═══════════════════ */
@@ -454,7 +483,10 @@ const OcorrenciasPage = (function () {
       _map?.flyTo([inc.lat, inc.lon], Math.max(_map.getZoom(), 9), { duration: 0.7 });
     }
     _renderDetail(inc, null);
-    if (inc.lat != null && inc.lon != null) {
+    /* Only earthquakes need reverse geocoding — fogos fires already carry the full
+       district/concelho/freguesia hierarchy, and IPMA warnings carry their district.
+       This avoids hammering the rate-limited Nominatim service. */
+    if (inc.type === 'earthquake' && inc.lat != null && inc.lon != null) {
       _reverseGeocode(inc.lat, inc.lon).then(geo => {
         if (geo && _detailInc === inc) _renderDetail(inc, geo);
       });
@@ -506,30 +538,34 @@ const OcorrenciasPage = (function () {
         ${inc.url ? `<a class="oc-detail-link" href="${inc.url}" target="_blank" rel="noopener">Ver relatório USGS ↗</a>` : ''}`;
 
     } else if (inc.type === 'fire') {
-      const statusMap = { active: 'Ativo', resolved: 'Resolvido', 'em curso': 'Em curso', 'conclusão': 'Em conclusão', despacho: 'Em despacho' };
-      const statusLbl = statusMap[(inc.status || '').toLowerCase()] || inc.status;
-      const hasResources = inc.operacionais != null || inc.veiculos != null || inc.aereos != null;
+      const statusLbl = inc.status || null;
+      const statusClr = inc.statusColor || null;
+      const hasResources = [inc.operacionais, inc.veiculos, inc.aereos, inc.aquaticos].some(v => v != null);
+      const typeLbl = inc.familia || 'Ocorrência de Proteção Civil';
       content = `
         <div class="oc-detail-hero fire">
           <div class="oc-detail-fire-icon">🔥</div>
           <div>
-            <div class="oc-detail-type-lbl">Incêndio Florestal</div>
-            ${statusLbl ? `<div class="oc-detail-status-badge">${statusLbl}</div>` : ''}
+            <div class="oc-detail-type-lbl">${typeLbl}</div>
+            ${statusLbl ? `<div class="oc-detail-status-badge"${statusClr ? ` style="background:${statusClr}22;color:${statusClr};border-color:${statusClr}55"` : ''}>${statusLbl}</div>` : ''}
+            ${inc.important ? `<div class="oc-detail-status-badge" style="background:#ef444422;color:#ef4444;border-color:#ef444455">⚠ Significativa</div>` : ''}
           </div>
         </div>
         <div class="oc-detail-rows">
           <div class="oc-detail-row"><span class="oc-detail-label">Natureza</span><span>${_val(inc.title)}</span></div>
           ${_geoRows(geo || { district: inc.district, municipality: inc.municipio, parish: inc.freguesia })}
-          <div class="oc-detail-row"><span class="oc-detail-label">Área ardida</span><span>${_val(inc.area != null ? inc.area.toFixed(2) : null, ' ha')}</span></div>
+          ${inc.localidade ? `<div class="oc-detail-row"><span class="oc-detail-label">📍 Localidade</span><span>${inc.localidade}</span></div>` : ''}
           ${hasResources ? `
           <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">👷 Operacionais</span><span>${_val(inc.operacionais)}</span></div>
-          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">🚒 Veículos</span><span>${_val(inc.veiculos)}</span></div>
-          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">✈️ Meios aéreos</span><span>${_val(inc.aereos)}</span></div>` : ''}
+          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">🚒 Veículos terrestres</span><span>${_val(inc.veiculos)}</span></div>
+          <div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">✈️ Meios aéreos</span><span>${_val(inc.aereos)}</span></div>
+          ${inc.aquaticos ? `<div class="oc-detail-row oc-detail-row--highlight"><span class="oc-detail-label">🚤 Meios aquáticos</span><span>${_val(inc.aquaticos)}</span></div>` : ''}` : ''}
           <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span style="font-family:var(--font-mono);font-size:.78rem">${inc.lat.toFixed(4)}°N, ${Math.abs(inc.lon).toFixed(4)}°W</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Última atualização</span><span>${_fmtTime(inc.lastUpdate)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">fogos.pt</span></div>
         </div>
+        ${inc.url ? `<a class="oc-detail-link" href="${inc.url}" target="_blank" rel="noopener">Ver em fogos.pt ↗</a>` : ''}
         <div class="oc-detail-notice">Dados via fogos.pt (integra sistema SADO da ANEPC).</div>`;
 
     } else if (inc.type === 'weather') {
@@ -549,7 +585,8 @@ const OcorrenciasPage = (function () {
           <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fim previsto</span><span>${_fmtTime(inc.endTime)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">IPMA</span></div>
-        </div>`;
+        </div>
+        ${inc.descr ? `<div class="oc-detail-notice">${inc.descr}</div>` : ''}`;
     }
 
     panel.querySelector('.oc-detail-content').innerHTML = content;
@@ -562,17 +599,25 @@ const OcorrenciasPage = (function () {
     return new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
   }
 
+  /* Normalise any timestamp (ms-epoch number, ISO string, or null) to ms; 0 if unknown. */
+  function _ts(v) {
+    if (v == null || v === '') return 0;
+    if (typeof v === 'number') return v;
+    const t = Date.parse(v);
+    return isNaN(t) ? 0 : t;
+  }
+
   function _fmtTime(iso) {
-    if (!iso) return '—';
-    try {
-      return new Date(iso).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-    } catch (e) { return '—'; }
+    const t = _ts(iso);
+    if (!t) return '—';
+    return new Date(t).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   }
 
   function _relTime(iso) {
-    if (!iso) return '';
+    const t0 = _ts(iso);
+    if (!t0) return '';
     try {
-      const diff = Date.now() - new Date(iso).getTime();
+      const diff = Date.now() - t0;
       const m = Math.floor(diff / 60000);
       if (m < 1)  return 'agora mesmo';
       if (m < 60) return `há ${m}m`;
@@ -757,7 +802,7 @@ const OcorrenciasPage = (function () {
     const warns = r2.status === 'fulfilled' ? r2.value : [];
 
     _incidents = [...eqs, ...fires, ...warns]
-      .sort((a, b) => (b.time || '') > (a.time || '') ? 1 : -1);
+      .sort((a, b) => _ts(b.time) - _ts(a.time));
 
     _renderEqMarkers(eqs);
     _renderFireMarkers(fires);
