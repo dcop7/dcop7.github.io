@@ -90,10 +90,20 @@ const ExplorerPage = (function () {
       mat3 rotY = mat3(cos(invLon), 0, sin(invLon), 0, 1, 0, -sin(invLon), 0, cos(invLon));
       vec3 sunDir = rotX * rotY * polar2Cartesian(sunPosition);
       float intensity = dot(normalize(vNormal), normalize(sunDir));
-      vec4 dayColor   = texture2D(dayTexture, vUv);
-      vec4 nightColor = texture2D(nightTexture, vUv);
+      vec3 dayColor   = texture2D(dayTexture, vUv).rgb;
+      vec3 nightColor = texture2D(nightTexture, vUv).rgb;
       float blend = mix(1.0, smoothstep(-0.12, 0.18, intensity), dayNight);
-      gl_FragColor = mix(nightColor, dayColor, blend);
+      vec3 col = mix(nightColor, dayColor, blend);
+      /* The raw texture rendered unlit looks flat and overexposed. Deepen it
+         with a gentle gamma + contrast so oceans/land/terrain read naturally. */
+      col = pow(col, vec3(1.13));
+      col = (col - 0.5) * 1.10 + 0.5;
+      /* Limb darkening — darken grazing-angle edges so the sphere reads as a
+         3D Earth instead of a glowing white disc. vNormal is the view-space
+         normal; the view direction in view space is +Z. */
+      float facing = clamp(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
+      col *= mix(0.70, 1.0, pow(facing, 0.55));
+      gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
     }`;
 
   const CONT_COLORS = {
@@ -880,8 +890,8 @@ const ExplorerPage = (function () {
       .height(container.clientHeight)
       .backgroundImageUrl(GLOBE_TEX.space)
       .showAtmosphere(true)
-      .atmosphereColor('#7fb8ff')
-      .atmosphereAltitude(0.18)
+      .atmosphereColor('#5a8fd0')
+      .atmosphereAltitude(0.12)
       .polygonsData(_geoJson.features)
       .polygonCapColor(getCapColor)
       .polygonSideColor(() => 'rgba(0,0,0,0.1)')
@@ -941,6 +951,16 @@ const ExplorerPage = (function () {
 
     const countEl = document.getElementById('ex-globe-count');
     if (countEl) countEl.textContent = _countries.length;
+
+    /* Neutral startup: no country selected/highlighted, panel closed, and a
+       calm ocean-centred view so nothing reads as a default selection. */
+    _globeHovered = null;
+    _globeGL.pointOfView({ lat: 20, lng: -40, altitude: 2.5 }, 0);
+    const selEl = document.getElementById('ex-globe-sel');
+    if (selEl) selEl.textContent = '—';
+    const gPanel = document.getElementById('ex-country-panel-globe');
+    if (gPanel) { gPanel.classList.remove('open'); gPanel.innerHTML = ''; }
+    _updateGlobeColors?.();
 
     document.getElementById('ex-globe-loading')?.remove();
     _globeInited = true;
