@@ -3,168 +3,260 @@
     "q": "Em que cidade portuguesa se encontra Mosteiro dos Jerónimos?",
     "a": "Lisboa",
     "opts": [
+      "Porto",
       "Lisboa",
-      "Faro",
-      "Guimarães",
-      "Sintra"
+      "Batalha",
+      "Braga"
     ],
-    "exp": "Mosteiro dos Jerónimos encontra-se em Lisboa, Portugal.",
+    "exp": "Mosteiro dos Jerónimos encontra-se em Lisboa, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Mosteiro%20dos%20Jer%C3%B3nimos\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/mosteiro-jeronimos.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Ingo Mehling · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que cidade portuguesa se encontra Palácio da Pena?",
     "a": "Sintra",
     "opts": [
-      "Batalha",
-      "Coimbra",
-      "Lisboa",
-      "Sintra"
+      "Porto",
+      "Braga",
+      "Sintra",
+      "Tomar"
     ],
-    "exp": "Palácio da Pena encontra-se em Sintra, Portugal.",
+    "exp": "Palácio da Pena encontra-se em Sintra, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Pal%C3%A1cio%20Nacional%20da%20Pena\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/palacio-pena.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Singa Hitam · CC BY 2.0 · Wikimedia Commons"
   },
   {
     "q": "Em que cidade portuguesa se encontra Padrão dos Descobrimentos?",
     "a": "Lisboa",
     "opts": [
       "Lisboa",
+      "Porto",
       "Sintra",
-      "Batalha",
-      "Coimbra"
+      "Tomar"
     ],
-    "exp": "Padrão dos Descobrimentos encontra-se em Lisboa, Portugal.",
+    "exp": "Padrão dos Descobrimentos encontra-se em Lisboa, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Padr%C3%A3o%20dos%20Descobrimentos\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/padrao-descobrimentos.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Diego Delso · CC BY-SA 3.0 · Wikimedia Commons"
+  },
+  {
+    "q": "Em que cidade portuguesa se encontra Castelo de Guimarães?",
+    "a": "Guimarães",
+    "opts": [
+      "Coimbra",
+      "Guimarães",
+      "Tomar",
+      "Faro"
+    ],
+    "exp": "Castelo de Guimarães encontra-se em Guimarães, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Castelo%20de%20Guimar%C3%A3es\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/castelo-guimaraes.jpg",
+    "imgCredit": "Krzysztof Golik · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Torre de Pisa?",
     "a": "Itália",
     "opts": [
-      "Portugal",
       "Itália",
-      "EUA",
-      "Reino Unido"
+      "Portugal",
+      "Indonésia",
+      "Peru"
     ],
-    "exp": "Torre de Pisa encontra-se em Pisa, Itália.",
+    "exp": "Torre de Pisa encontra-se em Pisa, Itália. <a href=\"https://pt.wikipedia.org/wiki/Torre%20de%20Pisa\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/torre-pisa.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Arne Müseler · CC BY-SA 3.0 de · Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Sagrada Família?",
+    "a": "Espanha",
+    "opts": [
+      "Portugal",
+      "Emirados Árabes Unidos",
+      "Espanha",
+      "México"
+    ],
+    "exp": "Sagrada Família encontra-se em Barcelona, Espanha. <a href=\"https://pt.wikipedia.org/wiki/Sagrada%20Fam%C3%ADlia\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/sagrada-familia.jpg",
+    "imgCredit": "Bartolomé Esteban Murillo · Public domain · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Portão de Brandemburgo?",
     "a": "Alemanha",
     "opts": [
-      "Jordânia",
       "Alemanha",
-      "Itália",
-      "Vaticano"
+      "Austrália",
+      "Bélgica",
+      "Índia"
     ],
-    "exp": "Portão de Brandemburgo encontra-se em Berlim, Alemanha.",
+    "exp": "Portão de Brandemburgo encontra-se em Berlim, Alemanha. <a href=\"https://pt.wikipedia.org/wiki/Port%C3%A3o%20de%20Brandemburgo\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/brandenburg.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Pedelecs ( talk · contribs ) · CC BY-SA 3.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Pártenon?",
     "a": "Grécia",
     "opts": [
-      "Vaticano",
-      "Emirados Árabes Unidos",
       "Grécia",
-      "Portugal"
+      "Egipto",
+      "Indonésia",
+      "Emirados Árabes Unidos"
     ],
-    "exp": "Pártenon encontra-se em Atenas, Grécia.",
+    "exp": "Pártenon encontra-se em Atenas, Grécia. <a href=\"https://pt.wikipedia.org/wiki/P%C3%A1rtenon\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/partenon.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Steve Swayne · CC BY 2.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Basílica de São Pedro?",
     "a": "Vaticano",
     "opts": [
       "Vaticano",
+      "China",
       "Reino Unido",
-      "França",
-      "Peru"
+      "Emirados Árabes Unidos"
     ],
-    "exp": "Basílica de São Pedro encontra-se em Vaticano.",
+    "exp": "Basílica de São Pedro encontra-se em Vaticano. <a href=\"https://pt.wikipedia.org/wiki/Bas%C3%ADlica%20de%20S%C3%A3o%20Pedro\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/sao-pedro.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Jakub Hałun · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Stonehenge?",
     "a": "Reino Unido",
     "opts": [
-      "Portugal",
-      "Alemanha",
-      "Reino Unido",
-      "Grécia"
+      "EUA",
+      "Jordânia",
+      "Grécia",
+      "Reino Unido"
     ],
-    "exp": "Stonehenge encontra-se em Wiltshire, Reino Unido.",
+    "exp": "Stonehenge encontra-se em Wiltshire, Reino Unido. <a href=\"https://pt.wikipedia.org/wiki/Stonehenge\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/stonehenge.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Frédéric Vincent · CC BY-SA 2.0 · Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Grande Muralha da China?",
+    "a": "China",
+    "opts": [
+      "Egipto",
+      "China",
+      "França",
+      "Vaticano"
+    ],
+    "exp": "Grande Muralha da China encontra-se em China. <a href=\"https://pt.wikipedia.org/wiki/Grande%20Muralha%20da%20China\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/muralha-china.jpg",
+    "imgCredit": "Vincent Ndaku · CC BY-SA 3.0 · Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Cidade Proibida?",
+    "a": "China",
+    "opts": [
+      "China",
+      "Bélgica",
+      "Itália",
+      "Peru"
+    ],
+    "exp": "Cidade Proibida encontra-se em Pequim, China. <a href=\"https://pt.wikipedia.org/wiki/Cidade%20Proibida\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/cidade-proibida.jpg",
+    "imgCredit": "Jacob Ehnmark from Sendai, Japan · CC BY 2.0 · Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Angkor Wat?",
+    "a": "Camboja",
+    "opts": [
+      "Reino Unido",
+      "Camboja",
+      "México",
+      "Jordânia"
+    ],
+    "exp": "Angkor Wat encontra-se em Camboja. <a href=\"https://pt.wikipedia.org/wiki/Angkor%20Wat\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/angkor-wat.jpg",
+    "imgCredit": "Kheng Vungvuthy · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Petra?",
     "a": "Jordânia",
     "opts": [
+      "Austrália",
       "Jordânia",
-      "Portugal",
-      "Bélgica",
-      "Emirados Árabes Unidos"
+      "Índia",
+      "EUA"
     ],
-    "exp": "Petra encontra-se em Jordânia.",
+    "exp": "Petra encontra-se em Jordânia. <a href=\"https://pt.wikipedia.org/wiki/Petra\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/petra.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Al_Khazneh_Petra.jpg : Graham Racher from London, UK derivat · CC BY-SA 2.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Burj Khalifa?",
     "a": "Emirados Árabes Unidos",
     "opts": [
-      "Peru",
       "Reino Unido",
+      "Indonésia",
       "Emirados Árabes Unidos",
-      "EUA"
+      "Vaticano"
     ],
-    "exp": "Burj Khalifa encontra-se em Dubai, Emirados Árabes Unidos.",
-    "imgType": "img",
-    "img": "quizzes/assets/monuments/burj-khalifa.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "exp": "Burj Khalifa encontra-se em Dubai, Emirados Árabes Unidos. <a href=\"https://pt.wikipedia.org/wiki/Burj%20Khalifa\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>"
+  },
+  {
+    "q": "Em que país se encontra Borobudur?",
+    "a": "Indonésia",
+    "opts": [
+      "Itália",
+      "Espanha",
+      "China",
+      "Indonésia"
+    ],
+    "exp": "Borobudur encontra-se em Java, Indonésia. <a href=\"https://pt.wikipedia.org/wiki/Borobudur\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>"
   },
   {
     "q": "Em que país se encontra Ponte Golden Gate?",
     "a": "EUA",
     "opts": [
-      "EUA",
-      "Grécia",
       "Itália",
-      "Alemanha"
+      "Portugal",
+      "EUA",
+      "Peru"
     ],
-    "exp": "Ponte Golden Gate encontra-se em São Francisco, EUA.",
+    "exp": "Ponte Golden Gate encontra-se em São Francisco, EUA. <a href=\"https://pt.wikipedia.org/wiki/Ponte%20Golden%20Gate\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/golden-gate.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Frank Schulenburg · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Chichén Itzá?",
     "a": "México",
     "opts": [
-      "México",
-      "Itália",
       "Emirados Árabes Unidos",
-      "Bélgica"
+      "Egipto",
+      "Índia",
+      "México"
     ],
-    "exp": "Chichén Itzá encontra-se em Iucatão, México.",
+    "exp": "Chichén Itzá encontra-se em Iucatão, México. <a href=\"https://pt.wikipedia.org/wiki/Chich%C3%A9n%20Itz%C3%A1\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/chichen-itza.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Dronepicr · CC BY 3.0 · Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Ópera de Sydney?",
+    "a": "Austrália",
+    "opts": [
+      "Austrália",
+      "Indonésia",
+      "Jordânia",
+      "França"
+    ],
+    "exp": "Ópera de Sydney encontra-se em Sydney, Austrália. <a href=\"https://pt.wikipedia.org/wiki/%C3%93pera%20de%20Sydney\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/opera-sydney.jpg",
+    "imgCredit": "Bernard Spragg. NZ from Christchurch, New Zealand · CC0 · Wikimedia Commons"
   }
 ]

@@ -321,6 +321,8 @@ const ExplorerPage = (function () {
           </button>
           <a class="ex-wiki-btn" href="https://en.wikipedia.org/wiki/${encodeURIComponent(name)}"
              target="_blank" rel="noopener">📖 Wikipedia</a>
+          <a class="ex-wiki-btn" href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(name)}"
+             target="_blank" rel="noopener">🖼 Commons</a>
         </div>
         <div class="ex-panel-rows">
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🏙</span><span class="ex-panel-label">Capital</span><span class="ex-panel-value">${capital}</span></div>
@@ -360,15 +362,14 @@ const ExplorerPage = (function () {
       };
     });
 
-    _fetchWiki(name).then(({ text, image }) => {
+    _fetchWiki(name).then(({ text }) => {
       const el = panel.querySelector('#ex-panel-excerpt');
       if (!el) return;
-      /* Lead image (Wikimedia Commons) + excerpt; image falls back silently. */
-      const img = image
-        ? `<img class="ex-panel-photo" src="${image}" alt="${name}" loading="lazy"
-             onerror="this.remove()"/>` : '';
-      const body = text ? `<p>${text}${text.length >= 298 ? '…' : ''}</p>` : '';
-      el.innerHTML = img + body;
+      /* Text-only excerpt. We deliberately do NOT render the Wikipedia lead
+         image: its per-file licence cannot be verified at runtime, and the
+         project's policy is "if licence is unverified, do not use the image" —
+         the Wikipedia/Commons links below are the compliant visual fallback. */
+      el.innerHTML = text ? `<p>${text}${text.length >= 298 ? '…' : ''}</p>` : '';
     });
   }
 
