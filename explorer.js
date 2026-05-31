@@ -16,13 +16,16 @@ const ExplorerPage = (function () {
   let _globeGL         = null;
   let _globeInited     = false;
   let _globeResizeObs  = null;
-  let _globeView       = 'dark';   /* political world-map-on-a-sphere: 'dark' | 'light' ocean */
+  let _globeView       = 'realistic';   /* 'realistic' (Blue-Marble) | 'daynight' (live terminator + city lights) | 'political' (flat map) */
   let _globeHovered    = null;
   let _globeSelected   = null;          /* persistently highlighted country (after click) */
   let _byCca3          = {};
   let _updateGlobeColors = null;
+  let _applyGlobeSurface = null;        /* swaps the globe surface for the active view */
+  let _globeShaderMat   = null;         /* realistic/day-night ShaderMaterial (built once) */
   let _globeMatUniforms = null;         /* day/night ShaderMaterial uniforms, if active */
   let _globeSunTimer    = null;
+  const _realistic = () => _globeView === 'realistic' || _globeView === 'daynight';
   let _cloudsMesh       = null;
   let _cloudsRAF        = null;
   let _globeInteracted  = false;       /* true after first user pointer interaction */
@@ -57,10 +60,11 @@ const ExplorerPage = (function () {
   /* Earth textures = NASA Blue Marble / Black Marble / topology (public domain),
      hosted on the three-globe CDN. No external starfield image — the background
      is a solid colour + a CSS starfield (avoids an unverifiable texture). */
+  /* Local equirectangular Earth maps (Solar System Scope, CC BY 4.0) — offline
+     capable, no CDN dependency. Both are 2:1 so they wrap the sphere cleanly. */
   const GLOBE_TEX = {
-    day:   'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
-    night: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
-    bump:  'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png',
+    day:   'assets/planets/earth_atmos_2048.jpg',
+    night: 'assets/planets/earth-night.jpg',
   };
 
   /* Day/night globe shader (after vasturiano's globe.gl night-day example).
@@ -837,8 +841,9 @@ const ExplorerPage = (function () {
           <div class="ex-loading-text" id="ex-globe-loading-txt">A carregar o globo…</div>
         </div>
         <div class="ex-globe-view-bar" id="ex-globe-view-bar">
-          <button class="ex-globe-view-btn active" data-view="dark">Escuro</button>
-          <button class="ex-globe-view-btn" data-view="light">Claro</button>
+          <button class="ex-globe-view-btn active" data-view="realistic">🌍 Realista</button>
+          <button class="ex-globe-view-btn" data-view="daynight">🌗 Dia/Noite</button>
+          <button class="ex-globe-view-btn" data-view="political">🗺️ Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
         <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
@@ -926,13 +931,17 @@ const ExplorerPage = (function () {
        continent colour, selection/hover stand out, borders always visible. */
     const getCapColor = f => {
       if (!f) return 'rgba(0,0,0,0)';
-      if (f === _globeSelected) return 'rgba(99,102,241,0.92)';
-      if (f === _globeHovered)  return 'rgba(255,255,255,0.82)';
-      if (_favorites.includes(f.id)) return 'rgba(239,68,68,0.6)';
+      if (f === _globeSelected) return _realistic() ? 'rgba(99,102,241,0.55)' : 'rgba(99,102,241,0.92)';
+      if (f === _globeHovered)  return _realistic() ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.82)';
+      if (_favorites.includes(f.id)) return _realistic() ? 'rgba(239,68,68,0.40)' : 'rgba(239,68,68,0.6)';
+      /* Realistic/day-night: caps are transparent so the Earth texture shows. */
+      if (_realistic()) return 'rgba(0,0,0,0)';
       const c = _byCca3[f.id];
       return CONT_COLORS[(c?.continents || [''])[0]] || 'rgba(150,160,180,0.55)';
     };
     const getCapAlt = f => (f === _globeSelected ? 0.02 : f === _globeHovered ? 0.012 : 0.006);
+    /* Borders stay subtle over the photo Earth, bolder over the flat map. */
+    const getStroke = () => _realistic() ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.55)';
 
     _globeGL = Globe({ animateIn: true })(container)
       .width(container.clientWidth)
@@ -944,7 +953,7 @@ const ExplorerPage = (function () {
       .polygonsData(_geoJson.features)
       .polygonCapColor(getCapColor)
       .polygonSideColor(() => 'rgba(20,30,55,0.35)')
-      .polygonStrokeColor(() => 'rgba(255,255,255,0.55)')
+      .polygonStrokeColor(getStroke)
       .polygonAltitude(getCapAlt)
       .labelsData([])
       .labelLat(d => d.lat)
@@ -984,15 +993,44 @@ const ExplorerPage = (function () {
         else   _showGlobeMinimalPanel(f);
       });
 
-    /* The globe is the world map wrapped on a sphere — a plain ocean surface
-       (no Earth photo/clouds/day-night) so country fills, borders and labels
-       stay readable. Surface colour follows the chosen ocean theme. */
-    _setOceanGlobe();
-
     _updateGlobeColors = () => {
       if (!_globeGL) return;
-      _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt);
+      _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt).polygonStrokeColor(getStroke);
     };
+
+    /* Swap the globe's surface to match the active view: a realistic Blue-Marble
+       (optionally with a live day/night terminator + city lights) or the flat
+       political ocean. The shader material is built once and reused. */
+    _applyGlobeSurface = () => {
+      const T = window.THREE;
+      if (!_globeGL) return;
+      if (_realistic() && T && _globeGL.globeMaterial) {
+        if (!_globeShaderMat) _globeShaderMat = _buildGlobeShaderMat();
+        if (_globeShaderMat) {
+          _globeShaderMat.uniforms.dayNight.value = (_globeView === 'daynight') ? 1 : 0;
+          try {
+            const pov = _globeGL.pointOfView();
+            if (pov) _globeShaderMat.uniforms.globeRotation.value.set(pov.lng, pov.lat);
+          } catch (e) {}
+          _globeGL.globeMaterial(_globeShaderMat);
+          _globeGL.atmosphereColor('#9ec5ff');
+          return;
+        }
+      }
+      _setOceanGlobe();   /* político (or THREE unavailable) → flat ocean map */
+      _globeGL.atmosphereColor('#6f9fd8');
+    };
+    _applyGlobeSurface();
+
+    /* Keep the day/night terminator anchored to the real Sun position. */
+    if (_globeSunTimer) clearInterval(_globeSunTimer);
+    const _updateSun = () => {
+      if (!_globeShaderMat) return;
+      const sp = _sunPos();
+      _globeShaderMat.uniforms.sunPosition.value.set(sp.lon, sp.lat);
+    };
+    _updateSun();
+    _globeSunTimer = setInterval(_updateSun, 30000);
 
     /* Wire view buttons */
     const bar = document.getElementById('ex-globe-view-bar');
@@ -1053,24 +1091,42 @@ const ExplorerPage = (function () {
     _globeInited = true;
   }
 
-  /* Plain ocean globe surface — NO Earth photo, clouds, day/night or shaders.
-     The globe is the world map wrapped on a sphere: a readable ocean colour
-     under the coloured country polygons + borders + labels. Mild Phong shading
-     gives a gentle 3D read without dramatic lighting. */
-  const OCEAN = { dark: '#0e2742', light: '#a9c6e6' };
+  /* Flat "político" surface — a readable dark ocean under the continent-coloured
+     country polygons + borders + labels. Mild Phong shading for a gentle 3D read. */
+  const OCEAN = { dark: '#0e2742' };
   function _setOceanGlobe() {
     const T = window.THREE;
     if (!_globeGL) return;
-    const col = _globeView === 'light' ? OCEAN.light : OCEAN.dark;
     try {
       if (T && _globeGL.globeMaterial) {
-        const mat = new T.MeshPhongMaterial({ color: new T.Color(col), shininess: 5 });
-        if (_globeView !== 'light') mat.emissive = new T.Color('#08111f');
+        const mat = new T.MeshPhongMaterial({ color: new T.Color(OCEAN.dark), shininess: 5 });
+        mat.emissive = new T.Color('#08111f');
         _globeGL.globeMaterial(mat);
       } else if (_globeGL.globeImageUrl) {
         _globeGL.globeImageUrl(null);
       }
     } catch (e) {}
+  }
+
+  /* Build the realistic day/night ShaderMaterial once (textures load async).
+     Blends the Blue-Marble day map with a city-lights night map by the live
+     Sun direction; `dayNight` 0 = full daylight, 1 = real terminator. */
+  function _buildGlobeShaderMat() {
+    const T = window.THREE;
+    if (!T) return null;
+    const loader = new T.TextureLoader();
+    const day = loader.load(GLOBE_TEX.day, () => document.getElementById('ex-globe-loading')?.remove());
+    const night = loader.load(GLOBE_TEX.night);
+    if (T.SRGBColorSpace) { day.colorSpace = T.SRGBColorSpace; night.colorSpace = T.SRGBColorSpace; }
+    const sp = _sunPos();
+    _globeMatUniforms = {
+      dayTexture:    { value: day },
+      nightTexture:  { value: night },
+      sunPosition:   { value: new T.Vector2(sp.lon, sp.lat) },
+      globeRotation: { value: new T.Vector2() },
+      dayNight:      { value: 1 },
+    };
+    return new T.ShaderMaterial({ uniforms: _globeMatUniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
   }
 
   /* Zoom handler: reveals more country labels as the user zooms in. */
@@ -1083,13 +1139,15 @@ const ExplorerPage = (function () {
   function _onGlobeZoom(pov) {
     if (!pov) return;
     _updateGlobeLabels(pov.altitude);
+    /* Re-anchor the terminator to geographic space as the camera moves. */
+    if (_globeShaderMat) _globeShaderMat.uniforms.globeRotation.value.set(pov.lng, pov.lat);
   }
 
-  /* Switch ocean theme (dark/light). Both are readable political map styles. */
+  /* Switch globe view: Realista | Dia/Noite | Político. */
   function _setGlobeView(view) {
     if (!_globeGL) return;
-    _globeView = (view === 'light') ? 'light' : 'dark';
-    _setOceanGlobe();
+    _globeView = ['realistic', 'daynight', 'political'].includes(view) ? view : 'realistic';
+    _applyGlobeSurface?.();
     _updateGlobeColors?.();
   }
 
