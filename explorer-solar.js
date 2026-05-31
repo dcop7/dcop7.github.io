@@ -182,6 +182,8 @@ const SolarExplorer = (function () {
   /* Animation */
   let _speed   = 1;
   let _paused  = false;
+  let _orbitLines    = [];
+  let _orbitsVisible = true;
 
   /* Respect the user's reduced-motion preference (app setting or OS).
      When reduced, planets hold position/spin but the scene still renders
@@ -233,6 +235,8 @@ const SolarExplorer = (function () {
           <button class="ex-solar-btn" id="ss-faster" title="Mais rápido">⏩</button>
           <button class="ex-solar-btn" id="ss-reset"  title="Repor">↺</button>
           <div class="ex-solar-divider"></div>
+          <button class="ex-solar-btn active" id="ss-orbits" title="Mostrar/ocultar órbitas">🛰</button>
+          <div class="ex-solar-divider"></div>
           <button class="ex-solar-btn" id="ss-zoom-out" title="Afastar">−</button>
           <button class="ex-solar-btn" id="ss-zoom-in"  title="Aproximar">+</button>
         </div>
@@ -247,7 +251,7 @@ const SolarExplorer = (function () {
           </div>
           <div class="ex-solar-panel-body" id="ss-panel-body"></div>
         </div>
-        <div class="ex-solar-hint" id="ss-hint">Clica num planeta para explorar · Scroll para zoom</div>
+        <div class="ex-solar-hint" id="ss-hint">Selecciona um corpo celeste para explorar · Arrasta para rodar · Scroll para zoom</div>
       </div>`;
 
     _mounted = true;
@@ -270,15 +274,9 @@ const SolarExplorer = (function () {
     _wireHover(container);
     _start();
 
-    /* Auto-open Sun panel on first load */
-    if (!_autoOpenDone) {
-      _autoOpenDone = true;
-      setTimeout(() => {
-        _sel = 'sun';
-        _focusSun();
-        _openPanel(SUN, container);
-      }, 800);
-    }
+    /* Neutral start — nothing selected. A gentle cinematic camera drift
+       (handled in the animation tick while _sel === null) makes it feel alive
+       without auto-selecting any body. */
   }
 
   function resume() { if (!_raf && _mounted) _start(); }
@@ -293,6 +291,7 @@ const SolarExplorer = (function () {
     const viewport = container.querySelector('#ss-viewport');
     const W = viewport.clientWidth  || 800;
     const H = viewport.clientHeight || 600;
+    _orbitLines = [];   /* reset so re-mounts don't keep stale orbit refs */
 
     /* Renderer */
     _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -347,7 +346,10 @@ const SolarExplorer = (function () {
         pts.push(new THREE.Vector3(Math.cos(a) * p.orbitR, 0, Math.sin(a) * p.orbitR));
       }
       const orbitGeo = new THREE.BufferGeometry().setFromPoints(pts);
-      _scene.add(new THREE.LineLoop(orbitGeo, orbitMat));
+      const loop = new THREE.LineLoop(orbitGeo, orbitMat);
+      loop.visible = _orbitsVisible;
+      _orbitLines.push(loop);
+      _scene.add(loop);
     });
 
     /* Real axial tilts (degrees) — gives the planets and rings a believable
@@ -473,6 +475,12 @@ const SolarExplorer = (function () {
           if (animate) mesh.rotateY(0.002 * _speed);
         }
       });
+
+      /* Cinematic idle drift: while nothing is selected (and the user isn't
+         dragging), slowly orbit the camera so the scene feels alive. */
+      if (_sel === null && !_dragging && animate) {
+        _camThetaT += 0.0006;
+      }
 
       /* Lerp camera towards target */
       const lf = 0.06;
@@ -680,8 +688,13 @@ const SolarExplorer = (function () {
       _updateSpeedLabel(container);
     };
     container.querySelector('#ss-faster').onclick = () => {
-      _speed = Math.min(64, _speed * 2);
+      _speed = Math.min(1000, _speed * 2);
       _updateSpeedLabel(container);
+    };
+    container.querySelector('#ss-orbits').onclick = e => {
+      _orbitsVisible = !_orbitsVisible;
+      _orbitLines.forEach(l => { l.visible = _orbitsVisible; });
+      e.currentTarget.classList.toggle('active', _orbitsVisible);
     };
     container.querySelector('#ss-zoom-in').onclick  = () => { _camDistT = Math.max(20, _camDistT * 0.7); };
     container.querySelector('#ss-zoom-out').onclick = () => { _camDistT = Math.min(600, _camDistT * 1.4); };
