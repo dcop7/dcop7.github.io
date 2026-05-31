@@ -29,19 +29,19 @@ const GameHost = (function () {
     { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8', group: 'Puzzle',
       desc: 'Constrói pontes para os robôs atravessarem. Triângulos são a chave!' },
     { id: 'escape-lab',    name: 'Math Escape Lab',      icon: '🧪', color: '#00cc70', group: 'Educativo',
-      desc: 'Foge do laboratório resolvendo puzzles matemáticos. Idades 6–14+.' },
+      desc: 'Foge do laboratório resolvendo puzzles matemáticos.' },
     { id: 'cipher-grid',   name: 'Cipher Grid',          icon: '🔷', color: '#22d3ee', group: 'Educativo',
-      desc: 'Decifra padrões, sequências e grelhas misteriosas. Idades 6–14+.' },
+      desc: 'Decifra padrões, sequências e grelhas misteriosas.' },
     { id: 'robot-repair',  name: 'Robot Repair Lab',     icon: '🤖', color: '#7c3aed', group: 'Educativo',
-      desc: 'Repara robôs resolvendo puzzles de lógica. Idades 6–14+.' },
+      desc: 'Repara robôs resolvendo puzzles de lógica.' },
     { id: 'space-code',    name: 'Space Code Academy',   icon: '🛸', color: '#1d4ed8', group: 'Educativo',
-      desc: 'Decifra transmissões alienígenas com matemática espacial. Idades 6–14+.' },
+      desc: 'Decifra transmissões alienígenas com matemática espacial.' },
     { id: 'math-detective',name: 'Math Detective',       icon: '🔍', color: '#b45309', group: 'Educativo',
-      desc: 'Resolve mistérios usando pistas matemáticas. Idades 6–14+.' },
+      desc: 'Resolve mistérios usando pistas matemáticas.' },
     { id: 'treasure-vault',name: 'Treasure Vault',       icon: '🏺', color: '#d97706', group: 'Educativo',
-      desc: 'Abre cofres antigos com combinações matemáticas. Idades 6–14+.' },
+      desc: 'Abre cofres antigos com combinações matemáticas.' },
     { id: 'cyber-maze',    name: 'Cyber Maze',           icon: '🌀', color: '#db2777', group: 'Educativo',
-      desc: 'Navega num labirinto cibernético resolvendo puzzles. Idades 6–14+.' },
+      desc: 'Navega num labirinto cibernético resolvendo puzzles.' },
     { id: 'neon',          name: 'Neon Drawing',         icon: '✨', color: '#a855f7', group: 'Criativo',
       desc: 'Desenha com efeito neon brilhante. Arte digital!' },
   ];
@@ -73,18 +73,40 @@ const GameHost = (function () {
     'bridge-builder':{ init: () => BridgeBuilderGame.init(document.getElementById('pane-bridge-builder')), initialized: false },
   };
 
-  const AGES = [6,7,8,9,10,11,12,13,14];
+  /* Unified difficulty model — same as Quizzes (Fácil / Médio / Difícil).
+     Shared with quizzes via the 'quiz-difficulty' key so the whole site uses
+     one progression the user learns once. */
+  const DIFFS = [
+    { id: 'easy',   label: 'Fácil',   dot: '🟢' },
+    { id: 'medium', label: 'Médio',   dot: '🟡' },
+    { id: 'hard',   label: 'Difícil', dot: '🔴' },
+  ];
+  /* Representative age fed to each game's existing age-based scaling, so every
+     game genuinely adapts at 3 distinct levels without per-game rewrites. */
+  const DIFF_AGE = { easy: 7, medium: 10, hard: 14 };
 
-  function getGameAge() {
-    const raw = localStorage.getItem('game-age-default') || '8';
-    return AGES.map(String).includes(raw) ? raw : '8';
+  function getDifficulty() {
+    const d = localStorage.getItem('quiz-difficulty');
+    return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
   }
+  /* Keep the legacy per-game key in sync so all games scale to the chosen
+     difficulty (Fácil→7, Médio→10, Difícil→14). */
+  function _syncGameAge() {
+    try { localStorage.setItem('game-age-default', String(DIFF_AGE[getDifficulty()])); } catch (e) {}
+  }
+  function setDifficulty(d) {
+    if (!DIFF_AGE[d]) return;
+    try { localStorage.setItem('quiz-difficulty', d); } catch (e) {}
+    _syncGameAge();
+  }
+  function getGameAge() { return String(DIFF_AGE[getDifficulty()]); }
 
   function renderHub() {
     const hub = document.getElementById('games-hub');
     if (!hub) return;
 
-    const age    = getGameAge();
+    _syncGameAge();              /* make sure games reflect the current difficulty */
+    const diff   = getDifficulty();
     const groups = {};
     GAMES.forEach(g => {
       if (!groups[g.group]) groups[g.group] = [];
@@ -97,10 +119,10 @@ const GameHost = (function () {
         <p class="page-subtitle">Escolhe um jogo para começar a jogar</p>
       </div>
       <div class="gh-settings-bar">
-        <span class="gh-settings-lbl">Idade / Dificuldade</span>
-        <div class="gh-age-seg" id="gh-age-seg">
-          ${AGES.map(a =>
-            `<button class="gh-age-btn${age===String(a)?' active':''}" data-age="${a}">${a===14?'14+':a}</button>`
+        <span class="gh-settings-lbl">Dificuldade</span>
+        <div class="gh-diff-seg" id="gh-diff-seg">
+          ${DIFFS.map(d =>
+            `<button class="gh-diff-btn gh-diff-${d.id}${diff===d.id?' active':''}" data-diff="${d.id}">${d.dot} ${d.label}</button>`
           ).join('')}
         </div>
       </div>
@@ -117,15 +139,14 @@ const GameHost = (function () {
           </div>
         </div>`).join('')}`;
 
-    /* Age selector */
-    hub.querySelectorAll('#gh-age-seg .gh-age-btn').forEach(btn => {
+    /* Difficulty selector (unified Fácil/Médio/Difícil) */
+    hub.querySelectorAll('#gh-diff-seg .gh-diff-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const a = btn.dataset.age;
-        localStorage.setItem('game-age-default', a);
-        hub.querySelectorAll('#gh-age-seg .gh-age-btn').forEach(b => b.classList.toggle('active', b === btn));
+        setDifficulty(btn.dataset.diff);
+        hub.querySelectorAll('#gh-diff-seg .gh-diff-btn').forEach(b => b.classList.toggle('active', b === btn));
         /* sync hangman's in-game age display if visible */
         const hfAgeVal = document.getElementById('hf-age-val');
-        if (hfAgeVal) hfAgeVal.textContent = a;
+        if (hfAgeVal) hfAgeVal.textContent = getGameAge();
       });
     });
 

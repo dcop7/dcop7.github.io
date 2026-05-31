@@ -119,6 +119,25 @@
   font-weight: 700;
 }
 
+/* ── UNIFIED DIFFICULTY SELECTOR (matches the Quizzes Fácil/Médio/Difícil) ── */
+.gh-diff-seg { display: flex; flex-wrap: wrap; gap: .4rem; }
+.gh-diff-btn {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text2);
+  font-size: .8rem;
+  font-weight: 600;
+  padding: .4rem .85rem;
+  cursor: pointer;
+  transition: all var(--ease);
+  font-family: inherit;
+}
+.gh-diff-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+.gh-diff-easy.active   { background: rgba(34,197,94,.16);  border-color: rgba(34,197,94,.5);  color: #22c55e; }
+.gh-diff-medium.active { background: rgba(234,179,8,.16);  border-color: rgba(234,179,8,.5);  color: #eab308; }
+.gh-diff-hard.active   { background: rgba(239,68,68,.16);  border-color: rgba(239,68,68,.5);  color: #ef4444; }
+
 /* ── GAME GROUPS ── */
 .games-group { margin-bottom: 1.75rem; }
 .games-group-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: .65rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .4rem; }
