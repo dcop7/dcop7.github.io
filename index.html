@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <title>Diogo's website</title>
-<meta name="description" content="Futuristic personal productivity homepage"/>
+<meta name="description" content="Centro pessoal de produtividade — ferramentas, jogos, quizzes, mapas e muito mais."/>
 <meta name="theme-color" content="#6366f1"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -41,10 +41,10 @@
 
 <!-- ── THEME PANEL ── -->
 <div id="theme-panel" class="theme-panel">
-  <div class="theme-panel-title">Theme</div>
+  <div class="theme-panel-title" data-i18n="theme.title">Tema</div>
   <div class="theme-grid">
-    <button class="theme-option" data-theme="dark">Dark</button>
-    <button class="theme-option" data-theme="light">Light</button>
+    <button class="theme-option" data-theme="dark" data-i18n="theme.dark">Escuro</button>
+    <button class="theme-option" data-theme="light" data-i18n="theme.light">Claro</button>
   </div>
 </div>
 
@@ -55,7 +55,7 @@
 
   <header id="site-header">
     <div class="hdr-left">
-      <button class="sb-toggle" id="sb-toggle" aria-label="Menu">
+      <button class="sb-toggle" id="sb-toggle" aria-label="Menu" data-i18n-title="hdr.menu">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
@@ -77,17 +77,17 @@
         <strong id="date-el">—</strong>
         <span id="time-el">—</span>
       </div>
-      <div class="font-ctrl-wrap" title="Text size">
+      <div class="font-ctrl-wrap" title="Tamanho do texto" data-i18n-title="hdr.textsize">
         <div class="font-ctrl">
           <button class="font-btn" id="font-dec">−</button>
           <span class="font-size-lbl" id="font-lbl">M</span>
           <button class="font-btn" id="font-inc">+</button>
         </div>
       </div>
-      <button class="icon-btn" id="theme-toggle-btn" title="Change theme">
+      <button class="icon-btn" id="theme-toggle-btn" title="Mudar tema" data-i18n-title="hdr.theme">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
-      <button class="lang-btn" id="lang-btn" onclick="I18n.toggle()" title="Switch language">PT</button>
+      <button class="lang-btn" id="lang-btn" onclick="I18n.toggle()" title="Mudar idioma" data-i18n-title="hdr.lang.title">PT</button>
     </div>
   </header>
 

@@ -50,8 +50,8 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${ICONS.cheatsheets}<span>${TN('nav.cheatsheets')}</span></a>
           <a class="sb-nav-item" data-route="games"        href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${ICONS.quiz}<span>${TN('nav.quiz')}</span></a>
-          <a class="sb-nav-item" data-route="explorer"    href="#explorer">${ICONS.explorer}<span>Explorar</span></a>
-          <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>Ocorrências PT</span></a>
+          <a class="sb-nav-item" data-route="explorer"    href="#explorer">${ICONS.explorer}<span>${TN('nav.explorer')}</span></a>
+          <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>${TN('nav.ocorrencias')}</span></a>
           <div class="sb-sep"></div>
           <a class="sb-nav-item" data-route="media"        href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
           <a class="sb-nav-item" data-route="workout"      href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
@@ -213,10 +213,15 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','media','workout','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','explorer','ocorrencias','media','workout','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);
+    });
+    /* Mobile bottom-nav labels follow the same keys. */
+    document.querySelectorAll('#mob-nav .mob-nav-btn').forEach(btn => {
+      const span = btn.querySelector('span');
+      if (span) span.textContent = TN(`nav.${btn.dataset.route}`);
     });
   });
 

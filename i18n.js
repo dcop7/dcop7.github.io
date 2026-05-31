@@ -8,8 +8,12 @@ const I18n = (function () {
       'nav.tools':'Tools','nav.workout':'Workout','nav.media':'Entertainment',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
-      'nav.quiz':'Quizzes',
+      'nav.quiz':'Quizzes','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
+      // Theme panel + header tooltips
+      'theme.title':'Theme','theme.dark':'Dark','theme.light':'Light',
+      'hdr.textsize':'Text size','hdr.theme':'Change theme','hdr.lang.title':'Switch language',
+      'hdr.menu':'Menu','hdr.fav.edit':'Edit favourites',
       'lp.all':'All','lp.title':'🔗 Useful Sites',
       'lp.count':'{n} sites in {m} categories',
       // Games
@@ -132,8 +136,12 @@ const I18n = (function () {
       'nav.tools':'Ferramentas','nav.workout':'Treino','nav.media':'Entretenimento',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
-      'nav.quiz':'Quizzes',
+      'nav.quiz':'Quizzes','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
+      // Painel de tema + dicas do cabeçalho
+      'theme.title':'Tema','theme.dark':'Escuro','theme.light':'Claro',
+      'hdr.textsize':'Tamanho do texto','hdr.theme':'Mudar tema','hdr.lang.title':'Mudar idioma',
+      'hdr.menu':'Menu','hdr.fav.edit':'Editar favoritos',
       'lp.all':'Todos','lp.title':'🔗 Sites Úteis',
       'lp.count':'{n} sites em {m} categorias',
       // Games
@@ -265,6 +273,7 @@ const I18n = (function () {
   function applyStatic() {
     document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
     const btn = document.getElementById('lang-btn');
     if (btn) btn.textContent = t('hdr.lang');
   }
