@@ -31,6 +31,14 @@ for (const f of (existsSync(monDir) ? await readdir(monDir) : []).filter(x => x.
     verified: !!c, classification: c ? 'SAFE' : 'REVIEW' });
 }
 
+/* 2b) National flags — local public-domain SVGs (flag designs are PD) */
+const flagsDir = join(ROOT, 'data', 'flags');
+for (const f of (existsSync(flagsDir) ? await readdir(flagsDir) : []).filter(x => x.endsWith('.svg'))) {
+  add({ file: `data/flags/${f}`, type: 'svg', source: 'flagcdn.com (national flag)',
+    license: 'Public Domain (flag designs are not copyrightable)', attribution: 'none required',
+    verified: true, classification: 'SAFE' });
+}
+
 /* 3) Favicon — original work in this repo */
 add({ file: 'favicon.svg', type: 'svg', source: 'original (this repository)',
   license: 'project-owned / public-domain shapes', attribution: 'none', verified: true, classification: 'SAFE' });
@@ -48,7 +56,6 @@ const remote = [
   { file: 'cdn.jsdelivr.net/.../earth-blue-marble.jpg', source: 'NASA Visible Earth (Blue Marble) via three-globe CDN', license: 'Public Domain (NASA)', attribution: 'NASA (not required)', verified: true, classification: 'SAFE' },
   { file: 'cdn.jsdelivr.net/.../earth-night.jpg', source: 'NASA Earth at Night (Black Marble) via three-globe CDN', license: 'Public Domain (NASA)', attribution: 'NASA (not required)', verified: true, classification: 'SAFE' },
   { file: 'cdn.jsdelivr.net/.../earth-topology.png', source: 'NASA elevation (topology) via three-globe CDN', license: 'Public Domain (NASA-derived)', attribution: 'NASA (not required)', verified: true, classification: 'SAFE' },
-  { file: 'flagcdn.com/*.svg', source: 'flagcdn.com', license: 'Public Domain (national flags are not copyrightable)', attribution: 'none required', verified: true, classification: 'SAFE', note: 'Hotlinked — recommend localising into assets/flags/ for the no-hotlink rule.' },
   { file: '{s}.basemaps.cartocdn.com/* (voyager/dark_matter/dark_all/light_all)', source: 'CARTO + OpenStreetMap', license: 'OSM ODbL data + CARTO Basemaps (free, attribution required)', attribution: '© OpenStreetMap © CARTO (shown on map)', verified: true, classification: 'SAFE' },
   { file: 'server.arcgisonline.com/.../World_Imagery|World_Topo_Map|World_Boundaries_and_Places', source: 'Esri ArcGIS Online', license: 'Esri Terms of Use — free with attribution', attribution: '© Esri, Maxar (shown on map)', verified: true, classification: 'REVIEW', note: 'Attribution present; Esri terms have nuance for heavy/commercial use — acceptable for a personal educational site.' },
   { file: 'fonts.googleapis.com / fonts.gstatic.com (Space Grotesk, Inter, JetBrains Mono)', source: 'Google Fonts', license: 'SIL OFL 1.1 / Apache 2.0', attribution: 'none required', verified: true, classification: 'SAFE' },
@@ -94,7 +101,7 @@ ${remoteRows}
 - **REMOVE** — none found (no random-website/Google-Images/scraped assets exist in the repo).
 
 ## Notes / recommendations
-- **Flags** are public-domain but **hotlinked** from flagcdn — localising them into \`assets/flags/\` would satisfy the no-hotlink preference.
+- **Flags** are now **stored locally** as public-domain SVGs in \`data/flags/\` (the former flagcdn hotlink is gone) — last runtime image hotlink closed.
 - Monument licences are mostly **CC BY / CC BY-SA** (attribution required); credit is shown in-quiz and recorded in \`IMAGE-CREDITS.md\`.
 - Re-run \`verify-licenses.mjs\` after fetching new monuments; re-run this audit to regenerate the registry.
 `;
