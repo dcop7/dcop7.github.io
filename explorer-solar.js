@@ -246,6 +246,7 @@ const SolarExplorer = (function () {
           <div class="ex-solar-panel-tabs" id="ss-panel-tabs">
             <button class="ex-solar-panel-tab active" data-tab="overview">Geral</button>
             <button class="ex-solar-panel-tab" data-tab="moons">Luas</button>
+            <button class="ex-solar-panel-tab" data-tab="exploration">Exploração</button>
             <button class="ex-solar-panel-tab" data-tab="facts">Curiosidades</button>
             <button class="ex-solar-panel-tab" data-tab="compare">Comparar</button>
           </div>
@@ -762,6 +763,19 @@ const SolarExplorer = (function () {
       </div>`;
   }
 
+  /* Verified space-mission history per body (well-known facts). */
+  const MISSIONS = {
+    sun: ['SOHO (NASA/ESA) — observatório solar desde 1995', 'Parker Solar Probe (NASA) — a sonda que mais se aproxima da coroa solar', 'Solar Orbiter (ESA/NASA) — imagens de perto, incluindo os polos'],
+    mercury: ['Mariner 10 (NASA, 1974–75) — primeiras imagens de perto', 'MESSENGER (NASA) — em órbita 2011–2015', 'BepiColombo (ESA/JAXA) — a caminho, chegada prevista 2026'],
+    venus: ['Mariner 2 (NASA, 1962) — 1ª sonda a passar por outro planeta', 'Programa Venera (URSS) — pousagens na superfície nos anos 1970', 'Magellan (NASA) — mapeamento por radar (1990–94)', 'Akatsuki (JAXA) — em órbita desde 2015'],
+    earth: ['Milhares de satélites em órbita terrestre', 'Estação Espacial Internacional (ISS) — tripulada desde 2000', 'Programa Apollo — única presença humana fora da Terra (na Lua, 1969–72)'],
+    mars: ['Viking 1 e 2 (NASA, 1976) — primeiras pousagens bem-sucedidas', 'Curiosity (NASA) — rover desde 2012', 'Perseverance + helicóptero Ingenuity (NASA) — desde 2021', 'Mars Express (ESA), Hope (EAU), Tianwen-1 (China)'],
+    jupiter: ['Pioneer 10/11 e Voyager 1/2 — sobrevoos nos anos 1970', 'Galileo (NASA) — em órbita 1995–2003, com sonda atmosférica', 'Juno (NASA) — em órbita desde 2016', 'JUICE (ESA) e Europa Clipper (NASA) — a caminho das luas geladas'],
+    saturn: ['Pioneer 11 e Voyager 1/2 — sobrevoos', 'Cassini–Huygens (NASA/ESA) — em órbita 2004–2017', 'Huygens (ESA) — pousou em Titã em 2005, a pousagem mais distante de sempre'],
+    uranus: ['Voyager 2 (NASA, 1986) — a única nave a visitar Urano'],
+    neptune: ['Voyager 2 (NASA, 1989) — a única nave a visitar Neptuno'],
+  };
+
   function _renderPanelBody(container) {
     const bodyEl = container.querySelector('#ss-panel-body');
     if (!bodyEl) return;
@@ -801,6 +815,12 @@ const SolarExplorer = (function () {
       const more  = total > body.moonList.length
         ? `<div class="ex-solar-moons-more">+ ${total - body.moonList.length} luas menores catalogadas</div>` : '';
       bodyEl.innerHTML = `<div class="ex-solar-moons">${items}${more}</div>`;
+
+    } else if (_curTab === 'exploration') {
+      const key = _sel === 'sun' ? 'sun' : body.id;
+      const list = MISSIONS[key] || [];
+      const items = list.map(m => `<div class="ex-solar-fact-item">🛰 ${m}</div>`).join('');
+      bodyEl.innerHTML = `<div class="ex-solar-facts">${items || '<div class="ex-solar-empty">Sem missões registadas.</div>'}</div>`;
 
     } else if (_curTab === 'facts') {
       const items = (body.facts || []).map(f => `<div class="ex-solar-fact-item">${f}</div>`).join('');
