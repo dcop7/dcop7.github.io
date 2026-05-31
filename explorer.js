@@ -16,8 +16,9 @@ const ExplorerPage = (function () {
   let _globeGL         = null;
   let _globeInited     = false;
   let _globeResizeObs  = null;
-  let _globeView       = 'realistic';   /* 'realistic' | 'daynight' | 'political' */
+  let _globeView       = 'dark';   /* political world-map-on-a-sphere: 'dark' | 'light' ocean */
   let _globeHovered    = null;
+  let _globeSelected   = null;          /* persistently highlighted country (after click) */
   let _byCca3          = {};
   let _updateGlobeColors = null;
   let _globeMatUniforms = null;         /* day/night ShaderMaterial uniforms, if active */
@@ -836,9 +837,8 @@ const ExplorerPage = (function () {
           <div class="ex-loading-text" id="ex-globe-loading-txt">A carregar o globo…</div>
         </div>
         <div class="ex-globe-view-bar" id="ex-globe-view-bar">
-          <button class="ex-globe-view-btn active" data-view="realistic">Realista</button>
-          <button class="ex-globe-view-btn" data-view="daynight">☀ Dia/Noite</button>
-          <button class="ex-globe-view-btn" data-view="political">Político</button>
+          <button class="ex-globe-view-btn active" data-view="dark">Escuro</button>
+          <button class="ex-globe-view-btn" data-view="light">Claro</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
         <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
@@ -922,30 +922,29 @@ const ExplorerPage = (function () {
       .sort((a, b) => (b.population || 0) - (a.population || 0))
       .map(c => ({ lat: c.latlng[0], lng: c.latlng[1], text: _cName(c) }));
 
+    /* Political world-map-on-a-sphere: every country is filled with its
+       continent colour, selection/hover stand out, borders always visible. */
     const getCapColor = f => {
       if (!f) return 'rgba(0,0,0,0)';
-      if (f === _globeHovered) return 'rgba(255,255,255,0.85)';
-      if (_favorites.includes(f.id)) return 'rgba(239,68,68,0.55)';
-      if (_globeView === 'political') {
-        const c = _byCca3[f.id];
-        return CONT_COLORS[(c?.continents || [''])[0]] || 'rgba(150,150,150,0.45)';
-      }
-      /* Realistic / day-night: transparent caps so the Earth texture shows through. */
-      return 'rgba(0,0,0,0)';
+      if (f === _globeSelected) return 'rgba(99,102,241,0.92)';
+      if (f === _globeHovered)  return 'rgba(255,255,255,0.82)';
+      if (_favorites.includes(f.id)) return 'rgba(239,68,68,0.6)';
+      const c = _byCca3[f.id];
+      return CONT_COLORS[(c?.continents || [''])[0]] || 'rgba(150,160,180,0.55)';
     };
-    const getCapAlt = f => f === _globeHovered ? 0.006 : (_globeView === 'political' ? 0.003 : 0.001);
+    const getCapAlt = f => (f === _globeSelected ? 0.02 : f === _globeHovered ? 0.012 : 0.006);
 
     _globeGL = Globe({ animateIn: true })(container)
       .width(container.clientWidth)
       .height(container.clientHeight)
       .backgroundColor('rgba(0,0,0,0)')
       .showAtmosphere(true)
-      .atmosphereColor('#5a8fd0')
-      .atmosphereAltitude(0.12)
+      .atmosphereColor('#6f9fd8')
+      .atmosphereAltitude(0.1)
       .polygonsData(_geoJson.features)
       .polygonCapColor(getCapColor)
-      .polygonSideColor(() => 'rgba(0,0,0,0.1)')
-      .polygonStrokeColor(() => 'rgba(255,255,255,0.22)')
+      .polygonSideColor(() => 'rgba(20,30,55,0.35)')
+      .polygonStrokeColor(() => 'rgba(255,255,255,0.55)')
       .polygonAltitude(getCapAlt)
       .labelsData([])
       .labelLat(d => d.lat)
@@ -973,8 +972,10 @@ const ExplorerPage = (function () {
       .onPolygonClick(f => {
         if (!f) return;
         _updateGlobeTooltip(null);
+        /* Persistent highlight on the clicked country + smooth rotate to it. */
+        _globeSelected = f;
+        _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt);
         const c = _byCca3[f.id];
-        /* Smooth fly-to using the country's bundled centroid when available. */
         const ll = c?.latlng;
         if (ll && ll.length === 2) {
           _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
@@ -983,14 +984,14 @@ const ExplorerPage = (function () {
         else   _showGlobeMinimalPanel(f);
       });
 
-    /* Vivid day/night globe material (raw textures, no Phong wash). Falls back to
-       the classic textured material if THREE / the shader is unavailable. */
-    _setupGlobeMaterial();
-    _setupClouds();
+    /* The globe is the world map wrapped on a sphere — a plain ocean surface
+       (no Earth photo/clouds/day-night) so country fills, borders and labels
+       stay readable. Surface colour follows the chosen ocean theme. */
+    _setOceanGlobe();
 
     _updateGlobeColors = () => {
       if (!_globeGL) return;
-      _globeGL.polygonCapColor(getCapColor);
+      _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt);
     };
 
     /* Wire view buttons */
@@ -1039,6 +1040,7 @@ const ExplorerPage = (function () {
     /* Neutral startup: no country selected/highlighted, panel closed, and a
        calm ocean-centred view so nothing reads as a default selection. */
     _globeHovered = null;
+    _globeSelected = null;
     _globeGL.pointOfView({ lat: 20, lng: -40, altitude: 2.5 }, 0);
     const selEl = document.getElementById('ex-globe-sel');
     if (selEl) selEl.textContent = '—';
@@ -1051,57 +1053,27 @@ const ExplorerPage = (function () {
     _globeInited = true;
   }
 
-  /* Build the day/night ShaderMaterial and wire its uniforms. Falls back to the
-     classic textured globe if THREE or the shader is unavailable. */
-  function _setupGlobeMaterial() {
+  /* Plain ocean globe surface — NO Earth photo, clouds, day/night or shaders.
+     The globe is the world map wrapped on a sphere: a readable ocean colour
+     under the coloured country polygons + borders + labels. Mild Phong shading
+     gives a gentle 3D read without dramatic lighting. */
+  const OCEAN = { dark: '#0e2742', light: '#a9c6e6' };
+  function _setOceanGlobe() {
     const T = window.THREE;
-    if (!T || !_globeGL) { _globeFallbackMaterial(); return; }
-    /* Show a textured Earth IMMEDIATELY so the globe is never a blank/white
-       sphere while the shader textures load (or if they fail entirely). */
-    _globeFallbackMaterial();
+    if (!_globeGL) return;
+    const col = _globeView === 'light' ? OCEAN.light : OCEAN.dark;
     try {
-      const loader = new T.TextureLoader();
-      loader.setCrossOrigin('anonymous');
-      let count = 0, failed = false;
-      const dayTex = loader.load(GLOBE_TEX.day, onOne, undefined, onErr);
-      const nightTex = loader.load(GLOBE_TEX.night, onOne, undefined, onErr);
-      if (T.SRGBColorSpace) { dayTex.colorSpace = T.SRGBColorSpace; nightTex.colorSpace = T.SRGBColorSpace; }
-
-      function onErr() { failed = true; /* keep the textured fallback material */ }
-      function onOne() {
-        if (failed) return;
-        if (++count < 2) return;       // wait until BOTH textures are decoded
-        applyShader();
-      }
-      function applyShader() {
-        const uniforms = {
-          dayTexture:    { value: dayTex },
-          nightTexture:  { value: nightTex },
-          sunPosition:   { value: new T.Vector2() },
-          globeRotation: { value: new T.Vector2() },
-          dayNight:      { value: _globeView === 'daynight' ? 1 : 0 },
-        };
-        const mat = new T.ShaderMaterial({ uniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
+      if (T && _globeGL.globeMaterial) {
+        const mat = new T.MeshPhongMaterial({ color: new T.Color(col), shininess: 5 });
+        if (_globeView !== 'light') mat.emissive = new T.Color('#08111f');
         _globeGL.globeMaterial(mat);
-        _globeMatUniforms = uniforms;
-        /* (zoom handler is set once on the globe via .onZoom(_onGlobeZoom)) */
-        _updateSunUniform();
-        if (_globeSunTimer) clearInterval(_globeSunTimer);
-        _globeSunTimer = setInterval(_updateSunUniform, 60000);
+      } else if (_globeGL.globeImageUrl) {
+        _globeGL.globeImageUrl(null);
       }
-    } catch (e) {
-      _globeFallbackMaterial();
-    }
+    } catch (e) {}
   }
 
-  function _updateSunUniform() {
-    if (!_globeMatUniforms) return;
-    const s = _sunPos();
-    _globeMatUniforms.sunPosition.value.set(s.lon, s.lat);
-  }
-
-  /* Single zoom handler: keeps the day/night shader's rotation in sync AND
-     reveals more country labels as the user zooms in (fewer when zoomed out). */
+  /* Zoom handler: reveals more country labels as the user zooms in. */
   function _updateGlobeLabels(altitude) {
     if (!_globeGL) return;
     const a = altitude == null ? 2.5 : altitude;
@@ -1110,61 +1082,14 @@ const ExplorerPage = (function () {
   }
   function _onGlobeZoom(pov) {
     if (!pov) return;
-    if (_globeMatUniforms) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
     _updateGlobeLabels(pov.altitude);
   }
 
-  /* Translucent, slowly-drifting cloud layer for realism (three-globe asset,
-     MIT). Lazy and managed: the rAF is cancelled on globe teardown. The 5 MB
-     texture loads only when the globe view is opened. */
-  const CLOUDS_URL = 'https://unpkg.com/three-globe/example/clouds/clouds.png';
-  function _setupClouds() {
-    const T = window.THREE;
-    if (!T || !_globeGL || _cloudsMesh) return;
-    try {
-      const R = _globeGL.getGlobeRadius ? _globeGL.getGlobeRadius() : 100;
-      /* Unlit material + alphaMap so only the clouds show (sky transparent).
-         CRITICAL: the mesh stays HIDDEN until the texture has loaded — a cloud
-         sphere with no texture renders as a translucent WHITE sphere that washes
-         out the whole globe (this was the "white globe" bug). */
-      const mat = new T.MeshBasicMaterial({ transparent: true, opacity: 0.5, depthWrite: false });
-      _cloudsMesh = new T.Mesh(new T.SphereGeometry(R * 1.02, 64, 64), mat);
-      _cloudsMesh.visible = false;
-      let cloudsLoaded = false;
-      new T.TextureLoader().load(
-        CLOUDS_URL,
-        tex => { if (!_cloudsMesh) return; mat.map = tex; mat.alphaMap = tex; mat.needsUpdate = true; cloudsLoaded = true; },
-        undefined,
-        () => { /* load failed → clouds stay hidden; globe renders normally */ }
-      );
-      _globeGL.scene().add(_cloudsMesh);
-      const drift = () => {
-        if (!_cloudsMesh) return;
-        _cloudsMesh.rotation.y += 0.0004;
-        /* Only visible once the texture is ready, and not in the flat political view. */
-        _cloudsMesh.visible = cloudsLoaded && _globeView !== 'political';
-        _cloudsRAF = requestAnimationFrame(drift);
-      };
-      _cloudsRAF = requestAnimationFrame(drift);
-    } catch (e) { _cloudsMesh = null; }
-  }
-
-  function _globeFallbackMaterial() {
-    /* No shader — use the classic textured material so the globe still works. */
-    try { _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump); } catch (e) {}
-  }
-
+  /* Switch ocean theme (dark/light). Both are readable political map styles. */
   function _setGlobeView(view) {
     if (!_globeGL) return;
-    _globeView = view;
-    if (_globeMatUniforms) {
-      _globeMatUniforms.dayNight.value = (view === 'daynight') ? 1 : 0;
-      _updateSunUniform();
-    } else {
-      /* Fallback material mode (no shader). */
-      if (view === 'daynight') _globeGL.globeImageUrl(GLOBE_TEX.night).bumpImageUrl(null);
-      else                     _globeGL.globeImageUrl(GLOBE_TEX.day).bumpImageUrl(GLOBE_TEX.bump);
-    }
+    _globeView = (view === 'light') ? 'light' : 'dark';
+    _setOceanGlobe();
     _updateGlobeColors?.();
   }
 
@@ -1306,6 +1231,7 @@ const ExplorerPage = (function () {
       _globeGL         = null;
       _globeInited     = false;
       _globeHovered    = null;
+      _globeSelected   = null;
       _updateGlobeColors = null;
       _buildShell(view);
     }
