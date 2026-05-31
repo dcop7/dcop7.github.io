@@ -23,7 +23,7 @@ const QuizPage = (function () {
     {
       id: 'natureza', icon: '🌿', labelKey: 'quiz.cat.natureza',
       quizzes: [
-        { id: 'space',    icon: '🚀', labelPt: 'Espaço e Planetas',  labelEn: 'Space & Planets',  provider: 'space',   count: 10 },
+        { id: 'space',    icon: '🚀', labelPt: 'Espaço e Planetas',  labelEn: 'Space & Planets',  provider: 'solar-pt', count: 10 },
         { id: 'animals',  icon: '🐾', labelPt: 'Animais',            labelEn: 'Animals',          provider: 'animals', count: 10 },
         { id: 'body',     icon: '🫀', labelPt: 'Corpo Humano',       labelEn: 'Human Body',       provider: 'body',    count: 10 },
         { id: 'science',  icon: '🔬', labelPt: 'Ciência',            labelEn: 'Science',          provider: 'science', count: 10 },

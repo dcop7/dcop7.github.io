@@ -3,10 +3,10 @@
     "q": "Em que continente se localiza Vanuatu?",
     "a": "Oceânia",
     "opts": [
-      "América do Sul",
       "Oceânia",
-      "América do Norte",
-      "África"
+      "Europa",
+      "África",
+      "Ásia"
     ],
     "exp": "Vanuatu fica em Oceânia."
   },
@@ -14,10 +14,10 @@
     "q": "Em que continente se localiza Nova Caledónia?",
     "a": "Oceânia",
     "opts": [
-      "África",
-      "Oceânia",
+      "Europa",
+      "América do Norte",
       "Ásia",
-      "Europa"
+      "Oceânia"
     ],
     "exp": "Nova Caledónia fica em Oceânia."
   },
@@ -25,9 +25,9 @@
     "q": "Em que continente se localiza Polinésia Francesa?",
     "a": "Oceânia",
     "opts": [
-      "América do Sul",
       "Oceânia",
-      "África",
+      "América do Sul",
+      "Europa",
       "América do Norte"
     ],
     "exp": "Polinésia Francesa fica em Oceânia."
@@ -36,9 +36,9 @@
     "q": "Em que continente se localiza São Tomé e Príncipe?",
     "a": "África",
     "opts": [
-      "Europa",
-      "Ásia",
+      "Oceânia",
       "América do Sul",
+      "Ásia",
       "África"
     ],
     "exp": "São Tomé e Príncipe fica em África."
@@ -47,10 +47,10 @@
     "q": "Em que continente se localiza Samoa?",
     "a": "Oceânia",
     "opts": [
-      "Ásia",
-      "América do Sul",
       "Oceânia",
-      "África"
+      "América do Norte",
+      "Ásia",
+      "Europa"
     ],
     "exp": "Samoa fica em Oceânia."
   },
@@ -58,10 +58,10 @@
     "q": "Em que continente se localiza Guam?",
     "a": "Oceânia",
     "opts": [
+      "Europa",
+      "América do Norte",
       "Oceânia",
-      "América do Sul",
-      "Ásia",
-      "América do Norte"
+      "África"
     ],
     "exp": "Guam fica em Oceânia."
   },
@@ -70,9 +70,9 @@
     "a": "Oceânia",
     "opts": [
       "Oceânia",
-      "Europa",
+      "Ásia",
       "África",
-      "Ásia"
+      "América do Sul"
     ],
     "exp": "Kiribati fica em Oceânia."
   },
@@ -80,10 +80,10 @@
     "q": "Em que continente se localiza Seicheles?",
     "a": "África",
     "opts": [
-      "Oceânia",
-      "América do Sul",
+      "Europa",
       "África",
-      "América do Norte"
+      "Oceânia",
+      "Ásia"
     ],
     "exp": "Seicheles fica em África."
   },
@@ -91,10 +91,10 @@
     "q": "Em que continente se localiza Micronésia?",
     "a": "Oceânia",
     "opts": [
-      "Oceânia",
       "África",
+      "Europa",
       "América do Sul",
-      "Europa"
+      "Oceânia"
     ],
     "exp": "Micronésia fica em Oceânia."
   },
@@ -102,10 +102,10 @@
     "q": "Em que continente se localiza Tonga?",
     "a": "Oceânia",
     "opts": [
-      "América do Sul",
+      "Oceânia",
+      "Europa",
       "África",
-      "Ásia",
-      "Oceânia"
+      "Ásia"
     ],
     "exp": "Tonga fica em Oceânia."
   },
@@ -113,10 +113,10 @@
     "q": "Em que continente se localiza Ilha de Man?",
     "a": "Europa",
     "opts": [
-      "América do Norte",
+      "África",
       "América do Sul",
-      "Europa",
-      "Ásia"
+      "Oceânia",
+      "Europa"
     ],
     "exp": "Ilha de Man fica em Europa."
   },
@@ -124,10 +124,10 @@
     "q": "Em que continente se localiza Andorra?",
     "a": "Europa",
     "opts": [
-      "Europa",
+      "América do Sul",
       "África",
-      "Ásia",
-      "América do Norte"
+      "Oceânia",
+      "Europa"
     ],
     "exp": "Andorra fica em Europa."
   },
@@ -135,9 +135,9 @@
     "q": "Em que continente se localiza Ilhas Faroé?",
     "a": "Europa",
     "opts": [
-      "Europa",
       "África",
-      "América do Sul",
+      "Oceânia",
+      "Europa",
       "América do Norte"
     ],
     "exp": "Ilhas Faroé fica em Europa."
@@ -147,9 +147,9 @@
     "a": "Oceânia",
     "opts": [
       "Oceânia",
-      "América do Sul",
+      "América do Norte",
       "Europa",
-      "África"
+      "América do Sul"
     ],
     "exp": "Samoa Americana fica em Oceânia."
   },
@@ -157,10 +157,10 @@
     "q": "Em que continente se localiza Marianas Setentrionais?",
     "a": "Oceânia",
     "opts": [
-      "América do Norte",
       "Oceânia",
-      "América do Sul",
-      "Europa"
+      "Ásia",
+      "Europa",
+      "África"
     ],
     "exp": "Marianas Setentrionais fica em Oceânia."
   },
@@ -168,10 +168,10 @@
     "q": "Em que continente se localiza Liechtenstein?",
     "a": "Europa",
     "opts": [
-      "África",
       "Ásia",
-      "América do Norte",
-      "Europa"
+      "Europa",
+      "África",
+      "América do Norte"
     ],
     "exp": "Liechtenstein fica em Europa."
   },
@@ -179,9 +179,9 @@
     "q": "Em que continente se localiza Gibraltar?",
     "a": "Europa",
     "opts": [
-      "África",
-      "Europa",
       "América do Norte",
+      "Oceânia",
+      "Europa",
       "Ásia"
     ],
     "exp": "Gibraltar fica em Europa."
@@ -190,10 +190,10 @@
     "q": "Em que continente se localiza Mónaco?",
     "a": "Europa",
     "opts": [
-      "Oceânia",
-      "América do Norte",
+      "Ásia",
       "Europa",
-      "América do Sul"
+      "África",
+      "América do Norte"
     ],
     "exp": "Mónaco fica em Europa."
   },
@@ -201,10 +201,10 @@
     "q": "Em que continente se localiza Ilhas Marshall?",
     "a": "Oceânia",
     "opts": [
-      "Europa",
-      "América do Sul",
-      "América do Norte",
-      "Oceânia"
+      "Ásia",
+      "África",
+      "Oceânia",
+      "América do Norte"
     ],
     "exp": "Ilhas Marshall fica em Oceânia."
   },
@@ -212,10 +212,10 @@
     "q": "Em que continente se localiza San Marino?",
     "a": "Europa",
     "opts": [
+      "Oceânia",
+      "América do Sul",
       "Europa",
-      "África",
-      "América do Norte",
-      "América do Sul"
+      "Ásia"
     ],
     "exp": "San Marino fica em Europa."
   },
@@ -223,10 +223,10 @@
     "q": "Em que continente se localiza Palau?",
     "a": "Oceânia",
     "opts": [
-      "Ásia",
-      "Oceânia",
-      "América do Sul",
-      "América do Norte"
+      "África",
+      "América do Norte",
+      "Europa",
+      "Oceânia"
     ],
     "exp": "Palau fica em Oceânia."
   },
@@ -234,8 +234,8 @@
     "q": "Em que continente se localiza Nauru?",
     "a": "Oceânia",
     "opts": [
+      "Europa",
       "África",
-      "América do Sul",
       "Oceânia",
       "Ásia"
     ],
@@ -245,10 +245,10 @@
     "q": "Em que continente se localiza Tuvalu?",
     "a": "Oceânia",
     "opts": [
-      "África",
-      "Oceânia",
-      "Europa",
-      "Ásia"
+      "América do Norte",
+      "Ásia",
+      "América do Sul",
+      "Oceânia"
     ],
     "exp": "Tuvalu fica em Oceânia."
   },
@@ -256,9 +256,9 @@
     "q": "Em que continente se localiza Alândia?",
     "a": "Europa",
     "opts": [
-      "América do Sul",
       "Europa",
       "Oceânia",
+      "África",
       "América do Norte"
     ],
     "exp": "Alândia fica em Europa."
@@ -267,10 +267,10 @@
     "q": "Em que continente se localiza Antártida?",
     "a": "Antárctida",
     "opts": [
-      "Oceânia",
       "Antárctida",
       "América do Norte",
-      "Europa"
+      "Oceânia",
+      "América do Sul"
     ],
     "exp": "Antártida fica em Antárctida."
   },
@@ -278,10 +278,10 @@
     "q": "Em que continente se localiza Ilha Bouvet?",
     "a": "Antárctida",
     "opts": [
-      "Ásia",
-      "Oceânia",
       "Antárctida",
-      "América do Sul"
+      "América do Sul",
+      "América do Norte",
+      "África"
     ],
     "exp": "Ilha Bouvet fica em Antárctida."
   },
@@ -289,10 +289,10 @@
     "q": "Em que continente se localiza Território Britânico do Oceano Índico?",
     "a": "África",
     "opts": [
-      "América do Sul",
       "Europa",
+      "África",
       "América do Norte",
-      "África"
+      "Oceânia"
     ],
     "exp": "Território Britânico do Oceano Índico fica em África."
   },
@@ -300,10 +300,10 @@
     "q": "Em que continente se localiza Ilha do Natal?",
     "a": "Oceânia",
     "opts": [
-      "Oceânia",
-      "Europa",
+      "América do Norte",
       "África",
-      "América do Sul"
+      "Europa",
+      "Oceânia"
     ],
     "exp": "Ilha do Natal fica em Oceânia."
   },
@@ -312,7 +312,7 @@
     "a": "Oceânia",
     "opts": [
       "América do Norte",
-      "Ásia",
+      "Europa",
       "Oceânia",
       "África"
     ],
@@ -323,9 +323,9 @@
     "a": "Oceânia",
     "opts": [
       "Europa",
-      "Ásia",
-      "Oceânia",
-      "África"
+      "América do Norte",
+      "América do Sul",
+      "Oceânia"
     ],
     "exp": "Ilhas Cook fica em Oceânia."
   },
@@ -333,10 +333,10 @@
     "q": "Em que continente se localiza Terras Austrais e Antárticas Francesas?",
     "a": "Antárctida",
     "opts": [
-      "África",
-      "América do Sul",
       "Antárctida",
-      "Europa"
+      "Oceânia",
+      "América do Norte",
+      "América do Sul"
     ],
     "exp": "Terras Austrais e Antárticas Francesas fica em Antárctida."
   },
@@ -344,10 +344,10 @@
     "q": "Em que continente se localiza Guernsey?",
     "a": "Europa",
     "opts": [
+      "América do Norte",
       "Europa",
-      "África",
-      "Ásia",
-      "América do Norte"
+      "América do Sul",
+      "Oceânia"
     ],
     "exp": "Guernsey fica em Europa."
   },
@@ -355,10 +355,10 @@
     "q": "Em que continente se localiza Ilha Heard e Ilhas McDonald?",
     "a": "Antárctida",
     "opts": [
+      "África",
       "Ásia",
-      "América do Norte",
       "Antárctida",
-      "Europa"
+      "América do Norte"
     ],
     "exp": "Ilha Heard e Ilhas McDonald fica em Antárctida."
   },
@@ -366,10 +366,10 @@
     "q": "Em que continente se localiza Jersey?",
     "a": "Europa",
     "opts": [
-      "Europa",
-      "África",
+      "América do Norte",
       "Ásia",
-      "Oceânia"
+      "América do Sul",
+      "Europa"
     ],
     "exp": "Jersey fica em Europa."
   },
@@ -377,10 +377,10 @@
     "q": "Em que continente se localiza Kosovo?",
     "a": "Europa",
     "opts": [
-      "Europa",
       "Ásia",
-      "América do Norte",
-      "América do Sul"
+      "América do Sul",
+      "Oceânia",
+      "Europa"
     ],
     "exp": "Kosovo fica em Europa."
   },
@@ -388,10 +388,10 @@
     "q": "Em que continente se localiza Mayotte?",
     "a": "África",
     "opts": [
+      "Oceânia",
       "Europa",
-      "América do Norte",
-      "Ásia",
-      "África"
+      "África",
+      "América do Norte"
     ],
     "exp": "Mayotte fica em África."
   },
@@ -399,10 +399,10 @@
     "q": "Em que continente se localiza Niue?",
     "a": "Oceânia",
     "opts": [
-      "África",
-      "América do Norte",
+      "Ásia",
+      "Oceânia",
       "Europa",
-      "Oceânia"
+      "África"
     ],
     "exp": "Niue fica em Oceânia."
   },
@@ -410,10 +410,10 @@
     "q": "Em que continente se localiza Ilha Norfolk?",
     "a": "Oceânia",
     "opts": [
-      "América do Norte",
+      "Oceânia",
+      "África",
       "Europa",
-      "Ásia",
-      "Oceânia"
+      "Ásia"
     ],
     "exp": "Ilha Norfolk fica em Oceânia."
   },
@@ -421,10 +421,10 @@
     "q": "Em que continente se localiza Ilhas Pitcairn?",
     "a": "Oceânia",
     "opts": [
-      "América do Sul",
-      "Oceânia",
+      "América do Norte",
       "Ásia",
-      "América do Norte"
+      "América do Sul",
+      "Oceânia"
     ],
     "exp": "Ilhas Pitcairn fica em Oceânia."
   },
@@ -432,10 +432,10 @@
     "q": "Em que continente se localiza Reunião?",
     "a": "África",
     "opts": [
-      "América do Norte",
+      "Europa",
+      "América do Sul",
       "Oceânia",
-      "África",
-      "Europa"
+      "África"
     ],
     "exp": "Reunião fica em África."
   },
@@ -444,9 +444,9 @@
     "a": "África",
     "opts": [
       "África",
-      "Europa",
-      "América do Sul",
-      "Oceânia"
+      "Oceânia",
+      "Ásia",
+      "América do Sul"
     ],
     "exp": "Santa Helena, Ascensão e Tristão da Cunha fica em África."
   },
@@ -454,10 +454,10 @@
     "q": "Em que continente se localiza Ilhas Geórgia do Sul e Sandwich do Sul?",
     "a": "Antárctida",
     "opts": [
+      "América do Sul",
       "África",
-      "Antárctida",
-      "América do Norte",
-      "Europa"
+      "Ásia",
+      "Antárctida"
     ],
     "exp": "Ilhas Geórgia do Sul e Sandwich do Sul fica em Antárctida."
   },
@@ -465,10 +465,10 @@
     "q": "Em que continente se localiza Ilhas Svalbard e Jan Mayen?",
     "a": "Europa",
     "opts": [
-      "América do Norte",
+      "Europa",
       "Oceânia",
-      "América do Sul",
-      "Europa"
+      "Ásia",
+      "África"
     ],
     "exp": "Ilhas Svalbard e Jan Mayen fica em Europa."
   },
@@ -476,10 +476,10 @@
     "q": "Em que continente se localiza Ilha Formosa?",
     "a": "Ásia",
     "opts": [
-      "América do Sul",
-      "África",
+      "América do Norte",
       "Ásia",
-      "Europa"
+      "Europa",
+      "África"
     ],
     "exp": "Ilha Formosa fica em Ásia."
   },
@@ -487,10 +487,10 @@
     "q": "Em que continente se localiza Tokelau?",
     "a": "Oceânia",
     "opts": [
-      "Oceânia",
-      "América do Norte",
       "América do Sul",
-      "África"
+      "América do Norte",
+      "Ásia",
+      "Oceânia"
     ],
     "exp": "Tokelau fica em Oceânia."
   },
@@ -498,10 +498,10 @@
     "q": "Em que continente se localiza Cidade do Vaticano?",
     "a": "Europa",
     "opts": [
+      "América do Norte",
       "Oceânia",
-      "África",
       "Europa",
-      "América do Sul"
+      "Ásia"
     ],
     "exp": "Cidade do Vaticano fica em Europa."
   },
@@ -510,9 +510,9 @@
     "a": "Oceânia",
     "opts": [
       "América do Norte",
-      "Oceânia",
+      "América do Sul",
       "Ásia",
-      "África"
+      "Oceânia"
     ],
     "exp": "Wallis e Futuna fica em Oceânia."
   },
@@ -520,10 +520,10 @@
     "q": "Em que continente se localiza Saara Ocidental?",
     "a": "África",
     "opts": [
-      "Ásia",
+      "África",
       "Europa",
-      "América do Norte",
-      "África"
+      "Ásia",
+      "América do Sul"
     ],
     "exp": "Saara Ocidental fica em África."
   },
@@ -531,10 +531,10 @@
     "q": "De que país é capital a cidade de Moscovo?",
     "a": "Rússia",
     "opts": [
-      "Coreia do Sul",
-      "Estados Unidos",
-      "Indonésia",
-      "Rússia"
+      "Rússia",
+      "Reino Unido",
+      "Singapura",
+      "Estados Unidos"
     ],
     "exp": "Moscovo é a capital de Rússia."
   },
@@ -542,10 +542,10 @@
     "q": "De que país é capital a cidade de Kiev?",
     "a": "Ucrânia",
     "opts": [
-      "Ucrânia",
-      "Paquistão",
-      "Grécia",
-      "Hungria"
+      "Reino Unido",
+      "Índia",
+      "Estados Unidos",
+      "Ucrânia"
     ],
     "exp": "Kiev é a capital de Ucrânia."
   },
@@ -553,10 +553,10 @@
     "q": "De que país é capital a cidade de Ancara?",
     "a": "Turquia",
     "opts": [
-      "Turquia",
-      "Estados Unidos",
-      "Roménia",
-      "Luxemburgo"
+      "Hungria",
+      "Polónia",
+      "Austrália",
+      "Turquia"
     ],
     "exp": "Ancara é a capital de Turquia."
   },
@@ -564,10 +564,10 @@
     "q": "De que país é capital a cidade de Zagrebe?",
     "a": "Croácia",
     "opts": [
+      "Luxemburgo",
       "Índia",
-      "Vietname",
-      "Brasil",
-      "Croácia"
+      "Croácia",
+      "Chile"
     ],
     "exp": "Zagrebe é a capital de Croácia."
   },
@@ -575,10 +575,10 @@
     "q": "De que país é capital a cidade de Washington, D.C.?",
     "a": "Estados Unidos",
     "opts": [
+      "China",
+      "Islândia",
       "Estados Unidos",
-      "Moçambique",
-      "Austrália",
-      "Malásia"
+      "Irão"
     ],
     "exp": "Washington, D.C. é a capital de Estados Unidos."
   },
@@ -586,10 +586,10 @@
     "q": "De que país é capital a cidade de Otava?",
     "a": "Canadá",
     "opts": [
-      "África do Sul",
-      "Paquistão",
+      "Moçambique",
+      "Argentina",
       "Canadá",
-      "França"
+      "Turquia"
     ],
     "exp": "Otava é a capital de Canadá."
   },
@@ -597,10 +597,10 @@
     "q": "De que país é capital a cidade de Cidade do México?",
     "a": "México",
     "opts": [
-      "Israel",
       "México",
-      "Croácia",
-      "Indonésia"
+      "Reino Unido",
+      "Islândia",
+      "Turquia"
     ],
     "exp": "Cidade do México é a capital de México."
   },
@@ -608,10 +608,10 @@
     "q": "De que país é capital a cidade de Brasília?",
     "a": "Brasil",
     "opts": [
-      "Indonésia",
-      "Egito",
       "Brasil",
-      "Reino Unido"
+      "Coreia do Sul",
+      "Luxemburgo",
+      "Chile"
     ],
     "exp": "Brasília é a capital de Brasil."
   },
@@ -619,9 +619,9 @@
     "q": "De que país é capital a cidade de Buenos Aires?",
     "a": "Argentina",
     "opts": [
-      "Angola",
-      "México",
-      "Malásia",
+      "Chéquia",
+      "Suécia",
+      "Finlândia",
       "Argentina"
     ],
     "exp": "Buenos Aires é a capital de Argentina."
@@ -630,10 +630,10 @@
     "q": "De que país é capital a cidade de Santiago?",
     "a": "Chile",
     "opts": [
-      "Irão",
+      "Indonésia",
+      "Chéquia",
       "Chile",
-      "Israel",
-      "Espanha"
+      "Canadá"
     ],
     "exp": "Santiago é a capital de Chile."
   },
@@ -641,10 +641,10 @@
     "q": "De que país é capital a cidade de Bogotá?",
     "a": "Colômbia",
     "opts": [
-      "Colômbia",
-      "Indonésia",
-      "Ucrânia",
-      "Luxemburgo"
+      "Filipinas",
+      "Áustria",
+      "Perú",
+      "Colômbia"
     ],
     "exp": "Bogotá é a capital de Colômbia."
   },
@@ -652,9 +652,9 @@
     "q": "De que país é capital a cidade de Lima?",
     "a": "Perú",
     "opts": [
-      "Alemanha",
-      "Nova Zelândia",
-      "África do Sul",
+      "Noruega",
+      "Brasil",
+      "Singapura",
       "Perú"
     ],
     "exp": "Lima é a capital de Perú."
@@ -663,10 +663,10 @@
     "q": "De que país é capital a cidade de Caracas?",
     "a": "Venezuela",
     "opts": [
-      "Paquistão",
-      "Argentina",
-      "Venezuela",
-      "China"
+      "México",
+      "Roménia",
+      "Índia",
+      "Venezuela"
     ],
     "exp": "Caracas é a capital de Venezuela."
   },
@@ -674,10 +674,10 @@
     "q": "De que país é capital a cidade de Havana?",
     "a": "Cuba",
     "opts": [
+      "Ucrânia",
       "Cuba",
-      "Noruega",
-      "Rússia",
-      "Espanha"
+      "Angola",
+      "África do Sul"
     ],
     "exp": "Havana é a capital de Cuba."
   },
@@ -685,10 +685,10 @@
     "q": "De que país é capital a cidade de Montevideu?",
     "a": "Uruguai",
     "opts": [
-      "Turquia",
-      "Singapura",
       "Uruguai",
-      "China"
+      "Gana",
+      "Nova Zelândia",
+      "Irlanda"
     ],
     "exp": "Montevideu é a capital de Uruguai."
   },
@@ -696,10 +696,10 @@
     "q": "De que país é capital a cidade de Pequim?",
     "a": "China",
     "opts": [
+      "Chile",
       "China",
-      "Venezuela",
-      "Irlanda",
-      "Tailândia"
+      "Bélgica",
+      "Finlândia"
     ],
     "exp": "Pequim é a capital de China."
   },
@@ -708,9 +708,9 @@
     "a": "Japão",
     "opts": [
       "Japão",
-      "Brasil",
-      "Arábia Saudita",
-      "Roménia"
+      "Paquistão",
+      "África do Sul",
+      "China"
     ],
     "exp": "Tóquio é a capital de Japão."
   },
@@ -718,10 +718,10 @@
     "q": "De que país é capital a cidade de Seul?",
     "a": "Coreia do Sul",
     "opts": [
-      "Japão",
-      "Suécia",
+      "Espanha",
+      "Polónia",
       "Coreia do Sul",
-      "Cuba"
+      "Moçambique"
     ],
     "exp": "Seul é a capital de Coreia do Sul."
   },
@@ -729,10 +729,10 @@
     "q": "De que país é capital a cidade de Nova Deli?",
     "a": "Índia",
     "opts": [
-      "Brasil",
-      "França",
-      "Índia",
-      "Nova Zelândia"
+      "Moçambique",
+      "Venezuela",
+      "Islândia",
+      "Índia"
     ],
     "exp": "Nova Deli é a capital de Índia."
   },
@@ -740,10 +740,10 @@
     "q": "De que país é capital a cidade de Jacarta?",
     "a": "Indonésia",
     "opts": [
-      "Etiópia",
+      "Malásia",
       "Indonésia",
-      "Angola",
-      "Alemanha"
+      "Nigéria",
+      "Irão"
     ],
     "exp": "Jacarta é a capital de Indonésia."
   },
@@ -751,10 +751,10 @@
     "q": "De que país é capital a cidade de Riade?",
     "a": "Arábia Saudita",
     "opts": [
-      "Finlândia",
+      "Etiópia",
+      "Holanda",
       "Arábia Saudita",
-      "Paquistão",
-      "Gana"
+      "Venezuela"
     ],
     "exp": "Riade é a capital de Arábia Saudita."
   },
@@ -762,10 +762,10 @@
     "q": "De que país é capital a cidade de Teerão?",
     "a": "Irão",
     "opts": [
-      "Dinamarca",
-      "Brasil",
-      "Canadá",
-      "Irão"
+      "Estados Unidos",
+      "Áustria",
+      "Irão",
+      "Noruega"
     ],
     "exp": "Teerão é a capital de Irão."
   },
@@ -773,10 +773,10 @@
     "q": "De que país é capital a cidade de Bagdade?",
     "a": "Iraque",
     "opts": [
-      "Japão",
-      "México",
+      "Bélgica",
       "Iraque",
-      "Angola"
+      "Egito",
+      "Holanda"
     ],
     "exp": "Bagdade é a capital de Iraque."
   },
@@ -784,10 +784,10 @@
     "q": "De que país é capital a cidade de Jerusalém?",
     "a": "Israel",
     "opts": [
-      "Suécia",
-      "Perú",
       "Israel",
-      "Alemanha"
+      "Tailândia",
+      "Filipinas",
+      "Iraque"
     ],
     "exp": "Jerusalém é a capital de Israel."
   },
@@ -795,10 +795,10 @@
     "q": "De que país é capital a cidade de Islamabade?",
     "a": "Paquistão",
     "opts": [
-      "Egito",
+      "Polónia",
+      "Marrocos",
       "Paquistão",
-      "Alemanha",
-      "Suécia"
+      "Perú"
     ],
     "exp": "Islamabade é a capital de Paquistão."
   },
@@ -806,10 +806,10 @@
     "q": "De que país é capital a cidade de Banguecoque?",
     "a": "Tailândia",
     "opts": [
-      "Uruguai",
-      "Vietname",
       "Tailândia",
-      "Quénia"
+      "Nova Zelândia",
+      "Turquia",
+      "Roménia"
     ],
     "exp": "Banguecoque é a capital de Tailândia."
   },
@@ -817,10 +817,10 @@
     "q": "De que país é capital a cidade de Hanói?",
     "a": "Vietname",
     "opts": [
-      "Nigéria",
-      "Coreia do Sul",
+      "Reino Unido",
       "Vietname",
-      "Suíça"
+      "Bélgica",
+      "Indonésia"
     ],
     "exp": "Hanói é a capital de Vietname."
   },
@@ -828,10 +828,10 @@
     "q": "De que país é capital a cidade de Manila?",
     "a": "Filipinas",
     "opts": [
-      "Nova Zelândia",
-      "Israel",
+      "Singapura",
       "Filipinas",
-      "Bélgica"
+      "Suíça",
+      "Quénia"
     ],
     "exp": "Manila é a capital de Filipinas."
   },
@@ -839,10 +839,10 @@
     "q": "De que país é capital a cidade de Kuala Lumpur?",
     "a": "Malásia",
     "opts": [
-      "Holanda",
-      "Iraque",
-      "Indonésia",
-      "Malásia"
+      "Malásia",
+      "Itália",
+      "Brasil",
+      "Quénia"
     ],
     "exp": "Kuala Lumpur é a capital de Malásia."
   },
@@ -850,10 +850,10 @@
     "q": "De que país é capital a cidade de Singapura?",
     "a": "Singapura",
     "opts": [
+      "Espanha",
+      "Singapura",
       "Marrocos",
-      "Gana",
-      "Angola",
-      "Singapura"
+      "China"
     ],
     "exp": "Singapura é a capital de Singapura."
   },
@@ -861,10 +861,10 @@
     "q": "De que país é capital a cidade de Cairo?",
     "a": "Egito",
     "opts": [
-      "Turquia",
+      "Ucrânia",
+      "Quénia",
       "Egito",
-      "Chéquia",
-      "Irão"
+      "Suécia"
     ],
     "exp": "Cairo é a capital de Egito."
   },
@@ -872,10 +872,10 @@
     "q": "De que país é capital a cidade de Abuja?",
     "a": "Nigéria",
     "opts": [
+      "Canadá",
+      "Gana",
       "Nigéria",
-      "Vietname",
-      "Estados Unidos",
-      "Reino Unido"
+      "Austrália"
     ],
     "exp": "Abuja é a capital de Nigéria."
   },
@@ -883,10 +883,10 @@
     "q": "De que país é capital a cidade de Pretória?",
     "a": "África do Sul",
     "opts": [
+      "Japão",
+      "México",
       "África do Sul",
-      "Egito",
-      "Paquistão",
-      "Marrocos"
+      "Dinamarca"
     ],
     "exp": "Pretória é a capital de África do Sul."
   },
@@ -894,10 +894,10 @@
     "q": "De que país é capital a cidade de Nairóbi?",
     "a": "Quénia",
     "opts": [
+      "Índia",
       "Quénia",
-      "Canadá",
-      "Coreia do Sul",
-      "China"
+      "Islândia",
+      "Irlanda"
     ],
     "exp": "Nairóbi é a capital de Quénia."
   },
@@ -905,10 +905,10 @@
     "q": "De que país é capital a cidade de Adis Abeba?",
     "a": "Etiópia",
     "opts": [
-      "Nigéria",
-      "Ucrânia",
-      "Portugal",
-      "Etiópia"
+      "Índia",
+      "Etiópia",
+      "Iraque",
+      "Áustria"
     ],
     "exp": "Adis Abeba é a capital de Etiópia."
   },
@@ -916,10 +916,10 @@
     "q": "De que país é capital a cidade de Acra?",
     "a": "Gana",
     "opts": [
-      "Gana",
-      "Indonésia",
-      "Paquistão",
-      "Uruguai"
+      "Noruega",
+      "Brasil",
+      "Marrocos",
+      "Gana"
     ],
     "exp": "Acra é a capital de Gana."
   },
@@ -927,10 +927,10 @@
     "q": "De que país é capital a cidade de Rabat?",
     "a": "Marrocos",
     "opts": [
-      "Singapura",
+      "Canadá",
+      "Argentina",
       "Marrocos",
-      "Japão",
-      "Alemanha"
+      "Senegal"
     ],
     "exp": "Rabat é a capital de Marrocos."
   },
@@ -939,9 +939,9 @@
     "a": "Angola",
     "opts": [
       "Angola",
-      "Bélgica",
-      "Irão",
-      "Moçambique"
+      "Reino Unido",
+      "Hungria",
+      "Israel"
     ],
     "exp": "Luanda é a capital de Angola."
   },
@@ -949,10 +949,10 @@
     "q": "De que país é capital a cidade de Maputo?",
     "a": "Moçambique",
     "opts": [
+      "Hungria",
       "Moçambique",
-      "Malásia",
-      "Luxemburgo",
-      "Bélgica"
+      "Turquia",
+      "Áustria"
     ],
     "exp": "Maputo é a capital de Moçambique."
   },
@@ -960,10 +960,10 @@
     "q": "De que país é capital a cidade de Dacar?",
     "a": "Senegal",
     "opts": [
-      "Finlândia",
-      "Nigéria",
-      "Paquistão",
-      "Senegal"
+      "Suíça",
+      "Senegal",
+      "Dinamarca",
+      "Chéquia"
     ],
     "exp": "Dacar é a capital de Senegal."
   },
@@ -971,10 +971,10 @@
     "q": "De que país é capital a cidade de Camberra?",
     "a": "Austrália",
     "opts": [
-      "Austrália",
-      "Luxemburgo",
       "Polónia",
-      "Suécia"
+      "Paquistão",
+      "Nova Zelândia",
+      "Austrália"
     ],
     "exp": "Camberra é a capital de Austrália."
   },
@@ -982,10 +982,10 @@
     "q": "De que país é capital a cidade de Wellington?",
     "a": "Nova Zelândia",
     "opts": [
-      "Malásia",
-      "Suíça",
+      "Etiópia",
+      "Ucrânia",
       "Nova Zelândia",
-      "Vietname"
+      "Marrocos"
     ],
     "exp": "Wellington é a capital de Nova Zelândia."
   },
@@ -993,10 +993,10 @@
     "q": "De que país é capital a cidade de Reiquiavique?",
     "a": "Islândia",
     "opts": [
+      "Iraque",
+      "Irão",
       "Islândia",
-      "Chéquia",
-      "Austrália",
-      "Hungria"
+      "Austrália"
     ],
     "exp": "Reiquiavique é a capital de Islândia."
   },
@@ -1004,11 +1004,869 @@
     "q": "De que país é capital a cidade de Luxemburgo?",
     "a": "Luxemburgo",
     "opts": [
+      "Chile",
+      "Marrocos",
       "Luxemburgo",
-      "Coreia do Sul",
-      "Canadá",
-      "Irlanda"
+      "França"
     ],
     "exp": "Luxemburgo é a capital de Luxemburgo."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Suíça",
+    "opts": [
+      "Marianas Setentrionais",
+      "Lesoto",
+      "Suíça",
+      "Polinésia Francesa"
+    ],
+    "exp": "Suíça tem a maior população dos quatro (9.005.582 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Gana",
+    "opts": [
+      "Maldivas",
+      "Vanuatu",
+      "Namíbia",
+      "Gana"
+    ],
+    "exp": "Gana tem a maior população dos quatro (34.427.414 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Ruanda",
+    "opts": [
+      "Burundi",
+      "Panamá",
+      "Ruanda",
+      "Belize"
+    ],
+    "exp": "Ruanda tem a maior população dos quatro (14.256.567 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Síria",
+    "opts": [
+      "Comores",
+      "Síria",
+      "Roménia",
+      "Líbia"
+    ],
+    "exp": "Síria tem a maior população dos quatro (24.672.760 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Sudão",
+    "opts": [
+      "Suriname",
+      "Sudão",
+      "Azerbeijão",
+      "Kuwait"
+    ],
+    "exp": "Sudão tem a maior população dos quatro (50.448.963 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Holanda",
+    "opts": [
+      "Holanda",
+      "Benin",
+      "El Salvador",
+      "Santa Lúcia"
+    ],
+    "exp": "Holanda tem a maior população dos quatro (17.993.485 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Vietname",
+    "opts": [
+      "Mauritânia",
+      "Vietname",
+      "África do Sul",
+      "Coreia do Norte"
+    ],
+    "exp": "Vietname tem a maior população dos quatro (100.987.686 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Rússia",
+    "opts": [
+      "Costa Rica",
+      "Moldávia",
+      "Marianas Setentrionais",
+      "Rússia"
+    ],
+    "exp": "Rússia tem a maior população dos quatro (143.533.851 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Canadá",
+    "opts": [
+      "Canadá",
+      "Bermudas",
+      "Benin",
+      "Jamaica"
+    ],
+    "exp": "Canadá tem a maior população dos quatro (41.288.599 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Iémen",
+    "opts": [
+      "Líbia",
+      "Senegal",
+      "Dominica",
+      "Iémen"
+    ],
+    "exp": "Iémen tem a maior população dos quatro (40.583.164 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "China",
+    "opts": [
+      "Suécia",
+      "Eslovénia",
+      "China",
+      "Camarões"
+    ],
+    "exp": "China tem a maior população dos quatro (1.408.975.000 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Zâmbia",
+    "opts": [
+      "ilha da Curação",
+      "Zâmbia",
+      "Chipre",
+      "Papua Nova Guiné"
+    ],
+    "exp": "Zâmbia tem a maior população dos quatro (21.314.956 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Reino Unido",
+    "opts": [
+      "Reino Unido",
+      "Guiné Equatorial",
+      "Macau",
+      "Butão"
+    ],
+    "exp": "Reino Unido tem a maior população dos quatro (69.226.000 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Burundi",
+    "opts": [
+      "Bielorússia",
+      "Burundi",
+      "Lituânia",
+      "Maurício"
+    ],
+    "exp": "Burundi tem a maior população dos quatro (14.047.786 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Tajiquistão",
+    "opts": [
+      "Mauritânia",
+      "Tajiquistão",
+      "Nauru",
+      "Geórgia"
+    ],
+    "exp": "Tajiquistão tem a maior população dos quatro (10.590.927 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Burundi",
+    "opts": [
+      "Mónaco",
+      "Sérvia",
+      "São Tomé e Príncipe",
+      "Burundi"
+    ],
+    "exp": "Burundi tem a maior população dos quatro (14.047.786 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Nicarágua",
+    "opts": [
+      "Lesoto",
+      "Ilhas Salomão",
+      "Timor-Leste",
+      "Nicarágua"
+    ],
+    "exp": "Nicarágua tem a maior população dos quatro (6.916.140 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Níger",
+    "opts": [
+      "Bielorússia",
+      "Gabão",
+      "Senegal",
+      "Níger"
+    ],
+    "exp": "Níger tem a maior população dos quatro (27.032.412 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Kuwait",
+    "opts": [
+      "Kuwait",
+      "Ilhas Virgens dos Estados Unidos",
+      "Gibraltar",
+      "Macedónia do Norte"
+    ],
+    "exp": "Kuwait tem a maior população dos quatro (4.897.263 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Paquistão",
+    "opts": [
+      "Belize",
+      "Suriname",
+      "Paquistão",
+      "Quirguistão"
+    ],
+    "exp": "Paquistão tem a maior população dos quatro (251.269.164 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Uzbequistão",
+    "opts": [
+      "Uzbequistão",
+      "Djibouti",
+      "São Vincente e Granadinas",
+      "Benin"
+    ],
+    "exp": "Uzbequistão tem a maior população dos quatro (36.361.859 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "França",
+    "opts": [
+      "Namíbia",
+      "Colômbia",
+      "França",
+      "República Centro-Africana"
+    ],
+    "exp": "França tem a maior população dos quatro (68.551.653 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Argélia",
+    "opts": [
+      "Chile",
+      "Samoa",
+      "Porto Rico",
+      "Argélia"
+    ],
+    "exp": "Argélia tem a maior população dos quatro (46.814.308 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Alemanha",
+    "opts": [
+      "África do Sul",
+      "Butão",
+      "Alemanha",
+      "Nova Zelândia"
+    ],
+    "exp": "Alemanha tem a maior população dos quatro (83.516.593 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior população?",
+    "a": "Ucrânia",
+    "opts": [
+      "Nauru",
+      "Catar",
+      "Ucrânia",
+      "Gabão"
+    ],
+    "exp": "Ucrânia tem a maior população dos quatro (37.860.221 hab.)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Etiópia",
+    "opts": [
+      "Etiópia",
+      "Tokelau",
+      "Croácia",
+      "Kiribati"
+    ],
+    "exp": "Etiópia é o maior em área dos quatro (1.104.300 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Brasil",
+    "opts": [
+      "Brasil",
+      "Somália",
+      "Suriname",
+      "Roménia"
+    ],
+    "exp": "Brasil é o maior em área dos quatro (8.515.767 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Hungria",
+    "opts": [
+      "Ilha Formosa",
+      "Hungria",
+      "Montserrat",
+      "Santa Helena, Ascensão e Tristão da Cunha"
+    ],
+    "exp": "Hungria é o maior em área dos quatro (93.028 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Brasil",
+    "opts": [
+      "Portugal",
+      "Maurício",
+      "Brasil",
+      "Ilha Formosa"
+    ],
+    "exp": "Brasil é o maior em área dos quatro (8.515.767 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Israel",
+    "opts": [
+      "Kosovo",
+      "Israel",
+      "Bermudas",
+      "São Martinho"
+    ],
+    "exp": "Israel é o maior em área dos quatro (20.770 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Áustria",
+    "opts": [
+      "Ilha Norfolk",
+      "Maldivas",
+      "Áustria",
+      "Micronésia"
+    ],
+    "exp": "Áustria é o maior em área dos quatro (83.871 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Brasil",
+    "opts": [
+      "Reino Unido",
+      "Brasil",
+      "Saint-Pierre e Miquelon",
+      "Ilhas Virgens"
+    ],
+    "exp": "Brasil é o maior em área dos quatro (8.515.767 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Madagáscar",
+    "opts": [
+      "Território Britânico do Oceano Índico",
+      "Filipinas",
+      "Timor-Leste",
+      "Madagáscar"
+    ],
+    "exp": "Madagáscar é o maior em área dos quatro (587.041 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Senegal",
+    "opts": [
+      "Chipre",
+      "Senegal",
+      "Eslovénia",
+      "Seicheles"
+    ],
+    "exp": "Senegal é o maior em área dos quatro (196.722 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Perú",
+    "opts": [
+      "Perú",
+      "Porto Rico",
+      "Afeganistão",
+      "Nepal"
+    ],
+    "exp": "Perú é o maior em área dos quatro (1.285.216 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Sudão",
+    "opts": [
+      "Barbados",
+      "Geórgia",
+      "Panamá",
+      "Sudão"
+    ],
+    "exp": "Sudão é o maior em área dos quatro (1.886.068 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Zâmbia",
+    "opts": [
+      "Zâmbia",
+      "Uganda",
+      "Guadalupe",
+      "Moldávia"
+    ],
+    "exp": "Zâmbia é o maior em área dos quatro (752.612 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Botswana",
+    "opts": [
+      "Nova Caledónia",
+      "Nova Zelândia",
+      "Tokelau",
+      "Botswana"
+    ],
+    "exp": "Botswana é o maior em área dos quatro (582.000 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Venezuela",
+    "opts": [
+      "Porto Rico",
+      "Congo",
+      "Venezuela",
+      "Nauru"
+    ],
+    "exp": "Venezuela é o maior em área dos quatro (916.445 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Polinésia Francesa",
+    "opts": [
+      "Ilhas Virgens",
+      "Polinésia Francesa",
+      "Guadalupe",
+      "Dominica"
+    ],
+    "exp": "Polinésia Francesa é o maior em área dos quatro (4.167 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Perú",
+    "opts": [
+      "Burkina Faso",
+      "Porto Rico",
+      "Perú",
+      "Gabão"
+    ],
+    "exp": "Perú é o maior em área dos quatro (1.285.216 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Austrália",
+    "opts": [
+      "Haiti",
+      "Madagáscar",
+      "Austrália",
+      "Indonésia"
+    ],
+    "exp": "Austrália é o maior em área dos quatro (7.692.024 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Níger",
+    "opts": [
+      "Equador",
+      "Butão",
+      "Suíça",
+      "Níger"
+    ],
+    "exp": "Níger é o maior em área dos quatro (1.267.000 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Sudão do Sul",
+    "opts": [
+      "Jersey",
+      "Sudão do Sul",
+      "França",
+      "Comores"
+    ],
+    "exp": "Sudão do Sul é o maior em área dos quatro (619.745 km²)."
+  },
+  {
+    "q": "Qual destes países tem maior área?",
+    "a": "Bangladesh",
+    "opts": [
+      "Luxemburgo",
+      "São Tomé e Príncipe",
+      "Jamaica",
+      "Bangladesh"
+    ],
+    "exp": "Bangladesh é o maior em área dos quatro (147.570 km²)."
+  },
+  {
+    "q": "Qual destes países se localiza em Europa?",
+    "a": "Itália",
+    "opts": [
+      "Senegal",
+      "Itália",
+      "Marrocos",
+      "Coreia do Norte"
+    ],
+    "exp": "Itália fica em Europa."
+  },
+  {
+    "q": "Qual destes países se localiza em Oceânia?",
+    "a": "Micronésia",
+    "opts": [
+      "Barbados",
+      "Camboja",
+      "Micronésia",
+      "Somália"
+    ],
+    "exp": "Micronésia fica em Oceânia."
+  },
+  {
+    "q": "Qual destes países se localiza em Antárctida?",
+    "a": "Antártida",
+    "opts": [
+      "Antártida",
+      "Macau",
+      "Palestina",
+      "Butão"
+    ],
+    "exp": "Antártida fica em Antárctida."
+  },
+  {
+    "q": "Qual destes países se localiza em Ásia?",
+    "a": "Omã",
+    "opts": [
+      "Antígua e Barbuda",
+      "Eslováquia",
+      "Madagáscar",
+      "Omã"
+    ],
+    "exp": "Omã fica em Ásia."
+  },
+  {
+    "q": "Qual destes países se localiza em África?",
+    "a": "Benin",
+    "opts": [
+      "Benin",
+      "Bolívia",
+      "Reino Unido",
+      "Lituânia"
+    ],
+    "exp": "Benin fica em África."
+  },
+  {
+    "q": "Qual destes países se localiza em Europa?",
+    "a": "Croácia",
+    "opts": [
+      "Paraguai",
+      "Croácia",
+      "Burkina Faso",
+      "Malawi"
+    ],
+    "exp": "Croácia fica em Europa."
+  },
+  {
+    "q": "Qual destes países se localiza em Oceânia?",
+    "a": "Micronésia",
+    "opts": [
+      "Comores",
+      "Colômbia",
+      "Vietname",
+      "Micronésia"
+    ],
+    "exp": "Micronésia fica em Oceânia."
+  },
+  {
+    "q": "Qual destes países se localiza em Antárctida?",
+    "a": "Antártida",
+    "opts": [
+      "Madagáscar",
+      "Antártida",
+      "Angola",
+      "Ilhas Caimão"
+    ],
+    "exp": "Antártida fica em Antárctida."
+  },
+  {
+    "q": "Qual destes países se localiza em Ásia?",
+    "a": "Cazaquistão",
+    "opts": [
+      "Cazaquistão",
+      "El Salvador",
+      "São Martinho",
+      "Djibouti"
+    ],
+    "exp": "Cazaquistão fica em Ásia."
+  },
+  {
+    "q": "Qual destes países se localiza em África?",
+    "a": "Libéria",
+    "opts": [
+      "Libéria",
+      "Coreia do Norte",
+      "Singapura",
+      "Irlanda"
+    ],
+    "exp": "Libéria fica em África."
+  },
+  {
+    "q": "Qual destes países se localiza em Europa?",
+    "a": "Itália",
+    "opts": [
+      "Mali",
+      "Itália",
+      "Papua Nova Guiné",
+      "Palestina"
+    ],
+    "exp": "Itália fica em Europa."
+  },
+  {
+    "q": "Qual destes países se localiza em Oceânia?",
+    "a": "Ilhas Cook",
+    "opts": [
+      "Ilhas Cook",
+      "Malásia",
+      "Letónia",
+      "Eslováquia"
+    ],
+    "exp": "Ilhas Cook fica em Oceânia."
+  },
+  {
+    "q": "Qual destes países se localiza em Antárctida?",
+    "a": "Ilha Heard e Ilhas McDonald",
+    "opts": [
+      "Albânia",
+      "Ilha Heard e Ilhas McDonald",
+      "Cazaquistão",
+      "Polinésia Francesa"
+    ],
+    "exp": "Ilha Heard e Ilhas McDonald fica em Antárctida."
+  },
+  {
+    "q": "Qual destes países se localiza em Ásia?",
+    "a": "Sri Lanka",
+    "opts": [
+      "Trinidade e Tobago",
+      "Sri Lanka",
+      "Chile",
+      "Quénia"
+    ],
+    "exp": "Sri Lanka fica em Ásia."
+  },
+  {
+    "q": "Qual destes países se localiza em África?",
+    "a": "Djibouti",
+    "opts": [
+      "Djibouti",
+      "Canadá",
+      "Costa Rica",
+      "Eslovénia"
+    ],
+    "exp": "Djibouti fica em África."
+  },
+  {
+    "q": "Qual destes países se localiza em Europa?",
+    "a": "Estónia",
+    "opts": [
+      "Etiópia",
+      "Equador",
+      "Singapura",
+      "Estónia"
+    ],
+    "exp": "Estónia fica em Europa."
+  },
+  {
+    "q": "Qual destes países se localiza em Oceânia?",
+    "a": "Tuvalu",
+    "opts": [
+      "Myanmar",
+      "Tuvalu",
+      "Síria",
+      "Catar"
+    ],
+    "exp": "Tuvalu fica em Oceânia."
+  },
+  {
+    "q": "Qual destes países se localiza em Antárctida?",
+    "a": "Ilhas Geórgia do Sul e Sandwich do Sul",
+    "opts": [
+      "México",
+      "Áustria",
+      "Ilhas Geórgia do Sul e Sandwich do Sul",
+      "Espanha"
+    ],
+    "exp": "Ilhas Geórgia do Sul e Sandwich do Sul fica em Antárctida."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Tokelau?",
+    "a": "0",
+    "opts": [
+      "2",
+      "0",
+      "3",
+      "1"
+    ],
+    "exp": "Tokelau faz fronteira com 0 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Estados Unidos?",
+    "a": "2",
+    "opts": [
+      "2",
+      "3",
+      "1",
+      "4"
+    ],
+    "exp": "Estados Unidos faz fronteira com 2 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Etiópia?",
+    "a": "6",
+    "opts": [
+      "6",
+      "8",
+      "5",
+      "7"
+    ],
+    "exp": "Etiópia faz fronteira com 6 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Irão?",
+    "a": "7",
+    "opts": [
+      "6",
+      "7",
+      "9",
+      "8"
+    ],
+    "exp": "Irão faz fronteira com 7 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre África do Sul?",
+    "a": "6",
+    "opts": [
+      "7",
+      "5",
+      "6",
+      "8"
+    ],
+    "exp": "África do Sul faz fronteira com 6 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Uganda?",
+    "a": "5",
+    "opts": [
+      "6",
+      "4",
+      "5",
+      "7"
+    ],
+    "exp": "Uganda faz fronteira com 5 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Iémen?",
+    "a": "2",
+    "opts": [
+      "1",
+      "3",
+      "2",
+      "4"
+    ],
+    "exp": "Iémen faz fronteira com 2 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Arábia Saudita?",
+    "a": "7",
+    "opts": [
+      "8",
+      "9",
+      "6",
+      "7"
+    ],
+    "exp": "Arábia Saudita faz fronteira com 7 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Camarões?",
+    "a": "6",
+    "opts": [
+      "5",
+      "8",
+      "7",
+      "6"
+    ],
+    "exp": "Camarões faz fronteira com 6 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Burkina Faso?",
+    "a": "6",
+    "opts": [
+      "8",
+      "7",
+      "6",
+      "5"
+    ],
+    "exp": "Burkina Faso faz fronteira com 6 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Roménia?",
+    "a": "5",
+    "opts": [
+      "6",
+      "5",
+      "4",
+      "7"
+    ],
+    "exp": "Roménia faz fronteira com 5 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Zimbabwe?",
+    "a": "4",
+    "opts": [
+      "3",
+      "5",
+      "4",
+      "6"
+    ],
+    "exp": "Zimbabwe faz fronteira com 4 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Sudão do Sul?",
+    "a": "6",
+    "opts": [
+      "8",
+      "6",
+      "5",
+      "7"
+    ],
+    "exp": "Sudão do Sul faz fronteira com 6 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Chéquia?",
+    "a": "4",
+    "opts": [
+      "3",
+      "4",
+      "6",
+      "5"
+    ],
+    "exp": "Chéquia faz fronteira com 4 países."
+  },
+  {
+    "q": "Com quantos países faz fronteira terrestre Azerbeijão?",
+    "a": "5",
+    "opts": [
+      "6",
+      "4",
+      "5",
+      "7"
+    ],
+    "exp": "Azerbeijão faz fronteira com 5 países."
   }
 ]

@@ -835,6 +835,7 @@ const _TRIVIA_EXTRA = {
   QuizEngine.register('tecnologia-pt',   makeDataProvider('tecnologia'));
   QuizEngine.register('monumentos-img',  makeDataProvider('monumentos'));
   QuizEngine.register('f1',              makeDataProvider('f1'));
+  QuizEngine.register('solar-pt',        makeDataProvider('solar'));
 })();
 
 /* ══════════════════════════════════════════════════════════════════
