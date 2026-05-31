@@ -1474,11 +1474,18 @@ body.light .ex-country-label {
 
 .pt-explorer-wrap {
   display: grid;
-  grid-template-columns: 230px 1fr;
+  grid-template-columns: 230px minmax(0, 1fr) 0px;
   grid-template-rows: 1fr;
   height: 100%;
   overflow: hidden;
   position: relative;
+  transition: grid-template-columns .3s ease;
+}
+/* When a district is selected the info panel becomes a real third column,
+   so the map AND the rich district panel are visible at the same time on
+   desktop (no fragile slide-over that can sit under the map controls). */
+.pt-explorer-wrap.pt-info-open {
+  grid-template-columns: 230px minmax(0, 1fr) clamp(340px, 30vw, 420px);
 }
 
 .pt-map-area {
@@ -1705,24 +1712,18 @@ body.light .pt-capital-label .pt-cap-dot {
 }
 
 /* Info panel (slides from right) */
+/* Desktop: the panel is the third grid column (always visible when open). */
 .pt-info-panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 320px;
+  grid-column: 3;
+  grid-row: 1;
+  position: relative;
+  min-width: 0;
   background: var(--card-solid);
   border-left: 1px solid var(--border2);
-  transform: translateX(100%);
-  transition: transform .32s cubic-bezier(.4,0,.2,1);
   z-index: 50;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.pt-info-panel.open {
-  transform: translateX(0);
 }
 
 .pt-info-close {
@@ -1892,7 +1893,8 @@ body.light .pt-capital-label .pt-cap-dot {
 }
 
 @media (max-width: 768px) {
-  .pt-explorer-wrap {
+  .pt-explorer-wrap,
+  .pt-explorer-wrap.pt-info-open {
     grid-template-columns: 1fr;
     grid-template-rows: 220px 1fr;
   }
@@ -1909,18 +1911,24 @@ body.light .pt-capital-label .pt-cap-dot {
     border-top: 1px solid var(--border2);
   }
 
+  /* Mobile keeps the bottom-sheet slide-over (this already worked). */
   .pt-info-panel {
+    position: absolute;
+    grid-column: 1;
     width: 100%;
     top: auto;
+    right: 0;
     bottom: 0;
     height: 65vh;
     border-left: none;
     border-top: 1px solid var(--border2);
     border-radius: var(--radius) var(--radius) 0 0;
     transform: translateY(100%);
+    transition: transform .32s cubic-bezier(.4,0,.2,1);
+    z-index: 50;
   }
 
-  .pt-info-panel.open {
+  .pt-explorer-wrap.pt-info-open .pt-info-panel {
     transform: translateY(0);
   }
 }
