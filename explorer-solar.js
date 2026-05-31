@@ -192,6 +192,30 @@ const SolarExplorer = (function () {
   let _selMoon       = null;
   let _earthClouds   = null;   /* Earth cloud shell (toggleable) */
   let _cloudsOn      = true;
+  let _earthDN       = null;   /* Earth day/night shader uniforms */
+  let _earthMesh     = null;
+  let _comet         = null;   /* { head, tail, angle, a, b, inc } */
+  let _sunCorona     = null;
+
+  /* Earth day/night: blend day + night (city lights) textures by the angle to
+     the Sun (at the origin). World-space normal so it works with tilt + spin. */
+  const EARTH_VERT = `
+    varying vec2 vUv; varying vec3 vWorldNormal;
+    void main() {
+      vUv = uv;
+      vWorldNormal = normalize(mat3(modelMatrix) * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }`;
+  const EARTH_FRAG = `
+    uniform sampler2D dayTex; uniform sampler2D nightTex; uniform vec3 sunDir;
+    varying vec2 vUv; varying vec3 vWorldNormal;
+    void main() {
+      float intensity = dot(normalize(vWorldNormal), normalize(sunDir));
+      float blend = smoothstep(-0.10, 0.18, intensity);
+      vec3 day   = texture2D(dayTex, vUv).rgb;
+      vec3 night = texture2D(nightTex, vUv).rgb * 1.5;   /* boost city lights */
+      gl_FragColor = vec4(mix(night, day, blend), 1.0);
+    }`;
 
   /* Respect the user's reduced-motion preference (app setting or OS).
      When reduced, planets hold position/spin but the scene still renders
@@ -303,6 +327,7 @@ const SolarExplorer = (function () {
     const W = viewport.clientWidth  || 800;
     const H = viewport.clientHeight || 600;
     _orbitLines = [];   /* reset so re-mounts don't keep stale orbit refs */
+    _earthDN = null; _earthMesh = null; _comet = null; _sunCorona = null;
 
     /* Renderer */
     _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -409,6 +434,18 @@ const SolarExplorer = (function () {
           _earthClouds.visible = _cloudsOn;
         }, undefined, () => {});
         mesh.add(_earthClouds);
+
+        /* Day/night shader — swaps in once BOTH day + night maps have loaded. */
+        const uniforms = { dayTex: { value: null }, nightTex: { value: null }, sunDir: { value: new THREE.Vector3(1, 0, 0) } };
+        const tl = new THREE.TextureLoader();
+        let loaded = 0;
+        const onLoad = () => {
+          if (++loaded < 2) return;
+          mesh.material = new THREE.ShaderMaterial({ uniforms, vertexShader: EARTH_VERT, fragmentShader: EARTH_FRAG });
+          _earthDN = uniforms; _earthMesh = mesh;
+        };
+        tl.load('assets/planets/earth_atmos_2048.jpg', t => { if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; uniforms.dayTex.value = t; onLoad(); }, undefined, () => {});
+        tl.load('assets/planets/earth-night.jpg',     t => { if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; uniforms.nightTex.value = t; onLoad(); }, undefined, () => {});
       }
 
       /* Saturn rings — tilt with the planet so they read as a 3D ring system. */
@@ -440,6 +477,10 @@ const SolarExplorer = (function () {
 
     /* Clickable major moons orbiting their planets. */
     _buildMoons();
+
+    /* Subtle Sun corona (additive shell that gently pulses) + a comet. */
+    _buildSunCorona();
+    _buildComet();
 
     /* ResizeObserver */
     new ResizeObserver(() => {
@@ -503,6 +544,29 @@ const SolarExplorer = (function () {
     });
   }
 
+  /* Soft additive corona around the Sun — gently pulses (subtle solar activity). */
+  function _buildSunCorona() {
+    const geo = new THREE.SphereGeometry(10.5, 32, 32);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.18, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false });
+    _sunCorona = new THREE.Mesh(geo, mat);
+    _scene.add(_sunCorona);
+  }
+
+  /* A single comet on a wide, inclined elliptical orbit with an anti-sunward
+     tail (a stretched, fading set of points). Decorative + subtle. */
+  function _buildComet() {
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xcfe8ff }),
+    );
+    const N = 40;
+    const tg = new THREE.BufferGeometry();
+    tg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
+    const tail = new THREE.Points(tg, new THREE.PointsMaterial({ color: 0x9fd0ff, size: 1.4, transparent: true, opacity: 0.5, sizeAttenuation: true, depthWrite: false }));
+    _scene.add(head); _scene.add(tail);
+    _comet = { head, tail, N, angle: Math.random() * Math.PI * 2, a: 250, b: 150, inc: 0.5 };
+  }
+
   /* ═════════════════════════════ CAMERA ═════════════════════════════ */
   function _updateCamera() {
     if (!_camera) return;
@@ -557,6 +621,42 @@ const SolarExplorer = (function () {
           pm.position.y + Math.sin(mo.angle) * mo.dist * 0.18,
           pm.position.z + Math.sin(mo.angle) * mo.dist,
         );
+      }
+
+      /* Earth day/night: sun sits at the origin, so the direction to the Sun
+         from Earth is simply -position. Update the shader's sun vector. */
+      if (_earthDN && _earthMesh) {
+        _earthDN.sunDir.value.set(-_earthMesh.position.x, -_earthMesh.position.y, -_earthMesh.position.z).normalize();
+      }
+
+      const t = performance.now() * 0.001;
+
+      /* Subtle solar activity: corona gently breathes in scale + opacity. */
+      if (_sunCorona) {
+        const pulse = 1 + Math.sin(t * 1.3) * 0.04;
+        _sunCorona.scale.setScalar(pulse);
+        _sunCorona.material.opacity = 0.15 + Math.sin(t * 1.3) * 0.05;
+      }
+
+      /* Comet: glide along an inclined ellipse; tail points anti-sunward. */
+      if (_comet) {
+        if (animate) _comet.angle += 0.0007 * _speed;
+        const a = _comet.angle;
+        const hx = Math.cos(a) * _comet.a;
+        const hz = Math.sin(a) * _comet.b;
+        const hy = Math.sin(a) * _comet.a * _comet.inc;
+        _comet.head.position.set(hx, hy, hz);
+        /* Tail: trail of points stretching away from the Sun (origin). */
+        const dir = _comet.head.position.clone().normalize();
+        const pos = _comet.tail.geometry.attributes.position;
+        for (let k = 0; k < _comet.N; k++) {
+          const f = k / _comet.N;
+          pos.setXYZ(k,
+            hx + dir.x * f * 60 + (Math.random() - 0.5) * f * 6,
+            hy + dir.y * f * 60 + (Math.random() - 0.5) * f * 6,
+            hz + dir.z * f * 60 + (Math.random() - 0.5) * f * 6);
+        }
+        pos.needsUpdate = true;
       }
 
       /* Cinematic idle drift: while nothing is selected (and the user isn't
