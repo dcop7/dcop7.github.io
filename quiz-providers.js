@@ -86,7 +86,9 @@ const _COUNTRIES_FB = [
 ];
 
 function _flagUrl(cca2) {
-  return `https://flagcdn.com/w160/${(cca2||'').toLowerCase()}.png`;
+  /* Local public-domain flag SVGs (no runtime hotlink). A missing file falls
+     back to a placeholder via the image onerror handler. */
+  return `data/flags/${(cca2||'').toLowerCase()}.svg`;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -110,7 +112,7 @@ function _flagUrl(cca2) {
           name:   c.name.common,
           namePt: (c.translations && c.translations.por && c.translations.por.common) || c.name.common,
           capital: c.capital[0],
-          flag:   c.flags.svg || c.flags.png || _flagUrl(c.cca2),
+          flag:   _flagUrl(c.cca2),  /* local PD SVG, not the API's hotlinked URL */
           region: c.region || '',
           pop:    c.population || 0,
           cca2:   (c.cca2 || '').toLowerCase(),
