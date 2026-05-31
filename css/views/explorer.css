@@ -881,6 +881,35 @@ body.light .ex-country-label {
   width: 100%;
   height: 100%;
 }
+/* Globe hover tooltip — flag + country name + continent (no selection) */
+.ex-globe-tooltip {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .35rem .6rem;
+  background: var(--glass-strong);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 22px rgba(0,0,0,.5);
+  font-size: .8rem;
+  color: var(--text);
+  white-space: nowrap;
+  max-width: 60%;
+}
+.ex-globe-tooltip[hidden] { display: none; }
+.ex-gt-flag { font-size: 1.05rem; line-height: 1; }
+.ex-gt-name { font-weight: 700; }
+.ex-gt-cont {
+  font-size: .68rem;
+  color: var(--muted);
+  border-left: 1px solid var(--border2);
+  padding-left: .45rem;
+}
 #ex-globe-container canvas {
   display: block;
 }

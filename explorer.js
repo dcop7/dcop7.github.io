@@ -281,6 +281,20 @@ const ExplorerPage = (function () {
      with English common name as a safe fallback. */
   function _cName(c) { return c ? (c.namePt || (c.name && c.name.common) || c.cca3 || '') : ''; }
 
+  /* Hover tooltip on the globe: flag + name + continent (no selection). */
+  const _CONT_PT = { 'Africa':'África', 'Asia':'Ásia', 'Europe':'Europa', 'North America':'América do Norte', 'South America':'América do Sul', 'Oceania':'Oceânia', 'Antarctica':'Antárctida' };
+  let _globeCursor = { x: 0, y: 0 };
+  function _updateGlobeTooltip(c) {
+    const tip = document.getElementById('ex-globe-tooltip');
+    if (!tip) return;
+    if (!c) { tip.hidden = true; return; }
+    const cont = _CONT_PT[(c.continents || [])[0]] || c.regionPt || '';
+    tip.innerHTML = `<span class="ex-gt-flag">${c.flag || '🏳'}</span><span class="ex-gt-name">${_cName(c)}</span>${cont ? `<span class="ex-gt-cont">${cont}</span>` : ''}`;
+    tip.style.left = _globeCursor.x + 'px';
+    tip.style.top  = _globeCursor.y + 'px';
+    tip.hidden = false;
+  }
+
   function showCountryPanel(country, panelSel) {
     const panel = document.querySelector(panelSel || '#ex-country-panel');
     if (!panel) return;
@@ -824,6 +838,7 @@ const ExplorerPage = (function () {
           <button class="ex-globe-view-btn" data-view="political">Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
+        <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
         <div class="ex-globe-stats">
           <div class="ex-globe-stat">Países <span class="ex-globe-stat-val" id="ex-globe-count">—</span></div>
           <div class="ex-globe-stat">Em destaque <span class="ex-globe-stat-val" id="ex-globe-sel">—</span></div>
@@ -929,11 +944,14 @@ const ExplorerPage = (function () {
         if (!_globeInteracted) return;
         _globeHovered = f;
         _globeGL.polygonCapColor(getCapColor);
+        const c = f ? _byCca3[f.id] : null;
         const sel = document.getElementById('ex-globe-sel');
-        if (sel) sel.textContent = f ? (_cName(_byCca3[f.id]) || f.id) : '—';
+        if (sel) sel.textContent = c ? (_cName(c) || f.id) : '—';
+        _updateGlobeTooltip(c);
       })
       .onPolygonClick(f => {
         if (!f) return;
+        _updateGlobeTooltip(null);
         const c = _byCca3[f.id];
         /* Smooth fly-to using the country's bundled centroid when available. */
         const ll = c?.latlng;
@@ -970,6 +988,15 @@ const ExplorerPage = (function () {
     const markInteracted = () => { _globeInteracted = true; };
     container.addEventListener('pointerdown', markInteracted, { once: true });
     container.addEventListener('pointermove', markInteracted, { once: true });
+    /* Track cursor (relative to the globe wrap) to position the hover tooltip. */
+    container.addEventListener('pointermove', ev => {
+      const wrap = container.closest('.ex-globe-wrap') || container;
+      const r = wrap.getBoundingClientRect();
+      _globeCursor = { x: ev.clientX - r.left + 14, y: ev.clientY - r.top + 14 };
+      const tip = document.getElementById('ex-globe-tooltip');
+      if (tip && !tip.hidden) { tip.style.left = _globeCursor.x + 'px'; tip.style.top = _globeCursor.y + 'px'; }
+    }, { passive: true });
+    container.addEventListener('pointerleave', () => _updateGlobeTooltip(null));
 
     /* ResizeObserver — stored so it can be disconnected on shell rebuild */
     _globeResizeObs = new ResizeObserver(() => {
