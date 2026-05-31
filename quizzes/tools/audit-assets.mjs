@@ -39,6 +39,13 @@ for (const f of (existsSync(flagsDir) ? await readdir(flagsDir) : []).filter(x =
     verified: true, classification: 'SAFE' });
 }
 
+/* 2c) Planet/Sun textures — Solar System Scope (CC BY 4.0) */
+const planetsDir = join(ROOT, 'assets', 'planets');
+for (const f of (existsSync(planetsDir) ? await readdir(planetsDir) : []).filter(x => /\.(jpg|png)$/i.test(x))) {
+  add({ file: `assets/planets/${f}`, type: 'texture', source: 'Solar System Scope (solarsystemscope.com)',
+    license: 'CC BY 4.0', attribution: 'Solar System Scope', verified: true, classification: 'SAFE' });
+}
+
 /* 3) Favicon — original work in this repo */
 add({ file: 'favicon.svg', type: 'svg', source: 'original (this repository)',
   license: 'project-owned / public-domain shapes', attribution: 'none', verified: true, classification: 'SAFE' });

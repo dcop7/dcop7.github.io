@@ -1989,3 +1989,4 @@ body.light .pt-capital-label .pt-cap-dot {
   .ex-discover-btn { padding: .65rem 1.5rem; font-size: .85rem; }
   .ex-country-panel { height: 70vh; }
 }
+.ex-solar-credit{position:absolute;bottom:.5rem;right:.7rem;z-index:6;font-size:.58rem;color:var(--muted);opacity:.6;pointer-events:auto}.ex-solar-credit a{color:var(--muted);text-decoration:underline}

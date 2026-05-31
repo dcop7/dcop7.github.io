@@ -5,7 +5,11 @@ const SolarExplorer = (function () {
   'use strict';
 
   const THREE_CDN  = 'https://unpkg.com/three@0.160.0/build/three.min.js';
-  const TEX_BASE   = 'https://unpkg.com/three@0.160.0/examples/textures/planets/';
+  /* Local planet textures — Solar System Scope (CC BY 4.0). Replaces the old
+     unpkg path which 404'd (planets showed only a flat colour). */
+  const TEX_BASE   = 'assets/planets/';
+  const RING_TEX   = 'assets/planets/saturn-ring.png';
+  const SUN_TEX    = 'assets/planets/sun.jpg';
   /* (Removed external space background texture — unverifiable licence.
      The scene uses a solid colour + a locally-generated starfield instead.) */
 
@@ -255,6 +259,7 @@ const SolarExplorer = (function () {
           <div class="ex-solar-panel-body" id="ss-panel-body"></div>
         </div>
         <div class="ex-solar-hint" id="ss-hint">Selecciona um corpo celeste para explorar · Arrasta para rodar · Scroll para zoom</div>
+        <div class="ex-solar-credit">Texturas: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · CC BY 4.0</div>
       </div>`;
 
     _mounted = true;
@@ -329,9 +334,13 @@ const SolarExplorer = (function () {
     _camera = new THREE.PerspectiveCamera(55, W / H, 0.5, 3000);
     _updateCamera();
 
-    /* Sun */
-    const sunGeo  = new THREE.SphereGeometry(8, 32, 32);
-    const sunMat  = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+    /* Sun — textured surface (CC BY 4.0); falls back to flat gold if it fails. */
+    const sunGeo  = new THREE.SphereGeometry(8, 48, 48);
+    const sunMat  = new THREE.MeshBasicMaterial({ color: 0xfff2cc });
+    new THREE.TextureLoader().load(SUN_TEX, tex => {
+      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      sunMat.map = tex; sunMat.color.set(0xffffff); sunMat.needsUpdate = true;
+    }, undefined, () => { sunMat.color.set(0xffd700); });
     _sunMesh = new THREE.Mesh(sunGeo, sunMat);
     _scene.add(_sunMesh);
 
@@ -389,15 +398,20 @@ const SolarExplorer = (function () {
 
       /* Saturn rings — tilt with the planet so they read as a 3D ring system. */
       if (p.hasRings) {
-        const ringGeo = new THREE.RingGeometry(p.displayR * 1.35, p.displayR * 2.3, 96);
-        /* Remap UVs so a radial gradient texture would sit correctly; also gives
-           the flat-shaded ring a subtle inner/outer tone via vertex distance. */
-        const ringMat = new THREE.MeshBasicMaterial({
-          color: 0xd8b878,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.7,
-        });
+        const inner = p.displayR * 1.28, outer = p.displayR * 2.35;
+        const ringGeo = new THREE.RingGeometry(inner, outer, 160);
+        /* Remap UVs radially so the ring texture's gradient (inner→outer gaps,
+           Cassini division) maps across the ring's width. */
+        const pos = ringGeo.attributes.position, uv = ringGeo.attributes.uv, v3 = new THREE.Vector3();
+        for (let i = 0; i < pos.count; i++) {
+          v3.fromBufferAttribute(pos, i);
+          uv.setXY(i, (v3.length() - inner) / (outer - inner), 0.5);
+        }
+        const ringMat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0.95, depthWrite: false });
+        new THREE.TextureLoader().load(RING_TEX, tex => {
+          if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+          ringMat.map = tex; ringMat.alphaMap = tex; ringMat.needsUpdate = true;
+        }, undefined, () => { ringMat.color = new THREE.Color(0xd8b878); ringMat.opacity = 0.7; });
         const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = Math.PI / 2;   /* lie in the planet's equatorial plane */
         mesh.add(ring);                   /* inherits the planet's axial tilt */
