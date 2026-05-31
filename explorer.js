@@ -350,6 +350,8 @@ const ExplorerPage = (function () {
              target="_blank" rel="noopener">📖 Wikipédia</a>
           <a class="ex-wiki-btn" href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(enName)}"
              target="_blank" rel="noopener">🖼 Commons</a>
+          ${country.cca2 ? `<a class="ex-wiki-btn" href="https://whc.unesco.org/en/statesparties/${country.cca2.toLowerCase()}"
+             target="_blank" rel="noopener" title="Sítios Património Mundial da UNESCO">🏛 Património UNESCO</a>` : ''}
         </div>
         <div class="ex-panel-rows">
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🏙</span><span class="ex-panel-label">Capital</span><span class="ex-panel-value">${capital}</span></div>
