@@ -215,26 +215,30 @@
 }
 
 /* ── DISTRICT NAME LABELS (always-on, zoom-scaled) ── */
-.oc-district-label {
+.oc-region-label {
   background: none !important;
   border: none !important;
   pointer-events: none;
+  margin: 0 !important;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.oc-district-label span {
+/* Distinct REGION-label style (uppercase, spaced, semi-transparent) so it
+   reads as a district/area label, not a duplicate city point-label. */
+.oc-region-label span {
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: .7rem;
-  letter-spacing: .01em;
-  color: #fff;
-  text-shadow: 0 0 3px rgba(0,0,0,.9), 0 1px 4px rgba(0,0,0,.8), 0 0 8px rgba(0,0,0,.6);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.82);
+  text-shadow: 0 0 3px rgba(0,0,0,.95), 0 1px 5px rgba(0,0,0,.85);
   white-space: nowrap;
 }
-.oc-district-label.light span {
-  color: #1e293b;
-  text-shadow: 0 0 3px rgba(255,255,255,.95), 0 1px 4px rgba(255,255,255,.85);
+.oc-region-label.light span {
+  color: rgba(30,41,59,.78);
+  text-shadow: 0 0 3px rgba(255,255,255,.95), 0 1px 4px rgba(255,255,255,.9);
 }
 .oc-map-side .leaflet-control-zoom {
   border: none !important;

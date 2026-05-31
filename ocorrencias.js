@@ -167,8 +167,9 @@ const OcorrenciasPage = (function () {
      switch district borders/labels to a light, high-contrast treatment. */
   function _setBasemap(style) {
     if (!_map) return;
-    if (!BASEMAPS[style]) style = 'standard';
+    if (!BASEMAPS[style] && style !== 'satellite-labels') style = 'standard';
     _baseStyle = style;
+    try { localStorage.setItem('oc-basemap', style); } catch (e) {}
     const sat = style === 'satellite' || style === 'satellite-labels';
 
     if (_baseTile)     { _map.removeLayer(_baseTile);     _baseTile = null; }
@@ -217,6 +218,7 @@ const OcorrenciasPage = (function () {
       if (!r.ok) return;
       _districtGeoData = await r.json();
       _renderDistrictBorders();
+      _renderDistrictLabels(); // now we have polygons → place labels at centroids
     } catch (e) { /* silently skip — map still functional without boundary overlay */ }
   }
 
@@ -246,37 +248,40 @@ const OcorrenciasPage = (function () {
   function _renderDistrictLabels() {
     if (!_map) return;
     if (_districtLabelLayer) { _districtLabelLayer.remove(); _districtLabelLayer = null; }
-    /* Avoid DUPLICATE place names: every basemap except plain satellite already
-       prints city/district labels (CARTO voyager/dark, Esri reference overlay).
-       Only the plain 'satellite' imagery has no labels, so draw our district
-       labels there exclusively. */
-    if (_baseStyle !== 'satellite') return;
-    const cls = 'oc-district-label';
+    /* The Esri 'satellite-labels' overlay already prints place names — skip
+       ours there to avoid double labelling. On every other style we render
+       district names as distinct REGION labels (uppercase, spaced) placed at
+       each district's polygon centroid, not on the capital city, so they don't
+       duplicate the basemap's city point-labels. */
+    if (_baseStyle === 'satellite-labels') return;
+    /* Light voyager basemap needs dark text; dark/satellite needs light text. */
+    const cls = 'oc-region-label' + (_baseStyle === 'standard' ? ' light' : '');
     _districtLabelLayer = L.layerGroup();
-    Object.entries(DISTRICT_CENTROIDS).forEach(([name, ll]) => {
-      const icon = L.divIcon({
-        className: cls,
-        html: `<span>${name}</span>`,
-        iconSize: [80, 16], iconAnchor: [40, 8],
+    const place = (name, lat, lng) => {
+      const icon = L.divIcon({ className: cls, html: `<span>${name}</span>`, iconSize: [94, 14], iconAnchor: [47, 7] });
+      L.marker([lat, lng], { icon, interactive: false, keyboard: false }).addTo(_districtLabelLayer);
+    };
+    if (_districtGeoData && _districtGeoData.features) {
+      _districtGeoData.features.forEach(f => {
+        const name = f.properties && f.properties.name;
+        if (!name) return;
+        try { const c = L.geoJSON(f).getBounds().getCenter(); place(name, c.lat, c.lng); } catch (e) {}
       });
-      const m = L.marker(ll, { icon, interactive: false, keyboard: false });
-      m._major = _LABEL_MAJOR.has(name);
-      m.addTo(_districtLabelLayer);
-    });
+    } else {
+      Object.entries(DISTRICT_CENTROIDS).forEach(([name, ll]) => place(name, ll[0], ll[1]));
+    }
     _districtLabelLayer.addTo(_map);
     _updateDistrictLabelZoom();
   }
 
-  /* Progressive labels: at low zoom only major districts; font grows with zoom. */
+  /* Font scales with zoom (labels stay legible, never oversized). */
   function _updateDistrictLabelZoom() {
     if (!_districtLabelLayer || !_map) return;
     const z = _map.getZoom();
-    const fs = z >= 9 ? '.8rem' : z >= 7 ? '.72rem' : '.66rem';
+    const fs = z >= 9 ? '.74rem' : z >= 7 ? '.66rem' : '.6rem';
     _districtLabelLayer.eachLayer(m => {
       const el = m.getElement();
-      if (!el) return;
-      el.style.display = (z < 7 && !m._major) ? 'none' : '';
-      el.style.fontSize = fs;
+      if (el) el.style.fontSize = fs;
     });
   }
 
@@ -468,9 +473,10 @@ const OcorrenciasPage = (function () {
     });
     L.control.zoom({ position: 'bottomright' }).addTo(_map);
 
-    /* Match the app theme by default so the map integrates with the dark UI
-       (dark basemap in dark mode); the user can switch styles at any time. */
-    _setBasemap(_isDark() ? 'dark' : 'standard');
+    /* Restore the saved style; otherwise match the app theme (dark map in
+       dark mode) so the map integrates with the rest of the UI. */
+    let _savedBase; try { _savedBase = localStorage.getItem('oc-basemap'); } catch (e) {}
+    _setBasemap(_savedBase || (_isDark() ? 'dark' : 'standard'));
 
     _lEq   = L.layerGroup().addTo(_map);
     _lFire = L.layerGroup().addTo(_map);

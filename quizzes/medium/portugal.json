@@ -1,10 +1,123 @@
 [
-  { "q": "Quem foi o primeiro rei de Portugal?", "a": "D. Afonso Henriques", "opts": ["D. Afonso Henriques", "D. Dinis", "D. João I", "D. Sebastião"], "exp": "D. Afonso Henriques tornou-se o primeiro rei de Portugal em 1143." },
-  { "q": "Em que ano ocorreu a Revolução dos Cravos?", "a": "1974", "opts": ["1974", "1910", "1926", "1986"], "exp": "A 25 de Abril de 1974, a Revolução dos Cravos pôs fim à ditadura do Estado Novo." },
-  { "q": "Que navegador português chegou à Índia por via marítima em 1498?", "a": "Vasco da Gama", "opts": ["Vasco da Gama", "Pedro Álvares Cabral", "Fernão de Magalhães", "Bartolomeu Dias"], "exp": "Vasco da Gama abriu o caminho marítimo para a Índia em 1498." },
-  { "q": "Qual é o ponto mais alto de Portugal continental?", "a": "Torre (Serra da Estrela)", "opts": ["Torre (Serra da Estrela)", "Pico (Açores)", "Monte Gerês", "Foia (Monchique)"], "exp": "A Torre, na Serra da Estrela, tem 1993 m — o ponto mais alto do continente. O ponto mais alto de Portugal é o Pico, nos Açores (2351 m)." },
-  { "q": "Que poeta escreveu 'Os Lusíadas'?", "a": "Luís de Camões", "opts": ["Luís de Camões", "Fernando Pessoa", "Eça de Queirós", "Almeida Garrett"], "exp": "Camões publicou a epopeia 'Os Lusíadas' em 1572." },
-  { "q": "Qual é o monumento manuelino em Belém, Património Mundial da UNESCO?", "a": "Mosteiro dos Jerónimos", "opts": ["Mosteiro dos Jerónimos", "Sé de Lisboa", "Palácio da Pena", "Convento de Mafra"], "exp": "O Mosteiro dos Jerónimos e a Torre de Belém são Património Mundial desde 1983." },
-  { "q": "Em que ano aderiu Portugal à CEE (atual União Europeia)?", "a": "1986", "opts": ["1986", "1974", "1992", "2002"], "exp": "Portugal aderiu à Comunidade Económica Europeia em 1 de Janeiro de 1986." },
-  { "q": "Qual é o segundo maior rio que nasce em Espanha e atravessa o norte de Portugal?", "a": "Douro", "opts": ["Douro", "Tejo", "Minho", "Sado"], "exp": "O Douro nasce em Espanha e atravessa a região vinhateira do Douro." }
+  {
+    "q": "Quem foi o primeiro rei de Portugal?",
+    "a": "D. Afonso Henriques",
+    "opts": [
+      "D. Afonso Henriques",
+      "D. Dinis",
+      "D. João I",
+      "D. Sebastião"
+    ],
+    "exp": "D. Afonso Henriques tornou-se o primeiro rei de Portugal em 1143."
+  },
+  {
+    "q": "Em que ano ocorreu a Revolução dos Cravos?",
+    "a": "1974",
+    "opts": [
+      "1974",
+      "1910",
+      "1926",
+      "1986"
+    ],
+    "exp": "A 25 de Abril de 1974, a Revolução dos Cravos pôs fim à ditadura do Estado Novo."
+  },
+  {
+    "q": "Que navegador português chegou à Índia por via marítima em 1498?",
+    "a": "Vasco da Gama",
+    "opts": [
+      "Vasco da Gama",
+      "Pedro Álvares Cabral",
+      "Fernão de Magalhães",
+      "Bartolomeu Dias"
+    ],
+    "exp": "Vasco da Gama abriu o caminho marítimo para a Índia em 1498."
+  },
+  {
+    "q": "Qual é o ponto mais alto de Portugal continental?",
+    "a": "Torre (Serra da Estrela)",
+    "opts": [
+      "Torre (Serra da Estrela)",
+      "Pico (Açores)",
+      "Monte Gerês",
+      "Foia (Monchique)"
+    ],
+    "exp": "A Torre, na Serra da Estrela, tem 1993 m — o ponto mais alto do continente. O ponto mais alto de Portugal é o Pico, nos Açores (2351 m)."
+  },
+  {
+    "q": "Que poeta escreveu 'Os Lusíadas'?",
+    "a": "Luís de Camões",
+    "opts": [
+      "Luís de Camões",
+      "Fernando Pessoa",
+      "Eça de Queirós",
+      "Almeida Garrett"
+    ],
+    "exp": "Camões publicou a epopeia 'Os Lusíadas' em 1572."
+  },
+  {
+    "q": "Qual é o monumento manuelino em Belém, Património Mundial da UNESCO?",
+    "a": "Mosteiro dos Jerónimos",
+    "opts": [
+      "Mosteiro dos Jerónimos",
+      "Sé de Lisboa",
+      "Palácio da Pena",
+      "Convento de Mafra"
+    ],
+    "exp": "O Mosteiro dos Jerónimos e a Torre de Belém são Património Mundial desde 1983."
+  },
+  {
+    "q": "Em que ano aderiu Portugal à CEE (atual União Europeia)?",
+    "a": "1986",
+    "opts": [
+      "1986",
+      "1974",
+      "1992",
+      "2002"
+    ],
+    "exp": "Portugal aderiu à Comunidade Económica Europeia em 1 de Janeiro de 1986."
+  },
+  {
+    "q": "Qual é o segundo maior rio que nasce em Espanha e atravessa o norte de Portugal?",
+    "a": "Douro",
+    "opts": [
+      "Douro",
+      "Tejo",
+      "Minho",
+      "Sado"
+    ],
+    "exp": "O Douro nasce em Espanha e atravessa a região vinhateira do Douro."
+  },
+  {
+    "q": "Qual é o ponto mais ocidental da Europa continental?",
+    "a": "Cabo da Roca",
+    "opts": [
+      "Cabo da Roca",
+      "Cabo de São Vicente",
+      "Cabo Carvoeiro",
+      "Cabo Espichel"
+    ],
+    "exp": "O Cabo da Roca, em Sintra, é o ponto mais ocidental do continente europeu."
+  },
+  {
+    "q": "Que região é famosa pelo vinho verde?",
+    "a": "Minho",
+    "opts": [
+      "Minho",
+      "Alentejo",
+      "Algarve",
+      "Douro"
+    ],
+    "exp": "O vinho verde é produzido na região do Minho, no noroeste."
+  },
+  {
+    "q": "Quantos distritos tem Portugal continental?",
+    "a": "18",
+    "opts": [
+      "18",
+      "20",
+      "12",
+      "22"
+    ],
+    "exp": "Portugal continental está dividido em 18 distritos."
+  }
 ]

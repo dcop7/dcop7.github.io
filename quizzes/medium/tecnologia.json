@@ -1,13 +1,167 @@
 [
-  { "q": "Que linguagem de programação é conhecida pela mascote do Gopher?", "a": "Go", "opts": ["Go", "Rust", "Python", "Ruby"], "exp": "Go (Golang) foi criada na Google em 2009; a mascote é o Gopher." },
-  { "q": "O que significa 'CPU'?", "a": "Unidade Central de Processamento", "opts": ["Unidade Central de Processamento", "Unidade de Cópia de Programas", "Central de Processos Únicos", "Controlador Principal USB"], "exp": "CPU = Central Processing Unit, o 'cérebro' do computador." },
-  { "q": "Que empresa desenvolve a linha de placas gráficas GeForce?", "a": "NVIDIA", "opts": ["NVIDIA", "AMD", "Intel", "Qualcomm"], "exp": "As GeForce são GPUs da NVIDIA, muito usadas em jogos e IA." },
-  { "q": "Quantos bits tem um byte?", "a": "8", "opts": ["8", "4", "16", "32"], "exp": "Um byte é composto por 8 bits." },
-  { "q": "Que sistema de controlo de versões foi criado por Linus Torvalds?", "a": "Git", "opts": ["Git", "SVN", "Mercurial", "CVS"], "exp": "O Git foi criado em 2005 para gerir o desenvolvimento do núcleo Linux." },
-  { "q": "Que protocolo torna seguras as ligações a sites (cadeado no navegador)?", "a": "HTTPS", "opts": ["HTTPS", "HTTP", "FTP", "SMTP"], "exp": "O HTTPS cifra a comunicação entre o navegador e o servidor." },
-  { "q": "Que empresa criou a linguagem e plataforma Java?", "a": "Sun Microsystems", "opts": ["Sun Microsystems", "Microsoft", "Apple", "Oracle"], "exp": "O Java foi criado pela Sun Microsystems em 1995 (a Sun foi depois comprada pela Oracle)." },
-  { "q": "O que é uma 'GPU'?", "a": "Unidade de Processamento Gráfico", "opts": ["Unidade de Processamento Gráfico", "Unidade Geral de Programas", "Gestor de Pastas Universais", "Grande Processador Único"], "exp": "A GPU acelera o processamento de imagem e cálculos paralelos." },
-  { "q": "Que empresa mantém o sistema de IA conversacional ChatGPT?", "a": "OpenAI", "opts": ["OpenAI", "Google", "Meta", "Amazon"], "exp": "O ChatGPT é desenvolvido pela OpenAI." },
-  { "q": "Que tipo de software é o Linux?", "a": "Um sistema operativo de código aberto", "opts": ["Um sistema operativo de código aberto", "Um antivírus", "Um navegador", "Uma folha de cálculo"], "exp": "O Linux é um núcleo de sistema operativo livre e de código aberto." },
-  { "q": "O que mede a unidade 'gigabyte' (GB)?", "a": "Quantidade de dados", "opts": ["Quantidade de dados", "Velocidade do processador", "Resolução do ecrã", "Frequência da rede"], "exp": "O gigabyte mede capacidade de armazenamento/quantidade de dados (1 GB ≈ mil milhões de bytes)." }
+  {
+    "q": "Que linguagem de programação é conhecida pela mascote do Gopher?",
+    "a": "Go",
+    "opts": [
+      "Go",
+      "Rust",
+      "Python",
+      "Ruby"
+    ],
+    "exp": "Go (Golang) foi criada na Google em 2009; a mascote é o Gopher."
+  },
+  {
+    "q": "O que significa 'CPU'?",
+    "a": "Unidade Central de Processamento",
+    "opts": [
+      "Unidade Central de Processamento",
+      "Unidade de Cópia de Programas",
+      "Central de Processos Únicos",
+      "Controlador Principal USB"
+    ],
+    "exp": "CPU = Central Processing Unit, o 'cérebro' do computador."
+  },
+  {
+    "q": "Que empresa desenvolve a linha de placas gráficas GeForce?",
+    "a": "NVIDIA",
+    "opts": [
+      "NVIDIA",
+      "AMD",
+      "Intel",
+      "Qualcomm"
+    ],
+    "exp": "As GeForce são GPUs da NVIDIA, muito usadas em jogos e IA."
+  },
+  {
+    "q": "Quantos bits tem um byte?",
+    "a": "8",
+    "opts": [
+      "8",
+      "4",
+      "16",
+      "32"
+    ],
+    "exp": "Um byte é composto por 8 bits."
+  },
+  {
+    "q": "Que sistema de controlo de versões foi criado por Linus Torvalds?",
+    "a": "Git",
+    "opts": [
+      "Git",
+      "SVN",
+      "Mercurial",
+      "CVS"
+    ],
+    "exp": "O Git foi criado em 2005 para gerir o desenvolvimento do núcleo Linux."
+  },
+  {
+    "q": "Que protocolo torna seguras as ligações a sites (cadeado no navegador)?",
+    "a": "HTTPS",
+    "opts": [
+      "HTTPS",
+      "HTTP",
+      "FTP",
+      "SMTP"
+    ],
+    "exp": "O HTTPS cifra a comunicação entre o navegador e o servidor."
+  },
+  {
+    "q": "Que empresa criou a linguagem e plataforma Java?",
+    "a": "Sun Microsystems",
+    "opts": [
+      "Sun Microsystems",
+      "Microsoft",
+      "Apple",
+      "Oracle"
+    ],
+    "exp": "O Java foi criado pela Sun Microsystems em 1995 (a Sun foi depois comprada pela Oracle)."
+  },
+  {
+    "q": "O que é uma 'GPU'?",
+    "a": "Unidade de Processamento Gráfico",
+    "opts": [
+      "Unidade de Processamento Gráfico",
+      "Unidade Geral de Programas",
+      "Gestor de Pastas Universais",
+      "Grande Processador Único"
+    ],
+    "exp": "A GPU acelera o processamento de imagem e cálculos paralelos."
+  },
+  {
+    "q": "Que empresa mantém o sistema de IA conversacional ChatGPT?",
+    "a": "OpenAI",
+    "opts": [
+      "OpenAI",
+      "Google",
+      "Meta",
+      "Amazon"
+    ],
+    "exp": "O ChatGPT é desenvolvido pela OpenAI."
+  },
+  {
+    "q": "Que tipo de software é o Linux?",
+    "a": "Um sistema operativo de código aberto",
+    "opts": [
+      "Um sistema operativo de código aberto",
+      "Um antivírus",
+      "Um navegador",
+      "Uma folha de cálculo"
+    ],
+    "exp": "O Linux é um núcleo de sistema operativo livre e de código aberto."
+  },
+  {
+    "q": "O que mede a unidade 'gigabyte' (GB)?",
+    "a": "Quantidade de dados",
+    "opts": [
+      "Quantidade de dados",
+      "Velocidade do processador",
+      "Resolução do ecrã",
+      "Frequência da rede"
+    ],
+    "exp": "O gigabyte mede capacidade de armazenamento/quantidade de dados (1 GB ≈ mil milhões de bytes)."
+  },
+  {
+    "q": "O que significa \"URL\"?",
+    "a": "Uniform Resource Locator",
+    "opts": [
+      "Uniform Resource Locator",
+      "Universal Reference Link",
+      "Unified Resource Layer",
+      "User Routing Link"
+    ],
+    "exp": "URL é o endereço único de um recurso na web."
+  },
+  {
+    "q": "Que estrutura de dados segue a regra FIFO (primeiro a entrar, primeiro a sair)?",
+    "a": "Fila",
+    "opts": [
+      "Fila",
+      "Pilha",
+      "Árvore",
+      "Grafo"
+    ],
+    "exp": "Numa fila (queue) o primeiro elemento a entrar é o primeiro a sair."
+  },
+  {
+    "q": "Que empresa criou o sistema operativo Android?",
+    "a": "Google",
+    "opts": [
+      "Google",
+      "Apple",
+      "Microsoft",
+      "Samsung"
+    ],
+    "exp": "O Android é mantido pela Google."
+  },
+  {
+    "q": "O que faz uma VPN?",
+    "a": "Cria uma ligação privada e cifrada",
+    "opts": [
+      "Cria uma ligação privada e cifrada",
+      "Acelera o processador",
+      "Aumenta o armazenamento",
+      "Edita imagens"
+    ],
+    "exp": "Uma VPN cria um túnel cifrado para proteger a ligação."
+  }
 ]
