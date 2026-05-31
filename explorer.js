@@ -52,12 +52,13 @@ const ExplorerPage = (function () {
   const COUNTRIES_URL = 'data/countries.json';
   const GEOJSON_URL   = 'data/world-countries.geojson';
 
-  /* three-globe CDN — confirmed working 2025 */
+  /* Earth textures = NASA Blue Marble / Black Marble / topology (public domain),
+     hosted on the three-globe CDN. No external starfield image — the background
+     is a solid colour + a CSS starfield (avoids an unverifiable texture). */
   const GLOBE_TEX = {
     day:   'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
     night: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
     bump:  'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png',
-    space: 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png',
   };
 
   /* Day/night globe shader (after vasturiano's globe.gl night-day example).
@@ -912,7 +913,7 @@ const ExplorerPage = (function () {
     _globeGL = Globe({ animateIn: true })(container)
       .width(container.clientWidth)
       .height(container.clientHeight)
-      .backgroundImageUrl(GLOBE_TEX.space)
+      .backgroundColor('rgba(0,0,0,0)')
       .showAtmosphere(true)
       .atmosphereColor('#5a8fd0')
       .atmosphereAltitude(0.12)
