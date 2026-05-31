@@ -84,6 +84,78 @@ Object.entries(CAP).forEach(([cca2, cap], i) => {
   });
 });
 
+/* 4) "Qual destes tem MAIOR população?" — 4 country options, verified by data.
+   Well-known countries → easy; mixed → medium; obscure → hard. */
+const popList = withPt.filter(c => c.population > 0);
+function sampleDistinct(arr, n, exclude) {
+  const pool = shuffle(arr.filter(x => x !== exclude));
+  return pool.slice(0, n);
+}
+function regionTier(i, n) { return tierOf(i, n); }
+for (let i = 0; i < 90; i++) {
+  const group = sampleDistinct(popList, 4);
+  if (group.length < 4) break;
+  const win = group.reduce((a, b) => (a.population >= b.population ? a : b));
+  const names = group.map(c => ptNames[c.cca2]);
+  const a = ptNames[win.cca2];
+  const tier = i < 30 ? 'easy' : i < 65 ? 'medium' : 'hard';
+  out[tier].push({
+    q: 'Qual destes países tem maior população?', a, opts: shuffle(names),
+    exp: `${a} tem a maior população dos quatro (${win.population.toLocaleString('pt')} hab.).`,
+  });
+}
+
+/* 5) "Qual destes é o MAIOR em área?" */
+const areaList = withPt.filter(c => c.area > 0);
+for (let i = 0; i < 70; i++) {
+  const group = sampleDistinct(areaList, 4);
+  if (group.length < 4) break;
+  const win = group.reduce((a, b) => (a.area >= b.area ? a : b));
+  const names = group.map(c => ptNames[c.cca2]);
+  const a = ptNames[win.cca2];
+  const tier = i < 24 ? 'easy' : i < 50 ? 'medium' : 'hard';
+  out[tier].push({
+    q: 'Qual destes países tem maior área?', a, opts: shuffle(names),
+    exp: `${a} é o maior em área dos quatro (${win.area.toLocaleString('pt')} km²).`,
+  });
+}
+
+/* 6) "Qual destes países fica em <região>?" — 1 in region, 3 outside */
+const byCont = {};
+for (const c of withPt) { const k = CONT_PT[c.continents[0]]; if (k) (byCont[k] = byCont[k] || []).push(c); }
+const conts = Object.keys(byCont).filter(k => byCont[k].length >= 1);
+for (let i = 0; i < 60; i++) {
+  const cont = conts[i % conts.length];
+  const inside = sampleDistinct(byCont[cont], 1)[0];
+  const outside = sampleDistinct(withPt.filter(c => CONT_PT[c.continents[0]] !== cont), 3);
+  if (!inside || outside.length < 3) continue;
+  const a = ptNames[inside.cca2];
+  const opts = shuffle([a, ...outside.map(c => ptNames[c.cca2])]);
+  const tier = i < 20 ? 'easy' : i < 42 ? 'medium' : 'hard';
+  out[tier].push({
+    q: `Qual destes países se localiza em ${cont}?`, a, opts,
+    exp: `${a} fica em ${cont}.`,
+  });
+}
+
+/* 7) "Com quantos países faz fronteira X?" — numeric, verified by borders[] */
+const borderList = withPt.filter(c => Array.isArray(c.borders));
+for (let i = 0; i < 50; i++) {
+  const c = borderList[(i * 7) % borderList.length];
+  if (!c) continue;
+  const n = c.borders.length;
+  const cand = [n, n + 1, n + 2, Math.max(0, n - 1), Math.max(0, n - 2), n + 3];
+  const opts = [...new Set(cand)].slice(0, 4);
+  while (opts.length < 4) { const x = Math.floor(Math.random() * 12); if (!opts.includes(x)) opts.push(x); }
+  const a = String(n);
+  const tier = i < 16 ? 'easy' : i < 35 ? 'medium' : 'hard';
+  out[tier].push({
+    q: `Com quantos países faz fronteira terrestre ${ptNames[c.cca2]}?`,
+    a, opts: shuffle(opts.map(String)),
+    exp: `${ptNames[c.cca2]} faz fronteira com ${n} ${n === 1 ? 'país' : 'países'}.`,
+  });
+}
+
 for (const tier of ['easy','medium','hard']) {
   await writeFile(join(ROOT,'quizzes',tier,'geografia.json'), JSON.stringify(out[tier], null, 2) + '\n', 'utf8');
   console.log(`  wrote ${tier}/geografia.json — ${out[tier].length} entries`);
