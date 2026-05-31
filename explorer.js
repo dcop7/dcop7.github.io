@@ -24,6 +24,7 @@ const ExplorerPage = (function () {
   let _globeSunTimer    = null;
   let _cloudsMesh       = null;
   let _cloudsRAF        = null;
+  let _globeInteracted  = false;       /* true after first user pointer interaction */
 
   /* ── Leaflet state ── */
   let _lMap        = null;
@@ -96,15 +97,14 @@ const ExplorerPage = (function () {
       vec3 nightColor = texture2D(nightTexture, vUv).rgb;
       float blend = mix(1.0, smoothstep(-0.12, 0.18, intensity), dayNight);
       vec3 col = mix(nightColor, dayColor, blend);
-      /* The raw texture rendered unlit looks flat and overexposed. Deepen it
-         with a gentle gamma + contrast so oceans/land/terrain read naturally. */
-      col = pow(col, vec3(1.13));
-      col = (col - 0.5) * 1.10 + 0.5;
-      /* Limb darkening — darken grazing-angle edges so the sphere reads as a
-         3D Earth instead of a glowing white disc. vNormal is the view-space
-         normal; the view direction in view space is +Z. */
+      /* Gentle contrast so land/ocean read naturally, but keep it bright enough
+         that continents stay clearly identifiable (was previously too dark). */
+      col = pow(col, vec3(1.04));
+      col = (col - 0.5) * 1.06 + 0.5;
+      col *= 1.10;
+      /* Mild limb darkening for a 3D look without dimming the visible face. */
       float facing = clamp(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
-      col *= mix(0.70, 1.0, pow(facing, 0.55));
+      col *= mix(0.84, 1.05, pow(facing, 0.45));
       gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
     }`;
 
@@ -228,10 +228,11 @@ const ExplorerPage = (function () {
   /* Wikipedia summary → short excerpt + lead image (Wikimedia Commons,
      freely-licensed). Returns { text, image } (either may be null). */
   async function _fetchWiki(name) {
-    const key = `ex-wiki2-${name}`;
+    const key = `ex-wiki-pt-${name}`;
     try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
     try {
-      const r = await _fetchTimeout(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`, 6000);
+      /* PT Wikipedia so the excerpt is in European Portuguese, not English. */
+      const r = await _fetchTimeout(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`, 6000);
       const d = await r.json();
       const text = d.extract_html
         ? d.extract_html.replace(/<[^>]+>/g, '').slice(0, 300)
@@ -275,12 +276,17 @@ const ExplorerPage = (function () {
     return facts.slice(0, 3);
   }
 
+  /* European-Portuguese country name (bundled in countries.json as namePt),
+     with English common name as a safe fallback. */
+  function _cName(c) { return c ? (c.namePt || (c.name && c.name.common) || c.cca3 || '') : ''; }
+
   function showCountryPanel(country, panelSel) {
     const panel = document.querySelector(panelSel || '#ex-country-panel');
     if (!panel) return;
     _addRecent(country.cca3);
 
-    const name    = country.name?.common || '?';
+    const name    = _cName(country) || '?';
+    const enName  = (country.name && country.name.common) || name;
     const capital = (country.capital || [])[0] || '—';
     const pop     = country.population > 0 ? country.population.toLocaleString('pt') : '—';
     const area    = country.area > 0 ? country.area.toLocaleString('pt') + ' km²' : '—';
@@ -289,7 +295,12 @@ const ExplorerPage = (function () {
     const cont    = (country.continents || [])[0] || '—';
     const tzList  = country.timezones || [];
     const tz      = tzList.length ? tzList.join(', ') : '—';
-    const region  = [country.region, country.subregion].filter(Boolean).join(' · ') || '—';
+    const region  = [country.regionPt || country.region, country.subregionPt || country.subregion].filter(Boolean).join(' · ') || '—';
+    const gdpStr  = country.gdp > 0
+      ? (country.gdp >= 1e12 ? `${(country.gdp / 1e12).toFixed(2)} biliões US$`
+        : `${(country.gdp / 1e9).toFixed(1)} mil milhões US$`) : '—';
+    const gdpPc   = (country.gdp > 0 && country.population > 0)
+      ? Math.round(country.gdp / country.population).toLocaleString('pt') + ' US$' : '—';
     const ll      = country.latlng || [];
     const coords  = ll.length === 2
       ? `${Math.abs(ll[0]).toFixed(1)}°${ll[0] >= 0 ? 'N' : 'S'}, ${Math.abs(ll[1]).toFixed(1)}°${ll[1] >= 0 ? 'E' : 'W'}`
@@ -303,7 +314,7 @@ const ExplorerPage = (function () {
     const byCca3  = (_byCca3 && Object.keys(_byCca3).length) ? _byCca3 : _byCode();
     const neighbours = (country.borders || []).map(code => {
       const n = byCca3[code];
-      return { code, name: n?.name?.common || code, flag: n?.flag || '' };
+      return { code, name: _cName(n) || code, flag: n?.flag || '' };
     });
 
     panel.innerHTML = `
@@ -319,9 +330,9 @@ const ExplorerPage = (function () {
           <button class="ex-fave-btn${isFave ? ' active' : ''}" id="ex-fave-btn">
             <span class="ex-fave-btn-icon">${isFave ? '❤' : '🤍'}</span> ${isFave ? 'Guardado' : 'Favorito'}
           </button>
-          <a class="ex-wiki-btn" href="https://en.wikipedia.org/wiki/${encodeURIComponent(name)}"
-             target="_blank" rel="noopener">📖 Wikipedia</a>
-          <a class="ex-wiki-btn" href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(name)}"
+          <a class="ex-wiki-btn" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(name)}"
+             target="_blank" rel="noopener">📖 Wikipédia</a>
+          <a class="ex-wiki-btn" href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(enName)}"
              target="_blank" rel="noopener">🖼 Commons</a>
         </div>
         <div class="ex-panel-rows">
@@ -333,6 +344,8 @@ const ExplorerPage = (function () {
           <div class="ex-panel-row"><span class="ex-panel-row-icon">👣</span><span class="ex-panel-label">Densidade</span><span class="ex-panel-value">${density}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🌍</span><span class="ex-panel-label">Continente</span><span class="ex-panel-value">${cont}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🗺</span><span class="ex-panel-label">Região</span><span class="ex-panel-value">${region}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">📈</span><span class="ex-panel-label">PIB</span><span class="ex-panel-value">${gdpStr}</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">💶</span><span class="ex-panel-label">PIB per capita</span><span class="ex-panel-value">${gdpPc}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">📍</span><span class="ex-panel-label">Coordenadas</span><span class="ex-panel-value" style="font-family:var(--font-mono);font-size:.76rem">${coords}</span></div>
           <div class="ex-panel-row"><span class="ex-panel-row-icon">🕐</span><span class="ex-panel-label">Fuso${tzList.length > 1 ? 's' : ''} horário${tzList.length > 1 ? 's' : ''}</span><span class="ex-panel-value">${tz}</span></div>
         </div>
@@ -415,7 +428,7 @@ const ExplorerPage = (function () {
             <div class="ex-section-label">Visto recentemente</div>
             <div class="ex-chips-row">
               ${recents.map(c => `<button class="ex-country-chip" data-cca3="${c.cca3}">
-                <span class="ex-country-chip-flag">${c.flag || ''}</span>${c.name.common}</button>`).join('')}
+                <span class="ex-country-chip-flag">${c.flag || ''}</span>${_cName(c)}</button>`).join('')}
             </div>
           </div>` : ''}
         ${faves.length ? `
@@ -423,7 +436,7 @@ const ExplorerPage = (function () {
             <div class="ex-section-label">Favoritos</div>
             <div class="ex-chips-row">
               ${faves.map(c => `<button class="ex-country-chip" data-cca3="${c.cca3}">
-                <span class="ex-country-chip-flag">${c.flag || ''}</span>${c.name.common}</button>`).join('')}
+                <span class="ex-country-chip-flag">${c.flag || ''}</span>${_cName(c)}</button>`).join('')}
             </div>
           </div>` : ''}
       </div>`;
@@ -704,7 +717,7 @@ const ExplorerPage = (function () {
             keyboard: false,
             icon: L.divIcon({
               className: 'ex-country-label',
-              html: `<span class="ex-cl-flag">${c.flag || ''}</span><span class="ex-cl-name">${c.name.common}</span>`,
+              html: `<span class="ex-cl-flag">${c.flag || ''}</span><span class="ex-cl-name">${_cName(c)}</span>`,
               iconSize: [0, 0],
             }),
           });
@@ -763,14 +776,14 @@ const ExplorerPage = (function () {
       const q = input.value.trim().toLowerCase();
       if (!q) { results.classList.remove('open'); return; }
       const hits = _countries.filter(c =>
-        c.name.common.toLowerCase().includes(q) || (c.cca3 || '').toLowerCase().includes(q)
+        _cName(c).toLowerCase().includes(q) || c.name.common.toLowerCase().includes(q) || (c.cca3 || '').toLowerCase().includes(q)
       ).slice(0, 8);
       if (!hits.length) { results.classList.remove('open'); return; }
       results._hits = hits;
       results.innerHTML = hits.map((c, i) => `
         <div class="ex-search-result" data-i="${i}">
           <span class="ex-search-result-flag">${c.flag || ''}</span>
-          <span class="ex-search-result-name">${c.name.common}</span>
+          <span class="ex-search-result-name">${_cName(c)}</span>
           <span class="ex-search-result-region">${(c.continents || [])[0] || ''}</span>
         </div>`).join('');
       results.classList.add('open'); _fi = -1;
@@ -909,10 +922,14 @@ const ExplorerPage = (function () {
       .polygonStrokeColor(() => 'rgba(255,255,255,0.22)')
       .polygonAltitude(getCapAlt)
       .onPolygonHover(f => {
+        /* Ignore hover until the user actually interacts with the globe.
+           globe.gl can emit an initial hover on data load, which previously
+           caused a country to appear "selected/featured" before any click. */
+        if (!_globeInteracted) return;
         _globeHovered = f;
         _globeGL.polygonCapColor(getCapColor);
         const sel = document.getElementById('ex-globe-sel');
-        if (sel) sel.textContent = f ? (_byCca3[f.id]?.name.common || f.id) : '—';
+        if (sel) sel.textContent = f ? (_cName(_byCca3[f.id]) || f.id) : '—';
       })
       .onPolygonClick(f => {
         if (!f) return;
@@ -946,6 +963,12 @@ const ExplorerPage = (function () {
         _setGlobeView(btn.dataset.view);
       });
     }
+
+    /* First real pointer interaction unlocks hover highlighting/featuring. */
+    _globeInteracted = false;
+    const markInteracted = () => { _globeInteracted = true; };
+    container.addEventListener('pointerdown', markInteracted, { once: true });
+    container.addEventListener('pointermove', markInteracted, { once: true });
 
     /* ResizeObserver — stored so it can be disconnected on shell rebuild */
     _globeResizeObs = new ResizeObserver(() => {
@@ -983,28 +1006,41 @@ const ExplorerPage = (function () {
   function _setupGlobeMaterial() {
     const T = window.THREE;
     if (!T || !_globeGL) { _globeFallbackMaterial(); return; }
+    /* Show a textured Earth IMMEDIATELY so the globe is never a blank/white
+       sphere while the shader textures load (or if they fail entirely). */
+    _globeFallbackMaterial();
     try {
-      const loader   = new T.TextureLoader();
-      const dayTex   = loader.load(GLOBE_TEX.day);
-      const nightTex = loader.load(GLOBE_TEX.night);
+      const loader = new T.TextureLoader();
+      loader.setCrossOrigin('anonymous');
+      let count = 0, failed = false;
+      const dayTex = loader.load(GLOBE_TEX.day, onOne, undefined, onErr);
+      const nightTex = loader.load(GLOBE_TEX.night, onOne, undefined, onErr);
       if (T.SRGBColorSpace) { dayTex.colorSpace = T.SRGBColorSpace; nightTex.colorSpace = T.SRGBColorSpace; }
-      const uniforms = {
-        dayTexture:    { value: dayTex },
-        nightTexture:  { value: nightTex },
-        sunPosition:   { value: new T.Vector2() },
-        globeRotation: { value: new T.Vector2() },
-        dayNight:      { value: 0 },
-      };
-      const mat = new T.ShaderMaterial({ uniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
-      _globeGL.globeMaterial(mat);
-      _globeMatUniforms = uniforms;
-      /* Keep the shader's sun direction aligned with the camera POV. */
-      _globeGL.onZoom(pov => {
-        if (_globeMatUniforms && pov) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
-      });
-      _updateSunUniform();
-      if (_globeSunTimer) clearInterval(_globeSunTimer);
-      _globeSunTimer = setInterval(_updateSunUniform, 60000);
+
+      function onErr() { failed = true; /* keep the textured fallback material */ }
+      function onOne() {
+        if (failed) return;
+        if (++count < 2) return;       // wait until BOTH textures are decoded
+        applyShader();
+      }
+      function applyShader() {
+        const uniforms = {
+          dayTexture:    { value: dayTex },
+          nightTexture:  { value: nightTex },
+          sunPosition:   { value: new T.Vector2() },
+          globeRotation: { value: new T.Vector2() },
+          dayNight:      { value: _globeView === 'daynight' ? 1 : 0 },
+        };
+        const mat = new T.ShaderMaterial({ uniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
+        _globeGL.globeMaterial(mat);
+        _globeMatUniforms = uniforms;
+        _globeGL.onZoom(pov => {
+          if (_globeMatUniforms && pov) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
+        });
+        _updateSunUniform();
+        if (_globeSunTimer) clearInterval(_globeSunTimer);
+        _globeSunTimer = setInterval(_updateSunUniform, 60000);
+      }
     } catch (e) {
       _globeFallbackMaterial();
     }
@@ -1195,6 +1231,7 @@ const ExplorerPage = (function () {
       if (_globeSunTimer) { clearInterval(_globeSunTimer); _globeSunTimer = null; }
       if (_cloudsRAF) { cancelAnimationFrame(_cloudsRAF); _cloudsRAF = null; }
       _cloudsMesh = null;
+      _globeInteracted = false;
       _globeMatUniforms = null;
       _globeGL         = null;
       _globeInited     = false;
