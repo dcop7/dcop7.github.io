@@ -1556,6 +1556,43 @@ body.light .ex-country-label {
   flex: 1;
   overflow-y: auto;
   padding: .4rem .5rem;
+  scrollbar-width: none;          /* hidden internal scrollbar (cleaner UI) */
+}
+.pt-district-list::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Remove the browser focus rectangle Leaflet draws around a clicked polygon
+   (the "selection box" artifact). */
+#pt-leaflet-map path.leaflet-interactive:focus,
+#pt-leaflet-map .leaflet-interactive:focus { outline: none; }
+/* Satellite imagery must not be dimmed by the dark-theme tile filter. */
+#pt-leaflet-map.pt-sat .leaflet-tile-pane { filter: none; }
+
+/* ── Portugal basemap selector ── */
+.pt-basemap-bar {
+  position: absolute;
+  top: .7rem; right: .7rem;
+  z-index: 500;
+  display: flex; gap: .25rem; flex-wrap: wrap;
+  background: var(--glass);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: .3rem .35rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.pt-basemap-btn {
+  padding: .3rem .6rem;
+  background: transparent; border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--muted); font-size: .7rem; font-weight: 600;
+  font-family: var(--font-sans); cursor: pointer; transition: all var(--ease);
+  white-space: nowrap;
+}
+.pt-basemap-btn:hover { color: var(--text2); background: rgba(255,255,255,.06); }
+.pt-basemap-btn.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: rgba(var(--accent-rgb),.35);
 }
 
 .pt-district-chip {
@@ -1704,7 +1741,9 @@ body.light .pt-capital-label .pt-cap-dot {
 .pt-info-content {
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;          /* hidden internal scrollbar (cleaner UI) */
 }
+.pt-info-content::-webkit-scrollbar { width: 0; height: 0; }
 
 .pt-info-hero {
   padding: 1.4rem 1.1rem 1rem;

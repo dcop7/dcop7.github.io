@@ -246,11 +246,12 @@ const OcorrenciasPage = (function () {
   function _renderDistrictLabels() {
     if (!_map) return;
     if (_districtLabelLayer) { _districtLabelLayer.remove(); _districtLabelLayer = null; }
-    const sat = _baseStyle === 'satellite' || _baseStyle === 'satellite-labels';
-    /* On satellite+labels the Esri overlay already prints place names, so skip
-       ours to avoid double labelling. */
-    if (_baseStyle === 'satellite-labels') return;
-    const cls = 'oc-district-label' + (sat || _isDark() ? '' : ' light');
+    /* Avoid DUPLICATE place names: every basemap except plain satellite already
+       prints city/district labels (CARTO voyager/dark, Esri reference overlay).
+       Only the plain 'satellite' imagery has no labels, so draw our district
+       labels there exclusively. */
+    if (_baseStyle !== 'satellite') return;
+    const cls = 'oc-district-label';
     _districtLabelLayer = L.layerGroup();
     Object.entries(DISTRICT_CENTROIDS).forEach(([name, ll]) => {
       const icon = L.divIcon({
@@ -467,9 +468,9 @@ const OcorrenciasPage = (function () {
     });
     L.control.zoom({ position: 'bottomright' }).addTo(_map);
 
-    /* Default to the context-rich standard basemap so Portugal sits within
-       visible surrounding territory (Spain, coastline) rather than floating. */
-    _setBasemap('standard');
+    /* Match the app theme by default so the map integrates with the dark UI
+       (dark basemap in dark mode); the user can switch styles at any time. */
+    _setBasemap(_isDark() ? 'dark' : 'standard');
 
     _lEq   = L.layerGroup().addTo(_map);
     _lFire = L.layerGroup().addTo(_map);
@@ -504,15 +505,44 @@ const OcorrenciasPage = (function () {
     });
   }
 
+  /* Map a fogos.pt occurrence status consistently to a colour + severity.
+     Same status → same colour everywhere (markers, list, legend).
+     Palette: novo=azul, em resolução=amarelo, em curso=laranja,
+     significativo=vermelho, grande dispositivo=vermelho-escuro,
+     vigilância=verde, encerrada=cinza. */
+  const FIRE_STATUS = [
+    { m: /vigil/,                         color: '#22c55e', sev: 1, label: 'Vigilância' },
+    { m: /conclus/,                       color: '#9ca3af', sev: 1, label: 'Em conclusão' },
+    { m: /resolu/,                        color: '#eab308', sev: 2, label: 'Em resolução' },
+    { m: /curso|chegada|teatro|operac/,   color: '#f97316', sev: 3, label: 'Em curso' },
+    { m: /alerta|despacho|acionament/,    color: '#3b82f6', sev: 1, label: 'Novo / Despacho' },
+    { m: /encerr|rescaldo|extint/,        color: '#9ca3af', sev: 0, label: 'Encerrada' },
+  ];
+  function _fireStatus(inc) {
+    const s = (inc.status || '').toLowerCase();
+    let st = FIRE_STATUS.find(x => x.m.test(s)) || { color: '#f97316', sev: 3, label: inc.status || 'Ativa' };
+    st = { ...st };
+    const heavy = (inc.operacionais || 0) >= 50 || (inc.aereos || 0) >= 1;
+    if (inc.important && heavy) { st.color = '#b91c1c'; st.sev = 5; st.label = 'Significativo · grande dispositivo'; }
+    else if (inc.important)     { st.color = '#ef4444'; st.sev = Math.max(st.sev, 4); st.label = 'Incêndio significativo'; }
+    return st;
+  }
+
   function _renderFireMarkers(fires) {
     if (!_lFire) return;
     _lFire.clearLayers();
     if (!_layers.fire) return;
     fires.forEach(f => {
+      const st   = _fireStatus(f);
+      const sz   = 18 + st.sev * 3;
+      const glow = 6 + st.sev * 4;
+      const fs   = Math.round(sz * 0.5);
+      const loc  = f.district && f.district !== '—' ? ` · ${f.district}` : '';
+      const tip  = `${f.title}${loc} · ${st.label}`.replace(/"/g, '&quot;');
       const icon = L.divIcon({
         className: '',
-        html: `<div style="font-size:20px;line-height:1;filter:drop-shadow(0 0 6px #ff6600cc);cursor:pointer" title="${f.title}">🔥</div>`,
-        iconSize: [22, 22], iconAnchor: [11, 11],
+        html: `<div title="${tip}" style="width:${sz}px;height:${sz}px;border-radius:50%;background:${st.color};border:2px solid rgba(255,255,255,.92);box-shadow:0 0 ${glow}px ${st.color},0 0 3px rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;font-size:${fs}px;line-height:1;cursor:pointer">🔥</div>`,
+        iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
       });
       L.marker([f.lat, f.lon], { icon })
         .on('click', () => _openDetail(f))
@@ -773,13 +803,17 @@ const OcorrenciasPage = (function () {
       const extra  = inc.type === 'earthquake'
         ? `<span class="oc-incident-mag ${_magClass(inc.mag)}">${inc.mag?.toFixed(1) || '?'}</span>` : '';
       const t = _relTime(inc.time);
+      /* Fire dots use the same status colour as their map marker. */
+      const dotStyle = inc.type === 'fire' ? ` style="background:${_fireStatus(inc).color};box-shadow:none"` : '';
+      const statusTag = inc.type === 'fire' && inc.status ? `<span class="oc-incident-status">${_fireStatus(inc).label}</span>` : '';
       return `<div class="oc-incident-item" data-id="${inc.id}">
-        <div class="oc-incident-dot ${dotCls}"></div>
+        <div class="oc-incident-dot ${dotCls}"${dotStyle}></div>
         <div class="oc-incident-body">
           <div class="oc-incident-title">${inc.title}</div>
           <div class="oc-incident-meta">
             <span class="oc-incident-district">📍 ${inc.district}</span>
             ${extra}
+            ${statusTag}
             ${t ? `<span class="oc-incident-time">${t}</span>` : ''}
           </div>
         </div>
@@ -955,11 +989,20 @@ const OcorrenciasPage = (function () {
                 <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#ef4444"></div>≥ 5.0</div>
               </div>
               <div class="oc-legend-section">
-                <div class="oc-legend-label">Outros</div>
-                <div class="oc-legend-row"><span style="font-size:11px;line-height:1">🔥</span>Incêndio ativo</div>
-                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#eab30855;border-color:#eab308"></div>Aviso amarelo</div>
-                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#f9731655;border-color:#f97316"></div>Aviso laranja</div>
-                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#ef444455;border-color:#ef4444"></div>Aviso vermelho</div>
+                <div class="oc-legend-label">Incêndios (estado)</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#3b82f6"></div>Novo / despacho</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#f97316"></div>Em curso</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#eab308"></div>Em resolução</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#ef4444"></div>Significativo</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#b91c1c"></div>Grande dispositivo</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#22c55e"></div>Vigilância</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#9ca3af"></div>Conclusão / encerrada</div>
+              </div>
+              <div class="oc-legend-section">
+                <div class="oc-legend-label">Avisos IPMA</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#eab30855;border-color:#eab308"></div>Amarelo</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#f9731655;border-color:#f97316"></div>Laranja</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#ef444455;border-color:#ef4444"></div>Vermelho</div>
               </div>
             </div>
 

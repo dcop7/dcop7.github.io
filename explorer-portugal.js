@@ -276,6 +276,8 @@ const PortugalExplorer = (function () {
   let _geoLayer  = null;
   let _selected  = null;
   let _container = null;
+  let _baseTile  = null;
+  let _baseStyle = 'standard';
 
   /* ── District boundaries (bundled locally, simplified) — property "name"
      matches the district names in DISTRICTS exactly. ── */
@@ -298,10 +300,27 @@ const PortugalExplorer = (function () {
   }
 
   function _isDark() { return !document.body.classList.contains('light'); }
-  function _tileUrl() {
-    return _isDark()
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+  /* Selectable basemap styles (atlas-style detail: roads, places, terrain). */
+  const PT_BASEMAPS = {
+    standard:  { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: '© OpenStreetMap © CARTO' },
+    dark:      { url: 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png',          sub: 'abcd', attr: '© OpenStreetMap © CARTO' },
+    satellite: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: '© Esri, Maxar' },
+    terrain:   { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',  sub: '', attr: '© Esri' },
+  };
+
+  function _setBasemap(style) {
+    if (!_map || !PT_BASEMAPS[style]) return;
+    _baseStyle = style;
+    if (_baseTile) { _map.removeLayer(_baseTile); _baseTile = null; }
+    const b = PT_BASEMAPS[style];
+    _baseTile = L.tileLayer(b.url, { attribution: b.attr, subdomains: b.sub, maxZoom: 18 }).addTo(_map);
+    _baseTile.bringToBack();
+    const el = document.getElementById('pt-leaflet-map');
+    if (el) el.classList.toggle('pt-sat', style === 'satellite');
+    document.querySelectorAll('.pt-basemap-btn').forEach(x =>
+      x.classList.toggle('active', x.dataset.base === style));
+    _onZoom(); // refresh capital-label visibility for the new style
   }
 
   /* ── Mount ── */
@@ -311,6 +330,12 @@ const PortugalExplorer = (function () {
       <div class="pt-explorer-wrap">
         <div class="pt-map-area" id="pt-map-area">
           <div id="pt-leaflet-map"></div>
+          <div class="pt-basemap-bar" id="pt-basemap-bar">
+            <button class="pt-basemap-btn active" data-base="standard">Político</button>
+            <button class="pt-basemap-btn" data-base="terrain">Relevo</button>
+            <button class="pt-basemap-btn" data-base="satellite">Satélite</button>
+            <button class="pt-basemap-btn" data-base="dark">Escuro</button>
+          </div>
           <div class="pt-loading" id="pt-loading">
             <div class="pt-loading-spinner"></div>
             <div class="pt-loading-txt">A carregar mapa de Portugal…</div>
@@ -349,6 +374,9 @@ const PortugalExplorer = (function () {
     _initMap(container);
     _wireSearch(container);
     _wireSidebar(container);
+    container.querySelectorAll('.pt-basemap-btn').forEach(btn => {
+      btn.addEventListener('click', () => _setBasemap(btn.dataset.base));
+    });
     document.getElementById('pt-loading')?.remove();
     _inited = true;
   }
@@ -369,10 +397,8 @@ const PortugalExplorer = (function () {
       zoomControl: false,
     });
     L.control.zoom({ position: 'bottomright' }).addTo(_map);
-    L.tileLayer(_tileUrl(), {
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',
-      subdomains: 'abcd',
-    }).addTo(_map);
+    /* Match the app theme by default; user can switch styles via the bar. */
+    _setBasemap(_isDark() ? 'dark' : 'standard');
 
     _addDistrictMarkers();
     _addCapitalLabels();
@@ -385,11 +411,13 @@ const PortugalExplorer = (function () {
     _tryLoadGeoJSON();
   }
 
-  /* District fill opacity, attenuated by zoom so detail shows through up close. */
+  /* District fill opacity — deliberately light so the basemap (roads, cities,
+     terrain, coastlines) stays readable. The selection is conveyed mainly by a
+     coloured border, not a solid block (think "Google Maps selected area"). */
   function _fillFor(selected) {
     const z = _map ? _map.getZoom() : 7;
-    if (selected) return z >= 10 ? 0.22 : z >= 8 ? 0.38 : 0.5;
-    return z >= 10 ? 0.04 : z >= 8 ? 0.09 : 0.15;
+    if (selected) return z >= 10 ? 0.12 : z >= 8 ? 0.20 : 0.28;
+    return z >= 10 ? 0.02 : z >= 8 ? 0.05 : 0.08;
   }
 
   function _onZoom() {
@@ -399,8 +427,10 @@ const PortugalExplorer = (function () {
       const d = _findDistrict(Object.values(props).find(v => typeof v === 'string'));
       layer.setStyle({ fillOpacity: _fillFor(d === _selected) });
     });
-    /* Capital labels only when zoomed in enough to be useful. */
-    const showCaps = _map.getZoom() >= 8;
+    /* Capital labels only on satellite imagery (no built-in labels there);
+       every other basemap already prints place names, so showing our own would
+       duplicate them. Also gated by zoom to stay useful and uncluttered. */
+    const showCaps = _map.getZoom() >= 8 && _baseStyle === 'satellite';
     _capitalMarkers.forEach(m => {
       const el = m.getElement();
       if (el) el.style.display = showCaps ? '' : 'none';
@@ -543,7 +573,10 @@ const PortugalExplorer = (function () {
         layer.setStyle({
           fillColor: base,
           fillOpacity: _fillFor(isSelected),
-          weight: isSelected ? 2 : 1.2,
+          /* Selected = bright coloured outline; others = subtle hairline. */
+          color: isSelected ? base : (_isDark() ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.25)'),
+          weight: isSelected ? 3 : 1.2,
+          opacity: isSelected ? 0.95 : 0.6,
         });
         if (isSelected) layer.bringToFront();
       });

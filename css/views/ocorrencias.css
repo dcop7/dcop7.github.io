@@ -173,6 +173,8 @@
 }
 /* Satellite imagery must not be dimmed by the dark-theme tile filter */
 #oc-leaflet-map.oc-sat .leaflet-tile-pane { filter: none; }
+/* Remove the browser focus rectangle around clicked warning polygons */
+#oc-leaflet-map .leaflet-interactive:focus { outline: none; }
 
 /* ── BASEMAP STYLE SELECTOR (top-right) ── */
 .oc-basemap-bar {
@@ -887,6 +889,11 @@
   font-weight: 700;
   padding: .1rem .38rem;
   border-radius: 3px;
+}
+.oc-incident-status {
+  font-size: .6rem;
+  color: var(--muted);
+  font-weight: 600;
 }
 .oc-incident-mag.low    { background: rgba(34,197,94,.1);   color: #22c55e; }
 .oc-incident-mag.mod    { background: rgba(234,179,8,.12);  color: #eab308; }
