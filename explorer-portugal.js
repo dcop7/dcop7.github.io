@@ -564,11 +564,11 @@ const PortugalExplorer = (function () {
       }
     });
 
-    /* Re-style GeoJSON polygons */
+    /* Re-style GeoJSON polygons; capture the selected layer for fit-to-bounds. */
+    let selLayer = null;
     if (_geoLayer) {
       _geoLayer.eachLayer(layer => {
         const props = layer.feature?.properties || {};
-        const nameKey = Object.keys(props).find(k => props[k] && typeof props[k] === 'string');
         const fd = _findDistrict(Object.values(props).find(v => typeof v === 'string'));
         const isSelected = fd === d;
         const base = fd ? fd.color : '#6366f1';
@@ -580,31 +580,37 @@ const PortugalExplorer = (function () {
           weight: isSelected ? 3 : 1.2,
           opacity: isSelected ? 0.95 : 0.6,
         });
-        if (isSelected) layer.bringToFront();
+        if (isSelected) { selLayer = layer; layer.bringToFront(); }
       });
     }
 
-    /* Fly to district. Guard against a zero-size map (not yet laid out), where
-       Leaflet's flyTo animation can throw on NaN — fall back to setView, and
-       never let a map error block the info panel. */
-    if (_map) {
-      try {
-        const sz = _map.getSize();
-        if (sz.x > 0 && sz.y > 0) _map.flyTo([d.lat, d.lon], 9, { duration: 0.8 });
-        else _map.setView([d.lat, d.lon], 9);
-      } catch (e) {
-        try { _map.setView([d.lat, d.lon], 9); } catch (e2) {}
-      }
-    }
-
-    /* Show panel */
+    /* Render + open the info panel (third grid column on desktop, bottom sheet
+       on mobile). Opening resizes the map area, so invalidate + fit after. */
     _renderInfo(d);
-    document.getElementById('pt-info-panel')?.classList.add('open');
+    const wrap = _container?.querySelector('.pt-explorer-wrap');
+    wrap?.classList.add('pt-info-open');
+    _fitDistrict(d, selLayer);
+    setTimeout(() => { try { _map?.invalidateSize(); _fitDistrict(d, selLayer); } catch (e) {} }, 340);
 
     /* Highlight list item */
     document.querySelectorAll('.pt-district-chip').forEach(c => {
       c.classList.toggle('active', c.dataset.id === d.id);
     });
+  }
+
+  /* Auto-zoom to fit the selected district's bounds (smooth, capped so it
+     never zooms in excessively); falls back to a centred view. */
+  function _fitDistrict(d, layer) {
+    if (!_map) return;
+    try {
+      const sz = _map.getSize();
+      if (sz.x <= 0 || sz.y <= 0) { _map.setView([d.lat, d.lon], 9); return; }
+      if (layer && layer.getBounds && layer.getBounds().isValid()) {
+        _map.flyToBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 11, duration: 0.8 });
+      } else {
+        _map.flyTo([d.lat, d.lon], 9, { duration: 0.8 });
+      }
+    } catch (e) { try { _map.setView([d.lat, d.lon], 9); } catch (e2) {} }
   }
 
   /* ── Info panel ── */
@@ -685,12 +691,14 @@ const PortugalExplorer = (function () {
     });
 
     container.querySelector('#pt-info-close')?.addEventListener('click', () => {
-      document.getElementById('pt-info-panel')?.classList.remove('open');
+      container.querySelector('.pt-explorer-wrap')?.classList.remove('pt-info-open');
       _selected = null;
       _markers.forEach(({ dist, marker }) => {
         marker.setStyle({ fillOpacity: 0.35, weight: 2, radius: _markerRadius(dist) });
       });
       document.querySelectorAll('.pt-district-chip').forEach(c => c.classList.remove('active'));
+      /* Map area grows back when the panel column collapses. */
+      setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 340);
     });
   }
 
