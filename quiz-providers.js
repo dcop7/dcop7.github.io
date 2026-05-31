@@ -707,8 +707,9 @@ const _TRIVIA_EXTRA = {
   /* When a bank carries `d` difficulty tags (1/2/3), pick age-appropriate items:
      younger get only easy; middle get easy+medium; older get medium+hard.
      Widens the pool automatically if a band has too few items for the count. */
-  function _selectForAge(bank, age, need) {
-    if (!bank.some(it => it.d)) return QuizEngine.shuffle(bank).slice(0, need);
+  function _selectForAge(bank, age, need, key) {
+    const take = pool => key ? QuizEngine.pickFresh(pool, need, key) : QuizEngine.shuffle(pool).slice(0, need);
+    if (!bank.some(it => it.d)) return take(bank);
     const band = _ageBand(age);
     const d = it => it.d || 2;
     let pool = band === 1 ? bank.filter(it => d(it) <= 1)
@@ -716,13 +717,15 @@ const _TRIVIA_EXTRA = {
              :              bank.filter(it => d(it) >= 2);
     if (pool.length < need) pool = band === 3 ? bank : bank.filter(it => d(it) <= 2);
     if (pool.length < need) pool = bank;
-    return QuizEngine.shuffle(pool).slice(0, need);
+    return take(pool);
   }
 
   function fromBank(bank, opts) {
     const { age, lang, count } = opts;
     const n    = QuizEngine.optionCount(age);
-    const pool = _selectForAge(bank, age, count || 10);
+    /* Rotation key per bank+age band so the fallback cycles, not repeats. */
+    const key  = opts.bankKey ? `tb-${opts.bankKey}-${lang}-${_ageBand(age)}` : null;
+    const pool = _selectForAge(bank, age, count || 10, key);
     return pool.map((item, i) => {
       const distractors = item.opts.filter(o => o !== item.a);
       const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
@@ -747,13 +750,13 @@ const _TRIVIA_EXTRA = {
       async getQuestions(opts) {
         const { age, lang, count } = opts;
         if (lang === 'pt' && _TRIVIA.pt[bankKey]) {
-          return fromBank(_TRIVIA.pt[bankKey], opts);
+          return fromBank(_TRIVIA.pt[bankKey], { ...opts, bankKey });
         }
         const diff  = diffFn ? diffFn(age) : (age <= 9 ? 'easy' : age <= 12 ? 'medium' : 'hard');
         const items = await tryFetch(apiCat, diff, count || 10);
         if (items) return mapTrivia(items, opts);
         const fb = _TRIVIA.en[bankKey] || _TRIVIA.pt[bankKey] || [];
-        return fromBank(fb.length ? fb : _TRIVIA.pt.gk, opts);
+        return fromBank(fb.length ? fb : _TRIVIA.pt.gk, { ...opts, bankKey });
       }
     };
   }
@@ -786,7 +789,7 @@ const _TRIVIA_EXTRA = {
         if (!items || !items.length) {
           items = (embedded && (embedded[diff] || embedded.easy)) || [];
         }
-        if (typeof QuizData !== 'undefined') return QuizData.buildFromBank(items, opts);
+        if (typeof QuizData !== 'undefined') return QuizData.buildFromBank(items, { ...opts, category });
         /* QuizData unavailable — degrade gracefully with the engine helpers */
         const pool = QuizEngine.shuffle(items).slice(0, opts.count || 10);
         return pool.map((it, i) => {
