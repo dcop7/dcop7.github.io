@@ -4662,6 +4662,96 @@
     "classification": "SAFE"
   },
   {
+    "file": "assets/planets/earth_atmos_2048.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/jupiter_2048.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/mars_1024.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/mercury_1024.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/neptune_2048.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/saturn-ring.png",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/saturn_2048.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/sun.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/uranus_2048.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/venus_2048.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
     "file": "favicon.svg",
     "type": "svg",
     "source": "original (this repository)",
