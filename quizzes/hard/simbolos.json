@@ -106,10 +106,10 @@
     "q": "Qual é o símbolo químico de Berílio?",
     "a": "Be",
     "opts": [
-      "Br",
       "Be",
-      "S",
-      "Na"
+      "Co",
+      "Mn",
+      "Am"
     ],
     "exp": "O símbolo químico de Berílio é Be.",
     "gen": "chem"
@@ -118,10 +118,10 @@
     "q": "Que elemento químico tem o símbolo Be?",
     "a": "Berílio",
     "opts": [
-      "Árgon",
-      "Carbono",
-      "Hélio",
-      "Berílio"
+      "Berílio",
+      "Samário",
+      "Arsénio",
+      "Gálio"
     ],
     "exp": "O símbolo Be corresponde ao Berílio.",
     "gen": "chem"
@@ -130,10 +130,10 @@
     "q": "Qual é o símbolo químico de Escândio?",
     "a": "Sc",
     "opts": [
-      "Ti",
-      "Cu",
-      "Ni",
-      "Sc"
+      "Sc",
+      "Am",
+      "H",
+      "Fe"
     ],
     "exp": "O símbolo químico de Escândio é Sc.",
     "gen": "chem"
@@ -142,10 +142,10 @@
     "q": "Que elemento químico tem o símbolo Sc?",
     "a": "Escândio",
     "opts": [
-      "Cloro",
-      "Árgon",
-      "Alumínio",
-      "Escândio"
+      "Escândio",
+      "Telúrio",
+      "Polónio",
+      "Cério"
     ],
     "exp": "O símbolo Sc corresponde ao Escândio.",
     "gen": "chem"
@@ -154,10 +154,10 @@
     "q": "Qual é o símbolo químico de Vanádio?",
     "a": "V",
     "opts": [
-      "Ge",
+      "Hg",
       "V",
-      "Sc",
-      "Ti"
+      "Be",
+      "Y"
     ],
     "exp": "O símbolo químico de Vanádio é V.",
     "gen": "chem"
@@ -166,10 +166,10 @@
     "q": "Que elemento químico tem o símbolo V?",
     "a": "Vanádio",
     "opts": [
-      "Magnésio",
-      "Iodo",
+      "Alumínio",
       "Vanádio",
-      "Hidrogénio"
+      "Carbono",
+      "Tântalo"
     ],
     "exp": "O símbolo V corresponde ao Vanádio.",
     "gen": "chem"
@@ -179,9 +179,9 @@
     "a": "Mn",
     "opts": [
       "Se",
-      "S",
-      "Pb",
-      "Mn"
+      "Mn",
+      "Np",
+      "Hf"
     ],
     "exp": "O símbolo químico de Manganês é Mn.",
     "gen": "chem"
@@ -190,10 +190,10 @@
     "q": "Que elemento químico tem o símbolo Mn?",
     "a": "Manganês",
     "opts": [
-      "Ouro",
       "Prata",
-      "Zinco",
-      "Manganês"
+      "Manganês",
+      "Enxofre",
+      "Silício"
     ],
     "exp": "O símbolo Mn corresponde ao Manganês.",
     "gen": "chem"
@@ -202,10 +202,10 @@
     "q": "Qual é o símbolo químico de Gálio?",
     "a": "Ga",
     "opts": [
-      "Cd",
-      "Cl",
-      "Zn",
-      "Ga"
+      "Ne",
+      "Ti",
+      "Ga",
+      "I"
     ],
     "exp": "O símbolo químico de Gálio é Ga.",
     "gen": "chem"
@@ -214,10 +214,10 @@
     "q": "Que elemento químico tem o símbolo Ga?",
     "a": "Gálio",
     "opts": [
+      "Estanho",
       "Gálio",
-      "Cádmio",
-      "Cobalto",
-      "Magnésio"
+      "Actínio",
+      "Ítrio"
     ],
     "exp": "O símbolo Ga corresponde ao Gálio.",
     "gen": "chem"
@@ -226,10 +226,10 @@
     "q": "Qual é o símbolo químico de Germânio?",
     "a": "Ge",
     "opts": [
-      "Cr",
+      "B",
+      "C",
       "Ge",
-      "Ga",
-      "Bi"
+      "Ti"
     ],
     "exp": "O símbolo químico de Germânio é Ge.",
     "gen": "chem"
@@ -238,10 +238,10 @@
     "q": "Que elemento químico tem o símbolo Ge?",
     "a": "Germânio",
     "opts": [
-      "Plutónio",
-      "Gálio",
-      "Cálcio",
-      "Germânio"
+      "Flúor",
+      "Germânio",
+      "Cobalto",
+      "Fósforo"
     ],
     "exp": "O símbolo Ge corresponde ao Germânio.",
     "gen": "chem"
@@ -250,10 +250,10 @@
     "q": "Qual é o símbolo químico de Selénio?",
     "a": "Se",
     "opts": [
+      "Pt",
+      "Cr",
       "Se",
-      "Be",
-      "Ge",
-      "W"
+      "H"
     ],
     "exp": "O símbolo químico de Selénio é Se.",
     "gen": "chem"
@@ -262,10 +262,10 @@
     "q": "Que elemento químico tem o símbolo Se?",
     "a": "Selénio",
     "opts": [
-      "Selénio",
-      "Hidrogénio",
-      "Bismuto",
-      "Crípton"
+      "Tântalo",
+      "Amerício",
+      "Platina",
+      "Selénio"
     ],
     "exp": "O símbolo Se corresponde ao Selénio.",
     "gen": "chem"
@@ -274,10 +274,10 @@
     "q": "Qual é o símbolo químico de Crípton?",
     "a": "Kr",
     "opts": [
+      "Zn",
+      "Ra",
       "Kr",
-      "B",
-      "Fe",
-      "Cr"
+      "Cd"
     ],
     "exp": "O símbolo químico de Crípton é Kr.",
     "gen": "chem"
@@ -286,10 +286,10 @@
     "q": "Que elemento químico tem o símbolo Kr?",
     "a": "Crípton",
     "opts": [
-      "Urânio",
-      "Potássio",
-      "Crípton",
-      "Hélio"
+      "Zinco",
+      "Magnésio",
+      "Manganês",
+      "Crípton"
     ],
     "exp": "O símbolo Kr corresponde ao Crípton.",
     "gen": "chem"
@@ -298,9 +298,9 @@
     "q": "Qual é o símbolo químico de Cádmio?",
     "a": "Cd",
     "opts": [
-      "Pb",
-      "Rn",
-      "Ni",
+      "Nb",
+      "Sc",
+      "As",
       "Cd"
     ],
     "exp": "O símbolo químico de Cádmio é Cd.",
@@ -310,10 +310,10 @@
     "q": "Que elemento químico tem o símbolo Cd?",
     "a": "Cádmio",
     "opts": [
-      "Flúor",
-      "Escândio",
+      "Telúrio",
       "Cádmio",
-      "Vanádio"
+      "Ítrio",
+      "Carbono"
     ],
     "exp": "O símbolo Cd corresponde ao Cádmio.",
     "gen": "chem"
@@ -322,10 +322,10 @@
     "q": "Qual é o símbolo químico de Antimónio?",
     "a": "Sb",
     "opts": [
-      "Ni",
+      "I",
+      "Ba",
       "Sb",
-      "Br",
-      "W"
+      "Li"
     ],
     "exp": "O símbolo químico de Antimónio é Sb.",
     "gen": "chem"
@@ -334,10 +334,10 @@
     "q": "Que elemento químico tem o símbolo Sb?",
     "a": "Antimónio",
     "opts": [
-      "Arsénio",
-      "Potássio",
       "Antimónio",
-      "Cobre"
+      "Crípton",
+      "Estanho",
+      "Árgon"
     ],
     "exp": "O símbolo Sb corresponde ao Antimónio.",
     "gen": "chem"
@@ -346,10 +346,10 @@
     "q": "Qual é o símbolo químico de Xénon?",
     "a": "Xe",
     "opts": [
-      "Se",
-      "Xe",
-      "Mn",
-      "Cu"
+      "In",
+      "Pd",
+      "Co",
+      "Xe"
     ],
     "exp": "O símbolo químico de Xénon é Xe.",
     "gen": "chem"
@@ -358,10 +358,10 @@
     "q": "Que elemento químico tem o símbolo Xe?",
     "a": "Xénon",
     "opts": [
-      "Xénon",
-      "Potássio",
-      "Escândio",
-      "Carbono"
+      "Paládio",
+      "Rádio",
+      "Ouro",
+      "Xénon"
     ],
     "exp": "O símbolo Xe corresponde ao Xénon.",
     "gen": "chem"
@@ -370,10 +370,10 @@
     "q": "Qual é o símbolo químico de Césio?",
     "a": "Cs",
     "opts": [
-      "Cu",
-      "Ga",
+      "Ta",
+      "Ir",
       "Cs",
-      "H"
+      "Rb"
     ],
     "exp": "O símbolo químico de Césio é Cs.",
     "gen": "chem"
@@ -382,10 +382,10 @@
     "q": "Que elemento químico tem o símbolo Cs?",
     "a": "Césio",
     "opts": [
-      "Iodo",
+      "Selénio",
+      "Mercúrio",
       "Césio",
-      "Árgon",
-      "Germânio"
+      "Ástato"
     ],
     "exp": "O símbolo Cs corresponde ao Césio.",
     "gen": "chem"
@@ -394,10 +394,10 @@
     "q": "Qual é o símbolo químico de Tungsténio?",
     "a": "W",
     "opts": [
+      "Li",
       "W",
-      "Cl",
-      "Ge",
-      "Co"
+      "Gd",
+      "Cm"
     ],
     "exp": "O símbolo químico de Tungsténio é W.",
     "gen": "chem"
@@ -406,9 +406,9 @@
     "q": "Que elemento químico tem o símbolo W?",
     "a": "Tungsténio",
     "opts": [
-      "Prata",
-      "Flúor",
-      "Rádio",
+      "Tecnécio",
+      "Protactínio",
+      "Iodo",
       "Tungsténio"
     ],
     "exp": "O símbolo W corresponde ao Tungsténio.",
@@ -418,9 +418,9 @@
     "q": "Qual é o símbolo químico de Bismuto?",
     "a": "Bi",
     "opts": [
-      "U",
-      "Ge",
-      "Cu",
+      "Pb",
+      "Li",
+      "Ti",
       "Bi"
     ],
     "exp": "O símbolo químico de Bismuto é Bi.",
@@ -430,10 +430,10 @@
     "q": "Que elemento químico tem o símbolo Bi?",
     "a": "Bismuto",
     "opts": [
-      "Cádmio",
-      "Bismuto",
-      "Manganês",
-      "Césio"
+      "Tecnécio",
+      "Amerício",
+      "Boro",
+      "Bismuto"
     ],
     "exp": "O símbolo Bi corresponde ao Bismuto.",
     "gen": "chem"
@@ -442,9 +442,9 @@
     "q": "Qual é o símbolo químico de Rádon?",
     "a": "Rn",
     "opts": [
-      "Sb",
-      "K",
-      "U",
+      "Nd",
+      "Co",
+      "Ge",
       "Rn"
     ],
     "exp": "O símbolo químico de Rádon é Rn.",
@@ -455,9 +455,9 @@
     "a": "Rádon",
     "opts": [
       "Rádon",
-      "Arsénio",
-      "Crómio",
-      "Potássio"
+      "Ítrio",
+      "Césio",
+      "Bismuto"
     ],
     "exp": "O símbolo Rn corresponde ao Rádon.",
     "gen": "chem"
@@ -466,10 +466,10 @@
     "q": "Qual é o símbolo químico de Plutónio?",
     "a": "Pu",
     "opts": [
-      "Mg",
-      "Xe",
       "Pu",
-      "V"
+      "Ag",
+      "F",
+      "Se"
     ],
     "exp": "O símbolo químico de Plutónio é Pu.",
     "gen": "chem"
@@ -478,12 +478,732 @@
     "q": "Que elemento químico tem o símbolo Pu?",
     "a": "Plutónio",
     "opts": [
-      "Árgon",
+      "Escândio",
       "Plutónio",
-      "Platina",
-      "Bismuto"
+      "Molibdénio",
+      "Mercúrio"
     ],
     "exp": "O símbolo Pu corresponde ao Plutónio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Rubídio?",
+    "a": "Rb",
+    "opts": [
+      "N",
+      "Rb",
+      "Ce",
+      "Nb"
+    ],
+    "exp": "O símbolo químico de Rubídio é Rb.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Rb?",
+    "a": "Rubídio",
+    "opts": [
+      "Césio",
+      "Flúor",
+      "Rubídio",
+      "Gadolínio"
+    ],
+    "exp": "O símbolo Rb corresponde ao Rubídio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Estrôncio?",
+    "a": "Sr",
+    "opts": [
+      "Br",
+      "Li",
+      "Sr",
+      "Zr"
+    ],
+    "exp": "O símbolo químico de Estrôncio é Sr.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Sr?",
+    "a": "Estrôncio",
+    "opts": [
+      "Ósmio",
+      "Gadolínio",
+      "Prata",
+      "Estrôncio"
+    ],
+    "exp": "O símbolo Sr corresponde ao Estrôncio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ítrio?",
+    "a": "Y",
+    "opts": [
+      "As",
+      "Ne",
+      "Y",
+      "Mg"
+    ],
+    "exp": "O símbolo químico de Ítrio é Y.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Y?",
+    "a": "Ítrio",
+    "opts": [
+      "Lantânio",
+      "Silício",
+      "Ítrio",
+      "Chumbo"
+    ],
+    "exp": "O símbolo Y corresponde ao Ítrio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Zircónio?",
+    "a": "Zr",
+    "opts": [
+      "Zn",
+      "Ne",
+      "Am",
+      "Zr"
+    ],
+    "exp": "O símbolo químico de Zircónio é Zr.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Zr?",
+    "a": "Zircónio",
+    "opts": [
+      "Alumínio",
+      "Gadolínio",
+      "Zircónio",
+      "Prata"
+    ],
+    "exp": "O símbolo Zr corresponde ao Zircónio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Nióbio?",
+    "a": "Nb",
+    "opts": [
+      "U",
+      "Nb",
+      "Br",
+      "Zr"
+    ],
+    "exp": "O símbolo químico de Nióbio é Nb.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Nb?",
+    "a": "Nióbio",
+    "opts": [
+      "Hélio",
+      "Nióbio",
+      "Germânio",
+      "Cádmio"
+    ],
+    "exp": "O símbolo Nb corresponde ao Nióbio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Molibdénio?",
+    "a": "Mo",
+    "opts": [
+      "Ba",
+      "Mo",
+      "Pt",
+      "C"
+    ],
+    "exp": "O símbolo químico de Molibdénio é Mo.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Mo?",
+    "a": "Molibdénio",
+    "opts": [
+      "Rénio",
+      "Urânio",
+      "Iodo",
+      "Molibdénio"
+    ],
+    "exp": "O símbolo Mo corresponde ao Molibdénio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Tecnécio?",
+    "a": "Tc",
+    "opts": [
+      "Ac",
+      "Co",
+      "Tc",
+      "Ra"
+    ],
+    "exp": "O símbolo químico de Tecnécio é Tc.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Tc?",
+    "a": "Tecnécio",
+    "opts": [
+      "Protactínio",
+      "Európio",
+      "Bário",
+      "Tecnécio"
+    ],
+    "exp": "O símbolo Tc corresponde ao Tecnécio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ruténio?",
+    "a": "Ru",
+    "opts": [
+      "Ru",
+      "Ca",
+      "Sc",
+      "As"
+    ],
+    "exp": "O símbolo químico de Ruténio é Ru.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ru?",
+    "a": "Ruténio",
+    "opts": [
+      "Tecnécio",
+      "Césio",
+      "Ruténio",
+      "Boro"
+    ],
+    "exp": "O símbolo Ru corresponde ao Ruténio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ródio?",
+    "a": "Rh",
+    "opts": [
+      "Rh",
+      "Co",
+      "Bi",
+      "Kr"
+    ],
+    "exp": "O símbolo químico de Ródio é Rh.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Rh?",
+    "a": "Ródio",
+    "opts": [
+      "Chumbo",
+      "Ródio",
+      "Estrôncio",
+      "Neptúnio"
+    ],
+    "exp": "O símbolo Rh corresponde ao Ródio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Índio?",
+    "a": "In",
+    "opts": [
+      "In",
+      "Rb",
+      "Rn",
+      "Nb"
+    ],
+    "exp": "O símbolo químico de Índio é In.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo In?",
+    "a": "Índio",
+    "opts": [
+      "Bário",
+      "Índio",
+      "Escândio",
+      "Árgon"
+    ],
+    "exp": "O símbolo In corresponde ao Índio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Telúrio?",
+    "a": "Te",
+    "opts": [
+      "Ca",
+      "Te",
+      "Nb",
+      "Se"
+    ],
+    "exp": "O símbolo químico de Telúrio é Te.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Te?",
+    "a": "Telúrio",
+    "opts": [
+      "Zircónio",
+      "Telúrio",
+      "Silício",
+      "Tálio"
+    ],
+    "exp": "O símbolo Te corresponde ao Telúrio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Lantânio?",
+    "a": "La",
+    "opts": [
+      "P",
+      "Tl",
+      "La",
+      "Pb"
+    ],
+    "exp": "O símbolo químico de Lantânio é La.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo La?",
+    "a": "Lantânio",
+    "opts": [
+      "Lantânio",
+      "Cobre",
+      "Platina",
+      "Actínio"
+    ],
+    "exp": "O símbolo La corresponde ao Lantânio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Cério?",
+    "a": "Ce",
+    "opts": [
+      "Cr",
+      "Ni",
+      "Ce",
+      "Kr"
+    ],
+    "exp": "O símbolo químico de Cério é Ce.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ce?",
+    "a": "Cério",
+    "opts": [
+      "Cério",
+      "Manganês",
+      "Bromo",
+      "Ruténio"
+    ],
+    "exp": "O símbolo Ce corresponde ao Cério.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Neodímio?",
+    "a": "Nd",
+    "opts": [
+      "Ta",
+      "Nd",
+      "Xe",
+      "Sc"
+    ],
+    "exp": "O símbolo químico de Neodímio é Nd.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Nd?",
+    "a": "Neodímio",
+    "opts": [
+      "Ósmio",
+      "Níquel",
+      "Ástato",
+      "Neodímio"
+    ],
+    "exp": "O símbolo Nd corresponde ao Neodímio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Samário?",
+    "a": "Sm",
+    "opts": [
+      "Sm",
+      "P",
+      "Pd",
+      "Re"
+    ],
+    "exp": "O símbolo químico de Samário é Sm.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Sm?",
+    "a": "Samário",
+    "opts": [
+      "Zircónio",
+      "Ródio",
+      "Samário",
+      "Ouro"
+    ],
+    "exp": "O símbolo Sm corresponde ao Samário.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Európio?",
+    "a": "Eu",
+    "opts": [
+      "Eu",
+      "Tb",
+      "Na",
+      "Be"
+    ],
+    "exp": "O símbolo químico de Európio é Eu.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Eu?",
+    "a": "Európio",
+    "opts": [
+      "Polónio",
+      "Azoto",
+      "Európio",
+      "Actínio"
+    ],
+    "exp": "O símbolo Eu corresponde ao Európio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Gadolínio?",
+    "a": "Gd",
+    "opts": [
+      "Xe",
+      "I",
+      "Gd",
+      "Np"
+    ],
+    "exp": "O símbolo químico de Gadolínio é Gd.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Gd?",
+    "a": "Gadolínio",
+    "opts": [
+      "Gadolínio",
+      "Néon",
+      "Paládio",
+      "Mercúrio"
+    ],
+    "exp": "O símbolo Gd corresponde ao Gadolínio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Térbio?",
+    "a": "Tb",
+    "opts": [
+      "Br",
+      "Ce",
+      "Tb",
+      "K"
+    ],
+    "exp": "O símbolo químico de Térbio é Tb.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Tb?",
+    "a": "Térbio",
+    "opts": [
+      "Titânio",
+      "Flúor",
+      "Cúrio",
+      "Térbio"
+    ],
+    "exp": "O símbolo Tb corresponde ao Térbio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Háfnio?",
+    "a": "Hf",
+    "opts": [
+      "Rn",
+      "B",
+      "N",
+      "Hf"
+    ],
+    "exp": "O símbolo químico de Háfnio é Hf.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Hf?",
+    "a": "Háfnio",
+    "opts": [
+      "Manganês",
+      "Ouro",
+      "Háfnio",
+      "Bário"
+    ],
+    "exp": "O símbolo Hf corresponde ao Háfnio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Tântalo?",
+    "a": "Ta",
+    "opts": [
+      "Ta",
+      "Mg",
+      "Xe",
+      "Ga"
+    ],
+    "exp": "O símbolo químico de Tântalo é Ta.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ta?",
+    "a": "Tântalo",
+    "opts": [
+      "Amerício",
+      "Crípton",
+      "Tântalo",
+      "Telúrio"
+    ],
+    "exp": "O símbolo Ta corresponde ao Tântalo.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Rénio?",
+    "a": "Re",
+    "opts": [
+      "Nb",
+      "Ce",
+      "Nd",
+      "Re"
+    ],
+    "exp": "O símbolo químico de Rénio é Re.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Re?",
+    "a": "Rénio",
+    "opts": [
+      "Rénio",
+      "Urânio",
+      "Ouro",
+      "Hidrogénio"
+    ],
+    "exp": "O símbolo Re corresponde ao Rénio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ósmio?",
+    "a": "Os",
+    "opts": [
+      "Pb",
+      "Ru",
+      "Os",
+      "S"
+    ],
+    "exp": "O símbolo químico de Ósmio é Os.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Os?",
+    "a": "Ósmio",
+    "opts": [
+      "Cloro",
+      "Ósmio",
+      "Alumínio",
+      "Cúrio"
+    ],
+    "exp": "O símbolo Os corresponde ao Ósmio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Tálio?",
+    "a": "Tl",
+    "opts": [
+      "Nb",
+      "K",
+      "Tl",
+      "Rb"
+    ],
+    "exp": "O símbolo químico de Tálio é Tl.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Tl?",
+    "a": "Tálio",
+    "opts": [
+      "Európio",
+      "Tálio",
+      "Ástato",
+      "Cúrio"
+    ],
+    "exp": "O símbolo Tl corresponde ao Tálio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Ástato?",
+    "a": "At",
+    "opts": [
+      "Ga",
+      "Be",
+      "At",
+      "K"
+    ],
+    "exp": "O símbolo químico de Ástato é At.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo At?",
+    "a": "Ástato",
+    "opts": [
+      "Ástato",
+      "Urânio",
+      "Estrôncio",
+      "Actínio"
+    ],
+    "exp": "O símbolo At corresponde ao Ástato.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Frâncio?",
+    "a": "Fr",
+    "opts": [
+      "Ca",
+      "U",
+      "Fr",
+      "Ce"
+    ],
+    "exp": "O símbolo químico de Frâncio é Fr.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Fr?",
+    "a": "Frâncio",
+    "opts": [
+      "Rádon",
+      "Ástato",
+      "Boro",
+      "Frâncio"
+    ],
+    "exp": "O símbolo Fr corresponde ao Frâncio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Actínio?",
+    "a": "Ac",
+    "opts": [
+      "Ac",
+      "Br",
+      "Cd",
+      "Au"
+    ],
+    "exp": "O símbolo químico de Actínio é Ac.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Ac?",
+    "a": "Actínio",
+    "opts": [
+      "Mercúrio",
+      "Estanho",
+      "Cálcio",
+      "Actínio"
+    ],
+    "exp": "O símbolo Ac corresponde ao Actínio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Protactínio?",
+    "a": "Pa",
+    "opts": [
+      "Ir",
+      "Pa",
+      "Fe",
+      "Au"
+    ],
+    "exp": "O símbolo químico de Protactínio é Pa.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Pa?",
+    "a": "Protactínio",
+    "opts": [
+      "Magnésio",
+      "Actínio",
+      "Protactínio",
+      "Európio"
+    ],
+    "exp": "O símbolo Pa corresponde ao Protactínio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Neptúnio?",
+    "a": "Np",
+    "opts": [
+      "Np",
+      "Ce",
+      "Kr",
+      "Tl"
+    ],
+    "exp": "O símbolo químico de Neptúnio é Np.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Np?",
+    "a": "Neptúnio",
+    "opts": [
+      "Neptúnio",
+      "Árgon",
+      "Protactínio",
+      "Césio"
+    ],
+    "exp": "O símbolo Np corresponde ao Neptúnio.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Amerício?",
+    "a": "Am",
+    "opts": [
+      "Am",
+      "Xe",
+      "Co",
+      "Bi"
+    ],
+    "exp": "O símbolo químico de Amerício é Am.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Am?",
+    "a": "Amerício",
+    "opts": [
+      "Platina",
+      "Hélio",
+      "Amerício",
+      "Cloro"
+    ],
+    "exp": "O símbolo Am corresponde ao Amerício.",
+    "gen": "chem"
+  },
+  {
+    "q": "Qual é o símbolo químico de Cúrio?",
+    "a": "Cm",
+    "opts": [
+      "Xe",
+      "W",
+      "Ga",
+      "Cm"
+    ],
+    "exp": "O símbolo químico de Cúrio é Cm.",
+    "gen": "chem"
+  },
+  {
+    "q": "Que elemento químico tem o símbolo Cm?",
+    "a": "Cúrio",
+    "opts": [
+      "Césio",
+      "Cúrio",
+      "Gadolínio",
+      "Árgon"
+    ],
+    "exp": "O símbolo Cm corresponde ao Cúrio.",
     "gen": "chem"
   }
 ]

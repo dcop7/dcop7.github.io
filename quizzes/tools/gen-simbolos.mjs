@@ -26,6 +26,15 @@ const EL = [
   ['W','Tungsténio','hard'],['Pt','Platina','medium'],['Au','Ouro','easy'],['Hg','Mercúrio','easy'],
   ['Pb','Chumbo','easy'],['Bi','Bismuto','hard'],['Rn','Rádon','hard'],['Ra','Rádio','medium'],
   ['U','Urânio','medium'],['Pu','Plutónio','hard'],
+  ['Rb','Rubídio','hard'],['Sr','Estrôncio','hard'],['Y','Ítrio','hard'],['Zr','Zircónio','hard'],
+  ['Nb','Nióbio','hard'],['Mo','Molibdénio','hard'],['Tc','Tecnécio','hard'],['Ru','Ruténio','hard'],
+  ['Rh','Ródio','hard'],['Pd','Paládio','medium'],['In','Índio','hard'],['Te','Telúrio','hard'],
+  ['La','Lantânio','hard'],['Ce','Cério','hard'],['Nd','Neodímio','hard'],['Sm','Samário','hard'],
+  ['Eu','Európio','hard'],['Gd','Gadolínio','hard'],['Tb','Térbio','hard'],['Hf','Háfnio','hard'],
+  ['Ta','Tântalo','hard'],['Re','Rénio','hard'],['Os','Ósmio','hard'],['Ir','Irídio','medium'],
+  ['Tl','Tálio','hard'],['Po','Polónio','medium'],['At','Ástato','hard'],['Fr','Frâncio','hard'],
+  ['Ac','Actínio','hard'],['Th','Tório','medium'],['Pa','Protactínio','hard'],['Np','Neptúnio','hard'],
+  ['Am','Amerício','hard'],['Cm','Cúrio','hard'],
 ];
 
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
