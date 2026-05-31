@@ -184,6 +184,8 @@ const SolarExplorer = (function () {
   let _paused  = false;
   let _orbitLines    = [];
   let _orbitsVisible = true;
+  let _moons         = [];     /* clickable moon meshes: {mesh, planetIdx, angle, dist, speed, color, data} */
+  let _selMoon       = null;
 
   /* Respect the user's reduced-motion preference (app setting or OS).
      When reduced, planets hold position/spin but the scene still renders
@@ -369,7 +371,7 @@ const SolarExplorer = (function () {
       const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: baseEmissive, shininess: 15 });
       loader.load(
         TEX_BASE + p.textureFile,
-        tex => { mat.map = tex; mat.needsUpdate = true; },
+        tex => { if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace; mat.map = tex; mat.needsUpdate = true; },
         undefined,
         () => {}
       );
@@ -377,6 +379,13 @@ const SolarExplorer = (function () {
       /* Apply axial tilt about the Z axis so rotation + rings look correct. */
       mesh.rotation.z = (AXIAL_TILT[p.id] || 0) * Math.PI / 180;
       _scene.add(mesh);
+
+      /* Earth gets a soft blue atmosphere shell (subtle, additive). */
+      if (p.id === 'earth') {
+        const atmGeo = new THREE.SphereGeometry(p.displayR * 1.07, 48, 48);
+        const atmMat = new THREE.MeshBasicMaterial({ color: 0x4a93ff, transparent: true, opacity: 0.16, side: THREE.BackSide, depthWrite: false });
+        mesh.add(new THREE.Mesh(atmGeo, atmMat));
+      }
 
       /* Saturn rings — tilt with the planet so they read as a 3D ring system. */
       if (p.hasRings) {
@@ -399,6 +408,9 @@ const SolarExplorer = (function () {
 
     /* Asteroid belt between Mars and Jupiter (decorative, ~Kirkwood gap region). */
     _buildAsteroidBelt(PLANETS);
+
+    /* Clickable major moons orbiting their planets. */
+    _buildMoons();
 
     /* ResizeObserver */
     new ResizeObserver(() => {
@@ -431,6 +443,28 @@ const SolarExplorer = (function () {
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     const mat = new THREE.PointsMaterial({ color: 0x9a8f7a, size: 0.6, sizeAttenuation: true, transparent: true, opacity: 0.7 });
     _scene.add(new THREE.Points(geo, mat));
+  }
+
+  /* Build small clickable moons orbiting each planet (from its moonList). */
+  const _MOON_COLOR = { 'Io': 0xe6d27a, 'Europa': 0xeae6dc, 'Lua': 0xcfd2d6, 'Titã': 0xd9a441, 'Tritão': 0xc8d6e6 };
+  function _buildMoons() {
+    _moons = [];
+    PLANETS.forEach((p, pi) => {
+      (p.moonList || []).forEach((m, k) => {
+        const color = _MOON_COLOR[m.name] || 0xc2c7cf;
+        const mr = Math.max(0.5, Math.min(1.6, p.displayR * 0.16));
+        const geo = new THREE.SphereGeometry(mr, 16, 16);
+        const mat = new THREE.MeshPhongMaterial({ color, emissive: new THREE.Color(color).multiplyScalar(0.15), shininess: 8 });
+        const mesh = new THREE.Mesh(geo, mat);
+        _scene.add(mesh);
+        _moons.push({
+          mesh, planetIdx: pi, data: m, color,
+          angle: Math.random() * Math.PI * 2,
+          dist:  p.displayR * 1.7 + k * (p.displayR * 0.5 + 1.4),
+          speed: 0.012 + k * 0.004,
+        });
+      });
+    });
   }
 
   /* ═════════════════════════════ CAMERA ═════════════════════════════ */
@@ -476,6 +510,18 @@ const SolarExplorer = (function () {
           if (animate) mesh.rotateY(0.002 * _speed);
         }
       });
+
+      /* Position moons around their (now-moved) planets. */
+      for (const mo of _moons) {
+        const pm = _planetMeshes[mo.planetIdx];
+        if (!pm) continue;
+        if (animate) mo.angle += mo.speed * _speed * 0.1;
+        mo.mesh.position.set(
+          pm.position.x + Math.cos(mo.angle) * mo.dist,
+          pm.position.y + Math.sin(mo.angle) * mo.dist * 0.18,
+          pm.position.z + Math.sin(mo.angle) * mo.dist,
+        );
+      }
 
       /* Cinematic idle drift: while nothing is selected (and the user isn't
          dragging), slowly orbit the camera so the scene feels alive. */
@@ -664,6 +710,15 @@ const SolarExplorer = (function () {
         return;
       }
 
+      /* Check moons (small, in front of their planet) */
+      if (_moons.length) {
+        const moonHits = ray.intersectObjects(_moons.map(m => m.mesh), false);
+        if (moonHits.length) {
+          const mo = _moons.find(m => m.mesh === moonHits[0].object);
+          if (mo) { _openMoonPanel(mo, container); return; }
+        }
+      }
+
       /* Check planets */
       const planetHits = ray.intersectObjects(_planetMeshes, false);
       if (planetHits.length) {
@@ -677,7 +732,7 @@ const SolarExplorer = (function () {
       }
 
       /* Click empty: deselect */
-      _sel = null;
+      _sel = null; _selMoon = null;
       container.querySelector('#ss-panel')?.classList.remove('open');
     });
   }
@@ -731,17 +786,44 @@ const SolarExplorer = (function () {
     });
     const closeBtn = container.querySelector('#ss-panel-close');
     if (closeBtn) closeBtn.onclick = () => {
-      _sel = null;
+      _sel = null; _selMoon = null;
+      const tabs = container.querySelector('#ss-panel-tabs');
+      if (tabs) tabs.style.display = '';   /* restore for next planet/sun */
       container.querySelector('#ss-panel')?.classList.remove('open');
     };
   }
 
-  function _openPanel(body, container) {
+  /* Simple info panel for a clicked moon (no tabs — focuses its planet). */
+  function _openMoonPanel(mo, container) {
+    _sel = null; _selMoon = mo;
     const hint = container.querySelector('#ss-hint');
     if (hint) hint.style.display = 'none';
     const panel = container.querySelector('#ss-panel');
     if (!panel) return;
     panel.classList.add('open');
+    const tabs = container.querySelector('#ss-panel-tabs');
+    if (tabs) tabs.style.display = 'none';
+    _focusPlanet(mo.planetIdx);   /* bring its planet into view so the moon is visible */
+    const planet = PLANETS[mo.planetIdx];
+    _renderPanelHeader({ name: mo.data.name, color: '#' + mo.color.toString(16).padStart(6, '0'), info: { type: `Lua de ${planet.name}` } }, container);
+    const b = container.querySelector('#ss-panel-body');
+    if (b) b.innerHTML = `<div class="ex-solar-overview">
+      <div class="ex-solar-info-row"><span class="ex-solar-info-label">Planeta</span><span>${planet.name}</span></div>
+      <div class="ex-solar-info-row"><span class="ex-solar-info-label">Distância ao planeta</span><span>${mo.data.dist}</span></div>
+      <div class="ex-solar-info-row"><span class="ex-solar-info-label">Período orbital</span><span>${mo.data.period}</span></div>
+      <div class="ex-solar-info-row"><span class="ex-solar-info-label">Raio</span><span>${mo.data.r}</span></div>
+    </div>`;
+  }
+
+  function _openPanel(body, container) {
+    _selMoon = null;
+    const hint = container.querySelector('#ss-hint');
+    if (hint) hint.style.display = 'none';
+    const panel = container.querySelector('#ss-panel');
+    if (!panel) return;
+    panel.classList.add('open');
+    const tabs = container.querySelector('#ss-panel-tabs');
+    if (tabs) tabs.style.display = '';   /* restore tabs (hidden by moon panel) */
     _curTab = 'overview';
     container.querySelectorAll('.ex-solar-panel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'overview'));
     const moonTab    = panel.querySelector('[data-tab="moons"]');
