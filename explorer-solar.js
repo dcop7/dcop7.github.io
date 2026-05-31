@@ -190,6 +190,8 @@ const SolarExplorer = (function () {
   let _orbitsVisible = true;
   let _moons         = [];     /* clickable moon meshes: {mesh, planetIdx, angle, dist, speed, color, data} */
   let _selMoon       = null;
+  let _earthClouds   = null;   /* Earth cloud shell (toggleable) */
+  let _cloudsOn      = true;
 
   /* Respect the user's reduced-motion preference (app setting or OS).
      When reduced, planets hold position/spin but the scene still renders
@@ -242,6 +244,7 @@ const SolarExplorer = (function () {
           <button class="ex-solar-btn" id="ss-reset"  title="Repor">↺</button>
           <div class="ex-solar-divider"></div>
           <button class="ex-solar-btn active" id="ss-orbits" title="Mostrar/ocultar órbitas">🛰</button>
+          <button class="ex-solar-btn active" id="ss-clouds" title="Nuvens da Terra">☁</button>
           <div class="ex-solar-divider"></div>
           <button class="ex-solar-btn" id="ss-zoom-out" title="Afastar">−</button>
           <button class="ex-solar-btn" id="ss-zoom-in"  title="Aproximar">+</button>
@@ -389,11 +392,23 @@ const SolarExplorer = (function () {
       mesh.rotation.z = (AXIAL_TILT[p.id] || 0) * Math.PI / 180;
       _scene.add(mesh);
 
-      /* Earth gets a soft blue atmosphere shell (subtle, additive). */
+      /* Earth gets a soft blue atmosphere shell + a toggleable cloud layer. */
       if (p.id === 'earth') {
         const atmGeo = new THREE.SphereGeometry(p.displayR * 1.07, 48, 48);
         const atmMat = new THREE.MeshBasicMaterial({ color: 0x4a93ff, transparent: true, opacity: 0.16, side: THREE.BackSide, depthWrite: false });
         mesh.add(new THREE.Mesh(atmGeo, atmMat));
+
+        /* Clouds: white-on-black texture used as map + alphaMap so only the
+           clouds show. Hidden until the texture loads (avoids a white shell). */
+        const cloudMat = new THREE.MeshPhongMaterial({ transparent: true, opacity: 0.9, depthWrite: false });
+        _earthClouds = new THREE.Mesh(new THREE.SphereGeometry(p.displayR * 1.025, 48, 48), cloudMat);
+        _earthClouds.visible = false;
+        new THREE.TextureLoader().load('assets/planets/earth-clouds.jpg', tex => {
+          if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+          cloudMat.map = tex; cloudMat.alphaMap = tex; cloudMat.needsUpdate = true;
+          _earthClouds.visible = _cloudsOn;
+        }, undefined, () => {});
+        mesh.add(_earthClouds);
       }
 
       /* Saturn rings — tilt with the planet so they read as a 3D ring system. */
@@ -467,8 +482,15 @@ const SolarExplorer = (function () {
       (p.moonList || []).forEach((m, k) => {
         const color = _MOON_COLOR[m.name] || 0xc2c7cf;
         const mr = Math.max(0.5, Math.min(1.6, p.displayR * 0.16));
-        const geo = new THREE.SphereGeometry(mr, 16, 16);
+        const geo = new THREE.SphereGeometry(mr, 20, 20);
         const mat = new THREE.MeshPhongMaterial({ color, emissive: new THREE.Color(color).multiplyScalar(0.15), shininess: 8 });
+        /* Earth's Moon gets the real lunar texture (CC BY 4.0). */
+        if (m.name === 'Lua') {
+          new THREE.TextureLoader().load('assets/planets/moon.jpg', tex => {
+            if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+            mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true;
+          }, undefined, () => {});
+        }
         const mesh = new THREE.Mesh(geo, mat);
         _scene.add(mesh);
         _moons.push({
@@ -765,6 +787,11 @@ const SolarExplorer = (function () {
       _orbitsVisible = !_orbitsVisible;
       _orbitLines.forEach(l => { l.visible = _orbitsVisible; });
       e.currentTarget.classList.toggle('active', _orbitsVisible);
+    };
+    container.querySelector('#ss-clouds').onclick = e => {
+      _cloudsOn = !_cloudsOn;
+      if (_earthClouds && _earthClouds.material.map) _earthClouds.visible = _cloudsOn;
+      e.currentTarget.classList.toggle('active', _cloudsOn);
     };
     container.querySelector('#ss-zoom-in').onclick  = () => { _camDistT = Math.max(20, _camDistT * 0.7); };
     container.querySelector('#ss-zoom-out').onclick = () => { _camDistT = Math.min(600, _camDistT * 1.4); };
