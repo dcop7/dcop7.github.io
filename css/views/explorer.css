@@ -850,8 +850,29 @@ body.light .ex-country-label {
   position: relative;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at 50% 40%, #060b18 0%, #0a0e1e 100%);
+  background: radial-gradient(ellipse at 50% 40%, #060b18 0%, #05060f 100%);
   overflow: hidden;
+}
+/* Pure-CSS starfield behind the (transparent-background) globe — replaces the
+   former external night-sky texture, so there is no third-party image to
+   licence. Generated entirely from radial-gradients. */
+.ex-globe-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.9) 50%, transparent 51%),
+    radial-gradient(1px 1px at 28% 72%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 44% 33%, rgba(255,255,255,.85) 50%, transparent 51%),
+    radial-gradient(1px 1px at 61% 58%, rgba(255,255,255,.6) 50%, transparent 51%),
+    radial-gradient(1.6px 1.6px at 74% 22%, rgba(255,255,255,.95) 50%, transparent 51%),
+    radial-gradient(1px 1px at 83% 67%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 41%, rgba(255,255,255,.8) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 18% 88%, rgba(255,255,255,.75) 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 91%, rgba(255,255,255,.6) 50%, transparent 51%),
+    radial-gradient(1.3px 1.3px at 38% 9%, rgba(255,255,255,.8) 50%, transparent 51%);
+  opacity: .7;
 }
 
 #ex-globe-container {

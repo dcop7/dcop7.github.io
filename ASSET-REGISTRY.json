@@ -1,0 +1,2545 @@
+[
+  {
+    "file": "quizzes/assets/icons/acura.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/alfaromeo.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/alpinelinux.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/anaconda.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/android.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/angular.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ansible.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/apache.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/apachekafka.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/archlinux.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/arduino.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/astonmartin.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/astro.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/audacity.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/audi.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/babel.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/bentley.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/bitbucket.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/blender.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/bmw.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/bootstrap.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/brave.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/bugatti.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/bun.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/c.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/caddy.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/cadillac.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/centos.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/chevrolet.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/chrysler.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/citroen.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/clojure.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/cloudflare.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/cplusplus.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/crystal.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/csharp.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/css3.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/dacia.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/dart.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/debian.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/deno.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/digitalocean.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/discord.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/django.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/docker.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/dotnet.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/drupal.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ducati.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/elasticsearch.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/electron.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/elixir.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/erlang.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/esbuild.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/express.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/fastapi.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/fedora.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ferrari.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/fiat.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/figma.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/firebase.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/firefoxbrowser.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/flask.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/flutter.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ford.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/freebsd.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ghost.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/gimp.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/git.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/gitea.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/github.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/gitlab.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/gnu.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/gnubash.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/go.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/godotengine.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/googlechrome.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/grafana.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/graphql.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/haskell.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/heroku.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/honda.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/html5.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/huggingface.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/hyundai.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/infiniti.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/inkscape.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/insomnia.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ionic.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/jaguar.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/javascript.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/jeep.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/jenkins.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/jira.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/joomla.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/jquery.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/json.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/julia.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/jupyter.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/kalilinux.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/keras.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/kia.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/koenigsegg.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/kotlin.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/krita.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ktm.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/kubernetes.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/lamborghini.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/landrover.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/laravel.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/latex.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/less.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/linux.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/linuxmint.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/lua.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/lucid.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/manjaro.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mariadb.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/markdown.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/maserati.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mastodon.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/matrix.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mazda.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mclaren.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mercedes.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/microsoftedge.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mini.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mitsubishi.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mongodb.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/mysql.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/neo4j.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/neovim.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/netlify.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/nextdotjs.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/nginx.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/nim.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/nissan.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/nodedotjs.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/notion.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/npm.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/numpy.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/nuxtdotjs.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/obsidian.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/obsstudio.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ocaml.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/opel.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/openjdk.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/opensuse.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/opera.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/pandas.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/perl.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/peugeot.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/php.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/pnpm.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/podman.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/polestar.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/porsche.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/postgresql.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/postman.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/powershell.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/preact.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/prisma.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/prometheus.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/proxmox.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/python.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/pytorch.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/qemu.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/qt.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/r.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/rabbitmq.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/raspberrypi.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/react.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/reddit.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/redhat.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/redis.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/redux.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/renault.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/rollsroyce.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ruby.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/rubyonrails.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/rust.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/sass.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/scala.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/scikitlearn.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/seat.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/signal.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/skoda.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/slack.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/solid.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/spotify.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/spring.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/sqlite.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/stackoverflow.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/steam.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/subaru.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/supabase.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/suzuki.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/svelte.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/swift.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/tailwindcss.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/tauri.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/telegram.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/tensorflow.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/terraform.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/tesla.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/torbrowser.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/toyota.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/trello.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/typescript.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/ubuntu.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/unity.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/unrealengine.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/v.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vagrant.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vauxhall.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vercel.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vespa.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vim.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/virtualbox.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vite.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vivaldi.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vlcmediaplayer.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vmware.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/volkswagen.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/volvo.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/vuedotjs.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/wasmer.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/webassembly.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/webpack.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/wikipedia.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/wireshark.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/wordpress.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/yamahamotorcorporation.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/yaml.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/yarn.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/icons/zig.svg",
+    "type": "svg",
+    "source": "Simple Icons (simpleicons.org)",
+    "license": "CC0-1.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/angkor-wat.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Kheng Vungvuthy",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/aqueduto-aguas-livres.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "attribution": "Lijealso",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/atomium.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 4.0",
+    "attribution": "Trougnouf (Benoit Brummer)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/big-ben.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 2.0",
+    "attribution": "Dave Bezaire",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/bom-jesus.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "Public domain",
+    "attribution": "Botafogo",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/brandenburg.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "Pedelecs ( talk · contribs )",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/castelo-guimaraes.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Krzysztof Golik",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/chichen-itza.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "attribution": "Dronepicr",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/cidade-proibida.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "attribution": "Jacob Ehnmark from Sendai, Japan",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/coliseu.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "FeaturedPics",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/convento-cristo.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "attribution": "Marcio",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/cristo-redentor.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0 de",
+    "attribution": "Arne Müseler",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/esfinge.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "MusikAnimal",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/estatua-liberdade.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC0",
+    "attribution": "AskALotl",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/golden-gate.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Frank Schulenburg",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/mosteiro-batalha.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "Waugsberg",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/mosteiro-jeronimos.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Ingo Mehling",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/muralha-china.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "Vincent Ndaku",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/opera-sydney.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC0",
+    "attribution": "Bernard Spragg. NZ from Christchurch, New Zealand",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/padrao-descobrimentos.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "Diego Delso",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/palacio-pena.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "attribution": "Singa Hitam",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/partenon.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "attribution": "Steve Swayne",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/petra.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 2.0",
+    "attribution": "Al_Khazneh_Petra.jpg : Graham Racher from London, UK derivat",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/piramide-queops.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Douwe C. van der Zee",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/sagrada-familia.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "Public domain",
+    "attribution": "Bartolomé Esteban Murillo",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/sao-pedro.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Jakub Hałun",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/stonehenge.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 2.0",
+    "attribution": "Frédéric Vincent",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/taj-mahal.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "Asitjain",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/torre-belem.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "Alvesgaspar",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/torre-clerigos.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "António Amen",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/torre-eiffel.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 2.0",
+    "attribution": "Gordon Gartrell",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/torre-pisa.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0 de",
+    "attribution": "Arne Müseler",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/assets/monuments/versalhes.jpg",
+    "type": "jpg",
+    "source": "Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "attribution": "ToucanWings",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "favicon.svg",
+    "type": "svg",
+    "source": "original (this repository)",
+    "license": "project-owned / public-domain shapes",
+    "attribution": "none",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/{easy,medium,hard}/sinais.json (inline SVG)",
+    "type": "svg-inline",
+    "source": "original (this repository)",
+    "license": "project-owned; road-sign designs are standardised/public",
+    "attribution": "none",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "quizzes/{...}/simbolos.json (inline SVG)",
+    "type": "svg-inline",
+    "source": "original (this repository)",
+    "license": "project-owned (maths/scientific glyphs)",
+    "attribution": "none",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "index.html / *.js (inline UI/nav SVG icons)",
+    "type": "svg-inline",
+    "source": "original (this repository)",
+    "license": "project-owned",
+    "attribution": "none",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "type": "remote",
+    "file": "cdn.jsdelivr.net/.../earth-blue-marble.jpg",
+    "source": "NASA Visible Earth (Blue Marble) via three-globe CDN",
+    "license": "Public Domain (NASA)",
+    "attribution": "NASA (not required)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "type": "remote",
+    "file": "cdn.jsdelivr.net/.../earth-night.jpg",
+    "source": "NASA Earth at Night (Black Marble) via three-globe CDN",
+    "license": "Public Domain (NASA)",
+    "attribution": "NASA (not required)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "type": "remote",
+    "file": "cdn.jsdelivr.net/.../earth-topology.png",
+    "source": "NASA elevation (topology) via three-globe CDN",
+    "license": "Public Domain (NASA-derived)",
+    "attribution": "NASA (not required)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "type": "remote",
+    "file": "flagcdn.com/*.svg",
+    "source": "flagcdn.com",
+    "license": "Public Domain (national flags are not copyrightable)",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE",
+    "note": "Hotlinked — recommend localising into assets/flags/ for the no-hotlink rule."
+  },
+  {
+    "type": "remote",
+    "file": "{s}.basemaps.cartocdn.com/* (voyager/dark_matter/dark_all/light_all)",
+    "source": "CARTO + OpenStreetMap",
+    "license": "OSM ODbL data + CARTO Basemaps (free, attribution required)",
+    "attribution": "© OpenStreetMap © CARTO (shown on map)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "type": "remote",
+    "file": "server.arcgisonline.com/.../World_Imagery|World_Topo_Map|World_Boundaries_and_Places",
+    "source": "Esri ArcGIS Online",
+    "license": "Esri Terms of Use — free with attribution",
+    "attribution": "© Esri, Maxar (shown on map)",
+    "verified": true,
+    "classification": "REVIEW",
+    "note": "Attribution present; Esri terms have nuance for heavy/commercial use — acceptable for a personal educational site."
+  },
+  {
+    "type": "remote",
+    "file": "fonts.googleapis.com / fonts.gstatic.com (Space Grotesk, Inter, JetBrains Mono)",
+    "source": "Google Fonts",
+    "license": "SIL OFL 1.1 / Apache 2.0",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "type": "remote",
+    "file": "i.ytimg.com/vi/<id>/hqdefault.jpg",
+    "source": "YouTube",
+    "license": "YouTube ToS — thumbnail shown only to represent the embedded/linked video",
+    "attribution": "YouTube",
+    "verified": false,
+    "classification": "REVIEW",
+    "note": "Nominative use as part of linking the actual video; not a standalone image asset."
+  },
+  {
+    "type": "remote",
+    "file": "three-globe night-sky.png (globe background)",
+    "source": "three-globe example asset",
+    "license": "UNVERIFIED",
+    "attribution": "unknown",
+    "verified": false,
+    "classification": "REMOVED",
+    "note": "Removed in this audit — replaced by a solid colour + pure-CSS starfield."
+  },
+  {
+    "type": "remote",
+    "file": "three.js 2294472375_24a3b8ef46_o.jpg (solar background)",
+    "source": "three.js example texture (Flickr-derived)",
+    "license": "UNVERIFIED",
+    "attribution": "unknown",
+    "verified": false,
+    "classification": "REMOVED",
+    "note": "Removed in this audit — replaced by a solid colour + generated 3D starfield."
+  }
+]

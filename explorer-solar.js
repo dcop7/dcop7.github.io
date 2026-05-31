@@ -6,7 +6,8 @@ const SolarExplorer = (function () {
 
   const THREE_CDN  = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const TEX_BASE   = 'https://unpkg.com/three@0.160.0/examples/textures/planets/';
-  const SPACE_TEX  = 'https://unpkg.com/three@0.160.0/examples/textures/2294472375_24a3b8ef46_o.jpg';
+  /* (Removed external space background texture — unverifiable licence.
+     The scene uses a solid colour + a locally-generated starfield instead.) */
 
   /* ── Planet data ── */
   const PLANETS = [
@@ -303,14 +304,10 @@ const SolarExplorer = (function () {
     /* Scene */
     _scene = new THREE.Scene();
 
-    /* Space background */
-    const spaceLoader = new THREE.TextureLoader();
-    spaceLoader.load(SPACE_TEX, tex => {
-      tex.mapping = THREE.EquirectangularReflectionMapping;
-      _scene.background = tex;
-    }, undefined, () => {
-      _scene.background = new THREE.Color(0x000008);
-    });
+    /* Space background — solid deep-space colour. The starry look comes from
+       the procedural starfield below (generated locally), so we use no external
+       background image (avoids any unverifiable third-party texture licence). */
+    _scene.background = new THREE.Color(0x05060f);
 
     /* Starfield */
     const starCount = 5000;
