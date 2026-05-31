@@ -1062,18 +1062,26 @@ const ExplorerPage = (function () {
     if (!T || !_globeGL || _cloudsMesh) return;
     try {
       const R = _globeGL.getGlobeRadius ? _globeGL.getGlobeRadius() : 100;
-      const mat = new T.MeshLambertMaterial({ transparent: true, opacity: 0.42, depthWrite: false });
-      _cloudsMesh = new T.Mesh(new T.SphereGeometry(R * 1.015, 64, 64), mat);
-      new T.TextureLoader().load(CLOUDS_URL, tex => {
-        if (!_cloudsMesh) return;
-        mat.map = tex; mat.alphaMap = tex; mat.needsUpdate = true;
-      });
+      /* Unlit material + alphaMap so only the clouds show (sky transparent).
+         CRITICAL: the mesh stays HIDDEN until the texture has loaded — a cloud
+         sphere with no texture renders as a translucent WHITE sphere that washes
+         out the whole globe (this was the "white globe" bug). */
+      const mat = new T.MeshBasicMaterial({ transparent: true, opacity: 0.5, depthWrite: false });
+      _cloudsMesh = new T.Mesh(new T.SphereGeometry(R * 1.02, 64, 64), mat);
+      _cloudsMesh.visible = false;
+      let cloudsLoaded = false;
+      new T.TextureLoader().load(
+        CLOUDS_URL,
+        tex => { if (!_cloudsMesh) return; mat.map = tex; mat.alphaMap = tex; mat.needsUpdate = true; cloudsLoaded = true; },
+        undefined,
+        () => { /* load failed → clouds stay hidden; globe renders normally */ }
+      );
       _globeGL.scene().add(_cloudsMesh);
       const drift = () => {
         if (!_cloudsMesh) return;
         _cloudsMesh.rotation.y += 0.0004;
-        /* Hidden in the flat "political" view where realism isn't the point. */
-        _cloudsMesh.visible = _globeView !== 'political';
+        /* Only visible once the texture is ready, and not in the flat political view. */
+        _cloudsMesh.visible = cloudsLoaded && _globeView !== 'political';
         _cloudsRAF = requestAnimationFrame(drift);
       };
       _cloudsRAF = requestAnimationFrame(drift);
