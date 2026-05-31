@@ -4662,6 +4662,15 @@
     "classification": "SAFE"
   },
   {
+    "file": "assets/planets/earth-clouds.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
     "file": "assets/planets/earth_atmos_2048.jpg",
     "type": "texture",
     "source": "Solar System Scope (solarsystemscope.com)",
@@ -4690,6 +4699,15 @@
   },
   {
     "file": "assets/planets/mercury_1024.jpg",
+    "type": "texture",
+    "source": "Solar System Scope (solarsystemscope.com)",
+    "license": "CC BY 4.0",
+    "attribution": "Solar System Scope",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/planets/moon.jpg",
     "type": "texture",
     "source": "Solar System Scope (solarsystemscope.com)",
     "license": "CC BY 4.0",
