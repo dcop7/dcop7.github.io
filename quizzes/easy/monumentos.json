@@ -3,112 +3,123 @@
     "q": "Em que cidade portuguesa se encontra Torre de Belém?",
     "a": "Lisboa",
     "opts": [
-      "Guimarães",
-      "Batalha",
       "Lisboa",
-      "Évora"
+      "Guimarães",
+      "Faro",
+      "Coimbra"
     ],
-    "exp": "Torre de Belém encontra-se em Lisboa, Portugal.",
+    "exp": "Torre de Belém encontra-se em Lisboa, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Torre%20de%20Bel%C3%A9m\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/torre-belem.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Alvesgaspar · CC BY-SA 3.0 · Wikimedia Commons"
+  },
+  {
+    "q": "Em que país se encontra Torre Eiffel?",
+    "a": "França",
+    "opts": [
+      "Vaticano",
+      "Camboja",
+      "Espanha",
+      "França"
+    ],
+    "exp": "Torre Eiffel encontra-se em Paris, França. <a href=\"https://pt.wikipedia.org/wiki/Torre%20Eiffel\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
+    "imgType": "img",
+    "img": "quizzes/assets/monuments/torre-eiffel.jpg",
+    "imgCredit": "Gordon Gartrell · CC BY-SA 2.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Coliseu?",
     "a": "Itália",
     "opts": [
-      "França",
-      "Grécia",
+      "Peru",
       "Itália",
-      "Emirados Árabes Unidos"
+      "Alemanha",
+      "Egipto"
     ],
-    "exp": "Coliseu encontra-se em Roma, Itália.",
+    "exp": "Coliseu encontra-se em Roma, Itália. <a href=\"https://pt.wikipedia.org/wiki/Coliseu%20de%20Roma\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/coliseu.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "FeaturedPics · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Big Ben?",
     "a": "Reino Unido",
     "opts": [
-      "Vaticano",
+      "Alemanha",
+      "EUA",
       "Reino Unido",
-      "Brasil",
-      "Peru"
+      "Espanha"
     ],
-    "exp": "Big Ben encontra-se em Londres, Reino Unido.",
+    "exp": "Big Ben encontra-se em Londres, Reino Unido. <a href=\"https://pt.wikipedia.org/wiki/Big%20Ben\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/big-ben.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Dave Bezaire · CC BY-SA 2.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Taj Mahal?",
     "a": "Índia",
     "opts": [
-      "Emirados Árabes Unidos",
-      "EUA",
-      "Peru",
-      "Índia"
+      "Brasil",
+      "Índia",
+      "México",
+      "Alemanha"
     ],
-    "exp": "Taj Mahal encontra-se em Agra, Índia.",
+    "exp": "Taj Mahal encontra-se em Agra, Índia. <a href=\"https://pt.wikipedia.org/wiki/Taj%20Mahal\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/taj-mahal.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Asitjain · CC BY-SA 3.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Pirâmide de Quéops?",
     "a": "Egipto",
     "opts": [
-      "México",
-      "Egipto",
-      "Brasil",
-      "Bélgica"
+      "Alemanha",
+      "Índia",
+      "Austrália",
+      "Egipto"
     ],
-    "exp": "Pirâmide de Quéops encontra-se em Gizé, Egipto.",
+    "exp": "Pirâmide de Quéops encontra-se em Gizé, Egipto. <a href=\"https://pt.wikipedia.org/wiki/Pir%C3%A2mide%20de%20Qu%C3%A9ops\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/piramide-queops.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Douwe C. van der Zee · CC BY-SA 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Estátua da Liberdade?",
     "a": "EUA",
     "opts": [
+      "Indonésia",
       "Egipto",
-      "Reino Unido",
-      "Portugal",
-      "EUA"
+      "EUA",
+      "Camboja"
     ],
-    "exp": "Estátua da Liberdade encontra-se em Nova Iorque, EUA.",
+    "exp": "Estátua da Liberdade encontra-se em Nova Iorque, EUA. <a href=\"https://pt.wikipedia.org/wiki/Est%C3%A1tua%20da%20Liberdade\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/estatua-liberdade.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "AskALotl · CC0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Cristo Redentor?",
     "a": "Brasil",
     "opts": [
+      "Índia",
       "Brasil",
-      "Vaticano",
-      "México",
-      "Índia"
+      "França",
+      "Jordânia"
     ],
-    "exp": "Cristo Redentor encontra-se em Rio de Janeiro, Brasil.",
+    "exp": "Cristo Redentor encontra-se em Rio de Janeiro, Brasil. <a href=\"https://pt.wikipedia.org/wiki/Cristo%20Redentor\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/cristo-redentor.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Arne Müseler · CC BY-SA 3.0 de · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Machu Picchu?",
     "a": "Peru",
     "opts": [
-      "Egipto",
-      "Vaticano",
+      "Brasil",
+      "Indonésia",
       "Peru",
       "México"
     ],
-    "exp": "Machu Picchu encontra-se em Peru.",
-    "imgType": "img",
-    "img": "quizzes/assets/monuments/machu-picchu.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "exp": "Machu Picchu encontra-se em Peru. <a href=\"https://pt.wikipedia.org/wiki/Machu%20Picchu\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>"
   }
 ]

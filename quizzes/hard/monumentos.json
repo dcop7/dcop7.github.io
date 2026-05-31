@@ -3,112 +3,112 @@
     "q": "Em que cidade portuguesa se encontra Torre dos Clérigos?",
     "a": "Porto",
     "opts": [
-      "Coimbra",
-      "Faro",
-      "Batalha",
-      "Porto"
+      "Sintra",
+      "Évora",
+      "Porto",
+      "Lisboa"
     ],
-    "exp": "Torre dos Clérigos encontra-se em Porto, Portugal.",
+    "exp": "Torre dos Clérigos encontra-se em Porto, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Torre%20dos%20Cl%C3%A9rigos\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/torre-clerigos.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "António Amen · CC BY-SA 3.0 · Wikimedia Commons"
   },
   {
     "q": "Em que cidade portuguesa se encontra Mosteiro da Batalha?",
     "a": "Batalha",
     "opts": [
-      "Porto",
-      "Lisboa",
       "Batalha",
+      "Évora",
+      "Faro",
       "Braga"
     ],
-    "exp": "Mosteiro da Batalha encontra-se em Batalha, Portugal.",
+    "exp": "Mosteiro da Batalha encontra-se em Batalha, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Mosteiro%20da%20Batalha\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/mosteiro-batalha.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Waugsberg · CC BY-SA 3.0 · Wikimedia Commons"
   },
   {
     "q": "Em que cidade portuguesa se encontra Convento de Cristo?",
     "a": "Tomar",
     "opts": [
-      "Lisboa",
-      "Braga",
+      "Batalha",
       "Tomar",
-      "Batalha"
+      "Évora",
+      "Lisboa"
     ],
-    "exp": "Convento de Cristo encontra-se em Tomar, Portugal.",
+    "exp": "Convento de Cristo encontra-se em Tomar, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Convento%20de%20Cristo%20(Tomar)\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/convento-cristo.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Marcio · CC BY 2.0 · Wikimedia Commons"
   },
   {
     "q": "Em que cidade portuguesa se encontra Bom Jesus do Monte?",
     "a": "Braga",
     "opts": [
-      "Braga",
+      "Faro",
       "Porto",
-      "Évora",
-      "Coimbra"
+      "Braga",
+      "Évora"
     ],
-    "exp": "Bom Jesus do Monte encontra-se em Braga, Portugal.",
+    "exp": "Bom Jesus do Monte encontra-se em Braga, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Santu%C3%A1rio%20do%20Bom%20Jesus%20do%20Monte\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/bom-jesus.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Botafogo · Public domain · Wikimedia Commons"
   },
   {
     "q": "Em que cidade portuguesa se encontra Aqueduto das Águas Livres?",
     "a": "Lisboa",
     "opts": [
+      "Évora",
+      "Braga",
       "Lisboa",
-      "Sintra",
-      "Porto",
       "Batalha"
     ],
-    "exp": "Aqueduto das Águas Livres encontra-se em Lisboa, Portugal.",
+    "exp": "Aqueduto das Águas Livres encontra-se em Lisboa, Portugal. <a href=\"https://pt.wikipedia.org/wiki/Aqueduto%20das%20%C3%81guas%20Livres\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/aqueduto-aguas-livres.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Lijealso · CC BY 3.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Palácio de Versalhes?",
     "a": "França",
     "opts": [
-      "Portugal",
+      "Egipto",
+      "Bélgica",
       "França",
-      "Brasil",
-      "Jordânia"
+      "Itália"
     ],
-    "exp": "Palácio de Versalhes encontra-se em Versalhes, França.",
+    "exp": "Palácio de Versalhes encontra-se em Versalhes, França. <a href=\"https://pt.wikipedia.org/wiki/Pal%C3%A1cio%20de%20Versalhes\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/versalhes.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "ToucanWings · CC BY-SA 3.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Atomium?",
     "a": "Bélgica",
     "opts": [
-      "México",
-      "Itália",
-      "Vaticano",
-      "Bélgica"
+      "Brasil",
+      "Bélgica",
+      "Indonésia",
+      "Reino Unido"
     ],
-    "exp": "Atomium encontra-se em Bruxelas, Bélgica.",
+    "exp": "Atomium encontra-se em Bruxelas, Bélgica. <a href=\"https://pt.wikipedia.org/wiki/Atomium\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/atomium.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "Trougnouf (Benoit Brummer) · CC BY 4.0 · Wikimedia Commons"
   },
   {
     "q": "Em que país se encontra Esfinge de Gizé?",
     "a": "Egipto",
     "opts": [
-      "Vaticano",
-      "Reino Unido",
-      "Grécia",
-      "Egipto"
+      "Egipto",
+      "Emirados Árabes Unidos",
+      "Espanha",
+      "Jordânia"
     ],
-    "exp": "Esfinge de Gizé encontra-se em Gizé, Egipto.",
+    "exp": "Esfinge de Gizé encontra-se em Gizé, Egipto. <a href=\"https://pt.wikipedia.org/wiki/Grande%20Esfinge%20de%20Giz%C3%A9\" target=\"_blank\" rel=\"noopener\">Wikipédia ↗</a>",
     "imgType": "img",
     "img": "quizzes/assets/monuments/esfinge.jpg",
-    "imgCredit": "Wikimedia Commons"
+    "imgCredit": "MusikAnimal · CC BY-SA 3.0 · Wikimedia Commons"
   }
 ]
