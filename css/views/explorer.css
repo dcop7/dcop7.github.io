@@ -738,11 +738,22 @@
 .ex-panel-excerpt {
   font-size: .76rem;
   color: var(--muted);
-  font-style: italic;
   line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.ex-panel-excerpt p {
+  font-style: italic;
   border-left: 2px solid rgba(var(--accent-rgb),.4);
   padding-left: .75rem;
-  margin-bottom: 1rem;
+}
+/* Wikimedia Commons lead image for the country */
+.ex-panel-photo {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-bottom: .7rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
 }
 
 .ex-panel-borders-label {

@@ -1,10 +1,156 @@
 [
-  { "q": "Em que ano caiu o Império Romano do Ocidente?", "a": "476 d.C.", "opts": ["476 d.C.", "395 d.C.", "1453 d.C.", "330 d.C."], "exp": "Em 476, Odoacro depôs Rómulo Augústulo, marcando o fim do Império Romano do Ocidente." },
-  { "q": "Que tratado pôs fim à Primeira Guerra Mundial em 1919?", "a": "Tratado de Versalhes", "opts": ["Tratado de Versalhes", "Tratado de Vestfália", "Tratado de Tordesilhas", "Tratado de Utrecht"], "exp": "O Tratado de Versalhes (1919) impôs duras condições à Alemanha." },
-  { "q": "Qual foi a capital do Império Bizantino?", "a": "Constantinopla", "opts": ["Constantinopla", "Roma", "Atenas", "Antioquia"], "exp": "Constantinopla (atual Istambul) foi a capital bizantina até 1453." },
-  { "q": "Que dinastia chinesa construiu grande parte da Grande Muralha tal como hoje existe?", "a": "Dinastia Ming", "opts": ["Dinastia Ming", "Dinastia Han", "Dinastia Qing", "Dinastia Tang"], "exp": "A maior parte da Muralha preservada hoje foi erguida durante a Dinastia Ming." },
-  { "q": "Quem foi o imperador francês derrotado em Waterloo em 1815?", "a": "Napoleão Bonaparte", "opts": ["Napoleão Bonaparte", "Luís XVI", "Carlos Magno", "Robespierre"], "exp": "Napoleão foi definitivamente derrotado na Batalha de Waterloo (1815)." },
-  { "q": "Que paz de 1648 estabeleceu o conceito moderno de soberania dos Estados?", "a": "Paz de Vestfália", "opts": ["Paz de Vestfália", "Congresso de Viena", "Paz de Augsburgo", "Tratado de Versalhes"], "exp": "A Paz de Vestfália (1648) terminou a Guerra dos Trinta Anos e fundou a ordem de Estados soberanos." },
-  { "q": "Que revolução de 1917 levou os bolcheviques ao poder na Rússia?", "a": "Revolução de Outubro", "opts": ["Revolução de Outubro", "Revolução de Fevereiro", "Revolução de 1905", "Primavera dos Povos"], "exp": "A Revolução de Outubro de 1917 levou Lenine e os bolcheviques ao poder." },
-  { "q": "Qual era o nome do programa norte-americano que levou ao desembarque na Lua?", "a": "Programa Apollo", "opts": ["Programa Apollo", "Programa Gemini", "Programa Mercury", "Programa Artemis"], "exp": "O Programa Apollo da NASA culminou com a Apollo 11 em 1969." }
+  {
+    "q": "Em que ano caiu o Império Romano do Ocidente?",
+    "a": "476 d.C.",
+    "opts": [
+      "476 d.C.",
+      "395 d.C.",
+      "1453 d.C.",
+      "330 d.C."
+    ],
+    "exp": "Em 476, Odoacro depôs Rómulo Augústulo, marcando o fim do Império Romano do Ocidente."
+  },
+  {
+    "q": "Que tratado pôs fim à Primeira Guerra Mundial em 1919?",
+    "a": "Tratado de Versalhes",
+    "opts": [
+      "Tratado de Versalhes",
+      "Tratado de Vestfália",
+      "Tratado de Tordesilhas",
+      "Tratado de Utrecht"
+    ],
+    "exp": "O Tratado de Versalhes (1919) impôs duras condições à Alemanha."
+  },
+  {
+    "q": "Qual foi a capital do Império Bizantino?",
+    "a": "Constantinopla",
+    "opts": [
+      "Constantinopla",
+      "Roma",
+      "Atenas",
+      "Antioquia"
+    ],
+    "exp": "Constantinopla (atual Istambul) foi a capital bizantina até 1453."
+  },
+  {
+    "q": "Que dinastia chinesa construiu grande parte da Grande Muralha tal como hoje existe?",
+    "a": "Dinastia Ming",
+    "opts": [
+      "Dinastia Ming",
+      "Dinastia Han",
+      "Dinastia Qing",
+      "Dinastia Tang"
+    ],
+    "exp": "A maior parte da Muralha preservada hoje foi erguida durante a Dinastia Ming."
+  },
+  {
+    "q": "Quem foi o imperador francês derrotado em Waterloo em 1815?",
+    "a": "Napoleão Bonaparte",
+    "opts": [
+      "Napoleão Bonaparte",
+      "Luís XVI",
+      "Carlos Magno",
+      "Robespierre"
+    ],
+    "exp": "Napoleão foi definitivamente derrotado na Batalha de Waterloo (1815)."
+  },
+  {
+    "q": "Que paz de 1648 estabeleceu o conceito moderno de soberania dos Estados?",
+    "a": "Paz de Vestfália",
+    "opts": [
+      "Paz de Vestfália",
+      "Congresso de Viena",
+      "Paz de Augsburgo",
+      "Tratado de Versalhes"
+    ],
+    "exp": "A Paz de Vestfália (1648) terminou a Guerra dos Trinta Anos e fundou a ordem de Estados soberanos."
+  },
+  {
+    "q": "Que revolução de 1917 levou os bolcheviques ao poder na Rússia?",
+    "a": "Revolução de Outubro",
+    "opts": [
+      "Revolução de Outubro",
+      "Revolução de Fevereiro",
+      "Revolução de 1905",
+      "Primavera dos Povos"
+    ],
+    "exp": "A Revolução de Outubro de 1917 levou Lenine e os bolcheviques ao poder."
+  },
+  {
+    "q": "Qual era o nome do programa norte-americano que levou ao desembarque na Lua?",
+    "a": "Programa Apollo",
+    "opts": [
+      "Programa Apollo",
+      "Programa Gemini",
+      "Programa Mercury",
+      "Programa Artemis"
+    ],
+    "exp": "O Programa Apollo da NASA culminou com a Apollo 11 em 1969."
+  },
+  {
+    "q": "Em que ano foi assinada a Paz de Augsburgo?",
+    "a": "1555",
+    "opts": [
+      "1555",
+      "1492",
+      "1648",
+      "1789"
+    ],
+    "exp": "A Paz de Augsburgo (1555) permitiu a cada príncipe alemão escolher a religião do seu território."
+  },
+  {
+    "q": "Que tratado dividiu o Império Carolíngio em 843?",
+    "a": "Tratado de Verdun",
+    "opts": [
+      "Tratado de Verdun",
+      "Tratado de Tordesilhas",
+      "Paz de Vestfália",
+      "Tratado de Aquisgrão"
+    ],
+    "exp": "O Tratado de Verdun dividiu o império de Carlos Magno entre os seus netos."
+  },
+  {
+    "q": "Quem foi o último imperador da China?",
+    "a": "Puyi",
+    "opts": [
+      "Puyi",
+      "Sun Yat-sen",
+      "Mao Tsé-Tung",
+      "Hirohito"
+    ],
+    "exp": "Puyi foi o último imperador, deposto em 1912."
+  },
+  {
+    "q": "Que batalha de 1415 foi vencida por Henrique V de Inglaterra?",
+    "a": "Azincourt",
+    "opts": [
+      "Azincourt",
+      "Hastings",
+      "Crécy",
+      "Bosworth"
+    ],
+    "exp": "A Batalha de Azincourt foi uma vitória inglesa na Guerra dos Cem Anos."
+  },
+  {
+    "q": "Que cidade-estado grega era famosa pela sua disciplina militar?",
+    "a": "Esparta",
+    "opts": [
+      "Esparta",
+      "Atenas",
+      "Corinto",
+      "Tebas"
+    ],
+    "exp": "Esparta era conhecida pela rigorosa educação militar (agogê)."
+  },
+  {
+    "q": "Em que ano começou a Reforma Protestante de Lutero?",
+    "a": "1517",
+    "opts": [
+      "1517",
+      "1453",
+      "1492",
+      "1648"
+    ],
+    "exp": "Lutero afixou as 95 teses em 1517."
+  }
 ]

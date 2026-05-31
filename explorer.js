@@ -22,6 +22,8 @@ const ExplorerPage = (function () {
   let _updateGlobeColors = null;
   let _globeMatUniforms = null;         /* day/night ShaderMaterial uniforms, if active */
   let _globeSunTimer    = null;
+  let _cloudsMesh       = null;
+  let _cloudsRAF        = null;
 
   /* ── Leaflet state ── */
   let _lMap        = null;
@@ -223,18 +225,22 @@ const ExplorerPage = (function () {
     return r.json();
   }
 
+  /* Wikipedia summary → short excerpt + lead image (Wikimedia Commons,
+     freely-licensed). Returns { text, image } (either may be null). */
   async function _fetchWiki(name) {
-    const key = `ex-wiki-${name}`;
-    try { const c = sessionStorage.getItem(key); if (c) return c; } catch (e) {}
+    const key = `ex-wiki2-${name}`;
+    try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
     try {
       const r = await _fetchTimeout(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`, 6000);
       const d = await r.json();
       const text = d.extract_html
         ? d.extract_html.replace(/<[^>]+>/g, '').slice(0, 300)
         : (d.extract || '').slice(0, 300);
-      if (text) try { sessionStorage.setItem(key, text); } catch (e) {}
-      return text || null;
-    } catch (e) { return null; }
+      const image = (d.thumbnail && d.thumbnail.source) || null;
+      const out = { text: text || null, image };
+      try { sessionStorage.setItem(key, JSON.stringify(out)); } catch (e) {}
+      return out;
+    } catch (e) { return { text: null, image: null }; }
   }
 
   async function _loadLeaflet() {
@@ -354,11 +360,15 @@ const ExplorerPage = (function () {
       };
     });
 
-    _fetchWiki(name).then(text => {
+    _fetchWiki(name).then(({ text, image }) => {
       const el = panel.querySelector('#ex-panel-excerpt');
-      if (el) el.innerHTML = text
-        ? `<p>${text}${text.length >= 298 ? '…' : ''}</p>`
-        : '';
+      if (!el) return;
+      /* Lead image (Wikimedia Commons) + excerpt; image falls back silently. */
+      const img = image
+        ? `<img class="ex-panel-photo" src="${image}" alt="${name}" loading="lazy"
+             onerror="this.remove()"/>` : '';
+      const body = text ? `<p>${text}${text.length >= 298 ? '…' : ''}</p>` : '';
+      el.innerHTML = img + body;
     });
   }
 
@@ -918,6 +928,7 @@ const ExplorerPage = (function () {
     /* Vivid day/night globe material (raw textures, no Phong wash). Falls back to
        the classic textured material if THREE / the shader is unavailable. */
     _setupGlobeMaterial();
+    _setupClouds();
 
     _updateGlobeColors = () => {
       if (!_globeGL) return;
@@ -1002,6 +1013,33 @@ const ExplorerPage = (function () {
     if (!_globeMatUniforms) return;
     const s = _sunPos();
     _globeMatUniforms.sunPosition.value.set(s.lon, s.lat);
+  }
+
+  /* Translucent, slowly-drifting cloud layer for realism (three-globe asset,
+     MIT). Lazy and managed: the rAF is cancelled on globe teardown. The 5 MB
+     texture loads only when the globe view is opened. */
+  const CLOUDS_URL = 'https://unpkg.com/three-globe/example/clouds/clouds.png';
+  function _setupClouds() {
+    const T = window.THREE;
+    if (!T || !_globeGL || _cloudsMesh) return;
+    try {
+      const R = _globeGL.getGlobeRadius ? _globeGL.getGlobeRadius() : 100;
+      const mat = new T.MeshLambertMaterial({ transparent: true, opacity: 0.42, depthWrite: false });
+      _cloudsMesh = new T.Mesh(new T.SphereGeometry(R * 1.015, 64, 64), mat);
+      new T.TextureLoader().load(CLOUDS_URL, tex => {
+        if (!_cloudsMesh) return;
+        mat.map = tex; mat.alphaMap = tex; mat.needsUpdate = true;
+      });
+      _globeGL.scene().add(_cloudsMesh);
+      const drift = () => {
+        if (!_cloudsMesh) return;
+        _cloudsMesh.rotation.y += 0.0004;
+        /* Hidden in the flat "political" view where realism isn't the point. */
+        _cloudsMesh.visible = _globeView !== 'political';
+        _cloudsRAF = requestAnimationFrame(drift);
+      };
+      _cloudsRAF = requestAnimationFrame(drift);
+    } catch (e) { _cloudsMesh = null; }
   }
 
   function _globeFallbackMaterial() {
@@ -1154,6 +1192,8 @@ const ExplorerPage = (function () {
       /* Disconnect old globe observer and reset state before rebuilding DOM */
       if (_globeResizeObs) { _globeResizeObs.disconnect(); _globeResizeObs = null; }
       if (_globeSunTimer) { clearInterval(_globeSunTimer); _globeSunTimer = null; }
+      if (_cloudsRAF) { cancelAnimationFrame(_cloudsRAF); _cloudsRAF = null; }
+      _cloudsMesh = null;
       _globeMatUniforms = null;
       _globeGL         = null;
       _globeInited     = false;

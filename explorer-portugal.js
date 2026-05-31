@@ -312,6 +312,7 @@ const PortugalExplorer = (function () {
   function _setBasemap(style) {
     if (!_map || !PT_BASEMAPS[style]) return;
     _baseStyle = style;
+    try { localStorage.setItem('pt-basemap', style); } catch (e) {}
     if (_baseTile) { _map.removeLayer(_baseTile); _baseTile = null; }
     const b = PT_BASEMAPS[style];
     _baseTile = L.tileLayer(b.url, { attribution: b.attr, subdomains: b.sub, maxZoom: 18 }).addTo(_map);
@@ -397,8 +398,9 @@ const PortugalExplorer = (function () {
       zoomControl: false,
     });
     L.control.zoom({ position: 'bottomright' }).addTo(_map);
-    /* Match the app theme by default; user can switch styles via the bar. */
-    _setBasemap(_isDark() ? 'dark' : 'standard');
+    /* Restore saved style; default to the detailed political map (atlas feel). */
+    let _savedBase; try { _savedBase = localStorage.getItem('pt-basemap'); } catch (e) {}
+    _setBasemap((_savedBase && PT_BASEMAPS[_savedBase]) ? _savedBase : 'standard');
 
     _addDistrictMarkers();
     _addCapitalLabels();
