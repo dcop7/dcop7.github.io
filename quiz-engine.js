@@ -78,6 +78,30 @@ const QuizEngine = (function () {
     return shuffle(arr).slice(0, n);
   }
 
+  /* ── Anti-repeat rotation ───────────────────────────────────────────
+     Pick `n` items from `pool` while avoiding the ones served most recently
+     for `key`, so the player cycles through (almost) the entire bank before
+     anything repeats — even a modest bank then feels fresh. Falls back to the
+     full pool once everything has been seen. `idOf` maps an item to a stable id
+     (defaults to its question text). State persists in localStorage per key. */
+  function pickFresh(pool, n, key, idOf) {
+    const id = idOf || (it => (it && (it.q || it.question || it.id || JSON.stringify(it))));
+    if (!Array.isArray(pool) || pool.length === 0) return [];
+    n = Math.min(n, pool.length);
+    const lsKey = 'qrot-' + key;
+    let recent = [];
+    try { recent = JSON.parse(localStorage.getItem(lsKey) || '[]') || []; } catch (e) {}
+    const recentSet = new Set(recent);
+    let avail = pool.filter(it => !recentSet.has(id(it)));
+    if (avail.length < n) { avail = pool.slice(); recent = []; } // cycled through → reset
+    const chosen = shuffle(avail).slice(0, n);
+    /* Remember enough recent ids that we exhaust the pool before repeating. */
+    const cap = Math.max(0, pool.length - n);
+    const updated = [...chosen.map(id), ...recent].slice(0, cap);
+    try { localStorage.setItem(lsKey, JSON.stringify(updated)); } catch (e) {}
+    return chosen;
+  }
+
   /* ── Build answer options ─────────────────────────────────────────
      Given a correct answer and pool of distractors, return shuffled
      options array with correctIdx pointing to the right answer.
@@ -129,6 +153,7 @@ const QuizEngine = (function () {
     getLang,
     shuffle,
     pick,
+    pickFresh,
     buildOptions,
     getHighscore,
     saveHighscore,

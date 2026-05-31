@@ -71,7 +71,10 @@ const QuizData = (function () {
   function buildFromBank(items, opts) {
     const { lang, count } = opts;
     const n = 4;
-    const pool = QuizEngine.shuffle(items.filter(_valid)).slice(0, count || 10);
+    /* Anti-repeat rotation: cycle through the whole bank before repeating. */
+    const valid = items.filter(_valid);
+    const key = `${opts.category || 'data'}-${opts.difficulty || 'easy'}`;
+    const pool = QuizEngine.pickFresh(valid, count || 10, key);
     return pool.map((item, i) => {
       const distractors = item.opts.filter(o => o !== item.a);
       const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
