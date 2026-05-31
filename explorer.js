@@ -25,6 +25,7 @@ const ExplorerPage = (function () {
   let _cloudsMesh       = null;
   let _cloudsRAF        = null;
   let _globeInteracted  = false;       /* true after first user pointer interaction */
+  let _globeLabels      = [];          /* country labels ranked by population */
 
   /* ── Leaflet state ── */
   let _lMap        = null;
@@ -912,6 +913,13 @@ const ExplorerPage = (function () {
 
     _byCca3 = _byCode();
 
+    /* Country labels ranked by population (major countries first) — fed to the
+       globe progressively by zoom level so they never clutter the view. */
+    _globeLabels = _countries
+      .filter(c => Array.isArray(c.latlng) && c.latlng.length === 2 && (c.population || 0) > 0)
+      .sort((a, b) => (b.population || 0) - (a.population || 0))
+      .map(c => ({ lat: c.latlng[0], lng: c.latlng[1], text: _cName(c) }));
+
     const getCapColor = f => {
       if (!f) return 'rgba(0,0,0,0)';
       if (f === _globeHovered) return 'rgba(255,255,255,0.85)';
@@ -937,6 +945,17 @@ const ExplorerPage = (function () {
       .polygonSideColor(() => 'rgba(0,0,0,0.1)')
       .polygonStrokeColor(() => 'rgba(255,255,255,0.22)')
       .polygonAltitude(getCapAlt)
+      .labelsData([])
+      .labelLat(d => d.lat)
+      .labelLng(d => d.lng)
+      .labelText(d => d.text)
+      .labelSize(0.62)
+      .labelDotRadius(0.18)
+      .labelColor(() => 'rgba(255,255,255,0.78)')
+      .labelResolution(2)
+      .labelAltitude(0.008)
+      .labelsTransitionDuration(300)
+      .onZoom(_onGlobeZoom)
       .onPolygonHover(f => {
         /* Ignore hover until the user actually interacts with the globe.
            globe.gl can emit an initial hover on data load, which previously
@@ -1024,6 +1043,7 @@ const ExplorerPage = (function () {
     const gPanel = document.getElementById('ex-country-panel-globe');
     if (gPanel) { gPanel.classList.remove('open'); gPanel.innerHTML = ''; }
     _updateGlobeColors?.();
+    _updateGlobeLabels(2.5);   /* show the major-country labels at the initial zoom */
 
     document.getElementById('ex-globe-loading')?.remove();
     _globeInited = true;
@@ -1062,9 +1082,7 @@ const ExplorerPage = (function () {
         const mat = new T.ShaderMaterial({ uniforms, vertexShader: GLOBE_VERT, fragmentShader: GLOBE_FRAG });
         _globeGL.globeMaterial(mat);
         _globeMatUniforms = uniforms;
-        _globeGL.onZoom(pov => {
-          if (_globeMatUniforms && pov) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
-        });
+        /* (zoom handler is set once on the globe via .onZoom(_onGlobeZoom)) */
         _updateSunUniform();
         if (_globeSunTimer) clearInterval(_globeSunTimer);
         _globeSunTimer = setInterval(_updateSunUniform, 60000);
@@ -1078,6 +1096,20 @@ const ExplorerPage = (function () {
     if (!_globeMatUniforms) return;
     const s = _sunPos();
     _globeMatUniforms.sunPosition.value.set(s.lon, s.lat);
+  }
+
+  /* Single zoom handler: keeps the day/night shader's rotation in sync AND
+     reveals more country labels as the user zooms in (fewer when zoomed out). */
+  function _updateGlobeLabels(altitude) {
+    if (!_globeGL) return;
+    const a = altitude == null ? 2.5 : altitude;
+    const n = a > 2.2 ? 12 : a > 1.6 ? 30 : a > 1.1 ? 60 : a > 0.7 ? 110 : 170;
+    _globeGL.labelsData(_globeLabels.slice(0, n));
+  }
+  function _onGlobeZoom(pov) {
+    if (!pov) return;
+    if (_globeMatUniforms) _globeMatUniforms.globeRotation.value.set(pov.lng, pov.lat);
+    _updateGlobeLabels(pov.altitude);
   }
 
   /* Translucent, slowly-drifting cloud layer for realism (three-globe asset,
