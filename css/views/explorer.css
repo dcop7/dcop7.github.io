@@ -1492,6 +1492,23 @@ body.light .ex-country-label {
     gap: .3rem;
   }
 
+  /* Globe view switch: keep all 3 modes reachable without crowding the top. */
+  .ex-globe-view-bar { top: .6rem; right: .6rem; left: .6rem; justify-content: center; }
+  .ex-globe-view-btn { padding: .3rem .55rem; font-size: .66rem; }
+
+  /* Solar System: panel becomes a bottom-sheet like the country/Portugal panels. */
+  .ex-solar-panel {
+    top: auto; right: 0; bottom: 0; left: 0;
+    width: 100%; height: 60vh;
+    border: none; border-top: 1px solid var(--border2);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transform: translateY(100%);
+  }
+  .ex-solar-panel.open { transform: translateY(0); }
+  /* Lift the control pill so it never hides behind the bottom-sheet. */
+  .ex-solar-controls { bottom: .75rem; gap: .35rem; padding: .3rem .45rem; }
+  .ex-solar-btn { width: 30px; height: 30px; }
+
   .ex-solar-info {
     width: 180px;
     padding: .7rem .8rem;
