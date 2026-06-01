@@ -4662,6 +4662,42 @@
     "classification": "SAFE"
   },
   {
+    "file": "data/world-countries.geojson",
+    "type": "geojson",
+    "source": "johan/world.geo.json",
+    "license": "Public Domain",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "data/pt-districts.geojson",
+    "type": "geojson",
+    "source": "Portugal district boundaries (open data)",
+    "license": "Open data",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "data/pt-concelhos.geojson",
+    "type": "geojson",
+    "source": "CAOP — Carta Administrativa Oficial de Portugal (Direção-Geral do Território) via nmota/caop_GeoJSON; reprojected to WGS84 + simplified",
+    "license": "Open data (DGT)",
+    "attribution": "Direção-Geral do Território (CAOP)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "data/countries.json",
+    "type": "data",
+    "source": "mledoze/countries + World Bank population",
+    "license": "ODbL / public data",
+    "attribution": "mledoze/countries",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
     "file": "assets/planets/earth-clouds.jpg",
     "type": "texture",
     "source": "Solar System Scope (solarsystemscope.com)",

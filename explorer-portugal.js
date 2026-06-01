@@ -278,10 +278,25 @@ const PortugalExplorer = (function () {
   let _container = null;
   let _baseTile  = null;
   let _baseStyle = 'standard';
+  /* ── Concelho (municipality) drilldown ── */
+  let _concelhoData   = null;   /* parsed pt-concelhos.geojson FeatureCollection */
+  let _concelhoLayer  = null;   /* Leaflet layer for the active district's concelhos */
+  let _concelhoSel    = null;   /* selected concelho feature */
+  let _concelhoLoading = false;
 
   /* ── District boundaries (bundled locally, simplified) — property "name"
      matches the district names in DISTRICTS exactly. ── */
   const PT_GEOJSON = 'data/pt-districts.geojson';
+  const PT_CONCELHOS = 'data/pt-concelhos.geojson';
+
+  /* District capitals — used to flag the capital concelho with extra context.
+     Authentic, hand-checked; everything else uses the official CAOP stats only. */
+  const CAPITAL_IDS = {
+    aveiro:'Aveiro', beja:'Beja', braga:'Braga', braganca:'Braganca', 'castelo-branco':'Castelo Branco',
+    coimbra:'Coimbra', evora:'Evora', faro:'Faro', guarda:'Guarda', leiria:'Leiria', lisboa:'Lisboa',
+    portalegre:'Portalegre', porto:'Porto', santarem:'Santarem', setubal:'Setubal',
+    'viana-do-castelo':'Viana Do Castelo', 'vila-real':'Vila Real', viseu:'Viseu',
+  };
 
   /* ── Leaflet lazy load ── */
   async function _loadLeaflet() {
@@ -544,6 +559,7 @@ const PortugalExplorer = (function () {
   /* ── Selection ── */
   function _select(d) {
     _selected = d;
+    _clearConcelhos();   /* leaving any previous district's drilldown */
 
     /* Highlight / reset circle markers */
     const hasGeo = !!_geoLayer;
@@ -613,6 +629,78 @@ const PortugalExplorer = (function () {
     } catch (e) { try { _map.setView([d.lat, d.lon], 9); } catch (e2) {} }
   }
 
+  /* ════════════════════ CONCELHO (MUNICIPALITY) DRILLDOWN ════════════════════ */
+
+  /* Lazy-load the bundled concelhos GeoJSON once. */
+  async function _loadConcelhos() {
+    if (_concelhoData || _concelhoLoading) return _concelhoData;
+    _concelhoLoading = true;
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 20000);
+      const r = await fetch(PT_CONCELHOS, { signal: ctrl.signal });
+      clearTimeout(tid);
+      if (r.ok) _concelhoData = await r.json();
+    } catch (e) { /* drilldown unavailable — district view still works */ }
+    _concelhoLoading = false;
+    return _concelhoData;
+  }
+
+  function _clearConcelhos() {
+    if (_concelhoLayer) { _concelhoLayer.remove(); _concelhoLayer = null; }
+    _concelhoSel = null;
+  }
+
+  /* Draw the clickable concelhos for the active district on top of the map. */
+  async function _showConcelhos(d) {
+    await _loadConcelhos();
+    if (!_concelhoData || !_map || _selected !== d) return;
+    _clearConcelhos();
+
+    const feats = _concelhoData.features.filter(f => f.properties.d === d.id);
+    if (!feats.length) return;
+
+    _concelhoLayer = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+      style: () => ({
+        fillColor: d.color,
+        color: _isDark() ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.4)',
+        weight: 1,
+        fillOpacity: 0.12,
+      }),
+      onEachFeature(feature, layer) {
+        const name = feature.properties.c;
+        layer.bindTooltip(name, { sticky: true, direction: 'top', className: 'pt-geo-tooltip' });
+        layer.on({
+          mouseover(e) { if (feature !== _concelhoSel) { e.target.setStyle({ fillOpacity: 0.32, weight: 1.6 }); e.target.bringToFront(); } },
+          mouseout(e)  { if (feature !== _concelhoSel) _concelhoLayer?.resetStyle(e.target); },
+          click(e) { L.DomEvent.stopPropagation(e); _selectConcelho(feature, layer, d); },
+        });
+      },
+    }).addTo(_map);
+
+    /* Fade the district outline so concelhos read clearly. */
+    if (_concelhoLayer.getBounds && _concelhoLayer.getBounds().isValid()) {
+      _map.flyToBounds(_concelhoLayer.getBounds(), { padding: [30, 30], maxZoom: 11, duration: 0.7 });
+    }
+  }
+
+  function _selectConcelho(feature, layer, d) {
+    _concelhoSel = feature;
+    if (_concelhoLayer) {
+      _concelhoLayer.eachLayer(l => {
+        const on = l.feature === feature;
+        l.setStyle({ fillOpacity: on ? 0.5 : 0.12, weight: on ? 2.4 : 1, color: on ? d.color : (_isDark() ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.4)') });
+        if (on) l.bringToFront();
+      });
+    }
+    try {
+      if (layer.getBounds && layer.getBounds().isValid()) _map.flyToBounds(layer.getBounds(), { padding: [50, 50], maxZoom: 12, duration: 0.7 });
+    } catch (e) {}
+    _renderConcelhoInfo(feature, d);
+    _container?.querySelector('.pt-explorer-wrap')?.classList.add('pt-info-open');
+    setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 320);
+  }
+
   /* ── Info panel ── */
   function _renderInfo(d) {
     const el = document.getElementById('pt-info-content');
@@ -645,6 +733,8 @@ const PortugalExplorer = (function () {
         <div class="pt-info-row"><span class="pt-row-icon">🌍</span><span class="pt-row-lbl">NUTS II</span><span class="pt-row-val">${d.nuts2}</span></div>
       </div>
 
+      <button class="pt-drill-btn" id="pt-drill" data-id="${d.id}">🔎 Explorar concelhos (${d.munic})</button>
+
       <div class="pt-info-section">
         <div class="pt-section-title">📍 Pontos de Interesse</div>
         <div class="pt-tags-wrap">${(d.landmarks || []).map(l => `<span class="pt-tag">${l}</span>`).join('')}</div>
@@ -671,6 +761,62 @@ const PortugalExplorer = (function () {
           ${(d.facts || []).map(f => `<div class="pt-fact-item">• ${f}</div>`).join('')}
         </div>
       </div>`;
+
+    el.querySelector('#pt-drill')?.addEventListener('click', () => _showConcelhos(d));
+  }
+
+  /* Concelho info panel — uses ONLY authentic CAOP figures (freguesias, area,
+     max altitude) plus a Wikipedia link. No invented cultural data per concelho. */
+  function _renderConcelhoInfo(feature, d) {
+    const el = document.getElementById('pt-info-content');
+    if (!el) return;
+    const p = feature.properties;
+    const areaKm = p.ha ? (p.ha / 100).toLocaleString('pt', { maximumFractionDigits: 1 }) + ' km²' : '—';
+    const isCapital = CAPITAL_IDS[d.id] && _normalizeStr(CAPITAL_IDS[d.id]) === _normalizeStr(p.c);
+    const wiki = `https://pt.wikipedia.org/wiki/${encodeURIComponent(p.c.replace(/ /g, '_'))}`;
+
+    el.innerHTML = `
+      <button class="pt-back-btn" id="pt-back">← ${d.name}</button>
+      <div class="pt-info-hero" style="--dist-color:${d.color}">
+        <div class="pt-info-emoji">${isCapital ? '⭐' : '🏘'}</div>
+        <div class="pt-info-title-group">
+          <div class="pt-info-name">${p.c}</div>
+          <div class="pt-info-tagline">${isCapital ? `Capital de distrito · ${d.name}` : `Concelho · distrito de ${d.name}`}</div>
+        </div>
+      </div>
+
+      <div class="pt-info-stats">
+        <div class="pt-info-stat"><span class="pt-stat-val">${p.nf ?? '—'}</span><span class="pt-stat-lbl">freguesias</span></div>
+        <div class="pt-info-stat"><span class="pt-stat-val">${areaKm}</span><span class="pt-stat-lbl">área</span></div>
+        <div class="pt-info-stat"><span class="pt-stat-val">${p.am ? p.am + ' m' : '—'}</span><span class="pt-stat-lbl">altitude máx.</span></div>
+        <div class="pt-info-stat"><span class="pt-stat-val">${d.name}</span><span class="pt-stat-lbl">distrito</span></div>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">📖 Sobre o concelho</div>
+        <p class="pt-history-text">${p.c} é um concelho do distrito de ${d.name}, na região ${d.region}.${isCapital ? ` É a capital do distrito.` : ''} Os dados oficiais (freguesias, área e altitude) são da Carta Administrativa Oficial de Portugal (CAOP, Direção-Geral do Território).</p>
+      </div>
+
+      <div class="pt-info-section">
+        <div class="pt-section-title">🔗 Saber mais</div>
+        <a class="pt-wiki-link" href="${wiki}" target="_blank" rel="noopener">Wikipédia: ${p.c} ↗</a>
+      </div>
+
+      <div class="pt-info-note">A informação cultural detalhada (gastronomia, tradições, monumentos) está disponível ao nível do distrito de <strong>${d.name}</strong>. Toca em “← ${d.name}” para a ver.</div>`;
+
+    el.querySelector('#pt-back')?.addEventListener('click', () => _backToDistrict(d));
+  }
+
+  /* Return from a concelho to its parent district view. */
+  function _backToDistrict(d) {
+    _concelhoSel = null;
+    if (_concelhoLayer) {
+      _concelhoLayer.eachLayer(l => l.setStyle({ fillOpacity: 0.12, weight: 1, color: _isDark() ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.4)' }));
+    }
+    _renderInfo(d);
+    if (_concelhoLayer && _concelhoLayer.getBounds && _concelhoLayer.getBounds().isValid()) {
+      _map.flyToBounds(_concelhoLayer.getBounds(), { padding: [30, 30], maxZoom: 11, duration: 0.6 });
+    }
   }
 
   /* ── Search + controls ── */
@@ -692,6 +838,7 @@ const PortugalExplorer = (function () {
 
     container.querySelector('#pt-info-close')?.addEventListener('click', () => {
       container.querySelector('.pt-explorer-wrap')?.classList.remove('pt-info-open');
+      _clearConcelhos();
       _selected = null;
       _markers.forEach(({ dist, marker }) => {
         marker.setStyle({ fillOpacity: 0.35, weight: 2, radius: _markerRadius(dist) });

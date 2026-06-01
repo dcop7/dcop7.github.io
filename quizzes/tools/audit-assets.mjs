@@ -39,6 +39,16 @@ for (const f of (existsSync(flagsDir) ? await readdir(flagsDir) : []).filter(x =
     verified: true, classification: 'SAFE' });
 }
 
+/* 2b-ii) Bundled boundary data (GeoJSON) — open geographic data */
+add({ file: 'data/world-countries.geojson', type: 'geojson', source: 'johan/world.geo.json',
+  license: 'Public Domain', attribution: 'none required', verified: true, classification: 'SAFE' });
+add({ file: 'data/pt-districts.geojson', type: 'geojson', source: 'Portugal district boundaries (open data)',
+  license: 'Open data', attribution: 'none required', verified: true, classification: 'SAFE' });
+add({ file: 'data/pt-concelhos.geojson', type: 'geojson', source: 'CAOP — Carta Administrativa Oficial de Portugal (Direção-Geral do Território) via nmota/caop_GeoJSON; reprojected to WGS84 + simplified',
+  license: 'Open data (DGT)', attribution: 'Direção-Geral do Território (CAOP)', verified: true, classification: 'SAFE' });
+add({ file: 'data/countries.json', type: 'data', source: 'mledoze/countries + World Bank population',
+  license: 'ODbL / public data', attribution: 'mledoze/countries', verified: true, classification: 'SAFE' });
+
 /* 2c) Planet/Sun textures — Solar System Scope (CC BY 4.0) */
 const planetsDir = join(ROOT, 'assets', 'planets');
 for (const f of (existsSync(planetsDir) ? await readdir(planetsDir) : []).filter(x => /\.(jpg|png)$/i.test(x))) {

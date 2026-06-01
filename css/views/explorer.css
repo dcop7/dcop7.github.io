@@ -1947,6 +1947,42 @@ body.light .pt-capital-label .pt-cap-dot {
   flex-shrink: 0;
 }
 
+/* Concelho drilldown — button, back link, wiki link, honest note */
+.pt-drill-btn {
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+  width: 100%; margin: .25rem 0 1rem;
+  padding: .6rem .9rem;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid rgba(var(--accent-rgb),.35); border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: .82rem; font-weight: 600;
+  cursor: pointer; transition: all var(--ease);
+}
+.pt-drill-btn:hover { background: rgba(var(--accent-rgb),.18); border-color: var(--accent); }
+
+.pt-back-btn {
+  display: inline-flex; align-items: center; gap: .35rem;
+  margin-bottom: .85rem; padding: .4rem .8rem;
+  background: var(--card2); color: var(--text2);
+  border: 1px solid var(--border2); border-radius: 50px;
+  font-family: var(--font-sans); font-size: .76rem; font-weight: 600;
+  cursor: pointer; transition: all var(--ease);
+}
+.pt-back-btn:hover { color: var(--accent); border-color: rgba(var(--accent-rgb),.4); background: var(--accent-soft); }
+
+.pt-wiki-link {
+  display: inline-flex; align-items: center;
+  font-size: .8rem; font-weight: 600; color: var(--accent); text-decoration: none;
+  padding: .4rem 0;
+}
+.pt-wiki-link:hover { text-decoration: underline; }
+
+.pt-info-note {
+  margin-top: 1rem; padding: .7rem .85rem;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: .74rem; color: var(--muted); line-height: 1.5;
+}
+
 /* Map marker popups */
 .pt-marker-tooltip {
   background: var(--card-solid);
