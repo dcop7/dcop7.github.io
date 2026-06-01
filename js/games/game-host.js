@@ -144,9 +144,8 @@ const GameHost = (function () {
       btn.addEventListener('click', () => {
         setDifficulty(btn.dataset.diff);
         hub.querySelectorAll('#gh-diff-seg .gh-diff-btn').forEach(b => b.classList.toggle('active', b === btn));
-        /* sync hangman's in-game age display if visible */
-        const hfAgeVal = document.getElementById('hf-age-val');
-        if (hfAgeVal) hfAgeVal.textContent = getGameAge();
+        /* Note: Hangman has its own in-game age selector (independent of this
+           global difficulty); nothing to sync here. */
       });
     });
 

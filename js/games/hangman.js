@@ -1,87 +1,96 @@
 (function () {
   'use strict';
 
-  // ── WORD LISTS BY DIFFICULTY TIER ─────────────────────────────────────
-  const WORDS = {
-    easy: [
-      {w:'GATO',c:'Animal'},{w:'CÃO',c:'Animal'},{w:'SOL',c:'Natureza'},
-      {w:'LUA',c:'Natureza'},{w:'MAR',c:'Natureza'},{w:'PÃO',c:'Comida'},
-      {w:'RIO',c:'Natureza'},{w:'BOLA',c:'Brinquedo'},{w:'CASA',c:'Lugar'},
-      {w:'MESA',c:'Mobília'},{w:'CAMA',c:'Mobília'},{w:'LEÃO',c:'Animal'},
-      {w:'PATO',c:'Animal'},{w:'SAPO',c:'Animal'},{w:'RATO',c:'Animal'},
-      {w:'VACA',c:'Animal'},{w:'URSO',c:'Animal'},{w:'PEIXE',c:'Animal'},
-      {w:'PORTA',c:'Objeto'},{w:'ESCOLA',c:'Lugar'},{w:'AMIGO',c:'Pessoa'},
-      {w:'LIVRO',c:'Objeto'},{w:'COPO',c:'Objeto'},{w:'FLOR',c:'Planta'},
-      {w:'ÁRVORE',c:'Planta'},{w:'PERA',c:'Fruta'},{w:'MAÇÃ',c:'Fruta'},
-      {w:'UVA',c:'Fruta'},{w:'LARANJA',c:'Fruta'},{w:'LÁPIS',c:'Objeto'},
-      {w:'COELHO',c:'Animal'},{w:'BOLO',c:'Comida'},{w:'SUMO',c:'Bebida'},
-      {w:'ÁGUA',c:'Bebida'},{w:'CHUVA',c:'Tempo'},{w:'NUVEM',c:'Tempo'},
-      {w:'NEVE',c:'Tempo'},{w:'VENTO',c:'Tempo'},{w:'PRAIA',c:'Lugar'},
-      {w:'CAMPO',c:'Lugar'},{w:'MOTA',c:'Transporte'},{w:'TREM',c:'Transporte'},
-    ],
-    medium: [
-      {w:'JARDIM',c:'Lugar'},{w:'BARCO',c:'Transporte'},{w:'CARRO',c:'Transporte'},
-      {w:'PONTE',c:'Estrutura'},{w:'MONTE',c:'Natureza'},{w:'JANELA',c:'Objeto'},
-      {w:'CANETA',c:'Objeto'},{w:'MOCHILA',c:'Objeto'},{w:'CHAPÉU',c:'Roupa'},
-      {w:'GELADO',c:'Comida'},{w:'PISCINA',c:'Lugar'},{w:'FUTEBOL',c:'Desporto'},
-      {w:'MÚSICA',c:'Arte'},{w:'TEATRO',c:'Arte'},{w:'BORBOLETA',c:'Animal'},
-      {w:'CARACOL',c:'Animal'},{w:'TARTARUGA',c:'Animal'},{w:'CAVALO',c:'Animal'},
-      {w:'ELEFANTE',c:'Animal'},{w:'GIRAFA',c:'Animal'},{w:'GOLFINHO',c:'Animal'},
-      {w:'PINGUIM',c:'Animal'},{w:'FAMÍLIA',c:'Pessoas'},{w:'CIDADE',c:'Lugar'},
-      {w:'FLORESTA',c:'Natureza'},{w:'CASTELO',c:'Construção'},{w:'BICICLETA',c:'Transporte'},
-      {w:'COMBOIO',c:'Transporte'},{w:'AVIÃO',c:'Transporte'},{w:'FOGUETE',c:'Transporte'},
-      {w:'BALÃO',c:'Objeto'},{w:'ARCO-ÍRIS',c:'Natureza'},{w:'ESTRELA',c:'Astronomia'},
-      {w:'PLANETA',c:'Astronomia'},{w:'OCEANO',c:'Natureza'},{w:'DESERTO',c:'Natureza'},
-      {w:'VULCÃO',c:'Natureza'},{w:'CASCATA',c:'Natureza'},{w:'ILHA',c:'Lugar'},
-      {w:'MONTANHA',c:'Natureza'},{w:'CIRCO',c:'Espetáculo'},{w:'PALHAÇO',c:'Pessoa'},
-    ],
-    hard: [
-      {w:'AVENTURA',c:'Conceito'},{w:'MISTÉRIO',c:'Conceito'},{w:'VIAGEM',c:'Atividade'},
-      {w:'CIÊNCIA',c:'Área'},{w:'PINTURA',c:'Arte'},{w:'COMPUTADOR',c:'Tecnologia'},
-      {w:'PROGRAMA',c:'Tecnologia'},{w:'INTERNET',c:'Tecnologia'},{w:'FOTOGRAFIA',c:'Arte'},
-      {w:'DINOSSAURO',c:'Animal pré-histórico'},{w:'MAMÍFERO',c:'Biologia'},
-      {w:'EXPEDIÇÃO',c:'Aventura'},{w:'AEROPORTO',c:'Lugar'},
-      {w:'HELICÓPTERO',c:'Transporte'},{w:'SUBMARINO',c:'Transporte'},
-      {w:'PIRÂMIDE',c:'Estrutura'},{w:'TRIÂNGULO',c:'Geometria'},
-      {w:'PORTUGAL',c:'País'},{w:'ESPANHA',c:'País'},{w:'EUROPA',c:'Continente'},
-      {w:'TELESCÓPIO',c:'Instrumento'},{w:'MICROSCÓPIO',c:'Instrumento'},
-      {w:'FOTOSSÍNTESE',c:'Biologia'},{w:'METAMORFOSE',c:'Biologia'},
-      {w:'GEOLOGIA',c:'Ciência'},{w:'BIOLOGIA',c:'Ciência'},
-      {w:'QUÍMICA',c:'Ciência'},{w:'HISTÓRIA',c:'Disciplina'},
-      {w:'MATEMÁTICA',c:'Disciplina'},{w:'DEMOCRACIA',c:'Política'},
-      {w:'MONARQUIA',c:'Política'},{w:'CONTINENTE',c:'Geografia'},
-      {w:'ARQUIPÉLAGO',c:'Geografia'},{w:'PRECIPITAÇÃO',c:'Meteorologia'},
-      {w:'ATMOSFERA',c:'Ciência'},{w:'GRAVIDADE',c:'Física'},
-      {w:'ELECTRICIDADE',c:'Física'},{w:'MAGNETISMO',c:'Física'},
-    ],
-    expert: [
-      {w:'FOTOSSÍNTESE',c:'Biologia'},{w:'METAMORFOSE',c:'Biologia'},
-      {w:'HIBERNAÇÃO',c:'Biologia'},{w:'BIODIVERSIDADE',c:'Ambiente'},
-      {w:'ECOSSISTEMA',c:'Ambiente'},{w:'SUSTENTABILIDADE',c:'Ambiente'},
-      {w:'ARQUITECTURA',c:'Arte'},{w:'ESCULTURA',c:'Arte'},
-      {w:'LITERATURA',c:'Arte'},{w:'FILOSOFIA',c:'Ciência'},
-      {w:'ALGORITMO',c:'Tecnologia'},{w:'PROGRAMAÇÃO',c:'Tecnologia'},
-      {w:'INTELIGÊNCIA',c:'Conceito'},{w:'TECNOLOGIA',c:'Área'},
-      {w:'DEMOCRACIA',c:'Política'},{w:'REVOLUÇÃO',c:'História'},
-      {w:'INDEPENDÊNCIA',c:'História'},{w:'CONSTITUIÇÃO',c:'Direito'},
-      {w:'RENASCIMENTO',c:'História'},{w:'ILUMINISMO',c:'História'},
-      {w:'ROMANTISMO',c:'Arte'},{w:'ELETROMAGNETISMO',c:'Física'},
-      {w:'TERMODINÂMICA',c:'Física'},{w:'RADIOATIVIDADE',c:'Física'},
-      {w:'PSICOLOGIA',c:'Ciência'},{w:'SOCIOLOGIA',c:'Ciência'},
-      {w:'ANTROPOLOGIA',c:'Ciência'},{w:'GLOBALIZAÇÃO',c:'Sociedade'},
-      {w:'CAPITALISMO',c:'Economia'},{w:'PARLAMENTARISMO',c:'Política'},
-      {w:'IMPERIALISMO',c:'História'},{w:'COLONIALISMO',c:'História'},
-      {w:'PROBABILIDADE',c:'Matemática'},{w:'RELATIVIDADE',c:'Física'},
-      {w:'CONSCIÊNCIA',c:'Filosofia'},{w:'NEUROCIÊNCIA',c:'Ciência'},
-    ],
-  };
+  /* ── WORD BANK — each word tagged with a difficulty d (1 = easiest … 9 =
+       hardest). The age selector maps to a difficulty window, so every age gets
+       genuinely age-appropriate words. Big bank per level → low repetition. ── */
+  const BANK = [
+    /* d1 — 3–4 letters, very common (≈6 anos) */
+    {w:'GATO',c:'Animal',d:1},{w:'CÃO',c:'Animal',d:1},{w:'SOL',c:'Natureza',d:1},
+    {w:'LUA',c:'Natureza',d:1},{w:'MAR',c:'Natureza',d:1},{w:'PÃO',c:'Comida',d:1},
+    {w:'RIO',c:'Natureza',d:1},{w:'BOLA',c:'Brinquedo',d:1},{w:'CASA',c:'Lugar',d:1},
+    {w:'MESA',c:'Mobília',d:1},{w:'CAMA',c:'Mobília',d:1},{w:'PATO',c:'Animal',d:1},
+    {w:'SAPO',c:'Animal',d:1},{w:'RATO',c:'Animal',d:1},{w:'VACA',c:'Animal',d:1},
+    {w:'URSO',c:'Animal',d:1},{w:'COPO',c:'Objeto',d:1},{w:'FLOR',c:'Planta',d:1},
+    {w:'UVA',c:'Fruta',d:1},{w:'BOLO',c:'Comida',d:1},{w:'SUMO',c:'Bebida',d:1},
+    {w:'NEVE',c:'Tempo',d:1},{w:'PERA',c:'Fruta',d:1},{w:'DEDO',c:'Corpo',d:1},
+    {w:'OVO',c:'Comida',d:1},{w:'PÉ',c:'Corpo',d:1},{w:'MÃO',c:'Corpo',d:1},
+    /* d2 — 4–5 letters, common (≈7 anos) */
+    {w:'LEÃO',c:'Animal',d:2},{w:'PEIXE',c:'Animal',d:2},{w:'PORTA',c:'Objeto',d:2},
+    {w:'LIVRO',c:'Objeto',d:2},{w:'ÁGUA',c:'Bebida',d:2},{w:'CHUVA',c:'Tempo',d:2},
+    {w:'NUVEM',c:'Tempo',d:2},{w:'VENTO',c:'Tempo',d:2},{w:'PRAIA',c:'Lugar',d:2},
+    {w:'CAMPO',c:'Lugar',d:2},{w:'MOTA',c:'Transporte',d:2},{w:'MAÇÃ',c:'Fruta',d:2},
+    {w:'LÁPIS',c:'Objeto',d:2},{w:'AMIGO',c:'Pessoa',d:2},{w:'BARCO',c:'Transporte',d:2},
+    {w:'CARRO',c:'Transporte',d:2},{w:'MONTE',c:'Natureza',d:2},{w:'PONTE',c:'Estrutura',d:2},
+    {w:'QUEIJO',c:'Comida',d:2},{w:'GALO',c:'Animal',d:2},{w:'PORCO',c:'Animal',d:2},
+    {w:'NARIZ',c:'Corpo',d:2},{w:'BOCA',c:'Corpo',d:2},{w:'CÉU',c:'Natureza',d:2},
+    /* d3 — 5–6 letters (≈8 anos) */
+    {w:'ESCOLA',c:'Lugar',d:3},{w:'ÁRVORE',c:'Planta',d:3},{w:'COELHO',c:'Animal',d:3},
+    {w:'LARANJA',c:'Fruta',d:3},{w:'JARDIM',c:'Lugar',d:3},{w:'JANELA',c:'Objeto',d:3},
+    {w:'CANETA',c:'Objeto',d:3},{w:'GELADO',c:'Comida',d:3},{w:'CAVALO',c:'Animal',d:3},
+    {w:'CIDADE',c:'Lugar',d:3},{w:'BALÃO',c:'Objeto',d:3},{w:'ILHA',c:'Lugar',d:3},
+    {w:'CIRCO',c:'Espetáculo',d:3},{w:'CHAPÉU',c:'Roupa',d:3},{w:'CARACOL',c:'Animal',d:3},
+    {w:'BANANA',c:'Fruta',d:3},{w:'SAPATO',c:'Roupa',d:3},{w:'CEBOLA',c:'Comida',d:3},
+    {w:'COMETA',c:'Astronomia',d:3},{w:'ABELHA',c:'Animal',d:3},{w:'CABRA',c:'Animal',d:3},
+    /* d4 — 6–7 letters (≈9 anos) */
+    {w:'MOCHILA',c:'Objeto',d:4},{w:'PISCINA',c:'Lugar',d:4},{w:'FUTEBOL',c:'Desporto',d:4},
+    {w:'MÚSICA',c:'Arte',d:4},{w:'TEATRO',c:'Arte',d:4},{w:'GIRAFA',c:'Animal',d:4},
+    {w:'PINGUIM',c:'Animal',d:4},{w:'FAMÍLIA',c:'Pessoas',d:4},{w:'CASTELO',c:'Construção',d:4},
+    {w:'COMBOIO',c:'Transporte',d:4},{w:'AVIÃO',c:'Transporte',d:4},{w:'FOGUETE',c:'Transporte',d:4},
+    {w:'ESTRELA',c:'Astronomia',d:4},{w:'PLANETA',c:'Astronomia',d:4},{w:'OCEANO',c:'Natureza',d:4},
+    {w:'DESERTO',c:'Natureza',d:4},{w:'VULCÃO',c:'Natureza',d:4},{w:'CASCATA',c:'Natureza',d:4},
+    {w:'PALHAÇO',c:'Pessoa',d:4},{w:'GUITARRA',c:'Instrumento',d:4},{w:'JANEIRO',c:'Mês',d:4},
+    /* d5 — 7–9 letters (≈10 anos) */
+    {w:'BORBOLETA',c:'Animal',d:5},{w:'TARTARUGA',c:'Animal',d:5},{w:'ELEFANTE',c:'Animal',d:5},
+    {w:'GOLFINHO',c:'Animal',d:5},{w:'FLORESTA',c:'Natureza',d:5},{w:'BICICLETA',c:'Transporte',d:5},
+    {w:'MONTANHA',c:'Natureza',d:5},{w:'AVENTURA',c:'Conceito',d:5},{w:'VIAGEM',c:'Atividade',d:5},
+    {w:'PINTURA',c:'Arte',d:5},{w:'PORTUGAL',c:'País',d:5},{w:'ESPANHA',c:'País',d:5},
+    {w:'EUROPA',c:'Continente',d:5},{w:'BIBLIOTECA',c:'Lugar',d:5},{w:'CALENDÁRIO',c:'Objeto',d:5},
+    {w:'ESQUELETO',c:'Corpo',d:5},{w:'RELÂMPAGO',c:'Tempo',d:5},{w:'TEMPESTADE',c:'Tempo',d:5},
+    /* d6 — harder vocab (≈11 anos) */
+    {w:'MISTÉRIO',c:'Conceito',d:6},{w:'CIÊNCIA',c:'Área',d:6},{w:'COMPUTADOR',c:'Tecnologia',d:6},
+    {w:'PROGRAMA',c:'Tecnologia',d:6},{w:'INTERNET',c:'Tecnologia',d:6},{w:'FOTOGRAFIA',c:'Arte',d:6},
+    {w:'DINOSSAURO',c:'Pré-história',d:6},{w:'MAMÍFERO',c:'Biologia',d:6},{w:'AEROPORTO',c:'Lugar',d:6},
+    {w:'SUBMARINO',c:'Transporte',d:6},{w:'PIRÂMIDE',c:'Estrutura',d:6},{w:'TRIÂNGULO',c:'Geometria',d:6},
+    {w:'GEOLOGIA',c:'Ciência',d:6},{w:'BIOLOGIA',c:'Ciência',d:6},{w:'QUÍMICA',c:'Ciência',d:6},
+    {w:'HISTÓRIA',c:'Disciplina',d:6},{w:'ORQUESTRA',c:'Música',d:6},{w:'CONTINENTE',c:'Geografia',d:6},
+    /* d7 — (≈12 anos) */
+    {w:'EXPEDIÇÃO',c:'Aventura',d:7},{w:'HELICÓPTERO',c:'Transporte',d:7},{w:'TELESCÓPIO',c:'Instrumento',d:7},
+    {w:'MICROSCÓPIO',c:'Instrumento',d:7},{w:'FOTOSSÍNTESE',c:'Biologia',d:7},{w:'METAMORFOSE',c:'Biologia',d:7},
+    {w:'MATEMÁTICA',c:'Disciplina',d:7},{w:'DEMOCRACIA',c:'Política',d:7},{w:'MONARQUIA',c:'Política',d:7},
+    {w:'ARQUIPÉLAGO',c:'Geografia',d:7},{w:'ATMOSFERA',c:'Ciência',d:7},{w:'GRAVIDADE',c:'Física',d:7},
+    {w:'MAGNETISMO',c:'Física',d:7},{w:'HIBERNAÇÃO',c:'Biologia',d:7},{w:'ECOSSISTEMA',c:'Ambiente',d:7},
+    {w:'ESCULTURA',c:'Arte',d:7},{w:'ALGORITMO',c:'Tecnologia',d:7},{w:'LITERATURA',c:'Arte',d:7},
+    /* d8 — (≈13 anos) */
+    {w:'PRECIPITAÇÃO',c:'Meteorologia',d:8},{w:'ELECTRICIDADE',c:'Física',d:8},{w:'BIODIVERSIDADE',c:'Ambiente',d:8},
+    {w:'SUSTENTABILIDADE',c:'Ambiente',d:8},{w:'ARQUITECTURA',c:'Arte',d:8},{w:'FILOSOFIA',c:'Ciência',d:8},
+    {w:'PROGRAMAÇÃO',c:'Tecnologia',d:8},{w:'INTELIGÊNCIA',c:'Conceito',d:8},{w:'REVOLUÇÃO',c:'História',d:8},
+    {w:'INDEPENDÊNCIA',c:'História',d:8},{w:'CONSTITUIÇÃO',c:'Direito',d:8},{w:'RENASCIMENTO',c:'História',d:8},
+    {w:'PROBABILIDADE',c:'Matemática',d:8},{w:'PSICOLOGIA',c:'Ciência',d:8},{w:'SOCIOLOGIA',c:'Ciência',d:8},
+    /* d9 — most demanding (≈14+) */
+    {w:'ILUMINISMO',c:'História',d:9},{w:'ROMANTISMO',c:'Arte',d:9},{w:'ELETROMAGNETISMO',c:'Física',d:9},
+    {w:'TERMODINÂMICA',c:'Física',d:9},{w:'RADIOATIVIDADE',c:'Física',d:9},{w:'ANTROPOLOGIA',c:'Ciência',d:9},
+    {w:'GLOBALIZAÇÃO',c:'Sociedade',d:9},{w:'CAPITALISMO',c:'Economia',d:9},{w:'PARLAMENTARISMO',c:'Política',d:9},
+    {w:'IMPERIALISMO',c:'História',d:9},{w:'COLONIALISMO',c:'História',d:9},{w:'RELATIVIDADE',c:'Física',d:9},
+    {w:'CONSCIÊNCIA',c:'Filosofia',d:9},{w:'NEUROCIÊNCIA',c:'Ciência',d:9},{w:'PALEONTOLOGIA',c:'Ciência',d:9},
+  ];
 
-  function tierFor(age) {
-    const a = +age;
-    if (a <= 7)  return 'easy';
-    if (a <= 9)  return 'medium';
-    if (a <= 12) return 'hard';
-    return 'expert';
+  /* Each supported age (6…14) maps to a window of difficulties to draw from, so
+     words feel right for that age while still varying. 14 = "14+". */
+  const AGE_WINDOW = {
+    6:  [1, 2],
+    7:  [1, 2, 3],
+    8:  [2, 3, 4],
+    9:  [3, 4, 5],
+    10: [4, 5, 6],
+    11: [5, 6, 7],
+    12: [6, 7, 8],
+    13: [7, 8, 9],
+    14: [8, 9],
+  };
+  function poolFor(age) {
+    const win = AGE_WINDOW[age] || AGE_WINDOW[8];
+    return BANK.filter(item => win.includes(item.d));
   }
 
   // ── GALLOWS PARTS ─────────────────────────────────────────────────
@@ -94,10 +103,19 @@
   let guessed = new Set();
   let wrongCount = 0;
   let gameOver = false;
-  let currentAge = parseInt(localStorage.getItem('game-age-default') || '8', 10);
+  /* Hangman has its OWN age (6–14), independent of the global game difficulty
+     that drives the other games. Persisted under 'hangman-age'. */
+  const AGES = [6, 7, 8, 9, 10, 11, 12, 13, 14];
+  function _loadAge() {
+    const a = parseInt(localStorage.getItem('hangman-age'), 10);
+    return AGES.includes(a) ? a : 8;
+  }
+  let currentAge = _loadAge();
 
-  const _recentWords = { easy: [], medium: [], hard: [], expert: [] };
-  const AVOID_REPEAT = 8;
+  /* Anti-repeat: remember recently-played words (persisted) and avoid them until
+     most of the current age's pool has been used. Dynamic, not repetitive. */
+  let _recentWords = [];
+  try { _recentWords = JSON.parse(localStorage.getItem('hangman-recent') || '[]') || []; } catch (e) {}
 
   // ── DOM REFS ──────────────────────────────────────────────────────
   const wordRow   = document.getElementById('hf-word-row');
@@ -205,18 +223,20 @@
   }
 
   function newGame() {
-    currentAge = parseInt(localStorage.getItem('game-age-default') || '8', 10);
-    const ageEl = document.getElementById('hf-age-val');
-    if (ageEl) ageEl.textContent = currentAge;
-    const tier = tierFor(currentAge);
-    const pool = WORDS[tier];
-    const recent = _recentWords[tier] || [];
-    let available = pool.filter(item => !recent.includes(item.w));
-    if (available.length === 0) available = pool;
+    currentAge = _loadAge();
+    const sel = document.getElementById('hf-age-sel');
+    if (sel && +sel.value !== currentAge) sel.value = String(currentAge);
+
+    const pool = poolFor(currentAge);
+    /* Keep the avoid-list shorter than the pool so there's always real choice,
+       but large enough that words don't recur for a long time. */
+    const avoidMax = Math.max(0, pool.length - 4);
+    let available = pool.filter(item => !_recentWords.includes(item.w));
+    if (available.length === 0) { _recentWords = []; available = pool; }
     const entry = rand(available);
-    recent.push(entry.w);
-    if (recent.length > AVOID_REPEAT) recent.shift();
-    _recentWords[tier] = recent;
+    _recentWords.push(entry.w);
+    while (_recentWords.length > avoidMax) _recentWords.shift();
+    try { localStorage.setItem('hangman-recent', JSON.stringify(_recentWords)); } catch (e) {}
 
     currentWord = entry.w.toUpperCase();
     currentCat  = entry.c;
@@ -252,5 +272,21 @@
   });
 
   newBtn.addEventListener('click', newGame);
+
+  /* In-game age selector — only this game. Changing it starts a fresh word at
+     the new age and persists the choice (does NOT touch other games). */
+  const ageSel = document.getElementById('hf-age-sel');
+  if (ageSel) {
+    ageSel.value = String(currentAge);
+    ageSel.addEventListener('change', () => {
+      const a = parseInt(ageSel.value, 10);
+      if (!AGES.includes(a)) return;
+      currentAge = a;
+      try { localStorage.setItem('hangman-age', String(a)); } catch (e) {}
+      _recentWords = [];   /* reset avoid-list so the new age pool is fully fresh */
+      newGame();
+    });
+  }
+
   newGame();
 })();

@@ -39,6 +39,18 @@
 .hf-age-wrap { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 .hf-age-lbl { font-size: .72rem; color: var(--muted); }
 .hf-age-val { font-size: .68rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(var(--accent-rgb),.3); padding: .22rem .5rem; border-radius: 5px; }
+.hf-age-sel {
+  font-size: .74rem; font-weight: 600; font-family: var(--font-sans);
+  color: var(--accent); background: var(--accent-soft);
+  border: 1px solid rgba(var(--accent-rgb),.35); border-radius: 6px;
+  padding: .26rem 1.4rem .26rem .55rem; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236366f1' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right .5rem center;
+}
+.hf-age-sel:hover { border-color: var(--accent); }
+.hf-age-sel:focus { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.hf-age-sel option { background: var(--card-solid); color: var(--text); }
 .hf-body { display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; align-items: start; }
 .hf-gallows-col { display: flex; flex-direction: column; align-items: center; gap: .5rem; width: 140px; flex-shrink: 0; }
 .hf-svg { stroke: var(--text2); stroke-width: 2.5; stroke-linecap: round; width: 130px; height: 185px; flex-shrink: 0; }
