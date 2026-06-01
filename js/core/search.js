@@ -7,11 +7,14 @@ const Search = (function () {
   const SECTIONS = [
     { label: 'Início',       id: 'home',         icon: '🏠', tags: ['início','home','dashboard','início'] },
     { label: 'Feed',         id: 'feed',         icon: '📰', tags: ['feed','hacker news','hn','rss','noticias','tech','news'] },
-    { label: 'Cheatsheets',  id: 'cheatsheets',  icon: '📋', tags: ['cheatsheets','git','linux','docker','vim','bash','regex','claude','comandos','atalhos'] },
+    { label: 'Cheatsheets',  id: 'cheatsheets',  icon: '📋', tags: ['cheatsheets','git','linux','docker','kubernetes','k8s','vim','bash','regex','claude','javascript','python','css','http','npm','sql','postgresql','sqlserver','sql server','oracle','mongodb','redis','valkey','prometheus','promql','windows','comandos','atalhos'] },
     { label: 'Jogos',        id: 'games',        icon: '🎮', tags: ['jogos','games','jogar'] },
     { label: 'Sites Úteis',  id: 'links',        icon: '🔗', tags: ['sites','links','úteis'] },
     { label: 'Ferramentas',  id: 'tools',        icon: '🛠️', tags: ['ferramentas','temporizador','cronómetro','timer','stopwatch','pomodoro','produtividade','ampulheta'] },
     { label: 'Treino',       id: 'workout',      icon: '💪', tags: ['treino','workout','exercício','fitness','cardio','força','core'] },
+    { label: 'Explorar',     id: 'explorer',         icon: '🌍', tags: ['explorar','explore','mapa','map','globo','globe','países','countries','mundo','world','portugal','distritos'] },
+    { label: 'Sistema Solar',id: 'explorer/solar',   icon: '☀', tags: ['sistema solar','solar system','planetas','planets','cometas','comets','asteroides','asteroids','satélites','iss','sol','sun','lua'] },
+    { label: 'Via Láctea',   id: 'explorer/galaxy',  icon: '🌌', tags: ['via láctea','milky way','galáxia','galaxy','galaxias','constelações','constellations','estrelas','stars','nebulosas','nebulae','andrómeda','andromeda','espaço','space'] },
   ];
 
   const GAMES = [

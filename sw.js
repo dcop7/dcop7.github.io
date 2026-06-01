@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v43';
+const CACHE = 'dcop7-v46';
 const STATIC = [
   '/',
   '/index.html',
@@ -18,8 +18,10 @@ const STATIC = [
   '/js/core/parallax.js',
   /* Explorer */
   '/js/explorer/explorer.js',
+  '/js/explorer/pt-concelhos-info.js',
   '/js/explorer/explorer-portugal.js',
   '/js/explorer/explorer-solar.js',
+  '/js/explorer/explorer-galaxy.js',
   '/js/explorer/ocorrencias.js',
   /* Pages */
   '/js/pages/links-data.js',
