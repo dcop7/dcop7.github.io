@@ -287,6 +287,14 @@ const ExplorerPage = (function () {
      with English common name as a safe fallback. */
   function _cName(c) { return c ? (c.namePt || (c.name && c.name.common) || c.cca3 || '') : ''; }
 
+  /* Flag as a local SVG <img> (data/flags/<cca2>.svg). Emoji flags don't render
+     on Chrome/Windows (no colour flag font) — these do, in every browser. */
+  function _flagImg(c, cls) {
+    const code = (c && c.cca2 || '').toLowerCase();
+    if (!code) return '';
+    return `<img class="${cls || 'ex-flag-img'}" src="data/flags/${code}.svg" alt="" loading="lazy" onerror="this.style.display='none'">`;
+  }
+
   /* ── Globe hover: OWN deterministic hit-testing ──────────────────────────
      globe.gl's built-in polygon raycaster is unreliable for this dataset — over
      open ocean it still reports the nearest tiny polygon (Bermuda, from the
@@ -374,7 +382,7 @@ const ExplorerPage = (function () {
     if (!tip) return;
     if (!c) { tip.hidden = true; return; }
     const cont = _CONT_PT[(c.continents || [])[0]] || c.regionPt || '';
-    tip.innerHTML = `<span class="ex-gt-flag">${c.flag || '🏳'}</span><span class="ex-gt-name">${_cName(c)}</span>${cont ? `<span class="ex-gt-cont">${cont}</span>` : ''}`;
+    tip.innerHTML = `${_flagImg(c, 'ex-gt-flag-img')}<span class="ex-gt-name">${_cName(c)}</span>${cont ? `<span class="ex-gt-cont">${cont}</span>` : ''}`;
     if (x != null) { tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
     tip.hidden = false;
   }
@@ -407,13 +415,13 @@ const ExplorerPage = (function () {
     const density = (country.area > 0 && country.population > 0)
       ? Math.round(country.population / country.area).toLocaleString('pt') + ' hab/km²' : '—';
     const isFave  = _favorites.includes(country.cca3);
-    const flag    = country.flags?.svg || country.flags?.png || '';
+    const flag    = (country.cca2 ? `data/flags/${country.cca2.toLowerCase()}.svg` : '') || country.flags?.svg || country.flags?.png || '';
     const facts   = _countryFacts(country);
     /* Resolve neighbour codes to {flag, name} for richer border chips. */
     const byCca3  = (_byCca3 && Object.keys(_byCca3).length) ? _byCca3 : _byCode();
     const neighbours = (country.borders || []).map(code => {
       const n = byCca3[code];
-      return { code, name: _cName(n) || code, flag: n?.flag || '' };
+      return { code, name: _cName(n) || code, flag: n ? _flagImg(n, 'ex-border-chip-flag-img') : '' };
     });
 
     panel.innerHTML = `
@@ -459,7 +467,7 @@ const ExplorerPage = (function () {
         ${neighbours.length ? `
           <div class="ex-panel-borders-label">Países vizinhos (${neighbours.length})</div>
           <div class="ex-panel-borders">
-            ${neighbours.map(n => `<button class="ex-panel-border-chip" data-cca3="${n.code}">${n.flag ? `<span class="ex-border-chip-flag">${n.flag}</span>` : ''}${n.name}</button>`).join('')}
+            ${neighbours.map(n => `<button class="ex-panel-border-chip" data-cca3="${n.code}">${n.flag}${n.name}</button>`).join('')}
           </div>`
           : `<div class="ex-panel-borders-label">Fronteiras</div>
              <div class="ex-panel-island-note">🏝 Sem fronteiras terrestres${country.area && country.area < 1000000 ? ' — nação ilha' : ''}.</div>`}
@@ -529,7 +537,7 @@ const ExplorerPage = (function () {
             <div class="ex-section-label">Visto recentemente</div>
             <div class="ex-chips-row">
               ${recents.map(c => `<button class="ex-country-chip" data-cca3="${c.cca3}">
-                <span class="ex-country-chip-flag">${c.flag || ''}</span>${_cName(c)}</button>`).join('')}
+                ${_flagImg(c, 'ex-country-chip-flag-img')}${_cName(c)}</button>`).join('')}
             </div>
           </div>` : ''}
         ${faves.length ? `
@@ -537,7 +545,7 @@ const ExplorerPage = (function () {
             <div class="ex-section-label">Favoritos</div>
             <div class="ex-chips-row">
               ${faves.map(c => `<button class="ex-country-chip" data-cca3="${c.cca3}">
-                <span class="ex-country-chip-flag">${c.flag || ''}</span>${_cName(c)}</button>`).join('')}
+                ${_flagImg(c, 'ex-country-chip-flag-img')}${_cName(c)}</button>`).join('')}
             </div>
           </div>` : ''}
       </div>`;
@@ -818,7 +826,7 @@ const ExplorerPage = (function () {
             keyboard: false,
             icon: L.divIcon({
               className: 'ex-country-label',
-              html: `<span class="ex-cl-flag">${c.flag || ''}</span><span class="ex-cl-name">${_cName(c)}</span>`,
+              html: `${_flagImg(c, 'ex-cl-flag-img')}<span class="ex-cl-name">${_cName(c)}</span>`,
               iconSize: [0, 0],
             }),
           });
@@ -883,7 +891,7 @@ const ExplorerPage = (function () {
       results._hits = hits;
       results.innerHTML = hits.map((c, i) => `
         <div class="ex-search-result" data-i="${i}">
-          <span class="ex-search-result-flag">${c.flag || ''}</span>
+          ${_flagImg(c, 'ex-search-result-flag-img')}
           <span class="ex-search-result-name">${_cName(c)}</span>
           <span class="ex-search-result-region">${(c.continents || [])[0] || ''}</span>
         </div>`).join('');
@@ -1001,10 +1009,14 @@ const ExplorerPage = (function () {
 
     /* Country labels ranked by population (major countries first) — fed to the
        globe progressively by zoom level so they never clutter the view. */
+    /* three-globe renders WebGL labels with a basic-Latin typeface (helvetiker),
+       which has no ç/ã/é… glyphs — they'd show as "?". Strip accents for the
+       3D labels only; the tooltip + panels keep the full accented names. */
+    const _asciiLabel = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
     _globeLabels = _countries
       .filter(c => Array.isArray(c.latlng) && c.latlng.length === 2 && (c.population || 0) > 0)
       .sort((a, b) => (b.population || 0) - (a.population || 0))
-      .map(c => ({ lat: c.latlng[0], lng: c.latlng[1], text: _cName(c) }));
+      .map(c => ({ lat: c.latlng[0], lng: c.latlng[1], text: _asciiLabel(_cName(c)) }));
 
     /* Political world-map-on-a-sphere: every country is filled with its
        continent colour, selection/hover stand out, borders always visible. */

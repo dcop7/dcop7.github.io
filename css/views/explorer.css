@@ -904,6 +904,23 @@ body.light .ex-country-label {
 .ex-globe-tooltip[hidden] { display: none; }
 .ex-gt-flag { font-size: 1.05rem; line-height: 1; }
 .ex-gt-name { font-weight: 700; }
+
+/* Local SVG flag images (cross-browser; emoji flags don't render on Chrome/Win) */
+.ex-flag-img,
+.ex-gt-flag-img,
+.ex-country-chip-flag-img,
+.ex-border-chip-flag-img,
+.ex-search-result-flag-img,
+.ex-cl-flag-img {
+  width: 1.15em; height: auto; border-radius: 2px;
+  display: inline-block; vertical-align: middle;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+  object-fit: cover;
+}
+.ex-gt-flag-img { width: 1.35em; margin-right: .1rem; }
+.ex-country-chip-flag-img, .ex-border-chip-flag-img { margin-right: .35rem; }
+.ex-search-result-flag-img { width: 1.4em; }
+.ex-cl-flag-img { width: 1em; margin-right: .25rem; }
 .ex-gt-cont {
   font-size: .68rem;
   color: var(--muted);
