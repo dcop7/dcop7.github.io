@@ -53,22 +53,20 @@ dcop7.github.io/
 │           ├── audio.js       ← Web Audio API sound primitives
 │           ├── input.js       ← keyboard tracker + touch D-pad
 │           └── storage.js     ← per-game highscore/level/prefs
-├── i18n.js                    ← internationalization (PT/EN)
-├── nav.js                     ← routing, sidebar, mobile nav
-├── main.js                    ← home view, widgets, clock
-├── tools.js                   ← all tools logic
-├── game-host.js               ← game registry + lazy init
-├── links-page.js              ← links view
-├── cheatsheets.js             ← cheatsheets view
-├── photography.js             ← photography calculators + color wheel
-├── workout.js                 ← workout library + player
-├── media.js                   ← media tracker
-├── visual.js                  ← whiteboard, Eisenhower, SWOT
-├── settings.js                ← settings panel
-├── search.js                  ← global search dropdown
-├── command-palette.js         ← Cmd+K command palette
-└── [game-*.js]                ← individual game implementations
+├── js/                        ← all application modules, grouped by area
+│   ├── core/                  ← i18n, nav, main, search, settings, parallax, command-palette
+│   ├── games/                 ← game-host + every game implementation (game-*.js, hangman, …)
+│   ├── quiz/                  ← quiz-engine, quiz-data (loader), quiz-providers, quiz-page
+│   ├── explorer/              ← explorer (world map/globe), explorer-portugal, explorer-solar, ocorrencias
+│   └── pages/                 ← tools, cheatsheets, photography, workout, media, visual, links-*, rss
+├── quizzes/                   ← offline question database: {easy,medium,hard}/{category}.json
+├── data/                      ← bundled GeoJSON + country data (offline-first)
+└── sw.js                      ← service worker (stays at root for scope)
 ```
+
+> `i18n.js` loads in `<head>` (so the language is set before render); all other
+> modules load with `defer` at the end of `<body>`. Load order in `index.html`
+> still handles dependencies (no ES module imports).
 
 ### Module pattern
 

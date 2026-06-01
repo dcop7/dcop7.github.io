@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="css/views/quiz.css"/>
 <link rel="stylesheet" href="css/views/explorer.css"/>
 <link rel="stylesheet" href="css/views/ocorrencias.css"/>
-<script src="i18n.js"></script>
+<script src="js/core/i18n.js"></script>
 </head>
 <body>
 
@@ -370,6 +370,7 @@
   </div>
 </nav>
 
+<!-- Shared engine helpers -->
 <script src="src/core/store.js" defer></script>
 <script src="src/core/events.js" defer></script>
 <script src="src/games/engine/canvas.js" defer></script>
@@ -377,49 +378,54 @@
 <script src="src/games/engine/audio.js" defer></script>
 <script src="src/games/engine/input.js" defer></script>
 <script src="src/games/engine/storage.js" defer></script>
-<script src="links-data.js" defer></script>
-<script src="game-wordle.js" defer></script>
-<script src="minesweeper.js" defer></script>
-<script src="bomb.js" defer></script>
-<script src="game-memory.js" defer></script>
-<script src="game-tictactoe.js" defer></script>
-<script src="game-shooting.js" defer></script>
-<script src="game-reaction.js" defer></script>
-<script src="game-neon.js" defer></script>
-<script src="game-escape-lab.js" defer></script>
-<script src="game-cipher-grid.js" defer></script>
-<script src="game-robot-repair.js" defer></script>
-<script src="game-space-code.js" defer></script>
-<script src="game-math-detective.js" defer></script>
-<script src="game-treasure-vault.js" defer></script>
-<script src="game-cyber-maze.js" defer></script>
-<script src="game-neon-shooter.js" defer></script>
-<script src="game-sky-hopper.js" defer></script>
-<script src="game-gravity-lab.js" defer></script>
-<script src="game-chain-reaction.js" defer></script>
-<script src="game-bridge-builder.js" defer></script>
-<script src="game-host.js" defer></script>
-<script src="hangman.js" defer></script>
-<script src="main.js" defer></script>
-<script src="links-page.js" defer></script>
-<script src="search.js" defer></script>
-<script src="tools.js" defer></script>
-<script src="visual.js" defer></script>
-<script src="photography.js" defer></script>
-<script src="settings.js" defer></script>
-<script src="workout.js" defer></script>
-<script src="media.js" defer></script>
-<script src="cheatsheets.js" defer></script>
-<script src="quiz-engine.js" defer></script>
-<script src="quiz-data.js" defer></script>
-<script src="quiz-providers.js" defer></script>
-<script src="quiz-page.js" defer></script>
-<script src="parallax.js" defer></script>
-<script src="explorer-portugal.js" defer></script>
-<script src="explorer.js" defer></script>
-<script src="explorer-solar.js" defer></script>
-<script src="ocorrencias.js" defer></script>
-<script src="nav.js" defer></script>
+<!-- Pages -->
+<script src="js/pages/links-data.js" defer></script>
+<!-- Games -->
+<script src="js/games/game-wordle.js" defer></script>
+<script src="js/games/minesweeper.js" defer></script>
+<script src="js/games/bomb.js" defer></script>
+<script src="js/games/game-memory.js" defer></script>
+<script src="js/games/game-tictactoe.js" defer></script>
+<script src="js/games/game-shooting.js" defer></script>
+<script src="js/games/game-reaction.js" defer></script>
+<script src="js/games/game-neon.js" defer></script>
+<script src="js/games/game-escape-lab.js" defer></script>
+<script src="js/games/game-cipher-grid.js" defer></script>
+<script src="js/games/game-robot-repair.js" defer></script>
+<script src="js/games/game-space-code.js" defer></script>
+<script src="js/games/game-math-detective.js" defer></script>
+<script src="js/games/game-treasure-vault.js" defer></script>
+<script src="js/games/game-cyber-maze.js" defer></script>
+<script src="js/games/game-neon-shooter.js" defer></script>
+<script src="js/games/game-sky-hopper.js" defer></script>
+<script src="js/games/game-gravity-lab.js" defer></script>
+<script src="js/games/game-chain-reaction.js" defer></script>
+<script src="js/games/game-bridge-builder.js" defer></script>
+<script src="js/games/game-host.js" defer></script>
+<script src="js/games/hangman.js" defer></script>
+<!-- Core -->
+<script src="js/core/main.js" defer></script>
+<script src="js/pages/links-page.js" defer></script>
+<script src="js/core/search.js" defer></script>
+<script src="js/pages/tools.js" defer></script>
+<script src="js/pages/visual.js" defer></script>
+<script src="js/pages/photography.js" defer></script>
+<script src="js/core/settings.js" defer></script>
+<script src="js/pages/workout.js" defer></script>
+<script src="js/pages/media.js" defer></script>
+<script src="js/pages/cheatsheets.js" defer></script>
+<!-- Quiz -->
+<script src="js/quiz/quiz-engine.js" defer></script>
+<script src="js/quiz/quiz-data.js" defer></script>
+<script src="js/quiz/quiz-providers.js" defer></script>
+<script src="js/quiz/quiz-page.js" defer></script>
+<!-- Explorer -->
+<script src="js/core/parallax.js" defer></script>
+<script src="js/explorer/explorer-portugal.js" defer></script>
+<script src="js/explorer/explorer.js" defer></script>
+<script src="js/explorer/explorer-solar.js" defer></script>
+<script src="js/explorer/ocorrencias.js" defer></script>
+<script src="js/core/nav.js" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
