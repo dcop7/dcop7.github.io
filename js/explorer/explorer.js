@@ -169,6 +169,21 @@ const ExplorerPage = (function () {
 
   function _isDark() { return !document.body.classList.contains('light'); }
 
+  /* ── Language (follows the site's I18n: 'pt' | 'en') ── */
+  function _lang() { return (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt'); }
+  /* _t(en, pt): pick the string for the active language. */
+  function _t(en, pt) { return _lang() === 'en' ? en : pt; }
+  function _wikiLang() { return _lang() === 'en' ? 'en' : 'pt'; }
+  function _locale() { return _lang() === 'en' ? 'en' : 'pt'; }
+
+  /* Localised continent / region name for a country. */
+  const _CONT_EN = { 'Africa':'Africa','Asia':'Asia','Europe':'Europe','North America':'North America','South America':'South America','Oceania':'Oceania','Antarctica':'Antarctica' };
+  function _contName(c) {
+    const k = (c?.continents || [])[0] || '';
+    if (_lang() === 'en') return _CONT_EN[k] || k || '';
+    return _CONT_PT[k] || c?.regionPt || k || '';
+  }
+
   function _cartoPoliticalUrl() {
     return _isDark() ? MAP_TILES.political.dark : MAP_TILES.political.light;
   }
@@ -214,7 +229,7 @@ const ExplorerPage = (function () {
     if (btn) {
       const on = _favorites.includes(cca3);
       btn.classList.toggle('active', on);
-      btn.innerHTML = `<span class="ex-fave-btn-icon">${on ? '❤' : '🤍'}</span> ${on ? 'Guardado' : 'Favorito'}`;
+      btn.innerHTML = `<span class="ex-fave-btn-icon">${on ? '❤' : '🤍'}</span> ${on ? _t('Saved', 'Guardado') : _t('Favourite', 'Favorito')}`;
     }
     _updateGlobeColors?.();
   }
@@ -232,24 +247,37 @@ const ExplorerPage = (function () {
     return r.json();
   }
 
-  /* Wikipedia summary → short excerpt + lead image (Wikimedia Commons,
-     freely-licensed). Returns { text, image } (either may be null). */
-  async function _fetchWiki(name) {
-    const key = `ex-wiki-pt-${name}`;
+  /* Wikipedia REST summary for a title in the given language. Returns
+     { text, url } — text/url are null when the page doesn't exist (404).
+     Cached per (lang, title) in sessionStorage so re-opens are instant and
+     we never hit the API twice for the same thing in a session. */
+  async function _wikiSummary(title, lang, maxLen) {
+    const wl = lang || _wikiLang();
+    const key = `ex-wiki-${wl}-${title}`;
     try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
+    let out = { text: null, url: null };
     try {
-      /* PT Wikipedia so the excerpt is in European Portuguese, not English. */
-      const r = await _fetchTimeout(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`, 6000);
+      const r = await _fetchTimeout(`https://${wl}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, 6000);
       const d = await r.json();
-      const text = d.extract_html
-        ? d.extract_html.replace(/<[^>]+>/g, '').slice(0, 300)
-        : (d.extract || '').slice(0, 300);
-      const image = (d.thumbnail && d.thumbnail.source) || null;
-      const out = { text: text || null, image };
-      try { sessionStorage.setItem(key, JSON.stringify(out)); } catch (e) {}
-      return out;
-    } catch (e) { return { text: null, image: null }; }
+      if (d && d.type !== 'https://mediawiki.org/wiki/HyperSwitch/errors/not_found' && (d.extract || d.extract_html)) {
+        const raw = d.extract_html ? d.extract_html.replace(/<[^>]+>/g, '') : (d.extract || '');
+        out = {
+          text: raw ? raw.slice(0, maxLen || 360) : null,
+          url: (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || null,
+        };
+      }
+    } catch (e) { /* offline / 404 → null excerpt, link fallback used */ }
+    try { sessionStorage.setItem(key, JSON.stringify(out)); } catch (e) {}
+    return out;
   }
+  /* Back-compat: country lead excerpt in the active language. */
+  async function _fetchWiki(name) {
+    const s = await _wikiSummary(name, _wikiLang(), 320);
+    return { text: s.text, image: null };
+  }
+  /* Wikipedia article URL (or search URL) for a title in the active language. */
+  function _wikiUrl(title)   { return `https://${_wikiLang()}.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`; }
+  function _wikiSearchUrl(q) { return `https://${_wikiLang()}.wikipedia.org/w/index.php?search=${encodeURIComponent(q)}`; }
 
   async function _loadLeaflet() {
     if (window.L) return;
@@ -269,23 +297,36 @@ const ExplorerPage = (function () {
   /* ════════════════════════════════ COUNTRY PANEL ══════════════════ */
   function _countryFacts(c) {
     const facts = [];
+    const loc = _locale();
+    const nf = n => (n || 0).toLocaleString(loc);
     const langs = Object.values(c.languages || {});
-    if (langs.length >= 3) facts.push(`Tem ${langs.length} línguas oficiais.`);
-    if (c.area > 1000000) facts.push(`Um dos 20 maiores países do mundo por área.`);
-    if (c.population > 100000000) facts.push(`Com mais de ${Math.round(c.population / 1e6)} milhões de habitantes.`);
-    if ((c.borders || []).length === 0 && c.area < 1000000) facts.push(`Nação ilha — sem fronteiras terrestres.`);
-    if ((c.timezones || []).length > 3) facts.push(`Abrange ${c.timezones.length} fusos horários.`);
+    const borders = c.borders || [];
+    const tz = c.timezones || [];
+    if (langs.length >= 3) facts.push(_t(`Has ${langs.length} official languages.`, `Tem ${langs.length} línguas oficiais.`));
+    if (c.area > 1000000) facts.push(_t(`One of the 20 largest countries by area.`, `Um dos 20 maiores países do mundo por área.`));
+    if (c.population > 100000000) facts.push(_t(`Home to over ${Math.round(c.population / 1e6)} million people.`, `Com mais de ${Math.round(c.population / 1e6)} milhões de habitantes.`));
+    if (borders.length === 0 && c.area < 1000000) facts.push(_t(`Island nation — no land borders.`, `Nação ilha — sem fronteiras terrestres.`));
+    if (borders.length >= 7) facts.push(_t(`Shares land borders with ${borders.length} countries.`, `Faz fronteira terrestre com ${borders.length} países.`));
+    if (tz.length > 3) facts.push(_t(`Spans ${tz.length} time zones.`, `Abrange ${tz.length} fusos horários.`));
     if (c.area && c.population) {
       const density = Math.round(c.population / c.area);
-      if (density > 500) facts.push(`Densidade populacional muito elevada: ${density} hab/km².`);
-      if (density < 5 && c.area > 100000) facts.push(`Um dos países menos densamente povoados: ${density} hab/km².`);
+      if (density > 500) facts.push(_t(`Very high population density: ${nf(density)} people/km².`, `Densidade populacional muito elevada: ${nf(density)} hab/km².`));
+      if (density < 5 && c.area > 100000) facts.push(_t(`One of the least densely populated countries: ${nf(density)} people/km².`, `Um dos países menos densamente povoados: ${nf(density)} hab/km².`));
     }
-    return facts.slice(0, 3);
+    if (c.area && c.area < 1000) facts.push(_t(`A micro-state: just ${nf(c.area)} km².`, `Um micro-estado: apenas ${nf(c.area)} km².`));
+    if ((c.capital || []).length > 1) facts.push(_t(`Has more than one capital city.`, `Tem mais do que uma capital.`));
+    if (c.population === 0) facts.push(_t(`Has no permanent population.`, `Não tem população permanente.`));
+    return facts.slice(0, 6);
   }
 
-  /* European-Portuguese country name (bundled in countries.json as namePt),
-     with English common name as a safe fallback. */
-  function _cName(c) { return c ? (c.namePt || (c.name && c.name.common) || c.cca3 || '') : ''; }
+  /* Country name in the active language: English common name (en) or the
+     bundled European-Portuguese name (pt), each with a safe fallback. */
+  function _cName(c) {
+    if (!c) return '';
+    const en = (c.name && c.name.common) || c.namePt || c.cca3 || '';
+    const pt = c.namePt || (c.name && c.name.common) || c.cca3 || '';
+    return _lang() === 'en' ? en : pt;
+  }
 
   /* Flag as a local SVG <img> (data/flags/<cca2>.svg). Emoji flags don't render
      on Chrome/Windows (no colour flag font) — these do, in every browser. */
@@ -381,51 +422,106 @@ const ExplorerPage = (function () {
     const tip = document.getElementById('ex-globe-tooltip');
     if (!tip) return;
     if (!c) { tip.hidden = true; return; }
-    const cont = _CONT_PT[(c.continents || [])[0]] || c.regionPt || '';
+    const cont = _contName(c);
     tip.innerHTML = `${_flagImg(c, 'ex-gt-flag-img')}<span class="ex-gt-name">${_cName(c)}</span>${cont ? `<span class="ex-gt-cont">${cont}</span>` : ''}`;
     if (x != null) { tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
     tip.hidden = false;
   }
 
-  function showCountryPanel(country, panelSel) {
-    const panel = document.querySelector(panelSel || '#ex-country-panel');
-    if (!panel) return;
+  /* ── Shared centered modal (used by both map & globe) ──────────────────
+     One overlay lives on <body>. Clicking the backdrop or pressing Escape
+     closes it; on mobile it becomes a full-screen sheet (see CSS). */
+  let _modalCountry = null;   /* country currently shown, for langchange re-render */
+  function _ensureModal() {
+    let overlay = document.getElementById('ex-modal-overlay');
+    if (overlay) return overlay;
+    overlay = document.createElement('div');
+    overlay.id = 'ex-modal-overlay';
+    overlay.className = 'ex-modal-overlay';
+    overlay.innerHTML = `<div class="ex-modal" id="ex-modal" role="dialog" aria-modal="true"></div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) _closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) _closeModal();
+    });
+    return overlay;
+  }
+  function _closeModal() {
+    const overlay = document.getElementById('ex-modal-overlay');
+    if (overlay) overlay.classList.remove('open');
+    _modalCountry = null;
+  }
+
+  function showCountryPanel(country /* , panelSel (ignored — shared modal) */) {
+    const overlay = _ensureModal();
+    const modal = overlay.querySelector('#ex-modal');
+    if (!modal) return;
     _addRecent(country.cca3);
+    _modalCountry = country;
+    const loc = _locale();
+    const nf = n => (n || 0).toLocaleString(loc);
 
     const name    = _cName(country) || '?';
     const enName  = (country.name && country.name.common) || name;
-    const capital = (country.capital || [])[0] || '—';
-    const pop     = country.population > 0 ? country.population.toLocaleString('pt') : '—';
-    const area    = country.area > 0 ? country.area.toLocaleString('pt') + ' km²' : '—';
+    const ptName  = country.namePt || enName;
+    const capital = (country.capital || []).join(', ') || '—';
+    const pop     = country.population > 0 ? nf(country.population) : '—';
+    const area    = country.area > 0 ? nf(country.area) + ' km²' : '—';
     const curr    = Object.values(country.currencies || {}).map(c => `${c.name}${c.symbol ? ` (${c.symbol})` : ''}`).join(', ') || '—';
     const langs   = Object.values(country.languages || {}).join(', ') || '—';
-    const cont    = (country.continents || [])[0] || '—';
+    const cont    = _contName(country) || '—';
     const tzList  = country.timezones || [];
     const tz      = tzList.length ? tzList.join(', ') : '—';
-    const region  = [country.regionPt || country.region, country.subregionPt || country.subregion].filter(Boolean).join(' · ') || '—';
+    const region  = _lang() === 'en'
+      ? [country.region, country.subregion].filter(Boolean).join(' · ') || '—'
+      : [country.regionPt || country.region, country.subregionPt || country.subregion].filter(Boolean).join(' · ') || '—';
     const gdpStr  = country.gdp > 0
-      ? (country.gdp >= 1e12 ? `${(country.gdp / 1e12).toFixed(2)} biliões US$`
-        : `${(country.gdp / 1e9).toFixed(1)} mil milhões US$`) : '—';
+      ? (country.gdp >= 1e12 ? `${(country.gdp / 1e12).toFixed(2)} ${_t('trillion US$', 'biliões US$')}`
+        : `${(country.gdp / 1e9).toFixed(1)} ${_t('billion US$', 'mil milhões US$')}`) : '—';
     const gdpPc   = (country.gdp > 0 && country.population > 0)
-      ? Math.round(country.gdp / country.population).toLocaleString('pt') + ' US$' : '—';
+      ? nf(Math.round(country.gdp / country.population)) + ' US$' : '—';
     const ll      = country.latlng || [];
     const coords  = ll.length === 2
       ? `${Math.abs(ll[0]).toFixed(1)}°${ll[0] >= 0 ? 'N' : 'S'}, ${Math.abs(ll[1]).toFixed(1)}°${ll[1] >= 0 ? 'E' : 'W'}`
       : '—';
     const density = (country.area > 0 && country.population > 0)
-      ? Math.round(country.population / country.area).toLocaleString('pt') + ' hab/km²' : '—';
+      ? nf(Math.round(country.population / country.area)) + ` ${_t('people/km²', 'hab/km²')}` : '—';
     const isFave  = _favorites.includes(country.cca3);
     const flag    = (country.cca2 ? `data/flags/${country.cca2.toLowerCase()}.svg` : '') || country.flags?.svg || country.flags?.png || '';
     const facts   = _countryFacts(country);
-    /* Resolve neighbour codes to {flag, name} for richer border chips. */
     const byCca3  = (_byCca3 && Object.keys(_byCca3).length) ? _byCca3 : _byCode();
     const neighbours = (country.borders || []).map(code => {
       const n = byCca3[code];
       return { code, name: _cName(n) || code, flag: n ? _flagImg(n, 'ex-border-chip-flag-img') : '' };
     });
 
-    panel.innerHTML = `
-      <button class="ex-panel-close" id="ex-panel-close">✕</button>
+    const row = (icon, label, value, mono) =>
+      `<div class="ex-panel-row"><span class="ex-panel-row-icon">${icon}</span><span class="ex-panel-label">${label}</span><span class="ex-panel-value"${mono ? ' style="font-family:var(--font-mono);font-size:.76rem"' : ''}>${value}</span></div>`;
+
+    /* Wikipedia titles for the rich sections, by language. 404s degrade to a
+       search link, so a missing exact title never breaks the section. */
+    const histTitle = _t(`History of ${enName}`, `História de ${ptName}`);
+    const foodTitle = _t(`Cuisine of ${enName}`, `Culinária de ${ptName}`);
+    const whsTitle  = _t(`List of World Heritage Sites in ${enName}`, `Lista do Património Mundial em ${ptName}`);
+    const tourTitle = _t(`Tourism in ${enName}`, `Turismo em ${ptName}`);
+
+    /* Accordion section: lazy-loads a Wikipedia excerpt on first expand. */
+    const acc = (id, icon, label, wikiTitle, extraLinks) => `
+      <div class="ex-acc" data-acc="${id}" data-title="${encodeURIComponent(wikiTitle)}">
+        <button class="ex-acc-hdr" type="button">
+          <span class="ex-acc-icon">${icon}</span><span class="ex-acc-label">${label}</span>
+          <span class="ex-acc-chevron">▾</span>
+        </button>
+        <div class="ex-acc-body">
+          <div class="ex-acc-excerpt"></div>
+          <div class="ex-acc-links">${extraLinks || ''}</div>
+        </div>
+      </div>`;
+
+    const wbtn = (href, txt, title) => `<a class="ex-mini-link" href="${href}" target="_blank" rel="noopener"${title ? ` title="${title}"` : ''}>${txt} ↗</a>`;
+
+    modal.innerHTML = `
+      <button class="ex-panel-close" id="ex-panel-close" aria-label="${_t('Close', 'Fechar')}">✕</button>
       ${flag
         ? `<img class="ex-panel-flag" src="${flag}" alt="${name}" loading="lazy"/>`
         : `<div class="ex-panel-flag-placeholder">${country.flag || '🏳'}</div>`}
@@ -435,64 +531,91 @@ const ExplorerPage = (function () {
           ? `<div class="ex-panel-official">${country.name.official}</div>` : ''}
         <div class="ex-panel-actions">
           <button class="ex-fave-btn${isFave ? ' active' : ''}" id="ex-fave-btn">
-            <span class="ex-fave-btn-icon">${isFave ? '❤' : '🤍'}</span> ${isFave ? 'Guardado' : 'Favorito'}
+            <span class="ex-fave-btn-icon">${isFave ? '❤' : '🤍'}</span> ${isFave ? _t('Saved', 'Guardado') : _t('Favourite', 'Favorito')}
           </button>
-          <a class="ex-wiki-btn" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(name)}"
+          <a class="ex-wiki-btn" href="${_wikiUrl(_lang() === 'en' ? enName : ptName)}"
              target="_blank" rel="noopener">📖 Wikipédia</a>
           <a class="ex-wiki-btn" href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(enName)}"
              target="_blank" rel="noopener">🖼 Commons</a>
-          ${country.cca2 ? `<a class="ex-wiki-btn" href="https://whc.unesco.org/en/statesparties/${country.cca2.toLowerCase()}"
-             target="_blank" rel="noopener" title="Sítios Património Mundial da UNESCO">🏛 Património UNESCO</a>` : ''}
         </div>
+
         <div class="ex-panel-rows">
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🏙</span><span class="ex-panel-label">Capital</span><span class="ex-panel-value">${capital}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">👥</span><span class="ex-panel-label">População</span><span class="ex-panel-value">${pop}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">📐</span><span class="ex-panel-label">Área</span><span class="ex-panel-value">${area}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">💰</span><span class="ex-panel-label">Moeda</span><span class="ex-panel-value">${curr}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🗣</span><span class="ex-panel-label">Línguas</span><span class="ex-panel-value">${langs}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">👣</span><span class="ex-panel-label">Densidade</span><span class="ex-panel-value">${density}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🌍</span><span class="ex-panel-label">Continente</span><span class="ex-panel-value">${cont}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🗺</span><span class="ex-panel-label">Região</span><span class="ex-panel-value">${region}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">📈</span><span class="ex-panel-label">PIB</span><span class="ex-panel-value">${gdpStr}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">💶</span><span class="ex-panel-label">PIB per capita</span><span class="ex-panel-value">${gdpPc}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">📍</span><span class="ex-panel-label">Coordenadas</span><span class="ex-panel-value" style="font-family:var(--font-mono);font-size:.76rem">${coords}</span></div>
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">🕐</span><span class="ex-panel-label">Fuso${tzList.length > 1 ? 's' : ''} horário${tzList.length > 1 ? 's' : ''}</span><span class="ex-panel-value">${tz}</span></div>
+          ${row('🏙', _t('Capital', 'Capital'), capital)}
+          ${row('👥', _t('Population', 'População'), pop)}
+          ${row('📐', _t('Area', 'Área'), area)}
+          ${row('💰', _t('Currency', 'Moeda'), curr)}
+          ${row('🗣', _t('Languages', 'Línguas'), langs)}
+          ${row('👣', _t('Density', 'Densidade'), density)}
+          ${row('🌍', _t('Continent', 'Continente'), cont)}
+          ${row('🗺', _t('Region', 'Região'), region)}
+          ${row('📈', _t('GDP', 'PIB'), gdpStr)}
+          ${row('💶', _t('GDP per capita', 'PIB per capita'), gdpPc)}
+          ${row('📍', _t('Coordinates', 'Coordenadas'), coords, true)}
+          ${row('🕐', _t(tzList.length > 1 ? 'Time zones' : 'Time zone', tzList.length > 1 ? 'Fusos horários' : 'Fuso horário'), tz)}
         </div>
-        ${facts.length ? `<div class="ex-panel-facts">
-          ${facts.map(f => `<div class="ex-panel-fact">💡 ${f}</div>`).join('')}
-        </div>` : ''}
-        <div class="ex-panel-excerpt" id="ex-panel-excerpt">
-          <div class="ex-panel-excerpt-loading">A carregar…</div>
+
+        ${facts.length ? `<div class="ex-panel-section-title">💡 ${_t('Did you know', 'Curiosidades')}</div>
+          <div class="ex-panel-facts">
+            ${facts.map(f => `<div class="ex-panel-fact">• ${f}</div>`).join('')}
+          </div>` : ''}
+
+        <div class="ex-acc-group">
+          ${acc('history', '📖', _t('History', 'História'), histTitle, '')}
+          ${acc('food', '🍽', _t('Cuisine', 'Gastronomia'), foodTitle, '')}
+          ${acc('monuments', '🏛', _t('Monuments & Heritage', 'Monumentos e Património'), whsTitle,
+            `${country.cca2 ? wbtn(`https://whc.unesco.org/en/statesparties/${country.cca2.toLowerCase()}`, _t('UNESCO World Heritage', 'Património Mundial UNESCO')) : ''}
+             ${wbtn(_wikiUrl(tourTitle), _t('Tourism', 'Turismo'))}`)}
         </div>
+
         ${neighbours.length ? `
-          <div class="ex-panel-borders-label">Países vizinhos (${neighbours.length})</div>
+          <div class="ex-panel-borders-label">${_t('Neighbouring countries', 'Países vizinhos')} (${neighbours.length})</div>
           <div class="ex-panel-borders">
             ${neighbours.map(n => `<button class="ex-panel-border-chip" data-cca3="${n.code}">${n.flag}${n.name}</button>`).join('')}
           </div>`
-          : `<div class="ex-panel-borders-label">Fronteiras</div>
-             <div class="ex-panel-island-note">🏝 Sem fronteiras terrestres${country.area && country.area < 1000000 ? ' — nação ilha' : ''}.</div>`}
+          : `<div class="ex-panel-borders-label">${_t('Borders', 'Fronteiras')}</div>
+             <div class="ex-panel-island-note">🏝 ${_t('No land borders', 'Sem fronteiras terrestres')}${country.area && country.area < 1000000 ? _t(' — island nation', ' — nação ilha') : ''}.</div>`}
       </div>`;
 
-    panel.classList.add('open');
+    overlay.classList.add('open');
+    modal.scrollTop = 0;
+    const body = modal.querySelector('.ex-panel-body');
+    if (body) body.scrollTop = 0;
 
-    panel.querySelector('#ex-panel-close').onclick  = () => panel.classList.remove('open');
-    panel.querySelector('#ex-fave-btn').onclick      = () => _toggleFave(country.cca3, panel);
-    panel.querySelectorAll('.ex-panel-border-chip').forEach(btn => {
+    modal.querySelector('#ex-panel-close').onclick = () => _closeModal();
+    modal.querySelector('#ex-fave-btn').onclick    = () => _toggleFave(country.cca3, modal);
+    modal.querySelectorAll('.ex-panel-border-chip').forEach(btn => {
       btn.onclick = () => {
         const c = _countries.find(x => x.cca3 === btn.dataset.cca3);
-        if (c) showCountryPanel(c, panelSel);
+        if (c) showCountryPanel(c);
       };
     });
 
-    _fetchWiki(name).then(({ text }) => {
-      const el = panel.querySelector('#ex-panel-excerpt');
-      if (!el) return;
-      /* Text-only excerpt. We deliberately do NOT render the Wikipedia lead
-         image: its per-file licence cannot be verified at runtime, and the
-         project's policy is "if licence is unverified, do not use the image" —
-         the Wikipedia/Commons links below are the compliant visual fallback. */
-      el.innerHTML = text ? `<p>${text}${text.length >= 298 ? '…' : ''}</p>` : '';
+    /* Accordion: expand/collapse + lazy Wikipedia excerpt on first open. */
+    modal.querySelectorAll('.ex-acc').forEach(accEl => {
+      const hdr = accEl.querySelector('.ex-acc-hdr');
+      hdr.onclick = () => {
+        const open = accEl.classList.toggle('open');
+        if (open && !accEl.dataset.loaded) {
+          accEl.dataset.loaded = '1';
+          const exc = accEl.querySelector('.ex-acc-excerpt');
+          exc.innerHTML = `<div class="ex-acc-loading">${_t('Loading…', 'A carregar…')}</div>`;
+          const title = decodeURIComponent(accEl.dataset.title);
+          _wikiSummary(title, _wikiLang(), 600).then(s => {
+            if (!exc.isConnected) return;
+            if (s.text) {
+              exc.innerHTML = `<p>${s.text}${s.text.length >= 598 ? '…' : ''}</p>` +
+                (s.url ? `<a class="ex-mini-link" href="${s.url}" target="_blank" rel="noopener">${_t('Read more', 'Ler mais')} ↗</a>` : '');
+            } else {
+              exc.innerHTML = `<a class="ex-mini-link" href="${_wikiSearchUrl(title)}" target="_blank" rel="noopener">${_t('Search on Wikipedia', 'Procurar na Wikipédia')} ↗</a>`;
+            }
+          });
+        }
+      };
     });
+
+    /* Lead excerpt: auto-open History so the modal feels alive immediately. */
+    const firstAcc = modal.querySelector('.ex-acc[data-acc="history"] .ex-acc-hdr');
+    if (firstAcc) firstAcc.click();
   }
 
   /* ════════════════════════════════ HUB ════════════════════════════ */
@@ -504,37 +627,42 @@ const ExplorerPage = (function () {
     sub.innerHTML = `
       <div class="ex-hub">
         <div class="ex-hub-header">
-          <h1 class="ex-hub-title">Explorar o Mundo</h1>
-          <p class="ex-hub-subtitle">Descobre países, navega o globo e explora o sistema solar.</p>
+          <h1 class="ex-hub-title">${_t('Explore the World', 'Explorar o Mundo')}</h1>
+          <p class="ex-hub-subtitle">${_t('Discover countries, spin the globe and explore the solar system.', 'Descobre países, navega o globo e explora o sistema solar.')}</p>
           <button class="ex-discover-btn" id="ex-discover-btn">
-            <span class="ex-discover-btn-icon">🎲</span> Descobrir algo novo
+            <span class="ex-discover-btn-icon">🎲</span> ${_t('Discover something new', 'Descobrir algo novo')}
           </button>
         </div>
         <div class="ex-feature-grid">
           <div class="ex-feature-card" data-tab="map">
             <span class="ex-feature-card-icon">🗺</span>
-            <div class="ex-feature-card-title">Mapa Mundial</div>
-            <div class="ex-feature-card-desc">Clica em qualquer país para ver informações, capitais, moedas, línguas e factos.</div>
+            <div class="ex-feature-card-title">${_t('World Map', 'Mapa Mundial')}</div>
+            <div class="ex-feature-card-desc">${_t('Click any country to see info, capitals, currencies, languages and facts.', 'Clica em qualquer país para ver informações, capitais, moedas, línguas e factos.')}</div>
           </div>
           <div class="ex-feature-card" data-tab="globe">
             <span class="ex-feature-card-icon">🌍</span>
-            <div class="ex-feature-card-title">Globo 3D</div>
-            <div class="ex-feature-card-desc">Globo WebGL realista com atmosfera, texturas e modos político e noturno.</div>
+            <div class="ex-feature-card-title">${_t('3D Globe', 'Globo 3D')}</div>
+            <div class="ex-feature-card-desc">${_t('Realistic WebGL globe with atmosphere, textures and political / night modes.', 'Globo WebGL realista com atmosfera, texturas e modos político e noturno.')}</div>
           </div>
           <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
             <span class="ex-feature-card-icon">🇵🇹</span>
             <div class="ex-feature-card-title">Portugal</div>
-            <div class="ex-feature-card-desc">Explora os 20 distritos com história, gastronomia, tradições e curiosidades de cada região.</div>
+            <div class="ex-feature-card-desc">${_t('Explore the 20 districts with history, cuisine, traditions and curiosities of each region.', 'Explora os 20 distritos com história, gastronomia, tradições e curiosidades de cada região.')}</div>
           </div>
           <div class="ex-feature-card" data-tab="solar">
             <span class="ex-feature-card-icon">☀</span>
-            <div class="ex-feature-card-title">Sistema Solar</div>
-            <div class="ex-feature-card-desc">Vê os planetas em 3D com texturas reais, clica para explorar factos e comparações.</div>
+            <div class="ex-feature-card-title">${_t('Solar System', 'Sistema Solar')}</div>
+            <div class="ex-feature-card-desc">${_t('See the planets in 3D with real textures, comets, the asteroid belt and satellites.', 'Vê os planetas em 3D com texturas reais, cometas, a cintura de asteroides e satélites.')}</div>
+          </div>
+          <div class="ex-feature-card" data-tab="galaxy">
+            <span class="ex-feature-card-icon">🌌</span>
+            <div class="ex-feature-card-title">${_t('Milky Way', 'Via Láctea')}</div>
+            <div class="ex-feature-card-desc">${_t('Fly through our galaxy: spiral arms, the Sun, bright stars and constellations, nebulae and other galaxies.', 'Voa pela nossa galáxia: braços em espiral, o Sol, estrelas e constelações, nebulosas e outras galáxias.')}</div>
           </div>
         </div>
         ${recents.length ? `
           <div class="ex-recent-section">
-            <div class="ex-section-label">Visto recentemente</div>
+            <div class="ex-section-label">${_t('Recently viewed', 'Visto recentemente')}</div>
             <div class="ex-chips-row">
               ${recents.map(c => `<button class="ex-country-chip" data-cca3="${c.cca3}">
                 ${_flagImg(c, 'ex-country-chip-flag-img')}${_cName(c)}</button>`).join('')}
@@ -542,7 +670,7 @@ const ExplorerPage = (function () {
           </div>` : ''}
         ${faves.length ? `
           <div class="ex-faves-section">
-            <div class="ex-section-label">Favoritos</div>
+            <div class="ex-section-label">${_t('Favourites', 'Favoritos')}</div>
             <div class="ex-chips-row">
               ${faves.map(c => `<button class="ex-country-chip" data-cca3="${c.cca3}">
                 ${_flagImg(c, 'ex-country-chip-flag-img')}${_cName(c)}</button>`).join('')}
@@ -557,7 +685,7 @@ const ExplorerPage = (function () {
     sub.querySelectorAll('.ex-country-chip').forEach(chip => {
       chip.onclick = () => {
         const c = _countries.find(x => x.cca3 === chip.dataset.cca3);
-        if (c) { _switchTab('map'); setTimeout(() => showCountryPanel(c, '#ex-country-panel'), 400); }
+        if (c) { _switchTab('map'); setTimeout(() => showCountryPanel(c), 400); }
       };
     });
   }
@@ -569,34 +697,33 @@ const ExplorerPage = (function () {
         <div id="ex-leaflet-map"></div>
         <div class="ex-loading" id="ex-map-loading">
           <div class="ex-loading-spinner"></div>
-          <div class="ex-loading-text" id="ex-map-loading-txt">A inicializar o mapa…</div>
+          <div class="ex-loading-text" id="ex-map-loading-txt">${_t('Initialising the map…', 'A inicializar o mapa…')}</div>
         </div>
         <div class="ex-search-bar">
           <div class="ex-search-inner">
             <span class="ex-search-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-            <input type="text" class="ex-search-input" id="ex-map-search" placeholder="Pesquisar país…" autocomplete="off"/>
-            <button class="ex-search-clear" id="ex-map-search-clear" aria-label="Limpar">✕</button>
+            <input type="text" class="ex-search-input" id="ex-map-search" placeholder="${_t('Search country…', 'Pesquisar país…')}" autocomplete="off"/>
+            <button class="ex-search-clear" id="ex-map-search-clear" aria-label="${_t('Clear', 'Limpar')}">✕</button>
           </div>
           <div class="ex-search-results" id="ex-map-search-results"></div>
         </div>
         <div class="ex-map-view-btns" id="ex-map-view-btns">
-          <button class="ex-map-view-btn active" data-view="political">Político</button>
-          <button class="ex-map-view-btn" data-view="satellite">Satélite</button>
-          <button class="ex-map-view-btn" data-view="night">Dia/Noite</button>
+          <button class="ex-map-view-btn active" data-view="political">${_t('Political', 'Político')}</button>
+          <button class="ex-map-view-btn" data-view="satellite">${_t('Satellite', 'Satélite')}</button>
+          <button class="ex-map-view-btn" data-view="night">${_t('Day/Night', 'Dia/Noite')}</button>
         </div>
         <div class="ex-map-controls">
-          <button class="ex-map-btn" id="ex-map-random"><span class="ex-map-btn-icon">🎲</span> Aleatório</button>
+          <button class="ex-map-btn" id="ex-map-random"><span class="ex-map-btn-icon">🎲</span> ${_t('Random', 'Aleatório')}</button>
         </div>
         <div class="ex-continent-filter" id="ex-continent-filter">
-          <button class="ex-continent-btn active" data-c="all">Todos</button>
-          <button class="ex-continent-btn" data-c="Africa">África</button>
-          <button class="ex-continent-btn" data-c="Americas">Américas</button>
-          <button class="ex-continent-btn" data-c="Asia">Ásia</button>
-          <button class="ex-continent-btn" data-c="Europe">Europa</button>
-          <button class="ex-continent-btn" data-c="Oceania">Oceânia</button>
+          <button class="ex-continent-btn active" data-c="all">${_t('All', 'Todos')}</button>
+          <button class="ex-continent-btn" data-c="Africa">${_t('Africa', 'África')}</button>
+          <button class="ex-continent-btn" data-c="Americas">${_t('Americas', 'Américas')}</button>
+          <button class="ex-continent-btn" data-c="Asia">${_t('Asia', 'Ásia')}</button>
+          <button class="ex-continent-btn" data-c="Europe">${_t('Europe', 'Europa')}</button>
+          <button class="ex-continent-btn" data-c="Oceania">${_t('Oceania', 'Oceânia')}</button>
         </div>
         <div class="ex-data-status" id="ex-data-status"></div>
-        <div class="ex-country-panel" id="ex-country-panel"></div>
       </div>`;
   }
 
@@ -669,7 +796,7 @@ const ExplorerPage = (function () {
       return;
     }
 
-    _setLoadingText('A carregar biblioteca de mapas…');
+    _setLoadingText(_t('Loading map library…', 'A carregar biblioteca de mapas…'));
 
     try {
       await _loadLeaflet();
@@ -677,8 +804,8 @@ const ExplorerPage = (function () {
       const ld = document.getElementById('ex-map-loading');
       if (ld) ld.innerHTML = `
         <div class="ex-error-icon">⚠</div>
-        <div class="ex-error-msg">Erro ao carregar Leaflet.<br>Verifica a ligação à internet.</div>
-        <button class="ex-retry-btn" id="ex-map-retry">Tentar novamente</button>`;
+        <div class="ex-error-msg">${_t('Failed to load Leaflet.<br>Check your internet connection.', 'Erro ao carregar Leaflet.<br>Verifica a ligação à internet.')}</div>
+        <button class="ex-retry-btn" id="ex-map-retry">${_t('Try again', 'Tentar novamente')}</button>`;
       document.getElementById('ex-map-retry')?.addEventListener('click', _initMap);
       return;
     }
@@ -713,7 +840,7 @@ const ExplorerPage = (function () {
     _lInited = true;
 
     document.getElementById('ex-map-random')?.addEventListener('click', () => {
-      if (_countriesOk) showCountryPanel(_countries[Math.floor(Math.random() * _countries.length)], '#ex-country-panel');
+      if (_countriesOk) showCountryPanel(_countries[Math.floor(Math.random() * _countries.length)]);
     });
 
     _wireMapViewBtns();
@@ -766,7 +893,7 @@ const ExplorerPage = (function () {
 
   async function _loadMapData() {
     if (_lDataLoaded) return;
-    _setDataStatus('loading', 'A carregar dados dos países…');
+    _setDataStatus('loading', _t('Loading country data…', 'A carregar dados dos países…'));
 
     const [cr, gr] = await Promise.allSettled([
       _countriesOk ? Promise.resolve(_countries) : _fetchCountries(),
@@ -777,7 +904,7 @@ const ExplorerPage = (function () {
     if (gr.status === 'fulfilled') { _geoJson = gr.value; _geoJsonOk = true; }
 
     if (!_geoJsonOk) {
-      _setDataStatus('error', 'Erro ao carregar contornos dos países.', _loadMapData);
+      _setDataStatus('error', _t('Failed to load country borders.', 'Erro ao carregar contornos dos países.'), _loadMapData);
       if (_countriesOk) _wireMapSearch(_byCode());
       return;
     }
@@ -808,9 +935,9 @@ const ExplorerPage = (function () {
             /* Fly to country bounds */
             try { _lMap.flyToBounds(layer.getBounds(), { padding: [30, 30], maxZoom: 6, duration: 0.7 }); } catch (e) {}
             if (c) {
-              showCountryPanel(c, '#ex-country-panel');
+              showCountryPanel(c);
             } else {
-              _showMapMinimalPanel(feature);
+              _showMinimalPanel(feature);
             }
           },
         });
@@ -901,7 +1028,7 @@ const ExplorerPage = (function () {
       const row = e.target.closest('.ex-search-result');
       if (!row || !results._hits) return;
       const c = results._hits[+row.dataset.i];
-      if (c) { showCountryPanel(c, '#ex-country-panel'); results.classList.remove('open'); input.value = ''; }
+      if (c) { showCountryPanel(c); results.classList.remove('open'); input.value = ''; }
     });
     input.addEventListener('keydown', e => {
       const items = results.querySelectorAll('.ex-search-result');
@@ -924,21 +1051,20 @@ const ExplorerPage = (function () {
         <div id="ex-globe-container"></div>
         <div class="ex-loading" id="ex-globe-loading">
           <div class="ex-loading-spinner"></div>
-          <div class="ex-loading-text" id="ex-globe-loading-txt">A carregar o globo…</div>
+          <div class="ex-loading-text" id="ex-globe-loading-txt">${_t('Loading the globe…', 'A carregar o globo…')}</div>
         </div>
         <div class="ex-globe-view-bar" id="ex-globe-view-bar">
-          <button class="ex-globe-view-btn active" data-view="realistic">🌍 Realista</button>
-          <button class="ex-globe-view-btn" data-view="daynight">🌗 Dia/Noite</button>
-          <button class="ex-globe-view-btn" data-view="political">🗺️ Político</button>
+          <button class="ex-globe-view-btn active" data-view="realistic">🌍 ${_t('Realistic', 'Realista')}</button>
+          <button class="ex-globe-view-btn" data-view="daynight">🌗 ${_t('Day/Night', 'Dia/Noite')}</button>
+          <button class="ex-globe-view-btn" data-view="political">🗺️ ${_t('Political', 'Político')}</button>
         </div>
-        <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
+        <div class="ex-globe-hint">${_t('Drag to rotate · Click a country to explore', 'Arrasta para rodar · Clica num país para explorar')}</div>
         <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
         <div class="ex-globe-stats">
-          <div class="ex-globe-stat">Países <span class="ex-globe-stat-val" id="ex-globe-count">—</span></div>
-          <div class="ex-globe-stat">Em destaque <span class="ex-globe-stat-val" id="ex-globe-sel">—</span></div>
+          <div class="ex-globe-stat">${_t('Countries', 'Países')} <span class="ex-globe-stat-val" id="ex-globe-count">—</span></div>
+          <div class="ex-globe-stat">${_t('Selected', 'Em destaque')} <span class="ex-globe-stat-val" id="ex-globe-sel">—</span></div>
         </div>
-        <div class="ex-country-panel" id="ex-country-panel-globe"></div>
-        <div class="ex-solar-credit">Texturas: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · CC BY 4.0</div>
+        <div class="ex-solar-credit">${_t('Textures', 'Texturas')}: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · CC BY 4.0</div>
       </div>`;
   }
 
@@ -962,7 +1088,7 @@ const ExplorerPage = (function () {
     }
 
     const setTxt = t => { const el = document.getElementById('ex-globe-loading-txt'); if (el) el.textContent = t; };
-    setTxt('A carregar dados dos países…');
+    setTxt(_t('Loading country data…', 'A carregar dados dos países…'));
 
     /* Load data */
     try {
@@ -970,20 +1096,20 @@ const ExplorerPage = (function () {
     } catch (e) { /* globe works without country data */ }
 
     try {
-      setTxt('A carregar mapa do mundo…');
+      setTxt(_t('Loading world map…', 'A carregar mapa do mundo…'));
       if (!_geoJsonOk) { _geoJson = await _fetchGeoJson(); _geoJsonOk = true; }
     } catch (e) {
       const ld = document.getElementById('ex-globe-loading');
       if (ld) ld.innerHTML = `
         <div class="ex-error-icon">⚠</div>
-        <div class="ex-error-msg">Erro ao carregar dados do globo.</div>
-        <button class="ex-retry-btn" id="ex-globe-retry">Tentar novamente</button>`;
+        <div class="ex-error-msg">${_t('Failed to load globe data.', 'Erro ao carregar dados do globo.')}</div>
+        <button class="ex-retry-btn" id="ex-globe-retry">${_t('Try again', 'Tentar novamente')}</button>`;
       document.getElementById('ex-globe-retry')?.addEventListener('click', _initGlobe);
       return;
     }
 
     /* Load globe.gl (pinned version — confirmed working) */
-    setTxt('A inicializar globo 3D…');
+    setTxt(_t('Initialising 3D globe…', 'A inicializar globo 3D…'));
     /* Load THREE first (same version SolarExplorer uses, usually cached) so we
        can build the day/night ShaderMaterial. Non-fatal if it fails. */
     try { await _loadScript('https://unpkg.com/three@0.160.0/build/three.min.js'); } catch (e) {}
@@ -993,8 +1119,8 @@ const ExplorerPage = (function () {
       const ld = document.getElementById('ex-globe-loading');
       if (ld) ld.innerHTML = `
         <div class="ex-error-icon">⚠</div>
-        <div class="ex-error-msg">Erro ao carregar globo WebGL.<br>Verifica a ligação à internet.</div>
-        <button class="ex-retry-btn" id="ex-globe-retry2">Tentar novamente</button>`;
+        <div class="ex-error-msg">${_t('Failed to load WebGL globe.<br>Check your internet connection.', 'Erro ao carregar globo WebGL.<br>Verifica a ligação à internet.')}</div>
+        <button class="ex-retry-btn" id="ex-globe-retry2">${_t('Try again', 'Tentar novamente')}</button>`;
       document.getElementById('ex-globe-retry2')?.addEventListener('click', _initGlobe);
       return;
     }
@@ -1070,8 +1196,8 @@ const ExplorerPage = (function () {
       if (selEl) selEl.textContent = c ? (_cName(c) || f.id) : (f.properties?.name || f.id || '—');
       const ll = c?.latlng;
       if (ll && ll.length === 2) _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
-      if (c) showCountryPanel(c, '#ex-country-panel-globe');
-      else   _showGlobeMinimalPanel(f);
+      if (c) showCountryPanel(c);
+      else   _showMinimalPanel(f);
     };
 
     _updateGlobeColors = () => {
@@ -1141,15 +1267,27 @@ const ExplorerPage = (function () {
       return ll ? _featureAt(ll[0], ll[1]) : null;
     }
 
-    container.addEventListener('pointermove', ev => {
-      const f = _featureFromEvent(ev);
+    /* Hover hit-testing is expensive (ray + point-in-polygon over ~250
+       features), so coalesce pointer moves to at most one test per animation
+       frame instead of running on every mousemove event. */
+    let _hoverPt = null, _hoverRAF = 0;
+    const _processHover = () => {
+      _hoverRAF = 0;
+      if (!_hoverPt || !_globeGL) return;
+      const pt = _hoverPt;
+      const f = _featureFromEvent(pt);
       if (_globeHovered !== f) { _globeHovered = f; _globeGL.polygonCapColor(getCapColor); }
       const c = f ? _byCca3[f.id] : null;
       const wr = wrap.getBoundingClientRect();
-      _updateGlobeTooltip(c, ev.clientX - wr.left + 14, ev.clientY - wr.top + 14);
+      _updateGlobeTooltip(c, pt.clientX - wr.left + 14, pt.clientY - wr.top + 14);
+    };
+    container.addEventListener('pointermove', ev => {
+      _hoverPt = { clientX: ev.clientX, clientY: ev.clientY };
+      if (!_hoverRAF) _hoverRAF = requestAnimationFrame(_processHover);
     }, { passive: true });
 
     const _leave = () => {
+      _hoverPt = null;
       if (_globeHovered) { _globeHovered = null; if (_globeGL) _globeGL.polygonCapColor(getCapColor); }
       _updateGlobeTooltip(null);
     };
@@ -1191,8 +1329,7 @@ const ExplorerPage = (function () {
     _globeGL.pointOfView({ lat: 20, lng: -40, altitude: 2.5 }, 0);
     const selEl = document.getElementById('ex-globe-sel');
     if (selEl) selEl.textContent = '—';
-    const gPanel = document.getElementById('ex-country-panel-globe');
-    if (gPanel) { gPanel.classList.remove('open'); gPanel.innerHTML = ''; }
+    _closeModal();
     _updateGlobeColors?.();
     _updateGlobeLabels(2.5);   /* show the major-country labels at the initial zoom */
 
@@ -1262,64 +1399,50 @@ const ExplorerPage = (function () {
 
   /* ════════════════════════════════ DISCOVER ════════════════════════ */
   function _discoverRandom() {
-    const modes = ['map', 'globe', 'portugal', 'solar'];
+    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy'];
     if (typeof PortugalExplorer === 'undefined') modes.splice(modes.indexOf('portugal'), 1);
+    if (typeof MilkyWayExplorer === 'undefined') modes.splice(modes.indexOf('galaxy'), 1);
 
     const mode = modes[Math.floor(Math.random() * modes.length)];
 
     if ((mode === 'map' || mode === 'globe') && _countriesOk && _countries.length) {
       const c = _countries[Math.floor(Math.random() * _countries.length)];
-      const panelSel = mode === 'globe' ? '#ex-country-panel-globe' : '#ex-country-panel';
       _switchTab(mode);
-      setTimeout(() => showCountryPanel(c, panelSel), 500);
+      setTimeout(() => showCountryPanel(c), 500);
     } else if (mode === 'portugal' && typeof PortugalExplorer !== 'undefined') {
       _switchTab('portugal');
       setTimeout(() => PortugalExplorer.discoverRandom(), 500);
     } else if (mode === 'solar') {
       _switchTab('solar');
+    } else if (mode === 'galaxy') {
+      _switchTab('galaxy');
     } else if (_countriesOk && _countries.length) {
       /* Fallback: show random country on map */
       const c = _countries[Math.floor(Math.random() * _countries.length)];
       _switchTab('map');
-      setTimeout(() => showCountryPanel(c, '#ex-country-panel'), 500);
+      setTimeout(() => showCountryPanel(c), 500);
     }
   }
 
-  function _showMapMinimalPanel(feature) {
-    const panel = document.querySelector('#ex-country-panel');
-    if (!panel) return;
-    const name = feature.properties?.name || feature.id || 'País desconhecido';
-    panel.innerHTML = `
-      <button class="ex-panel-close" id="ex-panel-close">✕</button>
-      <div class="ex-panel-flag-placeholder" style="font-size:3rem;display:flex;align-items:center;justify-content:center;height:120px;background:linear-gradient(135deg,var(--accent-soft),var(--bg2))">🌍</div>
+  /* Minimal modal for a polygon with no matching country record. */
+  function _showMinimalPanel(feature) {
+    const overlay = _ensureModal();
+    const modal = overlay.querySelector('#ex-modal');
+    if (!modal) return;
+    _modalCountry = null;
+    const name = feature.properties?.name || feature.id || _t('Unknown country', 'País desconhecido');
+    modal.innerHTML = `
+      <button class="ex-panel-close" id="ex-panel-close" aria-label="${_t('Close', 'Fechar')}">✕</button>
+      <div class="ex-panel-flag-placeholder" style="font-size:3rem">🌍</div>
       <div class="ex-panel-body">
         <div class="ex-panel-name">${name}</div>
         <div class="ex-panel-rows" style="margin-top:.75rem">
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">⚠</span><span class="ex-panel-label" style="color:var(--muted);font-size:.78rem">Dados detalhados indisponíveis. A ligar ao servidor…</span></div>
+          <div class="ex-panel-row"><span class="ex-panel-row-icon">⚠</span><span class="ex-panel-label" style="color:var(--muted);font-size:.78rem">${_t('Detailed data unavailable for this territory.', 'Dados detalhados indisponíveis para este território.')}</span></div>
         </div>
-        <a class="ex-wiki-btn" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-flex">📖 Wikipedia</a>
+        <a class="ex-wiki-btn" href="${_wikiUrl(name)}" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-flex">📖 Wikipédia</a>
       </div>`;
-    panel.classList.add('open');
-    panel.querySelector('#ex-panel-close').onclick = () => panel.classList.remove('open');
-  }
-
-  function _showGlobeMinimalPanel(feature) {
-    const panel = document.querySelector('#ex-country-panel-globe');
-    if (!panel) return;
-    const name = feature.properties?.name || feature.id || 'País desconhecido';
-    panel.innerHTML = `
-      <button class="ex-panel-close" id="ex-panel-close">✕</button>
-      <div class="ex-panel-flag-placeholder" style="font-size:3rem;display:flex;align-items:center;justify-content:center;height:120px;background:linear-gradient(135deg,var(--accent-soft),var(--bg2))">🌍</div>
-      <div class="ex-panel-body">
-        <div class="ex-panel-name">${name}</div>
-        <div style="font-size:.8rem;color:var(--muted);margin:.5rem 0 1rem">ID GeoJSON: ${feature.id || '—'}</div>
-        <div class="ex-panel-rows">
-          <div class="ex-panel-row"><span class="ex-panel-row-icon">⚠</span><span class="ex-panel-label" style="color:var(--muted)">Dados detalhados indisponíveis de momento. Tenta novamente mais tarde.</span></div>
-        </div>
-        <a class="ex-wiki-btn" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-flex">📖 Wikipedia</a>
-      </div>`;
-    panel.classList.add('open');
-    panel.querySelector('#ex-panel-close').onclick = () => panel.classList.remove('open');
+    overlay.classList.add('open');
+    modal.querySelector('#ex-panel-close').onclick = () => _closeModal();
   }
 
   /* ════════════════════════════════ TAB SYSTEM ══════════════════════ */
@@ -1327,11 +1450,12 @@ const ExplorerPage = (function () {
     view.innerHTML = `
       <div class="ex-shell">
         <div class="ex-tabs" id="ex-tabs">
-          <button class="ex-tab active" data-tab="hub"><span class="ex-tab-icon">🏠</span> Início</button>
-          <button class="ex-tab" data-tab="map"><span class="ex-tab-icon">🗺</span> Mapa</button>
-          <button class="ex-tab" data-tab="globe"><span class="ex-tab-icon">🌍</span> Globo</button>
+          <button class="ex-tab active" data-tab="hub"><span class="ex-tab-icon">🏠</span> ${_t('Home', 'Início')}</button>
+          <button class="ex-tab" data-tab="map"><span class="ex-tab-icon">🗺</span> ${_t('Map', 'Mapa')}</button>
+          <button class="ex-tab" data-tab="globe"><span class="ex-tab-icon">🌍</span> ${_t('Globe', 'Globo')}</button>
           <button class="ex-tab" data-tab="portugal"><span class="ex-tab-icon">🇵🇹</span> Portugal</button>
-          <button class="ex-tab" data-tab="solar"><span class="ex-tab-icon">☀</span> Sistema Solar</button>
+          <button class="ex-tab" data-tab="solar"><span class="ex-tab-icon">☀</span> ${_t('Solar System', 'Sistema Solar')}</button>
+          <button class="ex-tab" data-tab="galaxy"><span class="ex-tab-icon">🌌</span> ${_t('Milky Way', 'Via Láctea')}</button>
         </div>
         <div class="ex-content">
           <div class="ex-sub active" id="ex-sub-hub"></div>
@@ -1339,6 +1463,7 @@ const ExplorerPage = (function () {
           <div class="ex-sub" id="ex-sub-globe"></div>
           <div class="ex-sub" id="ex-sub-portugal"></div>
           <div class="ex-sub" id="ex-sub-solar"></div>
+          <div class="ex-sub" id="ex-sub-galaxy"></div>
         </div>
       </div>`;
 
@@ -1352,7 +1477,9 @@ const ExplorerPage = (function () {
 
   function _switchTab(tab) {
     if (!_shell) return;
+    _closeModal();
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
+    if (tab !== 'galaxy' && _curTab === 'galaxy' && typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
@@ -1382,6 +1509,11 @@ const ExplorerPage = (function () {
       if (typeof SolarExplorer !== 'undefined') {
         if (!sub.querySelector('.ex-solar-wrap')) SolarExplorer.mount(sub);
         else SolarExplorer.resume();
+      }
+    } else if (tab === 'galaxy') {
+      if (typeof MilkyWayExplorer !== 'undefined') {
+        if (!sub.querySelector('.ex-solar-wrap')) MilkyWayExplorer.mount(sub);
+        else MilkyWayExplorer.resume();
       }
     }
   }
@@ -1420,7 +1552,23 @@ const ExplorerPage = (function () {
     }
     if (_globeGL) { try { _globeGL.pauseAnimation(); } catch (_) {} }
     if (typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
+    if (typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
     if (typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
+    _closeModal();
+  });
+
+  /* Language toggle → rebuild the explorer in the new language (keeping the
+     current tab). Cheap and fully consistent; if the view is hidden we just
+     drop the shell so it rebuilds fresh on the next open. */
+  document.addEventListener('langchange', () => {
+    const view = document.getElementById('view-explorer');
+    if (!view) return;
+    _closeModal();
+    if (!_shell || !view.contains(_shell)) return;
+    if (view.offsetParent === null) { _shell = null; return; }
+    const tab = _curTab;
+    _shell = null;
+    show(tab);
   });
 
   return { show };

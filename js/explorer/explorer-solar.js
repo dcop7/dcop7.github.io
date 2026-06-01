@@ -156,6 +156,88 @@ const SolarExplorer = (function () {
     ],
   };
 
+  /* ── Comets (real, clickable). Orbit params (a,b,inc,phase,speed) are
+     scene-decorative; info/facts are factual. ── */
+  const COMETS = [
+    {
+      id: 'halley', name: 'Halley (1P/Halley)', color: '#bfe3ff',
+      a: 300, b: 120, inc: 0.55, phase: 0.0, speed: 0.00055, tailLen: 95,
+      info: { type: 'Cometa periódico', period: '76 anos', perihelion: '0,59 UA', aphelion: '35 UA', nucleus: '15 × 8 km', composition: 'Gelo, poeira, CO₂', origin: 'Nuvem de Oort (tipo Halley)', lastSeen: '1986', nextSeen: '2061' },
+      facts: [
+        'O cometa mais famoso — observado desde, pelo menos, 240 a.C.',
+        'Foi o primeiro cometa cujo retorno foi previsto (por Edmond Halley, em 1705).',
+        'A sonda Giotto (ESA) fotografou o seu núcleo de perto em 1986.',
+        'Origina as chuvas de meteoros das Eta Aquáridas (Maio) e Oriónidas (Outubro).',
+      ],
+    },
+    {
+      id: 'halebopp', name: 'Hale-Bopp (C/1995 O1)', color: '#dbe6ff',
+      a: 460, b: 150, inc: 0.9, phase: 1.7, speed: 0.00028, tailLen: 130,
+      info: { type: 'Cometa de longo período', period: '~2 530 anos', perihelion: '0,91 UA', nucleus: '~60 km', composition: 'Gelo, poeira (duas caudas distintas)', origin: 'Nuvem de Oort', lastSeen: '1997', nextSeen: '~4385' },
+      facts: [
+        'Um dos cometas mais brilhantes do século XX — visível a olho nu durante 18 meses.',
+        'O seu núcleo, com ~60 km, é dos maiores alguma vez medidos.',
+        'Exibiu claramente duas caudas: uma de poeira (amarelada) e outra de iões (azul).',
+      ],
+    },
+    {
+      id: 'neowise', name: 'NEOWISE (C/2020 F3)', color: '#ffe7c0',
+      a: 540, b: 130, inc: 1.25, phase: 3.3, speed: 0.00022, tailLen: 120,
+      info: { type: 'Cometa de longo período', period: '~6 800 anos', perihelion: '0,29 UA', nucleus: '~5 km', composition: 'Gelo, poeira', origin: 'Nuvem de Oort', lastSeen: '2020', nextSeen: '~8800' },
+      facts: [
+        'O cometa mais brilhante visível do hemisfério norte desde o Hale-Bopp.',
+        'Descoberto pelo telescópio espacial NEOWISE (NASA) em Março de 2020.',
+        'Mostrou uma cauda de sódio, um fenómeno raro registado em poucos cometas.',
+      ],
+    },
+    {
+      id: 'encke', name: 'Encke (2P/Encke)', color: '#cfe0c8',
+      a: 150, b: 70, inc: 0.3, phase: 4.7, speed: 0.0013, tailLen: 55,
+      info: { type: 'Cometa periódico', period: '3,3 anos', perihelion: '0,34 UA', aphelion: '4,1 UA', nucleus: '~4,8 km', composition: 'Gelo, poeira', origin: 'Família de Júpiter', lastSeen: '2023', nextSeen: '2027' },
+      facts: [
+        'Tem o período orbital conhecido mais curto de qualquer cometa: apenas 3,3 anos.',
+        'Está associado à chuva de meteoros das Táuridas.',
+        'O segundo cometa a ter o seu regresso previsto, depois do Halley.',
+      ],
+    },
+    {
+      id: 'churyumov', name: '67P/Churyumov–Gerasimenko', color: '#c9c4b8',
+      a: 210, b: 95, inc: 0.18, phase: 2.4, speed: 0.0009, tailLen: 60,
+      info: { type: 'Cometa periódico', period: '6,4 anos', perihelion: '1,24 UA', aphelion: '5,7 UA', nucleus: '~4,3 km (bilobado)', composition: 'Gelo, poeira, compostos orgânicos', origin: 'Família de Júpiter', lastSeen: '2021', nextSeen: '2028' },
+      facts: [
+        'O primeiro cometa onde uma sonda entrou em órbita e pousou um módulo.',
+        'A missão Rosetta (ESA) orbitou-o e o módulo Philae pousou no núcleo em 2014.',
+        'Tem forma de "pato de borracha", com dois lóbulos ligados por um pescoço.',
+      ],
+    },
+  ];
+
+  /* ── Large/named asteroids (clickable, orbit within the belt). ── */
+  const BIG_ASTEROIDS = [
+    { id: 'ceres', name: 'Ceres', color: '#9fa3a8', orbitR: 99, displayR: 1.7,
+      info: { type: 'Planeta anão', dist: '2,77 UA', radius: '473 km', period: '4,6 anos', day: '9 horas', moons: '0', composition: 'Rocha, gelo de água' },
+      facts: ['O maior objeto da cintura de asteroides e o único planeta anão da cintura.', 'Contém cerca de um terço de toda a massa da cintura.', 'A sonda Dawn (NASA) orbitou-o entre 2015 e 2018, revelando depósitos de sais brilhantes.'] },
+    { id: 'vesta', name: 'Vesta', color: '#c8bda6', orbitR: 92, displayR: 1.2,
+      info: { type: 'Asteroide (protoplaneta)', dist: '2,36 UA', radius: '263 km', period: '3,6 anos', day: '5,3 horas', composition: 'Rocha basáltica' },
+      facts: ['O segundo corpo mais massivo da cintura e, por vezes, visível a olho nu.', 'Visitado pela sonda Dawn (NASA) em 2011–2012.', 'Muitos meteoritos HED encontrados na Terra têm origem em Vesta.'] },
+    { id: 'pallas', name: 'Pallas', color: '#a6a29a', orbitR: 106, displayR: 1.1,
+      info: { type: 'Asteroide', dist: '2,77 UA', radius: '256 km', period: '4,6 anos', day: '7,8 horas', composition: 'Silicatos' },
+      facts: ['O terceiro maior asteroide, com uma órbita muito inclinada (~35°).', 'Foi o segundo asteroide a ser descoberto, em 1802.'] },
+    { id: 'hygiea', name: 'Hígia', color: '#8f9298', orbitR: 112, displayR: 1.0,
+      info: { type: 'Asteroide', dist: '3,14 UA', radius: '217 km', period: '5,6 anos', day: '13,8 horas', composition: 'Carbonáceo escuro' },
+      facts: ['O quarto maior objeto da cintura e possivelmente quase esférico.', 'Poderá vir a ser reclassificado como planeta anão.'] },
+  ];
+
+  /* ── Earth satellites (clickable: ISS, Hubble). ── */
+  const SATELLITES = [
+    { id: 'iss', name: 'Estação Espacial Internacional', color: 0xffffff, dist: 5.1, inc: 0.9, speed: 0.05,
+      info: { type: 'Estação espacial', dist: '~420 km', period: '92 minutos', speed: '27 600 km/h', crew: '7 tripulantes' },
+      facts: ['O maior objeto humano em órbita — visível a olho nu como um ponto brilhante.', 'Dá uma volta à Terra a cada ~92 minutos (16 amanheceres por dia).', 'Habitada continuamente desde Novembro de 2000.'] },
+    { id: 'hubble', name: 'Telescópio Espacial Hubble', color: 0xcfd6e0, dist: 5.6, inc: 0.45, speed: 0.044,
+      info: { type: 'Telescópio espacial', dist: '~540 km', period: '95 minutos', launch: '1990', operator: 'NASA / ESA' },
+      facts: ['Em órbita desde 1990, revolucionou a astronomia moderna.', 'As suas imagens ajudaram a medir a idade e a expansão do Universo.', 'Foi reparado e atualizado por missões tripuladas dos vaivéns espaciais.'] },
+  ];
+
   /* ── Module state ── */
   let _renderer   = null;
   let _scene      = null;
@@ -190,11 +272,16 @@ const SolarExplorer = (function () {
   let _orbitsVisible = true;
   let _moons         = [];     /* clickable moon meshes: {mesh, planetIdx, angle, dist, speed, color, data} */
   let _selMoon       = null;
+  let _selBody       = null;    /* body object backing the tabbed panel (planet/sun/comet/asteroid/satellite) */
   let _earthClouds   = null;   /* Earth cloud shell (toggleable) */
   let _cloudsOn      = true;
   let _earthDN       = null;   /* Earth day/night shader uniforms */
   let _earthMesh     = null;
-  let _comet         = null;   /* { head, tail, angle, a, b, inc } */
+  let _comets        = [];     /* [{ data, head, ion, dust, angle, ... }] */
+  let _beltPoints    = null;   /* rotating asteroid-belt Points */
+  let _asteroids     = [];     /* named clickable asteroids: {mesh, data, angle, orbitR, speed} */
+  let _satellites    = [];     /* Earth satellites: {mesh, data, angle, dist, inc, speed} */
+  let _glowTex       = null;   /* shared soft radial-glow texture (coma, etc.) */
   let _sunCorona     = null;
 
   /* Earth day/night: blend day + night (city lights) textures by the angle to
@@ -324,7 +411,8 @@ const SolarExplorer = (function () {
     const W = viewport.clientWidth  || 800;
     const H = viewport.clientHeight || 600;
     _orbitLines = [];   /* reset so re-mounts don't keep stale orbit refs */
-    _earthDN = null; _earthMesh = null; _comet = null; _sunCorona = null;
+    _earthDN = null; _earthMesh = null; _sunCorona = null;
+    _comets = []; _asteroids = []; _satellites = []; _beltPoints = null;
 
     /* Renderer */
     _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -469,15 +557,19 @@ const SolarExplorer = (function () {
       return mesh;
     });
 
-    /* Asteroid belt between Mars and Jupiter (decorative, ~Kirkwood gap region). */
+    /* Asteroid belt between Mars and Jupiter + named clickable asteroids. */
     _buildAsteroidBelt(PLANETS);
+    _buildNamedAsteroids();
 
     /* Clickable major moons orbiting their planets. */
     _buildMoons();
 
-    /* Subtle Sun corona (additive shell that gently pulses) + a comet. */
+    /* Satellites orbiting Earth (ISS, Hubble + decorative GPS/geo ring). */
+    _buildSatellites();
+
+    /* Subtle Sun corona (additive shell that gently pulses) + comets. */
     _buildSunCorona();
-    _buildComet();
+    _buildComets();
 
     /* ResizeObserver */
     new ResizeObserver(() => {
@@ -491,25 +583,111 @@ const SolarExplorer = (function () {
     }).observe(viewport);
   }
 
-  /* Scatter a faint ring of points between Mars and Jupiter. */
+  /* Soft radial-gradient texture (white core → transparent) reused for comet
+     comae, sun glow and nebulae. Generated once, on a small canvas. */
+  function _glowTexture() {
+    if (_glowTex) return _glowTex;
+    const s = 64, cv = document.createElement('canvas');
+    cv.width = cv.height = s;
+    const ctx = cv.getContext('2d');
+    const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.25, 'rgba(255,255,255,0.55)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+    _glowTex = new THREE.CanvasTexture(cv);
+    return _glowTex;
+  }
+
+  /* Asteroid belt between Mars and Jupiter — denser, with size/colour variation,
+     a believable vertical spread and a clear (Kirkwood-style) inner/outer falloff.
+     Stored so it rotates slowly in the animation loop. */
   function _buildAsteroidBelt(PLANETS) {
     const mars = PLANETS.find(p => p.id === 'mars');
     const jup  = PLANETS.find(p => p.id === 'jupiter');
     if (!mars || !jup) return;
-    const rMin = mars.orbitR + 6, rMax = jup.orbitR - 7;
-    const N = 1400;
+    const rMin = mars.orbitR + 5, rMax = jup.orbitR - 6;
+    const N = 4200;
     const pos = new Float32Array(N * 3);
+    const col = new Float32Array(N * 3);
+    const palette = [
+      [0.60, 0.56, 0.48], [0.52, 0.47, 0.40], [0.70, 0.64, 0.54],
+      [0.45, 0.42, 0.40], [0.66, 0.58, 0.46],
+    ];
     for (let i = 0; i < N; i++) {
       const a = Math.random() * Math.PI * 2;
-      const r = rMin + Math.random() * (rMax - rMin);
+      /* Bias toward the middle of the belt (denser core, sparse edges). */
+      const t = (Math.random() + Math.random()) / 2;
+      const r = rMin + t * (rMax - rMin);
+      /* Vertical spread grows slightly with radius (a flared torus). */
+      const spread = 2 + (r - rMin) / (rMax - rMin) * 3;
       pos[i * 3]     = Math.cos(a) * r;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 3;   /* thin vertical spread */
+      pos[i * 3 + 1] = (Math.random() - 0.5) * spread;
       pos[i * 3 + 2] = Math.sin(a) * r;
+      const c = palette[(Math.random() * palette.length) | 0];
+      col[i * 3] = c[0]; col[i * 3 + 1] = c[1]; col[i * 3 + 2] = c[2];
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const mat = new THREE.PointsMaterial({ color: 0x9a8f7a, size: 0.6, sizeAttenuation: true, transparent: true, opacity: 0.7 });
-    _scene.add(new THREE.Points(geo, mat));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const mat = new THREE.PointsMaterial({ size: 0.7, sizeAttenuation: true, transparent: true, opacity: 0.85, vertexColors: true });
+    _beltPoints = new THREE.Points(geo, mat);
+    _scene.add(_beltPoints);
+  }
+
+  /* Named asteroids (Ceres, Vesta…) as small clickable bodies in the belt. */
+  function _buildNamedAsteroids() {
+    _asteroids = [];
+    BIG_ASTEROIDS.forEach(a => {
+      const geo = new THREE.SphereGeometry(a.displayR, 16, 16);
+      const mat = new THREE.MeshPhongMaterial({ color: a.color, emissive: new THREE.Color(a.color).multiplyScalar(0.2), shininess: 6 });
+      const mesh = new THREE.Mesh(geo, mat);
+      _scene.add(mesh);
+      _asteroids.push({ mesh, data: a, angle: Math.random() * Math.PI * 2, orbitR: a.orbitR, speed: 0.0004 + Math.random() * 0.0003 });
+    });
+  }
+
+  /* Earth satellites: ISS + Hubble (clickable) plus a decorative geostationary
+     ring and a small GPS cluster. They are attached to the Earth mesh so they
+     follow it around its orbit. */
+  function _buildSatellites() {
+    _satellites = [];
+    const earthIdx = PLANETS.findIndex(p => p.id === 'earth');
+    const earth = _planetMeshes[earthIdx];
+    if (!earth) return;
+    const R = PLANETS[earthIdx].displayR;
+
+    SATELLITES.forEach(s => {
+      const geo = new THREE.SphereGeometry(0.32, 10, 10);
+      const mat = new THREE.MeshBasicMaterial({ color: s.color });
+      const mesh = new THREE.Mesh(geo, mat);
+      _scene.add(mesh);
+      _satellites.push({ mesh, data: s, angle: Math.random() * Math.PI * 2, dist: s.dist, inc: s.inc, speed: s.speed });
+    });
+
+    /* Decorative geostationary ring (thin line in Earth's equatorial plane). */
+    const geoPts = [];
+    for (let i = 0; i <= 96; i++) {
+      const a = (i / 96) * Math.PI * 2;
+      geoPts.push(new THREE.Vector3(Math.cos(a) * R * 1.9, 0, Math.sin(a) * R * 1.9));
+    }
+    const ring = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(geoPts),
+      new THREE.LineBasicMaterial({ color: 0x66aaff, transparent: true, opacity: 0.35 }),
+    );
+    earth.add(ring);
+
+    /* GPS-like cluster: a handful of tiny dots on inclined orbits (decorative). */
+    const gpsPos = new Float32Array(24 * 3);
+    for (let i = 0; i < 24; i++) {
+      const a = Math.random() * Math.PI * 2, inc = (Math.random() - 0.5) * 1.0, r = R * 2.3;
+      gpsPos[i * 3]     = Math.cos(a) * r;
+      gpsPos[i * 3 + 1] = Math.sin(inc) * r * 0.7;
+      gpsPos[i * 3 + 2] = Math.sin(a) * r;
+    }
+    const gpsGeo = new THREE.BufferGeometry();
+    gpsGeo.setAttribute('position', new THREE.BufferAttribute(gpsPos, 3));
+    earth.add(new THREE.Points(gpsGeo, new THREE.PointsMaterial({ color: 0x9fd0ff, size: 0.45, transparent: true, opacity: 0.8 })));
   }
 
   /* Build small clickable moons orbiting each planet (from its moonList). */
@@ -549,19 +727,41 @@ const SolarExplorer = (function () {
     _scene.add(_sunCorona);
   }
 
-  /* A single comet on a wide, inclined elliptical orbit with an anti-sunward
-     tail (a stretched, fading set of points). Decorative + subtle. */
-  function _buildComet() {
-    const head = new THREE.Mesh(
-      new THREE.SphereGeometry(1.1, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xcfe8ff }),
-    );
-    const N = 40;
-    const tg = new THREE.BufferGeometry();
-    tg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
-    const tail = new THREE.Points(tg, new THREE.PointsMaterial({ color: 0x9fd0ff, size: 1.4, transparent: true, opacity: 0.5, sizeAttenuation: true, depthWrite: false }));
-    _scene.add(head); _scene.add(tail);
-    _comet = { head, tail, N, angle: Math.random() * Math.PI * 2, a: 250, b: 150, inc: 0.5 };
+  /* Detailed comets: each has a glowing coma (sprite), a solid nucleus, a
+     straight blue ion tail and a wider, slightly fanned pale dust tail — both
+     pointing anti-sunward. The nucleus mesh is clickable (userData.cometId). */
+  function _buildComets() {
+    _comets = [];
+    const glow = _glowTexture();
+    COMETS.forEach(c => {
+      const col = new THREE.Color(c.color);
+
+      /* Nucleus (clickable) */
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(1.0, 14, 14),
+        new THREE.MeshBasicMaterial({ color: col }),
+      );
+      head.userData.cometId = c.id;
+      _scene.add(head);
+
+      /* Coma: soft additive glow sprite around the nucleus. */
+      const coma = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: col, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
+      coma.scale.setScalar(7);
+      head.add(coma);
+
+      const ionN = Math.round(c.tailLen * 0.6);
+      const dustN = Math.round(c.tailLen * 0.9);
+      const ionGeo = new THREE.BufferGeometry();
+      ionGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(ionN * 3), 3));
+      const ion = new THREE.Points(ionGeo, new THREE.PointsMaterial({ color: 0x8fc4ff, size: 1.4, transparent: true, opacity: 0.6, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+
+      const dustGeo = new THREE.BufferGeometry();
+      dustGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(dustN * 3), 3));
+      const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xf3e6c8, size: 1.9, transparent: true, opacity: 0.42, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+
+      _scene.add(ion); _scene.add(dust);
+      _comets.push({ data: c, head, coma, ion, dust, ionN, dustN, angle: c.phase, a: c.a, b: c.b, inc: c.inc, speed: c.speed, tailLen: c.tailLen });
+    });
   }
 
   /* ═════════════════════════════ CAMERA ═════════════════════════════ */
@@ -587,6 +787,11 @@ const SolarExplorer = (function () {
   function _focusSun() {
     _camFocusXT = 0; _camFocusYT = 0; _camFocusZT = 0;
     _camDistT   = 50;
+  }
+
+  function _focusVec(x, y, z, dist) {
+    _camFocusXT = x; _camFocusYT = y; _camFocusZT = z;
+    _camDistT = dist;
   }
 
   /* ═════════════════════════════ ANIMATION ══════════════════════════ */
@@ -635,25 +840,64 @@ const SolarExplorer = (function () {
         _sunCorona.material.opacity = 0.15 + Math.sin(t * 1.3) * 0.05;
       }
 
-      /* Comet: glide along an inclined ellipse; tail points anti-sunward. */
-      if (_comet) {
-        if (animate) _comet.angle += 0.0007 * _speed;
-        const a = _comet.angle;
-        const hx = Math.cos(a) * _comet.a;
-        const hz = Math.sin(a) * _comet.b;
-        const hy = Math.sin(a) * _comet.a * _comet.inc;
-        _comet.head.position.set(hx, hy, hz);
-        /* Tail: trail of points stretching away from the Sun (origin). */
-        const dir = _comet.head.position.clone().normalize();
-        const pos = _comet.tail.geometry.attributes.position;
-        for (let k = 0; k < _comet.N; k++) {
-          const f = k / _comet.N;
-          pos.setXYZ(k,
-            hx + dir.x * f * 60 + (Math.random() - 0.5) * f * 6,
-            hy + dir.y * f * 60 + (Math.random() - 0.5) * f * 6,
-            hz + dir.z * f * 60 + (Math.random() - 0.5) * f * 6);
+      /* Asteroid belt slowly precesses (visible only when animating). */
+      if (_beltPoints && animate) _beltPoints.rotation.y += 0.00012 * _speed;
+
+      /* Named asteroids orbit within the belt. */
+      for (const as of _asteroids) {
+        if (animate) { as.angle += as.speed * _speed; as.mesh.rotateY(0.004 * _speed); }
+        as.mesh.position.set(Math.cos(as.angle) * as.orbitR, Math.sin(as.angle * 1.7) * 2, Math.sin(as.angle) * as.orbitR);
+      }
+
+      /* Earth satellites orbit the (now-moved) Earth on inclined planes. */
+      if (_satellites.length) {
+        const ei = PLANETS.findIndex(p => p.id === 'earth');
+        const em = _planetMeshes[ei];
+        if (em) {
+          for (const s of _satellites) {
+            if (animate) s.angle += s.speed * _speed;
+            const cx = Math.cos(s.angle) * s.dist;
+            const cz = Math.sin(s.angle) * s.dist;
+            s.mesh.position.set(
+              em.position.x + cx,
+              em.position.y + Math.sin(s.angle) * s.dist * Math.sin(s.inc),
+              em.position.z + cz * Math.cos(s.inc),
+            );
+          }
         }
-        pos.needsUpdate = true;
+      }
+
+      /* Comets: glide along inclined ellipses; ion tail straight anti-sunward,
+         dust tail wider and slightly fanned. Both fade with distance. */
+      for (const cm of _comets) {
+        if (animate) cm.angle += cm.speed * _speed;
+        const a = cm.angle;
+        const hx = Math.cos(a) * cm.a;
+        const hz = Math.sin(a) * cm.b;
+        const hy = Math.sin(a) * cm.a * cm.inc;
+        cm.head.position.set(hx, hy, hz);
+        const dir = cm.head.position.clone().normalize();   /* anti-sunward */
+        /* Ion tail — narrow, straight. */
+        const ip = cm.ion.geometry.attributes.position;
+        for (let k = 0; k < cm.ionN; k++) {
+          const f = k / cm.ionN;
+          ip.setXYZ(k,
+            hx + dir.x * f * cm.tailLen + (Math.random() - 0.5) * f * 3,
+            hy + dir.y * f * cm.tailLen + (Math.random() - 0.5) * f * 3,
+            hz + dir.z * f * cm.tailLen + (Math.random() - 0.5) * f * 3);
+        }
+        ip.needsUpdate = true;
+        /* Dust tail — shorter, wider, curved opposite the motion direction. */
+        const dp = cm.dust.geometry.attributes.position;
+        const tang = new THREE.Vector3(-Math.sin(a) * cm.a, Math.cos(a) * cm.a * cm.inc, Math.cos(a) * cm.b).normalize();
+        for (let k = 0; k < cm.dustN; k++) {
+          const f = k / cm.dustN;
+          dp.setXYZ(k,
+            hx + dir.x * f * cm.tailLen * 0.8 - tang.x * f * cm.tailLen * 0.25 + (Math.random() - 0.5) * f * 6,
+            hy + dir.y * f * cm.tailLen * 0.8 - tang.y * f * cm.tailLen * 0.25 + (Math.random() - 0.5) * f * 6,
+            hz + dir.z * f * cm.tailLen * 0.8 - tang.z * f * cm.tailLen * 0.25 + (Math.random() - 0.5) * f * 6);
+        }
+        dp.needsUpdate = true;
       }
 
       /* Cinematic idle drift: while nothing is selected (and the user isn't
@@ -852,6 +1096,51 @@ const SolarExplorer = (function () {
         }
       }
 
+      /* Check Earth satellites (ISS, Hubble) */
+      if (_satellites.length) {
+        const satHits = ray.intersectObjects(_satellites.map(s => s.mesh), false);
+        if (satHits.length) {
+          const s = _satellites.find(x => x.mesh === satHits[0].object);
+          if (s) {
+            _sel = 'other';
+            const ei = PLANETS.findIndex(p => p.id === 'earth');
+            _focusPlanet(ei);
+            _openPanel({ ...s.data, color: '#' + s.data.color.toString(16).padStart(6, '0') }, container);
+            return;
+          }
+        }
+      }
+
+      /* Check comets (nucleus meshes) */
+      if (_comets.length) {
+        const cHits = ray.intersectObjects(_comets.map(c => c.head), false);
+        if (cHits.length) {
+          const cm = _comets.find(x => x.head === cHits[0].object);
+          if (cm) {
+            _sel = 'other';
+            const h = cm.head.position;
+            _focusVec(h.x, h.y, h.z, 90);
+            _openPanel(cm.data, container);
+            return;
+          }
+        }
+      }
+
+      /* Check named asteroids (Ceres, Vesta…) */
+      if (_asteroids.length) {
+        const aHits = ray.intersectObjects(_asteroids.map(a => a.mesh), false);
+        if (aHits.length) {
+          const as = _asteroids.find(x => x.mesh === aHits[0].object);
+          if (as) {
+            _sel = 'other';
+            const p = as.mesh.position;
+            _focusVec(p.x, p.y, p.z, 42);
+            _openPanel(as.data, container);
+            return;
+          }
+        }
+      }
+
       /* Check planets */
       const planetHits = ray.intersectObjects(_planetMeshes, false);
       if (planetHits.length) {
@@ -865,7 +1154,7 @@ const SolarExplorer = (function () {
       }
 
       /* Click empty: deselect */
-      _sel = null; _selMoon = null;
+      _sel = null; _selMoon = null; _selBody = null;
       container.querySelector('#ss-panel')?.classList.remove('open');
     });
   }
@@ -897,7 +1186,7 @@ const SolarExplorer = (function () {
       _speed    = 1;
       _camThetaT = 0.3; _camPhiT = 1.1; _camDistT = 280;
       _camFocusXT = 0; _camFocusYT = 0; _camFocusZT = 0;
-      _sel = null;
+      _sel = null; _selBody = null;
       container.querySelector('#ss-panel')?.classList.remove('open');
       _updateSpeedLabel(container);
     };
@@ -924,7 +1213,7 @@ const SolarExplorer = (function () {
     });
     const closeBtn = container.querySelector('#ss-panel-close');
     if (closeBtn) closeBtn.onclick = () => {
-      _sel = null; _selMoon = null;
+      _sel = null; _selMoon = null; _selBody = null;
       const tabs = container.querySelector('#ss-panel-tabs');
       if (tabs) tabs.style.display = '';   /* restore for next planet/sun */
       container.querySelector('#ss-panel')?.classList.remove('open');
@@ -955,6 +1244,7 @@ const SolarExplorer = (function () {
 
   function _openPanel(body, container) {
     _selMoon = null;
+    _selBody = body;
     const hint = container.querySelector('#ss-hint');
     if (hint) hint.style.display = 'none';
     const panel = container.querySelector('#ss-panel');
@@ -966,8 +1256,11 @@ const SolarExplorer = (function () {
     container.querySelectorAll('.ex-solar-panel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'overview'));
     const moonTab    = panel.querySelector('[data-tab="moons"]');
     const compareTab = panel.querySelector('[data-tab="compare"]');
+    const explTab    = panel.querySelector('[data-tab="exploration"]');
     if (moonTab)    moonTab.style.display    = body.moonList !== undefined ? '' : 'none';
     if (compareTab) compareTab.style.display = body.compare  !== undefined ? '' : 'none';
+    const missionKey = (body === SUN) ? 'sun' : body.id;
+    if (explTab)    explTab.style.display    = (MISSIONS[missionKey] ? '' : 'none');
     _renderPanelHeader(body, container);
     _renderPanelBody(container);
   }
@@ -994,12 +1287,19 @@ const SolarExplorer = (function () {
     saturn: ['Pioneer 11 e Voyager 1/2 — sobrevoos', 'Cassini–Huygens (NASA/ESA) — em órbita 2004–2017', 'Huygens (ESA) — pousou em Titã em 2005, a pousagem mais distante de sempre'],
     uranus: ['Voyager 2 (NASA, 1986) — a única nave a visitar Urano'],
     neptune: ['Voyager 2 (NASA, 1989) — a única nave a visitar Neptuno'],
+    /* Comets */
+    halley: ['Giotto (ESA, 1986) — passou a ~600 km do núcleo', '"Armada do Halley": Vega 1/2 (URSS) e Suisei/Sakigake (Japão)'],
+    churyumov: ['Rosetta (ESA) — primeira sonda a orbitar um cometa (2014–2016)', 'Philae (ESA) — primeiro módulo a pousar num núcleo cometário (2014)'],
+    encke: ['Observado por inúmeras campanhas terrestres e pela sonda Deep Impact (2007)'],
+    /* Large asteroids */
+    ceres: ['Dawn (NASA) — em órbita 2015–2018, com motor iónico'],
+    vesta: ['Dawn (NASA) — em órbita 2011–2012'],
   };
 
   function _renderPanelBody(container) {
     const bodyEl = container.querySelector('#ss-panel-body');
     if (!bodyEl) return;
-    const body = _sel === 'sun' ? SUN : (_sel !== null ? PLANETS[_sel] : null);
+    const body = _selBody;
     if (!body) return;
 
     if (_curTab === 'overview') {
@@ -1008,6 +1308,10 @@ const SolarExplorer = (function () {
         period: 'Período orbital', day: 'Duração do dia',
         temp: 'Temperatura', moons: 'Nº de luas', gravity: 'Gravidade superficial',
         atmos: 'Atmosfera', type: 'Tipo', age: 'Idade',
+        perihelion: 'Periélio (mín.)', aphelion: 'Afélio (máx.)', nucleus: 'Núcleo',
+        composition: 'Composição', origin: 'Origem', lastSeen: 'Última passagem',
+        nextSeen: 'Próxima passagem', speed: 'Velocidade', crew: 'Tripulação',
+        launch: 'Lançamento', operator: 'Operador',
       };
       const rows = Object.entries(body.info).map(([k, v]) =>
         `<div class="ex-solar-info-row">
@@ -1037,7 +1341,7 @@ const SolarExplorer = (function () {
       bodyEl.innerHTML = `<div class="ex-solar-moons">${items}${more}</div>`;
 
     } else if (_curTab === 'exploration') {
-      const key = _sel === 'sun' ? 'sun' : body.id;
+      const key = (body === SUN) ? 'sun' : body.id;
       const list = MISSIONS[key] || [];
       const items = list.map(m => `<div class="ex-solar-fact-item">🛰 ${m}</div>`).join('');
       bodyEl.innerHTML = `<div class="ex-solar-facts">${items || '<div class="ex-solar-empty">Sem missões registadas.</div>'}</div>`;

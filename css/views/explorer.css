@@ -586,6 +586,96 @@
 }
 .ex-country-panel.open { transform: translateX(0); }
 
+/* ── Centered country modal (shared by map & globe) ── */
+.ex-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(4, 8, 16, .55);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+.ex-modal-overlay.open { opacity: 1; pointer-events: auto; }
+.ex-modal {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(88vh, 780px);
+  background: var(--card-solid);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .55);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(14px) scale(.98);
+  transition: transform .22s cubic-bezier(.4, 0, .2, 1);
+}
+.ex-modal-overlay.open .ex-modal { transform: none; }
+.ex-modal .ex-panel-flag { height: 150px; }
+.ex-modal .ex-panel-close {
+  position: absolute; top: .7rem; right: .7rem; z-index: 3;
+}
+
+/* Section title + accordion inside the modal */
+.ex-panel-section-title {
+  font-family: var(--font-head);
+  font-size: .9rem; font-weight: 700;
+  margin: 1.1rem 0 .5rem;
+}
+.ex-acc-group { margin-top: 1.1rem; display: flex; flex-direction: column; gap: .5rem; }
+.ex-acc {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--card);
+}
+.ex-acc-hdr {
+  width: 100%;
+  display: flex; align-items: center; gap: .55rem;
+  padding: .6rem .8rem;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text); font-family: var(--font-sans); font-size: .85rem; font-weight: 600;
+  text-align: left;
+  transition: background var(--ease);
+}
+.ex-acc-hdr:hover { background: rgba(255,255,255,.04); }
+.ex-acc-icon { font-size: 1rem; }
+.ex-acc-label { flex: 1; }
+.ex-acc-chevron { font-size: .8rem; color: var(--muted); transition: transform .2s ease; }
+.ex-acc.open .ex-acc-chevron { transform: rotate(180deg); }
+.ex-acc-body {
+  display: none;
+  padding: 0 .8rem .8rem;
+  font-size: .8rem; line-height: 1.55; color: var(--text2);
+}
+.ex-acc.open .ex-acc-body { display: block; }
+.ex-acc-excerpt p { margin: .2rem 0 .6rem; }
+.ex-acc-loading { color: var(--muted); font-size: .76rem; padding: .3rem 0; }
+.ex-acc-links { display: flex; flex-wrap: wrap; gap: .4rem .9rem; }
+.ex-mini-link {
+  display: inline-flex; align-items: center;
+  color: var(--accent); font-size: .76rem; font-weight: 600;
+  text-decoration: none; border-bottom: 1px solid transparent;
+}
+.ex-mini-link:hover { border-bottom-color: var(--accent); }
+
+@media (max-width: 640px) {
+  /* Full-screen sheet on phones for comfortable reading + tapping. */
+  .ex-modal-overlay { padding: 0; }
+  .ex-modal {
+    width: 100%; height: 100%; max-height: 100%;
+    border-radius: 0; border: none;
+  }
+  .ex-modal .ex-panel-flag { height: 130px; }
+}
+
 .ex-panel-flag {
   width: 100%;
   height: 160px;
@@ -1958,6 +2048,17 @@ body.light .pt-capital-label .pt-cap-dot {
   line-height: 1.6;
   opacity: .9;
 }
+
+/* Historic-monument links (district panel) */
+.pt-links-wrap { display: flex; flex-direction: column; gap: .1rem; }
+.pt-mon-link {
+  display: inline-flex; align-items: center;
+  font-size: .8rem; font-weight: 600; color: var(--accent);
+  text-decoration: none; padding: .32rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.pt-links-wrap .pt-mon-link:last-child { border-bottom: none; }
+.pt-mon-link:hover { text-decoration: underline; }
 
 .pt-fact-item {
   display: flex;

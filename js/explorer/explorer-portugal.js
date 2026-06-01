@@ -268,6 +268,100 @@ const PortugalExplorer = (function () {
     },
   ];
 
+  /* ── Historic monuments per district (name + PT Wikipedia article) +
+     a few extra points of interest. Kept separate so the DISTRICTS block
+     stays readable; rendered as clickable links in the info panel. ── */
+  const DISTRICT_MON = {
+    aveiro: { mon: [
+      ['Sé de Aveiro', 'Sé_de_Aveiro'], ['Mosteiro de Jesus (Museu de Aveiro)', 'Mosteiro_de_Jesus_(Aveiro)'],
+      ['Farol da Barra', 'Farol_da_Barra_de_Aveiro'], ['Mosteiro de Arouca', 'Mosteiro_de_Arouca'],
+    ], poi: ['Praia da Barra', 'Pateira de Fermentelos', 'Passadiços do Paiva (Arouca)', 'Ponte 516 Arouca'] },
+    beja: { mon: [
+      ['Castelo de Beja', 'Castelo_de_Beja'], ['Convento da Conceição (Museu Rainha D. Leonor)', 'Convento_de_Nossa_Senhora_da_Conceição_(Beja)'],
+      ['Castelo de Mértola', 'Castelo_de_Mértola'], ['Igreja Matriz de Mértola (antiga mesquita)', 'Igreja_Matriz_de_Mértola'],
+    ], poi: ['Pulo do Lobo', 'Mina de São Domingos', 'Vila Nova de Milfontes'] },
+    braga: { mon: [
+      ['Sé de Braga', 'Sé_de_Braga'], ['Santuário do Bom Jesus do Monte', 'Santuário_do_Bom_Jesus_do_Monte'],
+      ['Santuário do Sameiro', 'Santuário_do_Sameiro'], ['Mosteiro de Tibães', 'Mosteiro_de_São_Martinho_de_Tibães'],
+      ['Capela de São Frutuoso', 'Capela_de_São_Frutuoso_de_Montélios'],
+    ], poi: ['Termas Romanas do Alto da Cividade', 'Geres (Peneda-Gerês)', 'Citânia de Briteiros'] },
+    braganca: { mon: [
+      ['Castelo de Bragança', 'Castelo_de_Bragança'], ['Domus Municipalis', 'Domus_Municipalis'],
+      ['Sé de Bragança', 'Concatedral_de_Bragança'], ['Mosteiro de Castro de Avelãs', 'Mosteiro_de_Castro_de_Avelãs'],
+    ], poi: ['Parque Natural de Montesinho', 'Centro de Arte Contemporânea Graça Morais', 'Miranda do Douro'] },
+    'castelo-branco': { mon: [
+      ['Jardim do Paço Episcopal', 'Jardim_do_Paço_Episcopal_de_Castelo_Branco'], ['Castelo de Monsanto', 'Castelo_de_Monsanto'],
+      ['Sé de Castelo Branco', 'Sé_de_Castelo_Branco'], ['Ruínas romanas de Idanha-a-Velha', 'Idanha-a-Velha'],
+    ], poi: ['Aldeia Histórica de Monsanto', 'Penha Garcia', 'Reserva Natural da Serra da Malcata'] },
+    coimbra: { mon: [
+      ['Universidade de Coimbra (Paço das Escolas)', 'Universidade_de_Coimbra'], ['Biblioteca Joanina', 'Biblioteca_Joanina'],
+      ['Sé Velha de Coimbra', 'Sé_Velha_de_Coimbra'], ['Mosteiro de Santa Cruz', 'Mosteiro_de_Santa_Cruz_(Coimbra)'],
+      ['Mosteiro de Santa Clara-a-Velha', 'Mosteiro_de_Santa_Clara-a-Velha'],
+    ], poi: ['Portugal dos Pequenitos', 'Conímbriga (ruínas romanas)', 'Penedo da Saudade'] },
+    evora: { mon: [
+      ['Templo Romano de Évora', 'Templo_romano_de_Évora'], ['Sé de Évora', 'Sé_de_Évora'],
+      ['Capela dos Ossos', 'Capela_dos_Ossos_(Évora)'], ['Cromeleque dos Almendres', 'Cromeleque_dos_Almendres'],
+      ['Aqueduto da Água de Prata', 'Aqueduto_da_Água_de_Prata'],
+    ], poi: ['Universidade de Évora', 'Praça do Giraldo', 'Anta Grande do Zambujeiro'] },
+    faro: { mon: [
+      ['Sé de Faro', 'Sé_de_Faro'], ['Castelo de Silves', 'Castelo_de_Silves'],
+      ['Fortaleza de Sagres', 'Fortaleza_de_Sagres'], ['Cabo de São Vicente', 'Cabo_de_São_Vicente'],
+    ], poi: ['Ria Formosa', 'Praia da Marinha', 'Ponta da Piedade (Lagos)', 'Grutas de Benagil'] },
+    guarda: { mon: [
+      ['Sé da Guarda', 'Sé_da_Guarda'], ['Castelo de Belmonte', 'Castelo_de_Belmonte'],
+      ['Aldeia Histórica de Sortelha', 'Sortelha'], ['Torre de Menagem da Guarda', 'Castelo_da_Guarda'],
+    ], poi: ['Serra da Estrela (Torre)', 'Museu Judaico de Belmonte', 'Aldeia de Linhares da Beira'] },
+    leiria: { mon: [
+      ['Castelo de Leiria', 'Castelo_de_Leiria'], ['Mosteiro de Alcobaça', 'Mosteiro_de_Alcobaça'],
+      ['Mosteiro da Batalha', 'Mosteiro_da_Batalha'], ['Santuário de Fátima', 'Santuário_de_Fátima'],
+      ['Castelo de Óbidos', 'Castelo_de_Óbidos'],
+    ], poi: ['Praia da Nazaré (Canhão)', 'Vila medieval de Óbidos', 'Grutas de Mira de Aire'] },
+    lisboa: { mon: [
+      ['Torre de Belém', 'Torre_de_Belém'], ['Mosteiro dos Jerónimos', 'Mosteiro_dos_Jerónimos'],
+      ['Castelo de São Jorge', 'Castelo_de_São_Jorge'], ['Sé de Lisboa', 'Sé_de_Lisboa'],
+      ['Padrão dos Descobrimentos', 'Padrão_dos_Descobrimentos'], ['Palácio Nacional de Sintra', 'Palácio_Nacional_de_Sintra'],
+    ], poi: ['Palácio da Pena (Sintra)', 'Praça do Comércio', 'Cabo da Roca', 'Elétrico 28'] },
+    portalegre: { mon: [
+      ['Sé de Portalegre', 'Sé_de_Portalegre'], ['Castelo de Marvão', 'Castelo_de_Marvão'],
+      ['Castelo de Castelo de Vide', 'Castelo_de_Vide'], ['Castelo de Arronches', 'Castelo_de_Arronches'],
+    ], poi: ['Aldeia de Marvão', 'Judiaria de Castelo de Vide', 'Serra de São Mamede'] },
+    porto: { mon: [
+      ['Torre dos Clérigos', 'Torre_dos_Clérigos'], ['Sé do Porto', 'Sé_do_Porto'],
+      ['Palácio da Bolsa', 'Palácio_da_Bolsa'], ['Igreja de São Francisco', 'Igreja_de_São_Francisco_(Porto)'],
+      ['Ponte Luís I', 'Ponte_Luís_I'], ['Livraria Lello', 'Livraria_Lello'],
+    ], poi: ['Ribeira do Porto', 'Caves do Vinho do Porto (Gaia)', 'Fundação de Serralves', 'Mercado do Bolhão'] },
+    santarem: { mon: [
+      ['Convento de Cristo (Tomar)', 'Convento_de_Cristo'], ['Castelo de Almourol', 'Castelo_de_Almourol'],
+      ['Igreja da Graça (Santarém)', 'Igreja_da_Graça_(Santarém)'], ['Castelo de Torres Novas', 'Castelo_de_Torres_Novas'],
+    ], poi: ['Portas do Sol', 'Aqueduto dos Pegões (Tomar)', 'Mata Nacional dos Sete Montes'] },
+    setubal: { mon: [
+      ['Castelo de Palmela', 'Castelo_de_Palmela'], ['Convento de Jesus (Setúbal)', 'Convento_de_Jesus_(Setúbal)'],
+      ['Forte de São Filipe', 'Forte_de_São_Filipe_(Setúbal)'], ['Santuário do Cabo Espichel', 'Cabo_Espichel'],
+    ], poi: ['Serra da Arrábida', 'Praia de Galápos', 'Reserva Natural do Estuário do Sado'] },
+    'viana-do-castelo': { mon: [
+      ['Santuário de Santa Luzia', 'Santuário_de_Santa_Luzia'], ['Castelo de Santiago da Barra', 'Castelo_de_Santiago_da_Barra'],
+      ['Citânia de Santa Luzia', 'Citânia_de_Santa_Luzia'], ['Ponte Medieval de Ponte de Lima', 'Ponte_de_Lima'],
+    ], poi: ['Monte de Santa Luzia', 'Praia do Cabedelo', 'Parque Nacional Peneda-Gerês'] },
+    'vila-real': { mon: [
+      ['Solar de Mateus', 'Casa_de_Mateus'], ['Santuário de Panóias', 'Santuário_de_Panóias'],
+      ['Castelo de Montalegre', 'Castelo_de_Montalegre'], ['Termas de Vidago (Vidago Palace)', 'Vidago_Palace_Hotel'],
+    ], poi: ['Parque Natural do Alvão', 'Reserva da Biosfera de Barroso', 'Vinhas do Douro (Mesão Frio)'] },
+    viseu: { mon: [
+      ['Sé de Viseu', 'Sé_de_Viseu'], ['Museu Grão Vasco', 'Museu_Grão_Vasco'],
+      ['Santuário dos Remédios (Lamego)', 'Santuário_de_Nossa_Senhora_dos_Remédios'], ['Cava de Viriato', 'Cava_de_Viriato'],
+    ], poi: ['Centro Histórico de Viseu', 'Caves da Raposeira (Lamego)', 'Serra do Caramulo'] },
+    madeira: { mon: [
+      ['Sé do Funchal', 'Sé_do_Funchal'], ['Fortaleza de São Tiago', 'Forte_de_São_Tiago_(Funchal)'],
+      ['Igreja de Nossa Senhora do Monte', 'Igreja_de_Nossa_Senhora_do_Monte'], ['Cabo Girão', 'Cabo_Girão'],
+    ], poi: ['Mercado dos Lavradores', 'Levadas da Madeira', 'Pico do Areeiro', 'Porto Moniz'] },
+    acores: { mon: [
+      ['Forte de São Brás', 'Forte_de_São_Brás'], ['Convento e Igreja de São Francisco (Ponta Delgada)', 'Convento_de_São_Francisco_(Ponta_Delgada)'],
+      ['Paisagem da Vinha do Pico (UNESCO)', 'Paisagem_da_cultura_da_vinha_da_Ilha_do_Pico'], ['Igreja de São Sebastião', 'Igreja_Matriz_de_São_Sebastião_(Ponta_Delgada)'],
+    ], poi: ['Lagoa das Sete Cidades', 'Furnas (caldeiras)', 'Montanha do Pico', 'Algar do Carvão'] },
+  };
+
+  function _wikiPt(title) { return `https://pt.wikipedia.org/wiki/${encodeURIComponent(title)}`; }
+
   /* ── State ── */
   let _map       = null;
   let _inited    = false;
@@ -710,6 +804,9 @@ const PortugalExplorer = (function () {
     const area = (d.area || 0).toLocaleString('pt') + ' km²';
     const density = (d.pop && d.area)
       ? Math.round(d.pop / d.area).toLocaleString('pt') + ' hab/km²' : '—';
+    const extra = DISTRICT_MON[d.id] || {};
+    /* Merge curated landmarks with the extra points of interest (de-duped). */
+    const pois = [...(d.landmarks || []), ...((extra.poi || []).filter(p => !(d.landmarks || []).includes(p)))];
 
     el.innerHTML = `
       <div class="pt-info-hero" style="--dist-color:${d.color}">
@@ -735,9 +832,17 @@ const PortugalExplorer = (function () {
 
       <button class="pt-drill-btn" id="pt-drill" data-id="${d.id}">🔎 Explorar concelhos (${d.munic})</button>
 
+      ${extra.mon && extra.mon.length ? `
+      <div class="pt-info-section">
+        <div class="pt-section-title">🏛 Monumentos Históricos</div>
+        <div class="pt-links-wrap">
+          ${extra.mon.map(m => `<a class="pt-mon-link" href="${_wikiPt(m[1])}" target="_blank" rel="noopener">${m[0]} ↗</a>`).join('')}
+        </div>
+      </div>` : ''}
+
       <div class="pt-info-section">
         <div class="pt-section-title">📍 Pontos de Interesse</div>
-        <div class="pt-tags-wrap">${(d.landmarks || []).map(l => `<span class="pt-tag">${l}</span>`).join('')}</div>
+        <div class="pt-tags-wrap">${pois.map(l => `<span class="pt-tag">${l}</span>`).join('')}</div>
       </div>
 
       <div class="pt-info-section">
@@ -774,6 +879,8 @@ const PortugalExplorer = (function () {
     const areaKm = p.ha ? (p.ha / 100).toLocaleString('pt', { maximumFractionDigits: 1 }) + ' km²' : '—';
     const isCapital = CAPITAL_IDS[d.id] && _normalizeStr(CAPITAL_IDS[d.id]) === _normalizeStr(p.c);
     const wiki = `https://pt.wikipedia.org/wiki/${encodeURIComponent(p.c.replace(/ /g, '_'))}`;
+    /* Curated local info (no API call). Null when this concelho isn't covered. */
+    const info = (typeof PT_CONCELHO_INFO !== 'undefined') ? PT_CONCELHO_INFO.get(p.c) : null;
 
     el.innerHTML = `
       <button class="pt-back-btn" id="pt-back">← ${d.name}</button>
@@ -792,17 +899,40 @@ const PortugalExplorer = (function () {
         <div class="pt-info-stat"><span class="pt-stat-val">${d.name}</span><span class="pt-stat-lbl">distrito</span></div>
       </div>
 
-      <div class="pt-info-section">
-        <div class="pt-section-title">📖 Sobre o concelho</div>
-        <p class="pt-history-text">${p.c} é um concelho do distrito de ${d.name}, na região ${d.region}.${isCapital ? ` É a capital do distrito.` : ''} Os dados oficiais (freguesias, área e altitude) são da Carta Administrativa Oficial de Portugal (CAOP, Direção-Geral do Território).</p>
-      </div>
-
-      <div class="pt-info-section">
-        <div class="pt-section-title">🔗 Saber mais</div>
-        <a class="pt-wiki-link" href="${wiki}" target="_blank" rel="noopener">Wikipédia: ${p.c} ↗</a>
-      </div>
-
-      <div class="pt-info-note">A informação cultural detalhada (gastronomia, tradições, monumentos) está disponível ao nível do distrito de <strong>${d.name}</strong>. Toca em “← ${d.name}” para a ver.</div>`;
+      ${info ? `
+        <div class="pt-info-section">
+          <div class="pt-section-title">📖 História</div>
+          <p class="pt-history-text">${info.hist}</p>
+        </div>
+        ${info.poi && info.poi.length ? `
+        <div class="pt-info-section">
+          <div class="pt-section-title">📍 Pontos de Interesse</div>
+          <div class="pt-tags-wrap">${info.poi.map(x => `<span class="pt-tag">${x}</span>`).join('')}</div>
+        </div>` : ''}
+        ${info.food && info.food.length ? `
+        <div class="pt-info-section">
+          <div class="pt-section-title">🍽 Gastronomia</div>
+          <div class="pt-tags-wrap">${info.food.map(x => `<span class="pt-tag food">${x}</span>`).join('')}</div>
+        </div>` : ''}
+        ${info.trad && info.trad.length ? `
+        <div class="pt-info-section">
+          <div class="pt-section-title">🎉 Tradições</div>
+          <div class="pt-tags-wrap">${info.trad.map(x => `<span class="pt-tag trad">${x}</span>`).join('')}</div>
+        </div>` : ''}
+        <div class="pt-info-section">
+          <div class="pt-section-title">🔗 Saber mais</div>
+          <a class="pt-wiki-link" href="${wiki}" target="_blank" rel="noopener">Wikipédia: ${p.c} ↗</a>
+        </div>`
+      : `
+        <div class="pt-info-section">
+          <div class="pt-section-title">📖 Sobre o concelho</div>
+          <p class="pt-history-text">${p.c} é um concelho do distrito de ${d.name}, na região ${d.region}.${isCapital ? ` É a capital do distrito.` : ''} Os dados oficiais (freguesias, área e altitude) são da Carta Administrativa Oficial de Portugal (CAOP, Direção-Geral do Território).</p>
+        </div>
+        <div class="pt-info-section">
+          <div class="pt-section-title">🔗 Saber mais</div>
+          <a class="pt-wiki-link" href="${wiki}" target="_blank" rel="noopener">Wikipédia: ${p.c} ↗</a>
+        </div>
+        <div class="pt-info-note">Informação cultural detalhada para este concelho ainda não está disponível — vê o nível do distrito de <strong>${d.name}</strong> em “← ${d.name}”.</div>`}`;
 
     el.querySelector('#pt-back')?.addEventListener('click', () => _backToDistrict(d));
   }
