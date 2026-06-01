@@ -42,9 +42,9 @@ const NeonShooterGame = (function () {
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:3rem;filter:drop-shadow(0 0 20px #a855f7)">🚀</div>
       <div class="ns-title">Neon Space<br>Shooter</div>
-      <div class="ns-hi">Best: ${hi} pts</div>
-      <button class="ns-play-btn" id="ns-start">▶ Play</button>
-      <div class="ns-tip">Move mouse / drag finger to fly<br>Your ship fires automatically</div>
+      <div class="ns-hi">Recorde: ${hi} pts</div>
+      <button class="ns-play-btn" id="ns-start">▶ Jogar</button>
+      <div class="ns-tip">Move o rato / arrasta o dedo para voar<br>A tua nave dispara automaticamente</div>
     </div></div>`;
     root.querySelector('#ns-start').addEventListener('click', startGame);
   }
@@ -383,15 +383,15 @@ const NeonShooterGame = (function () {
     const hi = localStorage.getItem('ns-hi') || 0;
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:2.5rem">💥</div>
-      <div class="ns-title" style="font-size:1.6rem">Game Over</div>
+      <div class="ns-title" style="font-size:1.6rem">Fim de Jogo</div>
       <div class="ns-score-big">${G.score}</div>
       <div class="ns-stats-row">
-        <div class="ns-stat-item"><span class="ns-stat-val">Wave ${G.wave}</span><span>reached</span></div>
-        <div class="ns-stat-item"><span class="ns-stat-val">${G.killCount}</span><span>enemies</span></div>
-        <div class="ns-stat-item"><span class="ns-stat-val">×${G.maxCombo}</span><span>max combo</span></div>
+        <div class="ns-stat-item"><span class="ns-stat-val">Vaga ${G.wave}</span><span>alcançada</span></div>
+        <div class="ns-stat-item"><span class="ns-stat-val">${G.killCount}</span><span>inimigos</span></div>
+        <div class="ns-stat-item"><span class="ns-stat-val">×${G.maxCombo}</span><span>combo máx.</span></div>
       </div>
-      <div class="ns-hi">Best: ${hi} pts</div>
-      <button class="ns-play-btn" id="ns-retry">🔄 Play Again</button>
+      <div class="ns-hi">Recorde: ${hi} pts</div>
+      <button class="ns-play-btn" id="ns-retry">🔄 Jogar de Novo</button>
       <button style="background:transparent;border:1px solid #333;color:#555;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="ns-menu">Menu</button>
     </div></div>`;
     root.querySelector('#ns-retry').addEventListener('click', startGame);

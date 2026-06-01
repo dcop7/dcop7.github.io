@@ -7,9 +7,9 @@ const ShootingGame = (function () {
     root.innerHTML = `
       <div class="game-card" style="padding:.6rem">
         <div class="sg-hdr">
-          <div class="sg-stat"><span class="sg-lbl">Score</span><span class="sg-val" id="sg-score">0</span></div>
-          <div class="sg-stat"><span class="sg-lbl">Level</span><span class="sg-val" id="sg-level">1</span></div>
-          <div class="sg-stat"><span class="sg-lbl">Lives</span><span class="sg-val" id="sg-lives">❤️❤️❤️</span></div>
+          <div class="sg-stat"><span class="sg-lbl">Pontos</span><span class="sg-val" id="sg-score">0</span></div>
+          <div class="sg-stat"><span class="sg-lbl">Nível</span><span class="sg-val" id="sg-level">1</span></div>
+          <div class="sg-stat"><span class="sg-lbl">Vidas</span><span class="sg-val" id="sg-lives">❤️❤️❤️</span></div>
           <button class="hf-new-btn" id="sg-pause" style="padding:.3rem .75rem;font-size:.72rem">⏸ Pausa</button>
         </div>
         <div style="position:relative">
@@ -17,7 +17,7 @@ const ShootingGame = (function () {
           <div id="sg-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,8,16,.85);border-radius:var(--radius-sm)">
             <div id="sg-over-title" style="font-family:var(--font-head);font-size:1.6rem;font-weight:800;color:#60a5fa;text-shadow:0 0 20px #60a5fa">SPACE SHOOTER</div>
             <div id="sg-over-score" style="color:var(--muted);font-size:.85rem;margin:.4rem 0 .8rem"></div>
-            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem;text-align:center">Move with mouse / touch · Auto-fires · A/D or ← → keys</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem;text-align:center">Move com o rato / toque · Dispara sozinho · Teclas A/D ou ← →</div>
             <button id="sg-start" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:.6rem 2rem;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 0 20px rgba(99,102,241,.5)">🚀 Jogar</button>
           </div>
         </div>
@@ -411,7 +411,7 @@ const ShootingGame = (function () {
       if (frameId) cancelAnimationFrame(frameId);
       const overlay = root.querySelector('#sg-overlay');
       root.querySelector('#sg-over-title').textContent = '💥 Game Over!';
-      root.querySelector('#sg-over-score').textContent = `Score: ${score} · Level: ${level} · Best: ${highScore}`;
+      root.querySelector('#sg-over-score').textContent = `Pontos: ${score} · Nível: ${level} · Recorde: ${highScore}`;
       root.querySelector('#sg-start').textContent = '🔄 Jogar de novo';
       overlay.style.display = 'flex';
     }

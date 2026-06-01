@@ -42,15 +42,15 @@ const SkyHopperGame = (function () {
     root.innerHTML = `<div class="sh-host"><div class="sh-overlay">
       <div style="font-size:3.2rem;filter:drop-shadow(0 0 18px #06b6d4)">🌟</div>
       <div class="sh-title">Sky Hopper</div>
-      <div class="sh-best">Best: ${best}</div>
-      <div class="sh-diff-label">Difficulty</div>
+      <div class="sh-best">Recorde: ${best}</div>
+      <div class="sh-diff-label">Dificuldade</div>
       <div class="sh-diff-row">
-        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Easy</button>
-        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Medium</button>
-        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Hard</button>
+        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Fácil</button>
+        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Médio</button>
+        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Difícil</button>
       </div>
-      <button class="sh-btn" id="sh-play">▶ Play</button>
-      <div class="sh-tip">Tap / click to fly upward<br>Collect ⚡ orbs for bonus points</div>
+      <button class="sh-btn" id="sh-play">▶ Jogar</button>
+      <div class="sh-tip">Toca / clica para subir<br>Apanha orbes ⚡ para pontos bónus</div>
     </div></div>`;
     root.querySelectorAll('.sh-diff-btn').forEach(b => {
       b.addEventListener('click', () => {
@@ -316,16 +316,16 @@ const SkyHopperGame = (function () {
     const medal = G.score >= 20 ? '🥇' : G.score >= 10 ? '🥈' : G.score >= 5 ? '🥉' : '🌟';
     root.innerHTML = `<div class="sh-host"><div class="sh-overlay">
       <div class="sh-medal">${medal}</div>
-      <div class="sh-title" style="font-size:1.7rem">Nice Flight!</div>
+      <div class="sh-title" style="font-size:1.7rem">Bom Voo!</div>
       <div class="sh-score-big">${G.score}</div>
-      <div style="font-size:.8rem;color:#444">Best: ${best} · Orbs are worth 3 pts</div>
-      <div class="sh-diff-label">Difficulty</div>
+      <div style="font-size:.8rem;color:#444">Recorde: ${best} · Os orbes valem 3 pts</div>
+      <div class="sh-diff-label">Dificuldade</div>
       <div class="sh-diff-row">
-        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Easy</button>
-        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Medium</button>
-        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Hard</button>
+        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Fácil</button>
+        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Médio</button>
+        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Difícil</button>
       </div>
-      <button class="sh-btn" id="sh-retry">🔄 Fly Again</button>
+      <button class="sh-btn" id="sh-retry">🔄 Voar de Novo</button>
       <button style="background:transparent;border:1px solid #222;color:#444;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="sh-menu">Menu</button>
     </div></div>`;
     root.querySelectorAll('.sh-diff-btn').forEach(b => {

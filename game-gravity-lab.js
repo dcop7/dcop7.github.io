@@ -7,28 +7,28 @@ const GravityLabGame = (function () {
   const TILE = 40;
 
   const LEVELS = [
-    { title:'Level 1', hint:'Use arrow keys or tap to change gravity!',
+    { title:'Nível 1', hint:'Usa as setas ou toca para mudar a gravidade!',
       grid:['#####','#S  #','#   #','# E #','#####'],
       flips:3, gravStart:'down' },
-    { title:'Level 2', hint:'Use the switch to restore flip charges',
+    { title:'Nível 2', hint:'Usa o interruptor para recuperar inversões',
       grid:['######','#S   #','## # #','#W   #','# E  #','######'],
       flips:3, gravStart:'down' },
-    { title:'Level 3', hint:'Time your flips carefully',
+    { title:'Nível 3', hint:'Calcula bem o momento das inversões',
       grid:['#######','#S    #','#  ## #','# ##  #','#    E#','#######'],
       flips:4, gravStart:'down' },
-    { title:'Level 4', hint:'Multiple platforms to navigate',
+    { title:'Nível 4', hint:'Várias plataformas para atravessar',
       grid:['########','#S     #','# #### #','#      #','# #### #','#     E#','########'],
       flips:5, gravStart:'down' },
-    { title:'Level 5', hint:'Gravity goes sideways too!',
+    { title:'Nível 5', hint:'A gravidade também vai para os lados!',
       grid:['########','#S  ## #','#      #','## ##  #','#      #','# E    #','########'],
       flips:5, gravStart:'down' },
-    { title:'Level 6', hint:'Complex route — plan your flips!',
+    { title:'Nível 6', hint:'Percurso complexo — planeia as inversões!',
       grid:['#########','#S      #','# #####W#','#       #','#W##### #','#      E#','#########'],
       flips:6, gravStart:'down' },
-    { title:'Level 7', hint:'Advanced — use every flip wisely',
+    { title:'Nível 7', hint:'Avançado — usa cada inversão com cuidado',
       grid:['##########','#S       #','## ##### #','#        #','# ##### ##','#       E#','##########'],
       flips:7, gravStart:'down' },
-    { title:'Level 8', hint:'Master challenge!',
+    { title:'Nível 8', hint:'Desafio mestre!',
       grid:['###########','#S        #','# #######W#','#         #','#W####### #','#        E#','###########'],
       flips:8, gravStart:'down' },
   ];
@@ -78,9 +78,9 @@ const GravityLabGame = (function () {
       <div class="gl-level-num">🔬</div>
       <div class="gl-title">Gravity Lab</div>
       <div class="gl-progress">${LEVELS.map((_,i)=>`<div class="gl-prog-dot ${i<saved?'done':''}"></div>`).join('')}</div>
-      <button class="gl-btn" id="gl-play">▶ ${saved>0?'Continue':'Play'}</button>
-      ${saved>0?`<button class="gl-btn-sm" id="gl-reset">↺ Restart from Level 1</button>`:''}
-      <div class="gl-tip">Arrow keys ↑↓←→ to set gravity<br>Or tap / click to cycle direction<br>Guide the ball to the exit portal</div>
+      <button class="gl-btn" id="gl-play">▶ ${saved>0?'Continuar':'Jogar'}</button>
+      ${saved>0?`<button class="gl-btn-sm" id="gl-reset">↺ Recomeçar do Nível 1</button>`:''}
+      <div class="gl-tip">Setas ↑↓←→ para definir a gravidade<br>Ou toca / clica para alternar a direção<br>Leva a bola até ao portal de saída</div>
     </div></div>`;
     root.querySelector('#gl-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#gl-reset')?.addEventListener('click', () => { localStorage.removeItem('gl-lvl'); showMenu(); });
@@ -96,7 +96,7 @@ const GravityLabGame = (function () {
         <div class="gl-hud-title">${lvl.title}</div>
         <div class="gl-hud-grav" id="gl-grav">${GRAV_LABELS[lvl.gravStart]}</div>
         <div class="gl-hud-flips" id="gl-flips"></div>
-        <button class="gl-hud-btn" id="gl-hud-new">↺ New</button>
+        <button class="gl-hud-btn" id="gl-hud-new">↺ Novo</button>
       </div>
     </div>`;
     cv = root.querySelector('#gl-cv');
@@ -326,13 +326,13 @@ const GravityLabGame = (function () {
     if (next > +localStorage.getItem('gl-lvl')||0) localStorage.setItem('gl-lvl', next);
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div class="gl-lv-done">✅</div>
-      <div class="gl-complete-title">Level Complete!</div>
-      <div style="font-size:.85rem;color:#334155">Flips used: ${G.flipsUsed} / ${G.lvl.flips}</div>
+      <div class="gl-complete-title">Nível Concluído!</div>
+      <div style="font-size:.85rem;color:#334155">Inversões usadas: ${G.flipsUsed} / ${G.lvl.flips}</div>
       <div class="gl-progress">${LEVELS.map((_,i)=>`<div class="gl-prog-dot ${i<next?'done':i===next?'curr':''}"></div>`).join('')}</div>
       ${next < LEVELS.length
-        ? `<button class="gl-btn" id="gl-next">▶ Next Level</button>`
-        : `<button class="gl-btn" id="gl-next">🏆 All Done!</button>`}
-      <button class="gl-btn-sm" id="gl-retry">↺ Replay</button>
+        ? `<button class="gl-btn" id="gl-next">▶ Próximo Nível</button>`
+        : `<button class="gl-btn" id="gl-next">🏆 Tudo Concluído!</button>`}
+      <button class="gl-btn-sm" id="gl-retry">↺ Repetir</button>
       <button class="gl-btn-sm" id="gl-menu2">☰ Menu</button>
     </div></div>`;
     root.querySelector('#gl-next').addEventListener('click', () => playLevel(next));
@@ -344,9 +344,9 @@ const GravityLabGame = (function () {
     _removeKeyHandler();
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div style="font-size:3rem">🏆</div>
-      <div class="gl-title">Lab Complete!</div>
-      <div style="font-size:.85rem;color:#334155">All ${LEVELS.length} levels cleared!</div>
-      <button class="gl-btn" id="gl-restart">▶ Play Again</button>
+      <div class="gl-title">Laboratório Concluído!</div>
+      <div style="font-size:.85rem;color:#334155">Todos os ${LEVELS.length} níveis superados!</div>
+      <button class="gl-btn" id="gl-restart">▶ Jogar de Novo</button>
     </div></div>`;
     root.querySelector('#gl-restart').addEventListener('click', () => { localStorage.removeItem('gl-lvl'); showMenu(); });
   }

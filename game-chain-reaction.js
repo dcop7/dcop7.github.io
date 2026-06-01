@@ -8,24 +8,24 @@ const ChainReactionGame = (function () {
   // L = mirror /, R = mirror \, B = bouncer (reverses), X = splitter, + = extra ball
 
   const LEVELS = [
-    { title:'Level 1 — First Reaction', hint:'Place a mirror to redirect the ball to the target',
+    { title:'Nível 1 — Primeira Reação', hint:'Coloca um espelho para desviar a bola até ao alvo',
       launcher:{ x:0, y:2, dir:'right' }, target:{ x:7, y:2 },
       walls:[], given:{ '/':2, '\\':2 }, grid:8, rows:5 },
-    { title:'Level 2 — Double Bounce', hint:'Bounce the ball twice to reach the target',
+    { title:'Nível 2 — Ressalto Duplo', hint:'Faz a bola ressaltar duas vezes até ao alvo',
       launcher:{ x:0, y:1, dir:'right' }, target:{ x:5, y:4 },
       walls:[{x:3,y:2}], given:{ '/':2, '\\':2 }, grid:7, rows:6 },
-    { title:'Level 3 — The Wall', hint:'Navigate around the wall',
+    { title:'Nível 3 — O Muro', hint:'Contorna o muro',
       launcher:{ x:0, y:0, dir:'right' }, target:{ x:6, y:5 },
       walls:[{x:2,y:0},{x:2,y:1},{x:2,y:2},{x:4,y:3},{x:4,y:4},{x:4,y:5}],
       given:{ '/':3, '\\':3 }, grid:8, rows:7 },
-    { title:'Level 4 — Splitter', hint:'Use the splitter to hit two targets!',
+    { title:'Nível 4 — Divisor', hint:'Usa o divisor para atingir dois alvos!',
       launcher:{ x:0, y:3, dir:'right' }, target:{ x:6, y:0 }, target2:{ x:6, y:5 },
       walls:[], given:{ '/':2, '\\':2, 'X':1 }, grid:8, rows:7 },
-    { title:'Level 5 — Maze', hint:'Use all the pieces to solve the maze',
+    { title:'Nível 5 — Labirinto', hint:'Usa todas as peças para resolver o labirinto',
       launcher:{ x:0, y:0, dir:'right' }, target:{ x:7, y:6 },
       walls:[{x:2,y:0},{x:2,y:1},{x:4,y:2},{x:4,y:3},{x:6,y:4},{x:6,y:5}],
       given:{ '/':4, '\\':3 }, grid:9, rows:8 },
-    { title:'Level 6 — Advanced', hint:'Think several steps ahead',
+    { title:'Nível 6 — Avançado', hint:'Pensa vários passos à frente',
       launcher:{ x:0, y:4, dir:'right' }, target:{ x:8, y:0 },
       walls:[{x:2,y:1},{x:2,y:2},{x:5,y:3},{x:5,y:4},{x:5,y:5}],
       given:{ '/':4, '\\':3, 'X':1 }, grid:10, rows:7 },
@@ -71,9 +71,9 @@ const ChainReactionGame = (function () {
       <div style="font-size:3rem;filter:drop-shadow(0 0 18px #6366f1)">⚙️</div>
       <div class="cr-title">Chain Reaction<br>Factory</div>
       <div class="cr-prog">${LEVELS.map((_,i)=>`<div class="cr-prog-d ${i<saved?'done':''}"></div>`).join('')}</div>
-      <button class="cr-btn" id="cr-play">▶ ${saved>0?'Continue':'Play'}</button>
-      ${saved>0?`<button class="cr-btn-sm" id="cr-reset">↺ Start Over</button>`:''}
-      <div class="cr-hint">Place mirrors to redirect the ball · Hit the target to win</div>
+      <button class="cr-btn" id="cr-play">▶ ${saved>0?'Continuar':'Jogar'}</button>
+      ${saved>0?`<button class="cr-btn-sm" id="cr-reset">↺ Recomeçar</button>`:''}
+      <div class="cr-hint">Coloca espelhos para desviar a bola · Atinge o alvo para ganhar</div>
     </div></div>`;
     root.querySelector('#cr-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#cr-reset')?.addEventListener('click', () => { localStorage.removeItem('cr-lvl'); showMenu(); });
@@ -90,7 +90,7 @@ const ChainReactionGame = (function () {
         <div class="cr-piece-tray" id="cr-tray"></div>
         <div class="cr-actions">
           <button class="cr-reset-btn" id="cr-r">↺</button>
-          <button class="cr-fire-btn" id="cr-f">🚀 Launch</button>
+          <button class="cr-fire-btn" id="cr-f">🚀 Lançar</button>
         </div>
       </div>
       <canvas class="cr-cv" id="cr-cv"></canvas>
@@ -301,12 +301,12 @@ const ChainReactionGame = (function () {
     if (next > +localStorage.getItem('cr-lvl')||0) localStorage.setItem('cr-lvl', next);
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:2.8rem">✅</div>
-      <div class="cr-title" style="font-size:1.6rem">Chain Complete!</div>
+      <div class="cr-title" style="font-size:1.6rem">Reação Completa!</div>
       <div class="cr-prog">${LEVELS.map((_,i)=>`<div class="cr-prog-d ${i<next?'done':i===next?'done':''}"></div>`).join('')}</div>
       ${next < LEVELS.length
-        ? `<button class="cr-btn" id="cr-next">▶ Next Level</button>`
-        : `<button class="cr-btn" id="cr-next">🏆 All Done!</button>`}
-      <button class="cr-btn-sm" id="cr-re">↺ Replay</button>
+        ? `<button class="cr-btn" id="cr-next">▶ Próximo Nível</button>`
+        : `<button class="cr-btn" id="cr-next">🏆 Tudo Concluído!</button>`}
+      <button class="cr-btn-sm" id="cr-re">↺ Repetir</button>
     </div></div>`;
     root.querySelector('#cr-next').addEventListener('click', () => playLevel(next));
     root.querySelector('#cr-re').addEventListener('click', () => playLevel(G.idx));
@@ -317,9 +317,9 @@ const ChainReactionGame = (function () {
     G.state = 'fail';
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:2.8rem">💥</div>
-      <div class="cr-title" style="font-size:1.5rem">Miss!</div>
-      <div class="cr-hint">The ball didn't reach the target. Rearrange your pieces!</div>
-      <button class="cr-btn" id="cr-re">↺ Try Again</button>
+      <div class="cr-title" style="font-size:1.5rem">Falhou!</div>
+      <div class="cr-hint">A bola não chegou ao alvo. Reorganiza as tuas peças!</div>
+      <button class="cr-btn" id="cr-re">↺ Tentar de Novo</button>
     </div></div>`;
     root.querySelector('#cr-re').addEventListener('click', () => playLevel(G.idx));
   }
@@ -327,8 +327,8 @@ const ChainReactionGame = (function () {
   function showAllDone() {
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:3rem">🏆</div>
-      <div class="cr-title">Factory Mastered!</div>
-      <button class="cr-btn" id="cr-ag">▶ Play Again</button>
+      <div class="cr-title">Fábrica Dominada!</div>
+      <button class="cr-btn" id="cr-ag">▶ Jogar de Novo</button>
     </div></div>`;
     root.querySelector('#cr-ag').addEventListener('click', () => { localStorage.removeItem('cr-lvl'); showMenu(); });
   }
