@@ -28,9 +28,6 @@ const ExplorerPage = (function () {
   const _realistic = () => _globeView === 'realistic' || _globeView === 'daynight';
   let _cloudsMesh       = null;
   let _cloudsRAF        = null;
-  let _globeInteracted  = false;       /* true after first user pointer interaction */
-  let _pointerOverGlobe = false;       /* true only while the cursor is over the globe canvas */
-  let _lastPointerMove  = 0;           /* timestamp of the last real pointer move over the globe */
   let _globeLabels      = [];          /* country labels ranked by population */
 
   /* ── Leaflet state ── */
@@ -289,34 +286,23 @@ const ExplorerPage = (function () {
      with English common name as a safe fallback. */
   function _cName(c) { return c ? (c.namePt || (c.name && c.name.common) || c.cca3 || '') : ''; }
 
-  /* Globe hover tooltip.
-     IMPORTANT: the tooltip is driven ONLY by real DOM pointer events on the
-     globe container (see _wireGlobePointer). globe.gl re-fires onPolygonHover on
-     every re-render (sun timer, resize, entry animation), reusing the polygon
-     under a stationary cursor — which is what kept Bermuda's tooltip stuck. So
-     onPolygonHover NEVER shows the tooltip; it only records which feature is
-     under the cursor. _hideGlobeTooltip()/_showGlobeTooltip() are the only ways
-     the element's visibility ever changes, and both are called from pointer
-     events. No re-render can resurrect it. */
+  /* Globe hover tooltip — uses globe.gl's NATIVE polygon label (.polygonLabel),
+     whose visibility is managed by the library's own raycaster: it only shows
+     while a polygon is genuinely under the cursor and hides itself otherwise.
+     We build the label HTML here. No custom DOM element, no pointer plumbing —
+     this is what finally kills the "stuck Bermuda tooltip". */
   const _CONT_PT = { 'Africa':'África', 'Asia':'Ásia', 'Europe':'Europa', 'North America':'América do Norte', 'South America':'América do Sul', 'Oceania':'Oceânia', 'Antarctica':'Antárctida' };
-  let _hoverFeat = null;     /* GeoJSON feature currently under the cursor (from globe.gl) */
-
-  function _hideGlobeTooltip() {
-    const tip = document.getElementById('ex-globe-tooltip');
-    if (tip) tip.hidden = true;
-  }
-  /* Show the tooltip for the hovered country at a given cursor position. */
-  function _showGlobeTooltip(x, y) {
-    const tip = document.getElementById('ex-globe-tooltip');
-    if (!tip) return;
-    const f = _hoverFeat;
-    const c = f ? _byCca3[f.id] : null;
-    if (!c) { tip.hidden = true; return; }
-    const cont = _CONT_PT[(c.continents || [])[0]] || c.regionPt || '';
-    tip.innerHTML = `<span class="ex-gt-flag">${c.flag || '🏳'}</span><span class="ex-gt-name">${_cName(c)}</span>${cont ? `<span class="ex-gt-cont">${cont}</span>` : ''}`;
-    tip.style.left = x + 'px';
-    tip.style.top  = y + 'px';
-    tip.hidden = false;
+  function _globeLabelHTML(f) {
+    if (!f) return '';
+    const c = _byCca3[f.id];
+    const name = c ? _cName(c) : (f.properties?.name || f.id || '');
+    if (!name) return '';
+    const flag = c?.flag || '🏳';
+    const cont = c ? (_CONT_PT[(c.continents || [])[0]] || c.regionPt || '') : '';
+    return `<div class="ex-globe-tooltip">`
+      + `<span class="ex-gt-flag">${flag}</span><span class="ex-gt-name">${name}</span>`
+      + (cont ? `<span class="ex-gt-cont">${cont}</span>` : '')
+      + `</div>`;
   }
 
   function showCountryPanel(country, panelSel) {
@@ -864,7 +850,6 @@ const ExplorerPage = (function () {
           <button class="ex-globe-view-btn" data-view="political">🗺️ Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
-        <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
         <div class="ex-globe-stats">
           <div class="ex-globe-stat">Países <span class="ex-globe-stat-val" id="ex-globe-count">—</span></div>
           <div class="ex-globe-stat">Em destaque <span class="ex-globe-stat-val" id="ex-globe-sel">—</span></div>
@@ -974,6 +959,7 @@ const ExplorerPage = (function () {
       .polygonSideColor(() => 'rgba(20,30,55,0.35)')
       .polygonStrokeColor(getStroke)
       .polygonAltitude(getCapAlt)
+      .polygonLabel(_globeLabelHTML)
       .labelsData([])
       .labelLat(d => d.lat)
       .labelLng(d => d.lng)
@@ -986,20 +972,12 @@ const ExplorerPage = (function () {
       .labelsTransitionDuration(300)
       .onZoom(_onGlobeZoom)
       .onPolygonHover(f => {
-        /* ONLY record what's under the cursor + update the hover highlight.
-           NEVER show/hide the tooltip here — that is driven solely by real DOM
-           pointer events (see _wireGlobePointer), so a re-render-triggered hover
-           on a stationary cursor can never resurrect it. The highlight is also
-           gated on a genuinely-fresh pointer position. */
-        const fresh = _pointerOverGlobe && (performance.now() - _lastPointerMove) < 600;
-        const next = fresh ? f : null;
-        _hoverFeat = next;
-        if (_globeHovered !== next) { _globeHovered = next; _globeGL.polygonCapColor(getCapColor); }
-        if (!fresh) _hideGlobeTooltip();
+        /* The tooltip is globe.gl's native polygon label (handled by the lib).
+           Here we only sync the hover highlight colour. */
+        if (_globeHovered !== f) { _globeHovered = f; _globeGL.polygonCapColor(getCapColor); }
       })
       .onPolygonClick(f => {
         if (!f) return;
-        _hideGlobeTooltip();
         /* Persistent highlight on the clicked country + smooth rotate to it.
            "Em destaque" reflects the selected country (not hover). */
         _globeSelected = f;
@@ -1065,32 +1043,10 @@ const ExplorerPage = (function () {
       });
     }
 
-    /* First real pointer interaction unlocks hover highlighting/featuring. */
-    _globeInteracted = false;
-    _pointerOverGlobe = false;
-    const markInteracted = () => { _globeInteracted = true; };
-    container.addEventListener('pointerdown', markInteracted, { once: true });
-    container.addEventListener('pointermove', markInteracted, { once: true });
-    container.addEventListener('pointerenter', () => { _pointerOverGlobe = true; });
-    /* The tooltip is shown/positioned ONLY here, on real pointer movement. Each
-       move re-evaluates _hoverFeat (kept current by onPolygonHover) and either
-       shows the tooltip at the cursor or hides it when over empty ocean. */
-    container.addEventListener('pointermove', ev => {
-      _pointerOverGlobe = true;
-      _lastPointerMove = performance.now();
-      const wrap = container.closest('.ex-globe-wrap') || container;
-      const r = wrap.getBoundingClientRect();
-      const x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
-      if (_hoverFeat && _byCca3[_hoverFeat.id]) _showGlobeTooltip(x, y);
-      else _hideGlobeTooltip();
-    }, { passive: true });
+    /* When the pointer leaves the globe, drop the hover highlight (the native
+       label hides itself). No tooltip plumbing — globe.gl owns the label now. */
     container.addEventListener('pointerleave', () => {
-      _pointerOverGlobe = false;
-      _lastPointerMove = 0;
-      _hoverFeat = null;
-      _globeHovered = null;
-      _hideGlobeTooltip();
-      if (_globeGL) _globeGL.polygonCapColor(getCapColor);
+      if (_globeHovered) { _globeHovered = null; if (_globeGL) _globeGL.polygonCapColor(getCapColor); }
     });
 
     /* ResizeObserver — stored so it can be disconnected on shell rebuild */
@@ -1114,9 +1070,6 @@ const ExplorerPage = (function () {
        calm ocean-centred view so nothing reads as a default selection. */
     _globeHovered = null;
     _globeSelected = null;
-    _hoverFeat = null;
-    _lastPointerMove = 0;
-    _hideGlobeTooltip();
     _globeGL.pointOfView({ lat: 20, lng: -40, altitude: 2.5 }, 0);
     const selEl = document.getElementById('ex-globe-sel');
     if (selEl) selEl.textContent = '—';
@@ -1326,10 +1279,6 @@ const ExplorerPage = (function () {
       if (_globeSunTimer) { clearInterval(_globeSunTimer); _globeSunTimer = null; }
       if (_cloudsRAF) { cancelAnimationFrame(_cloudsRAF); _cloudsRAF = null; }
       _cloudsMesh = null;
-      _globeInteracted = false;
-      _pointerOverGlobe = false;
-      _lastPointerMove = 0;
-      _hoverFeat = null;
       _globeShaderMat  = null;
       _globeMatUniforms = null;
       _globeGL         = null;

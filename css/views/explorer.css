@@ -881,12 +881,17 @@ body.light .ex-country-label {
   width: 100%;
   height: 100%;
 }
-/* Globe hover tooltip — flag + country name + continent (no selection) */
+/* Globe hover tooltip — globe.gl's native label (.scene-tooltip wrapper).
+   Neutralise the library default and style our inner pill. */
+.ex-globe-wrap .scene-tooltip {
+  background: transparent !important;
+  color: inherit !important;
+  font-family: var(--font-sans) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
 .ex-globe-tooltip {
-  position: absolute;
-  z-index: 30;
-  pointer-events: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: .45rem;
   padding: .35rem .6rem;
@@ -899,9 +904,7 @@ body.light .ex-country-label {
   font-size: .8rem;
   color: var(--text);
   white-space: nowrap;
-  max-width: 60%;
 }
-.ex-globe-tooltip[hidden] { display: none; }
 .ex-gt-flag { font-size: 1.05rem; line-height: 1; }
 .ex-gt-name { font-weight: 700; }
 .ex-gt-cont {
