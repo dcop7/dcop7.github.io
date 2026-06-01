@@ -21,6 +21,7 @@ const ExplorerPage = (function () {
   let _globeSelected   = null;          /* persistently highlighted country (after click) */
   let _byCca3          = {};
   let _updateGlobeColors = null;
+  let _selectGlobeFeature = null;       /* select+open a country (set during globe init) */
   let _applyGlobeSurface = null;        /* swaps the globe surface for the active view */
   let _globeShaderMat   = null;         /* realistic/day-night ShaderMaterial (built once) */
   let _globeMatUniforms = null;         /* day/night ShaderMaterial uniforms, if active */
@@ -286,23 +287,96 @@ const ExplorerPage = (function () {
      with English common name as a safe fallback. */
   function _cName(c) { return c ? (c.namePt || (c.name && c.name.common) || c.cca3 || '') : ''; }
 
-  /* Globe hover tooltip — uses globe.gl's NATIVE polygon label (.polygonLabel),
-     whose visibility is managed by the library's own raycaster: it only shows
-     while a polygon is genuinely under the cursor and hides itself otherwise.
-     We build the label HTML here. No custom DOM element, no pointer plumbing —
-     this is what finally kills the "stuck Bermuda tooltip". */
+  /* ── Globe hover: OWN deterministic hit-testing ──────────────────────────
+     globe.gl's built-in polygon raycaster is unreliable for this dataset — over
+     open ocean it still reports the nearest tiny polygon (Bermuda, from the
+     initial centre cast), which is the long-standing "stuck Bermuda" bug. So we
+     ignore onPolygonHover entirely and compute the country under the cursor
+     ourselves: raycast the cursor onto the globe sphere → lat/lng → point-in-
+     polygon against the country features. Over ocean, nothing contains the point
+     → no hover, no tooltip. Bermuda can only show when the cursor is on Bermuda. */
   const _CONT_PT = { 'Africa':'África', 'Asia':'Ásia', 'Europe':'Europa', 'North America':'América do Norte', 'South America':'América do Sul', 'Oceania':'Oceânia', 'Antarctica':'Antárctida' };
-  function _globeLabelHTML(f) {
-    if (!f) return '';
-    const c = _byCca3[f.id];
-    const name = c ? _cName(c) : (f.properties?.name || f.id || '');
-    if (!name) return '';
-    const flag = c?.flag || '🏳';
-    const cont = c ? (_CONT_PT[(c.continents || [])[0]] || c.regionPt || '') : '';
-    return `<div class="ex-globe-tooltip">`
-      + `<span class="ex-gt-flag">${flag}</span><span class="ex-gt-name">${name}</span>`
-      + (cont ? `<span class="ex-gt-cont">${cont}</span>` : '')
-      + `</div>`;
+
+  /* Ray-vs-unit-sphere → [lng,lat] in degrees, or null if the ray misses. */
+  function _raycastLngLat(ndcX, ndcY) {
+    const T = window.THREE;
+    if (!T || !_globeGL) return null;
+    const cam = _globeGL.camera();
+    const ray = new T.Raycaster();
+    ray.setFromCamera(new T.Vector2(ndcX, ndcY), cam);
+    /* globe.gl's sphere has radius 100 centred at the origin. */
+    const sphere = new T.Sphere(new T.Vector3(0, 0, 0), 100);
+    const hit = new T.Vector3();
+    if (!ray.ray.intersectSphere(sphere, hit)) return null;
+    /* Invert three-globe's mapping (see GLOBE shader polar2Cartesian):
+       with theta=90-lon, phi=90-lat → x=sin(phi)cos(theta), y=cos(phi),
+       z=sin(phi)sin(theta). So lat=90-acos(y), lon=90-atan2(z,x). */
+    const v = hit.clone().normalize();
+    const lat = 90 - Math.acos(Math.max(-1, Math.min(1, v.y))) * 180 / Math.PI;
+    let lng = 90 - Math.atan2(v.z, v.x) * 180 / Math.PI;
+    lng = ((lng + 180) % 360 + 360) % 360 - 180;   /* wrap to [-180,180] */
+    return [lng, lat];
+  }
+
+  /* Point-in-polygon (ray casting) for a single linear ring [[lng,lat],…]. */
+  function _pointInRing(lng, lat, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+  function _pointInFeature(lng, lat, geom) {
+    if (!geom) return false;
+    const polys = geom.type === 'Polygon' ? [geom.coordinates]
+                : geom.type === 'MultiPolygon' ? geom.coordinates : [];
+    for (const poly of polys) {
+      if (!poly.length || !_pointInRing(lng, lat, poly[0])) continue;   // outer ring
+      let inHole = false;
+      for (let h = 1; h < poly.length; h++) if (_pointInRing(lng, lat, poly[h])) { inHole = true; break; }
+      if (!inHole) return true;
+    }
+    return false;
+  }
+
+  /* Bounding box per feature so most are rejected with a cheap test first. */
+  let _featBounds = null;
+  function _ensureFeatBounds() {
+    if (_featBounds || !_geoJson?.features) return;
+    _featBounds = _geoJson.features.map(f => {
+      let minX = 180, maxX = -180, minY = 90, maxY = -90;
+      (function walk(a) {
+        if (typeof a[0] === 'number') { if (a[0] < minX) minX = a[0]; if (a[0] > maxX) maxX = a[0]; if (a[1] < minY) minY = a[1]; if (a[1] > maxY) maxY = a[1]; return; }
+        a.forEach(walk);
+      })(f.geometry.coordinates);
+      return { f, minX, maxX, minY, maxY };
+    });
+  }
+
+  /* Country feature at [lng,lat], or null. Smaller-area features win ties so a
+     tiny island inside a bbox isn't shadowed by a big neighbour. */
+  function _featureAt(lng, lat) {
+    _ensureFeatBounds();
+    if (!_featBounds) return null;
+    let best = null, bestArea = Infinity;
+    for (const b of _featBounds) {
+      if (lng < b.minX || lng > b.maxX || lat < b.minY || lat > b.maxY) continue;
+      if (!_pointInFeature(lng, lat, b.f.geometry)) continue;
+      const area = (b.maxX - b.minX) * (b.maxY - b.minY);
+      if (area < bestArea) { bestArea = area; best = b.f; }
+    }
+    return best;
+  }
+
+  function _updateGlobeTooltip(c, x, y) {
+    const tip = document.getElementById('ex-globe-tooltip');
+    if (!tip) return;
+    if (!c) { tip.hidden = true; return; }
+    const cont = _CONT_PT[(c.continents || [])[0]] || c.regionPt || '';
+    tip.innerHTML = `<span class="ex-gt-flag">${c.flag || '🏳'}</span><span class="ex-gt-name">${_cName(c)}</span>${cont ? `<span class="ex-gt-cont">${cont}</span>` : ''}`;
+    if (x != null) { tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
+    tip.hidden = false;
   }
 
   function showCountryPanel(country, panelSel) {
@@ -850,6 +924,7 @@ const ExplorerPage = (function () {
           <button class="ex-globe-view-btn" data-view="political">🗺️ Político</button>
         </div>
         <div class="ex-globe-hint">Arrasta para rodar · Clica num país para explorar</div>
+        <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
         <div class="ex-globe-stats">
           <div class="ex-globe-stat">Países <span class="ex-globe-stat-val" id="ex-globe-count">—</span></div>
           <div class="ex-globe-stat">Em destaque <span class="ex-globe-stat-val" id="ex-globe-sel">—</span></div>
@@ -959,7 +1034,7 @@ const ExplorerPage = (function () {
       .polygonSideColor(() => 'rgba(20,30,55,0.35)')
       .polygonStrokeColor(getStroke)
       .polygonAltitude(getCapAlt)
-      .polygonLabel(_globeLabelHTML)
+      .polygonLabel(() => '')   /* native label disabled — we do our own hit-testing */
       .labelsData([])
       .labelLat(d => d.lat)
       .labelLng(d => d.lng)
@@ -970,28 +1045,22 @@ const ExplorerPage = (function () {
       .labelResolution(2)
       .labelAltitude(0.008)
       .labelsTransitionDuration(300)
-      .onZoom(_onGlobeZoom)
-      .onPolygonHover(f => {
-        /* The tooltip is globe.gl's native polygon label (handled by the lib).
-           Here we only sync the hover highlight colour. */
-        if (_globeHovered !== f) { _globeHovered = f; _globeGL.polygonCapColor(getCapColor); }
-      })
-      .onPolygonClick(f => {
-        if (!f) return;
-        /* Persistent highlight on the clicked country + smooth rotate to it.
-           "Em destaque" reflects the selected country (not hover). */
-        _globeSelected = f;
-        _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt);
-        const c = _byCca3[f.id];
-        const selEl = document.getElementById('ex-globe-sel');
-        if (selEl) selEl.textContent = c ? (_cName(c) || f.id) : (f.properties?.name || f.id || '—');
-        const ll = c?.latlng;
-        if (ll && ll.length === 2) {
-          _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
-        }
-        if (c) showCountryPanel(c, '#ex-country-panel-globe');
-        else   _showGlobeMinimalPanel(f);
-      });
+      .onZoom(_onGlobeZoom);
+    /* NOTE: globe.gl's onPolygonHover/onPolygonClick are intentionally NOT used
+       (unreliable over ocean). Hover + click are handled by our own raycast +
+       point-in-polygon in _wireGlobeHitTesting(). */
+    _selectGlobeFeature = f => {
+      if (!f) return;
+      _globeSelected = f;
+      _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt);
+      const c = _byCca3[f.id];
+      const selEl = document.getElementById('ex-globe-sel');
+      if (selEl) selEl.textContent = c ? (_cName(c) || f.id) : (f.properties?.name || f.id || '—');
+      const ll = c?.latlng;
+      if (ll && ll.length === 2) _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
+      if (c) showCountryPanel(c, '#ex-country-panel-globe');
+      else   _showGlobeMinimalPanel(f);
+    };
 
     _updateGlobeColors = () => {
       if (!_globeGL) return;
@@ -1043,22 +1112,48 @@ const ExplorerPage = (function () {
       });
     }
 
-    /* globe.gl keeps rendering its native hover label at the last raycast hit —
-       including the initial centre cast (≈ mid-Atlantic / Bermuda) and after the
-       cursor leaves the canvas by the edge. We gate the label's VISIBILITY purely
-       on whether the pointer is physically over the globe, via a class on the
-       wrap (.globe-hovering → CSS shows the label). This is render-proof: no
-       stray raycast can show the label without the pointer actually being here. */
+    /* ── Our own hover/click hit-testing (replaces globe.gl's raycaster) ──
+       Each pointer move: convert cursor → NDC → ray → sphere point → lat/lng →
+       which country polygon contains it. Over ocean: null → tooltip hidden,
+       highlight cleared. This is the definitive cure for the "stuck Bermuda"
+       bug, since nothing is shown unless the cursor is truly inside a country. */
     const wrap = container.closest('.ex-globe-wrap') || container;
-    const _enter = () => wrap.classList.add('globe-hovering');
+    let _wasDragging = false, _downX = 0, _downY = 0;
+
+    function _featureFromEvent(ev) {
+      const r = container.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) return null;
+      const ndcX = ((ev.clientX - r.left) / r.width) * 2 - 1;
+      const ndcY = -(((ev.clientY - r.top) / r.height) * 2 - 1);
+      const ll = _raycastLngLat(ndcX, ndcY);
+      return ll ? _featureAt(ll[0], ll[1]) : null;
+    }
+
+    container.addEventListener('pointermove', ev => {
+      const f = _featureFromEvent(ev);
+      if (_globeHovered !== f) { _globeHovered = f; _globeGL.polygonCapColor(getCapColor); }
+      const c = f ? _byCca3[f.id] : null;
+      const wr = wrap.getBoundingClientRect();
+      _updateGlobeTooltip(c, ev.clientX - wr.left + 14, ev.clientY - wr.top + 14);
+    }, { passive: true });
+
     const _leave = () => {
-      wrap.classList.remove('globe-hovering');
       if (_globeHovered) { _globeHovered = null; if (_globeGL) _globeGL.polygonCapColor(getCapColor); }
+      _updateGlobeTooltip(null);
     };
-    container.addEventListener('pointerenter', _enter);
-    container.addEventListener('pointermove', _enter);
     container.addEventListener('pointerleave', _leave);
     container.addEventListener('pointercancel', _leave);
+
+    /* Distinguish a click from a drag-to-rotate, then select via our hit test. */
+    container.addEventListener('pointerdown', ev => { _wasDragging = false; _downX = ev.clientX; _downY = ev.clientY; });
+    container.addEventListener('pointermove', ev => {
+      if ((Math.abs(ev.clientX - _downX) + Math.abs(ev.clientY - _downY)) > 6) _wasDragging = true;
+    });
+    container.addEventListener('pointerup', ev => {
+      if (_wasDragging) return;
+      const f = _featureFromEvent(ev);
+      if (f && _selectGlobeFeature) { _updateGlobeTooltip(null); _selectGlobeFeature(f); }
+    });
 
     /* ResizeObserver — stored so it can be disconnected on shell rebuild */
     _globeResizeObs = new ResizeObserver(() => {
