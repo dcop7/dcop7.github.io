@@ -807,6 +807,15 @@
   text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8);
 }
 .ex-country-label .ex-cl-flag { font-size: .9rem; line-height: 1; }
+/* Leaflet doesn't constrain <img> inside a divIcon, so pin the flag size hard. */
+.ex-country-label .ex-cl-flag-img {
+  width: 15px !important;
+  height: 10px !important;
+  max-width: 15px !important;
+  flex: 0 0 auto;
+  border-radius: 1px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.3);
+}
 body.light .ex-country-label {
   color: #1a2230;
   text-shadow: 0 1px 3px rgba(255,255,255,.9), 0 0 2px rgba(255,255,255,.8);
@@ -912,8 +921,8 @@ body.light .ex-country-label {
 .ex-border-chip-flag-img,
 .ex-search-result-flag-img,
 .ex-cl-flag-img {
-  width: 1.15em; height: auto; border-radius: 2px;
-  display: inline-block; vertical-align: middle;
+  width: 1.15em; height: .8em; max-width: 1.6em; border-radius: 2px;
+  display: inline-block; vertical-align: middle; flex: 0 0 auto;
   box-shadow: 0 0 0 1px rgba(0,0,0,.15);
   object-fit: cover;
 }
