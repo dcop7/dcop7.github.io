@@ -351,11 +351,25 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: .55rem .75rem;
+  padding: .5rem .7rem;
   display: flex;
   flex-direction: column;
   gap: .28rem;
+  max-height: 52%;
+  overflow-y: auto;
 }
+.oc-legend-title {
+  display: flex; align-items: center; gap: .35rem;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-sans); font-size: .68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em; color: var(--text2);
+  padding: 0;
+}
+.oc-legend-chevron { transition: transform .2s; font-size: .6rem; }
+.oc-map-legend.collapsed .oc-legend-chevron { transform: rotate(-90deg); }
+.oc-map-legend.collapsed .oc-legend-body { display: none; }
+.oc-legend-body { display: flex; flex-direction: column; gap: .5rem; margin-top: .35rem; }
+.oc-legend-note { font-size: .6rem; color: var(--muted); font-style: italic; margin-top: .15rem; }
 .oc-legend-row {
   display: flex;
   align-items: center;
@@ -373,14 +387,6 @@
 .oc-legend-dot.eq   { background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,.5); }
 .oc-legend-dot.wx   { background: #38bdf8; box-shadow: 0 0 6px rgba(56,189,248,.4); }
 
-.oc-legend-title {
-  font-size: .6rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--muted);
-  margin-bottom: .3rem;
-}
 .oc-legend-section {
   padding-top: .3rem;
   margin-top: .25rem;
@@ -1161,34 +1167,35 @@
    RESPONSIVE
 ══════════════════════════════════════════════════════════════════ */
 
+/* Map/List toggle — desktop shows both panes, so the toggle is hidden there. */
+.oc-view-toggle { display: none; }
+.oc-vt-btn {
+  background: var(--card2); border: 1px solid var(--border); color: var(--muted);
+  font-family: var(--font-sans); font-size: .74rem; font-weight: 600;
+  padding: .32rem .6rem; cursor: pointer;
+}
+.oc-vt-btn:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.oc-vt-btn:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; border-left: none; }
+.oc-vt-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(var(--accent-rgb),.4); }
+
 @media (max-width: 900px) {
-  .oc-body {
-    flex-direction: column-reverse;
-    overflow-y: auto;
-  }
+  .oc-view-toggle { display: inline-flex; }
+  /* Single-pane on mobile: show map OR list, driven by the toggle class. */
+  .oc-body { flex-direction: column; overflow: hidden; }
   .oc-map-side {
-    flex: 1;
-    min-height: 0;
-    height: calc(55vh - 48px);
+    flex: 1; min-height: 0; height: calc(100vh - var(--hdr-h) - 96px);
     position: relative;
   }
-  #oc-leaflet-map {
-    position: relative;
-    height: 100%;
-    width: 100%;
-  }
+  #oc-leaflet-map { position: relative; height: 100%; width: 100%; }
   .oc-stats-panel {
-    width: 100%;
-    max-height: 45vh;
-    border-left: none;
-    border-bottom: 1px solid var(--border);
-    overflow-y: auto;
+    width: 100%; flex: 1; min-height: 0; max-height: none;
+    border-left: none; overflow-y: auto;
   }
-  .oc-incidents-section { max-height: 260px; }
-  .oc-layer-bar {
-    flex-wrap: wrap;
-    max-width: calc(100vw - 1.6rem);
-  }
+  .oc-incidents-section { max-height: none; }
+  /* Toggle visibility of each pane */
+  .oc-body.oc-show-map  .oc-stats-panel { display: none; }
+  .oc-body.oc-show-list .oc-map-side    { display: none; }
+  .oc-layer-bar { flex-wrap: wrap; max-width: calc(100vw - 1.6rem); }
 }
 
 @media (max-width: 600px) {

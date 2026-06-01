@@ -157,7 +157,7 @@ const OcorrenciasPage = (function () {
   const ESRI_ATTR  = 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics';
   const BASEMAPS = {
     standard: { name: 'Padrão',   url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: CARTO_ATTR },
-    dark:     { name: 'Escuro',   url: 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png',          sub: 'abcd', attr: CARTO_ATTR },
+    dark:     { name: 'Escuro',   url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',             sub: 'abcd', attr: CARTO_ATTR },
     satellite:{ name: 'Satélite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: ESRI_ATTR },
   };
   /* Esri reference overlay (boundaries + place names) for the satellite+labels mode */
@@ -274,14 +274,19 @@ const OcorrenciasPage = (function () {
     _updateDistrictLabelZoom();
   }
 
-  /* Font scales with zoom (labels stay legible, never oversized). */
+  /* Our district labels are an OVERVIEW aid. Once zoomed in (z >= 9) the CARTO
+     basemap prints its own town/region names, so we hide ours to avoid the
+     "name shown twice" effect. Font scales gently while visible. */
   function _updateDistrictLabelZoom() {
     if (!_districtLabelLayer || !_map) return;
     const z = _map.getZoom();
-    const fs = z >= 9 ? '.74rem' : z >= 7 ? '.66rem' : '.6rem';
+    const hide = z >= 9;
+    const fs = z >= 8 ? '.7rem' : z >= 7 ? '.66rem' : '.6rem';
     _districtLabelLayer.eachLayer(m => {
       const el = m.getElement();
-      if (el) el.style.fontSize = fs;
+      if (!el) return;
+      el.style.display = hide ? 'none' : '';
+      el.style.fontSize = fs;
     });
   }
 
@@ -534,20 +539,43 @@ const OcorrenciasPage = (function () {
     return st;
   }
 
+  /* Fire size tiers by the number of operacionais deployed (the real magnitude
+     proxy fogos.pt provides — there is no burned-area field). Each tier has a
+     distinct marker diameter so the scale of the response reads at a glance. */
+  const FIRE_SIZE_TIERS = [
+    { min: 0,   d: 16, label: 'Pequena (< 6 operacionais)' },
+    { min: 6,   d: 24, label: 'Média (6–19 operacionais)' },
+    { min: 20,  d: 34, label: 'Grande (20–49 operacionais)' },
+    { min: 50,  d: 46, label: 'Muito grande (50–99 operacionais)' },
+    { min: 100, d: 60, label: 'Grande dispositivo (100+ operacionais)' },
+  ];
+  function _fireSizeTier(inc) {
+    const op = inc.operacionais || 0;
+    let t = FIRE_SIZE_TIERS[0];
+    for (const tier of FIRE_SIZE_TIERS) if (op >= tier.min) t = tier;
+    return t;
+  }
+
   function _renderFireMarkers(fires) {
     if (!_lFire) return;
     _lFire.clearLayers();
     if (!_layers.fire) return;
-    fires.forEach(f => {
+    /* Draw biggest fires last so they sit on top of small ones. */
+    const sorted = fires.slice().sort((a, b) => (a.operacionais || 0) - (b.operacionais || 0));
+    sorted.forEach(f => {
       const st   = _fireStatus(f);
-      const sz   = 18 + st.sev * 3;
-      const glow = 6 + st.sev * 4;
-      const fs   = Math.round(sz * 0.5);
+      const tier = _fireSizeTier(f);
+      const sz   = tier.d;
+      const glow = 4 + Math.round(sz * 0.22);
+      const fs   = Math.round(sz * 0.46);
+      const op   = f.operacionais || 0;
       const loc  = f.district && f.district !== '—' ? ` · ${f.district}` : '';
-      const tip  = `${f.title}${loc} · ${st.label}`.replace(/"/g, '&quot;');
+      const tip  = `${f.title}${loc} · ${st.label} · ${tier.label}`.replace(/"/g, '&quot;');
+      /* Ring thickness also grows with size; a tiny operacionais badge on big ones. */
+      const badge = op >= 20 ? `<span style="position:absolute;bottom:-5px;right:-5px;background:rgba(8,12,20,.92);color:#fff;font-size:9px;font-weight:700;line-height:1;padding:1px 3px;border-radius:6px;border:1px solid rgba(255,255,255,.4)">${op}</span>` : '';
       const icon = L.divIcon({
         className: '',
-        html: `<div title="${tip}" style="width:${sz}px;height:${sz}px;border-radius:50%;background:${st.color};border:2px solid rgba(255,255,255,.92);box-shadow:0 0 ${glow}px ${st.color},0 0 3px rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;font-size:${fs}px;line-height:1;cursor:pointer">🔥</div>`,
+        html: `<div title="${tip}" style="position:relative;width:${sz}px;height:${sz}px;border-radius:50%;background:${st.color};border:2px solid rgba(255,255,255,.92);box-shadow:0 0 ${glow}px ${st.color},0 0 3px rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;font-size:${fs}px;line-height:1;cursor:pointer">🔥${badge}</div>`,
         iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
       });
       L.marker([f.lat, f.lon], { icon })
@@ -594,6 +622,9 @@ const OcorrenciasPage = (function () {
 
   function _openDetail(inc) {
     _detailInc = inc;
+    /* On mobile the list and map are separate panes — when an occurrence is
+       picked from the list, switch to the map so the detail sheet + pin show. */
+    if (window.innerWidth <= 900) _setMobileView('map');
     if (inc.lat != null && inc.lon != null) {
       _map?.flyTo([inc.lat, inc.lon], Math.max(_map.getZoom(), 9), { duration: 0.7 });
     }
@@ -956,13 +987,17 @@ const OcorrenciasPage = (function () {
             <span class="oc-last-update">A carregar…</span>
           </div>
           <div class="oc-header-right">
+            <div class="oc-view-toggle" id="oc-view-toggle" role="tablist" aria-label="Ver mapa ou lista">
+              <button class="oc-vt-btn active" data-view="map" role="tab">🗺 Mapa</button>
+              <button class="oc-vt-btn" data-view="list" role="tab">📋 Lista</button>
+            </div>
             <button class="oc-refresh-btn" id="oc-refresh">
               <span class="oc-refresh-icon">↻</span> Atualizar
             </button>
           </div>
         </div>
 
-        <div class="oc-body">
+        <div class="oc-body oc-show-map">
           <div class="oc-map-side">
             <div id="oc-leaflet-map"></div>
 
@@ -985,8 +1020,16 @@ const OcorrenciasPage = (function () {
               </button>
             </div>
 
-            <div class="oc-map-legend">
-              <div class="oc-legend-title">Legenda</div>
+            <div class="oc-map-legend" id="oc-map-legend">
+              <button class="oc-legend-title" id="oc-legend-toggle" aria-expanded="true">Legenda <span class="oc-legend-chevron">▾</span></button>
+              <div class="oc-legend-body">
+              <div class="oc-legend-section">
+                <div class="oc-legend-label">Incêndios (dimensão)</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#f97316;width:8px;height:8px"></div>Pequena</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#f97316;width:13px;height:13px"></div>Média / grande</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#f97316;width:18px;height:18px"></div>Grande dispositivo</div>
+                <div class="oc-legend-note">Tamanho = nº de operacionais</div>
+              </div>
               <div class="oc-legend-section">
                 <div class="oc-legend-label">Sismos (Mag.)</div>
                 <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#22c55e"></div>&lt; 2.0</div>
@@ -1009,6 +1052,7 @@ const OcorrenciasPage = (function () {
                 <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#eab30855;border-color:#eab308"></div>Amarelo</div>
                 <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#f9731655;border-color:#f97316"></div>Laranja</div>
                 <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#ef444455;border-color:#ef4444"></div>Vermelho</div>
+              </div>
               </div>
             </div>
 
@@ -1062,6 +1106,41 @@ const OcorrenciasPage = (function () {
       document.querySelector('.oc-detail-panel')?.classList.remove('open');
       _detailInc = null;
     };
+
+    /* Mobile Mapa/Lista toggle — switches which pane the .oc-body shows. */
+    const vt = document.getElementById('oc-view-toggle');
+    vt?.addEventListener('click', e => {
+      const btn = e.target.closest('.oc-vt-btn');
+      if (!btn) return;
+      _setMobileView(btn.dataset.view);
+    });
+
+    /* Collapsible legend (handy on small screens). */
+    const lt = document.getElementById('oc-legend-toggle');
+    lt?.addEventListener('click', () => {
+      const lg = document.getElementById('oc-map-legend');
+      const open = lg.classList.toggle('collapsed');
+      lt.setAttribute('aria-expanded', String(!open));
+    });
+    /* Start collapsed on phones so the legend doesn't cover the small map. */
+    if (window.innerWidth <= 600) {
+      document.getElementById('oc-map-legend')?.classList.add('collapsed');
+      lt?.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  /* Toggle the mobile single-pane view (map vs list). On desktop both show, so
+     this only affects the <=900px layout via the .oc-show-map/.oc-show-list class. */
+  function _setMobileView(view) {
+    const body = document.querySelector('.oc-body');
+    if (!body) return;
+    const showList = view === 'list';
+    body.classList.toggle('oc-show-list', showList);
+    body.classList.toggle('oc-show-map', !showList);
+    document.querySelectorAll('#oc-view-toggle .oc-vt-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.view === view));
+    /* The map needs a resize nudge when it becomes visible again. */
+    if (!showList) setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 60);
   }
 
   /* ════════════════════════════════ AUTO-REFRESH ════════════════════ */
