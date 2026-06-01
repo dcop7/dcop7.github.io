@@ -1,0 +1,145 @@
+[
+  {
+    "q": "O que estuda a biologia?",
+    "a": "Os seres vivos",
+    "opts": [
+      "As rochas",
+      "Os seres vivos",
+      "Os planetas",
+      "Os números"
+    ],
+    "exp": "A biologia é a ciência que estuda todos os seres vivos."
+  },
+  {
+    "q": "Qual é o planeta mais próximo do Sol?",
+    "a": "Mercúrio",
+    "opts": [
+      "Vénus",
+      "Terra",
+      "Mercúrio",
+      "Marte"
+    ],
+    "exp": "Mercúrio é o primeiro planeta do Sistema Solar."
+  },
+  {
+    "q": "A que temperatura congela a água ao nível do mar?",
+    "a": "0°C",
+    "opts": [
+      "-10°C",
+      "0°C",
+      "4°C",
+      "10°C"
+    ],
+    "exp": "À pressão atmosférica normal, a água congela a 0°C."
+  },
+  {
+    "q": "Como se chama a nossa galáxia?",
+    "a": "Via Láctea",
+    "opts": [
+      "Andrómeda",
+      "Triângulo",
+      "Via Láctea",
+      "Sombrero"
+    ],
+    "exp": "O Sistema Solar fica na galáxia Via Láctea."
+  },
+  {
+    "q": "A que temperatura ferve a água ao nível do mar?",
+    "a": "100°C",
+    "opts": [
+      "50°C",
+      "100°C",
+      "150°C",
+      "200°C"
+    ],
+    "exp": "A água ferve a 100°C ao nível do mar."
+  },
+  {
+    "q": "Qual a força que faz cair uma maçã da árvore?",
+    "a": "Gravidade",
+    "opts": [
+      "Magnetismo",
+      "Gravidade",
+      "Eletricidade",
+      "Atrito"
+    ],
+    "exp": "A gravidade puxa todos os corpos para o centro da Terra."
+  },
+  {
+    "q": "O que mede um termómetro?",
+    "a": "Temperatura",
+    "opts": [
+      "Pressão",
+      "Temperatura",
+      "Humidade",
+      "Velocidade"
+    ],
+    "exp": "O termómetro mede a temperatura."
+  },
+  {
+    "q": "Qual é o estado da água a 0°C ou menos?",
+    "a": "Sólido (gelo)",
+    "opts": [
+      "Líquido",
+      "Gasoso",
+      "Sólido (gelo)",
+      "Plasma"
+    ],
+    "exp": "Abaixo de 0°C a água congela e torna-se gelo."
+  },
+  {
+    "q": "Que parte da planta absorve a água do solo?",
+    "a": "As raízes",
+    "opts": [
+      "As folhas",
+      "As flores",
+      "As raízes",
+      "O caule"
+    ],
+    "exp": "As raízes absorvem água e nutrientes do solo."
+  },
+  {
+    "q": "Qual é o órgão da respiração nos peixes?",
+    "a": "Guelras",
+    "opts": [
+      "Pulmões",
+      "Guelras",
+      "Pele",
+      "Boca"
+    ],
+    "exp": "Os peixes respiram através das guelras (brânquias)."
+  },
+  {
+    "q": "Quantas patas tem um insecto?",
+    "a": "6",
+    "opts": [
+      "4",
+      "6",
+      "8",
+      "10"
+    ],
+    "exp": "Todos os insectos têm 6 patas."
+  },
+  {
+    "q": "Qual é o estado da água quando congela?",
+    "a": "Sólido",
+    "opts": [
+      "Líquido",
+      "Sólido",
+      "Gasoso",
+      "Plasma"
+    ],
+    "exp": "A água congela e passa ao estado sólido (gelo)."
+  },
+  {
+    "q": "Que órgão bombeia o sangue pelo corpo?",
+    "a": "Coração",
+    "opts": [
+      "Pulmão",
+      "Coração",
+      "Fígado",
+      "Rim"
+    ],
+    "exp": "O coração bombeia o sangue por todo o corpo."
+  }
+]

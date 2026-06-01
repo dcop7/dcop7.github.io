@@ -1,0 +1,178 @@
+[
+  {
+    "q": "Em que ano terminou a Segunda Guerra Mundial?",
+    "a": "1945",
+    "opts": [
+      "1939",
+      "1942",
+      "1945",
+      "1950"
+    ],
+    "exp": "A Segunda Guerra Mundial terminou em 1945 com a rendição da Alemanha (maio) e do Japão (agosto)."
+  },
+  {
+    "q": "Quem foi o primeiro presidente dos EUA?",
+    "a": "George Washington",
+    "opts": [
+      "Abraham Lincoln",
+      "Thomas Jefferson",
+      "George Washington",
+      "Benjamin Franklin"
+    ],
+    "exp": "George Washington foi o primeiro presidente dos Estados Unidos (1789–1797)."
+  },
+  {
+    "q": "Quem descobriu o Brasil?",
+    "a": "Pedro Álvares Cabral",
+    "opts": [
+      "Cristóvão Colombo",
+      "Vasco da Gama",
+      "Pedro Álvares Cabral",
+      "Fernão de Magalhães"
+    ],
+    "exp": "Pedro Álvares Cabral chegou ao Brasil a 22 de abril de 1500."
+  },
+  {
+    "q": "Em que ano ocorreu a Revolução dos Cravos em Portugal?",
+    "a": "1974",
+    "opts": [
+      "1968",
+      "1970",
+      "1974",
+      "1976"
+    ],
+    "exp": "A Revolução dos Cravos aconteceu a 25 de abril de 1974, restaurando a democracia em Portugal."
+  },
+  {
+    "q": "Em que continente nasceu a humanidade?",
+    "a": "África",
+    "opts": [
+      "Ásia",
+      "Europa",
+      "África",
+      "América"
+    ],
+    "exp": "Os fósseis mais antigos de humanos modernos foram encontrados em África."
+  },
+  {
+    "q": "Quem foi o primeiro rei de Portugal?",
+    "a": "D. Afonso Henriques",
+    "opts": [
+      "D. Dinis",
+      "D. João I",
+      "D. Afonso Henriques",
+      "D. Sancho I"
+    ],
+    "exp": "D. Afonso Henriques foi o primeiro rei de Portugal (1139-1185)."
+  },
+  {
+    "q": "Que navegador português chegou à Índia em 1498?",
+    "a": "Vasco da Gama",
+    "opts": [
+      "Cristóvão Colombo",
+      "Vasco da Gama",
+      "Pedro Álvares Cabral",
+      "Bartolomeu Dias"
+    ],
+    "exp": "Vasco da Gama abriu a rota marítima para a Índia em 1498."
+  },
+  {
+    "q": "Em que ano entrou Portugal na CEE/União Europeia?",
+    "a": "1986",
+    "opts": [
+      "1974",
+      "1980",
+      "1986",
+      "2000"
+    ],
+    "exp": "Portugal aderiu à então CEE a 1 de janeiro de 1986."
+  },
+  {
+    "q": "Quem inventou a lâmpada incandescente?",
+    "a": "Thomas Edison",
+    "opts": [
+      "Nikola Tesla",
+      "Thomas Edison",
+      "Alexander Graham Bell",
+      "Albert Einstein"
+    ],
+    "exp": "Thomas Edison patenteou a lâmpada incandescente em 1879."
+  },
+  {
+    "q": "Que muralha dividia Berlim até 1989?",
+    "a": "Muro de Berlim",
+    "opts": [
+      "Muralha da China",
+      "Muro de Berlim",
+      "Muro de Adriano",
+      "Linha Maginot"
+    ],
+    "exp": "O Muro de Berlim caiu a 9 de novembro de 1989."
+  },
+  {
+    "q": "Quem foi Cleópatra?",
+    "a": "Rainha do Egipto",
+    "opts": [
+      "Rainha de França",
+      "Rainha do Egipto",
+      "Imperatriz romana",
+      "Rainha de Espanha"
+    ],
+    "exp": "Cleópatra VII foi a última faraó do Egipto."
+  },
+  {
+    "q": "Que civilização inventou a democracia?",
+    "a": "Grécia Antiga",
+    "opts": [
+      "Roma",
+      "Egipto",
+      "Grécia Antiga",
+      "Pérsia"
+    ],
+    "exp": "A democracia nasceu em Atenas, na Grécia Antiga."
+  },
+  {
+    "q": "Quem liderou a Índia na independência de forma não-violenta?",
+    "a": "Gandhi",
+    "opts": [
+      "Nehru",
+      "Gandhi",
+      "Mandela",
+      "Churchill"
+    ],
+    "exp": "Mahatma Gandhi liderou a independência da Índia através da resistência pacífica."
+  },
+  {
+    "q": "Em que ano afundou o Titanic?",
+    "a": "1912",
+    "opts": [
+      "1905",
+      "1912",
+      "1920",
+      "1931"
+    ],
+    "exp": "O Titanic afundou na sua viagem inaugural, em abril de 1912."
+  },
+  {
+    "q": "Quem pintou o teto da Capela Sistina?",
+    "a": "Michelangelo",
+    "opts": [
+      "Leonardo da Vinci",
+      "Rafael",
+      "Michelangelo",
+      "Donatello"
+    ],
+    "exp": "Michelangelo pintou o teto da Capela Sistina entre 1508 e 1512."
+  },
+  {
+    "q": "Quem terá chegado ao Brasil em 1500?",
+    "a": "Pedro Álvares Cabral",
+    "opts": [
+      "Vasco da Gama",
+      "Pedro Álvares Cabral",
+      "Cristóvão Colombo",
+      "Fernão de Magalhães"
+    ],
+    "exp": "Pedro Álvares Cabral chegou ao Brasil em 1500."
+  }
+]

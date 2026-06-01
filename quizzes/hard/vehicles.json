@@ -1,0 +1,24 @@
+[
+  {
+    "q": "Como se chama o veículo elétrico de duas rodas que se equilibra sozinho?",
+    "a": "Segway",
+    "opts": [
+      "Trotinete",
+      "Segway",
+      "Monociclo",
+      "Velocípede"
+    ],
+    "exp": "O Segway é um veículo elétrico auto-equilibrado de duas rodas."
+  },
+  {
+    "q": "Que tipo de motor tornou famosa a Revolução Industrial nos transportes?",
+    "a": "Motor a vapor",
+    "opts": [
+      "Motor elétrico",
+      "Motor a vapor",
+      "Motor a jato",
+      "Motor diesel"
+    ],
+    "exp": "A máquina a vapor impulsionou comboios e navios no século XIX."
+  }
+]

@@ -1,0 +1,123 @@
+[
+  {
+    "q": "Qual é o peixe mais rápido?",
+    "a": "Peixe-vela",
+    "opts": [
+      "Tubarão",
+      "Atum",
+      "Peixe-vela",
+      "Espadarte"
+    ],
+    "exp": "O peixe-vela pode atingir 110 km/h, sendo o peixe mais rápido do mundo."
+  },
+  {
+    "q": "Quantas asas tem uma abelha?",
+    "a": "4",
+    "opts": [
+      "2",
+      "4",
+      "6",
+      "0"
+    ],
+    "exp": "As abelhas têm 4 asas — 2 anteriores e 2 posteriores que se ligam em voo."
+  },
+  {
+    "q": "O que é um mamífero?",
+    "a": "Animal que amamenta as crias",
+    "opts": [
+      "Animal que bota ovos",
+      "Animal que amamenta as crias",
+      "Animal que vive na água",
+      "Animal com escamas"
+    ],
+    "exp": "Os mamíferos são animais de sangue quente que amamentam as crias com leite."
+  },
+  {
+    "q": "Qual o símbolo nacional de Portugal mais famoso?",
+    "a": "Galo de Barcelos",
+    "opts": [
+      "Lobo Ibérico",
+      "Galo de Barcelos",
+      "Cavalo Lusitano",
+      "Touro"
+    ],
+    "exp": "O Galo de Barcelos é um dos símbolos mais reconhecíveis de Portugal."
+  },
+  {
+    "q": "Que idade pode atingir uma tartaruga gigante?",
+    "a": "Mais de 150 anos",
+    "opts": [
+      "20 anos",
+      "50 anos",
+      "100 anos",
+      "Mais de 150 anos"
+    ],
+    "exp": "Algumas tartarugas das Galápagos ultrapassam os 150 anos."
+  },
+  {
+    "q": "Qual é o maior felino do mundo?",
+    "a": "Tigre",
+    "opts": [
+      "Leão",
+      "Tigre",
+      "Leopardo",
+      "Jaguar"
+    ],
+    "exp": "O tigre-siberiano é o maior felino, podendo pesar mais de 300 kg."
+  },
+  {
+    "q": "Qual ave não voa mas corre muito depressa?",
+    "a": "Avestruz",
+    "opts": [
+      "Pinguim",
+      "Avestruz",
+      "Galinha",
+      "Pavão"
+    ],
+    "exp": "A avestruz corre até 70 km/h e é a maior ave do mundo."
+  },
+  {
+    "q": "Quantas patas tem um caranguejo?",
+    "a": "10",
+    "opts": [
+      "6",
+      "8",
+      "10",
+      "12"
+    ],
+    "exp": "Os caranguejos têm 10 patas, incluindo as pinças."
+  },
+  {
+    "q": "Qual destes animais é um anfíbio?",
+    "a": "Rã",
+    "opts": [
+      "Lagarto",
+      "Rã",
+      "Cobra",
+      "Tartaruga"
+    ],
+    "exp": "A rã é um anfíbio: vive na água e em terra."
+  },
+  {
+    "q": "Qual destes animais hiberna no inverno?",
+    "a": "Urso",
+    "opts": [
+      "Leão",
+      "Urso",
+      "Zebra",
+      "Canguru"
+    ],
+    "exp": "Muitos ursos hibernam durante o inverno."
+  },
+  {
+    "q": "Qual é a ave que não voa e vive na Antárctida?",
+    "a": "Pinguim",
+    "opts": [
+      "Avestruz",
+      "Pinguim",
+      "Galinha",
+      "Emu"
+    ],
+    "exp": "O pinguim não voa e vive sobretudo no hemisfério sul."
+  }
+]

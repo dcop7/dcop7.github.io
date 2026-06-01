@@ -749,8 +749,14 @@ const _TRIVIA_EXTRA = {
     return {
       async getQuestions(opts) {
         const { age, lang, count } = opts;
-        if (lang === 'pt' && _TRIVIA.pt[bankKey]) {
-          return fromBank(_TRIVIA.pt[bankKey], { ...opts, bankKey });
+        /* PT: serve from the split offline database (quizzes/{diff}/{bankKey}.json,
+           loaded lazily by QuizData). The old in-file _TRIVIA bank stays only as a
+           tiny safety net if the JSON is somehow unavailable. */
+        if (lang === 'pt') {
+          const diff = opts.difficulty || (diffFn ? diffFn(age) : 'easy');
+          let items = (typeof QuizData !== 'undefined') ? await QuizData.loadBank(bankKey, diff) : null;
+          if (items && items.length) return QuizData.buildFromBank(items, { ...opts, category: bankKey });
+          if (_TRIVIA.pt[bankKey]) return fromBank(_TRIVIA.pt[bankKey], { ...opts, bankKey });
         }
         const diff  = diffFn ? diffFn(age) : (age <= 9 ? 'easy' : age <= 12 ? 'medium' : 'hard');
         const items = await tryFetch(apiCat, diff, count || 10);

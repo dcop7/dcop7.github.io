@@ -1,0 +1,68 @@
+[
+  {
+    "q": "O que faz um motor a combustão?",
+    "a": "Queima combustível para gerar movimento",
+    "opts": [
+      "Usa apenas eletricidade",
+      "Queima combustível para gerar movimento",
+      "Usa energia solar",
+      "Funciona com água"
+    ],
+    "exp": "O motor a combustão queima gasolina ou gasóleo para mover o veículo."
+  },
+  {
+    "q": "Que documento é preciso para conduzir um carro?",
+    "a": "Carta de condução",
+    "opts": [
+      "Passaporte",
+      "Carta de condução",
+      "Bilhete de identidade",
+      "Cartão de cidadão"
+    ],
+    "exp": "É obrigatório ter carta de condução para conduzir."
+  },
+  {
+    "q": "Qual destes é um veículo elétrico famoso?",
+    "a": "Comboio elétrico",
+    "opts": [
+      "Comboio elétrico",
+      "Carroça",
+      "Veleiro",
+      "Planador"
+    ],
+    "exp": "Muitos comboios funcionam a eletricidade, sem emissões diretas."
+  },
+  {
+    "q": "O que mede o velocímetro de um carro?",
+    "a": "A velocidade",
+    "opts": [
+      "A gasolina",
+      "A velocidade",
+      "A temperatura",
+      "A distância"
+    ],
+    "exp": "O velocímetro indica a velocidade do veículo."
+  },
+  {
+    "q": "Que veículo é movido pela força do vento numas velas?",
+    "a": "Veleiro",
+    "opts": [
+      "Submarino",
+      "Veleiro",
+      "Jet-ski",
+      "Ferry"
+    ],
+    "exp": "O veleiro usa velas para aproveitar o vento."
+  },
+  {
+    "q": "Qual destes transportes é o mais rápido em viagens longas?",
+    "a": "Avião",
+    "opts": [
+      "Comboio",
+      "Autocarro",
+      "Avião",
+      "Navio"
+    ],
+    "exp": "O avião é, em geral, o transporte mais rápido em longas distâncias."
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "q": "Quantos anos separam cada Jogos Olímpicos de Verão?",
+    "a": "4",
+    "opts": [
+      "2",
+      "4",
+      "5",
+      "6"
+    ],
+    "exp": "Os Jogos Olímpicos de Verão realizam-se de 4 em 4 anos."
+  },
+  {
+    "q": "Em que país nasceu o futebol moderno?",
+    "a": "Inglaterra",
+    "opts": [
+      "Brasil",
+      "Alemanha",
+      "Inglaterra",
+      "Espanha"
+    ],
+    "exp": "O futebol moderno foi codificado em Inglaterra em 1863."
+  },
+  {
+    "q": "Que desporto se joga com um volante?",
+    "a": "Badminton",
+    "opts": [
+      "Squash",
+      "Ténis",
+      "Paddle",
+      "Badminton"
+    ],
+    "exp": "O volante é o projéctil usado no badminton, feito de penas ou plástico."
+  },
+  {
+    "q": "Quantos pontos vale uma cesta de 3 pontos no basquetebol?",
+    "a": "3",
+    "opts": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "exp": "O lançamento de trás da linha de 3 pontos vale 3 pontos no basquetebol."
+  },
+  {
+    "q": "Em que desporto se usa um taco para bater numa bola?",
+    "a": "Golfe",
+    "opts": [
+      "Hóquei",
+      "Polo",
+      "Golfe",
+      "Cricket"
+    ],
+    "exp": "No golfe, o objectivo é introduzir a bola no buraco com o menor número de tacadas."
+  },
+  {
+    "q": "Em que desporto se usa um capacete e bastão?",
+    "a": "Hóquei no gelo",
+    "opts": [
+      "Ténis",
+      "Basquetebol",
+      "Hóquei no gelo",
+      "Vólei"
+    ],
+    "exp": "No hóquei usa-se capacete e um bastão (stick)."
+  },
+  {
+    "q": "Que país ganhou mais Mundiais de futebol?",
+    "a": "Brasil",
+    "opts": [
+      "Alemanha",
+      "Brasil",
+      "Itália",
+      "Argentina"
+    ],
+    "exp": "O Brasil venceu 5 Campeonatos do Mundo."
+  },
+  {
+    "q": "Em que desporto existe o \"strike\" e o \"spare\"?",
+    "a": "Bowling",
+    "opts": [
+      "Ténis",
+      "Bowling",
+      "Golfe",
+      "Críquete"
+    ],
+    "exp": "Strike e spare são termos do bowling."
+  },
+  {
+    "q": "Em que desporto se usa um \"puck\"?",
+    "a": "Hóquei no gelo",
+    "opts": [
+      "Hóquei no gelo",
+      "Ténis de mesa",
+      "Polo",
+      "Andebol"
+    ],
+    "exp": "O disco (puck) é usado no hóquei no gelo."
+  },
+  {
+    "q": "De quantos em quantos anos se realizam os Jogos Olímpicos de Verão?",
+    "a": "4",
+    "opts": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "exp": "Os Jogos Olímpicos realizam-se de 4 em 4 anos."
+  }
+]

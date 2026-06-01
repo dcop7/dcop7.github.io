@@ -1,0 +1,134 @@
+[
+  {
+    "q": "Qual é a capital da Austrália?",
+    "a": "Camberra",
+    "opts": [
+      "Sydney",
+      "Melbourne",
+      "Camberra",
+      "Perth"
+    ],
+    "exp": "Camberra é a capital da Austrália, não Sydney."
+  },
+  {
+    "q": "Qual é o metal mais leve?",
+    "a": "Lítio",
+    "opts": [
+      "Alumínio",
+      "Ferro",
+      "Cobre",
+      "Lítio"
+    ],
+    "exp": "O lítio é o metal mais leve da tabela periódica."
+  },
+  {
+    "q": "Quem escreveu \"Os Lusíadas\"?",
+    "a": "Luís de Camões",
+    "opts": [
+      "Fernando Pessoa",
+      "Eça de Queirós",
+      "Luís de Camões",
+      "José Saramago"
+    ],
+    "exp": "\"Os Lusíadas\" é o épico nacional de Portugal, escrito por Luís de Camões no século XVI."
+  },
+  {
+    "q": "Qual é a maior ilha do mundo?",
+    "a": "Gronelândia",
+    "opts": [
+      "Madagáscar",
+      "Bornéu",
+      "Gronelândia",
+      "Austrália"
+    ],
+    "exp": "A Gronelândia tem cerca de 2,16 milhões de km². A Austrália é considerada continente."
+  },
+  {
+    "q": "Qual é a maior cordilheira do mundo?",
+    "a": "Andes",
+    "opts": [
+      "Himalaia",
+      "Alpes",
+      "Andes",
+      "Rochosas"
+    ],
+    "exp": "Os Andes têm cerca de 7 000 km de extensão, na América do Sul."
+  },
+  {
+    "q": "Quantos quilómetros tem a fronteira terrestre Portugal-Espanha?",
+    "a": "1 214 km",
+    "opts": [
+      "600 km",
+      "900 km",
+      "1 214 km",
+      "1 800 km"
+    ],
+    "exp": "A Raia tem 1 214 km, sendo uma das fronteiras mais antigas da Europa."
+  },
+  {
+    "q": "Qual é o país mais populoso do mundo?",
+    "a": "Índia",
+    "opts": [
+      "China",
+      "Índia",
+      "EUA",
+      "Indonésia"
+    ],
+    "exp": "A Índia ultrapassou a China como país mais populoso em 2023."
+  },
+  {
+    "q": "Qual é o menor país do mundo?",
+    "a": "Vaticano",
+    "opts": [
+      "Mónaco",
+      "Vaticano",
+      "São Marino",
+      "Liechtenstein"
+    ],
+    "exp": "O Vaticano tem apenas 0,44 km²."
+  },
+  {
+    "q": "Qual é a língua mais falada do mundo (nativos)?",
+    "a": "Mandarim",
+    "opts": [
+      "Inglês",
+      "Espanhol",
+      "Mandarim",
+      "Hindi"
+    ],
+    "exp": "O chinês mandarim tem o maior número de falantes nativos."
+  },
+  {
+    "q": "Qual é o lago de água doce mais profundo do mundo?",
+    "a": "Baikal",
+    "opts": [
+      "Superior",
+      "Vitória",
+      "Baikal",
+      "Tanganica"
+    ],
+    "exp": "O lago Baikal, na Sibéria, tem mais de 1 600 m de profundidade."
+  },
+  {
+    "q": "Em que ano se deu a Revolução dos Cravos?",
+    "a": "1974",
+    "opts": [
+      "1910",
+      "1926",
+      "1974",
+      "1986"
+    ],
+    "exp": "O 25 de Abril de 1974 pôs fim ao Estado Novo."
+  },
+  {
+    "q": "Qual é o ponto mais alto de Portugal?",
+    "a": "Montanha do Pico (Açores)",
+    "opts": [
+      "Torre",
+      "Montanha do Pico (Açores)",
+      "Pico do Areeiro",
+      "Foia"
+    ],
+    "exp": "A Montanha do Pico, nos Açores, tem 2 351 m."
+  }
+]

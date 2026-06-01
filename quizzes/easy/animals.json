@@ -1,0 +1,156 @@
+[
+  {
+    "q": "O que come um coelho?",
+    "a": "Ervas e vegetais",
+    "opts": [
+      "Carne",
+      "Ervas e vegetais",
+      "Peixes",
+      "Insectos"
+    ],
+    "exp": "Os coelhos são herbívoros — comem ervas, cenouras, folhas e outros vegetais."
+  },
+  {
+    "q": "Qual é o maior animal terrestre?",
+    "a": "Elefante-africano",
+    "opts": [
+      "Hipopótamo",
+      "Girafa",
+      "Elefante-africano",
+      "Rinoceronte"
+    ],
+    "exp": "O elefante-africano é o maior animal terrestre, podendo pesar mais de 6 toneladas."
+  },
+  {
+    "q": "Quantas patas tem uma aranha?",
+    "a": "8",
+    "opts": [
+      "6",
+      "8",
+      "10",
+      "4"
+    ],
+    "exp": "As aranhas têm 8 patas, o que as distingue dos insectos (que têm 6)."
+  },
+  {
+    "q": "Que som faz um gato?",
+    "a": "Mia",
+    "opts": [
+      "Late",
+      "Muge",
+      "Mia",
+      "Grasna"
+    ],
+    "exp": "Os gatos miam para comunicar com os humanos — é um comportamento aprendido."
+  },
+  {
+    "q": "De que se alimenta o panda gigante?",
+    "a": "Bambu",
+    "opts": [
+      "Peixe",
+      "Bambu",
+      "Mel",
+      "Frutos"
+    ],
+    "exp": "O panda gigante come quase exclusivamente bambu, consumindo até 40 kg por dia."
+  },
+  {
+    "q": "Qual é o maior animal do mundo?",
+    "a": "Baleia-azul",
+    "opts": [
+      "Elefante-africano",
+      "Tubarão-baleia",
+      "Baleia-azul",
+      "Crocodilo"
+    ],
+    "exp": "A baleia-azul pode atingir 30 metros e 180 toneladas."
+  },
+  {
+    "q": "Que som faz um cão?",
+    "a": "Ladra",
+    "opts": [
+      "Mia",
+      "Ladra",
+      "Muge",
+      "Crocita"
+    ],
+    "exp": "Os cães ladram para comunicar."
+  },
+  {
+    "q": "Que animal é conhecido como o \"rei da selva\"?",
+    "a": "Leão",
+    "opts": [
+      "Tigre",
+      "Leão",
+      "Elefante",
+      "Gorila"
+    ],
+    "exp": "O leão é tradicionalmente chamado o rei da selva."
+  },
+  {
+    "q": "Que animal muda de cor para se camuflar?",
+    "a": "Camaleão",
+    "opts": [
+      "Sapo",
+      "Camaleão",
+      "Coruja",
+      "Lobo"
+    ],
+    "exp": "O camaleão muda de cor para comunicar e regular a temperatura."
+  },
+  {
+    "q": "Qual é o animal mais alto do mundo?",
+    "a": "Girafa",
+    "opts": [
+      "Elefante",
+      "Girafa",
+      "Camelo",
+      "Avestruz"
+    ],
+    "exp": "A girafa pode atingir 5,5 m de altura."
+  },
+  {
+    "q": "O que produz a abelha?",
+    "a": "Mel",
+    "opts": [
+      "Leite",
+      "Mel",
+      "Seda",
+      "Cera apenas"
+    ],
+    "exp": "As abelhas produzem mel a partir do néctar das flores."
+  },
+  {
+    "q": "Que mamífero marinho é conhecido pela inteligência?",
+    "a": "Golfinho",
+    "opts": [
+      "Tubarão",
+      "Golfinho",
+      "Atum",
+      "Polvo"
+    ],
+    "exp": "Os golfinhos estão entre os animais mais inteligentes do planeta."
+  },
+  {
+    "q": "Que animal carrega as crias numa bolsa?",
+    "a": "Canguru",
+    "opts": [
+      "Coala",
+      "Canguru",
+      "Lontra",
+      "Esquilo"
+    ],
+    "exp": "O canguru é um marsupial: transporta as crias numa bolsa."
+  },
+  {
+    "q": "Qual destes animais é um mamífero?",
+    "a": "Golfinho",
+    "opts": [
+      "Tubarão",
+      "Golfinho",
+      "Polvo",
+      "Salmão"
+    ],
+    "exp": "O golfinho é um mamífero marinho, não um peixe."
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "q": "Qual animal tem a maior língua?",
+    "a": "Girafa",
+    "opts": [
+      "Camaleão",
+      "Girafa",
+      "Formigueiro",
+      "Elefante"
+    ],
+    "exp": "A língua da girafa tem cerca de 45 cm de comprimento."
+  },
+  {
+    "q": "Qual o mamífero que põe ovos?",
+    "a": "Ornitorrinco",
+    "opts": [
+      "Ouriço",
+      "Ornitorrinco",
+      "Esquilo",
+      "Toupeira"
+    ],
+    "exp": "O ornitorrinco é um dos raros mamíferos que põem ovos (monotremados)."
+  },
+  {
+    "q": "Quantos corações tem um polvo?",
+    "a": "3",
+    "opts": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "exp": "O polvo tem 3 corações: um sistémico e dois branquiais."
+  },
+  {
+    "q": "Qual é a ave mais pequena do mundo?",
+    "a": "Beija-flor-abelha",
+    "opts": [
+      "Pintassilgo",
+      "Beija-flor-abelha",
+      "Pardal",
+      "Andorinha"
+    ],
+    "exp": "O beija-flor-abelha de Cuba pesa apenas ~2 g."
+  },
+  {
+    "q": "Qual é o maior réptil do mundo?",
+    "a": "Crocodilo-de-água-salgada",
+    "opts": [
+      "Píton",
+      "Crocodilo-de-água-salgada",
+      "Iguana",
+      "Dragão-de-komodo"
+    ],
+    "exp": "O crocodilo-de-água-salgada pode passar dos 6 metros."
+  },
+  {
+    "q": "Quantos olhos tem a maioria das aranhas?",
+    "a": "8",
+    "opts": [
+      "2",
+      "4",
+      "6",
+      "8"
+    ],
+    "exp": "A maioria das aranhas tem 8 olhos."
+  },
+  {
+    "q": "Qual é o único mamífero que põe ovos e é nativo da Austrália?",
+    "a": "Ornitorrinco",
+    "opts": [
+      "Coala",
+      "Canguru",
+      "Ornitorrinco",
+      "Wombat"
+    ],
+    "exp": "O ornitorrinco é um mamífero monotremado que põe ovos."
+  }
+]
