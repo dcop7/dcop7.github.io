@@ -1245,7 +1245,520 @@ const CheatsheetsPage = (function () {
       ]
     },
 
+    kubernetes: {
+      label: 'Kubernetes', icon: '☸️',
+      sections: [
+        { title: 'kubectl Basics', items: [
+          { cmd: 'kubectl config get-contexts', desc: 'List available contexts' },
+          { cmd: 'kubectl config use-context <name>', desc: 'Switch context' },
+          { cmd: 'kubectl config set-context --current --namespace=<ns>', desc: 'Set default namespace' },
+          { cmd: 'kubectl get all -n <ns>', desc: 'List common resources in a namespace' },
+          { cmd: 'kubectl get all -A', desc: 'List resources across all namespaces' },
+          { cmd: 'kubectl api-resources', desc: 'List supported resource types' },
+          { cmd: 'kubectl explain pod.spec', desc: 'Show field documentation' },
+          { cmd: 'kubectl version --short', desc: 'Client and server versions' },
+        ]},
+        { title: 'Pods', items: [
+          { cmd: 'kubectl get pods -o wide', desc: 'List pods with node and IP' },
+          { cmd: 'kubectl get pods --watch', desc: 'Watch pod status changes' },
+          { cmd: 'kubectl describe pod <pod>', desc: 'Detailed pod info and events' },
+          { cmd: 'kubectl logs <pod>', desc: 'Show pod logs' },
+          { cmd: 'kubectl logs -f <pod> -c <container>', desc: 'Follow logs of a container' },
+          { cmd: 'kubectl logs --previous <pod>', desc: 'Logs from previous crashed container' },
+          { cmd: 'kubectl exec -it <pod> -- bash', desc: 'Shell into a pod' },
+          { cmd: 'kubectl cp <pod>:/path ./local', desc: 'Copy file from pod' },
+          { cmd: 'kubectl port-forward <pod> 8080:80', desc: 'Forward local port to pod' },
+          { cmd: 'kubectl delete pod <pod>', desc: 'Delete a pod (recreated if managed)' },
+          { cmd: 'kubectl run tmp --rm -it --image=busybox -- sh', desc: 'Throwaway debug pod' },
+        ]},
+        { title: 'Deployments', items: [
+          { cmd: 'kubectl get deploy', desc: 'List deployments' },
+          { cmd: 'kubectl create deploy web --image=nginx', desc: 'Create deployment' },
+          { cmd: 'kubectl apply -f deploy.yaml', desc: 'Apply manifest (declarative)' },
+          { cmd: 'kubectl set image deploy/web nginx=nginx:1.27', desc: 'Update container image' },
+          { cmd: 'kubectl rollout status deploy/web', desc: 'Watch rollout progress' },
+          { cmd: 'kubectl rollout history deploy/web', desc: 'Show rollout revisions' },
+          { cmd: 'kubectl rollout undo deploy/web', desc: 'Roll back to previous revision' },
+          { cmd: 'kubectl rollout restart deploy/web', desc: 'Restart pods (re-pull, reload config)' },
+          { cmd: 'kubectl scale deploy/web --replicas=5', desc: 'Scale to 5 replicas' },
+          { cmd: 'kubectl autoscale deploy/web --min=2 --max=10 --cpu-percent=70', desc: 'Horizontal Pod Autoscaler' },
+        ]},
+        { title: 'Services & Networking', items: [
+          { cmd: 'kubectl get svc', desc: 'List services' },
+          { cmd: 'kubectl expose deploy/web --port=80 --target-port=8080', desc: 'Create ClusterIP service' },
+          { cmd: 'kubectl expose deploy/web --type=NodePort --port=80', desc: 'Expose via NodePort' },
+          { cmd: 'kubectl expose deploy/web --type=LoadBalancer --port=80', desc: 'Expose via LoadBalancer' },
+          { cmd: 'kubectl get endpoints <svc>', desc: 'Show backing pod IPs' },
+          { cmd: 'kubectl get ingress', desc: 'List ingress rules' },
+          { cmd: 'kubectl port-forward svc/web 8080:80', desc: 'Forward to a service' },
+        ]},
+        { title: 'Config & Secrets', items: [
+          { cmd: 'kubectl create configmap cfg --from-file=app.conf', desc: 'ConfigMap from file' },
+          { cmd: 'kubectl create configmap cfg --from-literal=KEY=val', desc: 'ConfigMap from literal' },
+          { cmd: 'kubectl create secret generic db --from-literal=pass=secret', desc: 'Create secret' },
+          { cmd: 'kubectl get secret db -o jsonpath="{.data.pass}" | base64 -d', desc: 'Decode a secret value' },
+          { cmd: 'kubectl create secret docker-registry reg --docker-server=... --docker-username=... --docker-password=...', desc: 'Image pull secret' },
+          { cmd: 'kubectl get cm,secret', desc: 'List configmaps and secrets' },
+        ]},
+        { title: 'Debugging', items: [
+          { cmd: 'kubectl get events --sort-by=.lastTimestamp', desc: 'Recent cluster events' },
+          { cmd: 'kubectl describe node <node>', desc: 'Node capacity, conditions, pods' },
+          { cmd: 'kubectl top pod', desc: 'Pod CPU/memory usage (metrics-server)' },
+          { cmd: 'kubectl top node', desc: 'Node resource usage' },
+          { cmd: 'kubectl get pod <pod> -o yaml', desc: 'Full pod manifest' },
+          { cmd: 'kubectl debug <pod> -it --image=busybox', desc: 'Ephemeral debug container' },
+          { cmd: 'kubectl get pods --field-selector=status.phase=Failed', desc: 'List failed pods' },
+        ]},
+        { title: 'Apply & Manage', items: [
+          { cmd: 'kubectl apply -f dir/', desc: 'Apply all manifests in a directory' },
+          { cmd: 'kubectl apply -k overlays/prod', desc: 'Apply Kustomize overlay' },
+          { cmd: 'kubectl diff -f deploy.yaml', desc: 'Preview changes before apply' },
+          { cmd: 'kubectl delete -f deploy.yaml', desc: 'Delete resources in manifest' },
+          { cmd: 'kubectl label pod <pod> env=prod', desc: 'Add a label' },
+          { cmd: 'kubectl annotate pod <pod> note="..."', desc: 'Add an annotation' },
+          { cmd: 'kubectl get pods -l app=web', desc: 'Filter by label selector' },
+          { cmd: 'kubectl get po -o jsonpath="{.items[*].metadata.name}"', desc: 'Extract fields with JSONPath' },
+        ]},
+      ]
+    },
+
+    mongodb: {
+      label: 'MongoDB', icon: '🍃',
+      sections: [
+        { title: 'mongosh / Connect', items: [
+          { cmd: 'mongosh "mongodb://localhost:27017"', desc: 'Connect to local server' },
+          { cmd: 'mongosh "mongodb+srv://user:pass@cluster.net/db"', desc: 'Connect to Atlas (SRV)' },
+          { cmd: 'show dbs', desc: 'List databases' },
+          { cmd: 'use mydb', desc: 'Switch/create database' },
+          { cmd: 'show collections', desc: 'List collections' },
+          { cmd: 'db.dropDatabase()', desc: 'Delete current database' },
+          { cmd: 'db.stats()', desc: 'Database statistics' },
+        ]},
+        { title: 'Create / Insert', items: [
+          { cmd: 'db.users.insertOne({ name: "Ana", age: 30 })', desc: 'Insert a single document' },
+          { cmd: 'db.users.insertMany([{...}, {...}])', desc: 'Insert multiple documents' },
+          { cmd: 'db.createCollection("logs", { capped: true, size: 100000 })', desc: 'Create a capped collection' },
+        ]},
+        { title: 'Query / Find', items: [
+          { cmd: 'db.users.find({ age: { $gt: 25 } })', desc: 'Find with comparison operator' },
+          { cmd: 'db.users.findOne({ _id: ObjectId("...") })', desc: 'Find single by id' },
+          { cmd: 'db.users.find({ name: /^A/ })', desc: 'Regex match' },
+          { cmd: 'db.users.find({}, { name: 1, _id: 0 })', desc: 'Projection (only name)' },
+          { cmd: 'db.users.find().sort({ age: -1 }).limit(10)', desc: 'Sort descending, limit' },
+          { cmd: 'db.users.find().skip(20).limit(10)', desc: 'Pagination' },
+          { cmd: 'db.users.countDocuments({ active: true })', desc: 'Count matching documents' },
+          { cmd: 'db.users.distinct("country")', desc: 'Distinct field values' },
+        ]},
+        { title: 'Query Operators', items: [
+          { cmd: '$eq $ne $gt $gte $lt $lte', desc: 'Comparison operators' },
+          { cmd: '{ age: { $in: [20, 30, 40] } }', desc: 'Match any value in list' },
+          { cmd: '{ $and: [{a:1},{b:2}] } / $or / $nor', desc: 'Logical operators' },
+          { cmd: '{ tags: { $all: ["a","b"] } }', desc: 'Array contains all' },
+          { cmd: '{ field: { $exists: true } }', desc: 'Field exists' },
+          { cmd: '{ field: { $type: "string" } }', desc: 'Match by BSON type' },
+          { cmd: '{ "items.price": { $gt: 10 } }', desc: 'Query nested / array field' },
+          { cmd: '{ arr: { $elemMatch: { qty: { $gt: 5 } } } }', desc: 'Array element matches all conditions' },
+        ]},
+        { title: 'Update / Delete', items: [
+          { cmd: 'db.users.updateOne({_id:1}, { $set: { age: 31 } })', desc: 'Set a field' },
+          { cmd: 'db.users.updateMany({active:false}, { $set:{archived:true} })', desc: 'Update many documents' },
+          { cmd: '{ $inc: { views: 1 } }', desc: 'Increment a number' },
+          { cmd: '{ $push: { tags: "new" } } / $addToSet', desc: 'Append to array / unique append' },
+          { cmd: '{ $pull: { tags: "old" } }', desc: 'Remove matching from array' },
+          { cmd: '{ $unset: { field: "" } }', desc: 'Remove a field' },
+          { cmd: 'db.users.updateOne({...}, {...}, { upsert: true })', desc: 'Insert if not found' },
+          { cmd: 'db.users.deleteOne({ _id: 1 }) / deleteMany({})', desc: 'Delete one / many' },
+        ]},
+        { title: 'Aggregation', items: [
+          { cmd: 'db.orders.aggregate([{ $match: {...} }, { $group: {...} }])', desc: 'Aggregation pipeline' },
+          { cmd: '{ $match: { status: "active" } }', desc: 'Filter stage' },
+          { cmd: '{ $group: { _id: "$city", total: { $sum: "$amount" } } }', desc: 'Group and sum' },
+          { cmd: '{ $sort: { total: -1 } }', desc: 'Sort stage' },
+          { cmd: '{ $project: { name: 1, year: { $year: "$date" } } }', desc: 'Reshape documents' },
+          { cmd: '{ $lookup: { from:"b", localField:"id", foreignField:"aId", as:"j" } }', desc: 'Left outer join' },
+          { cmd: '{ $unwind: "$items" }', desc: 'Flatten array into documents' },
+          { cmd: '{ $count: "total" }', desc: 'Count documents in pipeline' },
+        ]},
+        { title: 'Indexes', items: [
+          { cmd: 'db.users.createIndex({ email: 1 }, { unique: true })', desc: 'Unique ascending index' },
+          { cmd: 'db.users.createIndex({ name: 1, age: -1 })', desc: 'Compound index' },
+          { cmd: 'db.posts.createIndex({ body: "text" })', desc: 'Text search index' },
+          { cmd: 'db.users.getIndexes()', desc: 'List indexes' },
+          { cmd: 'db.users.dropIndex("email_1")', desc: 'Drop an index' },
+          { cmd: 'db.users.find({...}).explain("executionStats")', desc: 'Explain query plan' },
+        ]},
+        { title: 'Admin', items: [
+          { cmd: 'db.currentOp()', desc: 'Show running operations' },
+          { cmd: 'db.killOp(<opid>)', desc: 'Kill an operation' },
+          { cmd: 'db.serverStatus()', desc: 'Server metrics' },
+          { cmd: 'rs.status()', desc: 'Replica set status' },
+          { cmd: 'mongodump --uri="..." --out=./dump', desc: 'Backup database' },
+          { cmd: 'mongorestore --uri="..." ./dump', desc: 'Restore from backup' },
+          { cmd: 'mongoimport --db=d --collection=c --file=data.json', desc: 'Import JSON / CSV' },
+        ]},
+      ]
+    },
+
+    redis: {
+      label: 'Redis / Valkey', icon: '🟥',
+      sections: [
+        { title: 'CLI / Connect', items: [
+          { cmd: 'redis-cli', desc: 'Connect to local server' },
+          { cmd: 'redis-cli -h host -p 6379 -a password', desc: 'Connect with host / port / auth' },
+          { cmd: 'redis-cli -n 2', desc: 'Select database 2 on connect' },
+          { cmd: 'PING', desc: 'Test connection (returns PONG)' },
+          { cmd: 'AUTH user password', desc: 'Authenticate (ACL)' },
+          { cmd: 'SELECT 0', desc: 'Switch database' },
+          { cmd: 'redis-cli --scan --pattern "user:*"', desc: 'Iterate keys safely (non-blocking)' },
+        ]},
+        { title: 'Keys & Expiry', items: [
+          { cmd: 'KEYS pattern*', desc: 'Find keys (avoid in production)' },
+          { cmd: 'SCAN 0 MATCH user:* COUNT 100', desc: 'Cursor-based key iteration' },
+          { cmd: 'EXISTS key', desc: 'Check if key exists' },
+          { cmd: 'TYPE key', desc: 'Data type of a key' },
+          { cmd: 'DEL key / UNLINK key', desc: 'Delete (sync / async)' },
+          { cmd: 'EXPIRE key 60 / PEXPIRE key 60000', desc: 'Set TTL in seconds / ms' },
+          { cmd: 'TTL key / PTTL key', desc: 'Remaining TTL' },
+          { cmd: 'PERSIST key', desc: 'Remove expiry' },
+          { cmd: 'RENAME old new', desc: 'Rename a key' },
+        ]},
+        { title: 'Strings', items: [
+          { cmd: 'SET key value', desc: 'Set a string value' },
+          { cmd: 'SET key value EX 60 NX', desc: 'Set with TTL, only if not exists' },
+          { cmd: 'GET key', desc: 'Get value' },
+          { cmd: 'MSET k1 v1 k2 v2 / MGET k1 k2', desc: 'Set / get multiple' },
+          { cmd: 'INCR counter / INCRBY counter 5', desc: 'Increment integer' },
+          { cmd: 'APPEND key text', desc: 'Append to string' },
+          { cmd: 'SETEX key 60 value', desc: 'Set with expiry in one command' },
+          { cmd: 'GETSET key newval', desc: 'Set and return old value' },
+        ]},
+        { title: 'Lists', items: [
+          { cmd: 'LPUSH key v / RPUSH key v', desc: 'Push to head / tail' },
+          { cmd: 'LPOP key / RPOP key', desc: 'Pop from head / tail' },
+          { cmd: 'LRANGE key 0 -1', desc: 'Get all elements' },
+          { cmd: 'LLEN key', desc: 'List length' },
+          { cmd: 'LINDEX key 0', desc: 'Element at index' },
+          { cmd: 'BLPOP key 5', desc: 'Blocking pop, 5s timeout (queues)' },
+          { cmd: 'LTRIM key 0 99', desc: 'Keep only first 100 elements' },
+        ]},
+        { title: 'Hashes', items: [
+          { cmd: 'HSET key field value', desc: 'Set a hash field' },
+          { cmd: 'HGET key field / HMGET key f1 f2', desc: 'Get field(s)' },
+          { cmd: 'HGETALL key', desc: 'Get all fields and values' },
+          { cmd: 'HDEL key field', desc: 'Delete a field' },
+          { cmd: 'HINCRBY key field 1', desc: 'Increment a hash field' },
+          { cmd: 'HKEYS key / HVALS key', desc: 'All field names / values' },
+          { cmd: 'HEXISTS key field', desc: 'Check field exists' },
+        ]},
+        { title: 'Sets & Sorted Sets', items: [
+          { cmd: 'SADD key m / SREM key m', desc: 'Add / remove set member' },
+          { cmd: 'SMEMBERS key / SISMEMBER key m', desc: 'List members / check membership' },
+          { cmd: 'SINTER a b / SUNION a b / SDIFF a b', desc: 'Set operations' },
+          { cmd: 'SCARD key', desc: 'Set cardinality (size)' },
+          { cmd: 'ZADD key 1 a 2 b', desc: 'Add scored members (sorted set)' },
+          { cmd: 'ZRANGE key 0 -1 WITHSCORES', desc: 'Range by rank with scores' },
+          { cmd: 'ZRANGEBYSCORE key 10 20', desc: 'Range by score' },
+          { cmd: 'ZRANK key m / ZSCORE key m', desc: 'Rank / score of member' },
+          { cmd: 'ZINCRBY key 1 member', desc: 'Increment member score' },
+        ]},
+        { title: 'Pub/Sub & Transactions', items: [
+          { cmd: 'SUBSCRIBE channel', desc: 'Subscribe to a channel' },
+          { cmd: 'PUBLISH channel message', desc: 'Publish a message' },
+          { cmd: 'PSUBSCRIBE news.*', desc: 'Pattern subscribe' },
+          { cmd: 'MULTI / EXEC', desc: 'Start / execute transaction' },
+          { cmd: 'WATCH key', desc: 'Optimistic lock for transaction' },
+          { cmd: 'DISCARD', desc: 'Abort transaction' },
+        ]},
+        { title: 'Server & Persistence', items: [
+          { cmd: 'INFO / INFO memory', desc: 'Server stats / memory section' },
+          { cmd: 'DBSIZE', desc: 'Number of keys in current DB' },
+          { cmd: 'FLUSHDB / FLUSHALL', desc: 'Clear current DB / all DBs' },
+          { cmd: 'CONFIG GET maxmemory / CONFIG SET ...', desc: 'Read / set config at runtime' },
+          { cmd: 'SAVE / BGSAVE', desc: 'Snapshot to disk (sync / background)' },
+          { cmd: 'MEMORY USAGE key', desc: 'Memory used by a key' },
+          { cmd: 'SLOWLOG GET 10', desc: 'Last 10 slow commands' },
+          { cmd: 'CLIENT LIST', desc: 'Connected clients' },
+        ]},
+      ]
+    },
+
+    sqlserver: {
+      label: 'SQL Server', icon: '🟦',
+      sections: [
+        { title: 'sqlcmd / Connect', items: [
+          { cmd: 'sqlcmd -S host -U sa -P pass -d db', desc: 'Connect with SQL auth' },
+          { cmd: 'sqlcmd -S host -E', desc: 'Connect with Windows auth' },
+          { cmd: 'sqlcmd -S host -d db -Q "SELECT 1"', desc: 'Run a query and exit' },
+          { cmd: 'GO', desc: 'Batch separator (runs preceding statements)' },
+          { cmd: 'USE mydb;', desc: 'Switch database' },
+          { cmd: ':setvar name value', desc: 'sqlcmd variable' },
+          { cmd: 'SELECT @@VERSION', desc: 'Server version' },
+        ]},
+        { title: 'Queries', items: [
+          { cmd: 'SELECT TOP 10 * FROM t ORDER BY col DESC', desc: 'Limit rows' },
+          { cmd: 'SELECT * FROM t ORDER BY col OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY', desc: 'Pagination' },
+          { cmd: 'SELECT ISNULL(col, 0) FROM t', desc: 'Default for NULL' },
+          { cmd: 'SELECT COALESCE(a, b, c) FROM t', desc: 'First non-null value' },
+          { cmd: 'SELECT CONCAT(a, " ", b) FROM t', desc: 'String concatenation' },
+          { cmd: 'SELECT CAST(col AS VARCHAR) / CONVERT(VARCHAR, col, 120)', desc: 'Type conversion' },
+          { cmd: 'SELECT IIF(qty > 0, "Y", "N") FROM t', desc: 'Inline conditional' },
+          { cmd: "SELECT FORMAT(d, 'yyyy-MM-dd') FROM t", desc: 'Format a value' },
+        ]},
+        { title: 'T-SQL', items: [
+          { cmd: 'DECLARE @x INT = 5;', desc: 'Declare and set a variable' },
+          { cmd: 'SET @x = (SELECT COUNT(*) FROM t);', desc: 'Assign from query' },
+          { cmd: 'IF @x > 0 BEGIN ... END ELSE BEGIN ... END', desc: 'Conditional block' },
+          { cmd: 'WHILE @i < 10 BEGIN ... SET @i += 1; END', desc: 'While loop' },
+          { cmd: 'BEGIN TRY ... END TRY BEGIN CATCH ... END CATCH', desc: 'Error handling' },
+          { cmd: 'BEGIN TRAN ... COMMIT / ROLLBACK', desc: 'Transaction' },
+          { cmd: 'SELECT * INTO #tmp FROM t', desc: 'Create temp table from query' },
+          { cmd: 'DECLARE @tbl TABLE (id INT)', desc: 'Table variable' },
+        ]},
+        { title: 'Joins & CTEs', items: [
+          { cmd: 'SELECT * FROM a INNER JOIN b ON a.id = b.a_id', desc: 'Inner join' },
+          { cmd: 'SELECT * FROM a LEFT JOIN b ON ...', desc: 'Left outer join' },
+          { cmd: 'WITH cte AS (SELECT ...) SELECT * FROM cte', desc: 'Common Table Expression' },
+          { cmd: 'WITH cte AS (...) ... OPTION (MAXRECURSION 100)', desc: 'Recursive CTE' },
+          { cmd: 'ROW_NUMBER() OVER (PARTITION BY col ORDER BY d DESC)', desc: 'Window function' },
+          { cmd: 'SELECT * FROM t PIVOT (SUM(amt) FOR mon IN ([Jan],[Feb]))', desc: 'PIVOT rows to columns' },
+          { cmd: 'CROSS APPLY / OUTER APPLY', desc: 'Join with table-valued function' },
+        ]},
+        { title: 'Modifications', items: [
+          { cmd: 'INSERT INTO t (a,b) VALUES (1,2)', desc: 'Insert row' },
+          { cmd: 'INSERT INTO t OUTPUT inserted.id VALUES (...)', desc: 'Return generated values' },
+          { cmd: 'UPDATE t SET col = val WHERE ...', desc: 'Update rows' },
+          { cmd: 'UPDATE t SET col = b.val FROM t JOIN b ON ...', desc: 'Update with join' },
+          { cmd: 'DELETE FROM t WHERE ...', desc: 'Delete rows' },
+          { cmd: 'MERGE t USING src ON ... WHEN MATCHED ... WHEN NOT MATCHED ...', desc: 'Upsert' },
+          { cmd: 'SELECT SCOPE_IDENTITY()', desc: 'Last identity value inserted' },
+        ]},
+        { title: 'Schema & Metadata', items: [
+          { cmd: 'CREATE TABLE t (id INT IDENTITY(1,1) PRIMARY KEY, name NVARCHAR(100))', desc: 'Create table with identity' },
+          { cmd: 'ALTER TABLE t ADD col INT NULL', desc: 'Add column' },
+          { cmd: 'CREATE INDEX idx ON t(col) INCLUDE (other)', desc: 'Index with included columns' },
+          { cmd: 'CREATE CLUSTERED / NONCLUSTERED INDEX ...', desc: 'Clustered / nonclustered index' },
+          { cmd: 'SELECT * FROM sys.tables', desc: 'List tables' },
+          { cmd: "SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('t')", desc: 'Column metadata' },
+          { cmd: "EXEC sp_help 't'", desc: 'Describe a table' },
+          { cmd: "EXEC sp_helptext 'proc_name'", desc: 'Show procedure definition' },
+        ]},
+        { title: 'Performance & DMVs', items: [
+          { cmd: 'SET STATISTICS IO, TIME ON', desc: 'Show IO and timing per query' },
+          { cmd: 'SET SHOWPLAN_ALL ON', desc: 'Show estimated execution plan' },
+          { cmd: 'SELECT * FROM sys.dm_exec_requests', desc: 'Currently executing requests' },
+          { cmd: 'SELECT * FROM sys.dm_exec_query_stats CROSS APPLY sys.dm_exec_sql_text(sql_handle)', desc: 'Expensive cached queries' },
+          { cmd: 'SELECT * FROM sys.dm_os_wait_stats ORDER BY wait_time_ms DESC', desc: 'Top wait types' },
+          { cmd: 'EXEC sp_who2', desc: 'Active sessions and blocking' },
+          { cmd: 'DBCC FREEPROCCACHE', desc: 'Clear plan cache (dev only)' },
+          { cmd: 'UPDATE STATISTICS t', desc: 'Refresh optimizer statistics' },
+        ]},
+      ]
+    },
+
+    oracle: {
+      label: 'Oracle', icon: '🔴',
+      sections: [
+        { title: 'SQL*Plus / Connect', items: [
+          { cmd: 'sqlplus user/pass@//host:1521/service', desc: 'Connect via EZConnect' },
+          { cmd: 'sqlplus / as sysdba', desc: 'Connect as SYSDBA (local)' },
+          { cmd: 'CONNECT user/pass@db', desc: 'Reconnect within SQL*Plus' },
+          { cmd: 'SHOW USER', desc: 'Show current user' },
+          { cmd: 'SET LINESIZE 200 PAGESIZE 50', desc: 'Format output width / height' },
+          { cmd: 'SET SERVEROUTPUT ON', desc: 'Enable DBMS_OUTPUT.PUT_LINE' },
+          { cmd: 'SPOOL out.txt ... SPOOL OFF', desc: 'Capture output to file' },
+          { cmd: 'EXIT / QUIT', desc: 'Leave SQL*Plus' },
+        ]},
+        { title: 'Queries', items: [
+          { cmd: 'SELECT * FROM tab FETCH FIRST 10 ROWS ONLY', desc: 'Limit rows (12c+)' },
+          { cmd: 'SELECT * FROM tab WHERE ROWNUM <= 10', desc: 'Limit rows (legacy)' },
+          { cmd: 'SELECT * FROM tab OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY', desc: 'Pagination' },
+          { cmd: 'SELECT NVL(col, 0) FROM tab', desc: 'Default for NULL' },
+          { cmd: "SELECT col || ' ' || col2 FROM tab", desc: 'String concatenation' },
+          { cmd: 'SELECT SYSDATE, SYSTIMESTAMP FROM DUAL', desc: 'Current date/time (DUAL table)' },
+          { cmd: "SELECT TO_CHAR(d, 'YYYY-MM-DD') FROM tab", desc: 'Format a date' },
+          { cmd: "SELECT TO_DATE('2026-01-01','YYYY-MM-DD') FROM DUAL", desc: 'Parse a date' },
+          { cmd: "SELECT DECODE(status,1,'A',2,'B','?') FROM tab", desc: 'DECODE (Oracle CASE)' },
+        ]},
+        { title: 'DDL & DML', items: [
+          { cmd: 'CREATE TABLE t (id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, name VARCHAR2(100))', desc: 'Create table with identity' },
+          { cmd: 'ALTER TABLE t ADD (col VARCHAR2(50))', desc: 'Add column' },
+          { cmd: 'ALTER TABLE t MODIFY (col NUMBER NOT NULL)', desc: 'Modify column' },
+          { cmd: 'CREATE INDEX idx ON t(col)', desc: 'Create index' },
+          { cmd: 'MERGE INTO t USING src ON (...) WHEN MATCHED THEN UPDATE ... WHEN NOT MATCHED THEN INSERT ...', desc: 'Upsert' },
+          { cmd: 'COMMIT / ROLLBACK', desc: 'Commit / undo transaction' },
+          { cmd: 'TRUNCATE TABLE t', desc: 'Fast delete all rows' },
+        ]},
+        { title: 'Data Dictionary', items: [
+          { cmd: 'SELECT table_name FROM user_tables', desc: 'List your tables' },
+          { cmd: "SELECT * FROM all_tables WHERE owner = 'HR'", desc: 'Tables in a schema' },
+          { cmd: 'DESC tablename', desc: 'Describe table columns' },
+          { cmd: "SELECT * FROM user_tab_columns WHERE table_name = 'EMP'", desc: 'Column metadata' },
+          { cmd: "SELECT * FROM user_constraints WHERE table_name = 'EMP'", desc: 'Constraints' },
+          { cmd: 'SELECT * FROM user_indexes', desc: 'Your indexes' },
+          { cmd: 'SELECT * FROM v$version', desc: 'Database version' },
+          { cmd: "SELECT * FROM user_objects WHERE object_type = 'VIEW'", desc: 'List views / objects' },
+        ]},
+        { title: 'PL/SQL', items: [
+          { cmd: 'BEGIN ... END; /', desc: 'Anonymous block (/ runs it)' },
+          { cmd: "DBMS_OUTPUT.PUT_LINE('text')", desc: 'Print output' },
+          { cmd: 'DECLARE v NUMBER; BEGIN SELECT col INTO v FROM t WHERE ...; END;', desc: 'SELECT INTO a variable' },
+          { cmd: 'FOR r IN (SELECT * FROM t) LOOP ... END LOOP;', desc: 'Cursor for-loop' },
+          { cmd: 'IF cond THEN ... ELSIF ... ELSE ... END IF;', desc: 'Conditional' },
+          { cmd: 'EXCEPTION WHEN NO_DATA_FOUND THEN ...', desc: 'Exception handling' },
+          { cmd: 'CREATE OR REPLACE PROCEDURE p (x IN NUMBER) AS BEGIN ... END;', desc: 'Stored procedure' },
+          { cmd: 'CREATE OR REPLACE FUNCTION f RETURN NUMBER AS BEGIN RETURN 1; END;', desc: 'Function' },
+        ]},
+        { title: 'Sequences & Analytics', items: [
+          { cmd: 'CREATE SEQUENCE seq START WITH 1 INCREMENT BY 1', desc: 'Create sequence' },
+          { cmd: 'SELECT seq.NEXTVAL FROM DUAL', desc: 'Next sequence value' },
+          { cmd: 'ROW_NUMBER() OVER (PARTITION BY dept ORDER BY sal DESC)', desc: 'Window function' },
+          { cmd: 'RANK() / DENSE_RANK() OVER (...)', desc: 'Ranking functions' },
+          { cmd: 'LAG(col) OVER (ORDER BY d) / LEAD(col) OVER (...)', desc: 'Previous / next row value' },
+          { cmd: 'CONNECT BY PRIOR id = parent_id START WITH parent_id IS NULL', desc: 'Hierarchical query' },
+          { cmd: "LISTAGG(name, ',') WITHIN GROUP (ORDER BY name)", desc: 'Aggregate strings' },
+        ]},
+        { title: 'Admin & Sessions', items: [
+          { cmd: "SELECT * FROM v$session WHERE status = 'ACTIVE'", desc: 'Active sessions' },
+          { cmd: "ALTER SYSTEM KILL SESSION 'sid,serial#'", desc: 'Kill a session' },
+          { cmd: 'SELECT * FROM v$sql ORDER BY elapsed_time DESC', desc: 'Slow SQL' },
+          { cmd: 'EXPLAIN PLAN FOR SELECT ...; SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY)', desc: 'Execution plan' },
+          { cmd: "ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'", desc: 'Session date format' },
+          { cmd: "EXEC DBMS_STATS.GATHER_TABLE_STATS('HR','EMP')", desc: 'Gather optimizer stats' },
+        ]},
+      ]
+    },
+
+    prometheus: {
+      label: 'PromQL', icon: '🔥',
+      sections: [
+        { title: 'Basics', items: [
+          { cmd: 'http_requests_total', desc: 'Instant vector — all series for a metric' },
+          { cmd: 'http_requests_total{job="api", code="200"}', desc: 'Filter by labels' },
+          { cmd: 'http_requests_total{code=~"5.."}', desc: 'Regex label match' },
+          { cmd: 'http_requests_total{code!~"2.."}', desc: 'Negative regex match' },
+          { cmd: 'http_requests_total offset 5m', desc: 'Value 5 minutes ago' },
+          { cmd: 'http_requests_total[5m]', desc: 'Range vector — last 5 minutes' },
+          { cmd: 'up == 0', desc: 'Targets that are down' },
+        ]},
+        { title: 'Rate & Counters', items: [
+          { cmd: 'rate(http_requests_total[5m])', desc: 'Per-second average rate (counters)' },
+          { cmd: 'irate(http_requests_total[5m])', desc: 'Instant rate (last 2 points)' },
+          { cmd: 'increase(http_requests_total[1h])', desc: 'Total increase over 1 hour' },
+          { cmd: 'rate(..._sum[5m]) / rate(..._count[5m])', desc: 'Average latency from sum/count' },
+          { cmd: 'resets(counter[1h])', desc: 'How many times a counter reset' },
+          { cmd: 'delta(temperature[1h])', desc: 'Difference over range (gauges)' },
+          { cmd: 'deriv(gauge[10m])', desc: 'Per-second derivative (gauges)' },
+          { cmd: 'predict_linear(disk_free[1h], 4*3600)', desc: 'Predict value 4h ahead' },
+        ]},
+        { title: 'Aggregation', items: [
+          { cmd: 'sum(rate(http_requests_total[5m]))', desc: 'Total across all series' },
+          { cmd: 'sum by (job) (rate(http_requests_total[5m]))', desc: 'Sum grouped by label' },
+          { cmd: 'sum without (instance) (...)', desc: 'Sum dropping a label' },
+          { cmd: 'avg / min / max / count (metric)', desc: 'Other aggregation operators' },
+          { cmd: 'count(up == 1)', desc: 'Number of healthy targets' },
+          { cmd: 'topk(5, rate(http_requests_total[5m]))', desc: 'Top 5 series by value' },
+          { cmd: 'quantile(0.95, metric)', desc: 'Aggregate 95th percentile' },
+          { cmd: 'histogram_quantile(0.95, sum by (le) (rate(bucket[5m])))', desc: 'p95 from histogram buckets' },
+        ]},
+        { title: 'Math & Operators', items: [
+          { cmd: 'node_memory_Active_bytes / 1024 / 1024', desc: 'Convert bytes to MB' },
+          { cmd: '(1 - node_memory_free / node_memory_total) * 100', desc: 'Memory used percentage' },
+          { cmd: 'a and b / a or b / a unless b', desc: 'Set operators between vectors' },
+          { cmd: 'metric > 0.8', desc: 'Filter by comparison (keeps matching)' },
+          { cmd: 'metric > bool 0.8', desc: 'Comparison returning 0 / 1' },
+          { cmd: 'a / on(instance) b', desc: 'Match vectors on specific labels' },
+          { cmd: 'a * on(id) group_left(name) b', desc: 'Many-to-one, carry label from right' },
+        ]},
+        { title: 'Time Functions', items: [
+          { cmd: 'time()', desc: 'Current Unix timestamp' },
+          { cmd: 'timestamp(metric)', desc: 'Timestamp of each sample' },
+          { cmd: 'time() - process_start_time_seconds', desc: 'Process uptime in seconds' },
+          { cmd: 'avg_over_time(metric[1h])', desc: 'Average over the range' },
+          { cmd: 'max_over_time / min_over_time / sum_over_time', desc: 'Aggregate over time range' },
+          { cmd: 'count_over_time(metric[5m])', desc: 'Number of samples in range' },
+          { cmd: 'changes(metric[1h])', desc: 'How many times the value changed' },
+        ]},
+        { title: 'Common Queries', items: [
+          { cmd: 'sum(rate(http_requests_total{code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))', desc: 'Error rate ratio' },
+          { cmd: '100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])))', desc: 'CPU utilization %' },
+          { cmd: 'node_filesystem_avail_bytes / node_filesystem_size_bytes * 100', desc: 'Disk free %' },
+          { cmd: 'rate(container_cpu_usage_seconds_total[5m])', desc: 'Container CPU cores used' },
+          { cmd: 'sum(kube_pod_status_phase{phase="Running"})', desc: 'Running pods count' },
+        ]},
+        { title: 'Alerting Rules', items: [
+          { cmd: 'expr: up == 0\nfor: 5m', desc: 'Alert when target down for 5m' },
+          { cmd: 'labels: { severity: "critical" }', desc: 'Attach labels to alerts' },
+          { cmd: 'annotations: { summary: "{{ $labels.instance }} down" }', desc: 'Templated annotations' },
+          { cmd: 'ALERTS{alertname="...", alertstate="firing"}', desc: 'Query currently firing alerts' },
+        ]},
+      ]
+    },
+
   };
+
+  /* Section titles & sidebar groups are localised; command content stays English. */
+  const TITLE_PT = {
+    'Setup': 'Configuração', 'Staging & Status': 'Staging & Estado', 'Commits': 'Commits',
+    'Branches': 'Ramos', 'Remote': 'Remoto', 'Stash': 'Stash', 'Inspection': 'Inspeção', 'Tags': 'Tags',
+    'Navigation': 'Navegação', 'Files & Dirs': 'Ficheiros & Diretórios', 'Text Processing': 'Processamento de Texto',
+    'Processes': 'Processos', 'Networking': 'Rede', 'Permissions & Users': 'Permissões & Utilizadores',
+    'Archives': 'Arquivos', 'systemd Services': 'Serviços systemd', 'Package Management': 'Gestão de Pacotes',
+    'System Info': 'Informação do Sistema', 'Images': 'Imagens', 'Containers': 'Contentores', 'Networks': 'Redes',
+    'Volumes': 'Volumes', 'Compose': 'Compose', 'Cleanup': 'Limpeza', 'Modes': 'Modos', 'Motion': 'Movimento',
+    'Editing': 'Edição', 'Text Objects': 'Objetos de Texto', 'Search & Replace': 'Procurar & Substituir',
+    'File & Splits': 'Ficheiro & Divisões', 'Macros': 'Macros', 'Variables': 'Variáveis',
+    'String Operations': 'Operações com Strings', 'Control Flow': 'Controlo de Fluxo', 'Functions': 'Funções',
+    'Operators & Redirects': 'Operadores & Redirecionamentos', 'Scripting Patterns': 'Padrões de Scripting',
+    'Advanced Bash': 'Bash Avançado', 'Debugging': 'Depuração', 'Variables & Types': 'Variáveis & Tipos',
+    'Arrays': 'Arrays', 'Objects': 'Objetos', 'Async': 'Assíncrono', 'DOM': 'DOM', 'Modern Syntax': 'Sintaxe Moderna',
+    'Basics': 'Básico', 'Strings': 'Strings', 'Lists & Comprehensions': 'Listas & Comprehensions',
+    'Dicts': 'Dicionários', 'Files & I/O': 'Ficheiros & I/O', 'Error Handling': 'Tratamento de Erros',
+    'Anchors': 'Âncoras', 'Quantifiers': 'Quantificadores', 'Character Classes': 'Classes de Caracteres',
+    'Groups & Alternation': 'Grupos & Alternância', 'Lookaround': 'Lookaround', 'Flags': 'Flags',
+    'Common Patterns': 'Padrões Comuns', 'Info & Audit': 'Informação & Auditoria', 'Scripts': 'Scripts',
+    'Node.js Essentials': 'Essenciais Node.js', 'pnpm / yarn': 'pnpm / yarn', 'Selectors': 'Seletores',
+    'Box Model & Layout': 'Box Model & Layout', 'Custom Properties': 'Propriedades Personalizadas',
+    'Typography': 'Tipografia', 'Transforms & Animations': 'Transformações & Animações', 'Responsive': 'Responsivo',
+    'Queries': 'Consultas', 'Joins': 'Joins', 'Subqueries & CTEs': 'Subconsultas & CTEs',
+    'Modifications': 'Modificações', 'Schema': 'Esquema', 'JSONB': 'JSONB',
+    'psql CLI — Connect': 'psql CLI — Conectar', 'psql CLI — Navigation': 'psql CLI — Navegação',
+    'psql CLI — Query & Output': 'psql CLI — Consulta & Saída', 'psql CLI — Import / Export': 'psql CLI — Importar / Exportar',
+    'psql CLI — Variables & History': 'psql CLI — Variáveis & Histórico', 'Performance': 'Desempenho',
+    'CLI Basics': 'Básico CLI', 'Slash Commands': 'Comandos Slash', 'Tools Available': 'Ferramentas Disponíveis',
+    'CLAUDE.md': 'CLAUDE.md', 'Prompting Tips': 'Dicas de Prompting', 'Keyboard Shortcuts': 'Atalhos de Teclado',
+    'MCP Servers': 'Servidores MCP', 'Settings & Hooks': 'Definições & Hooks', 'Automation & CI': 'Automação & CI',
+    'HTTP Methods': 'Métodos HTTP', 'Status Codes': 'Códigos de Estado', 'Headers': 'Cabeçalhos',
+    'REST Conventions': 'Convenções REST', 'curl Examples': 'Exemplos curl', 'System & General': 'Sistema & Geral',
+    'Window Management': 'Gestão de Janelas', 'Text Editing': 'Edição de Texto', 'File Explorer': 'Explorador de Ficheiros',
+    'Taskbar & Desktop': 'Barra de Tarefas & Ambiente de Trabalho', 'Browser (Chrome / Edge / Firefox)': 'Navegador (Chrome / Edge / Firefox)',
+    'Accessibility': 'Acessibilidade',
+    'kubectl Basics': 'Básico kubectl', 'Pods': 'Pods', 'Deployments': 'Deployments',
+    'Services & Networking': 'Serviços & Rede', 'Config & Secrets': 'Config & Secrets', 'Apply & Manage': 'Aplicar & Gerir',
+    'mongosh / Connect': 'mongosh / Conectar', 'Create / Insert': 'Criar / Inserir', 'Query / Find': 'Consultar / Find',
+    'Query Operators': 'Operadores de Consulta', 'Update / Delete': 'Atualizar / Apagar', 'Aggregation': 'Agregação',
+    'Indexes': 'Índices', 'Admin': 'Administração',
+    'CLI / Connect': 'CLI / Conectar', 'Keys & Expiry': 'Chaves & Expiração', 'Lists': 'Listas', 'Hashes': 'Hashes',
+    'Sets & Sorted Sets': 'Sets & Sorted Sets', 'Pub/Sub & Transactions': 'Pub/Sub & Transações',
+    'Server & Persistence': 'Servidor & Persistência',
+    'sqlcmd / Connect': 'sqlcmd / Conectar', 'T-SQL': 'T-SQL', 'Joins & CTEs': 'Joins & CTEs',
+    'Schema & Metadata': 'Esquema & Metadados', 'Performance & DMVs': 'Desempenho & DMVs',
+    'SQL*Plus / Connect': 'SQL*Plus / Conectar', 'DDL & DML': 'DDL & DML', 'Data Dictionary': 'Dicionário de Dados',
+    'PL/SQL': 'PL/SQL', 'Sequences & Analytics': 'Sequências & Analíticas', 'Admin & Sessions': 'Administração & Sessões',
+    'Rate & Counters': 'Taxa & Contadores', 'Math & Operators': 'Matemática & Operadores',
+    'Time Functions': 'Funções de Tempo', 'Common Queries': 'Consultas Comuns', 'Alerting Rules': 'Regras de Alerta',
+  };
+
+  /* Sidebar grouping by area (ordered). */
+  const GROUPS = [
+    { en: 'Tools', pt: 'Ferramentas', ids: ['git', 'vim', 'npm', 'claude'] },
+    { en: 'Shell & System', pt: 'Shell & Sistema', ids: ['bash', 'linux', 'windows'] },
+    { en: 'Languages', pt: 'Linguagens', ids: ['javascript', 'python'] },
+    { en: 'Web', pt: 'Web', ids: ['css', 'http', 'regex'] },
+    { en: 'Databases', pt: 'Bases de Dados', ids: ['sql', 'sqlserver', 'oracle', 'mongodb', 'redis'] },
+    { en: 'DevOps & Cloud', pt: 'DevOps & Cloud', ids: ['docker', 'kubernetes', 'prometheus'] },
+  ];
+
+  const sectionTitle = (t) => _t(t, TITLE_PT[t] || t);
 
   let _activeId = 'git';
   let _query = '';
@@ -1295,7 +1808,7 @@ const CheatsheetsPage = (function () {
       if (!filtered.length) return '';
       return `<div class="cs-section">
         <div class="cs-section-hdr">
-          <span class="cs-section-title">${sec.title}</span>
+          <span class="cs-section-title">${sectionTitle(sec.title)}</span>
           <span class="cs-section-count">${filtered.length}</span>
         </div>
         <div class="cs-items">
@@ -1349,6 +1862,8 @@ const CheatsheetsPage = (function () {
     page.querySelectorAll('.cs-cat-item').forEach(el => {
       el.classList.toggle('active', el.dataset.csId === id);
     });
+    const sel = page.querySelector('#cs-mobile-select');
+    if (sel && sel.value !== id) sel.value = id;
     const content = page.querySelector('#cs-content');
     if (content) {
       content.innerHTML = renderSections(_activeId, _query);
@@ -1362,16 +1877,33 @@ const CheatsheetsPage = (function () {
     const page = document.getElementById('cheatsheets-page');
     if (!page) return;
 
+    const catItem = (id) => {
+      const s = DATA[id];
+      if (!s) return '';
+      return `<div class="cs-cat-item${id === _activeId ? ' active' : ''}" data-cs-id="${id}">
+        <span class="cs-cat-icon">${s.icon}</span>${s.label}
+      </div>`;
+    };
+    const optItem = (id) => {
+      const s = DATA[id];
+      if (!s) return '';
+      return `<option value="${id}"${id === _activeId ? ' selected' : ''}>${esc(s.icon + '  ' + s.label)}</option>`;
+    };
+
     page.innerHTML = `
       <div class="cs-layout">
         <div class="cs-sidebar">
           <div class="cs-search-wrap">
             <input type="search" class="cs-search" id="cs-search" placeholder="${_t('Filter commands…', 'Filtrar comandos…')}" autocomplete="off"/>
           </div>
+          <select class="cs-mobile-select" id="cs-mobile-select" aria-label="${_t('Choose cheatsheet', 'Escolher cheatsheet')}">
+            ${GROUPS.map(g => `<optgroup label="${esc(_t(g.en, g.pt))}">${g.ids.map(optItem).join('')}</optgroup>`).join('')}
+          </select>
           <div class="cs-cat-list">
-            ${Object.entries(DATA).map(([id, s]) => `
-              <div class="cs-cat-item${id === _activeId ? ' active' : ''}" data-cs-id="${id}">
-                <span class="cs-cat-icon">${s.icon}</span>${s.label}
+            ${GROUPS.map(g => `
+              <div class="cs-cat-group">
+                <div class="cs-cat-group-label">${_t(g.en, g.pt)}</div>
+                ${g.ids.map(catItem).join('')}
               </div>`).join('')}
           </div>
         </div>
@@ -1387,6 +1919,11 @@ const CheatsheetsPage = (function () {
     page.querySelectorAll('.cs-cat-item').forEach(el => {
       el.addEventListener('click', () => updateActive(page, el.dataset.csId));
     });
+
+    const mobileSelect = page.querySelector('#cs-mobile-select');
+    if (mobileSelect) {
+      mobileSelect.addEventListener('change', () => updateActive(page, mobileSelect.value));
+    }
 
     const searchInput = page.querySelector('#cs-search');
     if (searchInput) {
