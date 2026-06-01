@@ -890,6 +890,12 @@ body.light .ex-country-label {
   padding: 0 !important;
   border-radius: 0 !important;
 }
+/* DEFINITIVE fix for the "stuck Bermuda label": globe.gl keeps rendering its
+   hover label at the last raycast hit (even from the initial centre cast, and
+   even after the cursor leaves the canvas by the edge). We simply never SHOW it
+   unless the pointer is genuinely over the globe — toggled by JS on the wrap. */
+.ex-globe-wrap .scene-tooltip { visibility: hidden !important; }
+.ex-globe-wrap.globe-hovering .scene-tooltip { visibility: visible !important; }
 .ex-globe-tooltip {
   display: inline-flex;
   align-items: center;

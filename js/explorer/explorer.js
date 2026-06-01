@@ -1043,11 +1043,22 @@ const ExplorerPage = (function () {
       });
     }
 
-    /* When the pointer leaves the globe, drop the hover highlight (the native
-       label hides itself). No tooltip plumbing — globe.gl owns the label now. */
-    container.addEventListener('pointerleave', () => {
+    /* globe.gl keeps rendering its native hover label at the last raycast hit —
+       including the initial centre cast (≈ mid-Atlantic / Bermuda) and after the
+       cursor leaves the canvas by the edge. We gate the label's VISIBILITY purely
+       on whether the pointer is physically over the globe, via a class on the
+       wrap (.globe-hovering → CSS shows the label). This is render-proof: no
+       stray raycast can show the label without the pointer actually being here. */
+    const wrap = container.closest('.ex-globe-wrap') || container;
+    const _enter = () => wrap.classList.add('globe-hovering');
+    const _leave = () => {
+      wrap.classList.remove('globe-hovering');
       if (_globeHovered) { _globeHovered = null; if (_globeGL) _globeGL.polygonCapColor(getCapColor); }
-    });
+    };
+    container.addEventListener('pointerenter', _enter);
+    container.addEventListener('pointermove', _enter);
+    container.addEventListener('pointerleave', _leave);
+    container.addEventListener('pointercancel', _leave);
 
     /* ResizeObserver — stored so it can be disconnected on shell rebuild */
     _globeResizeObs = new ResizeObserver(() => {
