@@ -1245,6 +1245,10 @@ const ExplorerPage = (function () {
     if (!_shell) return;
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
+    /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
+    if (_globeGL) {
+      try { if (tab === 'globe') _globeGL.resumeAnimation(); else _globeGL.pauseAnimation(); } catch (_) {}
+    }
     _curTab = tab;
 
     _shell.querySelectorAll('.ex-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -1295,6 +1299,20 @@ const ExplorerPage = (function () {
     }
     _switchTab(sub || 'hub');
   }
+
+  /* Stop the WebGL renderers when the user navigates away from Explorer so the
+     globe.gl loop and the Solar System RAF don't keep burning CPU/battery in a
+     hidden view. They resume when the user comes back to the relevant tab. */
+  document.addEventListener('routechange', e => {
+    const page = (e.detail || '').split('/')[0];
+    if (page === 'explorer') {
+      if (_globeGL && _curTab === 'globe') { try { _globeGL.resumeAnimation(); } catch (_) {} }
+      return;
+    }
+    if (_globeGL) { try { _globeGL.pauseAnimation(); } catch (_) {} }
+    if (typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
+    if (typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
+  });
 
   return { show };
 })();
