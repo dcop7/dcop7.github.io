@@ -30,6 +30,7 @@ const ExplorerPage = (function () {
   let _cloudsRAF        = null;
   let _globeInteracted  = false;       /* true after first user pointer interaction */
   let _pointerOverGlobe = false;       /* true only while the cursor is over the globe canvas */
+  let _lastPointerMove  = 0;           /* timestamp of the last real pointer move over the globe */
   let _globeLabels      = [];          /* country labels ranked by population */
 
   /* ── Leaflet state ── */
@@ -969,15 +970,20 @@ const ExplorerPage = (function () {
       .labelsTransitionDuration(300)
       .onZoom(_onGlobeZoom)
       .onPolygonHover(f => {
-        /* Only react to hover while the pointer is genuinely over the globe and
-           the user has interacted. globe.gl can emit stray hover events on data
-           load / re-render that previously left a country (e.g. Bermuda) stuck
-           as "featured" without any user action. */
-        if (!_globeInteracted || !_pointerOverGlobe) { _updateGlobeTooltip(null); return; }
+        /* globe.gl re-fires onPolygonHover on every re-render (sun timer, resize,
+           entry animation), reusing the polygon under the *stationary* cursor —
+           which is what kept Bermuda's tooltip stuck. Only honour a hover that
+           closely follows a REAL pointer move over the globe. */
+        const fresh = _pointerOverGlobe && (performance.now() - _lastPointerMove) < 600;
+        if (!_globeInteracted || !fresh) {
+          if (_globeHovered) { _globeHovered = null; _globeGL.polygonCapColor(getCapColor); }
+          _updateGlobeTooltip(null);
+          return;
+        }
         _globeHovered = f;
         _globeGL.polygonCapColor(getCapColor);
         const c = f ? _byCca3[f.id] : null;
-        _updateGlobeTooltip(c);
+        _updateGlobeTooltip(f ? c : null);
       })
       .onPolygonClick(f => {
         if (!f) return;
@@ -1057,6 +1063,7 @@ const ExplorerPage = (function () {
     /* Track cursor (relative to the globe wrap) to position the hover tooltip. */
     container.addEventListener('pointermove', ev => {
       _pointerOverGlobe = true;
+      _lastPointerMove = performance.now();
       const wrap = container.closest('.ex-globe-wrap') || container;
       const r = wrap.getBoundingClientRect();
       _globeCursor = { x: ev.clientX - r.left + 14, y: ev.clientY - r.top + 14 };
@@ -1065,6 +1072,7 @@ const ExplorerPage = (function () {
     }, { passive: true });
     container.addEventListener('pointerleave', () => {
       _pointerOverGlobe = false;
+      _lastPointerMove = 0;
       _globeHovered = null;
       _updateGlobeTooltip(null);
       if (_globeGL) _globeGL.polygonCapColor(getCapColor);
@@ -1091,6 +1099,8 @@ const ExplorerPage = (function () {
        calm ocean-centred view so nothing reads as a default selection. */
     _globeHovered = null;
     _globeSelected = null;
+    _lastPointerMove = 0;
+    _updateGlobeTooltip(null);
     _globeGL.pointOfView({ lat: 20, lng: -40, altitude: 2.5 }, 0);
     const selEl = document.getElementById('ex-globe-sel');
     if (selEl) selEl.textContent = '—';
@@ -1302,6 +1312,7 @@ const ExplorerPage = (function () {
       _cloudsMesh = null;
       _globeInteracted = false;
       _pointerOverGlobe = false;
+      _lastPointerMove = 0;
       _globeShaderMat  = null;
       _globeMatUniforms = null;
       _globeGL         = null;
