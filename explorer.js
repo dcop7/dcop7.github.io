@@ -852,6 +852,7 @@ const ExplorerPage = (function () {
           <div class="ex-globe-stat">Em destaque <span class="ex-globe-stat-val" id="ex-globe-sel">—</span></div>
         </div>
         <div class="ex-country-panel" id="ex-country-panel-globe"></div>
+        <div class="ex-solar-credit">Texturas: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · CC BY 4.0</div>
       </div>`;
   }
 

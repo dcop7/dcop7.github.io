@@ -1,7 +1,8 @@
 {
-  "name": "Diogo's Homepage",
+  "name": "Diogo's website",
   "short_name": "Diogo",
-  "description": "Futuristic personal productivity homepage",
+  "description": "Centro pessoal de produtividade — ferramentas, jogos, quizzes, mapas e muito mais.",
+  "lang": "pt-PT",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#080c14",
@@ -13,8 +14,8 @@
     { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Tools", "url": "/#tools", "description": "Open tools" },
-    { "name": "Links", "url": "/#links", "description": "Open links" },
-    { "name": "Games", "url": "/#games", "description": "Open games" }
+    { "name": "Ferramentas", "url": "/#tools", "description": "Abrir ferramentas" },
+    { "name": "Sites Úteis", "url": "/#links", "description": "Abrir sites úteis" },
+    { "name": "Jogos", "url": "/#games", "description": "Abrir jogos" }
   ]
 }

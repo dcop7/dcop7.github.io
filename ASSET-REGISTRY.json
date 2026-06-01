@@ -4816,33 +4816,6 @@
   },
   {
     "type": "remote",
-    "file": "cdn.jsdelivr.net/.../earth-blue-marble.jpg",
-    "source": "NASA Visible Earth (Blue Marble) via three-globe CDN",
-    "license": "Public Domain (NASA)",
-    "attribution": "NASA (not required)",
-    "verified": true,
-    "classification": "SAFE"
-  },
-  {
-    "type": "remote",
-    "file": "cdn.jsdelivr.net/.../earth-night.jpg",
-    "source": "NASA Earth at Night (Black Marble) via three-globe CDN",
-    "license": "Public Domain (NASA)",
-    "attribution": "NASA (not required)",
-    "verified": true,
-    "classification": "SAFE"
-  },
-  {
-    "type": "remote",
-    "file": "cdn.jsdelivr.net/.../earth-topology.png",
-    "source": "NASA elevation (topology) via three-globe CDN",
-    "license": "Public Domain (NASA-derived)",
-    "attribution": "NASA (not required)",
-    "verified": true,
-    "classification": "SAFE"
-  },
-  {
-    "type": "remote",
     "file": "{s}.basemaps.cartocdn.com/* (voyager/dark_matter/dark_all/light_all)",
     "source": "CARTO + OpenStreetMap",
     "license": "OSM ODbL data + CARTO Basemaps (free, attribution required)",

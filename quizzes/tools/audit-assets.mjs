@@ -60,9 +60,10 @@ add({ file: 'index.html / *.js (inline UI/nav SVG icons)', type: 'svg-inline', s
 
 /* 5) Remote references (textures / tiles / images loaded at runtime) */
 const remote = [
-  { file: 'cdn.jsdelivr.net/.../earth-blue-marble.jpg', source: 'NASA Visible Earth (Blue Marble) via three-globe CDN', license: 'Public Domain (NASA)', attribution: 'NASA (not required)', verified: true, classification: 'SAFE' },
-  { file: 'cdn.jsdelivr.net/.../earth-night.jpg', source: 'NASA Earth at Night (Black Marble) via three-globe CDN', license: 'Public Domain (NASA)', attribution: 'NASA (not required)', verified: true, classification: 'SAFE' },
-  { file: 'cdn.jsdelivr.net/.../earth-topology.png', source: 'NASA elevation (topology) via three-globe CDN', license: 'Public Domain (NASA-derived)', attribution: 'NASA (not required)', verified: true, classification: 'SAFE' },
+  /* The 3D globe's realistic + day/night Earth now uses LOCAL Solar System Scope
+     textures (assets/planets/earth_atmos_2048.jpg + earth-night.jpg, CC BY 4.0,
+     scanned in section 2c). The former NASA three-globe CDN textures are no
+     longer referenced at runtime, so they are not listed here. */
   { file: '{s}.basemaps.cartocdn.com/* (voyager/dark_matter/dark_all/light_all)', source: 'CARTO + OpenStreetMap', license: 'OSM ODbL data + CARTO Basemaps (free, attribution required)', attribution: '© OpenStreetMap © CARTO (shown on map)', verified: true, classification: 'SAFE' },
   { file: 'server.arcgisonline.com/.../World_Imagery|World_Topo_Map|World_Boundaries_and_Places', source: 'Esri ArcGIS Online', license: 'Esri Terms of Use — free with attribution', attribution: '© Esri, Maxar (shown on map)', verified: true, classification: 'REVIEW', note: 'Attribution present; Esri terms have nuance for heavy/commercial use — acceptable for a personal educational site.' },
   { file: 'fonts.googleapis.com / fonts.gstatic.com (Space Grotesk, Inter, JetBrains Mono)', source: 'Google Fonts', license: 'SIL OFL 1.1 / Apache 2.0', attribution: 'none required', verified: true, classification: 'SAFE' },
