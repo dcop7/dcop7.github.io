@@ -90,42 +90,23 @@ body.wp-active.light .widget {
 @keyframes skel-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 @keyframes skel-shimmer-light { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-/* ── REDUCED MOTION ── */
+/* ── REDUCED MOTION ──
+   Honour the OS/browser preference: kill animations + the mouse parallax so the
+   experience is calm and accessible for users who ask for it. This is the only
+   motion switch — there are no in-app effect toggles (premium defaults always). */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
     transition-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
   }
-}
-body.motion-reduced *, body.motion-reduced *::before, body.motion-reduced *::after {
-  animation-duration: .01ms !important;
-  transition-duration: .01ms !important;
+  .bg-canvas { transform: none !important; }
 }
 
-/* ── PARALLAX SYSTEM ── */
-/* Smooth transform for wallpaper and orbs canvas */
-#bg-wallpaper    { transition: background-position .05s linear; }
-.bg-canvas       { transition: transform .05s linear; will-change: transform; }
-
-/* Performance mode — pause orb drift animations */
-body.perf-mode .bg-orb { animation-play-state: paused; }
-
-/* Background effects intensity */
-body.bg-effects-disabled .bg-canvas { opacity: 0; pointer-events: none; }
-body.bg-effects-low  .bg-canvas { opacity: 0.35; }
-/* medium = default, no override needed */
-body.bg-effects-high .bg-orb {
-  filter: blur(90px) brightness(1.5);
-}
-body.bg-effects-high .orb-1 {
-  background: radial-gradient(circle, rgba(var(--accent-rgb),.13) 0%, transparent 70%);
-}
-body.bg-effects-high .orb-2 {
-  background: radial-gradient(circle, rgba(139,92,246,.10) 0%, transparent 70%);
-}
-body.bg-effects-high .orb-3 {
-  background: radial-gradient(circle, rgba(6,182,212,.09) 0%, transparent 70%);
-}
+/* ── PARALLAX SYSTEM ──
+   Smooth transform for the wallpaper + orb canvas (mouse depth handled in JS). */
+#bg-wallpaper { transition: background-position .05s linear; }
+.bg-canvas    { transition: transform .05s linear; will-change: transform; }
 
 /* Content layer: intentionally NOT parallaxed.
    A persistent `will-change: transform` here promotes the whole view to a

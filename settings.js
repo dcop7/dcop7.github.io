@@ -22,13 +22,8 @@ const SettingsPage = (function () {
     const tvDays       = localStorage.getItem('md-tv')       || '7';
     const theatersDays = localStorage.getItem('md-theaters') || '30';
     const digitalDays  = localStorage.getItem('md-digital')  || '7';
-    const iconStyle  = localStorage.getItem('icon-style') || 'colored';
     const wpEnabled  = localStorage.getItem('wallpaper-enabled') === 'true';
     const density    = localStorage.getItem('site-density') || 'comfortable';
-    const bgEffects  = localStorage.getItem('bg-effects')  || 'medium';
-    const parallaxOn = localStorage.getItem('parallax-enabled') !== 'false';
-    const motionPref = localStorage.getItem('motion-pref') || 'normal';
-    const perfMode   = localStorage.getItem('perf-mode') === 'true';
     const isPt       = curLang === 'pt';
     const VT = (pt, en) => isPt ? pt : en;
 
@@ -51,16 +46,6 @@ const SettingsPage = (function () {
               <div class="theme-grid" id="st-theme-grid" style="width:auto">
                 <button class="theme-option" data-theme="dark">Dark</button>
                 <button class="theme-option" data-theme="light">Light</button>
-              </div>
-            </div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${T('st.icons')}</div>
-                <div class="st-row-desc">${T('st.icons.desc')}</div>
-              </div>
-              <div class="tool-seg" id="st-icon-style">
-                <button class="tsb${iconStyle==='colored'?' active':''}" data-style="colored">${T('st.icons.colored')}</button>
-                <button class="tsb${iconStyle==='mono'?' active':''}" data-style="mono">${T('st.icons.mono')}</button>
               </div>
             </div>
             <div class="st-row">
@@ -108,53 +93,6 @@ const SettingsPage = (function () {
                 <button class="tsb${density==='comfortable'?' active':''}" data-density="comfortable">${T('st.density.comfortable')}</button>
                 <button class="tsb${density==='compact'?' active':''}" data-density="compact">${T('st.density.compact')}</button>
                 <button class="tsb${density==='list'?' active':''}" data-density="list">${T('st.density.list')}</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Visual Effects -->
-          <div class="st-section">
-            <div class="st-section-title">✨ ${VT('Efeitos Visuais', 'Visual Effects')}</div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${VT('Fundo Animado', 'Background Effects')}</div>
-                <div class="st-row-desc">${VT('Intensidade dos orbes de luz em fundo.', 'Intensity of the background light orbs.')}</div>
-              </div>
-              <div class="tool-seg" id="st-bg-effects">
-                <button class="tsb${bgEffects==='disabled'?' active':''}" data-val="disabled">${VT('Desligado','Off')}</button>
-                <button class="tsb${bgEffects==='low'?' active':''}" data-val="low">${VT('Baixo','Low')}</button>
-                <button class="tsb${bgEffects==='medium'?' active':''}" data-val="medium">${VT('Médio','Medium')}</button>
-                <button class="tsb${bgEffects==='high'?' active':''}" data-val="high">${VT('Alto','High')}</button>
-              </div>
-            </div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${VT('Paralaxe', 'Parallax')}</div>
-                <div class="st-row-desc">${VT('Efeito de profundidade com o rato.', 'Mouse-driven depth effect.')}</div>
-              </div>
-              <div class="tool-seg" id="st-parallax">
-                <button class="tsb${!parallaxOn?' active':''}" data-val="false">${VT('Desligado','Off')}</button>
-                <button class="tsb${parallaxOn?' active':''}" data-val="true">${VT('Ligado','On')}</button>
-              </div>
-            </div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${VT('Movimento', 'Motion')}</div>
-                <div class="st-row-desc">${VT('Reduz animações e transições.', 'Reduces animations and transitions.')}</div>
-              </div>
-              <div class="tool-seg" id="st-motion">
-                <button class="tsb${motionPref==='normal'?' active':''}" data-val="normal">${VT('Normal','Normal')}</button>
-                <button class="tsb${motionPref==='reduced'?' active':''}" data-val="reduced">${VT('Reduzido','Reduced')}</button>
-              </div>
-            </div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${VT('Modo Desempenho', 'Performance Mode')}</div>
-                <div class="st-row-desc">${VT('Simplifica efeitos para melhor fluidez.', 'Simplifies effects for better performance.')}</div>
-              </div>
-              <div class="tool-seg" id="st-perf-mode">
-                <button class="tsb${!perfMode?' active':''}" data-val="false">${VT('Normal','Normal')}</button>
-                <button class="tsb${perfMode?' active':''}" data-val="true">${VT('Ativado','On')}</button>
               </div>
             </div>
           </div>
@@ -208,16 +146,6 @@ const SettingsPage = (function () {
       })
     );
 
-    /* Icons */
-    el.querySelectorAll('#st-icon-style .tsb').forEach(btn =>
-      btn.addEventListener('click', () => {
-        const style = btn.dataset.style;
-        localStorage.setItem('icon-style', style);
-        document.body.classList.toggle('icons-mono', style === 'mono');
-        el.querySelectorAll('#st-icon-style .tsb').forEach(b => b.classList.toggle('active', b === btn));
-      })
-    );
-
     /* Wallpaper */
     const wpToggle = el.querySelector('#st-wp-toggle');
     const wpTrack  = el.querySelector('#st-wp-track');
@@ -248,42 +176,6 @@ const SettingsPage = (function () {
         el.querySelectorAll('#st-density .tsb').forEach(b => b.classList.toggle('active', b === btn));
         /* sync media page if open */
         if (typeof MediaPage !== 'undefined') MediaPage.syncDensity(d);
-      })
-    );
-
-    /* Background effects */
-    el.querySelectorAll('#st-bg-effects .tsb').forEach(btn =>
-      btn.addEventListener('click', () => {
-        localStorage.setItem('bg-effects', btn.dataset.val);
-        el.querySelectorAll('#st-bg-effects .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        if (window.ParallaxSystem) ParallaxSystem.update();
-      })
-    );
-
-    /* Parallax */
-    el.querySelectorAll('#st-parallax .tsb').forEach(btn =>
-      btn.addEventListener('click', () => {
-        localStorage.setItem('parallax-enabled', btn.dataset.val);
-        el.querySelectorAll('#st-parallax .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        if (window.ParallaxSystem) ParallaxSystem.update();
-      })
-    );
-
-    /* Motion */
-    el.querySelectorAll('#st-motion .tsb').forEach(btn =>
-      btn.addEventListener('click', () => {
-        localStorage.setItem('motion-pref', btn.dataset.val);
-        el.querySelectorAll('#st-motion .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        if (window.ParallaxSystem) ParallaxSystem.update();
-      })
-    );
-
-    /* Performance mode */
-    el.querySelectorAll('#st-perf-mode .tsb').forEach(btn =>
-      btn.addEventListener('click', () => {
-        localStorage.setItem('perf-mode', btn.dataset.val);
-        el.querySelectorAll('#st-perf-mode .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        if (window.ParallaxSystem) ParallaxSystem.update();
       })
     );
 

@@ -221,9 +221,6 @@ const SolarExplorer = (function () {
      When reduced, planets hold position/spin but the scene still renders
      and stays fully interactive (drag, zoom, selection). */
   function _reducedMotion() {
-    try {
-      if (localStorage.getItem('motion-pref') === 'reduced') return true;
-    } catch (_) {}
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   let _sel     = null;    /* index | 'sun' | null */

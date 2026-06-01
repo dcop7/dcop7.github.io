@@ -104,10 +104,6 @@ window.applyWallpaper = applyWallpaper;
 
 document.addEventListener('DOMContentLoaded', () => {
   applyWallpaper();
-  // Apply saved icon style
-  if (localStorage.getItem('icon-style') === 'mono') {
-    document.body.classList.add('icons-mono');
-  }
 });
 
 // ── CONSTANTS ──────────────────────────────────────────────────────

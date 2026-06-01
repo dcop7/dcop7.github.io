@@ -150,20 +150,21 @@ body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
 /* Thin separator between nav groups */
 .sb-sep { height: 1px; background: var(--border); margin: .5rem .85rem; opacity: .7; }
 
-/* Nav icon colours */
-body:not(.icons-mono) .sb-nav-item[data-route="home"] svg { stroke: #60a5fa; }
-body:not(.icons-mono) .sb-nav-item[data-route="cheatsheets"] svg { stroke: #a78bfa; }
-body:not(.icons-mono) .sb-nav-item[data-route="games"] svg { stroke: #34d399; }
-body:not(.icons-mono) .sb-nav-item[data-route="links"] svg { stroke: #fb923c; }
-body:not(.icons-mono) .sb-nav-item[data-route="tools"] svg { stroke: #818cf8; }
-body:not(.icons-mono) .sb-nav-item[data-route="visual"] svg { stroke: #f472b6; }
-body:not(.icons-mono) .sb-nav-item[data-route="photography"] svg { stroke: #fbbf24; }
-body:not(.icons-mono) .sb-nav-item[data-route="workout"] svg { stroke: #4ade80; }
-body:not(.icons-mono) .sb-nav-item[data-route="media"] svg { stroke: #f87171; }
-body:not(.icons-mono) .sb-nav-item[data-route="settings"] svg { stroke: #94a3b8; }
-body:not(.icons-mono) .sb-nav-item.active svg { stroke: var(--accent) !important; }
-body.icons-mono .sb-item-icon, body.icons-mono .tool-nav-btn,
-body.icons-mono .wft-item .wft-icon, body.icons-mono .wft-item .wfg-icon { filter: grayscale(1); opacity: .8; }
+/* Nav icon colours — every entry is colourful (no monochrome mode). */
+.sb-nav-item[data-route="home"] svg { stroke: #60a5fa; }
+.sb-nav-item[data-route="links"] svg { stroke: #fb923c; }
+.sb-nav-item[data-route="tools"] svg { stroke: #818cf8; }
+.sb-nav-item[data-route="cheatsheets"] svg { stroke: #a78bfa; }
+.sb-nav-item[data-route="games"] svg { stroke: #34d399; }
+.sb-nav-item[data-route="quiz"] svg { stroke: #22d3ee; }
+.sb-nav-item[data-route="explorer"] svg { stroke: #38bdf8; }
+.sb-nav-item[data-route="ocorrencias"] svg { stroke: #f59e0b; }
+.sb-nav-item[data-route="media"] svg { stroke: #f87171; }
+.sb-nav-item[data-route="workout"] svg { stroke: #4ade80; }
+.sb-nav-item[data-route="photography"] svg { stroke: #fbbf24; }
+.sb-nav-item[data-route="visual"] svg { stroke: #f472b6; }
+.sb-nav-item[data-route="settings"] svg { stroke: #94a3b8; }
+.sb-nav-item.active svg { stroke: var(--accent) !important; }
 
 /* ── VIEWS / APP CONTENT ── */
 #app-content { flex: 1; min-height: 0; position: relative; }

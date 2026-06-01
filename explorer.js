@@ -29,6 +29,7 @@ const ExplorerPage = (function () {
   let _cloudsMesh       = null;
   let _cloudsRAF        = null;
   let _globeInteracted  = false;       /* true after first user pointer interaction */
+  let _pointerOverGlobe = false;       /* true only while the cursor is over the globe canvas */
   let _globeLabels      = [];          /* country labels ranked by population */
 
   /* ── Leaflet state ── */
@@ -968,24 +969,26 @@ const ExplorerPage = (function () {
       .labelsTransitionDuration(300)
       .onZoom(_onGlobeZoom)
       .onPolygonHover(f => {
-        /* Ignore hover until the user actually interacts with the globe.
-           globe.gl can emit an initial hover on data load, which previously
-           caused a country to appear "selected/featured" before any click. */
-        if (!_globeInteracted) return;
+        /* Only react to hover while the pointer is genuinely over the globe and
+           the user has interacted. globe.gl can emit stray hover events on data
+           load / re-render that previously left a country (e.g. Bermuda) stuck
+           as "featured" without any user action. */
+        if (!_globeInteracted || !_pointerOverGlobe) { _updateGlobeTooltip(null); return; }
         _globeHovered = f;
         _globeGL.polygonCapColor(getCapColor);
         const c = f ? _byCca3[f.id] : null;
-        const sel = document.getElementById('ex-globe-sel');
-        if (sel) sel.textContent = c ? (_cName(c) || f.id) : '—';
         _updateGlobeTooltip(c);
       })
       .onPolygonClick(f => {
         if (!f) return;
         _updateGlobeTooltip(null);
-        /* Persistent highlight on the clicked country + smooth rotate to it. */
+        /* Persistent highlight on the clicked country + smooth rotate to it.
+           "Em destaque" reflects the selected country (not hover). */
         _globeSelected = f;
         _globeGL.polygonCapColor(getCapColor).polygonAltitude(getCapAlt);
         const c = _byCca3[f.id];
+        const selEl = document.getElementById('ex-globe-sel');
+        if (selEl) selEl.textContent = c ? (_cName(c) || f.id) : (f.properties?.name || f.id || '—');
         const ll = c?.latlng;
         if (ll && ll.length === 2) {
           _globeGL.pointOfView({ lat: ll[0], lng: ll[1], altitude: 1.6 }, 900);
@@ -1046,18 +1049,26 @@ const ExplorerPage = (function () {
 
     /* First real pointer interaction unlocks hover highlighting/featuring. */
     _globeInteracted = false;
+    _pointerOverGlobe = false;
     const markInteracted = () => { _globeInteracted = true; };
     container.addEventListener('pointerdown', markInteracted, { once: true });
     container.addEventListener('pointermove', markInteracted, { once: true });
+    container.addEventListener('pointerenter', () => { _pointerOverGlobe = true; });
     /* Track cursor (relative to the globe wrap) to position the hover tooltip. */
     container.addEventListener('pointermove', ev => {
+      _pointerOverGlobe = true;
       const wrap = container.closest('.ex-globe-wrap') || container;
       const r = wrap.getBoundingClientRect();
       _globeCursor = { x: ev.clientX - r.left + 14, y: ev.clientY - r.top + 14 };
       const tip = document.getElementById('ex-globe-tooltip');
       if (tip && !tip.hidden) { tip.style.left = _globeCursor.x + 'px'; tip.style.top = _globeCursor.y + 'px'; }
     }, { passive: true });
-    container.addEventListener('pointerleave', () => _updateGlobeTooltip(null));
+    container.addEventListener('pointerleave', () => {
+      _pointerOverGlobe = false;
+      _globeHovered = null;
+      _updateGlobeTooltip(null);
+      if (_globeGL) _globeGL.polygonCapColor(getCapColor);
+    });
 
     /* ResizeObserver — stored so it can be disconnected on shell rebuild */
     _globeResizeObs = new ResizeObserver(() => {
@@ -1290,6 +1301,8 @@ const ExplorerPage = (function () {
       if (_cloudsRAF) { cancelAnimationFrame(_cloudsRAF); _cloudsRAF = null; }
       _cloudsMesh = null;
       _globeInteracted = false;
+      _pointerOverGlobe = false;
+      _globeShaderMat  = null;
       _globeMatUniforms = null;
       _globeGL         = null;
       _globeInited     = false;
