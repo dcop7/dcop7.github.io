@@ -2170,3 +2170,70 @@ body.light .pt-capital-label .pt-cap-dot {
   .ex-country-panel { height: 70vh; }
 }
 .ex-solar-credit{position:absolute;bottom:.5rem;right:.7rem;z-index:6;font-size:.58rem;color:var(--muted);opacity:.6;pointer-events:auto}.ex-solar-credit a{color:var(--muted);text-decoration:underline}
+
+/* ══════════════════════════════════════════════════════════════════
+   REALTIME EARTH (Terra em Tempo Real)
+══════════════════════════════════════════════════════════════════ */
+.ex-rt-wrap { position: absolute; inset: 0; overflow: hidden; }
+.ex-rt-globe { position: absolute; inset: 0; }
+
+/* Layer toggle chips (top-left) */
+.ex-rt-layers {
+  position: absolute; top: .75rem; left: .75rem; z-index: 10;
+  display: flex; flex-wrap: wrap; gap: .35rem; max-width: min(62%, 520px);
+}
+.ex-rt-chip {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .3rem .6rem; border-radius: 999px; cursor: pointer;
+  background: rgba(10,16,28,.72); backdrop-filter: blur(10px);
+  border: 1px solid var(--border2); color: var(--muted);
+  font-family: var(--font-sans); font-size: .72rem; font-weight: 600;
+  transition: all var(--ease);
+}
+.ex-rt-chip:hover { color: var(--text); border-color: rgba(255,255,255,.3); }
+.ex-rt-chip.on { color: var(--text); background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.5); }
+.ex-rt-chip.disabled { opacity: .4; pointer-events: none; }
+.ex-rt-chip-ic { font-size: .85rem; line-height: 1; }
+
+/* Time-travel bar (top-right) */
+.ex-rt-time {
+  position: absolute; top: .75rem; right: .75rem; z-index: 10;
+  display: flex; align-items: center; gap: .4rem;
+  background: rgba(10,16,28,.72); backdrop-filter: blur(10px);
+  border: 1px solid var(--border2); border-radius: 999px; padding: .28rem .4rem .28rem .5rem;
+}
+.ex-rt-now {
+  background: transparent; border: 1px solid var(--border2); color: var(--muted);
+  font-family: var(--font-sans); font-size: .72rem; font-weight: 700;
+  padding: .26rem .6rem; border-radius: 999px; cursor: pointer; transition: all var(--ease);
+}
+.ex-rt-now.on { color: var(--green, #34d399); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+.ex-rt-date {
+  background: var(--card2); border: 1px solid var(--border2); color: var(--text);
+  font-family: var(--font-sans); font-size: .72rem; padding: .24rem .4rem;
+  border-radius: var(--radius-sm); outline: none; color-scheme: dark;
+}
+.ex-rt-status { font-size: .68rem; color: var(--muted); margin-left: .15rem; white-space: nowrap; }
+
+/* Active-layer legend (bottom-left) */
+.ex-rt-legend {
+  position: absolute; bottom: 1.6rem; left: .75rem; z-index: 9;
+  display: flex; flex-wrap: wrap; gap: .3rem .7rem; max-width: 60%;
+}
+.ex-rt-leg { display: inline-flex; align-items: center; gap: .25rem; font-size: .66rem; color: var(--muted); }
+
+/* Hover tooltip for events */
+.ex-rt-tooltip {
+  position: absolute; z-index: 12; pointer-events: none;
+  background: rgba(8,12,20,.92); border: 1px solid var(--border2); border-radius: 6px;
+  padding: .3rem .55rem; font-size: .72rem; color: var(--text); white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+}
+
+@media (max-width: 640px) {
+  .ex-rt-layers { max-width: 100%; right: .75rem; top: .6rem; }
+  .ex-rt-chip-lbl { display: none; }   /* icon-only chips on phones */
+  .ex-rt-chip { padding: .4rem .5rem; }
+  .ex-rt-time { top: auto; bottom: 2.6rem; right: .6rem; left: .6rem; justify-content: center; flex-wrap: wrap; }
+  .ex-rt-legend { display: none; }
+}

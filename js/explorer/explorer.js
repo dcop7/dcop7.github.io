@@ -644,6 +644,11 @@ const ExplorerPage = (function () {
             <div class="ex-feature-card-title">${_t('3D Globe', 'Globo 3D')}</div>
             <div class="ex-feature-card-desc">${_t('Realistic WebGL globe with atmosphere, textures and political / night modes.', 'Globo WebGL realista com atmosfera, texturas e modos político e noturno.')}</div>
           </div>
+          <div class="ex-feature-card" data-tab="realtime">
+            <span class="ex-feature-card-icon">🛰</span>
+            <div class="ex-feature-card-title">${_t('Live Earth', 'Terra em Tempo Real')}</div>
+            <div class="ex-feature-card-desc">${_t('Live earthquakes, volcanoes, wildfires, storms, clouds, temperature and flights — with time travel.', 'Sismos, vulcões, incêndios, tempestades, nuvens, temperatura e aviões em tempo real — com viagem no tempo.')}</div>
+          </div>
           <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
             <span class="ex-feature-card-icon">🇵🇹</span>
             <div class="ex-feature-card-title">Portugal</div>
@@ -1399,9 +1404,10 @@ const ExplorerPage = (function () {
 
   /* ════════════════════════════════ DISCOVER ════════════════════════ */
   function _discoverRandom() {
-    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy'];
+    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy', 'realtime'];
     if (typeof PortugalExplorer === 'undefined') modes.splice(modes.indexOf('portugal'), 1);
     if (typeof MilkyWayExplorer === 'undefined') modes.splice(modes.indexOf('galaxy'), 1);
+    if (typeof RealtimeEarth === 'undefined') modes.splice(modes.indexOf('realtime'), 1);
 
     const mode = modes[Math.floor(Math.random() * modes.length)];
 
@@ -1416,6 +1422,8 @@ const ExplorerPage = (function () {
       _switchTab('solar');
     } else if (mode === 'galaxy') {
       _switchTab('galaxy');
+    } else if (mode === 'realtime') {
+      _switchTab('realtime');
     } else if (_countriesOk && _countries.length) {
       /* Fallback: show random country on map */
       const c = _countries[Math.floor(Math.random() * _countries.length)];
@@ -1454,6 +1462,7 @@ const ExplorerPage = (function () {
           <button class="ex-tab" data-tab="map"><span class="ex-tab-icon">🗺</span> ${_t('Map', 'Mapa')}</button>
           <button class="ex-tab" data-tab="globe"><span class="ex-tab-icon">🌍</span> ${_t('Globe', 'Globo')}</button>
           <button class="ex-tab" data-tab="portugal"><span class="ex-tab-icon">🇵🇹</span> Portugal</button>
+          <button class="ex-tab" data-tab="realtime"><span class="ex-tab-icon">🛰</span> ${_t('Live Earth', 'Terra em Tempo Real')}</button>
           <button class="ex-tab" data-tab="solar"><span class="ex-tab-icon">☀</span> ${_t('Solar System', 'Sistema Solar')}</button>
           <button class="ex-tab" data-tab="galaxy"><span class="ex-tab-icon">🌌</span> ${_t('Milky Way', 'Via Láctea')}</button>
         </div>
@@ -1462,6 +1471,7 @@ const ExplorerPage = (function () {
           <div class="ex-sub" id="ex-sub-map"></div>
           <div class="ex-sub" id="ex-sub-globe"></div>
           <div class="ex-sub" id="ex-sub-portugal"></div>
+          <div class="ex-sub" id="ex-sub-realtime"></div>
           <div class="ex-sub" id="ex-sub-solar"></div>
           <div class="ex-sub" id="ex-sub-galaxy"></div>
         </div>
@@ -1480,6 +1490,7 @@ const ExplorerPage = (function () {
     _closeModal();
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
     if (tab !== 'galaxy' && _curTab === 'galaxy' && typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
+    if (tab !== 'realtime' && _curTab === 'realtime' && typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
@@ -1514,6 +1525,11 @@ const ExplorerPage = (function () {
       if (typeof MilkyWayExplorer !== 'undefined') {
         if (!sub.querySelector('.ex-solar-wrap')) MilkyWayExplorer.mount(sub);
         else MilkyWayExplorer.resume();
+      }
+    } else if (tab === 'realtime') {
+      if (typeof RealtimeEarth !== 'undefined') {
+        if (!sub.querySelector('.ex-rt-wrap')) RealtimeEarth.mount(sub);
+        else RealtimeEarth.resume();
       }
     }
   }
@@ -1553,6 +1569,7 @@ const ExplorerPage = (function () {
     if (_globeGL) { try { _globeGL.pauseAnimation(); } catch (_) {} }
     if (typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
     if (typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
+    if (typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     _closeModal();
   });

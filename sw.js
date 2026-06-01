@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v46';
+const CACHE = 'dcop7-v47';
 const STATIC = [
   '/',
   '/index.html',
@@ -22,6 +22,7 @@ const STATIC = [
   '/js/explorer/explorer-portugal.js',
   '/js/explorer/explorer-solar.js',
   '/js/explorer/explorer-galaxy.js',
+  '/js/explorer/explorer-realtime.js',
   '/js/explorer/ocorrencias.js',
   /* Pages */
   '/js/pages/links-data.js',
