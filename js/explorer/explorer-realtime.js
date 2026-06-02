@@ -100,15 +100,22 @@ const RealtimeEarth = (function () {
       gl_FragColor = vec4(mix(night, day, blend), 1.0);
     }`;
 
+  /* Subsolar point (lat/lon where the Sun is overhead) — low-precision NOAA
+     formula. Returns the Sun's geocentric declination + the longitude under it
+     from GMST. (The previous version added an extra 180° to the ecliptic
+     longitude, flipping the declination's sign → wrong hemisphere lit.) */
   function _sunPos() {
-    const d = Date.now() / 86400000 + 2440587.5 - 2451545;
-    const M = (357.5291 + 0.98560028 * d) * Math.PI / 180;
-    const C = (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M)) * Math.PI / 180;
-    const l = M + C + (283.0 + 180) * Math.PI / 180;
-    const dec = Math.asin(Math.sin(23.4397 * Math.PI / 180) * Math.sin(l));
-    const ra = Math.atan2(Math.cos(23.4397 * Math.PI / 180) * Math.sin(l), Math.cos(l));
-    const LMST = (280.46061837 + 360.98564736629 * d) * Math.PI / 180;
-    return { lat: dec * 180 / Math.PI, lon: 180 - ((LMST - ra) * 180 / Math.PI % 360 + 360) % 360 };
+    const rad = Math.PI / 180;
+    const n = Date.now() / 86400000 + 2440587.5 - 2451545.0;     /* days since J2000 */
+    const L = 280.460 + 0.9856474 * n;                            /* mean longitude (deg) */
+    const g = (357.528 + 0.9856003 * n) * rad;                    /* mean anomaly (rad) */
+    const lambda = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * rad;  /* ecliptic lon */
+    const eps = (23.439 - 0.0000004 * n) * rad;                   /* obliquity */
+    const dec = Math.asin(Math.sin(eps) * Math.sin(lambda));
+    const ra = Math.atan2(Math.cos(eps) * Math.sin(lambda), Math.cos(lambda)) / rad;  /* deg */
+    const gmst = (280.46061837 + 360.98564736629 * n) % 360;
+    let lon = ((ra - gmst) % 360 + 540) % 360 - 180;
+    return { lat: dec / rad, lon };
   }
 
   /* ── Utils ── */
@@ -221,7 +228,8 @@ const RealtimeEarth = (function () {
 
         <div class="ex-rt-time" id="rt-time">
           <button class="ex-rt-now on" id="rt-now">● Agora</button>
-          <input type="date" class="ex-rt-date" id="rt-date" max="${_ymd(new Date())}"/>
+          <button class="ex-rt-now" id="rt-date-btn" title="Escolher data">📅 <span id="rt-date-lbl">Data</span></button>
+          <input type="date" class="ex-rt-date-native" id="rt-date" lang="pt-PT" max="${_ymd(new Date())}"/>
           <button class="ex-rt-now" id="rt-filters-btn" title="Filtros">⚙ Filtros</button>
           <span class="ex-rt-status" id="rt-status"></span>
         </div>
@@ -696,8 +704,8 @@ const RealtimeEarth = (function () {
   }
 
   function _tipHtml(meta) {
-    const rows = meta.rows.slice(0, 3).map(([k, v]) => `<span class="ex-rt-tip-row"><b>${_esc(k)}</b> ${_esc(v)}</span>`).join('');
-    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}${meta.url ? '<span class="ex-rt-tip-hint">clica para detalhes</span>' : ''}`;
+    const rows = meta.rows.map(([k, v]) => `<span class="ex-rt-tip-row"><b>${_esc(k)}</b> ${_esc(v)}</span>`).join('');
+    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}${meta.url ? '<span class="ex-rt-tip-hint">clica para mais info ↗</span>' : ''}`;
   }
   function _cardHtml(meta) {
     const rows = meta.rows.map(([k, v]) => `<div class="ex-rt-card-row"><span>${_esc(k)}</span><span>${_esc(v)}</span></div>`).join('');
@@ -747,7 +755,15 @@ const RealtimeEarth = (function () {
       _applyLayer(id);
     });
     document.getElementById('rt-now')?.addEventListener('click', () => _setDate(null));
-    document.getElementById('rt-date')?.addEventListener('change', e => { if (e.target.value) _setDate(e.target.value); });
+    /* Custom date control: a button (shows dd/mm/yyyy) opens the native picker. */
+    const dateBtn = document.getElementById('rt-date-btn');
+    const dateIn = document.getElementById('rt-date');
+    dateBtn?.addEventListener('click', () => {
+      if (!dateIn) return;
+      if (typeof dateIn.showPicker === 'function') { try { dateIn.showPicker(); return; } catch (_) {} }
+      dateIn.focus(); dateIn.click();
+    });
+    dateIn?.addEventListener('change', e => { if (e.target.value) _setDate(e.target.value); });
 
     /* Filters popover. */
     const fbtn = document.getElementById('rt-filters-btn');
@@ -797,9 +813,13 @@ const RealtimeEarth = (function () {
     _date = date;
     const now = document.getElementById('rt-now');
     const dateEl = document.getElementById('rt-date');
+    const dateLbl = document.getElementById('rt-date-lbl');
+    const dateBtn = document.getElementById('rt-date-btn');
     const planesChip = document.querySelector('.ex-rt-chip[data-layer="planes"]');
     if (now) now.classList.toggle('on', date === null);
-    if (date === null && dateEl) dateEl.value = '';
+    if (dateBtn) dateBtn.classList.toggle('on', date !== null);
+    if (date === null) { if (dateEl) dateEl.value = ''; if (dateLbl) dateLbl.textContent = 'Data'; }
+    else if (dateLbl) { const [y, m, d] = date.split('-'); dateLbl.textContent = `${d}/${m}/${y}`; }
     /* Live flights only make sense "now"; disable the chip for past dates. */
     if (planesChip) planesChip.classList.toggle('disabled', date !== null);
     _schedulePlanes();

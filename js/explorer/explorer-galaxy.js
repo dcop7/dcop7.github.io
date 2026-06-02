@@ -289,11 +289,12 @@ const MilkyWayExplorer = (function () {
       for (let i = 0; i < N; i++) {
         let r, ang, t;
         const roll = Math.random();
-        if (roll < 0.20) {
-          /* Central bulge (slightly flattened, spheroidal). */
-          r = Math.pow(Math.random(), 2.0) * GAL_R * 0.26;
+        if (roll < 0.16) {
+          /* Central bulge (slightly flattened, spheroidal) — spread out a bit
+             so it reads as a glowing core rather than a blown-out white disc. */
+          r = Math.pow(Math.random(), 1.4) * GAL_R * 0.3;
           ang = Math.random() * Math.PI * 2; t = r / GAL_R;
-        } else if (roll < 0.30) {
+        } else if (roll < 0.26) {
           /* Central bar across the bulge. */
           const along = (Math.random() - 0.5) * GAL_R * 0.5;
           const wide = _g() * GAL_R * 0.06;
@@ -308,7 +309,7 @@ const MilkyWayExplorer = (function () {
           const base = ARMS[ai] + Math.log(r / 16) * WIND / 2.9;
           ang = base + _g() * ARM_W[ai] * (1 - t * 0.45);
         }
-        const thick = (roll < 0.20 ? 16 : 5.5) * (1 - t * 0.7);
+        const thick = (roll < 0.16 ? 16 : 5.5) * (1 - t * 0.7);
         pos[i * 3]     = Math.cos(ang) * r;
         pos[i * 3 + 1] = _g() * thick;
         pos[i * 3 + 2] = Math.sin(ang) * r;
@@ -396,9 +397,9 @@ const MilkyWayExplorer = (function () {
   function _buildCoreGlow() {
     _coreSprites = [];
     const layers = [
-      { color: 0xffffff, scale: 26, opacity: 0.95 },
-      { color: 0xffe6b0, scale: 64, opacity: 0.8 },
-      { color: 0xffc878, scale: 130, opacity: 0.42 },
+      { color: 0xfff2d4, scale: 15, opacity: 0.8 },
+      { color: 0xffd591, scale: 46, opacity: 0.5 },
+      { color: 0xffb25e, scale: 108, opacity: 0.28 },
     ];
     layers.forEach(l => {
       const sp = _sprite(new THREE.Color(l.color), l.scale, l.opacity);

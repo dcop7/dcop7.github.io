@@ -2174,7 +2174,13 @@ body.light .pt-capital-label .pt-cap-dot {
 /* ══════════════════════════════════════════════════════════════════
    REALTIME EARTH (Terra em Tempo Real)
 ══════════════════════════════════════════════════════════════════ */
-.ex-rt-wrap { position: absolute; inset: 0; overflow: hidden; }
+.ex-rt-wrap {
+  position: absolute; inset: 0; overflow: hidden;
+  /* Own dark "space" backdrop so the site wallpaper doesn't show through the
+     transparent globe canvas. */
+  background:
+    radial-gradient(circle at 50% 42%, #0b1426 0%, #060a14 55%, #03050b 100%);
+}
 .ex-rt-globe { position: absolute; inset: 0; }
 
 /* Layer toggle chips (top-left) */
@@ -2208,10 +2214,10 @@ body.light .pt-capital-label .pt-cap-dot {
   padding: .26rem .6rem; border-radius: 999px; cursor: pointer; transition: all var(--ease);
 }
 .ex-rt-now.on { color: var(--green, #34d399); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
-.ex-rt-date {
-  background: var(--card2); border: 1px solid var(--border2); color: var(--text);
-  font-family: var(--font-sans); font-size: .72rem; padding: .24rem .4rem;
-  border-radius: var(--radius-sm); outline: none; color-scheme: dark;
+/* Native date input kept only to drive the picker (label lives on the button). */
+.ex-rt-date-native {
+  position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
+  border: 0; padding: 0; margin: 0; color-scheme: dark;
 }
 .ex-rt-status { font-size: .68rem; color: var(--muted); margin-left: .15rem; white-space: nowrap; }
 
