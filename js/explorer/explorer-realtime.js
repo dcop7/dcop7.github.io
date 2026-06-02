@@ -107,8 +107,10 @@ const RealtimeEarth = (function () {
     void main(){
       float i = dot(normalize(vN), normalize(sunDirection));
       vec3 day = texture2D(dayTexture, vUv).rgb;
-      vec3 night = texture2D(nightTexture, vUv).rgb * 1.4;
-      float blend = mix(1.0, smoothstep(-0.12, 0.18, i), dayNight);
+      /* Night side = city lights + a faint, dim earth so it never reads as a
+         pure-black void when you zoom into the dark hemisphere. */
+      vec3 night = texture2D(nightTexture, vUv).rgb * 1.5 + day * 0.10;
+      float blend = mix(1.0, smoothstep(-0.18, 0.22, i), dayNight);
       gl_FragColor = vec4(mix(night, day, blend), 1.0);
     }`;
 
@@ -210,6 +212,18 @@ const RealtimeEarth = (function () {
       ].filter(Boolean),
       url: '', urlLabel: '',
     };
+  }
+  /* Decorative parts (glow sprites, smoke, lava) should never be hover targets —
+     only a small invisible hit sphere is. Otherwise a huge additive glow would
+     keep the tooltip showing across a wide area / "stuck". */
+  const _noRay = function () {};
+  function _addHit(group, radius, y) {
+    const hit = new THREE.Mesh(
+      new THREE.SphereGeometry(radius, 8, 8),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    if (y) hit.position.y = y;
+    group.add(hit);
+    return hit;
   }
   function _glowTexture() {
     if (_glowTex) return _glowTex;
@@ -421,6 +435,9 @@ const RealtimeEarth = (function () {
     const smoke = new THREE.Points(sg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0x8a8278, size: 2.4 * S, transparent: true, opacity: 0.42, depthWrite: false }));
     g.add(smoke);
 
+    /* Decoration is non-interactive; a small invisible sphere is the hit target. */
+    [cone, vent, glow, lava, smoke].forEach(o => { o.raycast = _noRay; });
+    _addHit(g, 2.4 * S, 1.6 * S);
     g.userData = { smoke, prog, N, lava, lprog, lspd, LN, vent, S, meta: _eonetMeta(d, 'volcano') };
     _orient(g, d.lat, d.lng, 0, 'y');
     _scene().add(g);
@@ -447,6 +464,8 @@ const RealtimeEarth = (function () {
     /* Smoke plume drifting up from the fire. */
     const smoke = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0x6b6358, transparent: true, opacity: 0.3, depthWrite: false }));
     smoke.scale.setScalar(S * 1.3); smoke.position.y = S * 1.1; g.add(smoke);
+    g.children.forEach(o => { o.raycast = _noRay; });
+    _addHit(g, 1.5 * S, S * 0.5);
     _orient(g, d.lat, d.lng, 0.002, 'y');
     _scene().add(g);
     _fires.push(g);
@@ -477,6 +496,8 @@ const RealtimeEarth = (function () {
       new THREE.PlaneGeometry(14, 14),
       new THREE.MeshBasicMaterial({ map: _spiralTexture(), transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide }));
     g.add(disc);
+    disc.raycast = _noRay;
+    _addHit(g, 6, 0);
     g.userData = { disc, meta: _eonetMeta(d, 'storm') };
     _orient(g, d.lat, d.lng, 0.01, 'z');
     _scene().add(g);
