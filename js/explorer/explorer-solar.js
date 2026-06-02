@@ -311,6 +311,19 @@ const SolarExplorer = (function () {
   function _reducedMotion() {
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
+  /* Quality factor (1 = full; lower on small / low-end devices) → fewer belt
+     rocks + stars and a capped pixel ratio, so it stays fluid on phones. */
+  function _quality() {
+    const small = Math.min(window.innerWidth, window.innerHeight) < 720;
+    const lowMem = navigator.deviceMemory && navigator.deviceMemory <= 4;
+    const lowCpu = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+    if (small && (lowMem || lowCpu)) return 0.35;
+    if (small) return 0.5;
+    if (lowMem || lowCpu) return 0.72;
+    return 1;
+  }
+  let _q = 1;
+  function _pixelRatio() { return Math.min(window.devicePixelRatio || 1, _q < 0.5 ? 1.25 : 1.75); }
   let _sel     = null;    /* index | 'sun' | null */
   let _curTab  = 'overview';
 
@@ -416,8 +429,9 @@ const SolarExplorer = (function () {
     _comets = []; _asteroids = []; _satellites = []; _beltPoints = null;
 
     /* Renderer */
-    _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    _renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    _q = _quality();
+    _renderer = new THREE.WebGLRenderer({ antialias: _q >= 0.7, alpha: false });
+    _renderer.setPixelRatio(_pixelRatio());
     _renderer.setSize(W, H);
     _renderer.setClearColor(0x000005, 1);
     try { _maxAniso = _renderer.capabilities.getMaxAnisotropy() || 8; } catch (_) {}
@@ -432,7 +446,7 @@ const SolarExplorer = (function () {
     _scene.background = new THREE.Color(0x05060f);
 
     /* Starfield */
-    const starCount = 5000;
+    const starCount = Math.round(5000 * _q);
     const starPos   = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount * 3; i++) starPos[i] = (Math.random() - 0.5) * 2000;
     const starGeo = new THREE.BufferGeometry();
@@ -609,7 +623,7 @@ const SolarExplorer = (function () {
     const jup  = PLANETS.find(p => p.id === 'jupiter');
     if (!mars || !jup) return;
     const rMin = mars.orbitR + 5, rMax = jup.orbitR - 6;
-    const N = 2800;
+    const N = Math.round(2800 * _q);
     const palette = [
       [0.60, 0.56, 0.48], [0.52, 0.47, 0.40], [0.70, 0.64, 0.54],
       [0.45, 0.42, 0.40], [0.66, 0.58, 0.46],
@@ -1100,13 +1114,22 @@ const SolarExplorer = (function () {
     });
     window.addEventListener('mouseup', () => { _dragging = false; });
 
-    /* Touch drag */
+    /* Touch: one finger orbits, two fingers pinch-to-zoom. */
+    let _pinch = 0;
+    const _dist2 = e => Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
     viewport.addEventListener('touchstart', e => {
       if (e.touches.length === 1) {
         _dragging = true; _lastX = e.touches[0].clientX; _lastY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        _dragging = false; _pinch = _dist2(e);
       }
     }, { passive: true });
     viewport.addEventListener('touchmove', e => {
+      if (e.touches.length === 2 && _pinch) {
+        const d = _dist2(e);
+        _camDistT = Math.max(20, Math.min(600, _camDistT * (_pinch / d)));
+        _pinch = d; return;
+      }
       if (!_dragging || e.touches.length !== 1) return;
       const dx = e.touches[0].clientX - _lastX;
       const dy = e.touches[0].clientY - _lastY;
@@ -1114,7 +1137,7 @@ const SolarExplorer = (function () {
       _camPhiT    = Math.max(0.2, Math.min(Math.PI - 0.2, _camPhiT + dy * 0.005));
       _lastX = e.touches[0].clientX; _lastY = e.touches[0].clientY;
     }, { passive: true });
-    viewport.addEventListener('touchend', () => { _dragging = false; });
+    viewport.addEventListener('touchend', e => { _dragging = false; if (e.touches.length < 2) _pinch = 0; });
 
     /* Scroll to zoom */
     viewport.addEventListener('wheel', e => {

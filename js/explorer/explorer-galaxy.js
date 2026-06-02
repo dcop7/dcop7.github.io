@@ -123,6 +123,19 @@ const MilkyWayExplorer = (function () {
   function _reducedMotion() {
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
+  /* Quality factor (1 = full, lower on small/low-end devices) so the galaxy
+     stays fluid on phones: fewer particles + a capped pixel ratio. */
+  function _quality() {
+    const small = Math.min(window.innerWidth, window.innerHeight) < 720;
+    const lowMem = navigator.deviceMemory && navigator.deviceMemory <= 4;
+    const lowCpu = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+    if (small && (lowMem || lowCpu)) return 0.32;
+    if (small) return 0.45;
+    if (lowMem || lowCpu) return 0.7;
+    return 1;
+  }
+  let _q = 1;
+  function _pixelRatio() { return Math.min(window.devicePixelRatio || 1, _q < 0.5 ? 1.25 : 1.75); }
   function _loadScript(src) {
     return new Promise((resolve, reject) => {
       if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
@@ -208,8 +221,9 @@ const MilkyWayExplorer = (function () {
     const W = viewport.clientWidth || 800, H = viewport.clientHeight || 600;
     _markers = []; _spinLayers = []; _coreSprites = [];
 
-    _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    _renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    _q = _quality();
+    _renderer = new THREE.WebGLRenderer({ antialias: _q >= 0.7, alpha: false });
+    _renderer.setPixelRatio(_pixelRatio());
     _renderer.setSize(W, H);
     _renderer.setClearColor(0x070912, 1);
     viewport.appendChild(_renderer.domElement);
@@ -218,7 +232,7 @@ const MilkyWayExplorer = (function () {
     _scene.background = new THREE.Color(0x070912);
 
     /* Distant background starfield. */
-    const bgN = 6000, bgPos = new Float32Array(bgN * 3), bgCol = new Float32Array(bgN * 3);
+    const bgN = Math.round(6000 * _q), bgPos = new Float32Array(bgN * 3), bgCol = new Float32Array(bgN * 3);
     const sc = new THREE.Color();
     for (let i = 0; i < bgN; i++) {
       const r = 700 + Math.random() * 800, a = Math.random() * Math.PI * 2, e = (Math.random() - 0.5) * Math.PI;
@@ -281,38 +295,44 @@ const MilkyWayExplorer = (function () {
     const cCore = new THREE.Color('#fff0c8'), cMid = new THREE.Color('#ffd2a0'),
           cArm = new THREE.Color('#bcd2ff'), cEdge = new THREE.Color('#8fb4ff');
     const tmp = new THREE.Color();
-    /* main arms get more stars; secondaries are fainter. */
-    const ARMS = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5];
-    const ARM_W = [0.34, 0.34, 0.5, 0.5];   /* angular half-width of each arm */
-    const WIND = 2.9;                         /* spiral tightness (b in r=e^(bθ)) */
+    /* Six logarithmic arms that wind well over a full turn, so the disc reads
+       as a full spiral rather than a few separate "legs". */
+    const ARMS = [0, Math.PI / 3, 2 * Math.PI / 3, Math.PI, 4 * Math.PI / 3, 5 * Math.PI / 3];
+    const ARM_W = 0.42;        /* angular half-width of each arm */
+    const WIND = 1.85;          /* how far the arms wind (× ln(r)) */
 
     function fill(geo, N, sizeBias, brightness) {
       const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
       for (let i = 0; i < N; i++) {
-        let r, ang, t;
+        let r, ang, t, faint = 1;
         const roll = Math.random();
-        if (roll < 0.16) {
+        if (roll < 0.15) {
           /* Central bulge (slightly flattened, spheroidal) — spread out a bit
              so it reads as a glowing core rather than a blown-out white disc. */
           r = Math.pow(Math.random(), 1.4) * GAL_R * 0.3;
           ang = Math.random() * Math.PI * 2; t = r / GAL_R;
-        } else if (roll < 0.26) {
+        } else if (roll < 0.23) {
           /* Central bar across the bulge. */
           const along = (Math.random() - 0.5) * GAL_R * 0.5;
           const wide = _g() * GAL_R * 0.06;
-          const barA = 0.5;                    /* bar position angle */
           r = Math.hypot(along, wide);
-          ang = Math.atan2(wide, along) + barA; t = r / GAL_R;
+          ang = Math.atan2(wide, along) + 0.5; t = r / GAL_R;
+        } else if (roll < 0.42) {
+          /* Diffuse inter-arm disc stars — fill the gaps between arms so the
+             galaxy looks continuous, not like discrete legs. Fainter. */
+          t = Math.pow(Math.random(), 1.1);
+          r = 16 + t * (GAL_R - 16);
+          ang = Math.random() * Math.PI * 2; faint = 0.5;
         } else {
           /* Spiral arm. Bias toward the inner/mid disc so the outer tips thin
              out naturally rather than ending at a hard circle. */
           const ai = i % ARMS.length;
           t = Math.pow(Math.random(), 1.15);
           r = 16 + t * (GAL_R - 16);
-          const base = ARMS[ai] + Math.log(r / 16) * WIND / 2.9;
-          ang = base + _g() * ARM_W[ai] * (1 - t * 0.4);
+          const base = ARMS[ai] + Math.log(r / 16) * WIND;
+          ang = base + _g() * ARM_W * (1 - t * 0.35);
         }
-        const thick = (roll < 0.16 ? 16 : 5.5) * (1 - t * 0.7);
+        const thick = (roll < 0.15 ? 16 : 5.5) * (1 - t * 0.7);
         pos[i * 3]     = Math.cos(ang) * r;
         pos[i * 3 + 1] = _g() * thick;
         pos[i * 3 + 2] = Math.sin(ang) * r;
@@ -321,8 +341,8 @@ const MilkyWayExplorer = (function () {
         else if (t < 0.45) tmp.copy(cMid).lerp(cArm, (t - 0.18) / 0.27);
         else tmp.copy(cArm).lerp(cEdge, Math.min(1, (t - 0.45) / 0.55));
         /* Fade the outer disc out so the arm tips dissolve (no cut-off edge). */
-        const edge = 1 - _smooth(0.62, 1.0, t) * 0.82;
-        const tw = (0.6 + Math.random() * 0.4) * brightness * edge;
+        const edge = 1 - _smooth(0.55, 1.0, t) * 0.9;
+        const tw = (0.6 + Math.random() * 0.4) * brightness * edge * faint;
         col[i * 3] = tmp.r * tw; col[i * 3 + 1] = tmp.g * tw; col[i * 3 + 2] = tmp.b * tw;
       }
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -330,14 +350,14 @@ const MilkyWayExplorer = (function () {
     }
 
     /* Layer 1 — dense fine haze (the bulk of the disc). */
-    const g1 = new THREE.BufferGeometry(); fill(g1, 60000, 0, 0.85);
+    const g1 = new THREE.BufferGeometry(); fill(g1, Math.round(60000 * _q), 0, 0.85);
     _galaxyPoints = new THREE.Points(g1, new THREE.PointsMaterial({
       size: 1.1, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
       transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false }));
     _scene.add(_galaxyPoints); _spinLayers.push(_galaxyPoints);
 
     /* Layer 2 — sparse bright resolved stars (adds sparkle + depth). */
-    const g2 = new THREE.BufferGeometry(); fill(g2, 9000, 0, 1.25);
+    const g2 = new THREE.BufferGeometry(); fill(g2, Math.round(9000 * _q), 0, 1.25);
     const bright = new THREE.Points(g2, new THREE.PointsMaterial({
       size: 2.6, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
       transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
@@ -347,15 +367,15 @@ const MilkyWayExplorer = (function () {
   /* Reddish-brown dust threaded between the arms — subtle additive tint that
      reads as the galaxy's dust lanes against the dark background. */
   function _buildArmDust() {
-    const N = 9000, pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
-    const ARMS = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5];
+    const N = Math.round(9000 * _q), pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+    const ARMS = [0, Math.PI / 3, 2 * Math.PI / 3, Math.PI, 4 * Math.PI / 3, 5 * Math.PI / 3];
     const cDust = new THREE.Color('#7a4a36');
     for (let i = 0; i < N; i++) {
       const ai = i % ARMS.length;
-      const t = Math.pow(Math.random(), 0.8);
+      const t = Math.pow(Math.random(), 0.9);
       const r = 22 + t * (GAL_R - 22);
       /* offset slightly inward of the bright arm → trailing dust lane. */
-      const ang = ARMS[ai] + Math.log(r / 16) * 1.0 - 0.16 + _g() * 0.22;
+      const ang = ARMS[ai] + Math.log(r / 16) * 1.85 - 0.14 + _g() * 0.2;
       pos[i * 3]     = Math.cos(ang) * r;
       pos[i * 3 + 1] = _g() * 4;
       pos[i * 3 + 2] = Math.sin(ang) * r;
@@ -376,12 +396,12 @@ const MilkyWayExplorer = (function () {
   function _buildHIIRegions() {
     const group = new THREE.Group();
     const cols = ['#ff7eb6', '#ff9ecb', '#7fe3ff', '#b59bff', '#ffd27f'];
-    const ARMS = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5];
-    for (let i = 0; i < 60; i++) {
+    const ARMS = [0, Math.PI / 3, 2 * Math.PI / 3, Math.PI, 4 * Math.PI / 3, 5 * Math.PI / 3];
+    for (let i = 0; i < Math.round(64 * _q); i++) {
       const ai = i % ARMS.length;
-      const t = 0.2 + Math.random() * 0.75;
+      const t = 0.2 + Math.random() * 0.62;
       const r = 16 + t * (GAL_R - 16);
-      const ang = ARMS[ai] + Math.log(r / 16) * 1.0 + (Math.random() - 0.5) * 0.3;
+      const ang = ARMS[ai] + Math.log(r / 16) * 1.85 + (Math.random() - 0.5) * 0.3;
       const knot = _sprite(new THREE.Color(cols[i % cols.length]), 6 + Math.random() * 10, 0.55 + Math.random() * 0.3);
       knot.position.set(Math.cos(ang) * r, _g() * 4, Math.sin(ang) * r);
       group.add(knot);
@@ -513,12 +533,13 @@ const MilkyWayExplorer = (function () {
   function _buildLabels(container) {
     const viewport = container.querySelector('#gx-viewport');
     if (!viewport) return;
+    const fs = Math.min(window.innerWidth, window.innerHeight) < 720 ? '.56rem' : '.66rem';
     _markers.forEach(mk => {
       if (mk.type === 'core') return;   /* core labelled implicitly */
       const el = document.createElement('div');
       el.className = 'gx-label';
       el.textContent = mk.data.name;
-      el.style.cssText = 'position:absolute;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-size:.66rem;font-family:var(--font-sans);font-weight:600;color:rgba(255,255,255,.72);text-shadow:0 1px 4px rgba(0,0,0,.9);z-index:5;transition:color .2s;';
+      el.style.cssText = `position:absolute;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-size:${fs};font-family:var(--font-sans);font-weight:600;color:rgba(255,255,255,.72);text-shadow:0 1px 4px rgba(0,0,0,.9);z-index:5;transition:color .2s;`;
       viewport.appendChild(el);
       mk.labelEl = el;
     });
@@ -558,16 +579,24 @@ const MilkyWayExplorer = (function () {
     });
     window.addEventListener('mouseup', () => { _dragging = false; });
 
+    let _pinch = 0;
+    const _dist2 = e => Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
     viewport.addEventListener('touchstart', e => {
       if (e.touches.length === 1) { _dragging = true; _lastX = e.touches[0].clientX; _lastY = e.touches[0].clientY; }
+      else if (e.touches.length === 2) { _dragging = false; _pinch = _dist2(e); }
     }, { passive: true });
     viewport.addEventListener('touchmove', e => {
+      if (e.touches.length === 2 && _pinch) {
+        const d = _dist2(e);
+        _camDistT = Math.max(40, Math.min(1200, _camDistT * (_pinch / d)));
+        _pinch = d; return;
+      }
       if (!_dragging || e.touches.length !== 1) return;
       _camThetaT += (e.touches[0].clientX - _lastX) * 0.005;
       _camPhiT = Math.max(0.15, Math.min(Math.PI - 0.15, _camPhiT + (e.touches[0].clientY - _lastY) * 0.005));
       _lastX = e.touches[0].clientX; _lastY = e.touches[0].clientY;
     }, { passive: true });
-    viewport.addEventListener('touchend', () => { _dragging = false; });
+    viewport.addEventListener('touchend', e => { _dragging = false; if (e.touches.length < 2) _pinch = 0; });
 
     viewport.addEventListener('wheel', e => {
       e.preventDefault();

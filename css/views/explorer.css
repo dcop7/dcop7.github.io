@@ -27,8 +27,11 @@
   z-index: 10;
   overflow-x: auto;
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
 }
 .ex-tabs::-webkit-scrollbar { display: none; }
+.ex-tab { scroll-snap-align: center; }
 .ex-tabs::after {
   content: '';
   position: absolute;
@@ -1549,11 +1552,18 @@ body.light .ex-country-label {
 ══════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  .ex-tab {
-    padding: .38rem .65rem;
-    font-size: .72rem;
+  .ex-tabs {
+    gap: .3rem;
+    padding: .4rem .7rem;
+    /* fade the edges to hint the bar scrolls horizontally */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
   }
-  .ex-tab-icon { font-size: .85rem; }
+  .ex-tab {
+    padding: .5rem .7rem;        /* taller tap target */
+    font-size: .74rem;
+  }
+  .ex-tab-icon { font-size: .9rem; }
 
   .ex-feature-grid {
     grid-template-columns: 1fr;
@@ -1622,19 +1632,12 @@ body.light .ex-country-label {
   }
   .ex-solar-panel.open { transform: translateY(0); }
   /* Lift the control pill so it never hides behind the bottom-sheet. */
-  .ex-solar-controls { bottom: .75rem; gap: .35rem; padding: .3rem .45rem; }
-  .ex-solar-btn { width: 30px; height: 30px; }
+  .ex-solar-controls { bottom: .75rem; gap: .4rem; padding: .35rem .5rem; }
+  .ex-solar-btn { width: 36px; height: 36px; }   /* comfortable touch target */
 
   .ex-solar-info {
     width: 180px;
     padding: .7rem .8rem;
-  }
-
-  .ex-solar-panel {
-    width: 220px;
-    top: .5rem;
-    right: .5rem;
-    bottom: 4rem;
   }
 
   .ex-hub { padding: 1rem 1rem 2rem; }
@@ -2285,5 +2288,5 @@ body.light .pt-capital-label .pt-cap-dot {
   .ex-rt-time { top: auto; bottom: 2.6rem; right: .6rem; left: .6rem; justify-content: center; flex-wrap: wrap; }
   .ex-rt-legend { display: none; }
   .ex-rt-filters { top: auto; bottom: 6rem; left: .6rem; right: .6rem; width: auto; }
-  .ex-rt-detail { bottom: 6rem; left: .6rem; right: .6rem; width: auto; }
+  .ex-rt-detail { top: 7rem; bottom: auto; left: .6rem; right: .6rem; width: auto; }
 }

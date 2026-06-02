@@ -1500,6 +1500,9 @@ const ExplorerPage = (function () {
 
     _shell.querySelectorAll('.ex-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     _shell.querySelectorAll('.ex-sub').forEach(s => s.classList.toggle('active', s.id === `ex-sub-${tab}`));
+    /* Keep the active tab visible in the scrollable bar (mobile). */
+    const activeBtn = _shell.querySelector('.ex-tab.active');
+    if (activeBtn) try { activeBtn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch (_) {}
 
     const sub = _shell.querySelector(`#ex-sub-${tab}`);
     if (!sub) return;

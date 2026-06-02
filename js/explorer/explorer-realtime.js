@@ -44,6 +44,20 @@ const RealtimeEarth = (function () {
   let _maxAniso = 8;
   function _aniso(tex) { if (tex) { tex.anisotropy = _maxAniso; tex.needsUpdate = true; } return tex; }
 
+  /* Quality factor (1 = full; lower on small / low-end devices) → capped pixel
+     ratio + fewer fire visuals, keeping the globe fluid on phones. */
+  function _quality() {
+    const small = Math.min(window.innerWidth, window.innerHeight) < 720;
+    const lowMem = navigator.deviceMemory && navigator.deviceMemory <= 4;
+    const lowCpu = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+    if (small && (lowMem || lowCpu)) return 0.4;
+    if (small) return 0.55;
+    if (lowMem || lowCpu) return 0.75;
+    return 1;
+  }
+  let _q = 1;
+  function _pixelRatio() { return Math.min(window.devicePixelRatio || 1, _q < 0.6 ? 1.25 : 1.75); }
+
   /* ── Layers (order = toggle-bar order). `on` = default visibility. ── */
   const LAYERS = [
     { id: 'daynight', icon: '🌓', label: 'Dia/Noite',   on: true,  live: false },
@@ -77,21 +91,21 @@ const RealtimeEarth = (function () {
 
   /* ── Day/night shader (after the country globe). Blends a day texture with a
      night texture by the real sun direction; `dayNight` 0 = full daylight. ── */
-  /* Day/night blend driven by a WORLD-space sun direction. Both the surface
-     normal and the sun are taken into view space (via normalMatrix / viewMatrix),
-     so the terminator is correct from any camera angle or zoom — no fragile
-     globeRotation tracking. */
+  /* Day/night blend computed entirely in the globe's OBJECT space: the sun
+     direction is expressed in the same frame as the sphere's geometry/texture,
+     and compared against the object-space normal. This is invariant to both the
+     camera AND any rotation globe.gl applies to the globe mesh while dragging,
+     so the terminator never breaks on zoom or rotate. */
   const VERT = `
-    varying vec3 vNormalV; varying vec2 vUv;
-    void main(){ vNormalV = normalize(normalMatrix * normal); vUv = uv;
+    varying vec3 vN; varying vec2 vUv;
+    void main(){ vN = normalize(normal); vUv = uv;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
   const FRAG = `
     uniform sampler2D dayTexture; uniform sampler2D nightTexture;
     uniform vec3 sunDirection; uniform float dayNight;
-    varying vec3 vNormalV; varying vec2 vUv;
+    varying vec3 vN; varying vec2 vUv;
     void main(){
-      vec3 sunV = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
-      float i = dot(normalize(vNormalV), sunV);
+      float i = dot(normalize(vN), normalize(sunDirection));
       vec3 day = texture2D(dayTexture, vUv).rgb;
       vec3 night = texture2D(nightTexture, vUv).rgb * 1.4;
       float blend = mix(1.0, smoothstep(-0.12, 0.18, i), dayNight);
@@ -272,19 +286,21 @@ const RealtimeEarth = (function () {
     _reloadAll();
   }
 
-  /* World-space direction toward the Sun: the surface point under the Sun,
-     from the globe centre. Uses globe.gl's own coord mapping so it matches the
-     mesh exactly regardless of any internal globe rotation. */
+  /* Object-space direction toward the Sun, in the globe sphere's own frame
+     (same lat/lon→xyz convention three-globe uses for the mesh + UVs). */
   function _updateSun() {
-    if (!_matUniforms || !_globe) return;
+    if (!_matUniforms) return;
     const s = _sunPos();
-    const c = _globe.getCoords(s.lat, s.lon, 0);
-    _matUniforms.sunDirection.value.set(c.x, c.y, c.z).normalize();
+    const t = (90 - s.lon) * Math.PI / 180, p = (90 - s.lat) * Math.PI / 180;
+    _matUniforms.sunDirection.value.set(Math.sin(p) * Math.cos(t), Math.cos(p), Math.sin(p) * Math.sin(t));
   }
   function _startSunTimer() { if (!_sunTimer) { _updateSun(); _sunTimer = setInterval(_updateSun, 30000); } }
 
   function resume() {
-    if (_globe) { const e = document.getElementById('rt-globe'); if (e) _globe.width(e.clientWidth).height(e.clientHeight); }
+    if (_globe) {
+      const e = document.getElementById('rt-globe'); if (e) _globe.width(e.clientWidth).height(e.clientHeight);
+      try { _globe.resumeAnimation(); } catch (_) {}
+    }
     if (!_raf) _start();
     _startSunTimer();
     _schedulePlanes();
@@ -293,6 +309,7 @@ const RealtimeEarth = (function () {
     if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
     if (_planeTimer) { clearInterval(_planeTimer); _planeTimer = null; }
     if (_sunTimer) { clearInterval(_sunTimer); _sunTimer = null; }
+    if (_globe) { try { _globe.pauseAnimation(); } catch (_) {} }   /* stop globe.gl's render loop while hidden */
   }
 
   /* ═════════════════════════════ GLOBE ══════════════════════════════ */
@@ -308,8 +325,16 @@ const RealtimeEarth = (function () {
       .ringPropagationSpeed(d => d.speed).ringRepeatPeriod(d => d.repeat)
       .ringAltitude(0.008);
 
-    /* Know the GPU's max anisotropy so textures stay sharp near the horizon. */
-    try { _maxAniso = _globe.renderer().capabilities.getMaxAnisotropy() || 8; } catch (_) {}
+    /* Know the GPU's max anisotropy so textures stay sharp near the horizon,
+       and cap the pixel ratio + event budget on small / low-end devices. */
+    _q = _quality();
+    try {
+      const r = _globe.renderer();
+      _maxAniso = r.capabilities.getMaxAnisotropy() || 8;
+      r.setPixelRatio(_pixelRatio());
+    } catch (_) {}
+    if (_q < 0.6) _fireCap = 60;
+    else if (_q < 0.8) _fireCap = 90;
 
     /* Day/night shader material on the globe surface. Start from the bundled
        textures (instant), then swap in the high-res GIBS imagery once loaded. */
