@@ -658,9 +658,7 @@ const SolarExplorer = (function () {
     const R = PLANETS[earthIdx].displayR;
 
     SATELLITES.forEach(s => {
-      const geo = new THREE.SphereGeometry(0.32, 10, 10);
-      const mat = new THREE.MeshBasicMaterial({ color: s.color });
-      const mesh = new THREE.Mesh(geo, mat);
+      const mesh = _buildSatModel(s);
       _scene.add(mesh);
       _satellites.push({ mesh, data: s, angle: Math.random() * Math.PI * 2, dist: s.dist, inc: s.inc, speed: s.speed });
     });
@@ -677,7 +675,8 @@ const SolarExplorer = (function () {
     );
     earth.add(ring);
 
-    /* GPS-like cluster: a handful of tiny dots on inclined orbits (decorative). */
+    /* GPS-like cluster: a handful of tiny round dots on inclined orbits.
+       A soft circular sprite map keeps them as dots (not the default squares). */
     const gpsPos = new Float32Array(24 * 3);
     for (let i = 0; i < 24; i++) {
       const a = Math.random() * Math.PI * 2, inc = (Math.random() - 0.5) * 1.0, r = R * 2.3;
@@ -687,7 +686,49 @@ const SolarExplorer = (function () {
     }
     const gpsGeo = new THREE.BufferGeometry();
     gpsGeo.setAttribute('position', new THREE.BufferAttribute(gpsPos, 3));
-    earth.add(new THREE.Points(gpsGeo, new THREE.PointsMaterial({ color: 0x9fd0ff, size: 0.45, transparent: true, opacity: 0.8 })));
+    earth.add(new THREE.Points(gpsGeo, new THREE.PointsMaterial({
+      map: _glowTexture(), color: 0x9fd0ff, size: 0.7, transparent: true, opacity: 0.85,
+      depthWrite: false, blending: THREE.AdditiveBlending,
+    })));
+  }
+
+  /* A small but recognisable satellite model (so ISS/Hubble don't read as
+     little moons): a body with gold solar panels, plus an invisible hit-sphere
+     for easy clicking. The group carries userData.satId. */
+  function _buildSatModel(s) {
+    const g = new THREE.Group();
+    const panelMat = new THREE.MeshBasicMaterial({ color: 0x2b6cb0, side: THREE.DoubleSide });
+
+    if (s.id === 'hubble') {
+      /* Cylindrical telescope body + open aperture + two small wings. */
+      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 1.0, 18), new THREE.MeshBasicMaterial({ color: 0xcdd3dd }));
+      tube.rotation.z = Math.PI / 2; g.add(tube);
+      const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.1, 18), new THREE.MeshBasicMaterial({ color: 0x1b1f2a }));
+      rim.rotation.z = Math.PI / 2; rim.position.x = 0.5; g.add(rim);
+      [-1, 1].forEach(sgn => {
+        const wing = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.85), panelMat);
+        wing.position.z = sgn * 0.5; g.add(wing);
+      });
+    } else {
+      /* ISS: silver central trusses + four long gold solar arrays. */
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.3, 0.3), new THREE.MeshBasicMaterial({ color: 0xe7edf6 }));
+      g.add(body);
+      const truss = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 2.0), new THREE.MeshBasicMaterial({ color: 0xb8c0cc }));
+      g.add(truss);
+      [-0.75, -0.25, 0.25, 0.75].forEach(z => {
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.42), new THREE.MeshBasicMaterial({ color: 0xffc861, side: THREE.DoubleSide }));
+        panel.position.z = z; g.add(panel);
+      });
+    }
+
+    /* Invisible, larger sphere makes the tiny model easy to hover/click. */
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.9, 8, 8),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    g.add(hit);
+
+    g.rotation.set(0.4, 0.6, 0);      /* a pleasant fixed attitude */
+    g.userData.satId = s.id;
+    return g;
   }
 
   /* Build small clickable moons orbiting each planet (from its moonList). */
@@ -1096,11 +1137,13 @@ const SolarExplorer = (function () {
         }
       }
 
-      /* Check Earth satellites (ISS, Hubble) */
+      /* Check Earth satellites (ISS, Hubble) — models are Groups, so recurse
+         and match the hit back to its owning satellite group. */
       if (_satellites.length) {
-        const satHits = ray.intersectObjects(_satellites.map(s => s.mesh), false);
+        const satHits = ray.intersectObjects(_satellites.map(s => s.mesh), true);
         if (satHits.length) {
-          const s = _satellites.find(x => x.mesh === satHits[0].object);
+          let o = satHits[0].object; while (o && o.userData?.satId == null && o.parent) o = o.parent;
+          const s = _satellites.find(x => x.mesh === o);
           if (s) {
             _sel = 'other';
             const ei = PLANETS.findIndex(p => p.id === 'earth');

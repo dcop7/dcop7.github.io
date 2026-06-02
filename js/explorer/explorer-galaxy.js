@@ -105,6 +105,8 @@ const MilkyWayExplorer = (function () {
   let _glowTex = null;
   let _markers = [];        /* {mesh, data, type, pos, labelEl} */
   let _galaxyPoints = null;
+  let _spinLayers = [];     /* everything that co-rotates with the disc */
+  let _coreSprites = [];    /* layered core glow sprites (pulsing) */
   let _coreGlow = null;
   let _selBody = null;
   let _curTab = 'overview';
@@ -204,7 +206,7 @@ const MilkyWayExplorer = (function () {
   function _buildScene(container) {
     const viewport = container.querySelector('#gx-viewport');
     const W = viewport.clientWidth || 800, H = viewport.clientHeight || 600;
-    _markers = [];
+    _markers = []; _spinLayers = []; _coreSprites = [];
 
     _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     _renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -216,23 +218,32 @@ const MilkyWayExplorer = (function () {
     _scene.background = new THREE.Color(0x03040a);
 
     /* Distant background starfield. */
-    const bgN = 4000, bgPos = new Float32Array(bgN * 3);
+    const bgN = 6000, bgPos = new Float32Array(bgN * 3), bgCol = new Float32Array(bgN * 3);
+    const sc = new THREE.Color();
     for (let i = 0; i < bgN; i++) {
       const r = 700 + Math.random() * 800, a = Math.random() * Math.PI * 2, e = (Math.random() - 0.5) * Math.PI;
       bgPos[i * 3]     = Math.cos(a) * Math.cos(e) * r;
       bgPos[i * 3 + 1] = Math.sin(e) * r;
       bgPos[i * 3 + 2] = Math.sin(a) * Math.cos(e) * r;
+      /* faint colour scatter: mostly white, a few warm/cool stars. */
+      const h = Math.random() < 0.85 ? 0 : (Math.random() < 0.5 ? 0.08 : 0.6);
+      sc.setHSL(h, h ? 0.5 : 0, 0.7 + Math.random() * 0.3);
+      bgCol[i * 3] = sc.r; bgCol[i * 3 + 1] = sc.g; bgCol[i * 3 + 2] = sc.b;
     }
     const bgGeo = new THREE.BufferGeometry();
     bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
-    _scene.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, sizeAttenuation: false, transparent: true, opacity: 0.7 })));
+    bgGeo.setAttribute('color', new THREE.BufferAttribute(bgCol, 3));
+    _scene.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({ map: _glowTexture(), size: 2.2, sizeAttenuation: true, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false })));
 
     _scene.add(new THREE.AmbientLight(0xffffff, 1.0));
 
     _camera = new THREE.PerspectiveCamera(55, W / H, 0.5, 5000);
     _updateCamera();
 
+    _buildGalaxyHaze();
     _buildGalaxyDisc();
+    _buildArmDust();
+    _buildHIIRegions();
     _buildCoreGlow();
     _placeMarkers();
 
@@ -246,52 +257,157 @@ const MilkyWayExplorer = (function () {
     }).observe(viewport);
   }
 
-  /* Procedural barred-spiral: 4 logarithmic arms + a central bulge, coloured
-     from a warm core to blue-white outer arms, with a thinning vertical disc. */
+  /* Gaussian-ish random in [-1,1] (sum of uniforms) — gives arms a soft, dense
+     centre line that fades outward, rather than a uniform fuzzy band. */
+  function _g() { return (Math.random() + Math.random() + Math.random() - 1.5) / 1.5; }
+
+  /* A soft round sprite (for nebula knots / haze), cached per-colour-less use. */
+  function _sprite(color, scale, opacity, blend) {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: _glowTexture(), color, transparent: true, opacity,
+      blending: blend == null ? THREE.AdditiveBlending : blend, depthWrite: false,
+    }));
+    sp.scale.setScalar(scale);
+    return sp;
+  }
+
+  /* Procedural barred-spiral. A dense bulge, a central bar, and two main +
+     two secondary logarithmic arms drawn as tight log spirals with a soft
+     Gaussian cross-section. Two star layers (fine haze + sparse bright stars)
+     give the disc depth; colours run warm-core → blue-white outer arms. */
   function _buildGalaxyDisc() {
-    const ARMS = 4, N = 22000;
-    const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
-    const cCore = new THREE.Color('#ffdfa6'), cMid = new THREE.Color('#ffd0b0'), cEdge = new THREE.Color('#9fc4ff');
+    const cCore = new THREE.Color('#fff0c8'), cMid = new THREE.Color('#ffd2a0'),
+          cArm = new THREE.Color('#bcd2ff'), cEdge = new THREE.Color('#8fb4ff');
     const tmp = new THREE.Color();
-    for (let i = 0; i < N; i++) {
-      const bulge = i < N * 0.22;                          /* ~22% in the bulge */
-      let r, ang, t;
-      if (bulge) {
-        r = Math.pow(Math.random(), 1.8) * GAL_R * 0.28;
-        ang = Math.random() * Math.PI * 2;
-        t = r / GAL_R;
-      } else {
-        t = Math.random();
-        r = 18 + t * (GAL_R - 18);
-        const arm = (i % ARMS) * (Math.PI * 2 / ARMS);
-        const swirl = r * 0.022;                           /* arm winding */
-        const scatter = (Math.random() - 0.5) * (0.45 - t * 0.28);
-        ang = arm + swirl + scatter;
+    /* main arms get more stars; secondaries are fainter. */
+    const ARMS = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5];
+    const ARM_W = [0.34, 0.34, 0.5, 0.5];   /* angular half-width of each arm */
+    const WIND = 2.9;                         /* spiral tightness (b in r=e^(bθ)) */
+
+    function fill(geo, N, sizeBias, brightness) {
+      const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        let r, ang, t;
+        const roll = Math.random();
+        if (roll < 0.20) {
+          /* Central bulge (slightly flattened, spheroidal). */
+          r = Math.pow(Math.random(), 2.0) * GAL_R * 0.26;
+          ang = Math.random() * Math.PI * 2; t = r / GAL_R;
+        } else if (roll < 0.30) {
+          /* Central bar across the bulge. */
+          const along = (Math.random() - 0.5) * GAL_R * 0.5;
+          const wide = _g() * GAL_R * 0.06;
+          const barA = 0.5;                    /* bar position angle */
+          r = Math.hypot(along, wide);
+          ang = Math.atan2(wide, along) + barA; t = r / GAL_R;
+        } else {
+          /* Spiral arm. */
+          const ai = i % ARMS.length;
+          t = Math.pow(Math.random(), 0.85);
+          r = 16 + t * (GAL_R - 16);
+          const base = ARMS[ai] + Math.log(r / 16) * WIND / 2.9;
+          ang = base + _g() * ARM_W[ai] * (1 - t * 0.45);
+        }
+        const thick = (roll < 0.20 ? 16 : 5.5) * (1 - t * 0.7);
+        pos[i * 3]     = Math.cos(ang) * r;
+        pos[i * 3 + 1] = _g() * thick;
+        pos[i * 3 + 2] = Math.sin(ang) * r;
+        /* Colour by radius, with occasional warmer/cooler stars. */
+        if (t < 0.18) tmp.copy(cCore);
+        else if (t < 0.45) tmp.copy(cMid).lerp(cArm, (t - 0.18) / 0.27);
+        else tmp.copy(cArm).lerp(cEdge, Math.min(1, (t - 0.45) / 0.55));
+        const tw = (0.6 + Math.random() * 0.4) * brightness;
+        col[i * 3] = tmp.r * tw; col[i * 3 + 1] = tmp.g * tw; col[i * 3 + 2] = tmp.b * tw;
       }
-      const thick = (bulge ? 14 : 5) * (1 - t * 0.7);
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    }
+
+    /* Layer 1 — dense fine haze (the bulk of the disc). */
+    const g1 = new THREE.BufferGeometry(); fill(g1, 60000, 0, 0.85);
+    _galaxyPoints = new THREE.Points(g1, new THREE.PointsMaterial({
+      size: 1.1, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
+      transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false }));
+    _scene.add(_galaxyPoints); _spinLayers.push(_galaxyPoints);
+
+    /* Layer 2 — sparse bright resolved stars (adds sparkle + depth). */
+    const g2 = new THREE.BufferGeometry(); fill(g2, 9000, 0, 1.25);
+    const bright = new THREE.Points(g2, new THREE.PointsMaterial({
+      size: 2.6, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
+      transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+    _scene.add(bright); _spinLayers.push(bright);
+  }
+
+  /* Reddish-brown dust threaded between the arms — subtle additive tint that
+     reads as the galaxy's dust lanes against the dark background. */
+  function _buildArmDust() {
+    const N = 9000, pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+    const ARMS = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5];
+    const cDust = new THREE.Color('#7a4a36');
+    for (let i = 0; i < N; i++) {
+      const ai = i % ARMS.length;
+      const t = Math.pow(Math.random(), 0.8);
+      const r = 22 + t * (GAL_R - 22);
+      /* offset slightly inward of the bright arm → trailing dust lane. */
+      const ang = ARMS[ai] + Math.log(r / 16) * 1.0 - 0.16 + _g() * 0.22;
       pos[i * 3]     = Math.cos(ang) * r;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * thick;
+      pos[i * 3 + 1] = _g() * 4;
       pos[i * 3 + 2] = Math.sin(ang) * r;
-      tmp.copy(t < 0.35 ? cCore : cMid).lerp(cEdge, Math.min(1, t));
-      const tw = 0.7 + Math.random() * 0.3;                /* subtle brightness twinkle */
-      col[i * 3] = tmp.r * tw; col[i * 3 + 1] = tmp.g * tw; col[i * 3 + 2] = tmp.b * tw;
+      const k = 0.5 + Math.random() * 0.5;
+      col[i * 3] = cDust.r * k; col[i * 3 + 1] = cDust.g * k; col[i * 3 + 2] = cDust.b * k;
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const mat = new THREE.PointsMaterial({ size: 1.5, sizeAttenuation: true, vertexColors: true, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
-    _galaxyPoints = new THREE.Points(geo, mat);
-    _scene.add(_galaxyPoints);
+    const dust = new THREE.Points(geo, new THREE.PointsMaterial({
+      size: 3.2, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
+      transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending, depthWrite: false }));
+    _scene.add(dust); _spinLayers.push(dust);
   }
 
-  /* Bright additive core glow (Sagittarius A* region) — also clickable. */
+  /* Glowing star-forming regions (HII) scattered along the arms — pink/teal
+     additive blobs that give the spiral a vivid, premium look. */
+  function _buildHIIRegions() {
+    const group = new THREE.Group();
+    const cols = ['#ff7eb6', '#ff9ecb', '#7fe3ff', '#b59bff', '#ffd27f'];
+    const ARMS = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5];
+    for (let i = 0; i < 60; i++) {
+      const ai = i % ARMS.length;
+      const t = 0.2 + Math.random() * 0.75;
+      const r = 16 + t * (GAL_R - 16);
+      const ang = ARMS[ai] + Math.log(r / 16) * 1.0 + (Math.random() - 0.5) * 0.3;
+      const knot = _sprite(new THREE.Color(cols[i % cols.length]), 6 + Math.random() * 10, 0.55 + Math.random() * 0.3);
+      knot.position.set(Math.cos(ang) * r, _g() * 4, Math.sin(ang) * r);
+      group.add(knot);
+    }
+    _scene.add(group); _spinLayers.push(group);
+  }
+
+  /* A broad, faint diffuse halo behind the disc so the galaxy glows. */
+  function _buildGalaxyHaze() {
+    const haze = _sprite(new THREE.Color('#5566aa'), GAL_R * 3.4, 0.10);
+    _scene.add(haze);
+    const warm = _sprite(new THREE.Color('#ffcaa0'), GAL_R * 1.5, 0.16);
+    _scene.add(warm);
+  }
+
+  /* Layered core glow (Sagittarius A* region): a tiny brilliant centre, a warm
+     mid halo and a wide soft bloom — all gently pulsing. Also clickable. */
   function _buildCoreGlow() {
-    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xffe6b0, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glow.scale.setScalar(90);
-    _scene.add(glow);
-    _coreGlow = glow;
+    _coreSprites = [];
+    const layers = [
+      { color: 0xffffff, scale: 26, opacity: 0.95 },
+      { color: 0xffe6b0, scale: 64, opacity: 0.8 },
+      { color: 0xffc878, scale: 130, opacity: 0.42 },
+    ];
+    layers.forEach(l => {
+      const sp = _sprite(new THREE.Color(l.color), l.scale, l.opacity);
+      sp.userData.base = l.scale;
+      _scene.add(sp); _coreSprites.push(sp);
+    });
+    _coreGlow = _coreSprites[1];
     /* Invisible-ish hit sphere at the core for clicking the galaxy itself. */
-    const hit = new THREE.Mesh(new THREE.SphereGeometry(14, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffe6b0 }));
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(14, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffe6b0, transparent: true, opacity: 0 }));
     _scene.add(hit);
     _markers.push({ mesh: hit, data: GALAXY, type: 'core', pos: new THREE.Vector3(0, 0, 0) });
   }
@@ -356,11 +472,9 @@ const MilkyWayExplorer = (function () {
       _raf = requestAnimationFrame(tick);
       if (!_renderer || !_scene || !_camera) return;
       const spin = _rotate && !_reducedMotion();
-      if (_galaxyPoints && spin) _galaxyPoints.rotation.y += 0.0004;
-      if (_coreGlow) {
-        const pulse = 1 + Math.sin(performance.now() * 0.0012) * 0.05;
-        _coreGlow.scale.setScalar(90 * pulse);
-      }
+      if (spin) _spinLayers.forEach(l => { l.rotation.y += 0.0004; });
+      const pulse = 1 + Math.sin(performance.now() * 0.0012) * 0.06;
+      _coreSprites.forEach(sp => sp.scale.setScalar(sp.userData.base * pulse));
       /* Idle camera drift while nothing is selected. */
       if (_selBody === null && !_dragging && spin) _camThetaT += 0.0004;
 

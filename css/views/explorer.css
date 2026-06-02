@@ -2222,13 +2222,54 @@ body.light .pt-capital-label .pt-cap-dot {
 }
 .ex-rt-leg { display: inline-flex; align-items: center; gap: .25rem; font-size: .66rem; color: var(--muted); }
 
-/* Hover tooltip for events */
+/* Hover tooltip for events (rich, multi-line) */
 .ex-rt-tooltip {
-  position: absolute; z-index: 12; pointer-events: none;
-  background: rgba(8,12,20,.92); border: 1px solid var(--border2); border-radius: 6px;
-  padding: .3rem .55rem; font-size: .72rem; color: var(--text); white-space: nowrap;
-  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+  position: absolute; z-index: 12; pointer-events: none; max-width: 230px;
+  background: rgba(8,12,20,.94); border: 1px solid var(--border2); border-radius: 8px;
+  padding: .4rem .6rem; font-size: .7rem; color: var(--text);
+  box-shadow: 0 6px 20px rgba(0,0,0,.55); display: flex; flex-direction: column; gap: .12rem;
 }
+.ex-rt-tip-title { font-weight: 700; font-size: .74rem; margin-bottom: .1rem; }
+.ex-rt-tip-row { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex-rt-tip-row b { color: var(--text); font-weight: 600; }
+.ex-rt-tip-hint { margin-top: .15rem; font-size: .62rem; color: rgba(var(--accent-rgb),.95); }
+
+/* Pinned event detail card (click an event) */
+.ex-rt-detail {
+  position: absolute; z-index: 13; bottom: 1.6rem; right: .75rem; width: min(300px, 80vw);
+  background: rgba(10,15,26,.96); backdrop-filter: blur(12px);
+  border: 1px solid var(--border2); border-radius: 12px; padding: .85rem .9rem .9rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,.6);
+}
+.ex-rt-card-close {
+  position: absolute; top: .5rem; right: .55rem; width: 1.5rem; height: 1.5rem;
+  display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.06); border: 1px solid var(--border2); color: var(--muted);
+  font-size: .72rem; transition: all var(--ease);
+}
+.ex-rt-card-close:hover { color: var(--text); background: rgba(255,255,255,.12); }
+.ex-rt-card-title { font-weight: 700; font-size: .92rem; color: var(--text); padding-right: 1.6rem; margin-bottom: .55rem; }
+.ex-rt-card-rows { display: flex; flex-direction: column; gap: .3rem; }
+.ex-rt-card-row { display: flex; justify-content: space-between; gap: 1rem; font-size: .76rem; }
+.ex-rt-card-row span:first-child { color: var(--muted); flex-shrink: 0; }
+.ex-rt-card-row span:last-child { color: var(--text); text-align: right; }
+.ex-rt-card-link {
+  display: inline-block; margin-top: .7rem; font-size: .76rem; font-weight: 600;
+  color: rgb(var(--accent-rgb)); text-decoration: none;
+}
+.ex-rt-card-link:hover { text-decoration: underline; }
+
+/* Filters popover */
+.ex-rt-filters {
+  position: absolute; top: 3.4rem; right: .75rem; z-index: 11; width: min(260px, 80vw);
+  display: flex; flex-direction: column; gap: .7rem;
+  background: rgba(10,15,26,.96); backdrop-filter: blur(12px);
+  border: 1px solid var(--border2); border-radius: 12px; padding: .85rem .9rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,.6);
+}
+.ex-rt-filter-row { display: flex; flex-direction: column; gap: .35rem; font-size: .72rem; color: var(--muted); }
+.ex-rt-filter-row b { color: var(--text); }
+.ex-rt-filter-row input[type=range] { width: 100%; accent-color: rgb(var(--accent-rgb)); cursor: pointer; }
 
 @media (max-width: 640px) {
   .ex-rt-layers { max-width: 100%; right: .75rem; top: .6rem; }
@@ -2236,4 +2277,6 @@ body.light .pt-capital-label .pt-cap-dot {
   .ex-rt-chip { padding: .4rem .5rem; }
   .ex-rt-time { top: auto; bottom: 2.6rem; right: .6rem; left: .6rem; justify-content: center; flex-wrap: wrap; }
   .ex-rt-legend { display: none; }
+  .ex-rt-filters { top: auto; bottom: 6rem; left: .6rem; right: .6rem; width: auto; }
+  .ex-rt-detail { bottom: 6rem; left: .6rem; right: .6rem; width: auto; }
 }

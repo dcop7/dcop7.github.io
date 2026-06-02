@@ -15,19 +15,34 @@ const RealtimeEarth = (function () {
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
 
-  const TEX_DAY   = 'assets/planets/earth_atmos_2048.jpg';
-  const TEX_NIGHT = 'assets/planets/earth-night.jpg';
+  const TEX_DAY   = 'assets/planets/earth_atmos_2048.jpg';   /* local fallback */
+  const TEX_NIGHT = 'assets/planets/earth-night.jpg';        /* local fallback */
 
-  /* NASA GIBS WMS — one equirectangular image per date (EPSG:4326, 2:1). */
+  /* NASA GIBS WMS — one equirectangular image per date (EPSG:4326, 2:1).
+     `px` = output width (height = px/2). Large for the static base imagery,
+     smaller for the date-aware overlays that change often. */
   const GIBS = 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi';
-  function _gibsUrl(layer, date, fmt) {
+  function _gibsUrl(layer, date, fmt, px) {
+    const W = px || 2048;
     const p = new URLSearchParams({
       SERVICE: 'WMS', REQUEST: 'GetMap', VERSION: '1.3.0', LAYERS: layer,
-      CRS: 'EPSG:4326', BBOX: '-90,-180,90,180', WIDTH: '2048', HEIGHT: '1024',
+      CRS: 'EPSG:4326', BBOX: '-90,-180,90,180', WIDTH: String(W), HEIGHT: String(W / 2),
       FORMAT: fmt || 'image/jpeg', TIME: date,
     });
     return `${GIBS}?${p.toString()}`;
   }
+
+  /* High-res, cloud-free base imagery (NASA "Blue Marble: Next Generation",
+     a static monthly composite) and night-lights (VIIRS "Black Marble").
+     Far sharper than the bundled 2048px textures; both fall back gracefully. */
+  /* 4096 (height 2048) is sharp yet within the 4096 max-texture limit of most
+     mobile GPUs; 8192 would fail to upload there. */
+  const TEX_DAY_HI   = _gibsUrl('BlueMarble_NextGeneration', '2004-08-01', 'image/jpeg', 4096);
+  const TEX_NIGHT_HI = _gibsUrl('VIIRS_Black_Marble', '2016-01-01', 'image/png', 2048);
+
+  /* Max anisotropy keeps the surface crisp at grazing angles (the horizon). */
+  let _maxAniso = 8;
+  function _aniso(tex) { if (tex) { tex.anisotropy = _maxAniso; tex.needsUpdate = true; } return tex; }
 
   /* ── Layers (order = toggle-bar order). `on` = default visibility. ── */
   const LAYERS = [
@@ -49,8 +64,13 @@ const RealtimeEarth = (function () {
   let _glowTex = null;
   let _shaderMat = null, _matUniforms = null, _sunTimer = null;
   let _volcanoes = [], _fires = [], _storms = [], _planes = [];
-  let _quakeData = [];          /* {lat,lng,mag,tsunami,place,time} */
+  let _quakeData = [];          /* {lat,lng,mag,tsunami,place,time,depth,url} */
+  let _quakeMarks = [];         /* invisible hit spheres for quake hover/click */
+  let _minMag = 2.5;            /* earthquake magnitude filter */
+  let _fireLimit = 40;          /* max wildfires drawn (density filter) */
+  let _pinned = null;           /* currently pinned detail card meta */
   let _tempMesh = null;
+  let _baseDayTex = null;       /* cached hi-res Blue Marble (cloud-free base) */
   let _planeTimer = null;
   let _loadSeq = 0;             /* guards against out-of-order async loads */
 
@@ -115,6 +135,62 @@ const RealtimeEarth = (function () {
     if (_date) return _date;
     const d = new Date(); d.setUTCDate(d.getUTCDate() - 1); return _ymd(d);
   }
+  /* Human-friendly absolute + relative time from an epoch-ms or ISO string. */
+  function _fmtTime(t) {
+    if (t == null) return '';
+    const d = typeof t === 'number' ? new Date(t) : new Date(t);
+    if (isNaN(d)) return String(t);
+    const abs = d.toLocaleString('pt-PT', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const diff = Date.now() - d.getTime();
+    if (diff < 0 || diff > 1000 * 3600 * 24 * 400) return abs;
+    const h = diff / 3600000;
+    const rel = h < 1 ? `há ${Math.max(1, Math.round(diff / 60000))} min`
+      : h < 48 ? `há ${Math.round(h)} h`
+      : `há ${Math.round(h / 24)} dias`;
+    return `${abs} · ${rel}`;
+  }
+  function _esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+  /* Build a uniform event-description object the tooltip + detail card share. */
+  function _quakeMeta(q) {
+    const sev = q.mag >= 6 ? 'forte' : q.mag >= 4.5 ? 'moderado' : 'ligeiro';
+    return {
+      kind: 'quake', icon: q.tsunami ? '🌊' : '💢',
+      title: `${q.tsunami ? 'Sismo (alerta tsunami)' : 'Sismo'} · M ${q.mag.toFixed(1)}`,
+      rows: [
+        ['Magnitude', `${q.mag.toFixed(1)} (${sev})`],
+        ['Local', q.place || '—'],
+        q.depth != null && isFinite(q.depth) ? ['Profundidade', `${Math.round(q.depth)} km`] : null,
+        ['Quando', _fmtTime(q.time)],
+      ].filter(Boolean),
+      url: q.url, urlLabel: 'Detalhes USGS',
+    };
+  }
+  function _eonetMeta(d, kind) {
+    const map = { volcano: ['🌋', 'Vulcão'], fire: ['🔥', 'Incêndio'], storm: ['🌀', 'Tempestade'] };
+    const [icon, type] = map[kind] || ['📍', 'Evento'];
+    return {
+      kind, icon, title: `${type} · ${d.title || type}`,
+      rows: [
+        ['Tipo', type],
+        d.mag != null ? ['Intensidade', `${d.mag} ${d.magUnit || ''}`.trim()] : null,
+        d.date ? ['Atualizado', _fmtTime(d.date)] : null,
+        ['Coords', `${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°`],
+      ].filter(Boolean),
+      url: d.url, urlLabel: 'Mais informação (NASA EONET)',
+    };
+  }
+  function _planeMeta(d) {
+    return {
+      kind: 'plane', icon: '✈️', title: `Voo ${d.call || '—'}`,
+      rows: [
+        d.country ? ['País', d.country] : null,
+        d.vel ? ['Velocidade', `${Math.round(d.vel * 3.6)} km/h`] : null,
+        d.alt ? ['Altitude', `${Math.round(d.alt)} m`] : null,
+      ].filter(Boolean),
+      url: '', urlLabel: '',
+    };
+  }
   function _glowTexture() {
     if (_glowTex) return _glowTex;
     const s = 64, cv = document.createElement('canvas'); cv.width = cv.height = s;
@@ -146,11 +222,24 @@ const RealtimeEarth = (function () {
         <div class="ex-rt-time" id="rt-time">
           <button class="ex-rt-now on" id="rt-now">● Agora</button>
           <input type="date" class="ex-rt-date" id="rt-date" max="${_ymd(new Date())}"/>
+          <button class="ex-rt-now" id="rt-filters-btn" title="Filtros">⚙ Filtros</button>
           <span class="ex-rt-status" id="rt-status"></span>
+        </div>
+
+        <div class="ex-rt-filters" id="rt-filters" hidden>
+          <label class="ex-rt-filter-row">
+            <span>💢 Sismos · magnitude ≥ <b id="rt-mag-val">${_minMag.toFixed(1)}</b></span>
+            <input type="range" id="rt-mag" min="2.5" max="7" step="0.5" value="${_minMag}"/>
+          </label>
+          <label class="ex-rt-filter-row">
+            <span>🔥 Incêndios · máx. <b id="rt-fire-val">${_fireLimit}</b></span>
+            <input type="range" id="rt-fire" min="0" max="160" step="10" value="${_fireLimit}"/>
+          </label>
         </div>
 
         <div class="ex-rt-legend" id="rt-legend"></div>
         <div class="ex-rt-tooltip" id="rt-tooltip" hidden></div>
+        <div class="ex-rt-detail" id="rt-detail" hidden></div>
         <div class="ex-solar-credit">Dados: USGS · NASA EONET · NASA GIBS · OpenSky Network</div>
       </div>`;
 
@@ -203,11 +292,28 @@ const RealtimeEarth = (function () {
       .ringPropagationSpeed(d => d.speed).ringRepeatPeriod(d => d.repeat)
       .ringAltitude(0.008);
 
-    /* Day/night shader material on the globe surface. */
-    const tl = new THREE.TextureLoader();
+    /* Know the GPU's max anisotropy so textures stay sharp near the horizon. */
+    try { _maxAniso = _globe.renderer().capabilities.getMaxAnisotropy() || 8; } catch (_) {}
+
+    /* Day/night shader material on the globe surface. Start from the bundled
+       textures (instant), then swap in the high-res GIBS imagery once loaded. */
+    const tl = new THREE.TextureLoader(); tl.setCrossOrigin('anonymous');
     const day = tl.load(TEX_DAY, () => {});
     const night = tl.load(TEX_NIGHT, () => {});
     if (THREE.SRGBColorSpace) { day.colorSpace = THREE.SRGBColorSpace; night.colorSpace = THREE.SRGBColorSpace; }
+    _aniso(day); _aniso(night);
+    /* High-res upgrades (only while not showing the cloud layer for the day). */
+    tl.load(TEX_DAY_HI, tex => {
+      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      _aniso(tex);
+      if (_matUniforms && !_on.clouds) _matUniforms.dayTexture.value = tex;
+      _baseDayTex = tex;
+    }, undefined, () => {});
+    tl.load(TEX_NIGHT_HI, tex => {
+      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      _aniso(tex);
+      if (_matUniforms) _matUniforms.nightTexture.value = tex;
+    }, undefined, () => {});
     const sp = _sunPos();
     _matUniforms = {
       dayTexture: { value: day }, nightTexture: { value: night },
@@ -262,7 +368,7 @@ const RealtimeEarth = (function () {
     sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     const smoke = new THREE.Points(sg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xb0a89c, size: 1.6, transparent: true, opacity: 0.5, depthWrite: false }));
     g.add(smoke);
-    g.userData = { smoke, prog, N, label: '🌋 ' + (d.title || 'Vulcão') };
+    g.userData = { smoke, prog, N, meta: _eonetMeta(d, 'volcano') };
     _orient(g, d.lat, d.lng, 0, 'y');
     _scene().add(g);
     _volcanoes.push(g);
@@ -272,12 +378,12 @@ const RealtimeEarth = (function () {
   function _buildFire(d) {
     const g = new THREE.Group();
     const cols = [0xff3000, 0xff6a00, 0xffb000];
-    g.userData = { sprites: [], label: '🔥 ' + (d.title || 'Incêndio') };
-    for (let i = 0; i < 4; i++) {
-      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: cols[i % cols.length], transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false }));
-      const base = 2 + Math.random() * 1.5;
+    g.userData = { sprites: [], meta: _eonetMeta(d, 'fire') };
+    for (let i = 0; i < 3; i++) {
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: cols[i % cols.length], transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const base = 1.1 + Math.random() * 0.9;
       sp.scale.setScalar(base);
-      sp.position.set((Math.random() - 0.5) * 1.2, 0.5 + Math.random() * 1.2, (Math.random() - 0.5) * 1.2);
+      sp.position.set((Math.random() - 0.5) * 0.7, 0.35 + Math.random() * 0.8, (Math.random() - 0.5) * 0.7);
       sp.userData = { base, ph: Math.random() * Math.PI * 2 };
       g.add(sp); g.userData.sprites.push(sp);
     }
@@ -311,7 +417,7 @@ const RealtimeEarth = (function () {
       new THREE.PlaneGeometry(14, 14),
       new THREE.MeshBasicMaterial({ map: _spiralTexture(), transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide }));
     g.add(disc);
-    g.userData = { disc, label: '🌀 ' + (d.title || 'Tempestade') };
+    g.userData = { disc, meta: _eonetMeta(d, 'storm') };
     _orient(g, d.lat, d.lng, 0.01, 'z');
     _scene().add(g);
     _storms.push(g);
@@ -326,7 +432,7 @@ const RealtimeEarth = (function () {
     _orient(mesh, d.lat, d.lng, alt, 'y');
     /* Rotate around the local outward axis to face the heading. */
     mesh.rotateY((d.track || 0) * Math.PI / 180);
-    mesh.userData = { label: '✈️ ' + (d.call || 'Voo') + (d.country ? ' · ' + d.country : ''), lat: d.lat, lng: d.lng, track: d.track || 0, vel: d.vel || 0, alt };
+    mesh.userData = { meta: _planeMeta(d), lat: d.lat, lng: d.lng, track: d.track || 0, vel: d.vel || 0, alt };
     _scene().add(mesh);
     _planes.push(mesh);
   }
@@ -348,18 +454,40 @@ const RealtimeEarth = (function () {
     if (!_globe) return;
     const data = [];
     const showQ = _on.quakes, showT = _on.tsunami;
+    const shown = [];
     _quakeData.forEach(q => {
+      if (q.mag < _minMag) return;                 /* magnitude filter */
       const isT = q.tsunami;
       if (isT && showT) {
         data.push({ lat: q.lat, lng: q.lng, maxR: 7 + q.mag, speed: 4, repeat: 700,
           color: t => `rgba(56,189,248,${1 - t})` });
+        shown.push(q);
       } else if (showQ) {
         const c = q.mag >= 6 ? [255, 80, 80] : q.mag >= 4.5 ? [255, 160, 60] : [255, 220, 90];
         data.push({ lat: q.lat, lng: q.lng, maxR: Math.max(2, q.mag * 1.1), speed: 2 + q.mag * 0.2, repeat: 900,
           color: t => `rgba(${c[0]},${c[1]},${c[2]},${1 - t})` });
+        shown.push(q);
       }
     });
     _globe.ringsData(data);
+    _buildQuakeMarks(shown);
+  }
+
+  /* Invisible hit spheres at each shown quake so they can be hovered/clicked
+     (the propagating rings themselves are not raycast targets). */
+  function _buildQuakeMarks(quakes) {
+    _clear(_quakeMarks);
+    if (!_globe) return;
+    quakes.forEach(q => {
+      const r = Math.max(1.2, q.mag * 0.9);
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(r, 8, 8),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+      _orient(m, q.lat, q.lng, 0.004, 'y');
+      m.userData = { meta: _quakeMeta(q) };
+      _scene().add(m);
+      _quakeMarks.push(m);
+    });
   }
 
   /* ═════════════════════════════ DATA LOADERS ══════════════════════ */
@@ -378,8 +506,10 @@ const RealtimeEarth = (function () {
       if (seq !== _loadSeq) return;
       _quakeData = (j.features || []).map(f => ({
         lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0],
+        depth: f.geometry.coordinates[2],
         mag: f.properties.mag || 0, tsunami: f.properties.tsunami === 1,
         place: f.properties.place || '', time: f.properties.time,
+        url: f.properties.url || '',
       })).filter(q => isFinite(q.lat) && isFinite(q.lng));
     } catch (e) { if (seq === _loadSeq) _quakeData = []; }
     if (seq === _loadSeq) _applyRings();
@@ -402,7 +532,14 @@ const RealtimeEarth = (function () {
         const geom = (ev.geometry || []).filter(g => Array.isArray(g.coordinates) && g.coordinates.length >= 2);
         if (!geom.length) return null;
         const last = geom[geom.length - 1];       /* most recent track point */
-        return { lng: last.coordinates[0], lat: last.coordinates[1], title: ev.title };
+        const src = (ev.sources || [])[0] || {};
+        return {
+          lng: last.coordinates[0], lat: last.coordinates[1], title: ev.title,
+          date: last.date || null,
+          mag: last.magnitudeValue != null ? last.magnitudeValue : null,
+          magUnit: last.magnitudeUnit || '',
+          url: src.url || `https://eonet.gsfc.nasa.gov/api/v3/events/${ev.id}`,
+        };
       }).filter(Boolean).filter(e => isFinite(e.lat) && isFinite(e.lng));
     } catch (e) { return []; }
   }
@@ -427,13 +564,17 @@ const RealtimeEarth = (function () {
   /* ═════════════════════════════ GIBS IMAGERY ══════════════════════ */
   function _applyBaseTexture() {
     if (!_matUniforms) return;
-    const date = _imageryDate();
-    const url = _on.clouds
-      ? _gibsUrl('MODIS_Terra_CorrectedReflectance_TrueColor', date, 'image/jpeg')
-      : TEX_DAY;
+    /* No clouds → use the cached hi-res Blue Marble (or local fallback). */
+    if (!_on.clouds) {
+      if (_baseDayTex) _matUniforms.dayTexture.value = _baseDayTex;
+      return;
+    }
+    /* Clouds on → date-aware true-colour MODIS mosaic at high resolution. */
+    const url = _gibsUrl('MODIS_Terra_CorrectedReflectance_TrueColor', _imageryDate(), 'image/jpeg', 4096);
     const tl = new THREE.TextureLoader(); tl.setCrossOrigin('anonymous');
     tl.load(url, tex => {
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      _aniso(tex);
       if (_matUniforms) { _matUniforms.dayTexture.value = tex; }
     }, undefined, () => {/* keep current on failure */});
   }
@@ -447,9 +588,9 @@ const RealtimeEarth = (function () {
     _tempMesh = new THREE.Mesh(geo, mat);
     _scene().add(_tempMesh);
     const tl = new THREE.TextureLoader(); tl.setCrossOrigin('anonymous');
-    tl.load(_gibsUrl('MODIS_Terra_Land_Surface_Temp_Day', _imageryDate(), 'image/png'), tex => {
+    tl.load(_gibsUrl('MODIS_Terra_Land_Surface_Temp_Day', _imageryDate(), 'image/png', 2048), tex => {
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-      mat.map = tex; mat.needsUpdate = true;
+      _aniso(tex); mat.map = tex; mat.needsUpdate = true;
     }, undefined, () => {});
   }
 
@@ -467,7 +608,7 @@ const RealtimeEarth = (function () {
     _clear(_volcanoes); _clear(_fires); _clear(_storms);
     const jobs = [];
     if (_on.volcanoes) jobs.push(_loadEonet('volcanoes', seq).then(list => { if (seq === _loadSeq) list.forEach(_buildVolcano); }));
-    if (_on.fires)     jobs.push(_loadEonet('wildfires', seq).then(list => { if (seq === _loadSeq) list.slice(0, 160).forEach(_buildFire); }));
+    if (_on.fires)     jobs.push(_loadEonet('wildfires', seq).then(list => { if (seq === _loadSeq) list.slice(0, _fireLimit).forEach(_buildFire); }));
     if (_on.storms)    jobs.push(_loadEonet('severeStorms', seq).then(list => { if (seq === _loadSeq) list.forEach(_buildStorm); }));
     await Promise.all(jobs);
 
@@ -478,7 +619,7 @@ const RealtimeEarth = (function () {
 
   function _statusText() {
     const bits = [];
-    if (_on.quakes || _on.tsunami) bits.push(`${_quakeData.length} sismos`);
+    if (_on.quakes || _on.tsunami) bits.push(`${_quakeData.filter(q => q.mag >= _minMag).length} sismos`);
     if (_on.volcanoes) bits.push(`${_volcanoes.length} vulcões`);
     if (_on.fires) bits.push(`${_fires.length} incêndios`);
     if (_on.storms) bits.push(`${_storms.length} tempestades`);
@@ -541,29 +682,59 @@ const RealtimeEarth = (function () {
     if (_on.planes && !_date) _planeTimer = setInterval(_loadPlanes, 20000);
   }
 
-  /* ═════════════════════════════ HOVER ═════════════════════════════ */
+  /* ═════════════════════════════ HOVER / PICK ══════════════════════ */
+  function _pickMeta(e, el) {
+    if (!_globe) return null;
+    const cam = _globe.camera(), rect = el.getBoundingClientRect();
+    const m = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+    const ray = new THREE.Raycaster(); ray.setFromCamera(m, cam);
+    const targets = [..._quakeMarks, ..._volcanoes, ..._fires, ..._storms, ..._planes];
+    const hit = ray.intersectObjects(targets, true)[0];
+    if (!hit) return null;
+    let o = hit.object; while (o && !o.userData?.meta && o.parent) o = o.parent;
+    return o?.userData?.meta || null;
+  }
+
+  function _tipHtml(meta) {
+    const rows = meta.rows.slice(0, 3).map(([k, v]) => `<span class="ex-rt-tip-row"><b>${_esc(k)}</b> ${_esc(v)}</span>`).join('');
+    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}${meta.url ? '<span class="ex-rt-tip-hint">clica para detalhes</span>' : ''}`;
+  }
+  function _cardHtml(meta) {
+    const rows = meta.rows.map(([k, v]) => `<div class="ex-rt-card-row"><span>${_esc(k)}</span><span>${_esc(v)}</span></div>`).join('');
+    const link = meta.url ? `<a class="ex-rt-card-link" href="${_esc(meta.url)}" target="_blank" rel="noopener">${_esc(meta.urlLabel || 'Mais informação')} ↗</a>` : '';
+    return `<button class="ex-rt-card-close" id="rt-card-close" title="Fechar">✕</button>
+      <div class="ex-rt-card-title">${meta.icon} ${_esc(meta.title)}</div>
+      <div class="ex-rt-card-rows">${rows}</div>${link}`;
+  }
+
   function _wireHover(el) {
     const tip = document.getElementById('rt-tooltip');
+    const card = document.getElementById('rt-detail');
     el.addEventListener('pointermove', e => {
-      if (!_globe || !tip) return;
-      const cam = _globe.camera(), rect = el.getBoundingClientRect();
-      const m = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
-      const ray = new THREE.Raycaster(); ray.setFromCamera(m, cam);
-      const targets = [..._volcanoes, ..._fires, ..._storms, ..._planes];
-      const hit = ray.intersectObjects(targets, true)[0];
-      if (hit) {
-        let o = hit.object; while (o && !o.userData?.label && o.parent) o = o.parent;
-        const label = o?.userData?.label;
-        if (label) {
-          tip.textContent = label; tip.hidden = false;
-          tip.style.left = (e.clientX - rect.left + 12) + 'px';
-          tip.style.top = (e.clientY - rect.top + 12) + 'px';
-          return;
-        }
-      }
-      tip.hidden = true;
+      if (!tip) return;
+      const meta = _pickMeta(e, el);
+      const rect = el.getBoundingClientRect();
+      if (meta) {
+        tip.innerHTML = _tipHtml(meta); tip.hidden = false;
+        const x = Math.min(e.clientX - rect.left + 14, rect.width - 240);
+        tip.style.left = Math.max(8, x) + 'px';
+        tip.style.top = (e.clientY - rect.top + 14) + 'px';
+        el.style.cursor = meta.url ? 'pointer' : '';
+      } else { tip.hidden = true; el.style.cursor = ''; }
     }, { passive: true });
     el.addEventListener('pointerleave', () => { if (tip) tip.hidden = true; });
+
+    /* Click an event → pin a detail card (with a link); click elsewhere closes it. */
+    el.addEventListener('click', e => {
+      if (!card) return;
+      const meta = _pickMeta(e, el);
+      if (meta) {
+        _pinned = meta;
+        card.innerHTML = _cardHtml(meta); card.hidden = false;
+        const close = document.getElementById('rt-card-close');
+        if (close) close.onclick = ev => { ev.stopPropagation(); card.hidden = true; _pinned = null; };
+      } else { card.hidden = true; _pinned = null; }
+    });
   }
 
   /* ═════════════════════════════ CONTROLS ══════════════════════════ */
@@ -577,6 +748,30 @@ const RealtimeEarth = (function () {
     });
     document.getElementById('rt-now')?.addEventListener('click', () => _setDate(null));
     document.getElementById('rt-date')?.addEventListener('change', e => { if (e.target.value) _setDate(e.target.value); });
+
+    /* Filters popover. */
+    const fbtn = document.getElementById('rt-filters-btn');
+    const fpop = document.getElementById('rt-filters');
+    fbtn?.addEventListener('click', () => {
+      const open = fpop.hidden; fpop.hidden = !open; fbtn.classList.toggle('on', open);
+    });
+    const magIn = document.getElementById('rt-mag'), magVal = document.getElementById('rt-mag-val');
+    magIn?.addEventListener('input', e => {
+      _minMag = parseFloat(e.target.value); if (magVal) magVal.textContent = _minMag.toFixed(1);
+      _applyRings(); _status(_statusText());
+    });
+    const fireIn = document.getElementById('rt-fire'), fireVal = document.getElementById('rt-fire-val');
+    let _fireT = null;
+    fireIn?.addEventListener('input', e => {
+      _fireLimit = parseInt(e.target.value, 10); if (fireVal) fireVal.textContent = _fireLimit;
+      /* Debounce the reload — slider fires rapidly while dragging. */
+      clearTimeout(_fireT);
+      _fireT = setTimeout(() => {
+        const seq = _loadSeq; _clear(_fires);
+        if (_on.fires && _fireLimit > 0) _loadEonet('wildfires', seq).then(l => l.slice(0, _fireLimit).forEach(_buildFire)).then(() => _status(_statusText()));
+        else _status(_statusText());
+      }, 280);
+    });
   }
 
   /* Apply a single layer toggle with the cheapest update path. */
@@ -593,7 +788,7 @@ const RealtimeEarth = (function () {
     /* volcanoes / fires / storms → (re)load just that layer. */
     const seq = _loadSeq;
     if (id === 'volcanoes') { _clear(_volcanoes); if (_on.volcanoes) _loadEonet('volcanoes', seq).then(l => l.forEach(_buildVolcano)).then(() => _status(_statusText())); }
-    if (id === 'fires')     { _clear(_fires);     if (_on.fires)     _loadEonet('wildfires', seq).then(l => l.slice(0,160).forEach(_buildFire)).then(() => _status(_statusText())); }
+    if (id === 'fires')     { _clear(_fires);     if (_on.fires)     _loadEonet('wildfires', seq).then(l => l.slice(0, _fireLimit).forEach(_buildFire)).then(() => _status(_statusText())); }
     if (id === 'storms')    { _clear(_storms);    if (_on.storms)    _loadEonet('severeStorms', seq).then(l => l.forEach(_buildStorm)).then(() => _status(_statusText())); }
     _updateLegend();
   }
