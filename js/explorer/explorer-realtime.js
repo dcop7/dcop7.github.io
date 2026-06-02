@@ -67,7 +67,8 @@ const RealtimeEarth = (function () {
   let _quakeData = [];          /* {lat,lng,mag,tsunami,place,time,depth,url} */
   let _quakeMarks = [];         /* invisible hit spheres for quake hover/click */
   let _minMag = 2.5;            /* earthquake magnitude filter */
-  let _fireLimit = 40;          /* max wildfires drawn (density filter) */
+  let _recencyDays = 7;         /* show EONET events active within N days */
+  let _fireCap = 120;           /* hard safety cap on wildfire visuals */
   let _pinned = null;           /* currently pinned detail card meta */
   let _tempMesh = null;
   let _baseDayTex = null;       /* cached hi-res Blue Marble (cloud-free base) */
@@ -76,24 +77,21 @@ const RealtimeEarth = (function () {
 
   /* ── Day/night shader (after the country globe). Blends a day texture with a
      night texture by the real sun direction; `dayNight` 0 = full daylight. ── */
+  /* Day/night blend driven by a WORLD-space sun direction. Both the surface
+     normal and the sun are taken into view space (via normalMatrix / viewMatrix),
+     so the terminator is correct from any camera angle or zoom — no fragile
+     globeRotation tracking. */
   const VERT = `
-    varying vec3 vNormal; varying vec2 vUv;
-    void main(){ vNormal = normalize(normalMatrix * normal); vUv = uv;
+    varying vec3 vNormalV; varying vec2 vUv;
+    void main(){ vNormalV = normalize(normalMatrix * normal); vUv = uv;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
   const FRAG = `
-    #define PI 3.1415926538
     uniform sampler2D dayTexture; uniform sampler2D nightTexture;
-    uniform vec2 sunPosition; uniform vec2 globeRotation; uniform float dayNight;
-    varying vec3 vNormal; varying vec2 vUv;
-    float toRad(in float a){ return a*PI/180.0; }
-    vec3 p2c(in vec2 c){ float t=toRad(90.0-c.x), p=toRad(90.0-c.y);
-      return vec3(sin(p)*cos(t), cos(p), sin(p)*sin(t)); }
+    uniform vec3 sunDirection; uniform float dayNight;
+    varying vec3 vNormalV; varying vec2 vUv;
     void main(){
-      float invLon=toRad(globeRotation.x), invLat=-toRad(globeRotation.y);
-      mat3 rx=mat3(1.,0.,0., 0.,cos(invLat),-sin(invLat), 0.,sin(invLat),cos(invLat));
-      mat3 ry=mat3(cos(invLon),0.,sin(invLon), 0.,1.,0., -sin(invLon),0.,cos(invLon));
-      vec3 sun = rx*ry*p2c(sunPosition);
-      float i = dot(normalize(vNormal), normalize(sun));
+      vec3 sunV = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
+      float i = dot(normalize(vNormalV), sunV);
       vec3 day = texture2D(dayTexture, vUv).rgb;
       vec3 night = texture2D(nightTexture, vUv).rgb * 1.4;
       float blend = mix(1.0, smoothstep(-0.12, 0.18, i), dayNight);
@@ -181,7 +179,8 @@ const RealtimeEarth = (function () {
       rows: [
         ['Tipo', type],
         d.mag != null ? ['Intensidade', `${d.mag} ${d.magUnit || ''}`.trim()] : null,
-        d.date ? ['Atualizado', _fmtTime(d.date)] : null,
+        d.startMs ? ['Início', _fmtTime(d.startMs)] : null,
+        d.lastMs ? ['Última atividade', _fmtTime(d.lastMs)] : null,
         ['Coords', `${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°`],
       ].filter(Boolean),
       url: d.url, urlLabel: 'Mais informação (NASA EONET)',
@@ -240,9 +239,10 @@ const RealtimeEarth = (function () {
             <input type="range" id="rt-mag" min="2.5" max="7" step="0.5" value="${_minMag}"/>
           </label>
           <label class="ex-rt-filter-row">
-            <span>🔥 Incêndios · máx. <b id="rt-fire-val">${_fireLimit}</b></span>
-            <input type="range" id="rt-fire" min="0" max="160" step="10" value="${_fireLimit}"/>
+            <span>🌋🔥🌀 Atividade · últimos <b id="rt-days-val">${_recencyDays}</b> dias</span>
+            <input type="range" id="rt-days" min="1" max="30" step="1" value="${_recencyDays}"/>
           </label>
+          <div class="ex-rt-filter-note">Mostra só eventos ativos no período (e maiores quando mais intensos).</div>
         </div>
 
         <div class="ex-rt-legend" id="rt-legend"></div>
@@ -272,7 +272,15 @@ const RealtimeEarth = (function () {
     _reloadAll();
   }
 
-  function _updateSun() { if (_matUniforms) { const s = _sunPos(); _matUniforms.sunPosition.value.set(s.lon, s.lat); } }
+  /* World-space direction toward the Sun: the surface point under the Sun,
+     from the globe centre. Uses globe.gl's own coord mapping so it matches the
+     mesh exactly regardless of any internal globe rotation. */
+  function _updateSun() {
+    if (!_matUniforms || !_globe) return;
+    const s = _sunPos();
+    const c = _globe.getCoords(s.lat, s.lon, 0);
+    _matUniforms.sunDirection.value.set(c.x, c.y, c.z).normalize();
+  }
   function _startSunTimer() { if (!_sunTimer) { _updateSun(); _sunTimer = setInterval(_updateSun, 30000); } }
 
   function resume() {
@@ -322,17 +330,16 @@ const RealtimeEarth = (function () {
       _aniso(tex);
       if (_matUniforms) _matUniforms.nightTexture.value = tex;
     }, undefined, () => {});
-    const sp = _sunPos();
     _matUniforms = {
       dayTexture: { value: day }, nightTexture: { value: night },
-      sunPosition: { value: new THREE.Vector2(sp.lon, sp.lat) },
-      globeRotation: { value: new THREE.Vector2() }, dayNight: { value: _on.daynight ? 1 : 0 },
+      sunDirection: { value: new THREE.Vector3(1, 0, 0) },
+      dayNight: { value: _on.daynight ? 1 : 0 },
     };
     _shaderMat = new THREE.ShaderMaterial({ uniforms: _matUniforms, vertexShader: VERT, fragmentShader: FRAG });
     try { _globe.globeMaterial(_shaderMat); } catch (_) {}
+    _updateSun();   /* set the initial sun direction */
 
     _globe.pointOfView({ lat: 20, lng: -20, altitude: 2.4 }, 0);
-    _globe.onZoom(pov => { if (pov && _matUniforms) _matUniforms.globeRotation.value.set(pov.lng, pov.lat); });
 
     /* Keep the terminator anchored to the real Sun. */
     _startSunTimer();
@@ -357,44 +364,64 @@ const RealtimeEarth = (function () {
   function _scene() { return _globe.scene(); }
 
   /* ═════════════════════════════ VISUALS ════════════════════════════ */
-  /* Erupting volcano: a brown cone, a glowing vent, and rising smoke particles. */
+  /* Erupting volcano, sized by significance: a basalt cone, a glowing crater,
+     a fountain of lava bombs, and a tall rising smoke/ash plume. */
   function _buildVolcano(d) {
     const g = new THREE.Group();
+    const S = 2.4 + (d.signif || 0) * 4.5;            /* overall scale */
     const cone = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.6, 1.8, 2.2, 14),
-      new THREE.MeshBasicMaterial({ color: 0x5a463a }));
-    cone.position.y = 1.1; g.add(cone);
-    const vent = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xff7a18 }));
-    vent.position.y = 2.2; g.add(vent);
-    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xff5a00, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glow.scale.setScalar(5); glow.position.y = 2.4; g.add(glow);
+      new THREE.ConeGeometry(1.4 * S, 2.4 * S, 18, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x4a3a30, side: THREE.DoubleSide }));
+    cone.position.y = 1.2 * S; g.add(cone);
+    /* Glowing crater + additive heat glow. */
+    const vent = new THREE.Mesh(new THREE.SphereGeometry(0.55 * S, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xffb024 }));
+    vent.position.y = 2.4 * S; g.add(vent);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xff4400, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+    glow.scale.setScalar(4 * S); glow.position.y = 2.6 * S; g.add(glow);
 
-    const N = 36, pos = new Float32Array(N * 3), prog = new Float32Array(N);
+    /* Lava fountain — bright bombs launched upward, falling back (animated). */
+    const LN = 40, lpos = new Float32Array(LN * 3), lprog = new Float32Array(LN), lspd = new Float32Array(LN);
+    for (let i = 0; i < LN; i++) { lprog[i] = Math.random(); lspd[i] = 0.6 + Math.random() * 0.6; }
+    const lg = new THREE.BufferGeometry();
+    lg.setAttribute('position', new THREE.BufferAttribute(lpos, 3));
+    const lava = new THREE.Points(lg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xff6a10, size: 1.3 * S, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+    g.add(lava);
+
+    /* Smoke / ash plume rising high above the crater. */
+    const N = 46, pos = new Float32Array(N * 3), prog = new Float32Array(N);
     for (let i = 0; i < N; i++) prog[i] = Math.random();
     const sg = new THREE.BufferGeometry();
     sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const smoke = new THREE.Points(sg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xb0a89c, size: 1.6, transparent: true, opacity: 0.5, depthWrite: false }));
+    const smoke = new THREE.Points(sg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0x8a8278, size: 2.4 * S, transparent: true, opacity: 0.42, depthWrite: false }));
     g.add(smoke);
-    g.userData = { smoke, prog, N, meta: _eonetMeta(d, 'volcano') };
+
+    g.userData = { smoke, prog, N, lava, lprog, lspd, LN, vent, S, meta: _eonetMeta(d, 'volcano') };
     _orient(g, d.lat, d.lng, 0, 'y');
     _scene().add(g);
     _volcanoes.push(g);
   }
 
   /* Wildfire: a flickering cluster of additive flame sprites. */
+  /* Wildfire, sized by significance: a cluster of additive flame sprites with a
+     rising smoke plume — big enough to read as a real fire front, not a speck. */
   function _buildFire(d) {
     const g = new THREE.Group();
-    const cols = [0xff3000, 0xff6a00, 0xffb000];
+    const cols = [0xff2a00, 0xff5a00, 0xffa81e];
+    const S = 3.0 + (d.signif || 0) * 7.0;            /* overall scale */
     g.userData = { sprites: [], meta: _eonetMeta(d, 'fire') };
-    for (let i = 0; i < 3; i++) {
-      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: cols[i % cols.length], transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false }));
-      const base = 1.1 + Math.random() * 0.9;
+    const flames = 5;
+    for (let i = 0; i < flames; i++) {
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: cols[i % cols.length], transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const base = S * (0.45 + Math.random() * 0.6);
       sp.scale.setScalar(base);
-      sp.position.set((Math.random() - 0.5) * 0.7, 0.35 + Math.random() * 0.8, (Math.random() - 0.5) * 0.7);
+      sp.position.set((Math.random() - 0.5) * S * 0.7, base * 0.35, (Math.random() - 0.5) * S * 0.7);
       sp.userData = { base, ph: Math.random() * Math.PI * 2 };
       g.add(sp); g.userData.sprites.push(sp);
     }
+    /* Smoke plume drifting up from the fire. */
+    const smoke = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0x6b6358, transparent: true, opacity: 0.3, depthWrite: false }));
+    smoke.scale.setScalar(S * 1.3); smoke.position.y = S * 1.1; g.add(smoke);
     _orient(g, d.lat, d.lng, 0.002, 'y');
     _scene().add(g);
     _fires.push(g);
@@ -541,15 +568,33 @@ const RealtimeEarth = (function () {
         if (!geom.length) return null;
         const last = geom[geom.length - 1];       /* most recent track point */
         const src = (ev.sources || [])[0] || {};
+        const startMs = geom[0].date ? Date.parse(geom[0].date) : null;
+        const lastMs = last.date ? Date.parse(last.date) : null;
+        /* Significance proxy: how long the event has been tracked + how many
+           updates — longer-running events render bigger / more impactful. */
+        const spanDays = startMs && lastMs ? (lastMs - startMs) / 86400000 : 0;
+        const signif = Math.min(1, (geom.length - 1) / 12 * 0.6 + spanDays / 60 * 0.4);
         return {
           lng: last.coordinates[0], lat: last.coordinates[1], title: ev.title,
-          date: last.date || null,
+          startMs, lastMs, signif,
           mag: last.magnitudeValue != null ? last.magnitudeValue : null,
           magUnit: last.magnitudeUnit || '',
           url: src.url || `https://eonet.gsfc.nasa.gov/api/v3/events/${ev.id}`,
         };
       }).filter(Boolean).filter(e => isFinite(e.lat) && isFinite(e.lng));
     } catch (e) { return []; }
+  }
+
+  /* Reference time for "recency": the chosen date (end of day) or now. */
+  function _refTime() { return _date ? Date.parse(_date + 'T23:59:59Z') : Date.now(); }
+  /* Keep only events still active within `_recencyDays` of the reference time,
+     newest first. Removes long-stale EONET events (e.g. a 2021 volcano that is
+     no longer erupting) so the globe shows what's actually active now. */
+  function _filterRecent(list) {
+    const ref = _refTime(), win = _recencyDays * 86400000;
+    return list
+      .filter(e => e.lastMs == null || (ref - e.lastMs <= win && ref - e.lastMs >= -86400000))
+      .sort((a, b) => (b.lastMs || 0) - (a.lastMs || 0));
   }
 
   async function _loadPlanes() {
@@ -615,9 +660,9 @@ const RealtimeEarth = (function () {
     /* EONET layers. */
     _clear(_volcanoes); _clear(_fires); _clear(_storms);
     const jobs = [];
-    if (_on.volcanoes) jobs.push(_loadEonet('volcanoes', seq).then(list => { if (seq === _loadSeq) list.forEach(_buildVolcano); }));
-    if (_on.fires)     jobs.push(_loadEonet('wildfires', seq).then(list => { if (seq === _loadSeq) list.slice(0, _fireLimit).forEach(_buildFire); }));
-    if (_on.storms)    jobs.push(_loadEonet('severeStorms', seq).then(list => { if (seq === _loadSeq) list.forEach(_buildStorm); }));
+    if (_on.volcanoes) jobs.push(_loadEonet('volcanoes', seq).then(list => { if (seq === _loadSeq) _filterRecent(list).forEach(_buildVolcano); }));
+    if (_on.fires)     jobs.push(_loadEonet('wildfires', seq).then(list => { if (seq === _loadSeq) _filterRecent(list).slice(0, _fireCap).forEach(_buildFire); }));
+    if (_on.storms)    jobs.push(_loadEonet('severeStorms', seq).then(list => { if (seq === _loadSeq) _filterRecent(list).forEach(_buildStorm); }));
     await Promise.all(jobs);
 
     await _loadPlanes();
@@ -649,16 +694,30 @@ const RealtimeEarth = (function () {
       _raf = requestAnimationFrame(tick);
       const t = performance.now(), dt = Math.min(0.05, (t - last) / 1000); last = t;
 
-      /* Volcano smoke rising + glow flicker. */
+      /* Volcano: rising ash plume, arcing lava fountain, flickering crater. */
       for (const v of _volcanoes) {
-        const u = v.userData, pos = u.smoke.geometry.attributes.position;
+        const u = v.userData, S = u.S || 1;
+        const spos = u.smoke.geometry.attributes.position;
         for (let i = 0; i < u.N; i++) {
-          u.prog[i] += dt * (0.25 + (i % 5) * 0.03);
+          u.prog[i] += dt * (0.18 + (i % 5) * 0.02);
           if (u.prog[i] > 1) u.prog[i] -= 1;
-          const p = u.prog[i], spread = 0.5 + p * 1.6;
-          pos.setXYZ(i, Math.sin(i * 12.9) * spread, 2.3 + p * 6, Math.cos(i * 7.7) * spread);
+          const p = u.prog[i], spread = S * (0.4 + p * 1.4);
+          spos.setXYZ(i, Math.sin(i * 12.9) * spread, S * (2.6 + p * 7), Math.cos(i * 7.7) * spread);
         }
-        pos.needsUpdate = true;
+        spos.needsUpdate = true;
+        if (u.lava) {
+          const lpos = u.lava.geometry.attributes.position;
+          for (let i = 0; i < u.LN; i++) {
+            u.lprog[i] += dt * u.lspd[i];
+            if (u.lprog[i] > 1) u.lprog[i] -= 1;
+            const p = u.lprog[i];
+            const h = (p * (1 - p) * 4);                /* parabolic arc 0..1..0 */
+            const ang = i * 2.39, rad = S * (0.15 + p * 0.9);
+            lpos.setXYZ(i, Math.cos(ang) * rad, S * (2.4 + h * 5.5), Math.sin(ang) * rad);
+          }
+          lpos.needsUpdate = true;
+        }
+        if (u.vent) u.vent.material.color.setHSL(0.06, 1, 0.5 + 0.12 * Math.sin(t * 0.01 + v.id));
       }
       /* Fire flicker. */
       for (const f of _fires) for (const sp of f.userData.sprites) {
@@ -776,17 +835,21 @@ const RealtimeEarth = (function () {
       _minMag = parseFloat(e.target.value); if (magVal) magVal.textContent = _minMag.toFixed(1);
       _applyRings(); _status(_statusText());
     });
-    const fireIn = document.getElementById('rt-fire'), fireVal = document.getElementById('rt-fire-val');
-    let _fireT = null;
-    fireIn?.addEventListener('input', e => {
-      _fireLimit = parseInt(e.target.value, 10); if (fireVal) fireVal.textContent = _fireLimit;
-      /* Debounce the reload — slider fires rapidly while dragging. */
-      clearTimeout(_fireT);
-      _fireT = setTimeout(() => {
-        const seq = _loadSeq; _clear(_fires);
-        if (_on.fires && _fireLimit > 0) _loadEonet('wildfires', seq).then(l => l.slice(0, _fireLimit).forEach(_buildFire)).then(() => _status(_statusText()));
-        else _status(_statusText());
-      }, 280);
+    const daysIn = document.getElementById('rt-days'), daysVal = document.getElementById('rt-days-val');
+    let _daysT = null;
+    daysIn?.addEventListener('input', e => {
+      _recencyDays = parseInt(e.target.value, 10); if (daysVal) daysVal.textContent = _recencyDays;
+      /* Debounce — reload the EONET layers (recency affects all of them). */
+      clearTimeout(_daysT);
+      _daysT = setTimeout(() => {
+        const seq = _loadSeq;
+        _clear(_volcanoes); _clear(_fires); _clear(_storms);
+        const jobs = [];
+        if (_on.volcanoes) jobs.push(_loadEonet('volcanoes', seq).then(l => _filterRecent(l).forEach(_buildVolcano)));
+        if (_on.fires)     jobs.push(_loadEonet('wildfires', seq).then(l => _filterRecent(l).slice(0, _fireCap).forEach(_buildFire)));
+        if (_on.storms)    jobs.push(_loadEonet('severeStorms', seq).then(l => _filterRecent(l).forEach(_buildStorm)));
+        Promise.all(jobs).then(() => _status(_statusText()));
+      }, 320);
     });
   }
 
@@ -803,9 +866,9 @@ const RealtimeEarth = (function () {
     if (id === 'planes') { _schedulePlanes(); _loadPlanes(); _updateLegend(); return; }
     /* volcanoes / fires / storms → (re)load just that layer. */
     const seq = _loadSeq;
-    if (id === 'volcanoes') { _clear(_volcanoes); if (_on.volcanoes) _loadEonet('volcanoes', seq).then(l => l.forEach(_buildVolcano)).then(() => _status(_statusText())); }
-    if (id === 'fires')     { _clear(_fires);     if (_on.fires)     _loadEonet('wildfires', seq).then(l => l.slice(0, _fireLimit).forEach(_buildFire)).then(() => _status(_statusText())); }
-    if (id === 'storms')    { _clear(_storms);    if (_on.storms)    _loadEonet('severeStorms', seq).then(l => l.forEach(_buildStorm)).then(() => _status(_statusText())); }
+    if (id === 'volcanoes') { _clear(_volcanoes); if (_on.volcanoes) _loadEonet('volcanoes', seq).then(l => _filterRecent(l).forEach(_buildVolcano)).then(() => _status(_statusText())); }
+    if (id === 'fires')     { _clear(_fires);     if (_on.fires)     _loadEonet('wildfires', seq).then(l => _filterRecent(l).slice(0, _fireCap).forEach(_buildFire)).then(() => _status(_statusText())); }
+    if (id === 'storms')    { _clear(_storms);    if (_on.storms)    _loadEonet('severeStorms', seq).then(l => _filterRecent(l).forEach(_buildStorm)).then(() => _status(_statusText())); }
     _updateLegend();
   }
 

@@ -283,6 +283,7 @@ const SolarExplorer = (function () {
   let _satellites    = [];     /* Earth satellites: {mesh, data, angle, dist, inc, speed} */
   let _glowTex       = null;   /* shared soft radial-glow texture (coma, etc.) */
   let _sunCorona     = null;
+  let _maxAniso      = 8;       /* GPU max anisotropy → sharper planet textures */
 
   /* Earth day/night: blend day + night (city lights) textures by the angle to
      the Sun (at the origin). World-space normal so it works with tilt + spin. */
@@ -419,6 +420,7 @@ const SolarExplorer = (function () {
     _renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     _renderer.setSize(W, H);
     _renderer.setClearColor(0x000005, 1);
+    try { _maxAniso = _renderer.capabilities.getMaxAnisotropy() || 8; } catch (_) {}
     viewport.appendChild(_renderer.domElement);
 
     /* Scene */
@@ -452,7 +454,7 @@ const SolarExplorer = (function () {
     const sunMat  = new THREE.MeshBasicMaterial({ color: 0xfff2cc });
     new THREE.TextureLoader().load(SUN_TEX, tex => {
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-      sunMat.map = tex; sunMat.color.set(0xffffff); sunMat.needsUpdate = true;
+      tex.anisotropy = _maxAniso; sunMat.map = tex; sunMat.color.set(0xffffff); sunMat.needsUpdate = true;
     }, undefined, () => { sunMat.color.set(0xffd700); });
     _sunMesh = new THREE.Mesh(sunGeo, sunMat);
     _scene.add(_sunMesh);
@@ -493,7 +495,7 @@ const SolarExplorer = (function () {
       const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: baseEmissive, shininess: 15 });
       loader.load(
         TEX_BASE + p.textureFile,
-        tex => { if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace; mat.map = tex; mat.needsUpdate = true; },
+        tex => { if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = _maxAniso; mat.map = tex; mat.needsUpdate = true; },
         undefined,
         () => {}
       );
@@ -515,7 +517,7 @@ const SolarExplorer = (function () {
         _earthClouds.visible = false;
         new THREE.TextureLoader().load('assets/planets/earth-clouds.jpg', tex => {
           if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-          cloudMat.map = tex; cloudMat.alphaMap = tex; cloudMat.needsUpdate = true;
+          tex.anisotropy = _maxAniso; cloudMat.map = tex; cloudMat.alphaMap = tex; cloudMat.needsUpdate = true;
           _earthClouds.visible = _cloudsOn;
         }, undefined, () => {});
         mesh.add(_earthClouds);
@@ -529,8 +531,8 @@ const SolarExplorer = (function () {
           mesh.material = new THREE.ShaderMaterial({ uniforms, vertexShader: EARTH_VERT, fragmentShader: EARTH_FRAG });
           _earthDN = uniforms; _earthMesh = mesh;
         };
-        tl.load('assets/planets/earth_atmos_2048.jpg', t => { if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; uniforms.dayTex.value = t; onLoad(); }, undefined, () => {});
-        tl.load('assets/planets/earth-night.jpg',     t => { if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; uniforms.nightTex.value = t; onLoad(); }, undefined, () => {});
+        tl.load('assets/planets/earth_atmos_2048.jpg', t => { if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = _maxAniso; uniforms.dayTex.value = t; onLoad(); }, undefined, () => {});
+        tl.load('assets/planets/earth-night.jpg',     t => { if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = _maxAniso; uniforms.nightTex.value = t; onLoad(); }, undefined, () => {});
       }
 
       /* Saturn rings — tilt with the planet so they read as a 3D ring system. */
@@ -547,7 +549,7 @@ const SolarExplorer = (function () {
         const ringMat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0.95, depthWrite: false });
         new THREE.TextureLoader().load(RING_TEX, tex => {
           if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-          ringMat.map = tex; ringMat.alphaMap = tex; ringMat.needsUpdate = true;
+          tex.anisotropy = _maxAniso; ringMat.map = tex; ringMat.alphaMap = tex; ringMat.needsUpdate = true;
         }, undefined, () => { ringMat.color = new THREE.Color(0xd8b878); ringMat.opacity = 0.7; });
         const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = Math.PI / 2;   /* lie in the planet's equatorial plane */
@@ -607,31 +609,37 @@ const SolarExplorer = (function () {
     const jup  = PLANETS.find(p => p.id === 'jupiter');
     if (!mars || !jup) return;
     const rMin = mars.orbitR + 5, rMax = jup.orbitR - 6;
-    const N = 4200;
-    const pos = new Float32Array(N * 3);
-    const col = new Float32Array(N * 3);
+    const N = 2800;
     const palette = [
       [0.60, 0.56, 0.48], [0.52, 0.47, 0.40], [0.70, 0.64, 0.54],
       [0.45, 0.42, 0.40], [0.66, 0.58, 0.46],
     ];
+    /* Real 3D rocks instead of flat square points: a single chunky low-poly
+       geometry instanced N times with per-rock position, rotation, non-uniform
+       scale and a greyish-brown tint. Far more believable than dots. */
+    const geo = new THREE.DodecahedronGeometry(1, 0);
+    const mat = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, flatShading: true });
+    const mesh = new THREE.InstancedMesh(geo, mat, N);
+    const dummy = new THREE.Object3D();
+    const color = new THREE.Color();
     for (let i = 0; i < N; i++) {
       const a = Math.random() * Math.PI * 2;
       /* Bias toward the middle of the belt (denser core, sparse edges). */
       const t = (Math.random() + Math.random()) / 2;
       const r = rMin + t * (rMax - rMin);
-      /* Vertical spread grows slightly with radius (a flared torus). */
       const spread = 2 + (r - rMin) / (rMax - rMin) * 3;
-      pos[i * 3]     = Math.cos(a) * r;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * spread;
-      pos[i * 3 + 2] = Math.sin(a) * r;
+      dummy.position.set(Math.cos(a) * r, (Math.random() - 0.5) * spread, Math.sin(a) * r);
+      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      const s = 0.28 + Math.pow(Math.random(), 2.2) * 1.0;        /* mostly small, a few larger */
+      dummy.scale.set(s * (0.7 + Math.random() * 0.6), s * (0.7 + Math.random() * 0.6), s * (0.7 + Math.random() * 0.6));
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
       const c = palette[(Math.random() * palette.length) | 0];
-      col[i * 3] = c[0]; col[i * 3 + 1] = c[1]; col[i * 3 + 2] = c[2];
+      color.setRGB(c[0], c[1], c[2]); mesh.setColorAt(i, color);
     }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const mat = new THREE.PointsMaterial({ size: 0.7, sizeAttenuation: true, transparent: true, opacity: 0.85, vertexColors: true });
-    _beltPoints = new THREE.Points(geo, mat);
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    _beltPoints = mesh;
     _scene.add(_beltPoints);
   }
 
@@ -675,21 +683,14 @@ const SolarExplorer = (function () {
     );
     earth.add(ring);
 
-    /* GPS-like cluster: a handful of tiny round dots on inclined orbits.
-       A soft circular sprite map keeps them as dots (not the default squares). */
-    const gpsPos = new Float32Array(24 * 3);
-    for (let i = 0; i < 24; i++) {
-      const a = Math.random() * Math.PI * 2, inc = (Math.random() - 0.5) * 1.0, r = R * 2.3;
-      gpsPos[i * 3]     = Math.cos(a) * r;
-      gpsPos[i * 3 + 1] = Math.sin(inc) * r * 0.7;
-      gpsPos[i * 3 + 2] = Math.sin(a) * r;
+    /* Constellation of small satellites on inclined orbits (GPS-like) — actual
+       mini-sat models rather than dots. Attached to Earth so they follow it. */
+    for (let i = 0; i < 14; i++) {
+      const a = Math.random() * Math.PI * 2, inc = (Math.random() - 0.5) * 1.1, r = R * (2.1 + Math.random() * 0.5);
+      const mini = _buildMiniSat();
+      mini.position.set(Math.cos(a) * r, Math.sin(inc) * r * 0.7, Math.sin(a) * r);
+      earth.add(mini);
     }
-    const gpsGeo = new THREE.BufferGeometry();
-    gpsGeo.setAttribute('position', new THREE.BufferAttribute(gpsPos, 3));
-    earth.add(new THREE.Points(gpsGeo, new THREE.PointsMaterial({
-      map: _glowTexture(), color: 0x9fd0ff, size: 0.7, transparent: true, opacity: 0.85,
-      depthWrite: false, blending: THREE.AdditiveBlending,
-    })));
   }
 
   /* A small but recognisable satellite model (so ISS/Hubble don't read as
@@ -722,12 +723,27 @@ const SolarExplorer = (function () {
     }
 
     /* Invisible, larger sphere makes the tiny model easy to hover/click. */
-    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.9, 8, 8),
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.85, 8, 8),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
     g.add(hit);
 
+    g.scale.setScalar(0.62);          /* smaller, less moon-like */
     g.rotation.set(0.4, 0.6, 0);      /* a pleasant fixed attitude */
     g.userData.satId = s.id;
+    return g;
+  }
+
+  /* A tiny decorative satellite (body + two solar wings) for the surrounding
+     constellation — recognisable as a mini-sat rather than a bare dot. */
+  function _buildMiniSat() {
+    const g = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.1), new THREE.MeshBasicMaterial({ color: 0xdfe6f0 }));
+    g.add(body);
+    [-1, 1].forEach(sgn => {
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.12), new THREE.MeshBasicMaterial({ color: 0x6aa6e6, side: THREE.DoubleSide }));
+      panel.position.x = sgn * 0.2; g.add(panel);
+    });
+    g.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
     return g;
   }
 
@@ -745,7 +761,7 @@ const SolarExplorer = (function () {
         if (m.name === 'Lua') {
           new THREE.TextureLoader().load('assets/planets/moon.jpg', tex => {
             if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-            mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true;
+            tex.anisotropy = _maxAniso; mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true;
           }, undefined, () => {});
         }
         const mesh = new THREE.Mesh(geo, mat);

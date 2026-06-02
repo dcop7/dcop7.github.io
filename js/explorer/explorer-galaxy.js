@@ -211,11 +211,11 @@ const MilkyWayExplorer = (function () {
     _renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     _renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     _renderer.setSize(W, H);
-    _renderer.setClearColor(0x03040a, 1);
+    _renderer.setClearColor(0x070912, 1);
     viewport.appendChild(_renderer.domElement);
 
     _scene = new THREE.Scene();
-    _scene.background = new THREE.Color(0x03040a);
+    _scene.background = new THREE.Color(0x070912);
 
     /* Distant background starfield. */
     const bgN = 6000, bgPos = new Float32Array(bgN * 3), bgCol = new Float32Array(bgN * 3);
@@ -260,6 +260,8 @@ const MilkyWayExplorer = (function () {
   /* Gaussian-ish random in [-1,1] (sum of uniforms) — gives arms a soft, dense
      centre line that fades outward, rather than a uniform fuzzy band. */
   function _g() { return (Math.random() + Math.random() + Math.random() - 1.5) / 1.5; }
+  /* GLSL-style smoothstep. */
+  function _smooth(a, b, x) { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
 
   /* A soft round sprite (for nebula knots / haze), cached per-colour-less use. */
   function _sprite(color, scale, opacity, blend) {
@@ -302,12 +304,13 @@ const MilkyWayExplorer = (function () {
           r = Math.hypot(along, wide);
           ang = Math.atan2(wide, along) + barA; t = r / GAL_R;
         } else {
-          /* Spiral arm. */
+          /* Spiral arm. Bias toward the inner/mid disc so the outer tips thin
+             out naturally rather than ending at a hard circle. */
           const ai = i % ARMS.length;
-          t = Math.pow(Math.random(), 0.85);
+          t = Math.pow(Math.random(), 1.15);
           r = 16 + t * (GAL_R - 16);
           const base = ARMS[ai] + Math.log(r / 16) * WIND / 2.9;
-          ang = base + _g() * ARM_W[ai] * (1 - t * 0.45);
+          ang = base + _g() * ARM_W[ai] * (1 - t * 0.4);
         }
         const thick = (roll < 0.16 ? 16 : 5.5) * (1 - t * 0.7);
         pos[i * 3]     = Math.cos(ang) * r;
@@ -317,7 +320,9 @@ const MilkyWayExplorer = (function () {
         if (t < 0.18) tmp.copy(cCore);
         else if (t < 0.45) tmp.copy(cMid).lerp(cArm, (t - 0.18) / 0.27);
         else tmp.copy(cArm).lerp(cEdge, Math.min(1, (t - 0.45) / 0.55));
-        const tw = (0.6 + Math.random() * 0.4) * brightness;
+        /* Fade the outer disc out so the arm tips dissolve (no cut-off edge). */
+        const edge = 1 - _smooth(0.62, 1.0, t) * 0.82;
+        const tw = (0.6 + Math.random() * 0.4) * brightness * edge;
         col[i * 3] = tmp.r * tw; col[i * 3 + 1] = tmp.g * tw; col[i * 3 + 2] = tmp.b * tw;
       }
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -384,12 +389,25 @@ const MilkyWayExplorer = (function () {
     _scene.add(group); _spinLayers.push(group);
   }
 
-  /* A broad, faint diffuse halo behind the disc so the galaxy glows. */
+  /* A broad, faint diffuse halo behind the disc + large, very faint coloured
+     nebula clouds scattered through the far background, so deep space isn't a
+     flat black void around the galaxy. */
   function _buildGalaxyHaze() {
-    const haze = _sprite(new THREE.Color('#5566aa'), GAL_R * 3.4, 0.10);
+    const haze = _sprite(new THREE.Color('#4a5a9a'), GAL_R * 3.6, 0.12);
     _scene.add(haze);
     const warm = _sprite(new THREE.Color('#ffcaa0'), GAL_R * 1.5, 0.16);
     _scene.add(warm);
+
+    /* Distant interstellar clouds (placed well outside the disc, mostly behind). */
+    const cols = ['#3a4f8f', '#6a3f8c', '#2f6f7a', '#7a3f5f', '#4060a0'];
+    for (let i = 0; i < 14; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = GAL_R * (2.2 + Math.random() * 2.2);
+      const y = (Math.random() - 0.5) * GAL_R * 2.0;
+      const cloud = _sprite(new THREE.Color(cols[i % cols.length]), GAL_R * (1.0 + Math.random() * 1.4), 0.05 + Math.random() * 0.06);
+      cloud.position.set(Math.cos(a) * r, y, Math.sin(a) * r);
+      _scene.add(cloud);
+    }
   }
 
   /* Layered core glow (Sagittarius A* region): a tiny brilliant centre, a warm

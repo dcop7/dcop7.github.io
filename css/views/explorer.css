@@ -2276,6 +2276,7 @@ body.light .pt-capital-label .pt-cap-dot {
 .ex-rt-filter-row { display: flex; flex-direction: column; gap: .35rem; font-size: .72rem; color: var(--muted); }
 .ex-rt-filter-row b { color: var(--text); }
 .ex-rt-filter-row input[type=range] { width: 100%; accent-color: rgb(var(--accent-rgb)); cursor: pointer; }
+.ex-rt-filter-note { font-size: .64rem; color: var(--muted); opacity: .85; line-height: 1.35; }
 
 @media (max-width: 640px) {
   .ex-rt-layers { max-width: 100%; right: .75rem; top: .6rem; }
