@@ -105,7 +105,8 @@ const MilkyWayExplorer = (function () {
   let _glowTex = null;
   let _markers = [];        /* {mesh, data, type, pos, labelEl} */
   let _galaxyPoints = null;
-  let _spinLayers = [];     /* everything that co-rotates with the disc */
+  let _galaxyGroup = null;  /* disc + dust + HII + in-disc markers — spins as one */
+  let _miniGals = [];       /* external mini-galaxies (each spins on its own axis) */
   let _coreSprites = [];    /* layered core glow sprites (pulsing) */
   let _coreGlow = null;
   let _selBody = null;
@@ -219,7 +220,7 @@ const MilkyWayExplorer = (function () {
   function _buildScene(container) {
     const viewport = container.querySelector('#gx-viewport');
     const W = viewport.clientWidth || 800, H = viewport.clientHeight || 600;
-    _markers = []; _spinLayers = []; _coreSprites = [];
+    _markers = []; _miniGals = []; _coreSprites = [];
 
     _q = _quality();
     _renderer = new THREE.WebGLRenderer({ antialias: _q >= 0.7, alpha: false });
@@ -253,6 +254,11 @@ const MilkyWayExplorer = (function () {
 
     _camera = new THREE.PerspectiveCamera(55, W / H, 0.5, 5000);
     _updateCamera();
+
+    /* Everything that should turn as one galaxy lives in this group. */
+    _galaxyGroup = new THREE.Group();
+    _miniGals = [];
+    _scene.add(_galaxyGroup);
 
     _buildGalaxyHaze();
     _buildGalaxyDisc();
@@ -354,14 +360,14 @@ const MilkyWayExplorer = (function () {
     _galaxyPoints = new THREE.Points(g1, new THREE.PointsMaterial({
       size: 1.1, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
       transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false }));
-    _scene.add(_galaxyPoints); _spinLayers.push(_galaxyPoints);
+    _galaxyGroup.add(_galaxyPoints);
 
     /* Layer 2 — sparse bright resolved stars (adds sparkle + depth). */
     const g2 = new THREE.BufferGeometry(); fill(g2, Math.round(9000 * _q), 0, 1.25);
     const bright = new THREE.Points(g2, new THREE.PointsMaterial({
       size: 2.6, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
       transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
-    _scene.add(bright); _spinLayers.push(bright);
+    _galaxyGroup.add(bright);
   }
 
   /* Reddish-brown dust threaded between the arms — subtle additive tint that
@@ -388,7 +394,7 @@ const MilkyWayExplorer = (function () {
     const dust = new THREE.Points(geo, new THREE.PointsMaterial({
       size: 3.2, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
       transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending, depthWrite: false }));
-    _scene.add(dust); _spinLayers.push(dust);
+    _galaxyGroup.add(dust);
   }
 
   /* Glowing star-forming regions (HII) scattered along the arms — pink/teal
@@ -406,7 +412,7 @@ const MilkyWayExplorer = (function () {
       knot.position.set(Math.cos(ang) * r, _g() * 4, Math.sin(ang) * r);
       group.add(knot);
     }
-    _scene.add(group); _spinLayers.push(group);
+    _galaxyGroup.add(group);
   }
 
   /* A broad, faint diffuse halo behind the disc + large, very faint coloured
@@ -442,55 +448,95 @@ const MilkyWayExplorer = (function () {
     layers.forEach(l => {
       const sp = _sprite(new THREE.Color(l.color), l.scale, l.opacity);
       sp.userData.base = l.scale;
-      _scene.add(sp); _coreSprites.push(sp);
+      _galaxyGroup.add(sp); _coreSprites.push(sp);
     });
     _coreGlow = _coreSprites[1];
     /* Invisible-ish hit sphere at the core for clicking the galaxy itself. */
     const hit = new THREE.Mesh(new THREE.SphereGeometry(14, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffe6b0, transparent: true, opacity: 0 }));
-    _scene.add(hit);
+    _galaxyGroup.add(hit);
     _markers.push({ mesh: hit, data: GALAXY, type: 'core', pos: new THREE.Vector3(0, 0, 0) });
+  }
+
+  /* A small clickable point-of-light marker (Sun, stars, nebulae): a tinted
+     core + soft halo. `parent` lets it ride the spinning galaxy group. */
+  function _addMarker(data, x, y, z, baseR, glowScale, parent) {
+    const glow = _glowTexture(), col = new THREE.Color(data.color);
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(baseR, 12, 12), new THREE.MeshBasicMaterial({ color: col }));
+    mesh.position.set(x, y, z);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: col, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    halo.scale.setScalar(glowScale); mesh.add(halo);
+    (parent || _scene).add(mesh);
+    _markers.push({ mesh, data, type: data.type, pos: mesh.position.clone(), halo });
+  }
+
+  /* A miniature spiral galaxy: a small swirl of points + a glowing core, on a
+     random inclination, with an invisible hit-sphere for selection. Far more
+     attractive than a plain white blob. Spins gently on its own axis. */
+  function _buildMiniGalaxy(data, x, y, z, size) {
+    const grp = new THREE.Group();
+    grp.position.set(x, y, z);
+    const core = new THREE.Color('#fff1d2'), edge = new THREE.Color(data.color);
+    const N = Math.max(160, Math.round(520 * _q));
+    const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), tmp = new THREE.Color();
+    for (let i = 0; i < N; i++) {
+      const t = Math.pow(Math.random(), 0.7);
+      const r = 2 + t * size;
+      const arm = (i % 2) * Math.PI;
+      const ang = arm + t * 5.5 + (Math.random() - 0.5) * 0.7;
+      pos[i * 3]     = Math.cos(ang) * r;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * size * 0.14 * (1 - t * 0.6);
+      pos[i * 3 + 2] = Math.sin(ang) * r;
+      tmp.copy(core).lerp(edge, Math.min(1, t * 1.2));
+      const b = (0.6 + Math.random() * 0.4) * (1 - t * 0.35);
+      col[i * 3] = tmp.r * b; col[i * 3 + 1] = tmp.g * b; col[i * 3 + 2] = tmp.b * b;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    grp.add(new THREE.Points(geo, new THREE.PointsMaterial({
+      size: size * 0.1, sizeAttenuation: true, vertexColors: true, map: _glowTexture(),
+      transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false })));
+    /* Bright core + faint disc haze. */
+    const coreSp = _sprite(new THREE.Color('#fff0cf'), size * 0.7, 0.95); grp.add(coreSp);
+    const haze = _sprite(edge.clone(), size * 2.2, 0.18); grp.add(haze);
+    /* Random inclination so some look face-on, others edge-on. */
+    grp.rotation.set((Math.random() - 0.5) * 1.6, Math.random() * Math.PI, (Math.random() - 0.5) * 1.0);
+
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(size * 0.9, 10, 10), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    grp.add(hit);
+    _scene.add(grp);
+    _miniGals.push(grp);
+    _markers.push({ mesh: hit, data, type: data.type, pos: grp.position.clone(), halo: coreSp });
   }
 
   /* Place clickable markers: the Sun, notable stars, nebulae, other galaxies. */
   function _placeMarkers() {
-    const glow = _glowTexture();
-    const addMarker = (data, x, y, z, baseR, glowScale, flat) => {
-      const col = new THREE.Color(data.color);
-      const mesh = new THREE.Mesh(new THREE.SphereGeometry(baseR, 16, 16), new THREE.MeshBasicMaterial({ color: col }));
-      mesh.position.set(x, y, z);
-      if (flat) mesh.scale.set(1.6, 0.4, 1.6);   /* disc-like for galaxies */
-      const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, color: col, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
-      halo.scale.setScalar(glowScale);
-      mesh.add(halo);
-      _scene.add(mesh);
-      _markers.push({ mesh, data, type: data.type, pos: mesh.position.clone(), halo });
-    };
-
-    /* Sun — on the Orion arm, ~62% out from the centre. */
+    /* Sun — on the Orion arm, ~62% out from the centre (rides the disc). */
     const sunR = GAL_R * 0.62, sunA = 0.9;
     const sx = Math.cos(sunA) * sunR, sz = Math.sin(sunA) * sunR;
-    addMarker(SUN, sx, 2, sz, 2.0, 16);
+    _addMarker(SUN, sx, 2, sz, 2.0, 16, _galaxyGroup);
 
     /* Notable stars — clustered near the Sun (our galactic neighbourhood). */
     STARS.forEach((s, i) => {
       const a = sunA + (i - STARS.length / 2) * 0.12;
       const r = sunR + (Math.random() - 0.5) * 36;
-      addMarker(s, Math.cos(a) * r, (Math.random() - 0.5) * 10, Math.sin(a) * r, 1.4, 9);
+      _addMarker(s, Math.cos(a) * r, (Math.random() - 0.5) * 10, Math.sin(a) * r, 1.4, 9, _galaxyGroup);
     });
 
     /* Nebulae — scattered along the disc, within the arms. */
     NEBULAE.forEach((n, i) => {
       const a = (i / NEBULAE.length) * Math.PI * 2 + 0.6;
       const r = 55 + (i % 3) * 45;
-      addMarker(n, Math.cos(a) * r, (Math.random() - 0.5) * 14, Math.sin(a) * r, 2.2, 16);
+      _addMarker(n, Math.cos(a) * r, (Math.random() - 0.5) * 14, Math.sin(a) * r, 2.2, 16, _galaxyGroup);
     });
 
-    /* Other galaxies — well beyond the disc, above/below the plane. */
+    /* Other galaxies — miniature spirals well beyond the disc, above/below. */
     GALAXIES.forEach((g, i) => {
       const a = (i / GALAXIES.length) * Math.PI * 2 + 0.3;
-      const r = GAL_R + 120 + (i % 3) * 90;
-      const y = (i % 2 ? 1 : -1) * (90 + (i % 3) * 60);
-      addMarker(g, Math.cos(a) * r, y, Math.sin(a) * r, 6, 34, true);
+      const r = GAL_R + 110 + (i % 3) * 80;
+      const y = (i % 2 ? 1 : -1) * (80 + (i % 3) * 55);
+      const size = 22 + (i % 3) * 8;
+      _buildMiniGalaxy(g, Math.cos(a) * r, y, Math.sin(a) * r, size);
     });
   }
 
@@ -511,11 +557,16 @@ const MilkyWayExplorer = (function () {
       _raf = requestAnimationFrame(tick);
       if (!_renderer || !_scene || !_camera) return;
       const spin = _rotate && !_reducedMotion();
-      if (spin) _spinLayers.forEach(l => { l.rotation.y += 0.0004; });
+      if (spin) {
+        /* The whole galaxy turns as one (held still while a body is selected so
+           it stays framed); satellite galaxies also spin on their own axes. */
+        if (_galaxyGroup && _selBody === null) _galaxyGroup.rotation.y += 0.0012;
+        for (const g of _miniGals) g.rotateY(0.003);
+      }
       const pulse = 1 + Math.sin(performance.now() * 0.0012) * 0.06;
       _coreSprites.forEach(sp => sp.scale.setScalar(sp.userData.base * pulse));
-      /* Idle camera drift while nothing is selected. */
-      if (_selBody === null && !_dragging && spin) _camThetaT += 0.0004;
+      /* Gentle idle camera drift while nothing is selected. */
+      if (_selBody === null && !_dragging && spin) _camThetaT += 0.0002;
 
       const lf = 0.07;
       _camDist += (_camDistT - _camDist) * lf;
@@ -617,8 +668,14 @@ const MilkyWayExplorer = (function () {
     viewport.addEventListener('click', e => {
       if (_dragging) return;
       const mk = _pick(e, viewport);
-      if (mk) { _selBody = mk.data; _focus(mk.pos, mk.type === 'galaxy' ? 220 : 70); _openPanel(mk.data, container); }
-      else { _selBody = null; container.querySelector('#gx-panel')?.classList.remove('open'); }
+      if (mk) {
+        _selBody = mk.data;
+        /* Focus the marker's CURRENT world position (it may have rotated with
+           the galaxy group since it was created). */
+        const wp = new THREE.Vector3(); mk.mesh.getWorldPosition(wp);
+        _focus(wp, mk.type === 'galaxy' ? 120 : 70);
+        _openPanel(mk.data, container);
+      } else { _selBody = null; container.querySelector('#gx-panel')?.classList.remove('open'); }
     });
   }
 
