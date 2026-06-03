@@ -178,7 +178,8 @@ const RealtimeEarth = (function () {
     const rel = h < 1 ? `há ${Math.max(1, Math.round(diff / 60000))} min`
       : h < 48 ? `há ${Math.round(h)} h`
       : `há ${Math.round(h / 24)} dias`;
-    return `${abs} · ${rel}`;
+    /* Relative first ("há 3 dias"), then the exact date — quicker to grasp. */
+    return `${rel} · ${abs}`;
   }
   function _esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
@@ -277,10 +278,10 @@ const RealtimeEarth = (function () {
             <input type="range" id="rt-mag" min="2.5" max="7" step="0.5" value="${_minMag}"/>
           </label>
           <label class="ex-rt-filter-row">
-            <span>🌋🔥🌀 Atividade · últimos <b id="rt-days-val">${_recencyDays}</b> dias</span>
-            <input type="range" id="rt-days" min="1" max="30" step="1" value="${_recencyDays}"/>
+            <span>🌋🔥🌀 Atividade · <b id="rt-days-val">${_daysLabel(_recencyDays)}</b></span>
+            <input type="range" id="rt-days" min="1" max="31" step="1" value="${_recencyDays}"/>
           </label>
-          <div class="ex-rt-filter-note">Mostra só eventos ativos no período (e maiores quando mais intensos).</div>
+          <div class="ex-rt-filter-note">Arrasta até ao fim (“tudo ativo”) para mostrar todos os eventos em curso; mais intensos aparecem maiores.</div>
         </div>
 
         <div class="ex-rt-legend" id="rt-legend"></div>
@@ -663,13 +664,17 @@ const RealtimeEarth = (function () {
 
   /* Reference time for "recency": the chosen date (end of day) or now. */
   function _refTime() { return _date ? Date.parse(_date + 'T23:59:59Z') : Date.now(); }
+  /* Slider value 31 = "tudo ativo" (no recency window). */
+  const _showAll = () => _recencyDays > 30;
+  function _daysLabel(v) { return v > 30 ? 'tudo o que está ativo' : `últimos ${v} dia${v === 1 ? '' : 's'}`; }
   /* Keep only events still active within `_recencyDays` of the reference time,
      newest first. Removes long-stale EONET events (e.g. a 2021 volcano that is
-     no longer erupting) so the globe shows what's actually active now. */
+     no longer erupting) so the globe shows what's actually active now — unless
+     "tudo ativo" is selected, which keeps every currently-tracked event. */
   function _filterRecent(list) {
     const ref = _refTime(), win = _recencyDays * 86400000;
     return list
-      .filter(e => e.lastMs == null || (ref - e.lastMs <= win && ref - e.lastMs >= -86400000))
+      .filter(e => e.lastMs == null || ((_showAll() || ref - e.lastMs <= win) && ref - e.lastMs >= -86400000))
       .sort((a, b) => (b.lastMs || 0) - (a.lastMs || 0));
   }
 
@@ -962,7 +967,7 @@ const RealtimeEarth = (function () {
     const daysIn = document.getElementById('rt-days'), daysVal = document.getElementById('rt-days-val');
     let _daysT = null;
     daysIn?.addEventListener('input', e => {
-      _recencyDays = parseInt(e.target.value, 10); if (daysVal) daysVal.textContent = _recencyDays;
+      _recencyDays = parseInt(e.target.value, 10); if (daysVal) daysVal.textContent = _daysLabel(_recencyDays);
       /* Debounce — reload the EONET layers (recency affects all of them). */
       clearTimeout(_daysT);
       _daysT = setTimeout(() => {
