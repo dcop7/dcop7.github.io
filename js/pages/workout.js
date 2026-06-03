@@ -586,6 +586,97 @@ const WorkoutPage = (function () {
     return FIGS[key] || FIGS.warmup;
   }
 
+  // ── Muscle-target map ───────────────────────────────────────────────
+  // Anatomical front + back body with the worked muscle groups highlighted,
+  // derived from the exercise's `muscle` text. Far more useful than a generic
+  // figure: it shows exactly what each exercise trains.
+  function _muscleSet(str) {
+    const s = (str || '').toLowerCase();
+    const set = new Set();
+    const has = (...w) => w.some(x => s.includes(x));
+    const add = (...k) => k.forEach(x => set.add(x));
+    if (has('todo o corpo', 'corpo completo', 'corpo inteiro', 'full body'))
+      add('delts','chest','biceps','triceps','abs','obliques','lats','lowerback','glutes','quads','hamstrings','calves');
+    if (has('peito')) add('chest');
+    if (has('ombro', 'deltoid')) add('delts');
+    if (has('tríceps', 'triceps')) add('triceps');
+    if (has('bíceps', 'biceps')) add('biceps');
+    if (has('antebra')) add('forearms');
+    if (has('abdom', 'reto abdominal')) add('abs');
+    if (has('core', 'estabil', 'equilíbrio', 'equilibrio')) add('abs', 'obliques');
+    if (has('oblíqu', 'obliqu')) add('obliques');
+    if (has('eretor', 'lombar', 'coluna')) add('lowerback');
+    if (has('costas', 'dorsa', 'grande dorsal')) add('lats');
+    if (has('trapéz', 'trapez')) add('traps');
+    if (has('glúteo', 'gluteo')) add('glutes');
+    if (has('isquiotibiais', 'posterior da coxa', 'femoral')) add('hamstrings');
+    if (has('quadr')) add('quads');
+    if (has('perna')) add('quads', 'glutes', 'hamstrings');
+    if (has('panturr', 'gémeo', 'gemeo', 'barriga da perna')) add('calves');
+    return set;
+  }
+
+  function muscleFig(muscleStr, isRest) {
+    const on = isRest ? new Set() : _muscleSet(muscleStr);
+    const BASE = '#283344', SKIN = '#2f3b4f', MI = '#3c4a66';   // silhouette / muscle tones
+    const F = k => on.has(k) ? 'url(#wkTgt)' : MI;
+    const CL = k => on.has(k) ? ' class="wk-mm-on"' : '';
+    const cap = (x1, y1, x2, y2, w, fill = BASE) => {
+      const dx = x2 - x1, dy = y2 - y1, l = Math.sqrt(dx * dx + dy * dy) || .1;
+      const a = (Math.atan2(dy, dx) * 180 / Math.PI).toFixed(1);
+      return `<rect x="${x1.toFixed(1)}" y="${(y1 - w / 2).toFixed(1)}" width="${l.toFixed(1)}" height="${w}" rx="${(w / 2).toFixed(1)}" fill="${fill}" transform="rotate(${a},${x1.toFixed(1)},${y1.toFixed(1)})"/>`;
+    };
+    const elps = (cx, cy, rx, ry, fill, rot, k) =>
+      `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx}" ry="${ry}" fill="${fill}"${rot ? ` transform="rotate(${rot},${cx.toFixed(1)},${cy.toFixed(1)})"` : ''}${k ? CL(k) : ''}/>`;
+
+    function silhouette(cx) {
+      return `<ellipse cx="${cx}" cy="14" rx="8.4" ry="9.8" fill="${SKIN}"/>` +
+        `<rect x="${cx - 3.4}" y="21.5" width="6.8" height="7.5" rx="2.4" fill="${SKIN}"/>` +
+        `<path d="M${cx - 14},35 Q${cx - 16.4},33 ${cx - 12.5},46 L${cx - 9},67 Q${cx - 10.6},79 ${cx - 11},87 L${cx + 11},87 Q${cx + 10.6},79 ${cx + 9},67 L${cx + 12.5},46 Q${cx + 16.4},33 ${cx + 14},35 Q${cx},29.5 ${cx - 14},35 Z" fill="${BASE}"/>` +
+        cap(cx - 12.5, 36, cx - 18, 63, 8) + cap(cx + 12.5, 36, cx + 18, 63, 8) +
+        cap(cx - 18, 63, cx - 19.5, 90, 6.4) + cap(cx + 18, 63, cx + 19.5, 90, 6.4) +
+        `<ellipse cx="${cx - 19.8}" cy="92.5" rx="3.2" ry="3.6" fill="${SKIN}"/><ellipse cx="${cx + 19.8}" cy="92.5" rx="3.2" ry="3.6" fill="${SKIN}"/>` +
+        cap(cx - 6, 86, cx - 7, 131, 12) + cap(cx + 6, 86, cx + 7, 131, 12) +
+        cap(cx - 7, 131, cx - 8, 179, 9) + cap(cx + 7, 131, cx + 8, 179, 9) +
+        `<ellipse cx="${cx - 9}" cy="183" rx="4.2" ry="3.4" fill="${SKIN}"/><ellipse cx="${cx + 9}" cy="183" rx="4.2" ry="3.4" fill="${SKIN}"/>`;
+    }
+    function frontM(cx) {
+      return elps(cx - 11.5, 38, 4.4, 4.2, F('delts'), 0, 'delts') + elps(cx + 11.5, 38, 4.4, 4.2, F('delts'), 0, 'delts') +
+        `<path d="M${cx - .8},42 Q${cx - 9.5},41 ${cx - 9},50.5 Q${cx - 5},54.5 ${cx - .8},52.5 Z" fill="${F('chest')}"${CL('chest')}/>` +
+        `<path d="M${cx + .8},42 Q${cx + 9.5},41 ${cx + 9},50.5 Q${cx + 5},54.5 ${cx + .8},52.5 Z" fill="${F('chest')}"${CL('chest')}/>` +
+        elps(cx - 15.2, 49, 2.8, 5.6, F('biceps'), 14, 'biceps') + elps(cx + 15.2, 49, 2.8, 5.6, F('biceps'), -14, 'biceps') +
+        elps(cx - 18.9, 77, 2.4, 5, F('forearms'), 6, 'forearms') + elps(cx + 18.9, 77, 2.4, 5, F('forearms'), -6, 'forearms') +
+        `<rect x="${cx - 5}" y="55" width="10" height="23" rx="3.2" fill="${F('abs')}"${CL('abs')}/>` +
+        elps(cx - 8.6, 63, 2.6, 6, F('obliques'), 0, 'obliques') + elps(cx + 8.6, 63, 2.6, 6, F('obliques'), 0, 'obliques') +
+        elps(cx - 6, 104, 4.2, 15, F('quads'), 2, 'quads') + elps(cx + 6, 104, 4.2, 15, F('quads'), -2, 'quads');
+    }
+    function backM(cx) {
+      return `<path d="M${cx - 13},35.5 L${cx + 13},35.5 L${cx + 5},52 L${cx - 5},52 Z" fill="${F('traps')}"${CL('traps')}/>` +
+        `<path d="M${cx - 9.5},52 L${cx - 2.5},53 L${cx - 3.5},68 L${cx - 9},64 Z" fill="${F('lats')}"${CL('lats')}/>` +
+        `<path d="M${cx + 9.5},52 L${cx + 2.5},53 L${cx + 3.5},68 L${cx + 9},64 Z" fill="${F('lats')}"${CL('lats')}/>` +
+        `<rect x="${cx - 4}" y="68" width="8" height="13" rx="2.6" fill="${F('lowerback')}"${CL('lowerback')}/>` +
+        elps(cx - 15.2, 50, 2.8, 5.6, F('triceps'), 14, 'triceps') + elps(cx + 15.2, 50, 2.8, 5.6, F('triceps'), -14, 'triceps') +
+        elps(cx - 5.5, 90, 5, 5.2, F('glutes'), 0, 'glutes') + elps(cx + 5.5, 90, 5, 5.2, F('glutes'), 0, 'glutes') +
+        elps(cx - 6.6, 112, 4, 14, F('hamstrings'), 2, 'hamstrings') + elps(cx + 6.6, 112, 4, 14, F('hamstrings'), -2, 'hamstrings') +
+        elps(cx - 8, 156, 3.2, 8, F('calves'), 3, 'calves') + elps(cx + 8, 156, 3.2, 8, F('calves'), -3, 'calves');
+    }
+
+    return `<div class="wk-mm-wrap">` +
+      `<svg class="wk-mm-svg" viewBox="0 0 150 212" xmlns="http://www.w3.org/2000/svg">` +
+        `<defs>` +
+          `<linearGradient id="wkTgt" x1="0" y1="0" x2="0" y2="1">` +
+            `<stop offset="0%" stop-color="#ff9a52"/><stop offset="55%" stop-color="#ff4d3d"/><stop offset="100%" stop-color="#ff1e54"/>` +
+          `</linearGradient>` +
+          `<filter id="wkGl" x="-50%" y="-50%" width="200%" height="200%">` +
+            `<feDropShadow dx="0" dy="0" stdDeviation="2.1" flood-color="#ff4326" flood-opacity="0.9"/></filter>` +
+        `</defs>` +
+        `<g>${silhouette(40)}${frontM(40)}</g>` +
+        `<g>${silhouette(110)}${backM(110)}</g>` +
+        `<text x="40" y="208" text-anchor="middle" class="wk-mm-cap">Frente</text>` +
+        `<text x="110" y="208" text-anchor="middle" class="wk-mm-cap">Costas</text>` +
+      `</svg></div>`;
+  }
+
   // ── Exercise database ──────────────────────────────────────────────
   const DB = {
     strength: [
@@ -708,7 +799,7 @@ const WorkoutPage = (function () {
     const total = _workout.length;
     const isRest = _phase === 'rest';
     const nextName = getNext();
-    const figHTML = makeFig(ex.anim, isRest);
+    const figHTML = muscleFig(ex.muscle, isRest);
     const speed = isRest ? '1.8s' : ex.anim === 'plank' || ex.anim === 'sideplank' ? '2.5s' : '0.7s';
 
     el.innerHTML = `
