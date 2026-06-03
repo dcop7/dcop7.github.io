@@ -39,6 +39,10 @@ const RealtimeEarth = (function () {
      mobile GPUs; 8192 would fail to upload there. */
   const TEX_DAY_HI   = _gibsUrl('BlueMarble_NextGeneration', '2004-08-01', 'image/jpeg', 4096);
   const TEX_NIGHT_HI = _gibsUrl('VIIRS_Black_Marble', '2016-01-01', 'image/png', 2048);
+  /* The hi-res NASA day mosaics (Blue Marble / MODIS true-colour) are ~1.5× darker
+     than the bundled day texture; this multiplier keeps the daylit globe equally
+     bright before and after the hi-res swap so it never appears to "go dark". */
+  const DAY_HI_BOOST = 1.55;
 
   /* Max anisotropy keeps the surface crisp at grazing angles (the horizon). */
   let _maxAniso = 8;
@@ -103,11 +107,15 @@ const RealtimeEarth = (function () {
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
   const FRAG = `
     uniform sampler2D dayTexture; uniform sampler2D nightTexture;
-    uniform vec3 sunDirection; uniform float dayNight;
+    uniform vec3 sunDirection; uniform float dayNight; uniform float dayBoost;
     varying vec3 vWorldNormal; varying vec2 vUv;
     void main(){
       float i = dot(normalize(vWorldNormal), normalize(sunDirection));
-      vec3 day = texture2D(dayTexture, vUv).rgb;
+      /* dayBoost normalises brightness across textures: the hi-res NASA "Blue
+         Marble" is markedly darker than the bundled day texture, so without this
+         the globe visibly dimmed the moment the hi-res image swapped in a few
+         seconds after opening — read by users as "it goes dark on its own". */
+      vec3 day = clamp(texture2D(dayTexture, vUv).rgb * dayBoost, 0.0, 1.0);
       /* Night side = a clearly visible dim Earth (≈⅓ of the day texture) + city
          lights + a faint blue earthshine floor, so even dark oceans never read
          as a pure-black void. */
@@ -334,7 +342,12 @@ const RealtimeEarth = (function () {
     const el = document.getElementById('rt-globe');
     const W = el.clientWidth || 800, H = el.clientHeight || 600;
 
-    _globe = Globe({ animateIn: true })(el)
+    /* animateIn:false — globe.gl's built-in intro animation runs its OWN
+       point-of-view transition over the first few seconds, which overrides our
+       pointOfView() call and slowly swung the camera off the daylit side onto
+       the terminator — exactly the "goes dark a few seconds after opening,
+       without touching anything" bug. We control the POV ourselves instead. */
+    _globe = Globe({ animateIn: false })(el)
       .width(W).height(H)
       .backgroundColor('rgba(0,0,0,0)')
       .showAtmosphere(true).atmosphereColor('#7fb2ff').atmosphereAltitude(0.16)
@@ -364,7 +377,7 @@ const RealtimeEarth = (function () {
     tl.load(TEX_DAY_HI, tex => {
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
       _aniso(tex);
-      if (_matUniforms && !_on.clouds) _matUniforms.dayTexture.value = tex;
+      if (_matUniforms && !_on.clouds) { _matUniforms.dayTexture.value = tex; _matUniforms.dayBoost.value = DAY_HI_BOOST; }
       _baseDayTex = tex;
     }, undefined, () => {});
     /* Night side keeps the bundled city-lights texture: the hi-res VIIRS "Black
@@ -374,6 +387,7 @@ const RealtimeEarth = (function () {
       dayTexture: { value: day }, nightTexture: { value: night },
       sunDirection: { value: new THREE.Vector3(1, 0, 0) },
       dayNight: { value: _on.daynight ? 1 : 0 },
+      dayBoost: { value: 1.0 },        /* 1.0 for the bright bundled texture */
     };
     _shaderMat = new THREE.ShaderMaterial({ uniforms: _matUniforms, vertexShader: VERT, fragmentShader: FRAG });
     try { _globe.globeMaterial(_shaderMat); } catch (_) {}
@@ -690,7 +704,7 @@ const RealtimeEarth = (function () {
     if (!_matUniforms) return;
     /* No clouds → use the cached hi-res Blue Marble (or local fallback). */
     if (!_on.clouds) {
-      if (_baseDayTex) _matUniforms.dayTexture.value = _baseDayTex;
+      if (_baseDayTex) { _matUniforms.dayTexture.value = _baseDayTex; _matUniforms.dayBoost.value = DAY_HI_BOOST; }
       return;
     }
     /* Clouds on → date-aware true-colour MODIS mosaic at high resolution. */
@@ -699,7 +713,7 @@ const RealtimeEarth = (function () {
     tl.load(url, tex => {
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
       _aniso(tex);
-      if (_matUniforms) { _matUniforms.dayTexture.value = tex; }
+      if (_matUniforms) { _matUniforms.dayTexture.value = tex; _matUniforms.dayBoost.value = DAY_HI_BOOST; }
     }, undefined, () => {/* keep current on failure */});
   }
   function _applyTempOverlay() {
@@ -864,31 +878,45 @@ const RealtimeEarth = (function () {
   function _wireHover(el) {
     const tip = document.getElementById('rt-tooltip');
     let _down = false, _downX = 0, _downY = 0, _dragMoved = false;
+    const hide = () => { if (tip && !tip.hidden) { tip.hidden = true; } el.style.cursor = ''; };
 
-    el.addEventListener('pointerdown', e => {
-      _down = true; _downX = e.clientX; _downY = e.clientY; _dragMoved = false;
-      if (tip) tip.hidden = true;                 /* hide tooltip while dragging */
-    });
-    window.addEventListener('pointerup', () => { _down = false; });
-
-    el.addEventListener('pointermove', e => {
-      if (_down) {
-        if (Math.abs(e.clientX - _downX) > 6 || Math.abs(e.clientY - _downY) > 6) _dragMoved = true;
-        if (tip) tip.hidden = true;               /* no hover tooltip mid-drag */
-        return;
-      }
+    /* Hover detection runs on the DOCUMENT in the CAPTURE phase. This is
+       deliberately not a listener on the globe container: globe.gl's own canvas
+       controls can swallow / re-target pointer events (and capture the pointer
+       during a drag), which previously left the tooltip "stuck" — shown but
+       never receiving the move that should hide it. A capturing document
+       listener always sees every move first, so the tooltip can never get
+       orphaned: if the pointer isn't over the globe, or isn't over an event,
+       it hides — every single move, no exceptions. */
+    function onMove(e) {
       if (!tip) return;
-      const meta = _pickMeta(e, el);
       const rect = el.getBoundingClientRect();
+      const inside = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (!inside || _down) { hide(); return; }     /* off-globe or mid-drag → hide */
+      const meta = _pickMeta(e, el);
       if (meta) {
         tip.innerHTML = _tipHtml(meta); tip.hidden = false;
         const x = Math.min(e.clientX - rect.left + 14, rect.width - 240);
         tip.style.left = Math.max(8, x) + 'px';
         tip.style.top = (e.clientY - rect.top + 14) + 'px';
         el.style.cursor = meta.url ? 'pointer' : '';
-      } else { tip.hidden = true; el.style.cursor = ''; }
+      } else { hide(); }
+    }
+    document.addEventListener('pointermove', onMove, true);
+    /* Anything that isn't a plain hover hides the tooltip immediately. */
+    el.addEventListener('pointerdown', e => {
+      _down = true; _downX = e.clientX; _downY = e.clientY; _dragMoved = false; hide();
+    });
+    window.addEventListener('pointerup', () => { _down = false; });
+    window.addEventListener('blur', hide);
+    document.addEventListener('wheel', hide, { passive: true });   /* zoom → hide */
+    el.addEventListener('pointerleave', hide);
+
+    /* While dragging, flag real movement so a click that ends a drag-rotate
+       doesn't also open a link. */
+    el.addEventListener('pointermove', e => {
+      if (_down && (Math.abs(e.clientX - _downX) > 6 || Math.abs(e.clientY - _downY) > 6)) _dragMoved = true;
     }, { passive: true });
-    el.addEventListener('pointerleave', () => { if (tip) tip.hidden = true; });
 
     /* Click an event (a real click, not a drag-rotate) → open its source page.
        No persistent card: the hover tooltip already shows the details and it
