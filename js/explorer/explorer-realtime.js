@@ -15,7 +15,7 @@ const RealtimeEarth = (function () {
   /* Bump on every meaningful change — logged on mount so we can confirm from the
      browser console exactly which build is actually running (rules out stale
      cached JS, the usual reason a fix "doesn't show up"). */
-  const BUILD = 'v64 (2026-06-03 tooltip hidden-CSS fix — the real popup bug)';
+  const BUILD = 'v65 (2026-06-03 gap-free VIIRS clouds)';
 
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
@@ -52,6 +52,13 @@ const RealtimeEarth = (function () {
      ≈102 — matching the bundled texture — with ZERO highlight clipping, so the
      hi-res swap is brightness-neutral and can never darken the globe. */
   const DAY_HI_GAMMA = 0.55;
+  /* Clouds layer = NASA "VIIRS NOAA-20" true-colour. VIIRS has a wide enough swath
+     for complete daily global coverage, so — unlike MODIS, whose narrow swath
+     leaves slanted black ORBITAL GAPS in the daily mosaic ("nuvens cortadas") — it
+     is gap-free. True-colour is already ~as bright as the base texture, so it gets
+     only a gentle gamma (not the strong 0.55 used for the dark shaded relief). */
+  const CLOUDS_LAYER = 'VIIRS_NOAA20_CorrectedReflectance_TrueColor';
+  const CLOUDS_GAMMA = 0.9;
 
   /* Max anisotropy keeps the surface crisp at grazing angles (the horizon). */
   let _maxAniso = 8;
@@ -111,6 +118,7 @@ const RealtimeEarth = (function () {
   let _loadSeq = 0;             /* guards against out-of-order async loads */
   let _tipEl = null, _ptr = null;   /* tooltip element + live pointer state */
   let _tempMesh = null, _planeTimer = null;   /* retired layers (kept inert) */
+  let _maxTexSize = 4096;       /* GPU max texture size (read from the renderer) */
 
   /* ── Day/night shader. Lit by the dot of the WORLD-space surface normal with a
      WORLD-space sun direction (both from globe.gl's own getCoords/model frame —
@@ -386,7 +394,6 @@ const RealtimeEarth = (function () {
     /* Know the GPU's max anisotropy so textures stay sharp near the horizon,
        and cap the pixel ratio + event budget on small / low-end devices. */
     _q = _quality();
-    let _maxTexSize = 4096;
     try {
       const r = _globe.renderer();
       _maxAniso = r.capabilities.getMaxAnisotropy() || 8;
@@ -776,13 +783,14 @@ const RealtimeEarth = (function () {
       if (_baseDayTex) { _matUniforms.dayTexture.value = _baseDayTex; _matUniforms.dayGamma.value = DAY_HI_GAMMA; }
       return;
     }
-    /* Clouds on → date-aware true-colour MODIS mosaic at high resolution. */
-    const url = _gibsUrl('MODIS_Terra_CorrectedReflectance_TrueColor', _imageryDate(), 'image/jpeg', 4096);
+    /* Clouds on → date-aware true-colour VIIRS mosaic (gap-free, unlike MODIS). */
+    const url = _gibsUrl(CLOUDS_LAYER, _imageryDate(), 'image/jpeg', Math.min(4096, _maxTexSize));
     const tl = new THREE.TextureLoader(); tl.setCrossOrigin('anonymous');
     tl.load(url, tex => {
+      if (!_isBright(tex.image)) return;     /* ignore a dark/incomplete mosaic */
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
       _aniso(tex);
-      if (_matUniforms) { _matUniforms.dayTexture.value = tex; _matUniforms.dayGamma.value = DAY_HI_GAMMA; }
+      if (_matUniforms) { _matUniforms.dayTexture.value = tex; _matUniforms.dayGamma.value = CLOUDS_GAMMA; }
     }, undefined, () => {/* keep current on failure */});
   }
   function _applyTempOverlay() {
