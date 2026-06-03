@@ -91,21 +91,22 @@ const RealtimeEarth = (function () {
 
   /* ── Day/night shader (after the country globe). Blends a day texture with a
      night texture by the real sun direction; `dayNight` 0 = full daylight. ── */
-  /* Day/night blend computed entirely in the globe's OBJECT space: the sun
-     direction is expressed in the same frame as the sphere's geometry/texture,
-     and compared against the object-space normal. This is invariant to both the
-     camera AND any rotation globe.gl applies to the globe mesh while dragging,
-     so the terminator never breaks on zoom or rotate. */
+  /* Day/night blend using the WORLD-space surface normal compared against a
+     WORLD-space sun direction (derived from globe.gl's own getCoords, the same
+     mapping the markers use). Because the sun is recomputed every frame from
+     getCoords, it always matches the globe's current orientation — so the
+     terminator stays geographically correct under any zoom or drag, however
+     globe.gl moves the camera or rotates the globe. */
   const VERT = `
-    varying vec3 vN; varying vec2 vUv;
-    void main(){ vN = normalize(normal); vUv = uv;
+    varying vec3 vWorldNormal; varying vec2 vUv;
+    void main(){ vWorldNormal = normalize(mat3(modelMatrix) * normal); vUv = uv;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
   const FRAG = `
     uniform sampler2D dayTexture; uniform sampler2D nightTexture;
     uniform vec3 sunDirection; uniform float dayNight;
-    varying vec3 vN; varying vec2 vUv;
+    varying vec3 vWorldNormal; varying vec2 vUv;
     void main(){
-      float i = dot(normalize(vN), normalize(sunDirection));
+      float i = dot(normalize(vWorldNormal), normalize(sunDirection));
       vec3 day = texture2D(dayTexture, vUv).rgb;
       /* Night side = city lights + a faint, dim earth so it never reads as a
          pure-black void when you zoom into the dark hemisphere. */
@@ -300,13 +301,14 @@ const RealtimeEarth = (function () {
     _reloadAll();
   }
 
-  /* Object-space direction toward the Sun, in the globe sphere's own frame
-     (same lat/lon→xyz convention three-globe uses for the mesh + UVs). */
+  /* World-space direction toward the Sun. Uses globe.gl's getCoords so it is
+     in the exact same frame as the rendered globe + markers; recomputed each
+     frame so it tracks the globe's current orientation. */
   function _updateSun() {
-    if (!_matUniforms) return;
+    if (!_matUniforms || !_globe || !_globe.getCoords) return;
     const s = _sunPos();
-    const t = (90 - s.lon) * Math.PI / 180, p = (90 - s.lat) * Math.PI / 180;
-    _matUniforms.sunDirection.value.set(Math.sin(p) * Math.cos(t), Math.cos(p), Math.sin(p) * Math.sin(t));
+    const c = _globe.getCoords(s.lat, s.lon, 0);
+    if (c) _matUniforms.sunDirection.value.set(c.x, c.y, c.z).normalize();
   }
   function _startSunTimer() { if (!_sunTimer) { _updateSun(); _sunTimer = setInterval(_updateSun, 30000); } }
 
@@ -402,6 +404,18 @@ const RealtimeEarth = (function () {
   }
   function _scene() { return _globe.scene(); }
 
+  /* Re-pin objects to the globe surface every frame from their stored lat/lng,
+     so they track the globe exactly however globe.gl moves on drag/zoom (the
+     same approach the planes use). Keeps hover targets aligned with what's
+     drawn — otherwise stale hit-spheres drift and the tooltip gets "stuck". */
+  function _reglue(arr) {
+    if (!_globe) return;
+    for (const o of arr) {
+      const u = o.userData;
+      if (u && u.lat != null) _orient(o, u.lat, u.lng, u.alt, u.axis);
+    }
+  }
+
   /* ═════════════════════════════ VISUALS ════════════════════════════ */
   /* Erupting volcano, sized by significance: a basalt cone, a glowing crater,
      a fountain of lava bombs, and a tall rising smoke/ash plume. */
@@ -438,7 +452,7 @@ const RealtimeEarth = (function () {
     /* Decoration is non-interactive; a small invisible sphere is the hit target. */
     [cone, vent, glow, lava, smoke].forEach(o => { o.raycast = _noRay; });
     _addHit(g, 2.4 * S, 1.6 * S);
-    g.userData = { smoke, prog, N, lava, lprog, lspd, LN, vent, S, meta: _eonetMeta(d, 'volcano') };
+    g.userData = { smoke, prog, N, lava, lprog, lspd, LN, vent, S, meta: _eonetMeta(d, 'volcano'), lat: d.lat, lng: d.lng, alt: 0, axis: 'y' };
     _orient(g, d.lat, d.lng, 0, 'y');
     _scene().add(g);
     _volcanoes.push(g);
@@ -451,7 +465,7 @@ const RealtimeEarth = (function () {
     const g = new THREE.Group();
     const cols = [0xff2a00, 0xff5a00, 0xffa81e];
     const S = 3.0 + (d.signif || 0) * 7.0;            /* overall scale */
-    g.userData = { sprites: [], meta: _eonetMeta(d, 'fire') };
+    g.userData = { sprites: [], meta: _eonetMeta(d, 'fire'), lat: d.lat, lng: d.lng, alt: 0.002, axis: 'y' };
     const flames = 5;
     for (let i = 0; i < flames; i++) {
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: cols[i % cols.length], transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
@@ -498,7 +512,7 @@ const RealtimeEarth = (function () {
     g.add(disc);
     disc.raycast = _noRay;
     _addHit(g, 6, 0);
-    g.userData = { disc, meta: _eonetMeta(d, 'storm') };
+    g.userData = { disc, meta: _eonetMeta(d, 'storm'), lat: d.lat, lng: d.lng, alt: 0.01, axis: 'z' };
     _orient(g, d.lat, d.lng, 0.01, 'z');
     _scene().add(g);
     _storms.push(g);
@@ -565,7 +579,7 @@ const RealtimeEarth = (function () {
         new THREE.SphereGeometry(r, 8, 8),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
       _orient(m, q.lat, q.lng, 0.004, 'y');
-      m.userData = { meta: _quakeMeta(q) };
+      m.userData = { meta: _quakeMeta(q), lat: q.lat, lng: q.lng, alt: 0.004, axis: 'y' };
       _scene().add(m);
       _quakeMarks.push(m);
     });
@@ -740,6 +754,11 @@ const RealtimeEarth = (function () {
       _raf = requestAnimationFrame(tick);
       const t = performance.now(), dt = Math.min(0.05, (t - last) / 1000); last = t;
 
+      /* Keep the terminator + all event markers locked to the globe's current
+         orientation (cheap; getCoords is the globe's own mapping). */
+      _updateSun();
+      _reglue(_quakeMarks); _reglue(_volcanoes); _reglue(_fires); _reglue(_storms);
+
       /* Volcano: rising ash plume, arcing lava fountain, flickering crater. */
       for (const v of _volcanoes) {
         const u = v.userData, S = u.S || 1;
@@ -802,10 +821,21 @@ const RealtimeEarth = (function () {
     const m = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(m, cam);
     const targets = [..._quakeMarks, ..._volcanoes, ..._fires, ..._storms, ..._planes];
-    const hit = ray.intersectObjects(targets, true)[0];
-    if (!hit) return null;
-    let o = hit.object; while (o && !o.userData?.meta && o.parent) o = o.parent;
-    return o?.userData?.meta || null;
+    const hits = ray.intersectObjects(targets, true);
+    if (!hits.length) return null;
+    /* Distance to the globe's near surface, so we can ignore events on the far
+       (hidden) hemisphere — the globe mesh isn't a raycast target and doesn't
+       occlude these spheres, which would otherwise make the tooltip "stick". */
+    const R = _globe.getGlobeRadius ? _globe.getGlobeRadius() : 100;
+    const near = new THREE.Vector3();
+    const hasNear = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(0, 0, 0), R), near);
+    const maxDist = hasNear ? cam.position.distanceTo(near) + R * 0.2 : Infinity;
+    for (const h of hits) {
+      if (h.distance > maxDist) continue;           /* behind the visible globe */
+      let o = h.object; while (o && !o.userData?.meta && o.parent) o = o.parent;
+      if (o && o.userData && o.userData.meta) return o.userData.meta;
+    }
+    return null;
   }
 
   function _tipHtml(meta) {
@@ -823,7 +853,20 @@ const RealtimeEarth = (function () {
   function _wireHover(el) {
     const tip = document.getElementById('rt-tooltip');
     const card = document.getElementById('rt-detail');
+    let _down = false, _downX = 0, _downY = 0, _dragMoved = false;
+
+    el.addEventListener('pointerdown', e => {
+      _down = true; _downX = e.clientX; _downY = e.clientY; _dragMoved = false;
+      if (tip) tip.hidden = true;                 /* hide tooltip while dragging */
+    });
+    window.addEventListener('pointerup', () => { _down = false; });
+
     el.addEventListener('pointermove', e => {
+      if (_down) {
+        if (Math.abs(e.clientX - _downX) > 6 || Math.abs(e.clientY - _downY) > 6) _dragMoved = true;
+        if (tip) tip.hidden = true;               /* no hover tooltip mid-drag */
+        return;
+      }
       if (!tip) return;
       const meta = _pickMeta(e, el);
       const rect = el.getBoundingClientRect();
@@ -837,9 +880,11 @@ const RealtimeEarth = (function () {
     }, { passive: true });
     el.addEventListener('pointerleave', () => { if (tip) tip.hidden = true; });
 
-    /* Click an event → pin a detail card (with a link); click elsewhere closes it. */
+    /* Click an event → pin a detail card (with a link); click elsewhere closes
+       it. A click that was really a drag (globe rotate) must NOT pin. */
     el.addEventListener('click', e => {
       if (!card) return;
+      if (_dragMoved) return;                     /* it was a drag, not a click */
       const meta = _pickMeta(e, el);
       if (meta) {
         _pinned = meta;
