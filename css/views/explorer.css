@@ -2238,6 +2238,12 @@ body.light .pt-capital-label .pt-cap-dot {
   padding: .4rem .6rem; font-size: .7rem; color: var(--text);
   box-shadow: 0 6px 20px rgba(0,0,0,.55); display: flex; flex-direction: column; gap: .12rem;
 }
+/* These panels are shown/hidden via the `hidden` attribute, but their explicit
+   `display:flex` overrode the browser's default `[hidden]{display:none}` (an
+   author rule beats the UA rule), so they never actually hid — THE cause of the
+   tooltip that "won't disappear" and the always-open filters panel. This rule
+   wins on specificity and makes `hidden` work as intended. */
+.ex-rt-tooltip[hidden], .ex-rt-filters[hidden], .ex-rt-detail[hidden] { display: none !important; }
 .ex-rt-tip-title { font-weight: 700; font-size: .74rem; margin-bottom: .1rem; }
 .ex-rt-tip-row { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ex-rt-tip-row b { color: var(--text); font-weight: 600; }

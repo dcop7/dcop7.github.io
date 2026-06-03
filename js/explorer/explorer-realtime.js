@@ -15,7 +15,7 @@ const RealtimeEarth = (function () {
   /* Bump on every meaningful change — logged on mount so we can confirm from the
      browser console exactly which build is actually running (rules out stale
      cached JS, the usual reason a fix "doesn't show up"). */
-  const BUILD = 'v63 (2026-06-03 detailed volcanoes + multi-path tooltip hide)';
+  const BUILD = 'v64 (2026-06-03 tooltip hidden-CSS fix — the real popup bug)';
 
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
