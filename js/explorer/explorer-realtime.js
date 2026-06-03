@@ -12,6 +12,11 @@
 const RealtimeEarth = (function () {
   'use strict';
 
+  /* Bump on every meaningful change — logged on mount so we can confirm from the
+     browser console exactly which build is actually running (rules out stale
+     cached JS, the usual reason a fix "doesn't show up"). */
+  const BUILD = 'v60.1 (2026-06-03 night+tooltip+texture-guard)';
+
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
 
@@ -120,11 +125,11 @@ const RealtimeEarth = (function () {
          Marble" is markedly darker than the bundled day texture, so without this
          the globe visibly dimmed the moment the hi-res image swapped in. */
       vec3 day = clamp(texture2D(dayTexture, vUv).rgb * dayBoost, 0.0, 1.0);
-      /* Night side = a clearly visible dusky Earth (60% of the day texture) + city
-         lights + a blue earthshine floor, so the night hemisphere is never a dark
-         void even when the user rotates straight onto it. */
-      vec3 night = texture2D(nightTexture, vUv).rgb * 1.2 + day * 0.6 + vec3(0.03, 0.045, 0.075);
-      float blend = mix(1.0, smoothstep(-0.22, 0.30, i), dayNight);
+      /* Night side = a clearly visible dusky Earth (75% of the day texture) + city
+         lights + a blue earthshine floor, so the night hemisphere reads as a dim
+         lit globe, never a dark void — the recurring "fica escuro" complaint. */
+      vec3 night = texture2D(nightTexture, vUv).rgb * 1.1 + day * 0.75 + vec3(0.04, 0.055, 0.09);
+      float blend = mix(1.0, smoothstep(-0.20, 0.35, i), dayNight);
       gl_FragColor = vec4(mix(night, day, blend), 1.0);
     }`;
 
@@ -154,14 +159,24 @@ const RealtimeEarth = (function () {
       s.onload = res; s.onerror = rej; document.head.appendChild(s);
     });
   }
-  async function _fetchJson(url, ms) {
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), ms || 12000);
-    try {
-      const r = await fetch(url, { signal: ctrl.signal });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return await r.json();
-    } finally { clearTimeout(tid); }
+  async function _fetchJson(url, ms, retries) {
+    const attempt = async () => {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), ms || 12000);
+      try {
+        const r = await fetch(url, { signal: ctrl.signal });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return await r.json();
+      } finally { clearTimeout(tid); }
+    };
+    let lastErr;
+    /* One quick retry by default — NASA EONET intermittently 503s, which left
+       volcanoes/fires/storms empty on an unlucky first try. */
+    for (let i = 0; i <= (retries == null ? 1 : retries); i++) {
+      try { return await attempt(); }
+      catch (e) { lastErr = e; if (i < (retries == null ? 1 : retries)) await new Promise(r => setTimeout(r, 1200)); }
+    }
+    throw lastErr;
   }
   function _ymd(d) { return d.toISOString().slice(0, 10); }
   /* Effective imagery date: chosen date, or yesterday for "now" (today's GIBS
@@ -295,6 +310,7 @@ const RealtimeEarth = (function () {
       </div>`;
 
     _mounted = true;
+    console.info('%c[RealtimeEarth] build ' + BUILD, 'color:#7fb2ff;font-weight:700');
     _wireControls();
 
     const setTxt = t => { const e = document.getElementById('rt-loading-txt'); if (e) e.textContent = t; };
@@ -799,7 +815,16 @@ const RealtimeEarth = (function () {
     const tick = () => {
       _raf = requestAnimationFrame(tick);
       const t = performance.now(), dt = Math.min(0.05, (t - last) / 1000); last = t;
+      /* Wrap the frame so a single stray error can NEVER kill the loop — that
+         would otherwise freeze both the animation and the tooltip (leaving a
+         "stuck" popup). */
+      try { _frame(t, dt); } catch (_) {}
+      last = t;
+    };
+    _raf = requestAnimationFrame(tick);
+  }
 
+  function _frame(t, dt) {
       /* Keep the sun direction + event markers locked to the globe's current
          orientation (all camera-independent; cheap). */
       _updateSun();
@@ -852,9 +877,6 @@ const RealtimeEarth = (function () {
           pl.rotateY(u.track * Math.PI / 180);
         }
       }
-      last = t;
-    };
-    _raf = requestAnimationFrame(tick);
   }
 
   function _schedulePlanes() {

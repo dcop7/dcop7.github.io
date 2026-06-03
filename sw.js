@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v60';
+const CACHE = 'dcop7-v61';
 const STATIC = [
   '/',
   '/index.html',
@@ -79,14 +79,18 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
 
-  /* Code (HTML/JS/CSS) → NETWORK-FIRST so a deploy is seen immediately when
-     online; cache is the offline fallback. Previously these were served
-     cache-first, which made every deploy lag by a reload (the cause of
-     "my fix doesn't show up"). */
+  /* Code (HTML/JS/CSS) → NETWORK-FIRST, and crucially with cache:'reload' so the
+     request bypasses the browser's HTTP cache and always revalidates with the
+     server. GitHub Pages serves code with max-age=600, so a plain fetch() could
+     keep returning a 10-min-stale file even on a hard reload — which is exactly
+     why fixes appeared "not to show up" on the live site. Cache is offline
+     fallback only. */
   const isCode = e.request.mode === 'navigate' || /\.(?:js|css|html)$/.test(url.pathname);
   if (isCode) {
     e.respondWith(
-      fetch(e.request).then(res => _cachePut(e.request, res)).catch(() => caches.match(e.request))
+      fetch(e.request, { cache: 'reload' })
+        .then(res => _cachePut(e.request, res))
+        .catch(() => caches.match(e.request))
     );
     return;
   }
