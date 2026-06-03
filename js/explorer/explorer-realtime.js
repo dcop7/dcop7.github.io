@@ -108,10 +108,10 @@ const RealtimeEarth = (function () {
     void main(){
       float i = dot(normalize(vWorldNormal), normalize(sunDirection));
       vec3 day = texture2D(dayTexture, vUv).rgb;
-      /* Night side = city lights + a faint, dim earth so it never reads as a
-         pure-black void when you zoom into the dark hemisphere. */
-      vec3 night = texture2D(nightTexture, vUv).rgb * 1.5 + day * 0.10;
-      float blend = mix(1.0, smoothstep(-0.18, 0.22, i), dayNight);
+      /* Night side = a clearly visible dim Earth (≈⅓ of the day texture) plus
+         glowing city lights — never a pure-black void. */
+      vec3 night = texture2D(nightTexture, vUv).rgb * 1.3 + day * 0.32;
+      float blend = mix(1.0, smoothstep(-0.25, 0.30, i), dayNight);
       gl_FragColor = vec4(mix(night, day, blend), 1.0);
     }`;
 
@@ -366,11 +366,9 @@ const RealtimeEarth = (function () {
       if (_matUniforms && !_on.clouds) _matUniforms.dayTexture.value = tex;
       _baseDayTex = tex;
     }, undefined, () => {});
-    tl.load(TEX_NIGHT_HI, tex => {
-      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-      _aniso(tex);
-      if (_matUniforms) _matUniforms.nightTexture.value = tex;
-    }, undefined, () => {});
+    /* Night side keeps the bundled city-lights texture: the hi-res VIIRS "Black
+       Marble" is almost pure black over land/ocean, so swapping it in turned the
+       whole night hemisphere into a black void a few seconds after load. */
     _matUniforms = {
       dayTexture: { value: day }, nightTexture: { value: night },
       sunDirection: { value: new THREE.Vector3(1, 0, 0) },
@@ -659,19 +657,28 @@ const RealtimeEarth = (function () {
 
   async function _loadPlanes() {
     if (!_on.planes || _date) { _clear(_planes); return; }
-    try {
-      const j = await _fetchJson('https://opensky-network.org/api/states/all', 12000);
-      const states = (j && j.states) || [];
-      const picked = states
-        .filter(s => s[5] != null && s[6] != null && !s[8])   /* lon, lat, not on_ground */
-        .slice(0, 280);
-      _clear(_planes);
-      picked.forEach(s => _buildPlane({ lng: s[5], lat: s[6], alt: s[7], vel: s[9], track: s[10], call: (s[1] || '').trim(), country: s[2] }));
-      _status(_statusText());
-    } catch (e) {
-      _clear(_planes);
-      _status('aviões indisponíveis (OpenSky/CORS)');
+    /* OpenSky now restricts CORS to its own domain, so a direct browser fetch
+       is blocked. Try direct first (works if that ever changes), then fall back
+       to a public CORS proxy (best-effort; may be rate-limited). */
+    const API = 'https://opensky-network.org/api/states/all';
+    let j = null;
+    try { j = await _fetchJson(API, 9000); }
+    catch (_) {
+      try { j = await _fetchJson('https://api.allorigins.win/raw?url=' + encodeURIComponent(API), 18000); }
+      catch (_) {}
     }
+    const states = (j && j.states) || null;
+    if (!states) {
+      _clear(_planes);
+      _status('aviões indisponíveis (OpenSky bloqueia CORS de outros sites)');
+      return;
+    }
+    const picked = states
+      .filter(s => s[5] != null && s[6] != null && !s[8])   /* lon, lat, not on_ground */
+      .slice(0, 280);
+    _clear(_planes);
+    picked.forEach(s => _buildPlane({ lng: s[5], lat: s[6], alt: s[7], vel: s[9], track: s[10], call: (s[1] || '').trim(), country: s[2] }));
+    _status(_statusText());
   }
 
   /* ═════════════════════════════ GIBS IMAGERY ══════════════════════ */
@@ -811,7 +818,7 @@ const RealtimeEarth = (function () {
 
   function _schedulePlanes() {
     if (_planeTimer) { clearInterval(_planeTimer); _planeTimer = null; }
-    if (_on.planes && !_date) _planeTimer = setInterval(_loadPlanes, 20000);
+    if (_on.planes && !_date) _planeTimer = setInterval(_loadPlanes, 45000);
   }
 
   /* ═════════════════════════════ HOVER / PICK ══════════════════════ */
