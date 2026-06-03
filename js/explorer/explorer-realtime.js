@@ -32,21 +32,32 @@ const RealtimeEarth = (function () {
     return `${GIBS}?${p.toString()}`;
   }
 
-  /* High-res, cloud-free base imagery (NASA "Blue Marble: Next Generation",
-     a static monthly composite) and night-lights (VIIRS "Black Marble").
-     Far sharper than the bundled 2048px textures; both fall back gracefully. */
-  /* 4096 (height 2048) is sharp yet within the 4096 max-texture limit of most
-     mobile GPUs; 8192 would fail to upload there. */
-  const TEX_DAY_HI   = _gibsUrl('BlueMarble_NextGeneration', '2004-08-01', 'image/jpeg', 4096);
-  const TEX_NIGHT_HI = _gibsUrl('VIIRS_Black_Marble', '2016-01-01', 'image/png', 2048);
-  /* The hi-res NASA day mosaics (Blue Marble / MODIS true-colour) are ~1.5× darker
-     than the bundled day texture; this multiplier keeps the daylit globe equally
-     bright before and after the hi-res swap so it never appears to "go dark". */
+  /* High-res, cloud-free base imagery (NASA "Blue Marble: Next Generation", a
+     static monthly composite) is far sharper than the bundled 2048px texture.
+     The request size is capped to the GPU's real max texture size at load time
+     (see _initGlobe) so it can never upload as black. The night-lights texture
+     stays the bundled one (VIIRS "Black Marble" is near-pure-black over land). */
+  /* The hi-res NASA day mosaic is ~1.5× darker than the bundled day texture;
+     this multiplier keeps the daylit globe equally bright before and after the
+     hi-res swap so it never appears to "go dark". */
   const DAY_HI_BOOST = 1.55;
 
   /* Max anisotropy keeps the surface crisp at grazing angles (the horizon). */
   let _maxAniso = 8;
   function _aniso(tex) { if (tex) { tex.anisotropy = _maxAniso; tex.needsUpdate = true; } return tex; }
+
+  /* True if an image is clearly brighter than black — used to reject a dark or
+     error texture response before it can ever darken the globe. */
+  function _isBright(img) {
+    if (!img || !img.width) return false;
+    try {
+      const c = document.createElement('canvas'); c.width = 32; c.height = 16;
+      const cx = c.getContext('2d'); cx.drawImage(img, 0, 0, 32, 16);
+      const d = cx.getImageData(0, 0, 32, 16).data; let s = 0;
+      for (let i = 0; i < d.length; i += 4) s += (d[i] + d[i + 1] + d[i + 2]) / 3;
+      return s / (d.length / 4) > 18;     /* mean brightness > ~18/255 */
+    } catch (_) { return true; }           /* unsamplable (tainted) → assume ok */
+  }
 
   /* Quality factor (1 = full; lower on small / low-end devices) → capped pixel
      ratio + fewer fire visuals, keeping the globe fluid on phones. */
@@ -71,8 +82,6 @@ const RealtimeEarth = (function () {
     { id: 'fires',    icon: '🔥', label: 'Incêndios',   on: true,  live: false },
     { id: 'storms',   icon: '🌀', label: 'Tempestades', on: true,  live: false },
     { id: 'clouds',   icon: '☁️', label: 'Nuvens',      on: false, live: false },
-    { id: 'temp',     icon: '🌡️', label: 'Temperatura', on: false, live: false },
-    { id: 'planes',   icon: '✈️', label: 'Aviões',      on: false, live: true  },
   ];
 
   /* ── State ── */
@@ -84,23 +93,19 @@ const RealtimeEarth = (function () {
   let _volcanoes = [], _fires = [], _storms = [], _planes = [];
   let _quakeData = [];          /* {lat,lng,mag,tsunami,place,time,depth,url} */
   let _quakeMarks = [];         /* invisible hit spheres for quake hover/click */
-  let _minMag = 2.5;            /* earthquake magnitude filter */
+  let _minMag = 4;              /* earthquake magnitude filter (default ≥4) */
   let _recencyDays = 7;         /* show EONET events active within N days */
   let _fireCap = 120;           /* hard safety cap on wildfire visuals */
-  let _pinned = null;           /* currently pinned detail card meta */
-  let _tempMesh = null;
   let _baseDayTex = null;       /* cached hi-res Blue Marble (cloud-free base) */
-  let _planeTimer = null;
   let _loadSeq = 0;             /* guards against out-of-order async loads */
+  let _tipEl = null, _ptr = null;   /* tooltip element + live pointer state */
+  let _tempMesh = null, _planeTimer = null;   /* retired layers (kept inert) */
 
-  /* ── Day/night shader (after the country globe). Blends a day texture with a
-     night texture by the real sun direction; `dayNight` 0 = full daylight. ── */
-  /* Day/night blend using the WORLD-space surface normal compared against a
-     WORLD-space sun direction (derived from globe.gl's own getCoords, the same
-     mapping the markers use). Because the sun is recomputed every frame from
-     getCoords, it always matches the globe's current orientation — so the
-     terminator stays geographically correct under any zoom or drag, however
-     globe.gl moves the camera or rotates the globe. */
+  /* ── Day/night shader. Lit by the dot of the WORLD-space surface normal with a
+     WORLD-space sun direction (both from globe.gl's own getCoords/model frame —
+     the same mapping the markers use). The normal comes from modelMatrix, not the
+     camera, so the terminator is camera-independent and stays geographically
+     correct under any zoom / drag / rotation. `dayNight` 0 = full daylight. */
   const VERT = `
     varying vec3 vWorldNormal; varying vec2 vUv;
     void main(){ vWorldNormal = normalize(mat3(modelMatrix) * normal); vUv = uv;
@@ -113,14 +118,13 @@ const RealtimeEarth = (function () {
       float i = dot(normalize(vWorldNormal), normalize(sunDirection));
       /* dayBoost normalises brightness across textures: the hi-res NASA "Blue
          Marble" is markedly darker than the bundled day texture, so without this
-         the globe visibly dimmed the moment the hi-res image swapped in a few
-         seconds after opening — read by users as "it goes dark on its own". */
+         the globe visibly dimmed the moment the hi-res image swapped in. */
       vec3 day = clamp(texture2D(dayTexture, vUv).rgb * dayBoost, 0.0, 1.0);
-      /* Night side = a clearly visible dim Earth (≈⅓ of the day texture) + city
-         lights + a faint blue earthshine floor, so even dark oceans never read
-         as a pure-black void. */
-      vec3 night = texture2D(nightTexture, vUv).rgb * 1.3 + day * 0.35 + vec3(0.012, 0.022, 0.045);
-      float blend = mix(1.0, smoothstep(-0.25, 0.30, i), dayNight);
+      /* Night side = a clearly visible dusky Earth (60% of the day texture) + city
+         lights + a blue earthshine floor, so the night hemisphere is never a dark
+         void even when the user rotates straight onto it. */
+      vec3 night = texture2D(nightTexture, vUv).rgb * 1.2 + day * 0.6 + vec3(0.03, 0.045, 0.075);
+      float blend = mix(1.0, smoothstep(-0.22, 0.30, i), dayNight);
       gl_FragColor = vec4(mix(night, day, blend), 1.0);
     }`;
 
@@ -311,9 +315,9 @@ const RealtimeEarth = (function () {
     _reloadAll();
   }
 
-  /* World-space direction toward the Sun. Uses globe.gl's getCoords so it is
-     in the exact same frame as the rendered globe + markers; recomputed each
-     frame so it tracks the globe's current orientation. */
+  /* World-space direction toward the Sun, via globe.gl's getCoords so it is in
+     the exact same frame as the globe surface (and the markers). Camera-
+     independent, so the terminator never shifts on zoom/drag. */
   function _updateSun() {
     if (!_matUniforms || !_globe || !_globe.getCoords) return;
     const s = _sunPos();
@@ -359,9 +363,11 @@ const RealtimeEarth = (function () {
     /* Know the GPU's max anisotropy so textures stay sharp near the horizon,
        and cap the pixel ratio + event budget on small / low-end devices. */
     _q = _quality();
+    let _maxTexSize = 4096;
     try {
       const r = _globe.renderer();
       _maxAniso = r.capabilities.getMaxAnisotropy() || 8;
+      _maxTexSize = r.capabilities.maxTextureSize || 4096;
       r.setPixelRatio(_pixelRatio());
     } catch (_) {}
     if (_q < 0.6) _fireCap = 60;
@@ -374,13 +380,23 @@ const RealtimeEarth = (function () {
     const night = tl.load(TEX_NIGHT, () => {});
     if (THREE.SRGBColorSpace) { day.colorSpace = THREE.SRGBColorSpace; night.colorSpace = THREE.SRGBColorSpace; }
     _aniso(day); _aniso(night);
-    /* High-res upgrades (only while not showing the cloud layer for the day). */
-    tl.load(TEX_DAY_HI, tex => {
-      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-      _aniso(tex);
-      if (_matUniforms && !_on.clouds) { _matUniforms.dayTexture.value = tex; _matUniforms.dayBoost.value = DAY_HI_BOOST; }
-      _baseDayTex = tex;
-    }, undefined, () => {});
+    /* High-res day upgrade. Cap the request to the GPU's real max texture size:
+       a texture larger than the GPU allows uploads as BLACK, which would turn the
+       daylit globe dark a few seconds after opening (a prime suspect for the
+       persistent "fica escuro"). We also verify the downloaded image is actually
+       bright before swapping, so a dark/error response can never darken the
+       globe either — the bright bundled texture stays put if anything is off. */
+    const hiPx = Math.min(4096, _maxTexSize);
+    if (hiPx >= 2048) {
+      const hiUrl = _gibsUrl('BlueMarble_NextGeneration', '2004-08-01', 'image/jpeg', hiPx);
+      tl.load(hiUrl, tex => {
+        if (!_matUniforms || _on.clouds || !_isBright(tex.image)) { _baseDayTex = _isBright(tex.image) ? tex : _baseDayTex; return; }
+        if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+        _aniso(tex);
+        _matUniforms.dayTexture.value = tex; _matUniforms.dayBoost.value = DAY_HI_BOOST;
+        _baseDayTex = tex;
+      }, undefined, () => {});
+    }
     /* Night side keeps the bundled city-lights texture: the hi-res VIIRS "Black
        Marble" is almost pure black over land/ocean, so swapping it in turned the
        whole night hemisphere into a black void a few seconds after load. */
@@ -394,10 +410,10 @@ const RealtimeEarth = (function () {
     try { _globe.globeMaterial(_shaderMat); } catch (_) {}
     _updateSun();   /* set the initial sun direction */
 
-    /* Open looking at the daylit side (centred on the Sun's longitude) so the
-       globe is bright and vivid on load, not facing the dark night hemisphere. */
+    /* Open looking straight at the daylit side (the subsolar point) so the globe
+       is bright and vivid on load, not facing the dark night hemisphere. */
     const sp0 = _sunPos();
-    _globe.pointOfView({ lat: 22, lng: sp0.lon, altitude: 2.4 }, 0);
+    _globe.pointOfView({ lat: Math.max(-55, Math.min(55, sp0.lat)), lng: sp0.lon, altitude: 2.4 }, 0);
 
     /* Keep the terminator anchored to the real Sun. */
     _startSunTimer();
@@ -784,10 +800,12 @@ const RealtimeEarth = (function () {
       _raf = requestAnimationFrame(tick);
       const t = performance.now(), dt = Math.min(0.05, (t - last) / 1000); last = t;
 
-      /* Keep the terminator + all event markers locked to the globe's current
-         orientation (cheap; getCoords is the globe's own mapping). */
+      /* Keep the sun direction + event markers locked to the globe's current
+         orientation (all camera-independent; cheap). */
       _updateSun();
       _reglue(_quakeMarks); _reglue(_volcanoes); _reglue(_fires); _reglue(_storms);
+      /* Heartbeat: keep the hover tooltip honest from the live pointer. */
+      _updateTooltip();
 
       /* Volcano: rising ash plume, arcing lava fountain, flickering crater. */
       for (const v of _volcanoes) {
@@ -845,12 +863,13 @@ const RealtimeEarth = (function () {
   }
 
   /* ═════════════════════════════ HOVER / PICK ══════════════════════ */
-  function _pickMeta(e, el) {
+  function _pickMeta(clientX, clientY, el) {
     if (!_globe) return null;
     const cam = _globe.camera(), rect = el.getBoundingClientRect();
-    const m = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+    if (!rect.width || !rect.height) return null;
+    const m = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(m, cam);
-    const targets = [..._quakeMarks, ..._volcanoes, ..._fires, ..._storms, ..._planes];
+    const targets = [..._quakeMarks, ..._volcanoes, ..._fires, ..._storms];
     const hits = ray.intersectObjects(targets, true);
     if (!hits.length) return null;
     /* Distance to the globe's near surface, so we can ignore events on the far
@@ -880,57 +899,56 @@ const RealtimeEarth = (function () {
       <div class="ex-rt-card-rows">${rows}</div>${link}`;
   }
 
+  /* The tooltip is driven by the RAF loop (_updateTooltip), not by pointer
+     events. Here we only TRACK the pointer — cheap, and impossible to get wrong.
+     Every frame the loop re-decides, from the live pointer position, whether an
+     event is under the cursor and shows/hides accordingly, so the tooltip can
+     never get "stuck": the instant the cursor isn't over an event (or leaves the
+     globe, or a drag starts) the very next frame hides it. Tracking on document
+     in the capture phase guarantees we still see moves even if globe.gl's canvas
+     controls swallow or re-target them. */
   function _wireHover(el) {
-    const tip = document.getElementById('rt-tooltip');
-    let _down = false, _downX = 0, _downY = 0, _dragMoved = false;
-    const hide = () => { if (tip && !tip.hidden) { tip.hidden = true; } el.style.cursor = ''; };
+    _tipEl = document.getElementById('rt-tooltip');
+    _ptr = { x: 0, y: 0, inside: false, down: false, downX: 0, downY: 0, dragMoved: false };
 
-    /* Hover detection runs on the DOCUMENT in the CAPTURE phase. This is
-       deliberately not a listener on the globe container: globe.gl's own canvas
-       controls can swallow / re-target pointer events (and capture the pointer
-       during a drag), which previously left the tooltip "stuck" — shown but
-       never receiving the move that should hide it. A capturing document
-       listener always sees every move first, so the tooltip can never get
-       orphaned: if the pointer isn't over the globe, or isn't over an event,
-       it hides — every single move, no exceptions. */
-    function onMove(e) {
-      if (!tip) return;
-      const rect = el.getBoundingClientRect();
-      const inside = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
-      if (!inside || _down) { hide(); return; }     /* off-globe or mid-drag → hide */
-      const meta = _pickMeta(e, el);
-      if (meta) {
-        tip.innerHTML = _tipHtml(meta); tip.hidden = false;
-        const x = Math.min(e.clientX - rect.left + 14, rect.width - 240);
-        tip.style.left = Math.max(8, x) + 'px';
-        tip.style.top = (e.clientY - rect.top + 14) + 'px';
-        el.style.cursor = meta.url ? 'pointer' : '';
-      } else { hide(); }
+    function track(e) {
+      _ptr.x = e.clientX; _ptr.y = e.clientY;
+      const r = el.getBoundingClientRect();
+      _ptr.inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (_ptr.down && (Math.abs(e.clientX - _ptr.downX) > 6 || Math.abs(e.clientY - _ptr.downY) > 6)) _ptr.dragMoved = true;
     }
-    document.addEventListener('pointermove', onMove, true);
-    /* Anything that isn't a plain hover hides the tooltip immediately. */
-    el.addEventListener('pointerdown', e => {
-      _down = true; _downX = e.clientX; _downY = e.clientY; _dragMoved = false; hide();
-    });
-    window.addEventListener('pointerup', () => { _down = false; });
-    window.addEventListener('blur', hide);
-    document.addEventListener('wheel', hide, { passive: true });   /* zoom → hide */
-    el.addEventListener('pointerleave', hide);
+    document.addEventListener('pointermove', track, true);
+    el.addEventListener('pointerdown', e => { _ptr.down = true; _ptr.downX = e.clientX; _ptr.downY = e.clientY; _ptr.dragMoved = false; });
+    window.addEventListener('pointerup', () => { _ptr.down = false; });
+    window.addEventListener('blur', () => { _ptr.inside = false; });
+    el.addEventListener('pointerleave', () => { _ptr.inside = false; });
 
-    /* While dragging, flag real movement so a click that ends a drag-rotate
-       doesn't also open a link. */
-    el.addEventListener('pointermove', e => {
-      if (_down && (Math.abs(e.clientX - _downX) > 6 || Math.abs(e.clientY - _downY) > 6)) _dragMoved = true;
-    }, { passive: true });
-
-    /* Click an event (a real click, not a drag-rotate) → open its source page.
-       No persistent card: the hover tooltip already shows the details and it
-       auto-hides when the pointer leaves the event. */
-    el.addEventListener('click', e => {
-      if (_dragMoved) return;
-      const meta = _pickMeta(e, el);
+    /* Click an event (a real click, not a drag-rotate) → open its source page. */
+    el.addEventListener('click', () => {
+      if (_ptr.dragMoved) return;
+      const meta = _pickMeta(_ptr.x, _ptr.y, el);
       if (meta && meta.url) window.open(meta.url, '_blank', 'noopener');
     });
+  }
+
+  /* Per-frame tooltip sync from the live pointer (the heartbeat that makes a
+     "stuck" tooltip impossible). */
+  function _updateTooltip() {
+    const tip = _tipEl; if (!tip) return;
+    const el = document.getElementById('rt-globe'); if (!el) return;
+    if (!_ptr || !_ptr.inside || _ptr.down) {
+      if (!tip.hidden) tip.hidden = true; el.style.cursor = ''; return;
+    }
+    const meta = _pickMeta(_ptr.x, _ptr.y, el);
+    if (!meta) { if (!tip.hidden) tip.hidden = true; el.style.cursor = ''; return; }
+    const html = _tipHtml(meta);
+    if (tip.__html !== html) { tip.innerHTML = html; tip.__html = html; }
+    tip.hidden = false;
+    const rect = el.getBoundingClientRect();
+    const x = Math.min(_ptr.x - rect.left + 14, rect.width - 240);
+    tip.style.left = Math.max(8, x) + 'px';
+    tip.style.top = (_ptr.y - rect.top + 14) + 'px';
+    el.style.cursor = meta.url ? 'pointer' : '';
   }
 
   /* ═════════════════════════════ CONTROLS ══════════════════════════ */
