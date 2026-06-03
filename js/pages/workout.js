@@ -29,19 +29,6 @@ const WorkoutPage = (function () {
       '<stop offset="48%" stop-color="#f1b487"/>' +
       '<stop offset="100%" stop-color="#b56a3b"/>' +
     '</radialGradient>' +
-    // Front (near) limbs — glossy blue with a bright specular edge
-    '<linearGradient id="g3b" x1="0" y1="0" x2="1" y2="0">' +
-      '<stop offset="0%" stop-color="#eaf3ff"/>' +
-      '<stop offset="20%" stop-color="#8cc0fd"/>' +
-      '<stop offset="55%" stop-color="#3b82f6"/>' +
-      '<stop offset="100%" stop-color="#1b46c4"/>' +
-    '</linearGradient>' +
-    // Back (far) limbs — darker, so depth reads clearly
-    '<linearGradient id="g3d" x1="0" y1="0" x2="1" y2="0">' +
-      '<stop offset="0%" stop-color="#6f9fe0"/>' +
-      '<stop offset="60%" stop-color="#2f5fbf"/>' +
-      '<stop offset="100%" stop-color="#153584"/>' +
-    '</linearGradient>' +
     // Joints / hands / feet
     '<radialGradient id="g3j" cx="35%" cy="32%" r="68%">' +
       '<stop offset="0%" stop-color="#f0f6ff"/>' +
@@ -66,14 +53,34 @@ const WorkoutPage = (function () {
   const h3 = (cx, cy, r=8) =>
     `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g3h)" stroke="rgba(110,55,22,.4)" stroke-width="0.7"/>`;
 
-  // Cylindrical segment — rotated rounded rect from (x1,y1) to (x2,y2), width w.
-  // d=true uses the darker gradient (back/far limbs). A thin dark outline keeps
-  // overlapping limbs cleanly separated; rounded caps read as muscle.
+  // Tapered, cylinder-shaded limb from (x1,y1)→(x2,y2), width w. Renders as a
+  // tapered capsule (fatter at the proximal/start joint, slimmer at the distal
+  // end) with a per-limb gradient ACROSS its cross-section — lit from the upper
+  // left — so each limb reads as a rounded 3D cylinder at any angle, plus rounded
+  // end-caps that double as joints/hands/feet. d=true = far limb (darker).
+  let _gid = 0;
   function s3(x1, y1, x2, y2, w=6, d=false) {
-    const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
-    const ang=(Math.atan2(dy,dx)*180/Math.PI).toFixed(1);
-    const f = d ? 'url(#g3d)' : 'url(#g3b)';
-    return `<rect x="${(+x1).toFixed(1)}" y="${(y1-w/2).toFixed(1)}" width="${len.toFixed(1)}" height="${w}" rx="${(w/2).toFixed(1)}" fill="${f}" stroke="rgba(8,16,42,.42)" stroke-width="0.7" transform="rotate(${ang},${(+x1).toFixed(1)},${(+y1).toFixed(1)})"/>`;
+    x1=+x1; y1=+y1; x2=+x2; y2=+y2;
+    const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy)||0.001;
+    const px=-dy/len, py=dx/len;                 // unit perpendicular
+    const r1=w/2, r2=Math.max(1.7, w*0.74/2);    // proximal (fat) → distal (slim)
+    // Light from upper-left: put the highlight on whichever side faces it.
+    const lit = (px*-0.55 + py*-1) >= 0 ? 1 : -1;
+    const mx=(x1+x2)/2, my=(y1+y2)/2, rr=Math.max(r1,r2);
+    const id='wl'+(_gid++);
+    const c = d ? ['#cfe0f6','#4f79c4','#102a63'] : ['#f4faff','#5aa0fb','#123a8e'];
+    const A=[(x1+px*r1*lit).toFixed(1),(y1+py*r1*lit).toFixed(1)];
+    const B=[(x2+px*r2*lit).toFixed(1),(y2+py*r2*lit).toFixed(1)];
+    const C=[(x2-px*r2*lit).toFixed(1),(y2-py*r2*lit).toFixed(1)];
+    const E=[(x1-px*r1*lit).toFixed(1),(y1-py*r1*lit).toFixed(1)];
+    // outline path: lit side A→B, round distal cap B→C, shadow side C→E, round proximal cap E→A
+    const path=`M${A[0]},${A[1]} L${B[0]},${B[1]} A${r2.toFixed(1)},${r2.toFixed(1)} 0 0 1 ${C[0]},${C[1]} L${E[0]},${E[1]} A${r1.toFixed(1)},${r1.toFixed(1)} 0 0 1 ${A[0]},${A[1]} Z`;
+    const g1x=(mx+px*rr*lit).toFixed(1), g1y=(my+py*rr*lit).toFixed(1);
+    const g2x=(mx-px*rr*lit).toFixed(1), g2y=(my-py*rr*lit).toFixed(1);
+    return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${g1x}" y1="${g1y}" x2="${g2x}" y2="${g2y}">`+
+      `<stop offset="0%" stop-color="${c[0]}"/><stop offset="14%" stop-color="${c[0]}"/>`+
+      `<stop offset="46%" stop-color="${c[1]}"/><stop offset="100%" stop-color="${c[2]}"/></linearGradient>`+
+      `<path d="${path}" fill="url(#${id})" stroke="rgba(7,14,38,.45)" stroke-width="0.7" stroke-linejoin="round"/>`;
   }
 
   // Joint / hand / foot sphere (slightly larger so limbs connect smoothly)
