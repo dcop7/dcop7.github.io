@@ -318,12 +318,14 @@ body.theme-terminal .cs-cmd { color: var(--accent); background: rgba(34,197,94,.
 .wk-work { background: rgba(99,102,241,.15); color: var(--accent); border: 1px solid rgba(var(--accent-rgb),.25); }
 .wk-rest { background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.22); }
 .wk-fig-wrap { width: min(200px, 55vw); aspect-ratio: 2/3; position: relative; }
-.wk-fig-svg-wrap { position: absolute; inset: 0; width: 100%; height: 100%; }
-.wk-fig-a, .wk-fig-b { position: absolute; inset: 0; width: 100%; height: 100%; }
-.wk-fig-a { animation: wk-frame-a calc(var(--wk-spd, 0.7s) * 2) linear infinite; }
-.wk-fig-b { animation: wk-frame-b calc(var(--wk-spd, 0.7s) * 2) linear infinite; }
-@keyframes wk-frame-a { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
-@keyframes wk-frame-b { 0%, 50% { opacity: 0; } 50.01%, 100% { opacity: 1; } }
+.wk-fig-svg-wrap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
+/* Sprite-strip movement loop: 4 frames side by side, stepped through with hard
+   cuts (no ghosting) so the exercise's positions read as real motion. */
+.wk-fig-strip { display: flex; width: 400%; height: 100%; will-change: transform;
+  animation: wk-sprite calc(var(--wk-spd, 0.62s) * 4) steps(4) infinite; }
+.wk-fig-f { flex: 0 0 25%; height: 100%; }
+.wk-fig-f svg { width: 100%; height: 100%; display: block; }
+@keyframes wk-sprite { from { transform: translateX(0); } to { transform: translateX(-100%); } }
 /* Muscle-target map */
 .wk-mm-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .wk-mm-svg { width: 100%; height: 100%; }

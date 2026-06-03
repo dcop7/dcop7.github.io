@@ -41,12 +41,21 @@ const WorkoutPage = (function () {
     '</filter>' +
   '</defs>';
 
+  // Multi-frame movement loop rendered as a CSS sprite strip (hard-cut steps, no
+  // ghosting). Frames are given in cycle order; we normalise to 4 slots so a
+  // single steps(4) animation drives every exercise:
+  //   2 frames [A,B]   → [A,A,B,B]   (two positions, each held)
+  //   3 frames [A,M,B] → [A,M,B,M]   (ping-pong through a middle = smooth motion)
+  //   4 frames         → as authored
   function fig(id, frames) {
-    const [f1, f2] = frames;
-    return `<div class="wk-fig-svg-wrap">` +
-      `<svg class="wk-fig-a" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}<g filter="url(#g3sh)">${f1}</g></svg>` +
-      `<svg class="wk-fig-b" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}<g filter="url(#g3sh)">${f2}</g></svg>` +
-    `</div>`;
+    let fr = frames.slice();
+    if (fr.length === 2) fr = [fr[0], fr[0], fr[1], fr[1]];
+    else if (fr.length === 3) fr = [fr[0], fr[1], fr[2], fr[1]];
+    while (fr.length < 4) fr.push(fr[fr.length - 1]);
+    fr = fr.slice(0, 4);
+    return `<div class="wk-fig-svg-wrap"><div class="wk-fig-strip">` +
+      fr.map(f => `<div class="wk-fig-f"><svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}<g filter="url(#g3sh)">${f}</g></svg></div>`).join('') +
+    `</div></div>`;
   }
 
   // 3D primitives
@@ -105,6 +114,15 @@ const WorkoutPage = (function () {
       s3(50,27,62,47,6)+s3(62,47,64,65,5)+         // R arm (front)
       j3(30,27)+j3(50,27)+j3(40,56)+j3(20,47)+j3(62,47)+j3(28,82)+j3(52,82)+
       h3(40,12),
+      // Half squat (middle of the descent)
+      gn(110)+
+      s3(40,55,25,76,8,1)+s3(25,76,28,103,7,1)+   // L leg
+      s3(33,30,21,42,6,1)+                          // L arm forward
+      s3(40,23,40,55,11.5)+                         // torso
+      s3(40,55,57,76,8)+s3(57,76,52,103,7)+         // R leg
+      s3(47,30,59,42,6)+                            // R arm forward
+      j3(33,30)+j3(47,30)+j3(40,55)+j3(25,76)+j3(57,76)+j3(21,42)+j3(59,42)+
+      h3(40,15),
       // Deep squat — thighs parallel, arms forward for balance
       gn(108)+
       s3(40,53,22,73,8,1)+s3(22,73,30,98,7,1)+    // L leg squat
@@ -166,6 +184,15 @@ const WorkoutPage = (function () {
       s3(42,56,28,78,8)+s3(28,78,24,108,7)+        // R leg forward (near)
       s3(50,27,62,47,6)+s3(62,47,64,65,5)+
       j3(30,27)+j3(50,27)+j3(40,56)+j3(54,80)+j3(28,78)+
+      h3(40,12),
+      // Standing (between alternating lunges)
+      gn(112)+
+      s3(38,56,37,82,8,1)+s3(37,82,36,108,7,1)+
+      s3(30,27,20,47,6,1)+s3(20,47,18,65,5,1)+
+      s3(40,20,40,56,12)+
+      s3(42,56,43,82,8)+s3(43,82,44,108,7)+
+      s3(50,27,62,47,6)+s3(62,47,64,65,5)+
+      j3(30,27)+j3(50,27)+j3(40,56)+j3(37,82)+j3(43,82)+
       h3(40,12),
       // Left leg forward lunge
       gn(112)+
@@ -251,6 +278,15 @@ const WorkoutPage = (function () {
       s3(50,27,56,48,6)+s3(56,48,58,66,5)+
       j3(30,27)+j3(50,27)+j3(40,56)+j3(24,48)+j3(56,48)+j3(32,82)+j3(48,82)+
       h3(40,12),
+      // Mid spread (between together and wide)
+      gn(112)+
+      s3(38,56,27,81,8,1)+s3(27,81,23,107,7,1)+
+      s3(30,27,19,33,6,1)+
+      s3(40,19,40,56,12)+
+      s3(42,56,53,81,8)+s3(53,81,57,107,7)+
+      s3(50,27,61,33,6)+
+      j3(30,27)+j3(50,27)+j3(40,56)+j3(27,81)+j3(53,81)+j3(19,33)+j3(61,33)+
+      h3(40,11),
       // Wide — arms/legs spread, slightly airborne
       gn(112)+
       s3(38,56,22,80,8,1)+s3(22,80,16,106,7,1)+
@@ -272,6 +308,15 @@ const WorkoutPage = (function () {
       s3(42,56,52,80,8)+s3(52,80,54,108,7)+        // R leg on ground
       s3(50,27,64,44,6)+                           // R arm forward
       j3(30,27)+j3(50,27)+j3(40,56)+j3(28,74)+j3(52,80)+j3(18,46)+j3(64,44)+
+      h3(40,12),
+      // Neutral (both feet down) — passes through this between knee raises
+      gn(112)+
+      s3(38,56,36,82,8,1)+s3(36,82,35,108,7,1)+
+      s3(30,27,22,47,6,1)+
+      s3(40,20,40,56,12)+
+      s3(42,56,44,82,8)+s3(44,82,45,108,7)+
+      s3(50,27,58,47,6)+
+      j3(30,27)+j3(50,27)+j3(40,56)+j3(36,82)+j3(44,82)+
       h3(40,12),
       // Right knee raised, left arm forward
       gn(112)+
@@ -338,6 +383,15 @@ const WorkoutPage = (function () {
       s3(50,24,62,10,6)+
       j3(30,24)+j3(50,24)+j3(40,48)+j3(30,72)+j3(50,72)+j3(18,10)+j3(62,10)+
       h3(40,8),
+      // Standing (between jump and landing)
+      gn(110)+
+      s3(40,54,30,78,8,1)+s3(30,78,29,104,7,1)+
+      s3(33,28,24,44,6,1)+
+      s3(40,22,40,54,11.5)+
+      s3(40,54,50,78,8)+s3(50,78,51,104,7)+
+      s3(47,28,56,44,6)+
+      j3(33,28)+j3(47,28)+j3(40,54)+j3(30,78)+j3(50,78)+
+      h3(40,14),
       // Landing squat
       gn(108)+
       s3(40,54,22,74,8,1)+s3(22,74,30,100,7,1)+
@@ -531,6 +585,15 @@ const WorkoutPage = (function () {
       s3(42,56,52,80,8)+s3(52,80,54,108,7)+        // R leg on ground
       s3(50,27,64,44,6)+                           // R arm forward
       j3(30,27)+j3(50,27)+j3(40,56)+j3(28,74)+j3(52,80)+j3(18,46)+j3(64,44)+
+      h3(40,12),
+      // Neutral (both feet down) — passes through this between knee raises
+      gn(112)+
+      s3(38,56,36,82,8,1)+s3(36,82,35,108,7,1)+
+      s3(30,27,22,47,6,1)+
+      s3(40,20,40,56,12)+
+      s3(42,56,44,82,8)+s3(44,82,45,108,7)+
+      s3(50,27,58,47,6)+
+      j3(30,27)+j3(50,27)+j3(40,56)+j3(36,82)+j3(44,82)+
       h3(40,12),
       // Right knee raised, left arm forward
       gn(112)+
@@ -799,8 +862,8 @@ const WorkoutPage = (function () {
     const total = _workout.length;
     const isRest = _phase === 'rest';
     const nextName = getNext();
-    const figHTML = muscleFig(ex.muscle, isRest);
-    const speed = isRest ? '1.8s' : ex.anim === 'plank' || ex.anim === 'sideplank' ? '2.5s' : '0.7s';
+    const figHTML = makeFig(ex.anim, isRest);
+    const speed = isRest ? '1.6s' : ex.anim === 'plank' || ex.anim === 'sideplank' ? '1.4s' : '0.62s';
 
     el.innerHTML = `
       <div class="view-inner">
