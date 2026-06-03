@@ -108,9 +108,10 @@ const RealtimeEarth = (function () {
     void main(){
       float i = dot(normalize(vWorldNormal), normalize(sunDirection));
       vec3 day = texture2D(dayTexture, vUv).rgb;
-      /* Night side = a clearly visible dim Earth (≈⅓ of the day texture) plus
-         glowing city lights — never a pure-black void. */
-      vec3 night = texture2D(nightTexture, vUv).rgb * 1.3 + day * 0.32;
+      /* Night side = a clearly visible dim Earth (≈⅓ of the day texture) + city
+         lights + a faint blue earthshine floor, so even dark oceans never read
+         as a pure-black void. */
+      vec3 night = texture2D(nightTexture, vUv).rgb * 1.3 + day * 0.35 + vec3(0.012, 0.022, 0.045);
       float blend = mix(1.0, smoothstep(-0.25, 0.30, i), dayNight);
       gl_FragColor = vec4(mix(night, day, blend), 1.0);
     }`;
@@ -378,7 +379,10 @@ const RealtimeEarth = (function () {
     try { _globe.globeMaterial(_shaderMat); } catch (_) {}
     _updateSun();   /* set the initial sun direction */
 
-    _globe.pointOfView({ lat: 20, lng: -20, altitude: 2.4 }, 0);
+    /* Open looking at the daylit side (centred on the Sun's longitude) so the
+       globe is bright and vivid on load, not facing the dark night hemisphere. */
+    const sp0 = _sunPos();
+    _globe.pointOfView({ lat: 22, lng: sp0.lon, altitude: 2.4 }, 0);
 
     /* Keep the terminator anchored to the real Sun. */
     _startSunTimer();
@@ -847,7 +851,7 @@ const RealtimeEarth = (function () {
 
   function _tipHtml(meta) {
     const rows = meta.rows.map(([k, v]) => `<span class="ex-rt-tip-row"><b>${_esc(k)}</b> ${_esc(v)}</span>`).join('');
-    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}${meta.url ? '<span class="ex-rt-tip-hint">clica para mais info ↗</span>' : ''}`;
+    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}${meta.url ? '<span class="ex-rt-tip-hint">clica para abrir a página ↗</span>' : ''}`;
   }
   function _cardHtml(meta) {
     const rows = meta.rows.map(([k, v]) => `<div class="ex-rt-card-row"><span>${_esc(k)}</span><span>${_esc(v)}</span></div>`).join('');
@@ -859,7 +863,6 @@ const RealtimeEarth = (function () {
 
   function _wireHover(el) {
     const tip = document.getElementById('rt-tooltip');
-    const card = document.getElementById('rt-detail');
     let _down = false, _downX = 0, _downY = 0, _dragMoved = false;
 
     el.addEventListener('pointerdown', e => {
@@ -887,18 +890,13 @@ const RealtimeEarth = (function () {
     }, { passive: true });
     el.addEventListener('pointerleave', () => { if (tip) tip.hidden = true; });
 
-    /* Click an event → pin a detail card (with a link); click elsewhere closes
-       it. A click that was really a drag (globe rotate) must NOT pin. */
+    /* Click an event (a real click, not a drag-rotate) → open its source page.
+       No persistent card: the hover tooltip already shows the details and it
+       auto-hides when the pointer leaves the event. */
     el.addEventListener('click', e => {
-      if (!card) return;
-      if (_dragMoved) return;                     /* it was a drag, not a click */
+      if (_dragMoved) return;
       const meta = _pickMeta(e, el);
-      if (meta) {
-        _pinned = meta;
-        card.innerHTML = _cardHtml(meta); card.hidden = false;
-        const close = document.getElementById('rt-card-close');
-        if (close) close.onclick = ev => { ev.stopPropagation(); card.hidden = true; _pinned = null; };
-      } else { card.hidden = true; _pinned = null; }
+      if (meta && meta.url) window.open(meta.url, '_blank', 'noopener');
     });
   }
 

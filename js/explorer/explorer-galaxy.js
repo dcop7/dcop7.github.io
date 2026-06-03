@@ -157,7 +157,7 @@ const MilkyWayExplorer = (function () {
           <div class="ex-solar-loading-txt">A inicializar a Via Láctea 3D…</div>
         </div>
         <div class="ex-solar-controls">
-          <button class="ex-solar-btn active" id="gx-rotate" title="Rotação automática">⟳</button>
+          <button class="ex-solar-btn active" id="gx-rotate" title="Parar rotação">⏸</button>
           <button class="ex-solar-btn active" id="gx-labels" title="Mostrar/ocultar nomes">🏷</button>
           <div class="ex-solar-divider"></div>
           <button class="ex-solar-btn" id="gx-zoom-out" title="Afastar">−</button>
@@ -698,7 +698,11 @@ const MilkyWayExplorer = (function () {
   /* ═════════════════════════════ CONTROLS ═══════════════════════════ */
   function _wireControls(container) {
     container.querySelector('#gx-rotate').onclick = e => {
-      _rotate = !_rotate; e.currentTarget.classList.toggle('active', _rotate);
+      _rotate = !_rotate;
+      const b = e.currentTarget;
+      b.classList.toggle('active', _rotate);
+      b.textContent = _rotate ? '⏸' : '⟳';                 /* pause when spinning, play when stopped */
+      b.title = _rotate ? 'Parar rotação' : 'Retomar rotação';
     };
     container.querySelector('#gx-labels').onclick = e => {
       _labelsOn = !_labelsOn; e.currentTarget.classList.toggle('active', _labelsOn);
