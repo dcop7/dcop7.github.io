@@ -23,54 +23,66 @@ const WorkoutPage = (function () {
   // viewBox="0 0 80 120" — 3/4 front-right view for standing, side view for floor
   // Back (left) limbs use g3d (dark), front (right) limbs use g3b (bright)
   const D = '<defs>' +
-    '<radialGradient id="g3h" cx="40%" cy="32%" r="60%">' +
-      '<stop offset="0%" stop-color="#ffdcb8"/>' +
-      '<stop offset="55%" stop-color="#e8a478"/>' +
-      '<stop offset="100%" stop-color="#c07040"/>' +
+    // Skin (head) — soft sheen
+    '<radialGradient id="g3h" cx="37%" cy="30%" r="70%">' +
+      '<stop offset="0%" stop-color="#ffe9d2"/>' +
+      '<stop offset="48%" stop-color="#f1b487"/>' +
+      '<stop offset="100%" stop-color="#b56a3b"/>' +
     '</radialGradient>' +
+    // Front (near) limbs — glossy blue with a bright specular edge
     '<linearGradient id="g3b" x1="0" y1="0" x2="1" y2="0">' +
-      '<stop offset="0%" stop-color="rgba(191,219,254,.92)"/>' +
-      '<stop offset="32%" stop-color="rgba(59,130,246,1)"/>' +
-      '<stop offset="100%" stop-color="rgba(29,78,216,.68)"/>' +
+      '<stop offset="0%" stop-color="#eaf3ff"/>' +
+      '<stop offset="20%" stop-color="#8cc0fd"/>' +
+      '<stop offset="55%" stop-color="#3b82f6"/>' +
+      '<stop offset="100%" stop-color="#1b46c4"/>' +
     '</linearGradient>' +
+    // Back (far) limbs — darker, so depth reads clearly
     '<linearGradient id="g3d" x1="0" y1="0" x2="1" y2="0">' +
-      '<stop offset="0%" stop-color="rgba(96,165,250,.72)"/>' +
-      '<stop offset="100%" stop-color="rgba(29,78,216,.46)"/>' +
+      '<stop offset="0%" stop-color="#6f9fe0"/>' +
+      '<stop offset="60%" stop-color="#2f5fbf"/>' +
+      '<stop offset="100%" stop-color="#153584"/>' +
     '</linearGradient>' +
-    '<radialGradient id="g3j" cx="38%" cy="35%" r="60%">' +
-      '<stop offset="0%" stop-color="rgba(191,219,254,1)"/>' +
-      '<stop offset="100%" stop-color="rgba(59,130,246,.8)"/>' +
+    // Joints / hands / feet
+    '<radialGradient id="g3j" cx="35%" cy="32%" r="68%">' +
+      '<stop offset="0%" stop-color="#f0f6ff"/>' +
+      '<stop offset="55%" stop-color="#6aa5f8"/>' +
+      '<stop offset="100%" stop-color="#214fbe"/>' +
     '</radialGradient>' +
+    // Soft unified drop shadow → makes the figure read as one solid 3D body
+    '<filter id="g3sh" x="-40%" y="-30%" width="180%" height="170%">' +
+      '<feDropShadow dx="0.5" dy="1.1" stdDeviation="1.3" flood-color="#0a1230" flood-opacity="0.5"/>' +
+    '</filter>' +
   '</defs>';
 
   function fig(id, frames) {
     const [f1, f2] = frames;
     return `<div class="wk-fig-svg-wrap">` +
-      `<svg class="wk-fig-a" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}${f1}</svg>` +
-      `<svg class="wk-fig-b" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}${f2}</svg>` +
+      `<svg class="wk-fig-a" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}<g filter="url(#g3sh)">${f1}</g></svg>` +
+      `<svg class="wk-fig-b" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">${D}<g filter="url(#g3sh)">${f2}</g></svg>` +
     `</div>`;
   }
 
   // 3D primitives
   const h3 = (cx, cy, r=8) =>
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g3h)"/>`;
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g3h)" stroke="rgba(110,55,22,.4)" stroke-width="0.7"/>`;
 
-  // Cylindrical segment — rotated rounded rect from (x1,y1) to (x2,y2), width w
-  // d=true uses darker gradient (back/far limbs)
+  // Cylindrical segment — rotated rounded rect from (x1,y1) to (x2,y2), width w.
+  // d=true uses the darker gradient (back/far limbs). A thin dark outline keeps
+  // overlapping limbs cleanly separated; rounded caps read as muscle.
   function s3(x1, y1, x2, y2, w=6, d=false) {
     const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
     const ang=(Math.atan2(dy,dx)*180/Math.PI).toFixed(1);
     const f = d ? 'url(#g3d)' : 'url(#g3b)';
-    return `<rect x="${(+x1).toFixed(1)}" y="${(y1-w/2).toFixed(1)}" width="${len.toFixed(1)}" height="${w}" rx="${(w/2).toFixed(1)}" fill="${f}" transform="rotate(${ang},${(+x1).toFixed(1)},${(+y1).toFixed(1)})"/>`;
+    return `<rect x="${(+x1).toFixed(1)}" y="${(y1-w/2).toFixed(1)}" width="${len.toFixed(1)}" height="${w}" rx="${(w/2).toFixed(1)}" fill="${f}" stroke="rgba(8,16,42,.42)" stroke-width="0.7" transform="rotate(${ang},${(+x1).toFixed(1)},${(+y1).toFixed(1)})"/>`;
   }
 
-  // Joint sphere
-  const j3 = (cx, cy, r=3.5) =>
+  // Joint / hand / foot sphere (slightly larger so limbs connect smoothly)
+  const j3 = (cx, cy, r=4) =>
     `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g3j)"/>`;
 
-  // Ground line
+  // Soft contact shadow on the ground (replaces the old flat line)
   const gn = (y=112) =>
-    `<line x1="8" y1="${y}" x2="72" y2="${y}"/>`;
+    `<ellipse cx="40" cy="${(+y+1).toFixed(1)}" rx="24" ry="3" fill="rgba(0,0,0,.28)"/>`;
 
   // ── Figure library ─────────────────────────────────────────────────
   const FIGS = {
