@@ -15,7 +15,7 @@ const RealtimeEarth = (function () {
   /* Bump on every meaningful change — logged on mount so we can confirm from the
      browser console exactly which build is actually running (rules out stale
      cached JS, the usual reason a fix "doesn't show up"). */
-  const BUILD = 'v61 (2026-06-03 bright shaded-relief day texture)';
+  const BUILD = 'v63 (2026-06-03 detailed volcanoes + multi-path tooltip hide)';
 
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
@@ -230,6 +230,7 @@ const RealtimeEarth = (function () {
       kind, icon, title: `${type} · ${d.title || type}`,
       rows: [
         ['Tipo', type],
+        d.sizeLabel ? ['Porte', d.sizeLabel] : null,
         d.mag != null ? ['Intensidade', `${d.mag} ${d.magUnit || ''}`.trim()] : null,
         d.startMs ? ['Início', _fmtTime(d.startMs)] : null,
         d.lastMs ? ['Última atividade', _fmtTime(d.lastMs)] : null,
@@ -476,38 +477,63 @@ const RealtimeEarth = (function () {
      a fountain of lava bombs, and a tall rising smoke/ash plume. */
   function _buildVolcano(d) {
     const g = new THREE.Group();
-    const S = 2.4 + (d.signif || 0) * 4.5;            /* overall scale */
-    const cone = new THREE.Mesh(
-      new THREE.ConeGeometry(1.4 * S, 2.4 * S, 18, 1, true),
-      new THREE.MeshBasicMaterial({ color: 0x4a3a30, side: THREE.DoubleSide }));
-    cone.position.y = 1.2 * S; g.add(cone);
-    /* Glowing crater + additive heat glow. */
-    const vent = new THREE.Mesh(new THREE.SphereGeometry(0.55 * S, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffb024 }));
-    vent.position.y = 2.4 * S; g.add(vent);
-    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xff4400, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glow.scale.setScalar(4 * S); glow.position.y = 2.6 * S; g.add(glow);
+    /* Size bucket from the activity-significance proxy: small · medium · large.
+       (EONET has no physical size, so longevity/track-length stands in for it.) */
+    const sig = d.signif || 0;
+    const lvl = sig >= 0.6 ? 2 : sig >= 0.3 ? 1 : 0;
+    d.sizeLabel = ['pequeno', 'médio', 'grande'][lvl];
+    const S = [2.2, 3.6, 5.4][lvl];
+    const qf = _q < 0.7 ? 0.6 : 1;                    /* fewer particles on weak devices */
 
-    /* Lava fountain — bright bombs launched upward, falling back (animated). */
-    const LN = 40, lpos = new Float32Array(LN * 3), lprog = new Float32Array(LN), lspd = new Float32Array(LN);
-    for (let i = 0; i < LN; i++) { lprog[i] = Math.random(); lspd[i] = 0.6 + Math.random() * 0.6; }
-    const lg = new THREE.BufferGeometry();
-    lg.setAttribute('position', new THREE.BufferAttribute(lpos, 3));
-    const lava = new THREE.Points(lg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xff6a10, size: 1.3 * S, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+    /* Stratovolcano profile: a broad lower flank + a steeper summit cone. */
+    const lower = new THREE.Mesh(new THREE.ConeGeometry(1.75 * S, 1.7 * S, 26, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x3a2e26, side: THREE.DoubleSide }));
+    lower.position.y = 0.85 * S; g.add(lower);
+    const upper = new THREE.Mesh(new THREE.ConeGeometry(0.95 * S, 1.5 * S, 26, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x4c3b30, side: THREE.DoubleSide }));
+    upper.position.y = 2.05 * S; g.add(upper);
+
+    /* Glowing crater rim + molten vent + additive heat bloom. */
+    const crater = new THREE.Mesh(new THREE.TorusGeometry(0.52 * S, 0.15 * S, 8, 20),
+      new THREE.MeshBasicMaterial({ color: 0xff5314 }));
+    crater.position.y = 2.78 * S; crater.rotation.x = Math.PI / 2; g.add(crater);
+    const vent = new THREE.Mesh(new THREE.SphereGeometry(0.4 * S, 14, 14),
+      new THREE.MeshBasicMaterial({ color: 0xffc23a }));
+    vent.position.y = 2.74 * S; g.add(vent);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xff4a00, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    glow.scale.setScalar(5 * S); glow.position.y = 3 * S; g.add(glow);
+
+    /* Lava fountain — incandescent bombs on parabolic arcs (more for bigger ones). */
+    const LN = Math.round((26 + lvl * 22) * qf);
+    const lpos = new Float32Array(LN * 3), lprog = new Float32Array(LN), lspd = new Float32Array(LN), lang = new Float32Array(LN);
+    for (let i = 0; i < LN; i++) { lprog[i] = Math.random(); lspd[i] = 0.5 + Math.random() * 0.7; lang[i] = Math.random() * Math.PI * 2; }
+    const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(lpos, 3));
+    const lava = new THREE.Points(lg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xff7a18, size: 1.1 * S, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
     g.add(lava);
 
-    /* Smoke / ash plume rising high above the crater. */
-    const N = 46, pos = new Float32Array(N * 3), prog = new Float32Array(N);
-    for (let i = 0; i < N; i++) prog[i] = Math.random();
+    /* Glowing lava creeping down the flanks (bright points descending the cone). */
+    const RN = Math.round((10 + lvl * 8) * qf);
+    const rpos = new Float32Array(RN * 3), rprog = new Float32Array(RN), rang = new Float32Array(RN), rspd = new Float32Array(RN);
+    for (let i = 0; i < RN; i++) { rprog[i] = Math.random(); rang[i] = Math.random() * Math.PI * 2; rspd[i] = 0.12 + Math.random() * 0.18; }
+    const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.BufferAttribute(rpos, 3));
+    const streaks = new THREE.Points(rg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xff3b08, size: 0.85 * S, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    g.add(streaks);
+
+    /* Ash plume — a column that widens as it rises (mushroom), colour fading from
+       dark ash at the base to pale grey at the top via per-vertex colour. */
+    const N = Math.round((50 + lvl * 40) * qf);
+    const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), prog = new Float32Array(N), pph = new Float32Array(N);
+    for (let i = 0; i < N; i++) { prog[i] = Math.random(); pph[i] = Math.random() * Math.PI * 2; }
     const sg = new THREE.BufferGeometry();
     sg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const smoke = new THREE.Points(sg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0x8a8278, size: 2.4 * S, transparent: true, opacity: 0.42, depthWrite: false }));
+    sg.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const smoke = new THREE.Points(sg, new THREE.PointsMaterial({ map: _glowTexture(), size: 2.6 * S, vertexColors: true, transparent: true, opacity: 0.5, depthWrite: false }));
     g.add(smoke);
 
     /* Decoration is non-interactive; a small invisible sphere is the hit target. */
-    [cone, vent, glow, lava, smoke].forEach(o => { o.raycast = _noRay; });
-    _addHit(g, 2.4 * S, 1.6 * S);
-    g.userData = { smoke, prog, N, lava, lprog, lspd, LN, vent, S, meta: _eonetMeta(d, 'volcano'), lat: d.lat, lng: d.lng, alt: 0, axis: 'y' };
+    [lower, upper, crater, vent, glow, lava, streaks, smoke].forEach(o => { o.raycast = _noRay; });
+    _addHit(g, 2.0 * S, 1.8 * S);
+    g.userData = { smoke, prog, pph, N, lava, lprog, lspd, lang, LN, streaks, rprog, rang, rspd, RN, vent, crater, glow, S, meta: _eonetMeta(d, 'volcano'), lat: d.lat, lng: d.lng, alt: 0, axis: 'y' };
     _orient(g, d.lat, d.lng, 0, 'y');
     _scene().add(g);
     _volcanoes.push(g);
@@ -821,9 +847,10 @@ const RealtimeEarth = (function () {
     const tick = () => {
       _raf = requestAnimationFrame(tick);
       const t = performance.now(), dt = Math.min(0.05, (t - last) / 1000); last = t;
-      /* Wrap the frame so a single stray error can NEVER kill the loop — that
-         would otherwise freeze both the animation and the tooltip (leaving a
-         "stuck" popup). */
+      /* Tooltip FIRST and isolated, so an error in the marker animation below can
+         never stop it from hiding (which would leave a "stuck" popup). It also
+         runs from pointer events directly — this rAF pass is just a backstop. */
+      try { _updateTooltip(); } catch (_) {}
       try { _frame(t, dt); } catch (_) {}
       last = t;
     };
@@ -835,33 +862,48 @@ const RealtimeEarth = (function () {
          orientation (all camera-independent; cheap). */
       _updateSun();
       _reglue(_quakeMarks); _reglue(_volcanoes); _reglue(_fires); _reglue(_storms);
-      /* Heartbeat: keep the hover tooltip honest from the live pointer. */
-      _updateTooltip();
 
-      /* Volcano: rising ash plume, arcing lava fountain, flickering crater. */
+      /* Volcano: mushrooming ash plume (dark→pale), arcing lava fountain, lava
+         creeping down the flanks, and a pulsing molten crater. */
       for (const v of _volcanoes) {
         const u = v.userData, S = u.S || 1;
-        const spos = u.smoke.geometry.attributes.position;
+        const spos = u.smoke.geometry.attributes.position, scol = u.smoke.geometry.attributes.color;
         for (let i = 0; i < u.N; i++) {
-          u.prog[i] += dt * (0.18 + (i % 5) * 0.02);
+          u.prog[i] += dt * (0.11 + (i % 5) * 0.012);
           if (u.prog[i] > 1) u.prog[i] -= 1;
-          const p = u.prog[i], spread = S * (0.4 + p * 1.4);
-          spos.setXYZ(i, Math.sin(i * 12.9) * spread, S * (2.6 + p * 7), Math.cos(i * 7.7) * spread);
+          const p = u.prog[i];
+          const spread = S * (0.28 + p * p * 2.6);            /* widen with height → mushroom */
+          const a = u.pph[i] + p * 1.4 + t * 0.0009;          /* slow swirl */
+          spos.setXYZ(i, Math.cos(a) * spread, S * (2.7 + p * 9.5), Math.sin(a) * spread);
+          const gc = 0.16 + p * 0.56;                         /* dark ash → pale grey */
+          scol.setXYZ(i, gc * 1.06, gc, gc * 0.92);
         }
-        spos.needsUpdate = true;
+        spos.needsUpdate = true; scol.needsUpdate = true;
         if (u.lava) {
           const lpos = u.lava.geometry.attributes.position;
           for (let i = 0; i < u.LN; i++) {
             u.lprog[i] += dt * u.lspd[i];
             if (u.lprog[i] > 1) u.lprog[i] -= 1;
-            const p = u.lprog[i];
-            const h = (p * (1 - p) * 4);                /* parabolic arc 0..1..0 */
-            const ang = i * 2.39, rad = S * (0.15 + p * 0.9);
-            lpos.setXYZ(i, Math.cos(ang) * rad, S * (2.4 + h * 5.5), Math.sin(ang) * rad);
+            const p = u.lprog[i], h = p * (1 - p) * 4;         /* parabolic arc 0..1..0 */
+            const rad = S * (0.1 + p * 1.15);
+            lpos.setXYZ(i, Math.cos(u.lang[i]) * rad, S * (2.7 + h * 6.2), Math.sin(u.lang[i]) * rad);
           }
           lpos.needsUpdate = true;
         }
-        if (u.vent) u.vent.material.color.setHSL(0.06, 1, 0.5 + 0.12 * Math.sin(t * 0.01 + v.id));
+        if (u.streaks) {
+          const rp = u.streaks.geometry.attributes.position;
+          for (let i = 0; i < u.RN; i++) {
+            u.rprog[i] += dt * u.rspd[i];
+            if (u.rprog[i] > 1) u.rprog[i] -= 1;
+            const p = u.rprog[i];
+            rp.setXYZ(i, Math.cos(u.rang[i]) * S * (0.32 + p * 1.5), S * (2.7 - p * 2.5), Math.sin(u.rang[i]) * S * (0.32 + p * 1.5));
+          }
+          rp.needsUpdate = true;
+        }
+        const pulse = 0.5 + 0.35 * Math.sin(t * 0.006 + v.id);
+        if (u.vent) u.vent.material.color.setHSL(0.045, 1, 0.45 + 0.16 * pulse);
+        if (u.crater) u.crater.material.color.setHSL(0.04, 1, 0.4 + 0.13 * pulse);
+        if (u.glow) { u.glow.material.opacity = 0.55 + 0.4 * pulse; u.glow.scale.setScalar(S * (4.6 + 0.9 * pulse)); }
       }
       /* Fire flicker. */
       for (const f of _fires) for (const sp of f.userData.sprites) {
@@ -906,7 +948,11 @@ const RealtimeEarth = (function () {
     const R = _globe.getGlobeRadius ? _globe.getGlobeRadius() : 100;
     const near = new THREE.Vector3();
     const hasNear = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(0, 0, 0), R), near);
-    const maxDist = hasNear ? cam.position.distanceTo(near) + R * 0.2 : Infinity;
+    /* Only accept hits on the near side. If the ray misses the globe entirely
+       (cursor in the space around it), cap at the distance to the globe centre so
+       a marker poking past the far limb can't keep the tooltip up — the cause of
+       a popup "not disappearing" when the pointer is off the globe. */
+    const maxDist = (hasNear ? cam.position.distanceTo(near) : cam.position.length()) + R * 0.2;
     for (const h of hits) {
       if (h.distance > maxDist) continue;           /* behind the visible globe */
       let o = h.object; while (o && !o.userData?.meta && o.parent) o = o.parent;
@@ -944,12 +990,19 @@ const RealtimeEarth = (function () {
       const r = el.getBoundingClientRect();
       _ptr.inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
       if (_ptr.down && (Math.abs(e.clientX - _ptr.downX) > 6 || Math.abs(e.clientY - _ptr.downY) > 6)) _ptr.dragMoved = true;
+      /* Decide show/hide immediately on the move itself (not only in rAF), so the
+         tooltip responds the instant the pointer leaves an event. Listening for
+         BOTH pointermove and mousemove, on document in the capture phase, means
+         no canvas/control can swallow the move that should hide it. */
+      try { _updateTooltip(); } catch (_) {}
     }
     document.addEventListener('pointermove', track, true);
+    document.addEventListener('mousemove', track, true);
     el.addEventListener('pointerdown', e => { _ptr.down = true; _ptr.downX = e.clientX; _ptr.downY = e.clientY; _ptr.dragMoved = false; });
     window.addEventListener('pointerup', () => { _ptr.down = false; });
-    window.addEventListener('blur', () => { _ptr.inside = false; });
-    el.addEventListener('pointerleave', () => { _ptr.inside = false; });
+    window.addEventListener('blur', () => { _ptr.inside = false; if (_tipEl) _tipEl.hidden = true; });
+    el.addEventListener('pointerleave', () => { _ptr.inside = false; if (_tipEl) _tipEl.hidden = true; });
+    el.addEventListener('mouseleave', () => { _ptr.inside = false; if (_tipEl) _tipEl.hidden = true; });
 
     /* Click an event (a real click, not a drag-rotate) → open its source page. */
     el.addEventListener('click', () => {
