@@ -15,7 +15,7 @@ const RealtimeEarth = (function () {
   /* Bump on every meaningful change — logged on mount so we can confirm from the
      browser console exactly which build is actually running (rules out stale
      cached JS, the usual reason a fix "doesn't show up"). */
-  const BUILD = 'v60.1 (2026-06-03 night+tooltip+texture-guard)';
+  const BUILD = 'v61 (2026-06-03 bright shaded-relief day texture)';
 
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
@@ -32,20 +32,26 @@ const RealtimeEarth = (function () {
     const p = new URLSearchParams({
       SERVICE: 'WMS', REQUEST: 'GetMap', VERSION: '1.3.0', LAYERS: layer,
       CRS: 'EPSG:4326', BBOX: '-90,-180,90,180', WIDTH: String(W), HEIGHT: String(W / 2),
-      FORMAT: fmt || 'image/jpeg', TIME: date,
+      FORMAT: fmt || 'image/jpeg',
     });
+    if (date) p.set('TIME', date);     /* omit for static layers (no time dim) */
     return `${GIBS}?${p.toString()}`;
   }
 
-  /* High-res, cloud-free base imagery (NASA "Blue Marble: Next Generation", a
-     static monthly composite) is far sharper than the bundled 2048px texture.
-     The request size is capped to the GPU's real max texture size at load time
-     (see _initGlobe) so it can never upload as black. The night-lights texture
-     stays the bundled one (VIIRS "Black Marble" is near-pure-black over land). */
-  /* The hi-res NASA day mosaic is ~1.5× darker than the bundled day texture;
-     this multiplier keeps the daylit globe equally bright before and after the
-     hi-res swap so it never appears to "go dark". */
-  const DAY_HI_BOOST = 1.55;
+  /* High-res cloud-free base imagery: NASA GIBS "Blue Marble Shaded Relief +
+     Bathymetry" — a STATIC layer (no time dim) that is the bright, colourful
+     topographic Earth, visually matching the bundled texture (unlike
+     "BlueMarble_NextGeneration", which measured ~half as bright and made the
+     globe visibly darken the moment it swapped in — the user's exact report).
+     Request size is capped to the GPU's max texture size at load time so it can
+     never upload as black; the image is also brightness-validated before use. */
+  const DAY_HI_LAYER = 'BlueMarble_ShadedRelief_Bathymetry';
+  /* Measured mean brightness: bundled ≈105, this layer ≈63. We brighten it with
+     a GAMMA curve (not a linear multiply, which blew out bright land while barely
+     lifting the dark oceans that read as "escuro"). Gamma 0.55 lifts the mean to
+     ≈102 — matching the bundled texture — with ZERO highlight clipping, so the
+     hi-res swap is brightness-neutral and can never darken the globe. */
+  const DAY_HI_GAMMA = 0.55;
 
   /* Max anisotropy keeps the surface crisp at grazing angles (the horizon). */
   let _maxAniso = 8;
@@ -117,14 +123,14 @@ const RealtimeEarth = (function () {
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
   const FRAG = `
     uniform sampler2D dayTexture; uniform sampler2D nightTexture;
-    uniform vec3 sunDirection; uniform float dayNight; uniform float dayBoost;
+    uniform vec3 sunDirection; uniform float dayNight; uniform float dayGamma;
     varying vec3 vWorldNormal; varying vec2 vUv;
     void main(){
       float i = dot(normalize(vWorldNormal), normalize(sunDirection));
-      /* dayBoost normalises brightness across textures: the hi-res NASA "Blue
-         Marble" is markedly darker than the bundled day texture, so without this
-         the globe visibly dimmed the moment the hi-res image swapped in. */
-      vec3 day = clamp(texture2D(dayTexture, vUv).rgb * dayBoost, 0.0, 1.0);
+      /* dayGamma (<1) brightens the day texture's midtones/oceans without
+         clipping bright land — it normalises brightness across textures so the
+         globe never dims when the (darker) hi-res NASA mosaic swaps in. */
+      vec3 day = clamp(pow(texture2D(dayTexture, vUv).rgb, vec3(dayGamma)), 0.0, 1.0);
       /* Night side = a clearly visible dusky Earth (75% of the day texture) + city
          lights + a blue earthshine floor, so the night hemisphere reads as a dim
          lit globe, never a dark void — the recurring "fica escuro" complaint. */
@@ -404,12 +410,12 @@ const RealtimeEarth = (function () {
        globe either — the bright bundled texture stays put if anything is off. */
     const hiPx = Math.min(4096, _maxTexSize);
     if (hiPx >= 2048) {
-      const hiUrl = _gibsUrl('BlueMarble_NextGeneration', '2004-08-01', 'image/jpeg', hiPx);
+      const hiUrl = _gibsUrl(DAY_HI_LAYER, null, 'image/jpeg', hiPx);
       tl.load(hiUrl, tex => {
         if (!_matUniforms || _on.clouds || !_isBright(tex.image)) { _baseDayTex = _isBright(tex.image) ? tex : _baseDayTex; return; }
         if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
         _aniso(tex);
-        _matUniforms.dayTexture.value = tex; _matUniforms.dayBoost.value = DAY_HI_BOOST;
+        _matUniforms.dayTexture.value = tex; _matUniforms.dayGamma.value = DAY_HI_GAMMA;
         _baseDayTex = tex;
       }, undefined, () => {});
     }
@@ -420,7 +426,7 @@ const RealtimeEarth = (function () {
       dayTexture: { value: day }, nightTexture: { value: night },
       sunDirection: { value: new THREE.Vector3(1, 0, 0) },
       dayNight: { value: _on.daynight ? 1 : 0 },
-      dayBoost: { value: 1.0 },        /* 1.0 for the bright bundled texture */
+      dayGamma: { value: 1.0 },        /* 1.0 = no change, for the bright bundled texture */
     };
     _shaderMat = new THREE.ShaderMaterial({ uniforms: _matUniforms, vertexShader: VERT, fragmentShader: FRAG });
     try { _globe.globeMaterial(_shaderMat); } catch (_) {}
@@ -741,7 +747,7 @@ const RealtimeEarth = (function () {
     if (!_matUniforms) return;
     /* No clouds → use the cached hi-res Blue Marble (or local fallback). */
     if (!_on.clouds) {
-      if (_baseDayTex) { _matUniforms.dayTexture.value = _baseDayTex; _matUniforms.dayBoost.value = DAY_HI_BOOST; }
+      if (_baseDayTex) { _matUniforms.dayTexture.value = _baseDayTex; _matUniforms.dayGamma.value = DAY_HI_GAMMA; }
       return;
     }
     /* Clouds on → date-aware true-colour MODIS mosaic at high resolution. */
@@ -750,7 +756,7 @@ const RealtimeEarth = (function () {
     tl.load(url, tex => {
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
       _aniso(tex);
-      if (_matUniforms) { _matUniforms.dayTexture.value = tex; _matUniforms.dayBoost.value = DAY_HI_BOOST; }
+      if (_matUniforms) { _matUniforms.dayTexture.value = tex; _matUniforms.dayGamma.value = DAY_HI_GAMMA; }
     }, undefined, () => {/* keep current on failure */});
   }
   function _applyTempOverlay() {
