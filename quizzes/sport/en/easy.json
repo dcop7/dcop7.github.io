@@ -1,0 +1,14 @@
+[
+  { "q": "How many players from one team are on a football pitch?", "a": "11", "opts": ["9", "10", "11", "12"], "exp": "Ten outfield players plus the goalkeeper." },
+  { "q": "Which body part may NOT touch the ball in football (except the goalkeeper)?", "a": "The hands", "opts": ["The feet", "The head", "The hands", "The chest"], "exp": "Handling the ball is a foul — except for the goalkeeper in their area." },
+  { "q": "How many rings are on the Olympic symbol?", "a": "Five", "opts": ["Three", "Four", "Five", "Six"], "exp": "The five rings represent the five inhabited continents." },
+  { "q": "Which sport uses a racket and a net to hit a small yellow ball?", "a": "Tennis", "opts": ["Golf", "Tennis", "Basketball", "Rugby"], "exp": "Tennis can be played on clay, grass or hard courts." },
+  { "q": "How many points is a free throw usually worth in basketball?", "a": "1", "opts": ["1", "2", "3", "4"], "exp": "Free throws are 1 point; normal baskets are 2 or 3." },
+  { "q": "How often are the Summer Olympic Games held?", "a": "Every 4 years", "opts": ["Every 2 years", "Every 4 years", "Every 5 years", "Every 10 years"], "exp": "Summer and Winter Games alternate every 2 years." },
+  { "q": "In which sport does a 'KO' (knockout) happen?", "a": "Boxing", "opts": ["Swimming", "Boxing", "Cycling", "Volleyball"], "exp": "A KO is when a boxer can't get up before the count of 10." },
+  { "q": "Which of these is a water sport?", "a": "Swimming", "opts": ["Handball", "Swimming", "Tennis", "Athletics"], "exp": "Strokes include freestyle, backstroke, breaststroke and butterfly." },
+  { "q": "How many players from one team are on a volleyball court?", "a": "6", "opts": ["5", "6", "7", "11"], "exp": "In volleyball the ball must not touch your own side's floor." },
+  { "q": "Which trophy does the football World Cup winner receive?", "a": "The World Cup", "opts": ["The Champions Cup", "The World Cup", "The Ballon d'Or", "The Nations League"], "exp": "The football World Cup is held every 4 years." },
+  { "q": "In which sport do you score a 'home run'?", "a": "Baseball", "opts": ["Cricket", "Baseball", "Golf", "Hockey"], "exp": "A home run lets the batter run all the bases and score." },
+  { "q": "What is the aim in golf?", "a": "Get the ball in the hole in the fewest strokes", "opts": ["Score more goals", "Get the ball in the hole in the fewest strokes", "Run fastest", "Jump highest"], "exp": "A golf course usually has 18 holes." }
+]

@@ -1,0 +1,14 @@
+[
+  { "q": "How many strings does a classical guitar usually have?", "a": "Six", "opts": ["Four", "Five", "Six", "Seven"], "exp": "A bass guitar usually has four strings." },
+  { "q": "Which instrument is played with black and white keys?", "a": "Piano", "opts": ["Violin", "Piano", "Flute", "Drums"], "exp": "A standard piano has 88 keys." },
+  { "q": "Which instrument is played by hitting it with sticks?", "a": "Drums", "opts": ["Harp", "Drums", "Saxophone", "Accordion"], "exp": "Drums keep the rhythm in most bands." },
+  { "q": "How many basic notes are in the musical scale (do, re, mi...)?", "a": "Seven", "opts": ["Five", "Six", "Seven", "Eight"], "exp": "Do, re, mi, fa, sol, la, ti — then it repeats an octave higher." },
+  { "q": "Which brass wind instrument is golden and shiny?", "a": "Trumpet", "opts": ["Violin", "Trumpet", "Piano", "Drum"], "exp": "The trumpet belongs to the brass family." },
+  { "q": "What is the person who leads an orchestra called?", "a": "Conductor", "opts": ["Soloist", "Conductor", "Composer", "Engineer"], "exp": "The conductor sets the tempo and cues the musicians with a baton." },
+  { "q": "Which instrument is played by drawing a bow across the strings?", "a": "Violin", "opts": ["Guitar", "Violin", "Piano", "Flute"], "exp": "A violin bow is strung with horsehair." },
+  { "q": "What measures the tempo (speed) of a piece of music?", "a": "Beats per minute (BPM)", "opts": ["The volume", "Beats per minute (BPM)", "The colour", "The weight"], "exp": "The higher the BPM, the faster the music." },
+  { "q": "What is a group of four singers or players called?", "a": "Quartet", "opts": ["Duet", "Trio", "Quartet", "Quintet"], "exp": "Duet = 2, trio = 3, quartet = 4, quintet = 5." },
+  { "q": "Which small, high-pitched woodwind instrument is held sideways?", "a": "Flute", "opts": ["Flute", "Tuba", "Double bass", "Drums"], "exp": "The transverse flute is played to the side." },
+  { "q": "Which large triangular string instrument is plucked with the fingers?", "a": "Harp", "opts": ["Harp", "Flute", "Drums", "Trumpet"], "exp": "A concert harp has 47 strings and 7 pedals." },
+  { "q": "Which music style was born in Portugal and is UNESCO heritage?", "a": "Fado", "opts": ["Samba", "Fado", "Flamenco", "Tango"], "exp": "Fado was recognised by UNESCO in 2011." }
+]

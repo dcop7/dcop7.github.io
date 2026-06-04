@@ -1,0 +1,14 @@
+[
+  { "q": "How many musicians are usually in a string quartet?", "a": "Four", "opts": ["Three", "Four", "Five", "Six"], "exp": "Two violins, a viola and a cello." },
+  { "q": "How many lines does a musical staff have?", "a": "Five", "opts": ["Four", "Five", "Six", "Seven"], "exp": "Five lines and four spaces show the pitch of notes." },
+  { "q": "Which interval separates two notes of the same name (e.g. C to C)?", "a": "Octave", "opts": ["Fifth", "Octave", "Third", "Seventh"], "exp": "Across an octave, the note's frequency doubles." },
+  { "q": "Which instrument did Adolphe Sax invent around 1840?", "a": "Saxophone", "opts": ["Clarinet", "Saxophone", "Trumpet", "Oboe"], "exp": "It is made of brass but played with a reed, like a clarinet." },
+  { "q": "Which Italian word marks a very slow tempo?", "a": "Largo", "opts": ["Presto", "Largo", "Allegro", "Vivace"], "exp": "Presto and vivace, by contrast, mean fast." },
+  { "q": "Which band released 'The Dark Side of the Moon' in 1973?", "a": "Pink Floyd", "opts": ["Led Zeppelin", "Pink Floyd", "The Who", "Genesis"], "exp": "It is one of the best-selling albums of all time." },
+  { "q": "What is the highest female singing voice called?", "a": "Soprano", "opts": ["Contralto", "Soprano", "Tenor", "Bass"], "exp": "Among male voices, the lowest is the bass." },
+  { "q": "Which Russian composer wrote the ballet 'Swan Lake'?", "a": "Tchaikovsky", "opts": ["Stravinsky", "Tchaikovsky", "Rachmaninoff", "Prokofiev"], "exp": "Tchaikovsky also composed 'The Nutcracker'." },
+  { "q": "What does the time signature 4/4 indicate?", "a": "Four beats per bar", "opts": ["Four instruments", "Four beats per bar", "Four minutes", "Four musicians"], "exp": "4/4 is the most common time signature in popular music." },
+  { "q": "How many sharps does the key of G major have?", "a": "One", "opts": ["None", "One", "Two", "Three"], "exp": "G major has F sharp; C major has no sharps or flats." },
+  { "q": "Which composer became deaf yet kept composing masterpieces?", "a": "Beethoven", "opts": ["Mozart", "Beethoven", "Handel", "Haydn"], "exp": "He composed the 9th Symphony while almost completely deaf." },
+  { "q": "Which voice type is the lowest male singing voice?", "a": "Bass", "opts": ["Tenor", "Baritone", "Bass", "Alto"], "exp": "From high to low: tenor, baritone, bass." }
+]

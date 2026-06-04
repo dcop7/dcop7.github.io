@@ -1,0 +1,14 @@
+[
+  { "q": "Who composed the 9th Symphony, with the 'Ode to Joy'?", "a": "Beethoven", "opts": ["Mozart", "Beethoven", "Bach", "Chopin"], "exp": "Beethoven was already deaf when he composed it in 1824." },
+  { "q": "How many keys does a standard piano have?", "a": "88", "opts": ["66", "76", "88", "100"], "exp": "That's 52 white keys and 36 black keys." },
+  { "q": "Which country is the home of reggae music?", "a": "Jamaica", "opts": ["Cuba", "Jamaica", "Brazil", "USA"], "exp": "Bob Marley was its greatest global ambassador." },
+  { "q": "Which family of instruments includes the violin, viola and cello?", "a": "Strings", "opts": ["Wind", "Strings", "Percussion", "Keys"], "exp": "In an orchestra, strings are usually the largest section." },
+  { "q": "Which symbol shows the pitch of notes at the start of the staff?", "a": "Clef", "opts": ["Time signature", "Clef", "Rest", "Flat"], "exp": "The treble clef is the most common." },
+  { "q": "Which of these is a Baroque-era composer?", "a": "J. S. Bach", "opts": ["Beethoven", "J. S. Bach", "Mozart", "Tchaikovsky"], "exp": "Bach lived 1685–1750, the height of the Baroque." },
+  { "q": "Which British band recorded the album 'Abbey Road'?", "a": "The Beatles", "opts": ["The Rolling Stones", "The Beatles", "Queen", "Pink Floyd"], "exp": "The 1969 Abbey Road cover is one of the most famous in history." },
+  { "q": "What is a piece for a single solo instrument with orchestra called?", "a": "Concerto", "opts": ["Symphony", "Concerto", "Sonata", "Opera"], "exp": "In a symphony the whole orchestra plays, with no featured soloist." },
+  { "q": "Which instrument has bellows and keys/buttons and is common in folk music?", "a": "Accordion", "opts": ["Mandolin", "Accordion", "Ukulele", "Bagpipes"], "exp": "Air from the bellows vibrates metal reeds." },
+  { "q": "How many musicians are in a quintet?", "a": "Five", "opts": ["Three", "Four", "Five", "Six"], "exp": "A typical wind quintet has flute, oboe, clarinet, horn and bassoon." },
+  { "q": "Which composer wrote the opera 'The Magic Flute'?", "a": "Mozart", "opts": ["Beethoven", "Mozart", "Verdi", "Wagner"], "exp": "Mozart wrote over 600 works before dying at 35." },
+  { "q": "Who won the Eurovision Song Contest for Portugal in 2017?", "a": "Salvador Sobral", "opts": ["Salvador Sobral", "Mariza", "Rui Veloso", "The Gift"], "exp": "He won with 'Amar Pelos Dois', Portugal's first victory." }
+]

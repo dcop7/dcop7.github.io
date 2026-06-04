@@ -1,0 +1,14 @@
+[
+  { "q": "Who was the first king of Portugal?", "a": "Afonso Henriques", "opts": ["Dinis", "Afonso Henriques", "John I", "Manuel I"], "exp": "He became king in 1143, after the Battle of Ourique." },
+  { "q": "In which year was the Carnation Revolution?", "a": "1974", "opts": ["1910", "1926", "1974", "1986"], "exp": "On 25 April 1974 it ended nearly 48 years of dictatorship." },
+  { "q": "Who wrote the epic poem 'The Lusiads'?", "a": "Luís de Camões", "opts": ["Fernando Pessoa", "Luís de Camões", "Eça de Queirós", "Almeida Garrett"], "exp": "It tells of Vasco da Gama's voyage to India." },
+  { "q": "Which Portuguese navigator reached India by sea in 1498?", "a": "Vasco da Gama", "opts": ["Cabral", "Vasco da Gama", "Magellan", "Bartolomeu Dias"], "exp": "He set off in 1497 and reached Calicut in 1498." },
+  { "q": "In which city was the Portuguese nationhood born (its first king)?", "a": "Guimarães", "opts": ["Lisbon", "Guimarães", "Porto", "Coimbra"], "exp": "Hence the saying 'Portugal was born here'." },
+  { "q": "Which is the longest river running through Portugal?", "a": "Tagus", "opts": ["Douro", "Tagus", "Guadiana", "Mondego"], "exp": "The Tagus rises in Spain and meets the sea at Lisbon." },
+  { "q": "Which bridge over the Tagus opened in 1998 and was Europe's longest at the time?", "a": "Vasco da Gama Bridge", "opts": ["25 de Abril Bridge", "Vasco da Gama Bridge", "Dom Luís I Bridge", "Arrábida Bridge"], "exp": "It is 17.2 km long, opened for Expo 98." },
+  { "q": "Which Portuguese city has one of Europe's oldest universities?", "a": "Coimbra", "opts": ["Évora", "Coimbra", "Braga", "Aveiro"], "exp": "The University of Coimbra was founded by King Dinis in 1290." },
+  { "q": "Which poet wrote under heteronyms like Alberto Caeiro and Álvaro de Campos?", "a": "Fernando Pessoa", "opts": ["Camões", "Fernando Pessoa", "Florbela Espanca", "Sophia de Mello Breyner"], "exp": "Pessoa created dozens of heteronyms, each with its own style." },
+  { "q": "Which earthquake destroyed much of Lisbon in 1755?", "a": "The 1755 earthquake", "opts": ["The 1531 one", "The 1755 earthquake", "The 1909 one", "The 1969 one"], "exp": "The Marquis of Pombal rebuilt downtown Lisbon afterwards." },
+  { "q": "Which Portuguese region is famous for Port wine?", "a": "Douro", "opts": ["Alentejo", "Douro", "Algarve", "Dão"], "exp": "The Douro is the world's oldest demarcated wine region (1756)." },
+  { "q": "How many districts does mainland Portugal have?", "a": "18", "opts": ["16", "18", "20", "22"], "exp": "Plus the autonomous regions of the Azores and Madeira." }
+]

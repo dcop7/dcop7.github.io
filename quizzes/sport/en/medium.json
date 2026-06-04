@@ -1,0 +1,14 @@
+[
+  { "q": "In which country were the ancient Olympic Games born?", "a": "Greece", "opts": ["Italy", "Greece", "Egypt", "China"], "exp": "They were held at Olympia, Greece, from 776 BC." },
+  { "q": "How many players are in a rugby union team?", "a": "15", "opts": ["11", "13", "15", "7"], "exp": "There is also rugby sevens, Olympic since 2016." },
+  { "q": "What is the distance of a marathon?", "a": "42.195 km", "opts": ["21 km", "42.195 km", "50 km", "100 km"], "exp": "The distance recalls the run from Marathon to Athens." },
+  { "q": "Which swimmer won 23 Olympic gold medals?", "a": "Michael Phelps", "opts": ["Mark Spitz", "Michael Phelps", "Ian Thorpe", "Caeleb Dressel"], "exp": "He is the most decorated Olympian of all time." },
+  { "q": "Which country has won the most football World Cups?", "a": "Brazil", "opts": ["Germany", "Brazil", "Italy", "Argentina"], "exp": "Brazil has won the World Cup five times." },
+  { "q": "How many sets must a man win at a Grand Slam tennis match?", "a": "3", "opts": ["2", "3", "4", "5"], "exp": "Men's Grand Slam matches are best of 5 sets." },
+  { "q": "In which sport are there 'strikes' and 'spares'?", "a": "Bowling", "opts": ["Darts", "Bowling", "Snooker", "Table tennis"], "exp": "A 'strike' is knocking down all 10 pins on the first roll." },
+  { "q": "Which sport combines swimming, cycling and running?", "a": "Triathlon", "opts": ["Pentathlon", "Triathlon", "Decathlon", "Biathlon"], "exp": "The order is swim, then bike, then run." },
+  { "q": "How many points is a try worth in rugby union?", "a": "5", "opts": ["3", "5", "7", "2"], "exp": "After a try (5 points) there is also the conversion (2 points)." },
+  { "q": "Which cyclist is famous for five Tour de France wins in the 1970s?", "a": "Eddy Merckx", "opts": ["Eddy Merckx", "Usain Bolt", "Michael Phelps", "Pelé"], "exp": "Merckx is regarded as one of the greatest cyclists ever." },
+  { "q": "Which country won the UEFA Euro 2016?", "a": "Portugal", "opts": ["France", "Portugal", "Germany", "Spain"], "exp": "Portugal beat hosts France 1–0 in the final." },
+  { "q": "Which sport is played at Wimbledon?", "a": "Tennis", "opts": ["Cricket", "Tennis", "Golf", "Badminton"], "exp": "Wimbledon is the oldest tennis tournament, played on grass." }
+]

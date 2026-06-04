@@ -1,0 +1,14 @@
+[
+  { "q": "Quantas vezes Portugal venceu o Campeonato da Europa de futebol?", "a": "Uma (2016)", "opts": ["Nunca", "Uma (2016)", "Duas", "Três"], "exp": "Portugal venceu o Euro 2016 em França, na final contra os anfitriões." },
+  { "q": "Em que país nasceram os Jogos Olímpicos antigos?", "a": "Grécia", "opts": ["Itália", "Grécia", "Egito", "China"], "exp": "Realizavam-se em Olímpia, na Grécia, desde 776 a.C." },
+  { "q": "Quantos jogadores tem uma equipa de râguebi (XV)?", "a": "15", "opts": ["11", "13", "15", "7"], "exp": "Existe também o râguebi de 7 (sevens), olímpico desde 2016." },
+  { "q": "Que ciclista é associado às vitórias na Volta a França?", "a": "Eddy Merckx", "opts": ["Eddy Merckx", "Usain Bolt", "Michael Phelps", "Pelé"], "exp": "Merckx venceu o Tour de France cinco vezes." },
+  { "q": "Qual é a distância de uma maratona?", "a": "42,195 km", "opts": ["21 km", "42,195 km", "50 km", "100 km"], "exp": "A distância recorda a corrida do mensageiro de Maratona até Atenas." },
+  { "q": "Em que desporto se destaca Cristiano Ronaldo?", "a": "Futebol", "opts": ["Ténis", "Futebol", "Basquetebol", "Natação"], "exp": "Ronaldo é o melhor marcador de sempre da seleção portuguesa." },
+  { "q": "Quantos sets é preciso ganhar para vencer um jogo de ténis masculino do Grand Slam?", "a": "3", "opts": ["2", "3", "4", "5"], "exp": "Nos Grand Slam masculinos joga-se à melhor de 5 sets." },
+  { "q": "Que nadador ganhou 23 medalhas de ouro olímpicas?", "a": "Michael Phelps", "opts": ["Mark Spitz", "Michael Phelps", "Ian Thorpe", "Caeleb Dressel"], "exp": "É o atleta olímpico mais medalhado de sempre." },
+  { "q": "Em que desporto existe o 'strike' e o 'spare'?", "a": "Bowling", "opts": ["Dardos", "Bowling", "Snooker", "Ténis de mesa"], "exp": "Um 'strike' é derrubar os 10 pinos no primeiro lançamento." },
+  { "q": "Qual é o país com mais vitórias na Taça do Mundo de futebol?", "a": "Brasil", "opts": ["Alemanha", "Brasil", "Itália", "Argentina"], "exp": "O Brasil venceu o Mundial cinco vezes." },
+  { "q": "Que desporto combina natação, ciclismo e corrida?", "a": "Triatlo", "opts": ["Pentatlo", "Triatlo", "Decatlo", "Biatlo"], "exp": "A ordem é natação, depois ciclismo e por fim corrida." },
+  { "q": "Quantos pontos vale um ensaio no râguebi?", "a": "5", "opts": ["3", "5", "7", "2"], "exp": "Após o ensaio (5 pontos) há ainda a conversão (2 pontos)." }
+]

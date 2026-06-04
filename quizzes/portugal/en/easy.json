@@ -1,0 +1,14 @@
+[
+  { "q": "What is the capital of Portugal?", "a": "Lisbon", "opts": ["Porto", "Lisbon", "Coimbra", "Braga"], "exp": "Lisbon sits on the river Tagus." },
+  { "q": "Which colours are on the flag of Portugal?", "a": "Green and red", "opts": ["Blue and white", "Green and red", "Red and yellow", "Green and white"], "exp": "It also features an armillary sphere and a shield." },
+  { "q": "Which currency is used in Portugal?", "a": "Euro", "opts": ["Escudo", "Euro", "Peseta", "Real"], "exp": "Portugal adopted the euro in 2002." },
+  { "q": "Which river runs through the city of Porto?", "a": "Douro", "opts": ["Tagus", "Douro", "Mondego", "Guadiana"], "exp": "Port wine ages in cellars in Vila Nova de Gaia, by the Douro." },
+  { "q": "Which famous pastry comes from Belém, Lisbon?", "a": "Pastel de nata", "opts": ["Pastel de nata", "Bolo-rei", "Queijada", "Pão de ló"], "exp": "The Pastéis de Belém recipe has been a secret since 1837." },
+  { "q": "How many main islands does the Azores archipelago have?", "a": "Nine", "opts": ["Seven", "Eight", "Nine", "Ten"], "exp": "The Azores and Madeira are autonomous regions of Portugal." },
+  { "q": "Which ocean borders Portugal's coast?", "a": "Atlantic", "opts": ["Pacific", "Atlantic", "Indian", "Arctic"], "exp": "Portugal has one of the largest maritime zones in Europe." },
+  { "q": "Which country shares a land border with Portugal?", "a": "Spain", "opts": ["France", "Spain", "Morocco", "Italy"], "exp": "The border with Spain is about 1,200 km long." },
+  { "q": "Which traditional Portuguese dish is made with salted cod?", "a": "Bacalhau à Brás", "opts": ["Cozido à portuguesa", "Bacalhau à Brás", "Caldo verde", "Francesinha"], "exp": "It is said there are over 365 ways to cook cod." },
+  { "q": "Which Lisbon monument is a tower by the river Tagus?", "a": "Belém Tower", "opts": ["Clérigos Tower", "Belém Tower", "Braga Cathedral", "Cristo Rei"], "exp": "Belém Tower is a UNESCO World Heritage Site." },
+  { "q": "What is Portugal's national anthem called?", "a": "A Portuguesa", "opts": ["A Portuguesa", "Os Lusíadas", "Grândola", "La Marseillaise"], "exp": "It was composed by Alfredo Keil in 1890." },
+  { "q": "What is the highest point in mainland Portugal?", "a": "Torre (Serra da Estrela)", "opts": ["Pico", "Torre (Serra da Estrela)", "Gerês", "Sintra hills"], "exp": "Torre is 1,993 m; the country's highest point is Pico in the Azores (2,351 m)." }
+]

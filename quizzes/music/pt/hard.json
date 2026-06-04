@@ -1,0 +1,14 @@
+[
+  { "q": "Quantos músicos tem habitualmente um quarteto de cordas?", "a": "Quatro", "opts": ["Três", "Quatro", "Cinco", "Seis"], "exp": "Dois violinos, uma viola e um violoncelo." },
+  { "q": "Que compositor austríaco escreveu a ópera 'A Flauta Mágica'?", "a": "Mozart", "opts": ["Beethoven", "Mozart", "Verdi", "Wagner"], "exp": "Mozart compôs mais de 600 obras antes de morrer aos 35 anos." },
+  { "q": "Quantas linhas tem uma pauta musical?", "a": "Cinco", "opts": ["Quatro", "Cinco", "Seis", "Sete"], "exp": "As cinco linhas e os quatro espaços indicam a altura das notas." },
+  { "q": "Que intervalo separa duas notas com o mesmo nome (ex.: dó a dó)?", "a": "Oitava", "opts": ["Quinta", "Oitava", "Terça", "Sétima"], "exp": "Numa oitava, a frequência da nota duplica." },
+  { "q": "Que instrumento inventou Adolphe Sax por volta de 1840?", "a": "Saxofone", "opts": ["Clarinete", "Saxofone", "Trompete", "Oboé"], "exp": "É de metal mas toca-se com palheta, como um clarinete." },
+  { "q": "Como se chama o andamento musical muito lento?", "a": "Largo", "opts": ["Presto", "Largo", "Allegro", "Vivace"], "exp": "Presto e vivace, pelo contrário, indicam andamentos rápidos." },
+  { "q": "Que compositor português é autor de óperas e da 'Sinfonia à Pátria'?", "a": "Joly Braga Santos", "opts": ["Luís de Freitas Branco", "Joly Braga Santos", "Carlos Seixas", "Fernando Lopes-Graça"], "exp": "Foi um dos grandes sinfonistas portugueses do século XX." },
+  { "q": "Quantos bemóis tem a tonalidade de Fá maior?", "a": "Um", "opts": ["Nenhum", "Um", "Dois", "Três"], "exp": "Fá maior tem o si bemol; Dó maior não tem acidentes." },
+  { "q": "Que banda lançou 'The Dark Side of the Moon' em 1973?", "a": "Pink Floyd", "opts": ["Led Zeppelin", "Pink Floyd", "The Who", "Genesis"], "exp": "É um dos álbuns mais vendidos de sempre." },
+  { "q": "Como se chama a voz feminina mais aguda?", "a": "Soprano", "opts": ["Contralto", "Soprano", "Tenor", "Baixo"], "exp": "Nas vozes masculinas, a mais grave é o baixo." },
+  { "q": "Que compositor russo escreveu o bailado 'O Lago dos Cisnes'?", "a": "Tchaikovsky", "opts": ["Stravinsky", "Tchaikovsky", "Rachmaninoff", "Prokofiev"], "exp": "Tchaikovsky compôs também 'O Quebra-Nozes'." },
+  { "q": "O que indica a 'fórmula de compasso' 4/4?", "a": "Quatro tempos por compasso", "opts": ["Quatro instrumentos", "Quatro tempos por compasso", "Quatro minutos", "Quatro músicos"], "exp": "4/4 é o compasso mais comum na música popular." }
+]

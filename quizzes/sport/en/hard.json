@@ -1,0 +1,14 @@
+[
+  { "q": "In which city were the first modern Olympic Games held in 1896?", "a": "Athens", "opts": ["Paris", "Athens", "London", "Rome"], "exp": "They were revived by Pierre de Coubertin in Greece." },
+  { "q": "Which tennis player holds the record for most men's Grand Slam singles titles (to 2024)?", "a": "Novak Djokovic", "opts": ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"], "exp": "Djokovic passed 24 Grand Slam singles titles." },
+  { "q": "Which is the only country to play in every football World Cup finals?", "a": "Brazil", "opts": ["Germany", "Brazil", "Italy", "Argentina"], "exp": "Brazil has appeared in every tournament since 1930." },
+  { "q": "Who holds the men's 100 m world record?", "a": "Usain Bolt", "opts": ["Carl Lewis", "Usain Bolt", "Justin Gatlin", "Yohan Blake"], "exp": "Bolt ran 9.58 s in Berlin in 2009." },
+  { "q": "Which trophy is the oldest in international sport still contested?", "a": "The America's Cup", "opts": ["The Ashes", "The America's Cup", "The Davis Cup", "The Ryder Cup"], "exp": "The America's Cup (sailing) dates from 1851." },
+  { "q": "Which gymnast has several elements named after her for being a pioneer?", "a": "Simone Biles", "opts": ["Nadia Comaneci", "Simone Biles", "Larisa Latynina", "Vera Caslavska"], "exp": "Biles has multiple skills named after her in the code of points." },
+  { "q": "How many points is a three-pointer worth in basketball?", "a": "3", "opts": ["1", "2", "3", "4"], "exp": "The NBA introduced the three-point line in 1979." },
+  { "q": "Which Formula 1 driver won seven World Championships, tying the record?", "a": "Lewis Hamilton", "opts": ["Ayrton Senna", "Lewis Hamilton", "Alain Prost", "Sebastian Vettel"], "exp": "Hamilton and Michael Schumacher each have seven titles." },
+  { "q": "Which country has hosted the Summer Olympics the most times?", "a": "United States", "opts": ["United Kingdom", "United States", "France", "Greece"], "exp": "The USA has hosted the Summer Games four times (with LA 2028 making five)." },
+  { "q": "Which boxer was known as 'The Greatest' and lit the 1996 Olympic flame?", "a": "Muhammad Ali", "opts": ["Mike Tyson", "Muhammad Ali", "Joe Frazier", "Floyd Mayweather"], "exp": "Ali lit the cauldron at the Atlanta 1996 Games." },
+  { "q": "In cricket, how many players are in a team?", "a": "11", "opts": ["9", "10", "11", "13"], "exp": "Like football, a cricket team fields 11 players." },
+  { "q": "Which Portuguese club first won the European Cup, in 1961?", "a": "Benfica", "opts": ["FC Porto", "Benfica", "Sporting", "Boavista"], "exp": "Benfica won it in 1961 and 1962 with Eusébio in the side." }
+]

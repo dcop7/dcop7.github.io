@@ -1,0 +1,14 @@
+[
+  { "q": "Em que batalha de 1385 Portugal garantiu a independência face a Castela?", "a": "Aljubarrota", "opts": ["Ourique", "Aljubarrota", "Alcácer-Quibir", "Salado"], "exp": "A vitória deu origem à construção do Mosteiro da Batalha." },
+  { "q": "Que rei português desapareceu em Alcácer-Quibir em 1578?", "a": "D. Sebastião", "opts": ["D. Sebastião", "D. João III", "D. Manuel I", "D. Henrique"], "exp": "O seu desaparecimento deu origem ao mito do 'sebastianismo'." },
+  { "q": "Em que ano foi implantada a República em Portugal?", "a": "1910", "opts": ["1890", "1910", "1926", "1933"], "exp": "A 5 de outubro de 1910 terminou a monarquia." },
+  { "q": "Que tratado de 1494 dividiu o mundo entre Portugal e Castela?", "a": "Tratado de Tordesilhas", "opts": ["Tratado de Windsor", "Tratado de Tordesilhas", "Tratado de Zamora", "Tratado de Methuen"], "exp": "A linha de Tordesilhas viria a dar o Brasil a Portugal." },
+  { "q": "Qual é a aliança diplomática mais antiga do mundo ainda em vigor?", "a": "Aliança Luso-Britânica", "opts": ["Aliança Luso-Espanhola", "Aliança Luso-Britânica", "Aliança Luso-Francesa", "Aliança Ibérica"], "exp": "Remonta ao Tratado de Windsor, de 1386." },
+  { "q": "Que dinastia subiu ao trono com a Restauração da Independência em 1640?", "a": "Bragança", "opts": ["Avis", "Bragança", "Borgonha", "Filipina"], "exp": "D. João IV foi aclamado rei a 1 de dezembro de 1640." },
+  { "q": "Quem foi o primeiro Presidente da República Portuguesa?", "a": "Manuel de Arriaga", "opts": ["Sidónio Pais", "Manuel de Arriaga", "Teófilo Braga", "Bernardino Machado"], "exp": "Foi eleito em 1911; Teófilo Braga liderou antes o Governo Provisório." },
+  { "q": "Em que ano aderiu Portugal à então CEE (hoje União Europeia)?", "a": "1986", "opts": ["1974", "1979", "1986", "1992"], "exp": "Portugal e Espanha aderiram em conjunto a 1 de janeiro de 1986." },
+  { "q": "Que navegador português foi o primeiro europeu a dobrar o Cabo da Boa Esperança?", "a": "Bartolomeu Dias", "opts": ["Vasco da Gama", "Bartolomeu Dias", "Diogo Cão", "Pedro Álvares Cabral"], "exp": "Dobrou o cabo em 1488, abrindo o caminho marítimo para a Índia." },
+  { "q": "Qual é o concelho mais extenso de Portugal?", "a": "Odemira", "opts": ["Évora", "Odemira", "Santiago do Cacém", "Beja"], "exp": "Odemira, no litoral alentejano, tem mais de 1 700 km²." },
+  { "q": "Quem foi o ditador que liderou o Estado Novo durante décadas?", "a": "António de Oliveira Salazar", "opts": ["Marcelo Caetano", "António de Oliveira Salazar", "Sidónio Pais", "Óscar Carmona"], "exp": "Salazar governou de 1932 a 1968; Caetano sucedeu-lhe até 1974." },
+  { "q": "Que escritor português recebeu o Prémio Nobel da Literatura em 1998?", "a": "José Saramago", "opts": ["Fernando Pessoa", "José Saramago", "Eça de Queirós", "António Lobo Antunes"], "exp": "Foi o único autor de língua portuguesa a receber o Nobel da Literatura." }
+]

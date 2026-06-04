@@ -1,0 +1,14 @@
+[
+  { "q": "Quem foi o primeiro rei de Portugal?", "a": "D. Afonso Henriques", "opts": ["D. Dinis", "D. Afonso Henriques", "D. João I", "D. Manuel I"], "exp": "Tornou-se rei em 1143, após a Batalha de Ourique e o Tratado de Zamora." },
+  { "q": "Em que ano se deu a Revolução dos Cravos?", "a": "1974", "opts": ["1910", "1926", "1974", "1986"], "exp": "A 25 de abril de 1974, pondo fim a quase 48 anos de ditadura." },
+  { "q": "Quem escreveu 'Os Lusíadas'?", "a": "Luís de Camões", "opts": ["Fernando Pessoa", "Luís de Camões", "Eça de Queirós", "Almeida Garrett"], "exp": "A epopeia narra a viagem de Vasco da Gama à Índia." },
+  { "q": "Quantos distritos tem Portugal continental?", "a": "18", "opts": ["16", "18", "20", "22"], "exp": "Com as regiões autónomas, há ainda os Açores e a Madeira." },
+  { "q": "Que navegador português chegou à Índia por mar em 1498?", "a": "Vasco da Gama", "opts": ["Pedro Álvares Cabral", "Vasco da Gama", "Fernão de Magalhães", "Bartolomeu Dias"], "exp": "Partiu de Belém em 1497 e chegou a Calecute em 1498." },
+  { "q": "Em que cidade nasceu a nacionalidade portuguesa (1.º rei)?", "a": "Guimarães", "opts": ["Lisboa", "Guimarães", "Porto", "Coimbra"], "exp": "Por isso se diz 'Aqui nasceu Portugal'." },
+  { "q": "Qual é o rio mais comprido que passa em Portugal?", "a": "Tejo", "opts": ["Douro", "Tejo", "Guadiana", "Mondego"], "exp": "O Tejo nasce em Espanha e desagua em Lisboa." },
+  { "q": "Que ponte sobre o Tejo foi inaugurada em 1998 e é a mais longa da Europa à data?", "a": "Ponte Vasco da Gama", "opts": ["Ponte 25 de Abril", "Ponte Vasco da Gama", "Ponte D. Luís I", "Ponte da Arrábida"], "exp": "Tem 17,2 km e foi inaugurada para a Expo 98." },
+  { "q": "Que cidade portuguesa é conhecida pela sua Universidade, das mais antigas da Europa?", "a": "Coimbra", "opts": ["Évora", "Coimbra", "Braga", "Aveiro"], "exp": "A Universidade de Coimbra foi fundada por D. Dinis em 1290." },
+  { "q": "Que poeta escreveu sob heterónimos como Alberto Caeiro e Álvaro de Campos?", "a": "Fernando Pessoa", "opts": ["Camões", "Fernando Pessoa", "Florbela Espanca", "Sophia de Mello Breyner"], "exp": "Pessoa criou dezenas de heterónimos com estilos próprios." },
+  { "q": "Que terramoto destruiu grande parte de Lisboa em 1755?", "a": "O Terramoto de 1755", "opts": ["O de 1531", "O Terramoto de 1755", "O de 1909", "O de 1969"], "exp": "O Marquês de Pombal reconstruiu a Baixa de Lisboa." },
+  { "q": "Que região portuguesa é famosa pelo vinho do Porto?", "a": "Douro", "opts": ["Alentejo", "Douro", "Algarve", "Dão"], "exp": "A Região Demarcada do Douro é a mais antiga do mundo (1756)." }
+]

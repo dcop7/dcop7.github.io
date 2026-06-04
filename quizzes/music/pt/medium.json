@@ -1,0 +1,14 @@
+[
+  { "q": "Quem compôs a 9.ª Sinfonia, com o 'Hino à Alegria'?", "a": "Beethoven", "opts": ["Mozart", "Beethoven", "Bach", "Chopin"], "exp": "Beethoven já estava surdo quando a compôs, em 1824." },
+  { "q": "Quantas teclas tem um piano padrão?", "a": "88", "opts": ["66", "76", "88", "100"], "exp": "São 52 teclas brancas e 36 pretas." },
+  { "q": "De que país é originário o estilo musical 'reggae'?", "a": "Jamaica", "opts": ["Cuba", "Jamaica", "Brasil", "EUA"], "exp": "Bob Marley foi o seu maior embaixador mundial." },
+  { "q": "Como se chama a fadista portuguesa conhecida como a 'Rainha do Fado'?", "a": "Amália Rodrigues", "opts": ["Mariza", "Amália Rodrigues", "Dulce Pontes", "Carminho"], "exp": "Amália levou o Fado ao mundo durante o século XX." },
+  { "q": "Que família de instrumentos inclui o violino, a viola e o violoncelo?", "a": "Cordas", "opts": ["Sopro", "Cordas", "Percussão", "Teclas"], "exp": "Numa orquestra, as cordas são geralmente a secção mais numerosa." },
+  { "q": "Que símbolo musical indica a altura das notas no início da pauta?", "a": "Clave", "opts": ["Compasso", "Clave", "Pausa", "Bemol"], "exp": "A clave de sol é a mais comum." },
+  { "q": "Qual destes é um compositor do período Barroco?", "a": "J. S. Bach", "opts": ["Beethoven", "J. S. Bach", "Mozart", "Tchaikovsky"], "exp": "Bach viveu de 1685 a 1750, o auge do Barroco." },
+  { "q": "Quantos músicos tem um quinteto?", "a": "Cinco", "opts": ["Três", "Quatro", "Cinco", "Seis"], "exp": "Um quinteto de sopros típico tem flauta, oboé, clarinete, trompa e fagote." },
+  { "q": "Que banda britânica gravou o álbum 'Abbey Road'?", "a": "The Beatles", "opts": ["The Rolling Stones", "The Beatles", "Queen", "Pink Floyd"], "exp": "A capa de Abbey Road (1969) é uma das mais famosas da história." },
+  { "q": "Que instrumento tem foles e teclas/botões e é típico em música popular?", "a": "Acordeão", "opts": ["Bandolim", "Acordeão", "Cavaquinho", "Gaita de foles"], "exp": "O ar dos foles faz vibrar palhetas metálicas." },
+  { "q": "Como se chama uma peça musical para um só instrumento solista com orquestra?", "a": "Concerto", "opts": ["Sinfonia", "Concerto", "Sonata", "Ópera"], "exp": "Numa sinfonia toca a orquestra inteira, sem solista destacado." },
+  { "q": "Que artista português venceu o Festival Eurovisão em 2017?", "a": "Salvador Sobral", "opts": ["Salvador Sobral", "Tony Carreira", "D.A.M.A", "Rui Veloso"], "exp": "Venceu com 'Amar Pelos Dois', a primeira vitória de Portugal." }
+]

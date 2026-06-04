@@ -1,0 +1,14 @@
+[
+  { "q": "In which 1385 battle did Portugal secure independence from Castile?", "a": "Aljubarrota", "opts": ["Ourique", "Aljubarrota", "Alcácer-Quibir", "Salado"], "exp": "The victory led to the building of the Batalha Monastery." },
+  { "q": "Which Portuguese king vanished at Alcácer-Quibir in 1578?", "a": "Sebastian", "opts": ["Sebastian", "John III", "Manuel I", "Henry"], "exp": "His disappearance gave rise to the 'Sebastianism' myth." },
+  { "q": "In which year was the Republic proclaimed in Portugal?", "a": "1910", "opts": ["1890", "1910", "1926", "1933"], "exp": "The monarchy ended on 5 October 1910." },
+  { "q": "Which 1494 treaty divided the world between Portugal and Castile?", "a": "Treaty of Tordesillas", "opts": ["Treaty of Windsor", "Treaty of Tordesillas", "Treaty of Zamora", "Treaty of Methuen"], "exp": "The Tordesillas line later gave Brazil to Portugal." },
+  { "q": "What is the world's oldest diplomatic alliance still in force?", "a": "The Anglo-Portuguese Alliance", "opts": ["The Iberian Pact", "The Anglo-Portuguese Alliance", "The Franco-Portuguese Alliance", "The Atlantic Pact"], "exp": "It dates back to the Treaty of Windsor of 1386." },
+  { "q": "Which dynasty took the throne with the 1640 Restoration of Independence?", "a": "Braganza", "opts": ["Aviz", "Braganza", "Burgundy", "Habsburg"], "exp": "John IV was acclaimed king on 1 December 1640." },
+  { "q": "In which year did Portugal join the then EEC (now the EU)?", "a": "1986", "opts": ["1974", "1979", "1986", "1992"], "exp": "Portugal and Spain joined together on 1 January 1986." },
+  { "q": "Which Portuguese navigator first rounded the Cape of Good Hope?", "a": "Bartolomeu Dias", "opts": ["Vasco da Gama", "Bartolomeu Dias", "Diogo Cão", "Cabral"], "exp": "He rounded the cape in 1488, opening the sea route to India." },
+  { "q": "Which Portuguese writer won the Nobel Prize in Literature in 1998?", "a": "José Saramago", "opts": ["Fernando Pessoa", "José Saramago", "Eça de Queirós", "Lobo Antunes"], "exp": "He is the only Portuguese-language author to win the Literature Nobel." },
+  { "q": "Who led the 'Estado Novo' dictatorship for decades?", "a": "António de Oliveira Salazar", "opts": ["Marcelo Caetano", "António de Oliveira Salazar", "Sidónio Pais", "Óscar Carmona"], "exp": "Salazar ruled 1932–1968; Caetano followed until 1974." },
+  { "q": "Which navigator led the first expedition to sail around the world?", "a": "Ferdinand Magellan", "opts": ["Vasco da Gama", "Ferdinand Magellan", "Cabral", "Columbus"], "exp": "The Portuguese-born Magellan set off in 1519 for Spain." },
+  { "q": "Which Portuguese explorer reached Brazil in 1500?", "a": "Pedro Álvares Cabral", "opts": ["Vasco da Gama", "Pedro Álvares Cabral", "Diogo Cão", "Magellan"], "exp": "Cabral landed in Brazil on 22 April 1500." }
+]
