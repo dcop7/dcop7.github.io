@@ -1,0 +1,2422 @@
+[
+ {
+  "q": "Which language is spoken in <strong>American Samoa</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Icelandic",
+   "Bengali",
+   "Seychellois Creole"
+  ],
+  "exp": "English is spoken in American Samoa."
+ },
+ {
+  "q": "Which currency is used in <strong>American Samoa</strong>?",
+  "a": "United States dollar",
+  "opts": [
+   "Hungarian forint",
+   "United States dollar",
+   "Netherlands Antillean guilder",
+   "Brunei dollar"
+  ],
+  "exp": "American Samoa uses the United States dollar."
+ },
+ {
+  "q": "What is the capital of <strong>Samoa</strong>?",
+  "a": "Apia",
+  "opts": [
+   "Fort-de-France",
+   "Budapest",
+   "Berlin",
+   "Apia"
+  ],
+  "exp": "The capital of Samoa is Apia (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Palau</strong>?",
+  "a": "United States dollar",
+  "opts": [
+   "Kazakhstani tenge",
+   "United States dollar",
+   "West African CFA franc",
+   "Jordanian dinar"
+  ],
+  "exp": "Palau uses the United States dollar."
+ },
+ {
+  "q": "What is the capital of <strong>Andorra</strong>?",
+  "a": "Andorra la Vella",
+  "opts": [
+   "Vaduz",
+   "Andorra la Vella",
+   "Lomé",
+   "Pyongyang"
+  ],
+  "exp": "The capital of Andorra is Andorra la Vella (Europe)."
+ },
+ {
+  "q": "Which currency is used in <strong>Montenegro</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Kazakhstani tenge",
+   "São Tomé and Príncipe dobra",
+   "British pound",
+   "Euro"
+  ],
+  "exp": "Montenegro uses the Euro."
+ },
+ {
+  "q": "Which currency is used in <strong>Liechtenstein</strong>?",
+  "a": "Swiss franc",
+  "opts": [
+   "Ghanaian cedi",
+   "Papua New Guinean kina",
+   "Swiss franc",
+   "Maldivian rufiyaa"
+  ],
+  "exp": "Liechtenstein uses the Swiss franc."
+ },
+ {
+  "q": "Which continent is <strong>Tokelau</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Oceania",
+   "Asia",
+   "Europe",
+   "Antarctica"
+  ],
+  "exp": "Tokelau is in Oceania."
+ },
+ {
+  "q": "Which continent is <strong>American Samoa</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Oceania",
+   "Asia",
+   "Europe"
+  ],
+  "exp": "American Samoa is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>Luxembourg</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Euro",
+   "Kazakhstani tenge",
+   "Gibraltar pound",
+   "Maldivian rufiyaa"
+  ],
+  "exp": "Luxembourg uses the Euro."
+ },
+ {
+  "q": "Which of these countries has the <strong>largest population</strong>?",
+  "a": "Guam",
+  "opts": [
+   "Guam",
+   "Kiribati",
+   "Curaçao",
+   "Seychelles"
+  ],
+  "exp": "Guam has about 168k people."
+ },
+ {
+  "q": "Which language is spoken in <strong>Wallis and Futuna</strong>?",
+  "a": "French",
+  "opts": [
+   "French",
+   "Hungarian",
+   "English",
+   "Georgian"
+  ],
+  "exp": "French is spoken in Wallis and Futuna."
+ },
+ {
+  "q": "Which continent is <strong>Tuvalu</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Oceania",
+   "Antarctica",
+   "Asia"
+  ],
+  "exp": "Tuvalu is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>Wallis and Futuna</strong>?",
+  "a": "CFP franc",
+  "opts": [
+   "Bolivian boliviano",
+   "Hungarian forint",
+   "Nepalese rupee",
+   "CFP franc"
+  ],
+  "exp": "Wallis and Futuna uses the CFP franc."
+ },
+ {
+  "q": "Which currency is used in <strong>Mayotte</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Haitian gourde",
+   "Surinamese dollar",
+   "Norwegian krone",
+   "Euro"
+  ],
+  "exp": "Mayotte uses the Euro."
+ },
+ {
+  "q": "Which currency is used in <strong>French Polynesia</strong>?",
+  "a": "CFP franc",
+  "opts": [
+   "Czech koruna",
+   "Comorian franc",
+   "CFP franc",
+   "Mongolian tögrög"
+  ],
+  "exp": "French Polynesia uses the CFP franc."
+ },
+ {
+  "q": "What is the capital of <strong>Guernsey</strong>?",
+  "a": "St. Peter Port",
+  "opts": [
+   "Pristina",
+   "Sana'a",
+   "Nicosia",
+   "St. Peter Port"
+  ],
+  "exp": "The capital of Guernsey is St. Peter Port (Europe)."
+ },
+ {
+  "q": "Which currency is used in <strong>Northern Mariana Islands</strong>?",
+  "a": "United States dollar",
+  "opts": [
+   "Pound sterling",
+   "Swazi lilangeni",
+   "United States dollar",
+   "Swiss franc"
+  ],
+  "exp": "Northern Mariana Islands uses the United States dollar."
+ },
+ {
+  "q": "What is the capital of <strong>Iceland</strong>?",
+  "a": "Reykjavik",
+  "opts": [
+   "Pyongyang",
+   "Rome",
+   "Gitega",
+   "Reykjavik"
+  ],
+  "exp": "The capital of Iceland is Reykjavik (Europe)."
+ },
+ {
+  "q": "Which continent is <strong>Monaco</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Europe",
+   "Asia"
+  ],
+  "exp": "Monaco is in Europe."
+ },
+ {
+  "q": "Which of these countries has the <strong>largest area</strong>?",
+  "a": "Paraguay",
+  "opts": [
+   "Germany",
+   "Japan",
+   "Zimbabwe",
+   "Paraguay"
+  ],
+  "exp": "Paraguay covers about 406,752 km²."
+ },
+ {
+  "q": "Which language is spoken in <strong>Faroe Islands</strong>?",
+  "a": "Danish",
+  "opts": [
+   "Nepali",
+   "Chibarwe",
+   "Danish",
+   "Lao"
+  ],
+  "exp": "Danish is spoken in Faroe Islands."
+ },
+ {
+  "q": "Which language is spoken in <strong>Tonga</strong>?",
+  "a": "English",
+  "opts": [
+   "Dari",
+   "English",
+   "Macedonian",
+   "Georgian"
+  ],
+  "exp": "English is spoken in Tonga."
+ },
+ {
+  "q": "Which language is spoken in <strong>Kiribati</strong>?",
+  "a": "English",
+  "opts": [
+   "Moldavian",
+   "Kyrgyz",
+   "English",
+   "Romanian"
+  ],
+  "exp": "English is spoken in Kiribati."
+ },
+ {
+  "q": "What is the capital of <strong>Svalbard and Jan Mayen</strong>?",
+  "a": "Longyearbyen",
+  "opts": [
+   "Banjul",
+   "Longyearbyen",
+   "Yamoussoukro",
+   "Ramallah"
+  ],
+  "exp": "The capital of Svalbard and Jan Mayen is Longyearbyen (Europe)."
+ },
+ {
+  "q": "What is the capital of <strong>Saint Helena, Ascension and Tristan da Cunha</strong>?",
+  "a": "Jamestown",
+  "opts": [
+   "Accra",
+   "St. George's",
+   "Jamestown",
+   "Montevideo"
+  ],
+  "exp": "The capital of Saint Helena, Ascension and Tristan da Cunha is Jamestown (Africa)."
+ },
+ {
+  "q": "What is the capital of <strong>South Georgia</strong>?",
+  "a": "King Edward Point",
+  "opts": [
+   "Bogotá",
+   "São Tomé",
+   "King Edward Point",
+   "Mogadishu"
+  ],
+  "exp": "The capital of South Georgia is King Edward Point (Antarctica)."
+ },
+ {
+  "q": "Which currency is used in <strong>Seychelles</strong>?",
+  "a": "Seychellois rupee",
+  "opts": [
+   "dalasi",
+   "Uruguayan peso",
+   "Philippine peso",
+   "Seychellois rupee"
+  ],
+  "exp": "Seychelles uses the Seychellois rupee."
+ },
+ {
+  "q": "What is the capital of <strong>Mayotte</strong>?",
+  "a": "Mamoudzou",
+  "opts": [
+   "Jerusalem",
+   "Ramallah",
+   "Conakry",
+   "Mamoudzou"
+  ],
+  "exp": "The capital of Mayotte is Mamoudzou (Africa)."
+ },
+ {
+  "q": "Which continent is <strong>Micronesia</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Oceania",
+   "Africa",
+   "Asia",
+   "Europe"
+  ],
+  "exp": "Micronesia is in Oceania."
+ },
+ {
+  "q": "Which continent is <strong>Bouvet Island</strong> in?",
+  "a": "Antarctica",
+  "opts": [
+   "Antarctica",
+   "Africa",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Bouvet Island is in Antarctica."
+ },
+ {
+  "q": "Which language is spoken in <strong>Iceland</strong>?",
+  "a": "Icelandic",
+  "opts": [
+   "Serbian",
+   "Slovene",
+   "Icelandic",
+   "Lithuanian"
+  ],
+  "exp": "Icelandic is spoken in Iceland."
+ },
+ {
+  "q": "Which currency is used in <strong>Guam</strong>?",
+  "a": "United States dollar",
+  "opts": [
+   "Bahraini dinar",
+   "Namibian dollar",
+   "Chinese yuan",
+   "United States dollar"
+  ],
+  "exp": "Guam uses the United States dollar."
+ },
+ {
+  "q": "Which currency is used in <strong>Brunei</strong>?",
+  "a": "Brunei dollar",
+  "opts": [
+   "Brunei dollar",
+   "lari",
+   "Argentine peso",
+   "Swazi lilangeni"
+  ],
+  "exp": "Brunei uses the Brunei dollar."
+ },
+ {
+  "q": "Which language is spoken in <strong>British Indian Ocean Territory</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Carolinian",
+   "Lao",
+   "Khmer"
+  ],
+  "exp": "English is spoken in British Indian Ocean Territory."
+ },
+ {
+  "q": "Which currency is used in <strong>Malta</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Polish złoty",
+   "Euro",
+   "Tanzanian shilling",
+   "South Sudanese pound"
+  ],
+  "exp": "Malta uses the Euro."
+ },
+ {
+  "q": "What is the capital of <strong>Palau</strong>?",
+  "a": "Ngerulmud",
+  "opts": [
+   "Ngerulmud",
+   "Stockholm",
+   "Suva",
+   "Diego Garcia"
+  ],
+  "exp": "The capital of Palau is Ngerulmud (Oceania)."
+ },
+ {
+  "q": "What is the capital of <strong>Norfolk Island</strong>?",
+  "a": "Kingston",
+  "opts": [
+   "Kuwait City",
+   "Wellington",
+   "Seoul",
+   "Kingston"
+  ],
+  "exp": "The capital of Norfolk Island is Kingston (Oceania)."
+ },
+ {
+  "q": "Which continent is <strong>British Indian Ocean Territory</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Oceania",
+   "Asia",
+   "Africa",
+   "Antarctica"
+  ],
+  "exp": "British Indian Ocean Territory is in Africa."
+ },
+ {
+  "q": "Which language is spoken in <strong>New Caledonia</strong>?",
+  "a": "French",
+  "opts": [
+   "French",
+   "Serbian",
+   "Czech",
+   "Slovene"
+  ],
+  "exp": "French is spoken in New Caledonia."
+ },
+ {
+  "q": "Which continent is <strong>Wallis and Futuna</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Oceania",
+   "Africa",
+   "Antarctica"
+  ],
+  "exp": "Wallis and Futuna is in Oceania."
+ },
+ {
+  "q": "Which language is spoken in <strong>Montenegro</strong>?",
+  "a": "Montenegrin",
+  "opts": [
+   "Romanian",
+   "English",
+   "Montenegrin",
+   "Greek"
+  ],
+  "exp": "Montenegrin is spoken in Montenegro."
+ },
+ {
+  "q": "Which continent is <strong>Guernsey</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Asia",
+   "Oceania",
+   "Europe",
+   "Africa"
+  ],
+  "exp": "Guernsey is in Europe."
+ },
+ {
+  "q": "What is the capital of <strong>Tokelau</strong>?",
+  "a": "Fakaofo",
+  "opts": [
+   "Tripoli",
+   "Taipei",
+   "Lusaka",
+   "Fakaofo"
+  ],
+  "exp": "The capital of Tokelau is Fakaofo (Oceania)."
+ },
+ {
+  "q": "What is the capital of <strong>Vanuatu</strong>?",
+  "a": "Port Vila",
+  "opts": [
+   "Basse-Terre",
+   "Port Vila",
+   "Yamoussoukro",
+   "Dakar"
+  ],
+  "exp": "The capital of Vanuatu is Port Vila (Oceania)."
+ },
+ {
+  "q": "What is the capital of <strong>Cape Verde</strong>?",
+  "a": "Praia",
+  "opts": [
+   "Praia",
+   "Tirana",
+   "Saint-Denis",
+   "Castries"
+  ],
+  "exp": "The capital of Cape Verde is Praia (Africa)."
+ },
+ {
+  "q": "Which continent is <strong>Cape Verde</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Oceania",
+   "Europe",
+   "Asia",
+   "Africa"
+  ],
+  "exp": "Cape Verde is in Africa."
+ },
+ {
+  "q": "What is the capital of <strong>Cocos (Keeling) Islands</strong>?",
+  "a": "West Island",
+  "opts": [
+   "Vatican City",
+   "West Island",
+   "Oranjestad",
+   "Brussels"
+  ],
+  "exp": "The capital of Cocos (Keeling) Islands is West Island (Oceania)."
+ },
+ {
+  "q": "What is the capital of <strong>Niue</strong>?",
+  "a": "Alofi",
+  "opts": [
+   "Basse-Terre",
+   "Lilongwe",
+   "Alofi",
+   "Guatemala City"
+  ],
+  "exp": "The capital of Niue is Alofi (Oceania)."
+ },
+ {
+  "q": "What is the capital of <strong>Monaco</strong>?",
+  "a": "Monaco",
+  "opts": [
+   "Singapore",
+   "Ramallah",
+   "Monaco",
+   "Cockburn Town"
+  ],
+  "exp": "The capital of Monaco is Monaco (Europe)."
+ },
+ {
+  "q": "What is the capital of <strong>Luxembourg</strong>?",
+  "a": "Luxembourg",
+  "opts": [
+   "Luxembourg",
+   "Alofi",
+   "Pago Pago",
+   "London"
+  ],
+  "exp": "The capital of Luxembourg is Luxembourg (Europe)."
+ },
+ {
+  "q": "Which continent is <strong>New Caledonia</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Europe",
+   "Oceania",
+   "Asia"
+  ],
+  "exp": "New Caledonia is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>Western Sahara</strong>?",
+  "a": "Algerian dinar",
+  "opts": [
+   "Algerian dinar",
+   "Pakistani rupee",
+   "Qatari riyal",
+   "Colombian peso"
+  ],
+  "exp": "Western Sahara uses the Algerian dinar."
+ },
+ {
+  "q": "Which currency is used in <strong>Cape Verde</strong>?",
+  "a": "Cape Verdean escudo",
+  "opts": [
+   "Argentine peso",
+   "Cape Verdean escudo",
+   "Bahraini dinar",
+   "New Zealand dollar"
+  ],
+  "exp": "Cape Verde uses the Cape Verdean escudo."
+ },
+ {
+  "q": "Which continent is <strong>Svalbard and Jan Mayen</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Europe",
+   "Africa",
+   "Antarctica",
+   "Oceania"
+  ],
+  "exp": "Svalbard and Jan Mayen is in Europe."
+ },
+ {
+  "q": "What is the capital of <strong>Gibraltar</strong>?",
+  "a": "Gibraltar",
+  "opts": [
+   "Kinshasa",
+   "Gibraltar",
+   "Libreville",
+   "Papeetē"
+  ],
+  "exp": "The capital of Gibraltar is Gibraltar (Europe)."
+ },
+ {
+  "q": "Which currency is used in <strong>Isle of Man</strong>?",
+  "a": "British pound",
+  "opts": [
+   "British pound",
+   "Vietnamese đồng",
+   "Hungarian forint",
+   "Chilean peso"
+  ],
+  "exp": "Isle of Man uses the British pound."
+ },
+ {
+  "q": "Which continent is <strong>Andorra</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Oceania",
+   "Europe"
+  ],
+  "exp": "Andorra is in Europe."
+ },
+ {
+  "q": "Which currency is used in <strong>Taiwan</strong>?",
+  "a": "New Taiwan dollar",
+  "opts": [
+   "New Taiwan dollar",
+   "Malaysian ringgit",
+   "Egyptian pound",
+   "Qatari riyal"
+  ],
+  "exp": "Taiwan uses the New Taiwan dollar."
+ },
+ {
+  "q": "Which currency is used in <strong>Svalbard and Jan Mayen</strong>?",
+  "a": "krone",
+  "opts": [
+   "krone",
+   "Moroccan dirham",
+   "Swedish krona",
+   "South Korean won"
+  ],
+  "exp": "Svalbard and Jan Mayen uses the krone."
+ },
+ {
+  "q": "Which continent is <strong>Luxembourg</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Europe",
+   "Africa"
+  ],
+  "exp": "Luxembourg is in Europe."
+ },
+ {
+  "q": "What is the capital of <strong>Kiribati</strong>?",
+  "a": "South Tarawa",
+  "opts": [
+   "South Tarawa",
+   "Wellington",
+   "Ramallah",
+   "King Edward Point"
+  ],
+  "exp": "The capital of Kiribati is South Tarawa (Oceania)."
+ },
+ {
+  "q": "Which continent is <strong>Gibraltar</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Asia",
+   "Antarctica",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Gibraltar is in Europe."
+ },
+ {
+  "q": "Which continent is <strong>South Georgia</strong> in?",
+  "a": "Antarctica",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Antarctica",
+   "Europe"
+  ],
+  "exp": "South Georgia is in Antarctica."
+ },
+ {
+  "q": "Which continent is <strong>Samoa</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Asia",
+   "Africa"
+  ],
+  "exp": "Samoa is in Oceania."
+ },
+ {
+  "q": "Which language is spoken in <strong>Heard Island and McDonald Islands</strong>?",
+  "a": "English",
+  "opts": [
+   "Mongolian",
+   "Romanian",
+   "English",
+   "Belarusian"
+  ],
+  "exp": "English is spoken in Heard Island and McDonald Islands."
+ },
+ {
+  "q": "Which language is spoken in <strong>Réunion</strong>?",
+  "a": "French",
+  "opts": [
+   "Vietnamese",
+   "French",
+   "Amharic",
+   "Dutch"
+  ],
+  "exp": "French is spoken in Réunion."
+ },
+ {
+  "q": "Which language is spoken in <strong>Guam</strong>?",
+  "a": "Chamorro",
+  "opts": [
+   "Azerbaijani",
+   "Chamorro",
+   "Turkish",
+   "Belizean Creole"
+  ],
+  "exp": "Chamorro is spoken in Guam."
+ },
+ {
+  "q": "Which language is spoken in <strong>Andorra</strong>?",
+  "a": "Catalan",
+  "opts": [
+   "Georgian",
+   "Catalan",
+   "Berber",
+   "Malay"
+  ],
+  "exp": "Catalan is spoken in Andorra."
+ },
+ {
+  "q": "Which currency is used in <strong>Vatican City</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Euro",
+   "Trinidad and Tobago dollar",
+   "Lesotho loti",
+   "São Tomé and Príncipe dobra"
+  ],
+  "exp": "Vatican City uses the Euro."
+ },
+ {
+  "q": "What is the capital of <strong>Western Sahara</strong>?",
+  "a": "El Aaiún",
+  "opts": [
+   "Hanoi",
+   "Zagreb",
+   "El Aaiún",
+   "Cairo"
+  ],
+  "exp": "The capital of Western Sahara is El Aaiún (Africa)."
+ },
+ {
+  "q": "What is the capital of <strong>Guam</strong>?",
+  "a": "Hagåtña",
+  "opts": [
+   "Ashgabat",
+   "Hagåtña",
+   "Managua",
+   "Quito"
+  ],
+  "exp": "The capital of Guam is Hagåtña (Oceania)."
+ },
+ {
+  "q": "Which continent is <strong>Norfolk Island</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Europe",
+   "Oceania",
+   "Antarctica"
+  ],
+  "exp": "Norfolk Island is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Tonga</strong>?",
+  "a": "Nuku'alofa",
+  "opts": [
+   "Tórshavn",
+   "Nuku'alofa",
+   "Sucre",
+   "Saint-Pierre"
+  ],
+  "exp": "The capital of Tonga is Nuku'alofa (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Kosovo</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Czech koruna",
+   "Costa Rican colón",
+   "Euro",
+   "Sri Lankan rupee"
+  ],
+  "exp": "Kosovo uses the Euro."
+ },
+ {
+  "q": "Which language is spoken in <strong>Cook Islands</strong>?",
+  "a": "English",
+  "opts": [
+   "Sinhala",
+   "Aymara",
+   "Polish",
+   "English"
+  ],
+  "exp": "English is spoken in Cook Islands."
+ },
+ {
+  "q": "Which continent is <strong>Saint Helena, Ascension and Tristan da Cunha</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Europe",
+   "Antarctica",
+   "Africa",
+   "Asia"
+  ],
+  "exp": "Saint Helena, Ascension and Tristan da Cunha is in Africa."
+ },
+ {
+  "q": "Which continent is <strong>French Polynesia</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Antarctica",
+   "Oceania",
+   "Europe"
+  ],
+  "exp": "French Polynesia is in Oceania."
+ },
+ {
+  "q": "Which language is spoken in <strong>Vanuatu</strong>?",
+  "a": "Bislama",
+  "opts": [
+   "Bislama",
+   "Norwegian Nynorsk",
+   "Danish",
+   "Chamorro"
+  ],
+  "exp": "Bislama is spoken in Vanuatu."
+ },
+ {
+  "q": "What is the capital of <strong>Cook Islands</strong>?",
+  "a": "Avarua",
+  "opts": [
+   "Abu Dhabi",
+   "Tallinn",
+   "The Valley",
+   "Avarua"
+  ],
+  "exp": "The capital of Cook Islands is Avarua (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Monaco</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Bhutanese ngultrum",
+   "United Arab Emirates dirham",
+   "Paraguayan guaraní",
+   "Euro"
+  ],
+  "exp": "Monaco uses the Euro."
+ },
+ {
+  "q": "Which continent is <strong>Antarctica</strong> in?",
+  "a": "Antarctica",
+  "opts": [
+   "Asia",
+   "Antarctica",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Antarctica is in Antarctica."
+ },
+ {
+  "q": "What is the capital of <strong>Seychelles</strong>?",
+  "a": "Victoria",
+  "opts": [
+   "Victoria",
+   "El Aaiún",
+   "Roseau",
+   "Saint-Pierre"
+  ],
+  "exp": "The capital of Seychelles is Victoria (Africa)."
+ },
+ {
+  "q": "What is the capital of <strong>Kosovo</strong>?",
+  "a": "Pristina",
+  "opts": [
+   "Zagreb",
+   "Pristina",
+   "Port-au-Prince",
+   "New Delhi"
+  ],
+  "exp": "The capital of Kosovo is Pristina (Europe)."
+ },
+ {
+  "q": "What is the capital of <strong>Vatican City</strong>?",
+  "a": "Vatican City",
+  "opts": [
+   "Singapore",
+   "Damascus",
+   "São Tomé",
+   "Vatican City"
+  ],
+  "exp": "The capital of Vatican City is Vatican City (Europe)."
+ },
+ {
+  "q": "Which language is spoken in <strong>Monaco</strong>?",
+  "a": "French",
+  "opts": [
+   "Greenlandic",
+   "Serbian",
+   "French",
+   "Arabic"
+  ],
+  "exp": "French is spoken in Monaco."
+ },
+ {
+  "q": "Which language is spoken in <strong>Western Sahara</strong>?",
+  "a": "Berber",
+  "opts": [
+   "Berber",
+   "Persian (Farsi)",
+   "Khmer",
+   "Turkish"
+  ],
+  "exp": "Berber is spoken in Western Sahara."
+ },
+ {
+  "q": "Which language is spoken in <strong>South Georgia</strong>?",
+  "a": "English",
+  "opts": [
+   "Chibarwe",
+   "Turkish",
+   "Malay",
+   "English"
+  ],
+  "exp": "English is spoken in South Georgia."
+ },
+ {
+  "q": "Which language is spoken in <strong>Micronesia</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Sinhala",
+   "Romanian",
+   "Spanish"
+  ],
+  "exp": "English is spoken in Micronesia."
+ },
+ {
+  "q": "What is the capital of <strong>British Indian Ocean Territory</strong>?",
+  "a": "Diego Garcia",
+  "opts": [
+   "Rabat",
+   "Diego Garcia",
+   "Dublin",
+   "Bern"
+  ],
+  "exp": "The capital of British Indian Ocean Territory is Diego Garcia (Africa)."
+ },
+ {
+  "q": "Which continent is <strong>Nauru</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Oceania",
+   "Europe",
+   "Asia"
+  ],
+  "exp": "Nauru is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Liechtenstein</strong>?",
+  "a": "Vaduz",
+  "opts": [
+   "Vaduz",
+   "Skopje",
+   "Paris",
+   "Tokyo"
+  ],
+  "exp": "The capital of Liechtenstein is Vaduz (Europe)."
+ },
+ {
+  "q": "What is the capital of <strong>French Polynesia</strong>?",
+  "a": "Papeetē",
+  "opts": [
+   "Sana'a",
+   "Papeetē",
+   "Seoul",
+   "Bissau"
+  ],
+  "exp": "The capital of French Polynesia is Papeetē (Oceania)."
+ },
+ {
+  "q": "Which continent is <strong>Maldives</strong> in?",
+  "a": "Asia",
+  "opts": [
+   "Antarctica",
+   "Africa",
+   "Asia",
+   "Europe"
+  ],
+  "exp": "Maldives is in Asia."
+ },
+ {
+  "q": "Which continent is <strong>Montenegro</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Europe",
+   "Antarctica",
+   "Oceania",
+   "Africa"
+  ],
+  "exp": "Montenegro is in Europe."
+ },
+ {
+  "q": "What is the capital of <strong>Maldives</strong>?",
+  "a": "Malé",
+  "opts": [
+   "Pyongyang",
+   "Malé",
+   "Baghdad",
+   "Thimphu"
+  ],
+  "exp": "The capital of Maldives is Malé (Asia)."
+ },
+ {
+  "q": "Which currency is used in <strong>Iceland</strong>?",
+  "a": "Icelandic króna",
+  "opts": [
+   "Guatemalan quetzal",
+   "West African CFA franc",
+   "Danish krone",
+   "Icelandic króna"
+  ],
+  "exp": "Iceland uses the Icelandic króna."
+ },
+ {
+  "q": "What is the capital of <strong>Marshall Islands</strong>?",
+  "a": "Majuro",
+  "opts": [
+   "Quito",
+   "Doha",
+   "Rabat",
+   "Majuro"
+  ],
+  "exp": "The capital of Marshall Islands is Majuro (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Maldives</strong>?",
+  "a": "Maldivian rufiyaa",
+  "opts": [
+   "Maldivian rufiyaa",
+   "Comorian franc",
+   "Cayman Islands dollar",
+   "Nepalese rupee"
+  ],
+  "exp": "Maldives uses the Maldivian rufiyaa."
+ },
+ {
+  "q": "Which continent is <strong>Palau</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Asia",
+   "Antarctica",
+   "Oceania"
+  ],
+  "exp": "Palau is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>San Marino</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Euro",
+   "Tongan paʻanga",
+   "Algerian dinar",
+   "West African CFA franc"
+  ],
+  "exp": "San Marino uses the Euro."
+ },
+ {
+  "q": "Which currency is used in <strong>Niue</strong>?",
+  "a": "New Zealand dollar",
+  "opts": [
+   "Paraguayan guaraní",
+   "Tanzanian shilling",
+   "Falkland Islands pound",
+   "New Zealand dollar"
+  ],
+  "exp": "Niue uses the New Zealand dollar."
+ },
+ {
+  "q": "Which currency is used in <strong>Samoa</strong>?",
+  "a": "Samoan tālā",
+  "opts": [
+   "Sudanese pound",
+   "Samoan tālā",
+   "Albanian lek",
+   "Saint Helena pound"
+  ],
+  "exp": "Samoa uses the Samoan tālā."
+ },
+ {
+  "q": "Which language is spoken in <strong>Tuvalu</strong>?",
+  "a": "English",
+  "opts": [
+   "Thai",
+   "Khmer",
+   "English",
+   "Kazakh"
+  ],
+  "exp": "English is spoken in Tuvalu."
+ },
+ {
+  "q": "Which continent is <strong>Brunei</strong> in?",
+  "a": "Asia",
+  "opts": [
+   "Oceania",
+   "Asia",
+   "Antarctica",
+   "Africa"
+  ],
+  "exp": "Brunei is in Asia."
+ },
+ {
+  "q": "Which continent is <strong>Cook Islands</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Oceania",
+   "Europe"
+  ],
+  "exp": "Cook Islands is in Oceania."
+ },
+ {
+  "q": "Which continent is <strong>Iceland</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Europe",
+   "Asia"
+  ],
+  "exp": "Iceland is in Europe."
+ },
+ {
+  "q": "Which language is spoken in <strong>Palau</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Khmer",
+   "Dari",
+   "Albanian"
+  ],
+  "exp": "English is spoken in Palau."
+ },
+ {
+  "q": "Which continent is <strong>Macau</strong> in?",
+  "a": "Asia",
+  "opts": [
+   "Oceania",
+   "Europe",
+   "Antarctica",
+   "Asia"
+  ],
+  "exp": "Macau is in Asia."
+ },
+ {
+  "q": "Which language is spoken in <strong>Cocos (Keeling) Islands</strong>?",
+  "a": "English",
+  "opts": [
+   "Catalan",
+   "English",
+   "Dari",
+   "Italian"
+  ],
+  "exp": "English is spoken in Cocos (Keeling) Islands."
+ },
+ {
+  "q": "Which currency is used in <strong>Guernsey</strong>?",
+  "a": "British pound",
+  "opts": [
+   "Romanian leu",
+   "São Tomé and Príncipe dobra",
+   "Russian ruble",
+   "British pound"
+  ],
+  "exp": "Guernsey uses the British pound."
+ },
+ {
+  "q": "Which continent is <strong>Malta</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Oceania",
+   "Antarctica",
+   "Europe",
+   "Asia"
+  ],
+  "exp": "Malta is in Europe."
+ },
+ {
+  "q": "Which continent is <strong>Isle of Man</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Europe",
+   "Africa",
+   "Asia",
+   "Oceania"
+  ],
+  "exp": "Isle of Man is in Europe."
+ },
+ {
+  "q": "Which language is spoken in <strong>Isle of Man</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Burmese",
+   "Afrikaans",
+   "Italian"
+  ],
+  "exp": "English is spoken in Isle of Man."
+ },
+ {
+  "q": "Which continent is <strong>Vanuatu</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Vanuatu is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Wallis and Futuna</strong>?",
+  "a": "Mata-Utu",
+  "opts": [
+   "Mariehamn",
+   "Warsaw",
+   "Beijing",
+   "Mata-Utu"
+  ],
+  "exp": "The capital of Wallis and Futuna is Mata-Utu (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Cook Islands</strong>?",
+  "a": "Cook Islands dollar",
+  "opts": [
+   "Tunisian dinar",
+   "Cook Islands dollar",
+   "Bahamian dollar",
+   "Bermudian dollar"
+  ],
+  "exp": "Cook Islands uses the Cook Islands dollar."
+ },
+ {
+  "q": "Which continent is <strong>Christmas Island</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Oceania",
+   "Asia",
+   "Antarctica"
+  ],
+  "exp": "Christmas Island is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Jersey</strong>?",
+  "a": "Saint Helier",
+  "opts": [
+   "Nairobi",
+   "Abuja",
+   "Saint Helier",
+   "Gustavia"
+  ],
+  "exp": "The capital of Jersey is Saint Helier (Europe)."
+ },
+ {
+  "q": "Which currency is used in <strong>South Georgia</strong>?",
+  "a": "Saint Helena pound",
+  "opts": [
+   "Netherlands Antillean guilder",
+   "Norwegian krone",
+   "Barbadian dollar",
+   "Saint Helena pound"
+  ],
+  "exp": "South Georgia uses the Saint Helena pound."
+ },
+ {
+  "q": "Which continent is <strong>Niue</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Oceania",
+   "Asia",
+   "Antarctica"
+  ],
+  "exp": "Niue is in Oceania."
+ },
+ {
+  "q": "Which language is spoken in <strong>Marshall Islands</strong>?",
+  "a": "English",
+  "opts": [
+   "Persian (Farsi)",
+   "Moldavian",
+   "English",
+   "Arabic"
+  ],
+  "exp": "English is spoken in Marshall Islands."
+ },
+ {
+  "q": "Which language is spoken in <strong>Christmas Island</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Norwegian",
+   "Lao",
+   "Polish"
+  ],
+  "exp": "English is spoken in Christmas Island."
+ },
+ {
+  "q": "Which currency is used in <strong>Norfolk Island</strong>?",
+  "a": "Australian dollar",
+  "opts": [
+   "Bolivian boliviano",
+   "Ukrainian hryvnia",
+   "Australian dollar",
+   "West African CFA franc"
+  ],
+  "exp": "Norfolk Island uses the Australian dollar."
+ },
+ {
+  "q": "Which currency is used in <strong>Tonga</strong>?",
+  "a": "Tongan paʻanga",
+  "opts": [
+   "dalasi",
+   "Uruguayan peso",
+   "Tunisian dinar",
+   "Tongan paʻanga"
+  ],
+  "exp": "Tonga uses the Tongan paʻanga."
+ },
+ {
+  "q": "Which language is spoken in <strong>Macau</strong>?",
+  "a": "Portuguese",
+  "opts": [
+   "Greenlandic",
+   "Danish",
+   "Portuguese",
+   "Bulgarian"
+  ],
+  "exp": "Portuguese is spoken in Macau."
+ },
+ {
+  "q": "Which language is spoken in <strong>Seychelles</strong>?",
+  "a": "Seychellois Creole",
+  "opts": [
+   "Amharic",
+   "Seychellois Creole",
+   "Finnish",
+   "Azerbaijani"
+  ],
+  "exp": "Seychellois Creole is spoken in Seychelles."
+ },
+ {
+  "q": "What is the capital of <strong>Taiwan</strong>?",
+  "a": "Taipei",
+  "opts": [
+   "Taipei",
+   "Pristina",
+   "Majuro",
+   "Quito"
+  ],
+  "exp": "The capital of Taiwan is Taipei (Asia)."
+ },
+ {
+  "q": "Which continent is <strong>Kosovo</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Oceania",
+   "Africa",
+   "Asia",
+   "Europe"
+  ],
+  "exp": "Kosovo is in Europe."
+ },
+ {
+  "q": "Which continent is <strong>Heard Island and McDonald Islands</strong> in?",
+  "a": "Antarctica",
+  "opts": [
+   "Africa",
+   "Antarctica",
+   "Oceania",
+   "Europe"
+  ],
+  "exp": "Heard Island and McDonald Islands is in Antarctica."
+ },
+ {
+  "q": "Which language is spoken in <strong>Vatican City</strong>?",
+  "a": "Italian",
+  "opts": [
+   "Dzongkha",
+   "Malay",
+   "Italian",
+   "Greek"
+  ],
+  "exp": "Italian is spoken in Vatican City."
+ },
+ {
+  "q": "Which currency is used in <strong>Faroe Islands</strong>?",
+  "a": "Danish krone",
+  "opts": [
+   "Danish krone",
+   "Colombian peso",
+   "Indian rupee",
+   "lari"
+  ],
+  "exp": "Faroe Islands uses the Danish krone."
+ },
+ {
+  "q": "Which currency is used in <strong>Tuvalu</strong>?",
+  "a": "Australian dollar",
+  "opts": [
+   "Congolese franc",
+   "Australian dollar",
+   "Macanese pataca",
+   "Djiboutian franc"
+  ],
+  "exp": "Tuvalu uses the Australian dollar."
+ },
+ {
+  "q": "Which language is spoken in <strong>Tokelau</strong>?",
+  "a": "English",
+  "opts": [
+   "Greek",
+   "Georgian",
+   "English",
+   "Finnish"
+  ],
+  "exp": "English is spoken in Tokelau."
+ },
+ {
+  "q": "Which language is spoken in <strong>Cape Verde</strong>?",
+  "a": "Portuguese",
+  "opts": [
+   "Portuguese",
+   "Arabic",
+   "Dutch",
+   "Estonian"
+  ],
+  "exp": "Portuguese is spoken in Cape Verde."
+ },
+ {
+  "q": "Which language is spoken in <strong>Norfolk Island</strong>?",
+  "a": "English",
+  "opts": [
+   "Arabic",
+   "Polish",
+   "Dutch",
+   "English"
+  ],
+  "exp": "English is spoken in Norfolk Island."
+ },
+ {
+  "q": "Which language is spoken in <strong>Mayotte</strong>?",
+  "a": "French",
+  "opts": [
+   "Polish",
+   "Georgian",
+   "Guaraní",
+   "French"
+  ],
+  "exp": "French is spoken in Mayotte."
+ },
+ {
+  "q": "Which continent is <strong>Northern Mariana Islands</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Africa",
+   "Antarctica",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Northern Mariana Islands is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>Vanuatu</strong>?",
+  "a": "Vanuatu vatu",
+  "opts": [
+   "Namibian dollar",
+   "Vanuatu vatu",
+   "Colombian peso",
+   "West African CFA franc"
+  ],
+  "exp": "Vanuatu uses the Vanuatu vatu."
+ },
+ {
+  "q": "Which continent is <strong>Taiwan</strong> in?",
+  "a": "Asia",
+  "opts": [
+   "Europe",
+   "Asia",
+   "Oceania",
+   "Africa"
+  ],
+  "exp": "Taiwan is in Asia."
+ },
+ {
+  "q": "Which continent is <strong>Mayotte</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Africa",
+   "Oceania",
+   "Europe",
+   "Antarctica"
+  ],
+  "exp": "Mayotte is in Africa."
+ },
+ {
+  "q": "What is the capital of <strong>Brunei</strong>?",
+  "a": "Bandar Seri Begawan",
+  "opts": [
+   "Douglas",
+   "Banjul",
+   "Santo Domingo",
+   "Bandar Seri Begawan"
+  ],
+  "exp": "The capital of Brunei is Bandar Seri Begawan (Asia)."
+ },
+ {
+  "q": "Which continent is <strong>Bhutan</strong> in?",
+  "a": "Asia",
+  "opts": [
+   "Asia",
+   "Antarctica",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Bhutan is in Asia."
+ },
+ {
+  "q": "Which language is spoken in <strong>Northern Mariana Islands</strong>?",
+  "a": "Carolinian",
+  "opts": [
+   "Mongolian",
+   "Kyrgyz",
+   "Carolinian",
+   "Norwegian Nynorsk"
+  ],
+  "exp": "Carolinian is spoken in Northern Mariana Islands."
+ },
+ {
+  "q": "Which language is spoken in <strong>Bouvet Island</strong>?",
+  "a": "Norwegian",
+  "opts": [
+   "Norwegian",
+   "Portuguese",
+   "Dzongkha",
+   "Korean"
+  ],
+  "exp": "Norwegian is spoken in Bouvet Island."
+ },
+ {
+  "q": "Which language is spoken in <strong>Gibraltar</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Berber",
+   "Khmer",
+   "Norwegian Nynorsk"
+  ],
+  "exp": "English is spoken in Gibraltar."
+ },
+ {
+  "q": "Which language is spoken in <strong>Kosovo</strong>?",
+  "a": "Albanian",
+  "opts": [
+   "Romanian",
+   "Thai",
+   "Albanian",
+   "Aymara"
+  ],
+  "exp": "Albanian is spoken in Kosovo."
+ },
+ {
+  "q": "Which language is spoken in <strong>Bhutan</strong>?",
+  "a": "Dzongkha",
+  "opts": [
+   "Polish",
+   "Slovak",
+   "Guaraní",
+   "Dzongkha"
+  ],
+  "exp": "Dzongkha is spoken in Bhutan."
+ },
+ {
+  "q": "Which language is spoken in <strong>Saint Helena, Ascension and Tristan da Cunha</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Ukrainian",
+   "Bislama",
+   "Seychellois Creole"
+  ],
+  "exp": "English is spoken in Saint Helena, Ascension and Tristan da Cunha."
+ },
+ {
+  "q": "Which language is spoken in <strong>Liechtenstein</strong>?",
+  "a": "German",
+  "opts": [
+   "German",
+   "Persian (Farsi)",
+   "Arabic",
+   "Indonesian"
+  ],
+  "exp": "German is spoken in Liechtenstein."
+ },
+ {
+  "q": "Which language is spoken in <strong>Taiwan</strong>?",
+  "a": "Chinese",
+  "opts": [
+   "Chinese",
+   "Amharic",
+   "Lao",
+   "Dzongkha"
+  ],
+  "exp": "Chinese is spoken in Taiwan."
+ },
+ {
+  "q": "What is the capital of <strong>Bhutan</strong>?",
+  "a": "Thimphu",
+  "opts": [
+   "Abuja",
+   "Charlotte Amalie",
+   "Thimphu",
+   "Port Louis"
+  ],
+  "exp": "The capital of Bhutan is Thimphu (Asia)."
+ },
+ {
+  "q": "Which currency is used in <strong>New Caledonia</strong>?",
+  "a": "CFP franc",
+  "opts": [
+   "Solomon Islands dollar",
+   "CFP franc",
+   "Pakistani rupee",
+   "Tajikistani somoni"
+  ],
+  "exp": "New Caledonia uses the CFP franc."
+ },
+ {
+  "q": "What is the capital of <strong>Réunion</strong>?",
+  "a": "Saint-Denis",
+  "opts": [
+   "Saint-Denis",
+   "Vilnius",
+   "Paramaribo",
+   "Gustavia"
+  ],
+  "exp": "The capital of Réunion is Saint-Denis (Africa)."
+ },
+ {
+  "q": "What is the capital of <strong>Northern Mariana Islands</strong>?",
+  "a": "Saipan",
+  "opts": [
+   "City of San Marino",
+   "Port-aux-Français",
+   "Saipan",
+   "Windhoek"
+  ],
+  "exp": "The capital of Northern Mariana Islands is Saipan (Oceania)."
+ },
+ {
+  "q": "Which language is spoken in <strong>São Tomé and Príncipe</strong>?",
+  "a": "Portuguese",
+  "opts": [
+   "Dari",
+   "Dutch",
+   "Portuguese",
+   "Chamorro"
+  ],
+  "exp": "Portuguese is spoken in São Tomé and Príncipe."
+ },
+ {
+  "q": "Which continent is <strong>São Tomé and Príncipe</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Oceania",
+   "Antarctica",
+   "Europe",
+   "Africa"
+  ],
+  "exp": "São Tomé and Príncipe is in Africa."
+ },
+ {
+  "q": "Which currency is used in <strong>Marshall Islands</strong>?",
+  "a": "United States dollar",
+  "opts": [
+   "Guyanese dollar",
+   "United States dollar",
+   "Panamanian balboa",
+   "Eritrean nakfa"
+  ],
+  "exp": "Marshall Islands uses the United States dollar."
+ },
+ {
+  "q": "Which continent is <strong>Pitcairn Islands</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Asia",
+   "Africa",
+   "Oceania"
+  ],
+  "exp": "Pitcairn Islands is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Åland Islands</strong>?",
+  "a": "Mariehamn",
+  "opts": [
+   "Rabat",
+   "Mariehamn",
+   "Maputo",
+   "Tirana"
+  ],
+  "exp": "The capital of Åland Islands is Mariehamn (Europe)."
+ },
+ {
+  "q": "Which currency is used in <strong>French Southern and Antarctic Lands</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Uruguayan peso",
+   "Euro",
+   "Yemeni rial",
+   "Moldovan leu"
+  ],
+  "exp": "French Southern and Antarctic Lands uses the Euro."
+ },
+ {
+  "q": "Which currency is used in <strong>Kiribati</strong>?",
+  "a": "Australian dollar",
+  "opts": [
+   "Australian dollar",
+   "Burundian franc",
+   "denar",
+   "Algerian dinar"
+  ],
+  "exp": "Kiribati uses the Australian dollar."
+ },
+ {
+  "q": "Which continent is <strong>Marshall Islands</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Antarctica",
+   "Africa",
+   "Oceania",
+   "Europe"
+  ],
+  "exp": "Marshall Islands is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>São Tomé and Príncipe</strong>?",
+  "a": "São Tomé and Príncipe dobra",
+  "opts": [
+   "New Taiwan dollar",
+   "Bosnia and Herzegovina convertible mark",
+   "São Tomé and Príncipe dobra",
+   "Gibraltar pound"
+  ],
+  "exp": "São Tomé and Príncipe uses the São Tomé and Príncipe dobra."
+ },
+ {
+  "q": "Which currency is used in <strong>Macau</strong>?",
+  "a": "Macanese pataca",
+  "opts": [
+   "Lao kip",
+   "Samoan tālā",
+   "Macanese pataca",
+   "Lebanese pound"
+  ],
+  "exp": "Macau uses the Macanese pataca."
+ },
+ {
+  "q": "Which language is spoken in <strong>French Polynesia</strong>?",
+  "a": "French",
+  "opts": [
+   "Belarusian",
+   "Albanian",
+   "French",
+   "Estonian"
+  ],
+  "exp": "French is spoken in French Polynesia."
+ },
+ {
+  "q": "What is the capital of <strong>San Marino</strong>?",
+  "a": "City of San Marino",
+  "opts": [
+   "City of San Marino",
+   "Manila",
+   "Niamey",
+   "Mogadishu"
+  ],
+  "exp": "The capital of San Marino is City of San Marino (Europe)."
+ },
+ {
+  "q": "Which currency is used in <strong>Gibraltar</strong>?",
+  "a": "Gibraltar pound",
+  "opts": [
+   "Bangladeshi taka",
+   "Gibraltar pound",
+   "Vietnamese đồng",
+   "Kazakhstani tenge"
+  ],
+  "exp": "Gibraltar uses the Gibraltar pound."
+ },
+ {
+  "q": "Which language is spoken in <strong>Niue</strong>?",
+  "a": "English",
+  "opts": [
+   "Lithuanian",
+   "Greek",
+   "Serbian",
+   "English"
+  ],
+  "exp": "English is spoken in Niue."
+ },
+ {
+  "q": "What is the capital of <strong>American Samoa</strong>?",
+  "a": "Pago Pago",
+  "opts": [
+   "Pago Pago",
+   "Dhaka",
+   "Gaborone",
+   "San Salvador"
+  ],
+  "exp": "The capital of American Samoa is Pago Pago (Oceania)."
+ },
+ {
+  "q": "What is the capital of <strong>São Tomé and Príncipe</strong>?",
+  "a": "São Tomé",
+  "opts": [
+   "Panama City",
+   "Bern",
+   "São Tomé",
+   "Alofi"
+  ],
+  "exp": "The capital of São Tomé and Príncipe is São Tomé (Africa)."
+ },
+ {
+  "q": "Which language is spoken in <strong>Nauru</strong>?",
+  "a": "English",
+  "opts": [
+   "Kyrgyz",
+   "Danish",
+   "English",
+   "Aymara"
+  ],
+  "exp": "English is spoken in Nauru."
+ },
+ {
+  "q": "Which language is spoken in <strong>Luxembourg</strong>?",
+  "a": "German",
+  "opts": [
+   "Dzongkha",
+   "Ukrainian",
+   "Afrikaans",
+   "German"
+  ],
+  "exp": "German is spoken in Luxembourg."
+ },
+ {
+  "q": "Which continent is <strong>French Southern and Antarctic Lands</strong> in?",
+  "a": "Antarctica",
+  "opts": [
+   "Europe",
+   "Oceania",
+   "Antarctica",
+   "Africa"
+  ],
+  "exp": "French Southern and Antarctic Lands is in Antarctica."
+ },
+ {
+  "q": "Which language is spoken in <strong>San Marino</strong>?",
+  "a": "Italian",
+  "opts": [
+   "Bosnian",
+   "Italian",
+   "Sinhala",
+   "Montenegrin"
+  ],
+  "exp": "Italian is spoken in San Marino."
+ },
+ {
+  "q": "What is the capital of <strong>Christmas Island</strong>?",
+  "a": "Flying Fish Cove",
+  "opts": [
+   "Gitega",
+   "Suva",
+   "Flying Fish Cove",
+   "El Aaiún"
+  ],
+  "exp": "The capital of Christmas Island is Flying Fish Cove (Oceania)."
+ },
+ {
+  "q": "Which language is spoken in <strong>Brunei</strong>?",
+  "a": "Malay",
+  "opts": [
+   "Swedish",
+   "Austro-Bavarian German",
+   "Malay",
+   "Croatian"
+  ],
+  "exp": "Malay is spoken in Brunei."
+ },
+ {
+  "q": "Which currency is used in <strong>British Indian Ocean Territory</strong>?",
+  "a": "United States dollar",
+  "opts": [
+   "Lao kip",
+   "Vanuatu vatu",
+   "Mexican peso",
+   "United States dollar"
+  ],
+  "exp": "British Indian Ocean Territory uses the United States dollar."
+ },
+ {
+  "q": "What is the capital of <strong>Montenegro</strong>?",
+  "a": "Podgorica",
+  "opts": [
+   "Pristina",
+   "Podgorica",
+   "Saint-Pierre",
+   "Belmopan"
+  ],
+  "exp": "The capital of Montenegro is Podgorica (Europe)."
+ },
+ {
+  "q": "What is the capital of <strong>New Caledonia</strong>?",
+  "a": "Nouméa",
+  "opts": [
+   "Nouméa",
+   "Riga",
+   "Algiers",
+   "Colombo"
+  ],
+  "exp": "The capital of New Caledonia is Nouméa (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Pitcairn Islands</strong>?",
+  "a": "New Zealand dollar",
+  "opts": [
+   "Netherlands Antillean guilder",
+   "Maldivian rufiyaa",
+   "New Zealand dollar",
+   "Barbadian dollar"
+  ],
+  "exp": "Pitcairn Islands uses the New Zealand dollar."
+ },
+ {
+  "q": "Which currency is used in <strong>Cocos (Keeling) Islands</strong>?",
+  "a": "Australian dollar",
+  "opts": [
+   "Uzbekistani soʻm",
+   "Australian dollar",
+   "Paraguayan guaraní",
+   "New Taiwan dollar"
+  ],
+  "exp": "Cocos (Keeling) Islands uses the Australian dollar."
+ },
+ {
+  "q": "What is the capital of <strong>Micronesia</strong>?",
+  "a": "Palikir",
+  "opts": [
+   "Palikir",
+   "Dhaka",
+   "Jerusalem",
+   "Athens"
+  ],
+  "exp": "The capital of Micronesia is Palikir (Oceania)."
+ },
+ {
+  "q": "Which language is spoken in <strong>Åland Islands</strong>?",
+  "a": "Swedish",
+  "opts": [
+   "Norwegian Nynorsk",
+   "Kyrgyz",
+   "Swedish",
+   "Icelandic"
+  ],
+  "exp": "Swedish is spoken in Åland Islands."
+ },
+ {
+  "q": "Which continent is <strong>Vatican City</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Europe",
+   "Asia"
+  ],
+  "exp": "Vatican City is in Europe."
+ },
+ {
+  "q": "Which continent is <strong>San Marino</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Africa",
+   "Europe",
+   "Asia",
+   "Oceania"
+  ],
+  "exp": "San Marino is in Europe."
+ },
+ {
+  "q": "Which continent is <strong>Faroe Islands</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Antarctica",
+   "Africa",
+   "Europe",
+   "Asia"
+  ],
+  "exp": "Faroe Islands is in Europe."
+ },
+ {
+  "q": "Which currency is used in <strong>Jersey</strong>?",
+  "a": "British pound",
+  "opts": [
+   "British pound",
+   "United States dollar",
+   "Euro",
+   "Seychellois rupee"
+  ],
+  "exp": "Jersey uses the British pound."
+ },
+ {
+  "q": "Which language is spoken in <strong>Malta</strong>?",
+  "a": "English",
+  "opts": [
+   "Moldavian",
+   "English",
+   "Arabic",
+   "Lithuanian"
+  ],
+  "exp": "English is spoken in Malta."
+ },
+ {
+  "q": "Which currency is used in <strong>Saint Helena, Ascension and Tristan da Cunha</strong>?",
+  "a": "Pound sterling",
+  "opts": [
+   "South Sudanese pound",
+   "New Zealand dollar",
+   "Somali shilling",
+   "Pound sterling"
+  ],
+  "exp": "Saint Helena, Ascension and Tristan da Cunha uses the Pound sterling."
+ },
+ {
+  "q": "Which continent is <strong>Seychelles</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Oceania",
+   "Europe"
+  ],
+  "exp": "Seychelles is in Africa."
+ },
+ {
+  "q": "Which continent is <strong>Jersey</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Asia",
+   "Europe",
+   "Antarctica",
+   "Oceania"
+  ],
+  "exp": "Jersey is in Europe."
+ },
+ {
+  "q": "Which continent is <strong>Guam</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Asia",
+   "Africa"
+  ],
+  "exp": "Guam is in Oceania."
+ },
+ {
+  "q": "Which currency is used in <strong>Bhutan</strong>?",
+  "a": "Bhutanese ngultrum",
+  "opts": [
+   "Bhutanese ngultrum",
+   "Gibraltar pound",
+   "Paraguayan guaraní",
+   "South Sudanese pound"
+  ],
+  "exp": "Bhutan uses the Bhutanese ngultrum."
+ },
+ {
+  "q": "What is the capital of <strong>Nauru</strong>?",
+  "a": "Yaren",
+  "opts": [
+   "Yaren",
+   "Dili",
+   "Mexico City",
+   "Ottawa"
+  ],
+  "exp": "The capital of Nauru is Yaren (Oceania)."
+ },
+ {
+  "q": "Which currency is used in <strong>Nauru</strong>?",
+  "a": "Australian dollar",
+  "opts": [
+   "Solomon Islands dollar",
+   "Namibian dollar",
+   "Australian dollar",
+   "Burundian franc"
+  ],
+  "exp": "Nauru uses the Australian dollar."
+ },
+ {
+  "q": "Which currency is used in <strong>Andorra</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Bhutanese ngultrum",
+   "Somali shilling",
+   "Serbian dinar",
+   "Euro"
+  ],
+  "exp": "Andorra uses the Euro."
+ },
+ {
+  "q": "Which currency is used in <strong>Réunion</strong>?",
+  "a": "Euro",
+  "opts": [
+   "Euro",
+   "Rwandan franc",
+   "Cayman Islands dollar",
+   "Indonesian rupiah"
+  ],
+  "exp": "Réunion uses the Euro."
+ },
+ {
+  "q": "Which language is spoken in <strong>Guernsey</strong>?",
+  "a": "English",
+  "opts": [
+   "Macedonian",
+   "Montenegrin",
+   "Norwegian Nynorsk",
+   "English"
+  ],
+  "exp": "English is spoken in Guernsey."
+ },
+ {
+  "q": "Which language is spoken in <strong>Svalbard and Jan Mayen</strong>?",
+  "a": "Norwegian",
+  "opts": [
+   "Italian",
+   "Portuguese",
+   "Serbian",
+   "Norwegian"
+  ],
+  "exp": "Norwegian is spoken in Svalbard and Jan Mayen."
+ },
+ {
+  "q": "What is the capital of <strong>French Southern and Antarctic Lands</strong>?",
+  "a": "Port-aux-Français",
+  "opts": [
+   "Kampala",
+   "Port-aux-Français",
+   "St. George's",
+   "Harare"
+  ],
+  "exp": "The capital of French Southern and Antarctic Lands is Port-aux-Français (Antarctica)."
+ },
+ {
+  "q": "Which language is spoken in <strong>Samoa</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Afrikaans",
+   "Moldavian",
+   "Dzongkha"
+  ],
+  "exp": "English is spoken in Samoa."
+ },
+ {
+  "q": "Which language is spoken in <strong>Maldives</strong>?",
+  "a": "Maldivian",
+  "opts": [
+   "Maldivian",
+   "Bislama",
+   "Kazakh",
+   "Thai"
+  ],
+  "exp": "Maldivian is spoken in Maldives."
+ },
+ {
+  "q": "Which continent is <strong>Cocos (Keeling) Islands</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Asia",
+   "Oceania",
+   "Africa"
+  ],
+  "exp": "Cocos (Keeling) Islands is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Tuvalu</strong>?",
+  "a": "Funafuti",
+  "opts": [
+   "The Valley",
+   "Colombo",
+   "Naypyidaw",
+   "Funafuti"
+  ],
+  "exp": "The capital of Tuvalu is Funafuti (Oceania)."
+ },
+ {
+  "q": "Which continent is <strong>Western Sahara</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Antarctica",
+   "Europe"
+  ],
+  "exp": "Western Sahara is in Africa."
+ },
+ {
+  "q": "What is the capital of <strong>Isle of Man</strong>?",
+  "a": "Douglas",
+  "opts": [
+   "Dakar",
+   "Douglas",
+   "Belgrade",
+   "Doha"
+  ],
+  "exp": "The capital of Isle of Man is Douglas (Europe)."
+ },
+ {
+  "q": "Which language is spoken in <strong>Pitcairn Islands</strong>?",
+  "a": "English",
+  "opts": [
+   "English",
+   "Swedish",
+   "Albanian",
+   "Belizean Creole"
+  ],
+  "exp": "English is spoken in Pitcairn Islands."
+ },
+ {
+  "q": "Which language is spoken in <strong>Jersey</strong>?",
+  "a": "English",
+  "opts": [
+   "Nepali",
+   "English",
+   "Thai",
+   "Georgian"
+  ],
+  "exp": "English is spoken in Jersey."
+ },
+ {
+  "q": "What is the capital of <strong>Faroe Islands</strong>?",
+  "a": "Tórshavn",
+  "opts": [
+   "Tórshavn",
+   "Philipsburg",
+   "Dodoma",
+   "South Tarawa"
+  ],
+  "exp": "The capital of Faroe Islands is Tórshavn (Europe)."
+ },
+ {
+  "q": "Which continent is <strong>Tonga</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Asia",
+   "Antarctica",
+   "Europe",
+   "Oceania"
+  ],
+  "exp": "Tonga is in Oceania."
+ },
+ {
+  "q": "What is the capital of <strong>Pitcairn Islands</strong>?",
+  "a": "Adamstown",
+  "opts": [
+   "Adamstown",
+   "Gibraltar",
+   "Stockholm",
+   "Kuala Lumpur"
+  ],
+  "exp": "The capital of Pitcairn Islands is Adamstown (Oceania)."
+ },
+ {
+  "q": "Which continent is <strong>Réunion</strong> in?",
+  "a": "Africa",
+  "opts": [
+   "Africa",
+   "Europe",
+   "Antarctica",
+   "Asia"
+  ],
+  "exp": "Réunion is in Africa."
+ },
+ {
+  "q": "Which currency is used in <strong>Tokelau</strong>?",
+  "a": "New Zealand dollar",
+  "opts": [
+   "New Zealand dollar",
+   "New Taiwan dollar",
+   "Cook Islands dollar",
+   "Japanese yen"
+  ],
+  "exp": "Tokelau uses the New Zealand dollar."
+ },
+ {
+  "q": "Which language is spoken in <strong>French Southern and Antarctic Lands</strong>?",
+  "a": "French",
+  "opts": [
+   "Albanian",
+   "French",
+   "Persian (Farsi)",
+   "Aymara"
+  ],
+  "exp": "French is spoken in French Southern and Antarctic Lands."
+ },
+ {
+  "q": "Which continent is <strong>Åland Islands</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Africa",
+   "Asia",
+   "Europe",
+   "Antarctica"
+  ],
+  "exp": "Åland Islands is in Europe."
+ },
+ {
+  "q": "What is the capital of <strong>Malta</strong>?",
+  "a": "Valletta",
+  "opts": [
+   "Kinshasa",
+   "San José",
+   "Valletta",
+   "Lisbon"
+  ],
+  "exp": "The capital of Malta is Valletta (Europe)."
+ },
+ {
+  "q": "Which continent is <strong>Kiribati</strong> in?",
+  "a": "Oceania",
+  "opts": [
+   "Europe",
+   "Africa",
+   "Oceania",
+   "Asia"
+  ],
+  "exp": "Kiribati is in Oceania."
+ },
+ {
+  "q": "Which continent is <strong>Liechtenstein</strong> in?",
+  "a": "Europe",
+  "opts": [
+   "Antarctica",
+   "Oceania",
+   "Europe",
+   "Africa"
+  ],
+  "exp": "Liechtenstein is in Europe."
+ },
+ {
+  "q": "Which currency is used in <strong>Christmas Island</strong>?",
+  "a": "Australian dollar",
+  "opts": [
+   "Sierra Leonean leone",
+   "Uruguayan peso",
+   "lari",
+   "Australian dollar"
+  ],
+  "exp": "Christmas Island uses the Australian dollar."
+ }
+]

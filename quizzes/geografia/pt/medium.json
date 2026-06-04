@@ -1,0 +1,1179 @@
+[
+ {
+  "q": "Em que continente fica <strong>Palestina</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Palestina fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Bielorússia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "Ásia",
+   "Antárctida"
+  ],
+  "exp": "Bielorússia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Estónia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Estónia fica na Europa."
+ },
+ {
+  "q": "De que país é capital <strong>Wellington</strong>?",
+  "a": "Nova Zelândia",
+  "opts": [
+   "Nova Zelândia",
+   "Ilhas Virgens dos Estados Unidos",
+   "Países Baixos Caribenhos",
+   "Grécia"
+  ],
+  "exp": "Wellington é a capital de Nova Zelândia."
+ },
+ {
+  "q": "Em que continente fica <strong>Serra Leoa</strong>?",
+  "a": "África",
+  "opts": [
+   "Oceânia",
+   "Europa",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Serra Leoa fica na África."
+ },
+ {
+  "q": "De que país é capital <strong>Singapura</strong>?",
+  "a": "Singapura",
+  "opts": [
+   "Saint-Pierre e Miquelon",
+   "Egito",
+   "Reunião",
+   "Singapura"
+  ],
+  "exp": "Singapura é a capital de Singapura."
+ },
+ {
+  "q": "Em que continente fica <strong>Guiné-Bissau</strong>?",
+  "a": "África",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "África",
+   "Ásia"
+  ],
+  "exp": "Guiné-Bissau fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Israel</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "África",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Israel fica na Ásia."
+ },
+ {
+  "q": "De que país é capital <strong>Oslo</strong>?",
+  "a": "Noruega",
+  "opts": [
+   "Noruega",
+   "Mónaco",
+   "Anguilla",
+   "Marianas Setentrionais"
+  ],
+  "exp": "Oslo é a capital de Noruega."
+ },
+ {
+  "q": "Em que continente fica <strong>Bulgária</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Antárctida",
+   "Europa",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Bulgária fica na Europa."
+ },
+ {
+  "q": "Qual é a capital de <strong>Nova Zelândia</strong>?",
+  "a": "Wellington",
+  "opts": [
+   "Wellington",
+   "Maputo",
+   "Paris",
+   "Jerusalém"
+  ],
+  "exp": "A capital de Nova Zelândia é Wellington (Oceânia)."
+ },
+ {
+  "q": "De que país é capital <strong>Zagrebe</strong>?",
+  "a": "Croácia",
+  "opts": [
+   "Croácia",
+   "Angola",
+   "El Salvador",
+   "Guatemala"
+  ],
+  "exp": "Zagrebe é a capital de Croácia."
+ },
+ {
+  "q": "Em que continente fica <strong>Azerbeijão</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "Antárctida",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "Azerbeijão fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Togo</strong>?",
+  "a": "África",
+  "opts": [
+   "África",
+   "Europa",
+   "Oceânia",
+   "Ásia"
+  ],
+  "exp": "Togo fica na África."
+ },
+ {
+  "q": "De que país é capital <strong>Lisboa</strong>?",
+  "a": "Portugal",
+  "opts": [
+   "Portugal",
+   "Paraguai",
+   "Eslovénia",
+   "Níger"
+  ],
+  "exp": "Lisboa é a capital de Portugal."
+ },
+ {
+  "q": "Em que continente fica <strong>Lituânia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Antárctida",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Lituânia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Mauritânia</strong>?",
+  "a": "África",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Mauritânia fica na África."
+ },
+ {
+  "q": "Qual destes países tem <strong>maior área</strong>?",
+  "a": "Moçambique",
+  "opts": [
+   "Turquia",
+   "Zâmbia",
+   "Chile",
+   "Moçambique"
+  ],
+  "exp": "Moçambique tem cerca de 801 590 km²."
+ },
+ {
+  "q": "Em que continente fica <strong>Papua Nova Guiné</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Papua Nova Guiné fica na Oceânia."
+ },
+ {
+  "q": "De que país é capital <strong>Praga</strong>?",
+  "a": "Chéquia",
+  "opts": [
+   "Chéquia",
+   "Uganda",
+   "Samoa Americana",
+   "Luxemburgo"
+  ],
+  "exp": "Praga é a capital de Chéquia."
+ },
+ {
+  "q": "Em que continente fica <strong>Gabão</strong>?",
+  "a": "África",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "Gabão fica na África."
+ },
+ {
+  "q": "Qual destes países tem <strong>maior população</strong>?",
+  "a": "Hungria",
+  "opts": [
+   "Bielorússia",
+   "Togo",
+   "Hungria",
+   "Áustria"
+  ],
+  "exp": "Hungria tem cerca de 9.6 milhões de habitantes."
+ },
+ {
+  "q": "De que país é capital <strong>Budapeste</strong>?",
+  "a": "Hungria",
+  "opts": [
+   "Guiné",
+   "Mali",
+   "Niue",
+   "Hungria"
+  ],
+  "exp": "Budapeste é a capital de Hungria."
+ },
+ {
+  "q": "Em que continente fica <strong>Guiné Equatorial</strong>?",
+  "a": "África",
+  "opts": [
+   "Oceânia",
+   "África",
+   "Ásia",
+   "Antárctida"
+  ],
+  "exp": "Guiné Equatorial fica na África."
+ },
+ {
+  "q": "Qual é a capital de <strong>Dinamarca</strong>?",
+  "a": "Copenhaga",
+  "opts": [
+   "Copenhaga",
+   "Caracas",
+   "Cairo",
+   "Hanói"
+  ],
+  "exp": "A capital de Dinamarca é Copenhaga (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Áustria</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Oceânia",
+   "Antárctida",
+   "Europa"
+  ],
+  "exp": "Áustria fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Sérvia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Antárctida",
+   "Oceânia",
+   "Europa"
+  ],
+  "exp": "Sérvia fica na Europa."
+ },
+ {
+  "q": "Qual é a capital de <strong>Grécia</strong>?",
+  "a": "Atenas",
+  "opts": [
+   "Kuala Lumpur",
+   "Maputo",
+   "Lima",
+   "Atenas"
+  ],
+  "exp": "A capital de Grécia é Atenas (Europa)."
+ },
+ {
+  "q": "Qual é a capital de <strong>Áustria</strong>?",
+  "a": "Viena",
+  "opts": [
+   "Dacar",
+   "Zagrebe",
+   "Viena",
+   "Bruxelas"
+  ],
+  "exp": "A capital de Áustria é Viena (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Bélgica</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "Ásia",
+   "Antárctida"
+  ],
+  "exp": "Bélgica fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Eslováquia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Oceânia",
+   "África",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Eslováquia fica na Europa."
+ },
+ {
+  "q": "De que país é capital <strong>Bruxelas</strong>?",
+  "a": "Bélgica",
+  "opts": [
+   "Sérvia",
+   "Ilha Formosa",
+   "Bélgica",
+   "Polónia"
+  ],
+  "exp": "Bruxelas é a capital de Bélgica."
+ },
+ {
+  "q": "Em que continente fica <strong>Gâmbia</strong>?",
+  "a": "África",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Europa",
+   "África"
+  ],
+  "exp": "Gâmbia fica na África."
+ },
+ {
+  "q": "Qual é a capital de <strong>Chéquia</strong>?",
+  "a": "Praga",
+  "opts": [
+   "Helsínquia",
+   "Hanói",
+   "Budapeste",
+   "Praga"
+  ],
+  "exp": "A capital de Chéquia é Praga (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Irlanda</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Oceânia",
+   "Antárctida",
+   "Europa"
+  ],
+  "exp": "Irlanda fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Hungria</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Oceânia",
+   "Europa",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Hungria fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Grécia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Grécia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Eslovénia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Eslovénia fica na Europa."
+ },
+ {
+  "q": "De que país é capital <strong>Helsínquia</strong>?",
+  "a": "Finlândia",
+  "opts": [
+   "Santa Lúcia",
+   "Paraguai",
+   "Finlândia",
+   "Togo"
+  ],
+  "exp": "Helsínquia é a capital de Finlândia."
+ },
+ {
+  "q": "Em que continente fica <strong>Ruanda</strong>?",
+  "a": "África",
+  "opts": [
+   "Oceânia",
+   "Ásia",
+   "África",
+   "Europa"
+  ],
+  "exp": "Ruanda fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Tunísia</strong>?",
+  "a": "África",
+  "opts": [
+   "Europa",
+   "África",
+   "Oceânia",
+   "Ásia"
+  ],
+  "exp": "Tunísia fica na África."
+ },
+ {
+  "q": "Qual é a capital de <strong>Portugal</strong>?",
+  "a": "Lisboa",
+  "opts": [
+   "Havana",
+   "Nairóbi",
+   "Otava",
+   "Lisboa"
+  ],
+  "exp": "A capital de Portugal é Lisboa (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Burundi</strong>?",
+  "a": "África",
+  "opts": [
+   "Ásia",
+   "África",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Burundi fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Fiji</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "Ásia",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Fiji fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Finlândia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Europa",
+   "Antárctida",
+   "Ásia"
+  ],
+  "exp": "Finlândia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Comores</strong>?",
+  "a": "África",
+  "opts": [
+   "Antárctida",
+   "Ásia",
+   "África",
+   "Europa"
+  ],
+  "exp": "Comores fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Hong Kong</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "África",
+   "Antárctida",
+   "Oceânia",
+   "Ásia"
+  ],
+  "exp": "Hong Kong fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Jordânia</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "África",
+   "Antárctida",
+   "Ásia",
+   "Oceânia"
+  ],
+  "exp": "Jordânia fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Singapura</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "Singapura fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Lesoto</strong>?",
+  "a": "África",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Ásia",
+   "Antárctida"
+  ],
+  "exp": "Lesoto fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Sudão do Sul</strong>?",
+  "a": "África",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "África",
+   "Ásia"
+  ],
+  "exp": "Sudão do Sul fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Salomão</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Antárctida",
+   "Europa"
+  ],
+  "exp": "Ilhas Salomão fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Kuwait</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "Ásia",
+   "Antárctida"
+  ],
+  "exp": "Kuwait fica na Ásia."
+ },
+ {
+  "q": "De que país é capital <strong>Atenas</strong>?",
+  "a": "Grécia",
+  "opts": [
+   "Equador",
+   "Tajiquistão",
+   "Grécia",
+   "Colômbia"
+  ],
+  "exp": "Atenas é a capital de Grécia."
+ },
+ {
+  "q": "Em que continente fica <strong>Eritreia</strong>?",
+  "a": "África",
+  "opts": [
+   "África",
+   "Ásia",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Eritreia fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Líbano</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "África",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Líbano fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Letónia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Antárctida",
+   "Oceânia",
+   "Europa"
+  ],
+  "exp": "Letónia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Arménia</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "África",
+   "Ásia",
+   "Oceânia",
+   "Antárctida"
+  ],
+  "exp": "Arménia fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Omã</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Oceânia",
+   "África",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Omã fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Quirguistão</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "Antárctida",
+   "Oceânia",
+   "Europa"
+  ],
+  "exp": "Quirguistão fica na Ásia."
+ },
+ {
+  "q": "Qual é a capital de <strong>Israel</strong>?",
+  "a": "Jerusalém",
+  "opts": [
+   "Jerusalém",
+   "Wellington",
+   "Roma",
+   "Pequim"
+  ],
+  "exp": "A capital de Israel é Jerusalém (Ásia)."
+ },
+ {
+  "q": "Em que continente fica <strong>Maurício</strong>?",
+  "a": "África",
+  "opts": [
+   "Ásia",
+   "Antárctida",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Maurício fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Djibouti</strong>?",
+  "a": "África",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "Djibouti fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Nova Zelândia</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "África",
+   "Ásia",
+   "Europa",
+   "Oceânia"
+  ],
+  "exp": "Nova Zelândia fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Tajiquistão</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "Tajiquistão fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Albânia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Antárctida",
+   "África",
+   "Europa",
+   "Oceânia"
+  ],
+  "exp": "Albânia fica na Europa."
+ },
+ {
+  "q": "Qual é a capital de <strong>Hungria</strong>?",
+  "a": "Budapeste",
+  "opts": [
+   "Wellington",
+   "Manila",
+   "Budapeste",
+   "Copenhaga"
+  ],
+  "exp": "A capital de Hungria é Budapeste (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Dinamarca</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Dinamarca fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Bahrein</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Bahrein fica na Ásia."
+ },
+ {
+  "q": "De que país é capital <strong>Estocolmo</strong>?",
+  "a": "Suécia",
+  "opts": [
+   "Eslováquia",
+   "Terras Austrais e Antárticas Francesas",
+   "Laos",
+   "Suécia"
+  ],
+  "exp": "Estocolmo é a capital de Suécia."
+ },
+ {
+  "q": "De que país é capital <strong>Dublin</strong>?",
+  "a": "Irlanda",
+  "opts": [
+   "Ilhas Turks e Caicos",
+   "Rússia",
+   "Irlanda",
+   "Ilha Bouvet"
+  ],
+  "exp": "Dublin é a capital de Irlanda."
+ },
+ {
+  "q": "Em que continente fica <strong>Libéria</strong>?",
+  "a": "África",
+  "opts": [
+   "Oceânia",
+   "Europa",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Libéria fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>República Centro-Africana</strong>?",
+  "a": "África",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Antárctida",
+   "Ásia"
+  ],
+  "exp": "República Centro-Africana fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Mongólia</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "Oceânia",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Mongólia fica na Ásia."
+ },
+ {
+  "q": "Qual é a capital de <strong>Suíça</strong>?",
+  "a": "Berna",
+  "opts": [
+   "Berna",
+   "Cairo",
+   "Luxemburgo",
+   "Jacarta"
+  ],
+  "exp": "A capital de Suíça é Berna (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Líbia</strong>?",
+  "a": "África",
+  "opts": [
+   "África",
+   "Antárctida",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Líbia fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Chipre</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "África",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Chipre fica na Europa."
+ },
+ {
+  "q": "De que país é capital <strong>Copenhaga</strong>?",
+  "a": "Dinamarca",
+  "opts": [
+   "Dinamarca",
+   "Espanha",
+   "Argentina",
+   "São Martinho"
+  ],
+  "exp": "Copenhaga é a capital de Dinamarca."
+ },
+ {
+  "q": "De que país é capital <strong>Berna</strong>?",
+  "a": "Suíça",
+  "opts": [
+   "Suíça",
+   "Bahrein",
+   "Islândia",
+   "Liechtenstein"
+  ],
+  "exp": "Berna é a capital de Suíça."
+ },
+ {
+  "q": "Em que continente fica <strong>Botswana</strong>?",
+  "a": "África",
+  "opts": [
+   "Ásia",
+   "África",
+   "Oceânia",
+   "Europa"
+  ],
+  "exp": "Botswana fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Laos</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Antárctida",
+   "África",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Laos fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Croácia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Europa",
+   "Oceânia",
+   "Antárctida"
+  ],
+  "exp": "Croácia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Macedónia do Norte</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Macedónia do Norte fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Suécia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Suécia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Timor-Leste</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Oceânia",
+   "Ásia",
+   "Europa",
+   "África"
+  ],
+  "exp": "Timor-Leste fica na Ásia."
+ },
+ {
+  "q": "Qual é a capital de <strong>Noruega</strong>?",
+  "a": "Oslo",
+  "opts": [
+   "Jacarta",
+   "Pretória",
+   "Helsínquia",
+   "Oslo"
+  ],
+  "exp": "A capital de Noruega é Oslo (Europa)."
+ },
+ {
+  "q": "Qual é a capital de <strong>Irlanda</strong>?",
+  "a": "Dublin",
+  "opts": [
+   "Acra",
+   "Luxemburgo",
+   "Washington, D.C.",
+   "Dublin"
+  ],
+  "exp": "A capital de Irlanda é Dublin (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Suíça</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "África",
+   "Oceânia",
+   "Ásia"
+  ],
+  "exp": "Suíça fica na Europa."
+ },
+ {
+  "q": "De que país é capital <strong>Viena</strong>?",
+  "a": "Áustria",
+  "opts": [
+   "Áustria",
+   "Bielorússia",
+   "Ilhas Turks e Caicos",
+   "Egito"
+  ],
+  "exp": "Viena é a capital de Áustria."
+ },
+ {
+  "q": "Em que continente fica <strong>Portugal</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Oceânia",
+   "Ásia",
+   "Europa",
+   "África"
+  ],
+  "exp": "Portugal fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Catar</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Catar fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Namíbia</strong>?",
+  "a": "África",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "África",
+   "Antárctida"
+  ],
+  "exp": "Namíbia fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Noruega</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Antárctida",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Noruega fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Turquemenistão</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "Antárctida",
+   "Oceânia",
+   "Europa"
+  ],
+  "exp": "Turquemenistão fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Chéquia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Europa",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Chéquia fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Bósnia e Herzegovina</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Oceânia",
+   "Antárctida",
+   "Europa"
+  ],
+  "exp": "Bósnia e Herzegovina fica na Europa."
+ },
+ {
+  "q": "Qual é a capital de <strong>Finlândia</strong>?",
+  "a": "Helsínquia",
+  "opts": [
+   "Jerusalém",
+   "Londres",
+   "Helsínquia",
+   "Banguecoque"
+  ],
+  "exp": "A capital de Finlândia é Helsínquia (Europa)."
+ },
+ {
+  "q": "Qual é a capital de <strong>Croácia</strong>?",
+  "a": "Zagrebe",
+  "opts": [
+   "Zagrebe",
+   "Dacar",
+   "Reiquiavique",
+   "Copenhaga"
+  ],
+  "exp": "A capital de Croácia é Zagrebe (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Congo</strong>?",
+  "a": "África",
+  "opts": [
+   "Ásia",
+   "Antárctida",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "Congo fica na África."
+ },
+ {
+  "q": "Qual é a capital de <strong>Bélgica</strong>?",
+  "a": "Bruxelas",
+  "opts": [
+   "Bogotá",
+   "Praga",
+   "Bruxelas",
+   "Teerão"
+  ],
+  "exp": "A capital de Bélgica é Bruxelas (Europa)."
+ },
+ {
+  "q": "De que país é capital <strong>Jerusalém</strong>?",
+  "a": "Israel",
+  "opts": [
+   "Israel",
+   "Chade",
+   "Moldávia",
+   "Comores"
+  ],
+  "exp": "Jerusalém é a capital de Israel."
+ },
+ {
+  "q": "Qual é a capital de <strong>Singapura</strong>?",
+  "a": "Singapura",
+  "opts": [
+   "Lisboa",
+   "Singapura",
+   "Caracas",
+   "Dacar"
+  ],
+  "exp": "A capital de Singapura é Singapura (Ásia)."
+ },
+ {
+  "q": "Qual é a capital de <strong>Suécia</strong>?",
+  "a": "Estocolmo",
+  "opts": [
+   "Paris",
+   "Kuala Lumpur",
+   "Lima",
+   "Estocolmo"
+  ],
+  "exp": "A capital de Suécia é Estocolmo (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Suazilândia</strong>?",
+  "a": "África",
+  "opts": [
+   "África",
+   "Europa",
+   "Ásia",
+   "Oceânia"
+  ],
+  "exp": "Suazilândia fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Emirados Árabes Unidos</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "África",
+   "Ásia"
+  ],
+  "exp": "Emirados Árabes Unidos fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Geórgia</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Geórgia fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Moldávia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Europa",
+   "Ásia",
+   "Oceânia"
+  ],
+  "exp": "Moldávia fica na Europa."
+ }
+]
