@@ -1,9 +1,13 @@
 /* ══════════════════════════════════════════════════════════════════
    QUIZ DATA — lazy loader for the split offline question database.
 
-   The database lives under /quizzes/{easy,medium,hard}/{category}.json
-   and is fetched on demand (never bundled into the initial page), so the
-   initial payload stays small and scales to thousands of questions.
+   New layout (preferred):  /quizzes/{category}/{lang}/{difficulty}.json
+   Legacy layout (fallback): /quizzes/{difficulty}/{category}.json  (pt only)
+
+   Files are fetched on demand (never bundled into the initial page), so the
+   initial payload stays small and scales to thousands of questions. Each quiz
+   ships its own per-language, per-difficulty data files inside the repo — no
+   external API is ever called.
 
    Tiering (offline-first):
      1. in-memory cache   (instant, per session)
@@ -11,8 +15,9 @@
      3. network fetch      (the JSON file, then cached in both layers)
      4. caller's embedded fallback bank (handled by the provider)
 
-   Question item shape (pt-PT):
+   Question item shape:
      { q, a, opts:[4], exp, img?, imgType?('svg'|'img'|'flag'), imgCredit? }
+   — `exp` is the per-question fact/info shown after answering.
 ══════════════════════════════════════════════════════════════════ */
 const QuizData = (function () {
   'use strict';
@@ -20,10 +25,10 @@ const QuizData = (function () {
   const BASE = 'quizzes';
   const DIFFS = ['easy', 'medium', 'hard'];
 
-  const _mem = new Map();        // `${difficulty}/${category}` -> items[]
+  const _mem = new Map();        // `${lang}/${category}/${difficulty}` -> items[]
   const _miss = new Set();       // keys known to be unavailable (avoid refetch)
 
-  function _key(category, difficulty) { return `${difficulty}/${category}`; }
+  function _key(category, difficulty, lang) { return `${lang}/${category}/${difficulty}`; }
 
   function _fromSession(key) {
     try {
@@ -35,10 +40,22 @@ const QuizData = (function () {
     try { sessionStorage.setItem('qd-' + key, JSON.stringify(data)); } catch {}
   }
 
-  /* Load one category at one difficulty. Returns items[] or null (never throws). */
-  async function loadBank(category, difficulty) {
+  async function _fetchJson(url) {
+    const r = await fetch(url, { cache: 'force-cache' });
+    if (!r.ok) throw new Error('not-found');
+    const data = await r.json();
+    const items = Array.isArray(data) ? data : (data.items || []);
+    if (!items.length) throw new Error('empty');
+    return items;
+  }
+
+  /* Load one category at one difficulty for one language. Tries the new
+     per-quiz layout first, then the legacy flat layout (pt). Returns items[]
+     or null (never throws). */
+  async function loadBank(category, difficulty, lang) {
     if (!DIFFS.includes(difficulty)) difficulty = 'easy';
-    const key = _key(category, difficulty);
+    lang = lang === 'en' ? 'en' : 'pt';
+    const key = _key(category, difficulty, lang);
 
     if (_mem.has(key)) return _mem.get(key);
     if (_miss.has(key)) return null;
@@ -46,19 +63,21 @@ const QuizData = (function () {
     const sess = _fromSession(key);
     if (sess) { _mem.set(key, sess); return sess; }
 
-    try {
-      const r = await fetch(`${BASE}/${difficulty}/${category}.json`, { cache: 'force-cache' });
-      if (!r.ok) throw new Error('not-found');
-      const data = await r.json();
-      const items = Array.isArray(data) ? data : (data.items || []);
-      if (!items.length) throw new Error('empty');
-      _mem.set(key, items);
-      _toSession(key, items);
-      return items;
-    } catch {
-      _miss.add(key);
-      return null;
+    /* Candidate URLs in priority order. The legacy flat layout only ever held
+       pt content, so only try it for pt. */
+    const urls = [`${BASE}/${category}/${lang}/${difficulty}.json`];
+    if (lang === 'pt') urls.push(`${BASE}/${difficulty}/${category}.json`);
+
+    for (const url of urls) {
+      try {
+        const items = await _fetchJson(url);
+        _mem.set(key, items);
+        _toSession(key, items);
+        return items;
+      } catch { /* try next candidate */ }
     }
+    _miss.add(key);
+    return null;
   }
 
   /* Validate a bank item is a well-formed 4-option question. */

@@ -1,0 +1,16 @@
+[
+  { "q": "Quantas câmaras tem o coração humano?", "a": "Quatro", "opts": ["Duas", "Três", "Quatro", "Cinco"], "exp": "O coração tem duas aurículas e dois ventrículos — quatro câmaras no total." },
+  { "q": "Que órgão produz a bílis que ajuda a digerir gorduras?", "a": "Fígado", "opts": ["Pâncreas", "Fígado", "Estômago", "Rim"], "exp": "O fígado é o maior órgão interno e desempenha mais de 500 funções." },
+  { "q": "Onde é absorvida a maior parte dos nutrientes?", "a": "Intestino delgado", "opts": ["Estômago", "Intestino grosso", "Intestino delgado", "Esófago"], "exp": "O intestino delgado tem cerca de 6 metros e milhões de dobras que absorvem os nutrientes." },
+  { "q": "Que células do sangue transportam o oxigénio?", "a": "Glóbulos vermelhos", "opts": ["Glóbulos brancos", "Glóbulos vermelhos", "Plaquetas", "Plasma"], "exp": "Os glóbulos vermelhos têm hemoglobina, que se liga ao oxigénio e lhes dá a cor vermelha." },
+  { "q": "Qual é o osso mais comprido do corpo humano?", "a": "Fémur", "opts": ["Úmero", "Tíbia", "Fémur", "Rádio"], "exp": "O fémur, na coxa, é o osso mais comprido e forte do corpo." },
+  { "q": "Que parte do cérebro controla o equilíbrio e a coordenação?", "a": "Cerebelo", "opts": ["Lobo frontal", "Cerebelo", "Bolbo raquidiano", "Hipotálamo"], "exp": "O cerebelo contém mais de metade dos neurónios do cérebro." },
+  { "q": "Quantos pares de costelas tem o ser humano?", "a": "12", "opts": ["10", "11", "12", "14"], "exp": "São 12 pares de costelas que protegem o coração e os pulmões." },
+  { "q": "Que órgão produz a insulina?", "a": "Pâncreas", "opts": ["Fígado", "Pâncreas", "Baço", "Rim"], "exp": "A insulina controla o nível de açúcar no sangue." },
+  { "q": "Qual é o músculo principal da respiração?", "a": "Diafragma", "opts": ["Bíceps", "Diafragma", "Coração", "Tríceps"], "exp": "O diafragma contrai-se para puxar o ar para os pulmões; um espasmo dele causa soluços." },
+  { "q": "Que vasos levam o sangue para fora do coração?", "a": "Artérias", "opts": ["Veias", "Artérias", "Capilares", "Nervos"], "exp": "As artérias levam sangue rico em oxigénio; as veias trazem-no de volta." },
+  { "q": "Onde são fabricadas as células do sangue?", "a": "Medula óssea", "opts": ["Fígado", "Medula óssea", "Coração", "Baço"], "exp": "A medula óssea, dentro dos ossos, produz milhões de células sanguíneas por segundo." },
+  { "q": "Quantos litros de sangue tem, em média, um adulto?", "a": "Cerca de 5 litros", "opts": ["Cerca de 1 litro", "Cerca de 5 litros", "Cerca de 10 litros", "Cerca de 20 litros"], "exp": "O sangue dá uma volta completa ao corpo em cerca de 1 minuto." },
+  { "q": "Que órgão armazena e concentra a urina antes de a expulsar?", "a": "Bexiga", "opts": ["Rim", "Bexiga", "Fígado", "Estômago"], "exp": "A bexiga de um adulto pode conter cerca de meio litro de urina." },
+  { "q": "Qual é a função dos glóbulos brancos?", "a": "Defender o corpo de infeções", "opts": ["Transportar oxigénio", "Defender o corpo de infeções", "Coagular o sangue", "Digerir a comida"], "exp": "Os glóbulos brancos são os 'soldados' do sistema imunitário." }
+]

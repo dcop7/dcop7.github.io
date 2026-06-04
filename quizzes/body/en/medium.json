@@ -1,0 +1,15 @@
+[
+  { "q": "How many chambers does the human heart have?", "a": "Four", "opts": ["Two", "Three", "Four", "Five"], "exp": "The heart has two atria and two ventricles — four chambers in total." },
+  { "q": "Which organ produces bile to help digest fats?", "a": "Liver", "opts": ["Pancreas", "Liver", "Stomach", "Kidney"], "exp": "The liver is the largest internal organ and performs over 500 jobs." },
+  { "q": "Where are most nutrients absorbed?", "a": "Small intestine", "opts": ["Stomach", "Large intestine", "Small intestine", "Oesophagus"], "exp": "The small intestine is about 6 metres long with millions of folds." },
+  { "q": "Which blood cells carry oxygen?", "a": "Red blood cells", "opts": ["White blood cells", "Red blood cells", "Platelets", "Plasma"], "exp": "Red blood cells contain haemoglobin, which binds oxygen and gives them their colour." },
+  { "q": "What is the longest bone in the human body?", "a": "Femur", "opts": ["Humerus", "Tibia", "Femur", "Radius"], "exp": "The femur, in the thigh, is the longest and strongest bone." },
+  { "q": "Which part of the brain controls balance and coordination?", "a": "Cerebellum", "opts": ["Frontal lobe", "Cerebellum", "Brainstem", "Hypothalamus"], "exp": "The cerebellum holds more than half of the brain's neurons." },
+  { "q": "How many pairs of ribs do humans have?", "a": "12", "opts": ["10", "11", "12", "14"], "exp": "Twelve pairs of ribs protect the heart and lungs." },
+  { "q": "Which organ produces insulin?", "a": "Pancreas", "opts": ["Liver", "Pancreas", "Spleen", "Kidney"], "exp": "Insulin controls the level of sugar in the blood." },
+  { "q": "Which is the main muscle used for breathing?", "a": "Diaphragm", "opts": ["Biceps", "Diaphragm", "Heart", "Triceps"], "exp": "A spasm of the diaphragm causes hiccups." },
+  { "q": "Which vessels carry blood away from the heart?", "a": "Arteries", "opts": ["Veins", "Arteries", "Capillaries", "Nerves"], "exp": "Arteries carry oxygen-rich blood; veins bring it back." },
+  { "q": "Where are blood cells made?", "a": "Bone marrow", "opts": ["Liver", "Bone marrow", "Heart", "Spleen"], "exp": "Bone marrow makes millions of blood cells every second." },
+  { "q": "About how many litres of blood does an adult have?", "a": "About 5 litres", "opts": ["About 1 litre", "About 5 litres", "About 10 litres", "About 20 litres"], "exp": "Blood completes a full lap of the body in about 1 minute." },
+  { "q": "What is the job of white blood cells?", "a": "Fight infection", "opts": ["Carry oxygen", "Fight infection", "Clot the blood", "Digest food"], "exp": "White blood cells are the soldiers of the immune system." }
+]

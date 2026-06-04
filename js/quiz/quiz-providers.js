@@ -92,31 +92,34 @@ function _flagUrl(cca2) {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   REST COUNTRIES  — tries API first, falls back to embedded data
+   COUNTRIES — loaded from the local in-repo dataset (data/countries.json,
+   the same file the Explorer uses). No external API; flags are local PD
+   SVGs. Falls back to a small embedded set if the file is unavailable.
 ══════════════════════════════════════════════════════════════════ */
 (function registerCountryProviders() {
-  const CACHE_KEY = 'countries-v3';
-  const API = 'https://restcountries.com/v3.1/all?fields=name,capital,flags,region,population,cca2,translations';
+  const CACHE_KEY = 'countries-v4';
+  const DATA_URL = 'data/countries.json';
 
   async function loadCountries() {
     const cached = QuizEngine.getCache(CACHE_KEY);
     if (cached) return cached;
 
     try {
-      const r = await _qFetch(API, 8000);
-      if (!r.ok) throw new Error('api-bad-status');
+      const r = await _qFetch(DATA_URL, 8000);
+      if (!r.ok) throw new Error('not-found');
       const data = await r.json();
       const clean = data
-        .filter(c => c.capital && c.capital[0] && c.name && c.name.common && c.flags)
+        .filter(c => c.capital && c.capital[0] && c.name && c.name.common)
         .map(c => ({
           name:   c.name.common,
-          namePt: (c.translations && c.translations.por && c.translations.por.common) || c.name.common,
+          namePt: c.namePt || c.name.common,
           capital: c.capital[0],
-          flag:   _flagUrl(c.cca2),  /* local PD SVG, not the API's hotlinked URL */
+          flag:   (c.flags && c.flags.svg) || _flagUrl(c.cca2),  /* local PD SVG */
           region: c.region || '',
           pop:    c.population || 0,
           cca2:   (c.cca2 || '').toLowerCase(),
         }));
+      if (!clean.length) throw new Error('empty');
       QuizEngine.setCache(CACHE_KEY, clean);
       return clean;
     } catch (_) {
@@ -656,46 +659,6 @@ const _TRIVIA_EXTRA = {
    OPEN TRIVIA DB — uses built-in banks for PT, API+fallback for EN
 ══════════════════════════════════════════════════════════════════ */
 (function registerTriviaProviders() {
-  function he(s) {
-    const d = document.createElement('div');
-    d.innerHTML = s;
-    return d.textContent || s;
-  }
-
-  async function fetchTrivia({ category, difficulty, count }) {
-    const cKey = `trivia-${category}-${difficulty}-${count}`;
-    const cached = QuizEngine.getCache(cKey);
-    if (cached) return cached;
-    const url = `https://opentdb.com/api.php?amount=${count}&type=multiple&difficulty=${difficulty}` +
-      (category ? `&category=${category}` : '');
-    const r = await _qFetch(url, 7000);
-    if (!r.ok) throw new Error('api-bad-status');
-    const j = await r.json();
-    if (j.response_code !== 0) throw new Error('trivia empty');
-    QuizEngine.setCache(cKey, j.results);
-    return j.results;
-  }
-
-  function mapTrivia(items, opts) {
-    const { age, lang } = opts;
-    const n = QuizEngine.optionCount(age);
-    return items.map((item, i) => {
-      const correct = he(item.correct_answer);
-      const wrongs  = item.incorrect_answers.map(he);
-      const { options, correctIdx } = QuizEngine.buildOptions(correct, [...wrongs, correct], n);
-      return {
-        id: `trivia-${i}`,
-        question: he(item.question),
-        options, correctIdx,
-        explanation: lang === 'pt'
-          ? `A resposta correcta é: <strong>${correct}</strong>.`
-          : `The correct answer is: <strong>${correct}</strong>.`,
-        difficulty: item.difficulty,
-        lang: 'en',
-      };
-    });
-  }
-
   /* Age → content band: 1 = younger, 2 = middle, 3 = older. */
   function _ageBand(age) {
     const a = parseInt(age) || 8;
@@ -740,29 +703,21 @@ const _TRIVIA_EXTRA = {
     });
   }
 
-  async function tryFetch(category, difficulty, count) {
-    try { return await fetchTrivia({ category, difficulty, count }); }
-    catch { return null; }
-  }
-
+  /* Offline-only provider. Serves from the split in-repo database
+     (new layout quizzes/{bankKey}/{lang}/{diff}.json, legacy fallback handled
+     by QuizData) for BOTH languages — no external API. The in-file _TRIVIA
+     bank is a tiny safety net used only if the JSON is unavailable. */
   function makeProvider(apiCat, bankKey, diffFn) {
     return {
       async getQuestions(opts) {
-        const { age, lang, count } = opts;
-        /* PT: serve from the split offline database (quizzes/{diff}/{bankKey}.json,
-           loaded lazily by QuizData). The old in-file _TRIVIA bank stays only as a
-           tiny safety net if the JSON is somehow unavailable. */
-        if (lang === 'pt') {
-          const diff = opts.difficulty || (diffFn ? diffFn(age) : 'easy');
-          let items = (typeof QuizData !== 'undefined') ? await QuizData.loadBank(bankKey, diff) : null;
+        const { age, lang } = opts;
+        const diff = opts.difficulty || (diffFn ? diffFn(age) : 'easy');
+        if (typeof QuizData !== 'undefined') {
+          const items = await QuizData.loadBank(bankKey, diff, lang);
           if (items && items.length) return QuizData.buildFromBank(items, { ...opts, category: bankKey });
-          if (_TRIVIA.pt[bankKey]) return fromBank(_TRIVIA.pt[bankKey], { ...opts, bankKey });
         }
-        const diff  = diffFn ? diffFn(age) : (age <= 9 ? 'easy' : age <= 12 ? 'medium' : 'hard');
-        const items = await tryFetch(apiCat, diff, count || 10);
-        if (items) return mapTrivia(items, opts);
-        const fb = _TRIVIA.en[bankKey] || _TRIVIA.pt[bankKey] || [];
-        return fromBank(fb.length ? fb : _TRIVIA.pt.gk, { ...opts, bankKey });
+        const tri = (_TRIVIA[lang] && _TRIVIA[lang][bankKey]) || _TRIVIA.pt[bankKey] || _TRIVIA.pt.gk || [];
+        return fromBank(tri, { ...opts, bankKey });
       }
     };
   }
@@ -791,7 +746,13 @@ const _TRIVIA_EXTRA = {
       async getQuestions(opts) {
         const diff = opts.difficulty || 'easy';
         let items = (typeof QuizData !== 'undefined')
-          ? await QuizData.loadBank(category, diff) : null;
+          ? await QuizData.loadBank(category, diff, opts.lang) : null;
+        /* Image/symbol quizzes (monuments, logos, signs) are largely
+           language-neutral and may not have a per-language bank yet — fall
+           back to the PT bank so they still work in EN (never empty). */
+        if ((!items || !items.length) && typeof QuizData !== 'undefined' && opts.lang !== 'pt') {
+          items = await QuizData.loadBank(category, diff, 'pt');
+        }
         if (!items || !items.length) {
           items = (embedded && (embedded[diff] || embedded.easy)) || [];
         }
@@ -1102,15 +1063,22 @@ QuizEngine.register('clocks', {
     ]
   };
   QuizEngine.register('body', {
-    getQuestions(opts) {
-      const { age, lang, count } = opts;
-      const n = QuizEngine.optionCount(age);
+    async getQuestions(opts) {
+      const { lang, count } = opts;
+      const diff = opts.difficulty || 'easy';
+      /* Prefer the in-repo split database (quizzes/body/<lang>/<diff>.json);
+         the embedded DATA below is only an offline safety net. */
+      if (typeof QuizData !== 'undefined') {
+        const items = await QuizData.loadBank('body', diff, lang);
+        if (items && items.length) return QuizData.buildFromBank(items, { ...opts, category: 'body' });
+      }
+      const n = QuizEngine.optionCount();
       const d = DATA[lang] || DATA.en;
-      const pool = QuizEngine.shuffle(d).slice(0, count||10);
+      const pool = QuizEngine.shuffle(d).slice(0, count || 10);
       return pool.map((item, i) => {
         const distractors = item.opts.filter(o => o !== item.a);
         const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
-        return { id:`body-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
+        return { id:`body-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:diff, lang };
       });
     }
   });

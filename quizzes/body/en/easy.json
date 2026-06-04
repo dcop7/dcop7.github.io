@@ -1,0 +1,15 @@
+[
+  { "q": "Which organ pumps blood around the body?", "a": "Heart", "opts": ["Lung", "Heart", "Liver", "Stomach"], "exp": "The heart beats about 100,000 times a day without ever resting." },
+  { "q": "How many lungs do humans have?", "a": "Two", "opts": ["One", "Two", "Three", "Four"], "exp": "The left lung is slightly smaller to make room for the heart." },
+  { "q": "Which organ do we use to think and control the body?", "a": "Brain", "opts": ["Heart", "Brain", "Liver", "Kidney"], "exp": "The brain has about 86 billion neurons and uses less power than a light bulb." },
+  { "q": "What is the largest organ of the human body?", "a": "Skin", "opts": ["Liver", "Brain", "Skin", "Lung"], "exp": "The skin covers about 2 m² in an adult." },
+  { "q": "Which body part do we smell with?", "a": "Nose", "opts": ["Mouth", "Nose", "Ear", "Eye"], "exp": "The nose can tell apart over a billion different smells." },
+  { "q": "Which organ filters the blood and makes urine?", "a": "Kidney", "opts": ["Liver", "Kidney", "Heart", "Spleen"], "exp": "The kidneys filter about 180 litres of blood every day." },
+  { "q": "Which organs do we use to breathe?", "a": "Lungs", "opts": ["Kidneys", "Lungs", "Intestines", "Bones"], "exp": "We breathe around 20,000 times a day to bring oxygen to the blood." },
+  { "q": "How many bones does an adult body have?", "a": "206", "opts": ["106", "206", "306", "406"], "exp": "Babies are born with about 300 bones; many fuse together by adulthood." },
+  { "q": "What do muscles let us do?", "a": "Move", "opts": ["Move", "Think", "Digest sugar", "See"], "exp": "We have over 600 muscles; the busiest is the heart." },
+  { "q": "Which sense do we use our eyes for?", "a": "Sight", "opts": ["Hearing", "Smell", "Sight", "Taste"], "exp": "About 80% of what we learn comes through sight." },
+  { "q": "What red liquid flows inside our veins?", "a": "Blood", "opts": ["Water", "Blood", "Bile", "Saliva"], "exp": "An adult has about 5 litres of blood." },
+  { "q": "Which body parts do we use to hear?", "a": "Ears", "opts": ["Eyes", "Ears", "Nose", "Tongue"], "exp": "The ears also help us keep our balance." },
+  { "q": "Where does the digestion of food begin?", "a": "In the mouth", "opts": ["In the stomach", "In the mouth", "In the intestine", "In the liver"], "exp": "Saliva starts breaking down food while it is still in the mouth." }
+]

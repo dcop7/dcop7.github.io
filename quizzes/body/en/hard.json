@@ -1,0 +1,15 @@
+[
+  { "q": "Roughly how many neurons does the human brain have?", "a": "~86 billion", "opts": ["~86 million", "~860 million", "~86 billion", "~8.6 trillion"], "exp": "Neurons fire electrical signals that travel up to 430 km/h." },
+  { "q": "What is the functional unit of the kidney that filters blood?", "a": "Nephron", "opts": ["Alveolus", "Nephron", "Neuron", "Glomerulus only"], "exp": "Each kidney has about 1 million nephrons." },
+  { "q": "What are the tiny air sacs in the lungs called?", "a": "Alveoli", "opts": ["Bronchi", "Alveoli", "Bronchioles", "Cilia"], "exp": "There are ~300 million alveoli; unfolded they would cover a tennis court." },
+  { "q": "Which protein in red blood cells carries oxygen?", "a": "Haemoglobin", "opts": ["Keratin", "Haemoglobin", "Collagen", "Insulin"], "exp": "The iron in haemoglobin gives blood its red colour." },
+  { "q": "What is the largest artery in the human body?", "a": "Aorta", "opts": ["Vena cava", "Aorta", "Pulmonary artery", "Carotid"], "exp": "The aorta leaves directly from the heart's left ventricle." },
+  { "q": "How many chromosomes does a normal human cell have?", "a": "46", "opts": ["23", "44", "46", "48"], "exp": "That's 23 pairs — half from each parent." },
+  { "q": "What is the smallest bone in the human body?", "a": "Stapes", "opts": ["Stapes", "Phalanx", "Radius", "Vomer"], "exp": "The stapes sits in the middle ear and is only about 3 mm long." },
+  { "q": "Which part of the eye is light-sensitive and forms the image?", "a": "Retina", "opts": ["Cornea", "Iris", "Retina", "Pupil"], "exp": "The retina turns light into signals the brain builds into an image." },
+  { "q": "Which lobe of the brain processes vision?", "a": "Occipital lobe", "opts": ["Frontal lobe", "Temporal lobe", "Occipital lobe", "Parietal lobe"], "exp": "It sits at the back of the head — we actually see with the brain." },
+  { "q": "How many vertebrae are in the human spine?", "a": "33", "opts": ["24", "33", "40", "12"], "exp": "Some fuse into the sacrum and coccyx at the base of the spine." },
+  { "q": "Which pancreatic hormone lowers blood sugar?", "a": "Insulin", "opts": ["Adrenaline", "Insulin", "Thyroxine", "Cortisol"], "exp": "A lack of, or poor response to, insulin causes diabetes." },
+  { "q": "What is the signal-carrying extension of a neuron called?", "a": "Axon", "opts": ["Dendrite", "Axon", "Synapse", "Myelin"], "exp": "An axon can be over a metre long, for example down the leg." },
+  { "q": "Which gland is called the 'master' of the hormone system?", "a": "Pituitary", "opts": ["Thyroid", "Pituitary", "Adrenal", "Pancreas"], "exp": "The pea-sized pituitary controls several other glands." }
+]
