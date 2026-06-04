@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v71';
+const CACHE = 'dcop7-v72';
 const STATIC = [
   '/',
   '/index.html',
@@ -43,6 +43,9 @@ const STATIC = [
   /* Games (most-used preloaded; rest cached on demand) */
   '/js/games/game-host.js',
   '/js/games/hangman.js',
+  '/games/hangman/config.json',
+  '/games/hangman/pt/words.json',
+  '/games/hangman/en/words.json',
   '/js/games/minesweeper.js',
   '/js/games/bomb.js',
   '/js/games/game-memory.js',
