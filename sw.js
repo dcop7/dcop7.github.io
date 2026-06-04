@@ -1,10 +1,11 @@
-const CACHE = 'dcop7-v69';
+const CACHE = 'dcop7-v70';
 const STATIC = [
   '/',
   '/index.html',
   '/i18n.js',
   '/css/base.css',
   '/css/views/explorer.css',
+  '/css/views/explorer-body.css',
   '/css/views/ocorrencias.css',
   '/css/views/quiz.css',
   '/data/countries.json',
@@ -23,6 +24,7 @@ const STATIC = [
   '/js/explorer/explorer-solar.js',
   '/js/explorer/explorer-galaxy.js',
   '/js/explorer/explorer-realtime.js',
+  '/js/explorer/explorer-body.js',
   '/js/explorer/ocorrencias.js',
   /* Pages */
   '/js/pages/links-data.js',

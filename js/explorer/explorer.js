@@ -628,41 +628,76 @@ const ExplorerPage = (function () {
       <div class="ex-hub">
         <div class="ex-hub-header">
           <h1 class="ex-hub-title">${_t('Explore the World', 'Explorar o Mundo')}</h1>
-          <p class="ex-hub-subtitle">${_t('Discover countries, spin the globe and explore the solar system.', 'Descobre países, navega o globo e explora o sistema solar.')}</p>
+          <p class="ex-hub-subtitle">${_t('Three worlds to explore: Earth, Space and the Human Body.', 'Três mundos para explorar: a Terra, o Espaço e o Corpo Humano.')}</p>
           <button class="ex-discover-btn" id="ex-discover-btn">
             <span class="ex-discover-btn-icon">🎲</span> ${_t('Discover something new', 'Descobrir algo novo')}
           </button>
         </div>
-        <div class="ex-feature-grid">
-          <div class="ex-feature-card" data-tab="map">
-            <span class="ex-feature-card-icon">🗺</span>
-            <div class="ex-feature-card-title">${_t('World Map', 'Mapa Mundial')}</div>
-            <div class="ex-feature-card-desc">${_t('Click any country to see info, capitals, currencies, languages and facts.', 'Clica em qualquer país para ver informações, capitais, moedas, línguas e factos.')}</div>
+        <div class="ex-cat-group">
+          <div class="ex-cat-head">
+            <span class="ex-cat-emoji">🌍</span>
+            <span class="ex-cat-name">${_t('Earth', 'Terra')}</span>
+            <span class="ex-cat-line"></span>
           </div>
-          <div class="ex-feature-card" data-tab="globe">
-            <span class="ex-feature-card-icon">🌍</span>
-            <div class="ex-feature-card-title">${_t('3D Globe', 'Globo 3D')}</div>
-            <div class="ex-feature-card-desc">${_t('Realistic WebGL globe with atmosphere, textures and political / night modes.', 'Globo WebGL realista com atmosfera, texturas e modos político e noturno.')}</div>
+          <div class="ex-feature-grid">
+            <div class="ex-feature-card" data-tab="map">
+              <span class="ex-feature-card-icon">🗺</span>
+              <div class="ex-feature-card-title">${_t('World Map', 'Mapa Mundial')}</div>
+              <div class="ex-feature-card-desc">${_t('Click any country to see info, capitals, currencies, languages and facts.', 'Clica em qualquer país para ver informações, capitais, moedas, línguas e factos.')}</div>
+            </div>
+            <div class="ex-feature-card" data-tab="globe">
+              <span class="ex-feature-card-icon">🌍</span>
+              <div class="ex-feature-card-title">${_t('3D Globe', 'Globo 3D')}</div>
+              <div class="ex-feature-card-desc">${_t('Realistic WebGL globe with atmosphere, textures and political / night modes.', 'Globo WebGL realista com atmosfera, texturas e modos político e noturno.')}</div>
+            </div>
+            <div class="ex-feature-card" data-tab="realtime">
+              <span class="ex-feature-card-icon">🛰</span>
+              <div class="ex-feature-card-title">${_t('Live Earth', 'Terra em Tempo Real')}</div>
+              <div class="ex-feature-card-desc">${_t('Live earthquakes, volcanoes, wildfires, storms, clouds, temperature and flights — with time travel.', 'Sismos, vulcões, incêndios, tempestades, nuvens, temperatura e aviões em tempo real — com viagem no tempo.')}</div>
+            </div>
+            <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
+              <span class="ex-feature-card-icon">🇵🇹</span>
+              <div class="ex-feature-card-title">Portugal</div>
+              <div class="ex-feature-card-desc">${_t('Explore the 20 districts with history, cuisine, traditions and curiosities of each region.', 'Explora os 20 distritos com história, gastronomia, tradições e curiosidades de cada região.')}</div>
+            </div>
           </div>
-          <div class="ex-feature-card" data-tab="realtime">
-            <span class="ex-feature-card-icon">🛰</span>
-            <div class="ex-feature-card-title">${_t('Live Earth', 'Terra em Tempo Real')}</div>
-            <div class="ex-feature-card-desc">${_t('Live earthquakes, volcanoes, wildfires, storms, clouds, temperature and flights — with time travel.', 'Sismos, vulcões, incêndios, tempestades, nuvens, temperatura e aviões em tempo real — com viagem no tempo.')}</div>
+        </div>
+        <div class="ex-cat-group">
+          <div class="ex-cat-head">
+            <span class="ex-cat-emoji">🌌</span>
+            <span class="ex-cat-name">${_t('Space', 'Espaço')}</span>
+            <span class="ex-cat-line"></span>
           </div>
-          <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
-            <span class="ex-feature-card-icon">🇵🇹</span>
-            <div class="ex-feature-card-title">Portugal</div>
-            <div class="ex-feature-card-desc">${_t('Explore the 20 districts with history, cuisine, traditions and curiosities of each region.', 'Explora os 20 distritos com história, gastronomia, tradições e curiosidades de cada região.')}</div>
+          <div class="ex-feature-grid">
+            <div class="ex-feature-card" data-tab="solar">
+              <span class="ex-feature-card-icon">☀</span>
+              <div class="ex-feature-card-title">${_t('Solar System', 'Sistema Solar')}</div>
+              <div class="ex-feature-card-desc">${_t('See the planets in 3D with real textures, comets, the asteroid belt and satellites.', 'Vê os planetas em 3D com texturas reais, cometas, a cintura de asteroides e satélites.')}</div>
+            </div>
+            <div class="ex-feature-card" data-tab="galaxy">
+              <span class="ex-feature-card-icon">🌌</span>
+              <div class="ex-feature-card-title">${_t('Milky Way', 'Via Láctea')}</div>
+              <div class="ex-feature-card-desc">${_t('Fly through our galaxy: spiral arms, the Sun, bright stars and constellations, nebulae and other galaxies.', 'Voa pela nossa galáxia: braços em espiral, o Sol, estrelas e constelações, nebulosas e outras galáxias.')}</div>
+            </div>
           </div>
-          <div class="ex-feature-card" data-tab="solar">
-            <span class="ex-feature-card-icon">☀</span>
-            <div class="ex-feature-card-title">${_t('Solar System', 'Sistema Solar')}</div>
-            <div class="ex-feature-card-desc">${_t('See the planets in 3D with real textures, comets, the asteroid belt and satellites.', 'Vê os planetas em 3D com texturas reais, cometas, a cintura de asteroides e satélites.')}</div>
+        </div>
+        <div class="ex-cat-group">
+          <div class="ex-cat-head">
+            <span class="ex-cat-emoji">🧬</span>
+            <span class="ex-cat-name">${_t('Human Body', 'Corpo Humano')}</span>
+            <span class="ex-cat-line"></span>
           </div>
-          <div class="ex-feature-card" data-tab="galaxy">
-            <span class="ex-feature-card-icon">🌌</span>
-            <div class="ex-feature-card-title">${_t('Milky Way', 'Via Láctea')}</div>
-            <div class="ex-feature-card-desc">${_t('Fly through our galaxy: spiral arms, the Sun, bright stars and constellations, nebulae and other galaxies.', 'Voa pela nossa galáxia: braços em espiral, o Sol, estrelas e constelações, nebulosas e outras galáxias.')}</div>
+          <div class="ex-feature-grid">
+            <div class="ex-feature-card ex-feature-card--body" data-tab="body">
+              <span class="ex-feature-card-icon">🧍</span>
+              <div class="ex-feature-card-title">${_t('Explore the body', 'Explorar o corpo')}</div>
+              <div class="ex-feature-card-desc">${_t('Anatomy, skeleton, circulation, breathing, digestion, brain, senses, cells & DNA — and a zoom journey from human to DNA.', 'Anatomia, esqueleto, circulação, respiração, digestão, cérebro, sentidos, células e DNA — e uma viagem em zoom do humano até ao DNA.')}</div>
+            </div>
+            <div class="ex-feature-card ex-feature-card--body" data-tab="body">
+              <span class="ex-feature-card-icon">🔬</span>
+              <div class="ex-feature-card-title">${_t('Human → DNA', 'Humano → DNA')}</div>
+              <div class="ex-feature-card-desc">${_t('Dive through the scales of life: human, organ, tissue, cell and the DNA double helix.', 'Mergulha pelas escalas da vida: humano, órgão, tecido, célula e a dupla hélice do DNA.')}</div>
+            </div>
           </div>
         </div>
         ${recents.length ? `
@@ -1465,6 +1500,7 @@ const ExplorerPage = (function () {
           <button class="ex-tab" data-tab="realtime"><span class="ex-tab-icon">🛰</span> ${_t('Live Earth', 'Terra em Tempo Real')}</button>
           <button class="ex-tab" data-tab="solar"><span class="ex-tab-icon">☀</span> ${_t('Solar System', 'Sistema Solar')}</button>
           <button class="ex-tab" data-tab="galaxy"><span class="ex-tab-icon">🌌</span> ${_t('Milky Way', 'Via Láctea')}</button>
+          <button class="ex-tab" data-tab="body"><span class="ex-tab-icon">🧬</span> ${_t('Human Body', 'Corpo Humano')}</button>
         </div>
         <div class="ex-content">
           <div class="ex-sub active" id="ex-sub-hub"></div>
@@ -1474,6 +1510,7 @@ const ExplorerPage = (function () {
           <div class="ex-sub" id="ex-sub-realtime"></div>
           <div class="ex-sub" id="ex-sub-solar"></div>
           <div class="ex-sub" id="ex-sub-galaxy"></div>
+          <div class="ex-sub" id="ex-sub-body"></div>
         </div>
       </div>`;
 
@@ -1492,6 +1529,7 @@ const ExplorerPage = (function () {
     if (tab !== 'galaxy' && _curTab === 'galaxy' && typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
     if (tab !== 'realtime' && _curTab === 'realtime' && typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
+    if (tab !== 'body' && _curTab === 'body' && typeof HumanBodyExplorer !== 'undefined') HumanBodyExplorer.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
       try { if (tab === 'globe') _globeGL.resumeAnimation(); else _globeGL.pauseAnimation(); } catch (_) {}
@@ -1533,6 +1571,11 @@ const ExplorerPage = (function () {
       if (typeof RealtimeEarth !== 'undefined') {
         if (!sub.querySelector('.ex-rt-wrap')) RealtimeEarth.mount(sub);
         else RealtimeEarth.resume();
+      }
+    } else if (tab === 'body') {
+      if (typeof HumanBodyExplorer !== 'undefined') {
+        if (!sub.querySelector('.hb-wrap')) HumanBodyExplorer.mount(sub);
+        else HumanBodyExplorer.resume();
       }
     }
   }
