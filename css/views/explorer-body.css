@@ -1,7 +1,65 @@
 /* ══════════════════════════════════════════════════════════════════
    EXPLORER · CORPO HUMANO (Human Body)
-   Interactive body systems + semantic-zoom journey
-   Humano → Órgão → Tecido → Célula → DNA
+   Navigable 3D body (three.js): layers, organs, flowing blood, DNA.
+══════════════════════════════════════════════════════════════════ */
+
+/* ── 3D stage ── */
+.hb3d-stage { position: relative; flex: 1; min-height: 0; display: flex; background: #06080f; }
+.hb3d-viewport { position: absolute; inset: 0; cursor: grab; }
+.hb3d-viewport.grabbing { cursor: grabbing; }
+.hb3d-viewport canvas { display: block; width: 100%; height: 100%; }
+
+.hb3d-loading {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .9rem; color: var(--muted); font-size: .85rem;
+  background: radial-gradient(ellipse at 50% 45%, rgba(244,63,94,.08), transparent 60%);
+}
+
+/* layer toggles (top-left) */
+.hb3d-layers {
+  position: absolute; top: .75rem; left: .75rem; z-index: 5;
+  display: flex; flex-direction: column; gap: .4rem;
+}
+.hb3d-layer-btn {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .42rem .7rem; border-radius: 999px;
+  border: 1px solid var(--border2); background: var(--glass);
+  color: var(--text2); font-family: var(--font-sans);
+  font-size: .73rem; font-weight: 600; cursor: pointer;
+  backdrop-filter: blur(8px); transition: all .15s ease;
+}
+.hb3d-layer-btn:hover { border-color: rgba(244,63,94,.35); color: var(--text); }
+.hb3d-layer-btn .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); transition: all .15s; flex-shrink: 0; }
+.hb3d-layer-btn.on { color: #fb7185; border-color: rgba(244,63,94,.4); background: rgba(244,63,94,.13); }
+.hb3d-layer-btn.on .dot { background: var(--ld, #fb7185); box-shadow: 0 0 9px var(--ld, #fb7185); }
+
+/* hint + reset (bottom) */
+.hb3d-foot {
+  position: absolute; bottom: .75rem; left: 50%; transform: translateX(-50%);
+  z-index: 5; display: flex; align-items: center; gap: .6rem;
+}
+.hb3d-hint {
+  font-size: .72rem; color: var(--muted);
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 999px; padding: .32rem .85rem; backdrop-filter: blur(8px);
+  pointer-events: none; white-space: nowrap;
+}
+.hb3d-reset {
+  font-size: .72rem; color: var(--text2); cursor: pointer;
+  background: var(--glass); border: 1px solid var(--border2);
+  border-radius: 999px; padding: .32rem .8rem; backdrop-filter: blur(8px);
+  transition: all .15s ease;
+}
+.hb3d-reset:hover { color: #fb7185; border-color: rgba(244,63,94,.4); }
+
+@media (max-width: 760px) {
+  .hb3d-layers { top: .5rem; left: .5rem; }
+  .hb3d-layer-btn { padding: .35rem .55rem; font-size: .68rem; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   (legacy SVG topic styles kept below — still used as fallbacks)
 ══════════════════════════════════════════════════════════════════ */
 
 .hb-wrap {
