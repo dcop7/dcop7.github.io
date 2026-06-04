@@ -1,0 +1,14 @@
+[
+  { "q": "Which animal has the strongest bite in the world?", "a": "Crocodile", "opts": ["Great white shark", "Crocodile", "Hyena", "Lion"], "exp": "The saltwater crocodile's bite exceeds 3,700 pounds per square inch." },
+  { "q": "Which animal has blue blood?", "a": "Octopus", "opts": ["Octopus", "Frog", "Snake", "Snail"], "exp": "An octopus's blood uses copper (hemocyanin) instead of iron." },
+  { "q": "Which is the only mammal that lays eggs?", "a": "Platypus", "opts": ["Bat", "Platypus", "Mole", "Sloth"], "exp": "The platypus and echidna are monotremes — egg-laying mammals." },
+  { "q": "Which animal can regenerate lost limbs?", "a": "Starfish", "opts": ["Lizard", "Starfish", "Crab", "Salamander"], "exp": "Some starfish regrow a whole body from a single arm." },
+  { "q": "Which bird flies the highest?", "a": "Rüppell's vulture", "opts": ["Golden eagle", "Rüppell's vulture", "Swift", "Albatross"], "exp": "It has been recorded at around 11,000 metres altitude." },
+  { "q": "Which animal has the largest heart of any animal?", "a": "Blue whale", "opts": ["Elephant", "Blue whale", "Giraffe", "Horse"], "exp": "A blue whale's heart can weigh about 180 kg." },
+  { "q": "Which animal shares the most DNA with humans?", "a": "Chimpanzee", "opts": ["Gorilla", "Chimpanzee", "Orangutan", "Baboon"], "exp": "We share about 98.8% of our DNA with chimpanzees." },
+  { "q": "Which insect can lift many times its own body weight?", "a": "Ant", "opts": ["Fly", "Ant", "Butterfly", "Mosquito"], "exp": "Some ants lift 50 times their own weight." },
+  { "q": "Which is among the most poisonous animals (by toxin)?", "a": "Golden poison dart frog", "opts": ["King cobra", "Golden poison dart frog", "Scorpion", "Black widow"], "exp": "One frog holds enough toxin to kill several humans." },
+  { "q": "Which animal gets almost all its water from food, rarely drinking?", "a": "Kangaroo rat", "opts": ["Camel", "Kangaroo rat", "Koala", "Fennec fox"], "exp": "The kangaroo rat extracts water from the seeds it eats." },
+  { "q": "What is the largest invertebrate in the world?", "a": "Giant squid", "opts": ["Giant octopus", "Giant squid", "Spider crab", "Jellyfish"], "exp": "The giant squid can reach 13 m and has the largest eyes in the animal kingdom." },
+  { "q": "Which creature is biologically 'immortal', able to revert to an earlier life stage?", "a": "Turritopsis jellyfish", "opts": ["Tardigrade", "Turritopsis jellyfish", "Lobster", "Hydra"], "exp": "This jellyfish can revert to its polyp stage, restarting its life cycle." }
+]

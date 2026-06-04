@@ -1,0 +1,14 @@
+[
+  { "q": "What is the largest land animal?", "a": "African elephant", "opts": ["Giraffe", "African elephant", "Hippopotamus", "Rhinoceros"], "exp": "An African elephant can weigh over 6 tonnes." },
+  { "q": "How many legs does a spider have?", "a": "8", "opts": ["6", "8", "10", "4"], "exp": "Spiders have 8 legs, so they are not insects (which have 6)." },
+  { "q": "What is the largest animal on the planet?", "a": "Blue whale", "opts": ["Elephant", "Blue whale", "Whale shark", "Giraffe"], "exp": "The blue whale can reach 30 metres and 180 tonnes." },
+  { "q": "What does the giant panda mainly eat?", "a": "Bamboo", "opts": ["Fish", "Bamboo", "Honey", "Fruit"], "exp": "A panda can eat up to 40 kg of bamboo a day." },
+  { "q": "Which animal is known as the 'king of the jungle'?", "a": "Lion", "opts": ["Tiger", "Lion", "Gorilla", "Elephant"], "exp": "Lions actually live in the savanna, not the jungle." },
+  { "q": "Which of these animals is a mammal?", "a": "Dolphin", "opts": ["Shark", "Dolphin", "Salmon", "Octopus"], "exp": "Dolphins breathe air and feed their young milk." },
+  { "q": "Which animal changes colour to camouflage?", "a": "Chameleon", "opts": ["Frog", "Chameleon", "Owl", "Wolf"], "exp": "Chameleons also change colour with mood and temperature." },
+  { "q": "What is the tallest animal in the world?", "a": "Giraffe", "opts": ["Elephant", "Giraffe", "Camel", "Ostrich"], "exp": "A giraffe can reach 5.5 m in height." },
+  { "q": "What do bees make from nectar?", "a": "Honey", "opts": ["Milk", "Honey", "Silk", "Wax"], "exp": "A single hive can hold more than 50,000 bees." },
+  { "q": "Which bird cannot fly but runs very fast?", "a": "Ostrich", "opts": ["Eagle", "Ostrich", "Sparrow", "Swallow"], "exp": "The ostrich runs over 70 km/h and is the largest bird in the world." },
+  { "q": "Which animal carries its young in a pouch?", "a": "Kangaroo", "opts": ["Koala", "Kangaroo", "Otter", "Squirrel"], "exp": "The kangaroo is a marsupial: the young grow in the pouch." },
+  { "q": "How many wings does a butterfly have?", "a": "Four", "opts": ["Two", "Four", "Six", "Eight"], "exp": "Butterflies have two pairs of wings covered in tiny scales." }
+]

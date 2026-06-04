@@ -1,0 +1,14 @@
+[
+  { "q": "What is the star at the centre of the Solar System?", "a": "The Sun", "opts": ["The Moon", "The Sun", "Sirius", "Mars"], "exp": "The Sun holds 99.8% of the Solar System's mass." },
+  { "q": "How many planets are in the Solar System?", "a": "Eight", "opts": ["Seven", "Eight", "Nine", "Ten"], "exp": "Pluto was reclassified as a dwarf planet in 2006." },
+  { "q": "Which planet do we live on?", "a": "Earth", "opts": ["Mars", "Earth", "Venus", "Jupiter"], "exp": "Earth is the only planet known to have life." },
+  { "q": "Which planet is known as the Red Planet?", "a": "Mars", "opts": ["Venus", "Mars", "Jupiter", "Mercury"], "exp": "Mars is red because of iron oxide (rust) in its soil." },
+  { "q": "Which is the largest planet in the Solar System?", "a": "Jupiter", "opts": ["Saturn", "Jupiter", "Neptune", "Earth"], "exp": "Over 1,300 Earths would fit inside Jupiter." },
+  { "q": "Which planet is closest to the Sun?", "a": "Mercury", "opts": ["Venus", "Mercury", "Earth", "Mars"], "exp": "Mercury takes only 88 days to orbit the Sun." },
+  { "q": "Which object orbits the Earth and lights up the night?", "a": "The Moon", "opts": ["The Sun", "The Moon", "Venus", "Jupiter"], "exp": "The Moon has no light of its own — it reflects the Sun's light." },
+  { "q": "Which planet is famous for its rings?", "a": "Saturn", "opts": ["Jupiter", "Saturn", "Uranus", "Mars"], "exp": "Saturn's rings are made mostly of ice and rock." },
+  { "q": "What do we call our group of planets and the Sun?", "a": "The Solar System", "opts": ["Galaxy", "The Solar System", "Universe", "Constellation"], "exp": "The Solar System lies within the Milky Way galaxy." },
+  { "q": "Who was the first person to walk on the Moon?", "a": "Neil Armstrong", "opts": ["Yuri Gagarin", "Neil Armstrong", "Buzz Aldrin", "Michael Collins"], "exp": "It happened during the Apollo 11 mission in 1969." },
+  { "q": "What is the name of the galaxy we live in?", "a": "The Milky Way", "opts": ["Andromeda", "The Milky Way", "Triangulum", "Sombrero"], "exp": "The Milky Way has over 100 billion stars." },
+  { "q": "What shape is the Earth?", "a": "Nearly spherical", "opts": ["Flat", "Nearly spherical", "Cubic", "Triangular"], "exp": "Earth is slightly flattened at the poles — a 'spheroid'." }
+]

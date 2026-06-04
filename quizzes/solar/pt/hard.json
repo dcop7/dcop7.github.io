@@ -1,0 +1,14 @@
+[
+  { "q": "Qual é a maior lua do Sistema Solar?", "a": "Ganimedes", "opts": ["Titã", "Ganimedes", "A Lua", "Europa"], "exp": "Ganimedes, de Júpiter, é maior do que o planeta Mercúrio." },
+  { "q": "Que lua de Saturno tem uma atmosfera densa e lagos de metano?", "a": "Titã", "opts": ["Encélado", "Titã", "Reia", "Mimas"], "exp": "Titã é a única lua conhecida com uma atmosfera espessa." },
+  { "q": "Como se chama a sonda que saiu do Sistema Solar e é o objeto humano mais distante?", "a": "Voyager 1", "opts": ["Voyager 1", "Cassini", "New Horizons", "Apollo 11"], "exp": "Lançada em 1977, a Voyager 1 entrou no espaço interestelar em 2012." },
+  { "q": "Que tipo de estrela é o Sol?", "a": "Anã amarela", "opts": ["Gigante vermelha", "Anã amarela", "Anã branca", "Estrela de neutrões"], "exp": "O Sol é uma anã amarela de tipo G; tem cerca de 4,6 mil milhões de anos." },
+  { "q": "Qual é o maior vulcão conhecido do Sistema Solar?", "a": "Monte Olimpo (Marte)", "opts": ["Mauna Loa (Terra)", "Monte Olimpo (Marte)", "Maat Mons (Vénus)", "Idunn Mons"], "exp": "O Monte Olimpo tem cerca de 22 km de altura — quase o triplo do Evereste." },
+  { "q": "Como se chama a região gelada de pequenos corpos para lá de Neptuno?", "a": "Cintura de Kuiper", "opts": ["Cintura de asteroides", "Cintura de Kuiper", "Nuvem de Magalhães", "Heliopausa"], "exp": "Plutão é um dos maiores objetos da Cintura de Kuiper." },
+  { "q": "Quanto tempo demora a luz a chegar do Sol a Neptuno?", "a": "Cerca de 4 horas", "opts": ["8 minutos", "Cerca de 4 horas", "4 dias", "4 anos"], "exp": "Neptuno está cerca de 30 vezes mais longe do Sol do que a Terra." },
+  { "q": "Que planeta tem a maior tempestade conhecida, a Grande Mancha Vermelha?", "a": "Júpiter", "opts": ["Saturno", "Júpiter", "Neptuno", "Marte"], "exp": "A Grande Mancha Vermelha é uma tempestade maior que a Terra, há séculos." },
+  { "q": "Como se chama o limite onde o vento solar encontra o meio interestelar?", "a": "Heliopausa", "opts": ["Magnetopausa", "Heliopausa", "Cintura de Van Allen", "Horizonte de eventos"], "exp": "Marca, em certo sentido, a fronteira do Sistema Solar." },
+  { "q": "Qual é a estrela mais próxima do Sol?", "a": "Próxima Centauri", "opts": ["Sírius", "Próxima Centauri", "Alpha Centauri A", "Vega"], "exp": "Fica a cerca de 4,2 anos-luz de distância." },
+  { "q": "Que missão levou os humanos à Lua?", "a": "Programa Apollo", "opts": ["Programa Gemini", "Programa Apollo", "Programa Mercury", "Programa Artemis"], "exp": "Doze pessoas caminharam na Lua entre 1969 e 1972." },
+  { "q": "O que é uma nebulosa?", "a": "Uma nuvem de gás e poeira no espaço", "opts": ["Uma estrela morta", "Uma nuvem de gás e poeira no espaço", "Um planeta gasoso", "Um aglomerado de luas"], "exp": "Muitas nebulosas são 'berçários' onde nascem novas estrelas." }
+]

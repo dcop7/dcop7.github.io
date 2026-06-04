@@ -1,0 +1,14 @@
+[
+  { "q": "What is the largest moon in the Solar System?", "a": "Ganymede", "opts": ["Titan", "Ganymede", "The Moon", "Europa"], "exp": "Jupiter's Ganymede is larger than the planet Mercury." },
+  { "q": "Which moon of Saturn has a thick atmosphere and methane lakes?", "a": "Titan", "opts": ["Enceladus", "Titan", "Rhea", "Mimas"], "exp": "Titan is the only known moon with a dense atmosphere." },
+  { "q": "Which probe left the Solar System and is the most distant human object?", "a": "Voyager 1", "opts": ["Voyager 1", "Cassini", "New Horizons", "Apollo 11"], "exp": "Launched in 1977, Voyager 1 reached interstellar space in 2012." },
+  { "q": "What type of star is the Sun?", "a": "Yellow dwarf", "opts": ["Red giant", "Yellow dwarf", "White dwarf", "Neutron star"], "exp": "The Sun is a G-type yellow dwarf, about 4.6 billion years old." },
+  { "q": "What is the largest known volcano in the Solar System?", "a": "Olympus Mons (Mars)", "opts": ["Mauna Loa (Earth)", "Olympus Mons (Mars)", "Maat Mons (Venus)", "Idunn Mons"], "exp": "Olympus Mons is about 22 km tall — nearly three times Everest." },
+  { "q": "What is the icy region of small bodies beyond Neptune called?", "a": "Kuiper belt", "opts": ["Asteroid belt", "Kuiper belt", "Magellanic Cloud", "Heliopause"], "exp": "Pluto is one of the largest objects in the Kuiper belt." },
+  { "q": "How long does light take to travel from the Sun to Neptune?", "a": "About 4 hours", "opts": ["8 minutes", "About 4 hours", "4 days", "4 years"], "exp": "Neptune is about 30 times farther from the Sun than Earth." },
+  { "q": "Which planet hosts the largest known storm, the Great Red Spot?", "a": "Jupiter", "opts": ["Saturn", "Jupiter", "Neptune", "Mars"], "exp": "The Great Red Spot is a storm bigger than Earth, raging for centuries." },
+  { "q": "What is the boundary where the solar wind meets interstellar space?", "a": "Heliopause", "opts": ["Magnetopause", "Heliopause", "Van Allen belt", "Event horizon"], "exp": "It marks, in a sense, the edge of the Solar System." },
+  { "q": "What is the closest star to the Sun?", "a": "Proxima Centauri", "opts": ["Sirius", "Proxima Centauri", "Alpha Centauri A", "Vega"], "exp": "It lies about 4.2 light-years away." },
+  { "q": "Which programme took humans to the Moon?", "a": "The Apollo programme", "opts": ["The Gemini programme", "The Apollo programme", "The Mercury programme", "The Artemis programme"], "exp": "Twelve people walked on the Moon between 1969 and 1972." },
+  { "q": "What is a nebula?", "a": "A cloud of gas and dust in space", "opts": ["A dead star", "A cloud of gas and dust in space", "A gas planet", "A cluster of moons"], "exp": "Many nebulae are 'nurseries' where new stars are born." }
+]

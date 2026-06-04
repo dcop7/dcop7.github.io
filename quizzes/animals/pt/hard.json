@@ -1,0 +1,14 @@
+[
+  { "q": "Qual é o animal com a mordida mais forte do mundo?", "a": "Crocodilo", "opts": ["Tubarão-branco", "Crocodilo", "Hiena", "Leão"], "exp": "A mordida do crocodilo-de-água-salgada ultrapassa as 3 700 libras por polegada." },
+  { "q": "Que animal tem o sangue azul?", "a": "Polvo", "opts": ["Polvo", "Sapo", "Cobra", "Caracol"], "exp": "O sangue do polvo usa cobre (hemocianina) em vez de ferro." },
+  { "q": "Qual é o único mamífero que põe ovos?", "a": "Ornitorrinco", "opts": ["Morcego", "Ornitorrinco", "Toupeira", "Preguiça"], "exp": "O ornitorrinco e a equidna são monotremados — mamíferos que põem ovos." },
+  { "q": "Que animal pode regenerar membros perdidos?", "a": "Estrela-do-mar", "opts": ["Lagarto", "Estrela-do-mar", "Caranguejo", "Salamandra"], "exp": "Algumas estrelas-do-mar regeneram um corpo inteiro a partir de um só braço." },
+  { "q": "Qual é a ave que voa mais alto?", "a": "Grifo-de-Rüppell", "opts": ["Águia-real", "Grifo-de-Rüppell", "Andorinhão", "Albatroz"], "exp": "Já foi registado a cerca de 11 000 metros de altitude." },
+  { "q": "Que animal tem o coração maior do reino animal?", "a": "Baleia-azul", "opts": ["Elefante", "Baleia-azul", "Girafa", "Cavalo"], "exp": "O coração da baleia-azul pode pesar cerca de 180 kg." },
+  { "q": "A que classe de animais pertencem as cobras?", "a": "Répteis", "opts": ["Anfíbios", "Répteis", "Mamíferos", "Invertebrados"], "exp": "As cobras são répteis de sangue frio e com escamas." },
+  { "q": "Qual destes animais tem o ADN mais semelhante ao humano?", "a": "Chimpanzé", "opts": ["Gorila", "Chimpanzé", "Orangotango", "Babuíno"], "exp": "Partilhamos cerca de 98,8% do ADN com os chimpanzés." },
+  { "q": "Que inseto pode levantar muitas vezes o seu próprio peso?", "a": "Formiga", "opts": ["Mosca", "Formiga", "Borboleta", "Mosquito"], "exp": "Algumas formigas levantam 50 vezes o seu peso." },
+  { "q": "Qual é o animal mais venenoso do mundo (toxina)?", "a": "Rã-dardo-dourada", "opts": ["Cobra-real", "Rã-dardo-dourada", "Escorpião", "Aranha-viúva-negra"], "exp": "Uma só rã-dardo-dourada tem veneno suficiente para matar vários humanos." },
+  { "q": "Que animal não bebe água durante grande parte da vida, obtendo-a dos alimentos?", "a": "Rato-canguru", "opts": ["Camelo", "Rato-canguru", "Coala", "Fénec"], "exp": "O rato-canguru obtém quase toda a água das sementes que come." },
+  { "q": "Qual é o maior invertebrado do mundo?", "a": "Lula-gigante", "opts": ["Polvo-gigante", "Lula-gigante", "Caranguejo-aranha", "Água-viva"], "exp": "A lula-gigante pode atingir 13 metros e tem os maiores olhos do reino animal." }
+]

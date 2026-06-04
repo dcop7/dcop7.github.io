@@ -1,0 +1,14 @@
+[
+  { "q": "Qual é o animal terrestre mais rápido?", "a": "Chita", "opts": ["Leão", "Chita", "Cavalo", "Galgo"], "exp": "A chita atinge cerca de 110 km/h em corridas curtas." },
+  { "q": "A que grupo pertence a rã?", "a": "Anfíbios", "opts": ["Répteis", "Anfíbios", "Mamíferos", "Peixes"], "exp": "Os anfíbios vivem entre a água e a terra e têm pele húmida." },
+  { "q": "Quantos corações tem um polvo?", "a": "Três", "opts": ["Um", "Dois", "Três", "Quatro"], "exp": "Dois bombeiam sangue para as guelras e um para o resto do corpo." },
+  { "q": "Que animal é o maior réptil do mundo?", "a": "Crocodilo-de-água-salgada", "opts": ["Pitão", "Crocodilo-de-água-salgada", "Dragão-de-Komodo", "Tartaruga-gigante"], "exp": "Pode ultrapassar os 6 metros de comprimento." },
+  { "q": "Como se chama um grupo de leões?", "a": "Alcateia/manada", "opts": ["Cardume", "Alcateia/manada", "Enxame", "Bando"], "exp": "Em português usa-se 'manada' ou 'alcateia' para o grupo (em inglês, 'pride')." },
+  { "q": "Que animal tem o pescoço com o mesmo número de vértebras que o humano?", "a": "Girafa", "opts": ["Girafa", "Avestruz", "Cisne", "Camelo"], "exp": "Tal como nós, a girafa tem 7 vértebras no pescoço — só que enormes." },
+  { "q": "Qual destes animais é um invertebrado?", "a": "Polvo", "opts": ["Sapo", "Polvo", "Morcego", "Pinguim"], "exp": "Os invertebrados não têm coluna vertebral." },
+  { "q": "Que mamífero é capaz de voar?", "a": "Morcego", "opts": ["Esquilo-voador", "Morcego", "Coruja", "Pinguim"], "exp": "O morcego é o único mamífero com voo verdadeiro." },
+  { "q": "Que animal produz a seda?", "a": "Bicho-da-seda", "opts": ["Aranha apenas", "Bicho-da-seda", "Abelha", "Formiga"], "exp": "A lagarta do bicho-da-seda fia um casulo de um único fio de seda." },
+  { "q": "Quantas câmaras tem o estômago de uma vaca?", "a": "Quatro", "opts": ["Uma", "Duas", "Quatro", "Seis"], "exp": "A vaca é um ruminante: rúmen, retículo, omaso e abomaso." },
+  { "q": "Que animal marinho é conhecido pela sua inteligência e ecolocalização?", "a": "Golfinho", "opts": ["Atum", "Golfinho", "Caranguejo", "Estrela-do-mar"], "exp": "Os golfinhos 'veem' com som, emitindo cliques e ouvindo o eco." },
+  { "q": "Qual é o maior felino do mundo?", "a": "Tigre", "opts": ["Leão", "Tigre", "Leopardo", "Jaguar"], "exp": "O tigre-siberiano pode pesar mais de 300 kg." }
+]

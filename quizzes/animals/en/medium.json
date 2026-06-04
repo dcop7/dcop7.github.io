@@ -1,0 +1,14 @@
+[
+  { "q": "What is the fastest land animal?", "a": "Cheetah", "opts": ["Lion", "Cheetah", "Horse", "Greyhound"], "exp": "The cheetah reaches about 110 km/h in short bursts." },
+  { "q": "Which group does a frog belong to?", "a": "Amphibians", "opts": ["Reptiles", "Amphibians", "Mammals", "Fish"], "exp": "Amphibians live between water and land and have moist skin." },
+  { "q": "How many hearts does an octopus have?", "a": "Three", "opts": ["One", "Two", "Three", "Four"], "exp": "Two pump blood to the gills and one to the rest of the body." },
+  { "q": "Which is the largest reptile in the world?", "a": "Saltwater crocodile", "opts": ["Python", "Saltwater crocodile", "Komodo dragon", "Giant tortoise"], "exp": "It can exceed 6 metres in length." },
+  { "q": "How many neck vertebrae does a giraffe have?", "a": "Seven", "opts": ["Seven", "Twelve", "Twenty", "Thirty"], "exp": "Just like humans, a giraffe has 7 neck vertebrae — only huge." },
+  { "q": "Which of these animals is an invertebrate?", "a": "Octopus", "opts": ["Frog", "Octopus", "Bat", "Penguin"], "exp": "Invertebrates have no backbone." },
+  { "q": "Which mammal can truly fly?", "a": "Bat", "opts": ["Flying squirrel", "Bat", "Owl", "Penguin"], "exp": "The bat is the only mammal capable of true flight." },
+  { "q": "Which animal produces silk for clothing?", "a": "Silkworm", "opts": ["Spider only", "Silkworm", "Bee", "Ant"], "exp": "The silkworm caterpillar spins a cocoon from one continuous thread." },
+  { "q": "How many stomach chambers does a cow have?", "a": "Four", "opts": ["One", "Two", "Four", "Six"], "exp": "Cows are ruminants: rumen, reticulum, omasum and abomasum." },
+  { "q": "Which marine animal uses echolocation to navigate?", "a": "Dolphin", "opts": ["Tuna", "Dolphin", "Crab", "Starfish"], "exp": "Dolphins 'see' with sound, sending clicks and hearing the echo." },
+  { "q": "What is the largest big cat in the world?", "a": "Tiger", "opts": ["Lion", "Tiger", "Leopard", "Jaguar"], "exp": "The Siberian tiger can weigh over 300 kg." },
+  { "q": "Which animal is famous for never forgetting and mourning its dead?", "a": "Elephant", "opts": ["Dolphin", "Elephant", "Crow", "Wolf"], "exp": "Elephants show complex memory and social behaviour." }
+]

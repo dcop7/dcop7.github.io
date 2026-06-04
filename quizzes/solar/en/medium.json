@@ -1,0 +1,14 @@
+[
+  { "q": "Which is the hottest planet in the Solar System?", "a": "Venus", "opts": ["Mercury", "Venus", "Mars", "Jupiter"], "exp": "Though Mercury is closer to the Sun, Venus's thick atmosphere traps heat (~465 °C)." },
+  { "q": "How long does sunlight take to reach Earth?", "a": "About 8 minutes", "opts": ["8 seconds", "About 8 minutes", "8 hours", "8 days"], "exp": "Light travels at 300,000 km/s and the Sun is ~150 million km away." },
+  { "q": "Which planet is farthest from the Sun?", "a": "Neptune", "opts": ["Uranus", "Neptune", "Saturn", "Pluto"], "exp": "Neptune takes 165 Earth years to orbit the Sun." },
+  { "q": "What is the path a planet takes around the Sun called?", "a": "Orbit", "opts": ["Rotation", "Orbit", "Eclipse", "Lunar path"], "exp": "Planetary orbits are ellipses, not perfect circles." },
+  { "q": "What is a shooting star?", "a": "A meteor burning in the atmosphere", "opts": ["A falling star", "A meteor burning in the atmosphere", "A satellite", "A planet"], "exp": "It is a small rock fragment burning up as it enters the atmosphere." },
+  { "q": "Which planets are called 'gas giants'?", "a": "Jupiter and Saturn", "opts": ["Earth and Mars", "Jupiter and Saturn", "Mercury and Venus", "Venus and Earth"], "exp": "Jupiter, Saturn, Uranus and Neptune are made mostly of gas." },
+  { "q": "What is the phenomenon when the Moon covers the Sun?", "a": "Solar eclipse", "opts": ["Lunar eclipse", "Solar eclipse", "Solstice", "Equinox"], "exp": "In a solar eclipse the Moon passes between the Earth and the Sun." },
+  { "q": "What is Earth's natural satellite?", "a": "The Moon", "opts": ["Phobos", "The Moon", "Europa", "Titan"], "exp": "The Moon drifts about 3.8 cm farther from Earth each year." },
+  { "q": "Which object has gravity so strong not even light escapes?", "a": "Black hole", "opts": ["Dwarf star", "Black hole", "Comet", "Nebula"], "exp": "A black hole's boundary is called the event horizon." },
+  { "q": "What is the belt of rocks between Mars and Jupiter called?", "a": "Asteroid belt", "opts": ["Kuiper belt", "Asteroid belt", "Oort cloud", "Saturn's ring"], "exp": "It holds millions of asteroids; the largest is the dwarf planet Ceres." },
+  { "q": "Which planet spins on its side, almost horizontally?", "a": "Uranus", "opts": ["Saturn", "Uranus", "Neptune", "Mars"], "exp": "Uranus is tilted at ~98°, likely after a giant collision." },
+  { "q": "How long is a day on Mercury compared with Earth?", "a": "Much longer", "opts": ["The same", "Much longer", "Much shorter", "Half"], "exp": "A day on Mercury lasts about 59 Earth days." }
+]
