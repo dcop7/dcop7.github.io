@@ -1,0 +1,14 @@
+[
+  { "q": "What is the star at the centre of our solar system?", "a": "The Sun", "opts": ["The Moon", "The Sun", "Mars", "Venus"], "exp": "The Sun is a star and holds 99.8% of the solar system's mass." },
+  { "q": "Which gas do we breathe from the air to live?", "a": "Oxygen", "opts": ["Hydrogen", "Oxygen", "Helium", "Pure nitrogen"], "exp": "Air is about 21% oxygen; most of the rest is nitrogen." },
+  { "q": "What state is water in when it freezes?", "a": "Solid", "opts": ["Liquid", "Gas", "Solid", "Plasma"], "exp": "Water freezes at 0 °C, becoming solid ice." },
+  { "q": "What makes objects fall to the ground?", "a": "Gravity", "opts": ["Wind", "Gravity", "Magnetism", "Electricity"], "exp": "Gravity pulls objects toward the centre of the Earth." },
+  { "q": "How many legs does an insect have?", "a": "Six", "opts": ["Four", "Six", "Eight", "Ten"], "exp": "All insects have 6 legs; spiders (with 8) are not insects." },
+  { "q": "Which planet is known as the Red Planet?", "a": "Mars", "opts": ["Jupiter", "Mars", "Saturn", "Venus"], "exp": "Mars looks red because of iron oxide (rust) in its soil." },
+  { "q": "Which part of a plant absorbs water from the soil?", "a": "The roots", "opts": ["The leaves", "The roots", "The flower", "The stem"], "exp": "Roots absorb water and nutrients and anchor the plant." },
+  { "q": "Water is made of oxygen and which other element?", "a": "Hydrogen", "opts": ["Carbon", "Hydrogen", "Helium", "Iron"], "exp": "Water's formula is H₂O: two hydrogen atoms and one oxygen." },
+  { "q": "Which sense uses the tongue?", "a": "Taste", "opts": ["Sight", "Smell", "Taste", "Touch"], "exp": "The tongue has thousands of taste buds that detect flavours." },
+  { "q": "Which object lights the night and orbits the Earth?", "a": "The Moon", "opts": ["The Sun", "The Moon", "Mars", "A star"], "exp": "The Moon has no light of its own — it reflects the Sun's light." },
+  { "q": "What do plants use to make their own food?", "a": "Sunlight", "opts": ["Sunlight", "Sound", "Wind", "Ice"], "exp": "In photosynthesis, plants use sunlight, water and CO₂ to make food." },
+  { "q": "Which of these is a mammal?", "a": "Dolphin", "opts": ["Shark", "Dolphin", "Salmon", "Octopus"], "exp": "Dolphins breathe air and feed their young milk — they are mammals, not fish." }
+]

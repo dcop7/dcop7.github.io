@@ -1,0 +1,14 @@
+[
+  { "q": "Which is the longest river in the world?", "a": "The Nile", "opts": ["The Amazon", "The Nile", "The Yangtze", "The Mississippi"], "exp": "The Nile and the Amazon compete; the Nile is about 6,650 km long." },
+  { "q": "Who painted the Mona Lisa?", "a": "Leonardo da Vinci", "opts": ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Michelangelo"], "exp": "The Mona Lisa hangs in the Louvre Museum in Paris." },
+  { "q": "Which precious metal has the symbol Ag?", "a": "Silver", "opts": ["Gold", "Silver", "Platinum", "Iron"], "exp": "Ag comes from the Latin 'argentum'." },
+  { "q": "On which continent is the Sahara Desert?", "a": "Africa", "opts": ["Asia", "Africa", "Oceania", "South America"], "exp": "The Sahara is the largest hot desert in the world." },
+  { "q": "How many players from one team are on a football pitch?", "a": "11", "opts": ["9", "10", "11", "12"], "exp": "Ten outfield players plus the goalkeeper." },
+  { "q": "Which language has the most native speakers?", "a": "Mandarin", "opts": ["English", "Mandarin", "Spanish", "Hindi"], "exp": "Mandarin Chinese has over a billion native speakers." },
+  { "q": "Who wrote 'Romeo and Juliet'?", "a": "William Shakespeare", "opts": ["Charles Dickens", "William Shakespeare", "Mark Twain", "Molière"], "exp": "Shakespeare wrote the play around 1595." },
+  { "q": "Which is the largest planet in the solar system?", "a": "Jupiter", "opts": ["Saturn", "Jupiter", "Neptune", "Earth"], "exp": "Jupiter is a gas giant with a great red spot." },
+  { "q": "How many continents are there on Earth?", "a": "Seven", "opts": ["Five", "Six", "Seven", "Eight"], "exp": "Africa, North America, South America, Antarctica, Asia, Europe and Oceania." },
+  { "q": "What is the tallest mountain in the world?", "a": "Mount Everest", "opts": ["K2", "Mount Everest", "Mont Blanc", "Kilimanjaro"], "exp": "Everest is 8,849 m high, in the Himalayas." },
+  { "q": "Which organ produces insulin?", "a": "Pancreas", "opts": ["Liver", "Pancreas", "Kidney", "Stomach"], "exp": "Insulin regulates sugar in the blood." },
+  { "q": "Which country has the largest population in the world?", "a": "India", "opts": ["China", "India", "United States", "Indonesia"], "exp": "India overtook China in population in 2023." }
+]

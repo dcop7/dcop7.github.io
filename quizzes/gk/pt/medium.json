@@ -1,0 +1,14 @@
+[
+  { "q": "Qual é o rio mais comprido do mundo?", "a": "Rio Nilo", "opts": ["Rio Amazonas", "Rio Nilo", "Rio Yangtzé", "Rio Mississípi"], "exp": "O Nilo e o Amazonas disputam o título; o Nilo tem cerca de 6 650 km." },
+  { "q": "Quem pintou a Mona Lisa?", "a": "Leonardo da Vinci", "opts": ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Michelangelo"], "exp": "A Mona Lisa está exposta no Museu do Louvre, em Paris." },
+  { "q": "Qual é o metal precioso com o símbolo Ag?", "a": "Prata", "opts": ["Ouro", "Prata", "Platina", "Ferro"], "exp": "Ag vem do latim 'argentum'." },
+  { "q": "Em que continente fica o deserto do Sahara?", "a": "África", "opts": ["Ásia", "África", "Oceânia", "América do Sul"], "exp": "O Sahara é o maior deserto quente do mundo." },
+  { "q": "Quantos jogadores tem uma equipa de futebol em campo?", "a": "11", "opts": ["9", "10", "11", "12"], "exp": "São 10 jogadores de campo mais o guarda-redes." },
+  { "q": "Qual é o idioma mais falado do mundo (nativos)?", "a": "Mandarim", "opts": ["Inglês", "Mandarim", "Espanhol", "Hindi"], "exp": "O chinês mandarim tem mais de mil milhões de falantes nativos." },
+  { "q": "Quem escreveu 'Romeu e Julieta'?", "a": "William Shakespeare", "opts": ["Charles Dickens", "William Shakespeare", "Camões", "Molière"], "exp": "Shakespeare escreveu a peça por volta de 1595." },
+  { "q": "Qual é o maior planeta do sistema solar?", "a": "Júpiter", "opts": ["Saturno", "Júpiter", "Neptuno", "Terra"], "exp": "Júpiter é um gigante gasoso com uma grande mancha vermelha." },
+  { "q": "Quantos continentes existem na Terra?", "a": "Sete", "opts": ["Cinco", "Seis", "Sete", "Oito"], "exp": "África, América do Norte, América do Sul, Antártida, Ásia, Europa e Oceânia." },
+  { "q": "Qual é a montanha mais alta do mundo?", "a": "Evereste", "opts": ["K2", "Evereste", "Mont Blanc", "Kilimanjaro"], "exp": "O Evereste tem 8 849 m de altitude, nos Himalaias." },
+  { "q": "Que órgão do corpo produz a insulina?", "a": "Pâncreas", "opts": ["Fígado", "Pâncreas", "Rim", "Estômago"], "exp": "A insulina regula o açúcar no sangue." },
+  { "q": "Qual é o país com maior população do mundo?", "a": "Índia", "opts": ["China", "Índia", "Estados Unidos", "Indonésia"], "exp": "A Índia ultrapassou a China em população em 2023." }
+]

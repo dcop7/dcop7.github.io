@@ -1,0 +1,14 @@
+[
+  { "q": "In which year did World War II begin?", "a": "1939", "opts": ["1914", "1929", "1939", "1945"], "exp": "It began with Germany's invasion of Poland in 1939 and ended in 1945." },
+  { "q": "Who led India's independence through non-violence?", "a": "Mahatma Gandhi", "opts": ["Nelson Mandela", "Mahatma Gandhi", "Churchill", "Nehru"], "exp": "India became independent from Britain in 1947." },
+  { "q": "Which wall divided the city of Berlin until 1989?", "a": "The Berlin Wall", "opts": ["Hadrian's Wall", "The Berlin Wall", "The Maginot Line", "The Iron Curtain"], "exp": "The Berlin Wall fell in 1989, a symbol of the end of the Cold War." },
+  { "q": "Which was the first civilization to use writing?", "a": "The Sumerians", "opts": ["The Egyptians", "The Sumerians", "The Greeks", "The Chinese"], "exp": "The Sumerians of Mesopotamia created cuneiform writing ~5,000 years ago." },
+  { "q": "Which Egyptian queen allied with Julius Caesar and Mark Antony?", "a": "Cleopatra", "opts": ["Nefertiti", "Cleopatra", "Hatshepsut", "Isis"], "exp": "Cleopatra was the last pharaoh of Egypt, in the 1st century BC." },
+  { "q": "Which 1215 English document limited the king's power?", "a": "Magna Carta", "opts": ["Magna Carta", "Declaration of Independence", "Code of Hammurabi", "Bill of Rights"], "exp": "Magna Carta is seen as a foundation of rights and constitutional rule." },
+  { "q": "Which 1789 revolution began with the storming of the Bastille?", "a": "The French Revolution", "opts": ["The Russian Revolution", "The French Revolution", "The American Revolution", "The Industrial Revolution"], "exp": "It proclaimed 'Liberty, Equality, Fraternity'." },
+  { "q": "Who was the first President of the United States?", "a": "George Washington", "opts": ["Thomas Jefferson", "George Washington", "Abraham Lincoln", "Benjamin Franklin"], "exp": "Washington took office in 1789, after independence in 1776." },
+  { "q": "Which Portuguese navigator reached India by sea in 1498?", "a": "Vasco da Gama", "opts": ["Cabral", "Vasco da Gama", "Magellan", "Bartolomeu Dias"], "exp": "Vasco da Gama opened the sea route to India in 1498." },
+  { "q": "Which empire fell when Constantinople was captured in 1453?", "a": "The Byzantine Empire", "opts": ["The Roman Empire", "The Byzantine Empire", "The Ottoman Empire", "The Persian Empire"], "exp": "The Ottomans captured Constantinople, ending the Byzantine Empire." },
+  { "q": "Which 1492 treaty-era voyage was funded by Spain?", "a": "Columbus's voyage", "opts": ["Magellan's voyage", "Columbus's voyage", "Cook's voyage", "Drake's voyage"], "exp": "Columbus sailed west for Spain hoping to reach Asia." },
+  { "q": "Who led the Soviet Union during most of World War II?", "a": "Stalin", "opts": ["Lenin", "Stalin", "Khrushchev", "Trotsky"], "exp": "Joseph Stalin led the USSR from 1924 until 1953." }
+]

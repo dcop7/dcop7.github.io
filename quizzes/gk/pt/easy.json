@@ -1,0 +1,14 @@
+[
+  { "q": "Quantos dias tem um ano normal?", "a": "365", "opts": ["360", "365", "366", "354"], "exp": "Um ano bissexto, de 4 em 4 anos, tem 366 dias." },
+  { "q": "Qual é a capital de Portugal?", "a": "Lisboa", "opts": ["Porto", "Lisboa", "Coimbra", "Braga"], "exp": "Lisboa é uma das capitais mais antigas da Europa Ocidental." },
+  { "q": "Quantas cores tem o arco-íris?", "a": "Sete", "opts": ["Cinco", "Seis", "Sete", "Oito"], "exp": "Vermelho, laranja, amarelo, verde, azul, anil e violeta." },
+  { "q": "Qual é o maior oceano do mundo?", "a": "Oceano Pacífico", "opts": ["Oceano Atlântico", "Oceano Pacífico", "Oceano Índico", "Oceano Ártico"], "exp": "O Pacífico cobre cerca de um terço da superfície da Terra." },
+  { "q": "Quantos lados tem um triângulo?", "a": "Três", "opts": ["Dois", "Três", "Quatro", "Cinco"], "exp": "A soma dos ângulos internos de um triângulo é sempre 180°." },
+  { "q": "Que animal é o 'melhor amigo do homem'?", "a": "O cão", "opts": ["O gato", "O cão", "O cavalo", "O coelho"], "exp": "O cão foi o primeiro animal domesticado, há mais de 15 000 anos." },
+  { "q": "Quantos minutos tem uma hora?", "a": "60", "opts": ["30", "60", "90", "100"], "exp": "Uma hora tem 60 minutos e cada minuto tem 60 segundos." },
+  { "q": "De que cor fica o céu num dia limpo?", "a": "Azul", "opts": ["Verde", "Azul", "Vermelho", "Roxo"], "exp": "O céu é azul porque a atmosfera dispersa mais a luz azul do Sol." },
+  { "q": "Qual é o planeta onde vivemos?", "a": "Terra", "opts": ["Marte", "Terra", "Vénus", "Júpiter"], "exp": "A Terra é o único planeta conhecido com vida." },
+  { "q": "Quantas estações do ano existem?", "a": "Quatro", "opts": ["Duas", "Três", "Quatro", "Cinco"], "exp": "Primavera, verão, outono e inverno." },
+  { "q": "Que instrumento usamos para ver as horas?", "a": "Relógio", "opts": ["Bússola", "Relógio", "Termómetro", "Balança"], "exp": "Os relógios mais antigos eram solares ou de água." },
+  { "q": "Qual é a moeda usada em Portugal?", "a": "Euro", "opts": ["Escudo", "Euro", "Dólar", "Libra"], "exp": "Portugal adotou o euro em 2002, substituindo o escudo." }
+]

@@ -1,0 +1,14 @@
+[
+  { "q": "Como se chama o processo pelo qual as plantas produzem alimento?", "a": "Fotossíntese", "opts": ["Respiração", "Fotossíntese", "Digestão", "Evaporação"], "exp": "Na fotossíntese, as plantas libertam o oxigénio que respiramos." },
+  { "q": "Qual é a unidade básica da vida?", "a": "A célula", "opts": ["O átomo", "A célula", "O órgão", "A molécula"], "exp": "Todos os seres vivos são feitos de uma ou mais células." },
+  { "q": "Que gás libertam as plantas durante a fotossíntese?", "a": "Oxigénio", "opts": ["Dióxido de carbono", "Oxigénio", "Hidrogénio", "Metano"], "exp": "As plantas absorvem CO₂ e libertam O₂ — o contrário de nós." },
+  { "q": "A que temperatura ferve a água ao nível do mar?", "a": "100 °C", "opts": ["50 °C", "100 °C", "150 °C", "200 °C"], "exp": "Em altitude, com menor pressão, a água ferve a temperaturas mais baixas." },
+  { "q": "Qual é a partícula com carga negativa no átomo?", "a": "Eletrão", "opts": ["Protão", "Neutrão", "Eletrão", "Fotão"], "exp": "Os eletrões orbitam o núcleo, que contém protões (+) e neutrões." },
+  { "q": "Que força mantém os planetas em órbita à volta do Sol?", "a": "A gravidade", "opts": ["O magnetismo", "A gravidade", "A fricção", "A eletricidade"], "exp": "A gravidade do Sol curva o movimento dos planetas, mantendo-os em órbita." },
+  { "q": "Qual é o planeta maior do sistema solar?", "a": "Júpiter", "opts": ["Saturno", "Júpiter", "Terra", "Neptuno"], "exp": "Júpiter é tão grande que caberiam lá dentro mais de 1 300 Terras." },
+  { "q": "Como se chama a mudança de líquido para gás?", "a": "Evaporação", "opts": ["Condensação", "Evaporação", "Solidificação", "Fusão"], "exp": "A evaporação faz parte do ciclo da água, juntamente com a condensação." },
+  { "q": "Que órgão das plantas faz a maior parte da fotossíntese?", "a": "A folha", "opts": ["A raiz", "A folha", "O fruto", "A semente"], "exp": "As folhas têm clorofila, o pigmento verde que capta a luz." },
+  { "q": "Qual é o metal líquido à temperatura ambiente?", "a": "Mercúrio", "opts": ["Ferro", "Mercúrio", "Alumínio", "Cobre"], "exp": "O mercúrio é o único metal líquido em condições normais." },
+  { "q": "O som precisa de quê para se propagar?", "a": "De um meio (ar, água…)", "opts": ["De luz", "De um meio (ar, água…)", "De vácuo", "De calor"], "exp": "No espaço, que é vácuo, o som não se propaga — não há meio." },
+  { "q": "Qual é o gás mais abundante na atmosfera da Terra?", "a": "Azoto", "opts": ["Oxigénio", "Azoto", "Dióxido de carbono", "Hidrogénio"], "exp": "O azoto representa cerca de 78% do ar que nos rodeia." }
+]

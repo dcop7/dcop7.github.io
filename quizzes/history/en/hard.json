@@ -1,0 +1,14 @@
+[
+  { "q": "Which Roman emperor made Christianity legal?", "a": "Constantine", "opts": ["Nero", "Constantine", "Caesar", "Trajan"], "exp": "The Edict of Milan (313 AD) allowed Christian worship in the Empire." },
+  { "q": "In which year did Constantinople fall to the Ottomans?", "a": "1453", "opts": ["1066", "1453", "1492", "1517"], "exp": "Its fall marked the end of the Byzantine Empire." },
+  { "q": "Who wrote the epic poem 'The Lusiads'?", "a": "Luís de Camões", "opts": ["Dante", "Luís de Camões", "Homer", "Virgil"], "exp": "Camões published 'Os Lusíadas' in 1572, about the Age of Discovery." },
+  { "q": "Which pre-Columbian civilization had its capital at Tenochtitlan?", "a": "The Aztecs", "opts": ["The Incas", "The Aztecs", "The Maya", "The Olmecs"], "exp": "Tenochtitlan stood where Mexico City is today." },
+  { "q": "Which revolution began in Russia in 1917?", "a": "The Bolshevik Revolution", "opts": ["The French Revolution", "The Bolshevik Revolution", "The Glorious Revolution", "The Industrial Revolution"], "exp": "It led to the creation of the Soviet Union." },
+  { "q": "Which treaty ended World War I in 1919?", "a": "Treaty of Versailles", "opts": ["Treaty of Versailles", "Treaty of Tordesilhas", "Treaty of Paris", "Treaty of Westphalia"], "exp": "Its harsh terms on Germany are often linked to the rise of WWII." },
+  { "q": "Who was the first man to walk on the Moon, in 1969?", "a": "Neil Armstrong", "opts": ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"], "exp": "Armstrong stepped onto the Moon during the Apollo 11 mission." },
+  { "q": "Which empire was led by Genghis Khan?", "a": "The Mongol Empire", "opts": ["The Ottoman Empire", "The Mongol Empire", "The Persian Empire", "The Roman Empire"], "exp": "It became the largest contiguous land empire in history." },
+  { "q": "Which document declared the independence of the USA in 1776?", "a": "Declaration of Independence", "opts": ["Magna Carta", "Declaration of Independence", "Bill of Rights", "Constitution"], "exp": "It was largely drafted by Thomas Jefferson." },
+  { "q": "Which plague devastated Europe in the 14th century?", "a": "The Black Death", "opts": ["The Spanish Flu", "The Black Death", "Cholera", "Smallpox"], "exp": "The Black Death killed up to a third of Europe's population." },
+  { "q": "Who was the first Roman emperor?", "a": "Augustus", "opts": ["Julius Caesar", "Augustus", "Nero", "Constantine"], "exp": "Augustus became emperor in 27 BC after Julius Caesar's death." },
+  { "q": "Which 1648 peace ended the Thirty Years' War?", "a": "Peace of Westphalia", "opts": ["Peace of Westphalia", "Treaty of Versailles", "Congress of Vienna", "Treaty of Utrecht"], "exp": "It shaped the modern idea of sovereign nation-states." }
+]

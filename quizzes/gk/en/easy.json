@@ -1,0 +1,14 @@
+[
+  { "q": "How many days are in a normal year?", "a": "365", "opts": ["360", "365", "366", "354"], "exp": "A leap year, every 4 years, has 366 days." },
+  { "q": "How many colours are in a rainbow?", "a": "Seven", "opts": ["Five", "Six", "Seven", "Eight"], "exp": "Red, orange, yellow, green, blue, indigo and violet." },
+  { "q": "Which is the largest ocean in the world?", "a": "Pacific Ocean", "opts": ["Atlantic Ocean", "Pacific Ocean", "Indian Ocean", "Arctic Ocean"], "exp": "The Pacific covers about a third of Earth's surface." },
+  { "q": "How many sides does a triangle have?", "a": "Three", "opts": ["Two", "Three", "Four", "Five"], "exp": "A triangle's interior angles always add up to 180°." },
+  { "q": "Which animal is called 'man's best friend'?", "a": "The dog", "opts": ["The cat", "The dog", "The horse", "The rabbit"], "exp": "The dog was the first domesticated animal, over 15,000 years ago." },
+  { "q": "How many minutes are in an hour?", "a": "60", "opts": ["30", "60", "90", "100"], "exp": "An hour has 60 minutes and each minute has 60 seconds." },
+  { "q": "What colour is the sky on a clear day?", "a": "Blue", "opts": ["Green", "Blue", "Red", "Purple"], "exp": "The sky is blue because the atmosphere scatters the Sun's blue light most." },
+  { "q": "Which planet do we live on?", "a": "Earth", "opts": ["Mars", "Earth", "Venus", "Jupiter"], "exp": "Earth is the only planet known to have life." },
+  { "q": "How many seasons are there in a year?", "a": "Four", "opts": ["Two", "Three", "Four", "Five"], "exp": "Spring, summer, autumn and winter." },
+  { "q": "What do we use to tell the time?", "a": "A clock", "opts": ["A compass", "A clock", "A thermometer", "Scales"], "exp": "The earliest clocks used the Sun or flowing water." },
+  { "q": "How many legs does a spider have?", "a": "Eight", "opts": ["Six", "Eight", "Ten", "Four"], "exp": "Spiders have 8 legs; insects have 6." },
+  { "q": "What is the capital of France?", "a": "Paris", "opts": ["London", "Paris", "Rome", "Madrid"], "exp": "Paris is famous for the Eiffel Tower, built in 1889." }
+]

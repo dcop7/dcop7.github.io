@@ -1,0 +1,14 @@
+[
+  { "q": "What is the capital of Australia?", "a": "Canberra", "opts": ["Sydney", "Canberra", "Melbourne", "Perth"], "exp": "Although Sydney is bigger, the capital is Canberra." },
+  { "q": "Who developed the theory of evolution by natural selection?", "a": "Charles Darwin", "opts": ["Gregor Mendel", "Charles Darwin", "Louis Pasteur", "Isaac Newton"], "exp": "Darwin published 'On the Origin of Species' in 1859." },
+  { "q": "What is the lightest chemical element?", "a": "Hydrogen", "opts": ["Helium", "Hydrogen", "Lithium", "Oxygen"], "exp": "Hydrogen is number 1 on the periodic table." },
+  { "q": "In which country is the city of Petra?", "a": "Jordan", "opts": ["Egypt", "Jordan", "Greece", "Turkey"], "exp": "Petra is a city carved into rock, over 2,000 years old." },
+  { "q": "What is the largest living structure on Earth?", "a": "The Great Barrier Reef", "opts": ["The Amazon Rainforest", "The Great Barrier Reef", "The giant sequoia", "The Belize Reef"], "exp": "The Great Barrier Reef in Australia is visible from space." },
+  { "q": "Who composed the 9th Symphony, with the 'Ode to Joy'?", "a": "Beethoven", "opts": ["Mozart", "Beethoven", "Bach", "Chopin"], "exp": "Beethoven was already deaf when he composed it in 1824." },
+  { "q": "What is the currency of Japan?", "a": "Yen", "opts": ["Won", "Yen", "Yuan", "Rupee"], "exp": "The symbol of the Japanese yen is ¥." },
+  { "q": "Which scientist proposed the laws of heredity using pea plants?", "a": "Gregor Mendel", "opts": ["Charles Darwin", "Gregor Mendel", "Louis Pasteur", "Watson and Crick"], "exp": "Mendel is considered the father of genetics." },
+  { "q": "What is the largest country in the world by area?", "a": "Russia", "opts": ["Canada", "Russia", "China", "United States"], "exp": "Russia spans over 17 million km² across two continents." },
+  { "q": "What is the chemical symbol for sodium?", "a": "Na", "opts": ["So", "Na", "Sd", "S"], "exp": "Na comes from the Latin 'natrium'." },
+  { "q": "Who wrote 'Don Quixote'?", "a": "Miguel de Cervantes", "opts": ["Dante", "Miguel de Cervantes", "Shakespeare", "Homer"], "exp": "Published in 1605, it is considered the first modern novel." },
+  { "q": "What is the hardest known natural material?", "a": "Diamond", "opts": ["Quartz", "Diamond", "Steel", "Granite"], "exp": "Diamond is pure carbon and tops the Mohs hardness scale at 10." }
+]

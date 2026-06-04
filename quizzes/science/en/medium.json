@@ -1,0 +1,14 @@
+[
+  { "q": "What is the process by which plants make food called?", "a": "Photosynthesis", "opts": ["Respiration", "Photosynthesis", "Digestion", "Evaporation"], "exp": "In photosynthesis, plants release the oxygen we breathe." },
+  { "q": "What is the basic unit of life?", "a": "The cell", "opts": ["The atom", "The cell", "The organ", "The molecule"], "exp": "Every living thing is made of one or more cells." },
+  { "q": "Which gas do plants release during photosynthesis?", "a": "Oxygen", "opts": ["Carbon dioxide", "Oxygen", "Hydrogen", "Methane"], "exp": "Plants take in CO₂ and release O₂ — the opposite of us." },
+  { "q": "At what temperature does water boil at sea level?", "a": "100 °C", "opts": ["50 °C", "100 °C", "150 °C", "200 °C"], "exp": "At high altitude, with lower pressure, water boils at a lower temperature." },
+  { "q": "Which particle in an atom carries a negative charge?", "a": "Electron", "opts": ["Proton", "Neutron", "Electron", "Photon"], "exp": "Electrons orbit the nucleus, which holds protons (+) and neutrons." },
+  { "q": "Which force keeps the planets orbiting the Sun?", "a": "Gravity", "opts": ["Magnetism", "Gravity", "Friction", "Electricity"], "exp": "The Sun's gravity bends the planets' motion into orbits." },
+  { "q": "Which is the largest planet in the solar system?", "a": "Jupiter", "opts": ["Saturn", "Jupiter", "Earth", "Neptune"], "exp": "Jupiter is so big that over 1,300 Earths would fit inside it." },
+  { "q": "What is the change from liquid to gas called?", "a": "Evaporation", "opts": ["Condensation", "Evaporation", "Freezing", "Melting"], "exp": "Evaporation is part of the water cycle, along with condensation." },
+  { "q": "Which metal is liquid at room temperature?", "a": "Mercury", "opts": ["Iron", "Mercury", "Aluminium", "Copper"], "exp": "Mercury is the only metal that is liquid under normal conditions." },
+  { "q": "What does sound need in order to travel?", "a": "A medium (air, water…)", "opts": ["Light", "A medium (air, water…)", "A vacuum", "Heat"], "exp": "In the vacuum of space, sound cannot travel — there is no medium." },
+  { "q": "Which is the most abundant gas in Earth's atmosphere?", "a": "Nitrogen", "opts": ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"], "exp": "Nitrogen makes up about 78% of the air around us." },
+  { "q": "Which green pigment lets plants capture light?", "a": "Chlorophyll", "opts": ["Melanin", "Chlorophyll", "Haemoglobin", "Keratin"], "exp": "Chlorophyll in the leaves absorbs sunlight for photosynthesis." }
+]

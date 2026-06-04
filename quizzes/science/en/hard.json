@@ -1,0 +1,14 @@
+[
+  { "q": "What is the chemical symbol for gold?", "a": "Au", "opts": ["Ag", "Au", "Go", "Or"], "exp": "Au comes from the Latin 'aurum'. Silver is Ag (argentum)." },
+  { "q": "What is the approximate speed of light in a vacuum?", "a": "300,000 km/s", "opts": ["3,000 km/s", "30,000 km/s", "300,000 km/s", "3,000,000 km/s"], "exp": "Light travels about 300,000 km per second — 7 times around Earth in one second." },
+  { "q": "Who proposed the theory of relativity?", "a": "Albert Einstein", "opts": ["Isaac Newton", "Albert Einstein", "Galileo", "Niels Bohr"], "exp": "Einstein published special relativity in 1905 and general relativity in 1915." },
+  { "q": "What is the most abundant chemical element in the Universe?", "a": "Hydrogen", "opts": ["Oxygen", "Hydrogen", "Carbon", "Helium"], "exp": "Hydrogen makes up about 75% of the Universe's ordinary matter." },
+  { "q": "What is the number of protons in an atom called?", "a": "Atomic number", "opts": ["Mass number", "Atomic number", "Valence", "Isotope"], "exp": "The atomic number defines the element — hydrogen is 1, carbon is 6." },
+  { "q": "Which force is responsible for attraction between electric charges?", "a": "Electromagnetic force", "opts": ["Gravity", "Electromagnetic force", "Strong nuclear force", "Tidal force"], "exp": "It is one of the four fundamental forces of nature." },
+  { "q": "Which scientist formulated the laws of motion and universal gravitation?", "a": "Isaac Newton", "opts": ["Albert Einstein", "Isaac Newton", "Charles Darwin", "Nikola Tesla"], "exp": "Newton published the 'Principia' in 1687." },
+  { "q": "What is the pH of a neutral solution?", "a": "7", "opts": ["0", "7", "10", "14"], "exp": "Below 7 is acidic; above 7 is basic (alkaline)." },
+  { "q": "Which molecule stores genetic information?", "a": "DNA", "opts": ["ATP", "DNA", "Messenger RNA", "Glucose"], "exp": "Human DNA has about 3 billion base pairs." },
+  { "q": "What is the SI unit of force?", "a": "Newton", "opts": ["Joule", "Watt", "Newton", "Pascal"], "exp": "1 newton gives a 1 kg mass an acceleration of 1 m/s²." },
+  { "q": "Which subatomic particle has no electric charge?", "a": "Neutron", "opts": ["Proton", "Electron", "Neutron", "Ion"], "exp": "The neutron is neutral; it sits in the nucleus with the protons." },
+  { "q": "What is the theory explaining the origin of the Universe?", "a": "Big Bang", "opts": ["Steady State theory", "Big Bang", "String theory", "Relativity"], "exp": "The Big Bang says the Universe expanded from a point ~13.8 billion years ago." }
+]

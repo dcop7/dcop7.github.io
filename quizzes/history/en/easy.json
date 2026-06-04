@@ -1,0 +1,14 @@
+[
+  { "q": "Which ancient civilization built the Pyramids of Giza?", "a": "The Egyptians", "opts": ["The Romans", "The Egyptians", "The Greeks", "The Maya"], "exp": "The Pyramids of Giza were built about 4,500 years ago." },
+  { "q": "Who is credited with reaching the Americas in 1492?", "a": "Christopher Columbus", "opts": ["Christopher Columbus", "Vasco da Gama", "Marco Polo", "Magellan"], "exp": "Columbus reached the Caribbean in 1492, sailing for Spain." },
+  { "q": "Which country built the Great Wall?", "a": "China", "opts": ["Japan", "China", "India", "Mongolia"], "exp": "The Great Wall of China is over 21,000 km long." },
+  { "q": "What were the warriors of old Japan called?", "a": "Samurai", "opts": ["Vikings", "Samurai", "Legionaries", "Knights"], "exp": "Samurai followed a code of honour called bushido." },
+  { "q": "On which continent did Roman civilization begin?", "a": "Europe", "opts": ["Asia", "Europe", "Africa", "America"], "exp": "Rome began on the Italian peninsula, in Europe." },
+  { "q": "Which seafaring people sailed ships called drakkar?", "a": "The Vikings", "opts": ["The Romans", "The Vikings", "The Greeks", "The Persians"], "exp": "The Vikings came from Scandinavia and reached North America." },
+  { "q": "In which city stood the famous ancient Colosseum?", "a": "Rome", "opts": ["Athens", "Rome", "Cairo", "London"], "exp": "Rome's Colosseum could hold up to 80,000 spectators." },
+  { "q": "What is the picture-writing of Ancient Egypt called?", "a": "Hieroglyphs", "opts": ["Runes", "Hieroglyphs", "Alphabet", "Cuneiform"], "exp": "Hieroglyphs were decoded thanks to the Rosetta Stone." },
+  { "q": "Which material gives the 'Stone Age' its name?", "a": "Stone", "opts": ["Iron", "Stone", "Bronze", "Gold"], "exp": "In the Stone Age, tools were made mostly of chipped stone." },
+  { "q": "Which explorer led the first voyage around the world?", "a": "Ferdinand Magellan", "opts": ["Vasco da Gama", "Ferdinand Magellan", "Columbus", "Cabral"], "exp": "Magellan set off in 1519; the expedition finished the loop in 1522." },
+  { "q": "Which empire was ruled by emperors like Julius Caesar and Augustus?", "a": "The Roman Empire", "opts": ["The Ottoman Empire", "The Roman Empire", "The Persian Empire", "The Mongol Empire"], "exp": "Augustus became the first Roman emperor in 27 BC." },
+  { "q": "Which ancient wonder still standing is in Egypt?", "a": "The Great Pyramid", "opts": ["The Hanging Gardens", "The Great Pyramid", "The Colossus of Rhodes", "The Lighthouse"], "exp": "The Great Pyramid is the only Ancient Wonder still largely intact." }
+]

@@ -1,0 +1,14 @@
+[
+  { "q": "Quem foi o primeiro rei de Portugal?", "a": "D. Afonso Henriques", "opts": ["D. Dinis", "D. Afonso Henriques", "D. João I", "D. Manuel I"], "exp": "D. Afonso Henriques tornou-se o primeiro rei de Portugal em 1143." },
+  { "q": "Que civilização antiga construiu as pirâmides de Gizé?", "a": "Os egípcios", "opts": ["Os romanos", "Os egípcios", "Os gregos", "Os maias"], "exp": "As pirâmides de Gizé foram construídas há cerca de 4 500 anos." },
+  { "q": "Em que continente nasceu a civilização romana?", "a": "Europa", "opts": ["Ásia", "Europa", "África", "América"], "exp": "Roma nasceu na península itálica, na Europa." },
+  { "q": "Que navegador português chegou à Índia por mar em 1498?", "a": "Vasco da Gama", "opts": ["Pedro Álvares Cabral", "Vasco da Gama", "Fernão de Magalhães", "Bartolomeu Dias"], "exp": "Vasco da Gama abriu o caminho marítimo para a Índia em 1498." },
+  { "q": "Que material deu nome à 'Idade da Pedra'?", "a": "A pedra", "opts": ["O ferro", "A pedra", "O bronze", "O ouro"], "exp": "Na Idade da Pedra, as ferramentas eram feitas sobretudo de pedra lascada." },
+  { "q": "Quem 'descobriu' a América em 1492?", "a": "Cristóvão Colombo", "opts": ["Cristóvão Colombo", "Vasco da Gama", "Américo Vespúcio", "Marco Polo"], "exp": "Colombo chegou às Caraíbas em 1492, ao serviço da Espanha." },
+  { "q": "Que país construiu a Grande Muralha?", "a": "China", "opts": ["Japão", "China", "Índia", "Mongólia"], "exp": "A Grande Muralha da China tem mais de 21 000 km de comprimento." },
+  { "q": "Como se chamavam os guerreiros do Japão antigo?", "a": "Samurais", "opts": ["Vikings", "Samurais", "Legionários", "Cavaleiros"], "exp": "Os samurais seguiam um código de honra chamado bushido." },
+  { "q": "Que navegador português descobriu o Brasil em 1500?", "a": "Pedro Álvares Cabral", "opts": ["Vasco da Gama", "Pedro Álvares Cabral", "Diogo Cão", "Fernão de Magalhães"], "exp": "Cabral chegou ao Brasil a 22 de abril de 1500." },
+  { "q": "Que povo guerreiro navegava em barcos chamados drakkar?", "a": "Os vikings", "opts": ["Os romanos", "Os vikings", "Os gregos", "Os persas"], "exp": "Os vikings vieram da Escandinávia e chegaram até à América do Norte." },
+  { "q": "Em que cidade ficava o famoso Coliseu da Antiguidade?", "a": "Roma", "opts": ["Atenas", "Roma", "Cairo", "Lisboa"], "exp": "O Coliseu de Roma chegou a receber 80 000 espectadores." },
+  { "q": "Como se chama a escrita com desenhos do Antigo Egito?", "a": "Hieróglifos", "opts": ["Runas", "Hieróglifos", "Alfabeto", "Cuneiforme"], "exp": "Os hieróglifos foram decifrados graças à Pedra de Roseta." }
+]
