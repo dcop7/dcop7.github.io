@@ -493,7 +493,7 @@ const HumanBodyExplorer = (function () {
       try {
         const brain = await _loadGLB('brain');
         _styleOrgan(brain, 'cerebro');
-        organs.add(_fitModel(brain, 2.6, 13.5));
+        organs.add(_fitModel(brain, 1.45, 14.35));   // sit inside the skull
       } catch (e) {}
       _replaceGroup('organs', organs);
 
@@ -637,26 +637,45 @@ const HumanBodyExplorer = (function () {
     _camera.lookAt(0, _focusY, 0);
   }
 
+  function _pinchDist(pts) { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); }
+
   function _wireControls() {
-    let drag = false, lx = 0, ly = 0, moved = 0;
+    const pts = new Map();                 // active pointers (multi-touch aware)
+    let lx = 0, ly = 0, moved = 0, pinchD = 0, ptype = 'mouse';
     _vp.addEventListener('pointerdown', e => {
-      drag = true; moved = 0; lx = e.clientX; ly = e.clientY; _autoSpin = false;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      ptype = e.pointerType; moved = 0; lx = e.clientX; ly = e.clientY; _autoSpin = false;
+      if (pts.size === 2) pinchD = _pinchDist(pts);
       _vp.classList.add('grabbing'); _vp.setPointerCapture?.(e.pointerId);
     });
     _vp.addEventListener('pointermove', e => {
-      if (!drag) return;
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size >= 2) {                  // two fingers → pinch-zoom
+        const d = _pinchDist(pts);
+        if (pinchD) _distT = Math.max(7, Math.min(70, _distT * (pinchD / (d || 1))));
+        pinchD = d; return;
+      }
       const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
       moved += Math.abs(dx) + Math.abs(dy);
-      _azT -= dx * 0.008;
-      _polT = Math.max(0.25, Math.min(Math.PI - 0.25, _polT - dy * 0.008));
+      const k = ptype === 'touch' ? 0.017 : 0.011;   // touch needs a faster sweep
+      _azT -= dx * k;
+      _polT = Math.max(0.25, Math.min(Math.PI - 0.25, _polT - dy * k));
     });
     const end = e => {
-      if (!drag) return;
-      drag = false; _vp.classList.remove('grabbing');
-      if (moved < 6) _pick(e);   // treat as a click
+      const had = pts.has(e.pointerId);
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinchD = 0;
+      if (!had) return;
+      if (pts.size === 0) {
+        _vp.classList.remove('grabbing');
+        if (moved < 8) _pick(e);            // a tap → select an organ
+      } else {                              // lift one finger of a pinch
+        const p = pts.values().next().value; lx = p.x; ly = p.y;
+      }
     };
     _vp.addEventListener('pointerup', end);
-    _vp.addEventListener('pointerleave', () => { drag = false; _vp.classList.remove('grabbing'); });
+    _vp.addEventListener('pointercancel', end);
     _vp.addEventListener('wheel', e => {
       e.preventDefault();
       _distT = Math.max(7, Math.min(70, _distT * (e.deltaY > 0 ? 1.1 : 0.9)));

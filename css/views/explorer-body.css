@@ -5,7 +5,7 @@
 
 /* ── 3D stage ── */
 .hb3d-stage { position: relative; flex: 1; min-height: 0; display: flex; background: #06080f; }
-.hb3d-viewport { position: absolute; inset: 0; cursor: grab; }
+.hb3d-viewport { position: absolute; inset: 0; cursor: grab; touch-action: none; }
 .hb3d-viewport.grabbing { cursor: grabbing; }
 .hb3d-viewport canvas { display: block; width: 100%; height: 100%; }
 
@@ -512,13 +512,23 @@
    RESPONSIVE
 ══════════════════════════════════════════════════════════════════ */
 @media (max-width: 760px) {
-  .hb-diagram { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  .hb-diagram { grid-template-columns: 1fr; grid-template-rows: 1.5fr auto; }
   .hb-info {
     border-left: none;
     border-top: 1px solid var(--border);
-    max-height: 42%;
+    max-height: 48%;
+    padding: 1rem 1.1rem 1.2rem;
+    gap: .7rem;
     flex-direction: column;
   }
+  /* bigger, more readable info on phones */
+  .hb-info-emoji { font-size: 2.3rem; }
+  .hb-info-ttl { font-size: 1.3rem; }
+  .hb-info-sub { font-size: .82rem; }
+  .hb-info-desc { font-size: .96rem; line-height: 1.55; }
+  .hb-stat-v { font-size: 1.2rem; }
+  .hb-stat-l { font-size: .68rem; }
+  .hb-info-facts li { font-size: .9rem; line-height: 1.5; }
   .hb-zlayer svg { width: 92%; }
   .hb-rail { right: .35rem; }
   .hb-rail-step span:not(.hb-rail-dot) { display: none; }
