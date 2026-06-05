@@ -1,0 +1,4 @@
+{
+  "pt": { "record": "Recorde", "difficulty": "Dificuldade", "easy": "Fácil", "medium": "Médio", "hard": "Difícil", "play": "▶ Jogar", "tip": "Toca / clica para subir<br>Apanha orbes ⚡ para pontos bónus", "goodFlight": "Bom Voo!", "orbsNote": "Os orbes valem 3 pts", "retry": "🔄 Voar de Novo", "menu": "Menu" },
+  "en": { "record": "Best", "difficulty": "Difficulty", "easy": "Easy", "medium": "Medium", "hard": "Hard", "play": "▶ Play", "tip": "Tap / click to rise<br>Grab orbs ⚡ for bonus points", "goodFlight": "Nice Flight!", "orbsNote": "Orbs are worth 3 pts", "retry": "🔄 Fly Again", "menu": "Menu" }
+}

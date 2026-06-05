@@ -3,6 +3,14 @@ const SkyHopperGame = (function () {
 
   let root, cv, cx, raf, W, H, G;
 
+  /* UI strings live in games/sky-hopper/i18n.json (offline fallback below). */
+  const FB_I18N = {
+    pt: { record:'Recorde', difficulty:'Dificuldade', easy:'Fácil', medium:'Médio', hard:'Difícil', play:'▶ Jogar', tip:'Toca / clica para subir<br>Apanha orbes ⚡ para pontos bónus', goodFlight:'Bom Voo!', orbsNote:'Os orbes valem 3 pts', retry:'🔄 Voar de Novo', menu:'Menu' },
+    en: { record:'Best', difficulty:'Difficulty', easy:'Easy', medium:'Medium', hard:'Hard', play:'▶ Play', tip:'Tap / click to rise<br>Grab orbs ⚡ for bonus points', goodFlight:'Nice Flight!', orbsNote:'Orbs are worth 3 pts', retry:'🔄 Fly Again', menu:'Menu' },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+
   const DIFFS = {
     easy:   { speed: 2.4, gravity: 0.42, jumpForce: -8.5,  gapMin: 145, gapMax: 210, pipeInterval: 130 },
     medium: { speed: 3.2, gravity: 0.55, jumpForce: -9.5,  gapMin: 110, gapMax: 180, pipeInterval: 105 },
@@ -42,15 +50,15 @@ const SkyHopperGame = (function () {
     root.innerHTML = `<div class="sh-host"><div class="sh-overlay">
       <div style="font-size:3.2rem;filter:drop-shadow(0 0 18px #06b6d4)">🌟</div>
       <div class="sh-title">Sky Hopper</div>
-      <div class="sh-best">Recorde: ${best}</div>
-      <div class="sh-diff-label">Dificuldade</div>
+      <div class="sh-best">${t('record')}: ${best}</div>
+      <div class="sh-diff-label">${t('difficulty')}</div>
       <div class="sh-diff-row">
-        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Fácil</button>
-        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Médio</button>
-        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Difícil</button>
+        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">${t('easy')}</button>
+        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">${t('medium')}</button>
+        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">${t('hard')}</button>
       </div>
-      <button class="sh-btn" id="sh-play">▶ Jogar</button>
-      <div class="sh-tip">Toca / clica para subir<br>Apanha orbes ⚡ para pontos bónus</div>
+      <button class="sh-btn" id="sh-play">${t('play')}</button>
+      <div class="sh-tip">${t('tip')}</div>
     </div></div>`;
     root.querySelectorAll('.sh-diff-btn').forEach(b => {
       b.addEventListener('click', () => {
@@ -316,17 +324,17 @@ const SkyHopperGame = (function () {
     const medal = G.score >= 20 ? '🥇' : G.score >= 10 ? '🥈' : G.score >= 5 ? '🥉' : '🌟';
     root.innerHTML = `<div class="sh-host"><div class="sh-overlay">
       <div class="sh-medal">${medal}</div>
-      <div class="sh-title" style="font-size:1.7rem">Bom Voo!</div>
+      <div class="sh-title" style="font-size:1.7rem">${t('goodFlight')}</div>
       <div class="sh-score-big">${G.score}</div>
-      <div style="font-size:.8rem;color:#444">Recorde: ${best} · Os orbes valem 3 pts</div>
-      <div class="sh-diff-label">Dificuldade</div>
+      <div style="font-size:.8rem;color:#444">${t('record')}: ${best} · ${t('orbsNote')}</div>
+      <div class="sh-diff-label">${t('difficulty')}</div>
       <div class="sh-diff-row">
-        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">Fácil</button>
-        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">Médio</button>
-        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">Difícil</button>
+        <button class="sh-diff-btn ${diff==='easy'?'active':''}" data-d="easy">${t('easy')}</button>
+        <button class="sh-diff-btn ${diff==='medium'?'active':''}" data-d="medium">${t('medium')}</button>
+        <button class="sh-diff-btn ${diff==='hard'?'active':''}" data-d="hard">${t('hard')}</button>
       </div>
-      <button class="sh-btn" id="sh-retry">🔄 Voar de Novo</button>
-      <button style="background:transparent;border:1px solid #222;color:#444;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="sh-menu">Menu</button>
+      <button class="sh-btn" id="sh-retry">${t('retry')}</button>
+      <button style="background:transparent;border:1px solid #222;color:#444;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="sh-menu">${t('menu')}</button>
     </div></div>`;
     root.querySelectorAll('.sh-diff-btn').forEach(b => {
       b.addEventListener('click', () => {
@@ -336,6 +344,15 @@ const SkyHopperGame = (function () {
     });
     root.querySelector('#sh-retry').addEventListener('click', () => startGame(localStorage.getItem('sh-diff') || diff));
     root.querySelector('#sh-menu').addEventListener('click', showMenu);
+  }
+
+  if (_has) {
+    const apply = () => GameData.load('sky-hopper').then(d => {
+      if (t.use) t.use(d.i18n);
+      if (root) { try { cancelAnimationFrame(raf); } catch (e) {} showMenu(); }
+    });
+    apply();
+    document.addEventListener('langchange', apply);
   }
 
   return { init };

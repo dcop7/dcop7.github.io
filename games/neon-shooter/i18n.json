@@ -1,0 +1,4 @@
+{
+  "pt": { "record": "Recorde", "pts": "pts", "play": "▶ Jogar", "tip": "Move o rato / arrasta o dedo para voar<br>A tua nave dispara automaticamente", "gameOver": "Fim de Jogo", "wave": "Vaga", "reached": "alcançada", "enemies": "inimigos", "maxCombo": "combo máx.", "retry": "🔄 Jogar de Novo", "menu": "Menu" },
+  "en": { "record": "Best", "pts": "pts", "play": "▶ Play", "tip": "Move the mouse / drag to fly<br>Your ship fires automatically", "gameOver": "Game Over", "wave": "Wave", "reached": "reached", "enemies": "enemies", "maxCombo": "max combo", "retry": "🔄 Play Again", "menu": "Menu" }
+}

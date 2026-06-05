@@ -4,6 +4,14 @@ const NeonShooterGame = (function () {
   let root, cv, cx, raf, W, H, G;
   let mx = 200, my = 400, touching = false;
 
+  /* UI strings live in games/neon-shooter/i18n.json (offline fallback below). */
+  const FB_I18N = {
+    pt: { record:'Recorde', pts:'pts', play:'▶ Jogar', tip:'Move o rato / arrasta o dedo para voar<br>A tua nave dispara automaticamente', gameOver:'Fim de Jogo', wave:'Vaga', reached:'alcançada', enemies:'inimigos', maxCombo:'combo máx.', retry:'🔄 Jogar de Novo', menu:'Menu' },
+    en: { record:'Best', pts:'pts', play:'▶ Play', tip:'Move the mouse / drag to fly<br>Your ship fires automatically', gameOver:'Game Over', wave:'Wave', reached:'reached', enemies:'enemies', maxCombo:'max combo', retry:'🔄 Play Again', menu:'Menu' },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+
   function injectCSS() {
     if (document.getElementById('ns-css')) return;
     const s = document.createElement('style'); s.id = 'ns-css';
@@ -42,9 +50,9 @@ const NeonShooterGame = (function () {
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:3rem;filter:drop-shadow(0 0 20px #a855f7)">🚀</div>
       <div class="ns-title">Neon Space<br>Shooter</div>
-      <div class="ns-hi">Recorde: ${hi} pts</div>
-      <button class="ns-play-btn" id="ns-start">▶ Jogar</button>
-      <div class="ns-tip">Move o rato / arrasta o dedo para voar<br>A tua nave dispara automaticamente</div>
+      <div class="ns-hi">${t('record')}: ${hi} ${t('pts')}</div>
+      <button class="ns-play-btn" id="ns-start">${t('play')}</button>
+      <div class="ns-tip">${t('tip')}</div>
     </div></div>`;
     root.querySelector('#ns-start').addEventListener('click', startGame);
   }
@@ -383,16 +391,16 @@ const NeonShooterGame = (function () {
     const hi = localStorage.getItem('ns-hi') || 0;
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:2.5rem">💥</div>
-      <div class="ns-title" style="font-size:1.6rem">Fim de Jogo</div>
+      <div class="ns-title" style="font-size:1.6rem">${t('gameOver')}</div>
       <div class="ns-score-big">${G.score}</div>
       <div class="ns-stats-row">
-        <div class="ns-stat-item"><span class="ns-stat-val">Vaga ${G.wave}</span><span>alcançada</span></div>
-        <div class="ns-stat-item"><span class="ns-stat-val">${G.killCount}</span><span>inimigos</span></div>
-        <div class="ns-stat-item"><span class="ns-stat-val">×${G.maxCombo}</span><span>combo máx.</span></div>
+        <div class="ns-stat-item"><span class="ns-stat-val">${t('wave')} ${G.wave}</span><span>${t('reached')}</span></div>
+        <div class="ns-stat-item"><span class="ns-stat-val">${G.killCount}</span><span>${t('enemies')}</span></div>
+        <div class="ns-stat-item"><span class="ns-stat-val">×${G.maxCombo}</span><span>${t('maxCombo')}</span></div>
       </div>
-      <div class="ns-hi">Recorde: ${hi} pts</div>
-      <button class="ns-play-btn" id="ns-retry">🔄 Jogar de Novo</button>
-      <button style="background:transparent;border:1px solid #333;color:#555;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="ns-menu">Menu</button>
+      <div class="ns-hi">${t('record')}: ${hi} ${t('pts')}</div>
+      <button class="ns-play-btn" id="ns-retry">${t('retry')}</button>
+      <button style="background:transparent;border:1px solid #333;color:#555;border-radius:8px;padding:8px 20px;cursor:pointer;font-size:.8rem" id="ns-menu">${t('menu')}</button>
     </div></div>`;
     root.querySelector('#ns-retry').addEventListener('click', startGame);
     root.querySelector('#ns-menu').addEventListener('click', showMenu);
@@ -542,6 +550,15 @@ const NeonShooterGame = (function () {
   function newG2() { const g = _newG(); g.spawnMax = 9; g.spawnTimer = 1.2; return g; }
 
   function init2(r) { root = r; if (!r) return; injectCSS(); showMenu(); }
+
+  if (_has) {
+    const apply = () => GameData.load('neon-shooter').then(d => {
+      if (t.use) t.use(d.i18n);
+      if (root) { try { cancelAnimationFrame(raf); } catch (e) {} showMenu(); }
+    });
+    apply();
+    document.addEventListener('langchange', apply);
+  }
 
   return { init: init2 };
 })();
