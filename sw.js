@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v78';
+const CACHE = 'dcop7-v79';
 const STATIC = [
   '/',
   '/index.html',
@@ -63,6 +63,7 @@ const STATIC = [
   '/games/neon-shooter/i18n.json',
   '/games/sky-hopper/i18n.json',
   '/games/bomb/i18n.json',
+  '/games/chain-reaction/i18n.json',
   '/js/games/minesweeper.js',
   '/js/games/bomb.js',
   '/js/games/game-memory.js',

@@ -1,0 +1,28 @@
+{
+  "pt": {
+    "play": "▶ Jogar", "continue": "▶ Continuar", "restart": "↺ Recomeçar",
+    "menuHint": "Coloca espelhos para desviar a bola · Atinge o alvo para ganhar",
+    "fire": "🚀 Lançar", "reactComplete": "Reação Completa!", "nextLevel": "▶ Próximo Nível",
+    "allDoneBtn": "🏆 Tudo Concluído!", "repeat": "↺ Repetir", "failed": "Falhou!",
+    "failHint": "A bola não chegou ao alvo. Reorganiza as tuas peças!", "tryAgain": "↺ Tentar de Novo",
+    "mastered": "Fábrica Dominada!", "playAgain": "▶ Jogar de Novo",
+    "levels": [
+      { "title": "Nível 1 — Primeira Reação" }, { "title": "Nível 2 — Ressalto Duplo" },
+      { "title": "Nível 3 — O Muro" }, { "title": "Nível 4 — Divisor" },
+      { "title": "Nível 5 — Labirinto" }, { "title": "Nível 6 — Avançado" }
+    ]
+  },
+  "en": {
+    "play": "▶ Play", "continue": "▶ Continue", "restart": "↺ Restart",
+    "menuHint": "Place mirrors to deflect the ball · Hit the target to win",
+    "fire": "🚀 Launch", "reactComplete": "Reaction Complete!", "nextLevel": "▶ Next Level",
+    "allDoneBtn": "🏆 All Done!", "repeat": "↺ Repeat", "failed": "Failed!",
+    "failHint": "The ball didn’t reach the target. Rearrange your pieces!", "tryAgain": "↺ Try Again",
+    "mastered": "Factory Mastered!", "playAgain": "▶ Play Again",
+    "levels": [
+      { "title": "Level 1 — First Reaction" }, { "title": "Level 2 — Double Bounce" },
+      { "title": "Level 3 — The Wall" }, { "title": "Level 4 — Splitter" },
+      { "title": "Level 5 — Maze" }, { "title": "Level 6 — Advanced" }
+    ]
+  }
+}

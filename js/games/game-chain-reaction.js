@@ -31,6 +31,18 @@ const ChainReactionGame = (function () {
       given:{ '/':4, '\\':3, 'X':1 }, grid:10, rows:7 },
   ];
 
+  /* UI strings + per-level titles live in games/chain-reaction/i18n.json
+     (offline fallback below; level text is keyed `levels` as an array). */
+  const FB_I18N = {
+    pt: { play:'▶ Jogar', continue:'▶ Continuar', restart:'↺ Recomeçar', menuHint:'Coloca espelhos para desviar a bola · Atinge o alvo para ganhar', fire:'🚀 Lançar', reactComplete:'Reação Completa!', nextLevel:'▶ Próximo Nível', allDoneBtn:'🏆 Tudo Concluído!', repeat:'↺ Repetir', failed:'Falhou!', failHint:'A bola não chegou ao alvo. Reorganiza as tuas peças!', tryAgain:'↺ Tentar de Novo', mastered:'Fábrica Dominada!', playAgain:'▶ Jogar de Novo',
+      levels:[ {title:'Nível 1 — Primeira Reação'}, {title:'Nível 2 — Ressalto Duplo'}, {title:'Nível 3 — O Muro'}, {title:'Nível 4 — Divisor'}, {title:'Nível 5 — Labirinto'}, {title:'Nível 6 — Avançado'} ] },
+    en: { play:'▶ Play', continue:'▶ Continue', restart:'↺ Restart', menuHint:'Place mirrors to deflect the ball · Hit the target to win', fire:'🚀 Launch', reactComplete:'Reaction Complete!', nextLevel:'▶ Next Level', allDoneBtn:'🏆 All Done!', repeat:'↺ Repeat', failed:'Failed!', failHint:'The ball didn’t reach the target. Rearrange your pieces!', tryAgain:'↺ Try Again', mastered:'Factory Mastered!', playAgain:'▶ Play Again',
+      levels:[ {title:'Level 1 — First Reaction'}, {title:'Level 2 — Double Bounce'}, {title:'Level 3 — The Wall'}, {title:'Level 4 — Splitter'}, {title:'Level 5 — Maze'}, {title:'Level 6 — Advanced'} ] },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  const _lvlTitle = idx => { const L = t('levels'); return (L && L[idx] && L[idx].title) || LEVELS[idx].title; };
+
   const PIECE_COLORS = { '/':'#22d3ee', '\\':'#a855f7', 'B':'#f59e0b', 'X':'#22c55e', '+':'#f43f5e' };
 
   function injectCSS() {
@@ -71,9 +83,9 @@ const ChainReactionGame = (function () {
       <div style="font-size:3rem;filter:drop-shadow(0 0 18px #6366f1)">⚙️</div>
       <div class="cr-title">Chain Reaction<br>Factory</div>
       <div class="cr-prog">${LEVELS.map((_,i)=>`<div class="cr-prog-d ${i<saved?'done':''}"></div>`).join('')}</div>
-      <button class="cr-btn" id="cr-play">▶ ${saved>0?'Continuar':'Jogar'}</button>
-      ${saved>0?`<button class="cr-btn-sm" id="cr-reset">↺ Recomeçar</button>`:''}
-      <div class="cr-hint">Coloca espelhos para desviar a bola · Atinge o alvo para ganhar</div>
+      <button class="cr-btn" id="cr-play">${saved>0?t('continue'):t('play')}</button>
+      ${saved>0?`<button class="cr-btn-sm" id="cr-reset">${t('restart')}</button>`:''}
+      <div class="cr-hint">${t('menuHint')}</div>
     </div></div>`;
     root.querySelector('#cr-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#cr-reset')?.addEventListener('click', () => { localStorage.removeItem('cr-lvl'); showMenu(); });
@@ -86,11 +98,11 @@ const ChainReactionGame = (function () {
 
     root.innerHTML = `<div class="cr-host">
       <div class="cr-hud">
-        <div class="cr-hud-title">${lvl.title}</div>
+        <div class="cr-hud-title">${_lvlTitle(idx)}</div>
         <div class="cr-piece-tray" id="cr-tray"></div>
         <div class="cr-actions">
           <button class="cr-reset-btn" id="cr-r">↺</button>
-          <button class="cr-fire-btn" id="cr-f">🚀 Lançar</button>
+          <button class="cr-fire-btn" id="cr-f">${t('fire')}</button>
         </div>
       </div>
       <canvas class="cr-cv" id="cr-cv"></canvas>
@@ -301,12 +313,12 @@ const ChainReactionGame = (function () {
     if (next > +localStorage.getItem('cr-lvl')||0) localStorage.setItem('cr-lvl', next);
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:2.8rem">✅</div>
-      <div class="cr-title" style="font-size:1.6rem">Reação Completa!</div>
+      <div class="cr-title" style="font-size:1.6rem">${t('reactComplete')}</div>
       <div class="cr-prog">${LEVELS.map((_,i)=>`<div class="cr-prog-d ${i<next?'done':i===next?'done':''}"></div>`).join('')}</div>
       ${next < LEVELS.length
-        ? `<button class="cr-btn" id="cr-next">▶ Próximo Nível</button>`
-        : `<button class="cr-btn" id="cr-next">🏆 Tudo Concluído!</button>`}
-      <button class="cr-btn-sm" id="cr-re">↺ Repetir</button>
+        ? `<button class="cr-btn" id="cr-next">${t('nextLevel')}</button>`
+        : `<button class="cr-btn" id="cr-next">${t('allDoneBtn')}</button>`}
+      <button class="cr-btn-sm" id="cr-re">${t('repeat')}</button>
     </div></div>`;
     root.querySelector('#cr-next').addEventListener('click', () => playLevel(next));
     root.querySelector('#cr-re').addEventListener('click', () => playLevel(G.idx));
@@ -317,9 +329,9 @@ const ChainReactionGame = (function () {
     G.state = 'fail';
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:2.8rem">💥</div>
-      <div class="cr-title" style="font-size:1.5rem">Falhou!</div>
-      <div class="cr-hint">A bola não chegou ao alvo. Reorganiza as tuas peças!</div>
-      <button class="cr-btn" id="cr-re">↺ Tentar de Novo</button>
+      <div class="cr-title" style="font-size:1.5rem">${t('failed')}</div>
+      <div class="cr-hint">${t('failHint')}</div>
+      <button class="cr-btn" id="cr-re">${t('tryAgain')}</button>
     </div></div>`;
     root.querySelector('#cr-re').addEventListener('click', () => playLevel(G.idx));
   }
@@ -327,8 +339,8 @@ const ChainReactionGame = (function () {
   function showAllDone() {
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:3rem">🏆</div>
-      <div class="cr-title">Fábrica Dominada!</div>
-      <button class="cr-btn" id="cr-ag">▶ Jogar de Novo</button>
+      <div class="cr-title">${t('mastered')}</div>
+      <button class="cr-btn" id="cr-ag">${t('playAgain')}</button>
     </div></div>`;
     root.querySelector('#cr-ag').addEventListener('click', () => { localStorage.removeItem('cr-lvl'); showMenu(); });
   }
@@ -436,6 +448,15 @@ const ChainReactionGame = (function () {
       cx.fillStyle = p.color; cx.beginPath(); cx.arc(p.x, p.y, p.size*Math.min(1,a), 0, Math.PI*2); cx.fill();
     });
     cx.globalAlpha = 1; noGlow();
+  }
+
+  if (_has) {
+    const apply = () => GameData.load('chain-reaction').then(d => {
+      if (t.use) t.use(d.i18n);
+      if (root) { try { cancelAnimationFrame(raf); } catch (e) {} showMenu(); }
+    });
+    apply();
+    document.addEventListener('langchange', apply);
   }
 
   return { init };
