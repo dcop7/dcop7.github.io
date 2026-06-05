@@ -36,6 +36,18 @@ const GravityLabGame = (function () {
   const GRAVS = { down:[0,1], up:[0,-1], left:[-1,0], right:[1,0] };
   const GRAV_LABELS = { down:'↓', up:'↑', left:'←', right:'→' };
 
+  /* UI strings + per-level hints live in games/gravity-lab/i18n.json
+     (offline fallback below; `hints` is an array indexed by level). */
+  const FB_I18N = {
+    pt: { play:'▶ Jogar', continue:'▶ Continuar', restart:'↺ Recomeçar do Nível 1', tip:'Setas ↑↓←→ para definir a gravidade<br>Ou toca / clica para alternar a direção<br>Leva a bola até ao portal de saída', level:'Nível', levelDone:'Nível Concluído!', flipsUsed:'Inversões usadas: {u} / {n}', nextLevel:'▶ Próximo Nível', allDoneBtn:'🏆 Tudo Concluído!', labDone:'Laboratório Concluído!', playAgain:'▶ Jogar de Novo', repeat:'↺ Repetir', menu:'☰ Menu', allCleared:'Todos os {n} níveis superados!',
+      hints:['Usa as setas ou toca para mudar a gravidade!','Usa o interruptor para recuperar inversões','Calcula bem o momento das inversões','Várias plataformas para atravessar','A gravidade também vai para os lados!','Percurso complexo — planeia as inversões!','Avançado — usa cada inversão com cuidado','Desafio mestre!'] },
+    en: { play:'▶ Play', continue:'▶ Continue', restart:'↺ Restart from Level 1', tip:'Arrows ↑↓←→ to set gravity<br>Or tap / click to flip the direction<br>Get the ball to the exit portal', level:'Level', levelDone:'Level Complete!', flipsUsed:'Flips used: {u} / {n}', nextLevel:'▶ Next Level', allDoneBtn:'🏆 All Done!', labDone:'Lab Complete!', playAgain:'▶ Play Again', repeat:'↺ Repeat', menu:'☰ Menu', allCleared:'All {n} levels cleared!',
+      hints:['Use the arrows or tap to change gravity!','Use the switch to regain flips','Time your flips carefully','Several platforms to cross','Gravity can go sideways too!','Complex route — plan your flips!','Advanced — use each flip with care','Master challenge!'] },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  const _hint = idx => { const h = t('hints'); return (h && h[idx]) || (LEVELS[idx] && LEVELS[idx].hint) || ''; };
+
   function injectCSS() {
     if (document.getElementById('gl-css')) return;
     const s = document.createElement('style'); s.id = 'gl-css';
@@ -78,9 +90,9 @@ const GravityLabGame = (function () {
       <div class="gl-level-num">🔬</div>
       <div class="gl-title">Gravity Lab</div>
       <div class="gl-progress">${LEVELS.map((_,i)=>`<div class="gl-prog-dot ${i<saved?'done':''}"></div>`).join('')}</div>
-      <button class="gl-btn" id="gl-play">▶ ${saved>0?'Continuar':'Jogar'}</button>
-      ${saved>0?`<button class="gl-btn-sm" id="gl-reset">↺ Recomeçar do Nível 1</button>`:''}
-      <div class="gl-tip">Setas ↑↓←→ para definir a gravidade<br>Ou toca / clica para alternar a direção<br>Leva a bola até ao portal de saída</div>
+      <button class="gl-btn" id="gl-play">${saved>0?t('continue'):t('play')}</button>
+      ${saved>0?`<button class="gl-btn-sm" id="gl-reset">${t('restart')}</button>`:''}
+      <div class="gl-tip">${t('tip')}</div>
     </div></div>`;
     root.querySelector('#gl-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#gl-reset')?.addEventListener('click', () => { localStorage.removeItem('gl-lvl'); showMenu(); });
@@ -93,7 +105,7 @@ const GravityLabGame = (function () {
     root.innerHTML = `<div class="gl-host">
       <canvas class="gl-cv" id="gl-cv"></canvas>
       <div class="gl-hud">
-        <div class="gl-hud-title">${lvl.title}</div>
+        <div class="gl-hud-title">${t('level')} ${idx+1}</div>
         <div class="gl-hud-grav" id="gl-grav">${GRAV_LABELS[lvl.gravStart]}</div>
         <div class="gl-hud-flips" id="gl-flips"></div>
         <button class="gl-hud-btn" id="gl-hud-new">↺ Novo</button>
@@ -326,14 +338,14 @@ const GravityLabGame = (function () {
     if (next > +localStorage.getItem('gl-lvl')||0) localStorage.setItem('gl-lvl', next);
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div class="gl-lv-done">✅</div>
-      <div class="gl-complete-title">Nível Concluído!</div>
-      <div style="font-size:.85rem;color:#334155">Inversões usadas: ${G.flipsUsed} / ${G.lvl.flips}</div>
+      <div class="gl-complete-title">${t('levelDone')}</div>
+      <div style="font-size:.85rem;color:#334155">${t('flipsUsed').replace('{u}', G.flipsUsed).replace('{n}', G.lvl.flips)}</div>
       <div class="gl-progress">${LEVELS.map((_,i)=>`<div class="gl-prog-dot ${i<next?'done':i===next?'curr':''}"></div>`).join('')}</div>
       ${next < LEVELS.length
-        ? `<button class="gl-btn" id="gl-next">▶ Próximo Nível</button>`
-        : `<button class="gl-btn" id="gl-next">🏆 Tudo Concluído!</button>`}
-      <button class="gl-btn-sm" id="gl-retry">↺ Repetir</button>
-      <button class="gl-btn-sm" id="gl-menu2">☰ Menu</button>
+        ? `<button class="gl-btn" id="gl-next">${t('nextLevel')}</button>`
+        : `<button class="gl-btn" id="gl-next">${t('allDoneBtn')}</button>`}
+      <button class="gl-btn-sm" id="gl-retry">${t('repeat')}</button>
+      <button class="gl-btn-sm" id="gl-menu2">${t('menu')}</button>
     </div></div>`;
     root.querySelector('#gl-next').addEventListener('click', () => playLevel(next));
     root.querySelector('#gl-retry').addEventListener('click', () => playLevel(G.idx));
@@ -344,9 +356,9 @@ const GravityLabGame = (function () {
     _removeKeyHandler();
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div style="font-size:3rem">🏆</div>
-      <div class="gl-title">Laboratório Concluído!</div>
-      <div style="font-size:.85rem;color:#334155">Todos os ${LEVELS.length} níveis superados!</div>
-      <button class="gl-btn" id="gl-restart">▶ Jogar de Novo</button>
+      <div class="gl-title">${t('labDone')}</div>
+      <div style="font-size:.85rem;color:#334155">${t('allCleared').replace('{n}', LEVELS.length)}</div>
+      <button class="gl-btn" id="gl-restart">${t('playAgain')}</button>
     </div></div>`;
     root.querySelector('#gl-restart').addEventListener('click', () => { localStorage.removeItem('gl-lvl'); showMenu(); });
   }
@@ -462,9 +474,18 @@ const GravityLabGame = (function () {
       cx.globalAlpha = Math.min(1, Math.min(t, 3-t)*2);
       cx.fillStyle = '#334155'; cx.font = '13px sans-serif';
       cx.textAlign = 'center'; cx.textBaseline = 'bottom';
-      cx.fillText(G.lvl.hint, W/2, H - 10);
+      cx.fillText(_hint(G.idx), W/2, H - 10);
       cx.globalAlpha = 1;
     }
+  }
+
+  if (_has) {
+    const apply = () => GameData.load('gravity-lab').then(d => {
+      if (t.use) t.use(d.i18n);
+      if (root) { try { cancelAnimationFrame(raf); } catch (e) {} _removeKeyHandler(); showMenu(); }
+    });
+    apply();
+    document.addEventListener('langchange', apply);
   }
 
   return { init };

@@ -1,0 +1,18 @@
+{
+  "pt": {
+    "play": "▶ Jogar", "continue": "▶ Continuar", "restart": "↺ Recomeçar do Nível 1",
+    "tip": "Setas ↑↓←→ para definir a gravidade<br>Ou toca / clica para alternar a direção<br>Leva a bola até ao portal de saída",
+    "level": "Nível", "levelDone": "Nível Concluído!", "flipsUsed": "Inversões usadas: {u} / {n}",
+    "nextLevel": "▶ Próximo Nível", "allDoneBtn": "🏆 Tudo Concluído!", "labDone": "Laboratório Concluído!",
+    "playAgain": "▶ Jogar de Novo", "repeat": "↺ Repetir", "menu": "☰ Menu", "allCleared": "Todos os {n} níveis superados!",
+    "hints": ["Usa as setas ou toca para mudar a gravidade!", "Usa o interruptor para recuperar inversões", "Calcula bem o momento das inversões", "Várias plataformas para atravessar", "A gravidade também vai para os lados!", "Percurso complexo — planeia as inversões!", "Avançado — usa cada inversão com cuidado", "Desafio mestre!"]
+  },
+  "en": {
+    "play": "▶ Play", "continue": "▶ Continue", "restart": "↺ Restart from Level 1",
+    "tip": "Arrows ↑↓←→ to set gravity<br>Or tap / click to flip the direction<br>Get the ball to the exit portal",
+    "level": "Level", "levelDone": "Level Complete!", "flipsUsed": "Flips used: {u} / {n}",
+    "nextLevel": "▶ Next Level", "allDoneBtn": "🏆 All Done!", "labDone": "Lab Complete!",
+    "playAgain": "▶ Play Again", "repeat": "↺ Repeat", "menu": "☰ Menu", "allCleared": "All {n} levels cleared!",
+    "hints": ["Use the arrows or tap to change gravity!", "Use the switch to regain flips", "Time your flips carefully", "Several platforms to cross", "Gravity can go sideways too!", "Complex route — plan your flips!", "Advanced — use each flip with care", "Master challenge!"]
+  }
+}
