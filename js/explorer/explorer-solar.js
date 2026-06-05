@@ -16,7 +16,7 @@ const SolarExplorer = (function () {
   /* ── Planet data ── */
   const PLANETS = [
     {
-      id: 'mercury', name: 'Mercúrio', color: '#b5b5b5', textureFile: 'mercury_1024.jpg',
+      id: 'mercury', name: 'Mercúrio', color: '#b5b5b5', textureFile: 'mercury_1024.jpg', rocky: true,
       displayR: 2.2, orbitR: 30, period: 88,
       info: { dist: '0.39 UA', radius: '2 439 km', mass: '3.30 × 10²³ kg', period: '88 dias', day: '176 dias T.', temp: '−170 / +430°C', moons: '0', gravity: '3.7 m/s²', atmos: 'Ínfima (Na, O₂, H₂)' },
       moonList: [],
@@ -57,7 +57,7 @@ const SolarExplorer = (function () {
       compare: { size: 1, gravity: 1, distance: 1, period: 1 },
     },
     {
-      id: 'mars', name: 'Marte', color: '#c1440e', textureFile: 'mars_1024.jpg',
+      id: 'mars', name: 'Marte', color: '#c1440e', textureFile: 'mars_1024.jpg', rocky: true,
       displayR: 2.8, orbitR: 80, period: 687,
       info: { dist: '1.52 UA', radius: '3 389 km', mass: '6.39 × 10²³ kg', period: '687 dias', day: '24 h 37 min', temp: '−125 / +20°C', moons: '2', gravity: '3.7 m/s²', atmos: 'Fina (CO₂ 95%)' },
       moonList: [
@@ -516,7 +516,15 @@ const SolarExplorer = (function () {
       const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(p.color), emissive: baseEmissive, shininess: 15 });
       loader.load(
         TEX_BASE + p.textureFile,
-        tex => { if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = _maxAniso; mat.map = tex; mat.needsUpdate = true; },
+        tex => {
+          if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+          tex.anisotropy = _maxAniso; mat.map = tex;
+          /* Surface relief for the cratered rocky worlds — reuse the colour map
+             as a bump map so craters/ridges catch the sunlight near the
+             terminator (gas giants stay smooth). */
+          if (p.rocky) { mat.bumpMap = tex; mat.bumpScale = 0.06; }
+          mat.needsUpdate = true;
+        },
         undefined,
         () => {}
       );

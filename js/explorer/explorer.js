@@ -1199,6 +1199,7 @@ const ExplorerPage = (function () {
       .width(container.clientWidth)
       .height(container.clientHeight)
       .backgroundColor('rgba(0,0,0,0)')
+      .backgroundImageUrl('assets/space/milkyway.jpg')   /* real ESO Milky Way sky (CC-BY) */
       .showAtmosphere(true)
       .atmosphereColor('#6f9fd8')
       .atmosphereAltitude(0.1)
