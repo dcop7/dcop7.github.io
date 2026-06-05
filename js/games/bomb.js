@@ -14,24 +14,43 @@ const BombGame = (function () {
                stages:['wires','code','math','pattern','sequence','wires','math'] },
   };
 
-  const STAGE_LABELS = { wires:'Fios', code:'Código', sequence:'Sequência', math:'Cálculo', pattern:'Padrão' };
+  /* UI strings live in games/bomb/i18n.json (offline fallback below). */
+  const FB_I18N = {
+    pt: { title:'💣 Desarmar a Bomba', chooseDiff:'Escolhe o nível de dificuldade', easy:'Fácil', medium:'Médio', hard:'Difícil', extreme:'Extremo', challenges:'desafios', timeLeft:'TEMPO RESTANTE', stage_wires:'Fios', stage_code:'Código', stage_sequence:'Sequência', stage_math:'Cálculo', stage_pattern:'Padrão', wire_red:'Vermelho', wire_blue:'Azul', wire_green:'Verde', wire_yellow:'Amarelo', wire_purple:'Roxo', wire_orange:'Laranja', cutWireMulti:'Corta o fio {w}. Não te enganes — há {n} fios.', cutWire:'Corta o fio {w}.', challenge:'Desafio', st_wires:'Cortar o Fio', st_code:'Código Secreto', st_sequence:'Sequência', st_math:'Cálculo Rápido', st_pattern:'Padrão de Cores', enterCode:'Introduz o código:', memoCode:'Memoriza. Desaparece em {s}s.', memoSeq:'Memoriza a ordem. Esconde em {s}s.', seqHidden:'Sequência oculta — confia na memória!', solveMentally:'Resolve mentalmente:', memoPattern:'Memoriza o padrão. Esconde em {s}s.', defused:'Bomba desarmada!', timeSpared:'Sobraram {s}s — missão cumprida!', level:'Nível', playAgain:'▶ Jogar de Novo', kaboom:'KABOOM!', exploded:'A bomba explodiu. Tenta outra vez.', tryAgain:'↺ Tentar de Novo' },
+    en: { title:'💣 Defuse the Bomb', chooseDiff:'Choose the difficulty', easy:'Easy', medium:'Medium', hard:'Hard', extreme:'Extreme', challenges:'challenges', timeLeft:'TIME LEFT', stage_wires:'Wires', stage_code:'Code', stage_sequence:'Sequence', stage_math:'Maths', stage_pattern:'Pattern', wire_red:'Red', wire_blue:'Blue', wire_green:'Green', wire_yellow:'Yellow', wire_purple:'Purple', wire_orange:'Orange', cutWireMulti:'Cut the {w} wire. Be careful — there are {n} wires.', cutWire:'Cut the {w} wire.', challenge:'Challenge', st_wires:'Cut the Wire', st_code:'Secret Code', st_sequence:'Sequence', st_math:'Quick Maths', st_pattern:'Colour Pattern', enterCode:'Enter the code:', memoCode:'Memorise. Disappears in {s}s.', memoSeq:'Memorise the order. Hides in {s}s.', seqHidden:'Sequence hidden — trust your memory!', solveMentally:'Solve in your head:', memoPattern:'Memorise the pattern. Hides in {s}s.', defused:'Bomb defused!', timeSpared:'{s}s to spare — mission complete!', level:'Level', playAgain:'▶ Play Again', kaboom:'KABOOM!', exploded:'The bomb exploded. Try again.', tryAgain:'↺ Try Again' },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  let diffKeyCur = 'easy';
 
-  function init(cont) { container = cont; renderMenu(); }
+  function init(cont) {
+    container = cont;
+    renderMenu();
+    if (_has) {
+      const apply = () => GameData.load('bomb').then(d => {
+        if (t.use) t.use(d.i18n);
+        /* Only re-render the menu when idle, so a defuse in progress isn't reset. */
+        if (container && (gameState === undefined || gameState === 'won' || gameState === 'lost')) renderMenu();
+      });
+      apply();
+      if (!init._wired) { init._wired = true; document.addEventListener('langchange', apply); }
+    }
+  }
 
   function renderMenu() {
     container.innerHTML = `
       <div class="hf-card bomb-card">
-        <div class="hf-top"><span class="hf-title">💣 Desarmar a Bomba</span></div>
+        <div class="hf-top"><span class="hf-title">${t('title')}</span></div>
         <div class="bomb-stage" id="bomb-stage">
           <div class="bomb-idle">
             <div style="font-size:2.8rem;margin-bottom:.7rem">💣</div>
-            <div style="font-size:.95rem;color:var(--muted);margin-bottom:1.4rem">Escolhe o nível de dificuldade</div>
+            <div style="font-size:.95rem;color:var(--muted);margin-bottom:1.4rem">${t('chooseDiff')}</div>
             <div class="bomb-diff-grid">
               ${Object.entries(DIFFS).map(([k,d]) => `
                 <button class="bomb-diff-btn" data-diff="${k}">
                   <span class="bdb-emoji">${d.emoji}</span>
-                  <span class="bdb-label">${d.label}</span>
-                  <span class="bdb-info">${d.stages.length} desafios · ${d.time}s</span>
+                  <span class="bdb-label">${t(k)}</span>
+                  <span class="bdb-info">${d.stages.length} ${t('challenges')} · ${d.time}s</span>
                 </button>`).join('')}
             </div>
           </div>
@@ -39,7 +58,7 @@ const BombGame = (function () {
         <div class="bomb-hud" id="bomb-hud" style="display:none">
           <div class="bomb-timer-wrap">
             <div class="bomb-timer" id="bomb-timer">—</div>
-            <div class="bomb-timer-lbl">TEMPO RESTANTE</div>
+            <div class="bomb-timer-lbl">${t('timeLeft')}</div>
           </div>
         </div>
         <div class="bomb-progress" id="bomb-progress"></div>
@@ -49,6 +68,7 @@ const BombGame = (function () {
   }
 
   function startGame(diffKey) {
+    diffKeyCur = DIFFS[diffKey] ? diffKey : 'medium';
     diff = DIFFS[diffKey] || DIFFS.medium;
     stages = diff.stages;
     stageIdx = 0;
@@ -89,26 +109,27 @@ const BombGame = (function () {
     const el = container.querySelector('#bomb-progress');
     if (!el) return;
     el.innerHTML = stages.map((s, i) =>
-      `<span class="bp-dot ${i < n ? 'done' : i === n ? 'active' : ''}">${i < n ? '✓' : i+1} ${STAGE_LABELS[s]}</span>`
+      `<span class="bp-dot ${i < n ? 'done' : i === n ? 'active' : ''}">${i < n ? '✓' : i+1} ${t('stage_' + s)}</span>`
     ).join('');
   }
 
   // ── Stage: Wire cut ────────────────────────────────────────────────
   const WIRE_COLORS = ['#ef4444','#3b82f6','#22c55e','#facc15','#a855f7','#f97316'];
-  const WIRE_NAMES  = ['Vermelho','Azul','Verde','Amarelo','Roxo','Laranja'];
+  const WIRE_KEYS   = ['wire_red','wire_blue','wire_green','wire_yellow','wire_purple','wire_orange'];
 
   function renderWires() {
     const stEl = container.querySelector('#bomb-stage');
     const count = diff.wires;
     const pool = [...Array(WIRE_COLORS.length).keys()].sort(() => Math.random() - .5).slice(0, count);
     const correct = pool[Math.floor(Math.random() * pool.length)];
+    const wireName = t(WIRE_KEYS[correct]).toUpperCase();
     const clue = diff === DIFFS.extreme
-      ? `Corta o fio ${WIRE_NAMES[correct].toUpperCase()}. Não te enganares — há ${count} fios.`
-      : `Corta o fio ${WIRE_NAMES[correct].toUpperCase()}.`;
+      ? t('cutWireMulti').replace('{w}', wireName).replace('{n}', count)
+      : t('cutWire').replace('{w}', wireName);
 
     stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio ${stageIdx+1} — Cortar o Fio</div>
+        <div class="bc-title">${t('challenge')} ${stageIdx+1} — ${t('st_wires')}</div>
         <div class="bc-clue">${clue}</div>
         <div class="bc-wires">
           ${pool.map(i => `
@@ -132,11 +153,11 @@ const BombGame = (function () {
 
     stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio ${stageIdx+1} — Código Secreto</div>
-        <div class="bc-clue">Memoriza. Desaparece em <span id="bc-cd">${showFor}</span>s.</div>
+        <div class="bc-title">${t('challenge')} ${stageIdx+1} — ${t('st_code')}</div>
+        <div class="bc-clue">${t('memoCode').replace('{s}', `<span id="bc-cd">${showFor}</span>`)}</div>
         <div class="bc-code-display" id="bc-code">${code}</div>
         <div id="bc-phase2" style="display:none">
-          <div class="bc-clue" style="margin-bottom:.5rem">Introduz o código:</div>
+          <div class="bc-clue" style="margin-bottom:.5rem">${t('enterCode')}</div>
           <input class="bc-code-input" id="bc-inp" maxlength="${len}" inputmode="numeric" placeholder="${'•'.repeat(len)}">
           <button class="hf-new-btn" id="bc-ok" style="margin-top:.6rem">Confirmar</button>
         </div>
@@ -176,8 +197,8 @@ const BombGame = (function () {
 
     stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio ${stageIdx+1} — Sequência</div>
-        <div class="bc-clue">Memoriza a ordem. Esconde em <span id="bc-scd">${showFor}</span>s.</div>
+        <div class="bc-title">${t('challenge')} ${stageIdx+1} — ${t('st_sequence')}</div>
+        <div class="bc-clue">${t('memoSeq').replace('{s}', `<span id="bc-scd">${showFor}</span>`)}</div>
         <div class="bc-seq-reveal" id="bc-seq-reveal">${order.join(' → ')}</div>
         <div class="bc-seq-btns" id="bc-seq-btns">
           ${pool.map(l => `<button class="bc-seq-btn" data-l="${l}">${l}</button>`).join('')}
@@ -195,7 +216,7 @@ const BombGame = (function () {
       if (cd <= 0) {
         clearInterval(cdInt);
         if (revEl) { revEl.style.filter = 'blur(8px)'; revEl.style.userSelect = 'none'; }
-        if (cluEl) cluEl.textContent = 'Sequência oculta — confia na memória!';
+        if (cluEl) cluEl.textContent = t('seqHidden');
       }
     }, 1000);
 
@@ -230,8 +251,8 @@ const BombGame = (function () {
 
     stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio ${stageIdx+1} — Cálculo Rápido</div>
-        <div class="bc-clue">Resolve mentalmente:</div>
+        <div class="bc-title">${t('challenge')} ${stageIdx+1} — ${t('st_math')}</div>
+        <div class="bc-clue">${t('solveMentally')}</div>
         <div class="bc-code-display">${question}</div>
         <input class="bc-code-input" id="bc-math" type="number" placeholder="Resposta" style="margin-top:.8rem">
         <button class="hf-new-btn" id="bc-math-ok" style="margin-top:.6rem">Confirmar</button>
@@ -255,8 +276,8 @@ const BombGame = (function () {
 
     stEl.innerHTML = `
       <div class="bomb-challenge">
-        <div class="bc-title">Desafio ${stageIdx+1} — Padrão de Cores</div>
-        <div class="bc-clue">Memoriza o padrão. Esconde em <span id="bc-pcd">${showFor}</span>s.</div>
+        <div class="bc-title">${t('challenge')} ${stageIdx+1} — ${t('st_pattern')}</div>
+        <div class="bc-clue">${t('memoPattern').replace('{s}', `<span id="bc-pcd">${showFor}</span>`)}</div>
         <div class="bc-pattern-disp" id="bc-pat-disp">${pattern.map(c=>`<span class="bc-pat-c">${c}</span>`).join('')}</div>
         <div id="bc-pat-phase2" style="display:none">
           <div class="bc-clue" style="margin-bottom:.4rem">Recria os ${len} círculos em ordem:</div>
@@ -314,10 +335,10 @@ const BombGame = (function () {
     if (stEl) stEl.innerHTML = `
       <div class="bomb-win">
         <div style="font-size:3rem">🎉</div>
-        <div style="font-size:1.3rem;font-weight:700;color:#4ade80;margin:.4rem 0">Bomba desarmada!</div>
-        <div style="color:var(--muted);margin-bottom:.4rem">Sobraram ${timeLeft}s — missão cumprida!</div>
-        <div style="font-size:.8rem;color:var(--accent);margin-bottom:1rem">Nível: ${diff.label} ${diff.emoji}</div>
-        <button class="hf-new-btn" id="bomb-again">▶ Jogar de Novo</button>
+        <div style="font-size:1.3rem;font-weight:700;color:#4ade80;margin:.4rem 0">${t('defused')}</div>
+        <div style="color:var(--muted);margin-bottom:.4rem">${t('timeSpared').replace('{s}', timeLeft)}</div>
+        <div style="font-size:.8rem;color:var(--accent);margin-bottom:1rem">${t('level')}: ${t(diffKeyCur)} ${diff.emoji}</div>
+        <button class="hf-new-btn" id="bomb-again">${t('playAgain')}</button>
       </div>`;
     updateProgress(stages.length);
     container.querySelector('#bomb-again').addEventListener('click', renderMenu);
@@ -330,9 +351,9 @@ const BombGame = (function () {
     if (stEl) stEl.innerHTML = `
       <div class="bomb-dead">
         <div style="font-size:3rem">💥</div>
-        <div style="font-size:1.3rem;font-weight:700;color:#f87171;margin:.4rem 0">KABOOM!</div>
-        <div style="color:var(--muted);margin-bottom:1rem">A bomba explodiu. Tenta outra vez.</div>
-        <button class="hf-new-btn" id="bomb-again">↺ Tentar de Novo</button>
+        <div style="font-size:1.3rem;font-weight:700;color:#f87171;margin:.4rem 0">${t('kaboom')}</div>
+        <div style="color:var(--muted);margin-bottom:1rem">${t('exploded')}</div>
+        <button class="hf-new-btn" id="bomb-again">${t('tryAgain')}</button>
       </div>`;
     container.querySelector('#bomb-again').addEventListener('click', renderMenu);
   }
