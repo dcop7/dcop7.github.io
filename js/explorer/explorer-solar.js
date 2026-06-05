@@ -440,10 +440,17 @@ const SolarExplorer = (function () {
     /* Scene */
     _scene = new THREE.Scene();
 
-    /* Space background — solid deep-space colour. The starry look comes from
-       the procedural starfield below (generated locally), so we use no external
-       background image (avoids any unverifiable third-party texture licence). */
+    /* Space background — the real Milky Way star sky (ESO/S.Brunier panorama,
+       CC-BY 4.0, bundled locally). This is exactly the right viewpoint: from
+       inside the Solar System we look out at our own galaxy. Solid colour shows
+       until the texture loads, and stays as the fallback if it fails. */
     _scene.background = new THREE.Color(0x05060f);
+    new THREE.TextureLoader().load('assets/space/milkyway.jpg', tex => {
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = _maxAniso || 1;
+      _scene.background = tex;
+    }, undefined, () => {});
 
     /* Starfield */
     const starCount = Math.round(5000 * _q);
