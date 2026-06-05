@@ -1,0 +1,18 @@
+{
+  "pt": {
+    "title": "⚡ Teste de Reação", "clickToStart": "Clica para começar",
+    "instr": "Aguarda o sinal verde e clica o mais rápido possível!",
+    "waiting": "Aguarda…", "click": "CLICA!",
+    "tooEarly": "😬 Cedo demais!", "waitGreen": "Aguarda o verde antes de clicar!",
+    "attempts": "Tentativas", "best": "Melhor", "avg": "Média", "reset": "↺ Reiniciar",
+    "r1": "🚀 Incrível!", "r2": "⚡ Excelente!", "r3": "✅ Bom!", "r4": "👍 Ok", "r5": "🐢 Lento"
+  },
+  "en": {
+    "title": "⚡ Reaction Test", "clickToStart": "Click to start",
+    "instr": "Wait for the green signal and click as fast as you can!",
+    "waiting": "Wait…", "click": "CLICK!",
+    "tooEarly": "😬 Too early!", "waitGreen": "Wait for green before clicking!",
+    "attempts": "Attempts", "best": "Best", "avg": "Average", "reset": "↺ Reset",
+    "r1": "🚀 Incredible!", "r2": "⚡ Excellent!", "r3": "✅ Good!", "r4": "👍 Ok", "r5": "🐢 Slow"
+  }
+}

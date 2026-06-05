@@ -1,0 +1,4 @@
+{
+  "pt": { "pairs": "Pares", "moves": "Movimentos", "time": "Tempo", "pairsBtn": "{n} pares", "win": "🎉 Parabéns! {moves} movimentos em {time}s", "newGame": "🔄 Novo Jogo" },
+  "en": { "pairs": "Pairs", "moves": "Moves", "time": "Time", "pairsBtn": "{n} pairs", "win": "🎉 Well done! {moves} moves in {time}s", "newGame": "🔄 New Game" }
+}

@@ -3,6 +3,17 @@ const TicTacToeGame = (function () {
 
   const WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
+  /* UI strings + AI difficulty live in games/tictactoe/{i18n,config}.json,
+     loaded at runtime; these are the offline fallback. */
+  const FB_I18N = {
+    pt: { youX:'Tu (X)', aiO:'IA (O)', draws:'Empates', yourTurn:'A tua vez (X)', newGame:'🔄 Novo Jogo', youWon:'🎉 Ganhaste!', aiWon:'🤖 A IA ganhou!', drawMsg:'🤝 Empate!', aiThinking:'IA a pensar…' },
+    en: { youX:'You (X)', aiO:'AI (O)', draws:'Draws', yourTurn:'Your turn (X)', newGame:'🔄 New Game', youWon:'🎉 You won!', aiWon:'🤖 The AI won!', drawMsg:'🤝 Draw!', aiThinking:'AI thinking…' },
+  };
+  const FB_RAND = { easy: 0.8, medium: 0.35, hard: 0 };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  let _rand = FB_RAND;
+
   function checkWin(b, p) { return WINS.some(([a,b_,c]) => b[a]===p && b[b_]===p && b[c]===p); }
 
   function minimax(board, isMax, depth) {
@@ -21,9 +32,15 @@ const TicTacToeGame = (function () {
   }
 
   function aiMove(board) {
-    let best = -Infinity, move = -1;
-    board.forEach((v, i) => {
-      if (v) return;
+    const empty = board.map((v, i) => v ? -1 : i).filter(i => i >= 0);
+    if (!empty.length) return -1;
+    /* Difficulty: sometimes play a random move instead of the optimal one. */
+    const diff = _has ? GameData.difficulty() : 'medium';
+    if (Math.random() < (_rand[diff] != null ? _rand[diff] : 0)) {
+      return empty[Math.floor(Math.random() * empty.length)];
+    }
+    let best = -Infinity, move = empty[0];
+    empty.forEach(i => {
       board[i] = 'O';
       const score = minimax(board, false, 0);
       board[i] = null;
@@ -41,15 +58,15 @@ const TicTacToeGame = (function () {
       root.innerHTML = `
         <div class="game-card" style="max-width:380px;margin:0 auto">
           <div class="ttt-hdr">
-            <div class="ttt-score">Tu (X): <strong id="ttt-sx">${score.X}</strong></div>
-            <div class="ttt-score">IA (O): <strong id="ttt-so">${score.O}</strong></div>
-            <div class="ttt-score">Empates: <strong id="ttt-sd">${score.D}</strong></div>
+            <div class="ttt-score">${t('youX')}: <strong id="ttt-sx">${score.X}</strong></div>
+            <div class="ttt-score">${t('aiO')}: <strong id="ttt-so">${score.O}</strong></div>
+            <div class="ttt-score">${t('draws')}: <strong id="ttt-sd">${score.D}</strong></div>
           </div>
-          <div class="ttt-status" id="ttt-status">A tua vez (X)</div>
+          <div class="ttt-status" id="ttt-status">${t('yourTurn')}</div>
           <div class="ttt-grid" id="ttt-grid">
             ${Array(9).fill(0).map((_,i)=>`<button class="ttt-cell" data-i="${i}"></button>`).join('')}
           </div>
-          <button class="hf-new-btn" id="ttt-new">🔄 Novo Jogo</button>
+          <button class="hf-new-btn" id="ttt-new">${t('newGame')}</button>
         </div>`;
 
       root.querySelector('#ttt-new').addEventListener('click', startGame);
@@ -64,7 +81,7 @@ const TicTacToeGame = (function () {
       board = Array(9).fill(null);
       turn = 'X'; gameOver = false;
       updateBoard();
-      root.querySelector('#ttt-status').textContent = 'A tua vez (X)';
+      root.querySelector('#ttt-status').textContent = t('yourTurn');
     }
 
     function updateBoard() {
@@ -81,23 +98,23 @@ const TicTacToeGame = (function () {
       if (checkWin(board, turn)) {
         score[turn]++;
         updateScore();
-        root.querySelector('#ttt-status').textContent = turn === 'X' ? '🎉 Ganhaste!' : '🤖 A IA ganhou!';
+        root.querySelector('#ttt-status').textContent = turn === 'X' ? t('youWon') : t('aiWon');
         gameOver = true;
         return;
       }
       if (board.every(Boolean)) {
         score.D++;
         updateScore();
-        root.querySelector('#ttt-status').textContent = '🤝 Empate!';
+        root.querySelector('#ttt-status').textContent = t('drawMsg');
         gameOver = true;
         return;
       }
       turn = turn === 'X' ? 'O' : 'X';
       if (turn === 'O') {
-        root.querySelector('#ttt-status').textContent = 'IA a pensar…';
+        root.querySelector('#ttt-status').textContent = t('aiThinking');
         setTimeout(() => { play(aiMove(board)); }, 350);
       } else {
-        root.querySelector('#ttt-status').textContent = 'A tua vez (X)';
+        root.querySelector('#ttt-status').textContent = t('yourTurn');
       }
     }
 
@@ -109,6 +126,19 @@ const TicTacToeGame = (function () {
 
     render();
     startGame();
+
+    /* Load external strings + difficulty config, then re-render. */
+    if (_has) {
+      const apply = () => {
+        GameData.load('tictactoe').then(d => {
+          if (t.use) t.use(d.i18n);
+          if (d.config && d.config.randomChance) _rand = d.config.randomChance;
+          render(); startGame();
+        });
+      };
+      apply();
+      document.addEventListener('langchange', apply);
+    }
   }
 
   return { init };

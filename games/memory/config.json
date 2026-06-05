@@ -1,0 +1,5 @@
+{
+  "_comment": "Default number of pairs per difficulty. The player can still pick any size with the buttons.",
+  "defaultPairs": { "easy": 6, "medium": 12, "hard": 24 },
+  "pairOptions": [6, 8, 12, 16, 24, 32]
+}

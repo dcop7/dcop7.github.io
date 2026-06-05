@@ -1,0 +1,14 @@
+{
+  "pt": {
+    "youX": "Tu (X)", "aiO": "IA (O)", "draws": "Empates",
+    "yourTurn": "A tua vez (X)", "newGame": "🔄 Novo Jogo",
+    "youWon": "🎉 Ganhaste!", "aiWon": "🤖 A IA ganhou!", "drawMsg": "🤝 Empate!",
+    "aiThinking": "IA a pensar…"
+  },
+  "en": {
+    "youX": "You (X)", "aiO": "AI (O)", "draws": "Draws",
+    "yourTurn": "Your turn (X)", "newGame": "🔄 New Game",
+    "youWon": "🎉 You won!", "aiWon": "🤖 The AI won!", "drawMsg": "🤝 Draw!",
+    "aiThinking": "AI thinking…"
+  }
+}

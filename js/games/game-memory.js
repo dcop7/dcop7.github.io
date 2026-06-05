@@ -8,6 +8,17 @@ const MemoryGame = (function () {
     '🐯','🦁','🐮','🐷','🐸','🐵','🦋','🌈'
   ];
 
+  /* UI strings + difficulty config live in games/memory/{i18n,config}.json,
+     loaded at runtime; these are the offline fallback. */
+  const FB_I18N = {
+    pt: { pairs:'Pares', moves:'Movimentos', time:'Tempo', pairsBtn:'{n} pares', win:'🎉 Parabéns! {moves} movimentos em {time}s', newGame:'🔄 Novo Jogo' },
+    en: { pairs:'Pairs', moves:'Moves', time:'Time', pairsBtn:'{n} pairs', win:'🎉 Well done! {moves} moves in {time}s', newGame:'🔄 New Game' },
+  };
+  const FB_DEF = { easy: 6, medium: 12, hard: 24 };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  let _defaultPairs = FB_DEF, _pairOptions = [6, 8, 12, 16, 24, 32];
+
   function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -49,16 +60,11 @@ const MemoryGame = (function () {
       root.innerHTML = `
         <div class="game-card">
           <div class="mem-hdr">
-            <div class="mem-stat"><span class="mem-lbl">Pares</span><span class="mem-val">${pairs}</span></div>
-            <div class="mem-stat"><span class="mem-lbl">Movimentos</span><span class="mem-val" id="mem-moves">0</span></div>
-            <div class="mem-stat"><span class="mem-lbl">Tempo</span><span class="mem-val" id="mem-timer">0s</span></div>
+            <div class="mem-stat"><span class="mem-lbl">${t('pairs')}</span><span class="mem-val">${pairs}</span></div>
+            <div class="mem-stat"><span class="mem-lbl">${t('moves')}</span><span class="mem-val" id="mem-moves">0</span></div>
+            <div class="mem-stat"><span class="mem-lbl">${t('time')}</span><span class="mem-val" id="mem-timer">0s</span></div>
             <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-              <button class="hf-new-btn mem-nb" data-p="6">6 pares</button>
-              <button class="hf-new-btn mem-nb" data-p="8">8 pares</button>
-              <button class="hf-new-btn mem-nb" data-p="12">12 pares</button>
-              <button class="hf-new-btn mem-nb" data-p="16">16 pares</button>
-              <button class="hf-new-btn mem-nb" data-p="24">24 pares</button>
-              <button class="hf-new-btn mem-nb" data-p="32">32 pares</button>
+              ${_pairOptions.map(p => `<button class="hf-new-btn mem-nb" data-p="${p}">${t('pairsBtn').replace('{n}', p)}</button>`).join('')}
             </div>
           </div>
           <div class="mem-grid" id="mem-grid" style="grid-template-columns:repeat(${cols},minmax(0,${cardW}px));justify-content:center">
@@ -95,7 +101,7 @@ const MemoryGame = (function () {
             if (matched.length === cards.length) {
               stopTimer();
               const msgEl = root.querySelector('#mem-msg');
-              msgEl.innerHTML = `🎉 Parabéns! ${moves} movimentos em ${timer}s<br><button class="hf-new-btn" style="margin-top:.6rem">🔄 Novo Jogo</button>`;
+              msgEl.innerHTML = `${t('win').replace('{moves}', moves).replace('{time}', timer)}<br><button class="hf-new-btn" style="margin-top:.6rem">${t('newGame')}</button>`;
               msgEl.querySelector('button').addEventListener('click', () => render(pairs));
             }
           } else {
@@ -108,7 +114,18 @@ const MemoryGame = (function () {
       });
     }
 
-    render(8);
+    const _start = () => render(_defaultPairs[_has ? GameData.difficulty() : 'medium'] || 8);
+    _start();
+
+    if (_has) {
+      const apply = () => GameData.load('memory').then(d => {
+        if (t.use) t.use(d.i18n);
+        if (d.config) { if (d.config.defaultPairs) _defaultPairs = d.config.defaultPairs; if (d.config.pairOptions) _pairOptions = d.config.pairOptions; }
+        _start();
+      });
+      apply();
+      document.addEventListener('langchange', apply);
+    }
   }
 
   return { init };

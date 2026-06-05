@@ -1,0 +1,9 @@
+{
+  "_comment": "Random delay (ms) before the green signal, per difficulty. Harder = wider, less predictable window.",
+  "delay": {
+    "easy":   { "min": 1500, "max": 3500 },
+    "medium": { "min": 1200, "max": 4000 },
+    "hard":   { "min": 800,  "max": 5000 }
+  },
+  "ratings": [150, 200, 250, 350]
+}

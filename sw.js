@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v73';
+const CACHE = 'dcop7-v74';
 const STATIC = [
   '/',
   '/index.html',
@@ -49,6 +49,13 @@ const STATIC = [
   '/games/wordle/config.json',
   '/games/wordle/pt/words.json',
   '/games/wordle/en/words.json',
+  '/src/games/engine/gamedata.js',
+  '/games/tictactoe/i18n.json',
+  '/games/tictactoe/config.json',
+  '/games/reaction/i18n.json',
+  '/games/reaction/config.json',
+  '/games/memory/i18n.json',
+  '/games/memory/config.json',
   '/js/games/minesweeper.js',
   '/js/games/bomb.js',
   '/js/games/game-memory.js',
