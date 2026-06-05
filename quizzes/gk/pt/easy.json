@@ -218,5 +218,225 @@
       "Marte"
     ],
     "exp": "O Sol ilumina o dia."
+  },
+  {
+    "q": "Quantas horas tem um dia?",
+    "a": "24",
+    "opts": [
+      "12",
+      "20",
+      "24",
+      "30"
+    ],
+    "exp": "Um dia divide-se em 24 horas."
+  },
+  {
+    "q": "Qual é a cor da relva saudável?",
+    "a": "Verde",
+    "opts": [
+      "Azul",
+      "Verde",
+      "Vermelha",
+      "Cinzenta"
+    ],
+    "exp": "A relva é verde por causa da clorofila."
+  },
+  {
+    "q": "Quantos dedos tem uma mão?",
+    "a": "Cinco",
+    "opts": [
+      "Quatro",
+      "Cinco",
+      "Seis",
+      "Dez"
+    ],
+    "exp": "Incluindo o polegar."
+  },
+  {
+    "q": "Onde nasce o Sol?",
+    "a": "A leste",
+    "opts": [
+      "A norte",
+      "A leste",
+      "A oeste",
+      "A sul"
+    ],
+    "exp": "O Sol nasce a leste e põe-se a oeste."
+  },
+  {
+    "q": "Qual é o animal que ladra?",
+    "a": "O cão",
+    "opts": [
+      "O gato",
+      "O cão",
+      "A vaca",
+      "O cavalo"
+    ],
+    "exp": "O latido é a forma de o cão comunicar."
+  },
+  {
+    "q": "Quantas patas tem um gato?",
+    "a": "Quatro",
+    "opts": [
+      "Duas",
+      "Quatro",
+      "Seis",
+      "Oito"
+    ],
+    "exp": "Os gatos andam sobre as pontas das patas."
+  },
+  {
+    "q": "Que estação do ano vem depois do verão?",
+    "a": "O outono",
+    "opts": [
+      "A primavera",
+      "O outono",
+      "O inverno",
+      "Outro verão"
+    ],
+    "exp": "No outono caem as folhas."
+  },
+  {
+    "q": "Qual é o número que vem depois do 9?",
+    "a": "10",
+    "opts": [
+      "8",
+      "10",
+      "11",
+      "19"
+    ],
+    "exp": "Depois do 9 vem o 10."
+  },
+  {
+    "q": "O que usamos para escrever no papel?",
+    "a": "Caneta ou lápis",
+    "opts": [
+      "Garfo",
+      "Caneta ou lápis",
+      "Tesoura",
+      "Martelo"
+    ],
+    "exp": "O lápis tem grafite no interior."
+  },
+  {
+    "q": "Que líquido cai das nuvens quando chove?",
+    "a": "Água",
+    "opts": [
+      "Leite",
+      "Água",
+      "Sumo",
+      "Mel"
+    ],
+    "exp": "A chuva é parte do ciclo da água."
+  },
+  {
+    "q": "Quantas rodas tem um carro normal?",
+    "a": "Quatro",
+    "opts": [
+      "Duas",
+      "Três",
+      "Quatro",
+      "Seis"
+    ],
+    "exp": "Os carros ligeiros têm quatro rodas."
+  },
+  {
+    "q": "Qual é a forma de uma bola?",
+    "a": "Redonda",
+    "opts": [
+      "Quadrada",
+      "Redonda",
+      "Triangular",
+      "Plana"
+    ],
+    "exp": "A esfera é redonda em todas as direções."
+  },
+  {
+    "q": "Em que sítio aprendemos e temos professores?",
+    "a": "Na escola",
+    "opts": [
+      "No hospital",
+      "Na escola",
+      "No supermercado",
+      "No cinema"
+    ],
+    "exp": "Na escola aprendemos a ler, escrever e contar."
+  },
+  {
+    "q": "Que doce gelado comemos no verão?",
+    "a": "Gelado",
+    "opts": [
+      "Sopa",
+      "Gelado",
+      "Pão",
+      "Arroz"
+    ],
+    "exp": "O gelado derrete ao calor."
+  },
+  {
+    "q": "Que animal mia?",
+    "a": "O gato",
+    "opts": [
+      "O cão",
+      "O gato",
+      "O pato",
+      "O galo"
+    ],
+    "exp": "O miar é típico dos gatos."
+  },
+  {
+    "q": "Qual é a primeira letra do alfabeto?",
+    "a": "A",
+    "opts": [
+      "A",
+      "B",
+      "Z",
+      "M"
+    ],
+    "exp": "O alfabeto português começa em A."
+  },
+  {
+    "q": "O que vestimos nos pés?",
+    "a": "Sapatos",
+    "opts": [
+      "Luvas",
+      "Sapatos",
+      "Chapéu",
+      "Óculos"
+    ],
+    "exp": "Os sapatos protegem os pés."
+  },
+  {
+    "q": "Que parte do dia é quando está escuro e dormimos?",
+    "a": "A noite",
+    "opts": [
+      "A manhã",
+      "A noite",
+      "A tarde",
+      "O meio-dia"
+    ],
+    "exp": "De noite vemos a Lua e as estrelas."
+  },
+  {
+    "q": "Que fruta é amarela e curva?",
+    "a": "Banana",
+    "opts": [
+      "Maçã",
+      "Banana",
+      "Uva",
+      "Morango"
+    ],
+    "exp": "A banana é rica em potássio."
+  },
+  {
+    "q": "Quantos olhos tem uma pessoa?",
+    "a": "Dois",
+    "opts": [
+      "Um",
+      "Dois",
+      "Três",
+      "Quatro"
+    ],
+    "exp": "Os dois olhos ajudam a ver em profundidade."
   }
 ]

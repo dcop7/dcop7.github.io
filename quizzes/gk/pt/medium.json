@@ -218,5 +218,236 @@
       "Anemómetro"
     ],
     "exp": "O barómetro ajuda a prever o tempo."
+  },
+  {
+    "q": "Que metal é atraído por um íman?",
+    "a": "Ferro",
+    "opts": [
+      "Ouro",
+      "Ferro",
+      "Prata",
+      "Cobre"
+    ],
+    "exp": "O ferro e o aço são magnéticos."
+  },
+  {
+    "q": "Em que país fica a cidade de Tóquio?",
+    "a": "Japão",
+    "opts": [
+      "China",
+      "Japão",
+      "Coreia do Sul",
+      "Tailândia"
+    ],
+    "exp": "Tóquio é a capital do Japão."
+  },
+  {
+    "q": "Quantos lados tem um triângulo?",
+    "a": "Três",
+    "opts": [
+      "Dois",
+      "Três",
+      "Quatro",
+      "Cinco"
+    ],
+    "exp": "O triângulo tem três lados e três ângulos."
+  },
+  {
+    "q": "Quem foi o pintor da Capela Sistina?",
+    "a": "Miguel Ângelo",
+    "opts": [
+      "Da Vinci",
+      "Miguel Ângelo",
+      "Rafael",
+      "Donatello"
+    ],
+    "exp": "Pintou o teto entre 1508 e 1512."
+  },
+  {
+    "q": "Qual é a capital de Espanha?",
+    "a": "Madrid",
+    "opts": [
+      "Barcelona",
+      "Madrid",
+      "Sevilha",
+      "Valência"
+    ],
+    "exp": "Madrid fica no centro de Espanha."
+  },
+  {
+    "q": "Que planeta é conhecido pelos seus anéis?",
+    "a": "Saturno",
+    "opts": [
+      "Júpiter",
+      "Saturno",
+      "Marte",
+      "Vénus"
+    ],
+    "exp": "Os anéis são feitos de gelo e rocha."
+  },
+  {
+    "q": "Qual é o animal terrestre mais rápido?",
+    "a": "Chita",
+    "opts": [
+      "Leão",
+      "Chita",
+      "Cavalo",
+      "Galgo"
+    ],
+    "exp": "A chita atinge cerca de 110 km/h."
+  },
+  {
+    "q": "Que instrumento serve para medir a temperatura?",
+    "a": "Termómetro",
+    "opts": [
+      "Barómetro",
+      "Termómetro",
+      "Bússola",
+      "Régua"
+    ],
+    "exp": "Mede em graus Celsius."
+  },
+  {
+    "q": "Qual é o rio mais comprido de Portugal?",
+    "a": "Tejo",
+    "opts": [
+      "Douro",
+      "Tejo",
+      "Guadiana",
+      "Mondego"
+    ],
+    "exp": "O Tejo nasce em Espanha e desagua em Lisboa."
+  },
+  {
+    "q": "Quantos minutos tem uma hora?",
+    "a": "60",
+    "opts": [
+      "30",
+      "60",
+      "90",
+      "100"
+    ],
+    "exp": "Cada minuto tem 60 segundos."
+  },
+  {
+    "q": "Que vitamina nos dá o Sol?",
+    "a": "Vitamina D",
+    "opts": [
+      "Vitamina A",
+      "Vitamina C",
+      "Vitamina D",
+      "Vitamina K"
+    ],
+    "exp": "A pele produz vitamina D com a luz solar."
+  },
+  {
+    "q": "Qual é o continente mais pequeno?",
+    "a": "Oceânia",
+    "opts": [
+      "Europa",
+      "Oceânia",
+      "Antártida",
+      "América do Sul"
+    ],
+    "exp": "A Oceânia inclui a Austrália."
+  },
+  {
+    "q": "Que cientista descobriu a gravidade ao ver uma maçã cair (segundo a lenda)?",
+    "a": "Isaac Newton",
+    "opts": [
+      "Einstein",
+      "Isaac Newton",
+      "Galileu",
+      "Darwin"
+    ],
+    "exp": "Newton formulou a lei da gravitação universal."
+  },
+  {
+    "q": "Qual é a moeda usada em França e na Alemanha?",
+    "a": "Euro",
+    "opts": [
+      "Dólar",
+      "Euro",
+      "Libra",
+      "Franco"
+    ],
+    "exp": "O euro é usado em vários países europeus."
+  },
+  {
+    "q": "Quantas cores tem a bandeira de Portugal?",
+    "a": "Duas (verde e vermelho)",
+    "opts": [
+      "Uma",
+      "Duas (verde e vermelho)",
+      "Três",
+      "Quatro"
+    ],
+    "exp": "Tem ainda o escudo e a esfera armilar."
+  },
+  {
+    "q": "Que ave é conhecida pela sua cauda colorida em leque?",
+    "a": "Pavão",
+    "opts": [
+      "Águia",
+      "Pavão",
+      "Coruja",
+      "Pardal"
+    ],
+    "exp": "Só o pavão macho tem a cauda colorida."
+  },
+  {
+    "q": "Qual é a montanha mais alta de Portugal continental?",
+    "a": "Torre (Serra da Estrela)",
+    "opts": [
+      "Pico",
+      "Torre (Serra da Estrela)",
+      "Gerês",
+      "Monchique"
+    ],
+    "exp": "A Torre tem 1 993 m de altitude."
+  },
+  {
+    "q": "Que aparelho usamos para ver televisão?",
+    "a": "Televisor",
+    "opts": [
+      "Rádio",
+      "Televisor",
+      "Telefone",
+      "Frigorífico"
+    ],
+    "exp": "A televisão transmite som e imagem."
+  },
+  {
+    "q": "Que gás respiramos para viver?",
+    "a": "Oxigénio",
+    "opts": [
+      "Hidrogénio",
+      "Oxigénio",
+      "Hélio",
+      "Néon"
+    ],
+    "exp": "O ar tem cerca de 21% de oxigénio."
+  },
+  {
+    "q": "Qual é o maior oceano do planeta?",
+    "a": "Pacífico",
+    "opts": [
+      "Atlântico",
+      "Pacífico",
+      "Índico",
+      "Ártico"
+    ],
+    "exp": "O Pacífico cobre cerca de um terço da superfície da Terra."
+  },
+  {
+    "q": "Em que continente fica o Egito?",
+    "a": "África",
+    "opts": [
+      "Ásia",
+      "África",
+      "Europa",
+      "Oceânia"
+    ],
+    "exp": "O Egito fica no nordeste de África."
   }
 ]

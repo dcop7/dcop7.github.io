@@ -218,5 +218,225 @@
       "Sun Tzu"
     ],
     "exp": "Ordenou também a construção do Exército de Terracota."
+  },
+  {
+    "q": "Que imperador romano dividiu o império em duas partes?",
+    "a": "Diocleciano",
+    "opts": [
+      "Augusto",
+      "Diocleciano",
+      "Nero",
+      "Trajano"
+    ],
+    "exp": "Dividiu-o para o tornar mais fácil de governar."
+  },
+  {
+    "q": "Que tratado de 1919 pôs fim à Primeira Guerra Mundial?",
+    "a": "Tratado de Versalhes",
+    "opts": [
+      "Paz de Vestfália",
+      "Tratado de Versalhes",
+      "Tratado de Tordesilhas",
+      "Tratado de Utrecht"
+    ],
+    "exp": "Impôs duras condições à Alemanha."
+  },
+  {
+    "q": "Que rei francês ficou conhecido como 'Rei-Sol'?",
+    "a": "Luís XIV",
+    "opts": [
+      "Luís XIV",
+      "Luís XVI",
+      "Napoleão",
+      "Carlos Magno"
+    ],
+    "exp": "Construiu o Palácio de Versalhes."
+  },
+  {
+    "q": "Que civilização inventou o conceito de zero como número?",
+    "a": "Os indianos (e maias)",
+    "opts": [
+      "Os romanos",
+      "Os indianos (e maias)",
+      "Os gregos",
+      "Os vikings"
+    ],
+    "exp": "O zero foi uma grande revolução matemática."
+  },
+  {
+    "q": "Em que ano foi proclamada a independência dos EUA?",
+    "a": "1776",
+    "opts": [
+      "1492",
+      "1620",
+      "1776",
+      "1865"
+    ],
+    "exp": "A Declaração de Independência data de 4 de julho de 1776."
+  },
+  {
+    "q": "Que rainha britânica deu nome a uma época do século XIX?",
+    "a": "Vitória",
+    "opts": [
+      "Isabel I",
+      "Vitória",
+      "Ana",
+      "Maria"
+    ],
+    "exp": "A Época Vitoriana coincidiu com a Revolução Industrial."
+  },
+  {
+    "q": "Que civilização mesoamericana foi conquistada por Pizarro?",
+    "a": "Os incas",
+    "opts": [
+      "Os astecas",
+      "Os incas",
+      "Os maias",
+      "Os olmecas"
+    ],
+    "exp": "Pizarro conquistou o Império Inca em 1533."
+  },
+  {
+    "q": "Que muro caiu em 1989, marcando o fim da Guerra Fria?",
+    "a": "O Muro de Berlim",
+    "opts": [
+      "A Muralha de Adriano",
+      "O Muro de Berlim",
+      "A Grande Muralha",
+      "A Linha Maginot"
+    ],
+    "exp": "Separava Berlim Oriental da Ocidental."
+  },
+  {
+    "q": "Que dinastia governou Portugal a partir de 1640?",
+    "a": "Bragança",
+    "opts": [
+      "Avis",
+      "Bragança",
+      "Borgonha",
+      "Filipina"
+    ],
+    "exp": "A Restauração da Independência ocorreu em 1640."
+  },
+  {
+    "q": "Que sistema de governo nasceu em Atenas na Antiguidade?",
+    "a": "A democracia",
+    "opts": [
+      "A monarquia",
+      "A democracia",
+      "O feudalismo",
+      "A república imperial"
+    ],
+    "exp": "Em Atenas, os cidadãos votavam diretamente."
+  },
+  {
+    "q": "Quem comandou a Longa Marcha e fundou a China comunista?",
+    "a": "Mao Tsé-Tung",
+    "opts": [
+      "Sun Yat-sen",
+      "Mao Tsé-Tung",
+      "Chiang Kai-shek",
+      "Deng Xiaoping"
+    ],
+    "exp": "Proclamou a República Popular da China em 1949."
+  },
+  {
+    "q": "Que documento de 1215 limitou os poderes do rei inglês?",
+    "a": "Magna Carta",
+    "opts": [
+      "Magna Carta",
+      "Bill of Rights",
+      "Declaração dos Direitos do Homem",
+      "Código Napoleónico"
+    ],
+    "exp": "É considerada a origem do constitucionalismo."
+  },
+  {
+    "q": "Que batalha naval de 1571 travou a expansão otomana no Mediterrâneo?",
+    "a": "Batalha de Lepanto",
+    "opts": [
+      "Batalha de Trafalgar",
+      "Batalha de Lepanto",
+      "Batalha de Aljubarrota",
+      "Batalha de Waterloo"
+    ],
+    "exp": "Uma coligação cristã venceu os otomanos."
+  },
+  {
+    "q": "Que pensador escreveu 'O Príncipe', sobre o exercício do poder?",
+    "a": "Maquiavel",
+    "opts": [
+      "Platão",
+      "Maquiavel",
+      "Rousseau",
+      "Hobbes"
+    ],
+    "exp": "Foi publicado no século XVI."
+  },
+  {
+    "q": "Que rei português desapareceu em Alcácer-Quibir em 1578?",
+    "a": "D. Sebastião",
+    "opts": [
+      "D. Manuel I",
+      "D. Sebastião",
+      "D. João III",
+      "D. Henrique"
+    ],
+    "exp": "Deu origem ao mito do sebastianismo."
+  },
+  {
+    "q": "Que invento chinês foi mais tarde usado em armas de fogo?",
+    "a": "A pólvora",
+    "opts": [
+      "O papel",
+      "A pólvora",
+      "A seda",
+      "A bússola"
+    ],
+    "exp": "A pólvora foi inventada na China."
+  },
+  {
+    "q": "Que revolução de 1917 levou os comunistas ao poder na Rússia?",
+    "a": "A Revolução de Outubro",
+    "opts": [
+      "A Revolução Francesa",
+      "A Revolução de Outubro",
+      "A Revolução Industrial",
+      "A Primavera de Praga"
+    ],
+    "exp": "Liderada por Lenine e os bolcheviques."
+  },
+  {
+    "q": "Quem unificou a Itália no século XIX?",
+    "a": "Garibaldi e Cavour",
+    "opts": [
+      "Bismarck",
+      "Garibaldi e Cavour",
+      "Napoleão III",
+      "Mussolini"
+    ],
+    "exp": "A unificação completou-se em 1871."
+  },
+  {
+    "q": "Que civilização construiu a cidade de Petra na rocha?",
+    "a": "Os nabateus",
+    "opts": [
+      "Os egípcios",
+      "Os nabateus",
+      "Os romanos",
+      "Os persas"
+    ],
+    "exp": "Petra fica na atual Jordânia."
+  },
+  {
+    "q": "Que conferência de 1884–85 dividiu a África entre potências europeias?",
+    "a": "Conferência de Berlim",
+    "opts": [
+      "Congresso de Viena",
+      "Conferência de Berlim",
+      "Conferência de Ialta",
+      "Tratado de Versalhes"
+    ],
+    "exp": "Repartiu o continente africano sem ouvir os africanos."
   }
 ]

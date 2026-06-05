@@ -218,5 +218,225 @@
       "Bronze"
     ],
     "exp": "A Idade da Pedra foi o período mais longo da pré-história."
+  },
+  {
+    "q": "Em que cidade italiana viviam os antigos gladiadores?",
+    "a": "Roma",
+    "opts": [
+      "Atenas",
+      "Roma",
+      "Cairo",
+      "Paris"
+    ],
+    "exp": "Os gladiadores combatiam no Coliseu de Roma."
+  },
+  {
+    "q": "Que rei egípcio jovem ficou famoso pelo seu túmulo de ouro?",
+    "a": "Tutankamon",
+    "opts": [
+      "Ramsés",
+      "Tutankamon",
+      "Quéops",
+      "Akhenaton"
+    ],
+    "exp": "O túmulo de Tutankamon foi descoberto em 1922."
+  },
+  {
+    "q": "Que animal usavam os cavaleiros medievais na batalha?",
+    "a": "O cavalo",
+    "opts": [
+      "O camelo",
+      "O cavalo",
+      "O elefante",
+      "O burro"
+    ],
+    "exp": "Os cavaleiros usavam armaduras de metal."
+  },
+  {
+    "q": "Que construção alta servia para defender os castelos?",
+    "a": "As torres e muralhas",
+    "opts": [
+      "As pontes",
+      "As torres e muralhas",
+      "As janelas",
+      "Os jardins"
+    ],
+    "exp": "As muralhas protegiam quem estava dentro do castelo."
+  },
+  {
+    "q": "Que povo antigo escrevia em tábuas de argila?",
+    "a": "Os mesopotâmios",
+    "opts": [
+      "Os vikings",
+      "Os mesopotâmios",
+      "Os incas",
+      "Os maias"
+    ],
+    "exp": "Usavam a escrita cuneiforme."
+  },
+  {
+    "q": "Que invento permitiu mover comboios com vapor?",
+    "a": "A máquina a vapor",
+    "opts": [
+      "O motor elétrico",
+      "A máquina a vapor",
+      "A roda apenas",
+      "O telefone"
+    ],
+    "exp": "A máquina a vapor deu início à Revolução Industrial."
+  },
+  {
+    "q": "Que navio famoso se afundou em 1912?",
+    "a": "O Titanic",
+    "opts": [
+      "A Santa Maria",
+      "O Titanic",
+      "O Mayflower",
+      "O Endeavour"
+    ],
+    "exp": "O Titanic chocou contra um icebergue."
+  },
+  {
+    "q": "Como se chamavam os soldados do exército romano?",
+    "a": "Legionários",
+    "opts": [
+      "Samurais",
+      "Legionários",
+      "Cavaleiros",
+      "Vikings"
+    ],
+    "exp": "Estavam organizados em legiões."
+  },
+  {
+    "q": "Que monumento de pedra com estátuas gigantes fica na Ilha de Páscoa?",
+    "a": "Os Moais",
+    "opts": [
+      "As Pirâmides",
+      "Os Moais",
+      "Stonehenge",
+      "O Coliseu"
+    ],
+    "exp": "Os Moais foram esculpidos pelo povo Rapa Nui."
+  },
+  {
+    "q": "Que material substituiu a pedra e o bronze nas ferramentas?",
+    "a": "O ferro",
+    "opts": [
+      "O plástico",
+      "O ferro",
+      "O vidro",
+      "O ouro"
+    ],
+    "exp": "A Idade do Ferro sucedeu à Idade do Bronze."
+  },
+  {
+    "q": "Que invento ilumina as casas e foi melhorado por Edison?",
+    "a": "A lâmpada elétrica",
+    "opts": [
+      "A vela",
+      "A lâmpada elétrica",
+      "A fogueira",
+      "O candeeiro a óleo"
+    ],
+    "exp": "Edison criou uma lâmpada duradoura em 1879."
+  },
+  {
+    "q": "Que rei foi o primeiro de Portugal?",
+    "a": "D. Afonso Henriques",
+    "opts": [
+      "D. Dinis",
+      "D. Afonso Henriques",
+      "D. João I",
+      "D. Sebastião"
+    ],
+    "exp": "Tornou-se rei em 1143."
+  },
+  {
+    "q": "Que barco usavam os portugueses nos Descobrimentos?",
+    "a": "A caravela",
+    "opts": [
+      "O submarino",
+      "A caravela",
+      "O ferry",
+      "O cargueiro"
+    ],
+    "exp": "A caravela era rápida e fácil de manobrar."
+  },
+  {
+    "q": "Que líder egípcio mandava construir grandes túmulos chamados pirâmides?",
+    "a": "O faraó",
+    "opts": [
+      "O imperador",
+      "O faraó",
+      "O cônsul",
+      "O czar"
+    ],
+    "exp": "As pirâmides eram túmulos dos faraós."
+  },
+  {
+    "q": "Que povo guerreiro usava capacetes e navegava em barcos compridos?",
+    "a": "Os vikings",
+    "opts": [
+      "Os romanos",
+      "Os vikings",
+      "Os gregos",
+      "Os egípcios"
+    ],
+    "exp": "Os vikings vieram do norte da Europa."
+  },
+  {
+    "q": "Que invento ajudou os marinheiros a saber a direção no mar?",
+    "a": "A bússola",
+    "opts": [
+      "O relógio",
+      "A bússola",
+      "O telescópio",
+      "O mapa apenas"
+    ],
+    "exp": "A agulha da bússola aponta para o norte."
+  },
+  {
+    "q": "Como se chamava a doença que matou muita gente na Idade Média?",
+    "a": "A Peste Negra",
+    "opts": [
+      "A gripe",
+      "A Peste Negra",
+      "A varíola apenas",
+      "A malária"
+    ],
+    "exp": "A Peste Negra espalhou-se pela Europa no século XIV."
+  },
+  {
+    "q": "Que jogo desportivo nasceu na Grécia Antiga?",
+    "a": "Os Jogos Olímpicos",
+    "opts": [
+      "O futebol",
+      "Os Jogos Olímpicos",
+      "O ténis",
+      "O basquetebol"
+    ],
+    "exp": "Os primeiros foram em 776 a.C."
+  },
+  {
+    "q": "Que estrutura enorme separava partes da China para defesa?",
+    "a": "A Grande Muralha",
+    "opts": [
+      "O Muro de Berlim",
+      "A Grande Muralha",
+      "A Muralha de Adriano",
+      "As Pirâmides"
+    ],
+    "exp": "Tem milhares de quilómetros."
+  },
+  {
+    "q": "Como se chamavam as histórias e deuses dos gregos antigos?",
+    "a": "Mitologia",
+    "opts": [
+      "Geografia",
+      "Mitologia",
+      "Aritmética",
+      "Filosofia"
+    ],
+    "exp": "Zeus era o rei dos deuses gregos."
   }
 ]

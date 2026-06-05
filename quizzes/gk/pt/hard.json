@@ -218,5 +218,214 @@
       "Pitágoras"
     ],
     "exp": "Aristóteles fundou também o Liceu, em Atenas."
+  },
+  {
+    "q": "Qual é a capital da Suíça?",
+    "a": "Berna",
+    "opts": [
+      "Genebra",
+      "Berna",
+      "Zurique",
+      "Basileia"
+    ],
+    "exp": "Apesar de Zurique ser maior, a capital é Berna."
+  },
+  {
+    "q": "Quem escreveu a peça 'Romeu e Julieta'?",
+    "a": "Shakespeare",
+    "opts": [
+      "Molière",
+      "Shakespeare",
+      "Camões",
+      "Cervantes"
+    ],
+    "exp": "Shakespeare escreveu-a por volta de 1595."
+  },
+  {
+    "q": "Qual é o símbolo químico do ferro?",
+    "a": "Fe",
+    "opts": [
+      "Ir",
+      "Fe",
+      "F",
+      "Fr"
+    ],
+    "exp": "Fe vem do latim 'ferrum'."
+  },
+  {
+    "q": "Em que país se encontram as cataratas do Iguaçu?",
+    "a": "Brasil e Argentina",
+    "opts": [
+      "Estados Unidos",
+      "Brasil e Argentina",
+      "Canadá",
+      "Venezuela"
+    ],
+    "exp": "Ficam na fronteira entre os dois países."
+  },
+  {
+    "q": "Quem desenvolveu a teoria da evolução das espécies?",
+    "a": "Charles Darwin",
+    "opts": [
+      "Mendel",
+      "Charles Darwin",
+      "Lamarck",
+      "Pasteur"
+    ],
+    "exp": "Publicou 'A Origem das Espécies' em 1859."
+  },
+  {
+    "q": "Qual é a moeda da Suíça?",
+    "a": "Franco suíço",
+    "opts": [
+      "Euro",
+      "Franco suíço",
+      "Coroa",
+      "Dólar"
+    ],
+    "exp": "A Suíça não adotou o euro."
+  },
+  {
+    "q": "Quem compôs a ópera 'A Flauta Mágica'?",
+    "a": "Mozart",
+    "opts": [
+      "Beethoven",
+      "Mozart",
+      "Verdi",
+      "Wagner"
+    ],
+    "exp": "Mozart compô-la em 1791."
+  },
+  {
+    "q": "Que estrutura óssea protege o coração e os pulmões?",
+    "a": "A caixa torácica",
+    "opts": [
+      "O crânio",
+      "A caixa torácica",
+      "A bacia",
+      "A coluna"
+    ],
+    "exp": "É formada pelas costelas e pelo esterno."
+  },
+  {
+    "q": "Qual é o deserto mais frio do mundo?",
+    "a": "A Antártida",
+    "opts": [
+      "O Sahara",
+      "A Antártida",
+      "O Gobi",
+      "O Atacama"
+    ],
+    "exp": "A Antártida é um deserto gelado."
+  },
+  {
+    "q": "Quem foi a primeira mulher a ganhar um Prémio Nobel?",
+    "a": "Marie Curie",
+    "opts": [
+      "Rosalind Franklin",
+      "Marie Curie",
+      "Ada Lovelace",
+      "Florence Nightingale"
+    ],
+    "exp": "Ganhou o Nobel da Física em 1903."
+  },
+  {
+    "q": "Qual é a língua mais falada do mundo (nativos)?",
+    "a": "Mandarim",
+    "opts": [
+      "Inglês",
+      "Mandarim",
+      "Espanhol",
+      "Hindi"
+    ],
+    "exp": "O mandarim tem mais de mil milhões de falantes."
+  },
+  {
+    "q": "Que planeta é o mais quente do Sistema Solar?",
+    "a": "Vénus",
+    "opts": [
+      "Mercúrio",
+      "Vénus",
+      "Marte",
+      "Júpiter"
+    ],
+    "exp": "A sua atmosfera densa retém o calor."
+  },
+  {
+    "q": "Quem pintou 'Guernica'?",
+    "a": "Picasso",
+    "opts": [
+      "Dalí",
+      "Picasso",
+      "Miró",
+      "Goya"
+    ],
+    "exp": "Picasso pintou-a em 1937, sobre a Guerra Civil de Espanha."
+  },
+  {
+    "q": "Qual é o osso mais comprido do corpo humano?",
+    "a": "Fémur",
+    "opts": [
+      "Úmero",
+      "Fémur",
+      "Tíbia",
+      "Rádio"
+    ],
+    "exp": "O fémur fica na coxa."
+  },
+  {
+    "q": "Em que cidade fica a estátua do Cristo Redentor?",
+    "a": "Rio de Janeiro",
+    "opts": [
+      "São Paulo",
+      "Rio de Janeiro",
+      "Lisboa",
+      "Buenos Aires"
+    ],
+    "exp": "Fica no cume do Corcovado."
+  },
+  {
+    "q": "Que filósofo grego foi condenado a beber cicuta?",
+    "a": "Sócrates",
+    "opts": [
+      "Platão",
+      "Sócrates",
+      "Aristóteles",
+      "Pitágoras"
+    ],
+    "exp": "Foi condenado em Atenas em 399 a.C."
+  },
+  {
+    "q": "Qual é a unidade básica de informação num computador?",
+    "a": "O bit",
+    "opts": [
+      "O byte",
+      "O bit",
+      "O pixel",
+      "O hertz"
+    ],
+    "exp": "Um bit é 0 ou 1; 8 bits formam um byte."
+  },
+  {
+    "q": "Qual é o maior planeta do Sistema Solar?",
+    "a": "Júpiter",
+    "opts": [
+      "Saturno",
+      "Júpiter",
+      "Neptuno",
+      "Terra"
+    ],
+    "exp": "Júpiter é um gigante gasoso."
+  },
+  {
+    "q": "Que gás nobre faz os balões flutuar?",
+    "a": "Hélio",
+    "opts": [
+      "Oxigénio",
+      "Hélio",
+      "Azoto",
+      "Hidrogénio"
+    ],
+    "exp": "O hélio é mais leve que o ar e não é inflamável."
   }
 ]

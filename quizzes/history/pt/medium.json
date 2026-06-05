@@ -218,5 +218,225 @@
       "Império Britânico"
     ],
     "exp": "Constantinopla é hoje Istambul, na Turquia."
+  },
+  {
+    "q": "Que general cartaginês atravessou os Alpes com elefantes?",
+    "a": "Aníbal",
+    "opts": [
+      "César",
+      "Aníbal",
+      "Alexandre",
+      "Espártaco"
+    ],
+    "exp": "Aníbal lutou contra Roma na Segunda Guerra Púnica."
+  },
+  {
+    "q": "Quem foi o conquistador macedónio que criou um enorme império?",
+    "a": "Alexandre, o Grande",
+    "opts": [
+      "Júlio César",
+      "Alexandre, o Grande",
+      "Carlos Magno",
+      "Átila"
+    ],
+    "exp": "Alexandre foi aluno de Aristóteles."
+  },
+  {
+    "q": "Que documento egípcio permitiu decifrar os hieróglifos?",
+    "a": "A Pedra de Roseta",
+    "opts": [
+      "O Papiro de Ani",
+      "A Pedra de Roseta",
+      "O Código de Hamurabi",
+      "A Magna Carta"
+    ],
+    "exp": "Tinha o mesmo texto em três escritas."
+  },
+  {
+    "q": "Como se chamavam as guerras religiosas medievais para a Terra Santa?",
+    "a": "As Cruzadas",
+    "opts": [
+      "As Cruzadas",
+      "A Reconquista",
+      "A Inquisição",
+      "As Descobertas"
+    ],
+    "exp": "Decorreram entre os séculos XI e XIII."
+  },
+  {
+    "q": "Que navegador português descobriu o caminho marítimo para o Brasil?",
+    "a": "Pedro Álvares Cabral",
+    "opts": [
+      "Vasco da Gama",
+      "Pedro Álvares Cabral",
+      "Diogo Cão",
+      "Bartolomeu Dias"
+    ],
+    "exp": "Cabral chegou ao Brasil em 1500."
+  },
+  {
+    "q": "Que sistema social medieval ligava senhores e camponeses?",
+    "a": "O feudalismo",
+    "opts": [
+      "A democracia",
+      "O feudalismo",
+      "O comunismo",
+      "O império"
+    ],
+    "exp": "Os servos trabalhavam a terra dos senhores."
+  },
+  {
+    "q": "Que guerra ocorreu entre 1914 e 1918?",
+    "a": "A Primeira Guerra Mundial",
+    "opts": [
+      "A Primeira Guerra Mundial",
+      "A Segunda Guerra Mundial",
+      "A Guerra Fria",
+      "A Guerra dos Cem Anos"
+    ],
+    "exp": "Foi marcada pela guerra de trincheiras."
+  },
+  {
+    "q": "Que civilização construiu pirâmides na América Central?",
+    "a": "Os maias",
+    "opts": [
+      "Os vikings",
+      "Os maias",
+      "Os egípcios",
+      "Os romanos"
+    ],
+    "exp": "Os maias tinham um calendário muito preciso."
+  },
+  {
+    "q": "Quem foi o líder soviético durante a maior parte da Segunda Guerra Mundial?",
+    "a": "Estaline",
+    "opts": [
+      "Lenine",
+      "Estaline",
+      "Trotsky",
+      "Gorbachev"
+    ],
+    "exp": "Estaline liderou a URSS de 1924 a 1953."
+  },
+  {
+    "q": "Que rei egípcio construiu muitos templos e reinou 66 anos?",
+    "a": "Ramsés II",
+    "opts": [
+      "Tutankamon",
+      "Ramsés II",
+      "Quéops",
+      "Cleópatra"
+    ],
+    "exp": "Ramsés II é um dos faraós mais famosos."
+  },
+  {
+    "q": "Em que ano começou a Revolução Industrial (aproximadamente)?",
+    "a": "Século XVIII",
+    "opts": [
+      "Século XV",
+      "Século XVIII",
+      "Século XX",
+      "Século X"
+    ],
+    "exp": "Começou em Inglaterra, com a máquina a vapor."
+  },
+  {
+    "q": "Quem foi o explorador veneziano que viajou até à China?",
+    "a": "Marco Polo",
+    "opts": [
+      "Cristóvão Colombo",
+      "Marco Polo",
+      "Vasco da Gama",
+      "Magalhães"
+    ],
+    "exp": "Marco Polo descreveu a corte de Kublai Khan."
+  },
+  {
+    "q": "Que rei francês foi guilhotinado na Revolução Francesa?",
+    "a": "Luís XVI",
+    "opts": [
+      "Luís XIV",
+      "Luís XVI",
+      "Napoleão",
+      "Carlos Magno"
+    ],
+    "exp": "Foi executado em 1793."
+  },
+  {
+    "q": "Que império dominou o Mediterrâneo na Antiguidade?",
+    "a": "Império Romano",
+    "opts": [
+      "Império Mongol",
+      "Império Romano",
+      "Império Asteca",
+      "Império Britânico"
+    ],
+    "exp": "Roma controlou todo o Mediterrâneo (o 'Mare Nostrum')."
+  },
+  {
+    "q": "Que terramoto destruiu Lisboa em 1755?",
+    "a": "O Grande Terramoto de Lisboa",
+    "opts": [
+      "O de 1531",
+      "O Grande Terramoto de Lisboa",
+      "O de 1909",
+      "O de 1969"
+    ],
+    "exp": "O Marquês de Pombal reconstruiu a Baixa."
+  },
+  {
+    "q": "Que invenção de Gutenberg ajudou a espalhar livros?",
+    "a": "A imprensa",
+    "opts": [
+      "A bússola",
+      "A imprensa",
+      "A pólvora",
+      "O telescópio"
+    ],
+    "exp": "Surgiu por volta de 1450."
+  },
+  {
+    "q": "Como se chamava o império asteca antes da chegada dos espanhóis?",
+    "a": "Império Asteca",
+    "opts": [
+      "Império Inca",
+      "Império Asteca",
+      "Império Maia",
+      "Império Romano"
+    ],
+    "exp": "A sua capital era Tenochtitlán."
+  },
+  {
+    "q": "Que conflito opôs o bloco soviético ao bloco ocidental sem guerra direta?",
+    "a": "A Guerra Fria",
+    "opts": [
+      "A Guerra dos Cem Anos",
+      "A Guerra Fria",
+      "A Guerra Civil",
+      "As Cruzadas"
+    ],
+    "exp": "Durou de 1947 a 1991, aproximadamente."
+  },
+  {
+    "q": "Que rei inglês teve seis esposas?",
+    "a": "Henrique VIII",
+    "opts": [
+      "Ricardo Coração de Leão",
+      "Henrique VIII",
+      "Jorge III",
+      "Eduardo I"
+    ],
+    "exp": "Henrique VIII fundou a Igreja Anglicana."
+  },
+  {
+    "q": "Que invento de Alexander Graham Bell mudou a comunicação?",
+    "a": "O telefone",
+    "opts": [
+      "A rádio",
+      "O telefone",
+      "A televisão",
+      "O telégrafo"
+    ],
+    "exp": "Bell patenteou o telefone em 1876."
   }
 ]
