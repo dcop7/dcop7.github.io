@@ -218,5 +218,247 @@
       "Ethernet"
     ],
     "exp": "O Bluetooth tem o nome de um rei viking."
+  },
+  {
+    "q": "Que combinação de teclas costuma servir para copiar?",
+    "a": "Ctrl + C",
+    "opts": [
+      "Ctrl + V",
+      "Ctrl + C",
+      "Ctrl + Z",
+      "Ctrl + P"
+    ],
+    "exp": "O Ctrl + V cola; o Ctrl + Z desfaz."
+  },
+  {
+    "q": "O que mede a velocidade da internet?",
+    "a": "Megabits por segundo (Mbps)",
+    "opts": [
+      "Graus Celsius",
+      "Megabits por segundo (Mbps)",
+      "Volts",
+      "Pixéis"
+    ],
+    "exp": "Quanto maior o valor, mais rápida a ligação."
+  },
+  {
+    "q": "Como se chama um programa para procurar coisas na internet?",
+    "a": "Motor de busca",
+    "opts": [
+      "Antivírus",
+      "Motor de busca",
+      "Folha de cálculo",
+      "Editor de fotos"
+    ],
+    "exp": "O Google é um motor de busca."
+  },
+  {
+    "q": "Que código quadrado se lê com a câmara do telemóvel?",
+    "a": "Código QR",
+    "opts": [
+      "Código de barras",
+      "Código QR",
+      "Código postal",
+      "Código Morse"
+    ],
+    "exp": "O QR pode abrir sites ou pagamentos."
+  },
+  {
+    "q": "Que sistema operativo é da Apple para computadores?",
+    "a": "macOS",
+    "opts": [
+      "Windows",
+      "macOS",
+      "Android",
+      "Linux"
+    ],
+    "exp": "O iOS é o sistema dos iPhones."
+  },
+  {
+    "q": "O que faz a tecla Ctrl + Z?",
+    "a": "Desfaz a última ação",
+    "opts": [
+      "Imprime",
+      "Desfaz a última ação",
+      "Guarda o ficheiro",
+      "Fecha o programa"
+    ],
+    "exp": "É muito útil para corrigir erros."
+  },
+  {
+    "q": "Como se chama um ataque que engana o utilizador para roubar dados?",
+    "a": "Phishing",
+    "opts": [
+      "Spam",
+      "Phishing",
+      "Backup",
+      "Firewall"
+    ],
+    "exp": "Costuma usar emails ou sites falsos."
+  },
+  {
+    "q": "O que é a 'RAM' de um computador?",
+    "a": "A memória temporária de trabalho",
+    "opts": [
+      "O disco permanente",
+      "A memória temporária de trabalho",
+      "O ecrã",
+      "A placa de som"
+    ],
+    "exp": "A RAM apaga-se quando se desliga."
+  },
+  {
+    "q": "Que tipo de ficheiro é normalmente uma música?",
+    "a": "MP3",
+    "opts": [
+      "JPEG",
+      "MP3",
+      "DOCX",
+      "EXE"
+    ],
+    "exp": "O JPEG é para imagens; o MP3 para som."
+  },
+  {
+    "q": "O que liga vários dispositivos sem fios a curta distância (ex.: auscultadores)?",
+    "a": "Bluetooth",
+    "opts": [
+      "Wifi",
+      "Bluetooth",
+      "5G",
+      "Cabo HDMI"
+    ],
+    "exp": "O Bluetooth tem o nome de um rei viking."
+  },
+  {
+    "q": "Como se chama a parte do computador que processa as instruções?",
+    "a": "O processador (CPU)",
+    "opts": [
+      "A coluna",
+      "O processador (CPU)",
+      "O monitor",
+      "O teclado"
+    ],
+    "exp": "A CPU é o 'cérebro' do computador."
+  },
+  {
+    "q": "Que rede móvel é mais recente e rápida que o 4G?",
+    "a": "5G",
+    "opts": [
+      "3G",
+      "5G",
+      "Wi-Fi 1",
+      "Bluetooth"
+    ],
+    "exp": "O 5G permite internet móvel muito rápida."
+  },
+  {
+    "q": "O que é um 'navegador' (browser)?",
+    "a": "Um programa para ver sites",
+    "opts": [
+      "Um vírus",
+      "Um programa para ver sites",
+      "Uma impressora",
+      "Um cabo"
+    ],
+    "exp": "Exemplos: Chrome, Firefox, Safari e Edge."
+  },
+  {
+    "q": "O que liga o computador à imagem da televisão por cabo digital?",
+    "a": "O cabo HDMI",
+    "opts": [
+      "O cabo USB",
+      "O cabo HDMI",
+      "O cabo de rede",
+      "O cabo elétrico apenas"
+    ],
+    "exp": "O HDMI transporta som e imagem."
+  },
+  {
+    "q": "Que empresa fabrica os iPhones?",
+    "a": "Apple",
+    "opts": [
+      "Samsung",
+      "Apple",
+      "Google",
+      "Microsoft"
+    ],
+    "exp": "A Apple foi fundada por Steve Jobs e Steve Wozniak."
+  },
+  {
+    "q": "O que mede a unidade 'gigabyte' (GB)?",
+    "a": "Quantidade de dados/memória",
+    "opts": [
+      "Velocidade",
+      "Quantidade de dados/memória",
+      "Brilho",
+      "Som"
+    ],
+    "exp": "1 GB tem 1024 megabytes."
+  },
+  {
+    "q": "Como se chama enviar um ficheiro do computador para a internet?",
+    "a": "Upload (carregar)",
+    "opts": [
+      "Download (descarregar)",
+      "Upload (carregar)",
+      "Reiniciar",
+      "Formatar"
+    ],
+    "exp": "O download é o contrário: trazer da internet."
+  },
+  {
+    "q": "Que rede social é conhecida por vídeos curtos com música?",
+    "a": "TikTok",
+    "opts": [
+      "LinkedIn",
+      "TikTok",
+      "Gmail",
+      "Spotify"
+    ],
+    "exp": "O TikTok popularizou os vídeos verticais curtos."
+  },
+  {
+    "q": "O que é um 'emoji'?",
+    "a": "Um pequeno ícone que mostra emoções",
+    "opts": [
+      "Um vírus",
+      "Um pequeno ícone que mostra emoções",
+      "Um cabo",
+      "Um motor de busca"
+    ],
+    "exp": "Os emojis surgiram no Japão."
+  },
+  {
+    "q": "Que componente guarda os dados mesmo com o computador desligado?",
+    "a": "O disco (HDD ou SSD)",
+    "opts": [
+      "A RAM",
+      "O disco (HDD ou SSD)",
+      "A placa gráfica",
+      "O monitor"
+    ],
+    "exp": "O SSD é mais rápido que o disco mecânico (HDD)."
+  },
+  {
+    "q": "Que formato de imagem permite fundo transparente, ideal para logótipos?",
+    "a": "PNG",
+    "opts": [
+      "MP3",
+      "PNG",
+      "DOCX",
+      "EXE"
+    ],
+    "exp": "O JPEG não guarda transparência; o PNG sim."
+  },
+  {
+    "q": "Que aparelho de pulso conta passos e mede os batimentos cardíacos?",
+    "a": "Smartwatch",
+    "opts": [
+      "Calculadora",
+      "Smartwatch",
+      "Router",
+      "Pen drive"
+    ],
+    "exp": "O smartwatch liga-se ao telemóvel."
   }
 ]

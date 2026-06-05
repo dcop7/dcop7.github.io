@@ -207,5 +207,214 @@
       "Arrefece a CPU"
     ],
     "exp": "As GPU também são muito usadas em inteligência artificial."
+  },
+  {
+    "q": "O que significa a sigla 'IA' em informática?",
+    "a": "Inteligência Artificial",
+    "opts": [
+      "Interface de Aplicação",
+      "Inteligência Artificial",
+      "Internet Avançada",
+      "Instalação Automática"
+    ],
+    "exp": "A IA permite às máquinas aprender com dados."
+  },
+  {
+    "q": "O que faz o protocolo 'DNS' na internet?",
+    "a": "Traduz nomes de sites em endereços IP",
+    "opts": [
+      "Encripta palavras-passe",
+      "Traduz nomes de sites em endereços IP",
+      "Cria emails",
+      "Liga o wifi"
+    ],
+    "exp": "É como a 'lista telefónica' da internet."
+  },
+  {
+    "q": "Que sistema operativo de código aberto é muito usado em servidores?",
+    "a": "Linux",
+    "opts": [
+      "Windows",
+      "Linux",
+      "macOS",
+      "iOS"
+    ],
+    "exp": "O Linux foi iniciado por Linus Torvalds em 1991."
+  },
+  {
+    "q": "Como se chama a memória rápida e temporária que os programas usam ao funcionar?",
+    "a": "RAM",
+    "opts": [
+      "SSD",
+      "RAM",
+      "CPU",
+      "GPU"
+    ],
+    "exp": "RAM = Random Access Memory."
+  },
+  {
+    "q": "O que é a 'autenticação de dois fatores' (2FA)?",
+    "a": "Confirmar a identidade com dois métodos",
+    "opts": [
+      "Dois ecrãs",
+      "Confirmar a identidade com dois métodos",
+      "Duas baterias",
+      "Dois teclados"
+    ],
+    "exp": "Por exemplo, palavra-passe + código no telemóvel."
+  },
+  {
+    "q": "O que é a 'computação na nuvem'?",
+    "a": "Usar servidores remotos pela internet",
+    "opts": [
+      "Computadores feitos de nuvens",
+      "Usar servidores remotos pela internet",
+      "Um tipo de vírus",
+      "Uma rede local"
+    ],
+    "exp": "A 'nuvem' são centros de dados noutros locais."
+  },
+  {
+    "q": "Em que base numérica funcionam os computadores?",
+    "a": "Binária (0 e 1)",
+    "opts": [
+      "Decimal",
+      "Binária (0 e 1)",
+      "Hexadecimal apenas",
+      "Romana"
+    ],
+    "exp": "Cada 0 ou 1 é um bit."
+  },
+  {
+    "q": "O que faz uma 'placa gráfica' (GPU)?",
+    "a": "Processa imagens e gráficos",
+    "opts": [
+      "Guarda ficheiros",
+      "Processa imagens e gráficos",
+      "Liga à internet",
+      "Arrefece o CPU"
+    ],
+    "exp": "As GPU também aceleram a inteligência artificial."
+  },
+  {
+    "q": "O que é um 'algoritmo'?",
+    "a": "Um conjunto de passos para resolver um problema",
+    "opts": [
+      "Um vírus",
+      "Um conjunto de passos para resolver um problema",
+      "Um cabo",
+      "Uma rede social"
+    ],
+    "exp": "As receitas de cozinha são algoritmos."
+  },
+  {
+    "q": "Que tecnologia regista transações de forma distribuída (criptomoedas)?",
+    "a": "Blockchain",
+    "opts": [
+      "Wifi",
+      "Blockchain",
+      "HTML",
+      "Bluetooth"
+    ],
+    "exp": "É muito difícil de adulterar."
+  },
+  {
+    "q": "O que é o 'IP' de um dispositivo na internet?",
+    "a": "Um endereço que o identifica na rede",
+    "opts": [
+      "Um vírus",
+      "Um endereço que o identifica na rede",
+      "Um tipo de ecrã",
+      "Uma palavra-passe"
+    ],
+    "exp": "É como uma 'morada' digital."
+  },
+  {
+    "q": "Como se chama o cérebro físico onde encaixam CPU, RAM e placas?",
+    "a": "A placa-mãe",
+    "opts": [
+      "O disco rígido",
+      "A placa-mãe",
+      "A fonte de alimentação",
+      "O monitor"
+    ],
+    "exp": "A placa-mãe liga todos os componentes."
+  },
+  {
+    "q": "O que faz a encriptação de dados?",
+    "a": "Codifica a informação para a proteger",
+    "opts": [
+      "Apaga ficheiros",
+      "Codifica a informação para a proteger",
+      "Acelera o computador",
+      "Imprime documentos"
+    ],
+    "exp": "Só quem tem a chave consegue ler."
+  },
+  {
+    "q": "Que termo descreve máquinas que aprendem a partir de exemplos?",
+    "a": "Aprendizagem automática (machine learning)",
+    "opts": [
+      "Folha de cálculo",
+      "Aprendizagem automática (machine learning)",
+      "Firewall",
+      "Backup"
+    ],
+    "exp": "É um ramo da inteligência artificial."
+  },
+  {
+    "q": "Que sigla designa a 'World Wide Web'?",
+    "a": "WWW",
+    "opts": [
+      "HTTP",
+      "WWW",
+      "FTP",
+      "DNS"
+    ],
+    "exp": "Foi criada por Tim Berners-Lee em 1989."
+  },
+  {
+    "q": "O que faz um 'cookie' num navegador?",
+    "a": "Guarda informação do utilizador no site",
+    "opts": [
+      "Limpa o ecrã",
+      "Guarda informação do utilizador no site",
+      "Aumenta a memória",
+      "Liga a câmara"
+    ],
+    "exp": "Por exemplo, lembra que iniciaste sessão."
+  },
+  {
+    "q": "Que empresa criou o motor de busca e o sistema Android?",
+    "a": "Google",
+    "opts": [
+      "Apple",
+      "Google",
+      "Microsoft",
+      "Meta"
+    ],
+    "exp": "O Android é o sistema móvel mais usado."
+  },
+  {
+    "q": "Que linguagem dá estilo (cores e layout) às páginas web?",
+    "a": "CSS",
+    "opts": [
+      "HTML",
+      "CSS",
+      "Python",
+      "SQL"
+    ],
+    "exp": "O HTML estrutura; o CSS decora; o JavaScript dá interatividade."
+  },
+  {
+    "q": "Que memória muito rápida fica dentro do processador?",
+    "a": "Cache",
+    "opts": [
+      "Disco rígido",
+      "Cache",
+      "Pen drive",
+      "Cartão SD"
+    ],
+    "exp": "A cache guarda dados de acesso frequente."
   }
 ]

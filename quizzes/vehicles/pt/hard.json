@@ -383,5 +383,16 @@
       "Rocket"
     ],
     "exp": "Inspirou romances e filmes."
+  },
+  {
+    "q": "Que veículo anfíbio anda em terra e na água?",
+    "a": "O hidroavião e o jipe anfíbio",
+    "opts": [
+      "O comboio",
+      "O hidroavião e o jipe anfíbio",
+      "O metro",
+      "O teleférico"
+    ],
+    "exp": "Os veículos anfíbios têm hélice e rodas."
   }
 ]

@@ -218,5 +218,225 @@
       "O fundo de ecrã"
     ],
     "exp": "Uma boa palavra-passe é longa e difícil de adivinhar."
+  },
+  {
+    "q": "Que tecla confirma ou cria uma nova linha ao escrever?",
+    "a": "Enter",
+    "opts": [
+      "Shift",
+      "Enter",
+      "Esc",
+      "Tab"
+    ],
+    "exp": "O Enter valida o texto ou muda de linha."
+  },
+  {
+    "q": "Que tecla longa serve para criar espaços entre palavras?",
+    "a": "Barra de espaços",
+    "opts": [
+      "Enter",
+      "Barra de espaços",
+      "Shift",
+      "Caps Lock"
+    ],
+    "exp": "É a tecla maior do teclado."
+  },
+  {
+    "q": "Que aparelho mostra a imagem do computador?",
+    "a": "O monitor",
+    "opts": [
+      "O rato",
+      "O monitor",
+      "O teclado",
+      "A coluna"
+    ],
+    "exp": "Os monitores modernos são LCD ou LED."
+  },
+  {
+    "q": "O que usamos para apagar uma letra à esquerda do cursor?",
+    "a": "Backspace",
+    "opts": [
+      "Enter",
+      "Backspace",
+      "Shift",
+      "Espaço"
+    ],
+    "exp": "O 'Delete' apaga à direita."
+  },
+  {
+    "q": "Que aparelho serve para tirar fotografias e gravar vídeos?",
+    "a": "A câmara",
+    "opts": [
+      "A impressora",
+      "A câmara",
+      "O router",
+      "O scanner"
+    ],
+    "exp": "Os telemóveis têm câmaras muito boas."
+  },
+  {
+    "q": "Que pequeno objeto guarda ficheiros e liga-se a uma entrada USB?",
+    "a": "A pen drive",
+    "opts": [
+      "O monitor",
+      "A pen drive",
+      "O rato",
+      "A coluna"
+    ],
+    "exp": "Cabe no bolso e leva ficheiros para todo o lado."
+  },
+  {
+    "q": "Que ligação sem fios dá internet em casa?",
+    "a": "O wifi",
+    "opts": [
+      "O cabo de ferro",
+      "O wifi",
+      "O Bluetooth apenas",
+      "O rádio FM"
+    ],
+    "exp": "O wifi usa ondas de rádio."
+  },
+  {
+    "q": "O que faz o botão de 'silêncio' num telemóvel?",
+    "a": "Desliga o som",
+    "opts": [
+      "Aumenta o som",
+      "Desliga o som",
+      "Liga a câmara",
+      "Carrega a bateria"
+    ],
+    "exp": "Útil em locais onde é preciso silêncio."
+  },
+  {
+    "q": "Que objeto guarda a energia que faz o telemóvel funcionar sem fios?",
+    "a": "A bateria",
+    "opts": [
+      "O carregador",
+      "A bateria",
+      "O ecrã",
+      "O cabo"
+    ],
+    "exp": "As baterias recarregam-se com o carregador."
+  },
+  {
+    "q": "O que vemos quando ligamos o computador e aparecem ícones?",
+    "a": "O ambiente de trabalho",
+    "opts": [
+      "A internet",
+      "O ambiente de trabalho",
+      "O antivírus",
+      "A impressora"
+    ],
+    "exp": "O ambiente de trabalho organiza programas e ficheiros."
+  },
+  {
+    "q": "Que aparelho liga muitos computadores e distribui a internet?",
+    "a": "O router",
+    "opts": [
+      "O monitor",
+      "O router",
+      "A coluna",
+      "A webcam"
+    ],
+    "exp": "O router encaminha os dados."
+  },
+  {
+    "q": "O que usamos para ouvir som no telemóvel sem incomodar?",
+    "a": "Os auscultadores",
+    "opts": [
+      "As colunas altas",
+      "Os auscultadores",
+      "O microfone",
+      "A antena"
+    ],
+    "exp": "Os auscultadores enviam o som aos ouvidos."
+  },
+  {
+    "q": "Que aparelho lê documentos em papel e passa-os para o computador?",
+    "a": "O scanner",
+    "opts": [
+      "A impressora",
+      "O scanner",
+      "O router",
+      "A coluna"
+    ],
+    "exp": "Digitaliza textos e imagens."
+  },
+  {
+    "q": "Como se chama uma pasta no computador?",
+    "a": "Uma pasta (folder)",
+    "opts": [
+      "Um vírus",
+      "Uma pasta (folder)",
+      "Um cabo",
+      "Um botão físico"
+    ],
+    "exp": "As pastas organizam os ficheiros."
+  },
+  {
+    "q": "O que fazemos para guardar uma cópia de um texto antes de o colar?",
+    "a": "Copiar",
+    "opts": [
+      "Apagar",
+      "Copiar",
+      "Imprimir",
+      "Desligar"
+    ],
+    "exp": "Depois de copiar, podemos 'colar' noutro sítio."
+  },
+  {
+    "q": "Que pequena câmara em cima do portátil serve para videochamadas?",
+    "a": "A webcam",
+    "opts": [
+      "O microfone",
+      "A webcam",
+      "O altifalante",
+      "O sensor de luz"
+    ],
+    "exp": "A webcam capta a nossa imagem."
+  },
+  {
+    "q": "O que aparece no ecrã para apontar e clicar com o rato?",
+    "a": "O cursor (seta)",
+    "opts": [
+      "O teclado",
+      "O cursor (seta)",
+      "O wifi",
+      "A bateria"
+    ],
+    "exp": "O cursor segue o movimento do rato."
+  },
+  {
+    "q": "Que aparelho pequeno guarda música e cabe no bolso?",
+    "a": "O telemóvel",
+    "opts": [
+      "A televisão",
+      "O telemóvel",
+      "O frigorífico",
+      "O micro-ondas"
+    ],
+    "exp": "Os telemóveis reproduzem música, vídeos e jogos."
+  },
+  {
+    "q": "Que tecla cancela uma ação ou fecha uma janela?",
+    "a": "Esc",
+    "opts": [
+      "Enter",
+      "Esc",
+      "Shift",
+      "Tab"
+    ],
+    "exp": "'Esc' vem de 'escape'."
+  },
+  {
+    "q": "Que aparelho projeta a imagem do computador numa parede ou tela grande?",
+    "a": "Projetor",
+    "opts": [
+      "Scanner",
+      "Projetor",
+      "Router",
+      "Microfone"
+    ],
+    "exp": "Os projetores são usados em aulas e cinemas."
   }
 ]
