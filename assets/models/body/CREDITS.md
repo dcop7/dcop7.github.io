@@ -21,11 +21,11 @@ Library of Medicine's Visible Human Project. Licence: CC BY 4.0.
 | intestine_small.glb | Small intestine | 3DPX-021017 |
 | intestine_large.glb | Large intestine | 3DPX-021005 |
 | bladder.glb | Urinary bladder | 3DPX-021025 |
+| skeleton.glb | Skeletal system (extracted from the VH_M "united" atlas) | 3DPX-021022 |
 
-## Standalone models
+## Standalone model
 | File | Model | NIH 3D entry | Licence |
 |------|-------|--------------|---------|
-| skeleton.glb | Human skeleton | 3DPX-016838 | CC BY 4.0 |
 | brain.glb | Detailed human brain | 3DPX-021161 | CC BY 4.0 |
 
 Attribution is also recorded in the repository's `ASSET-LICENSE-AUDIT.md`.

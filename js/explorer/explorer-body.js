@@ -145,7 +145,7 @@ const HumanBodyExplorer = (function () {
         desc:_=>_t('Rotate and zoom the body. Use the buttons on the left to peel away layers — skin, skeleton, muscles, organs and the blood vessels.','Roda e aproxima o corpo. Usa os botões à esquerda para revelar camadas — pele, esqueleto, músculos, órgãos e os vasos sanguíneos.'),
         stats:[['~37 bi',_=>_t('cells','células')],['206',_=>_t('bones','ossos')],['~640',_=>_t('muscles','músculos')]],
         facts:[_=>_t('Tap any organ to learn what it does.','Toca em qualquer órgão para saber o que faz.')] } },
-    esqueleto:  { layers:{skin:0,skeleton:1,muscles:0,organs:0,vessels:0}, focusY:9,  dist:38, spotlight:null,
+    esqueleto:  { layers:{skin:1,skeleton:1,muscles:0,organs:0,vessels:0}, focusY:9,  dist:38, spotlight:null,
       intro:{ emoji:'🦴', name:_=>_t('Skeleton','Esqueleto'), sub:_=>_t('206 bones','206 ossos'),
         desc:_=>_t('The frame that supports and protects you, lets you move and makes blood inside its marrow.','A estrutura que te suporta, protege, te deixa mover e fabrica sangue na sua medula.'),
         stats:[['206',_=>_t('bones','ossos')],['~15%',_=>_t('of weight','do peso')]],
@@ -178,10 +178,11 @@ const HumanBodyExplorer = (function () {
         facts:[_=>_t('All your DNA uncoiled would reach the Sun and back ~300 times.','Todo o teu DNA esticado iria ao Sol e voltava ~300 vezes.'),_=>_t('Humans share ~99.9% of their DNA.','Os humanos partilham ~99,9% do DNA.')] } },
   };
 
-  /* Only the co-registered VH layers are overlay-toggleable. The skeleton lives
-     on its own "Esqueleto" topic (separate model, shown on its own). */
+  /* All layers come from the same co-registered VH_M atlas, so they overlay
+     perfectly. (Muscles dropped — no real muscle model.) */
   const LAYER_BTNS = [
     { id:'skin',     ic:'🧍', color:'#fca5a5', name:_=>_t('Skin','Pele') },
+    { id:'skeleton', ic:'🦴', color:'#e2e8f0', name:_=>_t('Bones','Ossos') },
     { id:'organs',   ic:'🫀', color:'#fb7185', name:_=>_t('Organs','Órgãos') },
     { id:'vessels',  ic:'🩸', color:'#ef4444', name:_=>_t('Circulation','Circulação') },
   ];
@@ -497,12 +498,13 @@ const HumanBodyExplorer = (function () {
       } catch (e) {}
       _replaceGroup('organs', organs);
 
-      // skeleton — standalone, shown on its own topic
+      // skeleton — extracted from the same VH_M atlas, so it co-registers and
+      // overlays the skin/organs perfectly via the same wrap
       try {
         const sk = await _loadGLB('skeleton');
         const bone = new THREE.MeshStandardMaterial({ color: 0xf2efe2, roughness: 0.5, metalness: 0.05, emissive: 0x1a1812 });
         sk.traverse(m => { if (m.isMesh) m.material = bone; });
-        _replaceGroup('skeleton', _fitModel(sk, 16.5, 0, -Math.PI / 2));
+        _replaceGroup('skeleton', _vhWrap(sk));
       } catch (e) {}
 
       _modelsReady = true;
