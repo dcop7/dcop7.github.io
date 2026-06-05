@@ -308,7 +308,7 @@
     "exp": "As rãs e os sapos são anfíbios."
   },
   {
-    "q": "Que ave constrói diques e represas… não — que animal o faz?",
+    "q": "Que animal constrói diques e represas nos rios?",
     "a": "O castor",
     "opts": [
       "A lontra",
@@ -330,7 +330,7 @@
     "exp": "Pode atingir 5,5 m de altura."
   },
   {
-    "q": "Que animal carrega água na bossa… mito! O que guarda na bossa o camelo?",
+    "q": "O que guarda o camelo na bossa?",
     "a": "Gordura",
     "opts": [
       "Água",
