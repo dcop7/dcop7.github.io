@@ -1,39 +1,204 @@
 [
  {
-  "q": "Em que continente fica <strong>Ilhas Marshall</strong>?",
+  "q": "Em que continente fica <strong>Território Britânico do Oceano Índico</strong>?",
+  "a": "África",
+  "opts": [
+   "Oceânia",
+   "Europa",
+   "Antárctida",
+   "África"
+  ],
+  "exp": "Território Britânico do Oceano Índico fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Cidade do Vaticano</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Oceânia",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Cidade do Vaticano fica na Europa."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Montenegro</strong>?",
+  "a": "Croácia",
+  "opts": [
+   "Arménia",
+   "Croácia",
+   "Paraguai",
+   "Barbados"
+  ],
+  "exp": "Montenegro faz fronteira com Croácia."
+ },
+ {
+  "q": "Em que continente fica <strong>Nova Caledónia</strong>?",
   "a": "Oceânia",
   "opts": [
    "Ásia",
-   "Oceânia",
-   "Europa",
-   "África"
+   "Antárctida",
+   "África",
+   "Oceânia"
   ],
-  "exp": "Ilhas Marshall fica na Oceânia."
+  "exp": "Nova Caledónia fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Guernsey</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Antárctida",
+   "Europa",
+   "África",
+   "Ásia"
+  ],
+  "exp": "Guernsey fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Malta</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "África",
+   "Antárctida"
+  ],
+  "exp": "Malta fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Niue</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "Ásia",
+   "África",
+   "Antárctida"
+  ],
+  "exp": "Niue fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Liechtenstein</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Europa",
+   "Ásia",
+   "Oceânia"
+  ],
+  "exp": "Liechtenstein fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilha Bouvet</strong>?",
+  "a": "Antárctida",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "África",
+   "Antárctida"
+  ],
+  "exp": "Ilha Bouvet fica na Antárctida."
+ },
+ {
+  "q": "Em que continente fica <strong>Samoa Americana</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Samoa Americana fica na Oceânia."
  },
  {
   "q": "Qual destes países tem <strong>maior população</strong>?",
-  "a": "Ilhas Turks e Caicos",
+  "a": "Guam",
   "opts": [
-   "Ilhas Turks e Caicos",
-   "Liechtenstein",
-   "São Martinho",
-   "Marianas Setentrionais"
+   "Kiribati",
+   "Seicheles",
+   "ilha da Curação",
+   "Guam"
   ],
-  "exp": "Ilhas Turks e Caicos tem cerca de 47 mil de habitantes."
+  "exp": "Guam tem cerca de 168 mil de habitantes."
  },
  {
-  "q": "Em que continente fica <strong>Tokelau</strong>?",
-  "a": "Oceânia",
+  "q": "Qual destes países faz fronteira com <strong>Saara Ocidental</strong>?",
+  "a": "Marrocos",
   "opts": [
-   "África",
-   "Antárctida",
+   "São Vincente e Granadinas",
+   "Quirguistão",
+   "Marrocos",
+   "Ilhas Menores Distantes dos Estados Unidos"
+  ],
+  "exp": "Saara Ocidental faz fronteira com Marrocos."
+ },
+ {
+  "q": "Em que continente fica <strong>Butão</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
    "Europa",
+   "Antárctida",
    "Oceânia"
   ],
-  "exp": "Tokelau fica na Oceânia."
+  "exp": "Butão fica na Ásia."
  },
  {
-  "q": "Em que continente fica <strong>Polinésia Francesa</strong>?",
+  "q": "Qual destes países tem <strong>maior área</strong>?",
+  "a": "Paraguai",
+  "opts": [
+   "Paraguai",
+   "Japão",
+   "Zimbabwe",
+   "Alemanha"
+  ],
+  "exp": "Paraguai tem cerca de 406 752 km²."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Pitcairn</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "África",
+   "Ásia"
+  ],
+  "exp": "Ilhas Pitcairn fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Maldivas</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Antárctida",
+   "Europa",
+   "África",
+   "Ásia"
+  ],
+  "exp": "Maldivas fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Cook</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Ilhas Cook fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Antártida</strong>?",
+  "a": "Antárctida",
+  "opts": [
+   "Europa",
+   "África",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Antártida fica na Antárctida."
+ },
+ {
+  "q": "Em que continente fica <strong>Samoa</strong>?",
   "a": "Oceânia",
   "opts": [
    "Europa",
@@ -41,84 +206,568 @@
    "Oceânia",
    "Ásia"
   ],
-  "exp": "Polinésia Francesa fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Maldivas</strong>?",
-  "a": "Ásia",
-  "opts": [
-   "Ásia",
-   "África",
-   "Europa",
-   "Oceânia"
-  ],
-  "exp": "Maldivas fica na Ásia."
- },
- {
-  "q": "Em que continente fica <strong>Liechtenstein</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Oceânia",
-   "Europa",
-   "Ásia",
-   "África"
-  ],
-  "exp": "Liechtenstein fica na Europa."
+  "exp": "Samoa fica na Oceânia."
  },
  {
   "q": "Em que continente fica <strong>Tonga</strong>?",
   "a": "Oceânia",
   "opts": [
-   "Oceânia",
    "Antárctida",
+   "Oceânia",
    "Europa",
    "Ásia"
   ],
   "exp": "Tonga fica na Oceânia."
  },
  {
-  "q": "Em que continente fica <strong>Reunião</strong>?",
+  "q": "Qual destes países faz fronteira com <strong>Gibraltar</strong>?",
+  "a": "Espanha",
+  "opts": [
+   "Congo",
+   "Cidade do Vaticano",
+   "Espanha",
+   "Antártida"
+  ],
+  "exp": "Gibraltar faz fronteira com Espanha."
+ },
+ {
+  "q": "Em que continente fica <strong>Saara Ocidental</strong>?",
   "a": "África",
   "opts": [
    "Ásia",
+   "África",
+   "Oceânia",
+   "Europa"
+  ],
+  "exp": "Saara Ocidental fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Geórgia do Sul e Sandwich do Sul</strong>?",
+  "a": "Antárctida",
+  "opts": [
    "Europa",
+   "Antárctida",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Ilhas Geórgia do Sul e Sandwich do Sul fica na Antárctida."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Cocos (Keeling)</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Europa",
+   "Antárctida",
    "Oceânia",
    "África"
   ],
-  "exp": "Reunião fica na África."
+  "exp": "Ilhas Cocos (Keeling) fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Kosovo</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Oceânia",
+   "Europa",
+   "Antárctida",
+   "Ásia"
+  ],
+  "exp": "Kosovo fica na Europa."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Liechtenstein</strong>?",
+  "a": "Suíça",
+  "opts": [
+   "Mauritânia",
+   "Turquemenistão",
+   "Suíça",
+   "Gâmbia"
+  ],
+  "exp": "Liechtenstein faz fronteira com Suíça."
+ },
+ {
+  "q": "Em que continente fica <strong>Santa Helena, Ascensão e Tristão da Cunha</strong>?",
+  "a": "África",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Santa Helena, Ascensão e Tristão da Cunha fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Marshall</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "África",
+   "Europa",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Ilhas Marshall fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Tuvalu</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Ásia",
+   "África",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Tuvalu fica na Oceânia."
  },
  {
   "q": "Em que continente fica <strong>Mónaco</strong>?",
   "a": "Europa",
   "opts": [
-   "Europa",
-   "Antárctida",
+   "Oceânia",
+   "Ásia",
    "África",
-   "Oceânia"
+   "Europa"
   ],
   "exp": "Mónaco fica na Europa."
  },
  {
-  "q": "Em que continente fica <strong>Wallis e Futuna</strong>?",
+  "q": "Em que continente fica <strong>Gibraltar</strong>?",
+  "a": "Europa",
+  "opts": [
+   "África",
+   "Europa",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Gibraltar fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Luxemburgo</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "África",
+   "Oceânia",
+   "Ásia"
+  ],
+  "exp": "Luxemburgo fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Palau</strong>?",
   "a": "Oceânia",
   "opts": [
    "África",
    "Antárctida",
-   "Ásia",
-   "Oceânia"
+   "Oceânia",
+   "Europa"
   ],
-  "exp": "Wallis e Futuna fica na Oceânia."
+  "exp": "Palau fica na Oceânia."
  },
  {
   "q": "Em que continente fica <strong>Cabo Verde</strong>?",
   "a": "África",
   "opts": [
-   "Antárctida",
-   "Oceânia",
    "África",
-   "Ásia"
+   "Antárctida",
+   "Europa",
+   "Oceânia"
   ],
   "exp": "Cabo Verde fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Alândia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Europa",
+   "África",
+   "Antárctida"
+  ],
+  "exp": "Alândia fica na Europa."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Macau</strong>?",
+  "a": "China",
+  "opts": [
+   "Sudão do Sul",
+   "São Martinho",
+   "Ilhas Caimão",
+   "China"
+  ],
+  "exp": "Macau faz fronteira com China."
+ },
+ {
+  "q": "Qual é a capital de <strong>Islândia</strong>?",
+  "a": "Reiquiavique",
+  "opts": [
+   "Teerão",
+   "Reiquiavique",
+   "Nairóbi",
+   "Nova Deli"
+  ],
+  "exp": "A capital de Islândia é Reiquiavique (Europa)."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Andorra</strong>?",
+  "a": "Espanha",
+  "opts": [
+   "Trinidade e Tobago",
+   "Espanha",
+   "Arménia",
+   "Tajiquistão"
+  ],
+  "exp": "Andorra faz fronteira com Espanha."
+ },
+ {
+  "q": "Em que continente fica <strong>São Tomé e Príncipe</strong>?",
+  "a": "África",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Oceânia",
+   "África"
+  ],
+  "exp": "São Tomé e Príncipe fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>Macau</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Europa",
+   "Antárctida",
+   "Ásia",
+   "Oceânia"
+  ],
+  "exp": "Macau fica na Ásia."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Butão</strong>?",
+  "a": "China",
+  "opts": [
+   "Islândia",
+   "China",
+   "Ilhas Geórgia do Sul e Sandwich do Sul",
+   "Lesoto"
+  ],
+  "exp": "Butão faz fronteira com China."
+ },
+ {
+  "q": "Em que continente fica <strong>Kiribati</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "África",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Kiribati fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Wallis e Futuna</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "Europa",
+   "África"
+  ],
+  "exp": "Wallis e Futuna fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Guam</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Oceânia",
+   "Ásia",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Guam fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilha do Natal</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "África",
+   "Ásia",
+   "Oceânia",
+   "Antárctida"
+  ],
+  "exp": "Ilha do Natal fica na Oceânia."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Kosovo</strong>?",
+  "a": "Macedónia do Norte",
+  "opts": [
+   "Gronelândia",
+   "Sudão do Sul",
+   "Aruba",
+   "Macedónia do Norte"
+  ],
+  "exp": "Kosovo faz fronteira com Macedónia do Norte."
+ },
+ {
+  "q": "Em que continente fica <strong>Polinésia Francesa</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Polinésia Francesa fica na Oceânia."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Brunei</strong>?",
+  "a": "Malásia",
+  "opts": [
+   "Gronelândia",
+   "Suriname",
+   "Bolívia",
+   "Malásia"
+  ],
+  "exp": "Brunei faz fronteira com Malásia."
+ },
+ {
+  "q": "Qual é a capital de <strong>Luxemburgo</strong>?",
+  "a": "Luxemburgo",
+  "opts": [
+   "Luxemburgo",
+   "Praga",
+   "Wellington",
+   "Berlim"
+  ],
+  "exp": "A capital de Luxemburgo é Luxemburgo (Europa)."
+ },
+ {
+  "q": "Em que continente fica <strong>Marianas Setentrionais</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "África",
+   "Ásia",
+   "Europa",
+   "Oceânia"
+  ],
+  "exp": "Marianas Setentrionais fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilha Heard e Ilhas McDonald</strong>?",
+  "a": "Antárctida",
+  "opts": [
+   "Europa",
+   "Ásia",
+   "Oceânia",
+   "Antárctida"
+  ],
+  "exp": "Ilha Heard e Ilhas McDonald fica na Antárctida."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>San Marino</strong>?",
+  "a": "Itália",
+  "opts": [
+   "Palau",
+   "Madagáscar",
+   "Dinamarca",
+   "Itália"
+  ],
+  "exp": "San Marino faz fronteira com Itália."
+ },
+ {
+  "q": "Em que continente fica <strong>Montenegro</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Europa",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Montenegro fica na Europa."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Cidade do Vaticano</strong>?",
+  "a": "Itália",
+  "opts": [
+   "Itália",
+   "Guatemala",
+   "México",
+   "Belize"
+  ],
+  "exp": "Cidade do Vaticano faz fronteira com Itália."
+ },
+ {
+  "q": "Em que continente fica <strong>Terras Austrais e Antárticas Francesas</strong>?",
+  "a": "Antárctida",
+  "opts": [
+   "Antárctida",
+   "Europa",
+   "Oceânia",
+   "Ásia"
+  ],
+  "exp": "Terras Austrais e Antárticas Francesas fica na Antárctida."
+ },
+ {
+  "q": "Em que continente fica <strong>Tokelau</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Ásia",
+   "África",
+   "Antárctida",
+   "Oceânia"
+  ],
+  "exp": "Tokelau fica na Oceânia."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Luxemburgo</strong>?",
+  "a": "Bélgica",
+  "opts": [
+   "Geórgia",
+   "Trinidade e Tobago",
+   "Samoa Americana",
+   "Bélgica"
+  ],
+  "exp": "Luxemburgo faz fronteira com Bélgica."
+ },
+ {
+  "q": "Em que continente fica <strong>Micronésia</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "África",
+   "Europa",
+   "Oceânia",
+   "Antárctida"
+  ],
+  "exp": "Micronésia fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilha Norfolk</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Europa",
+   "Antárctida",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Ilha Norfolk fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilha Formosa</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Ásia",
+   "Europa",
+   "África",
+   "Antárctida"
+  ],
+  "exp": "Ilha Formosa fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Nauru</strong>?",
+  "a": "Oceânia",
+  "opts": [
+   "Europa",
+   "Antárctida",
+   "África",
+   "Oceânia"
+  ],
+  "exp": "Nauru fica na Oceânia."
+ },
+ {
+  "q": "Em que continente fica <strong>Islândia</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Islândia fica na Europa."
+ },
+ {
+  "q": "Qual destes países faz fronteira com <strong>Mónaco</strong>?",
+  "a": "França",
+  "opts": [
+   "Bermudas",
+   "França",
+   "Ilhas Marshall",
+   "Venezuela"
+  ],
+  "exp": "Mónaco faz fronteira com França."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilha de Man</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "África",
+   "Oceânia",
+   "Antárctida"
+  ],
+  "exp": "Ilha de Man fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Mayotte</strong>?",
+  "a": "África",
+  "opts": [
+   "Antárctida",
+   "Europa",
+   "Ásia",
+   "África"
+  ],
+  "exp": "Mayotte fica na África."
+ },
+ {
+  "q": "Em que continente fica <strong>San Marino</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Europa",
+   "Oceânia",
+   "Ásia",
+   "Antárctida"
+  ],
+  "exp": "San Marino fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Svalbard e Jan Mayen</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Oceânia",
+   "Europa",
+   "África"
+  ],
+  "exp": "Ilhas Svalbard e Jan Mayen fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Brunei</strong>?",
+  "a": "Ásia",
+  "opts": [
+   "Antárctida",
+   "Oceânia",
+   "Ásia",
+   "Europa"
+  ],
+  "exp": "Brunei fica na Ásia."
+ },
+ {
+  "q": "Em que continente fica <strong>Andorra</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Ásia",
+   "Oceânia",
+   "Europa",
+   "Antárctida"
+  ],
+  "exp": "Andorra fica na Europa."
+ },
+ {
+  "q": "Em que continente fica <strong>Ilhas Faroé</strong>?",
+  "a": "Europa",
+  "opts": [
+   "Oceânia",
+   "Antárctida",
+   "Europa",
+   "Ásia"
+  ],
+  "exp": "Ilhas Faroé fica na Europa."
  },
  {
   "q": "Em que continente fica <strong>Vanuatu</strong>?",
@@ -132,542 +781,36 @@
   "exp": "Vanuatu fica na Oceânia."
  },
  {
-  "q": "Em que continente fica <strong>Ilha Bouvet</strong>?",
-  "a": "Antárctida",
-  "opts": [
-   "Antárctida",
-   "Ásia",
-   "Oceânia",
-   "África"
-  ],
-  "exp": "Ilha Bouvet fica na Antárctida."
- },
- {
-  "q": "Em que continente fica <strong>Antártida</strong>?",
-  "a": "Antárctida",
-  "opts": [
-   "Ásia",
-   "Europa",
-   "Oceânia",
-   "Antárctida"
-  ],
-  "exp": "Antártida fica na Antárctida."
- },
- {
-  "q": "Qual é a capital de <strong>Islândia</strong>?",
-  "a": "Reiquiavique",
-  "opts": [
-   "Islamabade",
-   "Estocolmo",
-   "Riade",
-   "Reiquiavique"
-  ],
-  "exp": "A capital de Islândia é Reiquiavique (Europa)."
- },
- {
-  "q": "Em que continente fica <strong>Saara Ocidental</strong>?",
-  "a": "África",
-  "opts": [
-   "Europa",
-   "África",
-   "Antárctida",
-   "Ásia"
-  ],
-  "exp": "Saara Ocidental fica na África."
- },
- {
-  "q": "Em que continente fica <strong>Samoa Americana</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Ásia",
-   "África",
-   "Antárctida",
-   "Oceânia"
-  ],
-  "exp": "Samoa Americana fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>San Marino</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Oceânia",
-   "Ásia",
-   "Europa",
-   "Antárctida"
-  ],
-  "exp": "San Marino fica na Europa."
- },
- {
-  "q": "Qual destes países tem <strong>maior área</strong>?",
-  "a": "Sudão do Sul",
-  "opts": [
-   "Ucrânia",
-   "Madagáscar",
-   "Botswana",
-   "Sudão do Sul"
-  ],
-  "exp": "Sudão do Sul tem cerca de 619 745 km²."
- },
- {
-  "q": "Qual é a capital de <strong>Luxemburgo</strong>?",
-  "a": "Luxemburgo",
-  "opts": [
-   "Luxemburgo",
-   "Zagrebe",
-   "Amesterdão",
-   "Pequim"
-  ],
-  "exp": "A capital de Luxemburgo é Luxemburgo (Europa)."
- },
- {
-  "q": "Em que continente fica <strong>Ilha Norfolk</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Ásia",
-   "Europa",
-   "África",
-   "Oceânia"
-  ],
-  "exp": "Ilha Norfolk fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Butão</strong>?",
-  "a": "Ásia",
-  "opts": [
-   "Europa",
-   "África",
-   "Oceânia",
-   "Ásia"
-  ],
-  "exp": "Butão fica na Ásia."
- },
- {
-  "q": "Em que continente fica <strong>Nova Caledónia</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Europa",
-   "Ásia",
-   "Antárctida",
-   "Oceânia"
-  ],
-  "exp": "Nova Caledónia fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Kosovo</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Ásia",
-   "Antárctida",
-   "Europa",
-   "Oceânia"
-  ],
-  "exp": "Kosovo fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Palau</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "África",
-   "Antárctida",
-   "Ásia",
-   "Oceânia"
-  ],
-  "exp": "Palau fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Guam</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Oceânia",
-   "África",
-   "Ásia",
-   "Europa"
-  ],
-  "exp": "Guam fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Kiribati</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "África",
-   "Europa",
-   "Ásia",
-   "Oceânia"
-  ],
-  "exp": "Kiribati fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Ilha do Natal</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Antárctida",
-   "Europa",
-   "Ásia",
-   "Oceânia"
-  ],
-  "exp": "Ilha do Natal fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Niue</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Ásia",
-   "Antárctida",
-   "Oceânia",
-   "Europa"
-  ],
-  "exp": "Niue fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Ilhas Geórgia do Sul e Sandwich do Sul</strong>?",
-  "a": "Antárctida",
-  "opts": [
-   "Oceânia",
-   "África",
-   "Antárctida",
-   "Ásia"
-  ],
-  "exp": "Ilhas Geórgia do Sul e Sandwich do Sul fica na Antárctida."
- },
- {
-  "q": "Em que continente fica <strong>Ilhas Pitcairn</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Europa",
-   "Antárctida",
-   "Oceânia",
-   "Ásia"
-  ],
-  "exp": "Ilhas Pitcairn fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Gibraltar</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Europa",
-   "Ásia",
-   "Antárctida",
-   "Oceânia"
-  ],
-  "exp": "Gibraltar fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Macau</strong>?",
-  "a": "Ásia",
-  "opts": [
-   "Europa",
-   "Oceânia",
-   "Ásia",
-   "África"
-  ],
-  "exp": "Macau fica na Ásia."
- },
- {
-  "q": "Em que continente fica <strong>São Tomé e Príncipe</strong>?",
-  "a": "África",
-  "opts": [
-   "Oceânia",
-   "África",
-   "Antárctida",
-   "Ásia"
-  ],
-  "exp": "São Tomé e Príncipe fica na África."
- },
- {
-  "q": "Em que continente fica <strong>Tuvalu</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Antárctida",
-   "África",
-   "Ásia",
-   "Oceânia"
-  ],
-  "exp": "Tuvalu fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Cidade do Vaticano</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Ásia",
-   "Antárctida",
-   "Europa",
-   "Oceânia"
-  ],
-  "exp": "Cidade do Vaticano fica na Europa."
- },
- {
   "q": "Em que continente fica <strong>Seicheles</strong>?",
   "a": "África",
   "opts": [
    "Europa",
+   "Antárctida",
    "África",
-   "Ásia",
-   "Antárctida"
+   "Oceânia"
   ],
   "exp": "Seicheles fica na África."
- },
- {
-  "q": "Em que continente fica <strong>Montenegro</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Ásia",
-   "Antárctida",
-   "África",
-   "Europa"
-  ],
-  "exp": "Montenegro fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Luxemburgo</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Ásia",
-   "Europa",
-   "África",
-   "Antárctida"
-  ],
-  "exp": "Luxemburgo fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Guernsey</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Ásia",
-   "Oceânia",
-   "África",
-   "Europa"
-  ],
-  "exp": "Guernsey fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Terras Austrais e Antárticas Francesas</strong>?",
-  "a": "Antárctida",
-  "opts": [
-   "Oceânia",
-   "Europa",
-   "África",
-   "Antárctida"
-  ],
-  "exp": "Terras Austrais e Antárticas Francesas fica na Antárctida."
- },
- {
-  "q": "Em que continente fica <strong>Ilha de Man</strong>?",
-  "a": "Europa",
-  "opts": [
-   "África",
-   "Antárctida",
-   "Europa",
-   "Ásia"
-  ],
-  "exp": "Ilha de Man fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Samoa</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "África",
-   "Oceânia",
-   "Europa",
-   "Ásia"
-  ],
-  "exp": "Samoa fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Território Britânico do Oceano Índico</strong>?",
-  "a": "África",
-  "opts": [
-   "Antárctida",
-   "África",
-   "Oceânia",
-   "Ásia"
-  ],
-  "exp": "Território Britânico do Oceano Índico fica na África."
  },
  {
   "q": "Em que continente fica <strong>Jersey</strong>?",
   "a": "Europa",
   "opts": [
+   "Europa",
    "Oceânia",
-   "Ásia",
    "África",
-   "Europa"
+   "Antárctida"
   ],
   "exp": "Jersey fica na Europa."
  },
  {
-  "q": "Em que continente fica <strong>Ilhas Faroé</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Antárctida",
-   "Europa",
-   "Ásia",
-   "África"
-  ],
-  "exp": "Ilhas Faroé fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Malta</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Europa",
-   "Oceânia",
-   "África",
-   "Ásia"
-  ],
-  "exp": "Malta fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Marianas Setentrionais</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Oceânia",
-   "África",
-   "Antárctida",
-   "Ásia"
-  ],
-  "exp": "Marianas Setentrionais fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Alândia</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Europa",
-   "Ásia",
-   "Antárctida",
-   "Oceânia"
-  ],
-  "exp": "Alândia fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Nauru</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Ásia",
-   "África",
-   "Europa",
-   "Oceânia"
-  ],
-  "exp": "Nauru fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Ilha Heard e Ilhas McDonald</strong>?",
-  "a": "Antárctida",
-  "opts": [
-   "África",
-   "Antárctida",
-   "Ásia",
-   "Europa"
-  ],
-  "exp": "Ilha Heard e Ilhas McDonald fica na Antárctida."
- },
- {
-  "q": "Em que continente fica <strong>Brunei</strong>?",
-  "a": "Ásia",
-  "opts": [
-   "Ásia",
-   "Europa",
-   "Antárctida",
-   "Oceânia"
-  ],
-  "exp": "Brunei fica na Ásia."
- },
- {
-  "q": "Em que continente fica <strong>Ilha Formosa</strong>?",
-  "a": "Ásia",
-  "opts": [
-   "Oceânia",
-   "Europa",
-   "Ásia",
-   "Antárctida"
-  ],
-  "exp": "Ilha Formosa fica na Ásia."
- },
- {
-  "q": "Em que continente fica <strong>Mayotte</strong>?",
+  "q": "Em que continente fica <strong>Reunião</strong>?",
   "a": "África",
   "opts": [
-   "Antárctida",
    "Europa",
-   "Oceânia",
-   "África"
-  ],
-  "exp": "Mayotte fica na África."
- },
- {
-  "q": "Em que continente fica <strong>Micronésia</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Oceânia",
+   "África",
    "Ásia",
-   "África",
-   "Antárctida"
-  ],
-  "exp": "Micronésia fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Andorra</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Europa",
-   "Antárctida",
-   "Oceânia",
-   "Ásia"
-  ],
-  "exp": "Andorra fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Ilhas Svalbard e Jan Mayen</strong>?",
-  "a": "Europa",
-  "opts": [
-   "África",
-   "Antárctida",
-   "Europa",
-   "Ásia"
-  ],
-  "exp": "Ilhas Svalbard e Jan Mayen fica na Europa."
- },
- {
-  "q": "Em que continente fica <strong>Santa Helena, Ascensão e Tristão da Cunha</strong>?",
-  "a": "África",
-  "opts": [
-   "Oceânia",
-   "Europa",
-   "Antárctida",
-   "África"
-  ],
-  "exp": "Santa Helena, Ascensão e Tristão da Cunha fica na África."
- },
- {
-  "q": "Em que continente fica <strong>Ilhas Cook</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "África",
-   "Europa",
-   "Antárctida",
    "Oceânia"
   ],
-  "exp": "Ilhas Cook fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Ilhas Cocos (Keeling)</strong>?",
-  "a": "Oceânia",
-  "opts": [
-   "Oceânia",
-   "Ásia",
-   "África",
-   "Antárctida"
-  ],
-  "exp": "Ilhas Cocos (Keeling) fica na Oceânia."
- },
- {
-  "q": "Em que continente fica <strong>Islândia</strong>?",
-  "a": "Europa",
-  "opts": [
-   "Antárctida",
-   "África",
-   "Europa",
-   "Ásia"
-  ],
-  "exp": "Islândia fica na Europa."
+  "exp": "Reunião fica na África."
  }
 ]

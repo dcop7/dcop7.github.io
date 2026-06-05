@@ -60,6 +60,8 @@ function buildFor(lang){
     out[tier].push({ q, a, opts: shuffle(opts), exp });
   };
 
+  const byCca3 = {}; countries.forEach(c => { byCca3[c.cca3] = c; });
+
   countries.forEach((c, i) => {
     const tier = tierOf(i);
     const name = langName(c, lang), cont = contName(c, lang);
@@ -69,6 +71,18 @@ function buildFor(lang){
       const opts = [cont, ...pickDistinct(cont, allCont, 3)];
       const exp = lang==='pt' ? `${name} fica na ${cont}.` : `${name} is in ${cont}.`;
       push(tier, lang==='pt'?`Em que continente fica <strong>${name}</strong>?`:`Which continent is <strong>${name}</strong> in?`, cont, opts, exp);
+    }
+    // I) Borders (language-neutral names) — boosts the bank without needing English data
+    if (Array.isArray(c.borders) && c.borders.length) {
+      const neigh = c.borders.map(b => byCca3[b]).filter(Boolean);
+      if (neigh.length) {
+        const correct = langName(neigh[Math.floor(Math.random()*neigh.length)], lang);
+        const nonNeigh = countries.filter(x => x !== c && !c.borders.includes(x.cca3)).map(x => langName(x, lang));
+        const opts = [correct, ...pickDistinct(correct, nonNeigh, 3)];
+        const exp = lang==='pt' ? `${name} faz fronteira com ${correct}.` : `${name} borders ${correct}.`;
+        push(tier, lang==='pt'?`Qual destes países faz fronteira com <strong>${name}</strong>?`:`Which of these countries borders <strong>${name}</strong>?`, correct, opts, exp);
+      }
+      // Island/landlocked-style reverse: pick a neighbour, ask which it borders (adds variety)
     }
     // B) Capital (forward)
     const cap = capName(c, lang);
@@ -125,7 +139,7 @@ function buildFor(lang){
   for (const tier of ['easy','medium','hard']){
     const seen=new Set(); const uniq=[];
     for (const it of shuffle(out[tier])){ if(seen.has(it.q))continue; seen.add(it.q); uniq.push(it); }
-    out[tier] = uniq.slice(0, 220);
+    out[tier] = uniq.slice(0, 350);
   }
   return out;
 }
