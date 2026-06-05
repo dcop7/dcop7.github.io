@@ -218,5 +218,258 @@
       "Balões"
     ],
     "exp": "Os foguetões precisam de muita velocidade para sair da Terra."
+  },
+  {
+    "q": "Que planeta vemos como uma estrela muito brilhante ao amanhecer ou anoitecer?",
+    "a": "Vénus",
+    "opts": [
+      "Marte",
+      "Vénus",
+      "Saturno",
+      "Mercúrio"
+    ],
+    "exp": "Vénus é chamado a 'estrela da manhã' ou 'da tarde'."
+  },
+  {
+    "q": "O que dá calor e luz a todos os planetas?",
+    "a": "O Sol",
+    "opts": [
+      "A Lua",
+      "O Sol",
+      "As estrelas distantes",
+      "Júpiter"
+    ],
+    "exp": "O Sol é a fonte de energia do Sistema Solar."
+  },
+  {
+    "q": "Quantos planetas há no Sistema Solar?",
+    "a": "Oito",
+    "opts": [
+      "Sete",
+      "Oito",
+      "Nove",
+      "Dez"
+    ],
+    "exp": "Plutão é hoje um planeta anão."
+  },
+  {
+    "q": "Que planeta é o nosso?",
+    "a": "Terra",
+    "opts": [
+      "Marte",
+      "Terra",
+      "Vénus",
+      "Mercúrio"
+    ],
+    "exp": "A Terra é o terceiro planeta a partir do Sol."
+  },
+  {
+    "q": "Que astro muda de forma ao longo do mês (fases)?",
+    "a": "A Lua",
+    "opts": [
+      "O Sol",
+      "A Lua",
+      "Marte",
+      "Uma estrela"
+    ],
+    "exp": "As fases vão da Lua nova à Lua cheia."
+  },
+  {
+    "q": "Como se chama o caminho de um planeta à volta do Sol?",
+    "a": "Órbita",
+    "opts": [
+      "Rotação",
+      "Órbita",
+      "Eclipse",
+      "Galáxia"
+    ],
+    "exp": "A Terra demora um ano a percorrer a sua órbita."
+  },
+  {
+    "q": "Que veículo leva os astronautas ao espaço?",
+    "a": "Foguetão",
+    "opts": [
+      "Avião",
+      "Foguetão",
+      "Comboio",
+      "Submarino"
+    ],
+    "exp": "O foguetão precisa de grande velocidade para subir."
+  },
+  {
+    "q": "Que planeta tem anéis bem visíveis?",
+    "a": "Saturno",
+    "opts": [
+      "Marte",
+      "Saturno",
+      "Vénus",
+      "Mercúrio"
+    ],
+    "exp": "Os anéis são feitos de gelo e rocha."
+  },
+  {
+    "q": "O que vemos no céu à noite, a brilhar, além da Lua?",
+    "a": "As estrelas",
+    "opts": [
+      "O Sol",
+      "As estrelas",
+      "As nuvens",
+      "Os aviões apenas"
+    ],
+    "exp": "As estrelas são sóis muito distantes."
+  },
+  {
+    "q": "Qual é o planeta vermelho?",
+    "a": "Marte",
+    "opts": [
+      "Vénus",
+      "Marte",
+      "Júpiter",
+      "Saturno"
+    ],
+    "exp": "Marte tem solo cor de ferrugem."
+  },
+  {
+    "q": "O que separa o dia da noite na Terra?",
+    "a": "A rotação da Terra",
+    "opts": [
+      "A Lua",
+      "A rotação da Terra",
+      "As nuvens",
+      "O vento"
+    ],
+    "exp": "A Terra gira sobre si mesma uma vez por dia."
+  },
+  {
+    "q": "Como se chama um pedaço de rocha que arde ao entrar na atmosfera?",
+    "a": "Meteoro",
+    "opts": [
+      "Satélite",
+      "Meteoro",
+      "Planeta",
+      "Cometa apenas"
+    ],
+    "exp": "Chamamos-lhe 'estrela cadente'."
+  },
+  {
+    "q": "Que objeto com cauda brilhante visita o céu de vez em quando?",
+    "a": "Cometa",
+    "opts": [
+      "Planeta",
+      "Cometa",
+      "Lua",
+      "Galáxia"
+    ],
+    "exp": "A cauda do cometa aponta para longe do Sol."
+  },
+  {
+    "q": "Como se chama o grupo de estrelas onde vivemos?",
+    "a": "Via Láctea",
+    "opts": [
+      "Andrómeda",
+      "Via Láctea",
+      "Sistema Solar apenas",
+      "Universo"
+    ],
+    "exp": "A Via Láctea é a nossa galáxia."
+  },
+  {
+    "q": "Qual é o planeta mais perto do Sol?",
+    "a": "Mercúrio",
+    "opts": [
+      "Vénus",
+      "Mercúrio",
+      "Terra",
+      "Marte"
+    ],
+    "exp": "Mercúrio é também o mais pequeno."
+  },
+  {
+    "q": "Que aparelho usamos para ver os planetas e estrelas ao perto?",
+    "a": "Telescópio",
+    "opts": [
+      "Microscópio",
+      "Telescópio",
+      "Lupa",
+      "Bússola"
+    ],
+    "exp": "O telescópio amplia objetos distantes."
+  },
+  {
+    "q": "Que cor é o Sol que desenhamos normalmente?",
+    "a": "Amarelo",
+    "opts": [
+      "Azul",
+      "Amarelo",
+      "Verde",
+      "Preto"
+    ],
+    "exp": "O Sol é uma estrela anã amarela."
+  },
+  {
+    "q": "O que acontece quando a Lua tapa o Sol?",
+    "a": "Um eclipse solar",
+    "opts": [
+      "Um arco-íris",
+      "Um eclipse solar",
+      "Uma aurora",
+      "Uma chuva de estrelas"
+    ],
+    "exp": "A Lua fica entre a Terra e o Sol."
+  },
+  {
+    "q": "O que mantém os planetas presos à volta do Sol?",
+    "a": "A gravidade",
+    "opts": [
+      "O vento solar",
+      "A gravidade",
+      "O magnetismo",
+      "Cordas invisíveis"
+    ],
+    "exp": "A gravidade do Sol é muito forte."
+  },
+  {
+    "q": "Qual é o planeta mais pequeno do Sistema Solar?",
+    "a": "Mercúrio",
+    "opts": [
+      "Marte",
+      "Mercúrio",
+      "Vénus",
+      "Plutão"
+    ],
+    "exp": "Mercúrio é pouco maior do que a Lua."
+  },
+  {
+    "q": "De que é feito principalmente o Sol?",
+    "a": "Gás (hidrogénio e hélio)",
+    "opts": [
+      "Rocha",
+      "Gás (hidrogénio e hélio)",
+      "Água",
+      "Metal"
+    ],
+    "exp": "O Sol é uma enorme bola de gás muito quente."
+  },
+  {
+    "q": "Que objeto feito por humanos anda à volta da Terra?",
+    "a": "Satélite artificial",
+    "opts": [
+      "Cometa",
+      "Satélite artificial",
+      "Asteroide",
+      "Meteoro"
+    ],
+    "exp": "Os satélites servem para comunicações e GPS."
+  },
+  {
+    "q": "O que é mais forte na Lua do que na Terra?",
+    "a": "Nada — a gravidade é mais fraca",
+    "opts": [
+      "A gravidade",
+      "Nada — a gravidade é mais fraca",
+      "O vento",
+      "A chuva"
+    ],
+    "exp": "Na Lua pesamos cerca de 6 vezes menos."
   }
 ]

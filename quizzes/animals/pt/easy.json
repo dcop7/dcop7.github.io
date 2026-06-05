@@ -218,5 +218,225 @@
       "A ave"
     ],
     "exp": "As cobras mudam a pele várias vezes por ano."
+  },
+  {
+    "q": "O que come um coelho?",
+    "a": "Ervas e cenouras",
+    "opts": [
+      "Carne",
+      "Ervas e cenouras",
+      "Peixe",
+      "Insetos"
+    ],
+    "exp": "O coelho é herbívoro."
+  },
+  {
+    "q": "Que som faz a vaca?",
+    "a": "Muge",
+    "opts": [
+      "Late",
+      "Muge",
+      "Mia",
+      "Grasna"
+    ],
+    "exp": "O som da vaca chama-se mugido."
+  },
+  {
+    "q": "Que animal tem riscas pretas e brancas e parece um cavalo?",
+    "a": "Zebra",
+    "opts": [
+      "Girafa",
+      "Zebra",
+      "Burro",
+      "Antílope"
+    ],
+    "exp": "Cada zebra tem um padrão de riscas único."
+  },
+  {
+    "q": "Que ave dorme de dia e caça de noite?",
+    "a": "Coruja",
+    "opts": [
+      "Pardal",
+      "Coruja",
+      "Andorinha",
+      "Pato"
+    ],
+    "exp": "A coruja tem visão e audição excelentes."
+  },
+  {
+    "q": "Que animal carrega a casa às costas?",
+    "a": "O caracol",
+    "opts": [
+      "A formiga",
+      "O caracol",
+      "A abelha",
+      "A minhoca"
+    ],
+    "exp": "A concha protege o corpo mole do caracol."
+  },
+  {
+    "q": "Qual é o maior peixe do mundo?",
+    "a": "Tubarão-baleia",
+    "opts": [
+      "Tubarão-branco",
+      "Tubarão-baleia",
+      "Atum",
+      "Espadarte"
+    ],
+    "exp": "O tubarão-baleia come plâncton e é inofensivo."
+  },
+  {
+    "q": "Que ave não voa mas nada muito bem e vive no gelo?",
+    "a": "Pinguim",
+    "opts": [
+      "Águia",
+      "Pinguim",
+      "Gaivota",
+      "Falcão"
+    ],
+    "exp": "Os pinguins usam as asas para nadar."
+  },
+  {
+    "q": "Que animal salta e diz 'coac'?",
+    "a": "A rã",
+    "opts": [
+      "O grilo",
+      "A rã",
+      "O sapo",
+      "A cigarra"
+    ],
+    "exp": "As rãs vivem perto da água."
+  },
+  {
+    "q": "Qual é o grande felino com manchas, parecido com o leopardo?",
+    "a": "Jaguar",
+    "opts": [
+      "Tigre",
+      "Jaguar",
+      "Leão",
+      "Gato doméstico"
+    ],
+    "exp": "O jaguar vive nas florestas da América."
+  },
+  {
+    "q": "Que inseto trabalhador vive em formigueiros?",
+    "a": "A formiga",
+    "opts": [
+      "A abelha",
+      "A formiga",
+      "A mosca",
+      "O mosquito"
+    ],
+    "exp": "As formigas conseguem levantar muitas vezes o seu peso."
+  },
+  {
+    "q": "Que animal de quatro patas é o melhor amigo do homem?",
+    "a": "O cão",
+    "opts": [
+      "O gato",
+      "O cão",
+      "O cavalo",
+      "O coelho"
+    ],
+    "exp": "O cão foi o primeiro animal domesticado."
+  },
+  {
+    "q": "Como se chama a cria do gato?",
+    "a": "Gatinho",
+    "opts": [
+      "Cachorro",
+      "Gatinho",
+      "Poldro",
+      "Cordeiro"
+    ],
+    "exp": "A cria do cão é o cachorro."
+  },
+  {
+    "q": "Que animal grande vive na savana e tem um pescoço enorme?",
+    "a": "Girafa",
+    "opts": [
+      "Elefante",
+      "Girafa",
+      "Hipopótamo",
+      "Rinoceronte"
+    ],
+    "exp": "A girafa come folhas no alto das árvores."
+  },
+  {
+    "q": "Que ave fala e repete palavras?",
+    "a": "Papagaio",
+    "opts": [
+      "Pomba",
+      "Papagaio",
+      "Galinha",
+      "Pato"
+    ],
+    "exp": "Os papagaios imitam sons e vozes."
+  },
+  {
+    "q": "Que animal vive na água e tem barbatanas?",
+    "a": "O peixe",
+    "opts": [
+      "O cão",
+      "O peixe",
+      "O gato",
+      "A galinha"
+    ],
+    "exp": "Os peixes respiram pelas guelras."
+  },
+  {
+    "q": "Que animal põe ovos e voa, mas não é mamífero?",
+    "a": "A ave",
+    "opts": [
+      "O morcego",
+      "A ave",
+      "A baleia",
+      "O cão"
+    ],
+    "exp": "As aves põem ovos e têm penas."
+  },
+  {
+    "q": "Que animal grande e cinzento adora chafurdar na lama?",
+    "a": "Hipopótamo",
+    "opts": [
+      "Elefante",
+      "Hipopótamo",
+      "Rinoceronte",
+      "Búfalo"
+    ],
+    "exp": "A lama protege a pele do hipopótamo do sol."
+  },
+  {
+    "q": "Que animal pequeno faz teia para apanhar insetos?",
+    "a": "A aranha",
+    "opts": [
+      "A formiga",
+      "A aranha",
+      "A abelha",
+      "O escaravelho"
+    ],
+    "exp": "A teia é feita de seda muito resistente."
+  },
+  {
+    "q": "Que animal dá lã que usamos para fazer camisolas?",
+    "a": "A ovelha",
+    "opts": [
+      "A vaca",
+      "A ovelha",
+      "O porco",
+      "A galinha"
+    ],
+    "exp": "A lã é tosquiada da ovelha."
+  },
+  {
+    "q": "Que réptil tem casco e anda devagar?",
+    "a": "A tartaruga",
+    "opts": [
+      "A cobra",
+      "A tartaruga",
+      "O lagarto",
+      "O crocodilo"
+    ],
+    "exp": "Algumas tartarugas vivem mais de 100 anos."
   }
 ]

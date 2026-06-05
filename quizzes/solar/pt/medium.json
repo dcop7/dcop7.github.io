@@ -218,5 +218,236 @@
       "Júpiter"
     ],
     "exp": "Um dia em Vénus é mais longo do que o seu ano!"
+  },
+  {
+    "q": "Qual é o planeta com mais luas conhecidas?",
+    "a": "Saturno",
+    "opts": [
+      "Júpiter",
+      "Saturno",
+      "Úrano",
+      "Neptuno"
+    ],
+    "exp": "Saturno e Júpiter têm dezenas de luas."
+  },
+  {
+    "q": "Que planeta roda 'deitado', com o eixo quase horizontal?",
+    "a": "Úrano",
+    "opts": [
+      "Saturno",
+      "Úrano",
+      "Neptuno",
+      "Marte"
+    ],
+    "exp": "Provavelmente após uma grande colisão."
+  },
+  {
+    "q": "O que causa as marés nos oceanos da Terra?",
+    "a": "A atração da Lua",
+    "opts": [
+      "O vento",
+      "A atração da Lua",
+      "As correntes apenas",
+      "O Sol da tarde"
+    ],
+    "exp": "A gravidade da Lua (e do Sol) puxa a água."
+  },
+  {
+    "q": "Que missão levou os primeiros humanos à Lua?",
+    "a": "Apollo 11",
+    "opts": [
+      "Apollo 11",
+      "Gemini 4",
+      "Vostok 1",
+      "Sputnik 1"
+    ],
+    "exp": "Aconteceu em 1969."
+  },
+  {
+    "q": "Que planeta é o mais quente, apesar de não ser o mais próximo do Sol?",
+    "a": "Vénus",
+    "opts": [
+      "Mercúrio",
+      "Vénus",
+      "Marte",
+      "Júpiter"
+    ],
+    "exp": "A atmosfera densa de Vénus retém o calor."
+  },
+  {
+    "q": "O que é uma constelação?",
+    "a": "Um grupo de estrelas que formam um desenho",
+    "opts": [
+      "Um planeta",
+      "Um grupo de estrelas que formam um desenho",
+      "Uma lua",
+      "Um cometa"
+    ],
+    "exp": "O Cruzeiro do Sul é uma constelação famosa."
+  },
+  {
+    "q": "Que planeta tem a Grande Mancha Vermelha?",
+    "a": "Júpiter",
+    "opts": [
+      "Saturno",
+      "Júpiter",
+      "Marte",
+      "Neptuno"
+    ],
+    "exp": "É uma tempestade maior do que a Terra."
+  },
+  {
+    "q": "Como se chama o estudo do céu e dos astros?",
+    "a": "Astronomia",
+    "opts": [
+      "Astrologia",
+      "Astronomia",
+      "Geologia",
+      "Meteorologia"
+    ],
+    "exp": "A astronomia é uma ciência."
+  },
+  {
+    "q": "Que estrela é a mais próxima da Terra?",
+    "a": "O Sol",
+    "opts": [
+      "Sírius",
+      "O Sol",
+      "Próxima Centauri",
+      "Polaris"
+    ],
+    "exp": "A seguir ao Sol vem a Próxima Centauri."
+  },
+  {
+    "q": "Que telescópio espacial famoso orbita a Terra desde 1990?",
+    "a": "Hubble",
+    "opts": [
+      "James Webb",
+      "Hubble",
+      "Kepler",
+      "Galileo"
+    ],
+    "exp": "Captou imagens espetaculares do Universo."
+  },
+  {
+    "q": "O que é o Sol, afinal?",
+    "a": "Uma estrela",
+    "opts": [
+      "Um planeta gigante",
+      "Uma estrela",
+      "Um cometa",
+      "Uma lua"
+    ],
+    "exp": "O Sol é uma bola de gás que funde hidrogénio."
+  },
+  {
+    "q": "Quantas luas tem a Terra?",
+    "a": "Uma",
+    "opts": [
+      "Nenhuma",
+      "Uma",
+      "Duas",
+      "Quatro"
+    ],
+    "exp": "A Lua afasta-se cerca de 3,8 cm por ano."
+  },
+  {
+    "q": "Que planeta tem o dia mais curto (rotação mais rápida)?",
+    "a": "Júpiter",
+    "opts": [
+      "Terra",
+      "Júpiter",
+      "Marte",
+      "Vénus"
+    ],
+    "exp": "Júpiter roda em cerca de 10 horas."
+  },
+  {
+    "q": "Como se chama a região de pequenos corpos gelados além de Neptuno?",
+    "a": "Cintura de Kuiper",
+    "opts": [
+      "Cintura de asteroides",
+      "Cintura de Kuiper",
+      "Nuvem de gás",
+      "Anel de Saturno"
+    ],
+    "exp": "Plutão fica na Cintura de Kuiper."
+  },
+  {
+    "q": "O que provoca um eclipse lunar?",
+    "a": "A sombra da Terra sobre a Lua",
+    "opts": [
+      "A Lua tapar o Sol",
+      "A sombra da Terra sobre a Lua",
+      "Nuvens",
+      "O vento solar"
+    ],
+    "exp": "A Lua pode ficar avermelhada."
+  },
+  {
+    "q": "Que planeta tem montanhas e vales e já teve água líquida?",
+    "a": "Marte",
+    "opts": [
+      "Vénus",
+      "Marte",
+      "Mercúrio",
+      "Júpiter"
+    ],
+    "exp": "Há sinais de antigos rios em Marte."
+  },
+  {
+    "q": "Como se chama o conjunto de todos os planetas e o Sol?",
+    "a": "Sistema Solar",
+    "opts": [
+      "Galáxia",
+      "Sistema Solar",
+      "Universo",
+      "Constelação"
+    ],
+    "exp": "O Sistema Solar fica na Via Láctea."
+  },
+  {
+    "q": "Que planeta roda no sentido contrário aos outros?",
+    "a": "Vénus",
+    "opts": [
+      "Marte",
+      "Vénus",
+      "Júpiter",
+      "Saturno"
+    ],
+    "exp": "Em Vénus, o Sol nasceria a oeste."
+  },
+  {
+    "q": "A que distância aproximada está o Sol da Terra?",
+    "a": "Cerca de 150 milhões de km",
+    "opts": [
+      "1 milhão de km",
+      "Cerca de 150 milhões de km",
+      "10 mil km",
+      "1 mil milhões de km"
+    ],
+    "exp": "Essa distância chama-se Unidade Astronómica."
+  },
+  {
+    "q": "Que planeta tem uma densidade tão baixa que flutuaria na água?",
+    "a": "Saturno",
+    "opts": [
+      "Júpiter",
+      "Saturno",
+      "Terra",
+      "Mercúrio"
+    ],
+    "exp": "Saturno é menos denso do que a água."
+  },
+  {
+    "q": "Como se chama o maior corpo da cintura de asteroides?",
+    "a": "Ceres",
+    "opts": [
+      "Vesta",
+      "Ceres",
+      "Pallas",
+      "Éris"
+    ],
+    "exp": "Ceres é também um planeta anão."
   }
 ]

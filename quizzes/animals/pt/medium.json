@@ -218,5 +218,225 @@
       "Lobo"
     ],
     "exp": "Os morcegos usam ecolocalização."
+  },
+  {
+    "q": "Qual é a ave que voa mais rápido em mergulho?",
+    "a": "Falcão-peregrino",
+    "opts": [
+      "Águia",
+      "Falcão-peregrino",
+      "Andorinhão",
+      "Albatroz"
+    ],
+    "exp": "Pode ultrapassar os 320 km/h em picada."
+  },
+  {
+    "q": "A que grupo pertencem as baleias e os golfinhos?",
+    "a": "Mamíferos",
+    "opts": [
+      "Peixes",
+      "Mamíferos",
+      "Anfíbios",
+      "Répteis"
+    ],
+    "exp": "Respiram ar e amamentam as crias."
+  },
+  {
+    "q": "Que animal tem o pescoço mais longo do mundo?",
+    "a": "Girafa",
+    "opts": [
+      "Avestruz",
+      "Girafa",
+      "Camelo",
+      "Cisne"
+    ],
+    "exp": "A girafa tem apenas 7 vértebras no pescoço, como nós."
+  },
+  {
+    "q": "Que inseto sofre metamorfose completa passando por casulo?",
+    "a": "Borboleta",
+    "opts": [
+      "Gafanhoto",
+      "Borboleta",
+      "Libélula",
+      "Barata"
+    ],
+    "exp": "A lagarta transforma-se em borboleta na crisálida."
+  },
+  {
+    "q": "Que animal marinho pode mudar de cor e largar tinta?",
+    "a": "Polvo",
+    "opts": [
+      "Estrela-do-mar",
+      "Polvo",
+      "Cavalo-marinho",
+      "Caranguejo"
+    ],
+    "exp": "O polvo é um molusco muito inteligente."
+  },
+  {
+    "q": "Qual é o maior animal terrestre?",
+    "a": "Elefante-africano",
+    "opts": [
+      "Girafa",
+      "Elefante-africano",
+      "Hipopótamo",
+      "Rinoceronte-branco"
+    ],
+    "exp": "Pode pesar mais de 6 toneladas."
+  },
+  {
+    "q": "Que animal hiberna no inverno para poupar energia?",
+    "a": "O ouriço",
+    "opts": [
+      "O lobo",
+      "O ouriço",
+      "A raposa",
+      "O esquilo apenas"
+    ],
+    "exp": "Durante a hibernação, o metabolismo abranda muito."
+  },
+  {
+    "q": "Que classe de animais tem pele húmida e vive na água e na terra?",
+    "a": "Anfíbios",
+    "opts": [
+      "Répteis",
+      "Anfíbios",
+      "Mamíferos",
+      "Aves"
+    ],
+    "exp": "As rãs e os sapos são anfíbios."
+  },
+  {
+    "q": "Que ave constrói diques e represas… não — que animal o faz?",
+    "a": "O castor",
+    "opts": [
+      "A lontra",
+      "O castor",
+      "O rato-almiscarado",
+      "O ornitorrinco"
+    ],
+    "exp": "Os castores constroem diques com troncos."
+  },
+  {
+    "q": "Qual é o animal mais alto do mundo?",
+    "a": "Girafa",
+    "opts": [
+      "Elefante",
+      "Girafa",
+      "Camelo",
+      "Avestruz"
+    ],
+    "exp": "Pode atingir 5,5 m de altura."
+  },
+  {
+    "q": "Que animal carrega água na bossa… mito! O que guarda na bossa o camelo?",
+    "a": "Gordura",
+    "opts": [
+      "Água",
+      "Gordura",
+      "Ar",
+      "Comida sólida"
+    ],
+    "exp": "A bossa do camelo armazena gordura, não água."
+  },
+  {
+    "q": "Que mamífero marinho usa cliques para se orientar (ecolocalização)?",
+    "a": "Golfinho",
+    "opts": [
+      "Atum",
+      "Golfinho",
+      "Foca",
+      "Tartaruga"
+    ],
+    "exp": "O som ajuda-o a 'ver' no escuro da água."
+  },
+  {
+    "q": "Que animal é o símbolo da sabedoria e roda a cabeça quase 270°?",
+    "a": "Coruja",
+    "opts": [
+      "Águia",
+      "Coruja",
+      "Corvo",
+      "Falcão"
+    ],
+    "exp": "A coruja não move os olhos, por isso roda a cabeça."
+  },
+  {
+    "q": "Que grupo de animais inclui aranhas, escorpiões e ácaros?",
+    "a": "Aracnídeos",
+    "opts": [
+      "Insetos",
+      "Aracnídeos",
+      "Crustáceos",
+      "Miriápodes"
+    ],
+    "exp": "Os aracnídeos têm 8 patas."
+  },
+  {
+    "q": "Que réptil gigante vive na Indonésia e é um lagarto venenoso?",
+    "a": "Dragão-de-Komodo",
+    "opts": [
+      "Iguana",
+      "Dragão-de-Komodo",
+      "Camaleão",
+      "Crocodilo"
+    ],
+    "exp": "É o maior lagarto vivo do mundo."
+  },
+  {
+    "q": "Que animal produz a seda usada nos tecidos?",
+    "a": "O bicho-da-seda",
+    "opts": [
+      "A aranha",
+      "O bicho-da-seda",
+      "A abelha",
+      "A formiga"
+    ],
+    "exp": "A lagarta fia um casulo de um único fio."
+  },
+  {
+    "q": "Qual é o maior felino selvagem?",
+    "a": "Tigre",
+    "opts": [
+      "Leão",
+      "Tigre",
+      "Leopardo",
+      "Jaguar"
+    ],
+    "exp": "O tigre-siberiano pode pesar mais de 300 kg."
+  },
+  {
+    "q": "Que animal sem ossos rasteja e ajuda a fertilizar o solo?",
+    "a": "A minhoca",
+    "opts": [
+      "A cobra",
+      "A minhoca",
+      "A lesma",
+      "O caracol"
+    ],
+    "exp": "As minhocas arejam e enriquecem a terra."
+  },
+  {
+    "q": "Que ave faz longas migrações entre o norte e o sul?",
+    "a": "A andorinha",
+    "opts": [
+      "A galinha",
+      "A andorinha",
+      "O pinguim",
+      "O avestruz"
+    ],
+    "exp": "As andorinhas regressam todos os anos ao mesmo ninho."
+  },
+  {
+    "q": "Que animal tem o maior cérebro do planeta?",
+    "a": "Cachalote",
+    "opts": [
+      "Elefante",
+      "Cachalote",
+      "Humano",
+      "Golfinho"
+    ],
+    "exp": "O cérebro do cachalote pode pesar 8 kg."
   }
 ]

@@ -218,5 +218,225 @@
       "A hidra"
     ],
     "exp": "Esta medusa pode voltar à fase de pólipo, reiniciando o seu ciclo de vida."
+  },
+  {
+    "q": "Qual é o mamífero mais pequeno do mundo?",
+    "a": "Morcego-abelha",
+    "opts": [
+      "Musaranho-pigmeu",
+      "Morcego-abelha",
+      "Rato",
+      "Toupeira"
+    ],
+    "exp": "O morcego-abelha pesa menos de 2 gramas."
+  },
+  {
+    "q": "Que animal aguenta condições extremas, até no espaço?",
+    "a": "Tardígrado",
+    "opts": [
+      "Barata",
+      "Tardígrado",
+      "Escorpião",
+      "Formiga"
+    ],
+    "exp": "O tardígrado sobrevive a frio, calor e vácuo extremos."
+  },
+  {
+    "q": "Que ave tem o maior envergadura de asas do mundo?",
+    "a": "Albatroz",
+    "opts": [
+      "Condor",
+      "Albatroz",
+      "Águia-real",
+      "Pelicano"
+    ],
+    "exp": "As asas do albatroz podem atingir 3,5 m."
+  },
+  {
+    "q": "Como se chama um grupo de leões?",
+    "a": "Alcateia/manada (pride)",
+    "opts": [
+      "Cardume",
+      "Alcateia/manada (pride)",
+      "Enxame",
+      "Bando"
+    ],
+    "exp": "Em inglês chama-se 'pride'."
+  },
+  {
+    "q": "Que animal tem sangue azul devido ao cobre?",
+    "a": "Polvo",
+    "opts": [
+      "Caracol",
+      "Polvo",
+      "Cobra",
+      "Lagarto"
+    ],
+    "exp": "Usa hemocianina em vez de hemoglobina."
+  },
+  {
+    "q": "Qual é o veneno animal mais potente (por massa)?",
+    "a": "Rã-dardo-dourada",
+    "opts": [
+      "Cobra-taipan",
+      "Rã-dardo-dourada",
+      "Água-viva-caixa",
+      "Polvo-de-anéis-azuis"
+    ],
+    "exp": "Uma só rã tem veneno para matar vários humanos."
+  },
+  {
+    "q": "Que mamífero põe ovos, além do ornitorrinco?",
+    "a": "A equidna",
+    "opts": [
+      "O coala",
+      "A equidna",
+      "O canguru",
+      "A toupeira"
+    ],
+    "exp": "Os dois são monotremados."
+  },
+  {
+    "q": "Que animal regenera completamente membros e até partes do coração?",
+    "a": "Axolote",
+    "opts": [
+      "Lagarto",
+      "Axolote",
+      "Estrela-do-mar",
+      "Caranguejo"
+    ],
+    "exp": "O axolote é uma salamandra mexicana."
+  },
+  {
+    "q": "Que inseto vive em colónias com rainha, operárias e zangões?",
+    "a": "Abelha",
+    "opts": [
+      "Borboleta",
+      "Abelha",
+      "Libélula",
+      "Mosca"
+    ],
+    "exp": "As abelhas comunicam com uma 'dança'."
+  },
+  {
+    "q": "Que animal marinho tem o coração maior do mundo?",
+    "a": "Baleia-azul",
+    "opts": [
+      "Tubarão-branco",
+      "Baleia-azul",
+      "Cachalote",
+      "Orca"
+    ],
+    "exp": "O coração da baleia-azul pesa cerca de 180 kg."
+  },
+  {
+    "q": "Que peixe consegue dar choques elétricos?",
+    "a": "Enguia-elétrica",
+    "opts": [
+      "Piranha",
+      "Enguia-elétrica",
+      "Barracuda",
+      "Peixe-palhaço"
+    ],
+    "exp": "Pode gerar descargas de mais de 600 volts."
+  },
+  {
+    "q": "Que ave constrói o maior ninho do mundo?",
+    "a": "Águia-de-cabeça-branca",
+    "opts": [
+      "Andorinha",
+      "Águia-de-cabeça-branca",
+      "Pardal",
+      "Cuco"
+    ],
+    "exp": "Os ninhos podem pesar mais de uma tonelada."
+  },
+  {
+    "q": "Que animal é considerado o mais venenoso do mar?",
+    "a": "Água-viva-caixa",
+    "opts": [
+      "Tubarão",
+      "Água-viva-caixa",
+      "Polvo",
+      "Raia"
+    ],
+    "exp": "As suas células urticantes são extremamente perigosas."
+  },
+  {
+    "q": "Quantos estômagos (câmaras) tem uma vaca?",
+    "a": "Quatro",
+    "opts": [
+      "Um",
+      "Dois",
+      "Quatro",
+      "Seis"
+    ],
+    "exp": "Rúmen, retículo, omaso e abomaso."
+  },
+  {
+    "q": "Que animal tem a língua mais longa em relação ao corpo?",
+    "a": "Camaleão",
+    "opts": [
+      "Girafa",
+      "Camaleão",
+      "Formiga-comum",
+      "Tamanduá"
+    ],
+    "exp": "A língua do camaleão dispara para apanhar insetos."
+  },
+  {
+    "q": "Qual é o réptil mais venenoso do mundo (cobra)?",
+    "a": "Taipan-do-interior",
+    "opts": [
+      "Cobra-real",
+      "Taipan-do-interior",
+      "Naja",
+      "Mamba-negra"
+    ],
+    "exp": "Tem o veneno mais tóxico entre as serpentes."
+  },
+  {
+    "q": "Que animal não dorme da forma tradicional, descansando metade do cérebro de cada vez?",
+    "a": "O golfinho",
+    "opts": [
+      "O cão",
+      "O golfinho",
+      "O gato",
+      "O cavalo"
+    ],
+    "exp": "Assim continua a respirar à superfície."
+  },
+  {
+    "q": "Que ave macho constrói estruturas decoradas para atrair a fêmea?",
+    "a": "Pássaro-caramancheiro",
+    "opts": [
+      "Pavão",
+      "Pássaro-caramancheiro",
+      "Cisne",
+      "Flamingo"
+    ],
+    "exp": "Decora o 'caramanchão' com objetos coloridos."
+  },
+  {
+    "q": "Que grupo de animais não tem coluna vertebral?",
+    "a": "Invertebrados",
+    "opts": [
+      "Mamíferos",
+      "Invertebrados",
+      "Aves",
+      "Répteis"
+    ],
+    "exp": "Cerca de 95% das espécies animais são invertebrados."
+  },
+  {
+    "q": "Que animal pode sobreviver decapitado durante algum tempo?",
+    "a": "A barata",
+    "opts": [
+      "A formiga",
+      "A barata",
+      "A aranha",
+      "A minhoca"
+    ],
+    "exp": "A barata respira por todo o corpo, não só pela cabeça."
   }
 ]
