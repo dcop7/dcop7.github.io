@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é o rio mais comprido do mundo?", "a": "Rio Nilo", "opts": ["Rio Amazonas", "Rio Nilo", "Rio Yangtzé", "Rio Mississípi"], "exp": "O Nilo e o Amazonas disputam o título; o Nilo tem cerca de 6 650 km." },
-  { "q": "Quem pintou a Mona Lisa?", "a": "Leonardo da Vinci", "opts": ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Michelangelo"], "exp": "A Mona Lisa está exposta no Museu do Louvre, em Paris." },
-  { "q": "Qual é o metal precioso com o símbolo Ag?", "a": "Prata", "opts": ["Ouro", "Prata", "Platina", "Ferro"], "exp": "Ag vem do latim 'argentum'." },
-  { "q": "Em que continente fica o deserto do Sahara?", "a": "África", "opts": ["Ásia", "África", "Oceânia", "América do Sul"], "exp": "O Sahara é o maior deserto quente do mundo." },
-  { "q": "Quantos jogadores tem uma equipa de futebol em campo?", "a": "11", "opts": ["9", "10", "11", "12"], "exp": "São 10 jogadores de campo mais o guarda-redes." },
-  { "q": "Qual é o idioma mais falado do mundo (nativos)?", "a": "Mandarim", "opts": ["Inglês", "Mandarim", "Espanhol", "Hindi"], "exp": "O chinês mandarim tem mais de mil milhões de falantes nativos." },
-  { "q": "Quem escreveu 'Romeu e Julieta'?", "a": "William Shakespeare", "opts": ["Charles Dickens", "William Shakespeare", "Camões", "Molière"], "exp": "Shakespeare escreveu a peça por volta de 1595." },
-  { "q": "Qual é o maior planeta do sistema solar?", "a": "Júpiter", "opts": ["Saturno", "Júpiter", "Neptuno", "Terra"], "exp": "Júpiter é um gigante gasoso com uma grande mancha vermelha." },
-  { "q": "Quantos continentes existem na Terra?", "a": "Sete", "opts": ["Cinco", "Seis", "Sete", "Oito"], "exp": "África, América do Norte, América do Sul, Antártida, Ásia, Europa e Oceânia." },
-  { "q": "Qual é a montanha mais alta do mundo?", "a": "Evereste", "opts": ["K2", "Evereste", "Mont Blanc", "Kilimanjaro"], "exp": "O Evereste tem 8 849 m de altitude, nos Himalaias." },
-  { "q": "Que órgão do corpo produz a insulina?", "a": "Pâncreas", "opts": ["Fígado", "Pâncreas", "Rim", "Estômago"], "exp": "A insulina regula o açúcar no sangue." },
-  { "q": "Qual é o país com maior população do mundo?", "a": "Índia", "opts": ["China", "Índia", "Estados Unidos", "Indonésia"], "exp": "A Índia ultrapassou a China em população em 2023." }
+  {
+    "q": "Qual é o rio mais comprido do mundo?",
+    "a": "Rio Nilo",
+    "opts": [
+      "Rio Amazonas",
+      "Rio Nilo",
+      "Rio Yangtzé",
+      "Rio Mississípi"
+    ],
+    "exp": "O Nilo e o Amazonas disputam o título; o Nilo tem cerca de 6 650 km."
+  },
+  {
+    "q": "Quem pintou a Mona Lisa?",
+    "a": "Leonardo da Vinci",
+    "opts": [
+      "Pablo Picasso",
+      "Leonardo da Vinci",
+      "Vincent van Gogh",
+      "Michelangelo"
+    ],
+    "exp": "A Mona Lisa está exposta no Museu do Louvre, em Paris."
+  },
+  {
+    "q": "Qual é o metal precioso com o símbolo Ag?",
+    "a": "Prata",
+    "opts": [
+      "Ouro",
+      "Prata",
+      "Platina",
+      "Ferro"
+    ],
+    "exp": "Ag vem do latim 'argentum'."
+  },
+  {
+    "q": "Em que continente fica o deserto do Sahara?",
+    "a": "África",
+    "opts": [
+      "Ásia",
+      "África",
+      "Oceânia",
+      "América do Sul"
+    ],
+    "exp": "O Sahara é o maior deserto quente do mundo."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de futebol em campo?",
+    "a": "11",
+    "opts": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "exp": "São 10 jogadores de campo mais o guarda-redes."
+  },
+  {
+    "q": "Qual é o idioma mais falado do mundo (nativos)?",
+    "a": "Mandarim",
+    "opts": [
+      "Inglês",
+      "Mandarim",
+      "Espanhol",
+      "Hindi"
+    ],
+    "exp": "O chinês mandarim tem mais de mil milhões de falantes nativos."
+  },
+  {
+    "q": "Quem escreveu 'Romeu e Julieta'?",
+    "a": "William Shakespeare",
+    "opts": [
+      "Charles Dickens",
+      "William Shakespeare",
+      "Camões",
+      "Molière"
+    ],
+    "exp": "Shakespeare escreveu a peça por volta de 1595."
+  },
+  {
+    "q": "Qual é o maior planeta do sistema solar?",
+    "a": "Júpiter",
+    "opts": [
+      "Saturno",
+      "Júpiter",
+      "Neptuno",
+      "Terra"
+    ],
+    "exp": "Júpiter é um gigante gasoso com uma grande mancha vermelha."
+  },
+  {
+    "q": "Quantos continentes existem na Terra?",
+    "a": "Sete",
+    "opts": [
+      "Cinco",
+      "Seis",
+      "Sete",
+      "Oito"
+    ],
+    "exp": "África, América do Norte, América do Sul, Antártida, Ásia, Europa e Oceânia."
+  },
+  {
+    "q": "Qual é a montanha mais alta do mundo?",
+    "a": "Evereste",
+    "opts": [
+      "K2",
+      "Evereste",
+      "Mont Blanc",
+      "Kilimanjaro"
+    ],
+    "exp": "O Evereste tem 8 849 m de altitude, nos Himalaias."
+  },
+  {
+    "q": "Que órgão do corpo produz a insulina?",
+    "a": "Pâncreas",
+    "opts": [
+      "Fígado",
+      "Pâncreas",
+      "Rim",
+      "Estômago"
+    ],
+    "exp": "A insulina regula o açúcar no sangue."
+  },
+  {
+    "q": "Qual é o país com maior população do mundo?",
+    "a": "Índia",
+    "opts": [
+      "China",
+      "Índia",
+      "Estados Unidos",
+      "Indonésia"
+    ],
+    "exp": "A Índia ultrapassou a China em população em 2023."
+  },
+  {
+    "q": "Qual é o metal líquido à temperatura ambiente?",
+    "a": "Mercúrio",
+    "opts": [
+      "Ferro",
+      "Mercúrio",
+      "Chumbo",
+      "Alumínio"
+    ],
+    "exp": "O mercúrio é usado em alguns termómetros antigos."
+  },
+  {
+    "q": "Em que país se situa a Torre Eiffel?",
+    "a": "França",
+    "opts": [
+      "Itália",
+      "França",
+      "Espanha",
+      "Bélgica"
+    ],
+    "exp": "A Torre Eiffel fica em Paris."
+  },
+  {
+    "q": "Quem escreveu as peças 'Hamlet' e 'Macbeth'?",
+    "a": "Shakespeare",
+    "opts": [
+      "Camões",
+      "Shakespeare",
+      "Molière",
+      "Dante"
+    ],
+    "exp": "Shakespeare é o dramaturgo mais famoso da língua inglesa."
+  },
+  {
+    "q": "Qual é o maior deserto quente do mundo?",
+    "a": "Sahara",
+    "opts": [
+      "Gobi",
+      "Sahara",
+      "Atacama",
+      "Kalahari"
+    ],
+    "exp": "O Sahara cobre grande parte do norte de África."
+  },
+  {
+    "q": "Quantos lados tem um hexágono?",
+    "a": "6",
+    "opts": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "exp": "O prefixo 'hexa' significa seis."
+  },
+  {
+    "q": "Que vitamina é abundante nos citrinos como a laranja?",
+    "a": "Vitamina C",
+    "opts": [
+      "Vitamina A",
+      "Vitamina C",
+      "Vitamina D",
+      "Vitamina K"
+    ],
+    "exp": "A vitamina C ajuda o sistema imunitário."
+  },
+  {
+    "q": "Qual é o planeta mais próximo da Terra?",
+    "a": "Vénus",
+    "opts": [
+      "Marte",
+      "Vénus",
+      "Mercúrio",
+      "Júpiter"
+    ],
+    "exp": "Vénus é o nosso vizinho mais próximo em distância média."
+  },
+  {
+    "q": "Que instrumento mede a pressão atmosférica?",
+    "a": "Barómetro",
+    "opts": [
+      "Termómetro",
+      "Barómetro",
+      "Higrómetro",
+      "Anemómetro"
+    ],
+    "exp": "O barómetro ajuda a prever o tempo."
+  }
 ]

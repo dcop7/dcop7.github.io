@@ -1,14 +1,222 @@
 [
-  { "q": "Em que batalha de 1385 Portugal garantiu a independência face a Castela?", "a": "Batalha de Aljubarrota", "opts": ["Batalha de Ourique", "Batalha de Aljubarrota", "Batalha de Alcácer-Quibir", "Batalha do Salado"], "exp": "Em Aljubarrota, D. João I venceu Castela; daí nasceu o Mosteiro da Batalha." },
-  { "q": "Quem foi o imperador romano que tornou o cristianismo legal?", "a": "Constantino", "opts": ["Nero", "Constantino", "César", "Trajano"], "exp": "O Édito de Milão (313 d.C.) permitiu o culto cristão no Império." },
-  { "q": "Em que ano caiu Constantinopla nas mãos dos otomanos?", "a": "1453", "opts": ["1066", "1453", "1492", "1517"], "exp": "A queda de Constantinopla marcou o fim do Império Bizantino." },
-  { "q": "Que dinastia reinou em Portugal a partir de 1640, após a Restauração?", "a": "Dinastia de Bragança", "opts": ["Dinastia de Avis", "Dinastia de Bragança", "Dinastia de Borgonha", "Dinastia Filipina"], "exp": "Em 1640, D. João IV de Bragança restaurou a independência face a Espanha." },
-  { "q": "Quem escreveu 'Os Lusíadas'?", "a": "Luís de Camões", "opts": ["Fernando Pessoa", "Luís de Camões", "Gil Vicente", "Eça de Queirós"], "exp": "Camões publicou 'Os Lusíadas' em 1572, sobre os Descobrimentos." },
-  { "q": "Que revolução começou em 1789 com a tomada da Bastilha?", "a": "Revolução Francesa", "opts": ["Revolução Russa", "Revolução Francesa", "Revolução Americana", "Revolução Industrial"], "exp": "A Revolução Francesa proclamou 'Liberdade, Igualdade, Fraternidade'." },
-  { "q": "Que terramoto destruiu grande parte de Lisboa em 1755?", "a": "O Terramoto de 1755", "opts": ["O Terramoto de 1531", "O Terramoto de 1755", "O Terramoto de 1909", "O Terramoto de 1969"], "exp": "Após o sismo, o Marquês de Pombal reconstruiu a Baixa de Lisboa." },
-  { "q": "Quem foi o líder da União Soviética durante a maior parte da II Guerra Mundial?", "a": "Estaline", "opts": ["Lenine", "Estaline", "Khrushchev", "Trotsky"], "exp": "Josef Estaline liderou a URSS de 1924 até 1953." },
-  { "q": "Que civilização pré-colombiana tinha a capital em Tenochtitlán?", "a": "Os astecas", "opts": ["Os incas", "Os astecas", "Os maias", "Os olmecas"], "exp": "Tenochtitlán, dos astecas, ficava onde hoje é a Cidade do México." },
-  { "q": "Que tratado de 1143 reconheceu D. Afonso Henriques como rei?", "a": "Tratado de Zamora", "opts": ["Tratado de Zamora", "Tratado de Windsor", "Tratado de Alcanises", "Tratado de Tordesilhas"], "exp": "Em Zamora, o rei de Leão reconheceu Portugal; o Papa fê-lo em 1179." },
-  { "q": "Quem foi o primeiro Presidente dos Estados Unidos?", "a": "George Washington", "opts": ["Thomas Jefferson", "George Washington", "Abraham Lincoln", "Benjamin Franklin"], "exp": "Washington tomou posse em 1789, após a independência de 1776." },
-  { "q": "Que rei português desapareceu na batalha de Alcácer-Quibir em 1578?", "a": "D. Sebastião", "opts": ["D. Sebastião", "D. Manuel I", "D. João III", "D. Henrique"], "exp": "O desaparecimento de D. Sebastião deu origem ao mito do 'sebastianismo'." }
+  {
+    "q": "Em que batalha de 1385 Portugal garantiu a independência face a Castela?",
+    "a": "Batalha de Aljubarrota",
+    "opts": [
+      "Batalha de Ourique",
+      "Batalha de Aljubarrota",
+      "Batalha de Alcácer-Quibir",
+      "Batalha do Salado"
+    ],
+    "exp": "Em Aljubarrota, D. João I venceu Castela; daí nasceu o Mosteiro da Batalha."
+  },
+  {
+    "q": "Quem foi o imperador romano que tornou o cristianismo legal?",
+    "a": "Constantino",
+    "opts": [
+      "Nero",
+      "Constantino",
+      "César",
+      "Trajano"
+    ],
+    "exp": "O Édito de Milão (313 d.C.) permitiu o culto cristão no Império."
+  },
+  {
+    "q": "Em que ano caiu Constantinopla nas mãos dos otomanos?",
+    "a": "1453",
+    "opts": [
+      "1066",
+      "1453",
+      "1492",
+      "1517"
+    ],
+    "exp": "A queda de Constantinopla marcou o fim do Império Bizantino."
+  },
+  {
+    "q": "Que dinastia reinou em Portugal a partir de 1640, após a Restauração?",
+    "a": "Dinastia de Bragança",
+    "opts": [
+      "Dinastia de Avis",
+      "Dinastia de Bragança",
+      "Dinastia de Borgonha",
+      "Dinastia Filipina"
+    ],
+    "exp": "Em 1640, D. João IV de Bragança restaurou a independência face a Espanha."
+  },
+  {
+    "q": "Quem escreveu 'Os Lusíadas'?",
+    "a": "Luís de Camões",
+    "opts": [
+      "Fernando Pessoa",
+      "Luís de Camões",
+      "Gil Vicente",
+      "Eça de Queirós"
+    ],
+    "exp": "Camões publicou 'Os Lusíadas' em 1572, sobre os Descobrimentos."
+  },
+  {
+    "q": "Que revolução começou em 1789 com a tomada da Bastilha?",
+    "a": "Revolução Francesa",
+    "opts": [
+      "Revolução Russa",
+      "Revolução Francesa",
+      "Revolução Americana",
+      "Revolução Industrial"
+    ],
+    "exp": "A Revolução Francesa proclamou 'Liberdade, Igualdade, Fraternidade'."
+  },
+  {
+    "q": "Que terramoto destruiu grande parte de Lisboa em 1755?",
+    "a": "O Terramoto de 1755",
+    "opts": [
+      "O Terramoto de 1531",
+      "O Terramoto de 1755",
+      "O Terramoto de 1909",
+      "O Terramoto de 1969"
+    ],
+    "exp": "Após o sismo, o Marquês de Pombal reconstruiu a Baixa de Lisboa."
+  },
+  {
+    "q": "Quem foi o líder da União Soviética durante a maior parte da II Guerra Mundial?",
+    "a": "Estaline",
+    "opts": [
+      "Lenine",
+      "Estaline",
+      "Khrushchev",
+      "Trotsky"
+    ],
+    "exp": "Josef Estaline liderou a URSS de 1924 até 1953."
+  },
+  {
+    "q": "Que civilização pré-colombiana tinha a capital em Tenochtitlán?",
+    "a": "Os astecas",
+    "opts": [
+      "Os incas",
+      "Os astecas",
+      "Os maias",
+      "Os olmecas"
+    ],
+    "exp": "Tenochtitlán, dos astecas, ficava onde hoje é a Cidade do México."
+  },
+  {
+    "q": "Que tratado de 1143 reconheceu D. Afonso Henriques como rei?",
+    "a": "Tratado de Zamora",
+    "opts": [
+      "Tratado de Zamora",
+      "Tratado de Windsor",
+      "Tratado de Alcanises",
+      "Tratado de Tordesilhas"
+    ],
+    "exp": "Em Zamora, o rei de Leão reconheceu Portugal; o Papa fê-lo em 1179."
+  },
+  {
+    "q": "Quem foi o primeiro Presidente dos Estados Unidos?",
+    "a": "George Washington",
+    "opts": [
+      "Thomas Jefferson",
+      "George Washington",
+      "Abraham Lincoln",
+      "Benjamin Franklin"
+    ],
+    "exp": "Washington tomou posse em 1789, após a independência de 1776."
+  },
+  {
+    "q": "Que rei português desapareceu na batalha de Alcácer-Quibir em 1578?",
+    "a": "D. Sebastião",
+    "opts": [
+      "D. Sebastião",
+      "D. Manuel I",
+      "D. João III",
+      "D. Henrique"
+    ],
+    "exp": "O desaparecimento de D. Sebastião deu origem ao mito do 'sebastianismo'."
+  },
+  {
+    "q": "Que tratado de 1648 pôs fim à Guerra dos Trinta Anos?",
+    "a": "Paz de Vestfália",
+    "opts": [
+      "Tratado de Versalhes",
+      "Paz de Vestfália",
+      "Tratado de Tordesilhas",
+      "Congresso de Viena"
+    ],
+    "exp": "Lançou as bases do conceito moderno de Estado soberano."
+  },
+  {
+    "q": "Quem liderou a Revolução Russa de 1917?",
+    "a": "Lenine",
+    "opts": [
+      "Estaline",
+      "Lenine",
+      "Trotsky",
+      "Kerensky"
+    ],
+    "exp": "Lenine liderou os bolcheviques na tomada do poder."
+  },
+  {
+    "q": "Em que ano caiu o Muro de Berlim?",
+    "a": "1989",
+    "opts": [
+      "1961",
+      "1975",
+      "1989",
+      "1991"
+    ],
+    "exp": "A queda do Muro simbolizou o fim da Guerra Fria."
+  },
+  {
+    "q": "Que civilização inventou a escrita cuneiforme?",
+    "a": "Os sumérios",
+    "opts": [
+      "Os egípcios",
+      "Os sumérios",
+      "Os fenícios",
+      "Os hititas"
+    ],
+    "exp": "Surgiu na Mesopotâmia há cerca de 5 000 anos."
+  },
+  {
+    "q": "Que imperador francês foi derrotado em Waterloo?",
+    "a": "Napoleão",
+    "opts": [
+      "Luís XIV",
+      "Napoleão",
+      "Carlos Magno",
+      "Robespierre"
+    ],
+    "exp": "A Batalha de Waterloo ocorreu em 1815."
+  },
+  {
+    "q": "Que doença dizimou cerca de um terço da Europa no século XIV?",
+    "a": "A Peste Negra",
+    "opts": [
+      "A varíola",
+      "A Peste Negra",
+      "A cólera",
+      "A gripe espanhola"
+    ],
+    "exp": "A Peste Negra foi uma epidemia de peste bubónica."
+  },
+  {
+    "q": "Que dinastia chinesa construiu grande parte da Grande Muralha como a conhecemos?",
+    "a": "Ming",
+    "opts": [
+      "Han",
+      "Ming",
+      "Tang",
+      "Qing"
+    ],
+    "exp": "A dinastia Ming reforçou a muralha entre os séculos XIV e XVII."
+  },
+  {
+    "q": "Quem foi o primeiro imperador a unificar a China, no século III a.C.?",
+    "a": "Qin Shi Huang",
+    "opts": [
+      "Confúcio",
+      "Qin Shi Huang",
+      "Kublai Khan",
+      "Sun Tzu"
+    ],
+    "exp": "Ordenou também a construção do Exército de Terracota."
+  }
 ]

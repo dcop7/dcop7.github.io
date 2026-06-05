@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é a capital da Austrália?", "a": "Camberra", "opts": ["Sydney", "Camberra", "Melbourne", "Perth"], "exp": "Apesar de Sydney ser maior, a capital é Camberra." },
-  { "q": "Quem desenvolveu a teoria da evolução por seleção natural?", "a": "Charles Darwin", "opts": ["Gregor Mendel", "Charles Darwin", "Louis Pasteur", "Isaac Newton"], "exp": "Darwin publicou 'A Origem das Espécies' em 1859." },
-  { "q": "Qual é o elemento químico mais leve?", "a": "Hidrogénio", "opts": ["Hélio", "Hidrogénio", "Lítio", "Oxigénio"], "exp": "O hidrogénio é o número 1 da tabela periódica." },
-  { "q": "Em que país se encontra a cidade de Petra?", "a": "Jordânia", "opts": ["Egito", "Jordânia", "Grécia", "Turquia"], "exp": "Petra é uma cidade esculpida na rocha, com mais de 2 000 anos." },
-  { "q": "Qual é a maior estrutura viva da Terra?", "a": "A Grande Barreira de Coral", "opts": ["A Floresta Amazónica", "A Grande Barreira de Coral", "A sequoia gigante", "O recife de Belize"], "exp": "A Grande Barreira de Coral, na Austrália, é visível do espaço." },
-  { "q": "Quem compôs a 9ª Sinfonia, com o 'Hino à Alegria'?", "a": "Beethoven", "opts": ["Mozart", "Beethoven", "Bach", "Chopin"], "exp": "Beethoven já estava surdo quando a compôs, em 1824." },
-  { "q": "Qual é a unidade monetária do Japão?", "a": "Iene", "opts": ["Won", "Iene", "Yuan", "Rupia"], "exp": "O símbolo do iene japonês é ¥." },
-  { "q": "Qual é o osso que protege o cérebro?", "a": "O crânio", "opts": ["A clavícula", "O crânio", "O esterno", "A vértebra"], "exp": "O crânio adulto é formado por 22 ossos, a maioria fundidos." },
-  { "q": "Que cientista propôs as leis da hereditariedade com ervilhas?", "a": "Gregor Mendel", "opts": ["Charles Darwin", "Gregor Mendel", "Louis Pasteur", "Watson e Crick"], "exp": "Mendel é considerado o pai da genética." },
-  { "q": "Qual é o maior país do mundo em área?", "a": "Rússia", "opts": ["Canadá", "Rússia", "China", "Estados Unidos"], "exp": "A Rússia ocupa mais de 17 milhões de km², em dois continentes." },
-  { "q": "Qual é o símbolo químico do sódio?", "a": "Na", "opts": ["So", "Na", "Sd", "S"], "exp": "Na vem do latim 'natrium'." },
-  { "q": "Quem escreveu 'Dom Quixote'?", "a": "Miguel de Cervantes", "opts": ["Camões", "Miguel de Cervantes", "Shakespeare", "Dante"], "exp": "Publicado em 1605, é considerado o primeiro romance moderno." }
+  {
+    "q": "Qual é a capital da Austrália?",
+    "a": "Camberra",
+    "opts": [
+      "Sydney",
+      "Camberra",
+      "Melbourne",
+      "Perth"
+    ],
+    "exp": "Apesar de Sydney ser maior, a capital é Camberra."
+  },
+  {
+    "q": "Quem desenvolveu a teoria da evolução por seleção natural?",
+    "a": "Charles Darwin",
+    "opts": [
+      "Gregor Mendel",
+      "Charles Darwin",
+      "Louis Pasteur",
+      "Isaac Newton"
+    ],
+    "exp": "Darwin publicou 'A Origem das Espécies' em 1859."
+  },
+  {
+    "q": "Qual é o elemento químico mais leve?",
+    "a": "Hidrogénio",
+    "opts": [
+      "Hélio",
+      "Hidrogénio",
+      "Lítio",
+      "Oxigénio"
+    ],
+    "exp": "O hidrogénio é o número 1 da tabela periódica."
+  },
+  {
+    "q": "Em que país se encontra a cidade de Petra?",
+    "a": "Jordânia",
+    "opts": [
+      "Egito",
+      "Jordânia",
+      "Grécia",
+      "Turquia"
+    ],
+    "exp": "Petra é uma cidade esculpida na rocha, com mais de 2 000 anos."
+  },
+  {
+    "q": "Qual é a maior estrutura viva da Terra?",
+    "a": "A Grande Barreira de Coral",
+    "opts": [
+      "A Floresta Amazónica",
+      "A Grande Barreira de Coral",
+      "A sequoia gigante",
+      "O recife de Belize"
+    ],
+    "exp": "A Grande Barreira de Coral, na Austrália, é visível do espaço."
+  },
+  {
+    "q": "Quem compôs a 9ª Sinfonia, com o 'Hino à Alegria'?",
+    "a": "Beethoven",
+    "opts": [
+      "Mozart",
+      "Beethoven",
+      "Bach",
+      "Chopin"
+    ],
+    "exp": "Beethoven já estava surdo quando a compôs, em 1824."
+  },
+  {
+    "q": "Qual é a unidade monetária do Japão?",
+    "a": "Iene",
+    "opts": [
+      "Won",
+      "Iene",
+      "Yuan",
+      "Rupia"
+    ],
+    "exp": "O símbolo do iene japonês é ¥."
+  },
+  {
+    "q": "Qual é o osso que protege o cérebro?",
+    "a": "O crânio",
+    "opts": [
+      "A clavícula",
+      "O crânio",
+      "O esterno",
+      "A vértebra"
+    ],
+    "exp": "O crânio adulto é formado por 22 ossos, a maioria fundidos."
+  },
+  {
+    "q": "Que cientista propôs as leis da hereditariedade com ervilhas?",
+    "a": "Gregor Mendel",
+    "opts": [
+      "Charles Darwin",
+      "Gregor Mendel",
+      "Louis Pasteur",
+      "Watson e Crick"
+    ],
+    "exp": "Mendel é considerado o pai da genética."
+  },
+  {
+    "q": "Qual é o maior país do mundo em área?",
+    "a": "Rússia",
+    "opts": [
+      "Canadá",
+      "Rússia",
+      "China",
+      "Estados Unidos"
+    ],
+    "exp": "A Rússia ocupa mais de 17 milhões de km², em dois continentes."
+  },
+  {
+    "q": "Qual é o símbolo químico do sódio?",
+    "a": "Na",
+    "opts": [
+      "So",
+      "Na",
+      "Sd",
+      "S"
+    ],
+    "exp": "Na vem do latim 'natrium'."
+  },
+  {
+    "q": "Quem escreveu 'Dom Quixote'?",
+    "a": "Miguel de Cervantes",
+    "opts": [
+      "Camões",
+      "Miguel de Cervantes",
+      "Shakespeare",
+      "Dante"
+    ],
+    "exp": "Publicado em 1605, é considerado o primeiro romance moderno."
+  },
+  {
+    "q": "Qual é a capital do Canadá?",
+    "a": "Otava",
+    "opts": [
+      "Toronto",
+      "Otava",
+      "Montreal",
+      "Vancouver"
+    ],
+    "exp": "Apesar de Toronto ser maior, a capital é Otava."
+  },
+  {
+    "q": "Quem pintou 'A Noite Estrelada'?",
+    "a": "Van Gogh",
+    "opts": [
+      "Monet",
+      "Van Gogh",
+      "Picasso",
+      "Dalí"
+    ],
+    "exp": "Van Gogh pintou esta obra em 1889."
+  },
+  {
+    "q": "Qual é o símbolo químico do potássio?",
+    "a": "K",
+    "opts": [
+      "P",
+      "K",
+      "Po",
+      "Pt"
+    ],
+    "exp": "K vem do latim 'kalium'."
+  },
+  {
+    "q": "Que rio atravessa a cidade do Cairo?",
+    "a": "Nilo",
+    "opts": [
+      "Tigre",
+      "Nilo",
+      "Eufrates",
+      "Congo"
+    ],
+    "exp": "O Nilo é o rio mais longo de África."
+  },
+  {
+    "q": "Quem desenvolveu a teoria da gravitação universal?",
+    "a": "Newton",
+    "opts": [
+      "Galileu",
+      "Newton",
+      "Einstein",
+      "Kepler"
+    ],
+    "exp": "Newton publicou-a em 1687."
+  },
+  {
+    "q": "Qual é a moeda do Reino Unido?",
+    "a": "Libra esterlina",
+    "opts": [
+      "Euro",
+      "Libra esterlina",
+      "Dólar",
+      "Franco"
+    ],
+    "exp": "O símbolo da libra é £."
+  },
+  {
+    "q": "Qual é o maior país da América do Sul?",
+    "a": "Brasil",
+    "opts": [
+      "Argentina",
+      "Brasil",
+      "Peru",
+      "Colômbia"
+    ],
+    "exp": "O Brasil ocupa cerca de metade do continente."
+  },
+  {
+    "q": "Que filósofo grego foi mestre de Alexandre, o Grande?",
+    "a": "Aristóteles",
+    "opts": [
+      "Platão",
+      "Aristóteles",
+      "Sócrates",
+      "Pitágoras"
+    ],
+    "exp": "Aristóteles fundou também o Liceu, em Atenas."
+  }
 ]

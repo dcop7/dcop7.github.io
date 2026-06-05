@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é o animal terrestre mais rápido?", "a": "Chita", "opts": ["Leão", "Chita", "Cavalo", "Galgo"], "exp": "A chita atinge cerca de 110 km/h em corridas curtas." },
-  { "q": "A que grupo pertence a rã?", "a": "Anfíbios", "opts": ["Répteis", "Anfíbios", "Mamíferos", "Peixes"], "exp": "Os anfíbios vivem entre a água e a terra e têm pele húmida." },
-  { "q": "Quantos corações tem um polvo?", "a": "Três", "opts": ["Um", "Dois", "Três", "Quatro"], "exp": "Dois bombeiam sangue para as guelras e um para o resto do corpo." },
-  { "q": "Que animal é o maior réptil do mundo?", "a": "Crocodilo-de-água-salgada", "opts": ["Pitão", "Crocodilo-de-água-salgada", "Dragão-de-Komodo", "Tartaruga-gigante"], "exp": "Pode ultrapassar os 6 metros de comprimento." },
-  { "q": "Como se chama um grupo de leões?", "a": "Alcateia/manada", "opts": ["Cardume", "Alcateia/manada", "Enxame", "Bando"], "exp": "Em português usa-se 'manada' ou 'alcateia' para o grupo (em inglês, 'pride')." },
-  { "q": "Que animal tem o pescoço com o mesmo número de vértebras que o humano?", "a": "Girafa", "opts": ["Girafa", "Avestruz", "Cisne", "Camelo"], "exp": "Tal como nós, a girafa tem 7 vértebras no pescoço — só que enormes." },
-  { "q": "Qual destes animais é um invertebrado?", "a": "Polvo", "opts": ["Sapo", "Polvo", "Morcego", "Pinguim"], "exp": "Os invertebrados não têm coluna vertebral." },
-  { "q": "Que mamífero é capaz de voar?", "a": "Morcego", "opts": ["Esquilo-voador", "Morcego", "Coruja", "Pinguim"], "exp": "O morcego é o único mamífero com voo verdadeiro." },
-  { "q": "Que animal produz a seda?", "a": "Bicho-da-seda", "opts": ["Aranha apenas", "Bicho-da-seda", "Abelha", "Formiga"], "exp": "A lagarta do bicho-da-seda fia um casulo de um único fio de seda." },
-  { "q": "Quantas câmaras tem o estômago de uma vaca?", "a": "Quatro", "opts": ["Uma", "Duas", "Quatro", "Seis"], "exp": "A vaca é um ruminante: rúmen, retículo, omaso e abomaso." },
-  { "q": "Que animal marinho é conhecido pela sua inteligência e ecolocalização?", "a": "Golfinho", "opts": ["Atum", "Golfinho", "Caranguejo", "Estrela-do-mar"], "exp": "Os golfinhos 'veem' com som, emitindo cliques e ouvindo o eco." },
-  { "q": "Qual é o maior felino do mundo?", "a": "Tigre", "opts": ["Leão", "Tigre", "Leopardo", "Jaguar"], "exp": "O tigre-siberiano pode pesar mais de 300 kg." }
+  {
+    "q": "Qual é o animal terrestre mais rápido?",
+    "a": "Chita",
+    "opts": [
+      "Leão",
+      "Chita",
+      "Cavalo",
+      "Galgo"
+    ],
+    "exp": "A chita atinge cerca de 110 km/h em corridas curtas."
+  },
+  {
+    "q": "A que grupo pertence a rã?",
+    "a": "Anfíbios",
+    "opts": [
+      "Répteis",
+      "Anfíbios",
+      "Mamíferos",
+      "Peixes"
+    ],
+    "exp": "Os anfíbios vivem entre a água e a terra e têm pele húmida."
+  },
+  {
+    "q": "Quantos corações tem um polvo?",
+    "a": "Três",
+    "opts": [
+      "Um",
+      "Dois",
+      "Três",
+      "Quatro"
+    ],
+    "exp": "Dois bombeiam sangue para as guelras e um para o resto do corpo."
+  },
+  {
+    "q": "Que animal é o maior réptil do mundo?",
+    "a": "Crocodilo-de-água-salgada",
+    "opts": [
+      "Pitão",
+      "Crocodilo-de-água-salgada",
+      "Dragão-de-Komodo",
+      "Tartaruga-gigante"
+    ],
+    "exp": "Pode ultrapassar os 6 metros de comprimento."
+  },
+  {
+    "q": "Como se chama um grupo de leões?",
+    "a": "Alcateia/manada",
+    "opts": [
+      "Cardume",
+      "Alcateia/manada",
+      "Enxame",
+      "Bando"
+    ],
+    "exp": "Em português usa-se 'manada' ou 'alcateia' para o grupo (em inglês, 'pride')."
+  },
+  {
+    "q": "Que animal tem o pescoço com o mesmo número de vértebras que o humano?",
+    "a": "Girafa",
+    "opts": [
+      "Girafa",
+      "Avestruz",
+      "Cisne",
+      "Camelo"
+    ],
+    "exp": "Tal como nós, a girafa tem 7 vértebras no pescoço — só que enormes."
+  },
+  {
+    "q": "Qual destes animais é um invertebrado?",
+    "a": "Polvo",
+    "opts": [
+      "Sapo",
+      "Polvo",
+      "Morcego",
+      "Pinguim"
+    ],
+    "exp": "Os invertebrados não têm coluna vertebral."
+  },
+  {
+    "q": "Que mamífero é capaz de voar?",
+    "a": "Morcego",
+    "opts": [
+      "Esquilo-voador",
+      "Morcego",
+      "Coruja",
+      "Pinguim"
+    ],
+    "exp": "O morcego é o único mamífero com voo verdadeiro."
+  },
+  {
+    "q": "Que animal produz a seda?",
+    "a": "Bicho-da-seda",
+    "opts": [
+      "Aranha apenas",
+      "Bicho-da-seda",
+      "Abelha",
+      "Formiga"
+    ],
+    "exp": "A lagarta do bicho-da-seda fia um casulo de um único fio de seda."
+  },
+  {
+    "q": "Quantas câmaras tem o estômago de uma vaca?",
+    "a": "Quatro",
+    "opts": [
+      "Uma",
+      "Duas",
+      "Quatro",
+      "Seis"
+    ],
+    "exp": "A vaca é um ruminante: rúmen, retículo, omaso e abomaso."
+  },
+  {
+    "q": "Que animal marinho é conhecido pela sua inteligência e ecolocalização?",
+    "a": "Golfinho",
+    "opts": [
+      "Atum",
+      "Golfinho",
+      "Caranguejo",
+      "Estrela-do-mar"
+    ],
+    "exp": "Os golfinhos 'veem' com som, emitindo cliques e ouvindo o eco."
+  },
+  {
+    "q": "Qual é o maior felino do mundo?",
+    "a": "Tigre",
+    "opts": [
+      "Leão",
+      "Tigre",
+      "Leopardo",
+      "Jaguar"
+    ],
+    "exp": "O tigre-siberiano pode pesar mais de 300 kg."
+  },
+  {
+    "q": "A que grupo pertencem os animais de sangue frio com escamas e que põem ovos?",
+    "a": "Répteis",
+    "opts": [
+      "Anfíbios",
+      "Répteis",
+      "Mamíferos",
+      "Aves"
+    ],
+    "exp": "As cobras, lagartos e tartarugas são répteis."
+  },
+  {
+    "q": "Que animal marinho tem oito braços?",
+    "a": "Polvo",
+    "opts": [
+      "Lula",
+      "Polvo",
+      "Estrela-do-mar",
+      "Caranguejo"
+    ],
+    "exp": "O polvo é um molusco muito inteligente."
+  },
+  {
+    "q": "Qual é a maior ave do mundo?",
+    "a": "Avestruz",
+    "opts": [
+      "Águia",
+      "Avestruz",
+      "Condor",
+      "Albatroz"
+    ],
+    "exp": "A avestruz pode atingir 2,7 m de altura."
+  },
+  {
+    "q": "Que animal hiberna durante o inverno?",
+    "a": "O urso",
+    "opts": [
+      "O lobo",
+      "O urso",
+      "A raposa",
+      "O veado"
+    ],
+    "exp": "Durante a hibernação, o metabolismo do urso abranda muito."
+  },
+  {
+    "q": "Como se chama a transformação da lagarta em borboleta?",
+    "a": "Metamorfose",
+    "opts": [
+      "Mutação",
+      "Metamorfose",
+      "Camuflagem",
+      "Migração"
+    ],
+    "exp": "A lagarta forma um casulo antes de se tornar borboleta."
+  },
+  {
+    "q": "Que animal é o maior felino selvagem?",
+    "a": "Tigre",
+    "opts": [
+      "Leão",
+      "Tigre",
+      "Leopardo",
+      "Onça"
+    ],
+    "exp": "O tigre-siberiano pode pesar mais de 300 kg."
+  },
+  {
+    "q": "Que mamífero põe ovos?",
+    "a": "Ornitorrinco",
+    "opts": [
+      "Morcego",
+      "Ornitorrinco",
+      "Golfinho",
+      "Toupeira"
+    ],
+    "exp": "O ornitorrinco é um dos poucos mamíferos que põem ovos."
+  },
+  {
+    "q": "Que animal usa o eco para se orientar no escuro?",
+    "a": "Morcego",
+    "opts": [
+      "Coruja",
+      "Morcego",
+      "Gato",
+      "Lobo"
+    ],
+    "exp": "Os morcegos usam ecolocalização."
+  }
 ]

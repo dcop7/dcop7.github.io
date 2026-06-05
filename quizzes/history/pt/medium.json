@@ -1,14 +1,222 @@
 [
-  { "q": "Em que ano se deu a Revolução dos Cravos em Portugal?", "a": "1974", "opts": ["1910", "1926", "1974", "1986"], "exp": "A 25 de abril de 1974, uma revolução pacífica pôs fim à ditadura." },
-  { "q": "Quem foi o navegador que organizou a primeira viagem à volta do mundo?", "a": "Fernão de Magalhães", "opts": ["Vasco da Gama", "Fernão de Magalhães", "Cristóvão Colombo", "Pedro Álvares Cabral"], "exp": "Magalhães partiu em 1519; a expedição completou a volta em 1522." },
-  { "q": "Que tratado de 1494 dividiu o mundo entre Portugal e Espanha?", "a": "Tratado de Tordesilhas", "opts": ["Tratado de Windsor", "Tratado de Tordesilhas", "Tratado de Methuen", "Tratado de Paris"], "exp": "Tordesilhas traçou uma linha que deu o Brasil a Portugal." },
-  { "q": "Em que ano começou a Segunda Guerra Mundial?", "a": "1939", "opts": ["1914", "1929", "1939", "1945"], "exp": "Começou com a invasão da Polónia pela Alemanha em 1939; terminou em 1945." },
-  { "q": "Que império era governado por imperadores como Júlio César e Augusto?", "a": "Império Romano", "opts": ["Império Otomano", "Império Romano", "Império Persa", "Império Mongol"], "exp": "Augusto foi o primeiro imperador romano, a partir de 27 a.C." },
-  { "q": "Quem liderou a independência da Índia através da não-violência?", "a": "Mahatma Gandhi", "opts": ["Nelson Mandela", "Mahatma Gandhi", "Churchill", "Nehru"], "exp": "A Índia tornou-se independente do Reino Unido em 1947." },
-  { "q": "Que rei português é conhecido como 'O Lavrador'?", "a": "D. Dinis", "opts": ["D. João II", "D. Dinis", "D. Sebastião", "D. Manuel I"], "exp": "D. Dinis fundou a Universidade de Coimbra e mandou plantar o Pinhal de Leiria." },
-  { "q": "Que muro dividiu a cidade de Berlim até 1989?", "a": "O Muro de Berlim", "opts": ["A Muralha de Adriano", "O Muro de Berlim", "A Linha Maginot", "A Cortina de Ferro"], "exp": "O Muro de Berlim caiu em 1989, símbolo do fim da Guerra Fria." },
-  { "q": "Qual foi a primeira civilização a usar a escrita?", "a": "Os sumérios", "opts": ["Os egípcios", "Os sumérios", "Os gregos", "Os chineses"], "exp": "Os sumérios, na Mesopotâmia, criaram a escrita cuneiforme há ~5 000 anos." },
-  { "q": "Em que ano foi implantada a República em Portugal?", "a": "1910", "opts": ["1890", "1910", "1926", "1933"], "exp": "A 5 de outubro de 1910 terminou a monarquia em Portugal." },
-  { "q": "Que rainha egípcia se aliou a Júlio César e Marco António?", "a": "Cleópatra", "opts": ["Nefertiti", "Cleópatra", "Hatchepsut", "Isis"], "exp": "Cleópatra foi a última faraó do Egito, no século I a.C." },
-  { "q": "Que documento inglês de 1215 limitou o poder do rei?", "a": "Magna Carta", "opts": ["Magna Carta", "Declaração de Independência", "Código de Hamurabi", "Bula Manuelina"], "exp": "A Magna Carta é considerada uma base dos direitos e do constitucionalismo." }
+  {
+    "q": "Em que ano se deu a Revolução dos Cravos em Portugal?",
+    "a": "1974",
+    "opts": [
+      "1910",
+      "1926",
+      "1974",
+      "1986"
+    ],
+    "exp": "A 25 de abril de 1974, uma revolução pacífica pôs fim à ditadura."
+  },
+  {
+    "q": "Quem foi o navegador que organizou a primeira viagem à volta do mundo?",
+    "a": "Fernão de Magalhães",
+    "opts": [
+      "Vasco da Gama",
+      "Fernão de Magalhães",
+      "Cristóvão Colombo",
+      "Pedro Álvares Cabral"
+    ],
+    "exp": "Magalhães partiu em 1519; a expedição completou a volta em 1522."
+  },
+  {
+    "q": "Que tratado de 1494 dividiu o mundo entre Portugal e Espanha?",
+    "a": "Tratado de Tordesilhas",
+    "opts": [
+      "Tratado de Windsor",
+      "Tratado de Tordesilhas",
+      "Tratado de Methuen",
+      "Tratado de Paris"
+    ],
+    "exp": "Tordesilhas traçou uma linha que deu o Brasil a Portugal."
+  },
+  {
+    "q": "Em que ano começou a Segunda Guerra Mundial?",
+    "a": "1939",
+    "opts": [
+      "1914",
+      "1929",
+      "1939",
+      "1945"
+    ],
+    "exp": "Começou com a invasão da Polónia pela Alemanha em 1939; terminou em 1945."
+  },
+  {
+    "q": "Que império era governado por imperadores como Júlio César e Augusto?",
+    "a": "Império Romano",
+    "opts": [
+      "Império Otomano",
+      "Império Romano",
+      "Império Persa",
+      "Império Mongol"
+    ],
+    "exp": "Augusto foi o primeiro imperador romano, a partir de 27 a.C."
+  },
+  {
+    "q": "Quem liderou a independência da Índia através da não-violência?",
+    "a": "Mahatma Gandhi",
+    "opts": [
+      "Nelson Mandela",
+      "Mahatma Gandhi",
+      "Churchill",
+      "Nehru"
+    ],
+    "exp": "A Índia tornou-se independente do Reino Unido em 1947."
+  },
+  {
+    "q": "Que rei português é conhecido como 'O Lavrador'?",
+    "a": "D. Dinis",
+    "opts": [
+      "D. João II",
+      "D. Dinis",
+      "D. Sebastião",
+      "D. Manuel I"
+    ],
+    "exp": "D. Dinis fundou a Universidade de Coimbra e mandou plantar o Pinhal de Leiria."
+  },
+  {
+    "q": "Que muro dividiu a cidade de Berlim até 1989?",
+    "a": "O Muro de Berlim",
+    "opts": [
+      "A Muralha de Adriano",
+      "O Muro de Berlim",
+      "A Linha Maginot",
+      "A Cortina de Ferro"
+    ],
+    "exp": "O Muro de Berlim caiu em 1989, símbolo do fim da Guerra Fria."
+  },
+  {
+    "q": "Qual foi a primeira civilização a usar a escrita?",
+    "a": "Os sumérios",
+    "opts": [
+      "Os egípcios",
+      "Os sumérios",
+      "Os gregos",
+      "Os chineses"
+    ],
+    "exp": "Os sumérios, na Mesopotâmia, criaram a escrita cuneiforme há ~5 000 anos."
+  },
+  {
+    "q": "Em que ano foi implantada a República em Portugal?",
+    "a": "1910",
+    "opts": [
+      "1890",
+      "1910",
+      "1926",
+      "1933"
+    ],
+    "exp": "A 5 de outubro de 1910 terminou a monarquia em Portugal."
+  },
+  {
+    "q": "Que rainha egípcia se aliou a Júlio César e Marco António?",
+    "a": "Cleópatra",
+    "opts": [
+      "Nefertiti",
+      "Cleópatra",
+      "Hatchepsut",
+      "Isis"
+    ],
+    "exp": "Cleópatra foi a última faraó do Egito, no século I a.C."
+  },
+  {
+    "q": "Que documento inglês de 1215 limitou o poder do rei?",
+    "a": "Magna Carta",
+    "opts": [
+      "Magna Carta",
+      "Declaração de Independência",
+      "Código de Hamurabi",
+      "Bula Manuelina"
+    ],
+    "exp": "A Magna Carta é considerada uma base dos direitos e do constitucionalismo."
+  },
+  {
+    "q": "Que civilização construiu Machu Picchu?",
+    "a": "Os incas",
+    "opts": [
+      "Os astecas",
+      "Os incas",
+      "Os maias",
+      "Os olmecas"
+    ],
+    "exp": "Machu Picchu foi construída no Peru no século XV."
+  },
+  {
+    "q": "Quem foi o líder da Alemanha nazi na Segunda Guerra Mundial?",
+    "a": "Adolf Hitler",
+    "opts": [
+      "Bismarck",
+      "Adolf Hitler",
+      "Estaline",
+      "Mussolini"
+    ],
+    "exp": "Hitler liderou a Alemanha de 1933 a 1945."
+  },
+  {
+    "q": "Em que ano o Homem chegou à Lua?",
+    "a": "1969",
+    "opts": [
+      "1957",
+      "1961",
+      "1969",
+      "1975"
+    ],
+    "exp": "A Apollo 11 alunou a 20 de julho de 1969."
+  },
+  {
+    "q": "Que muralha protegia o Império Romano no norte da Britânia?",
+    "a": "Muralha de Adriano",
+    "opts": [
+      "Grande Muralha",
+      "Muralha de Adriano",
+      "Muro de Berlim",
+      "Linha Maginot"
+    ],
+    "exp": "A Muralha de Adriano foi construída por volta de 122 d.C."
+  },
+  {
+    "q": "Que rainha egípcia é famosa pela sua aliança com Roma?",
+    "a": "Cleópatra",
+    "opts": [
+      "Nefertiti",
+      "Cleópatra",
+      "Hatchepsut",
+      "Isis"
+    ],
+    "exp": "Cleópatra foi a última faraó do Egito."
+  },
+  {
+    "q": "Que invento de Gutenberg revolucionou a divulgação do saber?",
+    "a": "A imprensa",
+    "opts": [
+      "O relógio",
+      "A imprensa",
+      "A bússola",
+      "O telescópio"
+    ],
+    "exp": "A imprensa de tipos móveis surgiu por volta de 1450."
+  },
+  {
+    "q": "Como se chamavam os exploradores nórdicos que chegaram à América antes de Colombo?",
+    "a": "Vikings",
+    "opts": [
+      "Fenícios",
+      "Vikings",
+      "Mouros",
+      "Cartagineses"
+    ],
+    "exp": "Os vikings chegaram à América do Norte por volta do ano 1000."
+  },
+  {
+    "q": "Que império foi governado a partir de Constantinopla?",
+    "a": "Império Bizantino",
+    "opts": [
+      "Império Mongol",
+      "Império Bizantino",
+      "Império Asteca",
+      "Império Britânico"
+    ],
+    "exp": "Constantinopla é hoje Istambul, na Turquia."
+  }
 ]

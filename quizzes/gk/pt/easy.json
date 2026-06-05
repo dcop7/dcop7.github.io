@@ -1,14 +1,222 @@
 [
-  { "q": "Quantos dias tem um ano normal?", "a": "365", "opts": ["360", "365", "366", "354"], "exp": "Um ano bissexto, de 4 em 4 anos, tem 366 dias." },
-  { "q": "Qual é a capital de Portugal?", "a": "Lisboa", "opts": ["Porto", "Lisboa", "Coimbra", "Braga"], "exp": "Lisboa é uma das capitais mais antigas da Europa Ocidental." },
-  { "q": "Quantas cores tem o arco-íris?", "a": "Sete", "opts": ["Cinco", "Seis", "Sete", "Oito"], "exp": "Vermelho, laranja, amarelo, verde, azul, anil e violeta." },
-  { "q": "Qual é o maior oceano do mundo?", "a": "Oceano Pacífico", "opts": ["Oceano Atlântico", "Oceano Pacífico", "Oceano Índico", "Oceano Ártico"], "exp": "O Pacífico cobre cerca de um terço da superfície da Terra." },
-  { "q": "Quantos lados tem um triângulo?", "a": "Três", "opts": ["Dois", "Três", "Quatro", "Cinco"], "exp": "A soma dos ângulos internos de um triângulo é sempre 180°." },
-  { "q": "Que animal é o 'melhor amigo do homem'?", "a": "O cão", "opts": ["O gato", "O cão", "O cavalo", "O coelho"], "exp": "O cão foi o primeiro animal domesticado, há mais de 15 000 anos." },
-  { "q": "Quantos minutos tem uma hora?", "a": "60", "opts": ["30", "60", "90", "100"], "exp": "Uma hora tem 60 minutos e cada minuto tem 60 segundos." },
-  { "q": "De que cor fica o céu num dia limpo?", "a": "Azul", "opts": ["Verde", "Azul", "Vermelho", "Roxo"], "exp": "O céu é azul porque a atmosfera dispersa mais a luz azul do Sol." },
-  { "q": "Qual é o planeta onde vivemos?", "a": "Terra", "opts": ["Marte", "Terra", "Vénus", "Júpiter"], "exp": "A Terra é o único planeta conhecido com vida." },
-  { "q": "Quantas estações do ano existem?", "a": "Quatro", "opts": ["Duas", "Três", "Quatro", "Cinco"], "exp": "Primavera, verão, outono e inverno." },
-  { "q": "Que instrumento usamos para ver as horas?", "a": "Relógio", "opts": ["Bússola", "Relógio", "Termómetro", "Balança"], "exp": "Os relógios mais antigos eram solares ou de água." },
-  { "q": "Qual é a moeda usada em Portugal?", "a": "Euro", "opts": ["Escudo", "Euro", "Dólar", "Libra"], "exp": "Portugal adotou o euro em 2002, substituindo o escudo." }
+  {
+    "q": "Quantos dias tem um ano normal?",
+    "a": "365",
+    "opts": [
+      "360",
+      "365",
+      "366",
+      "354"
+    ],
+    "exp": "Um ano bissexto, de 4 em 4 anos, tem 366 dias."
+  },
+  {
+    "q": "Qual é a capital de Portugal?",
+    "a": "Lisboa",
+    "opts": [
+      "Porto",
+      "Lisboa",
+      "Coimbra",
+      "Braga"
+    ],
+    "exp": "Lisboa é uma das capitais mais antigas da Europa Ocidental."
+  },
+  {
+    "q": "Quantas cores tem o arco-íris?",
+    "a": "Sete",
+    "opts": [
+      "Cinco",
+      "Seis",
+      "Sete",
+      "Oito"
+    ],
+    "exp": "Vermelho, laranja, amarelo, verde, azul, anil e violeta."
+  },
+  {
+    "q": "Qual é o maior oceano do mundo?",
+    "a": "Oceano Pacífico",
+    "opts": [
+      "Oceano Atlântico",
+      "Oceano Pacífico",
+      "Oceano Índico",
+      "Oceano Ártico"
+    ],
+    "exp": "O Pacífico cobre cerca de um terço da superfície da Terra."
+  },
+  {
+    "q": "Quantos lados tem um triângulo?",
+    "a": "Três",
+    "opts": [
+      "Dois",
+      "Três",
+      "Quatro",
+      "Cinco"
+    ],
+    "exp": "A soma dos ângulos internos de um triângulo é sempre 180°."
+  },
+  {
+    "q": "Que animal é o 'melhor amigo do homem'?",
+    "a": "O cão",
+    "opts": [
+      "O gato",
+      "O cão",
+      "O cavalo",
+      "O coelho"
+    ],
+    "exp": "O cão foi o primeiro animal domesticado, há mais de 15 000 anos."
+  },
+  {
+    "q": "Quantos minutos tem uma hora?",
+    "a": "60",
+    "opts": [
+      "30",
+      "60",
+      "90",
+      "100"
+    ],
+    "exp": "Uma hora tem 60 minutos e cada minuto tem 60 segundos."
+  },
+  {
+    "q": "De que cor fica o céu num dia limpo?",
+    "a": "Azul",
+    "opts": [
+      "Verde",
+      "Azul",
+      "Vermelho",
+      "Roxo"
+    ],
+    "exp": "O céu é azul porque a atmosfera dispersa mais a luz azul do Sol."
+  },
+  {
+    "q": "Qual é o planeta onde vivemos?",
+    "a": "Terra",
+    "opts": [
+      "Marte",
+      "Terra",
+      "Vénus",
+      "Júpiter"
+    ],
+    "exp": "A Terra é o único planeta conhecido com vida."
+  },
+  {
+    "q": "Quantas estações do ano existem?",
+    "a": "Quatro",
+    "opts": [
+      "Duas",
+      "Três",
+      "Quatro",
+      "Cinco"
+    ],
+    "exp": "Primavera, verão, outono e inverno."
+  },
+  {
+    "q": "Que instrumento usamos para ver as horas?",
+    "a": "Relógio",
+    "opts": [
+      "Bússola",
+      "Relógio",
+      "Termómetro",
+      "Balança"
+    ],
+    "exp": "Os relógios mais antigos eram solares ou de água."
+  },
+  {
+    "q": "Qual é a moeda usada em Portugal?",
+    "a": "Euro",
+    "opts": [
+      "Escudo",
+      "Euro",
+      "Dólar",
+      "Libra"
+    ],
+    "exp": "Portugal adotou o euro em 2002, substituindo o escudo."
+  },
+  {
+    "q": "Quantos meses tem um ano?",
+    "a": "12",
+    "opts": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "exp": "O ano divide-se em 12 meses."
+  },
+  {
+    "q": "De que animal vem o leite que bebemos mais?",
+    "a": "Da vaca",
+    "opts": [
+      "Da cabra",
+      "Da vaca",
+      "Da ovelha",
+      "Do cavalo"
+    ],
+    "exp": "A vaca é a principal fonte de leite no mundo."
+  },
+  {
+    "q": "Qual é a cor que se obtém misturando azul e amarelo?",
+    "a": "Verde",
+    "opts": [
+      "Laranja",
+      "Verde",
+      "Roxo",
+      "Castanho"
+    ],
+    "exp": "Azul + amarelo dá verde."
+  },
+  {
+    "q": "Quantos dias tem uma semana?",
+    "a": "7",
+    "opts": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "exp": "A semana tem sete dias."
+  },
+  {
+    "q": "Qual é o maior animal do oceano?",
+    "a": "Baleia-azul",
+    "opts": [
+      "Tubarão",
+      "Baleia-azul",
+      "Golfinho",
+      "Polvo"
+    ],
+    "exp": "A baleia-azul é o maior animal que já existiu."
+  },
+  {
+    "q": "Que forma tem uma bola de futebol?",
+    "a": "Esférica",
+    "opts": [
+      "Cúbica",
+      "Esférica",
+      "Cilíndrica",
+      "Plana"
+    ],
+    "exp": "A esfera é redonda em todas as direções."
+  },
+  {
+    "q": "Qual é o oposto de 'quente'?",
+    "a": "Frio",
+    "opts": [
+      "Morno",
+      "Frio",
+      "Tépido",
+      "Cálido"
+    ],
+    "exp": "Frio é o antónimo de quente."
+  },
+  {
+    "q": "Que astro vemos durante o dia?",
+    "a": "O Sol",
+    "opts": [
+      "A Lua",
+      "O Sol",
+      "As estrelas",
+      "Marte"
+    ],
+    "exp": "O Sol ilumina o dia."
+  }
 ]

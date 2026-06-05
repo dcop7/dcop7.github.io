@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é o maior animal terrestre?", "a": "Elefante-africano", "opts": ["Girafa", "Elefante-africano", "Hipopótamo", "Rinoceronte"], "exp": "O elefante-africano pode pesar mais de 6 toneladas." },
-  { "q": "Quantas patas tem uma aranha?", "a": "8", "opts": ["6", "8", "10", "4"], "exp": "As aranhas têm 8 patas — por isso não são insetos (que têm 6)." },
-  { "q": "Qual é o maior animal do planeta?", "a": "Baleia-azul", "opts": ["Elefante", "Baleia-azul", "Tubarão-baleia", "Girafa"], "exp": "A baleia-azul pode atingir 30 metros e 180 toneladas." },
-  { "q": "De que se alimenta o panda gigante?", "a": "Bambu", "opts": ["Peixe", "Bambu", "Mel", "Frutos"], "exp": "Um panda pode comer até 40 kg de bambu por dia." },
-  { "q": "Que animal é conhecido como o 'rei da selva'?", "a": "Leão", "opts": ["Tigre", "Leão", "Gorila", "Elefante"], "exp": "Na verdade os leões vivem na savana, não na selva." },
-  { "q": "Qual destes animais é um mamífero?", "a": "Golfinho", "opts": ["Tubarão", "Golfinho", "Salmão", "Polvo"], "exp": "O golfinho respira ar e amamenta as crias." },
-  { "q": "Que animal muda de cor para se camuflar?", "a": "Camaleão", "opts": ["Sapo", "Camaleão", "Coruja", "Lobo"], "exp": "O camaleão também muda de cor consoante o humor e a temperatura." },
-  { "q": "Qual é o animal mais alto do mundo?", "a": "Girafa", "opts": ["Elefante", "Girafa", "Camelo", "Avestruz"], "exp": "A girafa pode atingir 5,5 m de altura." },
-  { "q": "O que produz a abelha a partir do néctar?", "a": "Mel", "opts": ["Leite", "Mel", "Seda", "Cera"], "exp": "Uma colmeia pode ter mais de 50 000 abelhas." },
-  { "q": "Que ave não consegue voar mas corre muito depressa?", "a": "Avestruz", "opts": ["Águia", "Avestruz", "Pardal", "Andorinha"], "exp": "A avestruz corre a mais de 70 km/h e é a maior ave do mundo." },
-  { "q": "Que animal carrega as crias numa bolsa?", "a": "Canguru", "opts": ["Coala", "Canguru", "Lontra", "Esquilo"], "exp": "O canguru é um marsupial: as crias crescem na bolsa." },
-  { "q": "Quantas asas tem uma borboleta?", "a": "Quatro", "opts": ["Duas", "Quatro", "Seis", "Oito"], "exp": "As borboletas têm dois pares de asas cobertas de minúsculas escamas." }
+  {
+    "q": "Qual é o maior animal terrestre?",
+    "a": "Elefante-africano",
+    "opts": [
+      "Girafa",
+      "Elefante-africano",
+      "Hipopótamo",
+      "Rinoceronte"
+    ],
+    "exp": "O elefante-africano pode pesar mais de 6 toneladas."
+  },
+  {
+    "q": "Quantas patas tem uma aranha?",
+    "a": "8",
+    "opts": [
+      "6",
+      "8",
+      "10",
+      "4"
+    ],
+    "exp": "As aranhas têm 8 patas — por isso não são insetos (que têm 6)."
+  },
+  {
+    "q": "Qual é o maior animal do planeta?",
+    "a": "Baleia-azul",
+    "opts": [
+      "Elefante",
+      "Baleia-azul",
+      "Tubarão-baleia",
+      "Girafa"
+    ],
+    "exp": "A baleia-azul pode atingir 30 metros e 180 toneladas."
+  },
+  {
+    "q": "De que se alimenta o panda gigante?",
+    "a": "Bambu",
+    "opts": [
+      "Peixe",
+      "Bambu",
+      "Mel",
+      "Frutos"
+    ],
+    "exp": "Um panda pode comer até 40 kg de bambu por dia."
+  },
+  {
+    "q": "Que animal é conhecido como o 'rei da selva'?",
+    "a": "Leão",
+    "opts": [
+      "Tigre",
+      "Leão",
+      "Gorila",
+      "Elefante"
+    ],
+    "exp": "Na verdade os leões vivem na savana, não na selva."
+  },
+  {
+    "q": "Qual destes animais é um mamífero?",
+    "a": "Golfinho",
+    "opts": [
+      "Tubarão",
+      "Golfinho",
+      "Salmão",
+      "Polvo"
+    ],
+    "exp": "O golfinho respira ar e amamenta as crias."
+  },
+  {
+    "q": "Que animal muda de cor para se camuflar?",
+    "a": "Camaleão",
+    "opts": [
+      "Sapo",
+      "Camaleão",
+      "Coruja",
+      "Lobo"
+    ],
+    "exp": "O camaleão também muda de cor consoante o humor e a temperatura."
+  },
+  {
+    "q": "Qual é o animal mais alto do mundo?",
+    "a": "Girafa",
+    "opts": [
+      "Elefante",
+      "Girafa",
+      "Camelo",
+      "Avestruz"
+    ],
+    "exp": "A girafa pode atingir 5,5 m de altura."
+  },
+  {
+    "q": "O que produz a abelha a partir do néctar?",
+    "a": "Mel",
+    "opts": [
+      "Leite",
+      "Mel",
+      "Seda",
+      "Cera"
+    ],
+    "exp": "Uma colmeia pode ter mais de 50 000 abelhas."
+  },
+  {
+    "q": "Que ave não consegue voar mas corre muito depressa?",
+    "a": "Avestruz",
+    "opts": [
+      "Águia",
+      "Avestruz",
+      "Pardal",
+      "Andorinha"
+    ],
+    "exp": "A avestruz corre a mais de 70 km/h e é a maior ave do mundo."
+  },
+  {
+    "q": "Que animal carrega as crias numa bolsa?",
+    "a": "Canguru",
+    "opts": [
+      "Coala",
+      "Canguru",
+      "Lontra",
+      "Esquilo"
+    ],
+    "exp": "O canguru é um marsupial: as crias crescem na bolsa."
+  },
+  {
+    "q": "Quantas asas tem uma borboleta?",
+    "a": "Quatro",
+    "opts": [
+      "Duas",
+      "Quatro",
+      "Seis",
+      "Oito"
+    ],
+    "exp": "As borboletas têm dois pares de asas cobertas de minúsculas escamas."
+  },
+  {
+    "q": "Que animal é conhecido por ter uma tromba?",
+    "a": "Elefante",
+    "opts": [
+      "Rinoceronte",
+      "Elefante",
+      "Hipopótamo",
+      "Girafa"
+    ],
+    "exp": "A tromba do elefante tem mais de 40 000 músculos."
+  },
+  {
+    "q": "Que animal dá saltos e tem uma bolsa?",
+    "a": "Canguru",
+    "opts": [
+      "Coala",
+      "Canguru",
+      "Lebre",
+      "Sapo"
+    ],
+    "exp": "O canguru é um marsupial australiano."
+  },
+  {
+    "q": "Que ave é símbolo da paz?",
+    "a": "Pomba",
+    "opts": [
+      "Águia",
+      "Pomba",
+      "Coruja",
+      "Pavão"
+    ],
+    "exp": "A pomba branca é um símbolo universal de paz."
+  },
+  {
+    "q": "Que animal ronrona quando está contente?",
+    "a": "Gato",
+    "opts": [
+      "Cão",
+      "Gato",
+      "Cavalo",
+      "Coelho"
+    ],
+    "exp": "O ronronar dos gatos pode ter efeito calmante."
+  },
+  {
+    "q": "Onde vive o urso-polar?",
+    "a": "No Ártico",
+    "opts": [
+      "No deserto",
+      "No Ártico",
+      "Na selva",
+      "No oceano tropical"
+    ],
+    "exp": "O urso-polar vive nas regiões geladas do norte."
+  },
+  {
+    "q": "Que inseto faz o mel?",
+    "a": "Abelha",
+    "opts": [
+      "Formiga",
+      "Abelha",
+      "Mosca",
+      "Vespa"
+    ],
+    "exp": "As abelhas fazem mel a partir do néctar das flores."
+  },
+  {
+    "q": "Que animal é o mais rápido a correr?",
+    "a": "Chita",
+    "opts": [
+      "Leão",
+      "Chita",
+      "Cavalo",
+      "Lobo"
+    ],
+    "exp": "A chita pode atingir 110 km/h."
+  },
+  {
+    "q": "Que animal muda a pele à medida que cresce?",
+    "a": "A cobra",
+    "opts": [
+      "O cão",
+      "A cobra",
+      "O peixe",
+      "A ave"
+    ],
+    "exp": "As cobras mudam a pele várias vezes por ano."
+  }
 ]
