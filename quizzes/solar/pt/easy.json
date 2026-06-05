@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é a estrela no centro do Sistema Solar?", "a": "O Sol", "opts": ["A Lua", "O Sol", "Sírius", "Marte"], "exp": "O Sol contém 99,8% de toda a massa do Sistema Solar." },
-  { "q": "Quantos planetas tem o Sistema Solar?", "a": "Oito", "opts": ["Sete", "Oito", "Nove", "Dez"], "exp": "Plutão foi reclassificado como planeta anão em 2006." },
-  { "q": "Qual é o planeta onde vivemos?", "a": "Terra", "opts": ["Marte", "Terra", "Vénus", "Júpiter"], "exp": "A Terra é o único planeta conhecido com vida." },
-  { "q": "Que planeta é conhecido como o Planeta Vermelho?", "a": "Marte", "opts": ["Vénus", "Marte", "Júpiter", "Mercúrio"], "exp": "Marte é avermelhado devido ao óxido de ferro (ferrugem) no solo." },
-  { "q": "Qual é o maior planeta do Sistema Solar?", "a": "Júpiter", "opts": ["Saturno", "Júpiter", "Neptuno", "Terra"], "exp": "Em Júpiter caberiam mais de 1 300 Terras." },
-  { "q": "Qual é o planeta mais próximo do Sol?", "a": "Mercúrio", "opts": ["Vénus", "Mercúrio", "Terra", "Marte"], "exp": "Mercúrio demora apenas 88 dias a dar a volta ao Sol." },
-  { "q": "Que astro gira à volta da Terra e ilumina a noite?", "a": "A Lua", "opts": ["O Sol", "A Lua", "Vénus", "Júpiter"], "exp": "A Lua não tem luz própria — reflete a luz do Sol." },
-  { "q": "Que planeta é famoso pelos seus anéis?", "a": "Saturno", "opts": ["Júpiter", "Saturno", "Úrano", "Marte"], "exp": "Os anéis de Saturno são feitos sobretudo de gelo e rocha." },
-  { "q": "Como se chama o nosso conjunto de planetas e o Sol?", "a": "Sistema Solar", "opts": ["Galáxia", "Sistema Solar", "Universo", "Constelação"], "exp": "O Sistema Solar fica na galáxia Via Láctea." },
-  { "q": "Que forma tem a Terra?", "a": "Esférica (quase)", "opts": ["Plana", "Esférica (quase)", "Cúbica", "Triangular"], "exp": "A Terra é ligeiramente achatada nos polos — um 'esferoide'." },
-  { "q": "Quem foi o primeiro homem a pisar a Lua?", "a": "Neil Armstrong", "opts": ["Yuri Gagarin", "Neil Armstrong", "Buzz Aldrin", "Michael Collins"], "exp": "Aconteceu na missão Apollo 11, em 1969." },
-  { "q": "Como se chama a galáxia onde vivemos?", "a": "Via Láctea", "opts": ["Andrómeda", "Via Láctea", "Triângulo", "Sombreiro"], "exp": "A Via Láctea tem mais de 100 mil milhões de estrelas." }
+  {
+    "q": "Qual é a estrela no centro do Sistema Solar?",
+    "a": "O Sol",
+    "opts": [
+      "A Lua",
+      "O Sol",
+      "Sírius",
+      "Marte"
+    ],
+    "exp": "O Sol contém 99,8% de toda a massa do Sistema Solar."
+  },
+  {
+    "q": "Quantos planetas tem o Sistema Solar?",
+    "a": "Oito",
+    "opts": [
+      "Sete",
+      "Oito",
+      "Nove",
+      "Dez"
+    ],
+    "exp": "Plutão foi reclassificado como planeta anão em 2006."
+  },
+  {
+    "q": "Qual é o planeta onde vivemos?",
+    "a": "Terra",
+    "opts": [
+      "Marte",
+      "Terra",
+      "Vénus",
+      "Júpiter"
+    ],
+    "exp": "A Terra é o único planeta conhecido com vida."
+  },
+  {
+    "q": "Que planeta é conhecido como o Planeta Vermelho?",
+    "a": "Marte",
+    "opts": [
+      "Vénus",
+      "Marte",
+      "Júpiter",
+      "Mercúrio"
+    ],
+    "exp": "Marte é avermelhado devido ao óxido de ferro (ferrugem) no solo."
+  },
+  {
+    "q": "Qual é o maior planeta do Sistema Solar?",
+    "a": "Júpiter",
+    "opts": [
+      "Saturno",
+      "Júpiter",
+      "Neptuno",
+      "Terra"
+    ],
+    "exp": "Em Júpiter caberiam mais de 1 300 Terras."
+  },
+  {
+    "q": "Qual é o planeta mais próximo do Sol?",
+    "a": "Mercúrio",
+    "opts": [
+      "Vénus",
+      "Mercúrio",
+      "Terra",
+      "Marte"
+    ],
+    "exp": "Mercúrio demora apenas 88 dias a dar a volta ao Sol."
+  },
+  {
+    "q": "Que astro gira à volta da Terra e ilumina a noite?",
+    "a": "A Lua",
+    "opts": [
+      "O Sol",
+      "A Lua",
+      "Vénus",
+      "Júpiter"
+    ],
+    "exp": "A Lua não tem luz própria — reflete a luz do Sol."
+  },
+  {
+    "q": "Que planeta é famoso pelos seus anéis?",
+    "a": "Saturno",
+    "opts": [
+      "Júpiter",
+      "Saturno",
+      "Úrano",
+      "Marte"
+    ],
+    "exp": "Os anéis de Saturno são feitos sobretudo de gelo e rocha."
+  },
+  {
+    "q": "Como se chama o nosso conjunto de planetas e o Sol?",
+    "a": "Sistema Solar",
+    "opts": [
+      "Galáxia",
+      "Sistema Solar",
+      "Universo",
+      "Constelação"
+    ],
+    "exp": "O Sistema Solar fica na galáxia Via Láctea."
+  },
+  {
+    "q": "Que forma tem a Terra?",
+    "a": "Esférica (quase)",
+    "opts": [
+      "Plana",
+      "Esférica (quase)",
+      "Cúbica",
+      "Triangular"
+    ],
+    "exp": "A Terra é ligeiramente achatada nos polos — um 'esferoide'."
+  },
+  {
+    "q": "Quem foi o primeiro homem a pisar a Lua?",
+    "a": "Neil Armstrong",
+    "opts": [
+      "Yuri Gagarin",
+      "Neil Armstrong",
+      "Buzz Aldrin",
+      "Michael Collins"
+    ],
+    "exp": "Aconteceu na missão Apollo 11, em 1969."
+  },
+  {
+    "q": "Como se chama a galáxia onde vivemos?",
+    "a": "Via Láctea",
+    "opts": [
+      "Andrómeda",
+      "Via Láctea",
+      "Triângulo",
+      "Sombreiro"
+    ],
+    "exp": "A Via Láctea tem mais de 100 mil milhões de estrelas."
+  },
+  {
+    "q": "Qual é o nome do satélite natural da Terra?",
+    "a": "A Lua",
+    "opts": [
+      "Fobos",
+      "A Lua",
+      "Titã",
+      "Europa"
+    ],
+    "exp": "A Lua é o único satélite natural da Terra."
+  },
+  {
+    "q": "O que é uma estrela?",
+    "a": "Uma enorme bola de gás quente",
+    "opts": [
+      "Um planeta gelado",
+      "Uma enorme bola de gás quente",
+      "Uma rocha gigante",
+      "Uma nuvem de poeira"
+    ],
+    "exp": "As estrelas produzem luz e calor por fusão nuclear."
+  },
+  {
+    "q": "Que planeta tem cor azulada e é onde vivemos?",
+    "a": "Terra",
+    "opts": [
+      "Vénus",
+      "Terra",
+      "Neptuno",
+      "Úrano"
+    ],
+    "exp": "A Terra parece azul por causa dos oceanos."
+  },
+  {
+    "q": "O que protege a Terra dos raios do Sol?",
+    "a": "A atmosfera",
+    "opts": [
+      "A Lua",
+      "A atmosfera",
+      "As nuvens apenas",
+      "O vento"
+    ],
+    "exp": "A atmosfera filtra grande parte da radiação perigosa."
+  },
+  {
+    "q": "O que é o Sol?",
+    "a": "Uma estrela",
+    "opts": [
+      "Um planeta",
+      "Uma estrela",
+      "Uma lua",
+      "Um cometa"
+    ],
+    "exp": "O Sol é a estrela mais próxima de nós."
+  },
+  {
+    "q": "Que objeto deixa um rasto brilhante no céu ao cair?",
+    "a": "Estrela cadente",
+    "opts": [
+      "Satélite",
+      "Estrela cadente",
+      "Planeta",
+      "Nuvem"
+    ],
+    "exp": "Uma estrela cadente é um meteoro a arder na atmosfera."
+  },
+  {
+    "q": "Quantas vezes a Terra dá uma volta sobre si mesma por dia?",
+    "a": "Uma",
+    "opts": [
+      "Uma",
+      "Duas",
+      "Doze",
+      "Vinte e quatro"
+    ],
+    "exp": "Essa rotação dá origem ao dia e à noite."
+  },
+  {
+    "q": "Que astronautas exploram o espaço viajam em…?",
+    "a": "Foguetões",
+    "opts": [
+      "Submarinos",
+      "Foguetões",
+      "Comboios",
+      "Balões"
+    ],
+    "exp": "Os foguetões precisam de muita velocidade para sair da Terra."
+  }
 ]

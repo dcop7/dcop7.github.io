@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é o planeta mais quente do Sistema Solar?", "a": "Vénus", "opts": ["Mercúrio", "Vénus", "Marte", "Júpiter"], "exp": "Apesar de Mercúrio estar mais perto do Sol, a atmosfera densa de Vénus retém o calor (~465 °C)." },
-  { "q": "Quanto tempo demora a luz do Sol a chegar à Terra?", "a": "Cerca de 8 minutos", "opts": ["8 segundos", "Cerca de 8 minutos", "8 horas", "8 dias"], "exp": "A luz viaja a 300 000 km/s e o Sol está a ~150 milhões de km." },
-  { "q": "Qual é o planeta mais distante do Sol?", "a": "Neptuno", "opts": ["Úrano", "Neptuno", "Saturno", "Plutão"], "exp": "Neptuno demora 165 anos terrestres a orbitar o Sol." },
-  { "q": "Como se chama o caminho que um planeta faz à volta do Sol?", "a": "Órbita", "opts": ["Rotação", "Órbita", "Eclipse", "Trajetória lunar"], "exp": "A órbita dos planetas tem forma de elipse, não de círculo perfeito." },
-  { "q": "O que é uma estrela cadente?", "a": "Um meteoro a arder na atmosfera", "opts": ["Uma estrela a cair", "Um meteoro a arder na atmosfera", "Um satélite", "Um planeta"], "exp": "É um pequeno fragmento de rocha que arde ao entrar na atmosfera." },
-  { "q": "Que planetas são chamados 'gigantes gasosos'?", "a": "Júpiter e Saturno", "opts": ["Terra e Marte", "Júpiter e Saturno", "Mercúrio e Vénus", "Vénus e Terra"], "exp": "Júpiter, Saturno, Úrano e Neptuno são feitos sobretudo de gás." },
-  { "q": "Quanto dura um dia em Mercúrio (rotação) comparado com a Terra?", "a": "Muito mais longo", "opts": ["Igual", "Muito mais longo", "Muito mais curto", "Metade"], "exp": "Um dia em Mercúrio dura cerca de 59 dias terrestres." },
-  { "q": "Como se chama o fenómeno em que a Lua tapa o Sol?", "a": "Eclipse solar", "opts": ["Eclipse lunar", "Eclipse solar", "Solstício", "Equinócio"], "exp": "Num eclipse solar a Lua fica entre a Terra e o Sol." },
-  { "q": "Qual é o satélite natural da Terra?", "a": "A Lua", "opts": ["Fobos", "A Lua", "Europa", "Titã"], "exp": "A Lua afasta-se da Terra cerca de 3,8 cm por ano." },
-  { "q": "Que objeto tem tanta gravidade que nem a luz escapa?", "a": "Buraco negro", "opts": ["Estrela anã", "Buraco negro", "Cometa", "Nebulosa"], "exp": "A fronteira de um buraco negro chama-se horizonte de eventos." },
-  { "q": "Como se chama a cintura de rochas entre Marte e Júpiter?", "a": "Cintura de asteroides", "opts": ["Cintura de Kuiper", "Cintura de asteroides", "Nuvem de Oort", "Anel de Saturno"], "exp": "Contém milhões de asteroides; o maior é Ceres, um planeta anão." },
-  { "q": "Que planeta gira 'deitado', com o eixo quase na horizontal?", "a": "Úrano", "opts": ["Saturno", "Úrano", "Neptuno", "Marte"], "exp": "Úrano roda inclinado a ~98°, provavelmente após uma grande colisão." }
+  {
+    "q": "Qual é o planeta mais quente do Sistema Solar?",
+    "a": "Vénus",
+    "opts": [
+      "Mercúrio",
+      "Vénus",
+      "Marte",
+      "Júpiter"
+    ],
+    "exp": "Apesar de Mercúrio estar mais perto do Sol, a atmosfera densa de Vénus retém o calor (~465 °C)."
+  },
+  {
+    "q": "Quanto tempo demora a luz do Sol a chegar à Terra?",
+    "a": "Cerca de 8 minutos",
+    "opts": [
+      "8 segundos",
+      "Cerca de 8 minutos",
+      "8 horas",
+      "8 dias"
+    ],
+    "exp": "A luz viaja a 300 000 km/s e o Sol está a ~150 milhões de km."
+  },
+  {
+    "q": "Qual é o planeta mais distante do Sol?",
+    "a": "Neptuno",
+    "opts": [
+      "Úrano",
+      "Neptuno",
+      "Saturno",
+      "Plutão"
+    ],
+    "exp": "Neptuno demora 165 anos terrestres a orbitar o Sol."
+  },
+  {
+    "q": "Como se chama o caminho que um planeta faz à volta do Sol?",
+    "a": "Órbita",
+    "opts": [
+      "Rotação",
+      "Órbita",
+      "Eclipse",
+      "Trajetória lunar"
+    ],
+    "exp": "A órbita dos planetas tem forma de elipse, não de círculo perfeito."
+  },
+  {
+    "q": "O que é uma estrela cadente?",
+    "a": "Um meteoro a arder na atmosfera",
+    "opts": [
+      "Uma estrela a cair",
+      "Um meteoro a arder na atmosfera",
+      "Um satélite",
+      "Um planeta"
+    ],
+    "exp": "É um pequeno fragmento de rocha que arde ao entrar na atmosfera."
+  },
+  {
+    "q": "Que planetas são chamados 'gigantes gasosos'?",
+    "a": "Júpiter e Saturno",
+    "opts": [
+      "Terra e Marte",
+      "Júpiter e Saturno",
+      "Mercúrio e Vénus",
+      "Vénus e Terra"
+    ],
+    "exp": "Júpiter, Saturno, Úrano e Neptuno são feitos sobretudo de gás."
+  },
+  {
+    "q": "Quanto dura um dia em Mercúrio (rotação) comparado com a Terra?",
+    "a": "Muito mais longo",
+    "opts": [
+      "Igual",
+      "Muito mais longo",
+      "Muito mais curto",
+      "Metade"
+    ],
+    "exp": "Um dia em Mercúrio dura cerca de 59 dias terrestres."
+  },
+  {
+    "q": "Como se chama o fenómeno em que a Lua tapa o Sol?",
+    "a": "Eclipse solar",
+    "opts": [
+      "Eclipse lunar",
+      "Eclipse solar",
+      "Solstício",
+      "Equinócio"
+    ],
+    "exp": "Num eclipse solar a Lua fica entre a Terra e o Sol."
+  },
+  {
+    "q": "Qual é o satélite natural da Terra?",
+    "a": "A Lua",
+    "opts": [
+      "Fobos",
+      "A Lua",
+      "Europa",
+      "Titã"
+    ],
+    "exp": "A Lua afasta-se da Terra cerca de 3,8 cm por ano."
+  },
+  {
+    "q": "Que objeto tem tanta gravidade que nem a luz escapa?",
+    "a": "Buraco negro",
+    "opts": [
+      "Estrela anã",
+      "Buraco negro",
+      "Cometa",
+      "Nebulosa"
+    ],
+    "exp": "A fronteira de um buraco negro chama-se horizonte de eventos."
+  },
+  {
+    "q": "Como se chama a cintura de rochas entre Marte e Júpiter?",
+    "a": "Cintura de asteroides",
+    "opts": [
+      "Cintura de Kuiper",
+      "Cintura de asteroides",
+      "Nuvem de Oort",
+      "Anel de Saturno"
+    ],
+    "exp": "Contém milhões de asteroides; o maior é Ceres, um planeta anão."
+  },
+  {
+    "q": "Que planeta gira 'deitado', com o eixo quase na horizontal?",
+    "a": "Úrano",
+    "opts": [
+      "Saturno",
+      "Úrano",
+      "Neptuno",
+      "Marte"
+    ],
+    "exp": "Úrano roda inclinado a ~98°, provavelmente após uma grande colisão."
+  },
+  {
+    "q": "Quanto tempo demora a Terra a dar uma volta ao Sol?",
+    "a": "Um ano",
+    "opts": [
+      "Um dia",
+      "Um mês",
+      "Um ano",
+      "Dez anos"
+    ],
+    "exp": "São cerca de 365 dias e um quarto."
+  },
+  {
+    "q": "Que planeta tem a maior lua do Sistema Solar?",
+    "a": "Júpiter",
+    "opts": [
+      "Saturno",
+      "Júpiter",
+      "Terra",
+      "Marte"
+    ],
+    "exp": "Ganimedes, de Júpiter, é maior que Mercúrio."
+  },
+  {
+    "q": "O que provoca as fases da Lua?",
+    "a": "A posição da Lua em relação ao Sol e à Terra",
+    "opts": [
+      "Nuvens",
+      "A posição da Lua em relação ao Sol e à Terra",
+      "A sombra dos planetas",
+      "O vento solar"
+    ],
+    "exp": "Vemos diferentes porções da metade iluminada da Lua."
+  },
+  {
+    "q": "Como se chama um eclipse em que a Terra tapa a luz do Sol que chega à Lua?",
+    "a": "Eclipse lunar",
+    "opts": [
+      "Eclipse solar",
+      "Eclipse lunar",
+      "Solstício",
+      "Equinócio"
+    ],
+    "exp": "A Lua fica avermelhada — a 'Lua de sangue'."
+  },
+  {
+    "q": "Qual é a galáxia onde está o Sistema Solar?",
+    "a": "Via Láctea",
+    "opts": [
+      "Andrómeda",
+      "Via Láctea",
+      "Triângulo",
+      "Sombreiro"
+    ],
+    "exp": "A Via Láctea tem mais de 100 mil milhões de estrelas."
+  },
+  {
+    "q": "Que sonda fotografou Plutão de perto em 2015?",
+    "a": "New Horizons",
+    "opts": [
+      "Voyager 1",
+      "New Horizons",
+      "Cassini",
+      "Juno"
+    ],
+    "exp": "A New Horizons revelou montanhas de gelo em Plutão."
+  },
+  {
+    "q": "O que é a cintura de asteroides?",
+    "a": "Uma região de rochas entre Marte e Júpiter",
+    "opts": [
+      "Um anel de Saturno",
+      "Uma região de rochas entre Marte e Júpiter",
+      "Uma nuvem de gás",
+      "Um conjunto de luas"
+    ],
+    "exp": "O maior corpo da cintura é Ceres, um planeta anão."
+  },
+  {
+    "q": "Qual é o planeta com a maior duração de um dia (rotação)?",
+    "a": "Vénus",
+    "opts": [
+      "Mercúrio",
+      "Vénus",
+      "Marte",
+      "Júpiter"
+    ],
+    "exp": "Um dia em Vénus é mais longo do que o seu ano!"
+  }
 ]

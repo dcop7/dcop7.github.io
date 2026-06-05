@@ -1,14 +1,222 @@
 [
-  { "q": "Quantos jogadores tem uma equipa de futebol em campo?", "a": "11", "opts": ["9", "10", "11", "12"], "exp": "São 10 jogadores de campo mais o guarda-redes." },
-  { "q": "Com que parte do corpo NÃO se pode tocar na bola no futebol (exceto o guarda-redes)?", "a": "As mãos", "opts": ["Os pés", "A cabeça", "As mãos", "O peito"], "exp": "Tocar com a mão é falta — exceto o guarda-redes na sua área." },
-  { "q": "Quantos anéis tem o símbolo dos Jogos Olímpicos?", "a": "Cinco", "opts": ["Três", "Quatro", "Cinco", "Seis"], "exp": "Os cinco anéis representam os cinco continentes." },
-  { "q": "Em que desporto se usa uma raquete e uma rede para bater uma bola pequena amarela?", "a": "Ténis", "opts": ["Golfe", "Ténis", "Basquetebol", "Râguebi"], "exp": "Um court de ténis pode ser de terra batida, relva ou piso duro." },
-  { "q": "Quantos pontos vale normalmente um cesto de lançamento livre no basquetebol?", "a": "1", "opts": ["1", "2", "3", "4"], "exp": "Os lances livres valem 1 ponto; cestos normais valem 2 ou 3." },
-  { "q": "De quantos em quantos anos se realizam os Jogos Olímpicos de Verão?", "a": "4 anos", "opts": ["2 anos", "4 anos", "5 anos", "10 anos"], "exp": "Os Jogos de Verão e de Inverno alternam de 2 em 2 anos." },
-  { "q": "Em que desporto existe o 'KO' (knockout)?", "a": "Boxe", "opts": ["Natação", "Boxe", "Ciclismo", "Voleibol"], "exp": "Um KO acontece quando um pugilista não se levanta até à contagem de 10." },
-  { "q": "Qual destes é um desporto aquático?", "a": "Natação", "opts": ["Andebol", "Natação", "Ténis", "Atletismo"], "exp": "Os estilos incluem livre, costas, bruços e mariposa." },
-  { "q": "Quantos jogadores tem uma equipa de voleibol em campo?", "a": "6", "opts": ["5", "6", "7", "11"], "exp": "No voleibol a bola não pode tocar no chão do próprio lado." },
-  { "q": "Que troféu ganha o vencedor do Campeonato do Mundo de futebol?", "a": "Taça do Mundo", "opts": ["Taça dos Campeões", "Taça do Mundo", "Bola de Ouro", "Liga das Nações"], "exp": "O Mundial de futebol realiza-se de 4 em 4 anos." },
-  { "q": "Em que desporto se marca um 'home run'?", "a": "Basebol", "opts": ["Críquete", "Basebol", "Golfe", "Hóquei"], "exp": "Um home run permite ao batedor percorrer todas as bases e marcar." },
-  { "q": "Qual é o objetivo no golfe?", "a": "Meter a bola no buraco com o menor número de tacadas", "opts": ["Marcar mais golos", "Meter a bola no buraco com o menor número de tacadas", "Correr mais depressa", "Saltar mais alto"], "exp": "Um campo de golfe tem habitualmente 18 buracos." }
+  {
+    "q": "Quantos jogadores tem uma equipa de futebol em campo?",
+    "a": "11",
+    "opts": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "exp": "São 10 jogadores de campo mais o guarda-redes."
+  },
+  {
+    "q": "Com que parte do corpo NÃO se pode tocar na bola no futebol (exceto o guarda-redes)?",
+    "a": "As mãos",
+    "opts": [
+      "Os pés",
+      "A cabeça",
+      "As mãos",
+      "O peito"
+    ],
+    "exp": "Tocar com a mão é falta — exceto o guarda-redes na sua área."
+  },
+  {
+    "q": "Quantos anéis tem o símbolo dos Jogos Olímpicos?",
+    "a": "Cinco",
+    "opts": [
+      "Três",
+      "Quatro",
+      "Cinco",
+      "Seis"
+    ],
+    "exp": "Os cinco anéis representam os cinco continentes."
+  },
+  {
+    "q": "Em que desporto se usa uma raquete e uma rede para bater uma bola pequena amarela?",
+    "a": "Ténis",
+    "opts": [
+      "Golfe",
+      "Ténis",
+      "Basquetebol",
+      "Râguebi"
+    ],
+    "exp": "Um court de ténis pode ser de terra batida, relva ou piso duro."
+  },
+  {
+    "q": "Quantos pontos vale normalmente um cesto de lançamento livre no basquetebol?",
+    "a": "1",
+    "opts": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "exp": "Os lances livres valem 1 ponto; cestos normais valem 2 ou 3."
+  },
+  {
+    "q": "De quantos em quantos anos se realizam os Jogos Olímpicos de Verão?",
+    "a": "4 anos",
+    "opts": [
+      "2 anos",
+      "4 anos",
+      "5 anos",
+      "10 anos"
+    ],
+    "exp": "Os Jogos de Verão e de Inverno alternam de 2 em 2 anos."
+  },
+  {
+    "q": "Em que desporto existe o 'KO' (knockout)?",
+    "a": "Boxe",
+    "opts": [
+      "Natação",
+      "Boxe",
+      "Ciclismo",
+      "Voleibol"
+    ],
+    "exp": "Um KO acontece quando um pugilista não se levanta até à contagem de 10."
+  },
+  {
+    "q": "Qual destes é um desporto aquático?",
+    "a": "Natação",
+    "opts": [
+      "Andebol",
+      "Natação",
+      "Ténis",
+      "Atletismo"
+    ],
+    "exp": "Os estilos incluem livre, costas, bruços e mariposa."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de voleibol em campo?",
+    "a": "6",
+    "opts": [
+      "5",
+      "6",
+      "7",
+      "11"
+    ],
+    "exp": "No voleibol a bola não pode tocar no chão do próprio lado."
+  },
+  {
+    "q": "Que troféu ganha o vencedor do Campeonato do Mundo de futebol?",
+    "a": "Taça do Mundo",
+    "opts": [
+      "Taça dos Campeões",
+      "Taça do Mundo",
+      "Bola de Ouro",
+      "Liga das Nações"
+    ],
+    "exp": "O Mundial de futebol realiza-se de 4 em 4 anos."
+  },
+  {
+    "q": "Em que desporto se marca um 'home run'?",
+    "a": "Basebol",
+    "opts": [
+      "Críquete",
+      "Basebol",
+      "Golfe",
+      "Hóquei"
+    ],
+    "exp": "Um home run permite ao batedor percorrer todas as bases e marcar."
+  },
+  {
+    "q": "Qual é o objetivo no golfe?",
+    "a": "Meter a bola no buraco com o menor número de tacadas",
+    "opts": [
+      "Marcar mais golos",
+      "Meter a bola no buraco com o menor número de tacadas",
+      "Correr mais depressa",
+      "Saltar mais alto"
+    ],
+    "exp": "Um campo de golfe tem habitualmente 18 buracos."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de basquetebol em campo?",
+    "a": "5",
+    "opts": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "exp": "São cinco jogadores por equipa no campo."
+  },
+  {
+    "q": "Em que desporto se usa uma bola e uma rede alta entre duas equipas?",
+    "a": "Voleibol",
+    "opts": [
+      "Ténis",
+      "Voleibol",
+      "Golfe",
+      "Boxe"
+    ],
+    "exp": "No voleibol a bola não pode tocar no chão do próprio lado."
+  },
+  {
+    "q": "Que desporto se pratica numa piscina?",
+    "a": "Natação",
+    "opts": [
+      "Atletismo",
+      "Natação",
+      "Ciclismo",
+      "Ténis"
+    ],
+    "exp": "A natação é também uma forma completa de exercício."
+  },
+  {
+    "q": "Com que parte do corpo se cabeceia uma bola no futebol?",
+    "a": "A cabeça",
+    "opts": [
+      "O pé",
+      "A cabeça",
+      "A mão",
+      "O joelho"
+    ],
+    "exp": "Cabecear é tocar a bola com a cabeça."
+  },
+  {
+    "q": "Que objeto se usa para jogar ténis?",
+    "a": "Raquete",
+    "opts": [
+      "Taco",
+      "Raquete",
+      "Luva",
+      "Remo"
+    ],
+    "exp": "A raquete tem cordas que batem na bola."
+  },
+  {
+    "q": "Quantos jogadores de uma equipa há num campo de futebol?",
+    "a": "11",
+    "opts": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "exp": "Dez de campo mais o guarda-redes."
+  },
+  {
+    "q": "Que desporto se faz sobre uma bicicleta?",
+    "a": "Ciclismo",
+    "opts": [
+      "Patinagem",
+      "Ciclismo",
+      "Surf",
+      "Esgrima"
+    ],
+    "exp": "A Volta a Portugal é uma prova de ciclismo."
+  },
+  {
+    "q": "O que ganha quem chega em primeiro lugar numa corrida?",
+    "a": "A medalha de ouro",
+    "opts": [
+      "A medalha de bronze",
+      "A medalha de ouro",
+      "A medalha de prata",
+      "Nada"
+    ],
+    "exp": "O ouro é para o primeiro, a prata para o segundo e o bronze para o terceiro."
+  }
 ]

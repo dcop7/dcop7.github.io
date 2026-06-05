@@ -1,14 +1,222 @@
 [
-  { "q": "Quantas cordas tem normalmente uma guitarra clássica?", "a": "Seis", "opts": ["Quatro", "Cinco", "Seis", "Sete"], "exp": "O baixo elétrico costuma ter quatro cordas." },
-  { "q": "Que instrumento se toca com teclas pretas e brancas?", "a": "Piano", "opts": ["Violino", "Piano", "Flauta", "Bateria"], "exp": "Um piano padrão tem 88 teclas." },
-  { "q": "Que instrumento se toca batendo com baquetas?", "a": "Bateria", "opts": ["Harpa", "Bateria", "Saxofone", "Acordeão"], "exp": "A bateria marca o ritmo na maioria das bandas." },
-  { "q": "Quantas notas musicais básicas existem na escala (dó, ré, mi...)?", "a": "Sete", "opts": ["Cinco", "Seis", "Sete", "Oito"], "exp": "Dó, ré, mi, fá, sol, lá, si — depois repete-se numa oitava acima." },
-  { "q": "Que instrumento de sopro é feito de metal e é dourado?", "a": "Trompete", "opts": ["Violino", "Trompete", "Piano", "Tambor"], "exp": "O trompete pertence à família dos metais (sopro)." },
-  { "q": "Como se chama a pessoa que dirige uma orquestra?", "a": "Maestro", "opts": ["Solista", "Maestro", "Compositor", "Técnico"], "exp": "O maestro marca o tempo e coordena os músicos com a batuta." },
-  { "q": "Que estilo de música nasceu em Portugal e é Património da UNESCO?", "a": "Fado", "opts": ["Samba", "Fado", "Flamenco", "Tango"], "exp": "O Fado foi reconhecido pela UNESCO em 2011." },
-  { "q": "Que instrumento se toca dedilhando as cordas e tem forma triangular grande?", "a": "Harpa", "opts": ["Harpa", "Flauta", "Bateria", "Trompete"], "exp": "A harpa de concerto tem 47 cordas e 7 pedais." },
-  { "q": "O que mede o 'andamento' (rapidez) de uma música?", "a": "O tempo (BPM)", "opts": ["O volume", "O tempo (BPM)", "A cor", "O peso"], "exp": "BPM = batidas por minuto; quanto maior, mais rápida a música." },
-  { "q": "Que instrumento usa um arco para fazer soar as cordas?", "a": "Violino", "opts": ["Guitarra", "Violino", "Piano", "Flauta"], "exp": "O arco do violino tem crina de cavalo." },
-  { "q": "Como se chama um grupo de 4 cantores ou músicos?", "a": "Quarteto", "opts": ["Dueto", "Trio", "Quarteto", "Quinteto"], "exp": "Dueto = 2, trio = 3, quarteto = 4, quinteto = 5." },
-  { "q": "Que instrumento de sopro de madeira é pequeno e agudo?", "a": "Flauta", "opts": ["Flauta", "Tuba", "Contrabaixo", "Bateria"], "exp": "A flauta transversal é tocada de lado." }
+  {
+    "q": "Quantas cordas tem normalmente uma guitarra clássica?",
+    "a": "Seis",
+    "opts": [
+      "Quatro",
+      "Cinco",
+      "Seis",
+      "Sete"
+    ],
+    "exp": "O baixo elétrico costuma ter quatro cordas."
+  },
+  {
+    "q": "Que instrumento se toca com teclas pretas e brancas?",
+    "a": "Piano",
+    "opts": [
+      "Violino",
+      "Piano",
+      "Flauta",
+      "Bateria"
+    ],
+    "exp": "Um piano padrão tem 88 teclas."
+  },
+  {
+    "q": "Que instrumento se toca batendo com baquetas?",
+    "a": "Bateria",
+    "opts": [
+      "Harpa",
+      "Bateria",
+      "Saxofone",
+      "Acordeão"
+    ],
+    "exp": "A bateria marca o ritmo na maioria das bandas."
+  },
+  {
+    "q": "Quantas notas musicais básicas existem na escala (dó, ré, mi...)?",
+    "a": "Sete",
+    "opts": [
+      "Cinco",
+      "Seis",
+      "Sete",
+      "Oito"
+    ],
+    "exp": "Dó, ré, mi, fá, sol, lá, si — depois repete-se numa oitava acima."
+  },
+  {
+    "q": "Que instrumento de sopro é feito de metal e é dourado?",
+    "a": "Trompete",
+    "opts": [
+      "Violino",
+      "Trompete",
+      "Piano",
+      "Tambor"
+    ],
+    "exp": "O trompete pertence à família dos metais (sopro)."
+  },
+  {
+    "q": "Como se chama a pessoa que dirige uma orquestra?",
+    "a": "Maestro",
+    "opts": [
+      "Solista",
+      "Maestro",
+      "Compositor",
+      "Técnico"
+    ],
+    "exp": "O maestro marca o tempo e coordena os músicos com a batuta."
+  },
+  {
+    "q": "Que estilo de música nasceu em Portugal e é Património da UNESCO?",
+    "a": "Fado",
+    "opts": [
+      "Samba",
+      "Fado",
+      "Flamenco",
+      "Tango"
+    ],
+    "exp": "O Fado foi reconhecido pela UNESCO em 2011."
+  },
+  {
+    "q": "Que instrumento se toca dedilhando as cordas e tem forma triangular grande?",
+    "a": "Harpa",
+    "opts": [
+      "Harpa",
+      "Flauta",
+      "Bateria",
+      "Trompete"
+    ],
+    "exp": "A harpa de concerto tem 47 cordas e 7 pedais."
+  },
+  {
+    "q": "O que mede o 'andamento' (rapidez) de uma música?",
+    "a": "O tempo (BPM)",
+    "opts": [
+      "O volume",
+      "O tempo (BPM)",
+      "A cor",
+      "O peso"
+    ],
+    "exp": "BPM = batidas por minuto; quanto maior, mais rápida a música."
+  },
+  {
+    "q": "Que instrumento usa um arco para fazer soar as cordas?",
+    "a": "Violino",
+    "opts": [
+      "Guitarra",
+      "Violino",
+      "Piano",
+      "Flauta"
+    ],
+    "exp": "O arco do violino tem crina de cavalo."
+  },
+  {
+    "q": "Como se chama um grupo de 4 cantores ou músicos?",
+    "a": "Quarteto",
+    "opts": [
+      "Dueto",
+      "Trio",
+      "Quarteto",
+      "Quinteto"
+    ],
+    "exp": "Dueto = 2, trio = 3, quarteto = 4, quinteto = 5."
+  },
+  {
+    "q": "Que instrumento de sopro de madeira é pequeno e agudo?",
+    "a": "Flauta",
+    "opts": [
+      "Flauta",
+      "Tuba",
+      "Contrabaixo",
+      "Bateria"
+    ],
+    "exp": "A flauta transversal é tocada de lado."
+  },
+  {
+    "q": "Que instrumento se toca soprando e tem teclas, comum nas escolas?",
+    "a": "Flauta",
+    "opts": [
+      "Flauta",
+      "Bateria",
+      "Violino",
+      "Piano"
+    ],
+    "exp": "A flauta de bisel é muito usada para aprender música."
+  },
+  {
+    "q": "Como se chama quem canta numa banda?",
+    "a": "Vocalista",
+    "opts": [
+      "Baterista",
+      "Vocalista",
+      "Guitarrista",
+      "Maestro"
+    ],
+    "exp": "O vocalista é o cantor principal."
+  },
+  {
+    "q": "Que instrumento tem cordas e se dedilha, muito usado no rock?",
+    "a": "Guitarra",
+    "opts": [
+      "Tambor",
+      "Guitarra",
+      "Trompete",
+      "Acordeão"
+    ],
+    "exp": "A guitarra elétrica precisa de um amplificador."
+  },
+  {
+    "q": "O que marca o ritmo numa música?",
+    "a": "A percussão",
+    "opts": [
+      "A percussão",
+      "A letra",
+      "O título",
+      "A capa"
+    ],
+    "exp": "A bateria é o instrumento de percussão mais comum nas bandas."
+  },
+  {
+    "q": "Como se chama um conjunto grande de músicos com violinos, sopros e percussão?",
+    "a": "Orquestra",
+    "opts": [
+      "Coro",
+      "Orquestra",
+      "Dueto",
+      "Banda filarmónica"
+    ],
+    "exp": "A orquestra é dirigida por um maestro."
+  },
+  {
+    "q": "Que estilo de música é típico de Portugal e fala de saudade?",
+    "a": "Fado",
+    "opts": [
+      "Samba",
+      "Fado",
+      "Jazz",
+      "Rap"
+    ],
+    "exp": "O Fado é Património Imaterial da Humanidade."
+  },
+  {
+    "q": "Que aparelho usamos para ouvir música sozinhos sem incomodar?",
+    "a": "Auscultadores",
+    "opts": [
+      "Colunas",
+      "Auscultadores",
+      "Microfone",
+      "Rádio alto"
+    ],
+    "exp": "Os auscultadores enviam o som diretamente aos ouvidos."
+  },
+  {
+    "q": "Como se chama um grupo de pessoas que canta em conjunto?",
+    "a": "Coro",
+    "opts": [
+      "Coro",
+      "Orquestra",
+      "Solo",
+      "Banda"
+    ],
+    "exp": "Num coro há vozes diferentes (soprano, contralto, tenor, baixo)."
+  }
 ]

@@ -1,14 +1,222 @@
 [
-  { "q": "Em que ano Portugal venceu o Campeonato da Europa de futebol?", "a": "2016", "opts": ["2004", "2012", "2016", "2020"], "exp": "Venceu a França por 1–0, com golo de Éder no prolongamento." },
-  { "q": "Que tenista detém o recorde de mais títulos do Grand Slam masculino (até 2024)?", "a": "Novak Djokovic", "opts": ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"], "exp": "Djokovic ultrapassou os 24 títulos de singulares do Grand Slam." },
-  { "q": "Em que cidade se realizaram os primeiros Jogos Olímpicos modernos, em 1896?", "a": "Atenas", "opts": ["Paris", "Atenas", "Londres", "Roma"], "exp": "Foram revividos por Pierre de Coubertin na Grécia." },
-  { "q": "Que piloto português correu na Fórmula 1 nos anos 1950–60?", "a": "Mário de Araújo Cabral", "opts": ["Tiago Monteiro", "Mário de Araújo Cabral", "Pedro Lamy", "Filipe Albuquerque"], "exp": "Foi pioneiro português na F1; mais tarde Tiago Monteiro subiu a um pódio em 2005." },
-  { "q": "Qual é o único país a participar em todas as fases finais do Mundial de futebol?", "a": "Brasil", "opts": ["Alemanha", "Brasil", "Itália", "Argentina"], "exp": "O Brasil esteve presente em todas as edições desde 1930." },
-  { "q": "Em atletismo, quem detém o recorde mundial dos 100 metros?", "a": "Usain Bolt", "opts": ["Carl Lewis", "Usain Bolt", "Justin Gatlin", "Yohan Blake"], "exp": "Bolt correu 9,58 s em Berlim, em 2009." },
-  { "q": "Que clube português foi o primeiro a vencer a Taça dos Campeões Europeus?", "a": "Benfica", "opts": ["FC Porto", "Benfica", "Sporting", "Boavista"], "exp": "O Benfica venceu em 1961 e 1962, com Eusébio na equipa." },
-  { "q": "Quantos jogadores estão simultaneamente em campo numa equipa de hóquei em patins?", "a": "5", "opts": ["4", "5", "6", "7"], "exp": "Quatro patinadores mais o guarda-redes; Portugal é potência mundial nesta modalidade." },
-  { "q": "Que prova de ciclismo é considerada a mais prestigiada do mundo?", "a": "Volta a França", "opts": ["Volta a Itália", "Volta a França", "Volta a Espanha", "Volta a Portugal"], "exp": "O Tour de France realiza-se desde 1903." },
-  { "q": "Em que desporto se disputa a 'America's Cup'?", "a": "Vela", "opts": ["Remo", "Vela", "Natação", "Surf"], "exp": "É o troféu mais antigo do desporto internacional ainda em disputa (desde 1851)." },
-  { "q": "Qual ginasta tem skills com o seu nome por serem pioneiros e difíceis?", "a": "Simone Biles", "opts": ["Nadia Comaneci", "Simone Biles", "Larisa Latynina", "Vera Caslavska"], "exp": "Biles tem vários elementos com o seu nome no código de pontuação." },
-  { "q": "Quantos pontos vale um cesto de três no basquetebol?", "a": "3", "opts": ["1", "2", "3", "4"], "exp": "A linha de 3 pontos foi introduzida na NBA em 1979." }
+  {
+    "q": "Em que ano Portugal venceu o Campeonato da Europa de futebol?",
+    "a": "2016",
+    "opts": [
+      "2004",
+      "2012",
+      "2016",
+      "2020"
+    ],
+    "exp": "Venceu a França por 1–0, com golo de Éder no prolongamento."
+  },
+  {
+    "q": "Que tenista detém o recorde de mais títulos do Grand Slam masculino (até 2024)?",
+    "a": "Novak Djokovic",
+    "opts": [
+      "Roger Federer",
+      "Rafael Nadal",
+      "Novak Djokovic",
+      "Pete Sampras"
+    ],
+    "exp": "Djokovic ultrapassou os 24 títulos de singulares do Grand Slam."
+  },
+  {
+    "q": "Em que cidade se realizaram os primeiros Jogos Olímpicos modernos, em 1896?",
+    "a": "Atenas",
+    "opts": [
+      "Paris",
+      "Atenas",
+      "Londres",
+      "Roma"
+    ],
+    "exp": "Foram revividos por Pierre de Coubertin na Grécia."
+  },
+  {
+    "q": "Que piloto português correu na Fórmula 1 nos anos 1950–60?",
+    "a": "Mário de Araújo Cabral",
+    "opts": [
+      "Tiago Monteiro",
+      "Mário de Araújo Cabral",
+      "Pedro Lamy",
+      "Filipe Albuquerque"
+    ],
+    "exp": "Foi pioneiro português na F1; mais tarde Tiago Monteiro subiu a um pódio em 2005."
+  },
+  {
+    "q": "Qual é o único país a participar em todas as fases finais do Mundial de futebol?",
+    "a": "Brasil",
+    "opts": [
+      "Alemanha",
+      "Brasil",
+      "Itália",
+      "Argentina"
+    ],
+    "exp": "O Brasil esteve presente em todas as edições desde 1930."
+  },
+  {
+    "q": "Em atletismo, quem detém o recorde mundial dos 100 metros?",
+    "a": "Usain Bolt",
+    "opts": [
+      "Carl Lewis",
+      "Usain Bolt",
+      "Justin Gatlin",
+      "Yohan Blake"
+    ],
+    "exp": "Bolt correu 9,58 s em Berlim, em 2009."
+  },
+  {
+    "q": "Que clube português foi o primeiro a vencer a Taça dos Campeões Europeus?",
+    "a": "Benfica",
+    "opts": [
+      "FC Porto",
+      "Benfica",
+      "Sporting",
+      "Boavista"
+    ],
+    "exp": "O Benfica venceu em 1961 e 1962, com Eusébio na equipa."
+  },
+  {
+    "q": "Quantos jogadores estão simultaneamente em campo numa equipa de hóquei em patins?",
+    "a": "5",
+    "opts": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "exp": "Quatro patinadores mais o guarda-redes; Portugal é potência mundial nesta modalidade."
+  },
+  {
+    "q": "Que prova de ciclismo é considerada a mais prestigiada do mundo?",
+    "a": "Volta a França",
+    "opts": [
+      "Volta a Itália",
+      "Volta a França",
+      "Volta a Espanha",
+      "Volta a Portugal"
+    ],
+    "exp": "O Tour de France realiza-se desde 1903."
+  },
+  {
+    "q": "Em que desporto se disputa a 'America's Cup'?",
+    "a": "Vela",
+    "opts": [
+      "Remo",
+      "Vela",
+      "Natação",
+      "Surf"
+    ],
+    "exp": "É o troféu mais antigo do desporto internacional ainda em disputa (desde 1851)."
+  },
+  {
+    "q": "Qual ginasta tem skills com o seu nome por serem pioneiros e difíceis?",
+    "a": "Simone Biles",
+    "opts": [
+      "Nadia Comaneci",
+      "Simone Biles",
+      "Larisa Latynina",
+      "Vera Caslavska"
+    ],
+    "exp": "Biles tem vários elementos com o seu nome no código de pontuação."
+  },
+  {
+    "q": "Quantos pontos vale um cesto de três no basquetebol?",
+    "a": "3",
+    "opts": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "exp": "A linha de 3 pontos foi introduzida na NBA em 1979."
+  },
+  {
+    "q": "Quem detém o recorde mundial dos 100 metros planos?",
+    "a": "Usain Bolt",
+    "opts": [
+      "Carl Lewis",
+      "Usain Bolt",
+      "Justin Gatlin",
+      "Yohan Blake"
+    ],
+    "exp": "Bolt correu 9,58 s em 2009, em Berlim."
+  },
+  {
+    "q": "Que ginasta tem o recorde de medalhas olímpicas femininas?",
+    "a": "Larisa Latynina",
+    "opts": [
+      "Simone Biles",
+      "Larisa Latynina",
+      "Nadia Comaneci",
+      "Vera Caslavska"
+    ],
+    "exp": "Latynina conquistou 18 medalhas olímpicas."
+  },
+  {
+    "q": "Em que ano o FC Porto venceu a Liga dos Campeões pela última vez?",
+    "a": "2004",
+    "opts": [
+      "1987",
+      "2004",
+      "2011",
+      "2016"
+    ],
+    "exp": "O Porto venceu em 1987 e 2004 (treinado por Mourinho)."
+  },
+  {
+    "q": "Qual é a prova-rainha do ciclismo mundial?",
+    "a": "Volta a França",
+    "opts": [
+      "Volta a Itália",
+      "Volta a França",
+      "Volta a Espanha",
+      "Paris-Roubaix"
+    ],
+    "exp": "O Tour de France realiza-se desde 1903."
+  },
+  {
+    "q": "Que tenista venceu mais vezes o torneio de Wimbledon (masculino, era aberta)?",
+    "a": "Roger Federer",
+    "opts": [
+      "Rafael Nadal",
+      "Roger Federer",
+      "Pete Sampras",
+      "Novak Djokovic"
+    ],
+    "exp": "Federer venceu Wimbledon 8 vezes."
+  },
+  {
+    "q": "Qual é o desporto coletivo mais popular do mundo?",
+    "a": "Futebol",
+    "opts": [
+      "Basquetebol",
+      "Futebol",
+      "Críquete",
+      "Voleibol"
+    ],
+    "exp": "O futebol tem milhares de milhões de adeptos."
+  },
+  {
+    "q": "Quantos anéis tem a bandeira olímpica e o que representam?",
+    "a": "Cinco, os continentes",
+    "opts": [
+      "Quatro, as estações",
+      "Cinco, os continentes",
+      "Seis, os oceanos",
+      "Três, as medalhas"
+    ],
+    "exp": "As cores incluem pelo menos uma de cada bandeira do mundo."
+  },
+  {
+    "q": "Que piloto português subiu a um pódio na Fórmula 1, em 2005?",
+    "a": "Tiago Monteiro",
+    "opts": [
+      "Pedro Lamy",
+      "Tiago Monteiro",
+      "Filipe Albuquerque",
+      "Mário Cabral"
+    ],
+    "exp": "Foi 3.º no GP dos EUA de 2005."
+  }
 ]
