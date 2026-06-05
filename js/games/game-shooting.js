@@ -1,24 +1,32 @@
 const ShootingGame = (function () {
   'use strict';
 
+  /* UI strings live in games/shooting/i18n.json (this is the offline fallback). */
+  const FB_I18N = {
+    pt: { points:'Pontos', level:'Nível', lives:'Vidas', pause:'⏸ Pausa', resume:'▶ Continuar', instr:'Move com o rato / toque · Dispara sozinho · Teclas A/D ou ← →', play:'🚀 Jogar', pausedBig:'⏸ PAUSADO', resumeHint:'Clica em Continuar para retomar', gameOver:'💥 Fim de Jogo!', over:'Pontos: {score} · Nível: {level} · Recorde: {best}', playAgain:'🔄 Jogar de novo' },
+    en: { points:'Score', level:'Level', lives:'Lives', pause:'⏸ Pause', resume:'▶ Resume', instr:'Move with mouse / touch · Auto-fires · Keys A/D or ← →', play:'🚀 Play', pausedBig:'⏸ PAUSED', resumeHint:'Click Resume to continue', gameOver:'💥 Game Over!', over:'Score: {score} · Level: {level} · Best: {best}', playAgain:'🔄 Play again' },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+
   function init(root) {
     if (!root) return;
 
     root.innerHTML = `
       <div class="game-card" style="padding:.6rem">
         <div class="sg-hdr">
-          <div class="sg-stat"><span class="sg-lbl">Pontos</span><span class="sg-val" id="sg-score">0</span></div>
-          <div class="sg-stat"><span class="sg-lbl">Nível</span><span class="sg-val" id="sg-level">1</span></div>
-          <div class="sg-stat"><span class="sg-lbl">Vidas</span><span class="sg-val" id="sg-lives">❤️❤️❤️</span></div>
-          <button class="hf-new-btn" id="sg-pause" style="padding:.3rem .75rem;font-size:.72rem">⏸ Pausa</button>
+          <div class="sg-stat"><span class="sg-lbl">${t('points')}</span><span class="sg-val" id="sg-score">0</span></div>
+          <div class="sg-stat"><span class="sg-lbl">${t('level')}</span><span class="sg-val" id="sg-level">1</span></div>
+          <div class="sg-stat"><span class="sg-lbl">${t('lives')}</span><span class="sg-val" id="sg-lives">❤️❤️❤️</span></div>
+          <button class="hf-new-btn" id="sg-pause" style="padding:.3rem .75rem;font-size:.72rem">${t('pause')}</button>
         </div>
         <div style="position:relative">
           <canvas id="sg-canvas" style="display:block;border-radius:var(--radius-sm);cursor:none;touch-action:none;width:100%"></canvas>
           <div id="sg-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,8,16,.85);border-radius:var(--radius-sm)">
             <div id="sg-over-title" style="font-family:var(--font-head);font-size:1.6rem;font-weight:800;color:#60a5fa;text-shadow:0 0 20px #60a5fa">SPACE SHOOTER</div>
             <div id="sg-over-score" style="color:var(--muted);font-size:.85rem;margin:.4rem 0 .8rem"></div>
-            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem;text-align:center">Move com o rato / toque · Dispara sozinho · Teclas A/D ou ← →</div>
-            <button id="sg-start" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:.6rem 2rem;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 0 20px rgba(99,102,241,.5)">🚀 Jogar</button>
+            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem;text-align:center">${t('instr')}</div>
+            <button id="sg-start" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:.6rem 2rem;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 0 20px rgba(99,102,241,.5)">${t('play')}</button>
           </div>
         </div>
       </div>`;
@@ -384,10 +392,10 @@ const ShootingGame = (function () {
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 1.5rem Inter,sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('⏸ PAUSADO', W / 2, H / 2);
+        ctx.fillText(t('pausedBig'), W / 2, H / 2);
         ctx.font = '.8rem Inter,sans-serif';
         ctx.fillStyle = 'rgba(255,255,255,.6)';
-        ctx.fillText('Clica em Continuar para retomar', W / 2, H / 2 + 28);
+        ctx.fillText(t('resumeHint'), W / 2, H / 2 + 28);
       }
     }
 
@@ -410,9 +418,9 @@ const ShootingGame = (function () {
       running = false;
       if (frameId) cancelAnimationFrame(frameId);
       const overlay = root.querySelector('#sg-overlay');
-      root.querySelector('#sg-over-title').textContent = '💥 Game Over!';
-      root.querySelector('#sg-over-score').textContent = `Pontos: ${score} · Nível: ${level} · Recorde: ${highScore}`;
-      root.querySelector('#sg-start').textContent = '🔄 Jogar de novo';
+      root.querySelector('#sg-over-title').textContent = t('gameOver');
+      root.querySelector('#sg-over-score').textContent = t('over').replace('{score}', score).replace('{level}', level).replace('{best}', highScore);
+      root.querySelector('#sg-start').textContent = t('playAgain');
       overlay.style.display = 'flex';
     }
 
@@ -423,7 +431,7 @@ const ShootingGame = (function () {
       player = mkPlayer();
       running = true; paused = false;
       root.querySelector('#sg-overlay').style.display = 'none';
-      root.querySelector('#sg-pause').textContent = '⏸ Pausa';
+      root.querySelector('#sg-pause').textContent = t('pause');
       updateHUD();
       lastTime = performance.now();
       if (frameId) cancelAnimationFrame(frameId);
@@ -435,7 +443,7 @@ const ShootingGame = (function () {
     root.querySelector('#sg-pause').addEventListener('click', () => {
       if (!running) return;
       paused = !paused;
-      root.querySelector('#sg-pause').textContent = paused ? '▶ Continuar' : '⏸ Pausa';
+      root.querySelector('#sg-pause').textContent = paused ? t('resume') : t('pause');
     });
 
     // Mouse
@@ -461,7 +469,7 @@ const ShootingGame = (function () {
       if (!pane || !pane.classList.contains('active')) return;
       if ((e.key === 'p' || e.key === 'P') && running) {
         paused = !paused;
-        root.querySelector('#sg-pause').textContent = paused ? '▶ Continuar' : '⏸ Pausa';
+        root.querySelector('#sg-pause').textContent = paused ? t('resume') : t('pause');
       }
     });
     document.addEventListener('keyup', e => { keys[e.key] = false; });
@@ -474,6 +482,30 @@ const ShootingGame = (function () {
     resize();
     // Initial static frame
     draw();
+
+    /* Re-localize labels in place (no game reset) when language changes. */
+    function relabel() {
+      const lbls = root.querySelectorAll('.sg-lbl');
+      if (lbls[0]) lbls[0].textContent = t('points');
+      if (lbls[1]) lbls[1].textContent = t('level');
+      if (lbls[2]) lbls[2].textContent = t('lives');
+      const pb = root.querySelector('#sg-pause');
+      if (pb) pb.textContent = paused ? t('resume') : t('pause');
+      const ov = root.querySelector('#sg-overlay');
+      if (ov && ov.style.display !== 'none') {
+        const instr = root.querySelector('#sg-overlay > div:nth-child(3)');
+        if (instr) instr.textContent = t('instr');
+        const sb = root.querySelector('#sg-start');
+        if (sb) sb.textContent = running ? t('playAgain') : t('play');
+      }
+    }
+    _relabel = relabel;
+  }
+
+  let _relabel = null;
+  if (_has) {
+    GameData.load('shooting').then(d => { if (t.use) t.use(d.i18n); if (_relabel) _relabel(); });
+    document.addEventListener('langchange', () => { GameData.load('shooting').then(d => { if (t.use) t.use(d.i18n); if (_relabel) _relabel(); }); });
   }
 
   return { init };
