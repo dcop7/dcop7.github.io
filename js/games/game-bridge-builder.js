@@ -25,6 +25,18 @@ const BridgeBuilderGame = (function () {
       maxBeams:18, robotSpeed:50 },
   ];
 
+  /* UI strings + per-level titles/hints live in games/bridge-builder/i18n.json
+     (offline fallback below; `levels` is an array indexed by level). */
+  const FB_I18N = {
+    pt: { play:'Jogar', continue:'Continuar', startOver:'↺ Recomeçar', tip:'Clica nos pontos de ancoragem para ligar vigas<br>Vigas longas e planas colapsam — usa triângulos!<br>Depois testa se a ponte aguenta o robô.', beamsInit:'Vigas: {n}', beamsLeft:'Vigas: {n} restantes', build:'🔧 Construir', del:'🗑 Apagar', clear:'Limpar', test:'🤖 Testar!', collapsed:'A ponte colapsou! Tenta treliças triangulares.', beamTooLong:'Viga demasiado longa — adiciona ancoragens intermédias!', buildPath:'Constrói um caminho de 🚀 a 🏁 primeiro!', bridgeHolds:'A Ponte Aguenta!', beamsUsed:'Vigas usadas: {u} / {n}', nextLevel:'▶ Próximo Nível', allDoneBtn:'🏆 Tudo Concluído!', replay:'↺ Repetir', menu:'☰ Menu', masterBuilder:'Construtor Mestre!', playAgain:'▶ Jogar de Novo',
+      levels:[ {title:'Nível 1 — Primeira Ponte',hint:'Liga os pontos de ancoragem com vigas para construir uma ponte'}, {title:'Nível 2 — O Abismo',hint:'Vãos longos precisam de vigas de apoio por baixo'}, {title:'Nível 3 — Atravessar o Vale',hint:'Usa as ancoragens inferiores para formar treliças triangulares'}, {title:'Nível 4 — Estrutura Avançada',hint:'As treliças triangulares distribuem a carga — pontes planas colapsam'} ] },
+    en: { play:'Play', continue:'Continue', startOver:'↺ Start Over', tip:'Click anchor points to connect beams<br>Long flat beams collapse — use triangles!<br>Then test if your bridge holds the robot.', beamsInit:'Beams: {n}', beamsLeft:'Beams: {n} left', build:'🔧 Build', del:'🗑 Delete', clear:'Clear', test:'🤖 Test!', collapsed:'Bridge collapsed! Try triangular trusses.', beamTooLong:'Beam too long — add intermediate anchors!', buildPath:'Build a path from 🚀 to 🏁 first!', bridgeHolds:'Bridge Holds!', beamsUsed:'Beams used: {u} / {n}', nextLevel:'▶ Next Level', allDoneBtn:'🏆 All Done!', replay:'↺ Replay', menu:'☰ Menu', masterBuilder:'Master Builder!', playAgain:'▶ Play Again',
+      levels:[ {title:'Level 1 — First Bridge',hint:'Connect anchor points with beams to build a bridge'}, {title:'Level 2 — The Chasm',hint:'Long spans need support beams beneath'}, {title:'Level 3 — Cross the Valley',hint:'Use the lower anchors to form triangular trusses'}, {title:'Level 4 — Advanced Structure',hint:'Triangular trusses spread the load — flat bridges will collapse'} ] },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  const _lvl = idx => { const L = t('levels'); return (L && L[idx]) || LEVELS[idx] || {}; };
+
   const BEAM_MAX_STRESS = 1.6;
   const ROBOT_RADIUS = 16;
   // Beams longer than this fraction of screen width will be extra weak
@@ -69,9 +81,9 @@ const BridgeBuilderGame = (function () {
       <div style="font-size:3rem;filter:drop-shadow(0 0 18px #38bdf8)">🌉</div>
       <div class="bb-title">Bridge Builder<br>Future</div>
       <div class="bb-prog">${LEVELS.map((_,i)=>`<div class="bb-pd ${i<saved?'done':''}"></div>`).join('')}</div>
-      <button class="bb-main-btn" id="bb-play">▶ ${saved>0?'Continue':'Play'}</button>
-      ${saved>0?`<button class="bb-sm-btn" id="bb-reset">↺ Start Over</button>`:''}
-      <div class="bb-tip">Click anchor points to connect beams<br>Long flat beams collapse — use triangles!<br>Then test if your bridge holds the robot.</div>
+      <button class="bb-main-btn" id="bb-play">▶ ${saved>0?t('continue'):t('play')}</button>
+      ${saved>0?`<button class="bb-sm-btn" id="bb-reset">${t('startOver')}</button>`:''}
+      <div class="bb-tip">${t('tip')}</div>
     </div></div>`;
     root.querySelector('#bb-play').addEventListener('click', () => playLevel(saved));
     root.querySelector('#bb-reset')?.addEventListener('click', () => { localStorage.removeItem('bb-lvl'); showMenu(); });
@@ -83,14 +95,14 @@ const BridgeBuilderGame = (function () {
 
     root.innerHTML = `<div class="bb-host">
       <div class="bb-hud">
-        <div class="bb-hud-title">${lvl.title}</div>
-        <div class="bb-beams-left" id="bb-bl">Beams: ${lvl.maxBeams}</div>
+        <div class="bb-hud-title">${_lvl(idx).title}</div>
+        <div class="bb-beams-left" id="bb-bl">${t('beamsInit').replace('{n}', lvl.maxBeams)}</div>
         <div class="bb-mode-row">
-          <button class="bb-mode-btn active" id="bb-m-build" style="color:#38bdf8;border-color:#38bdf8">🔧 Build</button>
-          <button class="bb-mode-btn" id="bb-m-del" style="color:#f87171;border-color:#f87171">🗑 Delete</button>
+          <button class="bb-mode-btn active" id="bb-m-build" style="color:#38bdf8;border-color:#38bdf8">${t('build')}</button>
+          <button class="bb-mode-btn" id="bb-m-del" style="color:#f87171;border-color:#f87171">${t('del')}</button>
         </div>
-        <button class="bb-btn-clear" id="bb-clear">Clear</button>
-        <button class="bb-btn" id="bb-test">🤖 Test!</button>
+        <button class="bb-btn-clear" id="bb-clear">${t('clear')}</button>
+        <button class="bb-btn" id="bb-test">${t('test')}</button>
         <button class="bb-btn-new" id="bb-new">☰</button>
       </div>
       <canvas class="bb-cv" id="bb-cv"></canvas>
@@ -165,7 +177,7 @@ const BridgeBuilderGame = (function () {
     const pa = G.anchors[a1], pb = G.anchors[a2];
     const beamLen = Math.sqrt((pa.px-pb.px)**2+(pa.py-pb.py)**2);
     if (beamLen > W * MAX_BEAM_FRACTION) {
-      flashMsg('Beam too long — add intermediate anchors!', '#fbbf24');
+      flashMsg(t('beamTooLong'), '#fbbf24');
       G.selectedAnchor = -1; return;
     }
 
@@ -196,7 +208,7 @@ const BridgeBuilderGame = (function () {
 
   function updateBeamHUD() {
     const bl = root.querySelector('#bb-bl');
-    if (bl) bl.textContent = `Beams: ${G.lvl.maxBeams - G.beamsUsed} left`;
+    if (bl) bl.textContent = t('beamsLeft').replace('{n}', G.lvl.maxBeams - G.beamsUsed);
   }
 
   function testBridge() {
@@ -204,7 +216,7 @@ const BridgeBuilderGame = (function () {
     const start = G.lvl.startAnchor, end = G.lvl.endAnchor;
     const connected = isConnected(start, end);
     if (!connected) {
-      flashMsg('Build a path from 🚀 to 🏁 first!', '#f87171'); return;
+      flashMsg(t('buildPath'), '#f87171'); return;
     }
     G.state = 'testing';
     const sa = G.anchors[start];
@@ -303,7 +315,7 @@ const BridgeBuilderGame = (function () {
     G.state = 'build';
     root.querySelector('#bb-test').disabled = false;
     G.beams.forEach(b => b.stress = 0);
-    flashMsg('Bridge collapsed! Try triangular trusses.', '#f87171');
+    flashMsg(t('collapsed'), '#f87171');
     G.robot = null;
   }
 
@@ -314,14 +326,14 @@ const BridgeBuilderGame = (function () {
     if (next > +localStorage.getItem('bb-lvl')||0) localStorage.setItem('bb-lvl', next);
     root.innerHTML = `<div class="bb-host"><div class="bb-overlay">
       <div style="font-size:2.8rem">✅</div>
-      <div class="bb-title" style="font-size:1.6rem">Bridge Holds!</div>
-      <div style="font-size:.85rem;color:#1e3a5f">Beams used: ${G.beamsUsed} / ${G.lvl.maxBeams}</div>
+      <div class="bb-title" style="font-size:1.6rem">${t('bridgeHolds')}</div>
+      <div style="font-size:.85rem;color:#1e3a5f">${t('beamsUsed').replace('{u}', G.beamsUsed).replace('{n}', G.lvl.maxBeams)}</div>
       <div class="bb-prog">${LEVELS.map((_,i)=>`<div class="bb-pd ${i<next?'done':''}"></div>`).join('')}</div>
       ${next < LEVELS.length
-        ? `<button class="bb-main-btn" id="bb-next">▶ Next Level</button>`
-        : `<button class="bb-main-btn" id="bb-next">🏆 All Done!</button>`}
-      <button class="bb-sm-btn" id="bb-re">↺ Replay</button>
-      <button class="bb-sm-btn" id="bb-men">☰ Menu</button>
+        ? `<button class="bb-main-btn" id="bb-next">${t('nextLevel')}</button>`
+        : `<button class="bb-main-btn" id="bb-next">${t('allDoneBtn')}</button>`}
+      <button class="bb-sm-btn" id="bb-re">${t('replay')}</button>
+      <button class="bb-sm-btn" id="bb-men">${t('menu')}</button>
     </div></div>`;
     root.querySelector('#bb-next').addEventListener('click', () => playLevel(next));
     root.querySelector('#bb-re').addEventListener('click', () => playLevel(G.idx));
@@ -331,8 +343,8 @@ const BridgeBuilderGame = (function () {
   function showAllDone() {
     root.innerHTML = `<div class="bb-host"><div class="bb-overlay">
       <div style="font-size:3rem">🏆</div>
-      <div class="bb-title">Master Builder!</div>
-      <button class="bb-main-btn" id="bb-ag">▶ Play Again</button>
+      <div class="bb-title">${t('masterBuilder')}</div>
+      <button class="bb-main-btn" id="bb-ag">${t('playAgain')}</button>
     </div></div>`;
     root.querySelector('#bb-ag').addEventListener('click', () => { localStorage.removeItem('bb-lvl'); showMenu(); });
   }
@@ -456,9 +468,18 @@ const BridgeBuilderGame = (function () {
       cx.globalAlpha = Math.min(1, Math.min(t*.8, (4-t)*2));
       cx.fillStyle = '#1e3a5f'; cx.font = '13px sans-serif';
       cx.textAlign = 'center'; cx.textBaseline = 'top';
-      cx.fillText(G.lvl.hint, W/2, 46);
+      cx.fillText(_lvl(G.idx).hint || G.lvl.hint, W/2, 46);
       cx.globalAlpha = 1;
     }
+  }
+
+  if (_has) {
+    const apply = () => GameData.load('bridge-builder').then(d => {
+      if (t.use) t.use(d.i18n);
+      if (root) { try { cancelAnimationFrame(raf); } catch (e) {} showMenu(); }
+    });
+    apply();
+    document.addEventListener('langchange', apply);
   }
 
   return { init };
