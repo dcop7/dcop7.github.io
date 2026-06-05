@@ -1,6 +1,15 @@
 const NeonGame = (function () {
   'use strict';
 
+  /* UI strings live in games/neon/i18n.json (this is the offline fallback). */
+  const FB_I18N = {
+    pt: { color:'Cor', thickness:'Espessura', clear:'🗑 Limpar', png:'💾 PNG' },
+    en: { color:'Colour', thickness:'Thickness', clear:'🗑 Clear', png:'💾 PNG' },
+  };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
+  if (_has) GameData.load('neon').then(d => { if (t.use) t.use(d.i18n); });
+
   function init(root) {
     if (!root) return;
 
@@ -8,20 +17,20 @@ const NeonGame = (function () {
       <div>
         <div class="t-row" style="margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
           <div class="tool-opts-grp">
-            <span class="tool-opts-lbl">Cor</span>
+            <span class="tool-opts-lbl">${t('color')}</span>
             <div class="tool-colors" id="neon-colors">
               ${['#6366f1','#22d3ee','#10b981','#f59e0b','#ef4444','#a855f7','#f0f','#0ff'].map((c,i)=>
                 `<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c}"></button>`).join('')}
             </div>
           </div>
           <div class="tool-opts-grp">
-            <span class="tool-opts-lbl">Espessura</span>
+            <span class="tool-opts-lbl">${t('thickness')}</span>
             <div class="tool-seg" id="neon-size">
               ${[2,4,8,14,20].map((s,i)=>`<button class="tsb${i===1?' active':''}" data-s="${s}">${s}</button>`).join('')}
             </div>
           </div>
-          <button class="t-btn t-btn-ghost" id="neon-clear">🗑 Limpar</button>
-          <button class="t-btn t-btn-ghost" id="neon-dl">💾 PNG</button>
+          <button class="t-btn t-btn-ghost" id="neon-clear">${t('clear')}</button>
+          <button class="t-btn t-btn-ghost" id="neon-dl">${t('png')}</button>
         </div>
         <canvas id="neon-canvas" style="background:#000;border:1px solid var(--border);border-radius:var(--radius);cursor:crosshair;display:block;width:100%;touch-action:none"></canvas>
       </div>`;

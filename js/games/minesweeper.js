@@ -1,11 +1,19 @@
 const MinesweeperGame = (function () {
   'use strict';
 
-  const DIFFS = {
+  /* Board sizes + UI strings live in games/minesweeper/{config,i18n}.json,
+     loaded at runtime; these are the offline fallback. */
+  const FB_I18N = {
+    pt: { title:'💣 Campo de Minas', easy:'Fácil', medium:'Médio', hard:'Difícil', start:'▶ Iniciar', kaboom:'💥 Kaboom! Tenta novamente.', won:'🏆 Ganhou em {t}s!' },
+    en: { title:'💣 Minesweeper', easy:'Easy', medium:'Medium', hard:'Hard', start:'▶ Start', kaboom:'💥 Kaboom! Try again.', won:'🏆 Solved in {t}s!' },
+  };
+  let DIFFS = {
     easy:   { rows: 9,  cols: 9,  mines: 10 },
     medium: { rows: 16, cols: 16, mines: 40 },
     hard:   { rows: 16, cols: 30, mines: 99 },
   };
+  const _has = typeof GameData !== 'undefined';
+  const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
 
   let container, diff = 'easy', board = [], rows, cols, mines;
   let revealed = 0, flagged = 0, gameState = 'idle'; // idle|running|won|lost
@@ -16,16 +24,16 @@ const MinesweeperGame = (function () {
     container.innerHTML = `
       <div class="hf-card ms-card">
         <div class="hf-top">
-          <span class="hf-title">💣 Campo de Minas</span>
+          <span class="hf-title">${t('title')}</span>
           <div class="ms-diff-btns">
-            <button class="ms-db active" data-d="easy">Fácil</button>
-            <button class="ms-db" data-d="medium">Médio</button>
-            <button class="ms-db" data-d="hard">Difícil</button>
+            <button class="ms-db${diff==='easy'?' active':''}" data-d="easy">${t('easy')}</button>
+            <button class="ms-db${diff==='medium'?' active':''}" data-d="medium">${t('medium')}</button>
+            <button class="ms-db${diff==='hard'?' active':''}" data-d="hard">${t('hard')}</button>
           </div>
         </div>
         <div class="ms-hud">
           <span class="ms-stat">💣 <span id="ms-mines">10</span></span>
-          <button class="ms-reset" id="ms-reset">▶ Iniciar</button>
+          <button class="ms-reset" id="ms-reset">${t('start')}</button>
           <span class="ms-stat">⏱ <span id="ms-timer">0</span>s</span>
         </div>
         <div class="ms-grid-wrap">
@@ -217,7 +225,7 @@ const MinesweeperGame = (function () {
         }
       }
     }
-    statusEl.textContent = '💥 Kaboom! Tenta novamente.';
+    statusEl.textContent = t('kaboom');
     statusEl.style.color = '#f87171';
   }
 
@@ -226,10 +234,22 @@ const MinesweeperGame = (function () {
     if (revealed === safe) {
       clearInterval(timerInt);
       gameState = 'won';
-      const t = Math.floor((Date.now() - startTime) / 1000);
-      statusEl.textContent = `🏆 Ganhou em ${t}s!`;
+      const secs = Math.floor((Date.now() - startTime) / 1000);
+      statusEl.textContent = t('won').replace('{t}', secs);
       statusEl.style.color = '#4ade80';
     }
+  }
+
+  function _apply() {
+    return GameData.load('minesweeper').then(d => {
+      if (t.use) t.use(d.i18n);                 /* re-resolves for the current language */
+      if (d.config && d.config.diffs) DIFFS = d.config.diffs;
+      if (container) init(container);
+    });
+  }
+  if (_has) {
+    _apply();
+    document.addEventListener('langchange', _apply);
   }
 
   return { init };

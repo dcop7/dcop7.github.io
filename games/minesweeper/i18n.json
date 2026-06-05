@@ -1,0 +1,4 @@
+{
+  "pt": { "title": "💣 Campo de Minas", "easy": "Fácil", "medium": "Médio", "hard": "Difícil", "start": "▶ Iniciar", "kaboom": "💥 Kaboom! Tenta novamente.", "won": "🏆 Ganhou em {t}s!" },
+  "en": { "title": "💣 Minesweeper", "easy": "Easy", "medium": "Medium", "hard": "Hard", "start": "▶ Start", "kaboom": "💥 Kaboom! Try again.", "won": "🏆 Solved in {t}s!" }
+}
