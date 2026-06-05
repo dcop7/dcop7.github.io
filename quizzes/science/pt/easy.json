@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é a estrela no centro do nosso sistema solar?", "a": "O Sol", "opts": ["A Lua", "O Sol", "Marte", "Vénus"], "exp": "O Sol é uma estrela e contém 99,8% de toda a massa do sistema solar." },
-  { "q": "Que gás respiramos do ar para viver?", "a": "Oxigénio", "opts": ["Hidrogénio", "Oxigénio", "Hélio", "Azoto puro"], "exp": "O ar tem cerca de 21% de oxigénio; o resto é quase todo azoto." },
-  { "q": "Em que estado está a água quando congela?", "a": "Sólido", "opts": ["Líquido", "Gasoso", "Sólido", "Plasma"], "exp": "A água congela a 0 °C, passando ao estado sólido (gelo)." },
-  { "q": "O que faz cair os objetos para o chão?", "a": "A gravidade", "opts": ["O vento", "A gravidade", "O magnetismo", "A eletricidade"], "exp": "A gravidade é a força que atrai os objetos para o centro da Terra." },
-  { "q": "Quantas patas tem um inseto?", "a": "Seis", "opts": ["Quatro", "Seis", "Oito", "Dez"], "exp": "Todos os insetos têm 6 patas; as aranhas (com 8) não são insetos." },
-  { "q": "Que planeta é conhecido como o Planeta Vermelho?", "a": "Marte", "opts": ["Júpiter", "Marte", "Saturno", "Vénus"], "exp": "Marte é avermelhado por causa do óxido de ferro (ferrugem) no solo." },
-  { "q": "Que parte da planta absorve a água do solo?", "a": "As raízes", "opts": ["As folhas", "As raízes", "A flor", "O caule"], "exp": "As raízes absorvem água e nutrientes e fixam a planta ao solo." },
-  { "q": "A água é feita de oxigénio e que outro elemento?", "a": "Hidrogénio", "opts": ["Carbono", "Hidrogénio", "Hélio", "Ferro"], "exp": "A fórmula da água é H₂O: dois átomos de hidrogénio e um de oxigénio." },
-  { "q": "Qual é o sentido que usa a língua?", "a": "Paladar", "opts": ["Visão", "Olfato", "Paladar", "Tato"], "exp": "A língua tem milhares de papilas gustativas que detetam os sabores." },
-  { "q": "Que astro ilumina a noite e gira à volta da Terra?", "a": "A Lua", "opts": ["O Sol", "A Lua", "Marte", "Uma estrela"], "exp": "A Lua não tem luz própria — apenas reflete a luz do Sol." },
-  { "q": "O que usam as plantas para produzir o seu alimento?", "a": "A luz do Sol", "opts": ["A luz do Sol", "O som", "O vento", "O gelo"], "exp": "Na fotossíntese, as plantas usam luz solar, água e CO₂ para fazer alimento." },
-  { "q": "Qual destes é um mamífero?", "a": "Golfinho", "opts": ["Tubarão", "Golfinho", "Salmão", "Polvo"], "exp": "O golfinho respira ar e amamenta as crias — é um mamífero, não um peixe." }
+  {
+    "q": "Qual é a estrela no centro do nosso sistema solar?",
+    "a": "O Sol",
+    "opts": [
+      "A Lua",
+      "O Sol",
+      "Marte",
+      "Vénus"
+    ],
+    "exp": "O Sol é uma estrela e contém 99,8% de toda a massa do sistema solar."
+  },
+  {
+    "q": "Que gás respiramos do ar para viver?",
+    "a": "Oxigénio",
+    "opts": [
+      "Hidrogénio",
+      "Oxigénio",
+      "Hélio",
+      "Azoto puro"
+    ],
+    "exp": "O ar tem cerca de 21% de oxigénio; o resto é quase todo azoto."
+  },
+  {
+    "q": "Em que estado está a água quando congela?",
+    "a": "Sólido",
+    "opts": [
+      "Líquido",
+      "Gasoso",
+      "Sólido",
+      "Plasma"
+    ],
+    "exp": "A água congela a 0 °C, passando ao estado sólido (gelo)."
+  },
+  {
+    "q": "O que faz cair os objetos para o chão?",
+    "a": "A gravidade",
+    "opts": [
+      "O vento",
+      "A gravidade",
+      "O magnetismo",
+      "A eletricidade"
+    ],
+    "exp": "A gravidade é a força que atrai os objetos para o centro da Terra."
+  },
+  {
+    "q": "Quantas patas tem um inseto?",
+    "a": "Seis",
+    "opts": [
+      "Quatro",
+      "Seis",
+      "Oito",
+      "Dez"
+    ],
+    "exp": "Todos os insetos têm 6 patas; as aranhas (com 8) não são insetos."
+  },
+  {
+    "q": "Que planeta é conhecido como o Planeta Vermelho?",
+    "a": "Marte",
+    "opts": [
+      "Júpiter",
+      "Marte",
+      "Saturno",
+      "Vénus"
+    ],
+    "exp": "Marte é avermelhado por causa do óxido de ferro (ferrugem) no solo."
+  },
+  {
+    "q": "Que parte da planta absorve a água do solo?",
+    "a": "As raízes",
+    "opts": [
+      "As folhas",
+      "As raízes",
+      "A flor",
+      "O caule"
+    ],
+    "exp": "As raízes absorvem água e nutrientes e fixam a planta ao solo."
+  },
+  {
+    "q": "A água é feita de oxigénio e que outro elemento?",
+    "a": "Hidrogénio",
+    "opts": [
+      "Carbono",
+      "Hidrogénio",
+      "Hélio",
+      "Ferro"
+    ],
+    "exp": "A fórmula da água é H₂O: dois átomos de hidrogénio e um de oxigénio."
+  },
+  {
+    "q": "Qual é o sentido que usa a língua?",
+    "a": "Paladar",
+    "opts": [
+      "Visão",
+      "Olfato",
+      "Paladar",
+      "Tato"
+    ],
+    "exp": "A língua tem milhares de papilas gustativas que detetam os sabores."
+  },
+  {
+    "q": "Que astro ilumina a noite e gira à volta da Terra?",
+    "a": "A Lua",
+    "opts": [
+      "O Sol",
+      "A Lua",
+      "Marte",
+      "Uma estrela"
+    ],
+    "exp": "A Lua não tem luz própria — apenas reflete a luz do Sol."
+  },
+  {
+    "q": "O que usam as plantas para produzir o seu alimento?",
+    "a": "A luz do Sol",
+    "opts": [
+      "A luz do Sol",
+      "O som",
+      "O vento",
+      "O gelo"
+    ],
+    "exp": "Na fotossíntese, as plantas usam luz solar, água e CO₂ para fazer alimento."
+  },
+  {
+    "q": "Qual destes é um mamífero?",
+    "a": "Golfinho",
+    "opts": [
+      "Tubarão",
+      "Golfinho",
+      "Salmão",
+      "Polvo"
+    ],
+    "exp": "O golfinho respira ar e amamenta as crias — é um mamífero, não um peixe."
+  },
+  {
+    "q": "Que aparelho usamos para medir a temperatura?",
+    "a": "Termómetro",
+    "opts": [
+      "Barómetro",
+      "Termómetro",
+      "Bússola",
+      "Balança"
+    ],
+    "exp": "O termómetro mede em graus Celsius (°C)."
+  },
+  {
+    "q": "Em que se transforma a água quando ferve?",
+    "a": "Em vapor",
+    "opts": [
+      "Em gelo",
+      "Em vapor",
+      "Em sal",
+      "Em ar puro"
+    ],
+    "exp": "A água ferve a 100 °C e passa ao estado gasoso."
+  },
+  {
+    "q": "Que força nos puxa para o chão?",
+    "a": "A gravidade",
+    "opts": [
+      "O magnetismo",
+      "A gravidade",
+      "O atrito",
+      "O vento"
+    ],
+    "exp": "A gravidade da Terra atrai tudo para o seu centro."
+  },
+  {
+    "q": "De que cor é a clorofila das plantas?",
+    "a": "Verde",
+    "opts": [
+      "Vermelha",
+      "Verde",
+      "Azul",
+      "Amarela"
+    ],
+    "exp": "A clorofila dá a cor verde às folhas."
+  },
+  {
+    "q": "O que usamos para ver coisas muito pequenas?",
+    "a": "Microscópio",
+    "opts": [
+      "Telescópio",
+      "Microscópio",
+      "Binóculos",
+      "Periscópio"
+    ],
+    "exp": "O microscópio amplia objetos minúsculos como as células."
+  },
+  {
+    "q": "Qual destes materiais é atraído por um íman?",
+    "a": "Ferro",
+    "opts": [
+      "Plástico",
+      "Ferro",
+      "Madeira",
+      "Vidro"
+    ],
+    "exp": "O ferro e o aço são materiais magnéticos."
+  },
+  {
+    "q": "De que são feitas as nuvens?",
+    "a": "Gotas de água",
+    "opts": [
+      "Fumo",
+      "Gotas de água",
+      "Areia",
+      "Algodão"
+    ],
+    "exp": "As nuvens são feitas de minúsculas gotas de água ou cristais de gelo."
+  },
+  {
+    "q": "Quantas pernas tem um inseto adulto?",
+    "a": "Seis",
+    "opts": [
+      "Quatro",
+      "Seis",
+      "Oito",
+      "Dez"
+    ],
+    "exp": "Todos os insetos têm seis pernas."
+  }
 ]

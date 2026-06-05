@@ -1,16 +1,244 @@
 [
-  { "q": "Aproximadamente quantos neurónios tem o cérebro humano?", "a": "~86 mil milhões", "opts": ["~86 milhões", "~860 milhões", "~86 mil milhões", "~8,6 biliões"], "exp": "Os neurónios comunicam com sinais elétricos que viajam até 430 km/h." },
-  { "q": "Qual é a unidade funcional do rim, onde o sangue é filtrado?", "a": "Nefrónio", "opts": ["Alvéolo", "Nefrónio", "Neurónio", "Glomérulo único"], "exp": "Cada rim tem cerca de 1 milhão de nefrónios." },
-  { "q": "Como se chamam os pequenos sacos de ar dos pulmões?", "a": "Alvéolos", "opts": ["Brônquios", "Alvéolos", "Bronquíolos", "Cílios"], "exp": "Há cerca de 300 milhões de alvéolos; desdobrados, cobririam um campo de ténis." },
-  { "q": "Que proteína dos glóbulos vermelhos transporta o oxigénio?", "a": "Hemoglobina", "opts": ["Queratina", "Hemoglobina", "Colagénio", "Insulina"], "exp": "É o ferro da hemoglobina que dá ao sangue a sua cor vermelha." },
-  { "q": "Qual é a maior artéria do corpo humano?", "a": "Aorta", "opts": ["Veia cava", "Aorta", "Artéria pulmonar", "Carótida"], "exp": "A aorta sai diretamente do ventrículo esquerdo do coração." },
-  { "q": "Quantos cromossomas tem uma célula humana normal?", "a": "46", "opts": ["23", "44", "46", "48"], "exp": "São 23 pares — metade vem da mãe e metade do pai." },
-  { "q": "Qual é o osso mais pequeno do corpo humano?", "a": "Estribo", "opts": ["Estribo", "Falange", "Rádio", "Vómer"], "exp": "O estribo fica no ouvido médio e tem apenas cerca de 3 mm." },
-  { "q": "Que parte do olho é sensível à luz e forma a imagem?", "a": "Retina", "opts": ["Córnea", "Íris", "Retina", "Pupila"], "exp": "A retina converte a luz em sinais que o cérebro transforma em imagem." },
-  { "q": "Que lobo do cérebro processa a visão?", "a": "Lobo occipital", "opts": ["Lobo frontal", "Lobo temporal", "Lobo occipital", "Lobo parietal"], "exp": "Fica na parte de trás da cabeça — vemos, na verdade, com o cérebro." },
-  { "q": "Quantas vértebras tem a coluna vertebral humana?", "a": "33", "opts": ["24", "33", "40", "12"], "exp": "Algumas vértebras fundem-se no sacro e no cóccix, na base da coluna." },
-  { "q": "Que hormona produzida pelo pâncreas baixa o açúcar no sangue?", "a": "Insulina", "opts": ["Adrenalina", "Insulina", "Tiroxina", "Cortisol"], "exp": "A falta ou má resposta à insulina causa a diabetes." },
-  { "q": "Como se chama o prolongamento do neurónio que transmite o sinal?", "a": "Axónio", "opts": ["Dendrite", "Axónio", "Sinapse", "Mielina"], "exp": "O axónio pode medir mais de um metro, por exemplo na perna." },
-  { "q": "Qual é o maior órgão interno do corpo humano?", "a": "Fígado", "opts": ["Coração", "Fígado", "Cérebro", "Pulmão"], "exp": "O fígado pesa cerca de 1,5 kg e consegue regenerar-se." },
-  { "q": "Que glândula é considerada a 'maestra' do sistema hormonal?", "a": "Hipófise", "opts": ["Tiroide", "Hipófise", "Suprarrenal", "Pâncreas"], "exp": "A hipófise, do tamanho de uma ervilha, comanda outras glândulas." }
+  {
+    "q": "Aproximadamente quantos neurónios tem o cérebro humano?",
+    "a": "~86 mil milhões",
+    "opts": [
+      "~86 milhões",
+      "~860 milhões",
+      "~86 mil milhões",
+      "~8,6 biliões"
+    ],
+    "exp": "Os neurónios comunicam com sinais elétricos que viajam até 430 km/h."
+  },
+  {
+    "q": "Qual é a unidade funcional do rim, onde o sangue é filtrado?",
+    "a": "Nefrónio",
+    "opts": [
+      "Alvéolo",
+      "Nefrónio",
+      "Neurónio",
+      "Glomérulo único"
+    ],
+    "exp": "Cada rim tem cerca de 1 milhão de nefrónios."
+  },
+  {
+    "q": "Como se chamam os pequenos sacos de ar dos pulmões?",
+    "a": "Alvéolos",
+    "opts": [
+      "Brônquios",
+      "Alvéolos",
+      "Bronquíolos",
+      "Cílios"
+    ],
+    "exp": "Há cerca de 300 milhões de alvéolos; desdobrados, cobririam um campo de ténis."
+  },
+  {
+    "q": "Que proteína dos glóbulos vermelhos transporta o oxigénio?",
+    "a": "Hemoglobina",
+    "opts": [
+      "Queratina",
+      "Hemoglobina",
+      "Colagénio",
+      "Insulina"
+    ],
+    "exp": "É o ferro da hemoglobina que dá ao sangue a sua cor vermelha."
+  },
+  {
+    "q": "Qual é a maior artéria do corpo humano?",
+    "a": "Aorta",
+    "opts": [
+      "Veia cava",
+      "Aorta",
+      "Artéria pulmonar",
+      "Carótida"
+    ],
+    "exp": "A aorta sai diretamente do ventrículo esquerdo do coração."
+  },
+  {
+    "q": "Quantos cromossomas tem uma célula humana normal?",
+    "a": "46",
+    "opts": [
+      "23",
+      "44",
+      "46",
+      "48"
+    ],
+    "exp": "São 23 pares — metade vem da mãe e metade do pai."
+  },
+  {
+    "q": "Qual é o osso mais pequeno do corpo humano?",
+    "a": "Estribo",
+    "opts": [
+      "Estribo",
+      "Falange",
+      "Rádio",
+      "Vómer"
+    ],
+    "exp": "O estribo fica no ouvido médio e tem apenas cerca de 3 mm."
+  },
+  {
+    "q": "Que parte do olho é sensível à luz e forma a imagem?",
+    "a": "Retina",
+    "opts": [
+      "Córnea",
+      "Íris",
+      "Retina",
+      "Pupila"
+    ],
+    "exp": "A retina converte a luz em sinais que o cérebro transforma em imagem."
+  },
+  {
+    "q": "Que lobo do cérebro processa a visão?",
+    "a": "Lobo occipital",
+    "opts": [
+      "Lobo frontal",
+      "Lobo temporal",
+      "Lobo occipital",
+      "Lobo parietal"
+    ],
+    "exp": "Fica na parte de trás da cabeça — vemos, na verdade, com o cérebro."
+  },
+  {
+    "q": "Quantas vértebras tem a coluna vertebral humana?",
+    "a": "33",
+    "opts": [
+      "24",
+      "33",
+      "40",
+      "12"
+    ],
+    "exp": "Algumas vértebras fundem-se no sacro e no cóccix, na base da coluna."
+  },
+  {
+    "q": "Que hormona produzida pelo pâncreas baixa o açúcar no sangue?",
+    "a": "Insulina",
+    "opts": [
+      "Adrenalina",
+      "Insulina",
+      "Tiroxina",
+      "Cortisol"
+    ],
+    "exp": "A falta ou má resposta à insulina causa a diabetes."
+  },
+  {
+    "q": "Como se chama o prolongamento do neurónio que transmite o sinal?",
+    "a": "Axónio",
+    "opts": [
+      "Dendrite",
+      "Axónio",
+      "Sinapse",
+      "Mielina"
+    ],
+    "exp": "O axónio pode medir mais de um metro, por exemplo na perna."
+  },
+  {
+    "q": "Qual é o maior órgão interno do corpo humano?",
+    "a": "Fígado",
+    "opts": [
+      "Coração",
+      "Fígado",
+      "Cérebro",
+      "Pulmão"
+    ],
+    "exp": "O fígado pesa cerca de 1,5 kg e consegue regenerar-se."
+  },
+  {
+    "q": "Que glândula é considerada a 'maestra' do sistema hormonal?",
+    "a": "Hipófise",
+    "opts": [
+      "Tiroide",
+      "Hipófise",
+      "Suprarrenal",
+      "Pâncreas"
+    ],
+    "exp": "A hipófise, do tamanho de uma ervilha, comanda outras glândulas."
+  },
+  {
+    "q": "Qual é o nome da maior veia do corpo?",
+    "a": "Veia cava",
+    "opts": [
+      "Aorta",
+      "Veia cava",
+      "Carótida",
+      "Jugular"
+    ],
+    "exp": "A veia cava traz o sangue de volta ao coração."
+  },
+  {
+    "q": "Entre que câmaras fica a válvula mitral?",
+    "a": "Aurícula e ventrículo esquerdos",
+    "opts": [
+      "As duas aurículas",
+      "Aurícula e ventrículo esquerdos",
+      "Os dois ventrículos",
+      "Aurícula e ventrículo direitos"
+    ],
+    "exp": "A válvula mitral controla o fluxo no lado esquerdo do coração."
+  },
+  {
+    "q": "Que glândula regula o metabolismo através da tiroxina?",
+    "a": "Tiroide",
+    "opts": [
+      "Hipófise",
+      "Tiroide",
+      "Suprarrenal",
+      "Pineal"
+    ],
+    "exp": "A tiroide situa-se no pescoço."
+  },
+  {
+    "q": "Como se chama a membrana que reveste os pulmões?",
+    "a": "Pleura",
+    "opts": [
+      "Peritoneu",
+      "Pleura",
+      "Pericárdio",
+      "Meninges"
+    ],
+    "exp": "O pericárdio reveste o coração; as meninges, o cérebro."
+  },
+  {
+    "q": "Que parte do neurónio recebe os sinais?",
+    "a": "Dendrites",
+    "opts": [
+      "Axónio",
+      "Dendrites",
+      "Mielina",
+      "Sinapse"
+    ],
+    "exp": "As dendrites recebem; o axónio transmite."
+  },
+  {
+    "q": "Qual é o pigmento que dá cor à pele e ao cabelo?",
+    "a": "Melanina",
+    "opts": [
+      "Hemoglobina",
+      "Melanina",
+      "Queratina",
+      "Clorofila"
+    ],
+    "exp": "A melanina também protege a pele dos raios UV."
+  },
+  {
+    "q": "Onde ocorre a troca de gases entre o ar e o sangue?",
+    "a": "Alvéolos",
+    "opts": [
+      "Brônquios",
+      "Alvéolos",
+      "Traqueia",
+      "Laringe"
+    ],
+    "exp": "Os alvéolos têm paredes finíssimas para a difusão de gases."
+  },
+  {
+    "q": "Que estrutura liga os dois hemisférios do cérebro?",
+    "a": "Corpo caloso",
+    "opts": [
+      "Cerebelo",
+      "Corpo caloso",
+      "Tronco cerebral",
+      "Córtex"
+    ],
+    "exp": "O corpo caloso é um feixe de milhões de fibras nervosas."
+  }
 ]

@@ -1,16 +1,244 @@
 [
-  { "q": "Qual é o órgão que bombeia o sangue pelo corpo?", "a": "Coração", "opts": ["Pulmão", "Coração", "Fígado", "Estômago"], "exp": "O coração bate cerca de 100 000 vezes por dia, sem nunca descansar." },
-  { "q": "Quantos pulmões tem o ser humano?", "a": "Dois", "opts": ["Um", "Dois", "Três", "Quatro"], "exp": "Temos dois pulmões; o esquerdo é um pouco mais pequeno para dar espaço ao coração." },
-  { "q": "Que órgão usamos para pensar e controlar o corpo?", "a": "Cérebro", "opts": ["Coração", "Cérebro", "Fígado", "Rim"], "exp": "O cérebro tem cerca de 86 mil milhões de neurónios e gasta menos energia que uma lâmpada." },
-  { "q": "Qual é o maior órgão do corpo humano?", "a": "Pele", "opts": ["Fígado", "Cérebro", "Pele", "Pulmão"], "exp": "A pele é o maior órgão e cobre cerca de 2 m² num adulto." },
-  { "q": "Com que parte do corpo cheiramos?", "a": "Nariz", "opts": ["Boca", "Nariz", "Ouvido", "Olho"], "exp": "O nariz consegue distinguir mais de mil milhões de cheiros diferentes." },
-  { "q": "Qual órgão filtra o sangue e produz a urina?", "a": "Rim", "opts": ["Fígado", "Rim", "Coração", "Baço"], "exp": "Os rins filtram cerca de 180 litros de sangue por dia." },
-  { "q": "Que órgãos usamos para respirar?", "a": "Pulmões", "opts": ["Rins", "Pulmões", "Intestinos", "Ossos"], "exp": "Respiramos cerca de 20 000 vezes por dia para levar oxigénio ao sangue." },
-  { "q": "Quantos ossos tem o corpo de um adulto?", "a": "206", "opts": ["106", "206", "306", "406"], "exp": "Um bebé nasce com cerca de 300 ossos, mas muitos fundem-se até à idade adulta (206)." },
-  { "q": "O que nos permitem fazer os músculos?", "a": "Mover", "opts": ["Mover", "Pensar", "Digerir o açúcar", "Ver"], "exp": "Temos mais de 600 músculos; o mais ativo é o do coração." },
-  { "q": "Com que sentido usamos os olhos?", "a": "Visão", "opts": ["Audição", "Olfato", "Visão", "Paladar"], "exp": "Cerca de 80% do que aprendemos entra pela visão." },
-  { "q": "Que líquido vermelho corre dentro das veias?", "a": "Sangue", "opts": ["Água", "Sangue", "Bílis", "Saliva"], "exp": "Um adulto tem cerca de 5 litros de sangue." },
-  { "q": "Que parte do corpo usamos para ouvir?", "a": "Ouvidos", "opts": ["Olhos", "Ouvidos", "Nariz", "Língua"], "exp": "O ouvido também nos ajuda a manter o equilíbrio." },
-  { "q": "Onde começa a digestão dos alimentos?", "a": "Na boca", "opts": ["No estômago", "Na boca", "No intestino", "No fígado"], "exp": "A saliva começa a desfazer a comida ainda na boca." },
-  { "q": "Que órgão protege o crânio?", "a": "O cérebro", "opts": ["O coração", "O cérebro", "O pulmão", "O fígado"], "exp": "O crânio é uma 'caixa' de osso que protege o cérebro." }
+  {
+    "q": "Qual é o órgão que bombeia o sangue pelo corpo?",
+    "a": "Coração",
+    "opts": [
+      "Pulmão",
+      "Coração",
+      "Fígado",
+      "Estômago"
+    ],
+    "exp": "O coração bate cerca de 100 000 vezes por dia, sem nunca descansar."
+  },
+  {
+    "q": "Quantos pulmões tem o ser humano?",
+    "a": "Dois",
+    "opts": [
+      "Um",
+      "Dois",
+      "Três",
+      "Quatro"
+    ],
+    "exp": "Temos dois pulmões; o esquerdo é um pouco mais pequeno para dar espaço ao coração."
+  },
+  {
+    "q": "Que órgão usamos para pensar e controlar o corpo?",
+    "a": "Cérebro",
+    "opts": [
+      "Coração",
+      "Cérebro",
+      "Fígado",
+      "Rim"
+    ],
+    "exp": "O cérebro tem cerca de 86 mil milhões de neurónios e gasta menos energia que uma lâmpada."
+  },
+  {
+    "q": "Qual é o maior órgão do corpo humano?",
+    "a": "Pele",
+    "opts": [
+      "Fígado",
+      "Cérebro",
+      "Pele",
+      "Pulmão"
+    ],
+    "exp": "A pele é o maior órgão e cobre cerca de 2 m² num adulto."
+  },
+  {
+    "q": "Com que parte do corpo cheiramos?",
+    "a": "Nariz",
+    "opts": [
+      "Boca",
+      "Nariz",
+      "Ouvido",
+      "Olho"
+    ],
+    "exp": "O nariz consegue distinguir mais de mil milhões de cheiros diferentes."
+  },
+  {
+    "q": "Qual órgão filtra o sangue e produz a urina?",
+    "a": "Rim",
+    "opts": [
+      "Fígado",
+      "Rim",
+      "Coração",
+      "Baço"
+    ],
+    "exp": "Os rins filtram cerca de 180 litros de sangue por dia."
+  },
+  {
+    "q": "Que órgãos usamos para respirar?",
+    "a": "Pulmões",
+    "opts": [
+      "Rins",
+      "Pulmões",
+      "Intestinos",
+      "Ossos"
+    ],
+    "exp": "Respiramos cerca de 20 000 vezes por dia para levar oxigénio ao sangue."
+  },
+  {
+    "q": "Quantos ossos tem o corpo de um adulto?",
+    "a": "206",
+    "opts": [
+      "106",
+      "206",
+      "306",
+      "406"
+    ],
+    "exp": "Um bebé nasce com cerca de 300 ossos, mas muitos fundem-se até à idade adulta (206)."
+  },
+  {
+    "q": "O que nos permitem fazer os músculos?",
+    "a": "Mover",
+    "opts": [
+      "Mover",
+      "Pensar",
+      "Digerir o açúcar",
+      "Ver"
+    ],
+    "exp": "Temos mais de 600 músculos; o mais ativo é o do coração."
+  },
+  {
+    "q": "Com que sentido usamos os olhos?",
+    "a": "Visão",
+    "opts": [
+      "Audição",
+      "Olfato",
+      "Visão",
+      "Paladar"
+    ],
+    "exp": "Cerca de 80% do que aprendemos entra pela visão."
+  },
+  {
+    "q": "Que líquido vermelho corre dentro das veias?",
+    "a": "Sangue",
+    "opts": [
+      "Água",
+      "Sangue",
+      "Bílis",
+      "Saliva"
+    ],
+    "exp": "Um adulto tem cerca de 5 litros de sangue."
+  },
+  {
+    "q": "Que parte do corpo usamos para ouvir?",
+    "a": "Ouvidos",
+    "opts": [
+      "Olhos",
+      "Ouvidos",
+      "Nariz",
+      "Língua"
+    ],
+    "exp": "O ouvido também nos ajuda a manter o equilíbrio."
+  },
+  {
+    "q": "Onde começa a digestão dos alimentos?",
+    "a": "Na boca",
+    "opts": [
+      "No estômago",
+      "Na boca",
+      "No intestino",
+      "No fígado"
+    ],
+    "exp": "A saliva começa a desfazer a comida ainda na boca."
+  },
+  {
+    "q": "Que órgão protege o crânio?",
+    "a": "O cérebro",
+    "opts": [
+      "O coração",
+      "O cérebro",
+      "O pulmão",
+      "O fígado"
+    ],
+    "exp": "O crânio é uma 'caixa' de osso que protege o cérebro."
+  },
+  {
+    "q": "Qual é o sentido ligado ao nariz?",
+    "a": "Olfato",
+    "opts": [
+      "Visão",
+      "Olfato",
+      "Audição",
+      "Tato"
+    ],
+    "exp": "O nariz deteta milhares de cheiros diferentes."
+  },
+  {
+    "q": "O que protege a ponta dos dedos?",
+    "a": "As unhas",
+    "opts": [
+      "A pele apenas",
+      "As unhas",
+      "Os ossos",
+      "Os músculos"
+    ],
+    "exp": "As unhas são feitas de queratina, tal como o cabelo."
+  },
+  {
+    "q": "Que parte do corpo dobra no meio da perna?",
+    "a": "O joelho",
+    "opts": [
+      "O cotovelo",
+      "O joelho",
+      "O ombro",
+      "O pulso"
+    ],
+    "exp": "O joelho é a maior articulação do corpo."
+  },
+  {
+    "q": "O que acontece quando inspiramos?",
+    "a": "Entra ar nos pulmões",
+    "opts": [
+      "Sai ar dos pulmões",
+      "Entra ar nos pulmões",
+      "O coração para",
+      "O sangue para"
+    ],
+    "exp": "Inspirar leva oxigénio aos pulmões; expirar liberta dióxido de carbono."
+  },
+  {
+    "q": "Que líquido sai dos olhos quando choramos?",
+    "a": "Lágrimas",
+    "opts": [
+      "Suor",
+      "Lágrimas",
+      "Saliva",
+      "Sangue"
+    ],
+    "exp": "As lágrimas mantêm os olhos limpos e húmidos."
+  },
+  {
+    "q": "Quantos dedos tem normalmente uma mão?",
+    "a": "Cinco",
+    "opts": [
+      "Quatro",
+      "Cinco",
+      "Seis",
+      "Dez"
+    ],
+    "exp": "Cada mão tem cinco dedos, incluindo o polegar."
+  },
+  {
+    "q": "O que usamos para mastigar a comida?",
+    "a": "Os dentes",
+    "opts": [
+      "A língua",
+      "Os dentes",
+      "Os lábios",
+      "O nariz"
+    ],
+    "exp": "Os dentes cortam e trituram os alimentos."
+  },
+  {
+    "q": "Que órgão sentimos a bater no peito?",
+    "a": "O coração",
+    "opts": [
+      "O pulmão",
+      "O coração",
+      "O estômago",
+      "O fígado"
+    ],
+    "exp": "Sentimos as batidas do coração a bombear sangue."
+  }
 ]

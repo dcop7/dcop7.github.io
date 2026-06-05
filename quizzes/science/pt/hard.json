@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é o símbolo químico do ouro?", "a": "Au", "opts": ["Ag", "Au", "Go", "Or"], "exp": "Au vem do latim 'aurum'. A prata é Ag (argentum)." },
-  { "q": "Qual é a velocidade da luz no vácuo (aproximada)?", "a": "300 000 km/s", "opts": ["3 000 km/s", "30 000 km/s", "300 000 km/s", "3 000 000 km/s"], "exp": "A luz percorre cerca de 300 000 km por segundo — daria 7 voltas à Terra num segundo." },
-  { "q": "Quem propôs a teoria da relatividade?", "a": "Albert Einstein", "opts": ["Isaac Newton", "Albert Einstein", "Galileu", "Niels Bohr"], "exp": "Einstein publicou a relatividade restrita em 1905 e a geral em 1915." },
-  { "q": "Qual é o elemento químico mais abundante no Universo?", "a": "Hidrogénio", "opts": ["Oxigénio", "Hidrogénio", "Carbono", "Hélio"], "exp": "O hidrogénio representa cerca de 75% da matéria comum do Universo." },
-  { "q": "Como se chama o número de protões de um átomo?", "a": "Número atómico", "opts": ["Número de massa", "Número atómico", "Valência", "Isótopo"], "exp": "O número atómico define o elemento — o hidrogénio é 1, o carbono é 6." },
-  { "q": "Qual é a força responsável pela atração entre cargas elétricas?", "a": "Força eletromagnética", "opts": ["Gravidade", "Força eletromagnética", "Força nuclear forte", "Força de maré"], "exp": "É uma das quatro forças fundamentais da natureza." },
-  { "q": "Que cientista formulou as leis do movimento e da gravitação universal?", "a": "Isaac Newton", "opts": ["Albert Einstein", "Isaac Newton", "Charles Darwin", "Nikola Tesla"], "exp": "Newton publicou os 'Principia' em 1687." },
-  { "q": "Qual é o pH de uma solução neutra?", "a": "7", "opts": ["0", "7", "10", "14"], "exp": "Abaixo de 7 é ácido; acima de 7 é básico (alcalino)." },
-  { "q": "Como se chama a molécula que guarda a informação genética?", "a": "DNA", "opts": ["ATP", "DNA", "RNA mensageiro", "Glucose"], "exp": "O DNA humano tem cerca de 3 mil milhões de pares de bases." },
-  { "q": "Qual é a unidade de medida da força no Sistema Internacional?", "a": "Newton", "opts": ["Joule", "Watt", "Newton", "Pascal"], "exp": "1 newton é a força que dá a 1 kg uma aceleração de 1 m/s²." },
-  { "q": "Que partícula subatómica não tem carga elétrica?", "a": "Neutrão", "opts": ["Protão", "Eletrão", "Neutrão", "Ião"], "exp": "O neutrão é neutro; está no núcleo junto com os protões." },
-  { "q": "Como se chama a teoria que explica a origem do Universo?", "a": "Big Bang", "opts": ["Teoria do Estado Estacionário", "Big Bang", "Teoria de Cordas", "Relatividade"], "exp": "Segundo o Big Bang, o Universo expandiu-se a partir de um ponto há ~13,8 mil milhões de anos." }
+  {
+    "q": "Qual é o símbolo químico do ouro?",
+    "a": "Au",
+    "opts": [
+      "Ag",
+      "Au",
+      "Go",
+      "Or"
+    ],
+    "exp": "Au vem do latim 'aurum'. A prata é Ag (argentum)."
+  },
+  {
+    "q": "Qual é a velocidade da luz no vácuo (aproximada)?",
+    "a": "300 000 km/s",
+    "opts": [
+      "3 000 km/s",
+      "30 000 km/s",
+      "300 000 km/s",
+      "3 000 000 km/s"
+    ],
+    "exp": "A luz percorre cerca de 300 000 km por segundo — daria 7 voltas à Terra num segundo."
+  },
+  {
+    "q": "Quem propôs a teoria da relatividade?",
+    "a": "Albert Einstein",
+    "opts": [
+      "Isaac Newton",
+      "Albert Einstein",
+      "Galileu",
+      "Niels Bohr"
+    ],
+    "exp": "Einstein publicou a relatividade restrita em 1905 e a geral em 1915."
+  },
+  {
+    "q": "Qual é o elemento químico mais abundante no Universo?",
+    "a": "Hidrogénio",
+    "opts": [
+      "Oxigénio",
+      "Hidrogénio",
+      "Carbono",
+      "Hélio"
+    ],
+    "exp": "O hidrogénio representa cerca de 75% da matéria comum do Universo."
+  },
+  {
+    "q": "Como se chama o número de protões de um átomo?",
+    "a": "Número atómico",
+    "opts": [
+      "Número de massa",
+      "Número atómico",
+      "Valência",
+      "Isótopo"
+    ],
+    "exp": "O número atómico define o elemento — o hidrogénio é 1, o carbono é 6."
+  },
+  {
+    "q": "Qual é a força responsável pela atração entre cargas elétricas?",
+    "a": "Força eletromagnética",
+    "opts": [
+      "Gravidade",
+      "Força eletromagnética",
+      "Força nuclear forte",
+      "Força de maré"
+    ],
+    "exp": "É uma das quatro forças fundamentais da natureza."
+  },
+  {
+    "q": "Que cientista formulou as leis do movimento e da gravitação universal?",
+    "a": "Isaac Newton",
+    "opts": [
+      "Albert Einstein",
+      "Isaac Newton",
+      "Charles Darwin",
+      "Nikola Tesla"
+    ],
+    "exp": "Newton publicou os 'Principia' em 1687."
+  },
+  {
+    "q": "Qual é o pH de uma solução neutra?",
+    "a": "7",
+    "opts": [
+      "0",
+      "7",
+      "10",
+      "14"
+    ],
+    "exp": "Abaixo de 7 é ácido; acima de 7 é básico (alcalino)."
+  },
+  {
+    "q": "Como se chama a molécula que guarda a informação genética?",
+    "a": "DNA",
+    "opts": [
+      "ATP",
+      "DNA",
+      "RNA mensageiro",
+      "Glucose"
+    ],
+    "exp": "O DNA humano tem cerca de 3 mil milhões de pares de bases."
+  },
+  {
+    "q": "Qual é a unidade de medida da força no Sistema Internacional?",
+    "a": "Newton",
+    "opts": [
+      "Joule",
+      "Watt",
+      "Newton",
+      "Pascal"
+    ],
+    "exp": "1 newton é a força que dá a 1 kg uma aceleração de 1 m/s²."
+  },
+  {
+    "q": "Que partícula subatómica não tem carga elétrica?",
+    "a": "Neutrão",
+    "opts": [
+      "Protão",
+      "Eletrão",
+      "Neutrão",
+      "Ião"
+    ],
+    "exp": "O neutrão é neutro; está no núcleo junto com os protões."
+  },
+  {
+    "q": "Como se chama a teoria que explica a origem do Universo?",
+    "a": "Big Bang",
+    "opts": [
+      "Teoria do Estado Estacionário",
+      "Big Bang",
+      "Teoria de Cordas",
+      "Relatividade"
+    ],
+    "exp": "Segundo o Big Bang, o Universo expandiu-se a partir de um ponto há ~13,8 mil milhões de anos."
+  },
+  {
+    "q": "Qual é a fórmula química do sal de cozinha?",
+    "a": "NaCl",
+    "opts": [
+      "H₂O",
+      "NaCl",
+      "CO₂",
+      "CaCO₃"
+    ],
+    "exp": "NaCl é cloreto de sódio."
+  },
+  {
+    "q": "Quem organizou a tabela periódica moderna?",
+    "a": "Mendeleev",
+    "opts": [
+      "Newton",
+      "Mendeleev",
+      "Bohr",
+      "Lavoisier"
+    ],
+    "exp": "Dmitri Mendeleev ordenou os elementos em 1869."
+  },
+  {
+    "q": "Qual é a partícula que transporta a luz?",
+    "a": "Fotão",
+    "opts": [
+      "Gluão",
+      "Fotão",
+      "Neutrino",
+      "Protão"
+    ],
+    "exp": "O fotão é a partícula da radiação eletromagnética."
+  },
+  {
+    "q": "Que princípio diz que a energia não se cria nem se destrói?",
+    "a": "Conservação da energia",
+    "opts": [
+      "Lei de Ohm",
+      "Conservação da energia",
+      "Lei de Hooke",
+      "Princípio de Arquimedes"
+    ],
+    "exp": "A energia apenas se transforma de uma forma noutra."
+  },
+  {
+    "q": "Como se chama a temperatura mínima possível?",
+    "a": "Zero absoluto",
+    "opts": [
+      "Ponto de fusão",
+      "Zero absoluto",
+      "Ponto triplo",
+      "Zero relativo"
+    ],
+    "exp": "O zero absoluto é cerca de −273,15 °C (0 kelvin)."
+  },
+  {
+    "q": "Que processo liberta energia no núcleo do Sol?",
+    "a": "Fusão nuclear",
+    "opts": [
+      "Combustão",
+      "Fusão nuclear",
+      "Fissão nuclear",
+      "Eletrólise"
+    ],
+    "exp": "O Sol funde hidrogénio em hélio."
+  },
+  {
+    "q": "Qual é o estado da matéria mais comum no Universo?",
+    "a": "Plasma",
+    "opts": [
+      "Sólido",
+      "Líquido",
+      "Gasoso",
+      "Plasma"
+    ],
+    "exp": "As estrelas são feitas de plasma."
+  },
+  {
+    "q": "Que gás nobre brilha em vermelho-alaranjado nos letreiros?",
+    "a": "Néon",
+    "opts": [
+      "Hélio",
+      "Néon",
+      "Árgon",
+      "Crípton"
+    ],
+    "exp": "O néon ganhou o nome dos letreiros luminosos."
+  }
 ]
