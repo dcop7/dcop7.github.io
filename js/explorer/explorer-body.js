@@ -10,6 +10,39 @@ const HumanBodyExplorer = (function () {
 
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
 
+  /* Real anatomical models (NIH 3D — Visible Human Male reference organs, CC-BY;
+     skeleton & brain CC-BY). All VH_M organs share one coordinate space so they
+     self-assemble. Bundled locally (offline) under assets/models/body/. */
+  const MODEL_BASE = 'assets/models/body/';
+  /* ESM three + addons (esm.sh auto-resolves the bare "three" specifier so the
+     loader shares one THREE instance). */
+  const ESM = {
+    three:  'https://esm.sh/three@0.160.0',
+    gltf:   'https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js',
+    meshopt:'https://esm.sh/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js',
+  };
+  let THREE = null;            /* module-scoped (ESM in GLB mode, else window.THREE) */
+  let _GLTFLoader = null, _MeshoptDecoder = null, _useGLB = false;
+
+  /* VH_M model → scene transform (model is ~1.8 m tall, centred at origin, Y up).
+     Map it into the legacy coordinate space (feet y≈0, head ≈16). _VH_ROT_Y can be
+     flipped to π if the body ends up facing away from the camera. */
+  const _VH_SCALE = 8.9, _VH_OFFY = 8.0, _VH_ROT_Y = 0;
+
+  /* Which organ GLBs to load and how to colour / key them for the info panel. */
+  const ORGAN_FILES = [
+    { file:'heart',           key:'coracao'    },
+    { file:'lungs',           key:'pulmoes'    },
+    { file:'liver',           key:'figado'     },
+    { file:'kidney_l',        key:'rins'       },
+    { file:'kidney_r',        key:'rins'       },
+    { file:'spleen',          key:'baco'       },
+    { file:'pancreas',        key:'pancreas'   },
+    { file:'intestine_small', key:'intestinos' },
+    { file:'intestine_large', key:'intestinos' },
+    { file:'bladder',         key:'bexiga'     },
+  ];
+
   /* ── DOM / scene state ── */
   let _host = null, _vp = null, _info = null;
   let _renderer = null, _scene = null, _camera = null, _raf = null;
@@ -19,7 +52,7 @@ const HumanBodyExplorer = (function () {
   /* groups by layer */
   const G = { skin:null, skeleton:null, muscles:null, organs:null, vessels:null, dna:null, senses:null };
   let _organMeshes = [];      /* {mesh, key, baseEmissive} for picking + focus */
-  let _heart = null, _lungs = [], _dnaGroup = null;
+  let _heart = null, _lungs = [], _dnaGroup = null, _lungPivot = null, _modelsReady = false;
   let _flowTex = [];          /* {tex, dir} animated blood-flow textures */
   let _senseMarkers = [];
 
@@ -69,6 +102,18 @@ const HumanBodyExplorer = (function () {
       desc:_=>_t('Two bean-shaped filters that clean your entire blood supply ~40 times a day, making urine and balancing your body’s water and salts.','Dois filtros em forma de feijão que limpam todo o teu sangue ~40 vezes por dia, produzindo urina e equilibrando a água e os sais do corpo.'),
       stats:[['~1 M',_=>_t('filters each','filtros cada')]],
       facts:[_=>_t('They filter ~180 litres of blood every day.','Filtram ~180 litros de sangue por dia.')] },
+    baco: { emoji:'🩸', color:0x9c3b4f, name:_=>_t('Spleen','Baço'), sub:_=>_t('Blood guardian','Guardião do sangue'),
+      desc:_=>_t('A fist-sized organ that filters the blood, recycles old red cells and helps the immune system fight infection.','Um órgão do tamanho do punho que filtra o sangue, recicla glóbulos vermelhos velhos e ajuda o sistema imunitário a combater infeções.'),
+      stats:[['~12 cm',_=>_t('long','comprimento')]],
+      facts:[_=>_t('You can live without it — other organs take over.','Podes viver sem ele — outros órgãos assumem a função.')] },
+    pancreas: { emoji:'🟡', color:0xe8c069, name:_=>_t('Pancreas','Pâncreas'), sub:_=>_t('Sugar & digestion','Açúcar e digestão'),
+      desc:_=>_t('Makes insulin to control blood sugar and releases enzymes into the gut to digest food.','Produz insulina para controlar o açúcar no sangue e liberta enzimas no intestino para digerir os alimentos.'),
+      stats:[['2',_=>_t('jobs in one','funções numa')]],
+      facts:[_=>_t('Without its insulin, sugar builds up — that is diabetes.','Sem a sua insulina, o açúcar acumula-se — é a diabetes.')] },
+    bexiga: { emoji:'💧', color:0xe7b86a, name:_=>_t('Bladder','Bexiga'), sub:_=>_t('The reservoir','O reservatório'),
+      desc:_=>_t('A stretchy muscular bag that stores urine from the kidneys until you are ready to release it.','Um saco muscular elástico que armazena a urina dos rins até estares pronto para a libertar.'),
+      stats:[['~0.5 L',_=>_t('capacity','capacidade')]],
+      facts:[_=>_t('It signals your brain when about 200 ml full.','Avisa o cérebro quando tem cerca de 200 ml.')] },
   };
 
   const SENSES = {
@@ -155,6 +200,59 @@ const HumanBodyExplorer = (function () {
       s.onload = resolve; s.onerror = reject;
       document.head.appendChild(s);
     });
+  }
+
+  /* Try to load ESM three + GLTFLoader + meshopt decoder (enables real models).
+     Falls back to the UMD global build (procedural body) on any failure. */
+  async function _loadThree() {
+    try {
+      const [T, G, M] = await Promise.all([import(ESM.three), import(ESM.gltf), import(ESM.meshopt)]);
+      THREE = T; _GLTFLoader = G.GLTFLoader; _MeshoptDecoder = M.MeshoptDecoder;
+      if (_MeshoptDecoder.ready) await _MeshoptDecoder.ready;
+      _useGLB = true;
+      return true;
+    } catch (e) {
+      try {
+        await _loadScript(THREE_CDN);
+        if (!window.THREE) throw new Error('THREE missing');
+        THREE = window.THREE; _useGLB = false;
+        return true;
+      } catch (e2) { return false; }
+    }
+  }
+
+  function _loadGLB(name) {
+    return new Promise((resolve, reject) => {
+      const loader = new _GLTFLoader();
+      if (_MeshoptDecoder) loader.setMeshoptDecoder(_MeshoptDecoder);
+      loader.load(MODEL_BASE + name + '.glb', g => resolve(g.scene), undefined, reject);
+    });
+  }
+
+  /* Normalise a standalone model (skeleton / brain) to a target height, centred,
+     feet/base near the floor. Returns a wrapped group. */
+  function _fitModel(scene, targetH, baseY, rotX) {
+    if (rotX) scene.rotation.x = rotX;             // stand a Z-up model upright
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = new THREE.Vector3(), ctr = new THREE.Vector3();
+    box.getSize(size); box.getCenter(ctr);
+    const s = targetH / (size.y || 1);
+    const wrap = new THREE.Group();
+    scene.position.set(scene.position.x - ctr.x, scene.position.y - ctr.y, scene.position.z - ctr.z);
+    wrap.add(scene);
+    wrap.scale.setScalar(s);
+    wrap.position.y = baseY + (size.y * s) / 2;    // sit base at baseY
+    return wrap;
+  }
+
+  /* Parent that maps the co-registered VH_M models into the legacy scene space. */
+  function _vhWrap(obj) {
+    const w = new THREE.Group();
+    w.add(obj);
+    w.scale.setScalar(_VH_SCALE);
+    w.position.y = _VH_OFFY;
+    w.rotation.y = _VH_ROT_Y;
+    return w;
   }
 
   /* ════════════════════════════════ MATERIALS ══════════════════════ */
@@ -294,6 +392,7 @@ const HumanBodyExplorer = (function () {
     hg.add(h1, h2, h3);
     hg.traverse(m => { if (m.isMesh) { m.userData.key = 'coracao'; m.userData.baseEmissive = hm.emissive.clone(); _organMeshes.push({ mesh: m, key: 'coracao' }); } });
     hg.position.set(0.35, 11.3, 0.55); hg.scale.setScalar(0.95);
+    hg.userData.base = 0.95;
     g.add(hg); _heart = hg;
 
     // lungs (two lobes)
@@ -334,6 +433,81 @@ const HumanBodyExplorer = (function () {
     });
 
     return g;
+  }
+
+  /* ── real-model (GLB) body assembly ── */
+  function _styleOrgan(obj, key) {
+    const mat = _organMat((ORGANS[key] && ORGANS[key].color) || 0xcf7a7a);
+    obj.traverse(m => {
+      if (!m.isMesh) return;
+      m.material = mat; m.userData.key = key;
+      m.userData.baseEmissive = mat.emissive.clone();
+      m.renderOrder = 10;
+      _organMeshes.push({ mesh: m, key });
+    });
+    return mat;
+  }
+
+  /* Wrap an object in a group pivoted on its centroid, so it can be scaled
+     (heartbeat / breathing) in place. */
+  function _pivotWrap(obj) {
+    const box = new THREE.Box3().setFromObject(obj);
+    const c = new THREE.Vector3(); box.getCenter(c);
+    const piv = new THREE.Group(); piv.position.copy(c);
+    obj.position.sub(c); piv.add(obj);
+    return piv;
+  }
+
+  function _replaceGroup(name, grp) {
+    if (G[name]) { _scene.remove(G[name]); }
+    G[name] = grp; grp.visible = false; _scene.add(grp);
+  }
+
+  /* Load the real anatomical models and swap them in for the procedural body.
+     Runs after the procedural fallback is already on screen. */
+  async function _buildBodyGLB() {
+    try {
+      // skin — translucent shell so the organs read through it
+      const skin = await _loadGLB('skin');
+      const skinMat = new THREE.MeshStandardMaterial({
+        color: 0xf0c4a0, roughness: 0.85, metalness: 0,
+        transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide,
+      });
+      skin.traverse(m => { if (m.isMesh) { m.material = skinMat; m.renderOrder = 30; } });
+      _replaceGroup('skin', _vhWrap(skin));
+
+      // organs — co-registered VH_M set self-assembles inside one wrap
+      const inner = new THREE.Group();
+      _organMeshes = []; _lungPivot = null; _heart = null;
+      const recs = await Promise.all(ORGAN_FILES.map(o =>
+        _loadGLB(o.file).then(s => ({ o, s })).catch(() => null)));
+      recs.forEach(rec => {
+        if (!rec) return;
+        const { o, s } = rec; _styleOrgan(s, o.key);
+        if (o.file === 'heart') { _heart = _pivotWrap(s); _heart.userData.base = 1; inner.add(_heart); }
+        else if (o.file === 'lungs') { _lungPivot = _pivotWrap(s); inner.add(_lungPivot); }
+        else inner.add(s);
+      });
+      const organs = new THREE.Group(); organs.add(_vhWrap(inner));
+      // brain — standalone model, normalised into the head
+      try {
+        const brain = await _loadGLB('brain');
+        _styleOrgan(brain, 'cerebro');
+        organs.add(_fitModel(brain, 2.6, 13.5));
+      } catch (e) {}
+      _replaceGroup('organs', organs);
+
+      // skeleton — standalone, shown on its own topic
+      try {
+        const sk = await _loadGLB('skeleton');
+        const bone = new THREE.MeshStandardMaterial({ color: 0xf2efe2, roughness: 0.5, metalness: 0.05, emissive: 0x1a1812 });
+        sk.traverse(m => { if (m.isMesh) m.material = bone; });
+        _replaceGroup('skeleton', _fitModel(sk, 16.5, 0, -Math.PI / 2));
+      } catch (e) {}
+
+      _modelsReady = true;
+      _applyLayers(); _spotlight((PRESETS[_topic] || {}).spotlight);
+    } catch (e) { /* keep the procedural fallback already on screen */ }
   }
 
   function _buildVessels() {
@@ -594,9 +768,13 @@ const HumanBodyExplorer = (function () {
     _updateCamera();
 
     // heartbeat
-    if (_heart && _heart.visible) { const b = 1 + Math.max(0, Math.sin(t * 5.0)) * 0.09; _heart.scale.setScalar(0.95 * b); }
+    if (_heart && G.organs && G.organs.visible) { const base = _heart.userData.base || 0.95; const b = 1 + Math.max(0, Math.sin(t * 5.0)) * 0.09; _heart.scale.setScalar(base * b); }
     // breathing
-    if (G.organs && G.organs.visible) { const br = 1 + Math.sin(t * 1.4) * 0.06; _lungs.forEach(l => l.scale.set(0.8, 1.5 * br, 0.7)); }
+    if (G.organs && G.organs.visible) {
+      const br = 1 + Math.sin(t * 1.4) * 0.06;
+      if (_lungPivot) _lungPivot.scale.setScalar(br);
+      else _lungs.forEach(l => l.scale.set(0.8, 1.5 * br, 0.7));
+    }
     // blood flow
     if (G.vessels && G.vessels.visible) _flowTex.forEach(f => { f.tex.offset.x -= f.dir * dt * 0.55; });
     // DNA spin
@@ -651,20 +829,18 @@ const HumanBodyExplorer = (function () {
     });
     _host.querySelector('#hb3d-reset').addEventListener('click', () => _applyTopic(_topic));
 
-    try {
-      await _loadScript(THREE_CDN);
-      if (!window.THREE) throw new Error('THREE missing');
-    } catch (e) {
+    if (!(await _loadThree())) {
       const l = host.querySelector('#hb3d-loading');
       if (l) l.innerHTML = `<div class="ex-error-icon">⚠</div><div>${_t('Could not load the 3D engine.','Não foi possível carregar o motor 3D.')}</div>`;
       return;
     }
 
-    _buildScene();
+    _buildScene();                       // procedural body shows immediately
     _wireControls();
     _applyTopic(_topic || 'anatomia', true);
     host.querySelector('#hb3d-loading')?.remove();
     _start();
+    if (_useGLB) _buildBodyGLB();        // swap in the real models when ready
   }
 
   function resume() { if (_mounted && _built && !_raf) _start(); setTimeout(_resize, 60); }
