@@ -218,5 +218,247 @@
       "Banda"
     ],
     "exp": "Num coro há vozes diferentes (soprano, contralto, tenor, baixo)."
+  },
+  {
+    "q": "Que instrumento tem cordas e se toca com um arco?",
+    "a": "Violino",
+    "opts": [
+      "Guitarra",
+      "Violino",
+      "Flauta",
+      "Bateria"
+    ],
+    "exp": "O arco roça nas cordas para produzir som."
+  },
+  {
+    "q": "Que instrumento grande de cordas se toca de pé, parecido com um violino enorme?",
+    "a": "Contrabaixo",
+    "opts": [
+      "Violino",
+      "Contrabaixo",
+      "Trompete",
+      "Flauta"
+    ],
+    "exp": "O contrabaixo faz os sons mais graves das cordas."
+  },
+  {
+    "q": "Como se chama o livro com as notas que os músicos leem?",
+    "a": "Partitura",
+    "opts": [
+      "Romance",
+      "Partitura",
+      "Manual",
+      "Dicionário"
+    ],
+    "exp": "A partitura usa pautas e notas."
+  },
+  {
+    "q": "Que aparelho amplia o som de um cantor?",
+    "a": "Microfone",
+    "opts": [
+      "Auscultadores",
+      "Microfone",
+      "Câmara",
+      "Teclado"
+    ],
+    "exp": "O microfone capta a voz e envia-a às colunas."
+  },
+  {
+    "q": "Como se chama bater palmas ao ritmo da música?",
+    "a": "Marcar o compasso",
+    "opts": [
+      "Cantar",
+      "Marcar o compasso",
+      "Dançar valsa",
+      "Afinar"
+    ],
+    "exp": "As palmas ajudam a sentir o ritmo."
+  },
+  {
+    "q": "Que instrumento de sopro é dourado e tem um tubo enrolado?",
+    "a": "Trompa",
+    "opts": [
+      "Flauta",
+      "Trompa",
+      "Violino",
+      "Piano"
+    ],
+    "exp": "A trompa pertence à família dos metais."
+  },
+  {
+    "q": "Que som faz um tambor?",
+    "a": "Um som grave de percussão",
+    "opts": [
+      "Um assobio",
+      "Um som grave de percussão",
+      "Um tilintar",
+      "Um zumbido"
+    ],
+    "exp": "O tambor toca-se batendo na pele esticada."
+  },
+  {
+    "q": "Como se chama uma canção cantada por uma só pessoa?",
+    "a": "Solo",
+    "opts": [
+      "Coro",
+      "Solo",
+      "Dueto",
+      "Orquestra"
+    ],
+    "exp": "Num dueto cantam duas pessoas."
+  },
+  {
+    "q": "Que tecla do piano fica entre duas teclas brancas?",
+    "a": "A tecla preta",
+    "opts": [
+      "A tecla vermelha",
+      "A tecla preta",
+      "A tecla azul",
+      "Não existe"
+    ],
+    "exp": "As teclas pretas tocam sustenidos e bemóis."
+  },
+  {
+    "q": "Que estilo de música tem batidas fortes e é tocado em discotecas?",
+    "a": "Música eletrónica/dança",
+    "opts": [
+      "Fado",
+      "Música eletrónica/dança",
+      "Música clássica",
+      "Música de embalar"
+    ],
+    "exp": "Usa muitas vezes computadores e sintetizadores."
+  },
+  {
+    "q": "Que instrumento se carrega ao peito, com foles, típico do Natal e festas?",
+    "a": "Acordeão",
+    "opts": [
+      "Harpa",
+      "Acordeão",
+      "Piano",
+      "Bateria"
+    ],
+    "exp": "O ar dos foles faz vibrar as palhetas."
+  },
+  {
+    "q": "O que faz subir e descer o volume do som?",
+    "a": "O botão de volume",
+    "opts": [
+      "O ecrã",
+      "O botão de volume",
+      "O teclado",
+      "A antena"
+    ],
+    "exp": "O volume mede a intensidade do som."
+  },
+  {
+    "q": "Que instrumento pequeno se toca soprando, com quatro furos e mais?",
+    "a": "Flauta",
+    "opts": [
+      "Tuba",
+      "Flauta",
+      "Contrabaixo",
+      "Tímpano"
+    ],
+    "exp": "A flauta de bisel é usada nas escolas."
+  },
+  {
+    "q": "Como se chama um grupo de muitos cantores?",
+    "a": "Coro",
+    "opts": [
+      "Banda",
+      "Coro",
+      "Trio",
+      "Solo"
+    ],
+    "exp": "Os coros têm vozes diferentes."
+  },
+  {
+    "q": "Que instrumento tem teclas brancas e pretas e cordas por dentro?",
+    "a": "Piano",
+    "opts": [
+      "Órgão de tubos",
+      "Piano",
+      "Acordeão",
+      "Guitarra"
+    ],
+    "exp": "As teclas acionam pequenos martelos."
+  },
+  {
+    "q": "O que é uma 'melodia'?",
+    "a": "Uma sequência de notas que reconhecemos",
+    "opts": [
+      "O volume",
+      "Uma sequência de notas que reconhecemos",
+      "O nome do cantor",
+      "A capa do disco"
+    ],
+    "exp": "A melodia é a parte que cantarolamos."
+  },
+  {
+    "q": "Que aparelho antigo tocava discos de vinil?",
+    "a": "Gira-discos",
+    "opts": [
+      "Rádio apenas",
+      "Gira-discos",
+      "Telemóvel",
+      "Computador"
+    ],
+    "exp": "A agulha lê os sulcos do disco."
+  },
+  {
+    "q": "Como se chama bater no tambor e nos pratos para marcar o ritmo?",
+    "a": "Tocar bateria",
+    "opts": [
+      "Cantar",
+      "Tocar bateria",
+      "Dirigir",
+      "Compor"
+    ],
+    "exp": "A bateria é o coração rítmico de uma banda."
+  },
+  {
+    "q": "Que instrumento de cordas se dedilha e é usado no rock?",
+    "a": "Guitarra",
+    "opts": [
+      "Violino",
+      "Guitarra",
+      "Flauta",
+      "Tuba"
+    ],
+    "exp": "A guitarra elétrica liga-se a um amplificador."
+  },
+  {
+    "q": "Que palavra significa cantar muito alto e forte?",
+    "a": "Forte",
+    "opts": [
+      "Piano (suave)",
+      "Forte",
+      "Lento",
+      "Pausa"
+    ],
+    "exp": "'Forte' indica para tocar com intensidade."
+  },
+  {
+    "q": "Que instrumento de percussão são dois pratos de metal batidos um no outro?",
+    "a": "Pratos (címbalos)",
+    "opts": [
+      "Tambor",
+      "Pratos (címbalos)",
+      "Triângulo",
+      "Maracas"
+    ],
+    "exp": "Os pratos fazem um som metálico e forte."
+  },
+  {
+    "q": "Que aparelho eletrónico imita muitos instrumentos com um teclado?",
+    "a": "Sintetizador",
+    "opts": [
+      "Microfone",
+      "Sintetizador",
+      "Amplificador",
+      "Gira-discos"
+    ],
+    "exp": "O sintetizador é muito usado na música eletrónica."
   }
 ]

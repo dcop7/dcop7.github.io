@@ -218,5 +218,225 @@
       "Mário Cabral"
     ],
     "exp": "Foi 3.º no GP dos EUA de 2005."
+  },
+  {
+    "q": "Quem venceu sete títulos mundiais de Fórmula 1, igualando o recorde?",
+    "a": "Lewis Hamilton",
+    "opts": [
+      "Ayrton Senna",
+      "Lewis Hamilton",
+      "Alain Prost",
+      "Sebastian Vettel"
+    ],
+    "exp": "Hamilton e Schumacher têm sete títulos cada."
+  },
+  {
+    "q": "Que selecionador levou Portugal a vencer o Euro 2016?",
+    "a": "Fernando Santos",
+    "opts": [
+      "José Mourinho",
+      "Fernando Santos",
+      "Carlos Queiroz",
+      "Luiz Felipe Scolari"
+    ],
+    "exp": "Portugal venceu a final contra a França."
+  },
+  {
+    "q": "Que ginasta romena obteve a primeira nota perfeita (10) olímpica?",
+    "a": "Nadia Comaneci",
+    "opts": [
+      "Simone Biles",
+      "Nadia Comaneci",
+      "Larisa Latynina",
+      "Olga Korbut"
+    ],
+    "exp": "Aconteceu em Montreal, em 1976."
+  },
+  {
+    "q": "Que clube português venceu a Taça dos Campeões em 1961 e 1962?",
+    "a": "Benfica",
+    "opts": [
+      "FC Porto",
+      "Benfica",
+      "Sporting",
+      "Boavista"
+    ],
+    "exp": "Eusébio fazia parte dessa equipa."
+  },
+  {
+    "q": "Que tenista detém o recorde de mais títulos masculinos do Grand Slam?",
+    "a": "Novak Djokovic",
+    "opts": [
+      "Roger Federer",
+      "Novak Djokovic",
+      "Rafael Nadal",
+      "Pete Sampras"
+    ],
+    "exp": "Ultrapassou os 24 títulos de singulares."
+  },
+  {
+    "q": "Que nadador conquistou 23 medalhas de ouro olímpicas?",
+    "a": "Michael Phelps",
+    "opts": [
+      "Mark Spitz",
+      "Michael Phelps",
+      "Ian Thorpe",
+      "Caeleb Dressel"
+    ],
+    "exp": "É o atleta olímpico mais medalhado."
+  },
+  {
+    "q": "Que atleta português foi campeão olímpico da maratona em 1988?",
+    "a": "Rosa Mota",
+    "opts": [
+      "Carlos Lopes",
+      "Rosa Mota",
+      "Fernanda Ribeiro",
+      "Naide Gomes"
+    ],
+    "exp": "Carlos Lopes venceu a maratona em 1984."
+  },
+  {
+    "q": "Que troféu é o mais antigo do desporto internacional ainda em disputa?",
+    "a": "America's Cup (vela)",
+    "opts": [
+      "Taça do Mundo",
+      "America's Cup (vela)",
+      "Taça Davis",
+      "Ryder Cup"
+    ],
+    "exp": "Disputa-se desde 1851."
+  },
+  {
+    "q": "Quem detém o recorde mundial dos 100 metros?",
+    "a": "Usain Bolt",
+    "opts": [
+      "Carl Lewis",
+      "Usain Bolt",
+      "Yohan Blake",
+      "Justin Gatlin"
+    ],
+    "exp": "Correu 9,58 s em 2009."
+  },
+  {
+    "q": "Em que ano Portugal venceu a Liga das Nações de futebol?",
+    "a": "2019",
+    "opts": [
+      "2016",
+      "2019",
+      "2021",
+      "2004"
+    ],
+    "exp": "Portugal venceu a primeira edição, em casa."
+  },
+  {
+    "q": "Que país é o único a ter participado em todos os Mundiais de futebol?",
+    "a": "Brasil",
+    "opts": [
+      "Alemanha",
+      "Brasil",
+      "Itália",
+      "Argentina"
+    ],
+    "exp": "Está presente desde 1930."
+  },
+  {
+    "q": "Que volta a Portugal é a prova-rainha do ciclismo nacional?",
+    "a": "Volta a Portugal",
+    "opts": [
+      "Grande Prémio JN",
+      "Volta a Portugal",
+      "Clássica da Arrábida",
+      "Troféu Joaquim Agostinho"
+    ],
+    "exp": "A Volta a Portugal disputa-se desde 1927."
+  },
+  {
+    "q": "Que jogador é o melhor marcador de sempre da seleção portuguesa?",
+    "a": "Cristiano Ronaldo",
+    "opts": [
+      "Eusébio",
+      "Cristiano Ronaldo",
+      "Pauleta",
+      "Luís Figo"
+    ],
+    "exp": "Tem mais de 100 golos por Portugal."
+  },
+  {
+    "q": "Que distância tem a prova de natação mais curta em piscina olímpica?",
+    "a": "50 metros",
+    "opts": [
+      "25 metros",
+      "50 metros",
+      "100 metros",
+      "200 metros"
+    ],
+    "exp": "A piscina olímpica tem 50 metros."
+  },
+  {
+    "q": "Que país organizou os Jogos Olímpicos de Verão mais vezes?",
+    "a": "Estados Unidos",
+    "opts": [
+      "Reino Unido",
+      "Estados Unidos",
+      "Grécia",
+      "França"
+    ],
+    "exp": "Os EUA já organizaram várias edições."
+  },
+  {
+    "q": "Que boxeador era conhecido como 'The Greatest'?",
+    "a": "Muhammad Ali",
+    "opts": [
+      "Mike Tyson",
+      "Muhammad Ali",
+      "Joe Frazier",
+      "Floyd Mayweather"
+    ],
+    "exp": "Ali acendeu a chama olímpica em 1996."
+  },
+  {
+    "q": "Que piloto brasileiro tricampeão de F1 morreu em 1994?",
+    "a": "Ayrton Senna",
+    "opts": [
+      "Nelson Piquet",
+      "Ayrton Senna",
+      "Emerson Fittipaldi",
+      "Rubens Barrichello"
+    ],
+    "exp": "Senna venceu três campeonatos do mundo."
+  },
+  {
+    "q": "Que modalidade combina saltos e figuras no ar com uma prancha na neve?",
+    "a": "Snowboard",
+    "opts": [
+      "Esqui de fundo",
+      "Snowboard",
+      "Curling",
+      "Bobsleigh"
+    ],
+    "exp": "O snowboard é olímpico desde 1998."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de râguebi (formato XV)?",
+    "a": "15",
+    "opts": [
+      "11",
+      "13",
+      "15",
+      "7"
+    ],
+    "exp": "Existe também o râguebi de 7."
+  },
+  {
+    "q": "Que clube português venceu a Liga Europa/Taça UEFA mais do que uma vez?",
+    "a": "FC Porto",
+    "opts": [
+      "Benfica",
+      "FC Porto",
+      "Sporting",
+      "Braga"
+    ],
+    "exp": "O FC Porto venceu em 2003 e 2011."
   }
 ]

@@ -218,5 +218,181 @@
       "Crescendo"
     ],
     "exp": "'pp' significa muito suave; 'ff', muito forte."
+  },
+  {
+    "q": "Quem compôs o bailado 'O Quebra-Nozes'?",
+    "a": "Tchaikovsky",
+    "opts": [
+      "Stravinsky",
+      "Tchaikovsky",
+      "Prokofiev",
+      "Rachmaninoff"
+    ],
+    "exp": "Tchaikovsky compôs também 'O Lago dos Cisnes'."
+  },
+  {
+    "q": "Qual é a voz masculina mais grave?",
+    "a": "Baixo",
+    "opts": [
+      "Tenor",
+      "Baixo",
+      "Barítono",
+      "Contralto"
+    ],
+    "exp": "A ordem do agudo ao grave: tenor, barítono, baixo."
+  },
+  {
+    "q": "Que compositor barroco escreveu 'As Quatro Estações'?",
+    "a": "Vivaldi",
+    "opts": [
+      "Bach",
+      "Vivaldi",
+      "Handel",
+      "Corelli"
+    ],
+    "exp": "São quatro concertos para violino."
+  },
+  {
+    "q": "Que indicação significa tocar muito suave?",
+    "a": "Pianíssimo",
+    "opts": [
+      "Fortíssimo",
+      "Pianíssimo",
+      "Mezzo-forte",
+      "Sforzando"
+    ],
+    "exp": "'pp' = muito suave."
+  },
+  {
+    "q": "Que escala não tem sustenidos nem bemóis?",
+    "a": "Dó maior",
+    "opts": [
+      "Sol maior",
+      "Dó maior",
+      "Ré maior",
+      "Fá maior"
+    ],
+    "exp": "Corresponde só às teclas brancas do piano."
+  },
+  {
+    "q": "Que compositor alemão é conhecido pelas suas fugas e era organista?",
+    "a": "J. S. Bach",
+    "opts": [
+      "Beethoven",
+      "J. S. Bach",
+      "Wagner",
+      "Brahms"
+    ],
+    "exp": "Bach é mestre do contraponto."
+  },
+  {
+    "q": "Que peça musical religiosa para coro e orquestra inclui o famoso 'Aleluia'?",
+    "a": "O 'Messias' de Handel",
+    "opts": [
+      "A 5.ª de Beethoven",
+      "O 'Messias' de Handel",
+      "O 'Bolero' de Ravel",
+      "O 'Requiem' de Mozart"
+    ],
+    "exp": "O 'Aleluia' é a parte mais conhecida."
+  },
+  {
+    "q": "Que termo indica tocar as notas bem ligadas e suaves?",
+    "a": "Legato",
+    "opts": [
+      "Staccato",
+      "Legato",
+      "Pizzicato",
+      "Marcato"
+    ],
+    "exp": "O staccato é o oposto: notas curtas e separadas."
+  },
+  {
+    "q": "Que fadista é considerada a 'Rainha do Fado'?",
+    "a": "Amália Rodrigues",
+    "opts": [
+      "Mariza",
+      "Amália Rodrigues",
+      "Dulce Pontes",
+      "Carminho"
+    ],
+    "exp": "Levou o Fado a todo o mundo."
+  },
+  {
+    "q": "Quantos músicos tem um quinteto?",
+    "a": "Cinco",
+    "opts": [
+      "Quatro",
+      "Cinco",
+      "Seis",
+      "Sete"
+    ],
+    "exp": "Um quinteto de sopros típico tem flauta, oboé, clarinete, trompa e fagote."
+  },
+  {
+    "q": "Que compositor russo escreveu 'Pedro e o Lobo'?",
+    "a": "Prokofiev",
+    "opts": [
+      "Tchaikovsky",
+      "Prokofiev",
+      "Stravinsky",
+      "Shostakovich"
+    ],
+    "exp": "Cada personagem é representada por um instrumento."
+  },
+  {
+    "q": "Que técnica consiste em tocar as cordas com os dedos, em vez do arco?",
+    "a": "Pizzicato",
+    "opts": [
+      "Legato",
+      "Pizzicato",
+      "Vibrato",
+      "Glissando"
+    ],
+    "exp": "Cria um som curto e percussivo."
+  },
+  {
+    "q": "Que compositor escreveu 'O Bolero', uma peça que repete o mesmo tema?",
+    "a": "Ravel",
+    "opts": [
+      "Debussy",
+      "Ravel",
+      "Satie",
+      "Fauré"
+    ],
+    "exp": "O 'Bolero' cresce de intensidade do início ao fim."
+  },
+  {
+    "q": "O que indica a fórmula de compasso 3/4?",
+    "a": "Três tempos por compasso",
+    "opts": [
+      "Três instrumentos",
+      "Três tempos por compasso",
+      "Três minutos",
+      "Três músicos"
+    ],
+    "exp": "É o compasso típico da valsa."
+  },
+  {
+    "q": "Que instrumento de cordas tem o registo mais grave da orquestra?",
+    "a": "Contrabaixo",
+    "opts": [
+      "Violino",
+      "Contrabaixo",
+      "Viola",
+      "Violoncelo"
+    ],
+    "exp": "O contrabaixo faz a base harmónica."
+  },
+  {
+    "q": "Que compositor alemão escreveu a famosa 'Marcha Nupcial'?",
+    "a": "Mendelssohn",
+    "opts": [
+      "Wagner",
+      "Mendelssohn",
+      "Brahms",
+      "Schumann"
+    ],
+    "exp": "Faz parte da música para 'Sonho de uma Noite de Verão'."
   }
 ]

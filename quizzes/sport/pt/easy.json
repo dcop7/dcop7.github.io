@@ -218,5 +218,236 @@
       "Nada"
     ],
     "exp": "O ouro é para o primeiro, a prata para o segundo e o bronze para o terceiro."
+  },
+  {
+    "q": "O que marca uma equipa de futebol quando a bola entra na baliza?",
+    "a": "Um golo",
+    "opts": [
+      "Um cesto",
+      "Um golo",
+      "Um ponto triplo",
+      "Um ensaio"
+    ],
+    "exp": "Ganha quem marcar mais golos."
+  },
+  {
+    "q": "Quem defende a baliza no futebol?",
+    "a": "O guarda-redes",
+    "opts": [
+      "O avançado",
+      "O guarda-redes",
+      "O árbitro",
+      "O treinador"
+    ],
+    "exp": "Só o guarda-redes pode tocar com as mãos na sua área."
+  },
+  {
+    "q": "Que objeto usa o árbitro para parar o jogo?",
+    "a": "O apito",
+    "opts": [
+      "A bandeira apenas",
+      "O apito",
+      "O cartão",
+      "O cronómetro"
+    ],
+    "exp": "O apito chama a atenção dos jogadores."
+  },
+  {
+    "q": "Em que desporto se ataca a cesta e se dribla a bola?",
+    "a": "Basquetebol",
+    "opts": [
+      "Futebol",
+      "Basquetebol",
+      "Ténis",
+      "Natação"
+    ],
+    "exp": "O cesto está a cerca de 3 metros de altura."
+  },
+  {
+    "q": "O que protege a cabeça de um ciclista?",
+    "a": "O capacete",
+    "opts": [
+      "O boné",
+      "O capacete",
+      "Os óculos",
+      "As luvas"
+    ],
+    "exp": "O capacete é obrigatório em muitas provas."
+  },
+  {
+    "q": "Em que desporto se desliza na neve com duas pranchas nos pés?",
+    "a": "Esqui",
+    "opts": [
+      "Surf",
+      "Esqui",
+      "Patinagem",
+      "Vela"
+    ],
+    "exp": "O esqui pratica-se em montanhas com neve."
+  },
+  {
+    "q": "Em que desporto se apanham ondas em cima de uma prancha?",
+    "a": "Surf",
+    "opts": [
+      "Vela",
+      "Surf",
+      "Remo",
+      "Natação"
+    ],
+    "exp": "O surfista equilibra-se sobre a onda."
+  },
+  {
+    "q": "Que peça preta e branca se move num tabuleiro de 64 casas?",
+    "a": "As peças de xadrez",
+    "opts": [
+      "As cartas",
+      "As peças de xadrez",
+      "Os dados",
+      "As fichas"
+    ],
+    "exp": "No xadrez, o objetivo é dar xeque-mate ao rei."
+  },
+  {
+    "q": "O que ganha o vencedor de uma corrida olímpica?",
+    "a": "Medalha de ouro",
+    "opts": [
+      "Medalha de bronze",
+      "Medalha de ouro",
+      "Medalha de prata",
+      "Nada"
+    ],
+    "exp": "Ouro, prata e bronze para os três primeiros."
+  },
+  {
+    "q": "Em que desporto se acerta num alvo com setas?",
+    "a": "Tiro com arco",
+    "opts": [
+      "Dardos",
+      "Tiro com arco",
+      "Boliche",
+      "Esgrima"
+    ],
+    "exp": "O arco lança a seta para o alvo."
+  },
+  {
+    "q": "Que desporto se pratica numa pista de gelo com patins?",
+    "a": "Patinagem no gelo",
+    "opts": [
+      "Esqui",
+      "Patinagem no gelo",
+      "Natação",
+      "Surf"
+    ],
+    "exp": "Inclui modalidades artísticas e de velocidade."
+  },
+  {
+    "q": "Em que desporto se salta sobre um trampolim e se fazem cambalhotas?",
+    "a": "Ginástica",
+    "opts": [
+      "Atletismo",
+      "Ginástica",
+      "Boxe",
+      "Vela"
+    ],
+    "exp": "A ginástica exige força e flexibilidade."
+  },
+  {
+    "q": "O que se usa para jogar ténis e bater na bola?",
+    "a": "Raquete",
+    "opts": [
+      "Taco",
+      "Raquete",
+      "Luva",
+      "Remo"
+    ],
+    "exp": "As cordas da raquete devolvem a bola."
+  },
+  {
+    "q": "Que desporto é praticado dentro de uma piscina?",
+    "a": "Natação",
+    "opts": [
+      "Ciclismo",
+      "Natação",
+      "Ténis",
+      "Esgrima"
+    ],
+    "exp": "Os nadadores usam touca e óculos."
+  },
+  {
+    "q": "Em que desporto se dão socos com luvas dentro de um ringue?",
+    "a": "Boxe",
+    "opts": [
+      "Judo",
+      "Boxe",
+      "Ténis",
+      "Râguebi"
+    ],
+    "exp": "Os boxeadores usam luvas almofadadas."
+  },
+  {
+    "q": "Que objeto redondo se chuta no futebol?",
+    "a": "A bola",
+    "opts": [
+      "O disco",
+      "A bola",
+      "O volante",
+      "O dardo"
+    ],
+    "exp": "A bola de futebol é esférica."
+  },
+  {
+    "q": "Em que desporto se rema dentro de um barco?",
+    "a": "Remo / canoagem",
+    "opts": [
+      "Vela",
+      "Remo / canoagem",
+      "Surf",
+      "Natação"
+    ],
+    "exp": "Os remadores usam remos para avançar."
+  },
+  {
+    "q": "Como se chama o treinador que orienta uma equipa?",
+    "a": "Treinador",
+    "opts": [
+      "Árbitro",
+      "Treinador",
+      "Capitão",
+      "Adepto"
+    ],
+    "exp": "O treinador define a estratégia da equipa."
+  },
+  {
+    "q": "Que cartão expulsa um jogador de futebol do jogo?",
+    "a": "O vermelho",
+    "opts": [
+      "O amarelo",
+      "O vermelho",
+      "O verde",
+      "O azul"
+    ],
+    "exp": "Dois amarelos também resultam em expulsão."
+  },
+  {
+    "q": "Em que desporto se usa um volante (peteca) em vez de bola?",
+    "a": "Badminton",
+    "opts": [
+      "Ténis",
+      "Badminton",
+      "Squash",
+      "Padel"
+    ],
+    "exp": "O volante tem penas e voa de forma diferente da bola."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de andebol em campo?",
+    "a": "7",
+    "opts": [
+      "5",
+      "6",
+      "7",
+      "11"
+    ],
+    "exp": "Seis jogadores de campo mais o guarda-redes."
   }
 ]

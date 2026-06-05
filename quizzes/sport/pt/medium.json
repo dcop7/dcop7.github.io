@@ -207,5 +207,236 @@
       "4"
     ],
     "exp": "Os cestos de longe (linha de 3) valem 3 pontos."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de basquetebol em campo?",
+    "a": "5",
+    "opts": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "exp": "Cinco por equipa no campo."
+  },
+  {
+    "q": "Em que país nasceram os Jogos Olímpicos modernos (1896)?",
+    "a": "Grécia",
+    "opts": [
+      "França",
+      "Grécia",
+      "Itália",
+      "Reino Unido"
+    ],
+    "exp": "Os primeiros modernos foram em Atenas."
+  },
+  {
+    "q": "O que significa 'love' (zero) no ténis?",
+    "a": "Pontuação zero",
+    "opts": [
+      "Vitória",
+      "Pontuação zero",
+      "Empate",
+      "Falta"
+    ],
+    "exp": "O ténis conta 15, 30, 40 e jogo."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de voleibol em campo?",
+    "a": "6",
+    "opts": [
+      "5",
+      "6",
+      "7",
+      "11"
+    ],
+    "exp": "A bola não pode tocar no chão do próprio lado."
+  },
+  {
+    "q": "A que altura está o cesto de basquetebol?",
+    "a": "3,05 m",
+    "opts": [
+      "2 m",
+      "3,05 m",
+      "4 m",
+      "5 m"
+    ],
+    "exp": "São cerca de 10 pés de altura."
+  },
+  {
+    "q": "Que prova de atletismo é a corrida mais longa dos Jogos Olímpicos?",
+    "a": "Maratona",
+    "opts": [
+      "100 metros",
+      "Maratona",
+      "400 metros",
+      "Salto em altura"
+    ],
+    "exp": "A maratona tem 42,195 km."
+  },
+  {
+    "q": "Em que desporto se usa um taco para acertar numa bola pequena e branca em buracos?",
+    "a": "Golfe",
+    "opts": [
+      "Críquete",
+      "Golfe",
+      "Hóquei",
+      "Baseball"
+    ],
+    "exp": "Ganha quem fizer menos tacadas."
+  },
+  {
+    "q": "Quantos pontos vale um cesto de fora da linha de 3 pontos?",
+    "a": "3",
+    "opts": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "exp": "Os cestos normais valem 2 pontos."
+  },
+  {
+    "q": "Que desporto japonês usa quedas e imobilizações num tatami?",
+    "a": "Judo",
+    "opts": [
+      "Karaté",
+      "Judo",
+      "Esgrima",
+      "Boxe"
+    ],
+    "exp": "O judo significa 'caminho suave'."
+  },
+  {
+    "q": "Em que desporto há um 'penalti' marcado a 11 metros da baliza?",
+    "a": "Futebol",
+    "opts": [
+      "Ténis",
+      "Futebol",
+      "Golfe",
+      "Natação"
+    ],
+    "exp": "O penalti é cobrado contra o guarda-redes."
+  },
+  {
+    "q": "Que país venceu mais Mundiais de futebol?",
+    "a": "Brasil",
+    "opts": [
+      "Alemanha",
+      "Brasil",
+      "Itália",
+      "Argentina"
+    ],
+    "exp": "O Brasil venceu cinco vezes."
+  },
+  {
+    "q": "Que prova combina esgrima, natação, equitação, tiro e corrida?",
+    "a": "Pentatlo moderno",
+    "opts": [
+      "Triatlo",
+      "Pentatlo moderno",
+      "Decatlo",
+      "Heptatlo"
+    ],
+    "exp": "São cinco modalidades diferentes."
+  },
+  {
+    "q": "Em que desporto se faz um 'home run'?",
+    "a": "Baseball",
+    "opts": [
+      "Críquete",
+      "Baseball",
+      "Golfe",
+      "Ténis"
+    ],
+    "exp": "Permite ao batedor percorrer todas as bases."
+  },
+  {
+    "q": "Que torneio de ténis se joga em relva, em Inglaterra?",
+    "a": "Wimbledon",
+    "opts": [
+      "Roland Garros",
+      "Wimbledon",
+      "US Open",
+      "Open da Austrália"
+    ],
+    "exp": "É o mais antigo torneio de ténis."
+  },
+  {
+    "q": "Quantos sets é preciso ganhar num jogo masculino de Grand Slam?",
+    "a": "3",
+    "opts": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "exp": "Joga-se à melhor de cinco sets."
+  },
+  {
+    "q": "Em que desporto português, sobre patins, Portugal é potência mundial?",
+    "a": "Hóquei em patins",
+    "opts": [
+      "Hóquei no gelo",
+      "Hóquei em patins",
+      "Andebol",
+      "Polo aquático"
+    ],
+    "exp": "Portugal tem vários títulos mundiais."
+  },
+  {
+    "q": "Que país organizou o Mundial de futebol de 2022?",
+    "a": "Catar",
+    "opts": [
+      "Rússia",
+      "Catar",
+      "Brasil",
+      "Alemanha"
+    ],
+    "exp": "Foi o primeiro Mundial no inverno."
+  },
+  {
+    "q": "Que desporto de inverno desce encostas a grande velocidade?",
+    "a": "Esqui alpino",
+    "opts": [
+      "Patinagem",
+      "Esqui alpino",
+      "Curling",
+      "Hóquei"
+    ],
+    "exp": "É uma modalidade dos Jogos Olímpicos de Inverno."
+  },
+  {
+    "q": "Quantos anéis tem o símbolo olímpico?",
+    "a": "Cinco",
+    "opts": [
+      "Quatro",
+      "Cinco",
+      "Seis",
+      "Três"
+    ],
+    "exp": "Representam os cinco continentes."
+  },
+  {
+    "q": "Em que desporto se montam cavalos e se saltam obstáculos?",
+    "a": "Equitação (hipismo)",
+    "opts": [
+      "Ciclismo",
+      "Equitação (hipismo)",
+      "Atletismo",
+      "Remo"
+    ],
+    "exp": "O hipismo é uma modalidade olímpica."
+  },
+  {
+    "q": "Que cor de cartão é apenas um aviso no futebol?",
+    "a": "Amarelo",
+    "opts": [
+      "Vermelho",
+      "Amarelo",
+      "Verde",
+      "Branco"
+    ],
+    "exp": "O vermelho expulsa; o amarelo avisa."
   }
 ]

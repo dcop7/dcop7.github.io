@@ -218,5 +218,247 @@
       "Carminho"
     ],
     "exp": "Amália levou o Fado a todo o mundo."
+  },
+  {
+    "q": "Quantas notas tem a escala musical básica (dó, ré, mi...)?",
+    "a": "Sete",
+    "opts": [
+      "Cinco",
+      "Seis",
+      "Sete",
+      "Oito"
+    ],
+    "exp": "Dó, ré, mi, fá, sol, lá, si."
+  },
+  {
+    "q": "Que clave é a mais usada para notas agudas?",
+    "a": "Clave de sol",
+    "opts": [
+      "Clave de fá",
+      "Clave de sol",
+      "Clave de dó",
+      "Clave de ré"
+    ],
+    "exp": "A clave de fá usa-se para sons graves."
+  },
+  {
+    "q": "Que instrumento de sopro de madeira tem palheta dupla?",
+    "a": "Oboé",
+    "opts": [
+      "Flauta",
+      "Oboé",
+      "Trompete",
+      "Trombone"
+    ],
+    "exp": "O fagote também tem palheta dupla."
+  },
+  {
+    "q": "Que família inclui violino, viola, violoncelo e contrabaixo?",
+    "a": "Cordas friccionadas",
+    "opts": [
+      "Sopro",
+      "Cordas friccionadas",
+      "Percussão",
+      "Teclas"
+    ],
+    "exp": "Tocam-se com arco."
+  },
+  {
+    "q": "Que estilo musical nasceu nos EUA com origem afro-americana e improvisação?",
+    "a": "Jazz",
+    "opts": [
+      "Fado",
+      "Jazz",
+      "Tango",
+      "Flamenco"
+    ],
+    "exp": "O jazz surgiu em Nova Orleães."
+  },
+  {
+    "q": "Qual é o nome da voz feminina mais aguda?",
+    "a": "Soprano",
+    "opts": [
+      "Contralto",
+      "Soprano",
+      "Tenor",
+      "Baixo"
+    ],
+    "exp": "A mais grave feminina é o contralto."
+  },
+  {
+    "q": "Que sinal musical indica silêncio?",
+    "a": "A pausa",
+    "opts": [
+      "A clave",
+      "A pausa",
+      "O bemol",
+      "O sustenido"
+    ],
+    "exp": "As pausas têm durações como as notas."
+  },
+  {
+    "q": "De que país é originário o flamenco?",
+    "a": "Espanha",
+    "opts": [
+      "Portugal",
+      "Espanha",
+      "Itália",
+      "Argentina"
+    ],
+    "exp": "O flamenco vem da Andaluzia."
+  },
+  {
+    "q": "Quantas teclas tem um piano de cauda padrão?",
+    "a": "88",
+    "opts": [
+      "66",
+      "76",
+      "88",
+      "100"
+    ],
+    "exp": "São 52 brancas e 36 pretas."
+  },
+  {
+    "q": "Que compositor era surdo quando compôs a sua 9.ª Sinfonia?",
+    "a": "Beethoven",
+    "opts": [
+      "Mozart",
+      "Beethoven",
+      "Bach",
+      "Chopin"
+    ],
+    "exp": "Inclui o 'Hino à Alegria'."
+  },
+  {
+    "q": "Que instrumento de percussão tem lâminas de metal e se toca com baquetas?",
+    "a": "Vibrafone",
+    "opts": [
+      "Xilofone de madeira",
+      "Vibrafone",
+      "Triângulo",
+      "Pandeireta"
+    ],
+    "exp": "O vibrafone tem um som metálico e ressonante."
+  },
+  {
+    "q": "Como se chama o conjunto de músicos dirigido por um maestro?",
+    "a": "Orquestra",
+    "opts": [
+      "Coro",
+      "Orquestra",
+      "Trio",
+      "Banda de garagem"
+    ],
+    "exp": "Uma orquestra sinfónica tem dezenas de músicos."
+  },
+  {
+    "q": "Que instrumento tradicional português tem quatro cordas e é pequeno?",
+    "a": "Cavaquinho",
+    "opts": [
+      "Bandolim",
+      "Cavaquinho",
+      "Viola",
+      "Banjo"
+    ],
+    "exp": "O cavaquinho deu origem ao ukulele."
+  },
+  {
+    "q": "Que termo musical significa tocar rápido e alegre?",
+    "a": "Allegro",
+    "opts": [
+      "Largo",
+      "Allegro",
+      "Adagio",
+      "Lento"
+    ],
+    "exp": "O largo, pelo contrário, é muito lento."
+  },
+  {
+    "q": "Que banda britânica gravou 'Bohemian Rhapsody'?",
+    "a": "Queen",
+    "opts": [
+      "The Beatles",
+      "Queen",
+      "Pink Floyd",
+      "Rolling Stones"
+    ],
+    "exp": "Foi cantada por Freddie Mercury."
+  },
+  {
+    "q": "Quantos músicos tem um quarteto?",
+    "a": "Quatro",
+    "opts": [
+      "Dois",
+      "Três",
+      "Quatro",
+      "Cinco"
+    ],
+    "exp": "Um quarteto de cordas tem 2 violinos, viola e violoncelo."
+  },
+  {
+    "q": "Que compositor austríaco escreveu mais de 600 obras e morreu jovem?",
+    "a": "Mozart",
+    "opts": [
+      "Beethoven",
+      "Mozart",
+      "Haydn",
+      "Schubert"
+    ],
+    "exp": "Mozart morreu aos 35 anos."
+  },
+  {
+    "q": "Que cantor português venceu a Eurovisão em 2017?",
+    "a": "Salvador Sobral",
+    "opts": [
+      "Tony Carreira",
+      "Salvador Sobral",
+      "Rui Veloso",
+      "D.A.M.A"
+    ],
+    "exp": "Venceu com 'Amar Pelos Dois'."
+  },
+  {
+    "q": "Que instrumento de teclas usa tubos e é típico das igrejas?",
+    "a": "Órgão",
+    "opts": [
+      "Piano",
+      "Órgão",
+      "Acordeão",
+      "Cravo"
+    ],
+    "exp": "O ar passa pelos tubos para produzir som."
+  },
+  {
+    "q": "Que termo indica para tocar gradualmente mais alto?",
+    "a": "Crescendo",
+    "opts": [
+      "Diminuendo",
+      "Crescendo",
+      "Staccato",
+      "Legato"
+    ],
+    "exp": "O diminuendo é o contrário."
+  },
+  {
+    "q": "Que voz feminina fica entre o soprano e o contralto?",
+    "a": "Mezzo-soprano",
+    "opts": [
+      "Tenor",
+      "Mezzo-soprano",
+      "Baixo",
+      "Barítono"
+    ],
+    "exp": "É uma voz feminina de registo médio."
+  },
+  {
+    "q": "Que dança a três tempos foi popularizada por Johann Strauss?",
+    "a": "Valsa",
+    "opts": [
+      "Tango",
+      "Valsa",
+      "Polca",
+      "Samba"
+    ],
+    "exp": "A valsa tem compasso 3/4."
   }
 ]
