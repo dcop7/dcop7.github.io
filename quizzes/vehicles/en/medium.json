@@ -1,0 +1,14 @@
+[
+  { "q": "Karl Benz's 1886 invention is considered the first what?", "a": "Automobile", "opts": ["Aeroplane", "Automobile", "Motorbike", "Train"], "exp": "It had three wheels and a petrol engine." },
+  { "q": "What does an electric car run on?", "a": "Electricity (batteries)", "opts": ["Petrol", "Electricity (batteries)", "Diesel", "Coal"], "exp": "Electric cars produce no exhaust emissions." },
+  { "q": "What is Japan's high-speed train called?", "a": "Shinkansen", "opts": ["TGV", "Shinkansen", "Maglev", "AVE"], "exp": "The Shinkansen ('bullet train') has run since 1964." },
+  { "q": "Which part of a plane creates the lift that makes it rise?", "a": "The wings", "opts": ["The tail", "The wings", "The wheels", "The windows"], "exp": "The wing shape creates lift as air flows over it." },
+  { "q": "Which vehicle broke the land speed record, passing the speed of sound?", "a": "Thrust SSC", "opts": ["Bugatti Veyron", "Thrust SSC", "Ferrari F1", "Tesla Roadster"], "exp": "In 1997 it reached about 1,228 km/h in Nevada." },
+  { "q": "What does a car's combustion engine do?", "a": "Burns fuel to create motion", "opts": ["Makes electricity from nothing", "Burns fuel to create motion", "Cools the car", "Filters the air"], "exp": "Controlled fuel explosions push the pistons." },
+  { "q": "Which company built the famous ship Titanic?", "a": "Harland & Wolff", "opts": ["Cunard", "Harland & Wolff", "Boeing", "Airbus"], "exp": "The Titanic sank on its maiden voyage in 1912." },
+  { "q": "What is the driverless vehicle that explores Mars called?", "a": "Rover", "opts": ["Satellite", "Rover", "Drone", "Submarine"], "exp": "Rovers like Perseverance roam the surface of Mars." },
+  { "q": "Which is an underground rail transport inside cities?", "a": "Metro", "opts": ["Taxi", "Metro", "Scooter", "Cable car"], "exp": "The London Underground, opened in 1863, was the first." },
+  { "q": "What is the 'box' that records a plane's data to investigate crashes?", "a": "Black box", "opts": ["Black box", "Radar", "Altimeter", "GPS"], "exp": "Despite the name, the black box is bright orange." },
+  { "q": "Which type of boat uses the wind to move?", "a": "Sailboat", "opts": ["Cargo ship", "Sailboat", "Submarine", "Ferry"], "exp": "Sails catch the wind, much like a wing catches air." },
+  { "q": "Which document is required to drive a car?", "a": "Driving licence", "opts": ["Passport", "Driving licence", "ID card only", "Student card"], "exp": "It proves you passed the driving test." }
+]

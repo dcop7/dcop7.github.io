@@ -1,0 +1,14 @@
+[
+  { "q": "Which of these is used to type on a computer?", "a": "Keyboard", "opts": ["Mouse", "Keyboard", "Monitor", "Speaker"], "exp": "The QWERTY keyboard is named after its first 6 letters." },
+  { "q": "What is the part of a computer that shows the picture?", "a": "Monitor (screen)", "opts": ["Keyboard", "Monitor (screen)", "Mouse", "Printer"], "exp": "Most modern screens are LCD or OLED." },
+  { "q": "Which device do we use to make calls and install apps?", "a": "Smartphone", "opts": ["Television", "Smartphone", "Radio", "Calculator"], "exp": "A smartphone is basically a small computer." },
+  { "q": "What is the internet?", "a": "A worldwide network of connected computers", "opts": ["A program", "A worldwide network of connected computers", "A game", "A type of screen"], "exp": "The internet links billions of devices worldwide." },
+  { "q": "What is a program that browses the internet called?", "a": "Web browser", "opts": ["Antivirus", "Web browser", "Spreadsheet", "Operating system"], "exp": "Examples: Chrome, Firefox, Safari and Edge." },
+  { "q": "Which symbol is used before the username in an email?", "a": "@ (at sign)", "opts": ["# (hash)", "@ (at sign)", "& (ampersand)", "% (percent)"], "exp": "The @ separates the user from the domain (e.g. name@example.com)." },
+  { "q": "What does a password do?", "a": "Protects access to an account", "opts": ["Speeds up the computer", "Protects access to an account", "Enlarges the screen", "Connects the printer"], "exp": "A good password is long and hard to guess." },
+  { "q": "Which device points and clicks on the screen?", "a": "Mouse", "opts": ["Mouse", "Keyboard", "Speaker", "Microphone"], "exp": "The first mouse was invented in the 1960s, made of wood." },
+  { "q": "Where are files stored 'in the cloud'?", "a": "On servers on the internet", "opts": ["Inside the mouse", "On servers on the internet", "In the keyboard", "In the speakers"], "exp": "The 'cloud' is just computers elsewhere, accessed over the internet." },
+  { "q": "Which key deletes the letter to the left of the cursor?", "a": "Backspace", "opts": ["Enter", "Backspace", "Space", "Shift"], "exp": "'Delete' removes the letter to the right of the cursor." },
+  { "q": "Which device prints documents on paper?", "a": "Printer", "opts": ["Scanner", "Printer", "Monitor", "Router"], "exp": "There are inkjet, laser and even 3D printers." },
+  { "q": "What is 'wifi'?", "a": "A wireless internet connection", "opts": ["A virus", "A wireless internet connection", "A type of screen", "A game"], "exp": "Wifi uses radio waves to connect devices without cables." }
+]

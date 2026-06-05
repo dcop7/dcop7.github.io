@@ -1,0 +1,14 @@
+[
+  { "q": "Which number system do computers 'think' in?", "a": "Binary (0 and 1)", "opts": ["Decimal", "Binary (0 and 1)", "Roman", "Hexadecimal only"], "exp": "Each 0 or 1 is a 'bit'; 8 bits make a 'byte'." },
+  { "q": "Who is regarded as the first computer programmer?", "a": "Ada Lovelace", "opts": ["Grace Hopper", "Ada Lovelace", "Marie Curie", "Hedy Lamarr"], "exp": "In the 1800s she wrote an algorithm for Babbage's machine." },
+  { "q": "What does 'HTTP' stand for?", "a": "HyperText Transfer Protocol", "opts": ["HyperText Transfer Protocol", "High Tech Transfer Process", "Home Tool Text Page", "Hyperlink Text Transport"], "exp": "It transfers web pages; 'HTTPS' is the secure version." },
+  { "q": "Which component is the fast, volatile memory used by running programs?", "a": "RAM", "opts": ["SSD", "RAM", "CPU", "GPU"], "exp": "RAM stands for Random Access Memory; it clears when powered off." },
+  { "q": "Which company makes the Core i5/i7 processors?", "a": "Intel", "opts": ["Nvidia", "Intel", "Qualcomm", "IBM"], "exp": "AMD is its main competitor in processors." },
+  { "q": "What is 'open source' software?", "a": "Software whose code can be seen and modified", "opts": ["Paid software", "Software whose code can be seen and modified", "A virus", "A type of cable"], "exp": "Linux is a famous example of open-source software." },
+  { "q": "Which technology underpins cryptocurrencies like Bitcoin?", "a": "Blockchain", "opts": ["Wifi", "Blockchain", "Bluetooth", "HTML"], "exp": "A blockchain is a distributed ledger that is very hard to tamper with." },
+  { "q": "What does a GPU (graphics card) do?", "a": "Processes images and graphics", "opts": ["Stores files", "Processes images and graphics", "Connects to the internet", "Cools the CPU"], "exp": "GPUs are also heavily used in artificial intelligence." },
+  { "q": "Which programming language is widely used in data science and AI?", "a": "Python", "opts": ["HTML", "Python", "CSS", "SQL only"], "exp": "Python is known for its simple, readable syntax." },
+  { "q": "What does 'AI' stand for?", "a": "Artificial Intelligence", "opts": ["Application Interface", "Artificial Intelligence", "Advanced Internet", "Automatic Install"], "exp": "AI lets machines learn patterns from data." },
+  { "q": "Which 1960s US network was the ancestor of the internet?", "a": "ARPANET", "opts": ["ARPANET", "Ethernet", "Wifi", "Bluetooth"], "exp": "ARPANET connected the first universities and research centres." },
+  { "q": "How many bits are in a byte?", "a": "8", "opts": ["4", "8", "16", "32"], "exp": "8 bits can represent 256 different values (0–255)." }
+]

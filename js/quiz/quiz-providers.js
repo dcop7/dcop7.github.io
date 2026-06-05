@@ -1237,15 +1237,22 @@ QuizEngine.register('clocks', {
     ]
   };
   QuizEngine.register('technology', {
-    getQuestions(opts) {
-      const { age, lang, count } = opts;
-      const n = QuizEngine.optionCount(age);
+    async getQuestions(opts) {
+      const { lang, count } = opts;
+      const diff = opts.difficulty || 'easy';
+      /* Shares the rich in-repo Technology bank (quizzes/tecnologia/<lang>/...);
+         the embedded DATA below is only an offline safety net. */
+      if (typeof QuizData !== 'undefined') {
+        const items = await QuizData.loadBank('tecnologia', diff, lang);
+        if (items && items.length) return QuizData.buildFromBank(items, { ...opts, category: 'tecnologia' });
+      }
+      const n = QuizEngine.optionCount();
       const d = DATA[lang] || DATA.en;
       const pool = QuizEngine.shuffle(d).slice(0, count||10);
       return pool.map((item, i) => {
         const distractors = item.opts.filter(o => o !== item.a);
         const { options, correctIdx } = QuizEngine.buildOptions(item.a, distractors, n);
-        return { id:`tech-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:age<=10?'easy':'medium', lang };
+        return { id:`tech-${i}`, question:item.q, options, correctIdx, explanation:item.exp, difficulty:diff, lang };
       });
     }
   });

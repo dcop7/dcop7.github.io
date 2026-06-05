@@ -1,0 +1,14 @@
+[
+  { "q": "O que significa 'CPU'?", "a": "Unidade Central de Processamento", "opts": ["Memória do computador", "Unidade Central de Processamento", "Placa gráfica", "Disco rígido"], "exp": "A CPU é o 'cérebro' do computador, que executa as instruções." },
+  { "q": "Qual destes é um sistema operativo?", "a": "Windows", "opts": ["Word", "Windows", "Chrome", "Excel"], "exp": "Outros exemplos: macOS, Linux e Android." },
+  { "q": "O que mede o 'megabyte' (MB)?", "a": "Quantidade de dados/memória", "opts": ["Velocidade", "Quantidade de dados/memória", "Brilho do ecrã", "Temperatura"], "exp": "1 gigabyte (GB) tem 1024 megabytes." },
+  { "q": "Que linguagem dá estrutura às páginas da internet?", "a": "HTML", "opts": ["HTML", "JPEG", "MP3", "PDF"], "exp": "HTML = HyperText Markup Language." },
+  { "q": "O que é um 'pixel'?", "a": "O ponto mais pequeno de uma imagem", "opts": ["Um vírus", "O ponto mais pequeno de uma imagem", "Um tipo de cabo", "Uma pasta"], "exp": "As imagens digitais são feitas de milhões de pixéis." },
+  { "q": "O que faz um antivírus?", "a": "Deteta e remove software malicioso", "opts": ["Aumenta o ecrã", "Deteta e remove software malicioso", "Liga o wifi", "Imprime ficheiros"], "exp": "Software malicioso inclui vírus, worms e ransomware." },
+  { "q": "Que empresa criou o sistema Android?", "a": "Google", "opts": ["Apple", "Google", "Microsoft", "Samsung"], "exp": "O Android é o sistema operativo móvel mais usado do mundo." },
+  { "q": "O que significa 'www' nos endereços de internet?", "a": "World Wide Web", "opts": ["World Wide Web", "Web Without Wires", "Wide World Window", "World Web Work"], "exp": "Foi criada por Tim Berners-Lee em 1989." },
+  { "q": "Onde se guardam permanentemente os ficheiros num computador?", "a": "No disco (HDD/SSD)", "opts": ["Na RAM", "No disco (HDD/SSD)", "No monitor", "No rato"], "exp": "A RAM perde os dados quando se desliga; o disco mantém-nos." },
+  { "q": "Que tipo de ficheiro é normalmente uma fotografia?", "a": "JPEG", "opts": ["MP3", "JPEG", "DOCX", "EXE"], "exp": "O MP3 é para som; o JPEG é para imagens." },
+  { "q": "O que é um 'algoritmo'?", "a": "Uma sequência de passos para resolver um problema", "opts": ["Um vírus", "Uma sequência de passos para resolver um problema", "Um cabo", "Uma rede social"], "exp": "Uma receita de cozinha é, no fundo, um algoritmo." },
+  { "q": "O que liga a tua casa à internet, distribuindo o wifi?", "a": "Router", "opts": ["Monitor", "Router", "Impressora", "Scanner"], "exp": "O router encaminha os dados entre a tua rede e a internet." }
+]

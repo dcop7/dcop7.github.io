@@ -1,0 +1,14 @@
+[
+  { "q": "How many wheels does a car usually have?", "a": "Four", "opts": ["Two", "Three", "Four", "Six"], "exp": "Passenger cars have four wheels." },
+  { "q": "Which vehicle flies with wings and jet engines?", "a": "Aeroplane", "opts": ["Train", "Aeroplane", "Boat", "Motorbike"], "exp": "A commercial plane cruises at around 10,000 metres." },
+  { "q": "Which vehicle runs on rails?", "a": "Train", "opts": ["Bus", "Train", "Lorry", "Bicycle"], "exp": "Trains run on two steel rails." },
+  { "q": "Which vehicle do we use to travel on water?", "a": "Boat", "opts": ["Plane", "Boat", "Car", "Train"], "exp": "Boats float thanks to buoyancy (Archimedes' principle)." },
+  { "q": "How many wheels does a bicycle have?", "a": "Two", "opts": ["One", "Two", "Three", "Four"], "exp": "A bicycle is powered by your legs, with no engine." },
+  { "q": "Which emergency vehicle puts out fires?", "a": "Fire engine", "opts": ["Ambulance", "Fire engine", "Police car", "Taxi"], "exp": "It carries water, hoses and ladders." },
+  { "q": "Which vehicle rushes patients to hospital?", "a": "Ambulance", "opts": ["Bus", "Ambulance", "Train", "Plane"], "exp": "Ambulances use sirens and lights to get priority in traffic." },
+  { "q": "Which vehicle carries many people around the city with lots of seats?", "a": "Bus", "opts": ["Motorbike", "Bus", "Bicycle", "Scooter"], "exp": "Buses are part of public transport." },
+  { "q": "Which two-wheeled vehicle has an engine and needs a helmet?", "a": "Motorbike", "opts": ["Bicycle", "Motorbike", "Scooter", "Skateboard"], "exp": "The helmet protects your head in a fall." },
+  { "q": "Which vehicle travels underwater?", "a": "Submarine", "opts": ["Sailboat", "Submarine", "Canoe", "Jet ski"], "exp": "A submarine fills tanks with water to dive." },
+  { "q": "Which vehicle travels into space?", "a": "Rocket", "opts": ["Helicopter", "Rocket", "Glider", "Balloon"], "exp": "A rocket needs huge speed to escape gravity." },
+  { "q": "Which vehicle has rotors on top and can hover?", "a": "Helicopter", "opts": ["Plane", "Helicopter", "Giant drone", "Balloon"], "exp": "A helicopter takes off and lands vertically." }
+]

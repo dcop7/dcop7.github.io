@@ -1,0 +1,14 @@
+[
+  { "q": "Em que sistema de numeração 'pensam' os computadores?", "a": "Binário (0 e 1)", "opts": ["Decimal", "Binário (0 e 1)", "Romano", "Hexadecimal apenas"], "exp": "Cada 0 ou 1 é um 'bit'; 8 bits formam um 'byte'." },
+  { "q": "Quem é considerada a primeira programadora da história?", "a": "Ada Lovelace", "opts": ["Grace Hopper", "Ada Lovelace", "Marie Curie", "Hedy Lamarr"], "exp": "No século XIX, escreveu um algoritmo para a máquina de Babbage." },
+  { "q": "O que significa 'HTTP'?", "a": "HyperText Transfer Protocol", "opts": ["HyperText Transfer Protocol", "High Tech Transfer Process", "Home Tool Text Page", "Hyperlink Text Transport"], "exp": "É o protocolo que transfere páginas web; o 'HTTPS' é a versão segura." },
+  { "q": "Que componente é a memória volátil e rápida usada pelos programas em execução?", "a": "RAM", "opts": ["SSD", "RAM", "CPU", "GPU"], "exp": "RAM = Random Access Memory; perde os dados ao desligar." },
+  { "q": "Que empresa fabrica os processadores das séries Core i5/i7?", "a": "Intel", "opts": ["Nvidia", "Intel", "Qualcomm", "IBM"], "exp": "A AMD é a sua principal concorrente em processadores." },
+  { "q": "O que é o 'código-fonte aberto' (open source)?", "a": "Software cujo código pode ser visto e modificado", "opts": ["Software pago", "Software cujo código pode ser visto e modificado", "Um vírus", "Um tipo de cabo"], "exp": "O Linux é um exemplo famoso de software de código aberto." },
+  { "q": "Que tecnologia está por trás das criptomoedas como a Bitcoin?", "a": "Blockchain", "opts": ["Wifi", "Blockchain", "Bluetooth", "HTML"], "exp": "A blockchain é um registo distribuído e muito difícil de adulterar." },
+  { "q": "O que faz uma GPU (placa gráfica)?", "a": "Processa imagens e gráficos", "opts": ["Guarda ficheiros", "Processa imagens e gráficos", "Liga à internet", "Arrefece o CPU"], "exp": "As GPU também são muito usadas em inteligência artificial." },
+  { "q": "Que linguagem de programação é muito usada em ciência de dados e IA?", "a": "Python", "opts": ["HTML", "Python", "CSS", "SQL apenas"], "exp": "O Python é conhecido pela sintaxe simples e legível." },
+  { "q": "O que significa 'IA'?", "a": "Inteligência Artificial", "opts": ["Interface de Aplicação", "Inteligência Artificial", "Internet Avançada", "Instalação Automática"], "exp": "A IA permite às máquinas aprender padrões a partir de dados." },
+  { "q": "Que rede antecessora da internet foi criada nos anos 1960 nos EUA?", "a": "ARPANET", "opts": ["ARPANET", "Ethernet", "Wifi", "Bluetooth"], "exp": "A ARPANET ligou as primeiras universidades e centros de investigação." },
+  { "q": "Quantos bits tem um byte?", "a": "8", "opts": ["4", "8", "16", "32"], "exp": "Com 8 bits é possível representar 256 valores diferentes (0–255)." }
+]

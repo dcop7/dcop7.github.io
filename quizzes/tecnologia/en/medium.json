@@ -1,0 +1,14 @@
+[
+  { "q": "What does 'CPU' stand for?", "a": "Central Processing Unit", "opts": ["Computer memory", "Central Processing Unit", "Graphics card", "Hard drive"], "exp": "The CPU is the 'brain' of the computer that runs instructions." },
+  { "q": "Which of these is an operating system?", "a": "Windows", "opts": ["Word", "Windows", "Chrome", "Excel"], "exp": "Other examples: macOS, Linux and Android." },
+  { "q": "What does a 'megabyte' (MB) measure?", "a": "Amount of data/memory", "opts": ["Speed", "Amount of data/memory", "Screen brightness", "Temperature"], "exp": "1 gigabyte (GB) is 1024 megabytes." },
+  { "q": "Which language gives structure to web pages?", "a": "HTML", "opts": ["HTML", "JPEG", "MP3", "PDF"], "exp": "HTML stands for HyperText Markup Language." },
+  { "q": "What is a 'pixel'?", "a": "The smallest dot of an image", "opts": ["A virus", "The smallest dot of an image", "A type of cable", "A folder"], "exp": "Digital images are made of millions of pixels." },
+  { "q": "What does antivirus software do?", "a": "Detects and removes malicious software", "opts": ["Enlarges the screen", "Detects and removes malicious software", "Turns on wifi", "Prints files"], "exp": "Malicious software includes viruses, worms and ransomware." },
+  { "q": "Which company created the Android system?", "a": "Google", "opts": ["Apple", "Google", "Microsoft", "Samsung"], "exp": "Android is the most used mobile operating system in the world." },
+  { "q": "What does 'www' stand for in web addresses?", "a": "World Wide Web", "opts": ["World Wide Web", "Web Without Wires", "Wide World Window", "World Web Work"], "exp": "It was created by Tim Berners-Lee in 1989." },
+  { "q": "Where are files stored permanently on a computer?", "a": "On the drive (HDD/SSD)", "opts": ["In the RAM", "On the drive (HDD/SSD)", "In the monitor", "In the mouse"], "exp": "RAM loses data when powered off; the drive keeps it." },
+  { "q": "Which file type is typically a photograph?", "a": "JPEG", "opts": ["MP3", "JPEG", "DOCX", "EXE"], "exp": "MP3 is for sound; JPEG is for images." },
+  { "q": "What is an 'algorithm'?", "a": "A sequence of steps to solve a problem", "opts": ["A virus", "A sequence of steps to solve a problem", "A cable", "A social network"], "exp": "A cooking recipe is basically an algorithm." },
+  { "q": "What connects your home to the internet and spreads the wifi?", "a": "Router", "opts": ["Monitor", "Router", "Printer", "Scanner"], "exp": "The router directs data between your network and the internet." }
+]

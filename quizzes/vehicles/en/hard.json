@@ -1,0 +1,14 @@
+[
+  { "q": "What technology lets Maglev trains float above the track?", "a": "Magnetic levitation", "opts": ["Air cushions", "Magnetic levitation", "Rubber wheels", "Propellers"], "exp": "Powerful magnets remove friction, allowing speeds over 500 km/h." },
+  { "q": "Which aircraft made the first controlled powered flight in 1903?", "a": "Wright Flyer", "opts": ["Spirit of St. Louis", "Wright Flyer", "Concorde", "Santos-Dumont 14-bis"], "exp": "The first flight lasted 12 seconds and covered 37 metres." },
+  { "q": "Which supersonic passenger jet flew between 1976 and 2003?", "a": "Concorde", "opts": ["Boeing 747", "Concorde", "Airbus A380", "Tupolev Tu-144"], "exp": "It crossed the Atlantic in about 3.5 hours at twice the speed of sound." },
+  { "q": "Which engineer popularised the car assembly line?", "a": "Henry Ford", "opts": ["Karl Benz", "Henry Ford", "Ferdinand Porsche", "Enzo Ferrari"], "exp": "The Ford Model T assembly line made cars affordable." },
+  { "q": "What is the largest passenger aircraft in service?", "a": "Airbus A380", "opts": ["Boeing 747", "Airbus A380", "Boeing 777", "Antonov An-225"], "exp": "The A380 has two decks and can carry over 850 passengers." },
+  { "q": "Which physical principle explains why steel ships float?", "a": "Buoyancy (Archimedes)", "opts": ["Inertia", "Buoyancy (Archimedes)", "Gravity", "Magnetism"], "exp": "The ship displaces a weight of water equal to its own weight." },
+  { "q": "Which NASA vehicle landed astronauts on the Moon's surface?", "a": "Lunar Module (LEM)", "opts": ["Space Shuttle", "Lunar Module (LEM)", "Soyuz capsule", "Apollo rover only"], "exp": "The Lunar Module 'Eagle' landed on the Moon in 1969." },
+  { "q": "What was the first artificial satellite, launched in 1957?", "a": "Sputnik 1", "opts": ["Sputnik 1", "Explorer 1", "Vostok 1", "Hubble"], "exp": "The Soviet Sputnik 1 began the Space Age." },
+  { "q": "What is the braking system that stops wheels locking up called?", "a": "ABS", "opts": ["ABS", "GPS", "ESP", "Turbo"], "exp": "ABS stands for anti-lock braking system." },
+  { "q": "Which company made the first hugely successful mass-produced electric car (Model S)?", "a": "Tesla", "opts": ["Nissan", "Tesla", "Toyota", "BMW"], "exp": "The Tesla Model S launched in 2012." },
+  { "q": "How does a nuclear-powered aircraft carrier sail for years without refuelling?", "a": "A nuclear reactor", "opts": ["Solar panels", "A nuclear reactor", "Huge fuel tanks", "Wind sails"], "exp": "A reactor supplies energy for a very long time without fossil fuel." },
+  { "q": "What was the name of the supersonic land vehicle that set the 1997 record?", "a": "Thrust SSC", "opts": ["Bloodhound", "Thrust SSC", "Blue Flame", "Spirit of America"], "exp": "It was the first land vehicle to officially break the sound barrier." }
+]

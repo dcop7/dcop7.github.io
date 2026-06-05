@@ -1,0 +1,14 @@
+[
+  { "q": "Qual destes serve para escrever num computador?", "a": "Teclado", "opts": ["Rato", "Teclado", "Monitor", "Coluna"], "exp": "O teclado QWERTY tem esse nome pelas primeiras 6 letras." },
+  { "q": "Como se chama a parte do computador que mostra a imagem?", "a": "Monitor (ecrã)", "opts": ["Teclado", "Monitor (ecrã)", "Rato", "Impressora"], "exp": "Os ecrãs atuais são quase todos LCD ou OLED." },
+  { "q": "Que aparelho usamos para fazer chamadas e instalar apps?", "a": "Telemóvel", "opts": ["Televisão", "Telemóvel", "Rádio", "Calculadora"], "exp": "Um smartphone é, na prática, um pequeno computador." },
+  { "q": "O que é a internet?", "a": "Uma rede mundial de computadores ligados", "opts": ["Um programa", "Uma rede mundial de computadores ligados", "Um jogo", "Um tipo de ecrã"], "exp": "A internet liga milhares de milhões de dispositivos em todo o mundo." },
+  { "q": "Como se chama um programa que navega na internet?", "a": "Navegador (browser)", "opts": ["Antivírus", "Navegador (browser)", "Folha de cálculo", "Sistema operativo"], "exp": "Exemplos: Chrome, Firefox, Safari e Edge." },
+  { "q": "Que símbolo se usa antes do nome de utilizador num email?", "a": "@ (arroba)", "opts": ["# (cardinal)", "@ (arroba)", "& (e comercial)", "% (percentagem)"], "exp": "O @ separa o utilizador do domínio (ex.: nome@exemplo.pt)." },
+  { "q": "O que faz uma palavra-passe (password)?", "a": "Protege o acesso a uma conta", "opts": ["Acelera o computador", "Protege o acesso a uma conta", "Aumenta o ecrã", "Liga a impressora"], "exp": "Uma boa palavra-passe é longa e difícil de adivinhar." },
+  { "q": "Que dispositivo aponta e clica no ecrã?", "a": "Rato", "opts": ["Rato", "Teclado", "Coluna", "Microfone"], "exp": "O primeiro rato foi inventado nos anos 1960, em madeira." },
+  { "q": "Onde se guardam ficheiros 'na nuvem'?", "a": "Em servidores na internet", "opts": ["Dentro do rato", "Em servidores na internet", "No teclado", "Nas colunas"], "exp": "A 'nuvem' são computadores noutros locais, acedidos pela internet." },
+  { "q": "Que tecla apaga a letra à esquerda do cursor?", "a": "Backspace", "opts": ["Enter", "Backspace", "Espaço", "Shift"], "exp": "O 'Delete' apaga a letra à direita do cursor." },
+  { "q": "Que aparelho imprime documentos em papel?", "a": "Impressora", "opts": ["Scanner", "Impressora", "Monitor", "Router"], "exp": "Há impressoras a jato de tinta, laser e até 3D." },
+  { "q": "O que é um 'wifi'?", "a": "Ligação à internet sem fios", "opts": ["Um vírus", "Ligação à internet sem fios", "Um tipo de ecrã", "Um jogo"], "exp": "O wifi usa ondas de rádio para ligar dispositivos sem cabos." }
+]

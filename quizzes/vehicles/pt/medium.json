@@ -1,0 +1,14 @@
+[
+  { "q": "Que invento de Karl Benz, em 1886, é considerado o primeiro automóvel?", "a": "O Benz Patent-Motorwagen", "opts": ["O Ford T", "O Benz Patent-Motorwagen", "O Fusca", "O Citroën 2CV"], "exp": "Tinha três rodas e um motor a gasolina." },
+  { "q": "Que combustível usa um carro elétrico?", "a": "Eletricidade (baterias)", "opts": ["Gasolina", "Eletricidade (baterias)", "Gasóleo", "Carvão"], "exp": "Os carros elétricos não emitem gases de escape." },
+  { "q": "Como se chama o comboio de alta velocidade japonês?", "a": "Shinkansen", "opts": ["TGV", "Shinkansen", "Maglev de teste", "AVE"], "exp": "O Shinkansen ('comboio-bala') circula desde 1964." },
+  { "q": "Que parte do avião gera a força que o faz subir?", "a": "As asas", "opts": ["A cauda", "As asas", "As rodas", "As janelas"], "exp": "O formato das asas cria sustentação à medida que o ar passa." },
+  { "q": "Que veículo bateu o recorde de velocidade em terra, ultrapassando a velocidade do som?", "a": "Thrust SSC", "opts": ["Bugatti Veyron", "Thrust SSC", "Ferrari F1", "Tesla Roadster"], "exp": "Em 1997 atingiu cerca de 1 228 km/h no deserto do Nevada." },
+  { "q": "O que faz o motor de combustão de um carro?", "a": "Queima combustível para gerar movimento", "opts": ["Produz eletricidade do nada", "Queima combustível para gerar movimento", "Arrefece o carro", "Filtra o ar"], "exp": "A explosão controlada de combustível move os pistões." },
+  { "q": "Que companhia construiu o famoso navio Titanic?", "a": "Harland & Wolff", "opts": ["Cunard", "Harland & Wolff", "Boeing", "Airbus"], "exp": "O Titanic afundou-se na sua viagem inaugural, em 1912." },
+  { "q": "Como se chama o veículo sem condutor que explora Marte?", "a": "Rover", "opts": ["Satélite", "Rover", "Drone", "Submarino"], "exp": "Os rovers como o Perseverance percorrem a superfície de Marte." },
+  { "q": "Qual destes é um meio de transporte público sobre carris dentro das cidades?", "a": "Metro", "opts": ["Táxi", "Metro", "Trotinete", "Teleférico"], "exp": "O Metropolitano de Lisboa abriu em 1959." },
+  { "q": "Que documento é obrigatório para conduzir um automóvel?", "a": "Carta de condução", "opts": ["Passaporte", "Carta de condução", "Bilhete de identidade apenas", "Cartão de estudante"], "exp": "Em Portugal tira-se a carta a partir dos 18 anos." },
+  { "q": "Como se chama a 'caixa' que regista dados de um avião para investigar acidentes?", "a": "Caixa negra", "opts": ["Caixa negra", "Radar", "Altímetro", "GPS"], "exp": "Apesar do nome, a caixa negra é cor de laranja, para ser encontrada." },
+  { "q": "Que tipo de barco usa o vento para se mover?", "a": "Veleiro", "opts": ["Cargueiro", "Veleiro", "Submarino", "Ferry"], "exp": "As velas captam o vento, tal como uma asa capta o ar." }
+]
