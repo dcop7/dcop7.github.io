@@ -58,6 +58,7 @@ const HumanBodyExplorer = (function () {
   const G = { skin:null, skeleton:null, muscles:null, organs:null, vessels:null, dna:null, senses:null };
   let _organMeshes = [];      /* {mesh, key, baseEmissive} for picking + focus */
   let _heart = null, _lungs = [], _dnaGroup = null, _lungPivot = null, _modelsReady = false;
+  let _skinMat = null, _boneMat = null;   /* kept to fade them when layers stack */
   let _flowTex = [];          /* {tex, dir} animated blood-flow textures */
   let _senseMarkers = [];
 
@@ -485,6 +486,7 @@ const HumanBodyExplorer = (function () {
         color: 0xf0c4a0, roughness: 0.85, metalness: 0,
         transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide,
       });
+      _skinMat = skinMat;
       skin.traverse(m => { if (m.isMesh) { m.material = skinMat; m.renderOrder = 30; } });
       _replaceGroup('skin', _vhWrap(skin));
 
@@ -513,6 +515,7 @@ const HumanBodyExplorer = (function () {
       try {
         const sk = await _loadGLB('skeleton');
         const bone = new THREE.MeshStandardMaterial({ color: 0xf2efe2, roughness: 0.5, metalness: 0.05, emissive: 0x1a1812 });
+        _boneMat = bone;
         sk.traverse(m => { if (m.isMesh) m.material = bone; });
         const skw = _fitModel(sk, _SK_H, _SK_BASEY, _SK_ROT);
         skw.position.x += _SK_OFFX; skw.position.z += _SK_OFFZ;
@@ -762,6 +765,22 @@ const HumanBodyExplorer = (function () {
     if (G.skeleton) G.skeleton.visible = !!_layers.skeleton && !G.dna.visible;
     if (G.organs)   G.organs.visible = !!_layers.organs && !G.dna.visible;
     if (G.vessels)  G.vessels.visible = !!_layers.vessels && !G.dna.visible;
+    _declutter();
+  }
+
+  /* Keep stacked layers legible: the more systems are shown together, the more
+     the skin (and the bones, when organs/vessels are also on) fade back. */
+  function _declutter() {
+    const L = _layers;
+    const others = (L.skeleton ? 1 : 0) + (L.organs ? 1 : 0) + (L.vessels ? 1 : 0);
+    if (_skinMat) { _skinMat.opacity = others >= 2 ? 0.045 : (others === 1 ? 0.09 : 0.13); _skinMat.needsUpdate = true; }
+    if (_boneMat) {
+      const fade = !!(L.organs || L.vessels);          // bones recede behind soft tissue
+      _boneMat.transparent = fade;
+      _boneMat.opacity = fade ? 0.3 : 1;
+      _boneMat.depthWrite = !fade;
+      _boneMat.needsUpdate = true;
+    }
   }
 
   function _spotlight(keys) {
