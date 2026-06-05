@@ -1,14 +1,222 @@
 [
-  { "q": "Qual é a capital de Portugal?", "a": "Lisboa", "opts": ["Porto", "Lisboa", "Coimbra", "Braga"], "exp": "Lisboa é atravessada pelo rio Tejo." },
-  { "q": "Que cores tem a bandeira de Portugal?", "a": "Verde e vermelho", "opts": ["Azul e branco", "Verde e vermelho", "Vermelho e amarelo", "Verde e branco"], "exp": "Tem ainda a esfera armilar e o escudo no centro." },
-  { "q": "Qual é a moeda usada em Portugal?", "a": "Euro", "opts": ["Escudo", "Euro", "Peseta", "Real"], "exp": "Portugal adotou o euro em 2002." },
-  { "q": "Que rio passa na cidade do Porto?", "a": "Douro", "opts": ["Tejo", "Douro", "Mondego", "Guadiana"], "exp": "O vinho do Porto envelhece nas caves de Vila Nova de Gaia, junto ao Douro." },
-  { "q": "Qual é o ponto mais alto de Portugal continental?", "a": "Torre (Serra da Estrela)", "opts": ["Pico", "Torre (Serra da Estrela)", "Monte Gerês", "Serra de Sintra"], "exp": "A Torre tem 1 993 m; o ponto mais alto do país é o Pico, nos Açores (2 351 m)." },
-  { "q": "Que prato típico português é feito com bacalhau?", "a": "Bacalhau à Brás", "opts": ["Cozido à portuguesa", "Bacalhau à Brás", "Caldo verde", "Francesinha"], "exp": "Diz-se que há mais de 365 maneiras de cozinhar bacalhau." },
-  { "q": "Quantas ilhas principais tem o arquipélago dos Açores?", "a": "Nove", "opts": ["Sete", "Oito", "Nove", "Dez"], "exp": "Os Açores e a Madeira são regiões autónomas de Portugal." },
-  { "q": "Que oceano banha a costa de Portugal?", "a": "Atlântico", "opts": ["Pacífico", "Atlântico", "Índico", "Ártico"], "exp": "Portugal tem uma das maiores zonas marítimas da Europa." },
-  { "q": "Qual é o doce típico de Belém, em Lisboa?", "a": "Pastel de nata", "opts": ["Pastel de nata", "Bolo-rei", "Queijada", "Pão de ló"], "exp": "Os Pastéis de Belém seguem uma receita secreta desde 1837." },
-  { "q": "Com que país Portugal faz fronteira terrestre?", "a": "Espanha", "opts": ["França", "Espanha", "Marrocos", "Itália"], "exp": "A fronteira com Espanha (a 'Raia') tem cerca de 1 200 km." },
-  { "q": "Que monumento de Lisboa é uma torre à beira do Tejo?", "a": "Torre de Belém", "opts": ["Torre dos Clérigos", "Torre de Belém", "Sé de Braga", "Cristo Rei"], "exp": "A Torre de Belém é Património Mundial da UNESCO." },
-  { "q": "Como se chama o hino nacional de Portugal?", "a": "A Portuguesa", "opts": ["A Portuguesa", "Os Lusíadas", "Grândola", "A Marselhesa"], "exp": "Foi composto por Alfredo Keil em 1890." }
+  {
+    "q": "Qual é a capital de Portugal?",
+    "a": "Lisboa",
+    "opts": [
+      "Porto",
+      "Lisboa",
+      "Coimbra",
+      "Braga"
+    ],
+    "exp": "Lisboa é atravessada pelo rio Tejo."
+  },
+  {
+    "q": "Que cores tem a bandeira de Portugal?",
+    "a": "Verde e vermelho",
+    "opts": [
+      "Azul e branco",
+      "Verde e vermelho",
+      "Vermelho e amarelo",
+      "Verde e branco"
+    ],
+    "exp": "Tem ainda a esfera armilar e o escudo no centro."
+  },
+  {
+    "q": "Qual é a moeda usada em Portugal?",
+    "a": "Euro",
+    "opts": [
+      "Escudo",
+      "Euro",
+      "Peseta",
+      "Real"
+    ],
+    "exp": "Portugal adotou o euro em 2002."
+  },
+  {
+    "q": "Que rio passa na cidade do Porto?",
+    "a": "Douro",
+    "opts": [
+      "Tejo",
+      "Douro",
+      "Mondego",
+      "Guadiana"
+    ],
+    "exp": "O vinho do Porto envelhece nas caves de Vila Nova de Gaia, junto ao Douro."
+  },
+  {
+    "q": "Qual é o ponto mais alto de Portugal continental?",
+    "a": "Torre (Serra da Estrela)",
+    "opts": [
+      "Pico",
+      "Torre (Serra da Estrela)",
+      "Monte Gerês",
+      "Serra de Sintra"
+    ],
+    "exp": "A Torre tem 1 993 m; o ponto mais alto do país é o Pico, nos Açores (2 351 m)."
+  },
+  {
+    "q": "Que prato típico português é feito com bacalhau?",
+    "a": "Bacalhau à Brás",
+    "opts": [
+      "Cozido à portuguesa",
+      "Bacalhau à Brás",
+      "Caldo verde",
+      "Francesinha"
+    ],
+    "exp": "Diz-se que há mais de 365 maneiras de cozinhar bacalhau."
+  },
+  {
+    "q": "Quantas ilhas principais tem o arquipélago dos Açores?",
+    "a": "Nove",
+    "opts": [
+      "Sete",
+      "Oito",
+      "Nove",
+      "Dez"
+    ],
+    "exp": "Os Açores e a Madeira são regiões autónomas de Portugal."
+  },
+  {
+    "q": "Que oceano banha a costa de Portugal?",
+    "a": "Atlântico",
+    "opts": [
+      "Pacífico",
+      "Atlântico",
+      "Índico",
+      "Ártico"
+    ],
+    "exp": "Portugal tem uma das maiores zonas marítimas da Europa."
+  },
+  {
+    "q": "Qual é o doce típico de Belém, em Lisboa?",
+    "a": "Pastel de nata",
+    "opts": [
+      "Pastel de nata",
+      "Bolo-rei",
+      "Queijada",
+      "Pão de ló"
+    ],
+    "exp": "Os Pastéis de Belém seguem uma receita secreta desde 1837."
+  },
+  {
+    "q": "Com que país Portugal faz fronteira terrestre?",
+    "a": "Espanha",
+    "opts": [
+      "França",
+      "Espanha",
+      "Marrocos",
+      "Itália"
+    ],
+    "exp": "A fronteira com Espanha (a 'Raia') tem cerca de 1 200 km."
+  },
+  {
+    "q": "Que monumento de Lisboa é uma torre à beira do Tejo?",
+    "a": "Torre de Belém",
+    "opts": [
+      "Torre dos Clérigos",
+      "Torre de Belém",
+      "Sé de Braga",
+      "Cristo Rei"
+    ],
+    "exp": "A Torre de Belém é Património Mundial da UNESCO."
+  },
+  {
+    "q": "Como se chama o hino nacional de Portugal?",
+    "a": "A Portuguesa",
+    "opts": [
+      "A Portuguesa",
+      "Os Lusíadas",
+      "Grândola",
+      "A Marselhesa"
+    ],
+    "exp": "Foi composto por Alfredo Keil em 1890."
+  },
+  {
+    "q": "Qual é a língua oficial de Portugal?",
+    "a": "Português",
+    "opts": [
+      "Espanhol",
+      "Português",
+      "Galego",
+      "Castelhano"
+    ],
+    "exp": "O português é falado por mais de 250 milhões de pessoas no mundo."
+  },
+  {
+    "q": "Que fruto seco é típico do Natal português e se assa?",
+    "a": "Castanha",
+    "opts": [
+      "Amêndoa",
+      "Castanha",
+      "Noz",
+      "Avelã"
+    ],
+    "exp": "O São Martinho celebra-se com castanhas assadas."
+  },
+  {
+    "q": "Qual é o desporto mais popular em Portugal?",
+    "a": "Futebol",
+    "opts": [
+      "Ténis",
+      "Futebol",
+      "Basquetebol",
+      "Andebol"
+    ],
+    "exp": "Portugal venceu o Euro 2016 e a Liga das Nações em 2019."
+  },
+  {
+    "q": "Que cidade portuguesa é conhecida pela ponte D. Luís I?",
+    "a": "Porto",
+    "opts": [
+      "Lisboa",
+      "Porto",
+      "Coimbra",
+      "Faro"
+    ],
+    "exp": "A ponte D. Luís I atravessa o rio Douro."
+  },
+  {
+    "q": "Que animal aparece muito nos azulejos e telhados portugueses como símbolo?",
+    "a": "O galo (de Barcelos)",
+    "opts": [
+      "O galo (de Barcelos)",
+      "A águia",
+      "O leão",
+      "A pomba"
+    ],
+    "exp": "O Galo de Barcelos é um símbolo de Portugal."
+  },
+  {
+    "q": "Qual é o rio que desagua em Lisboa?",
+    "a": "Tejo",
+    "opts": [
+      "Douro",
+      "Tejo",
+      "Mondego",
+      "Guadiana"
+    ],
+    "exp": "O Tejo é o rio mais comprido da Península Ibérica."
+  },
+  {
+    "q": "Que região portuguesa é uma ilha vulcânica no Atlântico?",
+    "a": "Açores",
+    "opts": [
+      "Algarve",
+      "Açores",
+      "Alentejo",
+      "Minho"
+    ],
+    "exp": "Os Açores têm nove ilhas."
+  },
+  {
+    "q": "Qual é a cor predominante dos táxis antigos de Lisboa?",
+    "a": "Preto e verde",
+    "opts": [
+      "Amarelo",
+      "Preto e verde",
+      "Branco",
+      "Vermelho"
+    ],
+    "exp": "Hoje muitos táxis portugueses são bege."
+  }
 ]
