@@ -691,12 +691,7 @@ const ExplorerPage = (function () {
             <div class="ex-feature-card ex-feature-card--body" data-tab="body">
               <span class="ex-feature-card-icon">🧍</span>
               <div class="ex-feature-card-title">${_t('Explore the body', 'Explorar o corpo')}</div>
-              <div class="ex-feature-card-desc">${_t('Anatomy, skeleton, circulation, breathing, digestion, brain, senses, cells & DNA — and a zoom journey from human to DNA.', 'Anatomia, esqueleto, circulação, respiração, digestão, cérebro, sentidos, células e DNA — e uma viagem em zoom do humano até ao DNA.')}</div>
-            </div>
-            <div class="ex-feature-card ex-feature-card--body" data-tab="body">
-              <span class="ex-feature-card-icon">🔬</span>
-              <div class="ex-feature-card-title">${_t('Human → DNA', 'Humano → DNA')}</div>
-              <div class="ex-feature-card-desc">${_t('Dive through the scales of life: human, organ, tissue, cell and the DNA double helix.', 'Mergulha pelas escalas da vida: humano, órgão, tecido, célula e a dupla hélice do DNA.')}</div>
+              <div class="ex-feature-card-desc">${_t('Real 3D anatomy you can rotate and explore: skin, skeleton, organs and circulation, plus breathing, digestion, the brain, the senses, and cells & DNA.', 'Anatomia 3D real para rodar e explorar: pele, esqueleto, órgãos e circulação, mais respiração, digestão, cérebro, sentidos e células e DNA.')}</div>
             </div>
           </div>
         </div>
