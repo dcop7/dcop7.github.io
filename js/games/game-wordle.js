@@ -1,36 +1,92 @@
 const WordleGame = (function () {
   'use strict';
 
-  const WORDS = ['CARRO','BARCO','PEDRA','FORCA','LIVRO','PORTA','CAMPO','LARGO','PRAIA','VENTO',
-    'FUNDO','MONTE','NOITE','TARDE','CIDADE','HOTEL','PAPEL','FOGAO','CHUVA','SAIDA',
-    'MUNDO','VERDE','BRAVO','TEMPO','LUGAR','FORÇA','HOMEM','MULHER','FILHO','FILHA',
-    'AMIGO','AMIGA','PRETO','BRUTO','SANTO','LEITE','PEIXE','FRUTA','BOLAS','CANOS',
-    'PALCO','PARCO','BAIXO','FLOCO','BOLSO','PINGO','GANHO','GARFO','BOITE','RAIVA'].filter(w=>w.length===5);
+  /* Word lists live in games/wordle/<lang>/words.json (bucketed by length) and
+     config + UI strings in games/wordle/config.json — loaded at runtime so the
+     engine stays data-free and scales without code changes. The difficulty
+     (GameHost: easy/medium/hard) picks the word length (4/5/6). A small embedded
+     set + default config keep the game fully playable offline. */
+  const FALLBACK = {
+    4: ['CASA','BOLA','GATO','PATO','MESA','VELA','ROSA','NOTA','GELO','LAGO'],
+    5: ['CARRO','BARCO','PEDRA','LIVRO','PORTA','CAMPO','PRAIA','VENTO','MONTE','NOITE'],
+    6: ['ESCOLA','JANELA','CIDADE','MULHER','PLANTA','CAVALO','COELHO','BANANA','FLORES','JARDIM'],
+  };
+  const STR = {
+    pt: { title:'📝 Palavra do Dia', played:'Jogados', wins:'Ganhos', streak:'Sequência', newWord:'🔄 Nova Palavra', win:'🎉 Excelente! Palavra correta!', loss:'A palavra era: {word}' },
+    en: { title:'📝 Word of the Day', played:'Played', wins:'Wins', streak:'Streak', newWord:'🔄 New Word', win:'🎉 Excellent! Correct word!', loss:'The word was: {word}' },
+  };
+  const DIFF_LEN = { easy: 4, medium: 5, hard: 6 };
 
-  function pickWord() { return WORDS[Math.floor(Math.random() * WORDS.length)]; }
+  let _cfg = { rows: 6, difficultyLen: DIFF_LEN };
+  let _words = null;          /* { lang: {4:[],5:[],6:[]} } cache */
+  let _i18n = STR.pt;
+  let _loadedLang = null;
+
+  function _lang() { return (typeof I18n !== 'undefined' && I18n.getLang() === 'en') ? 'en' : 'pt'; }
+  function _t(k) { return (_i18n && _i18n[k] != null) ? _i18n[k] : (STR[_lang()][k] || k); }
+  function _difficulty() {
+    try {
+      if (typeof GameHost !== 'undefined' && GameHost.getDifficulty) return GameHost.getDifficulty();
+      const d = localStorage.getItem('quiz-difficulty');
+      return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
+    } catch (e) { return 'medium'; }
+  }
+  function _len() { return (_cfg.difficultyLen || DIFF_LEN)[_difficulty()] || 5; }
+
+  async function _loadData(lang) {
+    _i18n = STR[lang];
+    try {
+      const [cfgR, wR] = await Promise.all([
+        fetch('games/wordle/config.json', { cache: 'force-cache' }),
+        fetch(`games/wordle/${lang}/words.json`, { cache: 'force-cache' }),
+      ]);
+      if (cfgR.ok) {
+        const c = await cfgR.json();
+        if (c.rows) _cfg.rows = c.rows;
+        if (c.difficultyLen) _cfg.difficultyLen = c.difficultyLen;
+        if (c.i18n && c.i18n[lang]) _i18n = c.i18n[lang];
+      }
+      if (wR.ok) {
+        const w = await wR.json();
+        _words = _words || {};
+        _words[lang] = w;
+      }
+    } catch (e) { /* keep fallback */ }
+    _loadedLang = lang;
+  }
+
+  /* Words for the active length, filtered to the exact length for safety. */
+  function _pool() {
+    const lang = _lang();
+    const len = _len();
+    const src = (_words && _words[lang] && _words[lang][len]) || FALLBACK[len] || FALLBACK[5];
+    const list = src.filter(w => [...w].length === len);
+    return list.length ? list : (FALLBACK[len] || FALLBACK[5]);
+  }
+  function pickWord() { const p = _pool(); return p[Math.floor(Math.random() * p.length)]; }
 
   function init(root) {
     if (!root) return;
 
-    let secret, guesses, current, gameOver, stats = {wins:0, played:0, streak:0};
+    let secret, guesses, current, gameOver, LEN = _len(), ROWS = _cfg.rows || 6;
+    let stats = { wins: 0, played: 0, streak: 0 };
 
     function render() {
       root.innerHTML = `
         <div class="game-card wrd-wrap">
           <div class="wrd-hdr">
-            <span class="wrd-title">📝 Palavra do Dia</span>
+            <span class="wrd-title">${_t('title')}</span>
             <div class="wrd-stats">
-              <span>Jogados: <strong id="wrd-played">${stats.played}</strong></span>
-              <span>Ganhos: <strong id="wrd-wins">${stats.wins}</strong></span>
-              <span>Sequência: <strong id="wrd-streak">${stats.streak}</strong></span>
+              <span>${_t('played')}: <strong id="wrd-played">${stats.played}</strong></span>
+              <span>${_t('wins')}: <strong id="wrd-wins">${stats.wins}</strong></span>
+              <span>${_t('streak')}: <strong id="wrd-streak">${stats.streak}</strong></span>
             </div>
           </div>
           <div class="wrd-grid" id="wrd-grid"></div>
           <div class="wrd-msg" id="wrd-msg"></div>
           <div class="wrd-keyboard" id="wrd-kb"></div>
-          <button class="hf-new-btn" id="wrd-new" style="margin-top:.75rem">🔄 Nova Palavra</button>
+          <button class="hf-new-btn" id="wrd-new" style="margin-top:.75rem">${_t('newWord')}</button>
         </div>`;
-
       root.querySelector('#wrd-new').addEventListener('click', startGame);
       buildKeyboard();
     }
@@ -38,10 +94,10 @@ const WordleGame = (function () {
     function buildGrid() {
       const grid = root.querySelector('#wrd-grid');
       grid.innerHTML = '';
-      for (let r = 0; r < 6; r++) {
+      for (let r = 0; r < ROWS; r++) {
         const row = document.createElement('div');
         row.className = 'wrd-row'; row.dataset.row = r;
-        for (let c = 0; c < 5; c++) {
+        for (let c = 0; c < LEN; c++) {
           const cell = document.createElement('div');
           cell.className = 'wrd-cell'; cell.dataset.row = r; cell.dataset.col = c;
           row.appendChild(cell);
@@ -73,8 +129,8 @@ const WordleGame = (function () {
     function handleKey(k) {
       if (gameOver) return;
       if (k === '⌫') { if (current.length > 0) { current = current.slice(0, -1); updateRow(); } }
-      else if (k === '↵') { if (current.length === 5) submitGuess(); }
-      else if (current.length < 5 && /^[A-ZÀ-Ÿ]$/.test(k)) { current += k; updateRow(); }
+      else if (k === '↵') { if (current.length === LEN) submitGuess(); }
+      else if (current.length < LEN && /^[A-ZÀ-Ÿ]$/.test(k)) { current += k; updateRow(); }
     }
 
     function updateRow() {
@@ -87,7 +143,7 @@ const WordleGame = (function () {
 
     function submitGuess() {
       const guess = current;
-      const result = Array(5).fill('absent');
+      const result = Array(LEN).fill('absent');
       const secArr = secret.split('');
       const gArr = guess.split('');
 
@@ -113,11 +169,11 @@ const WordleGame = (function () {
       setTimeout(() => {
         if (result.every(r => r === 'correct')) {
           stats.wins++; stats.played++; stats.streak++;
-          setMsg('🎉 Excelente! Palavra correta!', 'correct');
+          setMsg(_t('win'), 'correct');
           gameOver = true; updateStats();
-        } else if (guesses.length === 6) {
+        } else if (guesses.length === ROWS) {
           stats.played++; stats.streak = 0;
-          setMsg(`A palavra era: ${secret}`, 'absent');
+          setMsg(_t('loss').replace('{word}', secret), 'absent');
           gameOver = true; updateStats();
         }
       }, 700);
@@ -149,13 +205,21 @@ const WordleGame = (function () {
 
     function startGame() {
       document.removeEventListener('keydown', handleKeydown);
+      LEN = _len(); ROWS = _cfg.rows || 6;
       secret = pickWord(); guesses = []; current = ''; gameOver = false;
-      buildGrid(); buildKeyboard();
+      render(); buildGrid();
       setMsg('', '');
     }
 
-    render();
+    /* Render immediately (fallback), then load external data and restart so the
+       full word list + current language/difficulty take effect. */
     startGame();
+    _loadData(_lang()).then(startGame);
+
+    document.addEventListener('langchange', () => {
+      if (_lang() === _loadedLang) { startGame(); return; }
+      _loadData(_lang()).then(startGame);
+    });
   }
 
   return { init };
