@@ -29,6 +29,11 @@ const HumanBodyExplorer = (function () {
      flipped to π if the body ends up facing away from the camera. */
   const _VH_SCALE = 8.9, _VH_OFFY = 8.0, _VH_ROT_Y = 0;
 
+  /* The full skeleton is a separate (not co-registered) model — fit it to the
+     body's height and orient it upright/front-facing. Tunable. */
+  const _SK_ROT = [-Math.PI / 2, Math.PI / 2, 0];   // stand upright (z→up) + face front
+  const _SK_H = 16.6, _SK_BASEY = -0.2, _SK_OFFX = 0.7, _SK_OFFZ = 0;
+
   /* Which organ GLBs to load and how to colour / key them for the info panel. */
   const ORGAN_FILES = [
     { file:'heart',           key:'coracao'    },
@@ -232,8 +237,14 @@ const HumanBodyExplorer = (function () {
 
   /* Normalise a standalone model (skeleton / brain) to a target height, centred,
      feet/base near the floor. Returns a wrapped group. */
-  function _fitModel(scene, targetH, baseY, rotX) {
-    if (rotX) scene.rotation.x = rotX;             // stand a Z-up model upright
+  function _fitModel(scene, targetH, baseY, rot) {
+    if (rot != null) {                             // orient a model
+      if (Array.isArray(rot)) {                    // sequential WORLD-axis rotations (no gimbal tipping)
+        scene.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), rot[0]);
+        scene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), rot[1]);
+        scene.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rot[2]);
+      } else scene.rotation.x = rot;
+    }
     const box = new THREE.Box3().setFromObject(scene);
     const size = new THREE.Vector3(), ctr = new THREE.Vector3();
     box.getSize(size); box.getCenter(ctr);
@@ -498,13 +509,14 @@ const HumanBodyExplorer = (function () {
       } catch (e) {}
       _replaceGroup('organs', organs);
 
-      // skeleton — extracted from the same VH_M atlas, so it co-registers and
-      // overlays the skin/organs perfectly via the same wrap
+      // skeleton — a complete standalone model fitted to the body's height
       try {
         const sk = await _loadGLB('skeleton');
         const bone = new THREE.MeshStandardMaterial({ color: 0xf2efe2, roughness: 0.5, metalness: 0.05, emissive: 0x1a1812 });
         sk.traverse(m => { if (m.isMesh) m.material = bone; });
-        _replaceGroup('skeleton', _vhWrap(sk));
+        const skw = _fitModel(sk, _SK_H, _SK_BASEY, _SK_ROT);
+        skw.position.x += _SK_OFFX; skw.position.z += _SK_OFFZ;
+        _replaceGroup('skeleton', skw);
       } catch (e) {}
 
       _modelsReady = true;
@@ -526,22 +538,35 @@ const HumanBodyExplorer = (function () {
     };
     const V = (x, y, z) => new THREE.Vector3(x, y, z);
     const RED = 0xe23b3b, BLUE = 0x3b6ee2;
+    const vein = (pts) => pts.map(p => p.clone().add(V((p.x >= 0 ? 0.22 : -0.22), 0, -0.22))).reverse();
 
-    // ARTERIES (red) — aorta core + branches, flowing away from heart
-    mkTube([V(0.3,11.3,0.4), V(0.2,12.6,0.2), V(0,13.6,0), V(0,14.6,0.1)], 0.16, RED, -1);          // up to head
-    mkTube([V(0.3,11.0,0.4), V(0.15,9.5,0.25), V(0,8.2,0.1), V(0,7.2,0)], 0.18, RED, -1);            // descending aorta
-    mkTube([V(0,7.4,0), V(-0.7,6.6,0), V(-0.85,4,0), V(-0.9,1,0)], 0.14, RED, -1);                   // left leg
-    mkTube([V(0,7.4,0), V(0.7,6.6,0), V(0.85,4,0), V(0.9,1,0)], 0.14, RED, -1);                      // right leg
-    mkTube([V(0.4,12.4,0.2), V(-1.4,12.4,0.1), V(-2.3,11,0), V(-2.6,8.6,0)], 0.12, RED, -1);         // left arm
-    mkTube([V(0.4,12.4,0.2), V(1.4,12.4,0.1), V(2.3,11,0), V(2.6,8.6,0)], 0.12, RED, -1);            // right arm
+    const HEART = V(0.2, 11.2, 0.45);
+    /* ── central trunks ── aorta up to the head, descending aorta, and the
+       matching great veins returning to the heart ── */
+    mkTube([HEART, V(0.1, 12.9, 0.2), V(0, 14.1, 0.12), V(0, 15.2, 0.05)], 0.15, RED, -1);   // to head
+    mkTube([HEART, V(0.1, 9.7, 0.2), V(0, 8.4, 0.08), V(0, 7.5, 0.05)], 0.18, RED, -1);       // descending aorta
+    mkTube(vein([HEART, V(0.05, 12.9, 0.2), V(-0.25, 14.1, 0.12), V(-0.25, 15.2, 0.05)]), 0.14, BLUE, 1);
+    mkTube(vein([HEART, V(0.05, 9.7, 0.2), V(-0.2, 8.4, 0.08), V(-0.2, 7.5, 0.05)]), 0.17, BLUE, 1);
 
-    // VEINS (blue) — parallel, slightly offset, flowing back to heart
-    mkTube([V(-0.35,14.6,-0.1), V(-0.3,13.6,-0.1), V(-0.4,12.6,0.05), V(-0.45,11.4,0.3)], 0.16, BLUE, 1);
-    mkTube([V(-0.5,7.2,-0.1), V(-0.45,8.4,0), V(-0.4,9.6,0.1), V(-0.45,11.0,0.3)], 0.18, BLUE, 1);
-    mkTube([V(-1.2,1,-0.1), V(-1.15,4,-0.05), V(-0.95,6.6,-0.05), V(-0.5,7.4,-0.05)], 0.14, BLUE, 1);
-    mkTube([V(1.2,1,-0.1), V(1.15,4,-0.05), V(0.95,6.6,-0.05), V(0.4,7.4,-0.05)], 0.14, BLUE, 1);
-    mkTube([V(-2.7,8.6,-0.1), V(-2.4,11,-0.1), V(-1.5,12.2,-0.05), V(-0.5,12.2,0.1)], 0.12, BLUE, 1);
-    mkTube([V(2.7,8.6,-0.1), V(2.4,11,-0.1), V(1.5,12.2,-0.05), V(0.5,12.2,0.1)], 0.12, BLUE, 1);
+    /* ── limbs (mirrored) — reach all the way to the hands/fingers and
+       feet/toes so the whole circulatory tree is visible ── */
+    [-1, 1].forEach(s => {
+      // leg: pelvis → thigh → knee → shin → ankle → foot
+      const leg = [V(0, 7.5, 0.05), V(s * 0.7, 7.0, 0.05), V(s * 0.95, 4.6, 0.1),
+                   V(s * 1.0, 3.5, 0.15), V(s * 1.0, 1.5, 0.2), V(s * 1.0, 0.5, 0.3), V(s * 1.0, 0.3, 0.95)];
+      mkTube(leg, 0.12, RED, -1);
+      mkTube(vein(leg), 0.12, BLUE, 1);
+      const foot = V(s * 1.0, 0.3, 0.95);
+      [-0.28, -0.1, 0.08, 0.26].forEach(dx => mkTube([foot, V(s * 1.0 + dx, 0.2, 1.3)], 0.04, RED, -1));  // toes
+
+      // arm: aortic arch → shoulder → upper arm → elbow → forearm → wrist → hand
+      const arm = [V(0, 12.6, 0.15), V(s * 1.5, 12.4, 0.1), V(s * 2.2, 10.7, 0.1),
+                   V(s * 2.7, 8.9, 0.12), V(s * 3.0, 7.4, 0.18), V(s * 3.2, 6.4, 0.25), V(s * 3.3, 5.9, 0.35)];
+      mkTube(arm, 0.10, RED, -1);
+      mkTube(vein(arm), 0.10, BLUE, 1);
+      const hand = V(s * 3.3, 5.9, 0.35);
+      [-0.22, -0.07, 0.08, 0.22].forEach(dx => mkTube([hand, V(s * 3.3 + dx, 5.2, 0.55)], 0.032, RED, -1));  // fingers
+    });
 
     return g;
   }
