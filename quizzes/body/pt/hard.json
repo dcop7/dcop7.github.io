@@ -240,5 +240,225 @@
       "Córtex"
     ],
     "exp": "O corpo caloso é um feixe de milhões de fibras nervosas."
+  },
+  {
+    "q": "Como se chama a válvula entre o ventrículo esquerdo e a aorta?",
+    "a": "Válvula aórtica",
+    "opts": [
+      "Válvula mitral",
+      "Válvula aórtica",
+      "Válvula tricúspide",
+      "Válvula pulmonar"
+    ],
+    "exp": "Impede o refluxo do sangue para o coração."
+  },
+  {
+    "q": "Que parte do neurónio acelera a transmissão do impulso?",
+    "a": "Bainha de mielina",
+    "opts": [
+      "Dendrite",
+      "Bainha de mielina",
+      "Corpo celular",
+      "Sinapse"
+    ],
+    "exp": "A mielina isola o axónio como o plástico de um fio."
+  },
+  {
+    "q": "Como se chama a unidade que produz e contrai num músculo?",
+    "a": "Sarcómero",
+    "opts": [
+      "Nefrónio",
+      "Sarcómero",
+      "Alvéolo",
+      "Neurónio"
+    ],
+    "exp": "Os sarcómeros encurtam para o músculo se contrair."
+  },
+  {
+    "q": "Que hormona produzida pelos rins estimula a produção de glóbulos vermelhos?",
+    "a": "Eritropoietina",
+    "opts": [
+      "Insulina",
+      "Eritropoietina",
+      "Adrenalina",
+      "Tiroxina"
+    ],
+    "exp": "É conhecida pela sigla EPO."
+  },
+  {
+    "q": "Como se chama o maior nervo do corpo humano?",
+    "a": "Nervo ciático",
+    "opts": [
+      "Nervo ótico",
+      "Nervo ciático",
+      "Nervo vago",
+      "Nervo facial"
+    ],
+    "exp": "Vai da base da coluna até ao pé."
+  },
+  {
+    "q": "Que parte do cérebro regula a temperatura, a fome e a sede?",
+    "a": "Hipotálamo",
+    "opts": [
+      "Cerebelo",
+      "Hipotálamo",
+      "Tálamo",
+      "Bolbo"
+    ],
+    "exp": "O hipotálamo é o 'termóstato' do corpo."
+  },
+  {
+    "q": "Como se chama o processo de produção de glóbulos vermelhos?",
+    "a": "Eritropoiese",
+    "opts": [
+      "Fagocitose",
+      "Eritropoiese",
+      "Fotossíntese",
+      "Mitose"
+    ],
+    "exp": "Ocorre na medula óssea vermelha."
+  },
+  {
+    "q": "Que osso protege o coração e os pulmões à frente?",
+    "a": "Esterno",
+    "opts": [
+      "Clavícula",
+      "Esterno",
+      "Omoplata",
+      "Costela flutuante"
+    ],
+    "exp": "As costelas ligam-se ao esterno por cartilagem."
+  },
+  {
+    "q": "Que parte do rim filtra inicialmente o sangue?",
+    "a": "Glomérulo",
+    "opts": [
+      "Bexiga",
+      "Glomérulo",
+      "Uretra",
+      "Cápsula adiposa"
+    ],
+    "exp": "O glomérulo é um novelo de capilares."
+  },
+  {
+    "q": "Como se chama a membrana que protege o coração?",
+    "a": "Pericárdio",
+    "opts": [
+      "Pleura",
+      "Pericárdio",
+      "Peritoneu",
+      "Meninges"
+    ],
+    "exp": "O pericárdio reduz o atrito quando o coração bate."
+  },
+  {
+    "q": "Quantos pares de nervos cranianos existem?",
+    "a": "12",
+    "opts": [
+      "8",
+      "10",
+      "12",
+      "31"
+    ],
+    "exp": "Há também 31 pares de nervos espinhais."
+  },
+  {
+    "q": "Que célula do sangue é responsável pela coagulação?",
+    "a": "Plaquetas",
+    "opts": [
+      "Glóbulos vermelhos",
+      "Plaquetas",
+      "Glóbulos brancos",
+      "Macrófagos"
+    ],
+    "exp": "As plaquetas tapam as feridas formando um coágulo."
+  },
+  {
+    "q": "Que parte do olho foca a luz na retina?",
+    "a": "Cristalino",
+    "opts": [
+      "Córnea",
+      "Cristalino",
+      "Íris",
+      "Pupila"
+    ],
+    "exp": "O cristalino muda de forma para focar perto ou longe."
+  },
+  {
+    "q": "Como se chama a parte do cérebro responsável pela fala (na maioria das pessoas)?",
+    "a": "Área de Broca",
+    "opts": [
+      "Área de Broca",
+      "Cerebelo",
+      "Amígdala",
+      "Hipocampo"
+    ],
+    "exp": "Fica geralmente no hemisfério esquerdo."
+  },
+  {
+    "q": "Que enzima da saliva começa a digerir o amido?",
+    "a": "Amilase",
+    "opts": [
+      "Pepsina",
+      "Amilase",
+      "Lipase",
+      "Tripsina"
+    ],
+    "exp": "Por isso o pão fica doce se mastigado muito tempo."
+  },
+  {
+    "q": "Que glândula controla o ritmo do sono produzindo melatonina?",
+    "a": "Glândula pineal",
+    "opts": [
+      "Tiroide",
+      "Glândula pineal",
+      "Hipófise",
+      "Suprarrenal"
+    ],
+    "exp": "A pineal liberta melatonina à noite."
+  },
+  {
+    "q": "Como se chama a maior parte do cérebro, com as duas metades?",
+    "a": "Cérebro (córtex cerebral)",
+    "opts": [
+      "Cerebelo",
+      "Cérebro (córtex cerebral)",
+      "Tronco cerebral",
+      "Bolbo raquidiano"
+    ],
+    "exp": "O córtex é responsável pelo pensamento consciente."
+  },
+  {
+    "q": "Que parte do sangue combate especificamente vírus com anticorpos?",
+    "a": "Linfócitos",
+    "opts": [
+      "Eritrócitos",
+      "Linfócitos",
+      "Plaquetas",
+      "Plasma"
+    ],
+    "exp": "Os linfócitos B produzem anticorpos."
+  },
+  {
+    "q": "Quantos ossos formam a coluna vertebral de um adulto?",
+    "a": "33",
+    "opts": [
+      "24",
+      "33",
+      "40",
+      "12"
+    ],
+    "exp": "Algumas fundem-se no sacro e no cóccix."
+  },
+  {
+    "q": "Que hormona feminina é produzida sobretudo nos ovários?",
+    "a": "Estrogénio",
+    "opts": [
+      "Testosterona",
+      "Estrogénio",
+      "Insulina",
+      "Cortisol"
+    ],
+    "exp": "Regula o ciclo reprodutor."
   }
 ]

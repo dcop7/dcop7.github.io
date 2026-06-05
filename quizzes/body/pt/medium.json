@@ -240,5 +240,225 @@
       "Sistema ósseo"
     ],
     "exp": "Os glóbulos brancos fazem parte do sistema imunitário."
+  },
+  {
+    "q": "Que órgão armazena a bílis produzida pelo fígado?",
+    "a": "Vesícula biliar",
+    "opts": [
+      "Baço",
+      "Vesícula biliar",
+      "Apêndice",
+      "Pâncreas"
+    ],
+    "exp": "A bílis ajuda a digerir as gorduras."
+  },
+  {
+    "q": "Como se chama a parte colorida do olho?",
+    "a": "Íris",
+    "opts": [
+      "Pupila",
+      "Íris",
+      "Retina",
+      "Córnea"
+    ],
+    "exp": "A íris controla a quantidade de luz que entra."
+  },
+  {
+    "q": "Quantos litros de ar cabem, em média, nos pulmões de um adulto?",
+    "a": "Cerca de 6 litros",
+    "opts": [
+      "1 litro",
+      "Cerca de 6 litros",
+      "20 litros",
+      "50 litros"
+    ],
+    "exp": "Mas em cada respiração normal usamos só meio litro."
+  },
+  {
+    "q": "Que parte do corpo produz as células do sangue?",
+    "a": "A medula óssea",
+    "opts": [
+      "O coração",
+      "A medula óssea",
+      "O fígado",
+      "A pele"
+    ],
+    "exp": "Produz milhões de células por segundo."
+  },
+  {
+    "q": "Como se chama o tubo que liga a boca ao estômago?",
+    "a": "Esófago",
+    "opts": [
+      "Traqueia",
+      "Esófago",
+      "Intestino",
+      "Laringe"
+    ],
+    "exp": "O esófago empurra a comida com ondas musculares."
+  },
+  {
+    "q": "Qual é o órgão do sistema digestivo onde se absorve a água?",
+    "a": "Intestino grosso",
+    "opts": [
+      "Estômago",
+      "Intestino grosso",
+      "Esófago",
+      "Boca"
+    ],
+    "exp": "O intestino grosso recupera água antes da expulsão."
+  },
+  {
+    "q": "Que parte do ouvido converte o som em sinais nervosos?",
+    "a": "Cóclea",
+    "opts": [
+      "Tímpano",
+      "Cóclea",
+      "Estribo",
+      "Pavilhão"
+    ],
+    "exp": "A cóclea tem forma de caracol."
+  },
+  {
+    "q": "Como se chamam os dentes da frente, usados para cortar?",
+    "a": "Incisivos",
+    "opts": [
+      "Molares",
+      "Incisivos",
+      "Caninos",
+      "Pré-molares"
+    ],
+    "exp": "Os molares, atrás, servem para triturar."
+  },
+  {
+    "q": "Que gás expulsamos quando expiramos?",
+    "a": "Dióxido de carbono",
+    "opts": [
+      "Oxigénio",
+      "Dióxido de carbono",
+      "Hidrogénio",
+      "Hélio"
+    ],
+    "exp": "É um resíduo do funcionamento das células."
+  },
+  {
+    "q": "Como se chama o sistema que inclui o coração e os vasos sanguíneos?",
+    "a": "Sistema circulatório",
+    "opts": [
+      "Sistema digestivo",
+      "Sistema circulatório",
+      "Sistema respiratório",
+      "Sistema nervoso"
+    ],
+    "exp": "Transporta oxigénio e nutrientes a todo o corpo."
+  },
+  {
+    "q": "Que vitamina, em falta, pode causar problemas nos ossos?",
+    "a": "Vitamina D",
+    "opts": [
+      "Vitamina A",
+      "Vitamina D",
+      "Vitamina B12",
+      "Vitamina E"
+    ],
+    "exp": "A vitamina D ajuda a fixar o cálcio nos ossos."
+  },
+  {
+    "q": "Como se chama a articulação que liga o braço ao tronco?",
+    "a": "Ombro",
+    "opts": [
+      "Cotovelo",
+      "Ombro",
+      "Anca",
+      "Joelho"
+    ],
+    "exp": "O ombro é a articulação com maior amplitude de movimento."
+  },
+  {
+    "q": "Que órgão filtra o sangue e remove células velhas?",
+    "a": "Baço",
+    "opts": [
+      "Pâncreas",
+      "Baço",
+      "Apêndice",
+      "Vesícula"
+    ],
+    "exp": "O baço faz parte do sistema imunitário."
+  },
+  {
+    "q": "Que parte do cérebro controla a respiração e os batimentos cardíacos?",
+    "a": "Tronco cerebral",
+    "opts": [
+      "Cerebelo",
+      "Tronco cerebral",
+      "Lobo frontal",
+      "Hipotálamo"
+    ],
+    "exp": "Controla funções automáticas vitais."
+  },
+  {
+    "q": "Como se chama o líquido transparente do sangue (sem células)?",
+    "a": "Plasma",
+    "opts": [
+      "Soro lácteo",
+      "Plasma",
+      "Linfa",
+      "Bílis"
+    ],
+    "exp": "O plasma é cerca de 55% do sangue."
+  },
+  {
+    "q": "Que músculo separa o tórax do abdómen?",
+    "a": "Diafragma",
+    "opts": [
+      "Bíceps",
+      "Diafragma",
+      "Tríceps",
+      "Abdominal"
+    ],
+    "exp": "Contrai-se para puxarmos o ar."
+  },
+  {
+    "q": "Quantos sentidos principais tem o ser humano?",
+    "a": "Cinco",
+    "opts": [
+      "Três",
+      "Quatro",
+      "Cinco",
+      "Seis"
+    ],
+    "exp": "Visão, audição, olfato, paladar e tato."
+  },
+  {
+    "q": "Que parte da pele forma a camada mais exterior?",
+    "a": "Epiderme",
+    "opts": [
+      "Derme",
+      "Epiderme",
+      "Hipoderme",
+      "Tecido adiposo"
+    ],
+    "exp": "A epiderme renova-se constantemente."
+  },
+  {
+    "q": "Como se chama a substância dura que forma o esqueleto?",
+    "a": "Osso",
+    "opts": [
+      "Cartilagem",
+      "Osso",
+      "Tendão",
+      "Músculo"
+    ],
+    "exp": "O osso é vivo e regenera-se quando partido."
+  },
+  {
+    "q": "Que órgão produz hormonas como a adrenalina?",
+    "a": "Glândulas suprarrenais",
+    "opts": [
+      "Tiroide",
+      "Glândulas suprarrenais",
+      "Fígado",
+      "Baço"
+    ],
+    "exp": "A adrenalina prepara o corpo para reagir ao perigo."
   }
 ]

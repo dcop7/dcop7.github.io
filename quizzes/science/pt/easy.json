@@ -218,5 +218,225 @@
       "Dez"
     ],
     "exp": "Todos os insetos têm seis pernas."
+  },
+  {
+    "q": "Que planeta é o nosso lar?",
+    "a": "A Terra",
+    "opts": [
+      "Marte",
+      "A Terra",
+      "Vénus",
+      "Júpiter"
+    ],
+    "exp": "A Terra é o único planeta conhecido com vida."
+  },
+  {
+    "q": "O que cai do céu quando chove?",
+    "a": "Água",
+    "opts": [
+      "Areia",
+      "Água",
+      "Gelo seco",
+      "Fumo"
+    ],
+    "exp": "A chuva faz parte do ciclo da água."
+  },
+  {
+    "q": "Que cor resulta de misturar vermelho com amarelo?",
+    "a": "Laranja",
+    "opts": [
+      "Verde",
+      "Laranja",
+      "Roxo",
+      "Castanho"
+    ],
+    "exp": "Vermelho + amarelo dá laranja."
+  },
+  {
+    "q": "O que precisa uma planta para crescer?",
+    "a": "Água, luz e ar",
+    "opts": [
+      "Só pedras",
+      "Água, luz e ar",
+      "Só escuridão",
+      "Só sal"
+    ],
+    "exp": "As plantas fazem o seu alimento por fotossíntese."
+  },
+  {
+    "q": "Que estado da água é o gelo?",
+    "a": "Sólido",
+    "opts": [
+      "Líquido",
+      "Sólido",
+      "Gasoso",
+      "Plasma"
+    ],
+    "exp": "A água congela a 0 °C."
+  },
+  {
+    "q": "O que produz luz e calor no céu durante o dia?",
+    "a": "O Sol",
+    "opts": [
+      "A Lua",
+      "O Sol",
+      "As nuvens",
+      "O vento"
+    ],
+    "exp": "O Sol é uma estrela."
+  },
+  {
+    "q": "Que sentido usamos para ouvir?",
+    "a": "A audição",
+    "opts": [
+      "A visão",
+      "A audição",
+      "O olfato",
+      "O tato"
+    ],
+    "exp": "Os ouvidos captam as vibrações do som."
+  },
+  {
+    "q": "O que acontece a um balão quando lhe sai o ar?",
+    "a": "Fica murcho",
+    "opts": [
+      "Cresce",
+      "Fica murcho",
+      "Fica pesado",
+      "Fica quente"
+    ],
+    "exp": "O ar dentro do balão é que o mantinha cheio."
+  },
+  {
+    "q": "Que animal põe ovos: a galinha ou a vaca?",
+    "a": "A galinha",
+    "opts": [
+      "A vaca",
+      "A galinha",
+      "O cão",
+      "O gato"
+    ],
+    "exp": "As aves põem ovos; a vaca é mamífera."
+  },
+  {
+    "q": "O que flutua na água: a madeira ou uma pedra?",
+    "a": "A madeira",
+    "opts": [
+      "A pedra",
+      "A madeira",
+      "O ferro",
+      "O ouro"
+    ],
+    "exp": "A madeira é menos densa que a água."
+  },
+  {
+    "q": "Que parte da planta costuma ter cores vivas para atrair insetos?",
+    "a": "A flor",
+    "opts": [
+      "A raiz",
+      "A flor",
+      "O caule",
+      "A semente"
+    ],
+    "exp": "As flores atraem polinizadores como as abelhas."
+  },
+  {
+    "q": "O que usamos para nos aquecermos no inverno?",
+    "a": "Calor (fogo, aquecedor)",
+    "opts": [
+      "Gelo",
+      "Calor (fogo, aquecedor)",
+      "Vento",
+      "Sombra"
+    ],
+    "exp": "O calor é uma forma de energia."
+  },
+  {
+    "q": "Quantas estações do ano existem?",
+    "a": "Quatro",
+    "opts": [
+      "Duas",
+      "Três",
+      "Quatro",
+      "Cinco"
+    ],
+    "exp": "Primavera, verão, outono e inverno."
+  },
+  {
+    "q": "Que forma tem a Lua cheia?",
+    "a": "Redonda",
+    "opts": [
+      "Triangular",
+      "Redonda",
+      "Quadrada",
+      "Em estrela"
+    ],
+    "exp": "Vemos toda a face iluminada da Lua."
+  },
+  {
+    "q": "O que sentimos quando tocamos no gelo?",
+    "a": "Frio",
+    "opts": [
+      "Calor",
+      "Frio",
+      "Nada",
+      "Dor de barriga"
+    ],
+    "exp": "O gelo está a uma temperatura muito baixa."
+  },
+  {
+    "q": "O que respiram os peixes debaixo de água?",
+    "a": "Oxigénio dissolvido na água",
+    "opts": [
+      "Ar dos pulmões",
+      "Oxigénio dissolvido na água",
+      "Fumo",
+      "Sal"
+    ],
+    "exp": "Os peixes usam guelras para respirar."
+  },
+  {
+    "q": "Que objeto aponta sempre para o norte?",
+    "a": "A bússola",
+    "opts": [
+      "O relógio",
+      "A bússola",
+      "O termómetro",
+      "A régua"
+    ],
+    "exp": "A agulha da bússola é magnética."
+  },
+  {
+    "q": "O que cresce nas árvores e cai no outono?",
+    "a": "As folhas",
+    "opts": [
+      "As raízes",
+      "As folhas",
+      "Os troncos",
+      "As pedras"
+    ],
+    "exp": "Muitas árvores perdem as folhas no outono."
+  },
+  {
+    "q": "Que cor fica o céu num dia de sol sem nuvens?",
+    "a": "Azul",
+    "opts": [
+      "Verde",
+      "Azul",
+      "Vermelho",
+      "Preto"
+    ],
+    "exp": "A atmosfera dispersa mais a luz azul."
+  },
+  {
+    "q": "O que usamos para ver as estrelas mais de perto?",
+    "a": "Telescópio",
+    "opts": [
+      "Microscópio",
+      "Telescópio",
+      "Lupa",
+      "Binóculos de teatro"
+    ],
+    "exp": "O telescópio amplia objetos distantes."
   }
 ]

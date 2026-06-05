@@ -240,5 +240,225 @@
       "O fígado"
     ],
     "exp": "Sentimos as batidas do coração a bombear sangue."
+  },
+  {
+    "q": "Que parte da cabeça nos protege os olhos da chuva e do suor?",
+    "a": "As sobrancelhas",
+    "opts": [
+      "As pestanas",
+      "As sobrancelhas",
+      "As orelhas",
+      "O nariz"
+    ],
+    "exp": "As sobrancelhas desviam o suor para os lados."
+  },
+  {
+    "q": "O que cresce na cabeça e podemos cortar sem dor?",
+    "a": "O cabelo",
+    "opts": [
+      "A pele",
+      "O cabelo",
+      "As unhas da mão",
+      "Os dentes"
+    ],
+    "exp": "O cabelo é feito de queratina, uma proteína."
+  },
+  {
+    "q": "Com que parte do corpo agarramos as coisas?",
+    "a": "As mãos",
+    "opts": [
+      "Os pés",
+      "As mãos",
+      "Os joelhos",
+      "Os ombros"
+    ],
+    "exp": "O polegar opositor ajuda a agarrar objetos."
+  },
+  {
+    "q": "O que fazemos para descansar o corpo todas as noites?",
+    "a": "Dormir",
+    "opts": [
+      "Correr",
+      "Dormir",
+      "Comer",
+      "Saltar"
+    ],
+    "exp": "O sono ajuda o corpo e o cérebro a recuperar."
+  },
+  {
+    "q": "O que sentimos na barriga quando temos fome?",
+    "a": "O estômago vazio",
+    "opts": [
+      "O coração",
+      "O estômago vazio",
+      "Os pulmões",
+      "O cérebro"
+    ],
+    "exp": "O estômago avisa o cérebro de que precisa de comida."
+  },
+  {
+    "q": "Que parte do pé toca primeiro no chão ao andar?",
+    "a": "O calcanhar",
+    "opts": [
+      "Os dedos",
+      "O calcanhar",
+      "O joelho",
+      "A canela"
+    ],
+    "exp": "Ao andar, o calcanhar pousa antes dos dedos."
+  },
+  {
+    "q": "Quantos olhos tem normalmente uma pessoa?",
+    "a": "Dois",
+    "opts": [
+      "Um",
+      "Dois",
+      "Três",
+      "Quatro"
+    ],
+    "exp": "Os dois olhos ajudam a ver em profundidade."
+  },
+  {
+    "q": "O que usamos para falar e provar a comida?",
+    "a": "A língua",
+    "opts": [
+      "O nariz",
+      "A língua",
+      "A orelha",
+      "O dente"
+    ],
+    "exp": "A língua tem papilas que detetam os sabores."
+  },
+  {
+    "q": "O que protege o corpo todo por fora?",
+    "a": "A pele",
+    "opts": [
+      "Os ossos",
+      "A pele",
+      "O sangue",
+      "Os músculos"
+    ],
+    "exp": "A pele é uma barreira contra micróbios."
+  },
+  {
+    "q": "Que parte do braço dobra no meio?",
+    "a": "O cotovelo",
+    "opts": [
+      "O pulso",
+      "O cotovelo",
+      "O ombro",
+      "O dedo"
+    ],
+    "exp": "O cotovelo é uma articulação em dobradiça."
+  },
+  {
+    "q": "O que fazemos sem pensar, várias vezes por minuto, para viver?",
+    "a": "Respirar",
+    "opts": [
+      "Saltar",
+      "Respirar",
+      "Falar",
+      "Sorrir"
+    ],
+    "exp": "Respiramos cerca de 20 000 vezes por dia."
+  },
+  {
+    "q": "O que bate mais depressa quando corremos?",
+    "a": "O coração",
+    "opts": [
+      "O estômago",
+      "O coração",
+      "O fígado",
+      "O rim"
+    ],
+    "exp": "O coração acelera para levar mais oxigénio aos músculos."
+  },
+  {
+    "q": "O que cobre e protege os dentes por fora?",
+    "a": "O esmalte",
+    "opts": [
+      "A gengiva",
+      "O esmalte",
+      "A língua",
+      "O lábio"
+    ],
+    "exp": "O esmalte é a parte mais dura do corpo."
+  },
+  {
+    "q": "Que líquido da boca ajuda a engolir a comida?",
+    "a": "A saliva",
+    "opts": [
+      "O suor",
+      "A saliva",
+      "As lágrimas",
+      "O sangue"
+    ],
+    "exp": "A saliva também começa a digerir os alimentos."
+  },
+  {
+    "q": "O que fazemos quando algo entra no nariz e queremos expulsá-lo?",
+    "a": "Espirrar",
+    "opts": [
+      "Bocejar",
+      "Espirrar",
+      "Tossir",
+      "Soluçar"
+    ],
+    "exp": "Um espirro pode sair a mais de 150 km/h."
+  },
+  {
+    "q": "Quantas orelhas usamos para ouvir?",
+    "a": "Duas",
+    "opts": [
+      "Uma",
+      "Duas",
+      "Três",
+      "Quatro"
+    ],
+    "exp": "Duas orelhas ajudam a perceber de onde vem o som."
+  },
+  {
+    "q": "O que fica vermelho e dói quando batemos com força?",
+    "a": "A pele (nódoa negra)",
+    "opts": [
+      "O cabelo",
+      "A pele (nódoa negra)",
+      "As unhas",
+      "Os dentes"
+    ],
+    "exp": "A nódoa negra é sangue debaixo da pele."
+  },
+  {
+    "q": "Que parte do corpo usamos para pensar?",
+    "a": "O cérebro",
+    "opts": [
+      "O coração",
+      "O cérebro",
+      "O estômago",
+      "Os pés"
+    ],
+    "exp": "O cérebro é o centro de comando do corpo."
+  },
+  {
+    "q": "O que move o corpo e fica forte com exercício?",
+    "a": "Os músculos",
+    "opts": [
+      "Os ossos",
+      "Os músculos",
+      "O cabelo",
+      "As unhas"
+    ],
+    "exp": "Temos mais de 600 músculos."
+  },
+  {
+    "q": "O que respiramos do ar e o corpo precisa para viver?",
+    "a": "Oxigénio",
+    "opts": [
+      "Fumo",
+      "Oxigénio",
+      "Areia",
+      "Água"
+    ],
+    "exp": "O oxigénio entra no sangue através dos pulmões."
   }
 ]

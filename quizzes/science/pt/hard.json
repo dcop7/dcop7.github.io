@@ -218,5 +218,225 @@
       "Crípton"
     ],
     "exp": "O néon ganhou o nome dos letreiros luminosos."
+  },
+  {
+    "q": "Qual é o número atómico do carbono?",
+    "a": "6",
+    "opts": [
+      "1",
+      "6",
+      "8",
+      "12"
+    ],
+    "exp": "O carbono está na base de toda a vida."
+  },
+  {
+    "q": "Que lei relaciona força, massa e aceleração (F=ma)?",
+    "a": "2.ª lei de Newton",
+    "opts": [
+      "1.ª lei de Newton",
+      "2.ª lei de Newton",
+      "Lei de Ohm",
+      "Lei de Hooke"
+    ],
+    "exp": "Quanto maior a massa, mais força é precisa para acelerar."
+  },
+  {
+    "q": "Como se chama a divisão de uma célula em duas iguais?",
+    "a": "Mitose",
+    "opts": [
+      "Meiose",
+      "Mitose",
+      "Fissão nuclear",
+      "Osmose"
+    ],
+    "exp": "A mitose permite o crescimento e a regeneração."
+  },
+  {
+    "q": "Que partícula tem carga positiva no núcleo?",
+    "a": "Protão",
+    "opts": [
+      "Eletrão",
+      "Protão",
+      "Neutrão",
+      "Fotão"
+    ],
+    "exp": "O número de protões define o elemento."
+  },
+  {
+    "q": "Qual é a fórmula química do dióxido de carbono?",
+    "a": "CO₂",
+    "opts": [
+      "CO",
+      "CO₂",
+      "O₂",
+      "C₂O"
+    ],
+    "exp": "Cada molécula tem um carbono e dois oxigénios."
+  },
+  {
+    "q": "Que cientista desenvolveu as leis do movimento planetário?",
+    "a": "Kepler",
+    "opts": [
+      "Newton",
+      "Kepler",
+      "Galileu",
+      "Copérnico"
+    ],
+    "exp": "Kepler descobriu que as órbitas são elípticas."
+  },
+  {
+    "q": "Que tipo de energia tem a luz e o calor do Sol?",
+    "a": "Energia radiante",
+    "opts": [
+      "Energia química",
+      "Energia radiante",
+      "Energia elástica",
+      "Energia nuclear apenas"
+    ],
+    "exp": "Chega à Terra através do espaço como radiação."
+  },
+  {
+    "q": "Como se chama o pH de uma substância muito ácida?",
+    "a": "Próximo de 0",
+    "opts": [
+      "Próximo de 0",
+      "7",
+      "14",
+      "10"
+    ],
+    "exp": "Quanto menor o pH, mais ácida a substância."
+  },
+  {
+    "q": "Que gás representa cerca de 78% da atmosfera terrestre?",
+    "a": "Azoto",
+    "opts": [
+      "Oxigénio",
+      "Azoto",
+      "Árgon",
+      "Dióxido de carbono"
+    ],
+    "exp": "O oxigénio é só cerca de 21%."
+  },
+  {
+    "q": "Que molécula transporta a energia dentro das células?",
+    "a": "ATP",
+    "opts": [
+      "DNA",
+      "ATP",
+      "ARN",
+      "Glicose"
+    ],
+    "exp": "O ATP é a 'moeda energética' das células."
+  },
+  {
+    "q": "Como se chama a força que mantém os eletrões ligados ao núcleo?",
+    "a": "Força eletromagnética",
+    "opts": [
+      "Gravidade",
+      "Força eletromagnética",
+      "Força nuclear forte",
+      "Força fraca"
+    ],
+    "exp": "Atrai cargas de sinal contrário."
+  },
+  {
+    "q": "Qual é a unidade de medida da frequência?",
+    "a": "Hertz",
+    "opts": [
+      "Watt",
+      "Hertz",
+      "Joule",
+      "Pascal"
+    ],
+    "exp": "1 hertz é uma oscilação por segundo."
+  },
+  {
+    "q": "Que tipo de reação ocorre quando algo arde?",
+    "a": "Combustão",
+    "opts": [
+      "Fermentação",
+      "Combustão",
+      "Eletrólise",
+      "Fotossíntese"
+    ],
+    "exp": "A combustão liberta energia e precisa de oxigénio."
+  },
+  {
+    "q": "Como se chama o ponto em que a água ferve, em °C, ao nível do mar?",
+    "a": "100 °C",
+    "opts": [
+      "50 °C",
+      "100 °C",
+      "37 °C",
+      "0 °C"
+    ],
+    "exp": "Em altitude, ferve a temperaturas mais baixas."
+  },
+  {
+    "q": "Que tipo de onda é a luz?",
+    "a": "Onda eletromagnética",
+    "opts": [
+      "Onda sonora",
+      "Onda eletromagnética",
+      "Onda mecânica",
+      "Onda sísmica"
+    ],
+    "exp": "Não precisa de meio para se propagar."
+  },
+  {
+    "q": "Qual é o metal mais abundante na crosta terrestre?",
+    "a": "Alumínio",
+    "opts": [
+      "Ferro",
+      "Alumínio",
+      "Cobre",
+      "Ouro"
+    ],
+    "exp": "O alumínio representa cerca de 8% da crosta."
+  },
+  {
+    "q": "Que processo divide as células reprodutoras com metade dos cromossomas?",
+    "a": "Meiose",
+    "opts": [
+      "Mitose",
+      "Meiose",
+      "Fissão",
+      "Clonagem"
+    ],
+    "exp": "A meiose forma óvulos e espermatozoides."
+  },
+  {
+    "q": "Que cientista propôs o modelo heliocêntrico (Sol no centro)?",
+    "a": "Copérnico",
+    "opts": [
+      "Ptolomeu",
+      "Copérnico",
+      "Aristóteles",
+      "Hubble"
+    ],
+    "exp": "Copérnico publicou-o em 1543."
+  },
+  {
+    "q": "Qual é a unidade de resistência elétrica?",
+    "a": "Ohm",
+    "opts": [
+      "Volt",
+      "Ohm",
+      "Ampere",
+      "Watt"
+    ],
+    "exp": "A lei de Ohm relaciona tensão, corrente e resistência."
+  },
+  {
+    "q": "Que tipo de rocha se forma por acumulação de sedimentos?",
+    "a": "Rocha sedimentar",
+    "opts": [
+      "Rocha magmática",
+      "Rocha sedimentar",
+      "Rocha metamórfica",
+      "Lava"
+    ],
+    "exp": "O calcário e o arenito são sedimentares."
   }
 ]

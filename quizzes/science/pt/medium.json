@@ -218,5 +218,225 @@
       "O citoplasma"
     ],
     "exp": "O núcleo guarda e protege o DNA."
+  },
+  {
+    "q": "Como se chama a mudança de sólido diretamente para gás?",
+    "a": "Sublimação",
+    "opts": [
+      "Fusão",
+      "Sublimação",
+      "Condensação",
+      "Solidificação"
+    ],
+    "exp": "O gelo seco sublima sem passar por líquido."
+  },
+  {
+    "q": "Que parte da célula produz energia?",
+    "a": "Mitocôndria",
+    "opts": [
+      "Núcleo",
+      "Mitocôndria",
+      "Membrana",
+      "Ribossoma"
+    ],
+    "exp": "A mitocôndria é a 'central energética' da célula."
+  },
+  {
+    "q": "Que força faz parar uma bola que rola no chão?",
+    "a": "O atrito",
+    "opts": [
+      "A gravidade",
+      "O atrito",
+      "O magnetismo",
+      "A inércia"
+    ],
+    "exp": "O atrito opõe-se ao movimento."
+  },
+  {
+    "q": "Qual é a velocidade aproximada do som no ar?",
+    "a": "~340 m/s",
+    "opts": [
+      "~34 m/s",
+      "~340 m/s",
+      "~3 400 m/s",
+      "~300 000 km/s"
+    ],
+    "exp": "Por isso ouvimos o trovão depois de ver o relâmpago."
+  },
+  {
+    "q": "Que gás é essencial para a combustão (o fogo)?",
+    "a": "Oxigénio",
+    "opts": [
+      "Azoto",
+      "Oxigénio",
+      "Dióxido de carbono",
+      "Hélio"
+    ],
+    "exp": "Sem oxigénio, o fogo apaga-se."
+  },
+  {
+    "q": "Como se chama o caminho da Terra à volta do Sol?",
+    "a": "Órbita",
+    "opts": [
+      "Rotação",
+      "Órbita",
+      "Eclipse",
+      "Translação livre"
+    ],
+    "exp": "A Terra demora um ano a completar a órbita."
+  },
+  {
+    "q": "Que instrumento mede a humidade do ar?",
+    "a": "Higrómetro",
+    "opts": [
+      "Barómetro",
+      "Higrómetro",
+      "Termómetro",
+      "Anemómetro"
+    ],
+    "exp": "A humidade influencia a sensação de calor."
+  },
+  {
+    "q": "Que parte da planta transporta a água das raízes às folhas?",
+    "a": "O caule (xilema)",
+    "opts": [
+      "A flor",
+      "O caule (xilema)",
+      "A semente",
+      "O fruto"
+    ],
+    "exp": "O xilema funciona como canos da planta."
+  },
+  {
+    "q": "Como se chama a energia guardada num objeto em altura?",
+    "a": "Energia potencial",
+    "opts": [
+      "Energia cinética",
+      "Energia potencial",
+      "Energia térmica",
+      "Energia sonora"
+    ],
+    "exp": "Ao cair, transforma-se em energia cinética."
+  },
+  {
+    "q": "Que elemento químico tem o símbolo O?",
+    "a": "Oxigénio",
+    "opts": [
+      "Ouro",
+      "Oxigénio",
+      "Ósmio",
+      "Oganésson"
+    ],
+    "exp": "O oxigénio é vital para a respiração."
+  },
+  {
+    "q": "O que separa as cores da luz branca num arco-íris?",
+    "a": "As gotas de água",
+    "opts": [
+      "As nuvens",
+      "As gotas de água",
+      "O vento",
+      "O Sol diretamente"
+    ],
+    "exp": "As gotas funcionam como pequenos prismas."
+  },
+  {
+    "q": "Que tipo de animal é a rã, que vive na água e na terra?",
+    "a": "Anfíbio",
+    "opts": [
+      "Réptil",
+      "Anfíbio",
+      "Mamífero",
+      "Peixe"
+    ],
+    "exp": "Os anfíbios começam a vida na água (girinos)."
+  },
+  {
+    "q": "Como se chama a camada de gases que envolve a Terra?",
+    "a": "Atmosfera",
+    "opts": [
+      "Estratosfera apenas",
+      "Atmosfera",
+      "Hidrosfera",
+      "Litosfera"
+    ],
+    "exp": "A atmosfera protege-nos da radiação."
+  },
+  {
+    "q": "Que aparelho transforma energia elétrica em movimento?",
+    "a": "Motor elétrico",
+    "opts": [
+      "Gerador",
+      "Motor elétrico",
+      "Resistência",
+      "Pilha"
+    ],
+    "exp": "O gerador faz o contrário: movimento em eletricidade."
+  },
+  {
+    "q": "Qual é o principal gás responsável pelo efeito de estufa?",
+    "a": "Dióxido de carbono",
+    "opts": [
+      "Oxigénio",
+      "Dióxido de carbono",
+      "Hélio",
+      "Néon"
+    ],
+    "exp": "O excesso de CO₂ contribui para o aquecimento global."
+  },
+  {
+    "q": "Que parte do átomo orbita o núcleo?",
+    "a": "Os eletrões",
+    "opts": [
+      "Os protões",
+      "Os eletrões",
+      "Os neutrões",
+      "Os fotões"
+    ],
+    "exp": "Os eletrões têm carga negativa."
+  },
+  {
+    "q": "Como se chama o processo de transformar lagarta em borboleta?",
+    "a": "Metamorfose",
+    "opts": [
+      "Fotossíntese",
+      "Metamorfose",
+      "Mitose",
+      "Fermentação"
+    ],
+    "exp": "A lagarta forma uma crisálida."
+  },
+  {
+    "q": "Que tipo de rocha se forma a partir de lava arrefecida?",
+    "a": "Rocha magmática",
+    "opts": [
+      "Rocha sedimentar",
+      "Rocha magmática",
+      "Rocha metamórfica",
+      "Areia"
+    ],
+    "exp": "O basalto e o granito são rochas magmáticas."
+  },
+  {
+    "q": "Que parte do corpo das plantas faz a fotossíntese?",
+    "a": "As folhas",
+    "opts": [
+      "As raízes",
+      "As folhas",
+      "As flores",
+      "As sementes"
+    ],
+    "exp": "As folhas têm clorofila."
+  },
+  {
+    "q": "O que mede a unidade 'volt'?",
+    "a": "A tensão elétrica",
+    "opts": [
+      "A corrente",
+      "A tensão elétrica",
+      "A resistência",
+      "A potência"
+    ],
+    "exp": "A corrente mede-se em amperes."
   }
 ]
