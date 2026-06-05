@@ -218,5 +218,247 @@
       "Vermelho"
     ],
     "exp": "Hoje muitos táxis portugueses são bege."
+  },
+  {
+    "q": "Que sopa verde leva couve, batata e chouriço?",
+    "a": "Caldo verde",
+    "opts": [
+      "Sopa da pedra",
+      "Caldo verde",
+      "Açorda",
+      "Canja"
+    ],
+    "exp": "O caldo verde é típico do norte de Portugal."
+  },
+  {
+    "q": "Que peixe pequeno se assa nas festas dos santos populares?",
+    "a": "A sardinha",
+    "opts": [
+      "O bacalhau",
+      "A sardinha",
+      "O atum",
+      "A pescada"
+    ],
+    "exp": "As sardinhas assadas são típicas de junho."
+  },
+  {
+    "q": "Qual é a região do sul de Portugal famosa pelas praias?",
+    "a": "O Algarve",
+    "opts": [
+      "O Minho",
+      "O Algarve",
+      "Trás-os-Montes",
+      "As Beiras"
+    ],
+    "exp": "O Algarve tem clima quente e muito turismo."
+  },
+  {
+    "q": "Que cidade portuguesa tem uma das universidades mais antigas da Europa?",
+    "a": "Coimbra",
+    "opts": [
+      "Faro",
+      "Coimbra",
+      "Setúbal",
+      "Aveiro"
+    ],
+    "exp": "A Universidade de Coimbra foi fundada em 1290."
+  },
+  {
+    "q": "Que rio passa em Lisboa?",
+    "a": "O Tejo",
+    "opts": [
+      "O Douro",
+      "O Tejo",
+      "O Mondego",
+      "O Sado"
+    ],
+    "exp": "O Tejo é o rio mais comprido da Península Ibérica."
+  },
+  {
+    "q": "Que doce de Belém é feito de massa folhada e creme?",
+    "a": "Pastel de nata",
+    "opts": [
+      "Bolo-rei",
+      "Pastel de nata",
+      "Queijada",
+      "Pão de ló"
+    ],
+    "exp": "Os Pastéis de Belém seguem uma receita secreta."
+  },
+  {
+    "q": "Que instrumento acompanha tradicionalmente o Fado?",
+    "a": "A guitarra portuguesa",
+    "opts": [
+      "O acordeão",
+      "A guitarra portuguesa",
+      "O piano",
+      "A bateria"
+    ],
+    "exp": "A guitarra portuguesa tem um som muito característico."
+  },
+  {
+    "q": "Que cidade é a capital de Portugal?",
+    "a": "Lisboa",
+    "opts": [
+      "Porto",
+      "Lisboa",
+      "Braga",
+      "Faro"
+    ],
+    "exp": "Lisboa é atravessada pelo rio Tejo."
+  },
+  {
+    "q": "Que arquipélago português é famoso pelas paisagens verdes e vulcões?",
+    "a": "Açores",
+    "opts": [
+      "Canárias",
+      "Açores",
+      "Baleares",
+      "Cabo Verde"
+    ],
+    "exp": "Os Açores têm nove ilhas no Atlântico."
+  },
+  {
+    "q": "Que monumento de Lisboa parece uma fortaleza dentro do rio?",
+    "a": "Torre de Belém",
+    "opts": [
+      "Sé de Lisboa",
+      "Torre de Belém",
+      "Padrão dos Descobrimentos",
+      "Cristo Rei"
+    ],
+    "exp": "É Património Mundial da UNESCO."
+  },
+  {
+    "q": "Que prato leva carne, enchidos e legumes cozidos juntos?",
+    "a": "Cozido à portuguesa",
+    "opts": [
+      "Francesinha",
+      "Cozido à portuguesa",
+      "Bacalhau à Brás",
+      "Arroz de marisco"
+    ],
+    "exp": "É um prato típico de inverno."
+  },
+  {
+    "q": "Qual é a segunda maior cidade de Portugal?",
+    "a": "Porto",
+    "opts": [
+      "Braga",
+      "Porto",
+      "Coimbra",
+      "Aveiro"
+    ],
+    "exp": "O Porto fica junto ao rio Douro."
+  },
+  {
+    "q": "Que vinho doce é típico da cidade do Porto?",
+    "a": "Vinho do Porto",
+    "opts": [
+      "Vinho verde",
+      "Vinho do Porto",
+      "Vinho da Madeira",
+      "Espumante"
+    ],
+    "exp": "Envelhece nas caves de Vila Nova de Gaia."
+  },
+  {
+    "q": "Que cor predomina na bandeira de Portugal junto ao escudo?",
+    "a": "Verde e vermelho",
+    "opts": [
+      "Azul e branco",
+      "Verde e vermelho",
+      "Amarelo e azul",
+      "Branco e preto"
+    ],
+    "exp": "Tem ainda a esfera armilar."
+  },
+  {
+    "q": "Que santo popular se celebra em Lisboa em junho?",
+    "a": "Santo António",
+    "opts": [
+      "São João",
+      "Santo António",
+      "São Pedro",
+      "São Martinho"
+    ],
+    "exp": "As festas enchem as ruas de Lisboa."
+  },
+  {
+    "q": "Que cidade do norte celebra o São João com martelinhos e fogo?",
+    "a": "Porto",
+    "opts": [
+      "Lisboa",
+      "Porto",
+      "Évora",
+      "Faro"
+    ],
+    "exp": "O São João do Porto é uma grande festa popular."
+  },
+  {
+    "q": "Que animal de barro pintado é um símbolo de Portugal?",
+    "a": "O Galo de Barcelos",
+    "opts": [
+      "A águia",
+      "O Galo de Barcelos",
+      "O leão",
+      "O cavalo lusitano"
+    ],
+    "exp": "Está ligado a uma lenda de Barcelos."
+  },
+  {
+    "q": "Qual é o oceano que banha toda a costa de Portugal continental?",
+    "a": "Oceano Atlântico",
+    "opts": [
+      "Oceano Pacífico",
+      "Oceano Atlântico",
+      "Mar Mediterrâneo",
+      "Oceano Índico"
+    ],
+    "exp": "Portugal tem uma longa costa atlântica."
+  },
+  {
+    "q": "Que ponte vermelha de Lisboa atravessa o Tejo?",
+    "a": "Ponte 25 de Abril",
+    "opts": [
+      "Ponte Vasco da Gama",
+      "Ponte 25 de Abril",
+      "Ponte D. Luís I",
+      "Ponte da Arrábida"
+    ],
+    "exp": "Faz lembrar a ponte de São Francisco."
+  },
+  {
+    "q": "Qual é o ponto mais ocidental da Europa continental, em Portugal?",
+    "a": "Cabo da Roca",
+    "opts": [
+      "Cabo de São Vicente",
+      "Cabo da Roca",
+      "Cabo Carvoeiro",
+      "Cabo Espichel"
+    ],
+    "exp": "Fica em Sintra, à beira do Atlântico."
+  },
+  {
+    "q": "De que árvore se extrai a cortiça, muito produzida em Portugal?",
+    "a": "Sobreiro",
+    "opts": [
+      "Pinheiro",
+      "Sobreiro",
+      "Oliveira",
+      "Eucalipto"
+    ],
+    "exp": "Portugal é o maior produtor de cortiça do mundo."
+  },
+  {
+    "q": "Que praia portuguesa é famosa pelas ondas gigantes para surf?",
+    "a": "Nazaré",
+    "opts": [
+      "Carcavelos",
+      "Nazaré",
+      "Costa da Caparica",
+      "Comporta"
+    ],
+    "exp": "Na Nazaré já se surfaram ondas de mais de 20 metros."
   }
 ]

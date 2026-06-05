@@ -218,5 +218,225 @@
       "Turbo"
     ],
     "exp": "O GPS usa uma rede de satélites em órbita."
+  },
+  {
+    "q": "Como se chama o comboio-bala japonês?",
+    "a": "Shinkansen",
+    "opts": [
+      "TGV",
+      "Shinkansen",
+      "AVE",
+      "Maglev"
+    ],
+    "exp": "Circula desde 1964."
+  },
+  {
+    "q": "Que documento é preciso para conduzir um automóvel?",
+    "a": "Carta de condução",
+    "opts": [
+      "Passaporte",
+      "Carta de condução",
+      "Cartão de estudante",
+      "Bilhete de avião"
+    ],
+    "exp": "Tira-se a partir dos 18 anos."
+  },
+  {
+    "q": "Como se chama a caixa que regista os dados de voo de um avião?",
+    "a": "Caixa negra",
+    "opts": [
+      "Caixa negra",
+      "Radar",
+      "GPS",
+      "Altímetro"
+    ],
+    "exp": "Apesar do nome, é cor de laranja."
+  },
+  {
+    "q": "Que veículo sem condutor explora a superfície de Marte?",
+    "a": "Rover",
+    "opts": [
+      "Satélite",
+      "Rover",
+      "Drone",
+      "Submarino"
+    ],
+    "exp": "O Perseverance é um rover de Marte."
+  },
+  {
+    "q": "Que transporte público sobre carris circula dentro das cidades, muitas vezes subterrâneo?",
+    "a": "Metro",
+    "opts": [
+      "Táxi",
+      "Metro",
+      "Trotinete",
+      "Teleférico"
+    ],
+    "exp": "O Metro de Lisboa abriu em 1959."
+  },
+  {
+    "q": "Que sistema de satélites indica a localização ao condutor?",
+    "a": "GPS",
+    "opts": [
+      "ABS",
+      "GPS",
+      "Turbo",
+      "ESP"
+    ],
+    "exp": "Usa uma rede de satélites em órbita."
+  },
+  {
+    "q": "Que companhia construiu o navio Titanic?",
+    "a": "Harland & Wolff",
+    "opts": [
+      "Cunard",
+      "Harland & Wolff",
+      "Boeing",
+      "Airbus"
+    ],
+    "exp": "O Titanic afundou-se em 1912."
+  },
+  {
+    "q": "Que parte de um barco capta o vento para o mover?",
+    "a": "A vela",
+    "opts": [
+      "O leme",
+      "A vela",
+      "A âncora",
+      "O casco"
+    ],
+    "exp": "O leme serve para mudar de direção."
+  },
+  {
+    "q": "O que faz o motor de combustão?",
+    "a": "Queima combustível para gerar movimento",
+    "opts": [
+      "Produz eletricidade do nada",
+      "Queima combustível para gerar movimento",
+      "Arrefece o carro",
+      "Filtra o ar"
+    ],
+    "exp": "A explosão move os pistões."
+  },
+  {
+    "q": "Que veículo aéreo combate incêndios largando água?",
+    "a": "Avião bombardeiro de água (Canadair)",
+    "opts": [
+      "Helicóptero apenas",
+      "Avião bombardeiro de água (Canadair)",
+      "Drone",
+      "Balão"
+    ],
+    "exp": "Recolhe água de lagos ou do mar."
+  },
+  {
+    "q": "Que veículo espacial regressava à Terra como um planador?",
+    "a": "Vaivém espacial",
+    "opts": [
+      "Foguetão Saturno V",
+      "Vaivém espacial",
+      "Cápsula Soyuz",
+      "Estação espacial"
+    ],
+    "exp": "Voou entre 1981 e 2011."
+  },
+  {
+    "q": "Que veículo grande transporta automóveis e camiões através do mar?",
+    "a": "Ferry (navio de transporte)",
+    "opts": [
+      "Veleiro",
+      "Ferry (navio de transporte)",
+      "Submarino",
+      "Catamarã de corrida"
+    ],
+    "exp": "Os ferries ligam ilhas e margens."
+  },
+  {
+    "q": "Que tipo de barco usa dois cascos paralelos?",
+    "a": "Catamarã",
+    "opts": [
+      "Veleiro simples",
+      "Catamarã",
+      "Cargueiro",
+      "Submarino"
+    ],
+    "exp": "Os catamarãs são muito estáveis."
+  },
+  {
+    "q": "Quanto tempo, mais ou menos, dura uma viagem de avião de Lisboa a Nova Iorque?",
+    "a": "Cerca de 7 horas",
+    "opts": [
+      "1 hora",
+      "Cerca de 7 horas",
+      "2 dias",
+      "20 minutos"
+    ],
+    "exp": "Depende do vento e da rota."
+  },
+  {
+    "q": "Que invento permitiu mover comboios antes da eletricidade?",
+    "a": "A máquina a vapor",
+    "opts": [
+      "O motor a jato",
+      "A máquina a vapor",
+      "O painel solar",
+      "A turbina eólica"
+    ],
+    "exp": "Foi essencial na Revolução Industrial."
+  },
+  {
+    "q": "Que veículo de emergência persegue infratores na estrada?",
+    "a": "Carro da polícia",
+    "opts": [
+      "Ambulância",
+      "Carro da polícia",
+      "Carro dos bombeiros",
+      "Camião do lixo"
+    ],
+    "exp": "Usa sirene e luzes azuis."
+  },
+  {
+    "q": "Que parte do carro mostra a velocidade ao condutor?",
+    "a": "O velocímetro",
+    "opts": [
+      "O conta-quilómetros apenas",
+      "O velocímetro",
+      "O rádio",
+      "O retrovisor"
+    ],
+    "exp": "O velocímetro indica os km/h."
+  },
+  {
+    "q": "Que veículo voa sem motor, aproveitando as correntes de ar?",
+    "a": "O planador",
+    "opts": [
+      "O helicóptero",
+      "O planador",
+      "O foguetão",
+      "O drone"
+    ],
+    "exp": "O planador é rebocado ou lançado e depois plana."
+  },
+  {
+    "q": "Que veículo se eleva no ar cheio de ar quente?",
+    "a": "Balão de ar quente",
+    "opts": [
+      "Avião",
+      "Balão de ar quente",
+      "Helicóptero",
+      "Dirigível a hidrogénio"
+    ],
+    "exp": "O ar quente é mais leve que o ar frio."
+  },
+  {
+    "q": "Que luz o condutor liga para indicar que vai mudar de direção?",
+    "a": "O pisca (indicador)",
+    "opts": [
+      "Os máximos",
+      "O pisca (indicador)",
+      "Os mínimos",
+      "Os quatro piscas"
+    ],
+    "exp": "O indicador avisa os outros condutores."
   }
 ]

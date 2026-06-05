@@ -207,5 +207,181 @@
       "Antonov An-225"
     ],
     "exp": "O A380 tem dois pisos e leva mais de 850 passageiros."
+  },
+  {
+    "q": "Que tecnologia faz os comboios Maglev flutuarem sobre a via?",
+    "a": "Levitação magnética",
+    "opts": [
+      "Almofadas de ar",
+      "Levitação magnética",
+      "Rodas de borracha",
+      "Hélices"
+    ],
+    "exp": "Ímanes eliminam o atrito."
+  },
+  {
+    "q": "Que sistema de travagem impede o bloqueio das rodas?",
+    "a": "ABS",
+    "opts": [
+      "ABS",
+      "GPS",
+      "Turbo",
+      "ESP"
+    ],
+    "exp": "ABS = sistema antibloqueio."
+  },
+  {
+    "q": "Que empresa lançou o Model S, um carro elétrico de sucesso?",
+    "a": "Tesla",
+    "opts": [
+      "Nissan",
+      "Tesla",
+      "Toyota",
+      "BMW"
+    ],
+    "exp": "O Model S foi lançado em 2012."
+  },
+  {
+    "q": "Que veículo da NASA pousou astronautas na Lua?",
+    "a": "Módulo Lunar (LEM)",
+    "opts": [
+      "Vaivém espacial",
+      "Módulo Lunar (LEM)",
+      "Cápsula Soyuz",
+      "Rover Apollo"
+    ],
+    "exp": "O 'Eagle' alunou em 1969."
+  },
+  {
+    "q": "Que tipo de motor usa o impulso de gases para avançar, como nos aviões a jato?",
+    "a": "Motor a reação (jato)",
+    "opts": [
+      "Motor a vapor",
+      "Motor a reação (jato)",
+      "Motor a pedais",
+      "Motor de hélice apenas"
+    ],
+    "exp": "Baseia-se na 3.ª lei de Newton."
+  },
+  {
+    "q": "Que recorde estabeleceu o Thrust SSC em 1997?",
+    "a": "Velocidade em terra acima do som",
+    "opts": [
+      "Voo mais longo",
+      "Velocidade em terra acima do som",
+      "Mergulho mais fundo",
+      "Maior altitude"
+    ],
+    "exp": "Ultrapassou 1 228 km/h no deserto."
+  },
+  {
+    "q": "Que navio pode navegar anos sem reabastecer graças a um reator?",
+    "a": "Porta-aviões nuclear",
+    "opts": [
+      "Veleiro",
+      "Porta-aviões nuclear",
+      "Ferry",
+      "Cargueiro a gasóleo"
+    ],
+    "exp": "A energia nuclear dura muito tempo."
+  },
+  {
+    "q": "Que carro de Karl Benz, de 1886, é considerado o primeiro automóvel?",
+    "a": "Benz Patent-Motorwagen",
+    "opts": [
+      "Ford T",
+      "Benz Patent-Motorwagen",
+      "Fusca",
+      "Citroën 2CV"
+    ],
+    "exp": "Tinha três rodas."
+  },
+  {
+    "q": "Que motor inventou Rudolf Diesel?",
+    "a": "O motor a gasóleo (diesel)",
+    "opts": [
+      "O motor a gasolina",
+      "O motor a gasóleo (diesel)",
+      "O motor elétrico",
+      "O motor a vapor"
+    ],
+    "exp": "É mais eficiente em camiões e navios."
+  },
+  {
+    "q": "Que cápsula soviética levou Yuri Gagarin ao espaço em 1961?",
+    "a": "Vostok 1",
+    "opts": [
+      "Soyuz",
+      "Vostok 1",
+      "Apollo 11",
+      "Sputnik 2"
+    ],
+    "exp": "Gagarin foi o primeiro humano no espaço."
+  },
+  {
+    "q": "Que componente armazena energia num carro elétrico?",
+    "a": "A bateria",
+    "opts": [
+      "O depósito de gasolina",
+      "A bateria",
+      "O radiador",
+      "O turbo"
+    ],
+    "exp": "As baterias de iões de lítio são as mais comuns."
+  },
+  {
+    "q": "Que parte da asa de um avião se levanta para ajudar a aterrar?",
+    "a": "Os flaps",
+    "opts": [
+      "O leme",
+      "Os flaps",
+      "O trem de aterragem apenas",
+      "A fuselagem"
+    ],
+    "exp": "Os flaps aumentam a sustentação a baixa velocidade."
+  },
+  {
+    "q": "Que comboio histórico ligava Paris a Istambul de forma luxuosa?",
+    "a": "Orient Express",
+    "opts": [
+      "Flying Scotsman",
+      "Orient Express",
+      "Trans-Siberiano",
+      "Rocket"
+    ],
+    "exp": "Inspirou livros e filmes famosos."
+  },
+  {
+    "q": "Que sigla designa o sistema de estabilidade que evita derrapagens?",
+    "a": "ESP",
+    "opts": [
+      "ABS",
+      "ESP",
+      "GPS",
+      "USB"
+    ],
+    "exp": "O ESP trava rodas individualmente para corrigir a trajetória."
+  },
+  {
+    "q": "Que motor mais eficiente, usado em camiões e navios, inventou Rudolf Diesel?",
+    "a": "O motor diesel (a gasóleo)",
+    "opts": [
+      "O motor a gasolina",
+      "O motor diesel (a gasóleo)",
+      "O motor elétrico",
+      "O motor a vapor"
+    ],
+    "exp": "Funciona por compressão, sem vela de ignição."
+  },
+  {
+    "q": "Que comboio histórico de luxo ligava Paris a Istambul?",
+    "a": "Orient Express",
+    "opts": [
+      "Flying Scotsman",
+      "Orient Express",
+      "Transiberiano",
+      "Rocket"
+    ],
+    "exp": "Inspirou romances e filmes."
   }
 ]

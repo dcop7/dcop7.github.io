@@ -218,5 +218,214 @@
       "Queijada"
     ],
     "exp": "Os ovos moles de Aveiro têm Indicação Geográfica Protegida."
+  },
+  {
+    "q": "Em que cidade nasceu a nacionalidade portuguesa?",
+    "a": "Guimarães",
+    "opts": [
+      "Lisboa",
+      "Guimarães",
+      "Porto",
+      "Coimbra"
+    ],
+    "exp": "Diz-se 'Aqui nasceu Portugal'."
+  },
+  {
+    "q": "Que poeta português escreveu sob vários heterónimos?",
+    "a": "Fernando Pessoa",
+    "opts": [
+      "Camões",
+      "Fernando Pessoa",
+      "Eça de Queirós",
+      "Florbela Espanca"
+    ],
+    "exp": "Criou Alberto Caeiro, Ricardo Reis e Álvaro de Campos."
+  },
+  {
+    "q": "Que ponte de Lisboa é a mais longa da Europa (com viaduto)?",
+    "a": "Ponte Vasco da Gama",
+    "opts": [
+      "Ponte 25 de Abril",
+      "Ponte Vasco da Gama",
+      "Ponte D. Luís I",
+      "Ponte da Arrábida"
+    ],
+    "exp": "Foi inaugurada para a Expo 98."
+  },
+  {
+    "q": "Que serra portuguesa tem a única estância de esqui do país?",
+    "a": "Serra da Estrela",
+    "opts": [
+      "Serra do Gerês",
+      "Serra da Estrela",
+      "Serra de Sintra",
+      "Serra de Monchique"
+    ],
+    "exp": "É o ponto mais alto de Portugal continental."
+  },
+  {
+    "q": "Que arquipélago português é famoso pelo seu vinho generoso?",
+    "a": "Madeira",
+    "opts": [
+      "Açores",
+      "Madeira",
+      "Berlengas",
+      "Cabo Verde"
+    ],
+    "exp": "O vinho da Madeira é exportado há séculos."
+  },
+  {
+    "q": "Que ovos-doce é especialidade da cidade de Aveiro?",
+    "a": "Ovos moles",
+    "opts": [
+      "Pastel de Tentúgal",
+      "Ovos moles",
+      "Queijada de Sintra",
+      "Pão de ló de Ovar"
+    ],
+    "exp": "Têm Indicação Geográfica Protegida."
+  },
+  {
+    "q": "Que infante impulsionou os Descobrimentos a partir de Sagres?",
+    "a": "Infante D. Henrique",
+    "opts": [
+      "D. Manuel I",
+      "Infante D. Henrique",
+      "D. João II",
+      "Pedro Nunes"
+    ],
+    "exp": "Ficou conhecido como 'o Navegador'."
+  },
+  {
+    "q": "Que cidade alentejana tem um templo romano bem conservado?",
+    "a": "Évora",
+    "opts": [
+      "Beja",
+      "Évora",
+      "Portalegre",
+      "Elvas"
+    ],
+    "exp": "O Templo de Évora é dedicado a Diana."
+  },
+  {
+    "q": "Que mosteiro de Lisboa é um ex-líbris do estilo manuelino?",
+    "a": "Mosteiro dos Jerónimos",
+    "opts": [
+      "Mosteiro da Batalha",
+      "Mosteiro dos Jerónimos",
+      "Convento de Cristo",
+      "Mosteiro de Alcobaça"
+    ],
+    "exp": "Fica em Belém, junto ao Tejo."
+  },
+  {
+    "q": "Que palácio colorido fica no alto da serra de Sintra?",
+    "a": "Palácio da Pena",
+    "opts": [
+      "Palácio de Queluz",
+      "Palácio da Pena",
+      "Palácio de Mafra",
+      "Palácio da Ajuda"
+    ],
+    "exp": "É um símbolo do romantismo português."
+  },
+  {
+    "q": "Que cidade do centro de Portugal é famosa pelo santuário religioso?",
+    "a": "Fátima",
+    "opts": [
+      "Tomar",
+      "Fátima",
+      "Leiria",
+      "Viseu"
+    ],
+    "exp": "Recebe milhões de peregrinos todos os anos."
+  },
+  {
+    "q": "Que rei mandou plantar o Pinhal de Leiria e fundou a Universidade?",
+    "a": "D. Dinis",
+    "opts": [
+      "D. João II",
+      "D. Dinis",
+      "D. Sebastião",
+      "D. Manuel I"
+    ],
+    "exp": "Ficou conhecido como 'O Lavrador'."
+  },
+  {
+    "q": "Que prato de bacalhau leva batata palha e ovo mexido?",
+    "a": "Bacalhau à Brás",
+    "opts": [
+      "Bacalhau com natas",
+      "Bacalhau à Brás",
+      "Bacalhau à Gomes de Sá",
+      "Bacalhau à Zé do Pipo"
+    ],
+    "exp": "Diz-se que há mais de 365 receitas de bacalhau."
+  },
+  {
+    "q": "Que cidade portuguesa é conhecida pelos seus canais e barcos moliceiros?",
+    "a": "Aveiro",
+    "opts": [
+      "Setúbal",
+      "Aveiro",
+      "Viana do Castelo",
+      "Figueira da Foz"
+    ],
+    "exp": "Aveiro é chamada a 'Veneza de Portugal'."
+  },
+  {
+    "q": "Que terramoto destruiu grande parte de Lisboa?",
+    "a": "O de 1755",
+    "opts": [
+      "O de 1531",
+      "O de 1755",
+      "O de 1909",
+      "O de 1969"
+    ],
+    "exp": "O Marquês de Pombal reconstruiu a Baixa."
+  },
+  {
+    "q": "Que região vinícola do Douro é a mais antiga demarcada do mundo?",
+    "a": "Região Demarcada do Douro",
+    "opts": [
+      "Alentejo",
+      "Região Demarcada do Douro",
+      "Dão",
+      "Bairrada"
+    ],
+    "exp": "Foi demarcada em 1756."
+  },
+  {
+    "q": "Qual é a montanha mais alta de Portugal, na ilha do Pico?",
+    "a": "Montanha do Pico",
+    "opts": [
+      "Torre",
+      "Montanha do Pico",
+      "Pico Ruivo",
+      "Serra do Gerês"
+    ],
+    "exp": "Tem 2 351 m, o ponto mais alto do país."
+  },
+  {
+    "q": "Que vinho leve e jovem é típico da região do Minho?",
+    "a": "Vinho verde",
+    "opts": [
+      "Vinho do Porto",
+      "Vinho verde",
+      "Vinho da Madeira",
+      "Moscatel"
+    ],
+    "exp": "O vinho verde é fresco e ligeiramente efervescente."
+  },
+  {
+    "q": "Que castelo medieval está ligado ao nascimento de Portugal?",
+    "a": "Castelo de Guimarães",
+    "opts": [
+      "Castelo de São Jorge",
+      "Castelo de Guimarães",
+      "Castelo de Óbidos",
+      "Castelo dos Mouros"
+    ],
+    "exp": "Guimarães é o berço da nação."
   }
 ]

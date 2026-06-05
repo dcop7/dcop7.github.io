@@ -218,5 +218,269 @@
       "Camião"
     ],
     "exp": "Os comboios são um transporte muito eficiente."
+  },
+  {
+    "q": "Que veículo de duas rodas tem pedais e não usa combustível?",
+    "a": "Bicicleta",
+    "opts": [
+      "Mota",
+      "Bicicleta",
+      "Trotinete elétrica",
+      "Carro"
+    ],
+    "exp": "A bicicleta é movida pelas pernas."
+  },
+  {
+    "q": "Que veículo apaga incêndios e tem mangueiras?",
+    "a": "Carro dos bombeiros",
+    "opts": [
+      "Ambulância",
+      "Carro dos bombeiros",
+      "Carro da polícia",
+      "Camião do lixo"
+    ],
+    "exp": "Transporta água, escadas e mangueiras."
+  },
+  {
+    "q": "Que veículo leva os doentes ao hospital com sirene?",
+    "a": "Ambulância",
+    "opts": [
+      "Autocarro",
+      "Ambulância",
+      "Comboio",
+      "Avião"
+    ],
+    "exp": "Tem prioridade no trânsito."
+  },
+  {
+    "q": "Que veículo voa e tem hélices no topo?",
+    "a": "Helicóptero",
+    "opts": [
+      "Avião",
+      "Helicóptero",
+      "Balão",
+      "Drone gigante"
+    ],
+    "exp": "Descola e aterra na vertical."
+  },
+  {
+    "q": "Que veículo viaja sobre dois carris de ferro?",
+    "a": "Comboio",
+    "opts": [
+      "Autocarro",
+      "Comboio",
+      "Camião",
+      "Mota"
+    ],
+    "exp": "Os comboios transportam muitos passageiros."
+  },
+  {
+    "q": "Que veículo grande transporta mercadorias pelas estradas?",
+    "a": "Camião",
+    "opts": [
+      "Bicicleta",
+      "Camião",
+      "Mota",
+      "Trotinete"
+    ],
+    "exp": "Os camiões têm muitas rodas para aguentar o peso."
+  },
+  {
+    "q": "Que veículo flutua e navega no mar?",
+    "a": "Barco",
+    "opts": [
+      "Avião",
+      "Barco",
+      "Carro",
+      "Comboio"
+    ],
+    "exp": "Os barcos flutuam por impulsão."
+  },
+  {
+    "q": "Que veículo leva muitas pessoas pela cidade com paragens?",
+    "a": "Autocarro",
+    "opts": [
+      "Mota",
+      "Autocarro",
+      "Bicicleta",
+      "Skate"
+    ],
+    "exp": "Faz parte dos transportes públicos."
+  },
+  {
+    "q": "Que parte do carro serve para travar?",
+    "a": "Os travões",
+    "opts": [
+      "O volante",
+      "Os travões",
+      "As luzes",
+      "O rádio"
+    ],
+    "exp": "Os travões reduzem a velocidade."
+  },
+  {
+    "q": "Que veículo desce e explora o fundo do mar?",
+    "a": "Submarino",
+    "opts": [
+      "Veleiro",
+      "Submarino",
+      "Catamarã",
+      "Ferry"
+    ],
+    "exp": "Enche tanques de água para mergulhar."
+  },
+  {
+    "q": "Que veículo viaja para fora da Terra, para o espaço?",
+    "a": "Foguetão",
+    "opts": [
+      "Helicóptero",
+      "Foguetão",
+      "Planador",
+      "Balão"
+    ],
+    "exp": "Precisa de grande velocidade para subir."
+  },
+  {
+    "q": "Que cor do semáforo manda parar?",
+    "a": "Vermelho",
+    "opts": [
+      "Verde",
+      "Vermelho",
+      "Amarelo",
+      "Azul"
+    ],
+    "exp": "O verde indica que se pode avançar."
+  },
+  {
+    "q": "Que veículo de duas rodas tem motor e usa capacete?",
+    "a": "Mota",
+    "opts": [
+      "Bicicleta",
+      "Mota",
+      "Trotinete sem motor",
+      "Skate"
+    ],
+    "exp": "O capacete protege a cabeça."
+  },
+  {
+    "q": "Que veículo pequeno e leve usamos para deslizar de pé empurrando o chão?",
+    "a": "Trotinete",
+    "opts": [
+      "Carro",
+      "Trotinete",
+      "Camião",
+      "Comboio"
+    ],
+    "exp": "As trotinetes podem ser manuais ou elétricas."
+  },
+  {
+    "q": "Quantas rodas tem normalmente um carro ligeiro?",
+    "a": "Quatro",
+    "opts": [
+      "Duas",
+      "Três",
+      "Quatro",
+      "Seis"
+    ],
+    "exp": "As quatro rodas dão estabilidade."
+  },
+  {
+    "q": "Que veículo voa muito alto entre países, com asas e jatos?",
+    "a": "Avião",
+    "opts": [
+      "Helicóptero",
+      "Avião",
+      "Balão",
+      "Drone"
+    ],
+    "exp": "Voa a cerca de 900 km/h."
+  },
+  {
+    "q": "Que parte do carro faz som para avisar os outros?",
+    "a": "A buzina",
+    "opts": [
+      "O motor",
+      "A buzina",
+      "O espelho",
+      "O banco"
+    ],
+    "exp": "A buzina serve para avisar, não para insultar."
+  },
+  {
+    "q": "Que veículo escolar transporta as crianças à escola?",
+    "a": "Autocarro escolar",
+    "opts": [
+      "Ambulância",
+      "Autocarro escolar",
+      "Camião",
+      "Trator"
+    ],
+    "exp": "Costuma ter cor viva para ser bem visto."
+  },
+  {
+    "q": "Que veículo usa velas para se mover com o vento?",
+    "a": "Veleiro",
+    "opts": [
+      "Cargueiro",
+      "Veleiro",
+      "Submarino",
+      "Lancha a motor"
+    ],
+    "exp": "As velas captam o vento."
+  },
+  {
+    "q": "Que parte do carro ilumina a estrada à noite?",
+    "a": "Os faróis",
+    "opts": [
+      "A buzina",
+      "Os faróis",
+      "O rádio",
+      "O volante"
+    ],
+    "exp": "Os faróis ajudam a ver e a ser visto."
+  },
+  {
+    "q": "Que cinto nos protege dentro do carro?",
+    "a": "O cinto de segurança",
+    "opts": [
+      "O cinto das calças",
+      "O cinto de segurança",
+      "A gravata",
+      "O fato de banho"
+    ],
+    "exp": "O cinto salva vidas em caso de acidente."
+  },
+  {
+    "q": "Que veículo público elétrico anda sobre carris nas ruas de Lisboa?",
+    "a": "O elétrico",
+    "opts": [
+      "O metro",
+      "O elétrico",
+      "O comboio",
+      "O autocarro"
+    ],
+    "exp": "O elétrico 28 é muito famoso em Lisboa."
+  },
+  {
+    "q": "Quantas rodas tem um triciclo?",
+    "a": "Três",
+    "opts": [
+      "Duas",
+      "Três",
+      "Quatro",
+      "Uma"
+    ],
+    "exp": "O triciclo é estável e usado por crianças pequenas."
+  },
+  {
+    "q": "Que objeto impede um barco de se mover quando está parado?",
+    "a": "A âncora",
+    "opts": [
+      "A vela",
+      "A âncora",
+      "O leme",
+      "O remo"
+    ],
+    "exp": "A âncora prende o barco ao fundo."
   }
 ]

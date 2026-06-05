@@ -218,5 +218,214 @@
       "Miguel Torga"
     ],
     "exp": "Saramago recebeu o Nobel em 1998."
+  },
+  {
+    "q": "Em que batalha de 1385 Portugal venceu Castela?",
+    "a": "Aljubarrota",
+    "opts": [
+      "Ourique",
+      "Aljubarrota",
+      "Alcácer-Quibir",
+      "Toro"
+    ],
+    "exp": "Originou o Mosteiro da Batalha."
+  },
+  {
+    "q": "Que rei desapareceu em Alcácer-Quibir em 1578?",
+    "a": "D. Sebastião",
+    "opts": [
+      "D. Manuel I",
+      "D. Sebastião",
+      "D. João III",
+      "D. Henrique"
+    ],
+    "exp": "Deu origem ao sebastianismo."
+  },
+  {
+    "q": "Que tratado de 1494 dividiu o mundo com Castela?",
+    "a": "Tratado de Tordesilhas",
+    "opts": [
+      "Tratado de Windsor",
+      "Tratado de Tordesilhas",
+      "Tratado de Zamora",
+      "Tratado de Methuen"
+    ],
+    "exp": "Deu o Brasil a Portugal."
+  },
+  {
+    "q": "Em que ano aderiu Portugal à então CEE?",
+    "a": "1986",
+    "opts": [
+      "1974",
+      "1979",
+      "1986",
+      "1992"
+    ],
+    "exp": "Portugal e Espanha aderiram juntos."
+  },
+  {
+    "q": "Que navegador português dobrou primeiro o Cabo da Boa Esperança?",
+    "a": "Bartolomeu Dias",
+    "opts": [
+      "Vasco da Gama",
+      "Bartolomeu Dias",
+      "Diogo Cão",
+      "Cabral"
+    ],
+    "exp": "Dobrou o cabo em 1488."
+  },
+  {
+    "q": "Que ditador liderou o Estado Novo durante décadas?",
+    "a": "Salazar",
+    "opts": [
+      "Marcelo Caetano",
+      "Salazar",
+      "Sidónio Pais",
+      "Óscar Carmona"
+    ],
+    "exp": "Governou de 1932 a 1968."
+  },
+  {
+    "q": "Que escritor português recebeu o Prémio Nobel da Literatura?",
+    "a": "José Saramago",
+    "opts": [
+      "Eça de Queirós",
+      "José Saramago",
+      "Lobo Antunes",
+      "Miguel Torga"
+    ],
+    "exp": "Recebeu-o em 1998."
+  },
+  {
+    "q": "Que dinastia subiu ao trono em 1640 com a Restauração?",
+    "a": "Bragança",
+    "opts": [
+      "Avis",
+      "Bragança",
+      "Borgonha",
+      "Filipina"
+    ],
+    "exp": "D. João IV foi aclamado rei."
+  },
+  {
+    "q": "Que rei português é conhecido como 'O Conquistador'?",
+    "a": "D. Afonso Henriques",
+    "opts": [
+      "D. Dinis",
+      "D. Afonso Henriques",
+      "D. João I",
+      "D. Manuel I"
+    ],
+    "exp": "Foi o primeiro rei de Portugal."
+  },
+  {
+    "q": "Que poeta escreveu a epopeia 'Os Lusíadas'?",
+    "a": "Luís de Camões",
+    "opts": [
+      "Gil Vicente",
+      "Luís de Camões",
+      "Bocage",
+      "Sá de Miranda"
+    ],
+    "exp": "Publicada em 1572."
+  },
+  {
+    "q": "Que primeiro-ministro reconstruiu Lisboa após 1755?",
+    "a": "Marquês de Pombal",
+    "opts": [
+      "Duque de Saldanha",
+      "Marquês de Pombal",
+      "Mouzinho da Silveira",
+      "Sidónio Pais"
+    ],
+    "exp": "Criou a Baixa Pombalina, à prova de sismos."
+  },
+  {
+    "q": "Que rei mandou construir o Convento de Mafra?",
+    "a": "D. João V",
+    "opts": [
+      "D. José I",
+      "D. João V",
+      "D. Pedro II",
+      "D. Manuel I"
+    ],
+    "exp": "Foi construído com o ouro do Brasil."
+  },
+  {
+    "q": "Qual era o nome do avião dos primeiros voos Lisboa-Rio (1922)?",
+    "a": "Lusitânia (e Santa Cruz)",
+    "opts": [
+      "Espírito de São Luís",
+      "Lusitânia (e Santa Cruz)",
+      "Spitfire",
+      "Graf Zeppelin"
+    ],
+    "exp": "Gago Coutinho e Sacadura Cabral fizeram a primeira travessia aérea do Atlântico Sul."
+  },
+  {
+    "q": "Que concelho é o mais extenso de Portugal?",
+    "a": "Odemira",
+    "opts": [
+      "Évora",
+      "Odemira",
+      "Santiago do Cacém",
+      "Beja"
+    ],
+    "exp": "Fica no litoral alentejano."
+  },
+  {
+    "q": "Que rei mandou erguer a Universidade que se fixou em Coimbra?",
+    "a": "D. Dinis",
+    "opts": [
+      "D. Afonso III",
+      "D. Dinis",
+      "D. João I",
+      "D. Manuel I"
+    ],
+    "exp": "Fundada em 1290."
+  },
+  {
+    "q": "Que estilo arquitetónico português surgiu na época dos Descobrimentos?",
+    "a": "Manuelino",
+    "opts": [
+      "Românico",
+      "Manuelino",
+      "Pombalino",
+      "Barroco"
+    ],
+    "exp": "Inspira-se em motivos marinhos."
+  },
+  {
+    "q": "Quem sucedeu a Salazar como chefe do governo até 1974?",
+    "a": "Marcelo Caetano",
+    "opts": [
+      "Américo Tomás",
+      "Marcelo Caetano",
+      "Spínola",
+      "Costa Gomes"
+    ],
+    "exp": "Foi deposto pela Revolução de 25 de Abril."
+  },
+  {
+    "q": "Que poeta português escreveu o livro de poemas 'Mensagem'?",
+    "a": "Fernando Pessoa",
+    "opts": [
+      "Camões",
+      "Fernando Pessoa",
+      "Florbela Espanca",
+      "Cesário Verde"
+    ],
+    "exp": "Foi um dos poucos livros que Pessoa publicou em vida."
+  },
+  {
+    "q": "Que aviadores portugueses fizeram a 1.ª travessia aérea do Atlântico Sul (1922)?",
+    "a": "Gago Coutinho e Sacadura Cabral",
+    "opts": [
+      "Lindbergh e Earhart",
+      "Gago Coutinho e Sacadura Cabral",
+      "Santos-Dumont",
+      "Wright e Curtiss"
+    ],
+    "exp": "Inventaram um instrumento de navegação aérea."
   }
 ]
