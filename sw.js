@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v97';
+const CACHE = 'dcop7-v98';
 const STATIC = [
   '/',
   '/index.html',
@@ -7,7 +7,13 @@ const STATIC = [
   '/css/views/explorer.css',
   '/css/views/explorer-body.css',
   '/css/views/ocorrencias.css',
+  '/css/views/receitas.css',
   '/css/views/quiz.css',
+  /* Receitas (base local pt-PT, offline-first) */
+  '/receitas/portuguesas.json',
+  '/receitas/pratos.json',
+  '/receitas/entradas.json',
+  '/receitas/sobremesas.json',
   '/data/countries.json',
   '/data/world-countries.geojson',
   '/data/pt-districts.geojson',
@@ -34,6 +40,7 @@ const STATIC = [
   '/js/pages/photography.js',
   '/js/pages/workout.js',
   '/js/pages/media.js',
+  '/js/pages/receitas.js',
   '/js/pages/cheatsheets.js',
   /* Quiz */
   '/js/quiz/quiz-engine.js',
