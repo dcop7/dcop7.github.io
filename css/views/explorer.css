@@ -2537,6 +2537,17 @@ body.light .pt-capital-label .pt-cap-dot {
   outline: 2px solid var(--accent2); outline-offset: 2px;
 }
 
+/* ── Keyboard focus across every sub-explorer's controls ── */
+.pt-basemap-btn:focus-visible, .pt-district-chip:focus-visible, .pt-discover-btn:focus-visible,
+.pt-info-close:focus-visible, .pt-back-btn:focus-visible, .pt-drill-btn:focus-visible,
+.pt-mon-link:focus-visible, .pt-wiki-link:focus-visible, .pt-search-input:focus-visible,
+.ex-solar-btn:focus-visible, .ex-solar-panel-tab:focus-visible, .ex-solar-panel-close:focus-visible,
+.ex-rt-chip:focus-visible, .ex-rt-now:focus-visible, .ex-rt-card-close:focus-visible,
+.hb-topic:focus-visible, .hb3d-reset:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
 @media (max-width: 640px) {
   .tl-toolbar { padding: .6rem .7rem .35rem; }
   .tl-btn { flex: 1 1 auto; }

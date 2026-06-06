@@ -428,8 +428,11 @@ const PortugalExplorer = (function () {
     _baseTile.bringToBack();
     const el = document.getElementById('pt-leaflet-map');
     if (el) el.classList.toggle('pt-sat', style === 'satellite');
-    document.querySelectorAll('.pt-basemap-btn').forEach(x =>
-      x.classList.toggle('active', x.dataset.base === style));
+    document.querySelectorAll('.pt-basemap-btn').forEach(x => {
+      const on = x.dataset.base === style;
+      x.classList.toggle('active', on);
+      x.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
     _onZoom(); // refresh capital-label visibility for the new style
   }
 
@@ -440,11 +443,11 @@ const PortugalExplorer = (function () {
       <div class="pt-explorer-wrap">
         <div class="pt-map-area" id="pt-map-area">
           <div id="pt-leaflet-map"></div>
-          <div class="pt-basemap-bar" id="pt-basemap-bar">
-            <button class="pt-basemap-btn active" data-base="standard">Político</button>
-            <button class="pt-basemap-btn" data-base="terrain">Relevo</button>
-            <button class="pt-basemap-btn" data-base="satellite">Satélite</button>
-            <button class="pt-basemap-btn" data-base="dark">Escuro</button>
+          <div class="pt-basemap-bar" id="pt-basemap-bar" role="group" aria-label="Estilo do mapa">
+            <button class="pt-basemap-btn active" data-base="standard" aria-pressed="true">Político</button>
+            <button class="pt-basemap-btn" data-base="terrain" aria-pressed="false">Relevo</button>
+            <button class="pt-basemap-btn" data-base="satellite" aria-pressed="false">Satélite</button>
+            <button class="pt-basemap-btn" data-base="dark" aria-pressed="false">Escuro</button>
           </div>
           <div class="pt-loading" id="pt-loading">
             <div class="pt-loading-spinner"></div>
@@ -459,8 +462,8 @@ const PortugalExplorer = (function () {
               <span>Explorar Portugal</span>
             </div>
             <div class="pt-search-bar">
-              <input class="pt-search-input" id="pt-search" type="text" placeholder="Pesquisar distrito…" autocomplete="off"/>
-              <button class="pt-discover-btn" id="pt-discover" title="Descobrir distrito aleatório">🎲</button>
+              <input class="pt-search-input" id="pt-search" type="text" placeholder="Pesquisar distrito…" autocomplete="off" aria-label="Pesquisar distrito"/>
+              <button class="pt-discover-btn" id="pt-discover" title="Descobrir distrito aleatório" aria-label="Descobrir distrito aleatório">🎲</button>
             </div>
           </div>
 
@@ -474,8 +477,8 @@ const PortugalExplorer = (function () {
           </div>
         </div>
 
-        <div class="pt-info-panel" id="pt-info-panel">
-          <button class="pt-info-close" id="pt-info-close">✕</button>
+        <div class="pt-info-panel" id="pt-info-panel" role="region" aria-label="Informação do distrito" tabindex="-1">
+          <button class="pt-info-close" id="pt-info-close" aria-label="Fechar painel">✕</button>
           <div class="pt-info-content" id="pt-info-content"></div>
         </div>
       </div>`;
@@ -704,8 +707,24 @@ const PortugalExplorer = (function () {
 
     /* Highlight list item */
     document.querySelectorAll('.pt-district-chip').forEach(c => {
-      c.classList.toggle('active', c.dataset.id === d.id);
+      const on = c.dataset.id === d.id;
+      c.classList.toggle('active', on);
+      if (on) c.setAttribute('aria-current', 'true'); else c.removeAttribute('aria-current');
     });
+  }
+
+  /* Close the info panel (shared by the ✕ button and the Escape key). */
+  function _closePanel() {
+    const wrap = _container?.querySelector('.pt-explorer-wrap');
+    if (!wrap || !wrap.classList.contains('pt-info-open')) return;
+    wrap.classList.remove('pt-info-open');
+    _clearConcelhos();
+    _selected = null;
+    _markers.forEach(({ dist, marker }) => {
+      marker.setStyle({ fillOpacity: 0.35, weight: 2, radius: _markerRadius(dist) });
+    });
+    document.querySelectorAll('.pt-district-chip').forEach(c => { c.classList.remove('active'); c.removeAttribute('aria-current'); });
+    setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 340);
   }
 
   /* Auto-zoom to fit the selected district's bounds (smooth, capped so it
@@ -966,18 +985,17 @@ const PortugalExplorer = (function () {
       _select(d);
     });
 
-    container.querySelector('#pt-info-close')?.addEventListener('click', () => {
-      container.querySelector('.pt-explorer-wrap')?.classList.remove('pt-info-open');
-      _clearConcelhos();
-      _selected = null;
-      _markers.forEach(({ dist, marker }) => {
-        marker.setStyle({ fillOpacity: 0.35, weight: 2, radius: _markerRadius(dist) });
+    container.querySelector('#pt-info-close')?.addEventListener('click', _closePanel);
+
+    /* Escape closes the open info panel (bind once, even across re-mounts). */
+    if (!_ptEscBound) {
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && _container && _container.offsetParent !== null) _closePanel();
       });
-      document.querySelectorAll('.pt-district-chip').forEach(c => c.classList.remove('active'));
-      /* Map area grows back when the panel column collapses. */
-      setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 340);
-    });
+      _ptEscBound = true;
+    }
   }
+  let _ptEscBound = false;
 
   function _wireSidebar(container) {
     container.querySelectorAll('.pt-district-chip').forEach(chip => {

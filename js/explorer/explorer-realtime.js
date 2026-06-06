@@ -294,7 +294,7 @@ const RealtimeEarth = (function () {
         </div>
 
         <div class="ex-rt-layers" id="rt-layers">
-          ${LAYERS.map(l => `<button class="ex-rt-chip${_on[l.id] ? ' on' : ''}" data-layer="${l.id}" title="${l.label}">
+          ${LAYERS.map(l => `<button class="ex-rt-chip${_on[l.id] ? ' on' : ''}" data-layer="${l.id}" title="${l.label}" aria-pressed="${_on[l.id] ? 'true' : 'false'}" aria-label="${l.label}">
             <span class="ex-rt-chip-ic">${l.icon}</span><span class="ex-rt-chip-lbl">${l.label}</span></button>`).join('')}
         </div>
 
@@ -1047,6 +1047,7 @@ const RealtimeEarth = (function () {
       const chip = e.target.closest('.ex-rt-chip'); if (!chip) return;
       const id = chip.dataset.layer; _on[id] = !_on[id];
       chip.classList.toggle('on', _on[id]);
+      chip.setAttribute('aria-pressed', _on[id] ? 'true' : 'false');
       _applyLayer(id);
     });
     document.getElementById('rt-now')?.addEventListener('click', () => _setDate(null));

@@ -812,7 +812,11 @@ const HumanBodyExplorer = (function () {
   function _applyTopic(id, instant) {
     _topic = id;
     const p = PRESETS[id]; if (!p) return;
-    _host.querySelectorAll('.hb-topic').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+    _host.querySelectorAll('.hb-topic').forEach(b => {
+      const on = b.dataset.id === id;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
 
     G.dna.visible = !!p.dna;
     G.senses.visible = !!p.senses;
@@ -871,8 +875,8 @@ const HumanBodyExplorer = (function () {
   async function mount(host) {
     host.innerHTML = `
       <div class="hb-wrap">
-        <nav class="hb-topics">
-          ${TOPICS.map(t => `<button class="hb-topic ${t.id==='anatomia'?'active':''}" data-id="${t.id}">
+        <nav class="hb-topics" role="tablist" aria-label="${_t('Body systems','Sistemas do corpo')}">
+          ${TOPICS.map(t => `<button class="hb-topic ${t.id==='anatomia'?'active':''}" data-id="${t.id}" role="tab" aria-selected="${t.id==='anatomia'?'true':'false'}">
             <span class="hb-topic-ic">${t.ic}</span>${t.name()}</button>`).join('')}
         </nav>
         <div class="hb-diagram">
