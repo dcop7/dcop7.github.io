@@ -9,7 +9,7 @@ const TimelineExplorer = (function () {
   'use strict';
 
   let _data = null, _loaded = false, _root = null, _stage = null, _lastFocus = null, _escBound = false;
-  let _cat = 'all', _q = '', _keyOnly = false;
+  let _cat = 'all', _q = '', _keyOnly = true;   /* Highlights on by default — cleaner first view */
   let _zoom = 1, _pan = 0, _stageW = 0;           // view transform
   const MINZ = 1, MAXZ = 420;
   let _nodes = [], _bands = [];                    // {e, el, x} / {era, el}
@@ -96,26 +96,57 @@ const TimelineExplorer = (function () {
   const wikiTitle = e => e.wiki || WIKI[e.id] || e.title;
   function wikiUrl(title) { return 'https://pt.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')); }
 
-  /* Wikipedia REST summary → { thumb, extract, url }. Cached in sessionStorage. */
-  async function wikiSummary(title) {
-    const key = 'tl-wiki-' + title;
-    try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
-    let out = { thumb: null, extract: null, url: null };
-    try {
-      const r = await fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title));
-      if (r.ok) {
-        const d = await r.json();
-        if (d && d.type !== 'https://mediawiki.org/wiki/HyperSwitch/errors/not_found') {
-          out = {
-            thumb: (d.thumbnail && d.thumbnail.source) || null,
-            extract: d.extract || null,
-            url: (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || null,
-          };
-        }
-      }
-    } catch (e) {}
-    try { sessionStorage.setItem(key, JSON.stringify(out)); } catch (e) {}
-    return out;
+  /* ── Generated thumbnails (vector, offline, no copyright) ──────────────────
+     Each event gets a themed SVG "scene" by category, with a seeded hue/star
+     variation so events look distinct. No network, no licensing concerns. */
+  function _hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+  function _rng(seed) { let x = seed % 2147483647; if (x <= 0) x += 2147483646; return () => (x = x * 16807 % 2147483647) / 2147483647; }
+  function _stars(rnd, n, w, h) {
+    let s = '';
+    for (let i = 0; i < n; i++) { const r = (rnd() * 1.3 + 0.4).toFixed(1); s += `<circle cx="${(rnd() * w).toFixed(0)}" cy="${(rnd() * h).toFixed(0)}" r="${r}" fill="#fff" opacity="${(rnd() * 0.6 + 0.2).toFixed(2)}"/>`; }
+    return s;
+  }
+  /* category motif (centred around 160,72) — simple, recognisable vectors */
+  function _motif(c, color, rnd) {
+    const W = 'rgba(255,255,255,.92)', S = 'rgba(255,255,255,.6)';
+    switch (c) {
+      case 'universo': { let g = ''; for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; g += `<line x1="160" y1="72" x2="${(160 + Math.cos(a) * 60).toFixed(0)}" y2="${(72 + Math.sin(a) * 46).toFixed(0)}" stroke="${color}" stroke-width="2" opacity=".5"/>`; } return `${g}<circle cx="160" cy="72" r="16" fill="#fff"/><circle cx="160" cy="72" r="30" fill="none" stroke="${W}" stroke-width="1.5" opacity=".5"/>`; }
+      case 'solar': return `<circle cx="86" cy="72" r="26" fill="${color}"/><circle cx="86" cy="72" r="34" fill="none" stroke="${color}" stroke-width="2" opacity=".4"/><ellipse cx="86" cy="72" rx="120" ry="40" fill="none" stroke="${S}" stroke-width="1.5"/><ellipse cx="86" cy="72" rx="86" ry="28" fill="none" stroke="${S}" stroke-width="1.5"/><circle cx="206" cy="72" r="9" fill="${W}"/><circle cx="150" cy="46" r="5" fill="${W}"/>`;
+      case 'terra': return `<circle cx="160" cy="72" r="46" fill="${color}"/><circle cx="160" cy="72" r="52" fill="none" stroke="${color}" stroke-width="2" opacity=".4"/><path d="M130 62 q14 -10 26 -2 q12 8 4 16 q-12 8 -24 2 q-12 -6 -6 -16Z" fill="${W}" opacity=".85"/><path d="M170 84 q12 -4 18 4 q4 8 -6 12 q-12 2 -16 -6Z" fill="${W}" opacity=".8"/>`;
+      case 'vida': return `<circle cx="160" cy="72" r="44" fill="none" stroke="${W}" stroke-width="3"/><circle cx="160" cy="72" r="16" fill="${color}"/><circle cx="138" cy="56" r="5" fill="${W}"/><circle cx="184" cy="64" r="6" fill="${W}"/><circle cx="150" cy="92" r="5" fill="${W}"/><circle cx="178" cy="90" r="4" fill="${W}"/>`;
+      case 'dinos': return `<path d="M70 110 q4 -34 30 -40 q6 -28 30 -30 q-6 12 2 18 q16 2 22 16 q14 2 22 16 l16 4 q-8 8 -18 4 q4 14 -8 18 l-4 -14 q-10 6 -18 0 l-2 12 q-10 0 -10 -10 q-26 4 -34 -10 q-12 4 -16 18Z" fill="${W}"/><circle cx="120" cy="48" r="3" fill="${color}"/>`;
+      case 'humana': return `<circle cx="160" cy="40" r="12" fill="${W}"/><path d="M160 54 q14 4 14 24 l-4 26 q8 14 4 22 l-8 -2 l-4 -22 l-4 22 l-8 2 q-4 -8 4 -22 l-4 -26 q0 -20 14 -24Z" fill="${W}"/>`;
+      case 'civil': return `<path d="M70 50 L160 30 L250 50 Z" fill="${W}"/><rect x="74" y="50" width="172" height="8" fill="${W}"/>${[0,1,2,3,4].map(i=>`<rect x="${84+i*36}" y="60" width="14" height="46" fill="${S}"/>`).join('')}<rect x="70" y="106" width="180" height="9" fill="${W}"/>`;
+      case 'mundial': return `<circle cx="120" cy="72" r="40" fill="none" stroke="${W}" stroke-width="3"/><ellipse cx="120" cy="72" rx="18" ry="40" fill="none" stroke="${S}" stroke-width="2"/><line x1="80" y1="72" x2="160" y2="72" stroke="${S}" stroke-width="2"/><rect x="176" y="40" width="6" height="70" fill="${W}"/><path d="M182 44 l44 8 l-44 12Z" fill="${color}"/>`;
+      case 'portugal': return `<path d="M60 96 q40 12 100 0 t100 0 v8 q-60 14 -100 2 t-100 -2Z" fill="${color}" opacity=".6"/><path d="M120 96 L200 96 L188 76 L132 76Z" fill="${W}"/><rect x="158" y="34" width="4" height="44" fill="${W}"/><path d="M162 38 q34 8 0 30Z" fill="${W}"/>`;
+      case 'espaco': return `<path d="M160 26 q20 26 18 58 l-8 18 h-20 l-8 -18 q-2 -32 18 -58Z" fill="${W}"/><circle cx="160" cy="60" r="8" fill="${color}"/><path d="M142 84 l-16 18 l18 -4Z" fill="${S}"/><path d="M178 84 l16 18 l-18 -4Z" fill="${S}"/><path d="M150 102 q10 22 20 0 q-6 14 -10 22 q-4 -8 -10 -22Z" fill="${color}"/>`;
+      case 'tech': return `<rect x="118" y="40" width="84" height="64" rx="6" fill="none" stroke="${W}" stroke-width="3"/><rect x="138" y="60" width="44" height="24" rx="3" fill="${color}"/>${[0,1,2].map(i=>`<line x1="${134+i*26}" y1="40" x2="${134+i*26}" y2="30" stroke="${S}" stroke-width="3"/><line x1="${134+i*26}" y1="104" x2="${134+i*26}" y2="114" stroke="${S}" stroke-width="3"/><line x1="118" y1="${56+i*16}" x2="108" y2="${56+i*16}" stroke="${S}" stroke-width="3"/><line x1="202" y1="${56+i*16}" x2="212" y2="${56+i*16}" stroke="${S}" stroke-width="3"/>`).join('')}`;
+      case 'medicina': { let r = ''; for (let i = 0; i <= 6; i++) { const y = 36 + i * 11; r += `<line x1="${(160 - Math.sin(i) * 22).toFixed(0)}" y1="${y}" x2="${(160 + Math.sin(i) * 22).toFixed(0)}" y2="${y}" stroke="${S}" stroke-width="2"/>`; } return `<path d="M138 36 q44 18 0 72" fill="none" stroke="${W}" stroke-width="3"/><path d="M182 36 q-44 18 0 72" fill="none" stroke="${color}" stroke-width="3"/>${r}`; }
+      case 'ambiente': return `<path d="M160 30 q44 18 30 56 q-12 30 -30 30 q-18 0 -30 -30 q-14 -38 30 -56Z" fill="${color}"/><path d="M160 36 V112" stroke="${W}" stroke-width="2"/>${[0,1,2,3].map(i=>`<path d="M160 ${56+i*14} q14 -6 22 -14" fill="none" stroke="${W}" stroke-width="1.5"/><path d="M160 ${56+i*14} q-14 -6 -22 -14" fill="none" stroke="${W}" stroke-width="1.5"/>`).join('')}`;
+      case 'cultura': return `<path d="M160 36 q56 0 56 40 q0 18 -22 18 q-14 0 -14 12 q0 12 -20 12 q-56 0 -56 -50 q0 -44 56 -44Z" fill="${W}"/><circle cx="138" cy="60" r="6" fill="#ef4444"/><circle cx="166" cy="52" r="6" fill="#f59e0b"/><circle cx="190" cy="64" r="6" fill="#3b82f6"/><circle cx="150" cy="84" r="6" fill="#22c55e"/>`;
+      default: return `<circle cx="160" cy="72" r="34" fill="${color}"/>`;
+    }
+  }
+  function artSVG(e) {
+    const c = cat(e), seed = _hash(e.id), rnd = _rng(seed + 7);
+    const hue = seed % 60 - 30;   /* subtle per-event hue shift on the backdrop */
+    const id = 'a' + seed;
+    return `<svg viewBox="0 0 320 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(e.title)}">
+      <defs>
+        <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="${c.color}" stop-opacity=".5"/>
+          <stop offset="1" stop-color="#080a14"/>
+        </linearGradient>
+        <radialGradient id="${id}r" cx="0.5" cy="0.42" r="0.7">
+          <stop offset="0" stop-color="${c.color}" stop-opacity=".35"/>
+          <stop offset="1" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+      <rect width="320" height="150" fill="url(#${id})"/>
+      <rect width="320" height="150" fill="url(#${id}r)" style="filter:hue-rotate(${hue}deg)"/>
+      ${_stars(rnd, 26, 320, 150)}
+      ${_motif(e.cat, c.color, rnd)}
+    </svg>`;
   }
 
   /* Era bands shown across the top — give every era visible room. */
@@ -383,7 +414,9 @@ const TimelineExplorer = (function () {
     _stage.addEventListener('pointerdown', ev => {
       if (ev.target.closest('.tl-zoom') || ev.target.closest('.tl-mini')) return;
       pts.set(ev.pointerId, ev);
-      _stage.setPointerCapture?.(ev.pointerId);
+      /* NOTE: do NOT capture the pointer here — capturing on the stage retargets
+         the subsequent `click` to the stage, so event nodes never receive it.
+         We capture only once a real drag starts (see pointermove). */
       if (pts.size === 1) { down = true; _dragged = false; moved = 0; sx = ev.clientX; sp = _pan; }
       else if (pts.size === 2) {
         const a = [...pts.values()];
@@ -392,7 +425,6 @@ const TimelineExplorer = (function () {
         const r = _stage.getBoundingClientRect();
         pinchCx = (a[0].clientX + a[1].clientX) / 2 - r.left;
       }
-      _stage.classList.add('tl-grabbing');
     });
     _stage.addEventListener('pointermove', ev => {
       if (!pts.has(ev.pointerId)) return;
@@ -407,7 +439,12 @@ const TimelineExplorer = (function () {
       if (!down) return;
       const dx = ev.clientX - sx;
       moved += Math.abs(dx);
-      if (Math.abs(ev.clientX - sx) > 5) _dragged = true;
+      if (!_dragged && Math.abs(ev.clientX - sx) > 5) {
+        _dragged = true;
+        _stage.classList.add('tl-grabbing');
+        try { _stage.setPointerCapture?.(ev.pointerId); } catch (e) {}   /* capture only while dragging */
+      }
+      if (!_dragged) return;
       _pan = sp + dx;
       scheduleLayout();
     });
@@ -448,9 +485,7 @@ const TimelineExplorer = (function () {
     d.style.setProperty('--c', c.color);
     d.innerHTML = `
       <button class="tl-d-close" aria-label="${_t('Close','Fechar')}">✕</button>
-      <div class="tl-d-media" id="tl-d-media">
-        <div class="tl-d-media-ph"><span class="tl-d-emoji-big">${c.emoji}</span></div>
-      </div>
+      <div class="tl-d-media">${artSVG(e)}<span class="tl-d-media-em">${c.emoji}</span></div>
       <div class="tl-d-head">
         <span class="tl-d-emoji">${c.emoji}</span>
         <div><span class="tl-d-cat">${esc(c.label)}</span><h2 class="tl-d-title" id="tl-d-title">${esc(e.title)}</h2></div>
@@ -461,8 +496,7 @@ const TimelineExplorer = (function () {
       </div>
       <p class="tl-d-desc">${esc(e.desc || '')}</p>
       ${e.fact ? `<div class="tl-d-fact"><strong>💡 ${_t('Did you know?','Curiosidade')}</strong> ${esc(e.fact)}</div>` : ''}
-      <div class="tl-d-wiki" id="tl-d-wiki"></div>
-      <a class="tl-d-wikilink" id="tl-d-wikilink" href="${wikiUrl(wTitle)}" target="_blank" rel="noopener">📖 ${_t('Read on Wikipedia','Ler na Wikipédia')} ↗</a>
+      <a class="tl-d-wikilink" href="${wikiUrl(wTitle)}" target="_blank" rel="noopener">📖 ${_t('Read on Wikipedia','Ler na Wikipédia')} ↗</a>
       ${related.length ? `<div class="tl-d-rel-label">🔗 ${_t('Related events','Eventos relacionados')}</div>
         <div class="tl-d-rel">${related.map(r => `<button class="tl-chip" data-id="${esc(r.id)}" style="--c:${cat(r).color}"><span>${cat(r).emoji}</span>${esc(r.title)}</button>`).join('')}</div>` : ''}`;
     d.hidden = false; d.scrollTop = 0;
@@ -470,20 +504,6 @@ const TimelineExplorer = (function () {
     d.querySelectorAll('.tl-chip[data-id]').forEach(b => b.onclick = () => { focusEvent(b.dataset.id); openDetail(b.dataset.id); });
     _lastFocus = document.activeElement;
     requestAnimationFrame(() => d.querySelector('.tl-d-close')?.focus());
-
-    /* fetch Wikipedia image + extract + canonical link (cached, non-blocking) */
-    wikiSummary(wTitle).then(s => {
-      if (!d.isConnected || d.hidden) return;
-      if (s.thumb) {
-        const media = d.querySelector('#tl-d-media');
-        if (media) media.innerHTML = `<img src="${esc(s.thumb)}" alt="${esc(e.title)}" loading="lazy"><span class="tl-d-media-cr">Wikipédia</span>`;
-      }
-      if (s.extract && s.extract.length > (e.desc || '').length + 20) {
-        const w = d.querySelector('#tl-d-wiki');
-        if (w) w.innerHTML = `<p>${esc(s.extract)}</p>`;
-      }
-      if (s.url) { const a = d.querySelector('#tl-d-wikilink'); if (a) a.href = s.url; }
-    });
   }
   function closeDetail() {
     const d = _root && _root.querySelector('#tl-detail');
@@ -503,7 +523,7 @@ const TimelineExplorer = (function () {
           </div>
           <button class="tl-btn" id="tl-today" hidden>📅 ${_t('Today','Hoje')}</button>
           <button class="tl-btn" id="tl-random">🎲 ${_t('Random','Aleatório')}</button>
-          <button class="tl-btn" id="tl-key" aria-pressed="false">✨ ${_t('Highlights','Destaques')}</button>
+          <button class="tl-btn${_keyOnly ? ' on' : ''}" id="tl-key" aria-pressed="${_keyOnly}">✨ ${_t('Highlights','Destaques')}</button>
         </div>
         <div class="tl-chips tl-cats" id="tl-cats" role="group" aria-label="${_t('Filter by category','Filtrar por categoria')}">
           ${cats.map(([id, em, lb]) => `<button class="tl-fchip${id === 'all' ? ' on' : ''}" data-cat="${id}"><span>${em}</span>${esc(lb)}</button>`).join('')}
