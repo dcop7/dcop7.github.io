@@ -1,0 +1,158 @@
+[
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Twitch",
+    "opts": [
+      "McDonald's",
+      "Dropbox",
+      "Twitch",
+      "Shazam"
+    ],
+    "exp": "Este é o logótipo de Twitch.",
+    "img": "quizzes/assets/icons/twitch.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Snapchat",
+    "opts": [
+      "Snapchat",
+      "SoundCloud",
+      "Epic Games",
+      "Netflix"
+    ],
+    "exp": "Este é o logótipo de Snapchat.",
+    "img": "quizzes/assets/icons/snapchat.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "PayPal",
+    "opts": [
+      "SoundCloud",
+      "PayPal",
+      "YouTube",
+      "TikTok"
+    ],
+    "exp": "Este é o logótipo de PayPal.",
+    "img": "quizzes/assets/icons/paypal.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Airbnb",
+    "opts": [
+      "McDonald's",
+      "Pinterest",
+      "Airbnb",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de Airbnb.",
+    "img": "quizzes/assets/icons/airbnb.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Dropbox",
+    "opts": [
+      "Reddit",
+      "Vimeo",
+      "Dropbox",
+      "SoundCloud"
+    ],
+    "exp": "Este é o logótipo de Dropbox.",
+    "img": "quizzes/assets/icons/dropbox.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Zoom",
+    "opts": [
+      "Zoom",
+      "PlayStation",
+      "Roblox",
+      "Dropbox"
+    ],
+    "exp": "Este é o logótipo de Zoom.",
+    "img": "quizzes/assets/icons/zoom.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "eBay",
+    "opts": [
+      "eBay",
+      "Spotify",
+      "Starbucks",
+      "Vimeo"
+    ],
+    "exp": "Este é o logótipo de eBay.",
+    "img": "quizzes/assets/icons/ebay.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Roblox",
+    "opts": [
+      "Twitch",
+      "Roblox",
+      "eBay",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de Roblox.",
+    "img": "quizzes/assets/icons/roblox.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Duolingo",
+    "opts": [
+      "GitHub",
+      "Duolingo",
+      "Netflix",
+      "Airbnb"
+    ],
+    "exp": "Este é o logótipo de Duolingo.",
+    "img": "quizzes/assets/icons/duolingo.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Discord",
+    "opts": [
+      "Discord",
+      "Duolingo",
+      "McDonald's",
+      "Pinterest"
+    ],
+    "exp": "Este é o logótipo de Discord.",
+    "img": "quizzes/assets/icons/discord.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Google Play",
+    "opts": [
+      "Google Maps",
+      "Google Play",
+      "Ryanair",
+      "Vimeo"
+    ],
+    "exp": "Este é o logótipo de Google Play.",
+    "img": "quizzes/assets/icons/googleplay.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Starbucks",
+    "opts": [
+      "McDonald's",
+      "Roblox",
+      "Starbucks",
+      "Discord"
+    ],
+    "exp": "Este é o logótipo de Starbucks.",
+    "img": "quizzes/assets/icons/starbucks.svg",
+    "imgType": "logo"
+  }
+]

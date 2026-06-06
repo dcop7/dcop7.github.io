@@ -363,6 +363,8 @@ function _flagUrl(cca2) {
   QuizEngine.register('monumentos-img',  makeDataProvider('monumentos'));
   QuizEngine.register('f1',              makeDataProvider('f1'));
   QuizEngine.register('solar-pt',        makeDataProvider('solar'));
+  QuizEngine.register('apps',            makeDataProvider('apps'));
+  QuizEngine.register('flags-europa',    makeDataProvider('bandeiras-europa'));
 })();
 
 /* ══════════════════════════════════════════════════════════════════

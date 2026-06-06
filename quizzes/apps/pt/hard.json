@@ -1,0 +1,80 @@
+[
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "SoundCloud",
+    "opts": [
+      "Zoom",
+      "SoundCloud",
+      "Pinterest",
+      "Google Maps"
+    ],
+    "exp": "Este é o logótipo de SoundCloud.",
+    "img": "quizzes/assets/icons/soundcloud.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Vimeo",
+    "opts": [
+      "Epic Games",
+      "Twitch",
+      "Pinterest",
+      "Vimeo"
+    ],
+    "exp": "Este é o logótipo de Vimeo.",
+    "img": "quizzes/assets/icons/vimeo.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Shazam",
+    "opts": [
+      "Pinterest",
+      "PayPal",
+      "TikTok",
+      "Shazam"
+    ],
+    "exp": "Este é o logótipo de Shazam.",
+    "img": "quizzes/assets/icons/shazam.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Epic Games",
+    "opts": [
+      "Ryanair",
+      "Epic Games",
+      "Duolingo",
+      "Pinterest"
+    ],
+    "exp": "Este é o logótipo de Epic Games.",
+    "img": "quizzes/assets/icons/epicgames.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Ryanair",
+    "opts": [
+      "Ryanair",
+      "Uber",
+      "Roblox",
+      "Vimeo"
+    ],
+    "exp": "Este é o logótipo de Ryanair.",
+    "img": "quizzes/assets/icons/ryanair.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "GitHub",
+    "opts": [
+      "Google Play",
+      "GitHub",
+      "Shazam",
+      "Uber"
+    ],
+    "exp": "Este é o logótipo de GitHub.",
+    "img": "quizzes/assets/icons/github.svg",
+    "imgType": "logo"
+  }
+]

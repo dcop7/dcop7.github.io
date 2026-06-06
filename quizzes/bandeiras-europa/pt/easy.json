@@ -1,0 +1,249 @@
+[
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Áustria",
+    "opts": [
+      "Itália",
+      "Áustria",
+      "Macedónia do Norte",
+      "Suécia"
+    ],
+    "exp": "Esta é a bandeira de Áustria.",
+    "img": "data/flags/at.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Bélgica",
+    "opts": [
+      "Portugal",
+      "San Marino",
+      "Luxemburgo",
+      "Bélgica"
+    ],
+    "exp": "Esta é a bandeira de Bélgica.",
+    "img": "data/flags/be.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Dinamarca",
+    "opts": [
+      "Ilhas Faroé",
+      "Itália",
+      "Dinamarca",
+      "Islândia"
+    ],
+    "exp": "Esta é a bandeira de Dinamarca.",
+    "img": "data/flags/dk.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Finlândia",
+    "opts": [
+      "Áustria",
+      "Malta",
+      "Finlândia",
+      "Macedónia do Norte"
+    ],
+    "exp": "Esta é a bandeira de Finlândia.",
+    "img": "data/flags/fi.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "França",
+    "opts": [
+      "Montenegro",
+      "Chéquia",
+      "França",
+      "Malta"
+    ],
+    "exp": "Esta é a bandeira de França.",
+    "img": "data/flags/fr.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Alemanha",
+    "opts": [
+      "Islândia",
+      "Jersey",
+      "Sérvia",
+      "Alemanha"
+    ],
+    "exp": "Esta é a bandeira de Alemanha.",
+    "img": "data/flags/de.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Grécia",
+    "opts": [
+      "Ilha de Man",
+      "Eslovénia",
+      "Grécia",
+      "Estónia"
+    ],
+    "exp": "Esta é a bandeira de Grécia.",
+    "img": "data/flags/gr.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Irlanda",
+    "opts": [
+      "Malta",
+      "Andorra",
+      "Irlanda",
+      "Hungria"
+    ],
+    "exp": "Esta é a bandeira de Irlanda.",
+    "img": "data/flags/ie.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Itália",
+    "opts": [
+      "Itália",
+      "Holanda",
+      "San Marino",
+      "Bulgária"
+    ],
+    "exp": "Esta é a bandeira de Itália.",
+    "img": "data/flags/it.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Holanda",
+    "opts": [
+      "Finlândia",
+      "Ilhas Svalbard e Jan Mayen",
+      "Alândia",
+      "Holanda"
+    ],
+    "exp": "Esta é a bandeira de Holanda.",
+    "img": "data/flags/nl.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Noruega",
+    "opts": [
+      "Noruega",
+      "Kosovo",
+      "Bulgária",
+      "Ilha de Man"
+    ],
+    "exp": "Esta é a bandeira de Noruega.",
+    "img": "data/flags/no.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Polónia",
+    "opts": [
+      "Polónia",
+      "Malta",
+      "Ilhas Svalbard e Jan Mayen",
+      "Suécia"
+    ],
+    "exp": "Esta é a bandeira de Polónia.",
+    "img": "data/flags/pl.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Portugal",
+    "opts": [
+      "Espanha",
+      "Estónia",
+      "Portugal",
+      "Áustria"
+    ],
+    "exp": "Esta é a bandeira de Portugal.",
+    "img": "data/flags/pt.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Rússia",
+    "opts": [
+      "Kosovo",
+      "Rússia",
+      "Bielorússia",
+      "Islândia"
+    ],
+    "exp": "Esta é a bandeira de Rússia.",
+    "img": "data/flags/ru.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Espanha",
+    "opts": [
+      "Andorra",
+      "Liechtenstein",
+      "Espanha",
+      "Guernsey"
+    ],
+    "exp": "Esta é a bandeira de Espanha.",
+    "img": "data/flags/es.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Suécia",
+    "opts": [
+      "Suécia",
+      "Moldávia",
+      "Sérvia",
+      "Albânia"
+    ],
+    "exp": "Esta é a bandeira de Suécia.",
+    "img": "data/flags/se.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Suíça",
+    "opts": [
+      "Jersey",
+      "Polónia",
+      "Letónia",
+      "Suíça"
+    ],
+    "exp": "Esta é a bandeira de Suíça.",
+    "img": "data/flags/ch.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Ucrânia",
+    "opts": [
+      "Mónaco",
+      "Eslováquia",
+      "Ucrânia",
+      "Liechtenstein"
+    ],
+    "exp": "Esta é a bandeira de Ucrânia.",
+    "img": "data/flags/ua.svg",
+    "imgType": "flag"
+  },
+  {
+    "q": "Que país europeu tem esta bandeira?",
+    "a": "Reino Unido",
+    "opts": [
+      "Eslováquia",
+      "Reino Unido",
+      "Ilhas Faroé",
+      "Holanda"
+    ],
+    "exp": "Esta é a bandeira de Reino Unido.",
+    "img": "data/flags/gb.svg",
+    "imgType": "flag"
+  }
+]

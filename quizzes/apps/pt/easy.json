@@ -1,0 +1,145 @@
+[
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "YouTube",
+    "opts": [
+      "YouTube",
+      "PayPal",
+      "Epic Games",
+      "Uber"
+    ],
+    "exp": "Este é o logótipo de YouTube.",
+    "img": "quizzes/assets/icons/youtube.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Netflix",
+    "opts": [
+      "PayPal",
+      "Netflix",
+      "Duolingo",
+      "Reddit"
+    ],
+    "exp": "Este é o logótipo de Netflix.",
+    "img": "quizzes/assets/icons/netflix.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Spotify",
+    "opts": [
+      "Dropbox",
+      "Netflix",
+      "Spotify",
+      "Pinterest"
+    ],
+    "exp": "Este é o logótipo de Spotify.",
+    "img": "quizzes/assets/icons/spotify.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "TikTok",
+    "opts": [
+      "TikTok",
+      "Duolingo",
+      "Airbnb",
+      "Netflix"
+    ],
+    "exp": "Este é o logótipo de TikTok.",
+    "img": "quizzes/assets/icons/tiktok.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "PlayStation",
+    "opts": [
+      "PlayStation",
+      "Epic Games",
+      "Google Maps",
+      "Starbucks"
+    ],
+    "exp": "Este é o logótipo de PlayStation.",
+    "img": "quizzes/assets/icons/playstation.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "McDonald's",
+    "opts": [
+      "PayPal",
+      "McDonald's",
+      "Ryanair",
+      "Epic Games"
+    ],
+    "exp": "Este é o logótipo de McDonald's.",
+    "img": "quizzes/assets/icons/mcdonalds.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Google Maps",
+    "opts": [
+      "Shazam",
+      "Google Maps",
+      "Ryanair",
+      "GitHub"
+    ],
+    "exp": "Este é o logótipo de Google Maps.",
+    "img": "quizzes/assets/icons/googlemaps.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Telegram",
+    "opts": [
+      "PayPal",
+      "Epic Games",
+      "Telegram",
+      "Airbnb"
+    ],
+    "exp": "Este é o logótipo de Telegram.",
+    "img": "quizzes/assets/icons/telegram.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Uber",
+    "opts": [
+      "Reddit",
+      "Uber",
+      "Zoom",
+      "Google Maps"
+    ],
+    "exp": "Este é o logótipo de Uber.",
+    "img": "quizzes/assets/icons/uber.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Pinterest",
+    "opts": [
+      "Pinterest",
+      "Roblox",
+      "Google Maps",
+      "Reddit"
+    ],
+    "exp": "Este é o logótipo de Pinterest.",
+    "img": "quizzes/assets/icons/pinterest.svg",
+    "imgType": "logo"
+  },
+  {
+    "q": "Que aplicação ou marca é este logótipo?",
+    "a": "Reddit",
+    "opts": [
+      "Twitch",
+      "Reddit",
+      "Ryanair",
+      "Shazam"
+    ],
+    "exp": "Este é o logótipo de Reddit.",
+    "img": "quizzes/assets/icons/reddit.svg",
+    "imgType": "logo"
+  }
+]

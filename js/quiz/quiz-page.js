@@ -14,6 +14,7 @@ const QuizPage = (function () {
       quizzes: [
         { id: 'geografia',  icon: '🌐', labelPt: 'Geografia Mundial',       labelEn: 'World Geography',          provider: 'geografia-pt', count: 10 },
         { id: 'flags',      icon: '🚩', labelPt: 'Bandeiras do Mundo',      labelEn: 'Flags of the World',       provider: 'flags',     count: 10 },
+        { id: 'flags-eu',   icon: '🇪🇺', labelPt: 'Bandeiras da Europa',     labelEn: 'Flags of Europe',          provider: 'flags-europa', count: 8 },
         { id: 'capitals',   icon: '🏛️', labelPt: 'Capitais do Mundo',        labelEn: 'World Capitals',           provider: 'capitals',  count: 10 },
         { id: 'continents', icon: '🗺️', labelPt: 'Continentes',              labelEn: 'Continents',               provider: 'continents',count: 10 },
         { id: 'population', icon: '👥', labelPt: 'Maior População',           labelEn: 'Larger Population',        provider: 'population',count: 10 },
@@ -64,6 +65,7 @@ const QuizPage = (function () {
         { id: 'sinais',   icon: '🚦', labelPt: 'Sinais de Trânsito', labelEn: 'Traffic Signs',   provider: 'sinais-transito', count: 8 },
         { id: 'symbols',  icon: '🔣', labelPt: 'Símbolos',           labelEn: 'Symbols',         provider: 'symbols',        count: 8 },
         { id: 'car-logos',icon: '🚘', labelPt: 'Logótipos de Automóveis', labelEn: 'Car Logos',  provider: 'car-logos',      count: 8 },
+        { id: 'apps',     icon: '📱', labelPt: 'Apps e Redes Sociais', labelEn: 'Apps & Social',  provider: 'apps',           count: 8 },
       ]
     },
     {
