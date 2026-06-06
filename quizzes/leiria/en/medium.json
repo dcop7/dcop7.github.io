@@ -1,0 +1,10 @@
+[
+  { "q": "Which king expanded the Pinhal de Leiria to fix the dunes and supply timber?", "a": "King Dinis", "opts": ["King Dinis", "King Afonso Henriques", "King Manuel I", "King John II"], "exp": "King Dinis, 'the Farmer', is linked to the King's Pine Forest." },
+  { "q": "What was the timber from the Pinhal de Leiria important for in the Age of Discovery?", "a": "Building ships", "opts": ["Building ships", "Making paper only", "Heating Lisbon", "Building the castle"], "exp": "The pine forest supplied wood for Portuguese ships." },
+  { "q": "Which Portuguese writer set the novel 'The Sin of Father Amaro' in Leiria?", "a": "Eça de Queirós", "opts": ["Eça de Queirós", "Fernando Pessoa", "Luís de Camões", "José Saramago"], "exp": "Eça de Queirós worked in Leiria and set this novel there." },
+  { "q": "Which first king of Portugal took Leiria from the Moors in the 12th century?", "a": "Afonso Henriques", "opts": ["Afonso Henriques", "King Dinis", "King Sebastian", "King John I"], "exp": "Leiria was a frontier stronghold during the Reconquista." },
+  { "q": "Which major religious sanctuary is in the Leiria district?", "a": "Fátima", "opts": ["Fátima", "Santiago de Compostela", "Lourdes", "Sameiro"], "exp": "The Sanctuary of Fátima is in Ourém, Leiria district." },
+  { "q": "Which World Heritage monument is in the Leiria district, in Batalha?", "a": "The Monastery of Batalha", "opts": ["The Monastery of Batalha", "Belém Tower", "Pena Palace", "Jerónimos Monastery"], "exp": "It was built by King John I after the Battle of Aljubarrota." },
+  { "q": "Which town in the Leiria district is famous for its glass industry?", "a": "Marinha Grande", "opts": ["Marinha Grande", "Pombal", "Nazaré", "Óbidos"], "exp": "Marinha Grande has a long tradition of glassmaking." },
+  { "q": "Which Leiria stadium was built for Euro 2004?", "a": "Estádio Dr. Magalhães Pessoa", "opts": ["Estádio Dr. Magalhães Pessoa", "Estádio da Luz", "Estádio do Dragão", "Estádio José Alvalade"], "exp": "Leiria's stadium hosted matches at the 2004 European Championship." }
+]

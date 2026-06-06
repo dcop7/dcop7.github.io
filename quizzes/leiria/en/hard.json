@@ -1,0 +1,10 @@
+[
+  { "q": "In which century did Leiria host one of Portugal's first printing presses?", "a": "The 15th century", "opts": ["The 15th century", "The 20th century", "The 10th century", "The 18th century"], "exp": "Books were printed in Leiria as early as the 1490s." },
+  { "q": "What kind of pioneering books were printed in Leiria in the late 15th century?", "a": "Books in Hebrew", "opts": ["Books in Hebrew", "Comic books", "Daily newspapers", "Books in Chinese"], "exp": "Leiria had one of the country's first presses, printing Hebrew books in the 1490s." },
+  { "q": "Which astronomy and navigation work by Abraham Zacuto was printed in Leiria in 1496?", "a": "The 'Almanach Perpetuum'", "opts": ["The 'Almanach Perpetuum'", "'The Lusiads'", "The Gutenberg Bible", "'The Travels of Marco Polo'"], "exp": "Zacuto's 'Almanach Perpetuum' aided Portuguese navigators." },
+  { "q": "In which year did major wildfires destroy much of the Pinhal de Leiria?", "a": "2017", "opts": ["2017", "1980", "2002", "2010"], "exp": "The October 2017 fires burned most of the King's Pine Forest." },
+  { "q": "What was Leiria's strategic importance in the Middle Ages?", "a": "A frontier stronghold against the Moors", "opts": ["A frontier stronghold against the Moors", "The main seaport", "The kingdom's capital", "A fortified island"], "exp": "The castle guarded the frontier during the Christian Reconquista." },
+  { "q": "Which district of Leiria suffered a tragic wildfire in June 2017?", "a": "Pedrógão Grande", "opts": ["Pedrógão Grande", "Sintra", "Loulé", "Chaves"], "exp": "The Pedrógão Grande fire was one of the deadliest in Portugal." },
+  { "q": "Besides timber, what product was harvested from the pines of Leiria?", "a": "Resin", "opts": ["Resin", "Gold", "Marble", "Coal"], "exp": "Pine resin was used in varnishes, glues and other products." },
+  { "q": "Which town in the Leiria district is famous for the giant wave surfed at Praia do Norte?", "a": "Nazaré", "opts": ["Nazaré", "Peniche", "Ericeira", "Figueira da Foz"], "exp": "Praia do Norte in Nazaré hosts big-wave surfing world records." }
+]

@@ -43,7 +43,9 @@ const QuizPage = (function () {
       id: 'cultura', icon: '🎓', labelKey: 'quiz.cat.cultura',
       quizzes: [
         { id: 'gk',          icon: '🧠', labelPt: 'Cultura Geral',    labelEn: 'General Knowledge',  provider: 'general-knowledge', count: 10 },
+        { id: 'mythology',   icon: '⚡', labelPt: 'Mitologia',         labelEn: 'Mythology',          provider: 'mythology', count: 10 },
         { id: 'history',     icon: '📜', labelPt: 'História',          labelEn: 'History',            provider: 'history',   count: 10 },
+        { id: 'leiria',      icon: '🏰', labelPt: 'Leiria',            labelEn: 'Leiria',             provider: 'leiria',    count: 8  },
         { id: 'sport',       icon: '⚽', labelPt: 'Desporto',          labelEn: 'Sport',              provider: 'sport',     count: 10 },
         { id: 'music',       icon: '🎵', labelPt: 'Música',            labelEn: 'Music',              provider: 'music',     count: 10 },
         { id: 'professions', icon: '👷', labelPt: 'Profissões',        labelEn: 'Professions',        provider: 'professions',count: 10 },

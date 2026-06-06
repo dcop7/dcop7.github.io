@@ -282,6 +282,8 @@ function _flagUrl(cca2) {
   QuizEngine.register('sport',             makeProvider(21, 'sport',    a => a<=10?'easy':'medium'));
   QuizEngine.register('music',             makeProvider(12, 'music',    () => 'easy'));
   QuizEngine.register('vehicles',          makeProvider(28, 'vehicles', () => 'easy'));
+  QuizEngine.register('mythology',         makeProvider(0,  'mitologia', a => a<=9?'easy':a<=12?'medium':'hard'));
+  QuizEngine.register('leiria',            makeProvider(0,  'leiria',    a => a<=10?'easy':'medium'));
 })();
 
 /* ══════════════════════════════════════════════════════════════════

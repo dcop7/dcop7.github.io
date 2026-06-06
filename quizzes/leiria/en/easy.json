@@ -1,0 +1,10 @@
+[
+  { "q": "In which country is the city of Leiria?", "a": "Portugal", "opts": ["Portugal", "Spain", "Brazil", "France"], "exp": "Leiria is a city in central Portugal." },
+  { "q": "Which medieval monument overlooks the city of Leiria from a hilltop?", "a": "Leiria Castle", "opts": ["Leiria Castle", "Belém Tower", "Braga Cathedral", "An aqueduct"], "exp": "Leiria Castle has stood above the city since the Middle Ages." },
+  { "q": "Which river runs through the city of Leiria?", "a": "The Lis river", "opts": ["The Lis river", "The Tagus", "The Douro", "The Mondego"], "exp": "The Lis river flows through the centre of the city." },
+  { "q": "In which region of Portugal is Leiria?", "a": "Centre (Centro)", "opts": ["Centre (Centro)", "Algarve (south)", "North", "The islands"], "exp": "Leiria lies in the Centro region, between Lisbon and Coimbra." },
+  { "q": "Which large pine forest near the coast is linked to Leiria?", "a": "The Pinhal de Leiria", "opts": ["The Pinhal de Leiria", "The Black Forest", "Sherwood Forest", "The Amazon"], "exp": "The Pinhal de Leiria (King's Pine Forest) is a vast coastal pine wood." },
+  { "q": "Leiria is the capital of what?", "a": "A district", "opts": ["A district", "A country", "An island", "A parish"], "exp": "Leiria is the capital of the Leiria district." },
+  { "q": "Which ocean washes the coast of the Leiria district?", "a": "The Atlantic Ocean", "opts": ["The Atlantic Ocean", "The Pacific Ocean", "The Mediterranean Sea", "The Red Sea"], "exp": "The Leiria district's coast faces the Atlantic." },
+  { "q": "Is Leiria north or south of Lisbon?", "a": "North", "opts": ["North", "South", "On an island to the west", "Right next to it"], "exp": "Leiria is about 130 km north of Lisbon." }
+]

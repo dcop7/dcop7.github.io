@@ -1,0 +1,17 @@
+[
+  { "q": "What was the Roman name for the goddess Athena?", "a": "Minerva", "opts": ["Minerva", "Juno", "Diana", "Venus"], "exp": "Minerva was the Roman goddess of wisdom and strategy." },
+  { "q": "What was the Roman name for Ares?", "a": "Mars", "opts": ["Mars", "Mercury", "Vulcan", "Pluto"], "exp": "Mars was the Roman god of war and gave his name to the red planet." },
+  { "q": "What was the Roman name for Hermes?", "a": "Mercury", "opts": ["Mercury", "Mars", "Apollo", "Bacchus"], "exp": "Mercury was the swift messenger of the Roman gods." },
+  { "q": "Who was Zeus's wife, queen of the gods?", "a": "Hera", "opts": ["Hera", "Athena", "Aphrodite", "Demeter"], "exp": "Hera's Roman name is Juno." },
+  { "q": "Which Greek hero had a single weak spot on his heel?", "a": "Achilles", "opts": ["Achilles", "Heracles", "Perseus", "Odysseus"], "exp": "The phrase 'Achilles' heel' comes from this myth." },
+  { "q": "Which young man flew too close to the Sun on wax wings and fell?", "a": "Icarus", "opts": ["Icarus", "Perseus", "Theseus", "Jason"], "exp": "The wax on Icarus's wings melted in the Sun's heat." },
+  { "q": "Which half-man, half-bull creature lived in the Labyrinth of Crete?", "a": "Minotaur", "opts": ["Minotaur", "Centaur", "Cyclops", "Satyr"], "exp": "Theseus slew the Minotaur and escaped the maze using a thread." },
+  { "q": "What was the three-headed dog that guarded the Greek underworld?", "a": "Cerberus", "opts": ["Cerberus", "Pegasus", "Hydra", "Chimera"], "exp": "Cerberus kept the dead from leaving the realm of Hades." },
+  { "q": "Which winged horse sprang from the blood of Medusa?", "a": "Pegasus", "opts": ["Pegasus", "Centaur", "Unicorn", "Sleipnir"], "exp": "Pegasus was a white horse with wings." },
+  { "q": "What is the prophesied end of the world in Norse mythology?", "a": "Ragnarök", "opts": ["Ragnarök", "Valhalla", "Bifröst", "Yggdrasil"], "exp": "At Ragnarök many gods die and the world is reborn." },
+  { "q": "What is the great tree that links the nine worlds in Norse myth?", "a": "Yggdrasil", "opts": ["Yggdrasil", "Bifröst", "Mjölnir", "Gungnir"], "exp": "Yggdrasil is the great 'world tree'." },
+  { "q": "What is the rainbow bridge connecting Asgard to the world of men?", "a": "Bifröst", "opts": ["Bifröst", "Yggdrasil", "Valhalla", "Midgard"], "exp": "The god Heimdall guarded the Bifröst bridge." },
+  { "q": "Which Titan gave fire to humans and was punished by Zeus?", "a": "Prometheus", "opts": ["Prometheus", "Atlas", "Cronus", "Helios"], "exp": "Prometheus was chained and an eagle ate his liver each day." },
+  { "q": "Which Titan was condemned to hold up the sky?", "a": "Atlas", "opts": ["Atlas", "Prometheus", "Cronus", "Helios"], "exp": "Atlas holds up the vault of the heavens forever." },
+  { "q": "Which Roman goddess of the hunt corresponds to Artemis?", "a": "Diana", "opts": ["Diana", "Minerva", "Juno", "Ceres"], "exp": "Diana was the Roman goddess of the hunt and the Moon." }
+]

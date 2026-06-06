@@ -1,0 +1,17 @@
+[
+  { "q": "Who was the king of the gods in Greek mythology?", "a": "Zeus", "opts": ["Zeus", "Hades", "Apollo", "Hermes"], "exp": "Zeus ruled from Mount Olympus as god of the sky and thunder." },
+  { "q": "What was Zeus's signature weapon?", "a": "The thunderbolt", "opts": ["The thunderbolt", "The trident", "The bow", "The hammer"], "exp": "Zeus hurled thunderbolts; the trident belonged to Poseidon." },
+  { "q": "Who was the Greek god of the sea?", "a": "Poseidon", "opts": ["Poseidon", "Zeus", "Hades", "Ares"], "exp": "Poseidon ruled the oceans with his trident." },
+  { "q": "What was the Roman name for Zeus?", "a": "Jupiter", "opts": ["Jupiter", "Mars", "Neptune", "Apollo"], "exp": "Jupiter was the Roman king of the gods, equivalent to Zeus." },
+  { "q": "Who was the Norse god of thunder, who wielded a hammer?", "a": "Thor", "opts": ["Thor", "Odin", "Loki", "Freyr"], "exp": "Thor protected gods and humans with his hammer Mjölnir." },
+  { "q": "What is the name of Thor's hammer?", "a": "Mjölnir", "opts": ["Mjölnir", "Excalibur", "Gungnir", "Trident"], "exp": "Mjölnir always returned to Thor's hand after being thrown." },
+  { "q": "Who was the chief 'All-Father' god in Norse mythology?", "a": "Odin", "opts": ["Odin", "Thor", "Loki", "Baldr"], "exp": "Odin was the god of war and wisdom, leader of the Aesir gods." },
+  { "q": "Who was the trickster god of Norse mythology?", "a": "Loki", "opts": ["Loki", "Thor", "Tyr", "Heimdall"], "exp": "Loki was known for his tricks and for shape-shifting." },
+  { "q": "Who was the Greek goddess of love and beauty?", "a": "Aphrodite", "opts": ["Aphrodite", "Athena", "Hera", "Artemis"], "exp": "Aphrodite's Roman name is Venus." },
+  { "q": "Who was the Greek goddess of wisdom?", "a": "Athena", "opts": ["Athena", "Aphrodite", "Demeter", "Hestia"], "exp": "Athena protected the city of Athens, which bears her name." },
+  { "q": "Who was the Greek god of the underworld?", "a": "Hades", "opts": ["Hades", "Zeus", "Poseidon", "Ares"], "exp": "Hades's Roman name is Pluto." },
+  { "q": "Which monster had snakes for hair and turned onlookers to stone?", "a": "Medusa", "opts": ["Medusa", "Hydra", "Siren", "Chimera"], "exp": "Anyone who met Medusa's gaze was turned to stone." },
+  { "q": "Who founded Rome, according to legend, raised by a she-wolf?", "a": "Romulus and Remus", "opts": ["Romulus and Remus", "Julius Caesar", "Aeneas", "Janus"], "exp": "The twins Romulus and Remus were suckled by a she-wolf." },
+  { "q": "What is the hall where warriors slain in battle went, in Norse myth?", "a": "Valhalla", "opts": ["Valhalla", "Asgard", "Olympus", "Hades"], "exp": "Valkyries carried the bravest fallen warriors to Valhalla." },
+  { "q": "What is the realm of the gods called in Norse mythology?", "a": "Asgard", "opts": ["Asgard", "Valhalla", "Midgard", "Olympus"], "exp": "Asgard was the home of the Aesir gods." }
+]

@@ -1,0 +1,17 @@
+[
+  { "q": "From which part of Zeus's body was the goddess Athena born?", "a": "His head", "opts": ["His head", "His chest", "His arm", "His foot"], "exp": "Athena sprang fully grown and armoured from Zeus's head." },
+  { "q": "Who was Zeus's father, whom he overthrew?", "a": "Cronus", "opts": ["Cronus", "Uranus", "Atlas", "Hades"], "exp": "Cronus (Saturn in Rome) devoured his children; Zeus defeated him." },
+  { "q": "Who ferried souls across the river Styx?", "a": "Charon", "opts": ["Charon", "Cerberus", "Hades", "Hermes"], "exp": "A coin was paid to Charon to cross the river of the dead." },
+  { "q": "Which monster had heads of a lion, goat and serpent and breathed fire?", "a": "Chimera", "opts": ["Chimera", "Hydra", "Cerberus", "Medusa"], "exp": "The Chimera was slain by Bellerophon riding Pegasus." },
+  { "q": "Which Norse god lost a hand in the mouth of the wolf Fenrir?", "a": "Tyr", "opts": ["Tyr", "Thor", "Heimdall", "Baldr"], "exp": "Tyr sacrificed his hand so the gods could bind the wolf Fenrir." },
+  { "q": "Which giant wolf, son of Loki, would kill Odin at Ragnarök?", "a": "Fenrir", "opts": ["Fenrir", "Jörmungandr", "Sleipnir", "Garm"], "exp": "Fenrir was chained by the gods until Ragnarök." },
+  { "q": "What is the giant serpent that encircles the world in Norse myth?", "a": "Jörmungandr", "opts": ["Jörmungandr", "Fenrir", "Níðhöggr", "Hydra"], "exp": "Jörmungandr, the World Serpent, is Thor's great enemy." },
+  { "q": "Which Greek hero killed Medusa by looking at her reflection in a shield?", "a": "Perseus", "opts": ["Perseus", "Theseus", "Heracles", "Jason"], "exp": "Perseus avoided being turned to stone by viewing only her reflection." },
+  { "q": "What were the three goddesses of fate in Greek mythology?", "a": "The Fates (Moirai)", "opts": ["The Fates (Moirai)", "The Muses", "The Furies", "The Graces"], "exp": "The Fates spun, measured and cut the thread of life." },
+  { "q": "How many Muses were there, goddesses of the arts?", "a": "Nine", "opts": ["Nine", "Three", "Twelve", "Seven"], "exp": "The nine Muses inspired poetry, music and dance." },
+  { "q": "Which Roman two-faced god gave his name to the month of January?", "a": "Janus", "opts": ["Janus", "Mars", "Saturn", "Vulcan"], "exp": "Janus looked to the past and the future — hence 'January'." },
+  { "q": "What is the name of the realm of humans in Norse mythology?", "a": "Midgard", "opts": ["Midgard", "Asgard", "Niflheim", "Vanaheim"], "exp": "Midgard was the world of men, at the centre of Yggdrasil." },
+  { "q": "Which goddess ruled the world of the dead in Norse mythology?", "a": "Hel", "opts": ["Hel", "Freya", "Frigg", "Sif"], "exp": "Hel, daughter of Loki, ruled over Helheim, the world of the dead." },
+  { "q": "Which two ravens brought Odin news of the world?", "a": "Huginn and Muninn", "opts": ["Huginn and Muninn", "Geri and Freki", "The Aesir", "The Vanir"], "exp": "Huginn ('thought') and Muninn ('memory') flew the world and reported to Odin." },
+  { "q": "What is the name of Odin's spear, which never missed?", "a": "Gungnir", "opts": ["Gungnir", "Mjölnir", "Excalibur", "Trident"], "exp": "Gungnir was Odin's magical spear." }
+]

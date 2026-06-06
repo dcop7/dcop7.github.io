@@ -1,0 +1,18 @@
+[
+  { "q": "Em que país fica a cidade de Leiria?", "a": "Portugal", "opts": ["Portugal", "Espanha", "Brasil", "França"], "exp": "Leiria é uma cidade da região Centro de Portugal." },
+  { "q": "Que monumento medieval domina a cidade de Leiria, no alto de uma colina?", "a": "O Castelo de Leiria", "opts": ["O Castelo de Leiria", "A Torre de Belém", "A Sé de Braga", "O Aqueduto"], "exp": "O Castelo de Leiria ergue-se sobre a cidade desde a Idade Média." },
+  { "q": "Que rio atravessa a cidade de Leiria?", "a": "Rio Lis", "opts": ["Rio Lis", "Rio Tejo", "Rio Douro", "Rio Mondego"], "exp": "O rio Lis corre pelo centro da cidade, com jardins nas margens." },
+  { "q": "Em que região de Portugal fica Leiria?", "a": "Centro", "opts": ["Centro", "Algarve (sul)", "Norte", "Nas ilhas"], "exp": "Leiria situa-se na região Centro, entre Lisboa e Coimbra." },
+  { "q": "Que grande floresta de pinheiros, junto à costa, está associada a Leiria?", "a": "O Pinhal de Leiria", "opts": ["O Pinhal de Leiria", "A Mata do Buçaco", "A Floresta Negra", "O Gerês"], "exp": "O Pinhal de Leiria (Pinhal do Rei) é um vasto pinhal junto ao mar." },
+  { "q": "Que árvore é o símbolo natural mais associado a Leiria?", "a": "O pinheiro", "opts": ["O pinheiro", "A oliveira", "O sobreiro", "A palmeira"], "exp": "O Pinhal de Leiria deu fama aos pinheiros da região." },
+  { "q": "Leiria é a capital de quê?", "a": "De um distrito", "opts": ["De um distrito", "De um país", "De uma ilha", "De uma freguesia"], "exp": "Leiria é a capital do distrito de Leiria." },
+  { "q": "Que oceano banha a costa do distrito de Leiria?", "a": "Oceano Atlântico", "opts": ["Oceano Atlântico", "Oceano Pacífico", "Mar Mediterrâneo", "Mar Vermelho"], "exp": "A costa do distrito de Leiria é banhada pelo Atlântico." },
+  { "q": "Que tipo de construção é o principal monumento histórico de Leiria?", "a": "Um castelo", "opts": ["Um castelo", "Uma pirâmide", "Um farol", "Um arranha-céus"], "exp": "O Castelo de Leiria é o ex-líbris da cidade." },
+  { "q": "Qual destas cidades fica perto de Leiria?", "a": "Coimbra", "opts": ["Coimbra", "Madrid", "Sevilha", "Bordéus"], "exp": "Leiria fica entre Lisboa e Coimbra, no centro do país." },
+  { "q": "Que clube de futebol histórico representa a cidade de Leiria?", "a": "União de Leiria", "opts": ["União de Leiria", "Sporting", "Benfica", "FC Porto"], "exp": "A União Desportiva de Leiria é o clube histórico da cidade." },
+  { "q": "Leiria fica a norte ou a sul de Lisboa?", "a": "A norte", "opts": ["A norte", "A sul", "Numa ilha a oeste", "Mesmo ao lado"], "exp": "Leiria fica cerca de 130 km a norte de Lisboa." },
+  { "q": "Como se chama o rio que dá nome a muitos locais de Leiria?", "a": "Lis", "opts": ["Lis", "Sado", "Minho", "Guadiana"], "exp": "O Lis atravessa Leiria e desagua no Atlântico." },
+  { "q": "O Pinhal de Leiria fica perto de quê?", "a": "Do mar (da costa)", "opts": ["Do mar (da costa)", "De um deserto", "De uma montanha com neve", "De um vulcão"], "exp": "O pinhal foi plantado junto à costa para fixar as dunas de areia." },
+  { "q": "O que defendia antigamente a cidade de Leiria, no topo da colina?", "a": "Um castelo de pedra", "opts": ["Um castelo de pedra", "Uma muralha de gelo", "Uma ponte levadiça isolada", "Um farol"], "exp": "O castelo guardava a cidade na fronteira medieval." },
+  { "q": "Leiria é uma cidade ou uma aldeia?", "a": "Uma cidade", "opts": ["Uma cidade", "Uma aldeia pequena", "Uma ilha", "Um país"], "exp": "Leiria é uma cidade e sede de distrito, com mais de 100 mil habitantes no concelho." }
+]
