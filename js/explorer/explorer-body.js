@@ -31,7 +31,7 @@ const HumanBodyExplorer = (function () {
 
   /* The full skeleton is a separate (not co-registered) model — fit it to the
      body's height and orient it upright/front-facing. Tunable. */
-  const _SK_ROT = [-Math.PI / 2, Math.PI / 2, 0];   // stand upright (z→up) + face front
+  const _SK_ROT = [-Math.PI / 2, 0.785, 0];   // stand upright (z→up) + face front
   const _SK_H = 16.6, _SK_BASEY = -0.2, _SK_OFFX = 0.7, _SK_OFFZ = 0;
 
   /* Which organ GLBs to load and how to colour / key them for the info panel. */
@@ -134,9 +134,11 @@ const HumanBodyExplorer = (function () {
   };
 
   const TOPICS = [
-    { id:'anatomia',   ic:'🧍', name:_=>_t('Anatomy','Anatomia') },
+    { id:'anatomia',   ic:'🧍', name:_=>_t('Body','Corpo') },
+    { id:'pele',       ic:'🧑', name:_=>_t('Skin','Pele') },
     { id:'esqueleto',  ic:'🦴', name:_=>_t('Skeleton','Esqueleto') },
-    { id:'circulacao', ic:'🫀', name:_=>_t('Circulation','Circulação') },
+    { id:'orgaos',     ic:'🫀', name:_=>_t('Organs','Órgãos') },
+    { id:'circulacao', ic:'🩸', name:_=>_t('Circulation','Circulação') },
     { id:'respiracao', ic:'🫁', name:_=>_t('Breathing','Respiração') },
     { id:'digestao',   ic:'🍎', name:_=>_t('Digestion','Digestão') },
     { id:'cerebro',    ic:'🧠', name:_=>_t('Brain','Cérebro') },
@@ -146,32 +148,42 @@ const HumanBodyExplorer = (function () {
 
   /* Per-topic preset: layers, camera, which organs to spotlight, intro card. */
   const PRESETS = {
-    anatomia:   { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:9,  dist:38, spotlight:null,
-      intro:{ emoji:'🧍', name:_=>_t('Anatomy','Anatomia'), sub:_=>_t('The whole body','O corpo inteiro'),
-        desc:_=>_t('Rotate and zoom the body. Use the buttons on the left to peel away layers — skin, skeleton, muscles, organs and the blood vessels.','Roda e aproxima o corpo. Usa os botões à esquerda para revelar camadas — pele, esqueleto, músculos, órgãos e os vasos sanguíneos.'),
-        stats:[['~37 bi',_=>_t('cells','células')],['206',_=>_t('bones','ossos')],['~640',_=>_t('muscles','músculos')]],
+    anatomia:   { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:9,  dist:34, spotlight:null,
+      intro:{ emoji:'🧍', name:_=>_t('Body','Corpo'), sub:_=>_t('The whole body','O corpo inteiro'),
+        desc:_=>_t('Skin and organs together. Use the tabs above to study each system on its own — skin, skeleton, organs and circulation.','Pele e órgãos juntos. Usa os separadores acima para estudar cada sistema isolado — pele, esqueleto, órgãos e circulação.'),
+        stats:[['~37 bi',_=>_t('cells','células')],['206',_=>_t('bones','ossos')],['~78',_=>_t('organs','órgãos')]],
         facts:[_=>_t('Tap any organ to learn what it does.','Toca em qualquer órgão para saber o que faz.')] } },
-    esqueleto:  { layers:{skin:1,skeleton:1,muscles:0,organs:0,vessels:0}, focusY:9,  dist:38, spotlight:null,
+    pele:       { layers:{skin:1,skeleton:0,muscles:0,organs:0,vessels:0}, focusY:9,  dist:34, spotlight:null,
+      intro:{ emoji:'🧑', name:_=>_t('Skin','Pele'), sub:_=>_t('Your largest organ','O teu maior órgão'),
+        desc:_=>_t('The skin is the body’s biggest organ — a waterproof, self-repairing barrier that shields you, senses touch and helps control your temperature.','A pele é o maior órgão do corpo — uma barreira impermeável que se repara sozinha, te protege, sente o toque e ajuda a controlar a temperatura.'),
+        stats:[['~2 m²',_=>_t('area','área')],['~4 kg',_=>_t('weight','peso')]],
+        facts:[_=>_t('You shed about 40 000 skin cells every minute.','Perdes cerca de 40 000 células de pele por minuto.'),_=>_t('It fully renews itself about every 4 weeks.','Renova-se por completo a cada ~4 semanas.')] } },
+    esqueleto:  { layers:{skin:0,skeleton:1,muscles:0,organs:0,vessels:0}, focusY:9,  dist:38, spotlight:null,
       intro:{ emoji:'🦴', name:_=>_t('Skeleton','Esqueleto'), sub:_=>_t('206 bones','206 ossos'),
         desc:_=>_t('The frame that supports and protects you, lets you move and makes blood inside its marrow.','A estrutura que te suporta, protege, te deixa mover e fabrica sangue na sua medula.'),
         stats:[['206',_=>_t('bones','ossos')],['~15%',_=>_t('of weight','do peso')]],
         facts:[_=>_t('Babies are born with ~300 bones; many fuse with age.','Os bebés nascem com ~300 ossos; muitos fundem-se com a idade.'),_=>_t('Bone is stronger than steel by weight.','O osso é, por peso, mais forte que o aço.')] } },
-    circulacao: { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:1}, focusY:9,  dist:36, spotlight:['coracao'],
-      intro:{ emoji:'🫀', name:_=>_t('Circulation','Circulação'), sub:_=>_t('Watch the blood flow','Vê o sangue a circular'),
+    orgaos:     { layers:{skin:0,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:9,  dist:28, spotlight:null,
+      intro:{ emoji:'🫀', name:_=>_t('Organs','Órgãos'), sub:_=>_t('The vital organs','Os órgãos vitais'),
+        desc:_=>_t('Each organ does a vital job — the heart pumps, the lungs breathe, the liver cleans, the kidneys filter, the gut digests. Tap any one to learn more.','Cada órgão faz um trabalho vital — o coração bombeia, os pulmões respiram, o fígado limpa, os rins filtram, o intestino digere. Toca em qualquer um para saber mais.'),
+        stats:[['~78',_=>_t('organs','órgãos')],['5',_=>_t('vital ones','vitais')]],
+        facts:[_=>_t('Tap an organ to see what it does.','Toca num órgão para ver o que faz.')] } },
+    circulacao: { layers:{skin:0,skeleton:0,muscles:0,organs:1,vessels:1}, focusY:9,  dist:36, spotlight:['coracao'],
+      intro:{ emoji:'🩸', name:_=>_t('Circulation','Circulação'), sub:_=>_t('Watch the blood flow','Vê o sangue a circular'),
         desc:_=>_t('The heart and a 100 000 km network of vessels carry oxygen and food to every cell. Red = arteries (oxygen-rich), blue = veins (returning).','O coração e uma rede de 100 000 km de vasos levam oxigénio e alimento a cada célula. Vermelho = artérias (ricas em oxigénio), azul = veias (de retorno).'),
         stats:[['100 000 km',_=>_t('of vessels','de vasos')],['~5 L',_=>_t('of blood','de sangue')]],
         facts:[_=>_t('Blood completes a full lap of the body in ~1 minute.','O sangue dá uma volta completa ao corpo em ~1 minuto.')] } },
-    respiracao: { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:11, dist:26, spotlight:['pulmoes'],
+    respiracao: { layers:{skin:0,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:11, dist:26, spotlight:['pulmoes'],
       intro:{ emoji:'🫁', name:_=>_t('Breathing','Respiração'), sub:_=>_t('Respiratory system','Sistema respiratório'),
         desc:_=>_t('You breathe ~20 000 times a day, swapping carbon dioxide for the oxygen every cell needs. Watch the lungs expand and contract.','Respiras ~20 000 vezes por dia, trocando dióxido de carbono pelo oxigénio que cada célula precisa. Vê os pulmões a expandir e contrair.'),
         stats:[['~20 000',_=>_t('breaths / day','respirações / dia')],['~6 L',_=>_t('capacity','capacidade')]],
         facts:[_=>_t('Unfolded, the alveoli would cover a tennis court.','Desdobrados, os alvéolos cobririam um campo de ténis.')] } },
-    digestao:   { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:8,  dist:24, spotlight:['estomago','figado','intestinos'],
+    digestao:   { layers:{skin:0,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:8,  dist:24, spotlight:['figado','intestinos','pancreas'],
       intro:{ emoji:'🍎', name:_=>_t('Digestion','Digestão'), sub:_=>_t('Digestive system','Sistema digestivo'),
         desc:_=>_t('A ~9 metre journey that turns food into the fuel and building blocks every cell needs. Tap the stomach, liver or intestines.','Uma viagem de ~9 metros que transforma comida no combustível e nos blocos que cada célula precisa. Toca no estômago, fígado ou intestinos.'),
         stats:[['~9 m',_=>_t('total length','comprimento')],['24–72 h',_=>_t('to digest','para digerir')]],
         facts:[_=>_t('Most digestion happens in the small intestine.','A maior parte da digestão ocorre no intestino delgado.')] } },
-    cerebro:    { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:15, dist:13, spotlight:['cerebro'],
+    cerebro:    { layers:{skin:0,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:14, dist:13, spotlight:['cerebro'],
       intro:ORGANS.cerebro },
     sentidos:   { layers:{skin:1,skeleton:0,muscles:0,organs:0,vessels:0}, focusY:15, dist:12, spotlight:null, senses:true,
       intro:{ emoji:'👁️', name:_=>_t('Senses','Sentidos'), sub:_=>_t('Windows to the world','Janelas para o mundo'),
@@ -773,7 +785,12 @@ const HumanBodyExplorer = (function () {
   function _declutter() {
     const L = _layers;
     const others = (L.skeleton ? 1 : 0) + (L.organs ? 1 : 0) + (L.vessels ? 1 : 0);
-    if (_skinMat) { _skinMat.opacity = others >= 2 ? 0.045 : (others === 1 ? 0.09 : 0.13); _skinMat.needsUpdate = true; }
+    if (_skinMat) {
+      const skinAlone = L.skin && others === 0;     // "Pele" view — skin is the subject, show it solid
+      _skinMat.opacity = skinAlone ? 0.9 : (others >= 2 ? 0.045 : (others === 1 ? 0.09 : 0.13));
+      _skinMat.depthWrite = skinAlone;
+      _skinMat.needsUpdate = true;
+    }
     if (_boneMat) {
       const fade = !!(L.organs || L.vessels);          // bones recede behind soft tissue
       _boneMat.transparent = fade;
@@ -861,10 +878,6 @@ const HumanBodyExplorer = (function () {
         <div class="hb-diagram">
           <div class="hb3d-stage">
             <div class="hb3d-viewport" id="hb3d-vp"></div>
-            <div class="hb3d-layers" id="hb3d-layers">
-              ${LAYER_BTNS.map(l => `<button class="hb3d-layer-btn" data-layer="${l.id}" style="--ld:${l.color}">
-                <span class="dot"></span>${l.ic} ${l.name()}</button>`).join('')}
-            </div>
             <div class="hb3d-foot">
               <span class="hb3d-hint">${_t('Drag to rotate · scroll to zoom · tap an organ','Arrasta para rodar · scroll para zoom · toca num órgão')}</span>
               <button class="hb3d-reset" id="hb3d-reset">↺ ${_t('Reset','Repor')}</button>
@@ -883,14 +896,9 @@ const HumanBodyExplorer = (function () {
     _info = host.querySelector('#hb-info');
     _mounted = true;
 
-    // topic + layer wiring
+    // topic wiring (each tab shows one system on its own — no layer overlays)
     _host.querySelector('.hb-topics').addEventListener('click', e => {
       const b = e.target.closest('.hb-topic'); if (b) _applyTopic(b.dataset.id);
-    });
-    _host.querySelector('#hb3d-layers').addEventListener('click', e => {
-      const b = e.target.closest('.hb3d-layer-btn'); if (!b) return;
-      _layers[b.dataset.layer] = !_layers[b.dataset.layer];
-      _applyLayers(); _syncLayerButtons();
     });
     _host.querySelector('#hb3d-reset').addEventListener('click', () => _applyTopic(_topic));
 
