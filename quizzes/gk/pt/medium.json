@@ -272,7 +272,9 @@
       "Sevilha",
       "Valência"
     ],
-    "exp": "Madrid fica no centro de Espanha."
+    "exp": "Madrid fica no centro de Espanha.",
+    "img": "data/flags/es.svg",
+    "imgType": "flag"
   },
   {
     "q": "Que planeta é conhecido pelos seus anéis?",
@@ -316,7 +318,9 @@
       "Guadiana",
       "Mondego"
     ],
-    "exp": "O Tejo nasce em Espanha e desagua em Lisboa."
+    "exp": "O Tejo nasce em Espanha e desagua em Lisboa.",
+    "img": "data/flags/pt.svg",
+    "imgType": "flag"
   },
   {
     "q": "Quantos minutos tem uma hora?",
@@ -404,7 +408,9 @@
       "Gerês",
       "Monchique"
     ],
-    "exp": "A Torre tem 1 993 m de altitude."
+    "exp": "A Torre tem 1 993 m de altitude.",
+    "img": "data/flags/pt.svg",
+    "imgType": "flag"
   },
   {
     "q": "Que aparelho usamos para ver televisão?",
@@ -448,6 +454,8 @@
       "Europa",
       "Oceânia"
     ],
-    "exp": "O Egito fica no nordeste de África."
+    "exp": "O Egito fica no nordeste de África.",
+    "img": "data/flags/eg.svg",
+    "imgType": "flag"
   }
 ]

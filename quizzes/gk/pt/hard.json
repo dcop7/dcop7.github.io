@@ -8,7 +8,9 @@
       "Melbourne",
       "Perth"
     ],
-    "exp": "Apesar de Sydney ser maior, a capital é Camberra."
+    "exp": "Apesar de Sydney ser maior, a capital é Camberra.",
+    "img": "data/flags/au.svg",
+    "imgType": "flag"
   },
   {
     "q": "Quem desenvolveu a teoria da evolução por seleção natural?",
@@ -74,7 +76,9 @@
       "Yuan",
       "Rupia"
     ],
-    "exp": "O símbolo do iene japonês é ¥."
+    "exp": "O símbolo do iene japonês é ¥.",
+    "img": "data/flags/jp.svg",
+    "imgType": "flag"
   },
   {
     "q": "Qual é o osso que protege o cérebro?",
@@ -195,7 +199,9 @@
       "Dólar",
       "Franco"
     ],
-    "exp": "O símbolo da libra é £."
+    "exp": "O símbolo da libra é £.",
+    "img": "data/flags/gb.svg",
+    "imgType": "flag"
   },
   {
     "q": "Qual é o maior país da América do Sul?",
@@ -228,7 +234,9 @@
       "Zurique",
       "Basileia"
     ],
-    "exp": "Apesar de Zurique ser maior, a capital é Berna."
+    "exp": "Apesar de Zurique ser maior, a capital é Berna.",
+    "img": "data/flags/ch.svg",
+    "imgType": "flag"
   },
   {
     "q": "Quem escreveu a peça 'Romeu e Julieta'?",
@@ -283,7 +291,9 @@
       "Coroa",
       "Dólar"
     ],
-    "exp": "A Suíça não adotou o euro."
+    "exp": "A Suíça não adotou o euro.",
+    "img": "data/flags/ch.svg",
+    "imgType": "flag"
   },
   {
     "q": "Quem compôs a ópera 'A Flauta Mágica'?",

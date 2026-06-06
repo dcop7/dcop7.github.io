@@ -19,7 +19,9 @@
       "Coimbra",
       "Braga"
     ],
-    "exp": "Lisboa é uma das capitais mais antigas da Europa Ocidental."
+    "exp": "Lisboa é uma das capitais mais antigas da Europa Ocidental.",
+    "img": "data/flags/pt.svg",
+    "imgType": "flag"
   },
   {
     "q": "Quantas cores tem o arco-íris?",
@@ -129,7 +131,9 @@
       "Dólar",
       "Libra"
     ],
-    "exp": "Portugal adotou o euro em 2002, substituindo o escudo."
+    "exp": "Portugal adotou o euro em 2002, substituindo o escudo.",
+    "img": "data/flags/pt.svg",
+    "imgType": "flag"
   },
   {
     "q": "Quantos meses tem um ano?",

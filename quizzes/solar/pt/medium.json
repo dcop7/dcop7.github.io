@@ -19,7 +19,10 @@
       "8 horas",
       "8 dias"
     ],
-    "exp": "A luz viaja a 300 000 km/s e o Sol está a ~150 milhões de km."
+    "exp": "A luz viaja a 300 000 km/s e o Sol está a ~150 milhões de km.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Qual é o planeta mais distante do Sol?",
@@ -41,7 +44,10 @@
       "Eclipse",
       "Trajetória lunar"
     ],
-    "exp": "A órbita dos planetas tem forma de elipse, não de círculo perfeito."
+    "exp": "A órbita dos planetas tem forma de elipse, não de círculo perfeito.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que é uma estrela cadente?",
@@ -74,7 +80,10 @@
       "Muito mais curto",
       "Metade"
     ],
-    "exp": "Um dia em Mercúrio dura cerca de 59 dias terrestres."
+    "exp": "Um dia em Mercúrio dura cerca de 59 dias terrestres.",
+    "img": "assets/planets/mercury_1024.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Como se chama o fenómeno em que a Lua tapa o Sol?",
@@ -85,7 +94,10 @@
       "Solstício",
       "Equinócio"
     ],
-    "exp": "Num eclipse solar a Lua fica entre a Terra e o Sol."
+    "exp": "Num eclipse solar a Lua fica entre a Terra e o Sol.",
+    "img": "assets/planets/moon.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Qual é o satélite natural da Terra?",
@@ -96,7 +108,10 @@
       "Europa",
       "Titã"
     ],
-    "exp": "A Lua afasta-se da Terra cerca de 3,8 cm por ano."
+    "exp": "A Lua afasta-se da Terra cerca de 3,8 cm por ano.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que objeto tem tanta gravidade que nem a luz escapa?",
@@ -118,7 +133,10 @@
       "Nuvem de Oort",
       "Anel de Saturno"
     ],
-    "exp": "Contém milhões de asteroides; o maior é Ceres, um planeta anão."
+    "exp": "Contém milhões de asteroides; o maior é Ceres, um planeta anão.",
+    "img": "assets/planets/mars_1024.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta gira 'deitado', com o eixo quase na horizontal?",
@@ -140,7 +158,10 @@
       "Um ano",
       "Dez anos"
     ],
-    "exp": "São cerca de 365 dias e um quarto."
+    "exp": "São cerca de 365 dias e um quarto.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta tem a maior lua do Sistema Solar?",
@@ -162,7 +183,10 @@
       "A sombra dos planetas",
       "O vento solar"
     ],
-    "exp": "Vemos diferentes porções da metade iluminada da Lua."
+    "exp": "Vemos diferentes porções da metade iluminada da Lua.",
+    "img": "assets/planets/moon.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Como se chama um eclipse em que a Terra tapa a luz do Sol que chega à Lua?",
@@ -173,7 +197,10 @@
       "Solstício",
       "Equinócio"
     ],
-    "exp": "A Lua fica avermelhada — a 'Lua de sangue'."
+    "exp": "A Lua fica avermelhada — a 'Lua de sangue'.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Qual é a galáxia onde está o Sistema Solar?",
@@ -250,7 +277,10 @@
       "As correntes apenas",
       "O Sol da tarde"
     ],
-    "exp": "A gravidade da Lua (e do Sol) puxa a água."
+    "exp": "A gravidade da Lua (e do Sol) puxa a água.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que missão levou os primeiros humanos à Lua?",
@@ -261,7 +291,10 @@
       "Vostok 1",
       "Sputnik 1"
     ],
-    "exp": "Aconteceu em 1969."
+    "exp": "Aconteceu em 1969.",
+    "img": "assets/planets/moon.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta é o mais quente, apesar de não ser o mais próximo do Sol?",
@@ -316,7 +349,10 @@
       "Próxima Centauri",
       "Polaris"
     ],
-    "exp": "A seguir ao Sol vem a Próxima Centauri."
+    "exp": "A seguir ao Sol vem a Próxima Centauri.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que telescópio espacial famoso orbita a Terra desde 1990?",
@@ -327,7 +363,10 @@
       "Kepler",
       "Galileo"
     ],
-    "exp": "Captou imagens espetaculares do Universo."
+    "exp": "Captou imagens espetaculares do Universo.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que é o Sol, afinal?",
@@ -338,7 +377,10 @@
       "Um cometa",
       "Uma lua"
     ],
-    "exp": "O Sol é uma bola de gás que funde hidrogénio."
+    "exp": "O Sol é uma bola de gás que funde hidrogénio.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Quantas luas tem a Terra?",
@@ -349,7 +391,10 @@
       "Duas",
       "Quatro"
     ],
-    "exp": "A Lua afasta-se cerca de 3,8 cm por ano."
+    "exp": "A Lua afasta-se cerca de 3,8 cm por ano.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta tem o dia mais curto (rotação mais rápida)?",
@@ -371,7 +416,10 @@
       "Nuvem de gás",
       "Anel de Saturno"
     ],
-    "exp": "Plutão fica na Cintura de Kuiper."
+    "exp": "Plutão fica na Cintura de Kuiper.",
+    "img": "assets/planets/neptune_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que provoca um eclipse lunar?",
@@ -404,7 +452,10 @@
       "Universo",
       "Constelação"
     ],
-    "exp": "O Sistema Solar fica na Via Láctea."
+    "exp": "O Sistema Solar fica na Via Láctea.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta roda no sentido contrário aos outros?",
@@ -426,7 +477,10 @@
       "10 mil km",
       "1 mil milhões de km"
     ],
-    "exp": "Essa distância chama-se Unidade Astronómica."
+    "exp": "Essa distância chama-se Unidade Astronómica.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta tem uma densidade tão baixa que flutuaria na água?",

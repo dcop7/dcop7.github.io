@@ -74,7 +74,10 @@
       "Vénus",
       "Júpiter"
     ],
-    "exp": "A Lua não tem luz própria — reflete a luz do Sol."
+    "exp": "A Lua não tem luz própria — reflete a luz do Sol.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que planeta é famoso pelos seus anéis?",
@@ -96,7 +99,10 @@
       "Universo",
       "Constelação"
     ],
-    "exp": "O Sistema Solar fica na galáxia Via Láctea."
+    "exp": "O Sistema Solar fica na galáxia Via Láctea.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que forma tem a Terra?",
@@ -107,7 +113,10 @@
       "Cúbica",
       "Triangular"
     ],
-    "exp": "A Terra é ligeiramente achatada nos polos — um 'esferoide'."
+    "exp": "A Terra é ligeiramente achatada nos polos — um 'esferoide'.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Quem foi o primeiro homem a pisar a Lua?",
@@ -118,7 +127,10 @@
       "Buzz Aldrin",
       "Michael Collins"
     ],
-    "exp": "Aconteceu na missão Apollo 11, em 1969."
+    "exp": "Aconteceu na missão Apollo 11, em 1969.",
+    "img": "assets/planets/moon.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Como se chama a galáxia onde vivemos?",
@@ -140,7 +152,10 @@
       "Titã",
       "Europa"
     ],
-    "exp": "A Lua é o único satélite natural da Terra."
+    "exp": "A Lua é o único satélite natural da Terra.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que é uma estrela?",
@@ -173,7 +188,10 @@
       "As nuvens apenas",
       "O vento"
     ],
-    "exp": "A atmosfera filtra grande parte da radiação perigosa."
+    "exp": "A atmosfera filtra grande parte da radiação perigosa.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que é o Sol?",
@@ -184,7 +202,10 @@
       "Uma lua",
       "Um cometa"
     ],
-    "exp": "O Sol é a estrela mais próxima de nós."
+    "exp": "O Sol é a estrela mais próxima de nós.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que objeto deixa um rasto brilhante no céu ao cair?",
@@ -206,7 +227,10 @@
       "Doze",
       "Vinte e quatro"
     ],
-    "exp": "Essa rotação dá origem ao dia e à noite."
+    "exp": "Essa rotação dá origem ao dia e à noite.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Em que veículo viajam os astronautas para o espaço?",
@@ -283,7 +307,10 @@
       "Eclipse",
       "Galáxia"
     ],
-    "exp": "A Terra demora um ano a percorrer a sua órbita."
+    "exp": "A Terra demora um ano a percorrer a sua órbita.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que veículo leva os astronautas ao espaço?",
@@ -316,7 +343,10 @@
       "As nuvens",
       "Os aviões apenas"
     ],
-    "exp": "As estrelas são sóis muito distantes."
+    "exp": "As estrelas são sóis muito distantes.",
+    "img": "assets/planets/moon.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Qual é o planeta vermelho?",
@@ -338,7 +368,10 @@
       "As nuvens",
       "O vento"
     ],
-    "exp": "A Terra gira sobre si mesma uma vez por dia."
+    "exp": "A Terra gira sobre si mesma uma vez por dia.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Como se chama um pedaço de rocha que arde ao entrar na atmosfera?",
@@ -404,7 +437,10 @@
       "Verde",
       "Preto"
     ],
-    "exp": "O Sol é uma estrela anã amarela."
+    "exp": "O Sol é uma estrela anã amarela.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que acontece quando a Lua tapa o Sol?",
@@ -415,7 +451,10 @@
       "Uma aurora",
       "Uma chuva de estrelas"
     ],
-    "exp": "A Lua fica entre a Terra e o Sol."
+    "exp": "A Lua fica entre a Terra e o Sol.",
+    "img": "assets/planets/moon.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que mantém os planetas presos à volta do Sol?",
@@ -426,7 +465,10 @@
       "O magnetismo",
       "Cordas invisíveis"
     ],
-    "exp": "A gravidade do Sol é muito forte."
+    "exp": "A gravidade do Sol é muito forte.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Qual é o planeta mais pequeno do Sistema Solar?",
@@ -448,7 +490,10 @@
       "Água",
       "Metal"
     ],
-    "exp": "O Sol é uma enorme bola de gás muito quente."
+    "exp": "O Sol é uma enorme bola de gás muito quente.",
+    "img": "assets/planets/sun.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "Que objeto feito por humanos anda à volta da Terra?",
@@ -459,7 +504,10 @@
       "Asteroide",
       "Meteoro"
     ],
-    "exp": "Os satélites servem para comunicações e GPS."
+    "exp": "Os satélites servem para comunicações e GPS.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   },
   {
     "q": "O que é mais forte na Lua do que na Terra?",
@@ -470,6 +518,9 @@
       "O vento",
       "A chuva"
     ],
-    "exp": "Na Lua pesamos cerca de 6 vezes menos."
+    "exp": "Na Lua pesamos cerca de 6 vezes menos.",
+    "img": "assets/planets/earth_atmos_2048.jpg",
+    "imgType": "img",
+    "imgCredit": "Solar System Scope · CC BY 4.0"
   }
 ]
