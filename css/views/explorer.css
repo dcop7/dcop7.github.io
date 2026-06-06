@@ -288,6 +288,75 @@
   padding: .2rem .1rem;
 }
 
+/* ── HUB GLOBAL SEARCH ── */
+.ex-hub-search {
+  position: relative;
+  max-width: 420px;
+  margin: 1.5rem auto 0;
+}
+.ex-hub-search-ic {
+  position: absolute;
+  left: .9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  display: flex;
+  pointer-events: none;
+}
+.ex-hub-search-input {
+  width: 100%;
+  padding: .72rem 1rem .72rem 2.5rem;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 50px;
+  color: var(--text);
+  font-size: .9rem;
+  font-family: var(--font-sans);
+  transition: all var(--ease);
+}
+.ex-hub-search-input::placeholder { color: var(--muted); }
+.ex-hub-search-input:focus {
+  outline: none;
+  border-color: rgba(var(--accent-rgb),.5);
+  background: var(--card2);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.ex-hub-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  z-index: 30;
+  text-align: left;
+  background: var(--glass-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  display: none;
+  animation: view-in .12s ease;
+}
+.ex-hub-search-results.open { display: block; }
+
+/* ── KEYBOARD FOCUS (visible only for keyboard users) ── */
+.ex-feature-card:focus-visible,
+.ex-tab:focus-visible,
+.ex-country-chip:focus-visible,
+.ex-globe-view-btn:focus-visible,
+.ex-map-view-btn:focus-visible,
+.ex-continent-btn:focus-visible,
+.ex-discover-btn:focus-visible,
+.ex-panel-close:focus-visible,
+.ex-fave-btn:focus-visible,
+.ex-panel-border-chip:focus-visible,
+.ex-acc-hdr:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    MAP LAYOUT
 ══════════════════════════════════════════════════════════════════ */

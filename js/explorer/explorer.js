@@ -247,6 +247,20 @@ const ExplorerPage = (function () {
     return r.json();
   }
 
+  /* Ensure the bundled country dataset is loaded (used by the hub search, which
+     can run before the Map/Globe tabs have been opened). Safe to call repeatedly. */
+  let _countriesLoading = null;
+  async function _ensureCountries() {
+    if (_countriesOk) return true;
+    if (!_countriesLoading) {
+      _countriesLoading = _fetchCountries()
+        .then(d => { _countries = d; _countriesOk = true; return true; })
+        .catch(() => false)
+        .finally(() => { _countriesLoading = null; });
+    }
+    return _countriesLoading;
+  }
+
   /* Wikipedia REST summary for a title in the given language. Returns
      { text, url } — text/url are null when the page doesn't exist (404).
      Cached per (lang, title) in sessionStorage so re-opens are instant and
@@ -432,24 +446,45 @@ const ExplorerPage = (function () {
      One overlay lives on <body>. Clicking the backdrop or pressing Escape
      closes it; on mobile it becomes a full-screen sheet (see CSS). */
   let _modalCountry = null;   /* country currently shown, for langchange re-render */
+  let _modalLastFocus = null; /* element to restore focus to when the modal closes */
   function _ensureModal() {
     let overlay = document.getElementById('ex-modal-overlay');
     if (overlay) return overlay;
     overlay = document.createElement('div');
     overlay.id = 'ex-modal-overlay';
     overlay.className = 'ex-modal-overlay';
-    overlay.innerHTML = `<div class="ex-modal" id="ex-modal" role="dialog" aria-modal="true"></div>`;
+    overlay.innerHTML = `<div class="ex-modal" id="ex-modal" role="dialog" aria-modal="true" aria-labelledby="ex-modal-title"></div>`;
     document.body.appendChild(overlay);
     overlay.addEventListener('click', e => { if (e.target === overlay) _closeModal(); });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && overlay.classList.contains('open')) _closeModal();
     });
+    /* Keep keyboard focus inside the dialog while it is open. */
+    overlay.addEventListener('keydown', e => {
+      if (e.key !== 'Tab' || !overlay.classList.contains('open')) return;
+      const f = [...overlay.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])')]
+        .filter(el => el.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
     return overlay;
+  }
+  function _openModalFocus(overlay) {
+    _modalLastFocus = document.activeElement;
+    overlay.classList.add('open');
+    /* Defer so the close button exists & is laid out before focusing it. */
+    requestAnimationFrame(() => overlay.querySelector('#ex-panel-close')?.focus());
   }
   function _closeModal() {
     const overlay = document.getElementById('ex-modal-overlay');
     if (overlay) overlay.classList.remove('open');
     _modalCountry = null;
+    if (_modalLastFocus && typeof _modalLastFocus.focus === 'function') {
+      try { _modalLastFocus.focus(); } catch (e) {}
+    }
+    _modalLastFocus = null;
   }
 
   function showCountryPanel(country /* , panelSel (ignored — shared modal) */) {
@@ -526,7 +561,7 @@ const ExplorerPage = (function () {
         ? `<img class="ex-panel-flag" src="${flag}" alt="${name}" loading="lazy"/>`
         : `<div class="ex-panel-flag-placeholder">${country.flag || '🏳'}</div>`}
       <div class="ex-panel-body">
-        <div class="ex-panel-name">${name}</div>
+        <div class="ex-panel-name" id="ex-modal-title">${name}</div>
         ${country.name?.official && country.name.official !== name
           ? `<div class="ex-panel-official">${country.name.official}</div>` : ''}
         <div class="ex-panel-actions">
@@ -576,7 +611,7 @@ const ExplorerPage = (function () {
              <div class="ex-panel-island-note">🏝 ${_t('No land borders', 'Sem fronteiras terrestres')}${country.area && country.area < 1000000 ? _t(' — island nation', ' — nação ilha') : ''}.</div>`}
       </div>`;
 
-    overlay.classList.add('open');
+    _openModalFocus(overlay);
     modal.scrollTop = 0;
     const body = modal.querySelector('.ex-panel-body');
     if (body) body.scrollTop = 0;
@@ -629,6 +664,11 @@ const ExplorerPage = (function () {
         <div class="ex-hub-header">
           <h1 class="ex-hub-title">${_t('Explore the World', 'Explorar o Mundo')}</h1>
           <p class="ex-hub-subtitle">${_t('Three worlds to explore: Earth, Space and the Human Body.', 'Três mundos para explorar: a Terra, o Espaço e o Corpo Humano.')}</p>
+          <div class="ex-hub-search">
+            <span class="ex-hub-search-ic" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+            <input type="text" id="ex-hub-search" class="ex-hub-search-input" placeholder="${_t('Search any country…', 'Pesquisar qualquer país…')}" autocomplete="off" aria-label="${_t('Search any country', 'Pesquisar qualquer país')}" aria-controls="ex-hub-search-results"/>
+            <div class="ex-hub-search-results" id="ex-hub-search-results" role="listbox"></div>
+          </div>
           <button class="ex-discover-btn" id="ex-discover-btn">
             <span class="ex-discover-btn-icon">🎲</span> ${_t('Discover something new', 'Descobrir algo novo')}
           </button>
@@ -714,14 +754,75 @@ const ExplorerPage = (function () {
       </div>`;
 
     sub.querySelector('#ex-discover-btn').onclick = () => _discoverRandom();
+    /* Feature cards are <div>s — make them real, keyboard-operable buttons. */
     sub.querySelectorAll('.ex-feature-card').forEach(card => {
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+      const label = card.querySelector('.ex-feature-card-title')?.textContent?.trim();
+      if (label) card.setAttribute('aria-label', label);
       card.onclick = () => _switchTab(card.dataset.tab);
+      card.onkeydown = e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _switchTab(card.dataset.tab); }
+      };
     });
     sub.querySelectorAll('.ex-country-chip').forEach(chip => {
       chip.onclick = () => {
         const c = _countries.find(x => x.cca3 === chip.dataset.cca3);
-        if (c) { _switchTab('map'); setTimeout(() => showCountryPanel(c), 400); }
+        if (c) showCountryPanel(c);
       };
+    });
+    _wireHubSearch(sub);
+  }
+
+  /* Hub-level country search → opens the country panel directly from anywhere,
+     lazy-loading the dataset on first focus. Reuses the map search result styles
+     for visual consistency. */
+  function _wireHubSearch(sub) {
+    const input   = sub.querySelector('#ex-hub-search');
+    const results = sub.querySelector('#ex-hub-search-results');
+    if (!input || !results) return;
+    let fi = -1;
+
+    const run = () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q || !_countriesOk) { results.classList.remove('open'); return; }
+      const hits = _countries.filter(c =>
+        _cName(c).toLowerCase().includes(q) ||
+        (c.name && c.name.common || '').toLowerCase().includes(q) ||
+        (c.capital || []).some(cap => cap.toLowerCase().includes(q))
+      ).slice(0, 7);
+      results._hits = hits;
+      if (!hits.length) { results.classList.remove('open'); return; }
+      results.innerHTML = hits.map((c, i) => `
+        <div class="ex-search-result" role="option" data-i="${i}" id="ex-hub-opt-${i}">
+          ${_flagImg(c, 'ex-search-result-flag-img')}
+          <span class="ex-search-result-name">${_cName(c)}</span>
+          <span class="ex-search-result-region">${(c.continents || [])[0] || ''}</span>
+        </div>`).join('');
+      results.classList.add('open'); fi = -1;
+    };
+
+    if (!_countriesOk) _ensureCountries();
+    input.addEventListener('focus', () => { if (!_countriesOk) _ensureCountries().then(() => { if (input.value.trim()) run(); }); });
+    input.addEventListener('input', run);
+    results.addEventListener('click', e => {
+      const row = e.target.closest('.ex-search-result');
+      if (!row || !results._hits) return;
+      const c = results._hits[+row.dataset.i];
+      if (c) { results.classList.remove('open'); input.value = ''; showCountryPanel(c); }
+    });
+    input.addEventListener('keydown', e => {
+      const items = results.querySelectorAll('.ex-search-result');
+      if (e.key === 'ArrowDown') fi = Math.min(fi + 1, items.length - 1);
+      else if (e.key === 'ArrowUp') fi = Math.max(fi - 1, 0);
+      else if (e.key === 'Enter') { items[Math.max(fi, 0)]?.click(); return; }
+      else if (e.key === 'Escape') { results.classList.remove('open'); input.blur(); return; }
+      else return;
+      e.preventDefault();
+      items.forEach((it, i) => it.classList.toggle('focused', i === fi));
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.ex-hub-search')) results.classList.remove('open');
     });
   }
 
@@ -742,21 +843,21 @@ const ExplorerPage = (function () {
           </div>
           <div class="ex-search-results" id="ex-map-search-results"></div>
         </div>
-        <div class="ex-map-view-btns" id="ex-map-view-btns">
-          <button class="ex-map-view-btn active" data-view="political">${_t('Political', 'Político')}</button>
-          <button class="ex-map-view-btn" data-view="satellite">${_t('Satellite', 'Satélite')}</button>
-          <button class="ex-map-view-btn" data-view="night">${_t('Day/Night', 'Dia/Noite')}</button>
+        <div class="ex-map-view-btns" id="ex-map-view-btns" role="group" aria-label="${_t('Map view', 'Vista do mapa')}">
+          <button class="ex-map-view-btn active" data-view="political" aria-pressed="true">${_t('Political', 'Político')}</button>
+          <button class="ex-map-view-btn" data-view="satellite" aria-pressed="false">${_t('Satellite', 'Satélite')}</button>
+          <button class="ex-map-view-btn" data-view="night" aria-pressed="false">${_t('Day/Night', 'Dia/Noite')}</button>
         </div>
         <div class="ex-map-controls">
           <button class="ex-map-btn" id="ex-map-random"><span class="ex-map-btn-icon">🎲</span> ${_t('Random', 'Aleatório')}</button>
         </div>
-        <div class="ex-continent-filter" id="ex-continent-filter">
-          <button class="ex-continent-btn active" data-c="all">${_t('All', 'Todos')}</button>
-          <button class="ex-continent-btn" data-c="Africa">${_t('Africa', 'África')}</button>
-          <button class="ex-continent-btn" data-c="Americas">${_t('Americas', 'Américas')}</button>
-          <button class="ex-continent-btn" data-c="Asia">${_t('Asia', 'Ásia')}</button>
-          <button class="ex-continent-btn" data-c="Europe">${_t('Europe', 'Europa')}</button>
-          <button class="ex-continent-btn" data-c="Oceania">${_t('Oceania', 'Oceânia')}</button>
+        <div class="ex-continent-filter" id="ex-continent-filter" role="group" aria-label="${_t('Filter by continent', 'Filtrar por continente')}">
+          <button class="ex-continent-btn active" data-c="all" aria-pressed="true">${_t('All', 'Todos')}</button>
+          <button class="ex-continent-btn" data-c="Africa" aria-pressed="false">${_t('Africa', 'África')}</button>
+          <button class="ex-continent-btn" data-c="Americas" aria-pressed="false">${_t('Americas', 'Américas')}</button>
+          <button class="ex-continent-btn" data-c="Asia" aria-pressed="false">${_t('Asia', 'Ásia')}</button>
+          <button class="ex-continent-btn" data-c="Europe" aria-pressed="false">${_t('Europe', 'Europa')}</button>
+          <button class="ex-continent-btn" data-c="Oceania" aria-pressed="false">${_t('Oceania', 'Oceânia')}</button>
         </div>
         <div class="ex-data-status" id="ex-data-status"></div>
       </div>`;
@@ -889,7 +990,11 @@ const ExplorerPage = (function () {
       const btn = e.target.closest('.ex-map-view-btn');
       if (!btn) return;
       _setMapView(btn.dataset.view);
-      bar.querySelectorAll('.ex-map-view-btn').forEach(b => b.classList.toggle('active', b === btn));
+      bar.querySelectorAll('.ex-map-view-btn').forEach(b => {
+        const on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
     });
   }
 
@@ -1023,7 +1128,11 @@ const ExplorerPage = (function () {
       const btn = e.target.closest('.ex-continent-btn');
       if (!btn) return;
       _contFilter = btn.dataset.c;
-      bar.querySelectorAll('.ex-continent-btn').forEach(b => b.classList.toggle('active', b === btn));
+      bar.querySelectorAll('.ex-continent-btn').forEach(b => {
+        const on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
       if (!_lLayer) return;
       _lLayer.eachLayer(layer => {
         const c  = byCca3[layer.feature?.id];
@@ -1088,10 +1197,10 @@ const ExplorerPage = (function () {
           <div class="ex-loading-spinner"></div>
           <div class="ex-loading-text" id="ex-globe-loading-txt">${_t('Loading the globe…', 'A carregar o globo…')}</div>
         </div>
-        <div class="ex-globe-view-bar" id="ex-globe-view-bar">
-          <button class="ex-globe-view-btn active" data-view="realistic">🌍 ${_t('Realistic', 'Realista')}</button>
-          <button class="ex-globe-view-btn" data-view="daynight">🌗 ${_t('Day/Night', 'Dia/Noite')}</button>
-          <button class="ex-globe-view-btn" data-view="political">🗺️ ${_t('Political', 'Político')}</button>
+        <div class="ex-globe-view-bar" id="ex-globe-view-bar" role="group" aria-label="${_t('Globe view', 'Vista do globo')}">
+          <button class="ex-globe-view-btn active" data-view="realistic" aria-pressed="true">🌍 ${_t('Realistic', 'Realista')}</button>
+          <button class="ex-globe-view-btn" data-view="daynight" aria-pressed="false">🌗 ${_t('Day/Night', 'Dia/Noite')}</button>
+          <button class="ex-globe-view-btn" data-view="political" aria-pressed="false">🗺️ ${_t('Political', 'Político')}</button>
         </div>
         <div class="ex-globe-hint">${_t('Drag to rotate · Click a country to explore', 'Arrasta para rodar · Clica num país para explorar')}</div>
         <div class="ex-globe-tooltip" id="ex-globe-tooltip" hidden></div>
@@ -1281,7 +1390,11 @@ const ExplorerPage = (function () {
       bar.addEventListener('click', e => {
         const btn = e.target.closest('.ex-globe-view-btn');
         if (!btn) return;
-        bar.querySelectorAll('.ex-globe-view-btn').forEach(b => b.classList.toggle('active', b === btn));
+        bar.querySelectorAll('.ex-globe-view-btn').forEach(b => {
+          const on = b === btn;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
         _setGlobeView(btn.dataset.view);
       });
     }
@@ -1474,46 +1587,65 @@ const ExplorerPage = (function () {
       <button class="ex-panel-close" id="ex-panel-close" aria-label="${_t('Close', 'Fechar')}">✕</button>
       <div class="ex-panel-flag-placeholder" style="font-size:3rem">🌍</div>
       <div class="ex-panel-body">
-        <div class="ex-panel-name">${name}</div>
+        <div class="ex-panel-name" id="ex-modal-title">${name}</div>
         <div class="ex-panel-rows" style="margin-top:.75rem">
           <div class="ex-panel-row"><span class="ex-panel-row-icon">⚠</span><span class="ex-panel-label" style="color:var(--muted);font-size:.78rem">${_t('Detailed data unavailable for this territory.', 'Dados detalhados indisponíveis para este território.')}</span></div>
         </div>
         <a class="ex-wiki-btn" href="${_wikiUrl(name)}" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-flex">📖 Wikipédia</a>
       </div>`;
-    overlay.classList.add('open');
+    _openModalFocus(overlay);
     modal.querySelector('#ex-panel-close').onclick = () => _closeModal();
   }
 
   /* ════════════════════════════════ TAB SYSTEM ══════════════════════ */
+  const _TABS = () => [
+    ['hub', '🏠', _t('Home', 'Início')],
+    ['map', '🗺', _t('Map', 'Mapa')],
+    ['globe', '🌍', _t('Globe', 'Globo')],
+    ['portugal', '🇵🇹', 'Portugal'],
+    ['realtime', '🛰', _t('Live Earth', 'Terra em Tempo Real')],
+    ['solar', '☀', _t('Solar System', 'Sistema Solar')],
+    ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
+    ['body', '🧬', _t('Human Body', 'Corpo Humano')],
+  ];
+
   function _buildShell(view) {
+    const tabs = _TABS();
     view.innerHTML = `
       <div class="ex-shell">
-        <div class="ex-tabs" id="ex-tabs">
-          <button class="ex-tab active" data-tab="hub"><span class="ex-tab-icon">🏠</span> ${_t('Home', 'Início')}</button>
-          <button class="ex-tab" data-tab="map"><span class="ex-tab-icon">🗺</span> ${_t('Map', 'Mapa')}</button>
-          <button class="ex-tab" data-tab="globe"><span class="ex-tab-icon">🌍</span> ${_t('Globe', 'Globo')}</button>
-          <button class="ex-tab" data-tab="portugal"><span class="ex-tab-icon">🇵🇹</span> Portugal</button>
-          <button class="ex-tab" data-tab="realtime"><span class="ex-tab-icon">🛰</span> ${_t('Live Earth', 'Terra em Tempo Real')}</button>
-          <button class="ex-tab" data-tab="solar"><span class="ex-tab-icon">☀</span> ${_t('Solar System', 'Sistema Solar')}</button>
-          <button class="ex-tab" data-tab="galaxy"><span class="ex-tab-icon">🌌</span> ${_t('Milky Way', 'Via Láctea')}</button>
-          <button class="ex-tab" data-tab="body"><span class="ex-tab-icon">🧬</span> ${_t('Human Body', 'Corpo Humano')}</button>
+        <div class="ex-tabs" id="ex-tabs" role="tablist" aria-label="${_t('Explorer sections', 'Secções do explorador')}">
+          ${tabs.map(([id, icon, label]) => `
+          <button class="ex-tab${id === 'hub' ? ' active' : ''}" role="tab" id="ex-tab-${id}" data-tab="${id}"
+                  aria-controls="ex-sub-${id}" aria-selected="${id === 'hub'}" tabindex="${id === 'hub' ? '0' : '-1'}">
+            <span class="ex-tab-icon">${icon}</span> ${label}</button>`).join('')}
         </div>
         <div class="ex-content">
-          <div class="ex-sub active" id="ex-sub-hub"></div>
-          <div class="ex-sub" id="ex-sub-map"></div>
-          <div class="ex-sub" id="ex-sub-globe"></div>
-          <div class="ex-sub" id="ex-sub-portugal"></div>
-          <div class="ex-sub" id="ex-sub-realtime"></div>
-          <div class="ex-sub" id="ex-sub-solar"></div>
-          <div class="ex-sub" id="ex-sub-galaxy"></div>
-          <div class="ex-sub" id="ex-sub-body"></div>
+          ${tabs.map(([id]) => `<div class="ex-sub${id === 'hub' ? ' active' : ''}" id="ex-sub-${id}" role="tabpanel" aria-labelledby="ex-tab-${id}"></div>`).join('')}
         </div>
       </div>`;
 
     _shell = view.querySelector('.ex-shell');
-    view.querySelector('#ex-tabs').addEventListener('click', e => {
+    const tabsEl = view.querySelector('#ex-tabs');
+    tabsEl.addEventListener('click', e => {
       const btn = e.target.closest('.ex-tab');
       if (btn) _switchTab(btn.dataset.tab);
+    });
+    /* Keyboard: roving tabindex + arrow/Home/End focus movement. Manual
+       activation (Enter/Space/click) — arrowing only moves focus, so heavy
+       WebGL panels aren't mounted just by passing through them. */
+    tabsEl.addEventListener('keydown', e => {
+      const list = [...tabsEl.querySelectorAll('.ex-tab')];
+      const i = list.indexOf(document.activeElement);
+      if (i < 0) return;
+      let n = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % list.length;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + list.length) % list.length;
+      else if (e.key === 'Home') n = 0;
+      else if (e.key === 'End') n = list.length - 1;
+      else return;
+      e.preventDefault();
+      list.forEach((b, k) => { b.tabIndex = k === n ? 0 : -1; });
+      list[n].focus();
     });
     _renderHub(view.querySelector('#ex-sub-hub'));
   }
@@ -1532,7 +1664,12 @@ const ExplorerPage = (function () {
     }
     _curTab = tab;
 
-    _shell.querySelectorAll('.ex-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    _shell.querySelectorAll('.ex-tab').forEach(b => {
+      const on = b.dataset.tab === tab;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
     _shell.querySelectorAll('.ex-sub').forEach(s => s.classList.toggle('active', s.id === `ex-sub-${tab}`));
     /* Keep the active tab visible in the scrollable bar (mobile). */
     const activeBtn = _shell.querySelector('.ex-tab.active');
