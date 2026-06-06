@@ -66,7 +66,7 @@
     "exp": "Presto e vivace, pelo contrário, indicam andamentos rápidos."
   },
   {
-    "q": "Que compositor português é autor de óperas e da 'Sinfonia à Pátria'?",
+    "q": "Que compositor português do século XX é autor de seis sinfonias e da ópera Mérope?",
     "a": "Joly Braga Santos",
     "opts": [
       "Luís de Freitas Branco",
@@ -74,7 +74,7 @@
       "Carlos Seixas",
       "Fernando Lopes-Graça"
     ],
-    "exp": "Foi um dos grandes sinfonistas portugueses do século XX."
+    "exp": "Joly Braga Santos foi um dos grandes sinfonistas portugueses do século XX."
   },
   {
     "q": "Quantos bemóis tem a tonalidade de Fá maior?",
