@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v93';
+const CACHE = 'dcop7-v94';
 const STATIC = [
   '/',
   '/index.html',
