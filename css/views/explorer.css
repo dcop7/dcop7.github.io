@@ -2530,7 +2530,30 @@ body.light .pt-capital-label .pt-cap-dot {
   display: flex; align-items: center; justify-content: center; transition: all var(--ease);
 }
 .tl-zb:hover { border-color: var(--accent); color: var(--accent); }
-.tl-hint { position: absolute; left: .8rem; bottom: .8rem; font-size: .66rem; color: var(--muted); pointer-events: none; max-width: 60%; }
+.tl-hint { position: absolute; left: 1rem; bottom: 3.1rem; font-size: .66rem; color: var(--muted); pointer-events: none; max-width: 60%; }
+
+/* minimap / scrubber */
+.tl-mini {
+  position: absolute; left: 1rem; right: 64px; bottom: .8rem; height: 24px; z-index: 5;
+  border-radius: 6px; overflow: hidden; cursor: pointer; touch-action: none;
+  background: rgba(0,0,0,.4); border: 1px solid var(--border2);
+}
+.tl-mini-eras { position: absolute; inset: 0; }
+.tl-mini-era { position: absolute; top: 0; bottom: 0; opacity: .5; }
+.tl-mini-view {
+  position: absolute; top: -1px; bottom: -1px; border: 2px solid #fff; border-radius: 6px;
+  background: rgba(255,255,255,.16); box-shadow: 0 0 8px rgba(0,0,0,.55); pointer-events: none;
+}
+
+/* detail media (Wikipedia image) + wiki extract/link */
+.tl-d-media { position: relative; width: 100%; height: 150px; border-radius: 10px; overflow: hidden; background: var(--card2); border: 1px solid var(--border); }
+.tl-d-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tl-d-media-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, color-mix(in srgb, var(--c) 32%, transparent), transparent); }
+.tl-d-emoji-big { font-size: 3.4rem; opacity: .9; }
+.tl-d-media-cr { position: absolute; bottom: 4px; right: 6px; font-size: .58rem; color: #fff; background: rgba(0,0,0,.55); padding: .05rem .35rem; border-radius: 4px; }
+.tl-d-wiki p { font-size: .84rem; color: var(--text2); line-height: 1.55; margin: 0; }
+.tl-d-wikilink { display: inline-flex; align-items: center; gap: .3rem; font-size: .8rem; font-weight: 600; color: var(--accent2); text-decoration: none; align-self: flex-start; }
+.tl-d-wikilink:hover { text-decoration: underline; }
 
 /* detail overlay — desktop side panel, mobile bottom-sheet */
 .tl-detail {

@@ -13,7 +13,7 @@ const TimelineExplorer = (function () {
   let _zoom = 1, _pan = 0, _stageW = 0;           // view transform
   const MINZ = 1, MAXZ = 420;
   let _nodes = [], _bands = [];                    // {e, el, x} / {era, el}
-  let _rafLayout = 0, _ro = null;
+  let _rafLayout = 0, _ro = null, _mini = null, _miniView = null;
   const PRESENT = new Date().getFullYear();
 
   function _lang() { return typeof I18n !== 'undefined' ? I18n.getLang() : 'pt'; }
@@ -43,6 +43,80 @@ const TimelineExplorer = (function () {
     };
   }
   const cat = e => CATS[e.cat] || { emoji:'•', label:'', color:'#6366f1' };
+
+  /* pt.wikipedia article titles where they differ from the event title; the
+     rest fall back to the title. Used for the image + extract + link in the
+     detail panel (fetched live, cached, no copyrighted image stored). */
+  const WIKI = {
+    'primeiras-particulas':'Nucleossíntese primordial', 'primeiros-atomos':'Recombinação (cosmologia)',
+    'primeiras-estrelas':'População estelar', 'primeiras-galaxias':'Formação e evolução de galáxias',
+    'via-lactea':'Via Láctea', 'formacao-sol':'Sol', 'sistema-solar':'Sistema Solar',
+    'formacao-planetas':'Formação e evolução do Sistema Solar', 'formacao-asteroides':'Cintura de asteroides',
+    'formacao-cometas':'Cometa', 'formacao-luas-anoes':'Planeta anão',
+    'formacao-terra':'Terra', 'formacao-lua':'Lua', 'formacao-atmosfera':'Atmosfera terrestre',
+    'formacao-oceanos':'Oceano', 'primeiros-continentes':'Crosta continental', 'rodinia':'Rodínia',
+    'pangeia':'Pangeia', 'separacao-continentes':'Deriva continental', 'extincoes':'Extinção Permiano-Triássica',
+    'idades-gelo':'Idade do gelo', 'primeira-vida':'Origem da vida', 'bacterias':'Bactéria',
+    'fotossintese':'Fotossíntese', 'grande-oxidacao':'Grande Evento de Oxigenação', 'multicelulares':'Organismo multicelular',
+    'cambriana':'Explosão cambriana', 'primeiros-peixes':'Peixe', 'primeiras-plantas':'Planta',
+    'insetos':'Inseto', 'anfibios':'Anfíbio', 'repteis':'Réptil',
+    'primeiros-dinossauros':'Dinossauro', 'primeiros-mamiferos':'Mamífero', 'grandes-sauropodes':'Sauropoda',
+    'primeiras-aves':'Archaeopteryx', 't-rex':'Tyrannosaurus', 'triceratops':'Triceratops',
+    'velociraptor':'Velociraptor', 'extincao-dinos':'Extinção do Cretáceo-Paleogeno',
+    'australopithecus':'Australopithecus', 'homo-habilis':'Homo habilis', 'homo-erectus':'Homo erectus',
+    'neandertais':'Homem de Neandertal', 'homo-sapiens':'Homo sapiens', 'arte-rupestre':'Arte rupestre',
+    'mesopotamia':'Mesopotâmia', 'sumeria':'Suméria', 'egipto':'Antigo Egito', 'piramides':'Pirâmides do Egito',
+    'babilonia':'Babilônia', 'fenicios':'Fenícios', 'grecia':'Grécia Antiga', 'partenon':'Partenon',
+    'persas':'Império Aquemênida', 'china-antiga':'Dinastia Qin', 'imperio-romano':'Império Romano',
+    'coliseu':'Coliseu', 'maia':'Civilização maia', 'inca':'Império Inca', 'asteca':'Astecas',
+    'escrita':'História da escrita', 'papel':'Papel', 'medicina-antiga':'Trepanação',
+    'queda-roma':'Queda do Império Romano do Ocidente', 'idade-media':'Idade Média', 'cruzadas':'Cruzada',
+    'renascimento':'Renascimento', 'imprensa':'Imprensa', 'mona-lisa':'Mona Lisa',
+    'descobrimentos':'Era dos descobrimentos', 'reforma':'Reforma Protestante', 'revolucao-cientifica':'Revolução Científica',
+    'revolucao-industrial':'Revolução Industrial', 'primeira-guerra':'Primeira Guerra Mundial',
+    'segunda-guerra':'Segunda Guerra Mundial', 'guerra-fria':'Guerra Fria', 'muro-berlim':'Queda do Muro de Berlim',
+    'fundacao-portugal':'Tratado de Zamora', 'sao-mamede':'Batalha de São Mamede', 'aljubarrota':'Batalha de Aljubarrota',
+    'conquista-ceuta':'Conquista de Ceuta', 'descobrimentos-pt':'Descobrimentos portugueses',
+    'chegada-india':'Vasco da Gama', 'chegada-brasil':'Descobrimento do Brasil', 'restauracao':'Restauração da Independência',
+    'terramoto-1755':'Sismo de Lisboa de 1755', 'invasoes-francesas':'Invasões Francesas',
+    'republica':'Implantação da República Portuguesa', 'estado-novo':'Estado Novo (Portugal)',
+    '25-abril':'Revolução dos Cravos', 'adesao-cee':'União Europeia', 'euro-pt':'Euro',
+    'sputnik':'Sputnik 1', 'gagarin':'Iuri Gagarin', 'apollo-11':'Apollo 11', 'voyager-1':'Voyager 1',
+    'voyager-2':'Voyager 2', 'space-shuttle':'Ônibus espacial', 'iss':'Estação Espacial Internacional',
+    'curiosity':'Curiosity', 'perseverance':'Perseverance (sonda)', 'jwst':'Telescópio espacial James Webb',
+    'maquina-vapor':'Máquina a vapor', 'eletricidade':'Lâmpada incandescente', 'telefone':'Telefone',
+    'radio':'Rádio (comunicação)', 'automovel':'Automóvel', 'aviao':'Avião', 'televisao':'Televisão',
+    'computador':'Computador', 'internet':'Internet', 'www':'World Wide Web', 'smartphone':'Smartphone',
+    'ia':'Inteligência artificial', 'variola':'Varíola', 'microrganismos':'Louis Pasteur',
+    'penicilina':'Penicilina', 'adn':'Ácido desoxirribonucleico', 'genoma':'Projeto Genoma Humano',
+    'vacinas-mrna':'Vacina de RNA', 'pequena-idade-gelo':'Pequena Idade do Gelo', 'co2':'Dióxido de carbono',
+    'acordo-paris':'Acordo de Paris', 'clima-extremo':'Eventos climáticos extremos', 'cinema':'Cinema',
+    'streaming':'Streaming',
+  };
+  const wikiTitle = e => e.wiki || WIKI[e.id] || e.title;
+  function wikiUrl(title) { return 'https://pt.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')); }
+
+  /* Wikipedia REST summary → { thumb, extract, url }. Cached in sessionStorage. */
+  async function wikiSummary(title) {
+    const key = 'tl-wiki-' + title;
+    try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
+    let out = { thumb: null, extract: null, url: null };
+    try {
+      const r = await fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title));
+      if (r.ok) {
+        const d = await r.json();
+        if (d && d.type !== 'https://mediawiki.org/wiki/HyperSwitch/errors/not_found') {
+          out = {
+            thumb: (d.thumbnail && d.thumbnail.source) || null,
+            extract: d.extract || null,
+            url: (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || null,
+          };
+        }
+      }
+    } catch (e) {}
+    try { sessionStorage.setItem(key, JSON.stringify(out)); } catch (e) {}
+    return out;
+  }
 
   /* Era bands shown across the top — give every era visible room. */
   function _eras() {
@@ -97,9 +171,12 @@ const TimelineExplorer = (function () {
     _loaded = true;
   }
 
-  /* ── transform helpers ── */
+  /* ── transform helpers (PAD keeps the first/last events off the edges) ── */
+  const PAD = 78;
   const contentW = () => _stageW * _zoom;
-  const screenX = y => mapYear(y) * contentW() + _pan;
+  const trackW = () => Math.max(1, contentW() - 2 * PAD);
+  const pos = y => PAD + mapYear(y) * trackW() + _pan;          // screen px for a year
+  const worldAt = px => (px - _pan - PAD) / trackW();           // normalized [0,1] under px
   function clampPan() {
     const cw = contentW();
     _pan = (cw <= _stageW) ? (_stageW - cw) / 2 : clamp(_pan, _stageW - cw, 0);
@@ -117,7 +194,11 @@ const TimelineExplorer = (function () {
         <button class="tl-zb" id="tl-zout" aria-label="${_t('Zoom out','Afastar')}">−</button>
         <button class="tl-zb" id="tl-zreset" aria-label="${_t('Reset view','Repor vista')}">⤢</button>
       </div>
-      <div class="tl-hint">${_t('Drag to pan · scroll / pinch to zoom · click an era or event','Arrasta para mover · roda / pinça para zoom · clica numa era ou evento')}</div>`;
+      <div class="tl-hint">${_t('Drag to pan · scroll / pinch to zoom · click an era or event','Arrasta para mover · roda / pinça para zoom · clica numa era ou evento')}</div>
+      <div class="tl-mini" id="tl-mini" aria-hidden="true">
+        <div class="tl-mini-eras" id="tl-mini-eras"></div>
+        <div class="tl-mini-view" id="tl-mini-view"></div>
+      </div>`;
 
     const eraLayer = _stage.querySelector('#tl-eras-layer');
     _bands = eras.map(era => {
@@ -155,6 +236,28 @@ const TimelineExplorer = (function () {
     _stage.querySelector('#tl-zin').onclick = () => zoomBy(1.6, _stageW / 2);
     _stage.querySelector('#tl-zout').onclick = () => zoomBy(1 / 1.6, _stageW / 2);
     _stage.querySelector('#tl-zreset').onclick = () => resetView();
+
+    /* minimap: full timeline as era segments + a draggable viewport window */
+    _mini = _stage.querySelector('#tl-mini');
+    _miniView = _stage.querySelector('#tl-mini-view');
+    const miniEras = _stage.querySelector('#tl-mini-eras');
+    miniEras.innerHTML = eras.map(era => {
+      const a = mapYear(era.from), b = mapYear(era.to);
+      return `<span class="tl-mini-era" style="left:${a * 100}%;width:${(b - a) * 100}%;background:${era.color}"></span>`;
+    }).join('');
+    const miniGoTo = clientX => {
+      const r = _mini.getBoundingClientRect();
+      const w = clamp((clientX - r.left) / r.width, 0, 1);     // target centre (normalized)
+      const tw = trackW();
+      _pan = _stageW / 2 - PAD - w * tw;                        // centre that point
+      clampPan(); scheduleLayout();
+    };
+    let miniDown = false;
+    _mini.addEventListener('pointerdown', e => { miniDown = true; _mini.setPointerCapture?.(e.pointerId); miniGoTo(e.clientX); });
+    _mini.addEventListener('pointermove', e => { if (miniDown) miniGoTo(e.clientX); });
+    _mini.addEventListener('pointerup', () => { miniDown = false; });
+    _mini.addEventListener('pointercancel', () => { miniDown = false; });
+
     _wireGestures();
   }
 
@@ -165,34 +268,32 @@ const TimelineExplorer = (function () {
     if (!_stage) return;
     _stageW = _stage.clientWidth || _stageW;
     clampPan();
-    const cw = contentW();
+    const tw = trackW();
 
     /* era bands */
     _bands.forEach(({ era, el }) => {
-      const x0 = mapYear(era.from) * cw + _pan;
-      const x1 = mapYear(era.to) * cw + _pan;
+      const x0 = pos(era.from);
+      const x1 = pos(era.to);
       el.style.transform = `translateX(${x0}px)`;
       el.style.width = Math.max(0, x1 - x0) + 'px';
-      const vis = x1 > -20 && x0 < _stageW + 20;
-      el.classList.toggle('tl-off', !vis);
-      el.classList.toggle('tl-narrow', (x1 - x0) < 64);
+      el.classList.toggle('tl-off', !(x1 > -20 && x0 < _stageW + 20));
+      el.classList.toggle('tl-narrow', (x1 - x0) < 70);
     });
 
     /* nodes — collision-managed label reveal per lane (semantic zoom) */
     const qn = norm(_q);
-    const GAP = 116;
+    const GAP = 124;
     let lastUp = -1e9, lastDown = -1e9;
-    const ordered = _nodes.slice().sort((a, b) => mapYear(a.e.year) - mapYear(b.e.year));
+    const ordered = _nodes.slice().sort((a, b) => a.e.year - b.e.year);
     ordered.forEach(n => {
       const e = n.e, el = n.el;
       const hiddenByMode = (_keyOnly && !e.key) || (_cat !== 'all' && e.cat !== _cat);
       if (hiddenByMode) { el.classList.add('tl-hidden'); return; }
       el.classList.remove('tl-hidden');
-      const x = mapYear(e.year) * cw + _pan;
-      const onScreen = x > -160 && x < _stageW + 160;
+      const x = PAD + mapYear(e.year) * tw + _pan;
+      const onScreen = x > -180 && x < _stageW + 180;
       el.style.transform = `translateX(${x}px)`;
       el.classList.toggle('tl-off', !onScreen);
-      /* search highlight / dim */
       let dim = false;
       if (qn) {
         const hay = norm(e.title) + ' ' + norm(e.desc || '') + ' ' + norm(e.period || '') + ' ' + norm(cat(e).label);
@@ -201,51 +302,58 @@ const TimelineExplorer = (function () {
         dim = !hit;
       } else { el.classList.remove('tl-hit'); }
       el.classList.toggle('tl-dim', dim);
-      /* label reveal: keep key + search hits + spaced labels */
       let showLbl = false;
       if (onScreen) {
         const up = el.classList.contains('tl-node-up');
         const last = up ? lastUp : lastDown;
-        if ((e.key || (qn && !dim)) && x - last > 70) showLbl = true;
+        if ((e.key || (qn && !dim)) && x - last > 76) showLbl = true;
         else if (x - last > GAP) showLbl = true;
         if (showLbl) { if (up) lastUp = x; else lastDown = x; }
       }
       el.classList.toggle('tl-lbl-on', showLbl);
     });
+
+    updateMini();
   }
 
-  /* ── zoom / pan ── */
+  /* ── minimap (overview scrubber at the bottom) ── */
+  function updateMini() {
+    if (!_miniView) return;
+    const w0 = clamp(worldAt(0), 0, 1), w1 = clamp(worldAt(_stageW), 0, 1);
+    const mw = _mini.clientWidth || 1;
+    _miniView.style.left = (w0 * mw) + 'px';
+    _miniView.style.width = Math.max(14, (w1 - w0) * mw) + 'px';
+  }
+
+  /* ── zoom / pan (PAD-aware: keep the point under anchorX fixed) ── */
   function zoomAt(newZoom, anchorX) {
     newZoom = clamp(newZoom, MINZ, MAXZ);
-    const cw = contentW();
-    const world = cw ? (anchorX - _pan) / cw : 0;     // normalized point under the anchor
+    const w = worldAt(anchorX);
     _zoom = newZoom;
-    _pan = anchorX - world * contentW();
+    _pan = anchorX - PAD - w * trackW();
     clampPan();
     scheduleLayout();
   }
   function zoomBy(factor, anchorX) { animateZoom(clamp(_zoom * factor, MINZ, MAXZ), anchorX); }
   function resetView() { animateTo(MINZ, 0); }
 
-  /* Animate to a target zoom keeping anchorX fixed. */
   function animateZoom(targetZoom, anchorX) {
-    const cw = contentW();
-    const world = cw ? (anchorX - _pan) / cw : 0;
-    const targetPan = anchorX - world * (_stageW * targetZoom);
-    animateTo(targetZoom, targetPan);
+    const w = worldAt(anchorX);
+    const twT = _stageW * targetZoom - 2 * PAD;
+    animateTo(targetZoom, anchorX - PAD - w * twT);
   }
   function focusRange(fromY, toY) {
     const span = Math.max(1e-4, mapYear(toY) - mapYear(fromY));
-    const targetZoom = clamp(0.86 / span, MINZ, MAXZ);
+    const targetZoom = clamp(0.82 / span, MINZ, MAXZ);
     const mid = (mapYear(fromY) + mapYear(toY)) / 2;
-    const targetPan = _stageW / 2 - mid * (_stageW * targetZoom);
-    animateTo(targetZoom, targetPan);
+    const twT = _stageW * targetZoom - 2 * PAD;
+    animateTo(targetZoom, _stageW / 2 - PAD - mid * twT);
   }
   function focusEvent(id) {
     const n = _nodes.find(x => x.e.id === id); if (!n) return;
-    const targetZoom = Math.max(_zoom, 90);
-    const targetPan = _stageW / 2 - mapYear(n.e.year) * (_stageW * targetZoom);
-    animateTo(targetZoom, targetPan);
+    const targetZoom = Math.max(_zoom, 70);
+    const twT = _stageW * targetZoom - 2 * PAD;
+    animateTo(targetZoom, _stageW / 2 - PAD - mapYear(n.e.year) * twT);
   }
   let _anim = 0;
   function animateTo(targetZoom, targetPan) {
@@ -273,7 +381,7 @@ const TimelineExplorer = (function () {
     let pinchD0 = 0, pinchZ0 = 1, pinchCx = 0;
 
     _stage.addEventListener('pointerdown', ev => {
-      if (ev.target.closest('.tl-zoom')) return;
+      if (ev.target.closest('.tl-zoom') || ev.target.closest('.tl-mini')) return;
       pts.set(ev.pointerId, ev);
       _stage.setPointerCapture?.(ev.pointerId);
       if (pts.size === 1) { down = true; _dragged = false; moved = 0; sx = ev.clientX; sp = _pan; }
@@ -336,9 +444,13 @@ const TimelineExplorer = (function () {
     const d = _root.querySelector('#tl-detail'); if (!d) return;
     const c = cat(e);
     const related = (e.related || []).map(r => (_data || []).find(x => x.id === r)).filter(Boolean);
+    const wTitle = wikiTitle(e);
     d.style.setProperty('--c', c.color);
     d.innerHTML = `
       <button class="tl-d-close" aria-label="${_t('Close','Fechar')}">✕</button>
+      <div class="tl-d-media" id="tl-d-media">
+        <div class="tl-d-media-ph"><span class="tl-d-emoji-big">${c.emoji}</span></div>
+      </div>
       <div class="tl-d-head">
         <span class="tl-d-emoji">${c.emoji}</span>
         <div><span class="tl-d-cat">${esc(c.label)}</span><h2 class="tl-d-title" id="tl-d-title">${esc(e.title)}</h2></div>
@@ -349,13 +461,29 @@ const TimelineExplorer = (function () {
       </div>
       <p class="tl-d-desc">${esc(e.desc || '')}</p>
       ${e.fact ? `<div class="tl-d-fact"><strong>💡 ${_t('Did you know?','Curiosidade')}</strong> ${esc(e.fact)}</div>` : ''}
+      <div class="tl-d-wiki" id="tl-d-wiki"></div>
+      <a class="tl-d-wikilink" id="tl-d-wikilink" href="${wikiUrl(wTitle)}" target="_blank" rel="noopener">📖 ${_t('Read on Wikipedia','Ler na Wikipédia')} ↗</a>
       ${related.length ? `<div class="tl-d-rel-label">🔗 ${_t('Related events','Eventos relacionados')}</div>
         <div class="tl-d-rel">${related.map(r => `<button class="tl-chip" data-id="${esc(r.id)}" style="--c:${cat(r).color}"><span>${cat(r).emoji}</span>${esc(r.title)}</button>`).join('')}</div>` : ''}`;
     d.hidden = false; d.scrollTop = 0;
     d.querySelector('.tl-d-close').onclick = closeDetail;
-    d.querySelectorAll('[data-id]').forEach(b => b.onclick = () => { closeDetail(); focusEvent(b.dataset.id); openDetail(b.dataset.id); });
+    d.querySelectorAll('.tl-chip[data-id]').forEach(b => b.onclick = () => { focusEvent(b.dataset.id); openDetail(b.dataset.id); });
     _lastFocus = document.activeElement;
     requestAnimationFrame(() => d.querySelector('.tl-d-close')?.focus());
+
+    /* fetch Wikipedia image + extract + canonical link (cached, non-blocking) */
+    wikiSummary(wTitle).then(s => {
+      if (!d.isConnected || d.hidden) return;
+      if (s.thumb) {
+        const media = d.querySelector('#tl-d-media');
+        if (media) media.innerHTML = `<img src="${esc(s.thumb)}" alt="${esc(e.title)}" loading="lazy"><span class="tl-d-media-cr">Wikipédia</span>`;
+      }
+      if (s.extract && s.extract.length > (e.desc || '').length + 20) {
+        const w = d.querySelector('#tl-d-wiki');
+        if (w) w.innerHTML = `<p>${esc(s.extract)}</p>`;
+      }
+      if (s.url) { const a = d.querySelector('#tl-d-wikilink'); if (a) a.href = s.url; }
+    });
   }
   function closeDetail() {
     const d = _root && _root.querySelector('#tl-detail');
