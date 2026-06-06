@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v99';
+const CACHE = 'dcop7-v100';
 const STATIC = [
   '/',
   '/index.html',
@@ -17,6 +17,7 @@ const STATIC = [
   '/data/countries.json',
   '/data/world-countries.geojson',
   '/data/pt-districts.geojson',
+  '/data/timeline.json',
   /* Core */
   '/js/core/main.js',
   '/js/core/nav.js',
@@ -31,6 +32,7 @@ const STATIC = [
   '/js/explorer/explorer-galaxy.js',
   '/js/explorer/explorer-realtime.js',
   '/js/explorer/explorer-body.js',
+  '/js/explorer/explorer-timeline.js',
   '/js/explorer/ocorrencias.js',
   /* Pages */
   '/js/pages/links-data.js',

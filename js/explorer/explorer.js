@@ -735,6 +735,20 @@ const ExplorerPage = (function () {
             </div>
           </div>
         </div>
+        <div class="ex-cat-group">
+          <div class="ex-cat-head">
+            <span class="ex-cat-emoji">⏳</span>
+            <span class="ex-cat-name">${_t('History & Time', 'História e Tempo')}</span>
+            <span class="ex-cat-line"></span>
+          </div>
+          <div class="ex-feature-grid">
+            <div class="ex-feature-card ex-feature-card--timeline" data-tab="timeline">
+              <span class="ex-feature-card-icon">⏳</span>
+              <div class="ex-feature-card-title">${_t('Timeline', 'Linha do Tempo')}</div>
+              <div class="ex-feature-card-desc">${_t('Travel from the Big Bang to today: the Universe, Earth, life, the dinosaurs, civilisations, Portugal, science and space — searchable and filterable.', 'Viaja do Big Bang até hoje: o Universo, a Terra, a vida, os dinossauros, as civilizações, Portugal, a ciência e o espaço — com pesquisa e filtros.')}</div>
+            </div>
+          </div>
+        </div>
         ${recents.length ? `
           <div class="ex-recent-section">
             <div class="ex-section-label">${_t('Recently viewed', 'Visto recentemente')}</div>
@@ -1548,10 +1562,11 @@ const ExplorerPage = (function () {
 
   /* ════════════════════════════════ DISCOVER ════════════════════════ */
   function _discoverRandom() {
-    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy', 'realtime'];
+    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy', 'realtime', 'timeline'];
     if (typeof PortugalExplorer === 'undefined') modes.splice(modes.indexOf('portugal'), 1);
     if (typeof MilkyWayExplorer === 'undefined') modes.splice(modes.indexOf('galaxy'), 1);
     if (typeof RealtimeEarth === 'undefined') modes.splice(modes.indexOf('realtime'), 1);
+    if (typeof TimelineExplorer === 'undefined') modes.splice(modes.indexOf('timeline'), 1);
 
     const mode = modes[Math.floor(Math.random() * modes.length)];
 
@@ -1568,6 +1583,9 @@ const ExplorerPage = (function () {
       _switchTab('galaxy');
     } else if (mode === 'realtime') {
       _switchTab('realtime');
+    } else if (mode === 'timeline' && typeof TimelineExplorer !== 'undefined') {
+      _switchTab('timeline');
+      setTimeout(() => TimelineExplorer.discoverRandom(), 500);
     } else if (_countriesOk && _countries.length) {
       /* Fallback: show random country on map */
       const c = _countries[Math.floor(Math.random() * _countries.length)];
@@ -1607,6 +1625,7 @@ const ExplorerPage = (function () {
     ['solar', '☀', _t('Solar System', 'Sistema Solar')],
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
     ['body', '🧬', _t('Human Body', 'Corpo Humano')],
+    ['timeline', '⏳', _t('Timeline', 'Linha do Tempo')],
   ];
 
   function _buildShell(view) {
@@ -1658,6 +1677,7 @@ const ExplorerPage = (function () {
     if (tab !== 'realtime' && _curTab === 'realtime' && typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     if (tab !== 'body' && _curTab === 'body' && typeof HumanBodyExplorer !== 'undefined') HumanBodyExplorer.stop();
+    if (tab !== 'timeline' && _curTab === 'timeline' && typeof TimelineExplorer !== 'undefined') TimelineExplorer.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
       try { if (tab === 'globe') _globeGL.resumeAnimation(); else _globeGL.pauseAnimation(); } catch (_) {}
@@ -1710,6 +1730,11 @@ const ExplorerPage = (function () {
         if (!sub.querySelector('.hb-wrap')) HumanBodyExplorer.mount(sub);
         else HumanBodyExplorer.resume();
       }
+    } else if (tab === 'timeline') {
+      if (typeof TimelineExplorer !== 'undefined') {
+        if (!sub.querySelector('.tl-wrap')) TimelineExplorer.mount(sub);
+        else TimelineExplorer.resume();
+      }
     }
   }
 
@@ -1750,6 +1775,7 @@ const ExplorerPage = (function () {
     if (typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
     if (typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
+    if (typeof TimelineExplorer !== 'undefined') TimelineExplorer.stop();
     _closeModal();
   });
 
