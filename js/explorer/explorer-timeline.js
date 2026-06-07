@@ -35,6 +35,11 @@ const TimelineExplorer = (function () {
       medicina: { emoji:'🧬', label:_t('Medicine','Medicina'),              color:'#ec4899' },
       ambiente: { emoji:'🌱', label:_t('Environment','Ambiente'),            color:'#14b8a6' },
       cultura:  { emoji:'🎨', label:_t('Culture','Cultura'),                color:'#a855f7' },
+      arte:     { emoji:'🖼️', label:_t('Art','Arte'),                       color:'#f472b6' },
+      musica:   { emoji:'🎵', label:_t('Music','Música'),                   color:'#22d3ee' },
+      cinema:   { emoji:'🎬', label:_t('Cinema','Cinema'),                  color:'#fb7185' },
+      jogos:    { emoji:'🎮', label:_t('Video games','Videojogos'),         color:'#34d399' },
+      desporto: { emoji:'⚽', label:_t('Sport','Desporto'),                 color:'#f97316' },
     };
   }
   const cat = e => CATS[e.cat] || { emoji:'•', label:'', color:'#6366f1' };
@@ -79,6 +84,11 @@ const TimelineExplorer = (function () {
       case 'medicina': { let r = ''; for (let i = 0; i <= 6; i++) { const y = 36 + i * 11; r += `<line x1="${(160 - Math.sin(i) * 22).toFixed(0)}" y1="${y}" x2="${(160 + Math.sin(i) * 22).toFixed(0)}" y2="${y}" stroke="${S}" stroke-width="2"/>`; } return `<path d="M138 36 q44 18 0 72" fill="none" stroke="${W}" stroke-width="3"/><path d="M182 36 q-44 18 0 72" fill="none" stroke="${color}" stroke-width="3"/>${r}`; }
       case 'ambiente': return `<path d="M160 30 q44 18 30 56 q-12 30 -30 30 q-18 0 -30 -30 q-14 -38 30 -56Z" fill="${color}"/><path d="M160 36 V112" stroke="${W}" stroke-width="2"/>`;
       case 'cultura': return `<path d="M160 36 q56 0 56 40 q0 18 -22 18 q-14 0 -14 12 q0 12 -20 12 q-56 0 -56 -50 q0 -44 56 -44Z" fill="${W}"/><circle cx="138" cy="60" r="6" fill="#ef4444"/><circle cx="166" cy="52" r="6" fill="#f59e0b"/><circle cx="190" cy="64" r="6" fill="#3b82f6"/>`;
+      case 'arte': return `<rect x="106" y="40" width="108" height="74" rx="6" fill="none" stroke="${W}" stroke-width="3"/><path d="M118 100 l24 -32 l18 20 l16 -22 l24 34Z" fill="${color}"/><circle cx="140" cy="60" r="8" fill="${W}"/>`;
+      case 'musica': return `<path d="M150 36 v52 a14 12 0 1 1 -10 -11 V52 l44 -12 v40 a14 12 0 1 1 -10 -11 V40Z" fill="${W}"/>`;
+      case 'cinema': return `<rect x="108" y="50" width="104" height="58" rx="4" fill="none" stroke="${W}" stroke-width="3"/><path d="M108 50 l96 -14 l4 14Z" fill="${W}"/>${[0,1,2,3].map(i=>`<rect x="${118+i*24}" y="38" width="12" height="12" fill="${color}" transform="rotate(-8 ${124+i*24} 44)"/>`).join('')}`;
+      case 'jogos': return `<rect x="104" y="56" width="112" height="44" rx="22" fill="none" stroke="${W}" stroke-width="3"/><rect x="124" y="72" width="16" height="5" fill="${W}"/><rect x="129" y="67" width="5" height="16" fill="${W}"/><circle cx="184" cy="72" r="5" fill="${color}"/><circle cx="196" cy="80" r="5" fill="${W}"/>`;
+      case 'desporto': return `<path d="M132 40 h56 v10 q22 0 22 18 q0 18 -24 20 q-6 14 -22 16 v12 h14 v8 h-36 v-8 h14 v-12 q-16 -2 -22 -16 q-24 -2 -24 -20 q0 -18 22 -18Z" fill="${W}"/><path d="M132 50 h-2 q-12 0 -12 16 q0 8 10 10Z" fill="${color}" opacity=".6"/>`;
       default: return `<circle cx="160" cy="72" r="34" fill="${color}"/>`;
     }
   }
@@ -91,7 +101,7 @@ const TimelineExplorer = (function () {
 
   /* ── Wikipedia link (static; no fetch) ── */
   const WIKI = {
-    'primeiras-particulas':'Nucleossíntese primordial','primeiros-atomos':'Recombinação (cosmologia)','primeiras-estrelas':'População estelar','primeiras-galaxias':'Formação e evolução de galáxias','via-lactea':'Via Láctea','formacao-sol':'Sol','sistema-solar':'Sistema Solar','formacao-planetas':'Formação e evolução do Sistema Solar','formacao-asteroides':'Cintura de asteroides','formacao-cometas':'Cometa','formacao-luas-anoes':'Planeta anão','formacao-terra':'Terra','formacao-lua':'Lua','formacao-atmosfera':'Atmosfera terrestre','formacao-oceanos':'Oceano','primeiros-continentes':'Crosta continental','rodinia':'Rodínia','pangeia':'Pangeia','separacao-continentes':'Deriva continental','extincoes':'Extinção Permiano-Triássica','idades-gelo':'Idade do gelo','primeira-vida':'Origem da vida','bacterias':'Bactéria','fotossintese':'Fotossíntese','grande-oxidacao':'Grande Evento de Oxigenação','multicelulares':'Organismo multicelular','cambriana':'Explosão cambriana','primeiros-peixes':'Peixe','primeiras-plantas':'Planta','insetos':'Inseto','anfibios':'Anfíbio','repteis':'Réptil','primeiros-dinossauros':'Dinossauro','primeiros-mamiferos':'Mamífero','grandes-sauropodes':'Sauropoda','primeiras-aves':'Archaeopteryx','t-rex':'Tyrannosaurus','triceratops':'Triceratops','velociraptor':'Velociraptor','extincao-dinos':'Extinção do Cretáceo-Paleogeno','australopithecus':'Australopithecus','homo-habilis':'Homo habilis','homo-erectus':'Homo erectus','neandertais':'Homem de Neandertal','homo-sapiens':'Homo sapiens','arte-rupestre':'Arte rupestre','mesopotamia':'Mesopotâmia','sumeria':'Suméria','egipto':'Antigo Egito','piramides':'Pirâmides do Egito','babilonia':'Babilônia','fenicios':'Fenícios','grecia':'Grécia Antiga','partenon':'Partenon','persas':'Império Aquemênida','china-antiga':'Dinastia Qin','imperio-romano':'Império Romano','coliseu':'Coliseu','maia':'Civilização maia','inca':'Império Inca','asteca':'Astecas','escrita':'História da escrita','papel':'Papel','medicina-antiga':'Trepanação','queda-roma':'Queda do Império Romano do Ocidente','idade-media':'Idade Média','cruzadas':'Cruzada','renascimento':'Renascimento','imprensa':'Imprensa','mona-lisa':'Mona Lisa','descobrimentos':'Era dos descobrimentos','reforma':'Reforma Protestante','revolucao-cientifica':'Revolução Científica','revolucao-industrial':'Revolução Industrial','primeira-guerra':'Primeira Guerra Mundial','segunda-guerra':'Segunda Guerra Mundial','guerra-fria':'Guerra Fria','muro-berlim':'Queda do Muro de Berlim','fundacao-portugal':'Tratado de Zamora','sao-mamede':'Batalha de São Mamede','aljubarrota':'Batalha de Aljubarrota','conquista-ceuta':'Conquista de Ceuta','descobrimentos-pt':'Descobrimentos portugueses','chegada-india':'Vasco da Gama','chegada-brasil':'Descobrimento do Brasil','restauracao':'Restauração da Independência','terramoto-1755':'Sismo de Lisboa de 1755','invasoes-francesas':'Invasões Francesas','republica':'Implantação da República Portuguesa','estado-novo':'Estado Novo (Portugal)','25-abril':'Revolução dos Cravos','adesao-cee':'União Europeia','euro-pt':'Euro','sputnik':'Sputnik 1','gagarin':'Iuri Gagarin','apollo-11':'Apollo 11','voyager-1':'Voyager 1','voyager-2':'Voyager 2','space-shuttle':'Ônibus espacial','iss':'Estação Espacial Internacional','curiosity':'Curiosity','perseverance':'Perseverance (sonda)','jwst':'Telescópio espacial James Webb','maquina-vapor':'Máquina a vapor','eletricidade':'Lâmpada incandescente','telefone':'Telefone','radio':'Rádio (comunicação)','automovel':'Automóvel','aviao':'Avião','televisao':'Televisão','computador':'Computador','internet':'Internet','www':'World Wide Web','smartphone':'Smartphone','ia':'Inteligência artificial','variola':'Varíola','microrganismos':'Louis Pasteur','penicilina':'Penicilina','adn':'Ácido desoxirribonucleico','genoma':'Projeto Genoma Humano','vacinas-mrna':'Vacina de RNA','pequena-idade-gelo':'Pequena Idade do Gelo','co2':'Dióxido de carbono','acordo-paris':'Acordo de Paris','clima-extremo':'Eventos climáticos extremos','cinema':'Cinema','streaming':'Streaming',
+    'primeiras-particulas':'Nucleossíntese primordial','primeiros-atomos':'Recombinação (cosmologia)','primeiras-estrelas':'População estelar','primeiras-galaxias':'Formação e evolução de galáxias','via-lactea':'Via Láctea','formacao-sol':'Sol','sistema-solar':'Sistema Solar','formacao-planetas':'Formação e evolução do Sistema Solar','formacao-asteroides':'Cintura de asteroides','formacao-cometas':'Cometa','formacao-luas-anoes':'Planeta anão','formacao-terra':'Terra','formacao-lua':'Lua','formacao-atmosfera':'Atmosfera terrestre','formacao-oceanos':'Oceano','primeiros-continentes':'Crosta continental','rodinia':'Rodínia','pangeia':'Pangeia','separacao-continentes':'Deriva continental','extincoes':'Extinção Permiano-Triássica','idades-gelo':'Idade do gelo','primeira-vida':'Origem da vida','bacterias':'Bactéria','fotossintese':'Fotossíntese','grande-oxidacao':'Grande Evento de Oxigenação','multicelulares':'Organismo multicelular','cambriana':'Explosão cambriana','primeiros-peixes':'Peixe','primeiras-plantas':'Planta','insetos':'Inseto','anfibios':'Anfíbio','repteis':'Réptil','primeiros-dinossauros':'Dinossauro','primeiros-mamiferos':'Mamífero','grandes-sauropodes':'Sauropoda','primeiras-aves':'Archaeopteryx','t-rex':'Tyrannosaurus','triceratops':'Triceratops','velociraptor':'Velociraptor','extincao-dinos':'Extinção do Cretáceo-Paleogeno','australopithecus':'Australopithecus','homo-habilis':'Homo habilis','homo-erectus':'Homo erectus','neandertais':'Homem de Neandertal','homo-sapiens':'Homo sapiens','arte-rupestre':'Arte rupestre','mesopotamia':'Mesopotâmia','sumeria':'Suméria','egipto':'Antigo Egito','piramides':'Pirâmides do Egito','babilonia':'Babilônia','fenicios':'Fenícios','grecia':'Grécia Antiga','partenon':'Partenon','persas':'Império Aquemênida','china-antiga':'Dinastia Qin','imperio-romano':'Império Romano','coliseu':'Coliseu','maia':'Civilização maia','inca':'Império Inca','asteca':'Astecas','escrita':'História da escrita','papel':'Papel','medicina-antiga':'Trepanação','queda-roma':'Queda do Império Romano do Ocidente','idade-media':'Idade Média','cruzadas':'Cruzada','renascimento':'Renascimento','imprensa':'Imprensa','mona-lisa':'Mona Lisa','descobrimentos':'Era dos descobrimentos','reforma':'Reforma Protestante','revolucao-cientifica':'Revolução Científica','revolucao-industrial':'Revolução Industrial','primeira-guerra':'Primeira Guerra Mundial','segunda-guerra':'Segunda Guerra Mundial','guerra-fria':'Guerra Fria','muro-berlim':'Queda do Muro de Berlim','fundacao-portugal':'Tratado de Zamora','sao-mamede':'Batalha de São Mamede','aljubarrota':'Batalha de Aljubarrota','conquista-ceuta':'Conquista de Ceuta','descobrimentos-pt':'Descobrimentos portugueses','chegada-india':'Vasco da Gama','chegada-brasil':'Descobrimento do Brasil','restauracao':'Restauração da Independência','terramoto-1755':'Sismo de Lisboa de 1755','invasoes-francesas':'Invasões Francesas','republica':'Implantação da República Portuguesa','estado-novo':'Estado Novo (Portugal)','25-abril':'Revolução dos Cravos','adesao-cee':'União Europeia','euro-pt':'Euro','sputnik':'Sputnik 1','gagarin':'Iuri Gagarin','apollo-11':'Apollo 11','voyager-1':'Voyager 1','voyager-2':'Voyager 2','space-shuttle':'Ônibus espacial','iss':'Estação Espacial Internacional','curiosity':'Curiosity','perseverance':'Perseverance (sonda)','jwst':'Telescópio espacial James Webb','maquina-vapor':'Máquina a vapor','eletricidade':'Lâmpada incandescente','telefone':'Telefone','radio':'Rádio (comunicação)','automovel':'Automóvel','aviao':'Avião','televisao':'Televisão','computador':'Computador','internet':'Internet','www':'World Wide Web','smartphone':'Smartphone','ia':'Inteligência artificial','variola':'Varíola','microrganismos':'Louis Pasteur','penicilina':'Penicilina','adn':'Ácido desoxirribonucleico','genoma':'Projeto Genoma Humano','vacinas-mrna':'Vacina de RNA','pequena-idade-gelo':'Pequena Idade do Gelo','co2':'Dióxido de carbono','acordo-paris':'Acordo de Paris','clima-extremo':'Eventos climáticos extremos','cinema':'Cinema','streaming':'Streaming','jogos-olimpicos-antigos':'Jogos Olímpicos da Antiguidade','jogos-olimpicos-modernos':'Jogos Olímpicos','mundial-futebol':'Copa do Mundo FIFA','notacao-musical':'Notação musical','gravacao-som':'Fonógrafo','rock-roll':'Rock and roll','streaming-musica':'Streaming de áudio','cinema-sonoro':'Filme sonoro','cinema-cores':'Technicolor','pong':'Pong','super-mario':'Super Mario Bros.','playstation':'PlayStation','minecraft':'Minecraft','impressionismo':'Impressionismo','arte-moderna':'Arte moderna','ford-t':'Ford Modelo T','carro-eletrico':'Veículo elétrico','revolucao-francesa':'Revolução Francesa',
   };
   const wikiUrl = e => 'https://pt.wikipedia.org/wiki/' + encodeURIComponent((e.wiki || WIKI[e.id] || e.title).replace(/ /g, '_'));
 
@@ -123,6 +133,9 @@ const TimelineExplorer = (function () {
     if (c === 'portugal') return 'portugal';
     if (c === 'civil') return 'civil';
     if (c === 'cultura') return y <= 500 ? 'civil' : 'moderno';
+    if (c === 'arte') return y <= -10000 ? 'humana' : (y <= 500 ? 'civil' : 'moderno');
+    if (c === 'desporto') return y <= 500 ? 'civil' : 'moderno';
+    if (c === 'musica' || c === 'cinema' || c === 'jogos') return 'moderno';
     if (c === 'mundial') return y <= 1000 ? 'civil' : 'moderno';
     if (c === 'espaco') return 'espaco';
     return 'moderno';
@@ -163,13 +176,22 @@ const TimelineExplorer = (function () {
   }
 
   /* ── documentary build ── */
+  /* depth: top = Destaques (curated headline events), key = Explorar (key events),
+     all = Aprofundar (every event). TOP is the most iconic event per chapter. */
   let _depth = 'key', _theme = 'all', _ioRail = null, _railChs = [], _docBound = false;
+  const TOP = new Set(['big-bang','primeiras-estrelas','via-lactea','formacao-sol','sistema-solar',
+    'formacao-terra','formacao-lua','formacao-oceanos','primeira-vida','cambriana','primeiros-dinossauros',
+    't-rex','extincao-dinos','homo-sapiens','arte-rupestre','escrita','egipto','grecia','imperio-romano',
+    'fundacao-portugal','descobrimentos-pt','25-abril','imprensa','revolucao-francesa','revolucao-industrial',
+    'eletricidade','segunda-guerra','jogos-olimpicos-modernos','pong','computador','internet','smartphone','ia',
+    'sputnik','apollo-11','jwst']);
 
   function storyChapters() {
     return _CHAPTERS().map(ch => {
       let evs = (_data || []).filter(e => chapterOf(e) === ch.id);
       if (_theme !== 'all') evs = evs.filter(e => e.cat === _theme);
-      if (_depth === 'key') { const k = evs.filter(e => e.key); if (k.length) evs = k; }
+      if (_depth === 'top') { const t = evs.filter(e => TOP.has(e.id)); evs = t.length ? t : evs.filter(e => e.key); }
+      else if (_depth === 'key') { const k = evs.filter(e => e.key); if (k.length) evs = k; }
       evs.sort((a, b) => a.year - b.year);
       return { ch, evs };
     }).filter(x => _theme === 'all' || x.evs.length);
@@ -221,8 +243,9 @@ const TimelineExplorer = (function () {
      mode toggle) so the header stays one compact line. */
   function docControls() {
     return `<div class="tl-seg" id="tl-depth" role="group" aria-label="${_t('Detail level','Nível de detalhe')}">
-        <button data-depth="key" class="${_depth === 'key' ? 'on' : ''}">✨ ${_t('Highlights','Destaques')}</button>
-        <button data-depth="all" class="${_depth === 'all' ? 'on' : ''}">📚 ${_t('Complete','Completo')}</button>
+        <button data-depth="top" class="${_depth === 'top' ? 'on' : ''}" title="${_t('A quick high-level overview','Visão rápida a alto nível')}">⚡ ${_t('Highlights','Destaques')}</button>
+        <button data-depth="key" class="${_depth === 'key' ? 'on' : ''}" title="${_t('The usual journey','O percurso habitual')}">🧭 ${_t('Explore','Explorar')}</button>
+        <button data-depth="all" class="${_depth === 'all' ? 'on' : ''}" title="${_t('Every single event','Toda a informação')}">📚 ${_t('Deep dive','Aprofundar')}</button>
       </div>${themeSelect()}`;
   }
   function shell() {

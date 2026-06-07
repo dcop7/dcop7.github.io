@@ -2830,4 +2830,9 @@ body.light .pt-capital-label .pt-cap-dot {
   .tl-sc-media { flex: none; width: 100%; aspect-ratio: 16/10; }
   .tl-theme { margin-left: 0; }
   .tl-rail { display: none; }
+  /* depth segment + theme drop onto their own full-width row, comfortably tappable */
+  .tl-slot { margin-left: 0; width: 100%; gap: .5rem; }
+  .tl-seg { flex: 1; }
+  .tl-seg button { flex: 1; padding: .5rem .4rem; font-size: .74rem; white-space: nowrap; }
+  .tl-theme { flex-basis: 100%; }
 }

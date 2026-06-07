@@ -40,6 +40,11 @@ const TimelineInteractive = (function () {
       medicina: { emoji:'🧬', label:_t('Medicine','Medicina'),              color:'#ec4899' },
       ambiente: { emoji:'🌱', label:_t('Environment','Ambiente'),            color:'#14b8a6' },
       cultura:  { emoji:'🎨', label:_t('Culture','Cultura'),                color:'#a855f7' },
+      arte:     { emoji:'🖼️', label:_t('Art','Arte'),                       color:'#f472b6' },
+      musica:   { emoji:'🎵', label:_t('Music','Música'),                   color:'#22d3ee' },
+      cinema:   { emoji:'🎬', label:_t('Cinema','Cinema'),                  color:'#fb7185' },
+      jogos:    { emoji:'🎮', label:_t('Video games','Videojogos'),         color:'#34d399' },
+      desporto: { emoji:'⚽', label:_t('Sport','Desporto'),                 color:'#f97316' },
     };
   }
   const cat = e => CATS[e.cat] || { emoji:'•', label:'', color:'#6366f1' };
@@ -91,7 +96,13 @@ const TimelineInteractive = (function () {
     'penicilina':'Penicilina', 'adn':'Ácido desoxirribonucleico', 'genoma':'Projeto Genoma Humano',
     'vacinas-mrna':'Vacina de RNA', 'pequena-idade-gelo':'Pequena Idade do Gelo', 'co2':'Dióxido de carbono',
     'acordo-paris':'Acordo de Paris', 'clima-extremo':'Eventos climáticos extremos', 'cinema':'Cinema',
-    'streaming':'Streaming',
+    'streaming':'Streaming', 'jogos-olimpicos-antigos':'Jogos Olímpicos da Antiguidade',
+    'jogos-olimpicos-modernos':'Jogos Olímpicos', 'mundial-futebol':'Copa do Mundo FIFA',
+    'notacao-musical':'Notação musical', 'gravacao-som':'Fonógrafo', 'rock-roll':'Rock and roll',
+    'streaming-musica':'Streaming de áudio', 'cinema-sonoro':'Filme sonoro', 'cinema-cores':'Technicolor',
+    'pong':'Pong', 'super-mario':'Super Mario Bros.', 'playstation':'PlayStation', 'minecraft':'Minecraft',
+    'impressionismo':'Impressionismo', 'arte-moderna':'Arte moderna', 'ford-t':'Ford Modelo T',
+    'carro-eletrico':'Veículo elétrico', 'revolucao-francesa':'Revolução Francesa',
   };
   const wikiTitle = e => e.wiki || WIKI[e.id] || e.title;
   function wikiUrl(title) { return 'https://pt.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')); }
@@ -124,6 +135,11 @@ const TimelineInteractive = (function () {
       case 'medicina': { let r = ''; for (let i = 0; i <= 6; i++) { const y = 36 + i * 11; r += `<line x1="${(160 - Math.sin(i) * 22).toFixed(0)}" y1="${y}" x2="${(160 + Math.sin(i) * 22).toFixed(0)}" y2="${y}" stroke="${S}" stroke-width="2"/>`; } return `<path d="M138 36 q44 18 0 72" fill="none" stroke="${W}" stroke-width="3"/><path d="M182 36 q-44 18 0 72" fill="none" stroke="${color}" stroke-width="3"/>${r}`; }
       case 'ambiente': return `<path d="M160 30 q44 18 30 56 q-12 30 -30 30 q-18 0 -30 -30 q-14 -38 30 -56Z" fill="${color}"/><path d="M160 36 V112" stroke="${W}" stroke-width="2"/>${[0,1,2,3].map(i=>`<path d="M160 ${56+i*14} q14 -6 22 -14" fill="none" stroke="${W}" stroke-width="1.5"/><path d="M160 ${56+i*14} q-14 -6 -22 -14" fill="none" stroke="${W}" stroke-width="1.5"/>`).join('')}`;
       case 'cultura': return `<path d="M160 36 q56 0 56 40 q0 18 -22 18 q-14 0 -14 12 q0 12 -20 12 q-56 0 -56 -50 q0 -44 56 -44Z" fill="${W}"/><circle cx="138" cy="60" r="6" fill="#ef4444"/><circle cx="166" cy="52" r="6" fill="#f59e0b"/><circle cx="190" cy="64" r="6" fill="#3b82f6"/><circle cx="150" cy="84" r="6" fill="#22c55e"/>`;
+      case 'arte': return `<rect x="106" y="40" width="108" height="74" rx="6" fill="none" stroke="${W}" stroke-width="3"/><path d="M118 100 l24 -32 l18 20 l16 -22 l24 34Z" fill="${color}"/><circle cx="140" cy="60" r="8" fill="${W}"/>`;
+      case 'musica': return `<path d="M150 36 v52 a14 12 0 1 1 -10 -11 V52 l44 -12 v40 a14 12 0 1 1 -10 -11 V40Z" fill="${W}"/>`;
+      case 'cinema': return `<rect x="108" y="50" width="104" height="58" rx="4" fill="none" stroke="${W}" stroke-width="3"/><path d="M108 50 l96 -14 l4 14Z" fill="${W}"/>${[0,1,2,3].map(i=>`<rect x="${118+i*24}" y="38" width="12" height="12" fill="${color}" transform="rotate(-8 ${124+i*24} 44)"/>`).join('')}`;
+      case 'jogos': return `<rect x="104" y="56" width="112" height="44" rx="22" fill="none" stroke="${W}" stroke-width="3"/><rect x="124" y="72" width="16" height="5" fill="${W}"/><rect x="129" y="67" width="5" height="16" fill="${W}"/><circle cx="184" cy="72" r="5" fill="${color}"/><circle cx="196" cy="80" r="5" fill="${W}"/>`;
+      case 'desporto': return `<path d="M132 40 h56 v10 q22 0 22 18 q0 18 -24 20 q-6 14 -22 16 v12 h14 v8 h-36 v-8 h14 v-12 q-16 -2 -22 -16 q-24 -2 -24 -20 q0 -18 22 -18Z" fill="${W}"/><path d="M132 50 h-2 q-12 0 -12 16 q0 8 10 10Z" fill="${color}" opacity=".6"/>`;
       default: return `<circle cx="160" cy="72" r="34" fill="${color}"/>`;
     }
   }
