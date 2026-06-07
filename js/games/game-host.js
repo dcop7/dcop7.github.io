@@ -132,6 +132,7 @@ const GameHost = (function () {
           <div class="games-hub-grid">
             ${groups[gName].map(g => `
               <button class="game-hub-card" data-game="${g.id}">
+                <img class="game-hub-card-img" src="assets/games/${g.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
                 <div class="game-hub-card-icon">${g.icon}</div>
                 <div class="game-hub-card-name">${g.name}</div>
                 <div class="game-hub-card-desc">${g.desc}</div>

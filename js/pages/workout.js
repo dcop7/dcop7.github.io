@@ -823,6 +823,7 @@ const WorkoutPage = (function () {
               {id:'mixed',   icon:'🔥',name:'Misto',        desc:'Combinação equilibrada de força e cardio'},
             ].map(t=>`
               <button class="wk-type-btn" data-type="${t.id}">
+                <img class="wk-type-img" src="assets/workout/${t.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
                 <div class="wk-type-icon">${t.icon}</div>
                 <div class="wk-type-name">${t.name}</div>
                 <div class="wk-type-desc">${t.desc}</div>

@@ -8,13 +8,18 @@
   gap: 1rem; margin-bottom: 1.5rem;
 }
 .game-hub-card {
+  position: relative; overflow: hidden; min-height: 158px;
+  display: flex; flex-direction: column; justify-content: flex-end;
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 1.25rem; cursor: pointer; transition: all .2s; text-align: center;
 }
-.game-hub-card:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
-.game-hub-card-icon { font-size: 2.5rem; margin-bottom: .65rem; }
-.game-hub-card-name { font-family: var(--font-head); font-size: .9rem; font-weight: 700; color: var(--text); }
-.game-hub-card-desc { font-size: .72rem; color: var(--muted); margin-top: .25rem; }
+.game-hub-card:hover { border-color: rgba(var(--accent-rgb),.45); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.game-hub-card-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: .55; transition: opacity .2s ease, transform .4s ease; }
+.game-hub-card::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(8,12,20,.2) 0%, rgba(8,12,20,.55) 50%, rgba(8,12,20,.92) 100%); }
+.game-hub-card:hover .game-hub-card-img { opacity: .8; transform: scale(1.07); }
+.game-hub-card-icon { font-size: 2.5rem; margin-bottom: .65rem; position: relative; z-index: 2; filter: drop-shadow(0 3px 8px rgba(0,0,0,.7)); }
+.game-hub-card-name { font-family: var(--font-head); font-size: .9rem; font-weight: 700; color: #fff; position: relative; z-index: 2; }
+.game-hub-card-desc { font-size: .72rem; color: rgba(255,255,255,.82); margin-top: .25rem; position: relative; z-index: 2; }
 
 /* Breadcrumb */
 .breadcrumb { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); margin-bottom: 1rem; }

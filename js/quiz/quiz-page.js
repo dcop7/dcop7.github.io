@@ -204,6 +204,7 @@ const QuizPage = (function () {
         const hs    = QuizEngine.getHighscore(quiz.id);
         const played = QuizEngine.getPlayed(quiz.id);
         return `<button class="qc-card" data-quiz="${quiz.id}" title="${label}">
+          <img class="qc-card-img" src="assets/quiz/${quiz.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
           <div class="qc-card-icon">${quiz.icon}</div>
           <div class="qc-card-label">${label}</div>
           ${hs > 0 ? `<div class="qc-card-hs">⭐ ${hs}</div>` : ''}
