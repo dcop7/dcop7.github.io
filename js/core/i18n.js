@@ -9,7 +9,6 @@ const I18n = (function () {
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents',
-      'nav.receitas':'Recipes',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
       // Theme panel + header tooltips
       'theme.title':'Theme','theme.dark':'Dark','theme.light':'Light',
@@ -136,7 +135,6 @@ const I18n = (function () {
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT',
-      'nav.receitas':'Receitas',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
       // Painel de tema + dicas do cabeçalho
       'theme.title':'Tema','theme.dark':'Escuro','theme.light':'Claro',
