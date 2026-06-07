@@ -777,9 +777,9 @@ const ExplorerPage = (function () {
       /* AI-generated cover image behind each card (graceful if missing). */
       if (card.dataset.tab) card.insertAdjacentHTML('afterbegin',
         `<img class="ex-feat-img" src="assets/explorer/${card.dataset.tab}.jpg" alt="" loading="lazy" onerror="this.remove()">`);
-      card.onclick = () => _switchTab(card.dataset.tab);
+      card.onclick = () => _go(card.dataset.tab);
       card.onkeydown = e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _switchTab(card.dataset.tab); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _go(card.dataset.tab); }
       };
     });
     sub.querySelectorAll('.ex-country-chip').forEach(chip => {
@@ -1575,24 +1575,24 @@ const ExplorerPage = (function () {
 
     if ((mode === 'map' || mode === 'globe') && _countriesOk && _countries.length) {
       const c = _countries[Math.floor(Math.random() * _countries.length)];
-      _switchTab(mode);
+      _go(mode);
       setTimeout(() => showCountryPanel(c), 500);
     } else if (mode === 'portugal' && typeof PortugalExplorer !== 'undefined') {
-      _switchTab('portugal');
+      _go('portugal');
       setTimeout(() => PortugalExplorer.discoverRandom(), 500);
     } else if (mode === 'solar') {
-      _switchTab('solar');
+      _go('solar');
     } else if (mode === 'galaxy') {
-      _switchTab('galaxy');
+      _go('galaxy');
     } else if (mode === 'realtime') {
-      _switchTab('realtime');
+      _go('realtime');
     } else if (mode === 'timeline' && typeof TimelineExplorer !== 'undefined') {
-      _switchTab('timeline');
+      _go('timeline');
       setTimeout(() => TimelineExplorer.discoverRandom(), 500);
     } else if (_countriesOk && _countries.length) {
       /* Fallback: show random country on map */
       const c = _countries[Math.floor(Math.random() * _countries.length)];
-      _switchTab('map');
+      _go('map');
       setTimeout(() => showCountryPanel(c), 500);
     }
   }
@@ -1650,7 +1650,7 @@ const ExplorerPage = (function () {
     const tabsEl = view.querySelector('#ex-tabs');
     tabsEl.addEventListener('click', e => {
       const btn = e.target.closest('.ex-tab');
-      if (btn) _switchTab(btn.dataset.tab);
+      if (btn) _go(btn.dataset.tab);
     });
     /* Keyboard: roving tabindex + arrow/Home/End focus movement. Manual
        activation (Enter/Space/click) — arrowing only moves focus, so heavy
@@ -1670,6 +1670,14 @@ const ExplorerPage = (function () {
       list[n].focus();
     });
     _renderHub(view.querySelector('#ex-sub-hub'));
+  }
+
+  /* Navigate to a tab via the URL hash so refresh, sharing and the back
+     button work (e.g. #explorer/timeline). renderView → show(sub) → _switchTab. */
+  function _go(tab) {
+    const h = (!tab || tab === 'hub') ? 'explorer' : 'explorer/' + tab;
+    if (location.hash.slice(1) !== h) location.hash = h;
+    else _switchTab(tab);
   }
 
   function _switchTab(tab) {

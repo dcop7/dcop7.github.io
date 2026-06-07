@@ -97,8 +97,7 @@ const QuizPage = (function () {
     _el = document.getElementById('view-quiz');
     if (!_el) return;
     if (sub) {
-      const [catId, qId] = sub.split('/');
-      const quiz = findQuiz(qId);
+      const quiz = findQuiz(sub.split('/').pop());
       if (quiz) { startQuiz(quiz); return; }
     }
     renderBrowse();
@@ -226,8 +225,7 @@ const QuizPage = (function () {
 
     container.querySelectorAll('.qc-card').forEach(btn => {
       btn.addEventListener('click', () => {
-        const quiz = findQuiz(btn.dataset.quiz);
-        if (quiz) startQuiz(quiz);
+        if (findQuiz(btn.dataset.quiz)) Nav.go('quiz/' + btn.dataset.quiz);
       });
     });
   }
@@ -285,7 +283,7 @@ const QuizPage = (function () {
           </div>
         </div>
       </div>`;
-    _el.querySelector('#qg-back-err')?.addEventListener('click', renderBrowse);
+    _el.querySelector('#qg-back-err')?.addEventListener('click', () => Nav.go('quiz'));
     _el.querySelector('#qg-retry-err')?.addEventListener('click', () => startQuiz(_quiz));
   }
 
@@ -381,7 +379,7 @@ const QuizPage = (function () {
       </div>`;
 
     /* Back */
-    _el.querySelector('#qg-back')?.addEventListener('click', renderBrowse);
+    _el.querySelector('#qg-back')?.addEventListener('click', () => Nav.go('quiz'));
 
     /* Answer buttons */
     const optEls = _el.querySelectorAll('.qg-opt');
@@ -488,7 +486,7 @@ const QuizPage = (function () {
         </div>
       </div>`;
 
-    _el.querySelector('#qr-back')?.addEventListener('click', renderBrowse);
+    _el.querySelector('#qr-back')?.addEventListener('click', () => Nav.go('quiz'));
     _el.querySelector('#qr-retry')?.addEventListener('click', () => startQuiz(_quiz));
   }
 

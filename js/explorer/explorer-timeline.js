@@ -217,16 +217,17 @@ const TimelineExplorer = (function () {
     return `<select class="tl-theme" id="tl-theme" aria-label="${_t('Theme','Tema')}">${opts.join('')}</select>`;
   }
 
+  /* depth + theme controls — rendered into the shared top bar (same row as the
+     mode toggle) so the header stays one compact line. */
+  function docControls() {
+    return `<div class="tl-seg" id="tl-depth" role="group" aria-label="${_t('Detail level','Nível de detalhe')}">
+        <button data-depth="key" class="${_depth === 'key' ? 'on' : ''}">✨ ${_t('Highlights','Destaques')}</button>
+        <button data-depth="all" class="${_depth === 'all' ? 'on' : ''}">📚 ${_t('Complete','Completo')}</button>
+      </div>${themeSelect()}`;
+  }
   function shell() {
     return `
       <div class="tl-wrap tl-doc">
-        <div class="tl-doctop">
-          <div class="tl-seg" id="tl-depth" role="group" aria-label="${_t('Detail level','Nível de detalhe')}">
-            <button data-depth="key" class="${_depth === 'key' ? 'on' : ''}">✨ ${_t('Highlights','Destaques')}</button>
-            <button data-depth="all" class="${_depth === 'all' ? 'on' : ''}">📚 ${_t('Complete','Completo')}</button>
-          </div>
-          ${themeSelect()}
-        </div>
         <div class="tl-doc-scroll" id="tl-scroll">
           <div class="tl-doc-stage" id="tl-stage"></div>
         </div>
@@ -323,18 +324,19 @@ const TimelineExplorer = (function () {
     _root = sub;
     _buildCats();
     sub.innerHTML = shell();
+    if (_slot) _slot.innerHTML = docControls();
     _scroll = sub.querySelector('#tl-scroll');
     wireStory();
     _ensure().then(() => renderDoc());
   }
   function wireStory() {
-    _root.querySelector('#tl-depth').addEventListener('click', e => {
+    _slot && _slot.querySelector('#tl-depth').addEventListener('click', e => {
       const b = e.target.closest('[data-depth]'); if (!b) return;
       _depth = b.dataset.depth;
-      _root.querySelectorAll('#tl-depth button').forEach(x => x.classList.toggle('on', x.dataset.depth === _depth));
+      _slot.querySelectorAll('#tl-depth button').forEach(x => x.classList.toggle('on', x.dataset.depth === _depth));
       renderDoc();
     });
-    _root.querySelector('#tl-theme').addEventListener('change', e => { _theme = e.target.value; renderDoc(); });
+    _slot && _slot.querySelector('#tl-theme').addEventListener('change', e => { _theme = e.target.value; renderDoc(); });
     _root.querySelector('#tl-rail').addEventListener('click', e => { const b = e.target.closest('.tl-dot'); if (b) scrollToChapterId(b.dataset.ch); });
     _root.querySelector('#tl-stage').addEventListener('click', e => {
       const go = e.target.closest('[data-go]'); if (go) { relatedGo(go.dataset.go); return; }
@@ -369,17 +371,21 @@ const TimelineExplorer = (function () {
   }
 
   /* ══ mode coordinator: História (scrollytelling) | Explorar (interativo) ══ */
-  let _coRoot = null, _mode = 'story', _content = null;
+  let _coRoot = null, _mode = 'story', _content = null, _slot = null;
   function mount(sub) {
     _coRoot = sub;
     try { const s = localStorage.getItem('tl-mode'); if (s === 'interactive' || s === 'story') _mode = s; } catch (e) {}
     sub.innerHTML = `
-      <div class="tl-modes" role="tablist" aria-label="${_t('Timeline mode', 'Modo da linha do tempo')}">
-        <button class="tl-mode" data-mode="story" role="tab">📖 ${_t('Story', 'História')}</button>
-        <button class="tl-mode" data-mode="interactive" role="tab">🔭 ${_t('Explore', 'Explorar')}</button>
+      <div class="tl-topbar">
+        <div class="tl-modes" role="tablist" aria-label="${_t('Timeline mode', 'Modo da linha do tempo')}">
+          <button class="tl-mode" data-mode="story" role="tab">📖 ${_t('Story', 'História')}</button>
+          <button class="tl-mode" data-mode="interactive" role="tab">🔭 ${_t('Explore', 'Explorar')}</button>
+        </div>
+        <div class="tl-slot" id="tl-slot"></div>
       </div>
       <div class="tl-mode-content" id="tl-mode-content"></div>`;
     _content = sub.querySelector('#tl-mode-content');
+    _slot = sub.querySelector('#tl-slot');
     sub.querySelector('.tl-modes').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (b) setMode(b.dataset.mode); });
     setMode(_mode);
   }
@@ -390,6 +396,7 @@ const TimelineExplorer = (function () {
     _coRoot.querySelectorAll('.tl-mode').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
     try { _storyStop(); } catch (e) {}
     try { if (typeof TimelineInteractive !== 'undefined') TimelineInteractive.stop(); } catch (e) {}
+    if (_slot) _slot.innerHTML = '';
     _content.innerHTML = '';
     if (m === 'interactive' && typeof TimelineInteractive !== 'undefined') TimelineInteractive.mount(_content);
     else _storyMount(_content);

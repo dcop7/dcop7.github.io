@@ -2737,8 +2737,10 @@ body.light .pt-capital-label .pt-cap-dot {
 }
 
 
-/* ── Timeline: mode toggle + real AI photos ── */
-.tl-modes { display:flex; gap:.4rem; padding:.5rem .8rem; flex-shrink:0; border-bottom:1px solid var(--border); background:var(--glass-strong, var(--card-solid)); }
+/* ── Timeline: single top bar (mode toggle + controls) + real AI photos ── */
+.tl-topbar { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; padding:.5rem .8rem; flex-shrink:0; border-bottom:1px solid var(--border); background:var(--glass-strong, var(--card-solid)); }
+.tl-slot { display:flex; align-items:center; gap:.55rem; margin-left:auto; flex-wrap:wrap; }
+.tl-modes { display:flex; gap:.4rem; }
 .tl-mode { display:inline-flex; align-items:center; gap:.4rem; padding:.45rem .9rem; border-radius:999px; cursor:pointer; font-size:.82rem; font-weight:600; font-family:var(--font-sans); background:var(--card); border:1px solid var(--border); color:var(--text2); transition:all var(--ease); }
 .tl-mode:hover { border-color:var(--border2); color:var(--text); }
 .tl-mode.on { background:var(--accent); border-color:var(--accent); color:#fff; }
