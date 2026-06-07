@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v109';
+const CACHE = 'dcop7-v110';
 const STATIC = [
   '/',
   '/index.html',
@@ -33,6 +33,7 @@ const STATIC = [
   '/js/explorer/explorer-realtime.js',
   '/js/explorer/explorer-body.js',
   '/js/explorer/explorer-timeline.js',
+  '/js/explorer/explorer-timeline-interactive.js',
   '/js/explorer/ocorrencias.js',
   /* Pages */
   '/js/pages/links-data.js',

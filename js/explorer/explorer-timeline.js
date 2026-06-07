@@ -172,7 +172,7 @@ const TimelineExplorer = (function () {
   function eventCard(e) {
     const c = cat(e);
     return `<button class="tl-ev" data-id="${esc(e.id)}" style="--c:${c.color}">
-      <span class="tl-ev-thumb">${artSVG(e)}</span>
+      <span class="tl-ev-thumb">${artSVG(e)}<img class="tl-ev-photo" src="assets/timeline/${esc(e.id)}.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
       <span class="tl-ev-info">
         <span class="tl-ev-yr">${esc(cardDate(e.year))}</span>
         <span class="tl-ev-t">${esc(e.title)}</span>
@@ -188,7 +188,7 @@ const TimelineExplorer = (function () {
       return `<div class="tl-scene" data-i="${i}" style="--g1:${g[0]};--g2:${g[1]}">
         <div class="tl-sky"></div>
         <div class="tl-far"><svg viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${_starsMarkup(rnd, 90, 1200, 1000)}</svg></div>
-        <div class="tl-art"><svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sceneArt(ch.theme, (CATS[Object.keys(CATS)[0]] || {}).color || '#6366f1')}</svg></div>
+        <div class="tl-art"><svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sceneArt(ch.theme, (CATS[Object.keys(CATS)[0]] || {}).color || '#6366f1')}</svg><img class="tl-chap-photo" src="assets/timeline/chapter-${ch.id}.jpg" alt="" onerror="this.remove()"></div>
         <div class="tl-vignette"></div>
       </div>`;
     }).join('');
@@ -264,7 +264,7 @@ const TimelineExplorer = (function () {
     d.style.setProperty('--c', c.color);
     d.innerHTML = `
       <button class="tl-d-close" aria-label="${_t('Close','Fechar')}">✕</button>
-      <div class="tl-d-media">${artSVG(e)}<span class="tl-d-media-em">${c.emoji}</span></div>
+      <div class="tl-d-media">${artSVG(e)}<img class="tl-photo" src="assets/timeline/${esc(e.id)}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="tl-d-media-em">${c.emoji}</span></div>
       <div class="tl-d-head">
         <span class="tl-d-emoji">${c.emoji}</span>
         <div><span class="tl-d-cat">${esc(c.label)}</span><h2 class="tl-d-title" id="tl-d-title">${esc(e.title)}</h2></div>
@@ -290,8 +290,8 @@ const TimelineExplorer = (function () {
     if (_lastFocus && _lastFocus.focus) { try { _lastFocus.focus(); } catch (e) {} _lastFocus = null; }
   }
 
-  /* ── lifecycle ── */
-  function mount(sub) {
+  /* ── lifecycle (story) ── */
+  function _storyMount(sub) {
     _root = sub;
     _buildCats();
     sub.innerHTML = shell();
@@ -327,15 +327,14 @@ const TimelineExplorer = (function () {
     _ro = new ResizeObserver(() => schedule());
     _ro.observe(_scroll);
   }
-  function resume() {
+  function _storyResume() {
     if (!_root) return;
-    _root = document.getElementById('ex-sub-timeline') || _root;
     _scroll = _root.querySelector('#tl-scroll') || _scroll;
     _fixed = _root.querySelector('#tl-fixed') || _fixed;
     setTimeout(() => { _active = -1; onScroll(); }, 60);
   }
-  function stop() { closeDetail(); }
-  function discoverRandom() {
+  function _storyStop() { closeDetail(); }
+  function _storyDiscover() {
     _ensure().then(() => {
       if (!_data || !_data.length) return;
       const e = _data[Math.floor(Math.random() * _data.length)];
@@ -343,6 +342,36 @@ const TimelineExplorer = (function () {
       setTimeout(() => openDetail(e.id), 650);
     });
   }
+
+  /* ══ mode coordinator: História (scrollytelling) | Explorar (interativo) ══ */
+  let _coRoot = null, _mode = 'story', _content = null;
+  function mount(sub) {
+    _coRoot = sub;
+    try { const s = localStorage.getItem('tl-mode'); if (s === 'interactive' || s === 'story') _mode = s; } catch (e) {}
+    sub.innerHTML = `
+      <div class="tl-modes" role="tablist" aria-label="${_t('Timeline mode', 'Modo da linha do tempo')}">
+        <button class="tl-mode" data-mode="story" role="tab">📖 ${_t('Story', 'História')}</button>
+        <button class="tl-mode" data-mode="interactive" role="tab">🔭 ${_t('Explore', 'Explorar')}</button>
+      </div>
+      <div class="tl-mode-content" id="tl-mode-content"></div>`;
+    _content = sub.querySelector('#tl-mode-content');
+    sub.querySelector('.tl-modes').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (b) setMode(b.dataset.mode); });
+    setMode(_mode);
+  }
+  function setMode(m) {
+    if (!_content) return;
+    _mode = m;
+    try { localStorage.setItem('tl-mode', m); } catch (e) {}
+    _coRoot.querySelectorAll('.tl-mode').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    try { _storyStop(); } catch (e) {}
+    try { if (typeof TimelineInteractive !== 'undefined') TimelineInteractive.stop(); } catch (e) {}
+    _content.innerHTML = '';
+    if (m === 'interactive' && typeof TimelineInteractive !== 'undefined') TimelineInteractive.mount(_content);
+    else _storyMount(_content);
+  }
+  function resume() { if (_mode === 'interactive' && typeof TimelineInteractive !== 'undefined') TimelineInteractive.resume(); else _storyResume(); }
+  function stop() { try { _storyStop(); } catch (e) {} try { if (typeof TimelineInteractive !== 'undefined') TimelineInteractive.stop(); } catch (e) {} }
+  function discoverRandom() { if (_mode === 'interactive' && typeof TimelineInteractive !== 'undefined') TimelineInteractive.discoverRandom(); else _storyDiscover(); }
 
   return { mount, resume, stop, discoverRandom };
 })();
