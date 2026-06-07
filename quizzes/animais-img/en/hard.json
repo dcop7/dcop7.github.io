@@ -1,0 +1,210 @@
+[
+ {
+  "q": "Which animal is this?",
+  "a": "Lion",
+  "opts": [
+   "Lion",
+   "Tiger",
+   "Elephant",
+   "Giraffe"
+  ],
+  "exp": "Lion — The lion is known as the \"king of the jungle\".",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/leao.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Tiger",
+  "opts": [
+   "Tiger",
+   "Elephant",
+   "Giraffe",
+   "Zebra"
+  ],
+  "exp": "Tiger — The tiger is the largest cat in the world.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/tigre.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Elephant",
+  "opts": [
+   "Elephant",
+   "Giraffe",
+   "Zebra",
+   "Bear"
+  ],
+  "exp": "Elephant — The elephant is the largest land animal.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/elefante.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Giraffe",
+  "opts": [
+   "Giraffe",
+   "Zebra",
+   "Bear",
+   "Wolf"
+  ],
+  "exp": "Giraffe — The giraffe is the tallest animal in the world.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/girafa.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Zebra",
+  "opts": [
+   "Zebra",
+   "Bear",
+   "Wolf",
+   "Fox"
+  ],
+  "exp": "Zebra — Every zebra has a unique stripe pattern.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/zebra.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Bear",
+  "opts": [
+   "Bear",
+   "Wolf",
+   "Fox",
+   "Dolphin"
+  ],
+  "exp": "Bear — Bears can hibernate through winter.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/urso.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Wolf",
+  "opts": [
+   "Wolf",
+   "Fox",
+   "Dolphin",
+   "Shark"
+  ],
+  "exp": "Wolf — Wolves live and hunt in packs.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/lobo.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Fox",
+  "opts": [
+   "Fox",
+   "Dolphin",
+   "Shark",
+   "Eagle"
+  ],
+  "exp": "Fox — The fox is known for being clever.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/raposa.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Dolphin",
+  "opts": [
+   "Dolphin",
+   "Shark",
+   "Eagle",
+   "Owl"
+  ],
+  "exp": "Dolphin — Dolphins are highly intelligent and social.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/golfinho.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Shark",
+  "opts": [
+   "Shark",
+   "Eagle",
+   "Owl",
+   "Penguin"
+  ],
+  "exp": "Shark — Sharks have existed for over 400 million years.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/tubarao.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Eagle",
+  "opts": [
+   "Eagle",
+   "Owl",
+   "Penguin",
+   "Panda"
+  ],
+  "exp": "Eagle — The eagle has extraordinary eyesight.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/aguia.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Owl",
+  "opts": [
+   "Owl",
+   "Penguin",
+   "Panda",
+   "Monkey"
+  ],
+  "exp": "Owl — An owl can turn its head almost 270 degrees.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/coruja.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Penguin",
+  "opts": [
+   "Penguin",
+   "Panda",
+   "Monkey",
+   "Kangaroo"
+  ],
+  "exp": "Penguin — Penguins cannot fly but swim very well.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/pinguim.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Panda",
+  "opts": [
+   "Panda",
+   "Monkey",
+   "Kangaroo",
+   "Lion"
+  ],
+  "exp": "Panda — The panda eats almost only bamboo.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/panda.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Monkey",
+  "opts": [
+   "Monkey",
+   "Kangaroo",
+   "Lion",
+   "Tiger"
+  ],
+  "exp": "Monkey — Many monkeys use their tail to hold on.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/macaco.jpg"
+ },
+ {
+  "q": "Which animal is this?",
+  "a": "Kangaroo",
+  "opts": [
+   "Kangaroo",
+   "Lion",
+   "Tiger",
+   "Elephant"
+  ],
+  "exp": "Kangaroo — The kangaroo carries its young in a pouch.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/canguru.jpg"
+ }
+]

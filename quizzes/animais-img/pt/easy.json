@@ -1,0 +1,210 @@
+[
+ {
+  "q": "Que animal é este?",
+  "a": "Leão",
+  "opts": [
+   "Leão",
+   "Tigre",
+   "Elefante",
+   "Girafa"
+  ],
+  "exp": "Leão — O leão é conhecido como o \"rei da selva\".",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/leao.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Tigre",
+  "opts": [
+   "Tigre",
+   "Elefante",
+   "Girafa",
+   "Zebra"
+  ],
+  "exp": "Tigre — O tigre é o maior felino do mundo.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/tigre.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Elefante",
+  "opts": [
+   "Elefante",
+   "Girafa",
+   "Zebra",
+   "Urso"
+  ],
+  "exp": "Elefante — O elefante é o maior animal terrestre.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/elefante.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Girafa",
+  "opts": [
+   "Girafa",
+   "Zebra",
+   "Urso",
+   "Lobo"
+  ],
+  "exp": "Girafa — A girafa é o animal mais alto do mundo.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/girafa.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Zebra",
+  "opts": [
+   "Zebra",
+   "Urso",
+   "Lobo",
+   "Raposa"
+  ],
+  "exp": "Zebra — Cada zebra tem um padrão de riscas único.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/zebra.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Urso",
+  "opts": [
+   "Urso",
+   "Lobo",
+   "Raposa",
+   "Golfinho"
+  ],
+  "exp": "Urso — Os ursos podem hibernar durante o inverno.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/urso.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Lobo",
+  "opts": [
+   "Lobo",
+   "Raposa",
+   "Golfinho",
+   "Tubarão"
+  ],
+  "exp": "Lobo — Os lobos vivem e caçam em alcateias.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/lobo.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Raposa",
+  "opts": [
+   "Raposa",
+   "Golfinho",
+   "Tubarão",
+   "Águia"
+  ],
+  "exp": "Raposa — A raposa é conhecida pela sua astúcia.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/raposa.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Golfinho",
+  "opts": [
+   "Golfinho",
+   "Tubarão",
+   "Águia",
+   "Coruja"
+  ],
+  "exp": "Golfinho — Os golfinhos são muito inteligentes e sociáveis.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/golfinho.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Tubarão",
+  "opts": [
+   "Tubarão",
+   "Águia",
+   "Coruja",
+   "Pinguim"
+  ],
+  "exp": "Tubarão — Os tubarões existem há mais de 400 milhões de anos.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/tubarao.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Águia",
+  "opts": [
+   "Águia",
+   "Coruja",
+   "Pinguim",
+   "Panda"
+  ],
+  "exp": "Águia — A águia tem uma visão extraordinária.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/aguia.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Coruja",
+  "opts": [
+   "Coruja",
+   "Pinguim",
+   "Panda",
+   "Macaco"
+  ],
+  "exp": "Coruja — A coruja consegue rodar a cabeça quase 270 graus.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/coruja.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Pinguim",
+  "opts": [
+   "Pinguim",
+   "Panda",
+   "Macaco",
+   "Canguru"
+  ],
+  "exp": "Pinguim — Os pinguins não voam, mas nadam muito bem.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/pinguim.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Panda",
+  "opts": [
+   "Panda",
+   "Macaco",
+   "Canguru",
+   "Leão"
+  ],
+  "exp": "Panda — O panda alimenta-se quase só de bambu.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/panda.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Macaco",
+  "opts": [
+   "Macaco",
+   "Canguru",
+   "Leão",
+   "Tigre"
+  ],
+  "exp": "Macaco — Muitos macacos usam a cauda para se segurarem.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/macaco.jpg"
+ },
+ {
+  "q": "Que animal é este?",
+  "a": "Canguru",
+  "opts": [
+   "Canguru",
+   "Leão",
+   "Tigre",
+   "Elefante"
+  ],
+  "exp": "Canguru — O canguru transporta as crias numa bolsa.",
+  "imgType": "img",
+  "img": "quizzes/assets/animais-img/canguru.jpg"
+ }
+]

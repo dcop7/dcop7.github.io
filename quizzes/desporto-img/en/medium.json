@@ -1,0 +1,158 @@
+[
+ {
+  "q": "Which sport is this?",
+  "a": "Football",
+  "opts": [
+   "Football",
+   "Basketball",
+   "Tennis",
+   "Swimming"
+  ],
+  "exp": "Football — Football is the most popular sport in the world.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/futebol.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Basketball",
+  "opts": [
+   "Basketball",
+   "Tennis",
+   "Swimming",
+   "Cycling"
+  ],
+  "exp": "Basketball — In basketball you score by putting the ball in the hoop.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/basquetebol.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Tennis",
+  "opts": [
+   "Tennis",
+   "Swimming",
+   "Cycling",
+   "Golf"
+  ],
+  "exp": "Tennis — Tennis is played with rackets and a ball.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/tenis.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Swimming",
+  "opts": [
+   "Swimming",
+   "Cycling",
+   "Golf",
+   "Volleyball"
+  ],
+  "exp": "Swimming — Swimming is a full-body sport.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/natacao.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Cycling",
+  "opts": [
+   "Cycling",
+   "Golf",
+   "Volleyball",
+   "Boxing"
+  ],
+  "exp": "Cycling — Cycling is racing on bicycles.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/ciclismo.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Golf",
+  "opts": [
+   "Golf",
+   "Volleyball",
+   "Boxing",
+   "Skiing"
+  ],
+  "exp": "Golf — In golf you hit a ball into a hole with clubs.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/golfe.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Volleyball",
+  "opts": [
+   "Volleyball",
+   "Boxing",
+   "Skiing",
+   "Surfing"
+  ],
+  "exp": "Volleyball — In volleyball the ball goes over a net.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/voleibol.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Boxing",
+  "opts": [
+   "Boxing",
+   "Skiing",
+   "Surfing",
+   "Athletics"
+  ],
+  "exp": "Boxing — Boxing is a combat sport with gloves.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/boxe.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Skiing",
+  "opts": [
+   "Skiing",
+   "Surfing",
+   "Athletics",
+   "Rugby"
+  ],
+  "exp": "Skiing — Skiing is done on snow.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/esqui.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Surfing",
+  "opts": [
+   "Surfing",
+   "Athletics",
+   "Rugby",
+   "Football"
+  ],
+  "exp": "Surfing — In surfing you ride ocean waves.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/surf.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Athletics",
+  "opts": [
+   "Athletics",
+   "Rugby",
+   "Football",
+   "Basketball"
+  ],
+  "exp": "Athletics — Athletics includes running, jumping and throwing.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/atletismo.jpg"
+ },
+ {
+  "q": "Which sport is this?",
+  "a": "Rugby",
+  "opts": [
+   "Rugby",
+   "Football",
+   "Basketball",
+   "Tennis"
+  ],
+  "exp": "Rugby — Rugby is played with an oval ball.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/rugby.jpg"
+ }
+]

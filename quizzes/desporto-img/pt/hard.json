@@ -1,0 +1,158 @@
+[
+ {
+  "q": "Que desporto é este?",
+  "a": "Futebol",
+  "opts": [
+   "Futebol",
+   "Basquetebol",
+   "Ténis",
+   "Natação"
+  ],
+  "exp": "Futebol — O futebol é o desporto mais popular do mundo.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/futebol.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Basquetebol",
+  "opts": [
+   "Basquetebol",
+   "Ténis",
+   "Natação",
+   "Ciclismo"
+  ],
+  "exp": "Basquetebol — No basquetebol marca-se ponto pondo a bola no cesto.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/basquetebol.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Ténis",
+  "opts": [
+   "Ténis",
+   "Natação",
+   "Ciclismo",
+   "Golfe"
+  ],
+  "exp": "Ténis — O ténis joga-se com raquetes e uma bola.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/tenis.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Natação",
+  "opts": [
+   "Natação",
+   "Ciclismo",
+   "Golfe",
+   "Voleibol"
+  ],
+  "exp": "Natação — A natação é um desporto completo.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/natacao.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Ciclismo",
+  "opts": [
+   "Ciclismo",
+   "Golfe",
+   "Voleibol",
+   "Boxe"
+  ],
+  "exp": "Ciclismo — No ciclismo competem-se em bicicletas.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/ciclismo.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Golfe",
+  "opts": [
+   "Golfe",
+   "Voleibol",
+   "Boxe",
+   "Esqui"
+  ],
+  "exp": "Golfe — No golfe acerta-se a bola num buraco com tacos.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/golfe.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Voleibol",
+  "opts": [
+   "Voleibol",
+   "Boxe",
+   "Esqui",
+   "Surf"
+  ],
+  "exp": "Voleibol — No voleibol passa-se a bola por cima da rede.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/voleibol.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Boxe",
+  "opts": [
+   "Boxe",
+   "Esqui",
+   "Surf",
+   "Atletismo"
+  ],
+  "exp": "Boxe — O boxe é um desporto de combate com luvas.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/boxe.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Esqui",
+  "opts": [
+   "Esqui",
+   "Surf",
+   "Atletismo",
+   "Râguebi"
+  ],
+  "exp": "Esqui — O esqui pratica-se na neve.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/esqui.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Surf",
+  "opts": [
+   "Surf",
+   "Atletismo",
+   "Râguebi",
+   "Futebol"
+  ],
+  "exp": "Surf — No surf desliza-se sobre as ondas.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/surf.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Atletismo",
+  "opts": [
+   "Atletismo",
+   "Râguebi",
+   "Futebol",
+   "Basquetebol"
+  ],
+  "exp": "Atletismo — O atletismo inclui corridas, saltos e lançamentos.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/atletismo.jpg"
+ },
+ {
+  "q": "Que desporto é este?",
+  "a": "Râguebi",
+  "opts": [
+   "Râguebi",
+   "Futebol",
+   "Basquetebol",
+   "Ténis"
+  ],
+  "exp": "Râguebi — No râguebi joga-se com uma bola oval.",
+  "imgType": "img",
+  "img": "quizzes/assets/desporto-img/rugby.jpg"
+ }
+]

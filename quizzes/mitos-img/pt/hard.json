@@ -1,0 +1,132 @@
+[
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Zeus",
+  "opts": [
+   "Zeus",
+   "Poséidon",
+   "Hades",
+   "Atena"
+  ],
+  "exp": "Zeus — Zeus é o rei dos deuses gregos, senhor do raio.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/zeus.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Poséidon",
+  "opts": [
+   "Poséidon",
+   "Hades",
+   "Atena",
+   "Medusa"
+  ],
+  "exp": "Poséidon — Poséidon é o deus dos mares, com o seu tridente.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/poseidon.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Hades",
+  "opts": [
+   "Hades",
+   "Atena",
+   "Medusa",
+   "Minotauro"
+  ],
+  "exp": "Hades — Hades é o deus do submundo.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/hades.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Atena",
+  "opts": [
+   "Atena",
+   "Medusa",
+   "Minotauro",
+   "Pégaso"
+  ],
+  "exp": "Atena — Atena é a deusa da sabedoria e da guerra.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/atena.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Medusa",
+  "opts": [
+   "Medusa",
+   "Minotauro",
+   "Pégaso",
+   "Ciclope"
+  ],
+  "exp": "Medusa — Medusa tinha serpentes em vez de cabelo.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/medusa.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Minotauro",
+  "opts": [
+   "Minotauro",
+   "Pégaso",
+   "Ciclope",
+   "Centauro"
+  ],
+  "exp": "Minotauro — O Minotauro era metade homem, metade touro.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/minotauro.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Pégaso",
+  "opts": [
+   "Pégaso",
+   "Ciclope",
+   "Centauro",
+   "Hércules"
+  ],
+  "exp": "Pégaso — Pégaso é o cavalo alado da mitologia grega.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/pegaso.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Ciclope",
+  "opts": [
+   "Ciclope",
+   "Centauro",
+   "Hércules",
+   "Zeus"
+  ],
+  "exp": "Ciclope — O Ciclope é um gigante com um só olho.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/ciclope.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Centauro",
+  "opts": [
+   "Centauro",
+   "Hércules",
+   "Zeus",
+   "Poséidon"
+  ],
+  "exp": "Centauro — O Centauro é metade homem, metade cavalo.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/centauro.jpg"
+ },
+ {
+  "q": "Que figura mitológica é esta?",
+  "a": "Hércules",
+  "opts": [
+   "Hércules",
+   "Zeus",
+   "Poséidon",
+   "Hades"
+  ],
+  "exp": "Hércules — Hércules era famoso pela sua força sobre-humana.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/hercules.jpg"
+ }
+]

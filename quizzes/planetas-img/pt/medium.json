@@ -1,0 +1,132 @@
+[
+ {
+  "q": "Que astro é este?",
+  "a": "Mercúrio",
+  "opts": [
+   "Mercúrio",
+   "Vénus",
+   "Terra",
+   "Marte"
+  ],
+  "exp": "Mercúrio — Mercúrio é o planeta mais próximo do Sol.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/mercurio.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Vénus",
+  "opts": [
+   "Vénus",
+   "Terra",
+   "Marte",
+   "Júpiter"
+  ],
+  "exp": "Vénus — Vénus é o planeta mais quente do Sistema Solar.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/venus.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Terra",
+  "opts": [
+   "Terra",
+   "Marte",
+   "Júpiter",
+   "Saturno"
+  ],
+  "exp": "Terra — A Terra é o único planeta conhecido com vida.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/terra.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Marte",
+  "opts": [
+   "Marte",
+   "Júpiter",
+   "Saturno",
+   "Úrano"
+  ],
+  "exp": "Marte — Marte é conhecido como o \"planeta vermelho\".",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/marte.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Júpiter",
+  "opts": [
+   "Júpiter",
+   "Saturno",
+   "Úrano",
+   "Neptuno"
+  ],
+  "exp": "Júpiter — Júpiter é o maior planeta do Sistema Solar.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/jupiter.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Saturno",
+  "opts": [
+   "Saturno",
+   "Úrano",
+   "Neptuno",
+   "Sol"
+  ],
+  "exp": "Saturno — Saturno é famoso pelos seus anéis.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/saturno.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Úrano",
+  "opts": [
+   "Úrano",
+   "Neptuno",
+   "Sol",
+   "Lua"
+  ],
+  "exp": "Úrano — Úrano roda quase \"deitado\" de lado.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/urano.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Neptuno",
+  "opts": [
+   "Neptuno",
+   "Sol",
+   "Lua",
+   "Mercúrio"
+  ],
+  "exp": "Neptuno — Neptuno é o planeta mais distante do Sol.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/neptuno.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Sol",
+  "opts": [
+   "Sol",
+   "Lua",
+   "Mercúrio",
+   "Vénus"
+  ],
+  "exp": "Sol — O Sol é a estrela do nosso Sistema Solar.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/sol.jpg"
+ },
+ {
+  "q": "Que astro é este?",
+  "a": "Lua",
+  "opts": [
+   "Lua",
+   "Mercúrio",
+   "Vénus",
+   "Terra"
+  ],
+  "exp": "Lua — A Lua é o único satélite natural da Terra.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/lua.jpg"
+ }
+]

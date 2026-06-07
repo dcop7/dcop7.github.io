@@ -1,0 +1,184 @@
+[
+ {
+  "q": "Which profession is this?",
+  "a": "Doctor",
+  "opts": [
+   "Doctor",
+   "Firefighter",
+   "Police officer",
+   "Chef"
+  ],
+  "exp": "Doctor — A doctor diagnoses and treats illnesses.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/medico.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Firefighter",
+  "opts": [
+   "Firefighter",
+   "Police officer",
+   "Chef",
+   "Teacher"
+  ],
+  "exp": "Firefighter — A firefighter fights fires and performs rescues.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/bombeiro.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Police officer",
+  "opts": [
+   "Police officer",
+   "Chef",
+   "Teacher",
+   "Farmer"
+  ],
+  "exp": "Police officer — A police officer keeps order and safety.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/policia.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Chef",
+  "opts": [
+   "Chef",
+   "Teacher",
+   "Farmer",
+   "Mechanic"
+  ],
+  "exp": "Chef — A chef prepares dishes in a kitchen.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/cozinheiro.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Teacher",
+  "opts": [
+   "Teacher",
+   "Farmer",
+   "Mechanic",
+   "Nurse"
+  ],
+  "exp": "Teacher — A teacher educates and helps people learn.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/professor.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Farmer",
+  "opts": [
+   "Farmer",
+   "Mechanic",
+   "Nurse",
+   "Pilot"
+  ],
+  "exp": "Farmer — A farmer grows crops and raises animals.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/agricultor.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Mechanic",
+  "opts": [
+   "Mechanic",
+   "Nurse",
+   "Pilot",
+   "Astronaut"
+  ],
+  "exp": "Mechanic — A mechanic repairs vehicles and machines.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/mecanico.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Nurse",
+  "opts": [
+   "Nurse",
+   "Pilot",
+   "Astronaut",
+   "Fisherman"
+  ],
+  "exp": "Nurse — A nurse cares for patients.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/enfermeiro.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Pilot",
+  "opts": [
+   "Pilot",
+   "Astronaut",
+   "Fisherman",
+   "Carpenter"
+  ],
+  "exp": "Pilot — A pilot flies aeroplanes.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/piloto.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Astronaut",
+  "opts": [
+   "Astronaut",
+   "Fisherman",
+   "Carpenter",
+   "Gardener"
+  ],
+  "exp": "Astronaut — An astronaut travels to space.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/astronauta.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Fisherman",
+  "opts": [
+   "Fisherman",
+   "Carpenter",
+   "Gardener",
+   "Baker"
+  ],
+  "exp": "Fisherman — A fisherman catches fish at sea or in rivers.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/pescador.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Carpenter",
+  "opts": [
+   "Carpenter",
+   "Gardener",
+   "Baker",
+   "Doctor"
+  ],
+  "exp": "Carpenter — A carpenter works with wood.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/carpinteiro.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Gardener",
+  "opts": [
+   "Gardener",
+   "Baker",
+   "Doctor",
+   "Firefighter"
+  ],
+  "exp": "Gardener — A gardener tends plants and gardens.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/jardineiro.jpg"
+ },
+ {
+  "q": "Which profession is this?",
+  "a": "Baker",
+  "opts": [
+   "Baker",
+   "Doctor",
+   "Firefighter",
+   "Police officer"
+  ],
+  "exp": "Baker — A baker makes bread and cakes.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/padeiro.jpg"
+ }
+]

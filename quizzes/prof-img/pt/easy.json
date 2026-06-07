@@ -1,0 +1,184 @@
+[
+ {
+  "q": "Que profissão é esta?",
+  "a": "Médico",
+  "opts": [
+   "Médico",
+   "Bombeiro",
+   "Polícia",
+   "Cozinheiro"
+  ],
+  "exp": "Médico — O médico diagnostica e trata doenças.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/medico.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Bombeiro",
+  "opts": [
+   "Bombeiro",
+   "Polícia",
+   "Cozinheiro",
+   "Professor"
+  ],
+  "exp": "Bombeiro — O bombeiro combate incêndios e faz salvamentos.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/bombeiro.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Polícia",
+  "opts": [
+   "Polícia",
+   "Cozinheiro",
+   "Professor",
+   "Agricultor"
+  ],
+  "exp": "Polícia — A polícia mantém a ordem e a segurança.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/policia.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Cozinheiro",
+  "opts": [
+   "Cozinheiro",
+   "Professor",
+   "Agricultor",
+   "Mecânico"
+  ],
+  "exp": "Cozinheiro — O cozinheiro prepara pratos numa cozinha.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/cozinheiro.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Professor",
+  "opts": [
+   "Professor",
+   "Agricultor",
+   "Mecânico",
+   "Enfermeiro"
+  ],
+  "exp": "Professor — O professor ensina e ajuda a aprender.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/professor.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Agricultor",
+  "opts": [
+   "Agricultor",
+   "Mecânico",
+   "Enfermeiro",
+   "Piloto"
+  ],
+  "exp": "Agricultor — O agricultor cultiva a terra e cria animais.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/agricultor.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Mecânico",
+  "opts": [
+   "Mecânico",
+   "Enfermeiro",
+   "Piloto",
+   "Astronauta"
+  ],
+  "exp": "Mecânico — O mecânico repara veículos e máquinas.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/mecanico.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Enfermeiro",
+  "opts": [
+   "Enfermeiro",
+   "Piloto",
+   "Astronauta",
+   "Pescador"
+  ],
+  "exp": "Enfermeiro — O enfermeiro cuida dos doentes.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/enfermeiro.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Piloto",
+  "opts": [
+   "Piloto",
+   "Astronauta",
+   "Pescador",
+   "Carpinteiro"
+  ],
+  "exp": "Piloto — O piloto conduz aviões.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/piloto.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Astronauta",
+  "opts": [
+   "Astronauta",
+   "Pescador",
+   "Carpinteiro",
+   "Jardineiro"
+  ],
+  "exp": "Astronauta — O astronauta viaja para o espaço.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/astronauta.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Pescador",
+  "opts": [
+   "Pescador",
+   "Carpinteiro",
+   "Jardineiro",
+   "Padeiro"
+  ],
+  "exp": "Pescador — O pescador apanha peixe no mar ou nos rios.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/pescador.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Carpinteiro",
+  "opts": [
+   "Carpinteiro",
+   "Jardineiro",
+   "Padeiro",
+   "Médico"
+  ],
+  "exp": "Carpinteiro — O carpinteiro trabalha a madeira.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/carpinteiro.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Jardineiro",
+  "opts": [
+   "Jardineiro",
+   "Padeiro",
+   "Médico",
+   "Bombeiro"
+  ],
+  "exp": "Jardineiro — O jardineiro cuida de plantas e jardins.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/jardineiro.jpg"
+ },
+ {
+  "q": "Que profissão é esta?",
+  "a": "Padeiro",
+  "opts": [
+   "Padeiro",
+   "Médico",
+   "Bombeiro",
+   "Polícia"
+  ],
+  "exp": "Padeiro — O padeiro faz pão e bolos.",
+  "imgType": "img",
+  "img": "quizzes/assets/prof-img/padeiro.jpg"
+ }
+]

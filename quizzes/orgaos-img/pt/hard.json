@@ -1,0 +1,106 @@
+[
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Coração",
+  "opts": [
+   "Coração",
+   "Cérebro",
+   "Pulmões",
+   "Estômago"
+  ],
+  "exp": "Coração — O coração bombeia o sangue por todo o corpo.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/coracao.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Cérebro",
+  "opts": [
+   "Cérebro",
+   "Pulmões",
+   "Estômago",
+   "Fígado"
+  ],
+  "exp": "Cérebro — O cérebro controla o pensamento e o corpo.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/cerebro.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Pulmões",
+  "opts": [
+   "Pulmões",
+   "Estômago",
+   "Fígado",
+   "Rim"
+  ],
+  "exp": "Pulmões — Os pulmões permitem-nos respirar.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/pulmoes.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Estômago",
+  "opts": [
+   "Estômago",
+   "Fígado",
+   "Rim",
+   "Olho"
+  ],
+  "exp": "Estômago — O estômago digere os alimentos.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/estomago.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Fígado",
+  "opts": [
+   "Fígado",
+   "Rim",
+   "Olho",
+   "Esqueleto"
+  ],
+  "exp": "Fígado — O fígado filtra toxinas do sangue.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/figado.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Rim",
+  "opts": [
+   "Rim",
+   "Olho",
+   "Esqueleto",
+   "Coração"
+  ],
+  "exp": "Rim — Os rins filtram o sangue e produzem urina.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/rim.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Olho",
+  "opts": [
+   "Olho",
+   "Esqueleto",
+   "Coração",
+   "Cérebro"
+  ],
+  "exp": "Olho — O olho permite-nos ver.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/olho.jpg"
+ },
+ {
+  "q": "Que órgão do corpo é este?",
+  "a": "Esqueleto",
+  "opts": [
+   "Esqueleto",
+   "Coração",
+   "Cérebro",
+   "Pulmões"
+  ],
+  "exp": "Esqueleto — O esqueleto sustenta o corpo.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/esqueleto.jpg"
+ }
+]

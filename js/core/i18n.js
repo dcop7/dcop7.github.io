@@ -51,6 +51,7 @@ const I18n = (function () {
       'quiz.cat.geografia':'Geography','quiz.cat.natureza':'Nature & Science',
       'quiz.cat.escola':'School','quiz.cat.cultura':'General Knowledge',
       'quiz.cat.visual':'Visual & Fun','quiz.cat.tecnologia':'Technology',
+      'quiz.cat.imagens':'Guess from the Image',
       // Weather labels
       'wx.next24':'Next 24 Hours','wx.forecast':'7-Day Forecast',
       'wx.map':'🌍 Real-Time Map','wx.now':'Now','wx.today':'Today',
@@ -177,6 +178,7 @@ const I18n = (function () {
       'quiz.cat.geografia':'Geografia','quiz.cat.natureza':'Natureza e Ciência',
       'quiz.cat.escola':'Escola','quiz.cat.cultura':'Cultura Geral',
       'quiz.cat.visual':'Visual e Divertido','quiz.cat.tecnologia':'Tecnologia',
+      'quiz.cat.imagens':'Adivinha pela Imagem',
       // Weather labels
       'wx.next24':'Próximas 24 Horas','wx.forecast':'Previsão 7 Dias',
       'wx.map':'🌍 Mapa em Tempo Real','wx.now':'Agora','wx.today':'Hoje',

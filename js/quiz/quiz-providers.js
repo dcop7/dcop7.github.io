@@ -365,6 +365,14 @@ function _flagUrl(cca2) {
   QuizEngine.register('solar-pt',        makeDataProvider('solar'));
   QuizEngine.register('apps',            makeDataProvider('apps'));
   QuizEngine.register('flags-europa',    makeDataProvider('bandeiras-europa'));
+  /* "Guess from the image" quizzes — locally generated photos, no copyright. */
+  QuizEngine.register('prof-img',        makeDataProvider('prof-img'));
+  QuizEngine.register('animais-img',     makeDataProvider('animais-img'));
+  QuizEngine.register('planetas-img',    makeDataProvider('planetas-img'));
+  QuizEngine.register('alimentos-img',   makeDataProvider('alimentos-img'));
+  QuizEngine.register('orgaos-img',      makeDataProvider('orgaos-img'));
+  QuizEngine.register('desporto-img',    makeDataProvider('desporto-img'));
+  QuizEngine.register('mitos-img',       makeDataProvider('mitos-img'));
 })();
 
 /* ══════════════════════════════════════════════════════════════════

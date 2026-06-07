@@ -1,0 +1,132 @@
+[
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Zeus",
+  "opts": [
+   "Zeus",
+   "Poseidon",
+   "Hades",
+   "Athena"
+  ],
+  "exp": "Zeus — Zeus is the king of the Greek gods, lord of thunder.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/zeus.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Poseidon",
+  "opts": [
+   "Poseidon",
+   "Hades",
+   "Athena",
+   "Medusa"
+  ],
+  "exp": "Poseidon — Poseidon is the god of the seas, with his trident.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/poseidon.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Hades",
+  "opts": [
+   "Hades",
+   "Athena",
+   "Medusa",
+   "Minotaur"
+  ],
+  "exp": "Hades — Hades is the god of the underworld.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/hades.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Athena",
+  "opts": [
+   "Athena",
+   "Medusa",
+   "Minotaur",
+   "Pegasus"
+  ],
+  "exp": "Athena — Athena is the goddess of wisdom and war.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/atena.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Medusa",
+  "opts": [
+   "Medusa",
+   "Minotaur",
+   "Pegasus",
+   "Cyclops"
+  ],
+  "exp": "Medusa — Medusa had snakes instead of hair.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/medusa.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Minotaur",
+  "opts": [
+   "Minotaur",
+   "Pegasus",
+   "Cyclops",
+   "Centaur"
+  ],
+  "exp": "Minotaur — The Minotaur was half man, half bull.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/minotauro.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Pegasus",
+  "opts": [
+   "Pegasus",
+   "Cyclops",
+   "Centaur",
+   "Hercules"
+  ],
+  "exp": "Pegasus — Pegasus is the winged horse of Greek myth.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/pegaso.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Cyclops",
+  "opts": [
+   "Cyclops",
+   "Centaur",
+   "Hercules",
+   "Zeus"
+  ],
+  "exp": "Cyclops — The Cyclops is a giant with a single eye.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/ciclope.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Centaur",
+  "opts": [
+   "Centaur",
+   "Hercules",
+   "Zeus",
+   "Poseidon"
+  ],
+  "exp": "Centaur — The Centaur is half man, half horse.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/centauro.jpg"
+ },
+ {
+  "q": "Which mythological figure is this?",
+  "a": "Hercules",
+  "opts": [
+   "Hercules",
+   "Zeus",
+   "Poseidon",
+   "Hades"
+  ],
+  "exp": "Hercules — Hercules was famous for his superhuman strength.",
+  "imgType": "img",
+  "img": "quizzes/assets/mitos-img/hercules.jpg"
+ }
+]

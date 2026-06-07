@@ -1,0 +1,184 @@
+[
+ {
+  "q": "Which food is this?",
+  "a": "Apple",
+  "opts": [
+   "Apple",
+   "Banana",
+   "Orange",
+   "Strawberry"
+  ],
+  "exp": "Apple — The apple is one of the most grown fruits in the world.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/maca.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Banana",
+  "opts": [
+   "Banana",
+   "Orange",
+   "Strawberry",
+   "Grapes"
+  ],
+  "exp": "Banana — Bananas are rich in potassium.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/banana.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Orange",
+  "opts": [
+   "Orange",
+   "Strawberry",
+   "Grapes",
+   "Watermelon"
+  ],
+  "exp": "Orange — Oranges are rich in vitamin C.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/laranja.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Strawberry",
+  "opts": [
+   "Strawberry",
+   "Grapes",
+   "Watermelon",
+   "Carrot"
+  ],
+  "exp": "Strawberry — The strawberry carries its seeds on the outside.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/morango.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Grapes",
+  "opts": [
+   "Grapes",
+   "Watermelon",
+   "Carrot",
+   "Tomato"
+  ],
+  "exp": "Grapes — Wine is made from grapes.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/uva.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Watermelon",
+  "opts": [
+   "Watermelon",
+   "Carrot",
+   "Tomato",
+   "Broccoli"
+  ],
+  "exp": "Watermelon — Watermelon is over 90% water.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/melancia.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Carrot",
+  "opts": [
+   "Carrot",
+   "Tomato",
+   "Broccoli",
+   "Bread"
+  ],
+  "exp": "Carrot — Carrots are rich in vitamin A.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/cenoura.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Tomato",
+  "opts": [
+   "Tomato",
+   "Broccoli",
+   "Bread",
+   "Cheese"
+  ],
+  "exp": "Tomato — The tomato is actually a fruit.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/tomate.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Broccoli",
+  "opts": [
+   "Broccoli",
+   "Bread",
+   "Cheese",
+   "Egg"
+  ],
+  "exp": "Broccoli — Broccoli is rich in vitamins and fibre.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/brocolos.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Bread",
+  "opts": [
+   "Bread",
+   "Cheese",
+   "Egg",
+   "Fish"
+  ],
+  "exp": "Bread — Bread is one of the oldest foods.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/pao.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Cheese",
+  "opts": [
+   "Cheese",
+   "Egg",
+   "Fish",
+   "Rice"
+  ],
+  "exp": "Cheese — Cheese is made from milk.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/queijo.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Egg",
+  "opts": [
+   "Egg",
+   "Fish",
+   "Rice",
+   "Apple"
+  ],
+  "exp": "Egg — Eggs are a good source of protein.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/ovo.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Fish",
+  "opts": [
+   "Fish",
+   "Rice",
+   "Apple",
+   "Banana"
+  ],
+  "exp": "Fish — Fish is rich in omega-3.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/peixe.jpg"
+ },
+ {
+  "q": "Which food is this?",
+  "a": "Rice",
+  "opts": [
+   "Rice",
+   "Apple",
+   "Banana",
+   "Orange"
+  ],
+  "exp": "Rice — Rice feeds more than half the world.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/arroz.jpg"
+ }
+]

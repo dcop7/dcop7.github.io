@@ -10,6 +10,18 @@ const QuizPage = (function () {
   /* ── Category & quiz registry ── */
   const CATEGORIES = [
     {
+      id: 'imagens', icon: '📸', labelKey: 'quiz.cat.imagens',
+      quizzes: [
+        { id: 'prof-img',      icon: '👷', labelPt: 'Adivinha a Profissão', labelEn: 'Guess the Profession', provider: 'prof-img',      count: 10 },
+        { id: 'animais-img',   icon: '🦁', labelPt: 'Adivinha o Animal',    labelEn: 'Guess the Animal',     provider: 'animais-img',   count: 10 },
+        { id: 'planetas-img',  icon: '🪐', labelPt: 'Adivinha o Astro',     labelEn: 'Guess the Planet',     provider: 'planetas-img',  count: 8  },
+        { id: 'alimentos-img', icon: '🍓', labelPt: 'Adivinha o Alimento',  labelEn: 'Guess the Food',       provider: 'alimentos-img', count: 10 },
+        { id: 'orgaos-img',    icon: '🫀', labelPt: 'Adivinha o Órgão',     labelEn: 'Guess the Organ',      provider: 'orgaos-img',    count: 8  },
+        { id: 'desporto-img',  icon: '🏅', labelPt: 'Adivinha o Desporto',  labelEn: 'Guess the Sport',      provider: 'desporto-img',  count: 10 },
+        { id: 'mitos-img',     icon: '🏛️', labelPt: 'Adivinha o Mito',      labelEn: 'Guess the Myth',       provider: 'mitos-img',     count: 8  },
+      ]
+    },
+    {
       id: 'geografia', icon: '🌍', labelKey: 'quiz.cat.geografia',
       quizzes: [
         { id: 'geografia',  icon: '🌐', labelPt: 'Geografia Mundial',       labelEn: 'World Geography',          provider: 'geografia-pt', count: 10 },

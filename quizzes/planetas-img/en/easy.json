@@ -1,0 +1,132 @@
+[
+ {
+  "q": "Which celestial body is this?",
+  "a": "Mercury",
+  "opts": [
+   "Mercury",
+   "Venus",
+   "Earth",
+   "Mars"
+  ],
+  "exp": "Mercury — Mercury is the closest planet to the Sun.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/mercurio.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Venus",
+  "opts": [
+   "Venus",
+   "Earth",
+   "Mars",
+   "Jupiter"
+  ],
+  "exp": "Venus — Venus is the hottest planet in the Solar System.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/venus.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Earth",
+  "opts": [
+   "Earth",
+   "Mars",
+   "Jupiter",
+   "Saturn"
+  ],
+  "exp": "Earth — Earth is the only known planet with life.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/terra.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Mars",
+  "opts": [
+   "Mars",
+   "Jupiter",
+   "Saturn",
+   "Uranus"
+  ],
+  "exp": "Mars — Mars is known as the \"red planet\".",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/marte.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Jupiter",
+  "opts": [
+   "Jupiter",
+   "Saturn",
+   "Uranus",
+   "Neptune"
+  ],
+  "exp": "Jupiter — Jupiter is the largest planet in the Solar System.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/jupiter.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Saturn",
+  "opts": [
+   "Saturn",
+   "Uranus",
+   "Neptune",
+   "Sun"
+  ],
+  "exp": "Saturn — Saturn is famous for its rings.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/saturno.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Uranus",
+  "opts": [
+   "Uranus",
+   "Neptune",
+   "Sun",
+   "Moon"
+  ],
+  "exp": "Uranus — Uranus rotates almost on its side.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/urano.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Neptune",
+  "opts": [
+   "Neptune",
+   "Sun",
+   "Moon",
+   "Mercury"
+  ],
+  "exp": "Neptune — Neptune is the farthest planet from the Sun.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/neptuno.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Sun",
+  "opts": [
+   "Sun",
+   "Moon",
+   "Mercury",
+   "Venus"
+  ],
+  "exp": "Sun — The Sun is the star of our Solar System.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/sol.jpg"
+ },
+ {
+  "q": "Which celestial body is this?",
+  "a": "Moon",
+  "opts": [
+   "Moon",
+   "Mercury",
+   "Venus",
+   "Earth"
+  ],
+  "exp": "Moon — The Moon is Earth’s only natural satellite.",
+  "imgType": "img",
+  "img": "quizzes/assets/planetas-img/lua.jpg"
+ }
+]

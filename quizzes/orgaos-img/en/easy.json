@@ -1,0 +1,106 @@
+[
+ {
+  "q": "Which body organ is this?",
+  "a": "Heart",
+  "opts": [
+   "Heart",
+   "Brain",
+   "Lungs",
+   "Stomach"
+  ],
+  "exp": "Heart — The heart pumps blood around the whole body.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/coracao.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Brain",
+  "opts": [
+   "Brain",
+   "Lungs",
+   "Stomach",
+   "Liver"
+  ],
+  "exp": "Brain — The brain controls thought and the body.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/cerebro.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Lungs",
+  "opts": [
+   "Lungs",
+   "Stomach",
+   "Liver",
+   "Kidney"
+  ],
+  "exp": "Lungs — The lungs let us breathe.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/pulmoes.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Stomach",
+  "opts": [
+   "Stomach",
+   "Liver",
+   "Kidney",
+   "Eye"
+  ],
+  "exp": "Stomach — The stomach digests food.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/estomago.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Liver",
+  "opts": [
+   "Liver",
+   "Kidney",
+   "Eye",
+   "Skeleton"
+  ],
+  "exp": "Liver — The liver filters toxins from the blood.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/figado.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Kidney",
+  "opts": [
+   "Kidney",
+   "Eye",
+   "Skeleton",
+   "Heart"
+  ],
+  "exp": "Kidney — The kidneys filter blood and make urine.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/rim.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Eye",
+  "opts": [
+   "Eye",
+   "Skeleton",
+   "Heart",
+   "Brain"
+  ],
+  "exp": "Eye — The eye lets us see.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/olho.jpg"
+ },
+ {
+  "q": "Which body organ is this?",
+  "a": "Skeleton",
+  "opts": [
+   "Skeleton",
+   "Heart",
+   "Brain",
+   "Lungs"
+  ],
+  "exp": "Skeleton — The skeleton supports the body.",
+  "imgType": "img",
+  "img": "quizzes/assets/orgaos-img/esqueleto.jpg"
+ }
+]

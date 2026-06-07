@@ -1,0 +1,184 @@
+[
+ {
+  "q": "Que alimento é este?",
+  "a": "Maçã",
+  "opts": [
+   "Maçã",
+   "Banana",
+   "Laranja",
+   "Morango"
+  ],
+  "exp": "Maçã — A maçã é uma das frutas mais cultivadas do mundo.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/maca.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Banana",
+  "opts": [
+   "Banana",
+   "Laranja",
+   "Morango",
+   "Uva"
+  ],
+  "exp": "Banana — A banana é rica em potássio.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/banana.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Laranja",
+  "opts": [
+   "Laranja",
+   "Morango",
+   "Uva",
+   "Melancia"
+  ],
+  "exp": "Laranja — A laranja é rica em vitamina C.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/laranja.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Morango",
+  "opts": [
+   "Morango",
+   "Uva",
+   "Melancia",
+   "Cenoura"
+  ],
+  "exp": "Morango — O morango tem as sementes do lado de fora.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/morango.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Uva",
+  "opts": [
+   "Uva",
+   "Melancia",
+   "Cenoura",
+   "Tomate"
+  ],
+  "exp": "Uva — Das uvas faz-se o vinho.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/uva.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Melancia",
+  "opts": [
+   "Melancia",
+   "Cenoura",
+   "Tomate",
+   "Brócolos"
+  ],
+  "exp": "Melancia — A melancia é mais de 90% água.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/melancia.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Cenoura",
+  "opts": [
+   "Cenoura",
+   "Tomate",
+   "Brócolos",
+   "Pão"
+  ],
+  "exp": "Cenoura — A cenoura é rica em vitamina A.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/cenoura.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Tomate",
+  "opts": [
+   "Tomate",
+   "Brócolos",
+   "Pão",
+   "Queijo"
+  ],
+  "exp": "Tomate — O tomate é, na verdade, um fruto.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/tomate.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Brócolos",
+  "opts": [
+   "Brócolos",
+   "Pão",
+   "Queijo",
+   "Ovo"
+  ],
+  "exp": "Brócolos — Os brócolos são ricos em vitaminas e fibra.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/brocolos.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Pão",
+  "opts": [
+   "Pão",
+   "Queijo",
+   "Ovo",
+   "Peixe"
+  ],
+  "exp": "Pão — O pão é um dos alimentos mais antigos.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/pao.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Queijo",
+  "opts": [
+   "Queijo",
+   "Ovo",
+   "Peixe",
+   "Arroz"
+  ],
+  "exp": "Queijo — O queijo é feito a partir do leite.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/queijo.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Ovo",
+  "opts": [
+   "Ovo",
+   "Peixe",
+   "Arroz",
+   "Maçã"
+  ],
+  "exp": "Ovo — O ovo é uma boa fonte de proteína.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/ovo.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Peixe",
+  "opts": [
+   "Peixe",
+   "Arroz",
+   "Maçã",
+   "Banana"
+  ],
+  "exp": "Peixe — O peixe é rico em ómega-3.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/peixe.jpg"
+ },
+ {
+  "q": "Que alimento é este?",
+  "a": "Arroz",
+  "opts": [
+   "Arroz",
+   "Maçã",
+   "Banana",
+   "Laranja"
+  ],
+  "exp": "Arroz — O arroz alimenta mais de metade do mundo.",
+  "imgType": "img",
+  "img": "quizzes/assets/alimentos-img/arroz.jpg"
+ }
+]
