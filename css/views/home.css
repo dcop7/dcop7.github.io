@@ -19,7 +19,14 @@
   text-align: center; padding: clamp(2rem,5vw,4rem) 1rem clamp(1.5rem,3vw,2.5rem);
   max-width: 800px; margin: 0 auto; position: relative;
 }
-.home-hero > * { animation: hero-in .5s cubic-bezier(.34,1.56,.64,1) both; }
+.home-hero-bg {
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+  width: min(1200px, 135vw); height: 100%; object-fit: cover;
+  z-index: 0; opacity: .2; pointer-events: none; border-radius: var(--radius);
+  -webkit-mask-image: radial-gradient(120% 92% at 50% 22%, #000 32%, transparent 76%);
+          mask-image: radial-gradient(120% 92% at 50% 22%, #000 32%, transparent 76%);
+}
+.home-hero > *:not(.home-hero-bg) { position: relative; z-index: 1; animation: hero-in .5s cubic-bezier(.34,1.56,.64,1) both; }
 .home-hero .wc-greeting { animation-delay: .05s; }
 .home-hero .wc-msg { animation-delay: .1s; }
 .home-hero .hero-search-wrap { animation-delay: .15s; }
