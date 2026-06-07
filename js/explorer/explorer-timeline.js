@@ -98,18 +98,18 @@ const TimelineExplorer = (function () {
   /* ── chapters (narrative groupings). Events come from the dataset. ── */
   function _CHAPTERS() {
     return [
-      { id:'bigbang',  theme:'bigbang',     emoji:'💥', title:_t('The Big Bang','O Big Bang'),                   scale:_t('13.8 billion years ago','há 13,8 mil milhões de anos'),  lead:_t('It all began. The Universe is born from an incandescent point and starts to expand and cool.','Tudo começou. O Universo nasce de um ponto incandescente e começa a expandir-se e a arrefecer.') },
-      { id:'stars',    theme:'galaxy',      emoji:'✨', title:_t('First stars & galaxies','As primeiras estrelas e galáxias'), scale:_t('13.6 billion years ago','há 13,6 mil milhões de anos'), lead:_t('Gravity gathers the primordial gas; the first stars ignite and galaxies form — among them, our Milky Way.','A gravidade junta o gás primordial; acendem-se as primeiras estrelas e formam-se as galáxias — entre elas, a nossa Via Láctea.') },
-      { id:'solar',    theme:'solar',       emoji:'☀️', title:_t('The Solar System','O Sistema Solar'),           scale:_t('4.6 billion years ago','há 4,6 mil milhões de anos'),    lead:_t('In a cloud of gas and dust the Sun ignites and, around it, the planets take shape.','Numa nuvem de gás e poeira, o Sol acende-se e, à sua volta, formam-se os planetas.') },
-      { id:'terra',    theme:'terra',       emoji:'🌍', title:_t('The young Earth','A Terra jovem'),              scale:_t('4.5 billion years ago','há 4,5 mil milhões de anos'),    lead:_t('Earth forms as a world of molten rock. It cools, gains oceans and a Moon.','A Terra forma-se como um mundo de rocha fundida. Arrefece e ganha oceanos e uma Lua.') },
-      { id:'vida',     theme:'ocean',       emoji:'🦠', title:_t('The first life','A primeira vida'),             scale:_t('3.8 billion years ago','há 3,8 mil milhões de anos'),    lead:_t('In the primitive oceans the first life appears — and photosynthesis fills the air with oxygen.','Nos oceanos primitivos surge a primeira vida — e a fotossíntese enche o ar de oxigénio.') },
-      { id:'cambrico', theme:'reef',        emoji:'🐚', title:_t('Life explodes','A explosão da vida'),           scale:_t('541 million years ago','há 541 milhões de anos'),       lead:_t('In a burst of creativity, life diversifies: eyes, shells, the first fish and the first plants.','Numa explosão de criatividade, a vida diversifica-se: olhos, conchas, os primeiros peixes e plantas.') },
-      { id:'dinos',    theme:'jungle',      emoji:'🦕', title:_t('Age of dinosaurs','A era dos dinossauros'),     scale:_t('230–66 million years ago','há 230 a 66 milhões de anos'), lead:_t('For over 160 million years the dinosaurs rule the Earth — until an asteroid changes everything.','Durante mais de 160 milhões de anos, os dinossauros dominam a Terra — até um asteroide mudar tudo.') },
-      { id:'humana',   theme:'savanna',     emoji:'🦣', title:_t('The rise of humans','A ascensão humana'),       scale:_t('3 million – 300 000 years ago','há 3 milhões – 300 mil anos'), lead:_t('From the first upright hominids to Homo sapiens: humanity is born.','Dos primeiros hominídeos a caminhar erguidos até ao Homo sapiens: nasce a humanidade.') },
-      { id:'civil',    theme:'desert',      emoji:'🏺', title:_t('First civilisations','As primeiras civilizações'), scale:_t('5000 – 1500 years ago','há 5 000 – 1 500 anos'),       lead:_t('Writing, cities and empires. From Mesopotamia and Egypt to Greece and Rome.','A escrita, as cidades e os impérios. Da Mesopotâmia e do Egito à Grécia e a Roma.') },
-      { id:'portugal', theme:'discovery',   emoji:'🇵🇹', title:'Portugal',                                         scale:_t('since 1143','desde 1143'),                              lead:_t('A small kingdom at the edge of Europe takes to the sea and connects the world.','Um pequeno reino no extremo da Europa lança-se ao mar e liga o mundo.') },
-      { id:'moderno',  theme:'industrial',  emoji:'⚙️', title:_t('The modern world','O mundo moderno'),           scale:_t('the last 500 years','últimos 500 anos'),                lead:_t('Renaissance, science, revolutions and wars — the pace of history accelerates.','Renascimento, ciência, revoluções e guerras — o ritmo da história acelera.') },
-      { id:'espaco',   theme:'spacemodern', emoji:'🚀', title:_t('The space age','A era espacial'),               scale:_t('since 1957','desde 1957'),                              lead:_t('Humanity looks up and sets off to explore the cosmos.','A humanidade ergue os olhos e parte à descoberta do cosmos.') },
+      { id:'bigbang',  theme:'bigbang',     emoji:'💥', title:_t('The Big Bang','O Big Bang'),                   scale:_t('13.8 billion years ago','há 13,8 mil milhões de anos'),  lead:_t('Space, time and matter did not exist — everything sprang from a single incandescent instant. In a fraction of a second the Universe inflated and began to cool, and the first particles emerged from that energy. It is the zero point of all history: without it, nothing that follows would exist.','Não existia espaço, tempo nem matéria — tudo surgiu de um único instante incandescente. Numa fração de segundo o Universo inflacionou e começou a arrefecer, e dessa energia nasceram as primeiras partículas. É o ponto zero de toda a história: sem ele, nada do que se segue existiria.') },
+      { id:'stars',    theme:'galaxy',      emoji:'✨', title:_t('First stars & galaxies','As primeiras estrelas e galáxias'), scale:_t('13.6 billion years ago','há 13,6 mil milhões de anos'), lead:_t('For millions of years the Universe was dark — just hydrogen and helium. Gravity pulled that gas together until the first stars ignited, forging in their cores the elements we are made of. As they died they scattered those atoms across the cosmos and gathered into galaxies — among them, our Milky Way.','Durante milhões de anos o Universo foi escuro, apenas hidrogénio e hélio. A gravidade juntou esse gás até acender as primeiras estrelas, que forjaram nos seus núcleos os elementos de que somos feitos. Ao morrerem, espalharam esses átomos pelo cosmos e agruparam-se em galáxias — entre elas, a nossa Via Láctea.') },
+      { id:'solar',    theme:'solar',       emoji:'☀️', title:_t('The Solar System','O Sistema Solar'),           scale:_t('4.6 billion years ago','há 4,6 mil milhões de anos'),    lead:_t('A cloud of gas and dust collapsed and lit up the Sun. Around it, the leftovers formed a disc where dust stuck into rocks, and rocks into planets. In this chaotic cradle the Earth found its place — at just the right distance to one day hold liquid water.','Uma nuvem de gás e poeira colapsou e acendeu o Sol. À sua volta, os restos formaram um disco onde a poeira se colou em pedras, e as pedras em planetas. Foi neste berço caótico que a Terra ganhou o seu lugar, à distância certa para um dia ter água líquida.') },
+      { id:'terra',    theme:'terra',       emoji:'🌍', title:_t('The young Earth','A Terra jovem'),              scale:_t('4.5 billion years ago','há 4,5 mil milhões de anos'),    lead:_t('Earth was born a hell of molten rock, bombarded by asteroids. One such collision, with a Mars-sized world, blasted out the debris that became the Moon. As it cooled, vapour condensed into rain that fell for millennia and filled the first oceans — the stage where life would begin.','A Terra nasceu um inferno de rocha fundida, bombardeada por asteroides. Uma dessas colisões, com um planeta do tamanho de Marte, arrancou os destroços que formaram a Lua. Ao arrefecer, o vapor condensou-se em chuva que caiu durante milénios e encheu os primeiros oceanos — o palco onde a vida iria começar.') },
+      { id:'vida',     theme:'ocean',       emoji:'🦠', title:_t('The first life','A primeira vida'),             scale:_t('3.8 billion years ago','há 3,8 mil milhões de anos'),    lead:_t('In the primitive oceans, simple molecules organised into something able to copy itself: life. For billions of years it stayed microscopic, but microbes invented photosynthesis and began releasing oxygen. That gas, toxic to almost everything alive, transformed the planet’s atmosphere forever.','Nos oceanos primitivos, moléculas simples organizaram-se em algo capaz de se copiar: a vida. Durante milhares de milhões de anos foi apenas microscópica, mas micróbios inventaram a fotossíntese e começaram a libertar oxigénio. Esse gás, tóxico para quase tudo o que existia, transformou para sempre a atmosfera do planeta.') },
+      { id:'cambrico', theme:'reef',        emoji:'🐚', title:_t('Life explodes','A explosão da vida'),           scale:_t('541 million years ago','há 541 milhões de anos'),       lead:_t('In a geological blink, life diversified in an explosion of forms. Eyes, shells, skeletons and the first hunters appeared. Animals crawled out of the water, plants covered the land, and the world filled with visible life.','Num piscar de olhos geológico, a vida diversificou-se numa explosão de formas. Surgiram olhos, conchas, esqueletos e os primeiros caçadores. Os animais saíram da água, as plantas cobriram a terra, e o mundo encheu-se de vida visível.') },
+      { id:'dinos',    theme:'jungle',      emoji:'🦕', title:_t('Age of dinosaurs','A era dos dinossauros'),     scale:_t('230–66 million years ago','há 230 a 66 milhões de anos'), lead:_t('After the greatest extinction ever, reptiles rose and gave way to the dinosaurs, who reigned for over 160 million years — some evolving into today’s birds. Their reign ended suddenly 66 million years ago when an asteroid struck, opening the way for the mammals.','Após a maior extinção de sempre, os répteis ergueram-se e deram origem aos dinossauros, que reinaram mais de 160 milhões de anos — alguns evoluindo para as aves de hoje. O seu reinado acabou de repente, há 66 milhões de anos, quando um asteroide embateu, abrindo caminho aos mamíferos.') },
+      { id:'humana',   theme:'savanna',     emoji:'🦣', title:_t('The rise of humans','A ascensão humana'),       scale:_t('3 million – 300 000 years ago','há 3 milhões – 300 mil anos'), lead:_t('Small and nocturnal under the dinosaurs, mammals inherited the world after the extinction. In Africa, some primates began to walk upright, make tools and tame fire. Around 300,000 years ago came Homo sapiens — a species able to imagine, speak and tell stories like this one.','Pequenos e noturnos sob os dinossauros, os mamíferos herdaram o mundo depois da extinção. Em África, alguns primatas começaram a andar erguidos, a fazer ferramentas e a dominar o fogo. Há cerca de 300 mil anos surgiu o Homo sapiens — uma espécie capaz de imaginar, falar e contar histórias como esta.') },
+      { id:'civil',    theme:'desert',      emoji:'🏺', title:_t('First civilisations','As primeiras civilizações'), scale:_t('5000 – 1500 years ago','há 5 000 – 1 500 anos'),       lead:_t('When humans learned to farm, they could settle and build the first cities. With them came writing, laws, empires and organised religion. From Mesopotamia and Egypt to Greece and Rome were born ideas — democracy, philosophy, law — that still shape the world today.','Quando os humanos aprenderam a cultivar a terra, puderam fixar-se e construir as primeiras cidades. Com elas vieram a escrita, as leis, os impérios e a religião organizada. Da Mesopotâmia e do Egito à Grécia e a Roma nasceram ideias — democracia, filosofia, direito — que ainda hoje moldam o mundo.') },
+      { id:'portugal', theme:'discovery',   emoji:'🇵🇹', title:'Portugal',                                         scale:_t('since 1143','desde 1143'),                              lead:_t('On Europe’s western edge, one of the first nation-states formed in the 12th century. Small and facing the sea, Portugal launched into ocean exploration and opened sea routes that connected the continents for the first time. That daring brought glory and tragedy, and left its mark — in language and culture — across the planet.','No extremo ocidental da Europa formou-se, no século XII, um dos primeiros estados-nação. Pequeno e virado para o mar, Portugal lançou-se à exploração do oceano e abriu rotas marítimas que ligaram pela primeira vez os continentes. Essa ousadia trouxe glória e tragédia, e deixou marcas — na língua e na cultura — em todo o planeta.') },
+      { id:'moderno',  theme:'industrial',  emoji:'⚙️', title:_t('The modern world','O mundo moderno'),           scale:_t('the last 500 years','últimos 500 anos'),                lead:_t('The Renaissance rekindled curiosity, the printing press spread knowledge, and science began to explain the world. The industrial and technological revolutions sped everything up: machines, electricity, medicine, communications. In a few centuries humanity changed more than in millennia — with extraordinary progress and devastating wars.','O Renascimento reacendeu a curiosidade, a imprensa espalhou o conhecimento e a ciência passou a explicar o mundo. As revoluções industrial e tecnológica aceleraram tudo: máquinas, eletricidade, medicina, comunicações. Em poucos séculos a humanidade transformou-se mais do que em milénios — com avanços extraordinários e guerras devastadoras.') },
+      { id:'espaco',   theme:'spacemodern', emoji:'🚀', title:_t('The space age','A era espacial'),               scale:_t('since 1957','desde 1957'),                              lead:_t('For the first time in history, life left its planet. In a few decades we went from the first satellite to humans on the Moon and probes that have left the Solar System. Seeing Earth from space changed how we see ourselves — a fragile blue dot — and raised the next question: how far will we go?','Pela primeira vez na história, a vida saiu do seu planeta. Em poucas décadas passámos do primeiro satélite ao Homem na Lua e a sondas que já deixaram o Sistema Solar. Ver a Terra do espaço mudou a forma como nos vemos — um frágil ponto azul — e abriu a pergunta seguinte: até onde iremos?') },
     ];
   }
   function chapterOf(e) {
@@ -162,96 +162,124 @@ const TimelineExplorer = (function () {
     _loaded = true;
   }
 
-  /* ── build the experience ── */
-  function chapterEvents(chId) {
-    const all = (_data || []).filter(e => chapterOf(e) === chId).sort((a, b) => a.year - b.year);
-    const keys = all.filter(e => e.key);
-    const list = (keys.length >= 3 ? keys : all).slice(0, 7);
-    return list;
+  /* ── documentary build ── */
+  let _depth = 'key', _theme = 'all', _ioRail = null, _railChs = [], _docBound = false;
+
+  function storyChapters() {
+    return _CHAPTERS().map(ch => {
+      let evs = (_data || []).filter(e => chapterOf(e) === ch.id);
+      if (_theme !== 'all') evs = evs.filter(e => e.cat === _theme);
+      if (_depth === 'key') { const k = evs.filter(e => e.key); if (k.length) evs = k; }
+      evs.sort((a, b) => a.year - b.year);
+      return { ch, evs };
+    }).filter(x => _theme === 'all' || x.evs.length);
   }
-  function eventCard(e) {
+
+  function eraHero(ch) {
+    const g = THEME_G[ch.theme] || ['#10131f', '#05060d'];
+    return `<div class="tl-hero" style="--g1:${g[0]};--g2:${g[1]}">
+      <img class="tl-hero-bg" src="assets/timeline/chapter-${ch.id}.jpg" alt="" onerror="this.style.display='none'">
+      <div class="tl-hero-grad"></div>
+      <div class="tl-hero-in">
+        <div class="tl-hero-em">${ch.emoji}</div>
+        <div class="tl-hero-scale">${esc(ch.scale)}</div>
+        <h2 class="tl-hero-title">${esc(ch.title)}</h2>
+        <p class="tl-hero-lead">${esc(ch.lead)}</p>
+      </div>
+    </div>`;
+  }
+
+  function eventScene(e, i) {
     const c = cat(e);
-    return `<button class="tl-ev" data-id="${esc(e.id)}" style="--c:${c.color}">
-      <span class="tl-ev-thumb">${artSVG(e)}<img class="tl-ev-photo" src="assets/timeline/${esc(e.id)}.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
-      <span class="tl-ev-info">
-        <span class="tl-ev-yr">${esc(cardDate(e.year))}</span>
-        <span class="tl-ev-t">${esc(e.title)}</span>
-      </span>
-    </button>`;
+    const related = (e.related || []).map(r => (_data || []).find(x => x.id === r)).filter(Boolean).slice(0, 3);
+    return `<article class="tl-sc${i % 2 ? ' tl-sc-alt' : ''}" data-scid="${esc(e.id)}" style="--c:${c.color}">
+      <div class="tl-sc-media">
+        <img src="assets/timeline/${esc(e.id)}.jpg" alt="${esc(e.title)}" loading="lazy" onerror="this.closest('.tl-sc-media').classList.add('tl-noimg')">
+        <span class="tl-sc-em">${c.emoji}</span>
+        <span class="tl-sc-cat">${esc(c.label)}</span>
+      </div>
+      <div class="tl-sc-txt">
+        <div class="tl-sc-meta"><span class="tl-sc-date">${esc(cardDate(e.year))}</span><span class="tl-sc-ago">${agoStr(e.year)}</span>${e.period ? `<span class="tl-sc-per">${esc(e.period)}</span>` : ''}${e.place ? `<span class="tl-sc-per">📍 ${esc(e.place)}</span>` : ''}</div>
+        <h3 class="tl-sc-title">${esc(e.title)}</h3>
+        <p class="tl-sc-desc">${esc(e.desc || '')}</p>
+        ${e.fact ? `<p class="tl-sc-fact"><span>💡</span> ${esc(e.fact)}</p>` : ''}
+        <div class="tl-sc-foot">
+          <a class="tl-sc-wiki" href="${wikiUrl(e)}" target="_blank" rel="noopener">📖 ${_t('Wikipedia','Wikipédia')} ↗</a>
+          ${related.map(r => `<button class="tl-chip" data-go="${esc(r.id)}" style="--c:${cat(r).color}"><span>${cat(r).emoji}</span>${esc(r.title)}</button>`).join('')}
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function themeSelect() {
+    const opts = ['<option value="all">' + _t('All themes', 'Todos os temas') + '</option>']
+      .concat(Object.keys(CATS).map(k => `<option value="${k}"${_theme === k ? ' selected' : ''}>${CATS[k].emoji} ${esc(CATS[k].label)}</option>`));
+    return `<select class="tl-theme" id="tl-theme" aria-label="${_t('Theme','Tema')}">${opts.join('')}</select>`;
   }
 
   function shell() {
-    const CH = _CHAPTERS();
-    const scenes = CH.map((ch, i) => {
-      const g = THEME_G[ch.theme] || ['#10131f', '#05060d'];
-      const rnd = _rng(_hash(ch.id) + 3);
-      return `<div class="tl-scene" data-i="${i}" style="--g1:${g[0]};--g2:${g[1]}">
-        <div class="tl-sky"></div>
-        <div class="tl-far"><svg viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${_starsMarkup(rnd, 90, 1200, 1000)}</svg></div>
-        <div class="tl-art"><svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sceneArt(ch.theme, (CATS[Object.keys(CATS)[0]] || {}).color || '#6366f1')}</svg><img class="tl-chap-photo" src="assets/timeline/chapter-${ch.id}.jpg" alt="" onerror="this.remove()"></div>
-        <div class="tl-vignette"></div>
-      </div>`;
-    }).join('');
-
-    const chapters = CH.map((ch, i) => `
-      <section class="tl-chapter" id="tl-ch-${ch.id}" data-i="${i}" aria-label="${esc(ch.title)}">
-        <div class="tl-ch-inner">
-          <div class="tl-ch-emoji">${ch.emoji}</div>
-          <div class="tl-ch-scale">${esc(ch.scale)}</div>
-          <h2 class="tl-ch-title">${esc(ch.title)}</h2>
-          <p class="tl-ch-lead">${esc(ch.lead)}</p>
-          <div class="tl-ch-events">${chapterEvents(ch.id).map(eventCard).join('')}</div>
-        </div>
-      </section>`).join('');
-
-    const rail = CH.map((ch, i) => `<button class="tl-dot" data-i="${i}" title="${esc(ch.title)}" aria-label="${esc(ch.title)}"><span class="tl-dot-lbl">${ch.emoji} ${esc(ch.title)}</span></button>`).join('');
-
     return `
-      <div class="tl-wrap tl-scrolly">
-        <div class="tl-scroll" id="tl-scroll">
-          <div class="tl-fixed" id="tl-fixed">
-            <div class="tl-bg" id="tl-bg">${scenes}</div>
-            <nav class="tl-rail" aria-label="${_t('Chapters','Capítulos')}">${rail}</nav>
-            <div class="tl-hint" id="tl-hint"><span class="tl-hint-arrow">↓</span> ${_t('Scroll to travel through time','Desliza para viajar no tempo')}</div>
+      <div class="tl-wrap tl-doc">
+        <div class="tl-doctop">
+          <div class="tl-seg" id="tl-depth" role="group" aria-label="${_t('Detail level','Nível de detalhe')}">
+            <button data-depth="key" class="${_depth === 'key' ? 'on' : ''}">✨ ${_t('Highlights','Destaques')}</button>
+            <button data-depth="all" class="${_depth === 'all' ? 'on' : ''}">📚 ${_t('Complete','Completo')}</button>
           </div>
-          ${chapters}
+          ${themeSelect()}
         </div>
+        <div class="tl-doc-scroll" id="tl-scroll">
+          <div class="tl-doc-stage" id="tl-stage"></div>
+        </div>
+        <nav class="tl-rail" id="tl-rail" aria-label="${_t('Chapters','Capítulos')}"></nav>
         <div class="tl-detail" id="tl-detail" role="dialog" aria-modal="true" aria-labelledby="tl-d-title" hidden></div>
       </div>`;
   }
 
-  /* ── scroll → crossfade + parallax + active chapter ── */
-  function onScroll() {
-    _raf = 0;
-    if (!_scroll) return;
-    const top = _scroll.scrollTop, H = _scroll.clientHeight || 1;
-    if (_fixed) _fixed.style.transform = `translateY(${top}px)`;
-    const f = top / H;
-    _scenes.forEach((s, i) => {
-      const d = f - i;
-      const op = clamp(1 - Math.abs(d) * 1.15, 0, 1);
-      s.el.style.opacity = op;
-      s.el.style.visibility = op <= 0 ? 'hidden' : 'visible';
-      if (s.far) s.far.style.transform = `translateY(${(-d * 50).toFixed(1)}px) scale(1.12)`;
-      if (s.art) s.art.style.transform = `translateY(${(-d * 120).toFixed(1)}px)`;
-    });
-    const act = clamp(Math.round(f), 0, _scenes.length - 1);
-    if (act !== _active) { _active = act; updateRail(); }
-    if (top > 40 && _hint) _hint.classList.add('tl-gone');
+  function renderDoc() {
+    const stage = _root && _root.querySelector('#tl-stage');
+    if (!stage) return;
+    const chs = storyChapters();
+    stage.innerHTML = chs.length
+      ? chs.map(({ ch, evs }) => `
+        <section class="tl-chsec" id="tl-ch-${ch.id}" data-ch="${ch.id}" aria-label="${esc(ch.title)}">
+          ${eraHero(ch)}
+          <div class="tl-chbody">${evs.map(eventScene).join('')}</div>
+        </section>`).join('')
+      : `<p class="tl-empty">${_t('No events for this theme.', 'Sem eventos para este tema.')}</p>`;
+    /* rail */
+    const rail = _root.querySelector('#tl-rail');
+    if (rail) rail.innerHTML = chs.map(({ ch }) => `<button class="tl-dot" data-ch="${ch.id}" title="${esc(ch.title)}" aria-label="${esc(ch.title)}"><span class="tl-dot-lbl">${ch.emoji} ${esc(ch.title)}</span></button>`).join('');
+    _railChs = chs.map(x => x.ch.id);
+    _setupObservers();
+    const sc = _root.querySelector('#tl-scroll'); if (sc) sc.scrollTop = 0;
   }
-  function schedule() { if (!_raf) _raf = requestAnimationFrame(onScroll); }
-  function updateRail() {
-    _root && _root.querySelectorAll('.tl-dot').forEach((b, i) => b.classList.toggle('on', i === _active));
+
+  function _setupObservers() {
+    if (_io) _io.disconnect();
+    _io = new IntersectionObserver(ents => ents.forEach(en => { if (en.isIntersecting) en.target.classList.add('tl-in'); }), { root: _scroll, threshold: 0.18 });
+    _root.querySelectorAll('.tl-hero-in, .tl-sc').forEach(el => _io.observe(el));
+    if (_ioRail) _ioRail.disconnect();
+    _ioRail = new IntersectionObserver(ents => {
+      ents.forEach(en => { if (en.isIntersecting) _setRail(en.target.dataset.ch); });
+    }, { root: _scroll, rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    _root.querySelectorAll('.tl-chsec').forEach(el => _ioRail.observe(el));
   }
-  function scrollToChapter(i) {
-    if (!_scroll) return;
-    _scroll.scrollTo({ top: i * _scroll.clientHeight, behavior: 'smooth' });
+  function _setRail(chId) {
+    _root && _root.querySelectorAll('.tl-dot').forEach(b => b.classList.toggle('on', b.dataset.ch === chId));
+  }
+  function scrollToChapterId(chId) {
+    const el = _root && _root.querySelector('#tl-ch-' + chId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function relatedGo(id) {
+    const sc = _root && _root.querySelector('[data-scid="' + id + '"]');
+    if (sc) { sc.scrollIntoView({ behavior: 'smooth', block: 'center' }); sc.classList.remove('tl-flash'); void sc.offsetWidth; sc.classList.add('tl-flash'); }
+    else openDetail(id);
   }
   function scrollToEvent(id) {
-    const e = (_data || []).find(x => x.id === id); if (!e) return;
-    const ch = chapterOf(e);
-    const idx = _CHAPTERS().findIndex(c => c.id === ch);
-    if (idx >= 0) scrollToChapter(idx);
+    const sc = _root && _root.querySelector('[data-scid="' + id + '"]');
+    if (sc) sc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    else { const e = (_data || []).find(x => x.id === id); if (e) scrollToChapterId(chapterOf(e)); }
   }
 
   /* ── detail panel ── */
@@ -290,49 +318,46 @@ const TimelineExplorer = (function () {
     if (_lastFocus && _lastFocus.focus) { try { _lastFocus.focus(); } catch (e) {} _lastFocus = null; }
   }
 
-  /* ── lifecycle (story) ── */
+  /* ── lifecycle (story / documentary) ── */
   function _storyMount(sub) {
     _root = sub;
     _buildCats();
     sub.innerHTML = shell();
     _scroll = sub.querySelector('#tl-scroll');
-    _fixed = sub.querySelector('#tl-fixed');
-    _hint = sub.querySelector('#tl-hint');
-    _scenes = [...sub.querySelectorAll('.tl-scene')].map(el => ({ el, far: el.querySelector('.tl-far'), art: el.querySelector('.tl-art') }));
-
-    _ensure().then(() => {
-      sub.querySelectorAll('.tl-ch-events').forEach((wrap, i) => {
-        const ch = _CHAPTERS()[i];
-        wrap.innerHTML = chapterEvents(ch.id).map(eventCard).join('');
-      });
-      wire();
-      _active = -1; onScroll();
+    wireStory();
+    _ensure().then(() => renderDoc());
+  }
+  function wireStory() {
+    _root.querySelector('#tl-depth').addEventListener('click', e => {
+      const b = e.target.closest('[data-depth]'); if (!b) return;
+      _depth = b.dataset.depth;
+      _root.querySelectorAll('#tl-depth button').forEach(x => x.classList.toggle('on', x.dataset.depth === _depth));
+      renderDoc();
     });
-  }
-  function wire() {
-    _scroll.addEventListener('scroll', schedule, { passive: true });
-    _root.querySelector('.tl-rail').addEventListener('click', e => { const b = e.target.closest('.tl-dot'); if (b) scrollToChapter(+b.dataset.i); });
-    _root.querySelectorAll('.tl-ch-events').forEach(w => w.addEventListener('click', e => { const b = e.target.closest('.tl-ev'); if (b) openDetail(b.dataset.id); }));
-    const det = _root.querySelector('#tl-detail');
-    det.addEventListener('click', e => { if (e.target === det) closeDetail(); });
-    if (!_escBound) {
+    _root.querySelector('#tl-theme').addEventListener('change', e => { _theme = e.target.value; renderDoc(); });
+    _root.querySelector('#tl-rail').addEventListener('click', e => { const b = e.target.closest('.tl-dot'); if (b) scrollToChapterId(b.dataset.ch); });
+    _root.querySelector('#tl-stage').addEventListener('click', e => {
+      const go = e.target.closest('[data-go]'); if (go) { relatedGo(go.dataset.go); return; }
+      const media = e.target.closest('.tl-sc-media'); if (media) { const sc = media.closest('[data-scid]'); if (sc) openDetail(sc.dataset.scid); }
+    });
+    _root.querySelector('#tl-detail').addEventListener('click', e => {
+      const chip = e.target.closest('.tl-chip[data-id]'); if (chip) openDetail(chip.dataset.id);
+    });
+    /* close the panel naturally: click outside it, or Escape (bound once) */
+    if (!_docBound) {
+      /* Click anywhere outside the open panel closes it (capture + stop so it
+         doesn't also trigger a new open). Clicks inside the panel are ignored. */
+      document.addEventListener('click', e => {
+        if (!_root) return; const d = _root.querySelector('#tl-detail');
+        if (!d || d.hidden) return;
+        if (e.target.closest('#tl-detail')) return;
+        closeDetail(); e.stopPropagation();
+      }, true);
       document.addEventListener('keydown', e => { if (e.key !== 'Escape' || !_root) return; const d = _root.querySelector('#tl-detail'); if (d && !d.hidden) closeDetail(); });
-      _escBound = true;
+      _docBound = true;
     }
-    /* progressive reveal of chapter content */
-    if (_io) _io.disconnect();
-    _io = new IntersectionObserver(ents => ents.forEach(en => en.target.classList.toggle('tl-in', en.isIntersecting && en.intersectionRatio > 0.35)), { root: _scroll, threshold: [0, 0.35, 0.6] });
-    _root.querySelectorAll('.tl-chapter').forEach(s => _io.observe(s));
-    if (_ro) _ro.disconnect();
-    _ro = new ResizeObserver(() => schedule());
-    _ro.observe(_scroll);
   }
-  function _storyResume() {
-    if (!_root) return;
-    _scroll = _root.querySelector('#tl-scroll') || _scroll;
-    _fixed = _root.querySelector('#tl-fixed') || _fixed;
-    setTimeout(() => { _active = -1; onScroll(); }, 60);
-  }
+  function _storyResume() { if (_root) _scroll = _root.querySelector('#tl-scroll') || _scroll; }
   function _storyStop() { closeDetail(); }
   function _storyDiscover() {
     _ensure().then(() => {
