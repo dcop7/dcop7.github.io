@@ -64,6 +64,38 @@ const QuizEngine = (function () {
   /* ── Quiz settings helpers ── */
   function getLang() { return localStorage.getItem('quiz-lang') || 'pt'; }
 
+  /* Number of questions per round — user-selectable, applies to every quiz. */
+  const COUNTS = [5, 10, 15, 20, 25, 30];
+  function getCount() {
+    const n = parseInt(localStorage.getItem('quiz-count') || '10', 10);
+    return COUNTS.includes(n) ? n : 10;
+  }
+  function setCount(n) { if (COUNTS.includes(n)) localStorage.setItem('quiz-count', String(n)); }
+
+  /* ── Mixed rounds (a whole group, or every topic) ───────────────────
+     Pull questions from several providers and blend them into one round.
+     We fetch a small share from each provider (shuffled, capped) so even
+     "all topics" stays fast, then de-dupe by question text and trim. */
+  async function getMixedQuestions(providers, opts) {
+    const count = opts.count || 10;
+    const list = shuffle(providers.slice());
+    const per = Math.max(1, Math.ceil(count / Math.min(list.length, count)));
+    let all = [];
+    for (const p of list) {
+      if (all.length >= count * 2) break;          // enough material gathered
+      try {
+        const qs = await getQuestions(p, { ...opts, count: per + 1 });
+        if (qs && qs.length) all = all.concat(qs);
+      } catch (e) { /* skip a failing provider, keep the round alive */ }
+    }
+    const seen = new Set(), uniq = [];
+    for (const q of shuffle(all)) {
+      const k = q.question;
+      if (!seen.has(k)) { seen.add(k); uniq.push(q); }
+    }
+    return uniq.slice(0, count);
+  }
+
   /* ── Array utilities ── */
   function shuffle(arr) {
     const a = [...arr];
@@ -151,6 +183,10 @@ const QuizEngine = (function () {
     diffToLegacyAge,
     optionCount,
     getLang,
+    COUNTS,
+    getCount,
+    setCount,
+    getMixedQuestions,
     shuffle,
     pick,
     pickFresh,

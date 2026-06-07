@@ -99,6 +99,9 @@ const QuizPage = (function () {
   let _score  = 0;
   let _chosen = -1;       // selected answer idx (-1 = not yet)
   let _search = '';
+  let _startTime = 0;     // round start (ms) for the live timer
+  let _timerId   = 0;     // setInterval handle
+  let _elapsed   = 0;     // final round duration (s), for the result screen
 
   /* ── Getters ── */
   function getDifficulty() { return QuizEngine.getDifficulty(); }
@@ -109,7 +112,8 @@ const QuizPage = (function () {
     _el = document.getElementById('view-quiz');
     if (!_el) return;
     if (sub) {
-      const quiz = findQuiz(sub.split('/').pop());
+      const id = sub.split('/').pop();
+      const quiz = resolveQuiz(id);
       if (quiz) { startQuiz(quiz); return; }
     }
     renderBrowse();
@@ -120,6 +124,35 @@ const QuizPage = (function () {
       for (const q of cat.quizzes)
         if (q.id === id) return q;
     return null;
+  }
+
+  /* Resolve a deep-link id to a quiz def — single topic, a whole group
+     ("mix-<catId>"), or every topic ("mix-all"). */
+  function resolveQuiz(id) {
+    if (id === 'mix-all') return allQuiz();
+    if (id && id.indexOf('mix-') === 0) {
+      const cat = CATEGORIES.find(c => 'mix-' + c.id === id);
+      if (cat) return groupQuiz(cat);
+    }
+    return findQuiz(id);
+  }
+
+  /* Providers available in the current language. */
+  function providersIn(quizzes) {
+    const ql = getLang() === 'pt' ? 'pt' : 'en';
+    return quizzes.filter(q => !q.onlyLang || q.onlyLang === ql).map(q => q.provider);
+  }
+
+  /* Composite quiz: every topic across all groups. */
+  function allQuiz() {
+    const providers = [];
+    CATEGORIES.forEach(c => providersIn(c.quizzes).forEach(p => providers.push(p)));
+    return { id: 'mix-all', icon: '🎲', labelPt: 'Todos os Temas', labelEn: 'All Topics', providers, mixed: true };
+  }
+  /* Composite quiz: all topics within one group. */
+  function groupQuiz(cat) {
+    const label = T(cat.labelKey) || cat.labelKey;
+    return { id: 'mix-' + cat.id, icon: cat.icon, labelPt: label, labelEn: label, providers: providersIn(cat.quizzes), mixed: true };
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -136,6 +169,7 @@ const QuizPage = (function () {
       { id: 'medium', pt: 'Médio',   en: 'Medium' },
       { id: 'hard',   pt: 'Difícil', en: 'Hard'   },
     ];
+    const count = QuizEngine.getCount();
 
     _el.innerHTML = `
       <div class="qp-page">
@@ -153,6 +187,14 @@ const QuizPage = (function () {
                 </div>
               </div>
               <div class="qp-is-row">
+                <span class="qp-is-lbl">${lang === 'pt' ? 'Perguntas' : 'Questions'}</span>
+                <div class="qp-is-counts" id="qp-is-counts">
+                  ${QuizEngine.COUNTS.map(n =>
+                    `<button class="qp-is-btn${count===n?' active':''}" data-count="${n}">${n}</button>`
+                  ).join('')}
+                </div>
+              </div>
+              <div class="qp-is-row">
                 <span class="qp-is-lbl">${lang === 'pt' ? 'Língua' : 'Language'}</span>
                 <div class="qp-is-langs" id="qp-is-langs">
                   <button class="qp-is-btn${lang==='pt'?' active':''}" data-lang="pt">🇵🇹 PT</button>
@@ -160,6 +202,9 @@ const QuizPage = (function () {
                 </div>
               </div>
             </div>
+            <button class="qp-play-all" id="qp-play-all">
+              🎲 ${lang === 'pt' ? 'Jogar com Todos os Temas' : 'Play All Topics'}
+            </button>
             <input type="search" class="qp-search" id="qp-search" placeholder="${lang === 'pt' ? 'Pesquisar quizzes…' : 'Search quizzes…'}" value="${_search}" autocomplete="off"/>
           </div>
         </div>
@@ -177,6 +222,15 @@ const QuizPage = (function () {
       });
     });
 
+    /* Question-count selector */
+    _el.querySelectorAll('#qp-is-counts .qp-is-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.dataset.count, 10);
+        QuizEngine.setCount(n);
+        _el.querySelectorAll('#qp-is-counts .qp-is-btn').forEach(b => b.classList.toggle('active', b === btn));
+      });
+    });
+
     /* Language selector */
     _el.querySelectorAll('#qp-is-langs .qp-is-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -186,6 +240,9 @@ const QuizPage = (function () {
         document.dispatchEvent(new CustomEvent('quizsettingschange', { detail: { lang: l } }));
       });
     });
+
+    /* Play across every topic */
+    _el.querySelector('#qp-play-all')?.addEventListener('click', () => Nav.go('quiz/mix-all'));
 
     const searchInput = _el.querySelector('#qp-search');
     searchInput?.addEventListener('input', () => {
@@ -224,10 +281,12 @@ const QuizPage = (function () {
       }).join('');
 
       const catLabel = T(cat.labelKey) || cat.labelKey;
+      const showGroup = filtered.length > 1;
       return `<div class="qp-cat-section">
         <div class="qp-cat-header">
           <span class="qp-cat-icon">${cat.icon}</span>
           <span class="qp-cat-name">${catLabel}</span>
+          ${showGroup ? `<button class="qp-group-play" data-group="${cat.id}" title="${ql === 'pt' ? 'Jogar todo o grupo' : 'Play the whole group'}">▶ ${ql === 'pt' ? 'Grupo' : 'Group'}</button>` : ''}
         </div>
         <div class="qp-cat-grid">${cards}</div>
       </div>`;
@@ -239,6 +298,9 @@ const QuizPage = (function () {
       btn.addEventListener('click', () => {
         if (findQuiz(btn.dataset.quiz)) Nav.go('quiz/' + btn.dataset.quiz);
       });
+    });
+    container.querySelectorAll('.qp-group-play').forEach(btn => {
+      btn.addEventListener('click', () => Nav.go('quiz/mix-' + btn.dataset.group));
     });
   }
 
@@ -252,22 +314,43 @@ const QuizPage = (function () {
     _score  = 0;
     _chosen = -1;
     _qs     = [];
+    stopTimer();
 
     renderLoading();
 
     try {
       const difficulty = getDifficulty();
       const lang = getLang();
-      _qs = await QuizEngine.getQuestions(quiz.provider, {
-        difficulty, lang, count: quiz.count || 10,
+      const count = QuizEngine.getCount();
+      const opts = {
+        difficulty, lang, count,
         /* legacy compatibility shim for providers still written against age */
         age: QuizEngine.diffToLegacyAge(difficulty),
-      });
+      };
+      _qs = quiz.providers
+        ? await QuizEngine.getMixedQuestions(quiz.providers, opts)
+        : await QuizEngine.getQuestions(quiz.provider, opts);
       if (!_qs || !_qs.length) throw new Error('empty');
+      startTimer();
       renderQuestion();
     } catch (e) {
       renderError(e.message || '');
     }
+  }
+
+  /* ── Round timer (shown live in the quiz header) ── */
+  function startTimer() { stopTimer(); _startTime = Date.now(); _timerId = setInterval(updateTimer, 1000); }
+  function stopTimer()  { if (_timerId) { clearInterval(_timerId); _timerId = 0; } }
+  function fmtTime(s)   { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function updateTimer() {
+    const el = _el && _el.querySelector('#qg-timer');
+    if (!el || !_startTime) return;
+    el.textContent = '⏱ ' + fmtTime(Math.floor((Date.now() - _startTime) / 1000));
+  }
+  function diffLabel() {
+    const d = getDifficulty(), lang = getLang();
+    const M = { easy: ['Fácil', 'Easy'], medium: ['Médio', 'Medium'], hard: ['Difícil', 'Hard'] };
+    return (M[d] || M.easy)[lang === 'pt' ? 0 : 1];
   }
 
   function renderLoading() {
@@ -351,6 +434,12 @@ const QuizPage = (function () {
             <div class="qg-score-badge">⭐ ${_score}</div>
           </div>
 
+          <!-- Live HUD: chosen difficulty + elapsed time -->
+          <div class="qg-hud">
+            <span class="qg-hud-diff qg-diff-${getDifficulty()}">${diffLabel()}</span>
+            <span class="qg-hud-timer" id="qg-timer">⏱ ${fmtTime(Math.floor((Date.now() - (_startTime || Date.now())) / 1000))}</span>
+          </div>
+
           <!-- Progress -->
           <div class="qg-progress-wrap">
             <div class="qg-progress-bar" style="width:${pct}%"></div>
@@ -391,7 +480,7 @@ const QuizPage = (function () {
       </div>`;
 
     /* Back */
-    _el.querySelector('#qg-back')?.addEventListener('click', () => Nav.go('quiz'));
+    _el.querySelector('#qg-back')?.addEventListener('click', () => { stopTimer(); Nav.go('quiz'); });
 
     /* Answer buttons */
     const optEls = _el.querySelectorAll('.qg-opt');
@@ -447,6 +536,8 @@ const QuizPage = (function () {
   ══════════════════════════════════════════════════════════════════ */
   function renderResult() {
     _state = 'result';
+    if (_startTime) _elapsed = Math.floor((Date.now() - _startTime) / 1000);
+    stopTimer();
     const lang  = getLang();
     const total = _qs.length * 10;
     const pct   = Math.round((_score / total) * 100);
@@ -485,6 +576,11 @@ const QuizPage = (function () {
             </div>
           </div>
           <p class="qg-result-praise">${praise}</p>
+          <div class="qg-result-meta">
+            <span class="qg-hud-diff qg-diff-${getDifficulty()}">${diffLabel()}</span>
+            <span class="qg-result-meta-chip">📝 ${_qs.length} ${lang === 'pt' ? 'perguntas' : 'questions'}</span>
+            <span class="qg-result-meta-chip">⏱ ${fmtTime(_elapsed)}</span>
+          </div>
           ${isNewHS ? `<div class="qg-new-hs">🌟 ${lang === 'pt' ? 'Novo recorde!' : 'New high score!'}</div>` : `<div class="qg-prev-hs">${lang === 'pt' ? 'Recorde:' : 'High score:'} ⭐ ${hs}</div>`}
           <div class="qg-result-actions">
             <button class="qg-btn qg-btn-ghost" id="qr-back">

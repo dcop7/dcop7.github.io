@@ -67,6 +67,7 @@
 
 .qp-is-ages,
 .qp-is-diffs,
+.qp-is-counts,
 .qp-is-langs {
   display: flex;
   flex-wrap: wrap;
@@ -107,6 +108,27 @@
   .qp-is-btn { font-size: .72rem; padding: .25rem .42rem; }
 }
 
+/* Prominent "play everything" call to action */
+.qp-play-all {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 1rem;
+  padding: .7rem 1.4rem;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb),.95), rgba(var(--accent-rgb),.7));
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  font-family: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(var(--accent-rgb),.32);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.qp-play-all:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(var(--accent-rgb),.42); filter: brightness(1.05); }
+.qp-play-all:active { transform: translateY(0); }
+
 .qp-search {
   width: 100%;
   max-width: 440px;
@@ -140,6 +162,23 @@
   margin-bottom: .85rem;
 }
 
+/* "Play the whole group" pill, sits at the end of each section header */
+.qp-group-play {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: var(--accent-soft);
+  border: 1px solid rgba(var(--accent-rgb),.4);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all var(--ease);
+}
+.qp-group-play:hover { background: rgba(var(--accent-rgb),.18); transform: translateY(-1px); }
+
 .qp-cat-icon {
   font-size: 1.3rem;
 }
@@ -155,12 +194,12 @@
 /* ── QUIZ CARDS ── */
 .qp-cat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: .7rem;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: .55rem;
 }
 
 @media (max-width: 480px) {
-  .qp-cat-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: .55rem; }
+  .qp-cat-grid { grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); gap: .45rem; }
 }
 
 .qc-card {
@@ -178,7 +217,8 @@
   position: relative;
   overflow: hidden;
   justify-content: flex-end;
-  min-height: 128px;
+  min-height: 100px;
+  padding: .8rem .6rem .65rem;
 }
 .qc-card:hover {
   border-color: rgba(var(--accent-rgb),.4);
@@ -294,6 +334,33 @@
   font-weight: 700;
   color: var(--accent);
   flex-shrink: 0;
+}
+
+/* ── Live HUD: difficulty + elapsed time (always visible during play) ── */
+.qg-hud {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: -.2rem;
+}
+.qg-hud-diff {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .18rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text2);
+}
+.qg-diff-easy   { background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.5);  color: #22c55e; }
+.qg-diff-medium { background: rgba(234,179,8,.16); border-color: rgba(234,179,8,.5);  color: #eab308; }
+.qg-diff-hard   { background: rgba(239,68,68,.16); border-color: rgba(239,68,68,.5);  color: #ef4444; }
+.qg-hud-timer {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text2);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
 }
 
 /* ── Progress ── */
@@ -613,6 +680,24 @@
   font-weight: 600;
   color: var(--accent);
   margin: 0;
+}
+
+.qg-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .4rem;
+  margin-top: .85rem;
+}
+.qg-result-meta-chip {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .18rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text2);
+  font-variant-numeric: tabular-nums;
 }
 
 .qg-new-hs {
