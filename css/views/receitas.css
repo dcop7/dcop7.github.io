@@ -94,6 +94,7 @@
   overflow: hidden;
 }
 .rcp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rcp-thumb svg, .rcp-d-hero svg { width: 100%; height: 100%; display: block; }
 .rcp-emoji { font-size: 2.6rem; filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
 .rcp-emoji-lg { font-size: 5rem; }
 .rcp-flag { position: absolute; top: .4rem; left: .4rem; font-size: 1.1rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }

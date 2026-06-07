@@ -68,6 +68,50 @@ const ReceitasPage = (function () {
     return `background:linear-gradient(135deg,hsl(${hue} 55% 32%),hsl(${(hue + 40) % 360} 50% 20%))`;
   }
 
+  /* ── Generated dish illustration (vector, offline, no copyright) ──────────
+     A plated dish drawn from the recipe's key ingredients + category, so each
+     recipe gets a distinct, appetising thumbnail without any external image. */
+  function dishTopping(r) {
+    const P = r.principais || [], has = x => P.includes(x);
+    if (r.categoria === 'sobremesa') {
+      if (has('chocolate')) return 'choc';
+      if (has('maca') || has('banana') || has('morango') || has('laranja') || has('limao')) return 'fruit';
+      return 'cake';
+    }
+    if (has('bacalhau') || has('peixe') || has('atum') || has('polvo') || has('camarao')) return 'fish';
+    if (has('frango')) return 'chicken';
+    if (has('vaca') || has('porco')) return 'meat';
+    if (has('massa')) return 'pasta';
+    if (has('arroz')) return 'rice';
+    if (r.categoria === 'entrada') return 'soup';
+    return 'plate';
+  }
+  const TOPPING = {
+    soup:  () => `<ellipse cx="200" cy="150" rx="116" ry="42" fill="#e0892f"/><ellipse cx="200" cy="146" rx="116" ry="42" fill="#eda23f"/><path d="M150 140 q50 -16 100 0" stroke="#fff" stroke-width="4" fill="none" opacity=".55"/><circle cx="170" cy="150" r="6" fill="#3f7d2e"/><circle cx="225" cy="142" r="5" fill="#3f7d2e"/><circle cx="245" cy="156" r="5" fill="#c0392b"/>`,
+    rice:  () => `<ellipse cx="200" cy="146" rx="104" ry="36" fill="#f4eeda"/><ellipse cx="200" cy="140" rx="104" ry="36" fill="#fbf6e6"/>${Array.from({length:22},(_,i)=>`<rect x="${130+(i*13)%140}" y="${126+(i*7)%28}" width="6" height="3" rx="1.5" fill="#e7dcbf" transform="rotate(${i*20} ${130+(i*13)%140} 130)"/>`).join('')}<circle cx="235" cy="140" r="12" fill="#c0392b"/><circle cx="170" cy="146" r="9" fill="#3f7d2e"/>`,
+    pasta: () => `<ellipse cx="200" cy="146" rx="108" ry="38" fill="#f0d98a"/>${[0,1,2,3].map(i=>`<path d="M${150+i*30} 150 q14 -22 30 0" stroke="#e7c45a" stroke-width="6" fill="none"/>`).join('')}<ellipse cx="200" cy="138" rx="70" ry="20" fill="#b6322a" opacity=".75"/><circle cx="200" cy="134" r="16" fill="#7c241b"/><circle cx="168" cy="146" r="7" fill="#3f7d2e"/>`,
+    fish:  () => `<ellipse cx="200" cy="150" rx="120" ry="44" fill="#efe7d6" opacity=".25"/><g transform="translate(200,138)"><ellipse cx="0" cy="0" rx="70" ry="26" fill="#cdd7df"/><path d="M58 0 l34 -20 v40Z" fill="#cdd7df"/><circle cx="-44" cy="-6" r="4" fill="#1f2d3a"/><path d="M-30 0 q14 -10 28 0 q-14 10 -28 0" fill="#9fb0bd"/></g><path d="M120 158 a26 26 0 0 1 26 -26" stroke="#f6d743" stroke-width="9" fill="none"/>`,
+    chicken: () => `<ellipse cx="200" cy="152" rx="116" ry="40" fill="#efe7d6" opacity=".25"/><g transform="translate(196,130)"><path d="M-30 8 q-6 -44 34 -44 q40 0 30 40 q-8 26 -34 24 q-26 -2 -30 -20Z" fill="#c47a39"/><path d="M-30 8 q-4 16 6 22 l-16 8 q-10 -2 -8 -14Z" fill="#f3ead7"/></g><circle cx="240" cy="150" r="8" fill="#3f7d2e"/>`,
+    meat:  () => `<ellipse cx="200" cy="152" rx="116" ry="40" fill="#efe7d6" opacity=".25"/><rect x="138" y="118" width="118" height="44" rx="22" fill="#7c3a1c"/><rect x="138" y="118" width="118" height="44" rx="22" fill="#8b4422" opacity=".6"/>${[0,1,2,3].map(i=>`<line x1="${156+i*26}" y1="122" x2="${146+i*26}" y2="158" stroke="#4a2310" stroke-width="4" opacity=".6"/>`).join('')}<circle cx="250" cy="150" r="9" fill="#3f7d2e"/><ellipse cx="160" cy="150" rx="14" ry="9" fill="#f4eeda"/>`,
+    plate: () => `<circle cx="170" cy="132" r="26" fill="#7c3a1c"/><ellipse cx="232" cy="146" rx="34" ry="18" fill="#f4eeda"/><circle cx="210" cy="120" r="11" fill="#3f7d2e"/><circle cx="246" cy="124" r="9" fill="#c0392b"/>`,
+    cake:  () => `<g transform="translate(200,150)"><path d="M-70 0 L0 -64 L70 0Z" fill="#f0d6a6"/><path d="M-70 0 L0 -64 L70 0Z" fill="none"/><rect x="-70" y="0" width="140" height="18" fill="#e7c486"/><path d="M-46 -24 L0 -64 L46 -24Z" fill="#7c4a1e"/><circle cx="0" cy="-70" r="9" fill="#c0392b"/></g>`,
+    fruit: () => `<ellipse cx="200" cy="148" rx="104" ry="34" fill="#fbf6e6"/><circle cx="170" cy="138" r="16" fill="#e74c3c"/><circle cx="206" cy="132" r="15" fill="#f4b400"/><circle cx="238" cy="142" r="14" fill="#8e44ad"/><circle cx="190" cy="150" r="11" fill="#27ae60"/><circle cx="222" cy="152" r="10" fill="#e67e22"/>`,
+    choc:  () => `<g transform="translate(200,150)"><path d="M-64 0 q0 -52 64 -52 q64 0 64 52 q0 18 -22 18 h-84 q-22 0 -22 -18Z" fill="#4a2c18"/><path d="M-64 0 q14 14 30 -2 q16 16 34 0 q16 16 34 2" stroke="#2e1a0e" stroke-width="6" fill="none"/><circle cx="0" cy="-44" r="8" fill="#c0392b"/></g>`,
+  };
+  function dishSVG(r) {
+    const seed = hashHue(r.id || r.nome || '');
+    const pal = ({ entrada: ['#26421f', '#0c1a0d'], prato: ['#3a2712', '#160d06'], sobremesa: ['#3a1a2c', '#160814'] }[r.categoria]) || ['#2a2018', '#100b07'];
+    const steam = r.categoria !== 'sobremesa'
+      ? `<g opacity=".4" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"><path d="M172 78 q-12 -16 0 -32 q12 -16 0 -32"/><path d="M205 70 q-12 -16 0 -32 q12 -16 0 -32"/><path d="M238 78 q-12 -16 0 -32 q12 -16 0 -32"/></g>` : '';
+    const plate = `<ellipse cx="200" cy="182" rx="150" ry="40" fill="#000" opacity=".35"/><ellipse cx="200" cy="170" rx="150" ry="52" fill="#f4efe7"/><ellipse cx="200" cy="160" rx="150" ry="52" fill="#fbf8f2"/><ellipse cx="200" cy="152" rx="120" ry="42" fill="#e9e2d5"/>`;
+    return `<svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><radialGradient id="rd${seed}" cx=".5" cy=".28" r=".95"><stop offset="0" stop-color="${pal[0]}"/><stop offset="1" stop-color="${pal[1]}"/></radialGradient></defs>
+      <rect width="400" height="250" fill="url(#rd${seed})"/>
+      <circle cx="${80 + seed % 60}" cy="${50 + seed % 40}" r="60" fill="#fff" opacity=".04"/>
+      ${steam}${plate}${(TOPPING[dishTopping(r)] || TOPPING.plate)()}
+    </svg>`;
+  }
+
   function $(sel) { return document.getElementById('view-receitas')?.querySelector(sel); }
 
   // ── dados locais ───────────────────────────────────────────────────────────
@@ -286,8 +330,8 @@ const ReceitasPage = (function () {
   function card(r) {
     const tag = r.regiao ? esc(r.regiao) : esc(r.cozinha || '');
     return `<button class="rcp-card" data-id="${esc(r.id)}">
-      <div class="rcp-thumb" style="${thumbStyle(r)}">
-        ${r.img ? `<img loading="lazy" src="${esc(r.img)}" alt="">` : `<span class="rcp-emoji">${catEmoji(r.categoria)}</span>`}
+      <div class="rcp-thumb">
+        ${r.img ? `<img loading="lazy" src="${esc(r.img)}" alt="">` : dishSVG(r)}
         ${r.cozinha === 'Portuguesa' ? '<span class="rcp-flag">🇵🇹</span>' : ''}
       </div>
       <div class="rcp-card-body">
@@ -347,8 +391,8 @@ const ReceitasPage = (function () {
       : `<span class="rcp-match">${x.have}/${x.total} • faltam ${x.missing.length}</span>`;
     const miss = x.missing.length ? `<div class="rcp-miss">Faltam: ${x.missing.map(m => esc(panLabel(m))).join(', ')}</div>` : '';
     return `<button class="rcp-card" data-id="${esc(r.id)}">
-      <div class="rcp-thumb" style="${thumbStyle(r)}">
-        <span class="rcp-emoji">${catEmoji(r.categoria)}</span>
+      <div class="rcp-thumb">
+        ${dishSVG(r)}
         ${r.cozinha === 'Portuguesa' ? '<span class="rcp-flag">🇵🇹</span>' : ''}
         <span class="rcp-pct" style="--p:${pct}">${pct}%</span>
       </div>
@@ -437,8 +481,8 @@ const ReceitasPage = (function () {
     d.innerHTML = `
       <a class="rcp-back" href="#receitas">← Voltar às receitas</a>
       <article class="rcp-detail">
-        <div class="rcp-d-hero" style="${r.img ? '' : thumbStyle(r)}">
-          ${r.img ? `<img src="${esc(r.img)}" alt="${esc(r.nome)}">` : `<span class="rcp-emoji rcp-emoji-lg">${catEmoji(r.categoria)}</span>`}
+        <div class="rcp-d-hero">
+          ${r.img ? `<img src="${esc(r.img)}" alt="${esc(r.nome)}">` : dishSVG(r)}
           ${r.cozinha === 'Portuguesa' ? '<span class="rcp-flag rcp-flag-lg">🇵🇹</span>' : ''}
         </div>
         <h1 class="rcp-d-title">${esc(r.nome)}</h1>
