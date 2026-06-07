@@ -8,6 +8,10 @@
 const GameData = (function () {
   'use strict';
   const _cache = {};
+  /* Games that actually ship a config.json. Others carry their difficulty
+     params embedded as a fallback, so requesting the file would only 404 in
+     the console — skip it for them. */
+  const HAS_CONFIG = new Set(['hangman', 'wordle', 'tictactoe', 'reaction', 'memory', 'minesweeper']);
 
   async function load(id) {
     if (_cache[id]) return _cache[id];
@@ -15,7 +19,7 @@ const GameData = (function () {
     const grab = url => fetch(url, { cache: 'force-cache' }).then(r => r.ok ? r.json() : null).catch(() => null);
     try {
       const [c, i] = await Promise.all([
-        grab(`games/${id}/config.json`),
+        HAS_CONFIG.has(id) ? grab(`games/${id}/config.json`) : Promise.resolve(null),
         grab(`games/${id}/i18n.json`),
       ]);
       out.config = c; out.i18n = i;

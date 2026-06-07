@@ -214,14 +214,10 @@ body.light .mob-nav { background: rgba(248,250,252,.97); border-top-color: rgba(
   .sb-nav-item { padding: .7rem .85rem; font-size: .9rem; }
 }
 @media (max-width: 600px) {
-  /* Declutter the header so the brand + essential controls always fit. */
-  .hdr-right .font-ctrl-wrap, .hdr-right .toggle-wrap { display: none; }
-  .clock span { display: none; }
-  .clock strong { font-size: .72rem; }
+  /* Declutter the header so the brand + essential controls always fit
+     (the date is redundant with the Home greeting on phones). */
+  .hdr-right .font-ctrl-wrap, .hdr-right .toggle-wrap, .clock { display: none; }
   #site-header { padding: .55rem 1rem; gap: .5rem; }
-}
-@media (max-width: 380px) {
-  .clock { display: none; }
 }
 
 /* ── THEME PANEL ── */
