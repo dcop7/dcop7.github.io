@@ -254,8 +254,11 @@ const TimelineInteractive = (function () {
       el.setAttribute('aria-label', e.title + ' — ' + cardDate(e.year));
       el.innerHTML = `
         <span class="tl-node-card">
-          <span class="tl-node-yr">${esc(cardDate(e.year))}</span>
-          <span class="tl-node-ttl">${esc(e.title)}</span>
+          <span class="tl-node-thumb"><img src="assets/timeline/${esc(e.id)}.jpg" alt="" loading="lazy" onerror="this.closest('.tl-node-thumb').remove()"></span>
+          <span class="tl-node-txt">
+            <span class="tl-node-yr">${esc(cardDate(e.year))}</span>
+            <span class="tl-node-ttl">${esc(e.title)}</span>
+          </span>
         </span>
         <span class="tl-node-stem"></span>
         <span class="tl-node-dot">${e.key ? '<span class="tl-node-em">' + c.emoji + '</span>' : ''}</span>`;
