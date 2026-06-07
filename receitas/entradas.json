@@ -105,5 +105,6 @@
     "ingredientes": ["4 tomates maduros", "1 pepino", "1 pimento", "2 dentes de alho", "Pão duro", "Azeite, vinagre, orégãos e água gelada"],
     "principais": ["tomate", "pimento", "alho", "pao"],
     "preparacao": ["Picar finamente o tomate, o pepino e o pimento.", "Pisar o alho com sal, orégãos, azeite e vinagre.", "Juntar os legumes e água bem fria.", "Acrescentar pedaços de pão duro.", "Levar ao frigorífico e servir gelado."]
-  }
+  },
+  {"id":"cogumelos-recheados","nome":"Cogumelos Recheados","categoria":"entrada","cozinha":"Internacional","tempo":35,"dificuldade":"Fácil","porcoes":4,"popular":true,"ingredientes":["12 cogumelos grandes (Portobello)","100 g de queijo creme","1 cebola e 2 dentes de alho","Fiambre ou bacon picado","Queijo ralado","Salsa, sal e pimenta"],"principais":["cogumelos","queijo","alho","cebola","fiambre"],"preparacao":["Retirar os pés aos cogumelos e picá-los.","Refogar cebola, alho e os pés picados com o fiambre.","Misturar com o queijo creme e salsa.","Rechear os chapéus e cobrir com queijo ralado.","Levar ao forno a 190 °C ~18 min até gratinar."]}
 ]

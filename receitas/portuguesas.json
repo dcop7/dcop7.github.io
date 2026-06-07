@@ -27,9 +27,9 @@
     "tradicional": true,
     "popular": true,
     "historia": "Criado nos tascos do bairro do Bairro Alto, em Lisboa, atribuído a um taberneiro de apelido Brás. Junta bacalhau desfiado, batata palha e ovo.",
-    "ingredientes": ["400 g de bacalhau demolhado e desfiado", "4 ovos", "300 g de batata palha", "2 cebolas", "3 dentes de alho", "Azeite, salsa, azeitonas q.b."],
+    "ingredientes": ["400 g de bacalhau demolhado e desfiado", "4 ovos", "300 g de batata palha", "2 cebolas", "3 dentes de alho", "Azeite e salsa q.b."],
     "principais": ["bacalhau", "ovos", "batata", "cebola", "alho"],
-    "preparacao": ["Refogar a cebola e o alho em azeite até translúcidos.", "Juntar o bacalhau desfiado e deixar apurar.", "Adicionar a batata palha e envolver.", "Verter os ovos batidos e mexer em lume brando até cremoso (não deixar secar).", "Finalizar com salsa picada e azeitonas."]
+    "preparacao": ["Refogar a cebola e o alho em azeite até translúcidos.", "Juntar o bacalhau desfiado e deixar apurar.", "Adicionar a batata palha e envolver.", "Verter os ovos batidos e mexer em lume brando até cremoso (não deixar secar).", "Finalizar com salsa picada."]
   },
   {
     "id": "francesinha",
