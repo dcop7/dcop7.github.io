@@ -2755,3 +2755,17 @@ body.light .pt-capital-label .pt-cap-dot {
 .tl-node-thumb { display:block; height:72px; margin:-.32rem -.5rem .34rem; overflow:hidden; border-radius:8px 8px 0 0; background:#0a0e18; }
 .tl-node-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 .tl-node-txt { display:flex; flex-direction:column; }
+
+/* ── Explorer hub feature cards: AI cover images ── */
+.ex-feature-card { min-height: 158px; justify-content: flex-end; }
+.ex-feat-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: .5; transition: opacity .25s ease, transform .4s ease; }
+.ex-feature-card::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8,12,20,.25) 0%, rgba(8,12,20,.55) 55%, rgba(8,12,20,.92) 100%); }
+.ex-feature-card > .ex-feature-card-icon,
+.ex-feature-card > .ex-feature-card-title,
+.ex-feature-card > .ex-feature-card-desc { position: relative; z-index: 2; }
+.ex-feature-card:hover .ex-feat-img { opacity: .72; transform: scale(1.06); }
+.ex-feature-card .ex-feature-card-icon { filter: drop-shadow(0 3px 10px rgba(0,0,0,.75)); }
+.ex-feature-card .ex-feature-card-title { color: #fff; }
+.ex-feature-card .ex-feature-card-desc { color: rgba(255,255,255,.84); }
+@media (max-width: 768px) { .ex-feature-card { min-height: 104px; } }

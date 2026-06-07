@@ -774,6 +774,9 @@ const ExplorerPage = (function () {
       card.tabIndex = 0;
       const label = card.querySelector('.ex-feature-card-title')?.textContent?.trim();
       if (label) card.setAttribute('aria-label', label);
+      /* AI-generated cover image behind each card (graceful if missing). */
+      if (card.dataset.tab) card.insertAdjacentHTML('afterbegin',
+        `<img class="ex-feat-img" src="assets/explorer/${card.dataset.tab}.jpg" alt="" loading="lazy" onerror="this.remove()">`);
       card.onclick = () => _switchTab(card.dataset.tab);
       card.onkeydown = e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _switchTab(card.dataset.tab); }
