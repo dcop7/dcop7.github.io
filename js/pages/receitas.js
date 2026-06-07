@@ -331,7 +331,7 @@ const ReceitasPage = (function () {
     const tag = r.regiao ? esc(r.regiao) : esc(r.cozinha || '');
     return `<button class="rcp-card" data-id="${esc(r.id)}">
       <div class="rcp-thumb">
-        ${r.img ? `<img loading="lazy" src="${esc(r.img)}" alt="">` : dishSVG(r)}
+        ${r.img ? `<img loading="lazy" src="${esc(r.img)}" alt="">` : `${dishSVG(r)}<img class="rcp-photo" loading="lazy" src="receitas/img/${esc(r.id)}.jpg" alt="" onerror="this.remove()">`}
         ${r.cozinha === 'Portuguesa' ? '<span class="rcp-flag">🇵🇹</span>' : ''}
       </div>
       <div class="rcp-card-body">
@@ -392,7 +392,7 @@ const ReceitasPage = (function () {
     const miss = x.missing.length ? `<div class="rcp-miss">Faltam: ${x.missing.map(m => esc(panLabel(m))).join(', ')}</div>` : '';
     return `<button class="rcp-card" data-id="${esc(r.id)}">
       <div class="rcp-thumb">
-        ${dishSVG(r)}
+        ${dishSVG(r)}<img class="rcp-photo" loading="lazy" src="receitas/img/${esc(r.id)}.jpg" alt="" onerror="this.remove()">
         ${r.cozinha === 'Portuguesa' ? '<span class="rcp-flag">🇵🇹</span>' : ''}
         <span class="rcp-pct" style="--p:${pct}">${pct}%</span>
       </div>
@@ -482,7 +482,7 @@ const ReceitasPage = (function () {
       <a class="rcp-back" href="#receitas">← Voltar às receitas</a>
       <article class="rcp-detail">
         <div class="rcp-d-hero">
-          ${r.img ? `<img src="${esc(r.img)}" alt="${esc(r.nome)}">` : dishSVG(r)}
+          ${r.img ? `<img src="${esc(r.img)}" alt="${esc(r.nome)}">` : `${dishSVG(r)}<img class="rcp-photo" src="receitas/img/${esc(r.id)}.jpg" alt="${esc(r.nome)}" onerror="this.remove()">`}
           ${r.cozinha === 'Portuguesa' ? '<span class="rcp-flag rcp-flag-lg">🇵🇹</span>' : ''}
         </div>
         <h1 class="rcp-d-title">${esc(r.nome)}</h1>
