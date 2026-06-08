@@ -159,6 +159,44 @@ button.wd-sum-cell:hover { border-color: rgba(var(--accent-rgb),.4); transform: 
 .wd-cmp-rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .8rem; margin-left: .3rem; }
 .wd-cmp-rm:hover { color: #ef4444; }
 
+/* ── map quality + on-map labels (code + value) ── */
+.wd-geo { shape-rendering: geometricPrecision; }
+.wd-lbl { text-anchor: middle; fill: #fff; font-weight: 700; font-family: var(--font-sans, system-ui, sans-serif);
+  paint-order: stroke; stroke: #0b1020; stroke-width: 2.4px; vector-effect: non-scaling-stroke; pointer-events: none; }
+.wd-lbl-c { font-weight: 800; letter-spacing: .02em; }
+.wd-lbl-v { font-size: .82em; fill: #f0f6ff; }
+
+/* ── discrete (binned) legend ── */
+.wd-legend2 { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: .4rem; }
+.wd-lg-row { display: flex; gap: 0; }
+.wd-lg-sw { width: 30px; height: 11px; }
+.wd-lg-sw:first-child { border-radius: 3px 0 0 3px; }
+.wd-lg-sw:last-child { border-radius: 0 3px 3px 0; }
+.wd-lg-ths { display: flex; gap: 0; font-size: .64rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wd-lg-th { width: 30px; text-align: center; transform: translateX(15px); }
+.wd-lg-yr { font-size: .68rem; color: var(--muted); margin-top: .15rem; }
+
+/* ── statistic popup (click a country on the map) ── */
+.wd-pop-ov { position: fixed; inset: 0; z-index: 60; background: rgba(4,6,12,.55); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.wd-pop { position: relative; width: min(360px, 92vw); background: var(--card-solid, var(--card)); border: 1px solid var(--border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+.wd-pop-x { position: absolute; top: .6rem; right: .6rem; background: var(--card2); border: 1px solid var(--border); color: var(--text2); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: .8rem; }
+.wd-pop-x:hover { color: var(--text); }
+.wd-pop-head { display: flex; align-items: center; gap: .6rem; }
+.wd-pop-flag { font-size: 2rem; }
+.wd-pop-name { font-weight: 800; font-size: 1.1rem; color: var(--text); }
+.wd-pop-ind { font-size: .8rem; color: var(--muted); }
+.wd-pop-val { font-size: 1.8rem; font-weight: 800; color: var(--text); margin: .5rem 0 .2rem; }
+.wd-pop-ranks { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: .5rem; }
+.wd-pop-rank { font-size: .8rem; font-weight: 700; color: var(--accent); }
+.wd-pop-rank small { color: var(--muted); font-weight: 500; }
+.wd-pop-spark { margin: .2rem 0 .6rem; }
+.wd-pop-acts { display: flex; gap: .5rem; flex-wrap: wrap; }
+.wd-pop-btn { flex: 1; min-width: 120px; background: var(--accent); color: #fff; border: none; border-radius: 999px; padding: .5rem .8rem; font-weight: 700; font-size: .82rem; cursor: pointer; }
+.wd-pop-btn-ghost { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+.wd-pop-btn:hover { filter: brightness(1.05); }
+
+.wd-sec-sub { font-weight: 500; font-size: .78rem; color: var(--muted); }
+
 /* ── data year tag ── */
 .wd-yr { font-style: normal; font-size: .82em; color: var(--muted); font-weight: 600; }
 .wd-sum-l .wd-yr, .wd-ind-val .wd-yr { opacity: .85; }

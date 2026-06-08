@@ -34,6 +34,14 @@ lista localmente (instantânea) e, ao escolher um gráfico, o CSV correspondente
 obtido **em direto** de `ourworldindata.org/grapher/<slug>.csv` (CORS aberto) e
 desenhado no explorador. Sem chaves nem dependências de terceiros.
 
+## Pesquisa "em direto" (World Bank)
+`wb-catalog.json` é a lista de indicadores do World Development Indicators (código
++ nome), obtida da API do World Bank por `build-wb-catalog.mjs`. A pesquisa filtra
+localmente e, ao escolher um, os dados são obtidos **em direto** de
+`api.worldbank.org` (CORS aberto) e desenhados no explorador. **World Bank Open
+Data — CC BY 4.0.** A meta da resposta inclui `lastupdated`, mostrada como data de
+atualização.
+
 ## Cidades (população)
 **GeoNames** — https://www.geonames.org · Licença **CC BY 4.0**.
 Ficheiro `cities15000` filtrado por `build-cities.mjs`.
