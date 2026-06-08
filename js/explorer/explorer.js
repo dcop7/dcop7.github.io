@@ -747,6 +747,11 @@ const ExplorerPage = (function () {
               <div class="ex-feature-card-title">${_t('Timeline', 'Linha do Tempo')}</div>
               <div class="ex-feature-card-desc">${_t('Travel from the Big Bang to today: the Universe, Earth, life, the dinosaurs, civilisations, Portugal, science and space — searchable and filterable.', 'Viaja do Big Bang até hoje: o Universo, a Terra, a vida, os dinossauros, as civilizações, Portugal, a ciência e o espaço — com pesquisa e filtros.')}</div>
             </div>
+            <div class="ex-feature-card ex-feature-card--data" data-tab="data">
+              <span class="ex-feature-card-icon">📊</span>
+              <div class="ex-feature-card-title">${_t('World Data', 'Dados do Mundo')}</div>
+              <div class="ex-feature-card-desc">${_t('Discover and compare global statistics — from the World down to continents, countries and cities: life expectancy, economy, internet, climate and more, with maps, rankings and trends.', 'Descobre e compara estatísticas globais — do Mundo aos continentes, países e cidades: esperança de vida, economia, internet, clima e mais, com mapas, rankings e tendências.')}</div>
+            </div>
           </div>
         </div>
         ${recents.length ? `
@@ -1629,6 +1634,7 @@ const ExplorerPage = (function () {
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
     ['body', '🧬', _t('Human Body', 'Corpo Humano')],
     ['timeline', '⏳', _t('Timeline', 'Linha do Tempo')],
+    ['data', '📊', _t('World Data', 'Dados do Mundo')],
   ];
 
   function _buildShell(view) {
@@ -1689,6 +1695,7 @@ const ExplorerPage = (function () {
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     if (tab !== 'body' && _curTab === 'body' && typeof HumanBodyExplorer !== 'undefined') HumanBodyExplorer.stop();
     if (tab !== 'timeline' && _curTab === 'timeline' && typeof TimelineExplorer !== 'undefined') TimelineExplorer.stop();
+    if (tab !== 'data' && _curTab === 'data' && typeof WorldDataExplorer !== 'undefined') WorldDataExplorer.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
       try { if (tab === 'globe') _globeGL.resumeAnimation(); else _globeGL.pauseAnimation(); } catch (_) {}
@@ -1745,6 +1752,11 @@ const ExplorerPage = (function () {
       if (typeof TimelineExplorer !== 'undefined') {
         if (!sub.querySelector('.tl-wrap')) TimelineExplorer.mount(sub);
         else TimelineExplorer.resume();
+      }
+    } else if (tab === 'data') {
+      if (typeof WorldDataExplorer !== 'undefined') {
+        if (!sub.querySelector('.wd-wrap')) WorldDataExplorer.mount(sub);
+        else WorldDataExplorer.resume();
       }
     }
   }

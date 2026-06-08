@@ -1,14 +1,17 @@
-const CACHE = 'dcop7-v121';
+const CACHE = 'dcop7-v122';
 const STATIC = [
   '/',
   '/index.html',
   '/i18n.js',
   '/css/base.css',
   '/css/views/explorer.css',
+  '/css/views/worlddata.css',
   '/css/views/explorer-body.css',
   '/css/views/ocorrencias.css',
   '/css/views/quiz.css',
   '/data/countries.json',
+  '/data/worlddata/indicators.json',
+  '/data/worlddata/values.json',
   '/data/world-countries.geojson',
   '/data/pt-districts.geojson',
   '/data/timeline.json',
@@ -28,6 +31,7 @@ const STATIC = [
   '/js/explorer/explorer-body.js',
   '/js/explorer/explorer-timeline.js',
   '/js/explorer/explorer-timeline-interactive.js',
+  '/js/explorer/explorer-data.js',
   '/js/explorer/ocorrencias.js',
   /* Pages */
   '/js/pages/links-data.js',
