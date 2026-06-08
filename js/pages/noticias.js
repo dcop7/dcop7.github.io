@@ -34,6 +34,12 @@ const NoticiasPage = (function () {
   let _tab = 'principal';
   let _source = '';                  /* source-name filter */
   let _query = '';
+  let _mode = (() => { try { return localStorage.getItem('nw-mode') || 'cards'; } catch { return 'cards'; } })();  /* cards | compact | list */
+  const VIEW_MODES = [
+    ['cards',   '▢', 'Cards',   'Cartões'],
+    ['compact', '▦', 'Compact', 'Compacto'],
+    ['list',    '☰', 'List',    'Lista'],
+  ];
 
   /* ── helpers ── */
   const esc = (s) => (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -51,6 +57,15 @@ const NoticiasPage = (function () {
     const d = h / 24; if (d < 7) return _t(`${d | 0}d ago`, `há ${d | 0} dias`);
     return new Date(ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { day: '2-digit', month: 'short' });
   }
+  /* Source favicon from the site host (Google's service; hidden if it fails). */
+  function favicon(a) {
+    let host = '';
+    try { host = new URL(a.site || a.url).host; } catch { return ''; }
+    if (!host) return '';
+    const url = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`;
+    return `<img class="nw-fav" src="${url}" alt="" loading="lazy" onerror="this.style.display='none'">`;
+  }
+
   function fmtUpdated(iso) {
     if (!iso) return '';
     const d = new Date(iso);
@@ -101,10 +116,13 @@ const NoticiasPage = (function () {
         <div class="nw-toolbar">
           <input id="nw-q" class="nw-search" type="search" placeholder="${_t('Search headlines…', 'Pesquisar notícias…')}">
           <select id="nw-source" class="nw-source"><option value="">${_t('All sources', 'Todas as fontes')}</option>${srcOpts}</select>
+          <div class="nw-view" id="nw-view" role="group" aria-label="${_t('View mode', 'Modo de visualização')}">
+            ${VIEW_MODES.map(([id, ic, en, pt]) => `<button class="nw-view-b${id === _mode ? ' active' : ''}" data-mode="${id}" title="${_t(en, pt)}" aria-label="${_t(en, pt)}">${ic}</button>`).join('')}
+          </div>
           <span class="nw-count" id="nw-count"></span>
         </div>
 
-        <div class="nw-grid" id="nw-grid"></div>
+        <div class="nw-grid nw-grid--${_mode}" id="nw-grid"></div>
 
         <footer class="nw-foot" id="nw-foot"></footer>
       </div>`;
@@ -116,13 +134,24 @@ const NoticiasPage = (function () {
     const chips = (a.topics || []).map(t => `<span class="nw-chip" style="--tc:${tColor(t)}">${tIcon(t)} ${esc(tLabel(t))}</span>`).join('');
     return `<article class="nw-card" style="--tc:${tColor(top)}">
       <div class="nw-c-top">
-        <span class="nw-c-src">${esc(a.source)}</span>
+        ${favicon(a)}<span class="nw-c-src">${esc(a.source)}</span>
         <span class="nw-c-time" title="${esc(new Date(a.ts).toLocaleString())}">${esc(relTime(a.ts))}</span>
       </div>
       <a class="nw-c-title" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.title)}</a>
       ${a.summary ? `<p class="nw-c-sum">${esc(a.summary)}</p>` : ''}
       <div class="nw-c-foot">${chips}<a class="nw-c-read" href="${esc(a.url)}" target="_blank" rel="noopener">${_t('Read', 'Ler')} ↗</a></div>
     </article>`;
+  }
+
+  /* Dense single-line row for "list" mode. */
+  function articleRow(a) {
+    const top = a.topics && a.topics[0] || 'mundo';
+    return `<a class="nw-row" href="${esc(a.url)}" target="_blank" rel="noopener" style="--tc:${tColor(top)}">
+      ${favicon(a)}
+      <span class="nw-r-src">${esc(a.source)}</span>
+      <span class="nw-r-title">${esc(a.title)}</span>
+      <span class="nw-r-time">${esc(relTime(a.ts))}</span>
+    </a>`;
   }
 
   async function renderTab() {
@@ -134,8 +163,12 @@ const NoticiasPage = (function () {
     catch (e) { if (grid) grid.innerHTML = `<div class="nw-empty">😕 ${_t('Could not load the news. Try again shortly.', 'Não foi possível carregar as notícias. Tenta novamente daqui a pouco.')}</div>`; return; }
     const list = filtered(arts);
     if (count) count.textContent = `${list.length} ${_t('articles', 'artigos')}`;
-    if (grid) grid.innerHTML = list.length ? list.map(articleCard).join('')
-      : `<div class="nw-empty">😶 ${_t('Nothing matches your filters.', 'Nada corresponde aos filtros.')}</div>`;
+    if (grid) {
+      grid.className = 'nw-grid nw-grid--' + _mode;
+      const render = _mode === 'list' ? articleRow : articleCard;
+      grid.innerHTML = list.length ? list.map(render).join('')
+        : `<div class="nw-empty">😶 ${_t('Nothing matches your filters.', 'Nada corresponde aos filtros.')}</div>`;
+    }
   }
 
   function skeleton(n = 9) {
@@ -164,6 +197,13 @@ const NoticiasPage = (function () {
     let qt;
     view.querySelector('#nw-q').addEventListener('input', (e) => { clearTimeout(qt); qt = setTimeout(() => { _query = e.target.value; renderTab(); }, 200); });
     view.querySelector('#nw-source').addEventListener('change', (e) => { _source = e.target.value; renderTab(); });
+    view.querySelector('#nw-view').addEventListener('click', (e) => {
+      const b = e.target.closest('.nw-view-b'); if (!b) return;
+      _mode = b.dataset.mode;
+      try { localStorage.setItem('nw-mode', _mode); } catch {}
+      view.querySelectorAll('#nw-view .nw-view-b').forEach(x => x.classList.toggle('active', x === b));
+      renderTab();
+    });
   }
 
   /* ════════════════════════════ PUBLIC ════════════════════════════ */

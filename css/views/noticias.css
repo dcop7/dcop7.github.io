@@ -13,7 +13,8 @@
 .nw-updated { color: var(--muted); font-size: .82rem; font-weight: 600; white-space: nowrap; }
 
 /* ── TOPIC TABS ── */
-.nw-tabs { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .3rem; scrollbar-width: thin; }
+.nw-tabs { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .2rem; scrollbar-width: none; -ms-overflow-style: none; }
+.nw-tabs::-webkit-scrollbar { display: none; height: 0; }
 .nw-tab {
   display: inline-flex; align-items: center; gap: .35rem;
   padding: .5rem .85rem; border-radius: 999px;
@@ -37,6 +38,15 @@
 .nw-search:focus, .nw-source:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
 .nw-count { color: var(--muted); font-size: .82rem; font-weight: 600; margin-left: auto; }
 
+/* View-mode segmented control */
+.nw-view { display: inline-flex; gap: .15rem; background: var(--card-solid); border: 1px solid var(--border); border-radius: 999px; padding: .2rem; }
+.nw-view-b { width: 30px; height: 28px; border: 0; border-radius: 999px; background: transparent; color: var(--text2); font-size: .9rem; cursor: pointer; line-height: 1; }
+.nw-view-b:hover { background: var(--glass-hover); }
+.nw-view-b.active { background: var(--accent); color: #fff; }
+
+/* Source favicon */
+.nw-fav { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; object-fit: contain; background: var(--card2); }
+
 /* ── GRID OF CARDS ── */
 .nw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: .85rem; }
 .nw-card {
@@ -47,8 +57,8 @@
   transition: transform .15s var(--ease), border-color .15s var(--ease), box-shadow .15s var(--ease);
 }
 .nw-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.16); }
-.nw-c-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem; font-size: .74rem; }
-.nw-c-src { font-weight: 700; color: var(--tc, var(--accent)); text-transform: uppercase; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nw-c-top { display: flex; align-items: center; gap: .4rem; font-size: .74rem; }
+.nw-c-src { font-weight: 700; color: var(--tc, var(--accent)); text-transform: uppercase; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: auto; }
 .nw-c-time { color: var(--muted); white-space: nowrap; flex-shrink: 0; }
 .nw-c-title {
   font-family: var(--font-head); font-size: 1rem; font-weight: 700; line-height: 1.3;
@@ -71,6 +81,36 @@
 .nw-c-read:hover { text-decoration: underline; }
 
 .nw-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 2.5rem 1rem; font-size: .95rem; }
+
+/* ── VIEW MODES ── */
+/* Compact: smaller cards, no summary/chips — fit more per screen. */
+.nw-grid--compact { grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: .6rem; }
+.nw-grid--compact .nw-card { padding: .6rem .7rem .65rem; gap: .35rem; }
+.nw-grid--compact .nw-c-title { font-size: .9rem; -webkit-line-clamp: 3; }
+.nw-grid--compact .nw-c-sum { display: none; }
+.nw-grid--compact .nw-chip { display: none; }
+.nw-grid--compact .nw-c-foot { padding-top: 0; }
+
+/* List: dense one-line rows — maximum density. */
+.nw-grid--list { grid-template-columns: 1fr; gap: .3rem; }
+@media (min-width: 920px) { .nw-grid--list { grid-template-columns: 1fr 1fr; } }
+.nw-row {
+  display: grid; grid-template-columns: 18px clamp(80px, 16%, 150px) 1fr auto;
+  align-items: center; gap: .6rem;
+  padding: .5rem .7rem;
+  background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--tc, var(--accent));
+  border-radius: var(--radius-sm); text-decoration: none;
+  transition: background .12s var(--ease);
+}
+.nw-row:hover { background: var(--glass-hover); }
+.nw-r-src { font-size: .72rem; font-weight: 700; color: var(--tc, var(--accent)); text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nw-r-title { font-size: .86rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nw-row:hover .nw-r-title { color: var(--accent); }
+.nw-r-time { font-size: .72rem; color: var(--muted); white-space: nowrap; }
+@media (max-width: 560px) {
+  .nw-row { grid-template-columns: 18px 1fr auto; }
+  .nw-r-src { display: none; }
+}
 
 /* ── FOOTER ── */
 .nw-foot { border-top: 1px solid var(--border); padding-top: .8rem; color: var(--muted); font-size: .78rem; }
