@@ -37,9 +37,10 @@ const NoticiasPage = (function () {
   let _mode = (() => { try { return localStorage.getItem('nw-mode') || 'cards'; } catch { return 'cards'; } })();  /* cards | compact | list */
   let _maxAge = 0;                   /* hours; 0 = any time */
   const VIEW_MODES = [
-    ['cards',   '▢', 'Cards',   'Cartões'],
-    ['compact', '▦', 'Compact', 'Compacto'],
-    ['list',    '☰', 'List',    'Lista'],
+    ['cards',   '▢', 'Cards',           'Cartões'],
+    ['compact', '▦', 'Compact cards',   'Compacto'],
+    ['listimg', '▤', 'List + thumbs',   'Lista'],
+    ['list',    '☰', 'Compact list',    'Lista compacta'],
   ];
   const DATE_OPTS = [
     ['0', 'Any time',     'Qualquer altura'],
@@ -163,6 +164,22 @@ const NoticiasPage = (function () {
     </article>`;
   }
 
+  /* Relaxed list row WITH a thumbnail for "listimg" mode. */
+  function articleListItem(a) {
+    const top = a.topics && a.topics[0] || 'mundo';
+    const thumb = a.image
+      ? `<img class="nw-li-img" src="${esc(a.image)}" alt="" loading="lazy" onerror="this.closest('.nw-li').classList.add('nw-li--noimg'); this.remove()">`
+      : '';
+    return `<a class="nw-li${a.image ? '' : ' nw-li--noimg'}" href="${esc(a.url)}" target="_blank" rel="noopener" style="--tc:${tColor(top)}">
+      ${thumb}
+      <div class="nw-li-body">
+        <div class="nw-li-top">${favicon(a)}<span class="nw-li-src">${esc(a.source)}</span><span class="nw-li-time">${esc(relTime(a.ts))}</span></div>
+        <div class="nw-li-title">${esc(a.title)}</div>
+        ${a.summary ? `<p class="nw-li-sum">${esc(a.summary)}</p>` : ''}
+      </div>
+    </a>`;
+  }
+
   /* Dense single-line row for "list" mode. */
   function articleRow(a) {
     const top = a.topics && a.topics[0] || 'mundo';
@@ -185,7 +202,7 @@ const NoticiasPage = (function () {
     if (count) count.textContent = `${list.length} ${_t('articles', 'artigos')}`;
     if (grid) {
       grid.className = 'nw-grid nw-grid--' + _mode;
-      const render = _mode === 'list' ? articleRow : articleCard;
+      const render = _mode === 'list' ? articleRow : (_mode === 'listimg' ? articleListItem : articleCard);
       grid.innerHTML = list.length ? list.map(render).join('')
         : `<div class="nw-empty">😶 ${_t('Nothing matches your filters.', 'Nada corresponde aos filtros.')}</div>`;
     }
