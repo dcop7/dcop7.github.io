@@ -130,7 +130,7 @@ const WorldDataExplorer = (function () {
   }
   async function ensureGeo() {
     if (_geo) return;
-    _geo = await fetch('data/world-countries.geojson').then(r => r.json());
+    _geo = await fetch(`${BASE}/world-50m.geojson`).then(r => r.json());
     buildGeoPaths();
   }
   async function ensureCatalog() {
@@ -175,7 +175,7 @@ const WorldDataExplorer = (function () {
   function buildGeoPaths() {
     _geoPaths = []; _geoBbox = {};
     for (const f of _geo.features) {
-      const iso = geoIso(f.properties.name); if (!iso) continue;
+      const iso = f.properties.iso || geoIso(f.properties.name); if (!iso) continue;
       const g = f.geometry; let d = '';
       let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
       const acc = ring => { ring.forEach(pt => { const x = projX(pt[0]), y = projY(pt[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }); };
@@ -278,6 +278,42 @@ const WorldDataExplorer = (function () {
     return `<svg class="wd-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="${color}" stroke-width="2"/></svg>`;
   }
   const PALETTE = ['#6366f1', '#ef4444', '#10b981', '#f59e0b', '#06b6d4', '#a855f7'];
+
+  /* Pan/zoom a choropleth <svg> by mutating its viewBox. Drag to pan, wheel or
+     the +/−/⟲ buttons to zoom. Sets svg.__moved during a real drag so the
+     country click handler can ignore it. Returns control handles. */
+  function enableMapZoom(svg) {
+    if (!svg) return null;
+    const base = svg.getAttribute('viewBox').split(/\s+/).map(Number);
+    let vb = base.slice();
+    const apply = () => svg.setAttribute('viewBox', vb.map(n => n.toFixed(1)).join(' '));
+    const minW = base[2] * 0.12, maxW = base[2];
+    function clampPan() {
+      const mx = base[2] * 0.12, my = base[3] * 0.12;
+      vb[0] = Math.max(base[0] - mx, Math.min(vb[0], base[0] + base[2] - vb[2] + mx));
+      vb[1] = Math.max(base[1] - my, Math.min(vb[1], base[1] + base[3] - vb[3] + my));
+    }
+    function zoomAt(factor, cx, cy) {
+      let nw = vb[2] * factor; nw = Math.max(minW, Math.min(maxW, nw));
+      const k = nw / vb[2], nh = vb[3] * k;
+      vb[0] = cx - (cx - vb[0]) * k; vb[1] = cy - (cy - vb[1]) * k; vb[2] = nw; vb[3] = nh;
+      clampPan(); apply();
+    }
+    const toUser = (clientX, clientY) => { const r = svg.getBoundingClientRect(); return [vb[0] + (clientX - r.left) / r.width * vb[2], vb[1] + (clientY - r.top) / r.height * vb[3]]; };
+    svg.addEventListener('wheel', e => { e.preventDefault(); const [cx, cy] = toUser(e.clientX, e.clientY); zoomAt(e.deltaY > 0 ? 1.18 : 0.85, cx, cy); }, { passive: false });
+    let drag = null;
+    svg.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, vx: vb[0], vy: vb[1] }; svg.__moved = false; try { svg.setPointerCapture(e.pointerId); } catch (_) {} svg.style.cursor = 'grabbing'; });
+    svg.addEventListener('pointermove', e => { if (!drag) return; const r = svg.getBoundingClientRect(); const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3) svg.__moved = true; vb[0] = drag.vx - dx / r.width * vb[2]; vb[1] = drag.vy - dy / r.height * vb[3]; clampPan(); apply(); });
+    const end = () => { drag = null; svg.style.cursor = ''; setTimeout(() => { svg.__moved = false; }, 30); };
+    svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
+    return { zoomIn: () => zoomAt(0.72, vb[0] + vb[2] / 2, vb[1] + vb[3] / 2), zoomOut: () => zoomAt(1.4, vb[0] + vb[2] / 2, vb[1] + vb[3] / 2), reset: () => { vb = base.slice(); apply(); } };
+  }
+  const ZOOM_BTNS = `<div class="wd-map-zoom"><button data-z="in" aria-label="+">+</button><button data-z="out" aria-label="−">−</button><button data-z="reset" aria-label="⟲">⟲</button></div>`;
+  function wireZoom(svg) {
+    const z = enableMapZoom(svg); if (!z) return;
+    const wrap = svg.closest('.wd-map-wrap'); if (!wrap) return;
+    wrap.querySelectorAll('.wd-map-zoom [data-z]').forEach(b => b.onclick = () => { const a = b.dataset.z; if (a === 'in') z.zoomIn(); else if (a === 'out') z.zoomOut(); else z.reset(); });
+  }
 
   /* ══════════════════════ SHELL ══════════════════════ */
   function shell() {
@@ -479,6 +515,9 @@ const WorldDataExplorer = (function () {
     if (_scope.level === 'continent') cont = _scope.cont;
     else if (_scope.level === 'country') { const c = _cIso[_scope.country]; cont = c && c.continents ? c.continents[0] : null; focus = _scope.country; }
     const pool = cont ? countriesOf(cont) : null;
+    /* In País scope keep it country-focused: a stat hero + trend + regional
+       ranking, NOT a continent choropleth (that confused "país" with the map). */
+    const countryFocus = _scope.level === 'country';
     body.innerHTML = `
       <button class="wd-back" id="wd-back">← ${_t('Back', 'Voltar')}</button>
       <div class="wd-ind-head">
@@ -486,11 +525,27 @@ const WorldDataExplorer = (function () {
         <div><h2 class="wd-ind-head-name">${esc(indName(ind))}</h2>
         <div class="wd-ind-head-meta">${esc(catName(ind.cat))} · ${ind.latestYear} · ${esc(_t('source', 'fonte'))}: OWID${cont ? ' · ' + esc(entityName(cont)) : ''}</div></div>
       </div>
-      ${choroplethBlock(ind, focus, cont)}
-      ${rankingBlock(ind, pool, focus, cont)}
+      ${countryFocus ? countryStatHero(ind, _scope.country, cont) : choroplethBlock(ind, focus, cont)}
       ${trendBlock(ind, focus)}
+      ${rankingBlock(ind, pool, focus, cont)}
       ${sourceFooter()}`;
     wireIndicator(cont);
+  }
+
+  /* country-focused stat hero (used for an indicator viewed in País scope) */
+  function countryStatHero(ind, key, cont) {
+    const v = val(ind.id, key), y = yearOf(ind.id, key);
+    const rW = rankOf(ind.id, key), rC = cont ? rankOf(ind.id, key, countriesOf(cont)) : null;
+    const wv = val(ind.id, 'WORLD'); const cmp = (v != null && wv != null) ? (v >= wv ? 'up' : 'dn') : '';
+    return `<div class="wd-hero">
+      <div class="wd-hero-top"><span class="wd-hero-flag">${entityFlag(key)}</span>
+        <div><div class="wd-hero-kick">${ind.emoji} ${esc(indName(ind))}</div>
+        <h2 class="wd-hero-name">${fmtVal(ind, v)}${y ? ` <em class="wd-yr">${y}</em>` : ''}</h2></div></div>
+      <div class="wd-pop-ranks" style="margin-top:.7rem">
+        ${rW ? `<span class="wd-pop-rank">🌍 #${rW.rank}<small>/${rW.total}</small></span>` : ''}
+        ${rC ? `<span class="wd-pop-rank">${entityFlag(cont)} #${rC.rank}<small>/${rC.total}</small></span>` : ''}
+        ${cmp ? `<span class="wd-vs wd-vs-${cmp}">${cmp === 'up' ? '▲' : '▼'} ${_t('vs world', 'vs mundo')} (${fmtVal(ind, wv)})</span>` : ''}
+      </div></div>`;
   }
 
   function choroplethBlock(ind, focus, cont) {
@@ -506,19 +561,21 @@ const WorldDataExplorer = (function () {
       const cls = 'wd-geo' + (out ? ' wd-geo-out' : '') + (p.iso === focus ? ' wd-geo-focus' : '');
       return `<path d="${p.d}" fill="${fill}" class="${cls}" data-iso="${p.iso}" data-out="${out ? 1 : 0}"><title>${esc(entityName(p.iso))}${(m[p.iso] && !out) ? ': ' + fmtVal(ind, m[p.iso].v) : ''}</title></path>`;
     }).join('');
-    /* labels: in a framed (continent/country) view label all in-scope countries;
-       on the world map only the larger countries, to avoid clutter */
-    const areaMin = cont ? 0 : (vbW * vbW * 0.00040);
+    /* labels: skip countries too small to fit one without overlapping; halo is
+       a thin stroke proportional to the font size (no big black box) */
+    const areaMin = vbW * vbW * (cont ? 0.0011 : 0.00055);
+    const halo = (fs * 0.16).toFixed(2);
     const labels = _geoPaths.map(p => {
       if (set && !set.has(p.iso)) return '';
       const e = m[p.iso]; if (!e) return '';
       const b = _geoBbox[p.iso]; if (b && ((b.x1 - b.x0) * (b.y1 - b.y0)) < areaMin) return '';
       const c = _cIso[p.iso]; if (!c || !c.latlng) return '';
       const x = projX(c.latlng[1]).toFixed(1), y = projY(c.latlng[0]).toFixed(1);
-      return `<text class="wd-lbl" x="${x}" y="${y}" font-size="${fs.toFixed(2)}"><tspan x="${x}" dy="-0.05em" class="wd-lbl-c">${esc(c.cca2)}</tspan><tspan x="${x}" dy="1.05em" class="wd-lbl-v">${esc(mapLabelVal(ind, e.v))}</tspan></text>`;
+      return `<text class="wd-lbl" x="${x}" y="${y}" font-size="${fs.toFixed(2)}" stroke-width="${halo}"><tspan x="${x}" dy="-0.05em" class="wd-lbl-c">${esc(c.cca2)}</tspan><tspan x="${x}" dy="1.05em" class="wd-lbl-v">${esc(mapLabelVal(ind, e.v))}</tspan></text>`;
     }).join('');
     return `<div class="wd-map-wrap">
       <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(indName(ind))}">${paths}${labels}</svg>
+      ${ZOOM_BTNS}
       ${legendBinned(ind, ind.latestYear)}
       <div class="wd-map-tip" id="wd-map-tip" hidden></div>
     </div>`;
@@ -595,9 +652,9 @@ const WorldDataExplorer = (function () {
           <button class="wd-cmp-add" id="wd-cmp-add">⚖️ ${_t('Compare', 'Comparar')}</button>
         </div>
       </div>
+      ${citiesSec}
       <section class="wd-sec"><h3 class="wd-sec-h">📋 ${_t('All indicators', 'Todos os indicadores')}</h3>
         <div class="wd-prof-grid">${cards}</div></section>
-      ${citiesSec}
       ${sourceFooter()}`;
     wireEntity(key);
   }
@@ -706,10 +763,11 @@ const WorldDataExplorer = (function () {
     if (countryKeys.length >= 8) {
       const areaMin = 1000 * 1000 * 0.00040;
       const paths = _geoPaths.map(p => { const e = latest[p.iso]; return `<path d="${p.d}" fill="${e ? pickColor(e.v, scale) : 'var(--card2)'}" class="wd-geo" data-iso="${p.iso}"><title>${esc(entityName(p.iso))}${e ? ': ' + fmt(e.v) : ''}</title></path>`; }).join('');
-      const labels = _geoPaths.map(p => { const e = latest[p.iso]; if (!e) return ''; const b = _geoBbox[p.iso]; if (b && ((b.x1 - b.x0) * (b.y1 - b.y0)) < areaMin) return ''; const c = _cIso[p.iso]; if (!c || !c.latlng) return ''; const x = projX(c.latlng[1]).toFixed(1), y = projY(c.latlng[0]).toFixed(1); return `<text class="wd-lbl" x="${x}" y="${y}" font-size="11"><tspan x="${x}" dy="-0.05em" class="wd-lbl-c">${esc(c.cca2)}</tspan><tspan x="${x}" dy="1.05em" class="wd-lbl-v">${esc(fmt(e.v))}</tspan></text>`; }).join('');
+      const labels = _geoPaths.map(p => { const e = latest[p.iso]; if (!e) return ''; const b = _geoBbox[p.iso]; if (b && ((b.x1 - b.x0) * (b.y1 - b.y0)) < areaMin) return ''; const c = _cIso[p.iso]; if (!c || !c.latlng) return ''; const x = projX(c.latlng[1]).toFixed(1), y = projY(c.latlng[0]).toFixed(1); return `<text class="wd-lbl" x="${x}" y="${y}" font-size="11" stroke-width="1.8"><tspan x="${x}" dy="-0.05em" class="wd-lbl-c">${esc(c.cca2)}</tspan><tspan x="${x}" dy="1.05em" class="wd-lbl-v">${esc(fmt(e.v))}</tspan></text>`; }).join('');
       const sw = scale.ramp.map(c => `<span class="wd-lg-sw" style="background:${c}"></span>`).join('');
       const ths = scale.th.map(t => `<span class="wd-lg-th">${esc(fmt(t))}</span>`).join('');
       mapHtml = `<div class="wd-map-wrap"><svg class="wd-map" viewBox="0 40 1000 430" preserveAspectRatio="xMidYMid meet">${paths}${labels}</svg>
+        ${ZOOM_BTNS}
         <div class="wd-legend2"><div class="wd-lg-row">${sw}</div><div class="wd-lg-ths">${ths}</div>${latestYear ? `<div class="wd-lg-yr">${latestYear}</div>` : ''}</div>
         <div class="wd-map-tip" id="wd-map-tip" hidden></div></div>`;
     }
@@ -737,11 +795,12 @@ const WorldDataExplorer = (function () {
       <a class="wd-extlink" href="${link}" target="_blank" rel="noopener">${_t('View original on', 'Ver original em')} ${esc(srcName)} ↗</a>
       <div class="wd-source">${_t('Data fetched live', 'Dados obtidos em direto')} · ${esc(srcName)} (CC BY 4.0)</div>`;
     _root.querySelector('#wd-back').onclick = () => { _view = 'home'; render(); };
+    const svg = _root.querySelector('.wd-map'); wireZoom(svg);
     const tip = _root.querySelector('#wd-map-tip');
     if (tip) _root.querySelectorAll('.wd-geo').forEach(p => {
       p.addEventListener('mousemove', e => { const iso = p.dataset.iso, ee = latest[iso]; tip.innerHTML = `${entityFlag(iso)} ${esc(entityName(iso))}<b>${ee ? ' ' + fmt(ee.v) : ' —'}</b>`; const r = _root.querySelector('.wd-map-wrap').getBoundingClientRect(); tip.style.left = (e.clientX - r.left + 12) + 'px'; tip.style.top = (e.clientY - r.top + 12) + 'px'; tip.hidden = false; });
       p.addEventListener('mouseleave', () => { tip.hidden = true; });
-      p.addEventListener('click', () => { if (latest[p.dataset.iso] && _cIso[p.dataset.iso]) { _entity = p.dataset.iso; _scope.level = 'country'; _scope.country = p.dataset.iso; _view = 'entity'; render(); } });
+      p.addEventListener('click', () => { if (svg && svg.__moved) return; if (latest[p.dataset.iso] && _cIso[p.dataset.iso]) { _entity = p.dataset.iso; _scope.level = 'country'; _scope.country = p.dataset.iso; _view = 'entity'; render(); } });
     });
   }
 
@@ -826,7 +885,8 @@ const WorldDataExplorer = (function () {
     _root.querySelector('#wd-back').onclick = () => { _view = (_scope.level === 'country') ? 'entity' : 'home'; render(); };
     _root.querySelectorAll('.wd-rank-row[data-entity]').forEach(b => b.onclick = () => { _entity = b.dataset.entity; _scope.level = isCountry(b.dataset.entity) ? 'country' : _scope.level; if (isCountry(b.dataset.entity)) _scope.country = b.dataset.entity; _view = 'entity'; render(); });
     _root.querySelectorAll('.wd-toggle [data-rank]').forEach(b => b.onclick = () => { _rankDir = b.dataset.rank; indicatorView(); });
-    /* map: hover tip + click → a popup with the statistic detail (not navigation) */
+    /* map: pan/zoom + hover tip + click → a popup with the statistic detail */
+    const svg = _root.querySelector('.wd-map'); wireZoom(svg);
     const tip = _root.querySelector('#wd-map-tip'), ind = _byId[_ind], m = _vals[_ind];
     _root.querySelectorAll('.wd-geo').forEach(p => {
       p.addEventListener('mousemove', e => { const iso = p.dataset.iso; const v = m[iso] ? m[iso].v : null;
@@ -834,7 +894,7 @@ const WorldDataExplorer = (function () {
         const r = _root.querySelector('.wd-map-wrap').getBoundingClientRect();
         tip.style.left = (e.clientX - r.left + 12) + 'px'; tip.style.top = (e.clientY - r.top + 12) + 'px'; tip.hidden = false; });
       p.addEventListener('mouseleave', () => { tip.hidden = true; });
-      p.addEventListener('click', () => { if (m[p.dataset.iso]) showStatPopup(p.dataset.iso, ind, cont); });
+      p.addEventListener('click', () => { if (svg && svg.__moved) return; if (m[p.dataset.iso]) showStatPopup(p.dataset.iso, ind, cont); });
     });
   }
 

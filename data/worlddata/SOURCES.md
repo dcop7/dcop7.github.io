@@ -47,8 +47,10 @@ atualização.
 Ficheiro `cities15000` filtrado por `build-cities.mjs`.
 
 ## Geometria
-`data/world-countries.geojson` e os GeoJSON de Portugal já existentes no repo;
-factos base dos países em `data/countries.json`.
+`world-50m.geojson` — fronteiras dos países da **Natural Earth 50m** (domínio
+público), reduzidas a `{iso, name}` + coordenadas a 2 casas decimais por
+`build-geo.mjs` (~1,4 MB, carregado a pedido). Factos base dos países em
+`data/countries.json`.
 
 ## Regenerar
 ```

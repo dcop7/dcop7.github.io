@@ -94,9 +94,14 @@ button.wd-sum-cell:hover { border-color: rgba(var(--accent-rgb),.4); transform: 
 .wd-ind-head-meta { font-size: .76rem; color: var(--muted); margin-top: .15rem; }
 
 .wd-map-wrap { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: .5rem; margin-bottom: 1.4rem; }
-.wd-map { width: 100%; height: auto; display: block; }
-.wd-geo { stroke: var(--bg, #0a0e17); stroke-width: .4; transition: opacity .12s ease; cursor: pointer; }
-.wd-geo:hover { opacity: .75; stroke: #fff; stroke-width: .8; }
+.wd-map { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; }
+.wd-map:active { cursor: grabbing; }
+.wd-map-zoom { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; gap: 4px; z-index: 4; }
+.wd-map-zoom button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: rgba(10,14,23,.85); color: var(--text); font-size: 1rem; font-weight: 700; cursor: pointer; line-height: 1; }
+.wd-map-zoom button:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+/* crisp hairline borders that stay constant at any zoom */
+.wd-geo { stroke: rgba(8,12,22,.85); stroke-width: .7px; vector-effect: non-scaling-stroke; stroke-linejoin: round; shape-rendering: geometricPrecision; transition: opacity .12s ease; cursor: pointer; }
+.wd-geo:hover { opacity: .8; stroke: #fff; stroke-width: 1.4px; }
 .wd-map-legend { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-top: .3rem; font-size: .72rem; color: var(--muted); }
 .wd-legend-ramp { width: 140px; height: 9px; border-radius: 5px; }
 .wd-legend-1 { background: linear-gradient(90deg, hsl(0 65% 48%), hsl(65 65% 52%), hsl(130 65% 48%)); }
@@ -159,12 +164,13 @@ button.wd-sum-cell:hover { border-color: rgba(var(--accent-rgb),.4); transform: 
 .wd-cmp-rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .8rem; margin-left: .3rem; }
 .wd-cmp-rm:hover { color: #ef4444; }
 
-/* ── map quality + on-map labels (code + value) ── */
-.wd-geo { shape-rendering: geometricPrecision; }
+/* ── on-map labels (code + value): thin proportional halo, no box ──
+   stroke-width is set inline per <text> (in user units) so it scales with
+   zoom and never becomes a big black block. */
 .wd-lbl { text-anchor: middle; fill: #fff; font-weight: 700; font-family: var(--font-sans, system-ui, sans-serif);
-  paint-order: stroke; stroke: #0b1020; stroke-width: 2.4px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  paint-order: stroke; stroke: #0b1118; stroke-opacity: .9; stroke-linejoin: round; pointer-events: none; }
 .wd-lbl-c { font-weight: 800; letter-spacing: .02em; }
-.wd-lbl-v { font-size: .82em; fill: #f0f6ff; }
+.wd-lbl-v { font-size: .82em; fill: #eaf2ff; }
 
 /* ── discrete (binned) legend ── */
 .wd-legend2 { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: .4rem; }
@@ -202,8 +208,8 @@ button.wd-sum-cell:hover { border-color: rgba(var(--accent-rgb),.4); transform: 
 .wd-sum-l .wd-yr, .wd-ind-val .wd-yr { opacity: .85; }
 
 /* ── choropleth scoping ── */
-.wd-geo-out { opacity: .35; pointer-events: none; }
-.wd-geo-focus { stroke: var(--accent2, #38bdf8); stroke-width: 1.4; }
+.wd-geo-out { opacity: .3; pointer-events: none; }
+.wd-geo-focus { stroke: var(--accent2, #38bdf8); stroke-width: 2px; vector-effect: non-scaling-stroke; }
 .wd-map-year { color: var(--muted); }
 
 /* ── vs world delta on profile cards ── */
