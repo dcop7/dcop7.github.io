@@ -159,8 +159,42 @@ button.wd-sum-cell:hover { border-color: rgba(var(--accent-rgb),.4); transform: 
 .wd-cmp-rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .8rem; margin-left: .3rem; }
 .wd-cmp-rm:hover { color: #ef4444; }
 
+/* ── data year tag ── */
+.wd-yr { font-style: normal; font-size: .82em; color: var(--muted); font-weight: 600; }
+.wd-sum-l .wd-yr, .wd-ind-val .wd-yr { opacity: .85; }
+
+/* ── choropleth scoping ── */
+.wd-geo-out { opacity: .35; pointer-events: none; }
+.wd-geo-focus { stroke: var(--accent2, #38bdf8); stroke-width: 1.4; }
+.wd-map-year { color: var(--muted); }
+
+/* ── vs world delta on profile cards ── */
+.wd-vs { font-size: .68rem; font-weight: 700; margin-left: .25rem; }
+.wd-vs-up { color: #22c55e; }
+.wd-vs-dn { color: #ef4444; }
+
+/* ── Portugal spotlight ── */
+.wd-spot { display: block; width: 100%; text-align: left; background: linear-gradient(135deg, rgba(22,163,74,.14), rgba(239,68,68,.08)); border: 1px solid var(--border); border-radius: 16px; padding: .9rem 1rem; cursor: pointer; transition: all var(--ease); }
+.wd-spot:hover { border-color: rgba(var(--accent-rgb),.4); transform: translateY(-2px); }
+.wd-spot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; }
+.wd-spot-cell { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .1rem; }
+.wd-spot-em { font-size: 1.3rem; }
+.wd-spot-v { font-weight: 800; color: var(--text); font-size: 1rem; }
+.wd-spot-r { font-size: .72rem; color: var(--accent); font-weight: 700; }
+.wd-spot-l { font-size: .66rem; color: var(--muted); line-height: 1.15; }
+.wd-spot-go { font-size: .82rem; color: var(--accent); font-weight: 700; margin-top: .7rem; }
+
+/* ── search suggestion section headers + web link ── */
+.wd-sug-head { padding: .4rem .8rem .25rem; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; background: var(--card); position: sticky; top: 0; }
+.wd-extlink { display: inline-block; margin: .4rem 0; color: var(--accent2, var(--accent)); font-size: .85rem; font-weight: 600; text-decoration: none; }
+.wd-extlink:hover { text-decoration: underline; }
+
 /* ── hub feature card accent ── */
 .ex-feature-card--data { background: linear-gradient(135deg, rgba(56,189,248,.14), rgba(99,102,241,.1)); }
+
+@media (max-width: 620px) {
+  .wd-spot-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* ── responsive ── */
 @media (max-width: 620px) {

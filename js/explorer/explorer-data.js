@@ -16,12 +16,13 @@ const WorldDataExplorer = (function () {
   let _root = null, _mounted = false;
   let _inds = null, _vals = null, _byId = {};
   let _countries = null, _cIso = {}, _cName = {};   // iso3 -> country, name lookups
-  let _cities = null, _geo = null, _geoPaths = null;
+  let _cities = null, _geo = null, _geoPaths = null, _geoBbox = {};
   const _series = {};                               // indId -> {key:[[y,v]]}
+  let _catalog = null;                              // OWID chart slugs (live search)
 
   /* view + scope state */
-  let _view = 'home';                               // home | indicator | entity | compare
-  let _ind = null, _entity = null;
+  let _view = 'home';                               // home | indicator | entity | compare | web
+  let _ind = null, _entity = null, _web = null;
   let _compare = [];
   const _scope = { level: 'world', cont: 'Europe', country: 'PRT', city: null };
   let _rankDir = 'top';                              // ranking order in indicator view
@@ -44,6 +45,7 @@ const WorldDataExplorer = (function () {
   const CONT_PT = { 'World':'Mundo', Africa:'África', Asia:'Ásia', Europe:'Europa',
     'North America':'América do Norte', 'South America':'América do Sul', Oceania:'Oceânia' };
   const CONTS = ['Africa','Asia','Europe','North America','South America','Oceania'];
+  const SPECIALS = { 'World':'WORLD', Africa:'Africa', Asia:'Asia', Europe:'Europe', 'North America':'North America', 'South America':'South America', Oceania:'Oceania' };
 
   function indName(ind) { return _lang() === 'en' ? ind.en : ind.pt; }
   function indUnit(ind) { return _lang() === 'en' ? (ind.unitEn || '') : (ind.unit || ''); }
@@ -82,6 +84,7 @@ const WorldDataExplorer = (function () {
     const ct = (_cities || []).find(x => x.id === key); return ct ? (_cIso[ct.iso3]?.flag || '🏙️') : '🏙️';
   }
   function val(indId, key) { const m = _vals[indId]; const e = m && m[key]; return e ? e.v : null; }
+  function yearOf(indId, key) { const m = _vals[indId]; const e = m && m[key]; return e ? e.y : null; }
 
   /* countries that belong to a continent (by countries.json continents[0]) */
   function countriesOf(cont) {
@@ -129,6 +132,30 @@ const WorldDataExplorer = (function () {
     _geo = await fetch('data/world-countries.geojson').then(r => r.json());
     buildGeoPaths();
   }
+  async function ensureCatalog() {
+    if (_catalog) return _catalog;
+    try { _catalog = await fetch(`${BASE}/owid-catalog.json`).then(r => r.json()); }
+    catch { _catalog = []; }
+    return _catalog;
+  }
+
+  /* minimal CSV parser (handles quoted fields) — for live OWID chart CSVs */
+  function parseCSV(text) {
+    const rows = []; let i = 0, field = '', row = [], inQ = false;
+    while (i < text.length) {
+      const c = text[i];
+      if (inQ) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQ = false; } else field += c; }
+      else if (c === '"') inQ = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else if (c !== '\r') field += c;
+      i++;
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+  /* "co-emissions-per-capita" → "Co emissions per capita" */
+  function slugTitle(s) { const t = s.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); }
 
   /* geojson name → iso3 (with a few aliases for names that differ) */
   const GEO_ALIAS = { 'the bahamas':'BHS', macedonia:'MKD', swaziland:'SWZ', 'east timor':'TLS', turkey:'TUR', 'west bank':'PSE' };
@@ -144,14 +171,34 @@ const WorldDataExplorer = (function () {
     return d + 'Z';
   }
   function buildGeoPaths() {
-    _geoPaths = [];
+    _geoPaths = []; _geoBbox = {};
     for (const f of _geo.features) {
       const iso = geoIso(f.properties.name); if (!iso) continue;
       const g = f.geometry; let d = '';
-      if (g.type === 'Polygon') g.coordinates.forEach(r => d += ringPath(r));
-      else if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(r => d += ringPath(r)));
-      if (d) _geoPaths.push({ iso, d });
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      const acc = ring => { ring.forEach(pt => { const x = projX(pt[0]), y = projY(pt[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }); };
+      if (g.type === 'Polygon') g.coordinates.forEach(r => { d += ringPath(r); acc(r); });
+      else if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(r => { d += ringPath(r); acc(r); }));
+      if (d) { _geoPaths.push({ iso, d }); _geoBbox[iso] = { x0, y0, x1, y1 }; }
     }
+  }
+  /* viewBox framing the CORE of a continent. Uses country centroids with
+     percentile clipping so transcontinental outliers (Russia in Europe, French
+     overseas territories, etc.) don't blow the frame out to the whole world. */
+  function continentViewBox(cont) {
+    const lons = [], lats = [];
+    countriesOf(cont).forEach(iso => { const c = _cIso[iso]; if (c && c.latlng && c.latlng.length === 2) { lats.push(c.latlng[0]); lons.push(c.latlng[1]); } });
+    if (!lons.length) return '0 40 1000 430';
+    lons.sort((a, b) => a - b); lats.sort((a, b) => a - b);
+    const pct = (arr, p) => arr[Math.min(arr.length - 1, Math.max(0, Math.round((arr.length - 1) * p)))];
+    let lon0 = pct(lons, 0.08), lon1 = pct(lons, 0.92), lat0 = pct(lats, 0.08), lat1 = pct(lats, 0.92);
+    if (lon1 - lon0 < 24) { const m = (lon0 + lon1) / 2; lon0 = m - 14; lon1 = m + 14; }
+    if (lat1 - lat0 < 18) { const m = (lat0 + lat1) / 2; lat0 = m - 11; lat1 = m + 11; }
+    let x0 = projX(lon0), x1 = projX(lon1), y0 = projY(lat1), y1 = projY(lat0);  // projY inverts
+    const padX = (x1 - x0) * 0.14 + 12, padY = (y1 - y0) * 0.14 + 12;
+    x0 = Math.max(0, x0 - padX); y0 = Math.max(0, y0 - padY);
+    x1 = Math.min(MAPW, x1 + padX); y1 = Math.min(MAPH, y1 + padY);
+    return `${x0.toFixed(0)} ${y0.toFixed(0)} ${(x1 - x0).toFixed(0)} ${(y1 - y0).toFixed(0)}`;
   }
 
   /* ── colour scale for the choropleth ── */
@@ -273,16 +320,31 @@ const WorldDataExplorer = (function () {
     const pool = _scope.level === 'continent' ? countriesOf(_scope.cont) : null;
     return `
       ${scopeSummary(scopeKey)}
+      ${spotlightBlock()}
       ${highlightsBlock(scopeKey, pool)}
       ${popularBlock()}
       ${comparisonsTeaser()}
       ${sourceFooter()}`;
   }
 
+  /* a prominent "Portugal in detail" spotlight (the user lives there) */
+  function spotlightBlock() {
+    const key = 'PRT';
+    const stats = ['life', 'gdppc', 'happiness', 'internet'].map(id => {
+      const ind = _byId[id], v = val(id, key), r = rankOf(id, key);
+      return v == null ? '' : `<div class="wd-spot-cell"><span class="wd-spot-em">${ind.emoji}</span><span class="wd-spot-v">${fmtVal(ind, v)}</span><span class="wd-spot-r">${r ? '#' + r.rank : ''}</span><span class="wd-spot-l">${esc(indName(ind))}</span></div>`;
+    }).join('');
+    return `<section class="wd-sec"><h3 class="wd-sec-h">🇵🇹 ${_t('Portugal in detail', 'Portugal em detalhe')}</h3>
+      <button class="wd-spot" id="wd-spot-pt">
+        <div class="wd-spot-grid">${stats}</div>
+        <div class="wd-spot-go">${_t('Open full Portugal profile', 'Ver perfil completo de Portugal')} →</div>
+      </button></section>`;
+  }
+
   function scopeSummary(scopeKey) {
     const big = ['population', 'life', 'gdppc', 'happiness'];
-    const cells = big.map(id => { const ind = _byId[id]; const v = val(id, scopeKey); return v == null ? '' :
-      `<button class="wd-sum-cell" data-ind="${id}"><span class="wd-sum-em">${ind.emoji}</span><span class="wd-sum-v">${fmtVal(ind, v)}</span><span class="wd-sum-l">${esc(indName(ind))}</span></button>`; }).join('');
+    const cells = big.map(id => { const ind = _byId[id]; const v = val(id, scopeKey); const y = yearOf(id, scopeKey); return v == null ? '' :
+      `<button class="wd-sum-cell" data-ind="${id}"><span class="wd-sum-em">${ind.emoji}</span><span class="wd-sum-v">${fmtVal(ind, v)}</span><span class="wd-sum-l">${esc(indName(ind))}${y ? ` <em class="wd-yr">${y}</em>` : ''}</span></button>`; }).join('');
     return `<div class="wd-hero">
         <div class="wd-hero-top"><span class="wd-hero-flag">${entityFlag(scopeKey)}</span>
           <div><div class="wd-hero-kick">${_t('Exploring', 'A explorar')}</div><h2 class="wd-hero-name">${esc(entityName(scopeKey))}</h2></div></div>
@@ -332,10 +394,11 @@ const WorldDataExplorer = (function () {
   function indCard(ind) {
     const scopeKey = _scope.level === 'continent' ? _scope.cont : 'WORLD';
     const v = val(ind.id, scopeKey);
+    const y = yearOf(ind.id, scopeKey);
     return `<button class="wd-ind-card" data-ind="${ind.id}">
       <span class="wd-ind-em">${ind.emoji}</span>
       <span class="wd-ind-name">${esc(indName(ind))}</span>
-      <span class="wd-ind-val">${v == null ? '' : fmtVal(ind, v)}</span></button>`;
+      <span class="wd-ind-val">${v == null ? '' : fmtVal(ind, v)}${y ? ` <em class="wd-yr">${y}</em>` : ''}</span></button>`;
   }
 
   function comparisonsTeaser() {
@@ -404,24 +467,30 @@ const WorldDataExplorer = (function () {
         <div><h2 class="wd-ind-head-name">${esc(indName(ind))}</h2>
         <div class="wd-ind-head-meta">${esc(catName(ind.cat))} · ${ind.latestYear} · ${esc(_t('source', 'fonte'))}: OWID</div></div>
       </div>
-      ${choroplethBlock(ind)}
+      ${choroplethBlock(ind, focus)}
       ${rankingBlock(ind, pool, focus)}
       ${trendBlock(ind, focus)}
       ${sourceFooter()}`;
     wireIndicator();
   }
 
-  function choroplethBlock(ind) {
+  function choroplethBlock(ind, focus) {
     const m = _vals[ind.id];
+    const inCont = _scope.level === 'continent';
+    const set = inCont ? new Set(countriesOf(_scope.cont)) : null;
+    const vbox = inCont ? continentViewBox(_scope.cont) : '0 40 1000 430';
     const paths = _geoPaths.map(p => {
-      const v = m[p.iso] ? m[p.iso].v : null;
-      return `<path d="${p.d}" fill="${colorFor(ind, v)}" class="wd-geo" data-iso="${p.iso}"><title>${esc(entityName(p.iso))}${v == null ? '' : ': ' + fmtVal(ind, v)}</title></path>`;
+      const out = set && !set.has(p.iso);
+      const v = (out ? null : (m[p.iso] ? m[p.iso].v : null));
+      const fill = out ? 'var(--card2)' : colorFor(ind, m[p.iso] ? m[p.iso].v : null);
+      const cls = 'wd-geo' + (out ? ' wd-geo-out' : '') + (p.iso === focus ? ' wd-geo-focus' : '');
+      return `<path d="${p.d}" fill="${fill}" class="${cls}" data-iso="${p.iso}" data-out="${out ? 1 : 0}"><title>${esc(entityName(p.iso))}${(m[p.iso] && !out) ? ': ' + fmtVal(ind, m[p.iso].v) : ''}</title></path>`;
     }).join('');
     const loLabel = ind.dir === -1 ? _t('high', 'alto') : _t('low', 'baixo');
     const hiLabel = ind.dir === -1 ? _t('low', 'baixo') : _t('high', 'alto');
     return `<div class="wd-map-wrap">
-      <svg class="wd-map" viewBox="0 40 1000 430" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(indName(ind))}">${paths}</svg>
-      <div class="wd-map-legend"><span>${esc(loLabel)}</span><i class="wd-legend-ramp wd-legend-${ind.dir}"></i><span>${esc(hiLabel)}</span></div>
+      <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(indName(ind))}">${paths}</svg>
+      <div class="wd-map-legend"><span>${esc(loLabel)}</span><i class="wd-legend-ramp wd-legend-${ind.dir}"></i><span>${esc(hiLabel)}</span>${ind.latestYear ? `<span class="wd-map-year">· ${ind.latestYear}</span>` : ''}</div>
       <div class="wd-map-tip" id="wd-map-tip" hidden></div>
     </div>`;
   }
@@ -469,17 +538,25 @@ const WorldDataExplorer = (function () {
     const c = _cIso[key];
     const cont = c && c.continents ? c.continents[0] : null;
     const pool = cont ? countriesOf(cont) : null;
-    /* load sparkline series for all indicators (small, parallel) */
-    await Promise.all(_inds.map(i => ensureSeries(i.id)));
+    /* load sparkline series for all indicators + cities (small, parallel) */
+    await Promise.all([..._inds.map(i => ensureSeries(i.id)), ensureCities()]);
+    const contFlag = cont ? entityFlag(cont) : '';
     const cards = _inds.map(ind => {
-      const v = val(ind.id, key); const r = rankOf(ind.id, key);
+      const v = val(ind.id, key), y = yearOf(ind.id, key);
+      const r = rankOf(ind.id, key), rc = pool ? rankOf(ind.id, key, pool) : null;
       const s = (_series[ind.id] || {})[key];
+      const wv = val(ind.id, 'WORLD');
+      const cmp = (v != null && wv != null) ? (v >= wv ? '▲' : '▼') : '';
       return `<button class="wd-prof-card" data-ind="${ind.id}">
         <div class="wd-prof-top"><span class="wd-prof-em">${ind.emoji}</span><span class="wd-prof-name">${esc(indName(ind))}</span></div>
-        <div class="wd-prof-val">${fmtVal(ind, v)}</div>
-        ${r ? `<div class="wd-prof-rank">#${r.rank} <small>/ ${r.total} ${_t('worldwide', 'no mundo')}</small></div>` : ''}
+        <div class="wd-prof-val">${fmtVal(ind, v)}${y ? ` <em class="wd-yr">${y}</em>` : ''}</div>
+        ${r ? `<div class="wd-prof-rank">🌍 #${r.rank}<small>/${r.total}</small>${rc ? ` · ${contFlag} #${rc.rank}<small>/${rc.total}</small>` : ''}` +
+          `${cmp ? ` <span class="wd-vs wd-vs-${cmp === '▲' ? 'up' : 'dn'}">${cmp} ${_t('vs world', 'vs mundo')}</span>` : ''}</div>` : ''}
         ${sparkline(s, ind.dir === -1 ? '#ef4444' : 'var(--accent)')}</button>`;
     }).join('');
+    const cityList = (_cities || []).filter(x => x.iso3 === key).sort((a, b) => b.pop - a.pop).slice(0, 8);
+    const citiesSec = cityList.length ? `<section class="wd-sec"><h3 class="wd-sec-h">🏙️ ${_t('Largest cities', 'Maiores cidades')}</h3>
+        <div class="wd-rank">${cityList.map((ct, i) => cityRow(ct, i + 1, cityList[0].pop)).join('')}</div></section>` : '';
     const sub = c ? `${esc(c.capital ? c.capital[0] : '')} · ${esc(_lang() === 'en' ? (c.regionPt ? c.region : c.region) : (c.regionPt || c.region))}` : '';
     body.innerHTML = `
       <button class="wd-back" id="wd-back">← ${_t('Back', 'Voltar')}</button>
@@ -491,6 +568,7 @@ const WorldDataExplorer = (function () {
       </div>
       <section class="wd-sec"><h3 class="wd-sec-h">📋 ${_t('All indicators', 'Todos os indicadores')}</h3>
         <div class="wd-prof-grid">${cards}</div></section>
+      ${citiesSec}
       ${sourceFooter()}`;
     wireEntity(key);
   }
@@ -544,6 +622,86 @@ const WorldDataExplorer = (function () {
     });
   }
 
+  /* ══════════════════════ LIVE WEB CHART (Our World in Data) ══════════════════════ */
+  async function webView() {
+    const slug = _web;
+    const body = _root.querySelector('#wd-body');
+    body.innerHTML = `<button class="wd-back" id="wd-back">← ${_t('Back', 'Voltar')}</button><div class="wd-loading">${_t('Fetching live data from Our World in Data…', 'A obter dados em direto da Our World in Data…')}</div>`;
+    _root.querySelector('#wd-back').onclick = () => { _view = 'home'; render(); };
+    let rows;
+    try {
+      const txt = await fetch(`https://ourworldindata.org/grapher/${slug}.csv?csvType=full&useColumnShortNames=true`).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); });
+      rows = parseCSV(txt);
+    } catch (e) {
+      body.innerHTML = `<button class="wd-back" id="wd-back2">← ${_t('Back', 'Voltar')}</button>
+        <div class="wd-loading">${_t('Could not load this chart live.', 'Não foi possível carregar este gráfico em direto.')}<br>
+        <a class="wd-extlink" href="https://ourworldindata.org/grapher/${esc(slug)}" target="_blank" rel="noopener">${_t('Open on Our World in Data', 'Abrir na Our World in Data')} ↗</a></div>`;
+      _root.querySelector('#wd-back2').onclick = () => { _view = 'home'; render(); };
+      return;
+    }
+    await ensureGeo();
+    const header = rows[0] || [];
+    const valCol = 3;
+    const series = {};               // key -> [[y,v]]
+    const NOW = new Date().getFullYear();
+    for (let r = 1; r < rows.length; r++) {
+      const row = rows[r]; if (row.length <= valCol) continue;
+      const entity = row[0], code = row[1], year = parseInt(row[2], 10), v = parseFloat(row[valCol]);
+      if (!isFinite(v) || !isFinite(year) || year > NOW) continue;
+      let key = /^[A-Z]{3}$/.test(code) && code !== 'OWID' ? code : (SPECIALS[entity] || null);
+      if (!key) continue;
+      (series[key] = series[key] || []).push([year, v]);
+    }
+    Object.keys(series).forEach(k => series[k].sort((a, b) => a[0] - b[0]));
+    const latest = {}; let minV = Infinity, maxV = -Infinity, latestYear = 0;
+    Object.keys(series).forEach(k => { const last = series[k][series[k].length - 1]; latest[k] = { v: last[1], y: last[0] }; if (/^[A-Z]{3}$/.test(k)) { if (last[1] < minV) minV = last[1]; if (last[1] > maxV) maxV = last[1]; } if (last[0] > latestYear) latestYear = last[0]; });
+    const fakeInd = { id: '_web', dir: 0, dec: 2, min: minV, max: maxV, latestYear, emoji: '🌐' };
+    const fmt = v => v == null ? '—' : nf(round(v, Math.abs(v) < 10 ? 2 : (Math.abs(v) < 1000 ? 1 : 0)));
+    const colName = (header[valCol] || '').replace(/_/g, ' ');
+    /* choropleth (neutral ramp) */
+    const countryKeys = Object.keys(latest).filter(isCountry);
+    let mapHtml = '';
+    if (countryKeys.length >= 8 && isFinite(minV)) {
+      const paths = _geoPaths.map(p => { const e = latest[p.iso]; const fill = e ? colorFor(fakeInd, e.v) : 'var(--card2)'; return `<path d="${p.d}" fill="${fill}" class="wd-geo" data-iso="${p.iso}"><title>${esc(entityName(p.iso))}${e ? ': ' + fmt(e.v) : ''}</title></path>`; }).join('');
+      mapHtml = `<div class="wd-map-wrap"><svg class="wd-map" viewBox="0 40 1000 430" preserveAspectRatio="xMidYMid meet">${paths}</svg>
+        <div class="wd-map-legend"><span>${_t('low', 'baixo')}</span><i class="wd-legend-ramp wd-legend-0"></i><span>${_t('high', 'alto')}</span>${latestYear ? `<span class="wd-map-year">· ${latestYear}</span>` : ''}</div>
+        <div class="wd-map-tip" id="wd-map-tip" hidden></div></div>`;
+    }
+    /* ranking */
+    let rankHtml = '';
+    if (countryKeys.length) {
+      const ks = countryKeys.slice().sort((a, b) => latest[b].v - latest[a].v).slice(0, 15);
+      const mx = Math.max(...ks.map(k => Math.abs(latest[k].v))) || 1;
+      rankHtml = `<section class="wd-sec"><h3 class="wd-sec-h">🏆 ${_t('Ranking', 'Ranking')}</h3><div class="wd-rank">${ks.map((k, i) =>
+        `<div class="wd-rank-row${k === 'PRT' ? ' is-focus' : ''}"><span class="wd-rank-n">${i + 1}</span><span class="wd-rank-flag">${entityFlag(k)}</span><span class="wd-rank-name">${esc(entityName(k))}</span><span class="wd-rank-bar"><i style="width:${Math.max(3, Math.round(Math.abs(latest[k].v) / mx * 100))}%"></i></span><span class="wd-rank-val">${fmt(latest[k].v)}</span></div>`).join('')}</div></section>`;
+    }
+    /* line chart: World + Portugal + a couple of top entities */
+    const lineKeys = [];
+    if (series.WORLD) lineKeys.push('WORLD');
+    if (series.PRT) lineKeys.push('PRT');
+    countryKeys.sort((a, b) => latest[b].v - latest[a].v).slice(0, 2).forEach(k => { if (!lineKeys.includes(k)) lineKeys.push(k); });
+    if (!lineKeys.length) Object.keys(series).slice(0, 3).forEach(k => lineKeys.push(k));
+    const lines = lineKeys.map((k, i) => ({ key: k, label: entityName(k), color: PALETTE[i % PALETTE.length], points: series[k] }));
+    body.innerHTML = `
+      <button class="wd-back" id="wd-back">← ${_t('Back', 'Voltar')}</button>
+      <div class="wd-ind-head"><span class="wd-ind-head-em">🌐</span>
+        <div><h2 class="wd-ind-head-name">${esc(slugTitle(slug))}</h2>
+        <div class="wd-ind-head-meta">${_t('Live', 'Em direto')} · Our World in Data${colName ? ' · ' + esc(colName) : ''}${latestYear ? ' · ' + latestYear : ''}</div></div></div>
+      ${mapHtml}
+      ${lines.length ? `<section class="wd-sec"><h3 class="wd-sec-h">📈 ${_t('Evolution over time', 'Evolução ao longo do tempo')}</h3>${lineChart(lines, { label: slugTitle(slug) })}</section>` : ''}
+      ${rankHtml}
+      <a class="wd-extlink" href="https://ourworldindata.org/grapher/${esc(slug)}" target="_blank" rel="noopener">${_t('View original on Our World in Data', 'Ver original na Our World in Data')} ↗</a>
+      <div class="wd-source">${_t('Data fetched live', 'Dados obtidos em direto')} · Our World in Data (CC BY 4.0)</div>`;
+    _root.querySelector('#wd-back').onclick = () => { _view = 'home'; render(); };
+    /* map tooltip + click → country profile */
+    const tip = _root.querySelector('#wd-map-tip');
+    if (tip) _root.querySelectorAll('.wd-geo').forEach(p => {
+      p.addEventListener('mousemove', e => { const iso = p.dataset.iso, ee = latest[iso]; tip.innerHTML = `${entityFlag(iso)} ${esc(entityName(iso))}<b>${ee ? ' ' + fmt(ee.v) : ' —'}</b>`; const r = _root.querySelector('.wd-map-wrap').getBoundingClientRect(); tip.style.left = (e.clientX - r.left + 12) + 'px'; tip.style.top = (e.clientY - r.top + 12) + 'px'; tip.hidden = false; });
+      p.addEventListener('mouseleave', () => { tip.hidden = true; });
+      p.addEventListener('click', () => { _entity = p.dataset.iso; _scope.level = 'country'; _scope.country = p.dataset.iso; _view = 'entity'; render(); });
+    });
+  }
+
   /* ══════════════════════ SEARCH ══════════════════════ */
   function buildSearchIndex(q) {
     const out = [];
@@ -551,7 +709,20 @@ const WorldDataExplorer = (function () {
     (_countries || []).forEach(c => { if (norm(entityNameC(c)).includes(q)) out.push({ type: 'country', id: c.cca3, label: entityNameC(c), em: c.flag, sub: _t('Country', 'País') }); });
     CONTS.forEach(c => { if (norm(_t(c, CONT_PT[c])).includes(q)) out.push({ type: 'cont', id: c, label: _t(c, CONT_PT[c]), em: '🗺️', sub: _t('Continent', 'Continente') }); });
     if (_cities) (_cities).forEach(c => { if (norm(c.name).includes(q)) out.push({ type: 'city', id: c.id, label: c.name, em: '🏙️', sub: (_cIso[c.iso3] ? entityNameC(_cIso[c.iso3]) : c.cc) }); });
-    return out.slice(0, 10);
+    return out.slice(0, 8);
+  }
+  /* live catalogue search across all Our World in Data charts (~4.5k) */
+  function buildWebIndex(q) {
+    if (!_catalog) return [];
+    const terms = q.split(/\s+/).filter(Boolean);
+    const hits = [];
+    for (const slug of _catalog) {
+      const n = slug.replace(/-/g, ' ');
+      if (terms.every(t => n.includes(t))) { hits.push(slug); if (hits.length >= 30) break; }
+    }
+    /* prefer shorter slugs (more general charts) */
+    hits.sort((a, b) => a.length - b.length);
+    return hits.slice(0, 8).map(slug => ({ type: 'web', id: slug, label: slugTitle(slug), em: '🌐', sub: 'Our World in Data' }));
   }
   function wireSearch() {
     const inp = _root.querySelector('#wd-search'), box = _root.querySelector('#wd-suggest');
@@ -563,12 +734,17 @@ const WorldDataExplorer = (function () {
         const q = norm(inp.value.trim());
         if (q.length < 2) return close();
         if (!_cities) await ensureCities();
+        if (!_catalog) await ensureCatalog();
         const res = buildSearchIndex(q);
-        if (!res.length) { box.innerHTML = `<div class="wd-sug-empty">${_t('No matches', 'Sem resultados')}</div>`; box.hidden = false; return; }
-        box.innerHTML = res.map(r => `<button class="wd-sug" data-type="${r.type}" data-id="${r.id}"><span class="wd-sug-em">${r.em}</span><span class="wd-sug-l">${esc(r.label)}</span><span class="wd-sug-sub">${esc(r.sub)}</span></button>`).join('');
-        box.hidden = false;
+        const web = buildWebIndex(q);
+        const sug = r => `<button class="wd-sug" data-type="${r.type}" data-id="${esc(r.id)}"><span class="wd-sug-em">${r.em}</span><span class="wd-sug-l">${esc(r.label)}</span><span class="wd-sug-sub">${esc(r.sub)}</span></button>`;
+        let html = '';
+        if (res.length) html += `<div class="wd-sug-head">${_t('On this site', 'Neste site')}</div>` + res.map(sug).join('');
+        if (web.length) html += `<div class="wd-sug-head">🌐 ${_t('Live from Our World in Data', 'Em direto da Our World in Data')}</div>` + web.map(sug).join('');
+        if (!html) html = `<div class="wd-sug-empty">${_t('No matches', 'Sem resultados')}</div>`;
+        box.innerHTML = html; box.hidden = false;
         box.querySelectorAll('.wd-sug').forEach(b => b.onclick = () => { pickSearch(b.dataset.type, b.dataset.id); inp.value = ''; close(); });
-      }, 140);
+      }, 160);
     });
     inp.addEventListener('blur', () => setTimeout(close, 180));
   }
@@ -577,6 +753,7 @@ const WorldDataExplorer = (function () {
     else if (type === 'country') { _entity = id; _scope.level = 'country'; _scope.country = id; _view = 'entity'; }
     else if (type === 'cont') { _scope.level = 'continent'; _scope.cont = id; _view = 'home'; }
     else if (type === 'city') { _scope.level = 'city'; _scope.city = id; _entity = id; _view = 'entity'; }
+    else if (type === 'web') { _web = id; _view = 'web'; }
     render();
   }
 
@@ -586,6 +763,7 @@ const WorldDataExplorer = (function () {
     _root.querySelectorAll('.wd-hl[data-entity]').forEach(b => b.onclick = () => { _ind = b.dataset.ind; _view = 'indicator'; render(); });
     _root.querySelectorAll('.wd-cmp-card[data-keys]').forEach(b => b.onclick = () => { _compare = b.dataset.keys.split(','); _view = 'compare'; render(); });
     _root.querySelectorAll('.wd-rank-row[data-city]').forEach(b => b.onclick = () => { _entity = b.dataset.city; _view = 'entity'; render(); });
+    const spt = _root.querySelector('#wd-spot-pt'); if (spt) spt.onclick = () => { _entity = 'PRT'; _scope.level = 'country'; _scope.country = 'PRT'; _view = 'entity'; render(); };
   }
   function wireIndicator() {
     _root.querySelector('#wd-back').onclick = () => { _view = (_scope.level === 'country') ? 'entity' : 'home'; render(); };
@@ -605,6 +783,7 @@ const WorldDataExplorer = (function () {
   function wireEntity(key) {
     _root.querySelector('#wd-back').onclick = () => { _view = 'home'; render(); };
     _root.querySelectorAll('.wd-prof-card[data-ind]').forEach(b => b.onclick = () => { _ind = b.dataset.ind; _view = 'indicator'; render(); });
+    _root.querySelectorAll('.wd-rank-row[data-city]').forEach(b => b.onclick = () => { _entity = b.dataset.city; _view = 'entity'; render(); });
     const add = _root.querySelector('#wd-cmp-add'); if (add) add.onclick = () => { _compare = [key]; _view = 'compare'; render(); };
   }
   function wireCompare() {
@@ -629,6 +808,7 @@ const WorldDataExplorer = (function () {
     if (_view === 'indicator') { indicatorView(); return; }
     if (_view === 'entity') { entityView(); return; }
     if (_view === 'compare') { compareView(); return; }
+    if (_view === 'web') { webView(); return; }
     body.innerHTML = homeView();
     wireHome();
   }

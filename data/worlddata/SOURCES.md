@@ -27,6 +27,13 @@ OWID compila estes indicadores a partir de fontes como o Banco Mundial, a ONU
 (World Population Prospects), o UNDP, o World Happiness Report e o Global Carbon
 Project — ver a página de cada indicador para a citação primária.
 
+## Pesquisa "em direto" (catálogo OWID)
+`owid-catalog.json` é a lista de slugs de todos os gráficos do Our World in Data,
+extraída do sitemap público por `build-owid-catalog.mjs`. A pesquisa filtra esta
+lista localmente (instantânea) e, ao escolher um gráfico, o CSV correspondente é
+obtido **em direto** de `ourworldindata.org/grapher/<slug>.csv` (CORS aberto) e
+desenhado no explorador. Sem chaves nem dependências de terceiros.
+
 ## Cidades (população)
 **GeoNames** — https://www.geonames.org · Licença **CC BY 4.0**.
 Ficheiro `cities15000` filtrado por `build-cities.mjs`.
