@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opml version="1.0">
+    <head>
+        <title>Diogo subscriptions in feedly Cloud</title>
+    </head>
+    <body>
+        <outline text="My stuff " title="My stuff ">
+            <outline type="rss" text="MovieWeb - Movie and TV Reviews" title="MovieWeb - Movie and TV Reviews" xmlUrl="https://movieweb.com/rss/movie-reviews/" htmlUrl="https://movieweb.com"/>
+            <outline type="rss" text="IMDb" title="IMDb" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC_vz6SvmIkYs1_H3Wv2SKlg" htmlUrl="https://www.youtube.com/channel/UC_vz6SvmIkYs1_H3Wv2SKlg"/>
+            <outline type="rss" text="TLDR DevOps RSS Feed" title="TLDR DevOps RSS Feed" xmlUrl="https://tldr.tech/api/rss/devops" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="Architecture and Data Blog" title="Architecture and Data Blog" xmlUrl="http://www.sadalage.com/index.xml" htmlUrl="https://sadalage.com/"/>
+            <outline type="rss" text="MakeUseOf - Technology News" title="MakeUseOf - Technology News" xmlUrl="http://www.makeuseof.com/service/news/feed/" htmlUrl="https://www.makeuseof.com"/>
+            <outline type="rss" text="MakeUseOf - Android" title="MakeUseOf - Android" xmlUrl="http://www.makeuseof.com/service/google-android/feed/" htmlUrl="https://www.makeuseof.com"/>
+            <outline type="rss" text="SIC Notícias" title="SIC Notícias" xmlUrl="http://feeds.feedburner.com/sicnoticias-ultimas" htmlUrl="https://sicnoticias.pt/"/>
+            <outline type="rss" text="Pplware" title="Pplware" xmlUrl="http://pplware.sapo.pt/feed/" htmlUrl="https://pplware.sapo.pt/"/>
+            <outline type="rss" text="Contas Poupança" title="Contas Poupança" xmlUrl="https://rss.impresa.pt/feed/latest/contaspoupanca.rss" htmlUrl="https://contaspoupanca.pt/"/>
+            <outline type="rss" text="Lifehacker" title="Lifehacker" xmlUrl="https://lifehacker.com/rss" htmlUrl="https://lifehacker.com/feed/rss?test_uuid=zXnWOLjQQwkYjMVwrvo5w&amp;test_variant=B"/>
+            <outline type="rss" text="DevOps on Medium" title="DevOps on Medium" xmlUrl="https://medium.com/feed/tag/devops" htmlUrl="https://medium.com/tag/devops/latest?source=rss------devops-5"/>
+            <outline type="rss" text="MakeUseOf - Productivity" title="MakeUseOf - Productivity" xmlUrl="https://www.makeuseof.com/feed/category/productivity/" htmlUrl="https://www.makeuseof.com"/>
+            <outline type="rss" text="Xa das 5" title="Xa das 5" xmlUrl="http://xadas5.com/feed/" htmlUrl="https://xadas5.com"/>
+            <outline type="rss" text="MakeUseOf - Linux" title="MakeUseOf - Linux" xmlUrl="http://www.makeuseof.com/service/linux/feed/" htmlUrl="https://www.makeuseof.com"/>
+            <outline type="rss" text="MaisTecnologia" title="MaisTecnologia" xmlUrl="http://www.tecnologia.com.pt/feed/" htmlUrl="https://www.maistecnologia.com/"/>
+            <outline type="rss" text="9to5Google" title="9to5Google" xmlUrl="http://9to5google.com/feed/" htmlUrl="https://9to5google.com/"/>
+            <outline type="rss" text="TLDR AI RSS Feed" title="TLDR AI RSS Feed" xmlUrl="https://tldr.tech/api/rss/ai" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="World News | Latest Top Stories | Reuters" title="World News | Latest Top Stories | Reuters" xmlUrl="https://openrss.org/www.reuters.com/world/" htmlUrl="https://www.reuters.com/world/"/>
+            <outline type="rss" text="The New Stack" title="The New Stack" xmlUrl="http://thenewstack.io/feed/" htmlUrl="https://thenewstack.io/"/>
+            <outline type="rss" text="Android Police" title="Android Police" xmlUrl="http://www.androidpolice.com/feed/" htmlUrl="https://www.androidpolice.com"/>
+            <outline type="rss" text="The Hacker News" title="The Hacker News" xmlUrl="http://thehackernews.com/feeds/posts/default" htmlUrl="https://thehackernews.com"/>
+            <outline type="rss" text="MakeUseOf - Internet" title="MakeUseOf - Internet" xmlUrl="http://www.makeuseof.com/service/web-based/feed/" htmlUrl="https://www.makeuseof.com"/>
+            <outline type="rss" text="XDA" title="XDA" xmlUrl="http://www.xda-developers.com/feed/" htmlUrl="https://www.xda-developers.com"/>
+            <outline type="rss" text="DevOps.com" title="DevOps.com" xmlUrl="http://devops.com/feed/" htmlUrl="https://devops.com/"/>
+            <outline type="rss" text="AndroidGeek" title="AndroidGeek" xmlUrl="http://androidgeek.pt/feed/" htmlUrl="https://androidgeek.pt"/>
+            <outline type="rss" text="Razão Automóvel" title="Razão Automóvel" xmlUrl="http://razaoautomovel.com/feed" htmlUrl="https://www.razaoautomovel.com/"/>
+            <outline type="rss" text="IGN Portugal" title="IGN Portugal" xmlUrl="http://pt.ign.com/feed.xml" htmlUrl="https://pt.ign.com"/>
+            <outline type="rss" text="Cloud Native Now" title="Cloud Native Now" xmlUrl="http://containerjournal.com/feed/" htmlUrl="https://cloudnativenow.com/"/>
+            <outline type="rss" text="A tecnologia está do teu lado" title="A tecnologia está do teu lado" xmlUrl="http://www.4gnews.pt/feed/" htmlUrl="https://4gnews.pt/"/>
+            <outline type="rss" text="Latest F1 News" title="Latest F1 News" xmlUrl="https://www.formula1.com/content/fom-website/en/latest/all.xml" htmlUrl="https://www.formula1.com"/>
+            <outline type="rss" text="World news | The Guardian" title="World news | The Guardian" xmlUrl="https://www.theguardian.com/world/rss" htmlUrl="https://www.theguardian.com/world"/>
+            <outline type="rss" text="Minuto Digital" title="Minuto Digital" xmlUrl="https://minutodigital.pt/feed/" htmlUrl="https://minutodigital.pt/"/>
+            <outline type="rss" text="MakeUseOf - Windows" title="MakeUseOf - Windows" xmlUrl="http://www.makeuseof.com/service/windows/feed/" htmlUrl="https://www.makeuseof.com"/>
+            <outline type="rss" text="TLDR RSS Feed" title="TLDR RSS Feed" xmlUrl="https://www.tldrnewsletter.com/rss" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="Contas Poupança" title="Contas Poupança" xmlUrl="https://rss.impresa.pt/feed/latest/contaspoupanca.rss?type=ARTICLE,VIDEO,GALLERY,STREAM,PLAYLIST,EVENT,NEWSLETTER&amp;limit=20&amp;pubsubhub=true" htmlUrl="https://contaspoupanca.pt/"/>
+            <outline type="rss" text="Tool Finder" title="Tool Finder" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYyaQsm2HyneP9CsIOdihBw" htmlUrl="https://www.youtube.com/channel/UCYyaQsm2HyneP9CsIOdihBw"/>
+            <outline type="rss" text="Latest news" title="Latest news" xmlUrl="http://www.zdnet.com/news/rss.xml" htmlUrl="https://www.zdnet.com/"/>
+            <outline type="rss" text="Platform Engineering Blog" title="Platform Engineering Blog" xmlUrl="https://platformengineering.org/blog/rss.xml" htmlUrl="https://platformengineering.org"/>
+            <outline type="rss" text="Diário de Notícias - Últimas" title="Diário de Notícias - Últimas" xmlUrl="http://feeds.dn.pt/DN-Ultimas" htmlUrl="https://www.dn.pt/"/>
+            <outline type="rss" text="Jornal de Negocios" title="Jornal de Negocios" xmlUrl="http://www.jornaldenegocios.pt/funcionalidades/rss/generarRSS.php" htmlUrl="https://www.jornaldenegocios.pt/"/>
+            <outline type="rss" text="The Guardian/World" title="The Guardian/World" xmlUrl="http://feedmaker.kindle4rss.com/feeds/world.theguardian.xml" htmlUrl="https://www.theguardian.com/world"/>
+            <outline type="rss" text="Forbes - Innovation" title="Forbes - Innovation" xmlUrl="http://www.forbes.com/innovation/feed2/" htmlUrl="https://www.forbes.com/innovation/"/>
+            <outline type="rss" text="RTP Notícias / Geral / Últimas" title="RTP Notícias / Geral / Últimas" xmlUrl="http://www.rtp.pt/noticias/rss" htmlUrl="https://www.rtp.pt"/>
+            <outline type="rss" text="Leak" title="Leak" xmlUrl="http://feeds.feedburner.com/leak/jOFQ" htmlUrl="https://www.leak.pt/"/>
+            <outline type="rss" text="Tek Notícias" title="Tek Notícias" xmlUrl="http://tek.sapo.pt/rss" htmlUrl="https://tek.sapo.pt/"/>
+            <outline type="rss" text="Região de Leiria" title="Região de Leiria" xmlUrl="http://feeds.feedburner.com/RegiodeLeiria" htmlUrl="https://www.regiaodeleiria.pt"/>
+            <outline type="rss" text="The New Stack | DevOps, Open Source, and Cloud Native News" title="The New Stack | DevOps, Open Source, and Cloud Native News" xmlUrl="http://thenewstack.io/blog/feed/" htmlUrl="https://thenewstack.io/blog/"/>
+            <outline type="rss" text="Autoblog" title="Autoblog" xmlUrl="http://feeds.feedburner.com/autoblogpt" htmlUrl="http://www.autoblog.pt/"/>
+            <outline type="rss" text="Expresso" title="Expresso" xmlUrl="http://feeds.feedburner.com/expresso-geral" htmlUrl="https://expresso.pt/"/>
+            <outline type="rss" text="AutoSport" title="AutoSport" xmlUrl="http://www.autosport.pt/feed/" htmlUrl="https://www.autosport.pt"/>
+            <outline type="rss" text="Eurogamer.pt Latest Articles Feed" title="Eurogamer.pt Latest Articles Feed" xmlUrl="https://www.eurogamer.pt/feed" htmlUrl="https://www.eurogamer.pt/feed"/>
+            <outline type="rss" text="BBC News" title="BBC News" xmlUrl="http://feeds.bbci.co.uk/news/world/europe/rss.xml" htmlUrl="https://www.bbc.co.uk/news/world/europe"/>
+            <outline type="rss" text="Android Authority" title="Android Authority" xmlUrl="http://feeds.feedburner.com/androidauthority" htmlUrl="https://www.androidauthority.com/"/>
+            <outline type="rss" text="Cloud Native Computing Foundation" title="Cloud Native Computing Foundation" xmlUrl="https://www.cncf.io/feed" htmlUrl="https://www.cncf.io"/>
+            <outline type="rss" text="PCGuia" title="PCGuia" xmlUrl="http://www.pcguia.pt/feed/" htmlUrl="https://www.pcguia.pt"/>
+            <outline type="rss" text="Aberto até de Madrugada" title="Aberto até de Madrugada" xmlUrl="http://abertoatedemadrugada.com/feeds/posts/default" htmlUrl="https://abertoatedemadrugada.com/"/>
+            <outline type="rss" text="News | Euronews RSS" title="News | Euronews RSS" xmlUrl="http://feeds.feedburner.com/euronews/en/home/" htmlUrl="http://www.euronews.com"/>
+        </outline>
+    </body>
+</opml>

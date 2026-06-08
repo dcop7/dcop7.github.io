@@ -1,0 +1,44 @@
+name: Refresh news
+
+# Static RSS news aggregator. The OPML (data/news/feeds.opml) is the source of
+# truth. RSS feeds rarely allow CORS, so the browser can't fetch them directly;
+# this workflow fetches them server-side every 4 hours (Node has no CORS),
+# dedupes + classifies by topic, and commits static JSON for GitHub Pages.
+# No database, no backend. Scales to hundreds of feeds.
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'      # every 4 hours (UTC)
+  workflow_dispatch:           # manual run from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Aggregate feeds → static JSON
+        run: node data/news/build-news.mjs
+
+      - name: Commit updated news if changed
+        run: |
+          if [ -n "$(git status --porcelain data/news/*.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/news/*.json
+            git commit -m "chore(news): refresh aggregated feeds [skip ci]"
+            git push
+          else
+            echo "No news changes — nothing to commit."
+          fi

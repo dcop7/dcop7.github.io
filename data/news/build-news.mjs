@@ -1,0 +1,312 @@
+/* ══════════════════════════════════════════════════════════════════
+   build-news.mjs — static news aggregator (no DB, no runtime deps)
+   Reads the Feedly OPML (data/news/feeds.opml) as the source of truth,
+   fetches every RSS/Atom feed server-side (a GitHub Action runs this every
+   4h — no CORS there), parses + dedupes + classifies by topic, and writes
+   static JSON for GitHub Pages:
+       data/news/index.json        catalog: topics, sources, counts, ts
+       data/news/latest.json       newest ~180 across all topics
+       data/news/topic-<id>.json   newest ~140 per topic
+   Pure Node (global fetch, Node 18+). Scales to hundreds of feeds via a
+   bounded fetch pool with per-feed timeout and isolated failures.
+   Run: node data/news/build-news.mjs
+══════════════════════════════════════════════════════════════════ */
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const UA = 'Mozilla/5.0 (compatible; dcop7-news/1.0; +https://dcop7.github.io)';
+const CONCURRENCY = 10;
+const FEED_TIMEOUT = 14000;
+const ITEMS_PER_FEED = 30;
+const RETAIN_DAYS = 14;
+const PER_TOPIC = 140;
+const LATEST = 180;
+const SUMMARY_LEN = 220;
+
+/* ── Topics (priority order: Portugal, tech, world, …) ── */
+const TOPICS = [
+  ['portugal',   '🇵🇹', 'Portugal',        'Portugal'],
+  ['tecnologia', '💻', 'Technology',       'Tecnologia'],
+  ['devops',     '🧩', 'DevOps & Cloud',   'DevOps & Cloud'],
+  ['mundo',      '🌍', 'World',            'Mundo'],
+  ['economia',   '💶', 'Economy',          'Economia'],
+  ['automovel',  '🚗', 'Cars',             'Automóvel'],
+  ['gaming',     '🎮', 'Gaming',           'Gaming'],
+  ['cinema',     '🎬', 'Film & TV',        'Cinema & TV'],
+];
+const TOPIC_IDS = new Set(TOPICS.map(t => t[0]));
+
+/* ── Source → primary topic + Portuguese flag (keyed by OPML title) ── */
+const SRC = {
+  'MovieWeb - Movie and TV Reviews': ['cinema', false],
+  'IMDb': ['cinema', false],
+  'TLDR DevOps RSS Feed': ['devops', false],
+  'Architecture and Data Blog': ['devops', false],
+  'MakeUseOf - Technology News': ['tecnologia', false],
+  'MakeUseOf - Android': ['tecnologia', false],
+  'SIC Notícias': ['portugal', true],
+  'Pplware': ['tecnologia', true],
+  'Contas Poupança': ['economia', true],
+  'Lifehacker': ['tecnologia', false],
+  'DevOps on Medium': ['devops', false],
+  'MakeUseOf - Productivity': ['tecnologia', false],
+  'Xa das 5': ['tecnologia', true],
+  'MakeUseOf - Linux': ['tecnologia', false],
+  'MaisTecnologia': ['tecnologia', true],
+  '9to5Google': ['tecnologia', false],
+  'TLDR AI RSS Feed': ['tecnologia', false],
+  'World News | Latest Top Stories | Reuters': ['mundo', false],
+  'The New Stack': ['devops', false],
+  'Android Police': ['tecnologia', false],
+  'The Hacker News': ['tecnologia', false],
+  'MakeUseOf - Internet': ['tecnologia', false],
+  'XDA': ['tecnologia', false],
+  'DevOps.com': ['devops', false],
+  'AndroidGeek': ['tecnologia', true],
+  'Razão Automóvel': ['automovel', true],
+  'IGN Portugal': ['gaming', true],
+  'Cloud Native Now': ['devops', false],
+  'A tecnologia está do teu lado': ['tecnologia', true],
+  'Latest F1 News': ['automovel', false],
+  'World news | The Guardian': ['mundo', false],
+  'Minuto Digital': ['tecnologia', true],
+  'MakeUseOf - Windows': ['tecnologia', false],
+  'TLDR RSS Feed': ['tecnologia', false],
+  'Tool Finder': ['tecnologia', false],
+  'Latest news': ['tecnologia', false],
+  'Platform Engineering Blog': ['devops', false],
+  'Diário de Notícias - Últimas': ['portugal', true],
+  'Jornal de Negocios': ['economia', true],
+  'The Guardian/World': ['mundo', false],
+  'Forbes - Innovation': ['tecnologia', false],
+  'RTP Notícias / Geral / Últimas': ['portugal', true],
+  'Leak': ['tecnologia', true],
+  'Tek Notícias': ['tecnologia', true],
+  'Região de Leiria': ['portugal', true],
+  'The New Stack | DevOps, Open Source, and Cloud Native News': ['devops', false],
+  'Autoblog': ['automovel', true],
+  'Expresso': ['portugal', true],
+  'AutoSport': ['automovel', true],
+  'Eurogamer.pt Latest Articles Feed': ['gaming', true],
+  'BBC News': ['mundo', false],
+  'Android Authority': ['tecnologia', false],
+  'Cloud Native Computing Foundation': ['devops', false],
+  'PCGuia': ['tecnologia', true],
+  'Aberto até de Madrugada': ['cinema', true],
+  'News | Euronews RSS': ['mundo', false],
+};
+
+/* Cross-cutting keyword tags (added as extra topics, never replace primary). */
+const KW = [
+  ['portugal', /\bportugal\b|portugu[êe]s|lisboa|porto\b|algarve|governo de portugal|benfica|sporting|fc porto/i],
+];
+
+/* ── tiny helpers ── */
+const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', ldquo: '“', rdquo: '”', laquo: '«', raquo: '»', deg: '°', euro: '€' };
+const decodeEntities = (s) => (s || '')
+  .replace(/&#x([0-9a-f]+);/gi, (_, h) => { try { return String.fromCodePoint(parseInt(h, 16)); } catch { return ''; } })
+  .replace(/&#(\d+);/g, (_, d) => { try { return String.fromCodePoint(+d); } catch { return ''; } })
+  .replace(/&([a-z]+[0-9]?);/gi, (m, n) => (n.toLowerCase() in NAMED ? NAMED[n.toLowerCase()] : m));
+const stripCdata = (s) => (s || '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+const stripTags = (s) => (s || '').replace(/<[^>]+>/g, ' ');
+const cleanText = (s) => decodeEntities(stripTags(stripCdata(s || ''))).replace(/\s+/g, ' ').trim();
+const cleanTitle = (s) => decodeEntities(stripTags(stripCdata(s || ''))).replace(/\s+/g, ' ').trim();
+
+function tagInner(block, name) {
+  const re = new RegExp('<(?:\\w+:)?' + name + '(?:\\s[^>]*)?>([\\s\\S]*?)<\\/(?:\\w+:)?' + name + '>', 'i');
+  const m = block.match(re); return m ? m[1] : '';
+}
+/* Atom <link href=…>: prefer rel="alternate" or no rel; skip rel="self". */
+function atomLink(block) {
+  const links = block.match(/<link\b[^>]*\/?>/gi) || [];
+  let best = '';
+  for (const l of links) {
+    const href = (l.match(/href="([^"]+)"/i) || [])[1];
+    if (!href) continue;
+    const rel = (l.match(/rel="([^"]+)"/i) || [])[1] || 'alternate';
+    if (rel === 'self') continue;
+    if (rel === 'alternate') return href;
+    if (!best) best = href;
+  }
+  return best;
+}
+
+/* ── OPML ── */
+function parseOPML(xml) {
+  const feeds = [];
+  const re = /<outline\b[^>]*type="rss"[^>]*>/gi;
+  let m;
+  while ((m = re.exec(xml))) {
+    const o = m[0];
+    const xmlUrl = (o.match(/xmlUrl="([^"]+)"/i) || [])[1];
+    const title = decodeEntities((o.match(/(?:title|text)="([^"]+)"/i) || [])[1] || '');
+    const htmlUrl = (o.match(/htmlUrl="([^"]+)"/i) || [])[1] || '';
+    if (xmlUrl) feeds.push({ title, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
+  }
+  /* de-dup identical feed URLs (the OPML has a couple) */
+  const seen = new Set();
+  return feeds.filter(f => (seen.has(f.xmlUrl) ? false : seen.add(f.xmlUrl)));
+}
+
+/* ── fetch with timeout ── */
+async function fetchText(url) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FEED_TIMEOUT);
+  try {
+    const r = await fetch(url, {
+      signal: ctrl.signal, redirect: 'follow',
+      headers: { 'User-Agent': UA, 'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*' },
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.text();
+  } finally { clearTimeout(t); }
+}
+
+/* ── feed parsing (RSS <item> + Atom <entry>) ── */
+function parseFeed(xml) {
+  const out = [];
+  const isAtom = /<entry[\s>]/i.test(xml) && !/<item[\s>]/i.test(xml);
+  const blocks = xml.match(isAtom ? /<entry[\s>][\s\S]*?<\/entry>/gi : /<item[\s>][\s\S]*?<\/item>/gi) || [];
+  for (const b of blocks) {
+    const title = cleanTitle(tagInner(b, 'title'));
+    let link = '';
+    if (isAtom) link = atomLink(b);
+    if (!link) link = cleanText(tagInner(b, 'link'));
+    if (!link) {
+      const guid = cleanText(tagInner(b, 'guid'));
+      if (/^https?:\/\//i.test(guid)) link = guid;
+    }
+    const dateStr = tagInner(b, 'pubDate') || tagInner(b, 'published') || tagInner(b, 'updated') || tagInner(b, 'date');
+    const ts = Date.parse(cleanText(dateStr));
+    let desc = tagInner(b, 'description') || tagInner(b, 'summary') || tagInner(b, 'encoded') || tagInner(b, 'content');
+    desc = cleanText(desc);
+    if (!title || !link) continue;
+    out.push({ title, link: link.trim(), ts: isNaN(ts) ? null : ts, summary: desc });
+  }
+  return out;
+}
+
+/* ── url normalisation for dedupe ── */
+function urlKey(u) {
+  try {
+    const x = new URL(u);
+    x.hash = '';
+    const drop = [...x.searchParams.keys()].filter(k => /^utm_|^fbclid$|^gclid$|^mc_|^ref$|^source$/i.test(k));
+    drop.forEach(k => x.searchParams.delete(k));
+    let s = (x.host + x.pathname).toLowerCase().replace(/\/$/, '');
+    const q = x.searchParams.toString();
+    return s + (q ? '?' + q : '');
+  } catch { return (u || '').toLowerCase(); }
+}
+const normTitle = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+/* ── classify ── */
+function classify(art, primary) {
+  const topics = new Set([primary]);
+  const hay = art.title + ' ' + art.summary;
+  for (const [tp, re] of KW) if (re.test(hay)) topics.add(tp);
+  return [...topics].filter(t => TOPIC_IDS.has(t));
+}
+
+const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+
+/* ── bounded pool ── */
+async function pool(items, n, fn) {
+  const ret = new Array(items.length);
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => {
+    while (i < items.length) { const idx = i++; try { ret[idx] = await fn(items[idx], idx); } catch (e) { ret[idx] = { _err: String(e && e.message || e) }; } }
+  }));
+  return ret;
+}
+
+/* ════════════════════════════ MAIN ════════════════════════════ */
+const opml = readFileSync(HERE + '/feeds.opml', 'utf8');
+const feeds = parseOPML(opml);
+console.log(`OPML: ${feeds.length} feeds`);
+
+const now = Date.now();
+const minTs = now - RETAIN_DAYS * 86400000;
+const maxTs = now + 36 * 3600000; /* allow slight clock skew / scheduled posts */
+
+const results = await pool(feeds, CONCURRENCY, async (f) => {
+  const xml = await fetchText(f.xmlUrl);
+  const items = parseFeed(xml).slice(0, ITEMS_PER_FEED);
+  return { feed: f, items };
+});
+
+const sourcesMeta = [];
+const all = [];
+let okFeeds = 0, failFeeds = 0;
+for (let k = 0; k < results.length; k++) {
+  const f = feeds[k];
+  const map = SRC[f.title] || ['mundo', false];
+  const [primary, pt] = map;
+  const r = results[k];
+  if (!r || r._err || !r.items) { failFeeds++; sourcesMeta.push({ name: f.title, topic: primary, pt, count: 0, ok: false }); continue; }
+  okFeeds++;
+  let kept = 0;
+  for (const it of r.items) {
+    if (it.ts == null) it.ts = now; /* undated → treat as fresh-ish */
+    if (it.ts < minTs || it.ts > maxTs) continue;
+    const topics = classify(it, primary);
+    if (pt && !topics.includes('portugal') && primary !== 'portugal') { /* keep pt flag, no forced topic */ }
+    all.push({
+      id: slug(f.title) + '-' + Math.abs(hash(it.link)).toString(36),
+      title: it.title.slice(0, 200),
+      url: it.link,
+      source: f.title,
+      site: f.htmlUrl,
+      topics, pt,
+      ts: it.ts,
+      summary: it.summary.slice(0, SUMMARY_LEN),
+    });
+    kept++;
+  }
+  sourcesMeta.push({ name: f.title, topic: primary, pt, count: kept, ok: true });
+}
+
+function hash(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+
+/* dedupe: by URL, and by (source + normalised title) */
+const seenUrl = new Set(), seenST = new Set();
+const deduped = [];
+for (const a of all.sort((x, y) => y.ts - x.ts)) {
+  const uk = urlKey(a.url);
+  const stk = slug(a.source) + '|' + normTitle(a.title);
+  if (seenUrl.has(uk) || seenST.has(stk)) continue;
+  seenUrl.add(uk); seenST.add(stk);
+  deduped.push(a);
+}
+deduped.sort((a, b) => b.ts - a.ts);
+console.log(`Articles: ${all.length} raw → ${deduped.length} after dedupe (${okFeeds} feeds ok, ${failFeeds} failed)`);
+
+/* ── write output ── */
+mkdirSync(HERE, { recursive: true });
+const generated = new Date(now).toISOString();
+const topicCounts = {};
+for (const t of TOPICS) topicCounts[t[0]] = 0;
+for (const a of deduped) for (const tp of a.topics) if (tp in topicCounts) topicCounts[tp]++;
+
+/* latest.json */
+writeFileSync(HERE + '/latest.json', JSON.stringify({ generated, count: Math.min(LATEST, deduped.length), articles: deduped.slice(0, LATEST) }));
+
+/* per-topic shards */
+for (const [id] of TOPICS) {
+  const arts = deduped.filter(a => a.topics.includes(id)).slice(0, PER_TOPIC);
+  writeFileSync(HERE + `/topic-${id}.json`, JSON.stringify({ id, generated, count: arts.length, articles: arts }));
+}
+
+/* index.json */
+writeFileSync(HERE + '/index.json', JSON.stringify({
+  generated,
+  total: deduped.length,
+  feeds: { total: feeds.length, ok: okFeeds, failed: failFeeds },
+  topics: TOPICS.map(([id, icon, en, pt]) => ({ id, icon, en, pt, count: topicCounts[id] })),
+  sources: sourcesMeta.sort((a, b) => b.count - a.count),
+}));
+
+console.log(`Wrote index.json, latest.json + ${TOPICS.length} topic files.`);
+console.log('Topic counts:', topicCounts);
