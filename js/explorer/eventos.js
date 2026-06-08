@@ -99,8 +99,8 @@ const EventosPage = (function () {
   const _f = {
     district: '',                 /* '' = all */
     city: 'Leiria',
-    radius: 0,                    /* km; 0 = no limit (national) */
-    range: '7d',                  /* today | weekend | 7d | 30d | all */
+    radius: 50,                   /* km; 0 = no limit (national) */
+    range: '30d',                 /* today | weekend | 7d | 30d | all */
     cats: new Set(),              /* empty = all */
     freeOnly: false,
     showPermanent: false,         /* hide "always open" landmarks by default */
@@ -160,14 +160,16 @@ const EventosPage = (function () {
     return [f(3), f(11)];
   }
 
+  /* Returns [lat, lon, coarse]. coarse = placed at a district centroid only
+     (no concelho/city match), so the distance is district-level, not precise. */
   function geocode(concelho, district, seed) {
-    let base = null;
+    let base = null, coarse = false;
     if (concelho && _places && _places[norm(concelho)]) base = _places[norm(concelho)];
-    else if (district && _places && _places[norm(district)]) base = _places[norm(district)];
-    else if (district && DISTRICT_CENTROIDS[district]) base = DISTRICT_CENTROIDS[district];
+    else if (district && _places && _places[norm(district)]) { base = _places[norm(district)]; coarse = true; }
+    else if (district && DISTRICT_CENTROIDS[district]) { base = DISTRICT_CENTROIDS[district]; coarse = true; }
     if (!base) return null;
     const [jx, jy] = jitter(seed || concelho || district);
-    return [base[0] + jx, base[1] + jy];
+    return [base[0] + jx, base[1] + jy, coarse];
   }
 
   /* ── Date helpers ── */
@@ -391,6 +393,7 @@ const EventosPage = (function () {
       venue: e.venue || '', district: e.district || '', concelho: e.concelho || '',
       address: e.address || '',
       lat: coord ? coord[0] : null, lon: coord ? coord[1] : null,
+      coarse: coord ? !!coord[2] : false,
       image: e.image || '',
       url: e.url || '',
       free: !!e.free, price: e.price || '',
@@ -466,7 +469,11 @@ const EventosPage = (function () {
       return true;
     });
     list = withDistance(list);
-    if (_f.radius > 0) list = list.filter(e => e.dist == null || e.dist <= _f.radius);
+    /* With a radius active, only keep events we can actually place within it —
+       events without known coordinates (e.g. touring/"vários") are dropped so
+       "25 km from Leiria" never leaks far-away or unplaced events. Use radius 0
+       (Todo o país) to include everything. */
+    if (_f.radius > 0) list = list.filter(e => e.dist != null && e.dist <= _f.radius);
     /* sort: distance when a radius/city focus matters, else date. */
     list.sort((a, b) => {
       if (_f.radius > 0 || _gps) return (a.dist ?? 9e9) - (b.dist ?? 9e9);
@@ -645,7 +652,7 @@ const EventosPage = (function () {
   }
 
   function eventCard(e, compact) {
-    const dist = e.dist != null ? `<span class="ev-c-dist">📍 ${e.dist < 1 ? '<1' : Math.round(e.dist)} km</span>` : '';
+    const dist = (e.dist != null && !e.coarse) ? `<span class="ev-c-dist">📍 ${e.dist < 1 ? '<1' : Math.round(e.dist)} km</span>` : '';
     const img = (e.image && /^https?:/.test(e.image))
       ? `<div class="ev-c-img" style="background-image:url('${esc(e.image)}')"></div>`
       : `<div class="ev-c-img ev-c-img-ph" style="--cc:${catColor(e.category)}">${catIcon(e.category)}</div>`;
@@ -691,6 +698,18 @@ const EventosPage = (function () {
     const card = `<div class="ev-skel"><div class="ev-skel-img"></div><div class="ev-skel-body"><span class="ev-skel-ln ev-skel-ln-sm"></span><span class="ev-skel-ln"></span><span class="ev-skel-ln ev-skel-ln-md"></span></div></div>`;
     return `<div class="ev-loading-bar"><span class="ev-spinner"></span> ${_t('Searching events near you…', 'À procura de eventos perto de ti…')}</div>`
       + Array.from({ length: n }, () => card).join('');
+  }
+
+  /* Show a brief loading shimmer when the user changes a filter, then render —
+     so changes feel responsive and it's clear results are being recomputed. */
+  let _refreshTimer = null;
+  function refresh() {
+    const list = document.getElementById('ev-list');
+    if (list) list.innerHTML = skeletonHTML(6);
+    const disc = document.getElementById('ev-discovery');
+    if (disc) { disc.hidden = true; }
+    clearTimeout(_refreshTimer);
+    _refreshTimer = setTimeout(renderList, 240);
   }
 
   function renderList() {
@@ -741,7 +760,7 @@ const EventosPage = (function () {
       e.hours ? ['🕒', e.hours] : null,
       ['📌', [e.venue, e.concelho, e.district].filter(Boolean).join(' · ')],
       e.address ? ['🏠', e.address] : null,
-      e.dist != null ? ['📍', `${e.dist < 1 ? '<1' : Math.round(e.dist)} km ${_t('away', 'de distância')}`] : null,
+      (e.dist != null && !e.coarse) ? ['📍', `${e.dist < 1 ? '<1' : Math.round(e.dist)} km ${_t('away', 'de distância')}`] : null,
       [catIcon(e.category), catLabel(e.category)],
       [e.free ? '💶' : (e.price ? '🎟️' : ''), e.free ? _t('Free admission', 'Entrada livre') : e.price],
     ].filter(r => r && r[1]);
@@ -777,26 +796,26 @@ const EventosPage = (function () {
   /* ════════════════════════════ WIRING ════════════════════════════ */
 
   function _wire(view) {
-    view.querySelector('#ev-district').addEventListener('change', (e) => { _f.district = e.target.value; renderList(); });
+    view.querySelector('#ev-district').addEventListener('change', (e) => { _f.district = e.target.value; refresh(); });
     const cityIn = view.querySelector('#ev-city');
-    cityIn.addEventListener('change', (e) => { _f.city = e.target.value.trim() || 'Leiria'; _gps = null; renderList(); });
-    view.querySelector('#ev-radius').addEventListener('change', (e) => { _f.radius = parseInt(e.target.value, 10) || 0; renderList(); });
+    cityIn.addEventListener('change', (e) => { _f.city = e.target.value.trim() || 'Leiria'; _gps = null; refresh(); });
+    view.querySelector('#ev-radius').addEventListener('change', (e) => { _f.radius = parseInt(e.target.value, 10) || 0; refresh(); });
     let qt;
-    view.querySelector('#ev-q').addEventListener('input', (e) => { clearTimeout(qt); qt = setTimeout(() => { _f.query = e.target.value; renderList(); }, 200); });
+    view.querySelector('#ev-q').addEventListener('input', (e) => { clearTimeout(qt); qt = setTimeout(() => { _f.query = e.target.value; refresh(); }, 200); });
     view.querySelector('#ev-range').addEventListener('click', (e) => {
       const b = e.target.closest('.ev-chip'); if (!b) return;
       _f.range = b.dataset.range;
       view.querySelectorAll('#ev-range .ev-chip').forEach(x => x.classList.toggle('active', x === b));
-      renderList();
+      refresh();
     });
     view.querySelector('#ev-cats').addEventListener('click', (e) => {
       const b = e.target.closest('.ev-cat'); if (!b) return;
-      if (b.id === 'ev-free') { _f.freeOnly = !_f.freeOnly; b.classList.toggle('active', _f.freeOnly); renderList(); return; }
-      if (b.id === 'ev-perm') { _f.showPermanent = !_f.showPermanent; b.classList.toggle('active', _f.showPermanent); renderList(); return; }
+      if (b.id === 'ev-free') { _f.freeOnly = !_f.freeOnly; b.classList.toggle('active', _f.freeOnly); refresh(); return; }
+      if (b.id === 'ev-perm') { _f.showPermanent = !_f.showPermanent; b.classList.toggle('active', _f.showPermanent); refresh(); return; }
       const k = b.dataset.cat;
       if (_f.cats.has(k)) _f.cats.delete(k); else _f.cats.add(k);
       b.classList.toggle('active', _f.cats.has(k));
-      renderList();
+      refresh();
     });
     view.querySelector('#ev-vt').addEventListener('click', (e) => {
       const b = e.target.closest('.ev-vt-btn'); if (!b) return;
@@ -848,7 +867,7 @@ const EventosPage = (function () {
         _gps = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         btn.classList.remove('ev-gps-loading'); btn.classList.add('active'); btn.textContent = '📍 ' + _t('Near me', 'Perto de mim');
         if (!_f.radius) { _f.radius = 25; const rs = document.getElementById('ev-radius'); if (rs) rs.value = '25'; }
-        renderList();
+        refresh();
       },
       () => { _gpsFallback(btn); },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
@@ -858,7 +877,7 @@ const EventosPage = (function () {
     if (btn) { btn.classList.remove('ev-gps-loading'); btn.textContent = '📍 ' + _t('Near me', 'Perto de mim'); }
     /* Fall back to the selected city (already the active point). */
     if (!_f.radius) { _f.radius = 25; const rs = document.getElementById('ev-radius'); if (rs) rs.value = '25'; }
-    renderList();
+    refresh();
   }
 
   /* ════════════════════════════ PUBLIC ════════════════════════════ */
