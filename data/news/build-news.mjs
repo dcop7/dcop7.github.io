@@ -164,6 +164,20 @@ async function fetchText(url) {
   } finally { clearTimeout(t); }
 }
 
+/* Best-effort thumbnail: media:content/thumbnail, image enclosure, <img> in
+   the content, or itunes:image. Returns '' if none found. */
+function extractImage(block, rawDesc) {
+  const cands = [];
+  let m, re = /<media:(?:content|thumbnail)\b[^>]*\burl="([^"]+)"/gi;
+  while ((m = re.exec(block))) cands.push(m[1]);
+  re = /<enclosure\b[^>]*\burl="([^"]+)"[^>]*>/gi;
+  while ((m = re.exec(block))) { if (/type="image\//i.test(m[0]) || /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(m[1])) cands.push(m[1]); }
+  const im = (rawDesc || '').match(/<img\b[^>]*\bsrc="([^"]+)"/i); if (im) cands.push(im[1]);
+  const it = block.match(/<itunes:image\b[^>]*\bhref="([^"]+)"/i); if (it) cands.push(it[1]);
+  for (const c of cands) { const u = decodeEntities(c).trim(); if (/^https?:\/\//i.test(u)) return u; }
+  return '';
+}
+
 /* ── feed parsing (RSS <item> + Atom <entry>) ── */
 function parseFeed(xml) {
   const out = [];
@@ -180,10 +194,11 @@ function parseFeed(xml) {
     }
     const dateStr = tagInner(b, 'pubDate') || tagInner(b, 'published') || tagInner(b, 'updated') || tagInner(b, 'date');
     const ts = Date.parse(cleanText(dateStr));
-    let desc = tagInner(b, 'description') || tagInner(b, 'summary') || tagInner(b, 'encoded') || tagInner(b, 'content');
-    desc = cleanText(desc);
+    const rawDesc = tagInner(b, 'encoded') || tagInner(b, 'description') || tagInner(b, 'content') || tagInner(b, 'summary');
+    const desc = cleanText(rawDesc);
+    const image = extractImage(b, rawDesc);
     if (!title || !link) continue;
-    out.push({ title, link: link.trim(), ts: isNaN(ts) ? null : ts, summary: desc });
+    out.push({ title, link: link.trim(), ts: isNaN(ts) ? null : ts, summary: desc, image });
   }
   return out;
 }
@@ -245,7 +260,7 @@ for (let k = 0; k < results.length; k++) {
   const map = SRC[f.title] || ['mundo', false];
   const [primary, pt] = map;
   const r = results[k];
-  if (!r || r._err || !r.items) { failFeeds++; sourcesMeta.push({ name: f.title, topic: primary, pt, count: 0, ok: false }); continue; }
+  if (!r || r._err || !r.items) { failFeeds++; sourcesMeta.push({ name: f.title, topic: primary, pt, site: f.htmlUrl, count: 0, ok: false }); continue; }
   okFeeds++;
   let kept = 0;
   for (const it of r.items) {
@@ -262,10 +277,11 @@ for (let k = 0; k < results.length; k++) {
       topics, pt,
       ts: it.ts,
       summary: it.summary.slice(0, SUMMARY_LEN),
+      image: (it.image || '').slice(0, 300),
     });
     kept++;
   }
-  sourcesMeta.push({ name: f.title, topic: primary, pt, count: kept, ok: true });
+  sourcesMeta.push({ name: f.title, topic: primary, pt, site: f.htmlUrl, count: kept, ok: true });
 }
 
 function hash(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
