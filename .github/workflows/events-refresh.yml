@@ -6,15 +6,19 @@ name: Refresh events data
 # into the repo, so the Eventos section gets fresh national coverage without a
 # backend. The live sources (AgendaLX, e-cultura) are still fetched in-browser.
 
+# Runs at 07:00 Portugal continental time, all year. GitHub cron is UTC-only and
+# DST-unaware, and Portugal is UTC+0 (winter) / UTC+1 (summer) — so we fire at
+# both 06:00 and 07:00 UTC and a gate lets the job proceed only when it's 07h in
+# Europe/Lisbon (i.e. exactly one effective run per day).
 on:
   schedule:
-    - cron: '17 5 * * *'      # daily ~05:17 UTC
+    - cron: '0 6 * * *'      # 07:00 in summer (WEST, UTC+1)
+    - cron: '0 7 * * *'      # 07:00 in winter (WET, UTC+0)
   workflow_dispatch:           # allow manual runs from the Actions tab
 
 permissions:
   contents: write
 
-# Avoid overlapping runs piling up commits.
 concurrency:
   group: events-refresh
   cancel-in-progress: false
@@ -23,16 +27,32 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Gate to 07h Europe/Lisbon (skip the off-DST cron)
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Europe/Lisbon date +%H)" != "07" ]; then
+            echo "Lisbon hour is $(TZ=Europe/Lisbon date +%H)h — not 07h, skipping this run."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Build NoCartaz national snapshot
+        if: steps.gate.outputs.go == 'true'
         run: node data/events/build-nocartaz.mjs
 
       - name: Commit snapshot if it changed
+        if: steps.gate.outputs.go == 'true'
         run: |
           if [ -n "$(git status --porcelain data/events/nocartaz.json)" ]; then
             git config user.name  "github-actions[bot]"
