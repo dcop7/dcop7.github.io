@@ -49,11 +49,12 @@
             <outline type="rss" text="Tool Finder" title="Tool Finder" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYyaQsm2HyneP9CsIOdihBw" htmlUrl="https://www.youtube.com/channel/UCYyaQsm2HyneP9CsIOdihBw"/>
         </outline>
         <outline text="TLDR" title="TLDR">
-            <outline type="rss" text="TLDR Tech" title="TLDR Tech" xmlUrl="https://www.tldrnewsletter.com/rss" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="TLDR Tech" title="TLDR Tech" xmlUrl="https://tldr.tech/api/rss/tech" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="TLDR IT" title="TLDR IT" xmlUrl="https://tldr.tech/api/rss/it" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="TLDR DevOps" title="TLDR DevOps" xmlUrl="https://tldr.tech/api/rss/devops" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="TLDR AI" title="TLDR AI" xmlUrl="https://tldr.tech/api/rss/ai" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="TLDR Data" title="TLDR Data" xmlUrl="https://tldr.tech/api/rss/data" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="TLDR Hardware" title="TLDR Hardware" xmlUrl="https://tldr.tech/api/rss/hardware" htmlUrl="https://tldr.tech"/>
         </outline>
         <outline text="DevOps & Cloud" title="DevOps & Cloud">
             <outline type="rss" text="Architecture and Data Blog" title="Architecture and Data Blog" xmlUrl="http://www.sadalage.com/index.xml" htmlUrl="https://sadalage.com/"/>

@@ -67,7 +67,7 @@ const SRC = {
   'Reddit — Artificial': ['ia', false], 'Reddit — LocalLLaMA': ['ia', false], 'Reddit — MachineLearning': ['ia', false],
   /* TLDR (isolated newsletter section) */
   'TLDR Tech': ['tldr', false], 'TLDR IT': ['tldr', false], 'TLDR DevOps': ['tldr', false],
-  'TLDR AI': ['tldr', false], 'TLDR Data': ['tldr', false],
+  'TLDR AI': ['tldr', false], 'TLDR Data': ['tldr', false], 'TLDR Hardware': ['tldr', false],
   /* Android */
   'MakeUseOf - Android': ['android', false], '9to5Google': ['android', false], 'Android Police': ['android', false],
   'AndroidGeek': ['android', true], 'Android Authority': ['android', false],
