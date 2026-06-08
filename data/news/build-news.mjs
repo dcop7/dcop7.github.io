@@ -31,6 +31,7 @@ const SUMMARY_LEN = 220;
 const TOPICS = [
   ['tecnologia',    '💻', 'Technology',    'Tecnologia',    true],
   ['ia',            '🧠', 'AI',            'IA',            true],
+  ['tldr',          '📩', 'TLDR',          'TLDR',          true],
   ['android',       '📱', 'Android',       'Android',       true],
   ['produtividade', '🧰', 'Productivity',  'Produtividade', true],
   ['devops',        '🧩', 'DevOps',        'DevOps',        true],
@@ -58,14 +59,15 @@ const SRC = {
   'Tek Notícias': ['tecnologia', true], 'PCGuia': ['tecnologia', true], 'Minuto Digital': ['tecnologia', true],
   'Xa das 5': ['tecnologia', true], 'A tecnologia está do teu lado': ['tecnologia', true],
   'XDA': ['tecnologia', false], 'ZDNet': ['tecnologia', false], 'Forbes - Innovation': ['tecnologia', false],
-  'TLDR': ['tecnologia', false], 'TechCrunch': ['tecnologia', false], 'The Verge': ['tecnologia', false],
-  'Ars Technica': ['tecnologia', false],
+  'TechCrunch': ['tecnologia', false], 'The Verge': ['tecnologia', false], 'Ars Technica': ['tecnologia', false],
   /* IA */
-  'TLDR AI': ['ia', false], "Ben's Bites": ['ia', false], 'The Rundown AI': ['ia', false],
-  'Simon Willison': ['ia', false], 'OpenAI': ['ia', false], 'Anthropic': ['ia', false],
+  'Simon Willison': ['ia', false], 'OpenAI': ['ia', false],
   'Google DeepMind': ['ia', false], 'Latent Space': ['ia', false], 'One Useful Thing': ['ia', false],
-  'Future Tools': ['ia', false], "There's An AI For That": ['ia', false],
+  'Future Tools': ['ia', false],
   'Reddit — Artificial': ['ia', false], 'Reddit — LocalLLaMA': ['ia', false], 'Reddit — MachineLearning': ['ia', false],
+  /* TLDR (isolated newsletter section) */
+  'TLDR Tech': ['tldr', false], 'TLDR IT': ['tldr', false], 'TLDR DevOps': ['tldr', false],
+  'TLDR AI': ['tldr', false], 'TLDR Data': ['tldr', false],
   /* Android */
   'MakeUseOf - Android': ['android', false], '9to5Google': ['android', false], 'Android Police': ['android', false],
   'AndroidGeek': ['android', true], 'Android Authority': ['android', false],
@@ -73,7 +75,7 @@ const SRC = {
   'MakeUseOf - Productivity': ['produtividade', false], 'Lifehacker': ['produtividade', false],
   'Tool Finder': ['produtividade', false], 'AlternativeTo': ['produtividade', false],
   /* DevOps */
-  'TLDR DevOps': ['devops', false], 'Architecture and Data Blog': ['devops', false], 'DevOps on Medium': ['devops', false],
+  'Architecture and Data Blog': ['devops', false], 'DevOps on Medium': ['devops', false],
   'The New Stack': ['devops', false], 'DevOps.com': ['devops', false], 'Cloud Native Now': ['devops', false],
   'Platform Engineering': ['devops', false], 'Cloud Native Computing Foundation': ['devops', false],
   'Reddit — selfhosted': ['devops', false],

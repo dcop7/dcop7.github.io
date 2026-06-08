@@ -16,6 +16,7 @@ const NoticiasPage = (function () {
   const TOPIC = {
     tecnologia:    { icon: '💻', en: 'Technology',    pt: 'Tecnologia',    color: '#3b82f6' },
     ia:            { icon: '🧠', en: 'AI',            pt: 'IA',            color: '#a855f7' },
+    tldr:          { icon: '📩', en: 'TLDR',          pt: 'TLDR',          color: '#0891b2' },
     android:       { icon: '📱', en: 'Android',       pt: 'Android',       color: '#84cc16' },
     produtividade: { icon: '🧰', en: 'Productivity',  pt: 'Produtividade', color: '#14b8a6' },
     devops:        { icon: '🧩', en: 'DevOps',        pt: 'DevOps',        color: '#06b6d4' },

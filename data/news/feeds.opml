@@ -21,13 +21,11 @@
             <outline type="rss" text="XDA" title="XDA" xmlUrl="http://www.xda-developers.com/feed/" htmlUrl="https://www.xda-developers.com"/>
             <outline type="rss" text="ZDNet" title="ZDNet" xmlUrl="http://www.zdnet.com/news/rss.xml" htmlUrl="https://www.zdnet.com/"/>
             <outline type="rss" text="Forbes - Innovation" title="Forbes - Innovation" xmlUrl="http://www.forbes.com/innovation/feed2/" htmlUrl="https://www.forbes.com/innovation/"/>
-            <outline type="rss" text="TLDR" title="TLDR" xmlUrl="https://www.tldrnewsletter.com/rss" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="TechCrunch" title="TechCrunch" xmlUrl="https://feeds.feedburner.com/TechCrunch/" htmlUrl="https://techcrunch.com"/>
             <outline type="rss" text="The Verge" title="The Verge" xmlUrl="https://www.theverge.com/rss/index.xml" htmlUrl="https://www.theverge.com"/>
             <outline type="rss" text="Ars Technica" title="Ars Technica" xmlUrl="https://feeds.arstechnica.com/arstechnica/index" htmlUrl="https://arstechnica.com"/>
         </outline>
         <outline text="IA" title="IA">
-            <outline type="rss" text="TLDR AI" title="TLDR AI" xmlUrl="https://tldr.tech/api/rss/ai" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="Simon Willison" title="Simon Willison" xmlUrl="https://simonwillison.net/atom/everything/" htmlUrl="https://simonwillison.net"/>
             <outline type="rss" text="OpenAI" title="OpenAI" xmlUrl="https://openai.com/news/rss.xml" htmlUrl="https://openai.com"/>
             <outline type="rss" text="Google DeepMind" title="Google DeepMind" xmlUrl="https://deepmind.google/blog/rss.xml" htmlUrl="https://deepmind.google"/>
@@ -50,8 +48,14 @@
             <outline type="rss" text="Lifehacker" title="Lifehacker" xmlUrl="https://lifehacker.com/rss" htmlUrl="https://lifehacker.com"/>
             <outline type="rss" text="Tool Finder" title="Tool Finder" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYyaQsm2HyneP9CsIOdihBw" htmlUrl="https://www.youtube.com/channel/UCYyaQsm2HyneP9CsIOdihBw"/>
         </outline>
-        <outline text="DevOps & Cloud" title="DevOps & Cloud">
+        <outline text="TLDR" title="TLDR">
+            <outline type="rss" text="TLDR Tech" title="TLDR Tech" xmlUrl="https://www.tldrnewsletter.com/rss" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="TLDR IT" title="TLDR IT" xmlUrl="https://tldr.tech/api/rss/it" htmlUrl="https://tldr.tech"/>
             <outline type="rss" text="TLDR DevOps" title="TLDR DevOps" xmlUrl="https://tldr.tech/api/rss/devops" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="TLDR AI" title="TLDR AI" xmlUrl="https://tldr.tech/api/rss/ai" htmlUrl="https://tldr.tech"/>
+            <outline type="rss" text="TLDR Data" title="TLDR Data" xmlUrl="https://tldr.tech/api/rss/data" htmlUrl="https://tldr.tech"/>
+        </outline>
+        <outline text="DevOps & Cloud" title="DevOps & Cloud">
             <outline type="rss" text="Architecture and Data Blog" title="Architecture and Data Blog" xmlUrl="http://www.sadalage.com/index.xml" htmlUrl="https://sadalage.com/"/>
             <outline type="rss" text="DevOps on Medium" title="DevOps on Medium" xmlUrl="https://medium.com/feed/tag/devops" htmlUrl="https://medium.com/tag/devops"/>
             <outline type="rss" text="The New Stack" title="The New Stack" xmlUrl="http://thenewstack.io/feed/" htmlUrl="https://thenewstack.io/"/>
