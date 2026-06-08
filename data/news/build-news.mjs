@@ -91,9 +91,9 @@ const SRC = {
   /* Gaming */
   'IGN Portugal': ['gaming', true], 'Eurogamer.pt': ['gaming', true],
   /* Filmes e TV */
-  'MovieWeb': ['filmes', false], 'IMDb News': ['filmes', false], 'Aberto até de Madrugada': ['filmes', true],
+  'MovieWeb': ['filmes', false], 'Aberto até de Madrugada': ['filmes', true],
   /* Trailers */
-  'IGN Trailers': ['trailers', false], 'Rotten Tomatoes Trailers': ['trailers', false], 'Movieclips Trailers': ['trailers', false],
+  'Rotten Tomatoes Trailers': ['trailers', false], 'Movieclips Trailers': ['trailers', false], 'IMDb Trailers': ['trailers', false],
   /* Fact Check */
   'Polígrafo': ['factcheck', true], 'Observador Fact Check': ['factcheck', true],
   'Reuters Fact Check': ['factcheck', false], 'AP Fact Check': ['factcheck', false],

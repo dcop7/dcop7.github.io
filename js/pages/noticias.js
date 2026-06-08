@@ -36,25 +36,25 @@ const NoticiasPage = (function () {
   const tIcon  = (id) => (TOPIC[id] ? TOPIC[id].icon : '🗞️');
 
   const VIEW_MODES = [
-    ['cards',   '▢', 'Cards',         'Cartões'],
-    ['compact', '▦', 'Compact cards', 'Compacto'],
+    ['cards',   '▦', 'Cards',         'Cartões'],
     ['listimg', '▤', 'List + thumbs', 'Lista'],
-    ['list',    '☰', 'Compact list',  'Lista compacta'],
+    ['listc',   '≣', 'Compact list',  'Lista compacta'],
+    ['list',    '☰', 'Minimal list',  'Lista mínima'],
   ];
   const DATE_OPTS = [
     ['0', 'Any time', 'Qualquer altura'], ['6', 'Last 6h', 'Últimas 6h'],
     ['24', 'Last 24h', 'Últimas 24h'], ['48', 'Last 48h', 'Últimas 48h'],
     ['168', 'Last 7 days', 'Últimos 7 dias'], ['336', 'Last 14 days', 'Últimos 14 dias'],
   ];
-  const LIMIT_OPTS = [['30', '30'], ['60', '60'], ['100', '100'], ['500', '∞']];
+  const LIMIT_OPTS = [['30', '30'], ['60', '60'], ['100', '100'], ['250', '250'], ['500', '500']];
 
   /* ── State ── */
   let _inited = false, _index = null, _cache = {}, _srcSite = {};
   let _topic = null, _source = '', _query = '';
-  let _maxAge = 48, _limit = 60, _feedsOpen = false;
+  let _maxAge = 48, _limit = 100, _feedsOpen = false;
   const _ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch { return d; } };
   let _mode = _ls('nw-mode', 'cards');
-  let _cols = parseInt(_ls('nw-cols', '0'), 10) || 0;        /* 0 = auto, 1..4 = fixed columns */
+  if (!['cards', 'listimg', 'listc', 'list'].includes(_mode)) _mode = 'cards';   /* migrate old 'compact' */
   let _scale = parseFloat(_ls('nw-scale', '1')) || 1;        /* text size multiplier 0.85..1.3 */
 
   /* ── helpers ── */
@@ -199,9 +199,9 @@ const NoticiasPage = (function () {
     const shown = matching.slice(0, _limit);                      /* count-limit */
 
     if (grid) {
-      grid.className = 'nw-grid nw-grid--' + _mode + (_cols ? ' nw-cols-' + _cols : '');
+      grid.className = 'nw-grid nw-grid--' + _mode;
       grid.style.setProperty('--nw-scale', _scale);
-      const render = _mode === 'list' ? articleRow : (_mode === 'listimg' ? articleListItem : articleCard);
+      const render = _mode === 'list' ? articleRow : ((_mode === 'listimg' || _mode === 'listc') ? articleListItem : articleCard);
       if (!shown.length) {
         grid.innerHTML = `<div class="nw-empty">😶 ${_t('No articles in this range. Try a wider date filter.', 'Sem artigos neste intervalo. Experimenta um filtro de data maior.')}</div>`;
       } else {
@@ -255,8 +255,6 @@ const NoticiasPage = (function () {
           <div class="nw-dens-wrap">
             <button class="nw-icon-btn" id="nw-dens-btn" aria-label="${_t('Density', 'Densidade')}" title="${_t('Size & columns', 'Tamanho e colunas')}">⚙</button>
             <div class="nw-pop nw-dens" id="nw-dens" hidden>
-              <label class="nw-pop-row"><span>${_t('Columns', 'Colunas')}</span>
-                <span class="nw-seg" id="nw-cols">${['0', '1', '2', '3', '4'].map(v => `<button data-cols="${v}" class="${v === String(_cols) ? 'active' : ''}">${v === '0' ? 'Auto' : v}</button>`).join('')}</span></label>
               <label class="nw-pop-row"><span>${_t('Text size', 'Tamanho do texto')}</span>
                 <input type="range" id="nw-scale" min="0.85" max="1.3" step="0.05" value="${_scale}"></label>
             </div>
@@ -330,13 +328,6 @@ const NoticiasPage = (function () {
     const densBtn = view.querySelector('#nw-dens-btn'), densPop = view.querySelector('#nw-dens');
     densBtn.addEventListener('click', (e) => { e.stopPropagation(); densPop.hidden = !densPop.hidden; });
     document.addEventListener('click', (e) => { if (densPop && !densPop.hidden && !e.target.closest('.nw-dens-wrap')) densPop.hidden = true; });
-    view.querySelector('#nw-cols').addEventListener('click', (e) => {
-      const b = e.target.closest('button'); if (!b) return;
-      _cols = parseInt(b.dataset.cols, 10) || 0;
-      try { localStorage.setItem('nw-cols', _cols); } catch {}
-      view.querySelectorAll('#nw-cols button').forEach(x => x.classList.toggle('active', x === b));
-      renderTopic();
-    });
     view.querySelector('#nw-scale').addEventListener('input', (e) => {
       _scale = parseFloat(e.target.value) || 1;
       try { localStorage.setItem('nw-scale', _scale); } catch {}

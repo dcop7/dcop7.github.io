@@ -145,15 +145,15 @@
 .nw-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 2.5rem 1rem; font-size: .95rem; }
 
 /* ── VIEW MODES ── */
-/* Compact: smaller cards, no summary/chips — fit more per screen. */
-.nw-grid--compact { grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: .6rem; }
-.nw-grid--compact .nw-c-body { padding: .55rem .65rem .6rem; gap: .3rem; }
-.nw-grid--compact .nw-c-title { font-size: calc(.88rem * var(--nw-scale, 1)); -webkit-line-clamp: 3; }
-.nw-grid--compact .nw-c-sum { display: none; }
-.nw-grid--compact .nw-chip { display: none; }
-.nw-grid--compact .nw-c-foot { padding-top: 0; }
+/* Cards: compact cards with thumbnail, no summary/chips — auto columns. */
+.nw-grid--cards { grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: .7rem; }
+.nw-grid--cards .nw-c-body { padding: .55rem .7rem .65rem; gap: .3rem; }
+.nw-grid--cards .nw-c-title { font-size: calc(.9rem * var(--nw-scale, 1)); -webkit-line-clamp: 3; }
+.nw-grid--cards .nw-c-sum { display: none; }
+.nw-grid--cards .nw-chip { display: none; }
+.nw-grid--cards .nw-c-foot { padding-top: 0; }
 
-/* List + thumbs (relax): wide rows with a thumbnail on the left. */
+/* List + thumbs (relax): wide rows with a thumbnail on the left + summary. */
 .nw-grid--listimg { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: .6rem; }
 .nw-li {
   display: grid; grid-template-columns: 128px 1fr; gap: .85rem;
@@ -172,6 +172,13 @@
 .nw-li-title { font-family: var(--font-head); font-size: calc(.92rem * var(--nw-scale, 1)); font-weight: 700; line-height: 1.25; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .nw-li:hover .nw-li-title { color: var(--accent); }
 .nw-li-sum { margin: 0; font-size: calc(.8rem * var(--nw-scale, 1)); color: var(--muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Compact list (with thumbs): denser rows, small thumbnail, no summary, more columns. */
+.nw-grid--listc { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: .45rem; }
+.nw-grid--listc .nw-li { grid-template-columns: 72px 1fr; gap: .6rem; }
+.nw-grid--listc .nw-li-img { width: 72px; min-height: 60px; }
+.nw-grid--listc .nw-li-body { padding: .45rem .6rem; gap: .2rem; }
+.nw-grid--listc .nw-li-sum { display: none; }
 
 /* List: dense one-line rows — maximum density. */
 .nw-grid--list { grid-template-columns: 1fr; gap: .3rem; }
@@ -193,12 +200,6 @@
   .nw-row { grid-template-columns: 18px 1fr auto; }
   .nw-r-src { display: none; }
 }
-
-/* ── DENSITY: fixed-column overrides (Auto = the auto-fill defaults above) ── */
-.nw-grid.nw-cols-1 { grid-template-columns: 1fr; }
-.nw-grid.nw-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.nw-grid.nw-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.nw-grid.nw-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 /* ── DAY SEPARATOR ── */
 .nw-day {
@@ -268,12 +269,13 @@
   }
   .nw-tm-caret { color: var(--muted); }
   .nw-rail { position: static; order: -1; max-height: 50vh; }
-  .nw-grid.nw-cols-3, .nw-grid.nw-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
   .nw-wrap { padding: .8rem .7rem 2rem; }
   .nw-head h1 { font-size: 1.35rem; }
-  .nw-grid--cards, .nw-grid--listimg, .nw-grid.nw-cols-2, .nw-grid.nw-cols-3, .nw-grid.nw-cols-4 { grid-template-columns: 1fr; }
+  .nw-grid--listimg { grid-template-columns: 1fr; }
+  .nw-grid--cards { grid-template-columns: 1fr 1fr; }
+  .nw-grid--listc { grid-template-columns: 1fr; }
   .nw-count { margin-left: 0; }
   .nw-toolbar { gap: .45rem; }
   .nw-fl > span { display: none; }

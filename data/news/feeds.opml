@@ -28,16 +28,12 @@
         </outline>
         <outline text="IA" title="IA">
             <outline type="rss" text="TLDR AI" title="TLDR AI" xmlUrl="https://tldr.tech/api/rss/ai" htmlUrl="https://tldr.tech"/>
-            <outline type="rss" text="Ben's Bites" title="Ben's Bites" xmlUrl="https://www.bensbites.co/rss" htmlUrl="https://www.bensbites.co"/>
-            <outline type="rss" text="The Rundown AI" title="The Rundown AI" xmlUrl="https://www.therundown.ai/rss.xml" htmlUrl="https://www.therundown.ai"/>
             <outline type="rss" text="Simon Willison" title="Simon Willison" xmlUrl="https://simonwillison.net/atom/everything/" htmlUrl="https://simonwillison.net"/>
             <outline type="rss" text="OpenAI" title="OpenAI" xmlUrl="https://openai.com/news/rss.xml" htmlUrl="https://openai.com"/>
-            <outline type="rss" text="Anthropic" title="Anthropic" xmlUrl="https://www.anthropic.com/news/rss.xml" htmlUrl="https://www.anthropic.com"/>
             <outline type="rss" text="Google DeepMind" title="Google DeepMind" xmlUrl="https://deepmind.google/blog/rss.xml" htmlUrl="https://deepmind.google"/>
             <outline type="rss" text="Latent Space" title="Latent Space" xmlUrl="https://www.latent.space/feed.xml" htmlUrl="https://www.latent.space"/>
             <outline type="rss" text="One Useful Thing" title="One Useful Thing" xmlUrl="https://www.oneusefulthing.org/feed" htmlUrl="https://www.oneusefulthing.org"/>
             <outline type="rss" text="Future Tools" title="Future Tools" xmlUrl="https://www.futuretools.io/news/rss.xml" htmlUrl="https://www.futuretools.io"/>
-            <outline type="rss" text="There's An AI For That" title="There's An AI For That" xmlUrl="https://theresanaiforthat.com/rss.xml" htmlUrl="https://theresanaiforthat.com"/>
             <outline type="rss" text="Reddit — Artificial" title="Reddit — Artificial" xmlUrl="https://www.reddit.com/r/artificial/.rss" htmlUrl="https://www.reddit.com/r/artificial"/>
             <outline type="rss" text="Reddit — LocalLLaMA" title="Reddit — LocalLLaMA" xmlUrl="https://www.reddit.com/r/LocalLLaMA/.rss" htmlUrl="https://www.reddit.com/r/LocalLLaMA"/>
             <outline type="rss" text="Reddit — MachineLearning" title="Reddit — MachineLearning" xmlUrl="https://www.reddit.com/r/MachineLearning/.rss" htmlUrl="https://www.reddit.com/r/MachineLearning"/>
@@ -53,7 +49,6 @@
             <outline type="rss" text="MakeUseOf - Productivity" title="MakeUseOf - Productivity" xmlUrl="https://www.makeuseof.com/feed/category/productivity/" htmlUrl="https://www.makeuseof.com"/>
             <outline type="rss" text="Lifehacker" title="Lifehacker" xmlUrl="https://lifehacker.com/rss" htmlUrl="https://lifehacker.com"/>
             <outline type="rss" text="Tool Finder" title="Tool Finder" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYyaQsm2HyneP9CsIOdihBw" htmlUrl="https://www.youtube.com/channel/UCYyaQsm2HyneP9CsIOdihBw"/>
-            <outline type="rss" text="AlternativeTo" title="AlternativeTo" xmlUrl="https://alternativeto.net/feeds/all/" htmlUrl="https://alternativeto.net"/>
         </outline>
         <outline text="DevOps & Cloud" title="DevOps & Cloud">
             <outline type="rss" text="TLDR DevOps" title="TLDR DevOps" xmlUrl="https://tldr.tech/api/rss/devops" htmlUrl="https://tldr.tech"/>
@@ -85,7 +80,6 @@
             <outline type="rss" text="Motor24" title="Motor24" xmlUrl="https://feeds.feedburner.com/motor24" htmlUrl="https://www.motor24.pt"/>
             <outline type="rss" text="Standvirtual" title="Standvirtual" xmlUrl="https://www.standvirtual.com/blog/feed/" htmlUrl="https://www.standvirtual.com/blog"/>
             <outline type="rss" text="Observador Auto" title="Observador Auto" xmlUrl="https://observador.pt/seccao/auto/feed/" htmlUrl="https://observador.pt/seccao/auto"/>
-            <outline type="rss" text="Auto Express" title="Auto Express" xmlUrl="https://www.autoexpress.co.uk/rss.xml" htmlUrl="https://www.autoexpress.co.uk"/>
             <outline type="rss" text="Carwow" title="Carwow" xmlUrl="https://www.carwow.co.uk/blog/rss.xml" htmlUrl="https://www.carwow.co.uk"/>
             <outline type="rss" text="Top Gear" title="Top Gear" xmlUrl="https://www.topgear.com/rss.xml" htmlUrl="https://www.topgear.com"/>
             <outline type="rss" text="What Car?" title="What Car?" xmlUrl="https://www.whatcar.com/rss" htmlUrl="https://www.whatcar.com"/>
@@ -97,17 +91,16 @@
         </outline>
         <outline text="Filmes e TV" title="Filmes e TV">
             <outline type="rss" text="MovieWeb" title="MovieWeb" xmlUrl="https://movieweb.com/feed/" htmlUrl="https://movieweb.com"/>
-            <outline type="rss" text="IMDb News" title="IMDb News" xmlUrl="https://www.imdb.com/news/rss/" htmlUrl="https://www.imdb.com/news"/>
-            <outline type="rss" text="IGN Trailers" title="IGN Trailers" xmlUrl="https://feeds.ign.com/ign/trailers-all" htmlUrl="https://www.ign.com"/>
+            <outline type="rss" text="Aberto até de Madrugada" title="Aberto até de Madrugada" xmlUrl="http://abertoatedemadrugada.com/feeds/posts/default" htmlUrl="https://abertoatedemadrugada.com/"/>
+        </outline>
+        <outline text="Trailers" title="Trailers">
             <outline type="rss" text="Rotten Tomatoes Trailers" title="Rotten Tomatoes Trailers" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCi8e0iOVk1fEOogdfu4YgfA" htmlUrl="https://www.youtube.com/c/rottentomatoestrailers"/>
             <outline type="rss" text="Movieclips Trailers" title="Movieclips Trailers" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC3sznuotAs2ohg_U__Jzj_Q" htmlUrl="https://www.youtube.com/c/MOVIECLIPSTRAILERS"/>
-            <outline type="rss" text="Aberto até de Madrugada" title="Aberto até de Madrugada" xmlUrl="http://abertoatedemadrugada.com/feeds/posts/default" htmlUrl="https://abertoatedemadrugada.com/"/>
+            <outline type="rss" text="IMDb Trailers" title="IMDb Trailers" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC_vz6SvmIkYs1_H3Wv2SKlg" htmlUrl="https://www.youtube.com/@IMDb"/>
         </outline>
         <outline text="Fact Check" title="Fact Check">
             <outline type="rss" text="Polígrafo" title="Polígrafo" xmlUrl="https://poligrafo.sapo.pt/rss" htmlUrl="https://poligrafo.sapo.pt"/>
             <outline type="rss" text="Observador Fact Check" title="Observador Fact Check" xmlUrl="https://observador.pt/seccao/fact-check/feed/" htmlUrl="https://observador.pt/seccao/fact-check"/>
-            <outline type="rss" text="Reuters Fact Check" title="Reuters Fact Check" xmlUrl="https://www.reuters.com/fact-check/rss" htmlUrl="https://www.reuters.com/fact-check"/>
-            <outline type="rss" text="AP Fact Check" title="AP Fact Check" xmlUrl="https://apnews.com/hub/ap-fact-check/rss" htmlUrl="https://apnews.com/hub/ap-fact-check"/>
             <outline type="rss" text="FactCheck.org" title="FactCheck.org" xmlUrl="https://www.factcheck.org/feed/" htmlUrl="https://www.factcheck.org"/>
             <outline type="rss" text="Snopes" title="Snopes" xmlUrl="https://www.snopes.com/feed/" htmlUrl="https://www.snopes.com"/>
         </outline>
@@ -126,7 +119,6 @@
         </outline>
         <outline text="Economia" title="Economia">
             <outline type="rss" text="Contas Poupança" title="Contas Poupança" xmlUrl="https://rss.impresa.pt/feed/latest/contaspoupanca.rss" htmlUrl="https://contaspoupanca.pt/"/>
-            <outline type="rss" text="Jornal de Negócios" title="Jornal de Negócios" xmlUrl="http://www.jornaldenegocios.pt/funcionalidades/rss/generarRSS.php" htmlUrl="https://www.jornaldenegocios.pt/"/>
         </outline>
     </body>
 </opml>
