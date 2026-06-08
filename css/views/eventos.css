@@ -115,12 +115,12 @@
   margin: 0 0 .5rem; color: var(--text);
 }
 .ev-rail-track {
-  display: flex; gap: .7rem;
+  display: flex; gap: .5rem;
   overflow-x: auto;
-  padding-bottom: .5rem;
-  scroll-snap-type: x mandatory;
+  padding-bottom: .45rem;
+  scroll-snap-type: x proximity;
 }
-.ev-rail-track .ev-card { flex: 0 0 230px; scroll-snap-align: start; }
+.ev-rail-track .ev-card { flex: 0 0 150px; scroll-snap-align: start; }
 
 /* ── BODY (toolbar + split) ── */
 .ev-toolbar { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .6rem; }
@@ -172,7 +172,12 @@
   font-size: 2.6rem;
   background: linear-gradient(135deg, color-mix(in srgb, var(--cc) 22%, transparent), color-mix(in srgb, var(--cc) 8%, transparent));
 }
-.ev-card-c .ev-c-img { height: 104px; }
+.ev-card-c .ev-c-img { height: 74px; }
+.ev-card-c .ev-c-body { padding: .45rem .5rem .5rem; gap: .22rem; }
+.ev-card-c .ev-c-cat { font-size: .6rem; }
+.ev-card-c .ev-c-title { font-size: .8rem; -webkit-line-clamp: 2; }
+.ev-card-c .ev-c-meta { font-size: .68rem; }
+.ev-card-c .ev-c-img-ph { font-size: 1.7rem; }
 .ev-c-body { padding: .7rem .8rem .65rem; display: flex; flex-direction: column; gap: .35rem; flex: 1; }
 .ev-c-cat {
   display: inline-flex; align-items: center; gap: .3rem;
@@ -319,7 +324,7 @@
   .ev-head h1 { font-size: 1.35rem; }
   .ev-fld, .ev-fld-grow { min-width: 100%; }
   .ev-list { grid-template-columns: 1fr 1fr; }
-  .ev-rail-track .ev-card { flex-basis: 64vw; }
+  .ev-rail-track .ev-card { flex-basis: 40vw; }
 }
 @media (max-width: 380px) {
   .ev-list { grid-template-columns: 1fr; }

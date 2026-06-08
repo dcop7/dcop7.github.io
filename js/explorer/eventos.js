@@ -223,6 +223,16 @@ const EventosPage = (function () {
   /* ════════════════════════════ ADAPTERS ════════════════════════════ */
   /* Each returns a Promise<Array<normalisedEvent>>; failures are isolated. */
 
+  /* AgendaLX price_val is sometimes a serialized PHP array
+     (e.g. a:1:{i:0;a:1:{s:5:"value";s:1:"8";}}). Extract a plain number. */
+  function agendaPrice(v) {
+    const s = String(v == null ? '' : v).trim();
+    if (/^\d+([.,]\d+)?$/.test(s)) return s.replace(',', '.');
+    const m = s.match(/"value";s:\d+:"([\d.,]+)"/);
+    return m ? m[1].replace(',', '.') : '';
+  }
+  const priceLabel = (n) => (n && n !== '0' && parseFloat(n) > 0) ? (Math.round(parseFloat(n) * 100) / 100) + ' €' : '';
+
   async function srcAgendaLX() {
     const ckey = 'ev-agendalx';
     let raw = _fromCache(ckey);
@@ -253,8 +263,8 @@ const EventosPage = (function () {
         venue, district: 'Lisboa', concelho: 'Lisboa',
         image: e.featured_media_large || '',
         url: e.link || 'https://www.agendalx.pt/',
-        free: /gratuit|livre|free/i.test(e.price_cat || '') || e.price_val === '0',
-        price: e.price_val && e.price_val !== '0' ? e.price_val + ' €' : '',
+        free: /gratuit|livre|free/i.test(e.price_cat || '') || e.price_val === '0' || agendaPrice(e.price_val) === '0',
+        price: priceLabel(agendaPrice(e.price_val)),
       }));
     }
     return out;
@@ -486,32 +496,16 @@ const EventosPage = (function () {
   /* ════════════════════════════ DISCOVERY ════════════════════════════ */
   /* Location-aware, date-relaxed rails so users discover even without filters. */
   function discovery() {
-    const pool = _f.showPermanent ? _events : _events.filter(e => !e.permanent);
-    const here = withDistance(pool);
-    const future = here.filter(e => !e.start || e.end == null || e.end.getTime() >= Date.now());
+    /* Rails are different orderings of the SAME filtered results shown in the
+       list, so they always respect the chosen radius, dates and categories. */
+    const base = _filtered;
     const hasImg = (e) => e.image && /^https?:/.test(e.image);
-
-    const destaques = future.filter(e => hasImg(e) && (e.source !== 'seed' || e.permanent))
-      .sort((a, b) => (a.dist ?? 9e9) - (b.dist ?? 9e9)).slice(0, 12);
-
-    const perto = future.filter(e => e.dist != null)
-      .sort((a, b) => a.dist - b.dist).slice(0, 12);
-
-    const recentes = [...future].sort((a, b) =>
-      (a.start ? a.start.getTime() : 9e15) - (b.start ? b.start.getTime() : 9e15)).slice(0, 12);
-
-    /* "Populares": multi-day runs / landmarks / has image, near user. */
-    const populares = future.filter(e => hasImg(e) || e.permanent || (e.end && e.start && e.end - e.start > 2 * DAY))
-      .sort((a, b) => (a.dist ?? 9e9) - (b.dist ?? 9e9)).slice(0, 12);
-
-    /* Suggestions by the user's active category filter (or a varied mix). */
-    let sugestoes;
-    if (_f.cats.size) sugestoes = future.filter(e => _f.cats.has(e.category)).sort((a, b) => (a.dist ?? 9e9) - (b.dist ?? 9e9)).slice(0, 12);
-    else {
-      const byCat = {}; sugestoes = [];
-      for (const e of perto.concat(future)) { if (sugestoes.length >= 12) break; if ((byCat[e.category] = (byCat[e.category] || 0) + 1) <= 2) sugestoes.push(e); }
-    }
-    return { destaques, populares, recentes, perto, sugestoes };
+    const perto = base.filter(e => e.dist != null).slice().sort((a, b) => a.dist - b.dist).slice(0, 14);
+    const destaques = base.filter(hasImg).slice(0, 14);
+    const recentes = base.slice().sort((a, b) =>
+      (a.start ? a.start.getTime() : 9e15) - (b.start ? b.start.getTime() : 9e15)).slice(0, 14);
+    const populares = base.filter(e => hasImg(e) || e.permanent || (e.end && e.start && e.end - e.start > 2 * DAY)).slice(0, 14);
+    return { perto, destaques, recentes, populares };
   }
 
   /* ════════════════════════════ LEAFLET ════════════════════════════ */
@@ -675,15 +669,15 @@ const EventosPage = (function () {
     const box = document.getElementById('ev-discovery');
     if (!box) return;
     /* Only show the discovery rails in the "broad" state (no narrowing search/filters). */
-    const broad = !_f.query && !_f.district && _f.cats.size === 0;
+    /* Rails now respect every filter, so only hide them during a text search. */
+    const broad = !_f.query;
     if (!broad) { box.hidden = true; box.innerHTML = ''; return; }
     const d = discovery();
     const rails = [
-      ['⭐ ' + _t('Featured', 'Destaques'), d.destaques],
       ['📍 ' + _t('Near you', 'Perto de ti'), d.perto],
-      ['🔥 ' + _t('Popular', 'Populares'), d.populares],
+      ['⭐ ' + _t('Featured', 'Destaques'), d.destaques],
       ['🆕 ' + _t('Coming up', 'A chegar'), d.recentes],
-      ['💡 ' + _t('Suggestions', 'Sugestões'), d.sugestoes],
+      ['🔥 ' + _t('Popular', 'Populares'), d.populares],
     ].filter(([, l]) => l && l.length);
     if (!rails.length) { box.hidden = true; return; }
     box.hidden = false;
