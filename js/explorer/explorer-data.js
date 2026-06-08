@@ -152,6 +152,26 @@ const WorldDataExplorer = (function () {
     _geo = await fetch(`${BASE}/world-50m.geojson`).then(r => r.json());
     buildGeoPaths();
   }
+  /* administrative subdivisions for the country map (where we have geometry) */
+  const DISTRICTS = { PRT: 'data/pt-districts.geojson' };
+  const _districts = {};   // iso -> [{name,d,cx,cy,bbox}] | null
+  async function ensureDistricts(iso) {
+    if (_districts[iso] !== undefined) return _districts[iso];
+    const url = DISTRICTS[iso]; if (!url) { _districts[iso] = null; return null; }
+    try {
+      const g = await fetch(url).then(r => r.json());
+      _districts[iso] = g.features.map(f => {
+        let d = '', x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+        const ring = r => { let s = ''; r.forEach((pt, i) => { const x = projX(pt[0]), y = projY(pt[1]); s += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }); return s + 'Z'; };
+        const gg = f.geometry;
+        if (gg.type === 'Polygon') gg.coordinates.forEach(r => d += ring(r));
+        else if (gg.type === 'MultiPolygon') gg.coordinates.forEach(p => p.forEach(r => d += ring(r)));
+        return { name: f.properties.name || f.properties.NAME || '', d, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, bbox: { x0, y0, x1, y1 } };
+      });
+    } catch (e) { _districts[iso] = null; }
+    return _districts[iso];
+  }
+
   async function ensureCatalog() {
     if (_catalog && _wbCat) return;
     await Promise.all([
@@ -592,14 +612,21 @@ const WorldDataExplorer = (function () {
       </div></div>`;
   }
 
-  /* a map of one country with its cities plotted (the País landing map) */
+  /* a map of one country: its administrative divisions (districts) where we have
+     them, otherwise the country outline, with the cities plotted on top */
   function countryMapBlock(iso) {
     const b = _geoBbox[iso];
+    const districts = _districts[iso];
     const cities = (_cities || []).filter(c => c.iso3 === iso).sort((a, b) => b.pop - a.pop);
-    /* frame to the bulk of the cities (percentile-clipped) so distant islands
-       — e.g. the Azores/Madeira for Portugal — don't squash the mainland */
+    /* viewBox: prefer the districts' bbox (clean mainland); else percentile of
+       city centroids (keeps distant islands from squashing the mainland) */
     let vbox = '0 40 1000 430';
-    if (cities.length >= 5) {
+    if (districts && districts.length) {
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      districts.forEach(d => { if (d.bbox.x0 < x0) x0 = d.bbox.x0; if (d.bbox.y0 < y0) y0 = d.bbox.y0; if (d.bbox.x1 > x1) x1 = d.bbox.x1; if (d.bbox.y1 > y1) y1 = d.bbox.y1; });
+      const padX = (x1 - x0) * 0.08 + 2, padY = (y1 - y0) * 0.08 + 2;
+      vbox = `${(x0 - padX).toFixed(1)} ${(y0 - padY).toFixed(1)} ${(x1 - x0 + padX * 2).toFixed(1)} ${(y1 - y0 + padY * 2).toFixed(1)}`;
+    } else if (cities.length >= 5) {
       const lons = cities.map(c => c.lon).sort((a, b) => a - b), lats = cities.map(c => c.lat).sort((a, b) => a - b);
       const pct = (a, p) => a[Math.min(a.length - 1, Math.max(0, Math.round((a.length - 1) * p)))];
       let lo0 = pct(lons, 0.05), lo1 = pct(lons, 0.95), la0 = pct(lats, 0.05), la1 = pct(lats, 0.95);
@@ -610,13 +637,25 @@ const WorldDataExplorer = (function () {
       vbox = `${(x0 - padX).toFixed(1)} ${(y0 - padY).toFixed(1)} ${(x1 - x0 + padX * 2).toFixed(1)} ${(y1 - y0 + padY * 2).toFixed(1)}`;
     } else if (b) { const padX = (b.x1 - b.x0) * 0.2 + 4, padY = (b.y1 - b.y0) * 0.2 + 4; vbox = `${(b.x0 - padX).toFixed(1)} ${(b.y0 - padY).toFixed(1)} ${(b.x1 - b.x0 + padX * 2).toFixed(1)} ${(b.y1 - b.y0 + padY * 2).toFixed(1)}`; }
     const vbW = parseFloat(vbox.split(' ')[2]) || 100;
-    const paths = _geoPaths.map(p => { const me = p.iso === iso; return `<path d="${p.d}" class="wd-geo${me ? ' wd-cm-self' : ' wd-geo-out'}" fill="${me ? 'rgba(99,102,241,.20)' : 'var(--card2)'}" data-iso="${p.iso}"></path>`; }).join('');
+    /* base layer: neighbour countries greyed; the selected country tinted */
+    let base = _geoPaths.map(p => { const me = p.iso === iso; return `<path d="${p.d}" class="wd-geo${me ? ' wd-cm-self' : ' wd-geo-out'}" fill="${me && !districts ? 'rgba(99,102,241,.20)' : 'var(--card2)'}" data-iso="${p.iso}"></path>`; }).join('');
+    /* district divisions (each a distinct hue), with their names */
+    let divs = '', divLabels = '';
+    if (districts && districts.length) {
+      divs = districts.map((d, i) => `<path d="${d.d}" class="wd-dist" fill="hsl(${(i * 43) % 360} 42% 32%)" data-name="${esc(d.name)}"><title>${esc(d.name)}</title></path>`).join('');
+      const dfs = (vbW * 0.024).toFixed(2), dhalo = (vbW * 0.024 * 0.16).toFixed(2);
+      divLabels = districts.map(d => `<text class="wd-lbl wd-dist-lbl" x="${d.cx.toFixed(1)}" y="${d.cy.toFixed(1)}" font-size="${dfs}" stroke-width="${dhalo}">${esc(d.name)}</text>`).join('');
+    }
     const maxPop = cities.length ? cities[0].pop : 1;
-    const dots = cities.map(c => { const r = (vbW * (0.009 + 0.038 * Math.sqrt(c.pop / maxPop))).toFixed(2); return `<circle class="wd-cm-dot" cx="${projX(c.lon).toFixed(1)}" cy="${projY(c.lat).toFixed(1)}" r="${r}" data-city="${c.id}"><title>${esc(c.name)}: ${compact(c.pop)}</title></circle>`; }).join('');
-    const fs = (vbW * 0.026).toFixed(2), halo = (vbW * 0.026 * 0.16).toFixed(2);
-    const labels = cities.slice(0, 8).map(c => `<text class="wd-lbl wd-cm-lbl" x="${projX(c.lon).toFixed(1)}" y="${(projY(c.lat) - vbW * 0.02).toFixed(1)}" font-size="${fs}" stroke-width="${halo}">${esc(c.name)}</text>`).join('');
+    const dots = cities.map(c => { const r = (vbW * (0.008 + 0.03 * Math.sqrt(c.pop / maxPop))).toFixed(2); return `<circle class="wd-cm-dot" cx="${projX(c.lon).toFixed(1)}" cy="${projY(c.lat).toFixed(1)}" r="${r}" data-city="${c.id}"><title>${esc(c.name)}: ${compact(c.pop)}</title></circle>`; }).join('');
+    /* city name labels only when there are no district labels (avoid clutter) */
+    let cityLabels = '';
+    if (!(districts && districts.length)) {
+      const fs = (vbW * 0.026).toFixed(2), halo = (vbW * 0.026 * 0.16).toFixed(2);
+      cityLabels = cities.slice(0, 8).map(c => `<text class="wd-lbl wd-cm-lbl" x="${projX(c.lon).toFixed(1)}" y="${(projY(c.lat) - vbW * 0.02).toFixed(1)}" font-size="${fs}" stroke-width="${halo}">${esc(c.name)}</text>`).join('');
+    }
     return `<div class="wd-map-wrap wd-cm-wrap">
-      <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(entityName(iso))}">${paths}${dots}${labels}</svg>
+      <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(entityName(iso))}">${base}${divs}${dots}${divLabels}${cityLabels}</svg>
       ${ZOOM_BTNS}
       <div class="wd-map-tip" id="wd-map-tip" hidden></div>
     </div>`;
@@ -684,8 +723,8 @@ const WorldDataExplorer = (function () {
     const c = _cIso[key];
     const cont = c && c.continents ? c.continents[0] : null;
     const pool = cont ? countriesOf(cont) : null;
-    /* load sparkline series for all indicators + cities + map (parallel) */
-    await Promise.all([..._inds.map(i => ensureSeries(i.id)), ensureCities(), ensureGeo()]);
+    /* load sparkline series for all indicators + cities + map + districts */
+    await Promise.all([..._inds.map(i => ensureSeries(i.id)), ensureCities(), ensureGeo(), ensureDistricts(key)]);
     const contFlag = cont ? entityFlag(cont) : '';
     const cards = _inds.map(ind => {
       const v = val(ind.id, key), y = yearOf(ind.id, key);
@@ -712,7 +751,7 @@ const WorldDataExplorer = (function () {
           <button class="wd-cmp-add" id="wd-cmp-add">⚖️ ${_t('Compare', 'Comparar')}</button>
         </div>
       </div>
-      ${_geoBbox[key] ? `<section class="wd-sec"><h3 class="wd-sec-h">🗺️ ${_t('Cities', 'Cidades')}</h3>${countryMapBlock(key)}</section>` : ''}
+      ${_geoBbox[key] ? `<section class="wd-sec"><h3 class="wd-sec-h">🗺️ ${_districts[key] ? _t('Districts & cities', 'Distritos e cidades') : _t('Cities', 'Cidades')}</h3>${countryMapBlock(key)}</section>` : ''}
       ${citiesSec}
       <section class="wd-sec"><h3 class="wd-sec-h">📋 ${_t('All indicators', 'Todos os indicadores')}</h3>
         <div class="wd-prof-grid">${cards}</div></section>
@@ -772,7 +811,10 @@ const WorldDataExplorer = (function () {
   /* ══════════════════════ LIVE WEB CHART (Our World in Data / World Bank) ══════════════════════ */
   const NOWY = new Date().getFullYear();
   async function fetchOWID(slug) {
-    const txt = await fetch(`https://ourworldindata.org/grapher/${slug}.csv?csvType=full&useColumnShortNames=true`).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); });
+    const [txt, meta] = await Promise.all([
+      fetch(`https://ourworldindata.org/grapher/${slug}.csv?csvType=full&useColumnShortNames=true`).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }),
+      fetch(`https://ourworldindata.org/grapher/${slug}.metadata.json`).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
     const rows = parseCSV(txt); const series = {};
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r]; if (row.length <= 3) continue;
@@ -781,11 +823,21 @@ const WorldDataExplorer = (function () {
       const key = /^[A-Z]{3}$/.test(code) && code !== 'OWID' ? code : (SPECIALS[entity] || null);
       if (key) (series[key] = series[key] || []).push([year, v]);
     }
-    return { series, updated: null };
+    let unit = '', shortUnit = '', desc = '';
+    if (meta && meta.columns) {
+      const k = Object.keys(meta.columns).find(k => !/^(year|entity|code)$/i.test(k));
+      const c = (k && meta.columns[k]) || {};
+      unit = c.unit || ''; shortUnit = c.shortUnit || '';
+      desc = c.descriptionShort || (Array.isArray(c.descriptionKey) ? c.descriptionKey[0] : '') || (c.descriptionFromProducer || '');
+    }
+    return { series, updated: null, unit, shortUnit, desc };
   }
   async function fetchWB(code) {
     const url = `https://api.worldbank.org/v2/country/all/indicator/${code}?format=json&per_page=20000&date=1970:${NOWY}`;
-    const j = await fetch(url).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    const [j, metaRes] = await Promise.all([
+      fetch(url).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+      fetch(`https://api.worldbank.org/v2/indicator/${code}?format=json`).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
     const series = {};
     (j[1] || []).forEach(row => {
       if (row.value == null) return;
@@ -793,7 +845,8 @@ const WorldDataExplorer = (function () {
       let key = iso === 'WLD' ? 'WORLD' : (/^[A-Z]{3}$/.test(iso) && _cIso[iso] ? iso : null);
       if (key) (series[key] = series[key] || []).push([year, v]);
     });
-    return { series, updated: j[0] && j[0].lastupdated };
+    const meta = metaRes && metaRes[1] && metaRes[1][0];
+    return { series, updated: j[0] && j[0].lastupdated, unit: (meta && meta.unit) || '', shortUnit: '', desc: (meta && meta.sourceNote) || '' };
   }
   async function webView() {
     const web = _web || {};
@@ -803,8 +856,8 @@ const WorldDataExplorer = (function () {
     const title = web.src === 'wb' ? web.name : slugTitle(web.id);
     body.innerHTML = `<button class="wd-back" id="wd-back">← ${_t('Back', 'Voltar')}</button><div class="wd-loading">${_t('Fetching live data from', 'A obter dados em direto de')} ${esc(srcName)}…</div>`;
     _root.querySelector('#wd-back').onclick = () => { _view = 'home'; render(); };
-    let series, updated;
-    try { const res = await (web.src === 'wb' ? fetchWB(web.id) : fetchOWID(web.id)); series = res.series; updated = res.updated; if (!Object.keys(series).length) throw new Error('empty'); }
+    let series, updated, unit = '', shortUnit = '', desc = '';
+    try { const res = await (web.src === 'wb' ? fetchWB(web.id) : fetchOWID(web.id)); series = res.series; updated = res.updated; unit = res.unit || ''; shortUnit = res.shortUnit || ''; desc = res.desc || ''; if (!Object.keys(series).length) throw new Error('empty'); }
     catch (e) {
       body.innerHTML = `<button class="wd-back" id="wd-backe">← ${_t('Back', 'Voltar')}</button>
         <div class="wd-loading">${_t('Could not load this chart live.', 'Não foi possível carregar este gráfico em direto.')}<br>
@@ -818,7 +871,8 @@ const WorldDataExplorer = (function () {
     Object.keys(series).forEach(k => { const last = series[k][series[k].length - 1]; latest[k] = { v: last[1], y: last[0] }; if (last[0] > latestYear) latestYear = last[0]; });
     const countryKeys = Object.keys(latest).filter(isCountry);
     const scale = makeScale(countryKeys.map(k => latest[k].v), 0);
-    const fmt = v => v == null ? '—' : (Math.abs(v) >= 10000 ? compact(v) : nf(round(v, Math.abs(v) < 10 ? 2 : (Math.abs(v) < 1000 ? 1 : 0))));
+    const u = shortUnit || (unit && unit.length <= 5 && !/per|por|\s/.test(unit) ? unit : '');
+    const fmt = v => v == null ? '—' : (Math.abs(v) >= 10000 ? compact(v) : nf(round(v, Math.abs(v) < 10 ? 2 : (Math.abs(v) < 1000 ? 1 : 0)))) + (u ? ' ' + u : '');
     /* choropleth (white→blue) with labels for the larger countries */
     let mapHtml = '';
     if (countryKeys.length >= 8) {
@@ -847,7 +901,8 @@ const WorldDataExplorer = (function () {
       <button class="wd-back" id="wd-back">← ${_t('Back', 'Voltar')}</button>
       <div class="wd-ind-head"><span class="wd-ind-head-em">🌐</span>
         <div><h2 class="wd-ind-head-name">${esc(title)}</h2>
-        <div class="wd-ind-head-meta">${_t('Live', 'Em direto')} · ${esc(srcName)}${latestYear ? ' · ' + latestYear : ''}${updated ? ' · ' + _t('updated', 'atual.') + ' ' + esc(updated) : ''}</div></div></div>
+        <div class="wd-ind-head-meta">${_t('Live', 'Em direto')} · ${esc(srcName)}${unit ? ' · ' + esc(unit) : ''}${latestYear ? ' · ' + latestYear : ''}${updated ? ' · ' + _t('updated', 'atual.') + ' ' + esc(updated) : ''}</div></div></div>
+      ${desc ? `<p class="wd-ind-desc">${esc(desc.length > 320 ? desc.slice(0, 317) + '…' : desc)}</p>` : ''}
       ${mapHtml}
       ${lines.length ? `<section class="wd-sec"><h3 class="wd-sec-h">📈 ${_t('Evolution over time', 'Evolução ao longo do tempo')}</h3>${lineChart(lines, { label: title })}</section>` : ''}
       ${rankHtml}
