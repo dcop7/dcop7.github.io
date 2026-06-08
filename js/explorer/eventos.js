@@ -101,6 +101,7 @@ const EventosPage = (function () {
     range: '7d',                  /* today | weekend | 7d | 30d | all */
     cats: new Set(),              /* empty = all */
     freeOnly: false,
+    showPermanent: false,         /* hide "always open" landmarks by default */
     query: '',
   };
 
@@ -204,7 +205,7 @@ const EventosPage = (function () {
     return d.toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { day: '2-digit', month: 'short' });
   }
   function fmtWhen(ev) {
-    if (ev.permanent) return _t('Always open', 'Sempre / Permanente');
+    if (ev.permanent) return ev.hours ? ev.hours : _t('Always open', 'Sempre aberto');
     const s = ev.start, e = ev.end;
     if (!s) return '';
     const sameDay = e && startOfDay(s).getTime() === startOfDay(e).getTime();
@@ -311,7 +312,7 @@ const EventosPage = (function () {
           source: 'seed',
           title: e.title, lead: e.lead || '', desc: e.lead || '',
           start: o.start, end: o.end, permanent: o.permanent,
-          time: '',
+          time: '', hours: e.hours || '',
           category: norm(e.category) ? labelToKey(e.category) : classify(e.title, e.lead),
           venue: e.venue || '', district: e.district || '', concelho: e.concelho || '',
           image: e.image || '',
@@ -362,7 +363,7 @@ const EventosPage = (function () {
       title: e.title || '(sem título)',
       lead: e.lead || '', desc: e.desc || e.lead || '',
       start: e.start || null, end: e.end || e.start || null, permanent: !!e.permanent,
-      time: e.time || '',
+      time: e.time || '', hours: e.hours || '',
       category: e.category || 'outros',
       venue: e.venue || '', district: e.district || '', concelho: e.concelho || '',
       address: e.address || '',
@@ -432,6 +433,7 @@ const EventosPage = (function () {
     const win = dateWindow(_f.range);
     const q = norm(_f.query);
     let list = _events.filter(e => {
+      if (!_f.showPermanent && e.permanent) return false;
       if (_f.district && norm(e.district) !== norm(_f.district)) return false;
       if (_f.cats.size && !_f.cats.has(e.category)) return false;
       if (_f.freeOnly && !e.free) return false;
@@ -453,7 +455,8 @@ const EventosPage = (function () {
   /* ════════════════════════════ DISCOVERY ════════════════════════════ */
   /* Location-aware, date-relaxed rails so users discover even without filters. */
   function discovery() {
-    const here = withDistance(_events);
+    const pool = _f.showPermanent ? _events : _events.filter(e => !e.permanent);
+    const here = withDistance(pool);
     const future = here.filter(e => !e.start || e.end == null || e.end.getTime() >= Date.now());
     const hasImg = (e) => e.image && /^https?:/.test(e.image);
 
@@ -593,9 +596,8 @@ const EventosPage = (function () {
         <div class="ev-cats" id="ev-cats">
           ${Object.keys(CATS).map(k => `<button type="button" class="ev-cat" data-cat="${k}" style="--cc:${CATS[k].color}">${CATS[k].icon} ${catLabel(k)}</button>`).join('')}
           <button type="button" class="ev-cat ev-cat-free" id="ev-free">💶 ${_t('Free', 'Grátis')}</button>
+          <button type="button" class="ev-cat ev-cat-perm" id="ev-perm" title="${_t('Museums, monuments and other always-open places', 'Museus, monumentos e outros locais sempre abertos')}">🏛️ ${_t('Always-open', 'Sempre abertos')}</button>
         </div>
-
-        <section class="ev-discovery" id="ev-discovery" hidden></section>
 
         <div class="ev-body">
           <div class="ev-toolbar">
@@ -606,7 +608,10 @@ const EventosPage = (function () {
             </div>
           </div>
           <div class="ev-split ev-show-list">
-            <div class="ev-list" id="ev-list"></div>
+            <div class="ev-list-col">
+              <section class="ev-discovery" id="ev-discovery" hidden></section>
+              <div class="ev-list" id="ev-list"></div>
+            </div>
             <div class="ev-map-wrap"><div id="ev-map"></div></div>
           </div>
         </div>
@@ -702,7 +707,8 @@ const EventosPage = (function () {
       ? `<div class="ev-d-img" style="background-image:url('${esc(e.image)}')"></div>`
       : `<div class="ev-d-img ev-d-img-ph" style="--cc:${catColor(e.category)}">${catIcon(e.category)}</div>`;
     const rows = [
-      ['🗓️', fmtWhen(e)],
+      ['🗓️', e.permanent ? _t('Always open', 'Sempre aberto') : fmtWhen(e)],
+      e.hours ? ['🕒', e.hours] : null,
       ['📌', [e.venue, e.concelho, e.district].filter(Boolean).join(' · ')],
       e.address ? ['🏠', e.address] : null,
       e.dist != null ? ['📍', `${e.dist < 1 ? '<1' : Math.round(e.dist)} km ${_t('away', 'de distância')}`] : null,
@@ -756,6 +762,7 @@ const EventosPage = (function () {
     view.querySelector('#ev-cats').addEventListener('click', (e) => {
       const b = e.target.closest('.ev-cat'); if (!b) return;
       if (b.id === 'ev-free') { _f.freeOnly = !_f.freeOnly; b.classList.toggle('active', _f.freeOnly); renderList(); return; }
+      if (b.id === 'ev-perm') { _f.showPermanent = !_f.showPermanent; b.classList.toggle('active', _f.showPermanent); renderList(); return; }
       const k = b.dataset.cat;
       if (_f.cats.has(k)) _f.cats.delete(k); else _f.cats.add(k);
       b.classList.toggle('active', _f.cats.has(k));

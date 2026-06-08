@@ -105,6 +105,7 @@
   border-color: var(--cc, var(--accent));
 }
 .ev-cat-free.active { background: var(--green); border-color: var(--green); }
+.ev-cat-perm.active { background: #6b7280; border-color: #6b7280; color: #fff; }
 
 /* ── DISCOVERY RAILS ── */
 .ev-discovery { display: flex; flex-direction: column; gap: 1rem; }
@@ -131,8 +132,9 @@
 }
 .ev-vt-btn.active { background: var(--accent); color: #fff; }
 
-.ev-split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: start; }
-.ev-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .8rem; }
+.ev-split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1rem; align-items: start; }
+.ev-list-col { min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+.ev-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .8rem; }
 .ev-map-wrap { position: sticky; top: calc(var(--hdr-h) + .6rem); }
 #ev-map {
   height: clamp(360px, 72vh, 760px);
@@ -272,7 +274,7 @@
   .ev-map-wrap { position: relative; top: 0; }
   #ev-map { height: 62vh; }
   .ev-split.ev-show-list .ev-map-wrap { display: none; }
-  .ev-split.ev-show-map .ev-list { display: none; }
+  .ev-split.ev-show-map .ev-list-col { display: none; }
 }
 @media (min-width: 901px) {
   .ev-vt { display: none; }   /* both panes show on desktop */
