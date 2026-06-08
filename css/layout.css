@@ -150,6 +150,13 @@ body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
 /* Thin separator between nav groups */
 .sb-sep { height: 1px; background: var(--border); margin: .5rem .85rem; opacity: .7; }
 
+/* Sidebar group label */
+.sb-grp {
+  font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--muted); opacity: .7;
+  padding: .7rem .85rem .2rem;
+}
+
 /* Nav icon colours — every entry is colourful (no monochrome mode). */
 .sb-nav-item[data-route="home"] svg { stroke: #60a5fa; }
 .sb-nav-item[data-route="links"] svg { stroke: #fb923c; }

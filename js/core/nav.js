@@ -47,17 +47,20 @@ const Nav = (function () {
       <div class="sb-scroll">
         <nav class="sb-main-nav">
           <a class="sb-nav-item" data-route="home"         href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
+          <div class="sb-grp" data-grp="discover">${TN('nav.grp.discover')}</div>
+          <a class="sb-nav-item" data-route="explorer"    href="#explorer">${ICONS.explorer}<span>${TN('nav.explorer')}</span></a>
+          <a class="sb-nav-item" data-route="noticias"    href="#noticias">${ICONS.noticias}<span>${TN('nav.noticias')}</span></a>
+          <a class="sb-nav-item" data-route="eventos"     href="#eventos">${ICONS.eventos}<span>${TN('nav.eventos')}</span></a>
+          <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>${TN('nav.ocorrencias')}</span></a>
+          <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
           <a class="sb-nav-item" data-route="links"        href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools"        href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
           <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${ICONS.cheatsheets}<span>${TN('nav.cheatsheets')}</span></a>
+          <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
           <a class="sb-nav-item" data-route="games"        href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${ICONS.quiz}<span>${TN('nav.quiz')}</span></a>
-          <a class="sb-nav-item" data-route="explorer"    href="#explorer">${ICONS.explorer}<span>${TN('nav.explorer')}</span></a>
-          <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>${TN('nav.ocorrencias')}</span></a>
-          <a class="sb-nav-item" data-route="eventos"     href="#eventos">${ICONS.eventos}<span>${TN('nav.eventos')}</span></a>
-          <a class="sb-nav-item" data-route="noticias"    href="#noticias">${ICONS.noticias}<span>${TN('nav.noticias')}</span></a>
-          <div class="sb-sep"></div>
           <a class="sb-nav-item" data-route="media"        href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
+          <div class="sb-grp" data-grp="personal">${TN('nav.grp.personal')}</div>
           <a class="sb-nav-item" data-route="workout"      href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${ICONS.photography}<span>${TN('nav.photography')}</span></a>
           <a class="sb-nav-item" data-route="visual"       href="#visual">${ICONS.visual}<span>${TN('nav.visual')}</span></a>
@@ -180,7 +183,7 @@ const Nav = (function () {
       typeof EventosPage !== 'undefined' && EventosPage.show();
     } else if (page === 'noticias') {
       document.getElementById('view-noticias')?.classList.add('active');
-      typeof NoticiasPage !== 'undefined' && NoticiasPage.show();
+      typeof NoticiasPage !== 'undefined' && NoticiasPage.show(sub || null);
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
@@ -228,6 +231,8 @@ const Nav = (function () {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);
     });
+    /* Sidebar group labels. */
+    document.querySelectorAll('.sb-grp').forEach(el => { el.textContent = TN(`nav.grp.${el.dataset.grp}`); });
     /* Mobile bottom-nav labels follow the same keys. */
     document.querySelectorAll('#mob-nav .mob-nav-btn').forEach(btn => {
       const span = btn.querySelector('span');

@@ -15,13 +15,18 @@ const NoticiasPage = (function () {
 
   const TOPIC = {
     tecnologia:    { icon: '💻', en: 'Technology',    pt: 'Tecnologia',    color: '#3b82f6' },
+    ia:            { icon: '🧠', en: 'AI',            pt: 'IA',            color: '#a855f7' },
     android:       { icon: '📱', en: 'Android',       pt: 'Android',       color: '#84cc16' },
     produtividade: { icon: '🧰', en: 'Productivity',  pt: 'Produtividade', color: '#14b8a6' },
-    ia:            { icon: '🧠', en: 'AI',            pt: 'IA',            color: '#a855f7' },
-    devops:        { icon: '🧩', en: 'DevOps & Cloud', pt: 'DevOps & Cloud', color: '#06b6d4' },
-    carros:        { icon: '🚗', en: 'Cars & F1',     pt: 'Carros & F1',   color: '#ef4444' },
+    devops:        { icon: '🧩', en: 'DevOps',        pt: 'DevOps',        color: '#06b6d4' },
+    seguranca:     { icon: '🔒', en: 'Security',      pt: 'Segurança',     color: '#dc2626' },
+    ciencia:       { icon: '🔬', en: 'Science',       pt: 'Ciência',       color: '#0ea5e9' },
+    carros:        { icon: '🚗', en: 'Cars',          pt: 'Carros',        color: '#f97316' },
+    f1:            { icon: '🏎️', en: 'F1 & Motorsport', pt: 'F1 & Motorsport', color: '#e11d48' },
     gaming:        { icon: '🎮', en: 'Gaming',        pt: 'Gaming',        color: '#8b5cf6' },
     filmes:        { icon: '🎬', en: 'Film & TV',     pt: 'Filmes & TV',   color: '#ec4899' },
+    trailers:      { icon: '🎞️', en: 'Trailers',      pt: 'Trailers',      color: '#d946ef' },
+    factcheck:     { icon: '✅', en: 'Fact Check',    pt: 'Fact Check',    color: '#10b981' },
     geral:         { icon: '🇵🇹', en: 'Portugal',     pt: 'Geral',         color: '#16a34a' },
     mundo:         { icon: '🌍', en: 'World',         pt: 'Mundo',         color: '#f59e0b' },
     economia:      { icon: '💶', en: 'Economy',       pt: 'Economia',      color: '#a16207' },
@@ -47,7 +52,10 @@ const NoticiasPage = (function () {
   let _inited = false, _index = null, _cache = {}, _srcSite = {};
   let _topic = null, _source = '', _query = '';
   let _maxAge = 48, _limit = 60, _feedsOpen = false;
-  let _mode = (() => { try { return localStorage.getItem('nw-mode') || 'cards'; } catch { return 'cards'; } })();
+  const _ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch { return d; } };
+  let _mode = _ls('nw-mode', 'cards');
+  let _cols = parseInt(_ls('nw-cols', '0'), 10) || 0;        /* 0 = auto, 1..4 = fixed columns */
+  let _scale = parseFloat(_ls('nw-scale', '1')) || 1;        /* text size multiplier 0.85..1.3 */
 
   /* ── helpers ── */
   const esc = (s) => (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -68,6 +76,15 @@ const NoticiasPage = (function () {
   function fmtUpdated(iso) {
     if (!iso) return '';
     return new Date(iso).toLocaleString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+  function dayKey(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
+  function dayLabel(ts) {
+    const today = dayKey(Date.now()), k = dayKey(ts);
+    const diff = Math.round((today - k) / 86400000);
+    if (diff <= 0) return _t('Today', 'Hoje');
+    if (diff === 1) return _t('Yesterday', 'Ontem');
+    if (diff < 7) return new Date(ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { weekday: 'long' });
+    return new Date(ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { day: '2-digit', month: 'long' });
   }
   function favURL(site) { let h = ''; try { h = new URL(site).host; } catch { return ''; } return h ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=64` : ''; }
   function favicon(a) { const u = favURL(a.site || a.url); return u ? `<img class="nw-fav" src="${u}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''; }
@@ -136,16 +153,21 @@ const NoticiasPage = (function () {
   }
 
   /* ════════════════════════════ RAILS ════════════════════════════ */
-  function renderTopics() {
-    const el = document.getElementById('nw-topics');
-    if (!el || !_index) return;
+  function topicListHTML() {
+    if (!_index) return '';
     let html = '', sep = false;
     for (const t of _index.topics) {
       if (!t.feature && !sep) { html += `<div class="nw-topic-sep"></div>`; sep = true; }
       html += `<button class="nw-topic${t.id === _topic ? ' active' : ''}" data-topic="${t.id}" style="--tc:${tColor(t.id)}">
         <span class="nw-topic-ic">${tIcon(t.id)}</span><span class="nw-topic-n">${esc(tLabel(t.id))}</span></button>`;
     }
-    el.innerHTML = html;
+    return html;
+  }
+  function renderTopics() {
+    const el = document.getElementById('nw-topics');
+    if (el) el.innerHTML = topicListHTML();
+    const mob = document.getElementById('nw-topic-mob');
+    if (mob) mob.innerHTML = `<span>${tIcon(_topic)} ${esc(tLabel(_topic))}</span> <span class="nw-tm-caret">▾</span>`;
   }
 
   function renderFeeds(dsFiltered) {
@@ -177,10 +199,21 @@ const NoticiasPage = (function () {
     const shown = matching.slice(0, _limit);                      /* count-limit */
 
     if (grid) {
-      grid.className = 'nw-grid nw-grid--' + _mode;
+      grid.className = 'nw-grid nw-grid--' + _mode + (_cols ? ' nw-cols-' + _cols : '');
+      grid.style.setProperty('--nw-scale', _scale);
       const render = _mode === 'list' ? articleRow : (_mode === 'listimg' ? articleListItem : articleCard);
-      grid.innerHTML = shown.length ? shown.map(render).join('')
-        : `<div class="nw-empty">😶 ${_t('No articles in this range. Try a wider date filter.', 'Sem artigos neste intervalo. Experimenta um filtro de data maior.')}</div>`;
+      if (!shown.length) {
+        grid.innerHTML = `<div class="nw-empty">😶 ${_t('No articles in this range. Try a wider date filter.', 'Sem artigos neste intervalo. Experimenta um filtro de data maior.')}</div>`;
+      } else {
+        /* Insert day separators only when the results span more than one day. */
+        const multiDay = new Set(shown.map(a => dayKey(a.ts))).size > 1;
+        let html = '', last = null;
+        for (const a of shown) {
+          if (multiDay) { const dk = dayKey(a.ts); if (dk !== last) { html += `<div class="nw-day">${esc(dayLabel(a.ts))}</div>`; last = dk; } }
+          html += render(a);
+        }
+        grid.innerHTML = html;
+      }
     }
     if (count) {
       const unit = matching.length === 1 ? _t('article', 'artigo') : _t('articles', 'artigos');
@@ -219,14 +252,32 @@ const NoticiasPage = (function () {
           <div class="nw-view" id="nw-view" role="group" aria-label="${_t('View mode', 'Modo de visualização')}">
             ${VIEW_MODES.map(([id, ic, en, pt]) => `<button class="nw-view-b${id === _mode ? ' active' : ''}" data-mode="${id}" title="${_t(en, pt)}" aria-label="${_t(en, pt)}">${ic}</button>`).join('')}
           </div>
+          <div class="nw-dens-wrap">
+            <button class="nw-icon-btn" id="nw-dens-btn" aria-label="${_t('Density', 'Densidade')}" title="${_t('Size & columns', 'Tamanho e colunas')}">⚙</button>
+            <div class="nw-pop nw-dens" id="nw-dens" hidden>
+              <label class="nw-pop-row"><span>${_t('Columns', 'Colunas')}</span>
+                <span class="nw-seg" id="nw-cols">${['0', '1', '2', '3', '4'].map(v => `<button data-cols="${v}" class="${v === String(_cols) ? 'active' : ''}">${v === '0' ? 'Auto' : v}</button>`).join('')}</span></label>
+              <label class="nw-pop-row"><span>${_t('Text size', 'Tamanho do texto')}</span>
+                <input type="range" id="nw-scale" min="0.85" max="1.3" step="0.05" value="${_scale}"></label>
+            </div>
+          </div>
           <button class="nw-feeds-btn" id="nw-feeds-btn" aria-pressed="false">📡 ${_t('Feeds', 'Fontes')}</button>
           <span class="nw-count" id="nw-count"></span>
         </div>
+
+        <button class="nw-topic-mob" id="nw-topic-mob" aria-haspopup="true"></button>
 
         <div class="nw-layout" id="nw-layout">
           <aside class="nw-topics" id="nw-topics" aria-label="${_t('Topics', 'Temas')}"></aside>
           <div class="nw-grid nw-grid--${_mode}" id="nw-grid"></div>
           <aside class="nw-rail" id="nw-rail" aria-label="${_t('Feeds', 'Feeds')}" hidden></aside>
+        </div>
+
+        <div class="nw-topic-pop" id="nw-topic-pop" hidden>
+          <div class="nw-topic-pop-card">
+            <div class="nw-topic-pop-h">${_t('Choose a topic', 'Escolher tema')} <button class="nw-rail-x" id="nw-topic-pop-x" aria-label="${_t('Close', 'Fechar')}">✕</button></div>
+            <div class="nw-topic-pop-list" id="nw-topic-pop-list"></div>
+          </div>
         </div>
 
         <footer class="nw-foot" id="nw-foot"></footer>
@@ -235,12 +286,28 @@ const NoticiasPage = (function () {
   }
 
   /* ════════════════════════════ WIRING ════════════════════════════ */
+  function goTopic(id) {
+    closeTopicPop();
+    if (!id || id === _topic) return;
+    /* Topic lives in the URL (#noticias/<topic>) so refresh keeps the category. */
+    location.hash = '#noticias/' + id;
+  }
+  function openTopicPop() {
+    const pop = document.getElementById('nw-topic-pop');
+    const list = document.getElementById('nw-topic-pop-list');
+    if (!pop || !list) return;
+    list.innerHTML = topicListHTML();
+    pop.hidden = false;
+  }
+  function closeTopicPop() { const p = document.getElementById('nw-topic-pop'); if (p) p.hidden = true; }
+
   function _wire(view) {
-    view.querySelector('#nw-topics').addEventListener('click', (e) => {
-      const b = e.target.closest('.nw-topic'); if (!b) return;
-      _topic = b.dataset.topic; _source = '';
-      renderTopic();
-    });
+    const onTopicClick = (e) => { const b = e.target.closest('.nw-topic'); if (b) goTopic(b.dataset.topic); };
+    view.querySelector('#nw-topics').addEventListener('click', onTopicClick);
+    view.querySelector('#nw-topic-pop-list').addEventListener('click', onTopicClick);
+    view.querySelector('#nw-topic-mob').addEventListener('click', openTopicPop);
+    view.querySelector('#nw-topic-pop-x').addEventListener('click', closeTopicPop);
+    view.querySelector('#nw-topic-pop').addEventListener('click', (e) => { if (e.target.id === 'nw-topic-pop') closeTopicPop(); });
     view.querySelector('#nw-rail').addEventListener('click', (e) => {
       if (e.target.closest('#nw-rail-x')) { _toggleFeeds(false); return; }
       const b = e.target.closest('.nw-src'); if (!b) return;
@@ -259,6 +326,22 @@ const NoticiasPage = (function () {
       view.querySelectorAll('#nw-view .nw-view-b').forEach(x => x.classList.toggle('active', x === b));
       renderTopic();
     });
+    /* density popover */
+    const densBtn = view.querySelector('#nw-dens-btn'), densPop = view.querySelector('#nw-dens');
+    densBtn.addEventListener('click', (e) => { e.stopPropagation(); densPop.hidden = !densPop.hidden; });
+    document.addEventListener('click', (e) => { if (densPop && !densPop.hidden && !e.target.closest('.nw-dens-wrap')) densPop.hidden = true; });
+    view.querySelector('#nw-cols').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      _cols = parseInt(b.dataset.cols, 10) || 0;
+      try { localStorage.setItem('nw-cols', _cols); } catch {}
+      view.querySelectorAll('#nw-cols button').forEach(x => x.classList.toggle('active', x === b));
+      renderTopic();
+    });
+    view.querySelector('#nw-scale').addEventListener('input', (e) => {
+      _scale = parseFloat(e.target.value) || 1;
+      try { localStorage.setItem('nw-scale', _scale); } catch {}
+      const g = document.getElementById('nw-grid'); if (g) g.style.setProperty('--nw-scale', _scale);
+    });
   }
 
   function _toggleFeeds(open) {
@@ -272,14 +355,20 @@ const NoticiasPage = (function () {
   }
 
   /* ════════════════════════════ PUBLIC ════════════════════════════ */
-  async function show() {
+  const validTopic = (id) => id && _index && _index.topics.some(t => t.id === id);
+
+  async function show(sub) {
     const view = document.getElementById('view-noticias');
     if (!view) return;
-    if (_inited) return;
+    if (_inited) {
+      /* URL changed to a different topic (refresh / back / topic click). */
+      if (validTopic(sub) && sub !== _topic) { _topic = sub; _source = ''; closeTopicPop(); renderTopic(); }
+      return;
+    }
     view.innerHTML = `<div class="nw-wrap"><div class="nw-grid">${skeleton()}</div></div>`;
     try {
       await ensureIndex();
-      _topic = (_index.topics[0] && _index.topics[0].id) || 'tecnologia';
+      _topic = validTopic(sub) ? sub : ((_index.topics[0] && _index.topics[0].id) || 'tecnologia');
       _buildShell(view);
       renderMeta();
       renderTopics();

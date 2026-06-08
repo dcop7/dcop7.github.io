@@ -16,7 +16,8 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const UA = 'Mozilla/5.0 (compatible; dcop7-news/1.0; +https://dcop7.github.io)';
+/* A real browser UA recovers feeds that block generic/bot user-agents. */
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const CONCURRENCY = 10;
 const FEED_TIMEOUT = 14000;
 const ITEMS_PER_FEED = 80;     /* capture as many as each feed offers (most give fewer) */
@@ -29,13 +30,18 @@ const SUMMARY_LEN = 220;
    feed; the rest (Geral PT, Mundo, Economia) live in their own tabs only. */
 const TOPICS = [
   ['tecnologia',    '💻', 'Technology',    'Tecnologia',    true],
+  ['ia',            '🧠', 'AI',            'IA',            true],
   ['android',       '📱', 'Android',       'Android',       true],
   ['produtividade', '🧰', 'Productivity',  'Produtividade', true],
-  ['ia',            '🧠', 'AI',            'IA',            true],
-  ['devops',        '🧩', 'DevOps & Cloud','DevOps & Cloud', true],
-  ['carros',        '🚗', 'Cars & F1',     'Carros & F1',   true],
+  ['devops',        '🧩', 'DevOps',        'DevOps',        true],
+  ['seguranca',     '🔒', 'Security',      'Segurança',     true],
+  ['ciencia',       '🔬', 'Science',       'Ciência',       true],
+  ['carros',        '🚗', 'Cars',          'Carros',        true],
+  ['f1',            '🏎️', 'F1 & Motorsport', 'F1 & Motorsport', true],
   ['gaming',        '🎮', 'Gaming',        'Gaming',        true],
   ['filmes',        '🎬', 'Film & TV',     'Filmes & TV',   true],
+  ['trailers',      '🎞️', 'Trailers',      'Trailers',      true],
+  ['factcheck',     '✅', 'Fact Check',    'Fact Check',    true],
   ['geral',         '🇵🇹', 'Portugal',     'Geral',         false],
   ['mundo',         '🌍', 'World',         'Mundo',         false],
   ['economia',      '💶', 'Economy',       'Economia',      false],
@@ -45,62 +51,61 @@ const FEATURED = new Set(TOPICS.filter(t => t[4]).map(t => t[0]));
 
 /* ── Source → primary topic + Portuguese flag (keyed by OPML title) ── */
 const SRC = {
-  'MovieWeb - Movie and TV Reviews': ['filmes', false],
-  'IMDb': ['filmes', false],
-  'TLDR DevOps RSS Feed': ['devops', false],
-  'Architecture and Data Blog': ['devops', false],
-  'MakeUseOf - Technology News': ['tecnologia', false],
-  'MakeUseOf - Android': ['android', false],
-  'SIC Notícias': ['geral', true],
-  'Pplware': ['tecnologia', true],
-  'Contas Poupança': ['economia', true],
-  'Lifehacker': ['produtividade', false],
-  'DevOps on Medium': ['devops', false],
-  'MakeUseOf - Productivity': ['produtividade', false],
-  'Xa das 5': ['tecnologia', true],
-  'MakeUseOf - Linux': ['tecnologia', false],
-  'MaisTecnologia': ['tecnologia', true],
-  '9to5Google': ['android', false],
-  'TLDR AI RSS Feed': ['ia', false],
-  'World News | Latest Top Stories | Reuters': ['mundo', false],
-  'The New Stack': ['devops', false],
-  'Android Police': ['android', false],
-  'The Hacker News': ['tecnologia', false],
-  'MakeUseOf - Internet': ['tecnologia', false],
-  'XDA': ['tecnologia', false],
-  'DevOps.com': ['devops', false],
-  'AndroidGeek': ['android', true],
-  'Razão Automóvel': ['carros', true],
-  'IGN Portugal': ['gaming', true],
-  'Cloud Native Now': ['devops', false],
-  'A tecnologia está do teu lado': ['tecnologia', true],
-  'Latest F1 News': ['carros', false],
-  'World news | The Guardian': ['mundo', false],
-  'Minuto Digital': ['tecnologia', true],
-  'MakeUseOf - Windows': ['tecnologia', false],
-  'TLDR RSS Feed': ['tecnologia', false],
-  'Tool Finder': ['produtividade', false],
-  'Latest news': ['tecnologia', false],
-  'Platform Engineering Blog': ['devops', false],
-  'Diário de Notícias - Últimas': ['geral', true],
-  'Jornal de Negocios': ['economia', true],
-  'The Guardian/World': ['mundo', false],
-  'Forbes - Innovation': ['tecnologia', false],
-  'RTP Notícias / Geral / Últimas': ['geral', true],
-  'Leak': ['tecnologia', true],
-  'Tek Notícias': ['tecnologia', true],
-  'Região de Leiria': ['geral', true],
-  'The New Stack | DevOps, Open Source, and Cloud Native News': ['devops', false],
-  'Autoblog': ['carros', true],
-  'Expresso': ['geral', true],
-  'AutoSport': ['carros', true],
-  'Eurogamer.pt Latest Articles Feed': ['gaming', true],
-  'BBC News': ['mundo', false],
-  'Android Authority': ['android', false],
-  'Cloud Native Computing Foundation': ['devops', false],
-  'PCGuia': ['tecnologia', true],
-  'Aberto até de Madrugada': ['filmes', true],
-  'News | Euronews RSS': ['mundo', false],
+  /* Tecnologia */
+  'MakeUseOf - Technology News': ['tecnologia', false], 'MakeUseOf - Internet': ['tecnologia', false],
+  'MakeUseOf - Windows': ['tecnologia', false], 'MakeUseOf - Linux': ['tecnologia', false],
+  'Pplware': ['tecnologia', true], 'MaisTecnologia': ['tecnologia', true], 'Leak': ['tecnologia', true],
+  'Tek Notícias': ['tecnologia', true], 'PCGuia': ['tecnologia', true], 'Minuto Digital': ['tecnologia', true],
+  'Xa das 5': ['tecnologia', true], 'A tecnologia está do teu lado': ['tecnologia', true],
+  'XDA': ['tecnologia', false], 'ZDNet': ['tecnologia', false], 'Forbes - Innovation': ['tecnologia', false],
+  'TLDR': ['tecnologia', false], 'TechCrunch': ['tecnologia', false], 'The Verge': ['tecnologia', false],
+  'Ars Technica': ['tecnologia', false],
+  /* IA */
+  'TLDR AI': ['ia', false], "Ben's Bites": ['ia', false], 'The Rundown AI': ['ia', false],
+  'Simon Willison': ['ia', false], 'OpenAI': ['ia', false], 'Anthropic': ['ia', false],
+  'Google DeepMind': ['ia', false], 'Latent Space': ['ia', false], 'One Useful Thing': ['ia', false],
+  'Future Tools': ['ia', false], "There's An AI For That": ['ia', false],
+  'Reddit — Artificial': ['ia', false], 'Reddit — LocalLLaMA': ['ia', false], 'Reddit — MachineLearning': ['ia', false],
+  /* Android */
+  'MakeUseOf - Android': ['android', false], '9to5Google': ['android', false], 'Android Police': ['android', false],
+  'AndroidGeek': ['android', true], 'Android Authority': ['android', false],
+  /* Produtividade */
+  'MakeUseOf - Productivity': ['produtividade', false], 'Lifehacker': ['produtividade', false],
+  'Tool Finder': ['produtividade', false], 'AlternativeTo': ['produtividade', false],
+  /* DevOps */
+  'TLDR DevOps': ['devops', false], 'Architecture and Data Blog': ['devops', false], 'DevOps on Medium': ['devops', false],
+  'The New Stack': ['devops', false], 'DevOps.com': ['devops', false], 'Cloud Native Now': ['devops', false],
+  'Platform Engineering': ['devops', false], 'Cloud Native Computing Foundation': ['devops', false],
+  'Reddit — selfhosted': ['devops', false],
+  /* Segurança */
+  'The Hacker News': ['seguranca', false], 'Krebs on Security': ['seguranca', false],
+  'BleepingComputer': ['seguranca', false], 'Dark Reading': ['seguranca', false],
+  /* Ciência */
+  'ScienceDaily': ['ciencia', false], 'Nature': ['ciencia', false], 'New Scientist': ['ciencia', false],
+  /* Carros */
+  'Razão Automóvel': ['carros', true], 'Autoblog': ['carros', true], 'Motor24': ['carros', true],
+  'Standvirtual': ['carros', true], 'Observador Auto': ['carros', true], 'Auto Express': ['carros', false],
+  'Carwow': ['carros', false], 'Top Gear': ['carros', false], 'What Car?': ['carros', false], 'InsideEVs': ['carros', false],
+  /* F1 & Motorsport */
+  'Latest F1 News': ['f1', false], 'AutoSport': ['f1', true],
+  /* Gaming */
+  'IGN Portugal': ['gaming', true], 'Eurogamer.pt': ['gaming', true],
+  /* Filmes e TV */
+  'MovieWeb': ['filmes', false], 'IMDb News': ['filmes', false], 'Aberto até de Madrugada': ['filmes', true],
+  /* Trailers */
+  'IGN Trailers': ['trailers', false], 'Rotten Tomatoes Trailers': ['trailers', false], 'Movieclips Trailers': ['trailers', false],
+  /* Fact Check */
+  'Polígrafo': ['factcheck', true], 'Observador Fact Check': ['factcheck', true],
+  'Reuters Fact Check': ['factcheck', false], 'AP Fact Check': ['factcheck', false],
+  'FactCheck.org': ['factcheck', false], 'Snopes': ['factcheck', false],
+  /* Geral PT */
+  'SIC Notícias': ['geral', true], 'Diário de Notícias - Últimas': ['geral', true],
+  'RTP Notícias / Geral / Últimas': ['geral', true], 'Expresso': ['geral', true], 'Região de Leiria': ['geral', true],
+  /* Mundo */
+  'Reuters World': ['mundo', false], 'The Guardian — World': ['mundo', false],
+  'BBC News': ['mundo', false], 'Euronews': ['mundo', false],
+  /* Economia */
+  'Contas Poupança': ['economia', true], 'Jornal de Negócios': ['economia', true],
 };
 
 /* No cross-cutting keyword tags — each article keeps its source's topic, so
