@@ -201,6 +201,41 @@
   padding: 2.5rem 1rem; font-size: .95rem;
 }
 
+/* ── LOADING (spinner + skeleton cards) ── */
+.ev-loading-bar {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: .6rem;
+  color: var(--muted); font-size: .9rem; font-weight: 600;
+  padding: .2rem 0 .4rem;
+}
+.ev-spinner {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 2.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: ev-spin .8s linear infinite;
+}
+@keyframes ev-spin { to { transform: rotate(360deg); } }
+
+.ev-skel {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; background: var(--card);
+}
+.ev-skel-img { height: 130px; }
+.ev-skel-body { padding: .7rem .8rem; display: flex; flex-direction: column; gap: .5rem; }
+.ev-skel-ln { height: 11px; border-radius: 5px; width: 100%; }
+.ev-skel-ln-sm { width: 38%; height: 9px; }
+.ev-skel-ln-md { width: 64%; }
+.ev-skel-img, .ev-skel-ln {
+  background: linear-gradient(90deg, var(--card2) 25%, color-mix(in srgb, var(--card2) 40%, var(--glass-hover)) 37%, var(--card2) 63%);
+  background-size: 400% 100%;
+  animation: ev-shimmer 1.4s ease infinite;
+}
+@keyframes ev-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .ev-spinner, .ev-skel-img, .ev-skel-ln, .ev-here { animation: none; }
+}
+
 /* ── SOURCES FOOTER ── */
 .ev-sources { border-top: 1px solid var(--border); padding-top: .8rem; color: var(--muted); font-size: .8rem; }
 .ev-src-line { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }

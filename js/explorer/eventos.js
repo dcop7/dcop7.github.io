@@ -21,12 +21,14 @@ const EventosPage = (function () {
   const AGENDALX_URL = 'https://www.agendalx.pt/wp-json/agendalx/v1/events?per_page=100';
   const ECULTURA_URL = 'https://www.e-cultura.pt/api';
   const SEED_URL     = 'data/events/seed.json';
+  const NOCARTAZ_URL = 'data/events/nocartaz.json';
   const PLACES_URL   = 'data/events/pt-places.json';
   const TTL          = 30 * 60 * 1000;           /* 30 min cache */
   const HORIZON_DAYS = 366;                       /* how far ahead we keep events */
 
   const PROVIDERS = {
     agendalx: { name: 'AgendaLX', icon: '🎭', scope: () => _t('Lisbon cultural agenda', 'Agenda cultural de Lisboa'), url: 'https://www.agendalx.pt/' },
+    nocartaz: { name: 'NoCartaz', icon: '🗓️', scope: () => _t('National agenda (snapshot)', 'Agenda nacional (snapshot)'), url: 'https://www.nocartaz.pt/' },
     ecultura: { name: 'e-cultura', icon: '🇵🇹', scope: () => _t('National cultural highlights', 'Destaques culturais nacionais'), url: 'https://www.e-cultura.pt/' },
     seed:     { name: _t('Curated guide', 'Guia curado'), icon: '⭐', scope: () => _t('Recurring events & landmarks (offline)', 'Eventos e marcos recorrentes (offline)'), url: null },
   };
@@ -86,7 +88,7 @@ const EventosPage = (function () {
   let _events      = [];          /* aggregated, normalised, geocoded */
   let _filtered    = [];
   let _places      = null;        /* pt-places.json */
-  let _prov        = { agendalx: { ok: null }, ecultura: { ok: null }, seed: { ok: null } };
+  let _prov        = { agendalx: { ok: null }, nocartaz: { ok: null }, ecultura: { ok: null }, seed: { ok: null } };
   let _userPt      = null;        /* {lat,lon,label} active reference point */
   let _gps         = null;        /* geolocation result */
   let _themeObs    = null;
@@ -324,6 +326,27 @@ const EventosPage = (function () {
     return out;
   }
 
+  async function srcNoCartaz() {
+    const r = await _fetch(NOCARTAZ_URL);
+    if (!r.ok) throw new Error('nocartaz ' + r.status);
+    const data = await r.json();
+    const out = [];
+    for (const e of (data.events || [])) {
+      const start = parseDate(e.start);
+      out.push(normalise({
+        id: e.id, source: 'nocartaz',
+        title: e.title, lead: e.desc || '', desc: e.desc || '',
+        start, end: start,
+        category: classify(e.title, e.desc),
+        venue: '', district: e.district || '', concelho: '',
+        image: e.image || '',
+        url: e.url || 'https://www.nocartaz.pt/',
+        free: !!e.free, price: e.price || '',
+      }));
+    }
+    return out;
+  }
+
   /* PT/EN category label → key (for seed, which uses display labels). */
   function labelToKey(label) {
     const n = norm(label);
@@ -389,6 +412,7 @@ const EventosPage = (function () {
     await ensurePlaces();
     const tasks = [
       ['agendalx', srcAgendaLX],
+      ['nocartaz', srcNoCartaz],
       ['ecultura', srcECultura],
       ['seed', srcSeed],
     ];
@@ -407,9 +431,9 @@ const EventosPage = (function () {
       if (seen.has(k)) continue;
       seen.add(k); dedup.push(e);
     }
-    /* Keep only events with a usable location, sort by start date. */
+    /* Keep all events (those without coordinates still list, just no map pin),
+       sort by start date. */
     _events = dedup
-      .filter(e => e.lat != null)
       .sort((a, b) => (a.start ? a.start.getTime() : Infinity) - (b.start ? b.start.getTime() : Infinity));
     return _events;
   }
@@ -565,7 +589,7 @@ const EventosPage = (function () {
       ['7d', _t('Next 7 days', 'Próximos 7 dias')], ['30d', _t('Next 30 days', 'Próximos 30 dias')],
       ['all', _t('All', 'Tudo')],
     ];
-    const radii = [['0', _t('Nationwide', 'Todo o país')], ['10', '10 km'], ['25', '25 km'], ['50', '50 km'], ['100', '100 km']];
+    const radii = [['0', _t('Nationwide', 'Todo o país')], ['10', '10 km'], ['25', '25 km'], ['50', '50 km'], ['100', '100 km'], ['200', '200 km']];
     view.innerHTML = `
       <div class="ev-wrap">
         <header class="ev-head">
@@ -661,6 +685,12 @@ const EventosPage = (function () {
         <h2 class="ev-rail-h">${title}</h2>
         <div class="ev-rail-track">${list.map(e => eventCard(e, true)).join('')}</div>
       </div>`).join('');
+  }
+
+  function skeletonHTML(n = 8) {
+    const card = `<div class="ev-skel"><div class="ev-skel-img"></div><div class="ev-skel-body"><span class="ev-skel-ln ev-skel-ln-sm"></span><span class="ev-skel-ln"></span><span class="ev-skel-ln ev-skel-ln-md"></span></div></div>`;
+    return `<div class="ev-loading-bar"><span class="ev-spinner"></span> ${_t('Searching events near you…', 'À procura de eventos perto de ti…')}</div>`
+      + Array.from({ length: n }, () => card).join('');
   }
 
   function renderList() {
@@ -841,7 +871,7 @@ const EventosPage = (function () {
     _buildShell(view);
     _wire(view);
     const list = document.getElementById('ev-list');
-    if (list) list.innerHTML = `<div class="ev-loading">⏳ ${_t('Loading events…', 'A carregar eventos…')}</div>`;
+    if (list) list.innerHTML = skeletonHTML();
 
     try { await _loadLeaflet(); _initMap(); } catch {}
     _loading = true;

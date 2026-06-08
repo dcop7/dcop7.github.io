@@ -1,0 +1,45 @@
+name: Refresh events data
+
+# Some event sources (e.g. NoCartaz) lock CORS to their own origin, so the
+# browser can't fetch them live from dcop7.github.io. This workflow fetches
+# them server-side once a day (Node has no CORS) and commits a trimmed snapshot
+# into the repo, so the Eventos section gets fresh national coverage without a
+# backend. The live sources (AgendaLX, e-cultura) are still fetched in-browser.
+
+on:
+  schedule:
+    - cron: '17 5 * * *'      # daily ~05:17 UTC
+  workflow_dispatch:           # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+# Avoid overlapping runs piling up commits.
+concurrency:
+  group: events-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build NoCartaz national snapshot
+        run: node data/events/build-nocartaz.mjs
+
+      - name: Commit snapshot if it changed
+        run: |
+          if [ -n "$(git status --porcelain data/events/nocartaz.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/events/nocartaz.json
+            git commit -m "chore(eventos): refresh NoCartaz national snapshot [skip ci]"
+            git push
+          else
+            echo "No changes in nocartaz.json — nothing to commit."
+          fi

@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v130';
+const CACHE = 'dcop7-v131';
 const STATIC = [
   '/',
   '/index.html',
@@ -17,6 +17,7 @@ const STATIC = [
   '/data/pt-districts.geojson',
   '/data/timeline.json',
   '/data/events/seed.json',
+  '/data/events/nocartaz.json',
   '/data/events/pt-places.json',
   /* Core */
   '/js/core/main.js',

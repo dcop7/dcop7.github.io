@@ -17,11 +17,18 @@ todas as fontes são públicas.
 > no cliente. As imagens do e-cultura são servidas sem CORS (bloqueadas por ORB
 > no browser), pelo que **não são usadas** — mostramos um marcador de categoria.
 
-## Fonte offline (no repositório)
+## Fontes empacotadas no repositório (atualizadas por pipeline)
 
-| Ficheiro | Conteúdo |
-|---|---|
-| `seed.json` | ~26 eventos/atrações **recorrentes ou permanentes** curados, distribuídos por distrito e categoria (festas populares, feiras semanais, monumentos, museus, festivais anuais). Garante que a secção nunca fica vazia (offline ou se todas as fontes em direto falharem) e dá cobertura nacional para além de Lisboa. As regras de recorrência (`permanent` / `weekly` / `annual`) são expandidas em ocorrências concretas em runtime, pelo que nunca ficam desatualizadas. |
+Algumas fontes **bloqueiam o CORS ao próprio domínio**, pelo que o browser não as
+consegue buscar em direto a partir de dcop7.github.io. São obtidas no servidor
+(Node não tem CORS) por uma **GitHub Action diária** (`.github/workflows/events-refresh.yml`,
+cron ~05:17 UTC + execução manual), que corre os build scripts e faz commit do
+snapshot atualizado — cobertura nacional fresca sem backend.
+
+| Ficheiro | Origem | Build |
+|---|---|---|
+| `nocartaz.json` | **NoCartaz** (`https://www.nocartaz.pt/events.json`, agregador independente de ~9000 eventos de teatros, salas, cinemas, galerias e festivais em todos os distritos; atualizado várias vezes/dia). Snapshot trimado a eventos futuros (~150 dias), ≤2600, com distrito + relevância. | `node data/events/build-nocartaz.mjs` |
+| `seed.json` | ~26 eventos/atrações **recorrentes ou permanentes** curados à mão, por distrito e categoria (festas populares, feiras semanais, monumentos, museus, festivais anuais), com horário e preço. Garante que a secção nunca fica vazia (offline ou se tudo o resto falhar). As regras (`permanent`/`weekly`/`annual`) são expandidas em runtime, por isso nunca ficam desatualizadas. | curado à mão |
 
 ## Geocodificação
 
