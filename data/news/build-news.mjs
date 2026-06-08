@@ -19,10 +19,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const UA = 'Mozilla/5.0 (compatible; dcop7-news/1.0; +https://dcop7.github.io)';
 const CONCURRENCY = 10;
 const FEED_TIMEOUT = 14000;
-const ITEMS_PER_FEED = 30;
+const ITEMS_PER_FEED = 80;     /* capture as many as each feed offers (most give fewer) */
 const RETAIN_DAYS = 14;
-const PER_TOPIC = 140;
-const LATEST = 180;
+const PER_TOPIC = 500;         /* topic shard cap — serves the "all ≤500" view option */
 const SUMMARY_LEN = 220;
 
 /* ── Topics ── [id, icon, en, pt, featured]
@@ -311,12 +310,7 @@ const topicCounts = {};
 for (const t of TOPICS) topicCounts[t[0]] = 0;
 for (const a of deduped) for (const tp of a.topics) if (tp in topicCounts) topicCounts[tp]++;
 
-/* latest.json = "Para ti": newest across the featured (interest) topics only,
-   so the default feed excludes general PT / world / economy noise. */
-const forYou = deduped.filter(a => FEATURED.has(a.topics[0]));
-writeFileSync(HERE + '/latest.json', JSON.stringify({ generated, count: Math.min(LATEST, forYou.length), articles: forYou.slice(0, LATEST) }));
-
-/* per-topic shards */
+/* per-topic shards (the UI loads these per selected topic) */
 for (const [id] of TOPICS) {
   const arts = deduped.filter(a => a.topics.includes(id)).slice(0, PER_TOPIC);
   writeFileSync(HERE + `/topic-${id}.json`, JSON.stringify({ id, generated, count: arts.length, articles: arts }));
@@ -331,5 +325,5 @@ writeFileSync(HERE + '/index.json', JSON.stringify({
   sources: sourcesMeta.sort((a, b) => b.count - a.count),
 }));
 
-console.log(`Wrote index.json, latest.json + ${TOPICS.length} topic files.`);
+console.log(`Wrote index.json + ${TOPICS.length} topic files.`);
 console.log('Topic counts:', topicCounts);

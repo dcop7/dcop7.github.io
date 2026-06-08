@@ -29,14 +29,24 @@
 .nw-tab-sep { flex: 0 0 auto; align-self: center; width: 1px; height: 22px; background: var(--border2); margin: 0 .3rem; }
 
 /* ── TOOLBAR ── */
-.nw-toolbar { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
-.nw-search, .nw-source, .nw-date {
-  padding: .55rem .7rem; border-radius: var(--radius-sm);
+.nw-toolbar { display: flex; gap: .55rem; align-items: center; flex-wrap: wrap; }
+.nw-search, .nw-sel {
+  padding: .5rem .7rem; border-radius: var(--radius-sm);
   border: 1px solid var(--border); background: var(--card-solid); color: var(--text);
-  font-size: .88rem; font-family: var(--font-sans);
+  font-size: .86rem; font-family: var(--font-sans);
 }
-.nw-search { flex: 1; min-width: 180px; }
-.nw-search:focus, .nw-source:focus, .nw-date:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+.nw-search { flex: 1; min-width: 170px; }
+.nw-search:focus, .nw-sel:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+.nw-fl { display: inline-flex; align-items: center; gap: .4rem; }
+.nw-fl > span { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+.nw-feeds-btn {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .5rem .8rem; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--card-solid); color: var(--text2);
+  font-size: .82rem; font-weight: 600; cursor: pointer;
+}
+.nw-feeds-btn:hover { background: var(--glass-hover); color: var(--text); }
+.nw-feeds-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .nw-count { color: var(--muted); font-size: .82rem; font-weight: 600; margin-left: auto; }
 
 /* View-mode segmented control */
@@ -48,10 +58,30 @@
 /* Source favicon */
 .nw-fav { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; object-fit: contain; background: var(--card2); }
 
-/* ── LAYOUT: main grid + right feed rail ── */
-.nw-layout { display: grid; grid-template-columns: minmax(0, 1fr) 214px; gap: 1rem; align-items: start; }
+/* ── LAYOUT: left topics · main grid · (right feed rail, toggled) ── */
+.nw-layout { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 1rem; align-items: start; }
+.nw-layout.nw-feeds-open { grid-template-columns: 170px minmax(0, 1fr) 210px; }
 
-/* ── RIGHT FEED RAIL ── */
+/* ── LEFT TOPICS RAIL ── */
+.nw-topics {
+  position: sticky; top: calc(var(--hdr-h) + .6rem);
+  display: flex; flex-direction: column; gap: .12rem;
+  padding: .4rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.nw-topic {
+  display: flex; align-items: center; gap: .55rem;
+  width: 100%; padding: .5rem .6rem; border: 0; background: transparent;
+  border-left: 3px solid transparent; border-radius: var(--radius-sm);
+  color: var(--text2); font-size: .86rem; font-weight: 600; cursor: pointer; text-align: left;
+  transition: background .12s var(--ease), color .12s var(--ease);
+}
+.nw-topic:hover { background: var(--glass-hover); color: var(--text); }
+.nw-topic.active { background: color-mix(in srgb, var(--tc) 16%, transparent); color: var(--text); border-left-color: var(--tc); }
+.nw-topic-ic { font-size: 1rem; line-height: 1; }
+.nw-topic-n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nw-topic-sep { height: 1px; background: var(--border); margin: .35rem .3rem; }
+
+/* ── RIGHT FEED RAIL (toggled via the Feeds button) ── */
 .nw-rail {
   position: sticky; top: calc(var(--hdr-h) + .6rem);
   max-height: calc(100vh - var(--hdr-h) - 1.6rem); overflow-y: auto;
@@ -59,7 +89,10 @@
   padding: .5rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
   scrollbar-width: thin;
 }
-.nw-rail-h { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding: .25rem .5rem .45rem; }
+.nw-rail[hidden] { display: none; }   /* class display:flex would otherwise override the hidden attribute */
+.nw-rail-h { display: flex; align-items: center; justify-content: space-between; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding: .25rem .35rem .45rem; }
+.nw-rail-x { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: .9rem; line-height: 1; padding: .1rem .2rem; }
+.nw-rail-x:hover { color: var(--text); }
 .nw-src {
   display: flex; align-items: center; gap: .5rem;
   width: 100%; padding: .42rem .5rem; border: 0; background: transparent;
@@ -176,22 +209,28 @@
 @media (prefers-reduced-motion: reduce) { .nw-spin, .nw-sk-ln { animation: none; } }
 
 /* ── RESPONSIVE ── */
-/* Below 900px the feed rail moves above the grid as a horizontal scroller. */
+/* Below 900px: topics become a horizontal scroller on top; the feed rail,
+   when open, drops in as a full-width panel below it. */
 @media (max-width: 900px) {
-  .nw-layout { grid-template-columns: 1fr; }
-  .nw-rail {
-    position: static; max-height: none; order: -1;
-    flex-direction: row; overflow-x: auto; overflow-y: hidden;
-    gap: .35rem; scrollbar-width: none;
+  .nw-layout, .nw-layout.nw-feeds-open { grid-template-columns: 1fr; }
+  .nw-topics {
+    position: static; order: -2;
+    flex-direction: row; overflow-x: auto; gap: .3rem; padding: .3rem;
+    scrollbar-width: none;
   }
-  .nw-rail::-webkit-scrollbar { display: none; }
-  .nw-rail-h { display: none; }
-  .nw-src { flex: 0 0 auto; width: auto; }
-  .nw-src-c { display: none; }
+  .nw-topics::-webkit-scrollbar { display: none; }
+  .nw-topic { flex: 0 0 auto; width: auto; border-left: 0; border-bottom: 3px solid transparent; padding: .45rem .7rem; }
+  .nw-topic.active { border-left: 0; border-bottom-color: var(--tc); }
+  .nw-topic-sep { width: 1px; height: 24px; align-self: center; margin: 0 .25rem; }
+  .nw-rail {
+    position: static; order: -1; max-height: 46vh;
+  }
 }
 @media (max-width: 560px) {
   .nw-wrap { padding: .8rem .7rem 2rem; }
   .nw-head h1 { font-size: 1.35rem; }
   .nw-grid--cards { grid-template-columns: 1fr; }
   .nw-count { margin-left: 0; }
+  .nw-toolbar { gap: .45rem; }
+  .nw-fl > span { display: none; }
 }
