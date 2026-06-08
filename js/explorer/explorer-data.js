@@ -48,6 +48,25 @@ const WorldDataExplorer = (function () {
   const CONTS = ['Africa','Asia','Europe','North America','South America','Oceania'];
   const SPECIALS = { 'World':'WORLD', Africa:'Africa', Asia:'Asia', Europe:'Europe', 'North America':'North America', 'South America':'South America', Oceania:'Oceania' };
 
+  /* what each indicator actually measures (shown in the indicator view & popup) */
+  const DESC = {
+    life:        { pt:'Número médio de anos que um recém-nascido viveria se as condições de mortalidade de hoje se mantivessem.', en:'Average years a newborn would live if today’s mortality patterns stayed the same.' },
+    gdppc:       { pt:'Valor de toda a produção económica do país por pessoa, ajustado ao custo de vida (paridade de poder de compra).', en:'Total economic output per person, adjusted for the cost of living (purchasing power parity).' },
+    hdi:         { pt:'Índice de 0 a 1 que combina esperança de vida, educação e rendimento.', en:'A 0–1 index combining life expectancy, education and income.' },
+    happiness:   { pt:'Avaliação média que as pessoas dão à própria vida, de 0 a 10 (World Happiness Report).', en:'Average self-reported life satisfaction, 0–10 (World Happiness Report).' },
+    internet:    { pt:'Percentagem da população que usou a Internet nos últimos meses.', en:'Share of the population that used the Internet in recent months.' },
+    schooling:   { pt:'Número médio de anos de escolaridade dos adultos.', en:'Average number of years of schooling among adults.' },
+    doctors:     { pt:'Número de médicos por cada 1000 habitantes.', en:'Number of physicians per 1,000 people.' },
+    electricity: { pt:'Percentagem da população com acesso a eletricidade.', en:'Share of the population with access to electricity.' },
+    co2:         { pt:'Toneladas de CO₂ emitidas por pessoa por ano (combustíveis fósseis e indústria).', en:'Tonnes of CO₂ emitted per person per year (fossil fuels & industry).' },
+    medage:      { pt:'Idade que divide a população em duas metades iguais — metade é mais nova, metade mais velha.', en:'The age that splits the population into two equal halves.' },
+    fertility:   { pt:'Número médio de filhos que uma mulher teria ao longo da vida.', en:'Average number of children a woman would have over her lifetime.' },
+    urban:       { pt:'Percentagem da população que vive em áreas urbanas (cidades).', en:'Share of the population living in urban areas.' },
+    population:  { pt:'Número total de habitantes.', en:'Total number of inhabitants.' },
+    density:     { pt:'Número de habitantes por quilómetro quadrado.', en:'Number of inhabitants per square kilometre.' },
+  };
+  function indDesc(ind) { const d = DESC[ind.id]; return d ? (_lang() === 'en' ? d.en : d.pt) : ''; }
+
   function indName(ind) { return _lang() === 'en' ? ind.en : ind.pt; }
   function indUnit(ind) { return _lang() === 'en' ? (ind.unitEn || '') : (ind.unit || ''); }
   function catName(c) {
@@ -282,11 +301,11 @@ const WorldDataExplorer = (function () {
   /* Pan/zoom a choropleth <svg> by mutating its viewBox. Drag to pan, wheel or
      the +/−/⟲ buttons to zoom. Sets svg.__moved during a real drag so the
      country click handler can ignore it. Returns control handles. */
-  function enableMapZoom(svg) {
+  function enableMapZoom(svg, onChange) {
     if (!svg) return null;
     const base = svg.getAttribute('viewBox').split(/\s+/).map(Number);
-    let vb = base.slice();
-    const apply = () => svg.setAttribute('viewBox', vb.map(n => n.toFixed(1)).join(' '));
+    let vb = base.slice(), _raf = 0;
+    const apply = () => { svg.setAttribute('viewBox', vb.map(n => n.toFixed(1)).join(' ')); if (onChange) { cancelAnimationFrame(_raf); _raf = requestAnimationFrame(onChange); } };
     const minW = base[2] * 0.12, maxW = base[2];
     function clampPan() {
       const mx = base[2] * 0.12, my = base[3] * 0.12;
@@ -309,10 +328,34 @@ const WorldDataExplorer = (function () {
     return { zoomIn: () => zoomAt(0.72, vb[0] + vb[2] / 2, vb[1] + vb[3] / 2), zoomOut: () => zoomAt(1.4, vb[0] + vb[2] / 2, vb[1] + vb[3] / 2), reset: () => { vb = base.slice(); apply(); } };
   }
   const ZOOM_BTNS = `<div class="wd-map-zoom"><button data-z="in" aria-label="+">+</button><button data-z="out" aria-label="−">−</button><button data-z="reset" aria-label="⟲">⟲</button></div>`;
-  function wireZoom(svg) {
-    const z = enableMapZoom(svg); if (!z) return;
+  function wireZoom(svg, onChange) {
+    const z = enableMapZoom(svg, onChange); if (!z) return;
     const wrap = svg.closest('.wd-map-wrap'); if (!wrap) return;
     wrap.querySelectorAll('.wd-map-zoom [data-z]').forEach(b => b.onclick = () => { const a = b.dataset.z; if (a === 'in') z.zoomIn(); else if (a === 'out') z.zoomOut(); else z.reset(); });
+  }
+
+  /* labels that ADAPT to the current zoom: font-size scales with the viewBox
+     width and smaller countries appear as you zoom in. svg.__labelData holds
+     precomputed entries {x,y,code,val,area}; redrawn on every zoom/pan. */
+  function buildLabelData(getVal, set) {
+    const out = [];
+    for (const p of _geoPaths) {
+      if (set && !set.has(p.iso)) continue;
+      const e = getVal(p.iso); if (e == null) continue;
+      const c = _cIso[p.iso]; if (!c || !c.latlng) continue;
+      const b = _geoBbox[p.iso];
+      out.push({ x: projX(c.latlng[1]).toFixed(1), y: projY(c.latlng[0]).toFixed(1), code: esc(c.cca2), val: esc(e), area: b ? (b.x1 - b.x0) * (b.y1 - b.y0) : 0 });
+    }
+    return out;
+  }
+  function renderLabels(svg) {
+    const data = svg && svg.__labelData; const g = svg && svg.querySelector('.wd-lbls'); if (!data || !g) return;
+    const vb = svg.getAttribute('viewBox').split(/\s+/).map(Number), vbW = vb[2];
+    const fs = Math.max(1.2, Math.min(13, vbW * 0.013));
+    const areaMin = vbW * vbW * 0.00060;
+    const halo = (fs * 0.16).toFixed(2);
+    g.innerHTML = data.filter(d => d.area >= areaMin).map(d =>
+      `<text class="wd-lbl" x="${d.x}" y="${d.y}" font-size="${fs.toFixed(2)}" stroke-width="${halo}"><tspan x="${d.x}" dy="-0.05em" class="wd-lbl-c">${d.code}</tspan><tspan x="${d.x}" dy="1.05em" class="wd-lbl-v">${d.val}</tspan></text>`).join('');
   }
 
   /* ══════════════════════ SHELL ══════════════════════ */
@@ -525,6 +568,7 @@ const WorldDataExplorer = (function () {
         <div><h2 class="wd-ind-head-name">${esc(indName(ind))}</h2>
         <div class="wd-ind-head-meta">${esc(catName(ind.cat))} · ${ind.latestYear} · ${esc(_t('source', 'fonte'))}: OWID${cont ? ' · ' + esc(entityName(cont)) : ''}</div></div>
       </div>
+      ${indDesc(ind) ? `<p class="wd-ind-desc">${esc(indDesc(ind))}</p>` : ''}
       ${countryFocus ? countryStatHero(ind, _scope.country, cont) : choroplethBlock(ind, focus, cont)}
       ${trendBlock(ind, focus)}
       ${rankingBlock(ind, pool, focus, cont)}
@@ -548,12 +592,40 @@ const WorldDataExplorer = (function () {
       </div></div>`;
   }
 
+  /* a map of one country with its cities plotted (the País landing map) */
+  function countryMapBlock(iso) {
+    const b = _geoBbox[iso];
+    const cities = (_cities || []).filter(c => c.iso3 === iso).sort((a, b) => b.pop - a.pop);
+    /* frame to the bulk of the cities (percentile-clipped) so distant islands
+       — e.g. the Azores/Madeira for Portugal — don't squash the mainland */
+    let vbox = '0 40 1000 430';
+    if (cities.length >= 5) {
+      const lons = cities.map(c => c.lon).sort((a, b) => a - b), lats = cities.map(c => c.lat).sort((a, b) => a - b);
+      const pct = (a, p) => a[Math.min(a.length - 1, Math.max(0, Math.round((a.length - 1) * p)))];
+      let lo0 = pct(lons, 0.05), lo1 = pct(lons, 0.95), la0 = pct(lats, 0.05), la1 = pct(lats, 0.95);
+      if (lo1 - lo0 < 1.5) { const m = (lo0 + lo1) / 2; lo0 = m - 1.2; lo1 = m + 1.2; }
+      if (la1 - la0 < 1.5) { const m = (la0 + la1) / 2; la0 = m - 1.2; la1 = m + 1.2; }
+      let x0 = projX(lo0), x1 = projX(lo1), y0 = projY(la1), y1 = projY(la0);
+      const padX = (x1 - x0) * 0.14 + 3, padY = (y1 - y0) * 0.14 + 3;
+      vbox = `${(x0 - padX).toFixed(1)} ${(y0 - padY).toFixed(1)} ${(x1 - x0 + padX * 2).toFixed(1)} ${(y1 - y0 + padY * 2).toFixed(1)}`;
+    } else if (b) { const padX = (b.x1 - b.x0) * 0.2 + 4, padY = (b.y1 - b.y0) * 0.2 + 4; vbox = `${(b.x0 - padX).toFixed(1)} ${(b.y0 - padY).toFixed(1)} ${(b.x1 - b.x0 + padX * 2).toFixed(1)} ${(b.y1 - b.y0 + padY * 2).toFixed(1)}`; }
+    const vbW = parseFloat(vbox.split(' ')[2]) || 100;
+    const paths = _geoPaths.map(p => { const me = p.iso === iso; return `<path d="${p.d}" class="wd-geo${me ? ' wd-cm-self' : ' wd-geo-out'}" fill="${me ? 'rgba(99,102,241,.20)' : 'var(--card2)'}" data-iso="${p.iso}"></path>`; }).join('');
+    const maxPop = cities.length ? cities[0].pop : 1;
+    const dots = cities.map(c => { const r = (vbW * (0.009 + 0.038 * Math.sqrt(c.pop / maxPop))).toFixed(2); return `<circle class="wd-cm-dot" cx="${projX(c.lon).toFixed(1)}" cy="${projY(c.lat).toFixed(1)}" r="${r}" data-city="${c.id}"><title>${esc(c.name)}: ${compact(c.pop)}</title></circle>`; }).join('');
+    const fs = (vbW * 0.026).toFixed(2), halo = (vbW * 0.026 * 0.16).toFixed(2);
+    const labels = cities.slice(0, 8).map(c => `<text class="wd-lbl wd-cm-lbl" x="${projX(c.lon).toFixed(1)}" y="${(projY(c.lat) - vbW * 0.02).toFixed(1)}" font-size="${fs}" stroke-width="${halo}">${esc(c.name)}</text>`).join('');
+    return `<div class="wd-map-wrap wd-cm-wrap">
+      <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(entityName(iso))}">${paths}${dots}${labels}</svg>
+      ${ZOOM_BTNS}
+      <div class="wd-map-tip" id="wd-map-tip" hidden></div>
+    </div>`;
+  }
+
   function choroplethBlock(ind, focus, cont) {
     const m = _vals[ind.id];
     const set = cont ? new Set(countriesOf(cont)) : null;
     const vbox = cont ? continentViewBox(cont) : '0 40 1000 430';
-    const vbW = parseFloat(vbox.split(' ')[2]) || 1000;
-    const fs = Math.max(2.6, vbW * 0.011);
     const paths = _geoPaths.map(p => {
       const out = set && !set.has(p.iso);
       const v = m[p.iso] ? m[p.iso].v : null;
@@ -561,20 +633,8 @@ const WorldDataExplorer = (function () {
       const cls = 'wd-geo' + (out ? ' wd-geo-out' : '') + (p.iso === focus ? ' wd-geo-focus' : '');
       return `<path d="${p.d}" fill="${fill}" class="${cls}" data-iso="${p.iso}" data-out="${out ? 1 : 0}"><title>${esc(entityName(p.iso))}${(m[p.iso] && !out) ? ': ' + fmtVal(ind, m[p.iso].v) : ''}</title></path>`;
     }).join('');
-    /* labels: skip countries too small to fit one without overlapping; halo is
-       a thin stroke proportional to the font size (no big black box) */
-    const areaMin = vbW * vbW * (cont ? 0.0011 : 0.00055);
-    const halo = (fs * 0.16).toFixed(2);
-    const labels = _geoPaths.map(p => {
-      if (set && !set.has(p.iso)) return '';
-      const e = m[p.iso]; if (!e) return '';
-      const b = _geoBbox[p.iso]; if (b && ((b.x1 - b.x0) * (b.y1 - b.y0)) < areaMin) return '';
-      const c = _cIso[p.iso]; if (!c || !c.latlng) return '';
-      const x = projX(c.latlng[1]).toFixed(1), y = projY(c.latlng[0]).toFixed(1);
-      return `<text class="wd-lbl" x="${x}" y="${y}" font-size="${fs.toFixed(2)}" stroke-width="${halo}"><tspan x="${x}" dy="-0.05em" class="wd-lbl-c">${esc(c.cca2)}</tspan><tspan x="${x}" dy="1.05em" class="wd-lbl-v">${esc(mapLabelVal(ind, e.v))}</tspan></text>`;
-    }).join('');
     return `<div class="wd-map-wrap">
-      <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(indName(ind))}">${paths}${labels}</svg>
+      <svg class="wd-map" viewBox="${vbox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(indName(ind))}">${paths}<g class="wd-lbls"></g></svg>
       ${ZOOM_BTNS}
       ${legendBinned(ind, ind.latestYear)}
       <div class="wd-map-tip" id="wd-map-tip" hidden></div>
@@ -624,8 +684,8 @@ const WorldDataExplorer = (function () {
     const c = _cIso[key];
     const cont = c && c.continents ? c.continents[0] : null;
     const pool = cont ? countriesOf(cont) : null;
-    /* load sparkline series for all indicators + cities (small, parallel) */
-    await Promise.all([..._inds.map(i => ensureSeries(i.id)), ensureCities()]);
+    /* load sparkline series for all indicators + cities + map (parallel) */
+    await Promise.all([..._inds.map(i => ensureSeries(i.id)), ensureCities(), ensureGeo()]);
     const contFlag = cont ? entityFlag(cont) : '';
     const cards = _inds.map(ind => {
       const v = val(ind.id, key), y = yearOf(ind.id, key);
@@ -652,6 +712,7 @@ const WorldDataExplorer = (function () {
           <button class="wd-cmp-add" id="wd-cmp-add">⚖️ ${_t('Compare', 'Comparar')}</button>
         </div>
       </div>
+      ${_geoBbox[key] ? `<section class="wd-sec"><h3 class="wd-sec-h">🗺️ ${_t('Cities', 'Cidades')}</h3>${countryMapBlock(key)}</section>` : ''}
       ${citiesSec}
       <section class="wd-sec"><h3 class="wd-sec-h">📋 ${_t('All indicators', 'Todos os indicadores')}</h3>
         <div class="wd-prof-grid">${cards}</div></section>
@@ -761,12 +822,10 @@ const WorldDataExplorer = (function () {
     /* choropleth (white→blue) with labels for the larger countries */
     let mapHtml = '';
     if (countryKeys.length >= 8) {
-      const areaMin = 1000 * 1000 * 0.00040;
       const paths = _geoPaths.map(p => { const e = latest[p.iso]; return `<path d="${p.d}" fill="${e ? pickColor(e.v, scale) : 'var(--card2)'}" class="wd-geo" data-iso="${p.iso}"><title>${esc(entityName(p.iso))}${e ? ': ' + fmt(e.v) : ''}</title></path>`; }).join('');
-      const labels = _geoPaths.map(p => { const e = latest[p.iso]; if (!e) return ''; const b = _geoBbox[p.iso]; if (b && ((b.x1 - b.x0) * (b.y1 - b.y0)) < areaMin) return ''; const c = _cIso[p.iso]; if (!c || !c.latlng) return ''; const x = projX(c.latlng[1]).toFixed(1), y = projY(c.latlng[0]).toFixed(1); return `<text class="wd-lbl" x="${x}" y="${y}" font-size="11" stroke-width="1.8"><tspan x="${x}" dy="-0.05em" class="wd-lbl-c">${esc(c.cca2)}</tspan><tspan x="${x}" dy="1.05em" class="wd-lbl-v">${esc(fmt(e.v))}</tspan></text>`; }).join('');
       const sw = scale.ramp.map(c => `<span class="wd-lg-sw" style="background:${c}"></span>`).join('');
       const ths = scale.th.map(t => `<span class="wd-lg-th">${esc(fmt(t))}</span>`).join('');
-      mapHtml = `<div class="wd-map-wrap"><svg class="wd-map" viewBox="0 40 1000 430" preserveAspectRatio="xMidYMid meet">${paths}${labels}</svg>
+      mapHtml = `<div class="wd-map-wrap"><svg class="wd-map" viewBox="0 40 1000 430" preserveAspectRatio="xMidYMid meet">${paths}<g class="wd-lbls"></g></svg>
         ${ZOOM_BTNS}
         <div class="wd-legend2"><div class="wd-lg-row">${sw}</div><div class="wd-lg-ths">${ths}</div>${latestYear ? `<div class="wd-lg-yr">${latestYear}</div>` : ''}</div>
         <div class="wd-map-tip" id="wd-map-tip" hidden></div></div>`;
@@ -795,7 +854,8 @@ const WorldDataExplorer = (function () {
       <a class="wd-extlink" href="${link}" target="_blank" rel="noopener">${_t('View original on', 'Ver original em')} ${esc(srcName)} ↗</a>
       <div class="wd-source">${_t('Data fetched live', 'Dados obtidos em direto')} · ${esc(srcName)} (CC BY 4.0)</div>`;
     _root.querySelector('#wd-back').onclick = () => { _view = 'home'; render(); };
-    const svg = _root.querySelector('.wd-map'); wireZoom(svg);
+    const svg = _root.querySelector('.wd-map');
+    if (svg) { svg.__labelData = buildLabelData(iso => (latest[iso] ? fmt(latest[iso].v) : null), null); wireZoom(svg, () => renderLabels(svg)); renderLabels(svg); }
     const tip = _root.querySelector('#wd-map-tip');
     if (tip) _root.querySelectorAll('.wd-geo').forEach(p => {
       p.addEventListener('mousemove', e => { const iso = p.dataset.iso, ee = latest[iso]; tip.innerHTML = `${entityFlag(iso)} ${esc(entityName(iso))}<b>${ee ? ' ' + fmt(ee.v) : ' —'}</b>`; const r = _root.querySelector('.wd-map-wrap').getBoundingClientRect(); tip.style.left = (e.clientX - r.left + 12) + 'px'; tip.style.top = (e.clientY - r.top + 12) + 'px'; tip.hidden = false; });
@@ -885,9 +945,11 @@ const WorldDataExplorer = (function () {
     _root.querySelector('#wd-back').onclick = () => { _view = (_scope.level === 'country') ? 'entity' : 'home'; render(); };
     _root.querySelectorAll('.wd-rank-row[data-entity]').forEach(b => b.onclick = () => { _entity = b.dataset.entity; _scope.level = isCountry(b.dataset.entity) ? 'country' : _scope.level; if (isCountry(b.dataset.entity)) _scope.country = b.dataset.entity; _view = 'entity'; render(); });
     _root.querySelectorAll('.wd-toggle [data-rank]').forEach(b => b.onclick = () => { _rankDir = b.dataset.rank; indicatorView(); });
-    /* map: pan/zoom + hover tip + click → a popup with the statistic detail */
-    const svg = _root.querySelector('.wd-map'); wireZoom(svg);
-    const tip = _root.querySelector('#wd-map-tip'), ind = _byId[_ind], m = _vals[_ind];
+    /* map: pan/zoom + adaptive labels + hover tip + click → popup */
+    const ind = _byId[_ind], m = _vals[_ind];
+    const svg = _root.querySelector('.wd-map');
+    if (svg) { svg.__labelData = buildLabelData(iso => (m[iso] ? mapLabelVal(ind, m[iso].v) : null), cont ? new Set(countriesOf(cont)) : null); wireZoom(svg, () => renderLabels(svg)); renderLabels(svg); }
+    const tip = _root.querySelector('#wd-map-tip');
     _root.querySelectorAll('.wd-geo').forEach(p => {
       p.addEventListener('mousemove', e => { const iso = p.dataset.iso; const v = m[iso] ? m[iso].v : null;
         tip.innerHTML = `${entityFlag(iso)} ${esc(entityName(iso))}<b>${v == null ? ' —' : ' ' + fmtVal(ind, v)}</b>`;
@@ -912,6 +974,7 @@ const WorldDataExplorer = (function () {
       <button class="wd-pop-x" aria-label="${_t('Close', 'Fechar')}">✕</button>
       <div class="wd-pop-head"><span class="wd-pop-flag">${entityFlag(iso)}</span>
         <div><div class="wd-pop-name">${esc(entityName(iso))}</div><div class="wd-pop-ind">${ind.emoji} ${esc(indName(ind))}</div></div></div>
+      ${indDesc(ind) ? `<p class="wd-pop-desc">${esc(indDesc(ind))}</p>` : ''}
       <div class="wd-pop-val">${fmtVal(ind, v)}${y ? ` <em class="wd-yr">${y}</em>` : ''}</div>
       <div class="wd-pop-ranks">
         ${rW ? `<span class="wd-pop-rank">🌍 #${rW.rank}<small>/${rW.total}</small></span>` : ''}
@@ -936,6 +999,13 @@ const WorldDataExplorer = (function () {
     _root.querySelectorAll('.wd-prof-card[data-ind]').forEach(b => b.onclick = () => { _ind = b.dataset.ind; _view = 'indicator'; render(); });
     _root.querySelectorAll('.wd-rank-row[data-city]').forEach(b => b.onclick = () => { _entity = b.dataset.city; _view = 'entity'; render(); });
     const add = _root.querySelector('#wd-cmp-add'); if (add) add.onclick = () => { _compare = [key]; _view = 'compare'; render(); };
+    /* country map: pan/zoom + city markers */
+    const svg = _root.querySelector('.wd-map'); if (svg) wireZoom(svg);
+    const tip = _root.querySelector('#wd-map-tip');
+    _root.querySelectorAll('.wd-cm-dot').forEach(d => {
+      if (tip) { d.addEventListener('mousemove', e => { const ct = (_cities || []).find(x => x.id === d.dataset.city); if (!ct) return; tip.innerHTML = `🏙️ ${esc(ct.name)}<b> ${compact(ct.pop)}</b>`; const r = _root.querySelector('.wd-map-wrap').getBoundingClientRect(); tip.style.left = (e.clientX - r.left + 12) + 'px'; tip.style.top = (e.clientY - r.top + 12) + 'px'; tip.hidden = false; }); d.addEventListener('mouseleave', () => { tip.hidden = true; }); }
+      d.addEventListener('click', () => { if (svg && svg.__moved) return; _entity = d.dataset.city; _view = 'entity'; render(); });
+    });
   }
   function wireCompare() {
     _root.querySelector('#wd-back').onclick = () => { _view = (_scope.level === 'country') ? 'entity' : 'home'; render(); };

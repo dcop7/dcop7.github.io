@@ -92,6 +92,14 @@ button.wd-sum-cell:hover { border-color: rgba(var(--accent-rgb),.4); transform: 
 .wd-ind-head-em { font-size: 2rem; }
 .wd-ind-head-name { font: 800 1.3rem var(--font-head, inherit); margin: 0; color: var(--text); }
 .wd-ind-head-meta { font-size: .76rem; color: var(--muted); margin-top: .15rem; }
+.wd-ind-desc { font-size: .9rem; color: var(--text2); line-height: 1.5; margin: 0 0 1.1rem; max-width: 70ch; }
+.wd-pop-desc { font-size: .82rem; color: var(--text2); line-height: 1.45; margin: .4rem 0 .2rem; }
+
+/* country (País) map with city markers */
+.wd-cm-self { fill: rgba(99,102,241,.2); }
+.wd-cm-dot { fill: var(--accent2, #38bdf8); stroke: #07101f; stroke-width: .6px; vector-effect: non-scaling-stroke; fill-opacity: .85; cursor: pointer; }
+.wd-cm-dot:hover { fill: #fff; }
+.wd-cm-lbl { fill: #eaf2ff; }
 
 .wd-map-wrap { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: .5rem; margin-bottom: 1.4rem; }
 .wd-map { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; }
