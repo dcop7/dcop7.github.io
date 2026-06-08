@@ -27,6 +27,7 @@ const Nav = (function () {
     links:       svg('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
     explorer:    svg('<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'),
     ocorrencias: svg('<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
+    eventos:     svg('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>'),
     tools:       svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
     quiz:        svg('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
     workout:     svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
@@ -52,6 +53,7 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${ICONS.quiz}<span>${TN('nav.quiz')}</span></a>
           <a class="sb-nav-item" data-route="explorer"    href="#explorer">${ICONS.explorer}<span>${TN('nav.explorer')}</span></a>
           <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>${TN('nav.ocorrencias')}</span></a>
+          <a class="sb-nav-item" data-route="eventos"     href="#eventos">${ICONS.eventos}<span>${TN('nav.eventos')}</span></a>
           <div class="sb-sep"></div>
           <a class="sb-nav-item" data-route="media"        href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
           <a class="sb-nav-item" data-route="workout"      href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
@@ -171,6 +173,9 @@ const Nav = (function () {
     } else if (page === 'ocorrencias') {
       document.getElementById('view-ocorrencias')?.classList.add('active');
       typeof OcorrenciasPage !== 'undefined' && OcorrenciasPage.show();
+    } else if (page === 'eventos') {
+      document.getElementById('view-eventos')?.classList.add('active');
+      typeof EventosPage !== 'undefined' && EventosPage.show();
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
@@ -213,7 +218,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','explorer','ocorrencias','media','workout','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','explorer','ocorrencias','eventos','media','workout','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

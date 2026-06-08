@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v128';
+const CACHE = 'dcop7-v129';
 const STATIC = [
   '/',
   '/index.html',
@@ -8,6 +8,7 @@ const STATIC = [
   '/css/views/worlddata.css',
   '/css/views/explorer-body.css',
   '/css/views/ocorrencias.css',
+  '/css/views/eventos.css',
   '/css/views/quiz.css',
   '/data/countries.json',
   '/data/worlddata/indicators.json',
@@ -15,6 +16,8 @@ const STATIC = [
   '/data/world-countries.geojson',
   '/data/pt-districts.geojson',
   '/data/timeline.json',
+  '/data/events/seed.json',
+  '/data/events/pt-places.json',
   /* Core */
   '/js/core/main.js',
   '/js/core/nav.js',
@@ -33,6 +36,7 @@ const STATIC = [
   '/js/explorer/explorer-timeline-interactive.js',
   '/js/explorer/explorer-data.js',
   '/js/explorer/ocorrencias.js',
+  '/js/explorer/eventos.js',
   /* Pages */
   '/js/pages/links-data.js',
   '/js/pages/links-page.js',

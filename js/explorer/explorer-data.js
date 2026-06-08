@@ -751,6 +751,7 @@ const WorldDataExplorer = (function () {
           <button class="wd-cmp-add" id="wd-cmp-add">⚖️ ${_t('Compare', 'Comparar')}</button>
         </div>
       </div>
+      ${key === 'PRT' ? `<a class="wd-events-teaser" href="#eventos">📅 <span><strong>${_t('Events happening in Portugal', 'Eventos a acontecer em Portugal')}</strong>${_t('Discover concerts, culture, food and fairs near you', 'Descobre concertos, cultura, gastronomia e feiras perto de ti')}</span><em>→</em></a>` : ''}
       ${_geoBbox[key] ? `<section class="wd-sec"><h3 class="wd-sec-h">🗺️ ${_districts[key] ? _t('Districts & cities', 'Distritos e cidades') : _t('Cities', 'Cidades')}</h3>${countryMapBlock(key)}</section>` : ''}
       ${citiesSec}
       <section class="wd-sec"><h3 class="wd-sec-h">📋 ${_t('All indicators', 'Todos os indicadores')}</h3>
