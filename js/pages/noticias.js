@@ -14,14 +14,17 @@ const NoticiasPage = (function () {
   const BASE = 'data/news/';
   /* Topic metadata (ids match build-news.mjs). */
   const TOPIC = {
-    portugal:   { icon: '🇵🇹', en: 'Portugal',      pt: 'Portugal',      color: '#16a34a' },
-    tecnologia: { icon: '💻', en: 'Technology',     pt: 'Tecnologia',    color: '#3b82f6' },
-    devops:     { icon: '🧩', en: 'DevOps & Cloud', pt: 'DevOps & Cloud', color: '#06b6d4' },
-    mundo:      { icon: '🌍', en: 'World',          pt: 'Mundo',         color: '#f59e0b' },
-    economia:   { icon: '💶', en: 'Economy',        pt: 'Economia',      color: '#a16207' },
-    automovel:  { icon: '🚗', en: 'Cars',           pt: 'Automóvel',     color: '#ef4444' },
-    gaming:     { icon: '🎮', en: 'Gaming',         pt: 'Gaming',        color: '#8b5cf6' },
-    cinema:     { icon: '🎬', en: 'Film & TV',      pt: 'Cinema & TV',   color: '#ec4899' },
+    tecnologia:    { icon: '💻', en: 'Technology',    pt: 'Tecnologia',    color: '#3b82f6' },
+    android:       { icon: '📱', en: 'Android',       pt: 'Android',       color: '#84cc16' },
+    produtividade: { icon: '🧰', en: 'Productivity',  pt: 'Produtividade', color: '#14b8a6' },
+    ia:            { icon: '🧠', en: 'AI',            pt: 'IA',            color: '#a855f7' },
+    devops:        { icon: '🧩', en: 'DevOps & Cloud', pt: 'DevOps & Cloud', color: '#06b6d4' },
+    carros:        { icon: '🚗', en: 'Cars & F1',     pt: 'Carros & F1',   color: '#ef4444' },
+    gaming:        { icon: '🎮', en: 'Gaming',        pt: 'Gaming',        color: '#8b5cf6' },
+    filmes:        { icon: '🎬', en: 'Film & TV',     pt: 'Filmes & TV',   color: '#ec4899' },
+    geral:         { icon: '🇵🇹', en: 'Portugal',     pt: 'Geral',         color: '#16a34a' },
+    mundo:         { icon: '🌍', en: 'World',         pt: 'Mundo',         color: '#f59e0b' },
+    economia:      { icon: '💶', en: 'Economy',       pt: 'Economia',      color: '#a16207' },
   };
   const tLabel = (id) => (TOPIC[id] ? _t(TOPIC[id].en, TOPIC[id].pt) : id);
   const tColor = (id) => (TOPIC[id] ? TOPIC[id].color : '#64748b');
@@ -109,8 +112,13 @@ const NoticiasPage = (function () {
   /* ════════════════════════════ RENDER ════════════════════════════ */
   function _buildShell(view) {
     const topics = (_index && _index.topics) || [];
-    const tabs = [['principal', '🗞️', _t('Top stories', 'Principal')]]
-      .concat(topics.map(t => [t.id, tIcon(t.id), tLabel(t.id) + (t.count ? ` <small>${t.count}</small>` : '')]));
+    let tabsHTML = `<button class="nw-tab${_tab === 'principal' ? ' active' : ''}" role="tab" data-tab="principal">✨ ${_t('For you', 'Para ti')}</button>`;
+    let sepDone = false;
+    for (const t of topics) {
+      if (!t.feature && !sepDone) { tabsHTML += `<span class="nw-tab-sep" aria-hidden="true"></span>`; sepDone = true; }
+      const cnt = t.count ? ` <small>${t.count}</small>` : '';
+      tabsHTML += `<button class="nw-tab${t.id === _tab ? ' active' : ''}" role="tab" data-tab="${t.id}">${tIcon(t.id)} ${esc(tLabel(t.id))}${cnt}</button>`;
+    }
     view.innerHTML = `
       <div class="nw-wrap">
         <header class="nw-head">
@@ -121,9 +129,7 @@ const NoticiasPage = (function () {
           <div class="nw-updated" id="nw-updated"></div>
         </header>
 
-        <div class="nw-tabs" id="nw-tabs" role="tablist">
-          ${tabs.map(([id, icon, label]) => `<button class="nw-tab${id === _tab ? ' active' : ''}" role="tab" data-tab="${id}">${icon} ${label}</button>`).join('')}
-        </div>
+        <div class="nw-tabs" id="nw-tabs" role="tablist">${tabsHTML}</div>
 
         <div class="nw-toolbar">
           <input id="nw-q" class="nw-search" type="search" placeholder="${_t('Search headlines…', 'Pesquisar notícias…')}">

@@ -26,6 +26,7 @@
 .nw-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .nw-tab small { opacity: .7; font-weight: 700; }
 .nw-tab.active small { opacity: .85; }
+.nw-tab-sep { flex: 0 0 auto; align-self: center; width: 1px; height: 22px; background: var(--border2); margin: 0 .3rem; }
 
 /* ── TOOLBAR ── */
 .nw-toolbar { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }

@@ -25,83 +25,88 @@ const PER_TOPIC = 140;
 const LATEST = 180;
 const SUMMARY_LEN = 220;
 
-/* ── Topics (priority order: Portugal, tech, world, …) ── */
+/* ── Topics ── [id, icon, en, pt, featured]
+   "featured" topics are the user's interests and form the default "Para ti"
+   feed; the rest (Geral PT, Mundo, Economia) live in their own tabs only. */
 const TOPICS = [
-  ['portugal',   '🇵🇹', 'Portugal',        'Portugal'],
-  ['tecnologia', '💻', 'Technology',       'Tecnologia'],
-  ['devops',     '🧩', 'DevOps & Cloud',   'DevOps & Cloud'],
-  ['mundo',      '🌍', 'World',            'Mundo'],
-  ['economia',   '💶', 'Economy',          'Economia'],
-  ['automovel',  '🚗', 'Cars',             'Automóvel'],
-  ['gaming',     '🎮', 'Gaming',           'Gaming'],
-  ['cinema',     '🎬', 'Film & TV',        'Cinema & TV'],
+  ['tecnologia',    '💻', 'Technology',    'Tecnologia',    true],
+  ['android',       '📱', 'Android',       'Android',       true],
+  ['produtividade', '🧰', 'Productivity',  'Produtividade', true],
+  ['ia',            '🧠', 'AI',            'IA',            true],
+  ['devops',        '🧩', 'DevOps & Cloud','DevOps & Cloud', true],
+  ['carros',        '🚗', 'Cars & F1',     'Carros & F1',   true],
+  ['gaming',        '🎮', 'Gaming',        'Gaming',        true],
+  ['filmes',        '🎬', 'Film & TV',     'Filmes & TV',   true],
+  ['geral',         '🇵🇹', 'Portugal',     'Geral',         false],
+  ['mundo',         '🌍', 'World',         'Mundo',         false],
+  ['economia',      '💶', 'Economy',       'Economia',      false],
 ];
 const TOPIC_IDS = new Set(TOPICS.map(t => t[0]));
+const FEATURED = new Set(TOPICS.filter(t => t[4]).map(t => t[0]));
 
 /* ── Source → primary topic + Portuguese flag (keyed by OPML title) ── */
 const SRC = {
-  'MovieWeb - Movie and TV Reviews': ['cinema', false],
-  'IMDb': ['cinema', false],
+  'MovieWeb - Movie and TV Reviews': ['filmes', false],
+  'IMDb': ['filmes', false],
   'TLDR DevOps RSS Feed': ['devops', false],
   'Architecture and Data Blog': ['devops', false],
   'MakeUseOf - Technology News': ['tecnologia', false],
-  'MakeUseOf - Android': ['tecnologia', false],
-  'SIC Notícias': ['portugal', true],
+  'MakeUseOf - Android': ['android', false],
+  'SIC Notícias': ['geral', true],
   'Pplware': ['tecnologia', true],
   'Contas Poupança': ['economia', true],
-  'Lifehacker': ['tecnologia', false],
+  'Lifehacker': ['produtividade', false],
   'DevOps on Medium': ['devops', false],
-  'MakeUseOf - Productivity': ['tecnologia', false],
+  'MakeUseOf - Productivity': ['produtividade', false],
   'Xa das 5': ['tecnologia', true],
   'MakeUseOf - Linux': ['tecnologia', false],
   'MaisTecnologia': ['tecnologia', true],
-  '9to5Google': ['tecnologia', false],
-  'TLDR AI RSS Feed': ['tecnologia', false],
+  '9to5Google': ['android', false],
+  'TLDR AI RSS Feed': ['ia', false],
   'World News | Latest Top Stories | Reuters': ['mundo', false],
   'The New Stack': ['devops', false],
-  'Android Police': ['tecnologia', false],
+  'Android Police': ['android', false],
   'The Hacker News': ['tecnologia', false],
   'MakeUseOf - Internet': ['tecnologia', false],
   'XDA': ['tecnologia', false],
   'DevOps.com': ['devops', false],
-  'AndroidGeek': ['tecnologia', true],
-  'Razão Automóvel': ['automovel', true],
+  'AndroidGeek': ['android', true],
+  'Razão Automóvel': ['carros', true],
   'IGN Portugal': ['gaming', true],
   'Cloud Native Now': ['devops', false],
   'A tecnologia está do teu lado': ['tecnologia', true],
-  'Latest F1 News': ['automovel', false],
+  'Latest F1 News': ['carros', false],
   'World news | The Guardian': ['mundo', false],
   'Minuto Digital': ['tecnologia', true],
   'MakeUseOf - Windows': ['tecnologia', false],
   'TLDR RSS Feed': ['tecnologia', false],
-  'Tool Finder': ['tecnologia', false],
+  'Tool Finder': ['produtividade', false],
   'Latest news': ['tecnologia', false],
   'Platform Engineering Blog': ['devops', false],
-  'Diário de Notícias - Últimas': ['portugal', true],
+  'Diário de Notícias - Últimas': ['geral', true],
   'Jornal de Negocios': ['economia', true],
   'The Guardian/World': ['mundo', false],
   'Forbes - Innovation': ['tecnologia', false],
-  'RTP Notícias / Geral / Últimas': ['portugal', true],
+  'RTP Notícias / Geral / Últimas': ['geral', true],
   'Leak': ['tecnologia', true],
   'Tek Notícias': ['tecnologia', true],
-  'Região de Leiria': ['portugal', true],
+  'Região de Leiria': ['geral', true],
   'The New Stack | DevOps, Open Source, and Cloud Native News': ['devops', false],
-  'Autoblog': ['automovel', true],
-  'Expresso': ['portugal', true],
-  'AutoSport': ['automovel', true],
+  'Autoblog': ['carros', true],
+  'Expresso': ['geral', true],
+  'AutoSport': ['carros', true],
   'Eurogamer.pt Latest Articles Feed': ['gaming', true],
   'BBC News': ['mundo', false],
-  'Android Authority': ['tecnologia', false],
+  'Android Authority': ['android', false],
   'Cloud Native Computing Foundation': ['devops', false],
   'PCGuia': ['tecnologia', true],
-  'Aberto até de Madrugada': ['cinema', true],
+  'Aberto até de Madrugada': ['filmes', true],
   'News | Euronews RSS': ['mundo', false],
 };
 
-/* Cross-cutting keyword tags (added as extra topics, never replace primary). */
-const KW = [
-  ['portugal', /\bportugal\b|portugu[êe]s|lisboa|porto\b|algarve|governo de portugal|benfica|sporting|fc porto/i],
-];
+/* No cross-cutting keyword tags — each article keeps its source's topic, so
+   the tabs stay clean (a tech article never leaks into Geral PT). */
+const KW = [];
 
 /* ── tiny helpers ── */
 const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', ldquo: '“', rdquo: '”', laquo: '«', raquo: '»', deg: '°', euro: '€' };
@@ -306,8 +311,10 @@ const topicCounts = {};
 for (const t of TOPICS) topicCounts[t[0]] = 0;
 for (const a of deduped) for (const tp of a.topics) if (tp in topicCounts) topicCounts[tp]++;
 
-/* latest.json */
-writeFileSync(HERE + '/latest.json', JSON.stringify({ generated, count: Math.min(LATEST, deduped.length), articles: deduped.slice(0, LATEST) }));
+/* latest.json = "Para ti": newest across the featured (interest) topics only,
+   so the default feed excludes general PT / world / economy noise. */
+const forYou = deduped.filter(a => FEATURED.has(a.topics[0]));
+writeFileSync(HERE + '/latest.json', JSON.stringify({ generated, count: Math.min(LATEST, forYou.length), articles: forYou.slice(0, LATEST) }));
 
 /* per-topic shards */
 for (const [id] of TOPICS) {
@@ -320,7 +327,7 @@ writeFileSync(HERE + '/index.json', JSON.stringify({
   generated,
   total: deduped.length,
   feeds: { total: feeds.length, ok: okFeeds, failed: failFeeds },
-  topics: TOPICS.map(([id, icon, en, pt]) => ({ id, icon, en, pt, count: topicCounts[id] })),
+  topics: TOPICS.map(([id, icon, en, pt, feature]) => ({ id, icon, en, pt, feature: !!feature, count: topicCounts[id] })),
   sources: sourcesMeta.sort((a, b) => b.count - a.count),
 }));
 
