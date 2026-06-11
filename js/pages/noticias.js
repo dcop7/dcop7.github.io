@@ -26,6 +26,7 @@ const NoticiasPage = (function () {
     f1:            { icon: '🏎️', en: 'F1 & Motorsport', pt: 'F1 & Motorsport', color: '#e11d48' },
     gaming:        { icon: '🎮', en: 'Gaming',        pt: 'Gaming',        color: '#8b5cf6' },
     filmes:        { icon: '🎬', en: 'Film & TV',     pt: 'Filmes & TV',   color: '#ec4899' },
+    trailers:      { icon: '🎞️', en: 'Trailers',      pt: 'Trailers',      color: '#d946ef' },
     factcheck:     { icon: '✅', en: 'Fact Check',    pt: 'Fact Check',    color: '#10b981' },
     geral:         { icon: '🇵🇹', en: 'Portugal',     pt: 'Geral',         color: '#16a34a' },
     mundo:         { icon: '🌍', en: 'World',         pt: 'Mundo',         color: '#f59e0b' },

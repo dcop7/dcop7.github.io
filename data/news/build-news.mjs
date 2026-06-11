@@ -41,6 +41,7 @@ const TOPICS = [
   ['f1',            '🏎️', 'F1 & Motorsport', 'F1 & Motorsport', true],
   ['gaming',        '🎮', 'Gaming',        'Gaming',        true],
   ['filmes',        '🎬', 'Film & TV',     'Filmes & TV',   true],
+  ['trailers',      '🎞️', 'Trailers',      'Trailers',      true],
   ['factcheck',     '✅', 'Fact Check',    'Fact Check',    true],
   ['geral',         '🇵🇹', 'Portugal',     'Geral',         false],
   ['mundo',         '🌍', 'World',         'Mundo',         false],
@@ -290,6 +291,68 @@ async function pool(items, n, fn) {
   return ret;
 }
 
+/* ── Trailers via TMDB API (mainstream only, scored to hide obscure films) ──
+   Needs a free TMDB v3 API key in env TMDB_KEY (GitHub Action secret). Pulls
+   popular/upcoming movies (US region) + popular TV, keeps English-language or
+   high-popularity titles, then fetches each one's official YouTube trailer.
+   Degrades to [] (no Trailers tab) when the key is absent or TMDB is down. */
+const TMDB_KEY = process.env.TMDB_KEY || '';
+async function tmdbJSON(path, params) {
+  const u = new URL('https://api.themoviedb.org/3' + path);
+  u.searchParams.set('api_key', TMDB_KEY);
+  for (const [k, v] of Object.entries(params || {})) u.searchParams.set(k, v);
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const r = await fetch(u, { signal: ctrl.signal, headers: { 'User-Agent': UA, Accept: 'application/json' } });
+    if (!r.ok) throw new Error('TMDB ' + r.status);
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+async function fetchTrailers(now) {
+  if (!TMDB_KEY) { console.log('Trailers: no TMDB_KEY — skipped.'); return []; }
+  let lists;
+  try {
+    lists = await Promise.all([
+      tmdbJSON('/movie/popular',  { region: 'US', language: 'pt-PT', page: '1' }).catch(() => ({ results: [] })),
+      tmdbJSON('/movie/upcoming', { region: 'US', language: 'pt-PT', page: '1' }).catch(() => ({ results: [] })),
+      tmdbJSON('/tv/popular',     { language: 'pt-PT', page: '1' }).catch(() => ({ results: [] })),
+    ]);
+  } catch (e) { console.log('Trailers: TMDB error', e.message); return []; }
+  const cand = [];
+  const add = (arr, kind) => (arr || []).forEach(m => {
+    const title = m.title || m.name || '';
+    const pop = m.popularity || 0;
+    const mainstream = (m.original_language === 'en') || pop >= 40;   /* drop non-Hollywood unless very popular */
+    if (!title || !mainstream || pop < 15) return;                     /* hide obscure */
+    cand.push({ kind, id: m.id, title, pop, date: m.release_date || m.first_air_date || '', poster: m.poster_path || '', overview: m.overview || '' });
+  });
+  add(lists[0].results, 'movie'); add(lists[1].results, 'movie'); add(lists[2].results, 'tv');
+  const seen = new Set(), top = [];
+  for (const c of cand.sort((a, b) => b.pop - a.pop)) { const k = c.kind + c.id; if (seen.has(k)) continue; seen.add(k); top.push(c); if (top.length >= 28) break; }
+  const withVid = await pool(top, 8, async (c) => {
+    const v = await tmdbJSON(`/${c.kind}/${c.id}/videos`, { language: 'en-US' }).catch(() => null);
+    const vids = ((v && v.results) || []).filter(x => x.site === 'YouTube' && /Trailer|Teaser/i.test(x.type));
+    vids.sort((a, b) => (b.official ? 1 : 0) - (a.official ? 1 : 0) || (Date.parse(b.published_at || 0) - Date.parse(a.published_at || 0)));
+    return vids[0] ? { ...c, ytKey: vids[0].key } : null;
+  });
+  const items = [];
+  withVid.forEach((c, idx) => {
+    if (!c || c._err || !c.ytKey) return;
+    items.push({
+      id: 'trailer-' + c.kind + '-' + c.id,
+      title: `${c.title}${c.kind === 'tv' ? ' (série)' : ''} — Trailer`,
+      url: 'https://www.youtube.com/watch?v=' + c.ytKey,
+      source: 'Trailers', site: 'https://www.themoviedb.org',
+      topics: ['trailers'], pt: false,
+      ts: now - idx * 3600000,                 /* keep popularity order; all stay "fresh" */
+      summary: (c.overview || '').slice(0, SUMMARY_LEN),
+      image: c.poster ? ('https://image.tmdb.org/t/p/w500' + c.poster) : '',
+    });
+  });
+  console.log(`Trailers: ${items.length} from TMDB.`);
+  return items;
+}
+
 /* ════════════════════════════ MAIN ════════════════════════════ */
 const opml = readFileSync(HERE + '/feeds.opml', 'utf8');
 const feeds = parseOPML(opml);
@@ -337,6 +400,12 @@ for (let k = 0; k < results.length; k++) {
   sourcesMeta.push({ name: f.title, topic: primary, pt, site: f.htmlUrl, count: kept, ok: true });
 }
 
+/* Trailers (TMDB) — appended to the same pipeline (dedupe/shard) as a topic. */
+const trailerItems = await fetchTrailers(now);
+let trailerKept = 0;
+for (const t of trailerItems) { if (t.ts >= minTs && t.ts <= maxTs) { all.push(t); trailerKept++; } }
+if (trailerKept) sourcesMeta.push({ name: 'Trailers', topic: 'trailers', pt: false, site: 'https://www.themoviedb.org', count: trailerKept, ok: true });
+
 function hash(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
 
 /* dedupe: by URL, and by (source + normalised title) */
@@ -359,9 +428,11 @@ const topicCounts = {};
 for (const t of TOPICS) topicCounts[t[0]] = 0;
 for (const a of deduped) for (const tp of a.topics) if (tp in topicCounts) topicCounts[tp]++;
 
-/* per-topic shards (the UI loads these per selected topic) */
+/* per-topic shards (the UI loads these per selected topic). Skip empty topics
+   (e.g. Trailers when no TMDB key) so the UI never shows an empty tab. */
 for (const [id] of TOPICS) {
   const arts = deduped.filter(a => a.topics.includes(id)).slice(0, PER_TOPIC);
+  if (!arts.length) continue;
   writeFileSync(HERE + `/topic-${id}.json`, JSON.stringify({ id, generated, count: arts.length, articles: arts }));
 }
 
@@ -370,7 +441,7 @@ writeFileSync(HERE + '/index.json', JSON.stringify({
   generated,
   total: deduped.length,
   feeds: { total: feeds.length, ok: okFeeds, failed: failFeeds },
-  topics: TOPICS.map(([id, icon, en, pt, feature]) => ({ id, icon, en, pt, feature: !!feature, count: topicCounts[id] })),
+  topics: TOPICS.map(([id, icon, en, pt, feature]) => ({ id, icon, en, pt, feature: !!feature, count: topicCounts[id] })).filter(t => t.count > 0),
   sources: sourcesMeta.sort((a, b) => b.count - a.count),
 }));
 

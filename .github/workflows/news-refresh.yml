@@ -30,6 +30,8 @@ jobs:
 
       - name: Aggregate feeds → static JSON
         run: node data/news/build-news.mjs
+        env:
+          TMDB_KEY: ${{ secrets.TMDB_KEY }}   # optional: enables the Trailers tab (free key from themoviedb.org)
 
       - name: Commit updated news if changed
         run: |
