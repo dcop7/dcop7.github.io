@@ -5,7 +5,7 @@ const I18n = (function () {
     en: {
       // Nav
       'nav.home':'Home','nav.games':'Games','nav.links':'Useful Sites',
-      'nav.tools':'Tools','nav.workout':'Workout','nav.media':'Entertainment',
+      'nav.tools':'Tools','nav.workout':'Workout',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News',
@@ -92,27 +92,6 @@ const I18n = (function () {
       // Holidays
       'hol.nat':'🇵🇹 National Holidays','hol.mun':'🏛️ Municipal Holidays',
       'hol.nat.lbl':'National',
-      // Media
-      'md.title':'Entertainment','md.tv':'TV Episodes',
-      'md.trailers':'Trailers','md.theaters':'PT Cinemas','md.digital':'Digital & Blu-ray',
-      'md.last':'Last','md.days':'days','md.reload':'Reload',
-      'md.comfortable':'Comfortable','md.compact':'Compact','md.list':'List',
-      'md.series':'Series','md.movie':'Film',
-      'md.trailer':'Trailer','md.teaser':'Teaser','md.official':'Official',
-      'md.cinemas':'PT Cinemas','md.digital2':'Digital',
-      'md.noEp':'No episodes in the last {n} days.',
-      'md.noTrailers':'No trailers found.','md.noMovies':'No movies found.',
-      'md.noReleases':'No releases found.',
-      'md.loadingEp':'Loading episodes…','md.loadingTr':'Loading trailers…',
-      'md.loadingTh':'Loading movies…','md.loadingDg':'Loading releases…',
-      'md.invalidKey':'Invalid TMDB key.',
-      'md.freeNote':'General data — for PT dates, add your ',
-      'md.freeNoteBtn':'free TMDB key',
-      'md.tmdbTitle':'TMDB Key','md.tmdbOptional':'Optional',
-      'md.tmdbDesc':'Unlocks precise PT cinema and digital release data. Completely free — just create a TMDB account.',
-      'md.tmdbPh':'Paste API key here…','md.tmdbSave':'Save',
-      'md.tmdbLink':'Get free key at themoviedb.org →',
-      'md.tmdbNote':'Without a key, shows recent popular movies as fallback.',
       // Settings
       'st.title':'Settings','st.sub':'Customise your experience',
       'st.appearance':'Appearance',
@@ -125,9 +104,6 @@ const I18n = (function () {
       'st.density.comfortable':'Comfortable','st.density.compact':'Compact','st.density.list':'List',
       'st.games':'Games',
       'st.age':'Default age','st.age.desc':'Word and puzzle difficulty at startup',
-      'st.entertainment':'Entertainment',
-      'st.mediadays':'History window','st.mediadays.desc':'How many days of episodes to show',
-      'st.mediadays.unit':'days',
       // Quiz settings
       'st.quiz':'Quizzes',
       'st.quiz.age':'Quiz age','st.quiz.age.desc':'Question difficulty and vocabulary level',
@@ -136,7 +112,7 @@ const I18n = (function () {
     pt: {
       // Nav
       'nav.home':'Início','nav.games':'Jogos','nav.links':'Sites Úteis',
-      'nav.tools':'Ferramentas','nav.workout':'Treino','nav.media':'Entretenimento',
+      'nav.tools':'Ferramentas','nav.workout':'Treino',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias',
@@ -223,27 +199,6 @@ const I18n = (function () {
       // Holidays
       'hol.nat':'🇵🇹 Feriados Nacionais','hol.mun':'🏛️ Feriados Municipais',
       'hol.nat.lbl':'Nacional',
-      // Media
-      'md.title':'Entretenimento','md.tv':'Episódios de TV',
-      'md.trailers':'Trailers','md.theaters':'Cinemas em Portugal','md.digital':'Digital & Blu-ray',
-      'md.last':'Últimos','md.days':'dias','md.reload':'Recarregar',
-      'md.comfortable':'Confortável','md.compact':'Compacta','md.list':'Lista',
-      'md.series':'Série','md.movie':'Filme',
-      'md.trailer':'Trailer','md.teaser':'Teaser','md.official':'Oficial',
-      'md.cinemas':'Cinemas PT','md.digital2':'Digital',
-      'md.noEp':'Nenhum episódio nos últimos {n} dias.',
-      'md.noTrailers':'Nenhum trailer encontrado.','md.noMovies':'Sem filmes encontrados.',
-      'md.noReleases':'Sem lançamentos encontrados.',
-      'md.loadingEp':'A carregar episódios…','md.loadingTr':'A carregar trailers…',
-      'md.loadingTh':'A carregar filmes…','md.loadingDg':'A carregar lançamentos…',
-      'md.invalidKey':'Chave TMDB inválida.',
-      'md.freeNote':'Dados gerais — para datas PT, adiciona a ',
-      'md.freeNoteBtn':'chave TMDB gratuita',
-      'md.tmdbTitle':'Chave TMDB','md.tmdbOptional':'Opcional',
-      'md.tmdbDesc':'Desbloqueia dados precisos de cinemas portugueses e lançamentos digitais.',
-      'md.tmdbPh':'Cole a chave API aqui…','md.tmdbSave':'Guardar',
-      'md.tmdbLink':'Obter chave gratuita em themoviedb.org →',
-      'md.tmdbNote':'Sem chave, mostra filmes populares recentes como alternativa.',
       // Settings
       'st.title':'Definições','st.sub':'Personaliza a tua experiência',
       'st.appearance':'Aparência',
@@ -256,9 +211,6 @@ const I18n = (function () {
       'st.density.comfortable':'Confortável','st.density.compact':'Compacta','st.density.list':'Lista',
       'st.games':'Jogos',
       'st.age':'Idade padrão','st.age.desc':'Dificuldade das palavras e desafios ao iniciar',
-      'st.entertainment':'Entretenimento',
-      'st.mediadays':'Dias de histórico','st.mediadays.desc':'Quantos dias de episódios mostrar',
-      'st.mediadays.unit':'dias',
       // Quiz settings
       'st.quiz':'Quizzes',
       'st.quiz.age':'Idade dos quizzes','st.quiz.age.desc':'Nível de dificuldade e vocabulário das perguntas',

@@ -41,7 +41,6 @@ const TOPICS = [
   ['f1',            '🏎️', 'F1 & Motorsport', 'F1 & Motorsport', true],
   ['gaming',        '🎮', 'Gaming',        'Gaming',        true],
   ['filmes',        '🎬', 'Film & TV',     'Filmes & TV',   true],
-  ['trailers',      '🎞️', 'Trailers',      'Trailers',      true],
   ['factcheck',     '✅', 'Fact Check',    'Fact Check',    true],
   ['geral',         '🇵🇹', 'Portugal',     'Geral',         false],
   ['mundo',         '🌍', 'World',         'Mundo',         false],
@@ -73,9 +72,8 @@ const SRC = {
   'AndroidGeek': ['android', true], 'Android Authority': ['android', false],
   /* Produtividade */
   'MakeUseOf - Productivity': ['produtividade', false], 'Lifehacker': ['produtividade', false],
-  'Tool Finder': ['produtividade', false], 'AlternativeTo': ['produtividade', false],
   /* DevOps */
-  'Architecture and Data Blog': ['devops', false], 'DevOps on Medium': ['devops', false],
+  'DevOps on Medium': ['devops', false],
   'The New Stack': ['devops', false], 'DevOps.com': ['devops', false], 'Cloud Native Now': ['devops', false],
   'Platform Engineering': ['devops', false], 'Cloud Native Computing Foundation': ['devops', false],
   'Reddit — selfhosted': ['devops', false],
@@ -86,25 +84,23 @@ const SRC = {
   'ScienceDaily': ['ciencia', false], 'Nature': ['ciencia', false], 'New Scientist': ['ciencia', false],
   /* Carros */
   'Razão Automóvel': ['carros', true], 'Autoblog': ['carros', true], 'Motor24': ['carros', true],
-  'Standvirtual': ['carros', true], 'Observador Auto': ['carros', true], 'Auto Express': ['carros', false],
-  'Carwow': ['carros', false], 'Top Gear': ['carros', false], 'What Car?': ['carros', false], 'InsideEVs': ['carros', false],
+  'What Car?': ['carros', false], 'InsideEVs': ['carros', false],
   /* F1 & Motorsport */
   'Latest F1 News': ['f1', false], 'AutoSport': ['f1', true],
   /* Gaming */
   'IGN Portugal': ['gaming', true], 'Eurogamer.pt': ['gaming', true],
   /* Filmes e TV */
-  'MovieWeb': ['filmes', false], 'Aberto até de Madrugada': ['filmes', true],
-  /* Trailers */
-  'Rotten Tomatoes Trailers': ['trailers', false], 'Movieclips Trailers': ['trailers', false], 'IMDb Trailers': ['trailers', false],
+  'MovieWeb': ['filmes', false], '/Film': ['filmes', false], 'ScreenRant': ['filmes', false],
+  'Aberto até de Madrugada': ['filmes', true],
   /* Fact Check */
-  'Polígrafo': ['factcheck', true], 'Observador Fact Check': ['factcheck', true],
+  'Observador Fact Check': ['factcheck', true],
   'Reuters Fact Check': ['factcheck', false], 'AP Fact Check': ['factcheck', false],
   'FactCheck.org': ['factcheck', false], 'Snopes': ['factcheck', false],
   /* Geral PT */
-  'SIC Notícias': ['geral', true], 'Diário de Notícias - Últimas': ['geral', true],
+  'SIC Notícias': ['geral', true],
   'RTP Notícias / Geral / Últimas': ['geral', true], 'Expresso': ['geral', true], 'Região de Leiria': ['geral', true],
   /* Mundo */
-  'Reuters World': ['mundo', false], 'The Guardian — World': ['mundo', false],
+  'The Guardian — World': ['mundo', false],
   'BBC News': ['mundo', false], 'Euronews': ['mundo', false],
   /* Economia */
   'Contas Poupança': ['economia', true], 'Jornal de Negócios': ['economia', true],

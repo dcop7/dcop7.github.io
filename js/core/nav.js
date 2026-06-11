@@ -36,7 +36,6 @@ const Nav = (function () {
     tools:       svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
     quiz:        svg('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
     workout:     svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
-    media:       svg('<path d="M19.82 2H4.18A2.18 2.18 0 0 0 2 4.18v15.64A2.18 2.18 0 0 0 4.18 22h15.64A2.18 2.18 0 0 0 22 19.82V4.18A2.18 2.18 0 0 0 19.82 2z"/><polygon points="10 15 15 12 10 9 10 15"/>'),
     visual:      svg('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
     photography: svg('<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'),
     settings:    svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
@@ -63,7 +62,6 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
           <a class="sb-nav-item" data-route="games"        href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${ICONS.quiz}<span>${TN('nav.quiz')}</span></a>
-          <a class="sb-nav-item" data-route="media"        href="#media">${ICONS.media}<span>${TN('nav.media')}</span></a>
           <div class="sb-grp" data-grp="personal">${TN('nav.grp.personal')}</div>
           <a class="sb-nav-item" data-route="workout"      href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${ICONS.photography}<span>${TN('nav.photography')}</span></a>
@@ -167,9 +165,6 @@ const Nav = (function () {
     } else if (page === 'workout') {
       document.getElementById('view-workout')?.classList.add('active');
       typeof WorkoutPage !== 'undefined' && WorkoutPage.show();
-    } else if (page === 'media') {
-      document.getElementById('view-media')?.classList.add('active');
-      typeof MediaPage !== 'undefined' && MediaPage.show();
     } else if (page === 'settings') {
       document.getElementById('view-settings')?.classList.add('active');
       typeof SettingsPage !== 'undefined' && SettingsPage.show();
@@ -230,7 +225,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','explorer','ocorrencias','eventos','noticias','media','workout','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','explorer','ocorrencias','eventos','noticias','workout','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

@@ -19,9 +19,6 @@ const SettingsPage = (function () {
 
   function _build(el) {
     const curLang      = typeof I18n !== 'undefined' ? I18n.getLang() : 'pt';
-    const tvDays       = localStorage.getItem('md-tv')       || '7';
-    const theatersDays = localStorage.getItem('md-theaters') || '30';
-    const digitalDays  = localStorage.getItem('md-digital')  || '7';
     const wpEnabled  = localStorage.getItem('wallpaper-enabled') === 'true';
     const density    = localStorage.getItem('site-density') || 'comfortable';
     const isPt       = curLang === 'pt';
@@ -97,41 +94,6 @@ const SettingsPage = (function () {
             </div>
           </div>
 
-          <!-- Entertainment -->
-          <div class="st-section">
-            <div class="st-section-title">🎬 ${T('st.entertainment')}</div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${T('md.tv')}</div>
-                <div class="st-row-desc">${T('st.mediadays.desc')}</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:.6rem">
-                <input type="range" id="st-tv-days" min="3" max="30" step="1" value="${tvDays}" style="width:100px">
-                <span id="st-tv-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${tvDays} ${T('st.mediadays.unit')}</span>
-              </div>
-            </div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${T('md.theaters')}</div>
-                <div class="st-row-desc">${T('st.mediadays.desc')}</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:.6rem">
-                <input type="range" id="st-theaters-days" min="7" max="90" step="1" value="${theatersDays}" style="width:100px">
-                <span id="st-theaters-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${theatersDays} ${T('st.mediadays.unit')}</span>
-              </div>
-            </div>
-            <div class="st-row">
-              <div class="st-row-info">
-                <div class="st-row-label">${T('md.digital')}</div>
-                <div class="st-row-desc">${T('st.mediadays.desc')}</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:.6rem">
-                <input type="range" id="st-digital-days" min="3" max="30" step="1" value="${digitalDays}" style="width:100px">
-                <span id="st-digital-days-lbl" style="font-size:.78rem;font-family:var(--font-mono);font-weight:600;color:var(--accent);min-width:52px">${digitalDays} ${T('st.mediadays.unit')}</span>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>`;
     _wire(el);
@@ -174,22 +136,8 @@ const SettingsPage = (function () {
         localStorage.setItem('site-density', d);
         applyDensity(d);
         el.querySelectorAll('#st-density .tsb').forEach(b => b.classList.toggle('active', b === btn));
-        /* sync media page if open */
-        if (typeof MediaPage !== 'undefined') MediaPage.syncDensity(d);
       })
     );
-
-    /* Media days — three separate */
-    [['tv','#st-tv-days','#st-tv-days-lbl'],
-     ['theaters','#st-theaters-days','#st-theaters-days-lbl'],
-     ['digital','#st-digital-days','#st-digital-days-lbl']].forEach(([key, slId, lblId]) => {
-      const sl  = el.querySelector(slId);
-      const lbl = el.querySelector(lblId);
-      sl?.addEventListener('input', () => {
-        lbl.textContent = sl.value + ' ' + T('st.mediadays.unit');
-        localStorage.setItem('md-' + key, sl.value);
-      });
-    });
   }
 
   function _syncTheme() {
