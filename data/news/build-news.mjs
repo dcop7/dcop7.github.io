@@ -93,6 +93,8 @@ const SRC = {
   'MovieWeb': ['filmes', false], '/Film': ['filmes', false], 'ScreenRant': ['filmes', false],
   'Aberto até de Madrugada': ['filmes', true],
   /* Fact Check */
+  'Polígrafo': ['factcheck', true], 'Lusa — Combate Fake News': ['factcheck', true],
+  'Público — Prova dos Factos': ['factcheck', true], 'EU vs Disinfo': ['factcheck', false],
   'FactCheck.org': ['factcheck', false], 'Snopes': ['factcheck', false],
   /* Geral PT */
   'SIC Notícias': ['geral', true], 'Diário de Notícias': ['geral', true],
@@ -153,7 +155,8 @@ function parseOPML(xml) {
     const title = decodeEntities((o.match(/(?:title|text)="([^"]+)"/i) || [])[1] || '');
     const htmlUrl = (o.match(/htmlUrl="([^"]+)"/i) || [])[1] || '';
     const match = (o.match(/\bmatch="([^"]+)"/i) || [])[1] || '';
-    if (xmlUrl) feeds.push({ title, kind, match, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
+    const titlefrom = (o.match(/\btitlefrom="([^"]+)"/i) || [])[1] || '';
+    if (xmlUrl) feeds.push({ title, kind, match, titlefrom, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
   }
   /* de-dup identical feed URLs (the OPML has a couple) */
   const seen = new Set();
@@ -163,7 +166,7 @@ function parseOPML(xml) {
 /* Title from a URL slug (for scraped links whose anchor text is JS-rendered). */
 function slugTitle(u) {
   try {
-    const seg = new URL(u).pathname.replace(/\/$/, '').split('/').pop() || '';
+    const seg = (new URL(u).pathname.replace(/\/$/, '').split('/').pop() || '').replace(/-\d{4,}$/, '');
     const t = decodeEntities(decodeURIComponent(seg)).replace(/[-_]+/g, ' ').trim();
     return t.replace(/\b\p{L}/gu, c => c.toUpperCase());
   } catch { return ''; }
@@ -172,9 +175,11 @@ function slugTitle(u) {
 /* Scrape article links from an HTML listing page (no-RSS fallback). Undated →
    given a staggered just-past timestamp so they stay present but never bury the
    site's real dated news. */
+const SCRAPE_JUNK = /^(ler mais|leia mais|saiba mais|ver mais|read more|continuar a ler|continue reading)$|arrow_|read_more|chevron|material-icons/i;
 function scrapeArticles(html, f, now) {
   let origin = ''; try { origin = new URL(f.xmlUrl).origin; } catch {}
   const matchRe = f.match ? new RegExp(f.match, 'i') : /^https?:/i;
+  const forceSlug = f.titlefrom === 'slug';
   const re = /<a\b[^>]*href="([^"#]+)"[^>]*>([\s\S]*?)<\/a>/gi;
   const out = [], seen = new Set();
   let m, idx = 0;
@@ -185,10 +190,14 @@ function scrapeArticles(html, f, now) {
     else if (!/^https?:/i.test(href)) continue;
     const key = href.replace(/\/$/, '');
     if (seen.has(key)) continue; seen.add(key);
-    let title = cleanTitle(m[2]);
-    if (title.length < 6) title = slugTitle(href);
-    if (!title || title.length < 4) continue;
-    out.push({ title, link: href, ts: now - 2 * 86400000 - idx * 3600000, summary: '', image: '' });
+    let title = '';
+    if (!forceSlug) {
+      const txt = cleanTitle(m[2]).replace(/^Media\s+/, '').trim();   /* drop inline category label */
+      if (txt.length >= 12 && !SCRAPE_JUNK.test(txt)) title = txt;
+    }
+    if (!title) title = slugTitle(href);
+    if (!title || title.length < 6) continue;
+    out.push({ title: title.slice(0, 160), link: href, ts: now - 2 * 86400000 - idx * 3600000, summary: '', image: '' });
     idx++;
   }
   return out;
