@@ -24,6 +24,7 @@
             <outline type="rss" text="TechCrunch" title="TechCrunch" xmlUrl="https://techcrunch.com/feed/" htmlUrl="https://techcrunch.com"/>
             <outline type="rss" text="The Verge" title="The Verge" xmlUrl="https://www.theverge.com/rss/index.xml" htmlUrl="https://www.theverge.com"/>
             <outline type="rss" text="Ars Technica" title="Ars Technica" xmlUrl="https://feeds.arstechnica.com/arstechnica/index" htmlUrl="https://arstechnica.com"/>
+            <outline type="rss" text="HowToGeek" title="HowToGeek" xmlUrl="https://www.howtogeek.com/feed/" htmlUrl="https://www.howtogeek.com"/>
         </outline>
         <outline text="IA" title="IA">
             <outline type="rss" text="Simon Willison" title="Simon Willison" xmlUrl="https://simonwillison.net/atom/everything/" htmlUrl="https://simonwillison.net"/>
@@ -32,9 +33,6 @@
             <outline type="rss" text="Latent Space" title="Latent Space" xmlUrl="https://www.latent.space/feed.xml" htmlUrl="https://www.latent.space"/>
             <outline type="rss" text="One Useful Thing" title="One Useful Thing" xmlUrl="https://www.oneusefulthing.org/feed" htmlUrl="https://www.oneusefulthing.org"/>
             <outline type="rss" text="Future Tools" title="Future Tools" xmlUrl="https://www.futuretools.io/news/rss.xml" htmlUrl="https://www.futuretools.io"/>
-            <outline type="rss" text="Reddit — Artificial" title="Reddit — Artificial" xmlUrl="https://www.reddit.com/r/artificial/.rss" htmlUrl="https://www.reddit.com/r/artificial"/>
-            <outline type="rss" text="Reddit — LocalLLaMA" title="Reddit — LocalLLaMA" xmlUrl="https://www.reddit.com/r/LocalLLaMA/.rss" htmlUrl="https://www.reddit.com/r/LocalLLaMA"/>
-            <outline type="rss" text="Reddit — MachineLearning" title="Reddit — MachineLearning" xmlUrl="https://www.reddit.com/r/MachineLearning/.rss" htmlUrl="https://www.reddit.com/r/MachineLearning"/>
         </outline>
         <outline text="Android" title="Android">
             <outline type="rss" text="MakeUseOf - Android" title="MakeUseOf - Android" xmlUrl="http://www.makeuseof.com/service/google-android/feed/" htmlUrl="https://www.makeuseof.com"/>
@@ -94,12 +92,12 @@
             <outline type="rss" text="Aberto até de Madrugada" title="Aberto até de Madrugada" xmlUrl="https://abertoatedemadrugada.com/feeds/posts/default?alt=rss" htmlUrl="https://abertoatedemadrugada.com/"/>
         </outline>
         <outline text="Fact Check" title="Fact Check">
-            <outline type="rss" text="Observador Fact Check" title="Observador Fact Check" xmlUrl="https://observador.pt/seccao/fact-check/feed/" htmlUrl="https://observador.pt/seccao/fact-check"/>
             <outline type="rss" text="FactCheck.org" title="FactCheck.org" xmlUrl="https://www.factcheck.org/feed/" htmlUrl="https://www.factcheck.org"/>
             <outline type="rss" text="Snopes" title="Snopes" xmlUrl="https://www.snopes.com/feed/" htmlUrl="https://www.snopes.com"/>
         </outline>
         <outline text="Geral" title="Geral">
             <outline type="rss" text="SIC Notícias" title="SIC Notícias" xmlUrl="http://feeds.feedburner.com/sicnoticias-ultimas" htmlUrl="https://sicnoticias.pt/"/>
+            <outline type="rss" text="Diário de Notícias" title="Diário de Notícias" xmlUrl="https://www.dn.pt/feed/" htmlUrl="https://www.dn.pt/"/>
             <outline type="rss" text="RTP Notícias / Geral / Últimas" title="RTP Notícias / Geral / Últimas" xmlUrl="http://www.rtp.pt/noticias/rss" htmlUrl="https://www.rtp.pt"/>
             <outline type="rss" text="Expresso" title="Expresso" xmlUrl="http://feeds.feedburner.com/expresso-geral" htmlUrl="https://expresso.pt/"/>
             <outline type="rss" text="Região de Leiria" title="Região de Leiria" xmlUrl="http://feeds.feedburner.com/RegiodeLeiria" htmlUrl="https://www.regiaodeleiria.pt"/>
@@ -112,6 +110,7 @@
         <outline text="Economia" title="Economia">
             <outline type="rss" text="Contas Poupança" title="Contas Poupança" xmlUrl="https://rss.impresa.pt/feed/latest/contaspoupanca.rss" htmlUrl="https://contaspoupanca.pt/"/>
             <outline type="rss" text="Jornal de Negócios" title="Jornal de Negócios" xmlUrl="https://www.jornaldenegocios.pt/rss" htmlUrl="https://www.jornaldenegocios.pt"/>
+            <outline type="scrape" text="Literacia Financeira" title="Literacia Financeira" xmlUrl="https://www.literaciafinanceira.pt/artigos" htmlUrl="https://www.literaciafinanceira.pt" match="/artigos/[a-z0-9][a-z0-9-]{3,}$"/>
         </outline>
     </body>
 </opml>

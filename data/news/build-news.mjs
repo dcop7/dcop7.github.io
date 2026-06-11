@@ -59,11 +59,11 @@ const SRC = {
   'Xa das 5': ['tecnologia', true], 'A tecnologia está do teu lado': ['tecnologia', true],
   'XDA': ['tecnologia', false], 'ZDNet': ['tecnologia', false], 'Forbes - Innovation': ['tecnologia', false],
   'TechCrunch': ['tecnologia', false], 'The Verge': ['tecnologia', false], 'Ars Technica': ['tecnologia', false],
+  'HowToGeek': ['tecnologia', false],
   /* IA */
   'Simon Willison': ['ia', false], 'OpenAI': ['ia', false],
   'Google DeepMind': ['ia', false], 'Latent Space': ['ia', false], 'One Useful Thing': ['ia', false],
   'Future Tools': ['ia', false],
-  'Reddit — Artificial': ['ia', false], 'Reddit — LocalLLaMA': ['ia', false], 'Reddit — MachineLearning': ['ia', false],
   /* TLDR (isolated newsletter section) */
   'TLDR Tech': ['tldr', false], 'TLDR IT': ['tldr', false], 'TLDR DevOps': ['tldr', false],
   'TLDR AI': ['tldr', false], 'TLDR Data': ['tldr', false], 'TLDR Hardware': ['tldr', false],
@@ -93,17 +93,16 @@ const SRC = {
   'MovieWeb': ['filmes', false], '/Film': ['filmes', false], 'ScreenRant': ['filmes', false],
   'Aberto até de Madrugada': ['filmes', true],
   /* Fact Check */
-  'Observador Fact Check': ['factcheck', true],
-  'Reuters Fact Check': ['factcheck', false], 'AP Fact Check': ['factcheck', false],
   'FactCheck.org': ['factcheck', false], 'Snopes': ['factcheck', false],
   /* Geral PT */
-  'SIC Notícias': ['geral', true],
+  'SIC Notícias': ['geral', true], 'Diário de Notícias': ['geral', true],
   'RTP Notícias / Geral / Últimas': ['geral', true], 'Expresso': ['geral', true], 'Região de Leiria': ['geral', true],
   /* Mundo */
   'The Guardian — World': ['mundo', false],
   'BBC News': ['mundo', false], 'Euronews': ['mundo', false],
   /* Economia */
   'Contas Poupança': ['economia', true], 'Jornal de Negócios': ['economia', true],
+  'Literacia Financeira': ['economia', true],
 };
 
 /* No cross-cutting keyword tags — each article keeps its source's topic, so
@@ -140,21 +139,59 @@ function atomLink(block) {
   return best;
 }
 
-/* ── OPML ── */
+/* ── OPML ── (supports type="rss"/"atom" feeds and type="scrape" sources:
+   a scrape outline points xmlUrl at an HTML listing page and carries a
+   `match` regex selecting article hrefs — a fallback for sites without RSS.) */
 function parseOPML(xml) {
   const feeds = [];
-  const re = /<outline\b[^>]*type="rss"[^>]*>/gi;
+  const re = /<outline\b[^>]*type="(rss|atom|scrape)"[^>]*>/gi;
   let m;
   while ((m = re.exec(xml))) {
     const o = m[0];
+    const kind = (m[1] || 'rss').toLowerCase();
     const xmlUrl = (o.match(/xmlUrl="([^"]+)"/i) || [])[1];
     const title = decodeEntities((o.match(/(?:title|text)="([^"]+)"/i) || [])[1] || '');
     const htmlUrl = (o.match(/htmlUrl="([^"]+)"/i) || [])[1] || '';
-    if (xmlUrl) feeds.push({ title, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
+    const match = (o.match(/\bmatch="([^"]+)"/i) || [])[1] || '';
+    if (xmlUrl) feeds.push({ title, kind, match, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
   }
   /* de-dup identical feed URLs (the OPML has a couple) */
   const seen = new Set();
   return feeds.filter(f => (seen.has(f.xmlUrl) ? false : seen.add(f.xmlUrl)));
+}
+
+/* Title from a URL slug (for scraped links whose anchor text is JS-rendered). */
+function slugTitle(u) {
+  try {
+    const seg = new URL(u).pathname.replace(/\/$/, '').split('/').pop() || '';
+    const t = decodeEntities(decodeURIComponent(seg)).replace(/[-_]+/g, ' ').trim();
+    return t.replace(/\b\p{L}/gu, c => c.toUpperCase());
+  } catch { return ''; }
+}
+
+/* Scrape article links from an HTML listing page (no-RSS fallback). Undated →
+   given a staggered just-past timestamp so they stay present but never bury the
+   site's real dated news. */
+function scrapeArticles(html, f, now) {
+  let origin = ''; try { origin = new URL(f.xmlUrl).origin; } catch {}
+  const matchRe = f.match ? new RegExp(f.match, 'i') : /^https?:/i;
+  const re = /<a\b[^>]*href="([^"#]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+  const out = [], seen = new Set();
+  let m, idx = 0;
+  while ((m = re.exec(html))) {
+    let href = m[1];
+    if (!matchRe.test(href)) continue;
+    if (href.startsWith('/')) href = origin + href;
+    else if (!/^https?:/i.test(href)) continue;
+    const key = href.replace(/\/$/, '');
+    if (seen.has(key)) continue; seen.add(key);
+    let title = cleanTitle(m[2]);
+    if (title.length < 6) title = slugTitle(href);
+    if (!title || title.length < 4) continue;
+    out.push({ title, link: href, ts: now - 2 * 86400000 - idx * 3600000, summary: '', image: '' });
+    idx++;
+  }
+  return out;
 }
 
 /* ── fetch with timeout ── */
@@ -254,8 +291,8 @@ const minTs = now - RETAIN_DAYS * 86400000;
 const maxTs = now + 36 * 3600000; /* allow slight clock skew / scheduled posts */
 
 const results = await pool(feeds, CONCURRENCY, async (f) => {
-  const xml = await fetchText(f.xmlUrl);
-  const items = parseFeed(xml).slice(0, ITEMS_PER_FEED);
+  const text = await fetchText(f.xmlUrl);
+  const items = (f.kind === 'scrape' ? scrapeArticles(text, f, now) : parseFeed(text)).slice(0, ITEMS_PER_FEED);
   return { feed: f, items };
 });
 
