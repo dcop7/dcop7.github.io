@@ -18,6 +18,7 @@ const MinesweeperGame = (function () {
   let container, diff = 'easy', board = [], rows, cols, mines;
   let revealed = 0, flagged = 0, gameState = 'idle'; // idle|running|won|lost
   let timerEl, minesEl, gridEl, statusEl, startTime, timerInt;
+  let flagMode = false;   /* mobile-friendly: when on, a tap places a flag */
 
   function init(cont) {
     container = cont;
@@ -33,6 +34,7 @@ const MinesweeperGame = (function () {
         </div>
         <div class="ms-hud">
           <span class="ms-stat">💣 <span id="ms-mines">10</span></span>
+          <button class="ms-flagmode" id="ms-flagmode" aria-pressed="false" title="Modo bandeira (toca para marcar)">🚩</button>
           <button class="ms-reset" id="ms-reset">${t('start')}</button>
           <span class="ms-stat">⏱ <span id="ms-timer">0</span>s</span>
         </div>
@@ -48,6 +50,12 @@ const MinesweeperGame = (function () {
     statusEl = container.querySelector('#ms-status');
 
     container.querySelector('#ms-reset').addEventListener('click', startGame);
+    const fmBtn = container.querySelector('#ms-flagmode');
+    fmBtn.addEventListener('click', () => {
+      flagMode = !flagMode;
+      fmBtn.classList.toggle('active', flagMode);
+      fmBtn.setAttribute('aria-pressed', String(flagMode));
+    });
     container.querySelectorAll('.ms-db').forEach(b => {
       b.addEventListener('click', () => {
         container.querySelectorAll('.ms-db').forEach(x => x.classList.remove('active'));
@@ -91,7 +99,9 @@ const MinesweeperGame = (function () {
         cell.dataset.r = r; cell.dataset.c = c;
         cell.addEventListener('click', onLeft);
         cell.addEventListener('contextmenu', onRight);
-        cell.addEventListener('touchend', onTouch, { passive: false });
+        cell.addEventListener('touchstart', onTouchStart, { passive: false });
+        cell.addEventListener('touchmove', onTouchMove, { passive: true });
+        cell.addEventListener('touchend', onTouchEnd, { passive: false });
         gridEl.appendChild(cell);
       }
     }
@@ -132,21 +142,33 @@ const MinesweeperGame = (function () {
     }
   }
 
-  let longPressTimer = null;
-  function onTouch(e) {
+  /* ── Touch: long-press flags; quick tap reveals (or flags in flag-mode). ── */
+  let longPressTimer = null, lpFired = false;
+  function onTouchStart(e) {
     e.preventDefault();
     const cell = e.currentTarget;
     const r = +cell.dataset.r, c = +cell.dataset.c;
-    if (e.type === 'touchend' && longPressTimer) {
-      clearTimeout(longPressTimer);
-      longPressTimer = null;
-    }
-    handleLeft(r, c);
+    lpFired = false;
+    clearTimeout(longPressTimer);
+    longPressTimer = setTimeout(() => {
+      lpFired = true;
+      handleFlag(r, c);
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch (err) {} }
+    }, 420);
+  }
+  function onTouchMove() { clearTimeout(longPressTimer); }
+  function onTouchEnd(e) {
+    e.preventDefault();
+    clearTimeout(longPressTimer);
+    if (lpFired) { lpFired = false; return; }   /* long-press already handled it */
+    const cell = e.currentTarget;
+    const r = +cell.dataset.r, c = +cell.dataset.c;
+    if (flagMode) handleFlag(r, c); else handleLeft(r, c);
   }
 
   function onLeft(e) {
     const r = +e.currentTarget.dataset.r, c = +e.currentTarget.dataset.c;
-    handleLeft(r, c);
+    if (flagMode) handleFlag(r, c); else handleLeft(r, c);
   }
 
   function onRight(e) {
@@ -227,6 +249,9 @@ const MinesweeperGame = (function () {
     }
     statusEl.textContent = t('kaboom');
     statusEl.style.color = '#f87171';
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('minesweeper', { won: false, mode: diff }); } catch (e) {}
+    }
   }
 
   function checkWin() {
@@ -235,7 +260,16 @@ const MinesweeperGame = (function () {
       clearInterval(timerInt);
       gameState = 'won';
       const secs = Math.floor((Date.now() - startTime) / 1000);
-      statusEl.textContent = t('won').replace('{t}', secs);
+      let msg = t('won').replace('{t}', secs);
+      if (typeof GameProgress !== 'undefined') {
+        try {
+          const prevBest = GameProgress.bestScore('minesweeper', diff);
+          const res = GameProgress.record('minesweeper', { won: true, score: secs, mode: diff, lowerIsBetter: true });
+          if (res.newBest && prevBest != null) msg += ' 🏅 Novo recorde!';
+          else { const b = GameProgress.bestScore('minesweeper', diff); if (b != null) msg += ` · melhor: ${b}s`; }
+        } catch (e) {}
+      }
+      statusEl.textContent = msg;
       statusEl.style.color = '#4ade80';
     }
   }
@@ -250,6 +284,14 @@ const MinesweeperGame = (function () {
   if (_has) {
     _apply();
     document.addEventListener('langchange', _apply);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('minesweeper', [
+      { id: 'ms.win',  name: 'Desminado',   icon: '🚩', desc: 'Vence o Campo de Minas.',          test: c => c.gameId === 'minesweeper' && c.result.won === true },
+      { id: 'ms.hard', name: 'Perito',      icon: '💣', desc: 'Vence no nível Difícil.',          test: c => c.gameId === 'minesweeper' && c.result.won === true && c.result.mode === 'hard' },
+      { id: 'ms.fast', name: 'Mãos Rápidas', icon: '⚡', desc: 'Vence o Fácil em menos de 30s.',  test: c => c.gameId === 'minesweeper' && c.result.won === true && c.result.mode === 'easy' && c.result.score <= 30 },
+    ]);
   }
 
   return { init };

@@ -64,12 +64,24 @@ const WordleGame = (function () {
     return list.length ? list : (FALLBACK[len] || FALLBACK[5]);
   }
   function pickWord() { const p = _pool(); return p[Math.floor(Math.random() * p.length)]; }
+  /* Deterministic word of the day — same for everyone, changes daily per length. */
+  function pickDailyWord() {
+    const p = _pool();
+    if (typeof GameProgress !== 'undefined') {
+      const r = GameProgress.rng(GameProgress.dailySeed('wordle:' + _len()));
+      return p[Math.floor(r() * p.length)];
+    }
+    return pickWord();
+  }
 
   function init(root) {
     if (!root) return;
 
-    let secret, guesses, current, gameOver, LEN = _len(), ROWS = _cfg.rows || 6;
+    let secret, guesses, current, gameOver, LEN = _len(), ROWS = _cfg.rows || 6, firstGame = true;
     let stats = { wins: 0, played: 0, streak: 0 };
+    if (typeof GameProgress !== 'undefined') {
+      try { const s = GameProgress.stats('wordle'); stats = { wins: s.wins || 0, played: s.plays || 0, streak: s.wstreak || 0 }; } catch (e) {}
+    }
 
     function render() {
       root.innerHTML = `
@@ -171,10 +183,16 @@ const WordleGame = (function () {
           stats.wins++; stats.played++; stats.streak++;
           setMsg(_t('win'), 'correct');
           gameOver = true; updateStats();
+          if (typeof GameProgress !== 'undefined') {
+            try { GameProgress.record('wordle', { won: true, score: guesses.length, lowerIsBetter: true, meta: { wstreak: stats.streak } }); } catch (e) {}
+          }
         } else if (guesses.length === ROWS) {
           stats.played++; stats.streak = 0;
           setMsg(_t('loss').replace('{word}', secret), 'absent');
           gameOver = true; updateStats();
+          if (typeof GameProgress !== 'undefined') {
+            try { GameProgress.record('wordle', { won: false, meta: { wstreak: 0 } }); } catch (e) {}
+          }
         }
       }, 700);
     }
@@ -206,7 +224,11 @@ const WordleGame = (function () {
     function startGame() {
       document.removeEventListener('keydown', handleKeydown);
       LEN = _len(); ROWS = _cfg.rows || 6;
-      secret = pickWord(); guesses = []; current = ''; gameOver = false;
+      /* First word each session is the deterministic word of the day; the
+         "Nova Palavra" button then gives fresh random words. */
+      secret = firstGame ? pickDailyWord() : pickWord();
+      firstGame = false;
+      guesses = []; current = ''; gameOver = false;
       render(); buildGrid();
       setMsg('', '');
     }
@@ -220,6 +242,14 @@ const WordleGame = (function () {
       if (_lang() === _loadedLang) { startGame(); return; }
       _loadData(_lang()).then(startGame);
     });
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('wordle', [
+      { id: 'wrd.win',    name: 'Adivinho',     icon: '📝', desc: 'Acerta a Palavra do Dia.',          test: c => c.gameId === 'wordle' && c.result.won === true },
+      { id: 'wrd.sharp',  name: 'Afiado',       icon: '🎯', desc: 'Acerta em 3 tentativas ou menos.', test: c => c.gameId === 'wordle' && c.result.won === true && c.result.score <= 3 },
+      { id: 'wrd.streak', name: 'Em Sequência', icon: '🔥', desc: 'Ganha 5 jogos seguidos.',           test: c => c.gameId === 'wordle' && c.result.won === true && (c.result.meta && c.result.meta.wstreak >= 5) },
+    ]);
   }
 
   return { init };

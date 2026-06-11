@@ -336,6 +336,9 @@ const GravityLabGame = (function () {
     _removeKeyHandler();
     const next = G.idx + 1;
     if (next > +localStorage.getItem('gl-lvl')||0) localStorage.setItem('gl-lvl', next);
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('gravity-lab', { won: true, mode: 'lvl' + next, meta: { allDone: next >= LEVELS.length } }); } catch (e) {}
+    }
     root.innerHTML = `<div class="gl-host"><div class="gl-overlay">
       <div class="gl-lv-done">✅</div>
       <div class="gl-complete-title">${t('levelDone')}</div>
@@ -486,6 +489,13 @@ const GravityLabGame = (function () {
     });
     apply();
     document.addEventListener('langchange', apply);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('gravity-lab', [
+      { id: 'gl.win', name: 'Físico',          icon: '🔬', desc: 'Completa um nível do Gravity Lab.', test: c => c.gameId === 'gravity-lab' && c.result.won === true },
+      { id: 'gl.all', name: 'Mestre da Gravidade', icon: '🌀', desc: 'Completa todos os níveis.',     test: c => c.gameId === 'gravity-lab' && c.result.meta && c.result.meta.allDone === true },
+    ]);
   }
 
   return { init };

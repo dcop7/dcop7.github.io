@@ -782,6 +782,462 @@ const PhotographyPage = (function () {
     drawWheel();updateInfo();
   }
 
+  // ── Edit steps (idea + how-to in 3 apps) ──────────────────────────
+  function swRowsHTML(s) {
+    return `<div class="ph-estep-rows">
+      <div class="ph-estep-row"><span class="ph-sw ph-sw-rr">RapidRAW</span><span>${s.rr}</span></div>
+      <div class="ph-estep-row"><span class="ph-sw ph-sw-dt">darktable</span><span>${s.dt}</span></div>
+      <div class="ph-estep-row"><span class="ph-sw ph-sw-sg">Snapseed</span><span>${s.sg}</span></div>
+    </div>`;
+  }
+  function editStepHTML(s) {
+    return `<div class="ph-estep"><div class="ph-estep-idea">${s.idea}</div>${swRowsHTML(s)}</div>`;
+  }
+
+  // ── General editing techniques ────────────────────────────────────
+  const EDIT_TECHNIQUES = [
+    { id:'teal-orange', name:'Teal & Orange', icon:'🎨',
+      idea:'Empurra sombras/fundo para teal (azul-esverdeado) e tons de pele/realces para laranja. Cria separação e o look cinematográfico clássico.',
+      rr:'Painel Color Grading (rodas de cor): roda das Sombras → teal/azul, roda dos Realces/Médios → laranja. Afina no HSL (Azul/Ciano = teal; Laranja = pele).',
+      dt:'Módulo «color balance rgb»: nas 4-vias dá hue+chroma teal às Shadows e laranja aos Highlights; ajusta a pele em «color zones».',
+      sg:'Curvas: canal Azul levanta as sombras (+teal) e baixa os realces; canal Vermelho faz o inverso. Reforça com Balanço de Brancos (Calor) no Seletivo sobre a pele.' },
+    { id:'contraste', name:'Contraste (e reduzir)', icon:'◐',
+      idea:'Mais contraste = punch e drama. Menos contraste = look suave, mate, editorial e cores pastel. Reduz para retrato suave ou estética film.',
+      rr:'Slider Contrast; controlo fino na Tone Curve (S = mais; levantar os pretos = menos). «Tone Mapping/AgX» para rolloff suave dos realces.',
+      dt:'«color balance rgb» (contrast + pivot) ou «rgb curve». Para look mate, levanta o ponto preto na curva.',
+      sg:'Ajustar imagem → Contraste. Para look mate, em Curvas levanta o canto inferior-esquerdo (pretos) e baixa um pouco os brancos.' },
+    { id:'clareza', name:'Clareza / Estrutura', icon:'▦',
+      idea:'Clareza = contraste local nos médios (dá punch e volume). Estrutura/Textura = micro-detalhe (rochas, folhas, pele). Usa com moderação na pele.',
+      rr:'Sliders Clarity e Structure. Em retrato aplica Structure só numa máscara que evite a pele.',
+      dt:'Módulo «local contrast» (clarity) e «diffuse or sharpen» (preset texture); afina com «contrast equalizer».',
+      sg:'Detalhes → Estrutura; «Ambiente» (Ajustar imagem) dá contraste local. Aplica localmente com o Pincel se for pele.' },
+    { id:'sat-vib', name:'Saturação vs Vibração', icon:'🌈',
+      idea:'Vibração sobe só as cores menos saturadas e protege os tons de pele — mais natural. Saturação sobe tudo por igual — cuidado com o excesso.',
+      rr:'Sobe Vibrance primeiro; Saturation com parcimónia. Usa o HSL para cores específicas.',
+      dt:'«color balance rgb» (global chroma / vibrance) ou módulo «velvia» (satura protegendo a pele); «color zones» por cor.',
+      sg:'Ajustar imagem → Saturação (global); «Ambiente» dá um efeito tipo vibração. Para cores específicas usa o Seletivo.' },
+    { id:'realces-sombras', name:'Realces & Sombras', icon:'☀️',
+      idea:'Trazer detalhe das nuvens (realces) e abrir as sombras escuras sem achatar a imagem. Base de quase toda a edição RAW.',
+      rr:'Highlights (−) e Shadows (+); depois Whites/Blacks para fixar os pontos. «Dehaze» se houver bruma.',
+      dt:'«filmic rgb» (latitude) ou «tone equalizer» para abrir sombras/segurar realces; «exposure» para a base.',
+      sg:'Ajustar imagem → Realces (−) e Sombras (+). Afina com Curvas.' },
+    { id:'wb', name:'Balanço de Brancos', icon:'🌡️',
+      idea:'Definir a temperatura neutra — ou usá-la de forma criativa (mais quente ao pôr do sol, mais fria para frio/noite).',
+      rr:'Temperature/Tint; usa o conta-gotas num cinzento neutro. Dispara em RAW para liberdade total.',
+      dt:'«white balance» (ou «color calibration» com iluminante); conta-gotas numa zona neutra.',
+      sg:'Balanço de Brancos (Temperatura/Tonalidade); Auto e depois ajusta a gosto.' },
+    { id:'curvas', name:'Curva de Tons', icon:'〰️',
+      idea:'Controlo preciso de luminância e cor por zona — base do look mate, do contraste em S e do teal&orange por canal.',
+      rr:'Tone Curve (Luma + RGB): pontos para S-curve; canais R/G/B para cor.',
+      dt:'«rgb curve» (modo RGB ou por canal); «tone curve» em modo manual.',
+      sg:'Curvas: curva Luminosidade para contraste; troca para os canais Vermelho/Verde/Azul para cor.' },
+    { id:'dodge-burn', name:'Dodge & Burn', icon:'🔦',
+      idea:'Clarear (dodge) o sujeito/olhos e escurecer (burn) distrações e bordas — guia o olhar e dá volume.',
+      rr:'Máscaras (Brush/Radial ou AI «subject») com Exposure +/−. A AI «subject» isola a pessoa automaticamente.',
+      dt:'«exposure» com máscara desenhada (brush), ou «tone equalizer» com máscara.',
+      sg:'Pincel → Exposição/Brilho (clarear/escurecer com o dedo); Seletivo para zonas; Vinheta para as bordas.' },
+    { id:'nitidez-ruido', name:'Nitidez & Ruído', icon:'🔪',
+      idea:'Afiar o detalhe importante e limpar o ruído (sobretudo ISO alto/noite). Ruído primeiro, nitidez por último.',
+      rr:'Noise Reduction (luminância + cor) primeiro; Sharpening depois, com máscara para não afiar céu/pele.',
+      dt:'«denoise (profiled)» primeiro; «sharpen» ou «diffuse or sharpen» depois.',
+      sg:'Detalhes → Nitidez (pouco). Sem denoise dedicado forte: evita exagerar Estrutura/Sombras (amplificam ruído).' },
+    { id:'vinheta', name:'Vinheta', icon:'⭕',
+      idea:'Escurecer suavemente as bordas para concentrar o olhar no sujeito. Subtil — não deve notar-se.',
+      rr:'Effects → Vignette (amount/feather), ou máscara radial invertida com Exposure −.',
+      dt:'Módulo «vignetting» (subtil), ou «exposure» com máscara radial invertida.',
+      sg:'Ferramenta «Vinheta» (brilho exterior −, e tamanho).' },
+    { id:'pb', name:'Conversão Preto & Branco', icon:'⬛',
+      idea:'Converter pensando em tons: controlar como cada cor vira cinzento (céu mais escuro, pele mais clara) e dar contraste/estrutura.',
+      rr:'Conversão B&W + HSL/luminância por cor (baixar Azul = céu dramático); sobe Clarity/Structure e contraste.',
+      dt:'«color calibration» (cinza / channel mixer) ou «monochrome»; afina a luminância por cor; «contrast equalizer».',
+      sg:'Filtro «Preto e branco» (filtro Vermelho/Amarelo escurece o céu); «Tom dramático» e Estrutura para punch.' },
+    { id:'dehaze', name:'Dehaze / Atmosfera', icon:'🌫️',
+      idea:'Cortar a bruma e recuperar contraste/cor em paisagens distantes — ou adicionar glow/atmosfera para um look sonhador.',
+      rr:'Effects → Dehaze (+ limpa, − adiciona atmosfera); Glow/Halation para sonho.',
+      dt:'Módulo «haze removal»; ou contraste local para reforçar.',
+      sg:'Sem dehaze dedicado: Contraste + Estrutura + Sombras (−); «Tom dramático» ajuda.' },
+  ];
+
+  // ── Scenario cheat sheets ─────────────────────────────────────────
+  const SCENARIOS = [
+    { id:'paisagem', name:'Paisagem', icon:'🏔️',
+      blurb:'Nitidez de ponta a ponta, céu dramático e profundidade.',
+      settings:[
+        {k:'Modo',v:'Av / Prioridade à abertura (ou M)'},
+        {k:'ISO',v:'Mínimo (100) — tripé se preciso'},
+        {k:'Abertura',v:'f/8 – f/11 (nitidez máxima)'},
+        {k:'Velocidade',v:'Conforme a luz — tripé se < 1/60'},
+        {k:'Foco',v:'A ~1/3 da cena, ou hiperfocal'},
+        {k:'WB',v:'Luz do dia / Nublado'},
+      ],
+      composition:['Regra dos Terços','Linhas Convergentes','Curva em S','Espaço Negativo'],
+      light:'Hora dourada e hora azul dão a melhor luz; a luz lateral revela textura e relevo. Evita o sol a pino (céu lavado, sombras duras). Usa a calculadora de Hora Dourada aqui em baixo para planear.',
+      dos:['Tripé + temporizador/disparador para máxima nitidez','Foca a ~1/3 (ou usa a distância hiperfocal)','Polarizador para céu mais azul e tirar reflexos','Inclui um primeiro plano forte para dar profundidade','Mantém o horizonte direito'],
+      donts:['ISO alto sem necessidade (ruído)','Horizonte ao centro (exceto reflexo simétrico)','Abrir demais (f/1.8 perde nitidez nas pontas)','Esquecer o primeiro plano (imagem "vazia")','Disparar tudo ao meio-dia'],
+      edit:{ intro:'Maximiza a gama dinâmica e a profundidade: céu com detalhe, primeiro plano nítido, cor rica mas natural.',
+        steps:[
+          {idea:'Recuperar o céu e abrir as sombras (alta gama dinâmica)', rr:'Highlights −, Shadows +, Dehaze leve; Whites/Blacks a fixar os pontos.', dt:'«filmic rgb» + «tone equalizer» para equilibrar céu e terra.', sg:'Realces −, Sombras +, depois afina nas Curvas.'},
+          {idea:'Profundidade e textura (rochas, folhagem)', rr:'Clarity + Structure moderados; Sharpening com máscara.', dt:'«local contrast» + «diffuse or sharpen».', sg:'Detalhes → Estrutura; «Ambiente».'},
+          {idea:'Cor natural e rica (céu e vegetação)', rr:'Vibrance primeiro; HSL: Azul −luminância (céu mais fundo).', dt:'«velvia» + «color zones» para o verde.', sg:'Saturação leve + «Ambiente»; Seletivo no céu.'},
+        ] } },
+    { id:'retrato', name:'Retrato', icon:'👤', portrait:true,
+      blurb:'Fundo desfocado, foco no olho, pose e luz que favorecem.',
+      settings:[
+        {k:'Modo',v:'Av ou M'},
+        {k:'Abertura',v:'f/1.8 – f/2.8 (fundo cremoso); f/4–f/5.6 p/ grupos'},
+        {k:'ISO',v:'Base; sobe só o necessário'},
+        {k:'Velocidade',v:'≥ 1/200 (e ≥ distância focal)'},
+        {k:'Foco',v:'AF no olho (Eye AF) — olho mais próximo'},
+        {k:'Focal',v:'50–135mm (85mm ideal) evita distorção'},
+      ],
+      composition:['Regra dos Terços','Proporção Áurea (Phi)','Enquadramento Natural','Espaço Negativo'],
+      light:'Janela suave a 45°, sombra aberta ou hora dourada. Observa os catchlights nos olhos e a sombra suave a descer pela face. Evita o sol a pino (olhos-de-guaxinim).',
+      dos:['Foca sempre no olho mais próximo','Deixa espaço na direção do olhar','Dá direção e poses ao sujeito (vê os diagramas)','Dispara à altura dos olhos do sujeito','Separa o sujeito do fundo (distância + abertura)'],
+      donts:['Cortar nas articulações (joelhos, cotovelos, pulsos, tornozelos, pescoço)','Grande angular perto do rosto (distorce o nariz)','Postes/árvores a "sair" da cabeça','Flash frontal direto e duro','Focar no nariz em vez do olho'],
+      edit:{ intro:'Pele natural e agradável, olhos com vida e um fundo que não compete. Edição subtil — menos é mais.',
+        steps:[
+          {idea:'Pele natural — NÃO exagerar clareza/saturação na pele', rr:'Reduz Clarity/Texture na pele (máscara AI «subject»); Vibrance baixo.', dt:'«diffuse or sharpen» com máscara para suavizar; vibrance comedida.', sg:'Pincel: baixa Estrutura na pele; evita Saturação global alta.'},
+          {idea:'Teal & Orange para separar do fundo', rr:'Rodas de cor: sombras → teal, realces → laranja; HSL afina o Laranja (pele).', dt:'«color balance rgb» (4-vias).', sg:'Curvas (Azul/Vermelho) + Balanço de Brancos no Seletivo sobre a pele.'},
+          {idea:'Realçar os olhos (dodge) e escurecer distrações (burn)', rr:'Máscara Brush nos olhos: Exposure/Clarity +; Vinheta subtil.', dt:'«exposure» +/− com máscaras desenhadas.', sg:'Pincel → Exposição + nos olhos; Vinheta nas bordas.'},
+        ] } },
+    { id:'pb', name:'Preto & Branco', icon:'⬛',
+      blurb:'Pensar em luz, tom, contraste, forma e textura — não em cor.',
+      settings:[
+        {k:'Ficheiro',v:'RAW (converte na edição)'},
+        {k:'Pré-visualização',v:'Picture Style Monocromático (só para ver)'},
+        {k:'Exposição',v:'Expor à direita (proteger realces)'},
+        {k:'ISO',v:'Conforme — o grão pode ser estético'},
+        {k:'Procura',v:'Contraste, linhas, formas e texturas'},
+      ],
+      composition:['Diagonal Principal','Linhas Convergentes','Simetria & Reflexo','Composição em Triângulo'],
+      light:'Luz dura e lateral cria sombras profundas e drama. Nevoeiro e céus carregados funcionam muito bem. Pensa em como cada cor se traduz em cinzento.',
+      dos:['Procurar contraste, textura e formas fortes','Usar linhas e luz direcional','Converter de RAW e ajustar os canais de cor','Aumentar contraste e clareza','Escolher cenas onde a cor não acrescenta nada'],
+      donts:['Limitar-te ao JPEG P&B da câmara (perdes controlo)','Usar P&B para "salvar" uma foto fraca','Ignorar que cores diferentes podem virar o mesmo cinzento','Esquecer o ruído de cor antes de converter','Contraste a zero (imagem cinzenta e morta)'],
+      edit:{ intro:'Controla como cada cor vira cinzento e dá-lhe contraste e estrutura. A conversão é uma decisão criativa, não um botão.',
+        steps:[
+          {idea:'Conversão controlada por cor', rr:'B&W + HSL/luminância: baixar Azul = céu dramático; subir Laranja = pele clara.', dt:'«color calibration» (channel mixer cinza) ou «monochrome».', sg:'Filtro «Preto e branco» → filtro Vermelho/Amarelo escurece o céu.'},
+          {idea:'Contraste e estrutura para punch', rr:'Tone Curve em S; Clarity/Structure.', dt:'«contrast equalizer» / «tone curve».', sg:'«Tom dramático» + Estrutura + Contraste.'},
+          {idea:'Granulado film (opcional)', rr:'Effects → Film Grain.', dt:'Módulo «grain».', sg:'Ferramenta «Granulado».'},
+        ] } },
+    { id:'rua', name:'Rua / Urbano', icon:'🚶',
+      blurb:'Rápido e discreto: captar o momento e a luz da cidade.',
+      settings:[
+        {k:'Modo',v:'Av f/8 (zona de foco) ou Auto-ISO + M'},
+        {k:'Velocidade',v:'≥ 1/250 (congelar pessoas)'},
+        {k:'ISO',v:'Auto (até ~3200)'},
+        {k:'Foco',v:'Zona/hiperfocal ou AF contínuo'},
+        {k:'Focal',v:'28–50mm, lente discreta'},
+      ],
+      composition:['Linhas Convergentes','Enquadramento Natural','Regra dos Terços','Diagonal Principal'],
+      light:'A luz dura cria sombras e contraste interessantes; à noite usa néons e reflexos. Contraluz para silhuetas. Encontra uma boa luz + fundo e espera o sujeito entrar.',
+      dos:['Pré-focar (zone focusing) para disparar rápido','Lente discreta e leve','Antecipar e esperar pelo momento','Compor primeiro, esperar o sujeito depois','Respeitar as pessoas e o espaço'],
+      donts:['Hesitar — perde-se o momento','Usar flash na cara das pessoas','Abertura muito aberta (difícil acertar foco em movimento)','Invadir a privacidade ou fotografar onde é proibido','Olhar só para o ecrã (perde o contexto à volta)'],
+      edit:{ intro:'Carácter urbano: contraste, atmosfera e, muitas vezes, um look mate ou de film.',
+        steps:[
+          {idea:'Look mate / film (sombras levantadas)', rr:'Tone Curve: levanta o ponto preto; Color Grading subtil.', dt:'«rgb curve» (lift dos pretos) + «color balance rgb».', sg:'Curvas: levanta os pretos; reduz a Saturação levemente.'},
+          {idea:'Contraste local e atmosfera', rr:'Clarity +, Dehaze a gosto.', dt:'«local contrast» / «haze removal».', sg:'«Ambiente» + Estrutura.'},
+          {idea:'Cor coesa (teal&orange ou dessaturado)', rr:'Rodas de cor, ou baixa a Saturation para mood.', dt:'«color balance rgb».', sg:'Curvas por canal, ou Saturação −.'},
+        ] } },
+    { id:'noturna', name:'Noturna & Astro', icon:'🌌',
+      blurb:'Tripé, ISO alto, foco manual no infinito e estrelas pontuais.',
+      settings:[
+        {k:'Modo',v:'M + Tripé (obrigatório)'},
+        {k:'ISO',v:'1600–6400 (astro); baixo p/ cidade com tripé'},
+        {k:'Abertura',v:'Máxima (f/1.4 – f/2.8) para estrelas'},
+        {k:'Velocidade',v:'Regra dos 500 ÷ focal (ex.: 500/35 ≈ 14s)'},
+        {k:'Foco',v:'Manual, no infinito (live view numa estrela)'},
+        {k:'WB',v:'~3800K; RAW'},
+      ],
+      composition:['Espaço Negativo','Regra dos Terços','Linhas Convergentes','Simetria & Reflexo'],
+      light:'Foge da poluição luminosa; lua nova para a Via Láctea. Hora azul para a cidade. Acrescenta um primeiro plano (silhueta, árvore) e ilumina-o com light painting.',
+      dos:['Tripé + disparador/temporizador de 2s','Foco manual numa estrela brilhante (live view com zoom)','Desligar a estabilização no tripé','RAW + bateria extra (o frio gasta)','Primeiro plano interessante'],
+      donts:['ISO no máximo sem necessidade (ruído)','Exposição longa demais (estrelas viram traços — usa 500/focal)','Confiar no AF no escuro','Tocar no tripé durante a exposição','Disparar em JPEG'],
+      edit:{ intro:'Limpa o ruído, revela estrelas e luzes sem queimar, e controla a cor do céu.',
+        steps:[
+          {idea:'Reduzir ruído primeiro (ISO alto)', rr:'Noise Reduction (luminância + cor) antes de afiar.', dt:'«denoise (profiled)» — essencial.', sg:'Evita puxar Sombras/Estrutura ao máximo (amplifica o ruído).'},
+          {idea:'Revelar a Via Láctea / as luzes', rr:'Shadows +, Whites +, Dehaze; Clarity localizada (máscara).', dt:'«tone equalizer» + «local contrast» com máscara.', sg:'Sombras +; Estrutura local com o Pincel; Curvas.'},
+          {idea:'Cor do céu noturno', rr:'Temperature mais fria; HSL tira a dominante laranja da poluição luminosa.', dt:'«white balance» + «color zones» no laranja.', sg:'Balanço de Brancos mais frio; Seletivo.'},
+        ] } },
+    { id:'macro', name:'Macro / Close-up', icon:'🔬',
+      blurb:'Profundidade de campo minúscula — foco preciso e fundo limpo.',
+      settings:[
+        {k:'Modo',v:'M ou Av'},
+        {k:'Abertura',v:'f/8 – f/16 (DOF mínima)'},
+        {k:'Foco',v:'Manual + focus stacking'},
+        {k:'Velocidade',v:'Alta ou flash (o tremor é amplificado)'},
+        {k:'Apoio',v:'Tripé / trilho de foco'},
+      ],
+      composition:['Espaço Negativo','Regra dos Terços','Simetria & Reflexo','Proporção Áurea (Phi)'],
+      light:'Luz difusa (difusor no flash) evita reflexos e sombras duras. A luz lateral revela textura. De manhã cedo os insetos estão lentos e há menos vento.',
+      dos:['Foco manual (o AF "caça" no macro)','Focus stacking para nitidez total','Difusor no flash','Tripé ou trilho de foco','Disparar de manhã cedo, sem vento'],
+      donts:['Abrir muito (f/2.8 → quase nada em foco)','Confiar no autofoco','Disparar com vento','Flash direto sem difusão','Fundo atravancado'],
+      edit:{ intro:'Nitidez no plano focado, fundo limpo e suave, cor e textura do sujeito.',
+        steps:[
+          {idea:'Nitidez seletiva no sujeito', rr:'Sharpening + Structure só no plano nítido (máscara).', dt:'«diffuse or sharpen» / «sharpen» com máscara.', sg:'Detalhes → Nitidez; Pincel para localizar.'},
+          {idea:'Fundo limpo e suave', rr:'Máscara no fundo: Exposure/Saturation −; Vignette.', dt:'Máscara + «exposure» / «color balance rgb».', sg:'Seletivo no fundo (Saturação/Brilho −); Vinheta.'},
+          {idea:'Cor e textura do sujeito', rr:'Vibrance; Clarity/Structure no sujeito.', dt:'«velvia» + «local contrast».', sg:'Saturação leve; Estrutura local.'},
+        ] } },
+    { id:'vida-selvagem', name:'Vida Selvagem', icon:'🦅',
+      blurb:'Teleobjetiva, velocidade alta, foco no olho e paciência.',
+      settings:[
+        {k:'Modo',v:'Tv/S ou M + Auto-ISO'},
+        {k:'Velocidade',v:'≥ 1/1000 (aves em voo ≥ 1/2000)'},
+        {k:'Abertura',v:'Máxima (f/4 – f/6.3)'},
+        {k:'Foco',v:'AF contínuo + tracking / olho-animal'},
+        {k:'Disparo',v:'Rajada; teleobjetiva'},
+      ],
+      composition:['Espaço Negativo','Regra dos Terços','Diagonal Principal','Enquadramento Natural'],
+      light:'Hora dourada com a luz por trás de ti (frontal no animal). Contraluz para silhuetas. Mantém-te ao nível dos olhos do animal.',
+      dos:['Velocidade alta para congelar','AF contínuo + rajada no pico da ação','Apoiar (monopé) a teleobjetiva','Ficar ao nível dos olhos do animal','Paciência e distância de respeito'],
+      donts:['Velocidade baixa (tudo tremido)','Aproximar-te ou molestar o animal','Foco único estático num sujeito a mover-se','Cortar o espaço de movimento à frente','Flash em animais selvagens'],
+      edit:{ intro:'Destacar o animal, olho nítido, fundo desfocado e cor natural.',
+        steps:[
+          {idea:'Sujeito em destaque (dodge + nitidez)', rr:'Máscara AI «subject»: Exposure +, Sharpening, Clarity; fundo Exposure −.', dt:'Máscara («exposure» / «sharpen»).', sg:'Seletivo/Pincel no animal; Vinheta.'},
+          {idea:'Olho nítido e com vida', rr:'Máscara Brush no olho: Clarity/Sharpening +.', dt:'Máscara desenhada + «sharpen».', sg:'Pincel: Estrutura/Exposição no olho.'},
+          {idea:'Ruído + cor natural', rr:'Noise Reduction; Vibrance comedida.', dt:'«denoise (profiled)»; «velvia» leve.', sg:'Não exagerar; Saturação leve.'},
+        ] } },
+    { id:'desporto', name:'Desporto / Ação', icon:'⚽',
+      blurb:'Congelar (1/1000+) ou panning (1/30–1/125) a seguir o sujeito.',
+      settings:[
+        {k:'Modo',v:'Tv/S ou M + Auto-ISO'},
+        {k:'Congelar',v:'1/1000 – 1/2000'},
+        {k:'Panning',v:'1/30 – 1/125, a acompanhar o sujeito'},
+        {k:'Abertura',v:'f/2.8 – f/4'},
+        {k:'Foco',v:'AF contínuo + zona; rajada'},
+      ],
+      composition:['Diagonal Principal','Espaço Negativo','Regra dos Terços','Linhas Convergentes'],
+      light:'Exterior de dia é ideal. Interior → ISO alto + abertura máxima. Conhece a modalidade para antecipar o pico da ação.',
+      dos:['AF contínuo + tracking','Rajada no pico da ação','Pré-focar no ponto onde a ação vai acontecer','Panning para dar sensação de velocidade','Deixar espaço na direção do movimento'],
+      donts:['Velocidade baixa ao tentar congelar','Foco único (single AF)','Disparo único (perde o instante)','Abertura fechada com pouca luz (tremido)','Encher tanto o enquadramento que cortas o movimento'],
+      edit:{ intro:'Energia e clareza: atleta nítido, cores vivas e recortes dinâmicos.',
+        steps:[
+          {idea:'Punch e clareza no atleta', rr:'Clarity/Structure; Contrast; Sharpening com máscara.', dt:'«local contrast» + «contrast equalizer».', sg:'Estrutura + Contraste; Nitidez.'},
+          {idea:'Cores vivas (equipa, relva)', rr:'Vibrance + HSL por cor.', dt:'«velvia» / «color zones».', sg:'Saturação/«Ambiente»; Seletivo.'},
+          {idea:'Ruído (interior) + recorte dinâmico', rr:'Noise Reduction; crop diagonal.', dt:'«denoise (profiled)»; «crop».', sg:'Recortar para reforçar o movimento.'},
+        ] } },
+    { id:'viagem', name:'Viagem', icon:'🧳',
+      blurb:'Versátil e leve: sentido de lugar, do geral ao detalhe.',
+      settings:[
+        {k:'Modo',v:'Av f/8 versátil, ou Auto-ISO'},
+        {k:'Lente',v:'Zoom versátil (18–135 / 24–70)'},
+        {k:'Ficheiro',v:'RAW; cartões e baterias extra'},
+        {k:'Horário',v:'Cedo (luz boa, sem multidões)'},
+      ],
+      composition:['Enquadramento Natural','Regra dos Terços','Linhas Convergentes','Curva em S'],
+      light:'Hora dourada e azul. Cedo evita multidões e a luz dura do meio-dia. Planeia o horário dos locais.',
+      dos:['Misturar planos: geral, médio e detalhe','Incluir pessoas para dar escala e história','Acordar cedo (luz + sem gente)','Proteger e limpar o equipamento','Fazer backups dos cartões'],
+      donts:['Repetir só os postais clichés','Carregar equipamento a mais','Fotografar pessoas sem respeito/permissão','Esquecer baterias e cartões','Fotografar tudo ao meio-dia'],
+      edit:{ intro:'Cor rica e fiel ao local, com um look coerente entre as fotos da viagem.',
+        steps:[
+          {idea:'Look coerente (preset / copiar definições)', rr:'Cria um Preset e aplica à pasta/lote.', dt:'Guarda um «style» e aplica em lote.', sg:'«Copiar/Colar look» entre fotos (QR).'},
+          {idea:'Cor e luz do local', rr:'WB criativa (quente ao pôr do sol); Vibrance; Dehaze.', dt:'«white balance» + «color balance rgb» + «haze removal».', sg:'Balanço de Brancos; «Ambiente»; Saturação.'},
+          {idea:'Endireitar e corrigir perspetiva (arquitetura)', rr:'Transform: rotation / perspective.', dt:'«rotate and perspective».', sg:'Ferramenta «Perspetiva» + «Rodar».'},
+        ] } },
+    { id:'eventos', name:'Eventos / Concertos', icon:'🎤',
+      blurb:'Luz difícil e em mudança: abertura máxima, ISO alto, sem flash.',
+      settings:[
+        {k:'Modo',v:'M ou Av'},
+        {k:'Abertura',v:'Máxima (f/1.8 – f/2.8)'},
+        {k:'ISO',v:'Alto (3200–12800) — aceita ruído'},
+        {k:'Velocidade',v:'≥ 1/200 (os artistas mexem-se)'},
+        {k:'Foco',v:'AF contínuo; WB conforme palco (RAW)'},
+      ],
+      composition:['Regra dos Terços','Espaço Negativo','Diagonal Principal','Enquadramento Natural'],
+      light:'Usa as luzes do palco e espera os picos de luz branca/quente. Evita expor pelas luzes coloridas saturadas. O fumo e o contraluz criam atmosfera.',
+      dos:['Abertura máxima + ISO alto','Disparar nos picos de luz','AF contínuo','RAW (o WB de palco é difícil)','Antecipar os momentos e expressões'],
+      donts:['Flash (geralmente proibido e de alcance curto)','Velocidade baixa (artista tremido)','Sobre-expor as luzes coloridas','Bloquear a vista dos outros','Tripé em pé no meio do público'],
+      edit:{ intro:'Salvar luz de palco difícil, manter a atmosfera e controlar cor e ruído.',
+        steps:[
+          {idea:'Recuperar realces das luzes e abrir o artista', rr:'Highlights −, Shadows +; máscara «subject» Exposure +.', dt:'«tone equalizer» / «filmic rgb»; máscara.', sg:'Realces −, Sombras +; Seletivo no artista.'},
+          {idea:'Controlar cores de palco saturadas', rr:'HSL: baixa saturação/luminância da cor dominante; WB.', dt:'«color zones» / «color calibration».', sg:'Curvas por canal; Saturação − no Seletivo.'},
+          {idea:'Reduzir ruído (ISO muito alto)', rr:'Noise Reduction (luminância + cor).', dt:'«denoise (profiled)».', sg:'Evita puxar as sombras ao limite.'},
+        ] } },
+  ];
+
+  // ── Portrait illustrations (crop guide + poses + editorial tips) ──
+  function svgCropGuide() {
+    const g = '#34d399', r = '#f87171';
+    const line = (y, c, t, ok) =>
+      `<line x1="14" y1="${y}" x2="200" y2="${y}" stroke="${c}" stroke-width="2" stroke-dasharray="5 4"/>`
+      + `<text x="204" y="${y + 3.5}" fill="${c}" font-size="9" font-family="monospace">${ok ? '✓' : '✗'} ${t}</text>`;
+    return `<svg viewBox="0 0 360 336" width="100%" style="max-width:340px" role="img" aria-label="Onde cortar um retrato">
+      <g fill="#5b6478">
+        <circle cx="120" cy="44" r="22"/>
+        <rect x="112" y="64" width="16" height="12"/>
+        <path d="M92 78 Q120 70 148 78 L142 168 Q120 176 98 168 Z"/>
+      </g>
+      <g stroke="#5b6478" stroke-linecap="round" fill="none">
+        <line x1="98" y1="84" x2="84" y2="150" stroke-width="13"/>
+        <line x1="142" y1="84" x2="156" y2="150" stroke-width="13"/>
+        <line x1="110" y1="166" x2="104" y2="312" stroke-width="17"/>
+        <line x1="130" y1="166" x2="136" y2="312" stroke-width="17"/>
+      </g>
+      ${line(16, g, 'espaço p/ cabeça', 1)}
+      ${line(70, r, 'pescoço', 0)}
+      ${line(104, g, 'meio do peito', 1)}
+      ${line(138, r, 'cotovelos', 0)}
+      ${line(160, g, 'cintura', 1)}
+      ${line(188, r, 'pulsos / mãos', 0)}
+      ${line(238, g, 'meio da coxa', 1)}
+      ${line(266, r, 'joelhos', 0)}
+      ${line(312, r, 'tornozelos', 0)}
+    </svg>`;
+  }
+
+  function svgPoses() {
+    const C = '#a78bff';
+    const fig = d => `<svg viewBox="0 0 90 130" width="100%"><path d="${d}" fill="none" stroke="${C}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>__HEAD__</svg>`;
+    const head = (cx, cy) => `<circle cx="${cx}" cy="${cy}" r="10" fill="none" stroke="${C}" stroke-width="4"/>`;
+    const poses = [
+      { d:'M46 32 L45 78 M45 48 L34 66 M45 48 L58 62 M45 78 L38 116 M45 78 L56 100 L52 116', h:[46,22], cap:'Ângulo 3/4 · peso na perna de trás, ombros em ângulo' },
+      { d:'M46 34 L46 78 M46 50 L33 34 L40 20 M46 50 L58 64 L54 72 M46 78 L39 116 M46 78 L53 116', h:[46,24], cap:'Dá algo às mãos (cabelo, anca, bolso)' },
+      { d:'M48 32 C42 48 54 58 49 78 M47 48 L36 64 M51 50 L61 64 M49 78 L40 116 M49 78 L57 110 L54 116', h:[48,22], cap:'Curva em S · anca e ombros em sentidos opostos' },
+      { d:'M40 34 L54 78 M42 50 L34 66 M48 52 L70 60 M54 78 L47 116 M54 78 L60 104 L52 116 M74 12 L74 122', h:[40,24], cap:'Encostar / apoiar · postura relaxada' },
+    ];
+    return poses.map(p =>
+      `<div class="ph-pose">${fig(p.d).replace('__HEAD__', head(p.h[0], p.h[1]))}<div class="ph-pose-cap">${p.cap}</div></div>`
+    ).join('');
+  }
+
+  function portraitExtrasHTML() {
+    return `
+      <div class="ph-illus-block">
+        <div class="ph-illus-title">✂️ Onde cortar (e onde não)</div>
+        <div class="ph-illus">${svgCropGuide()}</div>
+        <div class="ph-illus-cap">Corta <strong>entre</strong> as articulações (verde). <strong>Nunca</strong> numa articulação (vermelho) — dá sensação de membro amputado. E deixa sempre espaço acima da cabeça.</div>
+      </div>
+      <div class="ph-illus-block">
+        <div class="ph-illus-title">🧍 Poses que funcionam</div>
+        <div class="ph-pose-grid">${svgPoses()}</div>
+      </div>
+      <div class="ph-illus-block">
+        <div class="ph-illus-title">😌 Olhar editorial / "cara de modelo"</div>
+        <ul class="ph-tip-list">
+          <li><strong>Sorri só com os olhos (smize):</strong> contrai ligeiramente as pálpebras inferiores em vez da boca.</li>
+          <li><strong>Sobrancelhas:</strong> levanta-as muito ligeiramente e relaxa — "abre" e desperta o olhar.</li>
+          <li><strong>Maxilar:</strong> ponta da língua atrás dos dentes de cima define a linha do queixo.</li>
+          <li><strong>Queixo:</strong> para a frente e ligeiramente para baixo (evita papada e o olhar "de cima").</li>
+          <li><strong>Respira:</strong> expira no momento do disparo — os ombros descem e a expressão relaxa.</li>
+        </ul>
+      </div>
+      <div class="ph-illus-block">
+        <div class="ph-illus-title">💡 Confirmar a melhor luz</div>
+        <ul class="ph-tip-list">
+          <li>Roda o sujeito devagar e observa os <strong>catchlights</strong> (reflexos) nos olhos — escolhe o ângulo com brilho vivo.</li>
+          <li>Procura uma sombra suave a descer pela face (padrão <strong>loop</strong> ou <strong>Rembrandt</strong>) — dá volume.</li>
+          <li>Sol a pino faz <strong>olhos-de-guaxinim</strong> → muda para sombra aberta, junto a uma janela a 45°, ou hora dourada.</li>
+        </ul>
+      </div>`;
+  }
+
+  // ── Scenario + technique UI ───────────────────────────────────────
+  function scnCaptureHTML(scn) {
+    const kv = scn.settings.map(s => `<div class="ph-kv"><span class="ph-kv-k">${s.k}</span><span class="ph-kv-v">${s.v}</span></div>`).join('');
+    const comps = scn.composition.map(name => {
+      const known = COMPOSITIONS.some(c => c.name === name);
+      return `<button class="ph-chip${known ? ' ph-chip-link' : ''}"${known ? ` data-comp="${name}"` : ' disabled'}>${name}</button>`;
+    }).join('');
+    return `
+      <div class="ph-scn-blurb">${scn.blurb}</div>
+      <section class="ph-scn-sec"><h4>⚙️ Definições</h4><div class="ph-kv-grid">${kv}</div></section>
+      <section class="ph-scn-sec"><h4>🎯 Composição</h4><div class="ph-chips">${comps}</div></section>
+      <section class="ph-scn-sec"><h4>💡 Luz</h4><div class="ph-light-box">${scn.light}</div></section>
+      <div class="ph-scn-cols">
+        <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${scn.dos.map(d => `<li>${d}</li>`).join('')}</ul></section>
+        <section class="ph-scn-sec"><h4>⛔ Não fazer</h4><ul class="ph-dont">${scn.donts.map(d => `<li>${d}</li>`).join('')}</ul></section>
+      </div>
+      ${scn.portrait ? portraitExtrasHTML() : ''}`;
+  }
+  function scnEditHTML(scn) {
+    return `<div class="ph-scn-blurb">${scn.edit.intro}</div>${scn.edit.steps.map(editStepHTML).join('')}
+      <div class="ph-edit-note">Aplica-se a ficheiros RAW. Vê o menu <strong>🎨 Técnicas de Edição</strong> para o detalhe de cada técnica.</div>`;
+  }
+
+  function _bindModalClose(modal) {
+    const close = () => { modal.hidden = true; document.removeEventListener('keydown', esc); };
+    function esc(e) { if (e.key === 'Escape') close(); }
+    modal.querySelector('.ph-modal-close').addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', esc);
+  }
+
+  function openScenarioModal(scn) {
+    let modal = document.getElementById('ph-scn-modal');
+    if (!modal) { modal = document.createElement('div'); modal.id = 'ph-scn-modal'; modal.className = 'ph-modal-overlay'; document.body.appendChild(modal); }
+    modal.innerHTML = `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${scn.name}">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">${scn.icon} ${scn.name}</span>
+        <button class="ph-modal-close" aria-label="Fechar">✕</button>
+      </div>
+      <div class="ph-scn-tabs">
+        <button class="ph-tab active" data-tab="cap">📷 Captura</button>
+        <button class="ph-tab" data-tab="edit">✏️ Edição</button>
+      </div>
+      <div class="ph-scn-modal-body">
+        <div class="ph-tabpane" data-pane="cap">${scnCaptureHTML(scn)}</div>
+        <div class="ph-tabpane" data-pane="edit" hidden>${scnEditHTML(scn)}</div>
+      </div>
+    </div>`;
+    modal.hidden = false;
+    _bindModalClose(modal);
+    modal.querySelectorAll('.ph-tab').forEach(tab => tab.addEventListener('click', () => {
+      modal.querySelectorAll('.ph-tab').forEach(x => x.classList.toggle('active', x === tab));
+      modal.querySelectorAll('.ph-tabpane').forEach(p => { p.hidden = p.dataset.pane !== tab.dataset.tab; });
+      modal.querySelector('.ph-scn-modal-body').scrollTop = 0;
+    }));
+    modal.querySelectorAll('.ph-chip-link').forEach(ch => ch.addEventListener('click', () => {
+      const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
+      if (comp) openCompModal(comp);
+    }));
+  }
+
+  function openTechModal(t) {
+    let modal = document.getElementById('ph-tech-modal');
+    if (!modal) { modal = document.createElement('div'); modal.id = 'ph-tech-modal'; modal.className = 'ph-modal-overlay'; document.body.appendChild(modal); }
+    modal.innerHTML = `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">${t.icon} ${t.name}</span>
+        <button class="ph-modal-close" aria-label="Fechar">✕</button>
+      </div>
+      <div class="ph-scn-modal-body">
+        <div class="ph-light-box">${t.idea}</div>
+        ${swRowsHTML(t)}
+      </div>
+    </div>`;
+    modal.hidden = false;
+    _bindModalClose(modal);
+  }
+
+  function buildScenarios(root) {
+    root.innerHTML = `
+      <div class="ph-section-title">🎯 Cheat Sheet por Cenário</div>
+      <p class="ph-section-sub">Escolhe o tipo de fotografia para ver definições, composição, luz, o que fazer/evitar e como editar.</p>
+      <div class="ph-scn-grid" id="ph-scn-grid"></div>`;
+    const grid = root.querySelector('#ph-scn-grid');
+    SCENARIOS.forEach(scn => {
+      const card = document.createElement('button');
+      card.className = 'ph-scn-card';
+      card.innerHTML = `<span class="ph-scn-ico">${scn.icon}</span><span class="ph-scn-name">${scn.name}</span><span class="ph-scn-blurb-sm">${scn.blurb}</span>`;
+      card.addEventListener('click', () => openScenarioModal(scn));
+      grid.appendChild(card);
+    });
+  }
+
+  function buildEditTechniques(root) {
+    root.innerHTML = `
+      <div class="ph-section-title">🎨 Técnicas de Edição</div>
+      <p class="ph-section-sub">Conceitos de pós-processamento e como aplicá-los em RapidRAW, darktable e Snapseed.</p>
+      <div class="ph-scn-grid" id="ph-edit-grid"></div>`;
+    const grid = root.querySelector('#ph-edit-grid');
+    EDIT_TECHNIQUES.forEach(t => {
+      const card = document.createElement('button');
+      card.className = 'ph-scn-card';
+      card.innerHTML = `<span class="ph-scn-ico">${t.icon}</span><span class="ph-scn-name">${t.name}</span><span class="ph-scn-blurb-sm">${t.idea}</span>`;
+      card.addEventListener('click', () => openTechModal(t));
+      grid.appendChild(card);
+    });
+  }
+
   // ── Main ──────────────────────────────────────────────────────────
   function show() {
     const view = document.getElementById('view-photography');
@@ -804,15 +1260,27 @@ const PhotographyPage = (function () {
         <div class="view-inner">
           <div class="page-header">
             <h1 class="page-title">📸 Fotografia</h1>
-            <p class="page-subtitle">Composições, roda de cores, calculadoras e referências técnicas · Canon M50 Mark II (APS-C 1.6×)</p>
+            <p class="page-subtitle">Cheat sheet de captura e edição, composições, roda de cores e calculadoras · Canon M50 Mark II (APS-C 1.6×)</p>
           </div>
           <div id="ph-comp-section" style="margin-bottom:2rem"></div>
+          <div id="ph-scn-section" style="margin-bottom:2rem"></div>
+          <div id="ph-edit-section" style="margin-bottom:2rem"></div>
           <div id="ph-cw-section" style="margin-bottom:2rem"></div>
           <div class="ph-grid" id="ph-grid"></div>
         </div>`;
 
       const compSection = view.querySelector('#ph-comp-section');
       buildComposition(compSection);
+
+      const scnBox = document.createElement('div');
+      scnBox.className = 'ph-section-box';
+      view.querySelector('#ph-scn-section').appendChild(scnBox);
+      buildScenarios(scnBox);
+
+      const editBox = document.createElement('div');
+      editBox.className = 'ph-section-box';
+      view.querySelector('#ph-edit-section').appendChild(editBox);
+      buildEditTechniques(editBox);
 
       const cwSection = view.querySelector('#ph-cw-section');
       const cwWrapper = document.createElement('div');

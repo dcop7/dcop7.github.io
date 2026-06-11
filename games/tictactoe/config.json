@@ -1,4 +1,0 @@
-{
-  "_comment": "randomChance = probability the AI plays a random move instead of the optimal one. Higher = easier.",
-  "randomChance": { "easy": 0.8, "medium": 0.35, "hard": 0 }
-}

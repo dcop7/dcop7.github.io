@@ -11,10 +11,13 @@ const SkyHopperGame = (function () {
   const _has = typeof GameData !== 'undefined';
   const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
 
+  /* Rebalanced so Fácil is genuinely forgiving: floatier control, wider gaps,
+     slower spawn, gentle speed-ramp with a low cap, and no death on the ceiling
+     (handled in update). ramp = speed gained per point; maxSpeed = ramp cap. */
   const DIFFS = {
-    easy:   { speed: 2.4, gravity: 0.42, jumpForce: -8.5,  gapMin: 145, gapMax: 210, pipeInterval: 130 },
-    medium: { speed: 3.2, gravity: 0.55, jumpForce: -9.5,  gapMin: 110, gapMax: 180, pipeInterval: 105 },
-    hard:   { speed: 4.2, gravity: 0.68, jumpForce: -10.5, gapMin: 75,  gapMax: 120, pipeInterval: 80  },
+    easy:   { speed: 2.0, gravity: 0.34, jumpForce: -7.6,  gapMin: 175, gapMax: 235, pipeInterval: 150, ramp: 0.004, maxSpeed: 5 },
+    medium: { speed: 2.8, gravity: 0.48, jumpForce: -8.8,  gapMin: 130, gapMax: 195, pipeInterval: 120, ramp: 0.006, maxSpeed: 8 },
+    hard:   { speed: 4.2, gravity: 0.68, jumpForce: -10.5, gapMin: 75,  gapMax: 120, pipeInterval: 80,  ramp: 0.010, maxSpeed: 12 },
   };
 
   function injectCSS() {
@@ -115,6 +118,7 @@ const SkyHopperGame = (function () {
         w: 60+Math.random()*80, sp: 0.3+Math.random()*0.4, a: 0.06+Math.random()*0.1
       })),
       particles: [],
+      startGrace: 108,   /* ~1.8s hover + 3·2·1 countdown before obstacles appear */
       highScore: +localStorage.getItem('sh-best') || 0
     };
   }
@@ -125,7 +129,7 @@ const SkyHopperGame = (function () {
   }
 
   function doJump() {
-    if (!G.alive) return;
+    if (!G.alive || G.startGrace > 0) return;   /* ignore taps during countdown */
     G.pvy = G.jumpForce;
     spawnJumpParticles();
   }
@@ -142,9 +146,20 @@ const SkyHopperGame = (function () {
   function update(dt) {
     G.frame++;
 
-    G.speed = DIFFS[G.diff].speed + G.score * 0.008;
-    const maxSpeed = G.diff === 'hard' ? 12 : G.diff === 'medium' ? 9 : 7;
-    if (G.speed > maxSpeed) G.speed = maxSpeed;
+    /* Initial grace: the bird hovers at centre while a 3·2·1 countdown plays,
+       no gravity and no obstacles, so the player can get oriented. */
+    if (G.startGrace > 0) {
+      G.startGrace -= dt;
+      G.py = H * 0.5 + Math.sin(G.frame * 0.08) * 6;   /* gentle bob */
+      G.pvy = 0;
+      G.trail.unshift({ x: G.px, y: G.py, a: 1 });
+      if (G.trail.length > 18) G.trail.pop();
+      return;
+    }
+
+    const d = DIFFS[G.diff];
+    G.speed = d.speed + G.score * d.ramp;
+    if (G.speed > d.maxSpeed) G.speed = d.maxSpeed;
 
     G.pvy += G.gravity * dt;
     G.py += G.pvy * dt;
@@ -153,7 +168,9 @@ const SkyHopperGame = (function () {
     G.trail.unshift({ x: G.px, y: G.py, a: 1 });
     if (G.trail.length > 18) G.trail.pop();
 
-    if (G.py - G.pRadius < 0 || G.py + G.pRadius > H) { die(); return; }
+    /* Touching the ceiling no longer kills — clamp instead; only the floor is fatal. */
+    if (G.py - G.pRadius < 0) { G.py = G.pRadius; if (G.pvy < 0) G.pvy = 0; }
+    if (G.py + G.pRadius > H) { die(); return; }
 
     G.bgStars.forEach(s => { s.x -= s.sp * dt * G.speed * 0.15; if (s.x < 0) { s.x = W; s.y = Math.random()*H; } });
     G.bgClouds.forEach(c => { c.x -= c.sp * dt * G.speed * 0.25; if (c.x + c.w < 0) { c.x = W + c.w; c.y = 40+Math.random()*(H-80); } });
@@ -198,6 +215,9 @@ const SkyHopperGame = (function () {
     G.alive = false;
     spawnDeathParticles();
     if (G.score > G.highScore) { localStorage.setItem('sh-best', G.score); G.highScore = G.score; }
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('sky-hopper', { score: G.score, mode: G.diff }); } catch (e) {}
+    }
   }
 
   function spawnJumpParticles() {
@@ -233,6 +253,22 @@ const SkyHopperGame = (function () {
     drawTrail();
     if (G.alive) drawPlayer();
     drawParticles();
+    if (G.alive && G.startGrace > 0) drawCountdown();
+  }
+
+  function drawCountdown() {
+    const n = Math.ceil(G.startGrace / 36);   /* 3 → 2 → 1 */
+    cx.save();
+    cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    glow('#00ffdd', 18);
+    cx.fillStyle = '#00ffdd';
+    cx.font = '900 4rem monospace';
+    cx.fillText(String(Math.max(1, n)), W / 2, H * 0.32);
+    noGlow();
+    cx.fillStyle = 'rgba(255,255,255,.75)';
+    cx.font = '600 .9rem sans-serif';
+    cx.fillText('Toca para voar', W / 2, H * 0.32 + 56);
+    cx.restore();
   }
 
   function glow(color, blur) { cx.shadowColor = color; cx.shadowBlur = blur; }
@@ -353,6 +389,14 @@ const SkyHopperGame = (function () {
     });
     apply();
     document.addEventListener('langchange', apply);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('sky-hopper', [
+      { id: 'sh.10', name: 'Voador',        icon: '🌟', desc: 'Faz 10 pontos no Sky Hopper.', test: c => c.gameId === 'sky-hopper' && c.result.score >= 10 },
+      { id: 'sh.25', name: 'Ás dos Céus',   icon: '🚀', desc: 'Faz 25 pontos no Sky Hopper.', test: c => c.gameId === 'sky-hopper' && c.result.score >= 25 },
+      { id: 'sh.50', name: 'Lenda Voadora', icon: '👑', desc: 'Faz 50 pontos no Sky Hopper.', test: c => c.gameId === 'sky-hopper' && c.result.score >= 50 },
+    ]);
   }
 
   return { init };

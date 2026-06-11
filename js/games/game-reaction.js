@@ -66,8 +66,12 @@ const ReactionGame = (function () {
       const [a, b, c, e] = _ratings;
       hint.textContent = ms < a ? t('r1') : ms < b ? t('r2') : ms < c ? t('r3') : ms < e ? t('r4') : t('r5');
 
+      let allTimeBest = null;
+      if (typeof GameProgress !== 'undefined') {
+        try { GameProgress.record('reaction', { score: ms, lowerIsBetter: true }); allTimeBest = GameProgress.bestScore('reaction'); } catch (err) {}
+      }
       const avg = Math.round(results.reduce((s, x) => s + x, 0) / results.length);
-      const best = Math.min(...results);
+      const best = allTimeBest != null ? allTimeBest : Math.min(...results);
       root.querySelector('#react-stats').innerHTML = `
         <div class="react-stat-row">
           <span>${t('attempts')}: <strong>${results.length}</strong></span>
@@ -114,6 +118,13 @@ const ReactionGame = (function () {
       apply();
       document.addEventListener('langchange', apply);
     }
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('reaction', [
+      { id: 'react.fast',  name: 'Reflexos Rápidos', icon: '⚡', desc: 'Reage em menos de 250 ms.', test: c => c.gameId === 'reaction' && c.result.score < 250 },
+      { id: 'react.flash', name: 'Velocidade da Luz', icon: '🚀', desc: 'Reage em menos de 180 ms.', test: c => c.gameId === 'reaction' && c.result.score < 180 },
+    ]);
   }
 
   return { init };

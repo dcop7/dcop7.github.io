@@ -19,10 +19,19 @@ const Search = (function () {
   ];
 
   const GAMES = [
-    { label: 'Jogo da Forca',    id: 'games/hangman',     icon: '🪢', tags: ['forca','palavras','adivinhar','hangman'] },
-    { label: 'Corredor Infinito',id: 'games/runner',      icon: '🦊', tags: ['runner','correr','raposa','obstáculos'] },
-    { label: 'Campo de Minas',   id: 'games/minesweeper', icon: '💣', tags: ['minesweeper','minas','campo'] },
-    { label: 'Desarmar Bomba',   id: 'games/bomb',        icon: '💥', tags: ['bomba','desarmar','desafio'] },
+    { label: 'Jogo da Forca',    id: 'games/hangman',        icon: '🪢', tags: ['forca','palavras','adivinhar','hangman'] },
+    { label: 'Campo de Minas',   id: 'games/minesweeper',    icon: '💣', tags: ['minesweeper','minas','campo'] },
+    { label: 'Memória',          id: 'games/memory',         icon: '🃏', tags: ['memória','memory','pares','cartas'] },
+    { label: 'Palavra do Dia',   id: 'games/wordle',         icon: '📝', tags: ['wordle','palavra','dia','letras'] },
+    { label: 'Teste de Reação',  id: 'games/reaction',       icon: '⚡', tags: ['reação','reflexos','reaction'] },
+    { label: 'Xadrez',           id: 'games/chess',          icon: '♟️', tags: ['xadrez','chess','estratégia','tabuleiro'] },
+    { label: 'Batalha Naval',    id: 'games/battleship',     icon: '🚢', tags: ['batalha','naval','navios','battleship'] },
+    { label: 'Desarmar Bomba',   id: 'games/bomb',           icon: '💥', tags: ['bomba','desarmar','desafio'] },
+    { label: 'Gravity Lab',      id: 'games/gravity-lab',    icon: '🔬', tags: ['gravidade','puzzle','gravity'] },
+    { label: 'Chain Reaction',   id: 'games/chain-reaction', icon: '⚙️', tags: ['reação','cadeia','puzzle','espelhos'] },
+    { label: 'Bridge Builder',   id: 'games/bridge-builder', icon: '🌉', tags: ['ponte','construir','física','bridge'] },
+    { label: 'Sky Hopper',       id: 'games/sky-hopper',     icon: '🌟', tags: ['voar','arcade','obstáculos','flappy'] },
+    { label: 'Neon Space Shooter', id: 'games/neon-shooter', icon: '🛸', tags: ['nave','shooter','espaço','arcade'] },
   ];
 
   function buildIndex() {

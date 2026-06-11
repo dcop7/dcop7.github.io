@@ -1,4 +1,0 @@
-{
-  "pt": { "points": "Pontos", "level": "Nível", "lives": "Vidas", "pause": "⏸ Pausa", "resume": "▶ Continuar", "instr": "Move com o rato / toque · Dispara sozinho · Teclas A/D ou ← →", "play": "🚀 Jogar", "pausedBig": "⏸ PAUSADO", "resumeHint": "Clica em Continuar para retomar", "gameOver": "💥 Fim de Jogo!", "over": "Pontos: {score} · Nível: {level} · Recorde: {best}", "playAgain": "🔄 Jogar de novo" },
-  "en": { "points": "Score", "level": "Level", "lives": "Lives", "pause": "⏸ Pause", "resume": "▶ Resume", "instr": "Move with mouse / touch · Auto-fires · Keys A/D or ← →", "play": "🚀 Play", "pausedBig": "⏸ PAUSED", "resumeHint": "Click Resume to continue", "gameOver": "💥 Game Over!", "over": "Score: {score} · Level: {level} · Best: {best}", "playAgain": "🔄 Play again" }
-}

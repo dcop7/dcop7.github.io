@@ -388,6 +388,9 @@ const NeonShooterGame = (function () {
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', resize);
     if (G.score > G.hiScore) { localStorage.setItem('ns-hi', G.score); G.hiScore = G.score; }
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('neon-shooter', { score: G.score, meta: { wave: G.wave } }); } catch (e) {}
+    }
     const hi = localStorage.getItem('ns-hi') || 0;
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:2.5rem">💥</div>
@@ -558,6 +561,13 @@ const NeonShooterGame = (function () {
     });
     apply();
     document.addEventListener('langchange', apply);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('neon-shooter', [
+      { id: 'ns.1k', name: 'Artilheiro',  icon: '🛸', desc: 'Faz 1000 pontos no Neon Shooter.', test: c => c.gameId === 'neon-shooter' && c.result.score >= 1000 },
+      { id: 'ns.5k', name: 'Ás Espacial', icon: '🌌', desc: 'Faz 5000 pontos no Neon Shooter.', test: c => c.gameId === 'neon-shooter' && c.result.score >= 5000 },
+    ]);
   }
 
   return { init: init2 };

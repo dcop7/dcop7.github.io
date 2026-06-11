@@ -203,9 +203,15 @@
       gameOver = true; renderKeyboard();
       showMsg(_t('win'), 'win');
       celebrateWin();
+      if (typeof GameProgress !== 'undefined') {
+        try { GameProgress.record('hangman', { won: true, mode: String(currentAge), meta: { perfect: wrongCount === 0 } }); } catch (e) {}
+      }
     } else if (wrongCount >= MAX_WRONG) {
       gameOver = true; renderWord(true); renderKeyboard();
       showMsg(_t('loss').replace('{word}', currentWord), 'lose');
+      if (typeof GameProgress !== 'undefined') {
+        try { GameProgress.record('hangman', { won: false, mode: String(currentAge) }); } catch (e) {}
+      }
     }
   }
 
@@ -282,6 +288,13 @@
       _recentWords = [];   /* reset avoid-list so the new age pool is fully fresh */
       newGame();
     });
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('hangman', [
+      { id: 'hm.win',     name: 'Enforcado Salvo', icon: '🪢', desc: 'Acerta uma palavra na Forca.',      test: c => c.gameId === 'hangman' && c.result.won === true },
+      { id: 'hm.perfect', name: 'Sem Erros',       icon: '✨', desc: 'Acerta sem nenhuma letra errada.', test: c => c.gameId === 'hangman' && c.result.won === true && c.result.perfect === true },
+    ]);
   }
 
   /* Render immediately with the embedded fallback, then swap in the full

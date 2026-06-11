@@ -324,6 +324,9 @@ const BridgeBuilderGame = (function () {
     window.removeEventListener('resize', resize);
     const next = G.idx + 1;
     if (next > +localStorage.getItem('bb-lvl')||0) localStorage.setItem('bb-lvl', next);
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('bridge-builder', { won: true, mode: 'lvl' + next, meta: { allDone: next >= LEVELS.length } }); } catch (e) {}
+    }
     root.innerHTML = `<div class="bb-host"><div class="bb-overlay">
       <div style="font-size:2.8rem">✅</div>
       <div class="bb-title" style="font-size:1.6rem">${t('bridgeHolds')}</div>
@@ -480,6 +483,13 @@ const BridgeBuilderGame = (function () {
     });
     apply();
     document.addEventListener('langchange', apply);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('bridge-builder', [
+      { id: 'bb.win', name: 'Engenheiro',       icon: '🌉', desc: 'Completa um nível do Bridge Builder.', test: c => c.gameId === 'bridge-builder' && c.result.won === true },
+      { id: 'bb.all', name: 'Construtor Mestre', icon: '🏗️', desc: 'Completa todos os níveis.',          test: c => c.gameId === 'bridge-builder' && c.result.meta && c.result.meta.allDone === true },
+    ]);
   }
 
   return { init };

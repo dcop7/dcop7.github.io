@@ -330,6 +330,9 @@ const BombGame = (function () {
 
   function win() {
     clearInterval(timerInt); gameState = 'won';
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('bomb', { won: true, score: timeLeft, mode: diffKeyCur }); } catch (e) {}
+    }
     container.querySelector('#bomb-hud').style.display = 'none';
     const stEl = container.querySelector('#bomb-stage');
     if (stEl) stEl.innerHTML = `
@@ -346,6 +349,9 @@ const BombGame = (function () {
 
   function explode() {
     clearInterval(timerInt); gameState = 'lost';
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('bomb', { won: false, mode: diffKeyCur }); } catch (e) {}
+    }
     container.querySelector('#bomb-hud').style.display = 'none';
     const stEl = container.querySelector('#bomb-stage');
     if (stEl) stEl.innerHTML = `
@@ -356,6 +362,13 @@ const BombGame = (function () {
         <button class="hf-new-btn" id="bomb-again">${t('tryAgain')}</button>
       </div>`;
     container.querySelector('#bomb-again').addEventListener('click', renderMenu);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('bomb', [
+      { id: 'bomb.win', name: 'Esquadrão Anti-Bomba', icon: '💣', desc: 'Desarma uma bomba.',                   test: c => c.gameId === 'bomb' && c.result.won === true },
+      { id: 'bomb.ext', name: 'Nervos de Aço',        icon: '🧨', desc: 'Desarma no nível Extremo.',            test: c => c.gameId === 'bomb' && c.result.won === true && c.result.mode === 'extreme' },
+    ]);
   }
 
   return { init };

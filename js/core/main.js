@@ -608,17 +608,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── FAVORITE GAMES WIDGET ─────────────────────────────────────────
 const ALL_GAMES = [
-  { id:'hangman',    key:'game.hangman',    icon:'🪢' },
-  { id:'minesweeper',key:'game.minesweeper',icon:'💣' },
-  { id:'bomb',       key:'game.bomb',       icon:'💥' },
-  { id:'memory',     key:'game.memory',     icon:'🃏' },
-  { id:'tictactoe',  key:'game.tictactoe',  icon:'⭕' },
-  { id:'wordle',     key:'game.wordle',     icon:'📝' },
-  { id:'shooting',   key:'game.shooting',   icon:'🚀' },
-  { id:'reaction',   key:'game.reaction',   icon:'⚡' },
-  { id:'neon',       key:'game.neon',       icon:'✨' },
+  { id:'hangman',     key:'game.hangman',     icon:'🪢' },
+  { id:'minesweeper', key:'game.minesweeper', icon:'💣' },
+  { id:'memory',      key:'game.memory',      icon:'🃏' },
+  { id:'wordle',      key:'game.wordle',      icon:'📝' },
+  { id:'reaction',    key:'game.reaction',    icon:'⚡' },
+  { id:'chess',       key:'game.chess',       icon:'♟️' },
+  { id:'battleship',  key:'game.battleship',  icon:'🚢' },
+  { id:'bomb',        key:'game.bomb',        icon:'💥' },
+  { id:'gravity-lab', key:'game.gravity-lab', icon:'🔬' },
+  { id:'chain-reaction', key:'game.chain-reaction', icon:'⚙️' },
+  { id:'bridge-builder', key:'game.bridge-builder', icon:'🌉' },
+  { id:'sky-hopper',  key:'game.sky-hopper',  icon:'🌟' },
+  { id:'neon-shooter',key:'game.neon-shooter',icon:'🛸' },
 ];
-const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','shooting'];
+const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','chess'];
 
 function getFavGames() {
   try { return JSON.parse(localStorage.getItem('home-fav-games') || 'null') || DEFAULT_FAV_GAMES; }

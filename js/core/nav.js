@@ -4,15 +4,19 @@ const Nav = (function () {
   const _pinned = false;
 
   const GAME_LIST = [
-    { id: 'hangman',    key: 'game.hangman',    icon: '🪢' },
-    { id: 'minesweeper',key: 'game.minesweeper',icon: '💣' },
-    { id: 'bomb',       key: 'game.bomb',       icon: '💥' },
-    { id: 'memory',     key: 'game.memory',     icon: '🃏' },
-    { id: 'tictactoe',  key: 'game.tictactoe',  icon: '⭕' },
-    { id: 'wordle',     key: 'game.wordle',     icon: '📝' },
-    { id: 'shooting',   key: 'game.shooting',   icon: '🚀' },
-    { id: 'reaction',   key: 'game.reaction',   icon: '⚡' },
-    { id: 'neon',       key: 'game.neon',       icon: '✨' },
+    { id: 'hangman',     key: 'game.hangman',     icon: '🪢' },
+    { id: 'minesweeper', key: 'game.minesweeper', icon: '💣' },
+    { id: 'memory',      key: 'game.memory',      icon: '🃏' },
+    { id: 'wordle',      key: 'game.wordle',      icon: '📝' },
+    { id: 'reaction',    key: 'game.reaction',    icon: '⚡' },
+    { id: 'chess',       key: 'game.chess',       icon: '♟️' },
+    { id: 'battleship',  key: 'game.battleship',  icon: '🚢' },
+    { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
+    { id: 'gravity-lab', key: 'game.gravity-lab', icon: '🔬' },
+    { id: 'chain-reaction', key: 'game.chain-reaction', icon: '⚙️' },
+    { id: 'bridge-builder', key: 'game.bridge-builder', icon: '🌉' },
+    { id: 'sky-hopper',  key: 'game.sky-hopper',  icon: '🌟' },
+    { id: 'neon-shooter',key: 'game.neon-shooter',icon: '🛸' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 

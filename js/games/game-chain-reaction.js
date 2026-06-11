@@ -311,6 +311,9 @@ const ChainReactionGame = (function () {
     G.state = 'won';
     const next = G.idx + 1;
     if (next > +localStorage.getItem('cr-lvl')||0) localStorage.setItem('cr-lvl', next);
+    if (typeof GameProgress !== 'undefined') {
+      try { GameProgress.record('chain-reaction', { won: true, mode: 'lvl' + next, meta: { allDone: next >= LEVELS.length } }); } catch (e) {}
+    }
     root.innerHTML = `<div class="cr-host"><div class="cr-overlay">
       <div style="font-size:2.8rem">✅</div>
       <div class="cr-title" style="font-size:1.6rem">${t('reactComplete')}</div>
@@ -457,6 +460,13 @@ const ChainReactionGame = (function () {
     });
     apply();
     document.addEventListener('langchange', apply);
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('chain-reaction', [
+      { id: 'cr.win', name: 'Reação',           icon: '⚙️', desc: 'Completa um nível do Chain Reaction.', test: c => c.gameId === 'chain-reaction' && c.result.won === true },
+      { id: 'cr.all', name: 'Fábrica Dominada', icon: '🏭', desc: 'Completa todos os níveis.',          test: c => c.gameId === 'chain-reaction' && c.result.meta && c.result.meta.allDone === true },
+    ]);
   }
 
   return { init };

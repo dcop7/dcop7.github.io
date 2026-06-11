@@ -100,8 +100,15 @@ const MemoryGame = (function () {
             flipped = []; locked = false;
             if (matched.length === cards.length) {
               stopTimer();
+              let extra = '';
+              if (typeof GameProgress !== 'undefined') {
+                try {
+                  const res = GameProgress.record('memory', { won: true, score: moves, mode: pairs + 'p', lowerIsBetter: true });
+                  if (res.newBest) extra = ' 🏅 Melhor marca!';
+                } catch (e) {}
+              }
               const msgEl = root.querySelector('#mem-msg');
-              msgEl.innerHTML = `${t('win').replace('{moves}', moves).replace('{time}', timer)}<br><button class="hf-new-btn" style="margin-top:.6rem">${t('newGame')}</button>`;
+              msgEl.innerHTML = `${t('win').replace('{moves}', moves).replace('{time}', timer)}${extra}<br><button class="hf-new-btn" style="margin-top:.6rem">${t('newGame')}</button>`;
               msgEl.querySelector('button').addEventListener('click', () => render(pairs));
             }
           } else {
@@ -126,6 +133,13 @@ const MemoryGame = (function () {
       apply();
       document.addEventListener('langchange', apply);
     }
+  }
+
+  if (typeof GameProgress !== 'undefined') {
+    GameProgress.defineAchievements('memory', [
+      { id: 'mem.win', name: 'Boa Memória',  icon: '🃏', desc: 'Completa um jogo de Memória.', test: c => c.gameId === 'memory' && c.result.won === true },
+      { id: 'mem.big', name: 'Memória de Aço', icon: '🧠', desc: 'Completa o tabuleiro de 16+ pares.', test: c => c.gameId === 'memory' && c.result.won === true && parseInt(c.result.mode, 10) >= 16 },
+    ]);
   }
 
   return { init };

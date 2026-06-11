@@ -18,11 +18,14 @@ const I18n = (function () {
       'lp.all':'All','lp.title':'🔗 Useful Sites',
       'lp.count':'{n} sites in {m} categories',
       // Games
-      'game.hangman':'Hangman','game.runner':'Infinite Runner',
+      'game.hangman':'Hangman',
       'game.minesweeper':'Minesweeper','game.bomb':'Defuse Bomb',
-      'game.memory':'Memory Cards','game.tictactoe':'Tic-tac-toe',
-      'game.wordle':'Word of the Day','game.shooting':'Space Shooter',
-      'game.reaction':'Reaction Test','game.neon':'Neon Drawing',
+      'game.memory':'Memory Cards','game.chess':'Chess',
+      'game.battleship':'Battleship',
+      'game.wordle':'Word of the Day','game.neon-shooter':'Neon Space Shooter',
+      'game.reaction':'Reaction Test','game.sky-hopper':'Sky Hopper',
+      'game.gravity-lab':'Gravity Lab','game.chain-reaction':'Chain Reaction',
+      'game.bridge-builder':'Bridge Builder',
       // Header
       'hdr.search':'Search games, sites, sections…','hdr.lang':'PT',
       // Home widgets
@@ -146,11 +149,14 @@ const I18n = (function () {
       'lp.all':'Todos','lp.title':'🔗 Sites Úteis',
       'lp.count':'{n} sites em {m} categorias',
       // Games
-      'game.hangman':'Jogo da Forca','game.runner':'Corredor Infinito',
+      'game.hangman':'Jogo da Forca',
       'game.minesweeper':'Campo de Minas','game.bomb':'Desarmar Bomba',
-      'game.memory':'Memória','game.tictactoe':'Jogo do Galo',
-      'game.wordle':'Palavra do Dia','game.shooting':'Space Shooter',
-      'game.reaction':'Teste de Reação','game.neon':'Neon Drawing',
+      'game.memory':'Memória','game.chess':'Xadrez',
+      'game.battleship':'Batalha Naval',
+      'game.wordle':'Palavra do Dia','game.neon-shooter':'Neon Space Shooter',
+      'game.reaction':'Teste de Reação','game.sky-hopper':'Sky Hopper',
+      'game.gravity-lab':'Gravity Lab','game.chain-reaction':'Chain Reaction',
+      'game.bridge-builder':'Bridge Builder',
       // Header
       'hdr.search':'Pesquisar jogos, sites, secções…','hdr.lang':'EN',
       // Home widgets

@@ -6,48 +6,32 @@ const GameHost = (function () {
       desc: 'Adivinha a palavra letra a letra. Quantas tentativas precisas?' },
     { id: 'minesweeper',   name: 'Campo de Minas',       icon: '💣', color: '#10b981', group: 'Clássicos',
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
-    { id: 'bomb',          name: 'Desarmar Bomba',       icon: '💥', color: '#ef4444', group: 'Clássicos',
-      desc: '5–7 desafios, conta decrescente. Consegues desarmar a bomba a tempo?' },
     { id: 'memory',        name: 'Memória',              icon: '🃏', color: '#a855f7', group: 'Clássicos',
       desc: 'Encontra todos os pares de cartas. Até 32 pares!' },
     { id: 'wordle',        name: 'Palavra do Dia',       icon: '📝', color: '#10b981', group: 'Clássicos',
       desc: 'Descobre a palavra de 5 letras em 6 tentativas. Estilo Wordle!' },
-    { id: 'tictactoe',     name: 'Jogo do Galo',         icon: '⭕', color: '#f59e0b', group: 'Clássicos',
-      desc: 'O clássico X e O contra a IA. Consegues ganhar?' },
     { id: 'reaction',      name: 'Teste de Reação',      icon: '⚡', color: '#22d3ee', group: 'Clássicos',
       desc: 'Quanto tempo demoras a reagir? Testa os teus reflexos.' },
-    { id: 'shooting',      name: 'Space Shooter',        icon: '🚀', color: '#6366f1', group: 'Ação',
-      desc: 'Elimina ondas de inimigos! Move o rato, esquiva e destrói tudo.' },
-    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Ação',
-      desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
-    { id: 'sky-hopper',    name: 'Sky Hopper',           icon: '🌟', color: '#06b6d4', group: 'Ação',
-      desc: 'Toca para voar, desvia dos obstáculos e apanha orbes de energia!' },
-    { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee', group: 'Puzzle',
-      desc: 'Muda a direção da gravidade para guiar a bola até à saída. 8 níveis!' },
-    { id: 'chain-reaction',name: 'Chain Reaction',       icon: '⚙️', color: '#6366f1', group: 'Puzzle',
+    { id: 'chess',         name: 'Xadrez',               icon: '♟️', color: '#f59e0b', group: 'Tabuleiro & Estratégia',
+      desc: 'O rei dos jogos de estratégia. Enfrenta a IA em 3 níveis ou joga a 2.' },
+    { id: 'battleship',    name: 'Batalha Naval',        icon: '🚢', color: '#0ea5e9', group: 'Tabuleiro & Estratégia',
+      desc: 'Afunda a frota inimiga. IA cada vez mais esperta em 3 níveis.' },
+    { id: 'bomb',          name: 'Desarmar Bomba',       icon: '💥', color: '#ef4444', group: 'Puzzle & Lógica',
+      desc: '5–7 desafios, conta decrescente. Consegues desarmar a bomba a tempo?' },
+    { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee', group: 'Puzzle & Lógica',
+      desc: 'Muda a direção da gravidade para guiar a bola até à saída.' },
+    { id: 'chain-reaction',name: 'Chain Reaction',       icon: '⚙️', color: '#6366f1', group: 'Puzzle & Lógica',
       desc: 'Coloca peças no tabuleiro para criar reações em cadeia explosivas!' },
-    { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8', group: 'Puzzle',
+    { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8', group: 'Puzzle & Lógica',
       desc: 'Constrói pontes para os robôs atravessarem. Triângulos são a chave!' },
-    { id: 'escape-lab',    name: 'Math Escape Lab',      icon: '🧪', color: '#00cc70', group: 'Educativo',
-      desc: 'Foge do laboratório resolvendo puzzles matemáticos.' },
-    { id: 'cipher-grid',   name: 'Cipher Grid',          icon: '🔷', color: '#22d3ee', group: 'Educativo',
-      desc: 'Decifra padrões, sequências e grelhas misteriosas.' },
-    { id: 'robot-repair',  name: 'Robot Repair Lab',     icon: '🤖', color: '#7c3aed', group: 'Educativo',
-      desc: 'Repara robôs resolvendo puzzles de lógica.' },
-    { id: 'space-code',    name: 'Space Code Academy',   icon: '🛸', color: '#1d4ed8', group: 'Educativo',
-      desc: 'Decifra transmissões alienígenas com matemática espacial.' },
-    { id: 'math-detective',name: 'Math Detective',       icon: '🔍', color: '#b45309', group: 'Educativo',
-      desc: 'Resolve mistérios usando pistas matemáticas.' },
-    { id: 'treasure-vault',name: 'Treasure Vault',       icon: '🏺', color: '#d97706', group: 'Educativo',
-      desc: 'Abre cofres antigos com combinações matemáticas.' },
-    { id: 'cyber-maze',    name: 'Cyber Maze',           icon: '🌀', color: '#db2777', group: 'Educativo',
-      desc: 'Navega num labirinto cibernético resolvendo puzzles.' },
-    { id: 'neon',          name: 'Neon Drawing',         icon: '✨', color: '#a855f7', group: 'Criativo',
-      desc: 'Desenha com efeito neon brilhante. Arte digital!' },
+    { id: 'sky-hopper',    name: 'Sky Hopper',           icon: '🌟', color: '#06b6d4', group: 'Arcade',
+      desc: 'Toca para voar, desvia dos obstáculos e apanha orbes de energia!' },
+    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Arcade',
+      desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
   ];
 
-  const GROUP_ORDER = ['Clássicos', 'Ação', 'Puzzle', 'Educativo', 'Criativo'];
-  const GROUP_ICONS = { 'Clássicos': '🎲', 'Ação': '⚡', 'Puzzle': '🧩', 'Educativo': '📚', 'Criativo': '🎨' };
+  const GROUP_ORDER = ['Clássicos', 'Tabuleiro & Estratégia', 'Puzzle & Lógica', 'Arcade'];
+  const GROUP_ICONS = { 'Clássicos': '🎲', 'Tabuleiro & Estratégia': '♟️', 'Puzzle & Lógica': '🧩', 'Arcade': '⚡' };
 
   const registry = {
     hangman:        { initialized: true },
@@ -55,17 +39,9 @@ const GameHost = (function () {
     bomb:           { init: () => BombGame.init(document.getElementById('pane-bomb')),                 initialized: false },
     memory:         { init: () => MemoryGame.init(document.getElementById('pane-memory')),             initialized: false },
     wordle:         { init: () => WordleGame.init(document.getElementById('pane-wordle')),             initialized: false },
-    tictactoe:      { init: () => TicTacToeGame.init(document.getElementById('pane-tictactoe')),       initialized: false },
-    shooting:       { init: () => ShootingGame.init(document.getElementById('pane-shooting')),         initialized: false },
     reaction:       { init: () => ReactionGame.init(document.getElementById('pane-reaction')),         initialized: false },
-    neon:           { init: () => NeonGame.init(document.getElementById('pane-neon')),                 initialized: false },
-    'escape-lab':   { init: () => EscapeLabGame.init(document.getElementById('pane-escape-lab')),      initialized: false },
-    'cipher-grid':  { init: () => CipherGridGame.init(document.getElementById('pane-cipher-grid')),    initialized: false },
-    'robot-repair': { init: () => RobotRepairGame.init(document.getElementById('pane-robot-repair')),  initialized: false },
-    'space-code':   { init: () => SpaceCodeGame.init(document.getElementById('pane-space-code')),      initialized: false },
-    'math-detective':{ init: () => MathDetectiveGame.init(document.getElementById('pane-math-detective')), initialized: false },
-    'treasure-vault':{ init: () => TreasureVaultGame.init(document.getElementById('pane-treasure-vault')), initialized: false },
-    'cyber-maze':    { init: () => CyberMazeGame.init(document.getElementById('pane-cyber-maze')),       initialized: false },
+    chess:          { init: () => ChessGame.init(document.getElementById('pane-chess')),               initialized: false },
+    battleship:     { init: () => BattleshipGame.init(document.getElementById('pane-battleship')),     initialized: false },
     'neon-shooter':  { init: () => NeonShooterGame.init(document.getElementById('pane-neon-shooter')),   initialized: false },
     'sky-hopper':    { init: () => SkyHopperGame.init(document.getElementById('pane-sky-hopper')),       initialized: false },
     'gravity-lab':   { init: () => GravityLabGame.init(document.getElementById('pane-gravity-lab')),     initialized: false },
@@ -113,11 +89,33 @@ const GameHost = (function () {
       groups[g.group].push(g);
     });
 
+    const GP = (typeof GameProgress !== 'undefined') ? GameProgress : null;
+    if (GP) GP.registerIds(GAMES.map(g => g.id));
+
+    /* Daily challenge: a deterministic game-of-the-day from a daily-friendly pool */
+    const dailyPool = ['wordle', 'minesweeper', 'memory', 'bomb', 'reaction'].filter(id => GAMES.some(g => g.id === id));
+    let dailyGame = null, dailyDone = false;
+    if (dailyPool.length) {
+      const idx = GP ? Math.floor(GP.rng(GP.dailySeed('hub'))() * dailyPool.length) : 0;
+      dailyGame = GAMES.find(g => g.id === dailyPool[idx]);
+      dailyDone = GP ? GP.isDailyDone(dailyGame.id) : false;
+    }
+
     hub.innerHTML = `
       <div class="page-header">
         <h1 class="page-title">🎮 Jogos</h1>
         <p class="page-subtitle">Escolhe um jogo para começar a jogar</p>
       </div>
+      ${dailyGame ? `
+      <button class="gh-daily${dailyDone ? ' done' : ''}" id="gh-daily" data-game="${dailyGame.id}">
+        <div class="gh-daily-ico">${dailyGame.icon}</div>
+        <div class="gh-daily-body">
+          <div class="gh-daily-kicker">⭐ Desafio Diário${dailyDone ? ' · concluído ✓' : ''}</div>
+          <div class="gh-daily-name">${dailyGame.name}</div>
+          <div class="gh-daily-desc">${dailyGame.desc}</div>
+        </div>
+        <span class="gh-daily-go">Jogar →</span>
+      </button>` : ''}
       <div class="gh-settings-bar">
         <span class="gh-settings-lbl">Dificuldade</span>
         <div class="gh-diff-seg" id="gh-diff-seg">
@@ -125,17 +123,24 @@ const GameHost = (function () {
             `<button class="gh-diff-btn gh-diff-${d.id}${diff===d.id?' active':''}" data-diff="${d.id}">${d.dot} ${d.label}</button>`
           ).join('')}
         </div>
+        <span class="gh-bar-spacer"></span>
+        <input class="gh-search" id="gh-search" type="search" placeholder="🔍 Procurar…" aria-label="Procurar jogo">
+        <button class="gh-stats-btn" id="gh-stats" aria-label="Ver estatísticas e conquistas">
+          📊 <span>${GP ? GP.streak() : 0}🔥 · ${GP ? GP.achievementCount() : 0}🏅</span>
+        </button>
       </div>
+      <div id="gh-noresults" class="gh-noresults" hidden>Nenhum jogo encontrado.</div>
       ${GROUP_ORDER.filter(g => groups[g]).map(gName => `
-        <div class="games-group">
+        <div class="games-group" data-group>
           <div class="games-group-title">${GROUP_ICONS[gName]} ${gName}</div>
           <div class="games-hub-grid">
             ${groups[gName].map(g => `
-              <button class="game-hub-card" data-game="${g.id}">
+              <button class="game-hub-card" data-game="${g.id}" data-name="${g.name.toLowerCase()}">
                 <img class="game-hub-card-img" src="assets/games/${g.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
                 <div class="game-hub-card-icon">${g.icon}</div>
                 <div class="game-hub-card-name">${g.name}</div>
                 <div class="game-hub-card-desc">${g.desc}</div>
+                ${GP ? GP.badgesHTML(g.id) : ''}
               </button>`).join('')}
           </div>
         </div>`).join('')}`;
@@ -152,6 +157,25 @@ const GameHost = (function () {
 
     hub.querySelectorAll('.game-hub-card').forEach(btn => {
       btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));
+    });
+    hub.querySelector('#gh-daily')?.addEventListener('click', () => Nav.go('games/' + dailyGame.id));
+    hub.querySelector('#gh-stats')?.addEventListener('click', () => GP && GP.openStats());
+
+    /* Live search across cards */
+    const search = hub.querySelector('#gh-search');
+    search?.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      let any = false;
+      hub.querySelectorAll('.games-group[data-group]').forEach(grp => {
+        let groupHas = false;
+        grp.querySelectorAll('.game-hub-card').forEach(card => {
+          const match = !q || card.dataset.name.includes(q) || (card.querySelector('.game-hub-card-desc')?.textContent.toLowerCase().includes(q));
+          card.hidden = !match;
+          if (match) { groupHas = true; any = true; }
+        });
+        grp.hidden = !groupHas;
+      });
+      hub.querySelector('#gh-noresults').hidden = any;
     });
   }
 
@@ -201,5 +225,5 @@ const GameHost = (function () {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
   else setup();
 
-  return { show };
+  return { show, getDifficulty, setDifficulty };
 })();
