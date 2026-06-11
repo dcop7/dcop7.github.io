@@ -61,12 +61,14 @@ const PhotographyPage = (function () {
       const ev=evFromSettings(ss,apN,+iso);
       root.querySelector('#et-ev').textContent=`EV ${ev.toFixed(1)}`;
       let desc='';
-      if(ev<0) desc='Sobreexposto. Aumenta a velocidade, reduz ISO, ou aumenta f-stop.';
-      else if(ev<5) desc='Exposição adequada para interior com pouca luz.';
-      else if(ev<10) desc='Exposição para interior com luz artificial.';
-      else if(ev<14) desc='Exposição para exterior nublado / interior brilhante.';
-      else if(ev<16) desc='Exposição para exterior em sol difuso.';
-      else desc='Exposição para luz solar directa intensa.';
+      if(ev<0) desc='Expõe corretamente cenas muito escuras — astrofotografia, Via Láctea, light painting.';
+      else if(ev<5) desc='Expõe corretamente noite urbana e interiores muito escuros.';
+      else if(ev<8) desc='Expõe corretamente interiores com luz artificial.';
+      else if(ev<11) desc='Expõe corretamente interiores bem iluminados, montras e palcos.';
+      else if(ev<13) desc='Expõe corretamente exterior muito nublado ou sombra fechada.';
+      else if(ev<15) desc='Expõe corretamente exterior nublado / sombra aberta.';
+      else if(ev<16) desc='Expõe corretamente sol direto (regra Sunny 16: f/16, 1/ISO).';
+      else desc='Expõe corretamente luz muito intensa — praia, neve, contraluz solar.';
       root.querySelector('#et-desc').textContent=desc;
     }
     root.querySelectorAll('select').forEach(s=>s.addEventListener('change',update));
@@ -105,28 +107,29 @@ const PhotographyPage = (function () {
             </select>
           </div>
         </div>
-        <button class="t-btn" id="dof-calc" style="margin-bottom:.5rem">Calcular</button>
-        <div id="dof-result" class="ph-result" style="display:none"></div>
+        <div id="dof-result" class="ph-result"></div>
       </div>`;
 
-    root.querySelector('#dof-calc').addEventListener('click',()=>{
+    function calcDof(){
       const fl=parseFloat(root.querySelector('#dof-fl').value);
       const ap=parseFloat(root.querySelector('#dof-ap').value);
       const d=parseFloat(root.querySelector('#dof-dist').value)*1000;
       const coc=parseFloat(root.querySelector('#dof-coc').value);
+      const res=root.querySelector('#dof-result');
+      if(!(fl>0)||!(ap>0)||!(d>0)){res.innerHTML='<div class="ph-result-desc">Preenche focal, abertura e distância.</div>';return;}
       const H=(fl*fl)/(ap*coc)+fl;
       const near=d*H/(H+(d-fl));
       const far=d*H/(H-(d-fl));
       const dof=far>0&&H>d-fl?(far-near)/1000:Infinity;
-      const res=root.querySelector('#dof-result');
-      res.style.display='';
       res.innerHTML=`
-        <div class="ph-result-val">DOF: ${dof===Infinity?'∞':(dof<1?dof.toFixed(2)+'m':`${dof.toFixed(2)} m`)}</div>
+        <div class="ph-result-val">DOF: ${dof===Infinity?'∞':`${dof.toFixed(2)} m`}</div>
         <div class="ph-result-desc">
-          Plano próximo: ${(near/1000).toFixed(2)} m | Plano distante: ${far>1e6?'∞':(far/1000).toFixed(2)+' m'}<br>
+          Plano próximo: ${(near/1000).toFixed(2)} m | Plano distante: ${far>1e6||far<=0?'∞':(far/1000).toFixed(2)+' m'}<br>
           Distância hiperfocal: ${(H/1000).toFixed(2)} m
         </div>`;
-    });
+    }
+    root.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calcDof));
+    calcDof();
   }
 
   // ── Focal Length & Crop Factor ────────────────────────────────────
@@ -314,54 +317,78 @@ const PhotographyPage = (function () {
         <div class="ph-row">
           <div class="ph-field">
             <label class="ph-label">Latitude</label>
-            <input type="number" class="ph-input" id="gh-lat" value="38.7" step="0.01" min="-90" max="90">
+            <input type="number" class="ph-input" id="gh-lat" value="38.72" step="0.01" min="-90" max="90">
           </div>
+          <div class="ph-field">
+            <label class="ph-label">Longitude</label>
+            <input type="number" class="ph-input" id="gh-lon" value="-9.14" step="0.01" min="-180" max="180">
+          </div>
+        </div>
+        <div class="ph-row">
           <div class="ph-field">
             <label class="ph-label">Data</label>
             <input type="date" class="ph-input" id="gh-date">
           </div>
+          <div class="ph-field">
+            <button class="t-btn t-btn-ghost" id="gh-locate" style="width:100%">📍 Usar a minha localização</button>
+          </div>
         </div>
-        <button class="t-btn" id="gh-calc">Calcular</button>
-        <div id="gh-result" class="ph-result" style="display:none"></div>
+        <div id="gh-result" class="ph-result"></div>
       </div>`;
 
-    const today=new Date().toISOString().split('T')[0];
-    root.querySelector('#gh-date').value=today;
+    root.querySelector('#gh-date').value=new Date().toISOString().split('T')[0];
 
-    root.querySelector('#gh-calc').addEventListener('click',()=>{
-      const lat=+root.querySelector('#gh-lat').value*Math.PI/180;
+    function calcGh(){
+      const latDeg=+root.querySelector('#gh-lat').value, lonDeg=+root.querySelector('#gh-lon').value;
       const dateStr=root.querySelector('#gh-date').value;
-      const d=new Date(dateStr);
-      const J=Math.floor((d-new Date(d.getFullYear(),0,0))/(86400000));
+      const res=root.querySelector('#gh-result');
+      if(!dateStr||!isFinite(latDeg)||!isFinite(lonDeg)){res.innerHTML='<div class="ph-result-desc">Indica latitude, longitude e data.</div>';return;}
+      const lat=latDeg*Math.PI/180;
+      const d=new Date(dateStr+'T12:00:00');
+      const J=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);
       const dec=-23.45*Math.PI/180*Math.cos(2*Math.PI/365*(J+10));
+      // Equation of time (minutes) + longitude correction → solar noon in local clock time
+      const B=2*Math.PI*(J-81)/364;
+      const eot=9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B);
+      const tzH=-d.getTimezoneOffset()/60;
+      const noon=12-lonDeg/15-eot/60+tzH;
 
-      function hourAngle(angle){
-        const cos=(-Math.sin(angle)-Math.sin(lat)*Math.sin(dec))/(Math.cos(lat)*Math.cos(dec));
+      // Hours from solar noon until the sun is at the given altitude (deg)
+      function ha(altDeg){
+        const a=altDeg*Math.PI/180;
+        const cos=(Math.sin(a)-Math.sin(lat)*Math.sin(dec))/(Math.cos(lat)*Math.cos(dec));
         if(cos<-1||cos>1) return null;
         return Math.acos(cos)*180/Math.PI/15;
       }
-      function hhmm(h){const tot=12+(h||0);const hr=Math.floor(tot)%24;const mn=Math.round((tot%1)*60);return `${hr.toString().padStart(2,'0')}:${mn.toString().padStart(2,'0')}`;}
+      function hhmm(h){if(h==null)return'—';const tot=((h%24)+24)%24;const hr=Math.floor(tot);const mn=Math.round((tot-hr)*60);return `${String(mn===60?hr+1:hr).padStart(2,'0')}:${String(mn===60?0:mn).padStart(2,'0')}`;}
+      const range=(h1,h2)=>h1==null||h2==null?'—':`${hhmm(h1)}–${hhmm(h2)}`;
 
-      const sunrise=hourAngle(-0.8333*Math.PI/180), sunset=hourAngle(-0.8333*Math.PI/180);
-      const blueHourMorn=hourAngle(-6*Math.PI/180), blueHourEve=hourAngle(-6*Math.PI/180);
-      const goldenMorn=hourAngle(-4*Math.PI/180), goldenEve=hourAngle(-4*Math.PI/180);
-
-      const sr=sunrise?hhmm(-sunrise):'—', ss=sunrise?hhmm(sunrise):'—';
-      const bhm=blueHourMorn?hhmm(-blueHourMorn):'—', bhe=blueHourEve?hhmm(blueHourEve):'—';
-      const ghm=goldenMorn?hhmm(-goldenMorn):'—', ghe=goldenEve?hhmm(goldenEve):'—';
-
-      const res=root.querySelector('#gh-result');
-      res.style.display='';
-      res.innerHTML=`<div class="ph-result-val">Lat ${(lat*180/Math.PI).toFixed(2)}°</div>
-        <div class="ph-result-desc" style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-top:.4rem">
-          <span>🌑 Hora azul manhã:</span><span style="color:var(--accent2);font-family:var(--font-mono)">${bhm}</span>
-          <span>🌅 Hora dourada manhã:</span><span style="color:var(--amber);font-family:var(--font-mono)">${ghm}</span>
-          <span>☀️ Nascer do sol:</span><span style="color:var(--accent);font-family:var(--font-mono)">${sr}</span>
-          <span>🌇 Pôr do sol:</span><span style="color:var(--accent);font-family:var(--font-mono)">${ss}</span>
-          <span>🌆 Hora dourada tarde:</span><span style="color:var(--amber);font-family:var(--font-mono)">${ghe}</span>
-          <span>🌑 Hora azul tarde:</span><span style="color:var(--accent2);font-family:var(--font-mono)">${bhe}</span>
+      const hSun=ha(-0.8333), hBlue=ha(-6), hGoldLo=ha(-4), hGoldHi=ha(6);
+      const row=(ico,lbl,val,color)=>`<span>${ico} ${lbl}</span><span style="color:${color};font-family:var(--font-mono)">${val}</span>`;
+      res.innerHTML=`<div class="ph-result-val">${latDeg.toFixed(2)}°, ${lonDeg.toFixed(2)}° · UTC${tzH>=0?'+':''}${tzH}</div>
+        <div class="ph-result-desc ph-gh-grid">
+          ${row('🌑','Hora azul manhã:',range(noon-hBlue,noon-hGoldLo),'var(--accent2)')}
+          ${row('🌅','Hora dourada manhã:',range(noon-hGoldLo,noon-hGoldHi),'var(--amber)')}
+          ${row('☀️','Nascer do sol:',hhmm(hSun==null?null:noon-hSun),'var(--accent)')}
+          ${row('🌇','Pôr do sol:',hhmm(hSun==null?null:noon+hSun),'var(--accent)')}
+          ${row('🌆','Hora dourada tarde:',range(noon+hGoldHi,noon+hGoldLo),'var(--amber)')}
+          ${row('🌑','Hora azul tarde:',range(noon+hGoldLo,noon+hBlue),'var(--accent2)')}
         </div>`;
+    }
+
+    root.querySelector('#gh-locate').addEventListener('click',()=>{
+      if(!navigator.geolocation) return;
+      const btn=root.querySelector('#gh-locate');
+      btn.disabled=true;btn.textContent='A localizar…';
+      navigator.geolocation.getCurrentPosition(pos=>{
+        root.querySelector('#gh-lat').value=pos.coords.latitude.toFixed(2);
+        root.querySelector('#gh-lon').value=pos.coords.longitude.toFixed(2);
+        btn.disabled=false;btn.textContent='📍 Usar a minha localização';
+        calcGh();
+      },()=>{btn.disabled=false;btn.textContent='📍 Usar a minha localização';});
     });
+    root.querySelectorAll('input').forEach(el=>el.addEventListener('input',calcGh));
+    calcGh();
   }
 
   // ── Composition Guides ────────────────────────────────────────────
@@ -432,6 +459,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Diagonal Principal', desc:'Elementos ao longo da diagonal criam tensão, energia e movimento — muito mais dinâmicos que horizontais ou verticais.',
       tips:'Diagonal ↗: lida como movimento natural no sentido de leitura. Diagonal ↙: tensão e drama. Estradas, rios, sombras e braços funcionam bem.',
+      examples:'Estradas e sombras em diagonal, escadarias, braços e olhares em retrato, arquitetura moderna.',
       draw(ctx,W,H){
         ctx.strokeStyle='rgba(34,197,94,.7)';ctx.lineWidth=2;
         ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,H);ctx.stroke();
@@ -442,6 +470,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Linhas Convergentes', desc:'Linhas que convergem num ponto de fuga criam profundidade, escala e perspetiva muito fortes. O olhar é irresistivelmente atraído.',
       tips:'Estradas, carris, corredores, árvores em linha. O sujeito fica no ou perto do ponto de convergência. O ponto de fuga pode estar fora do enquadramento.',
+      examples:'Carris e pontes, corredores e túneis, avenidas arborizadas, pontões a entrar no mar.',
       draw(ctx,W,H){
         const vx=W/2,vy=H*0.38;
         ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1;
@@ -455,6 +484,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Simetria & Reflexo', desc:'Simetria perfeita cria equilíbrio e harmonia. Reflexos em água duplicam o sujeito. Quebrar a simetria com um elemento cria interesse.',
       tips:'Superfícies de água, espelhos, janelas. Assimetria deliberada (60/40) é mais interessante que perfeição (50/50). Inclina ligeiramente para dinamismo.',
+      examples:'Reflexos em lagos e poças, fachadas e claustros, interiores de igrejas, retratos frontais centrados.',
       draw(ctx,W,H){
         ctx.strokeStyle='rgba(239,68,68,.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
         ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
@@ -464,6 +494,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Enquadramento Natural', desc:'Elementos da cena (arcos, janelas, ramos, portas) funcionam como moldura, dirigindo o olhar ao sujeito e dando contexto e profundidade.',
       tips:'Procura arcos, portas, túneis, copas de árvores. Foca no sujeito dentro da moldura — o enquadramento pode estar desfocado. Dá camadas à imagem.',
+      examples:'Portas e arcos, janelas, ramos de árvores em primeiro plano, túneis e pontes a emoldurar o sujeito.',
       draw(ctx,W,H){
         const m=W*0.16,mt=H*0.14;
         ctx.strokeStyle='rgba(34,197,94,.55)';ctx.lineWidth=2;
@@ -477,6 +508,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Espaço Negativo', desc:'Espaço vazio intencional em torno do sujeito. O vazio define o sujeito, cria respiração visual e reforça emoção (solidão, imensidão).',
       tips:'Quanto mais pequeno o sujeito no espaço, maior a sensação de vastidão. Deixa espaço à frente do sujeito (espaço de movimento). Fundos limpos são essenciais.',
+      examples:'Silhueta contra o céu, barco num mar calmo, minimalismo com nevoeiro, retrato contra parede lisa.',
       draw(ctx,W,H){
         ctx.fillStyle='rgba(99,102,241,.06)';ctx.fillRect(W*0.04,H*0.08,W*0.58,H*0.84);
         ctx.strokeStyle='rgba(99,102,241,.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
@@ -489,6 +521,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Curva em S', desc:'Linhas sinuosas em forma de S (ou C) guiam o olhar suavemente pelo enquadramento, criando fluidez, elegância e profundidade.',
       tips:'Estradas sinuosas, rios, caminhos, postura do corpo, praias. A curva S divide o espaço e dá profundidade — especialmente eficaz em paisagens.',
+      examples:'Estradas de montanha, rios e ribeiras, linha de costa, dunas, caminhos pedonais em jardins.',
       draw(ctx,W,H){
         ctx.strokeStyle='rgba(168,85,247,.15)';ctx.lineWidth=12;
         ctx.beginPath();ctx.moveTo(W*0.2,H);ctx.bezierCurveTo(W*0.2,H*0.6,W*0.8,H*0.4,W*0.8,0);ctx.stroke();
@@ -501,6 +534,7 @@ const PhotographyPage = (function () {
       }},
     { name:'Composição em Triângulo', desc:'Três pontos ou elementos formam um triângulo visual — estável, equilibrado e harmonioso. Guia o olhar em ciclo pelos três vértices.',
       tips:'Não precisa ser explícito: três objetos, olhares ou linhas imaginárias formam o triângulo. Triângulo invertido cria instabilidade intencional e tensão.',
+      examples:'Retratos de grupo (3 pessoas), montanhas, pose com braços na anca, still life com três objetos.',
       draw(ctx,W,H){
         const pts=[[W/2,H*0.12],[W*0.82,H*0.82],[W*0.18,H*0.82]];
         ctx.strokeStyle='rgba(251,146,60,.65)';ctx.lineWidth=1.5;
@@ -524,63 +558,36 @@ const PhotographyPage = (function () {
   }
 
   function openCompModal(comp) {
-    let modal = document.getElementById('ph-comp-modal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'ph-comp-modal';
-      modal.className = 'ph-modal-overlay';
-      modal.innerHTML = `<div class="ph-modal-box" style="max-width:820px">
-        <div class="ph-modal-hdr">
-          <span class="ph-modal-title" id="ph-modal-title"></span>
-          <button class="ph-modal-close" id="ph-modal-close">✕</button>
+    const modal = _openModal('ph-comp-modal', `<div class="ph-modal-box ph-comp-box" role="dialog" aria-modal="true" aria-label="${comp.name}">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">🖼️ ${comp.name}</span>
+        <button class="ph-modal-close" aria-label="Fechar">✕</button>
+      </div>
+      <div class="ph-comp-modal-grid">
+        <div class="ph-comp-modal-canvas-wrap"><canvas class="ph-modal-canvas" id="ph-modal-canvas"></canvas></div>
+        <div class="ph-comp-modal-info">
+          <div class="ph-comp-modal-desc">${comp.desc}</div>
+          ${comp.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${comp.tips}</div>` : ''}
+          ${comp.examples ? `<div class="ph-comp-modal-examples"><strong>📷 Exemplos:</strong> ${comp.examples}</div>` : ''}
         </div>
-        <div class="ph-comp-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:0">
-          <canvas class="ph-modal-canvas" id="ph-modal-canvas" style="aspect-ratio:4/3;border-right:1px solid var(--border)"></canvas>
-          <div style="padding:1rem;overflow-y:auto;max-height:420px;display:flex;flex-direction:column;gap:.75rem">
-            <div id="ph-modal-desc" style="font-size:.82rem;color:var(--text2);line-height:1.6"></div>
-            <div id="ph-modal-tips" style="padding:.65rem .75rem;background:var(--accent-soft);border-radius:var(--radius-sm);font-size:.78rem;color:var(--text2);line-height:1.6"></div>
-            <div id="ph-modal-examples" style="font-size:.78rem;color:var(--muted);line-height:1.6"></div>
-          </div>
-        </div>
-      </div>`;
-      document.body.appendChild(modal);
-      document.getElementById('ph-modal-close').addEventListener('click', () => { modal.hidden = true; });
-      modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
-    }
-    modal.hidden = false;
-    document.getElementById('ph-modal-title').textContent = comp.name;
-    document.getElementById('ph-modal-desc').innerHTML = comp.desc;
-    const tipsEl = document.getElementById('ph-modal-tips');
-    if (comp.tips) {
-      tipsEl.innerHTML = `<strong>💡 Dica prática:</strong> ${comp.tips}`;
-      tipsEl.style.display = '';
-    } else {
-      tipsEl.style.display = 'none';
-    }
-    const examplesEl = document.getElementById('ph-modal-examples');
-    if (comp.examples) {
-      examplesEl.innerHTML = `<strong>📷 Exemplos:</strong> ${comp.examples}`;
-    } else {
-      examplesEl.textContent = '';
-    }
-    const canvas = document.getElementById('ph-modal-canvas');
+      </div>
+    </div>`);
+    const canvas = modal.querySelector('#ph-modal-canvas');
     canvas.width = 560; canvas.height = 420;
     requestAnimationFrame(() => drawCompCanvas(canvas, comp));
   }
 
   function buildComposition(root) {
     root.innerHTML=`
-      <div>
-        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem">Exemplos de composições fotográficas. Clica num para ampliar.</p>
-        <div class="ph-comp-grid" id="ph-comp-grid"></div>
-      </div>`;
+      <div class="ph-section-title">🖼️ Guias de Composição</div>
+      <p class="ph-section-sub">As regras clássicas para organizar os elementos no enquadramento. Toca num cartão para ver a explicação completa, dicas práticas e exemplos.</p>
+      <div class="ph-comp-grid" id="ph-comp-grid"></div>`;
 
     const grid=root.querySelector('#ph-comp-grid');
     COMPOSITIONS.forEach((comp,idx)=>{
-      const item=document.createElement('div');
+      const item=document.createElement('button');
+      item.type='button';
       item.className='ph-comp-item';
-      item.style.cursor='pointer';
-      item.title='Clica para ampliar';
       item.innerHTML=`
         <div class="ph-comp-canvas-wrap"><canvas class="ph-comp-canvas" id="ph-comp-${idx}" width="300" height="200"></canvas></div>
         <div class="ph-comp-name">${comp.name}</div>
@@ -600,7 +607,6 @@ const PhotographyPage = (function () {
   function buildColorWheel(root) {
     root.innerHTML=`
       <div>
-        <p style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem">Roda de cores interativa. Clica na roda para escolher o tom, e no interior para ajustar a luminosidade.</p>
         <div class="cw-root">
           <div class="cw-canvas-col">
             <div class="cw-size-row">
@@ -744,29 +750,37 @@ const PhotographyPage = (function () {
       root.querySelector('#cw-copy-rgb').onclick=()=>navigator.clipboard.writeText(`rgb(${r},${g},${b})`).catch(()=>{});
     }
 
-    function handleCanvasClick(e){
+    // Pointer events (mouse + touch). The zone is locked at pointerdown so a
+    // drag that starts no anel ou no quadrado não salta para o outro.
+    let dragZone=null;
+    function handlePointer(e){
       const canvas=root.querySelector('#cw-canvas');
       const rect=canvas.getBoundingClientRect();
-      const mx=e.clientX-rect.left, my=e.clientY-rect.top;
       const S=wheelSize,cx=S/2,cy=S/2,outerR=S/2-2,ringW=Math.round(S*0.14),innerR=outerR-ringW;
-      const dx=mx-cx, dy=my-cy, dist=Math.sqrt(dx*dx+dy*dy);
       // Scale to canvas logical pixels
-      const scaleX=S/rect.width, scaleY=S/rect.height;
-      const lx=(mx)*scaleX, ly=(my)*scaleY;
+      const lx=(e.clientX-rect.left)*(S/rect.width), ly=(e.clientY-rect.top)*(S/rect.height);
       const ldx=lx-cx, ldy=ly-cy, ldist=Math.sqrt(ldx*ldx+ldy*ldy);
-      if(ldist>=innerR && ldist<=outerR+2){
+      if(!dragZone) dragZone = ldist>=innerR && ldist<=outerR+2 ? 'ring' : ldist<innerR ? 'sv' : null;
+      if(dragZone==='ring'){
         hue=(Math.atan2(ldy,ldx)*180/Math.PI+90+360)%360;
-      } else if(ldist<innerR){
+      } else if(dragZone==='sv'){
         const ix=cx-innerR, iw=innerR*2;
         const iy2=cy-innerR;
         sat=Math.max(0,Math.min(100,(lx-ix)/iw*100));
         lit=Math.max(5,Math.min(95,(1-(ly-iy2)/iw)*100));
-      }
+      } else return;
       drawWheel();updateInfo();
     }
 
-    root.querySelector('#cw-canvas').addEventListener('click',handleCanvasClick);
-    root.querySelector('#cw-canvas').addEventListener('mousemove',e=>{if(e.buttons===1)handleCanvasClick(e);});
+    const cwCanvas=root.querySelector('#cw-canvas');
+    cwCanvas.addEventListener('pointerdown',e=>{
+      e.preventDefault();
+      dragZone=null;
+      try{cwCanvas.setPointerCapture(e.pointerId);}catch(_){}
+      handlePointer(e);
+    });
+    cwCanvas.addEventListener('pointermove',e=>{if(e.buttons&1)handlePointer(e);});
+    cwCanvas.addEventListener('pointerup',()=>{dragZone=null;});
 
     root.querySelectorAll('#cw-size-seg .tsb').forEach(btn=>btn.addEventListener('click',()=>{
       wheelSize=+btn.dataset.s;
@@ -1150,21 +1164,42 @@ const PhotographyPage = (function () {
   }
   function scnEditHTML(scn) {
     return `<div class="ph-scn-blurb">${scn.edit.intro}</div>${scn.edit.steps.map(editStepHTML).join('')}
-      <div class="ph-edit-note">Aplica-se a ficheiros RAW. Vê o menu <strong>🎨 Técnicas de Edição</strong> para o detalhe de cada técnica.</div>`;
+      <div class="ph-edit-note">Aplica-se a ficheiros RAW. Vê o separador <strong>🎨 Edição</strong> para o detalhe de cada técnica.</div>`;
+  }
+
+  // Unified modal open/close: fresh overlay each time (no stale listeners),
+  // Escape closes only the topmost overlay, body scroll locked while any is open.
+  function _openModal(id, boxHTML) {
+    const old = document.getElementById(id);
+    if (old) old.remove();
+    const modal = document.createElement('div');
+    modal.id = id;
+    modal.className = 'ph-modal-overlay';
+    modal.innerHTML = boxHTML;
+    document.body.appendChild(modal);
+    document.body.classList.add('ph-modal-open');
+    _bindModalClose(modal);
+    return modal;
   }
 
   function _bindModalClose(modal) {
-    const close = () => { modal.hidden = true; document.removeEventListener('keydown', esc); };
-    function esc(e) { if (e.key === 'Escape') close(); }
+    const close = () => {
+      modal.hidden = true;
+      document.removeEventListener('keydown', esc);
+      if (!document.querySelector('.ph-modal-overlay:not([hidden])')) document.body.classList.remove('ph-modal-open');
+    };
+    function esc(e) {
+      if (e.key !== 'Escape') return;
+      const open = document.querySelectorAll('.ph-modal-overlay:not([hidden])');
+      if (open[open.length - 1] === modal) close();
+    }
     modal.querySelector('.ph-modal-close').addEventListener('click', close);
     modal.addEventListener('click', e => { if (e.target === modal) close(); });
     document.addEventListener('keydown', esc);
   }
 
   function openScenarioModal(scn) {
-    let modal = document.getElementById('ph-scn-modal');
-    if (!modal) { modal = document.createElement('div'); modal.id = 'ph-scn-modal'; modal.className = 'ph-modal-overlay'; document.body.appendChild(modal); }
-    modal.innerHTML = `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${scn.name}">
+    const modal = _openModal('ph-scn-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${scn.name}">
       <div class="ph-modal-hdr">
         <span class="ph-modal-title">${scn.icon} ${scn.name}</span>
         <button class="ph-modal-close" aria-label="Fechar">✕</button>
@@ -1177,9 +1212,7 @@ const PhotographyPage = (function () {
         <div class="ph-tabpane" data-pane="cap">${scnCaptureHTML(scn)}</div>
         <div class="ph-tabpane" data-pane="edit" hidden>${scnEditHTML(scn)}</div>
       </div>
-    </div>`;
-    modal.hidden = false;
-    _bindModalClose(modal);
+    </div>`);
     modal.querySelectorAll('.ph-tab').forEach(tab => tab.addEventListener('click', () => {
       modal.querySelectorAll('.ph-tab').forEach(x => x.classList.toggle('active', x === tab));
       modal.querySelectorAll('.ph-tabpane').forEach(p => { p.hidden = p.dataset.pane !== tab.dataset.tab; });
@@ -1192,9 +1225,7 @@ const PhotographyPage = (function () {
   }
 
   function openTechModal(t) {
-    let modal = document.getElementById('ph-tech-modal');
-    if (!modal) { modal = document.createElement('div'); modal.id = 'ph-tech-modal'; modal.className = 'ph-modal-overlay'; document.body.appendChild(modal); }
-    modal.innerHTML = `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
+    _openModal('ph-tech-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
       <div class="ph-modal-hdr">
         <span class="ph-modal-title">${t.icon} ${t.name}</span>
         <button class="ph-modal-close" aria-label="Fechar">✕</button>
@@ -1203,9 +1234,7 @@ const PhotographyPage = (function () {
         <div class="ph-light-box">${t.idea}</div>
         ${swRowsHTML(t)}
       </div>
-    </div>`;
-    modal.hidden = false;
-    _bindModalClose(modal);
+    </div>`);
   }
 
   function buildScenarios(root) {
@@ -1239,63 +1268,99 @@ const PhotographyPage = (function () {
   }
 
   // ── Main ──────────────────────────────────────────────────────────
-  function show() {
+  const PH_TABS = [
+    { id:'cenarios',   label:'🎯 Cenários' },
+    { id:'composicao', label:'🖼️ Composição' },
+    { id:'edicao',     label:'🎨 Edição' },
+    { id:'cores',      label:'🌈 Cores' },
+    { id:'calc',       label:'🧮 Calculadoras' },
+  ];
+
+  const PANEL_BUILDERS = {
+    cenarios(panel) {
+      const box = document.createElement('div');
+      box.className = 'ph-section-box';
+      panel.appendChild(box);
+      buildScenarios(box);
+    },
+    composicao(panel) {
+      const box = document.createElement('div');
+      box.className = 'ph-section-box';
+      panel.appendChild(box);
+      buildComposition(box);
+    },
+    edicao(panel) {
+      const box = document.createElement('div');
+      box.className = 'ph-section-box';
+      panel.appendChild(box);
+      buildEditTechniques(box);
+    },
+    cores(panel) {
+      const box = document.createElement('div');
+      box.className = 'ph-section-box';
+      box.innerHTML = `
+        <div class="ph-section-title">🌈 Roda de Cores</div>
+        <p class="ph-section-sub">Explora harmonias de cor para planear paletas de cena e color grading. Arrasta no anel para o tom e no quadrado interior para saturação/luminosidade.</p>
+        <div id="ph-cw-inner"></div>`;
+      panel.appendChild(box);
+      buildColorWheel(box.querySelector('#ph-cw-inner'));
+    },
+    calc(panel) {
+      panel.innerHTML = `
+        <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Calculadoras de exposição e ótica — os resultados atualizam automaticamente. Pré-definidas para a Canon M50 Mark II (APS-C 1.6×).</p>
+        <div class="ph-grid"></div>`;
+      const grid = panel.querySelector('.ph-grid');
+      [buildExposure, buildDof, buildFocal, buildNd, buildFlash, buildLongExposure, buildGoldenHour].forEach(fn => {
+        const wrapper = document.createElement('div');
+        fn(wrapper);
+        grid.appendChild(wrapper);
+      });
+    },
+  };
+
+  let _activate = null;
+
+  function show(tab) {
     const view = document.getElementById('view-photography');
     if (!view) return;
 
     if (!_built) {
       _built = true;
 
-      const calcSections = [
-        { id:'exposure',     fn:buildExposure,     title:'Exposição' },
-        { id:'dof',          fn:buildDof,           title:'Profundidade de Campo' },
-        { id:'focal',        fn:buildFocal,         title:'Focal & Crop' },
-        { id:'nd',           fn:buildNd,            title:'Filtros ND' },
-        { id:'flash',        fn:buildFlash,         title:'Flash' },
-        { id:'longexp',      fn:buildLongExposure,  title:'Longa Exposição' },
-        { id:'goldenhour',   fn:buildGoldenHour,    title:'Hora Dourada' },
-      ];
-
       view.innerHTML=`
         <div class="view-inner">
           <div class="page-header">
             <h1 class="page-title">📸 Fotografia</h1>
-            <p class="page-subtitle">Cheat sheet de captura e edição, composições, roda de cores e calculadoras · Canon M50 Mark II (APS-C 1.6×)</p>
+            <p class="page-subtitle">Cheat sheets de captura e edição, composição, cor e calculadoras · Canon M50 Mark II (APS-C 1.6×)</p>
           </div>
-          <div id="ph-comp-section" style="margin-bottom:2rem"></div>
-          <div id="ph-scn-section" style="margin-bottom:2rem"></div>
-          <div id="ph-edit-section" style="margin-bottom:2rem"></div>
-          <div id="ph-cw-section" style="margin-bottom:2rem"></div>
-          <div class="ph-grid" id="ph-grid"></div>
+          <div class="ph-nav" role="tablist" aria-label="Secções de fotografia">
+            ${PH_TABS.map(t=>`<button class="ph-nav-btn" role="tab" data-tab="${t.id}" aria-selected="false">${t.label}</button>`).join('')}
+          </div>
+          ${PH_TABS.map(t=>`<div class="ph-panel" data-panel="${t.id}" role="tabpanel"></div>`).join('')}
         </div>`;
 
-      const compSection = view.querySelector('#ph-comp-section');
-      buildComposition(compSection);
+      const builtPanels = new Set();
+      _activate = (id) => {
+        view.querySelectorAll('.ph-nav-btn').forEach(b => {
+          const on = b.dataset.tab === id;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-selected', on);
+        });
+        view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
+        if (!builtPanels.has(id)) {
+          builtPanels.add(id);
+          PANEL_BUILDERS[id](view.querySelector(`.ph-panel[data-panel="${id}"]`));
+        }
+        try { localStorage.setItem('ph-tab', id); } catch (_) {}
+      };
 
-      const scnBox = document.createElement('div');
-      scnBox.className = 'ph-section-box';
-      view.querySelector('#ph-scn-section').appendChild(scnBox);
-      buildScenarios(scnBox);
-
-      const editBox = document.createElement('div');
-      editBox.className = 'ph-section-box';
-      view.querySelector('#ph-edit-section').appendChild(editBox);
-      buildEditTechniques(editBox);
-
-      const cwSection = view.querySelector('#ph-cw-section');
-      const cwWrapper = document.createElement('div');
-      cwWrapper.className = 'ph-section-box';
-      cwWrapper.innerHTML = '<div class="ph-section-title">🎨 Roda de Cores</div><div id="ph-cw-inner"></div>';
-      cwSection.appendChild(cwWrapper);
-      buildColorWheel(cwWrapper.querySelector('#ph-cw-inner'));
-
-      const grid = view.querySelector('#ph-grid');
-      calcSections.forEach(s=>{
-        const wrapper = document.createElement('div');
-        s.fn(wrapper);
-        grid.appendChild(wrapper);
-      });
+      view.querySelectorAll('.ph-nav-btn').forEach(b => b.addEventListener('click', () => _activate(b.dataset.tab)));
     }
+
+    const valid = (id) => id && PH_TABS.some(t => t.id === id);
+    let initial = valid(tab) ? tab : null;
+    if (!initial) { try { const saved = localStorage.getItem('ph-tab'); if (valid(saved)) initial = saved; } catch (_) {} }
+    _activate(initial || 'cenarios');
   }
 
   return { show };

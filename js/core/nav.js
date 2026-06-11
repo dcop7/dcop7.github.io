@@ -161,7 +161,7 @@ const Nav = (function () {
       typeof VisualPage !== 'undefined' && VisualPage.show();
     } else if (page === 'photography') {
       document.getElementById('view-photography')?.classList.add('active');
-      typeof PhotographyPage !== 'undefined' && PhotographyPage.show();
+      typeof PhotographyPage !== 'undefined' && PhotographyPage.show(sub || null);
     } else if (page === 'workout') {
       document.getElementById('view-workout')?.classList.add('active');
       typeof WorkoutPage !== 'undefined' && WorkoutPage.show();
