@@ -1,12 +1,12 @@
 /* ══════════════════════════════════════════════════════════════════
-   ChessGame — full browser chess, no backend.
+   ChessGame — full browser chess, no backend, 2D (mobile-first).
    Rules/move-generation: vendored chess.js (global `Chess`, BSD).
    AI: own negamax + alpha-beta with material + piece-square tables.
-   Render: switchable 3D (lazily-loaded three.js, procedural high-detail
-   pieces, animated moves, raycast tap-to-move) or 2D (better for local
-   2-player). Selectable board+piece themes (wood by default). Optional
-   live move hints. Captured-piece trays. Promotion picker, undo,
-   3 AI levels + local 2-player. Integrates GameProgress.
+   Polished 2D board: themed wooden frame, crisp outlined SVG pieces,
+   sliding move animation, selectable light/dark themes (wood default),
+   optional move hints, per-side clocks + move counter, captured-piece
+   trays, promotion picker, undo, 3 AI levels + local 2-player.
+   Integrates GameProgress.
 ══════════════════════════════════════════════════════════════════ */
 const ChessGame = (function () {
   'use strict';
@@ -42,26 +42,25 @@ const ChessGame = (function () {
   };
 
   /* Board + piece themes. light/dark = squares, pcLight/pcDark = pieces,
-     frame = 3D border. 2D uses the same colours via CSS variables. */
+     frame = board border. Applied via CSS variables on the board wrapper. */
   const THEMES = {
     /* ── claros ── */
-    wood:   { name: 'Madeira', emoji: '🪵', group: 'light', light: '#f0d9b5', dark: '#b58863', frame: '#7a5230', pcLight: '#f6ead0', pcDark: '#5a3a22' },
-    marble: { name: 'Mármore', emoji: '🏛️', group: 'light', light: '#e7e5dd', dark: '#a89f8e', frame: '#83796a', pcLight: '#fbfaf7', pcDark: '#46423a' },
-    ice:    { name: 'Gelo',    emoji: '❄️', group: 'light', light: '#dde7ef', dark: '#7fa0bd', frame: '#6e8aa1', pcLight: '#fbfdff', pcDark: '#2b3a47' },
+    wood:   { name: 'Madeira', emoji: '🪵', group: 'light', light: '#f0d9b5', dark: '#b58863', frame: '#6d4326', pcLight: '#f7ecd6', pcDark: '#4a2f1c' },
+    marble: { name: 'Mármore', emoji: '🏛️', group: 'light', light: '#eceae3', dark: '#a39a88', frame: '#6f685b', pcLight: '#fcfbf8', pcDark: '#3b362f' },
+    ice:    { name: 'Gelo',    emoji: '❄️', group: 'light', light: '#dbe7f1', dark: '#7ba0c0', frame: '#3f5a72', pcLight: '#fbfdff', pcDark: '#22303c' },
     /* ── escuros ── */
-    night:  { name: 'Noturno', emoji: '🌙', group: 'dark', light: '#6e7790', dark: '#3a4156', frame: '#20242f', pcLight: '#eaeef6', pcDark: '#13151d' },
-    forest: { name: 'Floresta',emoji: '🌲', group: 'dark', light: '#5d7355', dark: '#34472d', frame: '#1d281a', pcLight: '#e8ebda', pcDark: '#13200e' },
-    obsidian:{name: 'Obsidiana',emoji:'🪨', group: 'dark', light: '#586070', dark: '#2e333e', frame: '#16181e', pcLight: '#e0e4eb', pcDark: '#0e1015' },
+    night:  { name: 'Noturno', emoji: '🌙', group: 'dark', light: '#cfd6e6', dark: '#566184', frame: '#2a3045', pcLight: '#f3f5fb', pcDark: '#13182a' },
+    forest: { name: 'Floresta',emoji: '🌲', group: 'dark', light: '#cdd9c4', dark: '#5a7850', frame: '#283a22', pcLight: '#f2f6ed', pcDark: '#14260f' },
+    coffee: { name: 'Café',    emoji: '☕', group: 'dark', light: '#d8c6b2', dark: '#6b4f3a', frame: '#34241a', pcLight: '#f6efe6', pcDark: '#1f1209' },
   };
 
   let root, game, mode = 'ai', diffKey = 'medium', humanColor = 'w';
-  let selected = null, legalDests = [], lastMove = null, busy = false;
+  let selected = null, legalDests = [], lastMove = null, busy = false, animMove = null;
   function loadPref(k, def) { try { const v = localStorage.getItem(k); return v == null ? def : v; } catch (e) { return def; } }
   function savePref(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-  let showHints  = loadPref('chess-hints', '0') === '1';
-  let renderMode = loadPref('chess-render', '3d');                 /* '3d' | '2d' */
-  let themeKey   = (THEMES[loadPref('chess-theme', 'wood')] ? loadPref('chess-theme', 'wood') : 'wood');
-  let use3D = false, board3d = null;
+  let showHints = loadPref('chess-hints', '0') === '1';
+  let themeKey  = (THEMES[loadPref('chess-theme', 'wood')] ? loadPref('chess-theme', 'wood') : 'wood');
+  let clock = { w: 0, b: 0 }, clockTimer = null, lastTick = 0;
   function theme() { return THEMES[themeKey] || THEMES.wood; }
 
   /* ── evaluation / search ────────────────────────────────────────── */
@@ -115,362 +114,86 @@ const ChessGame = (function () {
   }
   function g_moves() { return game.moves({ verbose: true }); }
 
-  /* ════════════════════════════════════════════════════════════════
-     3D board (three.js) — lazily loaded; falls back to 2D on failure.
-  ════════════════════════════════════════════════════════════════ */
-  let threePromise = null;
-  function ensureThree() {
-    if (typeof THREE !== 'undefined') return Promise.resolve(THREE);
-    if (threePromise) return threePromise;
-    threePromise = new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'js/games/vendor/three.min.js';
-      s.onload = () => (typeof THREE !== 'undefined' ? resolve(THREE) : reject(new Error('THREE missing')));
-      s.onerror = () => reject(new Error('three.js load failed'));
-      document.head.appendChild(s);
-    });
-    return threePromise;
-  }
-
-  /* High-detail lathe profiles: [radius, height] revolved around Y. */
-  const PROFILES = {
-    p: [[0,0],[.26,0],[.26,.045],[.225,.065],[.155,.10],[.122,.135],[.115,.175],[.168,.205],[.168,.235],[.10,.255],[.088,.31],[.135,.375],[.152,.44],[.142,.50],[.10,.55],[.052,.575],[0,.59]],
-    r: [[0,0],[.29,0],[.29,.05],[.245,.075],[.165,.115],[.155,.155],[.152,.40],[.135,.42],[.205,.45],[.21,.50],[.228,.52],[.228,.58],[.20,.585],[0,.585]],
-    b: [[0,0],[.285,0],[.285,.05],[.24,.075],[.155,.115],[.13,.16],[.125,.345],[.178,.375],[.182,.405],[.10,.425],[.095,.46],[.132,.525],[.158,.59],[.138,.65],[.108,.69],[.062,.725],[0,.748]],
-    n: [[0,0],[.29,0],[.29,.05],[.245,.075],[.165,.115],[.155,.155],[.152,.30],[.135,.32],[.205,.345],[0,.345]],
-    q: [[0,0],[.30,0],[.30,.05],[.255,.08],[.17,.125],[.138,.17],[.132,.45],[.182,.49],[.188,.525],[.115,.55],[.10,.585],[.156,.625],[.20,.66],[.208,.69],[.138,.70],[0,.70]],
-    k: [[0,0],[.30,0],[.30,.05],[.255,.08],[.17,.125],[.138,.17],[.132,.47],[.182,.51],[.188,.545],[.115,.57],[.10,.605],[.156,.645],[.20,.68],[.208,.71],[.152,.722],[.132,.748],[0,.748]],
-  };
-
-  function createBoard3D(container, onPick, th) {
-    const T = THREE;
-    const W = container.clientWidth || 380, H = container.clientHeight || W;
-    /* render-loop state — declared up-front: setTheme() (called during setup,
-       below) triggers requestRender(), so `dirty`/`rafId` must already exist. */
-    const tweens = [];
-    let rafId = null, dirty = true;
-
-    const scene = new T.Scene();
-    const camera = new T.PerspectiveCamera(33, W / H, 0.1, 100);
-    const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setSize(W, H);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
-    renderer.domElement.style.cssText = 'width:100%;height:100%;display:block;touch-action:manipulation';
-
-    /* lights — lower flat ambient + a hemisphere and rim light so the
-       carved piece forms read with real relief instead of looking flat. */
-    scene.add(new T.AmbientLight(0xffffff, 0.32));
-    scene.add(new T.HemisphereLight(0xeaf0ff, 0x4c4f5c, 0.42));
-    const key = new T.DirectionalLight(0xfff3df, 0.92);
-    key.position.set(3.8, 9.5, 5.0);
-    key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
-    key.shadow.camera.near = 1; key.shadow.camera.far = 34;
-    key.shadow.camera.left = -7; key.shadow.camera.right = 7;
-    key.shadow.camera.top = 7; key.shadow.camera.bottom = -7;
-    key.shadow.bias = -0.0006; key.shadow.radius = 4;
-    scene.add(key);
-    const fill = new T.DirectionalLight(0xbcd2ff, 0.20);
-    fill.position.set(-5, 4, -3); scene.add(fill);
-    const rim = new T.DirectionalLight(0xffffff, 0.30);     /* back rim → edge definition */
-    rim.position.set(-2, 6, -8); scene.add(rim);
-
-    /* materials (theme-driven, kept for live re-theming) */
-    const frameMat = new T.MeshStandardMaterial({ roughness: 0.65, metalness: 0.15 });
-    const lightMats = [], darkMats = [];
-    const matWhite = new T.MeshStandardMaterial({ roughness: 0.34, metalness: 0.16 });
-    const matBlack = new T.MeshStandardMaterial({ roughness: 0.40, metalness: 0.20 });
-
-    /* frame */
-    const frame = new T.Mesh(new T.BoxGeometry(9.4, 0.5, 9.4), frameMat);
-    frame.position.y = -0.32; frame.receiveShadow = true; scene.add(frame);
-
-    /* squares */
-    const sqGeo = new T.BoxGeometry(1, 0.16, 1);
-    const sqMesh = {};
-    const files = ['a','b','c','d','e','f','g','h'];
-    for (let f = 0; f < 8; f++) for (let r = 1; r <= 8; r++) {
-      const dark = (f + r) % 2 === 1;          /* a1 dark, as in real chess */
-      const mat = new T.MeshStandardMaterial({ color: new T.Color(dark ? th.dark : th.light), roughness: 0.82, metalness: 0.03 });
-      (dark ? darkMats : lightMats).push(mat);
-      const m = new T.Mesh(sqGeo, mat);
-      const name = files[f] + r;
-      m.position.set(f - 3.5, -0.09, r - 4.5);
-      m.receiveShadow = true;
-      m.userData = { square: name };
-      scene.add(m); sqMesh[name] = m;
-    }
-
-    /* cached geometry */
-    const geoCache = {};
-    function lathe(type) {
-      if (!geoCache[type]) {
-        const pts = PROFILES[type].map(p => new T.Vector2(Math.max(p[0], 0.0001), p[1]));
-        const g = new T.LatheGeometry(pts, 44);
-        g.computeVertexNormals();
-        geoCache[type] = g;
-      }
-      return geoCache[type];
-    }
-    function buildPiece(type, color) {
-      const mat = color === 'w' ? matWhite : matBlack;
-      const g = new T.Group();
-      const body = new T.Mesh(lathe(type), mat); body.castShadow = true; body.receiveShadow = true; g.add(body);
-      const add = (geo, x, y, z, rot) => { const m = new T.Mesh(geo, mat); m.position.set(x, y, z); if (rot) m.rotation.x = rot; m.castShadow = true; g.add(m); return m; };
-      if (type === 'r') {
-        for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; add(new T.BoxGeometry(0.09, 0.12, 0.09), Math.cos(a) * 0.17, 0.60, Math.sin(a) * 0.17); }
-      } else if (type === 'b') {
-        add(new T.SphereGeometry(0.055, 16, 12), 0, 0.78, 0);
-        const slit = new T.Mesh(new T.BoxGeometry(0.34, 0.05, 0.05), new T.MeshStandardMaterial({ color: 0x000000, roughness: 1 }));
-        slit.position.set(0, 0.66, 0); slit.rotation.y = 0.0; g.add(slit);
-      } else if (type === 'q') {
-        for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2; add(new T.SphereGeometry(0.045, 12, 10), Math.cos(a) * 0.175, 0.72, Math.sin(a) * 0.175); }
-        add(new T.SphereGeometry(0.062, 14, 12), 0, 0.77, 0);
-      } else if (type === 'k') {
-        add(new T.BoxGeometry(0.05, 0.22, 0.05), 0, 0.86, 0);
-        add(new T.BoxGeometry(0.16, 0.05, 0.05), 0, 0.85, 0);
-      } else if (type === 'n') {
-        const neck = add(new T.BoxGeometry(0.19, 0.32, 0.17), 0, 0.47, -0.03, -0.30); neck.geometry = roundBox(0.19, 0.32, 0.17);
-        const head = add(new T.BoxGeometry(0.17, 0.16, 0.20), 0, 0.60, 0.06, -0.30); head.geometry = roundBox(0.17, 0.16, 0.20);
-        const muzzle = add(new T.BoxGeometry(0.135, 0.12, 0.20), 0, 0.55, 0.16, -0.55); muzzle.geometry = roundBox(0.135, 0.12, 0.20);
-        const mane = add(new T.BoxGeometry(0.07, 0.34, 0.10), 0, 0.50, -0.13, -0.10); mane.geometry = roundBox(0.07, 0.34, 0.10);
-        for (const dx of [-0.055, 0.055]) add(new T.BoxGeometry(0.045, 0.12, 0.045), dx, 0.70, -0.05, -0.25);
-        const eyeMat = new T.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
-        for (const dx of [-0.07, 0.07]) { const e = new T.Mesh(new T.SphereGeometry(0.022, 8, 8), eyeMat); e.position.set(dx, 0.63, 0.13); g.add(e); }
-      }
-      return g;
-    }
-    /* small rounded box (chamfered) for the knight — nicer than hard cubes */
-    function roundBox(w, h, d) {
-      try { return new T.BoxGeometry(w, h, d, 2, 2, 2); } catch (e) { return new T.BoxGeometry(w, h, d); }
-    }
-
-    /* theme */
-    function setTheme(t) {
-      frameMat.color.set(t.frame);
-      lightMats.forEach(m => m.color.set(t.light));
-      darkMats.forEach(m => m.color.set(t.dark));
-      matWhite.color.set(t.pcLight);
-      matBlack.color.set(t.pcDark);
-      requestRender();
-    }
-    setTheme(th);
-
-    /* camera (gentle top-down 3D, fits the whole board) */
-    let flip = false;
-    function placeCamera() {
-      const z = flip ? 5.0 : -5.0;                   /* ~68° elevation: mostly top-down, gentle, fits fully */
-      camera.position.set(0, 12.3, z);
-      camera.lookAt(0, 0, 0);
-    }
-    placeCamera();
-
-    /* raycasting */
-    const ray = new T.Raycaster();
-    const ndc = new T.Vector2();
-    let interactive = true;
-    let downXY = null;
-    function evXY(ev) { return ev.touches && ev.touches[0] ? { x: ev.touches[0].clientX, y: ev.touches[0].clientY } : { x: ev.clientX, y: ev.clientY }; }
-    function pick(ev) {
-      if (!interactive) return;
-      const rect = renderer.domElement.getBoundingClientRect();
-      const xy = evXY(ev);
-      ndc.x = ((xy.x - rect.left) / rect.width) * 2 - 1;
-      ndc.y = -((xy.y - rect.top) / rect.height) * 2 + 1;
-      ray.setFromCamera(ndc, camera);
-      const hits = ray.intersectObjects(scene.children, true);
-      for (const h of hits) {
-        let o = h.object;
-        while (o && !(o.userData && o.userData.square)) o = o.parent;
-        if (o && o.userData.square) { onPick(o.userData.square); return; }
-      }
-    }
-    renderer.domElement.addEventListener('pointerdown', e => { downXY = { x: e.clientX, y: e.clientY }; });
-    renderer.domElement.addEventListener('pointerup', e => {
-      if (!downXY) return pick(e);
-      const moved = Math.hypot(e.clientX - downXY.x, e.clientY - downXY.y);
-      downXY = null;
-      if (moved < 10) pick(e);                       /* tap, not a drag/scroll */
-    });
-
-    /* pieces + fx */
-    const pieceMap = {};
-    const fxGroup = new T.Group(); scene.add(fxGroup);
-    const discGeo = new T.CircleGeometry(0.17, 24);
-    const ringGeo = new T.RingGeometry(0.36, 0.45, 28);
-    const discMat = new T.MeshBasicMaterial({ color: 0x2fcf72, transparent: true, opacity: 0.55 });
-    const ringMat = new T.MeshBasicMaterial({ color: 0x2fcf72, transparent: true, opacity: 0.7, side: T.DoubleSide });
-    function worldOf(sq) { return { x: sq.charCodeAt(0) - 97 - 3.5, z: (+sq[1]) - 4.5 }; }
-    function clearPieces() { Object.values(pieceMap).forEach(g => scene.remove(g)); for (const k in pieceMap) delete pieceMap[k]; }
-    function rebuild(boardArr) {
-      clearPieces();
-      for (let row = 0; row < 8; row++) for (let col = 0; col < 8; col++) {
-        const pc = boardArr[row][col]; if (!pc) continue;
-        const sq = files[col] + (8 - row);
-        const g = buildPiece(pc.type, pc.color);
-        g.scale.setScalar(1.08);                          /* a touch larger → more presence */
-        const w = worldOf(sq);
-        g.position.set(w.x, 0, w.z);
-        if (pc.color === 'b') g.rotation.y = Math.PI;
-        g.userData = { square: sq, baseY: 0 };
-        scene.add(g); pieceMap[sq] = g;
-      }
-      requestRender();
-    }
-
-    function highlight(hi) {
-      for (const name in sqMesh) {
-        const m = sqMesh[name].material;
-        let emis = 0x000000, inten = 0;
-        if (hi.checkSq === name) { emis = 0xff2e2e; inten = 0.9; }
-        else if (hi.selected === name) { emis = 0x5ad17a; inten = 0.55; }
-        else if (hi.lastMove && (hi.lastMove.from === name || hi.lastMove.to === name)) { emis = 0xf2c14e; inten = 0.30; }
-        m.emissive.setHex(emis); m.emissiveIntensity = inten;
-      }
-      Object.values(pieceMap).forEach(g => { g.position.y = g.userData.baseY; });
-      const selG = hi.selected && pieceMap[hi.selected];
-      if (selG) selG.position.y = 0.16;
-      while (fxGroup.children.length) fxGroup.remove(fxGroup.children[0]);
-      if (hi.showHints) (hi.legalDests || []).forEach(sq => {
-        const w = worldOf(sq); const occ = !!pieceMap[sq];
-        const mk = new T.Mesh(occ ? ringGeo : discGeo, occ ? ringMat : discMat);
-        mk.rotation.x = -Math.PI / 2; mk.position.set(w.x, 0.105, w.z);
-        fxGroup.add(mk);
-      });
-      requestRender();
-    }
-
-    /* tween / render loop */
-    function requestRender() { dirty = true; if (!rafId) loop(); }
-    function loop() {
-      rafId = requestAnimationFrame(loop);
-      const now = performance.now();
-      for (let i = tweens.length - 1; i >= 0; i--) {
-        const tw = tweens[i];
-        const t = Math.min(1, (now - tw.start) / tw.dur);
-        tw.step(t < 1 ? (tw.ease ? tw.ease(t) : t) : 1);
-        if (t >= 1) { tweens.splice(i, 1); tw.done && tw.done(); }
-        dirty = true;
-      }
-      if (dirty) { renderer.render(scene, camera); dirty = false; }
-      if (!tweens.length && !dirty) { cancelAnimationFrame(rafId); rafId = null; }
-    }
-    const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-    function applyMove(from, to, opts, cb) {
-      const g = pieceMap[from];
-      const capG = opts && opts.capture ? pieceMap[to] : null;
-      if (!g) { cb && cb(); return; }
-      const a = worldOf(from), b = worldOf(to);
-      const arc = opts && opts.knight ? 0.85 : 0.34;
-      tweens.push({
-        start: performance.now(), dur: 360, ease: easeInOut,
-        step: t => {
-          g.position.x = a.x + (b.x - a.x) * t;
-          g.position.z = a.z + (b.z - a.z) * t;
-          g.position.y = Math.sin(Math.PI * t) * arc;
-        },
-        done: cb,
-      });
-      if (capG) tweens.push({
-        start: performance.now() + 80, dur: 300,
-        step: t => { const e = 1 - t; capG.scale.setScalar(Math.max(0.001, e)); capG.position.y = -t * 0.5; capG.rotation.z = t * 1.4; },
-      });
-      requestRender();
-    }
-
-    function resize() {
-      const w = container.clientWidth || W, h = container.clientHeight || w;
-      renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
-      requestRender();
-    }
-    const ro = ('ResizeObserver' in window) ? new ResizeObserver(resize) : null;
-    if (ro) ro.observe(container);
-    window.addEventListener('resize', resize);
-
-    function dispose() {
-      if (rafId) cancelAnimationFrame(rafId);
-      if (ro) ro.disconnect();
-      window.removeEventListener('resize', resize);
-      renderer.dispose();
-      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
-    }
-
-    return {
-      rebuild, highlight, applyMove, resize, dispose, setTheme,
-      setFlip: f => { flip = f; placeCamera(); requestRender(); },
-      setInteractive: v => { interactive = v; },
-    };
-  }
-
   /* ── CSS ────────────────────────────────────────────────────────── */
   function injectCSS() {
     if (document.getElementById('ch-css')) return;
     const s = document.createElement('style'); s.id = 'ch-css';
     s.textContent = `
-.ch-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0;--sql:#f0d9b5;--sqd:#b58863;--pcl:#f2e3c6;--pcd:#5a3a22}
-.ch-menu{display:flex;flex-direction:column;align-items:center;gap:13px;padding:22px 16px;text-align:center}
-.ch-logo{font-size:3rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
-.ch-title{font-family:var(--font-head,inherit);font-size:1.7rem;font-weight:900;color:var(--text,#fff)}
+.ch-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0;width:100%;
+  --sql:#f0d9b5;--sqd:#b58863;--frm:#6d4326;--pcl:#f7ecd6;--pcd:#4a2f1c}
+.ch-menu{display:flex;flex-direction:column;align-items:center;gap:14px;padding:26px 16px;text-align:center}
+.ch-logo{font-size:3.2rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.ch-title{font-family:var(--font-head,inherit);font-size:1.8rem;font-weight:900;color:var(--text,#fff)}
 .ch-sub{font-size:.8rem;color:var(--muted,#9aa);letter-spacing:.08em;text-transform:uppercase}
 .ch-opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:360px}
-.ch-opt{background:var(--card2,#1b1d33);border:1.5px solid var(--border,#2a2c44);color:var(--text2,#ccd);border-radius:10px;padding:9px 15px;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
+.ch-opt{background:var(--card2,#1b1d33);border:1.5px solid var(--border,#2a2c44);color:var(--text2,#ccd);border-radius:10px;padding:9px 16px;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
 .ch-opt:hover{border-color:rgba(var(--accent-rgb,124,92,255),.5)}
 .ch-opt.active{background:var(--accent-soft,rgba(124,92,255,.16));border-color:rgba(var(--accent-rgb,124,92,255),.7);color:var(--accent,#a98bff)}
-.ch-themes{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:360px}
-.ch-theme{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border:2px solid transparent;border-radius:12px;padding:5px 6px;transition:all .15s}
-.ch-theme.active{border-color:var(--accent,#7c5cff);background:var(--accent-soft,rgba(124,92,255,.12))}
-.ch-sw{width:46px;height:30px;border-radius:7px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;box-shadow:0 2px 6px rgba(0,0,0,.4)}
-.ch-theme-lbl{font-size:.66rem;color:var(--text2,#ccd);font-weight:700}
-.ch-toggle{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text2,#ccd);background:var(--card2,#1b1d33);border:1.5px solid var(--border,#2a2c44);border-radius:10px;padding:8px 14px;cursor:pointer;user-select:none}
-.ch-toggle .ch-tg{width:34px;height:19px;border-radius:999px;background:#3a3d55;position:relative;transition:background .15s;flex:none}
-.ch-toggle .ch-tg::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .15s}
-.ch-toggle.on .ch-tg{background:var(--accent,#7c5cff)}
-.ch-toggle.on .ch-tg::after{transform:translateX(15px)}
 .ch-play{background:linear-gradient(135deg,var(--accent,#7c5cff),#a855f7);color:#fff;border:none;border-radius:12px;padding:13px 44px;font:inherit;font-size:1.05rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(124,92,255,.35);transition:transform .15s}
 .ch-play:hover{transform:scale(1.04)}
 
-.ch-status{display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:700;color:var(--text,#fff);min-height:24px;text-align:center}
+.ch-status{display:flex;align-items:center;gap:8px;font-size:.92rem;font-weight:700;color:var(--text,#fff);min-height:24px;text-align:center}
 .ch-turn-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid #888}
 .ch-turn-w{background:#f1f1f1}.ch-turn-b{background:#222}
-.ch-tray{display:flex;align-items:center;gap:1px;flex-wrap:wrap;justify-content:center;min-height:26px;width:min(94vw,460px);font-size:1.35rem;line-height:1}
-.ch-cap{filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
-.ch-cap.ch-w{color:var(--pcl)}.ch-cap.ch-b{color:var(--pcd)}
-.ch-adv{font-size:.78rem;font-weight:800;color:var(--muted,#9aa);margin-left:6px}
-.ch-stage{width:min(94vw,460px);aspect-ratio:1;position:relative;border-radius:12px}
-.ch-stage canvas{filter:drop-shadow(0 16px 40px rgba(0,0,0,.5))}
-.ch-board{width:min(94vw,460px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border-radius:8px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.45);touch-action:manipulation;border:3px solid var(--sqd,#7b91b0)}
-.ch-sq{position:relative;display:flex;align-items:center;justify-content:center;border:none;padding:0;cursor:pointer;font-size:clamp(22px,7.5vw,40px);line-height:1;user-select:none;-webkit-tap-highlight-color:transparent}
-.ch-light{background:var(--sql,#e8edf4)}.ch-dark{background:var(--sqd,#7b91b0)}
-.ch-pc{position:relative;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));transition:transform .12s}
-.ch-w{color:var(--pcl,#fff);text-shadow:0 0 1px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.4)}
-.ch-b{color:var(--pcd,#1a1a1a)}
-.ch-sq.sel{box-shadow:inset 0 0 0 4px rgba(90,209,122,.95)}
-.ch-sq.last::before{content:'';position:absolute;inset:0;background:rgba(242,193,78,.32);z-index:1}
-.ch-sq.check::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(239,68,68,.7),transparent 70%);z-index:1}
-.ch-dest::after{content:'';position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(47,207,114,.55);z-index:1}
-.ch-dest.cap::after{width:84%;height:84%;background:transparent;border:4px solid rgba(47,207,114,.6);box-sizing:border-box}
-.ch-coord{position:absolute;font-size:9px;font-weight:700;opacity:.55;z-index:1}
-.ch-coord.f{right:2px;bottom:1px}.ch-coord.r{left:2px;top:1px}
-.ch-light .ch-coord{color:rgba(0,0,0,.5)}.ch-dark .ch-coord{color:rgba(255,255,255,.7)}
+/* clocks + move counter */
+.ch-bar{display:flex;align-items:stretch;gap:8px;width:min(94vw,480px);justify-content:space-between}
+.ch-clock{display:flex;align-items:center;gap:7px;background:var(--card2,#1b1d33);border:1.5px solid var(--border,#2a2c44);border-radius:11px;padding:7px 14px;min-width:92px;justify-content:center;transition:all .15s}
+.ch-clock.active{border-color:rgba(var(--accent-rgb,124,92,255),.85);background:var(--accent-soft,rgba(124,92,255,.14));box-shadow:0 0 0 1px rgba(var(--accent-rgb,124,92,255),.4)}
+.ch-clock .pip{width:14px;height:14px;border-radius:50%;border:1.5px solid #777}
+.ch-clock .pip.w{background:#f1f1f1}.ch-clock .pip.b{background:#1c1c1c}
+.ch-clock .t{font-variant-numeric:tabular-nums;font-weight:800;font-size:1rem;color:var(--text,#fff);letter-spacing:.5px}
+.ch-moves{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--muted,#9aa);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.ch-moves b{font-size:1.1rem;color:var(--text,#fff);font-variant-numeric:tabular-nums}
+/* captured trays */
+.ch-tray{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:flex-start;min-height:24px;width:min(94vw,480px);padding:0 2px}
+.ch-tray.bot{align-items:flex-start}
+.ch-cap{width:20px;height:24px;display:inline-flex;align-items:center;justify-content:center;margin-right:-3px}
+.ch-cap svg{width:100%;height:100%;overflow:visible}
+.ch-adv{font-size:.8rem;font-weight:800;color:var(--muted,#9aa);margin-left:8px;align-self:center}
+/* board */
+.ch-board{width:min(94vw,480px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
+  border:7px solid var(--frm);border-radius:10px;overflow:hidden;touch-action:manipulation;
+  box-shadow:0 16px 44px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.06) inset,inset 0 0 0 1px rgba(0,0,0,.25)}
+.ch-sq{position:relative;display:flex;align-items:center;justify-content:center;border:none;padding:0;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;overflow:visible}
+.ch-light{background:var(--sql)}.ch-dark{background:var(--sqd)}
+.ch-pc{position:relative;z-index:2;width:92%;height:92%;pointer-events:none;will-change:transform;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.ch-pc-w{fill:var(--pcl);stroke:var(--pcd)}
+.ch-pc-b{fill:var(--pcd);stroke:var(--pcl)}
+.ch-pc text{paint-order:stroke;stroke-width:3px;stroke-linejoin:round;
+  font-family:'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols2','DejaVu Sans',sans-serif}
+.ch-sq.sel::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 4px rgba(120,210,120,.95);z-index:1}
+.ch-sq.last::before{content:'';position:absolute;inset:0;background:rgba(245,205,80,.42);z-index:0}
+.ch-sq.check::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(239,68,68,.85),rgba(239,68,68,.2) 65%,transparent 72%);z-index:0}
+.ch-dest::after{content:'';position:absolute;width:32%;height:32%;border-radius:50%;background:rgba(60,180,75,.5);z-index:1;box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.ch-dest.cap::after{width:90%;height:90%;background:transparent;border:5px solid rgba(60,180,75,.55);box-sizing:border-box}
+.ch-coord{position:absolute;font-size:clamp(8px,2vw,11px);font-weight:800;opacity:.65;z-index:1;pointer-events:none}
+.ch-coord.f{right:3px;bottom:1px}.ch-coord.r{left:3px;top:1px}
+.ch-light .ch-coord{color:var(--sqd)}.ch-dark .ch-coord{color:var(--sql)}
 
 .ch-ctrls{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:480px}
-.ch-btn{background:var(--card2,#1b1d33);border:1px solid var(--border,#2a2c44);color:var(--text2,#ccd);border-radius:9px;padding:8px 13px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}
+.ch-btn{background:var(--card2,#1b1d33);border:1px solid var(--border,#2a2c44);color:var(--text2,#ccd);border-radius:9px;padding:9px 15px;font:inherit;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .15s}
 .ch-btn:hover{border-color:rgba(var(--accent-rgb,124,92,255),.5);color:var(--accent,#a98bff)}
 .ch-btn.on{background:var(--accent-soft,rgba(124,92,255,.16));border-color:rgba(var(--accent-rgb,124,92,255),.7);color:var(--accent,#a98bff)}
 .ch-btn:disabled{opacity:.4;cursor:default}
 
-.ch-promo-back{position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
+/* modals (promotion + theme picker) */
+.ch-back{position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px}
 .ch-promo{background:var(--card,#14162a);border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px;display:flex;gap:10px}
-.ch-promo button{font-size:2.6rem;background:var(--sql,#e8edf4);border:2px solid transparent;border-radius:10px;width:64px;height:64px;cursor:pointer;color:var(--pcd,#1a1a1a);transition:all .12s}
+.ch-promo button{background:var(--sql,#e8edf4);border:2px solid transparent;border-radius:12px;width:66px;height:66px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
 .ch-promo button:hover{border-color:var(--accent,#7c5cff);transform:scale(1.06)}
+.ch-promo button svg{width:54px;height:54px}
 .ch-pop{background:var(--card,#14162a);border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px 18px 20px;max-width:min(92vw,400px)}
-.ch-pop-title{font-weight:800;color:var(--text,#fff);font-size:1.05rem;text-align:center;margin-bottom:10px}
-.ch-pop-grp{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--muted,#9aa);margin:10px 0 4px;text-transform:uppercase}
-@media (prefers-reduced-motion:reduce){.ch-play,.ch-promo button{transition:none}}`;
+.ch-pop-title{font-weight:800;color:var(--text,#fff);font-size:1.05rem;text-align:center;margin-bottom:8px}
+.ch-pop-grp{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--muted,#9aa);margin:12px 0 6px;text-transform:uppercase}
+.ch-themes{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.ch-theme{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;border:2px solid transparent;border-radius:12px;padding:6px 7px;transition:all .15s}
+.ch-theme:hover{background:rgba(255,255,255,.05)}
+.ch-theme.active{border-color:var(--accent,#7c5cff);background:var(--accent-soft,rgba(124,92,255,.12))}
+.ch-sw{width:54px;height:36px;border-radius:8px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;box-shadow:0 2px 8px rgba(0,0,0,.45);border:2px solid rgba(0,0,0,.3)}
+.ch-sw i{display:block}
+.ch-theme-lbl{font-size:.68rem;color:var(--text2,#ccd);font-weight:700}
+@media (prefers-reduced-motion:reduce){.ch-pc,.ch-play,.ch-promo button{transition:none!important}}`;
     document.head.appendChild(s);
   }
 
@@ -482,42 +205,36 @@ const ChessGame = (function () {
     showMenu();
   }
 
-  function themeSwatch(t) {
-    return `<span class="ch-sw"><i style="background:${t.light}"></i><i style="background:${t.dark}"></i><i style="background:${t.dark}"></i><i style="background:${t.light}"></i></span>`;
-  }
-
   function showMenu() {
-    disposeBoard();
+    stopClock();
     const opp = [
       { k: 'ai-easy',   t: '🟢 IA Fácil' }, { k: 'ai-medium', t: '🟡 IA Médio' },
       { k: 'ai-hard',   t: '🔴 IA Difícil' }, { k: '2p',       t: '👥 2 Jogadores' },
     ];
     const cur = mode === '2p' ? '2p' : 'ai-' + diffKey;
     root.innerHTML = `
-      <div class="ch-menu">
-        <div class="ch-logo">♟️</div>
-        <div class="ch-title">Xadrez</div>
-        <div class="ch-sub">Adversário</div>
-        <div class="ch-opts" id="ch-opp">
-          ${opp.map(o => `<button class="ch-opt${o.k === cur ? ' active' : ''}" data-k="${o.k}">${o.t}</button>`).join('')}
+      <div class="ch-wrap">
+        <div class="ch-menu">
+          <div class="ch-logo">♟️</div>
+          <div class="ch-title">Xadrez</div>
+          <div class="ch-sub">Adversário</div>
+          <div class="ch-opts" id="ch-opp">
+            ${opp.map(o => `<button class="ch-opt${o.k === cur ? ' active' : ''}" data-k="${o.k}">${o.t}</button>`).join('')}
+          </div>
+          <div class="ch-sub">Jogas com</div>
+          <div class="ch-opts" id="ch-color">
+            <button class="ch-opt${humanColor === 'w' ? ' active' : ''}" data-c="w">⚪ Brancas</button>
+            <button class="ch-opt${humanColor === 'b' ? ' active' : ''}" data-c="b">⚫ Pretas</button>
+            <button class="ch-opt" data-c="rand">🎲 Aleatório</button>
+          </div>
+          <div class="ch-sub" style="font-size:.72rem;opacity:.8;max-width:300px">⚙️ Tema do tabuleiro e dicas escolhem-se durante o jogo</div>
+          <button class="ch-play" id="ch-play">▶ Jogar</button>
         </div>
-        <div class="ch-sub">Jogas com</div>
-        <div class="ch-opts" id="ch-color">
-          <button class="ch-opt${humanColor === 'w' ? ' active' : ''}" data-c="w">⚪ Brancas</button>
-          <button class="ch-opt${humanColor === 'b' ? ' active' : ''}" data-c="b">⚫ Pretas</button>
-          <button class="ch-opt" data-c="rand">🎲 Aleatório</button>
-        </div>
-        <div class="ch-sub" style="margin-top:4px;font-size:.72rem;opacity:.8">⚙️ Tabuleiro 3D/2D, tema e dicas escolhem-se já durante o jogo</div>
-        <button class="ch-play" id="ch-play">▶ Jogar</button>
       </div>`;
-
+    applyThemeVars();
     root.querySelectorAll('#ch-opp .ch-opt').forEach(b => b.addEventListener('click', () => {
       const k = b.dataset.k;
-      if (k === '2p') {
-        mode = '2p';
-        /* 3D shares one screen and only faces one side — 2D is better for hot-seat. */
-        renderMode = '2d'; savePref('chess-render', renderMode);
-      } else { mode = 'ai'; diffKey = k.split('-')[1]; }
+      if (k === '2p') mode = '2p'; else { mode = 'ai'; diffKey = k.split('-')[1]; }
       root.querySelectorAll('#ch-opp .ch-opt').forEach(x => x.classList.toggle('active', x === b));
     }));
     root.querySelectorAll('#ch-color .ch-opt').forEach(b => b.addEventListener('click', () => {
@@ -529,18 +246,16 @@ const ChessGame = (function () {
 
   function setHints(on) {
     showHints = on; savePref('chess-hints', on ? '1' : '0');
-    document.querySelectorAll('#ch-hint-toggle').forEach(el => { el.classList.toggle('on', on); el.setAttribute('aria-checked', on); });
     const btn = root.querySelector('#ch-hint-btn'); if (btn) btn.classList.toggle('on', on);
-    refreshHighlight();
+    draw2D();
   }
 
-  function disposeBoard() { if (board3d) { try { board3d.dispose(); } catch (e) {} board3d = null; } }
-
   function startGame() {
-    disposeBoard();
     game = new Chess();
-    selected = null; legalDests = []; lastMove = null; busy = false;
+    selected = null; legalDests = []; lastMove = null; busy = false; animMove = null;
+    startClock();
     renderGame();
+    if (mode === 'ai' && game.turn() !== humanColor) aiTurn();
   }
 
   /* ── render shell ───────────────────────────────────────────────── */
@@ -548,20 +263,24 @@ const ChessGame = (function () {
     const wrap = root.querySelector('.ch-wrap'); if (!wrap) return;
     const t = theme();
     wrap.style.setProperty('--sql', t.light); wrap.style.setProperty('--sqd', t.dark);
+    wrap.style.setProperty('--frm', t.frame);
     wrap.style.setProperty('--pcl', t.pcLight); wrap.style.setProperty('--pcd', t.pcDark);
   }
 
   function renderGame() {
-    const is3D = renderMode === '3d';
     root.innerHTML = `
       <div class="ch-wrap">
         <div class="ch-status" id="ch-status"></div>
-        <div class="ch-tray" id="ch-tray-top"></div>
-        <div class="ch-stage" id="ch-stage"></div>
-        <div class="ch-tray" id="ch-tray-bot"></div>
+        <div class="ch-bar">
+          <div class="ch-clock" id="ch-clk-w"><span class="pip w"></span><span class="t">0:00</span></div>
+          <div class="ch-moves"><span>Jogadas</span><b id="ch-moveno">0</b></div>
+          <div class="ch-clock" id="ch-clk-b"><span class="pip b"></span><span class="t">0:00</span></div>
+        </div>
+        <div class="ch-tray top" id="ch-tray-top"></div>
+        <div class="ch-board" id="ch-board" role="grid" aria-label="Tabuleiro de xadrez"></div>
+        <div class="ch-tray bot" id="ch-tray-bot"></div>
         <div class="ch-ctrls">
           <button class="ch-btn${showHints ? ' on' : ''}" id="ch-hint-btn">💡 Dicas</button>
-          <button class="ch-btn" id="ch-render-btn">${is3D ? '⬛ 2D' : '🧊 3D'}</button>
           <button class="ch-btn" id="ch-theme-btn">🎨 Tema</button>
           <button class="ch-btn" id="ch-undo">↩ Desfazer</button>
           <button class="ch-btn" id="ch-new">🔄 Novo</button>
@@ -570,35 +289,28 @@ const ChessGame = (function () {
       </div>`;
     applyThemeVars();
     root.querySelector('#ch-hint-btn').addEventListener('click', () => setHints(!showHints));
-    root.querySelector('#ch-render-btn').addEventListener('click', toggleRender);
     root.querySelector('#ch-theme-btn').addEventListener('click', openThemePicker);
+    root.querySelector('#ch-undo').addEventListener('click', undo);
     root.querySelector('#ch-new').addEventListener('click', startGame);
     root.querySelector('#ch-menu').addEventListener('click', showMenu);
-    root.querySelector('#ch-undo').addEventListener('click', undo);
-    mountBoard();
+    draw2D();
     updateStatus();
     renderTrays();
+    updateClock();
   }
 
-  function toggleRender() {
-    renderMode = renderMode === '3d' ? '2d' : '3d';
-    savePref('chess-render', renderMode);
-    disposeBoard();
-    renderGame();                                    /* re-mount, game state preserved */
+  /* ── theme picker ───────────────────────────────────────────────── */
+  function themeSwatch(t) {
+    return `<span class="ch-sw"><i style="background:${t.light}"></i><i style="background:${t.dark}"></i><i style="background:${t.dark}"></i><i style="background:${t.light}"></i></span>`;
   }
-
   function setTheme(k) {
     if (!THEMES[k]) return;
     themeKey = k; savePref('chess-theme', themeKey);
-    applyThemeVars();
-    if (use3D && board3d) board3d.setTheme(theme());
-    else draw2D();
-    renderTrays();
+    applyThemeVars(); draw2D(); renderTrays();
   }
-
   function openThemePicker() {
     const back = document.createElement('div');
-    back.className = 'ch-promo-back';
+    back.className = 'ch-back';
     const groups = { light: '☀️ Claros', dark: '🌙 Escuros' };
     let html = '<div class="ch-pop"><div class="ch-pop-title">🎨 Tema do tabuleiro</div>';
     ['light', 'dark'].forEach(gr => {
@@ -615,42 +327,28 @@ const ChessGame = (function () {
     back.addEventListener('click', e => { if (e.target === back) back.remove(); });
   }
 
-  function mountBoard() {
-    const stage = root.querySelector('#ch-stage');
-    if (!stage) return;
-    if (renderMode !== '3d') { use3D = false; draw2D(); afterInitialMove(); return; }
-    ensureThree().then(() => {
-      if (!root.querySelector('#ch-stage')) return;
-      use3D = true;
-      board3d = createBoard3D(stage, onSquare, theme());
-      board3d.setFlip(mode === 'ai' && humanColor === 'b');
-      board3d.rebuild(game.board());
-      refreshHighlight();
-      afterInitialMove();
-    }).catch((err) => { try { console.warn('[chess] 3D mount failed, falling back to 2D:', err && (err.stack || err.message || err)); } catch (e) {} use3D = false; draw2D(); afterInitialMove(); });
+  /* ── clocks + move counter ──────────────────────────────────────── */
+  function startClock() { clock = { w: 0, b: 0 }; lastTick = performance.now(); stopClock(); clockTimer = setInterval(tick, 250); }
+  function stopClock() { if (clockTimer) { clearInterval(clockTimer); clockTimer = null; } }
+  function accrue() {
+    if (!game) return;
+    const now = performance.now();
+    let dt = (now - lastTick) / 1000; lastTick = now;
+    if (dt > 5) dt = 5;                      /* tab was backgrounded — don't dump a huge chunk */
+    if (!game.game_over()) clock[game.turn()] += dt;
+  }
+  function tick() { if (!game || game.game_over()) { stopClock(); return; } accrue(); updateClock(); }
+  function fmt(sec) { sec = Math.floor(sec); const m = Math.floor(sec / 60); return m + ':' + String(sec % 60).padStart(2, '0'); }
+  function updateClock() {
+    if (!game) return;
+    const cw = root.querySelector('#ch-clk-w'), cb = root.querySelector('#ch-clk-b'), mv = root.querySelector('#ch-moveno');
+    const over = game.game_over(), turn = game.turn();
+    if (cw) { cw.querySelector('.t').textContent = fmt(clock.w); cw.classList.toggle('active', !over && turn === 'w'); }
+    if (cb) { cb.querySelector('.t').textContent = fmt(clock.b); cb.classList.toggle('active', !over && turn === 'b'); }
+    if (mv) mv.textContent = game.history().length;
   }
 
-  function afterInitialMove() {
-    /* Only auto-open when the AI plays White from the very start. */
-    if (mode === 'ai' && game.history().length === 0 && game.turn() !== humanColor) aiTurn();
-  }
-
-  function hiState() {
-    let checkSq = null;
-    if (game.in_check()) {
-      const turn = game.turn(), board = game.board(), files = ['a','b','c','d','e','f','g','h'];
-      for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
-        const pc = board[r][c]; if (pc && pc.type === 'k' && pc.color === turn) checkSq = files[c] + (8 - r);
-      }
-    }
-    return { selected, legalDests, lastMove, checkSq, showHints };
-  }
-  function refreshHighlight() {
-    if (use3D && board3d) board3d.highlight(hiState());
-    else draw2D();
-  }
-
-  /* captured pieces (derived from history → robust to undo) */
+  /* ── captured trays ─────────────────────────────────────────────── */
   function capturedState() {
     const cap = { w: [], b: [] };
     if (game) game.history({ verbose: true }).forEach(m => { if (m.captured) cap[m.color].push(m.captured); });
@@ -666,11 +364,11 @@ const ChessGame = (function () {
     const topColor = bottomColor === 'w' ? 'b' : 'w';
     const whiteLead = sumV(cap.w) - sumV(cap.b);
     const lead = { w: whiteLead, b: -whiteLead };
-    const trayHTML = (capturerColor) => {
-      const victims = sortV(cap[capturerColor]);                /* pieces the capturer took */
-      const victimColor = capturerColor === 'w' ? 'b' : 'w';
-      const pts = lead[capturerColor];
-      return victims.map(t => `<span class="ch-cap ch-${victimColor}">${GLYPH[t]}</span>`).join('')
+    const trayHTML = (capturer) => {
+      const victims = sortV(cap[capturer]);
+      const vColor = capturer === 'w' ? 'b' : 'w';
+      const pts = lead[capturer];
+      return victims.map(t => `<span class="ch-cap">${pieceSVG(t, vColor)}</span>`).join('')
         + (pts > 0 ? `<span class="ch-adv">+${Math.round(pts / 100)}</span>` : '');
     };
     top.innerHTML = trayHTML(topColor);
@@ -678,14 +376,23 @@ const ChessGame = (function () {
   }
 
   /* ── 2D renderer ────────────────────────────────────────────────── */
+  function pieceSVG(type, color) {
+    return `<svg class="ch-pc ch-pc-${color}" viewBox="0 0 100 100" aria-hidden="true">
+      <text x="50" y="82" text-anchor="middle" font-size="92">${GLYPH[type]}</text></svg>`;
+  }
+
   function draw2D() {
-    const stage = root.querySelector('#ch-stage'); if (!stage) return;
-    let bd = stage.querySelector('#ch-board');
-    if (!bd) { stage.innerHTML = '<div class="ch-board" id="ch-board" role="grid" aria-label="Tabuleiro de xadrez"></div>'; bd = stage.querySelector('#ch-board'); }
+    const bd = root.querySelector('#ch-board'); if (!bd) return;
     const flip = (mode === 'ai' && humanColor === 'b');
     const files = ['a','b','c','d','e','f','g','h'];
     const board = game.board();
-    const hi = hiState();
+    let checkSq = null;
+    if (game.in_check()) {
+      const turn = game.turn();
+      for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+        const pc = board[r][c]; if (pc && pc.type === 'k' && pc.color === turn) checkSq = files[c] + (8 - r);
+      }
+    }
     const rowOrder = flip ? [...Array(8).keys()].reverse() : [...Array(8).keys()];
     const colOrder = flip ? [...Array(8).keys()].reverse() : [...Array(8).keys()];
     let html = '';
@@ -697,13 +404,13 @@ const ChessGame = (function () {
         const cls = ['ch-sq', dark ? 'ch-dark' : 'ch-light'];
         if (selected === sq) cls.push('sel');
         if (lastMove && (lastMove.from === sq || lastMove.to === sq)) cls.push('last');
-        if (hi.checkSq === sq) cls.push('check');
+        if (checkSq === sq) cls.push('check');
         if (showHints && legalDests.includes(sq)) { cls.push('ch-dest'); if (pc) cls.push('cap'); }
         const label = sq + (pc ? ', ' + (pc.color === 'w' ? 'branca' : 'preta') + ' ' + pieceName(pc.type) : ' vazio');
         const showFile = (flip ? r === 0 : r === 7);
         const showRank = (flip ? c === 7 : c === 0);
         html += `<button class="${cls.join(' ')}" data-sq="${sq}" role="gridcell" aria-label="${label}">
-          ${pc ? `<span class="ch-pc ch-${pc.color}">${GLYPH[pc.type]}</span>` : ''}
+          ${pc ? pieceSVG(pc.type, pc.color) : ''}
           ${showFile ? `<span class="ch-coord f">${files[c]}</span>` : ''}
           ${showRank ? `<span class="ch-coord r">${8 - r}</span>` : ''}
         </button>`;
@@ -711,6 +418,24 @@ const ChessGame = (function () {
     });
     bd.innerHTML = html;
     bd.querySelectorAll('.ch-sq').forEach(el => el.addEventListener('click', () => onSquare(el.dataset.sq)));
+
+    /* slide the moved piece from its origin (FLIP) */
+    if (animMove) {
+      const a = animMove; animMove = null;
+      const fromEl = bd.querySelector(`.ch-sq[data-sq="${a.from}"]`);
+      const toEl = bd.querySelector(`.ch-sq[data-sq="${a.to}"]`);
+      const pcEl = toEl && toEl.querySelector('.ch-pc');
+      if (fromEl && toEl && pcEl && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches)) {
+        const fr = fromEl.getBoundingClientRect(), tr = toEl.getBoundingClientRect();
+        const dx = fr.left - tr.left, dy = fr.top - tr.top;
+        pcEl.style.transform = `translate(${dx}px,${dy}px)`;
+        pcEl.getBoundingClientRect();                 /* force reflow */
+        requestAnimationFrame(() => {
+          pcEl.style.transition = 'transform .24s cubic-bezier(.22,.68,.32,1)';
+          pcEl.style.transform = 'translate(0,0)';
+        });
+      }
+    }
   }
 
   function pieceName(t) { return ({ p: 'peão', n: 'cavalo', b: 'bispo', r: 'torre', q: 'dama', k: 'rei' })[t] || t; }
@@ -720,6 +445,7 @@ const ChessGame = (function () {
     const undoBtn = root.querySelector('#ch-undo');
     if (undoBtn) undoBtn.disabled = busy || game.history().length === 0;
     if (game.game_over()) {
+      stopClock();
       let msg;
       if (game.in_checkmate()) { const winner = game.turn() === 'w' ? 'Pretas' : 'Brancas'; msg = `♚ Xeque-mate — ${winner} ganham!`; }
       else if (game.in_stalemate()) msg = '🤝 Empate (afogamento)';
@@ -746,14 +472,14 @@ const ChessGame = (function () {
     if (selected) {
       if (legalDests.includes(sq)) { tryMove(selected, sq); return; }
       if (pc && pc.color === turn) { selectSquare(sq); return; }
-      selected = null; legalDests = []; refreshHighlight(); return;
+      selected = null; legalDests = []; draw2D(); return;
     }
     if (pc && pc.color === turn) selectSquare(sq);
   }
   function selectSquare(sq) {
     selected = sq;
     legalDests = game.moves({ square: sq, verbose: true }).map(m => m.to);
-    refreshHighlight();
+    draw2D();
   }
   function tryMove(from, to) {
     const isPromo = game.moves({ square: from, verbose: true }).some(m => m.to === to && m.flags.includes('p'));
@@ -761,50 +487,45 @@ const ChessGame = (function () {
     applyMove({ from, to });
   }
   function applyMove(mv) {
+    accrue();                                          /* bank the mover's think time */
     const res = game.move({ from: mv.from, to: mv.to, promotion: mv.promotion || 'q' });
-    if (!res) { selected = null; legalDests = []; refreshHighlight(); return; }
+    if (!res) { selected = null; legalDests = []; draw2D(); return; }
     lastMove = { from: res.from, to: res.to };
     selected = null; legalDests = [];
     commitMove(res);
   }
-
   function commitMove(res) {
-    const cont = () => {
-      updateStatus(); renderTrays();
-      if (game.game_over()) { finish(); return; }
-      if (mode === 'ai' && game.turn() !== humanColor) aiTurn();
-    };
-    if (use3D && board3d) {
-      const capture = !!res.captured || (res.flags && res.flags.includes('e'));
-      board3d.applyMove(res.from, res.to, { capture, knight: res.piece === 'n' }, () => {
-        board3d.rebuild(game.board());
-        refreshHighlight();
-        cont();
-      });
-    } else { draw2D(); cont(); }
+    animMove = { from: res.from, to: res.to };
+    draw2D(); updateStatus(); renderTrays(); updateClock();
+    if (game.game_over()) { finish(); return; }
+    if (mode === 'ai' && game.turn() !== humanColor) aiTurn();
   }
 
   function promptPromotion(from, to) {
     const color = game.turn();
     const back = document.createElement('div');
-    back.className = 'ch-promo-back';
-    back.style.setProperty('--sql', theme().light); back.style.setProperty('--pcd', theme().pcDark); back.style.setProperty('--pcl', theme().pcLight);
+    back.className = 'ch-back';
     back.innerHTML = `<div class="ch-promo" role="dialog" aria-label="Escolhe a promoção">
-      ${['q','r','b','n'].map(t => `<button data-t="${t}" aria-label="${pieceName(t)}"><span class="ch-${color}">${GLYPH[t]}</span></button>`).join('')}
+      ${['q','r','b','n'].map(t => `<button data-t="${t}" aria-label="${pieceName(t)}">${pieceSVG(t, color)}</button>`).join('')}
     </div>`;
+    applyThemeVarsTo(back);
     document.body.appendChild(back);
     back.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { back.remove(); applyMove({ from, to, promotion: b.dataset.t }); }));
-    back.addEventListener('click', e => { if (e.target === back) { back.remove(); selected = null; legalDests = []; refreshHighlight(); } });
+    back.addEventListener('click', e => { if (e.target === back) { back.remove(); selected = null; legalDests = []; draw2D(); } });
+  }
+  function applyThemeVarsTo(node) {
+    const t = theme();
+    node.style.setProperty('--sql', t.light); node.style.setProperty('--sqd', t.dark);
+    node.style.setProperty('--pcl', t.pcLight); node.style.setProperty('--pcd', t.pcDark);
   }
 
   function aiTurn() {
     busy = true; updateStatus();
-    if (board3d) board3d.setInteractive(false);
     setTimeout(() => {
       const mv = chooseAIMove();
       busy = false;
-      if (board3d) board3d.setInteractive(true);
       if (!mv) { updateStatus(); return; }
+      accrue();                                        /* bank the AI's think time */
       const res = game.move(mv);
       lastMove = { from: res.from, to: res.to };
       selected = null; legalDests = [];
@@ -816,15 +537,15 @@ const ChessGame = (function () {
     if (busy || !game.history().length) return;
     game.undo();
     if (mode === 'ai' && game.history().length && game.turn() !== humanColor) game.undo();
-    selected = null; legalDests = [];
+    selected = null; legalDests = []; animMove = null;
     const h = game.history({ verbose: true });
     lastMove = h.length ? { from: h[h.length - 1].from, to: h[h.length - 1].to } : null;
-    if (use3D && board3d) { board3d.rebuild(game.board()); refreshHighlight(); }
-    else draw2D();
-    updateStatus(); renderTrays();
+    if (game.game_over() === false && !clockTimer) { lastTick = performance.now(); clockTimer = setInterval(tick, 250); }
+    draw2D(); updateStatus(); renderTrays(); updateClock();
   }
 
   function finish() {
+    stopClock();
     if (typeof GameProgress === 'undefined') return;
     let won = null;
     if (mode === 'ai' && game.in_checkmate()) won = (game.turn() !== humanColor);
@@ -833,7 +554,7 @@ const ChessGame = (function () {
       GameProgress.record('chess', {
         won: mode === 'ai' ? won : undefined,
         mode: mode === 'ai' ? diffKey : '2p',
-        meta: { checkmate: game.in_checkmate(), draw: game.in_draw() },
+        meta: { checkmate: game.in_checkmate(), draw: game.in_draw(), moves: game.history().length },
       });
     } catch (e) {}
   }
