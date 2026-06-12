@@ -49,9 +49,9 @@ const ChessGame = (function () {
     marble: { name: 'Mármore', emoji: '🏛️', group: 'light', light: '#eceae3', dark: '#a39a88', frame: '#6f685b', pcLight: '#fcfbf8', pcDark: '#3b362f' },
     ice:    { name: 'Gelo',    emoji: '❄️', group: 'light', light: '#dbe7f1', dark: '#7ba0c0', frame: '#3f5a72', pcLight: '#fbfdff', pcDark: '#22303c' },
     /* ── escuros ── */
-    night:  { name: 'Noturno', emoji: '🌙', group: 'dark', light: '#cfd6e6', dark: '#566184', frame: '#2a3045', pcLight: '#f3f5fb', pcDark: '#13182a' },
-    forest: { name: 'Floresta',emoji: '🌲', group: 'dark', light: '#cdd9c4', dark: '#5a7850', frame: '#283a22', pcLight: '#f2f6ed', pcDark: '#14260f' },
-    coffee: { name: 'Café',    emoji: '☕', group: 'dark', light: '#d8c6b2', dark: '#6b4f3a', frame: '#34241a', pcLight: '#f6efe6', pcDark: '#1f1209' },
+    night:  { name: 'Noturno', emoji: '🌙', group: 'dark', light: '#5c6479', dark: '#333a4f', frame: '#1a1f30', pcLight: '#eef1f8', pcDark: '#0c0f1a' },
+    forest: { name: 'Floresta',emoji: '🌲', group: 'dark', light: '#566b4e', dark: '#34492c', frame: '#172414', pcLight: '#eef3e6', pcDark: '#0b1707' },
+    coffee: { name: 'Café',    emoji: '☕', group: 'dark', light: '#7c6650', dark: '#4c3526', frame: '#23160d', pcLight: '#f1e7d9', pcDark: '#150b05' },
   };
 
   let root, game, mode = 'ai', diffKey = 'medium', humanColor = 'w';
@@ -178,12 +178,12 @@ const ChessGame = (function () {
 .ch-btn:disabled{opacity:.4;cursor:default}
 
 /* modals (promotion + theme picker) */
-.ch-back{position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px}
-.ch-promo{background:var(--card,#14162a);border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px;display:flex;gap:10px}
+.ch-back{position:fixed;inset:0;z-index:9997;background:rgba(6,8,16,.82);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+.ch-promo{background:#161a2c;border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px;display:flex;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .ch-promo button{background:var(--sql,#e8edf4);border:2px solid transparent;border-radius:12px;width:66px;height:66px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
 .ch-promo button:hover{border-color:var(--accent,#7c5cff);transform:scale(1.06)}
 .ch-promo button svg{width:54px;height:54px}
-.ch-pop{background:var(--card,#14162a);border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px 18px 20px;max-width:min(92vw,400px)}
+.ch-pop{background:#161a2c;border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px 18px 20px;max-width:min(92vw,400px);box-shadow:0 24px 70px rgba(0,0,0,.65)}
 .ch-pop-title{font-weight:800;color:var(--text,#fff);font-size:1.05rem;text-align:center;margin-bottom:8px}
 .ch-pop-grp{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--muted,#9aa);margin:12px 0 6px;text-transform:uppercase}
 .ch-themes{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
