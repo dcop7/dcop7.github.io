@@ -44,12 +44,14 @@ const ChessGame = (function () {
   /* Board + piece themes. light/dark = squares, pcLight/pcDark = pieces,
      frame = 3D border. 2D uses the same colours via CSS variables. */
   const THEMES = {
-    wood:   { name: 'Madeira', emoji: '🪵', light: '#f0d9b5', dark: '#b58863', frame: '#5b3d28', pcLight: '#f2e3c6', pcDark: '#5a3a22' },
-    green:  { name: 'Torneio', emoji: '🌿', light: '#eeeed2', dark: '#769656', frame: '#34432c', pcLight: '#f7f4ea', pcDark: '#2c2c2c' },
-    blue:   { name: 'Oceano',  emoji: '🌊', light: '#dde7ef', dark: '#7a9bb8', frame: '#2b3c4d', pcLight: '#f4f7fa', pcDark: '#27323d' },
-    marble: { name: 'Mármore', emoji: '🏛️', light: '#e8e6e0', dark: '#9a958a', frame: '#46423a', pcLight: '#f6f4ef', pcDark: '#3a342e' },
-    night:  { name: 'Noturno', emoji: '🌙', light: '#a6adba', dark: '#4c5366', frame: '#21242e', pcLight: '#e7eaf0', pcDark: '#1a1c26' },
-    coral:  { name: 'Coral',   emoji: '🪸', light: '#f3ddd0', dark: '#c08267', frame: '#5a3a2c', pcLight: '#f6e9df', pcDark: '#4a2c20' },
+    /* ── claros ── */
+    wood:   { name: 'Madeira', emoji: '🪵', group: 'light', light: '#f0d9b5', dark: '#b58863', frame: '#7a5230', pcLight: '#f6ead0', pcDark: '#5a3a22' },
+    marble: { name: 'Mármore', emoji: '🏛️', group: 'light', light: '#e7e5dd', dark: '#a89f8e', frame: '#83796a', pcLight: '#fbfaf7', pcDark: '#46423a' },
+    ice:    { name: 'Gelo',    emoji: '❄️', group: 'light', light: '#dde7ef', dark: '#7fa0bd', frame: '#6e8aa1', pcLight: '#fbfdff', pcDark: '#2b3a47' },
+    /* ── escuros ── */
+    night:  { name: 'Noturno', emoji: '🌙', group: 'dark', light: '#6e7790', dark: '#3a4156', frame: '#20242f', pcLight: '#eaeef6', pcDark: '#13151d' },
+    forest: { name: 'Floresta',emoji: '🌲', group: 'dark', light: '#5d7355', dark: '#34472d', frame: '#1d281a', pcLight: '#e8ebda', pcDark: '#13200e' },
+    obsidian:{name: 'Obsidiana',emoji:'🪨', group: 'dark', light: '#586070', dark: '#2e333e', frame: '#16181e', pcLight: '#e0e4eb', pcDark: '#0e1015' },
   };
 
   let root, game, mode = 'ai', diffKey = 'medium', humanColor = 'w';
@@ -143,9 +145,13 @@ const ChessGame = (function () {
   function createBoard3D(container, onPick, th) {
     const T = THREE;
     const W = container.clientWidth || 380, H = container.clientHeight || W;
+    /* render-loop state — declared up-front: setTheme() (called during setup,
+       below) triggers requestRender(), so `dirty`/`rafId` must already exist. */
+    const tweens = [];
+    let rafId = null, dirty = true;
 
     const scene = new T.Scene();
-    const camera = new T.PerspectiveCamera(32, W / H, 0.1, 100);
+    const camera = new T.PerspectiveCamera(33, W / H, 0.1, 100);
     const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(W, H);
@@ -154,39 +160,41 @@ const ChessGame = (function () {
     container.appendChild(renderer.domElement);
     renderer.domElement.style.cssText = 'width:100%;height:100%;display:block;touch-action:manipulation';
 
-    /* lights */
-    scene.add(new T.AmbientLight(0xffffff, 0.66));
-    const key = new T.DirectionalLight(0xffffff, 0.9);
-    key.position.set(3.5, 10, 4.5);
+    /* lights — lower flat ambient + a hemisphere and rim light so the
+       carved piece forms read with real relief instead of looking flat. */
+    scene.add(new T.AmbientLight(0xffffff, 0.32));
+    scene.add(new T.HemisphereLight(0xeaf0ff, 0x4c4f5c, 0.42));
+    const key = new T.DirectionalLight(0xfff3df, 0.92);
+    key.position.set(3.8, 9.5, 5.0);
     key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.mapSize.set(2048, 2048);
     key.shadow.camera.near = 1; key.shadow.camera.far = 34;
     key.shadow.camera.left = -7; key.shadow.camera.right = 7;
     key.shadow.camera.top = 7; key.shadow.camera.bottom = -7;
-    key.shadow.bias = -0.0007; key.shadow.radius = 3;
+    key.shadow.bias = -0.0006; key.shadow.radius = 4;
     scene.add(key);
-    const fill = new T.DirectionalLight(0xbcd2ff, 0.22);
-    fill.position.set(-5, 4, -5); scene.add(fill);
+    const fill = new T.DirectionalLight(0xbcd2ff, 0.20);
+    fill.position.set(-5, 4, -3); scene.add(fill);
+    const rim = new T.DirectionalLight(0xffffff, 0.30);     /* back rim → edge definition */
+    rim.position.set(-2, 6, -8); scene.add(rim);
 
     /* materials (theme-driven, kept for live re-theming) */
     const frameMat = new T.MeshStandardMaterial({ roughness: 0.65, metalness: 0.15 });
     const lightMats = [], darkMats = [];
-    const matWhite = new T.MeshStandardMaterial({ roughness: 0.45, metalness: 0.08 });
-    const matBlack = new T.MeshStandardMaterial({ roughness: 0.5, metalness: 0.12 });
+    const matWhite = new T.MeshStandardMaterial({ roughness: 0.34, metalness: 0.16 });
+    const matBlack = new T.MeshStandardMaterial({ roughness: 0.40, metalness: 0.20 });
 
     /* frame */
-    const frame = new T.Mesh(new T.BoxGeometry(9.5, 0.5, 9.5), frameMat);
-    frame.position.y = -0.34; frame.receiveShadow = true; scene.add(frame);
-    const inlay = new T.Mesh(new T.BoxGeometry(8.3, 0.12, 8.3), new T.MeshStandardMaterial({ color: 0x000000, roughness: 1 }));
-    inlay.position.y = -0.06; scene.add(inlay);
+    const frame = new T.Mesh(new T.BoxGeometry(9.4, 0.5, 9.4), frameMat);
+    frame.position.y = -0.32; frame.receiveShadow = true; scene.add(frame);
 
     /* squares */
-    const sqGeo = new T.BoxGeometry(1, 0.18, 1);
+    const sqGeo = new T.BoxGeometry(1, 0.16, 1);
     const sqMesh = {};
     const files = ['a','b','c','d','e','f','g','h'];
     for (let f = 0; f < 8; f++) for (let r = 1; r <= 8; r++) {
-      const dark = (f + r) % 2 === 0;
-      const mat = new T.MeshStandardMaterial({ roughness: 0.8, metalness: 0.04 });
+      const dark = (f + r) % 2 === 1;          /* a1 dark, as in real chess */
+      const mat = new T.MeshStandardMaterial({ color: new T.Color(dark ? th.dark : th.light), roughness: 0.82, metalness: 0.03 });
       (dark ? darkMats : lightMats).push(mat);
       const m = new T.Mesh(sqGeo, mat);
       const name = files[f] + r;
@@ -254,9 +262,9 @@ const ChessGame = (function () {
     /* camera (gentle top-down 3D, fits the whole board) */
     let flip = false;
     function placeCamera() {
-      const z = flip ? 8.6 : -8.6;
-      camera.position.set(0, 8.7, z);
-      camera.lookAt(0, -0.35, 0);
+      const z = flip ? 5.0 : -5.0;                   /* ~68° elevation: mostly top-down, gentle, fits fully */
+      camera.position.set(0, 12.3, z);
+      camera.lookAt(0, 0, 0);
     }
     placeCamera();
 
@@ -303,6 +311,7 @@ const ChessGame = (function () {
         const pc = boardArr[row][col]; if (!pc) continue;
         const sq = files[col] + (8 - row);
         const g = buildPiece(pc.type, pc.color);
+        g.scale.setScalar(1.08);                          /* a touch larger → more presence */
         const w = worldOf(sq);
         g.position.set(w.x, 0, w.z);
         if (pc.color === 'b') g.rotation.y = Math.PI;
@@ -335,8 +344,6 @@ const ChessGame = (function () {
     }
 
     /* tween / render loop */
-    const tweens = [];
-    let rafId = null, dirty = true;
     function requestRender() { dirty = true; if (!rafId) loop(); }
     function loop() {
       rafId = requestAnimationFrame(loop);
@@ -460,6 +467,9 @@ const ChessGame = (function () {
 .ch-promo{background:var(--card,#14162a);border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px;display:flex;gap:10px}
 .ch-promo button{font-size:2.6rem;background:var(--sql,#e8edf4);border:2px solid transparent;border-radius:10px;width:64px;height:64px;cursor:pointer;color:var(--pcd,#1a1a1a);transition:all .12s}
 .ch-promo button:hover{border-color:var(--accent,#7c5cff);transform:scale(1.06)}
+.ch-pop{background:var(--card,#14162a);border:1px solid var(--border,#2a2c44);border-radius:16px;padding:18px 18px 20px;max-width:min(92vw,400px)}
+.ch-pop-title{font-weight:800;color:var(--text,#fff);font-size:1.05rem;text-align:center;margin-bottom:10px}
+.ch-pop-grp{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--muted,#9aa);margin:10px 0 4px;text-transform:uppercase}
 @media (prefers-reduced-motion:reduce){.ch-play,.ch-promo button{transition:none}}`;
     document.head.appendChild(s);
   }
@@ -497,21 +507,7 @@ const ChessGame = (function () {
           <button class="ch-opt${humanColor === 'b' ? ' active' : ''}" data-c="b">⚫ Pretas</button>
           <button class="ch-opt" data-c="rand">🎲 Aleatório</button>
         </div>
-        <div class="ch-sub">Tabuleiro</div>
-        <div class="ch-opts" id="ch-render">
-          <button class="ch-opt${renderMode === '3d' ? ' active' : ''}" data-m="3d">🧊 3D</button>
-          <button class="ch-opt${renderMode === '2d' ? ' active' : ''}" data-m="2d">⬛ 2D <span style="opacity:.7;font-weight:600">(ideal p/ 2 jog.)</span></button>
-        </div>
-        <div class="ch-sub">Tema</div>
-        <div class="ch-themes" id="ch-theme">
-          ${Object.keys(THEMES).map(k => `
-            <div class="ch-theme${themeKey === k ? ' active' : ''}" data-t="${k}" role="button" aria-label="${THEMES[k].name}">
-              ${themeSwatch(THEMES[k])}<span class="ch-theme-lbl">${THEMES[k].emoji} ${THEMES[k].name}</span>
-            </div>`).join('')}
-        </div>
-        <div class="ch-toggle${showHints ? ' on' : ''}" id="ch-hint-toggle" role="switch" aria-checked="${showHints}">
-          <span class="ch-tg"></span><span>💡 Mostrar movimentos possíveis</span>
-        </div>
+        <div class="ch-sub" style="margin-top:4px;font-size:.72rem;opacity:.8">⚙️ Tabuleiro 3D/2D, tema e dicas escolhem-se já durante o jogo</div>
         <button class="ch-play" id="ch-play">▶ Jogar</button>
       </div>`;
 
@@ -521,7 +517,6 @@ const ChessGame = (function () {
         mode = '2p';
         /* 3D shares one screen and only faces one side — 2D is better for hot-seat. */
         renderMode = '2d'; savePref('chess-render', renderMode);
-        root.querySelectorAll('#ch-render .ch-opt').forEach(x => x.classList.toggle('active', x.dataset.m === '2d'));
       } else { mode = 'ai'; diffKey = k.split('-')[1]; }
       root.querySelectorAll('#ch-opp .ch-opt').forEach(x => x.classList.toggle('active', x === b));
     }));
@@ -529,15 +524,6 @@ const ChessGame = (function () {
       humanColor = b.dataset.c === 'rand' ? (Math.random() < 0.5 ? 'w' : 'b') : b.dataset.c;
       root.querySelectorAll('#ch-color .ch-opt').forEach(x => x.classList.toggle('active', x.dataset.c === humanColor));
     }));
-    root.querySelectorAll('#ch-render .ch-opt').forEach(b => b.addEventListener('click', () => {
-      renderMode = b.dataset.m; savePref('chess-render', renderMode);
-      root.querySelectorAll('#ch-render .ch-opt').forEach(x => x.classList.toggle('active', x === b));
-    }));
-    root.querySelectorAll('#ch-theme .ch-theme').forEach(b => b.addEventListener('click', () => {
-      themeKey = b.dataset.t; savePref('chess-theme', themeKey);
-      root.querySelectorAll('#ch-theme .ch-theme').forEach(x => x.classList.toggle('active', x === b));
-    }));
-    root.querySelector('#ch-hint-toggle').addEventListener('click', () => setHints(!showHints));
     root.querySelector('#ch-play').addEventListener('click', startGame);
   }
 
@@ -585,7 +571,7 @@ const ChessGame = (function () {
     applyThemeVars();
     root.querySelector('#ch-hint-btn').addEventListener('click', () => setHints(!showHints));
     root.querySelector('#ch-render-btn').addEventListener('click', toggleRender);
-    root.querySelector('#ch-theme-btn').addEventListener('click', cycleTheme);
+    root.querySelector('#ch-theme-btn').addEventListener('click', openThemePicker);
     root.querySelector('#ch-new').addEventListener('click', startGame);
     root.querySelector('#ch-menu').addEventListener('click', showMenu);
     root.querySelector('#ch-undo').addEventListener('click', undo);
@@ -595,23 +581,38 @@ const ChessGame = (function () {
   }
 
   function toggleRender() {
-    if (busy) return;
     renderMode = renderMode === '3d' ? '2d' : '3d';
     savePref('chess-render', renderMode);
     disposeBoard();
     renderGame();                                    /* re-mount, game state preserved */
   }
 
-  function cycleTheme() {
-    const keys = Object.keys(THEMES);
-    themeKey = keys[(keys.indexOf(themeKey) + 1) % keys.length];
-    savePref('chess-theme', themeKey);
+  function setTheme(k) {
+    if (!THEMES[k]) return;
+    themeKey = k; savePref('chess-theme', themeKey);
     applyThemeVars();
     if (use3D && board3d) board3d.setTheme(theme());
     else draw2D();
     renderTrays();
-    const st = root.querySelector('#ch-status');     /* brief theme name flash (single) */
-    if (st) { st.querySelector('.ch-flash')?.remove(); const tag = document.createElement('span'); tag.className = 'ch-flash'; tag.textContent = ' · ' + theme().emoji + ' ' + theme().name; tag.style.cssText = 'opacity:.7;font-weight:600'; st.appendChild(tag); setTimeout(() => tag.remove(), 1200); }
+  }
+
+  function openThemePicker() {
+    const back = document.createElement('div');
+    back.className = 'ch-promo-back';
+    const groups = { light: '☀️ Claros', dark: '🌙 Escuros' };
+    let html = '<div class="ch-pop"><div class="ch-pop-title">🎨 Tema do tabuleiro</div>';
+    ['light', 'dark'].forEach(gr => {
+      html += `<div class="ch-pop-grp">${groups[gr]}</div><div class="ch-themes">`
+        + Object.keys(THEMES).filter(k => THEMES[k].group === gr).map(k =>
+          `<div class="ch-theme${themeKey === k ? ' active' : ''}" data-t="${k}" role="button" aria-label="${THEMES[k].name}">
+             ${themeSwatch(THEMES[k])}<span class="ch-theme-lbl">${THEMES[k].emoji} ${THEMES[k].name}</span>
+           </div>`).join('') + '</div>';
+    });
+    html += '</div>';
+    back.innerHTML = html;
+    document.body.appendChild(back);
+    back.querySelectorAll('.ch-theme').forEach(el => el.addEventListener('click', () => { setTheme(el.dataset.t); back.remove(); }));
+    back.addEventListener('click', e => { if (e.target === back) back.remove(); });
   }
 
   function mountBoard() {
@@ -626,7 +627,7 @@ const ChessGame = (function () {
       board3d.rebuild(game.board());
       refreshHighlight();
       afterInitialMove();
-    }).catch(() => { use3D = false; draw2D(); afterInitialMove(); });
+    }).catch((err) => { try { console.warn('[chess] 3D mount failed, falling back to 2D:', err && (err.stack || err.message || err)); } catch (e) {} use3D = false; draw2D(); afterInitialMove(); });
   }
 
   function afterInitialMove() {
