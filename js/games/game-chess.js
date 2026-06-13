@@ -151,7 +151,8 @@ const ChessGame = (function () {
 .ch-cap svg{width:100%;height:100%;overflow:visible}
 .ch-adv{font-size:.8rem;font-weight:800;color:var(--muted,#9aa);margin-left:8px;align-self:center}
 /* board */
-.ch-board{width:min(94vw,480px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
+.ch-stage{position:relative;width:min(94vw,480px);line-height:0}
+.ch-board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
   border:7px solid var(--frm);border-radius:10px;overflow:hidden;touch-action:manipulation;
   box-shadow:0 16px 44px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.06) inset,inset 0 0 0 1px rgba(0,0,0,.25)}
 .ch-sq{position:relative;display:flex;align-items:center;justify-content:center;border:none;padding:0;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;overflow:visible}
@@ -170,6 +171,24 @@ const ChessGame = (function () {
 .ch-coord{position:absolute;font-size:clamp(8px,2vw,11px);font-weight:800;opacity:.65;z-index:1;pointer-events:none}
 .ch-coord.f{right:3px;bottom:1px}.ch-coord.r{left:3px;top:1px}
 .ch-light .ch-coord{color:var(--sqd)}.ch-dark .ch-coord{color:var(--sql)}
+
+/* end-of-game overlay (sits over the board, pieces stay visible) */
+.ch-over{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;padding:10px;
+  background:linear-gradient(rgba(6,8,16,.18),rgba(6,8,16,.34));border-radius:10px;line-height:normal;
+  animation:ch-over-in .3s ease both}
+.ch-over.hidden{display:none}
+.ch-over-card{background:rgba(16,19,36,.9);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  border:1.5px solid var(--border,#2a2c44);border-radius:16px;padding:15px 22px 16px;text-align:center;max-width:88%;
+  box-shadow:0 20px 55px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset}
+.ch-over-ic{font-size:2.5rem;line-height:1;margin-bottom:4px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.5))}
+.ch-over-ttl{font-family:var(--font-head,inherit);font-weight:900;font-size:1.3rem;color:var(--text,#fff)}
+.ch-over-sub{font-size:.82rem;color:var(--muted,#9aa);margin:3px 0 13px}
+.ch-over-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ch-over-btns .ch-btn{background:var(--card2,#1b1d33)}
+.ch-over-show{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:6}
+.ch-over-show.hidden{display:none}
+@keyframes ch-over-in{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ch-over{animation:none}}
 
 .ch-ctrls{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:480px}
 .ch-btn{background:var(--card2,#1b1d33);border:1px solid var(--border,#2a2c44);color:var(--text2,#ccd);border-radius:9px;padding:9px 15px;font:inherit;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .15s}
@@ -277,7 +296,9 @@ const ChessGame = (function () {
           <div class="ch-clock" id="ch-clk-b"><span class="pip b"></span><span class="t">0:00</span></div>
         </div>
         <div class="ch-tray top" id="ch-tray-top"></div>
-        <div class="ch-board" id="ch-board" role="grid" aria-label="Tabuleiro de xadrez"></div>
+        <div class="ch-stage" id="ch-stage">
+          <div class="ch-board" id="ch-board" role="grid" aria-label="Tabuleiro de xadrez"></div>
+        </div>
         <div class="ch-tray bot" id="ch-tray-bot"></div>
         <div class="ch-ctrls">
           <button class="ch-btn${showHints ? ' on' : ''}" id="ch-hint-btn">💡 Dicas</button>
@@ -446,21 +467,73 @@ const ChessGame = (function () {
     if (undoBtn) undoBtn.disabled = busy || game.history().length === 0;
     if (game.game_over()) {
       stopClock();
-      let msg;
-      if (game.in_checkmate()) { const winner = game.turn() === 'w' ? 'Pretas' : 'Brancas'; msg = `♚ Xeque-mate — ${winner} ganham!`; }
-      else if (game.in_stalemate()) msg = '🤝 Empate (afogamento)';
-      else if (game.in_threefold_repetition()) msg = '🤝 Empate (repetição)';
-      else if (game.insufficient_material()) msg = '🤝 Empate (material insuficiente)';
-      else msg = '🤝 Empate';
-      el.innerHTML = `<span>${msg}</span>`;
+      const r = resultInfo();
+      el.innerHTML = `<span>${r.ic} ${r.ttl}${r.sub ? ' — ' + r.sub : ''}</span>`;
+      showResultOverlay(r);
       return;
     }
+    hideResultOverlay();
     const turn = game.turn();
     let who;
     if (mode === '2p') who = turn === 'w' ? 'Vez das Brancas' : 'Vez das Pretas';
     else who = busy ? 'IA a pensar…' : (turn === humanColor ? 'A tua vez' : 'IA a pensar…');
     const check = game.in_check() ? ' · Xeque!' : '';
     el.innerHTML = `<span class="ch-turn-dot ch-turn-${turn}"></span><span>${who}${check}</span>`;
+  }
+
+  /* ── end-of-game overlay ────────────────────────────────────────── */
+  function resultInfo() {
+    if (game.in_checkmate()) {
+      const winnerWhite = game.turn() === 'b';            /* side to move is mated → other side wins */
+      if (mode === 'ai') {
+        const won = (winnerWhite ? 'w' : 'b') === humanColor;
+        return won
+          ? { ic: '🏆', ttl: 'Vitória!', sub: 'Xeque-mate — venceste a IA.' }
+          : { ic: '😞', ttl: 'Derrota', sub: 'Xeque-mate — a IA venceu.' };
+      }
+      return { ic: '♚', ttl: 'Xeque-mate!', sub: `${winnerWhite ? 'Brancas' : 'Pretas'} ganham.` };
+    }
+    if (game.in_stalemate())             return { ic: '🤝', ttl: 'Empate', sub: 'Rei afogado (sem jogadas legais).' };
+    if (game.in_threefold_repetition())  return { ic: '🤝', ttl: 'Empate', sub: 'Repetição tripla da posição.' };
+    if (game.insufficient_material())    return { ic: '🤝', ttl: 'Empate', sub: 'Material insuficiente para dar mate.' };
+    return { ic: '🤝', ttl: 'Empate', sub: 'Regra das 50 jogadas.' };
+  }
+
+  function showResultOverlay(r) {
+    const stage = root.querySelector('#ch-stage'); if (!stage) return;
+    let over = stage.querySelector('.ch-over');
+    if (!over) {
+      over = document.createElement('div');
+      over.className = 'ch-over';
+      stage.appendChild(over);
+      const show = document.createElement('button');
+      show.className = 'ch-btn ch-over-show hidden';
+      show.textContent = '🏁 Ver resultado';
+      show.addEventListener('click', () => { over.classList.remove('hidden'); show.classList.add('hidden'); });
+      stage.appendChild(show);
+    }
+    const show = stage.querySelector('.ch-over-show');
+    over.innerHTML = `<div class="ch-over-card">
+        <div class="ch-over-ic">${r.ic}</div>
+        <div class="ch-over-ttl">${r.ttl}</div>
+        <div class="ch-over-sub">${r.sub}</div>
+        <div class="ch-over-btns">
+          <button class="ch-btn" data-act="hide">👁 Ver tabuleiro</button>
+          <button class="ch-btn" data-act="new">🔄 Novo jogo</button>
+          <button class="ch-btn" data-act="menu">☰ Menu</button>
+        </div>
+      </div>`;
+    over.classList.remove('hidden');
+    if (show) show.classList.add('hidden');
+    over.querySelector('[data-act="hide"]').addEventListener('click', () => { over.classList.add('hidden'); if (show) show.classList.remove('hidden'); });
+    over.querySelector('[data-act="new"]').addEventListener('click', startGame);
+    over.querySelector('[data-act="menu"]').addEventListener('click', showMenu);
+  }
+
+  function hideResultOverlay() {
+    const stage = root.querySelector('#ch-stage'); if (!stage) return;
+    const over = stage.querySelector('.ch-over'); if (over) over.remove();
+    const show = stage.querySelector('.ch-over-show'); if (show) show.remove();
   }
 
   /* ── interaction ────────────────────────────────────────────────── */
