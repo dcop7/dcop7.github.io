@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v145';
+const CACHE = 'dcop7-v147';
 const STATIC = [
   '/',
   '/index.html',
@@ -47,6 +47,7 @@ const STATIC = [
   '/js/pages/visual.js',
   '/js/pages/photography.js',
   '/js/pages/workout.js',
+  '/js/pages/workout-rig.js',
   '/js/pages/cheatsheets.js',
   /* Quiz */
   '/js/quiz/quiz-engine.js',
@@ -72,11 +73,9 @@ const STATIC = [
   '/games/minesweeper/i18n.json',
   '/games/minesweeper/config.json',
   '/games/neon-shooter/i18n.json',
-  '/games/sky-hopper/i18n.json',
   '/games/bomb/i18n.json',
-  '/games/chain-reaction/i18n.json',
+  '/games/uno/i18n.json',
   '/games/gravity-lab/i18n.json',
-  '/games/bridge-builder/i18n.json',
   '/js/games/minesweeper.js',
   '/js/games/bomb.js',
   '/js/games/game-memory.js',
@@ -85,11 +84,9 @@ const STATIC = [
   '/js/games/vendor/chess.min.js',
   '/js/games/game-chess.js',
   '/js/games/game-battleship.js',
-  '/js/games/game-sky-hopper.js',
+  '/js/games/game-uno.js',
   '/js/games/game-neon-shooter.js',
   '/js/games/game-gravity-lab.js',
-  '/js/games/game-chain-reaction.js',
-  '/js/games/game-bridge-builder.js',
   '/favicon.svg',
   '/manifest.json',
 ];

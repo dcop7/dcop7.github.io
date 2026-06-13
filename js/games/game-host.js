@@ -20,12 +20,8 @@ const GameHost = (function () {
       desc: '5–7 desafios, conta decrescente. Consegues desarmar a bomba a tempo?' },
     { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee', group: 'Puzzle & Lógica',
       desc: 'Muda a direção da gravidade para guiar a bola até à saída.' },
-    { id: 'chain-reaction',name: 'Chain Reaction',       icon: '⚙️', color: '#6366f1', group: 'Puzzle & Lógica',
-      desc: 'Coloca peças no tabuleiro para criar reações em cadeia explosivas!' },
-    { id: 'bridge-builder',name: 'Bridge Builder',       icon: '🌉', color: '#38bdf8', group: 'Puzzle & Lógica',
-      desc: 'Constrói pontes para os robôs atravessarem. Triângulos são a chave!' },
-    { id: 'sky-hopper',    name: 'Sky Hopper',           icon: '🌟', color: '#06b6d4', group: 'Arcade',
-      desc: 'Toca para voar, desvia dos obstáculos e apanha orbes de energia!' },
+    { id: 'uno',           name: 'Uno',                  icon: '🃏', color: '#ef4444', group: 'Tabuleiro & Estratégia',
+      desc: 'O clássico jogo de cartas. Enfrenta 3 adversários com IA. Não te esqueças do UNO!' },
     { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Arcade',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
   ];
@@ -42,11 +38,9 @@ const GameHost = (function () {
     reaction:       { init: () => ReactionGame.init(document.getElementById('pane-reaction')),         initialized: false },
     chess:          { init: () => ChessGame.init(document.getElementById('pane-chess')),               initialized: false },
     battleship:     { init: () => BattleshipGame.init(document.getElementById('pane-battleship')),     initialized: false },
+    uno:            { init: () => UnoGame.init(document.getElementById('pane-uno')),                   initialized: false },
     'neon-shooter':  { init: () => NeonShooterGame.init(document.getElementById('pane-neon-shooter')),   initialized: false },
-    'sky-hopper':    { init: () => SkyHopperGame.init(document.getElementById('pane-sky-hopper')),       initialized: false },
     'gravity-lab':   { init: () => GravityLabGame.init(document.getElementById('pane-gravity-lab')),     initialized: false },
-    'chain-reaction':{ init: () => ChainReactionGame.init(document.getElementById('pane-chain-reaction')), initialized: false },
-    'bridge-builder':{ init: () => BridgeBuilderGame.init(document.getElementById('pane-bridge-builder')), initialized: false },
   };
 
   /* Unified difficulty model — same as Quizzes (Fácil / Médio / Difícil).
