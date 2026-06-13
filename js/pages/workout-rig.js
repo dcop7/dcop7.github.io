@@ -1,342 +1,276 @@
 /* ══════════════════════════════════════════════════════════════════
-   WorkoutRig — a dependency-free 3D articulated mannequin for the
-   Exercise section. A real forward-kinematics skeleton (joint hierarchy
-   + rest pose) is posed from authored keyframe "clips", projected to a
-   <canvas> with painter-sorted, depth-shaded capsule limbs and ball
-   joints. One mannequin is reused for every exercise; each exercise is
-   just a small set of joint-rotation keyframes (the "single model, many
-   animations" design) — so it is tiny, fully offline and mobile-fast.
+   WorkoutRig — 3D exercise figure using a real rigged humanoid.
+   Loads a CC0 mannequin (Quaternius, via Mesh2Motion) and plays either
+   (a) CC0 motion-capture clips (Mesh2Motion, public-domain — see
+   assets/models/workout/CREDITS.md) or (b) ORIGINAL clips we author on
+   the same skeleton (for exercises with no free mocap — plank, lunge,
+   crunch, …). Both run through one Three.js AnimationMixer; one model is
+   reused for every exercise. three.js is lazy-loaded from a CDN (cached
+   by the service worker); the .glb assets are bundled locally for offline.
 
    Public API:
+     WorkoutRig.setAuthored(defs)            — register original pose-clips
      WorkoutRig.create(canvas, opts) -> {
-       setClip(clip), play(), pause(), setPlaying(b),
-       setSpeed(mult), setView(azDeg, elDeg), orbitFrom(canvas),
-       setPhase(0..1), getPhase(), onPhase(cb), resize(), dispose()
+       setClip(name), play(), pause(), setPlaying(b), setSpeed(m),
+       setView(azDeg, elDeg), setPhase(0..1), getPhase(), onPhase(cb),
+       orbitFrom(el), resize(), isReduced(), dispose()
      }
-   A "clip" = { fps?, loop?, view?:[az,el], keys:[{t, root?, rootRot?, j:{joint:[rx,ry,rz]}}] }
-   Angles are radians; missing joints fall back to the rest pose.
+   Authored def: { dur, view?:[az,el,distMult], ground?:'feet'|'all',
+       keys:[{ t, b:{ boneName:[ex,ey,ez] (local-axis deltas, radians) } }] }
 ══════════════════════════════════════════════════════════════════ */
 const WorkoutRig = (function () {
   'use strict';
 
-  /* ── skeleton: parent before child; off = bone vector from parent (cm),
-        r = radius of the capsule drawn parent→joint (0 = no limb). ──── */
-  const BONES = [
-    { name: 'pelvis',   parent: null,      off: [0, 0, 0],     r: 0 },
-    { name: 'spine1',   parent: 'pelvis',  off: [0, 13, 0],    r: 9.8, noBall: 1 },
-    { name: 'spine2',   parent: 'spine1',  off: [0, 13, 0],    r: 10,  noBall: 1 },
-    { name: 'chest',    parent: 'spine2',  off: [0, 12, 0],    r: 10.5, noBall: 1 },
-    { name: 'neck',     parent: 'chest',   off: [0, 7, 0],     r: 4,   noBall: 1 },
-    { name: 'head',     parent: 'neck',    off: [0, 5, 0],     r: 5, head: 7.6 },
+  const ESM = {
+    three: 'https://esm.sh/three@0.160.0',
+    gltf:  'https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js',
+    skel:  'https://esm.sh/three@0.160.0/examples/jsm/utils/SkeletonUtils.js',
+  };
+  const BASE = 'assets/models/workout/';
+  const reduce = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const FEET_BONES = ['ball_l', 'ball_r', 'foot_l', 'foot_r', 'toe_l', 'toe_r'];
 
-    { name: 'shoulderL', parent: 'chest',  off: [-16, 3, 0],   r: 0 },
-    { name: 'elbowL',    parent: 'shoulderL', off: [-4, -29, 0], r: 5 },
-    { name: 'wristL',    parent: 'elbowL', off: [-2, -27, 0],   r: 4.2 },
-    { name: 'handL',     parent: 'wristL', off: [-1, -12, 0],   r: 3.6 },
+  let _authored = {};
+  function setAuthored(defs) { _authored = defs || {}; }
 
-    { name: 'shoulderR', parent: 'chest',  off: [16, 3, 0],    r: 0 },
-    { name: 'elbowR',    parent: 'shoulderR', off: [4, -29, 0], r: 5 },
-    { name: 'wristR',    parent: 'elbowR', off: [2, -27, 0],   r: 4.2 },
-    { name: 'handR',     parent: 'wristR', off: [1, -12, 0],   r: 3.6 },
-
-    { name: 'hipL',   parent: 'pelvis', off: [-9, -2, 0],   r: 0 },
-    { name: 'kneeL',  parent: 'hipL',   off: [0, -44, 0],   r: 7 },
-    { name: 'ankleL', parent: 'kneeL',  off: [0, -42, 0],   r: 5.5 },
-    { name: 'footL',  parent: 'ankleL', off: [0, -5, 13],   r: 4 },
-
-    { name: 'hipR',   parent: 'pelvis', off: [9, -2, 0],    r: 0 },
-    { name: 'kneeR',  parent: 'hipR',   off: [0, -44, 0],   r: 7 },
-    { name: 'ankleR', parent: 'kneeR',  off: [0, -42, 0],   r: 5.5 },
-    { name: 'footR',  parent: 'ankleR', off: [0, -5, 13],   r: 4 },
-  ];
-  const BY = {}; BONES.forEach((b, i) => { b.idx = i; BY[b.name] = b; });
-  /* default pelvis height so feet rest near the ground plane (y=0). */
-  const REST_ROOT_Y = 95;
-  const GROUND_Y = 0;
-
-  /* ── tiny 3×3 matrix / vector math ─────────────────────────────── */
-  function matFromEuler(x, y, z) {
-    const cx = Math.cos(x), sx = Math.sin(x), cy = Math.cos(y), sy = Math.sin(y), cz = Math.cos(z), sz = Math.sin(z);
-    /* R = Rz * Ry * Rx  (apply X then Y then Z) */
-    return [
-      cy * cz, cz * sx * sy - cx * sz, cx * cz * sy + sx * sz,
-      cy * sz, cx * cz + sx * sy * sz, cx * sy * sz - cz * sx,
-      -sy,     cy * sx,                cx * cy,
-    ];
-  }
-  function matMul(a, b) {
-    const m = new Array(9);
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++)
-      m[r * 3 + c] = a[r * 3] * b[c] + a[r * 3 + 1] * b[3 + c] + a[r * 3 + 2] * b[6 + c];
-    return m;
-  }
-  function matVec(m, v) {
-    return [
-      m[0] * v[0] + m[1] * v[1] + m[2] * v[2],
-      m[3] * v[0] + m[4] * v[1] + m[5] * v[2],
-      m[6] * v[0] + m[7] * v[1] + m[8] * v[2],
-    ];
+  let _libP = null, _assetP = null;
+  function lib() {
+    if (!_libP) _libP = (async () => {
+      const THREE = await import(ESM.three);
+      const { GLTFLoader } = await import(ESM.gltf);
+      const SkeletonUtils = await import(ESM.skel);
+      return { THREE, GLTFLoader, SkeletonUtils };
+    })();
+    return _libP;
   }
 
-  /* ── rest pose (all local rotations 0) ─────────────────────────── */
-  const ZERO = [0, 0, 0];
+  /* build an original AnimationClip from authored local-axis deltas, using
+     the mannequin's bind pose quaternions. */
+  function buildAuthored(THREE, skeleton, name, def) {
+    const bind = {};
+    skeleton.bones.forEach(b => { bind[b.name] = b.quaternion.clone(); });
+    const used = new Set();
+    def.keys.forEach(k => Object.keys(k.b || {}).forEach(n => used.add(n)));
+    const dur = def.dur || 2.4;
+    const times = def.keys.map(k => k.t * dur);
+    const tracks = [];
+    const tmpE = new THREE.Euler(), tmpQ = new THREE.Quaternion();
+    used.forEach(bn => {
+      if (!bind[bn]) return;
+      const vals = [];
+      def.keys.forEach(k => {
+        const d = (k.b && k.b[bn]) || [0, 0, 0];
+        tmpE.set(d[0], d[1], d[2], 'XYZ'); tmpQ.setFromEuler(tmpE);
+        const q = bind[bn].clone().multiply(tmpQ);
+        vals.push(q.x, q.y, q.z, q.w);
+      });
+      tracks.push(new THREE.QuaternionKeyframeTrack(bn + '.quaternion', times.slice(), vals));
+    });
+    return new THREE.AnimationClip(name, dur, tracks);
+  }
+
+  function assets() {
+    if (!_assetP) _assetP = (async () => {
+      const { THREE, GLTFLoader } = await lib();
+      const loader = new GLTFLoader();
+      const [m, a1, a2] = await Promise.all([
+        loader.loadAsync(BASE + 'mannequin.glb'),
+        loader.loadAsync(BASE + 'base-anim.glb'),
+        loader.loadAsync(BASE + 'addon-anim.glb'),
+      ]);
+      const clips = {};
+      [...a1.animations, ...a2.animations].forEach(c => { clips[c.name] = c; });
+      /* authored clips, bound to the mannequin's real skeleton */
+      let skeleton = null;
+      m.scene.traverse(o => { if (o.isSkinnedMesh) skeleton = o.skeleton; });
+      if (skeleton) {
+        for (const name in _authored) {
+          try { clips[name] = buildAuthored(THREE, skeleton, name, _authored[name]); } catch (e) {}
+        }
+      }
+      return { THREE, scene: m.scene, clips };
+    })();
+    return _assetP;
+  }
 
   function create(canvas, opts) {
     opts = opts || {};
-    const ctx = canvas.getContext('2d');
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let THREE, renderer, scene, camera, model, mixer, action, skeleton, hipBone, pelvisBone;
+    let raf = null, ready = false, disposed = false;
+    let azT = (opts.view && opts.view[0]) || 0.5, elT = (opts.view && opts.view[1]) || 0.06;
+    let az = azT, el = elT, pivot;
+    let pendingClip = null, speed = 1, playing = !reduce();
+    let phaseCb = null, lastT = 0, baseDist = 4, distMult = 1, reground = false, groundFeet = true;
+    let _cx = 0, _cy = 0.9, _cz = 0, _shadow = null;   /* figure centre (mean of bones) the camera follows */
+    let footBones = [], allBones = [];
+    const TARGET = 1.7;
 
-    let clip = null, phase = 0, playing = true, speed = 1, last = 0, raf = null;
-    let az = Math.PI / 2, el = 0.12;          /* camera: side view by default */
-    let azTarget = az, elTarget = el;
-    let phaseCb = null;
-    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    async function init() {
+      try {
+        const a = await assets();
+        if (disposed) return;
+        THREE = a.THREE;
+        const L = await lib();
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+        scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x222a3a, 1.15));
+        const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(2.5, 5, 3.5); scene.add(key);
+        const rim = new THREE.DirectionalLight(0x88a0d0, 0.6); rim.position.set(-3, 2, -3); scene.add(rim);
 
-    /* world transforms, recomputed each frame */
-    const wRot = {}, wPos = {};
+        pivot = new THREE.Group(); scene.add(pivot);
+        model = L.SkeletonUtils.clone(a.scene);
+        const mat = new THREE.MeshStandardMaterial({ color: 0xc3cee0, roughness: 0.82, metalness: 0.05 });
+        model.traverse(o => { if (o.isMesh || o.isSkinnedMesh) { o.material = mat; o.frustumCulled = false; if (o.isSkinnedMesh) skeleton = o.skeleton; } });
+
+        pivot.add(model);
+        model.updateMatrixWorld(true);
+        const v = new THREE.Vector3();
+        const measure = (bones) => {
+          let ymin = Infinity, ymax = -Infinity, xs = 0, zs = 0, n = 0;
+          const list = bones || (skeleton ? skeleton.bones : []);
+          if (list.length) list.forEach(b => { b.getWorldPosition(v); ymin = Math.min(ymin, v.y); ymax = Math.max(ymax, v.y); xs += v.x; zs += v.z; n++; });
+          else { const bb = new THREE.Box3().setFromObject(model); ymin = bb.min.y; ymax = bb.max.y; n = 1; }
+          return { ymin, ymax, h: (ymax - ymin) || 1, cx: xs / (n || 1), cz: zs / (n || 1) };
+        };
+        let mz = measure();
+        model.scale.multiplyScalar(TARGET / mz.h);
+        model.updateMatrixWorld(true);
+        mz = measure();
+        model.position.x -= mz.cx; model.position.z -= mz.cz; model.position.y -= mz.ymin;
+        model.updateMatrixWorld(true);
+        baseDist = TARGET * 2.05;
+
+        const sg = new THREE.CircleGeometry(TARGET * 0.22, 32);
+        _shadow = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.24 }));
+        _shadow.rotation.x = -Math.PI / 2; _shadow.position.y = 0.002; pivot.add(_shadow);
+
+        if (skeleton) {
+          hipBone = skeleton.bones.find(b => b.parent && !b.parent.isBone) || skeleton.bones[0];
+          pelvisBone = skeleton.getBoneByName('pelvis') || skeleton.getBoneByName('hips') || hipBone;
+          footBones = FEET_BONES.map(n => skeleton.getBoneByName(n)).filter(Boolean);
+          allBones = skeleton.bones;
+          updateCenter();
+        }
+
+        mixer = new THREE.AnimationMixer(model);
+        ready = true;
+        if (pendingClip) _apply(pendingClip);
+        resize();
+        if (canvas && canvas.parentElement) canvas.parentElement.classList.add('wk-fig-ready');
+        lastT = performance.now();
+        raf = requestAnimationFrame(loop);
+      } catch (e) {
+        if (canvas && canvas.parentElement) canvas.parentElement.classList.add('wk-fig-failed');
+        console.warn('WorkoutRig: 3D unavailable —', e && e.message);
+      }
+    }
+
+    function _apply(name) {
+      assets().then(a => {
+        if (disposed || !mixer) return;
+        const isAuth = !!_authored[name];
+        const clip = a.clips[name] || a.clips['Idle_Loop'] || Object.values(a.clips)[0];
+        if (!clip) return;
+        /* authored exercises: keep the figure grounded (contact point on floor) */
+        reground = isAuth;
+        groundFeet = !(isAuth && _authored[name].ground === 'all');
+        const dm = (opts.view && opts.view[2]) || (isAuth && _authored[name].view && _authored[name].view[2]) || 1;
+        distMult = dm;
+        const next = mixer.clipAction(clip);
+        next.reset(); next.enabled = true; next.setEffectiveWeight(1); next.play();
+        if (action && action !== next) action.crossFadeTo(next, 0.3, false);
+        action = next;
+        if (reduce()) { mixer.setTime(clip.duration * 0.5); playing = false; if (reground) doGround(); updateCenter(); render(); }
+      });
+    }
+
+    function doGround() {
+      if (!skeleton) return;
+      model.updateMatrixWorld(true);
+      const v = new THREE.Vector3();
+      const feet = (groundFeet && footBones.length) ? footBones : allBones;
+      let ymin = Infinity; feet.forEach(b => { b.getWorldPosition(v); ymin = Math.min(ymin, v.y); });
+      model.position.y -= ymin;
+    }
+    /* figure centre (mean of all bones) — the camera looks here, so the
+       figure stays framed for any pose/orientation incl. locomotion. */
+    function updateCenter() {
+      if (!skeleton || !allBones.length) return;
+      model.updateMatrixWorld(true);
+      const v = new THREE.Vector3();
+      let xs = 0, ys = 0, zs = 0; allBones.forEach(b => { b.getWorldPosition(v); xs += v.x; ys += v.y; zs += v.z; });
+      const n = allBones.length;
+      _cx = xs / n; _cy = ys / n; _cz = zs / n;
+      if (_shadow) { _shadow.position.x = _cx; _shadow.position.z = _cz; }
+    }
 
     function resize() {
-      const rect = canvas.getBoundingClientRect();
-      const w = Math.max(40, rect.width), h = Math.max(40, rect.height);
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-      draw();
+      if (!renderer || !camera) return;
+      const r = canvas.getBoundingClientRect();
+      const w = Math.max(40, r.width), h = Math.max(40, r.height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      render();
+    }
+    function placeCamera() {
+      const dist = baseDist * distMult;
+      camera.position.set(_cx + Math.sin(az) * Math.cos(el) * dist, _cy + Math.sin(el) * dist, _cz + Math.cos(az) * Math.cos(el) * dist);
+      camera.lookAt(_cx, _cy, _cz);
+    }
+    function render() { if (renderer && scene && camera) { placeCamera(); renderer.render(scene, camera); } }
+
+    function loop(t) {
+      raf = requestAnimationFrame(loop);
+      const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
+      az += (azT - az) * Math.min(1, dt * 8);
+      el += (elT - el) * Math.min(1, dt * 8);
+      if (mixer && playing && !reduce()) mixer.update(dt * speed);
+      if (reground) doGround();
+      updateCenter();
+      if (phaseCb && action && action.getClip()) phaseCb((action.time % action.getClip().duration) / action.getClip().duration);
+      render();
     }
 
-    /* smootherstep easing */
-    const ease = t => t * t * t * (t * (t * 6 - 15) + 10);
-
-    /* interpolate the clip at the current phase → {root,rootRot,jointEuler{}} */
-    function sample() {
-      if (!clip || !clip.keys.length) return { root: [0, REST_ROOT_Y, 0], rootRot: ZERO, j: {} };
-      const keys = clip.keys;
-      if (keys.length === 1) return normKey(keys[0]);
-      /* find surrounding keys by t */
-      let a = keys[0], b = keys[keys.length - 1];
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (phase >= keys[i].t && phase <= keys[i + 1].t) { a = keys[i]; b = keys[i + 1]; break; }
-      }
-      const span = (b.t - a.t) || 1;
-      const f = ease(Math.max(0, Math.min(1, (phase - a.t) / span)));
-      const ka = normKey(a), kb = normKey(b);
-      const out = { root: lerp3(ka.root, kb.root, f), rootRot: lerp3(ka.rootRot, kb.rootRot, f), j: {} };
-      const names = new Set([...Object.keys(ka.j), ...Object.keys(kb.j)]);
-      names.forEach(n => { out.j[n] = lerp3(ka.j[n] || ZERO, kb.j[n] || ZERO, f); });
-      return out;
-    }
-    function normKey(k) {
-      return { root: k.root || [0, REST_ROOT_Y, 0], rootRot: k.rootRot || ZERO, j: k.j || {} };
-    }
-    function lerp3(a, b, f) { return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }
-
-    /* forward kinematics → fill wRot/wPos */
-    function solve(pose) {
-      for (const bn of BONES) {
-        if (bn.parent === null) {
-          wRot[bn.name] = matFromEuler(pose.rootRot[0], pose.rootRot[1], pose.rootRot[2]);
-          wPos[bn.name] = pose.root.slice();
-        } else {
-          const pr = wRot[bn.parent], pp = wPos[bn.parent];
-          const o = matVec(pr, bn.off);
-          wPos[bn.name] = [pp[0] + o[0], pp[1] + o[1], pp[2] + o[2]];
-          const lr = pose.j[bn.name] || ZERO;
-          wRot[bn.name] = matMul(pr, matFromEuler(lr[0], lr[1], lr[2]));
-        }
-      }
-    }
-
-    /* camera transform + perspective, scale-independent unit coords */
-    function unit(p) {
-      const ca = Math.cos(az), sa = Math.sin(az), ce = Math.cos(el), se = Math.sin(el);
-      let x = p[0] * ca - p[2] * sa;
-      let z = p[0] * sa + p[2] * ca;
-      let y = p[1] * ce - z * se;
-      let zz = p[1] * se + z * ce;
-      const persp = 520 / (520 + zz);
-      return { ux: x * persp, uy: -y * persp, depth: zz, s: persp };
-    }
-    let _sc = 1, _cx = 0, _cy = 0;
-    function project(p) {
-      const u = unit(p);
-      return { x: _cx + u.ux * _sc, y: _cy + u.uy * _sc, depth: u.depth, s: u.s };
-    }
-
-    function draw() {
-      const W = canvas.width, H = canvas.height;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-
-      const pose = sample();
-      solve(pose);
-
-      /* auto-fit: project every joint at scale 1, derive scale+centre so the
-         whole figure always fits whatever the pose (squat, horizontal push-up…). */
-      let uxmin = Infinity, uxmax = -Infinity, uymin = Infinity, uymax = -Infinity;
-      for (const bn of BONES) {
-        const u = unit(wPos[bn.name]);
-        const pad = (bn.head ? bn.head : bn.r || 6) * u.s;
-        uxmin = Math.min(uxmin, u.ux - pad); uxmax = Math.max(uxmax, u.ux + pad);
-        uymin = Math.min(uymin, u.uy - pad); uymax = Math.max(uymax, u.uy + pad);
-      }
-      const bw = (uxmax - uxmin) || 1, bh = (uymax - uymin) || 1;
-      _sc = 0.9 * Math.min(W / bw, H / bh);
-      _cx = W / 2 - _sc * (uxmin + uxmax) / 2;
-      _cy = H / 2 - _sc * (uymin + uymax) / 2;
-      const scale = _sc;
-      const cx = _cx, cy = _cy;
-
-      /* ground contact shadow: under the lowest support joints */
-      let minY = Infinity;
-      for (const n in wPos) minY = Math.min(minY, wPos[n][1]);
-      const supports = ['footL', 'footR', 'handL', 'handR', 'wristL', 'wristR', 'kneeL', 'kneeR', 'pelvis', 'chest', 'elbowL', 'elbowR'];
-      ctx.save();
-      supports.forEach(n => {
-        const p = wPos[n]; if (!p) return;
-        if (p[1] > minY + 16) return;           /* only near-ground points */
-        const sp = project([p[0], GROUND_Y, p[2]], cx, cy, scale);
-        const rad = 16 * scale * sp.s;
-        const g = ctx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, rad);
-        g.addColorStop(0, 'rgba(0,0,0,.28)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.ellipse(sp.x, sp.y, rad, rad * 0.34, 0, 0, Math.PI * 2); ctx.fill();
-      });
-      ctx.restore();
-
-      /* build draw list (bones + head) with depth */
-      const items = [];
-      for (const bn of BONES) {
-        if (!bn.parent) continue;
-        if (bn.r <= 0 && !bn.head) continue;
-        const p1 = wPos[bn.parent], p2 = wPos[bn.name];
-        const a = project(p1, cx, cy, scale), b = project(p2, cx, cy, scale);
-        const depth = (a.depth + b.depth) / 2;
-        items.push({ bn, a, b, depth });
-      }
-      items.sort((u, v) => u.depth - v.depth);   /* far → near */
-
-      const COL = opts.color || { base: '#cdd6e6', hi: '#f3f7ff', lo: '#7c8aa6', joint: '#5b6b88', skin: '#e9b48c' };
-      const dmax = 120, dmin = -120;
-      for (const it of items) {
-        const { bn, a, b, depth } = it;
-        const shade = Math.max(0, Math.min(1, (depth - dmin) / (dmax - dmin)));  /* 0 far .. 1 near */
-        if (bn.head) {
-          /* head sphere */
-          const r = bn.head * scale * b.s;
-          const g = ctx.createRadialGradient(b.x - r * 0.3, b.y - r * 0.4, r * 0.2, b.x, b.y, r);
-          g.addColorStop(0, COL.hiSkin || '#ffe1c4'); g.addColorStop(0.6, COL.skin || '#e9b48c'); g.addColorStop(1, '#b07a4e');
-          ctx.fillStyle = g;
-          ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, Math.PI * 2); ctx.fill();
-          continue;
-        }
-        const r1 = (BY[bn.parent].r || bn.r) * scale * a.s;
-        const r2 = bn.r * scale * b.s;
-        drawCapsule(a.x, a.y, r1, b.x, b.y, r2, shade, COL, bn);
-      }
-    }
-
-    function drawCapsule(x1, y1, r1, x2, y2, r2, shade, COL, bn) {
-      const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 0.001;
-      const nx = -dy / len, ny = dx / len;
-      /* shade: blend lo→base→hi by depth */
-      const baseC = mix(COL.lo, COL.hi, shade * 0.9 + 0.05);
-      ctx.save();
-      /* body outline (rounded) */
-      ctx.beginPath();
-      ctx.moveTo(x1 + nx * r1, y1 + ny * r1);
-      ctx.lineTo(x2 + nx * r2, y2 + ny * r2);
-      ctx.arc(x2, y2, r2, Math.atan2(ny, nx), Math.atan2(-ny, -nx), false);
-      ctx.lineTo(x1 - nx * r1, y1 - ny * r1);
-      ctx.arc(x1, y1, r1, Math.atan2(-ny, -nx), Math.atan2(ny, nx), false);
-      ctx.closePath();
-      /* cross-cylinder gradient (lit upper-left edge) */
-      const gx1 = (x1 + x2) / 2 + nx * Math.max(r1, r2), gy1 = (y1 + y2) / 2 + ny * Math.max(r1, r2);
-      const gx2 = (x1 + x2) / 2 - nx * Math.max(r1, r2), gy2 = (y1 + y2) / 2 - ny * Math.max(r1, r2);
-      const g = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
-      g.addColorStop(0, mix(baseC, '#ffffff', 0.32));
-      g.addColorStop(0.45, baseC);
-      g.addColorStop(1, mix(baseC, '#0a1020', 0.34));
-      ctx.fillStyle = g;
-      ctx.strokeStyle = 'rgba(10,16,32,.35)'; ctx.lineWidth = Math.max(0.6, r2 * 0.12);
-      ctx.fill(); ctx.stroke();
-      ctx.restore();
-      /* rounded joint cap at the distal end (skip on the torso/neck) */
-      if (bn.noBall) return;
-      const jr = r2 * 0.98;
-      const jg = ctx.createRadialGradient(x2 - jr * 0.3, y2 - jr * 0.35, jr * 0.2, x2, y2, jr);
-      jg.addColorStop(0, mix(baseC, '#ffffff', 0.30)); jg.addColorStop(0.7, baseC); jg.addColorStop(1, mix(baseC, '#0a1020', 0.3));
-      ctx.fillStyle = jg;
-      ctx.beginPath(); ctx.arc(x2, y2, jr, 0, Math.PI * 2); ctx.fill();
-    }
-
-    function mix(a, b, t) {
-      const ca = hex(a), cb = hex(b);
-      const r = Math.round(ca[0] + (cb[0] - ca[0]) * t), g = Math.round(ca[1] + (cb[1] - ca[1]) * t), bl = Math.round(ca[2] + (cb[2] - ca[2]) * t);
-      return `rgb(${r},${g},${bl})`;
-    }
-    function hex(c) {
-      if (c[0] === '#') { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
-      const m = c.match(/\d+/g); return m ? m.map(Number) : [200, 200, 200];
-    }
-
-    /* ── loop ──────────────────────────────────────────────────────── */
-    function frame(ts) {
-      raf = requestAnimationFrame(frame);
-      if (!last) last = ts;
-      const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
-      /* ease camera toward target */
-      az += (azTarget - az) * Math.min(1, dt * 8);
-      el += (elTarget - el) * Math.min(1, dt * 8);
-      if (playing && clip && !reduce) {
-        const dur = (clip.dur || 2.4) / Math.max(0.1, speed);
-        phase += dt / dur;
-        if (phase >= 1) phase = clip.loop === false ? 1 : phase % 1;
-        if (phaseCb) phaseCb(phase);
-      }
-      draw();
-    }
-
-    /* ── camera drag ──────────────────────────────────────────────── */
     function orbitFrom(target) {
-      let dragging = false, lx = 0, ly = 0;
-      target.style.touchAction = 'pan-y';
-      const down = e => { dragging = true; const p = pt(e); lx = p.x; ly = p.y; };
-      const move = e => {
-        if (!dragging) return;
-        const p = pt(e); const dx = p.x - lx, dy = p.y - ly; lx = p.x; ly = p.y;
-        azTarget += dx * 0.012; elTarget = Math.max(-0.7, Math.min(0.9, elTarget + dy * 0.008));
-        if (e.cancelable) e.preventDefault();
-      };
-      const up = () => { dragging = false; };
-      const pt = e => { const t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; };
-      target.addEventListener('pointerdown', down);
-      window.addEventListener('pointermove', move, { passive: false });
-      window.addEventListener('pointerup', up);
-      api._off = () => { target.removeEventListener('pointerdown', down); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+      let down = false, lx = 0, ly = 0;
+      const pt = e => { const s = e.touches ? e.touches[0] : e; return { x: s.clientX, y: s.clientY }; };
+      const d = e => { down = true; const p = pt(e); lx = p.x; ly = p.y; };
+      const m = e => { if (!down) return; const p = pt(e); azT += (p.x - lx) * 0.011; elT = Math.max(-0.5, Math.min(0.9, elT + (p.y - ly) * 0.006)); lx = p.x; ly = p.y; if (e.cancelable) e.preventDefault(); };
+      const u = () => { down = false; };
+      target.addEventListener('pointerdown', d);
+      window.addEventListener('pointermove', m, { passive: false });
+      window.addEventListener('pointerup', u);
+      api._off = () => { target.removeEventListener('pointerdown', d); window.removeEventListener('pointermove', m); window.removeEventListener('pointerup', u); };
     }
 
     const ro = (typeof ResizeObserver !== 'undefined') ? new ResizeObserver(() => resize()) : null;
     if (ro) ro.observe(canvas);
 
     const api = {
-      setClip(c) { clip = c; phase = 0; last = 0; if (c && c.view) { azTarget = c.view[0]; elTarget = c.view[1]; } draw(); return api; },
+      setClip(name) { pendingClip = name; if (ready) _apply(name); return api; },
       play() { playing = true; return api; },
       pause() { playing = false; return api; },
       setPlaying(b) { playing = !!b; return api; },
       setSpeed(m) { speed = m; return api; },
-      setView(azDeg, elDeg) { azTarget = azDeg * Math.PI / 180; elTarget = elDeg * Math.PI / 180; return api; },
-      setPhase(p) { phase = Math.max(0, Math.min(1, p)); draw(); if (phaseCb) phaseCb(phase); return api; },
-      getPhase() { return phase; },
+      setView(azDeg, elDeg) { azT = azDeg * Math.PI / 180; elT = elDeg * Math.PI / 180; return api; },
+      setPhase(p) { if (action && action.getClip()) { action.time = Math.max(0, Math.min(1, p)) * action.getClip().duration; if (mixer) mixer.update(0); if (reground) doGround(); updateCenter(); render(); } return api; },
+      getPhase() { return action && action.getClip() ? (action.time / action.getClip().duration) : 0; },
       onPhase(cb) { phaseCb = cb; return api; },
-      orbitFrom,
-      resize,
-      isReduced() { return reduce; },
-      dispose() { if (raf) cancelAnimationFrame(raf); if (ro) ro.disconnect(); if (api._off) api._off(); },
+      orbitFrom, resize,
+      isReduced() { return reduce(); },
+      dispose() {
+        disposed = true; if (raf) cancelAnimationFrame(raf); if (ro) ro.disconnect(); if (api._off) api._off();
+        try { if (mixer) mixer.stopAllAction(); if (renderer) { renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); } } catch (e) {}
+        renderer = scene = camera = model = mixer = null;
+      },
     };
 
-    resize();
-    raf = requestAnimationFrame(frame);
+    init();
     return api;
   }
 
-  return { create, BONES };
+  return { create, preload: assets, setAuthored };
 })();

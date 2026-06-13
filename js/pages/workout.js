@@ -1,16 +1,14 @@
 /* ══════════════════════════════════════════════════════════════════
-   WorkoutPage — "Treino em Casa", rebuilt around a real 3D mannequin.
-   A single dependency-free articulated figure (WorkoutRig) is reused for
-   every exercise; each exercise is a small keyframe clip. The section
+   WorkoutPage — "Treino em Casa", built around a real 3D mannequin.
+   A single rigged CC0 humanoid (WorkoutRig) is reused for every exercise;
+   each exercise plays a CC0 motion-capture clip (see CREDITS). The section
    works like a modern training guide: pick a session OR browse the
-   exercise library, where every exercise shows its starting position,
+   exercise library, where each exercise shows its starting position,
    correct execution (animated, orbitable, slow-mo), range of motion,
    target muscles (anatomical map), duration, difficulty and short cues.
-   Fully offline, mobile-first, reduced-motion aware.
 ══════════════════════════════════════════════════════════════════ */
 const WorkoutPage = (function () {
   'use strict';
-  const PI = Math.PI;
 
   /* ── Audio cues ─────────────────────────────────────────────────── */
   function beep(freq, dur, vol = 0.3) {
@@ -29,170 +27,133 @@ const WorkoutPage = (function () {
   function gong() { if (!_audible()) return; beep(523, .3, .5); }
   function done() { if (!_audible()) return; beep(523, .12); setTimeout(() => beep(659, .12), 130); setTimeout(() => beep(784, .12), 260); setTimeout(() => beep(1047, .4), 390); }
 
-  /* ══ Animation clips ═══════════════════════════════════════════════
-     One mannequin, reusable keyframe clips. Angles in radians; missing
-     joints fall back to the rest pose. Loop A→peak→A. */
-  const CLIPS = {
-    squat: { view: [PI / 2, 0.08], dur: 2.6, keys: [
-      { t: 0, root: [0, 95, 0], j: {} },
-      { t: 0.5, root: [0, 58, -7], j: { hipL: [-1.0, 0, 0], hipR: [-1.0, 0, 0], kneeL: [2.05, 0, 0], kneeR: [2.05, 0, 0], spine1: [0.13, 0, 0], spine2: [0.06, 0, 0], shoulderL: [-1.5, 0, 0], shoulderR: [-1.5, 0, 0], elbowL: [0.4, 0, 0], elbowR: [0.4, 0, 0], ankleL: [-0.5, 0, 0], ankleR: [-0.5, 0, 0] } },
-      { t: 1, root: [0, 95, 0], j: {} },
+  /* ── Original clips authored on the mannequin's skeleton ───────────
+     For exercises with no free CC0 mocap (plank, lunge, crunch, …). Local-
+     axis deltas (radians): thigh X+ = hip flexion, calf X+ = knee flexion,
+     spine X+ = forward lean, root X±90 = lie prone/supine. 100% original. */
+  const PI = Math.PI;
+  /* arms hanging at the sides (the mannequin's bind pose is a T-pose) */
+  const AD = { upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3] };       /* arms at sides (mirrored) */
+  const AF = { upperarm_r: [-1.15, 0, 0], upperarm_l: [-1.15, 0, 0] };   /* arms forward */
+  const mix = (...o) => Object.assign({}, ...o);
+  const AUTHORED = {
+    squat_reps: { dur: 2.6, ground: 'feet', view: [0.6, 0.05, 1.12], lookY: 0.45, keys: [
+      { t: 0, b: mix(AD) },
+      { t: 0.5, b: mix(AF, { thigh_l: [0.85, 0, 0], thigh_r: [0.85, 0, 0], calf_l: [1.3, 0, 0], calf_r: [1.3, 0, 0], spine_02: [0.12, 0, 0], spine_01: [0.08, 0, 0] }) },
+      { t: 1, b: mix(AD) },
     ] },
-
-    pushup: { view: [PI / 2, 0.05], dur: 2.4, keys: [
-      { t: 0, root: [0, 42, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.12, 0, 0], elbowR: [0.12, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 0.5, root: [0, 34, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.5, 0, 0], shoulderR: [-1.5, 0, 0], elbowL: [0.85, 0, 0], elbowR: [0.85, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 1, root: [0, 42, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.12, 0, 0], elbowR: [0.12, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
+    lunge: { dur: 3, ground: 'feet', view: [0.55, 0.05], keys: [
+      { t: 0, b: mix(AD) },
+      { t: 0.5, b: mix(AD, { thigh_r: [0.9, 0, 0], calf_r: [1.35, 0, 0], thigh_l: [-0.25, 0, 0], calf_l: [1.6, 0, 0], spine_01: [0.05, 0, 0] }) },
+      { t: 1, b: mix(AD) },
     ] },
-
-    plank: { view: [PI / 2, 0.05], dur: 4, keys: [
-      { t: 0, root: [0, 32, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.4, 0, 0], shoulderR: [-1.4, 0, 0], elbowL: [1.5, 0, 0], elbowR: [1.5, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 0.5, root: [0, 33, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.4, 0, 0], shoulderR: [-1.4, 0, 0], elbowL: [1.5, 0, 0], elbowR: [1.5, 0, 0], hipL: [0.03, 0, 0], hipR: [0.03, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 1, root: [0, 32, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.4, 0, 0], shoulderR: [-1.4, 0, 0], elbowL: [1.5, 0, 0], elbowR: [1.5, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
+    highknees: { dur: 0.85, ground: 'feet', view: [0.5, 0.05], keys: [
+      { t: 0, b: mix(AD) },
+      { t: 0.25, b: { thigh_r: [1.7, 0, 0], calf_r: [1.3, 0, 0], upperarm_l: [-1.2, 0, 0], lowerarm_l: [1.1, 0, 0], upperarm_r: [0, 0, 1.3] } },
+      { t: 0.5, b: mix(AD) },
+      { t: 0.75, b: { thigh_l: [1.7, 0, 0], calf_l: [1.3, 0, 0], upperarm_r: [-1.2, 0, 0], lowerarm_r: [1.1, 0, 0], upperarm_l: [0, 0, -1.3] } },
+      { t: 1, b: mix(AD) },
     ] },
-
-    lunge: { view: [PI / 2, 0.05], dur: 3, keys: [
-      { t: 0, root: [0, 95, 0], j: {} },
-      { t: 0.25, root: [0, 70, 0], j: { hipR: [-0.85, 0, 0], kneeR: [1.5, 0, 0], hipL: [0.7, 0, 0], kneeL: [1.5, 0, 0], ankleL: [-0.7, 0, 0], ankleR: [-0.3, 0, 0], shoulderL: [-0.15, 0, 0], shoulderR: [-0.15, 0, 0] } },
-      { t: 0.5, root: [0, 95, 0], j: {} },
-      { t: 0.75, root: [0, 70, 0], j: { hipL: [-0.85, 0, 0], kneeL: [1.5, 0, 0], hipR: [0.7, 0, 0], kneeR: [1.5, 0, 0], ankleR: [-0.7, 0, 0], ankleL: [-0.3, 0, 0], shoulderL: [-0.15, 0, 0], shoulderR: [-0.15, 0, 0] } },
-      { t: 1, root: [0, 95, 0], j: {} },
+    plank: { dur: 4, ground: 'all', view: [0.5, 0.05, 1.55], lookY: 0.12, keys: [
+      { t: 0, b: { root: [PI / 2, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3], lowerarm_l: [1.5, 0, 0], lowerarm_r: [1.5, 0, 0] } },
+      { t: 0.5, b: { root: [PI / 2, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3], lowerarm_l: [1.5, 0, 0], lowerarm_r: [1.5, 0, 0] } },
+      { t: 1, b: { root: [PI / 2, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3], lowerarm_l: [1.5, 0, 0], lowerarm_r: [1.5, 0, 0] } },
     ] },
-
-    bridge: { view: [PI / 2, 0.05], dur: 2.6, keys: [
-      { t: 0, root: [0, 20, 0], rootRot: [-1.5708, 0, 0], j: { hipL: [1.5, 0, 0], hipR: [1.5, 0, 0], kneeL: [1.6, 0, 0], kneeR: [1.6, 0, 0], ankleL: [0.8, 0, 0], ankleR: [0.8, 0, 0], shoulderL: [0.5, 0, 0], shoulderR: [0.5, 0, 0] } },
-      { t: 0.5, root: [0, 34, 0], rootRot: [-1.12, 0, 0], j: { hipL: [1.35, 0, 0], hipR: [1.35, 0, 0], kneeL: [1.5, 0, 0], kneeR: [1.5, 0, 0], ankleL: [0.7, 0, 0], ankleR: [0.7, 0, 0], shoulderL: [0.5, 0, 0], shoulderR: [0.5, 0, 0] } },
-      { t: 1, root: [0, 20, 0], rootRot: [-1.5708, 0, 0], j: { hipL: [1.5, 0, 0], hipR: [1.5, 0, 0], kneeL: [1.6, 0, 0], kneeR: [1.6, 0, 0], ankleL: [0.8, 0, 0], ankleR: [0.8, 0, 0], shoulderL: [0.5, 0, 0], shoulderR: [0.5, 0, 0] } },
-    ] },
-
-    jumpingjack: { view: [0, 0.05], dur: 0.95, keys: [
-      { t: 0, root: [0, 92, 0], j: { shoulderL: [0, 0, -0.05], shoulderR: [0, 0, 0.05], hipL: [0, 0, 0.05], hipR: [0, 0, -0.05] } },
-      { t: 0.5, root: [0, 99, 0], j: { shoulderL: [0, 0, -2.45], shoulderR: [0, 0, 2.45], hipL: [0, 0, 0.42], hipR: [0, 0, -0.42], elbowL: [0, 0, -0.1], elbowR: [0, 0, 0.1] } },
-      { t: 1, root: [0, 92, 0], j: { shoulderL: [0, 0, -0.05], shoulderR: [0, 0, 0.05], hipL: [0, 0, 0.05], hipR: [0, 0, -0.05] } },
-    ] },
-
-    climber: { view: [0.7, 0.08], dur: 1.2, keys: [
-      { t: 0, root: [0, 40, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.15, 0, 0], elbowR: [0.15, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 0.25, root: [0, 40, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.15, 0, 0], elbowR: [0.15, 0, 0], hipR: [1.5, 0, 0], kneeR: [1.7, 0, 0], hipL: [0.05, 0, 0], ankleL: [0.9, 0, 0] } },
-      { t: 0.5, root: [0, 40, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.15, 0, 0], elbowR: [0.15, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 0.75, root: [0, 40, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.15, 0, 0], elbowR: [0.15, 0, 0], hipL: [1.5, 0, 0], kneeL: [1.7, 0, 0], hipR: [0.05, 0, 0], ankleR: [0.9, 0, 0] } },
-      { t: 1, root: [0, 40, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [-1.57, 0, 0], shoulderR: [-1.57, 0, 0], elbowL: [0.15, 0, 0], elbowR: [0.15, 0, 0], hipL: [0.05, 0, 0], hipR: [0.05, 0, 0], ankleL: [0.9, 0, 0], ankleR: [0.9, 0, 0] } },
-    ] },
-
-    crunch: { view: [PI / 2, 0.05], dur: 2.4, keys: [
-      { t: 0, root: [0, 22, 0], rootRot: [-1.5708, 0, 0], j: { hipL: [1.4, 0, 0], hipR: [1.4, 0, 0], kneeL: [1.6, 0, 0], kneeR: [1.6, 0, 0], shoulderL: [-0.8, 0, 0], shoulderR: [-0.8, 0, 0], elbowL: [1.8, 0, 0], elbowR: [1.8, 0, 0] } },
-      { t: 0.5, root: [0, 22, 0], rootRot: [-1.5708, 0, 0], j: { hipL: [1.4, 0, 0], hipR: [1.4, 0, 0], kneeL: [1.6, 0, 0], kneeR: [1.6, 0, 0], spine1: [0.34, 0, 0], spine2: [0.28, 0, 0], chest: [0.16, 0, 0], neck: [0.12, 0, 0], shoulderL: [-0.8, 0, 0], shoulderR: [-0.8, 0, 0], elbowL: [1.8, 0, 0], elbowR: [1.8, 0, 0] } },
-      { t: 1, root: [0, 22, 0], rootRot: [-1.5708, 0, 0], j: { hipL: [1.4, 0, 0], hipR: [1.4, 0, 0], kneeL: [1.6, 0, 0], kneeR: [1.6, 0, 0], shoulderL: [-0.8, 0, 0], shoulderR: [-0.8, 0, 0], elbowL: [1.8, 0, 0], elbowR: [1.8, 0, 0] } },
-    ] },
-
-    highknees: { view: [0.55, 0.06], dur: 0.75, keys: [
-      { t: 0, root: [0, 93, 0], j: {} },
-      { t: 0.25, root: [0, 93, 0], j: { hipR: [-1.6, 0, 0], kneeR: [1.7, 0, 0], shoulderL: [-1.0, 0, 0], elbowL: [1.2, 0, 0], shoulderR: [0.5, 0, 0], elbowR: [1.0, 0, 0] } },
-      { t: 0.5, root: [0, 93, 0], j: {} },
-      { t: 0.75, root: [0, 93, 0], j: { hipL: [-1.6, 0, 0], kneeL: [1.7, 0, 0], shoulderR: [-1.0, 0, 0], elbowR: [1.2, 0, 0], shoulderL: [0.5, 0, 0], elbowL: [1.0, 0, 0] } },
-      { t: 1, root: [0, 93, 0], j: {} },
-    ] },
-
-    superman: { view: [PI / 2, 0.05], dur: 2.6, keys: [
-      { t: 0, root: [0, 14, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [0.0, 0, 0], shoulderR: [0.0, 0, 0], hipL: [0.0, 0, 0], hipR: [0.0, 0, 0] } },
-      { t: 0.5, root: [0, 16, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [0.5, 0, 0], shoulderR: [0.5, 0, 0], hipL: [-0.5, 0, 0], hipR: [-0.5, 0, 0], spine1: [-0.18, 0, 0], spine2: [-0.14, 0, 0], chest: [-0.1, 0, 0], neck: [-0.15, 0, 0] } },
-      { t: 1, root: [0, 14, 0], rootRot: [PI / 2, 0, 0], j: { shoulderL: [0.0, 0, 0], shoulderR: [0.0, 0, 0], hipL: [0.0, 0, 0], hipR: [0.0, 0, 0] } },
-    ] },
-
-    /* gentle marching / breathing — warmup, rest & cooldown */
-    march: { view: [0.5, 0.05], dur: 1.1, keys: [
-      { t: 0, root: [0, 93, 0], j: { hipR: [-0.9, 0, 0], kneeR: [1.1, 0, 0], shoulderL: [-0.6, 0, 0], elbowL: [0.8, 0, 0] } },
-      { t: 0.5, root: [0, 93, 0], j: { hipL: [-0.9, 0, 0], kneeL: [1.1, 0, 0], shoulderR: [-0.6, 0, 0], elbowR: [0.8, 0, 0] } },
-      { t: 1, root: [0, 93, 0], j: { hipR: [-0.9, 0, 0], kneeR: [1.1, 0, 0], shoulderL: [-0.6, 0, 0], elbowL: [0.8, 0, 0] } },
-    ] },
-    breathe: { view: [0, 0.04], dur: 3.6, keys: [
-      { t: 0, root: [0, 94, 0], j: {} },
-      { t: 0.5, root: [0, 96, 0], j: { shoulderL: [0, 0, -1.2], shoulderR: [0, 0, 1.2], elbowL: [0, 0, -0.2], elbowR: [0, 0, 0.2] } },
-      { t: 1, root: [0, 94, 0], j: {} },
+    crunch: { dur: 2.4, ground: 'all', view: [0.5, 0.04, 1.5], lookY: 0.18, keys: [
+      { t: 0, b: { root: [-PI / 2, 0, 0], thigh_l: [1.2, 0, 0], thigh_r: [1.2, 0, 0], calf_l: [1.5, 0, 0], calf_r: [1.5, 0, 0], upperarm_r: [-0.5, 0, 0], upperarm_l: [-0.5, 0, 0] } },
+      { t: 0.5, b: { root: [-PI / 2, 0, 0], thigh_l: [1.2, 0, 0], thigh_r: [1.2, 0, 0], calf_l: [1.5, 0, 0], calf_r: [1.5, 0, 0], spine_01: [0.2, 0, 0], spine_02: [0.22, 0, 0], neck_01: [0.1, 0, 0], upperarm_r: [-0.7, 0, 0], upperarm_l: [-0.7, 0, 0] } },
+      { t: 1, b: { root: [-PI / 2, 0, 0], thigh_l: [1.2, 0, 0], thigh_r: [1.2, 0, 0], calf_l: [1.5, 0, 0], calf_r: [1.5, 0, 0], upperarm_r: [-0.5, 0, 0], upperarm_l: [-0.5, 0, 0] } },
     ] },
   };
+  if (typeof WorkoutRig !== 'undefined' && WorkoutRig.setAuthored) WorkoutRig.setAuthored(AUTHORED);
 
-  /* ── Exercise database (with educational fields) ───────────────────
-     diff: 1 Iniciante · 2 Intermédio · 3 Avançado. cues/mistakes short.
-     phases = range-of-motion breakdown. tempo = ecc-pause-conc seconds. */
+  /* ── Exercise database ─────────────────────────────────────────────
+     anim = name of a bundled CC0 clip OR an authored clip. view = [az, el]
+     radians. diff: 1 Iniciante · 2 Intermédio · 3 Avançado. */
   const E = {
-    squat: { name: 'Agachamento', anim: 'squat', diff: 1, work: 40, rest: 20, reps: '12–15 reps', tempo: '2-1-2',
+    squat: { name: 'Agachamento', icon: '🦵', anim: 'squat_reps', diff: 1, work: 40, rest: 20, reps: '12–15 reps', tempo: '2-1-2', view: [0.6, 0.05],
       muscle: 'Quadríceps · Glúteos · Core',
       start: 'De pé, pés à largura dos ombros, pontas ligeiramente para fora, peito aberto.',
       phases: ['Desce empurrando a anca para trás', 'Pausa com coxas ~paralelas', 'Sobe empurrando o chão'],
       cues: ['Mantém os calcanhares no chão', 'Joelhos alinhados com os pés', 'Peito direito, olhar em frente'],
       mistakes: ['Joelhos a colapsar para dentro', 'Levantar os calcanhares', 'Curvar a zona lombar'] },
-    pushup: { name: 'Flexões', anim: 'pushup', diff: 2, work: 40, rest: 20, reps: '8–12 reps', tempo: '2-0-1',
+    pushup: { name: 'Flexões', icon: '💪', anim: 'Pushup', diff: 2, work: 40, rest: 20, reps: '8–12 reps', tempo: '2-0-1', view: [0.7, 0.05],
       muscle: 'Peito · Tríceps · Ombros',
       start: 'Prancha alta, mãos um pouco mais largas que os ombros, corpo em linha reta.',
       phases: ['Desce o peito até quase tocar', 'Sobe estendendo os cotovelos'],
       cues: ['Cotovelos a ~45° do tronco', 'Abdómen e glúteos contraídos', 'Corpo numa linha reta'],
       mistakes: ['Anca a descair ou a subir', 'Cotovelos muito abertos', 'Amplitude curta'] },
-    pike: { name: 'Pike Push-ups', anim: 'pushup', diff: 3, work: 35, rest: 20, reps: '6–10 reps', tempo: '2-0-1',
-      muscle: 'Ombros · Tríceps',
-      start: 'V invertido: ancas no ar, mãos e pés no chão, olhar para os pés.',
-      phases: ['Dobra os cotovelos descendo a cabeça', 'Empurra de volta ao V'],
-      cues: ['Ancas bem altas', 'Cabeça desce entre as mãos'],
-      mistakes: ['Ancas baixas (vira flexão)', 'Cotovelos para fora'] },
-    plank: { name: 'Prancha', anim: 'plank', diff: 1, work: 45, rest: 15, reps: 'Aguenta o tempo', tempo: 'Isométrico',
-      muscle: 'Core · Ombros · Glúteos',
-      start: 'Apoio nos antebraços e pontas dos pés, corpo numa linha reta.',
-      phases: ['Mantém a posição sem oscilar'],
-      cues: ['Contrai abdómen e glúteos', 'Anca alinhada com os ombros', 'Respira de forma constante'],
-      mistakes: ['Anca demasiado alta ou baixa', 'Prender a respiração', 'Cabeça caída'] },
-    lunge: { name: 'Afundos', anim: 'lunge', diff: 2, work: 40, rest: 20, reps: '10/perna', tempo: '2-1-1',
-      muscle: 'Quadríceps · Glúteos',
-      start: 'De pé, tronco direito, mãos na cintura. Dá um passo à frente.',
-      phases: ['Desce dobrando os dois joelhos', 'Pausa com joelho traseiro perto do chão', 'Sobe e alterna a perna'],
-      cues: ['Joelho da frente sobre o tornozelo', 'Tronco vertical', 'Desce a direito'],
-      mistakes: ['Joelho da frente a passar o pé', 'Inclinar o tronco', 'Passo curto'] },
-    bridge: { name: 'Ponte de Glúteos', anim: 'bridge', diff: 1, work: 40, rest: 15, reps: '15 reps', tempo: '1-2-1',
-      muscle: 'Glúteos · Isquiotibiais · Core',
-      start: 'Deitado de costas, joelhos dobrados, pés apoiados perto dos glúteos.',
-      phases: ['Eleva a anca até alinhar joelhos-anca-ombros', 'Pausa e aperta os glúteos', 'Desce com controlo'],
-      cues: ['Empurra pelos calcanhares', 'Aperta os glúteos no topo', 'Não arqueies a lombar'],
-      mistakes: ['Subir demais (arquear lombar)', 'Empurrar pelas pontas dos pés'] },
-    jumpingjack: { name: 'Jumping Jacks', anim: 'jumpingjack', diff: 1, work: 40, rest: 15, reps: 'Ritmo constante', tempo: 'Rápido',
+    jumpingjack: { name: 'Jumping Jacks', icon: '🤸', anim: 'Jumping Jacks', diff: 1, work: 40, rest: 15, reps: 'Ritmo constante', tempo: 'Rápido', view: [0, 0.05],
       muscle: 'Todo o corpo · Cardio',
       start: 'De pé, pés juntos, braços ao lado do corpo.',
       phases: ['Salta abrindo pernas e braços', 'Salta fechando à posição inicial'],
       cues: ['Aterra suave com joelhos moles', 'Braços bem acima da cabeça', 'Mantém o ritmo'],
       mistakes: ['Aterrar com pernas rígidas', 'Amplitude curta dos braços'] },
-    climber: { name: 'Mountain Climbers', anim: 'climber', diff: 2, work: 35, rest: 15, reps: 'Rápido', tempo: 'Rápido',
-      muscle: 'Core · Ombros · Cardio',
-      start: 'Prancha alta, mãos sob os ombros, corpo em linha.',
-      phases: ['Leva um joelho ao peito', 'Alterna as pernas rapidamente'],
-      cues: ['Ancas baixas e estáveis', 'Ombros sobre as mãos', 'Core sempre contraído'],
-      mistakes: ['Anca a saltar para cima', 'Apoiar mal as mãos'] },
-    crunch: { name: 'Abdominais', anim: 'crunch', diff: 1, work: 40, rest: 15, reps: '15–20 reps', tempo: '1-1-2',
-      muscle: 'Reto abdominal',
-      start: 'Deitado de costas, joelhos dobrados, mãos junto à cabeça.',
-      phases: ['Enrola subindo os ombros do chão', 'Desce devagar com controlo'],
-      cues: ['Sobe enrolando, não puxes o pescoço', 'Olha para o teto', 'Expira ao subir'],
-      mistakes: ['Puxar a cabeça com as mãos', 'Usar impulso', 'Subir demasiado (sentar)'] },
-    highknees: { name: 'Elevação de Joelhos', anim: 'highknees', diff: 1, work: 35, rest: 15, reps: 'Rápido', tempo: 'Rápido',
+    run: { name: 'Corrida no Lugar', icon: '🏃', anim: 'Run Anime', diff: 1, work: 40, rest: 15, reps: 'Ritmo constante', tempo: 'Rápido', view: [0.5, 0.05],
+      muscle: 'Pernas · Core · Cardio',
+      start: 'De pé, corre no lugar elevando os joelhos e movendo os braços.',
+      phases: ['Eleva um joelho', 'Alterna rapidamente as pernas'],
+      cues: ['Apoia na ponta dos pés', 'Tronco direito', 'Braços a 90° a acompanhar'],
+      mistakes: ['Inclinar o tronco para trás', 'Passada demasiado curta'] },
+    sprint: { name: 'Sprint no Lugar', icon: '⚡', anim: 'Sprint_Loop', diff: 2, work: 30, rest: 20, reps: 'Máxima intensidade', tempo: 'Explosivo', view: [0.5, 0.05],
+      muscle: 'Pernas · Glúteos · Cardio',
+      start: 'Posição atlética, pronto para acelerar no lugar.',
+      phases: ['Acelera ao máximo', 'Mantém a frequência de passada'],
+      cues: ['Joelhos altos', 'Impulsiona com os braços', 'Mantém o core firme'],
+      mistakes: ['Perder a postura com a fadiga', 'Aterrar no calcanhar'] },
+    jump: { name: 'Saltos', icon: '🦘', anim: 'Jump_Loop', diff: 2, work: 30, rest: 20, reps: '10–12 reps', tempo: 'Explosivo', view: [0.5, 0.05],
+      muscle: 'Pernas · Glúteos · Cardio',
+      start: 'De pé, joelhos ligeiramente fletidos, pronto a impulsionar.',
+      phases: ['Agacha ligeiramente', 'Salta com força', 'Aterra suave e absorve'],
+      cues: ['Aterra com joelhos moles', 'Usa os braços para impulsionar', 'Amortece a aterragem'],
+      mistakes: ['Aterrar rígido', 'Joelhos para dentro na aterragem'] },
+    mobility: { name: 'Mobilidade Torácica', icon: '🧘', anim: 'Chest_Open', diff: 1, work: 30, rest: 10, reps: 'Lento e controlado', tempo: 'Lento', view: [0, 0.05],
+      muscle: 'Peito · Ombros · Core',
+      start: 'De pé, braços à frente; abre o peito levando os braços para trás.',
+      phases: ['Abre o peito e junta as omoplatas', 'Regressa com controlo'],
+      cues: ['Movimento lento', 'Junta as omoplatas', 'Respira fundo a abrir'],
+      mistakes: ['Arquear demasiado a lombar', 'Encolher os ombros'] },
+    lunge: { name: 'Afundos', icon: '🦿', anim: 'lunge', diff: 2, work: 40, rest: 20, reps: '10 / perna', tempo: '2-1-1', view: [0.55, 0.05],
+      muscle: 'Quadríceps · Glúteos',
+      start: 'De pé, tronco direito, mãos na cintura. Dá um passo à frente.',
+      phases: ['Desce dobrando os dois joelhos', 'Pausa com joelho traseiro perto do chão', 'Sobe e alterna a perna'],
+      cues: ['Joelho da frente sobre o tornozelo', 'Tronco vertical', 'Desce a direito'],
+      mistakes: ['Joelho da frente a passar o pé', 'Inclinar o tronco', 'Passo curto'] },
+    highknees: { name: 'Elevação de Joelhos', icon: '🏃', anim: 'highknees', diff: 1, work: 35, rest: 15, reps: 'Ritmo constante', tempo: 'Rápido', view: [0.5, 0.05],
       muscle: 'Pernas · Core · Cardio',
       start: 'De pé, corre no lugar levantando os joelhos à altura da anca.',
       phases: ['Sobe um joelho à altura da anca', 'Alterna rapidamente'],
       cues: ['Joelhos bem alto', 'Apoia na ponta dos pés', 'Braços a acompanhar'],
       mistakes: ['Joelhos baixos', 'Inclinar o tronco para trás'] },
-    superman: { name: 'Superman', anim: 'superman', diff: 1, work: 35, rest: 15, reps: '12 reps', tempo: '1-2-1',
-      muscle: 'Eretores da Coluna · Glúteos',
-      start: 'Deitado de barriga para baixo, braços estendidos à frente.',
-      phases: ['Levanta braços e pernas em simultâneo', 'Segura 2 s', 'Desce com controlo'],
-      cues: ['Olhar para o chão (pescoço neutro)', 'Aperta glúteos e costas', 'Movimento curto e controlado'],
-      mistakes: ['Esticar demasiado o pescoço', 'Usar balanço'] },
-  };
-
-  /* category → exercise ids */
-  const CATS = {
-    strength: ['squat', 'pushup', 'lunge', 'plank', 'bridge', 'superman', 'pike'],
-    cardio:   ['jumpingjack', 'highknees', 'climber', 'lunge', 'squat'],
-    core:     ['plank', 'crunch', 'climber', 'bridge', 'superman'],
+    plank: { name: 'Prancha', icon: '🛡️', anim: 'plank', diff: 1, work: 45, rest: 15, reps: 'Aguenta o tempo', tempo: 'Isométrico', view: [1.5, 0.12],
+      muscle: 'Core · Ombros · Glúteos',
+      start: 'Apoio nos antebraços e pontas dos pés, corpo numa linha reta.',
+      phases: ['Mantém a posição sem oscilar'],
+      cues: ['Contrai abdómen e glúteos', 'Anca alinhada com os ombros', 'Respira de forma constante'],
+      mistakes: ['Anca demasiado alta ou baixa', 'Prender a respiração', 'Cabeça caída'] },
+    crunch: { name: 'Abdominais', icon: '🔥', anim: 'crunch', diff: 1, work: 40, rest: 15, reps: '15–20 reps', tempo: '1-1-2', view: [1.5, 0.12],
+      muscle: 'Reto abdominal',
+      start: 'Deitado de costas, joelhos dobrados, mãos junto à cabeça.',
+      phases: ['Enrola subindo os ombros do chão', 'Desce devagar com controlo'],
+      cues: ['Sobe enrolando, não puxes o pescoço', 'Olha para o teto', 'Expira ao subir'],
+      mistakes: ['Puxar a cabeça com as mãos', 'Usar impulso', 'Subir demasiado (sentar)'] },
   };
   const ALL_IDS = Object.keys(E);
+  const CATS = {
+    strength: ['squat', 'pushup', 'lunge', 'jump'],
+    cardio:   ['jumpingjack', 'run', 'sprint', 'highknees', 'jump'],
+    core:     ['plank', 'crunch', 'squat', 'mobility'],
+  };
+  const WARMUP = { id: '_warmup', name: 'Aquecimento', icon: '🔥', anim: 'Walk_Loop', work: 60, rest: 0, special: 1, view: [0.5, 0.05],
+    start: 'Marcha no lugar com rotações articulares e mobilidade.', muscle: 'Aquecimento geral',
+    cues: ['Aumenta o ritmo gradualmente', 'Move ombros, ancas e tornozelos'], phases: ['Eleva a temperatura e mobiliza'] };
+  const COOLDOWN = { id: '_cooldown', name: 'Relaxamento', icon: '🧘', anim: 'Meditate', work: 60, rest: 0, special: 1, view: [0.2, 0.04],
+    start: 'Respiração profunda e alongamentos suaves.', muscle: 'Recuperação ativa',
+    cues: ['Inspira pelo nariz, expira pela boca', 'Alonga os grupos trabalhados'], phases: ['Baixa o ritmo cardíaco'] };
+  const REST_ANIM = 'Idle_Loop';
+  const DIFF_LBL = { 1: '🟢 Iniciante', 2: '🟡 Intermédio', 3: '🔴 Avançado' };
 
-  /* ── Muscle-target anatomical map (kept — genuinely educational) ──── */
+  /* ── Muscle-target anatomical map ──────────────────────────────── */
   function _muscleSet(str) {
     const s = (str || '').toLowerCase();
     const set = new Set();
@@ -267,25 +228,19 @@ const WorkoutPage = (function () {
       `<text x="110" y="208" text-anchor="middle" class="wk-mm-cap">Costas</text></svg>`;
   }
 
-  const DIFF_LBL = { 1: '🟢 Iniciante', 2: '🟡 Intermédio', 3: '🔴 Avançado' };
-
   /* ── workout builder ───────────────────────────────────────────── */
   function buildWorkout(type, totalMin) {
     const totalSec = totalMin * 60;
     let pool = (type === 'mixed' ? ALL_IDS.slice() : (CATS[type] || CATS.strength).slice()).sort(() => Math.random() - .5);
-    const list = [{ id: '_warmup', name: 'Aquecimento', anim: 'march', work: 60, rest: 0, special: 1,
-      start: 'Marcha no lugar com rotações articulares e mobilidade.', muscle: 'Aquecimento geral',
-      cues: ['Aumenta o ritmo gradualmente', 'Move ombros, ancas e tornozelos'], phases: ['Eleva a temperatura e mobiliza'] }];
+    const list = [Object.assign({}, WARMUP)];
     let elapsed = 60, i = 0;
     while (elapsed < totalSec - 60) {
       const ex = E[pool[i % pool.length]];
       list.push(Object.assign({ id: pool[i % pool.length] }, ex, { special: 0 }));
       elapsed += ex.work + ex.rest; i++;
-      if (i > pool.length * 4) break;
+      if (i > pool.length * 5) break;
     }
-    list.push({ id: '_cooldown', name: 'Relaxamento', anim: 'breathe', work: 60, rest: 0, special: 1,
-      start: 'Respiração profunda e alongamentos suaves.', muscle: 'Recuperação ativa',
-      cues: ['Inspira pelo nariz, expira pela boca', 'Alonga os grupos trabalhados'], phases: ['Baixa o ritmo cardíaco'] });
+    list.push(Object.assign({}, COOLDOWN));
     return list;
   }
 
@@ -298,19 +253,17 @@ const WorkoutPage = (function () {
   function show() {
     const el = document.getElementById('view-workout');
     if (!el) return;
+    if (typeof WorkoutRig !== 'undefined' && WorkoutRig.preload) { try { WorkoutRig.preload(); } catch (e) {} }
     if (!_built) { _built = true; renderConfig(el); }
   }
 
-  /* mount a rig on a canvas inside `el` (id) for the given exercise */
-  function mountRig(canvasId, ex, opts) {
+  function mountRig(canvasId, ex) {
     disposeRig();
     const cv = document.getElementById(canvasId);
     if (!cv || typeof WorkoutRig === 'undefined') return null;
-    _rig = WorkoutRig.create(cv, { color: { lo: '#7c8aa6', hi: '#f3f7ff', joint: '#5b6b88', skin: '#eab98f' } });
-    const clip = CLIPS[ex.anim] || CLIPS.breathe;
-    _rig.setClip(clip);
-    if (opts && opts.orbit) _rig.orbitFrom(cv);
-    if (_rig.isReduced()) { _rig.pause(); _rig.setPhase(0.5); }
+    _rig = WorkoutRig.create(cv, { view: ex.view || [0.5, 0.06] });
+    _rig.setClip(ex.anim || REST_ANIM);
+    _rig.orbitFrom(cv);
     return _rig;
   }
 
@@ -329,7 +282,7 @@ const WorkoutPage = (function () {
             ${[
               { id: 'strength', icon: '🏋️', name: 'Força', desc: 'Fortalecimento muscular e resistência' },
               { id: 'cardio', icon: '🏃', name: 'Cardio', desc: 'Alta intensidade e queima calórica' },
-              { id: 'core', icon: '⚡', name: 'Core', desc: 'Abdominais, lombar e equilíbrio' },
+              { id: 'core', icon: '⚡', name: 'Core', desc: 'Estabilidade, mobilidade e equilíbrio' },
               { id: 'mixed', icon: '🔥', name: 'Misto', desc: 'Combinação equilibrada' },
             ].map(t => `
               <button class="wk-type-btn" data-type="${t.id}">
@@ -367,7 +320,7 @@ const WorkoutPage = (function () {
     el.querySelector('#wk-lib').addEventListener('click', () => renderLibrary(el));
   }
 
-  /* ════ Exercise library ════════════════════════════════════════ */
+  /* ════ Exercise library (lightweight cards) ════════════════════ */
   function renderLibrary(el) {
     clearInterval(_wkInt); disposeRig();
     el.innerHTML = `
@@ -380,29 +333,19 @@ const WorkoutPage = (function () {
           ${ALL_IDS.map(id => {
             const ex = E[id];
             return `<button class="wk-lib-card" data-id="${id}">
-              <div class="wk-lib-thumb" data-anim="${ex.anim}"><canvas id="thumb-${id}"></canvas></div>
+              <div class="wk-lib-ico">${ex.icon}</div>
               <div class="wk-lib-name">${ex.name}</div>
-              <div class="wk-lib-meta">${DIFF_LBL[ex.diff]} · ${ex.muscle.split(' · ')[0]}</div>
+              <div class="wk-lib-meta">${DIFF_LBL[ex.diff]}</div>
+              <div class="wk-lib-musc">${ex.muscle}</div>
             </button>`;
           }).join('')}
         </div>
       </div>`;
     el.querySelector('#wk-back').addEventListener('click', () => renderConfig(el));
     el.querySelectorAll('.wk-lib-card').forEach(c => c.addEventListener('click', () => renderDetail(el, c.dataset.id)));
-    /* render a small static figure on each thumbnail (one shared rig would
-       conflict; draw each once and dispose) */
-    if (typeof WorkoutRig !== 'undefined') {
-      ALL_IDS.forEach(id => {
-        const cv = document.getElementById('thumb-' + id);
-        if (!cv) return;
-        const r = WorkoutRig.create(cv, {});
-        r.setClip(CLIPS[E[id].anim] || CLIPS.breathe); r.pause(); r.setPhase(0.5);
-        setTimeout(() => { r.setPhase(0.5); r.dispose(); }, 80);
-      });
-    }
   }
 
-  /* ════ Exercise detail (full educational card) ═════════════════ */
+  /* ════ Exercise detail ═════════════════════════════════════════ */
   function renderDetail(el, id) {
     clearInterval(_wkInt); disposeRig();
     const ex = E[id];
@@ -410,7 +353,7 @@ const WorkoutPage = (function () {
       <div class="view-inner">
         <div class="wk-detail-bar">
           <button class="wk-back" id="wk-back">← Biblioteca</button>
-          <h1 class="page-title" style="margin:0;font-size:1.3rem">${ex.name}</h1>
+          <h1 class="page-title" style="margin:0;font-size:1.3rem">${ex.icon} ${ex.name}</h1>
         </div>
         <div class="wk-detail">
           <div class="wk-detail-fig">
@@ -419,16 +362,15 @@ const WorkoutPage = (function () {
             </div>
             <div class="wk-fig-ctrls">
               <button class="wk-fc" id="wk-pp" aria-label="Pausa/play">⏸</button>
-              <button class="wk-fc" id="wk-slow" aria-label="Câmara lenta">🐢</button>
-              <button class="wk-fc" id="wk-startpose" aria-label="Posição inicial">⏮ início</button>
-              <input class="wk-scrub" id="wk-scrub" type="range" min="0" max="1000" value="0" aria-label="Amplitude do movimento">
+              <button class="wk-fc" id="wk-slow" aria-label="Câmara lenta">🐢 Lento</button>
+              <button class="wk-fc" id="wk-startpose" aria-label="Posição inicial">⏮ Início</button>
             </div>
           </div>
           <div class="wk-detail-info">
             <div class="wk-badges">
               <span class="wk-badge">${DIFF_LBL[ex.diff]}</span>
               <span class="wk-badge">⏱ ${ex.work}s · ${ex.reps}</span>
-              <span class="wk-badge">🎚 Tempo ${ex.tempo}</span>
+              <span class="wk-badge">🎚 ${ex.tempo}</span>
             </div>
             <div class="wk-info-block"><div class="wk-info-h">▶ Posição inicial</div><p>${ex.start}</p></div>
             <div class="wk-info-block"><div class="wk-info-h">🔁 Amplitude de movimento</div>
@@ -443,18 +385,15 @@ const WorkoutPage = (function () {
         </div>
       </div>`;
     el.querySelector('#wk-back').addEventListener('click', () => renderLibrary(el));
-    const rig = mountRig('wk-canvas', ex, { orbit: true });
-    const scrub = el.querySelector('#wk-scrub');
+    const rig = mountRig('wk-canvas', ex);
     const pp = el.querySelector('#wk-pp');
     let playing = !(rig && rig.isReduced());
-    if (rig) rig.onPhase(p => { if (playing) scrub.value = Math.round(p * 1000); });
     pp.textContent = playing ? '⏸' : '▶';
     pp.addEventListener('click', () => { playing = !playing; if (rig) rig.setPlaying(playing); pp.textContent = playing ? '⏸' : '▶'; });
     el.querySelector('#wk-slow').addEventListener('click', e => {
       _slow = !_slow; if (rig) rig.setSpeed(_slow ? 0.35 : 1); e.currentTarget.classList.toggle('on', _slow);
     });
-    el.querySelector('#wk-startpose').addEventListener('click', () => { if (rig) { playing = false; rig.setPlaying(false); rig.setPhase(0); scrub.value = 0; pp.textContent = '▶'; } });
-    scrub.addEventListener('input', () => { playing = false; if (rig) { rig.setPlaying(false); rig.setPhase(+scrub.value / 1000); } pp.textContent = '▶'; });
+    el.querySelector('#wk-startpose').addEventListener('click', () => { if (rig) { playing = false; rig.setPlaying(false); rig.setPhase(0); pp.textContent = '▶'; } });
   }
 
   /* ════ Session player ══════════════════════════════════════════ */
@@ -493,8 +432,7 @@ const WorkoutPage = (function () {
         </div>
       </div>`;
 
-    const rig = mountRig('wk-canvas', isRest ? { anim: 'breathe' } : ex, { orbit: true });
-    if (rig && !isRest) rig.setSpeed(1);
+    const rig = mountRig('wk-canvas', isRest ? { anim: REST_ANIM, view: [0.2, 0.05] } : ex);
     if (_paused && rig) rig.pause();
 
     el.querySelector('#wk-pause').addEventListener('click', e => {
