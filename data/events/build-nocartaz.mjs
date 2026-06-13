@@ -30,6 +30,23 @@ const all = Array.isArray(raw) ? raw : (raw.events || []);
 console.log('Total events from source:', all.length);
 
 const clean = (s) => (s || '').toString().replace(/\s+/g, ' ').trim();
+/* NoCartaz descriptions are raw HTML and sometimes embed third-party widgets
+   (e.g. a Google Maps <iframe> carrying that site's API key). Strip all markup
+   to plain text, decode the common entities, hard-redact anything that looks
+   like a leaked API key, and cap the length. Keeps the snapshot clean and
+   prevents committing other people's secrets. */
+const stripHtml = (s, max = 280) => (s || '')
+  .toString()
+  .replace(/<[^>]*>/g, ' ')
+  .replace(/&nbsp;/gi, ' ')
+  .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+  .replace(/&quot;/gi, '"').replace(/&#0?39;|&apos;/gi, "'")
+  .replace(/AIza[0-9A-Za-z_\-]{20,}/g, '')                 /* Google API keys */
+  .replace(/\bAKIA[0-9A-Z]{16}\b/g, '')                    /* AWS access keys */
+  .replace(/https?:\/\/\S*[?&]key=\S+/gi, '')              /* any url with a key= param */
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, max);
 
 let kept = all
   .map(e => {
@@ -53,8 +70,8 @@ const final = spread.concat(overflow).slice(0, CAP);
 
 const events = final.map(({ e, start }) => ({
   id: 'nc-' + e.id,
-  title: clean(e.title),
-  desc: clean(e.description),
+  title: stripHtml(e.title, 160),
+  desc: stripHtml(e.description),
   start: start.toISOString(),
   district: clean(e.distrito),
   url: e.url || 'https://www.nocartaz.pt/',
