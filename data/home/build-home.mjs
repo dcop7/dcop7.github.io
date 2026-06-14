@@ -64,7 +64,10 @@ const hay = it => (it.text + ' ' + (it.extract || '') + ' ' + (it.title || '')).
 /* keyword filters — PT first (the feed is Portuguese), EN as backup */
 const SPACE_RE = /\b(espa[çc]o|espacial|nave|astronauta|cosmonauta|nasa|esa|spacex|foguet|sat[ée]lite|[óo]rbita|lunar|\blua\b|apollo|soyuz|sputnik|voyager|hubble|telesc[óo]pio|marte|v[ée]nus|j[úu]piter|saturno|gal[áa]xia|nebulosa|cometa|asteroide|sonda|esta[çc][ãa]o espacial|vai[ée]m|space|spacecraft|astronaut|rocket|satellite|orbit|moon|telescope|mars|galaxy|comet|asteroid|spaceflight)\b/i;
 const TECH_RE = /\b(computador|inform[áa]tic|software|internet|\bweb\b|s[íi]tio web|microprocessador|processador|trans[íi]stor|semicondutor|programa[çc][ãa]o|algoritmo|telem[óo]vel|smartphone|iphone|android|videojogo|sistema operativo|microsoft|apple|google|ibm|intel|nintendo|correio eletr[óo]nico|arpanet|bitcoin|intelig[êe]ncia artificial|\brob[ôo]\b|telefone|tel[ée]grafo|computer|world wide web|website|transistor|programming|video game|operating system|email|robot)\b/i;
-const PT_RE = /\bportugal\b|portugu[êe]s|portuguesa|lisboa|\bporto\b|coimbra|\bbraga\b|[ée]vora|a[çc]ores|madeira|alentejo|algarve|sal[aá]zar|rep[úu]blica portugu|reino de portugal|descobrimentos|vasco da gama|cam[õo]es|d\. afonso|d\. jo[ãa]o|d\. manuel|d\. pedro|d\. maria|d\. sebasti[ãa]o|infante d/i;
+const PT_RE = /\bportugal\b|portugu[êe]s|portuguesa|lisboa|\bporto\b(?!-riquenh)|coimbra|\bbraga\b|[ée]vora|a[çc]ores|a[çc]oriano|madeira|madeirense|alentejo|algarve|sal[aá]zar|rep[úu]blica portugu|reino de portugal|rei de portugal|rainha de portugal|descobrimentos|vasco da gama|cam[õo]es|lusitan|lus[óo]fon|d\. afonso|d\. jo[ãa]o|d\. manuel|d\. pedro|d\. maria|d\. sebasti[ãa]o|infante d/i;
+/* stronger Portugal signal for matching free-text extracts (proper nouns only —
+   excludes the bare "português/portuguesa" that also tags the language / Brazil). */
+const PT_STRONG = /\bportugal\b|lisboa|coimbra|a[çc]ores|madeira|alentejo|algarve|sal[aá]zar|rep[úu]blica portuguesa|reino de portugal|rei de portugal|rainha de portugal|descobrimentos portugu|vasco da gama|cam[õo]es|d\. afonso|d\. jo[ãa]o|d\. manuel|d\. sebasti[ãa]o/i;
 /* births: relevant fields (sci/tech/arts/letters/sport/history) vs pop-only */
 const B_GOOD = /\b(cientista|f[íi]sic|qu[íi]mic|bi[óo]log|matem[áa]tic|engenheir|inventor|astr[óo]nom|astronauta|programador|inform[áa]tic|escritor|escritora|autor|poeta|poetisa|romancista|dramaturg|fil[óo]sof|pintor|pintora|escultor|arquitet|compositor|maestro|economista|m[ée]dic|cirurgi[ãa]|explorador|navegador|nobel|estadista|pioneir|fundador|rei\b|rainha|imperador|monarca|hist[oó]ria|scientist|physicist|inventor|engineer|mathematician|astronomer|writer|poet|painter|composer|philosopher|architect|explorer|nobel)\b/i;
 const B_SPORT = /\b(futebolista|t[ée]nista|ol[íi]mpic|atleta|ciclista|nadador|automobilismo|f[óo]rmula 1|basquetebol|andebol|footballer|olympic athlete)\b/i;
@@ -126,8 +129,23 @@ const ptSel = pt ? (pt.selected || []) : [];
 const ptAll = pt ? [...(pt.selected || []), ...(pt.events || [])] : [];
 const enAll = en ? [...(en.events || []), ...(en.selected || [])] : [];
 
-/* 🌍 Hoje em Portugal — strictly Portugal-related (PT feed), up to 15 */
-out.portugal = pick(ptAll.filter(x => PT_RE.test(clean(x.text))), 15);
+/* 🎂 Nasceram Hoje — relevant people, PT feed first, up to 15
+   (computed first so "Hoje em Portugal" can avoid repeating the same people) */
+{
+  let b = rankBirths(pt ? (pt.births || []) : [], 15);
+  if (b.length < 6 && en) b = b.concat(rankBirths(en.births || [], 15).filter(x => !b.find(o => o.title === x.title))).slice(0, 15);
+  out.births = b.length ? b : (fallback.births || []);
+}
+const bornTitles = new Set(out.births.map(x => x.title));
+
+/* 🌍 Hoje em Portugal — Portugal-related items across the whole PT feed
+   (events + people born/died), so it's not as sparse as an events-only filter.
+   text (PT_RE) reliably tags Portuguese people via nationality; the extract is
+   matched only against strong proper-noun signals (PT_STRONG — no bare
+   "português" which would also catch the Portuguese language / Brazil). Up to 15. */
+const ptPool = pt ? [...(pt.selected || []), ...(pt.events || []), ...(pt.births || []), ...(pt.deaths || [])] : [];
+const ptExtract = x => clean((x.pages && x.pages[0] && x.pages[0].extract) || '');
+out.portugal = pick(ptPool.filter(x => PT_RE.test(clean(x.text)) || PT_STRONG.test(ptExtract(x))), 15);
 if (!out.portugal.length) out.portugal = fallback.portugal || [];
 const ptUsed = new Set(out.portugal.map(x => x.title));
 
@@ -135,13 +153,6 @@ const ptUsed = new Set(out.portugal.map(x => x.title));
 out.history = pick(ptAll.filter(x => !PT_RE.test(clean(x.text))), 15).filter(x => !ptUsed.has(x.title));
 if (out.history.length < 6 && en) out.history = out.history.concat(pick(enAll, 15).filter(x => !out.history.find(o => o.title === x.title))).slice(0, 15);
 if (!out.history.length) out.history = fallback.history || [];
-
-/* 🎂 Nasceram Hoje — relevant people, PT feed first, up to 15 */
-{
-  let b = rankBirths(pt ? (pt.births || []) : [], 15);
-  if (b.length < 6 && en) b = b.concat(rankBirths(en.births || [], 15).filter(x => !b.find(o => o.title === x.title))).slice(0, 15);
-  out.births = b.length ? b : (fallback.births || []);
-}
 
 /* link to the full Portuguese "on this day" Wikipedia page (Ver mais) */
 out.links = { onthisday: `https://pt.wikipedia.org/wiki/${lisbon.getDate()}_de_${MONTHS_PT[lisbon.getMonth()]}` };
