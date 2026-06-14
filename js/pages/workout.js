@@ -39,7 +39,7 @@ const WorkoutPage = (function () {
   const AUTHORED = {
     squat_reps: { dur: 2.6, ground: 'feet', view: [0.6, 0.05, 1.12], lookY: 0.45, keys: [
       { t: 0, b: mix(AD) },
-      { t: 0.5, b: mix(AF, { thigh_l: [0.85, 0, 0], thigh_r: [0.85, 0, 0], calf_l: [1.3, 0, 0], calf_r: [1.3, 0, 0], spine_02: [0.12, 0, 0], spine_01: [0.08, 0, 0] }) },
+      { t: 0.5, b: mix(AF, { thigh_l: [0.72, 0, 0], thigh_r: [0.72, 0, 0], calf_l: [1.02, 0, 0], calf_r: [1.02, 0, 0], spine_02: [0.1, 0, 0], spine_01: [0.06, 0, 0] }) },
       { t: 1, b: mix(AD) },
     ] },
     lunge: { dur: 3, ground: 'feet', view: [0.55, 0.05], keys: [
@@ -54,15 +54,17 @@ const WorkoutPage = (function () {
       { t: 0.75, b: { thigh_l: [1.7, 0, 0], calf_l: [1.3, 0, 0], upperarm_r: [-1.2, 0, 0], lowerarm_r: [1.1, 0, 0], upperarm_l: [0, 0, -1.3] } },
       { t: 1, b: mix(AD) },
     ] },
-    plank: { dur: 4, ground: 'all', view: [0.5, 0.05, 1.55], lookY: 0.12, keys: [
-      { t: 0, b: { root: [PI / 2, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3], lowerarm_l: [1.5, 0, 0], lowerarm_r: [1.5, 0, 0] } },
-      { t: 0.5, b: { root: [PI / 2, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3], lowerarm_l: [1.5, 0, 0], lowerarm_r: [1.5, 0, 0] } },
-      { t: 1, b: { root: [PI / 2, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3], lowerarm_l: [1.5, 0, 0], lowerarm_r: [1.5, 0, 0] } },
+    plank: (() => { const p = { root: [PI / 2 - 0.16, 0, 0], upperarm_r: [-1.5, 0, 0], upperarm_l: [-1.5, 0, 0], lowerarm_r: [1.75, 0, 0], lowerarm_l: [1.75, 0, 0], foot_l: [1.1, 0, 0], foot_r: [1.1, 0, 0] };
+      return { dur: 4, ground: 'all', view: [1.5, 0.16, 1.6], keys: [{ t: 0, b: p }, { t: 0.5, b: p }, { t: 1, b: p }] }; })(),
+    chestopen: { dur: 3, ground: 'feet', view: [0, 0.05], keys: [
+      { t: 0, b: { upperarm_r: [-1.1, 0, 0], upperarm_l: [-1.1, 0, 0], lowerarm_r: [0.7, 0, 0], lowerarm_l: [0.7, 0, 0] } },
+      { t: 0.5, b: { lowerarm_r: [0.12, 0, 0], lowerarm_l: [0.12, 0, 0], spine_02: [-0.08, 0, 0], chest: [-0.05, 0, 0] } },
+      { t: 1, b: { upperarm_r: [-1.1, 0, 0], upperarm_l: [-1.1, 0, 0], lowerarm_r: [0.7, 0, 0], lowerarm_l: [0.7, 0, 0] } },
     ] },
-    crunch: { dur: 2.4, ground: 'all', view: [0.5, 0.04, 1.5], lookY: 0.18, keys: [
-      { t: 0, b: { root: [-PI / 2, 0, 0], thigh_l: [1.2, 0, 0], thigh_r: [1.2, 0, 0], calf_l: [1.5, 0, 0], calf_r: [1.5, 0, 0], upperarm_r: [-0.5, 0, 0], upperarm_l: [-0.5, 0, 0] } },
-      { t: 0.5, b: { root: [-PI / 2, 0, 0], thigh_l: [1.2, 0, 0], thigh_r: [1.2, 0, 0], calf_l: [1.5, 0, 0], calf_r: [1.5, 0, 0], spine_01: [0.2, 0, 0], spine_02: [0.22, 0, 0], neck_01: [0.1, 0, 0], upperarm_r: [-0.7, 0, 0], upperarm_l: [-0.7, 0, 0] } },
-      { t: 1, b: { root: [-PI / 2, 0, 0], thigh_l: [1.2, 0, 0], thigh_r: [1.2, 0, 0], calf_l: [1.5, 0, 0], calf_r: [1.5, 0, 0], upperarm_r: [-0.5, 0, 0], upperarm_l: [-0.5, 0, 0] } },
+    crunch: { dur: 2.4, ground: 'all', view: [1.5, 0.14, 1.3], keys: [
+      { t: 0, b: { root: [-PI / 2, 0, 0], thigh_l: [1.0, 0, 0], thigh_r: [1.0, 0, 0], calf_l: [1.6, 0, 0], calf_r: [1.6, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3] } },
+      { t: 0.5, b: { root: [-PI / 2, 0, 0], thigh_l: [1.0, 0, 0], thigh_r: [1.0, 0, 0], calf_l: [1.6, 0, 0], calf_r: [1.6, 0, 0], spine_01: [0.16, 0, 0], spine_02: [0.16, 0, 0], neck_01: [0.1, 0, 0], upperarm_r: [-0.45, 0, 0], upperarm_l: [-0.45, 0, 0] } },
+      { t: 1, b: { root: [-PI / 2, 0, 0], thigh_l: [1.0, 0, 0], thigh_r: [1.0, 0, 0], calf_l: [1.6, 0, 0], calf_r: [1.6, 0, 0], upperarm_r: [0, 0, 1.3], upperarm_l: [0, 0, -1.3] } },
     ] },
   };
   if (typeof WorkoutRig !== 'undefined' && WorkoutRig.setAuthored) WorkoutRig.setAuthored(AUTHORED);
@@ -107,7 +109,7 @@ const WorkoutPage = (function () {
       phases: ['Agacha ligeiramente', 'Salta com força', 'Aterra suave e absorve'],
       cues: ['Aterra com joelhos moles', 'Usa os braços para impulsionar', 'Amortece a aterragem'],
       mistakes: ['Aterrar rígido', 'Joelhos para dentro na aterragem'] },
-    mobility: { name: 'Mobilidade Torácica', icon: '🧘', anim: 'Chest_Open', diff: 1, work: 30, rest: 10, reps: 'Lento e controlado', tempo: 'Lento', view: [0, 0.05],
+    mobility: { name: 'Mobilidade Torácica', icon: '🧘', anim: 'chestopen', diff: 1, work: 30, rest: 10, reps: 'Lento e controlado', tempo: 'Lento', view: [0, 0.05],
       muscle: 'Peito · Ombros · Core',
       start: 'De pé, braços à frente; abre o peito levando os braços para trás.',
       phases: ['Abre o peito e junta as omoplatas', 'Regressa com controlo'],
