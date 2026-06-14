@@ -21,7 +21,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const CONCURRENCY = 10;
 const FEED_TIMEOUT = 14000;
 const ITEMS_PER_FEED = 80;     /* capture as many as each feed offers (most give fewer) */
-const RETAIN_DAYS = 14;
+const RETAIN_DAYS = 30;   /* retain a bit longer so slower feeds (e.g. fact-checkers) still surface */
 const PER_TOPIC = 500;         /* topic shard cap — serves the "all ≤500" view option */
 const SUMMARY_LEN = 220;
 
@@ -157,7 +157,8 @@ function parseOPML(xml) {
     const htmlUrl = (o.match(/htmlUrl="([^"]+)"/i) || [])[1] || '';
     const match = (o.match(/\bmatch="([^"]+)"/i) || [])[1] || '';
     const titlefrom = (o.match(/\btitlefrom="([^"]+)"/i) || [])[1] || '';
-    if (xmlUrl) feeds.push({ title, kind, match, titlefrom, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
+    const datefrom = (o.match(/\bdatefrom="([^"]+)"/i) || [])[1] || '';
+    if (xmlUrl) feeds.push({ title, kind, match, titlefrom, datefrom, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
   }
   /* de-dup identical feed URLs (the OPML has a couple) */
   const seen = new Set();
@@ -173,9 +174,26 @@ function slugTitle(u) {
   } catch { return ''; }
 }
 
-/* Scrape article links from an HTML listing page (no-RSS fallback). Undated →
-   given a staggered just-past timestamp so they stay present but never bury the
-   site's real dated news. */
+/* Real publish date from an article page (JSON-LD datePublished or og meta). */
+function extractPubDate(html) {
+  let m = html.match(/"datePublished"\s*:\s*"([^"]+)"/i);
+  if (m) { const t = Date.parse(m[1]); if (!isNaN(t)) return t; }
+  m = html.match(/property="article:published_time"[^>]*content="([^"]+)"/i) || html.match(/content="([^"]+)"[^>]*property="article:published_time"/i);
+  if (m) { const t = Date.parse(m[1]); if (!isNaN(t)) return t; }
+  return null;
+}
+/* Date embedded in a URL path, e.g. /2026/06/13/… (Público). */
+function urlDate(u) {
+  const m = (u || '').match(/\/(20\d{2})\/(\d{2})\/(\d{2})\//);
+  if (m) { const t = Date.parse(`${m[1]}-${m[2]}-${m[3]}T12:00:00Z`); if (!isNaN(t)) return t; }
+  return null;
+}
+
+/* Scrape article links from an HTML listing page (no-RSS fallback). Dating:
+   datefrom="url"  → parse the date out of the article URL;
+   datefrom="page" → flagged here, resolved later by fetching each article;
+   otherwise       → staggered just-past timestamp (kept present but never
+   burying real dated news, e.g. Literacia Financeira inside Economia). */
 const SCRAPE_JUNK = /^(ler mais|leia mais|saiba mais|ver mais|read more|continuar a ler|continue reading)$|arrow_|read_more|chevron|material-icons/i;
 function scrapeArticles(html, f, now) {
   let origin = ''; try { origin = new URL(f.xmlUrl).origin; } catch {}
@@ -198,7 +216,10 @@ function scrapeArticles(html, f, now) {
     }
     if (!title) title = slugTitle(href);
     if (!title || title.length < 6) continue;
-    out.push({ title: title.slice(0, 160), link: href, ts: now - 2 * 86400000 - idx * 3600000, summary: '', image: '' });
+    let ts = now - 2 * 86400000 - idx * 3600000, needDate = false;   /* default: buried */
+    if (f.datefrom === 'url') { const ud = urlDate(href); if (ud != null) ts = ud; else ts = now - idx * 3600000; }
+    else if (f.datefrom === 'page') needDate = true;                  /* resolved after fetch */
+    out.push({ title: title.slice(0, 160), link: href, ts, _needDate: needDate, _idx: idx, summary: '', image: '' });
     idx++;
   }
   return out;
@@ -367,6 +388,22 @@ const results = await pool(feeds, CONCURRENCY, async (f) => {
   const items = (f.kind === 'scrape' ? scrapeArticles(text, f, now) : parseFeed(text)).slice(0, ITEMS_PER_FEED);
   return { feed: f, items };
 });
+
+/* Resolve REAL publish dates for scrape sources flagged datefrom="page"
+   (e.g. Polígrafo, Lusa): fetch each of the most recent articles and read its
+   datePublished, so recent fact-checks aren't hidden behind the date filter.
+   Bounded to the newest DATE_CAP per source; failures fall back to recent. */
+const DATE_CAP = 32;
+const toDate = [];
+for (const r of results) { if (r && r.items) for (const it of r.items.slice(0, DATE_CAP)) if (it._needDate) toDate.push(it); }
+if (toDate.length) {
+  console.log(`Resolving ${toDate.length} article dates (datefrom=page)…`);
+  await pool(toDate, 6, async (it) => {
+    const html = await fetchText(it.link).catch(() => '');
+    const t = html ? extractPubDate(html) : null;
+    it.ts = t != null ? t : (now - (it._idx + 1) * 4 * 3600000);   /* unknown → recent, staggered */
+  });
+}
 
 const sourcesMeta = [];
 const all = [];
