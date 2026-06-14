@@ -326,6 +326,15 @@ async function renderHomeDiscovery() {
   if (sEl) sEl.textContent = data.dateLabel ? (l === 'pt' ? 'Hoje, ' + data.dateLabel : data.dateLabel) : '';
 
   const e = _escH;
+
+  /* 💡 Inspiração do Dia — welcome message at the top, next to the greeting */
+  const wEl = document.getElementById('disc-welcome');
+  if (wEl) {
+    if (data.inspiration && data.inspiration.quote) {
+      wEl.innerHTML = `<span class="disc-welcome-ico">💡</span> “${e(data.inspiration.quote)}” <span class="disc-welcome-author">— ${e(data.inspiration.author)}</span>`;
+      wEl.hidden = false;
+    } else { wEl.hidden = true; }
+  }
   const evItem = it => {
     const yr = it.year ? `<b class="disc-yr">${it.year}</b>` : '';
     const thumb = it.thumb ? `<img class="disc-thumb" src="${e(it.thumb)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
@@ -336,11 +345,11 @@ async function renderHomeDiscovery() {
     const thumb = p.thumb ? `<img class="disc-thumb rnd" src="${e(p.thumb)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="disc-thumb rnd ph">🎂</span>`;
     return `<a class="disc-person" href="${e(p.url || '#')}" target="_blank" rel="noopener">${thumb}<span class="disc-person-txt"><b>${e(p.title)}</b>${p.year ? ` <span class="disc-yr">· ${p.year}</span>` : ''}<small>${e(p.extract || p.text || '')}</small></span></a>`;
   };
-  const listCard = (icon, title, items, renderer, cls) =>
+  const listCard = (icon, title, items, renderer, cls, moreUrl, moreLbl) =>
     (!items || !items.length) ? '' :
-    `<section class="disc-card ${cls || ''}"><div class="disc-card-h"><span class="disc-ico">${icon}</span><h2>${title}</h2></div><div class="disc-card-b">${items.map(renderer).join('')}</div></section>`;
+    `<section class="disc-card ${cls || ''}"><div class="disc-card-h"><span class="disc-ico">${icon}</span><h2>${title}</h2></div><div class="disc-card-b">${items.map(renderer).join('')}</div>${moreUrl ? `<a class="disc-more" href="${e(moreUrl)}" target="_blank" rel="noopener">${moreLbl} →</a>` : ''}</section>`;
 
-  /* hero = Foto do Dia (or the quote if no photo) */
+  /* hero = Foto do Dia */
   let hero = '';
   if (data.photo && data.photo.image) {
     hero = `<section class="disc-hero" style="background-image:url('${e(data.photo.image)}')">
@@ -351,32 +360,17 @@ async function renderHomeDiscovery() {
         <p>${e(data.photo.explanation)}</p>
         <div class="disc-hero-meta">${e(data.photo.credit)}${data.photo.url ? ` · <a href="${e(data.photo.url)}" target="_blank" rel="noopener">ver no APOD ↗</a>` : ''}</div>
       </div></section>`;
-  } else if (data.inspiration) {
-    hero = `<section class="disc-hero disc-hero-quote"><div class="disc-hero-body"><span class="disc-kicker">💡 Inspiração do Dia</span><blockquote>“${e(data.inspiration.quote)}”</blockquote><div class="disc-hero-meta">— ${e(data.inspiration.author)}</div></div></section>`;
   }
 
+  const otd = (data.links && data.links.onthisday) || '';
+  const moreL = l === 'pt' ? 'Ver mais' : 'See more';
   const cards = [
-    listCard('📜', l === 'pt' ? 'Hoje na História' : 'Today in History', data.history, evItem),
-    listCard('🌍', l === 'pt' ? 'Hoje em Portugal' : 'Today in Portugal', data.portugal, evItem),
-    listCard('🚀', l === 'pt' ? 'Hoje no Espaço' : 'Today in Space', data.space, evItem),
-    listCard('💻', l === 'pt' ? 'Hoje na Tecnologia' : 'Today in Tech', data.tech, evItem),
-    listCard('🎂', l === 'pt' ? 'Nasceram Hoje' : 'Born Today', data.births, person, 'disc-people'),
+    listCard('📜', l === 'pt' ? 'Hoje na História' : 'Today in History', data.history, evItem, '', otd, moreL),
+    listCard('🌍', l === 'pt' ? 'Hoje em Portugal' : 'Today in Portugal', data.portugal, evItem, '', otd, moreL),
+    listCard('🎂', l === 'pt' ? 'Nasceram Hoje' : 'Born Today', data.births, person, 'disc-people', otd, moreL),
   ];
 
-  let dest = '';
-  if (data.highlight && data.highlight.title) {
-    const ex = (data.highlight.extra || []).map(x => `<a class="disc-item" href="${e(x.url)}" target="_blank" rel="noopener"><span class="disc-item-txt">${e(x.title)}</span></a>`).join('');
-    dest = `<section class="disc-card"><div class="disc-card-h"><span class="disc-ico">📰</span><h2>${l === 'pt' ? 'Destaque do Dia' : 'Top Story'}</h2></div><div class="disc-card-b">
-      <a class="disc-headline" href="${e(data.highlight.url)}" target="_blank" rel="noopener">${e(data.highlight.title)}</a>
-      <div class="disc-src">${e(data.highlight.source || 'Notícias')}</div>${ex}</div></section>`;
-  }
-
-  let insp = '';
-  if (data.inspiration && data.photo && data.photo.image) {
-    insp = `<section class="disc-card disc-quote-card"><div class="disc-card-h"><span class="disc-ico">💡</span><h2>${l === 'pt' ? 'Inspiração do Dia' : 'Daily Inspiration'}</h2></div><div class="disc-card-b"><blockquote>“${e(data.inspiration.quote)}”</blockquote><div class="disc-qauthor">— ${e(data.inspiration.author)}</div></div></section>`;
-  }
-
-  panel.innerHTML = hero + `<div class="disc-grid">${cards.join('')}${dest}${insp}</div>`;
+  panel.innerHTML = hero + `<div class="disc-grid">${cards.join('')}</div>`;
 }
 document.addEventListener('DOMContentLoaded', renderHomeDiscovery);
 
@@ -403,21 +397,54 @@ function wmo(code, isDay) {
 
 async function fetchWeatherForCity(city) {
   const key = 'weather-cache-' + city.toLowerCase();
-  try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000) return c.w; } catch (e) {}
+  try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000 && c.w && c.w.feels != null) return c.w; } catch (e) {}
   try {
-    const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=pt&country=PT`).then(r => r.json());
-    const loc = g && g.results && g.results[0];
+    const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=5&language=pt`).then(r => r.json());
+    const results = (g && g.results) || [];
+    const loc = results.find(r => r.country_code === 'PT') || results[0];
     if (!loc) return null;
-    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=4`).then(r => r.json());
+    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,uv_index_max,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
     if (!w || !w.current) return null;
     const out = {
-      city: loc.name, temp: Math.round(w.current.temperature_2m), code: w.current.weather_code, isDay: w.current.is_day,
+      city: loc.name, lat: loc.latitude, lon: loc.longitude,
+      temp: Math.round(w.current.temperature_2m), feels: Math.round(w.current.apparent_temperature),
+      humidity: Math.round(w.current.relative_humidity_2m), wind: Math.round(w.current.wind_speed_10m),
+      code: w.current.weather_code, isDay: w.current.is_day,
+      uv: w.daily.uv_index_max[0] != null ? Math.round(w.daily.uv_index_max[0]) : null,
       sunrise: w.daily.sunrise[0], sunset: w.daily.sunset[0],
-      days: w.daily.time.map((tt, i) => ({ date: tt, min: Math.round(w.daily.temperature_2m_min[i]), max: Math.round(w.daily.temperature_2m_max[i]), code: w.daily.weather_code[i] })),
+      days: w.daily.time.map((tt, i) => ({ date: tt, min: Math.round(w.daily.temperature_2m_min[i]), max: Math.round(w.daily.temperature_2m_max[i]), code: w.daily.weather_code[i], pop: w.daily.precipitation_probability_max[i], uv: w.daily.uv_index_max[i] != null ? Math.round(w.daily.uv_index_max[i]) : null })),
     };
     localStorage.setItem(key, JSON.stringify({ t: Date.now(), w: out }));
     return out;
   } catch (e) { return null; }
+}
+
+function nearestArea(areas, lat, lon) {
+  let best = null, bd = Infinity;
+  for (const a of areas || []) { const d = (a.lat - lat) ** 2 + (a.lon - lon) ** 2; if (d < bd) { bd = d; best = a; } }
+  return best;
+}
+async function fetchIpmaWarnings() {
+  try { const c = JSON.parse(localStorage.getItem('ipma-warn') || 'null'); if (c && Date.now() - c.t < 1800000) return c.w; } catch (e) {}
+  try {
+    const arr = await fetch('https://api.ipma.pt/open-data/forecast/warnings/warnings_www.json').then(r => r.json());
+    const now = Date.now(), by = {};
+    for (const w of arr) {
+      if (!w.idAreaAviso || w.awarenessLevelID === 'green') continue;
+      if (w.endTime && new Date(w.endTime).getTime() < now) continue;
+      (by[w.idAreaAviso] ||= []).push({ type: w.awarenessTypeName, level: w.awarenessLevelID, start: w.startTime, end: w.endTime, text: (w.text || '').trim() });
+    }
+    localStorage.setItem('ipma-warn', JSON.stringify({ t: Date.now(), w: by }));
+    return by;
+  } catch (e) { return null; }
+}
+function uvLevel(uv) {
+  const l = lang(); if (uv == null) return '';
+  if (uv < 3) return l === 'pt' ? 'Baixo' : 'Low';
+  if (uv < 6) return l === 'pt' ? 'Moderado' : 'Moderate';
+  if (uv < 8) return l === 'pt' ? 'Alto' : 'High';
+  if (uv < 11) return l === 'pt' ? 'Muito alto' : 'Very high';
+  return l === 'pt' ? 'Extremo' : 'Extreme';
 }
 
 function upcomingHolidays(n) {
@@ -437,33 +464,44 @@ function countdownTxt(days) {
 function openHolidayModal() {
   const l = lang();
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const y = today.getFullYear();
-  const list = ptNat(y).sort((a, b) => a.d - b.d);
-  const rows = list.map(h => {
-    const past = h.d < today, isToday = h.d.toDateString() === today.toDateString();
-    return `<div class="hm-row${past ? ' hm-past' : ''}${isToday ? ' hm-today' : ''}">
-      <div class="hm-date"><b>${h.d.getDate()}</b> ${ms()[h.d.getMonth()]}</div>
-      <div class="hm-info"><div class="hm-name">${_escH(h.n)}</div><div class="hm-sub">${wd()[h.d.getDay()]}${!past ? ` · ${countdownTxt(daysUntil(h.d))}` : ''}</div>
-        ${h.r ? `<div class="hm-reason">${_escH(h.r)}</div>` : ''}</div>
-    </div>`;
-  }).join('');
+  let y = today.getFullYear();
   const ov = document.createElement('div');
   ov.className = 'hm-overlay';
-  ov.innerHTML = `<div class="hm-modal" role="dialog" aria-modal="true" aria-label="${l === 'pt' ? 'Feriados' : 'Holidays'}">
-    <div class="hm-head"><h3>📅 ${(l === 'pt' ? 'Feriados ' : 'Holidays ') + y}</h3><button class="hm-close" aria-label="${l === 'pt' ? 'Fechar' : 'Close'}">✕</button></div>
-    <div class="hm-body">${rows}</div></div>`;
   document.body.appendChild(ov);
+
+  function render() {
+    const list = ptNat(y).sort((a, b) => a.d - b.d);
+    const rows = list.map(h => {
+      const past = y < today.getFullYear() || (y === today.getFullYear() && h.d < today);
+      const isToday = h.d.toDateString() === today.toDateString();
+      const future = h.d >= today;
+      return `<div class="hm-row${past ? ' hm-past' : ''}${isToday ? ' hm-today' : ''}">
+        <div class="hm-date"><b>${h.d.getDate()}</b> ${ms()[h.d.getMonth()]}</div>
+        <div class="hm-info"><div class="hm-name">${_escH(h.n)}</div><div class="hm-sub">${wd()[h.d.getDay()]}${future ? ` · ${countdownTxt(daysUntil(h.d))}` : ''}</div>
+          ${h.r ? `<div class="hm-reason">${_escH(h.r)}</div>` : ''}</div>
+      </div>`;
+    }).join('');
+    ov.innerHTML = `<div class="hm-modal" role="dialog" aria-modal="true" aria-label="${l === 'pt' ? 'Feriados' : 'Holidays'}">
+      <div class="hm-head">
+        <div class="hm-ynav"><button class="hm-y" data-d="-1" aria-label="${l === 'pt' ? 'Ano anterior' : 'Previous year'}">‹</button><h3>📅 ${y}</h3><button class="hm-y" data-d="1" aria-label="${l === 'pt' ? 'Ano seguinte' : 'Next year'}">›</button></div>
+        <button class="hm-close" aria-label="${l === 'pt' ? 'Fechar' : 'Close'}">✕</button></div>
+      <div class="hm-body">${rows}</div></div>`;
+    ov.querySelector('.hm-close').addEventListener('click', close);
+    ov.querySelectorAll('.hm-y').forEach(b => b.addEventListener('click', () => { y += +b.dataset.d; render(); }));
+  }
   const close = () => { ov.remove(); document.removeEventListener('keydown', esc); };
   function esc(e) { if (e.key === 'Escape') close(); }
   ov.addEventListener('click', e => { if (e.target === ov) close(); });
-  ov.querySelector('.hm-close').addEventListener('click', close);
   document.addEventListener('keydown', esc);
+  render();
 }
 
 async function renderUtility() {
   const panel = document.getElementById('util-panel');
   if (!panel) return;
   const l = lang(), e = _escH;
+  const num = (v, dg) => v == null ? '—' : v.toFixed(dg).replace('.', ',');
+  const more = (url, label) => `<a class="util-more" href="${url}" target="_blank" rel="noopener">${label} →</a>`;
 
   let u = null;
   try { const r = await fetch('data/home/utility.json', { cache: 'no-store' }); if (r.ok) u = await r.json(); } catch (er) {}
@@ -472,54 +510,81 @@ async function renderUtility() {
   const city = localStorage.getItem('weather-city') || 'Leiria';
   let w = await fetchWeatherForCity(city);
   if (!w && u && u.weather) w = u.weather;
+
+  /* warnings for this city's IPMA area (live, else cached in utility.json) */
+  let warnings = [];
+  if (w && u && u.ipma) {
+    let code = w.area;
+    if (!code && w.lat != null) { const a = nearestArea(u.ipma.areas, w.lat, w.lon); code = a && a.code; }
+    if (code) { const live = await fetchIpmaWarnings(); warnings = (live && live[code]) || (u.ipma.warnings && u.ipma.warnings[code]) || []; }
+  }
+
   let weatherCard;
   if (w) {
     const cur = wmo(w.code, w.isDay), d0 = w.days && w.days[0];
-    const fc = (w.days || []).slice(1, 4).map(d => {
-      const dw = wmo(d.code, 1), nm = wd()[new Date(d.date + 'T00:00').getDay()];
-      return `<div class="uw-day"><span class="uw-day-n">${nm}</span><span class="uw-day-i">${dw.emoji}</span><span class="uw-day-t"><b>${d.max}°</b> ${d.min}°</span></div>`;
+    const fc = (w.days || []).slice(1, 6).map(d => {
+      const dw = wmo(d.code, 1), nm = wd()[new Date(d.date + 'T00:00').getDay()].slice(0, 3);
+      const rain = d.pop != null && d.pop >= 20 ? `<span class="uw-day-r">💧${d.pop}%</span>` : '';
+      return `<div class="uw-day"><span class="uw-day-n">${nm}</span><span class="uw-day-i">${dw.emoji}</span><span class="uw-day-t"><b>${d.max}°</b> ${d.min}°</span>${rain}</div>`;
     }).join('');
+    const stats = [
+      w.feels != null ? `<span title="${l === 'pt' ? 'Sensação' : 'Feels like'}">🌡️ ${w.feels}°</span>` : '',
+      w.humidity != null ? `<span title="${l === 'pt' ? 'Humidade' : 'Humidity'}">💧 ${w.humidity}%</span>` : '',
+      w.wind != null ? `<span title="${l === 'pt' ? 'Vento' : 'Wind'}">💨 ${w.wind} km/h</span>` : '',
+      w.uv != null ? `<span title="UV">☀️ UV ${w.uv} <small>${uvLevel(w.uv)}</small></span>` : '',
+    ].filter(Boolean).join('');
+    const warnHtml = warnings.length ? `<div class="uw-warn">${warnings.slice(0, 4).map(wn => `<span class="uw-w lvl-${e(wn.level)}" title="${e(wn.text || wn.type)}">⚠️ ${e(wn.type)}</span>`).join('')}</div>` : '';
     weatherCard = `<section class="util-card util-weather">
       <div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2><span class="util-tag">${e(w.city)}</span></div>
       <div class="uw-now"><span class="uw-emoji">${cur.emoji}</span>
         <div class="uw-main"><span class="uw-temp">${w.temp}°</span><span class="uw-state">${cur.text}</span></div>
         ${d0 ? `<div class="uw-mm"><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
+      <div class="uw-stats">${stats}</div>
+      ${warnHtml}
       <div class="uw-sun"><span>🌅 ${w.sunrise.slice(11, 16)}</span><span>🌇 ${w.sunset.slice(11, 16)}</span></div>
-      <div class="uw-fc">${fc}</div></section>`;
+      <div class="uw-fc">${fc}</div>
+      <div class="util-foot">${more('https://www.ipma.pt/pt/otempo/prev.localidade.hora/', l === 'pt' ? 'Ver no IPMA' : 'See on IPMA')}</div></section>`;
   } else {
     weatherCard = `<section class="util-card util-weather"><div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2></div><div class="util-empty">${l === 'pt' ? 'Indisponível' : 'Unavailable'}</div></section>`;
   }
 
-  /* ── Fuel (utility.json — Portugal Continental) ── */
+  /* ── Fuel (utility.json — Portugal Continental, comparação semanal) ── */
   let fuelCard = '';
   if (u && u.fuel) {
     const f = u.fuel;
-    const num = (v, dg) => v.toFixed(dg).replace('.', ',');
-    const row = (label, o) => {
+    const row = (label, o, wk) => {
       if (!o || o.price == null) return '';
+      const d = wk != null ? wk : o.delta;
       let dl = '';
-      if (o.delta != null && o.delta !== 0) { const up = o.delta > 0; dl = `<span class="uf-d ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'} ${num(Math.abs(o.delta), 3)}</span>`; }
+      if (d != null && Math.abs(d) >= 0.001) { const up = d > 0; dl = `<span class="uf-d ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'} ${num(Math.abs(d), 3)}</span>`; }
+      else if (d != null) dl = `<span class="uf-d flat">=</span>`;
       return `<div class="uf-row"><span class="uf-l">${label}</span><span class="uf-p">${num(o.price, 3)} €<small>/L</small></span>${dl}</div>`;
     };
+    const wk = f.week || {};
+    const foot = f.weekFrom
+      ? (l === 'pt' ? `Variação vs ${f.weekFrom.slice(8, 10)}/${f.weekFrom.slice(5, 7)} · DGEG` : `Change vs ${f.weekFrom.slice(8, 10)}/${f.weekFrom.slice(5, 7)} · DGEG`)
+      : (l === 'pt' ? 'Média nacional · DGEG' : 'National avg · DGEG');
     fuelCard = `<section class="util-card util-fuel">
       <div class="util-h"><span class="util-ico">⛽</span><h2>${l === 'pt' ? 'Combustíveis' : 'Fuel'}</h2><span class="util-tag">${l === 'pt' ? 'Continente' : 'Mainland'}</span></div>
-      ${row('Gasolina 95', f.gasolina95)}${row(l === 'pt' ? 'Gasóleo' : 'Diesel', f.gasoleo)}${row('GPL Auto', f.gpl)}
-      <div class="util-foot">${l === 'pt' ? 'Média nacional · DGEG' : 'National avg · DGEG'}</div></section>`;
+      ${row('Gasolina 95', f.gasolina95, wk.gasolina95)}${row(l === 'pt' ? 'Gasóleo' : 'Diesel', f.gasoleo, wk.gasoleo)}${row('GPL Auto', f.gpl, wk.gpl)}
+      <div class="util-foot">${foot}<br>${more('https://precoscombustiveis.dgeg.gov.pt/', l === 'pt' ? 'Mapa de preços' : 'Price map')}</div></section>`;
   }
 
-  /* ── Electricity (utility.json — estimativa na fatura) ── */
+  /* ── Energia: eletricidade (estimativa na fatura) + gás natural ── */
   let elecCard = '';
   if (u && u.electricity) {
-    const el = u.electricity, num = (v, dg) => v == null ? '—' : v.toFixed(dg).replace('.', ',');
+    const el = u.electricity;
     const trI = el.trend === 'up' ? '<span class="ue-t up">▲</span>' : el.trend === 'down' ? '<span class="ue-t dn">▼</span>' : '';
+    const gas = u.gas ? `<div class="ue-gas"><span class="ue-gas-l">🔥 ${l === 'pt' ? 'Gás natural' : 'Natural gas'}</span><span class="ue-gas-v"><b>${num(u.gas.price, 2)}</b> c€/kWh</span><small>${e(u.gas.label)}</small></div>` : '';
     elecCard = `<section class="util-card util-elec">
-      <div class="util-h"><span class="util-ico">⚡</span><h2>${l === 'pt' ? 'Eletricidade' : 'Electricity'}</h2></div>
+      <div class="util-h"><span class="util-ico">⚡</span><h2>${l === 'pt' ? 'Energia' : 'Energy'}</h2></div>
       <div class="ue-now"><span class="ue-price">${num(el.bill, 1)}<small> c€/kWh</small></span>${trI}</div>
-      <div class="ue-sub">${l === 'pt' ? 'Estimativa indexada (c/ IVA)' : 'Indexed estimate (incl. VAT)'}</div>
-      <div class="util-foot">OMIE ${num(el.omie, 2)} c€/kWh · ${num(el.min, 1)}–${num(el.max, 1)}</div></section>`;
+      <div class="ue-sub">${l === 'pt' ? 'Eletricidade · estimativa indexada (c/ IVA)' : 'Electricity · indexed estimate (incl. VAT)'}</div>
+      ${gas}
+      <div class="util-foot">OMIE ${num(el.omie, 2)} c€/kWh · ${num(el.min, 1)}–${num(el.max, 1)}<br>${more('https://www.erse.pt/simuladores/', l === 'pt' ? 'Simular fatura (ERSE)' : 'Bill simulator (ERSE)')}</div></section>`;
   }
 
-  /* ── Holidays (next 3 + modal) ── */
+  /* ── Holidays (next 3 + modal with year navigation) ── */
   const up = upcomingHolidays(3);
   const holRows = up.map(h => `<div class="uh-row"><div class="uh-date"><b>${h.d.getDate()}</b> ${ms()[h.d.getMonth()].slice(0, 3)}</div>
     <div class="uh-info"><span class="uh-name">${e(h.n)}</span><span class="uh-cd">${countdownTxt(daysUntil(h.d))}</span></div></div>`).join('');

@@ -376,12 +376,40 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
   .util-card.util-weather { grid-column: span 1; }
 }
 
+/* weather extras: current stats, warnings, forecast rain, more link */
+.uw-stats { display: flex; flex-wrap: wrap; gap: .3rem .9rem; font-size: .76rem; color: var(--muted); padding-bottom: .5rem; }
+.uw-stats span { display: inline-flex; align-items: center; gap: .2rem; }
+.uw-stats small { color: var(--accent); font-weight: 600; }
+.uw-warn { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .55rem; }
+.uw-w { font-size: .68rem; font-weight: 700; padding: .2rem .5rem; border-radius: 6px; color: #1a1a1a; }
+.uw-w.lvl-yellow { background: #fde047; } .uw-w.lvl-orange { background: #fb923c; } .uw-w.lvl-red { background: #f87171; color: #fff; }
+.uw-day-r { font-size: .62rem; color: #3b82f6; }
+.util-more { display: inline-block; margin-top: .15rem; font-size: .7rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.util-more:hover { text-decoration: underline; }
+.uw-fc { margin-bottom: .6rem; }
+
+/* gas line inside the energy card */
+.ue-gas { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .5rem; margin-top: .7rem; padding-top: .6rem; border-top: 1px solid var(--border); }
+.ue-gas-l { font-size: .8rem; color: var(--text); font-weight: 600; }
+.ue-gas-v { font-size: .9rem; color: var(--text); } .ue-gas-v b { color: var(--accent); }
+.ue-gas small { flex-basis: 100%; font-size: .66rem; color: var(--muted); }
+
+/* discovery: top welcome (inspiration) + per-card "ver mais" */
+.disc-welcome { margin: .5rem 0 0; font-size: .9rem; font-style: italic; color: var(--text); opacity: .92; max-width: 60ch; line-height: 1.5; }
+.disc-welcome-ico { font-style: normal; }
+.disc-welcome-author { font-style: normal; color: var(--accent); font-weight: 600; font-size: .82rem; }
+.disc-more { display: inline-block; margin-top: .6rem; font-size: .74rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.disc-more:hover { text-decoration: underline; }
+
 /* ── Holidays modal ────────────────────────────────────────────── */
 .hm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(3px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.2rem; animation: hmIn .15s ease; }
 @keyframes hmIn { from { opacity: 0; } to { opacity: 1; } }
 .hm-modal { background: var(--card-solid, var(--card)); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
 .hm-head { display: flex; align-items: center; gap: .5rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
-.hm-head h3 { margin: 0; font-family: var(--font-head, inherit); font-size: 1.05rem; color: var(--text); }
+.hm-head h3 { margin: 0; font-family: var(--font-head, inherit); font-size: 1.05rem; color: var(--text); min-width: 3.2em; text-align: center; }
+.hm-ynav { display: flex; align-items: center; gap: .4rem; }
+.hm-y { background: var(--accent-soft); color: var(--accent); border: none; width: 28px; height: 28px; border-radius: 7px; font-size: 1.1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.hm-y:hover { background: var(--accent); color: #fff; }
 .hm-close { margin-left: auto; background: none; border: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; line-height: 1; padding: .2rem; }
 .hm-close:hover { color: var(--text); }
 .hm-body { overflow-y: auto; padding: .4rem 1.2rem 1rem; }

@@ -99,6 +99,9 @@ function pickLang(ptArr, enArr, n, re) {
 function pick(items, n, filterRe) {
   let arr = (items || []).map(mapItem).filter(x => x.text);
   if (filterRe) arr = arr.filter(x => filterRe.test(hay(x)));
+  /* dedupe by title (then text) */
+  const seen = new Set();
+  arr = arr.filter(x => { const k = (x.title || x.text).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
   /* prefer entries with a thumbnail, keep chronological-ish variety */
   const withThumb = arr.filter(x => x.thumb), without = arr.filter(x => !x.thumb);
   return withThumb.concat(without).slice(0, n);
@@ -138,28 +141,25 @@ const ptSel = pt ? (pt.selected || []) : [];
 const ptAll = pt ? [...(pt.selected || []), ...(pt.events || [])] : [];
 const enAll = en ? [...(en.events || []), ...(en.selected || [])] : [];
 
-/* 🌍 Hoje em Portugal — strictly Portugal-related (PT feed) */
-out.portugal = pick(ptAll.filter(x => PT_RE.test(clean(x.text))), 3);
+/* 🌍 Hoje em Portugal — strictly Portugal-related (PT feed), up to 15 */
+out.portugal = pick(ptAll.filter(x => PT_RE.test(clean(x.text))), 15);
 if (!out.portugal.length) out.portugal = fallback.portugal || [];
 const ptUsed = new Set(out.portugal.map(x => x.title));
 
-/* 📜 Hoje na História — top world efemérides in Portuguese (minus Portugal ones) */
-out.history = pick(ptSel.filter(x => !PT_RE.test(clean(x.text))), 4).filter(x => !ptUsed.has(x.title));
-if (out.history.length < 3 && en) out.history = out.history.concat(pick(en.selected, 4).filter(x => !out.history.find(o => o.title === x.title))).slice(0, 4);
+/* 📜 Hoje na História — world efemérides in Portuguese (minus Portugal ones), up to 15 */
+out.history = pick(ptAll.filter(x => !PT_RE.test(clean(x.text))), 15).filter(x => !ptUsed.has(x.title));
+if (out.history.length < 6 && en) out.history = out.history.concat(pick(enAll, 15).filter(x => !out.history.find(o => o.title === x.title))).slice(0, 15);
 if (!out.history.length) out.history = fallback.history || [];
 
-/* 🚀 Espaço & 💻 Tecnologia */
-out.space = pickLang(ptAll, enAll, 3, SPACE_RE);
-if (!out.space.length) out.space = fallback.space || [];
-out.tech = pickLang(ptAll, enAll, 3, TECH_RE);
-if (!out.tech.length) out.tech = fallback.tech || [];
-
-/* 🎂 Nasceram Hoje — relevant people, PT feed first */
+/* 🎂 Nasceram Hoje — relevant people, PT feed first, up to 15 */
 {
-  let b = rankBirths(pt ? (pt.births || []) : [], 4);
-  if (b.length < 3 && en) b = b.concat(rankBirths(en.births || [], 4).filter(x => !b.find(o => o.title === x.title))).slice(0, 4);
+  let b = rankBirths(pt ? (pt.births || []) : [], 15);
+  if (b.length < 6 && en) b = b.concat(rankBirths(en.births || [], 15).filter(x => !b.find(o => o.title === x.title))).slice(0, 15);
   out.births = b.length ? b : (fallback.births || []);
 }
+
+/* link to the full Portuguese "on this day" Wikipedia page (Ver mais) */
+out.links = { onthisday: `https://pt.wikipedia.org/wiki/${lisbon.getDate()}_de_${MONTHS_PT[lisbon.getMonth()]}` };
 
 /* ── 📰 Destaque do Dia (reuse news pipeline) ───────────────────── */
 console.log('Destaque (news)…');
@@ -183,7 +183,7 @@ try {
 
 writeFileSync(join(HERE, 'today.json'), JSON.stringify(out));
 console.log(`\ntoday.json written for ${ISO}:`);
-for (const k of ['photo', 'history', 'portugal', 'space', 'tech', 'births', 'highlight', 'inspiration']) {
+for (const k of ['photo', 'history', 'portugal', 'births', 'inspiration']) {
   const v = out[k];
   console.log(`  ${k}: ${Array.isArray(v) ? v.length + ' items' : (v ? 'ok' : '— (empty)')}`);
 }
