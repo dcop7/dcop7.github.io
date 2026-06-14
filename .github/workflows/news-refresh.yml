@@ -35,10 +35,10 @@ jobs:
 
       - name: Commit updated news if changed
         run: |
-          if [ -n "$(git status --porcelain data/news)" ]; then
+          if [ -n "$(git status --porcelain data/news/*.json)" ]; then
             git config user.name  "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/news/*.json data/news/history
+            git add data/news/*.json
             git commit -m "chore(news): refresh aggregated feeds [skip ci]"
             git push
           else
