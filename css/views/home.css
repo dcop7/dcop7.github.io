@@ -317,3 +317,80 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
   .disc-hero-body { padding: 1.1rem; }
   .disc-grid { grid-template-columns: 1fr; }
 }
+
+/* ── ÚTIL HOJE ─────────────────────────────────────────────────── */
+.util-panel { margin-bottom: 1.4rem; }
+.util-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; align-items: stretch; }
+.util-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; display: flex; flex-direction: column; }
+.util-card.util-weather { grid-column: span 2; }
+.util-h { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
+.util-h .util-ico { font-size: 1.15rem; }
+.util-h h2 { font-family: var(--font-head, inherit); font-size: .95rem; font-weight: 700; margin: 0; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.util-tag { margin-left: auto; flex-shrink: 0; white-space: nowrap; max-width: 45%; overflow: hidden; text-overflow: ellipsis; font-size: .68rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: .15rem .5rem; border-radius: 999px; }
+.util-foot { margin-top: auto; padding-top: .55rem; font-size: .66rem; color: var(--muted); }
+.util-empty { color: var(--muted); font-size: .8rem; padding: .5rem 0; }
+
+/* weather */
+.uw-now { display: flex; align-items: center; gap: .65rem; margin-bottom: .6rem; }
+.uw-emoji { font-size: 2.6rem; line-height: 1; }
+.uw-main { display: flex; flex-direction: column; }
+.uw-temp { font-size: 2rem; font-weight: 800; line-height: 1; color: var(--text); }
+.uw-state { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
+.uw-mm { margin-left: auto; display: flex; flex-direction: column; gap: .15rem; font-size: .8rem; font-weight: 600; text-align: right; }
+.uw-max { color: #ef4444; } .uw-min { color: #3b82f6; }
+.uw-sun { display: flex; gap: 1.1rem; font-size: .76rem; color: var(--muted); padding: .5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: .6rem; }
+.uw-fc { display: flex; gap: .4rem; }
+.uw-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .15rem; background: var(--accent-soft); border-radius: 10px; padding: .5rem .2rem; }
+.uw-day-n { font-size: .68rem; color: var(--muted); text-transform: capitalize; }
+.uw-day-i { font-size: 1.2rem; }
+.uw-day-t { font-size: .72rem; } .uw-day-t b { color: var(--text); }
+
+/* fuel */
+.uf-row { display: flex; align-items: center; gap: .5rem; padding: .45rem 0; border-bottom: 1px solid var(--border); }
+.uf-row:last-of-type { border-bottom: none; }
+.uf-l { font-size: .8rem; color: var(--text); }
+.uf-p { margin-left: auto; font-size: .95rem; font-weight: 700; color: var(--text); }
+.uf-p small { font-size: .62rem; font-weight: 500; color: var(--muted); }
+.uf-d { font-size: .68rem; font-weight: 700; min-width: 52px; text-align: right; }
+.uf-d.up { color: #ef4444; } .uf-d.dn { color: #22c55e; }
+
+/* electricity */
+.ue-now { display: flex; align-items: baseline; gap: .4rem; }
+.ue-price { font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1; }
+.ue-price small { font-size: .72rem; font-weight: 500; color: var(--muted); }
+.ue-t { font-size: 1rem; font-weight: 800; } .ue-t.up { color: #ef4444; } .ue-t.dn { color: #22c55e; }
+.ue-sub { font-size: .72rem; color: var(--muted); margin-top: .3rem; }
+
+/* holidays */
+.uh-row { display: flex; align-items: center; gap: .65rem; padding: .4rem 0; border-bottom: 1px solid var(--border); }
+.uh-date { flex-shrink: 0; width: 42px; text-align: center; font-size: .66rem; color: var(--muted); text-transform: uppercase; }
+.uh-date b { display: block; font-size: 1.15rem; color: var(--accent); }
+.uh-info { display: flex; flex-direction: column; min-width: 0; }
+.uh-name { font-size: .8rem; font-weight: 600; color: var(--text); }
+.uh-cd { font-size: .68rem; color: var(--muted); }
+.uh-all { margin-top: .7rem; align-self: flex-start; background: var(--accent-soft); color: var(--accent); border: none; border-radius: 8px; padding: .4rem .8rem; font-size: .74rem; font-weight: 600; cursor: pointer; transition: background .15s; }
+.uh-all:hover { background: var(--accent); color: #fff; }
+
+@media (max-width: 640px) {
+  .util-grid { grid-template-columns: 1fr; }
+  .util-card.util-weather { grid-column: span 1; }
+}
+
+/* ── Holidays modal ────────────────────────────────────────────── */
+.hm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(3px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.2rem; animation: hmIn .15s ease; }
+@keyframes hmIn { from { opacity: 0; } to { opacity: 1; } }
+.hm-modal { background: var(--card-solid, var(--card)); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.hm-head { display: flex; align-items: center; gap: .5rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
+.hm-head h3 { margin: 0; font-family: var(--font-head, inherit); font-size: 1.05rem; color: var(--text); }
+.hm-close { margin-left: auto; background: none; border: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; line-height: 1; padding: .2rem; }
+.hm-close:hover { color: var(--text); }
+.hm-body { overflow-y: auto; padding: .4rem 1.2rem 1rem; }
+.hm-row { display: flex; gap: .8rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
+.hm-row:last-child { border-bottom: none; }
+.hm-row.hm-past { opacity: .45; }
+.hm-row.hm-today { background: var(--accent-soft); border-radius: 8px; padding: .6rem .6rem; margin: 0 -.6rem; }
+.hm-date { flex-shrink: 0; width: 58px; text-align: center; font-size: .72rem; color: var(--muted); text-transform: uppercase; }
+.hm-date b { display: block; font-size: 1.25rem; color: var(--accent); }
+.hm-name { font-size: .88rem; font-weight: 700; color: var(--text); }
+.hm-sub { font-size: .72rem; color: var(--muted); text-transform: capitalize; }
+.hm-reason { font-size: .72rem; color: var(--muted); margin-top: .2rem; line-height: 1.4; }

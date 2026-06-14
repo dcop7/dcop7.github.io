@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v150';
+const CACHE = 'dcop7-v151';
 const STATIC = [
   '/',
   '/index.html',
@@ -22,6 +22,7 @@ const STATIC = [
   '/data/events/pt-places.json',
   '/data/home/today.json',
   '/data/home/fallback.json',
+  '/data/home/utility.json',
   '/data/humor/index.json',
   /* Core */
   '/js/core/main.js',

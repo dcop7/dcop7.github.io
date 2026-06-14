@@ -610,6 +610,8 @@ body.ph-modal-open { overflow: hidden; }
 .st-row-info { flex: 1; min-width: 0; }
 .st-row-label { font-size: .82rem; font-weight: 600; margin-bottom: .15rem; }
 .st-row-desc  { font-size: .7rem; color: var(--muted); }
+.st-input { background: var(--card2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: .45rem .65rem; font-size: .82rem; font-family: inherit; transition: border-color var(--ease); }
+.st-input:focus { outline: none; border-color: rgba(var(--accent-rgb),.5); }
 .st-font-ctrl { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
 .st-font-btn { background: var(--card2); border: 1px solid var(--border); color: var(--text); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: .95rem; transition: all var(--ease); display: flex; align-items: center; justify-content: center; font-family: inherit; }
 .st-font-btn:hover { border-color: rgba(var(--accent-rgb),.4); color: var(--accent); }

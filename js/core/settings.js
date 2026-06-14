@@ -78,6 +78,20 @@ const SettingsPage = (function () {
             </div>
           </div>
 
+          <!-- Homepage -->
+          <div class="st-section">
+            <div class="st-section-title">🏠 ${VT('Página inicial', 'Homepage')}</div>
+            <div class="st-row">
+              <div class="st-row-info">
+                <div class="st-row-label">${VT('Cidade (meteorologia)', 'City (weather)')}</div>
+                <div class="st-row-desc">${VT('Cidade usada no cartão de meteorologia da página inicial.', 'City used in the homepage weather card.')}</div>
+              </div>
+              <input type="text" id="st-weather-city" class="st-input" placeholder="Leiria"
+                value="${(localStorage.getItem('weather-city') || 'Leiria').replace(/"/g, '&quot;')}"
+                autocomplete="off" spellcheck="false" style="width:auto;min-width:140px">
+            </div>
+          </div>
+
           <!-- Interface (global density) -->
           <div class="st-section">
             <div class="st-section-title">📐 ${T('st.interface')}</div>
@@ -128,6 +142,16 @@ const SettingsPage = (function () {
         el.querySelectorAll('#st-lang-seg .tsb').forEach(b => b.classList.toggle('active', b === btn));
       })
     );
+
+    /* Weather city */
+    const cityInput = el.querySelector('#st-weather-city');
+    const saveCity = () => {
+      const v = (cityInput.value || '').trim() || 'Leiria';
+      localStorage.setItem('weather-city', v);
+      document.dispatchEvent(new CustomEvent('weather-city-change'));
+    };
+    cityInput?.addEventListener('change', saveCity);
+    cityInput?.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); cityInput.blur(); } });
 
     /* Density */
     el.querySelectorAll('#st-density .tsb').forEach(btn =>

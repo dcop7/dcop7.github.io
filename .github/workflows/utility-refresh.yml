@@ -1,0 +1,62 @@
+name: Refresh daily utility data
+
+# Builds data/home/utility.json (fuel prices via DGEG, electricity via OMIE,
+# Leiria weather fallback via Open-Meteo) server-side twice a day, so the
+# browser reads one small local JSON instead of calling those sources live.
+# No API keys required. Runs ~08h (fuel) and ~14h (OMIE day-ahead) Lisbon.
+
+on:
+  schedule:
+    - cron: '30 7 * * *'      # 08:30 summer (WEST, UTC+1)
+    - cron: '30 8 * * *'      # 08:30 winter (WET, UTC+0)
+    - cron: '30 13 * * *'     # 14:30 summer
+    - cron: '30 14 * * *'     # 14:30 winter
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: utility-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gate to 08h/14h Europe/Lisbon (skip the off-DST cron)
+        id: gate
+        run: |
+          H="$(TZ=Europe/Lisbon date +%H)"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$H" != "08" ] && [ "$H" != "14" ]; then
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build utility snapshot
+        if: steps.gate.outputs.go == 'true'
+        run: node data/home/build-utility.mjs
+
+      - name: Commit snapshot if it changed
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          if [ -n "$(git status --porcelain data/home/utility.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/home/utility.json
+            git commit -m "chore(home): refresh daily utility snapshot [skip ci]"
+            git push
+          else
+            echo "No changes in utility.json."
+          fi

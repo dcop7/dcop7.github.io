@@ -380,6 +380,158 @@ async function renderHomeDiscovery() {
 }
 document.addEventListener('DOMContentLoaded', renderHomeDiscovery);
 
+// ── ÚTIL HOJE (weather · fuel · electricity · holidays) ────────────
+function wmo(code, isDay) {
+  const m = {
+    0:['☀️','Céu limpo','Clear sky'], 1:['🌤️','Pouco nublado','Mainly clear'],
+    2:['⛅','Parcialmente nublado','Partly cloudy'], 3:['☁️','Nublado','Overcast'],
+    45:['🌫️','Nevoeiro','Fog'], 48:['🌫️','Nevoeiro gelado','Rime fog'],
+    51:['🌦️','Chuvisco fraco','Light drizzle'], 53:['🌦️','Chuvisco','Drizzle'], 55:['🌦️','Chuvisco forte','Dense drizzle'],
+    56:['🌧️','Chuvisco gelado','Freezing drizzle'], 57:['🌧️','Chuvisco gelado','Freezing drizzle'],
+    61:['🌧️','Chuva fraca','Light rain'], 63:['🌧️','Chuva','Rain'], 65:['🌧️','Chuva forte','Heavy rain'],
+    66:['🌧️','Chuva gelada','Freezing rain'], 67:['🌧️','Chuva gelada','Freezing rain'],
+    71:['🌨️','Neve fraca','Light snow'], 73:['🌨️','Neve','Snow'], 75:['🌨️','Neve forte','Heavy snow'], 77:['🌨️','Grãos de neve','Snow grains'],
+    80:['🌦️','Aguaceiros','Showers'], 81:['🌦️','Aguaceiros','Showers'], 82:['⛈️','Aguaceiros fortes','Violent showers'],
+    85:['🌨️','Aguaceiros de neve','Snow showers'], 86:['🌨️','Aguaceiros de neve','Snow showers'],
+    95:['⛈️','Trovoada','Thunderstorm'], 96:['⛈️','Trovoada c/ granizo','Thunderstorm w/ hail'], 99:['⛈️','Trovoada c/ granizo','Thunderstorm w/ hail'],
+  };
+  const e = m[+code] || ['🌡️','—','—'];
+  let emoji = e[0];
+  if ((+code === 0 || +code === 1) && !isDay) emoji = '🌙';
+  return { emoji, text: lang() === 'pt' ? e[1] : e[2] };
+}
+
+async function fetchWeatherForCity(city) {
+  const key = 'weather-cache-' + city.toLowerCase();
+  try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000) return c.w; } catch (e) {}
+  try {
+    const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=pt&country=PT`).then(r => r.json());
+    const loc = g && g.results && g.results[0];
+    if (!loc) return null;
+    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=4`).then(r => r.json());
+    if (!w || !w.current) return null;
+    const out = {
+      city: loc.name, temp: Math.round(w.current.temperature_2m), code: w.current.weather_code, isDay: w.current.is_day,
+      sunrise: w.daily.sunrise[0], sunset: w.daily.sunset[0],
+      days: w.daily.time.map((tt, i) => ({ date: tt, min: Math.round(w.daily.temperature_2m_min[i]), max: Math.round(w.daily.temperature_2m_max[i]), code: w.daily.weather_code[i] })),
+    };
+    localStorage.setItem(key, JSON.stringify({ t: Date.now(), w: out }));
+    return out;
+  } catch (e) { return null; }
+}
+
+function upcomingHolidays(n) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const y = today.getFullYear();
+  const all = [...ptNat(y), ...ptNat(y + 1)];
+  return all.filter(h => h.d >= today).sort((a, b) => a.d - b.d).slice(0, n);
+}
+function daysUntil(d) { const today = new Date(); today.setHours(0, 0, 0, 0); return Math.round((d - today) / 86400000); }
+function countdownTxt(days) {
+  const l = lang();
+  if (days <= 0) return l === 'pt' ? 'Hoje' : 'Today';
+  if (days === 1) return l === 'pt' ? 'Amanhã' : 'Tomorrow';
+  return l === 'pt' ? `faltam ${days} dias` : `in ${days} days`;
+}
+
+function openHolidayModal() {
+  const l = lang();
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const y = today.getFullYear();
+  const list = ptNat(y).sort((a, b) => a.d - b.d);
+  const rows = list.map(h => {
+    const past = h.d < today, isToday = h.d.toDateString() === today.toDateString();
+    return `<div class="hm-row${past ? ' hm-past' : ''}${isToday ? ' hm-today' : ''}">
+      <div class="hm-date"><b>${h.d.getDate()}</b> ${ms()[h.d.getMonth()]}</div>
+      <div class="hm-info"><div class="hm-name">${_escH(h.n)}</div><div class="hm-sub">${wd()[h.d.getDay()]}${!past ? ` · ${countdownTxt(daysUntil(h.d))}` : ''}</div>
+        ${h.r ? `<div class="hm-reason">${_escH(h.r)}</div>` : ''}</div>
+    </div>`;
+  }).join('');
+  const ov = document.createElement('div');
+  ov.className = 'hm-overlay';
+  ov.innerHTML = `<div class="hm-modal" role="dialog" aria-modal="true" aria-label="${l === 'pt' ? 'Feriados' : 'Holidays'}">
+    <div class="hm-head"><h3>📅 ${(l === 'pt' ? 'Feriados ' : 'Holidays ') + y}</h3><button class="hm-close" aria-label="${l === 'pt' ? 'Fechar' : 'Close'}">✕</button></div>
+    <div class="hm-body">${rows}</div></div>`;
+  document.body.appendChild(ov);
+  const close = () => { ov.remove(); document.removeEventListener('keydown', esc); };
+  function esc(e) { if (e.key === 'Escape') close(); }
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  ov.querySelector('.hm-close').addEventListener('click', close);
+  document.addEventListener('keydown', esc);
+}
+
+async function renderUtility() {
+  const panel = document.getElementById('util-panel');
+  if (!panel) return;
+  const l = lang(), e = _escH;
+
+  let u = null;
+  try { const r = await fetch('data/home/utility.json', { cache: 'no-store' }); if (r.ok) u = await r.json(); } catch (er) {}
+
+  /* ── Weather (live for configured city, fallback utility.json Leiria) ── */
+  const city = localStorage.getItem('weather-city') || 'Leiria';
+  let w = await fetchWeatherForCity(city);
+  if (!w && u && u.weather) w = u.weather;
+  let weatherCard;
+  if (w) {
+    const cur = wmo(w.code, w.isDay), d0 = w.days && w.days[0];
+    const fc = (w.days || []).slice(1, 4).map(d => {
+      const dw = wmo(d.code, 1), nm = wd()[new Date(d.date + 'T00:00').getDay()];
+      return `<div class="uw-day"><span class="uw-day-n">${nm}</span><span class="uw-day-i">${dw.emoji}</span><span class="uw-day-t"><b>${d.max}°</b> ${d.min}°</span></div>`;
+    }).join('');
+    weatherCard = `<section class="util-card util-weather">
+      <div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2><span class="util-tag">${e(w.city)}</span></div>
+      <div class="uw-now"><span class="uw-emoji">${cur.emoji}</span>
+        <div class="uw-main"><span class="uw-temp">${w.temp}°</span><span class="uw-state">${cur.text}</span></div>
+        ${d0 ? `<div class="uw-mm"><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
+      <div class="uw-sun"><span>🌅 ${w.sunrise.slice(11, 16)}</span><span>🌇 ${w.sunset.slice(11, 16)}</span></div>
+      <div class="uw-fc">${fc}</div></section>`;
+  } else {
+    weatherCard = `<section class="util-card util-weather"><div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2></div><div class="util-empty">${l === 'pt' ? 'Indisponível' : 'Unavailable'}</div></section>`;
+  }
+
+  /* ── Fuel (utility.json — Portugal Continental) ── */
+  let fuelCard = '';
+  if (u && u.fuel) {
+    const f = u.fuel;
+    const num = (v, dg) => v.toFixed(dg).replace('.', ',');
+    const row = (label, o) => {
+      if (!o || o.price == null) return '';
+      let dl = '';
+      if (o.delta != null && o.delta !== 0) { const up = o.delta > 0; dl = `<span class="uf-d ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'} ${num(Math.abs(o.delta), 3)}</span>`; }
+      return `<div class="uf-row"><span class="uf-l">${label}</span><span class="uf-p">${num(o.price, 3)} €<small>/L</small></span>${dl}</div>`;
+    };
+    fuelCard = `<section class="util-card util-fuel">
+      <div class="util-h"><span class="util-ico">⛽</span><h2>${l === 'pt' ? 'Combustíveis' : 'Fuel'}</h2><span class="util-tag">${l === 'pt' ? 'Continente' : 'Mainland'}</span></div>
+      ${row('Gasolina 95', f.gasolina95)}${row(l === 'pt' ? 'Gasóleo' : 'Diesel', f.gasoleo)}${row('GPL Auto', f.gpl)}
+      <div class="util-foot">${l === 'pt' ? 'Média nacional · DGEG' : 'National avg · DGEG'}</div></section>`;
+  }
+
+  /* ── Electricity (utility.json — estimativa na fatura) ── */
+  let elecCard = '';
+  if (u && u.electricity) {
+    const el = u.electricity, num = (v, dg) => v == null ? '—' : v.toFixed(dg).replace('.', ',');
+    const trI = el.trend === 'up' ? '<span class="ue-t up">▲</span>' : el.trend === 'down' ? '<span class="ue-t dn">▼</span>' : '';
+    elecCard = `<section class="util-card util-elec">
+      <div class="util-h"><span class="util-ico">⚡</span><h2>${l === 'pt' ? 'Eletricidade' : 'Electricity'}</h2></div>
+      <div class="ue-now"><span class="ue-price">${num(el.bill, 1)}<small> c€/kWh</small></span>${trI}</div>
+      <div class="ue-sub">${l === 'pt' ? 'Estimativa indexada (c/ IVA)' : 'Indexed estimate (incl. VAT)'}</div>
+      <div class="util-foot">OMIE ${num(el.omie, 2)} c€/kWh · ${num(el.min, 1)}–${num(el.max, 1)}</div></section>`;
+  }
+
+  /* ── Holidays (next 3 + modal) ── */
+  const up = upcomingHolidays(3);
+  const holRows = up.map(h => `<div class="uh-row"><div class="uh-date"><b>${h.d.getDate()}</b> ${ms()[h.d.getMonth()].slice(0, 3)}</div>
+    <div class="uh-info"><span class="uh-name">${e(h.n)}</span><span class="uh-cd">${countdownTxt(daysUntil(h.d))}</span></div></div>`).join('');
+  const holCard = `<section class="util-card util-hol">
+    <div class="util-h"><span class="util-ico">📅</span><h2>${l === 'pt' ? 'Próximos Feriados' : 'Next Holidays'}</h2></div>
+    ${holRows}<button class="uh-all" id="util-hol-all">${l === 'pt' ? 'Ver todos' : 'See all'} →</button></section>`;
+
+  panel.innerHTML = `<div class="util-grid">${weatherCard}${fuelCard}${elecCard}${holCard}</div>`;
+  document.getElementById('util-hol-all')?.addEventListener('click', openHolidayModal);
+}
+document.addEventListener('DOMContentLoaded', renderUtility);
+
 // ── HERO SEARCH (Google-only with autocomplete) ────────────────────
 function doSearch(q) {
   if (!q.trim()) return;
@@ -925,4 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('langchange', () => {
   tick();
   renderHomeDiscovery();
+  renderUtility();
 });
+
+document.addEventListener('weather-city-change', renderUtility);
