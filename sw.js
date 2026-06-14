@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v148';
+const CACHE = 'dcop7-v150';
 const STATIC = [
   '/',
   '/index.html',
@@ -20,6 +20,9 @@ const STATIC = [
   '/data/events/seed.json',
   '/data/events/nocartaz.json',
   '/data/events/pt-places.json',
+  '/data/home/today.json',
+  '/data/home/fallback.json',
+  '/data/humor/index.json',
   /* Core */
   '/js/core/main.js',
   '/js/core/nav.js',
@@ -48,6 +51,7 @@ const STATIC = [
   '/js/pages/photography.js',
   '/js/pages/workout.js',
   '/js/pages/workout-rig.js',
+  '/js/pages/humor.js',
   '/js/pages/cheatsheets.js',
   /* Quiz */
   '/js/quiz/quiz-engine.js',

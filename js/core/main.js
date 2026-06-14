@@ -305,7 +305,80 @@ async function loadDailyContent() {
     jEl.innerHTML = jokeHTML(localJ);
   }
 }
-document.addEventListener('DOMContentLoaded', loadDailyContent);
+/* ── HOME: daily discovery panel (data from data/home/today.json) ──── */
+function _escH(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+async function renderHomeDiscovery() {
+  const panel = document.getElementById('disc-panel');
+  const gEl = document.getElementById('disc-greeting');
+  const sEl = document.getElementById('disc-sub');
+  const l = lang();
+  const h = new Date().getHours();
+  const greet = l === 'pt' ? (h < 12 ? 'Bom dia' : h < 19 ? 'Boa tarde' : 'Boa noite')
+                           : (h < 12 ? 'Good morning' : h < 19 ? 'Good afternoon' : 'Good evening');
+  if (gEl) gEl.textContent = greet + ' 👋';
+  if (!panel) return;
+
+  let data = null;
+  try { const r = await fetch('data/home/today.json', { cache: 'no-store' }); if (r.ok) data = await r.json(); } catch (e) {}
+  if (!data) { try { const r = await fetch('data/home/fallback.json'); if (r.ok) data = await r.json(); } catch (e) {} }
+  if (!data) { panel.innerHTML = `<div class="disc-loading">${l === 'pt' ? 'Sem dados disponíveis offline.' : 'No data available offline.'}</div>`; return; }
+  if (sEl) sEl.textContent = data.dateLabel ? (l === 'pt' ? 'Hoje, ' + data.dateLabel : data.dateLabel) : '';
+
+  const e = _escH;
+  const evItem = it => {
+    const yr = it.year ? `<b class="disc-yr">${it.year}</b>` : '';
+    const thumb = it.thumb ? `<img class="disc-thumb" src="${e(it.thumb)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+    const body = `${thumb}<span class="disc-item-txt">${yr}${e(it.text || it.title)}</span>`;
+    return it.url ? `<a class="disc-item" href="${e(it.url)}" target="_blank" rel="noopener">${body}</a>` : `<div class="disc-item">${body}</div>`;
+  };
+  const person = p => {
+    const thumb = p.thumb ? `<img class="disc-thumb rnd" src="${e(p.thumb)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="disc-thumb rnd ph">🎂</span>`;
+    return `<a class="disc-person" href="${e(p.url || '#')}" target="_blank" rel="noopener">${thumb}<span class="disc-person-txt"><b>${e(p.title)}</b>${p.year ? ` <span class="disc-yr">· ${p.year}</span>` : ''}<small>${e(p.extract || p.text || '')}</small></span></a>`;
+  };
+  const listCard = (icon, title, items, renderer, cls) =>
+    (!items || !items.length) ? '' :
+    `<section class="disc-card ${cls || ''}"><div class="disc-card-h"><span class="disc-ico">${icon}</span><h2>${title}</h2></div><div class="disc-card-b">${items.map(renderer).join('')}</div></section>`;
+
+  /* hero = Foto do Dia (or the quote if no photo) */
+  let hero = '';
+  if (data.photo && data.photo.image) {
+    hero = `<section class="disc-hero" style="background-image:url('${e(data.photo.image)}')">
+      <div class="disc-hero-grad"></div>
+      <div class="disc-hero-body">
+        <span class="disc-kicker">📸 Foto do Dia</span>
+        <h2>${e(data.photo.title)}</h2>
+        <p>${e(data.photo.explanation)}</p>
+        <div class="disc-hero-meta">${e(data.photo.credit)}${data.photo.url ? ` · <a href="${e(data.photo.url)}" target="_blank" rel="noopener">ver no APOD ↗</a>` : ''}</div>
+      </div></section>`;
+  } else if (data.inspiration) {
+    hero = `<section class="disc-hero disc-hero-quote"><div class="disc-hero-body"><span class="disc-kicker">💡 Inspiração do Dia</span><blockquote>“${e(data.inspiration.quote)}”</blockquote><div class="disc-hero-meta">— ${e(data.inspiration.author)}</div></div></section>`;
+  }
+
+  const cards = [
+    listCard('📜', l === 'pt' ? 'Hoje na História' : 'Today in History', data.history, evItem),
+    listCard('🌍', l === 'pt' ? 'Hoje em Portugal' : 'Today in Portugal', data.portugal, evItem),
+    listCard('🚀', l === 'pt' ? 'Hoje no Espaço' : 'Today in Space', data.space, evItem),
+    listCard('💻', l === 'pt' ? 'Hoje na Tecnologia' : 'Today in Tech', data.tech, evItem),
+    listCard('🎂', l === 'pt' ? 'Nasceram Hoje' : 'Born Today', data.births, person, 'disc-people'),
+  ];
+
+  let dest = '';
+  if (data.highlight && data.highlight.title) {
+    const ex = (data.highlight.extra || []).map(x => `<a class="disc-item" href="${e(x.url)}" target="_blank" rel="noopener"><span class="disc-item-txt">${e(x.title)}</span></a>`).join('');
+    dest = `<section class="disc-card"><div class="disc-card-h"><span class="disc-ico">📰</span><h2>${l === 'pt' ? 'Destaque do Dia' : 'Top Story'}</h2></div><div class="disc-card-b">
+      <a class="disc-headline" href="${e(data.highlight.url)}" target="_blank" rel="noopener">${e(data.highlight.title)}</a>
+      <div class="disc-src">${e(data.highlight.source || 'Notícias')}</div>${ex}</div></section>`;
+  }
+
+  let insp = '';
+  if (data.inspiration && data.photo && data.photo.image) {
+    insp = `<section class="disc-card disc-quote-card"><div class="disc-card-h"><span class="disc-ico">💡</span><h2>${l === 'pt' ? 'Inspiração do Dia' : 'Daily Inspiration'}</h2></div><div class="disc-card-b"><blockquote>“${e(data.inspiration.quote)}”</blockquote><div class="disc-qauthor">— ${e(data.inspiration.author)}</div></div></section>`;
+  }
+
+  panel.innerHTML = hero + `<div class="disc-grid">${cards.join('')}${dest}${insp}</div>`;
+}
+document.addEventListener('DOMContentLoaded', renderHomeDiscovery);
 
 // ── HERO SEARCH (Google-only with autocomplete) ────────────────────
 function doSearch(q) {
@@ -851,12 +924,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('langchange', () => {
   tick();
-  renderWelcome();
-  loadDailyContent();
-  renderHolidays();
-  renderFavGames();
-  renderTimezones();
-  // Update hero search placeholder for active language
-  const heroInput = document.getElementById('hero-search');
-  if (heroInput) heroInput.placeholder = lang() === 'pt' ? 'Pesquisar no Google.pt…' : 'Search Google.com…';
+  renderHomeDiscovery();
 });

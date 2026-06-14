@@ -255,3 +255,65 @@ body.light .daily-card { background: rgba(255,255,255,.85); border-color: rgba(0
 .hn-widget-list { padding: .25rem .5rem; max-height: 320px; overflow-y: auto; }
 .hn-widget-list::-webkit-scrollbar { width: 3px; }
 .hn-widget-list::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* ══ HOME — daily discovery panel (disc-*) ══════════════════════════ */
+.disc-head { margin-bottom: 1.1rem; }
+.disc-greeting { font-family: var(--font-head, inherit); font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 800; margin: 0; color: var(--text); }
+.disc-date, .disc-sub { color: var(--muted); font-size: .9rem; margin: .2rem 0 0; }
+.disc-loading { color: var(--muted); padding: 2rem; text-align: center; }
+
+.disc-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+/* hero = Foto do Dia */
+.disc-hero { position: relative; border-radius: var(--radius); overflow: hidden; min-height: 340px; display: flex; align-items: flex-end;
+  background-size: cover; background-position: center; box-shadow: 0 10px 34px rgba(0,0,0,.4); }
+.disc-hero-grad { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,18,0) 30%, rgba(8,10,18,.55) 60%, rgba(8,10,18,.94) 100%); }
+.disc-hero-body { position: relative; z-index: 1; padding: 1.5rem 1.6rem; max-width: 760px; }
+.disc-kicker { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #fff;
+  background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.25); padding: .25rem .7rem; border-radius: 999px; margin-bottom: .6rem; backdrop-filter: blur(4px); }
+.disc-hero-body h2 { font-family: var(--font-head, inherit); font-size: clamp(1.3rem, 3.2vw, 1.9rem); font-weight: 800; color: #fff; margin: 0 0 .4rem; text-shadow: 0 2px 14px rgba(0,0,0,.6); }
+.disc-hero-body p { color: rgba(255,255,255,.9); font-size: .86rem; line-height: 1.55; margin: 0 0 .6rem; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+.disc-hero-meta { font-size: .74rem; color: rgba(255,255,255,.7); }
+.disc-hero-meta a { color: #fff; font-weight: 600; }
+.disc-hero-quote { min-height: 220px; align-items: center; justify-content: center; text-align: center;
+  background: radial-gradient(ellipse at 50% 30%, rgba(124,92,255,.28), rgba(20,22,40,.6)); }
+.disc-hero-quote blockquote { font-family: var(--font-head, inherit); font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--text); margin: .4rem 0; max-width: 640px; }
+
+/* bento grid of cards */
+.disc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; align-items: start; }
+.disc-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+.disc-card-h { display: flex; align-items: center; gap: .55rem; margin-bottom: .7rem; }
+.disc-card-h .disc-ico { font-size: 1.15rem; }
+.disc-card-h h2 { font-family: var(--font-head, inherit); font-size: .98rem; font-weight: 700; margin: 0; color: var(--text); }
+.disc-card-b { display: flex; flex-direction: column; gap: .1rem; }
+
+.disc-item { display: flex; gap: .65rem; align-items: flex-start; padding: .5rem .2rem; border-top: 1px solid var(--border); color: var(--text2); font-size: .84rem; line-height: 1.45; text-decoration: none; transition: background .15s; border-radius: 6px; }
+.disc-card-b > .disc-item:first-child { border-top: none; }
+a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
+.disc-thumb { width: 46px; height: 46px; flex: 0 0 auto; object-fit: cover; border-radius: 8px; background: var(--card2); }
+.disc-thumb.rnd { border-radius: 50%; }
+.disc-thumb.ph { display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.disc-item-txt { min-width: 0; }
+.disc-yr { color: var(--accent); font-weight: 700; margin-right: .4rem; font-family: var(--font-mono, monospace); font-size: .8rem; }
+
+/* born today */
+.disc-people .disc-card-b { gap: .15rem; }
+.disc-person { display: flex; gap: .65rem; align-items: center; padding: .45rem .2rem; border-top: 1px solid var(--border); text-decoration: none; border-radius: 6px; transition: background .15s; }
+.disc-people .disc-person:first-child { border-top: none; }
+.disc-person:hover { background: var(--accent-soft); }
+.disc-person-txt { min-width: 0; display: flex; flex-direction: column; }
+.disc-person-txt b { color: var(--text); font-size: .86rem; }
+.disc-person-txt small { color: var(--muted); font-size: .74rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* top story + inspiration */
+.disc-headline { display: block; color: var(--text); font-weight: 700; font-size: .95rem; line-height: 1.4; text-decoration: none; margin-bottom: .25rem; }
+.disc-headline:hover { color: var(--accent); }
+.disc-src { font-size: .72rem; color: var(--muted); margin-bottom: .5rem; }
+.disc-quote-card blockquote { font-family: var(--font-head, inherit); font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 0 0 .5rem; line-height: 1.5; }
+.disc-qauthor { color: var(--accent); font-size: .82rem; font-weight: 600; }
+
+@media (max-width: 640px) {
+  .disc-hero { min-height: 260px; }
+  .disc-hero-body { padding: 1.1rem; }
+  .disc-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,16 @@
+{
+  "categories": [
+    { "id": "geral", "name": "Humor Geral", "icon": "😄", "desc": "Um pouco de tudo" },
+    { "id": "adivinhas", "name": "Adivinhas", "icon": "🧩", "desc": "O que é, o que é?" },
+    { "id": "secas", "name": "Piadas Secas", "icon": "🌵", "desc": "Tão más que têm piada" },
+    { "id": "trocadilhos", "name": "Trocadilhos", "icon": "🔤", "desc": "Jogos de palavras" },
+    { "id": "criancas", "name": "Crianças", "icon": "🧒", "desc": "Para os mais novos" },
+    { "id": "escola", "name": "Escola", "icon": "🎒", "desc": "Professores e alunos" },
+    { "id": "trabalho", "name": "Trabalho", "icon": "💼", "desc": "Vida de escritório" },
+    { "id": "casamento", "name": "Casamento", "icon": "💍", "desc": "Maridos e mulheres" },
+    { "id": "sarcasticas", "name": "Sarcásticas", "icon": "😏", "desc": "Com uma pontinha de veneno" },
+    { "id": "nerd", "name": "Nerd / Geek", "icon": "🤓", "desc": "Programação e ciência" },
+    { "id": "dadjokes", "name": "Dad Jokes", "icon": "👨", "desc": "O clássico humor de pai" },
+    { "id": "knockknock", "name": "Knock-knock", "icon": "🚪", "desc": "Truz-truz!" }
+  ]
+}

@@ -1,0 +1,62 @@
+name: Refresh homepage data
+
+# Builds data/home/today.json (Foto do Dia, Hoje na História/Portugal/Espaço/
+# Tecnologia, Nasceram Hoje, Destaque, Inspiração) server-side once a day, so
+# the browser only reads one local JSON — no API keys in the client, no
+# per-visit third-party calls, works offline. NASA APOD uses the optional
+# NASA_API_KEY secret if set, otherwise DEMO_KEY (enough for one daily call).
+
+on:
+  schedule:
+    - cron: '20 6 * * *'      # 07:20 in summer (WEST, UTC+1)
+    - cron: '20 7 * * *'      # 07:20 in winter (WET, UTC+0)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: home-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gate to 07h Europe/Lisbon (skip the off-DST cron)
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Europe/Lisbon date +%H)" != "07" ]; then
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build homepage snapshot
+        if: steps.gate.outputs.go == 'true'
+        env:
+          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
+        run: node data/home/build-home.mjs
+
+      - name: Commit snapshot if it changed
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          if [ -n "$(git status --porcelain data/home/today.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/home/today.json
+            git commit -m "chore(home): refresh daily discovery snapshot [skip ci]"
+            git push
+          else
+            echo "No changes in today.json."
+          fi

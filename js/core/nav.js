@@ -33,6 +33,7 @@ const Nav = (function () {
     noticias:    svg('<path d="M4 4h13a1 1 0 0 1 1 1v14a1 1 0 0 0 1 1 1 1 0 0 0 1-1V8h2v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5a1 1 0 0 1 1-1z"/><path d="M7 8h7M7 12h7M7 16h4"/>'),
     tools:       svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
     quiz:        svg('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
+    humor:       svg('<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>'),
     workout:     svg('<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
     visual:      svg('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
     photography: svg('<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'),
@@ -60,6 +61,7 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
           <a class="sb-nav-item" data-route="games"        href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${ICONS.quiz}<span>${TN('nav.quiz')}</span></a>
+          <a class="sb-nav-item" data-route="humor"        href="#humor">${ICONS.humor}<span>${TN('nav.humor')}</span></a>
           <div class="sb-grp" data-grp="personal">${TN('nav.grp.personal')}</div>
           <a class="sb-nav-item" data-route="workout"      href="#workout">${ICONS.workout}<span>${TN('nav.workout')}</span></a>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${ICONS.photography}<span>${TN('nav.photography')}</span></a>
@@ -169,6 +171,9 @@ const Nav = (function () {
     } else if (page === 'quiz') {
       document.getElementById('view-quiz')?.classList.add('active');
       typeof QuizPage !== 'undefined' && QuizPage.show(sub || null);
+    } else if (page === 'humor') {
+      document.getElementById('view-humor')?.classList.add('active');
+      typeof HumorPage !== 'undefined' && HumorPage.show();
     } else if (page === 'explorer') {
       document.getElementById('view-explorer')?.classList.add('active');
       typeof ExplorerPage !== 'undefined' && ExplorerPage.show(sub || null);
@@ -223,7 +228,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','explorer','ocorrencias','eventos','noticias','workout','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','workout','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

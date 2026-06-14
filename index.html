@@ -102,122 +102,13 @@
     <!-- ── HOME VIEW ── -->
     <div id="view-home" class="view">
       <div class="view-inner">
-
-        <!-- Hero search -->
-        <div class="home-hero">
-          <img class="home-hero-bg" src="assets/home/hero.jpg" alt="" loading="lazy" onerror="this.remove()">
-          <div id="wc-greeting" class="wc-greeting"></div>
-          <div id="wc-msg" class="wc-msg"></div>
-          <div class="hero-search-wrap">
-            <div class="hero-search-box">
-              <span class="hero-search-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </span>
-              <input type="text" id="hero-search" class="hero-search-input" placeholder="Pesquisar no Google…" autocomplete="off" spellcheck="false"/>
-              <button class="hero-search-btn" id="hero-search-btn" aria-label="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
-            </div>
-            <div id="hero-autocomplete" class="hero-autocomplete" hidden role="listbox"></div>
-          </div>
-          <div class="quick-actions">
-            <button class="qa-item" onclick="Nav.go('links')">
-              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>Links
-            </button>
-            <button class="qa-item" onclick="Nav.go('tools')">
-              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>Ferramentas
-            </button>
-            <button class="qa-item" onclick="Nav.go('cheatsheets')">
-              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></span>Cheatsheets
-            </button>
-            <button class="qa-item" onclick="Nav.go('quiz')">
-              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Quizzes
-            </button>
-            <button class="qa-item" onclick="Nav.go('games')">
-              <span class="qa-item-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M7 10v4M5 12h4M17 11l2 1-2 1"/></svg></span>Jogos
-            </button>
-          </div>
+        <div class="disc-head">
+          <h1 class="disc-greeting" id="disc-greeting">Olá</h1>
+          <p class="disc-date" id="disc-sub">Descobre algo novo hoje</p>
         </div>
-
-        <!-- Home content grid -->
-        <div class="home-grid">
-
-          <!-- Left: favorites + timezone -->
-          <div class="home-left">
-
-            <!-- Sites Favoritos widget -->
-            <div class="widget" id="widget-bookmarks">
-              <div class="widget-hdr">
-                <span class="widget-title" data-i18n="home.fav.sites">🌐 Sites Favoritos</span>
-                <button class="wbm-add-btn" id="wbm-add" title="Editar favoritos">✎</button>
-              </div>
-              <div id="wbm-grid" class="wbm-grid"></div>
-            </div>
-
-            <!-- Favorite Tools widget -->
-            <div class="widget" id="widget-fav-tools">
-              <div class="widget-hdr">
-                <span class="widget-title" data-i18n="home.fav.tools">🔧 Ferramentas Favoritas</span>
-                <button class="wbm-add-btn" id="wft-edit" title="Editar favoritos">✎</button>
-              </div>
-              <div id="wft-grid" class="wft-grid"></div>
-            </div>
-
-            <!-- Favorite Games widget -->
-            <div class="widget" id="widget-fav-games">
-              <div class="widget-hdr">
-                <span class="widget-title" data-i18n="home.fav.games">🎮 Jogos Favoritos</span>
-                <button class="wbm-add-btn" id="wfg-edit" title="Editar favoritos">✎</button>
-              </div>
-              <div id="wfg-grid" class="wft-grid"></div>
-            </div>
-
-            <!-- Timezone widget -->
-            <div class="widget" id="widget-tz">
-              <div class="widget-hdr">
-                <span class="widget-title" data-i18n="home.world.times">🕐 Horas Mundiais</span>
-              </div>
-              <div class="wtz-grid" id="wtz-grid"></div>
-            </div>
-          </div>
-
-          <!-- Right: daily content + holidays -->
-          <div class="home-right">
-            <div class="home-daily">
-              <div class="daily-card">
-                <div class="daily-ttl" data-i18n="home.quote">💡 Frase do Dia</div>
-                <div id="dc-quote-wrap"><span class="dc-loading">A carregar…</span></div>
-              </div>
-              <div class="daily-card">
-                <div class="daily-ttl" data-i18n="home.riddle">🤔 Adivinha do Dia</div>
-                <div id="dc-riddle-wrap"><span class="dc-loading">A carregar…</span></div>
-              </div>
-              <div class="daily-card">
-                <div class="daily-ttl" data-i18n="home.joke">😄 Piada do Dia</div>
-                <div id="dc-joke-wrap"><span class="dc-loading">A carregar…</span></div>
-              </div>
-            </div>
-
-            <!-- Holidays -->
-            <div class="widget" id="widget-hol">
-              <div class="widget-hdr hol-hdr-toggle" id="hol-toggle" style="cursor:pointer">
-                <span class="widget-title" data-i18n="hol.nat">National Holidays</span>
-                <div style="display:flex;align-items:center;gap:.5rem">
-                  <div class="hol-year-nav" style="margin:0">
-                    <button class="hol-nav-btn" id="hol-prev">‹</button>
-                    <span class="hol-year-label" id="hol-year-label">—</span>
-                    <button class="hol-nav-btn" id="hol-next">›</button>
-                  </div>
-                  <span class="hol-chevron" id="hol-chevron">▸</span>
-                </div>
-              </div>
-              <div class="hol-widget-body" id="hol-body" hidden>
-                <div id="nat-hols"></div>
-                <div class="hol-mun-ttl" data-i18n="hol.mun">Municipal Holidays</div>
-                <div id="mun-hols"></div>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /home-grid -->
+        <div id="disc-panel" class="disc-panel">
+          <div class="disc-loading">A carregar as descobertas do dia…</div>
+        </div>
       </div>
     </div>
 
@@ -331,6 +222,7 @@
 
     <!-- ── QUIZ VIEW ── -->
     <div id="view-quiz" class="view"></div>
+    <div id="view-humor" class="view"></div>
 
     <!-- ── EXPLORER VIEW ── -->
     <div id="view-explorer" class="view"></div>
@@ -414,7 +306,7 @@
 <script src="js/pages/visual.js" defer></script>
 <script src="js/pages/photography.js" defer></script>
 <script src="js/core/settings.js" defer></script>
-<script src="js/pages/workout-rig.js" defer></script><script src="js/pages/workout.js" defer></script><script src="js/pages/cheatsheets.js" defer></script>
+<script src="js/pages/workout-rig.js" defer></script><script src="js/pages/workout.js" defer></script><script src="js/pages/humor.js" defer></script><script src="js/pages/cheatsheets.js" defer></script>
 <!-- Quiz -->
 <script src="js/quiz/quiz-engine.js" defer></script>
 <script src="js/quiz/quiz-data.js" defer></script>
