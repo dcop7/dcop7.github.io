@@ -349,19 +349,6 @@ async function renderHomeDiscovery() {
     (!items || !items.length) ? '' :
     `<section class="disc-card ${cls || ''}"><div class="disc-card-h"><span class="disc-ico">${icon}</span><h2>${title}</h2></div><div class="disc-card-b">${items.map(renderer).join('')}</div>${moreUrl ? `<a class="disc-more" href="${e(moreUrl)}" target="_blank" rel="noopener">${moreLbl} →</a>` : ''}</section>`;
 
-  /* hero = Foto do Dia */
-  let hero = '';
-  if (data.photo && data.photo.image) {
-    hero = `<section class="disc-hero" style="background-image:url('${e(data.photo.image)}')">
-      <div class="disc-hero-grad"></div>
-      <div class="disc-hero-body">
-        <span class="disc-kicker">📸 Foto do Dia</span>
-        <h2>${e(data.photo.title)}</h2>
-        <p>${e(data.photo.explanation)}</p>
-        <div class="disc-hero-meta">${e(data.photo.credit)}${data.photo.url ? ` · <a href="${e(data.photo.url)}" target="_blank" rel="noopener">ver no APOD ↗</a>` : ''}</div>
-      </div></section>`;
-  }
-
   const otd = (data.links && data.links.onthisday) || '';
   const moreL = l === 'pt' ? 'Ver mais' : 'See more';
   const cards = [
@@ -370,9 +357,77 @@ async function renderHomeDiscovery() {
     listCard('🎂', l === 'pt' ? 'Nasceram Hoje' : 'Born Today', data.births, person, 'disc-people', otd, moreL),
   ];
 
-  panel.innerHTML = hero + `<div class="disc-grid">${cards.join('')}</div>`;
+  panel.innerHTML = `<div class="disc-grid">${cards.join('')}</div>`;
+  renderHomeEvents();
 }
 document.addEventListener('DOMContentLoaded', renderHomeDiscovery);
+
+// ── Eventos perto (4.º cartão): mesma lógica dos Eventos, cidade da meteo, 50 km, 14 dias ──
+let _ncEvents = null, _ncPlaces = null;
+const HOME_DISTRICT_CENTROIDS = {
+  'Aveiro': [40.64, -8.65], 'Beja': [37.96, -7.87], 'Braga': [41.55, -8.42],
+  'Bragança': [40.67, -7.50], 'Castelo Branco': [39.83, -7.49], 'Coimbra': [40.21, -8.43],
+  'Évora': [38.57, -7.91], 'Faro': [37.01, -7.93], 'Guarda': [40.53, -7.27],
+  'Leiria': [39.74, -8.81], 'Lisboa': [38.72, -9.14], 'Porto': [41.16, -8.62],
+  'Portalegre': [39.30, -8.57], 'Setúbal': [38.52, -8.89], 'Santarém': [39.23, -8.69],
+  'Viana do Castelo': [41.69, -8.83], 'Viseu': [40.66, -7.91], 'Vila Real': [41.30, -7.74],
+  'Madeira': [32.75, -17.00], 'Açores': [37.74, -25.67],
+};
+function _haversine(a, b, c, d) {
+  const R = 6371, r = x => x * Math.PI / 180;
+  const dLat = r(c - a), dLon = r(d - b);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+const _normd = s => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+
+async function renderHomeEvents() {
+  const grid = document.querySelector('#disc-panel .disc-grid');
+  if (!grid) return;
+  grid.querySelector('.he-card')?.remove();   /* idempotent: avoid duplicates on re-render */
+  const l = lang(), e = _escH;
+  const RADIUS = 50, DAYS = 14;
+
+  /* reference point = the weather city (same setting), with Leiria as fallback */
+  const city = localStorage.getItem('weather-city') || 'Leiria';
+  let lat = 39.7436, lon = -8.8071, cityName = 'Leiria';
+  try { const w = await fetchWeatherForCity(city); if (w && w.lat != null) { lat = w.lat; lon = w.lon; cityName = w.city; } } catch (er) {}
+
+  try {
+    if (!_ncEvents) { const r = await fetch('data/events/nocartaz.json'); _ncEvents = r.ok ? await r.json() : []; }
+    if (!_ncPlaces) { const r = await fetch('data/events/pt-places.json'); _ncPlaces = r.ok ? await r.json() : {}; }
+  } catch (er) { return; }
+
+  const arr = Array.isArray(_ncEvents) ? _ncEvents : (_ncEvents.events || []);
+  const geo = d => { const k = _normd(d); return _ncPlaces[k] || HOME_DISTRICT_CENTROIDS[d] || null; };
+  const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+  const start = today0.getTime(), horizon = start + DAYS * 86400000;
+  const near = [];
+  for (const ev of arr) {
+    const t = Date.parse(ev.start); if (isNaN(t) || t < start || t > horizon) continue;
+    const g = geo(ev.district); if (!g) continue;
+    const dist = _haversine(lat, lon, g[0], g[1]); if (dist > RADIUS) continue;
+    near.push({ ev, t, dist });
+  }
+  near.sort((a, b) => a.t - b.t);
+  const top = near.slice(0, 10);
+
+  const head = `<div class="disc-card-h"><span class="disc-ico">📍</span><h2>${l === 'pt' ? 'Eventos perto' : 'Events nearby'}</h2></div>`;
+  let body;
+  if (!top.length) {
+    body = `<div class="disc-card-b"><div class="he-empty">${l === 'pt' ? `Sem eventos a ${RADIUS} km de ${e(cityName)} nos próximos ${DAYS} dias.` : `No events within ${RADIUS} km of ${e(cityName)} in the next ${DAYS} days.`}</div></div>`;
+  } else {
+    const item = ({ ev, t }) => {
+      const d = new Date(t), dl = `${d.getDate()} ${ms()[d.getMonth()].slice(0, 3)}`;
+      const free = ev.free ? `<span class="he-free">${l === 'pt' ? 'grátis' : 'free'}</span>` : '';
+      return `<a class="disc-item he-item" href="${e(ev.url || '#')}" target="_blank" rel="noopener"><span class="he-date">${dl}</span><span class="disc-item-txt">${e(ev.title)} <small class="he-loc">· ${e(ev.district)}</small>${free}</span></a>`;
+    };
+    body = `<div class="disc-card-b">${top.map(item).join('')}</div>`;
+  }
+  const sub = `<div class="he-sub">${e(cityName)} · ${RADIUS}&nbsp;km · ${l === 'pt' ? `${DAYS} dias` : `${DAYS} days`}</div>`;
+  const card = `<section class="disc-card he-card">${head}${sub}${body}<a class="disc-more" href="#eventos">${l === 'pt' ? 'Ver todos os eventos' : 'See all events'} →</a></section>`;
+  grid.insertAdjacentHTML('beforeend', card);
+}
 
 // ── ÚTIL HOJE (weather · fuel · electricity · holidays) ────────────
 function wmo(code, isDay) {
@@ -1145,4 +1200,4 @@ document.addEventListener('langchange', () => {
   renderUtility();
 });
 
-document.addEventListener('weather-city-change', renderUtility);
+document.addEventListener('weather-city-change', () => { renderUtility(); renderHomeEvents(); });

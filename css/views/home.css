@@ -280,7 +280,8 @@ body.light .daily-card { background: rgba(255,255,255,.85); border-color: rgba(0
 .disc-hero-quote blockquote { font-family: var(--font-head, inherit); font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--text); margin: .4rem 0; max-width: 640px; }
 
 /* bento grid of cards */
-.disc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; align-items: start; }
+.disc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; align-items: start; }
+@media (min-width: 1080px) { .disc-grid { grid-template-columns: repeat(4, 1fr); } }
 .disc-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
 .disc-card-h { display: flex; align-items: center; gap: .55rem; margin-bottom: .7rem; }
 .disc-card-h .disc-ico { font-size: 1.15rem; }
@@ -400,6 +401,14 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
 .disc-welcome-author { font-style: normal; color: var(--accent); font-weight: 600; font-size: .82rem; }
 .disc-more { display: inline-block; margin-top: .6rem; font-size: .74rem; font-weight: 600; color: var(--accent); text-decoration: none; }
 .disc-more:hover { text-decoration: underline; }
+
+/* discovery: eventos perto (4.º cartão) */
+.he-sub { font-size: .7rem; color: var(--muted); margin: -.4rem 0 .6rem; }
+.he-item { display: flex; gap: .6rem; align-items: baseline; }
+.he-date { flex-shrink: 0; min-width: 2.8em; font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; }
+.he-loc { color: var(--muted); }
+.he-free { margin-left: .35rem; font-size: .62rem; font-weight: 700; color: #16a34a; background: rgba(22,163,74,.12); padding: .05rem .35rem; border-radius: 4px; }
+.he-empty { font-size: .8rem; color: var(--muted); padding: .3rem 0 .5rem; line-height: 1.5; }
 
 /* ── Holidays modal ────────────────────────────────────────────── */
 .hm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(3px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.2rem; animation: hmIn .15s ease; }

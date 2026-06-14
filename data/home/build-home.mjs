@@ -115,22 +115,7 @@ try { quotes = JSON.parse(readFileSync(join(HERE, 'quotes.json'), 'utf8')); } ca
 
 const out = { date: ISO, dateLabel, generated: now.toISOString() };
 
-/* ── 📸 Foto do Dia (NASA APOD) ─────────────────────────────────── */
-console.log('APOD…');
-{
-  const a = await getJSON(`https://api.nasa.gov/planetary/apod?api_key=${NASA_KEY}&thumbs=true`);
-  if (a && (a.url || a.hdurl)) {
-    out.photo = {
-      title: clean(a.title),
-      explanation: cap(a.explanation, 320),
-      image: a.media_type === 'video' ? (a.thumbnail_url || a.url) : (a.url || a.hdurl),
-      hd: a.hdurl || '',
-      credit: clean(a.copyright) || 'NASA / APOD',
-      video: a.media_type === 'video' ? a.url : '',
-      url: `https://apod.nasa.gov/apod/ap${ISO.slice(2).replace(/-/g, '')}.html`,
-    };
-  } else { out.photo = fallback.photo || null; }
-}
+/* (📸 Foto do Dia / NASA APOD removed — not used by the homepage anymore.) */
 
 /* ── Wikimedia on this day (EN + PT) ────────────────────────────── */
 console.log('Wikimedia on this day…');
@@ -183,7 +168,7 @@ try {
 
 writeFileSync(join(HERE, 'today.json'), JSON.stringify(out));
 console.log(`\ntoday.json written for ${ISO}:`);
-for (const k of ['photo', 'history', 'portugal', 'births', 'inspiration']) {
+for (const k of ['history', 'portugal', 'births', 'inspiration']) {
   const v = out[k];
   console.log(`  ${k}: ${Array.isArray(v) ? v.length + ' items' : (v ? 'ok' : '— (empty)')}`);
 }
