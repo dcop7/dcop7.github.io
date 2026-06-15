@@ -1,0 +1,46 @@
+name: Refresh F1 data
+
+# Snapshots the slow Formula 1 data (driver & constructor standings, calendar,
+# last-race results) into data/f1/cache.json once a day from Jolpica (the open
+# Ergast successor), so the browser reads one local JSON first — fast, offline,
+# no per-visit third-party calls. Live timing / track positions are fetched
+# live from OpenF1 in the browser (CORS-open), not here.
+
+on:
+  schedule:
+    - cron: '40 6 * * *'      # ~daily, after most races settle
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: f1-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build F1 cache
+        run: node data/f1/build-f1.mjs
+
+      - name: Commit snapshot if it changed
+        run: |
+          if [ -n "$(git status --porcelain data/f1/cache.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/f1/cache.json
+            git commit -m "chore(f1): refresh standings/calendar snapshot [skip ci]"
+            git push
+          else
+            echo "No changes in cache.json."
+          fi
