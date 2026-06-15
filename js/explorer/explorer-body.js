@@ -237,11 +237,34 @@ const HumanBodyExplorer = (function () {
     const chest = cenAll(P('coracao')) || _frac(box, 0.5, 0.66, 0.55);
     const pelvisC = cenAll(pelve) || _frac(box, 0.5, 0.34, 0.5);
 
-    const mk = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.32, metalness: 0.0,
-      emissive: new THREE.Color(c).multiplyScalar(0.22), transparent: true, opacity: 1 });
+    /* glossy "wet" vessel material (clearcoat for a realistic sheen) */
+    const mk = c => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.3, metalness: 0.0,
+      clearcoat: 0.7, clearcoatRoughness: 0.35, emissive: new THREE.Color(c).multiplyScalar(0.16),
+      transparent: true, opacity: 1 });
     const matA = mk(ARTERY), matV = mk(VEIN);
-    /* vein path: offset perpendicular to the LOCAL direction (so it bends WITH
-       the artery and stays aligned at joints), nudged slightly behind. */
+
+    /* organic curve between two points — straight at the ends (joints stay
+       accurate), gently meandering in the middle so vessels aren't ruler-straight. */
+    const wavy = (a, b, amp, segs = 5) => {
+      const out = [a.clone()];
+      const dir = b.clone().sub(a); if (dir.lengthSq() < 1e-9) return [a.clone(), b.clone()]; dir.normalize();
+      let n = new THREE.Vector3(0, 1, 0).cross(dir); if (n.lengthSq() < 1e-5) n = new THREE.Vector3(1, 0, 0).cross(dir); n.normalize();
+      const bi = dir.clone().cross(n), p1 = Math.random() * 6.28, p2 = Math.random() * 6.28;
+      for (let i = 1; i < segs; i++) {
+        const t = i / segs, w = Math.sin(t * Math.PI);
+        out.push(a.clone().lerp(b, t).addScaledVector(n, Math.sin(t * 3.1 + p1) * amp * w).addScaledVector(bi, Math.cos(t * 2.3 + p2) * amp * w));
+      }
+      out.push(b.clone());
+      return out;
+    };
+    const chain = (joints, amp) => {
+      const J = joints.filter(Boolean); let out = [];
+      for (let i = 0; i < J.length - 1; i++) { const s = wavy(J[i], J[i + 1], amp); out = out.concat(i ? s.slice(1) : s); }
+      return out;
+    };
+
+    /* vein path: offset perpendicular to the LOCAL direction (bends WITH the
+       artery, stays aligned at joints), nudged slightly behind. */
     const amt = H * 0.0072;
     const veinPath = pts => {
       const a = pts.filter(Boolean);
@@ -257,28 +280,41 @@ const HumanBodyExplorer = (function () {
     const perp = (a, b, d) => new THREE.Vector3(0, 0, 1).cross(a.clone().sub(b)).normalize().multiplyScalar(d);
     const mid = (a, b, t = 0.5) => a.clone().lerp(b, t);
 
-    /* ── trunk (aorta + vena cava) ── */
-    pair([chest, mid(chest, pelvisC), pelvisC], H * 0.0085, H * 0.0058);
+    /* small collateral twigs along a parent vessel (organic density) */
+    const sprout = (pts, count, r, len) => {
+      const f = pts.filter(Boolean); if (f.length < 2) return;
+      const cv = new THREE.CatmullRomCurve3(f);
+      for (let i = 0; i < count; i++) {
+        const t = 0.18 + 0.66 * ((i + 0.5) / count);
+        const base = cv.getPointAt(t), tan = cv.getTangentAt(t).normalize();
+        let nrm = new THREE.Vector3(0, 1, 0).cross(tan); if (nrm.lengthSq() < 1e-5) nrm = new THREE.Vector3(1, 0, 0).cross(tan); nrm.normalize();
+        const bi = tan.clone().cross(nrm), ang = Math.random() * 6.28;
+        const dir = nrm.multiplyScalar(Math.cos(ang)).addScaledVector(bi, Math.sin(ang)).addScaledVector(tan, 0.25).normalize();
+        const L = len * (0.6 + Math.random() * 0.7);
+        onlyA(wavy(base, base.clone().addScaledVector(dir, L), L * 0.14, 4), r, r * 0.25);
+      }
+    };
 
-    /* ── head: a small network fanning over the skull, not one tube ── */
+    /* ── trunk (aorta + vena cava) ── */
+    pair(chain([chest, mid(chest, pelvisC), pelvisC], H * 0.006), H * 0.0085, H * 0.0055);
+
+    /* ── head: a branching network over the skull (not one tube) ── */
     if (cranio.length) {
-      const ny = xtreme(cranio, p => p.y, false).y;            // skull base
+      const ny = xtreme(cranio, p => p.y, false).y;
       const neck = new THREE.Vector3(chest.x, (chest.y + ny) / 2, chest.z + H * 0.004);
-      pair([chest, neck], H * 0.006, H * 0.0042);
+      pair(chain([chest, neck], H * 0.004), H * 0.006, H * 0.0042);
       const targets = [
-        xtreme(cranio, p => p.y, true),                        // crown
-        xtreme(cranio, p => p.z, true),                        // forehead/face
-        xtreme(cranio, p => p.z, false),                       // occiput
-        xtreme(onSide(cranio, -1), p => p.x, false),           // left temple
-        xtreme(onSide(cranio, 1), p => p.x, true),             // right temple
+        xtreme(cranio, p => p.y, true), xtreme(cranio, p => p.z, true), xtreme(cranio, p => p.z, false),
+        xtreme(onSide(cranio, -1), p => p.x, false), xtreme(onSide(cranio, 1), p => p.x, true),
       ].filter(Boolean);
       for (const t of targets) {
-        const bend = new THREE.Vector3((neck.x + t.x) / 2, (neck.y + t.y) / 2, (neck.z + t.z) / 2 + H * 0.006);
-        pair([neck, bend, t], H * 0.0030, H * 0.0010);
+        const path = chain([neck, new THREE.Vector3((neck.x + t.x) / 2, (neck.y + t.y) / 2, (neck.z + t.z) / 2 + H * 0.006), t], H * 0.004);
+        pair(path, H * 0.0028, H * 0.0009);
+        sprout(path, 2, H * 0.0011, H * 0.025);
       }
     }
 
-    /* ── intercostal branches off the trunk toward the ribs (richness) ── */
+    /* ── intercostal branches off the trunk toward the ribs ── */
     if (costelas.length) {
       for (const side of [-1, 1]) {
         const sc = onSide(costelas, side);
@@ -286,43 +322,32 @@ const HumanBodyExplorer = (function () {
           const yt = box.min.y + fy * H;
           let best = null, bd = Infinity;
           for (const p of sc) { const d = Math.abs(p.y - yt); if (d < bd) { bd = d; best = p; } }
-          if (best) { const s = new THREE.Vector3(chest.x, best.y, chest.z); onlyA([s, mid(s, best), best], H * 0.0022, H * 0.0007); }
+          if (best) { const s = new THREE.Vector3(chest.x, best.y, chest.z); onlyA(wavy(s, best, H * 0.006, 4), H * 0.0022, H * 0.0007); }
         }
       }
     }
 
     for (const side of [-1, 1]) {
-      /* ── arm: brachial → (radial + ulnar) → palm → 5 fingers ── */
+      /* ── arm: one continuous tapering vessel chest→shoulder→elbow→wrist→palm,
+            plus a parallel forearm (ulnar) vessel, collaterals, and 5 fingers ── */
       const shoulder = ext(umero, side, true), elbow = ext(umero, side, false), wrist = ext(radio, side, false), handCen = cen(mao, side);
-      if (shoulder && elbow) {
-        pair([chest, shoulder, elbow], H * 0.0058, H * 0.0042);
-        const m = mid(shoulder, elbow); onlyA([m, m.clone().add(perp(shoulder, elbow, H * 0.022))], H * 0.0018, H * 0.0006);
-      }
-      if (elbow && wrist) {
+      if (shoulder && elbow && wrist && handCen) {
+        const armPath = chain([chest, shoulder, elbow, wrist, handCen], H * 0.005);
+        pair(armPath, H * 0.0058, H * 0.0024);
         const off = perp(elbow, wrist, H * 0.009);
-        pair([elbow, wrist], H * 0.0042, H * 0.0028);
-        pair([elbow.clone().add(off), mid(elbow, wrist).add(off), wrist.clone().add(off)], H * 0.0034, H * 0.0022);
+        pair(chain([elbow.clone().add(off), wrist.clone().add(off)], H * 0.004), H * 0.0034, H * 0.0020);
+        sprout(armPath, 5, H * 0.0015, H * 0.045);
+        for (const t of _tips(onSide(mao, side), wrist, 5)) pair(wavy(handCen, t, H * 0.004, 4), H * 0.0020, H * 0.0006);
       }
-      if (wrist && handCen) {
-        pair([wrist, handCen], H * 0.0030, H * 0.0022);
-        const tips = _tips(onSide(mao, side), wrist, 5);
-        for (const t of tips) pair([handCen, t], H * 0.0020, H * 0.0006);
-      }
-      /* ── leg: femoral → (anterior + posterior tibial) → foot → 5 toes ── */
+      /* ── leg: continuous pelvis→hip→knee→ankle→foot + posterior tibial + collaterals + 5 toes ── */
       const hip = ext(femur, side, true), knee = ext(femur, side, false), ankle = ext(tibia, side, false), footCen = cen(pe, side);
-      if (hip && knee) {
-        pair([pelvisC, hip, knee], H * 0.0078, H * 0.0052);
-        const m = mid(hip, knee); onlyA([m, m.clone().add(perp(hip, knee, H * 0.020))], H * 0.0020, H * 0.0007);
-      }
-      if (knee && ankle) {
+      if (hip && knee && ankle && footCen) {
+        const legPath = chain([pelvisC, hip, knee, ankle, footCen], H * 0.005);
+        pair(legPath, H * 0.0078, H * 0.0026);
         const off = perp(knee, ankle, H * 0.009);
-        pair([knee, ankle], H * 0.0052, H * 0.0034);
-        pair([knee.clone().add(off), mid(knee, ankle).add(off), ankle.clone().add(off)], H * 0.0040, H * 0.0026);
-      }
-      if (ankle && footCen) {
-        pair([ankle, footCen], H * 0.0034, H * 0.0024);
-        const tips = _tips(onSide(pe, side), ankle, 5);
-        for (const t of tips) pair([footCen, t], H * 0.0022, H * 0.0007);
+        pair(chain([knee.clone().add(off), ankle.clone().add(off)], H * 0.004), H * 0.0042, H * 0.0024);
+        sprout(legPath, 6, H * 0.0017, H * 0.05);
+        for (const t of _tips(onSide(pe, side), ankle, 5)) pair(wavy(footCen, t, H * 0.004, 4), H * 0.0022, H * 0.0007);
       }
     }
   }
