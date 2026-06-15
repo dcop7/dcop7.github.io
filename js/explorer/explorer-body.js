@@ -163,32 +163,70 @@ const HumanBodyExplorer = (function () {
     });
     return out;
   }
-  function _vesselTube(grp, pts, color, key, r) {
+  /* Custom tapered tube (radius r0→r1 along the path) — TubeGeometry can't taper. */
+  function _taperedMesh(grp, pts, r0, r1, mat, key) {
     pts = pts.filter(Boolean);
     if (pts.length < 2) return;
-    const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(24, pts.length * 14), r, 9, false);
-    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.42, metalness: 0.08,
-      emissive: new THREE.Color(color).multiplyScalar(0.28), transparent: true, opacity: 1 });
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const seg = Math.max(18, pts.length * 10), rad = 7;
+    const fr = curve.computeFrenetFrames(seg, false);
+    const pos = [], idx = [], P = new THREE.Vector3();
+    for (let i = 0; i <= seg; i++) {
+      curve.getPointAt(i / seg, P);
+      const r = r0 + (r1 - r0) * (i / seg);
+      const N = fr.normals[i], B = fr.binormals[i];
+      for (let j = 0; j < rad; j++) {
+        const a = j / rad * Math.PI * 2, ca = Math.cos(a) * r, sa = Math.sin(a) * r;
+        pos.push(P.x + ca * N.x + sa * B.x, P.y + ca * N.y + sa * B.y, P.z + ca * N.z + sa * B.z);
+      }
+    }
+    for (let i = 0; i < seg; i++) for (let j = 0; j < rad; j++) {
+      const a = i * rad + j, b = i * rad + (j + 1) % rad, c = (i + 1) * rad + (j + 1) % rad, d = (i + 1) * rad + j;
+      idx.push(a, b, d, b, c, d);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geo.setIndex(idx); geo.computeVertexNormals();
     const m = new THREE.Mesh(geo, mat);
-    m.userData.key = key; m.userData.sys = 'circulatorio'; m.userData.baseColor = new THREE.Color(color);
+    m.userData.key = key; m.userData.sys = 'circulatorio'; m.userData.baseColor = new THREE.Color(mat.color.getHex());
     grp.add(m); (_meshByKey[key] = _meshByKey[key] || []).push(m);
   }
-  /* Route the limb + head vessels through the SKELETON's real bone joints so
-     they actually follow the body (the dataset lacks distal vessels). */
+
+  /* From a point cloud (a hand/foot), pick n spread "fingertip/toe" targets:
+     the most distal points across the lateral spread, relative to a base joint. */
+  function _tips(pts, base, n) {
+    if (!pts || pts.length < n) return [];
+    const cen = pts.reduce((a, p) => a.add(p.clone()), new THREE.Vector3()).multiplyScalar(1 / pts.length);
+    const dir = cen.clone().sub(base); if (dir.lengthSq() < 1e-6) return []; dir.normalize();
+    let lat = new THREE.Vector3(0, 1, 0).cross(dir); if (lat.lengthSq() < 1e-4) lat = new THREE.Vector3(1, 0, 0).cross(dir); lat.normalize();
+    const sc = pts.map(p => { const rel = p.clone().sub(base); return { p, d: rel.dot(dir), l: rel.dot(lat) }; });
+    const maxd = Math.max(...sc.map(s => s.d));
+    const distal = sc.filter(s => s.d > maxd * 0.6).sort((a, b) => a.l - b.l);
+    const tips = [];
+    for (let k = 0; k < n; k++) {
+      const s = distal.slice(Math.floor(k * distal.length / n), Math.floor((k + 1) * distal.length / n));
+      if (s.length) tips.push(s.reduce((m, x) => x.d > m.d ? x : m, s[0]).p);
+    }
+    return tips;
+  }
+
+  /* Build a detailed, branching, tapering vessel tree routed through the real
+     skeleton — down to an artery + vein in every finger and toe. */
   function _addVessels(grp, box) {
     if (!_sysGroup[GHOST_SYS]) return;
     const cx = (box.min.x + box.max.x) / 2, H = box.max.y - box.min.y;
-    const ext = (arr, side, top) => {       // extreme-Y point on one side
+    const ext = (arr, side, top) => {
       let best = null;
       for (const p of arr) { const on = side < 0 ? p.x < cx : p.x >= cx; if (on && (!best || (top ? p.y > best.y : p.y < best.y))) best = p; }
       return best;
     };
-    const cen = (arr, side) => {             // centroid of one side (null if empty)
+    const cen = (arr, side) => {
       const s = new THREE.Vector3(); let n = 0;
-      for (const p of arr) { if (side < 0 ? p.x < cx : p.x >= cx) { s.add(p); n++; } }
+      for (const p of arr) if (side < 0 ? p.x < cx : p.x >= cx) { s.add(p); n++; }
       return n ? s.multiplyScalar(1 / n) : null;
     };
     const cenAll = arr => { if (!arr.length) return null; const s = new THREE.Vector3(); arr.forEach(p => s.add(p)); return s.multiplyScalar(1 / arr.length); };
+    const onSide = (arr, side) => arr.filter(p => side < 0 ? p.x < cx : p.x >= cx);
     const P = k => _structurePoints(k);
     const umero = P('umero'), radio = P('radio_ulna'), mao = P('mao'),
           femur = P('femur'), tibia = P('tibia_fibula'), pe = P('pe'),
@@ -197,18 +235,43 @@ const HumanBodyExplorer = (function () {
     const pelvisC = cenAll(pelve) || _frac(box, 0.5, 0.34, 0.5);
     const headTop = cranio.length ? cranio.reduce((m, p) => p.y > m.y ? p : m, cranio[0]) : null;
 
-    const A = [];
-    if (headTop) A.push([chest.clone(), new THREE.Vector3(chest.x, (chest.y + headTop.y) / 2, (chest.z + headTop.z) / 2 + H * 0.01), headTop.clone()]);
+    const mk = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.4, metalness: 0.08,
+      emissive: new THREE.Color(c).multiplyScalar(0.28), transparent: true, opacity: 1 });
+    const matA = mk(ARTERY), matV = mk(VEIN);
+    const vo = p => p && new THREE.Vector3(p.x + (p.x >= cx ? 1 : -1) * H * 0.012, p.y, p.z - H * 0.035);
+    /* an artery path + its parallel vein twin */
+    const pair = (pts, r0, r1) => { _taperedMesh(grp, pts, r0, r1, matA, 'arterias'); _taperedMesh(grp, pts.map(vo), r0, r1, matV, 'veias'); };
+    const perp = (a, b, d) => new THREE.Vector3(0, 0, 1).cross(a.clone().sub(b)).normalize().multiplyScalar(d);
+
+    if (headTop) pair([chest, new THREE.Vector3(chest.x, (chest.y + headTop.y) / 2, (chest.z + headTop.z) / 2 + H * 0.01), headTop], H * 0.008, H * 0.004);
+    pair([chest, pelvisC], H * 0.012, H * 0.009);
+
     for (const side of [-1, 1]) {
-      const shoulder = ext(umero, side, true), elbow = ext(umero, side, false), wrist = ext(radio, side, false), hand = cen(mao, side);
-      A.push([chest.clone(), shoulder, elbow, wrist, hand]);                 // arm
-      const hip = ext(femur, side, true), knee = ext(femur, side, false), ankle = ext(tibia, side, false), foot = cen(pe, side);
-      A.push([pelvisC.clone(), hip, knee, ankle, foot]);                     // leg
+      /* ── arm: brachial → radial+ulnar → palm → 5 fingers ── */
+      const shoulder = ext(umero, side, true), elbow = ext(umero, side, false), wrist = ext(radio, side, false), handCen = cen(mao, side);
+      if (shoulder && elbow) pair([chest, shoulder, elbow], H * 0.009, H * 0.006);
+      if (elbow && wrist) {
+        const off = perp(elbow, wrist, H * 0.012);
+        pair([elbow, wrist], H * 0.006, H * 0.004);
+        pair([elbow.clone().add(off), wrist.clone().add(off)], H * 0.0045, H * 0.0030);
+      }
+      if (wrist && handCen) {
+        pair([wrist, handCen], H * 0.0040, H * 0.0030);
+        for (const t of _tips(onSide(mao, side), wrist, 5)) pair([handCen, t], H * 0.0026, H * 0.0008);
+      }
+      /* ── leg: femoral → tibial(×2) → foot → 5 toes ── */
+      const hip = ext(femur, side, true), knee = ext(femur, side, false), ankle = ext(tibia, side, false), footCen = cen(pe, side);
+      if (hip && knee) pair([pelvisC, hip, knee], H * 0.011, H * 0.007);
+      if (knee && ankle) {
+        const off = perp(knee, ankle, H * 0.012);
+        pair([knee, ankle], H * 0.007, H * 0.0045);
+        pair([knee.clone().add(off), ankle.clone().add(off)], H * 0.0050, H * 0.0032);
+      }
+      if (ankle && footCen) {
+        pair([ankle, footCen], H * 0.0045, H * 0.0030);
+        for (const t of _tips(onSide(pe, side), ankle, 5)) pair([footCen, t], H * 0.0028, H * 0.0010);
+      }
     }
-    const V = A.map(path => path.map(p => p && new THREE.Vector3(p.x + (p.x >= cx ? 1 : -1) * H * 0.012, p.y, p.z - H * 0.035)));
-    const rA = H * 0.009, rV = H * 0.0085;
-    A.forEach(p => _vesselTube(grp, p, ARTERY, 'arterias', rA));
-    V.forEach(p => _vesselTube(grp, p, VEIN, 'veias', rV));
   }
   function _addSenseMarkers(grp, box) {
     const col = new THREE.Color(SYS_BY_ID.sentidos.color);
