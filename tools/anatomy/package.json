@@ -1,0 +1,13 @@
+{
+  "name": "anatomy-build",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only pipeline: BodyParts3D OBJ → per-system GLB atlas. Not part of the site.",
+  "devDependencies": {
+    "@gltf-transform/core": "^4.1.0",
+    "@gltf-transform/extensions": "^4.1.0",
+    "@gltf-transform/functions": "^4.1.0",
+    "meshoptimizer": "^0.22.0",
+    "yauzl": "^3.2.0"
+  }
+}

@@ -1,621 +1,141 @@
 /* ══════════════════════════════════════════════════════════════════
-   EXPLORER · CORPO HUMANO  (3D Human Body Explorer)
-   A navigable three.js body: rotate / zoom, toggle layers
-   (Skin · Skeleton · Muscles · Organs · Circulation), watch blood
-   flow through the vessels, click organs for info, and a 3D DNA helix.
-   Built procedurally — no external models, works offline.
-══════════════════════════════════════════════════════════════════ */
+   EXPLORER · CORPO HUMANO — system-first 3D anatomy atlas
+   ----------------------------------------------------------------------
+   Real, co-registered anatomy from BodyParts3D (CC-BY-SA): every structure
+   is its own named, pickable mesh — so navigation, search, isolate, x-ray
+   and highlight come straight from the data (no manual alignment).
+
+   Navigation:  Corpo → Sistema → Estrutura → Detalhes
+   Data:        assets/models/anatomy/<system>.glb  +  data/anatomy/manifest.json
+   Engine:      three.js (ESM via esm.sh, module-scoped so it won't clash with
+                the other explorers' UMD THREE).
+   ══════════════════════════════════════════════════════════════════ */
 const HumanBodyExplorer = (function () {
   'use strict';
 
-  const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
-
-  /* Real anatomical models (NIH 3D — Visible Human Male reference organs, CC-BY;
-     skeleton & brain CC-BY). All VH_M organs share one coordinate space so they
-     self-assemble. Bundled locally (offline) under assets/models/body/. */
-  const MODEL_BASE = 'assets/models/body/';
-  /* ESM three + addons (esm.sh auto-resolves the bare "three" specifier so the
-     loader shares one THREE instance). */
   const ESM = {
     three:  'https://esm.sh/three@0.160.0',
     gltf:   'https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js',
     meshopt:'https://esm.sh/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js',
   };
-  let THREE = null;            /* module-scoped (ESM in GLB mode, else window.THREE) */
-  let _GLTFLoader = null, _MeshoptDecoder = null, _useGLB = false;
+  const MODEL_BASE = 'assets/models/anatomy/';
+  const MANIFEST_URL = 'data/anatomy/manifest.json';
 
-  /* VH_M model → scene transform (model is ~1.8 m tall, centred at origin, Y up).
-     Map it into the legacy coordinate space (feet y≈0, head ≈16). _VH_ROT_Y can be
-     flipped to π if the body ends up facing away from the camera. */
-  const _VH_SCALE = 8.9, _VH_OFFY = 8.0, _VH_ROT_Y = 0;
-
-  /* The full skeleton is a separate (not co-registered) model — fit it to the
-     body's height and orient it upright/front-facing. Tunable. */
-  const _SK_ROT = [-Math.PI / 2, 0.785, 0];   // stand upright (z→up) + face front
-  const _SK_H = 16.6, _SK_BASEY = -0.2, _SK_OFFX = 0.7, _SK_OFFZ = 0;
-
-  /* Which organ GLBs to load and how to colour / key them for the info panel. */
-  const ORGAN_FILES = [
-    { file:'heart',           key:'coracao'    },
-    { file:'lungs',           key:'pulmoes'    },
-    { file:'liver',           key:'figado'     },
-    { file:'kidney_l',        key:'rins'       },
-    { file:'kidney_r',        key:'rins'       },
-    { file:'spleen',          key:'baco'       },
-    { file:'pancreas',        key:'pancreas'   },
-    { file:'intestine_small', key:'intestinos' },
-    { file:'intestine_large', key:'intestinos' },
-    { file:'bladder',         key:'bexiga'     },
-  ];
-
-  /* ── DOM / scene state ── */
-  let _host = null, _vp = null, _info = null;
-  let _renderer = null, _scene = null, _camera = null, _raf = null;
-  let _mounted = false, _built = false;
-  let _topic = 'anatomia';
-
-  /* groups by layer */
-  const G = { skin:null, skeleton:null, muscles:null, organs:null, vessels:null, dna:null, senses:null };
-  let _organMeshes = [];      /* {mesh, key, baseEmissive} for picking + focus */
-  let _heart = null, _lungs = [], _dnaGroup = null, _lungPivot = null, _modelsReady = false;
-  let _skinMat = null, _boneMat = null;   /* kept to fade them when layers stack */
-  let _flowTex = [];          /* {tex, dir} animated blood-flow textures */
-  let _senseMarkers = [];
-
-  /* layer visibility */
-  const _layers = { skin:true, skeleton:false, muscles:false, organs:true, vessels:false };
-
-  /* camera (spherical around a focus point) */
-  let _az = 0.6, _pol = 1.32, _dist = 38, _focusY = 9;
-  let _azT = 0.6, _polT = 1.32, _distT = 38, _focusYT = 9;
-  let _autoSpin = true;
-
-  /* picking */
-  let _selected = null, _hovered = null;
+  let THREE = null, _GLTFLoader = null, _MeshoptDecoder = null;
 
   /* ── i18n ── */
   function _lang() { return (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt'); }
   function _t(en, pt) { return _lang() === 'en' ? en : pt; }
+  const _f = (s, field) => s[field + '_' + _lang()] ?? s[field + '_pt'];   // localized manifest field
+  const _nm = (s) => (_lang() === 'en' ? s.en : s.pt);
 
-  /* ════════════════════════════════ CONTENT ════════════════════════ */
-  /* Organ info (reused in the side panel). */
-  const ORGANS = {
-    cerebro: { emoji:'🧠', color:0xf6a8c8, name:_=>_t('Brain','Cérebro'), sub:_=>_t('Control centre','Centro de comando'),
-      desc:_=>_t('A 1.4 kg organ of ~86 billion neurons that controls everything you think, feel and do — using less power than a light bulb.','Um órgão de 1,4 kg com ~86 mil milhões de neurónios que controla tudo o que pensas, sentes e fazes — usando menos energia que uma lâmpada.'),
-      stats:[['~86 mil M',_=>_t('neurons','neurónios')],['~20 W',_=>_t('power','consumo')]],
-      facts:[_=>_t('Neurons fire signals at up to 430 km/h.','Os neurónios disparam sinais até 430 km/h.'),_=>_t('It is about 73% water.','É cerca de 73% água.')] },
-    coracao: { emoji:'❤️', color:0xe23b50, name:_=>_t('Heart','Coração'), sub:_=>_t('The pump','A bomba'),
-      desc:_=>_t('A fist-sized muscle with four chambers. It beats ~100 000 times a day, pushing blood through 100 000 km of vessels.','Um músculo do tamanho do punho com quatro câmaras. Bate ~100 000 vezes por dia, empurrando sangue por 100 000 km de vasos.'),
-      stats:[['~70',_=>_t('beats / min','batim. / min')],['4',_=>_t('chambers','câmaras')]],
-      facts:[_=>_t('It pumps about 7 500 L of blood a day.','Bombeia cerca de 7 500 L de sangue por dia.')] },
-    pulmoes: { emoji:'🫁', color:0xf07a8c, name:_=>_t('Lungs','Pulmões'), sub:_=>_t('Gas exchange','Trocas gasosas'),
-      desc:_=>_t('Two spongy organs holding ~300 million tiny air sacs (alveoli) where oxygen enters the blood. You breathe ~20 000 times a day.','Dois órgãos esponjosos com ~300 milhões de sacos de ar (alvéolos) onde o oxigénio entra no sangue. Respiras ~20 000 vezes por dia.'),
-      stats:[['~300M',_=>_t('alveoli','alvéolos')],['~6 L',_=>_t('capacity','capacidade')]],
-      facts:[_=>_t('Unfolded, the alveoli would cover a tennis court.','Desdobrados, os alvéolos cobririam um campo de ténis.')] },
-    figado: { emoji:'🟤', color:0x9a4b32, name:_=>_t('Liver','Fígado'), sub:_=>_t('The chemist','O químico'),
-      desc:_=>_t('Your largest internal organ. It filters toxins, stores energy and makes bile to digest fats — handling 500+ jobs.','O teu maior órgão interno. Filtra toxinas, armazena energia e produz bílis para digerir gorduras — com mais de 500 funções.'),
-      stats:[['500+',_=>_t('jobs','funções')],['~1.5 kg',_=>_t('weight','peso')]],
-      facts:[_=>_t('It can regrow from as little as 25% of itself.','Regenera a partir de apenas 25% de si mesmo.')] },
-    estomago: { emoji:'🫙', color:0xe79a6a, name:_=>_t('Stomach','Estômago'), sub:_=>_t('The mixer','O misturador'),
-      desc:_=>_t('A muscular bag that churns food in acid strong enough to dissolve metal, killing most germs.','Um saco muscular que mistura a comida em ácido forte o suficiente para dissolver metal, matando a maioria dos germes.'),
-      stats:[['pH ~2',_=>_t('acidity','acidez')]],
-      facts:[_=>_t('Its lining is renewed every few days so it doesn’t digest itself.','O seu revestimento renova-se a cada poucos dias para não se digerir.')] },
-    intestinos: { emoji:'🌀', color:0xe7a07a, name:_=>_t('Intestines','Intestinos'), sub:_=>_t('~7.5 m long','~7,5 m de comprimento'),
-      desc:_=>_t('The small intestine absorbs nutrients across millions of folds; the large intestine reclaims water. Home to your microbiome.','O intestino delgado absorve nutrientes através de milhões de pregas; o grosso recupera água. Lar do teu microbioma.'),
-      stats:[['~7.5 m',_=>_t('length','comprimento')]],
-      facts:[_=>_t('It hosts trillions of helpful bacteria.','Alberga biliões de bactérias úteis.')] },
-    rins: { emoji:'🫘', color:0x8e4a44, name:_=>_t('Kidneys','Rins'), sub:_=>_t('The filters','Os filtros'),
-      desc:_=>_t('Two bean-shaped filters that clean your entire blood supply ~40 times a day, making urine and balancing your body’s water and salts.','Dois filtros em forma de feijão que limpam todo o teu sangue ~40 vezes por dia, produzindo urina e equilibrando a água e os sais do corpo.'),
-      stats:[['~1 M',_=>_t('filters each','filtros cada')]],
-      facts:[_=>_t('They filter ~180 litres of blood every day.','Filtram ~180 litros de sangue por dia.')] },
-    baco: { emoji:'🩸', color:0x9c3b4f, name:_=>_t('Spleen','Baço'), sub:_=>_t('Blood guardian','Guardião do sangue'),
-      desc:_=>_t('A fist-sized organ that filters the blood, recycles old red cells and helps the immune system fight infection.','Um órgão do tamanho do punho que filtra o sangue, recicla glóbulos vermelhos velhos e ajuda o sistema imunitário a combater infeções.'),
-      stats:[['~12 cm',_=>_t('long','comprimento')]],
-      facts:[_=>_t('You can live without it — other organs take over.','Podes viver sem ele — outros órgãos assumem a função.')] },
-    pancreas: { emoji:'🟡', color:0xe8c069, name:_=>_t('Pancreas','Pâncreas'), sub:_=>_t('Sugar & digestion','Açúcar e digestão'),
-      desc:_=>_t('Makes insulin to control blood sugar and releases enzymes into the gut to digest food.','Produz insulina para controlar o açúcar no sangue e liberta enzimas no intestino para digerir os alimentos.'),
-      stats:[['2',_=>_t('jobs in one','funções numa')]],
-      facts:[_=>_t('Without its insulin, sugar builds up — that is diabetes.','Sem a sua insulina, o açúcar acumula-se — é a diabetes.')] },
-    bexiga: { emoji:'💧', color:0xe7b86a, name:_=>_t('Bladder','Bexiga'), sub:_=>_t('The reservoir','O reservatório'),
-      desc:_=>_t('A stretchy muscular bag that stores urine from the kidneys until you are ready to release it.','Um saco muscular elástico que armazena a urina dos rins até estares pronto para a libertar.'),
-      stats:[['~0.5 L',_=>_t('capacity','capacidade')]],
-      facts:[_=>_t('It signals your brain when about 200 ml full.','Avisa o cérebro quando tem cerca de 200 ml.')] },
-  };
+  /* ── manifest ── */
+  let MANIFEST = null, SYS = [], SYS_BY_ID = {}, STRUCT = [], STRUCT_BY_KEY = {};
 
-  const SENSES = {
-    visao:   { emoji:'👁️', color:0x38bdf8, name:_=>_t('Sight','Visão'), sub:_=>_t('Eyes','Olhos'),
-      desc:_=>_t('Eyes catch light and the brain builds it into images — about 80% of what we learn comes through vision.','Os olhos captam a luz e o cérebro transforma-a em imagens — cerca de 80% do que aprendemos entra pela visão.') },
-    audicao: { emoji:'👂', color:0xfbbf24, name:_=>_t('Hearing','Audição'), sub:_=>_t('Ears','Ouvidos'),
-      desc:_=>_t('Ears turn vibrations in the air into sound, and also keep you balanced through fluid-filled loops inside.','Os ouvidos transformam vibrações do ar em som e mantêm-te equilibrado através de canais cheios de líquido.') },
-    olfato:  { emoji:'👃', color:0x34d399, name:_=>_t('Smell','Olfato'), sub:_=>_t('Nose','Nariz'),
-      desc:_=>_t('The nose detects thousands of chemicals in the air. Smell is tightly wired to memory and emotion.','O nariz deteta milhares de químicos no ar. O olfato está fortemente ligado à memória e à emoção.') },
-    paladar: { emoji:'👅', color:0xfb7185, name:_=>_t('Taste','Paladar'), sub:_=>_t('Tongue','Língua'),
-      desc:_=>_t('Taste buds sense five basics — sweet, salty, sour, bitter and umami. Most "flavour" is actually smell.','As papilas sentem cinco sabores — doce, salgado, ácido, amargo e umami. Grande parte do "sabor" é olfato.') },
-  };
+  /* ── DOM / scene ── */
+  let _host = null, _vp = null, _panel = null, _crumb = null, _searchInput = null;
+  let _renderer = null, _scene = null, _camera = null, _raf = null;
+  let _mounted = false, _built = false;
 
-  const TOPICS = [
-    { id:'anatomia',   ic:'🧍', name:_=>_t('Body','Corpo') },
-    { id:'pele',       ic:'🧑', name:_=>_t('Skin','Pele') },
-    { id:'esqueleto',  ic:'🦴', name:_=>_t('Skeleton','Esqueleto') },
-    { id:'orgaos',     ic:'🫀', name:_=>_t('Organs','Órgãos') },
-    { id:'circulacao', ic:'🩸', name:_=>_t('Circulation','Circulação') },
-    { id:'respiracao', ic:'🫁', name:_=>_t('Breathing','Respiração') },
-    { id:'digestao',   ic:'🍎', name:_=>_t('Digestion','Digestão') },
-    { id:'cerebro',    ic:'🧠', name:_=>_t('Brain','Cérebro') },
-    { id:'sentidos',   ic:'👁️', name:_=>_t('Senses','Sentidos') },
-    { id:'celulas',    ic:'🧬', name:_=>_t('Cells & DNA','Células e DNA') },
-  ];
+  /* ── loaded model state ── */
+  const _sysGroup = {};        // sysId → THREE.Group
+  const _meshByKey = {};       // structureKey → [mesh, …]
+  const _loaded = new Set();   // sysIds whose GLB is in the scene
+  const _loading = new Set();
 
-  /* Per-topic preset: layers, camera, which organs to spotlight, intro card. */
-  const PRESETS = {
-    anatomia:   { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:9,  dist:34, spotlight:null,
-      intro:{ emoji:'🧍', name:_=>_t('Body','Corpo'), sub:_=>_t('The whole body','O corpo inteiro'),
-        desc:_=>_t('Skin and organs together. Use the tabs above to study each system on its own — skin, skeleton, organs and circulation.','Pele e órgãos juntos. Usa os separadores acima para estudar cada sistema isolado — pele, esqueleto, órgãos e circulação.'),
-        stats:[['~37 bi',_=>_t('cells','células')],['206',_=>_t('bones','ossos')],['~78',_=>_t('organs','órgãos')]],
-        facts:[_=>_t('Tap any organ to learn what it does.','Toca em qualquer órgão para saber o que faz.')] } },
-    pele:       { layers:{skin:1,skeleton:0,muscles:0,organs:0,vessels:0}, focusY:9,  dist:34, spotlight:null,
-      intro:{ emoji:'🧑', name:_=>_t('Skin','Pele'), sub:_=>_t('Your largest organ','O teu maior órgão'),
-        desc:_=>_t('The skin is the body’s biggest organ — a waterproof, self-repairing barrier that shields you, senses touch and helps control your temperature.','A pele é o maior órgão do corpo — uma barreira impermeável que se repara sozinha, te protege, sente o toque e ajuda a controlar a temperatura.'),
-        stats:[['~2 m²',_=>_t('area','área')],['~4 kg',_=>_t('weight','peso')]],
-        facts:[_=>_t('You shed about 40 000 skin cells every minute.','Perdes cerca de 40 000 células de pele por minuto.'),_=>_t('It fully renews itself about every 4 weeks.','Renova-se por completo a cada ~4 semanas.')] } },
-    esqueleto:  { layers:{skin:0,skeleton:1,muscles:0,organs:0,vessels:0}, focusY:9,  dist:38, spotlight:null,
-      intro:{ emoji:'🦴', name:_=>_t('Skeleton','Esqueleto'), sub:_=>_t('206 bones','206 ossos'),
-        desc:_=>_t('The frame that supports and protects you, lets you move and makes blood inside its marrow.','A estrutura que te suporta, protege, te deixa mover e fabrica sangue na sua medula.'),
-        stats:[['206',_=>_t('bones','ossos')],['~15%',_=>_t('of weight','do peso')]],
-        facts:[_=>_t('Babies are born with ~300 bones; many fuse with age.','Os bebés nascem com ~300 ossos; muitos fundem-se com a idade.'),_=>_t('Bone is stronger than steel by weight.','O osso é, por peso, mais forte que o aço.')] } },
-    orgaos:     { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:9,  dist:28, spotlight:null,
-      intro:{ emoji:'🫀', name:_=>_t('Organs','Órgãos'), sub:_=>_t('The vital organs','Os órgãos vitais'),
-        desc:_=>_t('Each organ does a vital job — the heart pumps, the lungs breathe, the liver cleans, the kidneys filter, the gut digests. Tap any one to learn more.','Cada órgão faz um trabalho vital — o coração bombeia, os pulmões respiram, o fígado limpa, os rins filtram, o intestino digere. Toca em qualquer um para saber mais.'),
-        stats:[['~78',_=>_t('organs','órgãos')],['5',_=>_t('vital ones','vitais')]],
-        facts:[_=>_t('Tap an organ to see what it does.','Toca num órgão para ver o que faz.')] } },
-    circulacao: { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:1}, focusY:9,  dist:36, spotlight:['coracao'],
-      intro:{ emoji:'🩸', name:_=>_t('Circulation','Circulação'), sub:_=>_t('Watch the blood flow','Vê o sangue a circular'),
-        desc:_=>_t('The heart and a 100 000 km network of vessels carry oxygen and food to every cell. Red = arteries (oxygen-rich), blue = veins (returning).','O coração e uma rede de 100 000 km de vasos levam oxigénio e alimento a cada célula. Vermelho = artérias (ricas em oxigénio), azul = veias (de retorno).'),
-        stats:[['100 000 km',_=>_t('of vessels','de vasos')],['~5 L',_=>_t('of blood','de sangue')]],
-        facts:[_=>_t('Blood completes a full lap of the body in ~1 minute.','O sangue dá uma volta completa ao corpo em ~1 minuto.')] } },
-    respiracao: { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:11, dist:26, spotlight:['pulmoes'],
-      intro:{ emoji:'🫁', name:_=>_t('Breathing','Respiração'), sub:_=>_t('Respiratory system','Sistema respiratório'),
-        desc:_=>_t('You breathe ~20 000 times a day, swapping carbon dioxide for the oxygen every cell needs. Watch the lungs expand and contract.','Respiras ~20 000 vezes por dia, trocando dióxido de carbono pelo oxigénio que cada célula precisa. Vê os pulmões a expandir e contrair.'),
-        stats:[['~20 000',_=>_t('breaths / day','respirações / dia')],['~6 L',_=>_t('capacity','capacidade')]],
-        facts:[_=>_t('Unfolded, the alveoli would cover a tennis court.','Desdobrados, os alvéolos cobririam um campo de ténis.')] } },
-    digestao:   { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:8,  dist:24, spotlight:['figado','intestinos','pancreas'],
-      intro:{ emoji:'🍎', name:_=>_t('Digestion','Digestão'), sub:_=>_t('Digestive system','Sistema digestivo'),
-        desc:_=>_t('A ~9 metre journey that turns food into the fuel and building blocks every cell needs. Tap the stomach, liver or intestines.','Uma viagem de ~9 metros que transforma comida no combustível e nos blocos que cada célula precisa. Toca no estômago, fígado ou intestinos.'),
-        stats:[['~9 m',_=>_t('total length','comprimento')],['24–72 h',_=>_t('to digest','para digerir')]],
-        facts:[_=>_t('Most digestion happens in the small intestine.','A maior parte da digestão ocorre no intestino delgado.')] } },
-    cerebro:    { layers:{skin:1,skeleton:0,muscles:0,organs:1,vessels:0}, focusY:14, dist:13, spotlight:['cerebro'],
-      intro:ORGANS.cerebro },
-    sentidos:   { layers:{skin:1,skeleton:0,muscles:0,organs:0,vessels:0}, focusY:15, dist:12, spotlight:null, senses:true,
-      intro:{ emoji:'👁️', name:_=>_t('Senses','Sentidos'), sub:_=>_t('Windows to the world','Janelas para o mundo'),
-        desc:_=>_t('Five senses feed your brain a constant stream of the world. Tap a glowing marker on the head to explore each one.','Cinco sentidos alimentam o teu cérebro com um fluxo constante do mundo. Toca num marcador luminoso na cabeça para explorar cada um.'),
-        facts:[_=>_t('About 80% of what you learn comes through sight.','Cerca de 80% do que aprendes entra pela visão.')] } },
-    celulas:    { layers:{skin:0,skeleton:0,muscles:0,organs:0,vessels:0}, focusY:9, dist:26, dna:true, spotlight:null,
-      intro:{ emoji:'🧬', name:_=>_t('Cells & DNA','Células e DNA'), sub:_=>_t('The building blocks','Os blocos da vida'),
-        desc:_=>_t('Every part of you is built from ~37 trillion cells, and each one runs on instructions written in DNA — 2 metres of it coiled in every nucleus.','Tudo em ti é feito de ~37 biliões de células, e cada uma funciona com instruções escritas no DNA — 2 metros dele enrolados em cada núcleo.'),
-        stats:[['~37 bi',_=>_t('cells','células')],['3 mil M',_=>_t('base pairs','pares de bases')]],
-        facts:[_=>_t('All your DNA uncoiled would reach the Sun and back ~300 times.','Todo o teu DNA esticado iria ao Sol e voltava ~300 vezes.'),_=>_t('Humans share ~99.9% of their DNA.','Os humanos partilham ~99,9% do DNA.')] } },
-  };
+  /* ── view state ── */
+  let _curSys = null;          // active system id, or '__all'
+  let _selKey = null;          // selected structure key
+  let _isolate = false, _xray = false;
 
-  /* All layers come from the same co-registered VH_M atlas, so they overlay
-     perfectly. (Muscles dropped — no real muscle model.) */
-  const LAYER_BTNS = [
-    { id:'skin',     ic:'🧍', color:'#fca5a5', name:_=>_t('Skin','Pele') },
-    { id:'skeleton', ic:'🦴', color:'#e2e8f0', name:_=>_t('Bones','Ossos') },
-    { id:'organs',   ic:'🫀', color:'#fb7185', name:_=>_t('Organs','Órgãos') },
-    { id:'vessels',  ic:'🩸', color:'#ef4444', name:_=>_t('Circulation','Circulação') },
-  ];
+  /* ── camera (spherical around a focus point) ── */
+  let _az = 0.6, _pol = 1.3, _dist = 34;
+  let _azT = 0.6, _polT = 1.3, _distT = 34;
+  let _focus = null, _focusT = null;     // THREE.Vector3
+  let _autoSpin = true;
 
-  /* ════════════════════════════════ THREE LOAD ═════════════════════ */
-  function _loadScript(src) {
-    return new Promise((resolve, reject) => {
-      if (window.THREE) { resolve(); return; }
-      if (document.querySelector(`script[src="${src}"]`)) {
-        const ex = document.querySelector(`script[src="${src}"]`);
-        ex.addEventListener('load', resolve); ex.addEventListener('error', reject);
-        if (window.THREE) resolve();
-        return;
-      }
-      const s = Object.assign(document.createElement('script'), { src });
-      s.onload = resolve; s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
-
-  /* Try to load ESM three + GLTFLoader + meshopt decoder (enables real models).
-     Falls back to the UMD global build (procedural body) on any failure. */
+  /* ════════════════════════════ LOADERS ════════════════════════════ */
   async function _loadThree() {
     try {
       const [T, G, M] = await Promise.all([import(ESM.three), import(ESM.gltf), import(ESM.meshopt)]);
       THREE = T; _GLTFLoader = G.GLTFLoader; _MeshoptDecoder = M.MeshoptDecoder;
       if (_MeshoptDecoder.ready) await _MeshoptDecoder.ready;
-      _useGLB = true;
       return true;
-    } catch (e) {
-      try {
-        await _loadScript(THREE_CDN);
-        if (!window.THREE) throw new Error('THREE missing');
-        THREE = window.THREE; _useGLB = false;
-        return true;
-      } catch (e2) { return false; }
-    }
+    } catch (e) { return false; }
   }
 
-  function _loadGLB(name) {
+  async function _loadManifest() {
+    try {
+      const r = await fetch(MANIFEST_URL);
+      MANIFEST = await r.json();
+      SYS = MANIFEST.systems || [];
+      STRUCT = MANIFEST.structures || [];
+      SYS.forEach(s => SYS_BY_ID[s.id] = s);
+      STRUCT.forEach(s => STRUCT_BY_KEY[s.key] = s);
+      return SYS.length > 0;
+    } catch (e) { return false; }
+  }
+
+  function _loadGLB(url) {
     return new Promise((resolve, reject) => {
       const loader = new _GLTFLoader();
       if (_MeshoptDecoder) loader.setMeshoptDecoder(_MeshoptDecoder);
-      loader.load(MODEL_BASE + name + '.glb', g => resolve(g.scene), undefined, reject);
+      loader.load(url, g => resolve(g.scene), undefined, reject);
     });
   }
 
-  /* Normalise a standalone model (skeleton / brain) to a target height, centred,
-     feet/base near the floor. Returns a wrapped group. */
-  function _fitModel(scene, targetH, baseY, rot) {
-    if (rot != null) {                             // orient a model
-      if (Array.isArray(rot)) {                    // sequential WORLD-axis rotations (no gimbal tipping)
-        scene.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), rot[0]);
-        scene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), rot[1]);
-        scene.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rot[2]);
-      } else scene.rotation.x = rot;
-    }
-    const box = new THREE.Box3().setFromObject(scene);
-    const size = new THREE.Vector3(), ctr = new THREE.Vector3();
-    box.getSize(size); box.getCenter(ctr);
-    const s = targetH / (size.y || 1);
-    const wrap = new THREE.Group();
-    scene.position.set(scene.position.x - ctr.x, scene.position.y - ctr.y, scene.position.z - ctr.z);
-    wrap.add(scene);
-    wrap.scale.setScalar(s);
-    wrap.position.y = baseY + (size.y * s) / 2;    // sit base at baseY
-    return wrap;
-  }
-
-  /* Parent that maps the co-registered VH_M models into the legacy scene space. */
-  function _vhWrap(obj) {
-    const w = new THREE.Group();
-    w.add(obj);
-    w.scale.setScalar(_VH_SCALE);
-    w.position.y = _VH_OFFY;
-    w.rotation.y = _VH_ROT_Y;
-    return w;
-  }
-
-  /* ════════════════════════════════ MATERIALS ══════════════════════ */
-  function _organMat(color) {
-    return new THREE.MeshStandardMaterial({
-      color, roughness: 0.55, metalness: 0.0,
-      emissive: new THREE.Color(color).multiplyScalar(0.18),
-      transparent: true, opacity: 1,
-    });
-  }
-
-  /* Repeating stripe texture → scrolled along vessels to fake blood flow. */
-  function _flowTexture() {
-    const c = document.createElement('canvas'); c.width = 64; c.height = 4;
-    const ctx = c.getContext('2d');
-    const g = ctx.createLinearGradient(0, 0, 64, 0);
-    g.addColorStop(0.0, '#3a0a10'); g.addColorStop(0.35, '#ffffff');
-    g.addColorStop(0.5, '#ffd0d0'); g.addColorStop(0.65, '#ffffff'); g.addColorStop(1.0, '#3a0a10');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 4);
-    const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    return tex;
-  }
-
-  /* ════════════════════════════════ BODY PARTS ═════════════════════ */
-  /* Coordinate system: Y up, feet at y≈0, head top y≈17, +Z = front. */
-
-  function _capsule(r, len, mat) { return new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 8, 18), mat); }
-  function _sphere(r, mat, seg) { return new THREE.Mesh(new THREE.SphereGeometry(r, seg||24, seg||24), mat); }
-
-  /* Humanoid silhouette shared by skin (translucent) & muscles (red). */
-  function _humanoid(mat, sc) {
-    const g = new THREE.Group();
-    const add = (m, x, y, z, rz) => { m.position.set(x, y, z); if (rz) m.rotation.z = rz; g.add(m); return m; };
-    // head + neck
-    add(_sphere(1.45 * sc, mat), 0, 15.1, 0).scale.set(1, 1.08, 0.92);
-    add(_capsule(0.5 * sc, 0.7, mat), 0, 13.7, 0);
-    // torso (flattened front-back)
-    add(_capsule(1.7 * sc, 2.6, mat), 0, 11, 0.05).scale.set(1.12, 1, 0.62);
-    // pelvis
-    add(_sphere(1.5 * sc, mat), 0, 8.1, 0).scale.set(1.05, 0.8, 0.62);
-    // arms (upper + fore + hand), splayed slightly
-    [[-1, 0.16], [1, -0.16]].forEach(([s, rz]) => {
-      add(_capsule(0.46 * sc, 2.2, mat), s * 2.25, 11.3, 0, rz);
-      add(_capsule(0.4 * sc, 2.2, mat), s * 2.65, 8.6, 0, rz * 0.6);
-      add(_sphere(0.46 * sc, mat), s * 2.8, 6.7, 0);
-    });
-    // legs (thigh + shin + foot)
-    [-1, 1].forEach(s => {
-      add(_capsule(0.78 * sc, 2.6, mat), s * 0.9, 5.6, 0);
-      add(_capsule(0.55 * sc, 2.9, mat), s * 0.98, 2.1, 0);
-      const f = add(_sphere(0.6 * sc, mat), s * 0.98, 0.35, 0.4); f.scale.set(0.8, 0.55, 1.5);
-    });
-    return g;
-  }
-
-  function _buildSkin() {
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0xf3c6a0, roughness: 0.85, metalness: 0,
-      transparent: true, opacity: 0.13, depthWrite: false, side: THREE.DoubleSide,
-    });
-    const g = _humanoid(mat, 1);
-    g.traverse(m => { if (m.isMesh) m.renderOrder = 20; });
-    return g;
-  }
-
-  function _buildMuscles() {
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0xb33b3b, roughness: 0.6, metalness: 0,
-      emissive: 0x3a0d0d, transparent: true, opacity: 0.96,
-    });
-    const g = _humanoid(mat, 0.9);
-    // subtle striation lines on torso for a more muscular read
-    return g;
-  }
-
-  function _buildSkeleton() {
-    const bone = new THREE.MeshStandardMaterial({ color: 0xf2efe2, roughness: 0.5, metalness: 0.05, emissive: 0x1a1812 });
-    const g = new THREE.Group();
-    const add = (m, x, y, z) => { m.position.set(x, y, z); g.add(m); return m; };
-    // skull + jaw
-    add(_sphere(1.18, bone, 28), 0, 15.2, 0.05).scale.set(0.95, 1.05, 0.95);
-    add(new THREE.Mesh(new THREE.SphereGeometry(0.8, 18, 14), bone), 0, 14.4, 0.35).scale.set(0.85, 0.55, 0.7);
-    // spine
-    for (let i = 0; i < 16; i++) {
-      const y = 13.2 - i * 0.34;
-      const v = add(new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.22, 12), bone), 0, y, -0.15 + Math.sin(i * 0.4) * 0.05);
-    }
-    // ribcage — open elliptical arcs around the chest
-    for (let i = 0; i < 7; i++) {
-      const y = 12.6 - i * 0.32;
-      const r = 1.45 + Math.sin((i / 7) * Math.PI) * 0.55;
-      const rib = new THREE.Mesh(new THREE.TorusGeometry(r, 0.1, 8, 28, Math.PI * 1.25), bone);
-      rib.rotation.x = Math.PI / 2; rib.rotation.z = Math.PI * 0.875;
-      rib.scale.set(1, 0.62, 1);
-      add(rib, 0, y, -0.1);
-    }
-    // sternum
-    add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.2, 0.2), bone), 0, 11.5, 1.05);
-    // clavicles
-    [-1, 1].forEach(s => { const c = add(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 1.8, 10), bone), s * 0.9, 12.9, 0.7); c.rotation.z = Math.PI / 2; });
-    // pelvis
-    const pel = add(new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.32, 10, 24), bone), 0, 8.1, 0); pel.rotation.x = Math.PI / 2; pel.scale.set(1.1, 0.7, 0.7);
-    // limbs (long bones)
-    [[-1, 0.16], [1, -0.16]].forEach(([s, rz]) => {
-      const h = add(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.2, 3.0, 12), bone), s * 2.25, 11.3, 0); h.rotation.z = rz * 1.2;
-      const f = add(new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.16, 2.6, 12), bone), s * 2.6, 8.5, 0); f.rotation.z = rz * 0.6;
-    });
-    [-1, 1].forEach(s => {
-      add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.26, 3.6, 12), bone), s * 0.9, 5.6, 0);
-      add(new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.2, 3.4, 12), bone), s * 0.95, 2.1, 0);
-    });
-    return g;
-  }
-
-  function _buildOrgans() {
-    const g = new THREE.Group();
-    _organMeshes = [];
-    const place = (mesh, key, x, y, z) => {
-      mesh.position.set(x, y, z);
-      mesh.userData.key = key;
-      mesh.userData.baseEmissive = mesh.material.emissive.clone();
-      g.add(mesh); _organMeshes.push({ mesh, key });
-      return mesh;
-    };
-
-    // brain
-    const brain = _sphere(1.0, _organMat(ORGANS.cerebro.color), 28); brain.scale.set(1, 0.92, 1.05);
-    place(brain, 'cerebro', 0, 15.2, 0.1);
-
-    // heart (two merged spheres + a cone tip)
-    const hg = new THREE.Group();
-    const hm = _organMat(ORGANS.coracao.color);
-    const h1 = _sphere(0.62, hm); h1.position.set(-0.32, 0.2, 0);
-    const h2 = _sphere(0.62, hm); h2.position.set(0.32, 0.2, 0);
-    const h3 = new THREE.Mesh(new THREE.ConeGeometry(0.7, 1.1, 18), hm); h3.position.set(0, -0.55, 0); h3.rotation.x = Math.PI; h3.rotation.z = 0.25;
-    hg.add(h1, h2, h3);
-    hg.traverse(m => { if (m.isMesh) { m.userData.key = 'coracao'; m.userData.baseEmissive = hm.emissive.clone(); _organMeshes.push({ mesh: m, key: 'coracao' }); } });
-    hg.position.set(0.35, 11.3, 0.55); hg.scale.setScalar(0.95);
-    hg.userData.base = 0.95;
-    g.add(hg); _heart = hg;
-
-    // lungs (two lobes)
-    _lungs = [];
-    [-1, 1].forEach(s => {
-      const lobe = _sphere(0.95, _organMat(ORGANS.pulmoes.color)); lobe.scale.set(0.8, 1.5, 0.7);
-      place(lobe, 'pulmoes', s * 1.25, 11.6, 0.15);
-      _lungs.push(lobe);
-    });
-    // trachea
-    const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.6, 10), _organMat(0xef9aa8));
-    place(tr, 'pulmoes', 0, 12.9, 0.2);
-
-    // liver (large wedge, right side = viewer left)
-    const liver = new THREE.Mesh(new THREE.SphereGeometry(1.15, 24, 20), _organMat(ORGANS.figado.color));
-    liver.scale.set(1.25, 0.6, 0.7); liver.rotation.z = -0.2;
-    place(liver, 'figado', -0.6, 9.7, 0.5);
-
-    // stomach (curved bean)
-    const stomach = _sphere(0.78, _organMat(ORGANS.estomago.color)); stomach.scale.set(0.9, 1.25, 0.8); stomach.rotation.z = 0.5;
-    place(stomach, 'estomago', 0.75, 9.6, 0.5);
-
-    // intestines — a coiled tube in the lower abdomen
-    const pts = [];
-    for (let i = 0; i <= 60; i++) {
-      const t = i / 60;
-      const ang = t * Math.PI * 6;
-      const rr = 1.05 * (1 - t * 0.45);
-      pts.push(new THREE.Vector3(Math.cos(ang) * rr, 7.0 + t * 1.5, 0.55 + Math.sin(ang) * 0.35));
-    }
-    const gut = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 120, 0.34, 8), _organMat(ORGANS.intestinos.color));
-    place(gut, 'intestinos', 0, 0, 0);
-
-    // kidneys (behind)
-    [-1, 1].forEach(s => {
-      const k = _sphere(0.42, _organMat(ORGANS.rins.color)); k.scale.set(0.8, 1.2, 0.7);
-      place(k, 'rins', s * 0.95, 9.1, -0.55);
-    });
-
-    return g;
-  }
-
-  /* ── real-model (GLB) body assembly ── */
-  function _styleOrgan(obj, key) {
-    const mat = _organMat((ORGANS[key] && ORGANS[key].color) || 0xcf7a7a);
-    obj.traverse(m => {
-      if (!m.isMesh) return;
-      m.material = mat; m.userData.key = key;
-      m.userData.baseEmissive = mat.emissive.clone();
-      m.renderOrder = 10;
-      _organMeshes.push({ mesh: m, key });
-    });
-    return mat;
-  }
-
-  /* Wrap an object in a group pivoted on its centroid, so it can be scaled
-     (heartbeat / breathing) in place. */
-  function _pivotWrap(obj) {
-    const box = new THREE.Box3().setFromObject(obj);
-    const c = new THREE.Vector3(); box.getCenter(c);
-    const piv = new THREE.Group(); piv.position.copy(c);
-    obj.position.sub(c); piv.add(obj);
-    return piv;
-  }
-
-  function _replaceGroup(name, grp) {
-    if (G[name]) { _scene.remove(G[name]); }
-    G[name] = grp; grp.visible = false; _scene.add(grp);
-  }
-
-  /* Load the real anatomical models and swap them in for the procedural body.
-     Runs after the procedural fallback is already on screen. */
-  async function _buildBodyGLB() {
+  /* Load one system's GLB, recolour its meshes and index them by structure key. */
+  async function _ensureSystem(sysId) {
+    if (_loaded.has(sysId) || _loading.has(sysId)) return;
+    _loading.add(sysId);
     try {
-      // skin — translucent shell so the organs read through it
-      const skin = await _loadGLB('skin');
-      const skinMat = new THREE.MeshStandardMaterial({
-        color: 0xf0c4a0, roughness: 0.85, metalness: 0,
-        transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide,
+      const root = await _loadGLB(MODEL_BASE + sysId + '.glb');
+      const sys = SYS_BY_ID[sysId];
+      const baseColor = new THREE.Color(sys.color);
+      const grp = new THREE.Group();
+      grp.name = sysId;
+      // Each top-level named node = one structure (key). Recolour + tag every mesh.
+      root.traverse(o => {
+        if (!o.isMesh) return;
+        const key = _structureKeyOf(o);
+        const mat = new THREE.MeshStandardMaterial({
+          color: baseColor.clone(), roughness: 0.62, metalness: 0.02,
+          transparent: true, opacity: 1, emissive: baseColor.clone().multiplyScalar(0.05),
+        });
+        o.material = mat;
+        o.userData.key = key;
+        o.userData.sys = sysId;
+        o.userData.baseColor = baseColor.clone();
+        if (key) (_meshByKey[key] = _meshByKey[key] || []).push(o);
       });
-      _skinMat = skinMat;
-      skin.traverse(m => { if (m.isMesh) { m.material = skinMat; m.renderOrder = 30; } });
-      _replaceGroup('skin', _vhWrap(skin));
-
-      // organs — co-registered VH_M set self-assembles inside one wrap
-      const inner = new THREE.Group();
-      _organMeshes = []; _lungPivot = null; _heart = null;
-      const recs = await Promise.all(ORGAN_FILES.map(o =>
-        _loadGLB(o.file).then(s => ({ o, s })).catch(() => null)));
-      recs.forEach(rec => {
-        if (!rec) return;
-        const { o, s } = rec; _styleOrgan(s, o.key);
-        if (o.file === 'heart') { _heart = _pivotWrap(s); _heart.userData.base = 1; inner.add(_heart); }
-        else if (o.file === 'lungs') { _lungPivot = _pivotWrap(s); inner.add(_lungPivot); }
-        else inner.add(s);
-      });
-      const organs = new THREE.Group(); organs.add(_vhWrap(inner));
-      // brain — standalone model, normalised into the head
-      try {
-        const brain = await _loadGLB('brain');
-        _styleOrgan(brain, 'cerebro');
-        organs.add(_fitModel(brain, 1.45, 14.35));   // sit inside the skull
-      } catch (e) {}
-      _replaceGroup('organs', organs);
-
-      // skeleton — a complete standalone model fitted to the body's height
-      try {
-        const sk = await _loadGLB('skeleton');
-        const bone = new THREE.MeshStandardMaterial({ color: 0xf2efe2, roughness: 0.5, metalness: 0.05, emissive: 0x1a1812 });
-        _boneMat = bone;
-        sk.traverse(m => { if (m.isMesh) m.material = bone; });
-        const skw = _fitModel(sk, _SK_H, _SK_BASEY, _SK_ROT);
-        skw.position.x += _SK_OFFX; skw.position.z += _SK_OFFZ;
-        _replaceGroup('skeleton', skw);
-      } catch (e) {}
-
-      _modelsReady = true;
-      _applyLayers(); _spotlight((PRESETS[_topic] || {}).spotlight);
-    } catch (e) { /* keep the procedural fallback already on screen */ }
-  }
-
-  function _buildVessels() {
-    const g = new THREE.Group();
-    _flowTex = [];
-    const mkTube = (points, radius, color, dir) => {
-      const tex = _flowTexture();
-      const len = new THREE.CatmullRomCurve3(points).getLength();
-      tex.repeat.set(Math.max(2, len / 2.2), 1);
-      const mat = new THREE.MeshStandardMaterial({ color, map: tex, roughness: 0.4, metalness: 0.1, emissive: new THREE.Color(color).multiplyScalar(0.25) });
-      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 80, radius, 8), mat);
-      g.add(tube); _flowTex.push({ tex, dir });
-      return tube;
-    };
-    const V = (x, y, z) => new THREE.Vector3(x, y, z);
-    const RED = 0xe23b3b, BLUE = 0x3b6ee2;
-    const vein = (pts) => pts.map(p => p.clone().add(V((p.x >= 0 ? 0.22 : -0.22), 0, -0.22))).reverse();
-
-    const HEART = V(0.2, 11.2, 0.45);
-    /* ── central trunks ── aorta up to the head, descending aorta, and the
-       matching great veins returning to the heart ── */
-    mkTube([HEART, V(0.1, 12.9, 0.2), V(0, 14.1, 0.12), V(0, 15.2, 0.05)], 0.15, RED, -1);   // to head
-    mkTube([HEART, V(0.1, 9.7, 0.2), V(0, 8.4, 0.08), V(0, 7.5, 0.05)], 0.18, RED, -1);       // descending aorta
-    mkTube(vein([HEART, V(0.05, 12.9, 0.2), V(-0.25, 14.1, 0.12), V(-0.25, 15.2, 0.05)]), 0.14, BLUE, 1);
-    mkTube(vein([HEART, V(0.05, 9.7, 0.2), V(-0.2, 8.4, 0.08), V(-0.2, 7.5, 0.05)]), 0.17, BLUE, 1);
-
-    /* ── limbs (mirrored) — reach all the way to the hands/fingers and
-       feet/toes so the whole circulatory tree is visible ── */
-    [-1, 1].forEach(s => {
-      // leg: pelvis → thigh → knee → shin → ankle → foot
-      const leg = [V(0, 7.5, 0.05), V(s * 0.7, 7.0, 0.05), V(s * 0.95, 4.6, 0.1),
-                   V(s * 1.0, 3.5, 0.15), V(s * 1.0, 1.5, 0.2), V(s * 1.0, 0.5, 0.3), V(s * 1.0, 0.3, 0.95)];
-      mkTube(leg, 0.12, RED, -1);
-      mkTube(vein(leg), 0.12, BLUE, 1);
-      const foot = V(s * 1.0, 0.3, 0.95);
-      [-0.28, -0.1, 0.08, 0.26].forEach(dx => mkTube([foot, V(s * 1.0 + dx, 0.2, 1.3)], 0.04, RED, -1));  // toes
-
-      // arm: aortic arch → shoulder → upper arm → elbow → forearm → wrist → hand
-      const arm = [V(0, 12.6, 0.15), V(s * 1.5, 12.4, 0.1), V(s * 2.2, 10.7, 0.1),
-                   V(s * 2.7, 8.9, 0.12), V(s * 3.0, 7.4, 0.18), V(s * 3.2, 6.4, 0.25), V(s * 3.3, 5.9, 0.35)];
-      mkTube(arm, 0.10, RED, -1);
-      mkTube(vein(arm), 0.10, BLUE, 1);
-      const hand = V(s * 3.3, 5.9, 0.35);
-      [-0.22, -0.07, 0.08, 0.22].forEach(dx => mkTube([hand, V(s * 3.3 + dx, 5.2, 0.55)], 0.032, RED, -1));  // fingers
-    });
-
-    return g;
-  }
-
-  function _buildDNA() {
-    const g = new THREE.Group();
-    const N = 34, R = 2.2, step = 0.62;
-    const cols = [0xf43f5e, 0x22d3ee, 0xa855f7, 0x22c55e];
-    const strandMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.3, metalness: 0.2, emissive: 0x223344 });
-    for (let i = 0; i < N; i++) {
-      const a = i * 0.42;
-      const y = i * step - (N * step) / 2;
-      const ax = Math.cos(a) * R, az = Math.sin(a) * R;
-      const bx = Math.cos(a + Math.PI) * R, bz = Math.sin(a + Math.PI) * R;
-      const sa = _sphere(0.32, strandMat, 16); sa.position.set(ax, y, az); g.add(sa);
-      const sb = _sphere(0.32, strandMat, 16); sb.position.set(bx, y, bz); g.add(sb);
-      // rung (base pair)
-      const mid = new THREE.Vector3((ax + bx) / 2, y, (az + bz) / 2);
-      const rung = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, R * 2, 8),
-        new THREE.MeshStandardMaterial({ color: cols[i % 4], emissive: new THREE.Color(cols[i % 4]).multiplyScalar(0.4), roughness: 0.4 }));
-      rung.position.copy(mid);
-      rung.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(ax - bx, 0, az - bz).normalize());
-      g.add(rung);
+      grp.add(root);
+      _sysGroup[sysId] = grp;
+      _scene.add(grp);
+      _loaded.add(sysId);
+    } catch (e) {
+      console.warn('anatomy: failed to load system', sysId, e);
+    } finally {
+      _loading.delete(sysId);
     }
-    g.position.set(0, 9, 0);
-    return g;
   }
 
-  /* ════════════════════════════════ SCENE ══════════════════════════ */
+  /* Walk up to the nearest ancestor whose name is a known structure key. */
+  function _structureKeyOf(mesh) {
+    let n = mesh;
+    while (n) {
+      const name = (n.name || '').replace(/_\d+$/, '');
+      if (STRUCT_BY_KEY[name]) return name;
+      n = n.parent;
+    }
+    return null;
+  }
+
+  /* ════════════════════════════ SCENE ══════════════════════════════ */
   function _bgTexture() {
     const c = document.createElement('canvas'); c.width = 8; c.height = 256;
     const ctx = c.getContext('2d');
     const g = ctx.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, '#0d1326'); g.addColorStop(0.5, '#080b16'); g.addColorStop(1, '#05060d');
+    g.addColorStop(0, '#0c1020'); g.addColorStop(0.55, '#070a13'); g.addColorStop(1, '#04050b');
     ctx.fillStyle = g; ctx.fillRect(0, 0, 8, 256);
     return new THREE.CanvasTexture(c);
   }
@@ -630,59 +150,217 @@ const HumanBodyExplorer = (function () {
 
     _scene = new THREE.Scene();
     _scene.background = _bgTexture();
+    _camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 2000);
+    _focus = new THREE.Vector3(0, 8, 0);
+    _focusT = _focus.clone();
 
-    _camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 400);
+    _scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+    const key = new THREE.DirectionalLight(0xfff1e6, 1.45); key.position.set(8, 18, 16); _scene.add(key);
+    const fill = new THREE.DirectionalLight(0x9fc0ff, 0.65); fill.position.set(-14, 8, 10); _scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xff9fb0, 0.7); rim.position.set(0, 10, -16); _scene.add(rim);
 
-    // lighting — soft studio setup
-    _scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    const key = new THREE.DirectionalLight(0xfff1e6, 1.5); key.position.set(8, 16, 14); _scene.add(key);
-    const fill = new THREE.DirectionalLight(0x88aaff, 0.7); fill.position.set(-12, 6, 8); _scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xff8fa3, 0.8); rim.position.set(0, 10, -14); _scene.add(rim);
-
-    // build layer groups
-    G.skin = _buildSkin();
-    G.muscles = _buildMuscles();
-    G.skeleton = _buildSkeleton();
-    G.organs = _buildOrgans();
-    G.vessels = _buildVessels();
-    G.dna = _buildDNA();
-    G.senses = _buildSenseMarkers();
-    Object.values(G).forEach(grp => grp && _scene.add(grp));
-
-    // soft ground shadow disc
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(5, 40),
-      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 }));
+    // soft ground shadow
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(7, 48),
+      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22 }));
     disc.rotation.x = -Math.PI / 2; disc.position.y = 0.02; _scene.add(disc);
 
     new ResizeObserver(() => _resize()).observe(_vp);
     _built = true;
   }
 
-  function _buildSenseMarkers() {
-    const g = new THREE.Group();
-    _senseMarkers = [];
-    const add = (key, x, y, z) => {
-      const m = _sphere(0.22, new THREE.MeshStandardMaterial({ color: SENSES[key].color, emissive: new THREE.Color(SENSES[key].color).multiplyScalar(0.6), roughness: 0.3 }), 16);
-      m.position.set(x, y, z); m.userData.sense = key; g.add(m); _senseMarkers.push(m);
-    };
-    add('visao', -0.45, 15.4, 1.15); add('visao', 0.45, 15.4, 1.15);
-    add('audicao', -1.25, 15.1, 0.1); add('audicao', 1.25, 15.1, 0.1);
-    add('olfato', 0, 14.9, 1.35);
-    add('paladar', 0, 14.4, 1.2);
-    return g;
+  /* ════════════════════════════ FRAMING ════════════════════════════ */
+  function _bounds(objects) {
+    const box = new THREE.Box3();
+    let any = false;
+    objects.forEach(o => { if (o) { box.expandByObject(o); any = true; } });
+    return any && !box.isEmpty() ? box : null;
   }
 
-  /* ════════════════════════════════ CAMERA / CONTROLS ══════════════ */
-  function _updateCamera() {
-    const sp = Math.sin(_pol), cp = Math.cos(_pol);
-    _camera.position.set(_dist * sp * Math.sin(_az), _dist * cp + _focusY, _dist * sp * Math.cos(_az));
-    _camera.lookAt(0, _focusY, 0);
+  function _frameBox(box, pad = 1.35, instant = false) {
+    if (!box) return;
+    const size = new THREE.Vector3(), ctr = new THREE.Vector3();
+    box.getSize(size); box.getCenter(ctr);
+    const r = Math.max(size.x, size.y, size.z) * 0.5 || 1;
+    const fov = _camera.fov * Math.PI / 180;
+    const d = (r / Math.sin(fov / 2)) * pad;
+    _focusT.copy(ctr);
+    _distT = Math.max(4, d);
+    if (instant) { _focus.copy(_focusT); _dist = _distT; _az = _azT; _pol = _polT; }
   }
 
+  function _frameStructure(key, instant) {
+    const box = _bounds(_meshByKey[key] || []);
+    _frameBox(box, 2.4, instant);
+    _azT = 0.5; _polT = 1.25; _autoSpin = false;
+  }
+
+  function _frameSystem(sysId, instant) {
+    const box = sysId === '__all'
+      ? _bounds(Object.values(_sysGroup))
+      : _bounds([_sysGroup[sysId]]);
+    _frameBox(box, 1.4, instant);
+    _azT = 0.5; _polT = 1.3; _autoSpin = true;
+  }
+
+  /* ════════════════════════════ VISIBILITY ═════════════════════════ */
+  /* Apply current system / isolate / x-ray to every loaded mesh. */
+  function _applyView() {
+    Object.entries(_sysGroup).forEach(([sysId, grp]) => {
+      const sysActive = _curSys === '__all' || _curSys === sysId;
+      grp.traverse(o => {
+        if (!o.isMesh) return;
+        const key = o.userData.key;
+        const selected = _selKey && key === _selKey;
+        let visible = sysActive;
+        if (_isolate && _selKey) visible = selected;
+        o.visible = visible;
+        const mat = o.material;
+        // x-ray: dim everything that isn't the selected structure
+        if (_xray && _selKey) {
+          mat.opacity = selected ? 1 : 0.14;
+          mat.depthWrite = selected;
+        } else {
+          mat.opacity = 1; mat.depthWrite = true;
+        }
+        // highlight selected
+        const e = o.userData.baseColor.clone().multiplyScalar(selected ? 0.55 : 0.05);
+        mat.emissive.copy(e);
+        mat.needsUpdate = true;
+      });
+    });
+  }
+
+  /* ════════════════════════════ SELECTION ══════════════════════════ */
+  async function selectSystem(sysId, instant) {
+    _curSys = sysId; _selKey = null;
+    _highlightRail();
+    if (sysId === '__all') { for (const s of SYS) await _ensureSystem(s.id); }
+    else await _ensureSystem(sysId);
+    _applyView();
+    _frameSystem(sysId, instant);
+    _renderPanelSystem(sysId);
+    _updateCrumb();
+  }
+
+  function selectStructure(key) {
+    const s = STRUCT_BY_KEY[key]; if (!s) return;
+    if (_curSys !== '__all' && s.system !== _curSys) { _curSys = s.system; _highlightRail(); }
+    _selKey = key;
+    _ensureSystem(s.system).then(() => { _applyView(); _frameStructure(key); });
+    _applyView();
+    _frameStructure(key);
+    _renderPanelStructure(s);
+    _updateCrumb();
+  }
+
+  /* ════════════════════════════ PANEL ══════════════════════════════ */
+  function _renderPanelSystem(sysId) {
+    if (sysId === '__all') {
+      _panel.innerHTML = `
+        <div class="hb-info-hd"><span class="hb-info-emoji">🧍</span>
+          <div><div class="hb-info-ttl">${_t('Whole body', 'Corpo completo')}</div>
+          <div class="hb-info-sub">${_t('All systems together', 'Todos os sistemas juntos')}</div></div></div>
+        <div class="hb-info-desc">${_t('Every system overlaid in one co-registered body. Pick a structure, or choose a single system on the left to study it on its own.', 'Todos os sistemas sobrepostos num corpo co-registado. Toca numa estrutura, ou escolhe um sistema à esquerda para o estudar isolado.')}</div>
+        ${_structureListHTML(STRUCT)}`;
+      return;
+    }
+    const sys = SYS_BY_ID[sysId];
+    const members = STRUCT.filter(s => s.system === sysId);
+    _panel.innerHTML = `
+      <div class="hb-info-hd"><span class="hb-info-emoji">${sys.emoji}</span>
+        <div><div class="hb-info-ttl">${_lang() === 'en' ? sys.en : sys.pt}</div>
+        <div class="hb-info-sub">${members.length} ${_t('structures', 'estruturas')}</div></div></div>
+      <div class="hb-info-desc">${_lang() === 'en' ? sys.desc_en : sys.desc_pt}</div>
+      <div class="hb-panel-h">${_t('Structures', 'Estruturas')}</div>
+      ${_structureListHTML(members)}`;
+    _wireStructureList();
+  }
+
+  function _renderPanelStructure(s) {
+    const sys = SYS_BY_ID[s.system];
+    const facts = _f(s, 'facts') || [];
+    _panel.innerHTML = `
+      <button class="hb-back" data-back="1">← ${_lang() === 'en' ? sys.en : sys.pt}</button>
+      <div class="hb-info-hd"><span class="hb-info-emoji">${sys.emoji}</span>
+        <div><div class="hb-info-ttl">${_nm(s)}</div>
+        <div class="hb-info-sub">${_lang() === 'en' ? sys.en : sys.pt}</div></div></div>
+      <div class="hb-info-desc">${_f(s, 'fn')}</div>
+      <div class="hb-meta-row"><span class="hb-meta-ic">📍</span><span>${_f(s, 'loc')}</span></div>
+      ${facts.length ? `<ul class="hb-info-facts">${facts.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+      <div class="hb-struct-actions">
+        <button class="hb-act ${_isolate ? 'on' : ''}" data-act="isolate">🔍 ${_t('Isolate', 'Isolar')}</button>
+        <button class="hb-act ${_xray ? 'on' : ''}" data-act="xray">👻 ${_t('X-ray', 'Raio-X')}</button>
+      </div>`;
+    _panel.querySelector('[data-back]')?.addEventListener('click', () => selectSystem(s.system));
+    _panel.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.act === 'isolate') _isolate = !_isolate;
+      if (b.dataset.act === 'xray') _xray = !_xray;
+      b.classList.toggle('on');
+      _applyView();
+    }));
+  }
+
+  function _structureListHTML(list) {
+    return `<div class="hb-struct-list">${list.map(s =>
+      `<button class="hb-struct-item" data-key="${s.key}">
+         <span class="hb-struct-dot" style="background:${SYS_BY_ID[s.system].color}"></span>
+         <span class="hb-struct-name">${_nm(s)}</span>
+         <span class="hb-struct-sys">${SYS_BY_ID[s.system].emoji}</span>
+       </button>`).join('')}</div>`;
+  }
+
+  function _wireStructureList() {
+    _panel.querySelectorAll('.hb-struct-item').forEach(b =>
+      b.addEventListener('click', () => selectStructure(b.dataset.key)));
+  }
+
+  /* ════════════════════════════ SEARCH ═════════════════════════════ */
+  function _runSearch(q) {
+    q = (q || '').trim().toLowerCase();
+    const box = _host.querySelector('#hb-results');
+    if (!q) { box.innerHTML = ''; box.classList.remove('on'); return; }
+    const hits = STRUCT.filter(s =>
+      _nm(s).toLowerCase().includes(q) || s.pt.toLowerCase().includes(q) ||
+      s.en.toLowerCase().includes(q) || _f(s, 'fn').toLowerCase().includes(q)
+    ).slice(0, 8);
+    box.classList.add('on');
+    box.innerHTML = hits.length ? hits.map(s =>
+      `<button class="hb-result" data-key="${s.key}">
+         <span class="hb-struct-dot" style="background:${SYS_BY_ID[s.system].color}"></span>
+         <b>${_nm(s)}</b><span class="hb-result-sys">${_lang() === 'en' ? SYS_BY_ID[s.system].en : SYS_BY_ID[s.system].pt}</span>
+       </button>`).join('') : `<div class="hb-result-empty">${_t('No match', 'Sem resultados')}</div>`;
+    box.querySelectorAll('.hb-result').forEach(b => b.addEventListener('click', () => {
+      selectStructure(b.dataset.key);
+      _searchInput.value = ''; box.innerHTML = ''; box.classList.remove('on');
+    }));
+  }
+
+  /* ════════════════════════════ RAIL / CRUMB ═══════════════════════ */
+  function _highlightRail() {
+    _host.querySelectorAll('.hb-sys').forEach(b =>
+      b.classList.toggle('on', b.dataset.sys === _curSys));
+  }
+  function _updateCrumb() {
+    const parts = [`<button class="hb-cr" data-cr="__all">${_t('Body', 'Corpo')}</button>`];
+    if (_curSys && _curSys !== '__all') {
+      const sys = SYS_BY_ID[_curSys];
+      parts.push(`<span class="hb-cr-sep">›</span><button class="hb-cr" data-cr="sys">${sys.emoji} ${_lang() === 'en' ? sys.en : sys.pt}</button>`);
+    }
+    if (_selKey) {
+      parts.push(`<span class="hb-cr-sep">›</span><span class="hb-cr on">${_nm(STRUCT_BY_KEY[_selKey])}</span>`);
+    }
+    _crumb.innerHTML = parts.join('');
+    _crumb.querySelectorAll('[data-cr]').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.cr === '__all') selectSystem('__all');
+      else selectSystem(_curSys);
+    }));
+  }
+
+  /* ════════════════════════════ CONTROLS ═══════════════════════════ */
   function _pinchDist(pts) { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); }
 
   function _wireControls() {
-    const pts = new Map();                 // active pointers (multi-touch aware)
+    const pts = new Map();
     let lx = 0, ly = 0, moved = 0, pinchD = 0, ptype = 'mouse';
     _vp.addEventListener('pointerdown', e => {
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -693,34 +371,30 @@ const HumanBodyExplorer = (function () {
     _vp.addEventListener('pointermove', e => {
       if (!pts.has(e.pointerId)) return;
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (pts.size >= 2) {                  // two fingers → pinch-zoom
+      if (pts.size >= 2) {
         const d = _pinchDist(pts);
-        if (pinchD) _distT = Math.max(7, Math.min(70, _distT * (pinchD / (d || 1))));
+        if (pinchD) _distT = Math.max(4, Math.min(120, _distT * (pinchD / (d || 1))));
         pinchD = d; return;
       }
       const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
       moved += Math.abs(dx) + Math.abs(dy);
-      const k = ptype === 'touch' ? 0.017 : 0.011;   // touch needs a faster sweep
+      const k = ptype === 'touch' ? 0.016 : 0.01;
       _azT -= dx * k;
-      _polT = Math.max(0.25, Math.min(Math.PI - 0.25, _polT - dy * k));
+      _polT = Math.max(0.2, Math.min(Math.PI - 0.2, _polT - dy * k));
     });
     const end = e => {
       const had = pts.has(e.pointerId);
       pts.delete(e.pointerId);
       if (pts.size < 2) pinchD = 0;
       if (!had) return;
-      if (pts.size === 0) {
-        _vp.classList.remove('grabbing');
-        if (moved < 8) _pick(e);            // a tap → select an organ
-      } else {                              // lift one finger of a pinch
-        const p = pts.values().next().value; lx = p.x; ly = p.y;
-      }
+      if (pts.size === 0) { _vp.classList.remove('grabbing'); if (moved < 8) _pick(e); }
+      else { const p = pts.values().next().value; lx = p.x; ly = p.y; }
     };
     _vp.addEventListener('pointerup', end);
     _vp.addEventListener('pointercancel', end);
     _vp.addEventListener('wheel', e => {
       e.preventDefault();
-      _distT = Math.max(7, Math.min(70, _distT * (e.deltaY > 0 ? 1.1 : 0.9)));
+      _distT = Math.max(4, Math.min(120, _distT * (e.deltaY > 0 ? 1.1 : 0.9)));
     }, { passive: false });
   }
 
@@ -729,111 +403,23 @@ const HumanBodyExplorer = (function () {
     const r = _vp.getBoundingClientRect();
     const m = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(m, _camera);
-
-    if (G.senses.visible) {
-      const hit = ray.intersectObjects(_senseMarkers, false)[0];
-      if (hit) { _showSense(hit.object.userData.sense); return; }
-    }
-    const targets = _organMeshes.filter(o => o.mesh.visible && G.organs.visible).map(o => o.mesh);
+    const targets = [];
+    Object.values(_sysGroup).forEach(g => g.traverse(o => { if (o.isMesh && o.visible) targets.push(o); }));
     const hit = ray.intersectObjects(targets, false)[0];
-    if (hit) _selectOrgan(hit.object.userData.key);
+    if (hit && hit.object.userData.key) selectStructure(hit.object.userData.key);
   }
 
-  /* ════════════════════════════════ INFO PANEL ═════════════════════ */
-  function _infoHTML(p) {
-    const stats = (p.stats || []).map(([v, l]) => `<div class="hb-stat"><div class="hb-stat-v">${v}</div><div class="hb-stat-l">${l()}</div></div>`).join('');
-    const facts = (p.facts || []).map(f => `<li>${f()}</li>`).join('');
-    return `
-      <div class="hb-info-hd"><span class="hb-info-emoji">${p.emoji}</span>
-        <div><div class="hb-info-ttl">${p.name()}</div><div class="hb-info-sub">${p.sub()}</div></div></div>
-      <div class="hb-info-desc">${p.desc()}</div>
-      ${stats ? `<div class="hb-info-stats">${stats}</div>` : ''}
-      ${facts ? `<ul class="hb-info-facts">${facts}</ul>` : ''}`;
+  /* ════════════════════════════ ANIMATION ══════════════════════════ */
+  function _updateCamera() {
+    const sp = Math.sin(_pol), cp = Math.cos(_pol);
+    _camera.position.set(
+      _focus.x + _dist * sp * Math.sin(_az),
+      _focus.y + _dist * cp,
+      _focus.z + _dist * sp * Math.cos(_az)
+    );
+    _camera.lookAt(_focus);
   }
 
-  function _selectOrgan(key) {
-    _selected = key;
-    if (_info) _info.innerHTML = _infoHTML(ORGANS[key]);
-    _organMeshes.forEach(o => {
-      const on = o.key === key;
-      o.mesh.material.emissive.copy(o.mesh.userData.baseEmissive || new THREE.Color(0));
-      if (on) o.mesh.material.emissive.addScalar(0.35);
-    });
-  }
-
-  function _showSense(key) {
-    if (_info) _info.innerHTML = _infoHTML(SENSES[key]);
-    _senseMarkers.forEach(m => m.scale.setScalar(m.userData.sense === key ? 1.6 : 1));
-  }
-
-  /* ════════════════════════════════ TOPIC / LAYERS ═════════════════ */
-  function _syncLayerButtons() {
-    _host.querySelectorAll('.hb3d-layer-btn').forEach(b => b.classList.toggle('on', !!_layers[b.dataset.layer]));
-  }
-
-  function _applyLayers() {
-    if (G.skin)     G.skin.visible = !!_layers.skin && !G.dna.visible;
-    if (G.muscles)  G.muscles.visible = !!_layers.muscles && !G.dna.visible;
-    if (G.skeleton) G.skeleton.visible = !!_layers.skeleton && !G.dna.visible;
-    if (G.organs)   G.organs.visible = !!_layers.organs && !G.dna.visible;
-    if (G.vessels)  G.vessels.visible = !!_layers.vessels && !G.dna.visible;
-    _declutter();
-  }
-
-  /* Keep stacked layers legible: the more systems are shown together, the more
-     the skin (and the bones, when organs/vessels are also on) fade back. */
-  function _declutter() {
-    const L = _layers;
-    const others = (L.skeleton ? 1 : 0) + (L.organs ? 1 : 0) + (L.vessels ? 1 : 0);
-    if (_skinMat) {
-      const skinAlone = L.skin && others === 0;     // "Pele" view — skin is the subject, show it solid
-      _skinMat.opacity = skinAlone ? 0.9 : (others >= 2 ? 0.045 : (others === 1 ? 0.09 : 0.13));
-      _skinMat.depthWrite = skinAlone;
-      _skinMat.needsUpdate = true;
-    }
-    if (_boneMat) {
-      const fade = !!(L.organs || L.vessels);          // bones recede behind soft tissue
-      _boneMat.transparent = fade;
-      _boneMat.opacity = fade ? 0.3 : 1;
-      _boneMat.depthWrite = !fade;
-      _boneMat.needsUpdate = true;
-    }
-  }
-
-  function _spotlight(keys) {
-    // dim non-spotlit organs; null = all full
-    _organMeshes.forEach(o => {
-      const full = !keys || keys.includes(o.key);
-      o.mesh.material.opacity = full ? 1 : 0.12;
-      o.mesh.material.depthWrite = full;
-    });
-  }
-
-  function _applyTopic(id, instant) {
-    _topic = id;
-    const p = PRESETS[id]; if (!p) return;
-    _host.querySelectorAll('.hb-topic').forEach(b => {
-      const on = b.dataset.id === id;
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-
-    G.dna.visible = !!p.dna;
-    G.senses.visible = !!p.senses;
-    Object.assign(_layers, p.layers);
-    _applyLayers();
-    _syncLayerButtons();
-    _spotlight(p.spotlight);
-
-    _selected = null;
-    if (_info) _info.innerHTML = _infoHTML(p.intro);
-
-    _focusYT = p.focusY; _distT = p.dist;
-    _azT = 0.55; _polT = 1.32; _autoSpin = true;
-    if (instant) { _focusY = _focusYT; _dist = _distT; _az = _azT; _pol = _polT; }
-  }
-
-  /* ════════════════════════════════ ANIMATION ══════════════════════ */
   function _resize() {
     if (!_renderer || !_camera || !_vp) return;
     const W = _vp.clientWidth, H = _vp.clientHeight;
@@ -845,83 +431,89 @@ const HumanBodyExplorer = (function () {
   function _tick(ts) {
     _raf = requestAnimationFrame(_tick);
     const t = ts * 0.001; if (!_t0) _t0 = t; const dt = Math.min(0.05, t - _t0); _t0 = t;
-
-    // smooth camera
-    const lf = 1 - Math.pow(0.0001, dt);
+    const lf = 1 - Math.pow(0.0008, dt);
     if (_autoSpin) _azT += dt * 0.12;
     _az += (_azT - _az) * lf; _pol += (_polT - _pol) * lf;
-    _dist += (_distT - _dist) * lf; _focusY += (_focusYT - _focusY) * lf;
+    _dist += (_distT - _dist) * lf;
+    _focus.lerp(_focusT, lf);
     _updateCamera();
-
-    // heartbeat
-    if (_heart && G.organs && G.organs.visible) { const base = _heart.userData.base || 0.95; const b = 1 + Math.max(0, Math.sin(t * 5.0)) * 0.09; _heart.scale.setScalar(base * b); }
-    // breathing
-    if (G.organs && G.organs.visible) {
-      const br = 1 + Math.sin(t * 1.4) * 0.06;
-      if (_lungPivot) _lungPivot.scale.setScalar(br);
-      else _lungs.forEach(l => l.scale.set(0.8, 1.5 * br, 0.7));
-    }
-    // blood flow
-    if (G.vessels && G.vessels.visible) _flowTex.forEach(f => { f.tex.offset.x -= f.dir * dt * 0.55; });
-    // DNA spin
-    if (G.dna && G.dna.visible) G.dna.rotation.y = t * 0.5;
-
     _renderer.render(_scene, _camera);
   }
-
   function _start() { if (!_raf) { _t0 = 0; _tick(performance.now()); } }
 
-  /* ════════════════════════════════ PUBLIC ═════════════════════════ */
+  /* ════════════════════════════ PUBLIC ═════════════════════════════ */
   async function mount(host) {
+    _mounted = true;
+    // initial loading placeholder (manifest + engine must load before we can
+    // build the systems rail, which is data-driven)
+    host.innerHTML = `<div class="hb-wrap"><div class="hb3d-loading" style="position:static;flex:1">
+      <div class="ex-loading-spinner"></div><div>${_t('Loading the 3D atlas…', 'A carregar o atlas 3D…')}</div></div></div>`;
+
+    if (!(await _loadThree()) || !(await _loadManifest())) {
+      host.innerHTML = `<div class="hb-wrap"><div class="hb3d-loading" style="position:static;flex:1">
+        <div class="ex-error-icon">⚠</div><div>${_t('Could not load the 3D atlas.', 'Não foi possível carregar o atlas 3D.')}</div></div></div>`;
+      return;
+    }
+
     host.innerHTML = `
-      <div class="hb-wrap">
-        <nav class="hb-topics" role="tablist" aria-label="${_t('Body systems','Sistemas do corpo')}">
-          ${TOPICS.map(t => `<button class="hb-topic ${t.id==='anatomia'?'active':''}" data-id="${t.id}" role="tab" aria-selected="${t.id==='anatomia'?'true':'false'}">
-            <span class="hb-topic-ic">${t.ic}</span>${t.name()}</button>`).join('')}
-        </nav>
-        <div class="hb-diagram">
-          <div class="hb3d-stage">
+      <div class="hb-wrap hb2">
+        <div class="hb-top">
+          <nav class="hb-crumb" id="hb-crumb"></nav>
+          <div class="hb-search">
+            <input id="hb-search-input" type="search" placeholder="${_t('Search a bone, muscle, organ…', 'Procurar osso, músculo, órgão…')}" autocomplete="off">
+            <div class="hb-results" id="hb-results"></div>
+          </div>
+        </div>
+        <div class="hb-body">
+          <nav class="hb-rail2" id="hb-rail" aria-label="${_t('Body systems', 'Sistemas do corpo')}">
+            <button class="hb-sys" data-sys="__all"><span class="hb-sys-ic">🧍</span><span class="hb-sys-lbl">${_t('Body', 'Corpo')}</span></button>
+            ${SYS.map(s => `<button class="hb-sys" data-sys="${s.id}"><span class="hb-sys-ic">${s.emoji}</span><span class="hb-sys-lbl">${_lang() === 'en' ? s.en : s.pt}</span></button>`).join('')}
+          </nav>
+          <div class="hb-stage2">
             <div class="hb3d-viewport" id="hb3d-vp"></div>
             <div class="hb3d-foot">
-              <span class="hb3d-hint">${_t('Drag to rotate · scroll to zoom · tap an organ','Arrasta para rodar · scroll para zoom · toca num órgão')}</span>
-              <button class="hb3d-reset" id="hb3d-reset">↺ ${_t('Reset','Repor')}</button>
+              <span class="hb3d-hint">${_t('Drag to rotate · pinch/scroll to zoom · tap a part', 'Arrasta para rodar · pinça/scroll para zoom · toca numa parte')}</span>
+              <button class="hb3d-reset" id="hb3d-reset">↺ ${_t('Reset', 'Repor')}</button>
             </div>
             <div class="hb3d-loading" id="hb3d-loading">
               <div class="ex-loading-spinner"></div>
-              <div>${_t('Loading 3D body…','A carregar o corpo 3D…')}</div>
+              <div>${_t('Loading the 3D atlas…', 'A carregar o atlas 3D…')}</div>
             </div>
           </div>
-          <aside class="hb-info" id="hb-info"></aside>
+          <aside class="hb-info hb-info2" id="hb-info"></aside>
         </div>
       </div>`;
 
     _host = host.querySelector('.hb-wrap');
     _vp = host.querySelector('#hb3d-vp');
-    _info = host.querySelector('#hb-info');
-    _mounted = true;
+    _panel = host.querySelector('#hb-info');
+    _crumb = host.querySelector('#hb-crumb');
+    _searchInput = host.querySelector('#hb-search-input');
 
-    // topic wiring (each tab shows one system on its own — no layer overlays)
-    _host.querySelector('.hb-topics').addEventListener('click', e => {
-      const b = e.target.closest('.hb-topic'); if (b) _applyTopic(b.dataset.id);
+    _host.querySelector('#hb-rail').addEventListener('click', e => {
+      const b = e.target.closest('.hb-sys'); if (b) selectSystem(b.dataset.sys);
     });
-    _host.querySelector('#hb3d-reset').addEventListener('click', () => _applyTopic(_topic));
+    _host.querySelector('#hb3d-reset').addEventListener('click', () => {
+      if (_selKey) _frameStructure(_selKey); else _frameSystem(_curSys);
+      _autoSpin = true;
+    });
+    _searchInput.addEventListener('input', () => _runSearch(_searchInput.value));
+    _searchInput.addEventListener('focus', () => _runSearch(_searchInput.value));
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.hb-search')) _host.querySelector('#hb-results')?.classList.remove('on');
+    });
 
-    if (!(await _loadThree())) {
-      const l = host.querySelector('#hb3d-loading');
-      if (l) l.innerHTML = `<div class="ex-error-icon">⚠</div><div>${_t('Could not load the 3D engine.','Não foi possível carregar o motor 3D.')}</div>`;
-      return;
-    }
-
-    _buildScene();                       // procedural body shows immediately
+    _buildScene();
     _wireControls();
-    _applyTopic(_topic || 'anatomia', true);
-    host.querySelector('#hb3d-loading')?.remove();
     _start();
-    if (_useGLB) _buildBodyGLB();        // swap in the real models when ready
+    host.querySelector('#hb3d-loading')?.remove();
+
+    // default landing: the skeletal system (iconic, light), framed
+    await selectSystem(SYS[0]?.id || '__all', true);
   }
 
   function resume() { if (_mounted && _built && !_raf) _start(); setTimeout(_resize, 60); }
-  function stop()   { if (_raf) { cancelAnimationFrame(_raf); _raf = null; } }
+  function stop() { if (_raf) { cancelAnimationFrame(_raf); _raf = null; } }
 
   return { mount, resume, stop };
 })();

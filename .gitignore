@@ -4,3 +4,7 @@ prompt.txt
 
 # Local Claude Code agent state (settings, plans, locks)
 .claude/
+tools/anatomy/_work/
+node_modules/
+_harness.html
+tools/anatomy/node_modules/
