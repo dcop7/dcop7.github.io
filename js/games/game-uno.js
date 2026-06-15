@@ -46,6 +46,7 @@ const UnoGame = (function () {
       cardsLeft: '{n} cartas', oneCard: '1 carta',
       red: 'Vermelho', yellow: 'Amarelo', green: 'Verde', blue: 'Azul',
       diffEasy: 'Fácil', diffMedium: 'Médio', diffHard: 'Difícil',
+      chooseDiff: 'Escolhe a dificuldade',
       rules: 'Combina cor ou número. Mágicas a qualquer momento. Não te esqueças do UNO!',
     },
     en: {
@@ -63,6 +64,7 @@ const UnoGame = (function () {
       cardsLeft: '{n} cards', oneCard: '1 card',
       red: 'Red', yellow: 'Yellow', green: 'Green', blue: 'Blue',
       diffEasy: 'Easy', diffMedium: 'Medium', diffHard: 'Hard',
+      chooseDiff: 'Choose difficulty',
       rules: 'Match colour or number. Wilds anytime. Don\'t forget UNO!',
     },
   };
@@ -134,23 +136,38 @@ const UnoGame = (function () {
     }
     return S.deck.pop();
   }
-  function give(pl, n) { const got = []; for (let i = 0; i < n; i++) { const c = drawFromDeck(); if (c) { pl.hand.push(c); got.push(c); } } return got; }
+  /* `hand` is the player's card array (S.hands[i]). Draw n cards into it. */
+  function give(hand, n) { const got = []; for (let i = 0; i < n; i++) { const c = drawFromDeck(); if (c) { hand.push(c); got.push(c); } } return got; }
 
   /* ══ flow ══════════════════════════════════════════════════════ */
   function init(r) { root = r; if (!root) return; injectCSS(); renderMenu(); }
 
+  function setDiff(d) {
+    try {
+      if (typeof GameHost !== 'undefined' && GameHost.setDifficulty) GameHost.setDifficulty(d);
+      else localStorage.setItem('quiz-difficulty', d);
+    } catch (e) {}
+  }
+
   function renderMenu() {
     const d = diff();
-    const dl = { easy: t('diffEasy'), medium: t('diffMedium'), hard: t('diffHard') }[d] || t('diffMedium');
+    const ICON = { easy: '🟢', medium: '🟡', hard: '🔴' };
+    const LBL = { easy: t('diffEasy'), medium: t('diffMedium'), hard: t('diffHard') };
     root.innerHTML = `
       <div class="uno-menu">
         <div class="uno-logo">${logoSVG()}</div>
         <p class="uno-tag">${t('tagline')}</p>
         <p class="uno-rules">${t('rules')}</p>
-        <div class="uno-diff-note">${({easy:'🟢',medium:'🟡',hard:'🔴'})[d]} ${dl}</div>
+        <div class="uno-difflbl">${t('chooseDiff')}</div>
+        <div class="uno-diffsel" role="group" aria-label="${t('chooseDiff')}">
+          ${['easy','medium','hard'].map(k =>
+            `<button class="uno-diffbtn${d===k?' on':''}" data-d="${k}">${ICON[k]} ${LBL[k]}</button>`).join('')}
+        </div>
         <button class="uno-btn primary big" id="uno-start">${t('start')}</button>
       </div>`;
     root.querySelector('#uno-start').addEventListener('click', start);
+    root.querySelectorAll('.uno-diffbtn').forEach(b =>
+      b.addEventListener('click', () => { setDiff(b.dataset.d); renderMenu(); }));
   }
 
   function start() {
@@ -649,7 +666,11 @@ const UnoGame = (function () {
 .uno-logosvg{width:100%;height:auto}
 .uno-tag{font-size:1rem;color:var(--text,#fff);font-weight:700;margin:0}
 .uno-rules{font-size:.82rem;color:var(--muted,#9aa);margin:0;max-width:340px}
-.uno-diff-note{font-size:.8rem;font-weight:700;color:var(--text2,#ccd);background:var(--card2,#1b1d33);border:1px solid var(--border,#2a2c44);border-radius:999px;padding:.3rem .9rem}
+.uno-difflbl{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#9aa);margin-top:.2rem}
+.uno-diffsel{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.uno-diffbtn{font-size:.82rem;font-weight:700;color:var(--text2,#ccd);background:var(--card2,#1b1d33);border:1px solid var(--border,#2a2c44);border-radius:999px;padding:.42rem 1rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.uno-diffbtn:hover{border-color:rgba(var(--accent-rgb,124,92,255),.55);color:var(--text,#fff);transform:translateY(-1px)}
+.uno-diffbtn.on{background:linear-gradient(135deg,#e4322b,#f2b417);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(228,50,43,.35)}
 .uno-btn{background:var(--card2,#1b1d33);border:1px solid var(--border,#2a2c44);color:var(--text2,#ccd);border-radius:11px;padding:.6rem 1.1rem;font:inherit;font-weight:800;cursor:pointer;transition:all .15s}
 .uno-btn:hover{border-color:rgba(var(--accent-rgb,124,92,255),.6);color:var(--accent,#a98bff);transform:translateY(-1px)}
 .uno-btn.primary{background:linear-gradient(135deg,#e4322b,#f2b417);color:#fff;border:none;box-shadow:0 6px 18px rgba(228,50,43,.35)}

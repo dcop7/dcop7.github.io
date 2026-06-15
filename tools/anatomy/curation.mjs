@@ -34,8 +34,8 @@ export const SYSTEMS = [
     desc_pt:'Os rins filtram o sangue e formam a urina, que os ureteres levam à bexiga para ser eliminada.',
     desc_en:'The kidneys filter the blood and make urine, which the ureters carry to the bladder to be removed.' },
   { id:'sentidos',     emoji:'👁️', color:'#b08fd9', pt:'Órgãos dos Sentidos', en:'Sense organs',
-    desc_pt:'Olhos, ouvidos e nariz captam luz, som e cheiros e enviam-nos ao cérebro para os interpretar.',
-    desc_en:'Eyes, ears and nose capture light, sound and smells and send them to the brain to interpret.' },
+    desc_pt:'Os cinco sentidos — visão, audição, olfato, paladar e tato — recolhem informação do mundo e enviam-na ao cérebro para a interpretar.',
+    desc_en:'The five senses — sight, hearing, smell, taste and touch — gather information about the world and send it to the brain to interpret.' },
 ];
 
 const S = (system, key, pt, en, fn_pt, fn_en, loc_pt, loc_en, opts = {}) =>

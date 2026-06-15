@@ -70,6 +70,16 @@ const HumanBodyExplorer = (function () {
       MANIFEST = await r.json();
       SYS = MANIFEST.systems || [];
       STRUCT = MANIFEST.structures || [];
+      /* Taste & touch have no mesh in BodyParts3D — add them as marker-only
+         structures so all five senses are represented (markers built at runtime). */
+      STRUCT.push(
+        { key:'paladar', system:'sentidos', node:'paladar', marker:[0.5,0.905,0.62], pt:'Paladar', en:'Taste',
+          fn_pt:'A língua deteta cinco sabores: doce, salgado, ácido, amargo e umami.', fn_en:'The tongue senses five tastes: sweet, salty, sour, bitter and umami.',
+          loc_pt:'Boca', loc_en:'Mouth', facts_pt:['Grande parte do "sabor" é, na verdade, olfato.'], facts_en:['Most of what we call "flavour" is actually smell.'] },
+        { key:'tato', system:'sentidos', node:'tato', marker:[0.595,0.93,0.55], pt:'Tato', en:'Touch',
+          fn_pt:'A pele sente toque, pressão, calor, frio e dor por toda a superfície do corpo.', fn_en:'The skin senses touch, pressure, heat, cold and pain across the whole body.',
+          loc_pt:'Pele (todo o corpo)', loc_en:'Skin (whole body)', facts_pt:['As pontas dos dedos estão entre as zonas mais sensíveis.'], facts_en:['The fingertips are among the most sensitive areas.'] },
+      );
       SYS.forEach(s => SYS_BY_ID[s.id] = s);
       STRUCT.forEach(s => STRUCT_BY_KEY[s.key] = s);
       return SYS.length > 0;
@@ -98,14 +108,15 @@ const HumanBodyExplorer = (function () {
       root.traverse(o => {
         if (!o.isMesh) return;
         const key = _structureKeyOf(o);
+        const col = _structureColor(sysId, key, baseColor);
         const mat = new THREE.MeshStandardMaterial({
-          color: baseColor.clone(), roughness: 0.62, metalness: 0.02,
-          transparent: true, opacity: 1, emissive: baseColor.clone().multiplyScalar(0.05),
+          color: col.clone(), roughness: 0.62, metalness: 0.02,
+          transparent: true, opacity: 1, emissive: col.clone().multiplyScalar(0.05),
         });
         o.material = mat;
         o.userData.key = key;
         o.userData.sys = sysId;
-        o.userData.baseColor = baseColor.clone();
+        o.userData.baseColor = col.clone();
         if (key) (_meshByKey[key] = _meshByKey[key] || []).push(o);
       });
       grp.add(root);
@@ -117,6 +128,76 @@ const HumanBodyExplorer = (function () {
     } finally {
       _loading.delete(sysId);
     }
+  }
+
+  /* Per-structure colour. In the circulatory view arteries read red and veins
+     blue so the two trees are distinguishable; everything else uses the system
+     colour. */
+  const ARTERY = 0xd83a3a, VEIN = 0x3f74d6;
+  function _structureColor(sysId, key, baseColor) {
+    if (sysId === 'circulatorio') return new THREE.Color(key === 'veias' ? VEIN : ARTERY);
+    return baseColor.clone();
+  }
+
+  /* ── procedural augmentation ──────────────────────────────────────
+     BodyParts3D has no distal limb/head vessels and no taste/touch organ,
+     so we add those procedurally, scaled to the skeleton's bounds, when the
+     relevant system is shown (once). Fractions: y 0=feet→1=head, x 0.5=centre. */
+  const _augmented = new Set();
+  function _frac(b, fx, fy, fz) {
+    return new THREE.Vector3(
+      b.min.x + fx * (b.max.x - b.min.x),
+      b.min.y + fy * (b.max.y - b.min.y),
+      b.min.z + fz * (b.max.z - b.min.z));
+  }
+  function _vesselTube(grp, box, fracs, color, key) {
+    const pts = fracs.map(f => _frac(box, f[0], f[1], f[2]));
+    const r = (box.max.y - box.min.y) * 0.006;
+    const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(16, pts.length * 8), r, 7, false);
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.05,
+      emissive: new THREE.Color(color).multiplyScalar(0.18), transparent: true, opacity: 1 });
+    const m = new THREE.Mesh(geo, mat);
+    m.userData.key = key; m.userData.sys = 'circulatorio'; m.userData.baseColor = new THREE.Color(color);
+    grp.add(m); (_meshByKey[key] = _meshByKey[key] || []).push(m);
+  }
+  function _addVessels(grp, box) {
+    const chest = [0.5, 0.66, 0.58];
+    const A = [
+      [chest, [0.5,0.78,0.55],[0.49,0.87,0.5],[0.47,0.93,0.46]],          // neck→head (L)
+      [chest, [0.5,0.78,0.55],[0.51,0.87,0.5],[0.53,0.93,0.46]],          // neck→head (R)
+      [chest, [0.5,0.56,0.52],[0.5,0.46,0.5],[0.5,0.36,0.5]],             // descending trunk
+    ];
+    for (const s of [-1, 1]) {
+      const x = f => 0.5 + s * f;
+      A.push([[x(0.08),0.74,0.52],[x(0.13),0.78,0.5],[x(0.15),0.68,0.5],[x(0.16),0.58,0.5],[x(0.16),0.48,0.52],[x(0.155),0.41,0.54]]); // arm
+      A.push([[0.5,0.37,0.5],[x(0.06),0.33,0.5],[x(0.08),0.26,0.5],[x(0.09),0.18,0.5],[x(0.09),0.10,0.52],[x(0.09),0.03,0.58],[x(0.085),0.01,0.66]]); // leg
+    }
+    const V = A.map(path => path.map(p => [p[0] + (p[0] >= 0.5 ? 0.014 : -0.014), p[1], p[2] - 0.14]));
+    A.forEach(p => _vesselTube(grp, box, p, ARTERY, 'arterias'));
+    V.forEach(p => _vesselTube(grp, box, p, VEIN, 'veias'));
+  }
+  function _addSenseMarkers(grp, box) {
+    const col = new THREE.Color(SYS_BY_ID.sentidos.color);
+    const r = (box.max.y - box.min.y) * 0.010;
+    STRUCT.filter(s => s.system === 'sentidos' && s.marker).forEach(s => {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 20),
+        new THREE.MeshStandardMaterial({ color: col.clone(), emissive: col.clone().multiplyScalar(0.5), roughness: 0.3, transparent: true, opacity: 1 }));
+      m.position.copy(_frac(box, s.marker[0], s.marker[1], s.marker[2]));
+      m.userData.key = s.key; m.userData.sys = 'sentidos'; m.userData.baseColor = col.clone();
+      grp.add(m); (_meshByKey[s.key] = _meshByKey[s.key] || []).push(m);
+    });
+  }
+  function _augmentSystem(sysId) {
+    const box = _bounds([_sysGroup[GHOST_SYS]]);
+    if (!box) return;
+    const add = id => {
+      if (_augmented.has(id) || !_sysGroup[id]) return;
+      if (id === 'circulatorio') _addVessels(_sysGroup[id], box);
+      else if (id === 'sentidos') _addSenseMarkers(_sysGroup[id], box);
+      else return;
+      _augmented.add(id);
+    };
+    if (sysId === '__all') { add('circulatorio'); add('sentidos'); } else add(sysId);
   }
 
   /* Walk up to the nearest ancestor whose name is a known structure key. */
@@ -249,6 +330,7 @@ const HumanBodyExplorer = (function () {
       await _ensureSystem(sysId);
       await _ensureSystem(GHOST_SYS);   // skeleton = spatial context for every system
     }
+    _augmentSystem(sysId);              // procedural limb/head vessels + taste/touch markers
     _applyView();
     _frameSystem(sysId, instant);
     _renderPanelSystem(sysId);

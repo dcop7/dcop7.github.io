@@ -9,3 +9,5 @@ node_modules/
 _harness.html
 tools/anatomy/node_modules/
 _uno_harness.html
+/[0-9].jpg
+/[0-9][0-9].jpg
