@@ -203,28 +203,38 @@ const HumanBodyExplorer = (function () {
   }
 
   /* ════════════════════════════ VISIBILITY ═════════════════════════ */
-  /* Apply current system / isolate / x-ray to every loaded mesh. */
+  const GHOST_SYS = 'esqueletico';   // skeleton doubles as the spatial context
+
+  /* Apply current system / isolate / x-ray to every loaded mesh. When a single
+     non-skeletal system is active, the skeleton is shown as a faint, non-pickable
+     "ghost" so organs/vessels/eyes have a body to sit in (Visible-Body style). */
   function _applyView() {
+    const ghostOn = _curSys !== GHOST_SYS && _curSys !== '__all';
     Object.entries(_sysGroup).forEach(([sysId, grp]) => {
       const sysActive = _curSys === '__all' || _curSys === sysId;
+      const ghost = sysId === GHOST_SYS && ghostOn;
       grp.traverse(o => {
         if (!o.isMesh) return;
         const key = o.userData.key;
         const selected = _selKey && key === _selKey;
+        const mat = o.material;
+
+        if (ghost) {                       // faint context skeleton
+          o.visible = true;
+          o.userData.pickable = false;
+          mat.transparent = true; mat.opacity = 0.055; mat.depthWrite = false;
+          mat.emissive.copy(o.userData.baseColor).multiplyScalar(0.02);
+          mat.needsUpdate = true;
+          return;
+        }
+
+        o.userData.pickable = true;
         let visible = sysActive;
         if (_isolate && _selKey) visible = selected;
         o.visible = visible;
-        const mat = o.material;
-        // x-ray: dim everything that isn't the selected structure
-        if (_xray && _selKey) {
-          mat.opacity = selected ? 1 : 0.14;
-          mat.depthWrite = selected;
-        } else {
-          mat.opacity = 1; mat.depthWrite = true;
-        }
-        // highlight selected
-        const e = o.userData.baseColor.clone().multiplyScalar(selected ? 0.55 : 0.05);
-        mat.emissive.copy(e);
+        if (_xray && _selKey) { mat.transparent = true; mat.opacity = selected ? 1 : 0.14; mat.depthWrite = selected; }
+        else { mat.opacity = 1; mat.depthWrite = true; mat.transparent = false; }
+        mat.emissive.copy(o.userData.baseColor).multiplyScalar(selected ? 0.55 : 0.05);
         mat.needsUpdate = true;
       });
     });
@@ -235,7 +245,10 @@ const HumanBodyExplorer = (function () {
     _curSys = sysId; _selKey = null;
     _highlightRail();
     if (sysId === '__all') { for (const s of SYS) await _ensureSystem(s.id); }
-    else await _ensureSystem(sysId);
+    else {
+      await _ensureSystem(sysId);
+      await _ensureSystem(GHOST_SYS);   // skeleton = spatial context for every system
+    }
     _applyView();
     _frameSystem(sysId, instant);
     _renderPanelSystem(sysId);
@@ -404,7 +417,7 @@ const HumanBodyExplorer = (function () {
     const m = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(m, _camera);
     const targets = [];
-    Object.values(_sysGroup).forEach(g => g.traverse(o => { if (o.isMesh && o.visible) targets.push(o); }));
+    Object.values(_sysGroup).forEach(g => g.traverse(o => { if (o.isMesh && o.visible && o.userData.pickable !== false) targets.push(o); }));
     const hit = ray.intersectObjects(targets, false)[0];
     if (hit && hit.object.userData.key) selectStructure(hit.object.userData.key);
   }

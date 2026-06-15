@@ -34,8 +34,8 @@ export const SYSTEMS = [
     desc_pt:'Os rins filtram o sangue e formam a urina, que os ureteres levam à bexiga para ser eliminada.',
     desc_en:'The kidneys filter the blood and make urine, which the ureters carry to the bladder to be removed.' },
   { id:'sentidos',     emoji:'👁️', color:'#b08fd9', pt:'Órgãos dos Sentidos', en:'Sense organs',
-    desc_pt:'Olhos, ouvidos, nariz e língua captam luz, som, cheiros e sabores e enviam-nos ao cérebro.',
-    desc_en:'Eyes, ears, nose and tongue capture light, sound, smells and tastes and send them to the brain.' },
+    desc_pt:'Olhos, ouvidos e nariz captam luz, som e cheiros e enviam-nos ao cérebro para os interpretar.',
+    desc_en:'Eyes, ears and nose capture light, sound and smells and send them to the brain to interpret.' },
 ];
 
 const S = (system, key, pt, en, fn_pt, fn_en, loc_pt, loc_en, opts = {}) =>
@@ -110,13 +110,15 @@ export const STRUCTURES = [
 
   /* ───────────────────────── CIRCULATÓRIO ───────────────────────── */
   S('circulatorio','coracao','Coração','Heart','Bombeia o sangue por todo o corpo, ~100 000 vezes por dia.','Pumps blood through the whole body ~100,000 times a day.','Centro do peito','Centre of chest',
-    { match:'(wall of heart|papillary muscle|interventricular|chordae|coronary|trabeculae|cardiac)', facts_pt:['Bate cerca de 100 000 vezes por dia.','Tem quatro câmaras.'], facts_en:['Beats about 100,000 times a day.','It has four chambers.'] }),
+    { match:'(wall of heart|papillary muscle|interventricular|chordae|trabeculae|cardiac)', facts_pt:['Bate cerca de 100 000 vezes por dia.','Tem quatro câmaras.'], facts_en:['Beats about 100,000 times a day.','It has four chambers.'] }),
   S('circulatorio','aorta','Aorta','Aorta','A maior artéria; leva o sangue oxigenado do coração ao corpo.','The largest artery; carries oxygen-rich blood from the heart.','Do coração para baixo','From the heart downward',
-    { fma:['FMA3734'], match:'^(aorta|ascending aorta|arch of aorta|thoracic aorta|abdominal aorta)$', facts_pt:['Tem cerca de 2,5 cm de diâmetro.'], facts_en:['It is about 2.5 cm wide.'] }),
-  S('circulatorio','veiacava','Veias cavas','Venae cavae','As grandes veias que devolvem o sangue ao coração.','The great veins that return blood to the heart.','Tórax e abdómen','Chest and abdomen',
-    { match:'^(superior vena cava|inferior vena cava)$' }),
-  S('circulatorio','pulmonar','Artéria pulmonar','Pulmonary artery','Leva o sangue do coração aos pulmões para se oxigenar.','Carries blood from the heart to the lungs to take up oxygen.','Entre coração e pulmões','Between heart and lungs',
-    { match:'^pulmonary (trunk|artery)$' }),
+    { match:'aorta', facts_pt:['Tem cerca de 2,5 cm de diâmetro.'], facts_en:['It is about 2.5 cm wide.'] }),
+  S('circulatorio','arterias','Artérias principais','Main arteries','Levam o sangue rico em oxigénio do coração até à cabeça, braços, abdómen e pernas.','Carry oxygen-rich blood from the heart to the head, arms, abdomen and legs.','Por todo o corpo','Throughout the body',
+    { match:'artery', exclude:'pulmonary|coronary', facts_pt:['As carótidas alimentam o cérebro; as ilíacas, as pernas.'], facts_en:['The carotids feed the brain; the iliacs, the legs.'] }),
+  S('circulatorio','veias','Veias principais','Main veins','Devolvem ao coração o sangue já usado pelos tecidos.','Return blood already used by the tissues back to the heart.','Por todo o corpo','Throughout the body',
+    { match:'(vein|vena cava)', exclude:'pulmonary|cardiac', facts_pt:['As veias cavas são as maiores veias do corpo.'], facts_en:['The venae cavae are the body’s largest veins.'] }),
+  S('circulatorio','pulmonar','Vasos pulmonares','Pulmonary vessels','Levam o sangue entre o coração e os pulmões para trocar gases.','Move blood between the heart and lungs to swap gases.','Entre coração e pulmões','Between heart and lungs',
+    { match:'pulmonary (trunk|artery|vein)' }),
 
   /* ───────────────────────── RESPIRATÓRIO ───────────────────────── */
   S('respiratorio','pulmoes','Pulmões','Lungs','Trocam oxigénio por dióxido de carbono no sangue.','Swap oxygen for carbon dioxide in the blood.','Tórax','Chest',
@@ -161,6 +163,10 @@ export const STRUCTURES = [
     { match:'^urinary bladder$', facts_pt:['Avisa o cérebro com ~200 ml.'], facts_en:['It signals the brain at ~200 ml.'] }),
 
   /* ───────────────────────── SENTIDOS ───────────────────────── */
-  S('sentidos','olhos','Olhos','Eyes','Captam a luz; ~80% do que aprendemos entra pela visão.','Capture light; ~80% of what we learn comes through sight.','Cara','Face',
-    { match:'(eyeball|lens of eye|cornea|retina|sclera|vitreous)', facts_pt:['A retina tem ~120 milhões de bastonetes.'], facts_en:['The retina has ~120 million rods.'] }),
+  S('sentidos','olhos','Olhos','Eyes','Captam a luz e o cérebro transforma-a em imagens; ~80% do que aprendemos entra pela visão.','Capture light that the brain turns into images; ~80% of what we learn comes through sight.','Cara','Face',
+    { match:'eyeball', facts_pt:['A retina tem ~120 milhões de bastonetes.'], facts_en:['The retina has ~120 million rods.'] }),
+  S('sentidos','ouvido','Ouvido','Ear','Transforma as vibrações do ar em som e mantém o equilíbrio.','Turns air vibrations into sound and keeps you balanced.','Lados da cabeça','Sides of the head',
+    { match:'^ear$', facts_pt:['O ouvido interno também controla o equilíbrio.'], facts_en:['The inner ear also controls balance.'] }),
+  S('sentidos','nariz','Nariz','Nose','Deteta milhares de cheiros e aquece o ar que respiras.','Detects thousands of smells and warms the air you breathe.','Centro da cara','Centre of the face',
+    { match:'nasal cartilage', facts_pt:['O olfato está ligado à memória e à emoção.'], facts_en:['Smell is wired to memory and emotion.'] }),
 ];
