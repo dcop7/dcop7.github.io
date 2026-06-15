@@ -150,31 +150,65 @@ const HumanBodyExplorer = (function () {
       b.min.y + fy * (b.max.y - b.min.y),
       b.min.z + fz * (b.max.z - b.min.z));
   }
-  function _vesselTube(grp, box, fracs, color, key) {
-    const pts = fracs.map(f => _frac(box, f[0], f[1], f[2]));
-    const r = (box.max.y - box.min.y) * 0.006;
-    const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(16, pts.length * 8), r, 7, false);
-    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.05,
-      emissive: new THREE.Color(color).multiplyScalar(0.18), transparent: true, opacity: 1 });
+  /* Sample world-space vertices of a structure's meshes (decimated). */
+  function _structurePoints(key) {
+    const out = [];
+    const v = new THREE.Vector3();
+    (_meshByKey[key] || []).forEach(m => {
+      const pos = m.geometry && m.geometry.attributes && m.geometry.attributes.position;
+      if (!pos) return;
+      m.updateWorldMatrix(true, false);
+      const step = Math.max(1, Math.ceil(pos.count / 500));
+      for (let i = 0; i < pos.count; i += step) out.push(v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld).clone());
+    });
+    return out;
+  }
+  function _vesselTube(grp, pts, color, key, r) {
+    pts = pts.filter(Boolean);
+    if (pts.length < 2) return;
+    const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(24, pts.length * 14), r, 9, false);
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.42, metalness: 0.08,
+      emissive: new THREE.Color(color).multiplyScalar(0.28), transparent: true, opacity: 1 });
     const m = new THREE.Mesh(geo, mat);
     m.userData.key = key; m.userData.sys = 'circulatorio'; m.userData.baseColor = new THREE.Color(color);
     grp.add(m); (_meshByKey[key] = _meshByKey[key] || []).push(m);
   }
+  /* Route the limb + head vessels through the SKELETON's real bone joints so
+     they actually follow the body (the dataset lacks distal vessels). */
   function _addVessels(grp, box) {
-    const chest = [0.5, 0.66, 0.58];
-    const A = [
-      [chest, [0.5,0.78,0.55],[0.49,0.87,0.5],[0.47,0.93,0.46]],          // neck→head (L)
-      [chest, [0.5,0.78,0.55],[0.51,0.87,0.5],[0.53,0.93,0.46]],          // neck→head (R)
-      [chest, [0.5,0.56,0.52],[0.5,0.46,0.5],[0.5,0.36,0.5]],             // descending trunk
-    ];
-    for (const s of [-1, 1]) {
-      const x = f => 0.5 + s * f;
-      A.push([[x(0.08),0.74,0.52],[x(0.13),0.78,0.5],[x(0.15),0.68,0.5],[x(0.16),0.58,0.5],[x(0.16),0.48,0.52],[x(0.155),0.41,0.54]]); // arm
-      A.push([[0.5,0.37,0.5],[x(0.06),0.33,0.5],[x(0.08),0.26,0.5],[x(0.09),0.18,0.5],[x(0.09),0.10,0.52],[x(0.09),0.03,0.58],[x(0.085),0.01,0.66]]); // leg
+    if (!_sysGroup[GHOST_SYS]) return;
+    const cx = (box.min.x + box.max.x) / 2, H = box.max.y - box.min.y;
+    const ext = (arr, side, top) => {       // extreme-Y point on one side
+      let best = null;
+      for (const p of arr) { const on = side < 0 ? p.x < cx : p.x >= cx; if (on && (!best || (top ? p.y > best.y : p.y < best.y))) best = p; }
+      return best;
+    };
+    const cen = (arr, side) => {             // centroid of one side (null if empty)
+      const s = new THREE.Vector3(); let n = 0;
+      for (const p of arr) { if (side < 0 ? p.x < cx : p.x >= cx) { s.add(p); n++; } }
+      return n ? s.multiplyScalar(1 / n) : null;
+    };
+    const cenAll = arr => { if (!arr.length) return null; const s = new THREE.Vector3(); arr.forEach(p => s.add(p)); return s.multiplyScalar(1 / arr.length); };
+    const P = k => _structurePoints(k);
+    const umero = P('umero'), radio = P('radio_ulna'), mao = P('mao'),
+          femur = P('femur'), tibia = P('tibia_fibula'), pe = P('pe'),
+          pelve = P('pelve'), cranio = P('cranio');
+    const chest = cenAll(P('coracao')) || _frac(box, 0.5, 0.66, 0.55);
+    const pelvisC = cenAll(pelve) || _frac(box, 0.5, 0.34, 0.5);
+    const headTop = cranio.length ? cranio.reduce((m, p) => p.y > m.y ? p : m, cranio[0]) : null;
+
+    const A = [];
+    if (headTop) A.push([chest.clone(), new THREE.Vector3(chest.x, (chest.y + headTop.y) / 2, (chest.z + headTop.z) / 2 + H * 0.01), headTop.clone()]);
+    for (const side of [-1, 1]) {
+      const shoulder = ext(umero, side, true), elbow = ext(umero, side, false), wrist = ext(radio, side, false), hand = cen(mao, side);
+      A.push([chest.clone(), shoulder, elbow, wrist, hand]);                 // arm
+      const hip = ext(femur, side, true), knee = ext(femur, side, false), ankle = ext(tibia, side, false), foot = cen(pe, side);
+      A.push([pelvisC.clone(), hip, knee, ankle, foot]);                     // leg
     }
-    const V = A.map(path => path.map(p => [p[0] + (p[0] >= 0.5 ? 0.014 : -0.014), p[1], p[2] - 0.14]));
-    A.forEach(p => _vesselTube(grp, box, p, ARTERY, 'arterias'));
-    V.forEach(p => _vesselTube(grp, box, p, VEIN, 'veias'));
+    const V = A.map(path => path.map(p => p && new THREE.Vector3(p.x + (p.x >= cx ? 1 : -1) * H * 0.012, p.y, p.z - H * 0.035)));
+    const rA = H * 0.009, rV = H * 0.0085;
+    A.forEach(p => _vesselTube(grp, p, ARTERY, 'arterias', rA));
+    V.forEach(p => _vesselTube(grp, p, VEIN, 'veias', rV));
   }
   function _addSenseMarkers(grp, box) {
     const col = new THREE.Color(SYS_BY_ID.sentidos.color);
