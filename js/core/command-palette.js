@@ -8,7 +8,6 @@ const CommandPalette = (function () {
     { name: 'Games',        desc: 'Play mini-games',        icon: '🎮', type: 'nav',  action: () => Nav.go('games') },
     { name: 'Links',        desc: 'Useful sites & bookmarks',icon: '🔗', type: 'nav', action: () => Nav.go('links') },
     { name: 'Tools',        desc: 'Developer tools',        icon: '🔧', type: 'nav',  action: () => Nav.go('tools') },
-    { name: 'Workout',      desc: 'Workout tracker',        icon: '💪', type: 'nav',  action: () => Nav.go('workout') },
     { name: 'Media',        desc: 'Entertainment dashboard', icon: '🎬', type: 'nav', action: () => Nav.go('media') },
   ];
 

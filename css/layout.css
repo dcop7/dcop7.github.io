@@ -169,7 +169,6 @@ body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
 .sb-nav-item[data-route="eventos"] svg { stroke: #2dd4bf; }
 .sb-nav-item[data-route="noticias"] svg { stroke: #c084fc; }
 .sb-nav-item[data-route="media"] svg { stroke: #f87171; }
-.sb-nav-item[data-route="workout"] svg { stroke: #4ade80; }
 .sb-nav-item[data-route="photography"] svg { stroke: #fbbf24; }
 .sb-nav-item[data-route="visual"] svg { stroke: #f472b6; }
 .sb-nav-item[data-route="settings"] svg { stroke: #94a3b8; }

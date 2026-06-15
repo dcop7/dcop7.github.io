@@ -16,7 +16,6 @@ A personal productivity dashboard and playground hosted on GitHub Pages. Zero ba
 | **Links** | Curated resource library organized by category |
 | **Cheatsheets** | Command references for Git, Linux, Vim, regex, Docker, keyboard shortcuts |
 | **Photography** | Exposure calculator, depth of field, composition guide, color wheel |
-| **Workout** | Exercise library with stick-figure animations and a guided workout player |
 | **Media** | Track movies, TV shows, and trailers you want to watch |
 | **Visual Tools** | Whiteboard (Excalidraw), Eisenhower matrix, SWOT analysis |
 | **Settings** | Theme, font size, icon style, bookmarks manager |
@@ -41,7 +40,7 @@ dcop7.github.io/
 │       ├── home.css           ← hero, widgets, bookmarks, world times
 │       ├── games.css          ← game hub grid, all per-game styles
 │       ├── tools.css          ← tools layout, all per-tool styles
-│       └── features.css       ← links, cheatsheets, photography, workout, media, settings, visual
+│       └── features.css       ← links, cheatsheets, photography, media, settings, visual
 ├── src/
 │   ├── core/
 │   │   ├── store.js           ← localStorage abstraction with pub/sub
@@ -58,7 +57,7 @@ dcop7.github.io/
 │   ├── games/                 ← game-host + every game implementation (game-*.js, hangman, …)
 │   ├── quiz/                  ← quiz-engine, quiz-data (loader), quiz-providers, quiz-page
 │   ├── explorer/              ← explorer (world map/globe), explorer-portugal, explorer-solar, ocorrencias
-│   └── pages/                 ← tools, cheatsheets, photography, workout, media, visual, links-*, rss
+│   └── pages/                 ← tools, cheatsheets, photography, media, visual, links-*, rss
 ├── quizzes/                   ← offline question database: {easy,medium,hard}/{category}.json
 ├── data/                      ← bundled GeoJSON + country data (offline-first)
 └── sw.js                      ← service worker (stays at root for scope)
@@ -181,7 +180,7 @@ Opt-in utilities for game files:
 Navigation is hash-based via `nav.js`. Routes:
 
 ```
-home · tools · games · links · cheatsheets · photography · workout · media · visual · settings
+home · tools · games · links · cheatsheets · photography · media · visual · settings
 ```
 
 Each route shows one `.view[data-view="<route>"]` and updates the sidebar active state. Deep-links work via URL hash (e.g. `#tools`).

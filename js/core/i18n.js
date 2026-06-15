@@ -5,7 +5,7 @@ const I18n = (function () {
     en: {
       // Nav
       'nav.home':'Home','nav.games':'Games','nav.links':'Useful Sites',
-      'nav.tools':'Tools','nav.workout':'Workout',
+      'nav.tools':'Tools',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News',
@@ -111,7 +111,7 @@ const I18n = (function () {
     pt: {
       // Nav
       'nav.home':'Início','nav.games':'Jogos','nav.links':'Sites Úteis',
-      'nav.tools':'Ferramentas','nav.workout':'Treino',
+      'nav.tools':'Ferramentas',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias',
