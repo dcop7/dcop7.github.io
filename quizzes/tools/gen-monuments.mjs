@@ -60,7 +60,7 @@ for (const it of items) {
 }
 
 for (const tier of ['easy','medium','hard']) {
-  await writeFile(join(ROOT, 'quizzes', tier, 'monumentos.json'), JSON.stringify(out[tier], null, 2) + '\n', 'utf8');
-  console.log(`  wrote ${tier}/monumentos.json — ${out[tier].length} entries`);
+  await writeFile(join(ROOT, 'quizzes', 'monumentos', 'pt', `${tier}.json`), JSON.stringify(out[tier], null, 2) + '\n', 'utf8');
+  console.log(`  wrote monumentos/pt/${tier}.json — ${out[tier].length} entries`);
 }
 console.log(`Total monuments: ${items.length} (${withImg.length} with verified images, ${items.length - withImg.length} text-only + Wikipedia link)`);

@@ -1,8 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════
    QUIZ DATA — lazy loader for the split offline question database.
 
-   New layout (preferred):  /quizzes/{category}/{lang}/{difficulty}.json
-   Legacy layout (fallback): /quizzes/{difficulty}/{category}.json  (pt only)
+   Layout:  /quizzes/{category}/{lang}/{difficulty}.json  (unified, per-topic)
 
    Files are fetched on demand (never bundled into the initial page), so the
    initial payload stays small and scales to thousands of questions. Each quiz
@@ -63,19 +62,13 @@ const QuizData = (function () {
     const sess = _fromSession(key);
     if (sess) { _mem.set(key, sess); return sess; }
 
-    /* Candidate URLs in priority order. The legacy flat layout only ever held
-       pt content, so only try it for pt. */
-    const urls = [`${BASE}/${category}/${lang}/${difficulty}.json`];
-    if (lang === 'pt') urls.push(`${BASE}/${difficulty}/${category}.json`);
-
-    for (const url of urls) {
-      try {
-        const items = await _fetchJson(url);
-        _mem.set(key, items);
-        _toSession(key, items);
-        return items;
-      } catch { /* try next candidate */ }
-    }
+    /* Unified per-topic layout: quizzes/<category>/<lang>/<difficulty>.json */
+    try {
+      const items = await _fetchJson(`${BASE}/${category}/${lang}/${difficulty}.json`);
+      _mem.set(key, items);
+      _toSession(key, items);
+      return items;
+    } catch { /* not found */ }
     _miss.add(key);
     return null;
   }

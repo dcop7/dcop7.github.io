@@ -81,8 +81,8 @@ const ADD = {
 let total = 0, added = 0;
 for (const [cat, tiers] of Object.entries(ADD)) {
   for (const [tier, items] of Object.entries(tiers)) {
-    const p = join(ROOT, 'quizzes', tier, `${cat}.json`);
-    if (!existsSync(p)) { console.log(`  skip (missing): ${tier}/${cat}.json`); continue; }
+    const p = join(ROOT, 'quizzes', cat, 'pt', `${tier}.json`);
+    if (!existsSync(p)) { console.log(`  skip (missing): ${cat}/pt/${tier}.json`); continue; }
     const arr = JSON.parse(await readFile(p, 'utf8'));
     const seen = new Set(arr.map(x => x.q));
     let n = 0;

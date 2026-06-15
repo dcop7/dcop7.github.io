@@ -427,5 +427,1941 @@
       "Castelo dos Mouros"
     ],
     "exp": "Guimarães é o berço da nação."
+  },
+  {
+    "q": "Em que ano ocorreu a Revolução dos Cravos?",
+    "a": "1974",
+    "opts": [
+      "1974",
+      "1910",
+      "1926",
+      "1986"
+    ],
+    "exp": "A 25 de Abril de 1974, a Revolução dos Cravos pôs fim à ditadura do Estado Novo."
+  },
+  {
+    "q": "Que navegador português chegou à Índia por via marítima em 1498?",
+    "a": "Vasco da Gama",
+    "opts": [
+      "Vasco da Gama",
+      "Pedro Álvares Cabral",
+      "Fernão de Magalhães",
+      "Bartolomeu Dias"
+    ],
+    "exp": "Vasco da Gama abriu o caminho marítimo para a Índia em 1498."
+  },
+  {
+    "q": "Qual é o ponto mais alto de Portugal continental?",
+    "a": "Torre (Serra da Estrela)",
+    "opts": [
+      "Torre (Serra da Estrela)",
+      "Pico (Açores)",
+      "Monte Gerês",
+      "Foia (Monchique)"
+    ],
+    "exp": "A Torre, na Serra da Estrela, tem 1993 m — o ponto mais alto do continente. O ponto mais alto de Portugal é o Pico, nos Açores (2351 m)."
+  },
+  {
+    "q": "Que poeta escreveu 'Os Lusíadas'?",
+    "a": "Luís de Camões",
+    "opts": [
+      "Luís de Camões",
+      "Fernando Pessoa",
+      "Eça de Queirós",
+      "Almeida Garrett"
+    ],
+    "exp": "Camões publicou a epopeia 'Os Lusíadas' em 1572."
+  },
+  {
+    "q": "Qual é o monumento manuelino em Belém, Património Mundial da UNESCO?",
+    "a": "Mosteiro dos Jerónimos",
+    "opts": [
+      "Mosteiro dos Jerónimos",
+      "Sé de Lisboa",
+      "Palácio da Pena",
+      "Convento de Mafra"
+    ],
+    "exp": "O Mosteiro dos Jerónimos e a Torre de Belém são Património Mundial desde 1983."
+  },
+  {
+    "q": "Em que ano aderiu Portugal à CEE (atual União Europeia)?",
+    "a": "1986",
+    "opts": [
+      "1986",
+      "1974",
+      "1992",
+      "2002"
+    ],
+    "exp": "Portugal aderiu à Comunidade Económica Europeia em 1 de Janeiro de 1986."
+  },
+  {
+    "q": "Qual é o segundo maior rio que nasce em Espanha e atravessa o norte de Portugal?",
+    "a": "Douro",
+    "opts": [
+      "Douro",
+      "Tejo",
+      "Minho",
+      "Sado"
+    ],
+    "exp": "O Douro nasce em Espanha e atravessa a região vinhateira do Douro."
+  },
+  {
+    "q": "Qual é o ponto mais ocidental da Europa continental?",
+    "a": "Cabo da Roca",
+    "opts": [
+      "Cabo da Roca",
+      "Cabo de São Vicente",
+      "Cabo Carvoeiro",
+      "Cabo Espichel"
+    ],
+    "exp": "O Cabo da Roca, em Sintra, é o ponto mais ocidental do continente europeu."
+  },
+  {
+    "q": "Que região é famosa pelo vinho verde?",
+    "a": "Minho",
+    "opts": [
+      "Minho",
+      "Alentejo",
+      "Algarve",
+      "Douro"
+    ],
+    "exp": "O vinho verde é produzido na região do Minho, no noroeste."
+  },
+  {
+    "q": "A que região pertence o distrito de Aveiro?",
+    "a": "Centro",
+    "opts": [
+      "Minho",
+      "Trás-os-Montes",
+      "Centro",
+      "Beira Interior"
+    ],
+    "exp": "O distrito de Aveiro pertence à região Centro."
+  },
+  {
+    "q": "A que região pertence o distrito de Beja?",
+    "a": "Alentejo",
+    "opts": [
+      "Região Autónoma da Madeira",
+      "Alto Alentejo",
+      "Alentejo",
+      "Algarve"
+    ],
+    "exp": "O distrito de Beja pertence à região Alentejo."
+  },
+  {
+    "q": "A que região pertence o distrito de Braga?",
+    "a": "Minho",
+    "opts": [
+      "Minho",
+      "Beira Interior",
+      "Trás-os-Montes",
+      "Região Autónoma da Madeira"
+    ],
+    "exp": "O distrito de Braga pertence à região Minho."
+  },
+  {
+    "q": "A que região pertence o distrito de Bragança?",
+    "a": "Trás-os-Montes",
+    "opts": [
+      "Alto Alentejo",
+      "Douro Litoral",
+      "Trás-os-Montes",
+      "Ribatejo"
+    ],
+    "exp": "O distrito de Bragança pertence à região Trás-os-Montes."
+  },
+  {
+    "q": "A que região pertence o distrito de Castelo Branco?",
+    "a": "Beira Interior",
+    "opts": [
+      "Região Autónoma da Madeira",
+      "Trás-os-Montes",
+      "Alto Alentejo",
+      "Beira Interior"
+    ],
+    "exp": "O distrito de Castelo Branco pertence à região Beira Interior."
+  },
+  {
+    "q": "A que região pertence o distrito de Coimbra?",
+    "a": "Beira Litoral",
+    "opts": [
+      "Ribatejo",
+      "Região Autónoma dos Açores",
+      "Beira Litoral",
+      "Região Autónoma da Madeira"
+    ],
+    "exp": "O distrito de Coimbra pertence à região Beira Litoral."
+  },
+  {
+    "q": "A que região pertence o distrito de Évora?",
+    "a": "Alto Alentejo",
+    "opts": [
+      "Alto Alentejo",
+      "Beira Alta",
+      "Ribatejo",
+      "Área Metropolitana de Lisboa"
+    ],
+    "exp": "O distrito de Évora pertence à região Alto Alentejo."
+  },
+  {
+    "q": "A que região pertence o distrito de Faro?",
+    "a": "Algarve",
+    "opts": [
+      "Alentejo",
+      "Área Metropolitana de Lisboa",
+      "Beira Interior",
+      "Algarve"
+    ],
+    "exp": "O distrito de Faro pertence à região Algarve."
+  },
+  {
+    "q": "A que região pertence o distrito de Guarda?",
+    "a": "Beira Interior",
+    "opts": [
+      "Minho",
+      "Beira Interior",
+      "Ribatejo",
+      "Alentejo"
+    ],
+    "exp": "O distrito de Guarda pertence à região Beira Interior."
+  },
+  {
+    "q": "A que região pertence o distrito de Leiria?",
+    "a": "Beira Litoral",
+    "opts": [
+      "Beira Litoral",
+      "Beira Alta",
+      "Minho",
+      "Ribatejo"
+    ],
+    "exp": "O distrito de Leiria pertence à região Beira Litoral."
+  },
+  {
+    "q": "A que região pertence o distrito de Lisboa?",
+    "a": "Área Metropolitana de Lisboa",
+    "opts": [
+      "Trás-os-Montes",
+      "Algarve",
+      "Área Metropolitana de Lisboa",
+      "Beira Interior"
+    ],
+    "exp": "O distrito de Lisboa pertence à região Área Metropolitana de Lisboa."
+  },
+  {
+    "q": "A que região pertence o distrito de Portalegre?",
+    "a": "Alto Alentejo",
+    "opts": [
+      "Alto Alentejo",
+      "Beira Interior",
+      "Área Metropolitana de Lisboa",
+      "Ribatejo"
+    ],
+    "exp": "O distrito de Portalegre pertence à região Alto Alentejo."
+  },
+  {
+    "q": "A que região pertence o distrito de Porto?",
+    "a": "Douro Litoral",
+    "opts": [
+      "Minho",
+      "Alto Alentejo",
+      "Centro",
+      "Douro Litoral"
+    ],
+    "exp": "O distrito de Porto pertence à região Douro Litoral."
+  },
+  {
+    "q": "A que região pertence o distrito de Santarém?",
+    "a": "Ribatejo",
+    "opts": [
+      "Região Autónoma da Madeira",
+      "Beira Litoral",
+      "Ribatejo",
+      "Alto Alentejo"
+    ],
+    "exp": "O distrito de Santarém pertence à região Ribatejo."
+  },
+  {
+    "q": "A que região pertence o distrito de Setúbal?",
+    "a": "Área Metropolitana de Lisboa",
+    "opts": [
+      "Região Autónoma dos Açores",
+      "Área Metropolitana de Lisboa",
+      "Beira Alta",
+      "Beira Interior"
+    ],
+    "exp": "O distrito de Setúbal pertence à região Área Metropolitana de Lisboa."
+  },
+  {
+    "q": "A que região pertence o distrito de Viana do Castelo?",
+    "a": "Minho",
+    "opts": [
+      "Centro",
+      "Minho",
+      "Alto Alentejo",
+      "Algarve"
+    ],
+    "exp": "O distrito de Viana do Castelo pertence à região Minho."
+  },
+  {
+    "q": "A que região pertence o distrito de Vila Real?",
+    "a": "Trás-os-Montes",
+    "opts": [
+      "Beira Litoral",
+      "Ribatejo",
+      "Região Autónoma dos Açores",
+      "Trás-os-Montes"
+    ],
+    "exp": "O distrito de Vila Real pertence à região Trás-os-Montes."
+  },
+  {
+    "q": "A que região pertence o distrito de Viseu?",
+    "a": "Beira Alta",
+    "opts": [
+      "Área Metropolitana de Lisboa",
+      "Trás-os-Montes",
+      "Beira Alta",
+      "Algarve"
+    ],
+    "exp": "O distrito de Viseu pertence à região Beira Alta."
+  },
+  {
+    "q": "A que região pertence o distrito de Madeira?",
+    "a": "Região Autónoma da Madeira",
+    "opts": [
+      "Região Autónoma da Madeira",
+      "Centro",
+      "Beira Interior",
+      "Algarve"
+    ],
+    "exp": "O distrito de Madeira pertence à região Região Autónoma da Madeira."
+  },
+  {
+    "q": "A que região pertence o distrito de Açores?",
+    "a": "Região Autónoma dos Açores",
+    "opts": [
+      "Beira Litoral",
+      "Algarve",
+      "Alentejo",
+      "Região Autónoma dos Açores"
+    ],
+    "exp": "O distrito de Açores pertence à região Região Autónoma dos Açores."
+  },
+  {
+    "q": "Em que distrito se encontra: Costa Nova (casas listradas)?",
+    "a": "Aveiro",
+    "opts": [
+      "Viseu",
+      "Aveiro",
+      "Lisboa",
+      "Guarda"
+    ],
+    "exp": "Costa Nova (casas listradas) fica no distrito de Aveiro."
+  },
+  {
+    "q": "Em que distrito se encontra: Universidade de Aveiro?",
+    "a": "Aveiro",
+    "opts": [
+      "Aveiro",
+      "Porto",
+      "Açores",
+      "Beja"
+    ],
+    "exp": "Universidade de Aveiro fica no distrito de Aveiro."
+  },
+  {
+    "q": "Em que distrito se encontra: Museu de Aveiro (Santa Joana)?",
+    "a": "Aveiro",
+    "opts": [
+      "Aveiro",
+      "Faro",
+      "Leiria",
+      "Lisboa"
+    ],
+    "exp": "Museu de Aveiro (Santa Joana) fica no distrito de Aveiro."
+  },
+  {
+    "q": "Em que distrito se encontra: Praia de Mira?",
+    "a": "Aveiro",
+    "opts": [
+      "Leiria",
+      "Aveiro",
+      "Viana do Castelo",
+      "Évora"
+    ],
+    "exp": "Praia de Mira fica no distrito de Aveiro."
+  },
+  {
+    "q": "Em que distrito se encontra: Museu Regional de Beja?",
+    "a": "Beja",
+    "opts": [
+      "Lisboa",
+      "Guarda",
+      "Beja",
+      "Açores"
+    ],
+    "exp": "Museu Regional de Beja fica no distrito de Beja."
+  },
+  {
+    "q": "Em que distrito se encontra: Castro Verde?",
+    "a": "Beja",
+    "opts": [
+      "Bragança",
+      "Castelo Branco",
+      "Viseu",
+      "Beja"
+    ],
+    "exp": "Castro Verde fica no distrito de Beja."
+  },
+  {
+    "q": "Em que distrito se encontra: Mértola (vila museu)?",
+    "a": "Beja",
+    "opts": [
+      "Açores",
+      "Beja",
+      "Bragança",
+      "Viseu"
+    ],
+    "exp": "Mértola (vila museu) fica no distrito de Beja."
+  },
+  {
+    "q": "Em que distrito se encontra: Barragem do Alqueva?",
+    "a": "Beja",
+    "opts": [
+      "Bragança",
+      "Beja",
+      "Viana do Castelo",
+      "Vila Real"
+    ],
+    "exp": "Barragem do Alqueva fica no distrito de Beja."
+  },
+  {
+    "q": "Em que distrito se encontra: Braga Romana?",
+    "a": "Braga",
+    "opts": [
+      "Aveiro",
+      "Lisboa",
+      "Braga",
+      "Castelo Branco"
+    ],
+    "exp": "Braga Romana fica no distrito de Braga."
+  },
+  {
+    "q": "Em que distrito se encontra: Cidadela Medieval?",
+    "a": "Bragança",
+    "opts": [
+      "Portalegre",
+      "Bragança",
+      "Faro",
+      "Beja"
+    ],
+    "exp": "Cidadela Medieval fica no distrito de Bragança."
+  },
+  {
+    "q": "Em que distrito se encontra: Parque Natural de Montesinho?",
+    "a": "Bragança",
+    "opts": [
+      "Açores",
+      "Madeira",
+      "Bragança",
+      "Setúbal"
+    ],
+    "exp": "Parque Natural de Montesinho fica no distrito de Bragança."
+  },
+  {
+    "q": "Em que distrito se encontra: Museu do Abade de Baçal?",
+    "a": "Bragança",
+    "opts": [
+      "Viana do Castelo",
+      "Porto",
+      "Bragança",
+      "Lisboa"
+    ],
+    "exp": "Museu do Abade de Baçal fica no distrito de Bragança."
+  },
+  {
+    "q": "Em que distrito se encontra: Jardim do Paço Episcopal?",
+    "a": "Castelo Branco",
+    "opts": [
+      "Castelo Branco",
+      "Porto",
+      "Açores",
+      "Coimbra"
+    ],
+    "exp": "Jardim do Paço Episcopal fica no distrito de Castelo Branco."
+  },
+  {
+    "q": "Em que distrito se encontra: Museu Francisco Tavares Proença Júnior?",
+    "a": "Castelo Branco",
+    "opts": [
+      "Leiria",
+      "Braga",
+      "Coimbra",
+      "Castelo Branco"
+    ],
+    "exp": "Museu Francisco Tavares Proença Júnior fica no distrito de Castelo Branco."
+  },
+  {
+    "q": "Em que distrito se encontra: Monsanto (aldeia histórica)?",
+    "a": "Castelo Branco",
+    "opts": [
+      "Viseu",
+      "Castelo Branco",
+      "Évora",
+      "Coimbra"
+    ],
+    "exp": "Monsanto (aldeia histórica) fica no distrito de Castelo Branco."
+  },
+  {
+    "q": "Em que distrito se encontra: Idanha-a-Velha (cidade romana)?",
+    "a": "Castelo Branco",
+    "opts": [
+      "Castelo Branco",
+      "Beja",
+      "Madeira",
+      "Lisboa"
+    ],
+    "exp": "Idanha-a-Velha (cidade romana) fica no distrito de Castelo Branco."
+  },
+  {
+    "q": "Em que distrito se encontra: Biblioteca Joanina?",
+    "a": "Coimbra",
+    "opts": [
+      "Coimbra",
+      "Beja",
+      "Faro",
+      "Açores"
+    ],
+    "exp": "Biblioteca Joanina fica no distrito de Coimbra."
+  },
+  {
+    "q": "Em que distrito se encontra: Portugal dos Pequenitos?",
+    "a": "Coimbra",
+    "opts": [
+      "Setúbal",
+      "Santarém",
+      "Braga",
+      "Coimbra"
+    ],
+    "exp": "Portugal dos Pequenitos fica no distrito de Coimbra."
+  },
+  {
+    "q": "Em que distrito se encontra: Convento de Cristo (Tomar)?",
+    "a": "Coimbra",
+    "opts": [
+      "Porto",
+      "Portalegre",
+      "Coimbra",
+      "Viseu"
+    ],
+    "exp": "Convento de Cristo (Tomar) fica no distrito de Coimbra."
+  },
+  {
+    "q": "Em que distrito se encontra: Templo Romano de Évora?",
+    "a": "Évora",
+    "opts": [
+      "Évora",
+      "Setúbal",
+      "Lisboa",
+      "Viseu"
+    ],
+    "exp": "Templo Romano de Évora fica no distrito de Évora."
+  },
+  {
+    "q": "Em que distrito se encontra: Catedral de Évora?",
+    "a": "Évora",
+    "opts": [
+      "Viana do Castelo",
+      "Viseu",
+      "Bragança",
+      "Évora"
+    ],
+    "exp": "Catedral de Évora fica no distrito de Évora."
+  },
+  {
+    "q": "Em que distrito se encontra: Cromeleque dos Almendres?",
+    "a": "Évora",
+    "opts": [
+      "Bragança",
+      "Évora",
+      "Setúbal",
+      "Guarda"
+    ],
+    "exp": "Cromeleque dos Almendres fica no distrito de Évora."
+  },
+  {
+    "q": "Em que distrito se encontra: Aqueduto da Prata?",
+    "a": "Évora",
+    "opts": [
+      "Setúbal",
+      "Évora",
+      "Coimbra",
+      "Viseu"
+    ],
+    "exp": "Aqueduto da Prata fica no distrito de Évora."
+  },
+  {
+    "q": "Em que distrito se encontra: Casa dos Ossos?",
+    "a": "Évora",
+    "opts": [
+      "Évora",
+      "Braga",
+      "Lisboa",
+      "Viseu"
+    ],
+    "exp": "Casa dos Ossos fica no distrito de Évora."
+  },
+  {
+    "q": "Em que distrito se encontra: Ria Formosa (Reserva Natural)?",
+    "a": "Faro",
+    "opts": [
+      "Madeira",
+      "Viseu",
+      "Faro",
+      "Porto"
+    ],
+    "exp": "Ria Formosa (Reserva Natural) fica no distrito de Faro."
+  },
+  {
+    "q": "Em que distrito se encontra: Sagres e Cabo de São Vicente?",
+    "a": "Faro",
+    "opts": [
+      "Viana do Castelo",
+      "Faro",
+      "Évora",
+      "Lisboa"
+    ],
+    "exp": "Sagres e Cabo de São Vicente fica no distrito de Faro."
+  },
+  {
+    "q": "Em que distrito se encontra: Praia da Marinha?",
+    "a": "Faro",
+    "opts": [
+      "Braga",
+      "Porto",
+      "Faro",
+      "Évora"
+    ],
+    "exp": "Praia da Marinha fica no distrito de Faro."
+  },
+  {
+    "q": "Em que distrito se encontra: Lagoa dos Salgados?",
+    "a": "Faro",
+    "opts": [
+      "Faro",
+      "Lisboa",
+      "Beja",
+      "Viana do Castelo"
+    ],
+    "exp": "Lagoa dos Salgados fica no distrito de Faro."
+  },
+  {
+    "q": "Em que distrito se encontra: Catedral da Guarda?",
+    "a": "Guarda",
+    "opts": [
+      "Beja",
+      "Leiria",
+      "Guarda",
+      "Aveiro"
+    ],
+    "exp": "Catedral da Guarda fica no distrito de Guarda."
+  },
+  {
+    "q": "Em que distrito se encontra: Sortelha (aldeia histórica)?",
+    "a": "Guarda",
+    "opts": [
+      "Guarda",
+      "Setúbal",
+      "Braga",
+      "Aveiro"
+    ],
+    "exp": "Sortelha (aldeia histórica) fica no distrito de Guarda."
+  },
+  {
+    "q": "Em que distrito se encontra: Belmonte (terra de Álvares Cabral)?",
+    "a": "Guarda",
+    "opts": [
+      "Beja",
+      "Lisboa",
+      "Vila Real",
+      "Guarda"
+    ],
+    "exp": "Belmonte (terra de Álvares Cabral) fica no distrito de Guarda."
+  },
+  {
+    "q": "Em que distrito se encontra: Óbidos (vila medieval)?",
+    "a": "Leiria",
+    "opts": [
+      "Braga",
+      "Bragança",
+      "Portalegre",
+      "Leiria"
+    ],
+    "exp": "Óbidos (vila medieval) fica no distrito de Leiria."
+  },
+  {
+    "q": "Em que distrito se encontra: Alfama?",
+    "a": "Lisboa",
+    "opts": [
+      "Guarda",
+      "Vila Real",
+      "Lisboa",
+      "Setúbal"
+    ],
+    "exp": "Alfama fica no distrito de Lisboa."
+  },
+  {
+    "q": "Em que distrito se encontra: Oceanário de Lisboa?",
+    "a": "Lisboa",
+    "opts": [
+      "Viana do Castelo",
+      "Lisboa",
+      "Castelo Branco",
+      "Leiria"
+    ],
+    "exp": "Oceanário de Lisboa fica no distrito de Lisboa."
+  },
+  {
+    "q": "Em que distrito se encontra: Museu da Tapeçaria de Guy Fino?",
+    "a": "Portalegre",
+    "opts": [
+      "Aveiro",
+      "Portalegre",
+      "Castelo Branco",
+      "Porto"
+    ],
+    "exp": "Museu da Tapeçaria de Guy Fino fica no distrito de Portalegre."
+  },
+  {
+    "q": "Em que distrito se encontra: Serra de São Mamede?",
+    "a": "Portalegre",
+    "opts": [
+      "Portalegre",
+      "Vila Real",
+      "Santarém",
+      "Guarda"
+    ],
+    "exp": "Serra de São Mamede fica no distrito de Portalegre."
+  },
+  {
+    "q": "Em que distrito se encontra: Marvão (aldeia histórica)?",
+    "a": "Portalegre",
+    "opts": [
+      "Portalegre",
+      "Beja",
+      "Bragança",
+      "Açores"
+    ],
+    "exp": "Marvão (aldeia histórica) fica no distrito de Portalegre."
+  },
+  {
+    "q": "Em que distrito se encontra: Ribeira do Porto (UNESCO)?",
+    "a": "Porto",
+    "opts": [
+      "Santarém",
+      "Braga",
+      "Castelo Branco",
+      "Porto"
+    ],
+    "exp": "Ribeira do Porto (UNESCO) fica no distrito de Porto."
+  },
+  {
+    "q": "Em que distrito se encontra: Caves de Vinho do Porto?",
+    "a": "Porto",
+    "opts": [
+      "Coimbra",
+      "Faro",
+      "Santarém",
+      "Porto"
+    ],
+    "exp": "Caves de Vinho do Porto fica no distrito de Porto."
+  },
+  {
+    "q": "Em que distrito se encontra: Livraria Lello?",
+    "a": "Porto",
+    "opts": [
+      "Coimbra",
+      "Vila Real",
+      "Porto",
+      "Portalegre"
+    ],
+    "exp": "Livraria Lello fica no distrito de Porto."
+  },
+  {
+    "q": "Em que distrito se encontra: Palácio da Bolsa?",
+    "a": "Porto",
+    "opts": [
+      "Leiria",
+      "Lisboa",
+      "Castelo Branco",
+      "Porto"
+    ],
+    "exp": "Palácio da Bolsa fica no distrito de Porto."
+  },
+  {
+    "q": "Em que distrito se encontra: Serralves?",
+    "a": "Porto",
+    "opts": [
+      "Leiria",
+      "Porto",
+      "Beja",
+      "Vila Real"
+    ],
+    "exp": "Serralves fica no distrito de Porto."
+  },
+  {
+    "q": "Em que distrito se encontra: Portas do Sol?",
+    "a": "Santarém",
+    "opts": [
+      "Viseu",
+      "Castelo Branco",
+      "Santarém",
+      "Aveiro"
+    ],
+    "exp": "Portas do Sol fica no distrito de Santarém."
+  },
+  {
+    "q": "Em que distrito se encontra: Igreja de Santa Cruz?",
+    "a": "Santarém",
+    "opts": [
+      "Beja",
+      "Bragança",
+      "Santarém",
+      "Vila Real"
+    ],
+    "exp": "Igreja de Santa Cruz fica no distrito de Santarém."
+  },
+  {
+    "q": "Em que distrito se encontra: Vale do Tejo?",
+    "a": "Santarém",
+    "opts": [
+      "Guarda",
+      "Leiria",
+      "Lisboa",
+      "Santarém"
+    ],
+    "exp": "Vale do Tejo fica no distrito de Santarém."
+  },
+  {
+    "q": "Em que distrito se encontra: Constância?",
+    "a": "Santarém",
+    "opts": [
+      "Castelo Branco",
+      "Évora",
+      "Viana do Castelo",
+      "Santarém"
+    ],
+    "exp": "Constância fica no distrito de Santarém."
+  },
+  {
+    "q": "Em que distrito se encontra: Serra da Arrábida (Parque Natural)?",
+    "a": "Setúbal",
+    "opts": [
+      "Setúbal",
+      "Guarda",
+      "Viana do Castelo",
+      "Madeira"
+    ],
+    "exp": "Serra da Arrábida (Parque Natural) fica no distrito de Setúbal."
+  },
+  {
+    "q": "Em que distrito se encontra: Palácio Nacional de Sintra?",
+    "a": "Setúbal",
+    "opts": [
+      "Faro",
+      "Porto",
+      "Setúbal",
+      "Bragança"
+    ],
+    "exp": "Palácio Nacional de Sintra fica no distrito de Setúbal."
+  },
+  {
+    "q": "Em que distrito se encontra: Cabo Espichel?",
+    "a": "Setúbal",
+    "opts": [
+      "Guarda",
+      "Évora",
+      "Setúbal",
+      "Viseu"
+    ],
+    "exp": "Cabo Espichel fica no distrito de Setúbal."
+  },
+  {
+    "q": "Em que distrito se encontra: Sesimbra?",
+    "a": "Setúbal",
+    "opts": [
+      "Setúbal",
+      "Porto",
+      "Madeira",
+      "Santarém"
+    ],
+    "exp": "Sesimbra fica no distrito de Setúbal."
+  },
+  {
+    "q": "Em que distrito se encontra: Palmela?",
+    "a": "Setúbal",
+    "opts": [
+      "Porto",
+      "Guarda",
+      "Setúbal",
+      "Vila Real"
+    ],
+    "exp": "Palmela fica no distrito de Setúbal."
+  },
+  {
+    "q": "Em que distrito se encontra: Basílica de Santa Luzia?",
+    "a": "Viana do Castelo",
+    "opts": [
+      "Bragança",
+      "Braga",
+      "Viana do Castelo",
+      "Évora"
+    ],
+    "exp": "Basílica de Santa Luzia fica no distrito de Viana do Castelo."
+  },
+  {
+    "q": "Em que distrito se encontra: Afife?",
+    "a": "Viana do Castelo",
+    "opts": [
+      "Viana do Castelo",
+      "Portalegre",
+      "Guarda",
+      "Faro"
+    ],
+    "exp": "Afife fica no distrito de Viana do Castelo."
+  },
+  {
+    "q": "Em que distrito se encontra: Rio Minho?",
+    "a": "Viana do Castelo",
+    "opts": [
+      "Açores",
+      "Viana do Castelo",
+      "Faro",
+      "Aveiro"
+    ],
+    "exp": "Rio Minho fica no distrito de Viana do Castelo."
+  },
+  {
+    "q": "Em que distrito se encontra: Solar de Mateus?",
+    "a": "Vila Real",
+    "opts": [
+      "Vila Real",
+      "Braga",
+      "Madeira",
+      "Faro"
+    ],
+    "exp": "Solar de Mateus fica no distrito de Vila Real."
+  },
+  {
+    "q": "Em que distrito se encontra: Parque Natural do Alvão?",
+    "a": "Vila Real",
+    "opts": [
+      "Vila Real",
+      "Aveiro",
+      "Bragança",
+      "Santarém"
+    ],
+    "exp": "Parque Natural do Alvão fica no distrito de Vila Real."
+  },
+  {
+    "q": "Em que distrito se encontra: Montalegre (Terras de Barroso)?",
+    "a": "Vila Real",
+    "opts": [
+      "Setúbal",
+      "Portalegre",
+      "Braga",
+      "Vila Real"
+    ],
+    "exp": "Montalegre (Terras de Barroso) fica no distrito de Vila Real."
+  },
+  {
+    "q": "Em que distrito se encontra: Vidago Palace?",
+    "a": "Vila Real",
+    "opts": [
+      "Portalegre",
+      "Viana do Castelo",
+      "Vila Real",
+      "Viseu"
+    ],
+    "exp": "Vidago Palace fica no distrito de Vila Real."
+  },
+  {
+    "q": "Em que distrito se encontra: Museu Grão Vasco?",
+    "a": "Viseu",
+    "opts": [
+      "Setúbal",
+      "Lisboa",
+      "Beja",
+      "Viseu"
+    ],
+    "exp": "Museu Grão Vasco fica no distrito de Viseu."
+  },
+  {
+    "q": "Em que distrito se encontra: Quinta das Vendas?",
+    "a": "Viseu",
+    "opts": [
+      "Leiria",
+      "Faro",
+      "Vila Real",
+      "Viseu"
+    ],
+    "exp": "Quinta das Vendas fica no distrito de Viseu."
+  },
+  {
+    "q": "Em que distrito se encontra: Cávado?",
+    "a": "Viseu",
+    "opts": [
+      "Viseu",
+      "Bragança",
+      "Madeira",
+      "Portalegre"
+    ],
+    "exp": "Cávado fica no distrito de Viseu."
+  },
+  {
+    "q": "Em que distrito se encontra: Monte (teleférico e carros de cesto)?",
+    "a": "Madeira",
+    "opts": [
+      "Madeira",
+      "Aveiro",
+      "Santarém",
+      "Coimbra"
+    ],
+    "exp": "Monte (teleférico e carros de cesto) fica no distrito de Madeira."
+  },
+  {
+    "q": "Em que distrito se encontra: Levadas da Madeira?",
+    "a": "Madeira",
+    "opts": [
+      "Guarda",
+      "Vila Real",
+      "Madeira",
+      "Lisboa"
+    ],
+    "exp": "Levadas da Madeira fica no distrito de Madeira."
+  },
+  {
+    "q": "Em que distrito se encontra: Cabo Girão (maior falésia da Europa)?",
+    "a": "Madeira",
+    "opts": [
+      "Évora",
+      "Madeira",
+      "Castelo Branco",
+      "Portalegre"
+    ],
+    "exp": "Cabo Girão (maior falésia da Europa) fica no distrito de Madeira."
+  },
+  {
+    "q": "Em que distrito se encontra: Funchal (mercado dos Lavradores)?",
+    "a": "Madeira",
+    "opts": [
+      "Coimbra",
+      "Açores",
+      "Madeira",
+      "Braga"
+    ],
+    "exp": "Funchal (mercado dos Lavradores) fica no distrito de Madeira."
+  },
+  {
+    "q": "Em que distrito se encontra: Porto Moniz?",
+    "a": "Madeira",
+    "opts": [
+      "Bragança",
+      "Madeira",
+      "Faro",
+      "Porto"
+    ],
+    "exp": "Porto Moniz fica no distrito de Madeira."
+  },
+  {
+    "q": "Em que distrito se encontra: Sete Cidades (São Miguel)?",
+    "a": "Açores",
+    "opts": [
+      "Bragança",
+      "Viseu",
+      "Portalegre",
+      "Açores"
+    ],
+    "exp": "Sete Cidades (São Miguel) fica no distrito de Açores."
+  },
+  {
+    "q": "Em que distrito se encontra: Furnas (termas e cozido)?",
+    "a": "Açores",
+    "opts": [
+      "Lisboa",
+      "Açores",
+      "Castelo Branco",
+      "Aveiro"
+    ],
+    "exp": "Furnas (termas e cozido) fica no distrito de Açores."
+  },
+  {
+    "q": "Em que distrito se encontra: Caldeira do Faial?",
+    "a": "Açores",
+    "opts": [
+      "Madeira",
+      "Açores",
+      "Setúbal",
+      "Viseu"
+    ],
+    "exp": "Caldeira do Faial fica no distrito de Açores."
+  },
+  {
+    "q": "Em que distrito se encontra: Fajã dos Cubres (Jogo)?",
+    "a": "Açores",
+    "opts": [
+      "Braga",
+      "Évora",
+      "Açores",
+      "Castelo Branco"
+    ],
+    "exp": "Fajã dos Cubres (Jogo) fica no distrito de Açores."
+  },
+  {
+    "q": "Em que distrito se encontra: Pico (vulcão mais alto de Portugal)?",
+    "a": "Açores",
+    "opts": [
+      "Lisboa",
+      "Madeira",
+      "Açores",
+      "Coimbra"
+    ],
+    "exp": "Pico (vulcão mais alto de Portugal) fica no distrito de Açores."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Ovos moles de Aveiro (IGP)?",
+    "a": "Aveiro",
+    "opts": [
+      "Guarda",
+      "Braga",
+      "Faro",
+      "Aveiro"
+    ],
+    "exp": "Ovos moles de Aveiro (IGP) é típico do distrito de Aveiro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Enguias da Ria?",
+    "a": "Aveiro",
+    "opts": [
+      "Évora",
+      "Castelo Branco",
+      "Aveiro",
+      "Braga"
+    ],
+    "exp": "Enguias da Ria é típico do distrito de Aveiro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Caldeirada de enguias?",
+    "a": "Aveiro",
+    "opts": [
+      "Guarda",
+      "Aveiro",
+      "Viseu",
+      "Vila Real"
+    ],
+    "exp": "Caldeirada de enguias é típico do distrito de Aveiro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Saraiva?",
+    "a": "Aveiro",
+    "opts": [
+      "Évora",
+      "Aveiro",
+      "Vila Real",
+      "Lisboa"
+    ],
+    "exp": "Saraiva é típico do distrito de Aveiro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Tripas à moda de Aveiro?",
+    "a": "Aveiro",
+    "opts": [
+      "Leiria",
+      "Porto",
+      "Aveiro",
+      "Coimbra"
+    ],
+    "exp": "Tripas à moda de Aveiro é típico do distrito de Aveiro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Migas alentejanas?",
+    "a": "Beja",
+    "opts": [
+      "Évora",
+      "Madeira",
+      "Beja",
+      "Leiria"
+    ],
+    "exp": "Migas alentejanas é típico do distrito de Beja."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo de ovelha?",
+    "a": "Beja",
+    "opts": [
+      "Évora",
+      "Beja",
+      "Portalegre",
+      "Guarda"
+    ],
+    "exp": "Queijo de ovelha é típico do distrito de Beja."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Carolo?",
+    "a": "Beja",
+    "opts": [
+      "Viseu",
+      "Beja",
+      "Viana do Castelo",
+      "Setúbal"
+    ],
+    "exp": "Carolo é típico do distrito de Beja."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Rojões à minhota?",
+    "a": "Braga",
+    "opts": [
+      "Braga",
+      "Açores",
+      "Aveiro",
+      "Guarda"
+    ],
+    "exp": "Rojões à minhota é típico do distrito de Braga."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bacalhau à Braga?",
+    "a": "Braga",
+    "opts": [
+      "Madeira",
+      "Braga",
+      "Leiria",
+      "Aveiro"
+    ],
+    "exp": "Bacalhau à Braga é típico do distrito de Braga."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Torta de Viana?",
+    "a": "Braga",
+    "opts": [
+      "Beja",
+      "Castelo Branco",
+      "Portalegre",
+      "Braga"
+    ],
+    "exp": "Torta de Viana é típico do distrito de Braga."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Alheira de Mirandela (IGP)?",
+    "a": "Bragança",
+    "opts": [
+      "Viseu",
+      "Bragança",
+      "Beja",
+      "Lisboa"
+    ],
+    "exp": "Alheira de Mirandela (IGP) é típico do distrito de Bragança."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Presunto de Vinhais (IGP)?",
+    "a": "Bragança",
+    "opts": [
+      "Braga",
+      "Viseu",
+      "Porto",
+      "Bragança"
+    ],
+    "exp": "Presunto de Vinhais (IGP) é típico do distrito de Bragança."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Butelo e casulas?",
+    "a": "Bragança",
+    "opts": [
+      "Bragança",
+      "Castelo Branco",
+      "Aveiro",
+      "Coimbra"
+    ],
+    "exp": "Butelo e casulas é típico do distrito de Bragança."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Mel de Trás-os-Montes?",
+    "a": "Bragança",
+    "opts": [
+      "Évora",
+      "Lisboa",
+      "Viseu",
+      "Bragança"
+    ],
+    "exp": "Mel de Trás-os-Montes é típico do distrito de Bragança."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo da Serra da Estrela?",
+    "a": "Castelo Branco",
+    "opts": [
+      "Coimbra",
+      "Aveiro",
+      "Castelo Branco",
+      "Guarda"
+    ],
+    "exp": "Queijo da Serra da Estrela é típico do distrito de Castelo Branco."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Chanfana?",
+    "a": "Castelo Branco",
+    "opts": [
+      "Setúbal",
+      "Castelo Branco",
+      "Aveiro",
+      "Santarém"
+    ],
+    "exp": "Chanfana é típico do distrito de Castelo Branco."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Chanfana de cabrito?",
+    "a": "Coimbra",
+    "opts": [
+      "Leiria",
+      "Santarém",
+      "Coimbra",
+      "Castelo Branco"
+    ],
+    "exp": "Chanfana de cabrito é típico do distrito de Coimbra."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Arroz de lampreia?",
+    "a": "Coimbra",
+    "opts": [
+      "Coimbra",
+      "Açores",
+      "Lisboa",
+      "Guarda"
+    ],
+    "exp": "Arroz de lampreia é típico do distrito de Coimbra."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Pastéis de Tentúgal?",
+    "a": "Coimbra",
+    "opts": [
+      "Beja",
+      "Açores",
+      "Coimbra",
+      "Bragança"
+    ],
+    "exp": "Pastéis de Tentúgal é típico do distrito de Coimbra."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Raivas de Coimbra?",
+    "a": "Coimbra",
+    "opts": [
+      "Santarém",
+      "Setúbal",
+      "Coimbra",
+      "Madeira"
+    ],
+    "exp": "Raivas de Coimbra é típico do distrito de Coimbra."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Açorda alentejana?",
+    "a": "Évora",
+    "opts": [
+      "Vila Real",
+      "Porto",
+      "Évora",
+      "Madeira"
+    ],
+    "exp": "Açorda alentejana é típico do distrito de Évora."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo de Évora (DOP)?",
+    "a": "Évora",
+    "opts": [
+      "Évora",
+      "Braga",
+      "Santarém",
+      "Viseu"
+    ],
+    "exp": "Queijo de Évora (DOP) é típico do distrito de Évora."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Cataplana de marisco?",
+    "a": "Faro",
+    "opts": [
+      "Vila Real",
+      "Faro",
+      "Aveiro",
+      "Açores"
+    ],
+    "exp": "Cataplana de marisco é típico do distrito de Faro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Amêijoas na cataplana?",
+    "a": "Faro",
+    "opts": [
+      "Setúbal",
+      "Faro",
+      "Açores",
+      "Castelo Branco"
+    ],
+    "exp": "Amêijoas na cataplana é típico do distrito de Faro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Caranguejo?",
+    "a": "Faro",
+    "opts": [
+      "Braga",
+      "Aveiro",
+      "Setúbal",
+      "Faro"
+    ],
+    "exp": "Caranguejo é típico do distrito de Faro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Figos do Algarve (IGP)?",
+    "a": "Faro",
+    "opts": [
+      "Aveiro",
+      "Santarém",
+      "Coimbra",
+      "Faro"
+    ],
+    "exp": "Figos do Algarve (IGP) é típico do distrito de Faro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Medronho?",
+    "a": "Faro",
+    "opts": [
+      "Braga",
+      "Évora",
+      "Leiria",
+      "Faro"
+    ],
+    "exp": "Medronho é típico do distrito de Faro."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo Serra da Estrela (DOP)?",
+    "a": "Guarda",
+    "opts": [
+      "Açores",
+      "Guarda",
+      "Lisboa",
+      "Aveiro"
+    ],
+    "exp": "Queijo Serra da Estrela (DOP) é típico do distrito de Guarda."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Chouriço de carne da Serra?",
+    "a": "Guarda",
+    "opts": [
+      "Aveiro",
+      "Guarda",
+      "Castelo Branco",
+      "Évora"
+    ],
+    "exp": "Chouriço de carne da Serra é típico do distrito de Guarda."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bacalhau à moda da Serra?",
+    "a": "Guarda",
+    "opts": [
+      "Santarém",
+      "Évora",
+      "Portalegre",
+      "Guarda"
+    ],
+    "exp": "Bacalhau à moda da Serra é típico do distrito de Guarda."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Mel da Serra da Estrela?",
+    "a": "Guarda",
+    "opts": [
+      "Portalegre",
+      "Guarda",
+      "Santarém",
+      "Coimbra"
+    ],
+    "exp": "Mel da Serra da Estrela é típico do distrito de Guarda."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Caldeirada de peixe da Nazaré?",
+    "a": "Leiria",
+    "opts": [
+      "Leiria",
+      "Castelo Branco",
+      "Viseu",
+      "Coimbra"
+    ],
+    "exp": "Caldeirada de peixe da Nazaré é típico do distrito de Leiria."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Doces conventuais de Alcobaça?",
+    "a": "Leiria",
+    "opts": [
+      "Bragança",
+      "Leiria",
+      "Faro",
+      "Portalegre"
+    ],
+    "exp": "Doces conventuais de Alcobaça é típico do distrito de Leiria."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Pão de ló de Margaride?",
+    "a": "Leiria",
+    "opts": [
+      "Évora",
+      "Leiria",
+      "Faro",
+      "Guarda"
+    ],
+    "exp": "Pão de ló de Margaride é típico do distrito de Leiria."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Pastéis de Belém?",
+    "a": "Lisboa",
+    "opts": [
+      "Castelo Branco",
+      "Lisboa",
+      "Portalegre",
+      "Faro"
+    ],
+    "exp": "Pastéis de Belém é típico do distrito de Lisboa."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bacalhau à Brás?",
+    "a": "Lisboa",
+    "opts": [
+      "Beja",
+      "Faro",
+      "Évora",
+      "Lisboa"
+    ],
+    "exp": "Bacalhau à Brás é típico do distrito de Lisboa."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Sardinhas assadas?",
+    "a": "Lisboa",
+    "opts": [
+      "Madeira",
+      "Coimbra",
+      "Lisboa",
+      "Açores"
+    ],
+    "exp": "Sardinhas assadas é típico do distrito de Lisboa."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Caldo verde?",
+    "a": "Lisboa",
+    "opts": [
+      "Porto",
+      "Évora",
+      "Guarda",
+      "Lisboa"
+    ],
+    "exp": "Caldo verde é típico do distrito de Lisboa."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bitoque?",
+    "a": "Lisboa",
+    "opts": [
+      "Coimbra",
+      "Lisboa",
+      "Évora",
+      "Leiria"
+    ],
+    "exp": "Bitoque é típico do distrito de Lisboa."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo de ovelha alentejano?",
+    "a": "Portalegre",
+    "opts": [
+      "Portalegre",
+      "Vila Real",
+      "Viana do Castelo",
+      "Évora"
+    ],
+    "exp": "Queijo de ovelha alentejano é típico do distrito de Portalegre."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Francesinha?",
+    "a": "Porto",
+    "opts": [
+      "Viana do Castelo",
+      "Porto",
+      "Setúbal",
+      "Faro"
+    ],
+    "exp": "Francesinha é típico do distrito de Porto."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Tripas à moda do Porto?",
+    "a": "Porto",
+    "opts": [
+      "Porto",
+      "Braga",
+      "Lisboa",
+      "Évora"
+    ],
+    "exp": "Tripas à moda do Porto é típico do distrito de Porto."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Vinho do Porto?",
+    "a": "Porto",
+    "opts": [
+      "Portalegre",
+      "Coimbra",
+      "Bragança",
+      "Porto"
+    ],
+    "exp": "Vinho do Porto é típico do distrito de Porto."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Pastel de Chaves?",
+    "a": "Porto",
+    "opts": [
+      "Faro",
+      "Bragança",
+      "Açores",
+      "Porto"
+    ],
+    "exp": "Pastel de Chaves é típico do distrito de Porto."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bacalhau à Gomes de Sá?",
+    "a": "Porto",
+    "opts": [
+      "Porto",
+      "Évora",
+      "Viseu",
+      "Setúbal"
+    ],
+    "exp": "Bacalhau à Gomes de Sá é típico do distrito de Porto."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Sopa da pedra de Almeirim?",
+    "a": "Santarém",
+    "opts": [
+      "Faro",
+      "Viseu",
+      "Portalegre",
+      "Santarém"
+    ],
+    "exp": "Sopa da pedra de Almeirim é típico do distrito de Santarém."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Morcela de arroz de Benfica do Ribatejo?",
+    "a": "Santarém",
+    "opts": [
+      "Santarém",
+      "Vila Real",
+      "Aveiro",
+      "Madeira"
+    ],
+    "exp": "Morcela de arroz de Benfica do Ribatejo é típico do distrito de Santarém."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Tomatada com ovos?",
+    "a": "Santarém",
+    "opts": [
+      "Braga",
+      "Lisboa",
+      "Viseu",
+      "Santarém"
+    ],
+    "exp": "Tomatada com ovos é típico do distrito de Santarém."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo de Abrantes?",
+    "a": "Santarém",
+    "opts": [
+      "Santarém",
+      "Guarda",
+      "Leiria",
+      "Madeira"
+    ],
+    "exp": "Queijo de Abrantes é típico do distrito de Santarém."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Choco frito de Setúbal?",
+    "a": "Setúbal",
+    "opts": [
+      "Braga",
+      "Évora",
+      "Setúbal",
+      "Açores"
+    ],
+    "exp": "Choco frito de Setúbal é típico do distrito de Setúbal."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Moscatel de Setúbal (DOP)?",
+    "a": "Setúbal",
+    "opts": [
+      "Beja",
+      "Vila Real",
+      "Porto",
+      "Setúbal"
+    ],
+    "exp": "Moscatel de Setúbal (DOP) é típico do distrito de Setúbal."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Azeitona Maçanilha?",
+    "a": "Setúbal",
+    "opts": [
+      "Coimbra",
+      "Setúbal",
+      "Viseu",
+      "Faro"
+    ],
+    "exp": "Azeitona Maçanilha é típico do distrito de Setúbal."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijadas de Sintra?",
+    "a": "Setúbal",
+    "opts": [
+      "Lisboa",
+      "Setúbal",
+      "Bragança",
+      "Faro"
+    ],
+    "exp": "Queijadas de Sintra é típico do distrito de Setúbal."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Arroz de sarrabulho?",
+    "a": "Viana do Castelo",
+    "opts": [
+      "Beja",
+      "Madeira",
+      "Viana do Castelo",
+      "Braga"
+    ],
+    "exp": "Arroz de sarrabulho é típico do distrito de Viana do Castelo."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Broas de mel?",
+    "a": "Viana do Castelo",
+    "opts": [
+      "Viana do Castelo",
+      "Vila Real",
+      "Leiria",
+      "Coimbra"
+    ],
+    "exp": "Broas de mel é típico do distrito de Viana do Castelo."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Presunto de Barroso (IGP)?",
+    "a": "Vila Real",
+    "opts": [
+      "Faro",
+      "Guarda",
+      "Aveiro",
+      "Vila Real"
+    ],
+    "exp": "Presunto de Barroso (IGP) é típico do distrito de Vila Real."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Vinho de Chaves?",
+    "a": "Vila Real",
+    "opts": [
+      "Beja",
+      "Braga",
+      "Vila Real",
+      "Portalegre"
+    ],
+    "exp": "Vinho de Chaves é típico do distrito de Vila Real."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Mel de Barroso (DOP)?",
+    "a": "Vila Real",
+    "opts": [
+      "Aveiro",
+      "Vila Real",
+      "Braga",
+      "Santarém"
+    ],
+    "exp": "Mel de Barroso (DOP) é típico do distrito de Vila Real."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo de Cabra Transmontano (DOP)?",
+    "a": "Vila Real",
+    "opts": [
+      "Bragança",
+      "Madeira",
+      "Vila Real",
+      "Porto"
+    ],
+    "exp": "Queijo de Cabra Transmontano (DOP) é típico do distrito de Vila Real."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Vinho Dão (DOC)?",
+    "a": "Viseu",
+    "opts": [
+      "Faro",
+      "Portalegre",
+      "Viseu",
+      "Porto"
+    ],
+    "exp": "Vinho Dão (DOC) é típico do distrito de Viseu."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Vitela de Lafões (IGP)?",
+    "a": "Viseu",
+    "opts": [
+      "Viseu",
+      "Beja",
+      "Portalegre",
+      "Braga"
+    ],
+    "exp": "Vitela de Lafões (IGP) é típico do distrito de Viseu."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo de Azeitão?",
+    "a": "Viseu",
+    "opts": [
+      "Setúbal",
+      "Viseu",
+      "Aveiro",
+      "Évora"
+    ],
+    "exp": "Queijo de Azeitão é típico do distrito de Viseu."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bôla de Lamego?",
+    "a": "Viseu",
+    "opts": [
+      "Viseu",
+      "Setúbal",
+      "Beja",
+      "Porto"
+    ],
+    "exp": "Bôla de Lamego é típico do distrito de Viseu."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Espada com banana?",
+    "a": "Madeira",
+    "opts": [
+      "Porto",
+      "Beja",
+      "Aveiro",
+      "Madeira"
+    ],
+    "exp": "Espada com banana é típico do distrito de Madeira."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Bolo de mel da Madeira?",
+    "a": "Madeira",
+    "opts": [
+      "Viana do Castelo",
+      "Beja",
+      "Viseu",
+      "Madeira"
+    ],
+    "exp": "Bolo de mel da Madeira é típico do distrito de Madeira."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Vinho Madeira (DOC)?",
+    "a": "Madeira",
+    "opts": [
+      "Viana do Castelo",
+      "Viseu",
+      "Bragança",
+      "Madeira"
+    ],
+    "exp": "Vinho Madeira (DOC) é típico do distrito de Madeira."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Poncha?",
+    "a": "Madeira",
+    "opts": [
+      "Braga",
+      "Madeira",
+      "Porto",
+      "Guarda"
+    ],
+    "exp": "Poncha é típico do distrito de Madeira."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Espetada?",
+    "a": "Madeira",
+    "opts": [
+      "Santarém",
+      "Bragança",
+      "Viseu",
+      "Madeira"
+    ],
+    "exp": "Espetada é típico do distrito de Madeira."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Cozido das Furnas?",
+    "a": "Açores",
+    "opts": [
+      "Coimbra",
+      "Madeira",
+      "Açores",
+      "Vila Real"
+    ],
+    "exp": "Cozido das Furnas é típico do distrito de Açores."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Alcatra de terceira?",
+    "a": "Açores",
+    "opts": [
+      "Coimbra",
+      "Beja",
+      "Aveiro",
+      "Açores"
+    ],
+    "exp": "Alcatra de terceira é típico do distrito de Açores."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Queijo São Jorge (DOP)?",
+    "a": "Açores",
+    "opts": [
+      "Faro",
+      "Aveiro",
+      "Açores",
+      "Madeira"
+    ],
+    "exp": "Queijo São Jorge (DOP) é típico do distrito de Açores."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Ananás dos Açores?",
+    "a": "Açores",
+    "opts": [
+      "Guarda",
+      "Açores",
+      "Madeira",
+      "Bragança"
+    ],
+    "exp": "Ananás dos Açores é típico do distrito de Açores."
+  },
+  {
+    "q": "De que distrito é típico o prato/produto: Licor de maracujá?",
+    "a": "Açores",
+    "opts": [
+      "Setúbal",
+      "Coimbra",
+      "Vila Real",
+      "Açores"
+    ],
+    "exp": "Licor de maracujá é típico do distrito de Açores."
+  },
+  {
+    "q": "Qual é a capital de Madeira?",
+    "a": "Funchal",
+    "opts": [
+      "Funchal",
+      "Horta",
+      "Angra do Heroísmo",
+      "Ponta Delgada"
+    ],
+    "exp": "A capital de Madeira é Funchal."
+  },
+  {
+    "q": "Qual é a capital de Açores?",
+    "a": "Ponta Delgada",
+    "opts": [
+      "Horta",
+      "Angra do Heroísmo",
+      "Ponta Delgada",
+      "Câmara de Lobos"
+    ],
+    "exp": "A capital de Açores é Ponta Delgada."
   }
 ]

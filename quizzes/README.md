@@ -7,17 +7,29 @@ hurting load time.
 
 ## Layout
 
+One **unified per-topic** layout — every quiz lives under its own folder,
+split by language and difficulty:
+
 ```
 quizzes/
-  easy/    <category>.json
-  medium/  <category>.json
-  hard/    <category>.json
+  <topic>/
+    pt/  easy.json  medium.json  hard.json
+    en/  easy.json  medium.json  hard.json   (optional — falls back to pt)
 ```
 
-Difficulty is a first-class axis (Fácil / Médio / Difícil) — the app no
-longer uses age groups. To add content, drop a `<category>.json` into the
-relevant difficulty folder and register a provider in `quiz-providers.js`
-via `makeDataProvider('<category>')`, then list it in `quiz-page.js`.
+`pt` (European Portuguese) is the primary, fully-maintained language; `en`
+is an optional fallback (the loader serves the `pt` bank when an `en` bank is
+absent). Difficulty is a first-class axis (Fácil / Médio / Difícil) — no age
+groups. The loader (`quiz-data.js`) fetches `quizzes/<topic>/<lang>/<diff>.json`
+on demand.
+
+> The legacy `quizzes/{easy,medium,hard}/<category>.json` layout was retired
+> in June 2026 — everything is now per-topic. Don't reintroduce top-level
+> difficulty folders.
+
+To add content: create `quizzes/<topic>/pt/<difficulty>.json` (a JSON array),
+register a provider in `quiz-providers.js` via `makeDataProvider('<topic>')`,
+then list it in `quiz-page.js`. The provider key **is** the topic folder name.
 
 ## Question format (pt-PT)
 

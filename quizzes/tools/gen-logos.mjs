@@ -104,7 +104,7 @@ function build(slugs, kind) {
 
 async function emit(base, data) {
   for (const tier of ['easy','medium','hard']) {
-    const p = join(ROOT, 'quizzes', tier, `${base}.json`);
+    const p = join(ROOT, 'quizzes', base, 'pt', `${tier}.json`);
     await writeFile(p, JSON.stringify(data[tier], null, 2) + '\n', 'utf8');
     console.log(`  wrote ${tier}/${base}.json — ${data[tier].length} entries`);
   }

@@ -1,0 +1,80 @@
+[
+  {
+    "q": "Que sinal de trânsito é este?",
+    "a": "Proibido estacionar",
+    "opts": [
+      "Proibido estacionar",
+      "Proibido parar e estacionar",
+      "Sentido proibido",
+      "Fim de estacionamento"
+    ],
+    "exp": "Círculo azul com bordo vermelho e uma barra diagonal: proíbe o estacionamento naquele local.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='150' height='150'><circle cx='60' cy='60' r='50' fill='#0d3b9e' stroke='#c1121f' stroke-width='9'/><line x1='26' y1='26' x2='94' y2='94' stroke='#c1121f' stroke-width='9'/></svg>"
+  },
+  {
+    "q": "Que sinal de trânsito é este?",
+    "a": "Outros perigos",
+    "opts": [
+      "Outros perigos",
+      "Cedência de passagem",
+      "Trabalhos na via",
+      "Cruzamento"
+    ],
+    "exp": "Triângulo de bordo vermelho com ponto de exclamação: assinala um perigo não coberto por outro sinal específico.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='150' height='150'><polygon points='60,12 114,104 6,104' fill='#fff' stroke='#c1121f' stroke-width='8'/><text x='60' y='98' font-family='Arial' font-weight='bold' font-size='56' fill='#111' text-anchor='middle'>!</text></svg>"
+  },
+  {
+    "q": "Que sinal de trânsito é este?",
+    "a": "Hospital",
+    "opts": [
+      "Hospital",
+      "Estacionamento",
+      "Posto de socorros",
+      "Heliporto"
+    ],
+    "exp": "Sinal de informação azul com a letra H: indica a proximidade de um hospital.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='150' height='150'><rect x='8' y='8' width='104' height='104' rx='8' fill='#0d3b9e'/><text x='60' y='86' font-family='Arial' font-weight='bold' font-size='70' fill='#fff' text-anchor='middle'>H</text></svg>"
+  },
+  {
+    "q": "Que sinal de trânsito é este?",
+    "a": "Limite de velocidade de 120 km/h",
+    "opts": [
+      "Limite de velocidade de 120 km/h",
+      "Velocidade recomendada de 120 km/h",
+      "Fim de auto-estrada",
+      "Distância mínima de 120 m"
+    ],
+    "exp": "É o limite máximo legal nas auto-estradas portuguesas, em condições normais.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='150' height='150'><circle cx='60' cy='60' r='54' fill='#fff' stroke='#c1121f' stroke-width='11'/><text x='60' y='76' font-family='Arial' font-weight='bold' font-size='38' fill='#111' text-anchor='middle'>120</text></svg>"
+  },
+  {
+    "q": "Que sinal de trânsito é este?",
+    "a": "Rotunda (sentido giratório obrigatório)",
+    "opts": [
+      "Rotunda (sentido giratório obrigatório)",
+      "Cruzamento perigoso",
+      "Curva fechada",
+      "Inversão de marcha"
+    ],
+    "exp": "Círculo azul com três setas em sentido anti-horário: obriga a circular no sentido giratório.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='150' height='150'><circle cx='60' cy='60' r='52' fill='#0d3b9e'/><path d='M60 30 a30 30 0 1 0 28 20' fill='none' stroke='#fff' stroke-width='9'/><polygon points='60,18 74,34 50,38' fill='#fff'/></svg>"
+  },
+  {
+    "q": "Que sinal de trânsito é este?",
+    "a": "Curva à direita (perigo)",
+    "opts": [
+      "Curva à direita (perigo)",
+      "Desvio à direita obrigatório",
+      "Saída à direita",
+      "Estrada escorregadia"
+    ],
+    "exp": "Triângulo de perigo com seta curva: assinala uma curva acentuada à direita.",
+    "imgType": "svg",
+    "img": "<svg viewBox='0 0 120 120' width='150' height='150'><polygon points='60,12 114,104 6,104' fill='#fff' stroke='#c1121f' stroke-width='8'/><path d='M50 96 V64 q0 -16 18 -16 h6' fill='none' stroke='#111' stroke-width='9'/><polygon points='70,34 90,48 70,62' fill='#111'/></svg>"
+  }
+]

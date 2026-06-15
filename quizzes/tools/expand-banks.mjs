@@ -113,7 +113,7 @@ const NEW = {
 let added = 0, skipped = 0;
 for (const cat of Object.keys(NEW)) {
   for (const diff of Object.keys(NEW[cat])) {
-    const path = join(ROOT, 'quizzes', diff, `${cat}.json`);
+    const path = join(ROOT, 'quizzes', cat, 'pt', `${diff}.json`);
     const arr = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : [];
     const seen = new Set(arr.map(it => norm(it.q)));
     for (const it of NEW[cat][diff]) {

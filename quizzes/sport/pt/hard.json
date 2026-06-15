@@ -438,5 +438,104 @@
       "Braga"
     ],
     "exp": "O FC Porto venceu em 2003 e 2011."
+  },
+  {
+    "q": "Qual é o maior torneio de ténis realizado em Wimbledon?",
+    "a": "Grand Slam",
+    "opts": [
+      "Copa Davis",
+      "Masters",
+      "Grand Slam",
+      "Liga ATP"
+    ],
+    "exp": "Wimbledon é um dos 4 torneios Grand Slam do ténis mundial."
+  },
+  {
+    "q": "Qual é o desporto nacional do Japão?",
+    "a": "Sumô",
+    "opts": [
+      "Judo",
+      "Karaté",
+      "Sumô",
+      "Kendo"
+    ],
+    "exp": "O sumô é considerado o desporto nacional do Japão."
+  },
+  {
+    "q": "Quantos sets pode ter um jogo de ténis masculino em Grand Slam?",
+    "a": "Até 5",
+    "opts": [
+      "Até 3",
+      "Até 4",
+      "Até 5",
+      "Até 7"
+    ],
+    "exp": "Nos Grand Slams masculinos joga-se à melhor de 5 sets."
+  },
+  {
+    "q": "Em que país se realizaram os primeiros Jogos Olímpicos modernos (1896)?",
+    "a": "Grécia",
+    "opts": [
+      "França",
+      "Grécia",
+      "Inglaterra",
+      "EUA"
+    ],
+    "exp": "Os primeiros Jogos Olímpicos modernos foram em Atenas, em 1896."
+  },
+  {
+    "q": "Qual é a distância de uma maratona?",
+    "a": "42,195 km",
+    "opts": [
+      "21 km",
+      "42,195 km",
+      "50 km",
+      "100 km"
+    ],
+    "exp": "A maratona tem 42,195 km."
+  },
+  {
+    "q": "Que clube português tem mais títulos nacionais de futebol?",
+    "a": "Benfica",
+    "opts": [
+      "FC Porto",
+      "Benfica",
+      "Sporting",
+      "Braga"
+    ],
+    "exp": "O Benfica é o clube com mais campeonatos nacionais de Portugal."
+  },
+  {
+    "q": "Quantos pontos vale um \"try\" no râguebi?",
+    "a": "5",
+    "opts": [
+      "3",
+      "5",
+      "6",
+      "7"
+    ],
+    "exp": "Um try vale 5 pontos no râguebi."
+  },
+  {
+    "q": "Em que superfície se joga Wimbledon?",
+    "a": "Relva",
+    "opts": [
+      "Terra batida",
+      "Relva",
+      "Cimento",
+      "Sintético"
+    ],
+    "exp": "Wimbledon é o único Grand Slam jogado em relva."
+  },
+  {
+    "q": "Que país venceu o primeiro Campeonato do Mundo de Futebol, em 1930?",
+    "a": "Uruguai",
+    "opts": [
+      "Brasil",
+      "Argentina",
+      "Uruguai",
+      "Itália"
+    ],
+    "exp": "O Uruguai venceu o Mundial de 1930, que organizou."
   }
 ]

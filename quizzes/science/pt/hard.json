@@ -438,5 +438,258 @@
       "Lava"
     ],
     "exp": "O calcário e o arenito são sedimentares."
+  },
+  {
+    "q": "Quantas células tem o corpo humano?",
+    "a": "Cerca de 37 biliões",
+    "opts": [
+      "Cerca de 1 milhão",
+      "Cerca de 1 bilião",
+      "Cerca de 37 biliões",
+      "Cerca de 1 trilião"
+    ],
+    "exp": "Estima-se que o corpo humano tenha cerca de 37,2 biliões de células."
+  },
+  {
+    "q": "Qual é a velocidade da luz?",
+    "a": "300 000 km/s",
+    "opts": [
+      "150 000 km/s",
+      "300 000 km/s",
+      "600 000 km/s",
+      "100 000 km/s"
+    ],
+    "exp": "A luz percorre cerca de 300 000 km por segundo no vácuo."
+  },
+  {
+    "q": "O que é o DNA?",
+    "a": "O código genético dos seres vivos",
+    "opts": [
+      "Um vírus",
+      "O código genético dos seres vivos",
+      "Uma proteína de defesa",
+      "Um açúcar"
+    ],
+    "exp": "O DNA contém as instruções genéticas que definem cada ser vivo."
+  },
+  {
+    "q": "Qual é o planeta mais quente do Sistema Solar?",
+    "a": "Vénus",
+    "opts": [
+      "Mercúrio",
+      "Vénus",
+      "Marte",
+      "Júpiter"
+    ],
+    "exp": "Vénus chega a 462°C devido ao seu efeito de estufa, sendo mais quente que Mercúrio."
+  },
+  {
+    "q": "Qual é o planeta com mais luas?",
+    "a": "Saturno",
+    "opts": [
+      "Júpiter",
+      "Saturno",
+      "Urano",
+      "Neptuno"
+    ],
+    "exp": "Saturno tem mais de 140 luas confirmadas, ultrapassando Júpiter."
+  },
+  {
+    "q": "Qual é a unidade de força no Sistema Internacional?",
+    "a": "Newton",
+    "opts": [
+      "Joule",
+      "Watt",
+      "Newton",
+      "Pascal"
+    ],
+    "exp": "A força mede-se em newtons (N), em honra de Isaac Newton."
+  },
+  {
+    "q": "Quantos cromossomas tem uma célula humana?",
+    "a": "46",
+    "opts": [
+      "23",
+      "46",
+      "48",
+      "64"
+    ],
+    "exp": "As células humanas têm 46 cromossomas (23 pares)."
+  },
+  {
+    "q": "Qual é o metal líquido à temperatura ambiente?",
+    "a": "Mercúrio",
+    "opts": [
+      "Ferro",
+      "Mercúrio",
+      "Alumínio",
+      "Chumbo"
+    ],
+    "exp": "O mercúrio é o único metal líquido à temperatura ambiente."
+  },
+  {
+    "q": "Qual é o som mais rápido: no ar ou na água?",
+    "a": "Na água",
+    "opts": [
+      "No ar",
+      "Na água",
+      "Igual",
+      "No vácuo"
+    ],
+    "exp": "O som viaja mais depressa na água do que no ar."
+  },
+  {
+    "q": "Qual é a velocidade aproximada da luz no vácuo?",
+    "a": "300 000 km/s",
+    "opts": [
+      "30 000 km/s",
+      "300 000 km/s",
+      "3 000 km/s",
+      "3 milhões km/s"
+    ],
+    "exp": "A luz viaja a cerca de 299 792 km/s no vácuo."
+  },
+  {
+    "q": "Qual é a partícula de carga negativa do átomo?",
+    "a": "Eletrão",
+    "opts": [
+      "Protão",
+      "Neutrão",
+      "Eletrão",
+      "Fotão"
+    ],
+    "exp": "O eletrão tem carga negativa."
+  },
+  {
+    "q": "Qual é a partícula subatómica com carga negativa?",
+    "a": "Electrão",
+    "opts": [
+      "Electrão",
+      "Protão",
+      "Neutrão",
+      "Positrão"
+    ],
+    "exp": "O electrão tem carga negativa; o protão positiva e o neutrão é neutro."
+  },
+  {
+    "q": "Que enzima copia o ADN durante a replicação?",
+    "a": "ADN polimerase",
+    "opts": [
+      "ADN polimerase",
+      "ARN polimerase",
+      "Ligase",
+      "Helicase"
+    ],
+    "exp": "A ADN polimerase sintetiza a nova cadeia durante a replicação do ADN."
+  },
+  {
+    "q": "Qual é a segunda lei de Newton?",
+    "a": "F = m × a",
+    "opts": [
+      "F = m × a",
+      "E = m c²",
+      "F = G m₁m₂/r²",
+      "PV = nRT"
+    ],
+    "exp": "A força resultante é igual à massa vezes a aceleração (F = m·a)."
+  },
+  {
+    "q": "Que tipo de radiação tem maior energia e menor comprimento de onda?",
+    "a": "Raios gama",
+    "opts": [
+      "Raios gama",
+      "Microondas",
+      "Infravermelhos",
+      "Ondas de rádio"
+    ],
+    "exp": "Os raios gama têm o comprimento de onda mais curto e a maior energia do espectro."
+  },
+  {
+    "q": "Qual é o nome do limite de uma região do espaço de onde nem a luz escapa?",
+    "a": "Horizonte de eventos",
+    "opts": [
+      "Horizonte de eventos",
+      "Singularidade",
+      "Nebulosa",
+      "Quasar"
+    ],
+    "exp": "O horizonte de eventos é a fronteira de um buraco negro."
+  },
+  {
+    "q": "Que ácido está presente no estômago e ajuda a digestão?",
+    "a": "Ácido clorídrico",
+    "opts": [
+      "Ácido clorídrico",
+      "Ácido sulfúrico",
+      "Ácido cítrico",
+      "Ácido acético"
+    ],
+    "exp": "O suco gástrico contém ácido clorídrico (HCl)."
+  },
+  {
+    "q": "Quem formulou a tabela periódica organizada por propriedades periódicas?",
+    "a": "Dmitri Mendeleev",
+    "opts": [
+      "Dmitri Mendeleev",
+      "Marie Curie",
+      "John Dalton",
+      "Antoine Lavoisier"
+    ],
+    "exp": "Mendeleev publicou a tabela periódica em 1869, prevendo elementos ainda por descobrir."
+  },
+  {
+    "q": "Que tipo de célula não possui núcleo definido?",
+    "a": "Procariótica",
+    "opts": [
+      "Procariótica",
+      "Eucariótica",
+      "Animal",
+      "Vegetal"
+    ],
+    "exp": "As células procarióticas (bactérias) não têm núcleo delimitado."
+  },
+  {
+    "q": "Qual é a lei que relaciona pressão e volume de um gás a temperatura constante?",
+    "a": "Lei de Boyle",
+    "opts": [
+      "Lei de Boyle",
+      "Lei de Ohm",
+      "Lei de Hooke",
+      "Lei de Newton"
+    ],
+    "exp": "A Lei de Boyle: a pressão é inversamente proporcional ao volume (T constante)."
+  },
+  {
+    "q": "Que partícula medeia a força eletromagnética?",
+    "a": "Fotão",
+    "opts": [
+      "Fotão",
+      "Gluão",
+      "Bosão de Higgs",
+      "Neutrino"
+    ],
+    "exp": "O fotão é a partícula mediadora da força eletromagnética."
+  },
+  {
+    "q": "Qual é a unidade SI de energia?",
+    "a": "Joule",
+    "opts": [
+      "Joule",
+      "Newton",
+      "Watt",
+      "Pascal"
+    ],
+    "exp": "A energia mede-se em joules (J) no Sistema Internacional."
+  },
+  {
+    "q": "Que organelo celular é responsável pela produção de energia (ATP)?",
+    "a": "Mitocôndria",
+    "opts": [
+      "Mitocôndria",
+      "Ribossoma",
+      "Núcleo",
+      "Cloroplasto"
+    ],
+    "exp": "A mitocôndria é a \"central energética\" da célula."
   }
 ]

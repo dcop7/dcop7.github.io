@@ -460,5 +460,126 @@
       "Gira-discos"
     ],
     "exp": "O sintetizador é muito usado na música eletrónica."
+  },
+  {
+    "q": "De que país é o fado?",
+    "a": "Portugal",
+    "opts": [
+      "Espanha",
+      "Brasil",
+      "Portugal",
+      "Argentina"
+    ],
+    "exp": "O fado é o género musical tradicional português, classificado como Património da UNESCO."
+  },
+  {
+    "q": "Que instrumento toca-se com um arco?",
+    "a": "Violino",
+    "opts": [
+      "Guitarra",
+      "Flauta",
+      "Violino",
+      "Saxofone"
+    ],
+    "exp": "O violino, viola, violoncelo e contrabaixo tocam-se com um arco."
+  },
+  {
+    "q": "Quantas notas tem a escala musical básica?",
+    "a": "7",
+    "opts": [
+      "5",
+      "7",
+      "9",
+      "12"
+    ],
+    "exp": "Dó, Ré, Mi, Fá, Sol, Lá, Si — sete notas (mais a oitava)."
+  },
+  {
+    "q": "Quem é considerada a \"Rainha do Fado\"?",
+    "a": "Amália Rodrigues",
+    "opts": [
+      "Mariza",
+      "Amália Rodrigues",
+      "Carminho",
+      "Ana Moura"
+    ],
+    "exp": "Amália Rodrigues (1920-1999) é a \"Rainha do Fado\"."
+  },
+  {
+    "q": "Qual destes é um instrumento de sopro?",
+    "a": "Flauta",
+    "opts": [
+      "Violino",
+      "Flauta",
+      "Tambor",
+      "Piano"
+    ],
+    "exp": "A flauta é um instrumento de sopro (aerofone)."
+  },
+  {
+    "q": "Qual destes é um instrumento de percussão?",
+    "a": "Bateria",
+    "opts": [
+      "Bateria",
+      "Guitarra",
+      "Violoncelo",
+      "Harpa"
+    ],
+    "exp": "A bateria é um instrumento de percussão."
+  },
+  {
+    "q": "Qual é o instrumento com teclas pretas e brancas?",
+    "a": "Piano",
+    "opts": [
+      "Órgão",
+      "Piano",
+      "Acordeão",
+      "Todos"
+    ],
+    "exp": "O piano (e também o órgão e o acordeão) tem teclas pretas e brancas."
+  },
+  {
+    "q": "Quantos músicos tem normalmente um quarteto?",
+    "a": "4",
+    "opts": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "exp": "Um quarteto é formado por 4 músicos."
+  },
+  {
+    "q": "Quem dirige uma orquestra?",
+    "a": "O maestro",
+    "opts": [
+      "O solista",
+      "O maestro",
+      "O compositor",
+      "O produtor"
+    ],
+    "exp": "O maestro (regente) dirige a orquestra."
+  },
+  {
+    "q": "Quantas cordas tem uma guitarra clássica?",
+    "a": "6",
+    "opts": [
+      "4",
+      "5",
+      "6",
+      "12"
+    ],
+    "exp": "A guitarra clássica tem 6 cordas."
+  },
+  {
+    "q": "Que instrumento tem teclas pretas e brancas?",
+    "a": "Piano",
+    "opts": [
+      "Violino",
+      "Piano",
+      "Flauta",
+      "Bateria"
+    ],
+    "exp": "O piano tem teclas pretas e brancas."
   }
 ]

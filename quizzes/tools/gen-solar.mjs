@@ -93,7 +93,7 @@ add('hard', 'A que grupo pertence Plutão desde 2006?', 'Planetas anões',
   shuffle(['Planetas anões','Planetas gigantes','Asteroides','Cometas']), 'Plutão foi reclassificado como planeta anão em 2006.');
 
 for (const tier of ['easy','medium','hard']) {
-  await writeFile(join(ROOT,'quizzes',tier,'solar.json'), JSON.stringify(out[tier], null, 2) + '\n', 'utf8');
-  console.log(`  wrote ${tier}/solar.json — ${out[tier].length} entries`);
+  await writeFile(join(ROOT,'quizzes','solar','pt',`${tier}.json`), JSON.stringify(out[tier], null, 2) + '\n', 'utf8');
+  console.log(`  wrote solar/pt/${tier}.json — ${out[tier].length} entries`);
 }
 console.log(`Total solar questions: ${out.easy.length + out.medium.length + out.hard.length}`);

@@ -438,5 +438,115 @@
       "Microfone"
     ],
     "exp": "Os projetores são usados em aulas e cinemas."
+  },
+  {
+    "q": "Que empresa criou o sistema operativo Windows?",
+    "a": "Microsoft",
+    "opts": [
+      "Microsoft",
+      "Apple",
+      "Google",
+      "IBM"
+    ],
+    "exp": "O Windows é o sistema operativo da Microsoft, lançado em 1985."
+  },
+  {
+    "q": "Que empresa fabrica o iPhone?",
+    "a": "Apple",
+    "opts": [
+      "Apple",
+      "Samsung",
+      "Google",
+      "Sony"
+    ],
+    "exp": "O iPhone é o smartphone da Apple, lançado em 2007."
+  },
+  {
+    "q": "O que significa 'www'?",
+    "a": "World Wide Web",
+    "opts": [
+      "World Wide Web",
+      "World Web Work",
+      "Wide World Web",
+      "Web World Wide"
+    ],
+    "exp": "WWW = World Wide Web, criada por Tim Berners-Lee em 1989."
+  },
+  {
+    "q": "Qual destas é uma rede social?",
+    "a": "Instagram",
+    "opts": [
+      "Instagram",
+      "Photoshop",
+      "Excel",
+      "Chrome"
+    ],
+    "exp": "O Instagram é uma rede social de partilha de fotografias e vídeos."
+  },
+  {
+    "q": "O que faz um motor de busca como o Google?",
+    "a": "Encontra páginas na Internet",
+    "opts": [
+      "Encontra páginas na Internet",
+      "Edita fotografias",
+      "Envia correio físico",
+      "Faz chamadas telefónicas"
+    ],
+    "exp": "Um motor de busca indexa e procura páginas web."
+  },
+  {
+    "q": "Que dispositivo guarda ficheiros e executa programas?",
+    "a": "Computador",
+    "opts": [
+      "Computador",
+      "Impressora",
+      "Router",
+      "Monitor"
+    ],
+    "exp": "O computador processa dados e executa programas."
+  },
+  {
+    "q": "O que é uma 'palavra-passe'?",
+    "a": "Um código secreto de acesso",
+    "opts": [
+      "Um código secreto de acesso",
+      "Um tipo de vírus",
+      "Um programa de desenho",
+      "Um cabo de rede"
+    ],
+    "exp": "A palavra-passe protege o acesso a contas e dispositivos."
+  },
+  {
+    "q": "Que empresa criou o motor de busca mais usado do mundo?",
+    "a": "Google",
+    "opts": [
+      "Google",
+      "Yahoo",
+      "Microsoft",
+      "Amazon"
+    ],
+    "exp": "A Google domina o mercado das pesquisas na Internet desde os anos 2000."
+  },
+  {
+    "q": "O que é o 'email'?",
+    "a": "Correio eletrónico",
+    "opts": [
+      "Correio eletrónico",
+      "Uma rede de telemóveis",
+      "Um jogo online",
+      "Um tipo de ecrã"
+    ],
+    "exp": "Email é correio electrónico — mensagens enviadas pela Internet."
+  },
+  {
+    "q": "Que parte do computador mostra a imagem?",
+    "a": "Monitor",
+    "opts": [
+      "Monitor",
+      "Teclado",
+      "Rato",
+      "Coluna"
+    ],
+    "exp": "O monitor (ecrã) apresenta a imagem ao utilizador."
   }
 ]

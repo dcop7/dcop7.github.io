@@ -51,7 +51,7 @@ for (const [sym, name, tier] of EL) {
 }
 
 for (const tier of ['easy','medium','hard']) {
-  const p = join(ROOT,'quizzes',tier,'simbolos.json');
+  const p = join(ROOT,'quizzes','simbolos','pt',`${tier}.json`);
   let existing = [];
   if (existsSync(p)) existing = JSON.parse(await readFile(p,'utf8')).filter(it => it.gen !== 'chem');
   const merged = existing.concat(gen[tier]);

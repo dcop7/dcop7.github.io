@@ -458,5 +458,181 @@
     "img": "assets/planets/sun.jpg",
     "imgType": "img",
     "imgCredit": "Solar System Scope · CC BY 4.0"
+  },
+  {
+    "q": "Que planeta roda quase \"deitado\", com o eixo muito inclinado?",
+    "a": "Urano",
+    "opts": [
+      "Júpiter",
+      "Terra",
+      "Urano",
+      "Vénus"
+    ],
+    "exp": "Resposta: Urano — o planeta que roda quase \"deitado\" (eixo muito inclinado)"
+  },
+  {
+    "q": "Que planeta roda no sentido retrógrado (ao contrário da maioria)?",
+    "a": "Vénus",
+    "opts": [
+      "Mercúrio",
+      "Terra",
+      "Urano",
+      "Vénus"
+    ],
+    "exp": "Resposta: Vénus — o planeta mais quente do Sistema Solar"
+  },
+  {
+    "q": "Em que planeta se encontra o Monte Olimpo, o maior vulcão do Sistema Solar?",
+    "a": "Marte",
+    "opts": [
+      "Júpiter",
+      "Neptuno",
+      "Marte",
+      "Terra"
+    ],
+    "exp": "Resposta: Marte — o planeta vermelho"
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Vénus (em direção ao Sol)?",
+    "a": "Mercúrio",
+    "opts": [
+      "Marte",
+      "Terra",
+      "Saturno",
+      "Mercúrio"
+    ],
+    "exp": "Antes de Vénus está Mercúrio."
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Terra (em direção ao Sol)?",
+    "a": "Vénus",
+    "opts": [
+      "Saturno",
+      "Vénus",
+      "Marte",
+      "Neptuno"
+    ],
+    "exp": "Antes de Terra está Vénus."
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Marte (em direção ao Sol)?",
+    "a": "Terra",
+    "opts": [
+      "Marte",
+      "Saturno",
+      "Júpiter",
+      "Terra"
+    ],
+    "exp": "Antes de Marte está Terra."
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Júpiter (em direção ao Sol)?",
+    "a": "Marte",
+    "opts": [
+      "Mercúrio",
+      "Neptuno",
+      "Marte",
+      "Vénus"
+    ],
+    "exp": "Antes de Júpiter está Marte."
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Saturno (em direção ao Sol)?",
+    "a": "Júpiter",
+    "opts": [
+      "Saturno",
+      "Vénus",
+      "Urano",
+      "Júpiter"
+    ],
+    "exp": "Antes de Saturno está Júpiter."
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Urano (em direção ao Sol)?",
+    "a": "Saturno",
+    "opts": [
+      "Neptuno",
+      "Urano",
+      "Vénus",
+      "Saturno"
+    ],
+    "exp": "Antes de Urano está Saturno."
+  },
+  {
+    "q": "Que planeta vem imediatamente antes de Neptuno (em direção ao Sol)?",
+    "a": "Urano",
+    "opts": [
+      "Marte",
+      "Júpiter",
+      "Vénus",
+      "Urano"
+    ],
+    "exp": "Antes de Neptuno está Urano."
+  },
+  {
+    "q": "Qual destas é uma lua de Terra?",
+    "a": "Lua",
+    "opts": [
+      "Ganimedes",
+      "Lua",
+      "Titã",
+      "Fobos"
+    ],
+    "exp": "Lua é uma lua de Terra."
+  },
+  {
+    "q": "Qual destas é uma lua de Marte?",
+    "a": "Fobos",
+    "opts": [
+      "Ganimedes",
+      "Lua",
+      "Fobos",
+      "Titã"
+    ],
+    "exp": "Fobos é uma lua de Marte."
+  },
+  {
+    "q": "Qual destas é uma lua de Júpiter?",
+    "a": "Ganimedes",
+    "opts": [
+      "Titã",
+      "Lua",
+      "Fobos",
+      "Ganimedes"
+    ],
+    "exp": "Ganimedes é uma lua de Júpiter."
+  },
+  {
+    "q": "Qual destas é uma lua de Saturno?",
+    "a": "Titã",
+    "opts": [
+      "Titã",
+      "Lua",
+      "Ganimedes",
+      "Fobos"
+    ],
+    "exp": "Titã é uma lua de Saturno."
+  },
+  {
+    "q": "Qual destas é uma lua de Neptuno?",
+    "a": "Tritão",
+    "opts": [
+      "Tritão",
+      "Titã",
+      "Lua",
+      "Fobos"
+    ],
+    "exp": "Tritão é uma lua de Neptuno."
+  },
+  {
+    "q": "A que grupo pertence Plutão desde 2006?",
+    "a": "Planetas anões",
+    "opts": [
+      "Planetas gigantes",
+      "Cometas",
+      "Planetas anões",
+      "Asteroides"
+    ],
+    "exp": "Plutão foi reclassificado como planeta anão em 2006."
   }
 ]

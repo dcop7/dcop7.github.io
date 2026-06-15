@@ -449,5 +449,104 @@
       "11"
     ],
     "exp": "Seis jogadores de campo mais o guarda-redes."
+  },
+  {
+    "q": "Quantos jogadores tem uma equipa de futebol?",
+    "a": "11",
+    "opts": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "exp": "Cada equipa de futebol tem 11 jogadores em campo, incluindo o guarda-redes."
+  },
+  {
+    "q": "Em que desporto se usa uma raquete e uma rede baixa?",
+    "a": "Ténis",
+    "opts": [
+      "Basquetebol",
+      "Badminton",
+      "Ténis",
+      "Squash"
+    ],
+    "exp": "No ténis usa-se uma raquete para rebater uma bola por cima de uma rede."
+  },
+  {
+    "q": "Em que ano Portugal venceu o Campeonato da Europa de futebol?",
+    "a": "2016",
+    "opts": [
+      "2004",
+      "2008",
+      "2012",
+      "2016"
+    ],
+    "exp": "Portugal venceu o Euro 2016 em França, com vitória sobre os anfitriões na final."
+  },
+  {
+    "q": "Quantos pontos vale um golo no futebol?",
+    "a": "1",
+    "opts": [
+      "1",
+      "2",
+      "3",
+      "5"
+    ],
+    "exp": "Cada golo no futebol vale 1 ponto."
+  },
+  {
+    "q": "De quantos em quantos anos há um Mundial de futebol?",
+    "a": "4",
+    "opts": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "exp": "O Campeonato do Mundo de futebol realiza-se de 4 em 4 anos."
+  },
+  {
+    "q": "Quantos anéis tem o símbolo olímpico?",
+    "a": "5",
+    "opts": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "exp": "Os 5 anéis representam os cinco continentes."
+  },
+  {
+    "q": "Quem é considerado o melhor jogador de futebol português de sempre por muitos?",
+    "a": "Cristiano Ronaldo",
+    "opts": [
+      "Eusébio",
+      "Cristiano Ronaldo",
+      "Luís Figo",
+      "Rui Costa"
+    ],
+    "exp": "Cristiano Ronaldo é o melhor marcador da história das seleções."
+  },
+  {
+    "q": "Com quantos jogadores joga uma equipa de voleibol em campo?",
+    "a": "6",
+    "opts": [
+      "5",
+      "6",
+      "7",
+      "11"
+    ],
+    "exp": "O voleibol joga-se com 6 jogadores por equipa."
+  },
+  {
+    "q": "Em que desporto se usa uma raquete e uma bola amarela num court?",
+    "a": "Ténis",
+    "opts": [
+      "Squash",
+      "Ténis",
+      "Badminton",
+      "Padel"
+    ],
+    "exp": "O ténis usa raquete e bola amarela."
   }
 ]

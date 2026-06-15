@@ -394,5 +394,71 @@
       "Schumann"
     ],
     "exp": "Faz parte da música para 'Sonho de uma Noite de Verão'."
+  },
+  {
+    "q": "Qual instrumento é considerado \"o rei dos instrumentos\"?",
+    "a": "Órgão",
+    "opts": [
+      "Piano",
+      "Violino",
+      "Órgão",
+      "Harpa"
+    ],
+    "exp": "O órgão é chamado \"o rei dos instrumentos\" pela sua grandiosidade e variedade de sons."
+  },
+  {
+    "q": "Quantas teclas brancas tem um piano normal?",
+    "a": "52",
+    "opts": [
+      "48",
+      "52",
+      "56",
+      "60"
+    ],
+    "exp": "Um piano de 88 teclas tem 52 teclas brancas e 36 teclas pretas."
+  },
+  {
+    "q": "Quem compôs as bandas sonoras de filmes como \"Lisbon Story\"?",
+    "a": "Madredeus",
+    "opts": [
+      "Mariza",
+      "Madredeus",
+      "Carlos do Carmo",
+      "Dulce Pontes"
+    ],
+    "exp": "Os Madredeus compuseram a banda sonora do filme \"Lisbon Story\" de Wim Wenders."
+  },
+  {
+    "q": "Que festival de música português é um dos maiores da Europa?",
+    "a": "Rock in Rio Lisboa",
+    "opts": [
+      "Tomorrowland",
+      "Rock in Rio Lisboa",
+      "Glastonbury",
+      "Coachella"
+    ],
+    "exp": "O Rock in Rio Lisboa é um dos grandes festivais realizados em Portugal."
+  },
+  {
+    "q": "Quantos músicos tem um quarteto?",
+    "a": "4",
+    "opts": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "exp": "Um quarteto é composto por 4 músicos."
+  },
+  {
+    "q": "Que compositor austríaco escreveu a ópera \"A Flauta Mágica\"?",
+    "a": "Mozart",
+    "opts": [
+      "Beethoven",
+      "Mozart",
+      "Bach",
+      "Vivaldi"
+    ],
+    "exp": "W. A. Mozart compôs \"A Flauta Mágica\" (1791)."
   }
 ]

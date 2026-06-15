@@ -460,5 +460,324 @@
       "Comporta"
     ],
     "exp": "Na Nazaré já se surfaram ondas de mais de 20 metros."
+  },
+  {
+    "q": "Qual é o rio que atravessa Lisboa?",
+    "a": "Tejo",
+    "opts": [
+      "Tejo",
+      "Douro",
+      "Mondego",
+      "Guadiana"
+    ],
+    "exp": "O Tejo é o maior rio da Península Ibérica e desagua em Lisboa."
+  },
+  {
+    "q": "Que cidade é conhecida pelo vinho do Porto?",
+    "a": "Porto",
+    "opts": [
+      "Porto",
+      "Faro",
+      "Évora",
+      "Aveiro"
+    ],
+    "exp": "O vinho do Porto envelhece nas caves de Vila Nova de Gaia, junto ao Porto."
+  },
+  {
+    "q": "Quantas cores tem a bandeira de Portugal?",
+    "a": "Duas (verde e vermelho)",
+    "opts": [
+      "Duas (verde e vermelho)",
+      "Três",
+      "Uma",
+      "Quatro"
+    ],
+    "exp": "A bandeira é verde e vermelha, com o escudo e a esfera armilar."
+  },
+  {
+    "q": "Que arquipélago português fica no Atlântico, a oeste do continente?",
+    "a": "Açores",
+    "opts": [
+      "Açores",
+      "Canárias",
+      "Cabo Verde",
+      "Baleares"
+    ],
+    "exp": "Os Açores e a Madeira são as duas regiões autónomas insulares de Portugal."
+  },
+  {
+    "q": "Qual é o oceano que banha a costa de Portugal?",
+    "a": "Atlântico",
+    "opts": [
+      "Atlântico",
+      "Pacífico",
+      "Índico",
+      "Mediterrâneo"
+    ],
+    "exp": "Toda a costa continental portuguesa é banhada pelo oceano Atlântico."
+  },
+  {
+    "q": "Com que único país tem Portugal fronteira terrestre?",
+    "a": "Espanha",
+    "opts": [
+      "Espanha",
+      "França",
+      "Marrocos",
+      "Andorra"
+    ],
+    "exp": "Portugal faz fronteira apenas com Espanha (a Raia)."
+  },
+  {
+    "q": "Em que distrito se encontra: Ria de Aveiro?",
+    "a": "Aveiro",
+    "opts": [
+      "Aveiro",
+      "Vila Real",
+      "Leiria",
+      "Lisboa"
+    ],
+    "exp": "Ria de Aveiro fica no distrito de Aveiro."
+  },
+  {
+    "q": "Em que distrito se encontra: Castelo de Beja?",
+    "a": "Beja",
+    "opts": [
+      "Beja",
+      "Vila Real",
+      "Setúbal",
+      "Porto"
+    ],
+    "exp": "Castelo de Beja fica no distrito de Beja."
+  },
+  {
+    "q": "Em que distrito se encontra: Bom Jesus do Monte?",
+    "a": "Braga",
+    "opts": [
+      "Viseu",
+      "Braga",
+      "Santarém",
+      "Madeira"
+    ],
+    "exp": "Bom Jesus do Monte fica no distrito de Braga."
+  },
+  {
+    "q": "Em que distrito se encontra: Sé de Braga?",
+    "a": "Braga",
+    "opts": [
+      "Beja",
+      "Guarda",
+      "Braga",
+      "Vila Real"
+    ],
+    "exp": "Sé de Braga fica no distrito de Braga."
+  },
+  {
+    "q": "Em que distrito se encontra: Santuário do Sameiro?",
+    "a": "Braga",
+    "opts": [
+      "Braga",
+      "Vila Real",
+      "Aveiro",
+      "Évora"
+    ],
+    "exp": "Santuário do Sameiro fica no distrito de Braga."
+  },
+  {
+    "q": "Em que distrito se encontra: Castelo de Bragança (Domus Municipalis)?",
+    "a": "Bragança",
+    "opts": [
+      "Bragança",
+      "Évora",
+      "Coimbra",
+      "Portalegre"
+    ],
+    "exp": "Castelo de Bragança (Domus Municipalis) fica no distrito de Bragança."
+  },
+  {
+    "q": "Em que distrito se encontra: Universidade de Coimbra (UNESCO)?",
+    "a": "Coimbra",
+    "opts": [
+      "Porto",
+      "Coimbra",
+      "Açores",
+      "Lisboa"
+    ],
+    "exp": "Universidade de Coimbra (UNESCO) fica no distrito de Coimbra."
+  },
+  {
+    "q": "Em que distrito se encontra: Mosteiro de Santa Cruz?",
+    "a": "Coimbra",
+    "opts": [
+      "Portalegre",
+      "Madeira",
+      "Viseu",
+      "Coimbra"
+    ],
+    "exp": "Mosteiro de Santa Cruz fica no distrito de Coimbra."
+  },
+  {
+    "q": "Em que distrito se encontra: Silves (castelo mourisco)?",
+    "a": "Faro",
+    "opts": [
+      "Madeira",
+      "Viseu",
+      "Leiria",
+      "Faro"
+    ],
+    "exp": "Silves (castelo mourisco) fica no distrito de Faro."
+  },
+  {
+    "q": "Em que distrito se encontra: Torre de Menagem?",
+    "a": "Guarda",
+    "opts": [
+      "Bragança",
+      "Leiria",
+      "Aveiro",
+      "Guarda"
+    ],
+    "exp": "Torre de Menagem fica no distrito de Guarda."
+  },
+  {
+    "q": "Em que distrito se encontra: Castelo de Leiria?",
+    "a": "Leiria",
+    "opts": [
+      "Coimbra",
+      "Lisboa",
+      "Leiria",
+      "Madeira"
+    ],
+    "exp": "Castelo de Leiria fica no distrito de Leiria."
+  },
+  {
+    "q": "Em que distrito se encontra: Mosteiro de Alcobaça (UNESCO)?",
+    "a": "Leiria",
+    "opts": [
+      "Portalegre",
+      "Viana do Castelo",
+      "Évora",
+      "Leiria"
+    ],
+    "exp": "Mosteiro de Alcobaça (UNESCO) fica no distrito de Leiria."
+  },
+  {
+    "q": "Em que distrito se encontra: Mosteiro da Batalha (UNESCO)?",
+    "a": "Leiria",
+    "opts": [
+      "Porto",
+      "Leiria",
+      "Lisboa",
+      "Évora"
+    ],
+    "exp": "Mosteiro da Batalha (UNESCO) fica no distrito de Leiria."
+  },
+  {
+    "q": "Em que distrito se encontra: Fátima (Santuário)?",
+    "a": "Leiria",
+    "opts": [
+      "Leiria",
+      "Castelo Branco",
+      "Açores",
+      "Aveiro"
+    ],
+    "exp": "Fátima (Santuário) fica no distrito de Leiria."
+  },
+  {
+    "q": "Em que distrito se encontra: Torre de Belém (UNESCO)?",
+    "a": "Lisboa",
+    "opts": [
+      "Portalegre",
+      "Castelo Branco",
+      "Lisboa",
+      "Évora"
+    ],
+    "exp": "Torre de Belém (UNESCO) fica no distrito de Lisboa."
+  },
+  {
+    "q": "Em que distrito se encontra: Mosteiro dos Jerónimos (UNESCO)?",
+    "a": "Lisboa",
+    "opts": [
+      "Beja",
+      "Portalegre",
+      "Leiria",
+      "Lisboa"
+    ],
+    "exp": "Mosteiro dos Jerónimos (UNESCO) fica no distrito de Lisboa."
+  },
+  {
+    "q": "Em que distrito se encontra: Castelo de São Jorge?",
+    "a": "Lisboa",
+    "opts": [
+      "Beja",
+      "Coimbra",
+      "Portalegre",
+      "Lisboa"
+    ],
+    "exp": "Castelo de São Jorge fica no distrito de Lisboa."
+  },
+  {
+    "q": "Em que distrito se encontra: Castelo de Portalegre?",
+    "a": "Portalegre",
+    "opts": [
+      "Évora",
+      "Santarém",
+      "Beja",
+      "Portalegre"
+    ],
+    "exp": "Castelo de Portalegre fica no distrito de Portalegre."
+  },
+  {
+    "q": "Em que distrito se encontra: Castelo de Vide?",
+    "a": "Portalegre",
+    "opts": [
+      "Bragança",
+      "Portalegre",
+      "Porto",
+      "Açores"
+    ],
+    "exp": "Castelo de Vide fica no distrito de Portalegre."
+  },
+  {
+    "q": "Em que distrito se encontra: Torre dos Clérigos?",
+    "a": "Porto",
+    "opts": [
+      "Évora",
+      "Porto",
+      "Castelo Branco",
+      "Beja"
+    ],
+    "exp": "Torre dos Clérigos fica no distrito de Porto."
+  },
+  {
+    "q": "Em que distrito se encontra: Almourol (castelo fluvial)?",
+    "a": "Santarém",
+    "opts": [
+      "Beja",
+      "Évora",
+      "Faro",
+      "Santarém"
+    ],
+    "exp": "Almourol (castelo fluvial) fica no distrito de Santarém."
+  },
+  {
+    "q": "Em que distrito se encontra: Vila do Conde (Mosteiro)?",
+    "a": "Viana do Castelo",
+    "opts": [
+      "Lisboa",
+      "Setúbal",
+      "Guarda",
+      "Viana do Castelo"
+    ],
+    "exp": "Vila do Conde (Mosteiro) fica no distrito de Viana do Castelo."
+  },
+  {
+    "q": "Em que distrito se encontra: Sé de Viseu?",
+    "a": "Viseu",
+    "opts": [
+      "Castelo Branco",
+      "Viseu",
+      "Lisboa",
+      "Vila Real"
+    ],
+    "exp": "Sé de Viseu fica no distrito de Viseu."
   }
 ]

@@ -457,5 +457,137 @@
     "exp": "O Egito fica no nordeste de África.",
     "img": "data/flags/eg.svg",
     "imgType": "flag"
+  },
+  {
+    "q": "Qual é o maior oceano do mundo?",
+    "a": "Pacífico",
+    "opts": [
+      "Atlântico",
+      "Índico",
+      "Pacífico",
+      "Ártico"
+    ],
+    "exp": "O oceano Pacífico cobre mais de 165 milhões de km²."
+  },
+  {
+    "q": "Qual é o rio mais longo do mundo?",
+    "a": "Nilo",
+    "opts": [
+      "Amazonas",
+      "Nilo",
+      "Yangtzé",
+      "Mississípi"
+    ],
+    "exp": "O Nilo tem cerca de 6 650 km de comprimento."
+  },
+  {
+    "q": "De que material é feita a teia da aranha?",
+    "a": "Seda",
+    "opts": [
+      "Algodão",
+      "Seda",
+      "Nylon",
+      "Lã"
+    ],
+    "exp": "A teia de aranha é feita de seda proteica — mais resistente que o aço do mesmo peso."
+  },
+  {
+    "q": "Qual é o osso mais longo do corpo humano?",
+    "a": "Fémur",
+    "opts": [
+      "Tíbia",
+      "Fémur",
+      "Húmero",
+      "Rádio"
+    ],
+    "exp": "O fémur é o osso da coxa e o mais longo do corpo."
+  },
+  {
+    "q": "Qual é a moeda do Japão?",
+    "a": "Iene",
+    "opts": [
+      "Yuan",
+      "Won",
+      "Iene",
+      "Rúpia"
+    ],
+    "exp": "A moeda oficial do Japão é o iene (¥)."
+  },
+  {
+    "q": "Qual é o maior país do mundo em área?",
+    "a": "Rússia",
+    "opts": [
+      "Canadá",
+      "China",
+      "Rússia",
+      "EUA"
+    ],
+    "exp": "A Rússia tem cerca de 17 milhões de km², abrangendo 11 fusos horários."
+  },
+  {
+    "q": "Em que cidade fica a estátua da Liberdade?",
+    "a": "Nova Iorque",
+    "opts": [
+      "Washington",
+      "Boston",
+      "Nova Iorque",
+      "Filadélfia"
+    ],
+    "exp": "A Estátua da Liberdade foi um presente da França aos EUA em 1886."
+  },
+  {
+    "q": "Em que país fica a cidade de Quioto?",
+    "a": "Japão",
+    "opts": [
+      "China",
+      "Coreia do Sul",
+      "Japão",
+      "Tailândia"
+    ],
+    "exp": "Quioto foi a capital imperial do Japão durante mais de mil anos."
+  },
+  {
+    "q": "Quantos dias tem um ano bissexto?",
+    "a": "366",
+    "opts": [
+      "364",
+      "365",
+      "366",
+      "367"
+    ],
+    "exp": "Um ano bissexto tem 366 dias, com 29 de fevereiro."
+  },
+  {
+    "q": "Qual é a capital do Brasil?",
+    "a": "Brasília",
+    "opts": [
+      "Rio de Janeiro",
+      "São Paulo",
+      "Brasília",
+      "Salvador"
+    ],
+    "exp": "Brasília é a capital do Brasil desde 1960."
+  },
+  {
+    "q": "Quantas pontas tem uma estrela do mar comum?",
+    "a": "5",
+    "opts": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "exp": "A maioria das estrelas-do-mar tem 5 braços."
+  },
+  {
+    "q": "Qual é o planeta mais próximo do Sol?",
+    "a": "Mercúrio",
+    "opts": [
+      "Vénus",
+      "Mercúrio",
+      "Marte",
+      "Terra"
+    ],
+    "exp": "Mercúrio é o planeta mais próximo do Sol."
   }
 ]

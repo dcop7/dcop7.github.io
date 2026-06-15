@@ -80,7 +80,7 @@ for (const d of DISTRICTS.filter(x => x.capital !== x.name)) {
 /* Merge with existing hand-authored portugal.json (dedupe by question text). */
 let total = 0;
 for (const tier of ['easy','medium','hard']) {
-  const p = join(ROOT, 'quizzes', tier, 'portugal.json');
+  const p = join(ROOT, 'quizzes', 'portugal', 'pt', `${tier}.json`);
   let existing = [];
   try { existing = JSON.parse(await readFile(p, 'utf8')); } catch (e) {}
   const seen = new Set(existing.map(x => x.q));
