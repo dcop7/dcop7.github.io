@@ -81,6 +81,8 @@ const UnoGame = (function () {
   }
   const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, reduceMotion() ? Math.min(ms, 120) : ms));
+  /* pacing — CPUs must be slow enough to follow who played what */
+  const THINK = 950, HOLD = 850;
 
   /* ── deck ──────────────────────────────────────────────────────── */
   function buildDeck() {
@@ -169,6 +171,7 @@ const UnoGame = (function () {
     S.turn = 0; S.dir = 1; S.phase = 'play';
     renderTable();
     setHint(t('yourTurn'));
+    setMyTurn(true);
   }
 
   function next(steps) { S.turn = (S.turn + S.dir * (steps || 1) + 4) % 4; }
@@ -178,6 +181,7 @@ const UnoGame = (function () {
     const hand = S.hands[pi];
     const idx = hand.indexOf(card);
     if (idx === -1) return;
+    S.drawnPlayable = null;                 /* a play ends the "freshly drawn" sub-state */
     hand.splice(idx, 1);
     S.discard.push(card);
     S.color = isWild(card) ? chosenColor : card.color;
@@ -207,17 +211,21 @@ const UnoGame = (function () {
     }
     renderTable();
     next(1 + skip);
+    if (pi !== 0) await wait(HOLD);         /* hold so the player can read what a CPU just did */
     await advance();
   }
 
   async function advance() {
     if (S.phase === 'over') return;
     renderTable();
-    if (S.turn === 0) { S.phase = 'play'; setHint(t('yourTurn')); enableHuman(); return; }
+    if (S.turn === 0) { S.phase = 'play'; setHint(t('yourTurn')); setMyTurn(true); enableHuman(); return; }
     /* CPU turn */
     S.phase = 'cpu';
+    setMyTurn(false);
     await cpuTurn(S.turn);
   }
+
+  function setMyTurn(on) { root.querySelector('.uno-board')?.classList.toggle('myturn', !!on); }
 
   /* ══ human interaction ═════════════════════════════════════════ */
   function enableHuman() { S.busy = false; renderTable(); }
@@ -267,7 +275,7 @@ const UnoGame = (function () {
     S.busy = true;
     setHint(fmt('cpuThinking', { n: S.names[pi] }));
     setActive(pi);
-    await wait(620 + Math.random() * 480);
+    await wait(THINK + Math.random() * 500);
 
     const hand = S.hands[pi];
     let playable = hand.filter(c => legalFor(c, hand));
@@ -565,7 +573,7 @@ const UnoGame = (function () {
     const b = document.createElement('div'); b.className = 'uno-flash-msg'; b.textContent = msg;
     el.appendChild(b);
     requestAnimationFrame(() => b.classList.add('show'));
-    setTimeout(() => { b.classList.remove('show'); setTimeout(() => b.remove(), 300); }, 1500);
+    setTimeout(() => { b.classList.remove('show'); setTimeout(() => b.remove(), 300); }, 1900);
   }
   function setHint(msg) { const h = root.querySelector('#uno-hint'); if (h) h.textContent = msg; }
   function bump(card) {
@@ -661,7 +669,10 @@ const UnoGame = (function () {
 .uno-seat.top{grid-column:2;grid-row:1}
 .uno-seat.left{grid-column:1;grid-row:2;justify-self:start;flex-direction:column;align-items:center;text-align:center}
 .uno-seat.right{grid-column:3;grid-row:2;justify-self:end;flex-direction:column;align-items:center;text-align:center}
-.uno-seat.active{background:rgba(242,180,23,.2);border-color:#f2b417;box-shadow:0 0 18px rgba(242,180,23,.5);transform:scale(1.05)}
+.uno-seat.active{background:rgba(242,180,23,.22);border-color:#f2b417;transform:scale(1.06);animation:uno-seatpulse 1.2s ease-in-out infinite}
+@keyframes uno-seatpulse{0%,100%{box-shadow:0 0 14px rgba(242,180,23,.4)}50%{box-shadow:0 0 26px 4px rgba(242,180,23,.7)}}
+.uno-seat.active .uno-avatar{animation:uno-think 1s ease-in-out infinite}
+@keyframes uno-think{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .uno-seat.uno1{border-color:#e4322b;box-shadow:0 0 16px rgba(228,50,43,.55)}
 .uno-avatar{font-size:1.5rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 .uno-seat-info{display:flex;flex-direction:column;min-width:0}
@@ -704,15 +715,16 @@ const UnoGame = (function () {
 .uno-wildquad{position:absolute;left:50%;top:50%;width:62%;height:62%;transform:translate(-50%,-50%) rotate(45deg);
   display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px #fff}
 .uno-wildquad span{display:block}
-.uno-card-big{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font:900 2.1rem/1 Arial,sans-serif;
-  color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.18);z-index:2}
-.uno-card.c-yellow .uno-card-big,.uno-card .uno-card-big{color:inherit}
-.uno-card-big{color:var(--cc)}
-.uno-card.c-red{--cc:#e4322b}.uno-card.c-yellow{--cc:#f2b417}.uno-card.c-green{--cc:#2aa24a}.uno-card.c-blue{--cc:#1b7ce0}
-.uno-card.wild .uno-card-big{color:#fff;-webkit-text-stroke:1.5px rgba(0,0,0,.35)}
-.uno-card-big.reverse,.uno-card-big.skip{font-size:1.9rem}
-.uno-card-big.draw2,.uno-card-big.wild4{font-size:1.55rem}
-.uno-card-corner{position:absolute;font:900 .78rem/1 Arial,sans-serif;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.5);z-index:3}
+.uno-card-big{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font:900 2.55rem/1 Arial Black,Arial,sans-serif;
+  color:var(--cc,#333);z-index:2;letter-spacing:-.02em;
+  text-shadow:0 0 3px rgba(255,255,255,.95),0 0 1px rgba(255,255,255,.95),0 2px 2px rgba(0,0,0,.3);
+  -webkit-text-stroke:1.4px rgba(0,0,0,.32);paint-order:stroke fill}
+.uno-card.c-red{--cc:#d22019}.uno-card.c-yellow{--cc:#d98f00}.uno-card.c-green{--cc:#188a39}.uno-card.c-blue{--cc:#1466c2}
+.uno-card.wild .uno-card-big{color:#fff;text-shadow:none;-webkit-text-stroke:2px rgba(0,0,0,.45)}
+.uno-card-big.reverse,.uno-card-big.skip{font-size:2.2rem}
+.uno-card-big.draw2,.uno-card-big.wild4{font-size:1.75rem}
+.uno-card-corner{position:absolute;font:900 .82rem/1 Arial Black,Arial,sans-serif;color:#fff;
+  text-shadow:0 0 2px rgba(0,0,0,.8),0 1px 1px rgba(0,0,0,.7);z-index:3}
 .uno-card-corner.tl{top:4px;left:5px}
 .uno-card-corner.br{bottom:4px;right:5px;transform:rotate(180deg)}
 
@@ -726,12 +738,26 @@ const UnoGame = (function () {
 .uno-handcard.shake{animation:uno-shake .4s}
 @keyframes uno-shake{0%,100%{transform:rotate(var(--rot)) translateY(var(--lift))}25%{transform:translateX(-7px) rotate(var(--rot))}75%{transform:translateX(7px) rotate(var(--rot))}}
 
-.uno-hint{text-align:center;font-size:.85rem;color:var(--text2,#cdd);font-weight:600;min-height:1.3em;margin-top:6px}
+.uno-hint{width:fit-content;max-width:92%;margin:10px auto 0;padding:.42rem 1.1rem;border-radius:999px;text-align:center;
+  font-size:.85rem;font-weight:800;color:var(--text2,#cdd);background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);
+  transition:all .25s}
+.uno-board.myturn .uno-hint{color:#06250f;background:linear-gradient(135deg,#ffd34d,#34d36a);border-color:rgba(255,255,255,.55);
+  box-shadow:0 0 0 0 rgba(52,211,106,.55);animation:uno-turnpulse 1.5s ease-in-out infinite;font-size:.92rem}
+@keyframes uno-turnpulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,106,.5)}50%{box-shadow:0 0 22px 4px rgba(52,211,106,.45)}}
 .uno-controls{display:flex;justify-content:center;gap:10px;margin-top:8px;min-height:10px}
 
+/* hand reacts to whose turn it is — unmistakable when it's yours */
+.uno-hand-wrap{position:relative;border-radius:18px;transition:all .3s}
+.uno-board:not(.myturn) .uno-hand-wrap{opacity:.62;filter:saturate(.7)}
+.uno-board.myturn .uno-hand-wrap{background:radial-gradient(ellipse at 50% 120%,rgba(52,211,106,.18),transparent 70%);
+  box-shadow:0 -2px 30px rgba(52,211,106,.22)}
+.uno-board.myturn .uno-hand-wrap::before{content:'';position:absolute;left:50%;top:-2px;transform:translateX(-50%);
+  width:62%;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#34d36a,transparent);animation:uno-scan 1.6s ease-in-out infinite}
+@keyframes uno-scan{0%,100%{opacity:.3;width:40%}50%{opacity:1;width:70%}}
+
 .uno-flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5}
-.uno-flash-msg{background:rgba(8,12,10,.86);color:#fff;font-weight:800;font-size:.92rem;padding:.5rem 1rem;border-radius:12px;
-  border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;transform:translateY(10px) scale(.92);transition:all .25s}
+.uno-flash-msg{background:rgba(8,12,10,.9);color:#fff;font-weight:800;font-size:1.05rem;padding:.6rem 1.3rem;border-radius:14px;
+  border:1px solid rgba(255,255,255,.22);box-shadow:0 10px 30px rgba(0,0,0,.55);opacity:0;transform:translateY(12px) scale(.9);transition:all .25s}
 .uno-flash-msg.show{opacity:1;transform:translateY(0) scale(1)}
 
 .uno-fly{position:absolute;z-index:60;transition:transform .32s cubic-bezier(.3,1,.4,1),opacity .32s;pointer-events:none}
