@@ -168,7 +168,7 @@ const HumanBodyExplorer = (function () {
     pts = pts.filter(Boolean);
     if (pts.length < 2) return;
     const curve = new THREE.CatmullRomCurve3(pts);
-    const seg = Math.max(18, pts.length * 10), rad = 7;
+    const seg = Math.max(20, pts.length * 11), rad = 9;
     const fr = curve.computeFrenetFrames(seg, false);
     const pos = [], idx = [], P = new THREE.Vector3();
     for (let i = 0; i <= seg; i++) {
@@ -210,8 +210,10 @@ const HumanBodyExplorer = (function () {
     return tips;
   }
 
-  /* Build a detailed, branching, tapering vessel tree routed through the real
-     skeleton — down to an artery + vein in every finger and toe. */
+  /* Build a detailed, organic, branching vessel network routed through the real
+     skeleton. Veins hug the arteries (offset perpendicular to the local path so
+     they stay aligned through every joint), the head/trunk get branch networks,
+     and the limbs taper down to an artery + vein in every finger and toe. */
   function _addVessels(grp, box) {
     if (!_sysGroup[GHOST_SYS]) return;
     const cx = (box.min.x + box.max.x) / 2, H = box.max.y - box.min.y;
@@ -227,49 +229,100 @@ const HumanBodyExplorer = (function () {
     };
     const cenAll = arr => { if (!arr.length) return null; const s = new THREE.Vector3(); arr.forEach(p => s.add(p)); return s.multiplyScalar(1 / arr.length); };
     const onSide = (arr, side) => arr.filter(p => side < 0 ? p.x < cx : p.x >= cx);
+    const xtreme = (arr, key, max) => arr.length ? arr.reduce((m, p) => (max ? key(p) > key(m) : key(p) < key(m)) ? p : m, arr[0]) : null;
     const P = k => _structurePoints(k);
     const umero = P('umero'), radio = P('radio_ulna'), mao = P('mao'),
           femur = P('femur'), tibia = P('tibia_fibula'), pe = P('pe'),
-          pelve = P('pelve'), cranio = P('cranio');
+          pelve = P('pelve'), cranio = P('cranio'), costelas = P('costelas');
     const chest = cenAll(P('coracao')) || _frac(box, 0.5, 0.66, 0.55);
     const pelvisC = cenAll(pelve) || _frac(box, 0.5, 0.34, 0.5);
-    const headTop = cranio.length ? cranio.reduce((m, p) => p.y > m.y ? p : m, cranio[0]) : null;
 
-    const mk = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.4, metalness: 0.08,
-      emissive: new THREE.Color(c).multiplyScalar(0.28), transparent: true, opacity: 1 });
+    const mk = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.32, metalness: 0.0,
+      emissive: new THREE.Color(c).multiplyScalar(0.22), transparent: true, opacity: 1 });
     const matA = mk(ARTERY), matV = mk(VEIN);
-    const vo = p => p && new THREE.Vector3(p.x + (p.x >= cx ? 1 : -1) * H * 0.012, p.y, p.z - H * 0.035);
-    /* an artery path + its parallel vein twin */
-    const pair = (pts, r0, r1) => { _taperedMesh(grp, pts, r0, r1, matA, 'arterias'); _taperedMesh(grp, pts.map(vo), r0, r1, matV, 'veias'); };
+    /* vein path: offset perpendicular to the LOCAL direction (so it bends WITH
+       the artery and stays aligned at joints), nudged slightly behind. */
+    const amt = H * 0.0072;
+    const veinPath = pts => {
+      const a = pts.filter(Boolean);
+      return a.map((p, i) => {
+        const u = a[Math.max(0, i - 1)], v = a[Math.min(a.length - 1, i + 1)];
+        const tan = v.clone().sub(u); if (tan.lengthSq() < 1e-9) tan.set(0, 1, 0); tan.normalize();
+        let off = new THREE.Vector3(0, 1, 0).cross(tan); if (off.lengthSq() < 1e-6) off = new THREE.Vector3(1, 0, 0).cross(tan); off.normalize();
+        return p.clone().addScaledVector(off, amt).add(new THREE.Vector3(0, 0, -amt * 0.7));
+      });
+    };
+    const pair = (pts, r0, r1) => { _taperedMesh(grp, pts, r0, r1, matA, 'arterias'); _taperedMesh(grp, veinPath(pts), r0, r1, matV, 'veias'); };
+    const onlyA = (pts, r0, r1) => _taperedMesh(grp, pts, r0, r1, matA, 'arterias');
     const perp = (a, b, d) => new THREE.Vector3(0, 0, 1).cross(a.clone().sub(b)).normalize().multiplyScalar(d);
+    const mid = (a, b, t = 0.5) => a.clone().lerp(b, t);
 
-    if (headTop) pair([chest, new THREE.Vector3(chest.x, (chest.y + headTop.y) / 2, (chest.z + headTop.z) / 2 + H * 0.01), headTop], H * 0.008, H * 0.004);
-    pair([chest, pelvisC], H * 0.012, H * 0.009);
+    /* ── trunk (aorta + vena cava) ── */
+    pair([chest, mid(chest, pelvisC), pelvisC], H * 0.0085, H * 0.0058);
+
+    /* ── head: a small network fanning over the skull, not one tube ── */
+    if (cranio.length) {
+      const ny = xtreme(cranio, p => p.y, false).y;            // skull base
+      const neck = new THREE.Vector3(chest.x, (chest.y + ny) / 2, chest.z + H * 0.004);
+      pair([chest, neck], H * 0.006, H * 0.0042);
+      const targets = [
+        xtreme(cranio, p => p.y, true),                        // crown
+        xtreme(cranio, p => p.z, true),                        // forehead/face
+        xtreme(cranio, p => p.z, false),                       // occiput
+        xtreme(onSide(cranio, -1), p => p.x, false),           // left temple
+        xtreme(onSide(cranio, 1), p => p.x, true),             // right temple
+      ].filter(Boolean);
+      for (const t of targets) {
+        const bend = new THREE.Vector3((neck.x + t.x) / 2, (neck.y + t.y) / 2, (neck.z + t.z) / 2 + H * 0.006);
+        pair([neck, bend, t], H * 0.0030, H * 0.0010);
+      }
+    }
+
+    /* ── intercostal branches off the trunk toward the ribs (richness) ── */
+    if (costelas.length) {
+      for (const side of [-1, 1]) {
+        const sc = onSide(costelas, side);
+        for (const fy of [0.62, 0.55, 0.48]) {
+          const yt = box.min.y + fy * H;
+          let best = null, bd = Infinity;
+          for (const p of sc) { const d = Math.abs(p.y - yt); if (d < bd) { bd = d; best = p; } }
+          if (best) { const s = new THREE.Vector3(chest.x, best.y, chest.z); onlyA([s, mid(s, best), best], H * 0.0022, H * 0.0007); }
+        }
+      }
+    }
 
     for (const side of [-1, 1]) {
-      /* ── arm: brachial → radial+ulnar → palm → 5 fingers ── */
+      /* ── arm: brachial → (radial + ulnar) → palm → 5 fingers ── */
       const shoulder = ext(umero, side, true), elbow = ext(umero, side, false), wrist = ext(radio, side, false), handCen = cen(mao, side);
-      if (shoulder && elbow) pair([chest, shoulder, elbow], H * 0.009, H * 0.006);
+      if (shoulder && elbow) {
+        pair([chest, shoulder, elbow], H * 0.0058, H * 0.0042);
+        const m = mid(shoulder, elbow); onlyA([m, m.clone().add(perp(shoulder, elbow, H * 0.022))], H * 0.0018, H * 0.0006);
+      }
       if (elbow && wrist) {
-        const off = perp(elbow, wrist, H * 0.012);
-        pair([elbow, wrist], H * 0.006, H * 0.004);
-        pair([elbow.clone().add(off), wrist.clone().add(off)], H * 0.0045, H * 0.0030);
+        const off = perp(elbow, wrist, H * 0.009);
+        pair([elbow, wrist], H * 0.0042, H * 0.0028);
+        pair([elbow.clone().add(off), mid(elbow, wrist).add(off), wrist.clone().add(off)], H * 0.0034, H * 0.0022);
       }
       if (wrist && handCen) {
-        pair([wrist, handCen], H * 0.0040, H * 0.0030);
-        for (const t of _tips(onSide(mao, side), wrist, 5)) pair([handCen, t], H * 0.0026, H * 0.0008);
+        pair([wrist, handCen], H * 0.0030, H * 0.0022);
+        const tips = _tips(onSide(mao, side), wrist, 5);
+        for (const t of tips) pair([handCen, t], H * 0.0020, H * 0.0006);
       }
-      /* ── leg: femoral → tibial(×2) → foot → 5 toes ── */
+      /* ── leg: femoral → (anterior + posterior tibial) → foot → 5 toes ── */
       const hip = ext(femur, side, true), knee = ext(femur, side, false), ankle = ext(tibia, side, false), footCen = cen(pe, side);
-      if (hip && knee) pair([pelvisC, hip, knee], H * 0.011, H * 0.007);
+      if (hip && knee) {
+        pair([pelvisC, hip, knee], H * 0.0078, H * 0.0052);
+        const m = mid(hip, knee); onlyA([m, m.clone().add(perp(hip, knee, H * 0.020))], H * 0.0020, H * 0.0007);
+      }
       if (knee && ankle) {
-        const off = perp(knee, ankle, H * 0.012);
-        pair([knee, ankle], H * 0.007, H * 0.0045);
-        pair([knee.clone().add(off), ankle.clone().add(off)], H * 0.0050, H * 0.0032);
+        const off = perp(knee, ankle, H * 0.009);
+        pair([knee, ankle], H * 0.0052, H * 0.0034);
+        pair([knee.clone().add(off), mid(knee, ankle).add(off), ankle.clone().add(off)], H * 0.0040, H * 0.0026);
       }
       if (ankle && footCen) {
-        pair([ankle, footCen], H * 0.0045, H * 0.0030);
-        for (const t of _tips(onSide(pe, side), ankle, 5)) pair([footCen, t], H * 0.0028, H * 0.0010);
+        pair([ankle, footCen], H * 0.0034, H * 0.0024);
+        const tips = _tips(onSide(pe, side), ankle, 5);
+        for (const t of tips) pair([footCen, t], H * 0.0022, H * 0.0007);
       }
     }
   }
