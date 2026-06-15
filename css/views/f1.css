@@ -100,7 +100,33 @@
 .f1-cal-date { font-family: var(--font-mono); font-size: .76rem; color: var(--text2); }
 .f1-cal-tick { color: #ff2d24; width: 1rem; text-align: center; }
 
+/* ── circuit tab ── */
+.f1-circ-note { max-width: 900px; margin: 0 auto .8rem; font-size: .72rem; color: var(--muted); text-align: center;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .45rem .7rem; }
+.f1-circ-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .5rem; }
+.f1-circ-card { text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: .6rem .7rem; cursor: pointer; font: inherit; transition: all var(--ease); }
+.f1-circ-card:hover { border-color: rgba(225,6,0,.4); transform: translateY(-1px); }
+.f1-circ-card.on { border-color: rgba(225,6,0,.55); background: rgba(225,6,0,.08); }
+.f1-circ-name { font-weight: 700; font-size: .82rem; color: var(--text); line-height: 1.15; }
+.f1-circ-loc { font-size: .7rem; color: var(--muted); margin-top: .15rem; }
+.f1-circ-stats { display: flex; gap: .8rem; margin-top: .4rem; font-family: var(--font-mono); font-size: .74rem; color: #ff6b66; }
+
+.f1-circ-panel { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; max-width: 900px; margin: 0 auto 1rem;
+  background: var(--card); border: 1px solid var(--border2); border-radius: var(--radius); padding: 1rem; }
+.f1-circ-panel-map { position: relative; aspect-ratio: 16/10; background: radial-gradient(ellipse at 50% 40%, #0e1322, #05070e);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.f1-circ-panel-map canvas { width: 100%; height: 100%; display: block; }
+.f1-circ-panel-info h3 { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; }
+.f1-circ-dl { margin: .7rem 0 0; display: flex; flex-direction: column; gap: .1rem; }
+.f1-circ-dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; padding: .35rem 0; border-bottom: 1px solid var(--border); }
+.f1-circ-dl dt { font-size: .76rem; color: var(--muted); margin: 0; }
+.f1-circ-dl dd { margin: 0; font-family: var(--font-mono); font-weight: 700; color: var(--text); text-align: right; }
+.f1-circ-dl dd small { display: block; font-family: var(--font-sans); font-weight: 400; font-size: .68rem; color: var(--muted); }
+.f1-circ-src { font-size: .66rem; color: var(--muted); margin: .6rem 0 0; }
+
 @media (max-width: 640px) {
   .f1-cols { grid-template-columns: 1fr; }
   .f1-body { padding: .7rem; }
+  .f1-circ-panel { grid-template-columns: 1fr; }
 }

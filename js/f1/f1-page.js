@@ -8,11 +8,12 @@ const F1Page = (function () {
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
   const _t = (en, pt) => (_lang() === 'en' ? en : pt);
-  let _root = null, _inited = false, _tab = 'race', _track = null, _liveTimer = null;
+  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null;
 
   const TABS = [
     { id: 'race',    ic: '🏁', en: 'Race',         pt: 'Corrida' },
     { id: 'track',   ic: '🏎️', en: 'Track',        pt: 'Pista' },
+    { id: 'circuit', ic: '🗺️', en: 'Circuit',      pt: 'Circuito' },
     { id: 'champ',   ic: '🏆', en: 'Championship',  pt: 'Campeonato' },
     { id: 'cal',     ic: '📅', en: 'Calendar',      pt: 'Calendário' },
     { id: 'stats',   ic: '📊', en: 'Stats',         pt: 'Estatísticas' },
@@ -76,9 +77,10 @@ const F1Page = (function () {
     _root.querySelectorAll('.f1-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
     clearInterval(_liveTimer); _liveTimer = null;
     if (_track) { _track.dispose(); _track = null; }
+    if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
     const body = _root.querySelector('#f1-body');
     body.innerHTML = loading();
-    ({ race: renderRace, track: renderTrack, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
+    ({ race: renderRace, track: renderTrack, circuit: renderCircuit, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
   }
 
   /* ════════════════════════════ RACE ════════════════════════════ */
@@ -238,6 +240,104 @@ const F1Page = (function () {
       body.querySelector('#f1-speed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; _track.setSpeed(+b.dataset.s); body.querySelectorAll('#f1-speed button').forEach(x => x.classList.toggle('on', x === b)); });
       _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');
     } catch (e) { body.innerHTML = err(); }
+  }
+
+  /* ════════════════════════════ CIRCUIT ════════════════════════════ */
+  async function renderCircuit(body) {
+    try {
+      const [races, meta] = await Promise.all([F1Data.schedule(), F1Data.circuitsMeta()]);
+      const seen = new Set();
+      const circuits = (races || []).map(r => r.Circuit).filter(c => c && !seen.has(c.circuitId) && seen.add(c.circuitId));
+      if (!circuits.length) { body.innerHTML = err(); return; }
+      body.innerHTML = `
+        <div class="f1-circ-note">${_t('Length &amp; turns from official sources — track lengths cross-checked against OpenF1 telemetry (21/21 within ~2%).',
+          'Comprimento e curvas de fontes oficiais — comprimentos cruzados com a telemetria OpenF1 (21/21 dentro de ~2%).')}</div>
+        <div id="f1-circ-detail"></div>
+        <div class="f1-circ-grid">
+          ${circuits.map(c => {
+            const m = meta[c.circuitId] || {};
+            return `<button class="f1-circ-card" data-id="${c.circuitId}">
+              <div class="f1-circ-name">${esc(c.circuitName)}</div>
+              <div class="f1-circ-loc">${esc(c.Location?.locality)}, ${esc(c.Location?.country)}</div>
+              <div class="f1-circ-stats">
+                <span>${m.length_km ? m.length_km.toFixed(3) + ' km' : '—'}</span>
+                <span>${m.turns ? m.turns + ' ' + _t('turns', 'curvas') : '—'}</span>
+              </div></button>`;
+          }).join('')}
+        </div>`;
+      const detail = body.querySelector('#f1-circ-detail');
+      body.querySelector('.f1-circ-grid').addEventListener('click', e => {
+        const card = e.target.closest('.f1-circ-card'); if (!card) return;
+        const c = circuits.find(x => x.circuitId === card.dataset.id);
+        body.querySelectorAll('.f1-circ-card').forEach(x => x.classList.toggle('on', x === card));
+        openCircuit(c, meta[c.circuitId] || {}, detail);
+      });
+    } catch (e) { body.innerHTML = err(); }
+  }
+
+  async function openCircuit(circ, m, detail) {
+    if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
+    detail.innerHTML = `<div class="f1-circ-panel">${loading(_t('Loading circuit…', 'A carregar o circuito…'))}</div>`;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    try {
+      // first GP year — from the season list of this circuit (Jolpica)
+      let firstGP = '';
+      try {
+        const d = await fetch(`https://api.jolpi.ca/ergast/f1/circuits/${circ.circuitId}/seasons.json?limit=100`).then(r => r.json());
+        const ss = d?.MRData?.SeasonTable?.Seasons || [];
+        if (ss.length) firstGP = ss[0].season;
+      } catch {}
+
+      // OpenF1 session for the map + fastest lap (latest past race at this circuit)
+      let track = null, fastest = null;
+      if (m.of1) {
+        let race = null;
+        for (const yr of [new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() - 2]) {
+          const rs = await F1Data.racesOfYear(yr).catch(() => []);
+          const past = (rs || []).filter(r => r.circuit_short_name === m.of1 && Date.parse(r.date_start) < Date.now());
+          if (past.length) { race = past[past.length - 1]; break; }
+        }
+        if (race) {
+          const sk = race.session_key;
+          const lapRows = await F1Data.laps(sk).catch(() => []);
+          const valid = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1);
+          if (valid.length) {
+            const best = valid.reduce((a, b) => b.lap_duration < a.lap_duration ? b : a);
+            const drvs = await F1Data.drivers(sk).catch(() => []);
+            const dr = (drvs || []).find(d => d.driver_number === best.driver_number);
+            fastest = { time: best.lap_duration, who: dr ? dr.full_name : '#' + best.driver_number, year: race.year, lap: best.lap_number };
+            // outline from that driver's best lap
+            const next = lapRows.find(l => l.driver_number === best.driver_number && l.lap_number === best.lap_number + 1);
+            const from = best.date_start, to = (next && next.date_start) || new Date(Date.parse(best.date_start) + (best.lap_duration + 5) * 1000).toISOString();
+            await new Promise(r => setTimeout(r, 450));   // dodge OpenF1's 3 req/s limit after the laps+drivers calls
+            const loc = await F1Data.location(sk, { driver: best.driver_number, from, to }).catch(() => []);
+            track = (loc || []).filter(p => p.x || p.y).map(p => ({ x: p.x, y: p.y }));
+          }
+        }
+      }
+
+      const fmtLap = s => { const m2 = Math.floor(s / 60), sec = (s % 60).toFixed(3); return `${m2}:${sec.padStart(6, '0')}`; };
+      detail.innerHTML = `
+        <div class="f1-circ-panel">
+          <div class="f1-circ-panel-map">${track && track.length > 20 ? '<canvas id="f1-circ-canvas"></canvas>' : `<div class="f1-empty">${_t('Map unavailable', 'Mapa indisponível')}</div>`}</div>
+          <div class="f1-circ-panel-info">
+            <h3>${esc(circ.circuitName)}</h3>
+            <div class="f1-circ-loc">${esc(circ.Location?.locality)}, ${esc(circ.Location?.country)}</div>
+            <dl class="f1-circ-dl">
+              <div><dt>${_t('Length', 'Comprimento')}</dt><dd>${m.length_km ? m.length_km.toFixed(3) + ' km' : '—'}</dd></div>
+              <div><dt>${_t('Turns', 'Curvas')}</dt><dd>${m.turns || '—'}</dd></div>
+              <div><dt>${_t('First GP', 'Primeira corrida')}</dt><dd>${firstGP || '—'}</dd></div>
+              <div><dt>${_t('Fastest lap', 'Volta mais rápida')}</dt><dd>${fastest ? `${fmtLap(fastest.time)}<small> ${esc(fastest.who)} · ${fastest.year}</small>` : '—'}</dd></div>
+            </dl>
+            ${fastest ? `<p class="f1-circ-src">${_t('Fastest lap from OpenF1 race data (2023→).', 'Volta mais rápida dos dados de corrida OpenF1 (2023→).')}</p>` : ''}
+          </div>
+        </div>`;
+      if (track && track.length > 20) {
+        const cv = detail.querySelector('#f1-circ-canvas');
+        _ctrack = F1Track.create(cv);
+        _ctrack.setTrack(track);
+      }
+    } catch (e) { detail.innerHTML = `<div class="f1-circ-panel">${err()}</div>`; }
   }
 
   /* ════════════════════════════ CHAMPIONSHIP ════════════════════════════ */

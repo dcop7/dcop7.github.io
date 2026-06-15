@@ -87,6 +87,9 @@ const F1Data = (function () {
   async function weather(sessionKey) {
     return _get(ofq('/weather', 'session_key=' + sessionKey), 60000);
   }
+  async function laps(sessionKey) {
+    return _get(ofq('/laps', 'session_key=' + sessionKey), 600000);
+  }
   /* raw location points (for the track + cars). Optional ISO date window. */
   async function location(sessionKey, { driver, from, to } = {}) {
     let p = 'session_key=' + sessionKey;
@@ -142,6 +145,11 @@ const F1Data = (function () {
     });
   }
 
+  /* Curated, telemetry-validated circuit metadata (length + turns). */
+  async function circuitsMeta() {
+    try { return await _get('data/f1/circuits.json', 86400000); } catch { return {}; }
+  }
+
   /* From the schedule, the next upcoming race and the most recent past one. */
   function splitSchedule(races) {
     const now = Date.now();
@@ -156,8 +164,8 @@ const F1Data = (function () {
 
   return {
     latestSession, latestMeeting, sessionsForMeeting, racesOfYear,
-    drivers, positions, intervals, weather, location,
-    latestOrder, latestIntervals,
+    drivers, positions, intervals, weather, location, laps,
+    latestOrder, latestIntervals, circuitsMeta,
     driverStandings, constructorStandings, schedule, lastResults, splitSchedule,
   };
 })();
