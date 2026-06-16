@@ -284,7 +284,13 @@ const F1Page = (function () {
             <button class="f1-btn" id="f1-play">▶ ${_t('Play', 'Reproduzir')}</button>
             <div class="f1-seek-wrap"><input type="range" id="f1-seek" min="0" max="1000" value="0" class="f1-seek">
               <div class="f1-seek-marks" id="f1-seek-marks"></div></div>
-            <div class="f1-clock" id="f1-clock">—</div>
+            <div class="f1-lap" title="${_t('Jump to lap', 'Ir para a volta')}">
+              <button class="f1-lap-btn" id="f1-lap-prev" aria-label="${_t('Previous lap','Volta anterior')}">◀</button>
+              <span class="f1-lap-lbl">${_lang() === 'en' ? 'L' : 'V'}</span>
+              <input class="f1-lap-in" id="f1-lap-in" type="number" min="1" value="1" inputmode="numeric">
+              <span class="f1-lap-tot" id="f1-lap-tot"></span>
+              <button class="f1-lap-btn" id="f1-lap-next" aria-label="${_t('Next lap','Volta seguinte')}">▶</button>
+            </div>
             <div class="f1-speed" id="f1-speed">${SPEEDS.map(s => `<button data-s="${s}" class="${s === DEF_SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div>
             <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
           </div>
@@ -345,15 +351,28 @@ const F1Page = (function () {
         const raceEnd = Math.max(...Object.values(lapsByDriver).map(a => a[a.length - 1].end));
         const raceDur = raceEnd - lights;
         const totalLaps = Math.max(...(lapRows || []).map(l => l.lap_number || 0));
+        // when each lap begins in the race (earliest driver to reach it) → for the lap picker
+        const lapStart = {};
+        for (const l of (lapRows || [])) {
+          if (!l.date_start) continue;
+          const t = Date.parse(l.date_start) - lights, ln = l.lap_number;
+          if (lapStart[ln] == null || t < lapStart[ln]) lapStart[ln] = t;
+        }
 
-        // fastest lap → its driver's location traces a clean outline (one small call)
+        // fastest lap → its driver's location traces a clean outline (one small call).
+        // Trim to EXACTLY one lap: fetching a little extra and keeping it would make
+        // the outline overlap itself past the start/finish, so a car crossing the
+        // line jumps back onto the overlapping tail ("comes back a few seconds").
         let outline = [];
         const cleanLaps = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1 && l.date_start);
         if (cleanLaps.length) {
           const best = cleanLaps.reduce((a, b) => b.lap_duration < a.lap_duration ? b : a);
-          const from = best.date_start, to = new Date(Date.parse(best.date_start) + (best.lap_duration + 3) * 1000).toISOString();
+          const lapEndMs = Date.parse(best.date_start) + best.lap_duration * 1000;
+          const from = best.date_start, to = new Date(lapEndMs + 1500).toISOString();
           const loc = await F1Data.location(sk, { driver: best.driver_number, from, to }).catch(() => []);
-          outline = (loc || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y)).map(p => ({ x: p.x, y: p.y }));
+          outline = (loc || [])
+            .filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y) && Date.parse(p.date) < lapEndMs)
+            .map(p => ({ x: p.x, y: p.y }));
         }
         if (outline.length < 20) { stage.innerHTML = err(_t('Could not trace the track.', 'Não foi possível traçar a pista.')); return; }
 
@@ -422,8 +441,10 @@ const F1Page = (function () {
         body.querySelector('#f1-track-hint').textContent = _t('Drag the bar · play to watch the whole race', 'Arrasta a barra · play para ver a corrida toda');
 
         const seek = body.querySelector('#f1-seek');
-        const clockEl = body.querySelector('#f1-clock');
+        const lapIn = body.querySelector('#f1-lap-in');
         const playBtn = body.querySelector('#f1-play');
+        lapIn.max = totalLaps;
+        body.querySelector('#f1-lap-tot').textContent = '/' + totalLaps;
 
         function latestAt(arr, ms, key) { let v; for (const e of arr || []) { if (e.t <= ms) v = e[key]; else break; } return v; }
         function orderAt(ms) {
@@ -480,12 +501,23 @@ const F1Page = (function () {
           _track.setFlag(flagAt(ms));
           const lead = orderAt(ms)[0];
           const lap = lead ? (progAbs(lapsByDriver[lead.num], lights + ms) || {}).lap || 1 : 1;
-          clockEl.textContent = (_lang() === 'en' ? 'L' : 'V') + Math.min(totalLaps, lap) + '/' + totalLaps;
+          if (document.activeElement !== lapIn) lapIn.value = Math.min(totalLaps, lap);
           paintPos(ms); paintEvents(ms);
         }
         _track.setOnTick(onClock);
         _track.setSpeed(DEF_SPEED);
         onClock(0);
+
+        function seekToLap(L) {
+          L = Math.max(1, Math.min(totalLaps, Math.round(L) || 1));
+          let t = lapStart[L]; if (t == null) return;
+          const tn = lapStart[L + 1];                          // nudge a little into the lap so the read-out matches
+          t += (tn != null ? (tn - t) : 6000) * 0.15;
+          _track.seek(Math.max(0, t) / (_track.duration || 1));
+        }
+        lapIn.onchange = () => seekToLap(+lapIn.value);
+        body.querySelector('#f1-lap-prev').onclick = () => seekToLap((+lapIn.value || 1) - 1);
+        body.querySelector('#f1-lap-next').onclick = () => seekToLap((+lapIn.value || 1) + 1);
 
         playBtn.onclick = () => { const on = _track.toggle(); playBtn.textContent = on ? '⏸ ' + _t('Pause', 'Pausa') : '▶ ' + _t('Play', 'Reproduzir'); };
         seek.oninput = () => _track.seek(seek.value / 1000);

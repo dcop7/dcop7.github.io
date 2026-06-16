@@ -172,8 +172,16 @@
 .f1-seek-marks i.m-sc, .f1-seek-marks i.m-vsc { background: #ff9d00; }
 .f1-seek-marks i.m-red { background: #ff2d24; } .f1-seek-marks i.m-incident, .f1-seek-marks i.m-penalty { background: #b388ff; }
 .f1-seek-marks i.m-chequered { background: #fff; }
-.f1-clock { font-family: var(--font-mono); font-weight: 800; font-size: .76rem; color: var(--text); background: var(--card2);
-  border: 1px solid var(--border); border-radius: var(--radius-xs); padding: .3rem .45rem; min-width: 3rem; text-align: center; }
+.f1-lap { display: flex; align-items: center; gap: .15rem; background: var(--card2); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); padding: .12rem .2rem; }
+.f1-lap-lbl { font-family: var(--font-mono); font-weight: 800; font-size: .72rem; color: var(--muted); margin-left: .15rem; }
+.f1-lap-in { width: 2.2rem; background: transparent; border: none; color: var(--text); font-family: var(--font-mono);
+  font-weight: 800; font-size: .8rem; text-align: center; -moz-appearance: textfield; padding: .2rem 0; }
+.f1-lap-in::-webkit-outer-spin-button, .f1-lap-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.f1-lap-tot { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); margin-right: .2rem; }
+.f1-lap-btn { background: transparent; border: none; color: var(--text2); cursor: pointer; font-size: .7rem;
+  padding: .25rem .3rem; border-radius: var(--radius-xs); line-height: 1; }
+.f1-lap-btn:hover { color: #ff2d24; background: rgba(225,6,0,.12); }
 .f1-speed button { padding: .35rem .42rem; font-size: .68rem; }
 .f1-toggle { padding: .42rem .55rem; font-family: var(--font-mono); }
 .f1-toggle.on { color: #ff2d24; border-color: rgba(225,6,0,.5); }
