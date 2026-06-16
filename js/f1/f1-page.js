@@ -232,8 +232,17 @@ const F1Page = (function () {
      event feed, and flag/safety-car overlays on the canvas. A picker lets
      you choose any past race of the season; a live session is auto-detected.
      ════════════════════════════════════════════════════════════════ */
-  const REPLAY_WINDOW_MS = 240000;       // ~4 min from lights-out (≈ first 3-4 laps)
-  const SPEEDS = [1, 3, 6, 12, 24];
+  const SPEEDS = [3, 6, 12, 24, 48];
+  const DEF_SPEED = 12;
+  const FRAME_MS = 1500;                 // sampling step for the synthetic replay
+  const GRID_GAP = 0.009;                // along-track spacing per grid place (de-overlap)
+
+  /* interpolate a point at parameter u∈[0,1) along a closed outline polyline */
+  function outlineXY(pts, u) {
+    const N = pts.length, fi = (((u % 1) + 1) % 1) * N;
+    const i = Math.floor(fi) % N, j = (i + 1) % N, f = fi - Math.floor(fi);
+    return { x: pts[i].x + (pts[j].x - pts[i].x) * f, y: pts[i].y + (pts[j].y - pts[i].y) * f };
+  }
 
   async function renderTrack(body) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
@@ -260,22 +269,27 @@ const F1Page = (function () {
         </div>
         <div class="f1-track-meta" id="f1-track-meta"></div>
       </div>
-      <div class="f1-track-stage">
-        <canvas id="f1-canvas"></canvas>
-        <div class="f1-track-hint" id="f1-track-hint"></div>
-        <div class="f1-stage-load" id="f1-stage-load">${loading()}</div>
-      </div>
-      <div class="f1-controls">
-        <button class="f1-btn" id="f1-play">▶ ${_t('Play', 'Reproduzir')}</button>
-        <div class="f1-seek-wrap"><input type="range" id="f1-seek" min="0" max="1000" value="0" class="f1-seek">
-          <div class="f1-seek-marks" id="f1-seek-marks"></div></div>
-        <div class="f1-clock" id="f1-clock">L1</div>
-        <div class="f1-speed" id="f1-speed">${SPEEDS.map(s => `<button data-s="${s}" class="${s === 6 ? 'on' : ''}">${s}×</button>`).join('')}</div>
-        <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
-      </div>
-      <div class="f1-track-cols">
-        <div class="f1-pos" id="f1-pos"></div>
-        <aside class="f1-events-panel">
+      <div class="f1-stage-grid">
+        <aside class="f1-side">
+          <h4>${_t('Order', 'Classificação')}</h4>
+          <div class="f1-pos" id="f1-pos"></div>
+        </aside>
+        <div class="f1-center">
+          <div class="f1-track-stage">
+            <canvas id="f1-canvas"></canvas>
+            <div class="f1-track-hint" id="f1-track-hint"></div>
+            <div class="f1-stage-load" id="f1-stage-load">${loading()}</div>
+          </div>
+          <div class="f1-controls">
+            <button class="f1-btn" id="f1-play">▶ ${_t('Play', 'Reproduzir')}</button>
+            <div class="f1-seek-wrap"><input type="range" id="f1-seek" min="0" max="1000" value="0" class="f1-seek">
+              <div class="f1-seek-marks" id="f1-seek-marks"></div></div>
+            <div class="f1-clock" id="f1-clock">—</div>
+            <div class="f1-speed" id="f1-speed">${SPEEDS.map(s => `<button data-s="${s}" class="${s === DEF_SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div>
+            <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
+          </div>
+        </div>
+        <aside class="f1-side">
           <h4>${_t('Race events', 'Eventos da corrida')}</h4>
           <div class="f1-events" id="f1-events"></div>
         </aside>
@@ -289,7 +303,12 @@ const F1Page = (function () {
 
     loadRace(+sel.value);
 
-    /* ── load + wire a single race replay ── */
+    /* ── load + wire a single race replay (WHOLE race) ──
+       The full X/Y telemetry of a 90-min race is ~50 MB, so instead each car
+       is placed on a real track outline by its lap progress (from /laps —
+       only ~600 KB for the entire race). Position on the lap = how far through
+       the current lap the car is; a small constant per-grid-slot offset keeps
+       the field from overlapping at the start. */
     async function loadRace(sk) {
       clearInterval(_liveTimer); _liveTimer = null;
       if (_track) { _track.dispose(); _track = null; }
@@ -298,128 +317,174 @@ const F1Page = (function () {
       const metaEl = body.querySelector('#f1-track-meta');
       const posEl = body.querySelector('#f1-pos');
       const evEl = body.querySelector('#f1-events');
-      stage.style.display = ''; stage.innerHTML = loading(_t('Loading replay…', 'A carregar o replay…'));
+      stage.style.display = ''; stage.innerHTML = loading(_t('Loading the full race…', 'A carregar a corrida completa…'));
       posEl.innerHTML = ''; evEl.innerHTML = '';
       metaEl.innerHTML = `<b>${esc(race.circuit_short_name)}</b> · ${esc(race.country_name)} ${race.year || ''}
-        <span class="f1-replay-tag">${_t('replay · race start', 'replay · partida')}</span>`;
+        <span class="f1-replay-tag">${_t('full race', 'corrida completa')}</span>`;
 
       try {
-        // sequence fetches — OpenF1 caps at 3 req/s, so keep each burst ≤2
-        // requests with a gap between bursts (firing more gets a 429).
+        // fetches sequenced under the OpenF1 rate gate (no big telemetry pull)
         const [drv, posRows] = await Promise.all([F1Data.drivers(sk), F1Data.positions(sk).catch(() => [])]);
-        await sleep(500);
-        const lightsISO = await F1Data.firstLapStart(sk).catch(() => null);
-        const start = lightsISO || race.date_start;
-        const t0 = Date.parse(start) - 2000;                 // a beat before lights-out
-        const fromISO = new Date(t0).toISOString();
-        const toISO = new Date(Date.parse(start) + REPLAY_WINDOW_MS).toISOString();
-        await sleep(500);
-        const [stintRows, rcRows] = await Promise.all([
-          F1Data.stints(sk).catch(() => []),
-          F1Data.raceControl(sk).catch(() => []),
-        ]);
-        await sleep(500);
-        const [loc, ivRows] = await Promise.all([
-          F1Data.location(sk, { from: fromISO, to: toISO }),
-          F1Data.intervalsWindow(sk, fromISO, toISO).catch(() => []),
-        ]);
+        const [lapRows, stintRows] = await Promise.all([F1Data.laps(sk), F1Data.stints(sk).catch(() => [])]);
+        const rcRows = await F1Data.raceControl(sk).catch(() => []);
 
         const meta = {};
         (drv || []).forEach(d => { meta[d.driver_number] = { name: d.full_name, code: d.name_acronym, colour: d.team_colour, team: d.team_name, num: d.driver_number }; });
 
-        // replay frames per driver (t = ms from t0)
-        const per = {};
-        for (const p of (loc || [])) {
-          if (!isFinite(p.x) || !isFinite(p.y) || (p.x === 0 && p.y === 0)) continue;
-          (per[p.driver_number] = per[p.driver_number] || []).push({ t: Date.parse(p.date) - t0, x: p.x, y: p.y });
+        // per-driver lap timeline {lap, t0, dur, end} (absolute ms)
+        const lapsByDriver = {};
+        for (const l of (lapRows || [])) {
+          if (!l.date_start) continue;
+          const t0 = Date.parse(l.date_start), dur = (l.lap_duration || 0) * 1000;
+          (lapsByDriver[l.driver_number] = lapsByDriver[l.driver_number] || []).push({ lap: l.lap_number, t0, dur, end: t0 + (dur || 90000) });
         }
-        if (!Object.keys(per).length) { stage.innerHTML = err(_t('No position data for this race.', 'Sem dados de posição para esta corrida.')); return; }
+        for (const n in lapsByDriver) lapsByDriver[n].sort((a, b) => a.lap - b.lap);
+        const allFirst = Object.values(lapsByDriver).map(a => a[0] && a[0].t0).filter(Boolean);
+        if (!allFirst.length) { stage.innerHTML = err(_t('No lap data for this race.', 'Sem dados de voltas para esta corrida.')); return; }
+        const lights = Math.min(...allFirst);
+        const raceEnd = Math.max(...Object.values(lapsByDriver).map(a => a[a.length - 1].end));
+        const raceDur = raceEnd - lights;
+        const totalLaps = Math.max(...(lapRows || []).map(l => l.lap_number || 0));
 
-        // outline = the driver with the most points (a front-runner runs clean laps)
-        let leadNum = Object.keys(per).sort((a, b) => per[b].length - per[a].length)[0];
-        const outline = (per[leadNum] || []).filter(p => p.x !== 0).map(p => ({ x: p.x, y: p.y }));
+        // fastest lap → its driver's location traces a clean outline (one small call)
+        let outline = [];
+        const cleanLaps = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1 && l.date_start);
+        if (cleanLaps.length) {
+          const best = cleanLaps.reduce((a, b) => b.lap_duration < a.lap_duration ? b : a);
+          const from = best.date_start, to = new Date(Date.parse(best.date_start) + (best.lap_duration + 3) * 1000).toISOString();
+          const loc = await F1Data.location(sk, { driver: best.driver_number, from, to }).catch(() => []);
+          outline = (loc || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y)).map(p => ({ x: p.x, y: p.y }));
+        }
+        if (outline.length < 20) { stage.innerHTML = err(_t('Could not trace the track.', 'Não foi possível traçar a pista.')); return; }
 
-        // starting tyre per driver (stint covering lap 1)
-        const startTyre = {};
-        for (const s of (stintRows || [])) {
-          const cur = startTyre[s.driver_number];
-          if (!cur || s.lap_start < cur.lap_start) startTyre[s.driver_number] = s;
+        // starting grid order → constant along-track offset so they don't overlap at the start
+        const startPos = {};
+        for (const r of (posRows || [])) {
+          const t = Date.parse(r.date);
+          if (!startPos[r.driver_number] || t < startPos[r.driver_number].t) startPos[r.driver_number] = { t, p: r.position };
+        }
+        const gridOrder = Object.keys(lapsByDriver).sort((a, b) => (startPos[a]?.p || 99) - (startPos[b]?.p || 99));
+        const offset = {}; gridOrder.forEach((n, i) => { offset[n] = i * GRID_GAP; });
+
+        // progress(absT) → {lap, f} (f = fraction through current lap); null once retired
+        function progAbs(arr, absT) {
+          if (absT < arr[0].t0) return { lap: 1, f: 0 };
+          for (let i = 0; i < arr.length; i++) {
+            const l = arr[i];
+            if (absT < l.end) return { lap: l.lap, f: l.dur ? Math.min(1, Math.max(0, (absT - l.t0) / l.dur)) : 0 };
+            if (i + 1 < arr.length && absT < arr[i + 1].t0) return { lap: l.lap, f: 1 };  // between laps (e.g. pit)
+          }
+          return null;                                          // past last lap → out
+        }
+        // float progress for gap maths
+        function progFloat(num, ms) { const a = lapsByDriver[num]; if (!a) return null; const p = progAbs(a, lights + ms); return p ? (p.lap - 1) + p.f : null; }
+
+        // build synthetic replay frames on the outline
+        const frames = {};
+        for (const num in lapsByDriver) {
+          const arr = lapsByDriver[num], lastEnd = arr[arr.length - 1].end, fr = [];
+          for (let t = 0; t <= raceDur; t += FRAME_MS) {
+            const absT = lights + t;
+            if (absT > lastEnd + 1500) break;                   // car retired/finished → stop (it disappears)
+            const p = progAbs(arr, absT); if (!p) break;
+            const xy = outlineXY(outline, p.f - offset[num]);
+            fr.push({ t, x: xy.x, y: xy.y });
+          }
+          if (fr.length) frames[num] = fr;
+        }
+
+        // tyre compound at a given lap (from stints)
+        const stintsByDriver = {};
+        for (const s of (stintRows || [])) (stintsByDriver[s.driver_number] = stintsByDriver[s.driver_number] || []).push(s);
+        function tyreAt(num, lap) {
+          const ss = stintsByDriver[num]; if (!ss) return {};
+          let cur = null;
+          for (const s of ss) { if (lap >= s.lap_start && lap <= s.lap_end) return s; if (s.lap_start <= lap) cur = s; }
+          return cur || ss[0] || {};
         }
 
         // running order over time (from /position)
         const posByDriver = {};
-        for (const r of (posRows || [])) (posByDriver[r.driver_number] = posByDriver[r.driver_number] || []).push({ t: Date.parse(r.date) - t0, p: r.position });
+        for (const r of (posRows || [])) (posByDriver[r.driver_number] = posByDriver[r.driver_number] || []).push({ t: Date.parse(r.date) - lights, p: r.position });
         Object.values(posByDriver).forEach(a => a.sort((x, y) => x.t - y.t));
-        // gaps over time (from /intervals)
-        const ivByDriver = {};
-        for (const r of (ivRows || [])) (ivByDriver[r.driver_number] = ivByDriver[r.driver_number] || []).push({ t: Date.parse(r.date) - t0, gap: r.interval, lead: r.gap_to_leader });
-        Object.values(ivByDriver).forEach(a => a.sort((x, y) => x.t - y.t));
 
-        // events: full race control feed; mark which fall inside the replay window
-        const dur = REPLAY_WINDOW_MS + 2000;
-        const events = (rcRows || []).map(rcEntry).filter(rcKeep).map(e => {
-          const t = Date.parse(e.date) - t0;
-          return { ...e, t, inWin: t >= -2000 && t <= dur };
-        }).sort((a, b) => a.t - b.t);
-        // flag-state timeline for the canvas overlay
-        const flagRows = flagStateRows(rcRows || []).map(r => ({ t: Date.parse(r.date) - t0, s: r.s })).sort((a, b) => a.t - b.t);
+        // events feed — whole race, all seekable
+        const events = (rcRows || []).map(rcEntry).filter(rcKeep).map(e => ({ ...e, t: Date.parse(e.date) - lights })).sort((a, b) => a.t - b.t);
+        const flagRows = flagStateRows(rcRows || []).map(r => ({ t: Date.parse(r.date) - lights, s: r.s })).sort((a, b) => a.t - b.t);
 
         // ── build the track ──
         const canvas = body.querySelector('#f1-canvas');
         _track = F1Track.create(canvas);
         _track.setDrivers(meta);
-        if (outline.length > 20) _track.setTrack(outline);
-        _track.setReplay(per);
+        _track.setTrack(outline);
+        _track.setReplay(frames);
         stage.style.display = 'none';
-        body.querySelector('#f1-track-hint').textContent = _t('Drag the bar · play to watch the start', 'Arrasta a barra · play para ver a partida');
+        body.querySelector('#f1-track-hint').textContent = _t('Drag the bar · play to watch the whole race', 'Arrasta a barra · play para ver a corrida toda');
 
         const seek = body.querySelector('#f1-seek');
         const clockEl = body.querySelector('#f1-clock');
         const playBtn = body.querySelector('#f1-play');
-        const lapMs = 90000;                                   // rough lap, just for an "L#" read-out
 
         function latestAt(arr, ms, key) { let v; for (const e of arr || []) { if (e.t <= ms) v = e[key]; else break; } return v; }
         function orderAt(ms) {
           const out = [];
-          for (const num in posByDriver) { const p = latestAt(posByDriver[num], ms, 'p'); if (p != null) out.push({ num, p }); }
+          for (const num in posByDriver) { const p = latestAt(posByDriver[num], ms, 'p'); if (p != null && progFloat(num, ms) != null) out.push({ num, p }); }
           return out.sort((a, b) => a.p - b.p);
+        }
+        function fmtGap(num, aheadNum, ms) {
+          const self = progFloat(num, ms), ah = progFloat(aheadNum, ms);
+          if (self == null || ah == null) return '';
+          const d = ah - self;
+          if (d >= 0.85) return '+' + Math.round(d) + (_lang() === 'en' ? ' lap' : ' v');   // laps down
+          const lapMs = (lapsByDriver[num]?.find(l => l.lap === (Math.floor(self) + 1))?.dur) || 90000;
+          return '+' + Math.max(0, d * lapMs / 1000).toFixed(1);
         }
         function paintPos(ms) {
           const ord = orderAt(ms);
-          if (ord.length && ord[0]) { leadNum = ord[0].num; _track.setLeader(leadNum); }
-          posEl.innerHTML = ord.map(o => {
-            const m = meta[o.num] || {}, ty = tyre((startTyre[o.num] || {}).compound);
-            const gap = o.p === 1 ? _t('LEADER', 'LÍDER') : (() => { const g = latestAt(ivByDriver[o.num], ms, 'gap'); return g == null ? '' : (typeof g === 'number' ? '+' + g.toFixed(1) : esc(g)); })();
+          if (ord[0]) _track.setLeader(ord[0].num);
+          posEl.innerHTML = ord.map((o, i) => {
+            const m = meta[o.num] || {};
+            const lap = (progAbs(lapsByDriver[o.num], lights + ms) || {}).lap || 1;
+            const ty = tyre((tyreAt(o.num, lap) || {}).compound);
+            const gap = i === 0 ? _t('LEADER', 'LÍDER') : fmtGap(o.num, ord[i - 1].num, ms);
             return `<div class="f1-pos-row"><span class="f1-pos-p">${o.p}</span>
               <span class="f1-pos-num" style="border-color:${teamCol(m.colour)}">${esc(o.num)}</span>
               <span class="f1-pos-name">${esc(m.code || o.num)}</span>
-              <span class="f1-tyre" style="--ty:${ty.c}" title="${esc((startTyre[o.num] || {}).compound || '')}">${ty.l}</span>
+              <span class="f1-tyre t-${(tyreAt(o.num, lap).compound || '').toLowerCase()}" title="${esc(tyreAt(o.num, lap).compound || '')}">${ty.l}</span>
               <span class="f1-pos-gap">${gap}</span></div>`;
           }).join('') || `<div class="f1-empty">${_t('No order', 'Sem ordem')}</div>`;
         }
+        let curEv = -1;
         function paintEvents(ms) {
-          evEl.innerHTML = events.map((e, i) => {
-            const past = e.t <= ms, future = !e.inWin;
+          let cur = -1;
+          const html = events.map((e, i) => {
+            const done = e.t <= ms; if (done) cur = i;
             const mm = e.t < 0 ? '0:00' : `${Math.floor(e.t / 60000)}:${String(Math.floor(e.t % 60000 / 1000)).padStart(2, '0')}`;
-            return `<div class="f1-ev k-${e.kind}${e.inWin ? ' inwin' : ''}${past && e.inWin ? ' done' : ''}" data-t="${e.t}" data-seek="${e.inWin ? 1 : 0}">
+            return `<div class="f1-ev k-${e.kind} inwin${done ? ' done' : ''}" data-i="${i}" data-t="${e.t}">
               <span class="f1-ev-ic">${e.icon}</span>
-              <span class="f1-ev-tx"><b>${esc(e.msg)}</b><small>${e.inWin ? mm : (e.lap ? _t('lap ', 'volta ') + e.lap : '—')}</small></span></div>`;
+              <span class="f1-ev-tx"><b>${esc(e.msg)}</b><small>${mm}${e.lap ? ' · ' + _t('lap ', 'V') + e.lap : ''}</small></span></div>`;
           }).join('') || `<div class="f1-empty">${_t('No notable events', 'Sem eventos relevantes')}</div>`;
+          evEl.innerHTML = html;
+          if (cur >= 0) { const el = evEl.querySelector(`.f1-ev[data-i="${cur}"]`); if (el) el.classList.add('cur'); }
         }
         function flagAt(ms) { let s = null; for (const r of flagRows) { if (r.t <= ms) s = r.s; else break; } return s; }
 
-        // seek-bar markers for in-window events
-        body.querySelector('#f1-seek-marks').innerHTML = events.filter(e => e.inWin && e.t >= 0).map(e =>
-          `<i class="m-${e.kind}" style="left:${Math.min(100, e.t / dur * 100)}%"></i>`).join('');
+        // seek-bar markers — only the notable events, across the whole race
+        const markKinds = { sc: 1, vsc: 1, red: 1, incident: 1, penalty: 1, chequered: 1 };
+        body.querySelector('#f1-seek-marks').innerHTML = events.filter(e => markKinds[e.kind] && e.t >= 0).map(e =>
+          `<i class="m-${e.kind}" style="left:${Math.min(100, e.t / raceDur * 100)}%"></i>`).join('');
 
         function onClock(frac) {
           const ms = frac * (_track.duration || 1);
           seek.value = Math.round(frac * 1000);
           _track.setFlag(flagAt(ms));
-          clockEl.textContent = 'L' + Math.max(1, Math.floor(ms / lapMs) + 1);
+          const lead = orderAt(ms)[0];
+          const lap = lead ? (progAbs(lapsByDriver[lead.num], lights + ms) || {}).lap || 1 : 1;
+          clockEl.textContent = (_lang() === 'en' ? 'L' : 'V') + Math.min(totalLaps, lap) + '/' + totalLaps;
           paintPos(ms); paintEvents(ms);
         }
         _track.setOnTick(onClock);
+        _track.setSpeed(DEF_SPEED);
         onClock(0);
 
         playBtn.onclick = () => { const on = _track.toggle(); playBtn.textContent = on ? '⏸ ' + _t('Pause', 'Pausa') : '▶ ' + _t('Play', 'Reproduzir'); };
@@ -427,9 +492,8 @@ const F1Page = (function () {
         body.querySelector('#f1-speed').onclick = e => { const b = e.target.closest('button'); if (!b) return; _track.setSpeed(+b.dataset.s); body.querySelectorAll('#f1-speed button').forEach(x => x.classList.toggle('on', x === b)); };
         let showCode = true;
         const labelBtn = body.querySelector('#f1-label');
-        labelBtn.textContent = 'ABC';
         labelBtn.onclick = () => { showCode = !showCode; _track.setLabelMode(showCode ? 'code' : 'num'); labelBtn.textContent = showCode ? 'ABC' : '#'; labelBtn.classList.toggle('on', !showCode); };
-        evEl.onclick = e => { const row = e.target.closest('.f1-ev'); if (!row || row.dataset.seek !== '1') return; _track.seek(Math.max(0, +row.dataset.t) / (_track.duration || 1)); };
+        evEl.onclick = e => { const row = e.target.closest('.f1-ev'); if (!row) return; _track.seek(Math.max(0, +row.dataset.t) / (_track.duration || 1)); };
 
         _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');
       } catch (e) { stage.style.display = ''; stage.innerHTML = err(); }

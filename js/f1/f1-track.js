@@ -145,7 +145,10 @@ const F1Track = (function () {
       // cars at current clock — drawn as team-coloured tags with the driver code
       const order = [];
       for (const num in frames) {
-        const p = _posAt(frames[num], clock);
+        const arr = frames[num];
+        // hide cars that are out (no data past this point = retired/finished)
+        if (clock > arr[arr.length - 1].t + 2000) continue;
+        const p = _posAt(arr, clock);
         const [px, py] = track.tf(p.x, p.y);
         order.push({ num, px, py });
       }
