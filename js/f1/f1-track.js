@@ -18,6 +18,9 @@ const F1Track = (function () {
     let clock = 0, speed = 6, playing = false, raf = null, last = 0;
     let _bounds = null;
     let onTick = null;
+    let labelMode = 'code';            // 'code' (HAM) | 'num' (44)
+    let flag = null;                   // null | 'yellow' | 'sc' | 'vsc' | 'red'
+    let leaderNum = null;              // highlight the running leader
 
     /* ── sizing ── */
     function resize() {
@@ -88,6 +91,37 @@ const F1Track = (function () {
       }
     }
 
+    /* readable text colour over a team-coloured tag */
+    function _ink(hex) {
+      const h = String(hex || '').replace('#', '');
+      if (h.length < 6) return '#fff';
+      const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+      return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#06080f' : '#fff';
+    }
+    function _roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    }
+
+    const FLAG_COL = { yellow: '#ffd60a', sc: '#ffd60a', vsc: '#ffd60a', red: '#ff2d24' };
+    function _drawFlag() {
+      if (!flag) return;
+      const col = FLAG_COL[flag] || '#ffd60a';
+      // pulsing edge vignette
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      ctx.save();
+      ctx.lineWidth = 5; ctx.strokeStyle = col; ctx.globalAlpha = .55;
+      ctx.strokeRect(2.5, 2.5, W - 5, H - 5);
+      ctx.globalAlpha = 1; ctx.restore();
+      // label chip top-left
+      const txt = flag === 'sc' ? 'SC' : flag === 'vsc' ? 'VSC' : flag === 'red' ? 'RED FLAG' : 'YELLOW';
+      ctx.font = '800 10px system-ui,sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      const w = ctx.measureText(txt).width + 14;
+      ctx.fillStyle = col; _roundRect(8, 8, w, 16, 4); ctx.fill();
+      ctx.fillStyle = '#06080f'; ctx.fillText(txt, 15, 17);
+    }
+
     function draw() {
       if (!ctx) return;
       ctx.clearRect(0, 0, W, H);
@@ -108,22 +142,30 @@ const F1Track = (function () {
         ctx.fillRect(sx - 3, sy, 3, 2.5); ctx.fillRect(sx + 3, sy, 3, 2.5);
       }
 
-      // cars at current clock
+      // cars at current clock — drawn as team-coloured tags with the driver code
       const order = [];
       for (const num in frames) {
         const p = _posAt(frames[num], clock);
         const [px, py] = track.tf(p.x, p.y);
         order.push({ num, px, py });
       }
+      ctx.font = '800 8.5px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       for (const c of order) {
         const d = drivers[c.num] || {};
-        const col = d.colour ? '#' + d.colour : '#bbb';
-        ctx.beginPath(); ctx.arc(c.px, c.py, 5.5, 0, 7); ctx.fillStyle = col;
-        ctx.shadowColor = col; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0;
-        ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.stroke();
-        ctx.fillStyle = '#fff'; ctx.font = '700 8px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(c.num, c.px, c.py);
+        const col = d.colour ? '#' + String(d.colour).replace('#', '') : '#bbb';
+        const label = labelMode === 'num' ? String(c.num) : (d.code || c.num);
+        const isLeader = String(c.num) === String(leaderNum);
+        const tw = Math.max(15, ctx.measureText(label).width + 8);
+        const th = 13, x = c.px - tw / 2, y = c.py - th / 2;
+        ctx.shadowColor = col; ctx.shadowBlur = isLeader ? 11 : 6;
+        ctx.fillStyle = col; _roundRect(x, y, tw, th, 3.5); ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = isLeader ? 1.6 : 1; ctx.strokeStyle = isLeader ? '#fff' : 'rgba(255,255,255,.55)';
+        _roundRect(x, y, tw, th, 3.5); ctx.stroke();
+        ctx.fillStyle = _ink(col); ctx.fillText(label, c.px, c.py + .5);
       }
+
+      _drawFlag();
     }
 
     /* ── playback ── */
@@ -146,13 +188,17 @@ const F1Track = (function () {
     function setSpeed(s) { speed = s; }
     function setLiveClock(t) { clock = t; draw(); }          // live mode drives the clock externally
     function setOnTick(fn) { onTick = fn; }
+    function setLabelMode(m) { labelMode = m === 'num' ? 'num' : 'code'; draw(); }
+    function setFlag(f) { flag = f || null; }
+    function setLeader(n) { leaderNum = n; }
     function dispose() { if (raf) cancelAnimationFrame(raf); raf = null; playing = false; }
 
     const ro = new ResizeObserver(resize); ro.observe(canvas);
     resize();
 
-    return { setTrack, setDrivers, setReplay, play, pause, toggle, seek, setSpeed, setLiveClock, setOnTick, start, dispose, resize,
-      get duration() { return duration; }, get playing() { return playing; } };
+    return { setTrack, setDrivers, setReplay, play, pause, toggle, seek, setSpeed, setLiveClock, setOnTick,
+      setLabelMode, setFlag, setLeader, start, dispose, resize,
+      get duration() { return duration; }, get playing() { return playing; }, get clock() { return clock; } };
   }
 
   return { create };

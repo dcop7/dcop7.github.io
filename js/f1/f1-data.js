@@ -29,6 +29,16 @@ const F1Data = (function () {
   const _mem = new Map();           // url -> { t, data }
   let _staticCache = null;          // the Action-built cache.json (or null)
 
+  /* OpenF1 caps at 3 req/s (and 30/min). Serialise every OpenF1 network call
+     through a ~360 ms spacing gate so bursts (Promise.all, startup) can't trip
+     a 429 regardless of how callers issue them. */
+  let _of1NextSlot = 0;
+  function _of1Slot() {
+    const now = Date.now(), at = Math.max(now, _of1NextSlot);
+    _of1NextSlot = at + 360;
+    return at <= now ? Promise.resolve() : new Promise(r => setTimeout(r, at - now));
+  }
+
   /* ── low-level fetch with in-memory + sessionStorage cache ── */
   async function _get(url, ttlMs = 60000) {
     const hit = _mem.get(url);
@@ -37,9 +47,21 @@ const F1Data = (function () {
       const raw = sessionStorage.getItem('f1:' + url);
       if (raw) { const o = JSON.parse(raw); if (Date.now() - o.t < ttlMs) { _mem.set(url, o); return o.data; } }
     } catch {}
-    const r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) throw new Error('http ' + r.status);
-    const data = await r.json();
+    const isOF1 = url.startsWith(OF1);
+    let data;
+    for (let attempt = 0; ; attempt++) {
+      if (isOF1) await _of1Slot();
+      const r = await fetch(url, { cache: 'no-store' });
+      if (r.status === 429 && attempt < 2) {                 // backoff + retry on rate limit
+        const ra = parseFloat(r.headers.get('retry-after')) || 1.2;
+        _of1NextSlot = Date.now() + ra * 1000 + 360;
+        await new Promise(res => setTimeout(res, ra * 1000));
+        continue;
+      }
+      if (!r.ok) throw new Error('http ' + r.status);
+      data = await r.json();
+      break;
+    }
     const o = { t: Date.now(), data };
     _mem.set(url, o);
     try { sessionStorage.setItem('f1:' + url, JSON.stringify(o)); } catch {}
@@ -89,6 +111,29 @@ const F1Data = (function () {
   }
   async function laps(sessionKey) {
     return _get(ofq('/laps', 'session_key=' + sessionKey), 600000);
+  }
+  /* Lights-out moment of a race = the lap 1 date_start (identical for every
+     driver). The session's own date_start is ~3-4 min earlier (formation lap),
+     which is why a window opened there shows cars spread out, not on the grid. */
+  async function firstLapStart(sessionKey) {
+    const a = await _get(ofq('/laps', 'session_key=' + sessionKey + '&lap_number=1'), 600000);
+    const ts = (a || []).map(l => l.date_start && Date.parse(l.date_start)).filter(Boolean);
+    return ts.length ? new Date(Math.min(...ts)).toISOString() : null;
+  }
+  /* Tyre stints (compound + lap range per driver). Small payload. */
+  async function stints(sessionKey) {
+    return _get(ofq('/stints', 'session_key=' + sessionKey), 600000);
+  }
+  /* Race control feed: flags, safety car, incidents, penalties. */
+  async function raceControl(sessionKey) {
+    return _get(ofq('/race_control', 'session_key=' + sessionKey), 8000);
+  }
+  /* Gaps. The full feed is ~25k rows, so callers should pass a date window. */
+  async function intervalsWindow(sessionKey, from, to) {
+    let p = 'session_key=' + sessionKey;
+    if (from) p += '&date%3E' + encodeURIComponent(from);
+    if (to) p += '&date%3C' + encodeURIComponent(to);
+    return _get(ofq('/intervals', p), 8000);
   }
   /* raw location points (for the track + cars). Optional ISO date window. */
   async function location(sessionKey, { driver, from, to } = {}) {
@@ -165,6 +210,7 @@ const F1Data = (function () {
   return {
     latestSession, latestMeeting, sessionsForMeeting, racesOfYear,
     drivers, positions, intervals, weather, location, laps,
+    firstLapStart, stints, raceControl, intervalsWindow,
     latestOrder, latestIntervals, circuitsMeta,
     driverStandings, constructorStandings, schedule, lastResults, splitSchedule,
   };
