@@ -58,6 +58,8 @@ const F1Data = (function () {
         await new Promise(res => setTimeout(res, ra * 1000));
         continue;
       }
+      // OpenF1 answers 404 "No results found" for an empty match — treat as []
+      if (r.status === 404 && isOF1) { data = []; break; }
       if (!r.ok) throw new Error('http ' + r.status);
       data = await r.json();
       break;

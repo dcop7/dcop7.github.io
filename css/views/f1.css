@@ -153,7 +153,7 @@
 .f1-replay-tag.live { color: #fff; background: #e10600; border-color: #e10600; }
 
 /* ── 3-column stage: order · track · events ── */
-.f1-stage-grid { max-width: 1400px; margin: 0 auto; display: flex; gap: .9rem; align-items: stretch; }
+.f1-stage-grid { max-width: 1400px; margin: 0 auto; display: flex; gap: .9rem; align-items: stretch; position: relative; }
 .f1-center { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
 .f1-side { flex: 0 0 200px; display: flex; flex-direction: column; min-height: 0; }
 .f1-side:last-child { flex-basis: 290px; }
@@ -215,6 +215,40 @@
 .f1-ev.k-sc, .f1-ev.k-vsc { border-left-color: #ff9d00; } .f1-ev.k-green { border-left-color: #3fb950; }
 .f1-ev.k-penalty, .f1-ev.k-incident, .f1-ev.k-deleted { border-left-color: #b388ff; }
 .f1-ev.k-chequered, .f1-ev.k-session { border-left-color: #fff; }
+
+/* ── weather chip (header) ── */
+.f1-weather { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .74rem; color: var(--text2); width: 100%; }
+.f1-weather span { white-space: nowrap; }
+
+/* ── fullscreen / icon buttons + retry ── */
+.f1-icon-btn { font-size: .95rem; padding: .4rem .55rem; line-height: 1; }
+.f1-retry { margin-top: .8rem; }
+
+/* ── retired rows + penalty badges ── */
+.f1-pos-row.out { opacity: .5; }
+.f1-pos-row.out .f1-pos-gap { color: #ff6b66; font-size: .64rem; }
+.f1-pen { font-family: var(--font-mono); font-size: .56rem; font-weight: 800; padding: 0 .25rem; border-radius: 3px;
+  background: rgba(225,6,0,.18); color: #ff6b66; border: 1px solid rgba(225,6,0,.4); white-space: nowrap; }
+.f1-pen-grid { background: rgba(179,136,255,.18); color: #c4a6ff; border-color: rgba(179,136,255,.4); }
+
+/* ── driver hover popup ── */
+.f1-driver-pop { position: absolute; z-index: 40; width: 240px; max-width: 80vw; background: var(--card2);
+  border: 1px solid var(--border2); border-radius: var(--radius-sm); box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  padding: .6rem .7rem; pointer-events: none; font-size: .76rem; }
+.f1-dp-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+.f1-dp-num { font-family: var(--font-mono); font-weight: 800; font-size: .72rem; color: #06080f; padding: .12rem .35rem; border-radius: 4px; }
+.f1-dp-name { font-weight: 800; color: var(--text); }
+.f1-dp-team { font-size: .68rem; color: var(--muted); }
+.f1-dp-rows > div { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .2rem 0; border-bottom: 1px solid var(--border); }
+.f1-dp-rows span { color: var(--muted); } .f1-dp-rows b { color: var(--text); display: flex; align-items: center; gap: .35rem; }
+.f1-dp-pens { margin-top: .5rem; }
+.f1-dp-lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: .25rem; }
+.f1-dp-pen { display: flex; gap: .4rem; align-items: baseline; font-size: .68rem; color: var(--text2); margin-bottom: .2rem; }
+
+/* ── fullscreen ── */
+#f1-stage-grid:fullscreen { background: #06080f; padding: 1rem 1.2rem; box-sizing: border-box; align-items: stretch; }
+#f1-stage-grid:fullscreen .f1-side .f1-pos, #f1-stage-grid:fullscreen .f1-side .f1-events { max-height: none; }
+#f1-stage-grid:-webkit-full-screen { background: #06080f; padding: 1rem 1.2rem; box-sizing: border-box; }
 
 @media (max-width: 900px) {
   .f1-stage-grid { flex-direction: column; }
