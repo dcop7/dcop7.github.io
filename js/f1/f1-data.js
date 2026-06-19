@@ -112,7 +112,7 @@ const F1Data = (function () {
     return _get(ofq('/weather', 'session_key=' + sessionKey), 60000);
   }
   async function laps(sessionKey) {
-    return _get(ofq('/laps', 'session_key=' + sessionKey), 600000);
+    return _get(ofq('/laps', 'session_key=' + sessionKey), 30000);   // short TTL so live timing refreshes
   }
   /* Lights-out moment of a race = the lap 1 date_start (identical for every
      driver). The session's own date_start is ~3-4 min earlier (formation lap),
@@ -124,7 +124,7 @@ const F1Data = (function () {
   }
   /* Tyre stints (compound + lap range per driver). Small payload. */
   async function stints(sessionKey) {
-    return _get(ofq('/stints', 'session_key=' + sessionKey), 600000);
+    return _get(ofq('/stints', 'session_key=' + sessionKey), 30000);
   }
   /* Race control feed: flags, safety car, incidents, penalties. */
   async function raceControl(sessionKey) {
@@ -137,6 +137,20 @@ const F1Data = (function () {
     if (to) p += '&date%3C' + encodeURIComponent(to);
     return _get(ofq('/intervals', p), 8000);
   }
+  /* Pit stops: lap, pit_duration (in pit lane) + stop_duration (stationary). */
+  async function pit(sessionKey) {
+    return _get(ofq('/pit', 'session_key=' + sessionKey), 8000);
+  }
+  /* Car telemetry: speed, throttle, brake, n_gear, rpm, drs (~3.7 Hz). HUGE for a
+     whole race, so callers MUST pass a date window (e.g. one lap). */
+  async function carData(sessionKey, { driver, from, to } = {}) {
+    let p = 'session_key=' + sessionKey;
+    if (driver != null) p += '&driver_number=' + driver;
+    if (from) p += '&date%3E' + encodeURIComponent(from);
+    if (to) p += '&date%3C' + encodeURIComponent(to);
+    return _get(ofq('/car_data', p), 600000);
+  }
+
   /* raw location points (for the track + cars). Optional ISO date window. */
   async function location(sessionKey, { driver, from, to } = {}) {
     let p = 'session_key=' + sessionKey;
@@ -272,7 +286,7 @@ const F1Data = (function () {
   return {
     latestSession, latestMeeting, sessionsForMeeting, racesOfYear,
     drivers, positions, intervals, weather, location, laps,
-    firstLapStart, stints, raceControl, intervalsWindow,
+    firstLapStart, stints, raceControl, intervalsWindow, pit, carData,
     latestOrder, latestIntervals, circuitsMeta, allCircuits, seasonStats, seasonStatsFor,
     driverStandings, constructorStandings, schedule, lastResults, splitSchedule,
   };
