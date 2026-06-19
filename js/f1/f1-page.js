@@ -403,7 +403,6 @@ const F1Page = (function () {
           <select class="f1-select" id="f1-race-sel" aria-label="${_t('Choose race','Escolher corrida')}">${opts}</select>
         </div>
         <div class="f1-track-meta" id="f1-track-meta"></div>
-        <div class="f1-weather" id="f1-weather"></div>
       </div>
       <div class="f1-stage-grid" id="f1-stage-grid">
         <aside class="f1-side">
@@ -463,8 +462,8 @@ const F1Page = (function () {
       const evEl = body.querySelector('#f1-events');
       stage.style.display = ''; stage.innerHTML = loading(_t('Loading the full race…', 'A carregar a corrida completa…'));
       posEl.innerHTML = ''; evEl.innerHTML = '';
-      metaEl.innerHTML = `<b>${esc(race.circuit_short_name)}</b> · ${esc(race.country_name)} ${race.year || ''}
-        <span class="f1-replay-tag">${_t('full race', 'corrida completa')}</span>`;
+      const raceLabel = `<b>${esc(race.circuit_short_name)}</b> · ${esc(race.country_name)} ${race.year || ''} <span class="f1-replay-tag">${_t('full race', 'corrida completa')}</span> `;
+      metaEl.innerHTML = raceLabel;
       const fail = msg => { stage.style.display = ''; stage.innerHTML =
         `<div class="f1-empty">⚠ ${esc(msg || _t('Could not load data.', 'Não foi possível carregar os dados.'))}
           <button class="f1-btn f1-retry" id="f1-retry">↻ ${_t('Retry', 'Tentar de novo')}</button></div>`;
@@ -554,15 +553,11 @@ const F1Page = (function () {
         }
         function flagAt(ms) { let s = null; for (const r of flagRows) { if (r.t <= ms) s = r.s; else break; } return s; }
 
-        // weather time-series (wx from the model) → chip in the header
-        const wxEl = body.querySelector('#f1-weather');
+        // weather (wx from the model) → inline chip next to the race name, like the Piloto tab
         function paintWx(ms) {
           let w = null; for (const r of wx) { if (r.t <= ms) w = r; else break; } if (!w) w = wx[0];
-          if (!w) { wxEl.textContent = ''; return; }
-          wxEl.innerHTML = `<span>${w.rain > 0 ? '🌧️' : '☀️'} ${Math.round(w.air)}°C</span>`
-            + `<span>${_t('track', 'pista')} ${Math.round(w.trk)}°</span>`
-            + `<span>💧 ${Math.round(w.hum)}%</span>`
-            + (w.wind != null ? `<span>💨 ${Math.round(w.wind)} m/s</span>` : '');
+          const chip = w ? `<span class="f1-dr-wx">${w.rain > 0 ? '🌧️' : '☀️'} ${Math.round(w.air)}°C · ${_t('track', 'pista')} ${Math.round(w.trk)}° · 💧 ${Math.round(w.hum)}%${w.wind != null ? ' · 💨 ' + Math.round(w.wind) + ' m/s' : ''}</span>` : '';
+          metaEl.innerHTML = raceLabel + chip;
         }
 
         // seek-bar markers — only the notable events, across the whole race
