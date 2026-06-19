@@ -1,23 +1,431 @@
 {
  "theme": "arte",
  "items": [
-  { "id": "arte-pre-historica", "title": "A arte da Pré-história", "tier": "destaque", "subtheme": "pintura", "year": -40000, "desc": "As pinturas nas grutas são as primeiras obras de arte da humanidade.", "fact": "Lascaux e Altamira têm animais pintados há mais de 15 mil anos.", "tags": ["pré-história", "pintura"], "related": ["arte-rupestre"] },
-  { "id": "arte-classica", "title": "A arte clássica grega", "tier": "explorar", "subtheme": "escultura", "year": -450, "desc": "Os gregos procuram a beleza ideal e o equilíbrio nas suas estátuas.", "fact": "As estátuas eram pintadas com cores vivas, não brancas como hoje.", "tags": ["grécia", "escultura"], "related": ["partenon"] },
-  { "id": "partenon", "title": "O Pártenon", "tier": "explorar", "subtheme": "arquitetura", "year": -438, "desc": "O templo de Atenas, ícone da arquitetura clássica.", "fact": "As suas colunas curvam-se ligeiramente para parecerem perfeitas ao olhar.", "tags": ["grécia", "arquitetura"], "place": "Atenas", "related": ["arte-classica"] },
-  { "id": "catedrais-goticas", "title": "As catedrais góticas", "tier": "explorar", "subtheme": "arquitetura", "year": 1150, "desc": "Igrejas altíssimas com vitrais e arcos que parecem desafiar a gravidade.", "fact": "Algumas demoraram mais de um século a construir.", "tags": ["medieval", "arquitetura"] },
-  { "id": "renascimento-arte", "title": "O Renascimento na arte", "tier": "destaque", "subtheme": "movimentos", "year": 1500, "desc": "Artistas redescobrem a perspetiva e o realismo do corpo humano.", "fact": "Da Vinci e Michelangelo definiram a imagem do génio artístico.", "tags": ["renascimento", "movimento"], "people": ["leonardo-da-vinci", "michelangelo"], "related": ["mona-lisa", "renascimento"] },
-  { "id": "mona-lisa", "title": "A Mona Lisa", "tier": "destaque", "subtheme": "pintura", "year": 1503, "desc": "O retrato mais famoso do mundo, de Leonardo da Vinci.", "fact": "Tornou-se mundialmente célebre depois de ser roubada em 1911.", "tags": ["pintura", "renascimento"], "people": ["leonardo-da-vinci"], "place": "Museu do Louvre, Paris", "related": ["renascimento-arte"] },
-  { "id": "barroco", "title": "O Barroco", "tier": "explorar", "subtheme": "movimentos", "year": 1600, "desc": "Arte dramática, cheia de movimento, luz e emoção.", "fact": "Caravaggio usava contrastes fortes de luz e sombra.", "tags": ["movimento", "barroco"], "people": ["caravaggio"] },
-  { "id": "impressionismo", "title": "O Impressionismo", "tier": "destaque", "subtheme": "movimentos", "year": 1874, "desc": "Monet e outros pintam a luz e o instante, com pinceladas soltas.", "fact": "O nome veio, em tom de troça, do quadro 'Impressão, Nascer do Sol'.", "tags": ["movimento", "pintura"], "people": ["claude-monet"], "related": ["van-gogh"] },
-  { "id": "van-gogh", "title": "Van Gogh", "tier": "explorar", "subtheme": "pintura", "year": 1889, "desc": "Pinta com cor e emoção intensas, vendendo quase nada em vida.", "fact": "Hoje os seus quadros estão entre os mais valiosos do mundo.", "tags": ["pintura", "pós-impressionismo"], "people": ["vincent-van-gogh"], "related": ["impressionismo"] },
-  { "id": "fotografia-nasce", "title": "A invenção da fotografia", "tier": "destaque", "subtheme": "fotografia", "year": 1839, "desc": "Pela primeira vez é possível captar a realidade tal como é.", "fact": "Libertou os pintores do realismo e abriu caminho à arte moderna.", "tags": ["fotografia", "invenção"], "related": ["impressionismo", "fotojornalismo"] },
-  { "id": "cubismo", "title": "O Cubismo", "tier": "explorar", "subtheme": "movimentos", "year": 1907, "desc": "Picasso e Braque quebram os objetos em formas geométricas.", "fact": "Mostravam vários ângulos do mesmo objeto ao mesmo tempo.", "tags": ["movimento", "moderno"], "people": ["pablo-picasso"], "related": ["arte-abstrata"] },
-  { "id": "arte-abstrata", "title": "A arte abstrata", "tier": "explorar", "subtheme": "movimentos", "year": 1910, "desc": "A arte deixa de representar coisas reais e foca-se em cor e forma.", "fact": "Kandinsky é apontado como pioneiro da abstração.", "tags": ["movimento", "abstrato"], "related": ["cubismo"] },
-  { "id": "surrealismo", "title": "O Surrealismo", "tier": "explorar", "subtheme": "movimentos", "year": 1924, "desc": "Artistas pintam o mundo dos sonhos e do inconsciente.", "fact": "Dalí tornou-se famoso pelos seus relógios moles.", "tags": ["movimento", "sonho"], "people": ["salvador-dali"] },
-  { "id": "pop-art", "title": "A Pop Art", "tier": "explorar", "subtheme": "movimentos", "year": 1962, "desc": "Warhol transforma latas de sopa e celebridades em arte.", "fact": "Misturou arte com publicidade e cultura de massas.", "tags": ["movimento", "moderno"], "people": ["andy-warhol"] },
-  { "id": "estatua-david", "title": "O David de Michelangelo", "tier": "explorar", "subtheme": "escultura", "year": 1504, "desc": "Uma das esculturas mais perfeitas de sempre, em mármore.", "fact": "Mede mais de 5 metros e foi esculpida de um único bloco.", "tags": ["escultura", "renascimento"], "people": ["michelangelo"], "place": "Florença" },
-  { "id": "arquitetura-moderna", "title": "A arquitetura moderna", "tier": "explorar", "subtheme": "arquitetura", "year": 1920, "desc": "O vidro, o aço e o betão criam edifícios funcionais e arranha-céus.", "fact": "'A forma segue a função' tornou-se um lema da época.", "tags": ["arquitetura", "moderno"] },
-  { "id": "fotojornalismo", "title": "A imagem que muda o mundo", "tier": "aprofundar", "subtheme": "fotografia", "year": 1936, "desc": "A fotografia documental dá a ver guerras, pobreza e história em direto.", "fact": "Algumas fotos tornaram-se símbolos de épocas inteiras.", "tags": ["fotografia", "jornalismo"], "related": ["fotografia-nasce"] },
-  { "id": "arte-digital", "title": "Arte digital e NFT", "tier": "aprofundar", "subtheme": "movimentos", "year": 2010, "desc": "Computadores e a internet criam novas formas de arte.", "fact": "Uma obra digital chegou a ser vendida por dezenas de milhões.", "tags": ["movimento", "digital"] }
+  {
+   "id": "arte-pre-historica",
+   "title": "A arte da Pré-história",
+   "tier": "destaque",
+   "subtheme": "pintura",
+   "year": -40000,
+   "desc": "As pinturas nas grutas são as primeiras obras de arte da humanidade.",
+   "fact": "Lascaux e Altamira têm animais pintados há mais de 15 mil anos.",
+   "tags": [
+    "pré-história",
+    "pintura"
+   ],
+   "related": [
+    "arte-rupestre"
+   ]
+  },
+  {
+   "id": "arte-classica",
+   "title": "A arte clássica grega",
+   "tier": "explorar",
+   "subtheme": "escultura",
+   "year": -450,
+   "desc": "Os gregos procuram a beleza ideal e o equilíbrio nas suas estátuas.",
+   "fact": "As estátuas eram pintadas com cores vivas, não brancas como hoje.",
+   "tags": [
+    "grécia",
+    "escultura"
+   ],
+   "related": [
+    "partenon"
+   ]
+  },
+  {
+   "id": "partenon",
+   "title": "O Pártenon",
+   "tier": "explorar",
+   "subtheme": "arquitetura",
+   "year": -438,
+   "desc": "O templo de Atenas, ícone da arquitetura clássica.",
+   "fact": "As suas colunas curvam-se ligeiramente para parecerem perfeitas ao olhar.",
+   "tags": [
+    "grécia",
+    "arquitetura"
+   ],
+   "place": "Atenas",
+   "related": [
+    "arte-classica"
+   ]
+  },
+  {
+   "id": "arte-bizantina",
+   "title": "A arte bizantina",
+   "tier": "aprofundar",
+   "subtheme": "arquitetura",
+   "year": 537,
+   "desc": "Mosaicos dourados e a imponente Santa Sofia marcam o Oriente cristão.",
+   "fact": "A cúpula de Santa Sofia parecia \"suspensa do céu\".",
+   "tags": [
+    "bizâncio",
+    "arquitetura"
+   ],
+   "place": "Istambul"
+  },
+  {
+   "id": "catedrais-goticas",
+   "title": "As catedrais góticas",
+   "tier": "explorar",
+   "subtheme": "arquitetura",
+   "year": 1150,
+   "desc": "Igrejas altíssimas com vitrais e arcos que parecem desafiar a gravidade.",
+   "fact": "Algumas demoraram mais de um século a construir.",
+   "tags": [
+    "medieval",
+    "arquitetura"
+   ]
+  },
+  {
+   "id": "renascimento-arte",
+   "title": "O Renascimento na arte",
+   "tier": "destaque",
+   "subtheme": "movimentos",
+   "year": 1500,
+   "desc": "Artistas redescobrem a perspetiva e o realismo do corpo humano.",
+   "fact": "Da Vinci e Michelangelo definiram a imagem do génio artístico.",
+   "tags": [
+    "renascimento",
+    "movimento"
+   ],
+   "people": [
+    "leonardo-da-vinci",
+    "michelangelo"
+   ],
+   "related": [
+    "mona-lisa",
+    "renascimento"
+   ]
+  },
+  {
+   "id": "mona-lisa",
+   "title": "A Mona Lisa",
+   "tier": "destaque",
+   "subtheme": "pintura",
+   "year": 1503,
+   "desc": "O retrato mais famoso do mundo, de Leonardo da Vinci.",
+   "fact": "Tornou-se mundialmente célebre depois de ser roubada em 1911.",
+   "tags": [
+    "pintura",
+    "renascimento"
+   ],
+   "people": [
+    "leonardo-da-vinci"
+   ],
+   "place": "Museu do Louvre, Paris",
+   "related": [
+    "renascimento-arte"
+   ]
+  },
+  {
+   "id": "estatua-david",
+   "title": "O David de Michelangelo",
+   "tier": "explorar",
+   "subtheme": "escultura",
+   "year": 1504,
+   "desc": "Uma das esculturas mais perfeitas de sempre, em mármore.",
+   "fact": "Mede mais de 5 metros e foi esculpida de um único bloco.",
+   "tags": [
+    "escultura",
+    "renascimento"
+   ],
+   "people": [
+    "michelangelo"
+   ],
+   "place": "Florença"
+  },
+  {
+   "id": "barroco",
+   "title": "O Barroco",
+   "tier": "explorar",
+   "subtheme": "movimentos",
+   "year": 1600,
+   "desc": "Arte dramática, cheia de movimento, luz e emoção.",
+   "fact": "Caravaggio usava contrastes fortes de luz e sombra.",
+   "tags": [
+    "movimento",
+    "barroco"
+   ],
+   "people": [
+    "caravaggio"
+   ]
+  },
+  {
+   "id": "ukiyo-e",
+   "title": "As gravuras japonesas (ukiyo-e)",
+   "tier": "aprofundar",
+   "subtheme": "movimentos",
+   "year": 1830,
+   "desc": "A \"Grande Onda\" de Hokusai e outras gravuras encantam o mundo.",
+   "fact": "Influenciaram fortemente os impressionistas europeus.",
+   "tags": [
+    "japão",
+    "gravura"
+   ],
+   "people": [
+    "hokusai"
+   ],
+   "related": [
+    "impressionismo"
+   ]
+  },
+  {
+   "id": "fotografia-nasce",
+   "title": "A invenção da fotografia",
+   "tier": "destaque",
+   "subtheme": "fotografia",
+   "year": 1839,
+   "desc": "Pela primeira vez é possível captar a realidade tal como é.",
+   "fact": "Libertou os pintores do realismo e abriu caminho à arte moderna.",
+   "tags": [
+    "fotografia",
+    "invenção"
+   ],
+   "related": [
+    "impressionismo",
+    "fotojornalismo"
+   ]
+  },
+  {
+   "id": "impressionismo",
+   "title": "O Impressionismo",
+   "tier": "destaque",
+   "subtheme": "movimentos",
+   "year": 1874,
+   "desc": "Monet e outros pintam a luz e o instante, com pinceladas soltas.",
+   "fact": "O nome veio, em tom de troça, do quadro 'Impressão, Nascer do Sol'.",
+   "tags": [
+    "movimento",
+    "pintura"
+   ],
+   "people": [
+    "claude-monet"
+   ],
+   "related": [
+    "van-gogh"
+   ]
+  },
+  {
+   "id": "van-gogh",
+   "title": "Van Gogh",
+   "tier": "explorar",
+   "subtheme": "pintura",
+   "year": 1889,
+   "desc": "Pinta com cor e emoção intensas, vendendo quase nada em vida.",
+   "fact": "Hoje os seus quadros estão entre os mais valiosos do mundo.",
+   "tags": [
+    "pintura",
+    "pós-impressionismo"
+   ],
+   "people": [
+    "vincent-van-gogh"
+   ],
+   "related": [
+    "impressionismo"
+   ]
+  },
+  {
+   "id": "art-nouveau",
+   "title": "A Art Nouveau",
+   "tier": "aprofundar",
+   "subtheme": "movimentos",
+   "year": 1890,
+   "desc": "Linhas curvas inspiradas na natureza invadem a arte e a arquitetura.",
+   "fact": "Gaudí levou-a ao extremo em Barcelona.",
+   "tags": [
+    "movimento",
+    "arquitetura"
+   ]
+  },
+  {
+   "id": "expressionismo",
+   "title": "O Expressionismo",
+   "tier": "aprofundar",
+   "subtheme": "movimentos",
+   "year": 1893,
+   "desc": "A arte foca-se na emoção crua, como em \"O Grito\" de Munch.",
+   "fact": "\"O Grito\" tornou-se um símbolo da angústia moderna.",
+   "tags": [
+    "movimento",
+    "emoção"
+   ]
+  },
+  {
+   "id": "cubismo",
+   "title": "O Cubismo",
+   "tier": "explorar",
+   "subtheme": "movimentos",
+   "year": 1907,
+   "desc": "Picasso e Braque quebram os objetos em formas geométricas.",
+   "fact": "Mostravam vários ângulos do mesmo objeto ao mesmo tempo.",
+   "tags": [
+    "movimento",
+    "moderno"
+   ],
+   "people": [
+    "pablo-picasso"
+   ],
+   "related": [
+    "arte-abstrata"
+   ]
+  },
+  {
+   "id": "arte-abstrata",
+   "title": "A arte abstrata",
+   "tier": "explorar",
+   "subtheme": "movimentos",
+   "year": 1910,
+   "desc": "A arte deixa de representar coisas reais e foca-se em cor e forma.",
+   "fact": "Kandinsky é apontado como pioneiro da abstração.",
+   "tags": [
+    "movimento",
+    "abstrato"
+   ],
+   "related": [
+    "cubismo"
+   ]
+  },
+  {
+   "id": "bauhaus",
+   "title": "A Bauhaus",
+   "tier": "aprofundar",
+   "subtheme": "arquitetura",
+   "year": 1919,
+   "desc": "Uma escola que une arte, design e indústria.",
+   "fact": "Definiu o aspeto limpo e funcional do design moderno.",
+   "tags": [
+    "design",
+    "arquitetura"
+   ],
+   "related": [
+    "arquitetura-moderna"
+   ]
+  },
+  {
+   "id": "arquitetura-moderna",
+   "title": "A arquitetura moderna",
+   "tier": "explorar",
+   "subtheme": "arquitetura",
+   "year": 1920,
+   "desc": "O vidro, o aço e o betão criam edifícios funcionais e arranha-céus.",
+   "fact": "'A forma segue a função' tornou-se um lema da época.",
+   "tags": [
+    "arquitetura",
+    "moderno"
+   ]
+  },
+  {
+   "id": "surrealismo",
+   "title": "O Surrealismo",
+   "tier": "explorar",
+   "subtheme": "movimentos",
+   "year": 1924,
+   "desc": "Artistas pintam o mundo dos sonhos e do inconsciente.",
+   "fact": "Dalí tornou-se famoso pelos seus relógios moles.",
+   "tags": [
+    "movimento",
+    "sonho"
+   ],
+   "people": [
+    "salvador-dali"
+   ]
+  },
+  {
+   "id": "fotojornalismo",
+   "title": "A imagem que muda o mundo",
+   "tier": "aprofundar",
+   "subtheme": "fotografia",
+   "year": 1936,
+   "desc": "A fotografia documental dá a ver guerras, pobreza e história em direto.",
+   "fact": "Algumas fotos tornaram-se símbolos de épocas inteiras.",
+   "tags": [
+    "fotografia",
+    "jornalismo"
+   ],
+   "related": [
+    "fotografia-nasce"
+   ]
+  },
+  {
+   "id": "guernica",
+   "title": "\"Guernica\"",
+   "tier": "aprofundar",
+   "subtheme": "pintura",
+   "year": 1937,
+   "desc": "O grito de Picasso contra o horror da guerra.",
+   "fact": "Foi pintado após o bombardeamento de uma vila espanhola.",
+   "tags": [
+    "pintura",
+    "protesto"
+   ],
+   "people": [
+    "pablo-picasso"
+   ],
+   "related": [
+    "cubismo"
+   ]
+  },
+  {
+   "id": "frida-kahlo",
+   "title": "Frida Kahlo",
+   "tier": "aprofundar",
+   "subtheme": "pintura",
+   "year": 1939,
+   "desc": "Autorretratos intensos que transformaram a dor em arte.",
+   "fact": "Tornou-se um ícone cultural mundial.",
+   "tags": [
+    "pintura",
+    "ícone"
+   ],
+   "people": [
+    "frida-kahlo"
+   ]
+  },
+  {
+   "id": "pop-art",
+   "title": "A Pop Art",
+   "tier": "explorar",
+   "subtheme": "movimentos",
+   "year": 1962,
+   "desc": "Warhol transforma latas de sopa e celebridades em arte.",
+   "fact": "Misturou arte com publicidade e cultura de massas.",
+   "tags": [
+    "movimento",
+    "moderno"
+   ],
+   "people": [
+    "andy-warhol"
+   ]
+  },
+  {
+   "id": "street-art",
+   "title": "A arte urbana",
+   "tier": "aprofundar",
+   "subtheme": "movimentos",
+   "year": 1980,
+   "desc": "O grafiti e o stencil levam a arte para as ruas.",
+   "fact": "Obras de Banksy valem hoje milhões em leilão.",
+   "tags": [
+    "movimento",
+    "urbano"
+   ],
+   "related": [
+    "arte-digital"
+   ]
+  },
+  {
+   "id": "arte-digital",
+   "title": "Arte digital e NFT",
+   "tier": "aprofundar",
+   "subtheme": "movimentos",
+   "year": 2010,
+   "desc": "Computadores e a internet criam novas formas de arte.",
+   "fact": "Uma obra digital chegou a ser vendida por dezenas de milhões.",
+   "tags": [
+    "movimento",
+    "digital"
+   ]
+  }
  ]
 }

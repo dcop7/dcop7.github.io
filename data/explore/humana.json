@@ -1,22 +1,404 @@
 {
  "theme": "humana",
  "items": [
-  { "id": "primatas", "title": "Dos primatas aos hominídeos", "tier": "explorar", "subtheme": "hominideos", "year": -7000000, "desc": "A linhagem humana separa-se da dos chimpanzés há ~7 milhões de anos.", "fact": "Partilhamos cerca de 98% do ADN com os chimpanzés.", "tags": ["evolução", "primatas"], "related": ["bipedia"] },
-  { "id": "bipedia", "title": "Andar sobre duas pernas", "tier": "destaque", "subtheme": "hominideos", "year": -4000000, "desc": "Os antepassados humanos começam a andar erguidos, libertando as mãos.", "fact": "Há pegadas fossilizadas com ~3,7 milhões de anos que o provam.", "tags": ["evolução", "bipedia"], "related": ["lucy"] },
-  { "id": "lucy", "title": "Lucy (Australopithecus)", "tier": "destaque", "subtheme": "hominideos", "year": -3200000, "desc": "Um dos fósseis humanos mais famosos, descoberto na Etiópia em 1974.", "fact": "Foi batizada 'Lucy' por causa de uma canção dos Beatles que tocava no acampamento.", "tags": ["fóssil", "australopithecus"], "related": ["bipedia"] },
-  { "id": "homo-habilis", "title": "Homo habilis e as ferramentas", "tier": "explorar", "subtheme": "hominideos", "year": -2400000, "desc": "Um dos primeiros do género Homo, associado às primeiras ferramentas de pedra.", "fact": "O nome significa 'homem habilidoso'.", "tags": ["homo", "ferramentas"], "related": ["fogo"] },
-  { "id": "homo-erectus", "title": "Homo erectus", "tier": "explorar", "subtheme": "hominideos", "year": -1900000, "desc": "O primeiro a ter corpo parecido com o nosso e a sair de África.", "fact": "Sobreviveu mais de um milhão de anos, muito mais do que nós até agora.", "tags": ["homo", "migração"], "related": ["fogo", "saida-africa"] },
-  { "id": "neandertais", "title": "Os Neandertais", "tier": "destaque", "subtheme": "hominideos", "year": -400000, "desc": "Humanos robustos adaptados ao frio da Europa, que enterravam os mortos.", "fact": "Muitos humanos atuais têm uma pequena percentagem de ADN neandertal.", "tags": ["homo", "europa"], "related": ["sapiens"] },
-  { "id": "sapiens", "title": "Homo sapiens", "tier": "destaque", "subtheme": "hominideos", "year": -300000, "desc": "A nossa espécie surge em África há ~300 mil anos.", "fact": "Durante milénios, vários tipos de humanos coexistiram no planeta.", "tags": ["homo", "origem"], "related": ["neandertais", "saida-africa"] },
-  { "id": "fogo", "title": "O domínio do fogo", "tier": "destaque", "subtheme": "prehistoria", "year": -1000000, "desc": "Controlar o fogo dá calor, proteção e comida cozinhada.", "fact": "Cozinhar libertou mais energia dos alimentos e ajudou o cérebro a crescer.", "tags": ["fogo", "tecnologia"], "related": ["homo-erectus"] },
-  { "id": "saida-africa", "title": "A saída de África", "tier": "destaque", "subtheme": "migracoes", "year": -70000, "desc": "O Homo sapiens espalha-se de África para o resto do mundo.", "fact": "Todos os humanos fora de África descendem destes migrantes.", "tags": ["migração", "sapiens"], "related": ["sapiens", "povoamento-americas"] },
-  { "id": "povoamento-australia", "title": "A chegada à Austrália", "tier": "explorar", "subtheme": "migracoes", "year": -50000, "desc": "Os humanos atravessam o mar e chegam à Austrália.", "fact": "Foi uma das primeiras grandes travessias marítimas da história.", "tags": ["migração", "austrália"], "related": ["saida-africa"] },
-  { "id": "povoamento-americas", "title": "A chegada à América", "tier": "explorar", "subtheme": "migracoes", "year": -16000, "desc": "Humanos atravessam da Ásia para a América durante a idade do gelo.", "fact": "O nível do mar mais baixo abriu uma ponte de terra no estreito de Bering.", "tags": ["migração", "américa"], "related": ["idades-do-gelo"] },
-  { "id": "arte-rupestre", "title": "Arte rupestre", "tier": "destaque", "subtheme": "cultura", "year": -40000, "desc": "Pinturas em grutas mostram o nascimento do pensamento simbólico.", "fact": "As gravuras do Côa, em Portugal, são Património Mundial.", "tags": ["arte", "símbolos"], "related": ["coa"] },
-  { "id": "linguagem", "title": "O nascimento da linguagem", "tier": "explorar", "subtheme": "cultura", "year": -100000, "desc": "A linguagem complexa permite cooperação e transmissão de conhecimento.", "fact": "É talvez a 'superpotência' que distingue a nossa espécie.", "tags": ["linguagem", "cultura"] },
-  { "id": "enterros", "title": "Rituais e crenças", "tier": "aprofundar", "subtheme": "cultura", "year": -100000, "desc": "Os enterros com oferendas mostram crenças sobre a morte.", "fact": "Até os Neandertais parecem ter cuidado dos seus mortos.", "tags": ["ritual", "crença"], "related": ["neandertais"] },
-  { "id": "neolitico", "title": "Revolução Neolítica", "tier": "destaque", "subtheme": "prehistoria", "year": -10000, "desc": "Os humanos começam a cultivar e a criar animais, e a fixar-se.", "fact": "A agricultura permitiu aldeias, cidades e, mais tarde, civilizações.", "tags": ["agricultura", "neolítico"], "related": ["agricultura", "primeiras-cidades"] },
-  { "id": "agricultura", "title": "A invenção da agricultura", "tier": "explorar", "subtheme": "prehistoria", "year": -9000, "desc": "Domesticar plantas e animais muda a história humana para sempre.", "fact": "Aconteceu de forma independente em várias partes do mundo.", "tags": ["agricultura", "neolítico"], "related": ["neolitico"] },
-  { "id": "humana-migracoes", "title": "Humanos pelo mundo inteiro", "tier": "aprofundar", "subtheme": "migracoes", "year": -12000, "desc": "No fim da idade do gelo, os humanos já viviam em quase todos os continentes.", "fact": "A nossa espécie é a mais espalhada e adaptável de sempre.", "tags": ["migração", "global"], "related": ["povoamento-americas"] }
+  {
+   "id": "primatas",
+   "title": "Dos primatas aos hominídeos",
+   "tier": "explorar",
+   "subtheme": "hominideos",
+   "year": -7000000,
+   "desc": "A linhagem humana separa-se da dos chimpanzés há ~7 milhões de anos.",
+   "fact": "Partilhamos cerca de 98% do ADN com os chimpanzés.",
+   "tags": [
+    "evolução",
+    "primatas"
+   ],
+   "related": [
+    "bipedia"
+   ]
+  },
+  {
+   "id": "bipedia",
+   "title": "Andar sobre duas pernas",
+   "tier": "destaque",
+   "subtheme": "hominideos",
+   "year": -4000000,
+   "desc": "Os antepassados humanos começam a andar erguidos, libertando as mãos.",
+   "fact": "Há pegadas fossilizadas com ~3,7 milhões de anos que o provam.",
+   "tags": [
+    "evolução",
+    "bipedia"
+   ],
+   "related": [
+    "lucy"
+   ]
+  },
+  {
+   "id": "lucy",
+   "title": "Lucy (Australopithecus)",
+   "tier": "destaque",
+   "subtheme": "hominideos",
+   "year": -3200000,
+   "desc": "Um dos fósseis humanos mais famosos, descoberto na Etiópia em 1974.",
+   "fact": "Foi batizada 'Lucy' por causa de uma canção dos Beatles que tocava no acampamento.",
+   "tags": [
+    "fóssil",
+    "australopithecus"
+   ],
+   "related": [
+    "bipedia"
+   ]
+  },
+  {
+   "id": "ferramentas-pedra",
+   "title": "As primeiras ferramentas de pedra",
+   "tier": "aprofundar",
+   "subtheme": "prehistoria",
+   "year": -2600000,
+   "desc": "Lascar pedras para cortar marca o início da tecnologia humana.",
+   "fact": "São anteriores ao próprio género Homo.",
+   "tags": [
+    "ferramentas",
+    "pré-história"
+   ],
+   "related": [
+    "homo-habilis"
+   ]
+  },
+  {
+   "id": "homo-habilis",
+   "title": "Homo habilis e as ferramentas",
+   "tier": "explorar",
+   "subtheme": "hominideos",
+   "year": -2400000,
+   "desc": "Um dos primeiros do género Homo, associado às primeiras ferramentas de pedra.",
+   "fact": "O nome significa 'homem habilidoso'.",
+   "tags": [
+    "homo",
+    "ferramentas"
+   ],
+   "related": [
+    "fogo"
+   ]
+  },
+  {
+   "id": "homo-erectus",
+   "title": "Homo erectus",
+   "tier": "explorar",
+   "subtheme": "hominideos",
+   "year": -1900000,
+   "desc": "O primeiro a ter corpo parecido com o nosso e a sair de África.",
+   "fact": "Sobreviveu mais de um milhão de anos, muito mais do que nós até agora.",
+   "tags": [
+    "homo",
+    "migração"
+   ],
+   "related": [
+    "fogo",
+    "saida-africa"
+   ]
+  },
+  {
+   "id": "fogo",
+   "title": "O domínio do fogo",
+   "tier": "destaque",
+   "subtheme": "prehistoria",
+   "year": -1000000,
+   "desc": "Controlar o fogo dá calor, proteção e comida cozinhada.",
+   "fact": "Cozinhar libertou mais energia dos alimentos e ajudou o cérebro a crescer.",
+   "tags": [
+    "fogo",
+    "tecnologia"
+   ],
+   "related": [
+    "homo-erectus"
+   ]
+  },
+  {
+   "id": "neandertais",
+   "title": "Os Neandertais",
+   "tier": "destaque",
+   "subtheme": "hominideos",
+   "year": -400000,
+   "desc": "Humanos robustos adaptados ao frio da Europa, que enterravam os mortos.",
+   "fact": "Muitos humanos atuais têm uma pequena percentagem de ADN neandertal.",
+   "tags": [
+    "homo",
+    "europa"
+   ],
+   "related": [
+    "sapiens"
+   ]
+  },
+  {
+   "id": "sapiens",
+   "title": "Homo sapiens",
+   "tier": "destaque",
+   "subtheme": "hominideos",
+   "year": -300000,
+   "desc": "A nossa espécie surge em África há ~300 mil anos.",
+   "fact": "Durante milénios, vários tipos de humanos coexistiram no planeta.",
+   "tags": [
+    "homo",
+    "origem"
+   ],
+   "related": [
+    "neandertais",
+    "saida-africa"
+   ]
+  },
+  {
+   "id": "linguagem",
+   "title": "O nascimento da linguagem",
+   "tier": "explorar",
+   "subtheme": "cultura",
+   "year": -100000,
+   "desc": "A linguagem complexa permite cooperação e transmissão de conhecimento.",
+   "fact": "É talvez a 'superpotência' que distingue a nossa espécie.",
+   "tags": [
+    "linguagem",
+    "cultura"
+   ]
+  },
+  {
+   "id": "enterros",
+   "title": "Rituais e crenças",
+   "tier": "aprofundar",
+   "subtheme": "cultura",
+   "year": -100000,
+   "desc": "Os enterros com oferendas mostram crenças sobre a morte.",
+   "fact": "Até os Neandertais parecem ter cuidado dos seus mortos.",
+   "tags": [
+    "ritual",
+    "crença"
+   ],
+   "related": [
+    "neandertais"
+   ]
+  },
+  {
+   "id": "saida-africa",
+   "title": "A saída de África",
+   "tier": "destaque",
+   "subtheme": "migracoes",
+   "year": -70000,
+   "desc": "O Homo sapiens espalha-se de África para o resto do mundo.",
+   "fact": "Todos os humanos fora de África descendem destes migrantes.",
+   "tags": [
+    "migração",
+    "sapiens"
+   ],
+   "related": [
+    "sapiens",
+    "povoamento-americas"
+   ]
+  },
+  {
+   "id": "povoamento-australia",
+   "title": "A chegada à Austrália",
+   "tier": "explorar",
+   "subtheme": "migracoes",
+   "year": -50000,
+   "desc": "Os humanos atravessam o mar e chegam à Austrália.",
+   "fact": "Foi uma das primeiras grandes travessias marítimas da história.",
+   "tags": [
+    "migração",
+    "austrália"
+   ],
+   "related": [
+    "saida-africa"
+   ]
+  },
+  {
+   "id": "arte-rupestre",
+   "title": "Arte rupestre",
+   "tier": "destaque",
+   "subtheme": "cultura",
+   "year": -40000,
+   "desc": "Pinturas em grutas mostram o nascimento do pensamento simbólico.",
+   "fact": "As gravuras do Côa, em Portugal, são Património Mundial.",
+   "tags": [
+    "arte",
+    "símbolos"
+   ],
+   "related": [
+    "coa"
+   ]
+  },
+  {
+   "id": "venus-paleoliticas",
+   "title": "As \"Vénus\" paleolíticas",
+   "tier": "aprofundar",
+   "subtheme": "cultura",
+   "year": -25000,
+   "desc": "Pequenas estatuetas femininas entre as mais antigas obras de arte 3D.",
+   "fact": "A Vénus de Willendorf tem cerca de 25 mil anos.",
+   "tags": [
+    "arte",
+    "pré-história"
+   ],
+   "related": [
+    "arte-rupestre"
+   ]
+  },
+  {
+   "id": "povoamento-americas",
+   "title": "A chegada à América",
+   "tier": "explorar",
+   "subtheme": "migracoes",
+   "year": -16000,
+   "desc": "Humanos atravessam da Ásia para a América durante a idade do gelo.",
+   "fact": "O nível do mar mais baixo abriu uma ponte de terra no estreito de Bering.",
+   "tags": [
+    "migração",
+    "américa"
+   ],
+   "related": [
+    "idades-do-gelo"
+   ]
+  },
+  {
+   "id": "domesticacao-caes",
+   "title": "O cão, o primeiro amigo",
+   "tier": "aprofundar",
+   "subtheme": "prehistoria",
+   "year": -15000,
+   "desc": "Os lobos aproximam-se dos humanos e tornam-se os primeiros animais domésticos.",
+   "fact": "Aconteceu antes da agricultura.",
+   "tags": [
+    "domesticação",
+    "animais"
+   ]
+  },
+  {
+   "id": "humana-migracoes",
+   "title": "Humanos pelo mundo inteiro",
+   "tier": "aprofundar",
+   "subtheme": "migracoes",
+   "year": -12000,
+   "desc": "No fim da idade do gelo, os humanos já viviam em quase todos os continentes.",
+   "fact": "A nossa espécie é a mais espalhada e adaptável de sempre.",
+   "tags": [
+    "migração",
+    "global"
+   ],
+   "related": [
+    "povoamento-americas"
+   ]
+  },
+  {
+   "id": "megafauna-extincao",
+   "title": "O fim da megafauna",
+   "tier": "aprofundar",
+   "subtheme": "migracoes",
+   "year": -12000,
+   "desc": "Mamutes e outros gigantes extinguem-se com a chegada dos humanos e o degelo.",
+   "fact": "A caça e o clima terão atuado em conjunto.",
+   "tags": [
+    "extinção",
+    "megafauna"
+   ],
+   "related": [
+    "idades-do-gelo"
+   ]
+  },
+  {
+   "id": "neolitico",
+   "title": "Revolução Neolítica",
+   "tier": "destaque",
+   "subtheme": "prehistoria",
+   "year": -10000,
+   "desc": "Os humanos começam a cultivar e a criar animais, e a fixar-se.",
+   "fact": "A agricultura permitiu aldeias, cidades e, mais tarde, civilizações.",
+   "tags": [
+    "agricultura",
+    "neolítico"
+   ],
+   "related": [
+    "agricultura",
+    "primeiras-cidades"
+   ]
+  },
+  {
+   "id": "agricultura",
+   "title": "A invenção da agricultura",
+   "tier": "explorar",
+   "subtheme": "prehistoria",
+   "year": -9000,
+   "desc": "Domesticar plantas e animais muda a história humana para sempre.",
+   "fact": "Aconteceu de forma independente em várias partes do mundo.",
+   "tags": [
+    "agricultura",
+    "neolítico"
+   ],
+   "related": [
+    "neolitico"
+   ]
+  },
+  {
+   "id": "focos-agricultura",
+   "title": "A agricultura nasce em vários sítios",
+   "tier": "aprofundar",
+   "subtheme": "prehistoria",
+   "year": -8000,
+   "desc": "Trigo no Médio Oriente, arroz na China, milho no México — tudo em separado.",
+   "fact": "A mesma ideia surgiu de forma independente pelo mundo.",
+   "tags": [
+    "agricultura",
+    "neolítico"
+   ],
+   "related": [
+    "agricultura"
+   ]
+  },
+  {
+   "id": "homo-floresiensis",
+   "title": "O \"Hobbit\" de Flores",
+   "tier": "aprofundar",
+   "subtheme": "hominideos",
+   "year": 2003,
+   "desc": "Uma espécie humana de pequena estatura que viveu numa ilha da Indonésia.",
+   "fact": "Media cerca de um metro de altura.",
+   "tags": [
+    "homo",
+    "descoberta"
+   ]
+  },
+  {
+   "id": "denisovanos",
+   "title": "Os Denisovanos",
+   "tier": "aprofundar",
+   "subtheme": "hominideos",
+   "year": 2010,
+   "desc": "Uma espécie humana descoberta apenas pelo ADN de um pequeno osso.",
+   "fact": "Povos da Ásia e Oceânia ainda carregam o seu ADN.",
+   "tags": [
+    "homo",
+    "adn"
+   ],
+   "related": [
+    "neandertais",
+    "adn-antigo"
+   ]
+  },
+  {
+   "id": "adn-antigo",
+   "title": "Ler o ADN dos fósseis",
+   "tier": "aprofundar",
+   "subtheme": "hominideos",
+   "year": 2010,
+   "desc": "A paleogenética permite ler o ADN de humanos com dezenas de milhares de anos.",
+   "fact": "Svante Pääbo ganhou o Nobel da Medicina por isso em 2022.",
+   "tags": [
+    "adn",
+    "ciência"
+   ],
+   "people": [
+    "svante-paabo"
+   ],
+   "related": [
+    "neandertais"
+   ]
+  }
  ]
 }

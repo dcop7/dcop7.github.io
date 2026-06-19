@@ -1,23 +1,432 @@
 {
  "theme": "desporto",
  "items": [
-  { "id": "olimpicos-modernos", "title": "Os Jogos Olímpicos modernos", "tier": "destaque", "subtheme": "olimpicos", "year": 1896, "desc": "Coubertin faz renascer os Jogos Olímpicos em Atenas.", "fact": "Os primeiros tiveram menos de 250 atletas, todos homens.", "tags": ["olímpicos", "história"], "people": ["pierre-coubertin"], "related": ["jogos-olimpicos-antigos"] },
-  { "id": "futebol-regras", "title": "O futebol moderno", "tier": "destaque", "subtheme": "futebol", "year": 1863, "desc": "Em Inglaterra criam-se as regras que dão origem ao futebol atual.", "fact": "É hoje o desporto mais popular do planeta.", "tags": ["futebol", "regras"], "related": ["mundial-futebol"] },
-  { "id": "mundial-futebol", "title": "O Mundial de Futebol", "tier": "destaque", "subtheme": "futebol", "year": 1930, "desc": "O primeiro Campeonato do Mundo realiza-se no Uruguai.", "fact": "A final atrai hoje mais de mil milhões de espectadores.", "tags": ["futebol", "mundial"], "related": ["futebol-regras", "pele"] },
-  { "id": "pele", "title": "Pelé", "tier": "explorar", "subtheme": "futebol", "year": 1958, "desc": "O brasileiro que ganhou três Mundiais e se tornou lenda do futebol.", "fact": "Marcou mais de mil golos na carreira.", "tags": ["futebol", "lenda"], "people": ["pele"], "related": ["mundial-futebol"] },
-  { "id": "eusebio", "title": "Eusébio", "tier": "explorar", "subtheme": "futebol", "year": 1966, "desc": "A 'Pantera Negra', maior ídolo do futebol português.", "fact": "Foi o melhor marcador do Mundial de 1966.", "tags": ["futebol", "portugal"], "people": ["eusebio"], "related": ["ronaldo"] },
-  { "id": "ronaldo", "title": "Cristiano Ronaldo", "tier": "destaque", "subtheme": "futebol", "year": 2008, "desc": "Um dos maiores futebolistas de sempre e ícone global português.", "fact": "É dos atletas mais seguidos do mundo nas redes sociais.", "tags": ["futebol", "portugal"], "people": ["cristiano-ronaldo"], "related": ["eusebio"] },
-  { "id": "euro-2016", "title": "Portugal campeão da Europa", "tier": "explorar", "subtheme": "futebol", "year": 2016, "date": "2016-07-10", "desc": "Portugal vence o Euro 2016, o seu primeiro grande título.", "fact": "Ganhou a final contra a anfitriã França, fora de casa.", "tags": ["futebol", "portugal"], "related": ["ronaldo"] },
-  { "id": "jesse-owens", "title": "Jesse Owens em 1936", "tier": "explorar", "subtheme": "atletismo", "year": 1936, "desc": "Ganha 4 medalhas de ouro nos Jogos de Berlim, perante Hitler.", "fact": "Desmentiu em pleno a propaganda de 'superioridade' nazi.", "tags": ["atletismo", "história"], "people": ["jesse-owens"], "related": ["olimpicos-modernos"] },
-  { "id": "maratona", "title": "A maratona", "tier": "aprofundar", "subtheme": "atletismo", "year": 1896, "desc": "Corrida de ~42 km inspirada numa lenda da Grécia Antiga.", "fact": "A distância exata foi fixada nos Jogos de Londres de 1908.", "tags": ["atletismo", "corrida"], "related": ["recorde-2h"] },
-  { "id": "recorde-2h", "title": "A maratona em menos de 2 horas", "tier": "explorar", "subtheme": "recordes", "year": 2019, "desc": "Eliud Kipchoge corre uma maratona abaixo das 2 horas.", "fact": "Foi um evento especial, não conta como recorde oficial.", "tags": ["recorde", "atletismo"], "people": ["eliud-kipchoge"], "related": ["maratona"] },
-  { "id": "usain-bolt", "title": "Usain Bolt, o homem mais rápido", "tier": "destaque", "subtheme": "recordes", "year": 2009, "desc": "Bate recordes mundiais nos 100 e 200 metros.", "fact": "Correu os 100 m em 9,58 segundos — um recorde que ainda dura.", "tags": ["recorde", "velocidade"], "people": ["usain-bolt"], "related": ["maratona"] },
-  { "id": "formula1-mundial", "title": "O Mundial de Fórmula 1", "tier": "destaque", "subtheme": "formula1", "year": 1950, "desc": "Nasce o Campeonato do Mundo de Fórmula 1.", "fact": "É o auge do automobilismo, com carros que passam dos 350 km/h.", "tags": ["fórmula1", "automobilismo"], "related": ["senna"] },
-  { "id": "senna", "title": "Ayrton Senna", "tier": "explorar", "subtheme": "formula1", "year": 1988, "desc": "Tricampeão do mundo, considerado um dos maiores pilotos de sempre.", "fact": "A sua morte em 1994 levou a enormes melhorias de segurança na F1.", "tags": ["fórmula1", "lenda"], "people": ["ayrton-senna"], "related": ["formula1-mundial"] },
-  { "id": "jogos-inverno", "title": "Os Jogos Olímpicos de Inverno", "tier": "aprofundar", "subtheme": "olimpicos", "year": 1924, "desc": "Esqui, patinagem e outros desportos de gelo e neve.", "fact": "Realizam-se desde 1924, primeiro junto aos de verão.", "tags": ["olímpicos", "inverno"], "related": ["olimpicos-modernos"] },
-  { "id": "paralimpicos", "title": "Os Jogos Paralímpicos", "tier": "explorar", "subtheme": "olimpicos", "year": 1960, "desc": "A maior competição mundial para atletas com deficiência.", "fact": "Realizam-se na mesma cidade e logo após os Jogos Olímpicos.", "tags": ["olímpicos", "inclusão"], "related": ["olimpicos-modernos"] },
-  { "id": "basquetebol", "title": "A invenção do basquetebol", "tier": "aprofundar", "subtheme": "recordes", "year": 1891, "desc": "James Naismith inventa o jogo com um cesto de pêssegos.", "fact": "A NBA tornou-o um fenómeno mundial.", "tags": ["desporto", "história"] },
-  { "id": "tour-france", "title": "A Volta a França", "tier": "aprofundar", "subtheme": "recordes", "year": 1903, "desc": "A mais famosa prova de ciclismo do mundo.", "fact": "Dura três semanas e percorre mais de 3000 km.", "tags": ["ciclismo", "resistência"] },
-  { "id": "tecnologia-desporto", "title": "Tecnologia no desporto", "tier": "explorar", "subtheme": "recordes", "year": 2018, "desc": "Do VAR ao olho-de-falcão, a tecnologia muda as competições.", "fact": "Já decide golos, faltas e pontos por milímetros.", "tags": ["tecnologia", "arbitragem"] }
+  {
+   "id": "rugby",
+   "title": "A origem do rugby",
+   "tier": "aprofundar",
+   "subtheme": "recordes",
+   "year": 1823,
+   "desc": "Diz a lenda que nasceu quando um aluno pegou na bola e correu.",
+   "fact": "Deu origem também ao futebol americano.",
+   "tags": [
+    "desporto",
+    "história"
+   ]
+  },
+  {
+   "id": "futebol-regras",
+   "title": "O futebol moderno",
+   "tier": "destaque",
+   "subtheme": "futebol",
+   "year": 1863,
+   "desc": "Em Inglaterra criam-se as regras que dão origem ao futebol atual.",
+   "fact": "É hoje o desporto mais popular do planeta.",
+   "tags": [
+    "futebol",
+    "regras"
+   ],
+   "related": [
+    "mundial-futebol"
+   ]
+  },
+  {
+   "id": "wimbledon",
+   "title": "Wimbledon e o ténis",
+   "tier": "aprofundar",
+   "subtheme": "recordes",
+   "year": 1877,
+   "desc": "O torneio de ténis mais antigo e prestigiado do mundo.",
+   "fact": "Mantém a tradição de os jogadores vestirem de branco.",
+   "tags": [
+    "ténis",
+    "tradição"
+   ]
+  },
+  {
+   "id": "basquetebol",
+   "title": "A invenção do basquetebol",
+   "tier": "aprofundar",
+   "subtheme": "recordes",
+   "year": 1891,
+   "desc": "James Naismith inventa o jogo com um cesto de pêssegos.",
+   "fact": "A NBA tornou-o um fenómeno mundial.",
+   "tags": [
+    "desporto",
+    "história"
+   ]
+  },
+  {
+   "id": "olimpicos-modernos",
+   "title": "Os Jogos Olímpicos modernos",
+   "tier": "destaque",
+   "subtheme": "olimpicos",
+   "year": 1896,
+   "desc": "Coubertin faz renascer os Jogos Olímpicos em Atenas.",
+   "fact": "Os primeiros tiveram menos de 250 atletas, todos homens.",
+   "tags": [
+    "olímpicos",
+    "história"
+   ],
+   "people": [
+    "pierre-coubertin"
+   ],
+   "related": [
+    "jogos-olimpicos-antigos"
+   ]
+  },
+  {
+   "id": "maratona",
+   "title": "A maratona",
+   "tier": "aprofundar",
+   "subtheme": "atletismo",
+   "year": 1896,
+   "desc": "Corrida de ~42 km inspirada numa lenda da Grécia Antiga.",
+   "fact": "A distância exata foi fixada nos Jogos de Londres de 1908.",
+   "tags": [
+    "atletismo",
+    "corrida"
+   ],
+   "related": [
+    "recorde-2h"
+   ]
+  },
+  {
+   "id": "tour-france",
+   "title": "A Volta a França",
+   "tier": "aprofundar",
+   "subtheme": "recordes",
+   "year": 1903,
+   "desc": "A mais famosa prova de ciclismo do mundo.",
+   "fact": "Dura três semanas e percorre mais de 3000 km.",
+   "tags": [
+    "ciclismo",
+    "resistência"
+   ]
+  },
+  {
+   "id": "jogos-inverno",
+   "title": "Os Jogos Olímpicos de Inverno",
+   "tier": "aprofundar",
+   "subtheme": "olimpicos",
+   "year": 1924,
+   "desc": "Esqui, patinagem e outros desportos de gelo e neve.",
+   "fact": "Realizam-se desde 1924, primeiro junto aos de verão.",
+   "tags": [
+    "olímpicos",
+    "inverno"
+   ],
+   "related": [
+    "olimpicos-modernos"
+   ]
+  },
+  {
+   "id": "mundial-futebol",
+   "title": "O Mundial de Futebol",
+   "tier": "destaque",
+   "subtheme": "futebol",
+   "year": 1930,
+   "desc": "O primeiro Campeonato do Mundo realiza-se no Uruguai.",
+   "fact": "A final atrai hoje mais de mil milhões de espectadores.",
+   "tags": [
+    "futebol",
+    "mundial"
+   ],
+   "related": [
+    "futebol-regras",
+    "pele"
+   ]
+  },
+  {
+   "id": "jesse-owens",
+   "title": "Jesse Owens em 1936",
+   "tier": "explorar",
+   "subtheme": "atletismo",
+   "year": 1936,
+   "desc": "Ganha 4 medalhas de ouro nos Jogos de Berlim, perante Hitler.",
+   "fact": "Desmentiu em pleno a propaganda de 'superioridade' nazi.",
+   "tags": [
+    "atletismo",
+    "história"
+   ],
+   "people": [
+    "jesse-owens"
+   ],
+   "related": [
+    "olimpicos-modernos"
+   ]
+  },
+  {
+   "id": "jogos-1936-tv",
+   "title": "Os primeiros Jogos na TV",
+   "tier": "aprofundar",
+   "subtheme": "olimpicos",
+   "year": 1936,
+   "desc": "Berlim 1936 são os primeiros Jogos Olímpicos transmitidos por televisão.",
+   "fact": "Também foram usados como propaganda pelo regime nazi.",
+   "tags": [
+    "olímpicos",
+    "média"
+   ],
+   "related": [
+    "jesse-owens"
+   ]
+  },
+  {
+   "id": "formula1-mundial",
+   "title": "O Mundial de Fórmula 1",
+   "tier": "destaque",
+   "subtheme": "formula1",
+   "year": 1950,
+   "desc": "Nasce o Campeonato do Mundo de Fórmula 1.",
+   "fact": "É o auge do automobilismo, com carros que passam dos 350 km/h.",
+   "tags": [
+    "fórmula1",
+    "automobilismo"
+   ],
+   "related": [
+    "senna"
+   ]
+  },
+  {
+   "id": "pele",
+   "title": "Pelé",
+   "tier": "explorar",
+   "subtheme": "futebol",
+   "year": 1958,
+   "desc": "O brasileiro que ganhou três Mundiais e se tornou lenda do futebol.",
+   "fact": "Marcou mais de mil golos na carreira.",
+   "tags": [
+    "futebol",
+    "lenda"
+   ],
+   "people": [
+    "pele"
+   ],
+   "related": [
+    "mundial-futebol"
+   ]
+  },
+  {
+   "id": "paralimpicos",
+   "title": "Os Jogos Paralímpicos",
+   "tier": "explorar",
+   "subtheme": "olimpicos",
+   "year": 1960,
+   "desc": "A maior competição mundial para atletas com deficiência.",
+   "fact": "Realizam-se na mesma cidade e logo após os Jogos Olímpicos.",
+   "tags": [
+    "olímpicos",
+    "inclusão"
+   ],
+   "related": [
+    "olimpicos-modernos"
+   ]
+  },
+  {
+   "id": "eusebio",
+   "title": "Eusébio",
+   "tier": "explorar",
+   "subtheme": "futebol",
+   "year": 1966,
+   "desc": "A 'Pantera Negra', maior ídolo do futebol português.",
+   "fact": "Foi o melhor marcador do Mundial de 1966.",
+   "tags": [
+    "futebol",
+    "portugal"
+   ],
+   "people": [
+    "eusebio"
+   ],
+   "related": [
+    "ronaldo"
+   ]
+  },
+  {
+   "id": "maratona-feminina",
+   "title": "A maratona feminina olímpica",
+   "tier": "aprofundar",
+   "subtheme": "atletismo",
+   "year": 1984,
+   "desc": "Só em 1984 as mulheres puderam correr a maratona nos Jogos.",
+   "fact": "Durante décadas, acharam que era perigosa para elas — sem razão.",
+   "tags": [
+    "atletismo",
+    "igualdade"
+   ],
+   "related": [
+    "maratona"
+   ]
+  },
+  {
+   "id": "senna",
+   "title": "Ayrton Senna",
+   "tier": "explorar",
+   "subtheme": "formula1",
+   "year": 1988,
+   "desc": "Tricampeão do mundo, considerado um dos maiores pilotos de sempre.",
+   "fact": "A sua morte em 1994 levou a enormes melhorias de segurança na F1.",
+   "tags": [
+    "fórmula1",
+    "lenda"
+   ],
+   "people": [
+    "ayrton-senna"
+   ],
+   "related": [
+    "formula1-mundial"
+   ]
+  },
+  {
+   "id": "doping-ben-johnson",
+   "title": "O escândalo do doping",
+   "tier": "aprofundar",
+   "subtheme": "recordes",
+   "year": 1988,
+   "desc": "Ben Johnson perde o ouro olímpico por doping, abalando o desporto.",
+   "fact": "Levou a controlos antidoping muito mais rígidos.",
+   "tags": [
+    "doping",
+    "ética"
+   ]
+  },
+  {
+   "id": "jordan-nba",
+   "title": "Michael Jordan",
+   "tier": "aprofundar",
+   "subtheme": "recordes",
+   "year": 1991,
+   "desc": "O jogador que tornou o basquetebol e a NBA um fenómeno mundial.",
+   "fact": "As suas sapatilhas criaram uma indústria por si só.",
+   "tags": [
+    "basquetebol",
+    "lenda"
+   ],
+   "people": [
+    "michael-jordan"
+   ],
+   "related": [
+    "basquetebol"
+   ]
+  },
+  {
+   "id": "mundial-feminino",
+   "title": "O Mundial de futebol feminino",
+   "tier": "aprofundar",
+   "subtheme": "futebol",
+   "year": 1991,
+   "desc": "O futebol feminino ganha o seu próprio Campeonato do Mundo.",
+   "fact": "As suas finais batem hoje recordes de público.",
+   "tags": [
+    "futebol",
+    "igualdade"
+   ],
+   "related": [
+    "mundial-futebol"
+   ]
+  },
+  {
+   "id": "ronaldo",
+   "title": "Cristiano Ronaldo",
+   "tier": "destaque",
+   "subtheme": "futebol",
+   "year": 2008,
+   "desc": "Um dos maiores futebolistas de sempre e ícone global português.",
+   "fact": "É dos atletas mais seguidos do mundo nas redes sociais.",
+   "tags": [
+    "futebol",
+    "portugal"
+   ],
+   "people": [
+    "cristiano-ronaldo"
+   ],
+   "related": [
+    "eusebio"
+   ]
+  },
+  {
+   "id": "usain-bolt",
+   "title": "Usain Bolt, o homem mais rápido",
+   "tier": "destaque",
+   "subtheme": "recordes",
+   "year": 2009,
+   "desc": "Bate recordes mundiais nos 100 e 200 metros.",
+   "fact": "Correu os 100 m em 9,58 segundos — um recorde que ainda dura.",
+   "tags": [
+    "recorde",
+    "velocidade"
+   ],
+   "people": [
+    "usain-bolt"
+   ],
+   "related": [
+    "maratona"
+   ]
+  },
+  {
+   "id": "euro-2016",
+   "title": "Portugal campeão da Europa",
+   "tier": "explorar",
+   "subtheme": "futebol",
+   "year": 2016,
+   "date": "2016-07-10",
+   "desc": "Portugal vence o Euro 2016, o seu primeiro grande título.",
+   "fact": "Ganhou a final contra a anfitriã França, fora de casa.",
+   "tags": [
+    "futebol",
+    "portugal"
+   ],
+   "related": [
+    "ronaldo"
+   ]
+  },
+  {
+   "id": "tecnologia-desporto",
+   "title": "Tecnologia no desporto",
+   "tier": "explorar",
+   "subtheme": "recordes",
+   "year": 2018,
+   "desc": "Do VAR ao olho-de-falcão, a tecnologia muda as competições.",
+   "fact": "Já decide golos, faltas e pontos por milímetros.",
+   "tags": [
+    "tecnologia",
+    "arbitragem"
+   ]
+  },
+  {
+   "id": "halo-f1",
+   "title": "O \"Halo\" na Fórmula 1",
+   "tier": "aprofundar",
+   "subtheme": "formula1",
+   "year": 2018,
+   "desc": "Um arco de titânio passa a proteger a cabeça dos pilotos.",
+   "fact": "Já salvou várias vidas em acidentes espetaculares.",
+   "tags": [
+    "fórmula1",
+    "segurança"
+   ],
+   "related": [
+    "senna"
+   ]
+  },
+  {
+   "id": "recorde-2h",
+   "title": "A maratona em menos de 2 horas",
+   "tier": "explorar",
+   "subtheme": "recordes",
+   "year": 2019,
+   "desc": "Eliud Kipchoge corre uma maratona abaixo das 2 horas.",
+   "fact": "Foi um evento especial, não conta como recorde oficial.",
+   "tags": [
+    "recorde",
+    "atletismo"
+   ],
+   "people": [
+    "eliud-kipchoge"
+   ],
+   "related": [
+    "maratona"
+   ]
+  }
  ]
 }

@@ -1,37 +1,661 @@
 {
  "theme": "tech",
  "items": [
-  { "id": "abaco", "title": "Ábaco e primeiras máquinas de calcular", "tier": "aprofundar", "subtheme": "computadores", "year": -2000, "desc": "Ferramentas de cálculo que antecederam o computador em milénios.", "fact": "O ábaco ainda é usado e ensinado em algumas escolas hoje.", "tags": ["cálculo", "história"] },
-  { "id": "maquina-babbage", "title": "A máquina de Babbage", "tier": "explorar", "subtheme": "computadores", "year": 1837, "desc": "Charles Babbage projeta o primeiro computador mecânico programável.", "fact": "Ada Lovelace escreveu o que é considerado o primeiro programa da história.", "tags": ["computador", "história"], "people": ["charles-babbage", "ada-lovelace"], "related": ["eniac"] },
-  { "id": "maquina-turing", "title": "Alan Turing e a teoria da computação", "tier": "destaque", "subtheme": "computadores", "year": 1936, "desc": "Turing define matematicamente o que uma máquina pode calcular.", "fact": "Ajudou a decifrar os códigos nazis na Segunda Guerra.", "tags": ["computação", "teoria"], "people": ["alan-turing"], "related": ["eniac"] },
-  { "id": "eniac", "title": "ENIAC, o primeiro computador eletrónico", "tier": "destaque", "subtheme": "computadores", "year": 1945, "desc": "Um computador gigante de válvulas que ocupava uma sala inteira.", "fact": "Pesava 27 toneladas e tinha quase 18 000 válvulas.", "tags": ["computador", "marco"], "related": ["transistor", "maquina-turing"] },
-  { "id": "transistor", "title": "O transístor", "tier": "destaque", "subtheme": "hardware", "year": 1947, "desc": "Substitui as válvulas e torna a eletrónica pequena e fiável.", "fact": "É a base de todos os chips modernos — há biliões num só telemóvel.", "tags": ["hardware", "marco"], "related": ["circuito-integrado", "microprocessador"] },
-  { "id": "circuito-integrado", "title": "O circuito integrado (chip)", "tier": "destaque", "subtheme": "hardware", "year": 1958, "desc": "Vários transístores juntos numa única pastilha de silício.", "fact": "Tornou possível encolher computadores inteiros.", "tags": ["hardware", "chip"], "related": ["transistor", "lei-moore"] },
-  { "id": "lei-moore", "title": "Lei de Moore", "tier": "explorar", "subtheme": "hardware", "year": 1965, "desc": "A previsão de que os chips duplicam de poder a cada ~2 anos.", "fact": "Manteve-se aproximadamente válida durante meio século.", "tags": ["hardware", "tendência"], "related": ["circuito-integrado"] },
-  { "id": "microprocessador", "title": "O microprocessador", "tier": "destaque", "subtheme": "hardware", "year": 1971, "desc": "A Intel coloca um computador inteiro num só chip (o 4004).", "fact": "Abriu caminho aos computadores pessoais.", "tags": ["hardware", "intel"], "related": ["computador-pessoal"] },
-  { "id": "computador-pessoal", "title": "O computador pessoal", "tier": "destaque", "subtheme": "computadores", "year": 1977, "desc": "Apple II, Commodore e outros levam o computador para casa.", "fact": "O IBM PC (1981) tornou-se o padrão da indústria.", "tags": ["computador", "pessoal"], "related": ["microprocessador", "windows"] },
-  { "id": "rato-gui", "title": "Rato e interface gráfica", "tier": "explorar", "subtheme": "computadores", "year": 1968, "desc": "Janelas, ícones e rato tornam os computadores fáceis de usar.", "fact": "A 'Mãe de Todas as Demos' (1968) mostrou tudo isto décadas antes de ser comum.", "tags": ["interface", "usabilidade"], "related": ["macintosh"] },
-  { "id": "macintosh", "title": "Apple Macintosh", "tier": "explorar", "subtheme": "computadores", "year": 1984, "desc": "Populariza a interface gráfica e o rato no grande público.", "fact": "Foi lançado com um famoso anúncio inspirado no livro '1984'.", "tags": ["apple", "interface"], "related": ["rato-gui", "windows"] },
-  { "id": "unix", "title": "Unix", "tier": "explorar", "subtheme": "software", "year": 1969, "desc": "Um sistema operativo cujas ideias estão na base de quase tudo hoje.", "fact": "Linux, macOS e Android descendem das suas ideias.", "tags": ["software", "sistema"], "related": ["linux"] },
-  { "id": "windows", "title": "Microsoft Windows", "tier": "explorar", "subtheme": "software", "year": 1985, "desc": "Torna-se o sistema operativo mais usado nos computadores do mundo.", "fact": "O Windows 95 trouxe o botão 'Iniciar' que ainda hoje usamos.", "tags": ["software", "microsoft"], "related": ["computador-pessoal"] },
-  { "id": "linux", "title": "Linux e o open source", "tier": "destaque", "subtheme": "software", "year": 1991, "desc": "Um sistema operativo livre, feito de forma colaborativa.", "fact": "Faz funcionar a maioria dos servidores e supercomputadores do mundo.", "tags": ["software", "open-source"], "people": ["linus-torvalds"], "related": ["unix", "open-source"] },
-  { "id": "open-source", "title": "O movimento open source", "tier": "explorar", "subtheme": "software", "year": 1998, "desc": "Software cujo código é aberto para todos verem e melhorarem.", "fact": "Grande parte da internet funciona sobre software open source.", "tags": ["software", "colaboração"], "related": ["linux"] },
-  { "id": "arpanet", "title": "ARPANET, a origem da internet", "tier": "destaque", "subtheme": "internet", "year": 1969, "desc": "A primeira rede a ligar computadores à distância.", "fact": "A primeira mensagem enviada foi 'LO' — o sistema bloqueou a meio de 'LOGIN'.", "tags": ["internet", "rede"], "related": ["tcp-ip", "www"] },
-  { "id": "tcp-ip", "title": "TCP/IP, a língua da internet", "tier": "explorar", "subtheme": "internet", "year": 1983, "desc": "O conjunto de regras que permite a qualquer rede falar com outra.", "fact": "É o que transforma redes separadas numa só 'internet'.", "tags": ["internet", "protocolo"], "related": ["arpanet"] },
-  { "id": "email", "title": "O e-mail", "tier": "aprofundar", "subtheme": "internet", "year": 1971, "desc": "A primeira forma de mensagens entre computadores ligados em rede.", "fact": "O símbolo @ foi escolhido para separar o utilizador do servidor.", "tags": ["internet", "comunicação"], "related": ["arpanet"] },
-  { "id": "www", "title": "A World Wide Web", "tier": "destaque", "subtheme": "internet", "year": 1989, "desc": "Tim Berners-Lee inventa a web no CERN: páginas ligadas por links.", "fact": "Decidiu não a patentear, para que fosse de toda a gente.", "tags": ["internet", "web"], "people": ["tim-berners-lee"], "related": ["navegador", "tcp-ip"] },
-  { "id": "navegador", "title": "Navegadores e a web para todos", "tier": "explorar", "subtheme": "internet", "year": 1993, "desc": "Browsers como o Mosaic e o Netscape abrem a web ao grande público.", "fact": "De repente, qualquer pessoa podia 'navegar' na internet.", "tags": ["internet", "browser"], "related": ["www", "google"] },
-  { "id": "google", "title": "Google e a pesquisa", "tier": "destaque", "subtheme": "internet", "year": 1998, "desc": "Organiza a web e torna a informação instantânea.", "fact": "'Google' virou verbo em muitas línguas.", "tags": ["internet", "pesquisa"], "related": ["navegador", "redes-sociais"] },
-  { "id": "redes-sociais", "title": "As redes sociais", "tier": "destaque", "subtheme": "internet", "year": 2004, "desc": "Facebook, YouTube e outras ligam milhares de milhões de pessoas.", "fact": "Mudaram a forma como nos informamos e comunicamos.", "tags": ["internet", "social"], "related": ["google", "smartphone-iphone"] },
-  { "id": "wifi", "title": "Wi-Fi e internet sem fios", "tier": "aprofundar", "subtheme": "redes", "year": 1997, "desc": "Liga dispositivos à internet sem cabos.", "fact": "Hoje há Wi-Fi em casas, cafés, aviões e comboios.", "tags": ["redes", "sem-fios"] },
-  { "id": "cloud", "title": "A computação na nuvem", "tier": "explorar", "subtheme": "redes", "year": 2006, "desc": "Guardar dados e correr programas em servidores remotos.", "fact": "Os teus ficheiros e fotos vivem, muitas vezes, 'na nuvem'.", "tags": ["redes", "cloud"], "related": ["cloud-gaming"] },
-  { "id": "telemovel-gsm", "title": "O telemóvel digital (GSM)", "tier": "explorar", "subtheme": "smartphones", "year": 1991, "desc": "O sistema GSM torna o telemóvel digital e global.", "fact": "Trouxe as SMS, que se tornaram um fenómeno mundial.", "tags": ["telemóvel", "comunicação"], "related": ["smartphone-iphone"] },
-  { "id": "smartphone-iphone", "title": "O iPhone e os smartphones", "tier": "destaque", "subtheme": "smartphones", "year": 2007, "date": "2007-01-09", "desc": "O iPhone reinventa o telemóvel com ecrã tátil e apps.", "fact": "Pôs um computador poderoso no bolso de milhares de milhões.", "tags": ["smartphone", "apple"], "people": ["steve-jobs"], "related": ["android", "redes-sociais"] },
-  { "id": "android", "title": "Android", "tier": "explorar", "subtheme": "smartphones", "year": 2008, "desc": "O sistema da Google torna os smartphones acessíveis a todos.", "fact": "É o sistema operativo mais usado do mundo.", "tags": ["smartphone", "google"], "related": ["smartphone-iphone"] },
-  { "id": "ia-nascimento", "title": "O nascimento da IA", "tier": "explorar", "subtheme": "ia", "year": 1956, "desc": "A inteligência artificial nasce como campo de estudo numa conferência em Dartmouth.", "fact": "O termo 'inteligência artificial' foi cunhado nessa reunião.", "tags": ["ia", "história"], "related": ["deep-blue", "deep-learning"] },
-  { "id": "deep-blue", "title": "Deep Blue vence Kasparov", "tier": "explorar", "subtheme": "ia", "year": 1997, "desc": "Um computador da IBM derrota o campeão mundial de xadrez.", "fact": "Foi um marco simbólico da máquina a superar o humano num jogo.", "tags": ["ia", "xadrez"], "related": ["ia-nascimento", "alphago"] },
-  { "id": "deep-learning", "title": "A revolução do deep learning", "tier": "destaque", "subtheme": "ia", "year": 2012, "desc": "Redes neuronais profundas disparam o reconhecimento de imagem e voz.", "fact": "Aprendem com enormes quantidades de dados, em vez de regras fixas.", "tags": ["ia", "aprendizagem"], "related": ["alphago", "chatgpt"] },
-  { "id": "alphago", "title": "AlphaGo vence no Go", "tier": "explorar", "subtheme": "ia", "year": 2016, "desc": "A IA da DeepMind vence o campeão mundial do complexo jogo de Go.", "fact": "Fez jogadas tão criativas que surpreenderam os mestres.", "tags": ["ia", "go"], "related": ["deep-learning"] },
-  { "id": "chatgpt", "title": "ChatGPT e a IA generativa", "tier": "destaque", "subtheme": "ia", "year": 2022, "date": "2022-11-30", "desc": "Uma IA que conversa e escreve chega ao grande público.", "fact": "Atingiu 100 milhões de utilizadores em apenas dois meses.", "tags": ["ia", "generativa"], "related": ["deep-learning"] }
+  {
+   "id": "abaco",
+   "title": "Ábaco e primeiras máquinas de calcular",
+   "tier": "aprofundar",
+   "subtheme": "computadores",
+   "year": -2000,
+   "desc": "Ferramentas de cálculo que antecederam o computador em milénios.",
+   "fact": "O ábaco ainda é usado e ensinado em algumas escolas hoje.",
+   "tags": [
+    "cálculo",
+    "história"
+   ]
+  },
+  {
+   "id": "maquina-babbage",
+   "title": "A máquina de Babbage",
+   "tier": "explorar",
+   "subtheme": "computadores",
+   "year": 1837,
+   "desc": "Charles Babbage projeta o primeiro computador mecânico programável.",
+   "fact": "Ada Lovelace escreveu o que é considerado o primeiro programa da história.",
+   "tags": [
+    "computador",
+    "história"
+   ],
+   "people": [
+    "charles-babbage",
+    "ada-lovelace"
+   ],
+   "related": [
+    "eniac"
+   ]
+  },
+  {
+   "id": "maquina-turing",
+   "title": "Alan Turing e a teoria da computação",
+   "tier": "destaque",
+   "subtheme": "computadores",
+   "year": 1936,
+   "desc": "Turing define matematicamente o que uma máquina pode calcular.",
+   "fact": "Ajudou a decifrar os códigos nazis na Segunda Guerra.",
+   "tags": [
+    "computação",
+    "teoria"
+   ],
+   "people": [
+    "alan-turing"
+   ],
+   "related": [
+    "eniac"
+   ]
+  },
+  {
+   "id": "colossus",
+   "title": "Colossus",
+   "tier": "aprofundar",
+   "subtheme": "computadores",
+   "year": 1943,
+   "desc": "O primeiro computador eletrónico digital, usado para decifrar códigos nazis.",
+   "fact": "Foi mantido secreto durante décadas após a guerra.",
+   "tags": [
+    "computador",
+    "história"
+   ],
+   "related": [
+    "eniac",
+    "maquina-turing"
+   ]
+  },
+  {
+   "id": "eniac",
+   "title": "ENIAC, o primeiro computador eletrónico",
+   "tier": "destaque",
+   "subtheme": "computadores",
+   "year": 1945,
+   "desc": "Um computador gigante de válvulas que ocupava uma sala inteira.",
+   "fact": "Pesava 27 toneladas e tinha quase 18 000 válvulas.",
+   "tags": [
+    "computador",
+    "marco"
+   ],
+   "related": [
+    "transistor",
+    "maquina-turing"
+   ]
+  },
+  {
+   "id": "transistor",
+   "title": "O transístor",
+   "tier": "destaque",
+   "subtheme": "hardware",
+   "year": 1947,
+   "desc": "Substitui as válvulas e torna a eletrónica pequena e fiável.",
+   "fact": "É a base de todos os chips modernos — há biliões num só telemóvel.",
+   "tags": [
+    "hardware",
+    "marco"
+   ],
+   "related": [
+    "circuito-integrado",
+    "microprocessador"
+   ]
+  },
+  {
+   "id": "primeiro-bug",
+   "title": "O primeiro \"bug\"",
+   "tier": "aprofundar",
+   "subtheme": "software",
+   "year": 1947,
+   "desc": "Uma traça presa num computador dá origem ao termo informático \"bug\".",
+   "fact": "O inseto foi colado no caderno de registo com a nota \"first actual bug\".",
+   "tags": [
+    "software",
+    "curiosidade"
+   ]
+  },
+  {
+   "id": "ia-nascimento",
+   "title": "O nascimento da IA",
+   "tier": "explorar",
+   "subtheme": "ia",
+   "year": 1956,
+   "desc": "A inteligência artificial nasce como campo de estudo numa conferência em Dartmouth.",
+   "fact": "O termo 'inteligência artificial' foi cunhado nessa reunião.",
+   "tags": [
+    "ia",
+    "história"
+   ],
+   "related": [
+    "deep-blue",
+    "deep-learning"
+   ]
+  },
+  {
+   "id": "circuito-integrado",
+   "title": "O circuito integrado (chip)",
+   "tier": "destaque",
+   "subtheme": "hardware",
+   "year": 1958,
+   "desc": "Vários transístores juntos numa única pastilha de silício.",
+   "fact": "Tornou possível encolher computadores inteiros.",
+   "tags": [
+    "hardware",
+    "chip"
+   ],
+   "related": [
+    "transistor",
+    "lei-moore"
+   ]
+  },
+  {
+   "id": "lei-moore",
+   "title": "Lei de Moore",
+   "tier": "explorar",
+   "subtheme": "hardware",
+   "year": 1965,
+   "desc": "A previsão de que os chips duplicam de poder a cada ~2 anos.",
+   "fact": "Manteve-se aproximadamente válida durante meio século.",
+   "tags": [
+    "hardware",
+    "tendência"
+   ],
+   "related": [
+    "circuito-integrado"
+   ]
+  },
+  {
+   "id": "fibra-otica",
+   "title": "A fibra ótica",
+   "tier": "aprofundar",
+   "subtheme": "redes",
+   "year": 1966,
+   "desc": "Filamentos de vidro transmitem dados à velocidade da luz.",
+   "fact": "É a espinha dorsal da internet mundial.",
+   "tags": [
+    "redes",
+    "internet"
+   ],
+   "related": [
+    "tcp-ip"
+   ]
+  },
+  {
+   "id": "rato-gui",
+   "title": "Rato e interface gráfica",
+   "tier": "explorar",
+   "subtheme": "computadores",
+   "year": 1968,
+   "desc": "Janelas, ícones e rato tornam os computadores fáceis de usar.",
+   "fact": "A 'Mãe de Todas as Demos' (1968) mostrou tudo isto décadas antes de ser comum.",
+   "tags": [
+    "interface",
+    "usabilidade"
+   ],
+   "related": [
+    "macintosh"
+   ]
+  },
+  {
+   "id": "unix",
+   "title": "Unix",
+   "tier": "explorar",
+   "subtheme": "software",
+   "year": 1969,
+   "desc": "Um sistema operativo cujas ideias estão na base de quase tudo hoje.",
+   "fact": "Linux, macOS e Android descendem das suas ideias.",
+   "tags": [
+    "software",
+    "sistema"
+   ],
+   "related": [
+    "linux"
+   ]
+  },
+  {
+   "id": "arpanet",
+   "title": "ARPANET, a origem da internet",
+   "tier": "destaque",
+   "subtheme": "internet",
+   "year": 1969,
+   "desc": "A primeira rede a ligar computadores à distância.",
+   "fact": "A primeira mensagem enviada foi 'LO' — o sistema bloqueou a meio de 'LOGIN'.",
+   "tags": [
+    "internet",
+    "rede"
+   ],
+   "related": [
+    "tcp-ip",
+    "www"
+   ]
+  },
+  {
+   "id": "microprocessador",
+   "title": "O microprocessador",
+   "tier": "destaque",
+   "subtheme": "hardware",
+   "year": 1971,
+   "desc": "A Intel coloca um computador inteiro num só chip (o 4004).",
+   "fact": "Abriu caminho aos computadores pessoais.",
+   "tags": [
+    "hardware",
+    "intel"
+   ],
+   "related": [
+    "computador-pessoal"
+   ]
+  },
+  {
+   "id": "email",
+   "title": "O e-mail",
+   "tier": "aprofundar",
+   "subtheme": "internet",
+   "year": 1971,
+   "desc": "A primeira forma de mensagens entre computadores ligados em rede.",
+   "fact": "O símbolo @ foi escolhido para separar o utilizador do servidor.",
+   "tags": [
+    "internet",
+    "comunicação"
+   ],
+   "related": [
+    "arpanet"
+   ]
+  },
+  {
+   "id": "computador-pessoal",
+   "title": "O computador pessoal",
+   "tier": "destaque",
+   "subtheme": "computadores",
+   "year": 1977,
+   "desc": "Apple II, Commodore e outros levam o computador para casa.",
+   "fact": "O IBM PC (1981) tornou-se o padrão da indústria.",
+   "tags": [
+    "computador",
+    "pessoal"
+   ],
+   "related": [
+    "microprocessador",
+    "windows"
+   ]
+  },
+  {
+   "id": "rsa-criptografia",
+   "title": "A criptografia de chave pública",
+   "tier": "aprofundar",
+   "subtheme": "software",
+   "year": 1977,
+   "desc": "O método RSA permite comunicar em segredo sem trocar chaves antes.",
+   "fact": "É a base da segurança da internet e das compras online.",
+   "tags": [
+    "software",
+    "segurança"
+   ]
+  },
+  {
+   "id": "gps",
+   "title": "O GPS",
+   "tier": "aprofundar",
+   "subtheme": "redes",
+   "year": 1978,
+   "desc": "Uma rede de satélites que diz a qualquer um onde está no planeta.",
+   "fact": "Precisa de corrigir os efeitos da relatividade de Einstein para ser exato.",
+   "tags": [
+    "redes",
+    "navegação"
+   ],
+   "related": [
+    "satelites"
+   ]
+  },
+  {
+   "id": "tcp-ip",
+   "title": "TCP/IP, a língua da internet",
+   "tier": "explorar",
+   "subtheme": "internet",
+   "year": 1983,
+   "desc": "O conjunto de regras que permite a qualquer rede falar com outra.",
+   "fact": "É o que transforma redes separadas numa só 'internet'.",
+   "tags": [
+    "internet",
+    "protocolo"
+   ],
+   "related": [
+    "arpanet"
+   ]
+  },
+  {
+   "id": "macintosh",
+   "title": "Apple Macintosh",
+   "tier": "explorar",
+   "subtheme": "computadores",
+   "year": 1984,
+   "desc": "Populariza a interface gráfica e o rato no grande público.",
+   "fact": "Foi lançado com um famoso anúncio inspirado no livro '1984'.",
+   "tags": [
+    "apple",
+    "interface"
+   ],
+   "related": [
+    "rato-gui",
+    "windows"
+   ]
+  },
+  {
+   "id": "windows",
+   "title": "Microsoft Windows",
+   "tier": "explorar",
+   "subtheme": "software",
+   "year": 1985,
+   "desc": "Torna-se o sistema operativo mais usado nos computadores do mundo.",
+   "fact": "O Windows 95 trouxe o botão 'Iniciar' que ainda hoje usamos.",
+   "tags": [
+    "software",
+    "microsoft"
+   ],
+   "related": [
+    "computador-pessoal"
+   ]
+  },
+  {
+   "id": "www",
+   "title": "A World Wide Web",
+   "tier": "destaque",
+   "subtheme": "internet",
+   "year": 1989,
+   "desc": "Tim Berners-Lee inventa a web no CERN: páginas ligadas por links.",
+   "fact": "Decidiu não a patentear, para que fosse de toda a gente.",
+   "tags": [
+    "internet",
+    "web"
+   ],
+   "people": [
+    "tim-berners-lee"
+   ],
+   "related": [
+    "navegador",
+    "tcp-ip"
+   ]
+  },
+  {
+   "id": "linux",
+   "title": "Linux e o open source",
+   "tier": "destaque",
+   "subtheme": "software",
+   "year": 1991,
+   "desc": "Um sistema operativo livre, feito de forma colaborativa.",
+   "fact": "Faz funcionar a maioria dos servidores e supercomputadores do mundo.",
+   "tags": [
+    "software",
+    "open-source"
+   ],
+   "people": [
+    "linus-torvalds"
+   ],
+   "related": [
+    "unix",
+    "open-source"
+   ]
+  },
+  {
+   "id": "telemovel-gsm",
+   "title": "O telemóvel digital (GSM)",
+   "tier": "explorar",
+   "subtheme": "smartphones",
+   "year": 1991,
+   "desc": "O sistema GSM torna o telemóvel digital e global.",
+   "fact": "Trouxe as SMS, que se tornaram um fenómeno mundial.",
+   "tags": [
+    "telemóvel",
+    "comunicação"
+   ],
+   "related": [
+    "smartphone-iphone"
+   ]
+  },
+  {
+   "id": "navegador",
+   "title": "Navegadores e a web para todos",
+   "tier": "explorar",
+   "subtheme": "internet",
+   "year": 1993,
+   "desc": "Browsers como o Mosaic e o Netscape abrem a web ao grande público.",
+   "fact": "De repente, qualquer pessoa podia 'navegar' na internet.",
+   "tags": [
+    "internet",
+    "browser"
+   ],
+   "related": [
+    "www",
+    "google"
+   ]
+  },
+  {
+   "id": "usb",
+   "title": "O USB",
+   "tier": "aprofundar",
+   "subtheme": "hardware",
+   "year": 1996,
+   "desc": "Uma ficha universal que substituiu dezenas de cabos diferentes.",
+   "fact": "Quase todos a ligam mal à primeira tentativa.",
+   "tags": [
+    "hardware",
+    "padrão"
+   ]
+  },
+  {
+   "id": "wifi",
+   "title": "Wi-Fi e internet sem fios",
+   "tier": "aprofundar",
+   "subtheme": "redes",
+   "year": 1997,
+   "desc": "Liga dispositivos à internet sem cabos.",
+   "fact": "Hoje há Wi-Fi em casas, cafés, aviões e comboios.",
+   "tags": [
+    "redes",
+    "sem-fios"
+   ]
+  },
+  {
+   "id": "deep-blue",
+   "title": "Deep Blue vence Kasparov",
+   "tier": "explorar",
+   "subtheme": "ia",
+   "year": 1997,
+   "desc": "Um computador da IBM derrota o campeão mundial de xadrez.",
+   "fact": "Foi um marco simbólico da máquina a superar o humano num jogo.",
+   "tags": [
+    "ia",
+    "xadrez"
+   ],
+   "related": [
+    "ia-nascimento",
+    "alphago"
+   ]
+  },
+  {
+   "id": "open-source",
+   "title": "O movimento open source",
+   "tier": "explorar",
+   "subtheme": "software",
+   "year": 1998,
+   "desc": "Software cujo código é aberto para todos verem e melhorarem.",
+   "fact": "Grande parte da internet funciona sobre software open source.",
+   "tags": [
+    "software",
+    "colaboração"
+   ],
+   "related": [
+    "linux"
+   ]
+  },
+  {
+   "id": "google",
+   "title": "Google e a pesquisa",
+   "tier": "destaque",
+   "subtheme": "internet",
+   "year": 1998,
+   "desc": "Organiza a web e torna a informação instantânea.",
+   "fact": "'Google' virou verbo em muitas línguas.",
+   "tags": [
+    "internet",
+    "pesquisa"
+   ],
+   "related": [
+    "navegador",
+    "redes-sociais"
+   ]
+  },
+  {
+   "id": "redes-sociais",
+   "title": "As redes sociais",
+   "tier": "destaque",
+   "subtheme": "internet",
+   "year": 2004,
+   "desc": "Facebook, YouTube e outras ligam milhares de milhões de pessoas.",
+   "fact": "Mudaram a forma como nos informamos e comunicamos.",
+   "tags": [
+    "internet",
+    "social"
+   ],
+   "related": [
+    "google",
+    "smartphone-iphone"
+   ]
+  },
+  {
+   "id": "cloud",
+   "title": "A computação na nuvem",
+   "tier": "explorar",
+   "subtheme": "redes",
+   "year": 2006,
+   "desc": "Guardar dados e correr programas em servidores remotos.",
+   "fact": "Os teus ficheiros e fotos vivem, muitas vezes, 'na nuvem'.",
+   "tags": [
+    "redes",
+    "cloud"
+   ],
+   "related": [
+    "cloud-gaming"
+   ]
+  },
+  {
+   "id": "smartphone-iphone",
+   "title": "O iPhone e os smartphones",
+   "tier": "destaque",
+   "subtheme": "smartphones",
+   "year": 2007,
+   "date": "2007-01-09",
+   "desc": "O iPhone reinventa o telemóvel com ecrã tátil e apps.",
+   "fact": "Pôs um computador poderoso no bolso de milhares de milhões.",
+   "tags": [
+    "smartphone",
+    "apple"
+   ],
+   "people": [
+    "steve-jobs"
+   ],
+   "related": [
+    "android",
+    "redes-sociais"
+   ]
+  },
+  {
+   "id": "android",
+   "title": "Android",
+   "tier": "explorar",
+   "subtheme": "smartphones",
+   "year": 2008,
+   "desc": "O sistema da Google torna os smartphones acessíveis a todos.",
+   "fact": "É o sistema operativo mais usado do mundo.",
+   "tags": [
+    "smartphone",
+    "google"
+   ],
+   "related": [
+    "smartphone-iphone"
+   ]
+  },
+  {
+   "id": "bitcoin",
+   "title": "Bitcoin e a blockchain",
+   "tier": "aprofundar",
+   "subtheme": "software",
+   "year": 2009,
+   "desc": "A primeira moeda digital sem banco central, baseada em blockchain.",
+   "fact": "O seu criador, \"Satoshi Nakamoto\", continua anónimo.",
+   "tags": [
+    "software",
+    "cripto"
+   ]
+  },
+  {
+   "id": "deep-learning",
+   "title": "A revolução do deep learning",
+   "tier": "destaque",
+   "subtheme": "ia",
+   "year": 2012,
+   "desc": "Redes neuronais profundas disparam o reconhecimento de imagem e voz.",
+   "fact": "Aprendem com enormes quantidades de dados, em vez de regras fixas.",
+   "tags": [
+    "ia",
+    "aprendizagem"
+   ],
+   "related": [
+    "alphago",
+    "chatgpt"
+   ]
+  },
+  {
+   "id": "alphago",
+   "title": "AlphaGo vence no Go",
+   "tier": "explorar",
+   "subtheme": "ia",
+   "year": 2016,
+   "desc": "A IA da DeepMind vence o campeão mundial do complexo jogo de Go.",
+   "fact": "Fez jogadas tão criativas que surpreenderam os mestres.",
+   "tags": [
+    "ia",
+    "go"
+   ],
+   "related": [
+    "deep-learning"
+   ]
+  },
+  {
+   "id": "computacao-quantica",
+   "title": "Computação quântica",
+   "tier": "aprofundar",
+   "subtheme": "hardware",
+   "year": 2019,
+   "desc": "Computadores que usam a física quântica para certos cálculos impossíveis.",
+   "fact": "Prometem resolver problemas que demorariam milénios aos atuais.",
+   "tags": [
+    "hardware",
+    "futuro"
+   ],
+   "related": [
+    "microprocessador"
+   ]
+  },
+  {
+   "id": "chatgpt",
+   "title": "ChatGPT e a IA generativa",
+   "tier": "destaque",
+   "subtheme": "ia",
+   "year": 2022,
+   "date": "2022-11-30",
+   "desc": "Uma IA que conversa e escreve chega ao grande público.",
+   "fact": "Atingiu 100 milhões de utilizadores em apenas dois meses.",
+   "tags": [
+    "ia",
+    "generativa"
+   ],
+   "related": [
+    "deep-learning"
+   ]
+  }
  ]
 }

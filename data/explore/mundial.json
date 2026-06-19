@@ -1,34 +1,608 @@
 {
  "theme": "mundial",
  "items": [
-  { "id": "idade-media", "title": "A Idade Média", "tier": "destaque", "subtheme": "medieval", "year": 500, "desc": "Mil anos entre a queda de Roma e o Renascimento, marcados por reinos e feudalismo.", "fact": "Não foi só 'idade das trevas' — houve catedrais, universidades e grandes obras.", "tags": ["medieval", "europa"], "related": ["queda-roma", "peste-negra"] },
-  { "id": "islao", "title": "A expansão do Islão", "tier": "destaque", "subtheme": "medieval", "year": 622, "desc": "Uma nova religião e civilização espalha-se da Arábia a três continentes.", "fact": "Preservou e expandiu o saber grego, indiano e persa.", "tags": ["islão", "civilização"], "related": ["ciencia-islamica"] },
-  { "id": "ciencia-islamica", "title": "A idade de ouro islâmica", "tier": "explorar", "subtheme": "medieval", "year": 800, "desc": "Avanços em álgebra, medicina e astronomia em cidades como Bagdade.", "fact": "Palavras como 'álgebra' e 'algoritmo' vêm do árabe.", "tags": ["ciência", "islão"], "related": ["islao"] },
-  { "id": "cruzadas", "title": "As Cruzadas", "tier": "explorar", "subtheme": "medieval", "year": 1096, "desc": "Guerras religiosas entre cristãos e muçulmanos pela Terra Santa.", "fact": "Duraram quase 200 anos e intensificaram o contacto entre culturas.", "tags": ["medieval", "guerra"] },
-  { "id": "peste-negra", "title": "A Peste Negra", "tier": "destaque", "subtheme": "medieval", "year": 1347, "desc": "Uma epidemia mata um terço da população europeia.", "fact": "Espalhou-se pela rota da seda e por navios mercantes.", "tags": ["epidemia", "medieval"], "related": ["pandemias-historia"] },
-  { "id": "renascimento", "title": "O Renascimento", "tier": "destaque", "subtheme": "moderna", "year": 1400, "desc": "Um renascer das artes e do saber, inspirado na Antiguidade.", "fact": "Deu-nos Leonardo da Vinci e Michelangelo.", "tags": ["renascimento", "arte"], "related": ["imprensa", "renascimento-arte"] },
-  { "id": "imprensa", "title": "A imprensa de Gutenberg", "tier": "destaque", "subtheme": "moderna", "year": 1440, "desc": "A imprensa de tipos móveis torna os livros acessíveis a muitos.", "fact": "Foi um dos maiores aceleradores de conhecimento da história.", "tags": ["imprensa", "conhecimento"], "people": ["gutenberg"], "related": ["reforma"] },
-  { "id": "descobrimentos-mundiais", "title": "A Era dos Descobrimentos", "tier": "destaque", "subtheme": "moderna", "year": 1492, "desc": "Europeus navegam pelo mundo e ligam continentes pela primeira vez.", "fact": "Portugal e Espanha lideraram esta expansão marítima.", "tags": ["descobrimentos", "navegação"], "related": ["descobrimentos-pt", "colombo"] },
-  { "id": "colombo", "title": "Colombo chega à América", "tier": "explorar", "subtheme": "moderna", "year": 1492, "date": "1492-10-12", "desc": "Cristóvão Colombo chega às Caraíbas julgando ter alcançado a Índia.", "fact": "Nunca aceitou que tinha encontrado um novo continente.", "tags": ["descobrimentos", "américa"], "people": ["cristovao-colombo"], "related": ["descobrimentos-mundiais"] },
-  { "id": "reforma", "title": "A Reforma Protestante", "tier": "explorar", "subtheme": "moderna", "year": 1517, "desc": "Lutero desafia a Igreja Católica e divide o cristianismo na Europa.", "fact": "A imprensa ajudou as suas ideias a espalharem-se rapidamente.", "tags": ["religião", "europa"], "people": ["martinho-lutero"], "related": ["imprensa"] },
-  { "id": "revolucao-cientifica", "title": "A Revolução Científica", "tier": "explorar", "subtheme": "revolucoes", "year": 1543, "desc": "Copérnico, Galileu e Newton criam a ciência moderna.", "fact": "Mostraram que a Terra orbita o Sol, e não o contrário.", "tags": ["ciência", "revolução"], "people": ["isaac-newton", "galileu-galilei"], "related": ["iluminismo"] },
-  { "id": "iluminismo", "title": "O Iluminismo", "tier": "explorar", "subtheme": "revolucoes", "year": 1700, "desc": "Pensadores defendem a razão, a liberdade e os direitos do indivíduo.", "fact": "Inspirou as revoluções americana e francesa.", "tags": ["filosofia", "razão"], "related": ["revolucao-francesa", "revolucao-americana"] },
-  { "id": "revolucao-americana", "title": "A Independência dos EUA", "tier": "explorar", "subtheme": "revolucoes", "year": 1776, "date": "1776-07-04", "desc": "As colónias americanas declaram independência da Grã-Bretanha.", "fact": "A sua declaração inspirou movimentos por todo o mundo.", "tags": ["revolução", "eua"], "related": ["iluminismo"] },
-  { "id": "revolucao-francesa", "title": "A Revolução Francesa", "tier": "destaque", "subtheme": "revolucoes", "year": 1789, "desc": "O povo derruba a monarquia em nome da 'Liberdade, Igualdade, Fraternidade'.", "fact": "Deu origem à ideia moderna de direitos do cidadão.", "tags": ["revolução", "frança"], "related": ["iluminismo", "napoleao"] },
-  { "id": "revolucao-industrial", "title": "A Revolução Industrial", "tier": "destaque", "subtheme": "revolucoes", "year": 1760, "desc": "Máquinas a vapor e fábricas mudam o trabalho e a sociedade.", "fact": "Em poucas décadas, milhões deixaram o campo pelas cidades.", "tags": ["indústria", "revolução"], "related": ["maquina-vapor"] },
-  { "id": "napoleao", "title": "Napoleão", "tier": "explorar", "subtheme": "revolucoes", "year": 1804, "desc": "General que se torna imperador e domina grande parte da Europa.", "fact": "O seu código de leis influenciou sistemas jurídicos de todo o mundo.", "tags": ["frança", "império"], "people": ["napoleao-bonaparte"], "related": ["revolucao-francesa"] },
-  { "id": "primeira-guerra", "title": "A Primeira Guerra Mundial", "tier": "destaque", "subtheme": "secxx", "year": 1914, "desc": "Um conflito global que matou milhões e mudou o mapa do mundo.", "fact": "Foi a primeira guerra com aviões, tanques e gás venenoso em larga escala.", "tags": ["guerra", "século-xx"], "related": ["segunda-guerra"] },
-  { "id": "gripe-espanhola", "title": "A gripe de 1918", "tier": "explorar", "subtheme": "secxx", "year": 1918, "desc": "Uma pandemia de gripe mata dezenas de milhões em todo o mundo.", "fact": "Fez mais mortos do que a própria Primeira Guerra.", "tags": ["pandemia", "século-xx"], "related": ["pandemias-historia"] },
-  { "id": "grande-depressao", "title": "A Grande Depressão", "tier": "explorar", "subtheme": "secxx", "year": 1929, "desc": "O crash da bolsa de 1929 lança o mundo numa crise económica.", "fact": "O desemprego em massa abriu caminho a regimes extremistas.", "tags": ["economia", "crise"] },
-  { "id": "segunda-guerra", "title": "A Segunda Guerra Mundial", "tier": "destaque", "subtheme": "secxx", "year": 1939, "desc": "O conflito mais mortífero da história, com o Holocausto e a bomba atómica.", "fact": "Morreram cerca de 70 a 85 milhões de pessoas.", "tags": ["guerra", "século-xx"], "related": ["bomba-atomica", "holocausto"] },
-  { "id": "holocausto", "title": "O Holocausto", "tier": "destaque", "subtheme": "secxx", "year": 1941, "desc": "O regime nazi assassina seis milhões de judeus e outras minorias.", "fact": "Levou à criação do conceito de 'crime contra a humanidade'.", "tags": ["genocídio", "século-xx"], "related": ["segunda-guerra", "direitos-humanos"] },
-  { "id": "bomba-atomica", "title": "A bomba atómica", "tier": "destaque", "subtheme": "secxx", "year": 1945, "date": "1945-08-06", "desc": "Hiroshima e Nagasaki mostram o poder destrutivo do átomo.", "fact": "Foram as únicas duas vezes que armas nucleares foram usadas em guerra.", "tags": ["guerra", "nuclear"], "related": ["segunda-guerra", "guerra-fria"] },
-  { "id": "direitos-humanos", "title": "Declaração dos Direitos Humanos", "tier": "explorar", "subtheme": "secxx", "year": 1948, "desc": "A ONU proclama direitos universais para todas as pessoas.", "fact": "Nasceu da vontade de evitar novos horrores como os da guerra.", "tags": ["direitos", "onu"], "related": ["holocausto"] },
-  { "id": "guerra-fria", "title": "A Guerra Fria", "tier": "destaque", "subtheme": "secxx", "year": 1947, "desc": "EUA e URSS dividem o mundo em dois blocos durante décadas.", "fact": "A corrida ao espaço foi um dos seus campos de batalha.", "tags": ["guerra-fria", "século-xx"], "related": ["corrida-espacial", "muro-berlim"] },
-  { "id": "descolonizacao", "title": "A descolonização", "tier": "explorar", "subtheme": "secxx", "year": 1960, "desc": "Dezenas de colónias em África e na Ásia tornam-se países independentes.", "fact": "Só em 1960 nasceram 17 novos países africanos.", "tags": ["independência", "século-xx"] },
-  { "id": "muro-berlim", "title": "A queda do Muro de Berlim", "tier": "destaque", "subtheme": "contemporanea", "year": 1989, "date": "1989-11-09", "desc": "A queda do muro marca o fim da Guerra Fria.", "fact": "Pedaços do muro tornaram-se souvenirs em todo o mundo.", "tags": ["guerra-fria", "liberdade"], "related": ["guerra-fria"] },
-  { "id": "globalizacao", "title": "A globalização e a internet", "tier": "explorar", "subtheme": "contemporanea", "year": 1995, "desc": "Comércio, viagens e a internet ligam o planeta como nunca.", "fact": "Hoje uma mensagem dá a volta ao mundo em segundos.", "tags": ["global", "internet"], "related": ["internet"] },
-  { "id": "11-setembro", "title": "11 de Setembro de 2001", "tier": "explorar", "subtheme": "contemporanea", "year": 2001, "date": "2001-09-11", "desc": "Ataques terroristas nos EUA mudam a política e a segurança mundiais.", "fact": "Redefiniram a segurança em aeroportos por todo o mundo.", "tags": ["terrorismo", "século-xxi"] },
-  { "id": "covid19", "title": "A pandemia de COVID-19", "tier": "destaque", "subtheme": "contemporanea", "year": 2020, "date": "2020-03-11", "desc": "Uma pandemia global confina milhares de milhões de pessoas.", "fact": "Vacinas eficazes foram criadas em menos de um ano, um feito histórico.", "tags": ["pandemia", "século-xxi"], "related": ["pandemias-historia", "vacinas-mrna"] }
+  {
+   "id": "idade-media",
+   "title": "A Idade Média",
+   "tier": "destaque",
+   "subtheme": "medieval",
+   "year": 500,
+   "desc": "Mil anos entre a queda de Roma e o Renascimento, marcados por reinos e feudalismo.",
+   "fact": "Não foi só 'idade das trevas' — houve catedrais, universidades e grandes obras.",
+   "tags": [
+    "medieval",
+    "europa"
+   ],
+   "related": [
+    "queda-roma",
+    "peste-negra"
+   ]
+  },
+  {
+   "id": "islao",
+   "title": "A expansão do Islão",
+   "tier": "destaque",
+   "subtheme": "medieval",
+   "year": 622,
+   "desc": "Uma nova religião e civilização espalha-se da Arábia a três continentes.",
+   "fact": "Preservou e expandiu o saber grego, indiano e persa.",
+   "tags": [
+    "islão",
+    "civilização"
+   ],
+   "related": [
+    "ciencia-islamica"
+   ]
+  },
+  {
+   "id": "vikings",
+   "title": "Os Vikings",
+   "tier": "aprofundar",
+   "subtheme": "medieval",
+   "year": 793,
+   "desc": "Navegadores e guerreiros nórdicos que chegaram à América antes de Colombo.",
+   "fact": "Tinham uma povoação no Canadá por volta do ano 1000.",
+   "tags": [
+    "medieval",
+    "navegação"
+   ],
+   "related": [
+    "colombo"
+   ]
+  },
+  {
+   "id": "ciencia-islamica",
+   "title": "A idade de ouro islâmica",
+   "tier": "explorar",
+   "subtheme": "medieval",
+   "year": 800,
+   "desc": "Avanços em álgebra, medicina e astronomia em cidades como Bagdade.",
+   "fact": "Palavras como 'álgebra' e 'algoritmo' vêm do árabe.",
+   "tags": [
+    "ciência",
+    "islão"
+   ],
+   "related": [
+    "islao"
+   ]
+  },
+  {
+   "id": "carlos-magno",
+   "title": "Carlos Magno",
+   "tier": "aprofundar",
+   "subtheme": "medieval",
+   "year": 800,
+   "desc": "Reúne grande parte da Europa Ocidental num império cristão.",
+   "fact": "É lembrado como \"pai da Europa\".",
+   "tags": [
+    "medieval",
+    "império"
+   ]
+  },
+  {
+   "id": "cruzadas",
+   "title": "As Cruzadas",
+   "tier": "explorar",
+   "subtheme": "medieval",
+   "year": 1096,
+   "desc": "Guerras religiosas entre cristãos e muçulmanos pela Terra Santa.",
+   "fact": "Duraram quase 200 anos e intensificaram o contacto entre culturas.",
+   "tags": [
+    "medieval",
+    "guerra"
+   ]
+  },
+  {
+   "id": "imperio-mongol",
+   "title": "O Império Mongol",
+   "tier": "aprofundar",
+   "subtheme": "medieval",
+   "year": 1206,
+   "desc": "Gengis Khan cria o maior império terrestre contínuo da história.",
+   "fact": "Ia da Coreia até à Europa de Leste.",
+   "tags": [
+    "medieval",
+    "império"
+   ]
+  },
+  {
+   "id": "magna-carta",
+   "title": "A Magna Carta",
+   "tier": "aprofundar",
+   "subtheme": "medieval",
+   "year": 1215,
+   "desc": "Um documento que limita o poder do rei de Inglaterra.",
+   "fact": "É vista como uma semente das democracias modernas.",
+   "tags": [
+    "medieval",
+    "direitos"
+   ],
+   "related": [
+    "direitos-humanos"
+   ]
+  },
+  {
+   "id": "peste-negra",
+   "title": "A Peste Negra",
+   "tier": "destaque",
+   "subtheme": "medieval",
+   "year": 1347,
+   "desc": "Uma epidemia mata um terço da população europeia.",
+   "fact": "Espalhou-se pela rota da seda e por navios mercantes.",
+   "tags": [
+    "epidemia",
+    "medieval"
+   ],
+   "related": [
+    "pandemias-historia"
+   ]
+  },
+  {
+   "id": "renascimento",
+   "title": "O Renascimento",
+   "tier": "destaque",
+   "subtheme": "moderna",
+   "year": 1400,
+   "desc": "Um renascer das artes e do saber, inspirado na Antiguidade.",
+   "fact": "Deu-nos Leonardo da Vinci e Michelangelo.",
+   "tags": [
+    "renascimento",
+    "arte"
+   ],
+   "related": [
+    "imprensa",
+    "renascimento-arte"
+   ]
+  },
+  {
+   "id": "imprensa",
+   "title": "A imprensa de Gutenberg",
+   "tier": "destaque",
+   "subtheme": "moderna",
+   "year": 1440,
+   "desc": "A imprensa de tipos móveis torna os livros acessíveis a muitos.",
+   "fact": "Foi um dos maiores aceleradores de conhecimento da história.",
+   "tags": [
+    "imprensa",
+    "conhecimento"
+   ],
+   "people": [
+    "gutenberg"
+   ],
+   "related": [
+    "reforma"
+   ]
+  },
+  {
+   "id": "queda-constantinopla",
+   "title": "A queda de Constantinopla",
+   "tier": "aprofundar",
+   "subtheme": "moderna",
+   "year": 1453,
+   "desc": "Os otomanos tomam a cidade e marcam o fim do Império Bizantino.",
+   "fact": "Ajudou a empurrar a Europa para a era dos Descobrimentos.",
+   "tags": [
+    "otomano",
+    "história"
+   ],
+   "related": [
+    "descobrimentos-mundiais"
+   ]
+  },
+  {
+   "id": "descobrimentos-mundiais",
+   "title": "A Era dos Descobrimentos",
+   "tier": "destaque",
+   "subtheme": "moderna",
+   "year": 1492,
+   "desc": "Europeus navegam pelo mundo e ligam continentes pela primeira vez.",
+   "fact": "Portugal e Espanha lideraram esta expansão marítima.",
+   "tags": [
+    "descobrimentos",
+    "navegação"
+   ],
+   "related": [
+    "descobrimentos-pt",
+    "colombo"
+   ]
+  },
+  {
+   "id": "colombo",
+   "title": "Colombo chega à América",
+   "tier": "explorar",
+   "subtheme": "moderna",
+   "year": 1492,
+   "date": "1492-10-12",
+   "desc": "Cristóvão Colombo chega às Caraíbas julgando ter alcançado a Índia.",
+   "fact": "Nunca aceitou que tinha encontrado um novo continente.",
+   "tags": [
+    "descobrimentos",
+    "américa"
+   ],
+   "people": [
+    "cristovao-colombo"
+   ],
+   "related": [
+    "descobrimentos-mundiais"
+   ]
+  },
+  {
+   "id": "trafico-escravos",
+   "title": "O tráfico transatlântico de escravos",
+   "tier": "aprofundar",
+   "subtheme": "moderna",
+   "year": 1500,
+   "desc": "Milhões de africanos são escravizados e levados para as Américas.",
+   "fact": "É uma das maiores tragédias da história humana.",
+   "tags": [
+    "história",
+    "injustiça"
+   ]
+  },
+  {
+   "id": "reforma",
+   "title": "A Reforma Protestante",
+   "tier": "explorar",
+   "subtheme": "moderna",
+   "year": 1517,
+   "desc": "Lutero desafia a Igreja Católica e divide o cristianismo na Europa.",
+   "fact": "A imprensa ajudou as suas ideias a espalharem-se rapidamente.",
+   "tags": [
+    "religião",
+    "europa"
+   ],
+   "people": [
+    "martinho-lutero"
+   ],
+   "related": [
+    "imprensa"
+   ]
+  },
+  {
+   "id": "revolucao-cientifica",
+   "title": "A Revolução Científica",
+   "tier": "explorar",
+   "subtheme": "revolucoes",
+   "year": 1543,
+   "desc": "Copérnico, Galileu e Newton criam a ciência moderna.",
+   "fact": "Mostraram que a Terra orbita o Sol, e não o contrário.",
+   "tags": [
+    "ciência",
+    "revolução"
+   ],
+   "people": [
+    "isaac-newton",
+    "galileu-galilei"
+   ],
+   "related": [
+    "iluminismo"
+   ]
+  },
+  {
+   "id": "iluminismo",
+   "title": "O Iluminismo",
+   "tier": "explorar",
+   "subtheme": "revolucoes",
+   "year": 1700,
+   "desc": "Pensadores defendem a razão, a liberdade e os direitos do indivíduo.",
+   "fact": "Inspirou as revoluções americana e francesa.",
+   "tags": [
+    "filosofia",
+    "razão"
+   ],
+   "related": [
+    "revolucao-francesa",
+    "revolucao-americana"
+   ]
+  },
+  {
+   "id": "revolucao-industrial",
+   "title": "A Revolução Industrial",
+   "tier": "destaque",
+   "subtheme": "revolucoes",
+   "year": 1760,
+   "desc": "Máquinas a vapor e fábricas mudam o trabalho e a sociedade.",
+   "fact": "Em poucas décadas, milhões deixaram o campo pelas cidades.",
+   "tags": [
+    "indústria",
+    "revolução"
+   ],
+   "related": [
+    "maquina-vapor"
+   ]
+  },
+  {
+   "id": "revolucao-americana",
+   "title": "A Independência dos EUA",
+   "tier": "explorar",
+   "subtheme": "revolucoes",
+   "year": 1776,
+   "date": "1776-07-04",
+   "desc": "As colónias americanas declaram independência da Grã-Bretanha.",
+   "fact": "A sua declaração inspirou movimentos por todo o mundo.",
+   "tags": [
+    "revolução",
+    "eua"
+   ],
+   "related": [
+    "iluminismo"
+   ]
+  },
+  {
+   "id": "revolucao-francesa",
+   "title": "A Revolução Francesa",
+   "tier": "destaque",
+   "subtheme": "revolucoes",
+   "year": 1789,
+   "desc": "O povo derruba a monarquia em nome da 'Liberdade, Igualdade, Fraternidade'.",
+   "fact": "Deu origem à ideia moderna de direitos do cidadão.",
+   "tags": [
+    "revolução",
+    "frança"
+   ],
+   "related": [
+    "iluminismo",
+    "napoleao"
+   ]
+  },
+  {
+   "id": "napoleao",
+   "title": "Napoleão",
+   "tier": "explorar",
+   "subtheme": "revolucoes",
+   "year": 1804,
+   "desc": "General que se torna imperador e domina grande parte da Europa.",
+   "fact": "O seu código de leis influenciou sistemas jurídicos de todo o mundo.",
+   "tags": [
+    "frança",
+    "império"
+   ],
+   "people": [
+    "napoleao-bonaparte"
+   ],
+   "related": [
+    "revolucao-francesa"
+   ]
+  },
+  {
+   "id": "primeira-guerra",
+   "title": "A Primeira Guerra Mundial",
+   "tier": "destaque",
+   "subtheme": "secxx",
+   "year": 1914,
+   "desc": "Um conflito global que matou milhões e mudou o mapa do mundo.",
+   "fact": "Foi a primeira guerra com aviões, tanques e gás venenoso em larga escala.",
+   "tags": [
+    "guerra",
+    "século-xx"
+   ],
+   "related": [
+    "segunda-guerra"
+   ]
+  },
+  {
+   "id": "revolucao-russa",
+   "title": "A Revolução Russa",
+   "tier": "aprofundar",
+   "subtheme": "secxx",
+   "year": 1917,
+   "desc": "Os bolcheviques tomam o poder e criam o primeiro Estado comunista.",
+   "fact": "Daria origem à União Soviética.",
+   "tags": [
+    "revolução",
+    "século-xx"
+   ],
+   "related": [
+    "guerra-fria"
+   ]
+  },
+  {
+   "id": "gripe-espanhola",
+   "title": "A gripe de 1918",
+   "tier": "explorar",
+   "subtheme": "secxx",
+   "year": 1918,
+   "desc": "Uma pandemia de gripe mata dezenas de milhões em todo o mundo.",
+   "fact": "Fez mais mortos do que a própria Primeira Guerra.",
+   "tags": [
+    "pandemia",
+    "século-xx"
+   ],
+   "related": [
+    "pandemias-historia"
+   ]
+  },
+  {
+   "id": "grande-depressao",
+   "title": "A Grande Depressão",
+   "tier": "explorar",
+   "subtheme": "secxx",
+   "year": 1929,
+   "desc": "O crash da bolsa de 1929 lança o mundo numa crise económica.",
+   "fact": "O desemprego em massa abriu caminho a regimes extremistas.",
+   "tags": [
+    "economia",
+    "crise"
+   ]
+  },
+  {
+   "id": "segunda-guerra",
+   "title": "A Segunda Guerra Mundial",
+   "tier": "destaque",
+   "subtheme": "secxx",
+   "year": 1939,
+   "desc": "O conflito mais mortífero da história, com o Holocausto e a bomba atómica.",
+   "fact": "Morreram cerca de 70 a 85 milhões de pessoas.",
+   "tags": [
+    "guerra",
+    "século-xx"
+   ],
+   "related": [
+    "bomba-atomica",
+    "holocausto"
+   ]
+  },
+  {
+   "id": "holocausto",
+   "title": "O Holocausto",
+   "tier": "destaque",
+   "subtheme": "secxx",
+   "year": 1941,
+   "desc": "O regime nazi assassina seis milhões de judeus e outras minorias.",
+   "fact": "Levou à criação do conceito de 'crime contra a humanidade'.",
+   "tags": [
+    "genocídio",
+    "século-xx"
+   ],
+   "related": [
+    "segunda-guerra",
+    "direitos-humanos"
+   ]
+  },
+  {
+   "id": "bomba-atomica",
+   "title": "A bomba atómica",
+   "tier": "destaque",
+   "subtheme": "secxx",
+   "year": 1945,
+   "date": "1945-08-06",
+   "desc": "Hiroshima e Nagasaki mostram o poder destrutivo do átomo.",
+   "fact": "Foram as únicas duas vezes que armas nucleares foram usadas em guerra.",
+   "tags": [
+    "guerra",
+    "nuclear"
+   ],
+   "related": [
+    "segunda-guerra",
+    "guerra-fria"
+   ]
+  },
+  {
+   "id": "guerra-fria",
+   "title": "A Guerra Fria",
+   "tier": "destaque",
+   "subtheme": "secxx",
+   "year": 1947,
+   "desc": "EUA e URSS dividem o mundo em dois blocos durante décadas.",
+   "fact": "A corrida ao espaço foi um dos seus campos de batalha.",
+   "tags": [
+    "guerra-fria",
+    "século-xx"
+   ],
+   "related": [
+    "corrida-espacial",
+    "muro-berlim"
+   ]
+  },
+  {
+   "id": "direitos-humanos",
+   "title": "Declaração dos Direitos Humanos",
+   "tier": "explorar",
+   "subtheme": "secxx",
+   "year": 1948,
+   "desc": "A ONU proclama direitos universais para todas as pessoas.",
+   "fact": "Nasceu da vontade de evitar novos horrores como os da guerra.",
+   "tags": [
+    "direitos",
+    "onu"
+   ],
+   "related": [
+    "holocausto"
+   ]
+  },
+  {
+   "id": "descolonizacao",
+   "title": "A descolonização",
+   "tier": "explorar",
+   "subtheme": "secxx",
+   "year": 1960,
+   "desc": "Dezenas de colónias em África e na Ásia tornam-se países independentes.",
+   "fact": "Só em 1960 nasceram 17 novos países africanos.",
+   "tags": [
+    "independência",
+    "século-xx"
+   ]
+  },
+  {
+   "id": "muro-berlim",
+   "title": "A queda do Muro de Berlim",
+   "tier": "destaque",
+   "subtheme": "contemporanea",
+   "year": 1989,
+   "date": "1989-11-09",
+   "desc": "A queda do muro marca o fim da Guerra Fria.",
+   "fact": "Pedaços do muro tornaram-se souvenirs em todo o mundo.",
+   "tags": [
+    "guerra-fria",
+    "liberdade"
+   ],
+   "related": [
+    "guerra-fria"
+   ]
+  },
+  {
+   "id": "queda-uniao-sovietica",
+   "title": "O fim da União Soviética",
+   "tier": "aprofundar",
+   "subtheme": "contemporanea",
+   "year": 1991,
+   "desc": "A maior potência comunista desfaz-se em 15 países.",
+   "fact": "Pôs fim definitivo à Guerra Fria.",
+   "tags": [
+    "século-xx",
+    "política"
+   ],
+   "related": [
+    "muro-berlim"
+   ]
+  },
+  {
+   "id": "globalizacao",
+   "title": "A globalização e a internet",
+   "tier": "explorar",
+   "subtheme": "contemporanea",
+   "year": 1995,
+   "desc": "Comércio, viagens e a internet ligam o planeta como nunca.",
+   "fact": "Hoje uma mensagem dá a volta ao mundo em segundos.",
+   "tags": [
+    "global",
+    "internet"
+   ],
+   "related": [
+    "internet"
+   ]
+  },
+  {
+   "id": "11-setembro",
+   "title": "11 de Setembro de 2001",
+   "tier": "explorar",
+   "subtheme": "contemporanea",
+   "year": 2001,
+   "date": "2001-09-11",
+   "desc": "Ataques terroristas nos EUA mudam a política e a segurança mundiais.",
+   "fact": "Redefiniram a segurança em aeroportos por todo o mundo.",
+   "tags": [
+    "terrorismo",
+    "século-xxi"
+   ]
+  },
+  {
+   "id": "covid19",
+   "title": "A pandemia de COVID-19",
+   "tier": "destaque",
+   "subtheme": "contemporanea",
+   "year": 2020,
+   "date": "2020-03-11",
+   "desc": "Uma pandemia global confina milhares de milhões de pessoas.",
+   "fact": "Vacinas eficazes foram criadas em menos de um ano, um feito histórico.",
+   "tags": [
+    "pandemia",
+    "século-xxi"
+   ],
+   "related": [
+    "pandemias-historia",
+    "vacinas-mrna"
+   ]
+  }
  ]
 }

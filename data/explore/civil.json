@@ -1,28 +1,504 @@
 {
  "theme": "civil",
  "items": [
-  { "id": "primeiras-cidades", "title": "As primeiras cidades", "tier": "destaque", "subtheme": "mesopotamia", "year": -4000, "desc": "Na Mesopotâmia nascem cidades como Uruk, com templos e mercados.", "fact": "Uruk pode ter sido a primeira cidade com dezenas de milhares de habitantes.", "tags": ["cidade", "mesopotâmia"], "related": ["escrita-cuneiforme"] },
-  { "id": "escrita-cuneiforme", "title": "A invenção da escrita", "tier": "destaque", "subtheme": "mesopotamia", "year": -3200, "desc": "Os sumérios criam a escrita cuneiforme para registar contas e leis.", "fact": "A escrita marca o início da História — antes dela, é Pré-história.", "tags": ["escrita", "mesopotâmia"], "related": ["primeiras-cidades", "codigo-hamurabi"] },
-  { "id": "roda", "title": "A roda", "tier": "explorar", "subtheme": "mesopotamia", "year": -3500, "desc": "Uma das invenções mais importantes, primeiro para a olaria e depois para o transporte.", "fact": "Surgiu surpreendentemente tarde, depois da escrita e da agricultura.", "tags": ["invenção", "transporte"] },
-  { "id": "codigo-hamurabi", "title": "Código de Hamurabi", "tier": "explorar", "subtheme": "mesopotamia", "year": -1754, "desc": "Um dos primeiros conjuntos de leis escritas, na Babilónia.", "fact": "É a origem do princípio 'olho por olho, dente por dente'.", "tags": ["leis", "babilónia"], "related": ["escrita-cuneiforme"] },
-  { "id": "antigo-egito", "title": "O Antigo Egito", "tier": "destaque", "subtheme": "egito", "year": -3100, "desc": "Uma civilização que floresceu ao longo do Nilo durante 3000 anos.", "fact": "Cleópatra viveu mais perto do nosso tempo do que da construção das pirâmides.", "tags": ["egito", "nilo"], "related": ["piramides", "hieroglifos"] },
-  { "id": "piramides", "title": "As Pirâmides de Gizé", "tier": "destaque", "subtheme": "egito", "year": -2560, "desc": "Túmulos monumentais dos faraós, maravilhas da engenharia antiga.", "fact": "A Grande Pirâmide foi o edifício mais alto do mundo durante ~3800 anos.", "tags": ["egito", "monumento"], "related": ["antigo-egito"] },
-  { "id": "hieroglifos", "title": "Hieróglifos e a Pedra de Roseta", "tier": "explorar", "subtheme": "egito", "year": -3200, "desc": "A escrita egípcia, decifrada em 1822 graças à Pedra de Roseta.", "fact": "Champollion conseguiu lê-los comparando o mesmo texto em três escritas.", "tags": ["egito", "escrita"], "people": ["champollion"], "related": ["antigo-egito"] },
-  { "id": "grecia-antiga", "title": "A Grécia Antiga", "tier": "destaque", "subtheme": "grecia", "year": -800, "desc": "Berço da filosofia, do teatro e da ciência ocidental.", "fact": "Cada cidade-estado, como Atenas e Esparta, era quase um país.", "tags": ["grécia", "civilização"], "related": ["democracia-atenas", "filosofia-grega"] },
-  { "id": "democracia-atenas", "title": "A democracia ateniense", "tier": "destaque", "subtheme": "grecia", "year": -508, "desc": "Atenas inventa um sistema em que os cidadãos votam diretamente.", "fact": "Só uma minoria — homens livres — podia votar; nem mulheres nem escravos.", "tags": ["democracia", "atenas"], "related": ["grecia-antiga"] },
-  { "id": "filosofia-grega", "title": "Sócrates, Platão e Aristóteles", "tier": "explorar", "subtheme": "grecia", "year": -400, "desc": "Os filósofos que lançaram as bases do pensamento ocidental.", "fact": "Aristóteles foi professor de Alexandre, o Grande.", "tags": ["filosofia", "grécia"], "people": ["socrates", "platao", "aristoteles"], "related": ["alexandre"] },
-  { "id": "jogos-olimpicos-antigos", "title": "Os Jogos Olímpicos antigos", "tier": "aprofundar", "subtheme": "grecia", "year": -776, "desc": "Competições atléticas em honra de Zeus, realizadas em Olímpia.", "fact": "Duraram mais de mil anos antes de serem proibidos.", "tags": ["grécia", "desporto"], "related": ["olimpicos-modernos"] },
-  { "id": "alexandre", "title": "Alexandre, o Grande", "tier": "explorar", "subtheme": "grecia", "year": -334, "desc": "Conquista um dos maiores impérios da Antiguidade antes dos 33 anos.", "fact": "Espalhou a cultura grega da Grécia até à Índia.", "tags": ["império", "conquista"], "people": ["alexandre-magno"] },
-  { "id": "republica-romana", "title": "A República Romana", "tier": "explorar", "subtheme": "roma", "year": -509, "desc": "Roma derruba os reis e cria uma república com senado e cônsules.", "fact": "Muitas ideias políticas modernas inspiram-se nesta república.", "tags": ["roma", "república"], "related": ["imperio-romano"] },
-  { "id": "imperio-romano", "title": "O Império Romano", "tier": "destaque", "subtheme": "roma", "year": -27, "desc": "Roma torna-se um império que domina todo o Mediterrâneo.", "fact": "No auge, governava cerca de 70 milhões de pessoas.", "tags": ["roma", "império"], "related": ["julio-cesar", "queda-roma"] },
-  { "id": "julio-cesar", "title": "Júlio César", "tier": "explorar", "subtheme": "roma", "year": -44, "desc": "General e ditador cujo assassínio marca o fim da República.", "fact": "O mês de julho tem o seu nome.", "tags": ["roma", "líder"], "people": ["julio-cesar"], "related": ["imperio-romano"] },
-  { "id": "engenharia-romana", "title": "Estradas, aquedutos e betão", "tier": "aprofundar", "subtheme": "roma", "year": -100, "desc": "Roma constrói uma rede de estradas e aquedutos que ainda hoje impressiona.", "fact": "O betão romano é tão durável que ainda intriga os engenheiros.", "tags": ["roma", "engenharia"], "related": ["imperio-romano"] },
-  { "id": "queda-roma", "title": "A queda de Roma", "tier": "explorar", "subtheme": "roma", "year": 476, "desc": "O Império Romano do Ocidente desmorona-se, abrindo a Idade Média.", "fact": "O Império do Oriente (Bizâncio) sobreviveu mais mil anos.", "tags": ["roma", "queda"], "related": ["idade-media"] },
-  { "id": "china-antiga", "title": "A China imperial", "tier": "explorar", "subtheme": "asia", "year": -221, "desc": "Qin Shi Huang unifica a China e torna-se o primeiro imperador.", "fact": "Foi sepultado com um exército de milhares de soldados de terracota.", "tags": ["china", "império"], "related": ["muralha-china"] },
-  { "id": "muralha-china", "title": "A Grande Muralha da China", "tier": "destaque", "subtheme": "asia", "year": -220, "desc": "Uma rede de muralhas construída ao longo de séculos para defesa.", "fact": "Somando todos os troços, ultrapassa os 20 000 km.", "tags": ["china", "monumento"], "related": ["china-antiga"] },
-  { "id": "india-antiga", "title": "Civilização do Indo e a Índia", "tier": "explorar", "subtheme": "asia", "year": -2600, "desc": "Cidades planeadas do Indo e, mais tarde, o berço de grandes religiões.", "fact": "Tinham sistemas de esgotos avançados há 4500 anos.", "tags": ["índia", "civilização"] },
-  { "id": "maias", "title": "Os Maias", "tier": "destaque", "subtheme": "americas", "year": -250, "desc": "Civilização mesoamericana avançada em astronomia, matemática e escrita.", "fact": "Usavam o conceito de zero séculos antes da Europa.", "tags": ["maias", "américa"], "related": ["astecas", "incas"] },
-  { "id": "astecas", "title": "Os Astecas", "tier": "explorar", "subtheme": "americas", "year": 1325, "desc": "Império mexica com a grande capital Tenochtitlán, sobre um lago.", "fact": "Tenochtitlán era maior do que a maioria das cidades europeias da época.", "tags": ["astecas", "américa"], "related": ["maias"] },
-  { "id": "incas", "title": "Os Incas e Machu Picchu", "tier": "explorar", "subtheme": "americas", "year": 1438, "desc": "O maior império da América pré-colombiana, nos Andes.", "fact": "Construíram milhares de km de estradas sem usar a roda nem o ferro.", "tags": ["incas", "américa"], "related": ["maias"] }
+  {
+   "id": "primeiras-cidades",
+   "title": "As primeiras cidades",
+   "tier": "destaque",
+   "subtheme": "mesopotamia",
+   "year": -4000,
+   "desc": "Na Mesopotâmia nascem cidades como Uruk, com templos e mercados.",
+   "fact": "Uruk pode ter sido a primeira cidade com dezenas de milhares de habitantes.",
+   "tags": [
+    "cidade",
+    "mesopotâmia"
+   ],
+   "related": [
+    "escrita-cuneiforme"
+   ]
+  },
+  {
+   "id": "roda",
+   "title": "A roda",
+   "tier": "explorar",
+   "subtheme": "mesopotamia",
+   "year": -3500,
+   "desc": "Uma das invenções mais importantes, primeiro para a olaria e depois para o transporte.",
+   "fact": "Surgiu surpreendentemente tarde, depois da escrita e da agricultura.",
+   "tags": [
+    "invenção",
+    "transporte"
+   ]
+  },
+  {
+   "id": "idade-bronze",
+   "title": "A Idade do Bronze",
+   "tier": "aprofundar",
+   "subtheme": "mesopotamia",
+   "year": -3300,
+   "desc": "Misturar cobre e estanho cria um metal duro que muda armas e ferramentas.",
+   "fact": "A sua procura criou as primeiras grandes redes de comércio.",
+   "tags": [
+    "metalurgia",
+    "antiguidade"
+   ]
+  },
+  {
+   "id": "escrita-cuneiforme",
+   "title": "A invenção da escrita",
+   "tier": "destaque",
+   "subtheme": "mesopotamia",
+   "year": -3200,
+   "desc": "Os sumérios criam a escrita cuneiforme para registar contas e leis.",
+   "fact": "A escrita marca o início da História — antes dela, é Pré-história.",
+   "tags": [
+    "escrita",
+    "mesopotâmia"
+   ],
+   "related": [
+    "primeiras-cidades",
+    "codigo-hamurabi"
+   ]
+  },
+  {
+   "id": "hieroglifos",
+   "title": "Hieróglifos e a Pedra de Roseta",
+   "tier": "explorar",
+   "subtheme": "egito",
+   "year": -3200,
+   "desc": "A escrita egípcia, decifrada em 1822 graças à Pedra de Roseta.",
+   "fact": "Champollion conseguiu lê-los comparando o mesmo texto em três escritas.",
+   "tags": [
+    "egito",
+    "escrita"
+   ],
+   "people": [
+    "champollion"
+   ],
+   "related": [
+    "antigo-egito"
+   ]
+  },
+  {
+   "id": "antigo-egito",
+   "title": "O Antigo Egito",
+   "tier": "destaque",
+   "subtheme": "egito",
+   "year": -3100,
+   "desc": "Uma civilização que floresceu ao longo do Nilo durante 3000 anos.",
+   "fact": "Cleópatra viveu mais perto do nosso tempo do que da construção das pirâmides.",
+   "tags": [
+    "egito",
+    "nilo"
+   ],
+   "related": [
+    "piramides",
+    "hieroglifos"
+   ]
+  },
+  {
+   "id": "india-antiga",
+   "title": "Civilização do Indo e a Índia",
+   "tier": "explorar",
+   "subtheme": "asia",
+   "year": -2600,
+   "desc": "Cidades planeadas do Indo e, mais tarde, o berço de grandes religiões.",
+   "fact": "Tinham sistemas de esgotos avançados há 4500 anos.",
+   "tags": [
+    "índia",
+    "civilização"
+   ]
+  },
+  {
+   "id": "piramides",
+   "title": "As Pirâmides de Gizé",
+   "tier": "destaque",
+   "subtheme": "egito",
+   "year": -2560,
+   "desc": "Túmulos monumentais dos faraós, maravilhas da engenharia antiga.",
+   "fact": "A Grande Pirâmide foi o edifício mais alto do mundo durante ~3800 anos.",
+   "tags": [
+    "egito",
+    "monumento"
+   ],
+   "related": [
+    "antigo-egito"
+   ]
+  },
+  {
+   "id": "gilgamesh",
+   "title": "A Epopeia de Gilgamesh",
+   "tier": "aprofundar",
+   "subtheme": "mesopotamia",
+   "year": -2100,
+   "desc": "Uma das obras literárias mais antigas que se conhecem.",
+   "fact": "Inclui uma história de dilúvio anterior à da Bíblia.",
+   "tags": [
+    "mesopotâmia",
+    "literatura"
+   ],
+   "related": [
+    "escrita-cuneiforme"
+   ]
+  },
+  {
+   "id": "codigo-hamurabi",
+   "title": "Código de Hamurabi",
+   "tier": "explorar",
+   "subtheme": "mesopotamia",
+   "year": -1754,
+   "desc": "Um dos primeiros conjuntos de leis escritas, na Babilónia.",
+   "fact": "É a origem do princípio 'olho por olho, dente por dente'.",
+   "tags": [
+    "leis",
+    "babilónia"
+   ],
+   "related": [
+    "escrita-cuneiforme"
+   ]
+  },
+  {
+   "id": "grecia-antiga",
+   "title": "A Grécia Antiga",
+   "tier": "destaque",
+   "subtheme": "grecia",
+   "year": -800,
+   "desc": "Berço da filosofia, do teatro e da ciência ocidental.",
+   "fact": "Cada cidade-estado, como Atenas e Esparta, era quase um país.",
+   "tags": [
+    "grécia",
+    "civilização"
+   ],
+   "related": [
+    "democracia-atenas",
+    "filosofia-grega"
+   ]
+  },
+  {
+   "id": "jogos-olimpicos-antigos",
+   "title": "Os Jogos Olímpicos antigos",
+   "tier": "aprofundar",
+   "subtheme": "grecia",
+   "year": -776,
+   "desc": "Competições atléticas em honra de Zeus, realizadas em Olímpia.",
+   "fact": "Duraram mais de mil anos antes de serem proibidos.",
+   "tags": [
+    "grécia",
+    "desporto"
+   ],
+   "related": [
+    "olimpicos-modernos"
+   ]
+  },
+  {
+   "id": "republica-romana",
+   "title": "A República Romana",
+   "tier": "explorar",
+   "subtheme": "roma",
+   "year": -509,
+   "desc": "Roma derruba os reis e cria uma república com senado e cônsules.",
+   "fact": "Muitas ideias políticas modernas inspiram-se nesta república.",
+   "tags": [
+    "roma",
+    "república"
+   ],
+   "related": [
+    "imperio-romano"
+   ]
+  },
+  {
+   "id": "democracia-atenas",
+   "title": "A democracia ateniense",
+   "tier": "destaque",
+   "subtheme": "grecia",
+   "year": -508,
+   "desc": "Atenas inventa um sistema em que os cidadãos votam diretamente.",
+   "fact": "Só uma minoria — homens livres — podia votar; nem mulheres nem escravos.",
+   "tags": [
+    "democracia",
+    "atenas"
+   ],
+   "related": [
+    "grecia-antiga"
+   ]
+  },
+  {
+   "id": "filosofia-grega",
+   "title": "Sócrates, Platão e Aristóteles",
+   "tier": "explorar",
+   "subtheme": "grecia",
+   "year": -400,
+   "desc": "Os filósofos que lançaram as bases do pensamento ocidental.",
+   "fact": "Aristóteles foi professor de Alexandre, o Grande.",
+   "tags": [
+    "filosofia",
+    "grécia"
+   ],
+   "people": [
+    "socrates",
+    "platao",
+    "aristoteles"
+   ],
+   "related": [
+    "alexandre"
+   ]
+  },
+  {
+   "id": "alexandre",
+   "title": "Alexandre, o Grande",
+   "tier": "explorar",
+   "subtheme": "grecia",
+   "year": -334,
+   "desc": "Conquista um dos maiores impérios da Antiguidade antes dos 33 anos.",
+   "fact": "Espalhou a cultura grega da Grécia até à Índia.",
+   "tags": [
+    "império",
+    "conquista"
+   ],
+   "people": [
+    "alexandre-magno"
+   ]
+  },
+  {
+   "id": "biblioteca-alexandria",
+   "title": "A Biblioteca de Alexandria",
+   "tier": "aprofundar",
+   "subtheme": "grecia",
+   "year": -283,
+   "desc": "O maior centro de saber do mundo antigo.",
+   "fact": "Tentava reunir uma cópia de todos os livros existentes.",
+   "tags": [
+    "grécia",
+    "conhecimento"
+   ],
+   "place": "Alexandria"
+  },
+  {
+   "id": "maias",
+   "title": "Os Maias",
+   "tier": "destaque",
+   "subtheme": "americas",
+   "year": -250,
+   "desc": "Civilização mesoamericana avançada em astronomia, matemática e escrita.",
+   "fact": "Usavam o conceito de zero séculos antes da Europa.",
+   "tags": [
+    "maias",
+    "américa"
+   ],
+   "related": [
+    "astecas",
+    "incas"
+   ]
+  },
+  {
+   "id": "arquimedes",
+   "title": "Arquimedes",
+   "tier": "aprofundar",
+   "subtheme": "grecia",
+   "year": -250,
+   "desc": "Um dos maiores génios da Antiguidade, na matemática e na engenharia.",
+   "fact": "Terá gritado \"Eureka!\" ao descobrir o princípio da impulsão no banho.",
+   "tags": [
+    "grécia",
+    "ciência"
+   ],
+   "people": [
+    "arquimedes"
+   ]
+  },
+  {
+   "id": "china-antiga",
+   "title": "A China imperial",
+   "tier": "explorar",
+   "subtheme": "asia",
+   "year": -221,
+   "desc": "Qin Shi Huang unifica a China e torna-se o primeiro imperador.",
+   "fact": "Foi sepultado com um exército de milhares de soldados de terracota.",
+   "tags": [
+    "china",
+    "império"
+   ],
+   "related": [
+    "muralha-china"
+   ]
+  },
+  {
+   "id": "muralha-china",
+   "title": "A Grande Muralha da China",
+   "tier": "destaque",
+   "subtheme": "asia",
+   "year": -220,
+   "desc": "Uma rede de muralhas construída ao longo de séculos para defesa.",
+   "fact": "Somando todos os troços, ultrapassa os 20 000 km.",
+   "tags": [
+    "china",
+    "monumento"
+   ],
+   "related": [
+    "china-antiga"
+   ]
+  },
+  {
+   "id": "rota-seda",
+   "title": "A Rota da Seda",
+   "tier": "aprofundar",
+   "subtheme": "asia",
+   "year": -130,
+   "desc": "Uma rede de rotas que ligava a China à Europa por comércio e ideias.",
+   "fact": "Por ela viajaram seda, especiarias, religiões e doenças.",
+   "tags": [
+    "comércio",
+    "ásia"
+   ],
+   "related": [
+    "china-antiga"
+   ]
+  },
+  {
+   "id": "engenharia-romana",
+   "title": "Estradas, aquedutos e betão",
+   "tier": "aprofundar",
+   "subtheme": "roma",
+   "year": -100,
+   "desc": "Roma constrói uma rede de estradas e aquedutos que ainda hoje impressiona.",
+   "fact": "O betão romano é tão durável que ainda intriga os engenheiros.",
+   "tags": [
+    "roma",
+    "engenharia"
+   ],
+   "related": [
+    "imperio-romano"
+   ]
+  },
+  {
+   "id": "linhas-nazca",
+   "title": "As linhas de Nazca",
+   "tier": "aprofundar",
+   "subtheme": "americas",
+   "year": -100,
+   "desc": "Enormes desenhos no deserto do Peru, só visíveis do céu.",
+   "fact": "Ainda hoje não há certezas sobre a sua função.",
+   "tags": [
+    "américa",
+    "mistério"
+   ]
+  },
+  {
+   "id": "julio-cesar",
+   "title": "Júlio César",
+   "tier": "explorar",
+   "subtheme": "roma",
+   "year": -44,
+   "desc": "General e ditador cujo assassínio marca o fim da República.",
+   "fact": "O mês de julho tem o seu nome.",
+   "tags": [
+    "roma",
+    "líder"
+   ],
+   "people": [
+    "julio-cesar"
+   ],
+   "related": [
+    "imperio-romano"
+   ]
+  },
+  {
+   "id": "imperio-romano",
+   "title": "O Império Romano",
+   "tier": "destaque",
+   "subtheme": "roma",
+   "year": -27,
+   "desc": "Roma torna-se um império que domina todo o Mediterrâneo.",
+   "fact": "No auge, governava cerca de 70 milhões de pessoas.",
+   "tags": [
+    "roma",
+    "império"
+   ],
+   "related": [
+    "julio-cesar",
+    "queda-roma"
+   ]
+  },
+  {
+   "id": "coliseu",
+   "title": "O Coliseu de Roma",
+   "tier": "aprofundar",
+   "subtheme": "roma",
+   "year": 80,
+   "desc": "Um anfiteatro para 50 mil pessoas, palco de combates de gladiadores.",
+   "fact": "Podia ser inundado para encenar batalhas navais.",
+   "tags": [
+    "roma",
+    "monumento"
+   ],
+   "place": "Roma",
+   "related": [
+    "imperio-romano"
+   ]
+  },
+  {
+   "id": "papel-china",
+   "title": "A invenção do papel",
+   "tier": "aprofundar",
+   "subtheme": "asia",
+   "year": 105,
+   "desc": "A China inventa o papel, muito antes da Europa.",
+   "fact": "Levou mais de mil anos a chegar ao Ocidente.",
+   "tags": [
+    "china",
+    "invenção"
+   ],
+   "related": [
+    "imprensa"
+   ]
+  },
+  {
+   "id": "queda-roma",
+   "title": "A queda de Roma",
+   "tier": "explorar",
+   "subtheme": "roma",
+   "year": 476,
+   "desc": "O Império Romano do Ocidente desmorona-se, abrindo a Idade Média.",
+   "fact": "O Império do Oriente (Bizâncio) sobreviveu mais mil anos.",
+   "tags": [
+    "roma",
+    "queda"
+   ],
+   "related": [
+    "idade-media"
+   ]
+  },
+  {
+   "id": "astecas",
+   "title": "Os Astecas",
+   "tier": "explorar",
+   "subtheme": "americas",
+   "year": 1325,
+   "desc": "Império mexica com a grande capital Tenochtitlán, sobre um lago.",
+   "fact": "Tenochtitlán era maior do que a maioria das cidades europeias da época.",
+   "tags": [
+    "astecas",
+    "américa"
+   ],
+   "related": [
+    "maias"
+   ]
+  },
+  {
+   "id": "incas",
+   "title": "Os Incas e Machu Picchu",
+   "tier": "explorar",
+   "subtheme": "americas",
+   "year": 1438,
+   "desc": "O maior império da América pré-colombiana, nos Andes.",
+   "fact": "Construíram milhares de km de estradas sem usar a roda nem o ferro.",
+   "tags": [
+    "incas",
+    "américa"
+   ],
+   "related": [
+    "maias"
+   ]
+  }
  ]
 }

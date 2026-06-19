@@ -1,25 +1,452 @@
 {
  "theme": "terra",
  "items": [
-  { "id": "formacao-terra", "title": "Formação da Terra", "tier": "destaque", "subtheme": "formacao", "year": -4540000000, "desc": "A Terra forma-se a partir da poeira e rocha que orbitavam o jovem Sol.", "fact": "No início era um inferno de rocha derretida e impactos constantes.", "tags": ["formação", "origem"], "related": ["colisao-theia"] },
-  { "id": "colisao-theia", "title": "A colisão que criou a Lua", "tier": "destaque", "subtheme": "formacao", "year": -4500000000, "desc": "Um planeta do tamanho de Marte choca com a Terra e os destroços formam a Lua.", "fact": "Esse impacto inclinou o eixo da Terra, dando-nos as estações do ano.", "tags": ["lua", "impacto"], "related": ["lua"] },
-  { "id": "agua-terra", "title": "Os oceanos primitivos", "tier": "explorar", "subtheme": "formacao", "year": -4400000000, "desc": "Quando a Terra arrefeceu, o vapor condensou-se e formaram-se os primeiros oceanos.", "fact": "Parte da água pode ter vindo de cometas e asteroides.", "tags": ["água", "oceano"], "related": ["atmosfera-primitiva"] },
-  { "id": "tectonica", "title": "Tectónica de placas", "tier": "destaque", "subtheme": "geologia", "year": 1912, "desc": "A crosta terrestre está dividida em placas que se movem e remodelam os continentes.", "fact": "Proposta por Alfred Wegener em 1912, só foi aceite décadas depois.", "tags": ["geologia", "continentes"], "people": ["alfred-wegener"], "related": ["pangeia"] },
-  { "id": "pangeia", "title": "Pangeia, o supercontinente", "tier": "explorar", "subtheme": "geologia", "year": -300000000, "desc": "Há ~300 milhões de anos toda a terra firme estava unida num só continente.", "fact": "Partiu-se lentamente nos continentes que conhecemos hoje.", "tags": ["geologia", "continentes"], "related": ["tectonica"] },
-  { "id": "vulcoes", "title": "Vulcões", "tier": "explorar", "subtheme": "geologia", "year": -4000000000, "desc": "Aberturas por onde sai rocha derretida do interior da Terra.", "fact": "Erupções gigantes já alteraram o clima de todo o planeta.", "tags": ["geologia", "vulcão"], "related": ["extincao-permiano"] },
-  { "id": "terremotos", "title": "Sismos", "tier": "aprofundar", "subtheme": "geologia", "year": 1935, "desc": "Tremores causados pelo movimento das placas, medidos em escalas de magnitude.", "fact": "A escala de Richter foi criada em 1935 para os comparar.", "tags": ["geologia", "sismo"], "related": ["tectonica"] },
-  { "id": "campo-magnetico", "title": "O campo magnético da Terra", "tier": "explorar", "subtheme": "geologia", "year": 1600, "desc": "O núcleo de ferro líquido cria um campo magnético que nos protege.", "fact": "Os polos magnéticos já se inverteram centenas de vezes na história da Terra.", "tags": ["geologia", "núcleo"], "related": ["vento-solar"] },
-  { "id": "atmosfera-primitiva", "title": "A primeira atmosfera", "tier": "explorar", "subtheme": "atmosfera", "year": -4000000000, "desc": "A atmosfera inicial não tinha oxigénio livre — era tóxica para a vida atual.", "fact": "Sem oxigénio, o céu poderia ter tido uma cor alaranjada.", "tags": ["atmosfera", "origem"], "related": ["grande-oxidacao"] },
-  { "id": "grande-oxidacao", "title": "A Grande Oxidação", "tier": "destaque", "subtheme": "atmosfera", "year": -2400000000, "desc": "Micróbios enchem a atmosfera de oxigénio, transformando o planeta.", "fact": "Foi talvez a maior poluição da história — fatal para muita vida da época.", "tags": ["atmosfera", "oxigénio"], "related": ["cianobacterias"] },
-  { "id": "camada-ozono", "title": "A camada de ozono", "tier": "aprofundar", "subtheme": "atmosfera", "year": -600000000, "desc": "O oxigénio forma uma camada que bloqueia a radiação ultravioleta do Sol.", "fact": "Foi ela que permitiu a vida sair do mar para a terra firme.", "tags": ["atmosfera", "proteção"] },
-  { "id": "correntes-oceanicas", "title": "Oceanos e correntes", "tier": "aprofundar", "subtheme": "atmosfera", "year": 1769, "desc": "As correntes marítimas distribuem calor pelo planeta e regulam o clima.", "fact": "A Corrente do Golfo ajuda a manter a Europa mais amena.", "tags": ["oceano", "clima"] },
-  { "id": "terra-bola-neve", "title": "Terra Bola de Neve", "tier": "explorar", "subtheme": "clima", "year": -650000000, "desc": "Houve épocas em que a Terra terá ficado quase totalmente congelada.", "fact": "O degelo seguinte pode ter ajudado a explosão de vida complexa.", "tags": ["clima", "glaciação"], "related": ["explosao-cambrica"] },
-  { "id": "idades-do-gelo", "title": "Idades do gelo", "tier": "destaque", "subtheme": "clima", "year": -2580000, "desc": "Ciclos em que enormes mantos de gelo cobrem grande parte dos continentes.", "fact": "Na última, há ~20 mil anos, podia atravessar-se a pé entre a Ásia e a América.", "tags": ["clima", "gelo"], "related": ["humana-migracoes"] },
-  { "id": "ciclos-milankovitch", "title": "Porque vêm as idades do gelo", "tier": "aprofundar", "subtheme": "clima", "year": 1920, "desc": "Pequenas variações na órbita e inclinação da Terra controlam o clima a longo prazo.", "fact": "Foram calculadas por Milankovitch à mão, ao longo de anos.", "tags": ["clima", "órbita"], "related": ["idades-do-gelo"] },
-  { "id": "holoceno", "title": "Um clima estável: o Holoceno", "tier": "explorar", "subtheme": "clima", "year": -11700, "desc": "Os últimos ~12 mil anos de clima ameno que permitiram a agricultura e as cidades.", "fact": "Toda a civilização humana cabe neste curto período estável.", "tags": ["clima", "civilização"], "related": ["agricultura"] },
-  { "id": "extincao-ordoviciana", "title": "Extinção do Ordovícico", "tier": "aprofundar", "subtheme": "extincoes", "year": -445000000, "desc": "A primeira das cinco grandes extinções em massa, ligada a uma glaciação.", "fact": "Desapareceram cerca de 85% das espécies marinhas.", "tags": ["extinção", "marinha"] },
-  { "id": "extincao-permiano", "title": "A Grande Mortandade (Permiano)", "tier": "destaque", "subtheme": "extincoes", "year": -252000000, "desc": "A maior extinção de sempre eliminou ~90% das espécies.", "fact": "Foi provavelmente causada por erupções vulcânicas gigantescas na Sibéria.", "tags": ["extinção", "vulcanismo"], "related": ["vulcoes", "triasico"] },
-  { "id": "extincao-dinos", "title": "Extinção dos dinossauros", "tier": "destaque", "subtheme": "extincoes", "year": -66000000, "desc": "Um asteroide gigante põe fim à era dos dinossauros.", "fact": "O impacto em Chicxulub, no México, deixou uma cratera de ~180 km.", "tags": ["extinção", "asteroide"], "related": ["extincao-kpg", "chicxulub"] },
-  { "id": "extincao-atual", "title": "A sexta extinção?", "tier": "explorar", "subtheme": "extincoes", "year": 2000, "desc": "Muitos cientistas alertam que a atividade humana está a causar uma extinção em massa.", "fact": "As espécies estão a desaparecer a um ritmo dezenas de vezes acima do normal.", "tags": ["extinção", "humano"], "related": ["conservacao-especies"] }
+  {
+   "id": "formacao-terra",
+   "title": "Formação da Terra",
+   "tier": "destaque",
+   "subtheme": "formacao",
+   "year": -4540000000,
+   "desc": "A Terra forma-se a partir da poeira e rocha que orbitavam o jovem Sol.",
+   "fact": "No início era um inferno de rocha derretida e impactos constantes.",
+   "tags": [
+    "formação",
+    "origem"
+   ],
+   "related": [
+    "colisao-theia"
+   ]
+  },
+  {
+   "id": "colisao-theia",
+   "title": "A colisão que criou a Lua",
+   "tier": "destaque",
+   "subtheme": "formacao",
+   "year": -4500000000,
+   "desc": "Um planeta do tamanho de Marte choca com a Terra e os destroços formam a Lua.",
+   "fact": "Esse impacto inclinou o eixo da Terra, dando-nos as estações do ano.",
+   "tags": [
+    "lua",
+    "impacto"
+   ],
+   "related": [
+    "lua"
+   ]
+  },
+  {
+   "id": "agua-terra",
+   "title": "Os oceanos primitivos",
+   "tier": "explorar",
+   "subtheme": "formacao",
+   "year": -4400000000,
+   "desc": "Quando a Terra arrefeceu, o vapor condensou-se e formaram-se os primeiros oceanos.",
+   "fact": "Parte da água pode ter vindo de cometas e asteroides.",
+   "tags": [
+    "água",
+    "oceano"
+   ],
+   "related": [
+    "atmosfera-primitiva"
+   ]
+  },
+  {
+   "id": "vulcoes",
+   "title": "Vulcões",
+   "tier": "explorar",
+   "subtheme": "geologia",
+   "year": -4000000000,
+   "desc": "Aberturas por onde sai rocha derretida do interior da Terra.",
+   "fact": "Erupções gigantes já alteraram o clima de todo o planeta.",
+   "tags": [
+    "geologia",
+    "vulcão"
+   ],
+   "related": [
+    "extincao-permiano"
+   ]
+  },
+  {
+   "id": "atmosfera-primitiva",
+   "title": "A primeira atmosfera",
+   "tier": "explorar",
+   "subtheme": "atmosfera",
+   "year": -4000000000,
+   "desc": "A atmosfera inicial não tinha oxigénio livre — era tóxica para a vida atual.",
+   "fact": "Sem oxigénio, o céu poderia ter tido uma cor alaranjada.",
+   "tags": [
+    "atmosfera",
+    "origem"
+   ],
+   "related": [
+    "grande-oxidacao"
+   ]
+  },
+  {
+   "id": "grande-oxidacao",
+   "title": "A Grande Oxidação",
+   "tier": "destaque",
+   "subtheme": "atmosfera",
+   "year": -2400000000,
+   "desc": "Micróbios enchem a atmosfera de oxigénio, transformando o planeta.",
+   "fact": "Foi talvez a maior poluição da história — fatal para muita vida da época.",
+   "tags": [
+    "atmosfera",
+    "oxigénio"
+   ],
+   "related": [
+    "cianobacterias"
+   ]
+  },
+  {
+   "id": "grande-oxidacao-detalhe",
+   "title": "As faixas de ferro",
+   "tier": "aprofundar",
+   "subtheme": "geologia",
+   "year": -2400000000,
+   "desc": "Camadas de rocha que registam o aparecimento do oxigénio nos oceanos.",
+   "fact": "Quase todo o ferro que usamos vem destes depósitos antigos.",
+   "tags": [
+    "geologia",
+    "oxigénio"
+   ],
+   "related": [
+    "grande-oxidacao"
+   ]
+  },
+  {
+   "id": "terra-bola-neve",
+   "title": "Terra Bola de Neve",
+   "tier": "explorar",
+   "subtheme": "clima",
+   "year": -650000000,
+   "desc": "Houve épocas em que a Terra terá ficado quase totalmente congelada.",
+   "fact": "O degelo seguinte pode ter ajudado a explosão de vida complexa.",
+   "tags": [
+    "clima",
+    "glaciação"
+   ],
+   "related": [
+    "explosao-cambrica"
+   ]
+  },
+  {
+   "id": "camada-ozono",
+   "title": "A camada de ozono",
+   "tier": "aprofundar",
+   "subtheme": "atmosfera",
+   "year": -600000000,
+   "desc": "O oxigénio forma uma camada que bloqueia a radiação ultravioleta do Sol.",
+   "fact": "Foi ela que permitiu a vida sair do mar para a terra firme.",
+   "tags": [
+    "atmosfera",
+    "proteção"
+   ]
+  },
+  {
+   "id": "extincao-ordoviciana",
+   "title": "Extinção do Ordovícico",
+   "tier": "aprofundar",
+   "subtheme": "extincoes",
+   "year": -445000000,
+   "desc": "A primeira das cinco grandes extinções em massa, ligada a uma glaciação.",
+   "fact": "Desapareceram cerca de 85% das espécies marinhas.",
+   "tags": [
+    "extinção",
+    "marinha"
+   ]
+  },
+  {
+   "id": "pangeia",
+   "title": "Pangeia, o supercontinente",
+   "tier": "explorar",
+   "subtheme": "geologia",
+   "year": -300000000,
+   "desc": "Há ~300 milhões de anos toda a terra firme estava unida num só continente.",
+   "fact": "Partiu-se lentamente nos continentes que conhecemos hoje.",
+   "tags": [
+    "geologia",
+    "continentes"
+   ],
+   "related": [
+    "tectonica"
+   ]
+  },
+  {
+   "id": "extincao-permiano",
+   "title": "A Grande Mortandade (Permiano)",
+   "tier": "destaque",
+   "subtheme": "extincoes",
+   "year": -252000000,
+   "desc": "A maior extinção de sempre eliminou ~90% das espécies.",
+   "fact": "Foi provavelmente causada por erupções vulcânicas gigantescas na Sibéria.",
+   "tags": [
+    "extinção",
+    "vulcanismo"
+   ],
+   "related": [
+    "vulcoes",
+    "triasico"
+   ]
+  },
+  {
+   "id": "extincao-dinos",
+   "title": "Extinção dos dinossauros",
+   "tier": "destaque",
+   "subtheme": "extincoes",
+   "year": -66000000,
+   "desc": "Um asteroide gigante põe fim à era dos dinossauros.",
+   "fact": "O impacto em Chicxulub, no México, deixou uma cratera de ~180 km.",
+   "tags": [
+    "extinção",
+    "asteroide"
+   ],
+   "related": [
+    "extincao-kpg",
+    "chicxulub"
+   ]
+  },
+  {
+   "id": "idades-do-gelo",
+   "title": "Idades do gelo",
+   "tier": "destaque",
+   "subtheme": "clima",
+   "year": -2580000,
+   "desc": "Ciclos em que enormes mantos de gelo cobrem grande parte dos continentes.",
+   "fact": "Na última, há ~20 mil anos, podia atravessar-se a pé entre a Ásia e a América.",
+   "tags": [
+    "clima",
+    "gelo"
+   ],
+   "related": [
+    "humana-migracoes"
+   ]
+  },
+  {
+   "id": "supererupcao-toba",
+   "title": "A supererupção de Toba",
+   "tier": "aprofundar",
+   "subtheme": "extincoes",
+   "year": -74000,
+   "desc": "Um vulcão gigante na Indonésia pode ter quase extinguido a humanidade.",
+   "fact": "Há quem acredite que reduziu os humanos a poucos milhares.",
+   "tags": [
+    "vulcão",
+    "catástrofe"
+   ],
+   "related": [
+    "vulcoes"
+   ]
+  },
+  {
+   "id": "holoceno",
+   "title": "Um clima estável: o Holoceno",
+   "tier": "explorar",
+   "subtheme": "clima",
+   "year": -11700,
+   "desc": "Os últimos ~12 mil anos de clima ameno que permitiram a agricultura e as cidades.",
+   "fact": "Toda a civilização humana cabe neste curto período estável.",
+   "tags": [
+    "clima",
+    "civilização"
+   ],
+   "related": [
+    "agricultura"
+   ]
+  },
+  {
+   "id": "campo-magnetico",
+   "title": "O campo magnético da Terra",
+   "tier": "explorar",
+   "subtheme": "geologia",
+   "year": 1600,
+   "desc": "O núcleo de ferro líquido cria um campo magnético que nos protege.",
+   "fact": "Os polos magnéticos já se inverteram centenas de vezes na história da Terra.",
+   "tags": [
+    "geologia",
+    "núcleo"
+   ],
+   "related": [
+    "vento-solar"
+   ]
+  },
+  {
+   "id": "correntes-oceanicas",
+   "title": "Oceanos e correntes",
+   "tier": "aprofundar",
+   "subtheme": "atmosfera",
+   "year": 1769,
+   "desc": "As correntes marítimas distribuem calor pelo planeta e regulam o clima.",
+   "fact": "A Corrente do Golfo ajuda a manter a Europa mais amena.",
+   "tags": [
+    "oceano",
+    "clima"
+   ]
+  },
+  {
+   "id": "tectonica",
+   "title": "Tectónica de placas",
+   "tier": "destaque",
+   "subtheme": "geologia",
+   "year": 1912,
+   "desc": "A crosta terrestre está dividida em placas que se movem e remodelam os continentes.",
+   "fact": "Proposta por Alfred Wegener em 1912, só foi aceite décadas depois.",
+   "tags": [
+    "geologia",
+    "continentes"
+   ],
+   "people": [
+    "alfred-wegener"
+   ],
+   "related": [
+    "pangeia"
+   ]
+  },
+  {
+   "id": "ciclos-milankovitch",
+   "title": "Porque vêm as idades do gelo",
+   "tier": "aprofundar",
+   "subtheme": "clima",
+   "year": 1920,
+   "desc": "Pequenas variações na órbita e inclinação da Terra controlam o clima a longo prazo.",
+   "fact": "Foram calculadas por Milankovitch à mão, ao longo de anos.",
+   "tags": [
+    "clima",
+    "órbita"
+   ],
+   "related": [
+    "idades-do-gelo"
+   ]
+  },
+  {
+   "id": "terremotos",
+   "title": "Sismos",
+   "tier": "aprofundar",
+   "subtheme": "geologia",
+   "year": 1935,
+   "desc": "Tremores causados pelo movimento das placas, medidos em escalas de magnitude.",
+   "fact": "A escala de Richter foi criada em 1935 para os comparar.",
+   "tags": [
+    "geologia",
+    "sismo"
+   ],
+   "related": [
+    "tectonica"
+   ]
+  },
+  {
+   "id": "nucleo-lehmann",
+   "title": "A descoberta do núcleo interno",
+   "tier": "aprofundar",
+   "subtheme": "geologia",
+   "year": 1936,
+   "desc": "Inge Lehmann descobre, pelas ondas sísmicas, que a Terra tem um núcleo sólido.",
+   "fact": "Conseguiu-o sem nunca ver o interior do planeta.",
+   "tags": [
+    "geologia",
+    "núcleo"
+   ],
+   "people": [
+    "inge-lehmann"
+   ],
+   "related": [
+    "campo-magnetico"
+   ]
+  },
+  {
+   "id": "correntes-jato",
+   "title": "As correntes de jato",
+   "tier": "aprofundar",
+   "subtheme": "atmosfera",
+   "year": 1939,
+   "desc": "Rios de vento a grande altitude que governam o tempo e as rotas dos aviões.",
+   "fact": "Voar com elas a favor poupa muito combustível e tempo.",
+   "tags": [
+    "atmosfera",
+    "vento"
+   ],
+   "related": [
+    "correntes-oceanicas"
+   ]
+  },
+  {
+   "id": "dorsais-oceanicas",
+   "title": "As dorsais oceânicas",
+   "tier": "aprofundar",
+   "subtheme": "geologia",
+   "year": 1960,
+   "desc": "Cadeias de montanhas no fundo do mar provam que as placas se afastam.",
+   "fact": "Foi a prova que finalmente fez aceitar a tectónica de placas.",
+   "tags": [
+    "geologia",
+    "oceano"
+   ],
+   "related": [
+    "tectonica"
+   ]
+  },
+  {
+   "id": "sismo-valdivia",
+   "title": "O maior sismo registado",
+   "tier": "aprofundar",
+   "subtheme": "geologia",
+   "year": 1960,
+   "desc": "O sismo de Valdivia, no Chile, atingiu magnitude 9,5.",
+   "fact": "Provocou um tsunami que chegou ao Japão um dia depois.",
+   "tags": [
+    "geologia",
+    "sismo"
+   ],
+   "related": [
+    "terremotos"
+   ]
+  },
+  {
+   "id": "inversoes-magneticas",
+   "title": "Inversões do campo magnético",
+   "tier": "aprofundar",
+   "subtheme": "geologia",
+   "year": 1963,
+   "desc": "Faixas magnéticas no fundo do mar registam quando os polos se inverteram.",
+   "fact": "O Norte magnético já foi o Sul muitas vezes na história da Terra.",
+   "tags": [
+    "geologia",
+    "magnetismo"
+   ],
+   "related": [
+    "campo-magnetico"
+   ]
+  },
+  {
+   "id": "extincao-atual",
+   "title": "A sexta extinção?",
+   "tier": "explorar",
+   "subtheme": "extincoes",
+   "year": 2000,
+   "desc": "Muitos cientistas alertam que a atividade humana está a causar uma extinção em massa.",
+   "fact": "As espécies estão a desaparecer a um ritmo dezenas de vezes acima do normal.",
+   "tags": [
+    "extinção",
+    "humano"
+   ],
+   "related": [
+    "conservacao-especies"
+   ]
+  },
+  {
+   "id": "permafrost",
+   "title": "O permafrost",
+   "tier": "aprofundar",
+   "subtheme": "clima",
+   "year": 2000,
+   "desc": "Solo permanentemente gelado que guarda enormes quantidades de carbono.",
+   "fact": "Ao derreter, liberta gases que aceleram o aquecimento global.",
+   "tags": [
+    "clima",
+    "gelo"
+   ],
+   "related": [
+    "aquecimento-global"
+   ]
+  }
  ]
 }
