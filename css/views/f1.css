@@ -281,8 +281,20 @@
 }
 
 /* ── stats dashboard ── */
-.f1-stats { max-width: 960px; margin: 0 auto; }
+.f1-stats { max-width: 960px; margin: 0 auto; position: relative; }
+.f1-stats-head { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-bottom: .7rem; }
+.f1-year-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+.f1-year-sel { min-width: 6rem; }
 .f1-stats-sub { font-size: .74rem; color: var(--muted); text-align: center; margin-bottom: .8rem; }
+
+/* team-colour marker (logos are trademarked — colours aren't) */
+.f1-team-dot { display: inline-block; width: 4px; height: 1.05em; border-radius: 2px; vertical-align: -.16em;
+  margin-right: .5em; flex-shrink: 0; }
+
+/* per-column hover description */
+.f1-th-pop { position: absolute; z-index: 45; max-width: 220px; background: var(--card-solid);
+  border: 1px solid var(--border2); border-radius: var(--radius-sm); box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  padding: .4rem .6rem; font-size: .72rem; color: var(--text); pointer-events: none; line-height: 1.3; }
 .f1-hi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .55rem; margin-bottom: 1rem; }
 .f1-hi { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .55rem .7rem; }
 .f1-hi-lbl { font-size: .58rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }

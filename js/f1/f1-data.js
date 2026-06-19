@@ -206,44 +206,55 @@ const F1Data = (function () {
   }
 
   /* Computed season aggregates (wins/podiums/poles/FL/DNF/avg per driver +
-     constructors). Cached by the Action; a best-effort live fallback paginates
-     results + qualifying and computes the same shape in the browser. */
-  async function seasonStats() {
-    return _staticOr('seasonStats', async () => {
-      const pageAll = async kind => {
-        const first = await jol(`/current/${kind}.json?limit=100&offset=0`);
-        const total = +first.MRData.total, races = [...(first.MRData.RaceTable.Races || [])];
-        for (let off = 100; off < total; off += 100) {
-          const pg = await jol(`/current/${kind}.json?limit=100&offset=${off}`);
-          races.push(...(pg.MRData.RaceTable.Races || []));
-        }
-        return races;
-      };
-      const resRaces = await pageAll('results');
-      let qRaces = []; try { qRaces = await pageAll('qualifying'); } catch {}
-      const classified = pt => /^\d+$/.test(pt);
-      const poles = {};
-      for (const r of qRaces) for (const q of (r.QualifyingResults || [])) if (q.position === '1') poles[q.Driver.driverId] = (poles[q.Driver.driverId] || 0) + 1;
-      const D = {}, C = {}; let rounds = 0;
-      for (const race of resRaces) {
-        rounds = Math.max(rounds, +race.round || 0);
-        for (const r of (race.Results || [])) {
-          const id = r.Driver.driverId, pos = +r.position, cl = classified(r.positionText);
-          const d = D[id] || (D[id] = { id, code: r.Driver.code || r.Driver.familyName.slice(0,3).toUpperCase(), given: r.Driver.givenName, family: r.Driver.familyName, nat: r.Driver.nationality, team: r.Constructor.name, points: 0, wins: 0, podiums: 0, fl: 0, dnf: 0, top10: 0, races: 0, best: 99, _s: 0, _n: 0 });
-          d.team = r.Constructor.name; d.points += +r.points || 0; d.races += 1;
-          if (cl) { d._s += pos; d._n += 1; if (pos < d.best) d.best = pos; if (pos === 1) d.wins++; if (pos <= 3) d.podiums++; if (pos <= 10) d.top10++; } else d.dnf++;
-          if (r.FastestLap?.rank === '1') d.fl++;
-          const cid = r.Constructor.constructorId;
-          const c = C[cid] || (C[cid] = { id: cid, name: r.Constructor.name, nat: r.Constructor.nationality, points: 0, wins: 0, podiums: 0, best: 99 });
-          c.points += +r.points || 0;
-          if (cl) { if (pos < c.best) c.best = pos; if (pos === 1) c.wins++; if (pos <= 3) c.podiums++; }
-        }
+     constructors) for ANY year. Cached by the Action for the current season;
+     other years are paginated + computed live in the browser on demand. */
+  function _computeStats(resRaces, qRaces) {
+    const classified = pt => /^\d+$/.test(pt);
+    const poles = {};
+    for (const r of (qRaces || [])) for (const q of (r.QualifyingResults || [])) if (q.position === '1') poles[q.Driver.driverId] = (poles[q.Driver.driverId] || 0) + 1;
+    const D = {}, C = {}; let rounds = 0;
+    for (const race of (resRaces || [])) {
+      rounds = Math.max(rounds, +race.round || 0);
+      for (const r of (race.Results || [])) {
+        const id = r.Driver.driverId, pos = +r.position, cl = classified(r.positionText);
+        const d = D[id] || (D[id] = { id, code: r.Driver.code || r.Driver.familyName.slice(0, 3).toUpperCase(), given: r.Driver.givenName, family: r.Driver.familyName, nat: r.Driver.nationality, team: r.Constructor.name, points: 0, wins: 0, podiums: 0, fl: 0, dnf: 0, top10: 0, races: 0, best: 99, _s: 0, _n: 0 });
+        d.team = r.Constructor.name; d.points += +r.points || 0; d.races += 1;
+        if (cl) { d._s += pos; d._n += 1; if (pos < d.best) d.best = pos; if (pos === 1) d.wins++; if (pos <= 3) d.podiums++; if (pos <= 10) d.top10++; } else d.dnf++;
+        if (r.FastestLap?.rank === '1') d.fl++;
+        const cid = r.Constructor.constructorId;
+        const c = C[cid] || (C[cid] = { id: cid, name: r.Constructor.name, nat: r.Constructor.nationality, points: 0, wins: 0, podiums: 0, best: 99 });
+        c.points += +r.points || 0;
+        if (cl) { if (pos < c.best) c.best = pos; if (pos === 1) c.wins++; if (pos <= 3) c.podiums++; }
       }
-      const drivers = Object.values(D).map(d => ({ id: d.id, code: d.code, given: d.given, family: d.family, nat: d.nat, team: d.team, points: d.points, wins: d.wins, podiums: d.podiums, poles: poles[d.id] || 0, fl: d.fl, dnf: d.dnf, top10: d.top10, races: d.races, best: d.best === 99 ? null : d.best, avg: d._n ? +(d._s / d._n).toFixed(1) : null }))
-        .sort((a, b) => b.points - a.points || b.wins - a.wins);
-      const constructors = Object.values(C).map(c => ({ ...c, best: c.best === 99 ? null : c.best })).sort((a, b) => b.points - a.points || b.wins - a.wins);
-      return { rounds, drivers, constructors };
-    });
+    }
+    const drivers = Object.values(D).map(d => ({ id: d.id, code: d.code, given: d.given, family: d.family, nat: d.nat, team: d.team, points: d.points, wins: d.wins, podiums: d.podiums, poles: poles[d.id] || 0, fl: d.fl, dnf: d.dnf, top10: d.top10, races: d.races, best: d.best === 99 ? null : d.best, avg: d._n ? +(d._s / d._n).toFixed(1) : null }))
+      .sort((a, b) => b.points - a.points || b.wins - a.wins);
+    const constructors = Object.values(C).map(c => ({ ...c, best: c.best === 99 ? null : c.best })).sort((a, b) => b.points - a.points || b.wins - a.wins);
+    return { rounds, drivers, constructors };
+  }
+  async function _pageAll(scope, kind) {
+    const first = await jol(`/${scope}/${kind}.json?limit=100&offset=0`);
+    const total = +first.MRData.total, races = [...(first.MRData.RaceTable.Races || [])];
+    for (let off = 100; off < total; off += 100) {
+      const pg = await jol(`/${scope}/${kind}.json?limit=100&offset=${off}`);
+      races.push(...(pg.MRData.RaceTable.Races || []));
+    }
+    return races;
+  }
+  async function _statsLive(scope) {
+    const resRaces = await _pageAll(scope, 'results');
+    let qRaces = []; try { qRaces = await _pageAll(scope, 'qualifying'); } catch {}
+    return _computeStats(resRaces, qRaces);
+  }
+  async function seasonStats() {
+    return _staticOr('seasonStats', () => _statsLive('current'));
+  }
+  /* Stats for a specific year — current season comes from cache, past years are
+     computed live (paginated). Year strings are used directly as the Ergast scope. */
+  async function seasonStatsFor(year) {
+    const cur = new Date().getFullYear();
+    if (!year || +year === cur) return seasonStats();
+    return _statsLive(String(year));
   }
 
   /* From the schedule, the next upcoming race and the most recent past one. */
@@ -262,7 +273,7 @@ const F1Data = (function () {
     latestSession, latestMeeting, sessionsForMeeting, racesOfYear,
     drivers, positions, intervals, weather, location, laps,
     firstLapStart, stints, raceControl, intervalsWindow,
-    latestOrder, latestIntervals, circuitsMeta, allCircuits, seasonStats,
+    latestOrder, latestIntervals, circuitsMeta, allCircuits, seasonStats, seasonStatsFor,
     driverStandings, constructorStandings, schedule, lastResults, splitSchedule,
   };
 })();

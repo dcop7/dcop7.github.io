@@ -49,6 +49,20 @@ const F1Page = (function () {
     return code ? `<img class="f1-flag${cls ? ' ' + cls : ''}" src="data/flags/${code}.svg" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
   }
 
+  /* Official team colour (constructor name → hex). Team LOGOS are trademarked,
+     so each driver is marked with the team's signature colour (colours aren't
+     copyrightable) instead. Best-effort across modern + historic constructors. */
+  const TEAM_COL = [
+    [/ferrari/i, '#E8002D'], [/mercedes/i, '#00D2BE'], [/red ?bull/i, '#3671C6'], [/mclaren/i, '#FF8000'],
+    [/aston/i, '#229971'], [/alpine/i, '#0093CC'], [/williams/i, '#64C4FF'], [/haas/i, '#B6BABD'],
+    [/audi/i, '#BB0A30'], [/cadillac/i, '#C9A24B'], [/(racing ?bull|alphatauri|toro ?rosso|\brb\b)/i, '#6692FF'],
+    [/sauber|kick/i, '#52E252'], [/force ?india|racing ?point/i, '#F596C8'], [/renault/i, '#FFF500'],
+    [/lotus/i, '#FFB800'], [/jordan/i, '#FFA100'], [/brawn/i, '#B6FF00'], [/benetton/i, '#00A14B'],
+    [/jaguar/i, '#0B5C2E'], [/\bbmw\b/i, '#005195'], [/toyota|honda/i, '#CC0000'], [/tyrrell/i, '#1E40AF'],
+  ];
+  function teamColour(name) { const s = String(name || ''); for (const [re, c] of TEAM_COL) if (re.test(s)) return c; return '#9aa3b2'; }
+  const teamDot = name => `<span class="f1-team-dot" style="background:${teamColour(name)}" title="${esc(name)}"></span>`;
+
   /* Season race sessions (OpenF1) — used for the replay race picker. */
   async function seasonRaces() {
     const yr = new Date().getFullYear();
@@ -894,6 +908,7 @@ const F1Page = (function () {
       const drivers = (ds || []).map(s => `
         <div class="f1-standing">
           <span class="f1-pos-p">${s.position}</span>
+          ${teamDot(s.Constructors?.[0]?.name || '')}
           <span class="f1-st-name">${esc(s.Driver.givenName)} <b>${esc(s.Driver.familyName)}</b></span>
           <span class="f1-st-team">${esc(s.Constructors?.[0]?.name || '')}</span>
           <span class="f1-st-pts">${s.points}</span>
@@ -901,6 +916,7 @@ const F1Page = (function () {
       const cons = (cs || []).map(s => `
         <div class="f1-standing">
           <span class="f1-pos-p">${s.position}</span>
+          ${teamDot(s.Constructor.name)}
           <span class="f1-st-name"><b>${esc(s.Constructor.name)}</b></span>
           <span class="f1-st-pts">${s.points}</span>
         </div>`).join('');
@@ -931,65 +947,94 @@ const F1Page = (function () {
 
   /* ════════════════════════════ STATS ════════════════════════════
      Rich season dashboard from computed aggregates (wins/podiums/poles/FL/
-     DNF/avg per driver + constructors), with a sortable table. Falls back to
-     the standings view if the aggregates aren't available. */
+     DNF/avg per driver + constructors), with a year picker, sortable table,
+     team-colour markers and per-column hover descriptions. Current season is
+     served from cache; past years are computed live on demand. */
+  const STAT_COLS = [
+    { k: 'points', en: 'Pts', pt: 'Pts', de: 'Championship points', dp: 'Pontos no campeonato' },
+    { k: 'wins', en: 'Wins', pt: 'Vit', de: 'Race wins', dp: 'Vitórias em corrida' },
+    { k: 'podiums', en: 'Pod', pt: 'Pód', de: 'Podium finishes (top 3)', dp: 'Pódios (top 3)' },
+    { k: 'poles', en: 'Pole', pt: 'Pole', de: 'Pole positions — fastest in qualifying', dp: 'Poles — 1.º na qualificação' },
+    { k: 'fl', en: 'FL', pt: 'VR', de: 'Fastest laps set in a race', dp: 'Voltas mais rápidas em corrida' },
+    { k: 'top10', en: 'Top10', pt: 'Top10', de: 'Top-10 finishes (points-paying)', dp: 'Chegadas no top 10 (zona de pontos)' },
+    { k: 'best', en: 'Best', pt: 'Melhor', de: 'Best finishing position of the year', dp: 'Melhor posição final do ano' },
+    { k: 'avg', en: 'Avg', pt: 'Média', de: 'Average finishing position', dp: 'Posição final média' },
+    { k: 'dnf', en: 'DNF', pt: 'Aban', de: 'Did Not Finish — retirements', dp: 'Abandonos — não terminou a corrida' },
+  ];
+  const STAT_ASC = { best: 1, avg: 1 };
+
   async function renderStats(body) {
-    let st = null;
-    try { st = await F1Data.seasonStats(); } catch {}
-    if (!st || !(st.drivers || []).length) return renderStatsFallback(body);
-
-    const D = st.drivers, C = st.constructors || [];
-    const yr = new Date().getFullYear();
-    const maxPts = Math.max(1, D[0].points);
-    const leaderBy = key => D.reduce((a, b) => (a == null || b[key] > a[key]) ? b : a, null);
-    const leader = D[0], mw = leaderBy('wins'), mp = leaderBy('poles'), mpod = leaderBy('podiums'), mfl = leaderBy('fl');
-    const hi = (lbl, d, val, emoji) => (d && val > 0) ? `
-      <div class="f1-hi">
-        <div class="f1-hi-lbl">${emoji} ${lbl}</div>
-        <div class="f1-hi-name">${esc(d.given)} <b>${esc(d.family)}</b></div>
-        <div class="f1-hi-val">${val}</div>
-      </div>` : '';
-
-    const cols = [
-      { k: 'points', en: 'Pts', pt: 'Pts' }, { k: 'wins', en: 'Wins', pt: 'Vit' },
-      { k: 'podiums', en: 'Pod', pt: 'Pód' }, { k: 'poles', en: 'Pole', pt: 'Pole' },
-      { k: 'fl', en: 'FL', pt: 'VR' }, { k: 'top10', en: 'Top10', pt: 'Top10' },
-      { k: 'best', en: 'Best', pt: 'Melhor' }, { k: 'avg', en: 'Avg', pt: 'Média' },
-      { k: 'dnf', en: 'DNF', pt: 'Aban' },
-    ];
-    const ASC = { best: 1, avg: 1 };
-    function rowsHTML(sortKey) {
-      const asc = !!ASC[sortKey];
-      const arr = D.slice().sort((a, b) => {
-        let av = a[sortKey], bv = b[sortKey];
-        if (av == null) return 1; if (bv == null) return -1;
-        return asc ? av - bv : bv - av;
-      });
-      const cell = (v, dash) => v || (dash ? '—' : '');
-      return arr.map((d, i) => `
-        <tr>
-          <td class="f1-stat-pos">${i + 1}</td>
-          <td class="f1-stat-drv"><b>${esc(d.code)}</b><span>${esc(d.given)} ${esc(d.family)}</span></td>
-          <td class="f1-stat-team">${esc(d.team)}</td>
-          <td class="f1-stat-pts"><b>${d.points}</b><span class="f1-ptsbar"><i style="width:${(d.points / maxPts * 100).toFixed(1)}%"></i></span></td>
-          <td>${cell(d.wins)}</td><td>${cell(d.podiums)}</td><td>${cell(d.poles)}</td><td>${cell(d.fl)}</td>
-          <td>${cell(d.top10)}</td><td>${d.best ?? '—'}</td><td>${d.avg ?? '—'}</td><td class="f1-stat-dnf">${cell(d.dnf)}</td>
-        </tr>`).join('');
-    }
-
-    const maxCpts = Math.max(1, (C[0] || {}).points || 1);
-    const consHTML = C.map((c, i) => `
-      <div class="f1-cbar">
-        <span class="f1-cbar-pos">${i + 1}</span>
-        <span class="f1-cbar-name">${esc(c.name)}</span>
-        <span class="f1-cbar-track"><i style="width:${(c.points / maxCpts * 100).toFixed(1)}%"></i></span>
-        <span class="f1-cbar-pts">${c.points}</span>
-        <span class="f1-cbar-sub">${c.wins} ${_t('win', 'vit')}${c.wins === 1 ? '' : (_lang() === 'en' ? 's' : '')} · ${c.podiums} ${_t('pod', 'pód')}</span>
-      </div>`).join('');
-
+    const cur = new Date().getFullYear();
+    const years = []; for (let y = cur; y >= 1950; y--) years.push(y);
     body.innerHTML = `
       <div class="f1-stats">
-        <div class="f1-stats-sub">${_t('Season', 'Época')} ${yr} · ${st.rounds} ${_t(st.rounds === 1 ? 'round' : 'rounds', 'rondas')} ${_t('completed', 'disputadas')}</div>
+        <div class="f1-stats-head">
+          <span class="f1-year-lbl">${_t('Season', 'Época')}</span>
+          <select class="f1-select f1-year-sel" id="f1-year" aria-label="${_t('Choose season', 'Escolher época')}">
+            ${years.map(y => `<option value="${y}">${y}</option>`).join('')}
+          </select>
+        </div>
+        <div id="f1-stats-body">${loading()}</div>
+        <div class="f1-th-pop" id="f1-th-pop" hidden></div>
+      </div>`;
+    const sel = body.querySelector('#f1-year');
+    const host = body.querySelector('#f1-stats-body');
+    const thPop = body.querySelector('#f1-th-pop');
+    const statsRoot = body.querySelector('.f1-stats');
+    sel.addEventListener('change', () => paint(+sel.value));
+    paint(cur);
+
+    async function paint(year) {
+      host.innerHTML = loading(_t('Loading season…', 'A carregar época…'));
+      let st = null;
+      try { st = await F1Data.seasonStatsFor(year); } catch {}
+      if (!st || !(st.drivers || []).length) {
+        if (year === cur) return renderStatsFallback(host);
+        host.innerHTML = err(_t('No data for this season yet.', 'Ainda sem dados para esta época.'));
+        return;
+      }
+      const D = st.drivers, C = st.constructors || [];
+      const maxPts = Math.max(1, D[0].points);
+      const leaderBy = key => D.reduce((a, b) => (a == null || b[key] > a[key]) ? b : a, null);
+      const leader = D[0], mw = leaderBy('wins'), mp = leaderBy('poles'), mpod = leaderBy('podiums'), mfl = leaderBy('fl');
+      const hi = (lbl, d, val, emoji) => (d && val > 0) ? `
+        <div class="f1-hi">
+          <div class="f1-hi-lbl">${emoji} ${lbl}</div>
+          <div class="f1-hi-name">${teamDot(d.team)}${esc(d.given)} <b>${esc(d.family)}</b></div>
+          <div class="f1-hi-val">${val}</div>
+        </div>` : '';
+
+      function rowsHTML(sortKey) {
+        const asc = !!STAT_ASC[sortKey];
+        const arr = D.slice().sort((a, b) => {
+          let av = a[sortKey], bv = b[sortKey];
+          if (av == null) return 1; if (bv == null) return -1;
+          return asc ? av - bv : bv - av;
+        });
+        const cell = v => v || '';
+        return arr.map((d, i) => `
+          <tr>
+            <td class="f1-stat-pos">${i + 1}</td>
+            <td class="f1-stat-drv">${teamDot(d.team)}<b>${esc(d.code)}</b><span>${esc(d.given)} ${esc(d.family)}</span></td>
+            <td class="f1-stat-team">${esc(d.team)}</td>
+            <td class="f1-stat-pts"><b>${d.points}</b><span class="f1-ptsbar"><i style="width:${(d.points / maxPts * 100).toFixed(1)}%"></i></span></td>
+            <td>${cell(d.wins)}</td><td>${cell(d.podiums)}</td><td>${cell(d.poles)}</td><td>${cell(d.fl)}</td>
+            <td>${cell(d.top10)}</td><td>${d.best ?? '—'}</td><td>${d.avg ?? '—'}</td><td class="f1-stat-dnf">${cell(d.dnf)}</td>
+          </tr>`).join('');
+      }
+
+      const maxCpts = Math.max(1, (C[0] || {}).points || 1);
+      const consHTML = C.map((c, i) => `
+        <div class="f1-cbar">
+          <span class="f1-cbar-pos">${i + 1}</span>
+          <span class="f1-cbar-name">${teamDot(c.name)}${esc(c.name)}</span>
+          <span class="f1-cbar-track"><i style="width:${(c.points / maxCpts * 100).toFixed(1)}%"></i></span>
+          <span class="f1-cbar-pts">${c.points}</span>
+          <span class="f1-cbar-sub">${c.wins} ${_t('win', 'vit')}${c.wins === 1 ? '' : (_lang() === 'en' ? 's' : '')} · ${c.podiums} ${_t('pod', 'pód')}</span>
+        </div>`).join('');
+
+      host.innerHTML = `
+        <div class="f1-stats-sub">${st.rounds} ${_t(st.rounds === 1 ? 'round' : 'rounds', 'rondas')} · ${D.length} ${_t('drivers', 'pilotos')}${year === cur ? ' · ' + _t('in progress', 'em curso') : ''}</div>
         <div class="f1-hi-row">
           ${hi(_t('Championship leader', 'Líder do campeonato'), leader, leader.points, '🏆')}
           ${hi(_t('Most wins', 'Mais vitórias'), mw, mw && mw.wins, '🥇')}
@@ -1001,24 +1046,34 @@ const F1Page = (function () {
           <table class="f1-stat-table">
             <thead><tr>
               <th>#</th><th>${_t('Driver', 'Piloto')}</th><th>${_t('Team', 'Equipa')}</th>
-              ${cols.map(c => `<th class="f1-sortable${c.k === 'points' ? ' on' : ''}" data-sort="${c.k}" title="${_t('Sort', 'Ordenar')}">${_t(c.en, c.pt)}</th>`).join('')}
+              ${STAT_COLS.map(c => `<th class="f1-sortable${c.k === 'points' ? ' on' : ''}" data-sort="${c.k}" data-desc="${esc(_t(c.de, c.dp))}" title="${esc(_t(c.de, c.dp))}">${_t(c.en, c.pt)}</th>`).join('')}
             </tr></thead>
             <tbody id="f1-stat-body">${rowsHTML('points')}</tbody>
           </table>
         </div>
-        <div class="f1-stat-legend">${_t('Tap a column header to sort · Best/Avg = finishing position · FL = fastest laps · DNF = retirements',
-          'Toca num cabeçalho para ordenar · Melhor/Média = posição final · VR = voltas rápidas · Aban = abandonos')}</div>
+        <div class="f1-stat-legend">${_t('Hover a column header for what it means · tap it to sort',
+          'Passa o rato num cabeçalho para ver o que significa · toca para ordenar')}</div>
         <h3 class="f1-stats-h">${_t('Constructors', 'Construtores')}</h3>
         <div class="f1-cbars">${consHTML}</div>
-        <p class="f1-note">${_t('Aggregated from this season’s race results &amp; qualifying (Jolpica/Ergast), refreshed daily.',
-          'Agregado dos resultados de corrida e qualificação desta época (Jolpica/Ergast), atualizado diariamente.')}</p>
-      </div>`;
+        <p class="f1-note">${_t('Aggregated from race results &amp; qualifying (Jolpica/Ergast). Coloured dot = team colour (logos are trademarked).',
+          'Agregado de resultados e qualificação (Jolpica/Ergast). Ponto colorido = cor da equipa (os logótipos são marcas registadas).')}</p>`;
 
-    const tbody = body.querySelector('#f1-stat-body');
-    body.querySelectorAll('.f1-sortable').forEach(th => th.addEventListener('click', () => {
-      body.querySelectorAll('.f1-sortable').forEach(x => x.classList.toggle('on', x === th));
-      tbody.innerHTML = rowsHTML(th.dataset.sort);
-    }));
+      const tbody = host.querySelector('#f1-stat-body');
+      host.querySelectorAll('.f1-sortable').forEach(th => {
+        th.addEventListener('click', () => {
+          host.querySelectorAll('.f1-sortable').forEach(x => x.classList.toggle('on', x === th));
+          tbody.innerHTML = rowsHTML(th.dataset.sort);
+        });
+        // hover description popup (positioned relative to .f1-stats, outside the scroll clip)
+        th.addEventListener('mouseenter', () => {
+          thPop.textContent = th.dataset.desc; thPop.hidden = false;
+          const tr = th.getBoundingClientRect(), sr = statsRoot.getBoundingClientRect();
+          thPop.style.left = Math.max(4, Math.min(sr.width - thPop.offsetWidth - 4, tr.left - sr.left)) + 'px';
+          thPop.style.top = (tr.bottom - sr.top + 4) + 'px';
+        });
+        th.addEventListener('mouseleave', () => { thPop.hidden = true; });
+      });
+    }
   }
 
   /* resilient fallback when the computed aggregates are unavailable */
