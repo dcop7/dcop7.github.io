@@ -1,25 +1,396 @@
 {
-  "_source": "Comprimento e curvas das layouts atuais de GP — Wikipedia (List of Formula One circuits + artigos por circuito) e specs oficiais (Madring). Comprimentos cruzados com a telemetria OpenF1 (1 unidade = 10 cm) por tools/f1/validate-circuits.mjs. `of1` = circuit_short_name na OpenF1 (para o mapa e a volta mais rápida).",
-  "albert_park":   { "length_km": 5.278, "turns": 16, "of1": "Melbourne" },
-  "shanghai":      { "length_km": 5.451, "turns": 16, "of1": "Shanghai" },
-  "suzuka":        { "length_km": 5.807, "turns": 18, "of1": "Suzuka" },
-  "miami":         { "length_km": 5.412, "turns": 19, "of1": "Miami" },
-  "villeneuve":    { "length_km": 4.361, "turns": 14, "of1": "Montreal" },
-  "monaco":        { "length_km": 3.337, "turns": 19, "of1": "Monte Carlo" },
-  "catalunya":     { "length_km": 4.657, "turns": 14, "of1": "Catalunya" },
-  "red_bull_ring": { "length_km": 4.318, "turns": 10, "of1": "Spielberg" },
-  "silverstone":   { "length_km": 5.891, "turns": 18, "of1": "Silverstone" },
-  "spa":           { "length_km": 7.004, "turns": 19, "of1": "Spa-Francorchamps" },
-  "hungaroring":   { "length_km": 4.381, "turns": 14, "of1": "Hungaroring" },
-  "zandvoort":     { "length_km": 4.259, "turns": 14, "of1": "Zandvoort" },
-  "monza":         { "length_km": 5.793, "turns": 11, "of1": "Monza" },
-  "madring":       { "length_km": 5.416, "turns": 22, "of1": "" },
-  "baku":          { "length_km": 6.003, "turns": 20, "of1": "Baku" },
-  "marina_bay":    { "length_km": 4.940, "turns": 19, "of1": "Singapore" },
-  "americas":      { "length_km": 5.513, "turns": 20, "of1": "Austin" },
-  "rodriguez":     { "length_km": 4.304, "turns": 17, "of1": "Mexico City" },
-  "interlagos":    { "length_km": 4.309, "turns": 15, "of1": "Interlagos" },
-  "vegas":         { "length_km": 6.201, "turns": 17, "of1": "Las Vegas" },
-  "losail":        { "length_km": 5.419, "turns": 16, "of1": "Lusail" },
-  "yas_marina":    { "length_km": 5.281, "turns": 16, "of1": "Yas Marina Circuit" }
+  "_source": "Comprimento e curvas: layouts atuais de GP validados com telemetria OpenF1 (1 unidade = 10 cm, tools/f1/validate-circuits.mjs); circuitos históricos a partir do infobox da Wikipedia (layout principal/atual — pode diferir do traçado exato usado pela F1), com correções curadas para a era F1 em alguns casos (Indianápolis, Sochi, Le Mans-Bugatti, etc.). Não validados por telemetria (sem dados OpenF1 antes de 2023). `of1` = circuit_short_name na OpenF1.",
+  "adelaide": {
+    "length_km": 3.219,
+    "turns": 14,
+    "src": "wikipedia"
+  },
+  "ain-diab": {
+    "length_km": 7.603,
+    "turns": 18,
+    "src": "wikipedia"
+  },
+  "aintree": {
+    "length_km": 4.828,
+    "turns": 8,
+    "src": "wikipedia"
+  },
+  "albert_park": {
+    "length_km": 5.278,
+    "turns": 16,
+    "of1": "Melbourne"
+  },
+  "americas": {
+    "length_km": 5.513,
+    "turns": 20,
+    "of1": "Austin"
+  },
+  "anderstorp": {
+    "length_km": 4.025,
+    "turns": 8,
+    "src": "wikipedia"
+  },
+  "avus": {
+    "length_km": 2.66,
+    "turns": 6,
+    "src": "wikipedia"
+  },
+  "bahrain": {
+    "of1": "Sakhir",
+    "length_km": 5.412,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "baku": {
+    "length_km": 6.003,
+    "turns": 20,
+    "of1": "Baku"
+  },
+  "boavista": {
+    "length_km": 4.8,
+    "turns": 23,
+    "src": "wikipedia"
+  },
+  "brands_hatch": {
+    "length_km": 3.916,
+    "turns": 9,
+    "src": "wikipedia"
+  },
+  "bremgarten": {
+    "length_km": 7.28,
+    "turns": 13,
+    "src": "wikipedia"
+  },
+  "buddh": {
+    "length_km": 5.125,
+    "turns": 16,
+    "src": "wikipedia"
+  },
+  "catalunya": {
+    "length_km": 4.657,
+    "turns": 14,
+    "of1": "Catalunya"
+  },
+  "charade": {
+    "length_km": 3.975,
+    "turns": 18,
+    "src": "wikipedia"
+  },
+  "dallas": {
+    "length_km": 3.901,
+    "turns": null,
+    "src": "curated-f1"
+  },
+  "detroit": {
+    "length_km": 4.023,
+    "turns": null,
+    "src": "curated-f1"
+  },
+  "dijon": {
+    "length_km": 3.801,
+    "turns": 12,
+    "src": "wikipedia"
+  },
+  "donington": {
+    "length_km": 4.02,
+    "turns": 12,
+    "src": "wikipedia"
+  },
+  "essarts": {
+    "length_km": 5.543,
+    "turns": 13,
+    "src": "wikipedia"
+  },
+  "estoril": {
+    "length_km": 4.182,
+    "turns": 14,
+    "src": "wikipedia"
+  },
+  "fuji": {
+    "length_km": 4.563,
+    "turns": 16,
+    "src": "wikipedia"
+  },
+  "galvez": {
+    "length_km": 4.259,
+    "turns": 19,
+    "src": "wikipedia"
+  },
+  "george": {
+    "length_km": 3.92,
+    "turns": 9,
+    "src": "wikipedia"
+  },
+  "hockenheimring": {
+    "length_km": 4.574,
+    "turns": 17,
+    "src": "wikipedia"
+  },
+  "hungaroring": {
+    "length_km": 4.381,
+    "turns": 14,
+    "of1": "Hungaroring"
+  },
+  "imola": {
+    "of1": "Imola",
+    "length_km": 4.909,
+    "turns": 19,
+    "src": "wikipedia"
+  },
+  "indianapolis": {
+    "length_km": 4.192,
+    "turns": 13,
+    "src": "curated-f1"
+  },
+  "interlagos": {
+    "length_km": 4.309,
+    "turns": 15,
+    "of1": "Interlagos"
+  },
+  "istanbul": {
+    "length_km": 5.338,
+    "turns": 14,
+    "src": "wikipedia"
+  },
+  "jacarepagua": {
+    "length_km": 5.031,
+    "turns": null,
+    "src": "curated-f1"
+  },
+  "jarama": {
+    "length_km": 3.85,
+    "turns": 14,
+    "src": "wikipedia"
+  },
+  "jeddah": {
+    "of1": "Jeddah",
+    "length_km": 6.174,
+    "turns": 27,
+    "src": "wikipedia"
+  },
+  "jerez": {
+    "length_km": 4.428,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "kyalami": {
+    "length_km": 4.529,
+    "turns": 16,
+    "src": "wikipedia"
+  },
+  "las_vegas": {
+    "length_km": 6.201,
+    "turns": 17,
+    "src": "wikipedia"
+  },
+  "lemans": {
+    "length_km": 4.185,
+    "turns": 14,
+    "src": "curated-f1"
+  },
+  "long_beach": {
+    "length_km": 3.275,
+    "turns": null,
+    "src": "curated-f1"
+  },
+  "losail": {
+    "length_km": 5.419,
+    "turns": 16,
+    "of1": "Lusail"
+  },
+  "madring": {
+    "length_km": 5.416,
+    "turns": 22,
+    "of1": ""
+  },
+  "magny_cours": {
+    "length_km": 4.411,
+    "turns": 17,
+    "src": "wikipedia"
+  },
+  "marina_bay": {
+    "length_km": 4.94,
+    "turns": 19,
+    "of1": "Singapore"
+  },
+  "miami": {
+    "length_km": 5.412,
+    "turns": 19,
+    "of1": "Miami"
+  },
+  "monaco": {
+    "length_km": 3.337,
+    "turns": 19,
+    "of1": "Monte Carlo"
+  },
+  "monsanto": {
+    "length_km": 5.44,
+    "turns": null,
+    "src": "wikipedia"
+  },
+  "montjuic": {
+    "length_km": 3.791,
+    "turns": 12,
+    "src": "wikipedia"
+  },
+  "monza": {
+    "length_km": 5.793,
+    "turns": 11,
+    "of1": "Monza"
+  },
+  "mosport": {
+    "length_km": 3.957,
+    "turns": 10,
+    "src": "wikipedia"
+  },
+  "mugello": {
+    "length_km": 5.245,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "nivelles": {
+    "length_km": 3.724,
+    "turns": 7,
+    "src": "wikipedia"
+  },
+  "nurburgring": {
+    "length_km": 5.148,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "okayama": {
+    "length_km": 3.703,
+    "turns": 13,
+    "src": "wikipedia"
+  },
+  "pedralbes": {
+    "length_km": 6.333,
+    "turns": 6,
+    "src": "wikipedia"
+  },
+  "pescara": {
+    "length_km": 25.801,
+    "turns": null,
+    "src": "curated-f1"
+  },
+  "phoenix": {
+    "length_km": 3.721,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "portimao": {
+    "length_km": 4.653,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "red_bull_ring": {
+    "length_km": 4.318,
+    "turns": 10,
+    "of1": "Spielberg"
+  },
+  "reims": {
+    "length_km": 8.302,
+    "turns": 7,
+    "src": "wikipedia"
+  },
+  "ricard": {
+    "length_km": 5.842,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "riverside": {
+    "length_km": 5.311,
+    "turns": 9,
+    "src": "wikipedia"
+  },
+  "rodriguez": {
+    "length_km": 4.304,
+    "turns": 17,
+    "of1": "Mexico City"
+  },
+  "sebring": {
+    "length_km": 6.019,
+    "turns": 17,
+    "src": "wikipedia"
+  },
+  "sepang": {
+    "length_km": 5.543,
+    "turns": 15,
+    "src": "wikipedia"
+  },
+  "shanghai": {
+    "length_km": 5.451,
+    "turns": 16,
+    "of1": "Shanghai"
+  },
+  "silverstone": {
+    "length_km": 5.891,
+    "turns": 18,
+    "of1": "Silverstone"
+  },
+  "sochi": {
+    "length_km": 5.848,
+    "turns": 18,
+    "src": "curated-f1"
+  },
+  "spa": {
+    "length_km": 7.004,
+    "turns": 19,
+    "of1": "Spa-Francorchamps"
+  },
+  "suzuka": {
+    "length_km": 5.807,
+    "turns": 18,
+    "of1": "Suzuka"
+  },
+  "tremblant": {
+    "length_km": 4.218,
+    "turns": 17,
+    "src": "wikipedia"
+  },
+  "valencia": {
+    "length_km": 5.419,
+    "turns": 25,
+    "src": "wikipedia"
+  },
+  "vegas": {
+    "length_km": 6.201,
+    "turns": 17,
+    "of1": "Las Vegas"
+  },
+  "villeneuve": {
+    "length_km": 4.361,
+    "turns": 14,
+    "of1": "Montreal"
+  },
+  "watkins_glen": {
+    "length_km": 5.552,
+    "turns": 11,
+    "src": "curated-f1"
+  },
+  "yas_marina": {
+    "length_km": 5.281,
+    "turns": 16,
+    "of1": "Yas Marina Circuit"
+  },
+  "yeongam": {
+    "length_km": 5.615,
+    "turns": 18,
+    "src": "wikipedia"
+  },
+  "zandvoort": {
+    "length_km": 4.259,
+    "turns": 14,
+    "of1": "Zandvoort"
+  },
+  "zeltweg": {
+    "length_km": 3.186,
+    "turns": 4,
+    "src": "wikipedia"
+  },
+  "zolder": {
+    "length_km": 4.01,
+    "turns": 10,
+    "src": "wikipedia"
+  }
 }

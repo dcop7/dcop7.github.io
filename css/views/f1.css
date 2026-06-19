@@ -124,6 +124,9 @@
 .f1-circ-panel-map { position: relative; aspect-ratio: 16/10; background: radial-gradient(ellipse at 50% 40%, #0e1322, #05070e);
   border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .f1-circ-panel-map canvas { width: 100%; height: 100%; display: block; }
+.f1-circ-nomap { gap: .4rem; padding: 1.2rem; font-size: .78rem; }
+.f1-circ-nomap > :first-child { font-size: 1.6rem; opacity: .5; }
+.f1-circ-nomap span { max-width: 16rem; }
 .f1-circ-panel-info h3 { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; }
 .f1-circ-dl { margin: .7rem 0 0; display: flex; flex-direction: column; gap: .1rem; }
 .f1-circ-dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; padding: .35rem 0; border-bottom: 1px solid var(--border); }

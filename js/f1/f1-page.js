@@ -818,8 +818,8 @@ const F1Page = (function () {
         <div class="f1-circ-grid">${html}</div>`;
 
       body.innerHTML = `
-        <div class="f1-circ-note">${_t('Length &amp; turns from official sources — track lengths cross-checked against OpenF1 telemetry (21/21 within ~2%). Tap a circuit for its map, fastest lap &amp; history.',
-          'Comprimento e curvas de fontes oficiais — comprimentos cruzados com a telemetria OpenF1 (21/21 dentro de ~2%). Toca num circuito para mapa, volta rápida e histórico.')}</div>
+        <div class="f1-circ-note">${_t('All 78 circuits ever raced. Current-layout lengths cross-checked against OpenF1 telemetry (~2%); historic ones from Wikipedia. Tap a circuit for its map, most wins &amp; history.',
+          'Todos os 78 circuitos já usados. Comprimentos dos traçados atuais validados com telemetria OpenF1 (~2%); históricos a partir da Wikipedia. Toca num circuito para mapa, vitórias e histórico.')}</div>
         <div id="f1-circ-detail"></div>
         ${season.length ? grp(_t('This season', 'Esta época'), season.length, season.map(c => card(c, `<span class="f1-circ-rd">${_t('Round', 'Ronda')} ${c.round}</span>`)).join('')) : ''}
         ${others.length ? grp(_t('All circuits in F1 history', 'Todos os circuitos da história da F1'), others.length, others.map(c => card(c)).join('')) : ''}`;
@@ -846,6 +846,20 @@ const F1Page = (function () {
         const d = await fetch(`https://api.jolpi.ca/ergast/f1/circuits/${circ.circuitId}/seasons.json?limit=100`).then(r => r.json());
         const ss = d?.MRData?.SeasonTable?.Seasons || [];
         if (ss.length) { firstGP = ss[0].season; lastGP = ss[ss.length - 1].season; heldCount = ss.length; }
+      } catch {}
+
+      // most successful driver here — winners of every GP held at this circuit
+      let topWin = null;
+      try {
+        const d = await fetch(`https://api.jolpi.ca/ergast/f1/circuits/${circ.circuitId}/results/1.json?limit=100`).then(r => r.json());
+        const wins = {};
+        for (const r of (d?.MRData?.RaceTable?.Races || [])) {
+          const w = r.Results?.[0]?.Driver; if (!w) continue;
+          const k = w.givenName + ' ' + w.familyName;
+          wins[k] = (wins[k] || 0) + 1;
+        }
+        const top = Object.entries(wins).sort((a, b) => b[1] - a[1])[0];
+        if (top) topWin = { who: top[0], n: top[1] };
       } catch {}
 
       // OpenF1 session for the map + fastest lap (latest past race at this circuit)
@@ -877,9 +891,12 @@ const F1Page = (function () {
       }
 
       const fmtLap = s => { const m2 = Math.floor(s / 60), sec = (s % 60).toFixed(3); return `${m2}:${sec.padStart(6, '0')}`; };
+      const noMap = `<div class="f1-empty f1-circ-nomap">🗺️<span>${m.of1
+        ? _t('Map unavailable', 'Mapa indisponível')
+        : _t('No map — telemetry only exists from 2023 (historic circuit)', 'Sem mapa — telemetria só existe desde 2023 (circuito histórico)')}</span></div>`;
       detail.innerHTML = `
         <div class="f1-circ-panel">
-          <div class="f1-circ-panel-map">${track && track.length > 20 ? '<canvas id="f1-circ-canvas"></canvas>' : `<div class="f1-empty">${_t('Map unavailable', 'Mapa indisponível')}</div>`}</div>
+          <div class="f1-circ-panel-map">${track && track.length > 20 ? '<canvas id="f1-circ-canvas"></canvas>' : noMap}</div>
           <div class="f1-circ-panel-info">
             <h3>${flag(circ.Location?.country)}${esc(circ.circuitName)}</h3>
             <div class="f1-circ-loc">${esc(circ.Location?.locality)}, ${esc(circ.Location?.country)}</div>
@@ -888,6 +905,7 @@ const F1Page = (function () {
               <div><dt>${_t('Turns', 'Curvas')}</dt><dd>${m.turns || '—'}</dd></div>
               <div><dt>${_t('Grands Prix held', 'GPs realizados')}</dt><dd>${heldCount || '—'}</dd></div>
               <div><dt>${_t('First / last GP', 'Primeiro / último GP')}</dt><dd>${firstGP ? firstGP + (lastGP && lastGP !== firstGP ? ' – ' + lastGP : '') : '—'}</dd></div>
+              <div><dt>${_t('Most wins here', 'Mais vitórias aqui')}</dt><dd>${topWin ? `${topWin.n}<small> ${esc(topWin.who)}</small>` : '—'}</dd></div>
               <div><dt>${_t('Fastest lap', 'Volta mais rápida')}</dt><dd>${fastest ? `${fmtLap(fastest.time)}<small> ${esc(fastest.who)} · ${fastest.year}</small>` : '—'}</dd></div>
             </dl>
             ${fastest ? `<p class="f1-circ-src">${_t('Fastest lap from OpenF1 race data (2023→).', 'Volta mais rápida dos dados de corrida OpenF1 (2023→).')}</p>` : ''}
