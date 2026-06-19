@@ -94,7 +94,20 @@
 .f1-cal-date { font-family: var(--font-mono); font-size: .76rem; color: var(--text2); }
 .f1-cal-tick { color: #ff2d24; width: 1rem; text-align: center; }
 
+/* ── country flag (shared) ── */
+.f1-flag { width: 1.15em; height: 1.15em; border-radius: 50%; object-fit: cover; vertical-align: -.18em;
+  margin-right: .4em; box-shadow: 0 0 0 1px var(--border2); background: var(--card2); }
+.f1-cal-flag { width: 1.4em; height: 1.4em; margin-right: 0; flex-shrink: 0; }
+.f1-gp .f1-flag { width: 1em; height: 1em; }
+
 /* ── circuit tab ── */
+.f1-circ-grouphd { max-width: 900px; margin: 1.3rem auto .55rem; display: flex; align-items: center; gap: .55rem; }
+.f1-circ-grouphd:first-of-type { margin-top: .2rem; }
+.f1-circ-grouphd h3 { font-family: var(--font-head); font-size: .98rem; font-weight: 800; color: var(--text); margin: 0; }
+.f1-circ-count { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; color: var(--muted);
+  background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: .1rem .5rem; }
+.f1-circ-rd { display: inline-block; margin-bottom: .35rem; font-family: var(--font-mono); font-size: .58rem; font-weight: 700;
+  color: #ff6b66; background: rgba(225,6,0,.12); border: 1px solid rgba(225,6,0,.28); border-radius: 999px; padding: .06rem .4rem; }
 .f1-circ-note { max-width: 900px; margin: 0 auto .8rem; font-size: .72rem; color: var(--muted); text-align: center;
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .45rem .7rem; }
 .f1-circ-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .5rem; }
@@ -232,7 +245,7 @@
 .f1-pen-grid { background: rgba(179,136,255,.18); color: #c4a6ff; border-color: rgba(179,136,255,.4); }
 
 /* ── driver hover popup ── */
-.f1-driver-pop { position: absolute; z-index: 40; width: 240px; max-width: 80vw; background: var(--card2);
+.f1-driver-pop { position: absolute; z-index: 40; width: 240px; max-width: 80vw; background: var(--card-solid);
   border: 1px solid var(--border2); border-radius: var(--radius-sm); box-shadow: 0 10px 30px rgba(0,0,0,.5);
   padding: .6rem .7rem; pointer-events: none; font-size: .76rem; }
 .f1-dp-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
@@ -263,4 +276,48 @@
   .f1-body { padding: .7rem; }
   .f1-circ-panel { grid-template-columns: 1fr; }
   .f1-select { max-width: 100%; flex: 1; }
+  .f1-cbar { grid-template-columns: 1.3rem minmax(70px, 1fr) 2.4fr auto; }
+  .f1-cbar-sub { display: none; }
 }
+
+/* ── stats dashboard ── */
+.f1-stats { max-width: 960px; margin: 0 auto; }
+.f1-stats-sub { font-size: .74rem; color: var(--muted); text-align: center; margin-bottom: .8rem; }
+.f1-hi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .55rem; margin-bottom: 1rem; }
+.f1-hi { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .55rem .7rem; }
+.f1-hi-lbl { font-size: .58rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+.f1-hi-name { font-size: .82rem; color: var(--text); margin-top: .25rem; line-height: 1.2; }
+.f1-hi-val { font-family: var(--font-mono); font-size: 1.35rem; font-weight: 800; color: #ff2d24; margin-top: .1rem; line-height: 1; }
+
+.f1-stat-tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.f1-stat-table { width: 100%; border-collapse: collapse; font-size: .78rem; white-space: nowrap; }
+.f1-stat-table th { text-align: right; font-size: .6rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  font-weight: 700; padding: .5rem .55rem; border-bottom: 1px solid var(--border2); position: sticky; top: 0; background: var(--bg2); }
+.f1-stat-table th:nth-child(-n+3), .f1-stat-table td:nth-child(-n+3) { text-align: left; }
+.f1-stat-table td { padding: .42rem .55rem; border-bottom: 1px solid var(--border); text-align: right; color: var(--text2); font-variant-numeric: tabular-nums; }
+.f1-stat-table tbody tr:last-child td { border-bottom: none; }
+.f1-stat-table tbody tr:hover { background: rgba(255,255,255,.03); }
+.f1-sortable { cursor: pointer; user-select: none; transition: color var(--ease); }
+.f1-sortable:hover { color: var(--text2); }
+.f1-sortable.on { color: #ff6b66; }
+.f1-sortable.on::after { content: ' ▾'; font-size: .8em; }
+.f1-stat-pos { color: var(--muted); font-family: var(--font-mono); }
+.f1-stat-drv b { color: var(--text); font-family: var(--font-mono); margin-right: .45rem; }
+.f1-stat-drv span { color: var(--muted); font-size: .7rem; }
+.f1-stat-team { color: var(--muted) !important; font-size: .72rem; }
+.f1-stat-pts { min-width: 66px; }
+.f1-stat-pts b { color: var(--text); font-family: var(--font-mono); display: block; }
+.f1-ptsbar { display: block; height: 3px; border-radius: 2px; background: rgba(255,255,255,.06); margin-top: .22rem; overflow: hidden; }
+.f1-ptsbar i { display: block; height: 100%; background: linear-gradient(90deg, #e10600, #ff6b66); }
+.f1-stat-dnf { color: var(--muted); }
+.f1-stat-legend { font-size: .66rem; color: var(--muted); margin: .55rem 2px 0; }
+
+.f1-stats-h { font-family: var(--font-head); font-size: .98rem; font-weight: 800; color: var(--text); margin: 1.4rem 0 .6rem; }
+.f1-cbars { display: flex; flex-direction: column; gap: .5rem; }
+.f1-cbar { display: grid; grid-template-columns: 1.4rem minmax(90px, 1.1fr) 3fr auto auto; align-items: center; gap: .6rem; font-size: .8rem; }
+.f1-cbar-pos { font-family: var(--font-mono); color: var(--muted); text-align: center; }
+.f1-cbar-name { color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f1-cbar-track { height: 9px; border-radius: 5px; background: rgba(255,255,255,.05); overflow: hidden; }
+.f1-cbar-track i { display: block; height: 100%; background: linear-gradient(90deg, #e10600, #ff6b66); border-radius: 5px; }
+.f1-cbar-pts { font-family: var(--font-mono); font-weight: 800; color: #ff2d24; min-width: 2.2rem; text-align: right; }
+.f1-cbar-sub { font-size: .68rem; color: var(--muted); white-space: nowrap; }

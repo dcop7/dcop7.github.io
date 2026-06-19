@@ -33,6 +33,22 @@ const F1Page = (function () {
     return `${m}m`;
   }
 
+  /* Country name (as used by Jolpica/Ergast) → ISO2 → local flag SVG. Covers
+     every country that has ever hosted a championship round + common variants. */
+  const CTRY = {
+    Argentina: 'ar', Australia: 'au', Austria: 'at', Azerbaijan: 'az', Bahrain: 'bh', Belgium: 'be',
+    Brazil: 'br', Canada: 'ca', China: 'cn', France: 'fr', Germany: 'de', Hungary: 'hu', India: 'in',
+    Italy: 'it', Japan: 'jp', Korea: 'kr', Malaysia: 'my', Mexico: 'mx', Monaco: 'mc', Morocco: 'ma',
+    Netherlands: 'nl', Portugal: 'pt', Qatar: 'qa', Russia: 'ru', 'Saudi Arabia': 'sa', Singapore: 'sg',
+    'South Africa': 'za', Spain: 'es', Sweden: 'se', Switzerland: 'ch', Turkey: 'tr', UAE: 'ae', UK: 'gb', USA: 'us',
+    'United States': 'us', 'United Kingdom': 'gb', 'Great Britain': 'gb', 'United Arab Emirates': 'ae',
+    'Abu Dhabi': 'ae', 'South Korea': 'kr', 'Czech Republic': 'cz', Indonesia: 'id', Thailand: 'th',
+  };
+  function flag(country, cls) {
+    const code = CTRY[country];
+    return code ? `<img class="f1-flag${cls ? ' ' + cls : ''}" src="data/flags/${code}.svg" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+  }
+
   /* Season race sessions (OpenF1) — used for the replay race picker. */
   async function seasonRaces() {
     const yr = new Date().getFullYear();
@@ -171,7 +187,7 @@ const F1Page = (function () {
       const nextHTML = next ? `
         <div class="f1-card">
           <div class="f1-card-lbl">${_t('Next Grand Prix', 'Próximo Grande Prémio')}</div>
-          <div class="f1-gp">${esc(next.raceName)}</div>
+          <div class="f1-gp">${flag(next.Circuit?.Location?.country)}${esc(next.raceName)}</div>
           <div class="f1-sub">${esc(next.Circuit?.circuitName)} · ${esc(next.Circuit?.Location?.locality)}, ${esc(next.Circuit?.Location?.country)}</div>
           <div class="f1-row2">
             <div class="f1-count"><span class="f1-count-n">${countdown(next._ts)}</span><span class="f1-count-l">${_t('to lights out', 'para a partida')}</span></div>
@@ -193,8 +209,10 @@ const F1Page = (function () {
       const grid = +r.grid || 0, fin = +r.position || 0;
       const delta = (finished && grid) ? grid - fin : 0;             // +ve = gained places
       const move = delta > 0 ? `<span class="f1-up">▲${delta}</span>` : delta < 0 ? `<span class="f1-dn">▼${-delta}</span>` : `<span class="f1-eq">–</span>`;
-      const gap = fin === 1 ? (r.Time?.time || '') : finished ? (r.Time?.time || '+' + (r.laps ? '' : '') ) : '';
-      const status = finished ? (gap || '') : (pos === 'R' ? _t('DNF', 'Abandono') : esc(r.status));
+      // gap to winner, or lapped/retirement status ("+1 Lap", "Accident", DNF…)
+      const status = fin === 1 ? (r.Time?.time || '')
+        : finished ? (r.Time?.time || r.status)
+        : (pos === 'R' ? _t('DNF', 'Abandono') : r.status);
       const fl = r.FastestLap?.rank === '1';
       const pts = +r.points || 0;
       return `<tr${fin === 1 ? ' class="win"' : ''}>
@@ -211,7 +229,7 @@ const F1Page = (function () {
     }).join('');
     return `
       <div class="f1-card f1-results-card">
-        <div class="f1-card-lbl">${_t('Last race — full classification', 'Última corrida — classificação completa')} · ${esc(race.raceName)}</div>
+        <div class="f1-card-lbl">${flag(race.Circuit?.Location?.country)}${_t('Last race — full classification', 'Última corrida — classificação completa')} · ${esc(race.raceName)}</div>
         <div class="f1-results-scroll">
           <table class="f1-results">
             <thead><tr>
@@ -674,12 +692,41 @@ const F1Page = (function () {
       let meta = {}, t0 = null;
       try {
         const drv = await F1Data.drivers(sk);
-        (drv || []).forEach(d => { meta[d.driver_number] = { name: d.full_name, code: d.name_acronym, colour: d.team_colour, team: d.team_name, num: d.driver_number }; });
+        (drv || []).forEach(d => { meta[d.driver_number] = { name: d.full_name, code: d.name_acronym, colour: d.team_colour, team: d.team_name, num: d.driver_number, country: d.country_code }; });
       } catch {}
       const canvas = body.querySelector('#f1-canvas');
       _track = F1Track.create(canvas);
       _track.setDrivers(meta);
       const buf = {};                                        // rolling location buffer
+
+      // live state for the hover popup (kept fresh each poll)
+      let liveOrder = [], liveIv = new Map(), livePen = {}, livePopNum = null;
+      const pop = body.querySelector('#f1-driver-pop');
+      function showLivePop(num) {
+        const m = meta[num] || {};
+        const o = liveOrder.find(x => x.driver_number === num);
+        const iv = liveIv.get(num);
+        const pens = livePen[num] || [];
+        const gapLead = iv && typeof iv.gap_to_leader === 'number' ? '+' + iv.gap_to_leader.toFixed(1) + 's' : '—';
+        const gapAhead = iv && typeof iv.interval === 'number' ? '+' + iv.interval.toFixed(1) + 's' : '—';
+        pop.innerHTML = `
+          <div class="f1-dp-head"><span class="f1-dp-num" style="background:${teamCol(m.colour)}">${esc(num)}</span>
+            <div><div class="f1-dp-name">${esc(m.name || m.code || num)}</div>
+            <div class="f1-dp-team">${esc(m.team || '')}${m.country ? ' · ' + esc(m.country) : ''}</div></div></div>
+          <div class="f1-dp-rows">
+            <div><span>${_t('Position', 'Posição')}</span><b>${o ? 'P' + o.position : '—'}</b></div>
+            <div><span>${_t('Gap to leader', 'Diferença p/ líder')}</span><b>${o && o.position === 1 ? _t('LEADER', 'LÍDER') : gapLead}</b></div>
+            <div><span>${_t('Interval', 'Intervalo')}</span><b>${o && o.position === 1 ? '—' : gapAhead}</b></div>
+          </div>
+          ${pens.length ? `<div class="f1-dp-pens"><div class="f1-dp-lbl">${_t('Penalties', 'Penalizações')}</div>${pens.map(p =>
+            `<div class="f1-dp-pen"><span class="f1-pen f1-pen-${p.type}">${esc(p.label)}</span><span>${_t('lap ', 'V')}${p.lap || '?'} · ${esc(p.reason || '')}</span></div>`).join('')}</div>` : ''}`;
+        pop.hidden = false;
+        const row = posEl.querySelector(`.f1-pos-row[data-num="${num}"]`);
+        if (row) { const rr = row.getBoundingClientRect(), gr = body.querySelector('#f1-stage-grid').getBoundingClientRect();
+          pop.style.top = (rr.bottom - gr.top + 4) + 'px'; pop.style.left = Math.max(0, rr.left - gr.left) + 'px'; }
+      }
+      posEl.addEventListener('mouseover', e => { const row = e.target.closest('.f1-pos-row'); if (!row || !row.dataset.num) return; livePopNum = +row.dataset.num; showLivePop(livePopNum); });
+      posEl.addEventListener('mouseleave', () => { pop.hidden = true; livePopNum = null; });
 
       async function poll() {
         try {
@@ -701,15 +748,20 @@ const F1Page = (function () {
           }
           const order = F1Data.latestOrder(posRows);
           const ivMap = F1Data.latestIntervals(ivRows);
+          liveOrder = order; liveIv = ivMap; livePen = parsePenalties(rcRows);
           if (order[0]) _track.setLeader(order[0].driver_number);
           posEl.innerHTML = order.map(o => {
             const m = meta[o.driver_number] || {}, iv = ivMap.get(o.driver_number);
             const gap = o.position === 1 ? _t('LEADER', 'LÍDER') : (iv && typeof iv.interval === 'number' ? '+' + iv.interval.toFixed(1) : '');
-            return `<div class="f1-pos-row"><span class="f1-pos-p">${o.position}</span>
+            const pens = livePen[o.driver_number] || [];
+            const penBadge = pens.length ? `<span class="f1-pen f1-pen-${pens[pens.length - 1].type}">${esc(pens[pens.length - 1].label)}</span>` : '';
+            return `<div class="f1-pos-row" data-num="${o.driver_number}"><span class="f1-pos-p">${o.position}</span>
               <span class="f1-pos-num" style="border-color:${teamCol(m.colour)}">${esc(o.driver_number)}</span>
               <span class="f1-pos-name">${esc(m.code || o.driver_number)}</span>
+              ${penBadge}
               <span class="f1-pos-gap">${gap}</span></div>`;
           }).join('') || `<div class="f1-empty">${_t('Waiting for data…', 'À espera de dados…')}</div>`;
+          if (livePopNum != null && !pop.hidden) showLivePop(livePopNum);  // keep popup fresh + repositioned
           const evs = (rcRows || []).map(rcEntry).filter(rcKeep).slice(-30).reverse();
           evEl.innerHTML = evs.map(e => `<div class="f1-ev k-${e.kind} inwin"><span class="f1-ev-ic">${e.icon}</span>
             <span class="f1-ev-tx"><b>${esc(e.msg)}</b><small>${e.lap ? _t('lap ', 'volta ') + e.lap : ''}</small></span></div>`).join('') || `<div class="f1-empty">—</div>`;
@@ -726,33 +778,46 @@ const F1Page = (function () {
   /* ════════════════════════════ CIRCUIT ════════════════════════════ */
   async function renderCircuit(body) {
     try {
-      const [races, meta] = await Promise.all([F1Data.schedule(), F1Data.circuitsMeta()]);
-      const seen = new Set();
-      const circuits = (races || []).map(r => r.Circuit).filter(c => c && !seen.has(c.circuitId) && seen.add(c.circuitId));
-      if (!circuits.length) { body.innerHTML = err(); return; }
+      const [races, all, meta] = await Promise.all([F1Data.schedule(), F1Data.allCircuits(), F1Data.circuitsMeta()]);
+      // this season's circuits (in calendar order, deduped), then everyone else
+      const seasonIds = new Set();
+      const season = [];
+      (races || []).forEach(r => { const c = r.Circuit; if (c && !seasonIds.has(c.circuitId)) { seasonIds.add(c.circuitId); season.push({ ...c, round: +r.round }); } });
+      season.sort((a, b) => a.round - b.round);
+      const others = (all || []).filter(c => !seasonIds.has(c.circuitId))
+        .sort((a, b) => (a.Location?.country || '').localeCompare(b.Location?.country || '') || a.circuitName.localeCompare(b.circuitName));
+      if (!season.length && !others.length) { body.innerHTML = err(); return; }
+
+      const card = (c, badge) => {
+        const m = meta[c.circuitId] || {};
+        return `<button class="f1-circ-card" data-id="${c.circuitId}">
+          ${badge || ''}
+          <div class="f1-circ-name">${esc(c.circuitName)}</div>
+          <div class="f1-circ-loc">${flag(c.Location?.country)}${esc(c.Location?.locality)}, ${esc(c.Location?.country)}</div>
+          <div class="f1-circ-stats">
+            <span>${m.length_km ? m.length_km.toFixed(3) + ' km' : '—'}</span>
+            <span>${m.turns ? m.turns + ' ' + _t('turns', 'curvas') : '—'}</span>
+          </div></button>`;
+      };
+      const grp = (title, n, html) => `
+        <div class="f1-circ-grouphd"><h3>${title}</h3><span class="f1-circ-count">${n}</span></div>
+        <div class="f1-circ-grid">${html}</div>`;
+
       body.innerHTML = `
-        <div class="f1-circ-note">${_t('Length &amp; turns from official sources — track lengths cross-checked against OpenF1 telemetry (21/21 within ~2%).',
-          'Comprimento e curvas de fontes oficiais — comprimentos cruzados com a telemetria OpenF1 (21/21 dentro de ~2%).')}</div>
+        <div class="f1-circ-note">${_t('Length &amp; turns from official sources — track lengths cross-checked against OpenF1 telemetry (21/21 within ~2%). Tap a circuit for its map, fastest lap &amp; history.',
+          'Comprimento e curvas de fontes oficiais — comprimentos cruzados com a telemetria OpenF1 (21/21 dentro de ~2%). Toca num circuito para mapa, volta rápida e histórico.')}</div>
         <div id="f1-circ-detail"></div>
-        <div class="f1-circ-grid">
-          ${circuits.map(c => {
-            const m = meta[c.circuitId] || {};
-            return `<button class="f1-circ-card" data-id="${c.circuitId}">
-              <div class="f1-circ-name">${esc(c.circuitName)}</div>
-              <div class="f1-circ-loc">${esc(c.Location?.locality)}, ${esc(c.Location?.country)}</div>
-              <div class="f1-circ-stats">
-                <span>${m.length_km ? m.length_km.toFixed(3) + ' km' : '—'}</span>
-                <span>${m.turns ? m.turns + ' ' + _t('turns', 'curvas') : '—'}</span>
-              </div></button>`;
-          }).join('')}
-        </div>`;
+        ${season.length ? grp(_t('This season', 'Esta época'), season.length, season.map(c => card(c, `<span class="f1-circ-rd">${_t('Round', 'Ronda')} ${c.round}</span>`)).join('')) : ''}
+        ${others.length ? grp(_t('All circuits in F1 history', 'Todos os circuitos da história da F1'), others.length, others.map(c => card(c)).join('')) : ''}`;
+
       const detail = body.querySelector('#f1-circ-detail');
-      body.querySelector('.f1-circ-grid').addEventListener('click', e => {
-        const card = e.target.closest('.f1-circ-card'); if (!card) return;
-        const c = circuits.find(x => x.circuitId === card.dataset.id);
-        body.querySelectorAll('.f1-circ-card').forEach(x => x.classList.toggle('on', x === card));
+      const byId = id => season.find(x => x.circuitId === id) || others.find(x => x.circuitId === id);
+      body.querySelectorAll('.f1-circ-grid').forEach(grid => grid.addEventListener('click', e => {
+        const cardEl = e.target.closest('.f1-circ-card'); if (!cardEl) return;
+        const c = byId(cardEl.dataset.id); if (!c) return;
+        body.querySelectorAll('.f1-circ-card').forEach(x => x.classList.toggle('on', x === cardEl));
         openCircuit(c, meta[c.circuitId] || {}, detail);
-      });
+      }));
     } catch (e) { body.innerHTML = err(); }
   }
 
@@ -761,12 +826,12 @@ const F1Page = (function () {
     detail.innerHTML = `<div class="f1-circ-panel">${loading(_t('Loading circuit…', 'A carregar o circuito…'))}</div>`;
     detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     try {
-      // first GP year — from the season list of this circuit (Jolpica)
-      let firstGP = '';
+      // season history of this circuit (Jolpica) → first/last GP + how many held
+      let firstGP = '', lastGP = '', heldCount = 0;
       try {
         const d = await fetch(`https://api.jolpi.ca/ergast/f1/circuits/${circ.circuitId}/seasons.json?limit=100`).then(r => r.json());
         const ss = d?.MRData?.SeasonTable?.Seasons || [];
-        if (ss.length) firstGP = ss[0].season;
+        if (ss.length) { firstGP = ss[0].season; lastGP = ss[ss.length - 1].season; heldCount = ss.length; }
       } catch {}
 
       // OpenF1 session for the map + fastest lap (latest past race at this circuit)
@@ -802,12 +867,13 @@ const F1Page = (function () {
         <div class="f1-circ-panel">
           <div class="f1-circ-panel-map">${track && track.length > 20 ? '<canvas id="f1-circ-canvas"></canvas>' : `<div class="f1-empty">${_t('Map unavailable', 'Mapa indisponível')}</div>`}</div>
           <div class="f1-circ-panel-info">
-            <h3>${esc(circ.circuitName)}</h3>
+            <h3>${flag(circ.Location?.country)}${esc(circ.circuitName)}</h3>
             <div class="f1-circ-loc">${esc(circ.Location?.locality)}, ${esc(circ.Location?.country)}</div>
             <dl class="f1-circ-dl">
               <div><dt>${_t('Length', 'Comprimento')}</dt><dd>${m.length_km ? m.length_km.toFixed(3) + ' km' : '—'}</dd></div>
               <div><dt>${_t('Turns', 'Curvas')}</dt><dd>${m.turns || '—'}</dd></div>
-              <div><dt>${_t('First GP', 'Primeira corrida')}</dt><dd>${firstGP || '—'}</dd></div>
+              <div><dt>${_t('Grands Prix held', 'GPs realizados')}</dt><dd>${heldCount || '—'}</dd></div>
+              <div><dt>${_t('First / last GP', 'Primeiro / último GP')}</dt><dd>${firstGP ? firstGP + (lastGP && lastGP !== firstGP ? ' – ' + lastGP : '') : '—'}</dd></div>
               <div><dt>${_t('Fastest lap', 'Volta mais rápida')}</dt><dd>${fastest ? `${fmtLap(fastest.time)}<small> ${esc(fastest.who)} · ${fastest.year}</small>` : '—'}</dd></div>
             </dl>
             ${fastest ? `<p class="f1-circ-src">${_t('Fastest lap from OpenF1 race data (2023→).', 'Volta mais rápida dos dados de corrida OpenF1 (2023→).')}</p>` : ''}
@@ -854,7 +920,8 @@ const F1Page = (function () {
       const row = (r, done) => `
         <div class="f1-cal-row${done ? ' done' : ''}${sp.next && r.round === sp.next.round ? ' next' : ''}">
           <span class="f1-cal-rd">${r.round}</span>
-          <span class="f1-cal-name">${esc(r.raceName)}<small>${esc(r.Circuit?.Location?.country)}</small></span>
+          ${flag(r.Circuit?.Location?.country, 'f1-cal-flag')}
+          <span class="f1-cal-name">${esc(r.raceName)}<small>${esc(r.Circuit?.Location?.locality)}, ${esc(r.Circuit?.Location?.country)}</small></span>
           <span class="f1-cal-date">${new Date(r._ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { day: '2-digit', month: 'short' })}</span>
           <span class="f1-cal-tick">${done ? '✓' : (sp.next && r.round === sp.next.round ? '▶' : '')}</span>
         </div>`;
@@ -862,8 +929,100 @@ const F1Page = (function () {
     } catch (e) { body.innerHTML = err(); }
   }
 
-  /* ════════════════════════════ STATS ════════════════════════════ */
+  /* ════════════════════════════ STATS ════════════════════════════
+     Rich season dashboard from computed aggregates (wins/podiums/poles/FL/
+     DNF/avg per driver + constructors), with a sortable table. Falls back to
+     the standings view if the aggregates aren't available. */
   async function renderStats(body) {
+    let st = null;
+    try { st = await F1Data.seasonStats(); } catch {}
+    if (!st || !(st.drivers || []).length) return renderStatsFallback(body);
+
+    const D = st.drivers, C = st.constructors || [];
+    const yr = new Date().getFullYear();
+    const maxPts = Math.max(1, D[0].points);
+    const leaderBy = key => D.reduce((a, b) => (a == null || b[key] > a[key]) ? b : a, null);
+    const leader = D[0], mw = leaderBy('wins'), mp = leaderBy('poles'), mpod = leaderBy('podiums'), mfl = leaderBy('fl');
+    const hi = (lbl, d, val, emoji) => (d && val > 0) ? `
+      <div class="f1-hi">
+        <div class="f1-hi-lbl">${emoji} ${lbl}</div>
+        <div class="f1-hi-name">${esc(d.given)} <b>${esc(d.family)}</b></div>
+        <div class="f1-hi-val">${val}</div>
+      </div>` : '';
+
+    const cols = [
+      { k: 'points', en: 'Pts', pt: 'Pts' }, { k: 'wins', en: 'Wins', pt: 'Vit' },
+      { k: 'podiums', en: 'Pod', pt: 'Pód' }, { k: 'poles', en: 'Pole', pt: 'Pole' },
+      { k: 'fl', en: 'FL', pt: 'VR' }, { k: 'top10', en: 'Top10', pt: 'Top10' },
+      { k: 'best', en: 'Best', pt: 'Melhor' }, { k: 'avg', en: 'Avg', pt: 'Média' },
+      { k: 'dnf', en: 'DNF', pt: 'Aban' },
+    ];
+    const ASC = { best: 1, avg: 1 };
+    function rowsHTML(sortKey) {
+      const asc = !!ASC[sortKey];
+      const arr = D.slice().sort((a, b) => {
+        let av = a[sortKey], bv = b[sortKey];
+        if (av == null) return 1; if (bv == null) return -1;
+        return asc ? av - bv : bv - av;
+      });
+      const cell = (v, dash) => v || (dash ? '—' : '');
+      return arr.map((d, i) => `
+        <tr>
+          <td class="f1-stat-pos">${i + 1}</td>
+          <td class="f1-stat-drv"><b>${esc(d.code)}</b><span>${esc(d.given)} ${esc(d.family)}</span></td>
+          <td class="f1-stat-team">${esc(d.team)}</td>
+          <td class="f1-stat-pts"><b>${d.points}</b><span class="f1-ptsbar"><i style="width:${(d.points / maxPts * 100).toFixed(1)}%"></i></span></td>
+          <td>${cell(d.wins)}</td><td>${cell(d.podiums)}</td><td>${cell(d.poles)}</td><td>${cell(d.fl)}</td>
+          <td>${cell(d.top10)}</td><td>${d.best ?? '—'}</td><td>${d.avg ?? '—'}</td><td class="f1-stat-dnf">${cell(d.dnf)}</td>
+        </tr>`).join('');
+    }
+
+    const maxCpts = Math.max(1, (C[0] || {}).points || 1);
+    const consHTML = C.map((c, i) => `
+      <div class="f1-cbar">
+        <span class="f1-cbar-pos">${i + 1}</span>
+        <span class="f1-cbar-name">${esc(c.name)}</span>
+        <span class="f1-cbar-track"><i style="width:${(c.points / maxCpts * 100).toFixed(1)}%"></i></span>
+        <span class="f1-cbar-pts">${c.points}</span>
+        <span class="f1-cbar-sub">${c.wins} ${_t('win', 'vit')}${c.wins === 1 ? '' : (_lang() === 'en' ? 's' : '')} · ${c.podiums} ${_t('pod', 'pód')}</span>
+      </div>`).join('');
+
+    body.innerHTML = `
+      <div class="f1-stats">
+        <div class="f1-stats-sub">${_t('Season', 'Época')} ${yr} · ${st.rounds} ${_t(st.rounds === 1 ? 'round' : 'rounds', 'rondas')} ${_t('completed', 'disputadas')}</div>
+        <div class="f1-hi-row">
+          ${hi(_t('Championship leader', 'Líder do campeonato'), leader, leader.points, '🏆')}
+          ${hi(_t('Most wins', 'Mais vitórias'), mw, mw && mw.wins, '🥇')}
+          ${hi(_t('Most poles', 'Mais poles'), mp, mp && mp.poles, '⚡')}
+          ${hi(_t('Most podiums', 'Mais pódios'), mpod, mpod && mpod.podiums, '🍾')}
+          ${hi(_t('Most fastest laps', 'Mais voltas rápidas'), mfl, mfl && mfl.fl, '⏱️')}
+        </div>
+        <div class="f1-stat-tablewrap">
+          <table class="f1-stat-table">
+            <thead><tr>
+              <th>#</th><th>${_t('Driver', 'Piloto')}</th><th>${_t('Team', 'Equipa')}</th>
+              ${cols.map(c => `<th class="f1-sortable${c.k === 'points' ? ' on' : ''}" data-sort="${c.k}" title="${_t('Sort', 'Ordenar')}">${_t(c.en, c.pt)}</th>`).join('')}
+            </tr></thead>
+            <tbody id="f1-stat-body">${rowsHTML('points')}</tbody>
+          </table>
+        </div>
+        <div class="f1-stat-legend">${_t('Tap a column header to sort · Best/Avg = finishing position · FL = fastest laps · DNF = retirements',
+          'Toca num cabeçalho para ordenar · Melhor/Média = posição final · VR = voltas rápidas · Aban = abandonos')}</div>
+        <h3 class="f1-stats-h">${_t('Constructors', 'Construtores')}</h3>
+        <div class="f1-cbars">${consHTML}</div>
+        <p class="f1-note">${_t('Aggregated from this season’s race results &amp; qualifying (Jolpica/Ergast), refreshed daily.',
+          'Agregado dos resultados de corrida e qualificação desta época (Jolpica/Ergast), atualizado diariamente.')}</p>
+      </div>`;
+
+    const tbody = body.querySelector('#f1-stat-body');
+    body.querySelectorAll('.f1-sortable').forEach(th => th.addEventListener('click', () => {
+      body.querySelectorAll('.f1-sortable').forEach(x => x.classList.toggle('on', x === th));
+      tbody.innerHTML = rowsHTML(th.dataset.sort);
+    }));
+  }
+
+  /* resilient fallback when the computed aggregates are unavailable */
+  async function renderStatsFallback(body) {
     try {
       const ds = await F1Data.driverStandings();
       const wins = (ds || []).filter(s => +s.wins > 0).sort((a, b) => b.wins - a.wins);
@@ -876,8 +1035,7 @@ const F1Page = (function () {
           <section class="f1-col"><h3>${_t('Points leaders', 'Líderes de pontos')}</h3>
             ${top.map(s => `<div class="f1-standing"><span class="f1-pos-p">${s.position}</span><span class="f1-st-name">${esc(s.Driver.familyName)}</span><span class="f1-st-pts">${s.points}</span></div>`).join('')}
           </section>
-        </div>
-        <p class="f1-note">${_t('More stats (poles, fastest laps, all-time history) coming as the section grows.', 'Mais estatísticas (poles, voltas rápidas, histórico) à medida que a secção cresce.')}</p>`;
+        </div>`;
     } catch (e) { body.innerHTML = err(); }
   }
 
