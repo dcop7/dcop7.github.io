@@ -59,7 +59,7 @@ const F1Track = (function () {
       draw();
     }
     function setDrivers(meta) { drivers = meta || {}; }
-    function setReplay(perDriver) {
+    function setReplay(perDriver, keepClock) {
       frames = {};
       duration = 0;
       const all = [];
@@ -68,7 +68,7 @@ const F1Track = (function () {
         if (arr.length) { frames[num] = arr; duration = Math.max(duration, arr[arr.length - 1].t); all.push(...arr); }
       }
       if (!track && all.length) { _bounds = _computeBounds(all); track = { raw: all, tf: null }; _buildTransform(); }
-      clock = 0;
+      if (!keepClock) clock = 0;   // swap which cars are shown mid-replay without restarting
     }
 
     function _posAt(arr, t) {

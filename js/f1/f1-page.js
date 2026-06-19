@@ -981,11 +981,11 @@ const F1Page = (function () {
               <span class="f1-dr-bignum">${num}</span>
               <div class="f1-dr-id"><div class="f1-dr-name">${esc(m.full_name || m.name_acronym || num)}</div>
                 <div class="f1-dr-team">${esc(m.team_name || '')}${m.country_code ? ' · ' + esc(m.country_code) : ''}</div></div>
-              <div class="f1-dr-pos"><span class="f1-dr-pos-n">${myPos ? 'P' + myPos : '—'}</span><span class="f1-dr-pos-l">${_t('position', 'posição')}</span></div>
+              <div class="f1-dr-pos"><span class="f1-dr-pos-n" id="f1-dr-posn">${myPos ? 'P' + myPos : '—'}</span><span class="f1-dr-pos-l">${_t('position', 'posição')}</span></div>
             </div>
             <div class="f1-dr-card f1-dr-track" id="f1-dr-track">
               <div class="f1-dr-track-top"><h4>📍 ${_t('Around on track', 'À volta na pista')}${_curLive ? ' <span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''}</h4>
-                <div class="f1-dr-nbstrip">${nbChip(ahead, _t('Ahead', 'Frente'))}${nbChip({ driver_number: num, position: myPos }, _t('Driver', 'Piloto'), true)}${nbChip(behind, _t('Behind', 'Atrás'))}</div></div>
+                <div class="f1-dr-nbstrip" id="f1-dr-nbstrip">${nbChip(ahead, _t('Ahead', 'Frente'))}${nbChip({ driver_number: num, position: myPos }, _t('Driver', 'Piloto'), true)}${nbChip(behind, _t('Behind', 'Atrás'))}</div></div>
               <div class="f1-track-stage f1-dr-stage"><canvas id="f1-dr-canvas"></canvas><div class="f1-stage-load" id="f1-dr-stageload">${loading()}</div></div>
               ${controls}
             </div>
@@ -1026,20 +1026,23 @@ const F1Page = (function () {
         } else {
           buildRaceModel(sk).then(model => {
             if (!model || model.error) { stageLoad.innerHTML = err(model && model.error); return; }
-            const focusNums = [ahead && ahead.driver_number, num, behind && behind.driver_number].filter(v => v != null);
-            const focus = {}; for (const fn of focusNums) if (model.frames[fn]) focus[fn] = model.frames[fn];
-            if (!Object.keys(focus).length) { stageLoad.innerHTML = err(_t('No track data.', 'Sem dados de pista.')); return; }
             const canvas = host.querySelector('#f1-dr-canvas');
             _track = F1Track.create(canvas);
-            _track.setDrivers(model.meta); _track.setTrack(model.outline); _track.setReplay(focus); _track.setLeader(num); _track.setSpeed(DEF_SPEED);
+            _track.setDrivers(model.meta); _track.setTrack(model.outline); _track.setLeader(num); _track.setSpeed(DEF_SPEED);
             stageLoad.style.display = 'none';
             const seek = host.querySelector('#f1-dr-seek'), lapIn = host.querySelector('#f1-dr-lapin'), playBtn = host.querySelector('#f1-dr-play');
+            const posnEl = host.querySelector('#f1-dr-posn'), nbEl = host.querySelector('#f1-dr-nbstrip');
             lapIn.max = model.totalLaps; host.querySelector('#f1-dr-laptot').textContent = '/' + model.totalLaps;
             const raceLabel = metaEl ? metaEl.dataset.race || '' : '';
+            // order at a given replay time (from /position), so position + neighbours track the playback
+            const latestP = (rows, ms) => { let v; for (const e of rows || []) { if (e.t <= ms) v = e.p; else break; } return v; };
+            function orderAt(ms) { const a = []; for (const n in model.posByDriver) { const p = latestP(model.posByDriver[n], ms); if (p == null) continue; a.push({ num: +n, p }); } a.sort((x, y) => x.p - y.p); return a; }
+            const chip = (n, p, label, self) => n != null ? `<span class="f1-nbc${self ? ' self' : ''}" style="--c:${teamCol((model.meta[n] || {}).colour)}"><small>${label}</small> P${p} <b>${esc((model.meta[n] || {}).code || n)}</b></span>` : `<span class="f1-nbc empty">${label}: —</span>`;
+            let lastFocusKey = '', lastNb = '', lastPos = '';
             function paintWx(ms) {
               let w = null; for (const r of model.wx) { if (r.t <= ms) w = r; else break; } if (!w) w = model.wx[0];
-              const chip = w ? `<span class="f1-dr-wx">${w.rain > 0 ? '🌧️' : '☀️'} ${Math.round(w.air)}°C · ${_t('track', 'pista')} ${Math.round(w.trk)}° · 💧 ${Math.round(w.hum)}%</span>` : '';
-              if (metaEl) metaEl.innerHTML = `${raceLabel}${chip}`;
+              const wchip = w ? `<span class="f1-dr-wx">${w.rain > 0 ? '🌧️' : '☀️'} ${Math.round(w.air)}°C · ${_t('track', 'pista')} ${Math.round(w.trk)}° · 💧 ${Math.round(w.hum)}%</span>` : '';
+              if (metaEl) metaEl.innerHTML = `${raceLabel}${wchip}`;
             }
             function onClock(frac) {
               const ms = frac * (_track.duration || 1);
@@ -1048,6 +1051,22 @@ const F1Page = (function () {
               const lap = arr ? ((model.progAbs(arr, model.lights + ms) || {}).lap || 1) : 1;
               if (document.activeElement !== lapIn) lapIn.value = Math.min(model.totalLaps, lap);
               paintWx(ms);
+              // live position + the cars currently just ahead/behind at this moment
+              const ord = orderAt(ms);
+              const i = ord.findIndex(o => o.num === num);
+              const myP = i >= 0 ? ord[i].p : null;
+              const ah = i > 0 ? ord[i - 1] : null, be = (i >= 0 && i < ord.length - 1) ? ord[i + 1] : null;
+              const posStr = myP ? 'P' + myP : '—';
+              if (posnEl && posStr !== lastPos) { posnEl.textContent = posStr; lastPos = posStr; }
+              const nbHtml = chip(ah ? ah.num : null, ah && ah.p, _t('Ahead', 'Frente')) + chip(num, myP, _t('Driver', 'Piloto'), true) + chip(be ? be.num : null, be && be.p, _t('Behind', 'Atrás'));
+              if (nbEl && nbHtml !== lastNb) { nbEl.innerHTML = nbHtml; lastNb = nbHtml; }
+              // swap the focused cars to the current neighbours (without restarting the clock)
+              const key = (ah ? ah.num : '-') + '/' + (be ? be.num : '-');
+              if (key !== lastFocusKey) {
+                lastFocusKey = key;
+                const f = {}; for (const fn of [ah && ah.num, num, be && be.num].filter(v => v != null)) if (model.frames[fn]) f[fn] = model.frames[fn];
+                if (Object.keys(f).length) _track.setReplay(f, true);
+              }
             }
             _track.setOnTick(onClock);
             playBtn.onclick = () => { const on = _track.toggle(); playBtn.textContent = on ? '⏸ ' + _t('Pause', 'Pausa') : '▶ ' + _t('Play', 'Reproduzir'); };
