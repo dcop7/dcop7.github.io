@@ -8,7 +8,7 @@ const F1Page = (function () {
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
   const _t = (en, pt) => (_lang() === 'en' ? en : pt);
-  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null;
+  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null;
 
   const TABS = [
     { id: 'race',    ic: '🏁', en: 'Race',         pt: 'Corrida' },
@@ -299,6 +299,86 @@ const F1Page = (function () {
     return { x: pts[i].x + (pts[j].x - pts[i].x) * f, y: pts[i].y + (pts[j].y - pts[i].y) * f };
   }
 
+  /* Build the whole-race replay MODEL (no UI): outline + per-driver synthetic
+     frames + lap timeline + order/events/weather. Shared by the Pista replay
+     and the Piloto focused replay. Returns { ...model } or { error }.
+     Results are memoised per session_key so switching drivers is instant. */
+  const _modelCache = new Map();
+  async function buildRaceModel(sk) {
+    if (_modelCache.has(sk)) return _modelCache.get(sk);
+    const [drv, posRows] = await Promise.all([F1Data.drivers(sk), F1Data.positions(sk).catch(() => [])]);
+    const [lapRows, stintRows] = await Promise.all([F1Data.laps(sk), F1Data.stints(sk).catch(() => [])]);
+    const [rcRows, wxRows] = await Promise.all([F1Data.raceControl(sk).catch(() => []), F1Data.weather(sk).catch(() => [])]);
+    const penByDriver = parsePenalties(rcRows);
+    const meta = {};
+    (drv || []).forEach(d => { meta[d.driver_number] = { name: d.full_name, code: d.name_acronym, colour: d.team_colour, team: d.team_name, num: d.driver_number, country: d.country_code }; });
+    const lapsByDriver = {};
+    for (const l of (lapRows || [])) { if (!l.date_start) continue; const t0 = Date.parse(l.date_start), dur = (l.lap_duration || 0) * 1000; (lapsByDriver[l.driver_number] = lapsByDriver[l.driver_number] || []).push({ lap: l.lap_number, t0, dur, end: t0 + (dur || 90000) }); }
+    for (const n in lapsByDriver) lapsByDriver[n].sort((a, b) => a.lap - b.lap);
+    const allFirst = Object.values(lapsByDriver).map(a => a[0] && a[0].t0).filter(Boolean);
+    if (!allFirst.length) return { error: _t('No lap data for this race.', 'Sem dados de voltas para esta corrida.') };
+    const lights = Math.min(...allFirst);
+    const raceEnd = Math.max(...Object.values(lapsByDriver).map(a => a[a.length - 1].end));
+    const raceDur = raceEnd - lights;
+    const totalLaps = Math.max(...(lapRows || []).map(l => l.lap_number || 0));
+    const lapStart = {};
+    for (const l of (lapRows || [])) { if (!l.date_start) continue; const t = Date.parse(l.date_start) - lights, ln = l.lap_number; if (lapStart[ln] == null || t < lapStart[ln]) lapStart[ln] = t; }
+    const lastEndRel = {}, lastLapNum = {};
+    for (const n in lapsByDriver) { const a = lapsByDriver[n]; lastEndRel[n] = a[a.length - 1].end - lights; lastLapNum[n] = a[a.length - 1].lap; }
+    const isRetired = num => lastEndRel[num] < raceDur - 150000;
+    // trace outline from a clean fast lap (with fallbacks for broken telemetry feeds)
+    let outline = [];
+    const clean = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1 && l.date_start);
+    const fastestIn = max => clean.filter(l => l.lap_number <= max).reduce((a, b) => (!a || b.lap_duration < a.lap_duration) ? b : a, null);
+    const cand = []; const seen = new Set();
+    for (const c of [fastestIn(1e9), fastestIn(Math.ceil(totalLaps * 0.5)), fastestIn(Math.ceil(totalLaps * 0.33)), fastestIn(Math.ceil(totalLaps * 0.2))]) {
+      if (c && !seen.has(c.driver_number + ':' + c.lap_number)) { seen.add(c.driver_number + ':' + c.lap_number); cand.push(c); }
+    }
+    for (const best of cand) {
+      const lapEndMs = Date.parse(best.date_start) + best.lap_duration * 1000;
+      const loc = await F1Data.location(sk, { driver: best.driver_number, from: best.date_start, to: new Date(lapEndMs + 1500).toISOString() }).catch(() => []);
+      const pts = (loc || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y) && Date.parse(p.date) < lapEndMs).map(p => ({ x: p.x, y: p.y }));
+      if (pts.length >= 20) { outline = pts; break; }
+    }
+    if (outline.length < 20) {
+      const drvNum = (cand[0] && cand[0].driver_number) || +Object.keys(lapsByDriver)[0];
+      const full = await F1Data.location(sk, { driver: drvNum }).catch(() => []);
+      const nz = (full || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y)).map(p => ({ t: Date.parse(p.date), x: p.x, y: p.y }));
+      let bestPts = [];
+      for (const l of (lapsByDriver[drvNum] || [])) { if (!l.dur) continue; const pts = nz.filter(p => p.t >= l.t0 && p.t < l.t0 + l.dur); if (pts.length > bestPts.length) bestPts = pts; }
+      outline = bestPts.sort((a, b) => a.t - b.t).map(p => ({ x: p.x, y: p.y }));
+    }
+    if (outline.length < 20) return { error: _t('Could not trace the track.', 'Não foi possível traçar a pista.') };
+    const startPos = {};
+    for (const r of (posRows || [])) { const t = Date.parse(r.date); if (!startPos[r.driver_number] || t < startPos[r.driver_number].t) startPos[r.driver_number] = { t, p: r.position }; }
+    const gridOrder = Object.keys(lapsByDriver).sort((a, b) => (startPos[a]?.p || 99) - (startPos[b]?.p || 99));
+    const offset = {}; gridOrder.forEach((n, i) => { offset[n] = i * GRID_GAP; });
+    function progAbs(arr, absT) {
+      if (absT < arr[0].t0) return { lap: 1, f: 0 };
+      for (let i = 0; i < arr.length; i++) { const l = arr[i]; if (absT < l.end) return { lap: l.lap, f: l.dur ? Math.min(1, Math.max(0, (absT - l.t0) / l.dur)) : 0 }; if (i + 1 < arr.length && absT < arr[i + 1].t0) return { lap: l.lap, f: 1 }; }
+      return null;
+    }
+    function progFloat(num, ms) { const a = lapsByDriver[num]; if (!a) return null; const p = progAbs(a, lights + ms); return p ? (p.lap - 1) + p.f : null; }
+    const frames = {};
+    for (const num in lapsByDriver) {
+      const arr = lapsByDriver[num], lastEnd = arr[arr.length - 1].end, fr = [];
+      for (let t = 0; t <= raceDur; t += FRAME_MS) { const absT = lights + t; if (absT > lastEnd + 1500) break; const p = progAbs(arr, absT); if (!p) break; const xy = outlineXY(outline, p.f - offset[num]); fr.push({ t, x: xy.x, y: xy.y }); }
+      if (fr.length) frames[num] = fr;
+    }
+    const stintsByDriver = {};
+    for (const s of (stintRows || [])) (stintsByDriver[s.driver_number] = stintsByDriver[s.driver_number] || []).push(s);
+    function tyreAt(num, lap) { const ss = stintsByDriver[num]; if (!ss) return {}; let cur = null; for (const s of ss) { if (lap >= s.lap_start && lap <= s.lap_end) return s; if (s.lap_start <= lap) cur = s; } return cur || ss[0] || {}; }
+    const posByDriver = {};
+    for (const r of (posRows || [])) (posByDriver[r.driver_number] = posByDriver[r.driver_number] || []).push({ t: Date.parse(r.date) - lights, p: r.position });
+    Object.values(posByDriver).forEach(a => a.sort((x, y) => x.t - y.t));
+    const events = (rcRows || []).map(rcEntry).filter(rcKeep).map(e => ({ ...e, t: Date.parse(e.date) - lights })).sort((a, b) => a.t - b.t);
+    const flagRows = flagStateRows(rcRows || []).map(r => ({ t: Date.parse(r.date) - lights, s: r.s })).sort((a, b) => a.t - b.t);
+    const wx = (wxRows || []).map(w => ({ t: Date.parse(w.date) - lights, air: w.air_temperature, trk: w.track_temperature, hum: w.humidity, rain: w.rainfall, wind: w.wind_speed })).filter(w => isFinite(w.t)).sort((a, b) => a.t - b.t);
+    const model = { meta, lapsByDriver, lights, raceDur, totalLaps, lapStart, lastEndRel, lastLapNum, isRetired, outline, offset, progAbs, progFloat, frames, stintsByDriver, tyreAt, posByDriver, events, flagRows, penByDriver, wx };
+    _modelCache.set(sk, model);
+    return model;
+  }
+
   async function renderTrack(body) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
     let races, liveSession = null;
@@ -391,134 +471,10 @@ const F1Page = (function () {
         const rb = stage.querySelector('#f1-retry'); if (rb) rb.onclick = () => loadRace(sk); };
 
       try {
-        // fetches sequenced under the OpenF1 rate gate (no big telemetry pull)
-        const [drv, posRows] = await Promise.all([F1Data.drivers(sk), F1Data.positions(sk).catch(() => [])]);
-        const [lapRows, stintRows] = await Promise.all([F1Data.laps(sk), F1Data.stints(sk).catch(() => [])]);
-        const [rcRows, wxRows] = await Promise.all([F1Data.raceControl(sk).catch(() => []), F1Data.weather(sk).catch(() => [])]);
-        const penByDriver = parsePenalties(rcRows);
-
-        const meta = {};
-        (drv || []).forEach(d => { meta[d.driver_number] = { name: d.full_name, code: d.name_acronym, colour: d.team_colour, team: d.team_name, num: d.driver_number, country: d.country_code }; });
-
-        // per-driver lap timeline {lap, t0, dur, end} (absolute ms)
-        const lapsByDriver = {};
-        for (const l of (lapRows || [])) {
-          if (!l.date_start) continue;
-          const t0 = Date.parse(l.date_start), dur = (l.lap_duration || 0) * 1000;
-          (lapsByDriver[l.driver_number] = lapsByDriver[l.driver_number] || []).push({ lap: l.lap_number, t0, dur, end: t0 + (dur || 90000) });
-        }
-        for (const n in lapsByDriver) lapsByDriver[n].sort((a, b) => a.lap - b.lap);
-        const allFirst = Object.values(lapsByDriver).map(a => a[0] && a[0].t0).filter(Boolean);
-        if (!allFirst.length) { fail(_t('No lap data for this race.', 'Sem dados de voltas para esta corrida.')); return; }
-        const lights = Math.min(...allFirst);
-        const raceEnd = Math.max(...Object.values(lapsByDriver).map(a => a[a.length - 1].end));
-        const raceDur = raceEnd - lights;
-        const totalLaps = Math.max(...(lapRows || []).map(l => l.lap_number || 0));
-        // when each lap begins in the race (earliest driver to reach it) → for the lap picker
-        const lapStart = {};
-        for (const l of (lapRows || [])) {
-          if (!l.date_start) continue;
-          const t = Date.parse(l.date_start) - lights, ln = l.lap_number;
-          if (lapStart[ln] == null || t < lapStart[ln]) lapStart[ln] = t;
-        }
-        // last lap + retired? (stopped well before the race ended = DNF, kept in the list)
-        const lastEndRel = {}, lastLapNum = {};
-        for (const n in lapsByDriver) { const a = lapsByDriver[n]; lastEndRel[n] = a[a.length - 1].end - lights; lastLapNum[n] = a[a.length - 1].lap; }
-        const isRetired = num => lastEndRel[num] < raceDur - 150000;   // ended >2.5 min before the finish
-
-        // Trace a clean outline from one driver's location over a single fast lap,
-        // trimmed to EXACTLY one lap (extra points would overlap past the start/
-        // finish and make cars "jump back"). The telemetry feed can cut out before
-        // the race ends (e.g. Monaco's stops ~1 h in while the race runs longer), so
-        // the overall fastest lap may have NO location — try several candidates
-        // (fastest, plus fast laps from earlier in the race) until one returns data.
-        let outline = [];
-        const clean = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1 && l.date_start);
-        const fastestIn = max => clean.filter(l => l.lap_number <= max).reduce((a, b) => (!a || b.lap_duration < a.lap_duration) ? b : a, null);
-        const cand = [];
-        const seen = new Set();
-        for (const c of [fastestIn(1e9), fastestIn(Math.ceil(totalLaps * 0.5)), fastestIn(Math.ceil(totalLaps * 0.33)), fastestIn(Math.ceil(totalLaps * 0.2))]) {
-          if (c && !seen.has(c.driver_number + ':' + c.lap_number)) { seen.add(c.driver_number + ':' + c.lap_number); cand.push(c); }
-        }
-        for (const best of cand) {
-          const lapEndMs = Date.parse(best.date_start) + best.lap_duration * 1000;
-          const loc = await F1Data.location(sk, { driver: best.driver_number, from: best.date_start, to: new Date(lapEndMs + 1500).toISOString() }).catch(() => []);
-          const pts = (loc || [])
-            .filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y) && Date.parse(p.date) < lapEndMs)
-            .map(p => ({ x: p.x, y: p.y }));
-          if (pts.length >= 20) { outline = pts; break; }
-        }
-        // Fallback: windowed location can be empty even when data exists (Monaco's
-        // feed dies after a few laps). Pull one driver's FULL location once and slice
-        // the clean lap that has the most points from it.
-        if (outline.length < 20) {
-          const drvNum = (cand[0] && cand[0].driver_number) || +Object.keys(lapsByDriver)[0];
-          const full = await F1Data.location(sk, { driver: drvNum }).catch(() => []);
-          const nz = (full || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y)).map(p => ({ t: Date.parse(p.date), x: p.x, y: p.y }));
-          let bestPts = [];
-          for (const l of (lapsByDriver[drvNum] || [])) {
-            if (!l.dur) continue;
-            const pts = nz.filter(p => p.t >= l.t0 && p.t < l.t0 + l.dur);
-            if (pts.length > bestPts.length) bestPts = pts;
-          }
-          outline = bestPts.sort((a, b) => a.t - b.t).map(p => ({ x: p.x, y: p.y }));
-        }
-        if (outline.length < 20) { fail(_t('Could not trace the track.', 'Não foi possível traçar a pista.')); return; }
-
-        // starting grid order → constant along-track offset so they don't overlap at the start
-        const startPos = {};
-        for (const r of (posRows || [])) {
-          const t = Date.parse(r.date);
-          if (!startPos[r.driver_number] || t < startPos[r.driver_number].t) startPos[r.driver_number] = { t, p: r.position };
-        }
-        const gridOrder = Object.keys(lapsByDriver).sort((a, b) => (startPos[a]?.p || 99) - (startPos[b]?.p || 99));
-        const offset = {}; gridOrder.forEach((n, i) => { offset[n] = i * GRID_GAP; });
-
-        // progress(absT) → {lap, f} (f = fraction through current lap); null once retired
-        function progAbs(arr, absT) {
-          if (absT < arr[0].t0) return { lap: 1, f: 0 };
-          for (let i = 0; i < arr.length; i++) {
-            const l = arr[i];
-            if (absT < l.end) return { lap: l.lap, f: l.dur ? Math.min(1, Math.max(0, (absT - l.t0) / l.dur)) : 0 };
-            if (i + 1 < arr.length && absT < arr[i + 1].t0) return { lap: l.lap, f: 1 };  // between laps (e.g. pit)
-          }
-          return null;                                          // past last lap → out
-        }
-        // float progress for gap maths
-        function progFloat(num, ms) { const a = lapsByDriver[num]; if (!a) return null; const p = progAbs(a, lights + ms); return p ? (p.lap - 1) + p.f : null; }
-
-        // build synthetic replay frames on the outline
-        const frames = {};
-        for (const num in lapsByDriver) {
-          const arr = lapsByDriver[num], lastEnd = arr[arr.length - 1].end, fr = [];
-          for (let t = 0; t <= raceDur; t += FRAME_MS) {
-            const absT = lights + t;
-            if (absT > lastEnd + 1500) break;                   // car retired/finished → stop (it disappears)
-            const p = progAbs(arr, absT); if (!p) break;
-            const xy = outlineXY(outline, p.f - offset[num]);
-            fr.push({ t, x: xy.x, y: xy.y });
-          }
-          if (fr.length) frames[num] = fr;
-        }
-
-        // tyre compound at a given lap (from stints)
-        const stintsByDriver = {};
-        for (const s of (stintRows || [])) (stintsByDriver[s.driver_number] = stintsByDriver[s.driver_number] || []).push(s);
-        function tyreAt(num, lap) {
-          const ss = stintsByDriver[num]; if (!ss) return {};
-          let cur = null;
-          for (const s of ss) { if (lap >= s.lap_start && lap <= s.lap_end) return s; if (s.lap_start <= lap) cur = s; }
-          return cur || ss[0] || {};
-        }
-
-        // running order over time (from /position)
-        const posByDriver = {};
-        for (const r of (posRows || [])) (posByDriver[r.driver_number] = posByDriver[r.driver_number] || []).push({ t: Date.parse(r.date) - lights, p: r.position });
-        Object.values(posByDriver).forEach(a => a.sort((x, y) => x.t - y.t));
-
-        // events feed — whole race, all seekable
-        const events = (rcRows || []).map(rcEntry).filter(rcKeep).map(e => ({ ...e, t: Date.parse(e.date) - lights })).sort((a, b) => a.t - b.t);
-        const flagRows = flagStateRows(rcRows || []).map(r => ({ t: Date.parse(r.date) - lights, s: r.s })).sort((a, b) => a.t - b.t);
+        const M = await buildRaceModel(sk);
+        if (M.error) { fail(M.error); return; }
+        const { meta, lapsByDriver, lights, raceDur, totalLaps, lapStart, lastEndRel, lastLapNum,
+          isRetired, outline, progAbs, progFloat, frames, tyreAt, posByDriver, events, flagRows, penByDriver, wx } = M;
 
         // ── build the track ──
         const canvas = body.querySelector('#f1-canvas');
@@ -598,9 +554,7 @@ const F1Page = (function () {
         }
         function flagAt(ms) { let s = null; for (const r of flagRows) { if (r.t <= ms) s = r.s; else break; } return s; }
 
-        // weather time-series → chip in the header
-        const wx = (wxRows || []).map(w => ({ t: Date.parse(w.date) - lights, air: w.air_temperature, trk: w.track_temperature, hum: w.humidity, rain: w.rainfall, wind: w.wind_speed }))
-          .filter(w => isFinite(w.t)).sort((a, b) => a.t - b.t);
+        // weather time-series (wx from the model) → chip in the header
         const wxEl = body.querySelector('#f1-weather');
         function paintWx(ms) {
           let w = null; for (const r of wx) { if (r.t <= ms) w = r; else break; } if (!w) w = wx[0];
@@ -656,6 +610,9 @@ const F1Page = (function () {
         }
         posEl.addEventListener('mouseover', e => { const row = e.target.closest('.f1-pos-row'); if (!row) return; popNum = +row.dataset.num; showPop(popNum); });
         posEl.addEventListener('mouseleave', () => { pop.hidden = true; popNum = null; });
+        // click a driver → open the Piloto tab focused on them, same race
+        posEl.style.cursor = 'pointer';
+        posEl.addEventListener('click', e => { const row = e.target.closest('.f1-pos-row'); if (!row) return; _pendingDriver = { sk, num: +row.dataset.num }; _go('driver'); });
 
         onClock(0);
 
@@ -928,24 +885,31 @@ const F1Page = (function () {
       </div>`;
     const raceSel = body.querySelector('#f1-dr-race');
     const drvSel = body.querySelector('#f1-dr-driver');
-    if (raceSel && past.length) raceSel.value = String(past[past.length - 1].session_key);
+    // honour a driver clicked from the Pista tab (same race + driver pre-selected)
+    const pend = _pendingDriver; _pendingDriver = null;
+    const initSk = pend ? pend.sk : (live ? live.session_key : (past.length ? past[past.length - 1].session_key : null));
+    if (raceSel && initSk && [...raceSel.options].some(o => +o.value === initSk)) raceSel.value = String(initSk);
     const gl = body.querySelector('[data-golive]'); if (gl) gl.addEventListener('click', () => { if (raceSel) raceSel.disabled = true; loadRaceDrivers(live.session_key, true); });
     let _curSk = null, _curDrivers = {}, _curOrder = [], _curLive = false;
     raceSel && raceSel.addEventListener('change', () => loadRaceDrivers(+raceSel.value, false));
     drvSel.addEventListener('change', () => paintDriver(+drvSel.value));
-    loadRaceDrivers(live ? live.session_key : +raceSel.value, !!live);
+    loadRaceDrivers(initSk, !!live && !pend, pend ? pend.num : null);
 
-    async function loadRaceDrivers(sk, isLive) {
+    async function loadRaceDrivers(sk, isLive, preNum) {
       clearInterval(_liveTimer); _liveTimer = null;
       if (_track) { _track.dispose(); _track = null; }
       _curSk = sk; _curLive = isLive;
       const host = body.querySelector('#f1-dr-body'); host.innerHTML = loading();
+      const metaEl = body.querySelector('#f1-dr-meta');
+      const race = (info.past.find(r => r.session_key === sk)) || live || {};
+      if (metaEl) { metaEl.dataset.race = `<b>${esc(race.circuit_short_name || '')}</b> · ${esc(race.country_name || '')} ${race.year || ''} ${isLive ? '<span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''} `; metaEl.innerHTML = metaEl.dataset.race; }
       const [drv, posRows] = await Promise.all([F1Data.drivers(sk).catch(() => []), F1Data.positions(sk).catch(() => [])]);
       _curDrivers = {}; (drv || []).forEach(d => _curDrivers[d.driver_number] = d);
       _curOrder = F1Data.latestOrder(posRows);
       const sorted = _curOrder.length ? _curOrder.map(o => _curDrivers[o.driver_number]).filter(Boolean) : Object.values(_curDrivers);
       drvSel.innerHTML = sorted.map(d => `<option value="${d.driver_number}">${esc(d.name_acronym)} · ${esc(d.full_name)}</option>`).join('');
-      if (sorted.length) { drvSel.value = String(sorted[0].driver_number); paintDriver(sorted[0].driver_number); }
+      const pick = (preNum != null && sorted.some(d => d.driver_number === preNum)) ? preNum : (sorted[0] && sorted[0].driver_number);
+      if (pick != null) { drvSel.value = String(pick); paintDriver(pick); }
       else host.innerHTML = err();
     }
 
@@ -1000,6 +964,17 @@ const F1Page = (function () {
         const posPts = myLaps.map(l => ({ x: l.lap_number, y: (myPosRows.filter(p => Date.parse(p.date) <= Date.parse(l.date_start)).pop() || {}).position || myPos || 10 }));
         const posTrace = posPts.length > 1 ? spark(posPts, 240, 70, { color: teamCol(m.team_colour), invert: true }) : '';
 
+        const nbChip = (o, label, self) => o ? `<span class="f1-nbc${self ? ' self' : ''}" style="--c:${teamCol((meta[o.driver_number] || {}).team_colour)}"><small>${label}</small> P${o.position} <b>${esc((meta[o.driver_number] || {}).name_acronym || o.driver_number)}</b></span>` : `<span class="f1-nbc empty">${label}: —</span>`;
+        const controls = `
+          <div class="f1-controls f1-dr-controls" id="f1-dr-controls">
+            <button class="f1-btn" id="f1-dr-play">▶ ${_t('Play', 'Reproduzir')}</button>
+            <div class="f1-seek-wrap"><input type="range" id="f1-dr-seek" min="0" max="1000" value="0" class="f1-seek"></div>
+            <div class="f1-lap"><button class="f1-lap-btn" id="f1-dr-lapprev">◀</button><span class="f1-lap-lbl">${_lang() === 'en' ? 'L' : 'V'}</span><input class="f1-lap-in" id="f1-dr-lapin" type="number" min="1" value="1" inputmode="numeric"><span class="f1-lap-tot" id="f1-dr-laptot"></span><button class="f1-lap-btn" id="f1-dr-lapnext">▶</button></div>
+            <div class="f1-speed" id="f1-dr-speed">${SPEEDS.map(s => `<button data-s="${s}" class="${s === DEF_SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div>
+            <button class="f1-btn f1-toggle" id="f1-dr-label" title="${_t('Toggle name / number', 'Alternar nome / número')}">ABC</button>
+            <button class="f1-btn f1-icon-btn" id="f1-dr-fs" title="${_t('Fullscreen', 'Ecrã inteiro')}">⛶</button>
+          </div>`;
+
         host.innerHTML = `
           <div class="f1-dr-grid">
             <div class="f1-dr-card f1-dr-head" style="--c:${teamCol(m.team_colour)}">
@@ -1008,11 +983,11 @@ const F1Page = (function () {
                 <div class="f1-dr-team">${esc(m.team_name || '')}${m.country_code ? ' · ' + esc(m.country_code) : ''}</div></div>
               <div class="f1-dr-pos"><span class="f1-dr-pos-n">${myPos ? 'P' + myPos : '—'}</span><span class="f1-dr-pos-l">${_t('position', 'posição')}</span></div>
             </div>
-            <div class="f1-dr-card f1-dr-neighbours">
-              <h4>${_t('Around on track', 'À volta na pista')}</h4>
-              ${neighbour(ahead, _t('Ahead', 'À frente'))}
-              <div class="f1-nb f1-nb-self" style="--c:${teamCol(m.team_colour)}"><span class="f1-nb-lbl">${_t('You', 'Este')}</span><span class="f1-nb-pos">P${myPos || '—'}</span><span class="f1-nb-num" style="border-color:${teamCol(m.team_colour)}">${num}</span><span class="f1-nb-code">${esc(m.name_acronym || num)}</span></div>
-              ${neighbour(behind, _t('Behind', 'Atrás'))}
+            <div class="f1-dr-card f1-dr-track" id="f1-dr-track">
+              <div class="f1-dr-track-top"><h4>📍 ${_t('Around on track', 'À volta na pista')}${_curLive ? ' <span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''}</h4>
+                <div class="f1-dr-nbstrip">${nbChip(ahead, _t('Ahead', 'Frente'))}${nbChip({ driver_number: num, position: myPos }, _t('Driver', 'Piloto'), true)}${nbChip(behind, _t('Behind', 'Atrás'))}</div></div>
+              <div class="f1-track-stage f1-dr-stage"><canvas id="f1-dr-canvas"></canvas><div class="f1-stage-load" id="f1-dr-stageload">${loading()}</div></div>
+              ${controls}
             </div>
             <div class="f1-dr-stats">
               <div class="f1-dr-stat"><span class="f1-dr-stat-v ${best && best.lap_duration === allBest ? 'f1-purple' : ''}">${best ? fmtLapTime(best.lap_duration) : '—'}</span><span class="f1-dr-stat-l">${_t('Best lap', 'Melhor volta')}${best ? ' · V' + best.lap_number : ''}</span></div>
@@ -1027,7 +1002,6 @@ const F1Page = (function () {
               <div class="f1-lapchart-x"><span>V1</span><span>V${totalLaps}</span></div></div>
             ${posTrace ? `<div class="f1-dr-card"><h4>📈 ${_t('Position', 'Posição')}</h4>${posTrace}</div>` : ''}
             <div class="f1-dr-card f1-dr-tele"><h4>⚡ ${_t('Fastest lap telemetry', 'Telemetria da volta mais rápida')}</h4><div id="f1-dr-tele">${loading()}</div></div>
-            ${_curLive ? `<div class="f1-dr-card f1-dr-livetrack"><h4>📍 ${_t('Live position', 'Posição ao vivo')}</h4><div class="f1-dr-stage"><canvas id="f1-dr-canvas"></canvas></div></div>` : ''}
           </div>`;
 
         // fastest-lap speed trace (car_data over that lap window)
@@ -1035,25 +1009,71 @@ const F1Page = (function () {
         if (best && best.date_start) {
           const from = best.date_start, to = new Date(Date.parse(best.date_start) + (best.lap_duration + 1) * 1000).toISOString();
           F1Data.carData(sk, { driver: num, from, to }).then(car => {
-            const pts = (car || []).filter(c => c.speed != null).map((c, i) => ({ x: Date.parse(c.date), y: c.speed }));
+            const pts = (car || []).filter(c => c.speed != null).map(c => ({ x: Date.parse(c.date), y: c.speed }));
             if (pts.length < 4) { teleEl.innerHTML = `<div class="f1-empty-sm">${_t('Telemetry unavailable', 'Telemetria indisponível')}</div>`; return; }
-            const maxS = Math.max(...pts.map(p => p.y)), throttle = (car || []).filter(c => c.throttle != null);
+            const maxS = Math.max(...pts.map(p => p.y));
             teleEl.innerHTML = `${spark(pts, 320, 90, { color: '#22d3ee', fill: true })}
               <div class="f1-tele-row"><span>🏁 ${_t('Max', 'Máx')} <b>${maxS}</b> km/h</span><span>⚙️ ${_t('gears', 'mudanças')} ${Math.max(...(car || []).map(c => c.n_gear || 0))}</span><span>🔧 ${_t('max rpm', 'rpm máx')} ${Math.max(...(car || []).map(c => c.rpm || 0))}</span></div>`;
           }).catch(() => { teleEl.innerHTML = `<div class="f1-empty-sm">${_t('Telemetry unavailable', 'Telemetria indisponível')}</div>`; });
         } else teleEl.innerHTML = `<div class="f1-empty-sm">${_t('No fastest lap yet', 'Ainda sem volta rápida')}</div>`;
 
-        // live focused mini-track + auto refresh
-        if (_curLive) startDriverLive(sk, num);
+        // ── the focused track: live polling, or whole-race replay of driver + neighbours ──
+        const metaEl = body.querySelector('#f1-dr-meta');
+        const stageLoad = host.querySelector('#f1-dr-stageload');
+        if (_curLive) {
+          host.querySelector('#f1-dr-controls').style.display = 'none';
+          startDriverLive(sk, num, stageLoad);
+        } else {
+          buildRaceModel(sk).then(model => {
+            if (!model || model.error) { stageLoad.innerHTML = err(model && model.error); return; }
+            const focusNums = [ahead && ahead.driver_number, num, behind && behind.driver_number].filter(v => v != null);
+            const focus = {}; for (const fn of focusNums) if (model.frames[fn]) focus[fn] = model.frames[fn];
+            if (!Object.keys(focus).length) { stageLoad.innerHTML = err(_t('No track data.', 'Sem dados de pista.')); return; }
+            const canvas = host.querySelector('#f1-dr-canvas');
+            _track = F1Track.create(canvas);
+            _track.setDrivers(model.meta); _track.setTrack(model.outline); _track.setReplay(focus); _track.setLeader(num); _track.setSpeed(DEF_SPEED);
+            stageLoad.style.display = 'none';
+            const seek = host.querySelector('#f1-dr-seek'), lapIn = host.querySelector('#f1-dr-lapin'), playBtn = host.querySelector('#f1-dr-play');
+            lapIn.max = model.totalLaps; host.querySelector('#f1-dr-laptot').textContent = '/' + model.totalLaps;
+            const raceLabel = metaEl ? metaEl.dataset.race || '' : '';
+            function paintWx(ms) {
+              let w = null; for (const r of model.wx) { if (r.t <= ms) w = r; else break; } if (!w) w = model.wx[0];
+              const chip = w ? `<span class="f1-dr-wx">${w.rain > 0 ? '🌧️' : '☀️'} ${Math.round(w.air)}°C · ${_t('track', 'pista')} ${Math.round(w.trk)}° · 💧 ${Math.round(w.hum)}%</span>` : '';
+              if (metaEl) metaEl.innerHTML = `${raceLabel}${chip}`;
+            }
+            function onClock(frac) {
+              const ms = frac * (_track.duration || 1);
+              seek.value = Math.round(frac * 1000);
+              const arr = model.lapsByDriver[num];
+              const lap = arr ? ((model.progAbs(arr, model.lights + ms) || {}).lap || 1) : 1;
+              if (document.activeElement !== lapIn) lapIn.value = Math.min(model.totalLaps, lap);
+              paintWx(ms);
+            }
+            _track.setOnTick(onClock);
+            playBtn.onclick = () => { const on = _track.toggle(); playBtn.textContent = on ? '⏸ ' + _t('Pause', 'Pausa') : '▶ ' + _t('Play', 'Reproduzir'); };
+            seek.oninput = () => _track.seek(seek.value / 1000);
+            host.querySelector('#f1-dr-speed').onclick = e => { const b = e.target.closest('button'); if (!b) return; _track.setSpeed(+b.dataset.s); host.querySelectorAll('#f1-dr-speed button').forEach(x => x.classList.toggle('on', x === b)); };
+            let showCode = true; const labelBtn = host.querySelector('#f1-dr-label');
+            labelBtn.onclick = () => { showCode = !showCode; _track.setLabelMode(showCode ? 'code' : 'num'); labelBtn.textContent = showCode ? 'ABC' : '#'; labelBtn.classList.toggle('on', !showCode); };
+            function seekToLap(L) { L = Math.max(1, Math.min(model.totalLaps, Math.round(L) || 1)); let t = model.lapStart[L]; if (t == null) return; const tn = model.lapStart[L + 1]; t += (tn != null ? (tn - t) : 6000) * 0.15; _track.seek(Math.max(0, t) / (_track.duration || 1)); }
+            lapIn.onchange = () => seekToLap(+lapIn.value);
+            host.querySelector('#f1-dr-lapprev').onclick = () => seekToLap((+lapIn.value || 1) - 1);
+            host.querySelector('#f1-dr-lapnext').onclick = () => seekToLap((+lapIn.value || 1) + 1);
+            host.querySelector('#f1-dr-fs').onclick = () => { const g = host.querySelector('#f1-dr-track'); if (!document.fullscreenElement) (g.requestFullscreen || g.webkitRequestFullscreen || (() => {})).call(g); else document.exitFullscreen && document.exitFullscreen(); };
+            onClock(0); _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');
+          }).catch(() => { stageLoad.innerHTML = err(); });
+        }
       } catch (e) { host.innerHTML = err(); }
     }
 
     /* live: focused track with the driver + the cars just ahead/behind, refreshed */
-    async function startDriverLive(sk, num) {
+    async function startDriverLive(sk, num, stageLoad) {
       const canvas = body.querySelector('#f1-dr-canvas'); if (!canvas) return;
       _track = F1Track.create(canvas);
       const meta = _curDrivers; const buf = {}; let t0 = null;
       _track.setDrivers(Object.fromEntries(Object.entries(meta).map(([k, d]) => [k, { code: d.name_acronym, colour: d.team_colour, num: d.driver_number }])));
+      const metaEl = body.querySelector('#f1-dr-meta');
+      F1Data.weather(sk).then(wx => { const w = (wx || [])[wx.length - 1]; if (w && metaEl) metaEl.innerHTML = (metaEl.dataset.race || '') + `<span class="f1-dr-wx">${w.rainfall ? '🌧️' : '☀️'} ${Math.round(w.air_temperature)}°C · ${_t('track', 'pista')} ${Math.round(w.track_temperature)}° · 💧 ${Math.round(w.humidity)}%</span>`; }).catch(() => {});
       async function poll() {
         try {
           const posRows = await F1Data.positions(sk).catch(() => []);
@@ -1070,13 +1090,13 @@ const F1Page = (function () {
             if (!_track._hasTrack && buf[lead]) { _track.setTrack(buf[lead].map(p => ({ x: p.x, y: p.y }))); _track._hasTrack = true; }
             const sub = {}; for (const n of focus) if (buf[n]) sub[n] = buf[n];
             _track.setReplay(sub); _track.setLiveClock(_track.duration); _track.setLeader(num);
+            if (stageLoad) stageLoad.style.display = 'none';
           }
         } catch {}
       }
       await poll(); _track.start();
-      _liveTimer = setInterval(() => { poll(); paintDriverLightRefresh(num); }, 6000);
+      _liveTimer = setInterval(poll, 6000);
     }
-    async function paintDriverLightRefresh() { /* order/gaps refresh handled by poll + track; full repaint on driver change */ }
   }
 
   /* ════════════════════════════ CIRCUIT ════════════════════════════ */

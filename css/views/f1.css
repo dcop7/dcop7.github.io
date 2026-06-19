@@ -406,3 +406,18 @@
   .f1-dr-grid { grid-template-columns: 1fr; }
   .f1-dr-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Piloto: focused replay track ── */
+.f1-dr-track { grid-column: 1 / -1; }
+.f1-dr-track-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-bottom: .55rem; }
+.f1-dr-track-top h4 { margin: 0; }
+.f1-dr-nbstrip { display: flex; gap: .4rem; flex-wrap: wrap; }
+.f1-nbc { display: inline-flex; align-items: center; gap: .3rem; font-size: .74rem; background: var(--card2); border: 1px solid var(--border);
+  border-left: 3px solid var(--c, #888); border-radius: var(--radius-xs); padding: .2rem .5rem; color: var(--text2); }
+.f1-nbc.self { background: rgba(var(--accent-rgb), .12); border-color: var(--border2); }
+.f1-nbc b { color: var(--text); font-weight: 700; }
+.f1-nbc small { color: var(--muted); text-transform: uppercase; font-size: .56rem; letter-spacing: .04em; }
+.f1-nbc.empty { color: var(--muted); }
+.f1-dr-track .f1-track-stage { aspect-ratio: 16/9; }
+.f1-dr-wx { margin-left: .6rem; color: var(--text2); font-size: .76rem; white-space: nowrap; }
+.f1-track-meta[data-race] { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem; }
