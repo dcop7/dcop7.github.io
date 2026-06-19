@@ -742,10 +742,15 @@ const ExplorerPage = (function () {
             <span class="ex-cat-line"></span>
           </div>
           <div class="ex-feature-grid">
+            <div class="ex-feature-card ex-feature-card--kb" data-tab="kb">
+              <span class="ex-feature-card-icon">🧭</span>
+              <div class="ex-feature-card-title">${_t('Explore by topic', 'Explorar por Temas')}</div>
+              <div class="ex-feature-card-desc">${_t('A knowledge base across 19 topics — from the Universe to video games — organised by sub-topic and depth (Highlights · Explore · Deep dive), with search, favourites and daily discovery.', 'Base de conhecimento em 19 temas — do Universo aos videojogos — por subtema e profundidade (Destaques · Explorar · Aprofundar), com pesquisa, favoritos e descoberta diária.')}</div>
+            </div>
             <div class="ex-feature-card ex-feature-card--timeline" data-tab="timeline">
               <span class="ex-feature-card-icon">⏳</span>
               <div class="ex-feature-card-title">${_t('Timeline', 'Linha do Tempo')}</div>
-              <div class="ex-feature-card-desc">${_t('Travel from the Big Bang to today: the Universe, Earth, life, the dinosaurs, civilisations, Portugal, science and space — searchable and filterable.', 'Viaja do Big Bang até hoje: o Universo, a Terra, a vida, os dinossauros, as civilizações, Portugal, a ciência e o espaço — com pesquisa e filtros.')}</div>
+              <div class="ex-feature-card-desc">${_t('Travel from the Big Bang to today on a single interactive timeline — searchable and filterable.', 'Viaja do Big Bang até hoje numa linha do tempo interativa única — com pesquisa e filtros.')}</div>
             </div>
             <div class="ex-feature-card ex-feature-card--data" data-tab="data">
               <span class="ex-feature-card-icon">📊</span>
@@ -1633,6 +1638,7 @@ const ExplorerPage = (function () {
     ['solar', '☀', _t('Solar System', 'Sistema Solar')],
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
     ['body', '🧬', _t('Human Body', 'Corpo Humano')],
+    ['kb', '🧭', _t('Topics', 'Temas')],
     ['timeline', '⏳', _t('Timeline', 'Linha do Tempo')],
     ['data', '📊', _t('World Data', 'Dados do Mundo')],
   ];
@@ -1696,6 +1702,7 @@ const ExplorerPage = (function () {
     if (tab !== 'body' && _curTab === 'body' && typeof HumanBodyExplorer !== 'undefined') HumanBodyExplorer.stop();
     if (tab !== 'timeline' && _curTab === 'timeline' && typeof TimelineExplorer !== 'undefined') TimelineExplorer.stop();
     if (tab !== 'data' && _curTab === 'data' && typeof WorldDataExplorer !== 'undefined') WorldDataExplorer.stop();
+    if (tab !== 'kb' && _curTab === 'kb' && typeof ExploreKB !== 'undefined') ExploreKB.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
       try { if (tab === 'globe') _globeGL.resumeAnimation(); else _globeGL.pauseAnimation(); } catch (_) {}
@@ -1757,6 +1764,11 @@ const ExplorerPage = (function () {
       if (typeof WorldDataExplorer !== 'undefined') {
         if (!sub.querySelector('.wd-wrap')) WorldDataExplorer.mount(sub);
         else WorldDataExplorer.resume();
+      }
+    } else if (tab === 'kb') {
+      if (typeof ExploreKB !== 'undefined') {
+        if (!sub.querySelector('.kb-wrap')) ExploreKB.mount(sub);
+        else ExploreKB.resume();
       }
     }
   }
