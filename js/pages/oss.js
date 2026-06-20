@@ -77,11 +77,35 @@ const OssPage = (function () {
   /* ════════════════════════════ HUB ════════════════════════════ */
   function railHTML(emoji, title, sub, items, railKey) {
     if (!items || !items.length) return '';
+    const more = railKey ? `<button class="oss-rail-more" data-rail="${railKey}">${_t('See all', 'Ver todos')} →</button>` : '';
     return `<section class="oss-rail">
-      <div class="oss-rail-hd"><h2>${emoji} ${esc(title)}</h2><p>${esc(sub)}</p>
-        <button class="oss-rail-more" data-rail="${railKey}">${_t('See all', 'Ver todos')} →</button></div>
-      <div class="oss-rail-track">${items.map(cardHTML).join('')}</div>
+      <div class="oss-rail-hd"><h2>${emoji} ${esc(title)}</h2>${sub ? `<p>${esc(sub)}</p>` : '<span style="flex:1"></span>'}${more}</div>
+      <div class="oss-rail-wrap">
+        <button class="oss-rail-nav prev" aria-label="${_t('Scroll left', 'Recuar')}" hidden>‹</button>
+        <div class="oss-rail-track">${items.map(cardHTML).join('')}</div>
+        <button class="oss-rail-nav next" aria-label="${_t('Scroll right', 'Avançar')}">›</button>
+      </div>
     </section>`;
+  }
+
+  /* Wire arrow buttons + edge state for every horizontal rail under `root`. */
+  function _wireRails(root) {
+    root.querySelectorAll('.oss-rail-wrap').forEach(wrap => {
+      const track = wrap.querySelector('.oss-rail-track');
+      const prev = wrap.querySelector('.oss-rail-nav.prev');
+      const next = wrap.querySelector('.oss-rail-nav.next');
+      if (!track || !prev || !next) return;
+      const sync = () => {
+        const max = track.scrollWidth - track.clientWidth - 2;
+        prev.hidden = track.scrollLeft <= 2;
+        next.hidden = track.scrollLeft >= max;
+      };
+      const step = () => Math.max(240, Math.round(track.clientWidth * 0.8));
+      prev.onclick = () => track.scrollBy({ left: -step(), behavior: 'smooth' });
+      next.onclick = () => track.scrollBy({ left: step(), behavior: 'smooth' });
+      track.addEventListener('scroll', sync, { passive: true });
+      requestAnimationFrame(sync);
+    });
   }
 
   function renderHub() {
@@ -324,6 +348,7 @@ const OssPage = (function () {
       e.stopPropagation();
       _filters = defFilters(); _filters.cat = el.dataset.cat; location.hash = 'oss/search';
     });
+    _wireRails(_root);
   }
 
   function surprise() {

@@ -14,6 +14,7 @@
     { "id": "automation",  "emoji": "🔁", "label": "Automação",                "label_en": "Automation",              "topics": ["automation", "workflow", "no-code", "scraping", "bot"] },
     { "id": "selfhosted",  "emoji": "🏠", "label": "Self-hosting",             "label_en": "Self-hosting",            "topics": ["self-hosted", "selfhosted", "homelab", "self-hosting"] },
     { "id": "science",     "emoji": "🔬", "label": "Ciência & Dados",          "label_en": "Science & Data",          "topics": ["data-science", "scientific-computing", "jupyter", "data-visualization", "data-engineering"] },
+    { "id": "photo",       "emoji": "📸", "label": "Fotografia & Imagem",      "label_en": "Photography & Imaging",   "topics": ["photography", "raw", "image-editing", "image-editor", "photo"] },
     { "id": "games",       "emoji": "🎮", "label": "Jogos & Gráficos",         "label_en": "Games & Graphics",        "topics": ["game-engine", "gamedev", "graphics", "godot", "game"] }
   ],
 
