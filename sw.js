@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v183';
+const CACHE = 'dcop7-v184';
 const STATIC = [
   '/',
   '/index.html',
@@ -55,6 +55,8 @@ const STATIC = [
   '/js/f1/f1-page.js',
   '/js/pages/oss.js',
   '/data/oss/index.json',
+  '/js/pages/discovery.js',
+  '/data/discovery/gaming/index.json',
   /* Pages */
   '/js/pages/links-data.js',
   '/js/pages/links-page.js',

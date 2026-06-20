@@ -1,0 +1,48 @@
+name: Refresh Product Discovery
+
+# Builds the Product Discovery deal catalogs (data/discovery/<category>/*) on a
+# schedule, fully server-side (no CORS, no browser rate limits): CheapShark +
+# Epic + Steam (all keyless), and IsThereAnyDeal only if the optional ITAD_KEY
+# secret is set (adds EUR prices + full price history). The browser reads only
+# the committed JSON. First category: gaming. See data/discovery/gaming/build-gaming.mjs.
+
+on:
+  schedule:
+    - cron: '15 */6 * * *'     # every 6 hours (deals + free games change often)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: discovery-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build gaming deals → static JSON
+        run: node data/discovery/gaming/build-gaming.mjs
+        env:
+          # Optional: free key from isthereanydeal.com/apps/ → EUR prices +
+          # full price-history charts. Build works fine without it (USD via CheapShark).
+          ITAD_KEY: ${{ secrets.ITAD_KEY }}
+
+      - name: Commit catalog if it changed
+        run: |
+          if [ -n "$(git status --porcelain data/discovery)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/discovery
+            git commit -m "chore(discovery): refresh gaming deals [skip ci]"
+            git push
+          else
+            echo "No deal changes — nothing to commit."
+          fi

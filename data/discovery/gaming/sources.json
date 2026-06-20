@@ -1,0 +1,27 @@
+{
+  "_doc": "Config for Product Discovery → Gaming (build-gaming.mjs, run by a GitHub Action). Keyless by default (CheapShark + Epic + Steam); set the optional ITAD_KEY secret to upgrade prices to EUR + full price history. Built to add categories (tech/books/…) and sources later.",
+  "category": "gaming",
+  "locale": { "country": "PT", "steamCC": "pt", "steamLang": "portuguese", "epicLocale": "pt-PT" },
+
+  "_comment_stores": "CheapShark store IDs to trust (skip grey-market keys). Names/icons come live from /stores; these are display overrides + an allowlist.",
+  "reputableStores": ["1", "7", "11", "15", "25", "3", "27", "23", "21"],
+  "storeMeta": {
+    "1":  { "name": "Steam",            "color": "#1b2838" },
+    "3":  { "name": "GreenManGaming",   "color": "#0b9444" },
+    "7":  { "name": "GOG",              "color": "#7b2ff7" },
+    "11": { "name": "Humble Store",     "color": "#cc2929" },
+    "15": { "name": "Fanatical",        "color": "#ff5a13" },
+    "21": { "name": "WinGameStore",     "color": "#2e7d32" },
+    "23": { "name": "GameBillet",       "color": "#e23b3b" },
+    "25": { "name": "Epic Games Store", "color": "#2a2a2a" },
+    "27": { "name": "Gamesplanet",      "color": "#1f6feb" }
+  },
+
+  "dealPages": 6,
+  "steamEnrichMax": 160,
+  "scoreWeights": { "savings": 0.34, "steamRating": 0.30, "dealRating": 0.18, "nearLow": 0.18 },
+  "verdict": { "greatMul": 1.05, "okMul": 1.4 },
+
+  "_comment_future": "Reserved slots for sources not yet integrated.",
+  "futureSources": ["prime", "itad", "stackshare"]
+}
