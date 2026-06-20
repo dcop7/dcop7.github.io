@@ -196,19 +196,30 @@ const BookDiscovery = (function () {
   }
 
   /* ════════════════════════ HUB ════════════════════════ */
+  /* category bar shared with Gaming — lets the user switch within Product Discovery */
+  function catBar() {
+    return `<div class="dc-cats">
+      <button class="dc-cat" data-go="discovery/gaming"><span>🎮</span>Gaming</button>
+      <button class="dc-cat on" data-go="discovery/books"><span>📚</span>${_t('Books', 'Livros')}</button>
+    </div>`;
+  }
+  function wireCats() { _root.querySelectorAll('.dc-cat[data-go]').forEach(el => el.onclick = () => { location.hash = el.dataset.go; }); }
+
   function renderHub() {
     _root.innerHTML = `<div class="bk-wrap">
       <header class="bk-hero">
-        <h1>📚 ${_t('Book Discovery', 'Book Discovery')}</h1>
+        <h1>📚 ${_t('Books', 'Livros')}</h1>
         <p>${_t('A library of discovery — explore by area, age and interest, ranked by real popularity.', 'Uma biblioteca de descoberta — explora por área, idade e interesse, ordenado por popularidade real.')}</p>
         <label class="bk-search"><span aria-hidden="true">🔍</span><input id="bk-q" type="search" placeholder="${_t('Search any book…', 'Pesquisar qualquer livro…')}" autocomplete="off"></label>
         <div class="bk-meta">${_t('Live data from Open Library', 'Dados ao vivo da Open Library')}</div>
       </header>
+      ${catBar()}
       <div class="bk-areas">${TAXONOMY.map(areaCard).join('')}</div>
     </div>`;
+    wireCats();
     const q = _root.querySelector('#bk-q');
-    q.addEventListener('keydown', e => { if (e.key === 'Enter' && q.value.trim()) { _filters = { q: q.value.trim() }; location.hash = 'books/search'; } });
-    _root.querySelectorAll('[data-leaf]').forEach(el => el.onclick = () => { location.hash = 'books/' + el.dataset.leaf; });
+    q.addEventListener('keydown', e => { if (e.key === 'Enter' && q.value.trim()) { _filters = { q: q.value.trim() }; location.hash = 'discovery/books/search'; } });
+    _root.querySelectorAll('[data-leaf]').forEach(el => el.onclick = () => { location.hash = 'discovery/books/' + el.dataset.leaf; });
   }
   function areaCard(a) {
     const chips = a.groups.map(g => `${g.label ? `<span class="bk-grp-lbl">${esc(g.label)}</span>` : ''}${g.leaves.map(l => `<button class="bk-leaf-chip" data-leaf="${esc(l.id)}">${esc(l.label)}</button>`).join('')}`).join('');
@@ -230,8 +241,8 @@ const BookDiscovery = (function () {
       ${railShell('🆕', _t('New releases', 'Novidades'), _t('Just published', 'Acabados de publicar'), 'new')}
       ${railShell('🎲', _t('Discover more', 'Descobrir outros'), _t('Beyond the obvious', 'Para além do óbvio'), 'disc')}
     </div>`;
-    _root.querySelector('#bk-back').onclick = () => { location.hash = 'books'; };
-    _root.querySelectorAll('.bk-chip[data-leaf]').forEach(el => el.onclick = () => { location.hash = 'books/' + el.dataset.leaf; });
+    _root.querySelector('#bk-back').onclick = () => { location.hash = 'discovery/books'; };
+    _root.querySelectorAll('.bk-chip[data-leaf]').forEach(el => el.onclick = () => { location.hash = 'discovery/books/' + el.dataset.leaf; });
 
     const q = leaf.q;
     // fire the rails live (each cached independently)
@@ -266,7 +277,7 @@ const BookDiscovery = (function () {
         wireBooks(_root);
       }).catch(() => { _root.querySelector('#bk-grid').innerHTML = `<div class="bk-empty">⚠ ${_t('Search failed.', 'Pesquisa falhou.')}</div>`; });
     };
-    _root.querySelector('#bk-back').onclick = () => { location.hash = 'books'; };
+    _root.querySelector('#bk-back').onclick = () => { location.hash = 'discovery/books'; };
     input.addEventListener('input', () => { clearTimeout(t); t = setTimeout(run, 350); });
     if (q0) run();
   }
@@ -274,7 +285,7 @@ const BookDiscovery = (function () {
   /* ════════════════════════ BOOK DETAIL ════════════════════════ */
   function renderDetail(olid) {
     _root.innerHTML = `<div class="bk-wrap"><div class="bk-topbar"><button class="bk-back" id="bk-back">← ${_t('Back', 'Voltar')}</button></div><div class="bk-loading"><div class="ex-loading-spinner"></div></div></div>`;
-    _root.querySelector('#bk-back').onclick = () => { if (history.length > 1) history.back(); else location.hash = 'books'; };
+    _root.querySelector('#bk-back').onclick = () => { if (history.length > 1) history.back(); else location.hash = 'discovery/books'; };
     BooksData.work(olid).then(async w => {
       if (!w) { _root.querySelector('.bk-loading').outerHTML = `<div class="bk-empty">${_t('Book not found.', 'Livro não encontrado.')}</div>`; return; }
       const title = w.title || '';
@@ -302,18 +313,18 @@ const BookDiscovery = (function () {
         </article>
         <section class="bk-rail" id="rail-similar"><div class="bk-rail-hd"><h2>🔗 ${_t('Similar books', 'Livros semelhantes')}</h2></div>
           <div class="bk-rail-wrap"><button class="bk-rail-nav prev" aria-label="‹" hidden>‹</button><div class="bk-rail-body">${skeletonRail()}</div><button class="bk-rail-nav next" aria-label="›" hidden>›</button></div></section>`;
-      _root.querySelector('#bk-back2').onclick = () => { if (history.length > 1) history.back(); else location.hash = 'books'; };
+      _root.querySelector('#bk-back2').onclick = () => { if (history.length > 1) history.back(); else location.hash = 'discovery/books'; };
       if (subjects[0]) BooksData.search('subject:' + JSON.stringify(subjects[0]).replace(/"/g, ''), { sort: 'readinglog', limit: 14 })
         .then(bs => fillRail('similar', bs.map(withScore).filter(b => b.id !== olid).slice(0, 12))).catch(() => fillRail('similar', []));
       else fillRail('similar', []);
     }).catch(() => { const l = _root.querySelector('.bk-loading'); if (l) l.outerHTML = `<div class="bk-empty">⚠ ${_t('Could not load the book.', 'Não foi possível carregar o livro.')}</div>`; });
   }
 
-  function wireBooks(scope) { (scope || _root).querySelectorAll('[data-book]').forEach(el => el.onclick = () => { location.hash = 'books/b/' + el.dataset.book; }); }
+  function wireBooks(scope) { (scope || _root).querySelectorAll('[data-book]').forEach(el => el.onclick = () => { location.hash = 'discovery/books/b/' + el.dataset.book; }); }
 
   /* ════════════════════════ PUBLIC ════════════════════════ */
   function show(sub) {
-    _root = document.getElementById('view-books'); if (!_root) return;
+    _root = document.getElementById('view-discovery'); if (!_root) return;   // Books is a category of Product Discovery
     if (!sub) { renderHub(); return; }
     if (sub === 'search') { renderSearch(); return; }
     if (sub.startsWith('b/')) { renderDetail(sub.slice(2)); return; }

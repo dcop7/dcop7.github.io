@@ -15,10 +15,7 @@ const DiscoveryPage = (function () {
 
   const CATS = [
     { id: 'gaming', emoji: '🎮', en: 'Gaming', pt: 'Gaming', ready: true },
-    { id: 'tech',   emoji: '💻', en: 'Tech Deals', pt: 'Tech', ready: false },
-    { id: 'books',  emoji: '📚', en: 'Books', pt: 'Livros', ready: false },
-    { id: 'toys',   emoji: '🧸', en: 'Toys', pt: 'Brinquedos', ready: false },
-    { id: 'home',   emoji: '🏠', en: 'Home', pt: 'Casa', ready: false },
+    { id: 'books',  emoji: '📚', en: 'Books', pt: 'Livros', ready: true },
   ];
   const VERDICT = {
     great: { ic: '🟢', en: 'Great buy', pt: 'Excelente compra', cls: 'great' },
@@ -50,11 +47,10 @@ const DiscoveryPage = (function () {
   async function ensureGames(cat) { if (_gamesCache[cat]) return _gamesCache[cat]; const d = await fetch(`data/discovery/${cat}/games.json`).then(r => r.json()); _gamesCache[cat] = d.games || []; return _gamesCache[cat]; }
   async function ensureDetail(cat, id) { const k = cat + '/' + id; if (_detail[k] !== undefined) return _detail[k]; _detail[k] = await fetch(`data/discovery/${cat}/g/${id}.json`).then(r => r.ok ? r.json() : null).catch(() => null); return _detail[k]; }
 
-  /* ── category tab bar ── */
+  /* ── category tab bar (Gaming · Livros) — shared shape with the books view ── */
   function catBar() {
-    return `<div class="dc-cats">${CATS.map(c => c.ready
-      ? `<button class="dc-cat${c.id === _cat ? ' on' : ''}" data-cat="${c.id}"><span>${c.emoji}</span>${_t(c.en, c.pt)}</button>`
-      : `<button class="dc-cat dc-cat-soon" disabled><span>${c.emoji}</span>${_t(c.en, c.pt)}<small>${_t('soon', 'em breve')}</small></button>`).join('')}</div>`;
+    return `<div class="dc-cats">${CATS.map(c =>
+      `<button class="dc-cat${c.id === _cat ? ' on' : ''}" data-cat="${c.id}"><span>${c.emoji}</span>${_t(c.en, c.pt)}</button>`).join('')}</div>`;
   }
 
   /* ── cards ── */
@@ -115,8 +111,8 @@ const DiscoveryPage = (function () {
   /* ════════════════════════════ HUB ════════════════════════════ */
   function renderHub() {
     _root.innerHTML = `<div class="dc-wrap"><div class="dc-loading"><div class="ex-loading-spinner"></div></div></div>`;
-    ensureIndex(_cat).then(ix => {
-      _index = ix; const b = ix.bundles, s = ix.stats, cur = ix.currency;
+    Promise.all([ensureIndex(_cat), ensureGames(_cat)]).then(([ix, games]) => {
+      _index = ix; _games = games; const b = ix.bundles, s = ix.stats, cur = ix.currency;
       const free = b.freeNow || [];
       const statCard = (ic, v, lbl) => `<div class="dc-stat"><span class="dc-stat-ic">${ic}</span><b>${v}</b><span>${esc(lbl)}</span></div>`;
       const stats = `<div class="dc-stats">
@@ -130,7 +126,11 @@ const DiscoveryPage = (function () {
       const freeSec = free.length ? `<section class="dc-rail"><div class="dc-rail-hd"><h2>🎁 ${_t('Free now', 'Grátis Agora')}</h2><p>${_t('Claim them before they are gone', 'Garante-os antes que desapareçam')}</p></div>
         <div class="dc-free-grid">${free.map(freeCard).join('')}</div></section>` : '';
 
-      const notice = !ix.hasHistory ? `<div class="dc-notice">ℹ️ ${_t('Deal prices in USD via CheapShark. Add an ITAD_KEY secret for EUR prices + full price-history charts.', 'Preços de promoções em USD via CheapShark. Adiciona o secret ITAD_KEY para preços em EUR + gráficos de histórico.')}</div>` : '';
+      // genre chip bar (browse discounts/lows by game category, not all mixed)
+      const genres = (ix.genres || []).filter(g => g.count >= 3);
+      const genreBar = `<div class="dc-genres" id="dc-genres">
+        <button class="dc-genre on" data-g="">${_t('All', 'Todos')}</button>
+        ${genres.map(g => `<button class="dc-genre" data-g="${esc(g.name)}">${esc(g.name)}</button>`).join('')}</div>`;
 
       _root.innerHTML = `<div class="dc-wrap">
         <header class="dc-hero">
@@ -142,17 +142,35 @@ const DiscoveryPage = (function () {
         ${catBar()}
         ${stats}
         ${freeSec}
-        ${rail('🔥', _t('Best discounts', 'Melhores descontos'), _t('Quality games worth grabbing', 'Jogos de qualidade que valem a pena'), (b.bestDeals || []).map(dealCard).join(''))}
-        ${rail('📉', _t('New historic lows', 'Novos mínimos históricos'), _t('At or near their lowest price ever', 'No mínimo de sempre ou perto dele'), (b.historicLows || []).map(dealCard).join(''))}
+        ${genreBar}
+        <div id="dc-genre-rails"></div>
         ${rail('⏳', _t('Ending soon', 'Promoções a terminar'), _t('Last chance', 'Última oportunidade'), (b.endingSoon || []).map(freeCard).join(''), 'dc-rail-free')}
-        ${notice}
         <div class="dc-credit">${_t('Data', 'Dados')}: CheapShark · Epic Games · Steam${ix.hasHistory ? ' · IsThereAnyDeal' : ''} — ${_t('prices may vary; always confirm on the store.', 'os preços podem variar; confirma sempre na loja.')}</div>
       </div>`;
+      paintGenreRails('');
+      _root.querySelector('#dc-genres').addEventListener('click', e => {
+        const btn = e.target.closest('[data-g]'); if (!btn) return;
+        _root.querySelectorAll('.dc-genre').forEach(x => x.classList.toggle('on', x === btn));
+        paintGenreRails(btn.dataset.g);
+      });
       wireCommon();
       const q = _root.querySelector('#dc-q');
       q.addEventListener('keydown', e => { if (e.key === 'Enter' && q.value.trim()) { _filters = defFilters(); _filters.q = q.value.trim(); location.hash = 'discovery/gaming/search'; } });
-      wireRails(_root);
     }).catch(failLoad);
+  }
+  /* recompute the discount + historic-low rails for the chosen genre (client-side from games.json) */
+  function paintGenreRails(genre) {
+    const host = _root.querySelector('#dc-genre-rails'); if (!host) return;
+    const inG = c => !genre || (c.genres || []).includes(genre);
+    const by = (arr, f, n) => arr.slice().sort(f).slice(0, n);
+    const best = by(_games.filter(c => inG(c) && c.cut > 0), (a, b) => b.score - a.score, 40);
+    const lows = by(_games.filter(c => inG(c) && c.pctLow != null && c.pctLow <= 0.15 && c.cut > 0), (a, b) => a.pctLow - b.pctLow, 40);
+    const label = genre ? ' · ' + genre : '';
+    host.innerHTML =
+      rail('🔥', _t('Best discounts', 'Melhores descontos') + label, _t('Quality games worth grabbing', 'Jogos de qualidade que valem a pena'), best.map(dealCard).join('')) +
+      rail('📉', _t('New historic lows', 'Novos mínimos históricos') + label, _t('At or near their lowest price ever', 'No mínimo de sempre ou perto dele'), lows.map(dealCard).join(''));
+    if (!best.length && !lows.length) host.innerHTML = `<div class="dc-empty">${_t('No deals in this category right now.', 'Sem promoções nesta categoria de momento.')}</div>`;
+    wireCommon(); wireRails(host);
   }
 
   /* ════════════════════════════ SEARCH ════════════════════════════ */
@@ -237,7 +255,11 @@ const DiscoveryPage = (function () {
         <span class="dc-store"><span class="dc-dot" style="background:${esc(s.storeColor)}"></span>${esc(s.store)}</span>
         <span class="dc-store-price">${s.cut > 0 ? `<span class="dc-cut sm">-${s.cut}%</span>` : ''}<b>${price(s.sale, d.cur)}</b>${s.cut > 0 ? `<span class="dc-was">${price(s.normal, d.cur)}</span>` : ''}</span>
         <span class="dc-btn sm">${_t('Get', 'Obter')} →</span></a>`).join('');
-      const histSec = (_index && _index.hasHistory && d.history) ? `<section class="dc-sec"><h3>📈 ${_t('Price history', 'Histórico de preços')}</h3>${priceChart(d.history)}<div class="dc-chart-note">${_t('Green line = all-time low', 'Linha verde = mínimo histórico')}</div></section>`
+      const hasHist = d.history && d.history.length >= 2;
+      const histSec = hasHist ? `<section class="dc-sec"><div class="dc-sec-hd"><h3>📈 ${_t('Price history', 'Histórico de preços')}</h3>
+          <div class="dc-ranges" id="dc-ranges">${[['30', _t('1m', '1 mês')], ['90', _t('3m', '3 meses')], ['365', _t('1y', '1 ano')], ['1095', _t('3y', '3 anos')], ['', _t('All', 'Tudo')]].map(([val, l], i) => `<button class="dc-range${i === 1 ? ' on' : ''}" data-d="${val}">${l}</button>`).join('')}</div></div>
+          <div id="dc-chart-host"></div>
+          <div class="dc-chart-note">${_t('Green dashed = all-time low', 'Tracejado verde = mínimo histórico')}</div></section>`
         : d.low != null ? `<section class="dc-sec"><h3>📉 ${_t('Current vs all-time low', 'Atual vs mínimo histórico')}</h3>
           <div class="dc-lowbars"><div><span>${_t('Now', 'Agora')}</span><div class="dc-bar"><i style="width:100%"></i></div><b>${price(d.sale, d.cur)}</b></div>
           <div><span>${_t('Lowest ever', 'Mínimo de sempre')}</span><div class="dc-bar low"><i style="width:${d.sale ? Math.round(d.low / d.sale * 100) : 100}%"></i></div><b>${price(d.low, d.cur)}</b></div></div>
@@ -259,6 +281,16 @@ const DiscoveryPage = (function () {
         ${histSec}
       </article></div>`;
       const b = _root.querySelector('#dc-back'); if (b) b.onclick = () => { if (history.length > 1) history.back(); else location.hash = 'discovery/gaming'; };
+      if (hasHist) {
+        const paintChart = days => {
+          const host = _root.querySelector('#dc-chart-host'); if (!host) return;
+          let h = d.history;
+          if (days) { const cut = Date.now() - (+days) * 864e5; const f = h.filter(p => p[0] >= cut); h = f.length >= 2 ? f : h; }
+          host.innerHTML = priceChart(h) || `<div class="dc-chart-note">${_t('Not enough data for this range yet.', 'Ainda sem dados suficientes para este intervalo.')}</div>`;
+        };
+        paintChart(90);
+        _root.querySelector('#dc-ranges').addEventListener('click', e => { const btn = e.target.closest('[data-d]'); if (!btn) return; _root.querySelectorAll('.dc-range').forEach(x => x.classList.toggle('on', x === btn)); paintChart(btn.dataset.d); });
+      }
     }).catch(failLoad);
   }
 

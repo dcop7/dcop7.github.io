@@ -5,20 +5,21 @@
 
   "_comment_stores": "CheapShark store IDs to trust (skip grey-market keys). Names/icons come live from /stores; these are display overrides + an allowlist.",
   "reputableStores": ["1", "7", "11", "15", "25", "3", "27", "23", "21"],
+  "_comment_search": "Direct store search URLs ({q}=encoded title) — used instead of the cheapshark.com/redirect affiliate link (which routes via cj.dotomi.com and is blocked by ad-blockers).",
   "storeMeta": {
-    "1":  { "name": "Steam",            "color": "#1b2838" },
-    "3":  { "name": "GreenManGaming",   "color": "#0b9444" },
-    "7":  { "name": "GOG",              "color": "#7b2ff7" },
-    "11": { "name": "Humble Store",     "color": "#cc2929" },
-    "15": { "name": "Fanatical",        "color": "#ff5a13" },
-    "21": { "name": "WinGameStore",     "color": "#2e7d32" },
-    "23": { "name": "GameBillet",       "color": "#e23b3b" },
-    "25": { "name": "Epic Games Store", "color": "#2a2a2a" },
-    "27": { "name": "Gamesplanet",      "color": "#1f6feb" }
+    "1":  { "name": "Steam",            "color": "#1b2838", "search": "https://store.steampowered.com/search/?term={q}" },
+    "3":  { "name": "GreenManGaming",   "color": "#0b9444", "search": "https://www.greenmangaming.com/search/?query={q}" },
+    "7":  { "name": "GOG",              "color": "#7b2ff7", "search": "https://www.gog.com/en/games?query={q}" },
+    "11": { "name": "Humble Store",     "color": "#cc2929", "search": "https://www.humblebundle.com/store/search?search={q}" },
+    "15": { "name": "Fanatical",        "color": "#ff5a13", "search": "https://www.fanatical.com/en/search?search={q}" },
+    "21": { "name": "WinGameStore",     "color": "#2e7d32", "search": "https://www.wingamestore.com/search/?q={q}" },
+    "23": { "name": "GameBillet",       "color": "#e23b3b", "search": "https://www.gamebillet.com/search?q={q}" },
+    "25": { "name": "Epic Games Store", "color": "#2a2a2a", "search": "https://store.epicgames.com/browse?q={q}" },
+    "27": { "name": "Gamesplanet",      "color": "#1f6feb", "search": "https://us.gamesplanet.com/search?query={q}" }
   },
 
   "dealPages": 6,
-  "steamEnrichMax": 160,
+  "steamEnrichMax": 260,
   "scoreWeights": { "savings": 0.34, "steamRating": 0.30, "dealRating": 0.18, "nearLow": 0.18 },
   "verdict": { "greatMul": 1.05, "okMul": 1.4 },
 

@@ -60,7 +60,6 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="f1"          href="#f1">${ICONS.f1}<span>${TN('nav.f1')}</span></a>
           <a class="sb-nav-item" data-route="oss"         href="#oss">${ICONS.oss}<span>${TN('nav.oss')}</span></a>
           <a class="sb-nav-item" data-route="discovery"   href="#discovery">${ICONS.discovery}<span>${TN('nav.discovery')}</span></a>
-          <a class="sb-nav-item" data-route="books"       href="#books">${ICONS.books}<span>${TN('nav.books')}</span></a>
           <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
           <a class="sb-nav-item" data-route="links"        href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools"        href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
@@ -198,12 +197,13 @@ const Nav = (function () {
       typeof OssPage !== 'undefined' && OssPage.show(ossSub);
     } else if (page === 'discovery') {
       document.getElementById('view-discovery')?.classList.add('active');
-      const dSub = path.startsWith('discovery/') ? path.slice(10) : null;   // e.g. "gaming" or "gaming/<id>"
-      typeof DiscoveryPage !== 'undefined' && DiscoveryPage.show(dSub);
-    } else if (page === 'books') {
-      document.getElementById('view-books')?.classList.add('active');
-      const bSub = path.startsWith('books/') ? path.slice(6) : null;   // "search" | "<leafId>" | "b/<olid>"
-      typeof BookDiscovery !== 'undefined' && BookDiscovery.show(bSub);
+      const dSub = path.startsWith('discovery/') ? path.slice(10) : null;   // "gaming…" | "books…"
+      if (dSub === 'books' || (dSub && dSub.startsWith('books/'))) {        // Books = a category of Product Discovery
+        const bSub = dSub === 'books' ? null : dSub.slice(6);              // "search" | "<leafId>" | "b/<olid>"
+        typeof BookDiscovery !== 'undefined' && BookDiscovery.show(bSub);
+      } else {
+        typeof DiscoveryPage !== 'undefined' && DiscoveryPage.show(dSub);
+      }
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
@@ -246,7 +246,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','books','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

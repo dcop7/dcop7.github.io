@@ -26,6 +26,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const G_DIR = join(HERE, 'g');
+const PSNAP = join(HERE, '_snap', 'prices.json');   // keyless price history (accrues per run)
 const cfg = JSON.parse(readFileSync(join(HERE, 'sources.json'), 'utf8'));
 
 const CS = 'https://www.cheapshark.com/api/1.0';
@@ -58,6 +59,25 @@ async function loadStores() {
   a.forEach(s => { STORES[s.storeID] = { name: (cfg.storeMeta[s.storeID]?.name) || s.storeName, color: cfg.storeMeta[s.storeID]?.color || '#888', icon: 'https://www.cheapshark.com' + (s.images?.icon || '') }; });
 }
 const reputable = id => cfg.reputableStores.includes(String(id));
+
+/* ── currency: CheapShark prices are USD → convert to EUR (keyless, ECB rate).
+   ITAD prices (when present) are already EUR and are not re-converted. ── */
+let FX = 0.92;
+async function fetchFx() {
+  const j = await jget('https://api.frankfurter.app/latest?from=USD&to=EUR', { label: 'fx' });
+  if (j?.rates?.EUR) FX = j.rates.EUR;
+  console.log(`  USD→EUR = ${FX}`);
+}
+const eur = v => v == null ? null : +(v * FX).toFixed(2);
+
+/* ── direct store links (NOT the cheapshark.com/redirect affiliate URL, which
+   routes through cj.dotomi.com and is blocked by ad-blockers). Steam → app
+   page; other stores → their own search by title. ── */
+function buyUrl(storeID, title, steamAppID) {
+  if (String(storeID) === '1' && steamAppID) return 'https://store.steampowered.com/app/' + steamAppID + '/';
+  const tmpl = cfg.storeMeta[String(storeID)]?.search;
+  return tmpl ? tmpl.replace('{q}', encodeURIComponent(title)) : 'https://store.steampowered.com/search/?term=' + encodeURIComponent(title);
+}
 
 /* ── CheapShark deals (paginated, two sorts: rating + savings) ── */
 const games = new Map();   // id → record
@@ -135,9 +155,9 @@ async function fetchCsFree() {
     if (freeNow.some(f => slug(f.title) === slug(title))) continue;   // dedup vs Epic
     freeNow.push({
       id: 'free-' + slug(title), title, store: STORES[d.storeID]?.name || 'Store', storeColor: STORES[d.storeID]?.color || '#888',
-      orig: '$' + (+d.normalPrice).toFixed(2), cur: '$', sale: 0, end: null,
+      orig: String(eur(+d.normalPrice)).replace('.', ',') + '€', cur: '€', sale: 0, end: null,
       image: d.thumb, steamAppID: d.steamAppID || null,
-      url: 'https://www.cheapshark.com/redirect?dealID=' + d.dealID, source: 'cheapshark',
+      url: buyUrl(d.storeID, title, d.steamAppID), source: 'cheapshark',
     });
   }
   console.log(`  free total: ${freeNow.length}`);
@@ -173,7 +193,7 @@ async function enrichItad() {
     try {
       const look = await jget(`https://api.isthereanydeal.com/games/lookup/v1?key=${ITAD_KEY}&appid=${g.steamAppID}`, { label: 'itad lookup' });
       const uid = look?.game?.id; if (!uid) continue;
-      const hist = await jget(`https://api.isthereanydeal.com/games/history/v2?key=${ITAD_KEY}&id=${uid}&since=${new Date(NOW - 400 * 864e5).toISOString()}`, { label: 'itad hist' });
+      const hist = await jget(`https://api.isthereanydeal.com/games/history/v2?key=${ITAD_KEY}&id=${uid}&country=PT&since=${new Date(NOW - 1100 * 864e5).toISOString()}`, { label: 'itad hist' });
       if (Array.isArray(hist) && hist.length) {
         g.history = hist.map(h => [Date.parse(h.timestamp), +(h.deal?.price?.amount ?? h.price?.amount)]).filter(p => p[1] >= 0);
         g.cur = '€';
@@ -208,20 +228,22 @@ function pctAboveLow(g) { const bd = bestDeal(g); return (bd && g.low > 0) ? (bd
 function card(g) {
   const bd = bestDeal(g);
   return {
-    id: g.id, title: g.title, thumb: g.cover || g.thumb, cur: g.cur, store: STORES[bd?.storeID]?.name || '',
-    storeColor: STORES[bd?.storeID]?.color || '#888', sale: bd ? bd.sale : null, normal: bd ? bd.normal : null,
-    cut: bd ? bd.savings : 0, low: g.low ?? null, lowDate: g.lowDate ?? null, pctLow: pctAboveLow(g),
+    id: g.id, title: g.title, thumb: g.cover || g.thumb, cur: '€', store: STORES[bd?.storeID]?.name || '',
+    storeColor: STORES[bd?.storeID]?.color || '#888', sale: bd ? eur(bd.sale) : null, normal: bd ? eur(bd.normal) : null,
+    cut: bd ? bd.savings : 0, low: g.low != null ? eur(g.low) : null, lowDate: g.lowDate ?? null, pctLow: pctAboveLow(g),
     score: dealScore(g), steamRating: g.steamRating || null, verdict: verdict(g),
     genres: g.genres || null, steamAppID: g.steamAppID || null,
+    url: bd ? buyUrl(bd.storeID, g.title, g.steamAppID) : null,
   };
 }
 function detail(g) {
+  const hist = (g.history && g.history.length) ? g.history : (g.histSeries || []);   // ITAD (EUR) > keyless snapshot
   return {
     ...card(g), descFull: g.descFull || '', release: g.release || null, platforms: g.platforms || [], eur: g.eur || null,
-    history: g.history || null,
+    history: hist.length ? hist : null,
     deals: (g.deals || []).slice().sort((a, b) => a.sale - b.sale).map(d => ({
       store: STORES[d.storeID]?.name || '', storeColor: STORES[d.storeID]?.color || '#888',
-      sale: d.sale, normal: d.normal, cut: d.savings, url: 'https://www.cheapshark.com/redirect?dealID=' + d.dealID,
+      sale: eur(d.sale), normal: eur(d.normal), cut: d.savings, url: buyUrl(d.storeID, g.title, g.steamAppID),
     })),
   };
 }
@@ -230,6 +252,22 @@ function detail(g) {
 function writeAll(hasHistory) {
   mkdirSync(G_DIR, { recursive: true });
   const all = [...games.values()].filter(g => bestDeal(g));
+
+  /* accrue a keyless price history: one EUR point per game per day, 3-year
+     window. Grows over time across Action runs; ITAD (when present) supplies a
+     backfilled series instead. */
+  const dayMs = Date.parse(new Date(NOW).toISOString().slice(0, 10));
+  let snap = {}; try { snap = JSON.parse(readFileSync(PSNAP, 'utf8')); } catch {}
+  const cutoff = NOW - 1095 * 864e5, newSnap = {};
+  for (const g of all) {
+    const p = eur(bestDeal(g).sale);
+    let series = (snap[g.id] || []).filter(pt => pt[0] >= cutoff);
+    const last = series[series.length - 1];
+    if (last && last[0] === dayMs) last[1] = p; else series.push([dayMs, p]);
+    newSnap[g.id] = series; g.histSeries = series;
+  }
+  mkdirSync(dirname(PSNAP), { recursive: true }); writeFileSync(PSNAP, JSON.stringify(newSnap));
+
   // prune stale detail files
   const ids = new Set(all.map(g => g.id));
   if (existsSync(G_DIR)) for (const f of readdirSync(G_DIR)) { if (!ids.has(f.replace(/\.json$/, ''))) try { rmSync(join(G_DIR, f)); } catch {} }
@@ -256,7 +294,7 @@ function writeAll(hasHistory) {
   const genres = Object.entries(genreSet).sort((a, b) => b[1] - a[1]).slice(0, 16).map(([name, count]) => ({ name, count }));
 
   const index = {
-    generatedAt: new Date(NOW).toISOString(), currency: hasHistory ? '€' : '$', hasHistory,
+    generatedAt: new Date(NOW).toISOString(), currency: '€', hasHistory,
     count: cards.length, stores: STORES, genres,
     bundles: { freeNow: active, bestDeals, historicLows, endingSoon }, stats,
   };
@@ -267,6 +305,7 @@ function writeAll(hasHistory) {
 
 /* ── main ── */
 (async () => {
+  await fetchFx();
   await loadStores();
   await fetchDeals();
   await fetchLows();
