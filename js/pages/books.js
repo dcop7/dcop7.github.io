@@ -52,6 +52,15 @@ const BookDiscovery = (function () {
       const data = await get(url);
       return (data.docs || []).map(normalize);
     }
+    /* precise lookup of one specific (curated) book by title (+ author) using
+       Open Library's title=/author= fields → the right edition, not a generic hit. */
+    async function lookup(title, author) {
+      const url = `${OL}/search.json?title=${encodeURIComponent(title)}${author ? '&author=' + encodeURIComponent(author) : ''}&limit=4&fields=${FIELDS}`;
+      let data; try { data = await get(url); } catch { return null; }
+      const docs = (data.docs || []).map(normalize);
+      // prefer a real match with a cover + the most editions (the canonical work)
+      return docs.sort((a, b) => (b.cover ? 1 : 0) - (a.cover ? 1 : 0) || (b.editions - a.editions) || (b.want - a.want))[0] || null;
+    }
     async function work(olid) {
       try { return await get(`${OL}/works/${olid}.json`); } catch { return null; }
     }
@@ -69,7 +78,7 @@ const BookDiscovery = (function () {
         return j.items?.[0]?.volumeInfo?.description || null;
       } catch { return null; }
     }
-    return { search, work, entity, coverUrl, gbDescription };
+    return { search, lookup, work, entity, coverUrl, gbDescription };
   })();
 
   /* ════════════════════════ BOOK SCORE ════════════════════════
@@ -141,6 +150,54 @@ const BookDiscovery = (function () {
   ];
   const LEAVES = {};
   TAXONOMY.forEach(a => a.groups.forEach(g => g.leaves.forEach(l => { LEAVES[l.id] = { ...l, areaId: a.id, area: a }; })));
+
+  /* ════════════════════════ CURATED REFERENCE BOOKS ════════════════════════
+     Per leaf, the best-known / most-recommended titles — shown FIRST (the
+     "Essenciais" rail), resolved precisely via BooksData.lookup (title+author)
+     so we don't depend on noisy generic subject queries. Canonical titles
+     (often the English original) resolve reliably on Open Library; a few PT
+     titles are included and simply skip if OL doesn't have them. {t,a}. */
+  const CURATED = {
+    // 👶 0–3
+    'k-animals': [{ t: 'The Very Hungry Caterpillar', a: 'Eric Carle' }, { t: 'Dear Zoo', a: 'Rod Campbell' }, { t: 'Brown Bear, Brown Bear, What Do You See?', a: 'Bill Martin' }, { t: "Where's Spot?", a: 'Eric Hill' }, { t: 'Goodnight Gorilla', a: 'Peggy Rathmann' }],
+    'k-sounds': [{ t: 'Moo, Baa, La La La!', a: 'Sandra Boynton' }, { t: "Don't Push the Button!", a: 'Bill Cotter' }, { t: 'The Very Busy Spider', a: 'Eric Carle' }, { t: 'Peek-a-Boo!', a: 'Janet Ahlberg' }],
+    'k-colors': [{ t: 'Press Here', a: 'Hervé Tullet' }, { t: 'Mix It Up!', a: 'Hervé Tullet' }, { t: 'The Mixed-Up Chameleon', a: 'Eric Carle' }, { t: "Little Blue and Little Yellow", a: 'Leo Lionni' }],
+    // 👶 4–6
+    'k-emotions': [{ t: 'The Colour Monster', a: 'Anna Llenas' }, { t: 'In My Heart', a: 'Jo Witek' }, { t: 'The Way I Feel', a: 'Janan Cain' }, { t: 'When Sophie Gets Angry', a: 'Molly Bang' }],
+    'k-friendship': [{ t: 'The Rainbow Fish', a: 'Marcus Pfister' }, { t: 'Should I Share My Ice Cream?', a: 'Mo Willems' }, { t: 'Frog and Toad Are Friends', a: 'Arnold Lobel' }, { t: 'Stick Man', a: 'Julia Donaldson' }],
+    'k-animals2': [{ t: 'The Gruffalo', a: 'Julia Donaldson' }, { t: "We're Going on a Bear Hunt", a: 'Michael Rosen' }, { t: 'Dear Zoo', a: 'Rod Campbell' }, { t: 'The Tiger Who Came to Tea', a: 'Judith Kerr' }],
+    'k-adventure': [{ t: 'Where the Wild Things Are', a: 'Maurice Sendak' }, { t: 'Room on the Broom', a: 'Julia Donaldson' }, { t: 'The Gruffalo', a: 'Julia Donaldson' }, { t: 'O Cuquedo', a: 'Clara Cunha' }],
+    'k-bedtime': [{ t: 'Guess How Much I Love You', a: 'Sam McBratney' }, { t: 'Goodnight Moon', a: 'Margaret Wise Brown' }, { t: 'The Rabbit Who Wants to Fall Asleep', a: 'Carl-Johan Forssén Ehrlin' }, { t: 'Llama Llama Red Pajama', a: 'Anna Dewdney' }],
+    // 👶 7–10
+    'k-science': [{ t: 'The Magic School Bus', a: 'Joanna Cole' }, { t: 'National Geographic Kids' }, { t: 'A Really Short History of Nearly Everything', a: 'Bill Bryson' }],
+    'k-history': [{ t: 'Horrible Histories', a: 'Terry Deary' }, { t: 'Who Was Albert Einstein?', a: 'Jess Brallier' }],
+    'k-fantasy': [{ t: "Harry Potter and the Philosopher's Stone", a: 'J. K. Rowling' }, { t: 'The Bad Guys', a: 'Aaron Blabey' }, { t: 'Diary of a Wimpy Kid', a: 'Jeff Kinney' }, { t: 'Charlie and the Chocolate Factory', a: 'Roald Dahl' }, { t: 'Dog Man', a: 'Dav Pilkey' }, { t: 'The Lion, the Witch and the Wardrobe', a: 'C. S. Lewis' }],
+    'k-mystery': [{ t: 'Diary of a Wimpy Kid', a: 'Jeff Kinney' }, { t: 'The 13-Storey Treehouse', a: 'Andy Griffiths' }, { t: 'The Boxcar Children', a: 'Gertrude Chandler Warner' }, { t: 'The Bad Guys', a: 'Aaron Blabey' }],
+    // 🧠 Desenvolvimento pessoal
+    'd-habits': [{ t: 'Atomic Habits', a: 'James Clear' }, { t: 'The Power of Habit', a: 'Charles Duhigg' }, { t: 'Tiny Habits', a: 'BJ Fogg' }],
+    'd-productivity': [{ t: 'Deep Work', a: 'Cal Newport' }, { t: 'Getting Things Done', a: 'David Allen' }, { t: 'The 7 Habits of Highly Effective People', a: 'Stephen Covey' }],
+    'd-communication': [{ t: 'How to Win Friends and Influence People', a: 'Dale Carnegie' }, { t: 'Never Split the Difference', a: 'Chris Voss' }, { t: 'Crucial Conversations', a: 'Kerry Patterson' }],
+    'd-eq': [{ t: 'Emotional Intelligence', a: 'Daniel Goleman' }, { t: 'The Body Keeps the Score', a: 'Bessel van der Kolk' }, { t: 'Daring Greatly', a: 'Brené Brown' }],
+    'd-finance': [{ t: 'The Psychology of Money', a: 'Morgan Housel' }, { t: 'Rich Dad, Poor Dad', a: 'Robert Kiyosaki' }, { t: 'The Richest Man in Babylon', a: 'George Clason' }],
+    // 🔬 Ciência
+    's-astronomy': [{ t: 'Cosmos', a: 'Carl Sagan' }, { t: 'A Brief History of Time', a: 'Stephen Hawking' }, { t: 'Astrophysics for People in a Hurry', a: 'Neil deGrasse Tyson' }],
+    's-biology': [{ t: 'The Selfish Gene', a: 'Richard Dawkins' }, { t: 'The Gene', a: 'Siddhartha Mukherjee' }],
+    's-body': [{ t: 'Being Mortal', a: 'Atul Gawande' }, { t: 'The Body', a: 'Bill Bryson' }],
+    's-evolution': [{ t: 'On the Origin of Species', a: 'Charles Darwin' }, { t: 'Sapiens', a: 'Yuval Noah Harari' }, { t: 'The Selfish Gene', a: 'Richard Dawkins' }],
+    's-ai': [{ t: 'Life 3.0', a: 'Max Tegmark' }, { t: 'Superintelligence', a: 'Nick Bostrom' }, { t: 'Human Compatible', a: 'Stuart Russell' }],
+    's-programming': [{ t: 'Clean Code', a: 'Robert Martin' }, { t: 'The Pragmatic Programmer', a: 'Andrew Hunt' }, { t: 'Structure and Interpretation of Computer Programs', a: 'Harold Abelson' }],
+    // 🌍 História e cultura
+    'h-civ': [{ t: 'Sapiens', a: 'Yuval Noah Harari' }, { t: 'Guns, Germs, and Steel', a: 'Jared Diamond' }, { t: 'A History of the World in 100 Objects', a: 'Neil MacGregor' }],
+    'h-wars': [{ t: 'The Second World War', a: 'Antony Beevor' }, { t: 'The Guns of August', a: 'Barbara Tuchman' }],
+    'h-portugal': [{ t: 'História de Portugal', a: 'José Hermano Saraiva' }, { t: 'Os Lusíadas', a: 'Luís de Camões' }],
+    'h-myth': [{ t: 'Mythos', a: 'Stephen Fry' }, { t: 'Norse Mythology', a: 'Neil Gaiman' }, { t: "D'Aulaires' Book of Greek Myths", a: 'Ingri d\'Aulaire' }],
+    // 🎭 Ficção
+    'f-fantasy': [{ t: 'The Lord of the Rings', a: 'J. R. R. Tolkien' }, { t: "Harry Potter and the Philosopher's Stone", a: 'J. K. Rowling' }, { t: 'A Game of Thrones', a: 'George R. R. Martin' }, { t: 'The Name of the Wind', a: 'Patrick Rothfuss' }, { t: 'Mistborn', a: 'Brandon Sanderson' }],
+    'f-scifi': [{ t: 'Dune', a: 'Frank Herbert' }, { t: '1984', a: 'George Orwell' }, { t: 'Project Hail Mary', a: 'Andy Weir' }, { t: 'The Three-Body Problem', a: 'Liu Cixin' }, { t: "The Hitchhiker's Guide to the Galaxy", a: 'Douglas Adams' }],
+    'f-mystery': [{ t: 'And Then There Were None', a: 'Agatha Christie' }, { t: 'Gone Girl', a: 'Gillian Flynn' }, { t: 'The Girl with the Dragon Tattoo', a: 'Stieg Larsson' }],
+    'f-horror': [{ t: 'It', a: 'Stephen King' }, { t: 'The Shining', a: 'Stephen King' }, { t: 'Dracula', a: 'Bram Stoker' }, { t: 'Frankenstein', a: 'Mary Shelley' }],
+    'f-romance': [{ t: 'Pride and Prejudice', a: 'Jane Austen' }, { t: 'It Ends with Us', a: 'Colleen Hoover' }, { t: 'The Notebook', a: 'Nicholas Sparks' }, { t: 'Me Before You', a: 'Jojo Moyes' }],
+  };
 
   /* PT bookstores — search by ISBN/title (no API). */
   const STORES = [
@@ -235,6 +292,7 @@ const BookDiscovery = (function () {
       <div class="bk-topbar"><button class="bk-back" id="bk-back">← ${_t('Library', 'Biblioteca')}</button>
         <div class="bk-crumb">${area.emoji} ${esc(_lang() === 'en' ? area.label_en : area.label)} <span>›</span> <b>${esc(leaf.label)}</b></div></div>
       <div class="bk-chips">${siblings.map(l => `<button class="bk-chip${l.id === leafId ? ' on' : ''}" data-leaf="${esc(l.id)}">${esc(l.label)}</button>`).join('')}</div>
+      ${(CURATED[leafId] || []).length ? railShell('📌', _t('Essentials', 'Essenciais'), _t('The best-known, recommended first', 'Os mais conhecidos, recomendados primeiro'), 'cur') : ''}
       ${railShell('⭐', _t('Most popular', 'Mais populares'), _t('Most-read in this topic', 'Os mais lidos neste tema'), 'pop')}
       ${railShell('🏆', _t('Must-read classics', 'Clássicos obrigatórios'), _t('Stood the test of time', 'Resistiram ao tempo'), 'classic')}
       ${railShell('🔥', _t('Trending', 'Tendências'), _t('Recent and rising', 'Recentes e a subir'), 'trend')}
@@ -245,7 +303,17 @@ const BookDiscovery = (function () {
     _root.querySelectorAll('.bk-chip[data-leaf]').forEach(el => el.onclick = () => { location.hash = 'discovery/books/' + el.dataset.leaf; });
 
     const q = leaf.q;
-    // fire the rails live (each cached independently)
+    // curated reference books FIRST (precise lookups), then dynamic discovery
+    const curated = CURATED[leafId] || [];
+    if (curated.length) {
+      Promise.all(curated.map(c => BooksData.lookup(c.t, c.a).catch(() => null)))
+        .then(bs => {
+          const seen = new Set();
+          const list = bs.filter(b => b && b.id && !seen.has(b.id) && seen.add(b.id)).map(withScore);
+          fillRail('cur', list);
+        }).catch(() => fillRail('cur', []));
+    }
+    // fire the dynamic rails live (each cached independently)
     load('pop', () => BooksData.search(q, { sort: 'readinglog', limit: 24 }).then(rankPop));
     load('classic', () => BooksData.search(q, { sort: 'editions', limit: 24 }).then(bs => bs.filter(b => b.ratingCount >= 5 || b.editions >= 8).slice(0, 20)));
     load('new', () => BooksData.search(q, { sort: 'new', limit: 24 }).then(bs => bs.filter(b => b.year >= YEAR - 6)));
