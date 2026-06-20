@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v180';
+const CACHE = 'dcop7-v181';
 const STATIC = [
   '/',
   '/index.html',
@@ -12,6 +12,7 @@ const STATIC = [
   '/css/views/eventos.css',
   '/css/views/noticias.css',
   '/css/views/f1.css',
+  '/css/views/oss.css',
   '/css/views/quiz.css',
   '/data/countries.json',
   '/data/worlddata/indicators.json',
@@ -50,6 +51,8 @@ const STATIC = [
   '/js/f1/f1-data.js',
   '/js/f1/f1-track.js',
   '/js/f1/f1-page.js',
+  '/js/pages/oss.js',
+  '/data/oss/index.json',
   /* Pages */
   '/js/pages/links-data.js',
   '/js/pages/links-page.js',

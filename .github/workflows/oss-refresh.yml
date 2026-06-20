@@ -1,0 +1,49 @@
+name: Refresh Descobrir Tech
+
+# Builds the open-source discovery catalog (data/oss/*) once a day. Runs
+# server-side (no CORS, no browser rate limits): GitHub Search + GraphQL
+# (authenticated with the automatic GITHUB_TOKEN — the repo owner manages no
+# key), Hacker News (Algolia), and community Awesome Lists. Correlates,
+# scores relevance and commits static JSON for GitHub Pages. The browser only
+# ever reads that JSON. See data/oss/build-oss.mjs.
+
+on:
+  schedule:
+    - cron: '20 5 * * *'      # ~daily (UTC), early morning
+  workflow_dispatch:           # manual run from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: oss-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build catalog → static JSON
+        run: node data/oss/build-oss.mjs
+        env:
+          # Automatic, repo-scoped token (no user-managed secret). Lifts rate
+          # limits and enables GraphQL enrichment (languages, watchers).
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit catalog if it changed
+        run: |
+          if [ -n "$(git status --porcelain data/oss)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/oss
+            git commit -m "chore(oss): refresh discovery catalog [skip ci]"
+            git push
+          else
+            echo "No catalog changes — nothing to commit."
+          fi

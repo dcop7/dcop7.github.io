@@ -32,6 +32,7 @@ const Nav = (function () {
     eventos:     svg('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>'),
     noticias:    svg('<path d="M4 4h13a1 1 0 0 1 1 1v14a1 1 0 0 0 1 1 1 1 0 0 0 1-1V8h2v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5a1 1 0 0 1 1-1z"/><path d="M7 8h7M7 12h7M7 16h4"/>'),
     f1:          svg('<line x1="5" y1="21" x2="5" y2="3"/><rect x="5" y="4" width="14" height="9"/><path d="M9.7 4v9M14.3 4v9M5 8.5h14"/>'),
+    oss:         svg('<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="13" y1="4" x2="11" y2="20"/>'),
     tools:       svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
     quiz:        svg('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
     humor:       svg('<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>'),
@@ -55,6 +56,7 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="eventos"     href="#eventos">${ICONS.eventos}<span>${TN('nav.eventos')}</span></a>
           <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>${TN('nav.ocorrencias')}</span></a>
           <a class="sb-nav-item" data-route="f1"          href="#f1">${ICONS.f1}<span>${TN('nav.f1')}</span></a>
+          <a class="sb-nav-item" data-route="oss"         href="#oss">${ICONS.oss}<span>${TN('nav.oss')}</span></a>
           <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
           <a class="sb-nav-item" data-route="links"        href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools"        href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
@@ -186,6 +188,10 @@ const Nav = (function () {
     } else if (page === 'f1') {
       document.getElementById('view-f1')?.classList.add('active');
       typeof F1Page !== 'undefined' && F1Page.show();
+    } else if (page === 'oss') {
+      document.getElementById('view-oss')?.classList.add('active');
+      const ossSub = path.startsWith('oss/') ? path.slice(4) : null;   // e.g. "search" or "owner/name"
+      typeof OssPage !== 'undefined' && OssPage.show(ossSub);
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
@@ -228,7 +234,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

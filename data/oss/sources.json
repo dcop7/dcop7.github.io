@@ -1,0 +1,45 @@
+{
+  "_doc": "Curated config for the Descobrir Tech (oss) section. Consumed by build-oss.mjs (GitHub Action). Categories drive GitHub Search discovery; awesome lists are parsed from their raw README; languages map to display colours. Add sources here — the schema is built to grow.",
+
+  "categories": [
+    { "id": "ai",          "emoji": "🤖", "label": "Inteligência Artificial", "label_en": "Artificial Intelligence", "topics": ["machine-learning", "deep-learning", "artificial-intelligence", "neural-network", "computer-vision"] },
+    { "id": "llm",         "emoji": "🧠", "label": "LLMs & IA Generativa",     "label_en": "LLMs & GenAI",            "topics": ["llm", "large-language-models", "rag", "agents", "gpt"] },
+    { "id": "web",         "emoji": "🌐", "label": "Desenvolvimento Web",      "label_en": "Web Development",         "topics": ["web-framework", "frontend", "fullstack", "javascript-framework", "web"] },
+    { "id": "mobile",      "emoji": "📱", "label": "Mobile",                   "label_en": "Mobile",                  "topics": ["android", "ios", "react-native", "flutter", "mobile"] },
+    { "id": "devops",      "emoji": "⚙️", "label": "DevOps",                   "label_en": "DevOps",                  "topics": ["devops", "ci-cd", "infrastructure-as-code", "observability", "monitoring"] },
+    { "id": "cloud",       "emoji": "☁️", "label": "Cloud & Containers",       "label_en": "Cloud & Containers",      "topics": ["kubernetes", "docker", "serverless", "cloud-native", "terraform"] },
+    { "id": "security",    "emoji": "🛡️", "label": "Segurança",                "label_en": "Security",                "topics": ["security", "cybersecurity", "pentesting", "infosec", "hacking"] },
+    { "id": "database",    "emoji": "🗄️", "label": "Bases de Dados",           "label_en": "Databases",               "topics": ["database", "sql", "nosql", "vector-database", "orm"] },
+    { "id": "tools",       "emoji": "🧰", "label": "Ferramentas de Dev",       "label_en": "Developer Tools",         "topics": ["cli", "developer-tools", "productivity", "terminal", "editor"] },
+    { "id": "automation",  "emoji": "🔁", "label": "Automação",                "label_en": "Automation",              "topics": ["automation", "workflow", "no-code", "scraping", "bot"] },
+    { "id": "selfhosted",  "emoji": "🏠", "label": "Self-hosting",             "label_en": "Self-hosting",            "topics": ["self-hosted", "selfhosted", "homelab", "self-hosting"] },
+    { "id": "science",     "emoji": "🔬", "label": "Ciência & Dados",          "label_en": "Science & Data",          "topics": ["data-science", "scientific-computing", "jupyter", "data-visualization", "data-engineering"] },
+    { "id": "games",       "emoji": "🎮", "label": "Jogos & Gráficos",         "label_en": "Games & Graphics",        "topics": ["game-engine", "gamedev", "graphics", "godot", "game"] }
+  ],
+
+  "awesome": [
+    { "id": "ai",          "repo": "owainlewis/awesome-artificial-intelligence", "branch": "master", "category": "ai",         "label": "Awesome AI",          "emoji": "🤖" },
+    { "id": "llm",         "repo": "Hannibal046/Awesome-LLM",                    "branch": "main",   "category": "llm",        "label": "Awesome LLM",         "emoji": "🧠" },
+    { "id": "selfhosted",  "repo": "awesome-selfhosted/awesome-selfhosted",      "branch": "master", "category": "selfhosted", "label": "Awesome Self-hosted", "emoji": "🏠" },
+    { "id": "devops",      "repo": "wmariuss/awesome-devops",                    "branch": "master", "category": "devops",     "label": "Awesome DevOps",      "emoji": "⚙️" },
+    { "id": "docker",      "repo": "veggiemonk/awesome-docker",                  "branch": "master", "category": "cloud",      "label": "Awesome Docker",      "emoji": "🐳" },
+    { "id": "kubernetes",  "repo": "ramitsurana/awesome-kubernetes",            "branch": "master", "category": "cloud",      "label": "Awesome Kubernetes",  "emoji": "☸️" },
+    { "id": "security",    "repo": "sbilly/awesome-security",                    "branch": "master", "category": "security",   "label": "Awesome Security",    "emoji": "🛡️" },
+    { "id": "python",      "repo": "vinta/awesome-python",                       "branch": "master", "category": "tools",      "label": "Awesome Python",      "emoji": "🐍" },
+    { "id": "javascript",  "repo": "sorrycc/awesome-javascript",                "branch": "master", "category": "web",        "label": "Awesome JavaScript",  "emoji": "📜" },
+    { "id": "typescript",  "repo": "dzharii/awesome-typescript",                "branch": "master", "category": "web",        "label": "Awesome TypeScript",  "emoji": "🔷" },
+    { "id": "react",       "repo": "enaqx/awesome-react",                        "branch": "master", "category": "web",        "label": "Awesome React",       "emoji": "⚛️" },
+    { "id": "vue",         "repo": "vuejs/awesome-vue",                          "branch": "master", "category": "web",        "label": "Awesome Vue",         "emoji": "💚" },
+    { "id": "rust",        "repo": "rust-unofficial/awesome-rust",              "branch": "master", "category": "tools",      "label": "Awesome Rust",        "emoji": "🦀" },
+    { "id": "go",          "repo": "avelino/awesome-go",                         "branch": "main",   "category": "tools",      "label": "Awesome Go",          "emoji": "🐹" }
+  ],
+
+  "languages": {
+    "JavaScript": "#f1e05a", "TypeScript": "#3178c6", "Python": "#3572A5", "Go": "#00ADD8",
+    "Rust": "#dea584", "C++": "#f34b7d", "C": "#555555", "Java": "#b07219", "C#": "#178600",
+    "Ruby": "#701516", "PHP": "#4F5D95", "Swift": "#F05138", "Kotlin": "#A97BFF", "Dart": "#00B4AB",
+    "Shell": "#89e051", "HTML": "#e34c26", "CSS": "#563d7c", "Vue": "#41b883", "Svelte": "#ff3e00",
+    "Jupyter Notebook": "#DA5B0B", "Lua": "#000080", "Zig": "#ec915c", "Elixir": "#6e4a7e",
+    "Scala": "#c22d40", "Haskell": "#5e5086", "Clojure": "#db5855", "Nix": "#7e7eff", "Julia": "#a270ba"
+  }
+}
