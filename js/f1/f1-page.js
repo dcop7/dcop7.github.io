@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════
-   F1 PAGE — experimental "Fórmula 1" section (a probe for a future Sport
-   area). Tabs: Corrida · Pista (live/replay) · Campeonato · Calendário ·
+   F1 PAGE — "Fórmula 1" section. Tabs: Corrida · Pista (live/replay) ·
+   Live Timing · Piloto · Tempos · Circuito · Campeonato · Calendário ·
    Estatísticas. Mobile-friendly, offline-first via F1Data, no backend.
    ══════════════════════════════════════════════════════════════════ */
 const F1Page = (function () {
@@ -13,6 +13,7 @@ const F1Page = (function () {
   const TABS = [
     { id: 'race',    ic: '🏁', en: 'Race',         pt: 'Corrida' },
     { id: 'track',   ic: '🏎️', en: 'Track',        pt: 'Pista' },
+    { id: 'live',    ic: '📊', en: 'Live Timing',   pt: 'Live Timing' },
     { id: 'driver',  ic: '👤', en: 'Driver',       pt: 'Piloto' },
     { id: 'timing',  ic: '📋', en: 'Timing',       pt: 'Tempos' },
     { id: 'circuit', ic: '🗺️', en: 'Circuit',      pt: 'Circuito' },
@@ -141,8 +142,7 @@ const F1Page = (function () {
     view.innerHTML = `
       <div class="f1-wrap">
         <header class="f1-head">
-          <div class="f1-title"><span class="f1-logo">🏎️</span> <span>Fórmula 1</span>
-            <span class="f1-exp">${_t('experimental', 'experimental')}</span></div>
+          <div class="f1-title"><span class="f1-logo">🏎️</span> <span>Fórmula 1</span></div>
           <nav class="f1-tabs" id="f1-tabs" role="tablist">
             ${TABS.map(t => `<button class="f1-tab${t.id === 'race' ? ' on' : ''}" data-tab="${t.id}" role="tab">
               <span class="f1-tab-ic">${t.ic}</span><span>${_t(t.en, t.pt)}</span></button>`).join('')}
@@ -168,7 +168,7 @@ const F1Page = (function () {
     if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
     const body = _root.querySelector('#f1-body');
     body.innerHTML = loading();
-    ({ race: renderRace, track: renderTrack, driver: renderDriver, timing: renderTiming, circuit: renderCircuit, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
+    ({ race: renderRace, track: renderTrack, live: renderLive, driver: renderDriver, timing: renderTiming, circuit: renderCircuit, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
   }
 
   /* ════════════════════════════ RACE ════════════════════════════ */
@@ -768,6 +768,252 @@ const F1Page = (function () {
     return `<svg class="f1-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${area}<path d="${d}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
   }
   const COMP_HEX = { SOFT: '#e8002d', MEDIUM: '#f6c700', HARD: '#e6e6e6', INTERMEDIATE: '#3fb950', WET: '#2d7dff' };
+
+  /* ════════════════════════════ LIVE TIMING ════════════════════════════
+     F1-TV-style configurable timing screen. Reuses F1Data (drivers, positions,
+     intervals, laps, stints, pit, race_control) — no extra API surface; the
+     data layer caches/serialises every call. Live polling + replay of the
+     latest race. User-configurable columns with quick presets, sector/tyre
+     colours, auto highlights and a per-driver detail drawer. Mobile: identity
+     columns stay pinned, the rest scroll horizontally. */
+  const LIVE_DEFAULT = ['team', 'tyre', 'tyreAge', 'last', 'best', 'gapLeader', 'interval'];
+
+  async function renderLive(body) {
+    body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
+    let info; try { info = await pastRacesAndLive(); } catch { body.innerHTML = err(); return; }
+    const { past, live } = info;
+    if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
+
+    /* ── column registry (id-only ones are pinned identity; rest toggle) ── */
+    const GRP = { tempos: ['Times', 'Tempos'], pneus: ['Tyres & strategy', 'Pneus & estratégia'], perf: ['Performance', 'Performance'], estado: ['Status', 'Estado'], id: ['Identity', 'Identidade'] };
+    const fmtGapVal = (v, pos, iv) => {
+      if (v == null || v === '') return pos === 1 ? (iv ? '—' : _t('LEADER', 'LÍDER')) : '—';
+      if (typeof v === 'string') return esc(v);
+      if (v === 0) return pos === 1 ? (iv ? '—' : _t('LEADER', 'LÍDER')) : '—';
+      return '+' + v.toFixed(3);
+    };
+    const secCell = (v, best, pb) => {
+      if (!v) return { h: '—' };
+      const c = best && Math.abs(v - best) < 0.0015 ? 'f1-purple' : (pb && v <= pb + 0.0015 ? 'f1-green' : '');
+      return { h: fmtLapTime(v), c };
+    };
+    const lapCell = (v, d, ctx) => {
+      if (!v) return { h: '—' };
+      const c = ctx.bLap && Math.abs(v - ctx.bLap) < 0.0015 ? 'f1-purple' : (d.best && Math.abs(v - d.best) < 0.0015 ? 'f1-green' : '');
+      return { h: fmtLapTime(v), c };
+    };
+    function stintBar(d) {
+      const total = (model && model.ctx.leaderLaps) || 1;
+      if (!d.stints.length) return '—';
+      return d.stints.map(s => {
+        const end = s.lap_end || total, laps = Math.max(1, end - s.lap_start + 1);
+        return `<span class="f1-lv-stint t-${String(s.compound || 'unknown').toLowerCase()}" title="${esc(s.compound || '?')} · ${_t('laps', 'voltas')} ${s.lap_start}–${end}">${tyre(s.compound).l}<small>${laps}</small></span>`;
+      }).join('<span class="f1-lv-pit">⛽</span>');
+    }
+    const C = {
+      team:    { grp: 'id', en: 'Team', pt: 'Equipa', cell: d => ({ h: esc(d.team || '') }) },
+      last:    { grp: 'tempos', en: 'Last lap', pt: 'Última volta', cell: (d, x) => lapCell(d.last, d, x) },
+      best:    { grp: 'tempos', en: 'Best lap', pt: 'Melhor volta', cell: (d, x) => ({ h: fmtLapTime(d.best), c: d.best && x.bLap && Math.abs(d.best - x.bLap) < 0.0015 ? 'f1-purple' : '' }) },
+      avg:     { grp: 'tempos', en: 'Avg (5)', pt: 'Média (5)', cell: d => ({ h: fmtLapTime(d.avg) }) },
+      gapLeader: { grp: 'tempos', en: 'Gap', pt: 'Gap líder', cell: d => ({ h: fmtGapVal(d.gapLeader, d.pos, false) }) },
+      interval: { grp: 'tempos', en: 'Interval', pt: 'Intervalo', cell: d => ({ h: fmtGapVal(d.interval, d.pos, true) }) },
+      s1:      { grp: 'tempos', en: 'S1', pt: 'S1', cell: (d, x) => secCell(d.s1, x.b1, d.pb1) },
+      s2:      { grp: 'tempos', en: 'S2', pt: 'S2', cell: (d, x) => secCell(d.s2, x.b2, d.pb2) },
+      s3:      { grp: 'tempos', en: 'S3', pt: 'S3', cell: (d, x) => secCell(d.s3, x.b3, d.pb3) },
+      tyre:    { grp: 'pneus', en: 'Tyre', pt: 'Pneu', cell: d => ({ h: d.tyreCompound ? `<span class="f1-tyre t-${d.tyreCompound.toLowerCase()}">${tyre(d.tyreCompound).l}</span>` : '—' }) },
+      tyreAge: { grp: 'pneus', en: 'Age', pt: 'Idade', cell: d => ({ h: d.tyreAge != null ? d.tyreAge + 'L' : '—' }) },
+      stops:   { grp: 'pneus', en: 'Stops', pt: 'Paragens', cell: d => ({ h: String(d.pitCount) }) },
+      stints:  { grp: 'pneus', en: 'Stints', pt: 'Stints', cell: d => ({ h: stintBar(d), c: 'f1-lv-stintcell' }) },
+      topSpeed: { grp: 'perf', en: 'Top km/h', pt: 'Vel máx', cell: (d, x) => ({ h: d.topSpeed || '—', c: d.topSpeed && d.topSpeed === x.topMax ? 'f1-purple' : '' }) },
+      consistency: { grp: 'perf', en: 'Consistency', pt: 'Consistência', cell: d => ({ h: d.consistency != null ? '±' + d.consistency.toFixed(2) + 's' : '—' }) },
+      paceDelta: { grp: 'perf', en: 'Δ pace', pt: 'Δ ritmo', cell: d => { if (!d.last || !d.best) return { h: '—' }; const dl = d.last - d.best; return dl <= 0.0015 ? { h: 'PB', c: 'f1-up' } : { h: '+' + dl.toFixed(3), c: '' }; } },
+      status:  { grp: 'estado', en: 'Status', pt: 'Estado', cell: d => d.dnf ? { h: 'DNF', c: 'f1-dn' } : d.lapsDown ? { h: esc(d.lapsDown), c: '' } : { h: '●', c: 'f1-up' } },
+      penalty: { grp: 'estado', en: 'Penalties', pt: 'Penalizações', cell: d => ({ h: d.penalties.length ? d.penalties.map(p => `<span class="f1-lv-pen">${esc(p.label)}</span>`).join(' ') : '' }) },
+    };
+    const ALL = Object.keys(C);
+    const PRESETS = {
+      basico:     { ic: '🏁', en: 'Basic', pt: 'Básico', cols: ['tyre', 'last', 'gapLeader'] },
+      estrategia: { ic: '🏎', en: 'Strategy', pt: 'Estratégia', cols: ['tyre', 'tyreAge', 'stops', 'stints'] },
+      ritmo:      { ic: '⏱', en: 'Pace', pt: 'Ritmo', cols: ['last', 'best', 'avg', 's1', 's2', 's3', 'interval'] },
+      engenheiro: { ic: '🧑‍🔧', en: 'Engineer', pt: 'Engenheiro', cols: ALL.slice() },
+    };
+    const loadCols = () => { try { const a = JSON.parse(localStorage.getItem('f1:live:cols')); if (Array.isArray(a)) return a.filter(x => C[x]); } catch {} return LIVE_DEFAULT.slice(); };
+    const saveCols = c => { try { localStorage.setItem('f1:live:cols', JSON.stringify(c)); } catch {} };
+    let cols = loadCols();
+    let preset = localStorage.getItem('f1:live:preset') || 'custom';
+    let model = null;
+
+    body.innerHTML = `
+      <div class="f1-live-timing">
+        <div class="f1-track-head">
+          ${raceSelect(past, live, 'f1-lv-sel')}
+          <div class="f1-track-meta" id="f1-lv-meta"></div>
+          <div class="f1-weather" id="f1-lv-wx"></div>
+          <button class="f1-lv-cfg-btn" id="f1-lv-cfg">⚙️ <span>${_t('Customise data', 'Personalizar dados')}</span></button>
+        </div>
+        <div class="f1-lv-presets" id="f1-lv-presets" role="tablist">
+          ${Object.entries(PRESETS).map(([k, p]) => `<button class="f1-lv-preset${preset === k ? ' on' : ''}" data-preset="${k}">${p.ic} ${_t(p.en, p.pt)}</button>`).join('')}
+        </div>
+        <div class="f1-lv-legend">${_t('🟣 session best · 🟢 personal best · ⚡ fastest lap · tap a driver for detail', '🟣 melhor da sessão · 🟢 melhor pessoal · ⚡ volta mais rápida · toca num piloto para detalhe')}</div>
+        <div id="f1-lv-body">${loading()}</div>
+        <div class="f1-lv-cfg-panel" id="f1-lv-cfg-panel" hidden></div>
+        <div class="f1-lv-driver" id="f1-lv-driver" hidden></div>
+      </div>`;
+
+    const sel = body.querySelector('#f1-lv-sel');
+    if (sel && past.length) sel.value = String(past[past.length - 1].session_key);
+    if (sel) sel.addEventListener('change', () => { sel.disabled = false; load(+sel.value, false); });
+    const gl = body.querySelector('[data-golive]'); if (gl) gl.addEventListener('click', () => load(live.session_key, true));
+    body.querySelector('#f1-lv-cfg').addEventListener('click', toggleCfg);
+    body.querySelector('#f1-lv-presets').addEventListener('click', e => {
+      const b = e.target.closest('[data-preset]'); if (!b) return;
+      preset = b.dataset.preset;
+      cols = PRESETS[preset].cols.slice();
+      saveCols(cols); try { localStorage.setItem('f1:live:preset', preset); } catch {}
+      body.querySelectorAll('.f1-lv-preset').forEach(x => x.classList.toggle('on', x.dataset.preset === preset));
+      paint();
+    });
+
+    load(live ? live.session_key : +sel.value, !!live);
+
+    function load(sk, isLive) {
+      clearInterval(_liveTimer); _liveTimer = null;
+      const host = body.querySelector('#f1-lv-body');
+      async function run() {
+        try {
+          model = await buildModel(sk);
+          const metaEl = body.querySelector('#f1-lv-meta');
+          if (metaEl) metaEl.innerHTML = `<b>${esc(model.race.circuit_short_name || '')}</b> · ${esc(model.race.country_name || '')} ${model.race.year || ''} ${isLive ? '<span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''}`;
+          const wxEl = body.querySelector('#f1-lv-wx'), w = model.wx;
+          if (w && wxEl) wxEl.innerHTML = `<span>${w.rainfall ? '🌧️' : '☀️'} ${Math.round(w.air_temperature)}°C</span><span>${_t('track', 'pista')} ${Math.round(w.track_temperature)}°</span>`;
+          if (!model.drivers.length) { host.innerHTML = err(_t('No timing data for this race.', 'Sem dados de tempos para esta corrida.')); return; }
+          paint();
+        } catch (e) { host.innerHTML = err(); }
+      }
+      run();
+      if (isLive) _liveTimer = setInterval(run, 5000);
+    }
+
+    async function buildModel(sk) {
+      const [drv, lapRows, stintRows, pitRows, posRows, intRows, rcRows, wxRows] = await Promise.all([
+        F1Data.drivers(sk), F1Data.laps(sk).catch(() => []), F1Data.stints(sk).catch(() => []),
+        F1Data.pit(sk).catch(() => []), F1Data.positions(sk).catch(() => []),
+        F1Data.intervals(sk).catch(() => []), F1Data.raceControl(sk).catch(() => []), F1Data.weather(sk).catch(() => []),
+      ]);
+      const meta = {}; (drv || []).forEach(d => meta[d.driver_number] = d);
+      const order = F1Data.latestOrder(posRows), posOf = {}; order.forEach(o => posOf[o.driver_number] = o.position);
+      const intMap = F1Data.latestIntervals(intRows), pen = parsePenalties(rcRows);
+      const posByD = {}; for (const r of (posRows || [])) (posByD[r.driver_number] = posByD[r.driver_number] || []).push(r);
+      for (const n in posByD) posByD[n].sort((a, b) => (a.date < b.date ? -1 : 1));
+      const stintsByD = {}; for (const s of (stintRows || [])) (stintsByD[s.driver_number] = stintsByD[s.driver_number] || []).push(s);
+      for (const n in stintsByD) stintsByD[n].sort((a, b) => a.lap_start - b.lap_start);
+      const pitByD = {}; for (const p of (pitRows || [])) (pitByD[p.driver_number] = pitByD[p.driver_number] || []).push(p);
+      const lapsByD = {}; for (const l of (lapRows || [])) (lapsByD[l.driver_number] = lapsByD[l.driver_number] || []).push(l);
+      for (const n in lapsByD) lapsByD[n].sort((a, b) => a.lap_number - b.lap_number);
+      const minOf = (a, k) => { let m = Infinity; for (const x of a) if (x[k] && x[k] < m) m = x[k]; return m === Infinity ? null : m; };
+      const stdev = a => { const mu = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - mu) ** 2, 0) / a.length); };
+
+      let leaderLaps = 0;
+      const drivers = (drv || []).map(m => {
+        const num = m.driver_number, ls = lapsByD[num] || [], done = ls.filter(l => l.lap_duration > 0);
+        const lapsCount = ls.length ? Math.max(...ls.map(l => l.lap_number || 0)) : 0;
+        leaderLaps = Math.max(leaderLaps, lapsCount);
+        const lastLap = [...done].reverse()[0] || null;
+        const best = done.length ? Math.min(...done.map(l => l.lap_duration)) : null;
+        const recent = done.slice(-5).map(l => l.lap_duration);
+        const st = stintsByD[num] || [], cur = st[st.length - 1];
+        let topSpeed = 0; for (const l of ls) for (const sp of [l.i1_speed, l.i2_speed, l.st_speed]) if (sp && sp > topSpeed) topSpeed = sp;
+        const iv = intMap.get(num) || {};
+        return {
+          num, code: m.name_acronym || String(num), name: m.full_name || '', team: m.team_name || '', colour: m.team_colour,
+          pos: posOf[num] || null, startPos: posByD[num] ? posByD[num][0].position : null,
+          gapLeader: iv.gap_to_leader, interval: iv.interval,
+          last: lastLap ? lastLap.lap_duration : null,
+          s1: lastLap ? lastLap.duration_sector_1 : null, s2: lastLap ? lastLap.duration_sector_2 : null, s3: lastLap ? lastLap.duration_sector_3 : null,
+          pb1: minOf(done, 'duration_sector_1'), pb2: minOf(done, 'duration_sector_2'), pb3: minOf(done, 'duration_sector_3'),
+          best, bestLapNum: best ? (done.find(l => l.lap_duration === best) || {}).lap_number : null,
+          lapsCount, avg: recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : null,
+          consistency: recent.length >= 3 ? stdev(recent) : null, topSpeed: topSpeed || null,
+          tyreCompound: cur ? cur.compound : null, tyreAge: cur ? (cur.tyre_age_at_start || 0) + Math.max(0, lapsCount - cur.lap_start + 1) : null,
+          stints: st.map(s => ({ compound: s.compound, lap_start: s.lap_start, lap_end: s.lap_end })),
+          pitCount: (pitByD[num] || []).length, pitLaps: (pitByD[num] || []).map(p => p.lap_number),
+          penalties: pen[num] || [], inOrder: posOf[num] != null,
+          posTrace: (posByD[num] || []).map((r, i) => ({ x: i, y: r.position })),
+          lapTrace: done.map(l => ({ x: l.lap_number, y: l.lap_duration })),
+        };
+      });
+      drivers.forEach(d => {
+        d.dnf = !d.inOrder && leaderLaps > 3;
+        d.lapsDown = typeof d.gapLeader === 'string' && /LAP/i.test(d.gapLeader) ? d.gapLeader.toUpperCase() : null;
+      });
+      drivers.sort((a, b) => (a.pos || 999) - (b.pos || 999) || b.lapsCount - a.lapsCount);
+      const mn = arr => { const v = arr.filter(x => x); return v.length ? Math.min(...v) : null; };
+      const ctx = { bLap: mn(drivers.map(d => d.best)), b1: mn(drivers.map(d => d.pb1)), b2: mn(drivers.map(d => d.pb2)), b3: mn(drivers.map(d => d.pb3)), topMax: Math.max(0, ...drivers.map(d => d.topSpeed || 0)) || null, leaderLaps, fastestNum: null };
+      let bv = Infinity; drivers.forEach(d => { if (d.best && d.best < bv) { bv = d.best; ctx.fastestNum = d.num; } });
+      return { drivers, ctx, race: (past.find(r => r.session_key === sk)) || live || {}, wx: (wxRows || [])[wxRows.length - 1] };
+    }
+
+    function paint() {
+      if (!model) return;
+      const host = body.querySelector('#f1-lv-body');
+      const ids = ALL.filter(id => cols.includes(id));
+      const ths = `<th class="f1-lv-stick">${_t('Pos', 'Pos')}</th><th class="f1-lv-stick2">${_t('Driver', 'Piloto')}</th>` + ids.map(id => `<th>${_t(C[id].en, C[id].pt)}</th>`).join('');
+      const rows = model.drivers.map(d => {
+        const cells = ids.map(id => { const r = C[id].cell(d, model.ctx) || {}; return `<td class="${r.c || ''}">${r.h != null ? r.h : ''}</td>`; }).join('');
+        const fast = d.num === model.ctx.fastestNum, gain = (d.startPos && d.pos) ? d.startPos - d.pos : 0;
+        const badges = `${fast ? `<span class="f1-lv-fl" title="${_t('Fastest lap', 'Volta mais rápida')}">⚡</span>` : ''}${gain >= 2 ? `<span class="f1-up">▲${gain}</span>` : gain <= -2 ? `<span class="f1-dn">▼${-gain}</span>` : ''}`;
+        return `<tr data-num="${d.num}" class="${d.dnf ? 'f1-lv-dnf' : ''}">
+          <td class="f1-lv-pos f1-lv-stick" style="border-left-color:${teamCol(d.colour)}">${d.pos || '–'}</td>
+          <td class="f1-lv-drv f1-lv-stick2"><span class="f1-lv-num">${d.num}</span><b>${esc(d.code)}</b>${badges ? `<span class="f1-lv-badges">${badges}</span>` : ''}</td>
+          ${cells}</tr>`;
+      }).join('');
+      host.innerHTML = `<div class="f1-lv-wrap"><table class="f1-lv-table"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table></div>`;
+      host.querySelectorAll('tr[data-num]').forEach(tr => tr.addEventListener('click', () => openDriver(+tr.dataset.num)));
+    }
+
+    function toggleCfg() {
+      const p = body.querySelector('#f1-lv-cfg-panel');
+      if (!p.hidden) { p.classList.remove('open'); setTimeout(() => p.hidden = true, 180); return; }
+      const groups = ['tempos', 'pneus', 'perf', 'estado', 'id'];
+      p.innerHTML = `<div class="f1-lv-cfg-hd"><b>${_t('Customise columns', 'Personalizar colunas')}</b><button class="f1-lv-dclose" id="f1-lv-cfg-x">✕</button></div>
+        <p class="f1-lv-cfg-note">${_t('Pos, number and driver are always shown.', 'Posição, número e piloto são sempre mostrados.')}</p>
+        ${groups.map(g => `<div class="f1-lv-cfg-grp"><h4>${_t(GRP[g][0], GRP[g][1])}</h4><div class="f1-lv-cfg-cols">${ALL.filter(id => C[id].grp === g).map(id => `<label class="f1-lv-cfg-chk"><input type="checkbox" data-col="${id}"${cols.includes(id) ? ' checked' : ''}> ${_t(C[id].en, C[id].pt)}</label>`).join('')}</div></div>`).join('')}`;
+      p.hidden = false; requestAnimationFrame(() => p.classList.add('open'));
+      p.querySelector('#f1-lv-cfg-x').onclick = toggleCfg;
+      p.querySelectorAll('input[data-col]').forEach(cb => cb.onchange = () => {
+        const id = cb.dataset.col;
+        if (cb.checked) { if (!cols.includes(id)) cols.push(id); } else cols = cols.filter(x => x !== id);
+        preset = 'custom'; saveCols(cols); try { localStorage.setItem('f1:live:preset', 'custom'); } catch {}
+        body.querySelectorAll('.f1-lv-preset').forEach(x => x.classList.remove('on'));
+        paint();
+      });
+    }
+
+    function openDriver(num) {
+      const d = model.drivers.find(x => x.num === num); if (!d) return;
+      const p = body.querySelector('#f1-lv-driver'), x = model.ctx;
+      p.innerHTML = `
+        <button class="f1-lv-dclose" id="f1-lv-dx" aria-label="${_t('Close', 'Fechar')}">✕</button>
+        <div class="f1-lv-dhead"><span class="f1-lv-num big" style="border-color:${teamCol(d.colour)}">${d.num}</span>
+          <div><div class="f1-lv-dname">${esc(d.code)} — ${esc(d.name)}</div><div class="f1-lv-dteam"><span class="f1-team-dot" style="background:${teamCol(d.colour)}"></span>${esc(d.team)} · P${d.pos || '–'}${d.dnf ? ' · DNF' : ''}</div></div></div>
+        <div class="f1-lv-dstat">
+          <div><b class="f1-purple">${fmtLapTime(d.best)}</b><span>${_t('Best lap', 'Melhor volta')}</span></div>
+          <div><b>${d.topSpeed || '—'}</b><span>${_t('Top km/h', 'Vel máx')}</span></div>
+          <div><b>${d.pitCount}</b><span>${_t('Stops', 'Paragens')}</span></div>
+          <div><b>${d.tyreCompound ? tyre(d.tyreCompound).l + ' · ' + d.tyreAge + 'L' : '—'}</b><span>${_t('Tyre', 'Pneu')}</span></div>
+        </div>
+        <div class="f1-lv-dsec"><h4>${_t('Lap times', 'Tempos por volta')}</h4>${spark(d.lapTrace, 320, 70, { color: '#ff2d24', invert: true, fill: true }) || '<div class="f1-lv-none">—</div>'}</div>
+        <div class="f1-lv-dsec"><h4>${_t('Position over the race', 'Posição ao longo da corrida')}</h4>${spark(d.posTrace, 320, 56, { color: '#7fd3ff', invert: true }) || '<div class="f1-lv-none">—</div>'}</div>
+        <div class="f1-lv-dsec"><h4>${_t('Tyre strategy', 'Estratégia de pneus')}</h4><div class="f1-lv-stints">${stintBar(d)}</div></div>
+        <div class="f1-lv-dsec"><h4>${_t('Best sectors', 'Melhores setores')}</h4><div class="f1-lv-dsectors">
+          <span class="${d.pb1 && d.pb1 === x.b1 ? 'f1-purple' : ''}">S1 ${fmtLapTime(d.pb1)}</span>
+          <span class="${d.pb2 && d.pb2 === x.b2 ? 'f1-purple' : ''}">S2 ${fmtLapTime(d.pb2)}</span>
+          <span class="${d.pb3 && d.pb3 === x.b3 ? 'f1-purple' : ''}">S3 ${fmtLapTime(d.pb3)}</span></div></div>
+        ${d.penalties.length ? `<div class="f1-lv-dsec"><h4>${_t('Penalties', 'Penalizações')}</h4>${d.penalties.map(pn => `<div class="f1-lv-dpen"><b>${esc(pn.label)}</b> ${esc(pn.reason || '')}</div>`).join('')}</div>` : ''}`;
+      p.hidden = false; requestAnimationFrame(() => p.classList.add('open'));
+      p.querySelector('#f1-lv-dx').onclick = () => { p.classList.remove('open'); setTimeout(() => p.hidden = true, 200); };
+    }
+  }
 
   /* ════════════════════════════ TIMING (Tempos) ════════════════════════════
      Full per-race stats with NO track: best lap, sectors, top speed, pit stops,

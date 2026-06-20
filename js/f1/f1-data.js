@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════
-   F1 DATA — offline-first data layer for the (experimental) Fórmula 1
-   section. Pure browser fetch, no backend (both APIs send
+   F1 DATA — offline-first data layer for the Fórmula 1 section.
+   Pure browser fetch, no backend (both APIs send
    `access-control-allow-origin: *`).
 
    Sources:
