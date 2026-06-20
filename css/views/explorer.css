@@ -2260,6 +2260,53 @@ body.light .pt-capital-label .pt-cap-dot {
 }
 .ex-solar-credit{position:absolute;bottom:.5rem;right:.7rem;z-index:6;font-size:.58rem;color:var(--muted);opacity:.6;pointer-events:auto}.ex-solar-credit a{color:var(--muted);text-decoration:underline}
 
+/* ══ Via Láctea (gx) — search · filters · smart labels ══ */
+.gx-wrap { position: relative; }
+/* search box (top-left) */
+.gx-search { position: absolute; top: .7rem; left: .7rem; z-index: 8; width: min(340px, calc(100% - 1.4rem)); }
+.gx-search-ic { position: absolute; left: .7rem; top: 50%; transform: translateY(-50%); font-size: .85rem; opacity: .7; pointer-events: none; }
+.gx-search input { width: 100%; padding: .55rem .8rem .55rem 2.1rem; border-radius: 999px; border: 1px solid var(--border2);
+  background: color-mix(in srgb, var(--card) 86%, transparent); color: var(--text); font: inherit; font-size: .85rem;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); outline: none; }
+.gx-search input:focus { border-color: rgba(var(--accent-rgb), .6); }
+.gx-results { position: absolute; top: calc(100% + .35rem); left: 0; right: 0; max-height: 52vh; overflow-y: auto;
+  background: var(--card); border: 1px solid var(--border2); border-radius: var(--radius-sm); box-shadow: 0 14px 40px -12px rgba(0,0,0,.6); padding: .25rem; }
+.gx-result { display: flex; align-items: center; gap: .55rem; width: 100%; text-align: left; cursor: pointer;
+  background: none; border: none; color: var(--text); padding: .45rem .55rem; border-radius: var(--radius-xs); font: inherit; }
+.gx-result:hover { background: var(--card2); }
+.gx-result-ic { font-size: 1rem; width: 1.4rem; text-align: center; flex-shrink: 0; }
+.gx-result-tx { min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.gx-result-tx b { font-size: .85rem; font-weight: 700; }
+.gx-result-tx small { font-size: .7rem; color: var(--muted); }
+.gx-result-empty { color: var(--muted); font-size: .8rem; padding: .5rem .55rem; }
+/* category filter chips */
+.gx-filters { position: absolute; top: .7rem; left: 50%; transform: translateX(-50%); z-index: 7;
+  display: flex; flex-wrap: wrap; gap: .35rem; justify-content: center; max-width: min(560px, calc(100% - 1.4rem)); }
+.gx-chip { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; white-space: nowrap;
+  background: color-mix(in srgb, var(--card) 80%, transparent); border: 1px solid var(--border); color: var(--text2);
+  border-radius: 999px; padding: .3rem .6rem; font: inherit; font-size: .73rem; font-weight: 600;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: all var(--ease); opacity: .55; }
+.gx-chip span { font-size: .82rem; }
+.gx-chip.on { opacity: 1; border-color: var(--border2); color: var(--text); }
+.gx-chip:hover { opacity: 1; }
+.gx-const { background: color-mix(in srgb, var(--card) 80%, transparent); border: 1px solid var(--border); color: var(--text2);
+  border-radius: 999px; padding: .3rem .55rem; font: inherit; font-size: .73rem; font-weight: 600; cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); max-width: 9rem; }
+/* smart labels */
+.gx-label { position: absolute; pointer-events: none; transform: translate(-50%, -100%); white-space: nowrap; z-index: 5;
+  font-family: var(--font-sans); font-weight: 600; font-size: .7rem; color: rgba(255,255,255,.74);
+  text-shadow: 0 1px 4px rgba(0,0,0,.95); display: flex; align-items: center; gap: .22rem; transition: color .2s; }
+.gx-label-ic { font-size: .68rem; opacity: .85; }
+.gx-desc { font-size: .82rem; color: var(--text2); line-height: 1.5; margin: 0 0 .7rem; }
+.gx-tier3 { font-size: .64rem; color: rgba(255,255,255,.6); }
+.gx-label.gx-hl { color: #fff; text-shadow: 0 0 8px rgba(120,170,255,.9), 0 1px 4px rgba(0,0,0,.95); font-weight: 800; }
+@media (max-width: 640px) {
+  .gx-search { top: .55rem; left: .55rem; width: calc(100% - 1.1rem); }
+  .gx-filters { top: 3.1rem; left: .55rem; transform: none; justify-content: flex-start; max-width: calc(100% - 1.1rem); }
+  .gx-chip { font-size: .68rem; padding: .28rem .5rem; }
+  .gx-const { font-size: .68rem; }
+}
+
 /* ══════════════════════════════════════════════════════════════════
    REALTIME EARTH (Terra em Tempo Real)
 ══════════════════════════════════════════════════════════════════ */

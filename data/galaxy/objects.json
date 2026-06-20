@@ -1,0 +1,116 @@
+{
+  "_doc": "Curated catalog for the Via Láctea 3D explorer (js/explorer/explorer-galaxy.js). Numbers are for placement/sizing/formatting (ra/dec in degrees J2000, distLy in light-years, radiusSun/massSun in solar units, tempK in kelvin, ageGyr in billion years, mag = apparent magnitude). tier drives smart-label LOD (1=always, 2=mid, 3=zoomed-in). Optional r/ang place an object at a curated disc spot (scene units, GAL_R≈200). Schema built to grow.",
+
+  "meta": {
+    "milkyway": { "name": "Via Láctea", "color": "#ffe2a8",
+      "info": { "type": "Galáxia espiral barrada", "diameter": "~100 000 anos-luz", "stars": "100–400 mil milhões", "age": "~13,6 mil M anos", "center": "Sagittarius A* (buraco negro)", "satellites": "~60 galáxias satélite" },
+      "facts": [
+        "A nossa galáxia — uma espiral barrada com quatro braços principais.",
+        "No centro está Sagittarius A*, um buraco negro supermassivo com ~4 milhões de massas solares.",
+        "O Sol leva 225–250 milhões de anos a dar uma volta ao centro (um \"ano galáctico\").",
+        "Faz parte do Grupo Local e irá fundir-se com Andrómeda dentro de ~4,5 mil milhões de anos."
+      ] }
+  },
+
+  "stars": [
+    { "id": "sol", "name": "Sol", "spectral": "G2V", "tempK": 5778, "radiusSun": 1, "massSun": 1, "distLy": 0, "ageGyr": 4.6, "mag": -26.7, "constellation": "—", "tier": 1, "sun": true,
+      "facts": ["A nossa estrela situa-se no Braço de Órion, a ~27 000 anos-luz do centro.", "Move-se a ~230 km/s em torno do centro galáctico.", "É uma anã amarela de meia-idade; viverá mais ~5 mil milhões de anos."] },
+    { "id": "proxima", "name": "Proxima Centauri", "spectral": "M5.5Ve", "tempK": 3042, "radiusSun": 0.15, "massSun": 0.12, "distLy": 4.24, "ageGyr": 4.85, "mag": 11.13, "constellation": "Centauro", "ra": 217.4, "dec": -62.68, "tier": 1,
+      "facts": ["A estrela mais próxima do Sol.", "Tem um planeta na zona habitável, Proxima b.", "É uma anã vermelha do sistema triplo Alpha Centauri, com erupções intensas."] },
+    { "id": "alpha-cen-a", "name": "Alpha Centauri A", "spectral": "G2V", "tempK": 5790, "radiusSun": 1.22, "massSun": 1.1, "distLy": 4.37, "ageGyr": 5.3, "mag": -0.01, "constellation": "Centauro", "ra": 219.9, "dec": -60.83, "tier": 2,
+      "facts": ["Quase gémea do Sol e a estrela individual mais brilhante do sistema mais próximo.", "Forma um par com Alpha Centauri B."] },
+    { "id": "alpha-cen-b", "name": "Alpha Centauri B", "spectral": "K1V", "tempK": 5260, "radiusSun": 0.86, "massSun": 0.91, "distLy": 4.37, "ageGyr": 5.3, "mag": 1.33, "constellation": "Centauro", "ra": 219.92, "dec": -60.84, "tier": 3,
+      "facts": ["Anã laranja, companheira de Alpha Centauri A.", "O par orbita-se a cada ~80 anos."] },
+    { "id": "sirius", "name": "Sírio", "spectral": "A1V", "tempK": 9940, "radiusSun": 1.71, "massSun": 2.06, "distLy": 8.6, "ageGyr": 0.24, "mag": -1.46, "constellation": "Cão Maior", "ra": 101.29, "dec": -16.72, "tier": 1,
+      "facts": ["A estrela mais brilhante do céu noturno.", "Tem uma companheira anã branca, Sírio B.", "Os egípcios baseavam o calendário no seu nascer heliacal."] },
+    { "id": "vega", "name": "Vega", "spectral": "A0V", "tempK": 9602, "radiusSun": 2.36, "massSun": 2.1, "distLy": 25, "ageGyr": 0.45, "mag": 0.03, "constellation": "Lira", "ra": 279.23, "dec": 38.78, "tier": 1,
+      "facts": ["Foi a estrela do norte há ~12 000 anos e voltará a sê-lo.", "Serve de referência para a escala de brilho das estrelas.", "Tem um disco de poeira que pode estar a formar planetas."] },
+    { "id": "altair", "name": "Altair", "spectral": "A7V", "tempK": 7700, "radiusSun": 1.8, "massSun": 1.79, "distLy": 16.7, "ageGyr": 1.2, "mag": 0.76, "constellation": "Águia", "ra": 297.7, "dec": 8.87, "tier": 2,
+      "facts": ["Roda tão depressa (uma volta em ~9 h) que fica achatada nos polos.", "Forma o Triângulo de Verão com Vega e Deneb."] },
+    { "id": "betelgeuse", "name": "Betelgeuse", "spectral": "M1-2Ia", "tempK": 3600, "radiusSun": 764, "massSun": 16.5, "distLy": 640, "ageGyr": 0.01, "mag": 0.42, "constellation": "Orionte", "ra": 88.79, "dec": 7.41, "tier": 1,
+      "facts": ["Supergigante vermelha que marca o \"ombro\" de Orionte.", "É candidata a explodir como supernova (em termos astronómicos, \"em breve\").", "Se estivesse no lugar do Sol, engoliria a órbita de Marte."] },
+    { "id": "rigel", "name": "Rigel", "spectral": "B8Ia", "tempK": 12100, "radiusSun": 78, "massSun": 21, "distLy": 860, "ageGyr": 0.008, "mag": 0.13, "constellation": "Orionte", "ra": 78.63, "dec": -8.2, "tier": 1,
+      "facts": ["Supergigante azul que marca o \"pé\" de Orionte.", "É ~120 000 vezes mais luminosa que o Sol."] },
+    { "id": "polaris", "name": "Polaris (Estrela Polar)", "spectral": "F7Ib", "tempK": 6015, "radiusSun": 37, "massSun": 5.4, "distLy": 433, "ageGyr": 0.07, "mag": 1.98, "constellation": "Ursa Menor", "ra": 37.95, "dec": 89.26, "tier": 1,
+      "facts": ["Aponta quase exatamente para o polo norte celeste.", "Por isso parece fixa enquanto o céu roda à sua volta.", "É uma estrela variável Cefeida."] },
+    { "id": "deneb", "name": "Deneb", "spectral": "A2Ia", "tempK": 8525, "radiusSun": 203, "massSun": 19, "distLy": 2615, "ageGyr": 0.01, "mag": 1.25, "constellation": "Cisne", "ra": 310.36, "dec": 45.28, "tier": 2,
+      "facts": ["Uma das estrelas mais luminosas conhecidas (~200 000× o Sol).", "Apesar de muito distante, brilha como uma das mais luminosas do céu."] },
+    { "id": "antares", "name": "Antares", "spectral": "M1.5Iab", "tempK": 3660, "radiusSun": 680, "massSun": 12, "distLy": 550, "ageGyr": 0.012, "mag": 1.06, "constellation": "Escorpião", "ra": 247.35, "dec": -26.43, "tier": 2,
+      "facts": ["O nome significa \"rival de Marte\", pela cor avermelhada.", "Supergigante vermelha que marca o \"coração\" do Escorpião."] },
+    { "id": "arcturus", "name": "Arcturus (Arcturo)", "spectral": "K0III", "tempK": 4286, "radiusSun": 25, "massSun": 1.08, "distLy": 36.7, "ageGyr": 7.1, "mag": -0.05, "constellation": "Boieiro", "ra": 213.92, "dec": 19.18, "tier": 1,
+      "facts": ["A estrela mais brilhante do hemisfério norte celeste.", "Gigante laranja que move-se depressa pelo céu (alta velocidade própria)."] },
+    { "id": "aldebaran", "name": "Aldebarã", "spectral": "K5III", "tempK": 3900, "radiusSun": 44, "massSun": 1.16, "distLy": 65, "ageGyr": 6.4, "mag": 0.85, "constellation": "Touro", "ra": 68.98, "dec": 16.51, "tier": 2,
+      "facts": ["O \"olho\" do Touro, uma gigante laranja.", "A sonda Pioneer 10 dirige-se na sua direção (chegará em ~2 M anos)."] },
+    { "id": "canopus", "name": "Canopus", "spectral": "A9II", "tempK": 7400, "radiusSun": 71, "massSun": 8, "distLy": 310, "ageGyr": 0.025, "mag": -0.74, "constellation": "Quilha", "ra": 95.99, "dec": -52.7, "tier": 2,
+      "facts": ["A segunda estrela mais brilhante do céu noturno.", "Muito usada por sondas espaciais para se orientarem."] }
+  ],
+
+  "nebulae": [
+    { "id": "orion", "name": "Nebulosa de Órion (M42)", "color": "#ff9ad2", "nebType": "Nebulosa de emissão", "distLy": 1344, "sizeLy": 24, "constellation": "Orionte", "tier": 1, "r": 92, "ang": 0.6,
+      "desc": "Um berçário estelar visível a olho nu, na \"espada\" de Orionte.",
+      "facts": ["Visível a olho nu como uma mancha difusa na espada de Orionte.", "Nela nascem milhares de estrelas novas.", "É a região de formação estelar mais estudada do céu."] },
+    { "id": "horsehead", "name": "Nebulosa Cabeça de Cavalo", "color": "#c77dff", "nebType": "Nebulosa escura", "distLy": 1375, "sizeLy": 3.5, "constellation": "Orionte", "tier": 2, "r": 98, "ang": 0.72,
+      "desc": "Uma coluna de poeira escura recortada contra o brilho avermelhado por trás.",
+      "facts": ["A sua forma de cabeça de cavalo é poeira que bloqueia a luz por trás.", "Uma das nebulosas mais fotografadas do céu."] },
+    { "id": "lagoon", "name": "Nebulosa da Lagoa (M8)", "color": "#ffb0c4", "nebType": "Nebulosa de emissão", "distLy": 4100, "sizeLy": 55, "constellation": "Sagitário", "tier": 2, "r": 130, "ang": 3.5,
+      "desc": "Uma vasta nuvem de gás brilhante na direção do centro galáctico.",
+      "facts": ["Uma das poucas regiões de formação estelar visíveis a olho nu.", "Situa-se na direção do centro galáctico, em Sagitário."] },
+    { "id": "trifid", "name": "Nebulosa Trífida (M20)", "color": "#ff8ab0", "nebType": "Emissão + reflexão", "distLy": 5200, "sizeLy": 42, "constellation": "Sagitário", "tier": 2, "r": 124, "ang": 3.7,
+      "desc": "Combina gás vermelho que emite luz, gás azul que a reflete e poeira escura.",
+      "facts": ["O nome \"trífida\" vem das três faixas de poeira que a dividem.", "Mostra três tipos de nebulosa numa só imagem."] },
+    { "id": "eagle", "name": "Nebulosa da Águia (M16)", "color": "#b6ffce", "nebType": "Região de formação estelar", "distLy": 5700, "sizeLy": 70, "constellation": "Serpente", "tier": 1, "r": 140, "ang": 2.4,
+      "desc": "Lar dos célebres \"Pilares da Criação\".",
+      "facts": ["Contém os \"Pilares da Criação\", imortalizados pelo Hubble.", "Colunas de gás com anos-luz de altura onde nascem novas estrelas."] },
+    { "id": "rosette", "name": "Nebulosa Roseta", "color": "#ff7e9d", "nebType": "Nebulosa de emissão", "distLy": 5200, "sizeLy": 130, "constellation": "Unicórnio", "tier": 2, "r": 150, "ang": 1.2,
+      "desc": "Uma flor cósmica de gás à volta de um enxame de estrelas jovens.",
+      "facts": ["O vento das estrelas jovens no centro abriu o \"buraco\" da roseta.", "Tem mais de 100 anos-luz de diâmetro."] },
+    { "id": "crab", "name": "Nebulosa do Caranguejo (M1)", "color": "#a0e0ff", "nebType": "Remanescente de supernova", "distLy": 6500, "sizeLy": 11, "constellation": "Touro", "tier": 1, "r": 110, "ang": 5.2,
+      "desc": "Os restos em expansão de uma estrela que explodiu em 1054.",
+      "facts": ["Os restos de uma supernova observada e registada em 1054.", "No centro há um pulsar que gira 30 vezes por segundo.", "Ainda se expande a ~1 500 km/s."] },
+    { "id": "carina", "name": "Nebulosa de Carina (NGC 3372)", "color": "#ffd27f", "nebType": "Nebulosa de emissão", "distLy": 8500, "sizeLy": 460, "constellation": "Quilha", "tier": 1, "r": 165, "ang": 4.4,
+      "desc": "Uma das maiores e mais brilhantes nebulosas do céu, no hemisfério sul.",
+      "facts": ["Alberga Eta Carinae, uma estrela monstruosa prestes a explodir.", "Muito maior e mais brilhante que a Nebulosa de Órion."] },
+    { "id": "helix", "name": "Nebulosa Hélice (NGC 7293)", "color": "#7affd6", "nebType": "Nebulosa planetária", "distLy": 655, "sizeLy": 2.5, "constellation": "Aquário", "tier": 2, "r": 80, "ang": 5.8,
+      "desc": "O invólucro de gás expelido por uma estrela moribunda como o Sol — apelidada de \"Olho de Deus\".",
+      "facts": ["Uma das nebulosas planetárias mais próximas da Terra.", "Mostra o futuro distante do nosso próprio Sol.", "Apelidada de \"Olho de Deus\" pela sua forma."] }
+  ],
+
+  "blackholes": [
+    { "id": "sgra", "name": "Sagittarius A*", "color": "#ffd08a", "bhType": "Buraco negro supermassivo", "massSun": 4150000, "distLy": 26700, "discovered": "1974 (rádio); órbitas confirmadas em 2002", "constellation": "Sagitário", "tier": 1, "center": true,
+      "desc": "O buraco negro supermassivo no centro da Via Láctea.",
+      "facts": ["Tem cerca de 4,15 milhões de massas solares.", "Fotografado pelo Event Horizon Telescope em 2022.", "As órbitas das estrelas à sua volta (como S2) provaram a sua existência — Prémio Nobel 2020."] },
+    { "id": "cygx1", "name": "Cygnus X-1", "color": "#9ab8ff", "bhType": "Buraco negro estelar (binário de raios-X)", "massSun": 21, "distLy": 7000, "discovered": "1964 (raios-X); 1971 identificado", "constellation": "Cisne", "tier": 1, "r": 150, "ang": 2.0,
+      "desc": "O primeiro objeto amplamente aceite como buraco negro.",
+      "facts": ["O primeiro buraco negro a ser amplamente reconhecido.", "Rouba gás a uma estrela supergigante companheira, que brilha em raios-X.", "Foi alvo de uma famosa aposta entre Stephen Hawking e Kip Thorne."] }
+  ],
+
+  "exoplanets": [
+    { "id": "proxima-b", "name": "Proxima Centauri b", "color": "#8fd6a0", "host": "Proxima Centauri", "hostId": "proxima", "distLy": 4.24, "planetType": "Planeta rochoso (super-Terra)", "habitability": "Na zona habitável (potencialmente)", "constellation": "Centauro", "tier": 1,
+      "desc": "O exoplaneta potencialmente habitável mais próximo da Terra.",
+      "facts": ["Orbita a estrela mais próxima do Sol, a apenas 4,24 anos-luz.", "Está na zona habitável, onde poderia existir água líquida.", "As erupções da estrela podem, porém, dificultar a vida."] },
+    { "id": "trappist1", "name": "Sistema TRAPPIST-1", "color": "#ffb27a", "host": "TRAPPIST-1 (anã vermelha)", "distLy": 40, "planetType": "7 planetas do tamanho da Terra", "habitability": "3–4 na zona habitável", "constellation": "Aquário", "ra": 346.62, "dec": -5.04, "tier": 1,
+      "desc": "Sete mundos rochosos do tamanho da Terra à volta de uma anã vermelha.",
+      "facts": ["Tem sete planetas rochosos, vários na zona habitável.", "Estão tão próximos que, da superfície de um, os outros apareceriam grandes no céu.", "Um dos melhores alvos para procurar vida fora do Sistema Solar."] },
+    { "id": "kepler-452b", "name": "Kepler-452b", "color": "#86c5ff", "host": "Kepler-452 (tipo Sol)", "distLy": 1800, "planetType": "Super-Terra", "habitability": "Na zona habitável", "constellation": "Cisne", "ra": 295.0, "dec": 44.28, "tier": 2,
+      "desc": "Apelidado de \"primo da Terra\" — orbita uma estrela parecida com o Sol.",
+      "facts": ["Chamado o \"primo mais velho da Terra\".", "Orbita uma estrela tipo Sol numa órbita parecida com a da Terra.", "Recebe uma quantidade de luz semelhante à que a Terra recebe."] },
+    { "id": "wasp-12b", "name": "WASP-12b", "color": "#ff7a5a", "host": "WASP-12", "distLy": 1410, "planetType": "Júpiter quente", "habitability": "Inóspito (está a ser devorado)", "constellation": "Cocheiro", "ra": 97.64, "dec": 29.67, "tier": 2,
+      "desc": "Um gigante gasoso tão quente que está a ser engolido pela sua estrela.",
+      "facts": ["Está tão perto da estrela que o ano dura ~26 horas.", "A estrela está a arrancar-lhe matéria — terá a forma de um ovo.", "É um dos planetas mais negros conhecidos, refletindo quase nenhuma luz."] }
+  ],
+
+  "galaxies": [
+    { "id": "andromeda", "name": "Andrómeda (M31)", "color": "#cdd9ff", "galType": "Galáxia espiral", "distMly": 2.5, "diameterLy": 220000, "tier": 1,
+      "facts": ["A galáxia grande mais próxima e o objeto mais distante visível a olho nu.", "Aproxima-se de nós a 110 km/s — fundir-se-á com a Via Láctea.", "É maior do que a nossa galáxia."] },
+    { "id": "triangulum", "name": "Triângulo (M33)", "color": "#bfe0ff", "galType": "Galáxia espiral", "distMly": 2.7, "diameterLy": 60000, "tier": 2,
+      "facts": ["A terceira maior galáxia do Grupo Local.", "Em céus muito escuros pode ser vista a olho nu."] },
+    { "id": "lmc", "name": "Grande Nuvem de Magalhães", "color": "#dfe6ff", "galType": "Galáxia anã (satélite)", "distMly": 0.16, "diameterLy": 14000, "tier": 2,
+      "facts": ["Galáxia satélite da Via Láctea, visível do hemisfério sul.", "Alberga a Nebulosa da Tarântula, a maior região de formação estelar conhecida."] },
+    { "id": "smc", "name": "Pequena Nuvem de Magalhães", "color": "#e6ecff", "galType": "Galáxia anã (satélite)", "distMly": 0.2, "diameterLy": 7000, "tier": 2,
+      "facts": ["A companheira mais pequena da Grande Nuvem de Magalhães.", "Ajudou Henrietta Leavitt a descobrir a relação período–luminosidade das Cefeidas."] },
+    { "id": "whirlpool", "name": "Rodamoinho (M51)", "color": "#cfe2ff", "galType": "Galáxia espiral", "distMly": 23, "diameterLy": 76000, "tier": 2,
+      "facts": ["A primeira galáxia onde se reconheceu a estrutura espiral.", "Interage com uma galáxia companheira mais pequena."] },
+    { "id": "sombrero", "name": "Sombreiro (M104)", "color": "#ffe8c4", "galType": "Galáxia espiral/lenticular", "distMly": 31, "diameterLy": 50000, "tier": 2,
+      "facts": ["A faixa de poeira que a atravessa dá-lhe a forma de um chapéu.", "Tem um buraco negro central de ~1 mil milhões de massas solares."] }
+  ]
+}
