@@ -34,6 +34,7 @@ const Nav = (function () {
     f1:          svg('<line x1="5" y1="21" x2="5" y2="3"/><rect x="5" y="4" width="14" height="9"/><path d="M9.7 4v9M14.3 4v9M5 8.5h14"/>'),
     oss:         svg('<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="13" y1="4" x2="11" y2="20"/>'),
     discovery:   svg('<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>'),
+    books:       svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
     tools:       svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
     quiz:        svg('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
     humor:       svg('<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>'),
@@ -59,6 +60,7 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="f1"          href="#f1">${ICONS.f1}<span>${TN('nav.f1')}</span></a>
           <a class="sb-nav-item" data-route="oss"         href="#oss">${ICONS.oss}<span>${TN('nav.oss')}</span></a>
           <a class="sb-nav-item" data-route="discovery"   href="#discovery">${ICONS.discovery}<span>${TN('nav.discovery')}</span></a>
+          <a class="sb-nav-item" data-route="books"       href="#books">${ICONS.books}<span>${TN('nav.books')}</span></a>
           <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
           <a class="sb-nav-item" data-route="links"        href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools"        href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
@@ -198,6 +200,10 @@ const Nav = (function () {
       document.getElementById('view-discovery')?.classList.add('active');
       const dSub = path.startsWith('discovery/') ? path.slice(10) : null;   // e.g. "gaming" or "gaming/<id>"
       typeof DiscoveryPage !== 'undefined' && DiscoveryPage.show(dSub);
+    } else if (page === 'books') {
+      document.getElementById('view-books')?.classList.add('active');
+      const bSub = path.startsWith('books/') ? path.slice(6) : null;   // "search" | "<leafId>" | "b/<olid>"
+      typeof BookDiscovery !== 'undefined' && BookDiscovery.show(bSub);
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
@@ -240,7 +246,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','books','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);
