@@ -2546,6 +2546,12 @@ body.light .pt-capital-label .pt-cap-dot {
           mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
 }
 .tl-chips::-webkit-scrollbar { display: none; }
+/* category filter: wraps to as many rows as needed so every theme is reachable
+   (was a single horizontally-clipped row where later chips like "Civ" were cut
+   off and unselectable). No mask, no horizontal scroll — plain flex-wrap. */
+.tl-cats { flex-wrap: wrap; overflow: visible; row-gap: .4rem; padding-bottom: .6rem;
+  border-bottom: 1px solid var(--border);
+  -webkit-mask-image: none; mask-image: none; }
 .tl-eras { padding-bottom: .55rem; border-bottom: 1px solid var(--border); }
 .tl-fchip {
   display: inline-flex; align-items: center; gap: .3rem; white-space: nowrap;

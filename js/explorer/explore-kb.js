@@ -223,7 +223,10 @@ const ExploreKB = (function () {
     const th = theme(i.theme);
     const fav = _fav.includes(i.id);
     const yr = fmtYear(i.year);
+    /* shared AI cover with the timeline (assets/timeline/<id>.jpg). When absent
+       the <img> removes itself and the emoji placeholder shows through. */
     return `<button class="kb-row" data-nav='${esc(JSON.stringify({ page: 'item', id: i.id }))}' style="--c:${th.color}">
+      <span class="kb-row-thumb"><span class="kb-row-thumb-em">${th.emoji}</span><img src="assets/timeline/${esc(i.id)}.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
       <span class="kb-row-year">${esc(yr)}</span>
       <span class="kb-row-main"><span class="kb-row-title">${esc(i.title)}</span>
         <span class="kb-row-desc">${esc(i.desc || '')}</span></span>
@@ -258,6 +261,7 @@ const ExploreKB = (function () {
           ...(sub ? [{ label: sub.label, to: { page: 'theme', theme: i.theme, sub: sub.id } }] : []),
           { label: i.title },
         ])}
+        <div class="kb-detail-media"><span class="kb-detail-media-em">${th.emoji}</span><img src="assets/timeline/${esc(i.id)}.jpg" alt="" loading="lazy" onerror="this.remove()"></div>
         <header class="kb-detail-hd">
           <div class="kb-detail-tags-top">
             <span class="kb-pill" style="background:${th.color}22;color:${th.color}">${th.emoji} ${esc(th.label)}</span>
