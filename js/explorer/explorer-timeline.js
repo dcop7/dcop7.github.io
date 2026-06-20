@@ -3,7 +3,8 @@
    Uma viagem do Big Bang ao presente: capítulos em ecrã inteiro, fundos
    temáticos com crossfade + parallax, revelação progressiva. Toda a arte
    é gerada localmente (SVG/CSS) — offline, sem dependências nem copyright.
-   Os eventos vêm de data/timeline.json (nada hardcoded no código).
+   Os eventos vêm da mesma base de conhecimento que os separadores "Temas" e
+   "Explorar" (data/explore/*), para que os três fiquem sempre em sincronia.
 ══════════════════════════════════════════════════════════════════ */
 const TimelineExplorer = (function () {
   'use strict';
@@ -169,8 +170,26 @@ const TimelineExplorer = (function () {
 
   async function _ensure() {
     if (_loaded) return;
-    try { const r = await fetch('data/timeline.json'); _data = r.ok ? await r.json() : []; }
-    catch (e) { _data = []; }
+    /* Same knowledge base as the "Temas" tab AND the interactive timeline:
+       load every per-theme file from data/explore/ and map it to the story's
+       event shape (theme→cat, tier 'destaque'→key). Falls back to the legacy
+       flat file. Keeps História and Explorar perfectly in sync. */
+    try {
+      const idx = await fetch('data/explore/index.json').then(r => r.json());
+      const themes = Object.keys(idx.themes);
+      const files = await Promise.all(themes.map(t =>
+        fetch('data/explore/' + t + '.json').then(r => r.ok ? r.json() : { items: [] }).catch(() => ({ items: [] }))));
+      const out = [];
+      files.forEach((f, i) => { const cat = themes[i]; for (const it of (f.items || [])) {
+        out.push({ id: it.id, title: it.title, cat, year: it.year, period: it.period || '',
+          key: it.tier === 'destaque', desc: it.desc || '', fact: it.fact || '',
+          related: it.related || [], date: it.date, place: it.place, subtheme: it.subtheme });
+      } });
+      if (!out.length) throw new Error('empty');
+      _data = out;
+    } catch (e) {
+      try { const r = await fetch('data/timeline.json'); _data = r.ok ? await r.json() : []; } catch { _data = []; }
+    }
     (_data || []).sort((a, b) => a.year - b.year);
     _loaded = true;
   }
