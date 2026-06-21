@@ -491,6 +491,31 @@ const F1Page = (function () {
     return out.sort((a, b) => a.t - b.t);
   }
 
+  /* Position-over-laps for every driver, for the evolution chart. */
+  function positionEvolution(model) {
+    const { posByDriver, lapStart, totalLaps, meta } = model;
+    const laps = []; for (let L = 1; L <= totalLaps; L++) if (lapStart[L] != null) laps.push(L);
+    const series = [];
+    for (const num in posByDriver) {
+      const arr = posByDriver[num]; if (!arr || !arr.length) continue;
+      const pts = []; let idx = 0;
+      for (const L of laps) { const t = lapStart[L]; while (idx < arr.length && arr[idx].t <= t) idx++; const p = idx > 0 ? arr[idx - 1].p : arr[0].p; if (p != null) pts.push({ lap: L, pos: +p }); }
+      if (pts.length > 1) series.push({ num: +num, team: meta[num] && meta[num].colour, pts });
+    }
+    const maxPos = Math.max(10, ...series.flatMap(s => s.pts.map(p => p.pos)));
+    return { series, totalLaps, maxPos };
+  }
+  function posEvoSVG(model) {
+    const { series, totalLaps, maxPos } = positionEvolution(model);
+    if (!series.length) return '';
+    const W = 700, H = 200, padL = 20, padR = 8, padT = 8, padB = 8;
+    const sx = lap => padL + (totalLaps > 1 ? (lap - 1) / (totalLaps - 1) : 0) * (W - padL - padR);
+    const sy = pos => padT + (maxPos > 1 ? (pos - 1) / (maxPos - 1) : 0) * (H - padT - padB);
+    const grid = [1, 5, 10, 15, 20].filter(p => p <= maxPos).map(p => `<line x1="${padL}" y1="${sy(p).toFixed(1)}" x2="${W - padR}" y2="${sy(p).toFixed(1)}" stroke="rgba(255,255,255,.06)"/><text x="2" y="${(sy(p) + 3).toFixed(1)}" class="f1-pe-ax">${p}</text>`).join('');
+    const lines = series.map(s => `<path d="${s.pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.lap).toFixed(1)} ${sy(p.pos).toFixed(1)}`).join(' ')}" fill="none" stroke="${teamCol(s.team)}" stroke-width="1.6" opacity=".88"/>`).join('');
+    return `<svg class="f1-pe-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}${lines}</svg>`;
+  }
+
   /* ════════════════════════════ TRACK ════════════════════════════
      Whole-race replay: cars run the full race placed on a real outline by
      lap progress, with live order (number · code · tyre · gap · penalties),
@@ -678,7 +703,8 @@ const F1Page = (function () {
           <div class="f1-events" id="f1-events"></div>
         </aside>
         <div class="f1-driver-pop" id="f1-driver-pop" hidden></div>
-      </div>`;
+      </div>
+      <div class="f1-track-extra" id="f1-track-extra" hidden></div>`;
 
     const yrSel = body.querySelector('#f1-track-year');
     yrSel.addEventListener('change', () => renderTrack(body, +yrSel.value));
@@ -896,6 +922,8 @@ const F1Page = (function () {
           const lap = lead ? (progAbs(lapsByDriver[lead.num], lights + ms) || {}).lap || 1 : 1;
           if (document.activeElement !== lapIn) lapIn.value = Math.min(totalLaps, lap);
           paintPos(ms); updateEvents(ms); paintWx(ms);
+          const peC = body.querySelector('#f1-pe-cursor');
+          if (peC) peC.style.left = (totalLaps > 1 ? (Math.min(totalLaps, lap) - 1) / (totalLaps - 1) * 100 : 0) + '%';
           if (!pop.hidden && popNum != null) showPop(popNum);     // keep popup fresh while open
         }
         _track.setOnTick(onClock);
@@ -930,6 +958,31 @@ const F1Page = (function () {
         // click a driver → open the Piloto tab focused on them, same race
         posEl.style.cursor = 'pointer';
         posEl.addEventListener('click', e => { const row = e.target.closest('.f1-pos-row'); if (!row) return; _pendingDriver = { sk, num: +row.dataset.num }; _go('driver'); });
+
+        // ── extra info row (uses the wide layout): position evolution + tyre strategy ──
+        const extra = body.querySelector('#f1-track-extra');
+        if (extra) {
+          const tsRows = orderAt(raceDur).map(o => {
+            const dm = meta[o.num] || {};
+            const stints = ((M.stintsByDriver && M.stintsByDriver[o.num]) || []).slice().sort((a, b) => a.lap_start - b.lap_start);
+            const segs = stints.map(s => {
+              const end = s.lap_end || totalLaps, lps = Math.max(1, end - s.lap_start + 1), comp = String(s.compound || '').toLowerCase();
+              return `<span class="f1-ts-seg t-${comp}" style="width:${(lps / totalLaps * 100).toFixed(1)}%" title="${esc(s.compound || '?')} · V${s.lap_start}–${end}">${tyre(s.compound).l}</span>`;
+            }).join('');
+            return `<div class="f1-ts-row"><span class="f1-ts-code" style="border-color:${teamCol(dm.colour)}">${esc(dm.code || o.num)}</span><div class="f1-ts-bar">${segs || '<span class="f1-ts-empty">—</span>'}</div></div>`;
+          }).join('');
+          extra.innerHTML = `
+            <div class="f1-xcard f1-xcard-chart">
+              <h4>📈 ${_t('Position evolution', 'Evolução das posições')}</h4>
+              <div class="f1-pe-chart">${posEvoSVG(M)}<div class="f1-pe-cursor" id="f1-pe-cursor"></div></div>
+              <div class="f1-pe-x"><span>V1</span><span>V${totalLaps}</span></div>
+            </div>
+            <div class="f1-xcard">
+              <h4>🛞 ${_t('Tyre strategy', 'Estratégia de pneus')}</h4>
+              <div class="f1-ts-list">${tsRows}</div>
+            </div>`;
+          extra.hidden = false;
+        }
 
         onClock(0);
 
