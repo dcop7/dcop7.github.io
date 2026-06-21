@@ -971,8 +971,17 @@ const RealtimeEarth = (function () {
 
   function _tipHtml(meta) {
     const rows = meta.rows.map(([k, v]) => `<span class="ex-rt-tip-row"><b>${_esc(k)}</b> ${_esc(v)}</span>`).join('');
-    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}${meta.url ? '<span class="ex-rt-tip-hint">clica para abrir a página ↗</span>' : ''}`;
+    return `<span class="ex-rt-tip-title">${meta.icon} ${_esc(meta.title)}</span>${rows}<span class="ex-rt-tip-hint">${meta.url ? 'toca para ver detalhes' : ''}</span>`;
   }
+  /* Show the event detail popup (data + a "Mais informação" link inside it). */
+  function _showCard(meta) {
+    const d = document.getElementById('rt-detail'); if (!d) return;
+    d.innerHTML = _cardHtml(meta);
+    d.hidden = false;
+    const close = d.querySelector('#rt-card-close');
+    if (close) close.onclick = () => { d.hidden = true; };
+  }
+  function _hideCard() { const d = document.getElementById('rt-detail'); if (d) d.hidden = true; }
   function _cardHtml(meta) {
     const rows = meta.rows.map(([k, v]) => `<div class="ex-rt-card-row"><span>${_esc(k)}</span><span>${_esc(v)}</span></div>`).join('');
     const link = meta.url ? `<a class="ex-rt-card-link" href="${_esc(meta.url)}" target="_blank" rel="noopener">${_esc(meta.urlLabel || 'Mais informação')} ↗</a>` : '';
@@ -1012,13 +1021,20 @@ const RealtimeEarth = (function () {
     el.addEventListener('pointerleave', () => { _ptr.inside = false; if (_tipEl) _tipEl.hidden = true; });
     el.addEventListener('mouseleave', () => { _ptr.inside = false; if (_tipEl) _tipEl.hidden = true; });
 
-    /* Click an event (a real click, not a drag-rotate) → open its source page. */
+    /* Click/tap an event (a real click, not a drag-rotate) → show a detail popup
+       with the event data + a "Mais informação ↗" link inside (works on mobile,
+       where there is no hover). Clicking empty globe closes it. */
     el.addEventListener('click', () => {
       if (_ptr.dragMoved) return;
       const meta = _pickMeta(_ptr.x, _ptr.y, el);
-      if (meta && meta.url) window.open(meta.url, '_blank', 'noopener');
+      if (meta) _showCard(meta); else _hideCard();
     });
+    if (!_escBound) {
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') _hideCard(); });
+      _escBound = true;
+    }
   }
+  let _escBound = false;
 
   /* Per-frame tooltip sync from the live pointer (the heartbeat that makes a
      "stuck" tooltip impossible). */

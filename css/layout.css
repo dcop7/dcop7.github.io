@@ -212,9 +212,8 @@ body.light .mob-nav { background: rgba(248,250,252,.97); border-top-color: rgba(
 /* ── RESPONSIVE BREAKPOINTS ── */
 @media (max-width: 900px) {
   :root { --sb-w: 264px; }
-  .mob-nav { display: flex; flex-direction: column; justify-content: flex-end; }
-  /* Keep content clear of the fixed bottom nav, including notched devices. */
-  .app-main { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+  /* Bottom mobile nav removed — only reserve the device safe-area inset. */
+  .app-main { padding-bottom: env(safe-area-inset-bottom, 0px); }
   .hdr-center { display: none; }
   #site-header .hdr-center { display: none; }
   .view-inner { padding: 1rem 1rem 1.5rem; }

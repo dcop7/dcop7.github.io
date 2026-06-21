@@ -2424,10 +2424,10 @@ body.light .pt-capital-label .pt-cap-dot {
   .ex-rt-layers { max-width: 100%; right: .75rem; top: .6rem; }
   .ex-rt-chip-lbl { display: none; }   /* icon-only chips on phones */
   .ex-rt-chip { padding: .4rem .5rem; }
-  .ex-rt-time { top: auto; bottom: 2.6rem; right: .6rem; left: .6rem; justify-content: center; flex-wrap: wrap; }
+  .ex-rt-time { top: auto; bottom: calc(.9rem + env(safe-area-inset-bottom, 0px)); right: .6rem; left: .6rem; justify-content: center; flex-wrap: wrap; }
   .ex-rt-legend { display: none; }
-  .ex-rt-filters { top: auto; bottom: 6rem; left: .6rem; right: .6rem; width: auto; }
-  .ex-rt-detail { top: 7rem; bottom: auto; left: .6rem; right: .6rem; width: auto; }
+  .ex-rt-filters { top: auto; bottom: calc(4.2rem + env(safe-area-inset-bottom, 0px)); left: .6rem; right: .6rem; width: auto; }
+  .ex-rt-detail { top: 6.5rem; bottom: auto; left: .6rem; right: .6rem; width: auto; }
 }
 
 /* ══════════════════════════════════════════════════════════════════
