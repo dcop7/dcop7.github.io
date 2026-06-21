@@ -597,3 +597,19 @@
 .f1-circ-opts input { accent-color: var(--accent); cursor: pointer; }
 .f1-circ-maphint { position: absolute; bottom: .35rem; left: .5rem; right: .5rem; text-align: center;
   font-size: .6rem; color: var(--muted); opacity: .75; pointer-events: none; }
+
+/* upcoming-race view (Track tab, race not yet run) + no-data note */
+.f1-upcoming { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .5rem; text-align: center; padding: 1.2rem 1rem; width: 100%; }
+.f1-up-tag { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #ff9f1c; }
+.f1-up-gp { font-family: var(--font-head, inherit); font-size: clamp(1.1rem, 3vw, 1.7rem); font-weight: 800;
+  display: flex; align-items: center; gap: .5rem; }
+.f1-up-when { font-size: .85rem; color: var(--muted); }
+.f1-up-when b { color: var(--text); }
+.f1-up-cd { font-family: var(--font-head, inherit); font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 900;
+  color: #fff; text-shadow: 0 2px 18px rgba(225,6,0,.35); }
+.f1-up-canvas-wrap { width: min(440px, 80%); aspect-ratio: 4 / 3; margin: .3rem auto 0; }
+.f1-up-canvas-wrap canvas { width: 100%; height: 100%; }
+.f1-up-note { font-size: .72rem; color: var(--muted); max-width: 36ch; }
+.f1-nodata { flex-direction: column; gap: .4rem; text-align: center; }
+.f1-nodata small { color: var(--muted); opacity: .8; }

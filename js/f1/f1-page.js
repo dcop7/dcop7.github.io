@@ -74,6 +74,34 @@ const F1Page = (function () {
     if (!races || !races.length) { try { races = await F1Data.racesOfYear(yr - 1); } catch {} }
     return (races || []).filter(r => r.session_key).sort((a, b) => Date.parse(a.date_start) - Date.parse(b.date_start));
   }
+
+  /* Unified season race list (any year): the authoritative Jolpica schedule
+     (every round, incl. those not yet run) merged with OpenF1 race sessions
+     (2023→) by date, so each round carries a session_key when telemetry exists.
+     Future-proof — a new season appears automatically. */
+  async function seasonRacesFull(year) {
+    const [sched, of1] = await Promise.all([
+      F1Data.scheduleFor(year).catch(() => []),
+      F1Data.racesOfYear(year).catch(() => []),
+    ]);
+    const ofR = (of1 || []).filter(r => r.session_key);
+    const now = Date.now();
+    return (sched || []).map(r => {
+      const ts = Date.parse(`${r.date}T${r.time || '13:00:00Z'}`);
+      let m = null, best = 4 * 86400000;
+      for (const o of ofR) { const d = Math.abs(Date.parse(o.date_start) - ts); if (d < best) { best = d; m = o; } }
+      return {
+        round: +r.round, raceName: r.raceName,
+        country: r.Circuit?.Location?.country, locality: r.Circuit?.Location?.locality,
+        circuitName: r.Circuit?.circuitName, circuitId: r.Circuit?.circuitId,
+        date: r.date, _ts: ts, year: +year,
+        session_key: m ? m.session_key : null,
+        circuit_short_name: m ? m.circuit_short_name : null,
+        country_name: m ? m.country_name : r.Circuit?.Location?.country,
+        status: ts < now ? 'past' : 'upcoming',
+      };
+    }).sort((a, b) => a.round - b.round);
+  }
   const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   /* ── tyres ── */
@@ -510,28 +538,34 @@ const F1Page = (function () {
     return model;
   }
 
-  async function renderTrack(body) {
+  async function renderTrack(body, year) {
+    const curYear = new Date().getFullYear();
+    year = +year || curYear;
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
     let races, liveSession = null;
     try {
-      races = await seasonRaces();
-      try {
+      races = await seasonRacesFull(year);
+      if (year === curYear) try {
         const s = await F1Data.latestSession();
         if (s) { const st = Date.parse(s.date_start), en = Date.parse(s.date_end);
           if (Date.now() >= st - 300000 && Date.now() <= en + 600000) liveSession = s; }
       } catch {}
     } catch { body.innerHTML = err(); return; }
-    const past = (races || []).filter(r => Date.parse(r.date_start) < Date.now());
-    if (!past.length && !liveSession) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
+    if (!races.length && !liveSession) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
 
-    const opts = past.slice().reverse().map(r =>
-      `<option value="${r.session_key}">${esc(r.circuit_short_name)} · ${esc(r.country_name)} ${r.year || ''}</option>`).join('');
+    // OpenF1 telemetry only exists from 2023 → that's the range for the replay
+    const years = []; for (let y = curYear; y >= 2023; y--) years.push(y);
+    const yrOpts = years.map(y => `<option value="${y}"${y === year ? ' selected' : ''}>${y}</option>`).join('');
+    const tag = r => r.status === 'upcoming' ? '⏳ ' : !r.session_key ? '∅ ' : '';
+    const raceOpts = races.map(r =>
+      `<option value="${r.round}">${tag(r)}R${r.round} · ${esc(r.country || r.country_name)}${r.status === 'upcoming' ? ' — ' + _t('upcoming', 'por correr') : ''}</option>`).join('');
 
     body.innerHTML = `
       <div class="f1-track-head">
         <div class="f1-track-sel">
           ${liveSession ? `<button class="f1-live-pill" id="f1-go-live">● ${_t('LIVE', 'AO VIVO')}</button>` : ''}
-          <select class="f1-select" id="f1-race-sel" aria-label="${_t('Choose race','Escolher corrida')}">${opts}</select>
+          <select class="f1-select f1-year-sel" id="f1-track-year" aria-label="${_t('Season','Época')}">${yrOpts}</select>
+          <select class="f1-select" id="f1-race-sel" aria-label="${_t('Choose race','Escolher corrida')}">${raceOpts}</select>
         </div>
         <div class="f1-track-meta" id="f1-track-meta"></div>
       </div>
@@ -573,13 +607,66 @@ const F1Page = (function () {
         <div class="f1-driver-pop" id="f1-driver-pop" hidden></div>
       </div>`;
 
+    const yrSel = body.querySelector('#f1-track-year');
+    yrSel.addEventListener('change', () => renderTrack(body, +yrSel.value));
     const sel = body.querySelector('#f1-race-sel');
-    sel.value = String(past[past.length - 1].session_key);
-    sel.addEventListener('change', () => loadRace(+sel.value));
+    const pastData = races.filter(r => r.session_key && r.status === 'past');
+    const def = pastData[pastData.length - 1] || races.find(r => r.status === 'upcoming') || races[0];
+    if (def) sel.value = String(def.round);
+    sel.addEventListener('change', () => loadRound(+sel.value));
     const goLive = body.querySelector('#f1-go-live');
     if (goLive) goLive.addEventListener('click', () => loadLive(liveSession));
 
-    loadRace(+sel.value);
+    if (liveSession && !def) loadLive(liveSession);
+    else if (def) loadRound(def.round);
+
+    function loadRound(round) {
+      const r = races.find(x => x.round === round); if (!r) return;
+      if (r.status === 'upcoming') return loadUpcoming(r);
+      if (r.session_key) return loadRace(r.session_key);
+      return showNoData(r);
+    }
+    function _resetStage() {
+      clearInterval(_liveTimer); _liveTimer = null;
+      if (_track) { _track.dispose(); _track = null; }
+      const pos = body.querySelector('#f1-pos'), ev = body.querySelector('#f1-events');
+      if (pos) pos.innerHTML = ''; if (ev) ev.innerHTML = '';
+    }
+    function showNoData(r) {
+      _resetStage();
+      body.querySelector('#f1-track-meta').innerHTML = `<b>${esc(r.raceName)}</b> · ${esc(r.country)} ${r.year}`;
+      const stage = body.querySelector('#f1-stage-load'); stage.style.display = '';
+      stage.innerHTML = `<div class="f1-empty f1-nodata">🛰️ <span>${_t('Live telemetry (map · timing · incidents) only exists from 2023.', 'A telemetria ao vivo (mapa · tempos · incidentes) só existe a partir de 2023.')}</span><small>${_t('Results & lap times are in Championship / Timing.', 'Resultados e tempos por volta estão em Campeonato / Tempos.')}</small></div>`;
+    }
+    async function loadUpcoming(r) {
+      _resetStage();
+      body.querySelector('#f1-track-meta').innerHTML = `<b>${esc(r.country)}</b> · ${esc(r.circuitName || '')}`;
+      const stage = body.querySelector('#f1-stage-load'); stage.style.display = '';
+      const days = Math.max(0, Math.ceil((r._ts - Date.now()) / 86400000));
+      stage.innerHTML = `<div class="f1-upcoming">
+        <div class="f1-up-tag">⏳ ${_t('Upcoming', 'Por correr')}</div>
+        <div class="f1-up-gp">${flag(r.country)}${esc(r.raceName)}</div>
+        <div class="f1-up-when">🗓️ ${new Date(r._ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { weekday: 'long', day: '2-digit', month: 'long' })} · <b>${_t('in', 'daqui a')} ${days} ${days === 1 ? _t('day', 'dia') : _t('days', 'dias')}</b></div>
+        <div class="f1-up-cd">${countdown(r._ts)}</div>
+        <div class="f1-up-canvas-wrap"><canvas id="f1-up-canvas"></canvas></div>
+        <div class="f1-up-note">${_t('The live map, timing & incidents appear once the race runs.', 'O mapa ao vivo, tempos e incidentes ficam disponíveis depois da corrida.')}</div>
+      </div>`;
+      // draw the circuit outline from the most recent past edition at this venue
+      try {
+        const meta = await F1Data.circuitsMeta(); const of1 = meta[r.circuitId] && meta[r.circuitId].of1;
+        if (of1) {
+          let outline = null;
+          for (const y of [curYear, curYear - 1, curYear - 2]) {
+            const rs = await F1Data.racesOfYear(y).catch(() => []);
+            const pasts = (rs || []).filter(x => x.circuit_short_name === of1 && Date.parse(x.date_start) < Date.now());
+            if (pasts.length) { const M = await buildRaceModel(pasts[pasts.length - 1].session_key); if (!M.error) { outline = M.outline; break; } }
+          }
+          const cv = stage.querySelector('#f1-up-canvas');
+          if (outline && cv) { const t = F1Track.create(cv); t.setTrack(outline); t.setCorners(detectCorners(outline)); t.setShowCorners(true); _track = t; }
+          else if (cv) cv.closest('.f1-up-canvas-wrap').style.display = 'none';
+        }
+      } catch {}
+    }
 
     /* ── load + wire a single race replay (WHOLE race) ──
        The full X/Y telemetry of a 90-min race is ~50 MB, so instead each car
