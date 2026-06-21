@@ -26,10 +26,14 @@ const BookDiscovery = (function () {
     async function get(url, ttl = 2700000) {
       const hit = mem.get(url); if (hit && Date.now() - hit.t < ttl) return hit.data;
       try { const raw = sessionStorage.getItem('bk:' + url); if (raw) { const o = JSON.parse(raw); if (Date.now() - o.t < ttl) { mem.set(url, o); return o.data; } } } catch {}
-      await slot();
-      const r = await fetch(url, { cache: 'no-store' });
-      if (!r.ok) throw new Error('http ' + r.status);
-      const data = await r.json();
+      let data;
+      for (let i = 0; i < 3; i++) {                       // Open Library is sometimes flaky (429/503) → retry
+        await slot();
+        let r; try { r = await fetch(url, { cache: 'no-store' }); } catch (e) { if (i === 2) throw e; await new Promise(s => setTimeout(s, 500 * (i + 1))); continue; }
+        if ((r.status === 429 || r.status >= 500) && i < 2) { await new Promise(s => setTimeout(s, 600 * (i + 1))); continue; }
+        if (!r.ok) throw new Error('http ' + r.status);
+        data = await r.json(); break;
+      }
       const o = { t: Date.now(), data }; mem.set(url, o);
       try { sessionStorage.setItem('bk:' + url, JSON.stringify(o)); } catch {}
       return data;
@@ -58,8 +62,10 @@ const BookDiscovery = (function () {
       const url = `${OL}/search.json?title=${encodeURIComponent(title)}${author ? '&author=' + encodeURIComponent(author) : ''}&limit=4&fields=${FIELDS}`;
       let data; try { data = await get(url); } catch { return null; }
       const docs = (data.docs || []).map(normalize);
-      // prefer a real match with a cover + the most editions (the canonical work)
-      return docs.sort((a, b) => (b.cover ? 1 : 0) - (a.cover ? 1 : 0) || (b.editions - a.editions) || (b.want - a.want))[0] || null;
+      const want = norm(title);
+      const m = d => { const t = norm(d.title); return t === want ? 3 : t.startsWith(want) ? 2 : t.includes(want) ? 1 : 0; };
+      // prefer the closest title match, then a cover, then the most editions (canonical work)
+      return docs.sort((a, b) => (m(b) - m(a)) || ((b.cover ? 1 : 0) - (a.cover ? 1 : 0)) || (b.editions - a.editions) || (b.want - a.want))[0] || null;
     }
     async function work(olid) {
       try { return await get(`${OL}/works/${olid}.json`); } catch { return null; }
@@ -198,6 +204,48 @@ const BookDiscovery = (function () {
     'f-horror': [{ t: 'It', a: 'Stephen King' }, { t: 'The Shining', a: 'Stephen King' }, { t: 'Dracula', a: 'Bram Stoker' }, { t: 'Frankenstein', a: 'Mary Shelley' }],
     'f-romance': [{ t: 'Pride and Prejudice', a: 'Jane Austen' }, { t: 'It Ends with Us', a: 'Colleen Hoover' }, { t: 'The Notebook', a: 'Nicholas Sparks' }, { t: 'Me Before You', a: 'Jojo Moyes' }],
   };
+
+  /* ════════════════════════ PT → CANONICAL TITLE ALIASES ════════════════════════
+     Open Library is indexed by the original (usually English) title, so a search
+     for the Portuguese title (e.g. "Os Mauzões") finds nothing. This maps common
+     PT titles → the canonical {t,a} we can look up precisely. Easily extensible. */
+  const ALIASES = [
+    { pt: 'Os Mauzões', t: 'The Bad Guys', a: 'Aaron Blabey' },
+    { pt: 'Diário de um Banana', t: 'Diary of a Wimpy Kid', a: 'Jeff Kinney' },
+    { pt: 'O Grufalão', t: 'The Gruffalo', a: 'Julia Donaldson' },
+    { pt: 'O Capitão Cuecas', t: 'Captain Underpants', a: 'Dav Pilkey' },
+    { pt: 'O Principezinho', t: 'The Little Prince', a: 'Antoine de Saint-Exupéry' },
+    { pt: 'O Pequeno Príncipe', t: 'The Little Prince', a: 'Antoine de Saint-Exupéry' },
+    { pt: 'Harry Potter e a Pedra Filosofal', t: "Harry Potter and the Philosopher's Stone", a: 'J. K. Rowling' },
+    { pt: 'O Leão, a Feiticeira e o Guarda-Roupa', t: 'The Lion, the Witch and the Wardrobe', a: 'C. S. Lewis' },
+    { pt: 'As Crónicas de Nárnia', t: 'The Chronicles of Narnia', a: 'C. S. Lewis' },
+    { pt: 'Charlie e a Fábrica de Chocolate', t: 'Charlie and the Chocolate Factory', a: 'Roald Dahl' },
+    { pt: 'O Senhor dos Anéis', t: 'The Lord of the Rings', a: 'J. R. R. Tolkien' },
+    { pt: 'O Hobbit', t: 'The Hobbit', a: 'J. R. R. Tolkien' },
+    { pt: 'A Guerra dos Tronos', t: 'A Game of Thrones', a: 'George R. R. Martin' },
+    { pt: 'As Crónicas de Gelo e Fogo', t: 'A Game of Thrones', a: 'George R. R. Martin' },
+    { pt: 'Duna', t: 'Dune', a: 'Frank Herbert' },
+    { pt: 'O Código Da Vinci', t: 'The Da Vinci Code', a: 'Dan Brown' },
+    { pt: 'Orgulho e Preconceito', t: 'Pride and Prejudice', a: 'Jane Austen' },
+    { pt: 'Hábitos Atómicos', t: 'Atomic Habits', a: 'James Clear' },
+    { pt: 'A Menina que Roubava Livros', t: 'The Book Thief', a: 'Markus Zusak' },
+    { pt: 'A Culpa é das Estrelas', t: 'The Fault in Our Stars', a: 'John Green' },
+    { pt: 'Onde Vivem os Monstros', t: 'Where the Wild Things Are', a: 'Maurice Sendak' },
+    { pt: 'O Diário de Anne Frank', t: 'The Diary of a Young Girl', a: 'Anne Frank' },
+    { pt: 'A Cabana', t: 'The Shack', a: 'William P. Young' },
+    { pt: 'Os Três Mosqueteiros', t: 'The Three Musketeers', a: 'Alexandre Dumas' },
+    { pt: 'O Conde de Monte Cristo', t: 'The Count of Monte Cristo', a: 'Alexandre Dumas' },
+    { pt: 'Crime e Castigo', t: 'Crime and Punishment', a: 'Fyodor Dostoevsky' },
+    { pt: 'A Revolução dos Bichos', t: 'Animal Farm', a: 'George Orwell' },
+    { pt: 'Admirável Mundo Novo', t: 'Brave New World', a: 'Aldous Huxley' },
+    { pt: 'A Sangue Frio', t: 'In Cold Blood', a: 'Truman Capote' },
+    { pt: 'O Apanhador no Campo de Centeio', t: 'The Catcher in the Rye', a: 'J. D. Salinger' },
+    { pt: 'As Vantagens de Ser Invisível', t: 'The Perks of Being a Wallflower', a: 'Stephen Chbosky' },
+    { pt: 'É Assim que Acaba', t: 'It Ends with Us', a: 'Colleen Hoover' },
+    { pt: 'Ladrão de Raios', t: 'The Lightning Thief', a: 'Rick Riordan' },
+    { pt: 'Percy Jackson', t: 'The Lightning Thief', a: 'Rick Riordan' },
+  ];
+  const aliasFor = nq => ALIASES.find(x => { const p = norm(x.pt); return nq.length >= 3 && (p === nq || p.includes(nq) || nq.includes(p)); });
 
   /* PT bookstores — search by ISBN/title (no API). */
   const STORES = [
@@ -338,8 +386,15 @@ const BookDiscovery = (function () {
     let t; const run = () => {
       const q = input.value.trim(); if (!q) { _root.querySelector('#bk-grid').innerHTML = `<div class="bk-empty">${_t('Type to search.', 'Escreve para pesquisar.')}</div>`; _root.querySelector('#bk-count').textContent = ''; return; }
       _root.querySelector('#bk-grid').innerHTML = skeletonRail();
-      BooksData.search(q, { sort: 'readinglog', limit: 40 }).then(bs => {
-        bs = bs.map(withScore).sort((a, b) => b.score - a.score);
+      // a known PT title → look up the canonical (English) title precisely and pin it first
+      const alias = aliasFor(norm(q));
+      const tasks = [BooksData.search(q, { sort: 'readinglog', limit: 40 }).catch(() => [])];
+      if (alias) tasks.push(BooksData.lookup(alias.t, alias.a).then(b => b ? [b] : []).catch(() => []));
+      Promise.all(tasks).then(parts => {
+        const pinned = parts[1] || [], pinId = pinned[0] && pinned[0].id;
+        const seen = new Set(); let bs = [];
+        pinned.concat(parts[0]).forEach(b => { if (b && b.id && !seen.has(b.id)) { seen.add(b.id); bs.push(withScore(b)); } });
+        bs.sort((a, b) => (a.id === pinId ? -1 : b.id === pinId ? 1 : 0) || b.score - a.score);
         _root.querySelector('#bk-count').textContent = `${bs.length} ${_t('results', 'resultados')}`;
         _root.querySelector('#bk-grid').innerHTML = bs.length ? `<div class="bk-grid-in">${bs.map(bookCard).join('')}</div>` : `<div class="bk-empty">${_t('No results.', 'Sem resultados.')}</div>`;
         wireBooks(_root);
