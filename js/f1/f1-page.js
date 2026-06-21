@@ -75,9 +75,8 @@ const F1Page = (function () {
   const TABS = [
     { id: 'race',    ic: '🏁', en: 'Race',         pt: 'Corrida' },
     { id: 'track',   ic: '🏎️', en: 'Track',        pt: 'Pista' },
-    { id: 'live',    ic: '📊', en: 'Live Timing',   pt: 'Live Timing' },
+    { id: 'live',    ic: '📊', en: 'Timing',        pt: 'Tempos' },
     { id: 'driver',  ic: '👤', en: 'Driver',       pt: 'Piloto' },
-    { id: 'timing',  ic: '📋', en: 'Timing',       pt: 'Tempos' },
     { id: 'circuit', ic: '🗺️', en: 'Circuit',      pt: 'Circuito' },
     { id: 'cal',     ic: '📅', en: 'Calendar',      pt: 'Calendário' },
     { id: 'stats',   ic: '📊', en: 'Stats',         pt: 'Estatísticas' },
@@ -871,12 +870,17 @@ const F1Page = (function () {
             const gap = o.retired ? _t('DNF', 'Abandono') : runIdx === 0 ? _t('LEADER', 'LÍDER') : fmtGap(o.num, ord[runIdx - 1] ? ord[runIdx - 1].num : o.num, ms);
             const pen = pensUntil(o.num, ms);
             const penBadge = pen.length ? `<span class="f1-pen f1-pen-${pen[pen.length - 1].type}">${esc(pen[pen.length - 1].label)}</span>` : '';
+            // extra info shown when the panel is wide (hidden on narrow via container query)
+            let llDur = 0; for (const l of (lapsByDriver[o.num] || [])) { if (l.end <= lights + ms && l.dur) llDur = l.dur; }
+            const st = tyreAt(o.num, lap), age = st.lap_start != null ? (lap - st.lap_start + (st.tyre_age_at_start || 0)) : null;
             return `<div class="f1-pos-row${o.retired ? ' out' : ''}" data-num="${o.num}">
               <span class="f1-pos-p">${o.retired ? '–' : o.p}</span>
               <span class="f1-pos-num" style="border-color:${teamCol(m.colour)}">${esc(o.num)}</span>
               <span class="f1-pos-name">${esc(m.code || o.num)}</span>
-              ${o.retired ? '' : `<span class="f1-tyre t-${comp.toLowerCase()}" title="${esc(comp)}">${ty.l}</span>`}
+              ${o.retired ? '' : `<span class="f1-tyre t-${comp.toLowerCase()}" title="${esc(comp)}${age != null ? ' · ' + age + 'v' : ''}">${ty.l}</span>`}
+              ${o.retired ? '' : `<span class="f1-pos-age">${age != null ? age + 'v' : ''}</span>`}
               ${penBadge}
+              <span class="f1-pos-ll">${llDur ? fmtLapTime(llDur / 1000) : ''}</span>
               <span class="f1-pos-gap">${gap}</span></div>`;
           }).join('') || `<div class="f1-empty">${_t('No order', 'Sem ordem')}</div>`;
         }
@@ -969,7 +973,7 @@ const F1Page = (function () {
               const end = s.lap_end || totalLaps, lps = Math.max(1, end - s.lap_start + 1), comp = String(s.compound || '').toLowerCase();
               return `<span class="f1-ts-seg t-${comp}" style="width:${(lps / totalLaps * 100).toFixed(1)}%" title="${esc(s.compound || '?')} · V${s.lap_start}–${end}">${tyre(s.compound).l}</span>`;
             }).join('');
-            return `<div class="f1-ts-row"><span class="f1-ts-code" style="border-color:${teamCol(dm.colour)}">${esc(dm.code || o.num)}</span><div class="f1-ts-bar">${segs || '<span class="f1-ts-empty">—</span>'}</div></div>`;
+            return `<div class="f1-ts-row" data-num="${o.num}" title="${_t('Open driver', 'Abrir piloto')}"><span class="f1-ts-code" style="border-color:${teamCol(dm.colour)}">${esc(dm.code || o.num)}</span><div class="f1-ts-bar">${segs || '<span class="f1-ts-empty">—</span>'}</div></div>`;
           }).join('');
           extra.innerHTML = `
             <div class="f1-xcard f1-xcard-chart">
@@ -982,6 +986,7 @@ const F1Page = (function () {
               <div class="f1-ts-list">${tsRows}</div>
             </div>`;
           extra.hidden = false;
+          extra.querySelectorAll('.f1-ts-row[data-num]').forEach(r => r.addEventListener('click', () => { _pendingDriver = { sk, num: +r.dataset.num }; _go('driver'); }));
         }
 
         onClock(0);
@@ -1620,12 +1625,14 @@ const F1Page = (function () {
                 <div class="f1-dr-team">${esc(m.team_name || '')}${m.country_code ? ' · ' + esc(m.country_code) : ''}</div></div>
               <div class="f1-dr-pos"><span class="f1-dr-pos-n" id="f1-dr-posn">${myPos ? 'P' + myPos : '—'}</span><span class="f1-dr-pos-l">${_t('position', 'posição')}</span></div>
             </div>
+            <div class="f1-dr-main">
             <div class="f1-dr-card f1-dr-track" id="f1-dr-track">
               <div class="f1-dr-track-top"><h4>📍 ${_t('Around on track', 'À volta na pista')}${_curLive ? ' <span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''}</h4>
                 <div class="f1-dr-nbstrip" id="f1-dr-nbstrip">${nbChip(ahead, _t('Ahead', 'Frente'))}${nbChip({ driver_number: num, position: myPos }, _t('Driver', 'Piloto'), true)}${nbChip(behind, _t('Behind', 'Atrás'))}</div></div>
               <div class="f1-track-stage f1-dr-stage"><canvas id="f1-dr-canvas"></canvas><div class="f1-stage-load" id="f1-dr-stageload">${loading()}</div></div>
               ${controls}
-            </div>
+            </div></div>
+            <div class="f1-dr-side">
             <div class="f1-dr-stats">
               <div class="f1-dr-stat"><span class="f1-dr-stat-v ${best && best.lap_duration === allBest ? 'f1-purple' : ''}">${best ? fmtLapTime(best.lap_duration) : '—'}</span><span class="f1-dr-stat-l">${_t('Best lap', 'Melhor volta')}${best ? ' · V' + best.lap_number : ''}</span></div>
               <div class="f1-dr-stat"><span class="f1-dr-stat-v">${top || '—'}<small> km/h</small></span><span class="f1-dr-stat-l">${_t('Top speed', 'Vel. máxima')}</span></div>
@@ -1639,6 +1646,7 @@ const F1Page = (function () {
               <div class="f1-lapchart-x"><span>V1</span><span>V${totalLaps}</span></div></div>
             ${posTrace ? `<div class="f1-dr-card"><h4>📈 ${_t('Position', 'Posição')}</h4>${posTrace}</div>` : ''}
             <div class="f1-dr-card f1-dr-tele"><h4>⚡ ${_t('Fastest lap telemetry', 'Telemetria da volta mais rápida')}</h4><div id="f1-dr-tele">${loading()}</div></div>
+            </div>
           </div>`;
 
         // fastest-lap speed trace (car_data over that lap window)

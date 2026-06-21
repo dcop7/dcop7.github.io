@@ -357,7 +357,10 @@
 
 /* ── Driver (Piloto) tab ── */
 .f1-driverpg { margin: 0 auto; }
-.f1-dr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+.f1-dr-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); gap: .9rem; align-items: start; }
+.f1-dr-main { grid-column: 1; min-width: 0; }
+.f1-dr-side { grid-column: 2; min-width: 0; display: flex; flex-direction: column; gap: .9rem; }
+.f1-dr-side .f1-dr-stats { grid-template-columns: repeat(2, 1fr); }
 .f1-dr-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .8rem .9rem; min-width: 0; }
 .f1-dr-card h4 { font-family: var(--font-head); font-size: .82rem; font-weight: 800; color: var(--text); margin: 0 0 .6rem; }
 .f1-dr-head { display: flex; align-items: center; gap: .8rem; border-left: 4px solid var(--c); grid-column: 1 / -1; }
@@ -399,9 +402,13 @@
 .f1-dr-stage { position: relative; aspect-ratio: 16/10; background: radial-gradient(ellipse at 50% 40%, #0e1322, #05070e); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .f1-dr-stage canvas { width: 100%; height: 100%; display: block; }
 .f1-dr-livetrack { grid-column: 1 / -1; }
-@media (max-width: 640px) {
+@media (max-width: 920px) {
   .f1-dr-grid { grid-template-columns: 1fr; }
-  .f1-dr-stats { grid-template-columns: repeat(2, 1fr); }
+  .f1-dr-main, .f1-dr-side { grid-column: 1; }
+  .f1-dr-stats, .f1-dr-side .f1-dr-stats { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 560px) {
+  .f1-dr-stats, .f1-dr-side .f1-dr-stats { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ── Piloto: focused replay track ── */
@@ -689,3 +696,19 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-ts-seg.t-wet { background: #2d7dff; color: #fff; }
 .f1-ts-empty { color: var(--muted); font-size: .7rem; padding-left: .3rem; }
 @media (max-width: 860px) { .f1-track-extra { grid-template-columns: 1fr; } }
+
+/* satellite brightness (was a bit dull) */
+.f1-satmap .leaflet-tile, .f1-circ-realmap .leaflet-tile { filter: brightness(1.13) saturate(1.22) contrast(1.05); }
+
+/* Pista classification — fill the width responsively (container queries on the side panel) */
+.f1-side { container-type: inline-size; }
+.f1-pos-name { flex: 1 1 auto; min-width: 1.6rem; }
+.f1-pos-age { font-size: .6rem; color: var(--muted); font-family: var(--font-mono); flex-shrink: 0; }
+.f1-pos-ll { font-family: var(--font-mono); font-size: .68rem; color: var(--text2); flex-shrink: 0; }
+.f1-pos-gap { flex-shrink: 0; }
+@container (max-width: 280px) { .f1-pos-ll { display: none; } }
+@container (max-width: 240px) { .f1-pos-age { display: none; } }
+
+/* clickable tyre-strategy rows (→ open the driver) */
+.f1-ts-row[data-num] { cursor: pointer; border-radius: 5px; padding: 1px 2px; transition: background var(--ease); }
+.f1-ts-row[data-num]:hover { background: rgba(225,6,0,.1); }
