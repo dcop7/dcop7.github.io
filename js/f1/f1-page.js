@@ -1293,6 +1293,7 @@ const F1Page = (function () {
         </div>
         <div class="f1-lv-legend">${_t('🟣 session best · 🟢 personal best · ⚡ fastest lap · tap a driver for detail', '🟣 melhor da sessão · 🟢 melhor pessoal · ⚡ volta mais rápida · toca num piloto para detalhe')}</div>
         <div id="f1-lv-body">${loading()}</div>
+        <div class="f1-lv-analysis" id="f1-lv-analysis" hidden></div>
         <div class="f1-lv-cfg-panel" id="f1-lv-cfg-panel" hidden></div>
         <div class="f1-lv-driver" id="f1-lv-driver" hidden></div>
       </div>`;
@@ -1318,7 +1319,7 @@ const F1Page = (function () {
           const wxEl = body.querySelector('#f1-lv-wx'), w = model.wx;
           if (w && wxEl) wxEl.innerHTML = `<span>${w.rainfall ? '🌧️' : '☀️'} ${Math.round(w.air_temperature)}°C</span><span>${_t('track', 'pista')} ${Math.round(w.track_temperature)}°</span>`;
           if (!model.drivers.length) { host.innerHTML = err(_t('No timing data for this race.', 'Sem dados de tempos para esta corrida.')); return; }
-          paint();
+          paint(); renderAnalysis();
         } catch (e) { host.innerHTML = err(); }
       }
       run();
@@ -1381,7 +1382,9 @@ const F1Page = (function () {
       const mn = arr => { const v = arr.filter(x => x); return v.length ? Math.min(...v) : null; };
       const ctx = { bLap: mn(drivers.map(d => d.best)), b1: mn(drivers.map(d => d.pb1)), b2: mn(drivers.map(d => d.pb2)), b3: mn(drivers.map(d => d.pb3)), topMax: Math.max(0, ...drivers.map(d => d.topSpeed || 0)) || null, leaderLaps, fastestNum: null };
       let bv = Infinity; drivers.forEach(d => { if (d.best && d.best < bv) { bv = d.best; ctx.fastestNum = d.num; } });
-      return { drivers, ctx, race: (past.find(r => r.session_key === sk)) || live || {}, wx: (wxRows || [])[wxRows.length - 1] };
+      let scN = 0, ylN = 0, rdN = 0;
+      for (const r of (rcRows || [])) { const msg = String(r.message || '').toUpperCase(); if (r.category === 'SafetyCar' && /DEPLOYED/.test(msg) && !/VIRTUAL/.test(msg)) scN++; else if (r.flag === 'YELLOW' || r.flag === 'DOUBLE YELLOW') ylN++; else if (r.flag === 'RED') rdN++; }
+      return { drivers, ctx, race: (past.find(r => r.session_key === sk)) || live || {}, wx: (wxRows || [])[wxRows.length - 1], flags: { sc: scN, yellow: ylN, red: rdN } };
     }
 
     function paint() {
@@ -1400,6 +1403,47 @@ const F1Page = (function () {
       }).join('');
       host.innerHTML = `<div class="f1-lv-wrap"><table class="f1-lv-table"><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table></div>`;
       host.querySelectorAll('tr[data-num]').forEach(tr => tr.addEventListener('click', () => openDriver(+tr.dataset.num)));
+    }
+
+    /* analysis blocks below the table: lap-time distribution · best sectors · session stats */
+    function renderAnalysis() {
+      const el = body.querySelector('#f1-lv-analysis'); if (!el || !model) return;
+      const durs = []; for (const d of model.drivers) for (const p of (d.lapTrace || [])) if (p.y) durs.push(p.y);
+      const best = model.ctx.bLap || (durs.length ? Math.min(...durs) : 0);
+      const labels = ['≤+0.5', '+0.5–1', '+1–2', '+2–3', '>+3'], bk = [0, 0, 0, 0, 0];
+      for (const t of durs) { const d = t - best; bk[d < 0.5 ? 0 : d < 1 ? 1 : d < 2 ? 2 : d < 3 ? 3 : 4]++; }
+      const maxB = Math.max(1, ...bk);
+      const dist = bk.map((b, i) => `<div class="f1-an-bar" title="${b}"><div class="f1-an-bar-track"><div class="f1-an-bar-fill" style="height:${Math.round(b / maxB * 100)}%"></div></div><span class="f1-an-bar-n">${b}</span><span class="f1-an-bar-l">${labels[i]}</span></div>`).join('');
+      const who = (key, bv) => { const d = model.drivers.find(x => x[key] === bv); return d ? d.code : '—'; };
+      const c = model.ctx, theo = (c.b1 && c.b2 && c.b3) ? c.b1 + c.b2 + c.b3 : null;
+      const secRow = (lbl, bv, key, col) => `<div class="f1-an-sec"><span class="f1-an-sec-l">${lbl}</span><b class="${col}">${bv ? bv.toFixed(3) : '—'}</b><span class="f1-an-sec-w">${bv ? who(key, bv) : ''}</span></div>`;
+      const fast = model.drivers.find(d => d.num === c.fastestNum);
+      const pits = model.drivers.reduce((a, d) => a + (d.pitCount || 0), 0);
+      const fl = model.flags || {};
+      const stat = (v, l) => `<div class="f1-an-stat"><span class="f1-an-stat-v">${v}</span><span class="f1-an-stat-l">${l}</span></div>`;
+      el.innerHTML = `
+        <div class="f1-an-card">
+          <h4>📊 ${_t('Lap-time distribution', 'Distribuição de tempos')}</h4>
+          <div class="f1-an-dist">${dist}</div>
+          <div class="f1-an-note">${_t('seconds off the fastest lap', 'segundos acima da volta mais rápida')} (${durs.length} ${_t('laps', 'voltas')})</div>
+        </div>
+        <div class="f1-an-card">
+          <h4>🟪 ${_t('Best sectors', 'Análise de setores')}</h4>
+          ${secRow('S1', c.b1, 'pb1', 'f1-an-s1')}${secRow('S2', c.b2, 'pb2', 'f1-an-s2')}${secRow('S3', c.b3, 'pb3', 'f1-an-s3')}
+          <div class="f1-an-sec f1-an-theo"><span class="f1-an-sec-l">${_t('Theoretical best', 'Volta teórica')}</span><b class="f1-purple">${theo ? fmtLapTime(theo) : '—'}</b><span class="f1-an-sec-w">${c.bLap ? fmtLapTime(c.bLap) + ' ' + _t('real', 'real') : ''}</span></div>
+        </div>
+        <div class="f1-an-card">
+          <h4>📋 ${_t('Session stats', 'Estatísticas da sessão')}</h4>
+          <div class="f1-an-stats">
+            ${stat(fast ? fmtLapTime(c.bLap) : '—', _t('Fastest lap', 'Volta mais rápida') + (fast ? ' · ' + fast.code : ''))}
+            ${stat(c.leaderLaps || '—', _t('Laps', 'Voltas'))}
+            ${stat(pits, _t('Pit stops', 'Paragens'))}
+            ${stat(c.topMax ? c.topMax + ' km/h' : '—', _t('Top speed', 'Vel. máxima'))}
+            ${stat('🚨 ' + (fl.sc || 0), 'Safety Car')}
+            ${stat('🟡 ' + (fl.yellow || 0) + (fl.red ? ' · 🔴 ' + fl.red : ''), _t('Flags', 'Bandeiras'))}
+          </div>
+        </div>`;
+      el.hidden = false;
     }
 
     const _esc = e => { if (e.key === 'Escape') closeCfg(); };
