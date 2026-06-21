@@ -34,20 +34,61 @@ const F1Page = (function () {
   /* A STATIC satellite map sized to sit *behind* the animated schematic: no
      pan/zoom, georeferenced from the telemetry outline (OpenF1 ≈ decimetres,
      north-up) so the real circuit lines up with the drawn track + cars. */
-  async function makeSatMapBehind(container, outline, lat, lon) {
+  async function makeSatMapBehind(container, outline, lat, lon, theta) {
     await _loadLeaflet();
     const map = L.map(container, { zoomControl: false, attributionControl: true, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false, zoomSnap: 0, fadeAnimation: false });
     const t = REALMAP_TILES.sat;
     L.tileLayer(t.url, { attribution: t.attr, maxZoom: 20, opacity: 0.95 }).addTo(map);
     let cx = 0, cy = 0; for (const p of outline) { cx += p.x; cy += p.y; } cx /= outline.length; cy /= outline.length;
     const mLat = 111320, mLon = 111320 * Math.cos(lat * Math.PI / 180);
+    const c = Math.cos(theta || 0), s = Math.sin(theta || 0);
     const bounds = L.latLngBounds();
-    for (const p of outline) bounds.extend([lat + ((p.y - cy) / 10) / mLat, lon + ((p.x - cx) / 10) / mLon]);
+    for (const p of outline) { const dx = p.x - cx, dy = p.y - cy, rx = dx * c - dy * s, ry = dx * s + dy * c; bounds.extend([lat + (ry / 10) / mLat, lon + (rx / 10) / mLon]); }
     const pad = () => [Math.max(8, container.clientWidth * 0.06), Math.max(8, container.clientHeight * 0.06)];
     map.fitBounds(bounds, { padding: pad(), animate: false });
     setTimeout(() => { try { map.invalidateSize(); map.fitBounds(bounds, { padding: pad(), animate: false }); } catch {} }, 70);
-    map.__bounds = bounds; map.__pad = pad;
     return map;
+  }
+
+  /* Derive the rotation that turns the telemetry frame north-up, by matching the
+     edge-orientation distribution of the lap outline to the real circuit geometry
+     from OpenStreetMap (Overpass). Cached per circuit; 0 if OSM is unavailable or
+     the fit is poor. */
+  const _rotCache = new Map();
+  async function circuitRotation(outline, lat, lon, key) {
+    if (_rotCache.has(key)) return _rotCache.get(key);
+    let theta = 0;
+    try {
+      const mLat = 111320, mLon = 111320 * Math.cos(lat * Math.PI / 180);
+      const q = `[out:json][timeout:25];(way["highway"="raceway"](around:2600,${lat},${lon}););out geom;`;
+      const d = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q) }).then(r => r.json());
+      const histO = new Float64Array(180), osmPts = [];
+      for (const w of (d.elements || [])) {
+        const g = w.geometry; if (!g || g.length < 2) continue;
+        for (let i = 0; i < g.length - 1; i++) {
+          const ax = (g[i].lon - lon) * mLon, ay = (g[i].lat - lat) * mLat, bx = (g[i + 1].lon - lon) * mLon, by = (g[i + 1].lat - lat) * mLat;
+          osmPts.push([ax, ay]); const len = Math.hypot(bx - ax, by - ay); if (len < 1) continue;
+          let a = Math.atan2(by - ay, bx - ax); a = ((a % Math.PI) + Math.PI) % Math.PI; histO[Math.min(179, Math.floor(a / Math.PI * 180))] += len;
+        }
+      }
+      if (osmPts.length < 8) { _rotCache.set(key, 0); return 0; }
+      let cx = 0, cy = 0; for (const p of outline) { cx += p.x; cy += p.y; } cx /= outline.length; cy /= outline.length;
+      const tPts = outline.map(p => [(p.x - cx) / 10, (p.y - cy) / 10]);
+      const histT = new Float64Array(180);
+      for (let i = 0; i < tPts.length; i++) { const a0 = tPts[i], a1 = tPts[(i + 1) % tPts.length], len = Math.hypot(a1[0] - a0[0], a1[1] - a0[1]); if (len < 1) continue; let a = Math.atan2(a1[1] - a0[1], a1[0] - a0[0]); a = ((a % Math.PI) + Math.PI) % Math.PI; histT[Math.min(179, Math.floor(a / Math.PI * 180))] += len; }
+      let bestS = 0, bestV = -1;
+      for (let sh = 0; sh < 180; sh++) { let v = 0; for (let b = 0; b < 180; b++) v += histT[b] * histO[(b + sh) % 180]; if (v > bestV) { bestV = v; bestS = sh; } }
+      const cand = bestS * Math.PI / 180;
+      let ox = 0, oy = 0; for (const p of osmPts) { ox += p[0]; oy += p[1]; } ox /= osmPts.length; oy /= osmPts.length;
+      const oc = osmPts.map(p => [p[0] - ox, p[1] - oy]);
+      const tStep = Math.max(1, Math.ceil(tPts.length / 60)), oStep = Math.max(1, Math.ceil(oc.length / 150));
+      const score = th => { const c = Math.cos(th), s = Math.sin(th); let sum = 0, n = 0; for (let i = 0; i < tPts.length; i += tStep) { const x = tPts[i][0] * c - tPts[i][1] * s, y = tPts[i][0] * s + tPts[i][1] * c; let best = 1e18; for (let j = 0; j < oc.length; j += oStep) { const dx = x - oc[j][0], dy = y - oc[j][1], dd = dx * dx + dy * dy; if (dd < best) best = dd; } sum += Math.sqrt(best); n++; } return n ? sum / n : 1e9; };
+      const sA = score(cand), sB = score(cand + Math.PI);
+      theta = sB < sA ? cand + Math.PI : cand;
+      if (Math.min(sA, sB) > 450) theta = 0;
+    } catch { theta = 0; }
+    _rotCache.set(key, theta);
+    return theta;
   }
 
   /* Create a fresh Leaflet map in a container (caller owns the lifecycle). */
@@ -919,6 +960,7 @@ const F1Page = (function () {
 
         let curMs = 0;
         function onClock(frac) {
+          if (!_track) return;
           const ms = frac * (_track.duration || 1); curMs = ms;
           seek.value = Math.round(frac * 1000);
           _track.setFlag(flagAt(ms));
@@ -1022,12 +1064,15 @@ const F1Page = (function () {
         // stay on top; the schematic keeps running) — georeferenced to line up.
         const satBtn = body.querySelector('#f1-track-sat'), satEl = body.querySelector('#f1-track-satmap');
         if (satBtn && satEl) satBtn.onclick = async () => {
-          if (!satEl.hidden) { satEl.hidden = true; satBtn.classList.remove('on'); if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; return; }
+          if (!satEl.hidden) { satEl.hidden = true; satBtn.classList.remove('on'); if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; _track && _track.setRotation(0); return; }
           if (!isFinite(race.lat) || !isFinite(race.lon) || !(outline && outline.length)) return;
           satEl.hidden = false; satBtn.classList.add('on');
           if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
+          satEl.innerHTML = '<div class="f1-satmap-tag">🛰️ …</div>';
+          const theta = await circuitRotation(outline, race.lat, race.lon, race.circuit_short_name || String(sk)).catch(() => 0);
+          _track && _track.setRotation(theta || 0);
           satEl.innerHTML = '';
-          try { _satMap = await makeSatMapBehind(satEl, outline, race.lat, race.lon); } catch { satEl.hidden = true; satBtn.classList.remove('on'); }
+          try { _satMap = await makeSatMapBehind(satEl, outline, race.lat, race.lon, theta || 0); } catch { satEl.hidden = true; satBtn.classList.remove('on'); }
         };
 
         _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');
@@ -1690,6 +1735,7 @@ const F1Page = (function () {
               if (metaEl) metaEl.innerHTML = `${raceLabel}${wchip}`;
             }
             function onClock(frac) {
+              if (!_track) return;
               const ms = frac * (_track.duration || 1);
               seek.value = Math.round(frac * 1000);
               const arr = model.lapsByDriver[num];

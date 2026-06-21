@@ -39,6 +39,11 @@ const F1Track = (function () {
       draw();
     }
 
+    /* optional whole-track rotation (radians), about the track centroid — used to
+       turn the telemetry frame north-up so a satellite layer lines up. */
+    let _rot = 0, _cx = 0, _cy = 0;
+    function _rotPt(x, y) { if (!_rot) return [x, y]; const dx = x - _cx, dy = y - _cy, c = Math.cos(_rot), s = Math.sin(_rot); return [_cx + dx * c - dy * s, _cy + dx * s + dy * c]; }
+
     /* fit the track bbox into the canvas (preserve aspect, flip Y, pad). */
     function _buildTransform() {
       if (!_bounds) return;
@@ -47,14 +52,16 @@ const F1Track = (function () {
       const pad = 0.12;
       const s = Math.min(W * (1 - pad) / bw, H * (1 - pad) / bh);
       const ox = (W - bw * s) / 2, oy = (H - bh * s) / 2;
-      track && (track.tf = (x, y) => [ox + (x - minx) * s, H - (oy + (y - miny) * s)]);
+      track && (track.tf = (x, y) => { const [rx, ry] = _rotPt(x, y); return [ox + (rx - minx) * s, H - (oy + (ry - miny) * s)]; });
     }
 
     function _computeBounds(pts) {
+      _cx = 0; _cy = 0; for (const p of pts) { _cx += p.x; _cy += p.y; } if (pts.length) { _cx /= pts.length; _cy /= pts.length; }
       let minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity;
-      for (const p of pts) { if (p.x < minx) minx = p.x; if (p.x > maxx) maxx = p.x; if (p.y < miny) miny = p.y; if (p.y > maxy) maxy = p.y; }
+      for (const p of pts) { const [x, y] = _rotPt(p.x, p.y); if (x < minx) minx = x; if (x > maxx) maxx = x; if (y < miny) miny = y; if (y > maxy) maxy = y; }
       return { minx, maxx, miny, maxy };
     }
+    function setRotation(rad) { _rot = rad || 0; if (track) { _bounds = _computeBounds(track.raw); _buildTransform(); draw(); } }
 
     /* ── data ── */
     function setTrack(points) {
@@ -248,7 +255,7 @@ const F1Track = (function () {
     resize();
 
     return { setTrack, setDrivers, setReplay, play, pause, toggle, seek, setSpeed, setLiveClock, setOnTick,
-      setLabelMode, setFlag, setLeader, setMarkers, setShowMarkers,
+      setLabelMode, setFlag, setLeader, setMarkers, setShowMarkers, setRotation,
       setCorners, setShowCorners, setSectorSplit, setShowSectors, start, dispose, resize,
       get duration() { return duration; }, get playing() { return playing; }, get clock() { return clock; } };
   }
