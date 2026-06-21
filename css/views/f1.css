@@ -712,3 +712,7 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 /* clickable tyre-strategy rows (→ open the driver) */
 .f1-ts-row[data-num] { cursor: pointer; border-radius: 5px; padding: 1px 2px; transition: background var(--ease); }
 .f1-ts-row[data-num]:hover { background: rgba(225,6,0,.1); }
+
+/* Piloto — position chart with a replay-synced cursor */
+.f1-dr-pe { position: relative; line-height: 0; }
+.f1-dr-pe .f1-spark { display: block; width: 100%; }

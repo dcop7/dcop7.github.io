@@ -1689,7 +1689,7 @@ const F1Page = (function () {
               ${pens.length ? `<div class="f1-pitlist">${pens.map(p => `<span class="f1-pen f1-pen-${p.type}">${esc(p.label)}</span>`).join(' ')}</div>` : ''}</div>
             <div class="f1-dr-card"><h4>📊 ${_t('Lap times', 'Tempos por volta')}</h4><div class="f1-lapchart">${lapBars || '—'}</div>
               <div class="f1-lapchart-x"><span>V1</span><span>V${totalLaps}</span></div></div>
-            ${posTrace ? `<div class="f1-dr-card"><h4>📈 ${_t('Position', 'Posição')}</h4>${posTrace}</div>` : ''}
+            ${posTrace ? `<div class="f1-dr-card"><h4>📈 ${_t('Position', 'Posição')}</h4><div class="f1-dr-pe">${posTrace}<div class="f1-pe-cursor" id="f1-dr-pe-cursor"></div></div></div>` : ''}
             <div class="f1-dr-card f1-dr-tele"><h4>⚡ ${_t('Fastest lap telemetry', 'Telemetria da volta mais rápida')}</h4><div id="f1-dr-tele">${loading()}</div></div>
             </div>
           </div>`;
@@ -1742,6 +1742,8 @@ const F1Page = (function () {
               const lap = arr ? ((model.progAbs(arr, model.lights + ms) || {}).lap || 1) : 1;
               if (document.activeElement !== lapIn) lapIn.value = Math.min(model.totalLaps, lap);
               paintWx(ms);
+              const drCur = host.querySelector('#f1-dr-pe-cursor');
+              if (drCur) drCur.style.left = (model.totalLaps > 1 ? (Math.min(model.totalLaps, lap) - 1) / (model.totalLaps - 1) * 100 : 0) + '%';
               // live position + the cars currently just ahead/behind at this moment
               const ord = orderAt(ms);
               const i = ord.findIndex(o => o.num === num);
