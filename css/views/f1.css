@@ -577,3 +577,13 @@
 .f1-cs-card.future .f1-cs-badge { color: var(--muted); }
 
 @media (max-width: 760px) { .f1-hub-stand { grid-template-columns: 1fr; } }
+
+/* incident legend on the Track replay */
+.f1-incid-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .7rem;
+  margin-top: .5rem; padding: .45rem .6rem; background: rgba(255,255,255,.03);
+  border: 1px solid var(--border2, rgba(255,255,255,.08)); border-radius: 10px;
+  font-size: .68rem; color: var(--muted); }
+.f1-incid-toggle { display: inline-flex; align-items: center; gap: .3rem; font-weight: 700;
+  color: var(--text); cursor: pointer; }
+.f1-incid-toggle input { accent-color: var(--accent); cursor: pointer; }
+.f1-incid-item { white-space: nowrap; }

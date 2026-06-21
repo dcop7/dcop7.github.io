@@ -21,6 +21,8 @@ const F1Track = (function () {
     let labelMode = 'code';            // 'code' (HAM) | 'num' (44)
     let flag = null;                   // null | 'yellow' | 'sc' | 'vsc' | 'red'
     let leaderNum = null;              // highlight the running leader
+    let markers = [];                  // incident markers [{x,y,t,icon,type}]
+    let showMarkers = true;
 
     /* ── sizing ── */
     function resize() {
@@ -142,6 +144,26 @@ const F1Track = (function () {
         ctx.fillRect(sx - 3, sy, 3, 2.5); ctx.fillRect(sx + 3, sy, 3, 2.5);
       }
 
+      // incident markers — always visible (a map of where things happened);
+      // the one(s) near the current clock pulse brighter to sync with the replay.
+      if (showMarkers && markers.length && track.tf) {
+        for (const mk of markers) {
+          const [mx, my] = track.tf(mk.x, mk.y);
+          const near = duration ? Math.abs(mk.t - clock) < 6000 : true;
+          const r = near ? 10 : 7.5;
+          ctx.save();
+          ctx.globalAlpha = near ? 1 : 0.55;
+          if (near) { ctx.shadowColor = mk.col || '#ffd60a'; ctx.shadowBlur = 9; }
+          ctx.beginPath(); ctx.arc(mx, my, r, 0, 7);
+          ctx.fillStyle = 'rgba(8,11,18,.9)'; ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.lineWidth = near ? 1.8 : 1.2; ctx.strokeStyle = mk.col || 'rgba(255,255,255,.6)'; ctx.stroke();
+          ctx.font = (near ? 11 : 9) + 'px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(mk.icon, mx, my + .5);
+          ctx.restore();
+        }
+      }
+
       // cars at current clock — drawn as team-coloured tags with the driver code
       const order = [];
       for (const num in frames) {
@@ -194,13 +216,15 @@ const F1Track = (function () {
     function setLabelMode(m) { labelMode = m === 'num' ? 'num' : 'code'; draw(); }
     function setFlag(f) { flag = f || null; }
     function setLeader(n) { leaderNum = n; }
+    function setMarkers(arr) { markers = Array.isArray(arr) ? arr : []; draw(); }
+    function setShowMarkers(b) { showMarkers = !!b; draw(); }
     function dispose() { if (raf) cancelAnimationFrame(raf); raf = null; playing = false; }
 
     const ro = new ResizeObserver(resize); ro.observe(canvas);
     resize();
 
     return { setTrack, setDrivers, setReplay, play, pause, toggle, seek, setSpeed, setLiveClock, setOnTick,
-      setLabelMode, setFlag, setLeader, start, dispose, resize,
+      setLabelMode, setFlag, setLeader, setMarkers, setShowMarkers, start, dispose, resize,
       get duration() { return duration; }, get playing() { return playing; }, get clock() { return clock; } };
   }
 

@@ -349,6 +349,49 @@ const F1Page = (function () {
     return byDriver;
   }
 
+  /* ── Incident markers on the circuit (🟡🔴🚗💥🚜🚨) ──
+     Built from OpenF1 race-control messages; placed on the outline at the
+     involved car's position (or the marshal sector) at the message time. */
+  const INCIDENTS = {
+    yellow:    { icon: '🟡', col: '#ffd60a', en: 'Yellow flag',  pt: 'Bandeira amarela' },
+    accident:  { icon: '🔴', col: '#ff2d24', en: 'Accident',     pt: 'Acidente' },
+    stopped:   { icon: '🚗', col: '#ff9f1c', en: 'Stopped car',  pt: 'Carro parado' },
+    collision: { icon: '💥', col: '#ff5d8f', en: 'Collision',    pt: 'Colisão' },
+    recovery:  { icon: '🚜', col: '#8ecae6', en: 'Recovery',     pt: 'Recuperação de carro' },
+    sc:        { icon: '🚨', col: '#ff6b35', en: 'Safety Car',   pt: 'Safety Car' },
+  };
+  function classifyIncident(r) {
+    const msg = String(r.message || '').toUpperCase();
+    if (r.category === 'SafetyCar' || /SAFETY CAR/.test(msg)) return 'sc';
+    if (/COLLISION|CONTACT/.test(msg)) return 'collision';
+    if (/ACCIDENT|CRASH/.test(msg)) return 'accident';
+    if (/RECOVER|CRANE|MARSHALS WORKING|VEHICLE RECOVERY|BARRIER/.test(msg)) return 'recovery';
+    if (/STOPPED/.test(msg)) return 'stopped';
+    if (r.flag === 'YELLOW' || r.flag === 'DOUBLE YELLOW' || /\bYELLOW\b/.test(msg)) return 'yellow';
+    return null;
+  }
+  function computeIncidentMarkers(rcRows, model) {
+    const { outline, progFloat, offset, lights } = model;
+    const maxSector = Math.max(1, ...(rcRows || []).map(r => +r.sector || 0));
+    const out = [], seen = new Set();
+    for (const r of (rcRows || [])) {
+      const type = classifyIncident(r); if (!type) continue;
+      const tRel = Date.parse(r.date) - lights; if (!isFinite(tRel)) continue;
+      let drv = +r.driver_number || 0;
+      if (!drv) { const m = String(r.message || '').match(/CAR (\d+)/); if (m) drv = +m[1]; }
+      let u = null;
+      if (drv) { const pf = progFloat(drv, Math.max(0, tRel)); if (pf != null) u = pf - (offset[drv] || 0); }
+      if (u == null && +r.sector) u = (+r.sector - 1) / maxSector;
+      if (u == null) continue;
+      const xy = outlineXY(outline, u);
+      const key = type + ':' + (r.lap_number || 0) + ':' + Math.round((((u % 1) + 1) % 1) * 30);
+      if (seen.has(key)) continue; seen.add(key);
+      const cfg = INCIDENTS[type];
+      out.push({ t: tRel, x: xy.x, y: xy.y, type, icon: cfg.icon, col: cfg.col, lap: r.lap_number || 0 });
+    }
+    return out.sort((a, b) => a.t - b.t);
+  }
+
   /* ════════════════════════════ TRACK ════════════════════════════
      Whole-race replay: cars run the full race placed on a real outline by
      lap progress, with live order (number · code · tyre · gap · penalties),
@@ -443,6 +486,7 @@ const F1Page = (function () {
     const flagRows = flagStateRows(rcRows || []).map(r => ({ t: Date.parse(r.date) - lights, s: r.s })).sort((a, b) => a.t - b.t);
     const wx = (wxRows || []).map(w => ({ t: Date.parse(w.date) - lights, air: w.air_temperature, trk: w.track_temperature, hum: w.humidity, rain: w.rainfall, wind: w.wind_speed })).filter(w => isFinite(w.t)).sort((a, b) => a.t - b.t);
     const model = { meta, lapsByDriver, lights, raceDur, totalLaps, lapStart, lastEndRel, lastLapNum, isRetired, outline, offset, progAbs, progFloat, frames, stintsByDriver, tyreAt, posByDriver, events, flagRows, penByDriver, wx };
+    model.markers = computeIncidentMarkers(rcRows, model);
     _modelCache.set(sk, model);
     return model;
   }
@@ -498,6 +542,10 @@ const F1Page = (function () {
             <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
             <button class="f1-btn f1-icon-btn" id="f1-fs" title="${_t('Fullscreen','Ecrã inteiro')}" aria-label="${_t('Fullscreen','Ecrã inteiro')}">⛶</button>
           </div>
+          <div class="f1-incid-legend" id="f1-incid-legend">
+            <label class="f1-incid-toggle"><input type="checkbox" id="f1-incid-chk" checked>${_t('Incidents', 'Incidentes')}</label>
+            ${Object.values(INCIDENTS).map(c => `<span class="f1-incid-item">${c.icon} ${_t(c.en, c.pt)}</span>`).join('')}
+          </div>
         </div>
         <aside class="f1-side">
           <h4>${_t('Race events', 'Eventos da corrida')}</h4>
@@ -549,6 +597,11 @@ const F1Page = (function () {
         _track.setDrivers(meta);
         _track.setTrack(outline);
         _track.setReplay(frames);
+        _track.setMarkers(M.markers || []);
+        const incidChk = body.querySelector('#f1-incid-chk');
+        if (incidChk) incidChk.addEventListener('change', () => _track && _track.setShowMarkers(incidChk.checked));
+        const legend = body.querySelector('#f1-incid-legend');
+        if (legend) legend.style.display = (M.markers && M.markers.length) ? '' : 'none';
         stage.style.display = 'none';
         body.querySelector('#f1-track-hint').textContent = _t('Drag the bar · play to watch the whole race', 'Arrasta a barra · play para ver a corrida toda');
 
