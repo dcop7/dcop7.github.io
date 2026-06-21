@@ -8,7 +8,40 @@ const F1Page = (function () {
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
   const _t = (en, pt) => (_lang() === 'en' ? en : pt);
-  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null;
+  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null, _circMap = null;
+
+  /* Lazy-load Leaflet (same CDN the Explorer uses) for the real circuit map. */
+  function _loadLeaflet() {
+    if (window.L) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      if (!document.querySelector('link[href*="leaflet"]')) {
+        document.head.appendChild(Object.assign(document.createElement('link'),
+          { rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' }));
+      }
+      const ex = document.querySelector('script[src*="leaflet@1.9.4"]');
+      if (ex) { ex.addEventListener('load', resolve); ex.addEventListener('error', reject); if (window.L) resolve(); return; }
+      const s = Object.assign(document.createElement('script'), { src: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' });
+      s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+    });
+  }
+  /* Real map of a circuit (license-clean, keyless): CARTO (OSM) or Esri satellite,
+     both with attribution — the same tile sources used by the Portugal explorer. */
+  const REALMAP_TILES = {
+    map: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>' },
+    sat: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics' },
+  };
+  async function showCircuitRealMap(container, lat, lon, kind) {
+    await _loadLeaflet();
+    if (!_circMap) {
+      _circMap = L.map(container, { center: [lat, lon], zoom: 14, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
+      _circMap.__layer = null;
+    }
+    if (_circMap.__layer) _circMap.removeLayer(_circMap.__layer);
+    const t = REALMAP_TILES[kind] || REALMAP_TILES.sat;
+    _circMap.__layer = L.tileLayer(t.url, { attribution: t.attr, subdomains: t.sub, maxZoom: 19 }).addTo(_circMap);
+    _circMap.setView([lat, lon], _circMap.getZoom() || 14);
+    setTimeout(() => _circMap && _circMap.invalidateSize(), 60);
+  }
 
   const TABS = [
     { id: 'race',    ic: '🏁', en: 'Race',         pt: 'Corrida' },
@@ -1634,6 +1667,7 @@ const F1Page = (function () {
 
   async function openCircuit(circ, m, detail) {
     if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
+    if (_circMap) { try { _circMap.remove(); } catch {} _circMap = null; }
     detail.innerHTML = `<div class="f1-circ-panel">${loading(_t('Loading circuit…', 'A carregar o circuito…'))}</div>`;
     detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     try {
@@ -1691,15 +1725,27 @@ const F1Page = (function () {
       const noMap = `<div class="f1-empty f1-circ-nomap">🗺️<span>${m.of1
         ? _t('Map unavailable', 'Mapa indisponível')
         : _t('No map — telemetry only exists from 2023 (historic circuit)', 'Sem mapa — telemetria só existe desde 2023 (circuito histórico)')}</span></div>`;
+      const lat = +circ.Location?.lat, lon = +circ.Location?.long;
+      const hasGeo = isFinite(lat) && isFinite(lon);
+      const hasSchema = track && track.length > 20;
+      const schemaInner = hasSchema ? `
+        <div class="f1-circ-opts">
+          <label><input type="checkbox" id="f1-cc-corners">${_t('Corners', 'Curvas')}</label>
+          <label><input type="checkbox" id="f1-cc-sectors">${_t('Sectors', 'Setores')}</label>
+        </div>
+        <canvas id="f1-circ-canvas"></canvas>
+        <div class="f1-circ-maphint">${_t('Layout, corners &amp; sectors derived from OpenF1 telemetry (approx).', 'Traçado, curvas e setores derivados da telemetria OpenF1 (aprox.).')}</div>` : noMap;
       detail.innerHTML = `
         <div class="f1-circ-panel">
-          <div class="f1-circ-panel-map">${track && track.length > 20 ? `
-            <div class="f1-circ-opts">
-              <label><input type="checkbox" id="f1-cc-corners">${_t('Corners', 'Curvas')}</label>
-              <label><input type="checkbox" id="f1-cc-sectors">${_t('Sectors', 'Setores')}</label>
-            </div>
-            <canvas id="f1-circ-canvas"></canvas>
-            <div class="f1-circ-maphint">${_t('Layout, corners &amp; sectors derived from OpenF1 telemetry (approx).', 'Traçado, curvas e setores derivados da telemetria OpenF1 (aprox.).')}</div>` : noMap}</div>
+          <div class="f1-circ-panel-map">
+            ${(hasGeo || hasSchema) ? `<div class="f1-circ-views" id="f1-circ-views">
+              <button data-view="schema"${hasSchema ? ' class="on"' : ' disabled'}>📐 ${_t('Schematic', 'Esquema')}</button>
+              <button data-view="map"${(!hasSchema && hasGeo) ? ' class="on"' : ''}${hasGeo ? '' : ' disabled'}>🗺️ ${_t('Map', 'Mapa')}</button>
+              <button data-view="sat"${hasGeo ? '' : ' disabled'}>🛰️ ${_t('Satellite', 'Satélite')}</button>
+            </div>` : ''}
+            <div class="f1-circ-schema" id="f1-circ-schema"${hasSchema ? '' : ' hidden'}>${schemaInner}</div>
+            <div class="f1-circ-realmap" id="f1-circ-realmap"${hasSchema ? ' hidden' : ''}></div>
+          </div>
           <div class="f1-circ-panel-info">
             <h3>${flag(circ.Location?.country)}${esc(circ.circuitName)}</h3>
             <div class="f1-circ-loc">${esc(circ.Location?.locality)}, ${esc(circ.Location?.country)}</div>
@@ -1714,7 +1760,7 @@ const F1Page = (function () {
             ${fastest ? `<p class="f1-circ-src">${_t('Fastest lap from OpenF1 race data (2023→).', 'Volta mais rápida dos dados de corrida OpenF1 (2023→).')}</p>` : ''}
           </div>
         </div>`;
-      if (track && track.length > 20) {
+      if (hasSchema) {
         const cv = detail.querySelector('#f1-circ-canvas');
         _ctrack = F1Track.create(cv);
         _ctrack.setTrack(track);
@@ -1723,6 +1769,18 @@ const F1Page = (function () {
         const cc = detail.querySelector('#f1-cc-corners'), scb = detail.querySelector('#f1-cc-sectors');
         cc && cc.addEventListener('change', () => _ctrack && _ctrack.setShowCorners(cc.checked));
         scb && scb.addEventListener('change', () => _ctrack && _ctrack.setShowSectors(scb.checked));
+      }
+      // real-map (CARTO/OSM or Esri satellite) — keyless, attributed, works for every circuit
+      const views = detail.querySelector('#f1-circ-views');
+      if (views && hasGeo) {
+        const schemaEl = detail.querySelector('#f1-circ-schema'), realEl = detail.querySelector('#f1-circ-realmap');
+        views.addEventListener('click', async e => {
+          const b = e.target.closest('[data-view]'); if (!b || b.disabled) return;
+          views.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+          if (b.dataset.view === 'schema') { schemaEl.hidden = false; realEl.hidden = true; _ctrack && _ctrack.resize(); }
+          else { schemaEl.hidden = true; realEl.hidden = false; realEl.innerHTML = realEl.innerHTML || ''; try { await showCircuitRealMap(realEl, lat, lon, b.dataset.view); } catch { realEl.innerHTML = err(); } }
+        });
+        if (!hasSchema) { try { await showCircuitRealMap(realEl, lat, lon, 'sat'); } catch { realEl.innerHTML = err(); } }
       }
     } catch (e) { detail.innerHTML = `<div class="f1-circ-panel">${err()}</div>`; }
   }

@@ -613,3 +613,15 @@
 .f1-up-note { font-size: .72rem; color: var(--muted); max-width: 36ch; }
 .f1-nodata { flex-direction: column; gap: .4rem; text-align: center; }
 .f1-nodata small { color: var(--muted); opacity: .8; }
+
+/* circuit detail — Schematic / Map / Satellite views */
+.f1-circ-views { position: absolute; top: .5rem; right: .5rem; z-index: 4; display: flex; gap: .25rem;
+  background: rgba(8,11,18,.72); backdrop-filter: blur(6px); border: 1px solid var(--border2, rgba(255,255,255,.1));
+  border-radius: 8px; padding: .22rem; }
+.f1-circ-views button { background: none; border: none; color: var(--muted); font-size: .64rem; font-weight: 700;
+  padding: .24rem .42rem; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+.f1-circ-views button.on { background: var(--accent); color: #fff; }
+.f1-circ-views button:disabled { opacity: .4; cursor: not-allowed; }
+.f1-circ-schema, .f1-circ-realmap { width: 100%; height: 100%; }
+.f1-circ-realmap { border-radius: 12px; overflow: hidden; background: #0a0e16; }
+.f1-circ-realmap .leaflet-control-attribution { font-size: .58rem; }
