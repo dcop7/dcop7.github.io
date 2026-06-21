@@ -173,48 +173,116 @@ const F1Page = (function () {
 
   /* ════════════════════════════ RACE ════════════════════════════ */
   async function renderRace(body) {
+    body.innerHTML = loading(_t('Loading championship…', 'A carregar o campeonato…'));
     try {
-      const [races, last, session] = await Promise.all([
+      const [races, last, session, ds, cs, winners] = await Promise.all([
         F1Data.schedule().catch(() => []),
         F1Data.lastResults().catch(() => null),
         F1Data.latestSession().catch(() => null),
+        F1Data.driverStandings().catch(() => []),
+        F1Data.constructorStandings().catch(() => []),
+        F1Data.seasonWinners().catch(() => []),
       ]);
       const sp = F1Data.splitSchedule(races);
       const next = sp.next;
+      const now = Date.now();
+      const year = (races[0]?.season) || new Date().getFullYear();
 
       // live? a session running within ±30min
       let liveHTML = '';
       if (session) {
         const st = Date.parse(session.date_start), en = Date.parse(session.date_end);
-        const now = Date.now();
         if (now >= st - 1800000 && now <= en + 1800000) {
           let w = null; try { const wr = await F1Data.weather(session.session_key); w = wr && wr[wr.length - 1]; } catch {}
           liveHTML = `
-            <div class="f1-card f1-live">
+            <div class="f1-hub-live">
               <div class="f1-live-badge">● ${_t('LIVE', 'AO VIVO')}</div>
-              <div class="f1-gp">${esc(session.circuit_short_name)} — ${esc(session.country_name)}</div>
-              <div class="f1-sess">${esc(session.session_name)}</div>
-              ${w ? `<div class="f1-wx">🌡️ ${w.air_temperature}°C · ${_t('track', 'pista')} ${w.track_temperature}°C · 💧 ${w.humidity}% · ${w.rainfall ? '🌧️ '+_t('rain','chuva') : '☀️ '+_t('dry','seco')}</div>` : ''}
-              <div class="f1-when">${localTime(session.date_start)}</div>
+              <div class="f1-hub-live-gp">${esc(session.circuit_short_name)} — ${esc(session.country_name)} · <b>${esc(session.session_name)}</b></div>
+              ${w ? `<div class="f1-wx">🌡️ ${w.air_temperature}°C · ${_t('track', 'pista')} ${w.track_temperature}°C · 💧 ${w.humidity}%${w.rainfall ? ' · 🌧️' : ''}</div>` : ''}
+              <button class="f1-hub-live-cta" data-goto="live">${_t('Open Live Timing', 'Abrir Live Timing')} →</button>
             </div>`;
         }
       }
 
-      const nextHTML = next ? `
-        <div class="f1-card">
-          <div class="f1-card-lbl">${_t('Next Grand Prix', 'Próximo Grande Prémio')}</div>
-          <div class="f1-gp">${flag(next.Circuit?.Location?.country)}${esc(next.raceName)}</div>
-          <div class="f1-sub">${esc(next.Circuit?.circuitName)} · ${esc(next.Circuit?.Location?.locality)}, ${esc(next.Circuit?.Location?.country)}</div>
-          <div class="f1-row2">
-            <div class="f1-count"><span class="f1-count-n">${countdown(next._ts)}</span><span class="f1-count-l">${_t('to lights out', 'para a partida')}</span></div>
-            <div class="f1-when">🕐 ${localTime(next._ts)} <span class="f1-tz">(${_t('your time', 'hora local')})</span></div>
+      // ── HERO: next race ──
+      const heroHTML = next ? `
+        <div class="f1-hub-hero">
+          <div class="f1-hub-hero-tag">${_t('Next Grand Prix', 'Próximo Grande Prémio')} · ${_t('Round', 'Ronda')} ${next.round}/${races.length}</div>
+          <div class="f1-hub-hero-gp">${flag(next.Circuit?.Location?.country)}${esc(next.raceName)}</div>
+          <div class="f1-hub-hero-sub">${esc(next.Circuit?.circuitName)} · ${esc(next.Circuit?.Location?.locality)}, ${esc(next.Circuit?.Location?.country)}</div>
+          <div class="f1-hub-hero-cd">
+            <div class="f1-hub-cd-big">${countdown(next._ts)}</div>
+            <div class="f1-hub-cd-when">🕐 ${localTime(next._ts)} <span class="f1-tz">(${_t('your time', 'hora local')})</span></div>
           </div>
+        </div>` : `<div class="f1-hub-hero"><div class="f1-hub-hero-tag">${_t('Season complete', 'Época terminada')}</div><div class="f1-hub-hero-gp">${year}</div></div>`;
+
+      // ── STANDINGS (drivers + constructors) with bars ──
+      const dLead = +(ds[0]?.points || 0) || 1;
+      const dRows = (ds || []).map(s => {
+        const pts = +s.points, team = s.Constructors?.[0]?.name || '', gap = +ds[0].points - pts;
+        return `<div class="f1-sd-row${+s.position <= 3 ? ' p' + s.position : ''}">
+          <span class="f1-sd-pos">${s.position}</span>
+          <span class="f1-sd-nm"><b>${esc(s.Driver.familyName)}</b><small>${esc(team)}</small></span>
+          <span class="f1-sd-bar"><i style="width:${Math.max(3, pts / dLead * 100)}%;background:${teamColour(team)}"></i></span>
+          <span class="f1-sd-pts">${pts}${gap ? `<small>−${gap}</small>` : ''}</span>
+        </div>`;
+      }).join('');
+      const cLead = +(cs[0]?.points || 0) || 1;
+      const cRows = (cs || []).map(s => {
+        const pts = +s.points, name = s.Constructor.name, gap = +cs[0].points - pts;
+        return `<div class="f1-sd-row${+s.position <= 3 ? ' p' + s.position : ''}">
+          <span class="f1-sd-pos">${s.position}</span>
+          <span class="f1-sd-nm">${teamDot(name)}<b>${esc(name)}</b></span>
+          <span class="f1-sd-bar"><i style="width:${Math.max(3, pts / cLead * 100)}%;background:${teamColour(name)}"></i></span>
+          <span class="f1-sd-pts">${pts}${gap ? `<small>−${gap}</small>` : ''}</span>
+        </div>`;
+      }).join('');
+      const standHTML = (ds.length || cs.length) ? `
+        <div class="f1-hub-stand">
+          <div class="f1-sd-card">
+            <div class="f1-sd-hd"><h3>🏆 ${_t('Drivers', 'Pilotos')}</h3><button class="f1-seeall" data-goto="champ">${_t('full table', 'tabela completa')} →</button></div>
+            ${dRows || err()}
+          </div>
+          <div class="f1-sd-card">
+            <div class="f1-sd-hd"><h3>🏭 ${_t('Constructors', 'Construtores')}</h3><button class="f1-seeall" data-goto="champ">${_t('full table', 'tabela completa')} →</button></div>
+            ${cRows || err()}
+          </div>
+        </div>` : '';
+
+      // ── VISUAL CALENDAR strip ──
+      const winBy = {};
+      for (const r of (winners || [])) { const w = r.Results?.[0]?.Driver; if (w) winBy[+r.round] = w.code || w.familyName.slice(0, 3).toUpperCase(); }
+      const calCards = sp.all.map(r => {
+        const done = r._ts < now, isNext = next && r.round === next.round;
+        const state = done ? 'done' : isNext ? 'next' : 'future';
+        const days = Math.ceil((r._ts - now) / 86400000);
+        const badge = done ? (winBy[+r.round] ? `🏆 ${winBy[+r.round]}` : '✓')
+          : isNext ? `⏱ ${countdown(r._ts)}`
+          : `${_t('in', 'em')} ${days}d`;
+        return `<div class="f1-cs-card ${state}"${isNext ? ' data-next="1"' : ''}>
+          <span class="f1-cs-rd">R${r.round}</span>
+          ${flag(r.Circuit?.Location?.country, 'f1-cs-flag')}
+          <span class="f1-cs-gp">${esc(r.Circuit?.Location?.country || r.raceName)}</span>
+          <span class="f1-cs-dt">${new Date(r._ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { day: '2-digit', month: 'short' })}</span>
+          <span class="f1-cs-badge">${badge}</span>
+        </div>`;
+      }).join('');
+      const calHTML = sp.all.length ? `
+        <div class="f1-hub-cal">
+          <div class="f1-sd-hd"><h3>📅 ${_t('Season', 'Época')} ${year} · ${sp.past.length}/${sp.all.length} ${_t('done', 'feitas')}</h3><button class="f1-seeall" data-goto="cal">${_t('details', 'detalhes')} →</button></div>
+          <div class="f1-cs-strip" id="f1-cs-strip">${calCards}</div>
         </div>` : '';
 
       const lastHTML = last && last.Results ? renderResults(last) : '';
 
-      body.innerHTML = `<div class="f1-grid">${liveHTML}${nextHTML}${lastHTML || ''}</div>` || err();
-      if (!liveHTML && !nextHTML && !lastHTML) body.innerHTML = err();
+      body.innerHTML = `<div class="f1-hub">${liveHTML}
+        <div class="f1-hub-top">${heroHTML}${standHTML}</div>
+        ${calHTML}${lastHTML}</div>`;
+      if (!next && !standHTML && !lastHTML) { body.innerHTML = err(); return; }
+
+      body.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => _go(b.dataset.goto)));
+      const strip = body.querySelector('#f1-cs-strip'), nx = strip && strip.querySelector('[data-next]');
+      if (nx) strip.scrollLeft = Math.max(0, nx.offsetLeft - strip.clientWidth / 2 + nx.clientWidth / 2);
     } catch (e) { body.innerHTML = err(); }
   }
 

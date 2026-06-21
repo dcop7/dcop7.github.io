@@ -205,6 +205,32 @@ const F1Data = (function () {
       return d?.MRData?.RaceTable?.Races?.[0] || null;
     });
   }
+  /* Every round's winner in one light call (only position 1). Future-proof:
+     pass a year, or omit for the current season. */
+  async function seasonWinners(year) {
+    const scope = (!year || +year === new Date().getFullYear()) ? 'current' : String(year);
+    const run = async () => {
+      const d = await jol(`/${scope}/results/1.json?limit=100`);
+      return d?.MRData?.RaceTable?.Races || [];
+    };
+    return scope === 'current' ? _staticOr('seasonWinners', run) : run();
+  }
+  /* Standings for any season (current is cached). */
+  async function driverStandingsFor(year) {
+    if (!year || +year === new Date().getFullYear()) return driverStandings();
+    const d = await jol(`/${year}/driverStandings.json`);
+    return d?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings || [];
+  }
+  async function constructorStandingsFor(year) {
+    if (!year || +year === new Date().getFullYear()) return constructorStandings();
+    const d = await jol(`/${year}/constructorStandings.json`);
+    return d?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings || [];
+  }
+  async function scheduleFor(year) {
+    if (!year || +year === new Date().getFullYear()) return schedule();
+    const d = await jol(`/${year}.json`);
+    return d?.MRData?.RaceTable?.Races || [];
+  }
 
   /* Curated, telemetry-validated circuit metadata (length + turns). */
   async function circuitsMeta() {
@@ -289,5 +315,6 @@ const F1Data = (function () {
     firstLapStart, stints, raceControl, intervalsWindow, pit, carData,
     latestOrder, latestIntervals, circuitsMeta, allCircuits, seasonStats, seasonStatsFor,
     driverStandings, constructorStandings, schedule, lastResults, splitSchedule,
+    seasonWinners, driverStandingsFor, constructorStandingsFor, scheduleFor,
   };
 })();
