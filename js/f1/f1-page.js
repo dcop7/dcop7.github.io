@@ -8,7 +8,8 @@ const F1Page = (function () {
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
   const _t = (en, pt) => (_lang() === 'en' ? en : pt);
-  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null, _circMap = null;
+  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null, _circMap = null, _satMap = null;
+  function _killMaps() { try { _circMap && _circMap.remove(); } catch {} try { _satMap && _satMap.remove(); } catch {} _circMap = null; _satMap = null; }
 
   /* Lazy-load Leaflet (same CDN the Explorer uses) for the real circuit map. */
   function _loadLeaflet() {
@@ -30,6 +31,15 @@ const F1Page = (function () {
     map: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>' },
     sat: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics' },
   };
+  /* Create a fresh Leaflet map in a container (caller owns the lifecycle). */
+  async function makeSatMap(container, lat, lon, kind) {
+    await _loadLeaflet();
+    const map = L.map(container, { center: [lat, lon], zoom: 14, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
+    const t = REALMAP_TILES[kind] || REALMAP_TILES.sat;
+    L.tileLayer(t.url, { attribution: t.attr, subdomains: t.sub, maxZoom: 19 }).addTo(map);
+    setTimeout(() => { try { map.invalidateSize(); } catch {} }, 60);
+    return map;
+  }
   async function showCircuitRealMap(container, lat, lon, kind) {
     await _loadLeaflet();
     if (!_circMap) {
@@ -127,6 +137,7 @@ const F1Page = (function () {
         round: +r.round, raceName: r.raceName,
         country: r.Circuit?.Location?.country, locality: r.Circuit?.Location?.locality,
         circuitName: r.Circuit?.circuitName, circuitId: r.Circuit?.circuitId,
+        lat: +r.Circuit?.Location?.lat, lon: +r.Circuit?.Location?.long,
         date: r.date, _ts: ts, year: +year,
         session_key: m ? m.session_key : null,
         circuit_short_name: m ? m.circuit_short_name : null,
@@ -227,6 +238,7 @@ const F1Page = (function () {
     clearInterval(_liveTimer); _liveTimer = null;
     if (_track) { _track.dispose(); _track = null; }
     if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
+    _killMaps();
     const body = _root.querySelector('#f1-body');
     body.innerHTML = loading();
     ({ race: renderRace, track: renderTrack, live: renderLive, driver: renderDriver, timing: renderTiming, circuit: renderCircuit, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
@@ -611,6 +623,7 @@ const F1Page = (function () {
           <div class="f1-track-stage">
             <canvas id="f1-canvas"></canvas>
             <div class="f1-track-hint" id="f1-track-hint"></div>
+            <div class="f1-satmap" id="f1-track-satmap" hidden></div>
             <div class="f1-stage-load" id="f1-stage-load">${loading()}</div>
           </div>
           <div class="f1-controls">
@@ -626,6 +639,7 @@ const F1Page = (function () {
             </div>
             <div class="f1-speed" id="f1-speed">${SPEEDS.map(s => `<button data-s="${s}" class="${s === DEF_SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div>
             <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
+            <button class="f1-btn f1-icon-btn f1-toggle" id="f1-track-sat" title="${_t('Real satellite of the circuit','Satélite real do circuito')}" aria-label="${_t('Satellite','Satélite')}">🛰️</button>
             <button class="f1-btn f1-icon-btn" id="f1-fs" title="${_t('Fullscreen','Ecrã inteiro')}" aria-label="${_t('Fullscreen','Ecrã inteiro')}">⛶</button>
           </div>
           <div class="f1-incid-legend" id="f1-incid-legend">
@@ -659,9 +673,15 @@ const F1Page = (function () {
       if (r.session_key) return loadRace(r.session_key);
       return showNoData(r);
     }
+    function _resetSat() {
+      if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
+      const se = body.querySelector('#f1-track-satmap'), sb = body.querySelector('#f1-track-sat');
+      if (se) { se.hidden = true; se.innerHTML = ''; } if (sb) sb.classList.remove('on');
+    }
     function _resetStage() {
       clearInterval(_liveTimer); _liveTimer = null;
       if (_track) { _track.dispose(); _track = null; }
+      _resetSat();
       const pos = body.querySelector('#f1-pos'), ev = body.querySelector('#f1-events');
       if (pos) pos.innerHTML = ''; if (ev) ev.innerHTML = '';
     }
@@ -681,9 +701,24 @@ const F1Page = (function () {
         <div class="f1-up-gp">${flag(r.country)}${esc(r.raceName)}</div>
         <div class="f1-up-when">🗓️ ${new Date(r._ts).toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { weekday: 'long', day: '2-digit', month: 'long' })} · <b>${_t('in', 'daqui a')} ${days} ${days === 1 ? _t('day', 'dia') : _t('days', 'dias')}</b></div>
         <div class="f1-up-cd">${countdown(r._ts)}</div>
-        <div class="f1-up-canvas-wrap"><canvas id="f1-up-canvas"></canvas></div>
+        <div class="f1-circ-views f1-up-views" id="f1-up-views">
+          <button data-uv="schema" class="on">📐 ${_t('Schematic', 'Esquema')}</button>
+          <button data-uv="sat"${isFinite(r.lat) && isFinite(r.lon) ? '' : ' disabled'}>🛰️ ${_t('Satellite', 'Satélite')}</button>
+        </div>
+        <div class="f1-up-canvas-wrap" id="f1-up-canvas-wrap"><canvas id="f1-up-canvas"></canvas></div>
+        <div class="f1-up-map" id="f1-up-map" hidden></div>
         <div class="f1-up-note">${_t('The live map, timing & incidents appear once the race runs.', 'O mapa ao vivo, tempos e incidentes ficam disponíveis depois da corrida.')}</div>
       </div>`;
+      const upViews = stage.querySelector('#f1-up-views');
+      if (upViews && isFinite(r.lat) && isFinite(r.lon)) {
+        const cwrap = stage.querySelector('#f1-up-canvas-wrap'), mapEl = stage.querySelector('#f1-up-map');
+        upViews.addEventListener('click', async e => {
+          const b = e.target.closest('[data-uv]'); if (!b || b.disabled) return;
+          upViews.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+          if (b.dataset.uv === 'schema') { cwrap.hidden = false; mapEl.hidden = true; _track && _track.resize(); }
+          else { cwrap.hidden = true; mapEl.hidden = false; if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } mapEl.innerHTML = ''; try { _satMap = await makeSatMap(mapEl, r.lat, r.lon, 'sat'); } catch { mapEl.innerHTML = err(); } }
+        });
+      }
       // draw the circuit outline from the most recent past edition at this venue
       try {
         const meta = await F1Data.circuitsMeta(); const of1 = meta[r.circuitId] && meta[r.circuitId].of1;
@@ -710,6 +745,7 @@ const F1Page = (function () {
     async function loadRace(sk) {
       clearInterval(_liveTimer); _liveTimer = null;
       if (_track) { _track.dispose(); _track = null; }
+      _resetSat();
       const race = (races || []).find(r => r.session_key === sk) || {};
       const stage = body.querySelector('#f1-stage-load');
       const metaEl = body.querySelector('#f1-track-meta');
@@ -897,6 +933,16 @@ const F1Page = (function () {
           const g = body.querySelector('#f1-stage-grid');
           if (!document.fullscreenElement) (g.requestFullscreen || g.webkitRequestFullscreen || (() => {})).call(g);
           else document.exitFullscreen && document.exitFullscreen();
+        };
+        // real satellite of the circuit (static reference — cars stay on the schematic)
+        const satBtn = body.querySelector('#f1-track-sat'), satEl = body.querySelector('#f1-track-satmap');
+        if (satBtn && satEl) satBtn.onclick = async () => {
+          if (!satEl.hidden) { satEl.hidden = true; satBtn.classList.remove('on'); if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; return; }
+          if (!isFinite(race.lat) || !isFinite(race.lon)) return;
+          satEl.hidden = false; satBtn.classList.add('on');
+          satEl.innerHTML = `<div class="f1-satmap-tag">🛰️ ${esc(race.country_name || race.country || '')} · ${_t('reference', 'referência')}</div><div class="f1-satmap-map"></div>`;
+          if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
+          try { _satMap = await makeSatMap(satEl.querySelector('.f1-satmap-map'), race.lat, race.lon, 'sat'); } catch { satEl.innerHTML = err(); }
         };
 
         _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');
