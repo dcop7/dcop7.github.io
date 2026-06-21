@@ -470,8 +470,10 @@
 
 /* slide-in drawers (config + driver detail) */
 .f1-lv-cfg-panel, .f1-lv-driver { position: fixed; top: 0; right: 0; height: 100%; width: min(380px, 100%); z-index: 60;
-  background: var(--card); border-left: 1px solid var(--border2); box-shadow: -12px 0 40px -12px rgba(0,0,0,.6);
+  background: #0c111b; border-left: 1px solid var(--border2); box-shadow: -12px 0 40px -12px rgba(0,0,0,.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   padding: 1rem 1rem 2rem; overflow-y: auto; transform: translateX(100%); transition: transform .2s ease; }
+body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-lv-cfg-panel.open, .f1-lv-driver.open { transform: translateX(0); }
 .f1-lv-dclose { position: absolute; top: .7rem; right: .7rem; background: var(--card2); border: 1px solid var(--border2);
   color: var(--text2); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: .9rem; }
@@ -542,7 +544,7 @@
 .f1-sd-hd h3 { font-size: .92rem; font-weight: 800; margin: 0; }
 .f1-seeall { background: none; border: none; color: var(--accent); font-size: .74rem; font-weight: 700; cursor: pointer; padding: 0; }
 .f1-seeall:hover { text-decoration: underline; }
-.f1-sd-row { display: grid; grid-template-columns: 1.5rem minmax(0,1fr) 26% auto; align-items: center;
+.f1-sd-row { display: grid; grid-template-columns: 1.5rem minmax(0,1fr) 32% 4.6rem; align-items: center;
   gap: .5rem; padding: .26rem 0; border-bottom: 1px solid rgba(255,255,255,.04); }
 .f1-sd-row:last-child { border-bottom: none; }
 .f1-sd-pos { font-weight: 800; font-size: .82rem; color: var(--muted); text-align: center; }
@@ -636,3 +638,9 @@
 .f1-up-views { position: static; margin: .2rem auto 0; }
 .f1-up-map { width: min(440px, 80%); aspect-ratio: 4 / 3; margin: .3rem auto 0; border-radius: 12px; overflow: hidden; background: #0a0e16; }
 .f1-up-map.leaflet-container { background: #0a0e16; }
+
+/* Live Timing — one-line header (race · time · customise) */
+.f1-lv-head { flex-wrap: wrap; }
+.f1-lv-head .f1-weather { width: auto; flex: 0 1 auto; }
+.f1-lv-head .f1-track-meta { flex: 0 1 auto; }
+.f1-lv-head .f1-lv-cfg-btn { margin-left: auto; }

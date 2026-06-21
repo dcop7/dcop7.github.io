@@ -165,21 +165,20 @@ const F1Track = (function () {
         ctx.fillRect(sx - 3, sy, 3, 2.5); ctx.fillRect(sx + 3, sy, 3, 2.5);
       }
 
-      // incident markers — always visible (a map of where things happened);
-      // the one(s) near the current clock pulse brighter to sync with the replay.
+      // incident markers — shown only while ACTIVE (between the event and its
+      // clear), like on TV: a yellow flag appears when waved and goes once green.
       if (showMarkers && markers.length && track.tf) {
         for (const mk of markers) {
+          const dur = mk.dur || 12000;
+          if (duration && (clock < mk.t - 250 || clock > mk.t + dur)) continue;
           const [mx, my] = track.tf(mk.x, mk.y);
-          const near = duration ? Math.abs(mk.t - clock) < 6000 : true;
-          const r = near ? 10 : 7.5;
           ctx.save();
-          ctx.globalAlpha = near ? 1 : 0.55;
-          if (near) { ctx.shadowColor = mk.col || '#ffd60a'; ctx.shadowBlur = 9; }
-          ctx.beginPath(); ctx.arc(mx, my, r, 0, 7);
-          ctx.fillStyle = 'rgba(8,11,18,.9)'; ctx.fill();
+          ctx.shadowColor = mk.col || '#ffd60a'; ctx.shadowBlur = 9;
+          ctx.beginPath(); ctx.arc(mx, my, 10, 0, 7);
+          ctx.fillStyle = 'rgba(8,11,18,.92)'; ctx.fill();
           ctx.shadowBlur = 0;
-          ctx.lineWidth = near ? 1.8 : 1.2; ctx.strokeStyle = mk.col || 'rgba(255,255,255,.6)'; ctx.stroke();
-          ctx.font = (near ? 11 : 9) + 'px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.lineWidth = 1.8; ctx.strokeStyle = mk.col || 'rgba(255,255,255,.6)'; ctx.stroke();
+          ctx.font = '11px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillText(mk.icon, mx, my + .5);
           ctx.restore();
         }

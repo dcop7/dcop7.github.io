@@ -60,7 +60,6 @@ const F1Page = (function () {
     { id: 'driver',  ic: '👤', en: 'Driver',       pt: 'Piloto' },
     { id: 'timing',  ic: '📋', en: 'Timing',       pt: 'Tempos' },
     { id: 'circuit', ic: '🗺️', en: 'Circuit',      pt: 'Circuito' },
-    { id: 'champ',   ic: '🏆', en: 'Championship',  pt: 'Campeonato' },
     { id: 'cal',     ic: '📅', en: 'Calendar',      pt: 'Calendário' },
     { id: 'stats',   ic: '📊', en: 'Stats',         pt: 'Estatísticas' },
   ];
@@ -313,11 +312,11 @@ const F1Page = (function () {
       const standHTML = (ds.length || cs.length) ? `
         <div class="f1-hub-stand">
           <div class="f1-sd-card">
-            <div class="f1-sd-hd"><h3>🏆 ${_t('Drivers', 'Pilotos')}</h3><button class="f1-seeall" data-goto="champ">${_t('full table', 'tabela completa')} →</button></div>
+            <div class="f1-sd-hd"><h3>🏆 ${_t('Drivers', 'Pilotos')}</h3></div>
             ${dRows || err()}
           </div>
           <div class="f1-sd-card">
-            <div class="f1-sd-hd"><h3>🏭 ${_t('Constructors', 'Construtores')}</h3><button class="f1-seeall" data-goto="champ">${_t('full table', 'tabela completa')} →</button></div>
+            <div class="f1-sd-hd"><h3>🏭 ${_t('Constructors', 'Construtores')}</h3></div>
             ${cRows || err()}
           </div>
         </div>` : '';
@@ -444,8 +443,15 @@ const F1Page = (function () {
     return null;
   }
   function computeIncidentMarkers(rcRows, model) {
-    const { outline, progFloat, offset, lights } = model;
+    const { outline, progFloat, offset, lights, flagRows } = model;
     const maxSector = Math.max(1, ...(rcRows || []).map(r => +r.sector || 0));
+    // how long a marker stays "active": flags/SC last until the next green/clear;
+    // point incidents (accident/collision/stopped/recovery) show for a short window.
+    const fr = flagRows || [];
+    const durFor = (type, t) => {
+      if (type === 'yellow' || type === 'sc') { const clear = fr.find(f => f.t > t + 200 && f.s == null); return clear ? Math.max(3000, clear.t - t) : 20000; }
+      return 12000;
+    };
     const out = [], seen = new Set();
     for (const r of (rcRows || [])) {
       const type = classifyIncident(r); if (!type) continue;
@@ -460,7 +466,7 @@ const F1Page = (function () {
       const key = type + ':' + (r.lap_number || 0) + ':' + Math.round((((u % 1) + 1) % 1) * 30);
       if (seen.has(key)) continue; seen.add(key);
       const cfg = INCIDENTS[type];
-      out.push({ t: tRel, x: xy.x, y: xy.y, type, icon: cfg.icon, col: cfg.col, lap: r.lap_number || 0 });
+      out.push({ t: tRel, dur: durFor(type, tRel), x: xy.x, y: xy.y, type, icon: cfg.icon, col: cfg.col, lap: r.lap_number || 0 });
     }
     return out.sort((a, b) => a.t - b.t);
   }
@@ -1051,16 +1057,20 @@ const F1Page = (function () {
 
   /* ══════════ shared: lap-time format, race list, race picker, sparkline ══════════ */
   const fmtLapTime = s => { if (s == null || !isFinite(s) || s <= 0) return '—'; const m = Math.floor(s / 60), sec = (s % 60).toFixed(3); return m > 0 ? `${m}:${sec.padStart(6, '0')}` : sec; };
-  async function pastRacesAndLive() {
-    const races = await seasonRaces();
+  async function pastRacesAndLive(year) {
+    const cur = new Date().getFullYear(); year = +year || cur;
+    const races = await seasonRacesFull(year);
     let live = null;
-    try { const s = await F1Data.latestSession(); if (s) { const st = Date.parse(s.date_start), en = Date.parse(s.date_end); if (Date.now() >= st - 300000 && Date.now() <= en + 600000) live = s; } } catch {}
-    const past = (races || []).filter(r => Date.parse(r.date_start) < Date.now());
-    return { races, past, live };
+    if (year === cur) try { const s = await F1Data.latestSession(); if (s) { const st = Date.parse(s.date_start), en = Date.parse(s.date_end); if (Date.now() >= st - 300000 && Date.now() <= en + 600000) live = s; } } catch {}
+    const past = (races || []).filter(r => r.status === 'past' && r.session_key);   // these tabs need telemetry (2023→)
+    return { races, past, live, year };
   }
-  function raceSelect(past, live, id) {
-    const opts = past.slice().reverse().map(r => `<option value="${r.session_key}">${esc(r.circuit_short_name)} · ${esc(r.country_name)} ${r.year || ''}</option>`).join('');
-    return `<div class="f1-track-sel">${live ? `<button class="f1-live-pill" data-golive="1">● ${_t('LIVE', 'AO VIVO')}</button>` : ''}<select class="f1-select" id="${id}">${opts}</select></div>`;
+  function raceSelect(past, live, id, year) {
+    const cur = new Date().getFullYear(); year = +year || cur;
+    const years = []; for (let y = cur; y >= 2023; y--) years.push(y);
+    const yrOpts = years.map(y => `<option value="${y}"${y === year ? ' selected' : ''}>${y}</option>`).join('');
+    const opts = past.slice().reverse().map(r => `<option value="${r.session_key}">R${r.round} · ${esc(r.country || r.country_name || r.circuit_short_name)}</option>`).join('');
+    return `<div class="f1-track-sel">${live ? `<button class="f1-live-pill" data-golive="1">● ${_t('LIVE', 'AO VIVO')}</button>` : ''}<select class="f1-select f1-year-sel" id="${id}-yr" aria-label="${_t('Season', 'Época')}">${yrOpts}</select><select class="f1-select" id="${id}" aria-label="${_t('Choose race', 'Escolher corrida')}">${opts}</select></div>`;
   }
   /* tiny SVG line chart from [{x,y}] (y already screen-oriented or via invert) */
   function spark(pts, w, h, { color = '#ff2d24', invert = false, pad = 3, fill = false } = {}) {
@@ -1084,9 +1094,9 @@ const F1Page = (function () {
      columns stay pinned, the rest scroll horizontally. */
   const LIVE_DEFAULT = ['team', 'tyre', 'tyreAge', 'last', 'best', 'gapLeader', 'interval'];
 
-  async function renderLive(body) {
+  async function renderLive(body, year) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
-    let info; try { info = await pastRacesAndLive(); } catch { body.innerHTML = err(); return; }
+    let info; try { info = await pastRacesAndLive(year); } catch { body.innerHTML = err(); return; }
     const { past, live } = info;
     if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
 
@@ -1143,22 +1153,19 @@ const F1Page = (function () {
       ritmo:      { ic: '⏱', en: 'Pace', pt: 'Ritmo', cols: ['last', 'best', 'avg', 's1', 's2', 's3', 'interval'] },
       engenheiro: { ic: '🧑‍🔧', en: 'Engineer', pt: 'Engenheiro', cols: ALL.slice() },
     };
-    const loadCols = () => { try { const a = JSON.parse(localStorage.getItem('f1:live:cols')); if (Array.isArray(a)) return a.filter(x => C[x]); } catch {} return LIVE_DEFAULT.slice(); };
-    const saveCols = c => { try { localStorage.setItem('f1:live:cols', JSON.stringify(c)); } catch {} };
+    // Engineer view by default (all data); the user can trim it via "Customise data".
+    const loadCols = () => { try { const a = JSON.parse(localStorage.getItem('f1:live:cols2')); if (Array.isArray(a)) return a.filter(x => C[x]); } catch {} return PRESETS.engenheiro.cols.slice(); };
+    const saveCols = c => { try { localStorage.setItem('f1:live:cols2', JSON.stringify(c)); } catch {} };
     let cols = loadCols();
-    let preset = localStorage.getItem('f1:live:preset') || 'custom';
     let model = null;
 
     body.innerHTML = `
       <div class="f1-live-timing">
-        <div class="f1-track-head">
-          ${raceSelect(past, live, 'f1-lv-sel')}
+        <div class="f1-track-head f1-lv-head">
+          ${raceSelect(past, live, 'f1-lv-sel', info.year)}
           <div class="f1-track-meta" id="f1-lv-meta"></div>
           <div class="f1-weather" id="f1-lv-wx"></div>
           <button class="f1-lv-cfg-btn" id="f1-lv-cfg">⚙️ <span>${_t('Customise data', 'Personalizar dados')}</span></button>
-        </div>
-        <div class="f1-lv-presets" id="f1-lv-presets" role="tablist">
-          ${Object.entries(PRESETS).map(([k, p]) => `<button class="f1-lv-preset${preset === k ? ' on' : ''}" data-preset="${k}">${p.ic} ${_t(p.en, p.pt)}</button>`).join('')}
         </div>
         <div class="f1-lv-legend">${_t('🟣 session best · 🟢 personal best · ⚡ fastest lap · tap a driver for detail', '🟣 melhor da sessão · 🟢 melhor pessoal · ⚡ volta mais rápida · toca num piloto para detalhe')}</div>
         <div id="f1-lv-body">${loading()}</div>
@@ -1166,19 +1173,13 @@ const F1Page = (function () {
         <div class="f1-lv-driver" id="f1-lv-driver" hidden></div>
       </div>`;
 
+    const yrSel = body.querySelector('#f1-lv-sel-yr');
+    if (yrSel) yrSel.addEventListener('change', () => renderLive(body, +yrSel.value));
     const sel = body.querySelector('#f1-lv-sel');
     if (sel && past.length) sel.value = String(past[past.length - 1].session_key);
     if (sel) sel.addEventListener('change', () => { sel.disabled = false; load(+sel.value, false); });
     const gl = body.querySelector('[data-golive]'); if (gl) gl.addEventListener('click', () => load(live.session_key, true));
     body.querySelector('#f1-lv-cfg').addEventListener('click', toggleCfg);
-    body.querySelector('#f1-lv-presets').addEventListener('click', e => {
-      const b = e.target.closest('[data-preset]'); if (!b) return;
-      preset = b.dataset.preset;
-      cols = PRESETS[preset].cols.slice();
-      saveCols(cols); try { localStorage.setItem('f1:live:preset', preset); } catch {}
-      body.querySelectorAll('.f1-lv-preset').forEach(x => x.classList.toggle('on', x.dataset.preset === preset));
-      paint();
-    });
 
     load(live ? live.session_key : +sel.value, !!live);
 
@@ -1289,8 +1290,7 @@ const F1Page = (function () {
       p.querySelectorAll('input[data-col]').forEach(cb => cb.onchange = () => {
         const id = cb.dataset.col;
         if (cb.checked) { if (!cols.includes(id)) cols.push(id); } else cols = cols.filter(x => x !== id);
-        preset = 'custom'; saveCols(cols); try { localStorage.setItem('f1:live:preset', 'custom'); } catch {}
-        body.querySelectorAll('.f1-lv-preset').forEach(x => x.classList.remove('on'));
+        saveCols(cols);
         paint();
       });
     }
@@ -1324,17 +1324,19 @@ const F1Page = (function () {
   /* ════════════════════════════ TIMING (Tempos) ════════════════════════════
      Full per-race stats with NO track: best lap, sectors, top speed, pit stops,
      tyres and live order for every driver. Works for finished races and live. */
-  async function renderTiming(body) {
+  async function renderTiming(body, year) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
-    let info; try { info = await pastRacesAndLive(); } catch { body.innerHTML = err(); return; }
+    let info; try { info = await pastRacesAndLive(year); } catch { body.innerHTML = err(); return; }
     const { past, live } = info;
     if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
     body.innerHTML = `
       <div class="f1-timing">
-        <div class="f1-track-head">${raceSelect(past, live, 'f1-tm-sel')}<div class="f1-track-meta" id="f1-tm-meta"></div><div class="f1-weather" id="f1-tm-wx"></div></div>
+        <div class="f1-track-head">${raceSelect(past, live, 'f1-tm-sel', info.year)}<div class="f1-track-meta" id="f1-tm-meta"></div><div class="f1-weather" id="f1-tm-wx"></div></div>
         <div class="f1-tm-legend">${_t('Purple = session best · S1/S2/S3 = sectors · tap a header to sort', 'Roxo = melhor da sessão · S1/S2/S3 = setores · toca num cabeçalho para ordenar')}</div>
         <div id="f1-tm-body">${loading()}</div>
       </div>`;
+    const tmYr = body.querySelector('#f1-tm-sel-yr');
+    if (tmYr) tmYr.addEventListener('change', () => renderTiming(body, +tmYr.value));
     const sel = body.querySelector('#f1-tm-sel');
     if (sel && past.length) sel.value = String(past[past.length - 1].session_key);
     if (sel) sel.addEventListener('change', () => loadTiming(+sel.value, false));
@@ -1416,20 +1418,22 @@ const F1Page = (function () {
      One driver in focus: position + the cars just ahead/behind, tyre strategy,
      pit stops, best lap + sectors, top speed, lap-time chart, position trace,
      and the speed telemetry of their fastest lap. Live or finished race. */
-  async function renderDriver(body) {
+  async function renderDriver(body, year) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
-    let info; try { info = await pastRacesAndLive(); } catch { body.innerHTML = err(); return; }
+    let info; try { info = await pastRacesAndLive(year); } catch { body.innerHTML = err(); return; }
     const { past, live } = info;
     if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
     body.innerHTML = `
       <div class="f1-driverpg">
         <div class="f1-track-head">
-          ${raceSelect(past, live, 'f1-dr-race')}
+          ${raceSelect(past, live, 'f1-dr-race', info.year)}
           <select class="f1-select" id="f1-dr-driver" aria-label="${_t('Driver', 'Piloto')}"></select>
           <div class="f1-track-meta" id="f1-dr-meta"></div>
         </div>
         <div id="f1-dr-body">${loading()}</div>
       </div>`;
+    const drYr = body.querySelector('#f1-dr-race-yr');
+    if (drYr) drYr.addEventListener('change', () => renderDriver(body, +drYr.value));
     const raceSel = body.querySelector('#f1-dr-race');
     const drvSel = body.querySelector('#f1-dr-driver');
     // honour a driver clicked from the Pista tab (same race + driver pre-selected)
