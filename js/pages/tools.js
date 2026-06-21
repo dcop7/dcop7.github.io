@@ -1,6 +1,8 @@
 const ToolsPage = (function () {
   'use strict';
 
+  let _dice3d = null;   // live 3D dice/coin engine (disposed when the tool changes)
+
   // ── Audio ──────────────────────────────────────────────────────────
   function beep(freq, dur, vol=0.35, type='sine') {
     try {
@@ -1080,6 +1082,7 @@ const ToolsPage = (function () {
 
   function initDice(root) {
     const TYPES = [4,6,8,10,12,20];
+    if (_dice3d) { _dice3d.dispose(); _dice3d = null; }
     root.innerHTML=`
       <div class="tool-card">
         <div class="tool-hdr">🎲 Dados</div>
@@ -1097,22 +1100,7 @@ const ToolsPage = (function () {
             </div>
           </div>
 
-          <div id="dice-d6-wrap" class="dice-3d-container">
-            <div class="dice-scene">
-              <div class="dice-cube" id="dice-cube">
-                <div class="dice-face dice-face-front" data-fk="front"></div>
-                <div class="dice-face dice-face-back" data-fk="back"></div>
-                <div class="dice-face dice-face-right" data-fk="right"></div>
-                <div class="dice-face dice-face-left" data-fk="left"></div>
-                <div class="dice-face dice-face-top" data-fk="top"></div>
-                <div class="dice-face dice-face-bottom" data-fk="bottom"></div>
-              </div>
-            </div>
-          </div>
-
-          <div id="dice-svg-wrap" class="dice-svg-container" style="display:none">
-            <div id="dice-svg-el" class="dice-svg-el"></div>
-          </div>
+          <div class="dice3d-stage" id="dice-stage"></div>
 
           <div class="dice-result-row" id="dice-vals"></div>
           <div class="dice-total" id="dice-total"></div>
@@ -1120,50 +1108,34 @@ const ToolsPage = (function () {
         </div>
       </div>`;
 
-    // Build D6 pip faces
-    root.querySelectorAll('.dice-face').forEach(face => {
-      const key = face.dataset.fk;
-      const val = D6_FACE_VALS[key];
-      const pips = D6_PIPS[val] || [];
-      face.innerHTML = pips.map(([x,y])=>`<div class="dice-dot" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%)"></div>`).join('');
-    });
-
-    let sides = 6;
+    let sides = 6, rolling = false;
+    _dice3d = Dice3D.create(root.querySelector('#dice-stage'));
+    _dice3d.die(sides);
 
     root.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => {
+      if (rolling) return;
       sides = +b.dataset.d;
       root.querySelectorAll('[data-d]').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
-      root.querySelector('#dice-d6-wrap').style.display = sides===6 ? '' : 'none';
-      root.querySelector('#dice-svg-wrap').style.display = sides!==6 ? '' : 'none';
+      root.querySelector('#dice-vals').innerHTML = '';
+      root.querySelector('#dice-total').textContent = '';
+      _dice3d.die(sides);
     }));
 
     root.querySelector('#dice-roll').addEventListener('click', () => {
+      if (rolling) return;
       const n = Math.min(20, Math.max(1, +root.querySelector('#dice-n').value||1));
       const vals = Array.from({length:n}, ()=>Math.floor(Math.random()*sides)+1);
-
-      if (sides===6) {
-        const cube = root.querySelector('#dice-cube');
-        cube.classList.remove('rolling');
-        cube.style.transition = 'none';
-        cube.style.transform = 'rotateX(0deg) rotateY(0deg)';
-        void cube.offsetWidth;
-        cube.style.transition = '';
-        cube.classList.add('rolling');
-        setTimeout(() => {
-          cube.classList.remove('rolling');
-          cube.style.transform = D6_TRANSFORMS[vals[0]];
-        }, 650);
-      } else {
-        const svgEl = root.querySelector('#dice-svg-el');
-        svgEl.innerHTML = dieSVG(sides, vals[0]);
-        svgEl.classList.remove('die-shake');
-        void svgEl.offsetWidth;
-        svgEl.classList.add('die-shake');
-      }
-
-      root.querySelector('#dice-vals').innerHTML = n>1 ? vals.map(v=>`<div class="dice-val">${v}</div>`).join('') : '';
-      root.querySelector('#dice-total').textContent = n>1 ? `Total: ${vals.reduce((a,b)=>a+b,0)}` : '';
+      root.querySelector('#dice-vals').innerHTML = '';
+      root.querySelector('#dice-total').textContent = '';
+      rolling = true;
+      _dice3d.roll(vals[0]).then(() => {
+        rolling = false;
+        root.querySelector('#dice-vals').innerHTML = n>1
+          ? vals.map(v=>`<div class="dice-val">${v}</div>`).join('')
+          : `<div class="dice-val big">${vals[0]}</div>`;
+        root.querySelector('#dice-total').textContent = n>1 ? `Total: ${vals.reduce((a,b)=>a+b,0)}` : '';
+      });
     });
   }
 
@@ -1171,42 +1143,32 @@ const ToolsPage = (function () {
   // COIN FLIP
   // ============================================================
   function initCoin(root) {
+    if (_dice3d) { _dice3d.dispose(); _dice3d = null; }
     root.innerHTML=`
       <div class="tool-card">
         <div class="tool-hdr">🪙 Moeda</div>
         <div class="dice-wrap">
-          <div class="coin-3d-container">
-            <div class="coin-3d">
-              <div class="coin-inner" id="coin-inner">
-                <div class="coin-face coin-heads">CARA</div>
-                <div class="coin-face coin-tails">COROA</div>
-              </div>
-            </div>
-          </div>
+          <div class="dice3d-stage dice3d-stage-coin" id="coin-stage"></div>
           <div class="coin-result" id="coin-res" style="font-size:1.1rem;font-weight:700;min-height:1.4rem;text-align:center"></div>
           <button class="tool-btn" id="coin-flip-btn">🪙 Lançar</button>
           <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;text-align:center" id="coin-stats"></div>
         </div>
       </div>`;
-    let heads=0, tails=0;
+    let heads=0, tails=0, flipping=false;
+    _dice3d = Dice3D.create(root.querySelector('#coin-stage'));
+    _dice3d.coin();
     root.querySelector('#coin-flip-btn').addEventListener('click', () => {
+      if (flipping) return;
+      flipping = true;
       const isHeads = Math.random()<0.5;
-      const inner = root.querySelector('#coin-inner');
-      inner.classList.remove('flipping');
-      inner.style.transition = 'none';
-      inner.style.transform = 'rotateY(0deg)';
-      void inner.offsetWidth;
-      inner.style.transition = '';
-      inner.classList.add('flipping');
-      setTimeout(() => {
-        inner.classList.remove('flipping');
-        inner.style.transform = isHeads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+      _dice3d.flip(isHeads).then(() => {
+        flipping = false;
         if (isHeads) heads++; else tails++;
         const res = root.querySelector('#coin-res');
         res.textContent = isHeads ? 'Cara' : 'Coroa';
         res.style.color = isHeads ? 'var(--accent)' : 'var(--amber)';
         root.querySelector('#coin-stats').textContent = `Cara: ${heads} | Coroa: ${tails} | Total: ${heads+tails}`;
-      }, 850);
+      });
     });
   }
 

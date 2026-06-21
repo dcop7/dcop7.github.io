@@ -301,7 +301,14 @@
 .wrd-key.wrd-present { background: #d97706; border-color: #d97706; color: #fff; }
 .wrd-key.wrd-absent { background: var(--muted); border-color: var(--muted); color: #fff; opacity: .6; }
 
-/* ── 3D DICE & COIN ── */
+/* ── 3D DICE & COIN (three.js engine — Dice3D) ── */
+.dice3d-stage { width: 100%; height: 210px; margin: .4rem 0 .2rem; touch-action: none;
+  display: flex; align-items: center; justify-content: center; }
+.dice3d-stage canvas { display: block; max-width: 100%; }
+.dice3d-stage-coin { height: 190px; }
+.dice-val.big { font-size: 1.35rem; min-width: 2.4rem; padding: .25rem .6rem; }
+
+/* ── 3D DICE & COIN (legacy CSS fallback, unused) ── */
 .dice-3d-container { display: flex; justify-content: center; align-items: center; padding: 1.5rem 0; min-height: 140px; }
 .dice-scene { width: 100px; height: 100px; perspective: 450px; }
 .dice-cube { width: 100px; height: 100px; position: relative; transform-style: preserve-3d; transform: rotateX(0deg) rotateY(0deg); transition: transform .35s cubic-bezier(.25,.46,.45,.94); }

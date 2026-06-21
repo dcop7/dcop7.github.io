@@ -172,6 +172,10 @@ body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
 .sb-nav-item[data-route="photography"] svg { stroke: #fbbf24; }
 .sb-nav-item[data-route="visual"] svg { stroke: #f472b6; }
 .sb-nav-item[data-route="settings"] svg { stroke: #94a3b8; }
+.sb-nav-item[data-route="f1"] svg { stroke: #ef4444; }
+.sb-nav-item[data-route="oss"] svg { stroke: #4ade80; }
+.sb-nav-item[data-route="discovery"] svg { stroke: #e879f9; }
+.sb-nav-item[data-route="humor"] svg { stroke: #facc15; }
 .sb-nav-item.active svg { stroke: var(--accent) !important; }
 
 /* ── VIEWS / APP CONTENT ── */

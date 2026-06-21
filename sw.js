@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v191';
+const CACHE = 'dcop7-v192';
 const STATIC = [
   '/',
   '/index.html',
@@ -63,6 +63,8 @@ const STATIC = [
   '/js/pages/links-data.js',
   '/js/pages/links-page.js',
   '/js/pages/tools.js',
+  '/js/pages/dice3d.js',
+  '/js/vendor/three.min.js',
   '/js/pages/visual.js',
   '/js/pages/photography.js',
   '/js/pages/humor.js',
