@@ -156,7 +156,7 @@
 @media (max-width: 560px) { .f1-r-full { display: none; } }
 
 /* ── track: race picker + meta ── */
-.f1-track-head { max-width: 1400px; margin: 0 auto .6rem; display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+.f1-track-head { max-width: none; margin: 0 auto .6rem; display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
 .f1-track-sel { display: flex; align-items: center; gap: .5rem; }
 .f1-select { background: var(--card2); border: 1px solid var(--border2); color: var(--text); font: inherit; font-size: .82rem;
   font-weight: 600; padding: .35rem .6rem; border-radius: var(--radius-sm); cursor: pointer; max-width: 62vw; }
@@ -166,10 +166,10 @@
 .f1-replay-tag.live { color: #fff; background: #e10600; border-color: #e10600; }
 
 /* ── 3-column stage: order · track · events ── */
-.f1-stage-grid { max-width: 1400px; margin: 0 auto; display: flex; gap: .9rem; align-items: stretch; position: relative; }
+.f1-stage-grid { margin: 0 auto; display: flex; gap: .9rem; align-items: stretch; position: relative; }
 .f1-center { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
-.f1-side { flex: 0 0 200px; display: flex; flex-direction: column; min-height: 0; }
-.f1-side:last-child { flex-basis: 290px; }
+.f1-side { flex: 0 0 clamp(200px, 18vw, 320px); display: flex; flex-direction: column; min-height: 0; }
+.f1-side:last-child { flex-basis: clamp(290px, 22vw, 420px); }
 .f1-side h4 { margin: 0 0 .4rem; font-family: var(--font-head); font-size: .8rem; font-weight: 800; color: var(--text); }
 .f1-side .f1-pos, .f1-side .f1-events { overflow-y: auto; flex: 1; min-height: 0; max-height: 62vh; padding-right: 2px; }
 
@@ -281,7 +281,7 @@
 }
 
 /* ── stats dashboard ── */
-.f1-stats { max-width: 960px; margin: 0 auto; position: relative; }
+.f1-stats { margin: 0 auto; position: relative; }
 .f1-stats-head { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-bottom: .7rem; }
 .f1-year-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
 .f1-year-sel { min-width: 6rem; }
@@ -335,7 +335,7 @@
 .f1-cbar-sub { font-size: .68rem; color: var(--muted); white-space: nowrap; }
 
 /* ── Timing (Tempos) tab ── */
-.f1-timing { max-width: 960px; margin: 0 auto; }
+.f1-timing { margin: 0 auto; }
 .f1-tm-legend { font-size: .68rem; color: var(--muted); margin: .2rem 0 .6rem; }
 .f1-tm-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
 .f1-tm-table { width: 100%; border-collapse: collapse; font-size: .76rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -356,7 +356,7 @@
 .f1-purple { color: #b15cff !important; font-weight: 800; }
 
 /* ── Driver (Piloto) tab ── */
-.f1-driverpg { max-width: 980px; margin: 0 auto; }
+.f1-driverpg { margin: 0 auto; }
 .f1-dr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; }
 .f1-dr-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .8rem .9rem; min-width: 0; }
 .f1-dr-card h4 { font-family: var(--font-head); font-size: .82rem; font-weight: 800; color: var(--text); margin: 0 0 .6rem; }
@@ -420,7 +420,7 @@
 .f1-track-meta[data-race] { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem; }
 
 /* ══ LIVE TIMING ══ */
-.f1-live-timing { max-width: 1400px; margin: 0 auto; }
+.f1-live-timing { margin: 0 auto; }
 .f1-green { color: #3fb950 !important; font-weight: 700; }
 .f1-lv-cfg-btn { background: var(--card2); border: 1px solid var(--border2); color: var(--text2); cursor: pointer;
   font: inherit; font-size: .78rem; font-weight: 600; padding: .4rem .7rem; border-radius: var(--radius-sm); white-space: nowrap; transition: all var(--ease); }
@@ -431,7 +431,7 @@
   padding: .32rem .7rem; font: inherit; font-size: .76rem; font-weight: 600; transition: all var(--ease); }
 .f1-lv-preset:hover { color: var(--text); border-color: var(--border2); }
 .f1-lv-preset.on { background: rgba(225,6,0,.14); border-color: rgba(225,6,0,.55); color: #fff; }
-.f1-lv-legend { max-width: 1400px; margin: 0 auto .5rem; font-size: .68rem; color: var(--muted); }
+.f1-lv-legend { margin: 0 auto .5rem; font-size: .68rem; color: var(--muted); }
 
 .f1-lv-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); -webkit-overflow-scrolling: touch; }
 .f1-lv-table { width: 100%; border-collapse: collapse; font-size: .78rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -469,15 +469,20 @@
 .f1-lv-pit { color: var(--muted); font-size: .6rem; margin: 0 .05rem; }
 
 /* slide-in drawers (config + driver detail) */
-.f1-lv-cfg-panel, .f1-lv-driver { position: fixed; top: 0; right: 0; height: 100%; width: min(380px, 100%); z-index: 60;
+.f1-lv-cfg-panel, .f1-lv-driver { position: fixed; top: var(--hdr-h, 0px); right: 0; height: calc(100% - var(--hdr-h, 0px));
+  width: min(380px, 100%); z-index: 620;
   background: #0c111b; border-left: 1px solid var(--border2); box-shadow: -12px 0 40px -12px rgba(0,0,0,.7);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   padding: 1rem 1rem 2rem; overflow-y: auto; transform: translateX(100%); transition: transform .2s ease; }
 body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-lv-cfg-panel.open, .f1-lv-driver.open { transform: translateX(0); }
-.f1-lv-dclose { position: absolute; top: .7rem; right: .7rem; background: var(--card2); border: 1px solid var(--border2);
-  color: var(--text2); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: .9rem; }
-.f1-lv-dclose:hover { color: var(--text); }
+.f1-lv-backdrop { position: fixed; inset: 0; z-index: 610; background: rgba(0,0,0,.45);
+  opacity: 0; pointer-events: none; transition: opacity .2s; }
+.f1-lv-backdrop.open { opacity: 1; pointer-events: auto; }
+.f1-lv-dclose { position: absolute; top: .7rem; right: .7rem; z-index: 3; background: var(--card2);
+  border: 1px solid var(--border2); color: var(--text); width: 34px; height: 34px; border-radius: 50%;
+  cursor: pointer; font-size: 1.05rem; line-height: 1; display: grid; place-items: center; }
+.f1-lv-dclose:hover { border-color: #e10600; color: #ff2d24; }
 .f1-lv-cfg-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: .3rem; font-size: 1rem; }
 .f1-lv-cfg-note { font-size: .72rem; color: var(--muted); margin: 0 0 .8rem; }
 .f1-lv-cfg-grp { margin-bottom: .9rem; }
@@ -651,3 +656,11 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-incid-compact .f1-incid-item { font-size: 1rem; line-height: 1; cursor: help; white-space: nowrap; }
 .f1-incid-compact .f1-incid-toggle { gap: .2rem; font-size: 1rem; }
 .f1-incid-compact .f1-incid-toggle input { width: .9rem; height: .9rem; }
+
+/* generated icon images for the F1 logo + tabs (replace emojis) */
+.f1-logo-img { width: 27px; height: 27px; border-radius: 7px; object-fit: cover; display: block;
+  box-shadow: 0 1px 8px rgba(0,0,0,.45); }
+.f1-tab-ic { display: inline-flex; align-items: center; }
+.f1-tab-img { width: 19px; height: 19px; border-radius: 5px; object-fit: cover; display: block;
+  filter: saturate(1.05); transition: box-shadow var(--ease); }
+.f1-tab.on .f1-tab-img { box-shadow: 0 0 0 1.5px rgba(225,6,0,.6); }

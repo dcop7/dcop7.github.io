@@ -232,10 +232,10 @@ const F1Page = (function () {
     view.innerHTML = `
       <div class="f1-wrap">
         <header class="f1-head">
-          <div class="f1-title"><span class="f1-logo">🏎️</span> <span>Fórmula 1</span></div>
+          <div class="f1-title"><span class="f1-logo"><img class="f1-logo-img" src="data/f1/icons/logo.jpg" alt="" onerror="this.outerHTML='🏎️'"></span> <span>Fórmula 1</span></div>
           <nav class="f1-tabs" id="f1-tabs" role="tablist">
             ${TABS.map(t => `<button class="f1-tab${t.id === 'race' ? ' on' : ''}" data-tab="${t.id}" role="tab">
-              <span class="f1-tab-ic">${t.ic}</span><span>${_t(t.en, t.pt)}</span></button>`).join('')}
+              <span class="f1-tab-ic"><img class="f1-tab-img" src="data/f1/icons/${t.id}.jpg" alt="" loading="lazy" onerror="this.outerHTML='${t.ic}'"></span><span>${_t(t.en, t.pt)}</span></button>`).join('')}
           </nav>
         </header>
         <div class="f1-body" id="f1-body"></div>
@@ -257,6 +257,7 @@ const F1Page = (function () {
     if (_track) { _track.dispose(); _track = null; }
     if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
     _killMaps();
+    document.getElementById('f1-lv-backdrop')?.remove();
     const body = _root.querySelector('#f1-body');
     body.innerHTML = loading();
     ({ race: renderRace, track: renderTrack, live: renderLive, driver: renderDriver, timing: renderTiming, circuit: renderCircuit, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
@@ -1298,15 +1299,27 @@ const F1Page = (function () {
       host.querySelectorAll('tr[data-num]').forEach(tr => tr.addEventListener('click', () => openDriver(+tr.dataset.num)));
     }
 
+    const _esc = e => { if (e.key === 'Escape') closeCfg(); };
+    function closeCfg() {
+      const p = body.querySelector('#f1-lv-cfg-panel'); if (!p || p.hidden) return;
+      p.classList.remove('open'); setTimeout(() => { p.hidden = true; }, 180);
+      const bd = document.getElementById('f1-lv-backdrop'); if (bd) { bd.classList.remove('open'); setTimeout(() => bd.remove(), 220); }
+      document.removeEventListener('keydown', _esc);
+    }
     function toggleCfg() {
       const p = body.querySelector('#f1-lv-cfg-panel');
-      if (!p.hidden) { p.classList.remove('open'); setTimeout(() => p.hidden = true, 180); return; }
+      if (!p.hidden) { closeCfg(); return; }
       const groups = ['tempos', 'pneus', 'perf', 'estado', 'id'];
-      p.innerHTML = `<div class="f1-lv-cfg-hd"><b>${_t('Customise columns', 'Personalizar colunas')}</b><button class="f1-lv-dclose" id="f1-lv-cfg-x">✕</button></div>
+      p.innerHTML = `<button class="f1-lv-dclose" id="f1-lv-cfg-x" aria-label="${_t('Close', 'Fechar')}">✕</button>
+        <div class="f1-lv-cfg-hd"><b>${_t('Customise columns', 'Personalizar colunas')}</b></div>
         <p class="f1-lv-cfg-note">${_t('Pos, number and driver are always shown.', 'Posição, número e piloto são sempre mostrados.')}</p>
         ${groups.map(g => `<div class="f1-lv-cfg-grp"><h4>${_t(GRP[g][0], GRP[g][1])}</h4><div class="f1-lv-cfg-cols">${ALL.filter(id => C[id].grp === g).map(id => `<label class="f1-lv-cfg-chk"><input type="checkbox" data-col="${id}"${cols.includes(id) ? ' checked' : ''}> ${_t(C[id].en, C[id].pt)}</label>`).join('')}</div></div>`).join('')}`;
       p.hidden = false; requestAnimationFrame(() => p.classList.add('open'));
-      p.querySelector('#f1-lv-cfg-x').onclick = toggleCfg;
+      let bd = document.getElementById('f1-lv-backdrop');
+      if (!bd) { bd = document.createElement('div'); bd.id = 'f1-lv-backdrop'; bd.className = 'f1-lv-backdrop'; document.body.appendChild(bd); }
+      bd.onclick = closeCfg; requestAnimationFrame(() => bd.classList.add('open'));
+      document.addEventListener('keydown', _esc);
+      p.querySelector('#f1-lv-cfg-x').onclick = closeCfg;
       p.querySelectorAll('input[data-col]').forEach(cb => cb.onchange = () => {
         const id = cb.dataset.col;
         if (cb.checked) { if (!cols.includes(id)) cols.push(id); } else cols = cols.filter(x => x !== id);
