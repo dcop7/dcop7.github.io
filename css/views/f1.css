@@ -587,3 +587,13 @@
   color: var(--text); cursor: pointer; }
 .f1-incid-toggle input { accent-color: var(--accent); cursor: pointer; }
 .f1-incid-item { white-space: nowrap; }
+
+/* circuit detail — corner/sector toggles */
+.f1-circ-panel-map { position: relative; }
+.f1-circ-opts { position: absolute; top: .5rem; left: .5rem; z-index: 3; display: flex; gap: .5rem;
+  background: rgba(8,11,18,.7); backdrop-filter: blur(6px); border: 1px solid var(--border2, rgba(255,255,255,.1));
+  border-radius: 8px; padding: .3rem .5rem; }
+.f1-circ-opts label { display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 600; color: var(--text); cursor: pointer; }
+.f1-circ-opts input { accent-color: var(--accent); cursor: pointer; }
+.f1-circ-maphint { position: absolute; bottom: .35rem; left: .5rem; right: .5rem; text-align: center;
+  font-size: .6rem; color: var(--muted); opacity: .75; pointer-events: none; }

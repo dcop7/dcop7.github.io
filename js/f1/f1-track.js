@@ -23,6 +23,10 @@ const F1Track = (function () {
     let leaderNum = null;              // highlight the running leader
     let markers = [];                  // incident markers [{x,y,t,icon,type}]
     let showMarkers = true;
+    let corners = [];                  // [{x,y,num}] turn markers
+    let showCorners = false;
+    let sectorSplit = null;            // [i1,i2] outline indices splitting S1/S2/S3
+    let showSectors = false;
 
     /* ── sizing ── */
     function resize() {
@@ -130,11 +134,28 @@ const F1Track = (function () {
       if (!track || !track.tf) return;
       const pts = track.raw;
 
-      // road casing (dark) + surface (grey) + dashed centre line
+      // road casing (dark) + surface (grey, or 3 colours in sector mode) + dashed centre line
       ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       _roadPath(pts); ctx.strokeStyle = 'rgba(10,12,20,.9)'; ctx.lineWidth = 16; ctx.stroke();
-      _roadPath(pts); ctx.strokeStyle = '#3a3f50'; ctx.lineWidth = 11; ctx.stroke();
+      if (showSectors && sectorSplit) {
+        const SC = ['#c026d3', '#06b6d4', '#f59e0b'], N = pts.length;
+        const seg = (from, to, col) => { ctx.beginPath(); let st = false; for (let k = from; k <= to; k++) { const [px, py] = track.tf(pts[k % N].x, pts[k % N].y); st ? ctx.lineTo(px, py) : (ctx.moveTo(px, py), st = true); } ctx.strokeStyle = col; ctx.lineWidth = 11; ctx.stroke(); };
+        seg(0, sectorSplit[0], SC[0]); seg(sectorSplit[0], sectorSplit[1], SC[1]); seg(sectorSplit[1], N - 1, SC[2]); seg(N - 1, N, SC[2]);
+      } else {
+        _roadPath(pts); ctx.strokeStyle = '#3a3f50'; ctx.lineWidth = 11; ctx.stroke();
+      }
       _roadPath(pts); ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 9]); ctx.stroke(); ctx.setLineDash([]);
+
+      // corner numbers
+      if (showCorners && corners.length) {
+        ctx.font = '700 9px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        for (const c of corners) {
+          const [cx, cy] = track.tf(c.x, c.y);
+          ctx.beginPath(); ctx.arc(cx, cy, 7.5, 0, 7); ctx.fillStyle = 'rgba(225,6,0,.92)'; ctx.fill();
+          ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.fillText(String(c.num), cx, cy + .5);
+        }
+      }
 
       // start/finish
       if (pts.length) {
@@ -218,13 +239,18 @@ const F1Track = (function () {
     function setLeader(n) { leaderNum = n; }
     function setMarkers(arr) { markers = Array.isArray(arr) ? arr : []; draw(); }
     function setShowMarkers(b) { showMarkers = !!b; draw(); }
+    function setCorners(arr) { corners = Array.isArray(arr) ? arr : []; draw(); }
+    function setShowCorners(b) { showCorners = !!b; draw(); }
+    function setSectorSplit(s) { sectorSplit = s; draw(); }
+    function setShowSectors(b) { showSectors = !!b; draw(); }
     function dispose() { if (raf) cancelAnimationFrame(raf); raf = null; playing = false; }
 
     const ro = new ResizeObserver(resize); ro.observe(canvas);
     resize();
 
     return { setTrack, setDrivers, setReplay, play, pause, toggle, seek, setSpeed, setLiveClock, setOnTick,
-      setLabelMode, setFlag, setLeader, setMarkers, setShowMarkers, start, dispose, resize,
+      setLabelMode, setFlag, setLeader, setMarkers, setShowMarkers,
+      setCorners, setShowCorners, setSectorSplit, setShowSectors, start, dispose, resize,
       get duration() { return duration; }, get playing() { return playing; }, get clock() { return clock; } };
   }
 

@@ -403,6 +403,25 @@ const F1Page = (function () {
   const FRAME_MS = 1500;                 // sampling step for the synthetic replay
   const GRID_GAP = 0.009;                // along-track spacing per grid place (de-overlap)
 
+  /* Detect the major corners of a circuit from its telemetry outline: find the
+     local peaks of heading-change (curvature) around the lap, number them from
+     the start/finish line. Approximate (derived from the racing line). */
+  function detectCorners(pts) {
+    const N = pts.length; if (N < 30) return [];
+    const span = Math.max(2, Math.round(N / 90));
+    const headAt = i => { const a = pts[(i - span + N) % N], c = pts[(i + span) % N]; return Math.atan2(c.y - a.y, c.x - a.x); };
+    const curv = new Array(N);
+    for (let i = 0; i < N; i++) { let d = headAt((i + span) % N) - headAt((i - span + N) % N); while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; curv[i] = Math.abs(d); }
+    const thr = 0.33, lo = thr * 0.5, minSep = Math.max(3, Math.round(N * 0.02));
+    const idxs = []; let i = 0, guard = 0;
+    while (i < N && guard++ < N * 2) {
+      if (curv[i] > thr) { let j = i, peak = i, len = 0; while (curv[j % N] > lo && len < N) { if (curv[j % N] > curv[peak % N]) peak = j; j++; len++; } idxs.push(peak % N); i = j + minSep; }
+      else i++;
+    }
+    const uniq = [...new Set(idxs)].sort((a, b) => a - b).filter((v, k, arr) => k === 0 || v - arr[k - 1] > minSep);
+    return uniq.map((idx, k) => ({ x: pts[idx].x, y: pts[idx].y, num: k + 1 }));
+  }
+
   /* interpolate a point at parameter u∈[0,1) along a closed outline polyline */
   function outlineXY(pts, u) {
     const N = pts.length, fi = (((u % 1) + 1) % 1) * N;
@@ -1587,7 +1606,13 @@ const F1Page = (function () {
         : _t('No map — telemetry only exists from 2023 (historic circuit)', 'Sem mapa — telemetria só existe desde 2023 (circuito histórico)')}</span></div>`;
       detail.innerHTML = `
         <div class="f1-circ-panel">
-          <div class="f1-circ-panel-map">${track && track.length > 20 ? '<canvas id="f1-circ-canvas"></canvas>' : noMap}</div>
+          <div class="f1-circ-panel-map">${track && track.length > 20 ? `
+            <div class="f1-circ-opts">
+              <label><input type="checkbox" id="f1-cc-corners">${_t('Corners', 'Curvas')}</label>
+              <label><input type="checkbox" id="f1-cc-sectors">${_t('Sectors', 'Setores')}</label>
+            </div>
+            <canvas id="f1-circ-canvas"></canvas>
+            <div class="f1-circ-maphint">${_t('Layout, corners &amp; sectors derived from OpenF1 telemetry (approx).', 'Traçado, curvas e setores derivados da telemetria OpenF1 (aprox.).')}</div>` : noMap}</div>
           <div class="f1-circ-panel-info">
             <h3>${flag(circ.Location?.country)}${esc(circ.circuitName)}</h3>
             <div class="f1-circ-loc">${esc(circ.Location?.locality)}, ${esc(circ.Location?.country)}</div>
@@ -1606,6 +1631,11 @@ const F1Page = (function () {
         const cv = detail.querySelector('#f1-circ-canvas');
         _ctrack = F1Track.create(cv);
         _ctrack.setTrack(track);
+        _ctrack.setCorners(detectCorners(track));
+        _ctrack.setSectorSplit([Math.floor(track.length / 3), Math.floor(track.length * 2 / 3)]);
+        const cc = detail.querySelector('#f1-cc-corners'), scb = detail.querySelector('#f1-cc-sectors');
+        cc && cc.addEventListener('change', () => _ctrack && _ctrack.setShowCorners(cc.checked));
+        scb && scb.addEventListener('change', () => _ctrack && _ctrack.setShowSectors(scb.checked));
       }
     } catch (e) { detail.innerHTML = `<div class="f1-circ-panel">${err()}</div>`; }
   }
