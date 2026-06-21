@@ -31,6 +31,25 @@ const F1Page = (function () {
     map: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>' },
     sat: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics' },
   };
+  /* A STATIC satellite map sized to sit *behind* the animated schematic: no
+     pan/zoom, georeferenced from the telemetry outline (OpenF1 ≈ decimetres,
+     north-up) so the real circuit lines up with the drawn track + cars. */
+  async function makeSatMapBehind(container, outline, lat, lon) {
+    await _loadLeaflet();
+    const map = L.map(container, { zoomControl: false, attributionControl: true, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false, zoomSnap: 0, fadeAnimation: false });
+    const t = REALMAP_TILES.sat;
+    L.tileLayer(t.url, { attribution: t.attr, maxZoom: 20, opacity: 0.95 }).addTo(map);
+    let cx = 0, cy = 0; for (const p of outline) { cx += p.x; cy += p.y; } cx /= outline.length; cy /= outline.length;
+    const mLat = 111320, mLon = 111320 * Math.cos(lat * Math.PI / 180);
+    const bounds = L.latLngBounds();
+    for (const p of outline) bounds.extend([lat + ((p.y - cy) / 10) / mLat, lon + ((p.x - cx) / 10) / mLon]);
+    const pad = () => [Math.max(8, container.clientWidth * 0.06), Math.max(8, container.clientHeight * 0.06)];
+    map.fitBounds(bounds, { padding: pad(), animate: false });
+    setTimeout(() => { try { map.invalidateSize(); map.fitBounds(bounds, { padding: pad(), animate: false }); } catch {} }, 70);
+    map.__bounds = bounds; map.__pad = pad;
+    return map;
+  }
+
   /* Create a fresh Leaflet map in a container (caller owns the lifecycle). */
   async function makeSatMap(container, lat, lon, kind) {
     await _loadLeaflet();
@@ -619,6 +638,10 @@ const F1Page = (function () {
           <select class="f1-select" id="f1-race-sel" aria-label="${_t('Choose race','Escolher corrida')}">${raceOpts}</select>
         </div>
         <div class="f1-track-meta" id="f1-track-meta"></div>
+        <div class="f1-incid-legend f1-incid-compact" id="f1-incid-legend">
+          <label class="f1-incid-toggle" title="${_t('Show incidents', 'Mostrar incidentes')}"><input type="checkbox" id="f1-incid-chk" checked>🚩</label>
+          ${Object.values(INCIDENTS).map(c => `<span class="f1-incid-item" title="${_t(c.en, c.pt)}">${c.icon}</span>`).join('')}
+        </div>
       </div>
       <div class="f1-stage-grid" id="f1-stage-grid">
         <aside class="f1-side">
@@ -647,10 +670,6 @@ const F1Page = (function () {
             <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
             <button class="f1-btn f1-icon-btn f1-toggle" id="f1-track-sat" title="${_t('Real satellite of the circuit','Satélite real do circuito')}" aria-label="${_t('Satellite','Satélite')}">🛰️</button>
             <button class="f1-btn f1-icon-btn" id="f1-fs" title="${_t('Fullscreen','Ecrã inteiro')}" aria-label="${_t('Fullscreen','Ecrã inteiro')}">⛶</button>
-          </div>
-          <div class="f1-incid-legend" id="f1-incid-legend">
-            <label class="f1-incid-toggle"><input type="checkbox" id="f1-incid-chk" checked>${_t('Incidents', 'Incidentes')}</label>
-            ${Object.values(INCIDENTS).map(c => `<span class="f1-incid-item">${c.icon} ${_t(c.en, c.pt)}</span>`).join('')}
           </div>
         </div>
         <aside class="f1-side">
@@ -940,15 +959,16 @@ const F1Page = (function () {
           if (!document.fullscreenElement) (g.requestFullscreen || g.webkitRequestFullscreen || (() => {})).call(g);
           else document.exitFullscreen && document.exitFullscreen();
         };
-        // real satellite of the circuit (static reference — cars stay on the schematic)
+        // static satellite of the circuit shown BEHIND the animated track (cars
+        // stay on top; the schematic keeps running) — georeferenced to line up.
         const satBtn = body.querySelector('#f1-track-sat'), satEl = body.querySelector('#f1-track-satmap');
         if (satBtn && satEl) satBtn.onclick = async () => {
           if (!satEl.hidden) { satEl.hidden = true; satBtn.classList.remove('on'); if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; return; }
-          if (!isFinite(race.lat) || !isFinite(race.lon)) return;
+          if (!isFinite(race.lat) || !isFinite(race.lon) || !(outline && outline.length)) return;
           satEl.hidden = false; satBtn.classList.add('on');
-          satEl.innerHTML = `<div class="f1-satmap-tag">🛰️ ${esc(race.country_name || race.country || '')} · ${_t('reference', 'referência')}</div><div class="f1-satmap-map"></div>`;
           if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
-          try { _satMap = await makeSatMap(satEl.querySelector('.f1-satmap-map'), race.lat, race.lon, 'sat'); } catch { satEl.innerHTML = err(); }
+          satEl.innerHTML = '';
+          try { _satMap = await makeSatMapBehind(satEl, outline, race.lat, race.lon); } catch { satEl.hidden = true; satBtn.classList.remove('on'); }
         };
 
         _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');

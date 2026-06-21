@@ -51,8 +51,8 @@
   color: #ff2d24; background: rgba(225,6,0,.12); border: 1px solid rgba(225,6,0,.3); padding: .1rem .4rem; border-radius: 6px; margin-left: .4rem; }
 .f1-track-stage { position: relative; width: 100%; margin: 0; aspect-ratio: 16/10;
   background: radial-gradient(ellipse at 50% 40%, #0e1322, #05070e); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.f1-track-stage canvas { width: 100%; height: 100%; display: block; }
-.f1-track-hint { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font-size: .64rem; color: var(--muted); pointer-events: none; }
+.f1-track-stage canvas { position: relative; z-index: 2; width: 100%; height: 100%; display: block; }
+.f1-track-hint { position: absolute; bottom: 6px; left: 0; right: 0; z-index: 3; text-align: center; font-size: .64rem; color: var(--muted); pointer-events: none; }
 .f1-controls { display: flex; align-items: center; gap: .6rem; width: 100%; margin: .6rem 0 0; }
 .f1-btn { background: var(--card2); border: 1px solid var(--border2); color: var(--text); font: inherit; font-weight: 700;
   font-size: .8rem; padding: .42rem .9rem; border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; transition: all var(--ease); }
@@ -173,7 +173,7 @@
 .f1-side h4 { margin: 0 0 .4rem; font-family: var(--font-head); font-size: .8rem; font-weight: 800; color: var(--text); }
 .f1-side .f1-pos, .f1-side .f1-events { overflow-y: auto; flex: 1; min-height: 0; max-height: 62vh; padding-right: 2px; }
 
-.f1-stage-load { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+.f1-stage-load { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
   background: rgba(5,7,14,.78); backdrop-filter: blur(2px); }
 
 /* ── controls ── */
@@ -629,7 +629,7 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-circ-realmap .leaflet-control-attribution { font-size: .58rem; }
 
 /* satellite overlay on the Track replay stage + upcoming view */
-.f1-satmap { position: absolute; inset: 0; z-index: 6; border-radius: 12px; overflow: hidden; background: #0a0e16; }
+.f1-satmap { position: absolute; inset: 0; z-index: 1; border-radius: 12px; overflow: hidden; background: #0a0e16; }
 .f1-satmap .f1-satmap-map { width: 100%; height: 100%; }
 .f1-satmap-tag { position: absolute; top: .5rem; left: .5rem; z-index: 1000; pointer-events: none;
   background: rgba(8,11,18,.78); color: var(--text); font-size: .66rem; font-weight: 700;
@@ -644,3 +644,10 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-lv-head .f1-weather { width: auto; flex: 0 1 auto; }
 .f1-lv-head .f1-track-meta { flex: 0 1 auto; }
 .f1-lv-head .f1-lv-cfg-btn { margin-left: auto; }
+
+/* compact incidents legend — symbols only, inline in the header next to weather */
+.f1-incid-compact { margin: 0; padding: .15rem .4rem; gap: .15rem .3rem; background: transparent;
+  border: none; font-size: .9rem; flex: 0 0 auto; }
+.f1-incid-compact .f1-incid-item { font-size: 1rem; line-height: 1; cursor: help; white-space: nowrap; }
+.f1-incid-compact .f1-incid-toggle { gap: .2rem; font-size: 1rem; }
+.f1-incid-compact .f1-incid-toggle input { width: .9rem; height: .9rem; }
