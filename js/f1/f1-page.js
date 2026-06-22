@@ -2037,7 +2037,7 @@ const F1Page = (function () {
       } catch {}
 
       // OpenF1 session for the map + fastest lap (latest past race at this circuit)
-      let track = null, fastest = null;
+      let track = null, fastest = null, speedPts = null;
       if (m.of1) {
         let race = null;
         for (const yr of [new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() - 2]) {
@@ -2059,7 +2059,20 @@ const F1Page = (function () {
             const from = best.date_start, to = (next && next.date_start) || new Date(Date.parse(best.date_start) + (best.lap_duration + 5) * 1000).toISOString();
             await new Promise(r => setTimeout(r, 450));   // dodge OpenF1's 3 req/s limit after the laps+drivers calls
             const loc = await F1Data.location(sk, { driver: best.driver_number, from, to }).catch(() => []);
-            track = (loc || []).filter(p => p.x || p.y).map(p => ({ x: p.x, y: p.y }));
+            const locRaw = (loc || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y));
+            track = locRaw.map(p => ({ x: p.x, y: p.y }));
+            // speed map (the circuit's character) from the same fast lap's telemetry
+            try {
+              await new Promise(r => setTimeout(r, 280));
+              const car = await F1Data.carData(sk, { driver: best.driver_number, from, to }).catch(() => []);
+              const carP = (car || []).filter(c => c.speed != null).map(c => ({ t: Date.parse(c.date), v: c.speed })).sort((a, b) => a.t - b.t);
+              const locT = locRaw.map(p => ({ x: p.x, y: p.y, t: Date.parse(p.date) }));
+              if (carP.length && locT.length >= 8) {
+                let mn = 1e9, mx = -1e9;
+                const pts = locT.map(p => { let lo = 0, hi = carP.length - 1; while (hi - lo > 1) { const md = (lo + hi) >> 1; carP[md].t <= p.t ? lo = md : hi = md; } const v = Math.abs(carP[lo].t - p.t) <= Math.abs(carP[hi].t - p.t) ? carP[lo].v : carP[hi].v; if (v < mn) mn = v; if (v > mx) mx = v; return { x: p.x, y: p.y, v }; });
+                const rng = (mx - mn) || 1; pts.forEach(p => p.v = (p.v - mn) / rng); speedPts = pts;
+              }
+            } catch {}
           }
         }
       }
@@ -2073,11 +2086,13 @@ const F1Page = (function () {
       const hasSchema = track && track.length > 20;
       const schemaInner = hasSchema ? `
         <div class="f1-circ-opts">
-          <label><input type="checkbox" id="f1-cc-corners">${_t('Corners', 'Curvas')}</label>
-          <label><input type="checkbox" id="f1-cc-sectors">${_t('Sectors', 'Setores')}</label>
+          <label class="f1-circ-opt"><input type="checkbox" id="f1-cc-corners" checked>${_t('Corners', 'Curvas')}</label>
+          <label class="f1-circ-opt"><input type="checkbox" id="f1-cc-sectors">${_t('Sectors', 'Setores')}</label>
+          ${speedPts ? `<label class="f1-circ-opt"><input type="checkbox" id="f1-cc-speed">${_t('Speed map', 'Velocidade')}</label>` : ''}
         </div>
         <canvas id="f1-circ-canvas"></canvas>
-        <div class="f1-circ-maphint">${_t('Layout, corners &amp; sectors derived from OpenF1 telemetry (approx).', 'Traçado, curvas e setores derivados da telemetria OpenF1 (aprox.).')}</div>` : noMap;
+        <div class="f1-circ-speedleg" id="f1-circ-speedleg" hidden><span class="f1-sl-slow">${_t('slow', 'lento')}</span><span class="f1-sl-bar"></span><span class="f1-sl-fast">${_t('fast', 'rápido')}</span></div>
+        <div class="f1-circ-maphint">${_t('Layout, corners, sectors &amp; speed derived from OpenF1 telemetry (approx).', 'Traçado, curvas, setores e velocidade derivados da telemetria OpenF1 (aprox.).')}</div>` : noMap;
       detail.innerHTML = `
         <div class="f1-circ-panel">
           <div class="f1-circ-panel-map">
@@ -2109,9 +2124,13 @@ const F1Page = (function () {
         _ctrack.setTrack(track);
         _ctrack.setCorners(detectCorners(track));
         _ctrack.setSectorSplit([Math.floor(track.length / 3), Math.floor(track.length * 2 / 3)]);
-        const cc = detail.querySelector('#f1-cc-corners'), scb = detail.querySelector('#f1-cc-sectors');
+        _ctrack.setShowCorners(true);   // corners on by default → instantly informative
+        if (speedPts) _ctrack.setSpeedData(speedPts);
+        const cc = detail.querySelector('#f1-cc-corners'), scb = detail.querySelector('#f1-cc-sectors'), spd = detail.querySelector('#f1-cc-speed');
         cc && cc.addEventListener('change', () => _ctrack && _ctrack.setShowCorners(cc.checked));
         scb && scb.addEventListener('change', () => _ctrack && _ctrack.setShowSectors(scb.checked));
+        const leg = detail.querySelector('#f1-circ-speedleg');
+        spd && spd.addEventListener('change', () => { _ctrack && _ctrack.setShowSpeed(spd.checked); if (leg) leg.hidden = !spd.checked; });
       }
       // real-map (CARTO/OSM or Esri satellite) — keyless, attributed, works for every circuit
       const views = detail.querySelector('#f1-circ-views');

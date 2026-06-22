@@ -799,3 +799,11 @@ body.light .f1-mom { background: #fff; }
 .lg-fast { background: #c026d3; border-radius: 50% !important; width: 9px !important; height: 9px !important; }
 .f1-dr-stintbar { margin-top: .5rem; }
 @media (max-width: 920px) { .f1-dr-grid2 { grid-template-columns: 1fr; grid-template-areas: "hero" "analysis" "aside"; } .f1-dr-story { margin-left: 0; gap: 1.1rem; } }
+
+/* Circuito — explore layers (corners / sectors / speed map) */
+.f1-circ-opts { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .55rem; }
+.f1-circ-opt { display: flex; align-items: center; gap: .35rem; background: var(--card2); border: 1px solid var(--border2); border-radius: 999px; padding: .25rem .65rem; font-size: .74rem; cursor: pointer; transition: border-color var(--ease); }
+.f1-circ-opt:hover { border-color: var(--accent); }
+.f1-circ-opt input { accent-color: var(--accent); cursor: pointer; }
+.f1-circ-speedleg { display: flex; align-items: center; gap: .5rem; font-size: .64rem; color: var(--muted); margin-top: .45rem; }
+.f1-sl-bar { flex: 1; max-width: 170px; height: 7px; border-radius: 4px; background: linear-gradient(90deg,#ff4646,#ffd646,#46e08c); }
