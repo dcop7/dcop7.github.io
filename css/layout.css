@@ -63,33 +63,44 @@ body.light .brand-name { background: linear-gradient(180deg, #2a2f45, #555d78); 
 }
 @keyframes brand-flow { 0% { background-position: 0% center; } 100% { background-position: 250% center; } }
 
-/* tiny planet with an orbiting satellite */
+/* tiny planet with a satellite on a tilted (diagonal) 3D orbit */
 .brand-orbit { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
 .brand-core {
-  position: absolute; inset: 7.5px; border-radius: 50%;
+  position: absolute; inset: 7.5px; border-radius: 50%; z-index: 2;
   background: radial-gradient(circle at 34% 30%, #bcd2ff, #6d5dfc 52%, #3a2fb0);
   box-shadow: 0 0 9px rgba(109,93,252,.75), inset -1px -1px 2px rgba(0,0,0,.4);
   animation: brand-pulse 3.2s ease-in-out infinite;
 }
+/* diagonal orbit ring: flattened ellipse rotated to a tilted plane */
 .brand-ring {
-  position: absolute; inset: 1px; border-radius: 50%;
-  border: 1px solid rgba(124,92,255,.30);
-  transform: rotate(-18deg) scaleY(.46);
+  position: absolute; inset: -1px; border-radius: 50%; z-index: 1;
+  border: 1px solid rgba(124,92,255,.28);
+  transform: rotate(32deg) scaleY(.4);
 }
 .brand-sat {
   position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px;
   border-radius: 50%; background: #7fe7ff; box-shadow: 0 0 7px #7fe7ff, 0 0 2px #fff;
-  animation: brand-orbit-spin 5s linear infinite;
+  animation: brand-orbit-3d 5.5s linear infinite;
 }
-@keyframes brand-orbit-spin {
-  from { transform: rotate(0deg) translateX(10px) rotate(0deg); }
-  to   { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+/* traces a tilted ellipse; scale/opacity/z give depth so it passes in front of
+   and behind the planet — reads as a 3D diagonal orbit, not a flat 2D ring */
+@keyframes brand-orbit-3d {
+  0%    { transform: translate(8.1px, 5px) scale(1);     opacity: .9;  z-index: 2; }
+  12.5% { transform: translate(4.4px, 5.6px) scale(1.15);opacity: 1;   z-index: 3; }
+  25%   { transform: translate(-1.8px, 2.9px) scale(1.2);opacity: 1;   z-index: 3; }
+  37.5% { transform: translate(-7px, -1.5px) scale(1.1); opacity: .95; z-index: 3; }
+  50%   { transform: translate(-8.1px, -5px) scale(1);   opacity: .85; z-index: 2; }
+  62.5% { transform: translate(-4.4px, -5.6px) scale(.72);opacity: .5; z-index: 1; }
+  75%   { transform: translate(1.8px, -2.9px) scale(.7); opacity: .45; z-index: 1; }
+  87.5% { transform: translate(7px, 1.5px) scale(.82);   opacity: .6;  z-index: 1; }
+  100%  { transform: translate(8.1px, 5px) scale(1);     opacity: .9;  z-index: 2; }
 }
 @keyframes brand-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); filter: brightness(1.12); } }
 .brand:hover .brand-site { animation-duration: 2.5s; }
-.brand:hover .brand-sat { animation-duration: 2.2s; }
+.brand:hover .brand-sat { animation-duration: 2.4s; }
 @media (prefers-reduced-motion: reduce) {
   .brand-site, .brand-core, .brand-sat { animation: none !important; }
+  .brand-sat { transform: translate(-1.8px, 2.9px); }
 }
 
 /* Header search */
