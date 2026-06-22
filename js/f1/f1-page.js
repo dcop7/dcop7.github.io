@@ -8,7 +8,7 @@ const F1Page = (function () {
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
   const _t = (en, pt) => (_lang() === 'en' ? en : pt);
-  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null, _circMap = null, _satMap = null;
+  let _root = null, _inited = false, _tab = 'race', _track = null, _ctrack = null, _liveTimer = null, _pendingDriver = null, _circMap = null, _satMap = null, _drNowRO = null;
   function _killMaps() { try { _circMap && _circMap.remove(); } catch {} try { _satMap && _satMap.remove(); } catch {} _circMap = null; _satMap = null; }
 
   /* Lazy-load Leaflet (same CDN the Explorer uses) for the real circuit map. */
@@ -298,6 +298,7 @@ const F1Page = (function () {
     clearInterval(_liveTimer); _liveTimer = null;
     if (_track) { _track.dispose(); _track = null; }
     if (_ctrack) { _ctrack.dispose(); _ctrack = null; }
+    if (_drNowRO) { try { _drNowRO.disconnect(); } catch {} _drNowRO = null; }
     _killMaps();
     document.getElementById('f1-lv-backdrop')?.remove();
     const body = _root.querySelector('#f1-body');
@@ -1854,12 +1855,13 @@ const F1Page = (function () {
             </div>
           </div>`;
 
-        // "Right now" panel — current lap, last 3 lap times, tyre+age; follows the replay clock
-        let drSeek = null;
+        // "Right now" panel — current lap, recent lap times (count fills the width), tyre+age; follows the replay clock
+        let drSeek = null, lastNowLap = 1;
         function paintNow(lap) {
           const el = host.querySelector('#f1-dr-now'); if (!el) return;
-          lap = Math.max(1, Math.min(totalLaps, lap || 1));
-          const done = myLaps.filter(l => l.lap_number <= lap), recent = done.slice(-3);
+          lastNowLap = lap = Math.max(1, Math.min(totalLaps, lap || 1));
+          const maxBars = Math.max(3, Math.min(9, Math.floor((el.clientWidth || 600) / 84)));   // fill the width: ~3 on phones, ~8-9 on wide screens
+          const done = myLaps.filter(l => l.lap_number <= lap), recent = done.slice(-maxBars);
           const comp = compoundAtLap(lap), st = myStints.find(s => lap >= s.lap_start && lap <= s.lap_end);
           const age = st ? (st.tyre_age_at_start || 0) + (lap - st.lap_start) : null;
           const mx = Math.max(...recent.map(l => l.lap_duration), 1), mn = Math.min(...recent.map(l => l.lap_duration), mx);
@@ -1874,6 +1876,10 @@ const F1Page = (function () {
             <div class="f1-now-lbl">${_t('last laps (taller = quicker)', 'últimas voltas (mais alta = mais rápida)')}</div>`;
         }
         paintNow(1);
+        // re-fit the recent-laps count when the panel resizes (responsive count)
+        if (_drNowRO) { try { _drNowRO.disconnect(); } catch {} _drNowRO = null; }
+        const nowEl = host.querySelector('#f1-dr-now');
+        if (nowEl && 'ResizeObserver' in window) { _drNowRO = new ResizeObserver(() => paintNow(lastNowLap)); _drNowRO.observe(nowEl); }
 
         // ── interactions: key moments + chart readouts (hover AND tap — mobile-friendly) ──
         const momDetail = host.querySelector('#f1-dr-mom-detail');
