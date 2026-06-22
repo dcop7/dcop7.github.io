@@ -2022,22 +2022,34 @@ const F1Page = (function () {
         if (ss.length) { firstGP = ss[0].season; lastGP = ss[ss.length - 1].season; heldCount = ss.length; }
       } catch {}
 
-      // most successful driver here — winners of every GP held at this circuit
-      let topWin = null;
+      // most successful driver here + most recent winner — winners of every GP held at this circuit
+      let topWin = null, recentWin = null;
       try {
         const d = await fetch(`https://api.jolpi.ca/ergast/f1/circuits/${circ.circuitId}/results/1.json?limit=100`).then(r => r.json());
-        const wins = {};
-        for (const r of (d?.MRData?.RaceTable?.Races || [])) {
+        const wins = {}; const races = (d?.MRData?.RaceTable?.Races || []).slice().sort((a, b) => +a.season - +b.season);
+        for (const r of races) {
           const w = r.Results?.[0]?.Driver; if (!w) continue;
           const k = w.givenName + ' ' + w.familyName;
           wins[k] = (wins[k] || 0) + 1;
         }
         const top = Object.entries(wins).sort((a, b) => b[1] - a[1])[0];
         if (top) topWin = { who: top[0], n: top[1] };
+        const last = races[races.length - 1];
+        if (last && last.Results?.[0]?.Driver) recentWin = { who: last.Results[0].Driver.givenName + ' ' + last.Results[0].Driver.familyName, year: last.season };
+      } catch {}
+
+      // most pole positions here (qualifying winners)
+      let topPole = null;
+      try {
+        const d = await fetch(`https://api.jolpi.ca/ergast/f1/circuits/${circ.circuitId}/qualifying/1.json?limit=100`).then(r => r.json());
+        const poles = {};
+        for (const r of (d?.MRData?.RaceTable?.Races || [])) { const q = r.QualifyingResults?.[0]?.Driver; if (!q) continue; const k = q.givenName + ' ' + q.familyName; poles[k] = (poles[k] || 0) + 1; }
+        const tp = Object.entries(poles).sort((a, b) => b[1] - a[1])[0];
+        if (tp) topPole = { who: tp[0], n: tp[1] };
       } catch {}
 
       // OpenF1 session for the map + fastest lap (latest past race at this circuit)
-      let track = null, fastest = null, speedPts = null;
+      let track = null, fastest = null, speedPts = null, raceLaps = 0, topSpeedKmh = 0;
       if (m.of1) {
         let race = null;
         for (const yr of [new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() - 2]) {
@@ -2048,6 +2060,7 @@ const F1Page = (function () {
         if (race) {
           const sk = race.session_key;
           const lapRows = await F1Data.laps(sk).catch(() => []);
+          raceLaps = Math.max(0, ...(lapRows || []).map(l => l.lap_number || 0));
           const valid = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1);
           if (valid.length) {
             const best = valid.reduce((a, b) => b.lap_duration < a.lap_duration ? b : a);
@@ -2070,6 +2083,7 @@ const F1Page = (function () {
               if (carP.length && locT.length >= 8) {
                 let mn = 1e9, mx = -1e9;
                 const pts = locT.map(p => { let lo = 0, hi = carP.length - 1; while (hi - lo > 1) { const md = (lo + hi) >> 1; carP[md].t <= p.t ? lo = md : hi = md; } const v = Math.abs(carP[lo].t - p.t) <= Math.abs(carP[hi].t - p.t) ? carP[lo].v : carP[hi].v; if (v < mn) mn = v; if (v > mx) mx = v; return { x: p.x, y: p.y, v }; });
+                topSpeedKmh = Math.round(mx);
                 const rng = (mx - mn) || 1; pts.forEach(p => p.v = (p.v - mn) / rng); speedPts = pts;
               }
             } catch {}
@@ -2093,16 +2107,18 @@ const F1Page = (function () {
         <canvas id="f1-circ-canvas"></canvas>
         <div class="f1-circ-speedleg" id="f1-circ-speedleg" hidden><span class="f1-sl-slow">${_t('slow', 'lento')}</span><span class="f1-sl-bar"></span><span class="f1-sl-fast">${_t('fast', 'rápido')}</span></div>
         <div class="f1-circ-maphint">${_t('Layout, corners, sectors &amp; speed derived from OpenF1 telemetry (approx).', 'Traçado, curvas, setores e velocidade derivados da telemetria OpenF1 (aprox.).')}</div>` : noMap;
+      const avgSpeed = (fastest && m.length_km) ? (m.length_km / (fastest.time / 3600)) : 0;
+      const raceDist = (raceLaps && m.length_km) ? raceLaps * m.length_km : 0;
+      const mapLinks = hasGeo ? `
+        <div class="f1-circ-links">
+          <a class="f1-circ-link" href="https://www.google.com/maps/@${lat},${lon},15z/data=!3m1!1e3" target="_blank" rel="noopener">🛰️ ${_t('Satellite view', 'Vista de satélite')}</a>
+          <a class="f1-circ-link" href="https://www.openstreetmap.org/#map=15/${lat}/${lon}" target="_blank" rel="noopener">🗺️ OpenStreetMap</a>
+        </div>` : '';
       detail.innerHTML = `
         <div class="f1-circ-panel">
           <div class="f1-circ-panel-map">
-            ${(hasGeo || hasSchema) ? `<div class="f1-circ-views" id="f1-circ-views">
-              <button data-view="schema"${hasSchema ? ' class="on"' : ' disabled'}>📐 ${_t('Schematic', 'Esquema')}</button>
-              <button data-view="map"${(!hasSchema && hasGeo) ? ' class="on"' : ''}${hasGeo ? '' : ' disabled'}>🗺️ ${_t('Map', 'Mapa')}</button>
-              <button data-view="sat"${hasGeo ? '' : ' disabled'}>🛰️ ${_t('Satellite', 'Satélite')}</button>
-            </div>` : ''}
-            <div class="f1-circ-schema" id="f1-circ-schema"${hasSchema ? '' : ' hidden'}>${schemaInner}</div>
-            <div class="f1-circ-realmap" id="f1-circ-realmap"${hasSchema ? ' hidden' : ''}></div>
+            <div class="f1-circ-schema" id="f1-circ-schema">${schemaInner}</div>
+            ${mapLinks}
           </div>
           <div class="f1-circ-panel-info">
             <h3>${flag(circ.Location?.country)}${esc(circ.circuitName)}</h3>
@@ -2110,12 +2126,18 @@ const F1Page = (function () {
             <dl class="f1-circ-dl">
               <div><dt>${_t('Length', 'Comprimento')}</dt><dd>${m.length_km ? m.length_km.toFixed(3) + ' km' : '—'}</dd></div>
               <div><dt>${_t('Turns', 'Curvas')}</dt><dd>${m.turns || '—'}</dd></div>
+              <div><dt>${_t('Race laps', 'Voltas (corrida)')}</dt><dd>${raceLaps || '—'}</dd></div>
+              <div><dt>${_t('Race distance', 'Distância da corrida')}</dt><dd>${raceDist ? raceDist.toFixed(1) + ' km' : '—'}</dd></div>
               <div><dt>${_t('Grands Prix held', 'GPs realizados')}</dt><dd>${heldCount || '—'}</dd></div>
               <div><dt>${_t('First / last GP', 'Primeiro / último GP')}</dt><dd>${firstGP ? firstGP + (lastGP && lastGP !== firstGP ? ' – ' + lastGP : '') : '—'}</dd></div>
               <div><dt>${_t('Most wins here', 'Mais vitórias aqui')}</dt><dd>${topWin ? `${topWin.n}<small> ${esc(topWin.who)}</small>` : '—'}</dd></div>
+              <div><dt>${_t('Most poles here', 'Mais poles aqui')}</dt><dd>${topPole ? `${topPole.n}<small> ${esc(topPole.who)}</small>` : '—'}</dd></div>
+              <div><dt>${_t('Latest winner', 'Vencedor mais recente')}</dt><dd>${recentWin ? `${esc(recentWin.who)}<small> ${recentWin.year}</small>` : '—'}</dd></div>
               <div><dt>${_t('Fastest lap', 'Volta mais rápida')}</dt><dd>${fastest ? `${fmtLap(fastest.time)}<small> ${esc(fastest.who)} · ${fastest.year}</small>` : '—'}</dd></div>
+              <div><dt>${_t('Avg lap speed', 'Vel. média à volta')}</dt><dd>${avgSpeed ? Math.round(avgSpeed) + '<small> km/h</small>' : '—'}</dd></div>
+              <div><dt>${_t('Top speed', 'Vel. máxima')}</dt><dd>${topSpeedKmh ? topSpeedKmh + '<small> km/h</small>' : '—'}</dd></div>
             </dl>
-            ${fastest ? `<p class="f1-circ-src">${_t('Fastest lap from OpenF1 race data (2023→).', 'Volta mais rápida dos dados de corrida OpenF1 (2023→).')}</p>` : ''}
+            ${fastest ? `<p class="f1-circ-src">${_t('Fastest lap, speed &amp; distance from OpenF1 race data (2023→).', 'Volta mais rápida, velocidade e distância dos dados OpenF1 (2023→).')}</p>` : ''}
           </div>
         </div>`;
       if (hasSchema) {
@@ -2131,18 +2153,6 @@ const F1Page = (function () {
         scb && scb.addEventListener('change', () => _ctrack && _ctrack.setShowSectors(scb.checked));
         const leg = detail.querySelector('#f1-circ-speedleg');
         spd && spd.addEventListener('change', () => { _ctrack && _ctrack.setShowSpeed(spd.checked); if (leg) leg.hidden = !spd.checked; });
-      }
-      // real-map (CARTO/OSM or Esri satellite) — keyless, attributed, works for every circuit
-      const views = detail.querySelector('#f1-circ-views');
-      if (views && hasGeo) {
-        const schemaEl = detail.querySelector('#f1-circ-schema'), realEl = detail.querySelector('#f1-circ-realmap');
-        views.addEventListener('click', async e => {
-          const b = e.target.closest('[data-view]'); if (!b || b.disabled) return;
-          views.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
-          if (b.dataset.view === 'schema') { schemaEl.hidden = false; realEl.hidden = true; _ctrack && _ctrack.resize(); }
-          else { schemaEl.hidden = true; realEl.hidden = false; realEl.innerHTML = realEl.innerHTML || ''; try { await showCircuitRealMap(realEl, lat, lon, b.dataset.view); } catch { realEl.innerHTML = err(); } }
-        });
-        if (!hasSchema) { try { await showCircuitRealMap(realEl, lat, lon, 'sat'); } catch { realEl.innerHTML = err(); } }
       }
     } catch (e) { detail.innerHTML = `<div class="f1-circ-panel">${err()}</div>`; }
   }
