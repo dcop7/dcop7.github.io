@@ -57,7 +57,7 @@ const F1Page = (function () {
   const _rotCache = new Map();
   async function circuitRotation(outline, lat, lon, key) {
     if (_rotCache.has(key)) return _rotCache.get(key);
-    let theta = 0;
+    let res = { theta: 0, ok: false, clat: lat, clon: lon };
     try {
       const mLat = 111320, mLon = 111320 * Math.cos(lat * Math.PI / 180);
       const q = `[out:json][timeout:25];(way["highway"="raceway"](around:2600,${lat},${lon}););out geom;`;
@@ -71,7 +71,7 @@ const F1Page = (function () {
           let a = Math.atan2(by - ay, bx - ax); a = ((a % Math.PI) + Math.PI) % Math.PI; histO[Math.min(179, Math.floor(a / Math.PI * 180))] += len;
         }
       }
-      if (osmPts.length < 8) { _rotCache.set(key, 0); return 0; }
+      if (osmPts.length < 8) { _rotCache.set(key, res); return res; }
       let cx = 0, cy = 0; for (const p of outline) { cx += p.x; cy += p.y; } cx /= outline.length; cy /= outline.length;
       const tPts = outline.map(p => [(p.x - cx) / 10, (p.y - cy) / 10]);
       const histT = new Float64Array(180);
@@ -84,11 +84,13 @@ const F1Page = (function () {
       const tStep = Math.max(1, Math.ceil(tPts.length / 60)), oStep = Math.max(1, Math.ceil(oc.length / 150));
       const score = th => { const c = Math.cos(th), s = Math.sin(th); let sum = 0, n = 0; for (let i = 0; i < tPts.length; i += tStep) { const x = tPts[i][0] * c - tPts[i][1] * s, y = tPts[i][0] * s + tPts[i][1] * c; let best = 1e18; for (let j = 0; j < oc.length; j += oStep) { const dx = x - oc[j][0], dy = y - oc[j][1], dd = dx * dx + dy * dy; if (dd < best) best = dd; } sum += Math.sqrt(best); n++; } return n ? sum / n : 1e9; };
       const sA = score(cand), sB = score(cand + Math.PI);
-      theta = sB < sA ? cand + Math.PI : cand;
-      if (Math.min(sA, sB) > 450) theta = 0;
-    } catch { theta = 0; }
-    _rotCache.set(key, theta);
-    return theta;
+      const theta = sB < sA ? cand + Math.PI : cand, best = Math.min(sA, sB);
+      // OK only when the racing line falls close to the real track (good alignment);
+      // centre the satellite on the OSM track centroid, not the (sometimes offset) GP point.
+      res = { theta: best < 30 ? theta : 0, ok: best < 30, clat: lat + oy / mLat, clon: lon + ox / mLon };
+    } catch { res = { theta: 0, ok: false, clat: lat, clon: lon }; }
+    _rotCache.set(key, res);
+    return res;
   }
 
   /* Create a fresh Leaflet map in a container (caller owns the lifecycle). */
@@ -484,6 +486,21 @@ const F1Page = (function () {
   /* ── Incident markers on the circuit (🟡🔴🚗💥🚜🚨) ──
      Built from OpenF1 race-control messages; placed on the outline at the
      involved car's position (or the marshal sector) at the message time. */
+  /* Map layers for the Pista (toggleable) + quick presets. */
+  const TRACK_LAYERS = [
+    { id: 'sectors',   en: 'Sectors',    pt: 'Setores' },
+    { id: 'corners',   en: 'Corners',    pt: 'Curvas' },
+    { id: 'flags',     en: 'Flag zones', pt: 'Zonas de bandeira' },
+    { id: 'speed',     en: 'Speed map',  pt: 'Mapa de velocidade' },
+    { id: 'incidents', en: 'Incidents',  pt: 'Incidentes' },
+    { id: 'satellite', en: 'Satellite',  pt: 'Satélite' },
+  ];
+  const TRACK_PRESETS = {
+    clean:    { en: 'Clean',    pt: 'Limpo',   layers: ['flags'] },
+    analysis: { en: 'Analysis', pt: 'Análise', layers: ['sectors', 'corners', 'flags', 'speed'] },
+    all:      { en: 'All',      pt: 'Tudo',    layers: ['sectors', 'corners', 'flags', 'speed', 'incidents', 'satellite'] },
+  };
+
   const INCIDENTS = {
     yellow:    { icon: '🟡', col: '#ffd60a', en: 'Yellow flag',  pt: 'Bandeira amarela' },
     accident:  { icon: '🔴', col: '#ff2d24', en: 'Accident',     pt: 'Acidente' },
@@ -529,6 +546,31 @@ const F1Page = (function () {
       out.push({ t: tRel, dur: durFor(type, tRel), x: xy.x, y: xy.y, type, icon: cfg.icon, col: cfg.col, lap: r.lap_number || 0 });
     }
     return out.sort((a, b) => a.t - b.t);
+  }
+
+  /* Time windows when a track segment is under a flag, for the live "flag zones"
+     map layer: yellow per marshal sector, Safety Car / red over the whole track. */
+  function computeFlagZones(rcRows, lights) {
+    const zones = []; let maxSector = 1;
+    const openY = {}; let sc = null, red = null;
+    for (const r of (rcRows || [])) {
+      const t = Date.parse(r.date) - lights; if (!isFinite(t)) continue;
+      const sec = +r.sector || 0; if (sec) maxSector = Math.max(maxSector, sec);
+      const msg = String(r.message || '').toUpperCase();
+      if (r.category === 'SafetyCar') {
+        if (/DEPLOYED/.test(msg)) sc = { t0: t, type: /VIRTUAL/.test(msg) ? 'vsc' : 'sc' };
+        else if (/ENDING|IN THIS LAP/.test(msg) && sc) { zones.push({ t0: sc.t0, t1: t + (sc.type === 'sc' ? 25000 : 5000), type: sc.type, sector: null }); sc = null; }
+      } else if (r.category === 'Flag') {
+        if (r.flag === 'RED') red = { t0: t };
+        else if (r.flag === 'YELLOW' || r.flag === 'DOUBLE YELLOW') { if (sec && openY[sec] == null) openY[sec] = t; }
+        else if (r.flag === 'GREEN' || r.flag === 'CLEAR' || r.flag === 'CHEQUERED') {
+          if (red) { zones.push({ t0: red.t0, t1: t, type: 'red', sector: null }); red = null; }
+          if (sec && openY[sec] != null) { zones.push({ t0: openY[sec], t1: t, type: 'yellow', sector: sec }); openY[sec] = null; }
+          else if (!sec) { for (const s in openY) if (openY[s] != null) { zones.push({ t0: openY[s], t1: t, type: 'yellow', sector: +s }); openY[s] = null; } }
+        }
+      }
+    }
+    return { zones, maxSector };
   }
 
   /* Position-over-laps for every driver, for the evolution chart. */
@@ -670,6 +712,7 @@ const F1Page = (function () {
     const wx = (wxRows || []).map(w => ({ t: Date.parse(w.date) - lights, air: w.air_temperature, trk: w.track_temperature, hum: w.humidity, rain: w.rainfall, wind: w.wind_speed })).filter(w => isFinite(w.t)).sort((a, b) => a.t - b.t);
     const model = { meta, lapsByDriver, lights, raceDur, totalLaps, lapStart, lastEndRel, lastLapNum, isRetired, outline, offset, progAbs, progFloat, frames, stintsByDriver, tyreAt, posByDriver, events, flagRows, penByDriver, wx };
     model.markers = computeIncidentMarkers(rcRows, model);
+    model.flagZones = computeFlagZones(rcRows, lights);
     _modelCache.set(sk, model);
     return model;
   }
@@ -704,9 +747,8 @@ const F1Page = (function () {
           <select class="f1-select" id="f1-race-sel" aria-label="${_t('Choose race','Escolher corrida')}">${raceOpts}</select>
         </div>
         <div class="f1-track-meta" id="f1-track-meta"></div>
-        <div class="f1-incid-legend f1-incid-compact" id="f1-incid-legend">
-          <label class="f1-incid-toggle" title="${_t('Show incidents', 'Mostrar incidentes')}"><input type="checkbox" id="f1-incid-chk" checked>🚩</label>
-          ${Object.values(INCIDENTS).map(c => `<span class="f1-incid-item" title="${_t(c.en, c.pt)}">${c.icon}</span>`).join('')}
+        <div class="f1-track-presets" id="f1-track-presets">
+          ${Object.entries(TRACK_PRESETS).map(([k, p]) => `<button class="f1-preset-chip" data-preset="${k}">${_t(p.en, p.pt)}</button>`).join('')}
         </div>
       </div>
       <div class="f1-stage-grid" id="f1-stage-grid">
@@ -733,9 +775,9 @@ const F1Page = (function () {
               <button class="f1-lap-btn" id="f1-lap-next" aria-label="${_t('Next lap','Volta seguinte')}">▶</button>
             </div>
             <div class="f1-speed" id="f1-speed">${SPEEDS.map(s => `<button data-s="${s}" class="${s === DEF_SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div>
-            <button class="f1-btn f1-toggle" id="f1-label" title="${_t('Toggle name / number','Alternar nome / número')}">ABC</button>
-            <button class="f1-btn f1-icon-btn f1-toggle" id="f1-track-sat" title="${_t('Real satellite of the circuit','Satélite real do circuito')}" aria-label="${_t('Satellite','Satélite')}">🛰️</button>
+            <button class="f1-btn f1-icon-btn f1-toggle" id="f1-layers-btn" title="${_t('Map layers','Camadas do mapa')}">☰ <span>${_t('Layers','Camadas')}</span></button>
             <button class="f1-btn f1-icon-btn" id="f1-fs" title="${_t('Fullscreen','Ecrã inteiro')}" aria-label="${_t('Fullscreen','Ecrã inteiro')}">⛶</button>
+            <div class="f1-layers-panel" id="f1-layers-panel" hidden></div>
           </div>
         </div>
         <aside class="f1-side">
@@ -743,11 +785,81 @@ const F1Page = (function () {
           <div class="f1-events" id="f1-events"></div>
         </aside>
         <div class="f1-driver-pop" id="f1-driver-pop" hidden></div>
-      </div>
-      <div class="f1-track-extra" id="f1-track-extra" hidden></div>`;
+      </div>`;
 
     const yrSel = body.querySelector('#f1-track-year');
     yrSel.addEventListener('change', () => renderTrack(body, +yrSel.value));
+
+    // ── map layers: state, panel, presets ──
+    const _layDef = { sectors: false, corners: false, flags: true, speed: false, incidents: true, satellite: false, labels: 'code' };
+    let layers; try { const a = JSON.parse(localStorage.getItem('f1:track:layers2')); layers = (a && typeof a === 'object') ? { ..._layDef, ...a } : { ..._layDef }; } catch { layers = { ..._layDef }; }
+    const saveLayers = () => { try { localStorage.setItem('f1:track:layers2', JSON.stringify(layers)); } catch {} };
+    let _curOutline = null, _curLatLon = null, _curSk = null, _speedFor = null;
+    function applyLayers() {
+      if (!_track) return;
+      _track.setShowSectors(layers.sectors);
+      _track.setShowCorners(layers.corners);
+      _track.setShowFlagZones(layers.flags);
+      _track.setShowMarkers(layers.incidents);
+      _track.setLabelMode(layers.labels);
+      if (layers.speed) { _track.setShowSpeed(true); if (_speedFor !== _curSk && _curSk) loadSpeed(_curSk); } else _track.setShowSpeed(false);
+      toggleSat(layers.satellite);
+    }
+    function syncPanelChecks() { const p = body.querySelector('#f1-layers-panel'); if (p) p.querySelectorAll('input[data-lay]').forEach(cb => cb.checked = !!layers[cb.dataset.lay]); }
+    function syncPresetChips() { const cur = Object.keys(TRACK_PRESETS).find(k => { const set = new Set(TRACK_PRESETS[k].layers); return TRACK_LAYERS.every(l => !!layers[l.id] === set.has(l.id)); }); body.querySelectorAll('.f1-preset-chip').forEach(c => c.classList.toggle('on', c.dataset.preset === cur)); }
+    function buildLayerPanel() {
+      const p = body.querySelector('#f1-layers-panel'); if (!p) return;
+      p.innerHTML = `<div class="f1-lay-hd"><b>${_t('Map layers', 'Camadas do mapa')}</b><button class="f1-lay-x" id="f1-lay-x" aria-label="${_t('Close', 'Fechar')}">✕</button></div>
+        ${TRACK_LAYERS.map(l => `<label class="f1-lay-row"><span>${_t(l.en, l.pt)}</span><input type="checkbox" data-lay="${l.id}"${layers[l.id] ? ' checked' : ''}></label>`).join('')}
+        <label class="f1-lay-row"><span>${_t('Labels', 'Etiquetas')}</span><select class="f1-select" id="f1-lay-labels"><option value="code"${layers.labels === 'code' ? ' selected' : ''}>${_t('Code', 'Código')}</option><option value="num"${layers.labels === 'num' ? ' selected' : ''}>${_t('Number', 'Número')}</option></select></label>`;
+      p.querySelector('#f1-lay-x').onclick = () => { p.hidden = true; };
+      p.querySelectorAll('input[data-lay]').forEach(cb => cb.onchange = () => { layers[cb.dataset.lay] = cb.checked; saveLayers(); applyLayers(); syncPresetChips(); });
+      p.querySelector('#f1-lay-labels').onchange = e => { layers.labels = e.target.value; saveLayers(); _track && _track.setLabelMode(layers.labels); };
+    }
+    body.querySelector('#f1-layers-btn').onclick = () => { const p = body.querySelector('#f1-layers-panel'); p.hidden = !p.hidden; };
+    body.querySelector('#f1-track-presets').addEventListener('click', e => { const c = e.target.closest('[data-preset]'); if (!c) return; const set = new Set(TRACK_PRESETS[c.dataset.preset].layers); TRACK_LAYERS.forEach(l => layers[l.id] = set.has(l.id)); saveLayers(); syncPanelChecks(); syncPresetChips(); applyLayers(); });
+    buildLayerPanel(); syncPresetChips();
+
+    async function loadSpeed(sk) {
+      if (!_track) return;
+      try {
+        const lapRows = await F1Data.laps(sk).catch(() => []);
+        const valid = (lapRows || []).filter(l => l.lap_duration && l.lap_number > 1 && l.date_start);
+        if (!valid.length) return;
+        const best = valid.reduce((a, b) => b.lap_duration < a.lap_duration ? b : a);
+        const from = best.date_start, to = new Date(Date.parse(best.date_start) + (best.lap_duration + 2) * 1000).toISOString();
+        await new Promise(r => setTimeout(r, 400));
+        const [loc, car] = await Promise.all([
+          F1Data.location(sk, { driver: best.driver_number, from, to }).catch(() => []),
+          F1Data.carData(sk, { driver: best.driver_number, from, to }).catch(() => []),
+        ]);
+        const locP = (loc || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y)).map(p => ({ t: Date.parse(p.date), x: p.x, y: p.y }));
+        const carP = (car || []).filter(c => c.speed != null).map(c => ({ t: Date.parse(c.date), v: c.speed })).sort((a, b) => a.t - b.t);
+        if (locP.length < 8 || !carP.length) return;
+        let maxV = -1e9, minV = 1e9;
+        const pts = locP.map(p => { let lo = 0, hi = carP.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; carP[m].t <= p.t ? lo = m : hi = m; } const v = Math.abs(carP[lo].t - p.t) <= Math.abs(carP[hi].t - p.t) ? carP[lo].v : carP[hi].v; if (v > maxV) maxV = v; if (v < minV) minV = v; return { x: p.x, y: p.y, v }; });
+        const range = (maxV - minV) || 1; pts.forEach(p => p.v = (p.v - minV) / range);
+        if (_track) { _track.setSpeedData(pts); _speedFor = sk; }
+      } catch {}
+    }
+    async function toggleSat(on) {
+      const satEl = body.querySelector('#f1-track-satmap'); if (!satEl) return;
+      if (!on) { satEl.hidden = true; if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; _track && _track.setRotation(0); return; }
+      if (!_curLatLon || !_curOutline || !_curOutline.length) return;
+      satEl.hidden = false; if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
+      satEl.innerHTML = `<div class="f1-satmap-tag">🛰️ …</div>`;
+      const r = await circuitRotation(_curOutline, _curLatLon.lat, _curLatLon.lon, _curLatLon.key).catch(() => ({ ok: false }));
+      if (!r.ok) {   // no reliable alignment → don't show a wrong image
+        satEl.hidden = true; satEl.innerHTML = '';
+        const h = body.querySelector('#f1-track-hint'); if (h) { const prev = h.textContent; h.textContent = '🛰️ ' + _t('Satellite has no reliable alignment for this circuit', 'Satélite sem alinhamento fiável neste circuito'); setTimeout(() => { if (h && h.isConnected) h.textContent = prev; }, 2800); }
+        _track && _track.setRotation(0); layers.satellite = false; saveLayers(); syncPanelChecks(); syncPresetChips();
+        return;
+      }
+      _track && _track.setRotation(r.theta || 0);
+      satEl.innerHTML = '';
+      try { _satMap = await makeSatMapBehind(satEl, _curOutline, r.clat, r.clon, r.theta || 0); } catch { satEl.hidden = true; }
+    }
+
     const sel = body.querySelector('#f1-race-sel');
     const pastData = races.filter(r => r.session_key && r.status === 'past');
     const def = pastData[pastData.length - 1] || races.find(r => r.status === 'upcoming') || races[0];
@@ -858,17 +970,20 @@ const F1Page = (function () {
         const { meta, lapsByDriver, lights, raceDur, totalLaps, lapStart, lastEndRel, lastLapNum,
           isRetired, outline, progAbs, progFloat, frames, tyreAt, posByDriver, events, flagRows, penByDriver, wx } = M;
 
-        // ── build the track ──
+        // ── build the track + its data layers ──
         const canvas = body.querySelector('#f1-canvas');
         _track = F1Track.create(canvas);
         _track.setDrivers(meta);
         _track.setTrack(outline);
         _track.setReplay(frames);
         _track.setMarkers(M.markers || []);
-        const incidChk = body.querySelector('#f1-incid-chk');
-        if (incidChk) incidChk.addEventListener('change', () => _track && _track.setShowMarkers(incidChk.checked));
-        const legend = body.querySelector('#f1-incid-legend');
-        if (legend) legend.style.display = (M.markers && M.markers.length) ? '' : 'none';
+        _track.setCorners(detectCorners(outline));
+        _track.setSectorSplit([Math.floor(outline.length / 3), Math.floor(outline.length * 2 / 3)]);
+        if (M.flagZones) _track.setFlagZones(M.flagZones.zones, M.flagZones.maxSector);
+        // expose race context for the satellite + speed layers, then apply the chosen layers
+        _curOutline = outline; _curSk = sk; _speedFor = null;
+        _curLatLon = (isFinite(race.lat) && isFinite(race.lon)) ? { lat: race.lat, lon: race.lon, key: race.circuit_short_name || String(sk) } : null;
+        applyLayers();
         stage.style.display = 'none';
         body.querySelector('#f1-track-hint').textContent = _t('Drag the bar · play to watch the whole race', 'Arrasta a barra · play para ver a corrida toda');
 
@@ -929,7 +1044,8 @@ const F1Page = (function () {
         // so hover/scroll aren't disturbed)
         evEl.innerHTML = events.map((e, i) => {
           const mm = e.t < 0 ? '0:00' : `${Math.floor(e.t / 60000)}:${String(Math.floor(e.t % 60000 / 1000)).padStart(2, '0')}`;
-          return `<div class="f1-ev k-${e.kind}" data-i="${i}" data-t="${e.t}">
+          const car = +e.driver_number || +((String(e.msg || '').match(/CAR (\d+)/) || [])[1]) || 0;
+          return `<div class="f1-ev k-${e.kind}" data-i="${i}" data-t="${e.t}"${car ? ` data-car="${car}"` : ''}>
             <span class="f1-ev-ic">${e.icon}</span>
             <span class="f1-ev-tx"><b>${esc(e.msg)}</b><small>${mm}${e.lap ? ' · ' + _t('lap ', 'V') + e.lap : ''}</small></span></div>`;
         }).join('') || `<div class="f1-empty">${_t('No notable events', 'Sem eventos relevantes')}</div>`;
@@ -999,37 +1115,14 @@ const F1Page = (function () {
           if (row) { const rr = row.getBoundingClientRect(), gr = body.querySelector('#f1-stage-grid').getBoundingClientRect();
             pop.style.top = (rr.bottom - gr.top + 4) + 'px'; pop.style.left = Math.max(0, rr.left - gr.left) + 'px'; }
         }
-        posEl.addEventListener('mouseover', e => { const row = e.target.closest('.f1-pos-row'); if (!row) return; popNum = +row.dataset.num; showPop(popNum); });
-        posEl.addEventListener('mouseleave', () => { pop.hidden = true; popNum = null; });
+        posEl.addEventListener('mouseover', e => { const row = e.target.closest('.f1-pos-row'); if (!row) return; popNum = +row.dataset.num; showPop(popNum); _track && _track.setHighlightCar(+row.dataset.num); });
+        posEl.addEventListener('mouseleave', () => { pop.hidden = true; popNum = null; _track && _track.setHighlightCar(null); });
         // click a driver → open the Piloto tab focused on them, same race
         posEl.style.cursor = 'pointer';
         posEl.addEventListener('click', e => { const row = e.target.closest('.f1-pos-row'); if (!row) return; _pendingDriver = { sk, num: +row.dataset.num }; _go('driver'); });
-
-        // ── extra info row (uses the wide layout): position evolution + tyre strategy ──
-        const extra = body.querySelector('#f1-track-extra');
-        if (extra) {
-          const tsRows = orderAt(raceDur).map(o => {
-            const dm = meta[o.num] || {};
-            const stints = ((M.stintsByDriver && M.stintsByDriver[o.num]) || []).slice().sort((a, b) => a.lap_start - b.lap_start);
-            const segs = stints.map(s => {
-              const end = s.lap_end || totalLaps, lps = Math.max(1, end - s.lap_start + 1), comp = String(s.compound || '').toLowerCase();
-              return `<span class="f1-ts-seg t-${comp}" style="width:${(lps / totalLaps * 100).toFixed(1)}%" title="${esc(s.compound || '?')} · V${s.lap_start}–${end}">${tyre(s.compound).l}</span>`;
-            }).join('');
-            return `<div class="f1-ts-row" data-num="${o.num}" title="${_t('Open driver', 'Abrir piloto')}"><span class="f1-ts-code" style="border-color:${teamCol(dm.colour)}">${esc(dm.code || o.num)}</span><div class="f1-ts-bar">${segs || '<span class="f1-ts-empty">—</span>'}</div></div>`;
-          }).join('');
-          extra.innerHTML = `
-            <div class="f1-xcard f1-xcard-chart">
-              <h4>📈 ${_t('Position evolution', 'Evolução das posições')}</h4>
-              <div class="f1-pe-chart">${posEvoSVG(M)}<div class="f1-pe-cursor" id="f1-pe-cursor"></div></div>
-              <div class="f1-pe-x"><span>V1</span><span>V${totalLaps}</span></div>
-            </div>
-            <div class="f1-xcard">
-              <h4>🛞 ${_t('Tyre strategy', 'Estratégia de pneus')}</h4>
-              <div class="f1-ts-list">${tsRows}</div>
-            </div>`;
-          extra.hidden = false;
-          extra.querySelectorAll('.f1-ts-row[data-num]').forEach(r => r.addEventListener('click', () => { _pendingDriver = { sk, num: +r.dataset.num }; _go('driver'); }));
-        }
+        // hover a race event mentioning a car → highlight that car on the map
+        evEl.addEventListener('mouseover', e => { const row = e.target.closest('.f1-ev'); if (!row || !row.dataset.car) return; _track && _track.setHighlightCar(+row.dataset.car); });
+        evEl.addEventListener('mouseleave', () => { _track && _track.setHighlightCar(null); });
 
         onClock(0);
 
@@ -1047,10 +1140,7 @@ const F1Page = (function () {
         playBtn.onclick = () => { const on = _track.toggle(); playBtn.textContent = on ? '⏸ ' + _t('Pause', 'Pausa') : '▶ ' + _t('Play', 'Reproduzir'); };
         seek.oninput = () => _track.seek(seek.value / 1000);
         body.querySelector('#f1-speed').onclick = e => { const b = e.target.closest('button'); if (!b) return; _track.setSpeed(+b.dataset.s); body.querySelectorAll('#f1-speed button').forEach(x => x.classList.toggle('on', x === b)); };
-        let showCode = true;
-        const labelBtn = body.querySelector('#f1-label');
-        labelBtn.onclick = () => { showCode = !showCode; _track.setLabelMode(showCode ? 'code' : 'num'); labelBtn.textContent = showCode ? 'ABC' : '#'; labelBtn.classList.toggle('on', !showCode); };
-        // click an event → jump there and pause
+        // click an event → jump there and pause; hover an event → pulse its spot on the map
         evEl.onclick = e => { const row = e.target.closest('.f1-ev'); if (!row) return;
           _track.pause(); playBtn.textContent = '▶ ' + _t('Play', 'Reproduzir');
           _track.seek(Math.max(0, +row.dataset.t) / (_track.duration || 1)); };
@@ -1059,20 +1149,6 @@ const F1Page = (function () {
           const g = body.querySelector('#f1-stage-grid');
           if (!document.fullscreenElement) (g.requestFullscreen || g.webkitRequestFullscreen || (() => {})).call(g);
           else document.exitFullscreen && document.exitFullscreen();
-        };
-        // static satellite of the circuit shown BEHIND the animated track (cars
-        // stay on top; the schematic keeps running) — georeferenced to line up.
-        const satBtn = body.querySelector('#f1-track-sat'), satEl = body.querySelector('#f1-track-satmap');
-        if (satBtn && satEl) satBtn.onclick = async () => {
-          if (!satEl.hidden) { satEl.hidden = true; satBtn.classList.remove('on'); if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; _track && _track.setRotation(0); return; }
-          if (!isFinite(race.lat) || !isFinite(race.lon) || !(outline && outline.length)) return;
-          satEl.hidden = false; satBtn.classList.add('on');
-          if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
-          satEl.innerHTML = '<div class="f1-satmap-tag">🛰️ …</div>';
-          const theta = await circuitRotation(outline, race.lat, race.lon, race.circuit_short_name || String(sk)).catch(() => 0);
-          _track && _track.setRotation(theta || 0);
-          satEl.innerHTML = '';
-          try { _satMap = await makeSatMapBehind(satEl, outline, race.lat, race.lon, theta || 0); } catch { satEl.hidden = true; satBtn.classList.remove('on'); }
         };
 
         _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');

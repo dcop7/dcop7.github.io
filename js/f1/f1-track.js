@@ -27,6 +27,10 @@ const F1Track = (function () {
     let showCorners = false;
     let sectorSplit = null;            // [i1,i2] outline indices splitting S1/S2/S3
     let showSectors = false;
+    let heat = [];                     // [{x,y,v}] speed-coloured trace (v 0..1)
+    let showHeat = false;
+    let flagZones = [], maxSector = 1, showZones = false;  // [{t0,t1,type,sector}]
+    let highlightNum = null;           // a car to ring (hovered)
 
     /* ── sizing ── */
     function resize() {
@@ -111,6 +115,7 @@ const F1Track = (function () {
       const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
       return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#06080f' : '#fff';
     }
+    function _heatColor(v) { v = Math.max(0, Math.min(1, v)); const r = v < 0.5 ? 255 : Math.round(255 * (1 - (v - 0.5) * 2)), g = v < 0.5 ? Math.round(255 * v * 2) : 255; return `rgb(${r},${g},70)`; }
     function _roundRect(x, y, w, h, r) {
       ctx.beginPath();
       ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
@@ -141,17 +146,39 @@ const F1Track = (function () {
       if (!track || !track.tf) return;
       const pts = track.raw;
 
-      // road casing (dark) + surface (grey, or 3 colours in sector mode) + dashed centre line
+      // road casing (dark) + surface (grey / sectors / speed heatmap) + dashed centre line
       ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       _roadPath(pts); ctx.strokeStyle = 'rgba(10,12,20,.9)'; ctx.lineWidth = 16; ctx.stroke();
-      if (showSectors && sectorSplit) {
-        const SC = ['#c026d3', '#06b6d4', '#f59e0b'], N = pts.length;
+      const N = pts.length;
+      if (showHeat && heat.length >= 8) {
+        ctx.lineWidth = 11;
+        for (let i = 0; i < heat.length - 1; i++) {
+          const a = heat[i], b = heat[i + 1], [ax, ay] = track.tf(a.x, a.y), [bx, by] = track.tf(b.x, b.y);
+          ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.strokeStyle = _heatColor((a.v + b.v) / 2); ctx.stroke();
+        }
+      } else if (showSectors && sectorSplit) {
+        const SC = ['#c026d3', '#06b6d4', '#f59e0b'];
         const seg = (from, to, col) => { ctx.beginPath(); let st = false; for (let k = from; k <= to; k++) { const [px, py] = track.tf(pts[k % N].x, pts[k % N].y); st ? ctx.lineTo(px, py) : (ctx.moveTo(px, py), st = true); } ctx.strokeStyle = col; ctx.lineWidth = 11; ctx.stroke(); };
         seg(0, sectorSplit[0], SC[0]); seg(sectorSplit[0], sectorSplit[1], SC[1]); seg(sectorSplit[1], N - 1, SC[2]); seg(N - 1, N, SC[2]);
       } else {
         _roadPath(pts); ctx.strokeStyle = '#3a3f50'; ctx.lineWidth = 11; ctx.stroke();
       }
       _roadPath(pts); ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 9]); ctx.stroke(); ctx.setLineDash([]);
+
+      // live flag zones — colour the track segment under a yellow flag / whole track under SC
+      if (showZones && flagZones.length) {
+        ctx.save(); ctx.lineCap = 'round';
+        for (const z of flagZones) {
+          if (clock < z.t0 - 200 || clock > z.t1) continue;
+          const col = z.type === 'red' ? 'rgba(255,45,36,.6)' : (z.type === 'sc' || z.type === 'vsc') ? 'rgba(255,140,40,.55)' : 'rgba(255,214,10,.6)';
+          ctx.strokeStyle = col; ctx.lineWidth = 13;
+          if (z.sector && maxSector > 1) {
+            const a = Math.floor((z.sector - 1) / maxSector * N), b = Math.ceil(z.sector / maxSector * N);
+            ctx.beginPath(); let st = false; for (let k = a; k <= b; k++) { const [px, py] = track.tf(pts[k % N].x, pts[k % N].y); st ? ctx.lineTo(px, py) : (ctx.moveTo(px, py), st = true); } ctx.stroke();
+          } else { _roadPath(pts); ctx.stroke(); }
+        }
+        ctx.restore();
+      }
 
       // corner numbers
       if (showCorners && corners.length) {
@@ -207,6 +234,8 @@ const F1Track = (function () {
         const col = d.colour ? '#' + String(d.colour).replace('#', '') : '#bbb';
         const label = labelMode === 'num' ? String(c.num) : (d.code || c.num);
         const isLeader = String(c.num) === String(leaderNum);
+        const isHi = highlightNum != null && String(c.num) === String(highlightNum);
+        if (isHi) { ctx.save(); ctx.beginPath(); ctx.arc(c.px, c.py, 14, 0, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.stroke(); ctx.restore(); }
         const tw = Math.max(15, ctx.measureText(label).width + 8);
         const th = 13, x = c.px - tw / 2, y = c.py - th / 2;
         ctx.shadowColor = col; ctx.shadowBlur = isLeader ? 11 : 6;
@@ -243,6 +272,11 @@ const F1Track = (function () {
     function setLabelMode(m) { labelMode = m === 'num' ? 'num' : 'code'; draw(); }
     function setFlag(f) { flag = f || null; }
     function setLeader(n) { leaderNum = n; }
+    function setSpeedData(arr) { heat = Array.isArray(arr) ? arr : []; draw(); }
+    function setShowSpeed(b) { showHeat = !!b; draw(); }
+    function setFlagZones(arr, max) { flagZones = Array.isArray(arr) ? arr : []; maxSector = max || 1; draw(); }
+    function setShowFlagZones(b) { showZones = !!b; draw(); }
+    function setHighlightCar(n) { highlightNum = n; draw(); }
     function setMarkers(arr) { markers = Array.isArray(arr) ? arr : []; draw(); }
     function setShowMarkers(b) { showMarkers = !!b; draw(); }
     function setCorners(arr) { corners = Array.isArray(arr) ? arr : []; draw(); }
@@ -256,7 +290,8 @@ const F1Track = (function () {
 
     return { setTrack, setDrivers, setReplay, play, pause, toggle, seek, setSpeed, setLiveClock, setOnTick,
       setLabelMode, setFlag, setLeader, setMarkers, setShowMarkers, setRotation,
-      setCorners, setShowCorners, setSectorSplit, setShowSectors, start, dispose, resize,
+      setCorners, setShowCorners, setSectorSplit, setShowSectors,
+      setSpeedData, setShowSpeed, setFlagZones, setShowFlagZones, setHighlightCar, start, dispose, resize,
       get duration() { return duration; }, get playing() { return playing; }, get clock() { return clock; } };
   }
 

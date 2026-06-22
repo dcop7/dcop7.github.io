@@ -739,3 +739,23 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-an-stat-v { font-family: var(--font-mono); font-weight: 800; font-size: .92rem; color: var(--text); }
 .f1-an-stat-l { font-size: .62rem; color: var(--muted); }
 @media (max-width: 900px) { .f1-lv-analysis { grid-template-columns: 1fr; } }
+
+/* Pista — map layers: preset chips + layer panel */
+.f1-track-presets { display: flex; gap: .3rem; margin-left: auto; flex-wrap: wrap; }
+.f1-preset-chip { background: var(--card2); border: 1px solid var(--border2); color: var(--muted); font: inherit;
+  font-size: .72rem; font-weight: 700; padding: .3rem .65rem; border-radius: 999px; cursor: pointer; transition: all var(--ease); }
+.f1-preset-chip:hover { color: var(--text); }
+.f1-preset-chip.on { background: rgba(225,6,0,.15); border-color: rgba(225,6,0,.45); color: #ff2d24; }
+.f1-controls { position: relative; }
+.f1-layers-panel { position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 30; width: 230px;
+  background: #0c111b; border: 1px solid var(--border2); border-radius: 12px; padding: .55rem .7rem .7rem;
+  box-shadow: 0 14px 40px rgba(0,0,0,.55); }
+body.light .f1-layers-panel { background: #f4f6fb; }
+.f1-lay-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: .4rem; font-size: .8rem; }
+.f1-lay-x { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .92rem; line-height: 1; }
+.f1-lay-x:hover { color: #ff2d24; }
+.f1-lay-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .26rem 0; font-size: .78rem; color: var(--text); }
+.f1-lay-row input[type=checkbox] { accent-color: var(--accent); cursor: pointer; width: .95rem; height: .95rem; }
+.f1-lay-row .f1-select { padding: .15rem .4rem; font-size: .72rem; }
+.f1-ev[data-car] { cursor: pointer; }
+.f1-ev[data-car]:hover { background: rgba(255,255,255,.05); }
