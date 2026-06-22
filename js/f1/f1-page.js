@@ -510,12 +510,15 @@ const F1Page = (function () {
   };
   function classifyIncident(r) {
     const msg = String(r.message || '').toUpperCase();
-    if (r.category === 'SafetyCar' || /SAFETY CAR/.test(msg)) return 'sc';
+    // Stewards' admin / penalties / track-limits are NOT on-track incidents — skip them
+    // (e.g. "...NOTED - YELLOW FLAG INFRINGEMENT", "...TIME DELETED - TRACK LIMITS").
+    if (/INFRINGEMENT|TRACK LIMITS|DELETED|INVESTIGAT|REVIEWED|NO FURTHER|NOTED|PENALTY|REMINDER|BLACK|WHITE/.test(msg)) return null;
+    // Only genuine point incidents get a marker. Yellow flags & Safety Car are
+    // shown as ZONES (the flag-zones layer + the yellow border), not as dots.
     if (/COLLISION|CONTACT/.test(msg)) return 'collision';
     if (/ACCIDENT|CRASH/.test(msg)) return 'accident';
-    if (/RECOVER|CRANE|MARSHALS WORKING|VEHICLE RECOVERY|BARRIER/.test(msg)) return 'recovery';
-    if (/STOPPED/.test(msg)) return 'stopped';
-    if (r.flag === 'YELLOW' || r.flag === 'DOUBLE YELLOW' || /\bYELLOW\b/.test(msg)) return 'yellow';
+    if (/RECOVER|CRANE|MARSHALS WORKING|VEHICLE RECOVERY|BARRIER REPAIR/.test(msg)) return 'recovery';
+    if (/CAR STOPPED|STOPPED ON|HAS STOPPED|STOPPED AT/.test(msg)) return 'stopped';
     return null;
   }
   function computeIncidentMarkers(rcRows, model) {
