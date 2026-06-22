@@ -40,17 +40,57 @@ body.light #site-header::after { opacity: .5; }
 }
 .sb-toggle:hover { border-color: var(--border2); color: var(--text); background: rgba(var(--accent-rgb),.08); }
 
+/* ── Brand: "Diogo Universe" — animated space identity (orbit + cosmic shimmer) ── */
 .brand {
   font-family: var(--font-head); font-size: 1.15rem; font-weight: 700;
-  letter-spacing: -.02em; display: flex; align-items: center; gap: .35em; white-space: nowrap;
+  letter-spacing: -.02em; display: flex; align-items: center; gap: .5em; white-space: nowrap;
+  text-decoration: none; color: inherit;
 }
+.brand-text { display: flex; align-items: baseline; gap: .32em; }
 .brand-name {
-  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
-  background-size: 200% auto;
+  font-weight: 800; letter-spacing: -.01em;
+  background: linear-gradient(180deg, #fff, #b9c2da);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  animation: brand-flow 4s linear infinite;
 }
-@keyframes brand-flow { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+body.light .brand-name { background: linear-gradient(180deg, #2a2f45, #555d78); -webkit-background-clip: text; background-clip: text; }
+.brand-site {
+  font-weight: 700;
+  background: linear-gradient(90deg, #7c5cff, #22d3ee, #c084fc, #7c5cff);
+  background-size: 250% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  animation: brand-flow 6s linear infinite;
+  filter: drop-shadow(0 0 7px rgba(124,92,255,.45));
+}
+@keyframes brand-flow { 0% { background-position: 0% center; } 100% { background-position: 250% center; } }
+
+/* tiny planet with an orbiting satellite */
+.brand-orbit { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+.brand-core {
+  position: absolute; inset: 7.5px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #bcd2ff, #6d5dfc 52%, #3a2fb0);
+  box-shadow: 0 0 9px rgba(109,93,252,.75), inset -1px -1px 2px rgba(0,0,0,.4);
+  animation: brand-pulse 3.2s ease-in-out infinite;
+}
+.brand-ring {
+  position: absolute; inset: 1px; border-radius: 50%;
+  border: 1px solid rgba(124,92,255,.30);
+  transform: rotate(-18deg) scaleY(.46);
+}
+.brand-sat {
+  position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px;
+  border-radius: 50%; background: #7fe7ff; box-shadow: 0 0 7px #7fe7ff, 0 0 2px #fff;
+  animation: brand-orbit-spin 5s linear infinite;
+}
+@keyframes brand-orbit-spin {
+  from { transform: rotate(0deg) translateX(10px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+}
+@keyframes brand-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); filter: brightness(1.12); } }
+.brand:hover .brand-site { animation-duration: 2.5s; }
+.brand:hover .brand-sat { animation-duration: 2.2s; }
+@media (prefers-reduced-motion: reduce) {
+  .brand-site, .brand-core, .brand-sat { animation: none !important; }
+}
 
 /* Header search */
 .search-wrap { position: relative; display: flex; align-items: center; max-width: 520px; margin: 0 auto; width: 100%; }
