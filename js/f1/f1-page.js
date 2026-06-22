@@ -1739,7 +1739,7 @@ const F1Page = (function () {
           const hgt = 12 + (1 - t) * 70;
           const comp = compoundAt(l.lap_number); const col = COMP_HEX[(comp || '').toUpperCase()] || '#888';
           const isBest = best && l.lap_number === best.lap_number, isPit = myPits.some(p => p.lap_number === l.lap_number || p.lap_number === l.lap_number - 1);
-          return `<span class="f1-lapbar${isBest ? ' best' : ''}${isPit ? ' pit' : ''}" style="height:${hgt.toFixed(0)}%;--c:${col}" title="${_t('Lap', 'Volta')} ${l.lap_number}: ${fmtLapTime(l.lap_duration)}${comp ? ' · ' + comp : ''}${isPit ? ' · PIT' : ''}"></span>`;
+          return `<span class="f1-lapbar${isBest ? ' best' : ''}${isPit ? ' pit' : ''}" data-lap="${l.lap_number}" data-dur="${l.lap_duration}" data-comp="${esc(comp || '')}"${isPit ? ' data-pit="1"' : ''} style="height:${hgt.toFixed(0)}%;--c:${col}"></span>`;
         }).join('');
 
         // tyre strategy bar
@@ -1764,9 +1764,11 @@ const F1Page = (function () {
         myPits.forEach(p => moments.push({ lap: p.lap_number, type: 'pit', icon: '🅿️', label: `${_t('Pit stop', 'Paragem')} · ${(p.stop_duration || p.pit_duration || 0).toFixed(1)}s` }));
         if (best) moments.push({ lap: best.lap_number, type: 'fast', icon: '⚡', label: `${_t('Best lap', 'Melhor volta')} ${fmtLapTime(best.lap_duration)}${isFastestOverall ? ' (' + _t('race fastest', 'mais rápida da corrida') + ')' : ''}` });
         scRanges.forEach(r => moments.push({ lap: r.s || 1, type: 'sc', icon: '🚨', label: `Safety Car · V${r.s}–${r.e}` }));
-        pens.forEach(p => moments.push({ lap: p.lap || 1, type: 'pen', icon: '⚠️', label: esc(p.label) + (p.reason ? ' · ' + esc(p.reason) : '') }));
-        for (const r of (rcRows || [])) { const t = classifyIncident(r); if (!t) continue; const cn = +r.driver_number || +((String(r.message || '').match(/CAR (\d+)/) || [])[1]); if (cn !== num) continue; moments.push({ lap: r.lap_number || 1, type: 'incident', icon: INCIDENTS[t].icon, label: _t(INCIDENTS[t].en, INCIDENTS[t].pt) }); }
+        pens.forEach(p => moments.push({ lap: p.lap || 1, type: 'pen', icon: '⚠️', label: p.label + (p.reason ? ' · ' + p.reason : '') }));
+        for (const r of (rcRows || [])) { const t = classifyIncident(r); if (!t) continue; const cn = +r.driver_number || +((String(r.message || '').match(/CAR (\d+)/) || [])[1]); if (cn !== num) continue; moments.push({ lap: r.lap_number || 1, type: 'incident', icon: INCIDENTS[t].icon, label: _t(INCIDENTS[t].en, INCIDENTS[t].pt) + ' · ' + (String(r.message || '').slice(0, 90)) }); }
         moments.sort((a, b) => a.lap - b.lap);
+        const posByLapNum = {}; posPts.forEach(p => posByLapNum[p.x] = p.y);
+        const compoundAtLap = lap => { const s = myStints.find(s => lap >= s.lap_start && lap <= s.lap_end); return s ? s.compound : ''; };
         // annotated position chart (SC bands · pit ticks · fastest star)
         const maxPos = Math.max(10, ...posPts.map(p => p.y));
         function annotatedPosChart() {
@@ -1783,7 +1785,7 @@ const F1Page = (function () {
           return `<svg class="f1-pe-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bands}${grid}${pits}<path d="${line}" fill="none" stroke="${teamCol(m.team_colour)}" stroke-width="2" stroke-linejoin="round"/>${star}</svg>`;
         }
         const posChart = annotatedPosChart();
-        const momentsBar = moments.length ? moments.map(mo => `<button class="f1-mom m-${mo.type}" data-lap="${mo.lap}" style="left:${(totalLaps > 1 ? (mo.lap - 1) / (totalLaps - 1) : 0) * 100}%" title="V${mo.lap} · ${mo.label.replace(/"/g, '')}">${mo.icon}</button>`).join('') : '';
+        const momentsBar = moments.length ? moments.map(mo => `<button class="f1-mom m-${mo.type}" data-lap="${mo.lap}" data-icon="${mo.icon}" data-label="${esc(mo.label)}" style="left:${(totalLaps > 1 ? (mo.lap - 1) / (totalLaps - 1) : 0) * 100}%" aria-label="V${mo.lap} ${esc(mo.label)}">${mo.icon}</button>`).join('') : '';
 
         const nbChip = (o, label, self) => o ? `<span class="f1-nbc${self ? ' self' : ''}" style="--c:${teamCol((meta[o.driver_number] || {}).team_colour)}"><small>${label}</small> P${o.position} <b>${esc((meta[o.driver_number] || {}).name_acronym || o.driver_number)}</b></span>` : `<span class="f1-nbc empty">${label}: —</span>`;
         const controls = `
@@ -1813,15 +1815,33 @@ const F1Page = (function () {
                 <div class="f1-dr-sg"><span class="f1-dr-sg-v">${myLaps.length}</span><span class="f1-dr-sg-l">${_t('Laps', 'Voltas')}</span></div>
               </div>
             </div>
+            <div class="f1-dr-track-col">
+              <div class="f1-dr-card f1-dr-track" id="f1-dr-track">
+                <div class="f1-dr-track-top"><h4>📍 ${_t('Around on track', 'À volta na pista')}${_curLive ? ' <span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''}<span class="f1-dr-pos-mini" id="f1-dr-posn">${myPos ? 'P' + myPos : '—'}</span></h4>
+                  <div class="f1-dr-layers" id="f1-dr-layers">
+                    <label class="f1-circ-opt"><input type="checkbox" data-dl="sectors">${_t('Sectors', 'Setores')}</label>
+                    <label class="f1-circ-opt"><input type="checkbox" data-dl="corners">${_t('Corners', 'Curvas')}</label>
+                    <label class="f1-circ-opt"><input type="checkbox" data-dl="flags" checked>${_t('Flags', 'Bandeiras')}</label>
+                    <label class="f1-circ-opt"><input type="checkbox" data-dl="speed">${_t('Speed', 'Velocidade')}</label>
+                    <label class="f1-circ-opt"><input type="checkbox" data-dl="incidents" checked>${_t('Incidents', 'Incidentes')}</label>
+                  </div>
+                  <div class="f1-dr-nbstrip" id="f1-dr-nbstrip">${nbChip(ahead, _t('Ahead', 'Frente'))}${nbChip({ driver_number: num, position: myPos }, _t('Driver', 'Piloto'), true)}${nbChip(behind, _t('Behind', 'Atrás'))}</div></div>
+                <div class="f1-track-stage f1-dr-stage"><canvas id="f1-dr-canvas"></canvas><div class="f1-stage-load" id="f1-dr-stageload">${loading()}</div></div>
+                ${controls}
+              </div>
+              <div class="f1-dr-card f1-dr-now-card"><h4>⏱️ ${_t('Right now', 'Neste momento')} <small class="f1-dr-hint">${_t('follows the replay', 'acompanha a repetição')}</small></h4><div id="f1-dr-now" class="f1-dr-now">${loading()}</div></div>
+            </div>
             <div class="f1-dr-analysis">
               <div class="f1-dr-card">
-                <h4>⏱️ ${_t('Key moments', 'Momentos decisivos')} <small class="f1-dr-hint">${_t('click to jump', 'clica para saltar')}</small></h4>
+                <h4>⏱️ ${_t('Key moments', 'Momentos decisivos')} <small class="f1-dr-hint">${_t('tap one for details', 'toca para ver detalhes')}</small></h4>
                 <div class="f1-mom-wrap"><div class="f1-mom-track" id="f1-dr-moments">${momentsBar || `<span class="f1-empty-sm">${_t('No notable moments', 'Sem momentos relevantes')}</span>`}</div></div>
                 <div class="f1-mom-x"><span>V1</span><span>V${totalLaps}</span></div>
+                <div class="f1-mom-detail" id="f1-dr-mom-detail"><span class="f1-empty-sm">${_t('Tap a moment above to see what happened.', 'Toca num momento acima para ver o que aconteceu.')}</span></div>
               </div>
               <div class="f1-dr-card">
                 <h4>📈 ${_t('Position through the race', 'Posição ao longo da corrida')}</h4>
-                <div class="f1-dr-pe">${posChart}<div class="f1-pe-cursor" id="f1-dr-pe-cursor"></div></div>
+                <div class="f1-dr-pe" id="f1-dr-pe-wrap">${posChart}<div class="f1-pe-cursor" id="f1-dr-pe-cursor"></div><div class="f1-chart-hit" id="f1-dr-pos-hit"></div></div>
+                <div class="f1-chart-readout" id="f1-dr-pos-readout"><span class="f1-empty-sm">${_t('Hover / tap the chart', 'Passa o rato / toca no gráfico')}</span></div>
                 <div class="f1-dr-legend"><span><i class="lg lg-line" style="background:${teamCol(m.team_colour)}"></i>${_t('position', 'posição')}</span><span><i class="lg lg-sc"></i>Safety Car</span><span><i class="lg lg-pit"></i>${_t('pit', 'boxes')}</span><span><i class="lg lg-fast"></i>${_t('best lap', 'melhor volta')}</span></div>
               </div>
               <div class="f1-dr-card">
@@ -1829,32 +1849,53 @@ const F1Page = (function () {
                 <div class="f1-lapchart" id="f1-dr-lapchart">${lapBars || '—'}</div>
                 <div class="f1-lapchart-x"><span>V1</span><span>V${totalLaps}</span></div>
                 <div class="f1-stintbar f1-dr-stintbar">${stintBar || ''}</div>
+                <div class="f1-chart-readout" id="f1-dr-lap-readout"><span class="f1-empty-sm">${_t('Hover / tap a lap', 'Passa o rato / toca numa volta')}</span></div>
               </div>
-            </div>
-            <div class="f1-dr-aside">
-              <div class="f1-dr-card f1-dr-track" id="f1-dr-track">
-                <div class="f1-dr-track-top"><h4>📍 ${_t('Around on track', 'À volta na pista')}${_curLive ? ' <span class="f1-replay-tag live">● ' + _t('LIVE', 'AO VIVO') + '</span>' : ''}<span class="f1-dr-pos-mini" id="f1-dr-posn">${myPos ? 'P' + myPos : '—'}</span></h4>
-                  <div class="f1-dr-nbstrip" id="f1-dr-nbstrip">${nbChip(ahead, _t('Ahead', 'Frente'))}${nbChip({ driver_number: num, position: myPos }, _t('Driver', 'Piloto'), true)}${nbChip(behind, _t('Behind', 'Atrás'))}</div></div>
-                <div class="f1-track-stage f1-dr-stage"><canvas id="f1-dr-canvas"></canvas><div class="f1-stage-load" id="f1-dr-stageload">${loading()}</div></div>
-                ${controls}
-              </div>
-              <div class="f1-dr-card f1-dr-tele"><h4>⚡ ${_t('Fastest lap telemetry', 'Telemetria da volta mais rápida')}</h4><div id="f1-dr-tele">${loading()}</div></div>
-              ${pens.length ? `<div class="f1-dr-card"><h4>⚠️ ${_t('Penalties', 'Penalizações')}</h4><div class="f1-pitlist">${pens.map(p => `<span class="f1-pen f1-pen-${p.type}">${esc(p.label)}</span>`).join(' ')}</div></div>` : ''}
             </div>
           </div>`;
 
-        // fastest-lap speed trace (car_data over that lap window)
-        const teleEl = host.querySelector('#f1-dr-tele');
-        if (best && best.date_start) {
-          const from = best.date_start, to = new Date(Date.parse(best.date_start) + (best.lap_duration + 1) * 1000).toISOString();
-          F1Data.carData(sk, { driver: num, from, to }).then(car => {
-            const pts = (car || []).filter(c => c.speed != null).map(c => ({ x: Date.parse(c.date), y: c.speed }));
-            if (pts.length < 4) { teleEl.innerHTML = `<div class="f1-empty-sm">${_t('Telemetry unavailable', 'Telemetria indisponível')}</div>`; return; }
-            const maxS = Math.max(...pts.map(p => p.y));
-            teleEl.innerHTML = `${spark(pts, 320, 90, { color: '#22d3ee', fill: true })}
-              <div class="f1-tele-row"><span>🏁 ${_t('Max', 'Máx')} <b>${maxS}</b> km/h</span><span>⚙️ ${_t('gears', 'mudanças')} ${Math.max(...(car || []).map(c => c.n_gear || 0))}</span><span>🔧 ${_t('max rpm', 'rpm máx')} ${Math.max(...(car || []).map(c => c.rpm || 0))}</span></div>`;
-          }).catch(() => { teleEl.innerHTML = `<div class="f1-empty-sm">${_t('Telemetry unavailable', 'Telemetria indisponível')}</div>`; });
-        } else teleEl.innerHTML = `<div class="f1-empty-sm">${_t('No fastest lap yet', 'Ainda sem volta rápida')}</div>`;
+        // "Right now" panel — current lap, last 3 lap times, tyre+age; follows the replay clock
+        let drSeek = null;
+        function paintNow(lap) {
+          const el = host.querySelector('#f1-dr-now'); if (!el) return;
+          lap = Math.max(1, Math.min(totalLaps, lap || 1));
+          const done = myLaps.filter(l => l.lap_number <= lap), recent = done.slice(-3);
+          const comp = compoundAtLap(lap), st = myStints.find(s => lap >= s.lap_start && lap <= s.lap_end);
+          const age = st ? (st.tyre_age_at_start || 0) + (lap - st.lap_start) : null;
+          const mx = Math.max(...recent.map(l => l.lap_duration), 1), mn = Math.min(...recent.map(l => l.lap_duration), mx);
+          const bars = recent.map(l => {
+            const t = (l.lap_duration - mn) / ((mx - mn) || 1), h = 32 + (1 - t) * 68, isBest = best && l.lap_number === best.lap_number;
+            const c = COMP_HEX[(compoundAtLap(l.lap_number) || '').toUpperCase()] || '#888';
+            return `<div class="f1-now-bar${isBest ? ' best' : ''}"><span class="f1-now-bar-fill" style="height:${h.toFixed(0)}%;--c:${c}"></span><b>${fmtLapTime(l.lap_duration)}</b><small>V${l.lap_number}</small></div>`;
+          }).join('');
+          el.innerHTML = `
+            <div class="f1-now-head"><span class="f1-now-lap">${_t('Lap', 'Volta')} <b>${lap}</b><small>/${totalLaps}</small></span>${comp ? `<span class="f1-tyre t-${String(comp).toLowerCase()}">${tyre(comp).l}</span><span class="f1-now-age">${age != null ? age + ' ' + _t('laps', 'voltas') : ''}</span>` : ''}</div>
+            <div class="f1-now-bars">${bars || `<span class="f1-empty-sm">${_t('warming up…', 'a aquecer…')}</span>`}</div>
+            <div class="f1-now-lbl">${_t('last laps (taller = quicker)', 'últimas voltas (mais alta = mais rápida)')}</div>`;
+        }
+        paintNow(1);
+
+        // ── interactions: key moments + chart readouts (hover AND tap — mobile-friendly) ──
+        const momDetail = host.querySelector('#f1-dr-mom-detail');
+        host.querySelectorAll('.f1-mom').forEach(bm => bm.addEventListener('click', () => {
+          host.querySelectorAll('.f1-mom').forEach(x => x.classList.remove('on')); bm.classList.add('on');
+          momDetail.innerHTML = `<div class="f1-mom-d"><span class="f1-mom-d-ic">${bm.dataset.icon}</span><div class="f1-mom-d-tx"><b>${esc(bm.dataset.label)}</b><small>${_t('Lap', 'Volta')} ${bm.dataset.lap} · ${_t('jumped the replay here', 'repetição saltou para aqui')}</small></div></div>`;
+          drSeek && drSeek(+bm.dataset.lap);
+        }));
+        const lapReadout = host.querySelector('#f1-dr-lap-readout'), lapchart = host.querySelector('#f1-dr-lapchart');
+        const lapInfo = b => { const lp = +b.dataset.lap, dur = +b.dataset.dur, cp = b.dataset.comp, dl = best ? dur - best.lap_duration : 0; return `<b>${_t('Lap', 'Volta')} ${lp}</b> · <b class="${best && lp === best.lap_number ? 'f1-purple' : ''}">${fmtLapTime(dur)}</b>${cp ? ` · <span class="f1-tyre t-${cp.toLowerCase()}">${tyre(cp).l}</span>` : ''}${b.dataset.pit ? ' · 🅿️' : ''}${best && lp === best.lap_number ? ' · ⚡ ' + _t('best lap', 'melhor volta') : (best && dl > 0 ? ` · +${dl.toFixed(3)}s` : '')}`; };
+        if (lapchart) {
+          lapchart.addEventListener('mouseover', e => { const b = e.target.closest('.f1-lapbar'); if (b) lapReadout.innerHTML = lapInfo(b); });
+          lapchart.addEventListener('click', e => { const b = e.target.closest('.f1-lapbar'); if (!b) return; lapReadout.innerHTML = lapInfo(b); drSeek && drSeek(+b.dataset.lap); });
+        }
+        const posHit = host.querySelector('#f1-dr-pos-hit'), posReadout = host.querySelector('#f1-dr-pos-readout');
+        const posAt = cx => { const r = posHit.getBoundingClientRect(); const f = Math.max(0, Math.min(1, (cx - r.left) / r.width)); const lap = Math.round(1 + f * (totalLaps - 1)); return { lap, p: posByLapNum[lap] }; };
+        const posShow = cx => { const { lap, p } = posAt(cx); if (p == null) return; const ev = moments.find(mo => mo.lap === lap); posReadout.innerHTML = `<b>${_t('Lap', 'Volta')} ${lap}</b> · <b>P${p}</b>${ev ? ` · ${ev.icon} ${esc(ev.label)}` : ''}`; };
+        if (posHit) {
+          posHit.addEventListener('mousemove', e => posShow(e.clientX));
+          posHit.addEventListener('click', e => { posShow(e.clientX); drSeek && drSeek(posAt(e.clientX).lap); });
+          posHit.addEventListener('touchstart', e => { if (e.touches[0]) { posShow(e.touches[0].clientX); drSeek && drSeek(posAt(e.touches[0].clientX).lap); } }, { passive: true });
+        }
 
         // ── the focused track: live polling, or whole-race replay of driver + neighbours ──
         const metaEl = body.querySelector('#f1-dr-meta');
@@ -1868,6 +1909,33 @@ const F1Page = (function () {
             const canvas = host.querySelector('#f1-dr-canvas');
             _track = F1Track.create(canvas);
             _track.setDrivers(model.meta); _track.setTrack(model.outline); _track.setLeader(num); _track.setSpeed(DEF_SPEED);
+            // map layers (like the Pista): corners/sectors/flag-zones/incidents/speed
+            _track.setCorners(detectCorners(model.outline));
+            _track.setSectorSplit([Math.floor(model.outline.length / 3), Math.floor(model.outline.length * 2 / 3)]);
+            if (model.flagZones) _track.setFlagZones(model.flagZones.zones, model.flagZones.maxSector);
+            _track.setMarkers(model.markers || []);
+            _track.setShowFlagZones(true); _track.setShowMarkers(true);
+            let drSpeedLoaded = false;
+            async function loadDriverSpeed() {
+              if (!best || !best.date_start || !_track) return;
+              try {
+                const from = best.date_start, to = new Date(Date.parse(best.date_start) + (best.lap_duration + 2) * 1000).toISOString();
+                const [loc, car] = await Promise.all([F1Data.location(sk, { driver: num, from, to }).catch(() => []), F1Data.carData(sk, { driver: num, from, to }).catch(() => [])]);
+                const locP = (loc || []).filter(p => (p.x || p.y) && isFinite(p.x) && isFinite(p.y)).map(p => ({ t: Date.parse(p.date), x: p.x, y: p.y }));
+                const carP = (car || []).filter(c => c.speed != null).map(c => ({ t: Date.parse(c.date), v: c.speed })).sort((a, b) => a.t - b.t);
+                if (locP.length < 8 || !carP.length) return;
+                let mn = 1e9, mx = -1e9; const pts = locP.map(p => { let lo = 0, hi = carP.length - 1; while (hi - lo > 1) { const md = (lo + hi) >> 1; carP[md].t <= p.t ? lo = md : hi = md; } const v = Math.abs(carP[lo].t - p.t) <= Math.abs(carP[hi].t - p.t) ? carP[lo].v : carP[hi].v; if (v < mn) mn = v; if (v > mx) mx = v; return { x: p.x, y: p.y, v }; });
+                const rng = (mx - mn) || 1; pts.forEach(p => p.v = (p.v - mn) / rng); _track && _track.setSpeedData(pts);
+              } catch {}
+            }
+            host.querySelectorAll('#f1-dr-layers input[data-dl]').forEach(cb => cb.addEventListener('change', () => {
+              const k = cb.dataset.dl, on = cb.checked;
+              if (k === 'sectors') _track.setShowSectors(on);
+              else if (k === 'corners') _track.setShowCorners(on);
+              else if (k === 'flags') _track.setShowFlagZones(on);
+              else if (k === 'incidents') _track.setShowMarkers(on);
+              else if (k === 'speed') { _track.setShowSpeed(on); if (on && !drSpeedLoaded) { drSpeedLoaded = true; loadDriverSpeed(); } }
+            }));
             stageLoad.style.display = 'none';
             const seek = host.querySelector('#f1-dr-seek'), lapIn = host.querySelector('#f1-dr-lapin'), playBtn = host.querySelector('#f1-dr-play');
             const posnEl = host.querySelector('#f1-dr-posn'), nbEl = host.querySelector('#f1-dr-nbstrip');
@@ -1893,6 +1961,7 @@ const F1Page = (function () {
               paintWx(ms);
               const drCur = host.querySelector('#f1-dr-pe-cursor');
               if (drCur) drCur.style.left = (model.totalLaps > 1 ? (Math.min(model.totalLaps, lap) - 1) / (model.totalLaps - 1) * 100 : 0) + '%';
+              paintNow(lap);
               // live position + the cars currently just ahead/behind at this moment
               const ord = orderAt(ms);
               const i = ord.findIndex(o => o.num === num);
@@ -1920,8 +1989,8 @@ const F1Page = (function () {
             lapIn.onchange = () => seekToLap(+lapIn.value);
             host.querySelector('#f1-dr-lapprev').onclick = () => seekToLap((+lapIn.value || 1) - 1);
             host.querySelector('#f1-dr-lapnext').onclick = () => seekToLap((+lapIn.value || 1) + 1);
-            // key-moments timeline → jump the replay (and pause to inspect)
-            host.querySelectorAll('.f1-mom').forEach(bm => bm.onclick = () => { _track && _track.pause(); playBtn.textContent = '▶ ' + _t('Play', 'Reproduzir'); seekToLap(+bm.dataset.lap); host.querySelectorAll('.f1-mom').forEach(x => x.classList.remove('on')); bm.classList.add('on'); });
+            // connect the moment/chart interactions (wired above) to the replay: jump + pause
+            drSeek = L => { _track && _track.pause(); playBtn.textContent = '▶ ' + _t('Play', 'Reproduzir'); seekToLap(L); };
             host.querySelector('#f1-dr-fs').onclick = () => { const g = host.querySelector('#f1-dr-track'); if (!document.fullscreenElement) (g.requestFullscreen || g.webkitRequestFullscreen || (() => {})).call(g); else document.exitFullscreen && document.exitFullscreen(); };
             onClock(0); _track.play(); playBtn.textContent = '⏸ ' + _t('Pause', 'Pausa');
           }).catch(() => { stageLoad.innerHTML = err(); });
