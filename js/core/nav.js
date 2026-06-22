@@ -44,6 +44,11 @@ const Nav = (function () {
     pin:         `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
   };
 
+  // Premium generated tile icon, with the line-art SVG as a graceful fallback (theme-safe).
+  function navIcon(r) {
+    return `<span class="sb-nav-ic"><img class="sb-nav-img" src="img/nav/${r}.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.sb-nav-ic').classList.add('img-fail')"><span class="sb-nav-fb" aria-hidden="true">${ICONS[r] || ''}</span></span>`;
+  }
+
   function buildSidebar() {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
@@ -51,28 +56,28 @@ const Nav = (function () {
     sb.innerHTML = `
       <div class="sb-scroll">
         <nav class="sb-main-nav">
-          <a class="sb-nav-item" data-route="home"         href="#home">${ICONS.home}<span>${TN('nav.home')}</span></a>
+          <a class="sb-nav-item" data-route="home"         href="#home">${navIcon('home')}<span>${TN('nav.home')}</span></a>
           <div class="sb-grp" data-grp="discover">${TN('nav.grp.discover')}</div>
-          <a class="sb-nav-item" data-route="explorer"    href="#explorer">${ICONS.explorer}<span>${TN('nav.explorer')}</span></a>
-          <a class="sb-nav-item" data-route="noticias"    href="#noticias">${ICONS.noticias}<span>${TN('nav.noticias')}</span></a>
-          <a class="sb-nav-item" data-route="eventos"     href="#eventos">${ICONS.eventos}<span>${TN('nav.eventos')}</span></a>
-          <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${ICONS.ocorrencias}<span>${TN('nav.ocorrencias')}</span></a>
-          <a class="sb-nav-item" data-route="f1"          href="#f1">${ICONS.f1}<span>${TN('nav.f1')}</span></a>
-          <a class="sb-nav-item" data-route="oss"         href="#oss">${ICONS.oss}<span>${TN('nav.oss')}</span></a>
-          <a class="sb-nav-item" data-route="discovery"   href="#discovery">${ICONS.discovery}<span>${TN('nav.discovery')}</span></a>
+          <a class="sb-nav-item" data-route="explorer"    href="#explorer">${navIcon('explorer')}<span>${TN('nav.explorer')}</span></a>
+          <a class="sb-nav-item" data-route="noticias"    href="#noticias">${navIcon('noticias')}<span>${TN('nav.noticias')}</span></a>
+          <a class="sb-nav-item" data-route="eventos"     href="#eventos">${navIcon('eventos')}<span>${TN('nav.eventos')}</span></a>
+          <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${navIcon('ocorrencias')}<span>${TN('nav.ocorrencias')}</span></a>
+          <a class="sb-nav-item" data-route="f1"          href="#f1">${navIcon('f1')}<span>${TN('nav.f1')}</span></a>
+          <a class="sb-nav-item" data-route="oss"         href="#oss">${navIcon('oss')}<span>${TN('nav.oss')}</span></a>
+          <a class="sb-nav-item" data-route="discovery"   href="#discovery">${navIcon('discovery')}<span>${TN('nav.discovery')}</span></a>
           <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
-          <a class="sb-nav-item" data-route="links"        href="#links">${ICONS.links}<span>${TN('nav.links')}</span></a>
-          <a class="sb-nav-item" data-route="tools"        href="#tools">${ICONS.tools}<span>${TN('nav.tools')}</span></a>
-          <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${ICONS.cheatsheets}<span>${TN('nav.cheatsheets')}</span></a>
+          <a class="sb-nav-item" data-route="links"        href="#links">${navIcon('links')}<span>${TN('nav.links')}</span></a>
+          <a class="sb-nav-item" data-route="tools"        href="#tools">${navIcon('tools')}<span>${TN('nav.tools')}</span></a>
+          <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${navIcon('cheatsheets')}<span>${TN('nav.cheatsheets')}</span></a>
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
-          <a class="sb-nav-item" data-route="games"        href="#games">${ICONS.games}<span>${TN('nav.games')}</span></a>
-          <a class="sb-nav-item" data-route="quiz"         href="#quiz">${ICONS.quiz}<span>${TN('nav.quiz')}</span></a>
-          <a class="sb-nav-item" data-route="humor"        href="#humor">${ICONS.humor}<span>${TN('nav.humor')}</span></a>
+          <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
+          <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
+          <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
           <div class="sb-grp" data-grp="personal">${TN('nav.grp.personal')}</div>
-          <a class="sb-nav-item" data-route="photography"  href="#photography">${ICONS.photography}<span>${TN('nav.photography')}</span></a>
-          <a class="sb-nav-item" data-route="visual"       href="#visual">${ICONS.visual}<span>${TN('nav.visual')}</span></a>
+          <a class="sb-nav-item" data-route="photography"  href="#photography">${navIcon('photography')}<span>${TN('nav.photography')}</span></a>
+          <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
           <div class="sb-sep"></div>
-          <a class="sb-nav-item" data-route="settings"     href="#settings">${ICONS.settings}<span>${TN('nav.settings')}</span></a>
+          <a class="sb-nav-item" data-route="settings"     href="#settings">${navIcon('settings')}<span>${TN('nav.settings')}</span></a>
         </nav>
       </div>`;
 

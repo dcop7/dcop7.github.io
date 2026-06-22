@@ -1,7 +1,11 @@
-const CACHE = 'dcop7-v216';
+const CACHE = 'dcop7-v217';
 const STATIC = [
   '/',
   '/index.html',
+  '/img/nav/home.webp', '/img/nav/explorer.webp', '/img/nav/noticias.webp', '/img/nav/eventos.webp',
+  '/img/nav/ocorrencias.webp', '/img/nav/f1.webp', '/img/nav/oss.webp', '/img/nav/discovery.webp',
+  '/img/nav/links.webp', '/img/nav/tools.webp', '/img/nav/cheatsheets.webp', '/img/nav/games.webp',
+  '/img/nav/quiz.webp', '/img/nav/humor.webp', '/img/nav/photography.webp', '/img/nav/visual.webp', '/img/nav/settings.webp',
   '/i18n.js',
   '/css/base.css',
   '/css/views/explorer.css',
