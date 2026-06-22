@@ -87,7 +87,7 @@ const F1Page = (function () {
       const theta = sB < sA ? cand + Math.PI : cand, best = Math.min(sA, sB);
       // OK only when the racing line falls close to the real track (good alignment);
       // centre the satellite on the OSM track centroid, not the (sometimes offset) GP point.
-      res = { theta: best < 30 ? theta : 0, ok: best < 30, clat: lat + oy / mLat, clon: lon + ox / mLon };
+      res = { theta: best < 30 ? theta : 0, ok: best < 30, score: best, clat: lat + oy / mLat, clon: lon + ox / mLon };
     } catch { res = { theta: 0, ok: false, clat: lat, clon: lon }; }
     _rotCache.set(key, res);
     return res;
@@ -493,12 +493,11 @@ const F1Page = (function () {
     { id: 'flags',     en: 'Flag zones', pt: 'Zonas de bandeira' },
     { id: 'speed',     en: 'Speed map',  pt: 'Mapa de velocidade' },
     { id: 'incidents', en: 'Incidents',  pt: 'Incidentes' },
-    { id: 'satellite', en: 'Satellite',  pt: 'Satélite' },
   ];
   const TRACK_PRESETS = {
     clean:    { en: 'Clean',    pt: 'Limpo',   layers: ['flags'] },
     analysis: { en: 'Analysis', pt: 'Análise', layers: ['sectors', 'corners', 'flags', 'speed'] },
-    all:      { en: 'All',      pt: 'Tudo',    layers: ['sectors', 'corners', 'flags', 'speed', 'incidents', 'satellite'] },
+    all:      { en: 'All',      pt: 'Tudo',    layers: ['sectors', 'corners', 'flags', 'speed', 'incidents'] },
   };
 
   const INCIDENTS = {
@@ -760,7 +759,6 @@ const F1Page = (function () {
           <div class="f1-track-stage">
             <canvas id="f1-canvas"></canvas>
             <div class="f1-track-hint" id="f1-track-hint"></div>
-            <div class="f1-satmap" id="f1-track-satmap" hidden></div>
             <div class="f1-stage-load" id="f1-stage-load">${loading()}</div>
           </div>
           <div class="f1-controls">
@@ -803,7 +801,6 @@ const F1Page = (function () {
       _track.setShowMarkers(layers.incidents);
       _track.setLabelMode(layers.labels);
       if (layers.speed) { _track.setShowSpeed(true); if (_speedFor !== _curSk && _curSk) loadSpeed(_curSk); } else _track.setShowSpeed(false);
-      toggleSat(layers.satellite);
     }
     function syncPanelChecks() { const p = body.querySelector('#f1-layers-panel'); if (p) p.querySelectorAll('input[data-lay]').forEach(cb => cb.checked = !!layers[cb.dataset.lay]); }
     function syncPresetChips() { const cur = Object.keys(TRACK_PRESETS).find(k => { const set = new Set(TRACK_PRESETS[k].layers); return TRACK_LAYERS.every(l => !!layers[l.id] === set.has(l.id)); }); body.querySelectorAll('.f1-preset-chip').forEach(c => c.classList.toggle('on', c.dataset.preset === cur)); }
@@ -842,24 +839,6 @@ const F1Page = (function () {
         if (_track) { _track.setSpeedData(pts); _speedFor = sk; }
       } catch {}
     }
-    async function toggleSat(on) {
-      const satEl = body.querySelector('#f1-track-satmap'); if (!satEl) return;
-      if (!on) { satEl.hidden = true; if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; } satEl.innerHTML = ''; _track && _track.setRotation(0); return; }
-      if (!_curLatLon || !_curOutline || !_curOutline.length) return;
-      satEl.hidden = false; if (_satMap) { try { _satMap.remove(); } catch {} _satMap = null; }
-      satEl.innerHTML = `<div class="f1-satmap-tag">🛰️ …</div>`;
-      const r = await circuitRotation(_curOutline, _curLatLon.lat, _curLatLon.lon, _curLatLon.key).catch(() => ({ ok: false }));
-      if (!r.ok) {   // no reliable alignment → don't show a wrong image
-        satEl.hidden = true; satEl.innerHTML = '';
-        const h = body.querySelector('#f1-track-hint'); if (h) { const prev = h.textContent; h.textContent = '🛰️ ' + _t('Satellite has no reliable alignment for this circuit', 'Satélite sem alinhamento fiável neste circuito'); setTimeout(() => { if (h && h.isConnected) h.textContent = prev; }, 2800); }
-        _track && _track.setRotation(0); layers.satellite = false; saveLayers(); syncPanelChecks(); syncPresetChips();
-        return;
-      }
-      _track && _track.setRotation(r.theta || 0);
-      satEl.innerHTML = '';
-      try { _satMap = await makeSatMapBehind(satEl, _curOutline, r.clat, r.clon, r.theta || 0); } catch { satEl.hidden = true; }
-    }
-
     const sel = body.querySelector('#f1-race-sel');
     const pastData = races.filter(r => r.session_key && r.status === 'past');
     const def = pastData[pastData.length - 1] || races.find(r => r.status === 'upcoming') || races[0];
