@@ -629,6 +629,7 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-st-on { color: #5fd38a; background: rgba(63,185,80,.14); }
 .f1-st-pit { color: #ffd166; background: rgba(255,209,102,.14); }
 .f1-st-out { color: #ff6b6b; background: rgba(255,107,107,.14); }
+.f1-drs { color: #7fd3ff; margin-right: .2rem; font-size: .85em; }
 @media (max-width: 860px) { .f1-live2-grid { grid-template-columns: 1fr; } .f1-live2-side { order: -1; } .f1-live2-events { max-height: 200px; } }
 
 /* incident legend on the Track replay */

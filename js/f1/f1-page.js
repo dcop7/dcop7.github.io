@@ -340,7 +340,8 @@ const F1Page = (function () {
     const col = r.colour || teamColour(r.team);
     const move = r.move > 0 ? `<span class="f1-up">▲${r.move}</span>` : r.move < 0 ? `<span class="f1-dn">▼${-r.move}</span>` : `<span class="f1-eq">–</span>`;
     const st = espnState(r);
-    const int = r.leader ? '—' : (r.interval != null ? '+' + r.interval.toFixed(3) : (r.gap && /lap/i.test(r.gap) ? esc(r.gap) : '—'));
+    const battle = !r.leader && r.interval != null && r.interval > 0 && r.interval <= 1.0;   // within ~DRS range
+    const int = r.leader ? '—' : (r.interval != null ? `${battle ? '<span class="f1-drs" title="< 1.0s">⚔</span>' : ''}+${r.interval.toFixed(3)}` : (r.gap && /lap/i.test(r.gap) ? esc(r.gap) : '—'));
     const gap = r.leader ? _t('LEADER', 'LÍDER') : (r.gap ? esc(r.gap) : '—');
     const pen = r.penPts > 0 ? `<span class="f1-pen" title="${_t('penalty points', 'pontos de penalização')}">+${r.penPts}</span>` : '';
     return `<tr class="${r.state === 'out' ? 'f1-row-out' : ''}">
@@ -372,6 +373,19 @@ const F1Page = (function () {
     }
     return out;
   }
+  // seed the feed on first load so it's never empty: retirements so far, leader,
+  // the biggest climbers vs the grid, and the closest on-track battle.
+  function espnSeed(rows, lap) {
+    const when = `${_t('lap', 'volta')} ${lap}`, out = [];
+    const lead = rows[0];
+    if (lead) out.push({ k: 'chequered', icon: '🏁', t: `${_t('Leader', 'Líder')}: ${lead.short || lead.name}`, when });
+    const climbers = rows.filter(r => r.move > 0 && r.state !== 'out').sort((a, b) => b.move - a.move).slice(0, 3);
+    for (const r of climbers) out.push({ k: 'green', icon: '▲', t: `${r.short || r.name} ${_t('up', 'subiu')} ${r.move} (P${r.grid}→P${r.pos})`, when });
+    const battle = rows.filter(r => !r.leader && r.interval != null && r.interval > 0 && r.interval <= 1.0).sort((a, b) => a.interval - b.interval)[0];
+    if (battle) out.push({ k: 'info', icon: '⚔', t: `${battle.short || battle.name} ${_t('attacking', 'a atacar')} (+${battle.interval.toFixed(1)}s)`, when });
+    for (const r of rows.filter(r => r.state === 'out').sort((a, b) => (a.laps || 0) - (b.laps || 0))) out.push({ k: 'red', icon: '🏳️', t: `${r.short || r.name} ${_t('retired', 'abandonou')}${r.laps ? ` (${_lang() === 'en' ? 'L' : 'V'}${r.laps})` : ''}`, when });
+    return out;
+  }
   async function mountEspnBoard(body, note) {
     clearInterval(_liveTimer); _liveTimer = null;
     body.innerHTML = loading(_t('Connecting live…', 'A ligar ao vivo…'));
@@ -386,9 +400,11 @@ const F1Page = (function () {
         body.innerHTML = err(_t('The live session just ended — full timing & the map will be back shortly.', 'A sessão ao vivo terminou agora — os tempos completos e o mapa voltam em breve.'));
         return;
       }
-      if (Object.keys(prev).length) {
+      if (!Object.keys(prev).length) {
+        log = espnSeed(b.rows, b.lap);                 // first poll → seed so the feed isn't empty
+      } else {
         const ev = espnDiff(prev, b.rows);
-        if (ev.length) { const when = `${_t('lap', 'volta')} ${b.lap}`; log = ev.map(e => ({ ...e, when })).concat(log).slice(0, 40); }
+        if (ev.length) { const when = `${_t('lap', 'volta')} ${b.lap}`; log = ev.map(e => ({ ...e, when })).concat(log).slice(0, 50); }
       }
       prev = Object.fromEntries(b.rows.map(r => [r.id, r]));
       const leader = b.rows[0];
