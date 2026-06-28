@@ -602,12 +602,34 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 @media (max-width: 760px) { .f1-hub-stand { grid-template-columns: 1fr; } }
 
 /* ESPN live fallback board (shown while OpenF1 pauses free live access) */
-.f1-espn-live { display: flex; flex-direction: column; gap: .2rem; }
-.f1-espn-head { margin-bottom: .1rem; }
 .f1-espn-note { font-size: .75rem; line-height: 1.45; color: var(--text2);
   background: rgba(225,6,0,.08); border: 1px solid rgba(225,6,0,.25);
-  border-radius: 10px; padding: .55rem .75rem; margin: .35rem 0 .6rem; }
+  border-radius: 10px; padding: .55rem .75rem; margin: .35rem 0 .7rem; }
 .f1-hub-hero.live { box-shadow: 0 0 0 1px rgba(225,6,0,.45), 0 10px 34px rgba(225,6,0,.18); }
+
+.f1-live2-head { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; margin-bottom: .2rem; }
+.f1-live2-lap { font-size: .85rem; color: var(--text2); }
+.f1-live2-lap b { color: var(--text); font-variant-numeric: tabular-nums; }
+.f1-live2-prog { flex: 1 1 160px; height: 5px; min-width: 120px; border-radius: 3px;
+  background: rgba(255,255,255,.08); overflow: hidden; }
+.f1-live2-prog i { display: block; height: 100%; background: linear-gradient(90deg, #e10600, #ff5d57); transition: width .6s var(--ease); }
+.f1-live2-grid { display: grid; grid-template-columns: 1fr 270px; gap: .8rem; align-items: start; margin-top: .3rem; }
+.f1-live2-main { min-width: 0; }
+.f1-live2-side { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: .6rem .7rem; }
+.f1-live2-side h4 { margin: 0 0 .5rem; font-size: .8rem; color: var(--text); }
+.f1-live2-events { display: flex; flex-direction: column; gap: .35rem; max-height: 62vh; overflow-y: auto; }
+.f1-live2-events .f1-ev { animation: f1-ev-in .35s var(--ease); }
+@keyframes f1-ev-in { from { opacity: 0; transform: translateY(-4px); } }
+/* the ESPN table left-aligns its first 5 identity columns (Pos·mv·#·Driver·Team) */
+.f1-espn-table th:nth-child(-n+5), .f1-espn-table td:nth-child(-n+5) { text-align: left; }
+.f1-espn-table .f1-flag { width: 16px; height: 11px; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; object-fit: cover; }
+.f1-row-out { opacity: .5; }
+.f1-st { display: inline-block; font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  padding: .12rem .4rem; border-radius: 6px; white-space: nowrap; }
+.f1-st-on { color: #5fd38a; background: rgba(63,185,80,.14); }
+.f1-st-pit { color: #ffd166; background: rgba(255,209,102,.14); }
+.f1-st-out { color: #ff6b6b; background: rgba(255,107,107,.14); }
+@media (max-width: 860px) { .f1-live2-grid { grid-template-columns: 1fr; } .f1-live2-side { order: -1; } .f1-live2-events { max-height: 200px; } }
 
 /* incident legend on the Track replay */
 .f1-incid-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .7rem;

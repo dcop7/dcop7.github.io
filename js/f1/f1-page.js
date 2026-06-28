@@ -326,25 +326,57 @@ const F1Page = (function () {
   /* ══════════════════ LIVE FALLBACK (ESPN) ══════════════════
      OpenF1 returns 401 during a live session (free access is paused until it
      ends). ESPN's public racing API stays open, so while a race is running we
-     show a live timing board from it: order · driver · team · lap · gap · pits.
-     The animated telemetry map needs car X/Y that only OpenF1 has, so that
-     comes back once the session ends. Polls into _liveTimer (cleared by _go). */
-  function espnBoardRow(r) {
+     show a rich live board from it: order + grid moves · driver · team · live
+     interval/gap · their lap · status (track/pit/retired) · pits · laps led ·
+     penalties, plus a derived live-events feed (overtakes, pit stops, retirements
+     diffed between polls). Sectors/lap-times/tyres/the animated map need OpenF1
+     telemetry → they return once the session ends. Polls into _liveTimer. */
+  function espnState(r) {
+    if (r.state === 'out') return { cls: 'f1-st-out', tx: _t('Retired', 'Abandono') + (r.laps ? ' · ' + (_lang() === 'en' ? 'L' : 'V') + r.laps : '') };
+    if (r.state === 'pit') return { cls: 'f1-st-pit', tx: _t('In pit', 'Boxes') };
+    return { cls: 'f1-st-on', tx: _t('On track', 'Em pista') };
+  }
+  function espnBoardRow(r, totalLaps) {
     const col = r.colour || teamColour(r.team);
-    return `<tr>
-      <td class="f1-tm-pos">${r.pos || '–'}</td>
+    const move = r.move > 0 ? `<span class="f1-up">▲${r.move}</span>` : r.move < 0 ? `<span class="f1-dn">▼${-r.move}</span>` : `<span class="f1-eq">–</span>`;
+    const st = espnState(r);
+    const int = r.leader ? '—' : (r.interval != null ? '+' + r.interval.toFixed(3) : (r.gap && /lap/i.test(r.gap) ? esc(r.gap) : '—'));
+    const gap = r.leader ? _t('LEADER', 'LÍDER') : (r.gap ? esc(r.gap) : '—');
+    const pen = r.penPts > 0 ? `<span class="f1-pen" title="${_t('penalty points', 'pontos de penalização')}">+${r.penPts}</span>` : '';
+    return `<tr class="${r.state === 'out' ? 'f1-row-out' : ''}">
+      <td class="f1-tm-pos">${r.leader ? '<b>' + r.pos + '</b>' : r.pos}</td>
+      <td class="f1-r-mv">${move}</td>
       <td class="f1-tm-num" style="border-color:${col}">${esc(r.num || '')}</td>
-      <td class="f1-tm-drv"><b>${esc(r.short || r.name || '')}</b></td>
+      <td class="f1-tm-drv">${r.flag ? `<img class="f1-flag" src="${esc(r.flag)}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}<b>${esc(r.short || r.name || '')}</b>${pen}</td>
       <td class="f1-tm-team"><span class="f1-team-dot" style="background:${col}"></span>${esc(r.team || '')}</td>
-      <td class="f1-tm-gap">${r.leader ? _t('LEADER', 'LÍDER') : esc(r.gap || '')}</td>
-      <td>${r.laps || ''}</td>
+      <td class="f1-tm-gap">${int}</td>
+      <td class="f1-tm-gap">${gap}</td>
+      <td>${r.laps || ''}${totalLaps ? `<small>/${totalLaps}</small>` : ''}</td>
+      <td><span class="f1-st ${st.cls}">${st.tx}</span></td>
       <td>${r.pits || 0}</td>
+      <td>${r.lapsLead || ''}</td>
     </tr>`;
+  }
+  // build the live-events feed by diffing this poll against the previous one
+  function espnDiff(prev, rows) {
+    const out = [];
+    for (const r of rows) {
+      const p = prev[r.id]; if (!p) continue;
+      const who = r.short || r.name || ('#' + r.num);
+      if (r.state === 'out' && p.state !== 'out') out.push({ k: 'red', icon: '🏳️', t: `${who} ${_t('retired', 'abandonou')}${r.laps ? ` (${_lang() === 'en' ? 'L' : 'V'}${r.laps})` : ''}` });
+      else if (r.state === 'pit' && p.state !== 'pit') out.push({ k: 'info', icon: '🅿️', t: `${who} ${_t('pits', 'entrou nas boxes')}` });
+      if (r.pits > p.pits) out.push({ k: 'info', icon: '🔧', t: `${who} — ${_t('stop', 'paragem')} ${r.pits}` });
+      if (r.pos < p.pos && r.state !== 'out' && p.state !== 'out') out.push({ k: 'green', icon: '▲', t: `${who} P${p.pos}→P${r.pos}` });
+      if (r.pos === 1 && p.pos !== 1) out.push({ k: 'chequered', icon: '🏁', t: `${_t('New leader', 'Novo líder')}: ${who}` });
+      if ((r.penPts || 0) > (p.penPts || 0)) out.push({ k: 'penalty', icon: '⏱️', t: `${who} — ${_t('penalty', 'penalização')}` });
+    }
+    return out;
   }
   async function mountEspnBoard(body, note) {
     clearInterval(_liveTimer); _liveTimer = null;
     body.innerHTML = loading(_t('Connecting live…', 'A ligar ao vivo…'));
     const myTab = _tab;
+    let prev = {}, log = [];
     async function run() {
       if (_tab !== myTab) { clearInterval(_liveTimer); _liveTimer = null; return; }
       let b; try { b = await F1Espn.liveBoard(); } catch { b = null; }
@@ -354,23 +386,39 @@ const F1Page = (function () {
         body.innerHTML = err(_t('The live session just ended — full timing & the map will be back shortly.', 'A sessão ao vivo terminou agora — os tempos completos e o mapa voltam em breve.'));
         return;
       }
+      if (Object.keys(prev).length) {
+        const ev = espnDiff(prev, b.rows);
+        if (ev.length) { const when = `${_t('lap', 'volta')} ${b.lap}`; log = ev.map(e => ({ ...e, when })).concat(log).slice(0, 40); }
+      }
+      prev = Object.fromEntries(b.rows.map(r => [r.id, r]));
+      const leader = b.rows[0];
+      const prog = b.totalLaps ? Math.min(100, Math.round(b.lap / b.totalLaps * 100)) : 0;
       body.innerHTML = `
-        <div class="f1-espn-live">
-          <div class="f1-track-head f1-espn-head">
-            <div class="f1-track-meta"><b>${esc(b.full || b.name)}</b> <span class="f1-replay-tag live">● ${_t('LIVE', 'AO VIVO')}</span>${b.lap ? ` · ${_t('lap', 'volta')} ${b.lap}` : ''}</div>
+        <div class="f1-live2">
+          <div class="f1-live2-head">
+            <div class="f1-track-meta"><b>${esc(b.full || b.name)}</b> <span class="f1-replay-tag live">● ${_t('LIVE', 'AO VIVO')}</span></div>
+            <div class="f1-live2-lap">${_t('Lap', 'Volta')} <b>${b.lap || '?'}</b>${b.totalLaps ? ` / ${b.totalLaps}` : ''}${leader ? ` · ${_t('Leader', 'Líder')} ${esc(leader.short || leader.name)}` : ''}</div>
+            ${b.totalLaps ? `<div class="f1-live2-prog"><i style="width:${prog}%"></i></div>` : ''}
           </div>
           ${note ? `<div class="f1-espn-note">🛰️ ${note}</div>` : ''}
-          <div class="f1-tm-wrap"><table class="f1-tm-table f1-espn-table"><thead><tr>
-            <th>${_t('Pos', 'Pos')}</th><th>#</th><th>${_t('Drv', 'Pil')}</th><th>${_t('Team', 'Equipa')}</th>
-            <th>${_t('Gap', 'Dif')}</th><th>${_t('Lap', 'Volta')}</th><th>${_t('Stops', 'Par')}</th>
-          </tr></thead><tbody>${b.rows.map(espnBoardRow).join('')}</tbody></table></div>
+          <div class="f1-live2-grid">
+            <div class="f1-live2-main"><div class="f1-tm-wrap"><table class="f1-tm-table f1-espn-table"><thead><tr>
+              <th>${_t('Pos', 'Pos')}</th><th></th><th>#</th><th>${_t('Driver', 'Piloto')}</th><th>${_t('Team', 'Equipa')}</th>
+              <th>${_t('Interval', 'Intervalo')}</th><th>${_t('Gap', 'Dif. líder')}</th><th>${_t('Lap', 'Volta')}</th>
+              <th>${_t('Status', 'Estado')}</th><th>${_t('Pits', 'Par')}</th><th title="${_t('Laps led', 'Voltas na liderança')}">${_t('Led', 'VL')}</th>
+            </tr></thead><tbody>${b.rows.map(r => espnBoardRow(r, b.totalLaps)).join('')}</tbody></table></div></div>
+            <aside class="f1-live2-side">
+              <h4>${_t('Live events', 'Eventos ao vivo')}</h4>
+              <div class="f1-live2-events">${log.length ? log.map(e => `<div class="f1-ev k-${e.k}"><span class="f1-ev-ic">${e.icon}</span><span class="f1-ev-tx"><b>${esc(e.t)}</b><small>${esc(e.when)}</small></span></div>`).join('') : `<div class="f1-empty">${_t('Watching for overtakes, pit stops & retirements…', 'À espera de ultrapassagens, paragens e abandonos…')}</div>`}</div>
+            </aside>
+          </div>
           <div class="f1-disclaimer">${_t(
-            'Live timing via ESPN. OpenF1 (the telemetry source) restricts free access during a live session, so the animated map returns once the session ends.',
-            'Tempos ao vivo via ESPN. A OpenF1 (fonte da telemetria) restringe o acesso gratuito durante a sessão ao vivo, por isso o mapa animado volta assim que a sessão terminar.')}</div>
+            'Live timing via ESPN. Sectors, lap times, tyres & the animated map need OpenF1 telemetry (restricted during the live session) — they return once it ends.',
+            'Tempos ao vivo via ESPN. Setores, tempos por volta, pneus e o mapa animado precisam da telemetria OpenF1 (restrita durante a sessão ao vivo) — voltam quando esta terminar.')}</div>
         </div>`;
     }
     await run();
-    if (_tab === myTab && !_liveTimer) _liveTimer = setInterval(run, 12000);
+    if (_tab === myTab && !_liveTimer) _liveTimer = setInterval(run, 15000);
   }
 
   /* ════════════════════════════ RACE ════════════════════════════ */

@@ -69,7 +69,7 @@ const F1Espn = (function () {
     return null;
   }
 
-  /* Per-athlete team · colour · number (changes rarely → cache for the session). */
+  /* Per-athlete team · colour · number · grid (start order). Cached per session. */
   const _roster = new Map();
   async function roster(eventId, compId) {
     const key = eventId + '/' + compId;
@@ -83,6 +83,7 @@ const F1Espn = (function () {
           num: v.number || '',
           team: v.manufacturer || '',
           colour: v.teamColor ? ('#' + String(v.teamColor).replace('#', '')) : '',
+          grid: +it.startOrder || 0,
         };
       }
     } catch {}
@@ -90,7 +91,24 @@ const F1Espn = (function () {
     return m;
   }
 
-  /* Live per-driver stats: laps completed, pit stops, place, gap to leader. */
+  /* Race-level meta: total laps + length (km×10). Cached per session. */
+  const _meta = new Map();
+  async function meta(eventId, compId) {
+    const key = eventId + '/' + compId;
+    if (_meta.has(key)) return _meta.get(key);
+    const m = { totalLaps: 0, length: 0 };
+    try {
+      const d = await _get(`${CORE}/events/${eventId}/competitions/${compId}/statistics?lang=en`, 600000);
+      for (const c of ((d.splits && d.splits.categories) || d.categories || [])) for (const s of (c.stats || [])) {
+        if (s.name === 'laps') m.totalLaps = +s.value || 0;
+        else if (s.name === 'length') m.length = +s.value || 0;
+      }
+    } catch {}
+    _meta.set(key, m);
+    return m;
+  }
+
+  /* Live per-driver stats: laps · pit stops · place · gap to leader · laps led · pen pts. */
   async function stats(eventId, compId, athleteId) {
     const d = await _get(`${CORE}/events/${eventId}/competitions/${compId}/competitors/${athleteId}/statistics?lang=en`, 6000);
     const cats = (d.splits && d.splits.categories) || d.categories || [];
@@ -100,31 +118,66 @@ const F1Espn = (function () {
       else if (s.name === 'pitsTaken') out.pits = +s.value || 0;
       else if (s.name === 'place') out.place = +s.value || 0;
       else if (s.name === 'lapsLead') out.lapsLead = +s.value || 0;
+      else if (s.name === 'penaltyPts') out.penPts = +s.value || 0;
       else if (s.name === 'gapToLeader') out.gap = s.displayValue || '';
     }
     return out;
   }
 
-  /* Full live board: order · driver · team/colour · lap · gap · pits.
-     One scoreboard call + one stats call per driver (≤8 in flight). */
+  /* Live per-driver status: their lap + state (on track / in pit / retired). */
+  async function status(eventId, compId, athleteId) {
+    const d = await _get(`${CORE}/events/${eventId}/competitions/${compId}/competitors/${athleteId}/status?lang=en`, 6000);
+    const t = d.type || {};
+    const name = t.name || '';
+    const state = /RETIRE|DNF|OUT|DNS/.test(name) ? 'out' : /PIT/.test(name) ? 'pit' : 'on';
+    return { lap: +d.period || 0, state, label: t.shortDetail || t.description || '' };
+  }
+
+  /* "+21.501" → 21.501 ; "+1 lap"/"1 LAP" → null (lapped, not a time). */
+  function gapSeconds(g) {
+    if (!g) return 0;
+    if (/lap/i.test(g)) return null;
+    const n = parseFloat(String(g).replace('+', ''));
+    return isFinite(n) ? n : null;
+  }
+
+  /* Full live board: order · grid · driver · team/colour · lap · gap · interval ·
+     status · pits · laps-led · pen. Scoreboard + (stats+status) per driver. */
   async function liveBoard() {
     const lr = await liveRace(); if (!lr) return null;
-    const ros = await roster(lr.eventId, lr.compId);
+    const [ros, mt] = await Promise.all([roster(lr.eventId, lr.compId), meta(lr.eventId, lr.compId)]);
     const rows = await _mapLimit(lr.drivers, 8, async d => {
-      let s = {}; try { s = await stats(lr.eventId, lr.compId, d.id); } catch {}
+      let s = {}, st = {};
+      try { [s, st] = await Promise.all([
+        stats(lr.eventId, lr.compId, d.id).catch(() => ({})),
+        status(lr.eventId, lr.compId, d.id).catch(() => ({})),
+      ]); } catch {}
       const r = ros[d.id] || {};
       // scoreboard `order` is the authoritative live position; the per-driver
       // `place` stat goes stale for retired/lapped cars (can duplicate P1).
       const pos = d.order || s.place || 99;
+      const grid = r.grid || 0;
       return {
-        id: d.id, pos, name: d.name, short: d.short, flag: d.flag,
+        id: d.id, pos, grid, move: (grid && st.state !== 'out') ? grid - pos : 0,
+        name: d.name, short: d.short, flag: d.flag,
         num: r.num, team: r.team, colour: r.colour,
-        laps: s.laps || 0, pits: s.pits || 0,
-        gap: pos === 1 ? '' : (s.gap || ''), leader: pos === 1, winner: d.winner,
+        laps: st.lap || s.laps || 0,
+        gap: pos === 1 ? '' : (s.gap || ''), gapSec: pos === 1 ? 0 : gapSeconds(s.gap),
+        pits: s.pits || 0, lapsLead: s.lapsLead || 0, penPts: s.penPts || 0,
+        state: st.state || 'on', stateLabel: st.label || '',
+        leader: pos === 1, winner: d.winner,
       };
     });
     rows.sort((a, b) => (a.pos || 99) - (b.pos || 99));
-    return { eventId: lr.eventId, compId: lr.compId, name: lr.name, full: lr.full, circuit: lr.circuit, lap: lr.lap, rows, source: 'ESPN' };
+    // interval to the car ahead = gap-to-leader difference (when both are times)
+    for (let i = 1; i < rows.length; i++) {
+      const a = rows[i], b = rows[i - 1];
+      a.interval = (a.gapSec != null && b.gapSec != null) ? +(a.gapSec - b.gapSec).toFixed(3) : null;
+    }
+    return {
+      eventId: lr.eventId, compId: lr.compId, name: lr.name, full: lr.full, circuit: lr.circuit,
+      lap: lr.lap, totalLaps: mt.totalLaps || 0, rows, source: 'ESPN',
+    };
   }
 
   return { liveRace, liveBoard };
