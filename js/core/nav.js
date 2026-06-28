@@ -195,7 +195,7 @@ const Nav = (function () {
       typeof NoticiasPage !== 'undefined' && NoticiasPage.show(sub || null);
     } else if (page === 'f1') {
       document.getElementById('view-f1')?.classList.add('active');
-      typeof F1Page !== 'undefined' && F1Page.show();
+      typeof F1Page !== 'undefined' && F1Page.show(sub || null);
     } else if (page === 'oss') {
       document.getElementById('view-oss')?.classList.add('active');
       const ossSub = path.startsWith('oss/') ? path.slice(4) : null;   // e.g. "search" or "owner/name"

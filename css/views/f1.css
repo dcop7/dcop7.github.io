@@ -4,8 +4,15 @@
 .f1-wrap { display: flex; flex-direction: column; height: 100%; overflow: hidden;
   background: radial-gradient(ellipse at 50% -10%, rgba(225,6,0,.10), transparent 55%); }
 
-.f1-head { flex-shrink: 0; padding: .7rem .9rem .4rem; border-bottom: 1px solid var(--border);
+.f1-head { position: relative; flex-shrink: 0; padding: .7rem .9rem .4rem; border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, var(--glass-strong), var(--glass-hover)); }
+.f1-refresh { position: absolute; top: .6rem; right: .8rem; width: 32px; height: 32px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; line-height: 1; font-size: 1.05rem;
+  background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text2);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all var(--ease); }
+.f1-refresh:hover { color: #ff2d24; border-color: rgba(225,6,0,.4); background: rgba(225,6,0,.1); }
+.f1-refresh.spin { animation: f1-refresh-spin .6s linear; }
+@keyframes f1-refresh-spin { to { transform: rotate(360deg); } }
 .f1-title { display: flex; align-items: center; gap: .5rem; font-family: var(--font-head);
   font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; color: var(--text); }
 .f1-logo { font-size: 1.3rem; }
@@ -589,8 +596,18 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-cs-card.next { border-color: #e10600; box-shadow: 0 0 0 1px rgba(225,6,0,.5), 0 6px 22px rgba(225,6,0,.22); opacity: 1; }
 .f1-cs-card.next .f1-cs-badge { color: #ff5d57; }
 .f1-cs-card.future .f1-cs-badge { color: var(--muted); }
+.f1-cs-card.live { border-color: #e10600; box-shadow: 0 0 0 1px rgba(225,6,0,.6), 0 6px 22px rgba(225,6,0,.32); opacity: 1; }
+.f1-cs-card.live .f1-cs-badge { color: #ff5d57; font-weight: 800; }
 
 @media (max-width: 760px) { .f1-hub-stand { grid-template-columns: 1fr; } }
+
+/* ESPN live fallback board (shown while OpenF1 pauses free live access) */
+.f1-espn-live { display: flex; flex-direction: column; gap: .2rem; }
+.f1-espn-head { margin-bottom: .1rem; }
+.f1-espn-note { font-size: .75rem; line-height: 1.45; color: var(--text2);
+  background: rgba(225,6,0,.08); border: 1px solid rgba(225,6,0,.25);
+  border-radius: 10px; padding: .55rem .75rem; margin: .35rem 0 .6rem; }
+.f1-hub-hero.live { box-shadow: 0 0 0 1px rgba(225,6,0,.45), 0 10px 34px rgba(225,6,0,.18); }
 
 /* incident legend on the Track replay */
 .f1-incid-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .7rem;

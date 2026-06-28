@@ -265,10 +265,19 @@ const F1Page = (function () {
   }
 
   /* ════════════════════════════ SHELL ════════════════════════════ */
-  function show() {
+  const _validTab = t => TABS.some(x => x.id === t);
+  function _savedTab() { try { return localStorage.getItem('f1:tab'); } catch { return null; } }
+  /* show(tab): tab comes from the URL (#f1/<tab>) on a browser refresh, so we
+     return to where the user was instead of always resetting to "Corrida". */
+  function show(tab) {
     const view = document.getElementById('view-f1');
     if (!view) return;
-    if (_inited) { if (_tab === 'track' && _track) _track.resize(); return; }
+    const want = _validTab(tab) ? tab : (_validTab(_savedTab()) ? _savedTab() : 'race');
+    if (_inited) {
+      if (tab && _validTab(tab) && tab !== _tab) _go(tab);
+      else if (_tab === 'track' && _track) _track.resize();
+      return;
+    }
     _inited = true;
     _root = view;
     view.innerHTML = `
@@ -276,9 +285,10 @@ const F1Page = (function () {
         <header class="f1-head">
           <div class="f1-title"><span class="f1-logo"><img class="f1-logo-img" src="data/f1/icons/logo.jpg" alt="" onerror="this.outerHTML='🏎️'"></span> <span>Fórmula 1</span></div>
           <nav class="f1-tabs" id="f1-tabs" role="tablist">
-            ${TABS.map(t => `<button class="f1-tab${t.id === 'race' ? ' on' : ''}" data-tab="${t.id}" role="tab">
+            ${TABS.map(t => `<button class="f1-tab${t.id === want ? ' on' : ''}" data-tab="${t.id}" role="tab">
               <span class="f1-tab-ic"><img class="f1-tab-img" src="data/f1/icons/${t.id}.jpg" alt="" loading="lazy" onerror="this.outerHTML='${t.ic}'"></span><span>${_t(t.en, t.pt)}</span></button>`).join('')}
           </nav>
+          <button class="f1-refresh" id="f1-refresh" title="${_t('Refresh this tab', 'Atualizar este separador')}" aria-label="${_t('Refresh', 'Atualizar')}">↻</button>
         </header>
         <div class="f1-body" id="f1-body"></div>
         <footer class="f1-disclaimer">${_t(
@@ -289,11 +299,18 @@ const F1Page = (function () {
       const b = e.target.closest('.f1-tab'); if (!b) return;
       _go(b.dataset.tab);
     });
-    _go('race');
+    // manual refresh: re-render the current tab (handy for live timing) without
+    // losing your place — a browser refresh now also restores the tab.
+    view.querySelector('#f1-refresh').addEventListener('click', () => { const r = view.querySelector('#f1-refresh'); r.classList.add('spin'); setTimeout(() => r.classList.remove('spin'), 600); _go(_tab); });
+    _go(want);
   }
 
   function _go(tab) {
     _tab = tab;
+    try { localStorage.setItem('f1:tab', tab); } catch {}
+    // keep the URL in sync so a browser refresh lands back on this tab (and the
+    // tab is shareable). replaceState doesn't fire hashchange → no re-render loop.
+    try { if ((location.hash.slice(1).split('/')[0]) === 'f1') history.replaceState(null, '', '#f1/' + tab); } catch {}
     _root.querySelectorAll('.f1-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
     clearInterval(_liveTimer); _liveTimer = null;
     if (_track) { _track.dispose(); _track = null; }
@@ -306,26 +323,94 @@ const F1Page = (function () {
     ({ race: renderRace, track: renderTrack, live: renderLive, driver: renderDriver, timing: renderTiming, circuit: renderCircuit, champ: renderChamp, cal: renderCal, stats: renderStats }[tab] || renderRace)(body);
   }
 
+  /* ══════════════════ LIVE FALLBACK (ESPN) ══════════════════
+     OpenF1 returns 401 during a live session (free access is paused until it
+     ends). ESPN's public racing API stays open, so while a race is running we
+     show a live timing board from it: order · driver · team · lap · gap · pits.
+     The animated telemetry map needs car X/Y that only OpenF1 has, so that
+     comes back once the session ends. Polls into _liveTimer (cleared by _go). */
+  function espnBoardRow(r) {
+    const col = r.colour || teamColour(r.team);
+    return `<tr>
+      <td class="f1-tm-pos">${r.pos || '–'}</td>
+      <td class="f1-tm-num" style="border-color:${col}">${esc(r.num || '')}</td>
+      <td class="f1-tm-drv"><b>${esc(r.short || r.name || '')}</b></td>
+      <td class="f1-tm-team"><span class="f1-team-dot" style="background:${col}"></span>${esc(r.team || '')}</td>
+      <td class="f1-tm-gap">${r.leader ? _t('LEADER', 'LÍDER') : esc(r.gap || '')}</td>
+      <td>${r.laps || ''}</td>
+      <td>${r.pits || 0}</td>
+    </tr>`;
+  }
+  async function mountEspnBoard(body, note) {
+    clearInterval(_liveTimer); _liveTimer = null;
+    body.innerHTML = loading(_t('Connecting live…', 'A ligar ao vivo…'));
+    const myTab = _tab;
+    async function run() {
+      if (_tab !== myTab) { clearInterval(_liveTimer); _liveTimer = null; return; }
+      let b; try { b = await F1Espn.liveBoard(); } catch { b = null; }
+      if (_tab !== myTab) return;
+      if (!b || !b.rows.length) {
+        clearInterval(_liveTimer); _liveTimer = null;
+        body.innerHTML = err(_t('The live session just ended — full timing & the map will be back shortly.', 'A sessão ao vivo terminou agora — os tempos completos e o mapa voltam em breve.'));
+        return;
+      }
+      body.innerHTML = `
+        <div class="f1-espn-live">
+          <div class="f1-track-head f1-espn-head">
+            <div class="f1-track-meta"><b>${esc(b.full || b.name)}</b> <span class="f1-replay-tag live">● ${_t('LIVE', 'AO VIVO')}</span>${b.lap ? ` · ${_t('lap', 'volta')} ${b.lap}` : ''}</div>
+          </div>
+          ${note ? `<div class="f1-espn-note">🛰️ ${note}</div>` : ''}
+          <div class="f1-tm-wrap"><table class="f1-tm-table f1-espn-table"><thead><tr>
+            <th>${_t('Pos', 'Pos')}</th><th>#</th><th>${_t('Drv', 'Pil')}</th><th>${_t('Team', 'Equipa')}</th>
+            <th>${_t('Gap', 'Dif')}</th><th>${_t('Lap', 'Volta')}</th><th>${_t('Stops', 'Par')}</th>
+          </tr></thead><tbody>${b.rows.map(espnBoardRow).join('')}</tbody></table></div>
+          <div class="f1-disclaimer">${_t(
+            'Live timing via ESPN. OpenF1 (the telemetry source) restricts free access during a live session, so the animated map returns once the session ends.',
+            'Tempos ao vivo via ESPN. A OpenF1 (fonte da telemetria) restringe o acesso gratuito durante a sessão ao vivo, por isso o mapa animado volta assim que a sessão terminar.')}</div>
+        </div>`;
+    }
+    await run();
+    if (_tab === myTab && !_liveTimer) _liveTimer = setInterval(run, 12000);
+  }
+
   /* ════════════════════════════ RACE ════════════════════════════ */
   async function renderRace(body) {
     body.innerHTML = loading(_t('Loading championship…', 'A carregar o campeonato…'));
     try {
-      const [races, last, session, ds, cs, winners] = await Promise.all([
+      const [races, last, session, ds, cs, winners, espn] = await Promise.all([
         F1Data.schedule().catch(() => []),
         F1Data.lastResults().catch(() => null),
         F1Data.latestSession().catch(() => null),
         F1Data.driverStandings().catch(() => []),
         F1Data.constructorStandings().catch(() => []),
         F1Data.seasonWinners().catch(() => []),
+        F1Espn.liveRace().catch(() => null),
       ]);
       const sp = F1Data.splitSchedule(races);
       const next = sp.next;
       const now = Date.now();
       const year = (races[0]?.season) || new Date().getFullYear();
 
-      // live? a session running within ±30min
+      // Keep the race of the DAY as the headline until the day ends, instead of
+      // jumping to the next GP the moment lights go out (the race is what matters
+      // today). "Today" = a scheduled round whose start falls in the local day.
+      const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(); endOfDay.setHours(23, 59, 59, 999);
+      const todayRace = sp.all.find(r => r._ts >= startOfDay.getTime() && r._ts <= endOfDay.getTime());
+      const hero = todayRace || next;
+      const isTodayHero = !!todayRace && hero === todayRace;
+      const heroLive = !!espn || (isTodayHero && now >= hero._ts);
+
+      // live? OpenF1 session within ±30min, OR (during the live block) ESPN.
       let liveHTML = '';
-      if (session) {
+      if (espn) {
+        liveHTML = `
+          <div class="f1-hub-live">
+            <div class="f1-live-badge">● ${_t('LIVE', 'AO VIVO')}</div>
+            <div class="f1-hub-live-gp">${esc(espn.full || espn.name)}${espn.lap ? ` · ${_t('lap', 'volta')} ${espn.lap}` : ''}</div>
+            <button class="f1-hub-live-cta" data-goto="track">${_t('Open live timing', 'Abrir tempos ao vivo')} →</button>
+          </div>`;
+      } else if (session) {
         const st = Date.parse(session.date_start), en = Date.parse(session.date_end);
         if (now >= st - 1800000 && now <= en + 1800000) {
           let w = null; try { const wr = await F1Data.weather(session.session_key); w = wr && wr[wr.length - 1]; } catch {}
@@ -339,16 +424,21 @@ const F1Page = (function () {
         }
       }
 
-      // ── HERO: next race ──
-      const heroHTML = next ? `
-        <div class="f1-hub-hero">
-          <div class="f1-hub-hero-tag">${_t('Next Grand Prix', 'Próximo Grande Prémio')} · ${_t('Round', 'Ronda')} ${next.round}/${races.length}</div>
-          <div class="f1-hub-hero-gp">${flag(next.Circuit?.Location?.country)}${esc(next.raceName)}</div>
-          <div class="f1-hub-hero-sub">${esc(next.Circuit?.circuitName)} · ${esc(next.Circuit?.Location?.locality)}, ${esc(next.Circuit?.Location?.country)}</div>
-          <div class="f1-hub-hero-cd">
-            <div class="f1-hub-cd-big">${countdown(next._ts)}</div>
-            <div class="f1-hub-cd-when">🕐 ${localTime(next._ts)} <span class="f1-tz">(${_t('your time', 'hora local')})</span></div>
-          </div>
+      // ── HERO: today's race (live/just-run) or the next one ──
+      const heroTag = isTodayHero
+        ? `${heroLive ? '🔴 ' + _t('Racing now', 'A decorrer') : '📍 ' + _t('Today', 'Hoje')} · ${_t('Round', 'Ronda')} ${hero.round}/${races.length}`
+        : `${_t('Next Grand Prix', 'Próximo Grande Prémio')} · ${_t('Round', 'Ronda')} ${hero.round}/${races.length}`;
+      const heroCd = isTodayHero
+        ? (heroLive
+            ? `<div class="f1-hub-cd-big">${espn && espn.lap ? _t('Lap', 'Volta') + ' ' + espn.lap : _t('LIVE', 'AO VIVO')}</div><div class="f1-hub-cd-when">${_t('results after the race', 'resultados após a corrida')}</div>`
+            : `<div class="f1-hub-cd-big">${_t('Today', 'Hoje')}</div><div class="f1-hub-cd-when">🕐 ${localTime(hero._ts)} <span class="f1-tz">(${_t('your time', 'hora local')})</span></div>`)
+        : `<div class="f1-hub-cd-big">${countdown(hero._ts)}</div><div class="f1-hub-cd-when">🕐 ${localTime(hero._ts)} <span class="f1-tz">(${_t('your time', 'hora local')})</span></div>`;
+      const heroHTML = hero ? `
+        <div class="f1-hub-hero${heroLive ? ' live' : ''}">
+          <div class="f1-hub-hero-tag">${heroTag}</div>
+          <div class="f1-hub-hero-gp">${flag(hero.Circuit?.Location?.country)}${esc(hero.raceName)}</div>
+          <div class="f1-hub-hero-sub">${esc(hero.Circuit?.circuitName)} · ${esc(hero.Circuit?.Location?.locality)}, ${esc(hero.Circuit?.Location?.country)}</div>
+          <div class="f1-hub-hero-cd">${heroCd}</div>
         </div>` : `<div class="f1-hub-hero"><div class="f1-hub-hero-tag">${_t('Season complete', 'Época terminada')}</div><div class="f1-hub-hero-gp">${year}</div></div>`;
 
       // ── STANDINGS (drivers + constructors) with bars ──
@@ -388,13 +478,15 @@ const F1Page = (function () {
       const winBy = {};
       for (const r of (winners || [])) { const w = r.Results?.[0]?.Driver; if (w) winBy[+r.round] = w.code || w.familyName.slice(0, 3).toUpperCase(); }
       const calCards = sp.all.map(r => {
-        const done = r._ts < now, isNext = next && r.round === next.round;
-        const state = done ? 'done' : isNext ? 'next' : 'future';
+        const liveNow = isTodayHero && heroLive && r.round === hero.round;
+        const done = r._ts < now && !liveNow, isNext = !liveNow && next && r.round === next.round;
+        const state = liveNow ? 'live' : done ? 'done' : isNext ? 'next' : 'future';
         const days = Math.ceil((r._ts - now) / 86400000);
-        const badge = done ? (winBy[+r.round] ? `🏆 ${winBy[+r.round]}` : '✓')
+        const badge = liveNow ? `🔴 ${_t('LIVE', 'AO VIVO')}`
+          : done ? (winBy[+r.round] ? `🏆 ${winBy[+r.round]}` : '✓')
           : isNext ? `⏱ ${countdown(r._ts)}`
           : `${_t('in', 'em')} ${days}d`;
-        return `<div class="f1-cs-card ${state}"${isNext ? ' data-next="1"' : ''}>
+        return `<div class="f1-cs-card ${state}"${(isNext || liveNow) ? ' data-next="1"' : ''}>
           <span class="f1-cs-rd">R${r.round}</span>
           ${flag(r.Circuit?.Location?.country, 'f1-cs-flag')}
           <span class="f1-cs-gp">${esc(r.Circuit?.Location?.country || r.raceName)}</span>
@@ -735,6 +827,15 @@ const F1Page = (function () {
     } catch { body.innerHTML = err(); return; }
     if (!races.length && !liveSession) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
 
+    // A race is running but OpenF1 paused free live access → show the live order
+    // (ESPN). The animated telemetry map returns once the session ends.
+    if (!liveSession && year === curYear) {
+      const espn = await F1Espn.liveRace().catch(() => null);
+      if (espn) return mountEspnBoard(body, _t(
+        'A race is running now. The live map needs car telemetry that OpenF1 restricts to paid users during the session — here is the live order. The animated map comes back when the session ends.',
+        'Está uma corrida a decorrer. O mapa ao vivo precisa de telemetria que a OpenF1 restringe a utilizadores pagos durante a sessão — aqui ficam os tempos ao vivo. O mapa animado volta quando a sessão terminar.'));
+    }
+
     // OpenF1 telemetry only exists from 2023 → that's the range for the replay
     const years = []; for (let y = curYear; y >= 2023; y--) years.push(y);
     const yrOpts = years.map(y => `<option value="${y}"${y === year ? ' selected' : ''}>${y}</option>`).join('');
@@ -851,7 +952,8 @@ const F1Page = (function () {
     const goLive = body.querySelector('#f1-go-live');
     if (goLive) goLive.addEventListener('click', () => loadLive(liveSession));
 
-    if (liveSession && !def) loadLive(liveSession);
+    // a real OpenF1 live session wins over a finished race — open it straight away
+    if (liveSession) loadLive(liveSession);
     else if (def) loadRound(def.round);
 
     function loadRound(round) {
@@ -1246,7 +1348,10 @@ const F1Page = (function () {
     let live = null;
     if (year === cur) try { const s = await F1Data.latestSession(); if (s) { const st = Date.parse(s.date_start), en = Date.parse(s.date_end); if (Date.now() >= st - 300000 && Date.now() <= en + 600000) live = s; } } catch {}
     const past = (races || []).filter(r => r.status === 'past' && r.session_key);   // these tabs need telemetry (2023→)
-    return { races, past, live, year };
+    // ESPN live board when OpenF1 is paused mid-session (only checked if OpenF1 has no live)
+    let espn = null;
+    if (year === cur && !live) espn = await F1Espn.liveRace().catch(() => null);
+    return { races, past, live, year, espn };
   }
   function raceSelect(past, live, id, year) {
     const cur = new Date().getFullYear(); year = +year || cur;
@@ -1280,8 +1385,13 @@ const F1Page = (function () {
   async function renderLive(body, year) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
     let info; try { info = await pastRacesAndLive(year); } catch { body.innerHTML = err(); return; }
-    const { past, live } = info;
-    if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
+    const { past, live, espn } = info;
+    if (!past.length && !live) {
+      if (espn) return mountEspnBoard(body, _t(
+        'A race is running now. Full timing & per-driver telemetry return once the session ends (OpenF1 restricts free live access).',
+        'Está uma corrida a decorrer. Os tempos completos e a telemetria por piloto voltam quando a sessão terminar (a OpenF1 restringe o acesso gratuito ao vivo).'));
+      body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return;
+    }
 
     /* ── column registry (id-only ones are pinned identity; rest toggle) ── */
     const GRP = { tempos: ['Times', 'Tempos'], pneus: ['Tyres & strategy', 'Pneus & estratégia'], perf: ['Performance', 'Performance'], estado: ['Status', 'Estado'], id: ['Identity', 'Identidade'] };
@@ -1566,8 +1676,13 @@ const F1Page = (function () {
   async function renderTiming(body, year) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
     let info; try { info = await pastRacesAndLive(year); } catch { body.innerHTML = err(); return; }
-    const { past, live } = info;
-    if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
+    const { past, live, espn } = info;
+    if (!past.length && !live) {
+      if (espn) return mountEspnBoard(body, _t(
+        'A race is running now. Full timing & per-driver telemetry return once the session ends (OpenF1 restricts free live access).',
+        'Está uma corrida a decorrer. Os tempos completos e a telemetria por piloto voltam quando a sessão terminar (a OpenF1 restringe o acesso gratuito ao vivo).'));
+      body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return;
+    }
     body.innerHTML = `
       <div class="f1-timing">
         <div class="f1-track-head">${raceSelect(past, live, 'f1-tm-sel', info.year)}<div class="f1-track-meta" id="f1-tm-meta"></div><div class="f1-weather" id="f1-tm-wx"></div></div>
@@ -1660,8 +1775,13 @@ const F1Page = (function () {
   async function renderDriver(body, year) {
     body.innerHTML = loading(_t('Loading races…', 'A carregar corridas…'));
     let info; try { info = await pastRacesAndLive(year); } catch { body.innerHTML = err(); return; }
-    const { past, live } = info;
-    if (!past.length && !live) { body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return; }
+    const { past, live, espn } = info;
+    if (!past.length && !live) {
+      if (espn) return mountEspnBoard(body, _t(
+        'A race is running now. Full timing & per-driver telemetry return once the session ends (OpenF1 restricts free live access).',
+        'Está uma corrida a decorrer. Os tempos completos e a telemetria por piloto voltam quando a sessão terminar (a OpenF1 restringe o acesso gratuito ao vivo).'));
+      body.innerHTML = err(_t('No race data yet.', 'Ainda sem dados de corrida.')); return;
+    }
     body.innerHTML = `
       <div class="f1-driverpg">
         <div class="f1-track-head">
