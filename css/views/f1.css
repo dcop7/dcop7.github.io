@@ -630,6 +630,15 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-st-pit { color: #ffd166; background: rgba(255,209,102,.14); }
 .f1-st-out { color: #ff6b6b; background: rgba(255,107,107,.14); }
 .f1-drs { color: #7fd3ff; margin-right: .2rem; font-size: .85em; }
+.f1-live2-wx { font-size: .8rem; color: var(--text2); white-space: nowrap; }
+/* race-spread strip — every car placed by its time-gap to the leader */
+.f1-spread { margin: .1rem 0 .6rem; }
+.f1-spread-lbl { font-size: .64rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: .3rem; }
+.f1-spread-track { position: relative; height: 14px; border-radius: 7px;
+  background: linear-gradient(90deg, rgba(225,6,0,.18), rgba(255,255,255,.05)); border: 1px solid var(--border); }
+.f1-spread-tick { position: absolute; top: 50%; width: 7px; height: 14px; margin-left: -3.5px; border-radius: 2px;
+  transform: translateY(-50%); box-shadow: 0 0 0 1px rgba(0,0,0,.35); transition: left .6s var(--ease); }
+.f1-spread-ax { display: flex; justify-content: space-between; font-size: .6rem; color: var(--muted); margin-top: .2rem; }
 @media (max-width: 860px) { .f1-live2-grid { grid-template-columns: 1fr; } .f1-live2-side { order: -1; } .f1-live2-events { max-height: 200px; } }
 
 /* incident legend on the Track replay */

@@ -59,14 +59,27 @@ const F1Espn = (function () {
         flag: (cm.athlete && cm.athlete.flag && cm.athlete.flag.href) || '',
       })).sort((a, b) => a.order - b.order);
       if (!drivers.length) continue;
+      const addr = (e.circuit && e.circuit.address) || {};
       return {
         eventId: String(e.id), compId: String(c.id),
         name: e.shortName || e.name || '', full: e.name || '',
         circuit: (e.circuit && e.circuit.fullName) || '',
+        country: addr.country || '', city: addr.city || '',
         lap: +c.status.period || 0, drivers, source: 'ESPN',
       };
     }
     return null;
+  }
+
+  /* Live weather at the circuit via Open-Meteo (free, CORS, no key). ESPN gives
+     only city/country, so the caller resolves lat/lon (from the schedule). */
+  async function weather(lat, lon) {
+    if (!isFinite(lat) || !isFinite(lon)) return null;
+    try {
+      const d = await _get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m`, 120000);
+      const c = d.current || {};
+      return { temp: c.temperature_2m, rain: c.precipitation, wind: c.wind_speed_10m, hum: c.relative_humidity_2m, code: c.weather_code };
+    } catch { return null; }
   }
 
   /* Per-athlete team · colour · number · grid (start order). Cached per session. */
@@ -176,9 +189,10 @@ const F1Espn = (function () {
     }
     return {
       eventId: lr.eventId, compId: lr.compId, name: lr.name, full: lr.full, circuit: lr.circuit,
+      country: lr.country, city: lr.city,
       lap: lr.lap, totalLaps: mt.totalLaps || 0, rows, source: 'ESPN',
     };
   }
 
-  return { liveRace, liveBoard };
+  return { liveRace, liveBoard, weather };
 })();

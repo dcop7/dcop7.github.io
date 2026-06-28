@@ -386,11 +386,47 @@ const F1Page = (function () {
     for (const r of rows.filter(r => r.state === 'out').sort((a, b) => (a.laps || 0) - (b.laps || 0))) out.push({ k: 'red', icon: '🏳️', t: `${r.short || r.name} ${_t('retired', 'abandonou')}${r.laps ? ` (${_lang() === 'en' ? 'L' : 'V'}${r.laps})` : ''}`, when });
     return out;
   }
+  // WMO weather code → icon + short label (Open-Meteo).
+  function wmo(code, rain) {
+    const c = +code;
+    if (rain > 0 || (c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return { ic: '🌧️', l: _t('Rain', 'Chuva') };
+    if (c >= 95) return { ic: '⛈️', l: _t('Storm', 'Trovoada') };
+    if (c >= 71 && c <= 77) return { ic: '❄️', l: _t('Snow', 'Neve') };
+    if (c === 45 || c === 48) return { ic: '🌫️', l: _t('Fog', 'Nevoeiro') };
+    if (c === 0) return { ic: '☀️', l: _t('Clear', 'Céu limpo') };
+    if (c <= 2) return { ic: '🌤️', l: _t('Mostly clear', 'Pouco nublado') };
+    return { ic: '☁️', l: _t('Cloudy', 'Nublado') };
+  }
+  // "race spread": every car placed by its time-gap to the leader (DRS trains
+  // & battles become visible). Built from the gaps we already fetch.
+  function espnSpread(rows) {
+    const timed = rows.filter(r => r.gapSec != null && r.state !== 'out');
+    if (timed.length < 3) return '';
+    const maxG = Math.max(1, ...timed.map(r => r.gapSec));
+    const ticks = timed.map(r => `<span class="f1-spread-tick" style="left:${(r.gapSec / maxG * 100).toFixed(1)}%;background:${r.colour || teamColour(r.team)}" title="${esc(r.short || r.name)} +${r.gapSec.toFixed(1)}s"></span>`).join('');
+    return `<div class="f1-spread"><div class="f1-spread-lbl">${_t('Field spread (gap to leader)', 'Dispersão do pelotão (dif. ao líder)')}</div>
+      <div class="f1-spread-track">${ticks}</div>
+      <div class="f1-spread-ax"><span>${_t('Leader', 'Líder')}</span><span>+${maxG.toFixed(0)}s</span></div></div>`;
+  }
   async function mountEspnBoard(body, note) {
     clearInterval(_liveTimer); _liveTimer = null;
     body.innerHTML = loading(_t('Connecting live…', 'A ligar ao vivo…'));
     const myTab = _tab;
     let prev = {}, log = [];
+    // live circuit weather (Open-Meteo): resolve lat/lon once from the schedule
+    let wx = null, wxAt = 0, wxLL = null, wxTried = false;
+    async function resolveLL(b) {
+      if (wxTried) return wxLL; wxTried = true;
+      try {
+        const races = await F1Data.schedule().catch(() => []);
+        const ymd = new Date().toISOString().slice(0, 10);
+        const r = (races || []).find(x => x.date === ymd)
+          || (b.country && (races || []).find(x => (x.Circuit?.Location?.country || '').toLowerCase() === String(b.country).toLowerCase()));
+        const la = +r?.Circuit?.Location?.lat, lo = +r?.Circuit?.Location?.long;
+        if (isFinite(la) && isFinite(lo)) wxLL = { lat: la, lon: lo };
+      } catch {}
+      return wxLL;
+    }
     async function run() {
       if (_tab !== myTab) { clearInterval(_liveTimer); _liveTimer = null; return; }
       let b; try { b = await F1Espn.liveBoard(); } catch { b = null; }
@@ -407,16 +443,23 @@ const F1Page = (function () {
         if (ev.length) { const when = `${_t('lap', 'volta')} ${b.lap}`; log = ev.map(e => ({ ...e, when })).concat(log).slice(0, 50); }
       }
       prev = Object.fromEntries(b.rows.map(r => [r.id, r]));
+      // live circuit weather (refreshed ~every 2 min; coords from the schedule)
+      const ll = await resolveLL(b);
+      if (ll && Date.now() - wxAt > 120000) { const w = await F1Espn.weather(ll.lat, ll.lon); if (w) { wx = w; wxAt = Date.now(); } }
+      if (_tab !== myTab) return;
       const leader = b.rows[0];
       const prog = b.totalLaps ? Math.min(100, Math.round(b.lap / b.totalLaps * 100)) : 0;
+      const wmoI = wx ? wmo(wx.code, wx.rain) : null;
       body.innerHTML = `
         <div class="f1-live2">
           <div class="f1-live2-head">
             <div class="f1-track-meta"><b>${esc(b.full || b.name)}</b> <span class="f1-replay-tag live">● ${_t('LIVE', 'AO VIVO')}</span></div>
             <div class="f1-live2-lap">${_t('Lap', 'Volta')} <b>${b.lap || '?'}</b>${b.totalLaps ? ` / ${b.totalLaps}` : ''}${leader ? ` · ${_t('Leader', 'Líder')} ${esc(leader.short || leader.name)}` : ''}</div>
+            ${wx ? `<div class="f1-live2-wx" title="${esc(wmoI.l)}">${wmoI.ic} ${Math.round(wx.temp)}°C · 💨 ${Math.round(wx.wind)} km/h · 💧 ${Math.round(wx.hum)}%${wx.rain > 0 ? ` · 🌧️ ${wx.rain}mm` : ''}</div>` : ''}
             ${b.totalLaps ? `<div class="f1-live2-prog"><i style="width:${prog}%"></i></div>` : ''}
           </div>
           ${note ? `<div class="f1-espn-note">🛰️ ${note}</div>` : ''}
+          ${espnSpread(b.rows)}
           <div class="f1-live2-grid">
             <div class="f1-live2-main"><div class="f1-tm-wrap"><table class="f1-tm-table f1-espn-table"><thead><tr>
               <th>${_t('Pos', 'Pos')}</th><th></th><th>#</th><th>${_t('Driver', 'Piloto')}</th><th>${_t('Team', 'Equipa')}</th>
