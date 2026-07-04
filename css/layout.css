@@ -40,67 +40,134 @@ body.light #site-header::after { opacity: .5; }
 }
 .sb-toggle:hover { border-color: var(--border2); color: var(--text); background: rgba(var(--accent-rgb),.08); }
 
-/* ── Brand: "Diogo Universe" — animated space identity (orbit + cosmic shimmer) ── */
+/* ══ BRAND: "Diogo Universe" — a small living universe ═══════════════
+   Symbol: lit planet + conic ring + moon on a tilted 3D orbit with
+   natural speed/depth/brightness variation + twinkling micro-stars +
+   breathing ambient halo. Text: one continuous cosmic shimmer (blue →
+   cyan → gold → red) sweeping across BOTH words. Pure CSS, GPU-cheap. */
 .brand {
   font-family: var(--font-head); font-size: 1.15rem; font-weight: 700;
-  letter-spacing: -.02em; display: flex; align-items: center; gap: .5em; white-space: nowrap;
+  letter-spacing: -.02em; display: flex; align-items: center; gap: .55em; white-space: nowrap;
   text-decoration: none; color: inherit;
 }
-.brand-text { display: flex; align-items: baseline; gap: .32em; }
-.brand-name {
-  font-weight: 800; letter-spacing: -.01em;
-  background: linear-gradient(180deg, #fff, #b9c2da);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-body.light .brand-name { background: linear-gradient(180deg, #2a2f45, #555d78); -webkit-background-clip: text; background-clip: text; }
-.brand-site {
-  font-weight: 700;
-  background: linear-gradient(90deg, #7c5cff, #22d3ee, #c084fc, #7c5cff);
-  background-size: 250% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  animation: brand-flow 6s linear infinite;
-  filter: drop-shadow(0 0 7px rgba(124,92,255,.45));
-}
-@keyframes brand-flow { 0% { background-position: 0% center; } 100% { background-position: 250% center; } }
 
-/* tiny planet with a satellite on a tilted (diagonal) 3D orbit */
-.brand-orbit { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+/* ── text: continuous premium shimmer over the whole name ──
+   A light readable base with a narrow tech-toned highlight band drifting
+   through it. The gradient lives on the parent so the sweep crosses the
+   word gap seamlessly. */
+.brand-text {
+  display: flex; align-items: baseline; gap: .32em;
+  background: linear-gradient(100deg,
+    #ccd6ec 0%, #ccd6ec 30%,
+    #6fb6ff 38%, #4ed6f2 43%,
+    #ffd27d 49%, #ff9a5c 53%, #ef6a6a 57%,
+    #e8c987 63%, #ccd6ec 71%, #ccd6ec 100%);
+  background-size: 320% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: brand-shimmer 11s linear infinite;
+  filter: drop-shadow(0 1px 6px rgba(99,102,241,.22));
+}
+.brand-name { font-weight: 800; letter-spacing: -.01em; }
+/* NOTE: children of a background-clip:text parent must NOT set opacity/filter
+   — it isolates them into their own compositing group and the clipped
+   gradient stops painting their glyphs (text turns invisible). */
+.brand-site { font-weight: 700; }
+@keyframes brand-shimmer { 0% { background-position: 115% 0; } 100% { background-position: -205% 0; } }
+.brand:hover .brand-text { animation-duration: 4.5s; }
+body.light .brand-text {
+  background-image: linear-gradient(100deg,
+    #2c3552 0%, #2c3552 30%,
+    #1d6fd6 38%, #0e9cbe 43%,
+    #c98a1b 49%, #e06a2c 53%, #cf4444 57%,
+    #a8842e 63%, #2c3552 71%, #2c3552 100%);
+  background-size: 320% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  filter: none;
+}
+
+/* ── symbol: planet + ring + moon + stars + halo ── */
+.brand-orbit { position: relative; width: 27px; height: 27px; flex-shrink: 0; }
+
+/* ambient glow, breathing very slowly */
+.brand-halo {
+  position: absolute; inset: -7px; border-radius: 50%; z-index: 0;
+  background: radial-gradient(circle at 50% 55%, rgba(109,93,252,.30), rgba(34,211,238,.10) 55%, transparent 72%);
+  filter: blur(3px);
+  animation: brand-breathe 7s ease-in-out infinite;
+}
+@keyframes brand-breathe { 0%, 100% { opacity: .7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.12); } }
+
+/* planet: lit from the upper left, atmosphere rim on the dark side */
 .brand-core {
   position: absolute; inset: 7.5px; border-radius: 50%; z-index: 2;
-  background: radial-gradient(circle at 34% 30%, #bcd2ff, #6d5dfc 52%, #3a2fb0);
-  box-shadow: 0 0 9px rgba(109,93,252,.75), inset -1px -1px 2px rgba(0,0,0,.4);
-  animation: brand-pulse 3.2s ease-in-out infinite;
+  background: radial-gradient(circle at 30% 26%, #e4ecff 0%, #9db4ff 22%, #6d5dfc 52%, #33288f 80%, #191349 100%);
+  box-shadow:
+    inset -2px -2.5px 4px rgba(5,3,26,.65),
+    inset 1px 1.5px 2px rgba(255,255,255,.35),
+    0 0 10px rgba(109,93,252,.55);
 }
-/* diagonal orbit ring: flattened ellipse rotated to a tilted plane */
+/* thin atmosphere catching light on the terminator */
+.brand-core::after {
+  content: ''; position: absolute; inset: -1.5px; border-radius: 50%;
+  background: radial-gradient(circle at 68% 74%, rgba(127,231,255,.4), transparent 46%);
+  mix-blend-mode: screen;
+}
+
+/* ring: conic gradient masked to a thin band — bright where it passes in
+   front of the planet, fading away behind it */
 .brand-ring {
-  position: absolute; inset: -1px; border-radius: 50%; z-index: 1;
-  border: 1px solid rgba(124,92,255,.28);
-  transform: rotate(32deg) scaleY(.4);
+  position: absolute; inset: -1.5px; border-radius: 50%; z-index: 1;
+  transform: rotate(-28deg) scaleY(.38);
+  background: conic-gradient(from 210deg,
+    transparent 0deg, rgba(124,92,255,.15) 40deg, rgba(124,92,255,.65) 130deg,
+    rgba(127,231,255,.85) 185deg, rgba(255,193,120,.5) 240deg, transparent 330deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.6px));
+          mask: radial-gradient(closest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.6px));
 }
+
+/* moon: tilted 3D orbit — faster + brighter in front (perigee), slower,
+   smaller and dimmer behind (apogee); warm sunlit tint at the closest pass */
 .brand-sat {
   position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px;
-  border-radius: 50%; background: #7fe7ff; box-shadow: 0 0 7px #7fe7ff, 0 0 2px #fff;
-  animation: brand-orbit-3d 5.5s linear infinite;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #9beaff 60%, #4dd0e8);
+  box-shadow: 0 0 6px rgba(127,231,255,.9), 0 0 2px #fff;
+  animation: brand-orbit-3d 6.5s cubic-bezier(.45,.05,.55,.95) infinite;
 }
-/* traces a tilted ellipse; scale/opacity/z give depth so it passes in front of
-   and behind the planet — reads as a 3D diagonal orbit, not a flat 2D ring */
 @keyframes brand-orbit-3d {
-  0%    { transform: translate(8.1px, 5px) scale(1);     opacity: .9;  z-index: 2; }
-  12.5% { transform: translate(4.4px, 5.6px) scale(1.15);opacity: 1;   z-index: 3; }
-  25%   { transform: translate(-1.8px, 2.9px) scale(1.2);opacity: 1;   z-index: 3; }
-  37.5% { transform: translate(-7px, -1.5px) scale(1.1); opacity: .95; z-index: 3; }
-  50%   { transform: translate(-8.1px, -5px) scale(1);   opacity: .85; z-index: 2; }
-  62.5% { transform: translate(-4.4px, -5.6px) scale(.72);opacity: .5; z-index: 1; }
-  75%   { transform: translate(1.8px, -2.9px) scale(.7); opacity: .45; z-index: 1; }
-  87.5% { transform: translate(7px, 1.5px) scale(.82);   opacity: .6;  z-index: 1; }
-  100%  { transform: translate(8.1px, 5px) scale(1);     opacity: .9;  z-index: 2; }
+  0%    { transform: translate(9.2px, 5.6px) scale(1);     opacity: .92; z-index: 3; }
+  10%   { transform: translate(5px, 6.3px) scale(1.22);    opacity: 1;   z-index: 3; filter: brightness(1.25); }
+  22%   { transform: translate(-2px, 3.3px) scale(1.28);   opacity: 1;   z-index: 3; filter: brightness(1.15); }
+  36%   { transform: translate(-7.9px, -1.7px) scale(1.08);opacity: .95; z-index: 3; }
+  50%   { transform: translate(-9.2px, -5.6px) scale(.9);  opacity: .8;  z-index: 1; }
+  64%   { transform: translate(-5px, -6.3px) scale(.62);   opacity: .42; z-index: 1; }
+  78%   { transform: translate(2px, -3.3px) scale(.58);    opacity: .38; z-index: 1; }
+  90%   { transform: translate(7.9px, 1.7px) scale(.8);    opacity: .62; z-index: 1; }
+  100%  { transform: translate(9.2px, 5.6px) scale(1);     opacity: .92; z-index: 3; }
 }
-@keyframes brand-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); filter: brightness(1.12); } }
-.brand:hover .brand-site { animation-duration: 2.5s; }
-.brand:hover .brand-sat { animation-duration: 2.4s; }
+
+/* micro-stars: three specks twinkling out of phase */
+.brand-star {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%; z-index: 0;
+  background: #cfe9ff; opacity: .2;
+  animation: brand-twinkle 4.2s ease-in-out infinite;
+}
+.brand-star.bs1 { top: 1px; right: 2px; }
+.brand-star.bs2 { bottom: 2px; left: 0; width: 1.5px; height: 1.5px; animation-delay: 1.4s; animation-duration: 5.1s; }
+.brand-star.bs3 { top: 6px; left: -3px; width: 1.5px; height: 1.5px; background: #ffe3b3; animation-delay: 2.6s; animation-duration: 6s; }
+@keyframes brand-twinkle {
+  0%, 100% { opacity: .15; transform: scale(1); }
+  50% { opacity: .85; transform: scale(1.35); box-shadow: 0 0 4px currentColor; }
+}
+
+.brand:hover .brand-sat { animation-duration: 2.8s; }
+.brand:hover .brand-halo { animation-duration: 3s; }
+
 @media (prefers-reduced-motion: reduce) {
-  .brand-site, .brand-core, .brand-sat { animation: none !important; }
-  .brand-sat { transform: translate(-1.8px, 2.9px); }
+  .brand-text, .brand-core, .brand-sat, .brand-halo, .brand-star { animation: none !important; }
+  .brand-sat { transform: translate(-2px, 3.3px); }
+  .brand-text { background-position: 40% 0; }
 }
 
 /* Header search */
@@ -231,14 +298,6 @@ body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--r
 .sb-nav-item:hover .sb-nav-ic { border-color: rgba(var(--rt), .5); filter: saturate(1.15) brightness(1.06); }
 .sb-nav-item:hover svg { transform: scale(1.09); }
 
-/* the brand spark ignites once on hover / stays lit on the active item */
-.sb-nav-item:hover .ic-spark { animation: spark-pop .5s ease .12s both; }
-.sb-nav-item.active .ic-spark { opacity: .95; }
-@keyframes spark-pop {
-  0% { opacity: 0; transform: scale(.3); transform-origin: center; transform-box: fill-box; }
-  55% { opacity: 1; transform: scale(1.35); }
-  100% { opacity: .95; transform: scale(1); }
-}
 /* active tile: lit from within + a soft colour-matched halo */
 .sb-nav-item.active .sb-nav-ic {
   border-color: rgba(var(--rt), .55);

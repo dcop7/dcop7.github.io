@@ -6,22 +6,14 @@
 // AppIcons.icon() regardless of deferred-script order.
 const AppIcons = (function () {
 
-  /* the same cyan as .brand-sat — this is what ties the set to the brand */
-  const SPARK = '#7fe7ff';
-  /* Hidden at rest (at 17px it read as a stray dot); CSS pops it in on
-     hover/active as the icon's "energy" micro-interaction. */
-  const spark = (x, y, s) => {
-    s = s || 1;
-    return `<path class="ic-spark" d="M${x} ${y - 2.1 * s}l${0.55 * s} ${1.55 * s} ${1.55 * s} ${0.55 * s} -${1.55 * s} ${0.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s} -${1.55 * s} -${1.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s}z" fill="${SPARK}" stroke="none" opacity="0"/>`;
-  };
-
-  /* duotone wrapper: gradient stroke + soft gradient fill on the silhouette */
-  function duo(id, c1, c2, body, opts) {
-    const o = opts || {};
+  /* duotone wrapper: gradient stroke + soft gradient fill on the silhouette.
+     (The old "spark" brand dot was removed — even animated it read as a
+     stray green pixel at sidebar sizes.) */
+  function duo(id, c1, c2, body) {
     return `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <defs><linearGradient id="ig-${id}" x1="4" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
 <stop stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
-${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c1)}${o.noSpark ? '' : spark(o.sx != null ? o.sx : 19.6, o.sy != null ? o.sy : 4.6, o.ss)}
+${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c1)}
 </svg>`;
   }
 
