@@ -505,7 +505,7 @@ function getWeatherLoc() {
 }
 
 async function fetchWeatherForLoc(loc) {
-  const key = 'weather-cache2-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
+  const key = 'weather-cache3-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
   try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000 && c.w && c.w.feels != null) return c.w; } catch (e) {}
   try {
     let { lat, lon, name } = loc;
@@ -520,8 +520,9 @@ async function fetchWeatherForLoc(loc) {
         localStorage.setItem('weather-loc', JSON.stringify({ id: c.id, name: c.name, admin1: c.admin1 || '', country: c.country_code || '', lat, lon }));
       } catch (e) {}
     }
-    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
+    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
     if (!w || !w.current) return null;
+    const hT = (w.hourly && w.hourly.temperature_2m) || [];
     const out = {
       city: name, lat, lon,
       temp: Math.round(w.current.temperature_2m), feels: Math.round(w.current.apparent_temperature),
@@ -535,6 +536,7 @@ async function fetchWeatherForLoc(loc) {
         rain: w.daily.precipitation_sum[i], windMax: w.daily.wind_speed_10m_max[i] != null ? Math.round(w.daily.wind_speed_10m_max[i]) : null,
         uv: w.daily.uv_index_max[i] != null ? Math.round(w.daily.uv_index_max[i]) : null,
         sunrise: w.daily.sunrise[i], sunset: w.daily.sunset[i],
+        hT: hT.slice(i * 24, i * 24 + 24).map(v => (v == null ? null : Math.round(v * 10) / 10)),
       })),
     };
     localStorage.setItem(key, JSON.stringify({ t: Date.now(), w: out }));
@@ -624,21 +626,68 @@ function openHolidayModal() {
    listeners. _uwData holds the last rendered forecast + warnings. */
 let _uwData = null;
 
+/* worst active IPMA warning level overlapping a given local day */
+function _dayWarnLvl(dateStr, warns) {
+  const sev = { red: 3, orange: 2, yellow: 1 };
+  const d0 = new Date(dateStr + 'T00:00').getTime(), d1 = d0 + 86400000;
+  let best = 0, lvl = null;
+  for (const wn of warns || []) {
+    const s = wn.start ? Date.parse(wn.start) : 0, e = wn.end ? Date.parse(wn.end) : s + 1;
+    if (s < d1 && e > d0 && (sev[wn.level] || 0) > best) { best = sev[wn.level]; lvl = wn.level; }
+  }
+  return lvl;
+}
+
+/* 24h temperature sparkline (procedural SVG, no libs) */
+function _uwSpark(hT) {
+  const pts = (hT || []).filter(v => v != null);
+  if (pts.length < 6) return '';
+  const W = 240, H = 46, lo = Math.min(...pts), hi = Math.max(...pts), rng = (hi - lo) || 1;
+  const step = W / (pts.length - 1);
+  const xy = pts.map((v, i) => [i * step, H - 8 - ((v - lo) / rng) * (H - 16)]);
+  const line = xy.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const area = `0,${H} ` + line + ` ${W},${H}`;
+  const hiIx = pts.indexOf(hi), loIx = pts.indexOf(lo);
+  return `<div class="uw-spark-wrap">
+    <svg class="uw-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="uwsa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgba(99,102,241,.35)"/><stop offset="1" stop-color="rgba(99,102,241,0)"/></linearGradient></defs>
+      <polygon points="${area}" fill="url(#uwsa)"/>
+      <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${xy[hiIx][0].toFixed(1)}" cy="${xy[hiIx][1].toFixed(1)}" r="2.6" fill="#ef4444"/>
+      <circle cx="${xy[loIx][0].toFixed(1)}" cy="${xy[loIx][1].toFixed(1)}" r="2.6" fill="#3b82f6"/>
+    </svg>
+    <div class="uw-spark-x"><span>00h</span><span>12h</span><span>24h</span></div>
+  </div>`;
+}
+
 function _uwDayHTML(di) {
   if (!_uwData) return '';
   const d = _uwData.w.days[di]; if (!d) return '';
   const l = lang(), dt = new Date(d.date + 'T00:00'), dw = wmo(d.code, 1);
-  const rows = [
-    d.pop != null ? `<span>💧 ${l === 'pt' ? 'Prob. chuva' : 'Rain prob.'} <b>${d.pop}%</b></span>` : '',
-    d.rain != null ? `<span>🌧️ ${l === 'pt' ? 'Precipitação' : 'Precipitation'} <b>${(+d.rain).toFixed(1).replace('.', l === 'pt' ? ',' : '.')} mm</b></span>` : '',
-    d.windMax != null ? `<span>💨 ${l === 'pt' ? 'Vento máx.' : 'Max wind'} <b>${d.windMax} km/h</b></span>` : '',
-    d.uv != null ? `<span>☀️ UV <b>${d.uv}</b> <small>${uvLevel(d.uv)}</small></span>` : '',
-    d.sunrise && d.sunset ? `<span>🌅 <b>${d.sunrise.slice(11, 16)}</b> · 🌇 <b>${d.sunset.slice(11, 16)}</b></span>` : '',
-  ].filter(Boolean).join('');
-  return `<div class="uw-pop-h"><span class="uw-pop-ico">${dw.emoji}</span>
-      <div><b>${wd()[dt.getDay()]}, ${dt.getDate()} ${ms()[dt.getMonth()]}</b><small>${dw.text} · ▲ ${d.max}° ▼ ${d.min}°</small></div>
+  const fmt1 = v => String((+v).toFixed(1)).replace('.', l === 'pt' ? ',' : '.');
+  const cell = (ico, lbl, val) => val == null ? '' :
+    `<div class="uw-cell"><span class="uw-cell-i">${ico}</span><span class="uw-cell-l">${lbl}</span><span class="uw-cell-v">${val}</span></div>`;
+  const cells = [
+    cell('💧', l === 'pt' ? 'Prob. chuva' : 'Rain prob.', d.pop != null ? `${d.pop}%` : null),
+    cell('🌧️', l === 'pt' ? 'Precipitação' : 'Precip.', d.rain != null ? `${fmt1(d.rain)} mm` : null),
+    cell('💨', l === 'pt' ? 'Vento máx.' : 'Max wind', d.windMax != null ? `${d.windMax} km/h` : null),
+    cell('☀️', 'UV', d.uv != null ? `${d.uv} · ${uvLevel(d.uv)}` : null),
+    cell('🌅', l === 'pt' ? 'Nascer' : 'Sunrise', d.sunrise ? d.sunrise.slice(11, 16) : null),
+    cell('🌇', l === 'pt' ? 'Pôr do sol' : 'Sunset', d.sunset ? d.sunset.slice(11, 16) : null),
+  ].join('');
+  /* warnings that touch this day */
+  const dayWarns = (_uwData.warns || []).filter(wn => {
+    const s = wn.start ? Date.parse(wn.start) : 0, e = wn.end ? Date.parse(wn.end) : s + 1;
+    return s < dt.getTime() + 86400000 && e > dt.getTime();
+  });
+  const warnRow = dayWarns.length
+    ? `<div class="uw-pop-warns">${dayWarns.map(wn => `<span class="uw-w lvl-${_escH(wn.level)}">⚠️ ${_escH(wn.type)}</span>`).join('')}</div>` : '';
+  return `<div class="uw-pop-h"><span class="uw-pop-ico">${AppIcons.weather(d.code, 1, 30)}</span>
+      <div><b>${wd()[dt.getDay()]}, ${dt.getDate()} ${ms()[dt.getMonth()]}</b><small>${dw.text} · <span class="uw-max">▲ ${d.max}°</span> <span class="uw-min">▼ ${d.min}°</span></small></div>
       <button type="button" class="uw-pop-x" aria-label="Fechar">✕</button></div>
-    <div class="uw-pop-rows">${rows}</div>`;
+    ${_uwSpark(d.hT)}
+    <div class="uw-pop-grid">${cells}</div>
+    ${warnRow}`;
 }
 
 function _uwWarnHTML(wi) {
@@ -693,6 +742,41 @@ function _wireWeatherWidget() {
     const q = ev.target.value.toLowerCase();
     document.querySelectorAll('#uw-city-drop .uw-city-opt').forEach(b => { b.hidden = q && !b.textContent.toLowerCase().includes(q); });
   });
+
+  /* pointer devices: the detail opens on hover — no click needed
+     (click/tap still works everywhere, and is the only path on touch) */
+  if (window.matchMedia && matchMedia('(hover: hover)').matches) {
+    let hideT = null, curDi = null;
+    document.addEventListener('mouseover', ev => {
+      const pop = document.getElementById('uw-pop');
+      if (!pop) return;
+      const day = ev.target.closest('.uw-day[data-di]');
+      const pill = ev.target.closest('.uw-w[data-wi]');
+      if (day || pill || ev.target.closest('#uw-pop')) { clearTimeout(hideT); hideT = null; }
+      if (day) {
+        const di = +day.dataset.di;
+        if (di !== curDi || pop.hidden) {
+          curDi = di;
+          pop.innerHTML = _uwDayHTML(di); pop.hidden = false;
+          document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
+        }
+      } else if (pill) {
+        curDi = null;
+        pop.innerHTML = _uwWarnHTML(+pill.dataset.wi); pop.hidden = false;
+      }
+    });
+    document.addEventListener('mouseout', ev => {
+      const pop = document.getElementById('uw-pop');
+      if (!pop || pop.hidden) return;
+      const to = ev.relatedTarget;
+      if (to && (to.closest?.('.uw-day') || to.closest?.('#uw-pop') || to.closest?.('.uw-w'))) return;
+      clearTimeout(hideT);
+      hideT = setTimeout(() => {
+        pop.hidden = true; curDi = null;
+        document.querySelectorAll('.uw-day.on').forEach(b => b.classList.remove('on'));
+      }, 220);
+    });
+  }
 }
 _wireWeatherWidget();
 
@@ -721,27 +805,38 @@ async function renderUtility() {
   let weatherCard;
   if (w) {
     const cur = wmo(w.code, w.isDay), d0 = w.days && w.days[0];
+    /* one pill per warning type (IPMA repeats the same type per time window);
+       keep the most severe level of each */
+    const sev = { red: 3, orange: 2, yellow: 1 };
+    const byType = {};
+    for (const wn of warnings) {
+      const prev = byType[wn.type];
+      if (!prev || (sev[wn.level] || 0) > (sev[prev.level] || 0)) byType[wn.type] = wn;
+    }
+    const uniqWarn = Object.values(byType);
+    _uwData = { w, warns: uniqWarn };
+    /* forecast as rows: everything readable at a glance — icon, temps,
+       rain probability+amount, max wind, and a warning dot on days covered
+       by an active IPMA warning */
+    const fmt1 = v => String((+v).toFixed(1)).replace('.', l === 'pt' ? ',' : '.');
     const fc = (w.days || []).slice(1, 6).map((d, ix) => {
       const dw = wmo(d.code, 1), nm = wd()[new Date(d.date + 'T00:00').getDay()].slice(0, 3);
-      const rain = d.pop != null && d.pop >= 20 ? `<span class="uw-day-r">💧${d.pop}%</span>` : '';
-      return `<button type="button" class="uw-day" data-di="${ix + 1}" aria-label="${nm}"><span class="uw-day-n">${nm}</span><span class="uw-day-i">${dw.emoji}</span><span class="uw-day-t"><b>${d.max}°</b> ${d.min}°</span>${rain}</button>`;
+      const lvl = _dayWarnLvl(d.date, warnings);
+      return `<button type="button" class="uw-day" data-di="${ix + 1}" aria-label="${nm}">
+        <span class="uw-day-n">${nm}${lvl ? `<i class="uw-day-w lvl-${lvl}"></i>` : ''}</span>
+        <span class="uw-day-i" title="${dw.text}">${AppIcons.weather(d.code, 1, 20)}</span>
+        <span class="uw-day-t"><b>${d.max}°</b><em>${d.min}°</em></span>
+        <span class="uw-day-x" title="${l === 'pt' ? 'Prob. de chuva · precipitação' : 'Rain prob. · precipitation'}">💧 ${d.pop != null ? d.pop + '%' : '—'}${d.rain != null && d.rain >= 0.1 ? ` <small>${fmt1(d.rain)}mm</small>` : ''}</span>
+        <span class="uw-day-x" title="${l === 'pt' ? 'Vento máximo' : 'Max wind'}">💨 ${d.windMax != null ? d.windMax : '—'}</span>
+      </button>`;
     }).join('');
     const stats = [
       w.feels != null ? `<span title="${l === 'pt' ? 'Sensação' : 'Feels like'}">🌡️ ${w.feels}°</span>` : '',
       w.humidity != null ? `<span title="${l === 'pt' ? 'Humidade' : 'Humidity'}">💧 ${w.humidity}%</span>` : '',
       w.wind != null ? `<span title="${l === 'pt' ? 'Vento' : 'Wind'}">💨 ${w.wind} km/h</span>` : '',
       w.uv != null ? `<span title="UV">☀️ UV ${w.uv} <small>${uvLevel(w.uv)}</small></span>` : '',
+      w.sunrise && w.sunset ? `<span class="uw-sun-chip" title="${l === 'pt' ? 'Nascer · pôr do sol' : 'Sunrise · sunset'}">🌅 ${w.sunrise.slice(11, 16)} · 🌇 ${w.sunset.slice(11, 16)}</span>` : '',
     ].filter(Boolean).join('');
-    /* one pill per warning type (IPMA repeats the same type per time window);
-       keep the most severe level of each */
-    const sev = { red: 3, orange: 2, yellow: 1 };
-    const byType = {};
-    for (const wn of warnings) {
-      const cur = byType[wn.type];
-      if (!cur || (sev[wn.level] || 0) > (sev[cur.level] || 0)) byType[wn.type] = wn;
-    }
-    const uniqWarn = Object.values(byType);
-    _uwData = { w, warns: uniqWarn };
     const warnHtml = uniqWarn.length ? `<div class="uw-warn">${uniqWarn.slice(0, 4).map((wn, wi) => `<button type="button" class="uw-w lvl-${e(wn.level)}" data-wi="${wi}" title="${e(wn.text || wn.type)}">⚠️ ${e(wn.type)}</button>`).join('')}</div>` : '';
     const cityOpts = PT_CITIES.map((c, ci) =>
       `<button type="button" class="uw-city-opt${c[0] === w.city ? ' on' : ''}" data-ci="${ci}">${c[0]}</button>`).join('');
@@ -753,12 +848,11 @@ async function renderUtility() {
           <div class="uw-city-list">${cityOpts}</div>
         </div>
       </div>
-      <div class="uw-now"><span class="uw-emoji">${cur.emoji}</span>
+      <div class="uw-now"><span class="uw-emoji">${AppIcons.weather(w.code, w.isDay, 42)}</span>
         <div class="uw-main"><span class="uw-temp">${w.temp}°</span><span class="uw-state">${cur.text}</span></div>
         ${d0 ? `<div class="uw-mm"><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
       <div class="uw-stats">${stats}</div>
       ${warnHtml}
-      <div class="uw-sun"><span>🌅 ${w.sunrise.slice(11, 16)}</span><span>🌇 ${w.sunset.slice(11, 16)}</span></div>
       <div class="uw-fc">${fc}</div>
       <div class="uw-pop" id="uw-pop" hidden></div>
       <div class="util-foot">${more('https://www.ipma.pt/pt/otempo/prev.localidade.hora/', l === 'pt' ? 'Ver no IPMA' : 'See on IPMA')}</div></section>`;

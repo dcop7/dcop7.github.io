@@ -122,6 +122,53 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
     const s = ICONS[r] || '';
     return size ? s.replace('width="17" height="17"', `width="${size}" height="${size}"`) : s;
   }
-  return { icon };
+
+  /* ── WEATHER ICON SET ─────────────────────────────────────────────
+     Same duotone language as the app icons (emoji weather glyphs were
+     unreadable at small sizes on the dark theme). Maps WMO codes. */
+  function wsvg(id, body) {
+    return `<svg class="wi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<defs>
+<linearGradient id="wg-sun" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+<linearGradient id="wg-moon" x1="6" y1="4" x2="18" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#c7d2fe"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
+<linearGradient id="wg-cloud" x1="4" y1="8" x2="20" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#cbd5e1"/><stop offset="1" stop-color="#7686a0"/></linearGradient>
+<linearGradient id="wg-rain" x1="6" y1="14" x2="18" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#7dd3fc"/><stop offset="1" stop-color="#3b82f6"/></linearGradient>
+</defs>${body}</svg>`;
+  }
+  const CLOUD = (y, sc) => `<path transform="translate(0 ${y || 0}) scale(${sc || 1})" d="M7 17.5a4 4 0 0 1-.6-7.95 5.2 5.2 0 0 1 10.1-1.1A4.1 4.1 0 0 1 16.6 17z" fill="url(#wg-cloud)" fill-opacity=".25" stroke="url(#wg-cloud)"/>`;
+  const SUN_S = `<circle cx="17.2" cy="6.4" r="2.6" fill="url(#wg-sun)" fill-opacity=".35" stroke="url(#wg-sun)"/><path d="M17.2 1.8v1.3M21.8 6.4h-1.3M20.5 3.1l-.9.9M13.9 3.1l.9.9" stroke="url(#wg-sun)"/>`;
+  const MOON_S = `<path d="M19.8 8.2a4.1 4.1 0 0 1-5-5 4.6 4.6 0 1 0 5 5z" fill="url(#wg-moon)" fill-opacity=".3" stroke="url(#wg-moon)"/>`;
+  const DROPS = (n) => {
+    const xs = [8.4, 12, 15.6].slice(0, n);
+    return xs.map((x, i) => `<path d="M${x} 19.4v2.2" stroke="url(#wg-rain)" stroke-width="1.9"${i === 1 ? ' transform="translate(0 .6)"' : ''}/>`).join('');
+  };
+  const WICONS = {
+    sun:     wsvg('sun', `<circle cx="12" cy="12" r="4.4" fill="url(#wg-sun)" fill-opacity=".35" stroke="url(#wg-sun)"/><path d="M12 3.2v2M12 18.8v2M3.2 12h2M18.8 12h2M5.8 5.8l1.4 1.4M16.8 16.8l1.4 1.4M18.2 5.8l-1.4 1.4M7.2 16.8l-1.4 1.4" stroke="url(#wg-sun)"/>`),
+    moon:    wsvg('moon', `<path d="M20 13.6A8 8 0 1 1 10.4 4 6.4 6.4 0 0 0 20 13.6z" fill="url(#wg-moon)" fill-opacity=".28" stroke="url(#wg-moon)"/>`),
+    partd:   wsvg('partd', SUN_S + CLOUD(1.5, .92)),
+    partn:   wsvg('partn', MOON_S + CLOUD(1.5, .92)),
+    cloud:   wsvg('cloud', CLOUD(1)),
+    fog:     wsvg('fog', CLOUD(-2.5, .85) + `<path d="M5.5 16.5h13M7 19.2h10" stroke="url(#wg-cloud)" opacity=".8"/>`),
+    drizzle: wsvg('drizzle', CLOUD(-1.5, .9) + DROPS(2)),
+    rain:    wsvg('rain', CLOUD(-1.5, .9) + DROPS(3)),
+    snow:    wsvg('snow', CLOUD(-1.5, .9) + `<path d="M8.4 20h.01M12 21h.01M15.6 20h.01" stroke="#a5f3fc" stroke-width="2.2"/>`),
+    thunder: wsvg('thunder', CLOUD(-1.5, .9) + `<path d="M12.6 15.6 10.4 19h3l-2 3.4" stroke="url(#wg-sun)" stroke-width="1.7"/>`),
+  };
+  function weather(code, isDay, size) {
+    const c = +code;
+    let k = 'cloud';
+    if (c === 0 || c === 1) k = isDay ? 'sun' : 'moon';
+    else if (c === 2) k = isDay ? 'partd' : 'partn';
+    else if (c === 3) k = 'cloud';
+    else if (c === 45 || c === 48) k = 'fog';
+    else if (c >= 51 && c <= 57) k = 'drizzle';
+    else if ((c >= 61 && c <= 67) || c === 80 || c === 81 || c === 82) k = 'rain';
+    else if ((c >= 71 && c <= 77) || c === 85 || c === 86) k = 'snow';
+    else if (c >= 95) k = 'thunder';
+    const s = WICONS[k];
+    return size ? s.replace('width="22" height="22"', `width="${size}" height="${size}"`) : s;
+  }
+
+  return { icon, weather };
 })();
 window.AppIcons = AppIcons;
