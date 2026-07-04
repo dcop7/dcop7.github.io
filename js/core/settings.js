@@ -174,5 +174,65 @@ const SettingsPage = (function () {
     applyDensity(localStorage.getItem('site-density') || 'comfortable');
   });
 
+  /* ── QUICK PREFS PANEL (header popover / mobile bottom sheet) ──────
+     The Definições page left the navigation; these are the fast, frequent
+     preferences. The full page + route stay in the codebase for later. */
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('prefs-btn');
+    const pop = document.getElementById('prefs-pop');
+    const ov  = document.getElementById('prefs-overlay');
+    if (!btn || !pop) return;
+    const isPt = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt') === 'pt';
+
+    const L = {
+      title: ['Preferências', 'Preferences'],
+      wp: ['Wallpaper dinâmico', 'Dynamic wallpaper'], 'wp.d': ['Imagem de fundo adaptada ao tema', 'Theme-matched background image'],
+      den: ['Densidade', 'Density'], 'den.d': ['Espaçamento da interface', 'Interface spacing'],
+      'den.1': ['Confortável', 'Comfortable'], 'den.2': ['Compacta', 'Compact'], 'den.3': ['Lista', 'List'],
+      font: ['Tamanho da letra', 'Font size'], 'font.d': ['Aplica-se a todo o site', 'Applies to the whole site'],
+    };
+    function syncLabels() {
+      const i = isPt() ? 0 : 1;
+      pop.querySelectorAll('[data-pp]').forEach(el => { const k = el.dataset.pp; if (L[k]) el.textContent = L[k][i]; });
+    }
+    function syncState() {
+      const wpOn = localStorage.getItem('wallpaper-enabled') === 'true';
+      const wpInput = document.getElementById('pp-wp-input');
+      if (wpInput) wpInput.checked = wpOn;
+      document.getElementById('pp-wp-track')?.classList.toggle('on', wpOn);
+      const den = localStorage.getItem('site-density') || 'comfortable';
+      pop.querySelectorAll('#pp-density .pp-seg-btn').forEach(b => b.classList.toggle('active', b.dataset.density === den));
+      const lbl = document.getElementById('font-lbl');
+      const ppLbl = document.getElementById('pp-font-lbl');
+      if (lbl && ppLbl) ppLbl.textContent = lbl.textContent;
+    }
+    function open()  { syncLabels(); syncState(); pop.hidden = false; if (ov) ov.hidden = false; }
+    function close() { pop.hidden = true; if (ov) ov.hidden = true; }
+
+    btn.addEventListener('click', () => (pop.hidden ? open() : close()));
+    document.getElementById('pp-close')?.addEventListener('click', close);
+    ov?.addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) close(); });
+    document.addEventListener('click', e => {
+      if (pop.hidden) return;
+      if (!e.target.closest('#prefs-pop') && !e.target.closest('#prefs-btn')) close();
+    });
+
+    document.getElementById('pp-wp-input')?.addEventListener('change', e => {
+      localStorage.setItem('wallpaper-enabled', e.target.checked ? 'true' : 'false');
+      if (window.applyWallpaper) window.applyWallpaper();
+      document.getElementById('pp-wp-track')?.classList.toggle('on', e.target.checked);
+    });
+    pop.querySelectorAll('#pp-density .pp-seg-btn').forEach(b =>
+      b.addEventListener('click', () => {
+        localStorage.setItem('site-density', b.dataset.density);
+        applyDensity(b.dataset.density);
+        syncState();
+      }));
+    document.getElementById('pp-font-dec')?.addEventListener('click', () => { document.getElementById('font-dec')?.click(); syncState(); });
+    document.getElementById('pp-font-inc')?.addEventListener('click', () => { document.getElementById('font-inc')?.click(); syncState(); });
+    document.addEventListener('langchange', () => { if (!pop.hidden) syncLabels(); });
+  });
+
   return { show, applyDensity };
 })();

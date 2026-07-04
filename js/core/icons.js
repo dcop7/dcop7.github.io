@@ -8,9 +8,11 @@ const AppIcons = (function () {
 
   /* the same cyan as .brand-sat — this is what ties the set to the brand */
   const SPARK = '#7fe7ff';
+  /* Hidden at rest (at 17px it read as a stray dot); CSS pops it in on
+     hover/active as the icon's "energy" micro-interaction. */
   const spark = (x, y, s) => {
     s = s || 1;
-    return `<path d="M${x} ${y - 2.1 * s}l${0.55 * s} ${1.55 * s} ${1.55 * s} ${0.55 * s} -${1.55 * s} ${0.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s} -${1.55 * s} -${1.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s}z" fill="${SPARK}" stroke="none" opacity=".95"/>`;
+    return `<path class="ic-spark" d="M${x} ${y - 2.1 * s}l${0.55 * s} ${1.55 * s} ${1.55 * s} ${0.55 * s} -${1.55 * s} ${0.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s} -${1.55 * s} -${1.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s}z" fill="${SPARK}" stroke="none" opacity="0"/>`;
   };
 
   /* duotone wrapper: gradient stroke + soft gradient fill on the silhouette */

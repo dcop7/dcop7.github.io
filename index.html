@@ -105,6 +105,9 @@
           <button class="font-btn" id="font-inc">+</button>
         </div>
       </div>
+      <button class="icon-btn" id="prefs-btn" title="Preferências" aria-label="Preferências" aria-haspopup="dialog">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--bg)"/></svg>
+      </button>
       <button class="icon-btn" id="theme-toggle-btn" title="Mudar tema" data-i18n-title="hdr.theme">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
@@ -348,6 +351,47 @@
       <span><kbd>↑↓</kbd> navegar</span>
       <span><kbd>↵</kbd> abrir</span>
       <span><kbd>Ctrl K</kbd> abrir/fechar</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── PREFERÊNCIAS RÁPIDAS (popover desktop · bottom sheet mobile) ── -->
+<div id="prefs-overlay" class="prefs-overlay" hidden></div>
+<div id="prefs-pop" class="prefs-pop" hidden role="dialog" aria-modal="true" aria-label="Preferências rápidas">
+  <div class="pp-head">
+    <span class="pp-title" data-pp="title">Preferências</span>
+    <button class="pp-close" id="pp-close" aria-label="Fechar">✕</button>
+  </div>
+  <div class="pp-row">
+    <div class="pp-info">
+      <span class="pp-label" data-pp="wp">Wallpaper dinâmico</span>
+      <span class="pp-desc" data-pp="wp.d">Imagem de fundo adaptada ao tema</span>
+    </div>
+    <label class="st-toggle-wrap">
+      <input type="checkbox" id="pp-wp-input" style="display:none">
+      <div class="st-toggle" id="pp-wp-track"><div class="st-toggle-knob"></div></div>
+    </label>
+  </div>
+  <div class="pp-row">
+    <div class="pp-info">
+      <span class="pp-label" data-pp="den">Densidade</span>
+      <span class="pp-desc" data-pp="den.d">Espaçamento da interface</span>
+    </div>
+    <div class="pp-seg" id="pp-density">
+      <button class="pp-seg-btn" data-density="comfortable" data-pp="den.1">Confortável</button>
+      <button class="pp-seg-btn" data-density="compact" data-pp="den.2">Compacta</button>
+      <button class="pp-seg-btn" data-density="list" data-pp="den.3">Lista</button>
+    </div>
+  </div>
+  <div class="pp-row">
+    <div class="pp-info">
+      <span class="pp-label" data-pp="font">Tamanho da letra</span>
+      <span class="pp-desc" data-pp="font.d">Aplica-se a todo o site</span>
+    </div>
+    <div class="pp-font">
+      <button class="pp-font-btn" id="pp-font-dec" aria-label="Diminuir">−</button>
+      <span class="pp-font-lbl" id="pp-font-lbl">M</span>
+      <button class="pp-font-btn" id="pp-font-inc" aria-label="Aumentar">+</button>
     </div>
   </div>
 </div>

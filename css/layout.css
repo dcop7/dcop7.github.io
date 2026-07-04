@@ -184,29 +184,67 @@ body.sb-open .sidebar { transform: translateX(0); }
 
 .sb-main-nav { padding: .25rem .7rem; display: flex; flex-direction: column; gap: calc(.1rem * var(--den)); }
 /* Density-driven: 18 entries must fit a laptop viewport without scrolling
-   in comfortable mode; compact/list tighten further via --den. */
+   in comfortable mode; compact/list tighten further via --den.
+   --rt = the route colour (set per item below); every hover/active effect
+   derives from it so the rail stays coherent. */
 .sb-nav-item {
+  --rt: var(--accent-rgb);
+  position: relative;
   display: flex; align-items: center; gap: .65rem; padding: calc(.42rem * var(--den) + .04rem) .75rem;
   border-radius: 9px; color: var(--muted); font-size: .81rem; font-weight: 500;
-  transition: all .18s; cursor: pointer; text-decoration: none;
-  border-left: 2px solid transparent;
+  transition: color .18s, background .18s, transform .12s; cursor: pointer; text-decoration: none;
 }
-.sb-nav-item:hover { color: var(--text); background: rgba(255,255,255,.06); border-left-color: var(--border2); }
+.sb-nav-item:hover { color: var(--text); background: rgba(255,255,255,.05); }
+.sb-nav-item:active { transform: scale(.985); }
+
+/* active pill: a small colour-matched bar that slides in from the centre */
+.sb-nav-item::before {
+  content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 0; border-radius: 3px; opacity: 0;
+  background: linear-gradient(180deg, rgb(var(--rt)), rgba(var(--rt), .35));
+  transition: height .24s cubic-bezier(.4,0,.2,1), opacity .2s;
+}
+.sb-nav-item.active::before { height: 58%; opacity: 1; }
 .sb-nav-item.active {
-  color: var(--accent); background: rgba(var(--accent-rgb),.12);
-  font-weight: 600; border-left-color: var(--accent);
+  color: var(--text); font-weight: 600;
+  background: linear-gradient(90deg, rgba(var(--rt), .13), rgba(var(--rt), .04) 65%, transparent);
 }
-body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
-.sb-nav-item svg { flex-shrink: 0; opacity: .9; transition: opacity .18s; }
+body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--rt), .12), rgba(var(--rt), .03) 65%, transparent); }
+
+.sb-nav-item svg { flex-shrink: 0; opacity: .9; transition: transform .22s cubic-bezier(.34,1.56,.64,1); }
 /* icon tile: consistent weight for every entry, tinted by the route colour */
 .sb-nav-ic {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
   width: calc(24px + 4px * var(--den)); height: calc(24px + 4px * var(--den)); border-radius: 8px; line-height: 0;
-  background: rgba(255,255,255,.045); border: 1px solid var(--border);
-  transition: all .18s;
+  background: rgba(var(--rt), .10); border: 1px solid rgba(var(--rt), .24);
+  transition: border-color .2s, box-shadow .25s, filter .2s;
 }
-body.light .sb-nav-ic { background: rgba(15,23,42,.05); }
-.sb-nav-item:hover .sb-nav-ic { transform: translateY(-1px); filter: saturate(1.15); }
+/* one-shot light sweep across the tile on hover */
+.sb-nav-ic::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.22) 50%, transparent 70%);
+  transform: translateX(-130%);
+}
+.sb-nav-item:hover .sb-nav-ic::after { animation: sb-sweep .55s cubic-bezier(.4,0,.2,1) 1 both; }
+@keyframes sb-sweep { to { transform: translateX(130%); } }
+.sb-nav-item:hover .sb-nav-ic { border-color: rgba(var(--rt), .5); filter: saturate(1.15) brightness(1.06); }
+.sb-nav-item:hover svg { transform: scale(1.09); }
+
+/* the brand spark ignites once on hover / stays lit on the active item */
+.sb-nav-item:hover .ic-spark { animation: spark-pop .5s ease .12s both; }
+.sb-nav-item.active .ic-spark { opacity: .95; }
+@keyframes spark-pop {
+  0% { opacity: 0; transform: scale(.3); transform-origin: center; transform-box: fill-box; }
+  55% { opacity: 1; transform: scale(1.35); }
+  100% { opacity: .95; transform: scale(1); }
+}
+/* active tile: lit from within + a soft colour-matched halo */
+.sb-nav-item.active .sb-nav-ic {
+  border-color: rgba(var(--rt), .55);
+  box-shadow: 0 0 14px -4px rgba(var(--rt), .75), inset 0 0 10px rgba(var(--rt), .14);
+  filter: saturate(1.2) brightness(1.1);
+}
 
 /* Thin separator between nav groups */
 .sb-sep { height: 1px; background: var(--border); margin: .5rem .85rem; opacity: .7; }
@@ -218,28 +256,25 @@ body.light .sb-nav-ic { background: rgba(15,23,42,.05); }
   padding: calc(.5rem * var(--den)) .8rem .15rem;
 }
 
-/* Per-route tile tints — each icon sits on a soft wash of its own colour,
-   so the rail reads as a designed brand element, not a generic admin menu.
-   (Icon colours themselves live inside the duotone SVGs in icons.js.) */
-.sb-nav-item[data-route="home"]        .sb-nav-ic { background: rgba(96,165,250,.10);  border-color: rgba(96,165,250,.24); }
-.sb-nav-item[data-route="explorer"]    .sb-nav-ic { background: rgba(56,189,248,.10);  border-color: rgba(56,189,248,.24); }
-.sb-nav-item[data-route="noticias"]    .sb-nav-ic { background: rgba(192,132,252,.10); border-color: rgba(192,132,252,.24); }
-.sb-nav-item[data-route="eventos"]     .sb-nav-ic { background: rgba(45,212,191,.10);  border-color: rgba(45,212,191,.24); }
-.sb-nav-item[data-route="ocorrencias"] .sb-nav-ic { background: rgba(245,158,11,.10);  border-color: rgba(245,158,11,.24); }
-.sb-nav-item[data-route="f1"]          .sb-nav-ic { background: rgba(239,68,68,.10);   border-color: rgba(239,68,68,.24); }
-.sb-nav-item[data-route="oss"]         .sb-nav-ic { background: rgba(74,222,128,.10);  border-color: rgba(74,222,128,.24); }
-.sb-nav-item[data-route="discovery"]   .sb-nav-ic { background: rgba(232,121,249,.10); border-color: rgba(232,121,249,.24); }
-.sb-nav-item[data-route="links"]       .sb-nav-ic { background: rgba(251,146,60,.10);  border-color: rgba(251,146,60,.24); }
-.sb-nav-item[data-route="tools"]       .sb-nav-ic { background: rgba(129,140,248,.10); border-color: rgba(129,140,248,.24); }
-.sb-nav-item[data-route="cheatsheets"] .sb-nav-ic { background: rgba(167,139,250,.10); border-color: rgba(167,139,250,.24); }
-.sb-nav-item[data-route="games"]       .sb-nav-ic { background: rgba(52,211,153,.10);  border-color: rgba(52,211,153,.24); }
-.sb-nav-item[data-route="quiz"]        .sb-nav-ic { background: rgba(34,211,238,.10);  border-color: rgba(34,211,238,.24); }
-.sb-nav-item[data-route="humor"]       .sb-nav-ic { background: rgba(250,204,21,.10);  border-color: rgba(250,204,21,.24); }
-.sb-nav-item[data-route="photography"] .sb-nav-ic { background: rgba(251,191,36,.10);  border-color: rgba(251,191,36,.24); }
-.sb-nav-item[data-route="visual"]      .sb-nav-ic { background: rgba(244,114,182,.10); border-color: rgba(244,114,182,.24); }
-.sb-nav-item[data-route="settings"]    .sb-nav-ic { background: rgba(148,163,184,.10); border-color: rgba(148,163,184,.24); }
-/* active: brighten the tile + label; the icon keeps its own colours */
-.sb-nav-item.active .sb-nav-ic { filter: saturate(1.25) brightness(1.12); }
+/* Per-route colour (--rt) — tiles, hover glow, active bar and halo all
+   derive from this one variable, mirroring each duotone icon's palette. */
+.sb-nav-item[data-route="home"]        { --rt: 96,165,250; }
+.sb-nav-item[data-route="explorer"]    { --rt: 56,189,248; }
+.sb-nav-item[data-route="noticias"]    { --rt: 192,132,252; }
+.sb-nav-item[data-route="eventos"]     { --rt: 45,212,191; }
+.sb-nav-item[data-route="ocorrencias"] { --rt: 245,158,11; }
+.sb-nav-item[data-route="f1"]          { --rt: 239,68,68; }
+.sb-nav-item[data-route="oss"]         { --rt: 74,222,128; }
+.sb-nav-item[data-route="discovery"]   { --rt: 232,121,249; }
+.sb-nav-item[data-route="links"]       { --rt: 251,146,60; }
+.sb-nav-item[data-route="tools"]       { --rt: 129,140,248; }
+.sb-nav-item[data-route="cheatsheets"] { --rt: 167,139,250; }
+.sb-nav-item[data-route="games"]       { --rt: 52,211,153; }
+.sb-nav-item[data-route="quiz"]        { --rt: 34,211,238; }
+.sb-nav-item[data-route="humor"]       { --rt: 250,204,21; }
+.sb-nav-item[data-route="photography"] { --rt: 251,191,36; }
+.sb-nav-item[data-route="visual"]      { --rt: 244,114,182; }
+.sb-nav-item[data-route="settings"]    { --rt: 148,163,184; }
 
 /* ── VIEWS / APP CONTENT ── */
 #app-content { flex: 1; min-height: 0; position: relative; }
@@ -316,6 +351,63 @@ body.light .mob-nav { background: rgba(248,250,252,.97); border-top-color: rgba(
 }
 .theme-option:hover { border-color: var(--border2); }
 .theme-option.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+/* ── QUICK PREFS PANEL ──
+   Desktop: popover anchored under the header button.
+   Mobile (≤600px): native-feeling bottom sheet with scrim. */
+.prefs-overlay {
+  position: fixed; inset: 0; z-index: 440;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(2px);
+  animation: cp-bg-in .18s ease;
+}
+.prefs-overlay[hidden] { display: none; }
+@media (min-width: 601px) { .prefs-overlay { display: none; } }
+.prefs-pop {
+  position: fixed; top: calc(var(--hdr-h) + 8px); right: 4.6rem; z-index: 450;
+  width: 320px; background: var(--card-solid);
+  border: 1px solid var(--border2); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3), 0 0 0 1px rgba(var(--accent-rgb), .06);
+  animation: cp-in .18s cubic-bezier(.34,1.56,.64,1);
+  overflow: hidden;
+}
+.prefs-pop[hidden] { display: none; }
+.pp-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .8rem 1rem .6rem; border-bottom: 1px solid var(--border);
+}
+.pp-title { font-family: var(--font-head); font-size: .88rem; font-weight: 700; }
+.pp-close { background: none; border: none; color: var(--muted); font-size: .85rem; cursor: pointer; padding: .15rem .3rem; line-height: 1; border-radius: 6px; transition: all var(--ease); }
+.pp-close:hover { color: var(--text); background: var(--card2); }
+.pp-row { display: flex; align-items: center; justify-content: space-between; gap: .9rem; padding: .7rem 1rem; border-bottom: 1px solid var(--border); }
+.pp-row:last-child { border-bottom: none; }
+.pp-info { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
+.pp-label { font-size: .8rem; font-weight: 600; color: var(--text); }
+.pp-desc { font-size: .66rem; color: var(--muted); }
+.pp-seg { display: flex; gap: .2rem; background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: .15rem; flex-shrink: 0; }
+.pp-seg-btn { background: transparent; border: none; color: var(--muted); font: inherit; font-size: .66rem; font-weight: 600; padding: .26rem .5rem; border-radius: 6px; cursor: pointer; transition: all var(--ease); white-space: nowrap; }
+.pp-seg-btn:hover { color: var(--text); }
+.pp-seg-btn.active { background: var(--accent-soft); color: var(--accent); }
+.pp-font { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
+.pp-font-btn { background: var(--card2); border: 1px solid var(--border); color: var(--text); width: 26px; height: 26px; border-radius: 7px; font-size: .95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: all var(--ease); }
+.pp-font-btn:hover { border-color: rgba(var(--accent-rgb),.4); color: var(--accent); }
+.pp-font-lbl { font-size: .68rem; font-weight: 700; color: var(--muted); min-width: 1.5rem; text-align: center; letter-spacing: .05em; }
+@media (max-width: 600px) {
+  .prefs-pop {
+    top: auto; right: 0; left: 0; bottom: 0; width: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-bottom: none;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: pp-sheet-in .28s cubic-bezier(.4,0,.2,1);
+  }
+  .pp-row { padding: .95rem 1.2rem; }
+  .pp-head { padding: 1rem 1.2rem .7rem; }
+  .pp-head::before {
+    content: ''; position: absolute; left: 50%; transform: translateX(-50%); top: .45rem;
+    width: 38px; height: 4px; border-radius: 2px; background: var(--border2);
+  }
+  .prefs-pop { position: fixed; }
+  .pp-head { position: relative; }
+}
+@keyframes pp-sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 /* ── PWA INSTALL PROMPT ── */
 .pwa-prompt {

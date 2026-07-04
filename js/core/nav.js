@@ -54,8 +54,8 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="personal">${TN('nav.grp.personal')}</div>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${navIcon('photography')}<span>${TN('nav.photography')}</span></a>
           <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
-          <div class="sb-sep"></div>
-          <a class="sb-nav-item" data-route="settings"     href="#settings">${navIcon('settings')}<span>${TN('nav.settings')}</span></a>
+          <!-- Definições saiu da navegação: as preferências rápidas vivem no
+               painel do header (a página/rota #settings mantém-se no código). -->
         </nav>
       </div>`;
 
