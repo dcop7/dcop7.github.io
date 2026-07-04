@@ -695,19 +695,25 @@ function _uwSpark(hT) {
   const line = xy.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const area = `0,${H} ` + line + ` ${W},${H}`;
   const hiIx = pts.indexOf(hi), loIx = pts.indexOf(lo);
-  /* keep the value labels inside the viewBox */
-  const tx = (x) => Math.min(Math.max(x, 12), W - 12).toFixed(1);
+  /* value labels as HTML overlays: SVG <text> gets squashed by the
+     non-uniform preserveAspectRatio="none" scaling. Each label carries the
+     hour, so it's clear WHEN the max/min happens. */
+  const pc = (x, min, max) => Math.min(Math.max(x, min), max).toFixed(1) + '%';
+  const lab = (ix, cls) =>
+    `<span class="uw-sk-lab ${cls}" style="left:${pc(xy[ix][0] / W * 100, 7, 93)};top:${pc(xy[ix][1] / H * 100, 4, 96)}">${Math.round(pts[ix])}° · ${ix}h</span>`;
   return `<div class="uw-chart">
     <div class="uw-chart-t">🌡️ ${l === 'pt' ? 'Temperatura ao longo do dia' : 'Temperature through the day'}</div>
-    <svg class="uw-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="uwsa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgba(99,102,241,.35)"/><stop offset="1" stop-color="rgba(99,102,241,0)"/></linearGradient></defs>
-      <polygon points="${area}" fill="url(#uwsa)"/>
-      <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="${xy[hiIx][0].toFixed(1)}" cy="${xy[hiIx][1].toFixed(1)}" r="2.4" fill="#ef4444"/>
-      <text x="${tx(xy[hiIx][0])}" y="${(xy[hiIx][1] - 4).toFixed(1)}" text-anchor="middle" class="uw-sk-max">${Math.round(hi)}°</text>
-      <circle cx="${xy[loIx][0].toFixed(1)}" cy="${xy[loIx][1].toFixed(1)}" r="2.4" fill="#3b82f6"/>
-      <text x="${tx(xy[loIx][0])}" y="${Math.min(xy[loIx][1] + 11, H - 1).toFixed(1)}" text-anchor="middle" class="uw-sk-min">${Math.round(lo)}°</text>
-    </svg>
+    <div class="uw-chart-sv">
+      <svg class="uw-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="uwsa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgba(99,102,241,.35)"/><stop offset="1" stop-color="rgba(99,102,241,0)"/></linearGradient></defs>
+        <polygon points="${area}" fill="url(#uwsa)"/>
+        <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="${xy[hiIx][0].toFixed(1)}" cy="${xy[hiIx][1].toFixed(1)}" r="2.4" fill="#ef4444"/>
+        <circle cx="${xy[loIx][0].toFixed(1)}" cy="${xy[loIx][1].toFixed(1)}" r="2.4" fill="#3b82f6"/>
+      </svg>
+      ${lab(hiIx, 'max')}${lab(loIx, 'min')}
+    </div>
+    <div class="uw-spark-x"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div>
   </div>`;
 }
 
@@ -921,7 +927,7 @@ async function renderUtility() {
       </div>
       <div class="uw-now"><span class="uw-emoji">${AppIcons.weather(w.code, w.isDay, 42)}</span>
         <div class="uw-main"><span class="uw-temp">${w.temp}°</span><span class="uw-state">${cur.text}</span></div>
-        ${d0 ? `<div class="uw-mm"><span class="uw-today">${l === 'pt' ? 'Hoje' : 'Today'} · ${wd()[AppTime.now().getDay()].slice(0, 3)}</span><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
+        ${d0 ? `<button type="button" class="uw-day uw-mm" data-di="0" title="${l === 'pt' ? 'Detalhe de hoje' : "Today's detail"}"><span class="uw-today">${l === 'pt' ? 'Hoje' : 'Today'} · ${wd()[AppTime.now().getDay()].slice(0, 3)}</span><span class="uw-mmrow"><span class="uw-max">▲ ${d0.max}°</span> <span class="uw-min">▼ ${d0.min}°</span></span></button>` : ''}</div>
       <div class="uw-stats">${stats}</div>
       ${warnHtml}
       <div class="uw-fc-wrap">
