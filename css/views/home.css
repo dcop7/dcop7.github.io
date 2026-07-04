@@ -384,17 +384,22 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
 .uw-city-opt:hover { background: var(--accent-soft); color: var(--text); }
 .uw-city-opt.on { color: var(--accent); font-weight: 700; background: var(--accent-soft); }
 
-/* forecast days + warning pills open the detail on hover (or tap) */
-.uw-day { border: 1px solid transparent; font: inherit; cursor: pointer; transition: background var(--ease), border-color var(--ease); }
-.uw-day:hover, .uw-day.on { background: rgba(var(--accent-rgb), .10); border-color: rgba(var(--accent-rgb), .3); }
+/* forecast days + warning pills open the detail on hover (or tap);
+   the selected day stays clearly marked while its popover is open */
+.uw-day { border: 1px solid transparent; font: inherit; cursor: pointer; transition: background var(--ease), border-color var(--ease), transform var(--ease); }
+.uw-day:hover, .uw-day.on {
+  background: rgba(var(--accent-rgb), .2); border-color: rgba(var(--accent-rgb), .55);
+  transform: translateY(-1px);
+}
+.uw-day.on .uw-day-n { color: var(--accent); }
 .uw-w { border: none; font: inherit; cursor: pointer; }
 .uw-w:hover { filter: brightness(1.08); }
 
-/* detail popover (day forecast / IPMA alert) */
+/* detail popover — anchored just above the day chips (never covers them) */
 .uw-pop {
-  position: absolute; left: .8rem; right: .8rem; bottom: .8rem; z-index: 25;
+  position: absolute; left: 0; right: 0; bottom: calc(100% + .4rem); z-index: 25;
   background: var(--card-solid); border: 1px solid var(--border2); border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-3); padding: .75rem .9rem; animation: view-in .14s ease;
+  box-shadow: var(--shadow-3); padding: .7rem .85rem; animation: view-in .14s ease;
 }
 .uw-pop-h { display: flex; align-items: flex-start; gap: .6rem; }
 .uw-pop-ico { font-size: 1.4rem; line-height: 1.2; }
@@ -408,7 +413,7 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
 
 /* popup v2: sparkline + stat grid + day warnings */
 .uw-spark-wrap { margin: .6rem 0 .2rem; }
-.uw-spark { display: block; width: 100%; height: 46px; }
+.uw-spark { display: block; width: 100%; height: 38px; }
 .uw-spark-x { display: flex; justify-content: space-between; font-size: .6rem; color: var(--muted); margin-top: .15rem; }
 .uw-pop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-top: .55rem; }
 .uw-cell {
@@ -431,23 +436,24 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
 .uw-state { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
 .uw-mm { margin-left: auto; display: flex; flex-direction: column; gap: .15rem; font-size: .8rem; font-weight: 600; text-align: right; }
 .uw-max { color: #ef4444; } .uw-min { color: #3b82f6; }
-/* forecast rows: everything visible at a glance, hover/tap for the detail */
-.uw-fc { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--border); padding-top: .35rem; }
+/* forecast: 5 compact chips side by side; detail pops ABOVE the row so the
+   highlighted chip stays visible under the cursor */
+.uw-fc-wrap { position: relative; border-top: 1px solid var(--border); padding-top: .4rem; }
+.uw-fc { display: flex; gap: .35rem; }
 .uw-day {
-  display: grid; grid-template-columns: 3rem 1.7rem 4.3rem 1fr auto; align-items: center; gap: .5rem;
-  background: transparent; border-radius: 8px; padding: calc(.28rem * var(--den) + .06rem) .45rem;
-  color: var(--text2); text-align: left; width: 100%;
+  flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .12rem;
+  background: var(--accent-soft); border-radius: 9px; padding: .4rem .15rem .35rem;
+  color: var(--text2);
 }
-.uw-day-n { font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: capitalize; display: inline-flex; align-items: center; gap: .3rem; }
-.uw-day-w { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.uw-day-w.lvl-yellow { background: #fde047; } .uw-day-w.lvl-orange { background: #fb923c; }
-.uw-day-w.lvl-red { background: #f87171; box-shadow: 0 0 6px rgba(248,113,113,.8); }
+.uw-day-n { font-size: .66rem; font-weight: 700; color: var(--muted); text-transform: capitalize; display: inline-flex; align-items: center; gap: .2rem; line-height: 1; }
+.uw-day-w { font-style: normal; font-size: .6rem; line-height: 1; }
+.uw-day-w.lvl-yellow { color: #fde047; } .uw-day-w.lvl-orange { color: #fb923c; }
+.uw-day-w.lvl-red { color: #f87171; text-shadow: 0 0 6px rgba(248,113,113,.9); }
 .uw-day-i { display: flex; align-items: center; justify-content: center; line-height: 0; }
-.uw-day-t { font-size: .78rem; display: flex; align-items: baseline; gap: .35rem; }
+.uw-day-t { font-size: .72rem; display: flex; align-items: baseline; gap: .3rem; }
 .uw-day-t b { color: var(--text); font-weight: 700; }
-.uw-day-t em { font-style: normal; color: var(--muted); font-size: .72rem; }
-.uw-day-x { font-size: .7rem; color: var(--muted); white-space: nowrap; }
-.uw-day-x small { color: #3b82f6; font-size: .66rem; }
+.uw-day-t em { font-style: normal; color: var(--muted); font-size: .66rem; }
+.uw-day-m { font-size: .58rem; color: var(--muted); white-space: nowrap; letter-spacing: -.01em; }
 
 /* fuel */
 .uf-row { display: flex; align-items: center; gap: .5rem; padding: var(--den-row) 0; border-bottom: 1px solid var(--border); }

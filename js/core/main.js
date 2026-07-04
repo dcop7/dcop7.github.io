@@ -626,16 +626,16 @@ function openHolidayModal() {
    listeners. _uwData holds the last rendered forecast + warnings. */
 let _uwData = null;
 
-/* worst active IPMA warning level overlapping a given local day */
-function _dayWarnLvl(dateStr, warns) {
+/* worst active IPMA warning overlapping a given local day (or null) */
+function _dayWorstWarn(dateStr, warns) {
   const sev = { red: 3, orange: 2, yellow: 1 };
   const d0 = new Date(dateStr + 'T00:00').getTime(), d1 = d0 + 86400000;
-  let best = 0, lvl = null;
+  let best = 0, out = null;
   for (const wn of warns || []) {
     const s = wn.start ? Date.parse(wn.start) : 0, e = wn.end ? Date.parse(wn.end) : s + 1;
-    if (s < d1 && e > d0 && (sev[wn.level] || 0) > best) { best = sev[wn.level]; lvl = wn.level; }
+    if (s < d1 && e > d0 && (sev[wn.level] || 0) > best) { best = sev[wn.level]; out = wn; }
   }
-  return lvl;
+  return out;
 }
 
 /* 24h temperature sparkline (procedural SVG, no libs) */
@@ -815,19 +815,20 @@ async function renderUtility() {
     }
     const uniqWarn = Object.values(byType);
     _uwData = { w, warns: uniqWarn };
-    /* forecast as rows: everything readable at a glance — icon, temps,
-       rain probability+amount, max wind, and a warning dot on days covered
-       by an active IPMA warning */
-    const fmt1 = v => String((+v).toFixed(1)).replace('.', l === 'pt' ? ',' : '.');
+    /* forecast: 5 compact side-by-side day chips — icon, temps, rain and
+       wind always visible; a coloured ⚠ (with tooltip) marks days covered
+       by an active IPMA warning. Details open in a popover anchored ABOVE
+       this row, so the highlighted chip stays visible underneath. */
+    const lvlName = v => ({ yellow: l === 'pt' ? 'Amarelo' : 'Yellow', orange: l === 'pt' ? 'Laranja' : 'Orange', red: l === 'pt' ? 'Vermelho' : 'Red' }[v] || v);
     const fc = (w.days || []).slice(1, 6).map((d, ix) => {
       const dw = wmo(d.code, 1), nm = wd()[new Date(d.date + 'T00:00').getDay()].slice(0, 3);
-      const lvl = _dayWarnLvl(d.date, warnings);
+      const wwn = _dayWorstWarn(d.date, warnings);
+      const warnI = wwn ? `<i class="uw-day-w lvl-${wwn.level}" title="${l === 'pt' ? 'Aviso IPMA' : 'IPMA warning'}: ${e(wwn.type)} (${lvlName(wwn.level)})">⚠</i>` : '';
       return `<button type="button" class="uw-day" data-di="${ix + 1}" aria-label="${nm}">
-        <span class="uw-day-n">${nm}${lvl ? `<i class="uw-day-w lvl-${lvl}"></i>` : ''}</span>
+        <span class="uw-day-n">${nm}${warnI}</span>
         <span class="uw-day-i" title="${dw.text}">${AppIcons.weather(d.code, 1, 20)}</span>
         <span class="uw-day-t"><b>${d.max}°</b><em>${d.min}°</em></span>
-        <span class="uw-day-x" title="${l === 'pt' ? 'Prob. de chuva · precipitação' : 'Rain prob. · precipitation'}">💧 ${d.pop != null ? d.pop + '%' : '—'}${d.rain != null && d.rain >= 0.1 ? ` <small>${fmt1(d.rain)}mm</small>` : ''}</span>
-        <span class="uw-day-x" title="${l === 'pt' ? 'Vento máximo' : 'Max wind'}">💨 ${d.windMax != null ? d.windMax : '—'}</span>
+        <span class="uw-day-m">💧${d.pop != null ? d.pop + '%' : '—'} · 💨${d.windMax != null ? d.windMax : '—'}</span>
       </button>`;
     }).join('');
     const stats = [
@@ -853,8 +854,10 @@ async function renderUtility() {
         ${d0 ? `<div class="uw-mm"><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
       <div class="uw-stats">${stats}</div>
       ${warnHtml}
-      <div class="uw-fc">${fc}</div>
-      <div class="uw-pop" id="uw-pop" hidden></div>
+      <div class="uw-fc-wrap">
+        <div class="uw-pop" id="uw-pop" hidden></div>
+        <div class="uw-fc">${fc}</div>
+      </div>
       <div class="util-foot">${more('https://www.ipma.pt/pt/otempo/prev.localidade.hora/', l === 'pt' ? 'Ver no IPMA' : 'See on IPMA')}</div></section>`;
   } else {
     weatherCard = `<section class="util-card util-weather"><div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2></div><div class="util-empty">${l === 'pt' ? 'Indisponível' : 'Unavailable'}</div></section>`;
