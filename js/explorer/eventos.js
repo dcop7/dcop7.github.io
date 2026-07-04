@@ -83,6 +83,7 @@ const EventosPage = (function () {
   /* ── State ── */
   let _inited      = false;
   let _map         = null;
+  let _baseTile    = null;
   let _markerLayer = null;
   let _districtLayer = null;
   let _events      = [];          /* aggregated, normalised, geocoded */
@@ -529,10 +530,13 @@ const EventosPage = (function () {
     const el = document.getElementById('ev-map');
     if (!el || _map) return;
     _map = L.map(el, { center: [39.6, -8.0], zoom: 7, zoomControl: true, scrollWheelZoom: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd', maxZoom: 19,
-    }).addTo(_map);
+    /* theme-matched basemap: light tiles inside the dark UI looked like a
+       foreign widget (Ocorrências already ships the CARTO dark basemap) */
+    const CARTO = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>';
+    const tileUrl = d => d
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    _baseTile = L.tileLayer(tileUrl(_isDark()), { attribution: CARTO, subdomains: 'abcd', maxZoom: 19 }).addTo(_map);
     _markerLayer = L.layerGroup().addTo(_map);
     _loadDistricts();
     _watchTheme();
@@ -555,6 +559,9 @@ const EventosPage = (function () {
     if (_themeObs) return;
     _themeObs = new MutationObserver(() => {
       if (_districtLayer) _districtLayer.setStyle({ color: _isDark() ? 'rgba(148,163,184,.35)' : 'rgba(71,85,105,.35)' });
+      if (_baseTile) _baseTile.setUrl(_isDark()
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png');
     });
     _themeObs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   }
@@ -593,12 +600,13 @@ const EventosPage = (function () {
     const radii = [['0', _t('Nationwide', 'Todo o país')], ['10', '10 km'], ['25', '25 km'], ['50', '50 km'], ['100', '100 km'], ['200', '200 km']];
     view.innerHTML = `
       <div class="ev-wrap">
-        <header class="ev-head">
-          <div class="ev-head-main">
-            <h1>📅 ${_t('Events in Portugal', 'Eventos em Portugal')}</h1>
-            <p class="ev-sub">${_t('Discover events near you — concerts, culture, food, fairs and more.', 'Descobre o que se passa perto de ti — concertos, cultura, gastronomia, feiras e mais.')}</p>
+        <header class="page-head">
+          <span class="ph-ico">${AppIcons.icon('eventos', 22)}</span>
+          <div class="ph-titles">
+            <h1 class="ph-title">${_t('Events in Portugal', 'Eventos em Portugal')}</h1>
+            <p class="ph-sub">${_t('Discover events near you — concerts, culture, food, fairs and more.', 'Descobre o que se passa perto de ti — concertos, cultura, gastronomia, feiras e mais.')}</p>
           </div>
-          <button class="ev-gps-btn" id="ev-gps" type="button">📍 ${_t('Near me', 'Perto de mim')}</button>
+          <div class="ph-actions"><button class="btn" id="ev-gps" type="button">📍 ${_t('Near me', 'Perto de mim')}</button></div>
         </header>
 
         <div class="ev-filters" id="ev-filters">

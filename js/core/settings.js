@@ -26,9 +26,12 @@ const SettingsPage = (function () {
 
     el.innerHTML = `
       <div class="view-inner">
-        <div class="page-header">
-          <h1 class="page-title">⚙️ ${T('st.title')}</h1>
-          <p class="page-subtitle">${T('st.sub')}</p>
+        <div class="page-head">
+          <span class="ph-ico">${AppIcons.icon('settings', 22)}</span>
+          <div class="ph-titles">
+            <h1 class="ph-title">${T('st.title')}</h1>
+            <p class="ph-sub">${T('st.sub')}</p>
+          </div>
         </div>
         <div class="st-grid">
 

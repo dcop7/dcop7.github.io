@@ -50,6 +50,12 @@ const Nav = (function () {
     return `<span class="sb-nav-ic" aria-hidden="true">${ICONS[r] || ''}</span>`;
   }
 
+  /* Public: section icon for page heads (same set the sidebar uses, larger). */
+  function icon(r, size) {
+    const s = (ICONS[r] || '');
+    return size ? s.replace(/width="\d+" height="\d+"/, `width="${size}" height="${size}"`) : s;
+  }
+
   function buildSidebar() {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
@@ -270,5 +276,5 @@ const Nav = (function () {
     });
   });
 
-  return { go, renderView };
+  return { go, renderView, icon };
 })();

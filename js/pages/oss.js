@@ -113,9 +113,14 @@ const OssPage = (function () {
     const cats = ix.categories.filter(c => c.count > 0)
       .map(c => `<button class="oss-cat" data-cat="${c.id}"><span>${c.emoji}</span>${esc(_lang() === 'en' ? c.label_en : c.label)} <b>${c.count}</b></button>`).join('');
 
+    /* the snapshot's "new" bundle often repeats the trending repos —
+       showing the same cards twice in a row read as a bug */
+    const seen = new Set((b.trending || []).map(p => p.id || p.full_name || p.name));
+    const freshNew = (b.new || []).filter(p => !seen.has(p.id || p.full_name || p.name));
+
     const rails = [
       railHTML('🔥', _t('Trending', 'Em tendência'), _t('Growing fast right now', 'A crescer depressa agora'), b.trending, 'trending'),
-      railHTML('🚀', _t('New & promising', 'Novos promissores'), _t('Recent projects gaining traction', 'Projetos recentes com tração'), b.new, 'new'),
+      railHTML('🚀', _t('New & promising', 'Novos promissores'), _t('Recent projects gaining traction', 'Projetos recentes com tração'), freshNew, 'new'),
       railHTML('🧠', _t('Community picks', 'Descobertas da comunidade'), _t('Buzzing on Hacker News', 'Em destaque no Hacker News'), b.community, 'community'),
       railHTML('💎', _t('Hidden gems', 'Joias escondidas'), _t('High quality, still under the radar', 'Qualidade alta, ainda pouco conhecidos'), b.gems, 'gems'),
       railHTML('🏆', _t('Most popular', 'Mais populares'), _t('All-time favourites', 'Os favoritos de sempre'), b.popular, 'popular'),

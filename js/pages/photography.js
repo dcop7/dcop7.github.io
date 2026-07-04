@@ -1329,12 +1329,15 @@ const PhotographyPage = (function () {
 
       view.innerHTML=`
         <div class="view-inner">
-          <div class="page-header">
-            <h1 class="page-title">📸 Fotografia</h1>
-            <p class="page-subtitle">Cheat sheets de captura e edição, composição, cor e calculadoras · Canon M50 Mark II (APS-C 1.6×)</p>
+          <div class="page-head">
+            <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
+            <div class="ph-titles">
+              <h1 class="ph-title">Fotografia</h1>
+              <p class="ph-sub">Cheat sheets de captura e edição, composição, cor e calculadoras · Canon M50 Mark II (APS-C 1.6×)</p>
+            </div>
           </div>
-          <div class="ph-nav" role="tablist" aria-label="Secções de fotografia">
-            ${PH_TABS.map(t=>`<button class="ph-nav-btn" role="tab" data-tab="${t.id}" aria-selected="false">${t.label}</button>`).join('')}
+          <div class="ph-nav seg" role="tablist" aria-label="Secções de fotografia">
+            ${PH_TABS.map(t=>`<button class="ph-nav-btn seg-btn" role="tab" data-tab="${t.id}" aria-selected="false">${t.label}</button>`).join('')}
           </div>
           ${PH_TABS.map(t=>`<div class="ph-panel" data-panel="${t.id}" role="tabpanel"></div>`).join('')}
         </div>`;

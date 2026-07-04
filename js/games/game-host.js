@@ -96,9 +96,12 @@ const GameHost = (function () {
     }
 
     hub.innerHTML = `
-      <div class="page-header">
-        <h1 class="page-title">🎮 Jogos</h1>
-        <p class="page-subtitle">Escolhe um jogo para começar a jogar</p>
+      <div class="page-head">
+        <span class="ph-ico">${AppIcons.icon('games', 22)}</span>
+        <div class="ph-titles">
+          <h1 class="ph-title">Jogos</h1>
+          <p class="ph-sub">Escolhe um jogo para começar a jogar</p>
+        </div>
       </div>
       ${dailyGame ? `
       <button class="gh-daily${dailyDone ? ' done' : ''}" id="gh-daily" data-game="${dailyGame.id}">

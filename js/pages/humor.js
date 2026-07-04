@@ -55,9 +55,12 @@ const HumorPage = (function () {
   async function renderHome() {
     root.innerHTML = `
       <div class="view-inner">
-        <div class="page-header">
-          <h1 class="page-title">😂 Humor</h1>
-          <p class="page-subtitle">Piadas, adivinhas e trocadilhos — escolhe uma categoria ou arrisca uma aleatória</p>
+        <div class="page-head">
+          <span class="ph-ico">${AppIcons.icon('humor', 22)}</span>
+          <div class="ph-titles">
+            <h1 class="ph-title">Humor</h1>
+            <p class="ph-sub">Piadas, adivinhas e trocadilhos — escolhe uma categoria ou arrisca uma aleatória</p>
+          </div>
         </div>
         <div class="hm-toolbar">
           <button class="hm-tool primary" id="hm-random">🎲 Piada Aleatória</button>

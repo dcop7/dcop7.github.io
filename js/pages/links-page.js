@@ -49,9 +49,12 @@ const LinksPage = (function () {
   function renderOverview(el) {
     const total = LINKS_DATA.reduce((s, c) => s + c.links.length, 0);
     el.innerHTML = `
-      <div class="page-header">
-        <h1 class="page-title">${t('lp.title')}</h1>
-        <p class="page-subtitle">${t('lp.count', { n: total, m: LINKS_DATA.length })}</p>
+      <div class="page-head">
+        <span class="ph-ico">${AppIcons.icon('links', 22)}</span>
+        <div class="ph-titles">
+          <h1 class="ph-title">${t('lp.title')}</h1>
+          <p class="ph-sub">${t('lp.count', { n: total, m: LINKS_DATA.length })}</p>
+        </div>
       </div>
       <div class="lp-overview-grid">
         ${LINKS_DATA.map(c => `
@@ -77,13 +80,11 @@ const LinksPage = (function () {
 
   function renderCategory(el, cat) {
     el.innerHTML = `
-      <div class="page-header">
-        <div class="lp-cat-title-row">
-          <span class="lp-cat-title-icon">${cat.icon}</span>
-          <div>
-            <h1 class="page-title">${catName(cat)}</h1>
-            <p class="page-subtitle">${cat.links.length} sites</p>
-          </div>
+      <div class="page-head">
+        <span class="ph-ico">${cat.icon}</span>
+        <div class="ph-titles">
+          <h1 class="ph-title">${catName(cat)}</h1>
+          <p class="ph-sub">${cat.links.length} sites</p>
         </div>
       </div>
       <div class="lp-links-list">

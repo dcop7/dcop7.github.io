@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v226';
+const CACHE = 'dcop7-v227';
 const STATIC = [
   '/',
   '/index.html',
@@ -8,6 +8,7 @@ const STATIC = [
   '/img/nav/quiz.webp', '/img/nav/humor.webp', '/img/nav/photography.webp', '/img/nav/visual.webp', '/img/nav/settings.webp',
   '/js/core/i18n.js',
   '/js/core/time.js',
+  '/js/core/icons.js',
   '/css/base.css',
   '/css/views/explorer.css',
   '/css/views/explore-kb.css',

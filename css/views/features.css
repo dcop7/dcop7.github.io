@@ -206,13 +206,8 @@ body.theme-terminal .cs-cmd { color: var(--accent); background: rgba(34,197,94,.
   padding: .55rem 0 .65rem; margin: -.5rem 0 1rem; background: var(--bg);
 }
 .ph-nav::-webkit-scrollbar { display: none; }
-.ph-nav-btn {
-  flex-shrink: 0; background: var(--card); border: 1px solid var(--border); color: var(--muted);
-  font: inherit; font-size: .78rem; font-weight: 600; padding: .42rem 1rem;
-  border-radius: 999px; cursor: pointer; transition: all var(--ease); white-space: nowrap;
-}
-.ph-nav-btn:hover { color: var(--text); border-color: var(--border2); }
-.ph-nav-btn.active { background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.45); color: var(--accent); font-weight: 700; }
+/* tab visuals come from the shared .seg-btn recipe (components.css) */
+.ph-nav-btn { flex-shrink: 0; font: inherit; }
 .ph-panel { display: none; }
 .ph-panel.active { display: block; animation: view-in .15s ease; }
 
@@ -494,9 +489,8 @@ body.ph-modal-open { overflow: hidden; }
 
 /* ── VISUAL TOOLS PAGE ── */
 .vt-tabs { display: flex; gap: .35rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
-.vt-tab { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: .78rem; font-weight: 600; padding: .4rem .9rem; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--ease); font-family: inherit; }
-.vt-tab:hover { color: var(--text); border-color: var(--border2); }
-.vt-tab.active { background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.3); color: var(--accent); }
+/* tab visuals come from the shared .seg-btn recipe (components.css) */
+.vt-tab { font-family: inherit; }
 .vt-panel { display: none; }
 .vt-panel.active { display: block; }
 

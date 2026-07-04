@@ -236,12 +236,13 @@ const NoticiasPage = (function () {
   function _buildShell(view) {
     view.innerHTML = `
       <div class="nw-wrap">
-        <header class="nw-head">
-          <div>
-            <h1>🗞️ ${_t('News', 'Notícias')}</h1>
-            <p class="nw-sub">${_t('Your RSS feeds, by topic — pick a topic on the left.', 'Os teus feeds RSS, por tema — escolhe um tema à esquerda.')}</p>
+        <header class="page-head">
+          <span class="ph-ico">${AppIcons.icon('noticias', 22)}</span>
+          <div class="ph-titles">
+            <h1 class="ph-title">${_t('News', 'Notícias')}</h1>
+            <p class="ph-sub">${_t('Your RSS feeds, by topic — pick a topic on the left.', 'Os teus feeds RSS, por tema — escolhe um tema à esquerda.')}</p>
           </div>
-          <div class="nw-updated" id="nw-updated"></div>
+          <div class="ph-actions"><div class="nw-updated" id="nw-updated"></div></div>
         </header>
 
         <div class="nw-toolbar">

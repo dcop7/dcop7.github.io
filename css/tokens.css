@@ -87,6 +87,25 @@
   --tile-filter:  brightness(.85) saturate(.7);
 }
 
+/* ── SECTION ACCENTS ──
+   Each view tints its own chrome (page head, tabs, chips, primary buttons)
+   via --pg-accent; the colours mirror the sidebar icon palette. */
+#view-explorer    { --pg-accent: #38bdf8; --pg-accent-rgb: 56,189,248; }
+#view-noticias    { --pg-accent: #c084fc; --pg-accent-rgb: 192,132,252; }
+#view-eventos     { --pg-accent: #2dd4bf; --pg-accent-rgb: 45,212,191; }
+#view-ocorrencias { --pg-accent: #f59e0b; --pg-accent-rgb: 245,158,11; }
+#view-f1          { --pg-accent: #ef4444; --pg-accent-rgb: 239,68,68; }
+#view-oss         { --pg-accent: #4ade80; --pg-accent-rgb: 74,222,128; }
+#view-discovery   { --pg-accent: #e879f9; --pg-accent-rgb: 232,121,249; }
+#view-links       { --pg-accent: #fb923c; --pg-accent-rgb: 251,146,60; }
+#view-tools       { --pg-accent: #818cf8; --pg-accent-rgb: 129,140,248; }
+#view-cheatsheets { --pg-accent: #a78bfa; --pg-accent-rgb: 167,139,250; }
+#view-games       { --pg-accent: #34d399; --pg-accent-rgb: 52,211,153; }
+#view-quiz        { --pg-accent: #22d3ee; --pg-accent-rgb: 34,211,238; }
+#view-humor       { --pg-accent: #facc15; --pg-accent-rgb: 250,204,21; }
+#view-photography { --pg-accent: #fbbf24; --pg-accent-rgb: 251,191,36; }
+#view-visual      { --pg-accent: #f472b6; --pg-accent-rgb: 244,114,182; }
+
 /* ── LIGHT THEME ── */
 body.light {
   --bg: #f8fafc;

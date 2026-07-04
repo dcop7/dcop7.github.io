@@ -558,12 +558,15 @@ const VisualPage = (function () {
       _built = true;
       view.innerHTML = `
         <div class="view-inner">
-          <div class="page-header">
-            <h1 class="page-title">🧩 Ferramentas Visuais</h1>
-            <p class="page-subtitle">Planeamento visual, mapas mentais e análise</p>
+          <div class="page-head">
+            <span class="ph-ico">${AppIcons.icon('visual', 22)}</span>
+            <div class="ph-titles">
+              <h1 class="ph-title">Ferramentas Visuais</h1>
+              <p class="ph-sub">Planeamento visual, mapas mentais e análise</p>
+            </div>
           </div>
-          <div class="vt-tabs">
-            ${TABS.map(t=>`<button class="vt-tab" data-tab="${t.id}">${t.label}</button>`).join('')}
+          <div class="vt-tabs seg">
+            ${TABS.map(t=>`<button class="vt-tab seg-btn" data-tab="${t.id}">${t.label}</button>`).join('')}
           </div>
           <div id="vt-content"></div>
         </div>`;
