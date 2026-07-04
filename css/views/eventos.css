@@ -305,6 +305,8 @@
 .ev-d-src { margin-top: .7rem; font-size: .76rem; color: var(--muted); }
 
 /* Leaflet attribution/legibility tweaks to match the site */
+/* dark theme: dim the light OSM tiles so the map belongs to the dark UI */
+body:not(.light) #ev-map .leaflet-tile-pane { filter: brightness(.72) saturate(.65) contrast(1.05); }
 #ev-map .leaflet-control-attribution { background: rgba(0,0,0,.45); color: #cbd5e1; }
 #ev-map .leaflet-control-attribution a { color: #93c5fd; }
 

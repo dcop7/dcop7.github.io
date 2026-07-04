@@ -318,7 +318,8 @@ function updateDiscGreeting() {
   const greet = lang() === 'pt'
     ? { morning: 'Bom dia', afternoon: 'Boa tarde', evening: 'Boa noite' }[per]
     : { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' }[per];
-  gEl.textContent = greet + ' 👋';
+  /* the wave lives in its own span so the gradient text-fill doesn't wash it out */
+  gEl.innerHTML = `${greet} <span class="disc-wave">👋</span>`;
 }
 
 async function renderHomeDiscovery() {
@@ -605,7 +606,16 @@ async function renderUtility() {
       w.wind != null ? `<span title="${l === 'pt' ? 'Vento' : 'Wind'}">💨 ${w.wind} km/h</span>` : '',
       w.uv != null ? `<span title="UV">☀️ UV ${w.uv} <small>${uvLevel(w.uv)}</small></span>` : '',
     ].filter(Boolean).join('');
-    const warnHtml = warnings.length ? `<div class="uw-warn">${warnings.slice(0, 4).map(wn => `<span class="uw-w lvl-${e(wn.level)}" title="${e(wn.text || wn.type)}">⚠️ ${e(wn.type)}</span>`).join('')}</div>` : '';
+    /* one pill per warning type (IPMA repeats the same type per time window);
+       keep the most severe level of each */
+    const sev = { red: 3, orange: 2, yellow: 1 };
+    const byType = {};
+    for (const wn of warnings) {
+      const cur = byType[wn.type];
+      if (!cur || (sev[wn.level] || 0) > (sev[cur.level] || 0)) byType[wn.type] = wn;
+    }
+    const uniqWarn = Object.values(byType);
+    const warnHtml = uniqWarn.length ? `<div class="uw-warn">${uniqWarn.slice(0, 4).map(wn => `<span class="uw-w lvl-${e(wn.level)}" title="${e(wn.text || wn.type)}">⚠️ ${e(wn.type)}</span>`).join('')}</div>` : '';
     weatherCard = `<section class="util-card util-weather">
       <div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2><span class="util-tag">${e(w.city)}</span></div>
       <div class="uw-now"><span class="uw-emoji">${cur.emoji}</span>

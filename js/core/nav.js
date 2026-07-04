@@ -19,7 +19,7 @@ const Nav = (function () {
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
   function svg(d, w, h) {
-    return `<svg width="${w||16}" height="${h||16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+    return `<svg width="${w||17}" height="${h||17}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   }
   const ICONS = {
     home:        svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
@@ -44,9 +44,10 @@ const Nav = (function () {
     pin:         `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
   };
 
-  // Premium generated tile icon, with the line-art SVG as a graceful fallback (theme-safe).
+  // Line-art icon in a subtle tile: one coherent icon language across the app
+  // (the photographic .webp tiles mixed three icon styles on one screen).
   function navIcon(r) {
-    return `<span class="sb-nav-ic"><img class="sb-nav-img" src="img/nav/${r}.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.sb-nav-ic').classList.add('img-fail')"><span class="sb-nav-fb" aria-hidden="true">${ICONS[r] || ''}</span></span>`;
+    return `<span class="sb-nav-ic" aria-hidden="true">${ICONS[r] || ''}</span>`;
   }
 
   function buildSidebar() {
@@ -93,8 +94,12 @@ const Nav = (function () {
   }
 
   function wireMobileNav() {
+    document.getElementById('hdr-search-btn')?.addEventListener('click', () => {
+      if (typeof CommandPalette !== 'undefined') CommandPalette.open();
+    });
     const mob = document.getElementById('mob-nav');
     if (!mob) return;
+    document.getElementById('mob-menu-btn')?.addEventListener('click', toggleSb);
     mob.addEventListener('click', e => {
       const btn = e.target.closest('[data-route]');
       if (!btn) return;

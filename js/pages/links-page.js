@@ -60,10 +60,18 @@ const LinksPage = (function () {
             <div class="lp-ov-name">${catName(c)}</div>
             <div class="lp-ov-count">${c.links.length} sites</div>
           </button>`).join('')}
-      </div>`;
+      </div>
+      ${LINKS_DATA.map(c => `
+        <section class="lp-sec" id="lp-sec-${c.id}">
+          <div class="lp-sec-head"><span class="lp-sec-icon">${c.icon}</span><h2>${catName(c)}</h2><span class="lp-sec-count">${c.links.length}</span></div>
+          <div class="lp-links-list">${c.links.map(link => linkCard(link)).join('')}</div>
+        </section>`).join('')}`;
 
+    /* the category tiles act as a jump-index into the full directory below */
     el.querySelectorAll('.lp-overview-card').forEach(btn => {
-      btn.addEventListener('click', () => Nav.go('links/' + btn.dataset.cat));
+      btn.addEventListener('click', () => {
+        document.getElementById('lp-sec-' + btn.dataset.cat)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
   }
 

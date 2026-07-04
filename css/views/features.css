@@ -34,17 +34,25 @@ body.light .lp-sidebar { background: rgba(248,250,252,.98); }
 .lp-cat-title-row { display: flex; align-items: center; gap: .75rem; }
 .lp-cat-title-icon { font-size: 1.8rem; flex-shrink: 0; }
 
-/* Overview grid */
-.lp-overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
+/* Overview grid — compact jump-index tiles (the full directory renders below) */
+.lp-overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .6rem; margin-bottom: 2rem; }
 .lp-overview-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1.25rem; cursor: pointer; transition: all .2s; text-align: center;
-  font-family: inherit; color: var(--text);
+  display: flex; align-items: center; gap: .65rem; text-align: left;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: .65rem .8rem; cursor: pointer; transition: all .2s;
+  font-family: inherit; color: var(--text); min-width: 0;
 }
-.lp-overview-card:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.25); }
-.lp-ov-icon { font-size: 2rem; margin-bottom: .5rem; }
-.lp-ov-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; }
-.lp-ov-count { font-size: .68rem; color: var(--muted); margin-top: .2rem; }
+.lp-overview-card:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-2px); box-shadow: var(--shadow-2); }
+.lp-ov-icon { font-size: 1.15rem; flex-shrink: 0; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: var(--card2); border: 1px solid var(--border); border-radius: 9px; }
+.lp-ov-name { flex: 1; font-family: var(--font-head); font-size: .78rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-ov-count { flex-shrink: 0; font-size: .64rem; color: var(--muted); margin-top: 0; }
+
+/* Full directory sections under the index */
+.lp-sec { margin-bottom: 2rem; scroll-margin-top: calc(var(--hdr-h) + 1rem); }
+.lp-sec-head { display: flex; align-items: center; gap: .55rem; margin-bottom: .8rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+.lp-sec-icon { font-size: 1rem; }
+.lp-sec-head h2 { font-family: var(--font-head); font-size: 1rem; font-weight: 700; margin: 0; }
+.lp-sec-count { font-size: .66rem; font-weight: 700; color: var(--muted); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .1rem .5rem; }
 
 /* Link cards */
 .lp-links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .65rem; margin-bottom: 1.5rem; }

@@ -195,17 +195,19 @@ body.sb-open .sidebar { transform: translateX(0); }
   font-weight: 600; border-left-color: var(--accent);
 }
 body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
-.sb-nav-item svg { flex-shrink: 0; opacity: .65; transition: opacity .18s; }
-.sb-nav-item:hover svg, .sb-nav-item.active svg { opacity: 1; }
-/* generated tile icons */
-.sb-nav-ic { display: inline-flex; flex-shrink: 0; line-height: 0; }
-.sb-nav-img { width: 25px; height: 25px; border-radius: 7px; display: block; object-fit: cover;
-  box-shadow: 0 1px 4px rgba(0,0,0,.35); transition: box-shadow .18s, transform .18s; }
-.sb-nav-item:hover .sb-nav-img { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(var(--accent-rgb),.4), 0 3px 9px rgba(0,0,0,.45); }
-.sb-nav-item.active .sb-nav-img { box-shadow: 0 0 0 1.5px rgba(var(--accent-rgb),.65), 0 2px 8px rgba(0,0,0,.45); }
-.sb-nav-fb { display: none; }
-.sb-nav-ic.img-fail .sb-nav-img { display: none; }
-.sb-nav-ic.img-fail .sb-nav-fb { display: inline-flex; }
+.sb-nav-item svg { flex-shrink: 0; opacity: .9; transition: opacity .18s; }
+/* icon tile: consistent weight for every entry, tinted by the route colour */
+.sb-nav-ic {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 8px; line-height: 0;
+  background: rgba(255,255,255,.045); border: 1px solid var(--border);
+  transition: all .18s;
+}
+body.light .sb-nav-ic { background: rgba(15,23,42,.05); }
+.sb-nav-item:hover .sb-nav-ic { border-color: var(--border2); transform: translateY(-1px); }
+.sb-nav-item.active .sb-nav-ic {
+  background: rgba(var(--accent-rgb),.16); border-color: rgba(var(--accent-rgb),.4);
+}
 
 /* Thin separator between nav groups */
 .sb-sep { height: 1px; background: var(--border); margin: .5rem .85rem; opacity: .7; }
@@ -250,7 +252,9 @@ body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
 .page-title { font-family: var(--font-head); font-size: clamp(1.2rem,3vw,1.5rem); font-weight: 800; letter-spacing: -.03em; display: flex; align-items: center; gap: .6rem; }
 .page-subtitle { font-size: .82rem; color: var(--muted); margin-top: .25rem; }
 
-/* ── MOBILE BOTTOM NAVIGATION ── */
+/* ── MOBILE BOTTOM NAVIGATION ──
+   Primary destinations always one thumb-tap away; the drawer keeps the full
+   catalogue. Hidden on desktop. */
 .mob-nav {
   display: none; position: fixed; bottom: 0; left: 0; right: 0;
   height: 60px; z-index: 400;
@@ -276,14 +280,17 @@ body.light .mob-nav { background: rgba(248,250,252,.97); border-top-color: rgba(
 /* ── RESPONSIVE BREAKPOINTS ── */
 @media (max-width: 900px) {
   :root { --sb-w: 264px; }
-  /* Bottom mobile nav removed — only reserve the device safe-area inset. */
-  .app-main { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .mob-nav { display: block; }
+  .app-main { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   .hdr-center { display: none; }
   #site-header .hdr-center { display: none; }
+  .hdr-search-btn { display: flex; }
   .view-inner { padding: 1rem 1rem 1.5rem; }
   /* Roomier drawer tap targets on touch screens. */
   .sb-nav-item { padding: .7rem .85rem; font-size: .9rem; }
 }
+/* Mobile search entry point (the inline search bar is desktop-only) */
+.hdr-search-btn { display: none; }
 @media (max-width: 600px) {
   /* Declutter the header so the brand + essential controls always fit
      (the date is redundant with the Home greeting on phones). */

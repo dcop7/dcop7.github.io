@@ -29,6 +29,22 @@ img { display: block; max-width: 100%; }
   outline-offset: 2px;
   border-radius: var(--radius-xs);
 }
+::selection { background: rgba(var(--accent-rgb), .35); }
+
+/* Custom scrollbars — the default chunky grey bars break the dark chrome */
+* { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); border: 2px solid transparent; background-clip: content-box; }
+
+/* Layout safety net: no view may ever push the page sideways */
+#app-content { overflow-x: clip; }
+
+/* Touch devices: minimum comfortable hit areas for the header controls */
+@media (pointer: coarse) {
+  .icon-btn, .sb-toggle, .font-btn, .lang-btn { min-width: 38px; min-height: 38px; }
+}
 
 /* ── BACKGROUND SYSTEM ── */
 .bg-canvas {

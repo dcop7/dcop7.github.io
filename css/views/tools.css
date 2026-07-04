@@ -15,7 +15,9 @@
 body.light .tools-sidebar { background: rgba(248,250,252,.98); }
 .tools-sidebar-cat { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); padding: .75rem 1rem .3rem; border-top: 1px solid var(--border); margin-top: .35rem; }
 .tools-sidebar-cat:first-child { border-top: none; margin-top: 0; padding-top: .3rem; }
-.tools-content { padding: 1.25rem 1.5rem; overflow-y: auto; }
+/* centred column: a lone tool card floating at the left of a huge empty
+   canvas read as unfinished — constrain and centre the work area */
+.tools-content { padding: 1.5rem; overflow-y: auto; max-width: 1000px; margin: 0 auto; width: 100%; }
 .tool-panel { display: none; }
 .tool-panel.active { display: block; }
 .tool-nav-btn { display: flex; align-items: center; gap: .5rem; padding: .42rem .9rem; width: 100%; background: transparent; border: none; color: var(--muted); font-size: .78rem; cursor: pointer; transition: all var(--ease); text-align: left; font-family: inherit; border-left: 2px solid transparent; }

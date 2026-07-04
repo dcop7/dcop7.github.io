@@ -122,6 +122,103 @@ body.light .skel {
 .shortcut-keys kbd { background: var(--card); border: 1px solid var(--border2); border-radius: 5px; padding: .15rem .45rem; font-size: .62rem; font-family: var(--font-mono); color: var(--text2); }
 @media (max-width: 900px) { .shortcuts-grid { grid-template-columns: 1fr; } }
 
+/* ══════════════════════════════════════════════════════════════════
+   UNIFIED UI KIT — one visual language for every section.
+   New pages must compose these instead of inventing local styles.
+══════════════════════════════════════════════════════════════════ */
+
+/* ── BUTTONS ──
+   .btn           base (soft surface)
+   .btn-primary   filled accent — ONE per screen region
+   .btn-ghost     borderless, low emphasis
+   .btn-sm        compact                                            */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45em;
+  background: var(--card2); border: 1px solid var(--border);
+  color: var(--text); font-size: var(--fs-sm); font-weight: 600;
+  padding: .5rem 1rem; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all var(--ease); text-decoration: none;
+  user-select: none; white-space: nowrap;
+}
+.btn:hover { border-color: var(--border2); background: var(--accent-soft); color: var(--accent); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--pg-accent), rgba(var(--pg-accent-rgb), .8));
+  border-color: transparent; color: #fff;
+  box-shadow: 0 2px 12px rgba(var(--pg-accent-rgb), .35);
+}
+.btn-primary:hover { background: var(--pg-accent); color: #fff; filter: brightness(1.1); box-shadow: 0 4px 18px rgba(var(--pg-accent-rgb), .45); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-ghost:hover { background: var(--card2); color: var(--text); border-color: transparent; }
+.btn-sm { padding: .32rem .7rem; font-size: var(--fs-xs); border-radius: var(--radius-xs); }
+
+/* ── CHIPS (filters / toggles) ── */
+.chip {
+  display: inline-flex; align-items: center; gap: .4em;
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text2); font-size: var(--fs-xs); font-weight: 600;
+  padding: .35rem .8rem; border-radius: 999px; cursor: pointer;
+  transition: all var(--ease); user-select: none; white-space: nowrap;
+}
+.chip:hover { border-color: rgba(var(--pg-accent-rgb), .4); color: var(--text); }
+.chip.active, .chip[aria-pressed="true"] {
+  background: rgba(var(--pg-accent-rgb), .14); border-color: rgba(var(--pg-accent-rgb), .45);
+  color: var(--pg-accent);
+}
+
+/* ── SEGMENTED TAB BAR (section sub-nav) ── */
+.seg { display: flex; gap: .35rem; flex-wrap: wrap; align-items: center; }
+.seg-btn {
+  display: inline-flex; align-items: center; gap: .45em;
+  background: transparent; border: 1px solid transparent;
+  color: var(--muted); font-size: var(--fs-sm); font-weight: 600;
+  padding: .45rem .9rem; border-radius: 999px; cursor: pointer; transition: all var(--ease);
+  white-space: nowrap;
+}
+.seg-btn:hover { color: var(--text); background: var(--card2); }
+.seg-btn.active {
+  color: var(--pg-accent); background: rgba(var(--pg-accent-rgb), .13);
+  border-color: rgba(var(--pg-accent-rgb), .4);
+}
+/* horizontal scroll on narrow screens instead of wrapping into a wall */
+@media (max-width: 700px) {
+  .seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .seg::-webkit-scrollbar { display: none; }
+}
+
+/* ── PAGE HEAD (title block every section shares) ── */
+.page-head { display: flex; align-items: flex-start; gap: .9rem; margin-bottom: var(--sp-5); flex-wrap: wrap; }
+.ph-ico {
+  width: 44px; height: 44px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
+  background: linear-gradient(145deg, rgba(var(--pg-accent-rgb), .18), rgba(var(--pg-accent-rgb), .05));
+  border: 1px solid rgba(var(--pg-accent-rgb), .25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06); flex-shrink: 0;
+}
+.ph-titles { flex: 1; min-width: 200px; }
+.ph-title { font-family: var(--font-head); font-size: var(--fs-xl); font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+.ph-sub { font-size: var(--fs-sm); color: var(--muted); margin-top: .3rem; max-width: 62ch; }
+.ph-actions { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; margin-left: auto; }
+
+/* ── CARD (standard content card) ── */
+.card-std {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: var(--sp-4);
+  transition: border-color var(--ease), transform var(--ease-out), box-shadow var(--ease-out);
+}
+.card-std:hover { border-color: var(--border2); box-shadow: var(--shadow-2); }
+a.card-std:hover, button.card-std:hover { transform: translateY(-2px); border-color: rgba(var(--pg-accent-rgb), .35); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: .6rem; padding: var(--sp-7) var(--sp-4); color: var(--muted);
+}
+.empty-state svg, .empty-state .es-ico { opacity: .5; font-size: 2rem; }
+.es-title { font-size: var(--fs-md); font-weight: 700; color: var(--text2); }
+.es-hint { font-size: var(--fs-sm); max-width: 42ch; line-height: 1.6; }
+
 /* ── SETTINGS TOGGLE ── */
 .st-toggle-wrap { cursor: pointer; user-select: none; }
 .st-toggle { width: 44px; height: 24px; border-radius: 12px; background: var(--border2); position: relative; transition: background .2s; flex-shrink: 0; }

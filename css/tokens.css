@@ -18,7 +18,7 @@
   /* ── Text ── */
   --text: #e2e8f0;
   --text2: #cbd5e1;
-  --muted: #64748b;
+  --muted: #7686a0;   /* ≥4.5:1 on --bg: secondary text must stay readable */
 
   /* ── Accent ── */
   --accent: #6366f1;
@@ -36,6 +36,35 @@
   --radius: 12px;
   --radius-sm: 8px;
   --radius-xs: 5px;
+  --radius-lg: 16px;
+
+  /* ── Spacing scale (4px base) ── */
+  --sp-1: .25rem;
+  --sp-2: .5rem;
+  --sp-3: .75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+
+  /* ── Type scale ── */
+  --fs-xs: .72rem;
+  --fs-sm: .82rem;
+  --fs-md: .92rem;
+  --fs-lg: 1.05rem;
+  --fs-xl: clamp(1.25rem, 2.6vw, 1.55rem);
+  --fs-2xl: clamp(1.6rem, 4vw, 2.2rem);
+  --fs-3xl: clamp(2rem, 5vw, 2.9rem);
+
+  /* ── Elevation ── */
+  --shadow-1: 0 1px 2px rgba(0,0,0,.25);
+  --shadow-2: 0 4px 16px rgba(0,0,0,.28);
+  --shadow-3: 0 16px 48px rgba(0,0,0,.42);
+  --ring: 0 0 0 3px var(--accent-soft);
+
+  /* ── Section accent (each view can override) ── */
+  --pg-accent: var(--accent);
+  --pg-accent-rgb: var(--accent-rgb);
 
   /* ── Layout ── */
   --sb-w: 224px;
@@ -74,6 +103,10 @@ body.light {
   --accent2: #0891b2;
   --accent-soft: rgba(99,102,241,.08);
   --accent-glow: rgba(99,102,241,.15);
+
+  --shadow-1: 0 1px 2px rgba(15,23,42,.06);
+  --shadow-2: 0 4px 16px rgba(15,23,42,.08);
+  --shadow-3: 0 16px 48px rgba(15,23,42,.14);
 
   /* Light-mode glass overlays */
   --glass:        rgba(255,255,255,.92);

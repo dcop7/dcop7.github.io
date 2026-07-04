@@ -2,22 +2,28 @@ const CommandPalette = (function () {
   'use strict';
 
   const NAV_ITEMS = [
-    { name: 'Home',         desc: 'Go to home',             icon: '🏠', type: 'nav',  action: () => Nav.go('home') },
-    { name: 'Feed',         desc: 'Hacker News & RSS feed', icon: '📰', type: 'nav',  action: () => Nav.go('feed') },
-    { name: 'Cheatsheets',  desc: 'Dev command cheatsheets',icon: '📋', type: 'nav',  action: () => Nav.go('cheatsheets') },
-    { name: 'Games',        desc: 'Play mini-games',        icon: '🎮', type: 'nav',  action: () => Nav.go('games') },
-    { name: 'Links',        desc: 'Useful sites & bookmarks',icon: '🔗', type: 'nav', action: () => Nav.go('links') },
-    { name: 'Tools',        desc: 'Developer tools',        icon: '🔧', type: 'nav',  action: () => Nav.go('tools') },
-    { name: 'Formula 1',    desc: 'Live race, track & standings', icon: '🏎️', type: 'nav', action: () => Nav.go('f1') },
-    { name: 'Media',        desc: 'Entertainment dashboard', icon: '🎬', type: 'nav', action: () => Nav.go('media') },
+    { name: 'Início',            desc: 'Painel do dia',                    icon: '🏠', type: 'nav', action: () => Nav.go('home') },
+    { name: 'Explorar',          desc: 'Terra, Espaço e Corpo Humano',     icon: '🌍', type: 'nav', action: () => Nav.go('explorer') },
+    { name: 'Notícias',          desc: 'Feeds RSS por tema',               icon: '📰', type: 'nav', action: () => Nav.go('noticias') },
+    { name: 'Eventos',           desc: 'Eventos em Portugal',              icon: '📅', type: 'nav', action: () => Nav.go('eventos') },
+    { name: 'Ocorrências PT',    desc: 'Sismos, incêndios e avisos',       icon: '🚨', type: 'nav', action: () => Nav.go('ocorrencias') },
+    { name: 'Fórmula 1',         desc: 'Corrida ao vivo e classificações', icon: '🏎️', type: 'nav', action: () => Nav.go('f1') },
+    { name: 'Descobrir Tech',    desc: 'Projetos open source',             icon: '⚡', type: 'nav', action: () => Nav.go('oss') },
+    { name: 'Product Discovery', desc: 'Promoções e jogos grátis',         icon: '🛍️', type: 'nav', action: () => Nav.go('discovery') },
+    { name: 'Sites Úteis',       desc: 'Bookmarks organizados',            icon: '🔗', type: 'nav', action: () => Nav.go('links') },
+    { name: 'Ferramentas',       desc: 'Utilitários e dev tools',          icon: '🔧', type: 'nav', action: () => Nav.go('tools') },
+    { name: 'Cheatsheets',       desc: 'Comandos e referências',           icon: '📋', type: 'nav', action: () => Nav.go('cheatsheets') },
+    { name: 'Jogos',             desc: 'Xadrez, Wordle, Uno e mais',       icon: '🎮', type: 'nav', action: () => Nav.go('games') },
+    { name: 'Quizzes',           desc: 'Aprender a brincar',               icon: '🧩', type: 'nav', action: () => Nav.go('quiz') },
+    { name: 'Humor',             desc: 'Piadas e adivinhas',               icon: '😂', type: 'nav', action: () => Nav.go('humor') },
+    { name: 'Fotografia',        desc: 'Cheat sheets de captura e edição', icon: '📷', type: 'nav', action: () => Nav.go('photography') },
+    { name: 'Visual',            desc: 'Matriz, SWOT, mapas mentais',      icon: '🧠', type: 'nav', action: () => Nav.go('visual') },
+    { name: 'Definições',        desc: 'Tema, língua, cidade',             icon: '⚙️', type: 'nav', action: () => Nav.go('settings') },
   ];
 
   const THEME_ITEMS = [
-    { name: 'Theme: Dark',      desc: 'Default dark theme',     icon: '🌙', type: 'theme', action: () => ThemeManager.apply('dark') },
-    { name: 'Theme: Light',     desc: 'Light mode',             icon: '☀️', type: 'theme', action: () => ThemeManager.apply('light') },
-    { name: 'Theme: Cyberpunk', desc: 'Neon purple & magenta',  icon: '💜', type: 'theme', action: () => ThemeManager.apply('cyberpunk') },
-    { name: 'Theme: Terminal',  desc: 'Green monochrome',       icon: '💚', type: 'theme', action: () => ThemeManager.apply('terminal') },
-    { name: 'Theme: Retro',     desc: 'Amber warm tones',       icon: '🟡', type: 'theme', action: () => ThemeManager.apply('retro') },
+    { name: 'Tema: Escuro', desc: 'Tema escuro (padrão)', icon: '🌙', type: 'theme', action: () => ThemeManager.apply('dark') },
+    { name: 'Tema: Claro',  desc: 'Tema claro',           icon: '☀️', type: 'theme', action: () => ThemeManager.apply('light') },
   ];
 
   function getBookmarkItems() {
@@ -110,8 +116,8 @@ const CommandPalette = (function () {
 
       if (ql.length >= 2) {
         matched.push({
-          name:   `Search web for "${q}"`,
-          desc:   'Open in browser',
+          name:   `Pesquisar na web: "${q}"`,
+          desc:   'Abrir no browser',
           icon:   '🔎',
           type:   'search',
           action: () => window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener'),
@@ -175,6 +181,14 @@ const CommandPalette = (function () {
 
   document.addEventListener('cp:open',  open);
   document.addEventListener('cp:close', close);
+
+  /* Global shortcut: Ctrl/Cmd+K from anywhere */
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      overlay && overlay.hidden ? open() : close();
+    }
+  });
 
   return { open, close };
 })();
