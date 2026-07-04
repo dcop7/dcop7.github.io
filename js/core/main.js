@@ -469,20 +469,43 @@ function wmo(code, isDay) {
   return { emoji, text: lang() === 'pt' ? e[1] : e[2] };
 }
 
-/* The configured weather location: a stable geocoder result ({id, name,
-   admin1, country, lat, lon}) saved by Definições. A bare legacy city string
-   is resolved ONCE below and then persisted — every later call reuses the
-   exact same place instead of re-geocoding ambiguous free text. */
+/* Portuguese cities offered by the weather widget's own picker: the 18
+   district capitals + islands, with fixed coordinates — picking one never
+   touches a geocoder, so the location is always exact. */
+const PT_CITIES = [
+  ['Aveiro', 40.641, -8.654], ['Beja', 38.015, -7.863], ['Braga', 41.545, -8.427],
+  ['Bragança', 41.806, -6.757], ['Castelo Branco', 39.822, -7.491], ['Coimbra', 40.211, -8.429],
+  ['Évora', 38.571, -7.913], ['Faro', 37.016, -7.935], ['Funchal', 32.667, -16.924],
+  ['Guarda', 40.537, -7.268], ['Leiria', 39.744, -8.807], ['Lisboa', 38.722, -9.139],
+  ['Ponta Delgada', 37.740, -25.669], ['Portalegre', 39.291, -7.428], ['Porto', 41.150, -8.610],
+  ['Santarém', 39.236, -8.686], ['Setúbal', 38.524, -8.893], ['Viana do Castelo', 41.694, -8.831],
+  ['Vila Real', 41.301, -7.742], ['Viseu', 40.657, -7.914],
+];
+const _citySlug = n => 'pt-' + n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-');
+
+function setWeatherCity(row) {
+  const loc = { id: _citySlug(row[0]), name: row[0], country: 'PT', lat: row[1], lon: row[2] };
+  localStorage.setItem('weather-loc', JSON.stringify(loc));
+  localStorage.setItem('weather-city', loc.name);   /* legacy readers */
+  document.dispatchEvent(new CustomEvent('weather-city-change'));
+}
+
+/* The configured weather location ({id, name, lat, lon}). A legacy city
+   string is matched against PT_CITIES first; only truly unknown free text
+   falls back to one geocoder resolution (then persisted). */
 function getWeatherLoc() {
   try {
     const l = JSON.parse(localStorage.getItem('weather-loc') || 'null');
     if (l && l.lat != null && l.name) return l;
   } catch (e) {}
-  return { name: localStorage.getItem('weather-city') || 'Leiria' };
+  const cityName = localStorage.getItem('weather-city') || 'Leiria';
+  const row = PT_CITIES.find(c => c[0].toLowerCase() === cityName.toLowerCase());
+  if (row) return { id: _citySlug(row[0]), name: row[0], country: 'PT', lat: row[1], lon: row[2] };
+  return { name: cityName };
 }
 
 async function fetchWeatherForLoc(loc) {
-  const key = 'weather-cache-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
+  const key = 'weather-cache2-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
   try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000 && c.w && c.w.feels != null) return c.w; } catch (e) {}
   try {
     let { lat, lon, name } = loc;
@@ -497,7 +520,7 @@ async function fetchWeatherForLoc(loc) {
         localStorage.setItem('weather-loc', JSON.stringify({ id: c.id, name: c.name, admin1: c.admin1 || '', country: c.country_code || '', lat, lon }));
       } catch (e) {}
     }
-    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,uv_index_max,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
+    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
     if (!w || !w.current) return null;
     const out = {
       city: name, lat, lon,
@@ -506,7 +529,13 @@ async function fetchWeatherForLoc(loc) {
       code: w.current.weather_code, isDay: w.current.is_day,
       uv: w.daily.uv_index_max[0] != null ? Math.round(w.daily.uv_index_max[0]) : null,
       sunrise: w.daily.sunrise[0], sunset: w.daily.sunset[0],
-      days: w.daily.time.map((tt, i) => ({ date: tt, min: Math.round(w.daily.temperature_2m_min[i]), max: Math.round(w.daily.temperature_2m_max[i]), code: w.daily.weather_code[i], pop: w.daily.precipitation_probability_max[i], uv: w.daily.uv_index_max[i] != null ? Math.round(w.daily.uv_index_max[i]) : null })),
+      days: w.daily.time.map((tt, i) => ({
+        date: tt, min: Math.round(w.daily.temperature_2m_min[i]), max: Math.round(w.daily.temperature_2m_max[i]),
+        code: w.daily.weather_code[i], pop: w.daily.precipitation_probability_max[i],
+        rain: w.daily.precipitation_sum[i], windMax: w.daily.wind_speed_10m_max[i] != null ? Math.round(w.daily.wind_speed_10m_max[i]) : null,
+        uv: w.daily.uv_index_max[i] != null ? Math.round(w.daily.uv_index_max[i]) : null,
+        sunrise: w.daily.sunrise[i], sunset: w.daily.sunset[i],
+      })),
     };
     localStorage.setItem(key, JSON.stringify({ t: Date.now(), w: out }));
     return out;
@@ -590,6 +619,83 @@ function openHolidayModal() {
   render();
 }
 
+/* ── Weather widget interactions: city picker + detail popovers ──────
+   Wired once via delegation so the hourly/day re-renders never stack
+   listeners. _uwData holds the last rendered forecast + warnings. */
+let _uwData = null;
+
+function _uwDayHTML(di) {
+  if (!_uwData) return '';
+  const d = _uwData.w.days[di]; if (!d) return '';
+  const l = lang(), dt = new Date(d.date + 'T00:00'), dw = wmo(d.code, 1);
+  const rows = [
+    d.pop != null ? `<span>💧 ${l === 'pt' ? 'Prob. chuva' : 'Rain prob.'} <b>${d.pop}%</b></span>` : '',
+    d.rain != null ? `<span>🌧️ ${l === 'pt' ? 'Precipitação' : 'Precipitation'} <b>${(+d.rain).toFixed(1).replace('.', l === 'pt' ? ',' : '.')} mm</b></span>` : '',
+    d.windMax != null ? `<span>💨 ${l === 'pt' ? 'Vento máx.' : 'Max wind'} <b>${d.windMax} km/h</b></span>` : '',
+    d.uv != null ? `<span>☀️ UV <b>${d.uv}</b> <small>${uvLevel(d.uv)}</small></span>` : '',
+    d.sunrise && d.sunset ? `<span>🌅 <b>${d.sunrise.slice(11, 16)}</b> · 🌇 <b>${d.sunset.slice(11, 16)}</b></span>` : '',
+  ].filter(Boolean).join('');
+  return `<div class="uw-pop-h"><span class="uw-pop-ico">${dw.emoji}</span>
+      <div><b>${wd()[dt.getDay()]}, ${dt.getDate()} ${ms()[dt.getMonth()]}</b><small>${dw.text} · ▲ ${d.max}° ▼ ${d.min}°</small></div>
+      <button type="button" class="uw-pop-x" aria-label="Fechar">✕</button></div>
+    <div class="uw-pop-rows">${rows}</div>`;
+}
+
+function _uwWarnHTML(wi) {
+  if (!_uwData) return '';
+  const wn = _uwData.warns[wi]; if (!wn) return '';
+  const l = lang();
+  const lvl = { yellow: l === 'pt' ? 'Amarelo' : 'Yellow', orange: l === 'pt' ? 'Laranja' : 'Orange', red: l === 'pt' ? 'Vermelho' : 'Red' }[wn.level] || wn.level;
+  const fmt = x => { try { return new Date(x).toLocaleString(l === 'pt' ? 'pt-PT' : 'en-GB', { weekday: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
+  const period = wn.start && wn.end ? `${fmt(wn.start)} → ${fmt(wn.end)}` : '';
+  return `<div class="uw-pop-h"><span class="uw-pop-ico">⚠️</span>
+      <div><b>${_escH(wn.type)} · <span class="uw-lvl-${_escH(wn.level)}">${lvl}</span></b>${period ? `<small>${period}</small>` : ''}</div>
+      <button type="button" class="uw-pop-x" aria-label="Fechar">✕</button></div>
+    ${wn.text ? `<div class="uw-pop-txt">${_escH(wn.text)}</div>` : `<div class="uw-pop-txt">${lang() === 'pt' ? 'Aviso IPMA em vigor para a região.' : 'IPMA warning in effect for the region.'}</div>`}`;
+}
+
+function _wireWeatherWidget() {
+  if (window._uwWired) return;
+  window._uwWired = true;
+  document.addEventListener('click', ev => {
+    if (!document.getElementById('util-panel')) return;
+    const pop  = document.getElementById('uw-pop');
+    const drop = document.getElementById('uw-city-drop');
+    if (ev.target.closest('#uw-city-btn')) {
+      if (drop) { drop.hidden = !drop.hidden; if (!drop.hidden) { drop.querySelector('#uw-city-filter')?.focus(); } }
+      if (pop) pop.hidden = true;
+      return;
+    }
+    const opt = ev.target.closest('.uw-city-opt');
+    if (opt) { setWeatherCity(PT_CITIES[+opt.dataset.ci]); return; }
+    if (drop && !drop.hidden && !ev.target.closest('#uw-city-drop')) drop.hidden = true;
+    if (ev.target.closest('.uw-pop-x')) { if (pop) pop.hidden = true; return; }
+    const day = ev.target.closest('.uw-day[data-di]');
+    if (day && pop) {
+      pop.innerHTML = _uwDayHTML(+day.dataset.di); pop.hidden = false;
+      document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
+      return;
+    }
+    const pill = ev.target.closest('.uw-w[data-wi]');
+    if (pill && pop) { pop.innerHTML = _uwWarnHTML(+pill.dataset.wi); pop.hidden = false; return; }
+    if (pop && !pop.hidden && !ev.target.closest('#uw-pop')) {
+      pop.hidden = true;
+      document.querySelectorAll('.uw-day.on').forEach(b => b.classList.remove('on'));
+    }
+  });
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape') return;
+    const pop = document.getElementById('uw-pop'); if (pop) pop.hidden = true;
+    const drop = document.getElementById('uw-city-drop'); if (drop) drop.hidden = true;
+  });
+  document.addEventListener('input', ev => {
+    if (!ev.target || ev.target.id !== 'uw-city-filter') return;
+    const q = ev.target.value.toLowerCase();
+    document.querySelectorAll('#uw-city-drop .uw-city-opt').forEach(b => { b.hidden = q && !b.textContent.toLowerCase().includes(q); });
+  });
+}
+_wireWeatherWidget();
+
 async function renderUtility() {
   const panel = document.getElementById('util-panel');
   if (!panel) return;
@@ -615,10 +721,10 @@ async function renderUtility() {
   let weatherCard;
   if (w) {
     const cur = wmo(w.code, w.isDay), d0 = w.days && w.days[0];
-    const fc = (w.days || []).slice(1, 6).map(d => {
+    const fc = (w.days || []).slice(1, 6).map((d, ix) => {
       const dw = wmo(d.code, 1), nm = wd()[new Date(d.date + 'T00:00').getDay()].slice(0, 3);
       const rain = d.pop != null && d.pop >= 20 ? `<span class="uw-day-r">💧${d.pop}%</span>` : '';
-      return `<div class="uw-day"><span class="uw-day-n">${nm}</span><span class="uw-day-i">${dw.emoji}</span><span class="uw-day-t"><b>${d.max}°</b> ${d.min}°</span>${rain}</div>`;
+      return `<button type="button" class="uw-day" data-di="${ix + 1}" aria-label="${nm}"><span class="uw-day-n">${nm}</span><span class="uw-day-i">${dw.emoji}</span><span class="uw-day-t"><b>${d.max}°</b> ${d.min}°</span>${rain}</button>`;
     }).join('');
     const stats = [
       w.feels != null ? `<span title="${l === 'pt' ? 'Sensação' : 'Feels like'}">🌡️ ${w.feels}°</span>` : '',
@@ -635,9 +741,18 @@ async function renderUtility() {
       if (!cur || (sev[wn.level] || 0) > (sev[cur.level] || 0)) byType[wn.type] = wn;
     }
     const uniqWarn = Object.values(byType);
-    const warnHtml = uniqWarn.length ? `<div class="uw-warn">${uniqWarn.slice(0, 4).map(wn => `<span class="uw-w lvl-${e(wn.level)}" title="${e(wn.text || wn.type)}">⚠️ ${e(wn.type)}</span>`).join('')}</div>` : '';
+    _uwData = { w, warns: uniqWarn };
+    const warnHtml = uniqWarn.length ? `<div class="uw-warn">${uniqWarn.slice(0, 4).map((wn, wi) => `<button type="button" class="uw-w lvl-${e(wn.level)}" data-wi="${wi}" title="${e(wn.text || wn.type)}">⚠️ ${e(wn.type)}</button>`).join('')}</div>` : '';
+    const cityOpts = PT_CITIES.map((c, ci) =>
+      `<button type="button" class="uw-city-opt${c[0] === w.city ? ' on' : ''}" data-ci="${ci}">${c[0]}</button>`).join('');
     weatherCard = `<section class="util-card util-weather">
-      <div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2><span class="util-tag">${e(w.city)}</span></div>
+      <div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2>
+        <button type="button" class="util-tag uw-city-btn" id="uw-city-btn" aria-haspopup="listbox" title="${l === 'pt' ? 'Mudar cidade' : 'Change city'}">${e(w.city)} <span class="uw-caret">▾</span></button>
+        <div class="uw-city-drop" id="uw-city-drop" hidden>
+          <input class="uw-city-filter" id="uw-city-filter" type="search" placeholder="${l === 'pt' ? 'Filtrar…' : 'Filter…'}" autocomplete="off">
+          <div class="uw-city-list">${cityOpts}</div>
+        </div>
+      </div>
       <div class="uw-now"><span class="uw-emoji">${cur.emoji}</span>
         <div class="uw-main"><span class="uw-temp">${w.temp}°</span><span class="uw-state">${cur.text}</span></div>
         ${d0 ? `<div class="uw-mm"><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
@@ -645,6 +760,7 @@ async function renderUtility() {
       ${warnHtml}
       <div class="uw-sun"><span>🌅 ${w.sunrise.slice(11, 16)}</span><span>🌇 ${w.sunset.slice(11, 16)}</span></div>
       <div class="uw-fc">${fc}</div>
+      <div class="uw-pop" id="uw-pop" hidden></div>
       <div class="util-foot">${more('https://www.ipma.pt/pt/otempo/prev.localidade.hora/', l === 'pt' ? 'Ver no IPMA' : 'See on IPMA')}</div></section>`;
   } else {
     weatherCard = `<section class="util-card util-weather"><div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2></div><div class="util-empty">${l === 'pt' ? 'Indisponível' : 'Unavailable'}</div></section>`;

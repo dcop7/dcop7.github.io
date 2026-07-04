@@ -359,6 +359,56 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
 .util-empty { color: var(--muted); font-size: .8rem; padding: .5rem 0; }
 
 /* weather */
+.util-weather { position: relative; }
+.util-weather .util-h { position: relative; }
+
+/* city picker lives in the widget itself (its only consumer) */
+.uw-city-btn { cursor: pointer; border: 1px solid transparent; font: inherit; font-size: .68rem; font-weight: 600; transition: all var(--ease); }
+.uw-city-btn:hover { border-color: rgba(var(--accent-rgb), .4); }
+.uw-caret { opacity: .7; font-size: .6rem; }
+.uw-city-drop {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 30; width: 200px;
+  background: var(--card-solid); border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-3); overflow: hidden; animation: view-in .12s ease;
+}
+.uw-city-filter {
+  width: 100%; background: var(--card2); border: none; border-bottom: 1px solid var(--border);
+  color: var(--text); font: inherit; font-size: .78rem; padding: .5rem .75rem; outline: none;
+}
+.uw-city-list { max-height: 240px; overflow-y: auto; padding: .25rem; }
+.uw-city-opt {
+  display: block; width: 100%; text-align: left; background: transparent; border: none;
+  color: var(--text2); font: inherit; font-size: .8rem; padding: .38rem .6rem; border-radius: 6px;
+  cursor: pointer; transition: background var(--ease);
+}
+.uw-city-opt:hover { background: var(--accent-soft); color: var(--text); }
+.uw-city-opt.on { color: var(--accent); font-weight: 700; background: var(--accent-soft); }
+
+/* forecast days + warning pills are tappable for detail */
+.uw-day { border: 1px solid transparent; font: inherit; cursor: pointer; transition: all var(--ease); }
+.uw-day:hover { border-color: rgba(var(--accent-rgb), .35); transform: translateY(-1px); }
+.uw-day.on { border-color: rgba(var(--accent-rgb), .55); background: rgba(var(--accent-rgb), .16); }
+.uw-w { border: none; font: inherit; cursor: pointer; }
+.uw-w:hover { filter: brightness(1.08); }
+
+/* detail popover (day forecast / IPMA alert) */
+.uw-pop {
+  position: absolute; left: .8rem; right: .8rem; bottom: .8rem; z-index: 25;
+  background: var(--card-solid); border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-3); padding: .75rem .9rem; animation: view-in .14s ease;
+}
+.uw-pop-h { display: flex; align-items: flex-start; gap: .6rem; }
+.uw-pop-ico { font-size: 1.4rem; line-height: 1.2; }
+.uw-pop-h b { font-size: .84rem; display: block; }
+.uw-pop-h small { display: block; font-size: .72rem; color: var(--muted); margin-top: .1rem; }
+.uw-pop-x { margin-left: auto; background: none; border: none; color: var(--muted); font-size: .85rem; cursor: pointer; padding: .1rem .25rem; line-height: 1; }
+.uw-pop-x:hover { color: var(--text); }
+.uw-pop-rows { display: flex; flex-wrap: wrap; gap: .3rem .9rem; margin-top: .6rem; font-size: .76rem; color: var(--muted); }
+.uw-pop-rows b { color: var(--text); font-weight: 700; }
+.uw-pop-rows small { color: var(--accent); font-weight: 600; }
+.uw-pop-txt { margin-top: .55rem; font-size: .76rem; line-height: 1.55; color: var(--text2); max-height: 130px; overflow-y: auto; }
+.uw-lvl-yellow { color: #fde047; } .uw-lvl-orange { color: #fb923c; } .uw-lvl-red { color: #f87171; }
+
 .uw-now { display: flex; align-items: center; gap: .65rem; margin-bottom: .6rem; }
 .uw-emoji { font-size: 2.6rem; line-height: 1; }
 .uw-main { display: flex; flex-direction: column; }
