@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v224';
+const CACHE = 'dcop7-v225';
 const STATIC = [
   '/',
   '/index.html',
@@ -6,7 +6,8 @@ const STATIC = [
   '/img/nav/ocorrencias.webp', '/img/nav/f1.webp', '/img/nav/oss.webp', '/img/nav/discovery.webp',
   '/img/nav/links.webp', '/img/nav/tools.webp', '/img/nav/cheatsheets.webp', '/img/nav/games.webp',
   '/img/nav/quiz.webp', '/img/nav/humor.webp', '/img/nav/photography.webp', '/img/nav/visual.webp', '/img/nav/settings.webp',
-  '/i18n.js',
+  '/js/core/i18n.js',
+  '/js/core/time.js',
   '/css/base.css',
   '/css/views/explorer.css',
   '/css/views/explore-kb.css',
@@ -117,8 +118,16 @@ const STATIC = [
 ];
 
 self.addEventListener('install', e => {
+  /* add files individually — with addAll, a single 404 in the list rejects the
+     whole install and strands every client on the previous SW (and its stale
+     caches) forever. Exactly that happened with a mislisted '/i18n.js'. */
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(STATIC)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then(c => Promise.allSettled(STATIC.map(u => c.add(u))))
+      .then(rs => {
+        rs.forEach((r, i) => { if (r.status === 'rejected') console.warn('[sw] precache failed:', STATIC[i]); });
+        return self.skipWaiting();
+      })
   );
 });
 
@@ -159,8 +168,21 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  /* Data / images / fonts → cache-first (stale-while-revalidate): fast and
-     they change rarely or are content-versioned. */
+  /* Data JSONs (/data/**.json) → NETWORK-FIRST with cache:'reload'. Many are
+     rebuilt daily by Actions (home, utility, news, events, discovery, f1…) and
+     the pages that read them label things as "today" — serving them cache-first
+     froze the homepage on an old date. Cache is offline fallback only. */
+  if (url.pathname.startsWith('/data/') && url.pathname.endsWith('.json')) {
+    e.respondWith(
+      fetch(e.request, { cache: 'reload' })
+        .then(res => _cachePut(e.request, res))
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  /* Images / fonts / other assets → cache-first (stale-while-revalidate):
+     fast and they change rarely or are content-versioned. */
   e.respondWith(
     caches.match(e.request).then(cached => {
       const fresh = fetch(e.request).then(res => _cachePut(e.request, res)).catch(() => cached);

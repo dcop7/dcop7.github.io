@@ -3,14 +3,21 @@ name: Refresh daily utility data
 # Builds data/home/utility.json (fuel prices via DGEG, electricity via OMIE,
 # Leiria weather fallback via Open-Meteo) server-side twice a day, so the
 # browser reads one small local JSON instead of calling those sources live.
-# No API keys required. Runs ~08h (fuel) and ~14h (OMIE day-ahead) Lisbon.
+# No API keys required. Targets ~08h (fuel) and ~14h (OMIE day-ahead) Lisbon.
+#
+# Scheduling note: GitHub delays cron runs by minutes to HOURS, so the gate
+# must never test the hour of day (an "== 08h/14h" gate silently skipped
+# every run). Instead we gate on the snapshot's own age: rebuild whenever it
+# is older than 4 h. That dedupes the summer/winter cron pair and still
+# allows the morning + afternoon rebuilds however late the runners start.
 
 on:
   schedule:
-    - cron: '30 7 * * *'      # 08:30 summer (WEST, UTC+1)
-    - cron: '30 8 * * *'      # 08:30 winter (WET, UTC+0)
-    - cron: '30 13 * * *'     # 14:30 summer
-    - cron: '30 14 * * *'     # 14:30 winter
+    - cron: '30 7 * * *'      # target 08:30 Lisbon (summer)
+    - cron: '30 8 * * *'      # target 08:30 Lisbon (winter)
+    - cron: '30 13 * * *'     # target 14:30 Lisbon (summer)
+    - cron: '30 14 * * *'     # target 14:30 Lisbon (winter)
+    - cron: '0 19 * * *'      # catch-up (GitHub cron can run hours late)
   workflow_dispatch:
 
 permissions:
@@ -24,19 +31,21 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Gate to 08h/14h Europe/Lisbon (skip the off-DST cron)
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Skip if utility.json was built less than 4 h ago
         id: gate
         run: |
-          H="$(TZ=Europe/Lisbon date +%H)"
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$H" != "08" ] && [ "$H" != "14" ]; then
+          gen="$(jq -r '.generated // empty' data/home/utility.json 2>/dev/null || true)"
+          ts="$(date -u -d "$gen" +%s 2>/dev/null || echo 0)"
+          age=$(( $(date -u +%s) - ts ))
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$age" -lt 14400 ]; then
+            echo "Snapshot is ${age}s old — still fresh, nothing to do."
             echo "go=false" >> "$GITHUB_OUTPUT"
           else
             echo "go=true" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Checkout
-        if: steps.gate.outputs.go == 'true'
-        uses: actions/checkout@v4
 
       - name: Setup Node
         if: steps.gate.outputs.go == 'true'
@@ -56,6 +65,7 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/home/utility.json
             git commit -m "chore(home): refresh daily utility snapshot [skip ci]"
+            git pull --rebase origin main
             git push
           else
             echo "No changes in utility.json."

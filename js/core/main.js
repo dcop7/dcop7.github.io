@@ -119,9 +119,9 @@ const wd    = () => lang() === 'pt' ? WD : WD_EN;
 const mo    = () => lang() === 'pt' ? MO : MO_EN;
 const ms    = () => lang() === 'pt' ? MS : MS_EN;
 
-// ── CLOCK ──────────────────────────────────────────────────────────
+// ── CLOCK (driven by AppTime, js/core/time.js) ────────────────────
 function tick() {
-  const n = new Date();
+  const n = AppTime.now();
   const l = lang();
   const dateEl = document.getElementById('date-el');
   const timeEl = document.getElementById('time-el');
@@ -132,7 +132,7 @@ function tick() {
     n.toLocaleTimeString(l === 'pt' ? 'pt-PT' : 'en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 tick();
-setInterval(tick, 30000);
+document.addEventListener('time:minute', tick);
 
 // ── DAILY CONTENT ─────────────────────────────────────────────────
 const QUOTES = [
@@ -225,9 +225,12 @@ const WELCOME_MSGS_EN = [
   'Success loves those who show up every day. 🏆',
 ];
 
+function greetingKey() {
+  return { morning: 'home.greet.morning', afternoon: 'home.greet.afternoon', evening: 'home.greet.evening' }[AppTime.period()];
+}
+
 function renderWelcome() {
-  const h = new Date().getHours();
-  const greeting = h < 12 ? t('home.greet.morning') : h < 19 ? t('home.greet.afternoon') : t('home.greet.evening');
+  const greeting = t(greetingKey());
   const pool = lang() === 'pt' ? WELCOME_MSGS : WELCOME_MSGS_EN;
   const msg  = pool[Math.floor(Math.random() * pool.length)];
   const gEl = document.getElementById('wc-greeting');
@@ -308,22 +311,37 @@ async function loadDailyContent() {
 /* ── HOME: daily discovery panel (data from data/home/today.json) ──── */
 function _escH(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
+function updateDiscGreeting() {
+  const gEl = document.getElementById('disc-greeting');
+  if (!gEl) return;
+  const per = AppTime.period();
+  const greet = lang() === 'pt'
+    ? { morning: 'Bom dia', afternoon: 'Boa tarde', evening: 'Boa noite' }[per]
+    : { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' }[per];
+  gEl.textContent = greet + ' 👋';
+}
+
 async function renderHomeDiscovery() {
   const panel = document.getElementById('disc-panel');
-  const gEl = document.getElementById('disc-greeting');
   const sEl = document.getElementById('disc-sub');
   const l = lang();
-  const h = new Date().getHours();
-  const greet = l === 'pt' ? (h < 12 ? 'Bom dia' : h < 19 ? 'Boa tarde' : 'Boa noite')
-                           : (h < 12 ? 'Good morning' : h < 19 ? 'Good afternoon' : 'Good evening');
-  if (gEl) gEl.textContent = greet + ' 👋';
+  updateDiscGreeting();
+
+  /* the visible date always comes from the client clock — never from the
+     snapshot file, which can be hours or days old */
+  const n = AppTime.now();
+  const todayLabel = l === 'pt' ? `Hoje, ${n.getDate()} de ${MO[n.getMonth()]}` : `${MO_EN[n.getMonth()]} ${n.getDate()}`;
+  if (sEl) sEl.textContent = todayLabel;
   if (!panel) return;
 
   let data = null;
   try { const r = await fetch('data/home/today.json', { cache: 'no-store' }); if (r.ok) data = await r.json(); } catch (e) {}
   if (!data) { try { const r = await fetch('data/home/fallback.json'); if (r.ok) data = await r.json(); } catch (e) {} }
   if (!data) { panel.innerHTML = `<div class="disc-loading">${l === 'pt' ? 'Sem dados disponíveis offline.' : 'No data available offline.'}</div>`; return; }
-  if (sEl) sEl.textContent = data.dateLabel ? (l === 'pt' ? 'Hoje, ' + data.dateLabel : data.dateLabel) : '';
+  /* stale snapshot (Action delayed/failed): keep today's date, flag the content */
+  if (sEl && data.date && data.date !== AppTime.dayKey()) {
+    sEl.textContent = todayLabel + (l === 'pt' ? ` · conteúdo de ${data.dateLabel || data.date}` : ` · content from ${data.date}`);
+  }
 
   const e = _escH;
 
@@ -400,8 +418,7 @@ async function renderHomeEvents() {
 
   const arr = Array.isArray(_ncEvents) ? _ncEvents : (_ncEvents.events || []);
   const geo = d => { const k = _normd(d); return _ncPlaces[k] || HOME_DISTRICT_CENTROIDS[d] || null; };
-  const today0 = new Date(); today0.setHours(0, 0, 0, 0);
-  const start = today0.getTime(), horizon = start + DAYS * 86400000;
+  const start = AppTime.today().getTime(), horizon = start + DAYS * 86400000;
   const near = [];
   for (const ev of arr) {
     const t = Date.parse(ev.start); if (isNaN(t) || t < start || t > horizon) continue;
@@ -503,12 +520,12 @@ function uvLevel(uv) {
 }
 
 function upcomingHolidays(n) {
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const today = AppTime.today();
   const y = today.getFullYear();
   const all = [...ptNat(y), ...ptNat(y + 1)];
   return all.filter(h => h.d >= today).sort((a, b) => a.d - b.d).slice(0, n);
 }
-function daysUntil(d) { const today = new Date(); today.setHours(0, 0, 0, 0); return Math.round((d - today) / 86400000); }
+function daysUntil(d) { return Math.round((d - AppTime.today()) / 86400000); }
 function countdownTxt(days) {
   const l = lang();
   if (days <= 0) return l === 'pt' ? 'Hoje' : 'Today';
@@ -518,7 +535,7 @@ function countdownTxt(days) {
 
 function openHolidayModal() {
   const l = lang();
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const today = AppTime.today();
   let y = today.getFullYear();
   const ov = document.createElement('div');
   ov.className = 'hm-overlay';
@@ -1099,7 +1116,7 @@ function tickTimezones() {
 
 document.addEventListener('DOMContentLoaded', () => {
   renderTimezones();
-  setInterval(tickTimezones, 1000);
+  document.addEventListener('time:second', tickTimezones);
 });
 
 // ── HOLIDAYS ──────────────────────────────────────────────────────
@@ -1146,10 +1163,10 @@ const MUN = [
   {m:12,d:12, n:'Nossa Senhora da Conceição', c:'Évora'},
 ];
 
-let holYear = new Date().getFullYear();
+let holYear = AppTime.now().getFullYear();
 
 function holHTML(date, name, sub, reason) {
-  const today = new Date(); today.setHours(0,0,0,0);
+  const today = AppTime.today();
   const curYear  = today.getFullYear();
   const isPast   = holYear === curYear && date < today;
   const isToday  = holYear === curYear && date.toDateString() === today.toDateString();
@@ -1196,8 +1213,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('langchange', () => {
   tick();
+  renderWelcome();
   renderHomeDiscovery();
   renderUtility();
 });
 
 document.addEventListener('weather-city-change', () => { renderUtility(); renderHomeEvents(); });
+
+// ── TIME-DRIVEN RE-RENDERS ────────────────────────────────────────
+// Everything date-dependent re-renders from the single AppTime clock
+// (js/core/time.js). No component may keep a date computed at page load:
+// a tab left open for days must stay correct without a refresh.
+document.addEventListener('time:period', () => {   // Bom dia → Boa tarde → Boa noite
+  renderWelcome();
+  updateDiscGreeting();
+});
+document.addEventListener('time:hour', () => {     // weather cache is 1 h, warnings 30 min
+  renderUtility();
+});
+document.addEventListener('time:day', () => {      // midnight, month/year rollover, wake from sleep
+  tick();
+  renderWelcome();
+  _ncEvents = _ncPlaces = null;                    // events snapshot is refreshed daily
+  renderHomeDiscovery();                           // also re-runs renderHomeEvents
+  renderUtility();
+  holYear = AppTime.now().getFullYear();
+  renderHolidays();
+  renderTimezones();                               // DST: offset/abbr labels can change
+});

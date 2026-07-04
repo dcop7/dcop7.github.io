@@ -1,15 +1,24 @@
 name: Refresh homepage data
 
-# Builds data/home/today.json (Foto do Dia, Hoje na História/Portugal/Espaço/
-# Tecnologia, Nasceram Hoje, Destaque, Inspiração) server-side once a day, so
-# the browser only reads one local JSON — no API keys in the client, no
-# per-visit third-party calls, works offline. NASA APOD uses the optional
-# NASA_API_KEY secret if set, otherwise DEMO_KEY (enough for one daily call).
+# Builds data/home/today.json (Hoje na História/Portugal, Nasceram Hoje,
+# Destaque, Inspiração) server-side once a day, so the browser only reads one
+# local JSON — no API keys in the client, no per-visit third-party calls,
+# works offline.
+#
+# Scheduling note: GitHub delays cron runs by minutes to HOURS, so the gate
+# must never test the hour of day (an "== 07h" gate silently skipped every
+# run for weeks). Instead we gate on the snapshot itself: run whenever
+# today.json is not yet from today (Europe/Lisbon). Several crons spread over
+# the day act as catch-up retries; whichever fires first does the work and
+# the rest no-op.
 
 on:
   schedule:
-    - cron: '20 6 * * *'      # 07:20 in summer (WEST, UTC+1)
-    - cron: '20 7 * * *'      # 07:20 in winter (WET, UTC+0)
+    - cron: '20 6 * * *'      # target 07:20 Lisbon (summer)
+    - cron: '20 7 * * *'      # target 07:20 Lisbon (winter)
+    - cron: '0 10 * * *'      # catch-up (GitHub cron can run hours late)
+    - cron: '0 14 * * *'      # catch-up
+    - cron: '0 18 * * *'      # last-chance catch-up
   workflow_dispatch:
 
 permissions:
@@ -23,18 +32,20 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Gate to 07h Europe/Lisbon (skip the off-DST cron)
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Skip if today.json is already from today (Europe/Lisbon)
         id: gate
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Europe/Lisbon date +%H)" != "07" ]; then
+          want="$(TZ=Europe/Lisbon date +%F)"
+          have="$(jq -r '.date // empty' data/home/today.json 2>/dev/null || true)"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$have" = "$want" ]; then
+            echo "Snapshot already fresh ($have) — nothing to do."
             echo "go=false" >> "$GITHUB_OUTPUT"
           else
             echo "go=true" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Checkout
-        if: steps.gate.outputs.go == 'true'
-        uses: actions/checkout@v4
 
       - name: Setup Node
         if: steps.gate.outputs.go == 'true'
@@ -56,6 +67,7 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/home/today.json
             git commit -m "chore(home): refresh daily discovery snapshot [skip ci]"
+            git pull --rebase origin main
             git push
           else
             echo "No changes in today.json."
