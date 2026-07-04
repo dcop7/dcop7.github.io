@@ -407,10 +407,11 @@ async function renderHomeEvents() {
   const l = lang(), e = _escH;
   const RADIUS = 50, DAYS = 14;
 
-  /* reference point = the weather city (same setting), with Leiria as fallback */
-  const city = localStorage.getItem('weather-city') || 'Leiria';
+  /* reference point = the configured weather location, Leiria as fallback */
+  const wloc = getWeatherLoc();
   let lat = 39.7436, lon = -8.8071, cityName = 'Leiria';
-  try { const w = await fetchWeatherForCity(city); if (w && w.lat != null) { lat = w.lat; lon = w.lon; cityName = w.city; } } catch (er) {}
+  if (wloc.lat != null) { lat = wloc.lat; lon = wloc.lon; cityName = wloc.name; }
+  else try { const w = await fetchWeatherForLoc(wloc); if (w && w.lat != null) { lat = w.lat; lon = w.lon; cityName = w.city; } } catch (er) {}
 
   try {
     if (!_ncEvents) { const r = await fetch('data/events/nocartaz.json'); _ncEvents = r.ok ? await r.json() : []; }
@@ -468,18 +469,38 @@ function wmo(code, isDay) {
   return { emoji, text: lang() === 'pt' ? e[1] : e[2] };
 }
 
-async function fetchWeatherForCity(city) {
-  const key = 'weather-cache-' + city.toLowerCase();
+/* The configured weather location: a stable geocoder result ({id, name,
+   admin1, country, lat, lon}) saved by Definições. A bare legacy city string
+   is resolved ONCE below and then persisted — every later call reuses the
+   exact same place instead of re-geocoding ambiguous free text. */
+function getWeatherLoc() {
+  try {
+    const l = JSON.parse(localStorage.getItem('weather-loc') || 'null');
+    if (l && l.lat != null && l.name) return l;
+  } catch (e) {}
+  return { name: localStorage.getItem('weather-city') || 'Leiria' };
+}
+
+async function fetchWeatherForLoc(loc) {
+  const key = 'weather-cache-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
   try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000 && c.w && c.w.feels != null) return c.w; } catch (e) {}
   try {
-    const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=5&language=pt`).then(r => r.json());
-    const results = (g && g.results) || [];
-    const loc = results.find(r => r.country_code === 'PT') || results[0];
-    if (!loc) return null;
-    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,uv_index_max,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
+    let { lat, lon, name } = loc;
+    if (lat == null || lon == null) {
+      const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=5&language=pt`).then(r => r.json());
+      const results = (g && g.results) || [];
+      const c = results.find(r => r.country_code === 'PT') || results[0];
+      if (!c) return null;
+      lat = c.latitude; lon = c.longitude; name = c.name;
+      /* migrate: persist the resolved id so this lookup never repeats */
+      try {
+        localStorage.setItem('weather-loc', JSON.stringify({ id: c.id, name: c.name, admin1: c.admin1 || '', country: c.country_code || '', lat, lon }));
+      } catch (e) {}
+    }
+    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,uv_index_max,sunrise,sunset&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
     if (!w || !w.current) return null;
     const out = {
-      city: loc.name, lat: loc.latitude, lon: loc.longitude,
+      city: name, lat, lon,
       temp: Math.round(w.current.temperature_2m), feels: Math.round(w.current.apparent_temperature),
       humidity: Math.round(w.current.relative_humidity_2m), wind: Math.round(w.current.wind_speed_10m),
       code: w.current.weather_code, isDay: w.current.is_day,
@@ -579,9 +600,8 @@ async function renderUtility() {
   let u = null;
   try { const r = await fetch('data/home/utility.json', { cache: 'no-store' }); if (r.ok) u = await r.json(); } catch (er) {}
 
-  /* ── Weather (live for configured city, fallback utility.json Leiria) ── */
-  const city = localStorage.getItem('weather-city') || 'Leiria';
-  let w = await fetchWeatherForCity(city);
+  /* ── Weather (live for the configured location, fallback utility.json Leiria) ── */
+  let w = await fetchWeatherForLoc(getWeatherLoc());
   if (!w && u && u.weather) w = u.weather;
 
   /* warnings for this city's IPMA area (live, else cached in utility.json) */

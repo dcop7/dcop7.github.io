@@ -4,6 +4,15 @@ const SettingsPage = (function () {
   let _el = null;
   const T = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
+  /* Selected weather location (stable id + coords) with legacy fallback */
+  function _cityLabel() {
+    try {
+      const l = JSON.parse(localStorage.getItem('weather-loc') || 'null');
+      if (l && l.name) return l.name + (l.admin1 ? ` (${l.admin1})` : '');
+    } catch (e) {}
+    return localStorage.getItem('weather-city') || 'Leiria';
+  }
+
   /* ── Apply density body class ── */
   function applyDensity(d) {
     document.body.classList.remove('density-comfortable', 'density-compact', 'density-list');
@@ -89,9 +98,12 @@ const SettingsPage = (function () {
                 <div class="st-row-label">${VT('Cidade (meteorologia)', 'City (weather)')}</div>
                 <div class="st-row-desc">${VT('Cidade usada no cartão de meteorologia da página inicial.', 'City used in the homepage weather card.')}</div>
               </div>
-              <input type="text" id="st-weather-city" class="st-input" placeholder="Leiria"
-                value="${(localStorage.getItem('weather-city') || 'Leiria').replace(/"/g, '&quot;')}"
-                autocomplete="off" spellcheck="false" style="width:auto;min-width:140px">
+              <div class="st-city-wrap">
+                <input type="text" id="st-weather-city" class="st-input" placeholder="${VT('Pesquisar cidade…', 'Search city…')}"
+                  value="${_cityLabel().replace(/"/g, '&quot;')}"
+                  autocomplete="off" spellcheck="false" style="width:auto;min-width:200px">
+                <div class="st-city-drop" id="st-city-drop" hidden></div>
+              </div>
             </div>
           </div>
 
@@ -117,6 +129,7 @@ const SettingsPage = (function () {
   }
 
   function _wire(el) {
+    const VT = (pt, en) => ((typeof I18n !== 'undefined' ? I18n.getLang() : 'pt') === 'pt') ? pt : en;
     /* Theme */
     el.querySelectorAll('#st-theme-grid .theme-option').forEach(btn =>
       btn.addEventListener('click', () => {
@@ -146,15 +159,52 @@ const SettingsPage = (function () {
       })
     );
 
-    /* Weather city */
+    /* Weather city — autocomplete against the Open-Meteo geocoder. The user
+       picks an explicit result and we persist its stable id + coordinates
+       (weather-loc); free text alone is never trusted as a location. */
     const cityInput = el.querySelector('#st-weather-city');
-    const saveCity = () => {
-      const v = (cityInput.value || '').trim() || 'Leiria';
-      localStorage.setItem('weather-city', v);
+    const cityDrop  = el.querySelector('#st-city-drop');
+    let _acTimer = null;
+    const closeDrop = () => { if (cityDrop) { cityDrop.hidden = true; cityDrop.innerHTML = ''; } };
+
+    async function searchCities(q) {
+      try {
+        const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=pt`);
+        const j = await r.json();
+        return (j && j.results) || [];
+      } catch { return []; }
+    }
+    function pickCity(c) {
+      const loc = { id: c.id, name: c.name, admin1: c.admin1 || '', country: c.country_code || '', lat: c.latitude, lon: c.longitude };
+      localStorage.setItem('weather-loc', JSON.stringify(loc));
+      localStorage.setItem('weather-city', loc.name);          /* legacy readers */
+      try { localStorage.removeItem('weather-cache-' + loc.name.toLowerCase()); } catch (e) {}
+      if (cityInput) cityInput.value = _cityLabel();
+      closeDrop();
       document.dispatchEvent(new CustomEvent('weather-city-change'));
-    };
-    cityInput?.addEventListener('change', saveCity);
-    cityInput?.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); cityInput.blur(); } });
+    }
+    cityInput?.addEventListener('input', () => {
+      clearTimeout(_acTimer);
+      const q = cityInput.value.trim();
+      if (q.length < 2) { closeDrop(); return; }
+      _acTimer = setTimeout(async () => {
+        const res = await searchCities(q);
+        if (!cityDrop) return;
+        if (!res.length) { cityDrop.innerHTML = `<div class="st-city-empty">${VT('Sem resultados', 'No results')}</div>`; cityDrop.hidden = false; return; }
+        cityDrop.innerHTML = res.map((c, i) =>
+          `<button type="button" class="st-city-opt" data-i="${i}">
+            <b>${c.name}</b><small>${[c.admin1, c.country_code].filter(Boolean).join(' · ')}</small>
+          </button>`).join('');
+        cityDrop.hidden = false;
+        cityDrop.querySelectorAll('.st-city-opt').forEach(btn =>
+          btn.addEventListener('mousedown', ev => { ev.preventDefault(); pickCity(res[+btn.dataset.i]); }));
+      }, 250);
+    });
+    cityInput?.addEventListener('blur', () => setTimeout(() => { if (cityInput) cityInput.value = _cityLabel(); closeDrop(); }, 180));
+    cityInput?.addEventListener('keydown', ev => {
+      if (ev.key === 'Escape') closeDrop();
+      if (ev.key === 'Enter') { ev.preventDefault(); cityDrop?.querySelector('.st-city-opt')?.dispatchEvent(new MouseEvent('mousedown')); }
+    });
 
     /* Density */
     el.querySelectorAll('#st-density .tsb').forEach(btn =>

@@ -182,10 +182,12 @@ body.sb-open .sidebar { transform: translateX(0); }
 .sb-scroll::-webkit-scrollbar { width: 3px; }
 .sb-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-.sb-main-nav { padding: .25rem .75rem; display: flex; flex-direction: column; gap: .1rem; }
+.sb-main-nav { padding: .25rem .7rem; display: flex; flex-direction: column; gap: calc(.1rem * var(--den)); }
+/* Density-driven: 18 entries must fit a laptop viewport without scrolling
+   in comfortable mode; compact/list tighten further via --den. */
 .sb-nav-item {
-  display: flex; align-items: center; gap: .7rem; padding: .58rem .8rem;
-  border-radius: 10px; color: var(--muted); font-size: .82rem; font-weight: 500;
+  display: flex; align-items: center; gap: .65rem; padding: calc(.42rem * var(--den) + .04rem) .75rem;
+  border-radius: 9px; color: var(--muted); font-size: .81rem; font-weight: 500;
   transition: all .18s; cursor: pointer; text-decoration: none;
   border-left: 2px solid transparent;
 }
@@ -199,52 +201,51 @@ body.light .sb-nav-item.active { background: rgba(var(--accent-rgb),.08); }
 /* icon tile: consistent weight for every entry, tinted by the route colour */
 .sb-nav-ic {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 28px; height: 28px; border-radius: 8px; line-height: 0;
+  width: calc(24px + 4px * var(--den)); height: calc(24px + 4px * var(--den)); border-radius: 8px; line-height: 0;
   background: rgba(255,255,255,.045); border: 1px solid var(--border);
   transition: all .18s;
 }
 body.light .sb-nav-ic { background: rgba(15,23,42,.05); }
-.sb-nav-item:hover .sb-nav-ic { border-color: var(--border2); transform: translateY(-1px); }
-.sb-nav-item.active .sb-nav-ic {
-  background: rgba(var(--accent-rgb),.16); border-color: rgba(var(--accent-rgb),.4);
-}
+.sb-nav-item:hover .sb-nav-ic { transform: translateY(-1px); filter: saturate(1.15); }
 
 /* Thin separator between nav groups */
 .sb-sep { height: 1px; background: var(--border); margin: .5rem .85rem; opacity: .7; }
 
 /* Sidebar group label */
 .sb-grp {
-  font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+  font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
   color: var(--muted); opacity: .7;
-  padding: .7rem .85rem .2rem;
+  padding: calc(.5rem * var(--den)) .8rem .15rem;
 }
 
-/* Nav icon colours — every entry is colourful (no monochrome mode). */
-.sb-nav-item[data-route="home"] svg { stroke: #60a5fa; }
-.sb-nav-item[data-route="links"] svg { stroke: #fb923c; }
-.sb-nav-item[data-route="tools"] svg { stroke: #818cf8; }
-.sb-nav-item[data-route="cheatsheets"] svg { stroke: #a78bfa; }
-.sb-nav-item[data-route="games"] svg { stroke: #34d399; }
-.sb-nav-item[data-route="quiz"] svg { stroke: #22d3ee; }
-.sb-nav-item[data-route="explorer"] svg { stroke: #38bdf8; }
-.sb-nav-item[data-route="ocorrencias"] svg { stroke: #f59e0b; }
-.sb-nav-item[data-route="eventos"] svg { stroke: #2dd4bf; }
-.sb-nav-item[data-route="noticias"] svg { stroke: #c084fc; }
-.sb-nav-item[data-route="media"] svg { stroke: #f87171; }
-.sb-nav-item[data-route="photography"] svg { stroke: #fbbf24; }
-.sb-nav-item[data-route="visual"] svg { stroke: #f472b6; }
-.sb-nav-item[data-route="settings"] svg { stroke: #94a3b8; }
-.sb-nav-item[data-route="f1"] svg { stroke: #ef4444; }
-.sb-nav-item[data-route="oss"] svg { stroke: #4ade80; }
-.sb-nav-item[data-route="discovery"] svg { stroke: #e879f9; }
-.sb-nav-item[data-route="humor"] svg { stroke: #facc15; }
-.sb-nav-item.active svg { stroke: var(--accent) !important; }
+/* Per-route tile tints — each icon sits on a soft wash of its own colour,
+   so the rail reads as a designed brand element, not a generic admin menu.
+   (Icon colours themselves live inside the duotone SVGs in icons.js.) */
+.sb-nav-item[data-route="home"]        .sb-nav-ic { background: rgba(96,165,250,.10);  border-color: rgba(96,165,250,.24); }
+.sb-nav-item[data-route="explorer"]    .sb-nav-ic { background: rgba(56,189,248,.10);  border-color: rgba(56,189,248,.24); }
+.sb-nav-item[data-route="noticias"]    .sb-nav-ic { background: rgba(192,132,252,.10); border-color: rgba(192,132,252,.24); }
+.sb-nav-item[data-route="eventos"]     .sb-nav-ic { background: rgba(45,212,191,.10);  border-color: rgba(45,212,191,.24); }
+.sb-nav-item[data-route="ocorrencias"] .sb-nav-ic { background: rgba(245,158,11,.10);  border-color: rgba(245,158,11,.24); }
+.sb-nav-item[data-route="f1"]          .sb-nav-ic { background: rgba(239,68,68,.10);   border-color: rgba(239,68,68,.24); }
+.sb-nav-item[data-route="oss"]         .sb-nav-ic { background: rgba(74,222,128,.10);  border-color: rgba(74,222,128,.24); }
+.sb-nav-item[data-route="discovery"]   .sb-nav-ic { background: rgba(232,121,249,.10); border-color: rgba(232,121,249,.24); }
+.sb-nav-item[data-route="links"]       .sb-nav-ic { background: rgba(251,146,60,.10);  border-color: rgba(251,146,60,.24); }
+.sb-nav-item[data-route="tools"]       .sb-nav-ic { background: rgba(129,140,248,.10); border-color: rgba(129,140,248,.24); }
+.sb-nav-item[data-route="cheatsheets"] .sb-nav-ic { background: rgba(167,139,250,.10); border-color: rgba(167,139,250,.24); }
+.sb-nav-item[data-route="games"]       .sb-nav-ic { background: rgba(52,211,153,.10);  border-color: rgba(52,211,153,.24); }
+.sb-nav-item[data-route="quiz"]        .sb-nav-ic { background: rgba(34,211,238,.10);  border-color: rgba(34,211,238,.24); }
+.sb-nav-item[data-route="humor"]       .sb-nav-ic { background: rgba(250,204,21,.10);  border-color: rgba(250,204,21,.24); }
+.sb-nav-item[data-route="photography"] .sb-nav-ic { background: rgba(251,191,36,.10);  border-color: rgba(251,191,36,.24); }
+.sb-nav-item[data-route="visual"]      .sb-nav-ic { background: rgba(244,114,182,.10); border-color: rgba(244,114,182,.24); }
+.sb-nav-item[data-route="settings"]    .sb-nav-ic { background: rgba(148,163,184,.10); border-color: rgba(148,163,184,.24); }
+/* active: brighten the tile + label; the icon keeps its own colours */
+.sb-nav-item.active .sb-nav-ic { filter: saturate(1.25) brightness(1.12); }
 
 /* ── VIEWS / APP CONTENT ── */
 #app-content { flex: 1; min-height: 0; position: relative; }
 .view { display: none; min-height: calc(100vh - var(--hdr-h)); }
 .view.active { display: block; animation: view-in .18s ease; }
-.view-inner { max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.75rem; }
+.view-inner { max-width: 1400px; margin: 0 auto; padding: var(--den-page) 1.75rem; }
 
 /* Page header pattern */
 .page-hdr { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }

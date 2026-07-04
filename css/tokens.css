@@ -85,7 +85,19 @@
   --glass-hover:  rgba(11,16,32,.95);
   --map-bg:       #0d1b2e;
   --tile-filter:  brightness(.85) saturate(.7);
+
+  /* ── Density system ──
+     ONE knob drives spacing across the whole app. Shared primitives
+     (view padding, cards, list rows, sidebar, grids) consume these vars,
+     so Definições ▸ Densidade genuinely re-tunes every page. */
+  --den: 1;                                   /* comfortable */
+  --den-pad:  calc(1rem * var(--den));        /* card/container padding */
+  --den-gap:  calc(1rem * var(--den));        /* grid/list gaps */
+  --den-row:  calc(.55rem * var(--den));      /* list-row vertical padding */
+  --den-page: calc(1.5rem * var(--den));      /* view outer padding */
 }
+body.density-compact { --den: .72; }
+body.density-list    { --den: .58; }
 
 /* ── SECTION ACCENTS ──
    Each view tints its own chrome (page head, tabs, chips, primary buttons)

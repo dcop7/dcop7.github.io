@@ -56,10 +56,10 @@ body.light .lp-sidebar { background: rgba(248,250,252,.98); }
 
 /* Link cards */
 .lp-links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .65rem; margin-bottom: 1.5rem; }
-.lp-links-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: .55rem; margin-bottom: 1.5rem; }
+.lp-links-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: calc(.55rem * var(--den)); margin-bottom: calc(1.5rem * var(--den)); }
 .lp-link-card {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: .85rem 1rem; transition: all .2s; display: flex; align-items: flex-start;
+  padding: calc(.85rem * var(--den)) calc(1rem * var(--den)); transition: all .2s; display: flex; align-items: flex-start;
   gap: .75rem; text-decoration: none; color: inherit;
 }
 .lp-link-card:hover { border-color: rgba(var(--accent-rgb),.35); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.2); }

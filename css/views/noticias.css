@@ -106,7 +106,7 @@
 .nw-src.active .nw-src-c { color: var(--accent); }
 
 /* ── GRID OF CARDS ── */
-.nw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .85rem; }
+.nw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: calc(.85rem * var(--den)); }
 .nw-card {
   display: flex; flex-direction: column;
   background: var(--card); overflow: hidden;

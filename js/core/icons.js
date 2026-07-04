@@ -1,36 +1,125 @@
-// ── APP ICONS — the single line-art icon set for all app chrome ──────
-// Loaded in <head> (before any deferred page script) so every template can
-// call AppIcons.icon() regardless of script order. Stroke SVGs inherit
-// currentColor; per-route tints live in CSS.
+// ── APP ICONS — bespoke duotone icon set (brand language v3) ─────────
+// Drawn specifically for Diogo Universe: one geometry (24px grid, 1.6
+// stroke, round caps), a per-section colour gradient, a soft translucent
+// fill for depth, and the cyan "spark" from the orbiting satellite in the
+// logo as a shared brand motif. Loaded in <head> so every template can call
+// AppIcons.icon() regardless of deferred-script order.
 const AppIcons = (function () {
-  function svg(d, w, h) {
-    return `<svg width="${w || 17}" height="${h || 17}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-  }
-  const ICONS = {
-    home:        svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
-    feed:        svg('<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>'),
-    cheatsheets: svg('<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/>'),
-    games:       svg('<rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M7 10v4M5 12h4M17 11l2 1-2 1"/>'),
-    links:       svg('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
-    explorer:    svg('<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'),
-    ocorrencias: svg('<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
-    eventos:     svg('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>'),
-    noticias:    svg('<path d="M4 4h13a1 1 0 0 1 1 1v14a1 1 0 0 0 1 1 1 1 0 0 0 1-1V8h2v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5a1 1 0 0 1 1-1z"/><path d="M7 8h7M7 12h7M7 16h4"/>'),
-    f1:          svg('<line x1="5" y1="21" x2="5" y2="3"/><rect x="5" y="4" width="14" height="9"/><path d="M9.7 4v9M14.3 4v9M5 8.5h14"/>'),
-    oss:         svg('<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="13" y1="4" x2="11" y2="20"/>'),
-    discovery:   svg('<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>'),
-    books:       svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
-    tools:       svg('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
-    quiz:        svg('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
-    humor:       svg('<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>'),
-    visual:      svg('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
-    photography: svg('<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'),
-    settings:    svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
+
+  /* the same cyan as .brand-sat — this is what ties the set to the brand */
+  const SPARK = '#7fe7ff';
+  const spark = (x, y, s) => {
+    s = s || 1;
+    return `<path d="M${x} ${y - 2.1 * s}l${0.55 * s} ${1.55 * s} ${1.55 * s} ${0.55 * s} -${1.55 * s} ${0.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s} -${1.55 * s} -${1.55 * s} -${0.55 * s} ${1.55 * s} -${0.55 * s}z" fill="${SPARK}" stroke="none" opacity=".95"/>`;
   };
+
+  /* duotone wrapper: gradient stroke + soft gradient fill on the silhouette */
+  function duo(id, c1, c2, body, opts) {
+    const o = opts || {};
+    return `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<defs><linearGradient id="ig-${id}" x1="4" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+<stop stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
+${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c1)}${o.noSpark ? '' : spark(o.sx != null ? o.sx : 19.6, o.sy != null ? o.sy : 4.6, o.ss)}
+</svg>`;
+  }
+
+  const ICONS = {
+    home: duo('home', '#60a5fa', '#93c5fd', `
+      <path d="M4 10.2 12 3.6l8 6.6V20a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 20z" fill="G" fill-opacity=".14" stroke="G"/>
+      <path d="M9.6 21.3v-6.1a1 1 0 0 1 1-1h2.8a1 1 0 0 1 1 1v6.1" stroke="C2"/>
+      <circle cx="12" cy="8.6" r=".9" fill="C2" stroke="none"/>`, { sx: 20.2, sy: 5.6, ss: .9 }),
+
+    explorer: duo('explorer', '#38bdf8', '#22d3ee', `
+      <circle cx="12" cy="12" r="7.6" fill="G" fill-opacity=".14" stroke="G"/>
+      <path d="M4.4 12h15.2M12 4.4a12.8 12.8 0 0 1 3.2 7.6 12.8 12.8 0 0 1-3.2 7.6 12.8 12.8 0 0 1-3.2-7.6A12.8 12.8 0 0 1 12 4.4z" stroke="G" opacity=".85"/>
+      <ellipse cx="12" cy="12" rx="10.4" ry="3.6" stroke="C2" opacity=".55" transform="rotate(-18 12 12)"/>`, { sx: 20.6, sy: 4.2, ss: .9 }),
+
+    noticias: duo('noticias', '#c084fc', '#e879f9', `
+      <path d="M3.6 4.6h12.8a1 1 0 0 1 1 1V19a1.5 1.5 0 0 0 3 0V8.2h1.4V19a2.9 2.9 0 0 1-2.9 2.9H5.5A2.9 2.9 0 0 1 2.6 19V5.6a1 1 0 0 1 1-1z" fill="G" fill-opacity=".13" stroke="G"/>
+      <rect x="5.8" y="7.4" width="5" height="3.6" rx=".7" fill="C2" fill-opacity=".55" stroke="none"/>
+      <path d="M13.4 8h1.6M13.4 10.4h1.6M5.9 13.8h9.1M5.9 16.6h9.1" stroke="C2" opacity=".85"/>`),
+
+    eventos: duo('eventos', '#2dd4bf', '#5eead4', `
+      <rect x="3.4" y="4.8" width="17.2" height="16.2" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="M8 2.8v3.4M16 2.8v3.4M3.6 9.6h16.8" stroke="G"/>
+      <rect x="14.2" y="12.4" width="3.6" height="3.6" rx=".9" fill="C2" fill-opacity=".75" stroke="none"/>
+      <path d="M6.6 13.8h.01M10.4 13.8h.01M6.6 17.4h.01M10.4 17.4h.01M14.4 17.4h.01" stroke="C2" stroke-width="1.9"/>`, { sx: 20.4, sy: 3.4, ss: .8 }),
+
+    ocorrencias: duo('ocorrencias', '#f59e0b', '#fbbf24', `
+      <path d="M10.6 4 2.5 17.6a1.9 1.9 0 0 0 1.6 2.9h15.8a1.9 1.9 0 0 0 1.6-2.9L13.4 4a1.9 1.9 0 0 0-2.8 0z" fill="G" fill-opacity=".15" stroke="G"/>
+      <path d="M6.5 15.2h2.2l1.2-2.6 1.9 4 1.6-3.2 1 1.8h2.9" stroke="C2"/>`, { sx: 20.3, sy: 4.9, ss: .85 }),
+
+    f1: duo('f1', '#ef4444', '#f97316', `
+      <path d="M5 21.4V3.4" stroke="G" stroke-width="1.8"/>
+      <path d="M5 4.2c2.6-1.5 5.3-1.5 8 0s5.3 1.5 7.6.2v8.4c-2.3 1.3-5 1.3-7.6-.2s-5.4-1.5-8 0z" fill="G" fill-opacity=".14" stroke="G"/>
+      <rect x="8.2" y="5.2" width="3" height="3" rx=".4" fill="C1" fill-opacity=".8" stroke="none"/>
+      <rect x="14.2" y="9" width="3" height="3" rx=".4" fill="C2" fill-opacity=".8" stroke="none"/>`, { sx: 20.6, sy: 17.6, ss: .85 }),
+
+    oss: duo('oss', '#4ade80', '#a3e635', `
+      <path d="m15.6 17.6 5.4-5.6-5.4-5.6M8.4 6.4 3 12l5.4 5.6" stroke="G" stroke-width="1.8"/>
+      <path d="M13.4 4.6 10.6 19.4" stroke="C2" opacity=".8"/>`, { sx: 19.9, sy: 3.9, ss: .85 }),
+
+    discovery: duo('discovery', '#e879f9', '#f0abfc', `
+      <path d="M20.2 13.2 13.4 20a2 2 0 0 1-2.8 0L3 12.4V3.4h9l8.2 8.2a1.9 1.9 0 0 1 0 2.6z" fill="G" fill-opacity=".14" stroke="G"/>
+      <circle cx="7.4" cy="7.8" r="1.5" fill="C2" fill-opacity=".8" stroke="none"/>`, { sx: 19.4, sy: 5.2, ss: .9 }),
+
+    links: duo('links', '#fb923c', '#fdba74', `
+      <path d="M10 13.2a4.7 4.7 0 0 0 7.1.5l2.8-2.8a4.7 4.7 0 0 0-6.6-6.6l-1.6 1.6" stroke="G" stroke-width="1.7"/>
+      <path d="M14 10.8a4.7 4.7 0 0 0-7.1-.5l-2.8 2.8a4.7 4.7 0 0 0 6.6 6.6l1.6-1.6" stroke="C2" stroke-width="1.7" opacity=".85"/>`, { sx: 19.8, sy: 18.9, ss: .85 }),
+
+    tools: duo('tools', '#818cf8', '#a5b4fc', `
+      <path d="M14.2 6.6a1 1 0 0 0 0 1.4l1.8 1.8a1 1 0 0 0 1.4 0l3.3-3.3a5.6 5.6 0 0 1-7.4 7.4l-6.6 6.6a2 2 0 0 1-2.8-2.8l6.6-6.6a5.6 5.6 0 0 1 7.4-7.4z" fill="G" fill-opacity=".14" stroke="G"/>
+      <circle cx="5.9" cy="18.1" r=".95" fill="C2" stroke="none"/>`),
+
+    cheatsheets: duo('cheatsheets', '#a78bfa', '#c4b5fd', `
+      <rect x="4" y="2.6" width="16" height="18.8" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="m7.4 8.2 2.4 2.2-2.4 2.2" stroke="C2"/>
+      <path d="M11.8 12.6h4.6M7.6 16.6h8.8" stroke="G" opacity=".85"/>`, { sx: 16.6, sy: 5.4, ss: .75 }),
+
+    games: duo('games', '#34d399', '#6ee7b7', `
+      <rect x="2.2" y="6.4" width="19.6" height="11.6" rx="4.4" fill="G" fill-opacity=".14" stroke="G"/>
+      <path d="M7.6 10.2v4M5.6 12.2h4" stroke="G" stroke-width="1.7"/>
+      <circle cx="15.6" cy="13.8" r="1.1" fill="C2" stroke="none"/>
+      <circle cx="18.3" cy="11" r="1.1" fill="C1" fill-opacity=".85" stroke="none"/>`, { sx: 20.7, sy: 4.3, ss: .85 }),
+
+    quiz: duo('quiz', '#22d3ee', '#67e8f9', `
+      <circle cx="12" cy="12" r="8.4" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="M9.4 9.4a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.3-2.6 3.7" stroke="C2" stroke-width="1.7"/>
+      <circle cx="12" cy="17" r=".95" fill="C2" stroke="none"/>`, { sx: 20.9, sy: 4.4, ss: .8 }),
+
+    humor: duo('humor', '#facc15', '#fde047', `
+      <circle cx="12" cy="12" r="8.4" fill="G" fill-opacity=".15" stroke="G"/>
+      <path d="M7.8 13.2a4.4 4.4 0 0 0 8.4 0z" fill="C2" fill-opacity=".6" stroke="C2" stroke-width="1.2"/>
+      <path d="M8.6 9.3h.01M15.4 9.3h.01" stroke="G" stroke-width="2.1"/>`, { sx: 20.9, sy: 4.4, ss: .8 }),
+
+    photography: duo('photography', '#fbbf24', '#fcd34d', `
+      <path d="M22 18.6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.7a2 2 0 0 1 2-2h3.4L9.2 4h5.6l1.8 2.7H20a2 2 0 0 1 2 2z" fill="G" fill-opacity=".13" stroke="G"/>
+      <circle cx="12" cy="13.4" r="3.9" stroke="C2" stroke-width="1.7"/>
+      <circle cx="12" cy="13.4" r="1.4" fill="C2" fill-opacity=".7" stroke="none"/>
+      <circle cx="18.7" cy="9.6" r=".8" fill="C2" stroke="none"/>`, { noSpark: true }),
+
+    visual: duo('visual', '#f472b6', '#f9a8d4', `
+      <rect x="3" y="3.6" width="18" height="16.8" rx="2.2" fill="G" fill-opacity=".12" stroke="G"/>
+      <path d="M12 4v16M3.4 12h17.2" stroke="G" opacity=".8"/>
+      <rect x="5.2" y="5.8" width="4.6" height="4" rx=".9" fill="C2" fill-opacity=".65" stroke="none"/>
+      <path d="M14.6 16.4h2.8M14.6 18h1.6M5.6 15.2l1.5 1.5 2.4-2.6" stroke="C2" opacity=".9"/>`, { sx: 17.4, sy: 8, ss: .7 }),
+
+    settings: duo('settings', '#94a3b8', '#cbd5e1', `
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="G" fill-opacity=".12" stroke="G"/>
+      <circle cx="12" cy="12" r="2.6" fill="C2" fill-opacity=".35" stroke="C2" stroke-width="1.6"/>`, { noSpark: true }),
+
+    feed: duo('feed', '#f87171', '#fca5a5', `
+      <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke="G" stroke-width="1.8"/>
+      <circle cx="5" cy="19" r="1.4" fill="C2" stroke="none"/>`),
+
+    books: duo('books', '#f87171', '#fca5a5', `
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="G" fill-opacity=".12" stroke="G"/>`),
+  };
+
   function icon(r, size) {
     const s = ICONS[r] || '';
-    return size ? s.replace(/width="\d+" height="\d+"/, `width="${size}" height="${size}"`) : s;
+    return size ? s.replace('width="17" height="17"', `width="${size}" height="${size}"`) : s;
   }
-  return { icon, svg };
+  return { icon };
 })();
 window.AppIcons = AppIcons;

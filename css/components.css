@@ -188,7 +188,7 @@ body.light .skel {
 }
 
 /* ── PAGE HEAD (title block every section shares) ── */
-.page-head { display: flex; align-items: flex-start; gap: .9rem; margin-bottom: var(--sp-5); flex-wrap: wrap; }
+.page-head { display: flex; align-items: flex-start; gap: .9rem; margin-bottom: calc(var(--sp-5) * var(--den)); flex-wrap: wrap; }
 .ph-ico {
   width: 44px; height: 44px; border-radius: var(--radius);
   display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
@@ -204,7 +204,7 @@ body.light .skel {
 /* ── CARD (standard content card) ── */
 .card-std {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: var(--sp-4);
+  border-radius: var(--radius); padding: var(--den-pad);
   transition: border-color var(--ease), transform var(--ease-out), box-shadow var(--ease-out);
 }
 .card-std:hover { border-color: var(--border2); box-shadow: var(--shadow-2); }
@@ -218,6 +218,22 @@ a.card-std:hover, button.card-std:hover { transform: translateY(-2px); border-co
 .empty-state svg, .empty-state .es-ico { opacity: .5; font-size: 2rem; }
 .es-title { font-size: var(--fs-md); font-weight: 700; color: var(--text2); }
 .es-hint { font-size: var(--fs-sm); max-width: 42ch; line-height: 1.6; }
+
+/* ── CITY AUTOCOMPLETE (Definições · meteorologia) ── */
+.st-city-wrap { position: relative; }
+.st-city-drop {
+  position: absolute; top: calc(100% + 4px); right: 0; min-width: 240px; z-index: 60;
+  background: var(--card-solid); border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-3); overflow: hidden;
+}
+.st-city-opt {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .05rem; width: 100%;
+  background: transparent; border: none; text-align: left; padding: .5rem .8rem;
+  color: var(--text); font: inherit; font-size: var(--fs-sm); cursor: pointer; transition: background var(--ease);
+}
+.st-city-opt:hover { background: var(--accent-soft); }
+.st-city-opt small { color: var(--muted); font-size: var(--fs-xs); }
+.st-city-empty { padding: .6rem .8rem; color: var(--muted); font-size: var(--fs-xs); }
 
 /* ── SETTINGS TOGGLE ── */
 .st-toggle-wrap { cursor: pointer; user-select: none; }
