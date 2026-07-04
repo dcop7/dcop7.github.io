@@ -483,6 +483,17 @@ const PT_CITIES = [
 ];
 const _citySlug = n => 'pt-' + n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-');
 
+/* IPMA globalIdLocal for each city — daily max/min come from the OFFICIAL
+   IPMA forecast so the widget always matches ipma.pt (Open-Meteo's model
+   ran ~2° warm vs IPMA); Open-Meteo still provides current + hourly. */
+const IPMA_IDS = {
+  'Aveiro': 1010500, 'Beja': 1020500, 'Braga': 1030300, 'Bragança': 1040200,
+  'Castelo Branco': 1050200, 'Coimbra': 1060300, 'Évora': 1070500, 'Faro': 1080500,
+  'Funchal': 2310300, 'Guarda': 1090700, 'Leiria': 1100900, 'Lisboa': 1110600,
+  'Ponta Delgada': 3420300, 'Portalegre': 1121400, 'Porto': 1131200, 'Santarém': 1141600,
+  'Setúbal': 1151200, 'Viana do Castelo': 1160900, 'Vila Real': 1171400, 'Viseu': 1182300,
+};
+
 function setWeatherCity(row) {
   const loc = { id: _citySlug(row[0]), name: row[0], country: 'PT', lat: row[1], lon: row[2] };
   localStorage.setItem('weather-loc', JSON.stringify(loc));
@@ -505,7 +516,7 @@ function getWeatherLoc() {
 }
 
 async function fetchWeatherForLoc(loc) {
-  const key = 'weather-cache3-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
+  const key = 'weather-cache4-' + (loc.id != null ? 'id' + loc.id : String(loc.name || '').toLowerCase());
   try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 3600000 && c.w && c.w.feels != null) return c.w; } catch (e) {}
   try {
     let { lat, lon, name } = loc;
@@ -520,9 +531,24 @@ async function fetchWeatherForLoc(loc) {
         localStorage.setItem('weather-loc', JSON.stringify({ id: c.id, name: c.name, admin1: c.admin1 || '', country: c.country_code || '', lat, lon }));
       } catch (e) {}
     }
-    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
+    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m,precipitation_probability&timezone=Europe%2FLisbon&forecast_days=6`).then(r => r.json());
     if (!w || !w.current) return null;
     const hT = (w.hourly && w.hourly.temperature_2m) || [];
+    const hP = (w.hourly && w.hourly.precipitation_probability) || [];
+
+    /* official IPMA daily forecast for this city (min/max/rain prob) */
+    let ipma = null;
+    const ipmaId = IPMA_IDS[name];
+    if (ipmaId) {
+      try {
+        const r = await fetch(`https://api.ipma.pt/open-data/forecast/meteorology/cities/daily/${ipmaId}.json`);
+        if (r.ok) {
+          const j = await r.json();
+          ipma = {};
+          for (const d of (j.data || [])) ipma[d.forecastDate] = d;
+        }
+      } catch (e2) {}
+    }
     const out = {
       city: name, lat, lon,
       temp: Math.round(w.current.temperature_2m), feels: Math.round(w.current.apparent_temperature),
@@ -530,14 +556,34 @@ async function fetchWeatherForLoc(loc) {
       code: w.current.weather_code, isDay: w.current.is_day,
       uv: w.daily.uv_index_max[0] != null ? Math.round(w.daily.uv_index_max[0]) : null,
       sunrise: w.daily.sunrise[0], sunset: w.daily.sunset[0],
-      days: w.daily.time.map((tt, i) => ({
-        date: tt, min: Math.round(w.daily.temperature_2m_min[i]), max: Math.round(w.daily.temperature_2m_max[i]),
-        code: w.daily.weather_code[i], pop: w.daily.precipitation_probability_max[i],
-        rain: w.daily.precipitation_sum[i], windMax: w.daily.wind_speed_10m_max[i] != null ? Math.round(w.daily.wind_speed_10m_max[i]) : null,
-        uv: w.daily.uv_index_max[i] != null ? Math.round(w.daily.uv_index_max[i]) : null,
-        sunrise: w.daily.sunrise[i], sunset: w.daily.sunset[i],
-        hT: hT.slice(i * 24, i * 24 + 24).map(v => (v == null ? null : Math.round(v * 10) / 10)),
-      })),
+      days: w.daily.time.map((tt, i) => {
+        const ip = ipma && ipma[tt];
+        /* hourly curve: keep Open-Meteo's shape but rescale its amplitude to
+           the official IPMA min/max, so every number in the popup agrees */
+        let hTd = hT.slice(i * 24, i * 24 + 24).map(v => (v == null ? null : Math.round(v * 10) / 10));
+        if (ip && ip.tMin != null && ip.tMax != null) {
+          const vals = hTd.filter(v => v != null);
+          if (vals.length > 4) {
+            const lo0 = Math.min(...vals), hi0 = Math.max(...vals), r0 = (hi0 - lo0) || 1;
+            const lo1 = +ip.tMin, hi1 = +ip.tMax;
+            hTd = hTd.map(v => v == null ? null : Math.round((lo1 + ((v - lo0) / r0) * (hi1 - lo1)) * 10) / 10);
+          }
+        }
+        return {
+          date: tt,
+          /* prefer the official IPMA numbers when the city is covered */
+          min: ip && ip.tMin != null ? Math.round(+ip.tMin) : Math.round(w.daily.temperature_2m_min[i]),
+          max: ip && ip.tMax != null ? Math.round(+ip.tMax) : Math.round(w.daily.temperature_2m_max[i]),
+          pop: ip && ip.precipitaProb != null ? Math.round(+ip.precipitaProb) : w.daily.precipitation_probability_max[i],
+          src: ip ? 'ipma' : 'om',
+          code: w.daily.weather_code[i],
+          rain: w.daily.precipitation_sum[i], windMax: w.daily.wind_speed_10m_max[i] != null ? Math.round(w.daily.wind_speed_10m_max[i]) : null,
+          uv: w.daily.uv_index_max[i] != null ? Math.round(w.daily.uv_index_max[i]) : null,
+          sunrise: w.daily.sunrise[i], sunset: w.daily.sunset[i],
+          hT: hTd,
+          hP: hP.slice(i * 24, i * 24 + 24).map(v => (v == null ? null : Math.round(v))),
+        };
+      }),
     };
     localStorage.setItem(key, JSON.stringify({ t: Date.now(), w: out }));
     return out;
@@ -638,25 +684,48 @@ function _dayWorstWarn(dateStr, warns) {
   return out;
 }
 
-/* 24h temperature sparkline (procedural SVG, no libs) */
+/* 24h temperature curve with labelled max/min markers (procedural SVG) */
 function _uwSpark(hT) {
+  const l = lang();
   const pts = (hT || []).filter(v => v != null);
   if (pts.length < 6) return '';
-  const W = 240, H = 46, lo = Math.min(...pts), hi = Math.max(...pts), rng = (hi - lo) || 1;
+  const W = 240, H = 44, lo = Math.min(...pts), hi = Math.max(...pts), rng = (hi - lo) || 1;
   const step = W / (pts.length - 1);
-  const xy = pts.map((v, i) => [i * step, H - 8 - ((v - lo) / rng) * (H - 16)]);
+  const xy = pts.map((v, i) => [i * step, H - 9 - ((v - lo) / rng) * (H - 22)]);
   const line = xy.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const area = `0,${H} ` + line + ` ${W},${H}`;
   const hiIx = pts.indexOf(hi), loIx = pts.indexOf(lo);
-  return `<div class="uw-spark-wrap">
+  /* keep the value labels inside the viewBox */
+  const tx = (x) => Math.min(Math.max(x, 12), W - 12).toFixed(1);
+  return `<div class="uw-chart">
+    <div class="uw-chart-t">🌡️ ${l === 'pt' ? 'Temperatura ao longo do dia' : 'Temperature through the day'}</div>
     <svg class="uw-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
       <defs><linearGradient id="uwsa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgba(99,102,241,.35)"/><stop offset="1" stop-color="rgba(99,102,241,0)"/></linearGradient></defs>
       <polygon points="${area}" fill="url(#uwsa)"/>
       <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="${xy[hiIx][0].toFixed(1)}" cy="${xy[hiIx][1].toFixed(1)}" r="2.6" fill="#ef4444"/>
-      <circle cx="${xy[loIx][0].toFixed(1)}" cy="${xy[loIx][1].toFixed(1)}" r="2.6" fill="#3b82f6"/>
+      <circle cx="${xy[hiIx][0].toFixed(1)}" cy="${xy[hiIx][1].toFixed(1)}" r="2.4" fill="#ef4444"/>
+      <text x="${tx(xy[hiIx][0])}" y="${(xy[hiIx][1] - 4).toFixed(1)}" text-anchor="middle" class="uw-sk-max">${Math.round(hi)}°</text>
+      <circle cx="${xy[loIx][0].toFixed(1)}" cy="${xy[loIx][1].toFixed(1)}" r="2.4" fill="#3b82f6"/>
+      <text x="${tx(xy[loIx][0])}" y="${Math.min(xy[loIx][1] + 11, H - 1).toFixed(1)}" text-anchor="middle" class="uw-sk-min">${Math.round(lo)}°</text>
     </svg>
-    <div class="uw-spark-x"><span>00h</span><span>12h</span><span>24h</span></div>
+  </div>`;
+}
+
+/* 24h rain-probability bars */
+function _uwRainBars(hP) {
+  const l = lang();
+  const pts = (hP || []).map(v => (v == null ? 0 : v));
+  if (!(hP || []).some(v => v != null)) return '';
+  const W = 240, H = 26, n = pts.length, bw = W / n - 1;
+  const bars = pts.map((v, i) =>
+    `<rect x="${(i * (W / n) + .5).toFixed(1)}" y="${(H - Math.max((v / 100) * H, 1)).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max((v / 100) * H, 1).toFixed(1)}" rx="1" fill="${v > 0 ? 'url(#uwrb)' : 'rgba(148,163,184,.18)'}"/>`).join('');
+  return `<div class="uw-chart">
+    <div class="uw-chart-t">💧 ${l === 'pt' ? 'Probabilidade de chuva' : 'Rain probability'} <small>${Math.max(...pts)}% ${l === 'pt' ? 'máx' : 'max'}</small></div>
+    <svg class="uw-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="uwrb" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+      ${bars}
+    </svg>
+    <div class="uw-spark-x"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div>
   </div>`;
 }
 
@@ -686,6 +755,7 @@ function _uwDayHTML(di) {
       <div><b>${wd()[dt.getDay()]}, ${dt.getDate()} ${ms()[dt.getMonth()]}</b><small>${dw.text} · <span class="uw-max">▲ ${d.max}°</span> <span class="uw-min">▼ ${d.min}°</span></small></div>
       <button type="button" class="uw-pop-x" aria-label="Fechar">✕</button></div>
     ${_uwSpark(d.hT)}
+    ${_uwRainBars(d.hP)}
     <div class="uw-pop-grid">${cells}</div>
     ${warnRow}`;
 }
@@ -851,14 +921,14 @@ async function renderUtility() {
       </div>
       <div class="uw-now"><span class="uw-emoji">${AppIcons.weather(w.code, w.isDay, 42)}</span>
         <div class="uw-main"><span class="uw-temp">${w.temp}°</span><span class="uw-state">${cur.text}</span></div>
-        ${d0 ? `<div class="uw-mm"><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
+        ${d0 ? `<div class="uw-mm"><span class="uw-today">${l === 'pt' ? 'Hoje' : 'Today'} · ${wd()[AppTime.now().getDay()].slice(0, 3)}</span><span class="uw-max">▲ ${d0.max}°</span><span class="uw-min">▼ ${d0.min}°</span></div>` : ''}</div>
       <div class="uw-stats">${stats}</div>
       ${warnHtml}
       <div class="uw-fc-wrap">
         <div class="uw-pop" id="uw-pop" hidden></div>
         <div class="uw-fc">${fc}</div>
       </div>
-      <div class="util-foot">${more('https://www.ipma.pt/pt/otempo/prev.localidade.hora/', l === 'pt' ? 'Ver no IPMA' : 'See on IPMA')}</div></section>`;
+      <div class="util-foot">${d0 && d0.src === 'ipma' ? (l === 'pt' ? 'Máx/mín oficiais IPMA · ' : 'Official IPMA max/min · ') : ''}${more('https://www.ipma.pt/pt/otempo/prev.localidade.hora/', l === 'pt' ? 'Ver no IPMA' : 'See on IPMA')}</div></section>`;
   } else {
     weatherCard = `<section class="util-card util-weather"><div class="util-h"><span class="util-ico">🌤️</span><h2>${l === 'pt' ? 'Meteorologia' : 'Weather'}</h2></div><div class="util-empty">${l === 'pt' ? 'Indisponível' : 'Unavailable'}</div></section>`;
   }
