@@ -55,8 +55,6 @@ jobs:
 
       - name: Build homepage snapshot
         if: steps.gate.outputs.go == 'true'
-        env:
-          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
         run: node data/home/build-home.mjs
 
       - name: Commit snapshot if it changed

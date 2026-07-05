@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v235';
+const CACHE = 'dcop7-v236';
 const STATIC = [
   '/',
   '/index.html',
@@ -34,6 +34,7 @@ const STATIC = [
   '/data/home/utility.json',
   '/data/humor/index.json',
   /* Core */
+  '/js/core/otd-lib.js',
   '/js/core/main.js',
   '/js/core/nav.js',
   '/js/core/search.js',

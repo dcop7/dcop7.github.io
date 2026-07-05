@@ -400,6 +400,9 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
   position: absolute; left: 0; right: 0; bottom: calc(100% + .4rem); z-index: 25;
   background: var(--card-solid); border: 1px solid var(--border2); border-radius: var(--radius-sm);
   box-shadow: var(--shadow-3); padding: .7rem .85rem; animation: view-in .14s ease;
+  /* JS slides it down when it would run under the header; this caps it on
+     very short viewports so it can scroll instead of being clipped */
+  max-height: calc(100vh - 76px); max-height: calc(100dvh - 76px); overflow-y: auto;
 }
 .uw-pop-h { display: flex; align-items: flex-start; gap: .6rem; }
 .uw-pop-ico { font-size: 1.4rem; line-height: 1.2; }

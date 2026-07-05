@@ -322,6 +322,38 @@ function updateDiscGreeting() {
   gEl.innerHTML = `${greet} <span class="disc-wave">👋</span>`;
 }
 
+/* Live "on this day" rebuild for stale snapshots: the GitHub Action often
+   runs hours late (GitHub delays crons), so on a morning visit today.json
+   can still be yesterday's. When that happens the browser fetches the SAME
+   Wikimedia feeds the Action uses and rebuilds the three cards with the
+   SAME shared logic (js/core/otd-lib.js) — so the homepage never shows
+   yesterday's ephemerides under today's date while online. Cached per day
+   in localStorage: at most one pair of requests per device per day. */
+async function _liveOtd() {
+  const key = 'home-otd-' + AppTime.dayKey();
+  try { const c = localStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
+  if (typeof OTDLib === 'undefined' || navigator.onLine === false) return null;
+  const n = AppTime.now();
+  const mm = String(n.getMonth() + 1).padStart(2, '0'), dd = String(n.getDate()).padStart(2, '0');
+  const j = u => fetch(u).then(r => r.ok ? r.json() : null).catch(() => null);
+  const [pt, en] = await Promise.all([
+    j(`https://pt.wikipedia.org/api/rest_v1/feed/onthisday/all/${mm}/${dd}`),
+    j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${mm}/${dd}`),
+  ]);
+  if (!pt && !en) return null;
+  const sec = OTDLib.buildSections(pt, en, {});
+  if (!sec.history.length && !sec.portugal.length && !sec.births.length) return null;
+  try {
+    /* keep only today's cache — yesterday's entry is useless from now on */
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf('home-otd-') === 0 && k !== key) localStorage.removeItem(k);
+    }
+    localStorage.setItem(key, JSON.stringify(sec));
+  } catch (e) {}
+  return sec;
+}
+
 async function renderHomeDiscovery() {
   const panel = document.getElementById('disc-panel');
   const sEl = document.getElementById('disc-sub');
@@ -339,9 +371,23 @@ async function renderHomeDiscovery() {
   try { const r = await fetch('data/home/today.json', { cache: 'no-store' }); if (r.ok) data = await r.json(); } catch (e) {}
   if (!data) { try { const r = await fetch('data/home/fallback.json'); if (r.ok) data = await r.json(); } catch (e) {} }
   if (!data) { panel.innerHTML = `<div class="disc-loading">${l === 'pt' ? 'Sem dados disponíveis offline.' : 'No data available offline.'}</div>`; return; }
-  /* stale snapshot (Action delayed/failed): keep today's date, flag the content */
-  if (sEl && data.date && data.date !== AppTime.dayKey()) {
-    sEl.textContent = todayLabel + (l === 'pt' ? ` · conteúdo de ${data.dateLabel || data.date}` : ` · content from ${data.date}`);
+  /* stale snapshot (Action delayed/failed): rebuild today's sections live in
+     the browser; only if that also fails keep yesterday's content, flagged */
+  if (data.date && data.date !== AppTime.dayKey()) {
+    const live = await _liveOtd();
+    if (live) {
+      data = { ...data, ...live, date: AppTime.dayKey(), links: { onthisday: `https://pt.wikipedia.org/wiki/${n.getDate()}_de_${MO[n.getMonth()]}` } };
+      /* the daily quote rotates deterministically over the same local pool */
+      try {
+        const r = await fetch('data/home/quotes.json');
+        if (r.ok) {
+          const pool = await r.json();
+          if (pool.length) { const doy = Math.floor((n - new Date(n.getFullYear(), 0, 0)) / 86400000); data.inspiration = pool[doy % pool.length]; }
+        }
+      } catch (e) {}
+    } else if (sEl) {
+      sEl.textContent = todayLabel + (l === 'pt' ? ` · conteúdo de ${data.dateLabel || data.date}` : ` · content from ${data.date}`);
+    }
   }
 
   const e = _escH;
@@ -779,6 +825,26 @@ function _uwWarnHTML(wi) {
     ${wn.text ? `<div class="uw-pop-txt">${_escH(wn.text)}</div>` : `<div class="uw-pop-txt">${lang() === 'pt' ? 'Aviso IPMA em vigor para a região.' : 'IPMA warning in effect for the region.'}</div>`}`;
 }
 
+/* open the popover and keep it fully visible: it is CSS-anchored above the
+   forecast row, but today's detail is tall — on short viewports (or with the
+   card near the top) it would run under the sticky header. Measure after
+   layout and slide it down just enough to clear header + viewport top. */
+function _uwOpenPop(pop, html) {
+  pop.innerHTML = html;
+  pop.hidden = false;
+  pop.style.bottom = '';
+  requestAnimationFrame(() => {
+    const wrap = pop.offsetParent; if (!wrap) return;
+    const hdr = document.getElementById('site-header');
+    const minTop = Math.max(6, hdr ? hdr.getBoundingClientRect().bottom + 6 : 6);
+    /* offsetTop, not getBoundingClientRect: the view-in animation translates
+       the popup while we measure, which would under-correct by up to 8px */
+    const top = wrap.getBoundingClientRect().top + pop.offsetTop;
+    const over = minTop - top;
+    if (over > 0) pop.style.bottom = `calc(100% + .4rem - ${Math.round(over)}px)`;
+  });
+}
+
 function _wireWeatherWidget() {
   if (window._uwWired) return;
   window._uwWired = true;
@@ -797,12 +863,12 @@ function _wireWeatherWidget() {
     if (ev.target.closest('.uw-pop-x')) { if (pop) pop.hidden = true; return; }
     const day = ev.target.closest('.uw-day[data-di]');
     if (day && pop) {
-      pop.innerHTML = _uwDayHTML(+day.dataset.di); pop.hidden = false;
+      _uwOpenPop(pop, _uwDayHTML(+day.dataset.di));
       document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
       return;
     }
     const pill = ev.target.closest('.uw-w[data-wi]');
-    if (pill && pop) { pop.innerHTML = _uwWarnHTML(+pill.dataset.wi); pop.hidden = false; return; }
+    if (pill && pop) { _uwOpenPop(pop, _uwWarnHTML(+pill.dataset.wi)); return; }
     if (pop && !pop.hidden && !ev.target.closest('#uw-pop')) {
       pop.hidden = true;
       document.querySelectorAll('.uw-day.on').forEach(b => b.classList.remove('on'));
@@ -833,12 +899,12 @@ function _wireWeatherWidget() {
         const di = +day.dataset.di;
         if (di !== curDi || pop.hidden) {
           curDi = di;
-          pop.innerHTML = _uwDayHTML(di); pop.hidden = false;
+          _uwOpenPop(pop, _uwDayHTML(di));
           document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
         }
       } else if (pill) {
         curDi = null;
-        pop.innerHTML = _uwWarnHTML(+pill.dataset.wi); pop.hidden = false;
+        _uwOpenPop(pop, _uwWarnHTML(+pill.dataset.wi));
       }
     });
     document.addEventListener('mouseout', ev => {
