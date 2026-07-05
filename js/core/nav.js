@@ -74,20 +74,6 @@ const Nav = (function () {
     document.getElementById('hdr-search-btn')?.addEventListener('click', () => {
       if (typeof CommandPalette !== 'undefined') CommandPalette.open();
     });
-    const mob = document.getElementById('mob-nav');
-    if (!mob) return;
-    document.getElementById('mob-menu-btn')?.addEventListener('click', toggleSb);
-    mob.addEventListener('click', e => {
-      const btn = e.target.closest('[data-route]');
-      if (!btn) return;
-      go(btn.dataset.route);
-    });
-    document.addEventListener('routechange', e => {
-      const page = (e.detail || '').split('/')[0] || 'home';
-      mob.querySelectorAll('.mob-nav-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.route === page);
-      });
-    });
   }
 
   function wireEvents() {
@@ -240,11 +226,6 @@ const Nav = (function () {
     });
     /* Sidebar group labels. */
     document.querySelectorAll('.sb-grp').forEach(el => { el.textContent = TN(`nav.grp.${el.dataset.grp}`); });
-    /* Mobile bottom-nav labels follow the same keys. */
-    document.querySelectorAll('#mob-nav .mob-nav-btn').forEach(btn => {
-      const span = btn.querySelector('span');
-      if (span) span.textContent = TN(`nav.${btn.dataset.route}`);
-    });
   });
 
   return { go, renderView, icon };

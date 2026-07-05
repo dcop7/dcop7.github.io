@@ -337,36 +337,9 @@ body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--r
 .page-title { font-family: var(--font-head); font-size: clamp(1.2rem,3vw,1.5rem); font-weight: 800; letter-spacing: -.03em; display: flex; align-items: center; gap: .6rem; }
 .page-subtitle { font-size: .82rem; color: var(--muted); margin-top: .25rem; }
 
-/* ── MOBILE BOTTOM NAVIGATION ──
-   Primary destinations always one thumb-tap away; the drawer keeps the full
-   catalogue. Hidden on desktop. */
-.mob-nav {
-  display: none; position: fixed; bottom: 0; left: 0; right: 0;
-  height: 60px; z-index: 400;
-  background: rgba(8,12,20,.97);
-  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(255,255,255,.08);
-  padding: 0 .5rem;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-body.light .mob-nav { background: rgba(248,250,252,.97); border-top-color: rgba(0,0,0,.08); }
-.mob-nav-inner { display: flex; align-items: center; justify-content: space-around; height: 60px; gap: .25rem; }
-.mob-nav-btn {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: .2rem; flex: 1; height: 52px; border: none; background: transparent;
-  color: var(--muted); border-radius: 10px; cursor: pointer; transition: all .2s;
-  font-size: .58rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
-}
-.mob-nav-btn svg { width: 20px; height: 20px; flex-shrink: 0; transition: stroke .2s; }
-.mob-nav-btn.active { color: var(--accent); }
-.mob-nav-btn.active svg { stroke: var(--accent); }
-.mob-nav-btn:active { transform: scale(.9); }
-
 /* ── RESPONSIVE BREAKPOINTS ── */
 @media (max-width: 900px) {
   :root { --sb-w: 264px; }
-  .mob-nav { display: block; }
-  .app-main { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   .hdr-center { display: none; }
   #site-header .hdr-center { display: none; }
   .hdr-search-btn { display: flex; }

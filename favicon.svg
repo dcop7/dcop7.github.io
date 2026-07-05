@@ -1,27 +1,112 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- "Diogo Universe" app icon: golden serif D + blue planet + gold orbit.
+       The D is a hand-drawn path (NOT <text>): SVG favicons render in image
+       context where document/system fonts are unreliable. -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0f1f38"/>
-      <stop offset="100%" stop-color="#0d1c30"/>
+    <radialGradient id="fvbg" cx="45%" cy="28%" r="90%">
+      <stop offset="0%" stop-color="#0a1122"/>
+      <stop offset="55%" stop-color="#050912"/>
+      <stop offset="100%" stop-color="#020409"/>
+    </radialGradient>
+    <!-- bright bevel edge of the D -->
+    <linearGradient id="fvD" x1=".05" y1="0" x2=".8" y2="1">
+      <stop offset="0%" stop-color="#eaf5ff"/>
+      <stop offset="12%" stop-color="#8fc3ff"/>
+      <stop offset="26%" stop-color="#6d9cf0"/>
+      <stop offset="40%" stop-color="#fbc75f"/>
+      <stop offset="72%" stop-color="#e8922a"/>
+      <stop offset="100%" stop-color="#a55708"/>
     </linearGradient>
-    <linearGradient id="dg" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00f5ff"/>
-      <stop offset="40%" stop-color="#0ea5e9"/>
-      <stop offset="100%" stop-color="#22d3ee"/>
+    <!-- darker metal body of the D -->
+    <linearGradient id="fvDdark" x1=".05" y1="0" x2=".8" y2="1">
+      <stop offset="0%" stop-color="#3d5f94"/>
+      <stop offset="18%" stop-color="#2b4470"/>
+      <stop offset="38%" stop-color="#8a5511"/>
+      <stop offset="70%" stop-color="#a2680f"/>
+      <stop offset="100%" stop-color="#6b3a07"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="0.8" result="b"/>
+    <!-- blue light that clings to the top of the glyph -->
+    <linearGradient id="fvBlueFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4e9ff" stop-opacity=".95"/>
+      <stop offset="20%" stop-color="#66a4ff" stop-opacity=".5"/>
+      <stop offset="40%" stop-color="#66a4ff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="fvPl" cx="52%" cy="16%" r="95%">
+      <stop offset="0%" stop-color="#5f9de6"/>
+      <stop offset="30%" stop-color="#28549f"/>
+      <stop offset="65%" stop-color="#122a67"/>
+      <stop offset="100%" stop-color="#050c26"/>
+    </radialGradient>
+    <linearGradient id="fvRing" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fff3c8"/>
+      <stop offset="45%" stop-color="#f2b344"/>
+      <stop offset="100%" stop-color="#8f4d0c"/>
+    </linearGradient>
+    <radialGradient id="fvMoon" cx="35%" cy="32%" r="80%">
+      <stop offset="0%" stop-color="#ffd98f"/>
+      <stop offset="100%" stop-color="#b25f0e"/>
+    </radialGradient>
+    <filter id="fvGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="0.9" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+    <filter id="fvBlur1" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="0.6"/>
+    </filter>
+    <filter id="fvBlur2" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+    <filter id="fvGlow2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- serif D: outer contour with left serif notches + bowl counter hole -->
+    <path id="fvDp" fill-rule="evenodd" d="
+      M14 12.8 H31.5
+      C43 12.8 50.5 19.4 50.5 31
+      C50.5 42.6 43 49.2 31.5 49.2
+      H14 V46.4 H17.4 V15.6 H14 Z
+      M22.6 15.6 V46.4 H30.5
+      C39.5 46.4 44.8 41 44.8 31
+      C44.8 21 39.5 15.6 30.5 15.6 Z"/>
   </defs>
-  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
-  <text
-    x="16" y="23.5"
-    font-family="'Space Grotesk', 'Segoe UI', system-ui, sans-serif"
-    font-size="21"
-    font-weight="700"
-    text-anchor="middle"
-    fill="url(#dg)"
-    filter="url(#glow)"
-    letter-spacing="-0.5">D</text>
+
+  <rect width="64" height="64" rx="14" fill="url(#fvbg)"/>
+  <!-- faint stars -->
+  <g fill="#cfe3ff">
+    <circle cx="11" cy="15" r=".55" opacity=".45"/>
+    <circle cx="54" cy="9" r=".5" opacity=".4"/>
+    <circle cx="58" cy="36" r=".55" opacity=".4"/>
+    <circle cx="8" cy="46" r=".5" opacity=".35"/>
+    <circle cx="22" cy="6" r=".45" opacity=".35"/>
+    <circle cx="49" cy="57" r=".5" opacity=".35"/>
+  </g>
+
+  <!-- serif D: soft edge halo, chiseled letter (dark metal body + bright
+       bevel stroke), then a blue light hugging the top of the glyph -->
+  <use href="#fvDp" fill="none" stroke="url(#fvD)" stroke-width="1.8" opacity=".35" filter="url(#fvBlur2)"/>
+  <use href="#fvDp" fill="url(#fvDdark)" stroke="url(#fvD)" stroke-width="1.1" filter="url(#fvGlow)"/>
+  <use href="#fvDp" fill="url(#fvBlueFade)" filter="url(#fvBlur1)"/>
+  <ellipse cx="19" cy="13" rx="6" ry="3" fill="#5aa8ff" opacity=".3" filter="url(#fvBlur2)"/>
+
+  <!-- orbit: back half behind the planet, front half above it -->
+  <g transform="rotate(-24 27 37)">
+    <path d="M9.5 37a17.5 5 0 0 1 35 0" fill="none" stroke="url(#fvRing)" stroke-width=".8" opacity=".45" filter="url(#fvGlow)"/>
+  </g>
+
+  <!-- planet: dark navy, lit from the top -->
+  <g filter="url(#fvGlow)">
+    <circle cx="27" cy="35.5" r="10" fill="url(#fvPl)"/>
+    <ellipse cx="23.5" cy="34" rx="4.1" ry="2.7" fill="#0c2254" opacity=".4"/>
+    <ellipse cx="31" cy="39" rx="4.3" ry="2.9" fill="#081a44" opacity=".45"/>
+    <path d="M18.8 31a10 10 0 0 1 16.4 0" fill="none" stroke="#9cc8ff" stroke-width=".7" opacity=".55" filter="url(#fvBlur1)"/>
+  </g>
+
+  <g transform="rotate(-24 27 37)">
+    <path d="M9.5 37a17.5 5 0 0 0 35 0" fill="none" stroke="url(#fvRing)" stroke-width="1.1" filter="url(#fvGlow2)"/>
+    <circle cx="12" cy="39.4" r=".9" fill="#fff3c8" filter="url(#fvGlow2)"/>
+  </g>
+
+  <!-- small moon in the bowl of the D -->
+  <circle cx="40.5" cy="25" r="2" fill="url(#fvMoon)" filter="url(#fvGlow)"/>
 </svg>
