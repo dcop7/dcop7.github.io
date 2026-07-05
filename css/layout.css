@@ -178,18 +178,6 @@ body.light .search-input { background: #fff; }
 .clock strong { display: block; font-size: .78rem; font-weight: 600; font-family: var(--font-head); }
 .clock span { font-size: .68rem; color: var(--muted); }
 
-/* Font controls */
-.font-ctrl-wrap { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-.font-ctrl { display: flex; align-items: center; gap: .25rem; }
-.font-btn {
-  background: var(--card2); border: 1px solid var(--border); color: var(--text);
-  font-size: .9rem; font-weight: 700; width: 22px; height: 22px; border-radius: 5px;
-  display: flex; align-items: center; justify-content: center; padding: 0; transition: all var(--ease);
-}
-.font-btn:hover:not(:disabled) { background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.3); color: var(--accent); }
-.font-btn:disabled { opacity: .25; cursor: default; }
-.font-size-lbl { font-size: .6rem; color: var(--muted); width: 1.4rem; text-align: center; font-weight: 700; letter-spacing: .06em; }
-
 /* Lang + theme buttons */
 .lang-btn {
   background: var(--card2); border: 1px solid var(--border); color: var(--muted);
@@ -352,7 +340,7 @@ body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--r
 @media (max-width: 600px) {
   /* Declutter the header so the brand + essential controls always fit
      (the date is redundant with the Home greeting on phones). */
-  .hdr-right .font-ctrl-wrap, .hdr-right .toggle-wrap, .clock { display: none; }
+  .hdr-right .toggle-wrap, .clock { display: none; }
   #site-header { padding: .55rem 1rem; gap: .5rem; }
 }
 

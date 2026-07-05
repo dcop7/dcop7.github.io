@@ -122,8 +122,8 @@ const SettingsPage = (function () {
     });
 
     /* Font size */
-    el.querySelector('#st-font-dec')?.addEventListener('click', () => { document.getElementById('font-dec')?.click(); _syncFont(); });
-    el.querySelector('#st-font-inc')?.addEventListener('click', () => { document.getElementById('font-inc')?.click(); _syncFont(); });
+    el.querySelector('#st-font-dec')?.addEventListener('click', () => { window.FontCtl?.step(-1); _syncFont(); });
+    el.querySelector('#st-font-inc')?.addEventListener('click', () => { window.FontCtl?.step(1); _syncFont(); });
 
     /* Language */
     el.querySelectorAll('#st-lang-seg .tsb').forEach(btn =>
@@ -154,9 +154,8 @@ const SettingsPage = (function () {
   }
 
   function _syncFont() {
-    const lbl = document.getElementById('font-lbl');
-    const st  = _el?.querySelector('#st-font-lbl');
-    if (st && lbl) st.textContent = lbl.textContent;
+    const st = _el?.querySelector('#st-font-lbl');
+    if (st && window.FontCtl) st.textContent = FontCtl.label();
   }
 
   function _syncAll() { _syncTheme(); _syncFont(); }
@@ -202,9 +201,13 @@ const SettingsPage = (function () {
       document.getElementById('pp-wp-track')?.classList.toggle('on', wpOn);
       const den = localStorage.getItem('site-density') || 'comfortable';
       pop.querySelectorAll('#pp-density .pp-seg-btn').forEach(b => b.classList.toggle('active', b.dataset.density === den));
-      const lbl = document.getElementById('font-lbl');
-      const ppLbl = document.getElementById('pp-font-lbl');
-      if (lbl && ppLbl) ppLbl.textContent = lbl.textContent;
+      if (window.FontCtl) {
+        const ppLbl = document.getElementById('pp-font-lbl');
+        if (ppLbl) ppLbl.textContent = FontCtl.label();
+        const dec = document.getElementById('pp-font-dec'), inc = document.getElementById('pp-font-inc');
+        if (dec) dec.disabled = FontCtl.atMin();
+        if (inc) inc.disabled = FontCtl.atMax();
+      }
     }
     function open()  { syncLabels(); syncState(); pop.hidden = false; if (ov) ov.hidden = false; }
     function close() { pop.hidden = true; if (ov) ov.hidden = true; }
@@ -229,8 +232,8 @@ const SettingsPage = (function () {
         applyDensity(b.dataset.density);
         syncState();
       }));
-    document.getElementById('pp-font-dec')?.addEventListener('click', () => { document.getElementById('font-dec')?.click(); syncState(); });
-    document.getElementById('pp-font-inc')?.addEventListener('click', () => { document.getElementById('font-inc')?.click(); syncState(); });
+    document.getElementById('pp-font-dec')?.addEventListener('click', () => { window.FontCtl?.step(-1); syncState(); });
+    document.getElementById('pp-font-inc')?.addEventListener('click', () => { window.FontCtl?.step(1); syncState(); });
     document.addEventListener('langchange', () => { if (!pop.hidden) syncLabels(); });
   });
 

@@ -43,7 +43,7 @@ img { display: block; max-width: 100%; }
 
 /* Touch devices: minimum comfortable hit areas for the header controls */
 @media (pointer: coarse) {
-  .icon-btn, .sb-toggle, .font-btn, .lang-btn { min-width: 38px; min-height: 38px; }
+  .icon-btn, .sb-toggle, .lang-btn { min-width: 38px; min-height: 38px; }
 }
 
 /* ── BACKGROUND SYSTEM ── */

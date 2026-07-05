@@ -440,6 +440,20 @@ body.light .uw-sk-lab { text-shadow: 0 1px 3px rgba(255,255,255,.8); }
 .uw-cell-l { font-size: .58rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
 .uw-cell-v { font-size: .74rem; font-weight: 700; color: var(--text); white-space: nowrap; }
 .uw-pop-warns { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem; }
+/* full IPMA warning cards inside the day popup (type · level, period, advice) */
+.uw-wb { margin-top: .55rem; padding: .5rem .65rem; border-radius: 9px; border: 1px solid; border-left-width: 3px; font-size: .74rem; }
+.uw-wb + .uw-wb { margin-top: .35rem; }
+.uw-wb-h { display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
+.uw-wb-h b { font-size: .76rem; }
+.uw-wb-h small { color: var(--muted); font-size: .68rem; margin-left: auto; white-space: nowrap; }
+.uw-wb-txt { margin-top: .3rem; color: var(--text2); line-height: 1.5; font-size: .72rem; max-height: 110px; overflow-y: auto; }
+.uw-wb.lvl-yellow { border-color: rgba(250,204,21,.45); background: rgba(250,204,21,.08); }
+.uw-wb.lvl-yellow b { color: #eab308; }
+.uw-wb.lvl-orange { border-color: rgba(251,146,60,.5); background: rgba(251,146,60,.09); }
+.uw-wb.lvl-orange b { color: #f97316; }
+.uw-wb.lvl-red { border-color: rgba(248,113,113,.55); background: rgba(248,113,113,.09); }
+.uw-wb.lvl-red b { color: #ef4444; }
+.uw-rainline { margin-top: .35rem; font-size: .68rem; font-weight: 600; color: #38bdf8; }
 .uw-sun-chip { white-space: nowrap; }
 @media (max-width: 640px) { .uw-pop-grid { grid-template-columns: repeat(2, 1fr); } }
 .uw-pop-txt { margin-top: .55rem; font-size: .76rem; line-height: 1.55; color: var(--text2); max-height: 130px; overflow-y: auto; }
