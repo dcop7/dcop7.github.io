@@ -86,78 +86,51 @@ body.light .brand-text {
   filter: none;
 }
 
-/* ── symbol: planet + ring + moon + stars + halo ── */
-.brand-orbit { position: relative; width: 27px; height: 27px; flex-shrink: 0; }
+/* ── symbol: the favicon itself, brought to life ──
+   Single source of truth: main.js fetches favicon.svg and inlines it in
+   #brand-mark (the <img> fallback shows the identical static icon). The
+   rules below only ADD motion to elements the favicon already has (tagged
+   with fv-* classes there): ring sway, travelling spark, star twinkle and
+   a breathing moon. Opacity/transform only — GPU-cheap. NOTE: a CSS
+   transform on an SVG node REPLACES its transform attribute, so the orbit
+   keyframes re-state the base rotate(-24°) around the planet (27,37). */
+.brand-mark { position: relative; width: 28px; height: 28px; flex-shrink: 0; transition: transform .3s var(--ease, ease); }
+.brand-mark img, .brand-mark svg { display: block; width: 100%; height: 100%; }
+.brand:hover .brand-mark { transform: scale(1.06); }
 
-/* planet: lit from the upper left, atmosphere rim on the dark side */
-.brand-core {
-  position: absolute; inset: 7.5px; border-radius: 50%; z-index: 2;
-  background: radial-gradient(circle at 30% 26%, #e4ecff 0%, #9db4ff 22%, #6d5dfc 52%, #33288f 80%, #191349 100%);
-  box-shadow:
-    inset -2px -2.5px 4px rgba(5,3,26,.65),
-    inset 1px 1.5px 2px rgba(255,255,255,.35),
-    0 0 10px rgba(109,93,252,.55);
+.brand-mark svg .fv-orbit {
+  transform-box: view-box; transform-origin: 27px 37px;
+  animation: fv-sway 12s ease-in-out infinite;
 }
-/* thin atmosphere catching light on the terminator */
-.brand-core::after {
-  content: ''; position: absolute; inset: -1.5px; border-radius: 50%;
-  background: radial-gradient(circle at 68% 74%, rgba(127,231,255,.4), transparent 46%);
-  mix-blend-mode: screen;
+@keyframes fv-sway {
+  0%, 100% { transform: rotate(-24deg); }
+  50%      { transform: rotate(-20.5deg); }
 }
-
-/* ring: conic gradient masked to a thin band — bright where it passes in
-   front of the planet, fading away behind it */
-.brand-ring {
-  position: absolute; inset: -1.5px; border-radius: 50%; z-index: 1;
-  transform: rotate(-28deg) scaleY(.38);
-  background: conic-gradient(from 210deg,
-    transparent 0deg, rgba(124,92,255,.15) 40deg, rgba(124,92,255,.65) 130deg,
-    rgba(127,231,255,.85) 185deg, rgba(255,193,120,.5) 240deg, transparent 330deg);
-  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.6px));
-          mask: radial-gradient(closest-side, transparent calc(100% - 1.6px), #000 calc(100% - 1.6px));
+.brand-mark svg .fv-spark { animation: fv-spark 3.8s ease-in-out infinite; }
+@keyframes fv-spark { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+.brand-mark svg .fv-star { animation: fv-twinkle 4.6s ease-in-out infinite; }
+.brand-mark svg .fv-star:nth-of-type(2) { animation-delay: .9s; }
+.brand-mark svg .fv-star:nth-of-type(3) { animation-delay: 1.7s; animation-duration: 5.4s; }
+.brand-mark svg .fv-star:nth-of-type(4) { animation-delay: 2.6s; }
+.brand-mark svg .fv-star:nth-of-type(5) { animation-delay: 3.4s; animation-duration: 5.8s; }
+.brand-mark svg .fv-star:nth-of-type(6) { animation-delay: 4.1s; }
+@keyframes fv-twinkle { 0%, 100% { opacity: .22; } 50% { opacity: .85; } }
+.brand-mark svg .fv-moon {
+  transform-box: fill-box; transform-origin: center;
+  animation: fv-moon 7s ease-in-out infinite;
 }
-
-/* moon: tilted 3D orbit — faster + brighter in front (perigee), slower,
-   smaller and dimmer behind (apogee); warm sunlit tint at the closest pass */
-.brand-sat {
-  position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffffff, #9beaff 60%, #4dd0e8);
-  box-shadow: 0 0 6px rgba(127,231,255,.9), 0 0 2px #fff;
-  animation: brand-orbit-3d 6.5s cubic-bezier(.45,.05,.55,.95) infinite;
+@keyframes fv-moon {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50%      { transform: scale(1.14); opacity: 1; }
 }
-@keyframes brand-orbit-3d {
-  0%    { transform: translate(9.2px, 5.6px) scale(1);     opacity: .92; z-index: 3; }
-  10%   { transform: translate(5px, 6.3px) scale(1.22);    opacity: 1;   z-index: 3; filter: brightness(1.25); }
-  22%   { transform: translate(-2px, 3.3px) scale(1.28);   opacity: 1;   z-index: 3; filter: brightness(1.15); }
-  36%   { transform: translate(-7.9px, -1.7px) scale(1.08);opacity: .95; z-index: 3; }
-  50%   { transform: translate(-9.2px, -5.6px) scale(.9);  opacity: .8;  z-index: 1; }
-  64%   { transform: translate(-5px, -6.3px) scale(.62);   opacity: .42; z-index: 1; }
-  78%   { transform: translate(2px, -3.3px) scale(.58);    opacity: .38; z-index: 1; }
-  90%   { transform: translate(7.9px, 1.7px) scale(.8);    opacity: .62; z-index: 1; }
-  100%  { transform: translate(9.2px, 5.6px) scale(1);     opacity: .92; z-index: 3; }
-}
-
-/* micro-stars: three specks twinkling out of phase */
-.brand-star {
-  position: absolute; width: 2px; height: 2px; border-radius: 50%; z-index: 0;
-  background: #cfe9ff; opacity: .2;
-  animation: brand-twinkle 4.2s ease-in-out infinite;
-}
-.brand-star.bs1 { top: 1px; right: 2px; }
-.brand-star.bs2 { bottom: 2px; left: 0; width: 1.5px; height: 1.5px; animation-delay: 1.4s; animation-duration: 5.1s; }
-.brand-star.bs3 { top: 6px; left: -3px; width: 1.5px; height: 1.5px; background: #ffe3b3; animation-delay: 2.6s; animation-duration: 6s; }
-@keyframes brand-twinkle {
-  0%, 100% { opacity: .15; transform: scale(1); }
-  50% { opacity: .85; transform: scale(1.35); box-shadow: 0 0 4px currentColor; }
-}
-
-.brand:hover .brand-sat { animation-duration: 2.8s; }
+.brand:hover .brand-mark svg .fv-orbit { animation-duration: 5.5s; }
+.brand:hover .brand-mark svg .fv-spark { animation-duration: 1.8s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .brand-text, .brand-core, .brand-sat, .brand-star { animation: none !important; }
-  .brand-sat { transform: translate(-2px, 3.3px); }
-  .brand-text { background-position: 40% 0; }
+  .brand-text { animation: none !important; background-position: 40% 0; }
+  .brand-mark svg .fv-orbit, .brand-mark svg .fv-spark,
+  .brand-mark svg .fv-star, .brand-mark svg .fv-moon { animation: none !important; }
+  .brand:hover .brand-mark { transform: none; }
 }
 
 /* Header search */

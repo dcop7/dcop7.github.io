@@ -72,14 +72,15 @@
   </defs>
 
   <rect width="64" height="64" rx="14" fill="url(#fvbg)"/>
-  <!-- faint stars -->
-  <g fill="#cfe3ff">
-    <circle cx="11" cy="15" r=".55" opacity=".45"/>
-    <circle cx="54" cy="9" r=".5" opacity=".4"/>
-    <circle cx="58" cy="36" r=".55" opacity=".4"/>
-    <circle cx="8" cy="46" r=".5" opacity=".35"/>
-    <circle cx="22" cy="6" r=".45" opacity=".35"/>
-    <circle cx="49" cy="57" r=".5" opacity=".35"/>
+  <!-- faint stars (fv-* classes are inert here; they let the header copy of
+       this SVG animate these elements via CSS — see css/layout.css .brand-mark) -->
+  <g fill="#cfe3ff" class="fv-stars">
+    <circle class="fv-star" cx="11" cy="15" r=".55" opacity=".45"/>
+    <circle class="fv-star" cx="54" cy="9" r=".5" opacity=".4"/>
+    <circle class="fv-star" cx="58" cy="36" r=".55" opacity=".4"/>
+    <circle class="fv-star" cx="8" cy="46" r=".5" opacity=".35"/>
+    <circle class="fv-star" cx="22" cy="6" r=".45" opacity=".35"/>
+    <circle class="fv-star" cx="49" cy="57" r=".5" opacity=".35"/>
   </g>
 
   <!-- serif D: soft edge halo, chiseled letter (dark metal body + bright
@@ -90,23 +91,23 @@
   <ellipse cx="19" cy="13" rx="6" ry="3" fill="#5aa8ff" opacity=".3" filter="url(#fvBlur2)"/>
 
   <!-- orbit: back half behind the planet, front half above it -->
-  <g transform="rotate(-24 27 37)">
+  <g class="fv-orbit fv-orbit-back" transform="rotate(-24 27 37)">
     <path d="M9.5 37a17.5 5 0 0 1 35 0" fill="none" stroke="url(#fvRing)" stroke-width=".8" opacity=".45" filter="url(#fvGlow)"/>
   </g>
 
   <!-- planet: dark navy, lit from the top -->
-  <g filter="url(#fvGlow)">
+  <g class="fv-planet" filter="url(#fvGlow)">
     <circle cx="27" cy="35.5" r="10" fill="url(#fvPl)"/>
     <ellipse cx="23.5" cy="34" rx="4.1" ry="2.7" fill="#0c2254" opacity=".4"/>
     <ellipse cx="31" cy="39" rx="4.3" ry="2.9" fill="#081a44" opacity=".45"/>
     <path d="M18.8 31a10 10 0 0 1 16.4 0" fill="none" stroke="#9cc8ff" stroke-width=".7" opacity=".55" filter="url(#fvBlur1)"/>
   </g>
 
-  <g transform="rotate(-24 27 37)">
+  <g class="fv-orbit fv-orbit-front" transform="rotate(-24 27 37)">
     <path d="M9.5 37a17.5 5 0 0 0 35 0" fill="none" stroke="url(#fvRing)" stroke-width="1.1" filter="url(#fvGlow2)"/>
-    <circle cx="12" cy="39.4" r=".9" fill="#fff3c8" filter="url(#fvGlow2)"/>
+    <circle class="fv-spark" cx="12" cy="39.4" r=".9" fill="#fff3c8" filter="url(#fvGlow2)"/>
   </g>
 
   <!-- small moon in the bowl of the D -->
-  <circle cx="40.5" cy="25" r="2" fill="url(#fvMoon)" filter="url(#fvGlow)"/>
+  <circle class="fv-moon" cx="40.5" cy="25" r="2" fill="url(#fvMoon)" filter="url(#fvGlow)"/>
 </svg>

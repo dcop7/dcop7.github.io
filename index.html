@@ -36,7 +36,6 @@
 <link rel="stylesheet" href="css/views/f1.css"/>
 <link rel="stylesheet" href="css/views/oss.css"/>
 <link rel="stylesheet" href="css/views/discovery.css"/>
-<link rel="stylesheet" href="css/views/books.css"/>
 <script src="js/core/i18n.js"></script>
 <script src="js/core/time.js"></script>
 <script src="js/core/icons.js"></script>
@@ -72,14 +71,10 @@
         </svg>
       </button>
       <a class="brand" href="#home" aria-label="Diogo Universe">
-        <span class="brand-orbit" aria-hidden="true">
-          <span class="brand-star bs1"></span>
-          <span class="brand-star bs2"></span>
-          <span class="brand-star bs3"></span>
-          <span class="brand-ring"></span>
-          <span class="brand-core"></span>
-          <span class="brand-sat"></span>
-        </span>
+        <!-- the mark IS favicon.svg: main.js fetches and inlines it here so
+             the CSS in layout.css can animate its internals; the <img> is the
+             identical static fallback (no-JS / fetch failure). -->
+        <span class="brand-mark" id="brand-mark" aria-hidden="true"><img src="favicon.svg" alt="" width="28" height="28"/></span>
         <span class="brand-text">
           <span class="brand-name">Diogo</span>
           <span class="brand-site">Universe</span>
@@ -258,7 +253,7 @@
     <!-- ── DESCOBRIR TECH (open-source discovery) ── -->
     <div id="view-oss" class="view"></div>
 
-    <!-- ── PRODUCT DISCOVERY (gaming deals + books library) ── -->
+    <!-- ── GAMING DEALS (promoções e jogos grátis) ── -->
     <div id="view-discovery" class="view"></div>
 
     <!-- ── SEARCH RESULTS VIEW ── -->
@@ -333,7 +328,6 @@
 <script src="js/f1/f1-data.js" defer></script><script src="js/f1/f1-espn.js" defer></script><script src="js/f1/f1-track.js" defer></script><script src="js/f1/f1-page.js" defer></script>
 <script src="js/pages/oss.js" defer></script>
 <script src="js/pages/discovery.js" defer></script>
-<script src="js/pages/books.js" defer></script>
 <script src="js/core/nav.js" defer></script>
 <script src="js/core/command-palette.js" defer></script>
 

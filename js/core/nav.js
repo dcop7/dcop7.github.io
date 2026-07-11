@@ -47,14 +47,14 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
           <a class="sb-nav-item" data-route="links"        href="#links">${navIcon('links')}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools"        href="#tools">${navIcon('tools')}<span>${TN('nav.tools')}</span></a>
+          <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
           <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${navIcon('cheatsheets')}<span>${TN('nav.cheatsheets')}</span></a>
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
           <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
           <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
-          <div class="sb-grp" data-grp="personal">${TN('nav.grp.personal')}</div>
+          <div class="sb-grp" data-grp="photo">${TN('nav.grp.photo')}</div>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${navIcon('photography')}<span>${TN('nav.photography')}</span></a>
-          <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
           <!-- Definições saiu da navegação: as preferências rápidas vivem no
                painel do header (a página/rota #settings mantém-se no código). -->
         </nav>
@@ -171,13 +171,8 @@ const Nav = (function () {
       typeof OssPage !== 'undefined' && OssPage.show(ossSub);
     } else if (page === 'discovery') {
       document.getElementById('view-discovery')?.classList.add('active');
-      const dSub = path.startsWith('discovery/') ? path.slice(10) : null;   // "gaming…" | "books…"
-      if (dSub === 'books' || (dSub && dSub.startsWith('books/'))) {        // Books = a category of Product Discovery
-        const bSub = dSub === 'books' ? null : dSub.slice(6);              // "search" | "<leafId>" | "b/<olid>"
-        typeof BookDiscovery !== 'undefined' && BookDiscovery.show(bSub);
-      } else {
-        typeof DiscoveryPage !== 'undefined' && DiscoveryPage.show(dSub);
-      }
+      const dSub = path.startsWith('discovery/') ? path.slice(10) : null;   // "gaming…"
+      typeof DiscoveryPage !== 'undefined' && DiscoveryPage.show(dSub);
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);

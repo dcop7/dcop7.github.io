@@ -1669,3 +1669,17 @@ document.addEventListener('time:day', () => {      // midnight, month/year rollo
   renderHolidays();
   renderTimezones();                               // DST: offset/abbr labels can change
 });
+
+// ── HEADER BRAND MARK ─────────────────────────────────────────────
+// The header symbol IS the favicon (single source of truth). Inline it so
+// css/layout.css can animate its fv-* elements; until the fetch resolves
+// (or if it fails) the <img src="favicon.svg"> fallback shows the same
+// icon, statically. The SW precaches favicon.svg, so this works offline.
+(function inlineBrandMark() {
+  const mark = document.getElementById('brand-mark');
+  if (!mark) return;
+  fetch('favicon.svg')
+    .then(r => (r.ok ? r.text() : null))
+    .then(svg => { if (svg && svg.trimStart().startsWith('<svg')) mark.innerHTML = svg; })
+    .catch(() => {});
+})();

@@ -8,8 +8,8 @@ const I18n = (function () {
       'nav.tools':'Tools',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
-      'nav.quiz':'Quizzes','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News','nav.f1':'Formula 1','nav.oss':'Tech Discovery','nav.discovery':'Product Discovery','nav.books':'Book Discovery',
-      'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun','nav.grp.personal':'Personal',
+      'nav.quiz':'Quizzes','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News','nav.f1':'Formula 1','nav.oss':'Tech Discovery','nav.discovery':'Gaming Deals',
+      'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun','nav.grp.photo':'Photography',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
       // Theme panel + header tooltips
       'theme.title':'Theme','theme.dark':'Dark','theme.light':'Light',
@@ -114,8 +114,8 @@ const I18n = (function () {
       'nav.tools':'Ferramentas',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
-      'nav.quiz':'Quizzes','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias','nav.f1':'Fórmula 1','nav.oss':'Descobrir Tech','nav.discovery':'Product Discovery','nav.books':'Book Discovery',
-      'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão','nav.grp.personal':'Pessoal',
+      'nav.quiz':'Quizzes','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias','nav.f1':'Fórmula 1','nav.oss':'Descobrir Tech','nav.discovery':'Gaming Deals',
+      'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão','nav.grp.photo':'Fotografia',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
       // Painel de tema + dicas do cabeçalho
       'theme.title':'Tema','theme.dark':'Escuro','theme.light':'Claro',

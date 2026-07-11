@@ -15,7 +15,6 @@ const DiscoveryPage = (function () {
 
   const CATS = [
     { id: 'gaming', emoji: '🎮', en: 'Gaming', pt: 'Gaming', ready: true },
-    { id: 'books',  emoji: '📚', en: 'Books', pt: 'Livros', ready: true },
   ];
   const VERDICT = {
     great: { ic: '🟢', en: 'Great buy', pt: 'Excelente compra', cls: 'great' },
@@ -47,8 +46,9 @@ const DiscoveryPage = (function () {
   async function ensureGames(cat) { if (_gamesCache[cat]) return _gamesCache[cat]; const d = await fetch(`data/discovery/${cat}/games.json`).then(r => r.json()); _gamesCache[cat] = d.games || []; return _gamesCache[cat]; }
   async function ensureDetail(cat, id) { const k = cat + '/' + id; if (_detail[k] !== undefined) return _detail[k]; _detail[k] = await fetch(`data/discovery/${cat}/g/${id}.json`).then(r => r.ok ? r.json() : null).catch(() => null); return _detail[k]; }
 
-  /* ── category tab bar (Gaming · Livros) — shared shape with the books view ── */
+  /* ── category tab bar — hidden while there is a single category ── */
   function catBar() {
+    if (CATS.length < 2) return '';
     return `<div class="dc-cats">${CATS.map(c =>
       `<button class="dc-cat${c.id === _cat ? ' on' : ''}" data-cat="${c.id}"><span>${c.emoji}</span>${_t(c.en, c.pt)}</button>`).join('')}</div>`;
   }

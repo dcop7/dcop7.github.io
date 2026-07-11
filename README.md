@@ -1,4 +1,4 @@
-# Diogo's Dev Hub
+# Diogo Universe
 
 Dashboard pessoal e playground alojado no GitHub Pages. **Zero backend, zero build step no cliente** — HTML, CSS e JavaScript puros, com pipelines de dados via GitHub Actions que geram JSON estático.
 
@@ -21,7 +21,7 @@ Este README serve de *knowledge base* do projeto: o que o site contém, como est
 
 ## Secções do site
 
-Navegação lateral (hash-based), agrupada em **Descobrir** e **Ferramentas**:
+Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **Diversão** e **Fotografia**:
 
 | Rota | Secção | Conteúdo |
 |------|--------|----------|
@@ -31,8 +31,8 @@ Navegação lateral (hash-based), agrupada em **Descobrir** e **Ferramentas**:
 | `#eventos` | **Eventos** | Descoberta de eventos em Portugal (AgendaLX, e-cultura ao vivo + seed offline), mapa Leaflet, geocoding por concelho |
 | `#ocorrencias` | **Ocorrências** | Ocorrências em tempo real: sismos (USGS/IPMA), eventos naturais (NASA EONET), proteção civil |
 | `#f1` | **Fórmula 1** | Secção experimental: calendário/resultados (Jolpica), posições live/replay em canvas (OpenF1), tudo CORS-direct sem backend |
-| `#oss` | **OSS** | Explorador de projetos open-source (índice gerado por Action + GitHub API) |
-| `#discovery` | **Descobertas** | Deals de gaming e jogos grátis (refresh 6h), livros (OpenLibrary) |
+| `#oss` | **Descobrir Tech** | Explorador de projetos open-source (índice gerado por Action + GitHub API) |
+| `#discovery` | **Gaming Deals** | Deals de gaming e jogos grátis (refresh 6h) |
 | `#tools` | **Tools** | Calculadora, pomodoro, cronómetro, editor markdown, regex tester, diff, conversores, cores, UUID, timestamps, dados 3D, … |
 | `#cheatsheets` | **Cheatsheets** | Referências de comandos: Git, Linux, Vim, regex, Docker, atalhos |
 | `#games` | **Jogos** | 12 jogos curados: Xadrez (chess.js vendored), Sueca (engine/IA próprios, 4 níveis), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
@@ -64,7 +64,7 @@ dcop7.github.io/
 │   └── views/                 ← um CSS por secção (home, games, explorer, noticias, f1, …)
 ├── js/
 │   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax
-│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, books, rss
+│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, rss
 │   ├── explorer/              ← explorer hub + realtime, solar, galaxy, body, portugal, timeline, data (mundo), kb, eventos, ocorrencias
 │   ├── games/                 ← game-host + jogos (game-*.js) + game-progress + vendor (chess.js)
 │   ├── quiz/                  ← quiz-engine, quiz-data, quiz-providers, quiz-page
@@ -168,7 +168,7 @@ Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge
 
 ### Consumidas nas Actions (build-time)
 
-DGEG preços de combustíveis · nocartaz.pt · feeds RSS via OPML (notícias) · OpenLibrary (livros) · lojas de gaming (deals) · OWID / World Bank / GeoNames (pipeline Dados do Mundo, offline).
+DGEG preços de combustíveis · nocartaz.pt · feeds RSS via OPML (notícias) · lojas de gaming (deals) · OWID / World Bank / GeoNames (pipeline Dados do Mundo, offline).
 
 ### Embeds/CDN opcionais
 

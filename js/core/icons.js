@@ -1,9 +1,16 @@
-// ── APP ICONS — bespoke duotone icon set (brand language v3) ─────────
+// ── APP ICONS — bespoke duotone icon set (brand language v4) ─────────
 // Drawn specifically for Diogo Universe: one geometry (24px grid, 1.6
-// stroke, round caps), a per-section colour gradient, a soft translucent
-// fill for depth, and the cyan "spark" from the orbiting satellite in the
-// logo as a shared brand motif. Loaded in <head> so every template can call
-// AppIcons.icon() regardless of deferred-script order.
+// stroke, round caps) and a per-section gradient restricted to the FIVE
+// brand colour families (derived from the favicon): AZUL, CIANO, LARANJA,
+// VERMELHO e DOURADO. Group logic: tons frios para Descobrir/Ferramentas,
+// quentes para Diversão/Fotografia, vermelho reservado a alertas e F1,
+// dourado para a marca (Início) e destaques. Loaded in <head> so every
+// template can call AppIcons.icon() regardless of deferred-script order.
+//   azul     #3b82f6→#60a5fa · #60a5fa→#93c5fd
+//   ciano    #22d3ee→#67e8f9 (ponte azul-ciano: #38bdf8→#22d3ee)
+//   laranja  #fb923c→#fdba74
+//   vermelho #ef4444→#f97316 · #f87171→#fca5a5
+//   dourado  #f2b344→#fbc75f (ouro do anel do favicon)
 const AppIcons = (function () {
 
   /* duotone wrapper: gradient stroke + soft gradient fill on the silhouette.
@@ -18,7 +25,7 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
   }
 
   const ICONS = {
-    home: duo('home', '#60a5fa', '#93c5fd', `
+    home: duo('home', '#f2b344', '#fbc75f', `
       <path d="M4 10.2 12 3.6l8 6.6V20a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 20z" fill="G" fill-opacity=".14" stroke="G"/>
       <path d="M9.6 21.3v-6.1a1 1 0 0 1 1-1h2.8a1 1 0 0 1 1 1v6.1" stroke="C2"/>
       <circle cx="12" cy="8.6" r=".9" fill="C2" stroke="none"/>`, { sx: 20.2, sy: 5.6, ss: .9 }),
@@ -28,18 +35,18 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M4.4 12h15.2M12 4.4a12.8 12.8 0 0 1 3.2 7.6 12.8 12.8 0 0 1-3.2 7.6 12.8 12.8 0 0 1-3.2-7.6A12.8 12.8 0 0 1 12 4.4z" stroke="G" opacity=".85"/>
       <ellipse cx="12" cy="12" rx="10.4" ry="3.6" stroke="C2" opacity=".55" transform="rotate(-18 12 12)"/>`, { sx: 20.6, sy: 4.2, ss: .9 }),
 
-    noticias: duo('noticias', '#c084fc', '#e879f9', `
+    noticias: duo('noticias', '#60a5fa', '#93c5fd', `
       <path d="M3.6 4.6h12.8a1 1 0 0 1 1 1V19a1.5 1.5 0 0 0 3 0V8.2h1.4V19a2.9 2.9 0 0 1-2.9 2.9H5.5A2.9 2.9 0 0 1 2.6 19V5.6a1 1 0 0 1 1-1z" fill="G" fill-opacity=".13" stroke="G"/>
       <rect x="5.8" y="7.4" width="5" height="3.6" rx=".7" fill="C2" fill-opacity=".55" stroke="none"/>
       <path d="M13.4 8h1.6M13.4 10.4h1.6M5.9 13.8h9.1M5.9 16.6h9.1" stroke="C2" opacity=".85"/>`),
 
-    eventos: duo('eventos', '#2dd4bf', '#5eead4', `
+    eventos: duo('eventos', '#22d3ee', '#67e8f9', `
       <rect x="3.4" y="4.8" width="17.2" height="16.2" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
       <path d="M8 2.8v3.4M16 2.8v3.4M3.6 9.6h16.8" stroke="G"/>
       <rect x="14.2" y="12.4" width="3.6" height="3.6" rx=".9" fill="C2" fill-opacity=".75" stroke="none"/>
       <path d="M6.6 13.8h.01M10.4 13.8h.01M6.6 17.4h.01M10.4 17.4h.01M14.4 17.4h.01" stroke="C2" stroke-width="1.9"/>`, { sx: 20.4, sy: 3.4, ss: .8 }),
 
-    ocorrencias: duo('ocorrencias', '#f59e0b', '#fbbf24', `
+    ocorrencias: duo('ocorrencias', '#fb923c', '#fdba74', `
       <path d="M10.6 4 2.5 17.6a1.9 1.9 0 0 0 1.6 2.9h15.8a1.9 1.9 0 0 0 1.6-2.9L13.4 4a1.9 1.9 0 0 0-2.8 0z" fill="G" fill-opacity=".15" stroke="G"/>
       <path d="M6.5 15.2h2.2l1.2-2.6 1.9 4 1.6-3.2 1 1.8h2.9" stroke="C2"/>`, { sx: 20.3, sy: 4.9, ss: .85 }),
 
@@ -49,11 +56,11 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <rect x="8.2" y="5.2" width="3" height="3" rx=".4" fill="C1" fill-opacity=".8" stroke="none"/>
       <rect x="14.2" y="9" width="3" height="3" rx=".4" fill="C2" fill-opacity=".8" stroke="none"/>`, { sx: 20.6, sy: 17.6, ss: .85 }),
 
-    oss: duo('oss', '#4ade80', '#a3e635', `
+    oss: duo('oss', '#3b82f6', '#60a5fa', `
       <path d="m15.6 17.6 5.4-5.6-5.4-5.6M8.4 6.4 3 12l5.4 5.6" stroke="G" stroke-width="1.8"/>
       <path d="M13.4 4.6 10.6 19.4" stroke="C2" opacity=".8"/>`, { sx: 19.9, sy: 3.9, ss: .85 }),
 
-    discovery: duo('discovery', '#e879f9', '#f0abfc', `
+    discovery: duo('discovery', '#f2b344', '#fbc75f', `
       <path d="M20.2 13.2 13.4 20a2 2 0 0 1-2.8 0L3 12.4V3.4h9l8.2 8.2a1.9 1.9 0 0 1 0 2.6z" fill="G" fill-opacity=".14" stroke="G"/>
       <circle cx="7.4" cy="7.8" r="1.5" fill="C2" fill-opacity=".8" stroke="none"/>`, { sx: 19.4, sy: 5.2, ss: .9 }),
 
@@ -61,16 +68,16 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M10 13.2a4.7 4.7 0 0 0 7.1.5l2.8-2.8a4.7 4.7 0 0 0-6.6-6.6l-1.6 1.6" stroke="G" stroke-width="1.7"/>
       <path d="M14 10.8a4.7 4.7 0 0 0-7.1-.5l-2.8 2.8a4.7 4.7 0 0 0 6.6 6.6l1.6-1.6" stroke="C2" stroke-width="1.7" opacity=".85"/>`, { sx: 19.8, sy: 18.9, ss: .85 }),
 
-    tools: duo('tools', '#818cf8', '#a5b4fc', `
+    tools: duo('tools', '#3b82f6', '#60a5fa', `
       <path d="M14.2 6.6a1 1 0 0 0 0 1.4l1.8 1.8a1 1 0 0 0 1.4 0l3.3-3.3a5.6 5.6 0 0 1-7.4 7.4l-6.6 6.6a2 2 0 0 1-2.8-2.8l6.6-6.6a5.6 5.6 0 0 1 7.4-7.4z" fill="G" fill-opacity=".14" stroke="G"/>
       <circle cx="5.9" cy="18.1" r=".95" fill="C2" stroke="none"/>`),
 
-    cheatsheets: duo('cheatsheets', '#a78bfa', '#c4b5fd', `
+    cheatsheets: duo('cheatsheets', '#22d3ee', '#67e8f9', `
       <rect x="4" y="2.6" width="16" height="18.8" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
       <path d="m7.4 8.2 2.4 2.2-2.4 2.2" stroke="C2"/>
       <path d="M11.8 12.6h4.6M7.6 16.6h8.8" stroke="G" opacity=".85"/>`, { sx: 16.6, sy: 5.4, ss: .75 }),
 
-    games: duo('games', '#34d399', '#6ee7b7', `
+    games: duo('games', '#fb923c', '#fdba74', `
       <rect x="2.2" y="6.4" width="19.6" height="11.6" rx="4.4" fill="G" fill-opacity=".14" stroke="G"/>
       <path d="M7.6 10.2v4M5.6 12.2h4" stroke="G" stroke-width="1.7"/>
       <circle cx="15.6" cy="13.8" r="1.1" fill="C2" stroke="none"/>
@@ -81,18 +88,18 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M9.4 9.4a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.3-2.6 3.7" stroke="C2" stroke-width="1.7"/>
       <circle cx="12" cy="17" r=".95" fill="C2" stroke="none"/>`, { sx: 20.9, sy: 4.4, ss: .8 }),
 
-    humor: duo('humor', '#facc15', '#fde047', `
+    humor: duo('humor', '#f2b344', '#fbc75f', `
       <circle cx="12" cy="12" r="8.4" fill="G" fill-opacity=".15" stroke="G"/>
       <path d="M7.8 13.2a4.4 4.4 0 0 0 8.4 0z" fill="C2" fill-opacity=".6" stroke="C2" stroke-width="1.2"/>
       <path d="M8.6 9.3h.01M15.4 9.3h.01" stroke="G" stroke-width="2.1"/>`, { sx: 20.9, sy: 4.4, ss: .8 }),
 
-    photography: duo('photography', '#fbbf24', '#fcd34d', `
+    photography: duo('photography', '#f2b344', '#fbc75f', `
       <path d="M22 18.6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.7a2 2 0 0 1 2-2h3.4L9.2 4h5.6l1.8 2.7H20a2 2 0 0 1 2 2z" fill="G" fill-opacity=".13" stroke="G"/>
       <circle cx="12" cy="13.4" r="3.9" stroke="C2" stroke-width="1.7"/>
       <circle cx="12" cy="13.4" r="1.4" fill="C2" fill-opacity=".7" stroke="none"/>
       <circle cx="18.7" cy="9.6" r=".8" fill="C2" stroke="none"/>`, { noSpark: true }),
 
-    visual: duo('visual', '#f472b6', '#f9a8d4', `
+    visual: duo('visual', '#f87171', '#fca5a5', `
       <rect x="3" y="3.6" width="18" height="16.8" rx="2.2" fill="G" fill-opacity=".12" stroke="G"/>
       <path d="M12 4v16M3.4 12h17.2" stroke="G" opacity=".8"/>
       <rect x="5.2" y="5.8" width="4.6" height="4" rx=".9" fill="C2" fill-opacity=".65" stroke="none"/>
@@ -106,8 +113,6 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke="G" stroke-width="1.8"/>
       <circle cx="5" cy="19" r="1.4" fill="C2" stroke="none"/>`),
 
-    books: duo('books', '#f87171', '#fca5a5', `
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="G" fill-opacity=".12" stroke="G"/>`),
   };
 
   function icon(r, size) {
