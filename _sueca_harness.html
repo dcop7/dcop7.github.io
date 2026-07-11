@@ -1,0 +1,42 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/">
+<style>body{margin:0;background:#0a0c1a}#root{max-width:760px;margin:0 auto;padding:16px}#log{color:#0f0;font:12px monospace;white-space:pre-wrap;padding:10px}</style></head><body>
+<div id="root"></div><pre id="log"></pre>
+<script>
+const L = m => { document.getElementById('log').textContent += m + '\n'; };
+window.onerror = (m, s, l) => { L('JSERROR: ' + m + ' @ ' + s + ':' + l); };
+window.addEventListener('unhandledrejection', e => L('JSREJECT: ' + (e.reason && e.reason.message || e.reason)));
+</script>
+<script src="src/games/engine/storage.js"></script>
+<script src="src/games/engine/gamedata.js"></script>
+<script src="src/games/engine/audio.js"></script>
+<script src="js/games/game-progress.js"></script>
+<script src="js/games/game-sueca.js"></script>
+<script>
+SuecaGame.init(document.getElementById('root'));
+const MODE = location.search.includes('play') ? 'play' : 'watch';
+let hands = 0, started = false;
+const mo = new MutationObserver(() => {
+  const startBtn = document.getElementById(MODE === 'play' ? 'sk-play' : 'sk-watch');
+  if (startBtn && !started) { started = true; startBtn.click(); L(MODE + ' mode started'); }
+  const tut = document.getElementById('sk-t-next');
+  if (tut && !tut.dataset.done) { tut.dataset.done = '1'; setTimeout(() => tut.click(), 20); }
+  if (MODE === 'play') {
+    const legal = document.querySelector('.sk-cardbtn.legal');
+    if (legal && !legal.dataset.clicked) { legal.dataset.clicked = '1'; setTimeout(() => legal.click(), 30); }
+  }
+  const next = document.getElementById('sk-e-next');
+  if (next && !next.dataset.done) {
+    next.dataset.done = '1';
+    const pts = [...document.querySelectorAll('.sk-endpts b')].map(b => +b.textContent);
+    const jog = [...document.querySelectorAll('.sk-endjogos b')].map(b => b.textContent);
+    hands++;
+    const sum = pts[0] + pts[1];
+    L('hand ' + hands + ': us=' + pts[0] + ' them=' + pts[1] + ' sum=' + sum + (sum === 120 ? ' OK' : ' BAD-SUM') + ' jogos=' + jog.join('-'));
+    const flag = document.querySelector('.sk-endflag');
+    if (flag) { L('match over: ' + flag.textContent.trim()); L('DONE after ' + hands + ' hands'); return; }
+    if (hands < 14) setTimeout(() => next.click(), 50); else L('DONE (cap reached)');
+  }
+});
+mo.observe(document.body, { subtree: true, childList: true });
+</script>
+</body></html>

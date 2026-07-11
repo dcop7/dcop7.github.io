@@ -27,6 +27,7 @@ const Search = (function () {
     { label: 'Xadrez',           id: 'games/chess',          icon: '♟️', tags: ['xadrez','chess','estratégia','tabuleiro'] },
     { label: 'Batalha Naval',    id: 'games/battleship',     icon: '🚢', tags: ['batalha','naval','navios','battleship'] },
     { label: 'Uno',              id: 'games/uno',            icon: '🃏', tags: ['uno','cartas','cards','família'] },
+    { label: 'Sueca',            id: 'games/sueca',          icon: '♠️', tags: ['sueca','cartas','trunfo','bandeira','parceiro'] },
     { label: 'Desarmar Bomba',   id: 'games/bomb',           icon: '💥', tags: ['bomba','desarmar','desafio'] },
     { label: 'Gravity Lab',      id: 'games/gravity-lab',    icon: '🔬', tags: ['gravidade','puzzle','gravity'] },
     { label: 'Neon Space Shooter', id: 'games/neon-shooter', icon: '🛸', tags: ['nave','shooter','espaço','arcade'] },

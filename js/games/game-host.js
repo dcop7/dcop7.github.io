@@ -22,6 +22,8 @@ const GameHost = (function () {
       desc: 'Muda a direção da gravidade para guiar a bola até à saída.' },
     { id: 'uno',           name: 'Uno',                  icon: '🃏', color: '#ef4444', group: 'Tabuleiro & Estratégia',
       desc: 'O clássico jogo de cartas. Enfrenta 3 adversários com IA. Não te esqueças do UNO!' },
+    { id: 'sueca',         name: 'Sueca',                icon: '♠️', color: '#1a7a4a', group: 'Tabuleiro & Estratégia',
+      desc: 'A sueca portuguesa: tu e o teu parceiro contra 2 IA. 120 pontos, trunfos e bandeiras.' },
     { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Arcade',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
   ];
@@ -39,6 +41,7 @@ const GameHost = (function () {
     chess:          { init: () => ChessGame.init(document.getElementById('pane-chess')),               initialized: false },
     battleship:     { init: () => BattleshipGame.init(document.getElementById('pane-battleship')),     initialized: false },
     uno:            { init: () => UnoGame.init(document.getElementById('pane-uno')),                   initialized: false },
+    sueca:          { init: () => SuecaGame.init(document.getElementById('pane-sueca')),               initialized: false },
     'neon-shooter':  { init: () => NeonShooterGame.init(document.getElementById('pane-neon-shooter')),   initialized: false },
     'gravity-lab':   { init: () => GravityLabGame.init(document.getElementById('pane-gravity-lab')),     initialized: false },
   };

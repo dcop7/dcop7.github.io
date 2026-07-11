@@ -35,7 +35,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir** e **Ferramentas**:
 | `#discovery` | **Descobertas** | Deals de gaming e jogos grátis (refresh 6h), livros (OpenLibrary) |
 | `#tools` | **Tools** | Calculadora, pomodoro, cronómetro, editor markdown, regex tester, diff, conversores, cores, UUID, timestamps, dados 3D, … |
 | `#cheatsheets` | **Cheatsheets** | Referências de comandos: Git, Linux, Vim, regex, Docker, atalhos |
-| `#games` | **Jogos** | 11 jogos curados: Xadrez (chess.js vendored), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
+| `#games` | **Jogos** | 12 jogos curados: Xadrez (chess.js vendored), Sueca (engine/IA próprios, 4 níveis), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), ~12 categorias / centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |

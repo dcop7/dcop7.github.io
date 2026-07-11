@@ -12,6 +12,7 @@ const Nav = (function () {
     { id: 'chess',       key: 'game.chess',       icon: '♟️' },
     { id: 'battleship',  key: 'game.battleship',  icon: '🚢' },
     { id: 'uno',         key: 'game.uno',         icon: '🃏' },
+    { id: 'sueca',       key: 'game.sueca',       icon: '♠️' },
     { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
     { id: 'gravity-lab', key: 'game.gravity-lab', icon: '🔬' },
     { id: 'neon-shooter',key: 'game.neon-shooter',icon: '🛸' },

@@ -262,7 +262,7 @@ const GameProgress = (function () {
   defineAchievements('_global', [
     { id: 'g.first',     name: 'Primeiro Jogo',   icon: '🎮', desc: 'Joga qualquer jogo.',                   test: c => c.totalPlays >= 1 },
     { id: 'g.explorer',  name: 'Explorador',      icon: '🧭', desc: 'Joga 5 jogos diferentes.',              test: c => c.distinctPlayed >= 5 },
-    { id: 'g.collector', name: 'Colecionador',    icon: '🗂️', desc: 'Experimenta todos os jogos.',           test: c => c.distinctPlayed >= 11 },
+    { id: 'g.collector', name: 'Colecionador',    icon: '🗂️', desc: 'Experimenta todos os jogos.',           test: c => c.distinctPlayed >= 12 },
     { id: 'g.dedicated', name: 'Dedicado',        icon: '🔥', desc: 'Joga 50 partidas no total.',            test: c => c.totalPlays >= 50 },
     { id: 'g.streak3',   name: 'Em Forma',        icon: '📅', desc: 'Joga 3 dias seguidos.',                 test: c => c.streak >= 3 },
     { id: 'g.streak7',   name: 'Imparável',       icon: '⚡', desc: 'Joga 7 dias seguidos.',                 test: c => c.streak >= 7 },
