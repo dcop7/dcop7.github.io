@@ -1,240 +1,215 @@
 # Diogo's Dev Hub
 
-A personal productivity dashboard and playground hosted on GitHub Pages. Zero backend, zero build step — pure HTML, CSS, and JavaScript.
+Dashboard pessoal e playground alojado no GitHub Pages. **Zero backend, zero build step no cliente** — HTML, CSS e JavaScript puros, com pipelines de dados via GitHub Actions que geram JSON estático.
 
 **Live:** [dcop7.github.io](https://dcop7.github.io)
 
----
-
-## What's Inside
-
-| Section | What it does |
-|---------|-------------|
-| **Home** | Greeting, hero search, bookmarks, world times, RSS/HN feed, holidays, daily quote/riddle |
-| **Tools** | Calculator, stopwatch, pomodoro, countdown, markdown editor, regex tester, diff viewer, color picker, UUID, timestamp, age, unit converter, dice/coin |
-| **Games** | Hangman, Minesweeper, Snake, Memory, Tic-Tac-Toe, Wordle, Aim Trainer, Reaction Test, Space Shooter, Bomb Defusal, and 10+ premium games |
-| **Links** | Curated resource library organized by category |
-| **Cheatsheets** | Command references for Git, Linux, Vim, regex, Docker, keyboard shortcuts |
-| **Photography** | Exposure calculator, depth of field, composition guide, color wheel |
-| **Media** | Track movies, TV shows, and trailers you want to watch |
-| **Visual Tools** | Whiteboard (Excalidraw), Eisenhower matrix, SWOT analysis |
-| **Settings** | Theme, font size, icon style, bookmarks manager |
+Este README serve de *knowledge base* do projeto: o que o site contém, como está arquitetado, que tecnologias e APIs usa, e as convenções a respeitar.
 
 ---
 
-## Architecture
+## Princípios
 
-### No framework, no bundler
+- **Frontend-only** — sem servidor, sem base de dados. O "backend" são GitHub Actions que fazem commit de JSON para `data/`.
+- **Sem frameworks nem bundler** — não há `package.json` na raiz, React, Vue ou minificação. Vanilla JS com padrão IIFE.
+- **Offline-first** — PWA com service worker; dados agregados server-side para o browser ler um único JSON local.
+- **PT por omissão** — bilingue (pt/en), com português como língua principal.
+- **Sem chaves de API no cliente** — tudo o que exige segredos corre nas Actions.
+- **Licenciamento estrito de assets** — apenas CC0 / MIT / CC-BY / trabalho original. Nada de Adobe/Mixamo nem licenças não-comerciais (ver `ASSET-LICENSE-AUDIT.md` e `ASSET-REGISTRY.json`).
 
-Everything is vanilla HTML/CSS/JS served directly by GitHub Pages. There is no `package.json`, no build step, no minification pipeline.
+---
+
+## Secções do site
+
+Navegação lateral (hash-based), agrupada em **Descobrir** e **Ferramentas**:
+
+| Rota | Secção | Conteúdo |
+|------|--------|----------|
+| `#home` | **Home** | Saudação, pesquisa, painel de descoberta diária (Hoje na História/Portugal, Nasceram Hoje, Destaque, Inspiração), bloco "Útil hoje" (meteo, combustíveis, eletricidade, feriados), bookmarks, feeds |
+| `#explorer` | **Explorar** | Hub de exploradores: Terra em Tempo Real (globo dia/noite), Sistema Solar, Galáxia, Corpo Humano 3D (three.js), Portugal (mapa concelhos), Linha do Tempo interativa, Dados do Mundo (Mundo▸Continente▸País▸Cidade), Temas (knowledge base Área→Tema→Subtema) |
+| `#noticias` | **Notícias** | Agregador RSS estático por tópicos (tecnologia, IA, gaming, economia, ciência, F1, fact-check, …) — sem DB, refresh a cada 4h via Action |
+| `#eventos` | **Eventos** | Descoberta de eventos em Portugal (AgendaLX, e-cultura ao vivo + seed offline), mapa Leaflet, geocoding por concelho |
+| `#ocorrencias` | **Ocorrências** | Ocorrências em tempo real: sismos (USGS/IPMA), eventos naturais (NASA EONET), proteção civil |
+| `#f1` | **Fórmula 1** | Secção experimental: calendário/resultados (Jolpica), posições live/replay em canvas (OpenF1), tudo CORS-direct sem backend |
+| `#oss` | **OSS** | Explorador de projetos open-source (índice gerado por Action + GitHub API) |
+| `#discovery` | **Descobertas** | Deals de gaming e jogos grátis (refresh 6h), livros (OpenLibrary) |
+| `#tools` | **Tools** | Calculadora, pomodoro, cronómetro, editor markdown, regex tester, diff, conversores, cores, UUID, timestamps, dados 3D, … |
+| `#cheatsheets` | **Cheatsheets** | Referências de comandos: Git, Linux, Vim, regex, Docker, atalhos |
+| `#games` | **Jogos** | 11 jogos curados: Xadrez (chess.js vendored), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
+| `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
+| `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), ~12 categorias / centenas de entradas |
+| `#links` | **Links** | Biblioteca de recursos por categoria |
+| `#photography` | **Fotografia** | Cheat sheets de captura+edição por cenário (10 cenários), 12 técnicas de edição (RapidRAW/darktable/Snapseed), hora dourada com longitude+fuso, roda de cores touch |
+| `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
+| `#settings` | **Preferências** | Tema, tamanho de letra, língua, bookmarks, cidade da meteo |
+
+Extras transversais: **command palette** (Ctrl+K), pesquisa global (`#search`), página 404.
+
+---
+
+## Arquitetura
+
+### Estrutura de pastas
 
 ```
 dcop7.github.io/
-├── index.html                 ← single HTML shell, all views inline
+├── index.html                 ← shell único; todas as views inline
+├── sw.js                      ← service worker (na raiz por causa do scope)
+├── manifest.json / favicon.svg
 ├── css/
-│   ├── tokens.css             ← CSS custom properties (design tokens)
-│   ├── base.css               ← reset, body, keyframes, background orbs
-│   ├── layout.css             ← header, sidebar, views, mobile nav
-│   ├── components.css         ← command palette, search, modals, badges
-│   └── views/
-│       ├── home.css           ← hero, widgets, bookmarks, world times
-│       ├── games.css          ← game hub grid, all per-game styles
-│       ├── tools.css          ← tools layout, all per-tool styles
-│       └── features.css       ← links, cheatsheets, photography, media, settings, visual
+│   ├── tokens.css             ← design tokens (custom properties)
+│   ├── base.css               ← reset, keyframes, fundo
+│   ├── layout.css             ← header, sidebar, views
+│   ├── components.css         ← UI kit partilhado (.btn, .chip, .seg, .page-head, .empty-state, modals, palette)
+│   └── views/                 ← um CSS por secção (home, games, explorer, noticias, f1, …)
+├── js/
+│   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax
+│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, books, rss
+│   ├── explorer/              ← explorer hub + realtime, solar, galaxy, body, portugal, timeline, data (mundo), kb, eventos, ocorrencias
+│   ├── games/                 ← game-host + jogos (game-*.js) + game-progress + vendor (chess.js)
+│   ├── quiz/                  ← quiz-engine, quiz-data, quiz-providers, quiz-page
+│   ├── f1/                    ← f1-data (OpenF1/Jolpica) + UI
+│   └── vendor/                ← libs vendorizadas
 ├── src/
-│   ├── core/
-│   │   ├── store.js           ← localStorage abstraction with pub/sub
-│   │   └── events.js          ← lightweight event bus
-│   └── games/
-│       └── engine/
-│           ├── canvas.js      ← responsive canvas + RAF loop
-│           ├── particles.js   ← particle system
-│           ├── audio.js       ← Web Audio API sound primitives
-│           ├── input.js       ← keyboard tracker + touch D-pad
-│           └── storage.js     ← per-game highscore/level/prefs
-├── js/                        ← all application modules, grouped by area
-│   ├── core/                  ← i18n, nav, main, search, settings, parallax, command-palette
-│   ├── games/                 ← game-host + every game implementation (game-*.js, hangman, …)
-│   ├── quiz/                  ← quiz-engine, quiz-data (loader), quiz-providers, quiz-page
-│   ├── explorer/              ← explorer (world map/globe), explorer-portugal, explorer-solar, ocorrencias
-│   └── pages/                 ← tools, cheatsheets, photography, media, visual, links-*, rss
-├── quizzes/                   ← offline question database: {easy,medium,hard}/{category}.json
-├── data/                      ← bundled GeoJSON + country data (offline-first)
-└── sw.js                      ← service worker (stays at root for scope)
+│   ├── core/                  ← store.js (localStorage+pub/sub), events.js (event bus)
+│   └── games/engine/          ← canvas, particles, audio, input, storage, gamedata
+├── data/                      ← JSON gerado/curado (ver "Pipeline de dados")
+├── quizzes/                   ← base de perguntas offline por quiz/língua/dificuldade
+├── tools/                     ← scripts de build/curadoria offline (anatomy, explore, f1) — não são servidos
+├── assets/ · img/ · games/    ← media e assets estáticos
+└── .github/workflows/         ← 7 workflows de refresh de dados
 ```
 
-> `i18n.js` loads in `<head>` (so the language is set before render); all other
-> modules load with `defer` at the end of `<body>`. Load order in `index.html`
-> still handles dependencies (no ES module imports).
+### Padrão de módulos
 
-### Module pattern
-
-All JS files use the IIFE module pattern — each exports a single global object:
+Todos os ficheiros JS usam IIFE que exporta um global único:
 
 ```javascript
 const ModuleName = (function () {
-  // private state
+  // estado privado
   return { publicAPI };
 })();
 ```
 
-Cross-module communication happens via those globals (e.g. `Nav.go('tools')`, `I18n.t('key')`). No ES module imports are needed; script load order in `index.html` handles dependencies.
+Comunicação entre módulos via esses globais (`Nav.go('tools')`, `I18n.t('key')`, `Store`, `Events`) — sem ES modules; a ordem dos `<script defer>` no `index.html` resolve dependências. Exceção: `i18n.js` carrega no `<head>` para fixar a língua antes do render.
 
-### CSS architecture
+### Relógio único — AppTime
 
-Design tokens (`css/tokens.css`) define 28 custom properties:
+`js/core/time.js` (**AppTime**) é a única fonte de data/hora da aplicação. Emite eventos `time:day` / `time:period` que atualizam toda a UI dependente de data (saudação, efemérides, útil hoje). **Nunca** ler `new Date()` diretamente para lógica de dia — subscrever o AppTime.
 
-```css
-:root {
-  --bg, --card, --card2, --card-solid   /* surfaces */
-  --border, --border2                    /* borders */
-  --text, --text2, --muted              /* typography */
-  --accent, --accent-rgb, --accent-soft, --accent-glow, --accent2
-  --red, --green, --amber               /* semantic colors */
-  --radius, --radius-sm, --radius-xs    /* border radius */
-  --sb-w, --hdr-h                       /* layout dimensions */
-  --font-sans, --font-head, --font-mono /* typefaces */
-  --ease, --ease-out                    /* transitions */
-}
-```
+### Routing
 
-Light theme is applied by adding `body.light`; accent themes via `body.theme-purple` etc.
+Hash-based via `js/core/nav.js`. Rotas: `home · links · tools · cheatsheets · games · quiz · humor · explorer · ocorrencias · eventos · noticias · f1 · oss · discovery · photography · visual · settings`. Suporta sub-rotas (`#oss/owner/name`, `#discovery/gaming`, `#explorer/kb`). Cada rota ativa uma `.view` e o estado da sidebar. **Não existe bottom-nav mobile** (removido de propósito — não reintroduzir).
 
----
+### Núcleo partilhado
 
-## Shared Utilities
-
-### Store (`src/core/store.js`)
-
-Unified localStorage wrapper with pub/sub and namespaced access:
-
-```javascript
-Store.set('key', value);
-Store.get('key', defaultValue);
-Store.on('key', fn);       // fires on change
-Store.ns('games').get('level', 1);  // namespaced
-```
-
-### Events (`src/core/events.js`)
-
-Global event bus for decoupled communication:
-
-```javascript
-Events.on('nav:change', route => { ... });
-Events.emit('nav:change', 'tools');
-Events.once('app:ready', fn);
-```
-
-### Game Engine (`src/games/engine/`)
-
-Opt-in utilities for game files:
-
-| Module | API |
+| Módulo | API |
 |--------|-----|
-| `CanvasEngine` | `create(canvas, { update, draw, onResize })` — RAF loop + ResizeObserver |
-| `Particles` | `create()` → `spawn`, `spawnBurst`, `update(dt)`, `draw(ctx)` |
-| `GameAudio` | `beep()`, `success()`, `fail()`, `pop()`, `shoot()`, `levelUp()`, `explosion()` |
-| `GameInput` | `createKeyboard()` — held/pressed/released; `createTouchControls(el)` — virtual D-pad |
-| `GameStorage` | `forGame(id)` → `getHighScore`, `setLevel`, `getPref`, `updateStats` |
+| `Store` (`src/core/store.js`) | `set/get`, `on(key, fn)` (pub/sub), `ns('games')` (namespaces) sobre localStorage |
+| `Events` (`src/core/events.js`) | `on / emit / once` — bus global desacoplado |
+| `CanvasEngine` | loop RAF responsivo + ResizeObserver |
+| `Particles` / `GameAudio` / `GameInput` | partículas, sons Web Audio, teclado + D-pad touch |
+| `GameStorage` / `GameProgress` | highscores, níveis, stats unificados por jogo |
+| `otd-lib` (`js/core/otd-lib.js`) | reconstrói o painel de descoberta em direto a partir da Wikimedia quando o `today.json` está desatualizado |
+
+### Design system
+
+- Tokens em `css/tokens.css` (superfícies, bordas, tipografia, acentos, raios, dimensões, easing).
+- UI kit unificado em `components.css`: `.btn`, `.chip`, `.seg`, `.page-head`, `.empty-state`.
+- Ícones de chrome **exclusivamente SVG** (sem emoji na navegação); favicon SVG path-based (D dourado + planeta).
+- Temas: light via `body.light`; acentos via `body.theme-*` (blue, purple, green, amber, red, cyan, terminal).
+- Fontes: Space Grotesk (títulos), Inter (UI), JetBrains Mono (código/timers).
+
+### I18n
+
+Dois locales: `pt` (default) e `en`. `I18n.set('en')` ou botão no header. `i18n.js` carrega síncrono para evitar flicker.
+
+### PWA / Service worker
+
+`sw.js` faz precache dos estáticos com `Promise.allSettled` (um ficheiro em falta não parte a instalação) e serve **`/data/*.json` em network-first** (dados frescos quando há rede, cache offline caso contrário). Bump da constante `CACHE` (`dcop7-vNNN`) invalida versões antigas.
 
 ---
 
-## Design System
+## Pipeline de dados (GitHub Actions)
 
-### Themes
+O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs`), agregam APIs externas e fazem commit de JSON estático**. O browser lê só ficheiros locais — rápido, offline, sem chaves expostas.
 
-| Class | Accent color |
-|-------|-------------|
-| *(default)* | Indigo `#6366f1` |
-| `body.theme-blue` | Blue `#3b82f6` |
-| `body.theme-purple` | Purple `#a855f7` |
-| `body.theme-green` | Green `#22c55e` |
-| `body.theme-amber` | Amber `#f59e0b` |
-| `body.theme-red` | Red `#ef4444` |
-| `body.theme-cyan` | Cyan `#06b6d4` |
-| `body.theme-terminal` | Green terminal |
-| `body.light` | Light mode |
+| Workflow | Script | Output | Cadência alvo |
+|----------|--------|--------|---------------|
+| `home-refresh.yml` | `data/home/build-home.mjs` | `data/home/today.json` (efemérides, nascimentos, destaque, citação) | diário ~07:20 Lisboa + catch-ups |
+| `utility-refresh.yml` | `data/home/build-utility.mjs` | `data/home/utility.json` (meteo, combustíveis DGEG, eletricidade indexada, feriados) | 2×/dia + catch-up |
+| `news-refresh.yml` | `data/news/build-news.mjs` | `data/news/topic-*.json` (a partir de `feeds.opml`) | a cada 4h |
+| `events-refresh.yml` | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` | diário |
+| `f1-refresh.yml` | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | diário, pós-corridas |
+| `oss-refresh.yml` | `data/oss/build-oss.mjs` | `data/oss/index.json` + `projects.json` | diário |
+| `discovery-refresh.yml` | `data/discovery/gaming/build-gaming.mjs` | deals de gaming / jogos grátis | a cada 6h |
 
-### Fonts
+**Regra crítica de agendamento:** o cron do GitHub atrasa minutos a *horas*. Os workflows **nunca** testam a hora do dia como gate (um `== 07h` falhou silenciosamente durante semanas). Em vez disso, o gate é o próprio snapshot ("o `today.json` já é de hoje, Europa/Lisboa?") e vários crons espalhados pelo dia funcionam como retries — o primeiro que dispara faz o trabalho, os restantes no-op. Commits de refresh usam `[skip ci]`.
 
-| Variable | Font | Used for |
-|----------|------|---------|
-| `--font-head` | Space Grotesk | Titles, card headings |
-| `--font-sans` | Inter | All UI text |
-| `--font-mono` | JetBrains Mono | Code, timers, monospace displays |
-
-### Responsive breakpoints
-
-| Max-width | Change |
-|-----------|--------|
-| 1400px | Home grid narrows right column |
-| 1100px | Home grid goes single column |
-| 900px | Sidebar hides; mobile bottom nav appears; tools sidebar collapses to pill row |
-| 600px | Game hub 1-column; calculator stays 4-col |
-| 480px | Media grid 2-col; header controls hide |
+Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge base de temas), `data/worlddata/` (pipeline OWID+GeoNames), `data/humor/`, `data/galaxy/`, `data/anatomy/`, `quizzes/`, `data/timeline.json`, GeoJSON de Portugal e do mundo. Os scripts em `tools/` (anatomy, explore, f1) fazem a curadoria/geração local.
 
 ---
 
-## Routing
+## APIs e fontes externas
 
-Navigation is hash-based via `nav.js`. Routes:
+### Consumidas no browser (CORS-direct, sem chave)
 
-```
-home · tools · games · links · cheatsheets · photography · media · visual · settings
-```
+| API | Uso |
+|-----|-----|
+| **IPMA** (`api.ipma.pt`) | Previsão por cidade + avisos meteorológicos (popup do dia) |
+| **Open-Meteo** | Meteo atual/6 dias para cidade configurável |
+| **Wikimedia / Wikipedia PT** (`api.wikimedia.org`) | Reconstrução live das efemérides quando o snapshot está velho (`otd-lib`) |
+| **Jolpica** (`api.jolpi.ca`) | Dados históricos/calendário F1 (sucessor do Ergast) |
+| **OpenF1** | Posições live/replay das corridas (canvas track-position) |
+| **USGS Earthquakes** + **NASA EONET** | Ocorrências: sismos e eventos naturais |
+| **AgendaLX / e-cultura** | Eventos culturais em direto (com fallback ao seed offline) |
+| **HN Algolia** | Feed Hacker News |
+| **GitHub API** | Detalhe de projetos OSS |
 
-Each route shows one `.view[data-view="<route>"]` and updates the sidebar active state. Deep-links work via URL hash (e.g. `#tools`).
+### Consumidas nas Actions (build-time)
 
-### Game routing
+DGEG preços de combustíveis · nocartaz.pt · feeds RSS via OPML (notícias) · OpenLibrary (livros) · lojas de gaming (deals) · OWID / World Bank / GeoNames (pipeline Dados do Mundo, offline).
 
-Games use a two-level route: `#games` shows the hub grid; clicking a card calls `GameHost.open(id)` which shows the pane, initializes the game (once), and updates the breadcrumb.
+### Embeds/CDN opcionais
 
----
-
-## I18n
-
-Two locales: Portuguese (`pt`, default) and English (`en`). `i18n.js` loads synchronously (before `defer` scripts) so the page never flickers. Switch with `I18n.set('en')` or the lang button in the header.
-
----
-
-## PWA
-
-A manifest (`manifest.json`) and service worker (`sw.js`) enable "Add to Home Screen" on mobile. The install prompt appears once and can be dismissed permanently.
+Google Fonts (CSS), Excalidraw (whiteboard), tiles de mapa (Carto/Esri/OSM) para Leaflet. Todo o resto é vendorizado ou local.
 
 ---
 
-## Development
+## Convenções e regras do projeto
 
-No install required. Open `index.html` in a browser or run a local static server:
+1. **Sem backend, sem build no cliente** — qualquer feature nova tem de funcionar como estático no GitHub Pages.
+2. **AppTime é o único relógio** — UI de data reage a `time:day`/`time:period`.
+3. **Actions nunca com gate por hora do dia** — gate pelo estado do snapshot (ver acima).
+4. **Assets só CC0/MIT/CC-BY/originais** — registar em `ASSET-REGISTRY.json`; preferir procedural/próprio.
+5. **Chrome da UI só com ícones SVG**; não reintroduzir bottom-nav mobile.
+6. **Nunca commitar chaves** — se um serviço exige chave, corre na Action com secret.
+7. **Dados primeiro** — conteúdo (quizzes, humor, temas, timeline) vive em JSON, não em código.
+8. **PT-first** — strings novas passam pelo `I18n` com pt e en.
+
+---
+
+## Desenvolvimento
+
+Sem instalação. Servir a raiz com qualquer servidor estático:
 
 ```bash
-# Python
-python -m http.server 8080
-
-# Node (npx)
-npx serve .
+python -m http.server 8080   # ou: npx serve .
 ```
 
-All CSS files and scripts are loaded from their filesystem paths — no bundling needed.
+> Para testar o service worker é preciso servir por HTTP (não `file://`). Após alterar estáticos, fazer bump ao `CACHE` em `sw.js`.
 
-### Adding a new tool
+### Adicionar uma tool
+1. Botão na sidebar de tools no `index.html`; 2. `<div id="tool-<nome>" class="tool-panel">`; 3. lógica no IIFE `Tools` em `js/pages/tools.js`.
 
-1. Add a `<button class="tool-nav-btn">` to the tools sidebar in `index.html`
-2. Add a `<div id="tool-<name>" class="tool-panel">` to the tools content area
-3. Add the JS logic to `tools.js` inside the `Tools` IIFE
+### Adicionar um jogo
+1. `js/games/game-<id>.js` com IIFE que exporta `{ init(container) }`; 2. registar no `GAMES`/`registry` de `game-host.js`; 3. pane no `index.html`; 4. `<script defer>` antes do `game-host.js`. Usar `GameProgress` para progresso.
 
-### Adding a new game
+### Adicionar um quiz
+Criar `quizzes/<id>/{pt,en}/{easy,medium,hard}.json` (cada pergunta com `exp` — facto explicativo) e registar em `js/quiz/quiz-data.js`.
 
-1. Create `game-<id>.js` with an IIFE exporting `{ init(container) }`
-2. Add the game entry to `game-host.js` — `GAMES` array and `registry` map
-3. Add `<div id="pane-<id>" class="game-pane">` to `index.html`
-4. Add a `<script src="game-<id>.js" defer>` before `game-host.js`
+### Adicionar um tema ao Explorar (KB)
+Criar `data/explore/<tema>.json` seguindo a estrutura Área→Tema→Subtema→Conteúdo (ver `jogos.json` como modelo) e referenciar no `index.json`.
 
----
-
-## Constraints
-
-- **Frontend-only** — no server, no backend, no database
-- **GitHub Pages compatible** — no server-side rendering, no build required
-- **No heavy frameworks** — no React, Vue, Next.js
-- Lightweight external resources: Google Fonts (CSS), optional CDN embeds for Excalidraw
+### Adicionar uma fonte de notícias
+Acrescentar o feed ao `data/news/feeds.opml` com o tópico certo; o workflow trata do resto.
