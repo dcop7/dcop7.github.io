@@ -39,7 +39,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), ~12 categorias / centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
-| `#photography` | **Fotografia** | Cheat sheets de captura+edição por cenário (10 cenários), 12 técnicas de edição (RapidRAW/darktable/Snapseed), hora dourada com longitude+fuso, roda de cores touch |
+| `#photography` | **Fotografia** | Portal por géneros (15 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S23+ / ambos), modo "No Terreno" (assistente de bolso), Aprender (fundamentos, composição, 12 técnicas de edição RapidRAW/darktable/Snapseed, roda de cores) e 7 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
 | `#settings` | **Preferências** | Tema, tamanho de letra, língua, bookmarks, cidade da meteo |
 

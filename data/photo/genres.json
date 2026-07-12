@@ -1,0 +1,939 @@
+{
+  "genres": [
+    {
+      "id": "paisagem", "name": "Paisagem", "icon": "🏔️",
+      "blurb": "Nitidez de ponta a ponta, céu dramático e profundidade.",
+      "goal": "Transportar quem vê para o lugar: um primeiro plano forte, nitidez até ao horizonte e a melhor luz do dia.",
+      "canon": {
+        "lens": "EF-M 15-45mm (24–72mm eq)",
+        "why": "Cobre do grande angular ao normal com estabilização — a lente que vive na câmara para paisagem.",
+        "alt": "55-200mm para paisagem comprimida: montanhas em camadas, detalhes ao longe.",
+        "settings": [
+          { "k": "Modo", "v": "Av" },
+          { "k": "Abertura", "v": "f/8 – f/11" },
+          { "k": "ISO", "v": "100" },
+          { "k": "Velocidade", "v": "Conforme a luz — tripé se < 1/60" },
+          { "k": "Foco", "v": "A ~1/3 da cena ou hiperfocal" },
+          { "k": "WB", "v": "Luz do dia / Nublado · RAW" }
+        ],
+        "af": "One-Shot, ponto único a ~1/3 da cena — ou foco manual na distância hiperfocal (vê a calculadora).",
+        "limits": [
+          "15mm = 24mm eq: para céus gigantes faz panorama de 2–3 fotos na vertical.",
+          "O lado longo fecha até f/6.3 — para nitidez máxima trabalha entre f/8 e f/11, nunca além de f/16 (difração)."
+        ],
+        "tips": [
+          "Tripé + temporizador 2s e IS desligado — nitidez garantida.",
+          "Polarizador de 49mm: céu mais azul, reflexos fora da água e folhagem saturada.",
+          "Expõe para o céu (não queimar) e abre as sombras depois no RAW.",
+          "Sem tripé: dispara em rajada de 3 — uma vem sempre mais nítida."
+        ]
+      },
+      "s23": {
+        "lens": "Ultra grande angular (13mm eq)",
+        "mode": "Foto com HDR automático · Expert RAW para gama dinâmica máxima",
+        "why": "Dá-te uma perspetiva ampla que a M50 não tem — o teu verdadeiro grande angular é este.",
+        "settings": [
+          { "k": "Lente", "v": "0.6× (UGA) ou 1× para menos distorção" },
+          { "k": "HDR", "v": "Ligado (céus contrastados)" },
+          { "k": "Grelha", "v": "3×3 + nivelador ativo" },
+          { "k": "Formato", "v": "Expert RAW quando a luz é difícil" }
+        ],
+        "limits": [
+          "A UGA tem 12MP e menos detalhe — não contes com grandes recortes.",
+          "Realces queimam depressa: toca no céu para expor e arrasta a exposição para baixo."
+        ],
+        "tips": [
+          "O HDR computacional segura céu + sombra melhor do que um disparo único da M50 — usa-o sem vergonha.",
+          "Em luz fraca, apoia o telemóvel num muro ou pedra em vez de subir o ISO.",
+          "Primeiro plano a meio metro + UGA = profundidade dramática instantânea."
+        ]
+      },
+      "light": "Hora dourada e hora azul dão a melhor luz; a luz lateral revela textura e relevo. Evita o sol a pino (céu lavado, sombras duras). Usa a calculadora de Hora Dourada para planear.",
+      "composition": ["Regra dos Terços", "Linhas Convergentes", "Curva em S", "Espaço Negativo"],
+      "dos": ["Inclui um primeiro plano forte para dar profundidade", "Foca a ~1/3 (ou usa a distância hiperfocal)", "Polarizador para céu mais azul e tirar reflexos", "Mantém o horizonte direito", "Chega 30 min antes da luz boa"],
+      "donts": ["ISO alto sem necessidade (ruído)", "Horizonte ao centro (exceto reflexo simétrico)", "Abrir demais a abertura (perde nitidez nas pontas)", "Esquecer o primeiro plano (imagem \"vazia\")", "Disparar tudo ao meio-dia"],
+      "checklist": ["Bateria carregada + cartão com espaço", "Tripé (e IS desligado ao usá-lo)", "Polarizador / ND na mochila", "Hora dourada consultada", "Local e primeiro plano escolhidos", "RAW ativado"],
+      "edit": {
+        "intro": "Maximiza a gama dinâmica e a profundidade: céu com detalhe, primeiro plano nítido, cor rica mas natural.",
+        "steps": [
+          { "idea": "Recuperar o céu e abrir as sombras (alta gama dinâmica)", "rr": "Highlights −, Shadows +, Dehaze leve; Whites/Blacks a fixar os pontos.", "dt": "«filmic rgb» + «tone equalizer» para equilibrar céu e terra.", "sg": "Realces −, Sombras +, depois afina nas Curvas." },
+          { "idea": "Profundidade e textura (rochas, folhagem)", "rr": "Clarity + Structure moderados; Sharpening com máscara.", "dt": "«local contrast» + «diffuse or sharpen».", "sg": "Detalhes → Estrutura; «Ambiente»." },
+          { "idea": "Cor natural e rica (céu e vegetação)", "rr": "Vibrance primeiro; HSL: Azul −luminância (céu mais fundo).", "dt": "«velvia» + «color zones» para o verde.", "sg": "Saturação leve + «Ambiente»; Seletivo no céu." }
+        ]
+      },
+      "techniques": ["realces-sombras", "dehaze", "sat-vib"],
+      "tools": ["gh", "dof", "focal", "nd"]
+    },
+    {
+      "id": "retrato", "name": "Retrato", "icon": "👤", "portrait": true,
+      "blurb": "Fundo desfocado, foco no olho, pose e luz que favorecem.",
+      "goal": "Uma pessoa em destaque absoluto: olhos vivos, pele natural, fundo que não compete e uma pose confortável.",
+      "canon": {
+        "lens": "EF 50mm f/1.8 (80mm eq, via Viltrox)",
+        "why": "Focal clássica de retrato e a única f/1.8 do teu kit — nenhuma outra dá este fundo cremoso e esta separação.",
+        "alt": "22mm f/2 (35mm eq) para retrato ambiental — a pessoa no seu contexto. Nunca a uses colada ao rosto (distorce).",
+        "settings": [
+          { "k": "Modo", "v": "Av" },
+          { "k": "Abertura", "v": "f/1.8 – f/2.8 · grupos f/4 – f/5.6" },
+          { "k": "Velocidade", "v": "≥ 1/200 (a 50mm não tem IS!)" },
+          { "k": "ISO", "v": "Auto até 1600" },
+          { "k": "AF", "v": "Deteção de olhos + Servo" },
+          { "k": "Formato", "v": "RAW" }
+        ],
+        "af": "Eye AF da M50 II com prioridade ao olho mais próximo; Servo se a pessoa se mexe. A f/1.8 a margem é milimétrica — confirma ampliado.",
+        "limits": [
+          "80mm eq aperta em interiores pequenos: recua, ou troca para a 22mm e faz meio-corpo.",
+          "Sem IS na 50mm: não desças de 1/160–1/200 mesmo com o sujeito quieto."
+        ],
+        "tips": [
+          "Afasta o sujeito do fundo 2–3 m: é isso (mais que a abertura) que derrete o fundo.",
+          "Luz de janela a 45° + reflexo (catchlight) nos olhos = retrato instantaneamente profissional.",
+          "Modo silencioso para expressões naturais em vez de poses rígidas.",
+          "f/1.8 para um olho só nítido; f/2.8 para o rosto todo; f/5.6 para duas pessoas."
+        ]
+      },
+      "s23": {
+        "lens": "Teleobjetiva 3× (~70mm eq)",
+        "mode": "Modo Retrato no 3× — o bokeh computacional com a compressão certa",
+        "why": "O 3× tem a perspetiva lisonjeira de um 70mm; o Retrato computacional trata do fundo.",
+        "settings": [
+          { "k": "Lente", "v": "3× (nunca zoom digital para rostos)" },
+          { "k": "Modo", "v": "Retrato · intensidade de bokeh média" },
+          { "k": "Foco", "v": "Toca no olho" },
+          { "k": "Luz", "v": "Quanto mais, melhor — o modo Retrato sofre no escuro" }
+        ],
+        "limits": [
+          "O recorte computacional falha em cabelo solto, óculos e copos — verifica as bordas ampliadas antes de sair do local.",
+          "Com pouca luz o Retrato 3× degrada-se: passa para 1× (sensor principal) e aceita menos compressão."
+        ],
+        "tips": [
+          "0.6× e 1× perto do rosto engordam nariz e testa — para rostos, 3× sempre que possível.",
+          "Expert RAW/Pro para pele mais natural, sem o \"embelezamento\" agressivo.",
+          "O bokeh do modo Retrato pode ajustar-se DEPOIS na galeria — dispara primeiro, afina em casa."
+        ]
+      },
+      "light": "Janela suave a 45°, sombra aberta ou hora dourada. Observa os catchlights nos olhos e a sombra suave a descer pela face. Evita o sol a pino (olhos-de-guaxinim).",
+      "composition": ["Regra dos Terços", "Proporção Áurea (Phi)", "Enquadramento Natural", "Espaço Negativo"],
+      "dos": ["Foca sempre no olho mais próximo", "Deixa espaço na direção do olhar", "Dá direção e poses ao sujeito (vê os diagramas)", "Dispara à altura dos olhos do sujeito", "Separa o sujeito do fundo (distância + abertura)"],
+      "donts": ["Cortar nas articulações (joelhos, cotovelos, pulsos, tornozelos, pescoço)", "Grande angular perto do rosto (distorce o nariz)", "Postes/árvores a \"sair\" da cabeça", "Flash frontal direto e duro", "Focar no nariz em vez do olho"],
+      "checklist": ["Local com fundo limpo e distante", "Luz suave identificada (janela/sombra)", "Eye AF ativo (Canon) / foco no olho (S23)", "Velocidade ≥ 1/200 confirmada", "Poses de referência vistas", "Conversa preparada — pessoa à vontade"],
+      "edit": {
+        "intro": "Pele natural e agradável, olhos com vida e um fundo que não compete. Edição subtil — menos é mais.",
+        "steps": [
+          { "idea": "Pele natural — NÃO exagerar clareza/saturação na pele", "rr": "Reduz Clarity/Texture na pele (máscara AI «subject»); Vibrance baixo.", "dt": "«diffuse or sharpen» com máscara para suavizar; vibrance comedida.", "sg": "Pincel: baixa Estrutura na pele; evita Saturação global alta." },
+          { "idea": "Teal & Orange para separar do fundo", "rr": "Rodas de cor: sombras → teal, realces → laranja; HSL afina o Laranja (pele).", "dt": "«color balance rgb» (4-vias).", "sg": "Curvas (Azul/Vermelho) + Balanço de Brancos no Seletivo sobre a pele." },
+          { "idea": "Realçar os olhos (dodge) e escurecer distrações (burn)", "rr": "Máscara Brush nos olhos: Exposure/Clarity +; Vinheta subtil.", "dt": "«exposure» +/− com máscaras desenhadas.", "sg": "Pincel → Exposição + nos olhos; Vinheta nas bordas." }
+        ]
+      },
+      "techniques": ["teal-orange", "dodge-burn", "clareza"],
+      "tools": ["dof", "exposure"]
+    },
+    {
+      "id": "rua", "name": "Rua / Urbano", "icon": "🚶",
+      "blurb": "Rápido e discreto: captar o momento e a luz da cidade.",
+      "goal": "O momento humano na geometria da cidade: luz, cena e sujeito a encaixarem num instante irrepetível.",
+      "canon": {
+        "lens": "EF-M 22mm f/2 (35mm eq)",
+        "why": "A focal de rua clássica numa panqueca minúscula — a combinação mais discreta e luminosa que tens.",
+        "alt": "15-45mm quando quiseres alternar entre cena larga e detalhe sem trocar de posição.",
+        "settings": [
+          { "k": "Modo", "v": "Av f/5.6 – f/8 (zona de foco)" },
+          { "k": "Velocidade", "v": "≥ 1/250 (pessoas em movimento)" },
+          { "k": "ISO", "v": "Auto até 3200" },
+          { "k": "AF", "v": "Zona + Servo, ou pré-foco a ~2.5m" },
+          { "k": "Disparo", "v": "Silencioso" }
+        ],
+        "af": "Zone focusing: a f/8 focado a 2.5m, tens (aprox.) de 1.5m ao infinito nítido — confirma na calculadora de DOF e dispara sem esperar pelo AF.",
+        "limits": [
+          "A 22mm não tem IS: de noite mantém ≥ 1/125 e deixa o ISO subir — grão é melhor que tremido.",
+          "35mm eq obriga a aproximares-te — faz parte do género."
+        ],
+        "tips": [
+          "Ecrã basculado à cintura: enquadras sem levantar a câmara — discrição total.",
+          "Encontra luz + fundo bons primeiro, espera que o sujeito entre na cena.",
+          "Modo silencioso + panqueca: ninguém repara numa M50 com a 22mm.",
+          "Contraluz forte? Expõe para as luzes e deixa as silhuetas falar."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1× (23mm eq) · UGA para becos e cenas apertadas",
+        "mode": "Foto normal + rajada (manter o obturador premido)",
+        "why": "O telemóvel é a câmara mais invisível que existe — ninguém estranha alguém a olhar para um ecrã.",
+        "settings": [
+          { "k": "Lente", "v": "1× por defeito; 0.6× para geometria/arquitetura" },
+          { "k": "Foco/Expo", "v": "Toque longo = bloquear AF/AE" },
+          { "k": "Rajada", "v": "Ativa para momentos" },
+          { "k": "Grelha", "v": "3×3 ligada" }
+        ],
+        "limits": [
+          "Shutter lag em luz fraca: antecipa meio segundo, ou usa rajada.",
+          "Zoom digital denuncia-se logo em cenas urbanas cheias de linhas — mexe os pés."
+        ],
+        "tips": [
+          "Botão de volume como obturador: dispara da cintura sem olhar.",
+          "Bloqueia a exposição numa zona de luz e espera pelo sujeito.",
+          "Reflexos em montras e poças: o S23 foca perto e baixo mais facilmente que a M50."
+        ]
+      },
+      "light": "A luz dura cria sombras e contraste interessantes; à noite usa néons e reflexos. Contraluz para silhuetas. Encontra uma boa luz + fundo e espera o sujeito entrar.",
+      "composition": ["Linhas Convergentes", "Enquadramento Natural", "Regra dos Terços", "Diagonal Principal"],
+      "dos": ["Pré-focar (zone focusing) para disparar rápido", "Lente discreta e leve", "Antecipar e esperar pelo momento", "Compor primeiro, esperar o sujeito depois", "Respeitar as pessoas e o espaço"],
+      "donts": ["Hesitar — perde-se o momento", "Usar flash na cara das pessoas", "Abertura muito aberta (difícil acertar foco em movimento)", "Invadir a privacidade ou fotografar onde é proibido", "Olhar só para o ecrã (perde o contexto à volta)"],
+      "checklist": ["Bateria + espaço (a rua gasta rajadas)", "Zona de foco pré-definida (f/8 a 2.5m)", "Modo silencioso ativo", "Rota/zona com boa luz pensada", "Frase pronta para quem perguntar"],
+      "edit": {
+        "intro": "Carácter urbano: contraste, atmosfera e, muitas vezes, um look mate ou de film.",
+        "steps": [
+          { "idea": "Look mate / film (sombras levantadas)", "rr": "Tone Curve: levanta o ponto preto; Color Grading subtil.", "dt": "«rgb curve» (lift dos pretos) + «color balance rgb».", "sg": "Curvas: levanta os pretos; reduz a Saturação levemente." },
+          { "idea": "Contraste local e atmosfera", "rr": "Clarity +, Dehaze a gosto.", "dt": "«local contrast» / «haze removal».", "sg": "«Ambiente» + Estrutura." },
+          { "idea": "Cor coesa (teal&orange ou dessaturado)", "rr": "Rodas de cor, ou baixa a Saturation para mood.", "dt": "«color balance rgb».", "sg": "Curvas por canal, ou Saturação −." }
+        ]
+      },
+      "techniques": ["curvas", "contraste", "pb"],
+      "tools": ["dof", "exposure"]
+    },
+    {
+      "id": "astro", "name": "Noturna & Astro", "icon": "🌌",
+      "blurb": "Tripé, ISO alto, foco manual no infinito e estrelas pontuais.",
+      "goal": "Céu estrelado ou cidade noturna com estrelas pontuais, luzes controladas e um primeiro plano com interesse.",
+      "canon": {
+        "lens": "EF-M 22mm f/2 (35mm eq)",
+        "why": "A tua lente mais luminosa e larga — é ela que apanha a Via Láctea. A f/2 entra 2.5× mais luz que na kit a f/3.5.",
+        "alt": "15-45 a 15mm apanha mais céu, mas a f/3.5 exige mais ISO — usa-a para cidade em tripé (ISO 100), não para estrelas.",
+        "settings": [
+          { "k": "Modo", "v": "M + tripé (obrigatório)" },
+          { "k": "Abertura", "v": "f/2" },
+          { "k": "ISO", "v": "1600 – 3200" },
+          { "k": "Velocidade", "v": "10–13s (regra 500: 500÷35eq ≈ 14s máx)" },
+          { "k": "Foco", "v": "Manual: live view 10× numa estrela" },
+          { "k": "WB", "v": "~3800K · RAW" }
+        ],
+        "af": "AF não funciona no escuro: foco manual com ampliação 10× numa estrela brilhante até ela ser um ponto mínimo — e não voltes a tocar no anel.",
+        "limits": [
+          "APS-C a f/2: a Via Láctea sai, mas com ruído — empilha 8–15 fotos iguais no Sequator (grátis) para um salto de qualidade.",
+          "Máximo 30s sem remoto: para mais, usa a app Canon Camera Connect como disparador."
+        ],
+        "tips": [
+          "Temporizador 2s ou app — nunca toques na câmara durante a exposição.",
+          "Desliga o IS no tripé; bateria extra no bolso (o frio come-as).",
+          "Ilumina o primeiro plano 2s com a lanterna do telemóvel (light painting).",
+          "Lua nova + longe das luzes da cidade = céu a sério."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1× (23mm eq)",
+        "mode": "Expert RAW → Astrofoto · Modo Noite para cidade",
+        "why": "O empilhamento computacional do Expert RAW faz em minutos o que na M50 exige empilhar à mão.",
+        "settings": [
+          { "k": "Astro", "v": "Expert RAW → Astrofoto, 4–10 min, apoiado" },
+          { "k": "Cidade", "v": "Modo Noite na principal" },
+          { "k": "Manual", "v": "Pro: foco ∞, ISO 800–3200, até 30s" },
+          { "k": "Timer", "v": "3s (o toque treme sempre)" }
+        ],
+        "limits": [
+          "Detalhe fino do céu fica atrás de uma M50 bem empilhada — mas o esforço é 10× menor.",
+          "UGA e tele são fracas à noite: usa quase sempre a principal."
+        ],
+        "tips": [
+          "Tripé mini ou telemóvel encostado a uma pedra — o Astrofoto precisa de imobilidade total.",
+          "Lua: 3× + modo Pro, ISO 50, ~1/125 — o modo automático transforma-a numa bola branca.",
+          "Rastos de estrelas sem esforço: Hyperlapse com trilha de estrelas."
+        ]
+      },
+      "light": "Foge da poluição luminosa; lua nova para a Via Láctea. Hora azul para a cidade. Acrescenta um primeiro plano (silhueta, árvore) e ilumina-o com light painting.",
+      "composition": ["Espaço Negativo", "Regra dos Terços", "Linhas Convergentes", "Simetria & Reflexo"],
+      "dos": ["Tripé + disparador/temporizador de 2s", "Foco manual numa estrela brilhante (live view com zoom)", "Desligar a estabilização no tripé", "RAW + bateria extra (o frio gasta)", "Primeiro plano interessante"],
+      "donts": ["ISO no máximo sem necessidade (ruído)", "Exposição longa demais (estrelas viram traços — usa 500/focal)", "Confiar no AF no escuro", "Tocar no tripé durante a exposição", "Disparar em JPEG"],
+      "checklist": ["Tripé + cabeça firme", "Baterias extra (frio)", "Lanterna frontal vermelha", "Céu/lua/nuvens verificados", "Local scouted de dia", "Roupa quente a mais"],
+      "edit": {
+        "intro": "Limpa o ruído, revela estrelas e luzes sem queimar, e controla a cor do céu.",
+        "steps": [
+          { "idea": "Reduzir ruído primeiro (ISO alto)", "rr": "Noise Reduction (luminância + cor) antes de afiar.", "dt": "«denoise (profiled)» — essencial.", "sg": "Evita puxar Sombras/Estrutura ao máximo (amplifica o ruído)." },
+          { "idea": "Revelar a Via Láctea / as luzes", "rr": "Shadows +, Whites +, Dehaze; Clarity localizada (máscara).", "dt": "«tone equalizer» + «local contrast» com máscara.", "sg": "Sombras +; Estrutura local com o Pincel; Curvas." },
+          { "idea": "Cor do céu noturno", "rr": "Temperature mais fria; HSL tira a dominante laranja da poluição luminosa.", "dt": "«white balance» + «color zones» no laranja.", "sg": "Balanço de Brancos mais frio; Seletivo." }
+        ]
+      },
+      "techniques": ["nitidez-ruido", "realces-sombras", "wb"],
+      "tools": ["le", "gh", "exposure"]
+    },
+    {
+      "id": "macro", "name": "Macro / Close-up", "icon": "🔬",
+      "blurb": "Profundidade de campo minúscula — foco preciso e fundo limpo.",
+      "goal": "Revelar o mundo pequeno: textura, padrão e detalhe que o olho não vê, com o plano de foco exatamente onde interessa.",
+      "canon": {
+        "lens": "EF-M 55-200 a 200mm, perto da distância mínima (~1m)",
+        "why": "Nenhuma das tuas lentes é macro real — mas o tele à distância mínima dá ampliação suficiente para flores, cogumelos e detalhes, com fundo bem desfocado.",
+        "alt": "15-45 a 45mm foca a ~20cm para close-ups com contexto. Tubos de extensão EF-M baratos (sem ótica) transformam a 50mm num quase-macro a sério.",
+        "settings": [
+          { "k": "Modo", "v": "Av ou M" },
+          { "k": "Abertura", "v": "f/8 – f/11 (a DOF é milimétrica)" },
+          { "k": "Velocidade", "v": "≥ 1/320 no tele (tremor amplificado)" },
+          { "k": "ISO", "v": "Auto — aceita 1600 para segurar velocidade" },
+          { "k": "Foco", "v": "Manual + focus peaking, ou AF ponto mínimo" },
+          { "k": "Disparo", "v": "Rajada" }
+        ],
+        "af": "O AF \"caça\" nestas distâncias: foco manual com peaking, corpo a balançar levemente para a frente e trás, rajada — uma foto apanha o plano certo.",
+        "limits": [
+          "Sem 1:1 verdadeiro: olhos de inseto e gotas ampliadas precisariam de tubos de extensão ou lente macro.",
+          "A DOF a 200mm de perto é de milímetros — f/11 e paciência."
+        ],
+        "tips": [
+          "Manhã cedo: insetos lentos, orvalho e sem vento.",
+          "Difusor caseiro (papel vegetal) sobre o flash/luz dura muda tudo.",
+          "Fundo a palmos de distância = fundo limpo; roda à volta do sujeito à procura do melhor.",
+          "Focus stacking: várias fotos a variar o foco, empilhadas na edição."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1× muito perto (~5cm)",
+        "mode": "Foto normal — aproxima até o foco falhar e recua um dedo",
+        "why": "O sensor principal foca surpreendentemente perto; com 50MP dá para recortar e \"ampliar\" ainda mais.",
+        "settings": [
+          { "k": "Lente", "v": "1× a ~5–8cm do sujeito" },
+          { "k": "Resolução", "v": "50MP para recorte posterior" },
+          { "k": "Foco", "v": "Toque + bloqueio AF/AE" },
+          { "k": "Luz", "v": "Lateral, natural" }
+        ],
+        "limits": [
+          "Sem lente macro dedicada: para ampliação real, uma lente clip-on macro custa pouco.",
+          "A tua própria sombra tapa a luz a 5cm — dispara de lado."
+        ],
+        "tips": [
+          "50MP + recorte é o teu \"zoom macro\" — melhor que aproximar além do mínimo de foco.",
+          "Cotovelos apoiados no chão/mesa: a esta distância qualquer tremor é terramoto.",
+          "O modo retrato NÃO serve para macro (recorte falha) — desfoca com proximidade real."
+        ]
+      },
+      "light": "Luz difusa (difusor no flash) evita reflexos e sombras duras. A luz lateral revela textura. De manhã cedo os insetos estão lentos e há menos vento.",
+      "composition": ["Espaço Negativo", "Regra dos Terços", "Simetria & Reflexo", "Proporção Áurea (Phi)"],
+      "dos": ["Foco manual (o AF \"caça\" no macro)", "Focus stacking para nitidez total", "Difusor no flash", "Tripé ou trilho de foco", "Disparar de manhã cedo, sem vento"],
+      "donts": ["Abrir muito (quase nada fica em foco)", "Confiar no autofoco", "Disparar com vento", "Flash direto sem difusão", "Fundo atravancado"],
+      "checklist": ["Difusor/refletor pequeno", "Tripé ou apoio", "Joelheiras/plástico para o chão", "Manhã sem vento escolhida", "Peaking/ampliação de foco ativos"],
+      "edit": {
+        "intro": "Nitidez no plano focado, fundo limpo e suave, cor e textura do sujeito.",
+        "steps": [
+          { "idea": "Nitidez seletiva no sujeito", "rr": "Sharpening + Structure só no plano nítido (máscara).", "dt": "«diffuse or sharpen» / «sharpen» com máscara.", "sg": "Detalhes → Nitidez; Pincel para localizar." },
+          { "idea": "Fundo limpo e suave", "rr": "Máscara no fundo: Exposure/Saturation −; Vignette.", "dt": "Máscara + «exposure» / «color balance rgb».", "sg": "Seletivo no fundo (Saturação/Brilho −); Vinheta." },
+          { "idea": "Cor e textura do sujeito", "rr": "Vibrance; Clarity/Structure no sujeito.", "dt": "«velvia» + «local contrast».", "sg": "Saturação leve; Estrutura local." }
+        ]
+      },
+      "techniques": ["nitidez-ruido", "clareza", "vinheta"],
+      "tools": ["dof", "flash"]
+    },
+    {
+      "id": "vida-selvagem", "name": "Vida Selvagem", "icon": "🦅",
+      "blurb": "Teleobjetiva, velocidade alta, foco no olho e paciência.",
+      "goal": "O animal nítido, ao nível dos olhos, com comportamento ou atitude — sem nunca o perturbar.",
+      "canon": {
+        "lens": "EF-M 55-200mm (88–320mm eq)",
+        "why": "É o teu alcance: 320mm eq chegam para aves maiores, parques e animais habituados — com IS para compensar o tele.",
+        "alt": "Para aves pequenas e tímidas o alcance é curto: compensa com esconderijo, paciência e conhecer os hábitos do animal.",
+        "settings": [
+          { "k": "Modo", "v": "Tv (ou M + Auto-ISO)" },
+          { "k": "Velocidade", "v": "≥ 1/1000 · aves em voo ≥ 1/2000" },
+          { "k": "Abertura", "v": "Máxima (f/6.3 no lado longo)" },
+          { "k": "ISO", "v": "Auto até 6400 — aceita o ruído" },
+          { "k": "AF", "v": "Servo + zona pequena" },
+          { "k": "Disparo", "v": "Rajada 10 fps, em picos curtos" }
+        ],
+        "af": "A M50 II não tem Eye-AF animal: usa zona AF pequena colada ao olho e rajadas curtas. Recompõe entre rajadas.",
+        "limits": [
+          "f/6.3 é escuro ao amanhecer/entardecer — exatamente quando os animais aparecem: ISO alto + denoise na edição fazem parte do jogo.",
+          "320mm eq é curto para aves pequenas: enquadra \"animal no habitat\" em vez de encher o frame à força."
+        ],
+        "tips": [
+          "Ao nível dos olhos do animal — deita-te se for preciso.",
+          "Monopé ou apoio no joelho: o IS ajuda mas não faz milagres a 320mm eq.",
+          "Aprende o comportamento: o momento antes do voo é previsível (agacha, aponta, defeca).",
+          "Sol atrás de ti = animal iluminado de frente e AF mais confiante."
+        ]
+      },
+      "s23": {
+        "lens": "Teleobjetiva 3× (~70mm eq)",
+        "mode": "Foto + rajada",
+        "why": "70mm eq só chegam para animais próximos e habituados — o S23 brilha no \"animal no ambiente\", não no close-up.",
+        "settings": [
+          { "k": "Lente", "v": "3× ótico · máx. 10× híbrido em desespero" },
+          { "k": "Rajada", "v": "Sempre" },
+          { "k": "Foco", "v": "Toque no animal + acompanhar" }
+        ],
+        "limits": [
+          "Sê honesto com o zoom: acima de 10× o resultado é papa digital — não contes com ele para aves.",
+          "Sem AF de seguimento sério para animais rápidos."
+        ],
+        "tips": [
+          "Parques urbanos, patos, gatos, gaivotas: animais habituados são o território ideal do telemóvel.",
+          "Plano largo com o animal pequeno no habitat épico funciona melhor que um crop mastigado.",
+          "Vídeo 8K e extrair frame é um truque legítimo para o momento certo."
+        ]
+      },
+      "light": "Hora dourada com a luz por trás de ti (frontal no animal). Contraluz para silhuetas. Mantém-te ao nível dos olhos do animal.",
+      "composition": ["Espaço Negativo", "Regra dos Terços", "Diagonal Principal", "Enquadramento Natural"],
+      "dos": ["Velocidade alta para congelar", "AF contínuo + rajada no pico da ação", "Apoiar (monopé) a teleobjetiva", "Ficar ao nível dos olhos do animal", "Paciência e distância de respeito"],
+      "donts": ["Velocidade baixa (tudo tremido)", "Aproximar-te ou molestar o animal", "Foco único estático num sujeito a mover-se", "Cortar o espaço de movimento à frente", "Flash em animais selvagens"],
+      "checklist": ["55-200 montada à partida", "Tv 1/1000 pré-definido", "Cartão rápido + espaço para rajadas", "Local/horário dos animais estudado", "Roupa discreta, sem cheiros fortes"],
+      "edit": {
+        "intro": "Destacar o animal, olho nítido, fundo desfocado e cor natural.",
+        "steps": [
+          { "idea": "Sujeito em destaque (dodge + nitidez)", "rr": "Máscara AI «subject»: Exposure +, Sharpening, Clarity; fundo Exposure −.", "dt": "Máscara («exposure» / «sharpen»).", "sg": "Seletivo/Pincel no animal; Vinheta." },
+          { "idea": "Olho nítido e com vida", "rr": "Máscara Brush no olho: Clarity/Sharpening +.", "dt": "Máscara desenhada + «sharpen».", "sg": "Pincel: Estrutura/Exposição no olho." },
+          { "idea": "Ruído + cor natural", "rr": "Noise Reduction; Vibrance comedida.", "dt": "«denoise (profiled)»; «velvia» leve.", "sg": "Não exagerar; Saturação leve." }
+        ]
+      },
+      "techniques": ["nitidez-ruido", "dodge-burn"],
+      "tools": ["exposure", "gh"]
+    },
+    {
+      "id": "desporto", "name": "Desporto / Ação", "icon": "⚽",
+      "blurb": "Congelar (1/1000+) ou panning (1/30–1/125) a seguir o sujeito.",
+      "goal": "O pico da ação: congelado com tudo nítido, ou em panning com o fundo a fugir — sempre com espaço para onde o movimento vai.",
+      "canon": {
+        "lens": "EF-M 55-200mm (88–320mm eq)",
+        "why": "Alcance para chegar ao relvado/pista a partir da bancada, com IS para o panning.",
+        "alt": "Interiores escuros (pavilhões): a 22mm f/2 junto à linha vale mais que o tele a f/6.3 na bancada.",
+        "settings": [
+          { "k": "Modo", "v": "Tv (ou M + Auto-ISO)" },
+          { "k": "Congelar", "v": "1/1000 – 1/2000" },
+          { "k": "Panning", "v": "1/60 – 1/125 a acompanhar" },
+          { "k": "ISO", "v": "Auto até 6400 (12800 em pavilhão)" },
+          { "k": "AF", "v": "Servo + zona" },
+          { "k": "Disparo", "v": "Rajada 10 fps" }
+        ],
+        "af": "Servo com zona no atleta; pré-foca no ponto onde a ação vai acontecer (baliza, curva, cesto) e espera lá por ela.",
+        "limits": [
+          "O buffer da M50 II enche depressa em RAW: rajadas de 5–8 fotos no pico, não metralhadora contínua.",
+          "f/4.5–6.3 em pavilhão = ISO nas alturas: aceita o grão ou muda para a 22mm perto da ação."
+        ],
+        "tips": [
+          "Conhece a modalidade: o pico (remate, smash, salto) é previsível.",
+          "Panning: pés fixos, roda o tronco, segue o sujeito antes, durante e DEPOIS do clique.",
+          "JPEG+RAW ou só JPEG se precisares de rajadas mais longas.",
+          "Deixa espaço à frente do movimento no enquadramento."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1× perto da ação · Tele 3× com boa luz",
+        "mode": "Rajada · modo Pro para fixar 1/1000 de dia",
+        "why": "De dia e perto, o S23 congela bem; a vantagem é estares onde uma câmara \"a sério\" chama a atenção.",
+        "settings": [
+          { "k": "Velocidade", "v": "Pro: 1/500–1/1000 com sol" },
+          { "k": "Rajada", "v": "Manter o obturador" },
+          { "k": "Lente", "v": "1× sempre que puderes aproximar-te" }
+        ],
+        "limits": [
+          "Tele 10MP f/2.4 em pavilhão = desilusão: fica-te pela principal.",
+          "Lag e rolling shutter em movimento muito rápido."
+        ],
+        "tips": [
+          "Vídeo 4K60 e extrair o frame do pico é muitas vezes a jogada certa.",
+          "Posição > zoom: meio segundo a andar vale mais que 3× digital.",
+          "Desporto de rua/skate com UGA colada à ação tem um look próprio que a M50 não faz."
+        ]
+      },
+      "light": "Exterior de dia é ideal. Interior → ISO alto + abertura máxima. Conhece a modalidade para antecipar o pico da ação.",
+      "composition": ["Diagonal Principal", "Espaço Negativo", "Regra dos Terços", "Linhas Convergentes"],
+      "dos": ["AF contínuo + tracking", "Rajada no pico da ação", "Pré-focar no ponto onde a ação vai acontecer", "Panning para dar sensação de velocidade", "Deixar espaço na direção do movimento"],
+      "donts": ["Velocidade baixa ao tentar congelar", "Foco único (single AF)", "Disparo único (perde o instante)", "Abertura fechada com pouca luz (tremido)", "Encher tanto o enquadramento que cortas o movimento"],
+      "checklist": ["Cartão rápido formatado", "Tv 1/1000 + Servo prontos", "Posição com linha de vista limpa", "Regras do recinto verificadas", "Pico da modalidade estudado"],
+      "edit": {
+        "intro": "Energia e clareza: atleta nítido, cores vivas e recortes dinâmicos.",
+        "steps": [
+          { "idea": "Punch e clareza no atleta", "rr": "Clarity/Structure; Contrast; Sharpening com máscara.", "dt": "«local contrast» + «contrast equalizer».", "sg": "Estrutura + Contraste; Nitidez." },
+          { "idea": "Cores vivas (equipa, relva)", "rr": "Vibrance + HSL por cor.", "dt": "«velvia» / «color zones».", "sg": "Saturação/«Ambiente»; Seletivo." },
+          { "idea": "Ruído (interior) + recorte dinâmico", "rr": "Noise Reduction; crop diagonal.", "dt": "«denoise (profiled)»; «crop».", "sg": "Recortar para reforçar o movimento." }
+        ]
+      },
+      "techniques": ["clareza", "contraste", "nitidez-ruido"],
+      "tools": ["exposure"]
+    },
+    {
+      "id": "viagem", "name": "Viagem", "icon": "🧳",
+      "blurb": "Versátil e leve: sentido de lugar, do geral ao detalhe.",
+      "goal": "Contar a história de um lugar: o plano geral, a rua, o detalhe e as pessoas — com um look coerente no fim.",
+      "canon": {
+        "lens": "EF-M 15-45mm montada + 22mm f/2 no bolso",
+        "why": "O kit de viagem perfeito do teu arsenal: zoom versátil de dia, panqueca luminosa para a noite e interiores.",
+        "alt": "O 55-200 só se o destino pedir alcance (safari, montanha) — peso a mais mata a vontade de levar a câmara.",
+        "settings": [
+          { "k": "Modo", "v": "Av f/8 de dia · Auto-ISO" },
+          { "k": "Noite", "v": "Troca para a 22mm f/2" },
+          { "k": "Formato", "v": "RAW" },
+          { "k": "Horário", "v": "Cedo — luz boa e zero multidões" }
+        ],
+        "af": "AF de deteção automática de cenas serve perfeitamente; muda para Eye AF quando fotografares pessoas.",
+        "limits": [
+          "Trocar de lente com vento/pó/areia: costas ao vento, câmara para baixo, rápido.",
+          "Um corpo só: decide de manhã a lente do dia e aceita — a limitação disciplina o olhar."
+        ],
+        "tips": [
+          "Mistura os planos: geral (chegada), médio (ruas), detalhe (mãos, azulejos, comida).",
+          "Backup diário: cartão → telemóvel via app Canon no hotel.",
+          "Pessoas dão escala e história — pede com um sorriso.",
+          "Bateria a carregar todas as noites, sem exceção."
+        ]
+      },
+      "s23": {
+        "lens": "As três — é o segundo corpo perfeito",
+        "mode": "UGA para o que a M50 não apanha · fotos rápidas · Expert RAW nos ícones",
+        "why": "M50 para as fotos com intenção, S23 para o instante, o ultra-wide e o registo do dia — em viagem são uma equipa, não rivais.",
+        "settings": [
+          { "k": "UGA", "v": "0.6× para praças, catedrais, quartos" },
+          { "k": "Geotag", "v": "Localização ligada (diário da viagem)" },
+          { "k": "HDR", "v": "Ligado" }
+        ],
+        "limits": [
+          "Não deixes o telemóvel substituir a M50 nos momentos-postal: o RAW da APS-C aguenta edição a sério.",
+          "Bateria: o roaming + fotos + mapas esgotam-no — powerbank."
+        ],
+        "tips": [
+          "Comida, mercados, interiores escuros de restaurantes: território natural do S23.",
+          "Expert RAW nos monumentos icónicos ao meio-dia — o multi-frame segura os contrastes.",
+          "Manda as melhores do dia para o telemóvel e edita no Snapseed na viagem de comboio."
+        ]
+      },
+      "light": "Hora dourada e azul. Cedo evita multidões e a luz dura do meio-dia. Planeia o horário dos locais.",
+      "composition": ["Enquadramento Natural", "Regra dos Terços", "Linhas Convergentes", "Curva em S"],
+      "dos": ["Misturar planos: geral, médio e detalhe", "Incluir pessoas para dar escala e história", "Acordar cedo (luz + sem gente)", "Proteger e limpar o equipamento", "Fazer backups dos cartões"],
+      "donts": ["Repetir só os postais clichés", "Carregar equipamento a mais", "Fotografar pessoas sem respeito/permissão", "Esquecer baterias e cartões", "Fotografar tudo ao meio-dia"],
+      "checklist": ["Kit mínimo: corpo + 15-45 + 22mm", "2 baterias + carregador + powerbank", "2 cartões (um sempre vazio)", "Pano de limpeza", "Horários/hora dourada dos locais", "Seguro/mochila anti-roubo"],
+      "edit": {
+        "intro": "Cor rica e fiel ao local, com um look coerente entre as fotos da viagem.",
+        "steps": [
+          { "idea": "Look coerente (preset / copiar definições)", "rr": "Cria um Preset e aplica à pasta/lote.", "dt": "Guarda um «style» e aplica em lote.", "sg": "«Copiar/Colar look» entre fotos (QR)." },
+          { "idea": "Cor e luz do local", "rr": "WB criativa (quente ao pôr do sol); Vibrance; Dehaze.", "dt": "«white balance» + «color balance rgb» + «haze removal».", "sg": "Balanço de Brancos; «Ambiente»; Saturação." },
+          { "idea": "Endireitar e corrigir perspetiva (arquitetura)", "rr": "Transform: rotation / perspective.", "dt": "«rotate and perspective».", "sg": "Ferramenta «Perspetiva» + «Rodar»." }
+        ]
+      },
+      "techniques": ["wb", "sat-vib", "dehaze"],
+      "tools": ["gh"]
+    },
+    {
+      "id": "eventos", "name": "Eventos / Concertos", "icon": "🎤",
+      "blurb": "Luz difícil e em mudança: abertura máxima, ISO alto, sem flash.",
+      "goal": "A energia do palco e das pessoas com a luz que existe: momentos, expressões e atmosfera — nunca flash.",
+      "canon": {
+        "lens": "EF-M 22mm f/2 (35mm eq)",
+        "why": "A tua arma de pouca luz: f/2 e discrição no meio do público. Apanha palco + ambiente.",
+        "alt": "EF 50mm f/1.8 (80mm eq) quando estás longe do palco — mas exige 1/250 por não ter IS.",
+        "settings": [
+          { "k": "Modo", "v": "M: f/2 · 1/200 · Auto-ISO" },
+          { "k": "ISO", "v": "Deixa subir até 12800 — aceita o ruído" },
+          { "k": "AF", "v": "Servo (os artistas mexem-se sempre)" },
+          { "k": "Formato", "v": "RAW (o WB de palco é impossível de acertar na hora)" },
+          { "k": "Flash", "v": "NUNCA" }
+        ],
+        "af": "Servo com deteção de rosto quando o artista está iluminado; nos blackouts, espera — o AF não vê no escuro.",
+        "limits": [
+          "35mm eq em palcos grandes deixa o artista pequeno: ou aproximas-te, ou 50mm com 1/250.",
+          "ISO 6400–12800 tem grão visível — o denoise na edição resolve mais do que pensas."
+        ],
+        "tips": [
+          "Dispara nos picos de luz (refrões, luz branca frontal) — 20 fotos boas valem mais que 500 escuras.",
+          "Expõe para as luzes: artista iluminado, resto a negro é o look certo.",
+          "Fumo + contraluz = as melhores fotos da noite.",
+          "Rajadas curtas nos gestos largos do artista."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1× (23mm eq)",
+        "mode": "Foto normal nos picos de luz · vídeo 4K para os momentos-chave",
+        "why": "Concertos são o teste mais duro para um sensor pequeno — a principal f/1.8 com OIS é a única que aguenta.",
+        "settings": [
+          { "k": "Exposição", "v": "Toca no artista e ARRASTA para baixo" },
+          { "k": "Modo Noite", "v": "Só em momentos parados (baladas)" },
+          { "k": "Zoom", "v": "Evita — recorta depois" }
+        ],
+        "limits": [
+          "As luzes coloridas saturam o sensor: baixa sempre a exposição manualmente.",
+          "Movimento rápido + luz fraca = arrasto; aceita-o como estética ou espera pelo momento parado."
+        ],
+        "tips": [
+          "Um bom vídeo 4K de 15s vale mais que 30 fotos tremidas — alterna.",
+          "Braços encostados ao corpo, ecrã baixo — respeita quem está atrás.",
+          "Modo Pro: ISO fixo 1600, 1/125, e deixa as luzes do palco fazer o resto."
+        ]
+      },
+      "light": "Usa as luzes do palco e espera os picos de luz branca/quente. Evita expor pelas luzes coloridas saturadas. O fumo e o contraluz criam atmosfera.",
+      "composition": ["Regra dos Terços", "Espaço Negativo", "Diagonal Principal", "Enquadramento Natural"],
+      "dos": ["Abertura máxima + ISO alto", "Disparar nos picos de luz", "AF contínuo", "RAW (o WB de palco é difícil)", "Antecipar os momentos e expressões"],
+      "donts": ["Flash (geralmente proibido e de alcance curto)", "Velocidade baixa (artista tremido)", "Sobre-expor as luzes coloridas", "Bloquear a vista dos outros", "Tripé em pé no meio do público"],
+      "checklist": ["Baterias carregadas (escuro gasta AF)", "22mm montada, 50mm no bolso", "M: f/2 · 1/200 · Auto-ISO pré-feito", "Tampões de ouvido", "Posição com linha de vista"],
+      "edit": {
+        "intro": "Salvar luz de palco difícil, manter a atmosfera e controlar cor e ruído.",
+        "steps": [
+          { "idea": "Recuperar realces das luzes e abrir o artista", "rr": "Highlights −, Shadows +; máscara «subject» Exposure +.", "dt": "«tone equalizer» / «filmic rgb»; máscara.", "sg": "Realces −, Sombras +; Seletivo no artista." },
+          { "idea": "Controlar cores de palco saturadas", "rr": "HSL: baixa saturação/luminância da cor dominante; WB.", "dt": "«color zones» / «color calibration».", "sg": "Curvas por canal; Saturação − no Seletivo." },
+          { "idea": "Reduzir ruído (ISO muito alto)", "rr": "Noise Reduction (luminância + cor).", "dt": "«denoise (profiled)».", "sg": "Evita puxar as sombras ao limite." }
+        ]
+      },
+      "techniques": ["realces-sombras", "nitidez-ruido", "wb"],
+      "tools": ["exposure"]
+    },
+    {
+      "id": "arquitetura", "name": "Arquitetura", "icon": "🏛️",
+      "blurb": "Linhas direitas, geometria, simetria e a luz certa na fachada.",
+      "goal": "Fazer justiça ao edifício: verticais verticais, geometria limpa e a luz que revela o volume e o material.",
+      "canon": {
+        "lens": "EF-M 15-45 a 15mm (24mm eq)",
+        "why": "O teu grande angular mais largo — suficiente para fachadas e ruas; a distorção do 15mm corrige-se na edição.",
+        "alt": "55-200 para detalhes: padrões de janelas, texturas, compressão de fachadas em camadas.",
+        "settings": [
+          { "k": "Modo", "v": "Av f/8" },
+          { "k": "ISO", "v": "100" },
+          { "k": "Grelha", "v": "Ativa (nivelar é tudo)" },
+          { "k": "Formato", "v": "RAW (correção de perspetiva pede margem)" }
+        ],
+        "af": "One-Shot num ponto a meia altura do edifício; a f/8 a profundidade cobre o resto.",
+        "limits": [
+          "24mm eq fica curto em interiores apertados e ruas estreitas — faz panorama vertical de 2–3 fotos.",
+          "Inclinar a câmara para cima faz as verticais convergir: afasta-te e dispara mais direito, ou corrige na edição (perde-se margem)."
+        ],
+        "tips": [
+          "Procura o ponto de vista a meia altura (escadas, varandas, colinas): verticais direitas sem esforço.",
+          "Hora azul com as luzes do edifício acesas é O momento da arquitetura.",
+          "Simetria frontal perfeita OU diagonal franca — o meio-termo parece erro.",
+          "Pessoas pequenas na base dão escala ao gigante."
+        ]
+      },
+      "s23": {
+        "lens": "Ultra grande angular (13mm eq)",
+        "mode": "Foto com grelha + nivelador",
+        "why": "A UGA de 13mm eq é a lente de interiores e fachadas altas que o teu kit Canon não tem — aqui o S23 ganha.",
+        "settings": [
+          { "k": "Lente", "v": "0.6× para o drama · 1× para rigor" },
+          { "k": "HDR", "v": "Ligado (interiores com janelas)" },
+          { "k": "Alinhamento", "v": "Grelha + nivelador sempre" }
+        ],
+        "limits": [
+          "Distorção forte nas bordas da UGA: não ponhas pessoas nos cantos.",
+          "Contraluz de janelas engana a exposição — bloqueia AE numa zona média."
+        ],
+        "tips": [
+          "Encosta o telemóvel ao chão ou a uma parede para ângulos impossíveis.",
+          "Snapseed → Perspetiva endireita verticais em segundos.",
+          "Escadarias em espiral + UGA de baixo para cima: cliché que funciona sempre."
+        ]
+      },
+      "light": "Luz lateral de manhã/tarde desenha o relevo da fachada; hora azul acende os edifícios; dias nublados são ótimos para detalhes e interiores sem sombras duras.",
+      "composition": ["Simetria & Reflexo", "Linhas Convergentes", "Enquadramento Natural", "Diagonal Principal"],
+      "dos": ["Nivelar a câmara (verticais direitas)", "Explorar simetrias e padrões repetidos", "Voltar ao mesmo edifício com luz diferente", "Incluir escala humana quando ajuda", "Procurar reflexos em vidro e água"],
+      "donts": ["Inclinar a câmara sem intenção (verticais tortas)", "Meio-dia com sombras que partem a fachada", "Cortar elementos estruturais a meio", "Ignorar cabos/carros/contentores no enquadramento", "Só fotografar de frente e em pé"],
+      "checklist": ["Horário da luz na fachada verificado", "Grelha/nivelador ativos", "Ponto de vista elevado procurado", "RAW ativo (perspetiva na edição)", "Autorização, se for interior privado"],
+      "edit": {
+        "intro": "Geometria impecável: endireitar, equilibrar a luz e decidir entre cor fiel ou P&B gráfico.",
+        "steps": [
+          { "idea": "Endireitar e corrigir perspetiva", "rr": "Transform: rotation + perspetiva vertical; crop final.", "dt": "«rotate and perspective» (keystone).", "sg": "Ferramenta «Perspetiva» + «Rodar»." },
+          { "idea": "Equilibrar céu e fachada", "rr": "Highlights −, Shadows +; máscara linear no céu.", "dt": "«tone equalizer» / máscara gradiente.", "sg": "Realces −, Sombras +; Seletivo no céu." },
+          { "idea": "Look gráfico (opcional P&B)", "rr": "B&W + contraste alto; Azul −luminância para céu negro.", "dt": "«monochrome» + «contrast equalizer».", "sg": "Preto e branco (filtro Vermelho) + Estrutura." }
+        ]
+      },
+      "techniques": ["pb", "curvas", "dehaze"],
+      "tools": ["gh"]
+    },
+    {
+      "id": "produto", "name": "Produto", "icon": "📦",
+      "blurb": "Objeto limpo, luz controlada e fundo sem distrações.",
+      "goal": "O objeto como herói: bordas definidas, cor fiel, reflexos controlados e um fundo que desaparece.",
+      "canon": {
+        "lens": "EF 50mm f/1.8 (80mm eq) fechada a f/5.6–f/8",
+        "why": "Compressão natural e distância de trabalho confortável — mas fechada: em produto queres o objeto TODO nítido.",
+        "alt": "55-200 a ~100mm para compressão máxima em objetos maiores (garrafas, calçado).",
+        "settings": [
+          { "k": "Modo", "v": "M em tripé" },
+          { "k": "Abertura", "v": "f/5.6 – f/8" },
+          { "k": "ISO", "v": "100" },
+          { "k": "WB", "v": "Fixo (não Auto — consistência entre fotos)" },
+          { "k": "Disparo", "v": "Temporizador 2s ou app" }
+        ],
+        "af": "One-Shot no ponto mais próximo importante do objeto; confirma ampliado — em produto, quase-nítido é rejeitado.",
+        "limits": [
+          "Distância mínima do 50mm ~35cm: chega para quase tudo, mas joias e miniaturas pedem tubos de extensão.",
+          "Sem flash dedicado: janela + refletores é o teu estúdio."
+        ],
+        "tips": [
+          "Sweep de cartolina branca curvada = fundo infinito por 2€.",
+          "Janela lateral + cartão branco do outro lado a devolver luz: setup clássico.",
+          "LIMPA o objeto — o pó que não vês, o sensor vê.",
+          "Série consistente: mesma luz, mesmo WB, mesma altura para todas as fotos."
+        ]
+      },
+      "s23": {
+        "lens": "Teleobjetiva 3× (~70mm eq) · principal 50MP para recortes",
+        "mode": "Foto normal — modo Retrato DESLIGADO (o bokeh falso rói as bordas do produto)",
+        "why": "Com luz de janela e apoio, o S23 faz product shots de marketplace perfeitamente decentes.",
+        "settings": [
+          { "k": "Lente", "v": "3× para compressão · 1× 50MP para detalhe" },
+          { "k": "Modo Pro", "v": "WB fixo + ISO 50" },
+          { "k": "Apoio", "v": "Tripé mini ou pilha de livros" }
+        ],
+        "limits": [
+          "Bokeh computacional em objetos = bordas comidas: desliga e desfoca com distância real ao fundo.",
+          "Reflexos em superfícies brilhantes mostram o telemóvel e as tuas mãos — ângulo e cartolina resolvem."
+        ],
+        "tips": [
+          "50MP + recorte substitui o macro para etiquetas e detalhe.",
+          "Toca no produto e ajusta a exposição para não queimar brancos.",
+          "Roda o objeto, não a câmara — mantém enquadramento e luz."
+        ]
+      },
+      "light": "Luz de janela difusa e lateral com refletor oposto; evita luz mista (janela + lâmpada quente). Para brilhos controlados em vidro/metal, luz grande e próxima.",
+      "composition": ["Espaço Negativo", "Composição em Triângulo", "Simetria & Reflexo", "Regra dos Terços"],
+      "dos": ["Tripé e WB fixo para consistência", "Limpar o objeto e o fundo", "Vários ângulos: frente, 3/4, detalhe, topo", "Refletor (cartão branco) para abrir sombras", "Margem à volta para recortes futuros"],
+      "donts": ["Luz mista (dominantes impossíveis)", "Abertura toda aberta (metade do produto desfocado)", "Fundos com textura que distrai", "Reflexos com o fotógrafo lá dentro", "Sombras duras não intencionais"],
+      "checklist": ["Objeto limpo (microfibra)", "Cartolina/sweep montado", "Janela + refletor posicionados", "WB fixo definido", "Tripé + temporizador", "Lista de ângulos a cobrir"],
+      "edit": {
+        "intro": "Fundo limpo, cor fiel e bordas nítidas — edição técnica, não artística.",
+        "steps": [
+          { "idea": "Fundo branco limpo", "rr": "Máscara no fundo: Exposure + até quase puro; Whites +.", "dt": "Máscara desenhada + «exposure».", "sg": "Seletivo no fundo: Brilho +; Pincel nos cantos." },
+          { "idea": "Cor fiel do produto", "rr": "WB pelo conta-gotas num cinza; Vibrance mínima.", "dt": "«white balance» conta-gotas; «velvia» off.", "sg": "Balanço de Brancos manual; Saturação neutra." },
+          { "idea": "Nitidez e micro-contraste nas bordas", "rr": "Sharpening + Clarity leve; máscara para não afiar o fundo.", "dt": "«sharpen» / «diffuse or sharpen» mascarado.", "sg": "Detalhes → Nitidez; Estrutura leve." }
+        ]
+      },
+      "techniques": ["wb", "dodge-burn", "nitidez-ruido", "vinheta"],
+      "tools": ["flash", "exposure"]
+    },
+    {
+      "id": "gastronomia", "name": "Gastronomia", "icon": "🍽️",
+      "blurb": "Comida apetitosa: luz lateral suave, textura e cor quente.",
+      "goal": "Dar fome a quem vê: textura em relevo, vapor e frescura, cores quentes mas críveis — e depressa, antes que murche.",
+      "canon": {
+        "lens": "EF 50mm f/1.8 (80mm eq) a f/2.8 – f/4",
+        "why": "O ângulo de 45° clássico com fundo desfocado q.b. — o prato nítido, a mesa a derreter.",
+        "alt": "15-45 a 24–35mm eq para flat lay (top-down) — com o 80mm eq terias de subir para um escadote.",
+        "settings": [
+          { "k": "Modo", "v": "Av f/2.8 – f/4" },
+          { "k": "ISO", "v": "≤ 800 (restaurantes: o que for preciso)" },
+          { "k": "Velocidade", "v": "≥ 1/125" },
+          { "k": "WB", "v": "Cuidado com luz mista — RAW salva" }
+        ],
+        "af": "Ponto único no elemento heróico do prato (o brilho do molho, a erva no topo) — é aí que o olho vai morder.",
+        "limits": [
+          "f/1.8 num prato = uma azeitona nítida e o resto sopa: fecha para f/2.8–f/4.",
+          "Interiores de restaurante à noite têm luz péssima: senta-te à janela ou aceita o mood escuro."
+        ],
+        "tips": [
+          "Os 3 ângulos: 45° (o normal), top-down (composições gráficas), nível do prato (burgers, bolos em camadas).",
+          "Luz de janela LATERAL ou traseira — nunca frontal (achata) nem flash (assassina).",
+          "Guardanapo branco = refletor grátis do outro lado.",
+          "Dispara nos primeiros 3 minutos: vapor, brilho e frescura têm prazo."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1× · Tele 3× para pratos do outro lado da mesa",
+        "mode": "Foto normal (o deteção de cena já aviva comida) — flash proibido",
+        "why": "Comida é o género onde os telemóveis brilham: perto, luz de janela e processamento pensado para isto.",
+        "settings": [
+          { "k": "Lente", "v": "1× a ~30cm · top-down à altura do peito" },
+          { "k": "Exposição", "v": "Toca no prato, ajusta para não queimar brancos" },
+          { "k": "Modo", "v": "Comida (se ativo) com desfoque suave" }
+        ],
+        "limits": [
+          "Luz quente de restaurante engana o WB: corrige no Snapseed depois.",
+          "Não uses o zoom digital para comida — chega-te ao prato."
+        ],
+        "tips": [
+          "Levanta o prato para junto da janela — ninguém repara, a foto agradece.",
+          "Top-down: alinha a mesa com a grelha e arruma o caos (talheres, copos) com intenção.",
+          "Edita quente e vibrante, mas pele de fruta e molhos têm de continuar credíveis."
+        ]
+      },
+      "light": "Janela lateral ou contraluz suave para relevo e brilho no molho; difusor (cortina) se o sol for duro; evita luz de teto quente + janela fria misturadas.",
+      "composition": ["Regra dos Terços", "Composição em Triângulo", "Espaço Negativo", "Curva em S"],
+      "dos": ["Disparar depressa (frescura tem prazo)", "Escolher o ângulo pelo prato (45°/top/nível)", "Estilizar: migalhas, ingredientes, mãos", "Refletor improvisado (guardanapo, ementa)", "Contar a história: processo, mesa, pessoas"],
+      "donts": ["Flash direto (mata qualquer prato)", "Luz mista sem correção", "Pratos vazios ou desarrumados sem intenção", "Abertura tão aberta que só um grão fica nítido", "Verde-azulado na comida (WB frio)"],
+      "checklist": ["Mesa perto da janela", "Prato e bordas limpas", "Elementos de história (ingredientes, mãos)", "WB verificado", "3 ângulos disparados"],
+      "edit": {
+        "intro": "Apetite: quente, vibrante e com textura — mas sempre credível.",
+        "steps": [
+          { "idea": "Temperatura apetitosa", "rr": "Temperature +200–400K; Tint a evitar verde.", "dt": "«white balance» ligeiramente quente.", "sg": "Balanço de Brancos → Calor +." },
+          { "idea": "Vida nas cores certas", "rr": "Vibrance +; HSL: Laranja/Vermelho saturação +, Verde controlado.", "dt": "«velvia» leve + «color zones».", "sg": "Saturação leve; Seletivo nos elementos." },
+          { "idea": "Textura no ponto de mordida", "rr": "Clarity/Structure local no herói do prato.", "dt": "«local contrast» mascarado.", "sg": "Pincel → Estrutura no centro do prato." }
+        ]
+      },
+      "techniques": ["wb", "sat-vib", "clareza", "vinheta"],
+      "tools": ["exposure"]
+    },
+    {
+      "id": "automovel", "name": "Automóvel", "icon": "🚗",
+      "blurb": "Linhas, reflexos controlados e sensação de movimento.",
+      "goal": "Respeitar o design: linhas limpas, reflexos que desenham a carroçaria e — em movimento — rodas a girar, nunca congeladas.",
+      "canon": {
+        "lens": "15-45 para estáticos (baixo, a 35–50mm eq) · 55-200 para panning",
+        "why": "Estático pede meio-zoom e pontos de vista baixos; panning pede distância e o IS da 55-200 a acompanhar.",
+        "alt": "50mm f/1.8 para detalhes: jantes, faróis, badges, interior com fundo derretido.",
+        "settings": [
+          { "k": "Estático", "v": "Av f/5.6 – f/8 · ISO 100" },
+          { "k": "Panning", "v": "Tv 1/60 – 1/125 a acompanhar" },
+          { "k": "AF", "v": "Servo + zona no panning" },
+          { "k": "Filtro", "v": "Polarizador — controla reflexos de vidro e chapa" }
+        ],
+        "af": "Estático: One-Shot no farol mais próximo. Panning: Servo na zona central, segue o carro como um pêndulo.",
+        "limits": [
+          "Reflexos: TU apareces na chapa — CPL, ângulo e distância são as armas.",
+          "Sem rádio/flash para light painting avançado: usa a hora azul como softbox gigante."
+        ],
+        "tips": [
+          "Agacha-te ao nível do farol — a foto de pé, de cima, mata qualquer carro.",
+          "3/4 frontal é o ângulo de catálogo; perfil para linhas puras; traseira 3/4 para músculo.",
+          "Panning: pés fixos, roda o tronco, segue antes-durante-depois do clique.",
+          "Chão molhado à hora azul = reflexos de neons na chapa, cliché glorioso."
+        ]
+      },
+      "s23": {
+        "lens": "UGA 0.6× para drama (rodas gigantes) · 1× para proporções fiéis",
+        "mode": "Foto + rajada para panning",
+        "why": "A UGA colada ao para-choques dá um look agressivo que a M50 não tem; e o telemóvel entra DENTRO do carro sem esforço.",
+        "settings": [
+          { "k": "Lente", "v": "0.6× baixo e perto · 1× a 3 passos" },
+          { "k": "Panning", "v": "Rajada + rodar o corpo; taxa de sucesso baixa, tenta muito" },
+          { "k": "Exposição", "v": "Toca na chapa; baixa para segurar realces" }
+        ],
+        "limits": [
+          "Dedadas na lente = flare nos faróis: limpa SEMPRE antes.",
+          "UGA distorce as proporções do design — usa como efeito, não como registo."
+        ],
+        "tips": [
+          "Interior: UGA do banco de trás apanha o cockpit inteiro.",
+          "Vídeo a orbitar o carro + frames é conteúdo instantâneo.",
+          "Reflexo do carro numa poça com o telemóvel quase no chão — só o S23 chega lá."
+        ]
+      },
+      "light": "Hora dourada e hora azul são o estúdio dos carros; o meio-dia cria reflexos impossíveis. Dia nublado = softbox natural para a chapa.",
+      "composition": ["Diagonal Principal", "Linhas Convergentes", "Regra dos Terços", "Espaço Negativo"],
+      "dos": ["Nível do farol ou mais baixo", "Rodar à volta: 3/4, perfil, detalhes", "Polarizador para gerir reflexos", "Localização que combine com o carro", "Rodas ligeiramente viradas para a câmara"],
+      "donts": ["Fotografar de pé, de cima", "Aparecer refletido na chapa", "Congelar rodas de um carro em movimento (parece estacionado)", "Fundo com postes/caixotes a nascer do tejadilho", "Zoom digital em panning"],
+      "checklist": ["Carro lavado (ou sujo com intenção)", "Local e hora da luz escolhidos", "CPL no bolso", "Ângulos planeados (3/4, perfil, detalhe)", "Panning: posição segura afastada da estrada"],
+      "edit": {
+        "intro": "Chapa com punch, fundo calmo e o look teal & orange que o género adora.",
+        "steps": [
+          { "idea": "Punch na carroçaria", "rr": "Clarity + Contrast; máscara no carro para Sharpening.", "dt": "«local contrast» + máscara «sharpen».", "sg": "Estrutura + Contraste; Pincel no carro." },
+          { "idea": "Fundo mais escuro e calmo", "rr": "Máscara invertida: Exposure −, Saturation −; Vignette.", "dt": "Máscara + «exposure»; «vignetting».", "sg": "Seletivo no fundo (Brilho −); Vinheta." },
+          { "idea": "Look teal & orange automóvel", "rr": "Rodas de cor: sombras teal, realces quentes; HSL na chapa.", "dt": "«color balance rgb» 4-vias.", "sg": "Curvas Azul/Vermelho por canal." }
+        ]
+      },
+      "techniques": ["teal-orange", "contraste", "clareza", "dodge-burn"],
+      "tools": ["gh", "nd"]
+    },
+    {
+      "id": "longa-exposicao", "name": "Longa Exposição", "icon": "🌊",
+      "blurb": "Tempo visível: água sedosa, rastos de luz, nuvens a correr.",
+      "goal": "Tornar o tempo visível: o que se move vira seda ou risco de luz, o que está parado fica cirurgicamente nítido.",
+      "canon": {
+        "lens": "EF-M 15-45mm + tripé + filtro ND",
+        "why": "Enquadramento flexível e rosca de 49mm para o ND — o resto é tripé e paciência.",
+        "alt": "22mm f/2 à noite (rastos de luz) dispensa ND: a escuridão é o teu filtro.",
+        "settings": [
+          { "k": "Modo", "v": "M · tripé · IS desligado" },
+          { "k": "ISO", "v": "100" },
+          { "k": "Abertura", "v": "f/8 – f/11" },
+          { "k": "Dia", "v": "ND1000: 1/60 → 15s (usa a calculadora ND)" },
+          { "k": "Noite", "v": "10 – 30s sem filtro (rastos de carros)" },
+          { "k": "Disparo", "v": "Temporizador 2s ou app Canon" }
+        ],
+        "af": "Compõe e FOCA antes de enroscar o ND (depois não se vê nada); passa para MF para o foco não fugir.",
+        "limits": [
+          "Máximo 30s no corpo: exposições mais longas pedem a app Canon Camera Connect (modo bulb remoto).",
+          "Roscas diferentes por lente (49/43/52mm): compra o ND para a 15-45 (49mm) e anéis adaptadores se precisares."
+        ],
+        "tips": [
+          "Água: 1–5s dá textura sedosa com movimento; 30s+ vira espelho de bruma.",
+          "Rastos de carros: cruzamentos à hora azul, 10–20s, vermelho para um lado, branco para o outro.",
+          "Nuvens rápidas + 60s+ = céu em pinceladas (bulb remoto).",
+          "Confere o histograma após cada disparo — o ND engana a medição."
+        ]
+      },
+      "s23": {
+        "lens": "Principal 1×",
+        "mode": "Modo Pro até 30s · Modo Noite para rastos suaves · Hyperlapse para trails",
+        "why": "Sem rosca para ND, mas com truques computacionais que fazem longa exposição de dia \"à unha\".",
+        "settings": [
+          { "k": "Pro", "v": "ISO 50 · 1–30s · foco manual" },
+          { "k": "Apoio", "v": "Tripé mini ou superfície — sempre" },
+          { "k": "Timer", "v": "3s para não tocar" }
+        ],
+        "limits": [
+          "De dia, 30s sem ND = tudo queimado: usa clip-on ND ou aceita exposições curtas (1/4s em cascatas à sombra).",
+          "Realces de faróis queimam depressa — expõe pelos rastos, não pela cena."
+        ],
+        "tips": [
+          "Cascatas à sombra + Pro 1/4s–1s já dá seda decente.",
+          "Hyperlapse noturno = rastos de estrelas/carros sem matemática.",
+          "Long exposure apps/modo do Expert RAW empilham frames — o ND dos pobres, e funciona."
+        ]
+      },
+      "light": "Hora azul é a rainha da longa exposição: luzes acesas, céu com cor e exposições naturalmente longas. De dia, o ND1000 abre o jogo; à noite basta a escuridão.",
+      "composition": ["Curva em S", "Linhas Convergentes", "Simetria & Reflexo", "Espaço Negativo"],
+      "dos": ["Tripé sólido + temporizador/remoto", "Focar ANTES de montar o ND", "IS desligado no tripé", "Histograma verificado a cada disparo", "Elemento estático forte na composição"],
+      "donts": ["Tocar na câmara durante a exposição", "Confiar na medição com ND montado", "Vento no tripé sem lastro (mochila pendurada ajuda)", "Água sedosa sem nada estático nítido (fica tudo mole)", "Esquecer que nuvens paradas = céu morto"],
+      "checklist": ["Tripé + lastro", "ND1000 + anéis", "Calculadora ND à mão", "Bateria cheia (exposições comem)", "Pano para salpicos", "Marés/caudal verificados"],
+      "edit": {
+        "intro": "Contraste entre o estático nítido e o fluido — e realces de luz sob controlo.",
+        "steps": [
+          { "idea": "Segurar realces (rastos, céu)", "rr": "Highlights −, Whites ajustados; máscara nos rastos.", "dt": "«filmic rgb» / «tone equalizer».", "sg": "Realces −; Curvas no topo." },
+          { "idea": "Nitidez só no estático", "rr": "Sharpening mascarado nas rochas/edifícios.", "dt": "«sharpen» com máscara.", "sg": "Pincel → Estrutura no estático." },
+          { "idea": "Mood (frio na água, quente nas luzes)", "rr": "WB dividido via Color Grading.", "dt": "«color balance rgb» sombras/realces.", "sg": "Curvas por canal; Seletivo." }
+        ]
+      },
+      "techniques": ["realces-sombras", "curvas", "nitidez-ruido"],
+      "tools": ["nd", "le", "gh"]
+    },
+    {
+      "id": "pb", "name": "Preto & Branco", "icon": "⬛",
+      "blurb": "Pensar em luz, tom, contraste, forma e textura — não em cor.",
+      "goal": "Reduzir a cena ao essencial: luz, forma, textura e emoção — o P&B é uma decisão, não um remendo.",
+      "canon": {
+        "lens": "Qualquer uma — o P&B é sobre luz, não sobre vidro",
+        "why": "22mm para rua P&B, 50mm para retrato dramático, 15-45 para paisagem gráfica: o género atravessa o kit todo.",
+        "alt": "Truque: Picture Style Monocromático no ecrã ajuda-te a VER em tons — e o RAW guarda a cor toda para a conversão a sério.",
+        "settings": [
+          { "k": "Ficheiro", "v": "RAW (converte na edição)" },
+          { "k": "Ecrã", "v": "Picture Style Mono (pré-visualização)" },
+          { "k": "Exposição", "v": "Expor à direita, proteger realces" },
+          { "k": "ISO", "v": "Liberdade total — grão em P&B é estética" }
+        ],
+        "af": "Sem mudanças — mas o teu OLHO muda: procura contrastes de tom onde antes vias contrastes de cor.",
+        "limits": [
+          "Cores diferentes com a mesma luminância viram o MESMO cinzento: um vermelho e um verde vibrantes podem fundir-se — é para isso que serve a conversão por canais."
+        ],
+        "tips": [
+          "Luz dura e lateral, sombras longas: o que estraga a cor alimenta o P&B.",
+          "Nevoeiro, chuva e céus carregados são dias de ouro monocromático.",
+          "Fotografa texturas: pedra, pele, madeira, água — o P&B amplifica-as.",
+          "Se a cor não acrescenta nada à foto, ela era P&B desde o início."
+        ]
+      },
+      "s23": {
+        "lens": "Qualquer — decide na edição",
+        "mode": "Dispara a CORES (RAW se possível) e converte no Snapseed",
+        "why": "Os filtros P&B diretos do telemóvel queimam a informação de cor — a conversão posterior dá-te o controlo dos canais.",
+        "settings": [
+          { "k": "Formato", "v": "Expert RAW quando possível" },
+          { "k": "Filtros", "v": "Evita o filtro P&B na captura" },
+          { "k": "Olho", "v": "Procura luz, linhas e textura" }
+        ],
+        "limits": [
+          "JPEG do telemóvel tem menos latitude para puxar contraste — mais razão para Expert RAW."
+        ],
+        "tips": [
+          "Snapseed → Preto e branco tem filtros de cor (Vermelho escurece céus, Amarelo equilibra pele).",
+          "Contraluz + silhueta é P&B de telemóvel infalível.",
+          "«Tom dramático» com moderação — vício rápido, cansaço visual garantido."
+        ]
+      },
+      "light": "Luz dura e lateral cria sombras profundas e drama. Nevoeiro e céus carregados funcionam muito bem. Pensa em como cada cor se traduz em cinzento.",
+      "composition": ["Diagonal Principal", "Linhas Convergentes", "Simetria & Reflexo", "Composição em Triângulo"],
+      "dos": ["Procurar contraste, textura e formas fortes", "Usar linhas e luz direcional", "Converter de RAW e ajustar os canais de cor", "Aumentar contraste e clareza", "Escolher cenas onde a cor não acrescenta nada"],
+      "donts": ["Limitar-te ao JPEG P&B da câmara (perdes controlo)", "Usar P&B para \"salvar\" uma foto fraca", "Ignorar que cores diferentes podem virar o mesmo cinzento", "Esquecer o ruído de cor antes de converter", "Contraste a zero (imagem cinzenta e morta)"],
+      "checklist": ["RAW ativo", "Pré-visualização mono (Canon)", "Dia de luz dura ou nevoeiro aproveitado", "Texturas e linhas no radar", "Conversão por canais planeada"],
+      "edit": {
+        "intro": "Controla como cada cor vira cinzento e dá-lhe contraste e estrutura. A conversão é uma decisão criativa, não um botão.",
+        "steps": [
+          { "idea": "Conversão controlada por cor", "rr": "B&W + HSL/luminância: baixar Azul = céu dramático; subir Laranja = pele clara.", "dt": "«color calibration» (channel mixer cinza) ou «monochrome».", "sg": "Filtro «Preto e branco» → filtro Vermelho/Amarelo escurece o céu." },
+          { "idea": "Contraste e estrutura para punch", "rr": "Tone Curve em S; Clarity/Structure.", "dt": "«contrast equalizer» / «tone curve».", "sg": "«Tom dramático» + Estrutura + Contraste." },
+          { "idea": "Granulado film (opcional)", "rr": "Effects → Film Grain.", "dt": "Módulo «grain».", "sg": "Ferramenta «Granulado»." }
+        ]
+      },
+      "techniques": ["pb", "curvas", "contraste", "clareza"],
+      "tools": ["exposure"]
+    }
+  ]
+}

@@ -872,202 +872,6 @@ const PhotographyPage = (function () {
       sg:'Sem dehaze dedicado: Contraste + Estrutura + Sombras (−); «Tom dramático» ajuda.' },
   ];
 
-  // ── Scenario cheat sheets ─────────────────────────────────────────
-  const SCENARIOS = [
-    { id:'paisagem', name:'Paisagem', icon:'🏔️',
-      blurb:'Nitidez de ponta a ponta, céu dramático e profundidade.',
-      settings:[
-        {k:'Modo',v:'Av / Prioridade à abertura (ou M)'},
-        {k:'ISO',v:'Mínimo (100) — tripé se preciso'},
-        {k:'Abertura',v:'f/8 – f/11 (nitidez máxima)'},
-        {k:'Velocidade',v:'Conforme a luz — tripé se < 1/60'},
-        {k:'Foco',v:'A ~1/3 da cena, ou hiperfocal'},
-        {k:'WB',v:'Luz do dia / Nublado'},
-      ],
-      composition:['Regra dos Terços','Linhas Convergentes','Curva em S','Espaço Negativo'],
-      light:'Hora dourada e hora azul dão a melhor luz; a luz lateral revela textura e relevo. Evita o sol a pino (céu lavado, sombras duras). Usa a calculadora de Hora Dourada aqui em baixo para planear.',
-      dos:['Tripé + temporizador/disparador para máxima nitidez','Foca a ~1/3 (ou usa a distância hiperfocal)','Polarizador para céu mais azul e tirar reflexos','Inclui um primeiro plano forte para dar profundidade','Mantém o horizonte direito'],
-      donts:['ISO alto sem necessidade (ruído)','Horizonte ao centro (exceto reflexo simétrico)','Abrir demais (f/1.8 perde nitidez nas pontas)','Esquecer o primeiro plano (imagem "vazia")','Disparar tudo ao meio-dia'],
-      edit:{ intro:'Maximiza a gama dinâmica e a profundidade: céu com detalhe, primeiro plano nítido, cor rica mas natural.',
-        steps:[
-          {idea:'Recuperar o céu e abrir as sombras (alta gama dinâmica)', rr:'Highlights −, Shadows +, Dehaze leve; Whites/Blacks a fixar os pontos.', dt:'«filmic rgb» + «tone equalizer» para equilibrar céu e terra.', sg:'Realces −, Sombras +, depois afina nas Curvas.'},
-          {idea:'Profundidade e textura (rochas, folhagem)', rr:'Clarity + Structure moderados; Sharpening com máscara.', dt:'«local contrast» + «diffuse or sharpen».', sg:'Detalhes → Estrutura; «Ambiente».'},
-          {idea:'Cor natural e rica (céu e vegetação)', rr:'Vibrance primeiro; HSL: Azul −luminância (céu mais fundo).', dt:'«velvia» + «color zones» para o verde.', sg:'Saturação leve + «Ambiente»; Seletivo no céu.'},
-        ] } },
-    { id:'retrato', name:'Retrato', icon:'👤', portrait:true,
-      blurb:'Fundo desfocado, foco no olho, pose e luz que favorecem.',
-      settings:[
-        {k:'Modo',v:'Av ou M'},
-        {k:'Abertura',v:'f/1.8 – f/2.8 (fundo cremoso); f/4–f/5.6 p/ grupos'},
-        {k:'ISO',v:'Base; sobe só o necessário'},
-        {k:'Velocidade',v:'≥ 1/200 (e ≥ distância focal)'},
-        {k:'Foco',v:'AF no olho (Eye AF) — olho mais próximo'},
-        {k:'Focal',v:'50–135mm (85mm ideal) evita distorção'},
-      ],
-      composition:['Regra dos Terços','Proporção Áurea (Phi)','Enquadramento Natural','Espaço Negativo'],
-      light:'Janela suave a 45°, sombra aberta ou hora dourada. Observa os catchlights nos olhos e a sombra suave a descer pela face. Evita o sol a pino (olhos-de-guaxinim).',
-      dos:['Foca sempre no olho mais próximo','Deixa espaço na direção do olhar','Dá direção e poses ao sujeito (vê os diagramas)','Dispara à altura dos olhos do sujeito','Separa o sujeito do fundo (distância + abertura)'],
-      donts:['Cortar nas articulações (joelhos, cotovelos, pulsos, tornozelos, pescoço)','Grande angular perto do rosto (distorce o nariz)','Postes/árvores a "sair" da cabeça','Flash frontal direto e duro','Focar no nariz em vez do olho'],
-      edit:{ intro:'Pele natural e agradável, olhos com vida e um fundo que não compete. Edição subtil — menos é mais.',
-        steps:[
-          {idea:'Pele natural — NÃO exagerar clareza/saturação na pele', rr:'Reduz Clarity/Texture na pele (máscara AI «subject»); Vibrance baixo.', dt:'«diffuse or sharpen» com máscara para suavizar; vibrance comedida.', sg:'Pincel: baixa Estrutura na pele; evita Saturação global alta.'},
-          {idea:'Teal & Orange para separar do fundo', rr:'Rodas de cor: sombras → teal, realces → laranja; HSL afina o Laranja (pele).', dt:'«color balance rgb» (4-vias).', sg:'Curvas (Azul/Vermelho) + Balanço de Brancos no Seletivo sobre a pele.'},
-          {idea:'Realçar os olhos (dodge) e escurecer distrações (burn)', rr:'Máscara Brush nos olhos: Exposure/Clarity +; Vinheta subtil.', dt:'«exposure» +/− com máscaras desenhadas.', sg:'Pincel → Exposição + nos olhos; Vinheta nas bordas.'},
-        ] } },
-    { id:'pb', name:'Preto & Branco', icon:'⬛',
-      blurb:'Pensar em luz, tom, contraste, forma e textura — não em cor.',
-      settings:[
-        {k:'Ficheiro',v:'RAW (converte na edição)'},
-        {k:'Pré-visualização',v:'Picture Style Monocromático (só para ver)'},
-        {k:'Exposição',v:'Expor à direita (proteger realces)'},
-        {k:'ISO',v:'Conforme — o grão pode ser estético'},
-        {k:'Procura',v:'Contraste, linhas, formas e texturas'},
-      ],
-      composition:['Diagonal Principal','Linhas Convergentes','Simetria & Reflexo','Composição em Triângulo'],
-      light:'Luz dura e lateral cria sombras profundas e drama. Nevoeiro e céus carregados funcionam muito bem. Pensa em como cada cor se traduz em cinzento.',
-      dos:['Procurar contraste, textura e formas fortes','Usar linhas e luz direcional','Converter de RAW e ajustar os canais de cor','Aumentar contraste e clareza','Escolher cenas onde a cor não acrescenta nada'],
-      donts:['Limitar-te ao JPEG P&B da câmara (perdes controlo)','Usar P&B para "salvar" uma foto fraca','Ignorar que cores diferentes podem virar o mesmo cinzento','Esquecer o ruído de cor antes de converter','Contraste a zero (imagem cinzenta e morta)'],
-      edit:{ intro:'Controla como cada cor vira cinzento e dá-lhe contraste e estrutura. A conversão é uma decisão criativa, não um botão.',
-        steps:[
-          {idea:'Conversão controlada por cor', rr:'B&W + HSL/luminância: baixar Azul = céu dramático; subir Laranja = pele clara.', dt:'«color calibration» (channel mixer cinza) ou «monochrome».', sg:'Filtro «Preto e branco» → filtro Vermelho/Amarelo escurece o céu.'},
-          {idea:'Contraste e estrutura para punch', rr:'Tone Curve em S; Clarity/Structure.', dt:'«contrast equalizer» / «tone curve».', sg:'«Tom dramático» + Estrutura + Contraste.'},
-          {idea:'Granulado film (opcional)', rr:'Effects → Film Grain.', dt:'Módulo «grain».', sg:'Ferramenta «Granulado».'},
-        ] } },
-    { id:'rua', name:'Rua / Urbano', icon:'🚶',
-      blurb:'Rápido e discreto: captar o momento e a luz da cidade.',
-      settings:[
-        {k:'Modo',v:'Av f/8 (zona de foco) ou Auto-ISO + M'},
-        {k:'Velocidade',v:'≥ 1/250 (congelar pessoas)'},
-        {k:'ISO',v:'Auto (até ~3200)'},
-        {k:'Foco',v:'Zona/hiperfocal ou AF contínuo'},
-        {k:'Focal',v:'28–50mm, lente discreta'},
-      ],
-      composition:['Linhas Convergentes','Enquadramento Natural','Regra dos Terços','Diagonal Principal'],
-      light:'A luz dura cria sombras e contraste interessantes; à noite usa néons e reflexos. Contraluz para silhuetas. Encontra uma boa luz + fundo e espera o sujeito entrar.',
-      dos:['Pré-focar (zone focusing) para disparar rápido','Lente discreta e leve','Antecipar e esperar pelo momento','Compor primeiro, esperar o sujeito depois','Respeitar as pessoas e o espaço'],
-      donts:['Hesitar — perde-se o momento','Usar flash na cara das pessoas','Abertura muito aberta (difícil acertar foco em movimento)','Invadir a privacidade ou fotografar onde é proibido','Olhar só para o ecrã (perde o contexto à volta)'],
-      edit:{ intro:'Carácter urbano: contraste, atmosfera e, muitas vezes, um look mate ou de film.',
-        steps:[
-          {idea:'Look mate / film (sombras levantadas)', rr:'Tone Curve: levanta o ponto preto; Color Grading subtil.', dt:'«rgb curve» (lift dos pretos) + «color balance rgb».', sg:'Curvas: levanta os pretos; reduz a Saturação levemente.'},
-          {idea:'Contraste local e atmosfera', rr:'Clarity +, Dehaze a gosto.', dt:'«local contrast» / «haze removal».', sg:'«Ambiente» + Estrutura.'},
-          {idea:'Cor coesa (teal&orange ou dessaturado)', rr:'Rodas de cor, ou baixa a Saturation para mood.', dt:'«color balance rgb».', sg:'Curvas por canal, ou Saturação −.'},
-        ] } },
-    { id:'noturna', name:'Noturna & Astro', icon:'🌌',
-      blurb:'Tripé, ISO alto, foco manual no infinito e estrelas pontuais.',
-      settings:[
-        {k:'Modo',v:'M + Tripé (obrigatório)'},
-        {k:'ISO',v:'1600–6400 (astro); baixo p/ cidade com tripé'},
-        {k:'Abertura',v:'Máxima (f/1.4 – f/2.8) para estrelas'},
-        {k:'Velocidade',v:'Regra dos 500 ÷ focal (ex.: 500/35 ≈ 14s)'},
-        {k:'Foco',v:'Manual, no infinito (live view numa estrela)'},
-        {k:'WB',v:'~3800K; RAW'},
-      ],
-      composition:['Espaço Negativo','Regra dos Terços','Linhas Convergentes','Simetria & Reflexo'],
-      light:'Foge da poluição luminosa; lua nova para a Via Láctea. Hora azul para a cidade. Acrescenta um primeiro plano (silhueta, árvore) e ilumina-o com light painting.',
-      dos:['Tripé + disparador/temporizador de 2s','Foco manual numa estrela brilhante (live view com zoom)','Desligar a estabilização no tripé','RAW + bateria extra (o frio gasta)','Primeiro plano interessante'],
-      donts:['ISO no máximo sem necessidade (ruído)','Exposição longa demais (estrelas viram traços — usa 500/focal)','Confiar no AF no escuro','Tocar no tripé durante a exposição','Disparar em JPEG'],
-      edit:{ intro:'Limpa o ruído, revela estrelas e luzes sem queimar, e controla a cor do céu.',
-        steps:[
-          {idea:'Reduzir ruído primeiro (ISO alto)', rr:'Noise Reduction (luminância + cor) antes de afiar.', dt:'«denoise (profiled)» — essencial.', sg:'Evita puxar Sombras/Estrutura ao máximo (amplifica o ruído).'},
-          {idea:'Revelar a Via Láctea / as luzes', rr:'Shadows +, Whites +, Dehaze; Clarity localizada (máscara).', dt:'«tone equalizer» + «local contrast» com máscara.', sg:'Sombras +; Estrutura local com o Pincel; Curvas.'},
-          {idea:'Cor do céu noturno', rr:'Temperature mais fria; HSL tira a dominante laranja da poluição luminosa.', dt:'«white balance» + «color zones» no laranja.', sg:'Balanço de Brancos mais frio; Seletivo.'},
-        ] } },
-    { id:'macro', name:'Macro / Close-up', icon:'🔬',
-      blurb:'Profundidade de campo minúscula — foco preciso e fundo limpo.',
-      settings:[
-        {k:'Modo',v:'M ou Av'},
-        {k:'Abertura',v:'f/8 – f/16 (DOF mínima)'},
-        {k:'Foco',v:'Manual + focus stacking'},
-        {k:'Velocidade',v:'Alta ou flash (o tremor é amplificado)'},
-        {k:'Apoio',v:'Tripé / trilho de foco'},
-      ],
-      composition:['Espaço Negativo','Regra dos Terços','Simetria & Reflexo','Proporção Áurea (Phi)'],
-      light:'Luz difusa (difusor no flash) evita reflexos e sombras duras. A luz lateral revela textura. De manhã cedo os insetos estão lentos e há menos vento.',
-      dos:['Foco manual (o AF "caça" no macro)','Focus stacking para nitidez total','Difusor no flash','Tripé ou trilho de foco','Disparar de manhã cedo, sem vento'],
-      donts:['Abrir muito (f/2.8 → quase nada em foco)','Confiar no autofoco','Disparar com vento','Flash direto sem difusão','Fundo atravancado'],
-      edit:{ intro:'Nitidez no plano focado, fundo limpo e suave, cor e textura do sujeito.',
-        steps:[
-          {idea:'Nitidez seletiva no sujeito', rr:'Sharpening + Structure só no plano nítido (máscara).', dt:'«diffuse or sharpen» / «sharpen» com máscara.', sg:'Detalhes → Nitidez; Pincel para localizar.'},
-          {idea:'Fundo limpo e suave', rr:'Máscara no fundo: Exposure/Saturation −; Vignette.', dt:'Máscara + «exposure» / «color balance rgb».', sg:'Seletivo no fundo (Saturação/Brilho −); Vinheta.'},
-          {idea:'Cor e textura do sujeito', rr:'Vibrance; Clarity/Structure no sujeito.', dt:'«velvia» + «local contrast».', sg:'Saturação leve; Estrutura local.'},
-        ] } },
-    { id:'vida-selvagem', name:'Vida Selvagem', icon:'🦅',
-      blurb:'Teleobjetiva, velocidade alta, foco no olho e paciência.',
-      settings:[
-        {k:'Modo',v:'Tv/S ou M + Auto-ISO'},
-        {k:'Velocidade',v:'≥ 1/1000 (aves em voo ≥ 1/2000)'},
-        {k:'Abertura',v:'Máxima (f/4 – f/6.3)'},
-        {k:'Foco',v:'AF contínuo + tracking / olho-animal'},
-        {k:'Disparo',v:'Rajada; teleobjetiva'},
-      ],
-      composition:['Espaço Negativo','Regra dos Terços','Diagonal Principal','Enquadramento Natural'],
-      light:'Hora dourada com a luz por trás de ti (frontal no animal). Contraluz para silhuetas. Mantém-te ao nível dos olhos do animal.',
-      dos:['Velocidade alta para congelar','AF contínuo + rajada no pico da ação','Apoiar (monopé) a teleobjetiva','Ficar ao nível dos olhos do animal','Paciência e distância de respeito'],
-      donts:['Velocidade baixa (tudo tremido)','Aproximar-te ou molestar o animal','Foco único estático num sujeito a mover-se','Cortar o espaço de movimento à frente','Flash em animais selvagens'],
-      edit:{ intro:'Destacar o animal, olho nítido, fundo desfocado e cor natural.',
-        steps:[
-          {idea:'Sujeito em destaque (dodge + nitidez)', rr:'Máscara AI «subject»: Exposure +, Sharpening, Clarity; fundo Exposure −.', dt:'Máscara («exposure» / «sharpen»).', sg:'Seletivo/Pincel no animal; Vinheta.'},
-          {idea:'Olho nítido e com vida', rr:'Máscara Brush no olho: Clarity/Sharpening +.', dt:'Máscara desenhada + «sharpen».', sg:'Pincel: Estrutura/Exposição no olho.'},
-          {idea:'Ruído + cor natural', rr:'Noise Reduction; Vibrance comedida.', dt:'«denoise (profiled)»; «velvia» leve.', sg:'Não exagerar; Saturação leve.'},
-        ] } },
-    { id:'desporto', name:'Desporto / Ação', icon:'⚽',
-      blurb:'Congelar (1/1000+) ou panning (1/30–1/125) a seguir o sujeito.',
-      settings:[
-        {k:'Modo',v:'Tv/S ou M + Auto-ISO'},
-        {k:'Congelar',v:'1/1000 – 1/2000'},
-        {k:'Panning',v:'1/30 – 1/125, a acompanhar o sujeito'},
-        {k:'Abertura',v:'f/2.8 – f/4'},
-        {k:'Foco',v:'AF contínuo + zona; rajada'},
-      ],
-      composition:['Diagonal Principal','Espaço Negativo','Regra dos Terços','Linhas Convergentes'],
-      light:'Exterior de dia é ideal. Interior → ISO alto + abertura máxima. Conhece a modalidade para antecipar o pico da ação.',
-      dos:['AF contínuo + tracking','Rajada no pico da ação','Pré-focar no ponto onde a ação vai acontecer','Panning para dar sensação de velocidade','Deixar espaço na direção do movimento'],
-      donts:['Velocidade baixa ao tentar congelar','Foco único (single AF)','Disparo único (perde o instante)','Abertura fechada com pouca luz (tremido)','Encher tanto o enquadramento que cortas o movimento'],
-      edit:{ intro:'Energia e clareza: atleta nítido, cores vivas e recortes dinâmicos.',
-        steps:[
-          {idea:'Punch e clareza no atleta', rr:'Clarity/Structure; Contrast; Sharpening com máscara.', dt:'«local contrast» + «contrast equalizer».', sg:'Estrutura + Contraste; Nitidez.'},
-          {idea:'Cores vivas (equipa, relva)', rr:'Vibrance + HSL por cor.', dt:'«velvia» / «color zones».', sg:'Saturação/«Ambiente»; Seletivo.'},
-          {idea:'Ruído (interior) + recorte dinâmico', rr:'Noise Reduction; crop diagonal.', dt:'«denoise (profiled)»; «crop».', sg:'Recortar para reforçar o movimento.'},
-        ] } },
-    { id:'viagem', name:'Viagem', icon:'🧳',
-      blurb:'Versátil e leve: sentido de lugar, do geral ao detalhe.',
-      settings:[
-        {k:'Modo',v:'Av f/8 versátil, ou Auto-ISO'},
-        {k:'Lente',v:'Zoom versátil (18–135 / 24–70)'},
-        {k:'Ficheiro',v:'RAW; cartões e baterias extra'},
-        {k:'Horário',v:'Cedo (luz boa, sem multidões)'},
-      ],
-      composition:['Enquadramento Natural','Regra dos Terços','Linhas Convergentes','Curva em S'],
-      light:'Hora dourada e azul. Cedo evita multidões e a luz dura do meio-dia. Planeia o horário dos locais.',
-      dos:['Misturar planos: geral, médio e detalhe','Incluir pessoas para dar escala e história','Acordar cedo (luz + sem gente)','Proteger e limpar o equipamento','Fazer backups dos cartões'],
-      donts:['Repetir só os postais clichés','Carregar equipamento a mais','Fotografar pessoas sem respeito/permissão','Esquecer baterias e cartões','Fotografar tudo ao meio-dia'],
-      edit:{ intro:'Cor rica e fiel ao local, com um look coerente entre as fotos da viagem.',
-        steps:[
-          {idea:'Look coerente (preset / copiar definições)', rr:'Cria um Preset e aplica à pasta/lote.', dt:'Guarda um «style» e aplica em lote.', sg:'«Copiar/Colar look» entre fotos (QR).'},
-          {idea:'Cor e luz do local', rr:'WB criativa (quente ao pôr do sol); Vibrance; Dehaze.', dt:'«white balance» + «color balance rgb» + «haze removal».', sg:'Balanço de Brancos; «Ambiente»; Saturação.'},
-          {idea:'Endireitar e corrigir perspetiva (arquitetura)', rr:'Transform: rotation / perspective.', dt:'«rotate and perspective».', sg:'Ferramenta «Perspetiva» + «Rodar».'},
-        ] } },
-    { id:'eventos', name:'Eventos / Concertos', icon:'🎤',
-      blurb:'Luz difícil e em mudança: abertura máxima, ISO alto, sem flash.',
-      settings:[
-        {k:'Modo',v:'M ou Av'},
-        {k:'Abertura',v:'Máxima (f/1.8 – f/2.8)'},
-        {k:'ISO',v:'Alto (3200–12800) — aceita ruído'},
-        {k:'Velocidade',v:'≥ 1/200 (os artistas mexem-se)'},
-        {k:'Foco',v:'AF contínuo; WB conforme palco (RAW)'},
-      ],
-      composition:['Regra dos Terços','Espaço Negativo','Diagonal Principal','Enquadramento Natural'],
-      light:'Usa as luzes do palco e espera os picos de luz branca/quente. Evita expor pelas luzes coloridas saturadas. O fumo e o contraluz criam atmosfera.',
-      dos:['Abertura máxima + ISO alto','Disparar nos picos de luz','AF contínuo','RAW (o WB de palco é difícil)','Antecipar os momentos e expressões'],
-      donts:['Flash (geralmente proibido e de alcance curto)','Velocidade baixa (artista tremido)','Sobre-expor as luzes coloridas','Bloquear a vista dos outros','Tripé em pé no meio do público'],
-      edit:{ intro:'Salvar luz de palco difícil, manter a atmosfera e controlar cor e ruído.',
-        steps:[
-          {idea:'Recuperar realces das luzes e abrir o artista', rr:'Highlights −, Shadows +; máscara «subject» Exposure +.', dt:'«tone equalizer» / «filmic rgb»; máscara.', sg:'Realces −, Sombras +; Seletivo no artista.'},
-          {idea:'Controlar cores de palco saturadas', rr:'HSL: baixa saturação/luminância da cor dominante; WB.', dt:'«color zones» / «color calibration».', sg:'Curvas por canal; Saturação − no Seletivo.'},
-          {idea:'Reduzir ruído (ISO muito alto)', rr:'Noise Reduction (luminância + cor).', dt:'«denoise (profiled)».', sg:'Evita puxar as sombras ao limite.'},
-        ] } },
-  ];
-
   // ── Portrait illustrations (crop guide + poses + editorial tips) ──
   function svgCropGuide() {
     const g = '#34d399', r = '#f87171';
@@ -1144,29 +948,6 @@ const PhotographyPage = (function () {
       </div>`;
   }
 
-  // ── Scenario + technique UI ───────────────────────────────────────
-  function scnCaptureHTML(scn) {
-    const kv = scn.settings.map(s => `<div class="ph-kv"><span class="ph-kv-k">${s.k}</span><span class="ph-kv-v">${s.v}</span></div>`).join('');
-    const comps = scn.composition.map(name => {
-      const known = COMPOSITIONS.some(c => c.name === name);
-      return `<button class="ph-chip${known ? ' ph-chip-link' : ''}"${known ? ` data-comp="${name}"` : ' disabled'}>${name}</button>`;
-    }).join('');
-    return `
-      <div class="ph-scn-blurb">${scn.blurb}</div>
-      <section class="ph-scn-sec"><h4>⚙️ Definições</h4><div class="ph-kv-grid">${kv}</div></section>
-      <section class="ph-scn-sec"><h4>🎯 Composição</h4><div class="ph-chips">${comps}</div></section>
-      <section class="ph-scn-sec"><h4>💡 Luz</h4><div class="ph-light-box">${scn.light}</div></section>
-      <div class="ph-scn-cols">
-        <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${scn.dos.map(d => `<li>${d}</li>`).join('')}</ul></section>
-        <section class="ph-scn-sec"><h4>⛔ Não fazer</h4><ul class="ph-dont">${scn.donts.map(d => `<li>${d}</li>`).join('')}</ul></section>
-      </div>
-      ${scn.portrait ? portraitExtrasHTML() : ''}`;
-  }
-  function scnEditHTML(scn) {
-    return `<div class="ph-scn-blurb">${scn.edit.intro}</div>${scn.edit.steps.map(editStepHTML).join('')}
-      <div class="ph-edit-note">Aplica-se a ficheiros RAW. Vê o separador <strong>🎨 Edição</strong> para o detalhe de cada técnica.</div>`;
-  }
-
   // Unified modal open/close: fresh overlay each time (no stale listeners),
   // Escape closes only the topmost overlay, body scroll locked while any is open.
   function _openModal(id, boxHTML) {
@@ -1198,32 +979,6 @@ const PhotographyPage = (function () {
     document.addEventListener('keydown', esc);
   }
 
-  function openScenarioModal(scn) {
-    const modal = _openModal('ph-scn-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${scn.name}">
-      <div class="ph-modal-hdr">
-        <span class="ph-modal-title">${scn.icon} ${scn.name}</span>
-        <button class="ph-modal-close" aria-label="Fechar">✕</button>
-      </div>
-      <div class="ph-scn-tabs">
-        <button class="ph-tab active" data-tab="cap">📷 Captura</button>
-        <button class="ph-tab" data-tab="edit">✏️ Edição</button>
-      </div>
-      <div class="ph-scn-modal-body">
-        <div class="ph-tabpane" data-pane="cap">${scnCaptureHTML(scn)}</div>
-        <div class="ph-tabpane" data-pane="edit" hidden>${scnEditHTML(scn)}</div>
-      </div>
-    </div>`);
-    modal.querySelectorAll('.ph-tab').forEach(tab => tab.addEventListener('click', () => {
-      modal.querySelectorAll('.ph-tab').forEach(x => x.classList.toggle('active', x === tab));
-      modal.querySelectorAll('.ph-tabpane').forEach(p => { p.hidden = p.dataset.pane !== tab.dataset.tab; });
-      modal.querySelector('.ph-scn-modal-body').scrollTop = 0;
-    }));
-    modal.querySelectorAll('.ph-chip-link').forEach(ch => ch.addEventListener('click', () => {
-      const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
-      if (comp) openCompModal(comp);
-    }));
-  }
-
   function openTechModal(t) {
     _openModal('ph-tech-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
       <div class="ph-modal-hdr">
@@ -1235,21 +990,6 @@ const PhotographyPage = (function () {
         ${swRowsHTML(t)}
       </div>
     </div>`);
-  }
-
-  function buildScenarios(root) {
-    root.innerHTML = `
-      <div class="ph-section-title">🎯 Cheat Sheet por Cenário</div>
-      <p class="ph-section-sub">Escolhe o tipo de fotografia para ver definições, composição, luz, o que fazer/evitar e como editar.</p>
-      <div class="ph-scn-grid" id="ph-scn-grid"></div>`;
-    const grid = root.querySelector('#ph-scn-grid');
-    SCENARIOS.forEach(scn => {
-      const card = document.createElement('button');
-      card.className = 'ph-scn-card';
-      card.innerHTML = `<span class="ph-scn-ico">${scn.icon}</span><span class="ph-scn-name">${scn.name}</span><span class="ph-scn-blurb-sm">${scn.blurb}</span>`;
-      card.addEventListener('click', () => openScenarioModal(scn));
-      grid.appendChild(card);
-    });
   }
 
   function buildEditTechniques(root) {
@@ -1267,103 +1007,394 @@ const PhotographyPage = (function () {
     });
   }
 
-  // ── Main ──────────────────────────────────────────────────────────
-  const PH_TABS = [
-    { id:'cenarios',   label:'🎯 Cenários' },
-    { id:'composicao', label:'🖼️ Composição' },
-    { id:'edicao',     label:'🎨 Edição' },
-    { id:'cores',      label:'🌈 Cores' },
-    { id:'calc',       label:'🧮 Calculadoras' },
-  ];
+  // ══ PORTAL DE GÉNEROS ═══════════════════════════════════════════
+  // Conteúdo data-driven (data/photo/{gear,genres,know}.json). O seletor
+  // de equipamento (M50 II / S23+ / Ambos) adapta lentes, definições,
+  // limites e dicas em todos os portais e no modo No Terreno.
+  let _DB = null, _dbPromise = null;
+  function loadDB() {
+    if (_DB) return Promise.resolve(_DB);
+    if (_dbPromise) return _dbPromise;
+    const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
+    _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json')])
+      .then(([g, gen, k]) => (_DB = { profiles: g.profiles, genres: gen.genres, know: k.topics }))
+      .catch(() => { _dbPromise = null; return null; });
+    return _dbPromise;
+  }
+  function dbErrorHTML() {
+    return `<div class="ph-section-box"><p class="ph-section-sub">Não foi possível carregar o conteúdo de fotografia. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p></div>`;
+  }
+  function wireRetry(panel, again) {
+    panel.querySelector('[data-retry]')?.addEventListener('click', again);
+  }
+  const li = x => `<li>${x}</li>`;
+  const kvHTML = s => `<div class="ph-kv"><span class="ph-kv-k">${s.k}</span><span class="ph-kv-v">${s.v}</span></div>`;
 
-  const PANEL_BUILDERS = {
-    cenarios(panel) {
-      const box = document.createElement('div');
-      box.className = 'ph-section-box';
-      panel.appendChild(box);
-      buildScenarios(box);
-    },
-    composicao(panel) {
-      const box = document.createElement('div');
-      box.className = 'ph-section-box';
-      panel.appendChild(box);
-      buildComposition(box);
-    },
-    edicao(panel) {
-      const box = document.createElement('div');
-      box.className = 'ph-section-box';
-      panel.appendChild(box);
-      buildEditTechniques(box);
-    },
-    cores(panel) {
-      const box = document.createElement('div');
-      box.className = 'ph-section-box';
+  // ── seletor de equipamento ──
+  const GEAR_OPTS = [
+    { id: 'canon', label: '📷 M50 II' },
+    { id: 's23',   label: '📱 S23+' },
+    { id: 'all',   label: '🎒 Ambos' },
+  ];
+  function gear() { try { const g = localStorage.getItem('ph-gear'); return GEAR_OPTS.some(o => o.id === g) ? g : 'canon'; } catch (_) { return 'canon'; } }
+  function setGear(g) { try { localStorage.setItem('ph-gear', g); } catch (_) {} }
+  function gearBarHTML(opts) {
+    const g = gear();
+    const list = (opts && opts.noAll) ? GEAR_OPTS.filter(o => o.id !== 'all') : GEAR_OPTS;
+    return `<div class="ph-gearbar" role="group" aria-label="Equipamento">
+      <span class="ph-gearbar-lbl">Equipamento</span>
+      ${list.map(o => `<button class="ph-gear-btn${o.id === g ? ' active' : ''}" data-gear="${o.id}">${o.label}</button>`).join('')}
+    </div>`;
+  }
+  function wireGearBar(panel, rerender) {
+    panel.querySelectorAll('.ph-gear-btn').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.gear === gear()) return;
+      setGear(b.dataset.gear);
+      rerender();
+    }));
+  }
+
+  // ── ferramentas: metadados p/ chips contextuais e âncoras ──
+  const TOOL_META = {
+    exposure: { fn: buildExposure,     label: 'Exposição' },
+    dof:      { fn: buildDof,          label: 'Prof. de campo' },
+    focal:    { fn: buildFocal,        label: 'Focal & hiperfocal' },
+    nd:       { fn: buildNd,           label: 'Filtro ND' },
+    flash:    { fn: buildFlash,        label: 'Flash' },
+    le:       { fn: buildLongExposure, label: 'Longa exposição' },
+    gh:       { fn: buildGoldenHour,   label: 'Hora dourada' },
+  };
+  let _pendingCalc = null;
+
+  // ── home: grelha de géneros ──
+  function buildGeneros(panel) {
+    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+    loadDB().then(db => {
+      if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildGeneros(panel)); return; }
+      panel.innerHTML = `
+        ${gearBarHTML()}
+        <button class="ph-field-cta" id="ph-goto-field">
+          <span class="ph-field-cta-ico">⚡</span>
+          <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Assistente de bolso: lente, definições e erros a evitar — em segundos</small></span>
+          <span class="ph-field-cta-go">→</span>
+        </button>
+        <div class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</div>
+        <p class="ph-section-sub">Escolhe o que vais fotografar — cada portal junta equipamento, definições, luz, composição, checklist e edição.</p>
+        <div class="ph-scn-grid" id="ph-genre-grid">
+          ${db.genres.map(g => `<button class="ph-scn-card" data-genre="${g.id}">
+            <span class="ph-scn-ico">${g.icon}</span><span class="ph-scn-name">${g.name}</span>
+            <span class="ph-scn-blurb-sm">${g.blurb}</span></button>`).join('')}
+        </div>`;
+      wireGearBar(panel, () => buildGeneros(panel));
+      panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/agora'));
+      panel.querySelectorAll('[data-genre]').forEach(c =>
+        c.addEventListener('click', () => Nav.go('photography/g/' + c.dataset.genre)));
+    });
+  }
+
+  // ── portal de um género ──
+  function compChipsHTML(names) {
+    return names.map(name => {
+      const known = COMPOSITIONS.some(c => c.name === name);
+      return `<button class="ph-chip${known ? ' ph-chip-link' : ''}"${known ? ` data-comp="${name}"` : ' disabled'}>${name}</button>`;
+    }).join('');
+  }
+  function kitCardHTML(db, g, k) {
+    const kit = g[k];
+    const prof = db.profiles.find(p => p.id === k) || { icon: '', short: k };
+    if (!kit) return '';
+    return `<div class="ph-kit ph-kit-${k}">
+      <div class="ph-kit-head">${prof.icon} ${prof.short}</div>
+      <div class="ph-kit-lens">${kit.lens}</div>
+      <div class="ph-kit-why">${kit.why}</div>
+      ${kit.mode ? `<div class="ph-kit-mode">✨ ${kit.mode}</div>` : ''}
+      <div class="ph-kv-grid">${kit.settings.map(kvHTML).join('')}</div>
+      ${kit.af ? `<div class="ph-kit-af"><b>Foco:</b> ${kit.af}</div>` : ''}
+      ${kit.alt ? `<div class="ph-kit-alt"><b>Alternativa:</b> ${kit.alt}</div>` : ''}
+      ${kit.limits && kit.limits.length ? `<div class="ph-kit-lims"><b>⚠️ Limites reais</b><ul>${kit.limits.map(li).join('')}</ul></div>` : ''}
+      ${kit.tips && kit.tips.length ? `<ul class="ph-tip-list">${kit.tips.map(li).join('')}</ul>` : ''}
+    </div>`;
+  }
+  function renderPortal(panel, id) {
+    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+    loadDB().then(db => {
+      if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
+      const g = db.genres.find(x => x.id === id);
+      if (!g) { Nav.go('photography'); return; }
+      const kits = gear() === 'all' ? ['canon', 's23'] : [gear()];
+      panel.innerHTML = `
+        <div class="ph-portal-top">
+          <button class="ph-back" id="ph-back">← Géneros</button>
+          ${gearBarHTML()}
+        </div>
+        <div class="ph-portal-head">
+          <span class="ph-portal-ico">${g.icon}</span>
+          <div><h2 class="ph-portal-name">${g.name}</h2><p class="ph-portal-goal">${g.goal}</p></div>
+        </div>
+        <div class="ph-kit-wrap${kits.length > 1 ? ' both' : ''}">${kits.map(k => kitCardHTML(db, g, k)).join('')}</div>
+        <section class="ph-scn-sec"><h4>💡 Luz</h4><div class="ph-light-box">${g.light}</div></section>
+        <section class="ph-scn-sec"><h4>🖼️ Composição</h4><div class="ph-chips">${compChipsHTML(g.composition)}</div></section>
+        <div class="ph-scn-cols">
+          <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${g.dos.map(li).join('')}</ul></section>
+          <section class="ph-scn-sec"><h4>⛔ Evitar</h4><ul class="ph-dont">${g.donts.map(li).join('')}</ul></section>
+        </div>
+        ${g.portrait ? portraitExtrasHTML() : ''}
+        <section class="ph-scn-sec"><h4>☑️ Checklist antes de sair</h4>
+          <ul class="ph-check">${g.checklist.map(c => `<li><label><input type="checkbox"><span>${c}</span></label></li>`).join('')}</ul>
+        </section>
+        <section class="ph-scn-sec"><h4>✏️ Edição deste género</h4>
+          <div class="ph-scn-blurb">${g.edit.intro}</div>
+          ${g.edit.steps.map(editStepHTML).join('')}
+          <div class="ph-chips" style="margin-top:.7rem">${(g.techniques || []).map(tid => {
+            const t = EDIT_TECHNIQUES.find(x => x.id === tid);
+            return t ? `<button class="ph-chip ph-chip-link" data-tech="${t.id}">${t.icon} ${t.name}</button>` : '';
+          }).join('')}</div>
+        </section>
+        ${(g.tools || []).length ? `<section class="ph-scn-sec"><h4>🧮 Ferramentas para este género</h4>
+          <div class="ph-chips">${g.tools.map(tid => TOOL_META[tid] ? `<button class="ph-chip ph-chip-link" data-tool="${tid}">🧮 ${TOOL_META[tid].label}</button>` : '').join('')}</div>
+        </section>` : ''}
+        <button class="ph-field-cta small" data-agora="${g.id}">
+          <span class="ph-field-cta-ico">⚡</span>
+          <span class="ph-field-cta-txt"><b>Modo terreno: ${g.name}</b><small>Só o essencial, para consultar com a câmara na mão</small></span>
+          <span class="ph-field-cta-go">→</span>
+        </button>`;
+      panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
+      wireGearBar(panel, () => renderPortal(panel, id));
+      panel.querySelectorAll('[data-comp]').forEach(ch => ch.addEventListener('click', () => {
+        const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
+        if (comp) openCompModal(comp);
+      }));
+      panel.querySelectorAll('[data-tech]').forEach(ch => ch.addEventListener('click', () => {
+        const t = EDIT_TECHNIQUES.find(x => x.id === ch.dataset.tech);
+        if (t) openTechModal(t);
+      }));
+      panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
+        _pendingCalc = ch.dataset.tool;
+        Nav.go('photography/ferramentas');
+      }));
+      panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
+      window.scrollTo({ top: 0 });
+    });
+  }
+
+  // ── modo No Terreno (assistente de bolso) ──
+  let _fieldGear = null;   // escolha efémera; não força quem prefere "Ambos"
+  function buildAgora(panel, genreId) {
+    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+    loadDB().then(db => {
+      if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildAgora(panel, genreId)); return; }
+      let id = genreId;
+      try { id = id || localStorage.getItem('ph-field-genre'); } catch (_) {}
+      if (!db.genres.some(g => g.id === id)) id = db.genres[0].id;
+      try { localStorage.setItem('ph-field-genre', id); } catch (_) {}
+      const g = db.genres.find(x => x.id === id);
+      if (!_fieldGear) _fieldGear = gear() === 'all' ? 'canon' : gear();
+      const kit = g[_fieldGear];
+      const firstLight = g.light.split(/(?<=\.)\s/)[0] || g.light;
+      panel.innerHTML = `
+        <div class="ph-field-pills" role="tablist" aria-label="Género">
+          ${db.genres.map(x => `<button class="ph-field-pill${x.id === id ? ' active' : ''}" data-fg="${x.id}" role="tab" aria-selected="${x.id === id}">${x.icon} ${x.name}</button>`).join('')}
+        </div>
+        <div class="ph-field-card">
+          <div class="ph-field-top">
+            <div class="ph-field-title">${g.icon} ${g.name}</div>
+            <div class="ph-field-gear" role="group" aria-label="Equipamento">
+              ${GEAR_OPTS.filter(o => o.id !== 'all').map(o => `<button class="ph-gear-btn${o.id === _fieldGear ? ' active' : ''}" data-fgear="${o.id}">${o.label}</button>`).join('')}
+            </div>
+          </div>
+          <div class="ph-field-lens">${kit.lens}</div>
+          ${kit.mode ? `<div class="ph-field-mode">✨ ${kit.mode}</div>` : ''}
+          <div class="ph-kv-grid ph-field-kv">${kit.settings.map(kvHTML).join('')}</div>
+          <div class="ph-field-row">🖼️ <b>Compõe:</b> ${g.composition.slice(0, 2).join(' · ')}</div>
+          <div class="ph-field-row">💡 ${firstLight}</div>
+          <div class="ph-field-avoid"><b>⛔ Evita:</b><ul>${g.donts.slice(0, 3).map(li).join('')}</ul></div>
+          <div class="ph-field-row ph-field-edit">✏️ <b>Depois:</b> ${g.edit.intro}</div>
+          <button class="ph-back ph-field-more" data-portal="${id}">Portal completo de ${g.name} →</button>
+        </div>`;
+      panel.querySelectorAll('[data-fg]').forEach(p => p.addEventListener('click', () => {
+        try { history.replaceState(null, '', '#photography/agora/' + p.dataset.fg); } catch (_) {}
+        buildAgora(panel, p.dataset.fg);
+      }));
+      panel.querySelectorAll('[data-fgear]').forEach(b => b.addEventListener('click', () => {
+        _fieldGear = b.dataset.fgear;
+        buildAgora(panel, id);
+      }));
+      panel.querySelector('[data-portal]').addEventListener('click', () => Nav.go('photography/g/' + id));
+      panel.querySelector('.ph-field-pill.active')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+    });
+  }
+
+  // ── Aprender: fundamentos + composição + edição + cores ──
+  function openKnowModal(t) {
+    _openModal('ph-know-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
+      <div class="ph-modal-hdr">
+        <span class="ph-modal-title">${t.icon} ${t.name}</span>
+        <button class="ph-modal-close" aria-label="Fechar">✕</button>
+      </div>
+      <div class="ph-scn-modal-body">
+        ${t.body.map(s => `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`).join('')}
+      </div>
+    </div>`);
+  }
+  function buildFundamentos(box) {
+    box.innerHTML = `
+      <div class="ph-section-title">📖 Fundamentos</div>
+      <p class="ph-section-sub">O conhecimento transversal a todos os géneros — exposição, foco, luz, ficheiros e o vocabulário da fotografia.</p>
+      <div class="ph-scn-grid" id="ph-know-grid"><p class="ph-section-sub">A carregar…</p></div>`;
+    loadDB().then(db => {
+      const grid = box.querySelector('#ph-know-grid');
+      if (!grid) return;
+      if (!db) { grid.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
+      grid.innerHTML = '';
+      db.know.forEach(t => {
+        const card = document.createElement('button');
+        card.className = 'ph-scn-card';
+        card.innerHTML = `<span class="ph-scn-ico">${t.icon}</span><span class="ph-scn-name">${t.name}</span><span class="ph-scn-blurb-sm">${t.blurb}</span>`;
+        card.addEventListener('click', () => openKnowModal(t));
+        grid.appendChild(card);
+      });
+    });
+  }
+
+  const APR_SEGS = [
+    { id: 'fundamentos', label: '📖 Fundamentos' },
+    { id: 'composicao',  label: '🖼️ Composição' },
+    { id: 'edicao',      label: '🎨 Edição' },
+    { id: 'cores',       label: '🌈 Cores' },
+  ];
+  const APR_BUILDERS = {
+    fundamentos(box) { buildFundamentos(box); },
+    composicao(box)  { buildComposition(box); },
+    edicao(box)      { buildEditTechniques(box); },
+    cores(box) {
       box.innerHTML = `
         <div class="ph-section-title">🌈 Roda de Cores</div>
         <p class="ph-section-sub">Explora harmonias de cor para planear paletas de cena e color grading. Arrasta no anel para o tom e no quadrado interior para saturação/luminosidade.</p>
         <div id="ph-cw-inner"></div>`;
-      panel.appendChild(box);
       buildColorWheel(box.querySelector('#ph-cw-inner'));
     },
-    calc(panel) {
+  };
+  let _aprBuilt = false, _aprActivate = null;
+  function buildAprender(panel, seg) {
+    if (!_aprBuilt) {
+      _aprBuilt = true;
+      panel.innerHTML = `
+        <div class="seg ph-apr-seg" role="tablist" aria-label="Aprender">
+          ${APR_SEGS.map(s => `<button class="seg-btn" data-seg="${s.id}" role="tab">${s.label}</button>`).join('')}
+        </div>
+        ${APR_SEGS.map(s => `<div class="ph-apr-panel ph-section-box" data-apr="${s.id}" hidden></div>`).join('')}`;
+      const done = new Set();
+      _aprActivate = (id) => {
+        if (!APR_BUILDERS[id]) id = 'fundamentos';
+        panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.seg === id));
+        panel.querySelectorAll('.ph-apr-panel').forEach(p => { p.hidden = p.dataset.apr !== id; });
+        if (!done.has(id)) { done.add(id); APR_BUILDERS[id](panel.querySelector(`.ph-apr-panel[data-apr="${id}"]`)); }
+        try { localStorage.setItem('ph-apr-seg', id); } catch (_) {}
+      };
+      panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b =>
+        b.addEventListener('click', () => _aprActivate(b.dataset.seg)));
+    }
+    let initial = seg;
+    if (!initial) { try { initial = localStorage.getItem('ph-apr-seg'); } catch (_) {} }
+    _aprActivate(initial || 'fundamentos');
+  }
+
+  // ── Ferramentas (calculadoras) ──
+  let _toolsBuilt = false;
+  function buildFerramentas(panel) {
+    if (!_toolsBuilt) {
+      _toolsBuilt = true;
       panel.innerHTML = `
         <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Calculadoras de exposição e ótica — os resultados atualizam automaticamente. Pré-definidas para a Canon M50 Mark II (APS-C 1.6×).</p>
         <div class="ph-grid"></div>`;
       const grid = panel.querySelector('.ph-grid');
-      [buildExposure, buildDof, buildFocal, buildNd, buildFlash, buildLongExposure, buildGoldenHour].forEach(fn => {
+      Object.keys(TOOL_META).forEach(key => {
         const wrapper = document.createElement('div');
-        fn(wrapper);
+        wrapper.id = 'ph-calc-' + key;
+        TOOL_META[key].fn(wrapper);
         grid.appendChild(wrapper);
       });
-    },
-  };
+    }
+    if (_pendingCalc) {
+      const target = panel.querySelector('#ph-calc-' + _pendingCalc);
+      _pendingCalc = null;
+      if (target) {
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.classList.add('ph-calc-flash');
+          setTimeout(() => target.classList.remove('ph-calc-flash'), 1800);
+        }, 80);
+      }
+    }
+  }
+
+  // ── Main ──────────────────────────────────────────────────────────
+  const PH_TABS = [
+    { id: 'generos',     label: '🎯 Géneros' },
+    { id: 'agora',       label: '⚡ No Terreno' },
+    { id: 'aprender',    label: '📚 Aprender' },
+    { id: 'ferramentas', label: '🧮 Ferramentas' },
+  ];
+  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
 
   let _activate = null;
 
-  function show(tab) {
+  function show(sub) {
     const view = document.getElementById('view-photography');
     if (!view) return;
 
     if (!_built) {
       _built = true;
-
-      view.innerHTML=`
+      view.innerHTML = `
         <div class="view-inner">
           <div class="page-head">
             <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
             <div class="ph-titles">
               <h1 class="ph-title">Fotografia</h1>
-              <p class="ph-sub">Cheat sheets de captura e edição, composição, cor e calculadoras · Canon M50 Mark II (APS-C 1.6×)</p>
+              <p class="ph-sub">Portais por género, assistente de terreno, aprendizagem e ferramentas · Canon M50 II & Galaxy S23+</p>
             </div>
           </div>
           <div class="ph-nav seg" role="tablist" aria-label="Secções de fotografia">
-            ${PH_TABS.map(t=>`<button class="ph-nav-btn seg-btn" role="tab" data-tab="${t.id}" aria-selected="false">${t.label}</button>`).join('')}
+            ${PH_TABS.map(t => `<button class="ph-nav-btn seg-btn" role="tab" data-tab="${t.id}" aria-selected="false">${t.label}</button>`).join('')}
           </div>
-          ${PH_TABS.map(t=>`<div class="ph-panel" data-panel="${t.id}" role="tabpanel"></div>`).join('')}
+          ${PH_TABS.map(t => `<div class="ph-panel" data-panel="${t.id}" role="tabpanel"></div>`).join('')}
         </div>`;
 
-      const builtPanels = new Set();
-      _activate = (id) => {
+      _activate = (id, arg) => {
         view.querySelectorAll('.ph-nav-btn').forEach(b => {
           const on = b.dataset.tab === id;
           b.classList.toggle('active', on);
           b.setAttribute('aria-selected', on);
         });
         view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
-        if (!builtPanels.has(id)) {
-          builtPanels.add(id);
-          PANEL_BUILDERS[id](view.querySelector(`.ph-panel[data-panel="${id}"]`));
-        }
+        const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
+        if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
+        else if (id === 'agora') buildAgora(panel, arg);
+        else if (id === 'aprender') buildAprender(panel, arg);
+        else buildFerramentas(panel);
         try { localStorage.setItem('ph-tab', id); } catch (_) {}
       };
 
-      view.querySelectorAll('.ph-nav-btn').forEach(b => b.addEventListener('click', () => _activate(b.dataset.tab)));
+      view.querySelectorAll('.ph-nav-btn').forEach(b =>
+        b.addEventListener('click', () => Nav.go(TAB_ROUTE[b.dataset.tab])));
     }
 
-    const valid = (id) => id && PH_TABS.some(t => t.id === id);
-    let initial = valid(tab) ? tab : null;
-    if (!initial) { try { const saved = localStorage.getItem('ph-tab'); if (valid(saved)) initial = saved; } catch (_) {} }
-    _activate(initial || 'cenarios');
+    /* rota → tab/argumento (com mapeamento das rotas antigas) */
+    let tab = null, arg = null;
+    if (sub) {
+      const seg = sub.split('/');
+      const a = seg[0], rest = seg.slice(1).join('/');
+      if (a === 'g' && rest)                 { tab = 'generos'; arg = rest; }
+      else if (a === 'agora')                { tab = 'agora'; arg = rest || null; }
+      else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
+      else if (a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
+      else if (a === 'cenarios')             tab = 'generos';
+      else if (a === 'composicao' || a === 'edicao' || a === 'cores') { tab = 'aprender'; arg = a; }
+    }
+    if (!tab) {
+      try { const saved = localStorage.getItem('ph-tab'); if (PH_TABS.some(t => t.id === saved)) tab = saved; } catch (_) {}
+    }
+    _activate(tab || 'generos', arg);
   }
 
   return { show };

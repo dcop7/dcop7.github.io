@@ -140,7 +140,9 @@ const Nav = (function () {
       typeof VisualPage !== 'undefined' && VisualPage.show();
     } else if (page === 'photography') {
       document.getElementById('view-photography')?.classList.add('active');
-      typeof PhotographyPage !== 'undefined' && PhotographyPage.show(sub || null);
+      /* sub completo (multi-segmento): "g/retrato", "agora/rua", "aprender/cores"… */
+      const phSub = path.startsWith('photography/') ? path.slice(12) : null;
+      typeof PhotographyPage !== 'undefined' && PhotographyPage.show(phSub);
     } else if (page === 'settings') {
       document.getElementById('view-settings')?.classList.add('active');
       typeof SettingsPage !== 'undefined' && SettingsPage.show();

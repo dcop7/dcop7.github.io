@@ -540,3 +540,104 @@ body.density-list .lp-links-grid { grid-template-columns: 1fr; gap: .3rem; }
 body.density-list .lp-link-card { padding: .55rem .75rem; }
 body.density-list .lp-link-desc { display: none; }
 body.density-list .lp-link-tags { display: none; }
+
+/* ══ FOTOGRAFIA · portal de géneros (v2) ═════════════════════════════
+   Seletor de equipamento, portais por género, modo No Terreno e
+   fundamentos. Reutiliza ph-scn-card/ph-kv/ph-chips/ph-do/ph-dont. */
+.ph-gearbar { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin-bottom: .9rem; }
+.ph-gearbar-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; margin-right: .2rem; }
+.ph-gear-btn {
+  font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+  color: var(--text2); background: var(--card2); border: 1px solid var(--border);
+  border-radius: 999px; padding: .38rem .85rem; transition: all var(--ease);
+}
+.ph-gear-btn:hover { border-color: rgba(var(--accent-rgb), .45); }
+.ph-gear-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* CTA do modo terreno */
+.ph-field-cta {
+  display: flex; align-items: center; gap: .8rem; width: 100%; text-align: left;
+  font: inherit; color: var(--text); cursor: pointer; margin: .2rem 0 1rem;
+  background: linear-gradient(120deg, rgba(var(--accent-rgb), .16), rgba(var(--accent-rgb), .05));
+  border: 1px solid rgba(var(--accent-rgb), .4); border-radius: var(--radius); padding: .85rem 1rem;
+  transition: transform var(--ease), border-color var(--ease);
+}
+.ph-field-cta:hover { transform: translateY(-1px); border-color: var(--accent); }
+.ph-field-cta.small { margin-top: 1.1rem; }
+.ph-field-cta-ico { font-size: 1.5rem; }
+.ph-field-cta-txt { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+.ph-field-cta-txt b { font-family: var(--font-head); font-size: .92rem; }
+.ph-field-cta-txt small { font-size: .74rem; color: var(--muted); }
+.ph-field-cta-go { margin-left: auto; font-size: 1.1rem; color: var(--accent); }
+
+/* portal de género */
+.ph-portal-top { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin-bottom: .9rem; }
+.ph-portal-top .ph-gearbar { margin-bottom: 0; }
+.ph-back {
+  font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+  color: var(--text2); background: var(--card2); border: 1px solid var(--border);
+  border-radius: 999px; padding: .4rem .9rem; transition: all var(--ease);
+}
+.ph-back:hover { color: var(--text); border-color: rgba(var(--accent-rgb), .45); }
+.ph-portal-head { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: 1rem; }
+.ph-portal-ico { font-size: 2rem; line-height: 1.1; }
+.ph-portal-name { font-family: var(--font-head); font-size: 1.25rem; margin: 0 0 .15rem; }
+.ph-portal-goal { margin: 0; font-size: .84rem; color: var(--muted); line-height: 1.55; max-width: 62ch; }
+
+/* cartões de equipamento */
+.ph-kit-wrap { display: grid; gap: .9rem; margin-bottom: 1.1rem; }
+.ph-kit-wrap.both { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.ph-kit { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; border-top: 3px solid rgba(var(--accent-rgb), .55); }
+.ph-kit-head { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--muted); margin-bottom: .5rem; }
+.ph-kit-lens { font-family: var(--font-head); font-size: .95rem; font-weight: 700; margin-bottom: .3rem; }
+.ph-kit-why { font-size: .8rem; color: var(--text2); line-height: 1.55; margin-bottom: .6rem; }
+.ph-kit-mode { font-size: .78rem; color: var(--accent); font-weight: 600; margin-bottom: .6rem; }
+.ph-kit .ph-kv-grid { margin-bottom: .65rem; }
+.ph-kit-af, .ph-kit-alt { font-size: .76rem; color: var(--text2); line-height: 1.55; margin-bottom: .5rem; }
+.ph-kit-lims { background: rgba(239, 68, 68, .07); border: 1px solid rgba(239, 68, 68, .22); border-radius: var(--radius-sm); padding: .55rem .7rem; margin-bottom: .55rem; }
+.ph-kit-lims b { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--red); }
+.ph-kit-lims ul { margin: .3rem 0 0; padding-left: 1.05rem; }
+.ph-kit-lims li { font-size: .76rem; color: var(--text2); line-height: 1.55; margin-bottom: .2rem; }
+
+/* checklist interativa */
+.ph-check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .35rem; }
+.ph-check label { display: flex; gap: .55rem; align-items: flex-start; cursor: pointer; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem .65rem; font-size: .78rem; line-height: 1.45; transition: all var(--ease); }
+.ph-check input { accent-color: var(--accent); margin-top: .12rem; flex-shrink: 0; }
+.ph-check input:checked + span { color: var(--muted); text-decoration: line-through; }
+
+/* modo No Terreno */
+.ph-field-pills { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .5rem; margin-bottom: .75rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.ph-field-pills::-webkit-scrollbar { display: none; }
+.ph-field-pill { flex-shrink: 0; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .45rem .85rem; transition: all var(--ease); }
+.ph-field-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ph-field-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.15rem; max-width: 640px; }
+.ph-field-top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; margin-bottom: .7rem; }
+.ph-field-title { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; }
+.ph-field-gear { display: flex; gap: .35rem; }
+.ph-field-lens { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: .3rem; }
+.ph-field-mode { font-size: .82rem; color: var(--text2); margin-bottom: .55rem; }
+.ph-field-kv { margin-bottom: .75rem; }
+.ph-field-kv .ph-kv-v { font-size: .84rem; }
+.ph-field-row { font-size: .84rem; line-height: 1.55; color: var(--text2); margin-bottom: .55rem; }
+.ph-field-avoid { background: rgba(239, 68, 68, .07); border: 1px solid rgba(239, 68, 68, .22); border-radius: var(--radius-sm); padding: .55rem .7rem .45rem; margin-bottom: .6rem; font-size: .8rem; }
+.ph-field-avoid ul { margin: .25rem 0 0; padding-left: 1.05rem; }
+.ph-field-avoid li { margin-bottom: .15rem; line-height: 1.5; color: var(--text2); }
+.ph-field-more { display: inline-block; margin-top: .3rem; }
+
+/* aprender + fundamentos */
+.ph-apr-seg { margin-bottom: 1rem; }
+.ph-apr-panel[hidden] { display: none; }
+.ph-know-sec { margin-bottom: .9rem; text-align: left; }
+.ph-know-sec h4 { margin: 0 0 .25rem; font-size: .84rem; font-family: var(--font-head); }
+.ph-know-sec p { margin: 0; font-size: .8rem; line-height: 1.65; color: var(--text2); }
+
+/* âncora de calculadora vinda de um portal */
+.ph-calc-flash > .ph-card, .ph-calc-flash { animation: phCalcFlash 1.6s ease; border-radius: var(--radius); }
+@keyframes phCalcFlash { 0%, 60% { box-shadow: 0 0 0 2px var(--accent), 0 0 22px rgba(var(--accent-rgb), .45); } 100% { box-shadow: none; } }
+
+@media (max-width: 640px) {
+  .ph-portal-top { flex-direction: column; align-items: flex-start; }
+  .ph-field-card { padding: .9rem; }
+  .ph-field-kv { grid-template-columns: 1fr 1fr; }
+  .ph-check { grid-template-columns: 1fr; }
+}
