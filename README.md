@@ -63,7 +63,7 @@ dcop7.github.io/
 │   ├── components.css         ← UI kit partilhado (.btn, .chip, .seg, .page-head, .empty-state, modals, palette)
 │   └── views/                 ← um CSS por secção (home, games, explorer, noticias, f1, …)
 ├── js/
-│   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax
+│   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax, motion (Anime.js)
 │   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, rss
 │   ├── explorer/              ← explorer hub + realtime, solar, galaxy, body, portugal, timeline, data (mundo), kb, eventos, ocorrencias
 │   ├── games/                 ← game-host + jogos (game-*.js) + game-progress + vendor (chess.js)
@@ -115,6 +115,7 @@ Hash-based via `js/core/nav.js`. Rotas: `home · links · tools · cheatsheets �
 ### Design system
 
 - Tokens em `css/tokens.css` (superfícies, bordas, tipografia, acentos, raios, dimensões, easing).
+- **Motion** (`js/core/motion.js` + anime.js v3 vendorizada): camada única de micro-interações — transição de vista com stagger, feedback de pressão em botões/cartões, entrada de modais e stagger da palette. Só transform/opacity, <400ms, tudo desligado com `prefers-reduced-motion`.
 - UI kit unificado em `components.css`: `.btn`, `.chip`, `.seg`, `.page-head`, `.empty-state`.
 - Ícones de chrome **exclusivamente SVG** (sem emoji na navegação); favicon SVG path-based (D dourado + planeta).
 - Temas: light via `body.light`; acentos via `body.theme-*` (blue, purple, green, amber, red, cyan, terminal).

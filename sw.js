@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v242';
+const CACHE = 'dcop7-v243';
 const STATIC = [
   '/',
   '/index.html',
@@ -40,6 +40,8 @@ const STATIC = [
   '/js/core/search.js',
   '/js/core/settings.js',
   '/js/core/parallax.js',
+  '/js/vendor/anime.min.js',
+  '/js/core/motion.js',
   /* Explorer */
   '/js/explorer/explorer.js',
   '/js/explorer/pt-concelhos-info.js',

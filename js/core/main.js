@@ -45,12 +45,14 @@ const ThemeManager = (function () {
   _apply(saved);
 
   document.addEventListener('DOMContentLoaded', () => {
+    /* via ThemeManager.apply (não _apply) para o Motion poder embrulhar a
+       troca de tema num cross-fade (View Transitions) */
     document.querySelectorAll('.theme-option').forEach(btn => {
-      btn.addEventListener('click', () => { _apply(btn.dataset.theme); closePanel(); });
+      btn.addEventListener('click', () => { ThemeManager.apply(btn.dataset.theme); closePanel(); });
     });
     const themeBtn = document.getElementById('theme-toggle-btn');
     if (themeBtn) themeBtn.addEventListener('click', () => {
-      _apply((localStorage.getItem('site-theme') || 'dark') === 'dark' ? 'light' : 'dark');
+      ThemeManager.apply((localStorage.getItem('site-theme') || 'dark') === 'dark' ? 'light' : 'dark');
     });
   });
 
