@@ -125,6 +125,43 @@ const SuecaGame = (function () {
 
   const soundOn = () => store().getPref('sound', true);
   const sfx = name => { try { if (soundOn() && typeof GameAudio !== 'undefined') GameAudio[name](); } catch (e) {} };
+
+  /* sons de mesa (WebAudio local, curto e discreto — padrão bomb/archery) */
+  let _actx = null;
+  function snd(fn) {
+    if (!soundOn()) return;
+    try {
+      _actx = _actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (_actx.state === 'suspended') _actx.resume();
+      fn(_actx);
+    } catch (e) {}
+  }
+  function nz(a, dur, vol, freq, delay) {
+    const t0 = a.currentTime + (delay || 0);
+    const n = Math.floor(a.sampleRate * dur);
+    const b = a.createBuffer(1, n, a.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const s = a.createBufferSource(); s.buffer = b;
+    const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq;
+    const g = a.createGain(); g.gain.value = vol;
+    s.connect(f).connect(g).connect(a.destination);
+    s.start(t0);
+  }
+  const sndSnap    = () => snd(a => nz(a, 0.05, 0.45, 1500));                    /* carta na mesa */
+  const sndCollect = () => snd(a => { nz(a, 0.05, 0.3, 1100); nz(a, 0.06, 0.26, 900, 0.07); nz(a, 0.07, 0.22, 700, 0.15); });
+  const sndShuffle = () => snd(a => { for (let i = 0; i < 5; i++) nz(a, 0.04, 0.28, 1700, i * 0.06); });
+  const sndTrump   = () => snd(a => {                                             /* brilho ao cortar a trunfo */
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(740, a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(1150, a.currentTime + 0.12);
+    g.gain.setValueAtTime(0.06, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.26);
+    o.connect(g).connect(a.destination);
+    o.start(); o.stop(a.currentTime + 0.26);
+  });
+  const vib = p => { try { if (soundOn() && navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
   const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, reduceMotion() ? Math.min(ms, 120) : Math.round(ms / (S && S.speed || 1))));
   const hoverable = () => window.matchMedia && window.matchMedia('(hover:hover)').matches;
@@ -408,6 +445,21 @@ const SuecaGame = (function () {
     wait(600).then(() => { if (tok === seq) nextTurn(); });
   }
 
+  /* personalidades dos bots: tempos de reação distintos (Rosa despachada,
+     Chico ponderado, Zé irregular), mais tempo em vazas gordas, menos no
+     fim da mão, e uma hesitação humana ocasional */
+  const PERSONA = { 0: { base: 640, jit: 520 }, 1: { base: 470, jit: 360 }, 2: { base: 860, jit: 520 }, 3: { base: 540, jit: 940 } };
+  function thinkTime(p) {
+    const pe = PERSONA[p] || PERSONA[0];
+    let ms = pe.base + Math.random() * pe.jit;
+    const lead = S.trick.length ? S.trick[0].card.s : null;
+    const legal = legalMoves(S.hands[p], lead);
+    if (legal.length > 2 && trickPts(S.trick) >= 10) ms += 240 + Math.random() * 360;
+    if (S.log.length >= 8) ms *= 0.75;
+    if (Math.random() < 0.06) ms += 550 + Math.random() * 550;
+    return ms;
+  }
+
   /* ── fluxo de jogo ─────────────────────────────────────────────── */
   function nextTurn() {
     if (!S || S.phase !== 'playing') return;
@@ -420,7 +472,7 @@ const SuecaGame = (function () {
     }
     setHint(fmt('thinking', { n: names()[S.turn] }));
     const tok = seq;
-    const think = 700 + Math.random() * 500;
+    const think = thinkTime(S.turn);
     wait(think).then(() => {
       if (tok !== seq || !S || S.phase !== 'playing') return;
       const card = aiPlay(S.turn);
@@ -448,8 +500,11 @@ const SuecaGame = (function () {
     hand.splice(i, 1);
     memNote(p, card, lead);
     S.trick.push({ p, card });
-    sfx('click');
-    dropCard(p, card);
+    const cut = card.s === S.trump && lead && lead !== S.trump;   /* corte a trunfo */
+    sndSnap();
+    if (cut) sndTrump();
+    if (p === 0) vib(10);
+    dropCard(p, card, cut);
     if (p === 0) renderHand();
     updateSeats();
 
@@ -457,7 +512,7 @@ const SuecaGame = (function () {
     if (S.trick.length === 4) {
       S.phase = 'trickEnd';
       saveState();
-      wait(950).then(() => { if (tok === seq) resolveTrick(); });
+      wait(700).then(() => { if (tok === seq) resolveTrick(); });
     } else {
       S.turn = NEXT(S.turn);        /* avançar antes de gravar, para o retomar acertar */
       saveState();
@@ -470,16 +525,27 @@ const SuecaGame = (function () {
     const w  = trickWinner(S.trick);
     const tm = TEAM_OF(w.p);
     const p  = trickPts(S.trick);
+    const wIdx = S.trick.indexOf(w);
     S.won[tm].push(...S.trick.map(x => x.card));
     S.log.push({ trick: S.trick.slice(), winner: w.p });
     S.lastWinnerTeam = tm;
+
+    /* 1º: destacar a carta vencedora e o vencedor; 2º: recolher; 3º: seguir */
+    root.querySelectorAll('#sk-trick .sk-slot')[wIdx]?.classList.add('sk-winner');
+    root.querySelector(`.sk-seat[data-p="${w.p}"]`)?.classList.add('won');
     flashMsg(fmt('trickWon', { n: seatName(w.p), p }), tm === 0 ? 'good' : 'bad');
     sfx(S.mode === 'play' ? (tm === 0 ? 'success' : 'pop') : 'pop');
-    collectTrick(w.p);
+    if (S.mode === 'play' && tm === 0) vib(22);
 
     const tok = seq;
-    wait(reduceMotion() ? 250 : 750).then(() => {
+    wait(reduceMotion() ? 120 : 620).then(() => {
       if (tok !== seq) return;
+      collectTrick(w.p);
+      sndCollect();
+      return wait(reduceMotion() ? 200 : 640);
+    }).then(() => {
+      if (tok !== seq || !S) return;
+      root.querySelector('.sk-seat.won')?.classList.remove('won');
       S.trick = [];
       renderTrick();
       updateScores();
@@ -554,11 +620,73 @@ const SuecaGame = (function () {
 
   function seatName(p) { return names()[p] + (S.mode === 'play' && p === 2 ? ` (${t('partner')})` : ''); }
 
+  /* ── figuras (Rei/Dama/Valete): bustos vetoriais originais, espelhados
+     como nas cartas tradicionais portuguesas. Silhuetas distintas para
+     leitura instantânea mesmo em miniatura: coroa de pontas + barba +
+     cetro (Rei), diadema de pérolas + cabelo + flor (Dama), barrete com
+     pena + alabarda (Valete). Robe na cor do naipe, detalhes dourados. */
+  function courtSVG(r, s) {
+    const red = RED[s];
+    const robe = red ? '#a63434' : '#334263';
+    const robeD = red ? '#7c2222' : '#232f4a';
+    const gold = '#c9a24f', skin = '#f2d4ae', line = '#3a3220';
+    let fig = '';
+    if (r === 'K') fig = `
+      <path d="M13 42 Q17 27 30 25 Q43 27 47 42 Z" fill="${robe}"/>
+      <path d="M13 42 Q17 27 30 25 Q43 27 47 42" fill="none" stroke="${gold}" stroke-width="1.2"/>
+      <path d="M24 28 L30 42 L36 28 Z" fill="${robeD}"/>
+      <circle cx="30" cy="16.5" r="7.2" fill="${skin}"/>
+      <path d="M23.5 18 Q24 26 30 26.5 Q36 26 36.5 18 Q36.5 15 34 16.5 L26 16.5 Q23.5 15 23.5 18Z" fill="#d8d3c8"/>
+      <path d="M22 11.5 L24 5.5 L27 9 L30 4 L33 9 L36 5.5 L38 11.5 Z" fill="${gold}" stroke="${line}" stroke-width=".6"/>
+      <rect x="22" y="10.8" width="16" height="2.4" rx="1" fill="${gold}" stroke="${line}" stroke-width=".5"/>
+      <circle cx="27" cy="15.2" r=".9" fill="${line}"/><circle cx="33" cy="15.2" r=".9" fill="${line}"/>
+      <line x1="44" y1="40" x2="51" y2="22" stroke="${gold}" stroke-width="1.7"/>
+      <circle cx="51.5" cy="20.6" r="2" fill="${gold}" stroke="${line}" stroke-width=".5"/>`;
+    else if (r === 'Q') fig = `
+      <path d="M14 42 Q18 27 30 25 Q42 27 46 42 Z" fill="${robe}"/>
+      <path d="M14 42 Q18 27 30 25 Q42 27 46 42" fill="none" stroke="${gold}" stroke-width="1.2"/>
+      <path d="M22.5 15 Q20 27 24.5 31 L25 17 Z" fill="#4a3527"/>
+      <path d="M37.5 15 Q40 27 35.5 31 L35 17 Z" fill="#4a3527"/>
+      <circle cx="30" cy="16.5" r="7" fill="${skin}"/>
+      <path d="M23 14 Q23 8.5 30 8.5 Q37 8.5 37 14 L37 17.5 Q34.5 12.5 30 12.5 Q25.5 12.5 23 17.5 Z" fill="#4a3527"/>
+      <path d="M24 9.5 Q30 4.6 36 9.5" fill="none" stroke="${gold}" stroke-width="1.7"/>
+      <circle cx="30" cy="6.2" r="1.5" fill="${gold}"/><circle cx="25.2" cy="8.3" r=".95" fill="${gold}"/><circle cx="34.8" cy="8.3" r=".95" fill="${gold}"/>
+      <circle cx="27.4" cy="16" r=".85" fill="${line}"/><circle cx="32.6" cy="16" r=".85" fill="${line}"/>
+      <path d="M27 20.6 Q30 22.4 33 20.6" fill="none" stroke="${line}" stroke-width=".7"/>
+      <path d="M26 27 Q30 29 34 27" fill="none" stroke="${gold}" stroke-width=".9"/>
+      <line x1="44.5" y1="40" x2="45" y2="33" stroke="#4f6b3a" stroke-width="1.1"/>
+      <circle cx="45" cy="31" r="2.7" fill="${red ? '#e8b4c8' : '#b9c9e4'}"/>
+      <circle cx="45" cy="31" r="1.1" fill="${gold}"/>`;
+    else fig = `
+      <path d="M14 42 Q18 28 30 26 Q42 28 46 42 Z" fill="${robe}"/>
+      <path d="M14 42 Q18 28 30 26 Q42 28 46 42" fill="none" stroke="${gold}" stroke-width="1.2"/>
+      <path d="M26.5 26.5 L30 30.5 L33.5 26.5 L33.5 24.5 L26.5 24.5 Z" fill="#f4f1e6"/>
+      <circle cx="30" cy="17" r="7" fill="${skin}"/>
+      <path d="M23.2 15.5 Q23 10.5 28 9.6 L36 11 Q37 13.5 36.8 15.5 L34 12.8 Q28 11.5 23.2 15.5Z" fill="#7a5230"/>
+      <path d="M21.5 12.6 Q25.5 6 33.5 7.6 L38.5 10.4 Q37.4 13.2 33 12.2 Q26.5 10.6 21.5 12.6Z" fill="${red ? '#8c2f2f' : '#2c3a58'}" stroke="${gold}" stroke-width=".5"/>
+      <path d="M35.5 8.2 Q39.5 2.6 43 4.4 Q40 6.2 38.3 10.2 Z" fill="${red ? '#d46a6a' : '#7a92c4'}"/>
+      <circle cx="27.4" cy="16.8" r=".85" fill="${line}"/><circle cx="32.6" cy="16.8" r=".85" fill="${line}"/>
+      <path d="M27.4 21 Q30 22.2 32.6 21" fill="none" stroke="${line}" stroke-width=".7"/>
+      <line x1="46.5" y1="42" x2="46.5" y2="13" stroke="#8a6f4d" stroke-width="1.5"/>
+      <path d="M46.5 13.5 L43.5 9.5 L46.5 4.5 L49.5 9.5 Z" fill="#c9cfda" stroke="${line}" stroke-width=".5"/>`;
+    const glyph = `<text x="30" y="39.6" text-anchor="middle" font-size="8" fill="${red ? '#c3282f' : '#20242c'}">${SUIT_G[s]}</text>`;
+    return `<svg class="sk-court" viewBox="0 0 60 84" aria-hidden="true">
+      <g>${fig}${glyph}</g>
+      <g transform="rotate(180 30 42)">${fig}${glyph}</g>
+      <line x1="9" y1="42" x2="51" y2="42" stroke="${gold}" stroke-width=".7" opacity=".5"/>
+    </svg>`;
+  }
+
   function cardHTML(c, cls = '') {
     const red = RED[c.s] ? ' red' : '';
-    return `<div class="sk-card${red} ${cls}" data-cid="${cid(c)}" role="img" aria-label="${RLABEL[c.r]} de ${SUIT_N[c.s]}">
+    const court = c.r === 'K' || c.r === 'Q' || c.r === 'J';
+    const ace = c.r === 'A';
+    const center = court ? courtSVG(c.r, c.s)
+      : ace ? `<span class="sk-ace-pip"><i>${SUIT_G[c.s]}</i></span>`
+      : `<span class="sk-pip">${SUIT_G[c.s]}</span>`;
+    return `<div class="sk-card${red}${court ? ' court' : ''}${ace ? ' ace' : ''} ${cls}" data-cid="${cid(c)}" role="img" aria-label="${RLABEL[c.r]} de ${SUIT_N[c.s]}">
       <span class="sk-cc tl"><b>${RLABEL[c.r]}</b><i>${SUIT_G[c.s]}</i></span>
-      <span class="sk-pip">${SUIT_G[c.s]}</span>
+      ${center}
       <span class="sk-cc br"><b>${RLABEL[c.r]}</b><i>${SUIT_G[c.s]}</i></span>
     </div>`;
   }
@@ -639,10 +767,10 @@ const SuecaGame = (function () {
         </div>
       </div>
       <div class="sk-table" id="sk-table">
-        <div class="sk-seat sk-seat-n" data-p="2"><div class="sk-avatar">${AVATARS[2]}</div><div class="sk-sname">${nm[2]}</div><div class="sk-scards" id="sk-oc-2"></div></div>
-        <div class="sk-seat sk-seat-w" data-p="3"><div class="sk-avatar">${AVATARS[3]}</div><div class="sk-sname">${nm[3]}</div><div class="sk-scards" id="sk-oc-3"></div></div>
-        <div class="sk-seat sk-seat-e" data-p="1"><div class="sk-avatar">${AVATARS[1]}</div><div class="sk-sname">${nm[1]}</div><div class="sk-scards" id="sk-oc-1"></div></div>
-        <div class="sk-seat sk-seat-s" data-p="0"><div class="sk-avatar">${AVATARS[0]}</div><div class="sk-sname">${nm[0]}</div></div>
+        <div class="sk-seat sk-seat-n us" data-p="2"><div class="sk-avatar">${AVATARS[2]}</div><div class="sk-sname">${nm[2]}</div>${S.mode === 'play' ? `<div class="sk-partner">🤝 ${t('partner')}</div>` : ''}<div class="sk-scards" id="sk-oc-2"></div></div>
+        <div class="sk-seat sk-seat-w them" data-p="3"><div class="sk-avatar">${AVATARS[3]}</div><div class="sk-sname">${nm[3]}</div><div class="sk-scards" id="sk-oc-3"></div></div>
+        <div class="sk-seat sk-seat-e them" data-p="1"><div class="sk-avatar">${AVATARS[1]}</div><div class="sk-sname">${nm[1]}</div><div class="sk-scards" id="sk-oc-1"></div></div>
+        <div class="sk-seat sk-seat-s us" data-p="0"><div class="sk-avatar">${AVATARS[0]}</div><div class="sk-sname">${nm[0]}</div></div>
         <div class="sk-trickzone" id="sk-trick"></div>
         <div class="sk-flash" id="sk-flash"></div>
       </div>
@@ -660,17 +788,23 @@ const SuecaGame = (function () {
       e.currentTarget.textContent = S.speed + '×';
     });
     updateScores(); updateSeats(); renderTrick(); renderHand(deal);
-    if (deal) sfx('pop');
+    if (deal) sndShuffle();
   }
 
   function updateScores() {
     const el = root.querySelector('#sk-score'); if (!el || !S) return;
+    const p0 = teamPts(0), p1 = teamPts(1);
     const dots = tm => Array.from({ length: 4 }, (_, i) => `<i class="${i < S.jogos[tm] ? 'on' : ''}"></i>`).join('');
     el.innerHTML = `
-      <div class="sk-team us"><span class="sk-tname">${t('us')}</span><b>${teamPts(0)}</b><span class="sk-dots">${dots(0)}</span></div>
+      <div class="sk-team us"><span class="sk-tname">${t('us')}</span><b>${p0}</b><span class="sk-dots">${dots(0)}</span></div>
       <div class="sk-vs">·</div>
-      <div class="sk-team them"><span class="sk-tname">${t('them')}</span><b>${teamPts(1)}</b><span class="sk-dots">${dots(1)}</span></div>
+      <div class="sk-team them"><span class="sk-tname">${t('them')}</span><b>${p1}</b><span class="sk-dots">${dots(1)}</span></div>
       ${S.carry ? `<span class="sk-carry" title="${fmt('carryNote', { n: S.carry })}">+${S.carry}</span>` : ''}`;
+    /* pulse quando os pontos de uma equipa sobem */
+    const prev = S._pp || [0, 0];
+    if (p0 > prev[0]) el.querySelector('.sk-team.us b')?.classList.add('bump');
+    if (p1 > prev[1]) el.querySelector('.sk-team.them b')?.classList.add('bump');
+    S._pp = [p0, p1];
   }
 
   function updateSeats() {
@@ -724,11 +858,11 @@ const SuecaGame = (function () {
     });
   }
 
-  function dropCard(p, card) {
+  function dropCard(p, card, cut) {
     const zone = root.querySelector('#sk-trick'); if (!zone) return;
     const seat = ['s', 'e', 'n', 'w'][p];
     const el = document.createElement('div');
-    el.className = `sk-slot sk-slot-${seat} sk-from-${seat}`;
+    el.className = `sk-slot sk-slot-${seat} sk-from-${seat}${cut ? ' sk-cut' : ''}`;
     el.innerHTML = cardHTML(card);
     zone.appendChild(el);
   }
@@ -788,6 +922,19 @@ const SuecaGame = (function () {
       if (r.matchOver) { const m = S.mode; clearSaved(); newMatch(m); }
       else newHand(false);
     });
+    if (r.matchOver && r.winTeam === 0 && S.mode === 'play') { confetti(back); vib([40, 60, 40]); }
+  }
+
+  /* celebração discreta quando a nossa equipa conquista a bandeira */
+  function confetti(host) {
+    if (reduceMotion()) return;
+    const cols = ['#d4af6a', '#4ade80', '#f87171', '#67e8f9', '#fbbf24'];
+    for (let i = 0; i < 36; i++) {
+      const e = document.createElement('i');
+      e.className = 'sk-conf';
+      e.style.cssText = `left:${Math.random() * 100}%;background:${cols[i % cols.length]};animation-delay:${Math.random() * 0.9}s;animation-duration:${1.7 + Math.random() * 1.1}s`;
+      host.appendChild(e);
+    }
   }
 
   function confirmExit() {
@@ -926,11 +1073,32 @@ body.light .sk-wrap{--sk-felt1:#2e7d54;--sk-felt2:#1c5c3a;--sk-gold:#b8860b}
 .sk-back::after{content:'';position:absolute;inset:3px;border-radius:5px;border:1px solid rgba(255,255,255,.25);
   background:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,rgba(255,255,255,.14) 0 2px,transparent 2px 7px)}
 
+/* figuras (R/D/V) e ases */
+.sk-court{position:absolute;left:14%;top:11%;width:72%;height:78%}
+.sk-card.court::after,.sk-card.ace::after{content:'';position:absolute;inset:6%;border:1px solid rgba(180,140,60,.42);border-radius:5px;pointer-events:none}
+.sk-card.ace{background:linear-gradient(160deg,#fffdf6 0%,#fbf5e4 55%,#f2e8cd 100%)}
+.sk-ace-pip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.sk-ace-pip i{font-style:normal;font-size:calc(var(--skw,64px)*.5);position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.22))}
+.sk-ace-pip::before{content:'';position:absolute;width:64%;aspect-ratio:1;border:1.5px solid rgba(180,140,60,.55);border-radius:50%}
+.sk-ace-pip::after{content:'';position:absolute;width:82%;aspect-ratio:1;border:1px dashed rgba(180,140,60,.32);border-radius:50%}
+.sk-card.tiny .sk-ace-pip::before,.sk-card.tiny .sk-ace-pip::after,
+.sk-card.tiny.court::after,.sk-card.tiny.ace::after{display:none}
+.sk-card.tiny .sk-court{left:8%;top:8%;width:84%;height:84%}
+
+/* carta vencedora da vaza + corte a trunfo */
+.sk-slot.sk-winner .sk-card{box-shadow:0 4px 14px rgba(0,0,0,.45),0 0 0 2.5px var(--sk-gold),0 0 24px rgba(212,175,106,.75);animation:skWinPulse .55s ease}
+@keyframes skWinPulse{0%{transform:scale(1)}35%{transform:scale(1.09)}100%{transform:scale(1)}}
+.sk-slot.sk-winner{z-index:2}
+.sk-slot.sk-cut .sk-card{animation:skCutGlow 1s ease}
+@keyframes skCutGlow{0%{box-shadow:0 2px 6px rgba(0,0,0,.35)}30%{box-shadow:0 2px 6px rgba(0,0,0,.35),0 0 0 3px rgba(212,175,106,.9),0 0 30px rgba(242,193,78,.9)}100%{box-shadow:0 2px 6px rgba(0,0,0,.35),0 0 0 1px rgba(212,175,106,.35)}}
+
 /* ── topo ── */
 .sk-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .sk-score{display:flex;align-items:center;gap:8px;background:var(--card,rgba(255,255,255,.05));border:1px solid var(--border,rgba(255,255,255,.1));border-radius:12px;padding:6px 12px;flex:1;min-width:0}
 .sk-team{display:flex;align-items:baseline;gap:6px;min-width:0}
 .sk-team b{font-size:1.15rem;font-family:var(--font-mono,monospace)}
+.sk-team b.bump{animation:skBump .45s ease}
+@keyframes skBump{35%{transform:scale(1.3);text-shadow:0 0 12px rgba(212,175,106,.8)}}
 .sk-team.us b{color:var(--green,#22c55e)}.sk-team.them b{color:var(--red,#ef4444)}
 .sk-tname{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#9aa)}
 .sk-vs{color:var(--muted,#9aa)}
@@ -959,8 +1127,12 @@ body.light .sk-wrap{--sk-felt1:#2e7d54;--sk-felt2:#1c5c3a;--sk-gold:#b8860b}
 .sk-seat-w{left:8px;top:50%;transform:translateY(-50%)}
 .sk-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.25rem;
   background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.25);transition:box-shadow .25s,border-color .25s}
+.sk-seat.us .sk-avatar{border-color:rgba(74,222,128,.5)}
+.sk-seat.them .sk-avatar{border-color:rgba(248,113,113,.45)}
 .sk-seat.turn .sk-avatar{border-color:var(--sk-gold);box-shadow:0 0 0 3px rgba(212,175,106,.35),0 0 18px rgba(212,175,106,.55);animation:skPulse 1.4s infinite}
 @keyframes skPulse{50%{box-shadow:0 0 0 5px rgba(212,175,106,.2),0 0 24px rgba(212,175,106,.7)}}
+.sk-seat.won .sk-avatar{border-color:var(--sk-gold);box-shadow:0 0 0 4px rgba(212,175,106,.45),0 0 26px rgba(212,175,106,.85);animation:skWinPulse .55s ease}
+.sk-partner{font-size:.56rem;font-weight:800;letter-spacing:.04em;color:var(--sk-gold);background:rgba(0,0,0,.35);border:1px solid rgba(212,175,106,.4);border-radius:999px;padding:1px 7px;text-shadow:none}
 .sk-sname{font-size:.7rem;font-weight:700;color:#f4efe2;text-shadow:0 1px 3px rgba(0,0,0,.6);display:flex;align-items:center;gap:4px}
 .sk-seat.dealer .sk-sname::after{content:'${'D'}';font-size:.58rem;background:var(--sk-gold);color:#241a08;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-weight:900}
 .sk-backs{display:flex}
@@ -1098,10 +1270,17 @@ body.light .sk-wrap{--sk-felt1:#2e7d54;--sk-felt2:#1c5c3a;--sk-gold:#b8860b}
   .sk-hand-zone{width:100%;min-height:0}
   .sk-cardbtn{--skw:48px}
 }
+/* confetti da bandeira */
+.sk-conf{position:absolute;top:-14px;width:7px;height:11px;border-radius:2px;pointer-events:none;opacity:.95;animation:skConf linear forwards}
+@keyframes skConf{60%{opacity:.95}100%{transform:translateY(78vh) rotate(660deg);opacity:0}}
+
 @media (prefers-reduced-motion:reduce){
   .sk-cardbtn.dealt,.sk-from-s,.sk-from-n,.sk-from-e,.sk-from-w{animation:none}
   .sk-fly-s,.sk-fly-n,.sk-fly-e,.sk-fly-w{transition:opacity .2s;opacity:0}
-  .sk-seat.turn .sk-avatar{animation:none}
+  .sk-seat.turn .sk-avatar,.sk-seat.won .sk-avatar{animation:none}
+  .sk-slot.sk-winner .sk-card,.sk-slot.sk-cut .sk-card{animation:none}
+  .sk-team b.bump{animation:none}
+  .sk-conf{display:none}
 }`;
     document.head.appendChild(s);
   }
