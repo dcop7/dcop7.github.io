@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v240';
+const CACHE = 'dcop7-v241';
 const STATIC = [
   '/',
   '/index.html',
@@ -105,6 +105,7 @@ const STATIC = [
   '/games/bomb/i18n.json',
   '/games/uno/i18n.json',
   '/games/sueca/i18n.json',
+  '/games/archery/i18n.json',
   '/games/gravity-lab/i18n.json',
   '/js/games/minesweeper.js',
   '/js/games/bomb.js',
@@ -116,6 +117,7 @@ const STATIC = [
   '/js/games/game-battleship.js',
   '/js/games/game-uno.js',
   '/js/games/game-sueca.js',
+  '/js/games/game-archery.js',
   '/js/games/game-neon-shooter.js',
   '/js/games/game-gravity-lab.js',
   '/favicon.svg',

@@ -31,6 +31,7 @@ const Search = (function () {
     { label: 'Desarmar Bomba',   id: 'games/bomb',           icon: '💥', tags: ['bomba','desarmar','desafio'] },
     { label: 'Gravity Lab',      id: 'games/gravity-lab',    icon: '🔬', tags: ['gravidade','puzzle','gravity'] },
     { label: 'Neon Space Shooter', id: 'games/neon-shooter', icon: '🛸', tags: ['nave','shooter','espaço','arcade'] },
+    { label: 'Tiro ao Arco',     id: 'games/archery',        icon: '🏹', tags: ['arco','tiro','archery','setas','pontaria'] },
   ];
 
   function buildIndex() {

@@ -16,6 +16,7 @@ const Nav = (function () {
     { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
     { id: 'gravity-lab', key: 'game.gravity-lab', icon: '🔬' },
     { id: 'neon-shooter',key: 'game.neon-shooter',icon: '🛸' },
+    { id: 'archery',     key: 'game.archery',     icon: '🏹' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 

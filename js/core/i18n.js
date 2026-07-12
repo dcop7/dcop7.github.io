@@ -24,7 +24,7 @@ const I18n = (function () {
       'game.battleship':'Battleship','game.uno':'Uno','game.sueca':'Sueca',
       'game.wordle':'Word of the Day','game.neon-shooter':'Neon Space Shooter',
       'game.reaction':'Reaction Test',
-      'game.gravity-lab':'Gravity Lab',
+      'game.gravity-lab':'Gravity Lab','game.archery':'Archery',
       // Header
       'hdr.search':'Search games, sites, sections…','hdr.lang':'PT',
       // Home widgets
@@ -130,7 +130,7 @@ const I18n = (function () {
       'game.battleship':'Batalha Naval','game.uno':'Uno','game.sueca':'Sueca',
       'game.wordle':'Palavra do Dia','game.neon-shooter':'Neon Space Shooter',
       'game.reaction':'Teste de Reação',
-      'game.gravity-lab':'Gravity Lab',
+      'game.gravity-lab':'Gravity Lab','game.archery':'Tiro ao Arco',
       // Header
       'hdr.search':'Pesquisar jogos, sites, secções…','hdr.lang':'EN',
       // Home widgets

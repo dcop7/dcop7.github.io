@@ -1409,6 +1409,7 @@ const ALL_GAMES = [
   { id:'bomb',        key:'game.bomb',        icon:'💥' },
   { id:'gravity-lab', key:'game.gravity-lab', icon:'🔬' },
   { id:'neon-shooter',key:'game.neon-shooter',icon:'🛸' },
+  { id:'archery',     key:'game.archery',     icon:'🏹' },
 ];
 const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','chess'];
 
