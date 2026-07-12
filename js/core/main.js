@@ -1675,11 +1675,36 @@ document.addEventListener('time:day', () => {      // midnight, month/year rollo
 // css/layout.css can animate its fv-* elements; until the fetch resolves
 // (or if it fails) the <img src="favicon.svg"> fallback shows the same
 // icon, statically. The SW precaches favicon.svg, so this works offline.
+// The spark's trip around the ring is SMIL added HERE (header copy only):
+// CSS offset-path on SVG children is silently ignored by Chrome, and the
+// favicon file itself must stay static (browser-tab icon).
 (function inlineBrandMark() {
   const mark = document.getElementById('brand-mark');
   if (!mark) return;
   fetch('favicon.svg')
     .then(r => (r.ok ? r.text() : null))
-    .then(svg => { if (svg && svg.trimStart().startsWith('<svg')) mark.innerHTML = svg; })
+    .then(svg => {
+      if (!svg || !svg.trimStart().startsWith('<svg')) return;
+      mark.innerHTML = svg;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const spark = mark.querySelector('.fv-spark');
+      if (!spark) return;
+      const NS = 'http://www.w3.org/2000/svg';
+      const anim = (name, attrs) => {
+        const el = document.createElementNS(NS, name);
+        for (const k in attrs) el.setAttribute(k, attrs[k]);
+        el.setAttribute('dur', '6.5s');
+        el.setAttribute('repeatCount', 'indefinite');
+        spark.appendChild(el);
+      };
+      /* a geometria passa a (0,0) e o animateMotion leva-a pela elipse da
+         órbita (coords locais do grupo rodado); r/opacity fazem o ciclo
+         perigeu (frente, grande e vivo) → apogeu (trás, pequeno e fraco) */
+      spark.setAttribute('cx', '0');
+      spark.setAttribute('cy', '0');
+      anim('animateMotion', { path: 'M9.5 37a17.5 5 0 1 0 35 0a17.5 5 0 1 0 -35 0' });
+      anim('animate', { attributeName: 'r',       values: '2.4;3.2;2;1.1;2.4',    calcMode: 'spline', keySplines: '.4 0 .6 1;.4 0 .6 1;.4 0 .6 1;.4 0 .6 1' });
+      anim('animate', { attributeName: 'opacity', values: '.95;1;.75;.35;.95' });
+    })
     .catch(() => {});
 })();

@@ -19,14 +19,30 @@ body.sb-open .app-main { margin-left: var(--sb-w); }
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 200; overflow: hidden; flex-shrink: 0;
 }
+/* linha do header: a MESMA banda cósmica do shimmer "Diogo Universe"
+   (azul → ciano → dourado → laranja → vermelho), mesma duração (11s) e
+   mesmas posições de background — as duas varrem o ecrã em sincronia. */
 #site-header::after {
   content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb),.5), var(--accent2), rgba(var(--accent-rgb),.5), transparent);
-  background-size: 200% 100%; animation: hdr-line 4s linear infinite;
+  background: linear-gradient(100deg,
+    transparent 0%, transparent 30%,
+    #6fb6ff 38%, #4ed6f2 43%,
+    #ffd27d 49%, #ff9a5c 53%, #ef6a6a 57%,
+    #e8c987 63%, transparent 71%, transparent 100%);
+  background-size: 320% 100%; animation: hdr-line 11s linear infinite;
 }
-@keyframes hdr-line { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes hdr-line { 0% { background-position: 115% 0; } 100% { background-position: -205% 0; } }
 body.light #site-header { background: rgba(248,250,252,.97); }
-body.light #site-header::after { opacity: .5; }
+body.light #site-header::after {
+  opacity: .7;
+  background-image: linear-gradient(100deg,
+    transparent 0%, transparent 30%,
+    #1d6fd6 38%, #0e9cbe 43%,
+    #c98a1b 49%, #e06a2c 53%, #cf4444 57%,
+    #a8842e 63%, transparent 71%, transparent 100%);
+  background-size: 320% 100%;
+}
+@media (prefers-reduced-motion: reduce) { #site-header::after { animation: none; background-position: 40% 0; } }
 
 .hdr-left { display: flex; align-items: center; gap: .7rem; flex-shrink: 0; }
 .hdr-center { flex: 1; min-width: 0; }
@@ -98,38 +114,55 @@ body.light .brand-text {
 .brand-mark img, .brand-mark svg { display: block; width: 100%; height: 100%; }
 .brand:hover .brand-mark { transform: scale(1.06); }
 
+/* órbita: oscilação pendular clara (7° de curso) à volta do planeta */
 .brand-mark svg .fv-orbit {
   transform-box: view-box; transform-origin: 27px 37px;
-  animation: fv-sway 12s ease-in-out infinite;
+  animation: fv-sway 8s ease-in-out infinite;
 }
 @keyframes fv-sway {
   0%, 100% { transform: rotate(-24deg); }
-  50%      { transform: rotate(-20.5deg); }
+  50%      { transform: rotate(-17deg); }
 }
-.brand-mark svg .fv-spark { animation: fv-spark 3.8s ease-in-out infinite; }
-@keyframes fv-spark { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
-.brand-mark svg .fv-star { animation: fv-twinkle 4.6s ease-in-out infinite; }
-.brand-mark svg .fv-star:nth-of-type(2) { animation-delay: .9s; }
-.brand-mark svg .fv-star:nth-of-type(3) { animation-delay: 1.7s; animation-duration: 5.4s; }
-.brand-mark svg .fv-star:nth-of-type(4) { animation-delay: 2.6s; }
-.brand-mark svg .fv-star:nth-of-type(5) { animation-delay: 3.4s; animation-duration: 5.8s; }
-.brand-mark svg .fv-star:nth-of-type(6) { animation-delay: 4.1s; }
-@keyframes fv-twinkle { 0%, 100% { opacity: .22; } 50% { opacity: .85; } }
+/* faísca/lua orbital: o movimento ao longo da elipse é SMIL (animateMotion
+   + animate r/opacity) injetado por main.js inlineBrandMark() — CSS
+   offset-path em filhos de SVG é silenciosamente ignorado pelo Chrome, e
+   animar `transform` por CSS destruiria o rotate() do grupo da órbita.
+   Sob prefers-reduced-motion o main.js não injeta nada. */
+/* estrelas: cintilar franco e desfasado */
+.brand-mark svg .fv-star {
+  transform-box: fill-box; transform-origin: center;
+  animation: fv-twinkle 3.6s ease-in-out infinite;
+}
+.brand-mark svg .fv-star:nth-of-type(2) { animation-delay: .7s; }
+.brand-mark svg .fv-star:nth-of-type(3) { animation-delay: 1.4s; animation-duration: 4.4s; }
+.brand-mark svg .fv-star:nth-of-type(4) { animation-delay: 2.1s; }
+.brand-mark svg .fv-star:nth-of-type(5) { animation-delay: 2.8s; animation-duration: 4.8s; }
+.brand-mark svg .fv-star:nth-of-type(6) { animation-delay: 3.3s; }
+@keyframes fv-twinkle {
+  0%, 100% { opacity: .12; transform: scale(1.4); }
+  50%      { opacity: 1;   transform: scale(3); }
+}
+/* lua no bojo do D: respiração com bob */
 .brand-mark svg .fv-moon {
   transform-box: fill-box; transform-origin: center;
-  animation: fv-moon 7s ease-in-out infinite;
+  animation: fv-moon 5.5s ease-in-out infinite;
 }
 @keyframes fv-moon {
-  0%, 100% { transform: scale(1); opacity: .85; }
-  50%      { transform: scale(1.14); opacity: 1; }
+  0%, 100% { transform: scale(1) translateY(0);      opacity: .78; }
+  50%      { transform: scale(1.28) translateY(-.6px); opacity: 1; }
 }
-.brand:hover .brand-mark svg .fv-orbit { animation-duration: 5.5s; }
-.brand:hover .brand-mark svg .fv-spark { animation-duration: 1.8s; }
+/* reflexo luminoso ocasional sobre o D dourado */
+.brand-mark svg .fv-d { animation: fv-glint 7s ease-in-out infinite; }
+@keyframes fv-glint {
+  0%, 80%, 100% { filter: brightness(1); }
+  88%           { filter: brightness(1.35) drop-shadow(0 0 1.5px rgba(251,199,95,.85)); }
+}
+.brand:hover .brand-mark svg .fv-orbit { animation-duration: 4s; }
 
 @media (prefers-reduced-motion: reduce) {
   .brand-text { animation: none !important; background-position: 40% 0; }
-  .brand-mark svg .fv-orbit, .brand-mark svg .fv-spark,
-  .brand-mark svg .fv-star, .brand-mark svg .fv-moon { animation: none !important; }
+  .brand-mark svg .fv-orbit, .brand-mark svg .fv-star,
+  .brand-mark svg .fv-moon, .brand-mark svg .fv-d { animation: none !important; }
   .brand:hover .brand-mark { transform: none; }
 }
 
