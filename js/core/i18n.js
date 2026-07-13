@@ -9,6 +9,7 @@ const I18n = (function () {
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News','nav.f1':'Formula 1','nav.oss':'Tech Discovery','nav.discovery':'Gaming Deals',
+      'nav.netlab':'Network Lab','nav.funlab':'Fun Lab','nav.autolab':'Auto Intelligence',
       'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun','nav.grp.photo':'Photography',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
       // Theme panel + header tooltips
@@ -115,6 +116,7 @@ const I18n = (function () {
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias','nav.f1':'Fórmula 1','nav.oss':'Descobrir Tech','nav.discovery':'Gaming Deals',
+      'nav.netlab':'Network Lab','nav.funlab':'Fun Lab','nav.autolab':'Auto Intelligence',
       'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão','nav.grp.photo':'Fotografia',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
       // Painel de tema + dicas do cabeçalho

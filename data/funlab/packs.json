@@ -1,0 +1,186 @@
+{
+  "excuses": {
+    "pt": {
+      "work": [
+        "O meu gato sentou-se no teclado e enviou o email para a pessoa errada.",
+        "A minha ligação à internet decidiu tirar férias exatamente à hora da reunião.",
+        "Fiquei preso numa discussão filosófica com o ChatGPT e perdi a noção do tempo.",
+        "O elevador do prédio prendeu-me entre dois andares durante uma eternidade.",
+        "Acordei convencido de que era sábado e o meu corpo recusou-se a cooperar.",
+        "Derramei café no portátil e passei a manhã a negociar com ele.",
+        "O meu despertador tocou, mas em modo passivo-agressivo, e eu ignorei-o.",
+        "Uma pomba entrou pela janela e reivindicou a minha secretária como território.",
+        "O GPS levou-me a uma aldeia que já não existe desde 1974.",
+        "Estava tão concentrado a ser produtivo mentalmente que me esqueci de o ser fisicamente."
+      ],
+      "school": [
+        "O meu trabalho ficou tão bom que o professor não vai acreditar que fui eu — por isso não o entreguei.",
+        "O cão comeu o meu portátil inteiro, carregador incluído.",
+        "Estava a estudar tanto que adormeci em cima dos apontamentos e colei-me a eles.",
+        "A impressora sentiu a minha pressão e recusou-se a imprimir por solidariedade.",
+        "Confundi a data do teste com o meu aniversário e preparei uma festa em vez de estudar.",
+        "O autocarro passou, olhou para mim, e seguiu viagem sem parar."
+      ]
+    },
+    "en": {
+      "work": [
+        "My cat sat on the keyboard and sent the email to the wrong person.",
+        "My internet decided to take a holiday exactly at meeting time.",
+        "I got stuck in a philosophical debate with ChatGPT and lost track of time.",
+        "The building lift trapped me between two floors for an eternity.",
+        "I woke up convinced it was Saturday and my body refused to cooperate.",
+        "I spilled coffee on the laptop and spent the morning negotiating with it.",
+        "My alarm rang, but passive-aggressively, so I ignored it.",
+        "A pigeon flew in and claimed my desk as its territory.",
+        "The GPS took me to a village that hasn't existed since 1974.",
+        "I was so busy being mentally productive that I forgot to be physically present."
+      ],
+      "school": [
+        "My work turned out so good the teacher wouldn't believe it was me — so I didn't hand it in.",
+        "The dog ate my entire laptop, charger included.",
+        "I studied so hard I fell asleep on my notes and got stuck to them.",
+        "The printer sensed my pressure and refused to print out of solidarity.",
+        "I mixed up the exam date with my birthday and threw a party instead of studying.",
+        "The bus came, looked at me, and drove off without stopping."
+      ]
+    }
+  },
+  "facts": {
+    "pt": [
+      "Os polvos têm três corações e sangue azul.",
+      "Um relâmpago é cinco vezes mais quente que a superfície do Sol.",
+      "As abelhas conseguem reconhecer rostos humanos.",
+      "O mel nunca estraga — encontrou-se mel comestível em túmulos egípcios com 3000 anos.",
+      "As lontras dão as mãos enquanto dormem para não se afastarem umas das outras.",
+      "Um dia em Vénus é mais longo que um ano em Vénus.",
+      "Os flamingos nascem cinzentos e só ficam cor-de-rosa por causa da dieta.",
+      "O coração de um camarão fica na cabeça.",
+      "Existe um planeta feito essencialmente de diamante a 40 anos-luz da Terra.",
+      "As nuvens pesam, em média, centenas de toneladas.",
+      "Os caracóis podem dormir até três anos seguidos.",
+      "A Torre Eiffel pode ficar 15 cm mais alta no verão devido à dilatação do metal.",
+      "Os gatos não conseguem saborear o doce.",
+      "Uma colher de chá de estrela de neutrões pesaria cerca de 6 mil milhões de toneladas.",
+      "As vacas têm melhores amigas e ficam stressadas quando são separadas."
+    ],
+    "en": [
+      "Octopuses have three hearts and blue blood.",
+      "A bolt of lightning is five times hotter than the surface of the Sun.",
+      "Bees can recognise human faces.",
+      "Honey never spoils — edible honey was found in 3000-year-old Egyptian tombs.",
+      "Otters hold hands while sleeping so they don't drift apart.",
+      "A day on Venus is longer than a year on Venus.",
+      "Flamingos are born grey and only turn pink because of their diet.",
+      "A shrimp's heart is in its head.",
+      "There's a planet made largely of diamond 40 light-years from Earth.",
+      "Clouds weigh, on average, hundreds of tonnes.",
+      "Snails can sleep for up to three years straight.",
+      "The Eiffel Tower can be 15 cm taller in summer due to metal expansion.",
+      "Cats can't taste sweetness.",
+      "A teaspoon of neutron star would weigh about 6 billion tonnes.",
+      "Cows have best friends and get stressed when separated."
+    ]
+  },
+  "fortunes": {
+    "pt": [
+      "Hoje, a tua maior conquista será resistir a carregar em 'atualizar' pela centésima vez.",
+      "Uma grande oportunidade bate-te à porta. Provavelmente é a encomenda que te esqueceste que fizeste.",
+      "As estrelas alinham-se a teu favor — pena que estejas com o telemóvel virado para baixo.",
+      "Vais encontrar aquilo que procuras assim que parares de procurar. Normalmente no primeiro sítio onde olhaste.",
+      "O universo tem um plano para ti. Infelizmente, está num formato de ficheiro que ninguém consegue abrir.",
+      "Grandes mudanças aproximam-se. Começa pela roupa que está na cadeira há três semanas.",
+      "A sorte sorri-te hoje. Retribui o sorriso, mesmo sem perceberes porquê.",
+      "Um estranho vai dar-te um conselho valioso. Ignora-o educadamente.",
+      "Hoje é um bom dia para fingir que sabes o que estás a fazer. Ninguém vai notar a diferença.",
+      "A resposta que procuras está dentro de ti. Ou no grupo da família. É difícil saber."
+    ],
+    "en": [
+      "Today your greatest achievement will be resisting hitting 'refresh' for the hundredth time.",
+      "A great opportunity knocks. It's probably the parcel you forgot you ordered.",
+      "The stars align in your favour — shame your phone is face down.",
+      "You'll find what you're looking for the moment you stop looking. Usually in the first place you checked.",
+      "The universe has a plan for you. Sadly it's in a file format nobody can open.",
+      "Big changes are coming. Start with the clothes that have been on the chair for three weeks.",
+      "Luck smiles on you today. Smile back, even if you don't know why.",
+      "A stranger will give you valuable advice. Politely ignore it.",
+      "Today is a good day to pretend you know what you're doing. Nobody will notice the difference.",
+      "The answer you seek is within you. Or in the family group chat. Hard to tell."
+    ]
+  },
+  "roasts": {
+    "pt": [
+      "Tens a energia de um carregador de telemóvel a 1% — tecnicamente ainda funcionas, mas ninguém confia em ti.",
+      "És como uma aba do browser que ninguém se lembra de ter aberto, mas que continua a fazer barulho.",
+      "O teu sentido de orientação é tão bom que consegues perder-te numa linha reta.",
+      "Tens o carisma de um formulário de imposto — necessário, mas ninguém fica feliz por te ver.",
+      "És a prova viva de que 'ir com calma' e 'não fazer nada' são coisas diferentes. Só não sabes qual estás a fazer.",
+      "A tua playlist tem tanta personalidade como a música de elevador de um centro comercial fechado.",
+      "És como o Wi-Fi público: prometes muito e desligas-te no momento em que mais preciso de ti.",
+      "Tens tantas ideias boas como o corretor ortográfico tem bom senso.",
+      "A tua zona de conforto tem código postal próprio e recusa-se a receber visitas.",
+      "És o tipo de pessoa que lê os termos e condições, mas só a parte que não interessa."
+    ],
+    "en": [
+      "You have the energy of a phone charger at 1% — technically still working, but nobody trusts you.",
+      "You're like a browser tab nobody remembers opening, but that keeps making noise.",
+      "Your sense of direction is so good you can get lost in a straight line.",
+      "You have the charisma of a tax form — necessary, but nobody's happy to see you.",
+      "You're living proof that 'taking it easy' and 'doing nothing' are different things. You just don't know which one you're doing.",
+      "Your playlist has as much personality as elevator music in a closed shopping mall.",
+      "You're like public Wi-Fi: you promise a lot and disconnect the moment I need you most.",
+      "You have as many good ideas as autocorrect has common sense.",
+      "Your comfort zone has its own postcode and refuses visitors.",
+      "You're the kind of person who reads the terms and conditions, but only the boring part."
+    ]
+  },
+  "conspiracy": {
+    "pt": {
+      "subjects": ["Os pombos", "As máquinas de café", "A meia perdida na máquina", "Os semáforos", "As nuvens", "O Wi-Fi do vizinho", "Os gatos", "As escadas rolantes", "Os autocolantes das bananas", "A tecla Caps Lock", "Os relógios das estações", "As folhas de cálculo"],
+      "actions": ["são secretamente controlados por", "foram inventados para esconder", "comunicam em código com", "trabalham em conjunto com", "são financiados por", "servem apenas para distrair de", "estão a recolher dados para"],
+      "agents": ["uma sociedade secreta de bibliotecários", "os fabricantes de guarda-chuvas", "uma IA aborrecida algalgures na Islândia", "o lobby dos fabricantes de meias", "extraterrestres em part-time", "o teu eu do futuro", "uma folha de cálculo que ganhou consciência", "os produtores de queijo suíço"],
+      "proofs": ["Pensa nisto: já viste os dois ao mesmo tempo? Exato.", "Ninguém consegue explicar, e isso já diz tudo.", "Os documentos que provam isto desapareceram — coincidência?", "Acorda! Está mesmo à frente dos teus olhos.", "A ciência 'oficial' recusa-se a investigar. Porquê?", "Segue o dinheiro. Ou melhor, segue as migalhas."]
+    },
+    "en": {
+      "subjects": ["Pigeons", "Coffee machines", "The sock lost in the washer", "Traffic lights", "Clouds", "Your neighbour's Wi-Fi", "Cats", "Escalators", "Banana stickers", "The Caps Lock key", "Train station clocks", "Spreadsheets"],
+      "actions": ["are secretly controlled by", "were invented to hide", "communicate in code with", "work together with", "are funded by", "exist only to distract from", "are collecting data for"],
+      "agents": ["a secret society of librarians", "umbrella manufacturers", "a bored AI somewhere in Iceland", "the sock-makers' lobby", "part-time extraterrestrials", "your future self", "a spreadsheet that gained consciousness", "Swiss cheese producers"],
+      "proofs": ["Think about it: have you ever seen the two at the same time? Exactly.", "Nobody can explain it, and that says it all.", "The documents proving this vanished — coincidence?", "Wake up! It's right in front of your eyes.", "'Official' science refuses to investigate. Why?", "Follow the money. Or better, follow the crumbs."]
+    }
+  },
+  "names": {
+    "pt": {
+      "first": ["Capitão", "Doutor", "Sir", "Barão", "Professor", "Comandante", "Duque", "Mestre", "Excelentíssimo", "General"],
+      "adj": ["Trovejante", "Aveludado", "Explosivo", "Melancólico", "Turbulento", "Cintilante", "Estrondoso", "Sorrateiro", "Majestoso", "Desastrado"],
+      "noun": ["Bigode", "Salsicha", "Punho", "Tremoço", "Relâmpago", "Chinelo", "Abacate", "Martelo", "Croquete", "Furacão"],
+      "suffix": ["da Silva Selvagem", "III", "de Além-Mar", "o Terrível", "Sénior", "das Sete Colinas", "o Improvável", "de Alta Rotação"]
+    },
+    "en": {
+      "first": ["Captain", "Doctor", "Sir", "Baron", "Professor", "Commander", "Duke", "Master", "Honourable", "General"],
+      "adj": ["Thunderous", "Velvet", "Explosive", "Melancholic", "Turbulent", "Sparkling", "Booming", "Sneaky", "Majestic", "Clumsy"],
+      "noun": ["Moustache", "Sausage", "Fist", "Pickle", "Lightning", "Slipper", "Avocado", "Hammer", "Nugget", "Hurricane"],
+      "suffix": ["the Wild", "III", "of the High Seas", "the Terrible", "Senior", "of Seven Hills", "the Unlikely", "of Overdrive"]
+    }
+  },
+  "memes": {
+    "pt": [
+      { "top": "EU: vou dormir cedo hoje", "bottom": "eu às 3 da manhã: e se as plantas têm sono?" },
+      { "top": "ninguém:", "bottom": "absolutamente ninguém: eu a abrir o frigorífico pela 5ª vez à espera de comida nova" },
+      { "top": "o meu código na sexta-feira", "bottom": "o mesmo código na segunda-feira, sem eu tocar em nada" },
+      { "top": "professores: não podem usar a calculadora", "bottom": "a vida adulta: aqui tens uma calculadora e a internet inteira" },
+      { "top": "quando dizes 'já está quase'", "bottom": "e ainda nem começaste" },
+      { "top": "o meu cérebro às 2h a lembrar-se", "bottom": "daquela coisa embaraçosa de 2011" },
+      { "top": "eu a fingir que percebi a reunião", "bottom": "eu a pesquisar tudo cinco minutos depois" },
+      { "top": "'só mais um episódio'", "bottom": "o sol a nascer" }
+    ],
+    "en": [
+      { "top": "ME: I'll sleep early tonight", "bottom": "me at 3am: but what if plants get tired?" },
+      { "top": "nobody:", "bottom": "absolutely nobody: me opening the fridge for the 5th time expecting new food" },
+      { "top": "my code on friday", "bottom": "the same code on monday, without me touching anything" },
+      { "top": "teachers: you can't use a calculator", "bottom": "adult life: here's a calculator and the entire internet" },
+      { "top": "when you say 'almost done'", "bottom": "and you haven't even started" },
+      { "top": "my brain at 2am reminding me", "bottom": "of that embarrassing thing from 2011" },
+      { "top": "me pretending I understood the meeting", "bottom": "me googling everything five minutes later" },
+      { "top": "'just one more episode'", "bottom": "the sun rising" }
+    ]
+  }
+}

@@ -34,6 +34,9 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#oss` | **Descobrir Tech** | Explorador de projetos open-source (índice gerado por Action + GitHub API) |
 | `#discovery` | **Gaming Deals** | Deals de gaming e jogos grátis (refresh 6h) |
 | `#tools` | **Tools** | Calculadora, pomodoro, cronómetro, editor markdown, regex tester, diff, conversores, cores, UUID, timestamps, dados 3D, … |
+| `#netlab` | **Network Lab** | IP público (IPv4/IPv6), ISP/ASN, geolocalização e infraestrutura num radar tático (canvas); latência por região, heurística de VPN/proxy, histórico local, pesquisa de qualquer IP (ipwho.is, CORS-direct) |
+| `#autolab` | **Auto Intelligence** | Fiabilidade automóvel focada na Europa/PT: marca→modelo→ano→avarias por quilometragem, recalls, custos em €, gauge, timeline de desgaste, comparação de gerações/motores (base curada offline `data/auto/models.json`) |
+| `#funlab` | **Internet Fun Lab** | Laboratório de conteúdo aleatório 100% offline: gerador de memes em canvas (original), meme/fortuna do dia, factos inúteis, desculpas, conspirações falsas, nomes absurdos, roast (`data/funlab/packs.json`) |
 | `#cheatsheets` | **Cheatsheets** | Referências de comandos: Git, Linux, Vim, regex, Docker, atalhos |
 | `#games` | **Jogos** | 13 jogos curados: Xadrez (chess.js vendored), Sueca (engine/IA próprios, 4 níveis), Tiro ao Arco (1ª pessoa, física de setas + vento), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
@@ -64,7 +67,7 @@ dcop7.github.io/
 │   └── views/                 ← um CSS por secção (home, games, explorer, noticias, f1, …)
 ├── js/
 │   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax, motion (Anime.js)
-│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, rss
+│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, netlab, autolab, funlab, rss
 │   ├── explorer/              ← explorer hub + realtime, solar, galaxy, body, portugal, timeline, data (mundo), kb, eventos, ocorrencias
 │   ├── games/                 ← game-host + jogos (game-*.js) + game-progress + vendor (chess.js)
 │   ├── quiz/                  ← quiz-engine, quiz-data, quiz-providers, quiz-page
@@ -157,6 +160,7 @@ Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge
 
 | API | Uso |
 |-----|-----|
+| **ipwho.is** | Network Lab: IP, ISP, ASN, geolocalização (CORS `*`, sem chave); IPv6 best-effort via api64.ipify |
 | **IPMA** (`api.ipma.pt`) | Previsão por cidade + avisos meteorológicos (popup do dia) |
 | **Open-Meteo** | Meteo atual/6 dias para cidade configurável |
 | **Wikimedia / Wikipedia PT** (`api.wikimedia.org`) | Reconstrução live das efemérides quando o snapshot está velho (`otd-lib`) |
