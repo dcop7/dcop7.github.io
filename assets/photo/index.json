@@ -32,5 +32,13 @@
   "know-rembrandt": "know/know-rembrandt.webp",
   "know-chiaroscuro": "know/know-chiaroscuro.webp",
   "know-compressao": "know/know-compressao.webp",
-  "know-profundidade": "know/know-profundidade.webp"
+  "know-profundidade": "know/know-profundidade.webp",
+  "comp-retrato-thirds": "comp-genre/comp-retrato-thirds.webp",
+  "comp-retrato-golden": "comp-genre/comp-retrato-golden.webp",
+  "comp-retrato-framing": "comp-genre/comp-retrato-framing.webp",
+  "comp-retrato-negative": "comp-genre/comp-retrato-negative.webp",
+  "comp-automovel-diagonal": "comp-genre/comp-automovel-diagonal.webp",
+  "comp-automovel-converging": "comp-genre/comp-automovel-converging.webp",
+  "comp-automovel-thirds": "comp-genre/comp-automovel-thirds.webp",
+  "comp-automovel-negative": "comp-genre/comp-automovel-negative.webp"
 }

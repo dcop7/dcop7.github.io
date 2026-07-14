@@ -456,6 +456,8 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
 .ph-comp-card-img { object-fit: cover; }
 .ph-comp-card-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; padding: .5rem .7rem .12rem; }
 .ph-comp-card-desc { font-size: .68rem; color: var(--muted); padding: 0 .7rem .6rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ph-comp-grid-sm { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: .55rem; }
+.ph-comp-grid-sm .ph-comp-card-name { padding: .4rem .55rem .5rem; font-size: .72rem; }
 
 .ph-comp2-box { max-width: 840px; }
 .ph-comp2-seg { margin: 0 auto; }

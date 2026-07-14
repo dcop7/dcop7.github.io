@@ -580,10 +580,15 @@ const PhotographyPage = (function () {
   }
 
   let _compView = (() => { try { return localStorage.getItem('ph-comp-view') || 'both'; } catch (_) { return 'both'; } })();
-  let _compIdx = 0;
+  let _compIdx = 0, _compGenre = null;
   function setCompView(v) { _compView = v; try { localStorage.setItem('ph-comp-view', v); } catch (_) {} }
+  // Ilustração da composição no contexto de um género (ex.: comp-retrato-thirds);
+  // se não existir, cai na ilustração geral (comp-thirds).
+  const compSlug = name => (COMP_ASSET[name] || '').replace(/^comp-/, '');
+  const genreCompAsset = (genre, comp) => genre ? assetPath('comp-' + genre + '-' + compSlug(comp.name)) : null;
 
-  function openCompModal(comp) {
+  function openCompModal(comp, genreId) {
+    _compGenre = genreId || null;
     _compIdx = Math.max(0, COMPOSITIONS.indexOf(comp));
     const modal = _openModal('ph-comp-modal', `<div class="ph-modal-box ph-comp2-box" role="dialog" aria-modal="true" aria-label="Composição">
       <div class="ph-modal-hdr">
@@ -606,10 +611,10 @@ const PhotographyPage = (function () {
     renderCompModal(modal);
   }
   function renderCompModal(modal) {
-    const comp = COMPOSITIONS[_compIdx], asset = compAsset(comp);
+    const comp = COMPOSITIONS[_compIdx], gAsset = genreCompAsset(_compGenre, comp), asset = gAsset || compAsset(comp);
     modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
     modal.querySelectorAll('.ph-comp2-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.view === _compView));
-    const slug = COMP_ASSET[comp.name], bad = assetPath(slug + '-bad'), why = COMP_WHY[slug] || {};
+    const slug = COMP_ASSET[comp.name], bad = gAsset ? null : assetPath(slug + '-bad'), why = COMP_WHY[slug] || {};
     const shot = (src, role) => `<figure class="ph-comp2-shot ${role}">
         <div class="ph-comp2-frame">${src ? `<img class="ph-comp2-img" src="${src}" alt="">` : '<div class="ph-comp2-img ph-comp2-noimg"></div>'}<canvas class="ph-comp2-canvas ph-comp2-anim"></canvas></div>
         ${bad ? `<span class="ph-comp2-badge ${role}">${role === 'ok' ? '✓ Correto' : '✗ Incorreto'}</span><figcaption>${role === 'ok' ? (why.ok || '') : (why.bad || '')}</figcaption>` : ''}
@@ -1220,11 +1225,16 @@ const PhotographyPage = (function () {
   }
 
   // ── portal de um género ──
-  function compChipsHTML(names) {
-    return names.map(name => {
-      const known = COMPOSITIONS.some(c => c.name === name);
-      return `<button class="ph-chip${known ? ' ph-chip-link' : ''}"${known ? ` data-comp="${name}"` : ' disabled'}>${name}</button>`;
-    }).join('');
+  // Composições do género como cartões ilustrados (ilustração específica do
+  // género quando existe, senão a geral) — clicar abre o modal nesse contexto.
+  function compCardsHTML(names, genreId) {
+    return `<div class="ph-comp-grid2 ph-comp-grid-sm">${names.map(name => {
+      const comp = COMPOSITIONS.find(c => c.name === name); if (!comp) return '';
+      const asset = (genreId && assetPath('comp-' + genreId + '-' + compSlug(name))) || assetPath(COMP_ASSET[name]);
+      return `<button class="ph-comp-card" data-comp="${name}">
+        <span class="ph-comp-card-frame">${asset ? `<img class="ph-comp-card-img" loading="lazy" decoding="async" src="${asset}" alt="">` : '<span class="ph-comp-card-noimg"></span>'}<canvas class="ph-comp-card-cv" width="320" height="219"></canvas></span>
+        <span class="ph-comp-card-name">${name}</span></button>`;
+    }).join('')}</div>`;
   }
   function kitCardHTML(db, g, k) {
     const kit = g[k];
@@ -1260,7 +1270,7 @@ const PhotographyPage = (function () {
         </div>
         <div class="ph-kit-wrap${kits.length > 1 ? ' both' : ''}">${kits.map(k => kitCardHTML(db, g, k)).join('')}</div>
         <section class="ph-scn-sec"><h4>💡 Luz</h4><div class="ph-light-box">${g.light}</div></section>
-        <section class="ph-scn-sec"><h4>🖼️ Composição</h4><div class="ph-chips">${compChipsHTML(g.composition)}</div></section>
+        <section class="ph-scn-sec"><h4>🖼️ Composição</h4>${compCardsHTML(g.composition, g.id)}</section>
         <div class="ph-scn-cols">
           <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${g.dos.map(li).join('')}</ul></section>
           <section class="ph-scn-sec"><h4>⛔ Evitar</h4><ul class="ph-dont">${g.donts.map(li).join('')}</ul></section>
@@ -1285,10 +1295,12 @@ const PhotographyPage = (function () {
         </button>`;
       panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
       wireGearBar(panel, () => renderPortal(panel, id));
-      panel.querySelectorAll('[data-comp]').forEach(ch => ch.addEventListener('click', () => {
+      panel.querySelectorAll('[data-comp]').forEach(ch => {
         const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
-        if (comp) openCompModal(comp);
-      }));
+        if (!comp) return;
+        const cv = ch.querySelector('.ph-comp-card-cv'); if (cv) requestAnimationFrame(() => drawCompOverlay(cv, comp));
+        ch.addEventListener('click', () => openCompModal(comp, g.id));
+      });
       panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => openEditModal({ level: 'obj', id: ch.dataset.goal })));
       panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
         _pendingCalc = ch.dataset.tool;
