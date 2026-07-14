@@ -126,7 +126,7 @@ const SuecaGame = (function () {
   const soundOn = () => store().getPref('sound', true);
   const sfx = name => { try { if (soundOn() && typeof GameAudio !== 'undefined') GameAudio[name](); } catch (e) {} };
 
-  /* sons de mesa (WebAudio local, curto e discreto — padrão bomb/archery) */
+  /* sons de mesa (WebAudio local, curto e discreto — padrão bomb) */
   let _actx = null;
   function snd(fn) {
     if (!soundOn()) return;

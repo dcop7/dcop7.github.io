@@ -9,7 +9,7 @@ const I18n = (function () {
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Photography','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News','nav.f1':'Formula 1','nav.oss':'Tech Discovery','nav.discovery':'Gaming Deals',
-      'nav.netlab':'Network Lab','nav.funlab':'Fun Lab','nav.autolab':'Auto Intelligence',
+      'nav.netlab':'Network Lab','nav.autolab':'Auto Intelligence',
       'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun','nav.grp.photo':'Photography',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
       // Theme panel + header tooltips
@@ -25,7 +25,7 @@ const I18n = (function () {
       'game.battleship':'Battleship','game.uno':'Uno','game.sueca':'Sueca',
       'game.wordle':'Word of the Day','game.neon-shooter':'Neon Space Shooter',
       'game.reaction':'Reaction Test',
-      'game.gravity-lab':'Gravity Lab','game.archery':'Archery',
+      'game.gravity-lab':'Gravity Lab','game.dobble':'Sharp Eye',
       // Header
       'hdr.search':'Search games, sites, sections…','hdr.lang':'PT',
       // Home widgets
@@ -116,7 +116,7 @@ const I18n = (function () {
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
       'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias','nav.f1':'Fórmula 1','nav.oss':'Descobrir Tech','nav.discovery':'Gaming Deals',
-      'nav.netlab':'Network Lab','nav.funlab':'Fun Lab','nav.autolab':'Auto Intelligence',
+      'nav.netlab':'Network Lab','nav.autolab':'Auto Intelligence',
       'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão','nav.grp.photo':'Fotografia',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
       // Painel de tema + dicas do cabeçalho
@@ -132,7 +132,7 @@ const I18n = (function () {
       'game.battleship':'Batalha Naval','game.uno':'Uno','game.sueca':'Sueca',
       'game.wordle':'Palavra do Dia','game.neon-shooter':'Neon Space Shooter',
       'game.reaction':'Teste de Reação',
-      'game.gravity-lab':'Gravity Lab','game.archery':'Tiro ao Arco',
+      'game.gravity-lab':'Gravity Lab','game.dobble':'Olho Vivo',
       // Header
       'hdr.search':'Pesquisar jogos, sites, secções…','hdr.lang':'EN',
       // Home widgets

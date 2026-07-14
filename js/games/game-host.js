@@ -26,8 +26,8 @@ const GameHost = (function () {
       desc: 'A sueca portuguesa: tu e o teu parceiro contra 2 IA. 120 pontos, trunfos e bandeiras.' },
     { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Arcade',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
-    { id: 'archery',       name: 'Tiro ao Arco',         icon: '🏹', color: '#f2b344', group: 'Arcade',
-      desc: 'Primeira pessoa: arma, aponta e domina o vento e a distância. Campanha de 18 níveis + Sem Fim.' },
+    { id: 'dobble',        name: 'Olho Vivo',            icon: '👁️', color: '#f2b344', group: 'Arcade',
+      desc: 'Encontra o único símbolo em comum entre as duas cartas. Rápido, o tempo não perdoa!' },
   ];
 
   const GROUP_ORDER = ['Clássicos', 'Tabuleiro & Estratégia', 'Puzzle & Lógica', 'Arcade'];
@@ -46,7 +46,7 @@ const GameHost = (function () {
     sueca:          { init: () => SuecaGame.init(document.getElementById('pane-sueca')),               initialized: false },
     'neon-shooter':  { init: () => NeonShooterGame.init(document.getElementById('pane-neon-shooter')),   initialized: false },
     'gravity-lab':   { init: () => GravityLabGame.init(document.getElementById('pane-gravity-lab')),     initialized: false },
-    archery:         { init: () => ArcheryGame.init(document.getElementById('pane-archery')),            initialized: false },
+    dobble:          { init: () => DobbleGame.init(document.getElementById('pane-dobble')),              initialized: false },
   };
 
   /* Unified difficulty model — same as Quizzes (Fácil / Médio / Difícil).

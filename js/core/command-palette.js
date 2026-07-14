@@ -17,7 +17,6 @@ const CommandPalette = (function () {
     { name: 'Cheatsheets',       desc: 'Comandos e referências',           icon: '📋', type: 'nav', action: () => Nav.go('cheatsheets') },
     { name: 'Jogos',             desc: 'Xadrez, Wordle, Uno e mais',       icon: '🎮', type: 'nav', action: () => Nav.go('games') },
     { name: 'Quizzes',           desc: 'Aprender a brincar',               icon: '🧩', type: 'nav', action: () => Nav.go('quiz') },
-    { name: 'Fun Lab',           desc: 'Memes, factos, roasts, fortuna',   icon: '🎲', type: 'nav', action: () => Nav.go('funlab') },
     { name: 'Humor',             desc: 'Piadas e adivinhas',               icon: '😂', type: 'nav', action: () => Nav.go('humor') },
     { name: 'Fotografia',        desc: 'Cheat sheets de captura e edição', icon: '📷', type: 'nav', action: () => Nav.go('photography') },
     { name: 'Visual',            desc: 'Matriz, SWOT, mapas mentais',      icon: '🧠', type: 'nav', action: () => Nav.go('visual') },

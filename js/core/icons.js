@@ -120,12 +120,6 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M12 12 18 6.5" stroke="C2" stroke-width="1.7"/>
       <circle cx="18" cy="6.5" r="1.5" fill="C2" stroke="none"/>`, { noSpark: true }),
 
-    funlab: duo('funlab', '#f59e0b', '#fbbf24', `
-      <path d="M4.5 20.5 9 9l6 6-11.5 4.5a1 1 0 0 1-1.3-1.3z" fill="G" fill-opacity=".16" stroke="G"/>
-      <circle cx="16.5" cy="7.5" r="4.2" fill="G" fill-opacity=".18" stroke="G"/>
-      <path d="M14.8 8.4a2.2 2.2 0 0 0 3.4 0" stroke="C2" stroke-width="1.3"/>
-      <path d="M15.4 6.4h.01M17.9 6.4h.01" stroke="C2" stroke-width="2"/>`, { noSpark: true }),
-
     autolab: duo('autolab', '#60a5fa', '#93c5fd', `
       <path d="M3 13.5 4.7 9a2 2 0 0 1 1.9-1.3h10.8A2 2 0 0 1 19.3 9L21 13.5V19a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1.2H6.5V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="G" fill-opacity=".14" stroke="G"/>
       <path d="M3.5 13.6h17" stroke="G" opacity=".7"/>

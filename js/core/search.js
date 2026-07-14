@@ -17,7 +17,6 @@ const Search = (function () {
     { label: 'Sistema Solar',id: 'explorer/solar',   icon: '☀', tags: ['sistema solar','solar system','planetas','planets','cometas','comets','asteroides','asteroids','satélites','iss','sol','sun','lua'] },
     { label: 'Via Láctea',   id: 'explorer/galaxy',  icon: '🌌', tags: ['via láctea','milky way','galáxia','galaxy','galaxias','constelações','constellations','estrelas','stars','nebulosas','nebulae','andrómeda','andromeda','espaço','space'] },
     { label: 'Network Lab',  id: 'netlab',           icon: '🛰️', tags: ['network lab','ip','ipv4','ipv6','isp','asn','vpn','proxy','tor','dns','rede','network','latência','latency','ping','geolocalização','geolocation','whois','radar'] },
-    { label: 'Fun Lab',      id: 'funlab',           icon: '🎲', tags: ['fun lab','memes','meme','desculpa','excuse','facto inútil','useless fact','roast','conspiração','conspiracy','nome absurdo','fortuna','fortune','aleatório','random'] },
     { label: 'Auto Intelligence', id: 'autolab',     icon: '🚗', tags: ['auto','carro','car','automóvel','fiabilidade','reliability','avarias','problems','recalls','manutenção','maintenance','comprar carro','usado','km'] },
   ];
 
@@ -34,7 +33,7 @@ const Search = (function () {
     { label: 'Desarmar Bomba',   id: 'games/bomb',           icon: '💥', tags: ['bomba','desarmar','desafio'] },
     { label: 'Gravity Lab',      id: 'games/gravity-lab',    icon: '🔬', tags: ['gravidade','puzzle','gravity'] },
     { label: 'Neon Space Shooter', id: 'games/neon-shooter', icon: '🛸', tags: ['nave','shooter','espaço','arcade'] },
-    { label: 'Tiro ao Arco',     id: 'games/archery',        icon: '🏹', tags: ['arco','tiro','archery','setas','pontaria'] },
+    { label: 'Olho Vivo',        id: 'games/dobble',         icon: '👁️', tags: ['olho vivo','dobble','spot it','símbolo','symbols','rapidez','observação','cartas','duplo'] },
   ];
 
   function buildIndex() {

@@ -16,7 +16,7 @@ const Nav = (function () {
     { id: 'bomb',        key: 'game.bomb',        icon: '💥' },
     { id: 'gravity-lab', key: 'game.gravity-lab', icon: '🔬' },
     { id: 'neon-shooter',key: 'game.neon-shooter',icon: '🛸' },
-    { id: 'archery',     key: 'game.archery',     icon: '🏹' },
+    { id: 'dobble',      key: 'game.dobble',      icon: '👁️' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
@@ -55,7 +55,6 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
           <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
-          <a class="sb-nav-item" data-route="funlab"       href="#funlab">${navIcon('funlab')}<span>${TN('nav.funlab')}</span></a>
           <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
           <div class="sb-grp" data-grp="photo">${TN('nav.grp.photo')}</div>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${navIcon('photography')}<span>${TN('nav.photography')}</span></a>
@@ -182,9 +181,6 @@ const Nav = (function () {
     } else if (page === 'netlab') {
       document.getElementById('view-netlab')?.classList.add('active');
       typeof NetLabPage !== 'undefined' && NetLabPage.show();
-    } else if (page === 'funlab') {
-      document.getElementById('view-funlab')?.classList.add('active');
-      typeof FunLabPage !== 'undefined' && FunLabPage.show();
     } else if (page === 'autolab') {
       document.getElementById('view-autolab')?.classList.add('active');
       typeof AutoLabPage !== 'undefined' && AutoLabPage.show();
@@ -230,7 +226,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','netlab','funlab','autolab','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','netlab','autolab','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);
