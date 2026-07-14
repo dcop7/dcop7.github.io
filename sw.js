@@ -82,6 +82,8 @@ const STATIC = [
   '/data/photo/gear.json',
   '/data/photo/genres.json',
   '/data/photo/know.json',
+  '/data/photo/edit-techniques.json',
+  '/data/photo/edit-impl.json',
   '/js/pages/humor.js',
   '/js/pages/cheatsheets.js',
   /* Quiz */

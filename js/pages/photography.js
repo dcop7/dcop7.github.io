@@ -789,81 +789,26 @@ const PhotographyPage = (function () {
     drawWheel();updateInfo();
   }
 
-  // ── Edit steps (idea + how-to in 3 apps) ──────────────────────────
-  function swRowsHTML(s) {
-    return `<div class="ph-estep-rows">
-      <div class="ph-estep-row"><span class="ph-sw ph-sw-rr">RapidRAW</span><span>${s.rr}</span></div>
-      <div class="ph-estep-row"><span class="ph-sw ph-sw-dt">darktable</span><span>${s.dt}</span></div>
-      <div class="ph-estep-row"><span class="ph-sw ph-sw-sg">Snapseed</span><span>${s.sg}</span></div>
-    </div>`;
+  // ══ EDIÇÃO — modelo de 3 camadas (data-driven) ═══════════════════
+  // género → objetivo visual → técnica (conceito) → implementação (software).
+  // Conceito e software vivem separados: data/photo/edit-techniques.json (a
+  // teoria, que sobrevive à troca de app) e edit-impl.json (o "como fazer" por
+  // software). Adicionar um editor = acrescentar uma chave ao edit-impl.json.
+  let _EDIT = null, _editP = null;
+  function loadEdit() {
+    if (_EDIT) return Promise.resolve(_EDIT);
+    if (_editP) return _editP;
+    const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
+    _editP = Promise.all([grab('edit-techniques.json'), grab('edit-impl.json')])
+      .then(([t, impl]) => (_EDIT = Object.assign({}, t, { impl })))
+      .catch(() => { _editP = null; return null; });
+    return _editP;
   }
-  function editStepHTML(s) {
-    return `<div class="ph-estep"><div class="ph-estep-idea">${s.idea}</div>${swRowsHTML(s)}</div>`;
-  }
-
-  // ── General editing techniques ────────────────────────────────────
-  const EDIT_TECHNIQUES = [
-    { id:'teal-orange', name:'Teal & Orange', icon:'🎨',
-      idea:'Empurra sombras/fundo para teal (azul-esverdeado) e tons de pele/realces para laranja. Cria separação e o look cinematográfico clássico.',
-      rr:'Painel Color Grading (rodas de cor): roda das Sombras → teal/azul, roda dos Realces/Médios → laranja. Afina no HSL (Azul/Ciano = teal; Laranja = pele).',
-      dt:'Módulo «color balance rgb»: nas 4-vias dá hue+chroma teal às Shadows e laranja aos Highlights; ajusta a pele em «color zones».',
-      sg:'Curvas: canal Azul levanta as sombras (+teal) e baixa os realces; canal Vermelho faz o inverso. Reforça com Balanço de Brancos (Calor) no Seletivo sobre a pele.' },
-    { id:'contraste', name:'Contraste (e reduzir)', icon:'◐',
-      idea:'Mais contraste = punch e drama. Menos contraste = look suave, mate, editorial e cores pastel. Reduz para retrato suave ou estética film.',
-      rr:'Slider Contrast; controlo fino na Tone Curve (S = mais; levantar os pretos = menos). «Tone Mapping/AgX» para rolloff suave dos realces.',
-      dt:'«color balance rgb» (contrast + pivot) ou «rgb curve». Para look mate, levanta o ponto preto na curva.',
-      sg:'Ajustar imagem → Contraste. Para look mate, em Curvas levanta o canto inferior-esquerdo (pretos) e baixa um pouco os brancos.' },
-    { id:'clareza', name:'Clareza / Estrutura', icon:'▦',
-      idea:'Clareza = contraste local nos médios (dá punch e volume). Estrutura/Textura = micro-detalhe (rochas, folhas, pele). Usa com moderação na pele.',
-      rr:'Sliders Clarity e Structure. Em retrato aplica Structure só numa máscara que evite a pele.',
-      dt:'Módulo «local contrast» (clarity) e «diffuse or sharpen» (preset texture); afina com «contrast equalizer».',
-      sg:'Detalhes → Estrutura; «Ambiente» (Ajustar imagem) dá contraste local. Aplica localmente com o Pincel se for pele.' },
-    { id:'sat-vib', name:'Saturação vs Vibração', icon:'🌈',
-      idea:'Vibração sobe só as cores menos saturadas e protege os tons de pele — mais natural. Saturação sobe tudo por igual — cuidado com o excesso.',
-      rr:'Sobe Vibrance primeiro; Saturation com parcimónia. Usa o HSL para cores específicas.',
-      dt:'«color balance rgb» (global chroma / vibrance) ou módulo «velvia» (satura protegendo a pele); «color zones» por cor.',
-      sg:'Ajustar imagem → Saturação (global); «Ambiente» dá um efeito tipo vibração. Para cores específicas usa o Seletivo.' },
-    { id:'realces-sombras', name:'Realces & Sombras', icon:'☀️',
-      idea:'Trazer detalhe das nuvens (realces) e abrir as sombras escuras sem achatar a imagem. Base de quase toda a edição RAW.',
-      rr:'Highlights (−) e Shadows (+); depois Whites/Blacks para fixar os pontos. «Dehaze» se houver bruma.',
-      dt:'«filmic rgb» (latitude) ou «tone equalizer» para abrir sombras/segurar realces; «exposure» para a base.',
-      sg:'Ajustar imagem → Realces (−) e Sombras (+). Afina com Curvas.' },
-    { id:'wb', name:'Balanço de Brancos', icon:'🌡️',
-      idea:'Definir a temperatura neutra — ou usá-la de forma criativa (mais quente ao pôr do sol, mais fria para frio/noite).',
-      rr:'Temperature/Tint; usa o conta-gotas num cinzento neutro. Dispara em RAW para liberdade total.',
-      dt:'«white balance» (ou «color calibration» com iluminante); conta-gotas numa zona neutra.',
-      sg:'Balanço de Brancos (Temperatura/Tonalidade); Auto e depois ajusta a gosto.' },
-    { id:'curvas', name:'Curva de Tons', icon:'〰️',
-      idea:'Controlo preciso de luminância e cor por zona — base do look mate, do contraste em S e do teal&orange por canal.',
-      rr:'Tone Curve (Luma + RGB): pontos para S-curve; canais R/G/B para cor.',
-      dt:'«rgb curve» (modo RGB ou por canal); «tone curve» em modo manual.',
-      sg:'Curvas: curva Luminosidade para contraste; troca para os canais Vermelho/Verde/Azul para cor.' },
-    { id:'dodge-burn', name:'Dodge & Burn', icon:'🔦',
-      idea:'Clarear (dodge) o sujeito/olhos e escurecer (burn) distrações e bordas — guia o olhar e dá volume.',
-      rr:'Máscaras (Brush/Radial ou AI «subject») com Exposure +/−. A AI «subject» isola a pessoa automaticamente.',
-      dt:'«exposure» com máscara desenhada (brush), ou «tone equalizer» com máscara.',
-      sg:'Pincel → Exposição/Brilho (clarear/escurecer com o dedo); Seletivo para zonas; Vinheta para as bordas.' },
-    { id:'nitidez-ruido', name:'Nitidez & Ruído', icon:'🔪',
-      idea:'Afiar o detalhe importante e limpar o ruído (sobretudo ISO alto/noite). Ruído primeiro, nitidez por último.',
-      rr:'Noise Reduction (luminância + cor) primeiro; Sharpening depois, com máscara para não afiar céu/pele.',
-      dt:'«denoise (profiled)» primeiro; «sharpen» ou «diffuse or sharpen» depois.',
-      sg:'Detalhes → Nitidez (pouco). Sem denoise dedicado forte: evita exagerar Estrutura/Sombras (amplificam ruído).' },
-    { id:'vinheta', name:'Vinheta', icon:'⭕',
-      idea:'Escurecer suavemente as bordas para concentrar o olhar no sujeito. Subtil — não deve notar-se.',
-      rr:'Effects → Vignette (amount/feather), ou máscara radial invertida com Exposure −.',
-      dt:'Módulo «vignetting» (subtil), ou «exposure» com máscara radial invertida.',
-      sg:'Ferramenta «Vinheta» (brilho exterior −, e tamanho).' },
-    { id:'pb', name:'Conversão Preto & Branco', icon:'⬛',
-      idea:'Converter pensando em tons: controlar como cada cor vira cinzento (céu mais escuro, pele mais clara) e dar contraste/estrutura.',
-      rr:'Conversão B&W + HSL/luminância por cor (baixar Azul = céu dramático); sobe Clarity/Structure e contraste.',
-      dt:'«color calibration» (cinza / channel mixer) ou «monochrome»; afina a luminância por cor; «contrast equalizer».',
-      sg:'Filtro «Preto e branco» (filtro Vermelho/Amarelo escurece o céu); «Tom dramático» e Estrutura para punch.' },
-    { id:'dehaze', name:'Dehaze / Atmosfera', icon:'🌫️',
-      idea:'Cortar a bruma e recuperar contraste/cor em paisagens distantes — ou adicionar glow/atmosfera para um look sonhador.',
-      rr:'Effects → Dehaze (+ limpa, − adiciona atmosfera); Glow/Halation para sonho.',
-      dt:'Módulo «haze removal»; ou contraste local para reforçar.',
-      sg:'Sem dehaze dedicado: Contraste + Estrutura + Sombras (−); «Tom dramático» ajuda.' },
-  ];
+  function editSoftware() { try { return localStorage.getItem('ph-edit-sw') || 'lightroom'; } catch (_) { return 'lightroom'; } }
+  function setEditSoftware(s) { try { localStorage.setItem('ph-edit-sw', s); } catch (_) {} }
+  const techById = id => (_EDIT.techniques || []).find(t => t.id === id);
+  const objById = id => (_EDIT.objectives || []).find(o => o.id === id);
+  let _pendingGoal = null;   // deep-link vindo de um portal de género
 
   // ── Portrait illustrations (crop guide + poses + editorial tips) ──
   // Poses e "Onde cortar" usam o manequim vetorial paramétrico (Mannequin,
@@ -945,28 +890,78 @@ const PhotographyPage = (function () {
     document.addEventListener('keydown', esc);
   }
 
-  function openTechModal(t) {
-    _openModal('ph-tech-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
-      <div class="ph-modal-hdr">
-        <span class="ph-modal-title">${t.icon} ${t.name}</span>
-        <button class="ph-modal-close" aria-label="Fechar">✕</button>
-      </div>
-      <div class="ph-scn-modal-body">
-        <div class="ph-light-box">${t.idea}</div>
-        ${swRowsHTML(t)}
-      </div>
-    </div>`);
+  // ── Laboratório de Edição: drill-down objetivo → técnica → software ──
+  function swTabsHTML(techId) {
+    const impl = (_EDIT.impl || {})[techId] || {};
+    const sw = _EDIT.software || [];
+    const active = editSoftware();
+    const tabs = sw.map(s => `<button class="ph-sw-tab${s.id === active ? ' active' : ''}" data-sw="${s.id}" style="--sw:${s.color}">${s.name}</button>`).join('');
+    const bodies = sw.map(s => `<div class="ph-sw-impl" data-sw="${s.id}"${s.id === active ? '' : ' hidden'}>${impl[s.id] || '—'}</div>`).join('');
+    return `<div class="ph-sw-tabs">${tabs}</div><div class="ph-sw-bodies">${bodies}</div>`;
   }
-
+  function techDetailHTML(t) {
+    const sec = (h, v) => v ? `<div class="ph-know-sec"><h4>${h}</h4><p>${v}</p></div>` : '';
+    const secl = (h, a) => (a && a.length) ? `<div class="ph-know-sec"><h4>${h}</h4><ul class="ph-tip-list">${a.map(x => `<li>${x}</li>`).join('')}</ul></div>` : '';
+    const related = (t.related || []).map(id => { const r = techById(id); return r ? `<button class="ph-chip ph-chip-link" data-tech="${id}">${r.icon} ${r.name}</button>` : ''; }).join('');
+    return `<div class="ph-edit-concept">
+        ${sec('O que resolve', t.solves)}
+        ${sec('Porque funciona', t.why)}
+        <div class="ph-scn-cols">${sec('Quando usar', t.when)}${sec('Quando evitar', t.avoid)}</div>
+        ${secl('Erros comuns', t.errors)}
+        ${sec('Relação com a cor', t.colorTheory)}
+        ${sec('Intensidade recomendada', t.intensity)}
+        ${secl('Variantes', t.variants)}
+        ${secl('Exemplos de utilização', t.examples)}
+      </div>
+      <div class="ph-edit-impl"><div class="ph-edit-impl-hd">🛠️ Como fazer no teu editor</div>${swTabsHTML(t.id)}</div>
+      ${related ? `<div class="ph-know-sec"><h4>Técnicas relacionadas</h4><div class="ph-chips">${related}</div></div>` : ''}`;
+  }
+  function editHomeHTML() {
+    const swSel = `<div class="ph-gearbar"><span class="ph-gearbar-lbl">O meu editor</span>${(_EDIT.software || []).map(s => `<button class="ph-gear-btn${s.id === editSoftware() ? ' active' : ''}" data-editsw="${s.id}">${s.name}</button>`).join('')}</div>`;
+    const cats = (_EDIT.categories || []).map(c => `<div class="ph-edit-cat">
+      <div class="ph-edit-cat-hd"><span>${c.icon} ${c.name}</span><small>${c.blurb || ''}</small></div>
+      <div class="ph-chips">${(c.objectives || []).map(oid => { const o = objById(oid); return o ? `<button class="ph-goal-chip" data-goal="${oid}">${o.name}</button>` : ''; }).join('')}</div>
+    </div>`).join('');
+    return swSel + `<div class="ph-edit-cats">${cats}</div>`;
+  }
+  function editObjHTML(o) {
+    const techs = (o.techniques || []).map(id => { const t = techById(id); return t ? `<button class="ph-scn-card" data-tech="${id}" data-from="${o.id}">
+      <span class="ph-scn-ico">${t.icon}</span><span class="ph-scn-name">${t.name}</span><span class="ph-scn-blurb-sm">${t.solves}</span></button>` : ''; }).join('');
+    return `<button class="ph-back" data-back="home">← Objetivos</button>
+      <div class="ph-portal-head"><span class="ph-portal-ico">🎯</span><div><h2 class="ph-portal-name">${o.name}</h2><p class="ph-portal-goal">${o.why}</p></div></div>
+      <p class="ph-section-sub">Técnicas que servem este objetivo — a teoria primeiro, depois o teu editor:</p>
+      <div class="ph-scn-grid">${techs}</div>`;
+  }
+  function editTechHTML(t, from) {
+    const back = from ? `obj:${from}` : 'home';
+    return `<button class="ph-back" data-back="${back}">← Voltar</button>
+      <div class="ph-portal-head"><span class="ph-portal-ico">${t.icon}</span><div><h2 class="ph-portal-name">${t.name}</h2></div></div>
+      ${techDetailHTML(t)}`;
+  }
+  function renderStage(stage, view) {
+    if (view.level === 'obj') stage.innerHTML = editObjHTML(objById(view.id));
+    else if (view.level === 'tech') stage.innerHTML = editTechHTML(techById(view.id), view.from);
+    else stage.innerHTML = editHomeHTML();
+    const go = v => renderStage(stage, v);
+    stage.querySelectorAll('[data-editsw]').forEach(b => b.addEventListener('click', () => { setEditSoftware(b.dataset.editsw); go(view); }));
+    stage.querySelectorAll('[data-goal]').forEach(b => b.addEventListener('click', () => go({ level: 'obj', id: b.dataset.goal })));
+    stage.querySelectorAll('[data-tech]').forEach(b => b.addEventListener('click', () => go({ level: 'tech', id: b.dataset.tech, from: b.dataset.from || (view.level === 'obj' ? view.id : null) })));
+    stage.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { const d = b.dataset.back; go(d.startsWith('obj:') ? { level: 'obj', id: d.slice(4) } : { level: 'home' }); }));
+    stage.querySelectorAll('.ph-sw-tab').forEach(tab => tab.addEventListener('click', () => {
+      const sw = tab.dataset.sw; setEditSoftware(sw);
+      stage.querySelectorAll('.ph-sw-tab').forEach(x => x.classList.toggle('active', x === tab));
+      stage.querySelectorAll('.ph-sw-impl').forEach(x => { x.hidden = x.dataset.sw !== sw; });
+    }));
+  }
   function buildEditTechniques(root) {
-    expandableGrid(root, EDIT_TECHNIQUES, {
-      head: `<div class="ph-section-title">🎨 Técnicas de Edição</div>
-        <p class="ph-section-sub">Conceitos de pós-processamento e como aplicá-los em RapidRAW, darktable e Snapseed.</p>`,
-      thumb: () => '',
-      blurb: t => t.idea,
-      detail: t => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
-        <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon}</span><h3 class="ph-detail-title">${t.name}</h3></div>
-        <div class="ph-detail-body"><div class="ph-light-box">${t.idea}</div>${swRowsHTML(t)}</div>`,
+    root.innerHTML = `<div class="ph-section-title">🎞️ Laboratório de Edição</div>
+      <p class="ph-section-sub">Organizado por <b>objetivo visual</b>, não por software. A teoria é independente do editor — escolhe o objetivo → a técnica → vê o "como fazer" no teu editor.</p>
+      <div class="ph-edit-stage"><p class="ph-section-sub">A carregar…</p></div>`;
+    loadEdit().then(db => {
+      const stage = root.querySelector('.ph-edit-stage'); if (!stage) return;
+      if (!db) { stage.innerHTML = `<p class="ph-section-sub">Não foi possível carregar. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p>`; wireRetry(stage, () => buildEditTechniques(root)); return; }
+      if (_pendingGoal && objById(_pendingGoal)) { const id = _pendingGoal; _pendingGoal = null; renderStage(stage, { level: 'obj', id }); }
+      else renderStage(stage, { level: 'home' });
     });
   }
 
@@ -1091,7 +1086,7 @@ const PhotographyPage = (function () {
   }
   function renderPortal(panel, id) {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+    Promise.all([loadDB(), loadAssets(), loadEdit()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
       const g = db.genres.find(x => x.id === id);
       if (!g) { Nav.go('photography'); return; }
@@ -1116,13 +1111,11 @@ const PhotographyPage = (function () {
         <section class="ph-scn-sec"><h4>☑️ Checklist antes de sair</h4>
           <ul class="ph-check">${g.checklist.map(c => `<li><label><input type="checkbox"><span>${c}</span></label></li>`).join('')}</ul>
         </section>
-        <section class="ph-scn-sec"><h4>✏️ Edição deste género</h4>
+        <section class="ph-scn-sec"><h4>✏️ Objetivos de edição</h4>
           <div class="ph-scn-blurb">${g.edit.intro}</div>
-          ${g.edit.steps.map(editStepHTML).join('')}
-          <div class="ph-chips" style="margin-top:.7rem">${(g.techniques || []).map(tid => {
-            const t = EDIT_TECHNIQUES.find(x => x.id === tid);
-            return t ? `<button class="ph-chip ph-chip-link" data-tech="${t.id}">${t.icon} ${t.name}</button>` : '';
-          }).join('')}</div>
+          <div class="ph-goal-list">${(((_EDIT && _EDIT.genreGoals && _EDIT.genreGoals[g.id]) || []).map(oid => {
+            const o = objById(oid); return o ? `<button class="ph-goal-row" data-goal="${oid}"><span class="ph-goal-name">✓ ${o.name}</span><span class="ph-goal-why">${o.why}</span><span class="ph-goal-go">→</span></button>` : '';
+          }).join('')) || '<p class="ph-section-sub">—</p>'}</div>
         </section>
         ${(g.tools || []).length ? `<section class="ph-scn-sec"><h4>🧮 Ferramentas para este género</h4>
           <div class="ph-chips">${g.tools.map(tid => TOOL_META[tid] ? `<button class="ph-chip ph-chip-link" data-tool="${tid}">🧮 ${TOOL_META[tid].label}</button>` : '').join('')}</div>
@@ -1138,9 +1131,9 @@ const PhotographyPage = (function () {
         const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
         if (comp) openCompModal(comp);
       }));
-      panel.querySelectorAll('[data-tech]').forEach(ch => ch.addEventListener('click', () => {
-        const t = EDIT_TECHNIQUES.find(x => x.id === ch.dataset.tech);
-        if (t) openTechModal(t);
+      panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => {
+        _pendingGoal = ch.dataset.goal;
+        Nav.go('photography/aprender/edicao');
       }));
       panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
         _pendingCalc = ch.dataset.tool;

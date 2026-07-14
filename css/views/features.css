@@ -395,6 +395,28 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
 .ph-know-sec h4 { font-family: var(--font-head); font-size: .82rem; font-weight: 700; margin: 0 0 .3rem; }
 .ph-know-sec p { font-size: .8rem; color: var(--text2); line-height: 1.6; margin: 0; }
 
+/* ── Laboratório de Edição (objetivo → técnica → software) ── */
+.ph-edit-cats { display: flex; flex-direction: column; gap: 1rem; margin-top: .9rem; }
+.ph-edit-cat-hd { display: flex; align-items: baseline; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
+.ph-edit-cat-hd span { font-family: var(--font-head); font-weight: 700; font-size: .9rem; }
+.ph-edit-cat-hd small { color: var(--muted); font-size: .7rem; }
+.ph-goal-chip { background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .42rem .9rem; font: inherit; font-size: .78rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all var(--ease); }
+.ph-goal-chip:hover { border-color: rgba(var(--accent-rgb), .5); color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+.ph-goal-list { display: flex; flex-direction: column; gap: .4rem; }
+.ph-goal-row { display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; font: inherit; color: var(--text); background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .55rem .75rem; cursor: pointer; transition: all var(--ease); }
+.ph-goal-row:hover { border-color: rgba(var(--accent-rgb), .45); transform: translateX(2px); }
+.ph-goal-name { font-weight: 700; font-size: .8rem; color: #34d399; flex-shrink: 0; }
+.ph-goal-why { font-size: .72rem; color: var(--muted); flex: 1; line-height: 1.4; }
+.ph-goal-go { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+.ph-edit-concept { display: flex; flex-direction: column; gap: .7rem; margin-bottom: .6rem; }
+.ph-edit-impl { border: 1px solid rgba(var(--accent-rgb), .3); border-radius: var(--radius-sm); overflow: hidden; margin: .5rem 0; }
+.ph-edit-impl-hd { font-family: var(--font-head); font-weight: 700; font-size: .8rem; padding: .55rem .75rem; background: var(--accent-soft); }
+.ph-sw-tabs { display: flex; gap: .3rem; padding: .5rem .6rem 0; flex-wrap: wrap; }
+.ph-sw-tab { background: transparent; border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; padding: .32rem .75rem; font: inherit; font-size: .74rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: all var(--ease); }
+.ph-sw-tab.active { color: #fff; background: var(--sw, var(--accent)); border-color: var(--sw, var(--accent)); }
+.ph-sw-bodies { padding: .65rem .8rem .8rem; border-top: 1px solid var(--border); }
+.ph-sw-impl { font-size: .8rem; color: var(--text2); line-height: 1.6; }
+
 /* Comparação foto-real (ex.: qualidade da luz) — miniatura + galeria 3-up */
 .ph-learn-thumb .ph-photo-thumb { aspect-ratio: 21 / 10; }
 .ph-photo-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; display: block; }

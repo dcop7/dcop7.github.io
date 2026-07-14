@@ -1,0 +1,75 @@
+{
+  "_doc": "Camada de IMPLEMENTAÇÃO (só software). A teoria vive em edit-techniques.json e não muda quando se troca de app. Para adicionar um software (ex.: captureone) basta acrescentar a chave a cada técnica; para remover, apagá-la.",
+  "teal-orange": {
+    "lightroom": "Color Grading (rodas): Sombras → teal/azul, Realces/Médios → laranja; ajusta a Luminância de cada roda. No HSL/Cor afina Laranja (pele) e Azul/Ciano para reforçar a separação.",
+    "darktable": "«color balance rgb»: nas 4-vias dá hue+chroma teal às Shadows e laranja aos Highlights; ajusta a pele em «color zones».",
+    "snapseed": "Curvas: canal Azul levanta as sombras (+teal) e baixa os realces; canal Vermelho faz o inverso. Reforça com Balanço de Brancos (Calor) no Seletivo sobre a pele.",
+    "rapidraw": "Color Grading (rodas de cor): roda das Sombras → teal/azul, roda dos Realces/Médios → laranja. Afina no HSL (Azul/Ciano = teal; Laranja = pele)."
+  },
+  "contraste": {
+    "lightroom": "Slider Contraste + Tone Curve (S = mais). Para look mate, levanta o ponto preto e baixa o branco na curva de pontos.",
+    "darktable": "«color balance rgb» (contrast + pivot) ou «rgb curve». Para look mate, levanta o ponto preto na curva.",
+    "snapseed": "Ajustar imagem → Contraste. Para look mate, em Curvas levanta o canto inferior-esquerdo (pretos) e baixa um pouco os brancos.",
+    "rapidraw": "Slider Contrast; controlo fino na Tone Curve (S = mais; levantar os pretos = menos). «Tone Mapping/AgX» para rolloff suave dos realces."
+  },
+  "clareza": {
+    "lightroom": "Sliders Textura e Clareza (médios). Em retrato aplica Textura só com máscara que evite a pele; «Dehaze» leve reforça o contraste local.",
+    "darktable": "Módulo «local contrast» (clarity) e «diffuse or sharpen» (preset texture); afina com «contrast equalizer».",
+    "snapseed": "Detalhes → Estrutura; «Ambiente» (Ajustar imagem) dá contraste local. Aplica localmente com o Pincel se for pele.",
+    "rapidraw": "Sliders Clarity e Structure. Em retrato aplica Structure só numa máscara que evite a pele."
+  },
+  "sat-vib": {
+    "lightroom": "Sobe Vibração primeiro (protege a pele); Saturação com parcimónia. HSL → Saturação por cor para ajustes cirúrgicos.",
+    "darktable": "«color balance rgb» (global chroma / vibrance) ou módulo «velvia» (satura protegendo a pele); «color zones» por cor.",
+    "snapseed": "Ajustar imagem → Saturação (global); «Ambiente» dá um efeito tipo vibração. Para cores específicas usa o Seletivo.",
+    "rapidraw": "Sobe Vibrance primeiro; Saturation com parcimónia. Usa o HSL para cores específicas."
+  },
+  "realces-sombras": {
+    "lightroom": "Realces (−) e Sombras (+); depois Brancos/Pretos para fixar os pontos. «Remover Neblina» leve se houver bruma.",
+    "darktable": "«filmic rgb» (latitude) ou «tone equalizer» para abrir sombras/segurar realces; «exposure» para a base.",
+    "snapseed": "Ajustar imagem → Realces (−) e Sombras (+). Afina com Curvas.",
+    "rapidraw": "Highlights (−) e Shadows (+); depois Whites/Blacks para fixar os pontos. «Dehaze» se houver bruma."
+  },
+  "wb": {
+    "lightroom": "Temperatura/Matiz; conta-gotas num cinzento neutro. Dispara em RAW para liberdade total.",
+    "darktable": "«white balance» (ou «color calibration» com iluminante); conta-gotas numa zona neutra.",
+    "snapseed": "Balanço de Brancos (Temperatura/Tonalidade); Auto e depois ajusta a gosto.",
+    "rapidraw": "Temperature/Tint; usa o conta-gotas num cinzento neutro. Dispara em RAW para liberdade total."
+  },
+  "curvas": {
+    "lightroom": "Curva de Tonalidade (Luma + canais Vermelho/Verde/Azul): pontos para S-curve; canais para cor.",
+    "darktable": "«rgb curve» (modo RGB ou por canal); «tone curve» em modo manual.",
+    "snapseed": "Curvas: curva Luminosidade para contraste; troca para os canais Vermelho/Verde/Azul para cor.",
+    "rapidraw": "Tone Curve (Luma + RGB): pontos para S-curve; canais R/G/B para cor."
+  },
+  "dodge-burn": {
+    "lightroom": "Máscaras (Pincel/Radial ou «Selecionar Sujeito/Céu» por IA) com Exposição +/−. A máscara de sujeito isola a pessoa automaticamente.",
+    "darktable": "«exposure» com máscara desenhada (brush), ou «tone equalizer» com máscara.",
+    "snapseed": "Pincel → Exposição/Brilho (clarear/escurecer com o dedo); Seletivo para zonas; Vinheta para as bordas.",
+    "rapidraw": "Máscaras (Brush/Radial ou AI «subject») com Exposure +/−. A AI «subject» isola a pessoa automaticamente."
+  },
+  "nitidez-ruido": {
+    "lightroom": "Redução de Ruído (luminância + cor) primeiro — ou «Eliminar Ruído» IA; Nitidez depois, com Máscara para não afiar céu/pele.",
+    "darktable": "«denoise (profiled)» primeiro; «sharpen» ou «diffuse or sharpen» depois.",
+    "snapseed": "Detalhes → Nitidez (pouco). Sem denoise dedicado forte: evita exagerar Estrutura/Sombras (amplificam ruído).",
+    "rapidraw": "Noise Reduction (luminância + cor) primeiro; Sharpening depois, com máscara para não afiar céu/pele."
+  },
+  "vinheta": {
+    "lightroom": "Efeitos → Vinheta (Quantidade/Difusão), ou máscara radial invertida com Exposição −.",
+    "darktable": "Módulo «vignetting» (subtil), ou «exposure» com máscara radial invertida.",
+    "snapseed": "Ferramenta «Vinheta» (brilho exterior −, e tamanho).",
+    "rapidraw": "Effects → Vignette (amount/feather), ou máscara radial invertida com Exposure −."
+  },
+  "pb": {
+    "lightroom": "Perfil P&B + Mistura P&B (luminância por cor: baixar Azul = céu dramático); sobe Textura/Clareza e contraste.",
+    "darktable": "«color calibration» (cinza / channel mixer) ou «monochrome»; afina a luminância por cor; «contrast equalizer».",
+    "snapseed": "Filtro «Preto e branco» (filtro Vermelho/Amarelo escurece o céu); «Tom dramático» e Estrutura para punch.",
+    "rapidraw": "Conversão B&W + HSL/luminância por cor (baixar Azul = céu dramático); sobe Clarity/Structure e contraste."
+  },
+  "dehaze": {
+    "lightroom": "Efeitos → Remover Neblina (+ limpa, − adiciona atmosfera); para glow, máscara + Clareza negativa.",
+    "darktable": "Módulo «haze removal»; ou contraste local para reforçar.",
+    "snapseed": "Sem dehaze dedicado: Contraste + Estrutura + Sombras (−); «Tom dramático» ajuda.",
+    "rapidraw": "Effects → Dehaze (+ limpa, − adiciona atmosfera); Glow/Halation para sonho."
+  }
+}
