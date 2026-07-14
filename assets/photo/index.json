@@ -40,5 +40,21 @@
   "comp-automovel-diagonal": "comp-genre/comp-automovel-diagonal.webp",
   "comp-automovel-converging": "comp-genre/comp-automovel-converging.webp",
   "comp-automovel-thirds": "comp-genre/comp-automovel-thirds.webp",
-  "comp-automovel-negative": "comp-genre/comp-automovel-negative.webp"
+  "comp-automovel-negative": "comp-genre/comp-automovel-negative.webp",
+  "comp-rua-converging": "comp-genre2/comp-rua-converging.webp",
+  "comp-rua-framing": "comp-genre2/comp-rua-framing.webp",
+  "comp-rua-thirds": "comp-genre2/comp-rua-thirds.webp",
+  "comp-rua-diagonal": "comp-genre2/comp-rua-diagonal.webp",
+  "comp-gastronomia-thirds": "comp-genre2/comp-gastronomia-thirds.webp",
+  "comp-gastronomia-triangle": "comp-genre2/comp-gastronomia-triangle.webp",
+  "comp-gastronomia-negative": "comp-genre2/comp-gastronomia-negative.webp",
+  "comp-gastronomia-scurve": "comp-genre2/comp-gastronomia-scurve.webp",
+  "comp-produto-negative": "comp-genre2/comp-produto-negative.webp",
+  "comp-produto-triangle": "comp-genre2/comp-produto-triangle.webp",
+  "comp-produto-symmetry": "comp-genre2/comp-produto-symmetry.webp",
+  "comp-produto-thirds": "comp-genre2/comp-produto-thirds.webp",
+  "comp-arquitetura-symmetry": "comp-genre2/comp-arquitetura-symmetry.webp",
+  "comp-arquitetura-converging": "comp-genre2/comp-arquitetura-converging.webp",
+  "comp-arquitetura-framing": "comp-genre2/comp-arquitetura-framing.webp",
+  "comp-arquitetura-diagonal": "comp-genre2/comp-arquitetura-diagonal.webp"
 }
