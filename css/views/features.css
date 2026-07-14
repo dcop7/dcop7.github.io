@@ -321,8 +321,75 @@ body.ph-modal-open { overflow: hidden; }
 .ph-pose-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: .5rem; }
 .ph-pose { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem; }
 .ph-pose svg { display: block; height: 120px; margin: 0 auto; }
+.ph-pose-vis { display: block; }
+.ph-pose-img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+/* Poses foto-reais (PNG/WebP com transparência) ficam maiores e com um fundo
+   subtil de estúdio para assentarem no cartão. */
+.ph-pose.has-img { background: radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.05), transparent 70%), var(--card2); }
+.ph-pose-grid:has(.has-img) { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .ph-pose-cap { font-size: .64rem; color: var(--text2); text-align: center; margin-top: .3rem; line-height: 1.35; }
 .ph-tip-list { margin: 0; padding-left: 1.1rem; font-size: .76rem; color: var(--text2); line-height: 1.55; display: flex; flex-direction: column; gap: .3rem; }
+
+/* ── Aprender visual-first: grelha expansível + ilustrações inline ── */
+.ph-vis, .ph-svg { display: block; width: 100%; height: auto; }
+.ph-vis-img, .ph-vis canvas { display: block; width: 100%; height: auto; }
+.ph-learn-thumb .ph-comp-thumb { aspect-ratio: 21 / 10; }
+.ph-comp-detail-art canvas { display: block; width: 100%; height: auto; }
+.ph-learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: .7rem; align-items: start; }
+.ph-learn-card {
+  display: flex; flex-direction: column; text-align: left; font: inherit; color: var(--text);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer; padding: 0; position: relative; transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
+}
+.ph-learn-card:hover { border-color: rgba(var(--accent-rgb), .45); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.28); }
+.ph-learn-card.active { border-color: rgba(var(--accent-rgb), .7); box-shadow: 0 0 0 1px rgba(var(--accent-rgb), .5) inset; transform: none; }
+.ph-learn-thumb { display: block; width: 100%; background: #0a1220; border-bottom: 1px solid var(--border); }
+.ph-learn-thumb .ph-svg, .ph-learn-thumb .ph-vis { aspect-ratio: 21 / 10; }
+.ph-learn-card.no-art .ph-learn-thumb { aspect-ratio: 21 / 10; display: flex; align-items: center; justify-content: center; }
+.ph-learn-ico { font-size: 2.4rem; opacity: .85; }
+.ph-learn-info { padding: .6rem .75rem .7rem; display: flex; flex-direction: column; gap: .2rem; }
+.ph-learn-name { font-family: var(--font-head); font-size: .84rem; font-weight: 700; line-height: 1.25; }
+.ph-learn-caret {
+  position: absolute; top: .5rem; right: .5rem; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(6,12,22,.62); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; transition: transform var(--ease), background var(--ease);
+}
+.ph-learn-caret::before, .ph-learn-caret::after { content: ''; position: absolute; background: var(--ink, #eaf1fb); border-radius: 2px; }
+.ph-learn-caret::before { width: 10px; height: 2px; }
+.ph-learn-caret::after { width: 2px; height: 10px; transition: transform var(--ease), opacity var(--ease); }
+.ph-learn-card.active .ph-learn-caret { background: var(--accent); border-color: var(--accent); }
+.ph-learn-card.active .ph-learn-caret::after { transform: scaleY(0); opacity: 0; }
+
+.ph-learn-detail {
+  grid-column: 1 / -1; position: relative; margin: .1rem 0 .3rem;
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), .06), transparent 60%), var(--card);
+  border: 1px solid rgba(var(--accent-rgb), .4); border-radius: var(--radius); padding: 1rem 1.15rem 1.15rem;
+  animation: ph-detail-in .28s var(--ease-out, ease);
+}
+@keyframes ph-detail-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.ph-detail-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; padding-right: 2rem; }
+.ph-detail-ico { font-size: 1.3rem; }
+.ph-detail-title { font-family: var(--font-head); font-size: 1.02rem; font-weight: 700; margin: 0; }
+.ph-detail-art { border-radius: var(--radius-sm); overflow: hidden; background: #0a1220; margin-bottom: 1rem; max-width: 640px; }
+.ph-detail-body { display: flex; flex-direction: column; gap: .85rem; max-width: 720px; }
+.ph-detail-close {
+  position: absolute; top: .7rem; right: .7rem; width: 26px; height: 26px; border-radius: 6px;
+  background: var(--card2); border: 1px solid var(--border); color: var(--muted); cursor: pointer;
+  font-size: .8rem; display: flex; align-items: center; justify-content: center; transition: all var(--ease); font-family: inherit;
+}
+.ph-detail-close:hover { color: var(--text); border-color: var(--border2); }
+.ph-know-sec h4 { font-family: var(--font-head); font-size: .82rem; font-weight: 700; margin: 0 0 .3rem; }
+.ph-know-sec p { font-size: .8rem; color: var(--text2); line-height: 1.6; margin: 0; }
+
+/* Comparação foto-real (ex.: qualidade da luz) — miniatura + galeria 3-up */
+.ph-learn-thumb .ph-photo-thumb { aspect-ratio: 21 / 10; }
+.ph-photo-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; display: block; }
+.ph-detail-art.ph-photo-art { background: transparent; }
+.ph-photo-gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
+.ph-photo-cell { margin: 0; }
+.ph-photo-cell img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
+.ph-photo-cell figcaption { font-size: .68rem; color: var(--muted); text-align: center; margin-top: .35rem; line-height: 1.35; }
+@media (max-width: 520px) { .ph-photo-gal { grid-template-columns: 1fr; } }
 
 .ph-estep { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .65rem .75rem; background: var(--card2); }
 .ph-estep + .ph-estep { margin-top: .6rem; }

@@ -1,0 +1,17 @@
+{
+  "name": "photogen",
+  "version": "1.0.0",
+  "description": "Gera **imagens estáticas** para a secção Fotografia usando o teu **ComfyUI local**. É uma ferramenta de *desenvolvimento*: corre na tua máquina, escreve ficheiros em `assets/photo/` e mais nada. O site continua **100% estático** e funciona sem estes assets — as ilustrações são desenhadas por código em `js/pages/photo-illus.js` (SVG) e os diagramas de pose em `js/pages/photography.js`. Os assets foto-reais só **substituem** esses fallbacks quando existem.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@imgly/background-removal-node": "^1.4.5",
+    "sharp": "^0.35.3"
+  }
+}

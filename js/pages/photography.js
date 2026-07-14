@@ -578,28 +578,21 @@ const PhotographyPage = (function () {
   }
 
   function buildComposition(root) {
-    root.innerHTML=`
-      <div class="ph-section-title">🖼️ Guias de Composição</div>
-      <p class="ph-section-sub">As regras clássicas para organizar os elementos no enquadramento. Toca num cartão para ver a explicação completa, dicas práticas e exemplos.</p>
-      <div class="ph-comp-grid" id="ph-comp-grid"></div>`;
-
-    const grid=root.querySelector('#ph-comp-grid');
-    COMPOSITIONS.forEach((comp,idx)=>{
-      const item=document.createElement('button');
-      item.type='button';
-      item.className='ph-comp-item';
-      item.innerHTML=`
-        <div class="ph-comp-canvas-wrap"><canvas class="ph-comp-canvas" id="ph-comp-${idx}" width="300" height="200"></canvas></div>
-        <div class="ph-comp-name">${comp.name}</div>
-        <div class="ph-comp-desc">${comp.desc}</div>`;
-      grid.appendChild(item);
-
-      requestAnimationFrame(()=>{
-        const canvas=item.querySelector('canvas');
-        drawCompCanvas(canvas, comp);
-      });
-
-      item.addEventListener('click', () => openCompModal(comp));
+    expandableGrid(root, COMPOSITIONS, {
+      head: `<div class="ph-section-title">🖼️ Guias de Composição</div>
+        <p class="ph-section-sub">As regras clássicas para organizar o enquadramento. Cada cartão mostra o diagrama — toca para o ver em grande, com dicas e exemplos.</p>`,
+      thumb: () => `<span class="ph-vis ph-comp-thumb"><canvas width="300" height="143"></canvas></span>`,
+      blurb: c => c.desc,
+      afterCard: (card, c) => { const cv = card.querySelector('canvas'); if (cv) requestAnimationFrame(() => drawCompCanvas(cv, c)); },
+      detail: c => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+        <div class="ph-detail-head"><span class="ph-detail-ico">🖼️</span><h3 class="ph-detail-title">${c.name}</h3></div>
+        <div class="ph-detail-art ph-comp-detail-art"><canvas width="600" height="286"></canvas></div>
+        <div class="ph-detail-body">
+          <div class="ph-know-sec"><p>${c.desc}</p></div>
+          ${c.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${c.tips}</div>` : ''}
+          ${c.examples ? `<div class="ph-know-sec"><h4>📷 Exemplos</h4><p>${c.examples}</p></div>` : ''}
+        </div>`,
+      afterOpen: (detail, c) => { const cv = detail.querySelector('.ph-detail-art canvas'); if (cv) drawCompCanvas(cv, c); },
     });
   }
 
@@ -902,19 +895,36 @@ const PhotographyPage = (function () {
     </svg>`;
   }
 
-  function svgPoses() {
+  // Poses: cada uma tem um id que casa com tools/photogen/manifest.json. Se
+  // existir um asset foto-real (gerado localmente via ComfyUI) usa-se a imagem
+  // com lazy-load; senão, o diagrama SVG é o fallback pedagógico.
+  const POSES = [
+    { id:'pose-three-quarter', d:'M46 32 L45 78 M45 48 L34 66 M45 48 L58 62 M45 78 L38 116 M45 78 L56 100 L52 116', h:[46,22], cap:'Ângulo 3/4 · peso na perna de trás, ombros em ângulo' },
+    { id:'pose-busy-hands', d:'M46 34 L46 78 M46 50 L33 34 L40 20 M46 50 L58 64 L54 72 M46 78 L39 116 M46 78 L53 116', h:[46,24], cap:'Dá algo às mãos (cabelo, anca, bolso)' },
+    { id:'pose-s-curve', d:'M48 32 C42 48 54 58 49 78 M47 48 L36 64 M51 50 L61 64 M49 78 L40 116 M49 78 L57 110 L54 116', h:[48,22], cap:'Curva em S · anca e ombros em sentidos opostos' },
+    { id:'pose-leaning', d:'M40 34 L54 78 M42 50 L34 66 M48 52 L70 60 M54 78 L47 116 M54 78 L60 104 L52 116 M74 12 L74 122', h:[40,24], cap:'Encostar / apoiar · postura relaxada' },
+  ];
+  function poseSvg(p) {
     const C = '#a78bff';
-    const fig = d => `<svg viewBox="0 0 90 130" width="100%"><path d="${d}" fill="none" stroke="${C}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>__HEAD__</svg>`;
-    const head = (cx, cy) => `<circle cx="${cx}" cy="${cy}" r="10" fill="none" stroke="${C}" stroke-width="4"/>`;
-    const poses = [
-      { d:'M46 32 L45 78 M45 48 L34 66 M45 48 L58 62 M45 78 L38 116 M45 78 L56 100 L52 116', h:[46,22], cap:'Ângulo 3/4 · peso na perna de trás, ombros em ângulo' },
-      { d:'M46 34 L46 78 M46 50 L33 34 L40 20 M46 50 L58 64 L54 72 M46 78 L39 116 M46 78 L53 116', h:[46,24], cap:'Dá algo às mãos (cabelo, anca, bolso)' },
-      { d:'M48 32 C42 48 54 58 49 78 M47 48 L36 64 M51 50 L61 64 M49 78 L40 116 M49 78 L57 110 L54 116', h:[48,22], cap:'Curva em S · anca e ombros em sentidos opostos' },
-      { d:'M40 34 L54 78 M42 50 L34 66 M48 52 L70 60 M54 78 L47 116 M54 78 L60 104 L52 116 M74 12 L74 122', h:[40,24], cap:'Encostar / apoiar · postura relaxada' },
-    ];
-    return poses.map(p =>
-      `<div class="ph-pose">${fig(p.d).replace('__HEAD__', head(p.h[0], p.h[1]))}<div class="ph-pose-cap">${p.cap}</div></div>`
-    ).join('');
+    return `<svg viewBox="0 0 90 130" width="100%"><path d="${p.d}" fill="none" stroke="${C}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${p.h[0]}" cy="${p.h[1]}" r="10" fill="none" stroke="${C}" stroke-width="4"/></svg>`;
+  }
+  function posesHTML() {
+    return POSES.map((p, idx) => {
+      const asset = assetPath(p.id);
+      const inner = asset
+        ? `<span class="ph-pose-vis" data-pose="${idx}"><img class="ph-pose-img" loading="lazy" decoding="async" alt="${p.cap}" src="${asset}"></span>`
+        : `<span class="ph-pose-vis">${poseSvg(p)}</span>`;
+      return `<div class="ph-pose${asset ? ' has-img' : ''}">${inner}<div class="ph-pose-cap">${p.cap}</div></div>`;
+    }).join('');
+  }
+  function wirePoses(root) {
+    root.querySelectorAll('.ph-pose-vis[data-pose] img').forEach(img => {
+      img.addEventListener('error', () => {
+        const s = img.closest('.ph-pose-vis'); if (!s) return;
+        s.parentElement.classList.remove('has-img');
+        s.innerHTML = poseSvg(POSES[+s.dataset.pose]);
+      }, { once: true });
+    });
   }
 
   function portraitExtrasHTML() {
@@ -926,7 +936,7 @@ const PhotographyPage = (function () {
       </div>
       <div class="ph-illus-block">
         <div class="ph-illus-title">🧍 Poses que funcionam</div>
-        <div class="ph-pose-grid">${svgPoses()}</div>
+        <div class="ph-pose-grid">${posesHTML()}</div>
       </div>
       <div class="ph-illus-block">
         <div class="ph-illus-title">😌 Olhar editorial / "cara de modelo"</div>
@@ -993,17 +1003,14 @@ const PhotographyPage = (function () {
   }
 
   function buildEditTechniques(root) {
-    root.innerHTML = `
-      <div class="ph-section-title">🎨 Técnicas de Edição</div>
-      <p class="ph-section-sub">Conceitos de pós-processamento e como aplicá-los em RapidRAW, darktable e Snapseed.</p>
-      <div class="ph-scn-grid" id="ph-edit-grid"></div>`;
-    const grid = root.querySelector('#ph-edit-grid');
-    EDIT_TECHNIQUES.forEach(t => {
-      const card = document.createElement('button');
-      card.className = 'ph-scn-card';
-      card.innerHTML = `<span class="ph-scn-ico">${t.icon}</span><span class="ph-scn-name">${t.name}</span><span class="ph-scn-blurb-sm">${t.idea}</span>`;
-      card.addEventListener('click', () => openTechModal(t));
-      grid.appendChild(card);
+    expandableGrid(root, EDIT_TECHNIQUES, {
+      head: `<div class="ph-section-title">🎨 Técnicas de Edição</div>
+        <p class="ph-section-sub">Conceitos de pós-processamento e como aplicá-los em RapidRAW, darktable e Snapseed.</p>`,
+      thumb: () => '',
+      blurb: t => t.idea,
+      detail: t => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+        <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon}</span><h3 class="ph-detail-title">${t.name}</h3></div>
+        <div class="ph-detail-body"><div class="ph-light-box">${t.idea}</div>${swRowsHTML(t)}</div>`,
     });
   }
 
@@ -1024,6 +1031,17 @@ const PhotographyPage = (function () {
   function dbErrorHTML() {
     return `<div class="ph-section-box"><p class="ph-section-sub">Não foi possível carregar o conteúdo de fotografia. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p></div>`;
   }
+  // Índice opcional de assets foto-reais (gerado localmente por tools/photogen).
+  // Ausente por omissão → tudo usa as ilustrações/SVG procedurais como fallback.
+  let _assets = null, _assetsP = null;
+  function loadAssets() {
+    if (_assets) return Promise.resolve(_assets);
+    if (_assetsP) return _assetsP;
+    _assetsP = fetch('assets/photo/index.json')
+      .then(r => (r.ok ? r.json() : {})).then(j => (_assets = j || {})).catch(() => (_assets = {}));
+    return _assetsP;
+  }
+  function assetPath(id) { return (_assets && _assets[id]) ? 'assets/photo/' + _assets[id] : null; }
   function wireRetry(panel, again) {
     panel.querySelector('[data-retry]')?.addEventListener('click', again);
   }
@@ -1117,7 +1135,7 @@ const PhotographyPage = (function () {
   }
   function renderPortal(panel, id) {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-    loadDB().then(db => {
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
       const g = db.genres.find(x => x.id === id);
       if (!g) { Nav.go('photography'); return; }
@@ -1173,6 +1191,7 @@ const PhotographyPage = (function () {
         Nav.go('photography/ferramentas');
       }));
       panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
+      if (g.portrait) wirePoses(panel);
       window.scrollTo({ top: 0 });
     });
   }
@@ -1225,33 +1244,91 @@ const PhotographyPage = (function () {
   }
 
   // ── Aprender: fundamentos + composição + edição + cores ──
-  function openKnowModal(t) {
-    _openModal('ph-know-modal', `<div class="ph-modal-box ph-scn-box" role="dialog" aria-modal="true" aria-label="${t.name}">
-      <div class="ph-modal-hdr">
-        <span class="ph-modal-title">${t.icon} ${t.name}</span>
-        <button class="ph-modal-close" aria-label="Fechar">✕</button>
-      </div>
-      <div class="ph-scn-modal-body">
-        ${t.body.map(s => `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`).join('')}
-      </div>
-    </div>`);
+  // Miniatura visual do conceito: ilustração procedural (PhotoIllus) e, se
+  // existir, uma imagem foto-real (gerada localmente via ComfyUI) com fallback.
+  // Conceitos que ganham uma comparação foto-real (assets gerados via ComfyUI).
+  // Se TODOS os assets existirem no índice, usam-se as fotos; senão, cai no SVG.
+  const CONCEPT_GALLERY = {
+    luz: [
+      { id: 'light-frontal', cap: 'Frontal · suave e plana' },
+      { id: 'light-side',    cap: 'Lateral · dá volume' },
+      { id: 'light-back',    cap: 'Contraluz · recorta' },
+    ],
+  };
+  function galleryItems(id) {
+    const g = CONCEPT_GALLERY[id]; if (!g) return null;
+    const items = g.map(x => ({ cap: x.cap, src: assetPath(x.id) }));
+    return items.every(x => x.src) ? items : null;
   }
+  function galleryHTML(items) {
+    return `<div class="ph-photo-gal">${items.map(x =>
+      `<figure class="ph-photo-cell"><img loading="lazy" decoding="async" src="${x.src}" alt="${x.cap}"><figcaption>${x.cap}</figcaption></figure>`).join('')}</div>`;
+  }
+  function svgThumb(id) {
+    return (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(id))
+      ? `<span class="ph-vis ph-learn-art">${PhotoIllus.svg(id)}</span>` : '';
+  }
+  function conceptThumb(id) {
+    const g = galleryItems(id);
+    if (g) return `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${g[1].src}"></span>`;
+    return svgThumb(id);
+  }
+  function conceptDetailHTML(t, sections) {
+    const g = galleryItems(t.id);
+    const art = g ? `<div class="ph-detail-art ph-photo-art">${galleryHTML(g)}</div>`
+      : (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(t.id)) ? `<div class="ph-detail-art">${PhotoIllus.svg(t.id)}</div>` : '';
+    return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+      <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon || ''}</span><h3 class="ph-detail-title">${t.name}</h3></div>
+      ${art}<div class="ph-detail-body">${sections}</div>`;
+  }
+  // Grelha expansível reutilizável (mata os modais de Aprender): ao clicar num
+  // cartão abre um painel inline em largura total logo a seguir a esse cartão.
+  function expandableGrid(box, items, opt) {
+    box.innerHTML = `${opt.head || ''}<div class="ph-learn-grid"></div>`;
+    const grid = box.querySelector('.ph-learn-grid');
+    const detail = document.createElement('div');
+    detail.className = 'ph-learn-detail'; detail.hidden = true;
+    let sel = null;
+    const close = () => {
+      sel = null; detail.hidden = true; detail.innerHTML = '';
+      grid.querySelectorAll('.ph-learn-card').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-expanded', 'false'); });
+    };
+    items.forEach(t => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      const th = opt.thumb(t);
+      card.className = 'ph-learn-card' + (th ? '' : ' no-art');
+      card.setAttribute('aria-expanded', 'false');
+      card.innerHTML = `<span class="ph-learn-thumb">${th || `<span class="ph-learn-ico">${t.icon || '📷'}</span>`}</span>
+        <span class="ph-learn-info"><span class="ph-learn-name">${t.icon ? t.icon + ' ' : ''}${t.name}</span>
+        <span class="ph-scn-blurb-sm">${opt.blurb(t)}</span></span><span class="ph-learn-caret" aria-hidden="true"></span>`;
+      card.addEventListener('click', () => {
+        if (sel === t) { close(); return; }
+        sel = t;
+        grid.querySelectorAll('.ph-learn-card').forEach(c => { const on = c === card; c.classList.toggle('active', on); c.setAttribute('aria-expanded', on); });
+        detail.innerHTML = opt.detail(t);
+        card.after(detail); detail.hidden = false;
+        if (typeof PhotoIllus !== 'undefined') PhotoIllus.wire(detail);
+        opt.afterOpen && opt.afterOpen(detail, t);
+        detail.querySelector('.ph-detail-close')?.addEventListener('click', () => { close(); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+        requestAnimationFrame(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
+      });
+      grid.appendChild(card);
+      opt.afterCard && opt.afterCard(card, t);
+    });
+    return { grid, close };
+  }
+  const APR_HEAD = `<div class="ph-section-title">📖 Fundamentos</div>
+    <p class="ph-section-sub">O conhecimento transversal a todos os géneros. Cada conceito abre com uma ilustração — percebe a ideia antes de ler.</p>`;
   function buildFundamentos(box) {
-    box.innerHTML = `
-      <div class="ph-section-title">📖 Fundamentos</div>
-      <p class="ph-section-sub">O conhecimento transversal a todos os géneros — exposição, foco, luz, ficheiros e o vocabulário da fotografia.</p>
-      <div class="ph-scn-grid" id="ph-know-grid"><p class="ph-section-sub">A carregar…</p></div>`;
-    loadDB().then(db => {
-      const grid = box.querySelector('#ph-know-grid');
-      if (!grid) return;
-      if (!db) { grid.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
-      grid.innerHTML = '';
-      db.know.forEach(t => {
-        const card = document.createElement('button');
-        card.className = 'ph-scn-card';
-        card.innerHTML = `<span class="ph-scn-ico">${t.icon}</span><span class="ph-scn-name">${t.name}</span><span class="ph-scn-blurb-sm">${t.blurb}</span>`;
-        card.addEventListener('click', () => openKnowModal(t));
-        grid.appendChild(card);
+    box.innerHTML = `${APR_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+      if (!db) { const g = box.querySelector('.ph-learn-grid'); if (g) g.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
+      expandableGrid(box, db.know, {
+        head: APR_HEAD,
+        thumb: t => conceptThumb(t.id),
+        blurb: t => t.blurb,
+        detail: t => conceptDetailHTML(t, t.body.map(s => `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`).join('')),
       });
     });
   }
@@ -1372,7 +1449,6 @@ const PhotographyPage = (function () {
         else if (id === 'agora') buildAgora(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
         else buildFerramentas(panel);
-        try { localStorage.setItem('ph-tab', id); } catch (_) {}
       };
 
       view.querySelectorAll('.ph-nav-btn').forEach(b =>
@@ -1391,9 +1467,8 @@ const PhotographyPage = (function () {
       else if (a === 'cenarios')             tab = 'generos';
       else if (a === 'composicao' || a === 'edicao' || a === 'cores') { tab = 'aprender'; arg = a; }
     }
-    if (!tab) {
-      try { const saved = localStorage.getItem('ph-tab'); if (PH_TABS.some(t => t.id === saved)) tab = saved; } catch (_) {}
-    }
+    /* Rota "nua" #photography é sempre a home de Géneros — não restaurar a última
+       tab (isso impedia voltar a Géneros; ver histórico do bug de navegação). */
     _activate(tab || 'generos', arg);
   }
 
