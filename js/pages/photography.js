@@ -820,11 +820,24 @@ const PhotographyPage = (function () {
     'pose-s-curve': 'Curva em S · anca e ombros em sentidos opostos',
     'pose-leaning': 'Encostar / apoiar · postura relaxada',
   };
+  // Poses: fotos reais (preferência do user) quando existirem no índice; o
+  // manequim vetorial é o fallback. O "Onde cortar" usa sempre o manequim.
+  function poseFigure(id) { return (typeof Mannequin !== 'undefined') ? `<span class="ph-pose-vis mq">${Mannequin.figure(id)}</span>` : ''; }
   function posesHTML() {
-    if (typeof Mannequin === 'undefined') return '';
-    return Object.keys(POSE_CAPTIONS).map(id =>
-      `<div class="ph-pose"><span class="ph-pose-vis mq">${Mannequin.figure(id)}</span><div class="ph-pose-cap">${POSE_CAPTIONS[id]}</div></div>`
-    ).join('');
+    return Object.keys(POSE_CAPTIONS).map(id => {
+      const asset = assetPath(id);
+      const inner = asset
+        ? `<span class="ph-pose-vis" data-pose="${id}"><img class="ph-pose-img" loading="lazy" decoding="async" alt="${POSE_CAPTIONS[id]}" src="${asset}"></span>`
+        : poseFigure(id);
+      return `<div class="ph-pose${asset ? ' has-img' : ''}">${inner}<div class="ph-pose-cap">${POSE_CAPTIONS[id]}</div></div>`;
+    }).join('');
+  }
+  function wirePoses(root) {
+    root.querySelectorAll('.ph-pose-vis[data-pose] img').forEach(img => img.addEventListener('error', () => {
+      const s = img.closest('.ph-pose-vis'); if (!s) return;
+      s.parentElement.classList.remove('has-img');
+      s.outerHTML = poseFigure(s.dataset.pose);
+    }, { once: true }));
   }
 
   function portraitExtrasHTML() {
@@ -895,8 +908,9 @@ const PhotographyPage = (function () {
     const impl = (_EDIT.impl || {})[techId] || {};
     const sw = _EDIT.software || [];
     const active = editSoftware();
+    const steps = v => Array.isArray(v) ? `<ol class="ph-sw-steps">${v.map(x => `<li>${x}</li>`).join('')}</ol>` : `<p>${v || '—'}</p>`;
     const tabs = sw.map(s => `<button class="ph-sw-tab${s.id === active ? ' active' : ''}" data-sw="${s.id}" style="--sw:${s.color}">${s.name}</button>`).join('');
-    const bodies = sw.map(s => `<div class="ph-sw-impl" data-sw="${s.id}"${s.id === active ? '' : ' hidden'}>${impl[s.id] || '—'}</div>`).join('');
+    const bodies = sw.map(s => `<div class="ph-sw-impl" data-sw="${s.id}"${s.id === active ? '' : ' hidden'}>${steps(impl[s.id])}</div>`).join('');
     return `<div class="ph-sw-tabs">${tabs}</div><div class="ph-sw-bodies">${bodies}</div>`;
   }
   function techDetailHTML(t) {
@@ -917,12 +931,11 @@ const PhotographyPage = (function () {
       ${related ? `<div class="ph-know-sec"><h4>Técnicas relacionadas</h4><div class="ph-chips">${related}</div></div>` : ''}`;
   }
   function editHomeHTML() {
-    const swSel = `<div class="ph-gearbar"><span class="ph-gearbar-lbl">O meu editor</span>${(_EDIT.software || []).map(s => `<button class="ph-gear-btn${s.id === editSoftware() ? ' active' : ''}" data-editsw="${s.id}">${s.name}</button>`).join('')}</div>`;
     const cats = (_EDIT.categories || []).map(c => `<div class="ph-edit-cat">
       <div class="ph-edit-cat-hd"><span>${c.icon} ${c.name}</span><small>${c.blurb || ''}</small></div>
       <div class="ph-chips">${(c.objectives || []).map(oid => { const o = objById(oid); return o ? `<button class="ph-goal-chip" data-goal="${oid}">${o.name}</button>` : ''; }).join('')}</div>
     </div>`).join('');
-    return swSel + `<div class="ph-edit-cats">${cats}</div>`;
+    return `<p class="ph-section-sub">Escolhe um objetivo → depois a técnica → o "como fazer" no teu editor (Lightroom, darktable, Snapseed ou RapidRAW).</p><div class="ph-edit-cats">${cats}</div>`;
   }
   function editObjHTML(o) {
     const techs = (o.techniques || []).map(id => { const t = techById(id); return t ? `<button class="ph-scn-card" data-tech="${id}" data-from="${o.id}">
@@ -962,6 +975,18 @@ const PhotographyPage = (function () {
       if (!db) { stage.innerHTML = `<p class="ph-section-sub">Não foi possível carregar. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p>`; wireRetry(stage, () => buildEditTechniques(root)); return; }
       if (_pendingGoal && objById(_pendingGoal)) { const id = _pendingGoal; _pendingGoal = null; renderStage(stage, { level: 'obj', id }); }
       else renderStage(stage, { level: 'home' });
+    });
+  }
+  // Modal de edição — abre a partir dos portais de género SEM sair do portal.
+  // É um mini-Laboratório: drill-down objetivo↔técnica dentro do overlay.
+  function openEditModal(view) {
+    loadEdit().then(db => {
+      if (!db) return;
+      const modal = _openModal('ph-edit-modal', `<div class="ph-modal-box ph-edit-modal-box" role="dialog" aria-modal="true" aria-label="Edição">
+        <div class="ph-modal-hdr"><span class="ph-modal-title">🎞️ Laboratório de Edição</span><button class="ph-modal-close" aria-label="Fechar">✕</button></div>
+        <div class="ph-edit-modal-body"><div class="ph-edit-stage"></div></div>
+      </div>`);
+      renderStage(modal.querySelector('.ph-edit-stage'), view);
     });
   }
 
@@ -1131,16 +1156,13 @@ const PhotographyPage = (function () {
         const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
         if (comp) openCompModal(comp);
       }));
-      panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => {
-        _pendingGoal = ch.dataset.goal;
-        Nav.go('photography/aprender/edicao');
-      }));
+      panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => openEditModal({ level: 'obj', id: ch.dataset.goal })));
       panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
         _pendingCalc = ch.dataset.tool;
         Nav.go('photography/ferramentas');
       }));
       panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
-      if (g.portrait && typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel);
+      if (g.portrait) { wirePoses(panel); if (typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel); }
       window.scrollTo({ top: 0 });
     });
   }

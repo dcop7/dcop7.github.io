@@ -416,6 +416,14 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
 .ph-sw-tab.active { color: #fff; background: var(--sw, var(--accent)); border-color: var(--sw, var(--accent)); }
 .ph-sw-bodies { padding: .65rem .8rem .8rem; border-top: 1px solid var(--border); }
 .ph-sw-impl { font-size: .8rem; color: var(--text2); line-height: 1.6; }
+.ph-sw-steps { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: .32rem; }
+.ph-sw-steps li { padding-left: .15rem; }
+.ph-sw-steps li::marker { color: var(--accent); font-weight: 700; }
+/* Modal de edição (mini-Laboratório a partir dos portais de género) */
+.ph-edit-modal-box { max-width: 720px; }
+.ph-edit-modal-body { padding: 1rem 1.15rem 1.15rem; overflow: auto; min-height: 0; }
+.ph-edit-modal-body .ph-portal-head { margin-top: .2rem; }
+.ph-edit-modal-body .ph-edit-cats { margin-top: .4rem; }
 
 /* Comparação foto-real (ex.: qualidade da luz) — miniatura + galeria 3-up */
 .ph-learn-thumb .ph-photo-thumb { aspect-ratio: 21 / 10; }
