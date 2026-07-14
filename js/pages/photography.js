@@ -1372,14 +1372,18 @@ const PhotographyPage = (function () {
     return (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(id))
       ? `<span class="ph-vis ph-learn-art">${PhotoIllus.svg(id)}</span>` : '';
   }
+  const conceptImg = id => assetPath('know-' + id);
   function conceptThumb(id) {
+    const img = conceptImg(id);
+    if (img) return `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${img}"></span>`;
     const g = galleryItems(id);
     if (g) return `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${g[1].src}"></span>`;
     return svgThumb(id);
   }
   function conceptDetailHTML(t, sections) {
-    const g = galleryItems(t.id);
-    const art = g ? `<div class="ph-detail-art ph-photo-art">${galleryHTML(g)}</div>`
+    const img = conceptImg(t.id), g = galleryItems(t.id);
+    const art = img ? `<div class="ph-detail-art ph-photo-art"><img loading="lazy" decoding="async" alt="" src="${img}"></div>`
+      : g ? `<div class="ph-detail-art ph-photo-art">${galleryHTML(g)}</div>`
       : (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(t.id)) ? `<div class="ph-detail-art">${PhotoIllus.svg(t.id)}</div>` : '';
     return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
       <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon || ''}</span><h3 class="ph-detail-title">${t.name}</h3></div>

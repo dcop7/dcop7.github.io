@@ -28,5 +28,9 @@
   "comp-framing-bad": "comp-bad/comp-framing-bad.webp",
   "comp-negative-bad": "comp-bad/comp-negative-bad.webp",
   "comp-scurve-bad": "comp-bad/comp-scurve-bad.webp",
-  "comp-triangle-bad": "comp-bad/comp-triangle-bad.webp"
+  "comp-triangle-bad": "comp-bad/comp-triangle-bad.webp",
+  "know-rembrandt": "know/know-rembrandt.webp",
+  "know-chiaroscuro": "know/know-chiaroscuro.webp",
+  "know-compressao": "know/know-compressao.webp",
+  "know-profundidade": "know/know-profundidade.webp"
 }

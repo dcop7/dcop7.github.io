@@ -1,139 +1,467 @@
 {
   "topics": [
     {
-      "id": "exposicao", "icon": "🔺", "name": "Triângulo de Exposição",
+      "id": "exposicao",
+      "icon": "🔺",
+      "name": "Triângulo de Exposição",
       "blurb": "Abertura, velocidade e ISO — o equilíbrio que define toda a foto.",
       "body": [
-        { "h": "A ideia", "t": "A exposição é a quantidade de luz captada. Três controlos partilham-na: a abertura (quanta luz entra), a velocidade (durante quanto tempo) e o ISO (quanto o sinal é amplificado). Mudar um obriga a compensar noutro." },
-        { "h": "Abertura (f/)", "t": "Números pequenos (f/1.8) = mais luz e fundo desfocado; números grandes (f/11) = menos luz e tudo nítido. Cada 'stop' (f/2 → f/2.8) corta a luz para metade." },
-        { "h": "Velocidade", "t": "1/1000 congela ação; 1/60 já treme à mão com tele; segundos criam rastos. Regra de segurança à mão: velocidade ≥ 1/(focal equivalente)." },
-        { "h": "ISO", "t": "Amplificação do sinal. ISO base (100) = máxima qualidade; cada duplicação ganha 1 stop de luz e acrescenta ruído. Um ISO alto nítido vale sempre mais do que um ISO baixo tremido." },
-        { "h": "Na prática", "t": "Decide primeiro o que a foto pede: DOF (abertura) ou movimento (velocidade). Fixa esse lado, deixa o outro acompanhar e o ISO fechar o triângulo — é exatamente o que os modos Av/Tv + Auto-ISO fazem." }
+        {
+          "h": "A ideia",
+          "t": "A exposição é a quantidade de luz captada. Três controlos partilham-na: a abertura (quanta luz entra), a velocidade (durante quanto tempo) e o ISO (quanto o sinal é amplificado). Mudar um obriga a compensar noutro."
+        },
+        {
+          "h": "Abertura (f/)",
+          "t": "Números pequenos (f/1.8) = mais luz e fundo desfocado; números grandes (f/11) = menos luz e tudo nítido. Cada 'stop' (f/2 → f/2.8) corta a luz para metade."
+        },
+        {
+          "h": "Velocidade",
+          "t": "1/1000 congela ação; 1/60 já treme à mão com tele; segundos criam rastos. Regra de segurança à mão: velocidade ≥ 1/(focal equivalente)."
+        },
+        {
+          "h": "ISO",
+          "t": "Amplificação do sinal. ISO base (100) = máxima qualidade; cada duplicação ganha 1 stop de luz e acrescenta ruído. Um ISO alto nítido vale sempre mais do que um ISO baixo tremido."
+        },
+        {
+          "h": "Na prática",
+          "t": "Decide primeiro o que a foto pede: DOF (abertura) ou movimento (velocidade). Fixa esse lado, deixa o outro acompanhar e o ISO fechar o triângulo — é exatamente o que os modos Av/Tv + Auto-ISO fazem."
+        }
       ]
     },
     {
-      "id": "histograma", "icon": "📊", "name": "Histograma",
+      "id": "histograma",
+      "icon": "📊",
+      "name": "Histograma",
       "blurb": "O gráfico que não mente — ao contrário do ecrã ao sol.",
       "body": [
-        { "h": "Como ler", "t": "Distribuição dos tons: sombras à esquerda, realces à direita. Não existe histograma 'certo' — existe histograma adequado à cena (uma cena noturna vive encostada à esquerda, e está bem)." },
-        { "h": "Cortes", "t": "Encostado e cortado à direita = realces queimados (irrecuperáveis); cortado à esquerda = sombras entupidas. Em RAW, recupera-se muito mais das sombras do que dos realces — na dúvida, protege a direita." },
-        { "h": "Expor à direita (ETTR)", "t": "Com tempo e tripé: empurra o histograma para a direita sem cortar. Maximiza sinal e minimiza ruído nas sombras ao revelar o RAW." },
-        { "h": "No terreno", "t": "Ativa o aviso de realces ('zebras'/blinkies). Ao sol, o ecrã engana; o histograma nunca." }
+        {
+          "h": "Como ler",
+          "t": "Distribuição dos tons: sombras à esquerda, realces à direita. Não existe histograma 'certo' — existe histograma adequado à cena (uma cena noturna vive encostada à esquerda, e está bem)."
+        },
+        {
+          "h": "Cortes",
+          "t": "Encostado e cortado à direita = realces queimados (irrecuperáveis); cortado à esquerda = sombras entupidas. Em RAW, recupera-se muito mais das sombras do que dos realces — na dúvida, protege a direita."
+        },
+        {
+          "h": "Expor à direita (ETTR)",
+          "t": "Com tempo e tripé: empurra o histograma para a direita sem cortar. Maximiza sinal e minimiza ruído nas sombras ao revelar o RAW."
+        },
+        {
+          "h": "No terreno",
+          "t": "Ativa o aviso de realces ('zebras'/blinkies). Ao sol, o ecrã engana; o histograma nunca."
+        }
       ]
     },
     {
-      "id": "foco-af", "icon": "🎯", "name": "Foco & Autofocus",
+      "id": "foco-af",
+      "icon": "🎯",
+      "name": "Foco & Autofocus",
       "blurb": "One-Shot vs Servo, zonas, Eye AF e quando focar à mão.",
       "body": [
-        { "h": "Modos AF", "t": "One-Shot (AF-S): foca e trava — sujeitos parados. Servo (AF-C): segue continuamente — tudo o que se mexe. Não existe motivo para usar One-Shot em algo que se move." },
-        { "h": "Áreas", "t": "Ponto único = precisão (olho, macro); Zona = ação (o AF escolhe dentro da área); Automático = confiança total na câmara (retratos casuais, viagens)." },
-        { "h": "Eye AF", "t": "Deteção de olhos prende ao olho mais próximo — a única escolha certa em retrato. Na M50 II funciona para pessoas; para animais, usa zona pequena colada ao olho." },
-        { "h": "Foco manual", "t": "Astro (live view ampliado numa estrela), macro (o AF caça) e longa exposição com ND (foca antes, muda para MF). Focus peaking pinta de cor o que está nítido." },
-        { "h": "Profundidade como rede", "t": "Zone focusing: a f/8 focado a 2.5m, quase tudo entre 1.5m e o infinito está aceitável — dispara sem esperar pelo AF (rua)." }
+        {
+          "h": "Modos AF",
+          "t": "One-Shot (AF-S): foca e trava — sujeitos parados. Servo (AF-C): segue continuamente — tudo o que se mexe. Não existe motivo para usar One-Shot em algo que se move."
+        },
+        {
+          "h": "Áreas",
+          "t": "Ponto único = precisão (olho, macro); Zona = ação (o AF escolhe dentro da área); Automático = confiança total na câmara (retratos casuais, viagens)."
+        },
+        {
+          "h": "Eye AF",
+          "t": "Deteção de olhos prende ao olho mais próximo — a única escolha certa em retrato. Na M50 II funciona para pessoas; para animais, usa zona pequena colada ao olho."
+        },
+        {
+          "h": "Foco manual",
+          "t": "Astro (live view ampliado numa estrela), macro (o AF caça) e longa exposição com ND (foca antes, muda para MF). Focus peaking pinta de cor o que está nítido."
+        },
+        {
+          "h": "Profundidade como rede",
+          "t": "Zone focusing: a f/8 focado a 2.5m, quase tudo entre 1.5m e o infinito está aceitável — dispara sem esperar pelo AF (rua)."
+        }
       ]
     },
     {
-      "id": "raw-jpeg", "icon": "🗂️", "name": "RAW vs JPEG",
+      "id": "raw-jpeg",
+      "icon": "🗂️",
+      "name": "RAW vs JPEG",
       "blurb": "Negativo digital vs foto pronta — quando usar cada um.",
       "body": [
-        { "h": "O que são", "t": "RAW = dados brutos do sensor (12–14 bits, sem decisões definitivas); JPEG = imagem processada e comprimida pela câmara (8 bits, WB e contraste 'cozidos')." },
-        { "h": "Vantagem RAW", "t": "Latitude: recuperas realces/sombras, mudas WB sem perda e o denoise trabalha com muito mais informação. Tudo o que planeies editar merece RAW." },
-        { "h": "Vantagem JPEG", "t": "Pronto a partilhar, ficheiros pequenos, rajadas mais longas (buffer). Eventos casuais e fotos-registo vivem bem em JPEG." },
-        { "h": "No teu kit", "t": "M50 II: RAW (CR3) por defeito para tudo o que interessa. S23+: o modo normal faz um JPEG computacional excelente; o Expert RAW dá DNG com multi-frame — o melhor dos dois mundos nos momentos importantes." }
+        {
+          "h": "O que são",
+          "t": "RAW = dados brutos do sensor (12–14 bits, sem decisões definitivas); JPEG = imagem processada e comprimida pela câmara (8 bits, WB e contraste 'cozidos')."
+        },
+        {
+          "h": "Vantagem RAW",
+          "t": "Latitude: recuperas realces/sombras, mudas WB sem perda e o denoise trabalha com muito mais informação. Tudo o que planeies editar merece RAW."
+        },
+        {
+          "h": "Vantagem JPEG",
+          "t": "Pronto a partilhar, ficheiros pequenos, rajadas mais longas (buffer). Eventos casuais e fotos-registo vivem bem em JPEG."
+        },
+        {
+          "h": "No teu kit",
+          "t": "M50 II: RAW (CR3) por defeito para tudo o que interessa. S23+: o modo normal faz um JPEG computacional excelente; o Expert RAW dá DNG com multi-frame — o melhor dos dois mundos nos momentos importantes."
+        }
       ]
     },
     {
-      "id": "focal-crop", "icon": "📏", "name": "Distância Focal & Crop",
+      "id": "focal-crop",
+      "icon": "📏",
+      "name": "Distância Focal & Crop",
       "blurb": "mm, equivalências APS-C 1.6× e o que 'zoom' realmente muda.",
       "body": [
-        { "h": "Focal e ângulo", "t": "Focal curta (15mm) = ângulo largo; focal longa (200mm) = ângulo estreito e compressão (fundos 'aproximam-se'). A perspetiva muda com a TUA posição, não com o zoom." },
-        { "h": "Crop 1.6×", "t": "O sensor APS-C da M50 vê um recorte do círculo da lente: multiplica a focal por 1.6 para comparar com full-frame. 22mm → 35mm eq; 50mm → 80mm eq; 15-45 → 24-72 eq; 55-200 → 88-320 eq." },
-        { "h": "No S23+", "t": "As focais já se anunciam em equivalente: UGA 13mm, principal 23mm, tele ~70mm. O zoom além de 3× é digital — recorte com maquilhagem." },
-        { "h": "Escolher focal", "t": "Não é 'chegar mais perto': 35eq conta cenas, 80eq isola pessoas, 24eq exagera espaço, 320eq comprime e alcança. Escolhe a focal pelo look, depois mexe os pés." }
+        {
+          "h": "Focal e ângulo",
+          "t": "Focal curta (15mm) = ângulo largo; focal longa (200mm) = ângulo estreito e compressão (fundos 'aproximam-se'). A perspetiva muda com a TUA posição, não com o zoom."
+        },
+        {
+          "h": "Crop 1.6×",
+          "t": "O sensor APS-C da M50 vê um recorte do círculo da lente: multiplica a focal por 1.6 para comparar com full-frame. 22mm → 35mm eq; 50mm → 80mm eq; 15-45 → 24-72 eq; 55-200 → 88-320 eq."
+        },
+        {
+          "h": "No S23+",
+          "t": "As focais já se anunciam em equivalente: UGA 13mm, principal 23mm, tele ~70mm. O zoom além de 3× é digital — recorte com maquilhagem."
+        },
+        {
+          "h": "Escolher focal",
+          "t": "Não é 'chegar mais perto': 35eq conta cenas, 80eq isola pessoas, 24eq exagera espaço, 320eq comprime e alcança. Escolhe a focal pelo look, depois mexe os pés."
+        }
       ]
     },
     {
-      "id": "abertura-dof", "icon": "🕳️", "name": "Abertura & Profundidade de Campo",
+      "id": "abertura-dof",
+      "icon": "🕳️",
+      "name": "Abertura & Profundidade de Campo",
       "blurb": "O que controla realmente o desfoque do fundo.",
       "body": [
-        { "h": "Os 4 fatores da DOF", "t": "Abertura maior (f/1.8), focal maior (80eq), sujeito mais perto e FUNDO mais longe = mais desfoque. O último é o mais esquecido: afasta a pessoa da parede e o fundo derrete." },
-        { "h": "Sweet spot", "t": "Quase todas as lentes são mais nítidas 2–3 stops fechadas da máxima: a 15-45 brilha a f/8, o 50mm a f/2.8–f/4. A abertura máxima é para luz/efeito, não para nitidez." },
-        { "h": "Difração", "t": "Além de ~f/11–f/16 em APS-C, a física esbate a imagem toda. f/22 raramente é resposta certa — para mais DOF, usa hiperfocal ou focus stacking." },
-        { "h": "Hiperfocal", "t": "A distância de foco que maximiza a zona nítida até ao infinito. Usa a calculadora — em paisagem substitui a adivinhação." }
+        {
+          "h": "Os 4 fatores da DOF",
+          "t": "Abertura maior (f/1.8), focal maior (80eq), sujeito mais perto e FUNDO mais longe = mais desfoque. O último é o mais esquecido: afasta a pessoa da parede e o fundo derrete."
+        },
+        {
+          "h": "Sweet spot",
+          "t": "Quase todas as lentes são mais nítidas 2–3 stops fechadas da máxima: a 15-45 brilha a f/8, o 50mm a f/2.8–f/4. A abertura máxima é para luz/efeito, não para nitidez."
+        },
+        {
+          "h": "Difração",
+          "t": "Além de ~f/11–f/16 em APS-C, a física esbate a imagem toda. f/22 raramente é resposta certa — para mais DOF, usa hiperfocal ou focus stacking."
+        },
+        {
+          "h": "Hiperfocal",
+          "t": "A distância de foco que maximiza a zona nítida até ao infinito. Usa a calculadora — em paisagem substitui a adivinhação."
+        }
       ]
     },
     {
-      "id": "velocidade", "icon": "⏱️", "name": "Velocidade & Movimento",
+      "id": "velocidade",
+      "icon": "⏱️",
+      "name": "Velocidade & Movimento",
       "blurb": "Congelar, arrastar, panning — o tempo como pincel.",
       "body": [
-        { "h": "Congelar", "t": "Pessoas a andar: 1/250. Desporto: 1/1000. Aves em voo: 1/2000. Gotas: 1/4000. Quando falta luz, abre a abertura e sobe o ISO antes de sacrificar a velocidade." },
-        { "h": "Tremor da mão", "t": "Regra: ≥ 1/(focal equivalente) sem estabilização — 1/80 para o 50mm (80eq), 1/320 no tele. O IS compensa o TEU tremor (3-4 stops), nunca o movimento do sujeito." },
-        { "h": "Arrastar", "t": "1/15–1/2s: água ganha fio, multidões viram fantasmas. Segundos: seda e rastos (ver género Longa Exposição)." },
-        { "h": "Panning", "t": "1/60–1/125 a seguir o sujeito: ele nítido, fundo riscado de velocidade. Pés fixos, tronco a rodar, acompanhamento antes-durante-depois do clique." }
+        {
+          "h": "Congelar",
+          "t": "Pessoas a andar: 1/250. Desporto: 1/1000. Aves em voo: 1/2000. Gotas: 1/4000. Quando falta luz, abre a abertura e sobe o ISO antes de sacrificar a velocidade."
+        },
+        {
+          "h": "Tremor da mão",
+          "t": "Regra: ≥ 1/(focal equivalente) sem estabilização — 1/80 para o 50mm (80eq), 1/320 no tele. O IS compensa o TEU tremor (3-4 stops), nunca o movimento do sujeito."
+        },
+        {
+          "h": "Arrastar",
+          "t": "1/15–1/2s: água ganha fio, multidões viram fantasmas. Segundos: seda e rastos (ver género Longa Exposição)."
+        },
+        {
+          "h": "Panning",
+          "t": "1/60–1/125 a seguir o sujeito: ele nítido, fundo riscado de velocidade. Pés fixos, tronco a rodar, acompanhamento antes-durante-depois do clique."
+        }
       ]
     },
     {
-      "id": "iso-ruido", "icon": "🌾", "name": "ISO & Ruído",
+      "id": "iso-ruido",
+      "icon": "🌾",
+      "name": "ISO & Ruído",
       "blurb": "De onde vem o grão e como o domar sem medo.",
       "body": [
-        { "h": "A verdade sobre o ruído", "t": "O ruído vem da FALTA DE LUZ, não do número ISO — subir o ISO só amplifica um sinal pobre. A foto de ISO 3200 bem exposta fica melhor que a de ISO 800 subexposta e puxada na edição." },
-        { "h": "Limites práticos", "t": "M50 II: até 1600 limpo, 3200 ótimo com denoise, 6400 utilizável, 12800 para memórias. S23+: o multi-frame disfarça, mas acima de ISO 800 num só frame nota-se." },
-        { "h": "Auto-ISO", "t": "A melhor invenção prática: fixa abertura e velocidade mínimas, deixa o ISO flutuar com limite máximo. Configura e esquece." },
-        { "h": "Denoise moderno", "t": "O denoise de hoje (RapidRAW/darktable profiled) transformou ISO 6400 em território normal. Dispara sem medo, limpa depois — ruído tem cura, tremido não." }
+        {
+          "h": "A verdade sobre o ruído",
+          "t": "O ruído vem da FALTA DE LUZ, não do número ISO — subir o ISO só amplifica um sinal pobre. A foto de ISO 3200 bem exposta fica melhor que a de ISO 800 subexposta e puxada na edição."
+        },
+        {
+          "h": "Limites práticos",
+          "t": "M50 II: até 1600 limpo, 3200 ótimo com denoise, 6400 utilizável, 12800 para memórias. S23+: o multi-frame disfarça, mas acima de ISO 800 num só frame nota-se."
+        },
+        {
+          "h": "Auto-ISO",
+          "t": "A melhor invenção prática: fixa abertura e velocidade mínimas, deixa o ISO flutuar com limite máximo. Configura e esquece."
+        },
+        {
+          "h": "Denoise moderno",
+          "t": "O denoise de hoje (RapidRAW/darktable profiled) transformou ISO 6400 em território normal. Dispara sem medo, limpa depois — ruído tem cura, tremido não."
+        }
       ]
     },
     {
-      "id": "medicao", "icon": "⚖️", "name": "Medição & Compensação",
+      "id": "medicao",
+      "icon": "⚖️",
+      "name": "Medição & Compensação",
       "blurb": "Porque é que a neve sai cinzenta e o palco queimado.",
       "body": [
-        { "h": "Como a câmara mede", "t": "O fotómetro assume que o mundo é cinzento médio. Cena branca (neve, praia) → subexpõe; cena escura (concerto, noite) → sobre-expõe. É previsível e corrige-se." },
-        { "h": "Compensação (±EV)", "t": "Neve/areia: +1 a +2 EV. Silhuetas e palcos: −1 a −2 EV. No S23: toca no sujeito e arrasta o slider — é a mesma coisa." },
-        { "h": "Modos de medição", "t": "Matricial/avaliativa serve 95% dos casos. Pontual para contraluz extremo e concertos (mede só o rosto iluminado)." },
-        { "h": "Confirmação", "t": "Compensaste? Confere o histograma — a combinação medição + compensação + histograma é o ciclo de exposição completo." }
+        {
+          "h": "Como a câmara mede",
+          "t": "O fotómetro assume que o mundo é cinzento médio. Cena branca (neve, praia) → subexpõe; cena escura (concerto, noite) → sobre-expõe. É previsível e corrige-se."
+        },
+        {
+          "h": "Compensação (±EV)",
+          "t": "Neve/areia: +1 a +2 EV. Silhuetas e palcos: −1 a −2 EV. No S23: toca no sujeito e arrasta o slider — é a mesma coisa."
+        },
+        {
+          "h": "Modos de medição",
+          "t": "Matricial/avaliativa serve 95% dos casos. Pontual para contraluz extremo e concertos (mede só o rosto iluminado)."
+        },
+        {
+          "h": "Confirmação",
+          "t": "Compensaste? Confere o histograma — a combinação medição + compensação + histograma é o ciclo de exposição completo."
+        }
       ]
     },
     {
-      "id": "luz", "icon": "💡", "name": "Qualidade & Direção da Luz",
+      "id": "luz",
+      "icon": "💡",
+      "name": "Qualidade & Direção da Luz",
       "blurb": "Dura vs suave, frontal vs lateral vs contra — a gramática da luz.",
       "body": [
-        { "h": "Dura vs suave", "t": "A regra única: quanto MAIOR a fonte relativa ao sujeito, mais suave a luz. Sol a pino = ponto minúsculo = sombras duras; céu nublado = softbox de quilómetros; janela grande perto = luz de estúdio grátis." },
-        { "h": "Direção", "t": "Frontal achata (mas esconde defeitos); lateral esculpe volume e textura (paisagem, retrato dramático); contraluz desenha contornos e halos (cabelo, vapor, silhuetas)." },
-        { "h": "Cor da luz", "t": "Hora dourada = quente e baixa; hora azul = fria e envolvente; sombra aberta = azulada e suave; tungsténio = laranja. Mistura de fontes = dores de cabeça de WB — escolhe uma dominante." },
-        { "h": "O hábito", "t": "Antes de levantar a câmara pergunta: de onde vem a luz, que tamanho tem, que cor tem? Mover o sujeito (ou os teus pés) 2 metros vale mais que qualquer definição." }
+        {
+          "h": "Dura vs suave",
+          "t": "A regra única: quanto MAIOR a fonte relativa ao sujeito, mais suave a luz. Sol a pino = ponto minúsculo = sombras duras; céu nublado = softbox de quilómetros; janela grande perto = luz de estúdio grátis."
+        },
+        {
+          "h": "Direção",
+          "t": "Frontal achata (mas esconde defeitos); lateral esculpe volume e textura (paisagem, retrato dramático); contraluz desenha contornos e halos (cabelo, vapor, silhuetas)."
+        },
+        {
+          "h": "Cor da luz",
+          "t": "Hora dourada = quente e baixa; hora azul = fria e envolvente; sombra aberta = azulada e suave; tungsténio = laranja. Mistura de fontes = dores de cabeça de WB — escolhe uma dominante."
+        },
+        {
+          "h": "O hábito",
+          "t": "Antes de levantar a câmara pergunta: de onde vem a luz, que tamanho tem, que cor tem? Mover o sujeito (ou os teus pés) 2 metros vale mais que qualquer definição."
+        }
       ]
     },
     {
-      "id": "filtros", "icon": "🔘", "name": "Filtros (CPL & ND)",
+      "id": "filtros",
+      "icon": "🔘",
+      "name": "Filtros (CPL & ND)",
       "blurb": "Os dois filtros que a edição não substitui.",
       "body": [
-        { "h": "Polarizador (CPL)", "t": "Corta reflexos de água/vidro/folhas e escurece céus a 90° do sol. IMPOSSÍVEL de replicar na edição. Roda-o até ver o efeito; máximo com o sol ao teu lado. Custa ~1 stop de luz." },
-        { "h": "ND", "t": "Óculos de sol para a lente: ND8 (3 stops) para suavizar água de dia; ND1000 (10 stops) para segundos de exposição ao sol. Compõe e foca antes de o montar." },
-        { "h": "As tuas roscas", "t": "15-45mm → 49mm · 22mm → 43mm · 55-200 → 52mm · EF 50 → 49mm. Compra para 49mm e resolve o resto com anéis step-up baratos." },
-        { "h": "O que NÃO precisas", "t": "Filtros UV 'de proteção' baratos degradam mais do que protegem; efeitos de cor fazem-se melhor na edição. CPL + ND cobrem tudo." }
+        {
+          "h": "Polarizador (CPL)",
+          "t": "Corta reflexos de água/vidro/folhas e escurece céus a 90° do sol. IMPOSSÍVEL de replicar na edição. Roda-o até ver o efeito; máximo com o sol ao teu lado. Custa ~1 stop de luz."
+        },
+        {
+          "h": "ND",
+          "t": "Óculos de sol para a lente: ND8 (3 stops) para suavizar água de dia; ND1000 (10 stops) para segundos de exposição ao sol. Compõe e foca antes de o montar."
+        },
+        {
+          "h": "As tuas roscas",
+          "t": "15-45mm → 49mm · 22mm → 43mm · 55-200 → 52mm · EF 50 → 49mm. Compra para 49mm e resolve o resto com anéis step-up baratos."
+        },
+        {
+          "h": "O que NÃO precisas",
+          "t": "Filtros UV 'de proteção' baratos degradam mais do que protegem; efeitos de cor fazem-se melhor na edição. CPL + ND cobrem tudo."
+        }
       ]
     },
     {
-      "id": "glossario", "icon": "📖", "name": "Glossário",
+      "id": "glossario",
+      "icon": "📖",
+      "name": "Glossário",
       "blurb": "Os termos que aparecem em manuais, vídeos e fóruns.",
       "body": [
-        { "h": "Stop", "t": "Duplicação ou metade da luz. +1 stop = 2× luz (via abertura, tempo ou ISO)." },
-        { "h": "Bokeh", "t": "A qualidade (não a quantidade) do desfoque — a forma como os pontos de luz desfocados se desenham." },
-        { "h": "DOF", "t": "Profundidade de campo: a faixa de distâncias aceitavelmente nítidas." },
-        { "h": "Hiperfocal", "t": "Distância de foco que estica a nitidez até ao infinito para uma dada focal/abertura." },
-        { "h": "ETTR", "t": "Expose To The Right — expor o mais claro possível sem queimar, para minimizar ruído." },
-        { "h": "Clipping", "t": "Corte de informação: realces 'queimados' ou sombras 'entupidas' sem detalhe." },
-        { "h": "Focus peaking", "t": "Realce colorido no ecrã sobre as zonas em foco (ouro do foco manual)." },
-        { "h": "Zone focusing", "t": "Pré-focar a uma distância com abertura fechada, confiando na DOF (rua)." },
-        { "h": "Panning", "t": "Seguir o sujeito com velocidade lenta: sujeito nítido, fundo varrido." },
-        { "h": "Focus stacking", "t": "Combinar várias fotos com focos diferentes numa só toda nítida (macro/paisagem)." },
-        { "h": "Golden hour", "t": "±1h após o nascer / antes do pôr do sol: luz quente, baixa e suave." },
-        { "h": "Blue hour", "t": "Crepúsculo civil: céu azul profundo que equilibra com as luzes artificiais." },
-        { "h": "IBIS / IS", "t": "Estabilização no corpo / na lente. A M50 II só tem IS nas lentes que o trazem." },
-        { "h": "Rolling shutter", "t": "Distorção de objetos rápidos por leitura progressiva do sensor (hélices tortas)." },
-        { "h": "Chimping", "t": "Ver o ecrã depois de cada disparo — útil com histograma, vício sem ele." },
-        { "h": "TFP", "t": "Time for prints: colaboração modelo/fotógrafo com troca de fotos em vez de pagamento." },
-        { "h": "Golden ratio", "t": "Proporção 1:1.618 usada em composição (phi grid, espiral áurea)." },
-        { "h": "Sweet spot", "t": "Abertura de nitidez máxima de uma lente (tipicamente 2–3 stops fechada)." }
+        {
+          "h": "Stop",
+          "t": "Duplicação ou metade da luz. +1 stop = 2× luz (via abertura, tempo ou ISO)."
+        },
+        {
+          "h": "Bokeh",
+          "t": "A qualidade (não a quantidade) do desfoque — a forma como os pontos de luz desfocados se desenham."
+        },
+        {
+          "h": "DOF",
+          "t": "Profundidade de campo: a faixa de distâncias aceitavelmente nítidas."
+        },
+        {
+          "h": "Hiperfocal",
+          "t": "Distância de foco que estica a nitidez até ao infinito para uma dada focal/abertura."
+        },
+        {
+          "h": "ETTR",
+          "t": "Expose To The Right — expor o mais claro possível sem queimar, para minimizar ruído."
+        },
+        {
+          "h": "Clipping",
+          "t": "Corte de informação: realces 'queimados' ou sombras 'entupidas' sem detalhe."
+        },
+        {
+          "h": "Focus peaking",
+          "t": "Realce colorido no ecrã sobre as zonas em foco (ouro do foco manual)."
+        },
+        {
+          "h": "Zone focusing",
+          "t": "Pré-focar a uma distância com abertura fechada, confiando na DOF (rua)."
+        },
+        {
+          "h": "Panning",
+          "t": "Seguir o sujeito com velocidade lenta: sujeito nítido, fundo varrido."
+        },
+        {
+          "h": "Focus stacking",
+          "t": "Combinar várias fotos com focos diferentes numa só toda nítida (macro/paisagem)."
+        },
+        {
+          "h": "Golden hour",
+          "t": "±1h após o nascer / antes do pôr do sol: luz quente, baixa e suave."
+        },
+        {
+          "h": "Blue hour",
+          "t": "Crepúsculo civil: céu azul profundo que equilibra com as luzes artificiais."
+        },
+        {
+          "h": "IBIS / IS",
+          "t": "Estabilização no corpo / na lente. A M50 II só tem IS nas lentes que o trazem."
+        },
+        {
+          "h": "Rolling shutter",
+          "t": "Distorção de objetos rápidos por leitura progressiva do sensor (hélices tortas)."
+        },
+        {
+          "h": "Chimping",
+          "t": "Ver o ecrã depois de cada disparo — útil com histograma, vício sem ele."
+        },
+        {
+          "h": "TFP",
+          "t": "Time for prints: colaboração modelo/fotógrafo com troca de fotos em vez de pagamento."
+        },
+        {
+          "h": "Golden ratio",
+          "t": "Proporção 1:1.618 usada em composição (phi grid, espiral áurea)."
+        },
+        {
+          "h": "Sweet spot",
+          "t": "Abertura de nitidez máxima de uma lente (tipicamente 2–3 stops fechada)."
+        }
+      ]
+    },
+    {
+      "id": "rembrandt",
+      "icon": "💡",
+      "name": "Iluminação Rembrandt",
+      "blurb": "O triângulo de luz na bochecha — o retrato clássico e dramático.",
+      "body": [
+        {
+          "h": "O que é",
+          "t": "Técnica de retrato em que a luz principal vem de um lado, a cerca de 45° e acima do rosto. Isso cria um pequeno triângulo de luz na bochecha do lado que fica em sombra, logo abaixo do olho. O nome vem do pintor Rembrandt, que a usava nos seus retratos."
+        },
+        {
+          "h": "Porque funciona",
+          "t": "Modela o rosto com luz e sombra — dá volume e tridimensionalidade sem o achatar. O triângulo é a 'assinatura' que indica que a luz está no ângulo certo."
+        },
+        {
+          "h": "Como fazer (e reconhecer)",
+          "t": "Uma fonte de luz suave (janela, softbox) a ~45° e ligeiramente acima. Roda o sujeito até apareceres o triângulo na bochecha em sombra. Regra: o triângulo não deve ser mais largo que o olho nem descer abaixo do nariz. Se não aparecer, aproxima a luz do sujeito ou ajusta o ângulo."
+        },
+        {
+          "h": "Quando usar / evitar",
+          "t": "Forte em retrato dramático, editorial e clássico. Evita em fotografia de beleza 'clean' ou de produto, onde queres luz plana e uniforme."
+        },
+        {
+          "h": "Conceitos próximos",
+          "t": "É uma forma de luz lateral levada a um ponto específico; quando o contraste é extremo, aproxima-se do chiaroscuro."
+        }
+      ]
+    },
+    {
+      "id": "chiaroscuro",
+      "icon": "🌓",
+      "name": "Chiaroscuro",
+      "blurb": "Claro-escuro extremo — o drama de Caravaggio.",
+      "body": [
+        {
+          "h": "O que é",
+          "t": "Do italiano 'claro-escuro': o uso de forte contraste entre luz e sombra para dar volume e drama. Levado ao extremo — fundo quase preto e só o sujeito iluminado — chama-se tenebrismo, o estilo de Caravaggio."
+        },
+        {
+          "h": "Porque funciona",
+          "t": "O contraste extremo cria mistério, tensão e foco absoluto: o olho vai direto à única zona iluminada. O que fica na sombra sugere-se, não se mostra."
+        },
+        {
+          "h": "Como fazer",
+          "t": "Uma única fonte de luz relativamente dura e direcional; o resto do ambiente escuro (ou bandeiras a cortar a luz). Expõe para os realces e deixa as sombras caírem para preto — não tentes 'salvar' tudo."
+        },
+        {
+          "h": "Quando usar / evitar",
+          "t": "Retrato dramático, still life, cinema noir, música. Evita quando precisas de ver detalhe em toda a cena ou de um look leve e arejado."
+        },
+        {
+          "h": "Conceitos próximos",
+          "t": "A iluminação Rembrandt é uma variante controlada; partilha família com a luz dura e o low-key."
+        }
+      ]
+    },
+    {
+      "id": "compressao",
+      "icon": "🔭",
+      "name": "Compressão de Perspetiva",
+      "blurb": "Porque a teleobjetiva 'cola' o fundo ao sujeito.",
+      "body": [
+        {
+          "h": "O que é",
+          "t": "Com uma focal longa (teleobjetiva) e o sujeito afastado, os planos parecem comprimidos: o fundo aparece muito maior e mais próximo do que realmente está. Uma montanha atrás de uma pessoa pode parecer que a esmaga."
+        },
+        {
+          "h": "Porque acontece",
+          "t": "Não é a lente que 'comprime' — é a DISTÂNCIA. Ao afastares-te e usares mais mm para manter o mesmo enquadramento, a diferença de tamanho entre o que está perto e o que está longe diminui. O oposto: grande angular muito perto exagera a profundidade e as distâncias."
+        },
+        {
+          "h": "Como usar",
+          "t": "85–200mm ou mais, e afasta-te do sujeito. Ótimo para tornar um fundo (montanha, edifício, pôr do sol) imponente atrás do sujeito, ou para 'empilhar' camadas de uma cidade/multidão."
+        },
+        {
+          "h": "Quando usar / evitar",
+          "t": "Retrato com fundo dramático, desporto, paisagem gráfica. Evita em espaços apertados (não tens recuo) ou quando queres exagerar a profundidade — aí usa grande angular perto."
+        },
+        {
+          "h": "Conceitos próximos",
+          "t": "Ligado à distância focal e crop; combina bem com a profundidade atmosférica para dar escala."
+        }
+      ]
+    },
+    {
+      "id": "profundidade",
+      "icon": "🌫️",
+      "name": "Profundidade Atmosférica",
+      "blurb": "Camadas que recuam — a perspetiva aérea.",
+      "body": [
+        {
+          "h": "O que é",
+          "t": "A atmosfera (humidade, poeira, bruma) faz os planos distantes parecerem mais claros, menos contrastados e mais azulados. Também se chama perspetiva aérea. É o que dá aquela sensação de camadas nas serras ao amanhecer."
+        },
+        {
+          "h": "Porque funciona",
+          "t": "O cérebro lê essa degradação — mais pálido e azulado = mais longe. Sobrepor planos com contraste decrescente cria profundidade e escala imediatas, mesmo numa foto 2D."
+        },
+        {
+          "h": "Como usar / reforçar",
+          "t": "Compõe com planos sobrepostos: primeiro plano escuro e contrastado, fundo claro e azulado. Bruma, nevoeiro e as horas mágicas ajudam. Na edição, reduz contraste/saturação (ou dehaze negativo) nos planos distantes para reforçar."
+        },
+        {
+          "h": "Quando usar / evitar",
+          "t": "Paisagem de montanha, vales, cidade ao longe. Menos relevante em cenas sem planos distantes ou em dias de ar muito limpo (pouca atmosfera = pouca separação)."
+        },
+        {
+          "h": "Conceitos próximos",
+          "t": "Reforça-se com a compressão de perspetiva; na edição liga-se ao dehaze."
+        }
       ]
     }
   ]

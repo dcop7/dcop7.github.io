@@ -487,6 +487,7 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
 .ph-learn-thumb .ph-photo-thumb { aspect-ratio: 21 / 10; }
 .ph-photo-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; display: block; }
 .ph-detail-art.ph-photo-art { background: transparent; }
+.ph-detail-art > img { width: 100%; height: auto; display: block; border-radius: var(--radius-sm); }
 .ph-photo-gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
 .ph-photo-cell { margin: 0; }
 .ph-photo-cell img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
