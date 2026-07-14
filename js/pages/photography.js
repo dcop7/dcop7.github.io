@@ -890,14 +890,82 @@ const PhotographyPage = (function () {
     }, { once: true }));
   }
 
+  // "Onde cortar" sobre uma personagem estilizada (crop-standing). Linhas
+  // calibradas às articulações da imagem (fração da altura). Fallback: manequim.
+  const CROP_LINES2 = [
+    { f: 0.02, ok: 1, label: 'espaço p/ cabeça' }, { f: 0.20, ok: 0, label: 'pescoço' },
+    { f: 0.33, ok: 1, label: 'meio do peito' }, { f: 0.46, ok: 0, label: 'cotovelos' },
+    { f: 0.52, ok: 1, label: 'cintura' }, { f: 0.57, ok: 0, label: 'pulsos / mãos' },
+    { f: 0.64, ok: 1, label: 'meio da coxa' }, { f: 0.72, ok: 0, label: 'joelhos' },
+    { f: 0.90, ok: 0, label: 'tornozelos' },
+  ];
+  function cropGuidePhoto(asset) {
+    const GOOD = '#34d399', BAD = '#f87171', VBW = 470, H = 400, figX = 30, figY = 8, figH = 384, figW = Math.round(figH * 0.684), lineX2 = figX + figW + 16;
+    const lines = CROP_LINES2.map(c => {
+      const y = +(figY + c.f * figH).toFixed(1), col = c.ok ? GOOD : BAD;
+      return `<g class="ph-cropp-line" data-y="${y}" tabindex="0" role="button" aria-label="${c.ok ? 'Bom corte' : 'Mau corte'}: ${c.label}">
+        <rect class="ph-cropp-hit" x="0" y="${y - 9}" width="${VBW}" height="18" fill="transparent"/>
+        <line class="ph-cropp-rule" x1="14" y1="${y}" x2="${lineX2}" y2="${y}" stroke="${col}" stroke-width="1.8" stroke-dasharray="5 4"/>
+        <circle cx="${figX + 16}" cy="${y}" r="6" fill="${col}" stroke="#0a1220" stroke-width="1.3"/>
+        <text x="${figX + 16}" y="${y + 2.6}" text-anchor="middle" fill="#04121a" font-size="8" font-weight="800" font-family="var(--font-sans,sans-serif)">${c.ok ? '✓' : '✗'}</text>
+        <text x="${lineX2 + 9}" y="${y + 3.6}" fill="${col}" font-size="11" font-family="var(--font-mono,monospace)">${c.label}</text>
+      </g>`;
+    }).join('');
+    return `<svg viewBox="0 0 ${VBW} ${H}" class="mq-svg ph-cropp" role="img" aria-label="Onde cortar num retrato">
+      <image href="${asset}" x="${figX}" y="${figY}" height="${figH}" preserveAspectRatio="xMinYMin meet"/>
+      <rect class="ph-cropp-dim" x="${figX}" y="0" width="${figW}" height="0" fill="rgba(2,6,14,.55)" style="pointer-events:none"/>
+      ${lines}
+    </svg>`;
+  }
+  function wireCropPhoto(root) {
+    root.querySelectorAll('.ph-cropp').forEach(svg => {
+      const dim = svg.querySelector('.ph-cropp-dim');
+      svg.querySelectorAll('.ph-cropp-line').forEach(g => {
+        const y = +g.dataset.y;
+        const on = () => { if (dim) { dim.setAttribute('y', y); dim.setAttribute('height', 400 - y); } g.classList.add('hot'); };
+        const off = () => { if (dim) dim.setAttribute('height', 0); g.classList.remove('hot'); };
+        g.addEventListener('mouseenter', on); g.addEventListener('mouseleave', off);
+        g.addEventListener('focus', on); g.addEventListener('blur', off);
+      });
+    });
+  }
+  // Exemplos práticos: a MESMA personagem recortada a alturas certas vs erradas.
+  const CROP_EX = [
+    { t: 'Primeiro plano', a: 'crop-standing', ok: 0.31, bad: 0.20, okc: 'Espaço acima da cabeça, corta no peito.', badc: 'Cortar no pescoço.' },
+    { t: 'Meio corpo', a: 'crop-standing', ok: 0.55, bad: 0.72, okc: 'Abaixo da cintura ou no meio da coxa.', badc: 'Cortar nos joelhos.' },
+    { t: 'Três quartos', a: 'crop-standing', ok: 0.66, bad: 0.72, okc: 'Meio da coxa, acima dos joelhos.', badc: 'Cortar nos joelhos.' },
+    { t: 'Corpo inteiro', a: 'crop-standing', ok: 1, bad: 0.90, okc: 'Inclui os pés com um respiro.', badc: 'Cortar nos tornozelos.' },
+  ];
+  function cropShot(asset, cf) {
+    return `<span class="ph-cropex-frame" style="aspect-ratio:${(0.684 / cf).toFixed(3)}"><img loading="lazy" decoding="async" src="${asset}" alt=""></span>`;
+  }
+  function cropExamplesHTML() {
+    const std = assetPath('crop-standing'); if (!std) return '';
+    return `<div class="ph-cropex-grid">${CROP_EX.map(e => {
+      const a = assetPath(e.a) || std;
+      return `<div class="ph-cropex-card"><div class="ph-cropex-title">${e.t}</div>
+        <div class="ph-cropex-pair">
+          <figure class="ph-cropex-shot ok"><span class="ph-cropex-badge">✓ Correto</span>${cropShot(a, e.ok)}<figcaption>${e.okc}</figcaption></figure>
+          <figure class="ph-cropex-shot bad"><span class="ph-cropex-badge">✗ Incorreto</span>${cropShot(a, e.bad)}<figcaption>${e.badc}</figcaption></figure>
+        </div></div>`;
+    }).join('')}</div>`;
+  }
+
   function portraitExtrasHTML() {
-    const crop = typeof Mannequin !== 'undefined' ? Mannequin.cropGuide() : '';
+    const cropAsset = assetPath('crop-standing');
+    const crop = cropAsset ? cropGuidePhoto(cropAsset) : (typeof Mannequin !== 'undefined' ? Mannequin.cropGuide() : '');
+    const examples = cropExamplesHTML();
     return `
       <div class="ph-illus-block">
         <div class="ph-illus-title">✂️ Onde cortar (e onde não)</div>
         <div class="ph-crop-illus">${crop}</div>
         <div class="ph-illus-cap">Passa o rato (ou toca) numa linha para veres o corte. Corta <strong>entre</strong> as articulações (verde), <strong>nunca</strong> numa articulação (vermelho) — dá sensação de membro amputado. E deixa sempre espaço acima da cabeça.</div>
       </div>
+      ${examples ? `<div class="ph-illus-block">
+        <div class="ph-illus-title">📐 Exemplos práticos de corte</div>
+        <div class="ph-illus-cap" style="margin: -.1rem 0 .6rem">A mesma pessoa — cortes certos (verde) vs errados (vermelho).</div>
+        ${examples}
+      </div>` : ''}
       <div class="ph-illus-block">
         <div class="ph-illus-title">🧍 Poses que funcionam</div>
         <div class="ph-pose-grid">${posesHTML()}</div>
@@ -1212,7 +1280,7 @@ const PhotographyPage = (function () {
         Nav.go('photography/ferramentas');
       }));
       panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
-      if (g.portrait) { wirePoses(panel); if (typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel); }
+      if (g.portrait) { wirePoses(panel); wireCropPhoto(panel); if (typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel); }
       window.scrollTo({ top: 0 });
     });
   }

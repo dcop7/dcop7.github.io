@@ -10,7 +10,8 @@
   },
   "characters": {
     "aria": "a 28 year old woman, oval face, light olive skin, shoulder-length dark brown wavy hair, subtle natural makeup, calm friendly expression, wearing a plain heather-grey crew-neck t-shirt and slim dark charcoal trousers, minimal neutral wardrobe",
-    "leo": "a 30 year old man, short dark hair, light stubble, neutral relaxed expression, wearing a plain slate-grey t-shirt and dark trousers, minimal neutral wardrobe"
+    "leo": "a 30 year old man, short dark hair, light stubble, neutral relaxed expression, wearing a plain slate-grey t-shirt and dark trousers, minimal neutral wardrobe",
+    "hero": "a friendly young adult with a neutral approachable look, short tidy dark brown hair, wearing a plain charcoal-grey crew-neck sweater, dark slim jeans and white sneakers, calm friendly expression"
   },
   "styles": {
     "studio_cutout": "full body head-to-toe, standing, isolated on a seamless pure white studio background, high-key evenly lit white backdrop, subject clearly separated from the background, soft three-point softbox lighting, sharp focus, shot on 50mm f8, photorealistic, natural skin texture, high detail",
@@ -52,6 +53,15 @@
       "prompt": "aerial view of a river winding in a graceful S-curve through a lush green valley at golden hour, the curve leading the eye smoothly through the scene" },
     { "id": "comp-triangle", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880011, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
       "prompt": "three tall rock sea stacks arranged forming a stable triangular composition rising from a calm ocean at sunset, balanced and harmonious" },
+    { "id": "crop-standing", "group": "crop", "character": "hero", "style": "char_illus", "matte": true, "seed": 890001, "size": [832, 1216],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, extra fingers, bad anatomy, cropped head, cropped feet, out of frame",
+      "prompt": "standing straight facing the camera, arms relaxed hanging naturally at the sides, whole body fully visible from head to feet, plain seamless light studio background" },
+    { "id": "crop-seated", "group": "crop", "character": "hero", "style": "char_illus", "matte": true, "seed": 890002, "size": [832, 1216],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, bad anatomy, cropped head, out of frame",
+      "prompt": "sitting relaxed on a simple wooden stool, hands resting on the lap, whole body fully visible including feet, plain seamless light studio background" },
+    { "id": "crop-profile", "group": "crop", "character": "hero", "style": "char_illus", "matte": true, "seed": 890003, "size": [832, 1216],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, bad anatomy, cropped head, cropped feet, out of frame",
+      "prompt": "standing in a full side profile view facing left, arms relaxed at the sides, whole body fully visible from head to feet, plain seamless light studio background" },
     { "id": "light-frontal", "group": "light", "character": "aria", "style": "portrait_light", "matte": false, "seed": 771001,
       "prompt": "lit by soft frontal light, even flat illumination on the face, minimal shadows, catchlights centered in the eyes",
       "caption": "Luz frontal / suave", "size": [1024, 1024] },

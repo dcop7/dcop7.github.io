@@ -15,5 +15,8 @@
   "comp-framing": "comp/comp-framing.webp",
   "comp-negative": "comp/comp-negative.webp",
   "comp-scurve": "comp/comp-scurve.webp",
-  "comp-triangle": "comp/comp-triangle.webp"
+  "comp-triangle": "comp/comp-triangle.webp",
+  "crop-standing": "crop/crop-standing.webp",
+  "crop-seated": "crop/crop-seated.webp",
+  "crop-profile": "crop/crop-profile.webp"
 }

@@ -336,6 +336,28 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
 .mq-crop-line:hover text, .mq-crop-line.hot text { font-weight: 800; }
 .mq-crop-line:focus-visible { outline: none; }
 .mq-crop-dim { transition: height .12s ease; }
+
+/* "Onde cortar" sobre personagem estilizada + exemplos práticos de corte */
+.ph-crop-illus .ph-cropp { max-width: 480px; }
+.ph-cropp-line { cursor: pointer; }
+.ph-cropp-rule { transition: stroke-width .12s ease; }
+.ph-cropp-line:hover .ph-cropp-rule, .ph-cropp-line.hot .ph-cropp-rule { stroke-width: 3; stroke-dasharray: none; }
+.ph-cropp-line:hover text:last-child, .ph-cropp-line.hot text:last-child { font-weight: 800; }
+.ph-cropp-line:focus-visible { outline: none; }
+.ph-cropp-dim { transition: height .12s ease; }
+.ph-cropex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: .7rem; }
+.ph-cropex-card { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .6rem .7rem .7rem; }
+.ph-cropex-title { font-family: var(--font-head); font-weight: 700; font-size: .8rem; text-align: center; margin-bottom: .5rem; }
+.ph-cropex-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.ph-cropex-shot { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+.ph-cropex-badge { font-size: .6rem; font-weight: 800; text-align: center; padding: .14rem; border-radius: 4px; letter-spacing: .02em; }
+.ph-cropex-shot.ok .ph-cropex-badge { color: #34d399; background: rgba(52,211,153,.12); }
+.ph-cropex-shot.bad .ph-cropex-badge { color: #f87171; background: rgba(248,113,113,.12); }
+.ph-cropex-frame { display: block; overflow: hidden; border-radius: .35rem; background: #0b1020; }
+.ph-cropex-shot.ok .ph-cropex-frame { box-shadow: 0 0 0 2px #34d399 inset; }
+.ph-cropex-shot.bad .ph-cropex-frame { box-shadow: 0 0 0 2px #f87171 inset; }
+.ph-cropex-frame img { width: 100%; display: block; }
+.ph-cropex-shot figcaption { font-size: .62rem; color: var(--muted); text-align: center; line-height: 1.32; }
 .ph-pose-img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
 /* Poses foto-reais (PNG/WebP com transparência) ficam maiores e com um fundo
    subtil de estúdio para assentarem no cartão. */
