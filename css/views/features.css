@@ -322,6 +322,20 @@ body.ph-modal-open { overflow: hidden; }
 .ph-pose { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem; }
 .ph-pose svg { display: block; height: 120px; margin: 0 auto; }
 .ph-pose-vis { display: block; }
+
+/* ── Manequim vetorial (poses + "Onde cortar") ── */
+:root { --mq-hi: #c3cee0; --mq-lo: #7a879f; --mq-edge: rgba(10,16,28,.28); --mq-joint: rgba(18,26,42,.42); }
+body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); --mq-joint: rgba(18,26,42,.34); }
+.mq-svg { display: block; width: 100%; height: auto; }
+.ph-pose .mq-svg { height: 188px; width: auto; margin: 0 auto; }
+.ph-crop-illus { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .8rem 1rem; }
+.ph-crop-illus .mq-crop { max-width: 460px; width: 100%; margin: 0 auto; }
+.mq-crop-line { cursor: pointer; }
+.mq-crop-line .mq-line { transition: stroke-width .12s ease; }
+.mq-crop-line:hover .mq-line, .mq-crop-line.hot .mq-line { stroke-width: 3; stroke-dasharray: none; }
+.mq-crop-line:hover text, .mq-crop-line.hot text { font-weight: 800; }
+.mq-crop-line:focus-visible { outline: none; }
+.mq-crop-dim { transition: height .12s ease; }
 .ph-pose-img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
 /* Poses foto-reais (PNG/WebP com transparência) ficam maiores e com um fundo
    subtil de estúdio para assentarem no cartão. */

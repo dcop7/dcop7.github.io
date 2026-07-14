@@ -1,8 +1,4 @@
 {
-  "pose-three-quarter": "poses/pose-three-quarter.webp",
-  "pose-busy-hands": "poses/pose-busy-hands.webp",
-  "pose-s-curve": "poses/pose-s-curve.webp",
-  "pose-leaning": "poses/pose-leaning.webp",
   "light-frontal": "light/light-frontal.webp",
   "light-side": "light/light-side.webp",
   "light-back": "light/light-back.webp"

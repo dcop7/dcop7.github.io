@@ -866,73 +866,29 @@ const PhotographyPage = (function () {
   ];
 
   // ── Portrait illustrations (crop guide + poses + editorial tips) ──
-  function svgCropGuide() {
-    const g = '#34d399', r = '#f87171';
-    const line = (y, c, t, ok) =>
-      `<line x1="14" y1="${y}" x2="200" y2="${y}" stroke="${c}" stroke-width="2" stroke-dasharray="5 4"/>`
-      + `<text x="204" y="${y + 3.5}" fill="${c}" font-size="9" font-family="monospace">${ok ? '✓' : '✗'} ${t}</text>`;
-    return `<svg viewBox="0 0 360 336" width="100%" style="max-width:340px" role="img" aria-label="Onde cortar um retrato">
-      <g fill="#5b6478">
-        <circle cx="120" cy="44" r="22"/>
-        <rect x="112" y="64" width="16" height="12"/>
-        <path d="M92 78 Q120 70 148 78 L142 168 Q120 176 98 168 Z"/>
-      </g>
-      <g stroke="#5b6478" stroke-linecap="round" fill="none">
-        <line x1="98" y1="84" x2="84" y2="150" stroke-width="13"/>
-        <line x1="142" y1="84" x2="156" y2="150" stroke-width="13"/>
-        <line x1="110" y1="166" x2="104" y2="312" stroke-width="17"/>
-        <line x1="130" y1="166" x2="136" y2="312" stroke-width="17"/>
-      </g>
-      ${line(16, g, 'espaço p/ cabeça', 1)}
-      ${line(70, r, 'pescoço', 0)}
-      ${line(104, g, 'meio do peito', 1)}
-      ${line(138, r, 'cotovelos', 0)}
-      ${line(160, g, 'cintura', 1)}
-      ${line(188, r, 'pulsos / mãos', 0)}
-      ${line(238, g, 'meio da coxa', 1)}
-      ${line(266, r, 'joelhos', 0)}
-      ${line(312, r, 'tornozelos', 0)}
-    </svg>`;
-  }
-
-  // Poses: cada uma tem um id que casa com tools/photogen/manifest.json. Se
-  // existir um asset foto-real (gerado localmente via ComfyUI) usa-se a imagem
-  // com lazy-load; senão, o diagrama SVG é o fallback pedagógico.
-  const POSES = [
-    { id:'pose-three-quarter', d:'M46 32 L45 78 M45 48 L34 66 M45 48 L58 62 M45 78 L38 116 M45 78 L56 100 L52 116', h:[46,22], cap:'Ângulo 3/4 · peso na perna de trás, ombros em ângulo' },
-    { id:'pose-busy-hands', d:'M46 34 L46 78 M46 50 L33 34 L40 20 M46 50 L58 64 L54 72 M46 78 L39 116 M46 78 L53 116', h:[46,24], cap:'Dá algo às mãos (cabelo, anca, bolso)' },
-    { id:'pose-s-curve', d:'M48 32 C42 48 54 58 49 78 M47 48 L36 64 M51 50 L61 64 M49 78 L40 116 M49 78 L57 110 L54 116', h:[48,22], cap:'Curva em S · anca e ombros em sentidos opostos' },
-    { id:'pose-leaning', d:'M40 34 L54 78 M42 50 L34 66 M48 52 L70 60 M54 78 L47 116 M54 78 L60 104 L52 116 M74 12 L74 122', h:[40,24], cap:'Encostar / apoiar · postura relaxada' },
-  ];
-  function poseSvg(p) {
-    const C = '#a78bff';
-    return `<svg viewBox="0 0 90 130" width="100%"><path d="${p.d}" fill="none" stroke="${C}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${p.h[0]}" cy="${p.h[1]}" r="10" fill="none" stroke="${C}" stroke-width="4"/></svg>`;
-  }
+  // Poses e "Onde cortar" usam o manequim vetorial paramétrico (Mannequin,
+  // js/pages/photo-mannequin.js): figura neutra, sem rosto/roupa/género, foco
+  // total na linguagem corporal e nas articulações. Reutilizável entre géneros.
+  const POSE_CAPTIONS = {
+    'pose-three-quarter': 'Ângulo 3/4 · peso na perna de trás, ombros em ângulo',
+    'pose-busy-hands': 'Dá algo às mãos (cabelo, anca, bolso)',
+    'pose-s-curve': 'Curva em S · anca e ombros em sentidos opostos',
+    'pose-leaning': 'Encostar / apoiar · postura relaxada',
+  };
   function posesHTML() {
-    return POSES.map((p, idx) => {
-      const asset = assetPath(p.id);
-      const inner = asset
-        ? `<span class="ph-pose-vis" data-pose="${idx}"><img class="ph-pose-img" loading="lazy" decoding="async" alt="${p.cap}" src="${asset}"></span>`
-        : `<span class="ph-pose-vis">${poseSvg(p)}</span>`;
-      return `<div class="ph-pose${asset ? ' has-img' : ''}">${inner}<div class="ph-pose-cap">${p.cap}</div></div>`;
-    }).join('');
-  }
-  function wirePoses(root) {
-    root.querySelectorAll('.ph-pose-vis[data-pose] img').forEach(img => {
-      img.addEventListener('error', () => {
-        const s = img.closest('.ph-pose-vis'); if (!s) return;
-        s.parentElement.classList.remove('has-img');
-        s.innerHTML = poseSvg(POSES[+s.dataset.pose]);
-      }, { once: true });
-    });
+    if (typeof Mannequin === 'undefined') return '';
+    return Object.keys(POSE_CAPTIONS).map(id =>
+      `<div class="ph-pose"><span class="ph-pose-vis mq">${Mannequin.figure(id)}</span><div class="ph-pose-cap">${POSE_CAPTIONS[id]}</div></div>`
+    ).join('');
   }
 
   function portraitExtrasHTML() {
+    const crop = typeof Mannequin !== 'undefined' ? Mannequin.cropGuide() : '';
     return `
       <div class="ph-illus-block">
         <div class="ph-illus-title">✂️ Onde cortar (e onde não)</div>
-        <div class="ph-illus">${svgCropGuide()}</div>
-        <div class="ph-illus-cap">Corta <strong>entre</strong> as articulações (verde). <strong>Nunca</strong> numa articulação (vermelho) — dá sensação de membro amputado. E deixa sempre espaço acima da cabeça.</div>
+        <div class="ph-crop-illus">${crop}</div>
+        <div class="ph-illus-cap">Passa o rato (ou toca) numa linha para veres o corte. Corta <strong>entre</strong> as articulações (verde), <strong>nunca</strong> numa articulação (vermelho) — dá sensação de membro amputado. E deixa sempre espaço acima da cabeça.</div>
       </div>
       <div class="ph-illus-block">
         <div class="ph-illus-title">🧍 Poses que funcionam</div>
@@ -1191,7 +1147,7 @@ const PhotographyPage = (function () {
         Nav.go('photography/ferramentas');
       }));
       panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
-      if (g.portrait) wirePoses(panel);
+      if (g.portrait && typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel);
       window.scrollTo({ top: 0 });
     });
   }
