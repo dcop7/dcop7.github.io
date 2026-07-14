@@ -88,5 +88,9 @@
   "comp-pb-diagonal": "comp-genre3/comp-pb-diagonal.webp",
   "comp-pb-converging": "comp-genre3/comp-pb-converging.webp",
   "comp-pb-symmetry": "comp-genre3/comp-pb-symmetry.webp",
-  "comp-pb-triangle": "comp-genre3/comp-pb-triangle.webp"
+  "comp-pb-triangle": "comp-genre3/comp-pb-triangle.webp",
+  "pose-seated": "poses/pose-seated.webp",
+  "pose-pockets": "poses/pose-pockets.webp",
+  "pose-walking": "poses/pose-walking.webp",
+  "pose-crossed": "poses/pose-crossed.webp"
 }

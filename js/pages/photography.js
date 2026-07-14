@@ -885,10 +885,14 @@ const PhotographyPage = (function () {
   // js/pages/photo-mannequin.js): figura neutra, sem rosto/roupa/género, foco
   // total na linguagem corporal e nas articulações. Reutilizável entre géneros.
   const POSE_CAPTIONS = {
-    'pose-three-quarter': 'Ângulo 3/4 · peso na perna de trás, ombros em ângulo',
-    'pose-busy-hands': 'Dá algo às mãos (cabelo, anca, bolso)',
-    'pose-s-curve': 'Curva em S · anca e ombros em sentidos opostos',
-    'pose-leaning': 'Encostar / apoiar · postura relaxada',
+    'pose-three-quarter': 'Ângulo 3/4 · peso na perna de trás',
+    'pose-busy-hands': 'Dá algo às mãos (cabelo, anca)',
+    'pose-s-curve': 'Curva em S · anca e ombros em contraste',
+    'pose-leaning': 'Encostar / apoiar · relaxado',
+    'pose-seated': 'Sentado · cotovelos nos joelhos',
+    'pose-pockets': 'Mãos nos bolsos · casual e confiante',
+    'pose-walking': 'Em movimento · passo natural',
+    'pose-crossed': 'Braços cruzados · confiante mas aberto',
   };
   // Poses: fotos reais (preferência do user) quando existirem no índice; o
   // manequim vetorial é o fallback. O "Onde cortar" usa sempre o manequim.
