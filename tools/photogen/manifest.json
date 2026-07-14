@@ -21,131 +21,1187 @@
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
-    { "id": "pose-three-quarter", "group": "poses", "character": "aria", "style": "studio_cutout", "matte": true, "seed": 770101,
+    {
+      "id": "pose-three-quarter",
+      "group": "poses",
+      "character": "aria",
+      "style": "studio_cutout",
+      "matte": true,
+      "seed": 770101,
       "prompt": "standing in a relaxed three-quarter angle to camera, body weight on the back leg, shoulders turned at an angle, chin slightly toward the front shoulder, arms relaxed",
-      "caption": "Ângulo 3/4 · peso na perna de trás, ombros em ângulo", "size": [832, 1216] },
-    { "id": "pose-busy-hands", "group": "poses", "character": "aria", "style": "studio_cutout", "matte": true, "seed": 770102,
+      "caption": "Ângulo 3/4 · peso na perna de trás, ombros em ângulo",
+      "size": [
+        832,
+        1216
+      ]
+    },
+    {
+      "id": "pose-busy-hands",
+      "group": "poses",
+      "character": "aria",
+      "style": "studio_cutout",
+      "matte": true,
+      "seed": 770102,
       "prompt": "standing naturally, one hand gently touching her hair and the other resting on her hip, giving the hands something to do, relaxed candid posture",
-      "caption": "Dá algo às mãos (cabelo, anca, bolso)", "size": [832, 1216] },
-    { "id": "pose-s-curve", "group": "poses", "character": "aria", "style": "studio_cutout", "matte": true, "seed": 770103,
+      "caption": "Dá algo às mãos (cabelo, anca, bolso)",
+      "size": [
+        832,
+        1216
+      ]
+    },
+    {
+      "id": "pose-s-curve",
+      "group": "poses",
+      "character": "aria",
+      "style": "studio_cutout",
+      "matte": true,
+      "seed": 770103,
       "prompt": "standing in an elegant S-curve pose, hips shifted to one side and shoulders counter-tilted to the opposite side, contrapposto, graceful line of the body",
-      "caption": "Curva em S · anca e ombros em sentidos opostos", "size": [832, 1216] },
-    { "id": "pose-leaning", "group": "poses", "character": "leo", "style": "studio_cutout", "matte": true, "seed": 770104,
+      "caption": "Curva em S · anca e ombros em sentidos opostos",
+      "size": [
+        832,
+        1216
+      ]
+    },
+    {
+      "id": "pose-leaning",
+      "group": "poses",
+      "character": "leo",
+      "style": "studio_cutout",
+      "matte": true,
+      "seed": 770104,
       "prompt": "leaning one shoulder against an invisible wall, ankles casually crossed, hands in pockets, relaxed confident posture",
-      "caption": "Encostar / apoiar · postura relaxada", "size": [832, 1216] },
-    { "id": "comp-thirds", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880001, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a dramatic rocky coastline at golden sunset, a lighthouse on a rocky outcrop placed on the right-third line, horizon on the lower third, calm reflective sea, rule of thirds composition" },
-    { "id": "comp-converging", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880002, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a long wooden pier extending straight toward distant mountains at sunrise, strong converging leading lines to a central vanishing point in the middle of the frame, calm misty lake" },
-    { "id": "comp-diagonal", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880003, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a winding coastal mountain road cutting diagonally from the lower-left to the upper-right of the frame at sunset, a sleek dark sports car on the road, dynamic diagonal composition" },
-    { "id": "comp-golden", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880005, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a lone traveler standing by a calm mountain lake at sunset, placed at the golden ratio point on the right side, the shoreline and clouds curving gently toward the subject, harmonious balanced landscape" },
-    { "id": "comp-spiral", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880006, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "aerial view of a curving sandy bay and cliffs forming a natural golden spiral that leads the eye inward to a small boat near the tight center, warm sunset light" },
-    { "id": "comp-symmetry", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880007, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a perfectly symmetrical snow mountain reflected in a still mirror-like lake at dawn, centered vertical symmetry, calm and balanced" },
-    { "id": "comp-framing", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880008, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a lone hiker seen through a natural stone arch that frames them, the dark arch in the foreground framing a bright sunlit valley beyond, natural framing composition" },
-    { "id": "comp-negative", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880009, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a tiny lone figure standing on a vast empty misty plain under an enormous pale sky, extreme negative space, minimalist, sense of scale and solitude" },
-    { "id": "comp-scurve", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880010, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "aerial view of a river winding in a graceful S-curve through a lush green valley at golden hour, the curve leading the eye smoothly through the scene" },
-    { "id": "comp-triangle", "group": "comp", "style": "scene_illus", "matte": false, "seed": 880011, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "three tall rock sea stacks arranged forming a stable triangular composition rising from a calm ocean at sunset, balanced and harmonious" },
-    { "id": "comp-retrato-thirds", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883001, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
-      "prompt": "a portrait of a person outdoors placed on the right-third line, their eye on the upper-right third intersection, looking into the frame, soft golden light, softly blurred background" },
-    { "id": "comp-retrato-golden", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883002, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
-      "prompt": "an elegant classical portrait of a person composed on the golden ratio, the face at the phi point on the right, harmonious balanced framing, soft window light" },
-    { "id": "comp-retrato-framing", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883003, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
-      "prompt": "a portrait of a person seen through a doorway that frames them, the dark door frame in the foreground surrounding the sunlit subject, natural framing composition" },
-    { "id": "comp-retrato-negative", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883004, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
-      "prompt": "a small lone person standing to one side against a large plain empty pastel wall, lots of negative space, minimalist portrait, sense of isolation" },
-    { "id": "comp-automovel-diagonal", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883005, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a sleek sports car on a road cutting diagonally across the frame from lower-left to upper-right at sunset, dynamic diagonal composition" },
-    { "id": "comp-automovel-converging", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883006, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a sports car with the road markings and guardrails converging to a central vanishing point behind it, strong leading lines, dusk" },
-    { "id": "comp-automovel-thirds", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883007, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a sports car positioned on the right-third of the frame on a scenic mountain road, horizon on the lower third, rule of thirds composition" },
-    { "id": "comp-automovel-negative", "group": "comp-genre", "style": "scene_illus", "matte": false, "seed": 883008, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a single sports car small in a vast empty salt flat at dusk, lots of negative space around it, strong sense of scale and solitude" },
-    { "id": "comp-rua-converging", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884001, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a narrow european city street at golden hour, the buildings and cobblestones converging to a central vanishing point, strong leading lines, a lone pedestrian" },
-    { "id": "comp-rua-framing", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884002, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a street scene viewed through a stone archway that frames a sunlit square with a figure beyond, dark arch in the foreground, natural framing" },
-    { "id": "comp-rua-thirds", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884003, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a candid street photo, a lone walking figure placed on the right-third line of a moody urban street at dusk, rule of thirds" },
-    { "id": "comp-rua-diagonal", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884004, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a city crosswalk and long shadows forming a strong diagonal across the frame at golden hour, a pedestrian, dynamic street composition" },
-    { "id": "comp-gastronomia-thirds", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884005, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "an appetising plated gourmet dish placed on the right-third of a rustic table, 45 degree food photography, soft window light, shallow depth" },
-    { "id": "comp-gastronomia-triangle", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884006, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "three small plates of food arranged forming a balanced triangle on a dark table, top-down flat lay food photography, moody light" },
-    { "id": "comp-gastronomia-negative", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884007, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a single small elegant dish placed to one side of a large empty light table, lots of negative space, minimalist food photography" },
-    { "id": "comp-gastronomia-scurve", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884008, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a dessert plate with a sauce drizzle and garnish arranged in a graceful S-curve leading the eye, elegant food photography, soft light" },
-    { "id": "comp-produto-negative", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884009, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a single premium product (a watch or perfume bottle) small and isolated with vast clean negative space around it, studio product photography, soft gradient background" },
-    { "id": "comp-produto-triangle", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884010, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "three premium products arranged forming a stable triangle, clean studio product photography, soft reflections, minimal background" },
-    { "id": "comp-produto-symmetry", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884011, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a single premium product perfectly centered with a mirror reflection below, symmetrical studio product shot, dark reflective surface" },
-    { "id": "comp-produto-thirds", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884012, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a premium product placed on the right-third of a clean styled surface, product photography, soft studio light, negative space on the left" },
-    { "id": "comp-arquitetura-symmetry", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884013, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a perfectly symmetrical modern building lobby interior, centered vertical symmetry, real estate interior photography, clean and bright" },
-    { "id": "comp-arquitetura-converging", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884014, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a bright modern corridor or hallway of a house converging to a vanishing point, strong leading lines, real estate interior photography" },
-    { "id": "comp-arquitetura-framing", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884015, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "the interior of a modern home looking out through a large window that frames a garden view, natural framing, real estate photography, bright airy" },
-    { "id": "comp-arquitetura-diagonal", "group": "comp-genre2", "style": "scene_illus", "matte": false, "seed": 884016, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a modern house exterior or a staircase with strong diagonal architectural lines crossing the frame, dynamic real estate photography, golden hour" },
-    { "id": "know-rembrandt", "group": "know", "character": "hero", "style": "char_illus", "matte": false, "seed": 882001, "size": [1024, 1024], "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, flat even lighting, photograph",
-      "prompt": "head and shoulders portrait lit from one side at 45 degrees and above, a small triangle of light on the shadowed cheek just below the eye, classic Rembrandt lighting, dark moody background, dramatic chiaroscuro" },
-    { "id": "know-chiaroscuro", "group": "know", "character": "hero", "style": "char_illus", "matte": false, "seed": 882002, "size": [1024, 1024], "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, flat even lighting, photograph",
-      "prompt": "dramatic portrait with a single hard light source, strong contrast between a brightly lit face and deep black shadow, most of the frame in darkness, Caravaggio chiaroscuro style, tenebrism" },
-    { "id": "know-compressao", "group": "know", "style": "scene_illus", "matte": false, "seed": 882003, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a telephoto view of a small figure on a road with an enormous mountain looming huge and close directly behind them, strongly compressed perspective, background appears much larger and nearer than reality" },
-    { "id": "know-profundidade", "group": "know", "style": "scene_illus", "matte": false, "seed": 882004, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "layered mountain ridges receding into the distance at dawn, each successive ridge paler and more blue-grey than the one in front, strong atmospheric perspective, hazy sense of depth" },
-    { "id": "comp-thirds-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881001, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a rocky coastline at sunset, a lighthouse placed dead center with the horizon exactly in the middle of the frame, static symmetrical boring composition" },
-    { "id": "comp-converging-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881002, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a calm lake with distant mountains at sunrise, a short pier off to one side pointing nowhere, no leading lines, flat directionless composition" },
-    { "id": "comp-diagonal-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881003, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a sports car parked facing the camera straight on a flat straight road at sunset, static frontal centered composition, no diagonal, dull" },
-    { "id": "comp-golden-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881005, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a lone traveler standing dead center by a mountain lake at sunset, perfectly centered and static, flat balance" },
-    { "id": "comp-spiral-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881006, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a plain flat aerial view of a straight beach and calm sea at sunset, no curves, no spiral, static and empty" },
-    { "id": "comp-symmetry-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881007, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a mountain and lake at dawn with a crooked tilted horizon and broken unbalanced framing, no symmetry, messy" },
-    { "id": "comp-framing-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881008, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a hiker standing in an open empty plain with nothing framing them, flat scene with no foreground frame, bland" },
-    { "id": "comp-negative-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881009, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a cluttered busy rocky shore with many elements competing for attention, a small figure lost among the clutter, no negative space, chaotic" },
-    { "id": "comp-scurve-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881010, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "an aerial view of a perfectly straight river cutting rigidly through a green valley, straight rigid line, no curve, static" },
-    { "id": "comp-triangle-bad", "group": "comp-bad", "style": "scene_illus", "matte": false, "seed": 881011, "size": [1216, 832], "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "three sea stacks scattered randomly and unevenly with no triangular arrangement, unbalanced random placement, awkward" },
-    { "id": "crop-standing", "group": "crop", "character": "hero", "style": "char_illus", "matte": true, "seed": 890001, "size": [832, 1216],
+      "caption": "Encostar / apoiar · postura relaxada",
+      "size": [
+        832,
+        1216
+      ]
+    },
+    {
+      "id": "comp-thirds",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a dramatic rocky coastline at golden sunset, a lighthouse on a rocky outcrop placed on the right-third line, horizon on the lower third, calm reflective sea, rule of thirds composition"
+    },
+    {
+      "id": "comp-converging",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a long wooden pier extending straight toward distant mountains at sunrise, strong converging leading lines to a central vanishing point in the middle of the frame, calm misty lake"
+    },
+    {
+      "id": "comp-diagonal",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a winding coastal mountain road cutting diagonally from the lower-left to the upper-right of the frame at sunset, a sleek dark sports car on the road, dynamic diagonal composition"
+    },
+    {
+      "id": "comp-golden",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a lone traveler standing by a calm mountain lake at sunset, placed at the golden ratio point on the right side, the shoreline and clouds curving gently toward the subject, harmonious balanced landscape"
+    },
+    {
+      "id": "comp-spiral",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "aerial view of a curving sandy bay and cliffs forming a natural golden spiral that leads the eye inward to a small boat near the tight center, warm sunset light"
+    },
+    {
+      "id": "comp-symmetry",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a perfectly symmetrical snow mountain reflected in a still mirror-like lake at dawn, centered vertical symmetry, calm and balanced"
+    },
+    {
+      "id": "comp-framing",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a lone hiker seen through a natural stone arch that frames them, the dark arch in the foreground framing a bright sunlit valley beyond, natural framing composition"
+    },
+    {
+      "id": "comp-negative",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880009,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "a tiny lone figure standing on a vast empty misty plain under an enormous pale sky, extreme negative space, minimalist, sense of scale and solitude"
+    },
+    {
+      "id": "comp-scurve",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "aerial view of a river winding in a graceful S-curve through a lush green valley at golden hour, the curve leading the eye smoothly through the scene"
+    },
+    {
+      "id": "comp-triangle",
+      "group": "comp",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 880011,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
+      "prompt": "three tall rock sea stacks arranged forming a stable triangular composition rising from a calm ocean at sunset, balanced and harmonious"
+    },
+    {
+      "id": "comp-retrato-thirds",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
+      "prompt": "a portrait of a person outdoors placed on the right-third line, their eye on the upper-right third intersection, looking into the frame, soft golden light, softly blurred background"
+    },
+    {
+      "id": "comp-retrato-golden",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
+      "prompt": "an elegant classical portrait of a person composed on the golden ratio, the face at the phi point on the right, harmonious balanced framing, soft window light"
+    },
+    {
+      "id": "comp-retrato-framing",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
+      "prompt": "a portrait of a person seen through a doorway that frames them, the dark door frame in the foreground surrounding the sunlit subject, natural framing composition"
+    },
+    {
+      "id": "comp-retrato-negative",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883004,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, ugly, photograph",
+      "prompt": "a small lone person standing to one side against a large plain empty pastel wall, lots of negative space, minimalist portrait, sense of isolation"
+    },
+    {
+      "id": "comp-automovel-diagonal",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a sleek sports car on a road cutting diagonally across the frame from lower-left to upper-right at sunset, dynamic diagonal composition"
+    },
+    {
+      "id": "comp-automovel-converging",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a sports car with the road markings and guardrails converging to a central vanishing point behind it, strong leading lines, dusk"
+    },
+    {
+      "id": "comp-automovel-thirds",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a sports car positioned on the right-third of the frame on a scenic mountain road, horizon on the lower third, rule of thirds composition"
+    },
+    {
+      "id": "comp-automovel-negative",
+      "group": "comp-genre",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 883008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a single sports car small in a vast empty salt flat at dusk, lots of negative space around it, strong sense of scale and solitude"
+    },
+    {
+      "id": "comp-rua-converging",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a narrow european city street at golden hour, the buildings and cobblestones converging to a central vanishing point, strong leading lines, a lone pedestrian"
+    },
+    {
+      "id": "comp-rua-framing",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a street scene viewed through a stone archway that frames a sunlit square with a figure beyond, dark arch in the foreground, natural framing"
+    },
+    {
+      "id": "comp-rua-thirds",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a candid street photo, a lone walking figure placed on the right-third line of a moody urban street at dusk, rule of thirds"
+    },
+    {
+      "id": "comp-rua-diagonal",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884004,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a city crosswalk and long shadows forming a strong diagonal across the frame at golden hour, a pedestrian, dynamic street composition"
+    },
+    {
+      "id": "comp-gastronomia-thirds",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an appetising plated gourmet dish placed on the right-third of a rustic table, 45 degree food photography, soft window light, shallow depth"
+    },
+    {
+      "id": "comp-gastronomia-triangle",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "three small plates of food arranged forming a balanced triangle on a dark table, top-down flat lay food photography, moody light"
+    },
+    {
+      "id": "comp-gastronomia-negative",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a single small elegant dish placed to one side of a large empty light table, lots of negative space, minimalist food photography"
+    },
+    {
+      "id": "comp-gastronomia-scurve",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dessert plate with a sauce drizzle and garnish arranged in a graceful S-curve leading the eye, elegant food photography, soft light"
+    },
+    {
+      "id": "comp-produto-negative",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884009,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a single premium product (a watch or perfume bottle) small and isolated with vast clean negative space around it, studio product photography, soft gradient background"
+    },
+    {
+      "id": "comp-produto-triangle",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "three premium products arranged forming a stable triangle, clean studio product photography, soft reflections, minimal background"
+    },
+    {
+      "id": "comp-produto-symmetry",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884011,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a single premium product perfectly centered with a mirror reflection below, symmetrical studio product shot, dark reflective surface"
+    },
+    {
+      "id": "comp-produto-thirds",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884012,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a premium product placed on the right-third of a clean styled surface, product photography, soft studio light, negative space on the left"
+    },
+    {
+      "id": "comp-arquitetura-symmetry",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884013,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a perfectly symmetrical modern building lobby interior, centered vertical symmetry, real estate interior photography, clean and bright"
+    },
+    {
+      "id": "comp-arquitetura-converging",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884014,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a bright modern corridor or hallway of a house converging to a vanishing point, strong leading lines, real estate interior photography"
+    },
+    {
+      "id": "comp-arquitetura-framing",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884015,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "the interior of a modern home looking out through a large window that frames a garden view, natural framing, real estate photography, bright airy"
+    },
+    {
+      "id": "comp-arquitetura-diagonal",
+      "group": "comp-genre2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 884016,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a modern house exterior or a staircase with strong diagonal architectural lines crossing the frame, dynamic real estate photography, golden hour"
+    },
+    {
+      "id": "comp-astro-negative",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a starry night sky full of stars and the milky way over a mountain landscape, a small lone silhouetted figure or tent, the subject small to one side with lots of empty negative space around it"
+    },
+    {
+      "id": "comp-astro-thirds",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a starry night sky full of stars and the milky way over a mountain landscape, a small lone silhouetted figure or tent, the main subject placed on a third-line intersection, rule of thirds composition"
+    },
+    {
+      "id": "comp-astro-converging",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a starry night sky full of stars and the milky way over a mountain landscape, a small lone silhouetted figure or tent, strong leading lines converging to a central vanishing point in the middle"
+    },
+    {
+      "id": "comp-astro-symmetry",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885004,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a starry night sky full of stars and the milky way over a mountain landscape, a small lone silhouetted figure or tent, a perfectly symmetrical composition with a mirrored reflection, centered"
+    },
+    {
+      "id": "comp-macro-negative",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an extreme close-up macro photo of a dew-covered flower petal and a tiny insect, beautiful shallow focus, the subject small to one side with lots of empty negative space around it"
+    },
+    {
+      "id": "comp-macro-thirds",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an extreme close-up macro photo of a dew-covered flower petal and a tiny insect, beautiful shallow focus, the main subject placed on a third-line intersection, rule of thirds composition"
+    },
+    {
+      "id": "comp-macro-symmetry",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an extreme close-up macro photo of a dew-covered flower petal and a tiny insect, beautiful shallow focus, a perfectly symmetrical composition with a mirrored reflection, centered"
+    },
+    {
+      "id": "comp-macro-golden",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an extreme close-up macro photo of a dew-covered flower petal and a tiny insect, beautiful shallow focus, the subject placed at the golden-ratio phi point, harmonious balance"
+    },
+    {
+      "id": "comp-vida-selvagem-negative",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885009,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a majestic wild animal (a red deer stag) standing in a misty natural forest habitat at golden hour, the subject small to one side with lots of empty negative space around it"
+    },
+    {
+      "id": "comp-vida-selvagem-thirds",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a majestic wild animal (a red deer stag) standing in a misty natural forest habitat at golden hour, the main subject placed on a third-line intersection, rule of thirds composition"
+    },
+    {
+      "id": "comp-vida-selvagem-diagonal",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885011,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a majestic wild animal (a red deer stag) standing in a misty natural forest habitat at golden hour, a strong diagonal line crossing the frame from the lower-left to the upper-right corner"
+    },
+    {
+      "id": "comp-vida-selvagem-framing",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885012,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a majestic wild animal (a red deer stag) standing in a misty natural forest habitat at golden hour, the subject framed by a natural foreground element such as branches, an arch or a doorway"
+    },
+    {
+      "id": "comp-desporto-diagonal",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885013,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dynamic action photo of a trail runner sprinting through a mountain landscape, sense of motion and energy, a strong diagonal line crossing the frame from the lower-left to the upper-right corner"
+    },
+    {
+      "id": "comp-desporto-negative",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885014,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dynamic action photo of a trail runner sprinting through a mountain landscape, sense of motion and energy, the subject small to one side with lots of empty negative space around it"
+    },
+    {
+      "id": "comp-desporto-thirds",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885015,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dynamic action photo of a trail runner sprinting through a mountain landscape, sense of motion and energy, the main subject placed on a third-line intersection, rule of thirds composition"
+    },
+    {
+      "id": "comp-desporto-converging",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885016,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dynamic action photo of a trail runner sprinting through a mountain landscape, sense of motion and energy, strong leading lines converging to a central vanishing point in the middle"
+    },
+    {
+      "id": "comp-viagem-framing",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885017,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a scenic travel moment, a lone backpacker looking at a famous scenic landmark and landscape at golden hour, the subject framed by a natural foreground element such as branches, an arch or a doorway"
+    },
+    {
+      "id": "comp-viagem-thirds",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885018,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a scenic travel moment, a lone backpacker looking at a famous scenic landmark and landscape at golden hour, the main subject placed on a third-line intersection, rule of thirds composition"
+    },
+    {
+      "id": "comp-viagem-converging",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885019,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a scenic travel moment, a lone backpacker looking at a famous scenic landmark and landscape at golden hour, strong leading lines converging to a central vanishing point in the middle"
+    },
+    {
+      "id": "comp-viagem-scurve",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885020,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a scenic travel moment, a lone backpacker looking at a famous scenic landmark and landscape at golden hour, a graceful S-curve leading the eye smoothly through the scene"
+    },
+    {
+      "id": "comp-eventos-thirds",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885021,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a warm joyful celebration moment, people at an outdoor wedding or festival with string lights at dusk, the main subject placed on a third-line intersection, rule of thirds composition"
+    },
+    {
+      "id": "comp-eventos-negative",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885022,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a warm joyful celebration moment, people at an outdoor wedding or festival with string lights at dusk, the subject small to one side with lots of empty negative space around it"
+    },
+    {
+      "id": "comp-eventos-diagonal",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885023,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a warm joyful celebration moment, people at an outdoor wedding or festival with string lights at dusk, a strong diagonal line crossing the frame from the lower-left to the upper-right corner"
+    },
+    {
+      "id": "comp-eventos-framing",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885024,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a warm joyful celebration moment, people at an outdoor wedding or festival with string lights at dusk, the subject framed by a natural foreground element such as branches, an arch or a doorway"
+    },
+    {
+      "id": "comp-longa-exposicao-scurve",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885025,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a long-exposure landscape at dusk with silky smooth blurred water and soft light trails, dreamy and calm, a graceful S-curve leading the eye smoothly through the scene"
+    },
+    {
+      "id": "comp-longa-exposicao-converging",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885026,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a long-exposure landscape at dusk with silky smooth blurred water and soft light trails, dreamy and calm, strong leading lines converging to a central vanishing point in the middle"
+    },
+    {
+      "id": "comp-longa-exposicao-symmetry",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885027,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a long-exposure landscape at dusk with silky smooth blurred water and soft light trails, dreamy and calm, a perfectly symmetrical composition with a mirrored reflection, centered"
+    },
+    {
+      "id": "comp-longa-exposicao-negative",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885028,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a long-exposure landscape at dusk with silky smooth blurred water and soft light trails, dreamy and calm, the subject small to one side with lots of empty negative space around it"
+    },
+    {
+      "id": "comp-pb-diagonal",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885029,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dramatic high-contrast black and white monochrome landscape photograph, a strong diagonal line crossing the frame from the lower-left to the upper-right corner, black and white, monochrome, dramatic contrast"
+    },
+    {
+      "id": "comp-pb-converging",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885030,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dramatic high-contrast black and white monochrome landscape photograph, strong leading lines converging to a central vanishing point in the middle, black and white, monochrome, dramatic contrast"
+    },
+    {
+      "id": "comp-pb-symmetry",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885031,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dramatic high-contrast black and white monochrome landscape photograph, a perfectly symmetrical composition with a mirrored reflection, centered, black and white, monochrome, dramatic contrast"
+    },
+    {
+      "id": "comp-pb-triangle",
+      "group": "comp-genre3",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 885032,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a dramatic high-contrast black and white monochrome landscape photograph, three main elements arranged forming a stable triangle, black and white, monochrome, dramatic contrast"
+    },
+    {
+      "id": "know-rembrandt",
+      "group": "know",
+      "character": "hero",
+      "style": "char_illus",
+      "matte": false,
+      "seed": 882001,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, flat even lighting, photograph",
+      "prompt": "head and shoulders portrait lit from one side at 45 degrees and above, a small triangle of light on the shadowed cheek just below the eye, classic Rembrandt lighting, dark moody background, dramatic chiaroscuro"
+    },
+    {
+      "id": "know-chiaroscuro",
+      "group": "know",
+      "character": "hero",
+      "style": "char_illus",
+      "matte": false,
+      "seed": 882002,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, flat even lighting, photograph",
+      "prompt": "dramatic portrait with a single hard light source, strong contrast between a brightly lit face and deep black shadow, most of the frame in darkness, Caravaggio chiaroscuro style, tenebrism"
+    },
+    {
+      "id": "know-compressao",
+      "group": "know",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 882003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a telephoto view of a small figure on a road with an enormous mountain looming huge and close directly behind them, strongly compressed perspective, background appears much larger and nearer than reality"
+    },
+    {
+      "id": "know-profundidade",
+      "group": "know",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 882004,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "layered mountain ridges receding into the distance at dawn, each successive ridge paler and more blue-grey than the one in front, strong atmospheric perspective, hazy sense of depth"
+    },
+    {
+      "id": "comp-thirds-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a coastline at sunset with the lighthouse and the horizon both placed dead center in the middle of the frame, perfectly centered, static boring composition"
+    },
+    {
+      "id": "comp-converging-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a flat open green meadow scattered with wildflowers under a plain empty sky, one small lone tree off to one side, absolutely no roads, no paths, no fences, no rows, no lines of any kind, nothing leads the eye, completely flat and directionless"
+    },
+    {
+      "id": "comp-diagonal-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a sports car parked dead center facing the camera head-on on a flat straight horizontal road, completely static frontal composition, no diagonal"
+    },
+    {
+      "id": "comp-golden-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a lone traveler standing exactly in the dead center of a symmetric mountain lake scene, mechanically centered, static lifeless balance"
+    },
+    {
+      "id": "comp-spiral-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a completely flat straight empty beach and calm sea at sunset, no curves, no spiral, no leading shapes, static and empty"
+    },
+    {
+      "id": "comp-symmetry-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a messy asymmetric rocky mountain landscape at midday with a strongly tilted crooked horizon, everything lopsided and unbalanced, dry ground with no water and no reflection at all, no symmetry"
+    },
+    {
+      "id": "comp-framing-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a hiker standing tiny in the middle of a wide flat empty open plain with absolutely nothing in the foreground to frame them, bland empty and flat"
+    },
+    {
+      "id": "comp-negative-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881009,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an extremely cluttered chaotic rocky shore crammed with countless competing rocks and elements filling the whole frame, no empty space at all, a figure lost in the clutter"
+    },
+    {
+      "id": "comp-scurve-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "an aerial view of a perfectly straight rigid river running straight down the middle of the frame like a ruler, no curve or bend, static"
+    },
+    {
+      "id": "comp-triangle-bad",
+      "group": "comp-bad",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 881011,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "three sea stacks scattered randomly and unevenly all bunched to one side with no triangular arrangement, awkward unbalanced placement"
+    },
+    {
+      "id": "crop-standing",
+      "group": "crop",
+      "character": "hero",
+      "style": "char_illus",
+      "matte": true,
+      "seed": 890001,
+      "size": [
+        832,
+        1216
+      ],
       "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, extra fingers, bad anatomy, cropped head, cropped feet, out of frame",
-      "prompt": "standing straight facing the camera, arms relaxed hanging naturally at the sides, whole body fully visible from head to feet, plain seamless light studio background" },
-    { "id": "crop-seated", "group": "crop", "character": "hero", "style": "char_illus", "matte": true, "seed": 890002, "size": [832, 1216],
+      "prompt": "standing straight facing the camera, arms relaxed hanging naturally at the sides, whole body fully visible from head to feet, plain seamless light studio background"
+    },
+    {
+      "id": "crop-seated",
+      "group": "crop",
+      "character": "hero",
+      "style": "char_illus",
+      "matte": true,
+      "seed": 890002,
+      "size": [
+        832,
+        1216
+      ],
       "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, bad anatomy, cropped head, out of frame",
-      "prompt": "sitting relaxed on a simple wooden stool, hands resting on the lap, whole body fully visible including feet, plain seamless light studio background" },
-    { "id": "crop-profile", "group": "crop", "character": "hero", "style": "char_illus", "matte": true, "seed": 890003, "size": [832, 1216],
+      "prompt": "sitting relaxed on a simple wooden stool, hands resting on the lap, whole body fully visible including feet, plain seamless light studio background"
+    },
+    {
+      "id": "crop-profile",
+      "group": "crop",
+      "character": "hero",
+      "style": "char_illus",
+      "matte": true,
+      "seed": 890003,
+      "size": [
+        832,
+        1216
+      ],
       "negative": "text, watermark, signature, low quality, blurry, deformed, extra limbs, bad anatomy, cropped head, cropped feet, out of frame",
-      "prompt": "standing in a full side profile view facing left, arms relaxed at the sides, whole body fully visible from head to feet, plain seamless light studio background" },
-    { "id": "light-frontal", "group": "light", "character": "aria", "style": "portrait_light", "matte": false, "seed": 771001,
+      "prompt": "standing in a full side profile view facing left, arms relaxed at the sides, whole body fully visible from head to feet, plain seamless light studio background"
+    },
+    {
+      "id": "light-frontal",
+      "group": "light",
+      "character": "aria",
+      "style": "portrait_light",
+      "matte": false,
+      "seed": 771001,
       "prompt": "lit by soft frontal light, even flat illumination on the face, minimal shadows, catchlights centered in the eyes",
-      "caption": "Luz frontal / suave", "size": [1024, 1024] },
-    { "id": "light-side", "group": "light", "character": "aria", "style": "portrait_light", "matte": false, "seed": 771002,
+      "caption": "Luz frontal / suave",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": "light-side",
+      "group": "light",
+      "character": "aria",
+      "style": "portrait_light",
+      "matte": false,
+      "seed": 771002,
       "prompt": "lit by dramatic side light from the left, strong light-and-shadow across the face, sculpting the cheekbone, loop/Rembrandt lighting",
-      "caption": "Luz lateral / volume", "size": [1024, 1024] },
-    { "id": "light-back", "group": "light", "character": "aria", "style": "portrait_light", "matte": false, "seed": 771003,
+      "caption": "Luz lateral / volume",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": "light-back",
+      "group": "light",
+      "character": "aria",
+      "style": "portrait_light",
+      "matte": false,
+      "seed": 771003,
       "prompt": "backlit rim light behind the head separating subject from a dark background, glowing hair rim, face in soft shadow",
-      "caption": "Contraluz / recorte", "size": [1024, 1024] }
+      "caption": "Contraluz / recorte",
+      "size": [
+        1024,
+        1024
+      ]
+    }
   ]
 }
