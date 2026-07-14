@@ -18,5 +18,15 @@
   "comp-triangle": "comp/comp-triangle.webp",
   "crop-standing": "crop/crop-standing.webp",
   "crop-seated": "crop/crop-seated.webp",
-  "crop-profile": "crop/crop-profile.webp"
+  "crop-profile": "crop/crop-profile.webp",
+  "comp-thirds-bad": "comp-bad/comp-thirds-bad.webp",
+  "comp-converging-bad": "comp-bad/comp-converging-bad.webp",
+  "comp-diagonal-bad": "comp-bad/comp-diagonal-bad.webp",
+  "comp-golden-bad": "comp-bad/comp-golden-bad.webp",
+  "comp-spiral-bad": "comp-bad/comp-spiral-bad.webp",
+  "comp-symmetry-bad": "comp-bad/comp-symmetry-bad.webp",
+  "comp-framing-bad": "comp-bad/comp-framing-bad.webp",
+  "comp-negative-bad": "comp-bad/comp-negative-bad.webp",
+  "comp-scurve-bad": "comp-bad/comp-scurve-bad.webp",
+  "comp-triangle-bad": "comp-bad/comp-triangle-bad.webp"
 }

@@ -557,6 +557,19 @@ const PhotographyPage = (function () {
     'Curva em S': 'comp-scurve', 'Composição em Triângulo': 'comp-triangle',
   };
   const compAsset = comp => assetPath(COMP_ASSET[comp.name]);
+  // Legendas correto/incorreto (quando existe a versão "errada" comp-<slug>-bad).
+  const COMP_WHY = {
+    'comp-thirds': { ok: 'Farol e horizonte alinhados com os pontos fortes.', bad: 'Sujeito ao centro e horizonte ao meio — estático.' },
+    'comp-golden': { ok: 'Sujeito no ponto áureo — equilíbrio natural.', bad: 'Ao centro — previsível e sem tensão.' },
+    'comp-spiral': { ok: 'A curva guia o olhar até ao centro.', bad: 'Reta e vazia — nada conduz o olhar.' },
+    'comp-diagonal': { ok: 'A diagonal cria movimento e destaca o sujeito.', bad: 'Frontal e estático — sem energia.' },
+    'comp-converging': { ok: 'As linhas do cais conduzem o olhar ao ponto focal.', bad: 'Sem direção visual, o olhar não é guiado.' },
+    'comp-symmetry': { ok: 'Simetria equilibrada e harmoniosa.', bad: 'Horizonte torto e desequilíbrio.' },
+    'comp-framing': { ok: 'A moldura natural dirige o olhar e dá profundidade.', bad: 'Sem moldura, a cena fica plana.' },
+    'comp-negative': { ok: 'O vazio destaca o sujeito e dá escala.', bad: 'Cena confusa — o sujeito perde-se.' },
+    'comp-scurve': { ok: 'A curva em S conduz o olhar com fluidez.', bad: 'Linha reta rígida — sem dinâmica.' },
+    'comp-triangle': { ok: 'Arranjo triangular estável e equilibrado.', bad: 'Disposição aleatória e desequilibrada.' },
+  };
   // Desenha só o overlay geométrico (fundo transparente para assentar na imagem);
   // opts.bg preenche um fundo neutro (vista "só grelha" sem imagem).
   function drawCompOverlay(canvas, comp, opts = {}) {
@@ -596,13 +609,15 @@ const PhotographyPage = (function () {
     const comp = COMPOSITIONS[_compIdx], asset = compAsset(comp);
     modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
     modal.querySelectorAll('.ph-comp2-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.view === _compView));
+    const slug = COMP_ASSET[comp.name], bad = assetPath(slug + '-bad'), why = COMP_WHY[slug] || {};
+    const shot = (src, role) => `<figure class="ph-comp2-shot ${role}">
+        <div class="ph-comp2-frame">${src ? `<img class="ph-comp2-img" src="${src}" alt="">` : '<div class="ph-comp2-img ph-comp2-noimg"></div>'}<canvas class="ph-comp2-canvas ph-comp2-anim"></canvas></div>
+        ${bad ? `<span class="ph-comp2-badge ${role}">${role === 'ok' ? '✓ Correto' : '✗ Incorreto'}</span><figcaption>${role === 'ok' ? (why.ok || '') : (why.bad || '')}</figcaption>` : ''}
+      </figure>`;
     modal.querySelector('.ph-comp2-body').innerHTML = `
-      <div class="ph-comp2-stage" data-view="${_compView}">
+      <div class="ph-comp2-stage${bad ? ' dual' : ''}" data-view="${_compView}">
         <button class="ph-comp2-nav prev" aria-label="Composição anterior">‹</button>
-        <div class="ph-comp2-frame">
-          ${asset ? `<img class="ph-comp2-img" src="${asset}" alt="${comp.name}">` : '<div class="ph-comp2-img ph-comp2-noimg"></div>'}
-          <canvas class="ph-comp2-canvas ph-comp2-anim"></canvas>
-        </div>
+        <div class="ph-comp2-frames">${shot(asset, 'ok')}${bad ? shot(bad, 'bad') : ''}</div>
         <button class="ph-comp2-nav next" aria-label="Composição seguinte">›</button>
       </div>
       <div class="ph-comp2-count">${_compIdx + 1} / ${COMPOSITIONS.length}</div>
@@ -611,12 +626,12 @@ const PhotographyPage = (function () {
         ${comp.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${comp.tips}</div>` : ''}
         ${comp.examples ? `<div class="ph-know-sec"><h4>📷 Exemplos</h4><p>${comp.examples}</p></div>` : ''}
       </div>`;
-    const canvas = modal.querySelector('.ph-comp2-canvas');
     requestAnimationFrame(() => {
-      const frame = modal.querySelector('.ph-comp2-frame');
-      const w = frame.clientWidth || 620, h = Math.round(w * 832 / 1216);
-      canvas.width = w; canvas.height = h;
-      drawCompOverlay(canvas, comp);
+      modal.querySelectorAll('.ph-comp2-canvas').forEach(canvas => {
+        const frame = canvas.closest('.ph-comp2-frame'), w = frame.clientWidth || 560, h = Math.round(w * 832 / 1216);
+        canvas.width = w; canvas.height = h;
+        drawCompOverlay(canvas, comp);
+      });
     });
     modal.querySelector('.prev').addEventListener('click', () => { _compIdx = (_compIdx - 1 + COMPOSITIONS.length) % COMPOSITIONS.length; renderCompModal(modal); });
     modal.querySelector('.next').addEventListener('click', () => { _compIdx = (_compIdx + 1) % COMPOSITIONS.length; renderCompModal(modal); });
