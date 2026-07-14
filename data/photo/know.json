@@ -25,6 +25,10 @@
         {
           "h": "Na prática",
           "t": "Decide primeiro o que a foto pede: DOF (abertura) ou movimento (velocidade). Fixa esse lado, deixa o outro acompanhar e o ISO fechar o triângulo — é exatamente o que os modos Av/Tv + Auto-ISO fazem."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Subir o ISO por preguiça (usa Auto-ISO com teto); confiar no brilho do ecrã ao sol; expor 'ao centro' e queimar o céu; esquecer que a abertura também mexe na profundidade de campo."
         }
       ]
     },
@@ -49,6 +53,10 @@
         {
           "h": "No terreno",
           "t": "Ativa o aviso de realces ('zebras'/blinkies). Ao sol, o ecrã engana; o histograma nunca."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Achar que existe um histograma 'certo' — depende da cena; ignorar o aviso de realces; corrigir a exposição pelo brilho do ecrã em vez do histograma; cortar sombras à esquerda sem querer."
         }
       ]
     },
@@ -77,6 +85,10 @@
         {
           "h": "Profundidade como rede",
           "t": "Zone focusing: a f/8 focado a 2.5m, quase tudo entre 1.5m e o infinito está aceitável — dispara sem esperar pelo AF (rua)."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Usar One-Shot num sujeito que se mexe; deixar a zona larga focar o fundo; focar-e-recompor a f/1.8 (o plano de foco desloca-se e o olho sai de foco); esquecer de ligar o Eye AF."
         }
       ]
     },
@@ -101,6 +113,10 @@
         {
           "h": "No teu kit",
           "t": "M50 II: RAW (CR3) por defeito para tudo o que interessa. S23+: o modo normal faz um JPEG computacional excelente; o Expert RAW dá DNG com multi-frame — o melhor dos dois mundos nos momentos importantes."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Disparar JPEG e só depois tentar recuperar um céu queimado (já não há informação); 'editar' um JPEG como se fosse RAW; disparar tudo em RAW numa reportagem casual e encher o cartão sem necessidade."
         }
       ]
     },
@@ -125,6 +141,10 @@
         {
           "h": "Escolher focal",
           "t": "Não é 'chegar mais perto': 35eq conta cenas, 80eq isola pessoas, 24eq exagera espaço, 320eq comprime e alcança. Escolhe a focal pelo look, depois mexe os pés."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Pensar em 'zoom' só como aproximar — muda a perspetiva, não apenas o tamanho; esquecer o crop 1.6× ao comprar/comparar lentes; pôr uma grande angular perto de um rosto (distorce o nariz)."
         }
       ]
     },
@@ -149,6 +169,10 @@
         {
           "h": "Hiperfocal",
           "t": "A distância de foco que maximiza a zona nítida até ao infinito. Usa a calculadora — em paisagem substitui a adivinhação."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "f/1.8 para um grupo (metade fica desfocada); fechar a f/22 'para ficar tudo nítido' e perder nitidez por difração; esquecer que aproximar do sujeito reduz muito a profundidade de campo."
         }
       ]
     },
@@ -173,6 +197,10 @@
         {
           "h": "Panning",
           "t": "1/60–1/125 a seguir o sujeito: ele nítido, fundo riscado de velocidade. Pés fixos, tronco a rodar, acompanhamento antes-durante-depois do clique."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Velocidade lenta de mais à mão → tremido; usar 1/1000 sem necessidade e matar luz (sobe o ISO à toa); tentar panning sem acompanhar o sujeito de forma fluida."
         }
       ]
     },
@@ -197,6 +225,10 @@
         {
           "h": "Denoise moderno",
           "t": "O denoise de hoje (RapidRAW/darktable profiled) transformou ISO 6400 em território normal. Dispara sem medo, limpa depois — ruído tem cura, tremido não."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Ter medo do ISO e subexpor — o ruído nas sombras levantadas fica PIOR do que teria com ISO mais alto; aplicar denoise a mais (aspeto plástico); culpar o número ISO em vez da falta de luz."
         }
       ]
     },
@@ -221,6 +253,10 @@
         {
           "h": "Confirmação",
           "t": "Compensaste? Confere o histograma — a combinação medição + compensação + histograma é o ciclo de exposição completo."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Confiar no automático em neve/palco (sai cinzento ou queimado); compensar e esquecer de repor no próximo enquadramento; usar medição pontual sem saber sobre que ponto está a medir."
         }
       ]
     },
@@ -245,6 +281,10 @@
         {
           "h": "O hábito",
           "t": "Antes de levantar a câmara pergunta: de onde vem a luz, que tamanho tem, que cor tem? Mover o sujeito (ou os teus pés) 2 metros vale mais que qualquer definição."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "Fotografar ao meio-dia com sol a pino (sombras duras, olhos-de-guaxinim); usar o flash frontal direto (achata e cria olhos vermelhos); ignorar a direção da luz e depois estranhar o resultado plano."
         }
       ]
     },
@@ -269,6 +309,10 @@
         {
           "h": "O que NÃO precisas",
           "t": "Filtros UV 'de proteção' baratos degradam mais do que protegem; efeitos de cor fazem-se melhor na edição. CPL + ND cobrem tudo."
+        },
+        {
+          "h": "⚠️ Erros comuns",
+          "t": "CPL 'a todo o gás' numa grande angular → céu com manchas de polarização irregular; filtros UV baratos que degradam a imagem; ND forte que faz o AF caçar; esquecer de reajustar a exposição depois de pôr o ND."
         }
       ]
     },
