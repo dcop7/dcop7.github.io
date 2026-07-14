@@ -12,7 +12,6 @@ const CommandPalette = (function () {
     { name: 'Gaming Deals',      desc: 'Promoções e jogos grátis',         icon: '🏷️', type: 'nav', action: () => Nav.go('discovery') },
     { name: 'Sites Úteis',       desc: 'Bookmarks organizados',            icon: '🔗', type: 'nav', action: () => Nav.go('links') },
     { name: 'Ferramentas',       desc: 'Utilitários e dev tools',          icon: '🔧', type: 'nav', action: () => Nav.go('tools') },
-    { name: 'Network Lab',       desc: 'IP, rede, geolocalização, radar',  icon: '🛰️', type: 'nav', action: () => Nav.go('netlab') },
     { name: 'Auto Intelligence', desc: 'Fiabilidade e avarias de carros',  icon: '🚗', type: 'nav', action: () => Nav.go('autolab') },
     { name: 'Cheatsheets',       desc: 'Comandos e referências',           icon: '📋', type: 'nav', action: () => Nav.go('cheatsheets') },
     { name: 'Jogos',             desc: 'Xadrez, Wordle, Uno e mais',       icon: '🎮', type: 'nav', action: () => Nav.go('games') },

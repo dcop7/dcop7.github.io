@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v246';
+const CACHE = 'dcop7-v247';
 const STATIC = [
   '/',
   '/index.html',
@@ -67,8 +67,6 @@ const STATIC = [
   '/data/oss/index.json',
   '/js/pages/discovery.js',
   '/data/discovery/gaming/index.json',
-  '/js/pages/netlab.js',
-  '/css/views/netlab.css',
   '/js/pages/autolab.js',
   '/css/views/autolab.css',
   /* Pages */

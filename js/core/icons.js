@@ -113,13 +113,6 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke="G" stroke-width="1.8"/>
       <circle cx="5" cy="19" r="1.4" fill="C2" stroke="none"/>`),
 
-    netlab: duo('netlab', '#22d3ee', '#67e8f9', `
-      <circle cx="12" cy="12" r="8.4" fill="G" fill-opacity=".12" stroke="G"/>
-      <circle cx="12" cy="12" r="4.4" stroke="G" opacity=".7"/>
-      <path d="M12 3.6v16.8M3.6 12h16.8" stroke="G" opacity=".45"/>
-      <path d="M12 12 18 6.5" stroke="C2" stroke-width="1.7"/>
-      <circle cx="18" cy="6.5" r="1.5" fill="C2" stroke="none"/>`, { noSpark: true }),
-
     autolab: duo('autolab', '#60a5fa', '#93c5fd', `
       <path d="M3 13.5 4.7 9a2 2 0 0 1 1.9-1.3h10.8A2 2 0 0 1 19.3 9L21 13.5V19a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1.2H6.5V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="G" fill-opacity=".14" stroke="G"/>
       <path d="M3.5 13.6h17" stroke="G" opacity=".7"/>
