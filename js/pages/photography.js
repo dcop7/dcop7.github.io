@@ -547,52 +547,102 @@ const PhotographyPage = (function () {
       }},
   ];
 
-  function drawCompCanvas(canvas, comp) {
-    const ctx2 = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-    ctx2.fillStyle = document.body.classList.contains('light') ? '#f1f5f9' : '#0b1020';
-    ctx2.fillRect(0, 0, W, H);
-    ctx2.save();
-    comp.draw(ctx2, W, H);
-    ctx2.restore();
+  // Cada composição tem uma ilustração estilizada (ComfyUI) composta para
+  // casar com o overlay geométrico. name → asset id (ver tools/photogen).
+  const COMP_ASSET = {
+    'Regra dos Terços': 'comp-thirds', 'Proporção Áurea (Phi)': 'comp-golden',
+    'Espiral Dourada': 'comp-spiral', 'Diagonal Principal': 'comp-diagonal',
+    'Linhas Convergentes': 'comp-converging', 'Simetria & Reflexo': 'comp-symmetry',
+    'Enquadramento Natural': 'comp-framing', 'Espaço Negativo': 'comp-negative',
+    'Curva em S': 'comp-scurve', 'Composição em Triângulo': 'comp-triangle',
+  };
+  const compAsset = comp => assetPath(COMP_ASSET[comp.name]);
+  // Desenha só o overlay geométrico (fundo transparente para assentar na imagem);
+  // opts.bg preenche um fundo neutro (vista "só grelha" sem imagem).
+  function drawCompOverlay(canvas, comp, opts = {}) {
+    const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    if (opts.bg) { ctx.fillStyle = document.body.classList.contains('light') ? '#dbe3ef' : '#0b1020'; ctx.fillRect(0, 0, W, H); }
+    ctx.save(); comp.draw(ctx, W, H); ctx.restore();
   }
 
+  let _compView = (() => { try { return localStorage.getItem('ph-comp-view') || 'both'; } catch (_) { return 'both'; } })();
+  let _compIdx = 0;
+  function setCompView(v) { _compView = v; try { localStorage.setItem('ph-comp-view', v); } catch (_) {} }
+
   function openCompModal(comp) {
-    const modal = _openModal('ph-comp-modal', `<div class="ph-modal-box ph-comp-box" role="dialog" aria-modal="true" aria-label="${comp.name}">
+    _compIdx = Math.max(0, COMPOSITIONS.indexOf(comp));
+    const modal = _openModal('ph-comp-modal', `<div class="ph-modal-box ph-comp2-box" role="dialog" aria-modal="true" aria-label="Composição">
       <div class="ph-modal-hdr">
-        <span class="ph-modal-title">🖼️ ${comp.name}</span>
+        <span class="ph-modal-title" data-comp-title></span>
+        <div class="seg ph-comp2-seg" role="group" aria-label="Vista">
+          <button class="seg-btn" data-view="grid">Grelha</button>
+          <button class="seg-btn" data-view="example">Exemplo</button>
+          <button class="seg-btn" data-view="both">Ambos</button>
+        </div>
         <button class="ph-modal-close" aria-label="Fechar">✕</button>
       </div>
-      <div class="ph-comp-modal-grid">
-        <div class="ph-comp-modal-canvas-wrap"><canvas class="ph-modal-canvas" id="ph-modal-canvas"></canvas></div>
-        <div class="ph-comp-modal-info">
-          <div class="ph-comp-modal-desc">${comp.desc}</div>
-          ${comp.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${comp.tips}</div>` : ''}
-          ${comp.examples ? `<div class="ph-comp-modal-examples"><strong>📷 Exemplos:</strong> ${comp.examples}</div>` : ''}
-        </div>
-      </div>
+      <div class="ph-comp2-body"></div>
     </div>`);
-    const canvas = modal.querySelector('#ph-modal-canvas');
-    canvas.width = 560; canvas.height = 420;
-    requestAnimationFrame(() => drawCompCanvas(canvas, comp));
+    modal.querySelectorAll('.ph-comp2-seg .seg-btn').forEach(b => b.addEventListener('click', () => { setCompView(b.dataset.view); renderCompModal(modal); }));
+    document.addEventListener('keydown', function nav(e) {
+      if (!document.getElementById('ph-comp-modal')) { document.removeEventListener('keydown', nav); return; }
+      if (e.key === 'ArrowLeft') { _compIdx = (_compIdx - 1 + COMPOSITIONS.length) % COMPOSITIONS.length; renderCompModal(modal); }
+      else if (e.key === 'ArrowRight') { _compIdx = (_compIdx + 1) % COMPOSITIONS.length; renderCompModal(modal); }
+    });
+    renderCompModal(modal);
+  }
+  function renderCompModal(modal) {
+    const comp = COMPOSITIONS[_compIdx], asset = compAsset(comp);
+    modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
+    modal.querySelectorAll('.ph-comp2-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.view === _compView));
+    modal.querySelector('.ph-comp2-body').innerHTML = `
+      <div class="ph-comp2-stage" data-view="${_compView}">
+        <button class="ph-comp2-nav prev" aria-label="Composição anterior">‹</button>
+        <div class="ph-comp2-frame">
+          ${asset ? `<img class="ph-comp2-img" src="${asset}" alt="${comp.name}">` : '<div class="ph-comp2-img ph-comp2-noimg"></div>'}
+          <canvas class="ph-comp2-canvas ph-comp2-anim"></canvas>
+        </div>
+        <button class="ph-comp2-nav next" aria-label="Composição seguinte">›</button>
+      </div>
+      <div class="ph-comp2-count">${_compIdx + 1} / ${COMPOSITIONS.length}</div>
+      <div class="ph-comp2-info">
+        <p class="ph-comp2-desc">${comp.desc}</p>
+        ${comp.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${comp.tips}</div>` : ''}
+        ${comp.examples ? `<div class="ph-know-sec"><h4>📷 Exemplos</h4><p>${comp.examples}</p></div>` : ''}
+      </div>`;
+    const canvas = modal.querySelector('.ph-comp2-canvas');
+    requestAnimationFrame(() => {
+      const frame = modal.querySelector('.ph-comp2-frame');
+      const w = frame.clientWidth || 620, h = Math.round(w * 832 / 1216);
+      canvas.width = w; canvas.height = h;
+      drawCompOverlay(canvas, comp);
+    });
+    modal.querySelector('.prev').addEventListener('click', () => { _compIdx = (_compIdx - 1 + COMPOSITIONS.length) % COMPOSITIONS.length; renderCompModal(modal); });
+    modal.querySelector('.next').addEventListener('click', () => { _compIdx = (_compIdx + 1) % COMPOSITIONS.length; renderCompModal(modal); });
   }
 
   function buildComposition(root) {
-    expandableGrid(root, COMPOSITIONS, {
-      head: `<div class="ph-section-title">🖼️ Guias de Composição</div>
-        <p class="ph-section-sub">As regras clássicas para organizar o enquadramento. Cada cartão mostra o diagrama — toca para o ver em grande, com dicas e exemplos.</p>`,
-      thumb: () => `<span class="ph-vis ph-comp-thumb"><canvas width="300" height="143"></canvas></span>`,
-      blurb: c => c.desc,
-      afterCard: (card, c) => { const cv = card.querySelector('canvas'); if (cv) requestAnimationFrame(() => drawCompCanvas(cv, c)); },
-      detail: c => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
-        <div class="ph-detail-head"><span class="ph-detail-ico">🖼️</span><h3 class="ph-detail-title">${c.name}</h3></div>
-        <div class="ph-detail-art ph-comp-detail-art"><canvas width="600" height="286"></canvas></div>
-        <div class="ph-detail-body">
-          <div class="ph-know-sec"><p>${c.desc}</p></div>
-          ${c.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${c.tips}</div>` : ''}
-          ${c.examples ? `<div class="ph-know-sec"><h4>📷 Exemplos</h4><p>${c.examples}</p></div>` : ''}
-        </div>`,
-      afterOpen: (detail, c) => { const cv = detail.querySelector('.ph-detail-art canvas'); if (cv) drawCompCanvas(cv, c); },
+    root.innerHTML = `<div class="ph-section-title">🖼️ Guias de Composição</div>
+      <p class="ph-section-sub">As regras clássicas para organizar o enquadramento — cada uma com um exemplo ilustrado e a grelha por cima. Toca para explorar.</p>
+      <div class="ph-comp-grid2"><p class="ph-section-sub">A carregar…</p></div>`;
+    loadAssets().then(() => {
+      const grid = root.querySelector('.ph-comp-grid2'); if (!grid) return;
+      grid.innerHTML = '';
+      COMPOSITIONS.forEach(comp => {
+        const asset = compAsset(comp);
+        const card = document.createElement('button');
+        card.type = 'button'; card.className = 'ph-comp-card';
+        card.innerHTML = `<span class="ph-comp-card-frame">
+            ${asset ? `<img class="ph-comp-card-img" loading="lazy" decoding="async" src="${asset}" alt="">` : '<span class="ph-comp-card-noimg"></span>'}
+            <canvas class="ph-comp-card-cv" width="320" height="219"></canvas>
+          </span>
+          <span class="ph-comp-card-name">${comp.name}</span>
+          <span class="ph-comp-card-desc">${comp.desc}</span>`;
+        grid.appendChild(card);
+        requestAnimationFrame(() => { const cv = card.querySelector('canvas'); if (cv) drawCompOverlay(cv, comp, { bg: !asset }); });
+        card.addEventListener('click', () => openCompModal(comp));
+      });
     });
   }
 

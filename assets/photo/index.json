@@ -5,5 +5,15 @@
   "pose-three-quarter": "poses/pose-three-quarter.webp",
   "pose-busy-hands": "poses/pose-busy-hands.webp",
   "pose-s-curve": "poses/pose-s-curve.webp",
-  "pose-leaning": "poses/pose-leaning.webp"
+  "pose-leaning": "poses/pose-leaning.webp",
+  "comp-thirds": "comp/comp-thirds.webp",
+  "comp-converging": "comp/comp-converging.webp",
+  "comp-diagonal": "comp/comp-diagonal.webp",
+  "comp-golden": "comp/comp-golden.webp",
+  "comp-spiral": "comp/comp-spiral.webp",
+  "comp-symmetry": "comp/comp-symmetry.webp",
+  "comp-framing": "comp/comp-framing.webp",
+  "comp-negative": "comp/comp-negative.webp",
+  "comp-scurve": "comp/comp-scurve.webp",
+  "comp-triangle": "comp/comp-triangle.webp"
 }
