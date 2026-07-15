@@ -58,7 +58,7 @@ const DobbleGame = (function () {
       matches: 'Acertos', accuracy: 'Precisão', bestReaction: 'Reação mais rápida',
       timeout: '⏰ O tempo esgotou-se…', wrongEnd: '✖ Símbolo errado…',
       playAgain: '↻ Jogar outra vez', otherModes: 'Modos', backMenu: '⬅ Menu',
-      sound: 'Som', zenExit: 'Terminar sessão',
+      sound: 'Som', vibrate: 'Vibração', zenExit: 'Terminar sessão',
       s: 's',
     },
     en: {
@@ -86,7 +86,7 @@ const DobbleGame = (function () {
       matches: 'Matches', accuracy: 'Accuracy', bestReaction: 'Fastest reaction',
       timeout: '⏰ Time ran out…', wrongEnd: '✖ Wrong symbol…',
       playAgain: '↻ Play again', otherModes: 'Modes', backMenu: '⬅ Menu',
-      sound: 'Sound', zenExit: 'End session',
+      sound: 'Sound', vibrate: 'Vibration', zenExit: 'End session',
       s: 's',
     },
   };
@@ -193,7 +193,8 @@ const DobbleGame = (function () {
   };
 
   /* ── sons (WebAudio local, curto e discreto) ───────────────────── */
-  const soundOn = () => store().getPref('sound', true);
+  const soundOn = () => store().getPref('sound', false);   /* desligado por defeito */
+  const vibeOn  = () => store().getPref('vibe', false);    /* desligado por defeito */
   let _actx = null;
   function snd(fn) {
     if (!soundOn()) return;
@@ -235,7 +236,7 @@ const DobbleGame = (function () {
   const sndMiss = () => snd(c => beep(c, 150, .16, 'square', .08));
   const sndTick = () => snd(c => beep(c, 900, .04, 'sine', .05));
   const sndEnd  = win => snd(c => { const f = win ? [523, 659, 784, 1047] : [330, 262]; f.forEach((q, i) => beep(c, q, .16, 'sine', .12, i * .13)); });
-  const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+  const vib = p => { if (!vibeOn()) return; try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
 
   /* ── estado ─────────────────────────────────────────────────────── */
   let root = null, S = null, _tick = null, _eyeIdle = null;
@@ -296,7 +297,7 @@ const DobbleGame = (function () {
         style="left:${(50 + (x + jx) * 44).toFixed(1)}%;top:${(50 + (y + jy) * 44).toFixed(1)}%;--rot:${rot}deg;--d:${i * 24}ms;font-size:${fs}cqw"
         aria-label="símbolo">${S.pool[sym]}</button>`;
     }).join('');
-    return `<div class="db-card${deal ? ' db-deal' : ''}">${syms}</div>`;
+    return `<div class="db-tilt"><div class="db-card${deal ? ' db-deal' : ''}">${syms}</div></div>`;
   }
 
   function renderPair(anim) {
@@ -325,33 +326,34 @@ const DobbleGame = (function () {
     });
   }
 
-  /* ── parallax/profundidade das cartas ao mover o ponteiro ──────── */
+  /* ── profundidade: inclina a carta INTEIRA (wrapper .db-tilt com
+     perspetiva) ao mover o ponteiro. Só a carta sob o cursor reage e a
+     inclinação é suavizada por uma transição CSS no próprio .db-tilt, por
+     isso não há tremor (não se mexe em cada símbolo, ao contrário da
+     versão antiga que os fazia "perseguir" o rato). ─────────────────── */
   function wireParallax() {
     if (!AOK()) return;
-    const table = root.querySelector('.db-table');
-    if (!table) return;
-    let raf = 0, ev = null;
-    const apply = () => {
-      raf = 0; if (!ev) return;
-      root.querySelectorAll('.db-card-wrap').forEach(wrap => {
-        const r = wrap.getBoundingClientRect();
-        const dx = (ev.clientX - (r.left + r.width / 2)) / (r.width / 2);
-        const dy = (ev.clientY - (r.top + r.height / 2)) / (r.height / 2);
-        const k = (Math.abs(dx) < 1.7 && Math.abs(dy) < 1.7) ? 1 : 0;
-        const card = wrap.querySelector('.db-card');
-        if (card && !card._busy) card.style.transform = `perspective(760px) rotateY(${(-dx * 6 * k).toFixed(2)}deg) rotateX(${(dy * 6 * k).toFixed(2)}deg)`;
-        wrap.querySelectorAll('.db-sym').forEach(s => {
-          const dp = +s.dataset.dp || .6;
-          s.style.setProperty('--px', (-dx * dp * 11 * k).toFixed(1) + 'px');
-          s.style.setProperty('--py', (-dy * dp * 11 * k).toFixed(1) + 'px');
+    root.querySelectorAll('.db-card-wrap').forEach(wrap => {
+      const tilt = wrap.querySelector('.db-tilt');
+      if (!tilt) return;
+      let raf = 0, ex = 0, ey = 0;
+      wrap.addEventListener('pointermove', e => {
+        ex = e.clientX; ey = e.clientY;
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const r = wrap.getBoundingClientRect();
+          const dx = Math.max(-1, Math.min(1, (ex - (r.left + r.width / 2)) / (r.width / 2)));
+          const dy = Math.max(-1, Math.min(1, (ey - (r.top + r.height / 2)) / (r.height / 2)));
+          tilt.style.setProperty('--rx', (dx * 7).toFixed(2) + 'deg');
+          tilt.style.setProperty('--ry', (-dy * 7).toFixed(2) + 'deg');
         });
-      });
-    };
-    table.addEventListener('pointermove', e => { ev = e; if (!raf) raf = requestAnimationFrame(apply); }, { passive: true });
-    table.addEventListener('pointerleave', () => {
-      root.querySelectorAll('.db-card').forEach(c => { c.style.transform = ''; });
-      root.querySelectorAll('.db-sym').forEach(s => { s.style.setProperty('--px', '0px'); s.style.setProperty('--py', '0px'); });
-    }, { passive: true });
+      }, { passive: true });
+      wrap.addEventListener('pointerleave', () => {
+        tilt.style.setProperty('--rx', '0deg');
+        tilt.style.setProperty('--ry', '0deg');
+      }, { passive: true });
+    });
   }
 
   /* ── burst de partículas + anel ao acertar ─────────────────────── */
@@ -614,6 +616,7 @@ const DobbleGame = (function () {
         </div>
         <div class="db-opts">
           <label class="db-snd"><input type="checkbox" id="db-snd" ${soundOn() ? 'checked' : ''}> 🔊 ${t('sound')}</label>
+          <label class="db-snd"><input type="checkbox" id="db-vibe" ${vibeOn() ? 'checked' : ''}> 📳 ${t('vibrate')}</label>
           <span class="db-opts-spacer"></span>
           <button class="db-chip db-howto-btn" id="db-howto">${t('howto')}</button>
         </div>
@@ -641,6 +644,7 @@ const DobbleGame = (function () {
       if (hint) hint.textContent = t('dHint_' + b.dataset.diff);
     }));
     root.querySelector('#db-snd')?.addEventListener('change', e => store().setPref('sound', e.target.checked));
+    root.querySelector('#db-vibe')?.addEventListener('change', e => store().setPref('vibe', e.target.checked));
     root.querySelector('#db-howto')?.addEventListener('click', showHowto);
     /* micro-vida no menu */
     if (window.Motion && Motion.stagger) Motion.stagger(root.querySelectorAll('.db-daily,.db-mode'), { y: 10, step: 34 });
@@ -849,7 +853,8 @@ const DobbleGame = (function () {
 .db-eye-arc.db-low{stroke:#ef4444}
 .db-eye-rip{position:absolute;width:56px;height:56px;border-radius:50%;border:2px solid var(--db-gold);pointer-events:none}
 .db-eye-combo{position:absolute;bottom:-16px;font-size:.68rem;font-weight:800;color:var(--db-gold);white-space:nowrap}
-.db-card-wrap{width:min(86vw,340px,calc((100dvh - 250px)/2));aspect-ratio:1;position:relative}
+.db-card-wrap{width:min(86vw,340px,calc((100dvh - 250px)/2));aspect-ratio:1;position:relative;perspective:900px}
+.db-tilt{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(var(--rx,0deg)) rotateX(var(--ry,0deg));transition:transform .3s cubic-bezier(.2,.7,.3,1)}
 @media (min-width:760px){
   .db-table{flex-direction:row;justify-content:center;gap:20px}
   .db-card-wrap{width:min(340px,38vw,58vh)}
@@ -865,12 +870,12 @@ const DobbleGame = (function () {
 .db-card.db-shake{animation:dbShake .4s}
 @keyframes dbShake{0%,100%{transform:none}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
 /* símbolos — transform base compõe parallax(--px/--py) + rotação */
-.db-sym{position:absolute;transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg));background:none;border:none;padding:.06em;cursor:pointer;line-height:1;user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .12s}
-.db-sym:active{transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg)) scale(1.15)}
+.db-sym{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot,0deg));background:none;border:none;padding:.06em;cursor:pointer;line-height:1;user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+.db-sym:active{transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1.15)}
 .db-card.db-deal .db-sym{animation:dbSymIn .42s var(--d,0ms) both cubic-bezier(.2,1.3,.3,1)}
-@keyframes dbSymIn{from{opacity:0;transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg)) scale(.2)}to{opacity:1;transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg)) scale(1)}}
+@keyframes dbSymIn{from{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1)}}
 .db-sym.db-pop{animation:dbPop .34s cubic-bezier(.2,1.4,.4,1);filter:drop-shadow(0 0 9px var(--db-gold));z-index:5}
-@keyframes dbPop{0%{transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg)) scale(1)}40%{transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg)) scale(1.6)}100%{transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px))) rotate(var(--rot,0deg)) scale(1.2)}}
+@keyframes dbPop{0%{transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1)}40%{transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1.6)}100%{transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1.2)}}
 .db-sym.db-bad{animation:dbBad .35s}
 @keyframes dbBad{0%,100%{filter:none}50%{filter:drop-shadow(0 0 10px #ef4444) grayscale(.4)}}
 .db-float{position:absolute;left:50%;top:-6px;transform:translateX(-50%);font-size:.5em;font-weight:900;color:var(--db-gold);pointer-events:none;animation:dbFloat .7s forwards}

@@ -24,7 +24,7 @@
     "matches": "Acertos", "accuracy": "Precisão", "bestReaction": "Reação mais rápida",
     "timeout": "⏰ O tempo esgotou-se…", "wrongEnd": "✖ Símbolo errado…",
     "playAgain": "↻ Jogar outra vez", "otherModes": "Modos", "backMenu": "⬅ Menu",
-    "sound": "Som", "zenExit": "Terminar sessão",
+    "sound": "Som", "vibrate": "Vibração", "zenExit": "Terminar sessão",
     "s": "s"
   },
   "en": {
@@ -52,7 +52,7 @@
     "matches": "Matches", "accuracy": "Accuracy", "bestReaction": "Fastest reaction",
     "timeout": "⏰ Time ran out…", "wrongEnd": "✖ Wrong symbol…",
     "playAgain": "↻ Play again", "otherModes": "Modes", "backMenu": "⬅ Menu",
-    "sound": "Sound", "zenExit": "End session",
+    "sound": "Sound", "vibrate": "Vibration", "zenExit": "End session",
     "s": "s"
   }
 }
