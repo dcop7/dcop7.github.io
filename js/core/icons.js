@@ -113,12 +113,6 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke="G" stroke-width="1.8"/>
       <circle cx="5" cy="19" r="1.4" fill="C2" stroke="none"/>`),
 
-    autolab: duo('autolab', '#60a5fa', '#93c5fd', `
-      <path d="M3 13.5 4.7 9a2 2 0 0 1 1.9-1.3h10.8A2 2 0 0 1 19.3 9L21 13.5V19a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1.2H6.5V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="G" fill-opacity=".14" stroke="G"/>
-      <path d="M3.5 13.6h17" stroke="G" opacity=".7"/>
-      <circle cx="7" cy="16.4" r="1.1" fill="C2" stroke="none"/>
-      <circle cx="17" cy="16.4" r="1.1" fill="C2" stroke="none"/>`, { noSpark: true }),
-
   };
 
   function icon(r, size) {

@@ -16,7 +16,6 @@ const Search = (function () {
     { label: 'Terra em Tempo Real', id: 'explorer/realtime', icon: '🛰', tags: ['terra em tempo real','live earth','sismos','earthquakes','terramotos','vulcões','volcanoes','incêndios','wildfires','fires','tempestades','furacões','storms','hurricanes','nuvens','clouds','temperatura','dia/noite','tsunamis','aviões','flights','usgs','eonet','gibs','opensky'] },
     { label: 'Sistema Solar',id: 'explorer/solar',   icon: '☀', tags: ['sistema solar','solar system','planetas','planets','cometas','comets','asteroides','asteroids','satélites','iss','sol','sun','lua'] },
     { label: 'Via Láctea',   id: 'explorer/galaxy',  icon: '🌌', tags: ['via láctea','milky way','galáxia','galaxy','galaxias','constelações','constellations','estrelas','stars','nebulosas','nebulae','andrómeda','andromeda','espaço','space'] },
-    { label: 'Auto Intelligence', id: 'autolab',     icon: '🚗', tags: ['auto','carro','car','automóvel','fiabilidade','reliability','avarias','problems','recalls','manutenção','maintenance','comprar carro','usado','km'] },
   ];
 
   const GAMES = [

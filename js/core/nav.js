@@ -48,7 +48,6 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="tools">${TN('nav.grp.tools')}</div>
           <a class="sb-nav-item" data-route="links"        href="#links">${navIcon('links')}<span>${TN('nav.links')}</span></a>
           <a class="sb-nav-item" data-route="tools"        href="#tools">${navIcon('tools')}<span>${TN('nav.tools')}</span></a>
-          <a class="sb-nav-item" data-route="autolab"      href="#autolab">${navIcon('autolab')}<span>${TN('nav.autolab')}</span></a>
           <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
           <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${navIcon('cheatsheets')}<span>${TN('nav.cheatsheets')}</span></a>
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
@@ -177,9 +176,6 @@ const Nav = (function () {
       document.getElementById('view-discovery')?.classList.add('active');
       const dSub = path.startsWith('discovery/') ? path.slice(10) : null;   // "gaming…"
       typeof DiscoveryPage !== 'undefined' && DiscoveryPage.show(dSub);
-    } else if (page === 'autolab') {
-      document.getElementById('view-autolab')?.classList.add('active');
-      typeof AutoLabPage !== 'undefined' && AutoLabPage.show();
     } else if (page === 'search') {
       document.getElementById('view-search')?.classList.add('active');
       typeof Search !== 'undefined' && Search.renderPage(q);
@@ -222,7 +218,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','autolab','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

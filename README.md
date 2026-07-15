@@ -35,7 +35,6 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#discovery` | **Gaming Deals** | Deals de gaming e jogos grátis (refresh 6h) |
 | `#tools` | **Tools** | Calculadora, pomodoro, cronómetro, editor markdown, regex tester, diff, conversores, cores, UUID, timestamps, dados 3D, … |
 | `#netlab` | **Network Lab** | IP público (IPv4/IPv6), ISP/ASN, geolocalização e infraestrutura num radar tático (canvas); latência por região, heurística de VPN/proxy, histórico local, pesquisa de qualquer IP (ipwho.is, CORS-direct) |
-| `#autolab` | **Auto Intelligence** | Inteligência automóvel 100% dinâmica, sem base local: marca→modelo→geração via Wikidata SPARQL (datas, fotos, pesquisa livre), descrição via Wikipedia REST, recalls oficiais e queixas reais de donos via NHTSA (localStorage só como cache TTL) |
 | `#cheatsheets` | **Cheatsheets** | Referências de comandos: Git, Linux, Vim, regex, Docker, atalhos |
 | `#games` | **Jogos** | 13 jogos curados: Xadrez (chess.js vendored), Sueca (engine/IA próprios, 4 níveis), Olho Vivo (Dobble/Spot It, plano projetivo, engine próprio), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
@@ -66,7 +65,7 @@ dcop7.github.io/
 │   └── views/                 ← um CSS por secção (home, games, explorer, noticias, f1, …)
 ├── js/
 │   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax, motion (Anime.js)
-│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, netlab, autolab, rss
+│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, rss
 │   ├── explorer/              ← explorer hub + realtime, solar, galaxy, body, portugal, timeline, data (mundo), kb, eventos, ocorrencias
 │   ├── games/                 ← game-host + jogos (game-*.js) + game-progress + vendor (chess.js)
 │   ├── quiz/                  ← quiz-engine, quiz-data, quiz-providers, quiz-page
@@ -160,9 +159,6 @@ Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge
 | API | Uso |
 |-----|-----|
 | **ipwho.is** | Network Lab: IP, ISP, ASN, geolocalização (CORS `*`, sem chave); IPv6 best-effort via api64.ipify |
-| **Wikidata SPARQL** (`query.wikidata.org`) | Auto Intelligence: marcas → modelos → gerações (datas, fotos, sitelinks), pesquisa via wbsearchentities |
-| **Wikipedia REST** (`{pt,en}.wikipedia.org/api/rest_v1`) | Auto Intelligence: resumo/foto da geração |
-| **NHTSA** (`api.nhtsa.gov`) | Auto Intelligence: recalls oficiais + queixas reais de donos por componente (anos-amostra da geração) |
 | **IPMA** (`api.ipma.pt`) | Previsão por cidade + avisos meteorológicos (popup do dia) |
 | **Open-Meteo** | Meteo atual/6 dias para cidade configurável |
 | **Wikimedia / Wikipedia PT** (`api.wikimedia.org`) | Reconstrução live das efemérides quando o snapshot está velho (`otd-lib`) |
