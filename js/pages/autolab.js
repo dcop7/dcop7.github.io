@@ -202,7 +202,8 @@ const AutoLabPage = (function () {
   function finishGens(map, ck) {
     const gens = Object.values(map)
       .filter(g => !/^Q\d+$/.test(g.label))
-      .sort((a, b) => (+(a.from || 9999)) - (+(b.from || 9999)) || b.links - a.links);
+      /* mais recentes primeiro (Golf 8 no topo, Mk1 no fundo); sem data → fundo */
+      .sort((a, b) => (+(b.from || 0)) - (+(a.from || 0)) || b.links - a.links);
     cset(ck, gens);
     return gens;
   }
@@ -219,13 +220,24 @@ const AutoLabPage = (function () {
   }
 
   /* ── NHTSA: recalls + queixas para anos-amostra da geração ────── */
+  /* Reduzir "Honda Civic (eighth generation)" → "Civic" para consultar a
+     NHTSA. CUIDADO: o antigo /[ivxlc]{1,5}/ apagava palavras reais feitas
+     só de letras romanas (Civic = c-i-v-i-c!), deixando o modelo vazio.
+     Agora só se remove um token que seja um algarismo romano VÁLIDO e que
+     não seja o nome-base (nunca o 1.º token). */
+  const ROMAN_RE = /^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/i;
+  const GEN_WORD = /^(generation|geração|geracao|série|serie|series|mk\.?\d*|w\d{3}|e\d{2,3}|f\d{2}|g\d{2}|b[4-9]|typ|type)$/i;
   function carModelBase(label, brandLabel) {
-    let s = label;
+    let s = label.replace(/\((.*?)\)/g, ' ');
     if (brandLabel) s = s.replace(new RegExp('^' + brandLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '');
-    s = s.replace(/\((.*?)\)/g, ' ')
-      .replace(/\b(mk\.?\s?\d+|[ivxlc]{1,5}|w\d{3}|e\d{2,3}|f\d{2}|g\d{2}|b[5-9]|typ?e?\s?\w{1,4}|generation|geração|série|series|\d{4}(–|-)\d{0,4})\b/gi, ' ')
-      .replace(/\s+/g, ' ').trim();
-    return s || label;
+    const toks = s.split(/\s+/).filter(Boolean);
+    const kept = toks.filter((tok, i) => {
+      if (GEN_WORD.test(tok)) return false;
+      if (i > 0 && tok.length <= 4 && ROMAN_RE.test(tok)) return false;   // "Golf VII" → "Golf"
+      if (/^\d{4}(?:[–\-—]\d{0,4})?$/.test(tok)) return false;             // intervalos de anos
+      return true;
+    });
+    return kept.join(' ').trim() || s.trim() || label;
   }
   function sampleYears(from, to) {
     const now = new Date().getFullYear();
@@ -272,6 +284,148 @@ const AutoLabPage = (function () {
       cset(ck, out);
       return out;
     });
+  }
+
+  /* ── FICHA TÉCNICA: infobox da Wikipedia (motores, cotas, peso…) ──
+     O Wikidata quase não tem specs de automóveis; a riqueza (1.4/1.8 L,
+     peso, dimensões, caixas) vive na infobox da Wikipedia. Aqui isolamos
+     TODAS as {{Infobox automobile}} do artigo (um artigo-"gama" tem uma
+     por carroçaria/mercado) e fundimos os campos. */
+  function wikiText(title, lang) {
+    return fetch(`https://${lang}.wikipedia.org/w/api.php?action=parse&format=json&origin=*&redirects=1&prop=wikitext&page=${encodeURIComponent(title)}`)
+      .then(r => { if (!r.ok) throw new Error('wt ' + r.status); return r.json(); })
+      .then(d => (d.parse && d.parse.wikitext && d.parse.wikitext['*']) || '');
+  }
+  function ibFindBoxes(wt) {
+    const out = []; let i = 0;
+    while (true) {
+      const idx = wt.indexOf('{{Infobox automobile', i);
+      if (idx < 0) break;
+      let d = 0, j = idx, end = -1;
+      while (j < wt.length - 1) {
+        const two = wt.slice(j, j + 2);
+        if (two === '{{') { d++; j += 2; continue; }
+        if (two === '}}') { d--; j += 2; if (d === 0) { end = j; break; } continue; }
+        j++;
+      }
+      if (end < 0) break;
+      out.push(wt.slice(idx, end)); i = end;
+    }
+    return out;
+  }
+  /* separar campos |chave = valor ao nível 0 (ignorar | dentro de {{}}/[[]]) */
+  function ibFields(box) {
+    const inner = box.replace(/^\{\{Infobox automobile/i, '').replace(/\}\}$/, '');
+    let d = 0, buf = ''; const parts = [];
+    for (let k = 0; k < inner.length; k++) {
+      const two = inner.slice(k, k + 2);
+      if (two === '{{' || two === '[[') { d++; buf += two; k++; continue; }
+      if (two === '}}' || two === ']]') { d--; buf += two; k++; continue; }
+      if (inner[k] === '|' && d === 0) { parts.push(buf); buf = ''; continue; }
+      buf += inner[k];
+    }
+    parts.push(buf);
+    const f = {};
+    parts.forEach(p => {
+      const eq = p.indexOf('='); if (eq < 0) return;
+      const k = p.slice(0, eq).trim().toLowerCase(), v = p.slice(eq + 1).trim();
+      if (k && v) f[k] = v;
+    });
+    return f;
+  }
+  function wkResolve(x) {
+    x = x.replace(/\{\{\s*(?:convert|cvt)\s*\|\s*([^|}]+)\|\s*([^|}]+)[^}]*\}\}/gi, '$1 $2');
+    for (let n = 0; n < 3; n++) x = x.replace(/\[\[[^\[\]|]*\|([^\[\]]*)\]\]/g, '$1').replace(/\[\[([^\[\]]*)\]\]/g, '$1');
+    return x;
+  }
+  function wkClean(x) {
+    return wkResolve(x).replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, '').replace(/<ref[^>]*\/>/gi, '')
+      .replace(/<[^>]+>/g, ' ').replace(/'{2,}/g, '').replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+  }
+  /* resolver wikilinks ANTES de dividir (os [[x|y]] têm | que não é separador) */
+  function wkList(v) {
+    const s = wkResolve(v)
+      .replace(/\{\{\s*(?:ubl|unbulleted list|plainlist|flatlist|hlist)\s*\|?/gi, '\n')
+      .replace(/\{\{[^{}]*\}\}/g, ' ').replace(/[{}]/g, '')
+      .replace(/<br\s*\/?>/gi, '\n');
+    const seen = [], out = [];
+    s.split(/[\n*|]+/).forEach(part => {
+      const c = wkClean(part);
+      if (c.length > 1 && !/^[A-Za-z .()\/-]+:$/.test(c) && !seen.includes(c.toLowerCase())) { seen.push(c.toLowerCase()); out.push(c); }
+    });
+    return out;
+  }
+  /* extrair medidas convertendo CADA número pela sua própria unidade adjacente
+     (evita anos de "(2006-08 sedan)" e misturas lb/kg). Limites por tipo. */
+  const DIM_BOUNDS = { length: [2500, 6500], width: [1400, 2300], height: [1200, 2200], wheelbase: [1800, 3800], mass: [600, 3200] };
+  function toMetric(str, kind) {
+    if (!str) return null;
+    const bounds = DIM_BOUNDS[kind]; if (!bounds) return null;
+    const s = str.replace(/\([^)]*\)/g, ' ');   // fora anotações de carroçaria/ano
+    const re = /(?:(\d[\d.,]*)\s*[-–—]\s*)?(\d[\d.,]*)\s*(mm|cm|in|lbs?|kg|t)\b/gi;
+    const conv = (raw, u) => {
+      let n = parseFloat(String(raw).replace(/,/g, '')); if (!isFinite(n)) return null;
+      u = u.toLowerCase();
+      if (kind === 'mass') { if (u === 'lb' || u === 'lbs') n *= 0.4536; else if (u === 't') n *= 1000; }
+      else { if (u === 'in') n *= 25.4; else if (u === 'cm') n *= 10; }
+      return n;
+    };
+    const vals = []; let m;
+    while ((m = re.exec(s))) { [m[1], m[2]].forEach(x => { if (x == null) return; const n = conv(x, m[3]); if (n != null && n >= bounds[0] && n <= bounds[1]) vals.push(n); }); }
+    if (!vals.length) return null;
+    const mn = Math.round(Math.min(...vals)), mx = Math.round(Math.max(...vals));
+    return (mn === mx ? mn : mn + '–' + mx) + (kind === 'mass' ? ' kg' : ' mm');
+  }
+  function pickYears(arr) {
+    const ys = ((arr || []).join(' ').match(/\b(?:19|20)\d{2}\b/g) || []).map(Number);
+    if (!ys.length) return null;
+    const mn = Math.min(...ys), mx = Math.max(...ys);
+    return mn === mx ? String(mn) : mn + '–' + mx;
+  }
+  function mergeSpecs(boxes) {
+    const eng = [], tr = [], L = [], W = [], H = [], WB = [], WT = [], prod = [], cls = [], lay = [], des = [], asm = [];
+    boxes.forEach(f => {
+      if (f.engine) eng.push(...wkList(f.engine));
+      if (f.transmission) tr.push(...wkList(f.transmission));
+      if (f.length) L.push(wkClean(f.length));
+      if (f.width) W.push(wkClean(f.width));
+      if (f.height) H.push(wkClean(f.height));
+      if (f.wheelbase) WB.push(wkClean(f.wheelbase));
+      if (f.weight) WT.push(wkClean(f.weight));
+      if (f.production) prod.push(wkClean(f.production));
+      if (f.class) cls.push(...wkList(f.class));
+      if (f.layout) lay.push(...wkList(f.layout));   // 1ª tracção (várias vêm em <br>)
+      if (f.designer) des.push(wkClean(f.designer));
+      if (f.assembly) asm.push(...wkList(f.assembly));
+    });
+    const uniq = a => [...new Set(a.map(x => x.trim()).filter(Boolean))];
+    const first = a => uniq(a)[0] || null;
+    return {
+      engines: uniq(eng).slice(0, 16),
+      transmissions: uniq(tr).slice(0, 8),
+      length: toMetric(L.join(' '), 'length'), width: toMetric(W.join(' '), 'width'),
+      height: toMetric(H.join(' '), 'height'), wheelbase: toMetric(WB.join(' '), 'wheelbase'),
+      weight: toMetric(WT.join(' '), 'mass'), years: pickYears(prod),
+      klass: first(cls), layout: first(lay), designer: first(des), assembly: first(asm),
+    };
+  }
+  function fetchSpecs(g) {
+    const ck = 'specs2.' + g.id + '.' + _lang();
+    const hit = cget(ck); if (hit) return Promise.resolve(hit);
+    const artTitle = u => decodeURIComponent((u || '').split('/wiki/')[1] || '').replace(/_/g, ' ');
+    const ptT = artTitle(g.apt), enT = artTitle(g.aen);
+    const grab = (t, l) => (t ? wikiText(t, l).then(wt => mergeSpecs(ibFindBoxes(wt).map(ibFields))).catch(() => null) : Promise.resolve(null));
+    /* PT primeiro (utilizador em Portugal); se a infobox PT for pobre, EN */
+    return grab(ptT, 'pt')
+      .then(sp => (sp && sp.engines.length) ? sp : grab(enT, 'en').then(se => se || sp))
+      .then(s => {
+        s = s || mergeSpecs([]);
+        return sparql(`SELECT ?prod WHERE { OPTIONAL { wd:${g.id} wdt:P1092 ?prod } }`, 'prod.' + g.id)
+          .then(rows => { const p = rows[0] && rows[0].prod && rows[0].prod.value; if (p) s.produced = (+p).toLocaleString(_lang() === 'en' ? 'en-US' : 'pt-PT'); return s; })
+          .catch(() => s);
+      })
+      .then(s => { cset(ck, s); return s; });
   }
 
   /* ══ RENDER ══════════════════════════════════════════════════════ */
@@ -475,6 +629,9 @@ const AutoLabPage = (function () {
             <div class="al-hero-links" id="al-links"></div>
           </div>
         </div>
+        <div class="al-sec" id="al-specs-sec"><div class="al-sec-t">🧾 ${T('Specs & engines', 'Ficha técnica & motores')} <small>${T('from the encyclopedia infobox', 'da ficha da enciclopédia')}</small></div>
+          <div id="al-specs">${spinner(T('Reading the technical sheet…', 'A ler a ficha técnica…'))}</div>
+        </div>
         <div class="al-sec"><div class="al-sec-t">📡 ${T('Real-world signals', 'Sinais do mundo real')} <small>NHTSA · ${T('live', 'em direto')}</small></div>
           <div id="al-signals">${spinner(T('Querying official recall & complaint databases…', 'A consultar bases oficiais de recalls e queixas…'))}</div>
         </div>
@@ -524,7 +681,10 @@ const AutoLabPage = (function () {
         `<a class="al-src" href="https://ec.europa.eu/safety-gate/" target="_blank" rel="noopener">🇪🇺 Safety Gate</a>`,
       ].filter(Boolean).join('');
 
-      /* 3) NHTSA — sinais reais */
+      /* 3) ficha técnica + motores (infobox Wikipedia) */
+      fetchSpecs(g).then(renderSpecs).catch(() => renderSpecs(null));
+
+      /* 4) NHTSA — sinais reais */
       const brandLabel = (S.brand && S.brand.label) || g.label.split(' ')[0];
       const modelBase = carModelBase((S.model && S.model.label) || g.label, brandLabel);
       fetchNhtsa(brandLabel, modelBase, g.from, g.to).then(d => renderSignals(d, brandLabel, modelBase)).catch(() => {
@@ -532,6 +692,38 @@ const AutoLabPage = (function () {
         if (el) el.innerHTML = errBox(T('Could not reach the NHTSA database.', 'Não foi possível contactar a base NHTSA.'));
       });
     });
+  }
+
+  function renderSpecs(s) {
+    const out = _root.querySelector('#al-specs'), sec = _root.querySelector('#al-specs-sec');
+    if (!out || !sec) return;
+    const rows = [];
+    const add = (label, val) => { if (val) rows.push(`<div class="al-spec"><span>${label}</span><b>${esc(val)}</b></div>`); };
+    if (s) {
+      add(T('Years', 'Anos'), s.years);
+      add(T('Segment', 'Segmento'), s.klass);
+      add(T('Drivetrain', 'Tração'), s.layout);
+      add(T('Length', 'Comprimento'), s.length);
+      add(T('Width', 'Largura'), s.width);
+      add(T('Height', 'Altura'), s.height);
+      add(T('Wheelbase', 'Dist. entre eixos'), s.wheelbase);
+      add(T('Kerb weight', 'Peso'), s.weight);
+      add(T('Units produced', 'Unidades produzidas'), s.produced);
+      add(T('Assembly', 'Montagem'), s.assembly);
+      add(T('Design', 'Design'), s.designer);
+    }
+    const eng = (s && s.engines) || [], tr = (s && s.transmissions) || [];
+    if (!rows.length && !eng.length) {
+      out.innerHTML = `<div class="al-nodata">🧾 ${T('No structured technical sheet found for this generation. See the Wikipedia link above.', 'Sem ficha técnica estruturada para esta geração. Vê a ligação da Wikipedia acima.')}</div>`;
+      return;
+    }
+    out.innerHTML = `
+      ${rows.length ? `<div class="al-spec-grid">${rows.join('')}</div>` : ''}
+      ${eng.length ? `<div class="al-eng"><div class="al-eng-h">⚙️ ${T('Engine line-up', 'Motorizações')} <small>${eng.length} ${T('variants', 'versões')}</small></div>
+        <div class="al-eng-list">${eng.map(e => `<span class="al-eng-chip">${esc(e)}</span>`).join('')}</div></div>` : ''}
+      ${tr.length ? `<div class="al-eng"><div class="al-eng-h">🔩 ${T('Transmissions', 'Caixas')}</div>
+        <div class="al-eng-list">${tr.map(t => `<span class="al-eng-chip alt">${esc(t)}</span>`).join('')}</div></div>` : ''}`;
+    if (typeof Motion !== 'undefined') Motion.stagger(_root.querySelectorAll('#al-specs .al-spec, #al-specs .al-eng-chip'), { step: 10 });
   }
 
   function renderSignals(d, make, model) {

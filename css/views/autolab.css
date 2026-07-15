@@ -171,6 +171,22 @@
 .al-recall p { margin: .55rem 0 0; font-size: .82rem; line-height: 1.55; color: var(--muted); }
 .al-recall-rem b { color: var(--text); }
 
+/* ── ficha técnica & motores ── */
+.al-spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: .5rem; margin-bottom: .3rem; }
+.al-spec { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .5rem .7rem; }
+.al-spec span { display: block; color: var(--muted); font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .18rem; }
+.al-spec b { font-size: .9rem; }
+.al-eng { margin-top: .9rem; }
+.al-eng-h { font-size: .82rem; font-weight: 700; margin-bottom: .5rem; }
+.al-eng-h small { color: var(--muted); font-weight: 400; font-size: .72rem; margin-left: .35rem; }
+.al-eng-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+.al-eng-chip {
+  font-size: .76rem; color: var(--text); border-radius: 8px; padding: .3rem .6rem;
+  background: rgba(var(--pg-accent-rgb), .1); border: 1px solid rgba(var(--pg-accent-rgb), .28);
+}
+.al-eng-chip.alt { background: rgba(255,255,255,.04); border-color: var(--border); color: var(--muted); }
+[data-theme="light"] .al-eng-chip.alt { background: rgba(0,0,0,.04); }
+
 .al-foot { margin-top: 1.6rem; color: var(--muted); font-size: .74rem; line-height: 1.6; max-width: 90ch; }
 
 @media (max-width: 640px) {
