@@ -47,7 +47,7 @@ const SuecaGame = (function () {
       backMenu: '⬅ Menu', quit: 'Sair', quitQ: 'Sair da partida? Podes continuá-la mais tarde a partir do menu.',
       quitYes: 'Sair', quitNo: 'Continuar a jogar',
       us: 'Nós', them: 'Eles', you: 'Tu', partner: 'Parceiro',
-      trump: 'Trunfo', dealer: 'Dá', games: 'jogos', flags: 'bandeiras',
+      trump: 'Trunfo', dealer: 'Dá', dealt: 'Deu', dealtBy: 'de ', games: 'jogos', flags: 'bandeiras',
       yourTurn: 'A tua vez — toca numa carta para a jogar.',
       confirmTap: 'Toca outra vez para confirmar.',
       mustFollow: 'Tens de assistir a {s}.',
@@ -81,7 +81,7 @@ const SuecaGame = (function () {
       backMenu: '⬅ Menu', quit: 'Quit', quitQ: 'Leave the match? You can resume it later from the menu.',
       quitYes: 'Leave', quitNo: 'Keep playing',
       us: 'Us', them: 'Them', you: 'You', partner: 'Partner',
-      trump: 'Trump', dealer: 'Deal', games: 'games', flags: 'flags',
+      trump: 'Trump', dealer: 'Deal', dealt: 'Dealt', dealtBy: 'by ', games: 'games', flags: 'flags',
       yourTurn: 'Your turn — tap a card to play it.',
       confirmTap: 'Tap again to confirm.',
       mustFollow: 'You must follow {s}.',
@@ -113,9 +113,21 @@ const SuecaGame = (function () {
   const t = _hasGD ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
   const fmt = (k, o) => { let s = t(k); for (const x in (o || {})) s = s.replace('{' + x + '}', o[x]); return s; };
 
-  const NAMES_PLAY  = ['Tu', 'Rosa', 'Chico', 'Zé'];
-  const NAMES_WATCH = ['Ana', 'Rosa', 'Chico', 'Zé'];
-  const AVATARS     = ['🧑', '👩', '👨‍🦳', '🧔'];
+  /* elenco: tu + um plantel de bots com nomes e caras variados (avatares
+     todos distintos p/ não confundir). Sorteado a cada partida → variedade
+     e rejogabilidade. Fácil expandir: junta { name, av } ao CAST_POOL. */
+  const YOU_PLAY = { name: 'Tu', av: '🙂' };
+  const CAST_POOL = [
+    { name: 'Rosa', av: '👩‍🦰' }, { name: 'Chico', av: '🧔' }, { name: 'Zé', av: '👨‍🦰' },
+    { name: 'Manel', av: '👨‍🦳' }, { name: 'Fernanda', av: '👵' }, { name: 'Tó', av: '🧓' },
+    { name: 'Beatriz', av: '👩‍🦱' }, { name: 'Rui', av: '👨' }, { name: 'Céu', av: '👩‍🦳' },
+    { name: 'Quim', av: '👴' }, { name: 'Lurdes', av: '👱‍♀️' }, { name: 'Nuno', av: '👨‍🦲' },
+    { name: 'Sónia', av: '👩' }, { name: 'Bruno', av: '👱' }, { name: 'Alberto', av: '🧑‍🦲' },
+  ];
+  function makeCast(mode) {
+    const pool = shuffle(CAST_POOL.slice());
+    return mode === 'watch' ? pool.slice(0, 4) : [YOU_PLAY, pool[0], pool[1], pool[2]];
+  }
 
   /* ── estado ────────────────────────────────────────────────────── */
   let root = null, S = null, seq = 0;
@@ -166,7 +178,8 @@ const SuecaGame = (function () {
   const wait = ms => new Promise(r => setTimeout(r, reduceMotion() ? Math.min(ms, 120) : Math.round(ms / (S && S.speed || 1))));
   const hoverable = () => window.matchMedia && window.matchMedia('(hover:hover)').matches;
 
-  function names() { return S && S.mode === 'watch' ? NAMES_WATCH : NAMES_PLAY; }
+  function names() { return (S && S.cast) ? S.cast.map(c => c.name) : ['Tu', 'Rosa', 'Chico', 'Zé']; }
+  function avatarOf(p) { return (S && S.cast && S.cast[p]) ? S.cast[p].av : '🙂'; }
   function teamName(tm) { return tm === 0 ? t('us') : t('them'); }
 
   /* ── baralho / regras ──────────────────────────────────────────── */
@@ -375,6 +388,7 @@ const SuecaGame = (function () {
       var10: store().getPref('var10', false),
       speed: 1,
       jogos: [0, 0], carry: 0,
+      cast: makeCast(mode),
       dealer: Math.floor(Math.random() * 4),
       phase: 'idle', seqGuard: 0,
       lastHand: store().getPref('lastHand', null),
@@ -417,7 +431,7 @@ const SuecaGame = (function () {
     try {
       store().setPref('saved', {
         mode: S.mode, level: S.level, var10: S.var10,
-        jogos: S.jogos, carry: S.carry, dealer: S.dealer,
+        jogos: S.jogos, carry: S.carry, cast: S.cast, dealer: S.dealer,
         hands: S.hands, trick: S.trick, turn: S.turn,
         trump: S.trump, trumpCard: S.trumpCard, trumpHolder: S.trumpHolder,
         won: S.won, log: S.log, mem: S.mem, phase: S.phase,
@@ -432,6 +446,7 @@ const SuecaGame = (function () {
     const sv = savedMatch();
     if (!sv) return renderMenu();
     S = Object.assign({ speed: 1, lastHand: store().getPref('lastHand', null) }, sv);
+    if (!S.cast) S.cast = makeCast(S.mode);   /* saves antigos não têm elenco */
     if (S.phase === 'handEnd') { renderGame(false); return endHand(true); }
     const tok = ++seq;
     if (S.trick.length === 4) {           /* gravado entre a 4ª carta e a resolução */
@@ -749,6 +764,21 @@ const SuecaGame = (function () {
   }
 
   /* ── mesa ── */
+  /* um lugar: avatar + nome + crachás (parceiro / quem deu = tem o trunfo) +
+     indicador "a jogar" (pontos a saltar, revelados via CSS só no lugar ativo) */
+  function seatHTML(p, pos, team) {
+    const badges = [];
+    if (S.mode === 'play' && p === 2) badges.push(`<span class="sk-badge sk-partner">🤝 ${t('partner')}</span>`);
+    if (S.dealer === p) badges.push(`<span class="sk-badge sk-dealer-b">🎴 ${t('dealt')}<span class="sk-badge-suit${RED[S.trump] ? ' red' : ''}">${SUIT_G[S.trump]}</span></span>`);
+    return `<div class="sk-seat sk-seat-${pos} ${team}" data-p="${p}">
+      <div class="sk-avatar">${avatarOf(p)}</div>
+      <div class="sk-sname">${names()[p]}</div>
+      ${badges.length ? `<div class="sk-badges">${badges.join('')}</div>` : ''}
+      <div class="sk-turn-ind" aria-hidden="true"><i></i><i></i><i></i></div>
+      ${p !== 0 ? `<div class="sk-scards" id="sk-oc-${p}"></div>` : ''}
+    </div>`;
+  }
+
   function renderGame(deal) {
     const nm = names();
     root.innerHTML = `
@@ -758,6 +788,7 @@ const SuecaGame = (function () {
         <div class="sk-trump" id="sk-trump" title="${t('trump')}">
           <span class="sk-trump-lbl">${t('trump')}</span>
           ${cardHTML(S.trumpCard, 'mini')}
+          <span class="sk-trump-by">${t('dealtBy')}<b>${nm[S.dealer]}</b></span>
         </div>
         <div class="sk-topbtns">
           ${S.mode === 'watch' ? `<button class="sk-ibtn" id="sk-speed" aria-label="${t('speed')}">${S.speed}×</button>` : ''}
@@ -767,10 +798,10 @@ const SuecaGame = (function () {
         </div>
       </div>
       <div class="sk-table" id="sk-table">
-        <div class="sk-seat sk-seat-n us" data-p="2"><div class="sk-avatar">${AVATARS[2]}</div><div class="sk-sname">${nm[2]}</div>${S.mode === 'play' ? `<div class="sk-partner">🤝 ${t('partner')}</div>` : ''}<div class="sk-scards" id="sk-oc-2"></div></div>
-        <div class="sk-seat sk-seat-w them" data-p="3"><div class="sk-avatar">${AVATARS[3]}</div><div class="sk-sname">${nm[3]}</div><div class="sk-scards" id="sk-oc-3"></div></div>
-        <div class="sk-seat sk-seat-e them" data-p="1"><div class="sk-avatar">${AVATARS[1]}</div><div class="sk-sname">${nm[1]}</div><div class="sk-scards" id="sk-oc-1"></div></div>
-        <div class="sk-seat sk-seat-s us" data-p="0"><div class="sk-avatar">${AVATARS[0]}</div><div class="sk-sname">${nm[0]}</div></div>
+        ${seatHTML(2, 'n', 'us')}
+        ${seatHTML(3, 'w', 'them')}
+        ${seatHTML(1, 'e', 'them')}
+        ${seatHTML(0, 's', 'us')}
         <div class="sk-trickzone" id="sk-trick"></div>
         <div class="sk-flash" id="sk-flash"></div>
       </div>
@@ -1107,6 +1138,8 @@ body.light .sk-wrap{--sk-felt1:#2e7d54;--sk-felt2:#1c5c3a;--sk-gold:#b8860b}
 .sk-carry{font-size:.7rem;font-weight:800;color:var(--sk-gold);border:1px dashed var(--sk-gold);border-radius:999px;padding:1px 7px}
 .sk-trump{display:flex;align-items:center;gap:7px;background:var(--card,rgba(255,255,255,.05));border:1px solid var(--sk-gold);border-radius:12px;padding:4px 10px}
 .sk-trump-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--sk-gold);font-weight:700}
+.sk-trump-by{font-size:.66rem;color:var(--muted,#9aa);white-space:nowrap}
+.sk-trump-by b{color:#f4efe2;font-weight:700}
 .sk-topbtns{display:flex;gap:6px}
 .sk-ibtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border,rgba(255,255,255,.12));background:var(--card,rgba(255,255,255,.05));color:var(--text,#eee);cursor:pointer;font-size:.95rem}
 .sk-ibtn:hover{border-color:var(--accent,#6366f1)}
@@ -1129,12 +1162,28 @@ body.light .sk-wrap{--sk-felt1:#2e7d54;--sk-felt2:#1c5c3a;--sk-gold:#b8860b}
   background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.25);transition:box-shadow .25s,border-color .25s}
 .sk-seat.us .sk-avatar{border-color:rgba(74,222,128,.5)}
 .sk-seat.them .sk-avatar{border-color:rgba(248,113,113,.45)}
-.sk-seat.turn .sk-avatar{border-color:var(--sk-gold);box-shadow:0 0 0 3px rgba(212,175,106,.35),0 0 18px rgba(212,175,106,.55);animation:skPulse 1.4s infinite}
-@keyframes skPulse{50%{box-shadow:0 0 0 5px rgba(212,175,106,.2),0 0 24px rgba(212,175,106,.7)}}
+/* lugar ativo (quem vai jogar): avatar aumenta + halo dourado forte, o nome
+   acende e os outros lugares esbatem-se — impossível não ver de quem é a vez */
+.sk-table:has(.sk-seat.turn) .sk-seat:not(.turn){opacity:.5;filter:saturate(.75)}
+.sk-seat{transition:opacity .25s,filter .25s}
+.sk-seat.turn .sk-avatar{border-color:var(--sk-gold);transform:scale(1.16);box-shadow:0 0 0 4px rgba(212,175,106,.4),0 0 22px rgba(212,175,106,.75);animation:skPulse 1.25s infinite}
+.sk-seat.turn .sk-sname{color:var(--sk-gold)}
+@keyframes skPulse{50%{box-shadow:0 0 0 7px rgba(212,175,106,.22),0 0 30px rgba(212,175,106,.9)}}
 .sk-seat.won .sk-avatar{border-color:var(--sk-gold);box-shadow:0 0 0 4px rgba(212,175,106,.45),0 0 26px rgba(212,175,106,.85);animation:skWinPulse .55s ease}
-.sk-partner{font-size:.56rem;font-weight:800;letter-spacing:.04em;color:var(--sk-gold);background:rgba(0,0,0,.35);border:1px solid rgba(212,175,106,.4);border-radius:999px;padding:1px 7px;text-shadow:none}
-.sk-sname{font-size:.7rem;font-weight:700;color:#f4efe2;text-shadow:0 1px 3px rgba(0,0,0,.6);display:flex;align-items:center;gap:4px}
-.sk-seat.dealer .sk-sname::after{content:'${'D'}';font-size:.58rem;background:var(--sk-gold);color:#241a08;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-weight:900}
+/* pontos "a jogar…" — só aparecem no lugar ativo */
+.sk-turn-ind{display:none;gap:4px;height:7px;margin-top:1px}
+.sk-seat.turn .sk-turn-ind{display:flex}
+.sk-turn-ind i{width:5px;height:5px;border-radius:50%;background:var(--sk-gold);animation:skDots 1s infinite ease-in-out}
+.sk-turn-ind i:nth-child(2){animation-delay:.16s}.sk-turn-ind i:nth-child(3){animation-delay:.32s}
+@keyframes skDots{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-4px);opacity:1}}
+/* crachás sob o nome */
+.sk-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:3px}
+.sk-badge{display:inline-flex;align-items:center;gap:3px;font-size:.56rem;font-weight:800;letter-spacing:.03em;border-radius:999px;padding:1px 7px;text-shadow:none;white-space:nowrap}
+.sk-partner{color:var(--sk-gold);background:rgba(0,0,0,.35);border:1px solid rgba(212,175,106,.4)}
+.sk-dealer-b{color:#241a08;background:var(--sk-gold);border:1px solid var(--sk-gold)}
+.sk-badge-suit{font-weight:900;color:#241a08}
+.sk-badge-suit.red{color:#a01818}
+.sk-sname{font-size:.7rem;font-weight:700;color:#f4efe2;text-shadow:0 1px 3px rgba(0,0,0,.6);display:flex;align-items:center;gap:4px;transition:color .2s}
 .sk-backs{display:flex}
 .sk-backs .sk-card{margin-left:-18px}.sk-backs .sk-card:first-child{margin-left:0}
 .sk-open{display:flex;flex-wrap:wrap;justify-content:center;max-width:280px}
@@ -1277,7 +1326,7 @@ body.light .sk-wrap{--sk-felt1:#2e7d54;--sk-felt2:#1c5c3a;--sk-gold:#b8860b}
 @media (prefers-reduced-motion:reduce){
   .sk-cardbtn.dealt,.sk-from-s,.sk-from-n,.sk-from-e,.sk-from-w{animation:none}
   .sk-fly-s,.sk-fly-n,.sk-fly-e,.sk-fly-w{transition:opacity .2s;opacity:0}
-  .sk-seat.turn .sk-avatar,.sk-seat.won .sk-avatar{animation:none}
+  .sk-seat.turn .sk-avatar,.sk-seat.won .sk-avatar,.sk-turn-ind i{animation:none}
   .sk-slot.sk-winner .sk-card,.sk-slot.sk-cut .sk-card{animation:none}
   .sk-team b.bump{animation:none}
   .sk-conf{display:none}
