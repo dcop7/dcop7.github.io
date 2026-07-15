@@ -10,7 +10,7 @@ const HumorPage = (function () {
   'use strict';
 
   const BASE = 'data/humor/';
-  let root, built = false, index = null;
+  let root, built = false, index = null, groups = null;
   const cache = {};                 /* id → jokes[] */
   let favs = load('humor-favs', {});/* {jokeId: jokeObj} */
 
@@ -25,12 +25,15 @@ const HumorPage = (function () {
     if (index) return index;
     const d = await getJSON(BASE + 'index.json');
     index = (d && d.categories) || [];
+    groups = (d && d.groups) || [];
     return index;
   }
   async function loadCat(id) {
     if (cache[id]) return cache[id];
     const d = await getJSON(BASE + id + '.json');
-    cache[id] = (Array.isArray(d) ? d : []).map(j => ({ ...j, cat: id }));
+    /* Stamp a stable per-joke id (index-based) so favourites & copy work —
+       the source JSON entries carry no id of their own. */
+    cache[id] = (Array.isArray(d) ? d : []).map((j, i) => ({ ...j, cat: id, id: j.id || `${id}-${i}` }));
     return cache[id];
   }
   async function loadAll() {
@@ -59,7 +62,7 @@ const HumorPage = (function () {
           <span class="ph-ico">${AppIcons.icon('humor', 22)}</span>
           <div class="ph-titles">
             <h1 class="ph-title">Humor</h1>
-            <p class="ph-sub">Piadas, adivinhas e trocadilhos — escolhe uma categoria ou arrisca uma aleatória</p>
+            <p class="ph-sub">Piadas, adivinhas, cúmulos e piropos — escolhe uma categoria ou arrisca uma aleatória</p>
           </div>
         </div>
         <div class="hm-toolbar">
@@ -79,14 +82,35 @@ const HumorPage = (function () {
     const idx = await loadIndex();
     const body = root.querySelector('#hm-body');
     if (!idx.length) { body.innerHTML = `<div class="hm-loading">Sem categorias.</div>`; return; }
-    body.innerHTML = `<div class="hm-cat-grid">${idx.map(c => `
+
+    const catCard = c => `
       <button class="hm-cat" data-id="${c.id}">
         <span class="hm-cat-ico">${c.icon}</span>
         <span class="hm-cat-body">
           <span class="hm-cat-name">${esc(c.name)}</span>
           ${c.desc ? `<span class="hm-cat-desc">${esc(c.desc)}</span>` : ''}
         </span>
-      </button>`).join('')}</div>`;
+      </button>`;
+
+    if (groups && groups.length) {
+      /* group the categories under their section heading; any category whose
+         group is missing falls into a trailing "Outras" bucket. */
+      const seen = new Set();
+      const sections = groups.map(g => {
+        const items = idx.filter(c => c.group === g.id);
+        items.forEach(c => seen.add(c.id));
+        return { g, items };
+      }).filter(s => s.items.length);
+      const orphans = idx.filter(c => !seen.has(c.id));
+      if (orphans.length) sections.push({ g: { name: 'Outras', icon: '📁' }, items: orphans });
+      body.innerHTML = sections.map(s => `
+        <section class="hm-group">
+          <h2 class="hm-group-ttl"><span class="hm-group-ico">${s.g.icon || ''}</span>${esc(s.g.name)}</h2>
+          <div class="hm-cat-grid">${s.items.map(catCard).join('')}</div>
+        </section>`).join('');
+    } else {
+      body.innerHTML = `<div class="hm-cat-grid">${idx.map(catCard).join('')}</div>`;
+    }
     body.querySelectorAll('.hm-cat').forEach(b => b.addEventListener('click', () => renderCategory(b.dataset.id)));
   }
 
@@ -199,6 +223,9 @@ const HumorPage = (function () {
 .hm-search-wrap{flex:1;min-width:160px}
 .hm-search{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);font:inherit;font-size:.85rem;padding:.5rem .9rem;border-radius:var(--radius-sm);outline:none}
 .hm-search:focus{border-color:rgba(var(--accent-rgb),.4)}
+.hm-group{margin-bottom:1.6rem}
+.hm-group-ttl{display:flex;align-items:center;gap:.5rem;font-family:var(--font-head,inherit);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+.hm-group-ico{font-size:1rem}
 .hm-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem}
 .hm-cat{display:flex;align-items:center;text-align:left;gap:.75rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem .95rem;cursor:pointer;font:inherit;transition:all .18s;min-width:0}
 .hm-cat:hover{border-color:rgba(var(--accent-rgb),.45);transform:translateY(-2px);box-shadow:var(--shadow-2, 0 4px 16px rgba(0,0,0,.28))}

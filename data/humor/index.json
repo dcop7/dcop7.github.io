@@ -1,16 +1,30 @@
 {
+  "groups": [
+    { "id": "piadas", "name": "Piadas", "icon": "😂" },
+    { "id": "enigmas", "name": "Adivinhas & Cúmulos", "icon": "🧩" },
+    { "id": "piropos", "name": "Piropos", "icon": "💘" },
+    { "id": "temas", "name": "Por Tema", "icon": "🗂️" }
+  ],
   "categories": [
-    { "id": "geral", "name": "Humor Geral", "icon": "😄", "desc": "Um pouco de tudo" },
-    { "id": "adivinhas", "name": "Adivinhas", "icon": "🧩", "desc": "O que é, o que é?" },
-    { "id": "secas", "name": "Piadas Secas", "icon": "🌵", "desc": "Tão más que têm piada" },
-    { "id": "trocadilhos", "name": "Trocadilhos", "icon": "🔤", "desc": "Jogos de palavras" },
-    { "id": "portugues", "name": "Piadas de Português", "icon": "🇵🇹", "desc": "O português que dá a volta a tudo" },
-    { "id": "criancas", "name": "Crianças", "icon": "🧒", "desc": "Para os mais novos" },
-    { "id": "escola", "name": "Escola", "icon": "🎒", "desc": "Professores e alunos" },
-    { "id": "trabalho", "name": "Trabalho", "icon": "💼", "desc": "Vida de escritório" },
-    { "id": "casamento", "name": "Casamento", "icon": "💍", "desc": "Maridos e mulheres" },
-    { "id": "sarcasticas", "name": "Sarcásticas", "icon": "😏", "desc": "Com uma pontinha de veneno" },
-    { "id": "nerd", "name": "Nerd / Geek", "icon": "🤓", "desc": "Tecnologia e ciência" },
-    { "id": "dadjokes", "name": "Humor de Pai", "icon": "👨", "desc": "Trocadilhos de pai, dos secos" }
+    { "id": "geral", "name": "Humor Geral", "icon": "😄", "desc": "Um pouco de tudo", "group": "piadas" },
+    { "id": "secas", "name": "Piadas Secas", "icon": "🌵", "desc": "Tão más que têm piada", "group": "piadas" },
+    { "id": "trocadilhos", "name": "Trocadilhos", "icon": "🔤", "desc": "Jogos de palavras", "group": "piadas" },
+    { "id": "portugues", "name": "Piadas de Português", "icon": "🇵🇹", "desc": "O português que dá a volta a tudo", "group": "piadas" },
+    { "id": "sarcasticas", "name": "Sarcásticas", "icon": "😏", "desc": "Com uma pontinha de veneno", "group": "piadas" },
+    { "id": "nerd", "name": "Nerd / Geek", "icon": "🤓", "desc": "Tecnologia e ciência", "group": "piadas" },
+    { "id": "dadjokes", "name": "Humor de Pai", "icon": "👨", "desc": "Trocadilhos de pai, dos secos", "group": "piadas" },
+
+    { "id": "adivinhas", "name": "Adivinhas", "icon": "🧩", "desc": "O que é, o que é?", "group": "enigmas" },
+    { "id": "cumulos", "name": "Cúmulos", "icon": "🎯", "desc": "Qual é o cúmulo de…?", "group": "enigmas" },
+
+    { "id": "piropos-classicos", "name": "Clássicos", "icon": "💘", "desc": "Os de sempre, à moda antiga", "group": "piropos" },
+    { "id": "piropos-romanticos", "name": "Românticos", "icon": "🌹", "desc": "Para derreter corações", "group": "piropos" },
+    { "id": "piropos-atrevidos", "name": "Atrevidos", "icon": "😏", "desc": "Com um bocadinho de lata", "group": "piropos" },
+    { "id": "piropos-foleiros", "name": "Foleiros", "icon": "🧀", "desc": "Tão maus que até dão jeito", "group": "piropos" },
+
+    { "id": "criancas", "name": "Crianças", "icon": "🧒", "desc": "Para os mais novos", "group": "temas" },
+    { "id": "escola", "name": "Escola", "icon": "🎒", "desc": "Professores e alunos", "group": "temas" },
+    { "id": "trabalho", "name": "Trabalho", "icon": "💼", "desc": "Vida de escritório", "group": "temas" },
+    { "id": "casamento", "name": "Casamento", "icon": "💍", "desc": "Maridos e mulheres", "group": "temas" }
   ]
 }
