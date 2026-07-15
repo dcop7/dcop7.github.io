@@ -26,8 +26,8 @@ const BattleshipGame = (function () {
   let root, phase, player, enemy, turn, placeOri, ai, shotsFired, hitsLanded, locked, drag, justSunk;
 
   function diff() {
-    try { if (typeof GameHost !== 'undefined' && GameHost.getDifficulty) return GameHost.getDifficulty(); } catch (e) {}
-    const d = localStorage.getItem('quiz-difficulty');
+    try { if (typeof GameData !== 'undefined' && GameData.difficulty) return GameData.difficulty('battleship', 'medium'); } catch (e) {}
+    const d = localStorage.getItem('gamediff:battleship');
     return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
   }
   const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -246,6 +246,7 @@ const BattleshipGame = (function () {
         <div class="bs-ocean"></div>
         <div class="bs-title">🚢 Posiciona a tua frota</div>
         <div class="bs-hint" id="bs-hint">Arrasta os navios para a tua água. Botão <b>Rodar</b> (ou duplo-clique) para virar; clica num navio já colocado para o mover.</div>
+        <div id="bs-diff" style="display:flex;justify-content:center;margin:0 0 .6rem"></div>
         <div class="bs-place-layout">
           <div style="display:flex;flex-direction:column;align-items:center">
             <div class="bs-board-lbl">A tua água</div>
@@ -267,6 +268,8 @@ const BattleshipGame = (function () {
           <button class="bs-btn primary" id="bs-start" ${allPlaced() ? '' : 'disabled'}>⚔ Começar</button>
         </div>
       </div>`;
+    if (typeof GameHost !== 'undefined' && GameHost.diffSeg)
+      root.querySelector('#bs-diff').appendChild(GameHost.diffSeg('battleship'));
     drawPlaceBoard();
     root.querySelector('#bs-rotate').addEventListener('click', () => {
       placeOri = placeOri === 'h' ? 'v' : 'h'; sfx.rotate(); renderPlacement();

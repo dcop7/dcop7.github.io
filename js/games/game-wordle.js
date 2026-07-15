@@ -26,8 +26,8 @@ const WordleGame = (function () {
   function _t(k) { return (_i18n && _i18n[k] != null) ? _i18n[k] : (STR[_lang()][k] || k); }
   function _difficulty() {
     try {
-      if (typeof GameHost !== 'undefined' && GameHost.getDifficulty) return GameHost.getDifficulty();
-      const d = localStorage.getItem('quiz-difficulty');
+      if (typeof GameData !== 'undefined' && GameData.difficulty) return GameData.difficulty('wordle', 'medium');
+      const d = localStorage.getItem('gamediff:wordle');
       return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
     } catch (e) { return 'medium'; }
   }
@@ -94,11 +94,14 @@ const WordleGame = (function () {
               <span>${_t('streak')}: <strong id="wrd-streak">${stats.streak}</strong></span>
             </div>
           </div>
+          <div id="wrd-diff" style="display:flex;justify-content:center;margin:.2rem 0 .7rem"></div>
           <div class="wrd-grid" id="wrd-grid"></div>
           <div class="wrd-msg" id="wrd-msg"></div>
           <div class="wrd-keyboard" id="wrd-kb"></div>
           <button class="hf-new-btn" id="wrd-new" style="margin-top:.75rem">${_t('newWord')}</button>
         </div>`;
+      if (typeof GameHost !== 'undefined' && GameHost.diffSeg)
+        root.querySelector('#wrd-diff').appendChild(GameHost.diffSeg('wordle', { onChange: () => startGame() }));
       root.querySelector('#wrd-new').addEventListener('click', startGame);
       buildKeyboard();
     }

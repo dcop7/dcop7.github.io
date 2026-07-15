@@ -21,12 +21,15 @@ const ReactionGame = (function () {
       root.innerHTML = `
         <div class="game-card" style="max-width:500px;margin:0 auto">
           <h2 style="text-align:center;margin-bottom:1rem">${t('title')}</h2>
+          <div id="react-diff" style="display:flex;justify-content:center;margin-bottom:1rem"></div>
           <div class="react-box" id="react-box">
             <div class="react-msg" id="react-msg">${t('clickToStart')}</div>
             <div class="react-hint" id="react-hint">${t('instr')}</div>
           </div>
           <div class="react-stats" id="react-stats"></div>
         </div>`;
+      if (typeof GameHost !== 'undefined' && GameHost.diffSeg)
+        root.querySelector('#react-diff').appendChild(GameHost.diffSeg('reaction'));
       wire();
       setIdle();
     }
@@ -45,7 +48,7 @@ const ReactionGame = (function () {
       box.className = 'react-box react-wait';
       msg.textContent = t('waiting');
       hint.textContent = '';
-      const d = _delay[_has ? GameData.difficulty() : 'medium'] || _delay.medium;
+      const d = _delay[_has ? GameData.difficulty('reaction', 'medium') : 'medium'] || _delay.medium;
       const delay = d.min + Math.random() * (d.max - d.min);
       timer = setTimeout(setGo, delay);
     }

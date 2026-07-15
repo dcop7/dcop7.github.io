@@ -147,12 +147,10 @@ const DobbleGame = (function () {
   const themeName = k => (THEMES[k] && THEMES[k].name[LANG()]) || (THEMES[k] && THEMES[k].name.pt) || k;
 
   /* ── dificuldade → ordem do plano + regras visuais ──────────────── */
-  function diff() { return _hasGD ? GameData.difficulty() : 'medium'; }
+  function diff() { return _hasGD ? GameData.difficulty('dobble', 'medium') : 'medium'; }
   function setDiff(d) {
-    try {
-      if (typeof GameHost !== 'undefined' && GameHost.setDifficulty) GameHost.setDifficulty(d);
-      else localStorage.setItem('quiz-difficulty', d);
-    } catch (e) {}
+    if (_hasGD && GameData.setDifficulty) GameData.setDifficulty('dobble', d);
+    else { try { localStorage.setItem('gamediff:dobble', d); } catch (e) {} }
   }
   /* n = ordem do plano (5→6 símbolos, 7→8); sizeVar 0 = todos iguais;
      rotMax = amplitude de rotação; jitter = deslocamento no slot; surv =

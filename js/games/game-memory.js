@@ -121,7 +121,7 @@ const MemoryGame = (function () {
       });
     }
 
-    const _start = () => render(_defaultPairs[_has ? GameData.difficulty() : 'medium'] || 8);
+    const _start = () => render(_defaultPairs[_has ? GameData.difficulty('memory', 'medium') : 'medium'] || 8);
     _start();
 
     if (_has) {

@@ -49,40 +49,74 @@ const GameHost = (function () {
     dobble:          { init: () => DobbleGame.init(document.getElementById('pane-dobble')),              initialized: false },
   };
 
-  /* Unified difficulty model — same as Quizzes (Fácil / Médio / Difícil).
-     Shared with quizzes via the 'quiz-difficulty' key so the whole site uses
-     one progression the user learns once. */
-  const DIFFS = [
-    { id: 'easy',   label: 'Fácil',   dot: '🟢' },
-    { id: 'medium', label: 'Médio',   dot: '🟡' },
-    { id: 'hard',   label: 'Difícil', dot: '🔴' },
-  ];
-  /* Representative age fed to each game's existing age-based scaling, so every
-     game genuinely adapts at 3 distinct levels without per-game rewrites. */
-  const DIFF_AGE = { easy: 7, medium: 10, hard: 14 };
+  /* ── Dificuldade POR JOGO ──────────────────────────────────────────
+     Já não há um seletor global no hub: cada jogo tem a sua dificuldade,
+     guardada em 'gamediff:<id>', e mostra o seu próprio controlo (alguns
+     com esquemas próprios — ex.: a Forca é por idade). Este helper serve
+     os jogos que só querem o clássico Fácil/Médio/Difícil. */
+  const DIFF_LABELS = {
+    pt: { easy: 'Fácil', medium: 'Médio', hard: 'Difícil', title: 'Dificuldade' },
+    en: { easy: 'Easy',  medium: 'Medium', hard: 'Hard',   title: 'Difficulty' },
+  };
+  function _lang() { try { return (typeof I18n !== 'undefined' && I18n.getLang && I18n.getLang() === 'en') ? 'en' : 'pt'; } catch (e) { return 'pt'; } }
 
+  function diffGet(id, def) {
+    try { const v = localStorage.getItem('gamediff:' + id); return (v === 'easy' || v === 'medium' || v === 'hard') ? v : (def || 'medium'); }
+    catch (e) { return def || 'medium'; }
+  }
+  function diffSet(id, v) {
+    if (!/^(easy|medium|hard)$/.test(v)) return;
+    try { localStorage.setItem('gamediff:' + id, v); } catch (e) {}
+  }
+  /* legado: mantido para compat (Quizzes usam a sua própria chave) */
   function getDifficulty() {
     const d = localStorage.getItem('quiz-difficulty');
     return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
   }
-  /* Keep the legacy per-game key in sync so all games scale to the chosen
-     difficulty (Fácil→7, Médio→10, Difícil→14). */
-  function _syncGameAge() {
-    try { localStorage.setItem('game-age-default', String(DIFF_AGE[getDifficulty()])); } catch (e) {}
-  }
   function setDifficulty(d) {
-    if (!DIFF_AGE[d]) return;
+    if (!/^(easy|medium|hard)$/.test(d)) return;
     try { localStorage.setItem('quiz-difficulty', d); } catch (e) {}
-    _syncGameAge();
   }
-  function getGameAge() { return String(DIFF_AGE[getDifficulty()]); }
+
+  /* Controlo de dificuldade partilhado (elemento DOM pronto a inserir no
+     menu de um jogo). levels opcional p/ esquemas próprios. */
+  let _segCSS = false;
+  function _injectSegCSS() {
+    if (_segCSS) return; _segCSS = true;
+    const s = document.createElement('style'); s.id = 'gh-seg-css';
+    s.textContent = `
+.ghseg{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.ghseg-lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#9aa)}
+.ghseg-btn{border:1px solid var(--border,rgba(255,255,255,.16));background:var(--card,rgba(255,255,255,.05));color:inherit;border-radius:999px;padding:5px 13px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}
+.ghseg-btn:hover{border-color:var(--accent,#6366f1)}
+.ghseg-btn.on{background:var(--accent,#6366f1);border-color:var(--accent,#6366f1);color:#fff}`;
+    document.head.appendChild(s);
+  }
+  function diffSeg(id, opts) {
+    opts = opts || {}; _injectSegCSS();
+    const L = DIFF_LABELS[_lang()];
+    const levels = opts.levels || [{ id: 'easy', label: L.easy }, { id: 'medium', label: L.medium }, { id: 'hard', label: L.hard }];
+    const def = opts.def || 'medium';
+    const wrap = document.createElement('div'); wrap.className = 'ghseg';
+    if (opts.label !== false) { const l = document.createElement('span'); l.className = 'ghseg-lbl'; l.textContent = (opts.label || L.title); wrap.appendChild(l); }
+    const cur = diffGet(id, def);
+    levels.forEach(lv => {
+      const b = document.createElement('button'); b.type = 'button';
+      b.className = 'ghseg-btn' + (lv.id === cur ? ' on' : ''); b.textContent = lv.label; b.dataset.d = lv.id;
+      b.addEventListener('click', () => {
+        diffSet(id, lv.id);
+        wrap.querySelectorAll('.ghseg-btn').forEach(x => x.classList.toggle('on', x === b));
+        opts.onChange && opts.onChange(lv.id);
+      });
+      wrap.appendChild(b);
+    });
+    return wrap;
+  }
 
   function renderHub() {
     const hub = document.getElementById('games-hub');
     if (!hub) return;
 
-    _syncGameAge();              /* make sure games reflect the current difficulty */
-    const diff   = getDifficulty();
     const groups = {};
     GAMES.forEach(g => {
       if (!groups[g.group]) groups[g.group] = [];
@@ -120,14 +154,8 @@ const GameHost = (function () {
         <span class="gh-daily-go">Jogar →</span>
       </button>` : ''}
       <div class="gh-settings-bar">
-        <span class="gh-settings-lbl">Dificuldade</span>
-        <div class="gh-diff-seg" id="gh-diff-seg">
-          ${DIFFS.map(d =>
-            `<button class="gh-diff-btn gh-diff-${d.id}${diff===d.id?' active':''}" data-diff="${d.id}">${d.dot} ${d.label}</button>`
-          ).join('')}
-        </div>
-        <span class="gh-bar-spacer"></span>
         <input class="gh-search" id="gh-search" type="search" placeholder="🔍 Procurar…" aria-label="Procurar jogo">
+        <span class="gh-bar-spacer"></span>
         <button class="gh-stats-btn" id="gh-stats" aria-label="Ver estatísticas e conquistas">
           📊 <span>${GP ? GP.streak() : 0}🔥 · ${GP ? GP.achievementCount() : 0}🏅</span>
         </button>
@@ -147,16 +175,6 @@ const GameHost = (function () {
               </button>`).join('')}
           </div>
         </div>`).join('')}`;
-
-    /* Difficulty selector (unified Fácil/Médio/Difícil) */
-    hub.querySelectorAll('#gh-diff-seg .gh-diff-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        setDifficulty(btn.dataset.diff);
-        hub.querySelectorAll('#gh-diff-seg .gh-diff-btn').forEach(b => b.classList.toggle('active', b === btn));
-        /* Note: Hangman has its own in-game age selector (independent of this
-           global difficulty); nothing to sync here. */
-      });
-    });
 
     hub.querySelectorAll('.game-hub-card').forEach(btn => {
       btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));
@@ -228,5 +246,5 @@ const GameHost = (function () {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
   else setup();
 
-  return { show, getDifficulty, setDifficulty };
+  return { show, getDifficulty, setDifficulty, diffGet, diffSet, diffSeg };
 })();

@@ -396,12 +396,9 @@ const SuecaGame = (function () {
     newHand(true);
   }
 
-  function defaultLevel() {
-    try {
-      const d = (typeof GameHost !== 'undefined') ? GameHost.getDifficulty() : 'medium';
-      return { easy: 'easy', medium: 'medium', hard: 'hard' }[d] || 'medium';
-    } catch (e) { return 'medium'; }
-  }
+  /* a Sueca tem o seu próprio seletor de nível (Fácil/Médio/Difícil/
+     Especialista) no menu, guardado na pref 'level'; o default é Médio. */
+  function defaultLevel() { return 'medium'; }
 
   function newHand(first) {
     if (!first) S.dealer = NEXT(S.dealer);

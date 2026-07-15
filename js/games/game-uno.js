@@ -14,7 +14,7 @@
        may be played immediately or kept.
      • Call UNO when you drop to one card or get caught for +2.
 
-   Difficulty (shared quiz-difficulty key):
+   Difficulty (per-game 'gamediff:uno' key, chosen in the game's own menu):
      • easy   — plays a random legal card, random colour choice.
      • medium — dumps high-value cards, prefers action cards, picks the
                 colour it holds most of.
@@ -77,8 +77,8 @@ const UnoGame = (function () {
   const CPU_NAMES = ['Rita', 'Bruno', 'Sofia'];
 
   function diff() {
-    try { if (typeof GameHost !== 'undefined' && GameHost.getDifficulty) return GameHost.getDifficulty(); } catch (e) {}
-    const d = localStorage.getItem('quiz-difficulty');
+    try { if (typeof GameData !== 'undefined' && GameData.difficulty) return GameData.difficulty('uno', 'medium'); } catch (e) {}
+    const d = localStorage.getItem('gamediff:uno');
     return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
   }
   const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -143,10 +143,8 @@ const UnoGame = (function () {
   function init(r) { root = r; if (!root) return; injectCSS(); renderMenu(); }
 
   function setDiff(d) {
-    try {
-      if (typeof GameHost !== 'undefined' && GameHost.setDifficulty) GameHost.setDifficulty(d);
-      else localStorage.setItem('quiz-difficulty', d);
-    } catch (e) {}
+    if (typeof GameData !== 'undefined' && GameData.setDifficulty) GameData.setDifficulty('uno', d);
+    else { try { localStorage.setItem('gamediff:uno', d); } catch (e) {} }
   }
 
   function renderMenu() {

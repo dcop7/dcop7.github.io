@@ -30,12 +30,23 @@ const GameData = (function () {
 
   function lang() { return (typeof I18n !== 'undefined' && I18n.getLang() === 'en') ? 'en' : 'pt'; }
 
-  function difficulty() {
+  /* Difficulty is now PER-GAME (each game owns its own, stored under
+     'gamediff:<id>'); pass the game id. Without an id we fall back to the
+     legacy global key still shared with the Quizzes section. */
+  function difficulty(id, def) {
     try {
+      if (id) {
+        const v = localStorage.getItem('gamediff:' + id);
+        return (v === 'easy' || v === 'medium' || v === 'hard') ? v : (def || 'medium');
+      }
       if (typeof GameHost !== 'undefined' && GameHost.getDifficulty) return GameHost.getDifficulty();
       const d = localStorage.getItem('quiz-difficulty');
       return (d === 'easy' || d === 'medium' || d === 'hard') ? d : 'medium';
-    } catch (e) { return 'medium'; }
+    } catch (e) { return def || 'medium'; }
+  }
+  function setDifficulty(id, v) {
+    if (!id || !/^(easy|medium|hard)$/.test(v)) return;
+    try { localStorage.setItem('gamediff:' + id, v); } catch (e) {}
   }
 
   /* Build a translator from an embedded { pt:{}, en:{} } fallback; call
@@ -47,5 +58,5 @@ const GameData = (function () {
     return t;
   }
 
-  return { load, lang, difficulty, translator };
+  return { load, lang, difficulty, setDifficulty, translator };
 })();
