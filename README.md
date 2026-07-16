@@ -26,19 +26,18 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | Rota | Secção | Conteúdo |
 |------|--------|----------|
 | `#home` | **Home** | Saudação, pesquisa, painel de descoberta diária (Hoje na História/Portugal, Nasceram Hoje, Destaque, Inspiração), bloco "Útil hoje" (meteo, combustíveis, eletricidade, feriados), bookmarks, feeds |
-| `#explorer` | **Explorar** | Hub de exploradores: Terra em Tempo Real (globo dia/noite), Sistema Solar, Galáxia, Corpo Humano 3D (three.js), Portugal (mapa concelhos), Linha do Tempo interativa, Dados do Mundo (Mundo▸Continente▸País▸Cidade), Temas (knowledge base Área→Tema→Subtema) |
+| `#explorer` | **Explorar** | Hub de exploradores: Terra em Tempo Real (globo 3D dia/noite com camadas ao vivo — sismos, vulcões, incêndios, tempestades, nuvens NASA — viagem no tempo e auto-rotação), Sistema Solar, Galáxia, Corpo Humano 3D (three.js), Portugal (mapa concelhos), Linha do Tempo interativa, Dados do Mundo (Mundo▸Continente▸País▸Cidade), Temas (knowledge base Área→Tema→Subtema) |
 | `#noticias` | **Notícias** | Agregador RSS estático por tópicos (tecnologia, IA, gaming, economia, ciência, F1, fact-check, …) — sem DB, refresh a cada 4h via Action |
 | `#eventos` | **Eventos** | Descoberta de eventos em Portugal (AgendaLX, e-cultura ao vivo + seed offline), mapa Leaflet, geocoding por concelho |
-| `#ocorrencias` | **Ocorrências** | Ocorrências em tempo real: sismos (USGS/IPMA), eventos naturais (NASA EONET), proteção civil |
+| `#ocorrencias` | **Ocorrências PT** | Dashboard de proteção civil em tempo real: sismos (USGS, bbox PT/Atlântico), incêndios e ocorrências ANEPC (fogos.pt), avisos meteorológicos por distrito (IPMA, polígonos coloridos), mapa Leaflet multi-basemap com detalhe por ocorrência e ordenação por recência/gravidade |
 | `#f1` | **Fórmula 1** | Secção experimental: calendário/resultados (Jolpica), posições live/replay em canvas (OpenF1), tudo CORS-direct sem backend |
 | `#oss` | **Descobrir Tech** | Explorador de projetos open-source (índice gerado por Action + GitHub API) |
 | `#discovery` | **Gaming Deals** | Deals de gaming e jogos grátis (refresh 6h) |
 | `#tools` | **Tools** | Calculadora, pomodoro, cronómetro, editor markdown, regex tester, diff, conversores, cores, UUID, timestamps, dados 3D, … |
-| `#netlab` | **Network Lab** | IP público (IPv4/IPv6), ISP/ASN, geolocalização e infraestrutura num radar tático (canvas); latência por região, heurística de VPN/proxy, histórico local, pesquisa de qualquer IP (ipwho.is, CORS-direct) |
 | `#cheatsheets` | **Cheatsheets** | Referências de comandos: Git, Linux, Vim, regex, Docker, atalhos |
 | `#games` | **Jogos** | 13 jogos curados: Xadrez (chess.js vendored), Sueca (engine/IA próprios, 4 níveis), Olho Vivo (Dobble/Spot It, plano projetivo, engine próprio), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
-| `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), ~12 categorias / centenas de entradas |
+| `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), 17 categorias (incl. piropos e cúmulos) organizadas por grupos, centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
 | `#photography` | **Fotografia** | Portal por géneros (15 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S23+ / ambos), modo "No Terreno" (assistente de bolso), Aprender (fundamentos, composição, 12 técnicas de edição RapidRAW/darktable/Snapseed, roda de cores) e 7 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
@@ -158,13 +157,16 @@ Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge
 
 | API | Uso |
 |-----|-----|
-| **ipwho.is** | Network Lab: IP, ISP, ASN, geolocalização (CORS `*`, sem chave); IPv6 best-effort via api64.ipify |
-| **IPMA** (`api.ipma.pt`) | Previsão por cidade + avisos meteorológicos (popup do dia) |
+| **IPMA** (`api.ipma.pt`) | Previsão por cidade + avisos meteorológicos por distrito (popup do dia e Ocorrências PT) |
 | **Open-Meteo** | Meteo atual/6 dias para cidade configurável |
 | **Wikimedia / Wikipedia PT** (`api.wikimedia.org`) | Reconstrução live das efemérides quando o snapshot está velho (`otd-lib`) |
 | **Jolpica** (`api.jolpi.ca`) | Dados históricos/calendário F1 (sucessor do Ergast) |
 | **OpenF1** | Posições live/replay das corridas (canvas track-position) |
-| **USGS Earthquakes** + **NASA EONET** | Ocorrências: sismos e eventos naturais |
+| **USGS Earthquakes** | Sismos: Ocorrências PT (bbox Portugal/Atlântico) e Terra em Tempo Real (global) |
+| **fogos.pt** | Ocorrências PT: incêndios/ocorrências ativas (agrega o sistema SADO da ANEPC) |
+| **NASA EONET** | Terra em Tempo Real: vulcões, incêndios e tempestades ativos |
+| **NASA GIBS** (WMS) | Terra em Tempo Real: imagem base Blue Marble hi-res + mosaico diário de nuvens VIIRS (com cache e crossfade no cliente) |
+| **Nominatim** (OSM) | Ocorrências PT: reverse geocoding de sismos (distrito/município/freguesia) |
 | **AgendaLX / e-cultura** | Eventos culturais em direto (com fallback ao seed offline) |
 | **HN Algolia** | Feed Hacker News |
 | **GitHub API** | Detalhe de projetos OSS |
