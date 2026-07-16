@@ -54,6 +54,7 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
           <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
+          <a class="sb-nav-item" data-route="fitness"      href="#fitness">${navIcon('fitness')}<span>${TN('nav.fitness')}</span></a>
           <div class="sb-grp" data-grp="photo">${TN('nav.grp.photo')}</div>
           <a class="sb-nav-item" data-route="photography"  href="#photography">${navIcon('photography')}<span>${TN('nav.photography')}</span></a>
           <!-- Definições saiu da navegação: as preferências rápidas vivem no
@@ -153,6 +154,9 @@ const Nav = (function () {
     } else if (page === 'humor') {
       document.getElementById('view-humor')?.classList.add('active');
       typeof HumorPage !== 'undefined' && HumorPage.show();
+    } else if (page === 'fitness') {
+      document.getElementById('view-fitness')?.classList.add('active');
+      typeof FitnessPage !== 'undefined' && FitnessPage.show(sub || null);
     } else if (page === 'explorer') {
       document.getElementById('view-explorer')?.classList.add('active');
       typeof ExplorerPage !== 'undefined' && ExplorerPage.show(sub || null);
@@ -218,7 +222,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','fitness','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

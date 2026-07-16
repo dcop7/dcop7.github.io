@@ -1,0 +1,66 @@
+{
+  "plans": [
+    {
+      "id": "along-10",
+      "name": { "pt": "Alongamentos · 10 min", "en": "Stretching · 10 min" },
+      "desc": { "pt": "Rotina rápida de corpo inteiro para o dia a dia.", "en": "Quick full-body routine for every day." },
+      "category": "alongamentos",
+      "holdSec": 25,
+      "sideRestSec": 5,
+      "moveRestSec": 10,
+      "prepSec": 10,
+      "items": [
+        "pescoco-lateral", "pescoco-rotacao", "ombro-cruzado", "triceps", "peito",
+        "tronco-lateral", "gato-vaca", "flexores-anca", "isquiotibiais", "gemeos"
+      ]
+    },
+    {
+      "id": "along-15",
+      "name": { "pt": "Alongamentos · 15 min", "en": "Stretching · 15 min" },
+      "desc": { "pt": "Corpo inteiro com mais atenção a ombros e pernas.", "en": "Full body with extra care for shoulders and legs." },
+      "category": "alongamentos",
+      "holdSec": 25,
+      "sideRestSec": 5,
+      "moveRestSec": 10,
+      "prepSec": 10,
+      "items": [
+        "pescoco-lateral", "pescoco-rotacao", "trapezio", "ombro-cruzado", "triceps",
+        "peito", "tronco-lateral", "gato-vaca", "rotacao-toracica", "flexores-anca",
+        "quadricep", "isquiotibiais", "gluteo-4", "gemeos", "tornozelos"
+      ]
+    },
+    {
+      "id": "along-20",
+      "name": { "pt": "Alongamentos · 20 min", "en": "Stretching · 20 min" },
+      "desc": { "pt": "Alongamentos mais profundos, 35 segundos por lado.", "en": "Deeper stretches, 35 seconds per side." },
+      "category": "alongamentos",
+      "holdSec": 35,
+      "sideRestSec": 5,
+      "moveRestSec": 10,
+      "prepSec": 10,
+      "items": [
+        "pescoco-lateral", "pescoco-rotacao", "trapezio", "ombro-cruzado", "triceps",
+        "peito", "tronco-lateral", "gato-vaca", "rotacao-toracica", "crianca",
+        "flexores-anca", "quadricep", "borboleta", "gluteo-4", "isquiotibiais", "gemeos"
+      ]
+    },
+    {
+      "id": "along-30",
+      "name": { "pt": "Alongamentos · 30 min", "en": "Stretching · 30 min" },
+      "desc": { "pt": "Sessão completa e profunda, da cabeça aos pés.", "en": "Complete deep session, head to toe." },
+      "category": "alongamentos",
+      "holdSec": 40,
+      "sideRestSec": 5,
+      "moveRestSec": 10,
+      "prepSec": 10,
+      "overrides": { "respiracao": 60 },
+      "items": [
+        "pescoco-lateral", "pescoco-rotacao", "pescoco-flexao", "ombro-cruzado", "triceps",
+        "biceps", "peito", "tronco-lateral", "gato-vaca", "rotacao-toracica",
+        "crianca", "cobra", "flexores-anca", "gluteo-4", "piriforme",
+        "borboleta", "adutores", "quadricep", "isquiotibiais", "gemeos",
+        "tibial", "tornozelos", "respiracao"
+      ]
+    }
+  ]
+}

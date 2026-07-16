@@ -4907,5 +4907,221 @@
     "verified": false,
     "classification": "REMOVED",
     "note": "Removed in this audit — replaced by a solid colour + generated 3D starfield."
+  },
+  {
+    "file": "assets/fitness/pescoco-lateral.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/pescoco-rotacao.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/pescoco-flexao.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/trapezio.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/ombro-cruzado.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/triceps.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/biceps.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/peito.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/tronco-lateral.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/gato-vaca.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/rotacao-toracica.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/crianca.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/cobra.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/flexores-anca.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/quadricep.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/isquiotibiais.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/gluteo-4.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/piriforme.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/borboleta.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/adutores.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/gemeos.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/tibial.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/tornozelos.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/fitness/respiracao.jpg",
+    "type": "jpg",
+    "source": "AI-generated locally (ComfyUI + JuggernautXL/SDXL, original prompt)",
+    "license": "original",
+    "attribution": "none required",
+    "verified": true,
+    "classification": "SAFE"
   }
 ]

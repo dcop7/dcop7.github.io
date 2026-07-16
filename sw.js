@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v256';
+const CACHE = 'dcop7-v257';
 const STATIC = [
   '/',
   '/index.html',
@@ -84,6 +84,12 @@ const STATIC = [
   '/data/photo/edit-impl.json',
   '/js/pages/humor.js',
   '/js/pages/cheatsheets.js',
+  /* Fitness */
+  '/js/pages/fitness.js',
+  '/css/views/fitness.css',
+  '/data/fitness/index.json',
+  '/data/fitness/movements.json',
+  '/data/fitness/plans.json',
   /* Quiz */
   '/js/quiz/quiz-engine.js',
   '/js/quiz/quiz-data.js',
