@@ -63,12 +63,12 @@ const OcorrenciasPage = (function () {
   /* Approximate district centroids for flyTo when clicking a warning in the list */
   const DISTRICT_CENTROIDS = {
     'Aveiro':           [40.64, -8.65],  'Beja':             [37.96, -7.87],
-    'Braga':            [41.55, -8.42],  'Bragança':         [40.67, -7.50],
+    'Braga':            [41.55, -8.42],  'Bragança':         [41.81, -6.76],
     'Castelo Branco':   [39.83, -7.49],  'Coimbra':          [40.21, -8.43],
     'Évora':            [38.57, -7.91],  'Faro':             [37.01, -7.93],
     'Guarda':           [40.53, -7.27],  'Leiria':           [39.74, -8.81],
     'Lisboa':           [38.72, -9.14],  'Porto':            [41.16, -8.62],
-    'Portalegre':       [39.30, -8.57],  'Setúbal':          [38.52, -8.89],
+    'Portalegre':       [39.29, -7.43],  'Setúbal':          [38.52, -8.89],
     'Santarém':         [39.23, -8.69],  'Viana do Castelo': [41.69, -8.83],
     'Viseu':            [40.66, -7.91],  'Vila Real':        [41.30, -7.74],
     'Madeira':          [32.75, -17.00], 'Açores':           [37.74, -25.67],
@@ -99,6 +99,8 @@ const OcorrenciasPage = (function () {
   let _themeObs          = null;
   let _refreshing        = false;
   let _detailInc         = null;
+  let _sortMode          = 'time';   /* 'time' | 'sev' — list ordering */
+  let _lastLoadTs        = null;     /* epoch-ms of the last successful load */
 
   /* ── Session cache ── */
   function _cacheTimeStr(key) {
@@ -505,9 +507,11 @@ const OcorrenciasPage = (function () {
       const cls = _magClass(eq.mag);
       const sz  = { low: 8, mod: 12, high: 16, severe: 22 }[cls] || 10;
       const clr = { low: '#22c55e', mod: '#eab308', high: '#f97316', severe: '#ef4444' }[cls];
+      /* Quakes in the last 6h pulse — fresh activity reads at a glance. */
+      const recent = Date.now() - _ts(eq.time) < 6 * 3600 * 1000;
       const icon = L.divIcon({
         className: '',
-        html: `<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:${clr};border:2px solid ${clr}44;box-shadow:0 0 ${sz}px ${clr}88;cursor:pointer"></div>`,
+        html: `<div${recent ? ' class="oc-marker-pulse"' : ''} style="--pc:${clr};width:${sz}px;height:${sz}px;border-radius:50%;background:${clr};border:2px solid ${clr}44;box-shadow:0 0 ${sz}px ${clr}88;cursor:pointer"></div>`,
         iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
       });
       L.marker([eq.lat, eq.lon], { icon })
@@ -573,9 +577,11 @@ const OcorrenciasPage = (function () {
       const tip  = `${f.title}${loc} · ${st.label} · ${tier.label}`.replace(/"/g, '&quot;');
       /* Ring thickness also grows with size; a tiny operacionais badge on big ones. */
       const badge = op >= 20 ? `<span style="position:absolute;bottom:-5px;right:-5px;background:rgba(8,12,20,.92);color:#fff;font-size:9px;font-weight:700;line-height:1;padding:1px 3px;border-radius:6px;border:1px solid rgba(255,255,255,.4)">${op}</span>` : '';
+      /* Significant fires pulse so they stand out among the small ones. */
+      const pulse = st.sev >= 4 ? ' class="oc-marker-pulse"' : '';
       const icon = L.divIcon({
         className: '',
-        html: `<div title="${tip}" style="position:relative;width:${sz}px;height:${sz}px;border-radius:50%;background:${st.color};border:2px solid rgba(255,255,255,.92);box-shadow:0 0 ${glow}px ${st.color},0 0 3px rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;font-size:${fs}px;line-height:1;cursor:pointer">🔥${badge}</div>`,
+        html: `<div${pulse} title="${tip}" style="--pc:${st.color};position:relative;width:${sz}px;height:${sz}px;border-radius:50%;background:${st.color};border:2px solid rgba(255,255,255,.92);box-shadow:0 0 ${glow}px ${st.color},0 0 3px rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;font-size:${fs}px;line-height:1;cursor:pointer">🔥${badge}</div>`,
         iconSize: [sz, sz], iconAnchor: [sz / 2, sz / 2],
       });
       L.marker([f.lat, f.lon], { icon })
@@ -776,23 +782,28 @@ const OcorrenciasPage = (function () {
   function _renderStats(eqs, fires, warns) {
     const statGrid = document.querySelector('.oc-stat-grid');
     if (!statGrid) return;
+    /* Stat cards double as one-tap filters for the list. */
     statGrid.innerHTML = `
-      <div class="oc-stat-card all">
+      <button class="oc-stat-card all" data-filter="all" title="Mostrar tudo">
         <div class="oc-stat-num">${eqs.length + fires.length + warns.length}</div>
         <div class="oc-stat-label">Total</div>
-      </div>
-      <div class="oc-stat-card eq">
+      </button>
+      <button class="oc-stat-card eq" data-filter="earthquake" title="Só sismos">
         <div class="oc-stat-num">${eqs.length}</div>
         <div class="oc-stat-label">Sismos</div>
-      </div>
-      <div class="oc-stat-card fire">
+      </button>
+      <button class="oc-stat-card fire" data-filter="fire" title="Só incêndios">
         <div class="oc-stat-num">${fires.length}</div>
         <div class="oc-stat-label">Incêndios</div>
-      </div>
-      <div class="oc-stat-card wx">
+      </button>
+      <button class="oc-stat-card wx" data-filter="weather" title="Só avisos">
         <div class="oc-stat-num">${warns.length}</div>
         <div class="oc-stat-label">Avisos</div>
-      </div>`;
+      </button>`;
+    statGrid.querySelectorAll('.oc-stat-card').forEach(c => {
+      c.onclick = () => _setFilter(c.dataset.filter);
+      c.classList.toggle('selected', c.dataset.filter === _activeFilter);
+    });
   }
 
   function _renderProviders() {
@@ -819,14 +830,27 @@ const OcorrenciasPage = (function () {
     }).join('');
   }
 
+  /* Cross-type severity score so "Severidade" ordering can rank a red IPMA
+     warning against an M5 quake against a 100-operacionais fire sensibly. */
+  function _sevScore(inc) {
+    if (inc.type === 'earthquake') return (inc.mag || 0) * 12;                       /* M5 → 60 */
+    if (inc.type === 'weather')    return (WARN_SEV[inc.level] || 1) * 16;           /* red → 64 */
+    if (inc.type === 'fire') {
+      const st = _fireStatus(inc);
+      return st.sev * 18 + Math.min(inc.operacionais || 0, 200) * 0.3;               /* grande dispositivo → 90+ */
+    }
+    return 0;
+  }
+
   function _renderList() {
     const list    = document.querySelector('.oc-incidents-list');
     const countEl = document.querySelector('.oc-incidents-count');
     if (!list) return;
 
-    const filtered = _activeFilter === 'all'
-      ? _incidents
+    let filtered = _activeFilter === 'all'
+      ? _incidents.slice()
       : _incidents.filter(i => i.type === _activeFilter);
+    if (_sortMode === 'sev') filtered.sort((a, b) => _sevScore(b) - _sevScore(a));
 
     if (countEl) countEl.textContent = filtered.length;
 
@@ -887,10 +911,19 @@ const OcorrenciasPage = (function () {
   }
 
   function _setLastUpdate() {
-    const el = document.querySelector('.oc-last-update');
-    if (el) el.textContent = `Atualizado: ${_nowTime()}`;
+    _lastLoadTs = Date.now();
+    _renderLastUpdate();
     const dot = document.querySelector('.oc-status-dot');
     if (dot) dot.className = 'oc-status-dot';
+  }
+
+  /* "Atualizado há Xm" — re-rendered every 30s so the freshness never lies. */
+  function _renderLastUpdate() {
+    const el = document.querySelector('.oc-last-update');
+    if (!el || !_lastLoadTs) return;
+    const mins = Math.floor((Date.now() - _lastLoadTs) / 60000);
+    const abs  = new Date(_lastLoadTs).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    el.textContent = mins < 1 ? `Atualizado às ${abs}` : `Atualizado às ${abs} · há ${mins} min`;
   }
 
   /* ── Layer toggle buttons ── */
@@ -914,11 +947,25 @@ const OcorrenciasPage = (function () {
     });
   }
 
+  /* Single source of truth for the active list filter — keeps the filter chips
+     and the (clickable) stat cards in sync no matter which one was tapped. */
+  function _setFilter(f) {
+    _activeFilter = f || 'all';
+    document.querySelectorAll('.oc-filter-btn').forEach(b =>
+      b.classList.toggle('active', (b.dataset.filter || 'all') === _activeFilter));
+    document.querySelectorAll('.oc-stat-card').forEach(c =>
+      c.classList.toggle('selected', c.dataset.filter === _activeFilter));
+    _renderList();
+  }
+
   function _wireFilters() {
     document.querySelectorAll('.oc-filter-btn').forEach(btn => {
+      btn.onclick = () => _setFilter(btn.dataset.filter || 'all');
+    });
+    document.querySelectorAll('.oc-sort-btn').forEach(btn => {
       btn.onclick = () => {
-        _activeFilter = btn.dataset.filter || 'all';
-        document.querySelectorAll('.oc-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+        _sortMode = btn.dataset.sort || 'time';
+        document.querySelectorAll('.oc-sort-btn').forEach(b => b.classList.toggle('active', b === btn));
         _renderList();
       };
     });
@@ -1067,6 +1114,10 @@ const OcorrenciasPage = (function () {
             <div class="oc-incidents-section">
               <div class="oc-incidents-header">
                 <span class="oc-incidents-title">Ocorrências ativas</span>
+                <div class="oc-sort-toggle" role="group" aria-label="Ordenar lista">
+                  <button class="oc-sort-btn active" data-sort="time" title="Mais recentes primeiro">Recentes</button>
+                  <button class="oc-sort-btn" data-sort="sev" title="Mais graves primeiro">Gravidade</button>
+                </div>
                 <span class="oc-incidents-count">—</span>
               </div>
               <div class="oc-incidents-filter">
@@ -1145,7 +1196,7 @@ const OcorrenciasPage = (function () {
 
   /* ════════════════════════════════ AUTO-REFRESH ════════════════════ */
 
-  let _autoTimer = null;
+  let _autoTimer = null, _tickTimer = null;
   function _startAutoRefresh() {
     if (_autoTimer) return;
     /* Re-fetch every TTL so the panel stays current; the TTL-aware cache
@@ -1157,6 +1208,7 @@ const OcorrenciasPage = (function () {
       Object.values(CACHE).forEach(k => sessionStorage.removeItem(k));
       _load();
     }, TTL);
+    _tickTimer = setInterval(_renderLastUpdate, 30000);
   }
 
   /* ════════════════════════════════ PUBLIC ══════════════════════════ */

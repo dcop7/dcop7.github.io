@@ -2351,12 +2351,18 @@ body.light .pt-capital-label .pt-cap-dot {
   padding: .26rem .6rem; border-radius: 999px; cursor: pointer; transition: all var(--ease);
 }
 .ex-rt-now.on { color: var(--green, #34d399); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+.ex-rt-now:disabled { opacity: .35; pointer-events: none; }
+/* ‹ › day-step arrows: compact, bolder glyph */
+.ex-rt-step { padding: .22rem .5rem; font-size: .85rem; line-height: 1; }
 /* Native date input kept only to drive the picker (label lives on the button). */
 .ex-rt-date-native {
   position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
   border: 0; padding: 0; margin: 0; color-scheme: dark;
 }
 .ex-rt-status { font-size: .68rem; color: var(--muted); margin-left: .15rem; white-space: nowrap; }
+/* Satellite-imagery download in flight → pulsing accent status */
+.ex-rt-status.loading { color: rgba(var(--accent-rgb), .95); animation: ex-rt-status-pulse 1.3s ease-in-out infinite; }
+@keyframes ex-rt-status-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 
 /* Active-layer legend (bottom-left) */
 .ex-rt-legend {
