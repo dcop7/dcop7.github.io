@@ -44,6 +44,21 @@ const HumorPage = (function () {
   const catName = id => { const c = (index || []).find(x => x.id === id); return c ? c.name : id; };
   const catIcon = id => { const c = (index || []).find(x => x.id === id); return c ? c.icon : '😂'; };
 
+  /* Random scopes: one button per group of categories + one with everything.
+     `groups: null` = all categories. */
+  const SCOPES = {
+    all:     { label: '🎲 Humor Aleatório',     groups: null },
+    piadas:  { label: '😂 Piada Aleatória',     groups: ['piadas', 'temas'] },
+    enigmas: { label: '🧩 Adivinha & Cúmulo',   groups: ['enigmas'] },
+    piropos: { label: '💘 Piropo Aleatório',    groups: ['piropos'] }
+  };
+  async function loadScope(groupIds) {
+    const idx = await loadIndex();
+    const cats = groupIds ? idx.filter(c => groupIds.includes(c.group)) : idx;
+    const all = await Promise.all(cats.map(c => loadCat(c.id)));
+    return all.flat();
+  }
+
   /* ── lifecycle ─────────────────────────────────────────────────── */
   function init() {
     root = document.getElementById('view-humor');
@@ -66,14 +81,15 @@ const HumorPage = (function () {
           </div>
         </div>
         <div class="hm-toolbar">
-          <button class="hm-tool primary" id="hm-random">🎲 Piada Aleatória</button>
+          ${Object.entries(SCOPES).map(([k, s]) =>
+            `<button class="hm-tool${k === 'all' ? ' primary' : ''}" data-scope="${k}">${s.label}</button>`).join('')}
           <button class="hm-tool" id="hm-daily">📅 Piada do Dia</button>
           <button class="hm-tool" id="hm-favs">⭐ Favoritas <span id="hm-favn">${Object.keys(favs).length || ''}</span></button>
           <div class="hm-search-wrap"><input class="hm-search" id="hm-search" type="search" placeholder="🔍 Pesquisar piadas…" aria-label="Pesquisar"></div>
         </div>
         <div id="hm-body"><div class="hm-loading">A carregar…</div></div>`;
 
-    root.querySelector('#hm-random').addEventListener('click', showRandom);
+    root.querySelectorAll('[data-scope]').forEach(b => b.addEventListener('click', () => showRandom(b.dataset.scope)));
     root.querySelector('#hm-daily').addEventListener('click', showDaily);
     root.querySelector('#hm-favs').addEventListener('click', showFavs);
     const s = root.querySelector('#hm-search');
@@ -149,24 +165,25 @@ const HumorPage = (function () {
     wireBack(); wireCards(body);
   }
 
-  async function showRandom() {
-    const all = await loadAll();
+  async function showRandom(scope) {
+    const s = SCOPES[scope] || SCOPES.all;
+    const all = await loadScope(s.groups);
     if (!all.length) return;
-    showSingle(all[Math.floor(Math.random() * all.length)], '🎲 Piada Aleatória', true);
+    showSingle(all[Math.floor(Math.random() * all.length)], s.label, scope in SCOPES ? scope : 'all');
   }
   async function showDaily() {
     const all = await loadAll();
     if (!all.length) return;
     const d = new Date(); const seed = d.getFullYear() * 1000 + (Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000));
-    showSingle(all[seed % all.length], '📅 Piada do Dia', false);
+    showSingle(all[seed % all.length], '📅 Piada do Dia', null);
   }
-  function showSingle(j, title, again) {
+  function showSingle(j, title, againScope) {
     const body = root.querySelector('#hm-body');
     body.innerHTML = backBar(title) +
       `<div class="hm-single">${jokeCard(j, true)}</div>` +
-      (again ? `<div class="hm-single-actions"><button class="hm-tool primary" id="hm-again">🎲 Outra</button></div>` : '');
+      (againScope ? `<div class="hm-single-actions"><button class="hm-tool primary" id="hm-again">🎲 Outra</button></div>` : '');
     wireBack(); wireCards(body);
-    root.querySelector('#hm-again')?.addEventListener('click', showRandom);
+    root.querySelector('#hm-again')?.addEventListener('click', () => showRandom(againScope));
   }
 
   /* ── joke card ─────────────────────────────────────────────────── */

@@ -21,10 +21,13 @@
     { "id": "piropos-romanticos", "name": "Românticos", "icon": "🌹", "desc": "Para derreter corações", "group": "piropos" },
     { "id": "piropos-atrevidos", "name": "Atrevidos", "icon": "😏", "desc": "Com um bocadinho de lata", "group": "piropos" },
     { "id": "piropos-foleiros", "name": "Foleiros", "icon": "🧀", "desc": "Tão maus que até dão jeito", "group": "piropos" },
+    { "id": "piropos-trolha", "name": "À Trolha", "icon": "🧱", "desc": "Direto do estaleiro, sem filtro", "group": "piropos" },
 
     { "id": "criancas", "name": "Crianças", "icon": "🧒", "desc": "Para os mais novos", "group": "temas" },
     { "id": "escola", "name": "Escola", "icon": "🎒", "desc": "Professores e alunos", "group": "temas" },
     { "id": "trabalho", "name": "Trabalho", "icon": "💼", "desc": "Vida de escritório", "group": "temas" },
-    { "id": "casamento", "name": "Casamento", "icon": "💍", "desc": "Maridos e mulheres", "group": "temas" }
+    { "id": "casamento", "name": "Casamento", "icon": "💍", "desc": "Maridos e mulheres", "group": "temas" },
+    { "id": "alentejanos", "name": "Alentejanos", "icon": "🌾", "desc": "Devagar, devagarinho", "group": "temas" },
+    { "id": "animais", "name": "Animais", "icon": "🐔", "desc": "A bicharada também tem piada", "group": "temas" }
   ]
 }
