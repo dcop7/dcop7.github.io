@@ -65,6 +65,7 @@ body.fit-playing { overflow: hidden; }
 .fit-pl-main { flex: 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.2rem; padding: 1.1rem 1.2rem; max-width: 1060px; width: 100%; margin: 0 auto; align-items: center; overflow: auto; }
 .fit-pl-media { position: relative; border-radius: 18px; overflow: hidden; background: var(--card); border: 1px solid var(--border); aspect-ratio: 4/4.4; max-height: 68vh; display: flex; align-items: center; justify-content: center; }
 .fit-pl-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fit-pl-media img.flip { transform: scaleX(-1); }  /* lado esquerdo = imagem espelhada */
 .fit-pl-noimg { font-size: 4rem; }
 .fit-pl-phase { position: absolute; top: .75rem; left: .75rem; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; padding: .28rem .7rem; border-radius: 99px; background: var(--fit); color: #04120c; }
 .fit-pl-phase.rest { background: #f59e0b; color: #1a1002; }

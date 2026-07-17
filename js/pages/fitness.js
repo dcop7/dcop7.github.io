@@ -263,7 +263,7 @@ const FitnessPage = (function () {
       </div>
       <div class="fit-pl-main ${seg.t}">
         <div class="fit-pl-media">
-          ${m ? `<img src="${IMG}${m.id}.jpg" alt="${esc(LOC(m.name))}" onerror="this.remove()">` : `<div class="fit-pl-noimg">🧘</div>`}
+          ${m ? `<img src="${IMG}${m.id}.jpg" alt="${esc(LOC(m.name))}"${showSide === 'l' ? ' class="flip"' : ''} onerror="this.remove()">` : `<div class="fit-pl-noimg">🧘</div>`}
           <span class="fit-pl-phase ${seg.t}">${phase}</span>
           ${showSide ? `<span class="fit-pl-side">${sideLabel(showSide)}</span>` : ''}
         </div>
