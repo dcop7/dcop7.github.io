@@ -1,6 +1,6 @@
 {
- "generated": "2026-07-17T20:10:25.184Z",
- "total": 66,
+ "generated": "2026-07-17T20:25:23.711Z",
+ "total": 71,
  "broken": 0,
  "unknown": 26,
  "results": [
@@ -111,6 +111,36 @@
    "url": "https://www.seg-social.pt/cuidador-informal",
    "status": 0,
    "ok": null
+  },
+  {
+   "id": "apoios:descontos-transportes",
+   "url": "https://www.cp.pt/passageiros/pt",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:museus-gratis",
+   "url": "https://www.museusemonumentos.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:cartao-jovem",
+   "url": "https://cartaojovem.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:bolsa-merito-secundario",
+   "url": "https://eportugal.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:transporte-doentes",
+   "url": "https://www.sns24.gov.pt/",
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cheque-dentista",

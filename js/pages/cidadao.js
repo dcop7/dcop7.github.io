@@ -32,6 +32,7 @@ const CidadaoPage = (function () {
     pensoes:   { icon: '👴', pt: 'Pensões',    en: 'Pensions',   color: '#f472b6' },
     energia:   { icon: '⚡', pt: 'Energia',    en: 'Energy',     color: '#eab308' },
     mobilidade:{ icon: '🚆', pt: 'Mobilidade', en: 'Mobility',   color: '#10b981' },
+    cultura:   { icon: '🎭', pt: 'Cultura e lazer', en: 'Culture & leisure', color: '#d946ef' },
     outros:    { icon: '✨', pt: 'Outros',     en: 'Other',      color: '#64748b' },
   };
   const cat = (k) => CATS[k] || CATS.outros;
@@ -75,9 +76,18 @@ const CidadaoPage = (function () {
     ['novidades', '🆕', 'Updates',   'Novidades'],
   ];
 
+  /* Modos de vista das listas (Prazos/Apoios): cartões · compacto · lista */
+  const VIEWS = [
+    ['cards',   '▦', 'Cards',   'Cartões'],
+    ['compact', '▤', 'Compact', 'Compacto'],
+    ['list',    '☰', 'List',    'Lista'],
+  ];
+
   /* ── Estado ── */
   let _cal = null, _apoios = null, _nov = null;
   let _tab = 'agora';
+  let _view = (() => { try { return localStorage.getItem('cd-view') || 'cards'; } catch { return 'cards'; } })();
+  if (!VIEWS.some(v => v[0] === _view)) _view = 'cards';
   let _pzCat = '', _pzMine = false;
   let _apCat = '', _apQuery = '', _apLittle = false;
   let _nvTopic = '', _nvSource = '';
@@ -246,7 +256,31 @@ const CidadaoPage = (function () {
     </article>`;
   }
 
-  function apoioCard(a) {
+  /* vista "lista": uma linha por prazo */
+  function deadlineRow(d) {
+    const r = d.rule, c = cat(r.cat);
+    const followed = _follow.has(r.id);
+    const date = d.info ? '' : (+d.start === +d.end ? fmtDate(d.end) : `${fmtDate(d.start)} → ${fmtDate(d.end)}`);
+    return `<div class="cd-row" style="--cc:${c.color}">
+      <span class="cd-row-ico">${r.icon || c.icon}</span>
+      <span class="cd-row-title">${esc(r.title)}</span>
+      <span class="cd-row-date">${esc(date)}${r.approx && date ? ' ≈' : ''}</span>
+      ${statusBadge(d)}
+      <button class="cd-follow${followed ? ' active' : ''}" data-follow="${r.id}" title="${_t('Follow', 'Seguir')}" aria-pressed="${followed}">${followed ? '★' : '☆'}</button>
+      <a class="cd-link" href="${esc(r.url)}" target="_blank" rel="noopener">↗</a>
+    </div>`;
+  }
+  function deadlineList(list) {
+    if (_view === 'list') return `<div class="cd-rows">${list.map(deadlineRow).join('')}</div>`;
+    return `<div class="cd-grid${_view === 'compact' ? ' cd-grid--c' : ''}">${list.map(d => deadlineCard(d, _view !== 'cards')).join('')}</div>`;
+  }
+  function viewSeg() {
+    return `<div class="cd-view" role="group" aria-label="${_t('View mode', 'Modo de visualização')}">
+      ${VIEWS.map(([id, ic, en, pt]) => `<button class="cd-view-b${id === _view ? ' active' : ''}" data-cdview="${id}" title="${_t(en, pt)}" aria-label="${_t(en, pt)}">${ic}</button>`).join('')}
+    </div>`;
+  }
+
+  function apoioCard(a, compact) {
     const c = cat(a.cat);
     const stateBadge = {
       continuo:  `<span class="cd-badge cd-b-open">${_t('Apply anytime', 'Pede-se a qualquer altura')}</span>`,
@@ -264,13 +298,27 @@ const CidadaoPage = (function () {
         </div>
       </div>
       <p class="cd-ap-sum">${esc(a.sum)}</p>
-      <dl class="cd-ap-facts">
+      ${compact ? '' : `<dl class="cd-ap-facts">
         <div><dt>${_t('Who', 'Para quem')}</dt><dd>${esc(a.who && a.who.txt || '—')}</dd></div>
         <div><dt>${_t('Amount', 'Quanto')}</dt><dd>${esc(a.value || '—')}</dd></div>
         <div><dt>${_t('How', 'Como pedir')}</dt><dd>${esc(a.how || '—')}</dd></div>
-      </dl>
+      </dl>`}
       <div class="cd-ap-foot">${stateBadge}<span class="cd-dl-spacer"></span><a class="cd-link" href="${esc(a.url)}" target="_blank" rel="noopener">${_t('Official site', 'Site oficial')} ↗</a></div>
     </article>`;
+  }
+  /* vista "lista": uma linha por apoio */
+  function apoioRow(a) {
+    const c = cat(a.cat);
+    return `<a class="cd-row cd-row--ap" style="--cc:${c.color}" href="${esc(a.url)}" target="_blank" rel="noopener">
+      <span class="cd-row-ico">${a.icon}</span>
+      <span class="cd-row-title">${esc(a.name)}${a.littleKnown ? ' 💎' : ''}</span>
+      <span class="cd-row-date">${c.icon} ${esc(catLabel(a.cat))}</span>
+      <span class="cd-link">↗</span>
+    </a>`;
+  }
+  function apoioList(list) {
+    if (_view === 'list') return `<div class="cd-rows">${list.map(apoioRow).join('')}</div>`;
+    return `<div class="cd-grid cd-grid--ap${_view === 'compact' ? ' cd-grid--c' : ''}">${list.map(a => apoioCard(a, _view !== 'cards')).join('')}</div>`;
   }
 
   function novidadeRow(n) {
@@ -284,7 +332,7 @@ const CidadaoPage = (function () {
         <span class="cd-nv-src">${esc((srcMeta && srcMeta.name) || n.source)}${n.via ? ' · ' + esc(n.via) : ''}</span>
         <span class="cd-nv-time">${relTime(n.ts)}</span>
       </div>
-      <span class="cd-nv-title">${n.radar ? '🎯 ' : ''}${esc(n.title)}</span>
+      <span class="cd-nv-title">${n.novo ? `<span class="cd-novo">${_t('NEW', 'NOVO')}</span> ` : n.radar ? '🎯 ' : ''}${esc(n.title)}</span>
       <div class="cd-nv-chips">${tchips}</div>
     </a>`;
   }
@@ -296,8 +344,10 @@ const CidadaoPage = (function () {
     const open = ds.filter(d => !d.info && !d.overdue && d.status === 'open' && daysTo(d.end) > 21);
     const soon = ds.filter(d => !d.info && d.status === 'upcoming' && daysTo(d.start) <= 60);
     const followed = ds.filter(d => _follow.has(d.rule.id) && !urgent.includes(d));
-    const radar = (((_nov && _nov.items) || []).filter(n => n.radar)).slice(0, 5);
-    const recent = (((_nov && _nov.items) || []).filter(n => !n.radar)).slice(0, 6);
+    const novos = (((_nov && _nov.items) || []).filter(n => n.novo)).slice(0, 5);
+    const novoSet = new Set(novos.map(n => n.url));
+    const radar = (((_nov && _nov.items) || []).filter(n => n.radar && !novoSet.has(n.url))).slice(0, 5);
+    const recent = (((_nov && _nov.items) || []).filter(n => !n.radar && !novoSet.has(n.url))).slice(0, 6);
     /* "podes estar a perder": apoios 💎 que condizem com o perfil (ou todos, sem perfil) */
     const gems = (((_apoios && _apoios.items) || []).filter(a => {
       const tags = (a.who && a.who.tags) || [];
@@ -322,6 +372,8 @@ const CidadaoPage = (function () {
       ${!urgent.length && !open.length && !soon.length ? `<div class="empty-state"><span class="es-ico">🌤️</span>
         <div class="es-title">${_t('Nothing urgent for your profile', 'Nada urgente para o teu perfil')}</div>
         <div class="es-hint">${_t('Check the Deadlines tab for the full year calendar.', 'Espreita a tab Prazos para veres o calendário do ano inteiro.')}</div></div>` : ''}
+      ${novos.length ? `<h2 class="cd-h2">✨ ${_t('New benefits detected', 'Novos apoios e medidas')} <span class="cd-h2-note">${_t('auto-detected — confirm at the source', 'detetado automaticamente — confirma na fonte')}</span></h2>
+        <div class="cd-nv-list">${novos.map(novidadeRow).join('')}</div>` : ''}
       ${radar.length ? `<h2 class="cd-h2">🎯 ${_t('Applications radar', 'Radar de candidaturas')} <span class="cd-h2-note">${_t('auto-detected in official news', 'detetado automaticamente nas notícias oficiais')}</span></h2>
         <div class="cd-nv-list">${radar.map(novidadeRow).join('')}</div>` : ''}
       ${gems.length ? `<h2 class="cd-h2">💎 ${_t('You may be missing out', 'Podes estar a perder')}</h2>
@@ -359,6 +411,7 @@ const CidadaoPage = (function () {
           ${cats.map(c => `<button class="seg-btn${_pzCat === c ? ' active' : ''}" data-pzcat="${c}">${cat(c).icon} ${esc(catLabel(c))}</button>`).join('')}
         </div>
         <label class="chip${_pzMine ? ' active' : ''}" id="cd-pz-mine" role="switch" aria-checked="${_pzMine}">👤 ${_t('Only for me', 'Só para mim')}</label>
+        ${viewSeg()}
         <button class="btn btn-sm" id="cd-ics-all" title="${_t('Download followed/all deadlines as calendar', 'Descarregar os prazos como calendário')}">📆 ${_t('Export .ics', 'Exportar .ics')}</button>
       </div>
       ${missing.length ? `<div class="cd-hint cd-hint--soft"><span class="cd-hint-ico">🔧</span>
@@ -369,7 +422,7 @@ const CidadaoPage = (function () {
         const list = groups.get(k);
         const title = k === 'info' ? `ℹ️ ${_t('No fixed date', 'Sem data fixa')}`
           : (() => { const [y, m] = k.split('-'); return '📅 ' + fmtMonthYear(new Date(+y, +m, 1)); })();
-        return `<h2 class="cd-h2">${title}</h2><div class="cd-grid">${list.map(d => deadlineCard(d)).join('')}</div>`;
+        return `<h2 class="cd-h2">${title}</h2>${deadlineList(list)}`;
       }).join('') || `<div class="empty-state"><span class="es-ico">📭</span><div class="es-title">${_t('No deadlines for this filter', 'Sem prazos para este filtro')}</div></div>`}
       <p class="cd-disclaimer">≈ ${_t('Marked windows are typical dates; the exact days are set yearly by the State — always confirm at the official link. This page aggregates and simplifies; it does not replace official services.', 'As janelas marcadas são datas típicas; os dias exatos são fixados anualmente pelo Estado — confirma sempre no link oficial. Esta página agrega e simplifica; não substitui os serviços oficiais.')}</p>`;
   }
@@ -393,8 +446,9 @@ const CidadaoPage = (function () {
           ${cats.map(c => `<button class="seg-btn${_apCat === c ? ' active' : ''}" data-apcat="${c}">${cat(c).icon} ${esc(catLabel(c))}</button>`).join('')}
         </div>
         <label class="chip${_apLittle ? ' active' : ''}" id="cd-ap-little" role="switch" aria-checked="${_apLittle}">💎 ${_t('Little-known', 'Pouco conhecidos')}</label>
+        ${viewSeg()}
       </div>
-      <div class="cd-grid cd-grid--ap">${list.map(apoioCard).join('') || `<div class="empty-state"><span class="es-ico">🔍</span><div class="es-title">${_t('Nothing found', 'Nada encontrado')}</div></div>`}</div>
+      ${list.length ? apoioList(list) : `<div class="empty-state"><span class="es-ico">🔍</span><div class="es-title">${_t('Nothing found', 'Nada encontrado')}</div></div>`}
       <p class="cd-disclaimer">${_t('Amounts are indicative and change with the State Budget — the official link is always the reference.', 'Os valores são indicativos e mudam com o Orçamento do Estado — o link oficial é sempre a referência.')}</p>`;
   }
 
@@ -498,10 +552,33 @@ const CidadaoPage = (function () {
   }
 
   /* ═══════════════════ SHELL + wiring ═══════════════════ */
+  /* Contadores nas tabs: urgentes · a decorrer · nº de apoios · novidades 48h */
+  function tabCount(id) {
+    if (id === 'agora') {
+      const n = deadlines().filter(d => !d.info && isMine(d.rule.who) && (d.overdue || (d.status === 'open' && daysTo(d.end) <= 21))).length;
+      return n || '';
+    }
+    if (id === 'prazos') return deadlines().filter(d => !d.info && d.status === 'open' && isMine(d.rule.who)).length || '';
+    if (id === 'apoios') return ((_apoios && _apoios.items) || []).length || '';
+    if (id === 'novidades') {
+      const cut = Date.now() - 48 * 3600000;
+      return (((_nov && _nov.items) || []).filter(n => n.ts >= cut).length) || '';
+    }
+    return '';
+  }
+  function updateTabs() {
+    document.querySelectorAll('#cd-tabs .seg-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === _tab);
+      const n = tabCount(b.dataset.tab);
+      const c = b.querySelector('.cd-tab-c');
+      if (c) { c.textContent = n; c.hidden = n === ''; }
+    });
+  }
+
   function renderTab() {
     const el = document.getElementById('cd-body');
     if (!el) return;
-    document.querySelectorAll('#cd-tabs .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === _tab));
+    updateTabs();
     if (_tab === 'prazos') renderPrazos(el);
     else if (_tab === 'apoios') renderApoios(el);
     else if (_tab === 'novidades') renderNovidades(el);
@@ -523,13 +600,24 @@ const CidadaoPage = (function () {
             <button class="btn btn-sm" id="cd-profile-btn" aria-haspopup="dialog">${profileSummary()}</button>
           </div>
         </header>
-        <div class="seg" id="cd-tabs" role="tablist">
-          ${TABS.map(([id, ic, en, pt]) => `<button class="seg-btn${id === _tab ? ' active' : ''}" role="tab" data-tab="${id}">${ic} ${_t(en, pt)}</button>`).join('')}
+        <div class="cd-nav">
+          <div class="seg" id="cd-tabs" role="tablist">
+            ${TABS.map(([id, ic, en, pt]) => `<button class="seg-btn${id === _tab ? ' active' : ''}" role="tab" data-tab="${id}">${ic} ${_t(en, pt)}<span class="cd-tab-c" hidden></span></button>`).join('')}
+          </div>
         </div>
         <div id="cd-profile" class="cd-profile" hidden></div>
         <div id="cd-body" class="cd-body"><div class="cd-loading">${_t('Loading…', 'A carregar…')}</div></div>
       </div>`;
     wire(view);
+    /* sombra na sub-nav quando fica colada ao header */
+    const nav = view.querySelector('.cd-nav');
+    if (nav && 'IntersectionObserver' in window) {
+      const sentinel = document.createElement('div');
+      nav.parentNode.insertBefore(sentinel, nav);
+      const hdr = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdr-h')) || 56;
+      new IntersectionObserver(([e]) => nav.classList.toggle('stuck', !e.isIntersecting),
+        { rootMargin: `-${hdr + 1}px 0px 0px 0px` }).observe(sentinel);
+    }
   }
 
   function wire(view) {
@@ -567,6 +655,12 @@ const CidadaoPage = (function () {
         const followedOnly = ds.filter(d => _follow.has(d.rule.id));
         downloadICS(followedOnly.length ? followedOnly : ds, 'prazos-cidadao.ics');
         return;
+      }
+      const vw = e.target.closest('[data-cdview]');
+      if (vw) {
+        _view = vw.dataset.cdview;
+        try { localStorage.setItem('cd-view', _view); } catch {}
+        renderTab(); return;
       }
       const pz = e.target.closest('[data-pzcat]');
       if (pz) { _pzCat = pz.dataset.pzcat; renderTab(); return; }

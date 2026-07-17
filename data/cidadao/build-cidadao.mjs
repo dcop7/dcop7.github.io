@@ -39,6 +39,7 @@ const SOURCES = [
   { id: 'habitacao',  name: 'Portal da Habitação',   type: 'gnews', q: 'site:portaldahabitacao.pt OR "Porta 65" OR "apoio à renda"', site: 'https://www.portaldahabitacao.pt' },
   { id: 'dges',       name: 'DGES · Ensino Superior', type: 'gnews', q: 'site:dges.gov.pt OR DGES bolsas OR candidatura "ensino superior"', site: 'https://www.dges.gov.pt' },
   { id: 'radar',      name: 'Radar de candidaturas', type: 'gnews', q: '"candidaturas abertas" OR "candidaturas até" apoio OR programa OR bolsa Portugal', site: '' },
+  { id: 'novos',      name: 'Novos apoios anunciados', type: 'gnews', q: '"novo apoio" OR "novo subsídio" OR "nova prestação" OR "novo programa" OR "novo complemento" Portugal governo', site: '' },
 ];
 
 /* ── Temas (classificação por palavras-chave) ── */
@@ -59,6 +60,9 @@ function classify(...texts) {
 }
 /* Sinal "radar": notícia que anuncia candidaturas/prazos concretos. */
 const RADAR_RE = /candidatur|inscriç|prazo|até \d{1,2} de|abr(e|iu|em)|dispon[ií]ve|entrega|pagamento|novo apoio|passa a/i;
+/* Sinal "novo": apoio/medida acabado de anunciar ou a entrar em vigor —
+   é isto que faz um apoio novo aparecer automaticamente na tab Agora. */
+const NOVO_RE = /\bnovo (apoio|subs[ií]dio|programa|complemento|benef[ií]cio|incentivo|regime|passe)|\bnova (presta[çc][ãa]o|medida|linha|tarifa|dedu[çc][ãa]o)|entra(m)? em vigor|passa(m)? a (pagar|ser|estar|abranger|ter)|v[ãa]o (receber|pagar menos|ter direito)|alargad[oa]|cria[çc][ãa]o d[eo]|aprovad[oa] (o|a|em)/i;
 /* Ruído a excluir do radar geral (desporto, autarquias-espetáculo, etc.). */
 const NOISE_RE = /futebol|liga\b|festival|concerto|meteorologia|horóscopo|cartaz|jogo d[oa]/i;
 
@@ -158,11 +162,14 @@ for (let k = 0; k < SOURCES.length; k++) {
     if (!title || title.length < 12) continue;
     const topics = classify(title, it.desc);
     const isRadar = src.id === 'radar' || (RADAR_RE.test(title) && topics.some(t => t !== 'outros'));
-    if (src.id === 'radar') {
-      /* o radar é uma pesquisa aberta: só entra o que fala mesmo de apoios */
-      if (NOISE_RE.test(title) || !/apoio|candidatur|bolsa|programa|subsídio|prémio|incentivo|vale\b/i.test(title)) continue;
+    if (src.id === 'radar' || src.id === 'novos') {
+      /* pesquisas abertas: só entra o que fala mesmo de apoios/medidas */
+      if (NOISE_RE.test(title) || !/apoio|candidatur|bolsa|programa|subsídio|prestaç|complemento|prémio|incentivo|tarifa|pensã|abono|vale\b/i.test(title)) continue;
     }
-    all.push({ title: title.slice(0, 220), url: it.link, source: src.id, via, ts: it.ts, topics, radar: !!isRadar });
+    const isNovo = src.id === 'novos' || (NOVO_RE.test(title) && topics.some(t => t === 'apoios' || t === 'impostos' || t === 'habitacao' || t === 'trabalho'));
+    const item = { title: title.slice(0, 220), url: it.link, source: src.id, via, ts: it.ts, topics, radar: !!isRadar };
+    if (isNovo) item.novo = true;
+    all.push(item);
     kept++;
   }
   sourcesMeta.push({ id: src.id, name: src.name, site: src.site, ok: true, count: kept });
