@@ -93,11 +93,6 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M7.8 13.2a4.4 4.4 0 0 0 8.4 0z" fill="C2" fill-opacity=".6" stroke="C2" stroke-width="1.2"/>
       <path d="M8.6 9.3h.01M15.4 9.3h.01" stroke="G" stroke-width="2.1"/>`, { sx: 20.9, sy: 4.4, ss: .8 }),
 
-    fitness: duo('fitness', '#10b981', '#34d399', `
-      <circle cx="12" cy="12" r="8.4" fill="G" fill-opacity=".13" stroke="G"/>
-      <circle cx="15.2" cy="7.6" r="1.5" fill="C2" stroke="none"/>
-      <path d="M14.6 10.2 11 12.4l-2.8 4.2M11 12.4l3.4 1.4 1.6 3M14.9 10.4l2.9-1.9" stroke="C2" stroke-width="1.7"/>`, { sx: 20.9, sy: 4.4, ss: .8 }),
-
     photography: duo('photography', '#f2b344', '#fbc75f', `
       <path d="M22 18.6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.7a2 2 0 0 1 2-2h3.4L9.2 4h5.6l1.8 2.7H20a2 2 0 0 1 2 2z" fill="G" fill-opacity=".13" stroke="G"/>
       <circle cx="12" cy="13.4" r="3.9" stroke="C2" stroke-width="1.7"/>

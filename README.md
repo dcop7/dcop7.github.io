@@ -38,7 +38,6 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#games` | **Jogos** | 13 jogos curados: Xadrez (chess.js vendored), Sueca (engine/IA próprios, 4 níveis), Olho Vivo (Dobble/Spot It, plano projetivo, engine próprio), Batalha Naval, Uno (engine/IA próprios), Bomba, Campo Minado, Forca, Wordle, Memória, Neon Shooter, Reaction, Gravity Lab — progresso unificado via `GameProgress` |
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), 17 categorias (incl. piropos e cúmulos) organizadas por grupos, centenas de entradas |
-| `#fitness` | **Fitness** | Planos guiados de alongamento (10/15/20/30 min) — 24 movimentos data-driven (`data/fitness/*.json`) com imagens 3D geradas localmente (`assets/fitness/`), player com barra de duração, lados esquerdo/direito, beeps opcionais nos últimos 3 s (WebAudio) e sinal forte no fim de cada alongamento; Home Workout preparado como categoria futura |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
 | `#photography` | **Fotografia** | Portal por géneros (15 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S23+ / ambos), modo "No Terreno" (assistente de bolso), Aprender (fundamentos, composição, 12 técnicas de edição RapidRAW/darktable/Snapseed, roda de cores) e 7 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
@@ -148,7 +147,7 @@ O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs
 
 **Regra crítica de agendamento:** o cron do GitHub atrasa minutos a *horas*. Os workflows **nunca** testam a hora do dia como gate (um `== 07h` falhou silenciosamente durante semanas). Em vez disso, o gate é o próprio snapshot ("o `today.json` já é de hoje, Europa/Lisboa?") e vários crons espalhados pelo dia funcionam como retries — o primeiro que dispara faz o trabalho, os restantes no-op. Commits de refresh usam `[skip ci]`.
 
-Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge base de temas), `data/worlddata/` (pipeline OWID+GeoNames), `data/humor/`, `data/fitness/` (movimentos+planos), `data/galaxy/`, `data/anatomy/`, `quizzes/`, `data/timeline.json`, GeoJSON de Portugal e do mundo. Os scripts em `tools/` (anatomy, explore, f1) fazem a curadoria/geração local.
+Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge base de temas), `data/worlddata/` (pipeline OWID+GeoNames), `data/humor/`, `data/galaxy/`, `data/anatomy/`, `quizzes/`, `data/timeline.json`, GeoJSON de Portugal e do mundo. Os scripts em `tools/` (anatomy, explore, f1) fazem a curadoria/geração local.
 
 ---
 
@@ -220,9 +219,8 @@ Criar `data/explore/<tema>.json` seguindo a estrutura Área→Tema→Subtema→C
 ### Adicionar uma fonte de notícias
 Acrescentar o feed ao `data/news/feeds.opml` com o tópico certo; o workflow trata do resto.
 
-### Adicionar um movimento ao Fitness (estilo canónico das imagens)
-1. Entrada em `data/fitness/movements.json` (`id`, `name{pt,en}`, `bilateral`, `position`, `area`, `steps{pt,en}`) e referenciar nos planos em `plans.json`.
-2. Gerar a imagem `assets/fitness/<id>.jpg` no ComfyUI local (JuggernautXL/SDXL, dpmpp_2m/karras, cfg 5.5, 30 steps; retrato 896×1152 para poses de pé/sentado, paisagem 1152×896 para poses de chão) **mantendo o estilo canónico** abaixo.
+### Estilo canónico de imagens geradas (personagem 3D "em casa")
+Receita para gerar imagens de demonstração/ilustração consistentes (usada na experiência Fitness de jul/2026; reutilizável em futuras secções). ComfyUI local: JuggernautXL/SDXL, dpmpp_2m/karras, cfg 5.5, 30 steps; retrato 896×1152 para poses de pé/sentado, paisagem 1152×896 para poses de chão. ChatGPT: 1024×1536 / 1536×1024.
 
 **Boneco 3D (personagem canónica):** jovem adulto masculino em render 3D estilizado tipo Pixar, cabelo castanho curto, **t-shirt cinzenta escura lisa** (contraste com o fundo claro) e calções pretos lisos, descalço ou ténis discretos sem marca, corpo inteiro visível da cabeça aos pés, expressão calma, proporções realistas suaves, sombreado limpo de animação 3D de alta qualidade.
 
