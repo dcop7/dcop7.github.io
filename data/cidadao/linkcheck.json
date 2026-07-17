@@ -1,0 +1,290 @@
+{
+ "generated": "2026-07-17T15:07:08.989Z",
+ "total": 47,
+ "broken": 0,
+ "unknown": 13,
+ "results": [
+  {
+   "id": "apoios:irs-jovem",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:porta65",
+   "url": "https://www.portaldahabitacao.pt/porta-65-jovem",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:garantia-1casa",
+   "url": "https://www.portaldahabitacao.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:isencao-imt-jovem",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:apoio-renda",
+   "url": "https://www.portaldahabitacao.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:vale-eficiencia",
+   "url": "https://www.fundoambiental.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:tarifa-social-energia",
+   "url": "https://www.dgeg.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:tarifa-social-net",
+   "url": "https://www.anacom-consumidor.pt/",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:abono-familia",
+   "url": "https://www.seg-social.pt/abono-de-familia-para-criancas-e-jovens",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:garantia-infancia",
+   "url": "https://www.seg-social.pt/garantia-para-a-infancia",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:creche-gratis",
+   "url": "https://www.seg-social.pt/creche-feliz",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:licencas-parentais",
+   "url": "https://www.seg-social.pt/parentalidade",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:csi",
+   "url": "https://www.seg-social.pt/complemento-solidario-para-idosos",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:psi",
+   "url": "https://www.seg-social.pt/prestacao-social-para-a-inclusao",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:cuidador-informal",
+   "url": "https://www.seg-social.pt/cuidador-informal",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:cheque-dentista",
+   "url": "https://www.sns24.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:subsidio-desemprego",
+   "url": "https://www.seg-social.pt/subsidio-de-desemprego",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:medidas-emprego",
+   "url": "https://www.iefp.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:programa-regressar",
+   "url": "https://www.programaregressar.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:bolsa-superior",
+   "url": "https://www.dges.gov.pt/pt",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:ase-escolar",
+   "url": "https://eportugal.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:passe-ferroviario-verde",
+   "url": "https://www.cp.pt/passageiros/pt",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:passes-jovens-gratis",
+   "url": "https://eportugal.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:rsi",
+   "url": "https://www.seg-social.pt/rendimento-social-de-insercao",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:protecao-juridica",
+   "url": "https://www.seg-social.pt/protecao-juridica",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:adse-isencoes-taxas",
+   "url": "https://www.seg-social.pt/subsidio-de-doenca",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "calendario:efatura-validar",
+   "url": "https://faturas.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:irs-agregado",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:irs-deducoes-reclamar",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:irs-entrega",
+   "url": "https://irs.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:irs-pagamento",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:imi",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:iuc",
+   "url": "https://www.portaldasfinancas.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:inspecao",
+   "url": "https://www.imt-ip.pt/sites/IMTT/Portugues/Veiculos/InspecaoVeiculos/Paginas/InspeccaodeVeiculos.aspx",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:cc-renovar",
+   "url": "https://www.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:carta-revalidar",
+   "url": "https://www.imt-ip.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:ss-prova-escolar",
+   "url": "https://app.seg-social.pt/sso/login",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:matriculas-escolares",
+   "url": "https://portaldasmatriculas.edu.gov.pt/",
+   "status": 405,
+   "ok": true
+  },
+  {
+   "id": "calendario:mega-manuais",
+   "url": "https://manuaisescolares.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:superior-1fase",
+   "url": "https://www.dges.gov.pt/online/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:bolsas-dges",
+   "url": "https://www.dges.gov.pt/pt",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:passe-sub23",
+   "url": "https://eportugal.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:gripe-vacina",
+   "url": "https://www.sns24.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:ti-declaracao-trimestral",
+   "url": "https://app.seg-social.pt/sso/login",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:ti-contribuicoes",
+   "url": "https://app.seg-social.pt/sso/login",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:subsidio-desemprego-prazo",
+   "url": "https://www.seg-social.pt/subsidio-de-desemprego",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "calendario:porta65-janelas",
+   "url": "https://www.portaldahabitacao.pt/porta-65-jovem",
+   "status": 200,
+   "ok": true
+  }
+ ]
+}

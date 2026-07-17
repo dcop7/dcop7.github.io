@@ -40,6 +40,7 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="discover">${TN('nav.grp.discover')}</div>
           <a class="sb-nav-item" data-route="explorer"    href="#explorer">${navIcon('explorer')}<span>${TN('nav.explorer')}</span></a>
           <a class="sb-nav-item" data-route="noticias"    href="#noticias">${navIcon('noticias')}<span>${TN('nav.noticias')}</span></a>
+          <a class="sb-nav-item" data-route="cidadao"     href="#cidadao">${navIcon('cidadao')}<span>${TN('nav.cidadao')}</span></a>
           <a class="sb-nav-item" data-route="eventos"     href="#eventos">${navIcon('eventos')}<span>${TN('nav.eventos')}</span></a>
           <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${navIcon('ocorrencias')}<span>${TN('nav.ocorrencias')}</span></a>
           <a class="sb-nav-item" data-route="f1"          href="#f1">${navIcon('f1')}<span>${TN('nav.f1')}</span></a>
@@ -165,6 +166,9 @@ const Nav = (function () {
     } else if (page === 'noticias') {
       document.getElementById('view-noticias')?.classList.add('active');
       typeof NoticiasPage !== 'undefined' && NoticiasPage.show(sub || null);
+    } else if (page === 'cidadao') {
+      document.getElementById('view-cidadao')?.classList.add('active');
+      typeof CidadaoPage !== 'undefined' && CidadaoPage.show(sub || null);
     } else if (page === 'f1') {
       document.getElementById('view-f1')?.classList.add('active');
       typeof F1Page !== 'undefined' && F1Page.show(sub || null);
@@ -218,7 +222,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','f1','oss','discovery','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r}`);

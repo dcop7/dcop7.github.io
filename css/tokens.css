@@ -105,6 +105,7 @@ body.density-list    { --den: .58; }
 #view-explorer    { --pg-accent: #38bdf8; --pg-accent-rgb: 56,189,248; }
 #view-noticias    { --pg-accent: #c084fc; --pg-accent-rgb: 192,132,252; }
 #view-eventos     { --pg-accent: #2dd4bf; --pg-accent-rgb: 45,212,191; }
+#view-cidadao     { --pg-accent: #10b981; --pg-accent-rgb: 16,185,129; }
 #view-ocorrencias { --pg-accent: #f59e0b; --pg-accent-rgb: 245,158,11; }
 #view-f1          { --pg-accent: #ef4444; --pg-accent-rgb: 239,68,68; }
 #view-oss         { --pg-accent: #4ade80; --pg-accent-rgb: 74,222,128; }

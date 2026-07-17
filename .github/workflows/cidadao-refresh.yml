@@ -1,0 +1,45 @@
+name: Refresh cidadao
+
+# Secção "Cidadão": agrega novidades oficiais do Estado (RSS do Diário da
+# República + Google News restringido a domínios oficiais) e verifica os
+# links curados de apoios/calendário. Os portais oficiais raramente têm
+# CORS/feeds utilizáveis no browser; este workflow corre server-side e
+# publica JSON estático para o GitHub Pages. Sem base de dados, sem backend.
+# NOTA: crons do GitHub atrasam horas — nunca depender da hora exata.
+
+on:
+  schedule:
+    - cron: '23 */6 * * *'     # ~4x/dia (UTC; minuto ímpar para fugir aos picos)
+  workflow_dispatch:            # corrida manual a partir da tab Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cidadao-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Agregar novidades oficiais → JSON estático
+        run: node data/cidadao/build-cidadao.mjs
+
+      - name: Commit se houver alterações
+        run: |
+          if [ -n "$(git status --porcelain data/cidadao/*.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/cidadao/*.json
+            git commit -m "chore(cidadao): refresh novidades oficiais [skip ci]"
+            git push
+          else
+            echo "Sem alterações — nada para commitar."
+          fi

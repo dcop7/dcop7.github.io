@@ -40,6 +40,13 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <rect x="5.8" y="7.4" width="5" height="3.6" rx=".7" fill="C2" fill-opacity=".55" stroke="none"/>
       <path d="M13.4 8h1.6M13.4 10.4h1.6M5.9 13.8h9.1M5.9 16.6h9.1" stroke="C2" opacity=".85"/>`),
 
+    /* cartão de cidadão: retrato + linhas de dados, tom frio (grupo Descobrir) */
+    cidadao: duo('cidadao', '#38bdf8', '#67e8f9', `
+      <rect x="2.8" y="5" width="18.4" height="14" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
+      <circle cx="8.2" cy="10.4" r="2" stroke="G"/>
+      <path d="M5.4 15.9c.5-1.7 1.5-2.6 2.8-2.6s2.3.9 2.8 2.6" stroke="G"/>
+      <path d="M13.6 9.4h4.6M13.6 12.2h4.6M13.6 15h3" stroke="C2" opacity=".85"/>`, { sx: 20.4, sy: 3.6, ss: .8 }),
+
     eventos: duo('eventos', '#22d3ee', '#67e8f9', `
       <rect x="3.4" y="4.8" width="17.2" height="16.2" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
       <path d="M8 2.8v3.4M16 2.8v3.4M3.6 9.6h16.8" stroke="G"/>
