@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-17T20:25:23.711Z",
- "total": 71,
+ "generated": "2026-07-17T20:45:32.046Z",
+ "total": 74,
  "broken": 0,
- "unknown": 26,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -281,6 +281,12 @@
    "ok": null
   },
   {
+   "id": "apoios:bupi",
+   "url": "https://bupi.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
    "id": "apoios:servicos-minimos-bancarios",
    "url": "https://clientebancario.bportugal.pt/",
    "status": 403,
@@ -421,6 +427,18 @@
   {
    "id": "calendario:subsidio-desemprego-prazo",
    "url": "https://www.seg-social.pt/subsidio-de-desemprego",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "calendario:limpeza-terrenos",
+   "url": "https://www.icnf.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:recenseamento-militar",
+   "url": "https://www.defesa.gov.pt/",
    "status": 0,
    "ok": null
   },

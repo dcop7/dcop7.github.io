@@ -225,6 +225,139 @@
           "links": ["credito-consumo", "credito-habitacao", "taxa-esforco"]
         }
       ]
+    },
+    {
+      "id": "patrimonio",
+      "icon": "🏘️",
+      "title": "Casa, carro e património",
+      "desc": "Mais-valias, comprar/vender casa e carro, terrenos, heranças e arrendamento",
+      "topics": [
+        {
+          "id": "maisvalias-imoveis",
+          "icon": "📈",
+          "term": "Mais-valias de imóveis",
+          "full": "O imposto de vender casa com lucro",
+          "what": "Se vendes um imóvel por mais do que te custou (contando obras documentadas, despesas de compra/venda e correção monetária), a diferença é uma mais-valia. Nos residentes, só 50% desse ganho entra no IRS, somando aos restantes rendimentos.",
+          "tip": "As isenções valem milhares de euros: (1) reinvestir o valor da venda noutra habitação própria e permanente (até 36 meses depois ou 24 antes) isenta a parte reinvestida; (2) com 65+ anos ou reformado, reinvestir em PPR/renda vitalícia nos 6 meses seguintes também isenta. Casa herdada: o 'preço de compra' é o valor patrimonial à data da herança — por isso vender pouco depois costuma gerar mais-valia pequena. Declara sempre no anexo G, mesmo com isenção.",
+          "links": ["irs", "comprar-casa", "herancas", "impostos-propriedade"]
+        },
+        {
+          "id": "maisvalias-investimentos",
+          "icon": "📊",
+          "term": "Mais-valias de ações e cripto",
+          "full": "O imposto dos investimentos",
+          "what": "Ganhos com ações, ETF e fundos pagam por regra 28% (taxa autónoma), com opção de englobamento se a tua taxa de IRS for mais baixa. As menos-valias do ano compensam os ganhos — vender a perder também conta.",
+          "tip": "Cripto: ganhos de moedas detidas 365 dias ou mais estão isentos; abaixo disso, 28%. Ações detidas menos de 1 ano por quem tem rendimentos altos são obrigatoriamente englobadas. Guarda o histórico de compras (datas e valores) — és tu que provas o custo de aquisição. Dividendos e juros também pagam 28%, normalmente retidos na fonte.",
+          "links": ["irs", "juros-compostos", "poupanca-estado", "maisvalias-imoveis"]
+        },
+        {
+          "id": "comprar-casa",
+          "icon": "🔑",
+          "term": "Comprar casa — passos e custos",
+          "full": "Do CPCV à escritura",
+          "what": "O caminho típico: proposta → contrato-promessa (CPCV) com sinal → aprovação do crédito e avaliação do banco → pagamento do IMT e Imposto do Selo (0,8%) → escritura com registos. Se o vendedor desistir depois do CPCV, deve o sinal em dobro; se desistires tu, perdes o sinal.",
+          "tip": "Orçamenta mais 6–8% além do preço: IMT (a maior fatia), selo de 0,8% sobre a compra + 0,6% sobre o crédito, registos/escritura (~1 000 €) e avaliação (~250–300 €). Jovens até 35 na 1.ª casa: isenção de IMT/selo e garantia pública do Estado — vê a tab Apoios. Antes de assinar o CPCV, pede a certidão predial e verifica ónus e penhoras.",
+          "links": ["credito-habitacao", "maisvalias-imoveis", "impostos-propriedade", "tan-taeg"]
+        },
+        {
+          "id": "vender-casa",
+          "icon": "🏷️",
+          "term": "Vender casa",
+          "full": "Obrigações de quem vende",
+          "what": "Antes sequer de anunciar precisas do Certificado Energético (vender ou publicitar sem ele dá coima). Para a escritura: caderneta predial, certidão permanente, licença de utilização e, se houver crédito, o distrate da hipoteca é tratado no próprio ato com o banco.",
+          "tip": "A comissão de imobiliária típica é 5% + IVA e só é devida se a venda se concretizar — o contrato de mediação define o regime (exclusividade ou não). No IRS do ano seguinte declara a venda no anexo G e, se fores reinvestir noutra casa, declara essa intenção para ativar a isenção.",
+          "links": ["maisvalias-imoveis", "comprar-casa"]
+        },
+        {
+          "id": "comprar-vender-carro",
+          "icon": "🚗",
+          "term": "Comprar e vender carro",
+          "full": "Registo, IUC e armadilhas",
+          "what": "Na venda entre particulares o essencial é o registo de propriedade: o comprador tem 60 dias para registar, mas o vendedor tem todo o interesse em entregar ele próprio o pedido (ou comunicar a venda online) — enquanto o carro estiver registado em teu nome, multas, portagens e IUC caem-te em cima.",
+          "tip": "Comprador: antes de pagar, pede a certidão do registo automóvel online (custa pouco) e confirma que não há penhoras, reservas de propriedade ou ónus; confirma também o IUC pago e as inspeções em dia. Carro importado paga ISV na legalização. Depois da compra, o IUC passa a ser teu no mês da matrícula — o prazo aparece no calendário desta secção quando pões o mês no perfil.",
+          "links": ["impostos-propriedade"]
+        },
+        {
+          "id": "terrenos-limpeza",
+          "icon": "🌿",
+          "term": "Terrenos e limpeza obrigatória",
+          "full": "Gestão de combustível e BUPi",
+          "what": "Quem tem terrenos rústicos tem de limpar a vegetação todos os anos nas faixas obrigatórias — 50 m à volta de edifícios, 100 m junto a aglomerados, parques e indústria. O prazo de referência tem sido até 30 de abril; falhar dá coimas pesadas e a câmara pode limpar por ti e cobrar-te.",
+          "tip": "Muita gente herda terrenos que nem sabe onde ficam: o BUPi permite identificar e registar gratuitamente prédios rústicos (processo que normalmente custaria dinheiro na Conservatória). Terrenos sem dono conhecido arriscam passar para a gestão do Estado — registar protege o património da família. O prazo anual de limpeza está no calendário desta secção.",
+          "links": ["herancas", "impostos-propriedade"]
+        },
+        {
+          "id": "herancas",
+          "icon": "📜",
+          "term": "Heranças e doações",
+          "full": "O que fazer quando alguém morre",
+          "what": "O cabeça de casal (normalmente o cônjuge ou o filho mais velho) tem de participar o óbito e os bens às Finanças até ao fim do 3.º mês seguinte. Cônjuge, filhos, netos e pais não pagam imposto sobre a herança; outros herdeiros (irmãos, sobrinhos…) pagam Imposto do Selo de 10%.",
+          "tip": "Uma herança pode ser recusada (repúdio) ou aceite 'a benefício de inventário' — importante quando há suspeita de dívidas maiores que os bens, porque protege o teu património pessoal. Não te esqueças dos direitos associados: pensão de sobrevivência, subsídio por morte e reembolso do funeral estão na tab Apoios, com prazos que perdem retroativos.",
+          "links": ["maisvalias-imoveis", "terrenos-limpeza", "irs"]
+        },
+        {
+          "id": "arrendar-casa",
+          "icon": "🏘️",
+          "term": "Arrendar casa (senhorio e inquilino)",
+          "full": "Contrato, recibos e deduções",
+          "what": "O contrato deve ser escrito e registado nas Finanças pelo senhorio, que passa recibos de renda eletrónicos. A caução típica é 1–2 rendas. As rendas do senhorio pagam uma taxa especial de IRS (25% de base, mais baixa em contratos longos) ou podem ser englobadas.",
+          "tip": "Inquilino: exige sempre os recibos eletrónicos — são a tua prova para a dedução das rendas no IRS e a porta de entrada do apoio extraordinário à renda (o contrato tem de estar registado). Senhorio: obras e encargos documentados deduzem ao rendimento das rendas; contratos de longa duração pagam menos imposto.",
+          "links": ["deducoes", "taxa-esforco", "irs"]
+        }
+      ]
+    },
+    {
+      "id": "consumidor",
+      "icon": "🛡️",
+      "title": "Direitos no consumo",
+      "desc": "Garantias, devoluções, fidelizações e como reclamar com resultados",
+      "topics": [
+        {
+          "id": "garantia-3anos",
+          "icon": "🔧",
+          "term": "Garantia de 3 anos",
+          "full": "O teu direito quando algo avaria",
+          "what": "Bens novos comprados a empresas têm 3 anos de garantia legal (desde 2022); usados têm no mínimo 18 meses quando acordado. Nos primeiros 2 anos presume-se que o defeito é de origem — é o vendedor que tem de provar o contrário, não tu.",
+          "tip": "A garantia exige-se ao VENDEDOR (a loja), não à marca — a loja não pode 'empurrar-te' para o fabricante. Ordem dos teus direitos: reparação ou substituição à escolha, depois redução do preço ou devolução do dinheiro. Reparação em garantia dá mais 6 meses de garantia à parte reparada. Guarda faturas — sem fatura não há garantia.",
+          "links": ["arrependimento-14dias", "livro-reclamacoes", "resolucao-litigios"]
+        },
+        {
+          "id": "arrependimento-14dias",
+          "icon": "↩️",
+          "term": "14 dias para devolver (compras online)",
+          "full": "Direito de livre resolução",
+          "what": "Em compras online, por telefone ou fora do estabelecimento tens 14 dias após receber o produto para desistir sem dar qualquer justificação e receber o dinheiro todo de volta (incluindo o envio normal).",
+          "tip": "Exceções que apanham muita gente: produtos personalizados, selados abertos por razões de higiene (auscultadores in-ear, cosméticos), conteúdos digitais já descarregados e serviços já prestados. Nas LOJAS FÍSICAS este direito NÃO existe por lei — as trocas em loja são política comercial de cada marca, por isso pergunta antes de comprar prendas.",
+          "links": ["garantia-3anos", "livro-reclamacoes"]
+        },
+        {
+          "id": "livro-reclamacoes",
+          "icon": "📕",
+          "term": "Livro de Reclamações",
+          "full": "Físico e eletrónico — e funciona",
+          "what": "Todos os estabelecimentos são obrigados a ter o livro físico e a disponibilizá-lo de imediato quando pedido (recusar dá coima). Existe também o Livro de Reclamações Eletrónico (livroreclamacoes.pt), que envia a queixa diretamente ao regulador do setor.",
+          "tip": "A empresa tem 15 dias úteis para te responder. Reclamar é grátis e fica registado no regulador (ASAE, ANACOM, ERSE, Banco de Portugal…) — mesmo que a empresa não resolva, os reguladores atuam sobre padrões de queixas. Escreve factos e datas, pede duplicado e guarda-o.",
+          "links": ["garantia-3anos", "resolucao-litigios", "fidelizacao-telecom"]
+        },
+        {
+          "id": "fidelizacao-telecom",
+          "icon": "📱",
+          "term": "Fidelizações e portabilidade",
+          "full": "Telecom sem sustos",
+          "what": "Os períodos de fidelização têm um máximo legal de 24 meses, e as operadoras têm de oferecer também opções de 6/12 meses ou sem fidelização (com outro preço). Sair antes do fim não paga 'o resto todo do contrato': o valor exigível é limitado por lei e decresce com o tempo já cumprido.",
+          "tip": "Mudar de operadora mantendo o número (portabilidade) é um direito e trata tudo a operadora nova, em poucos dias úteis. No fim da fidelização, o preço costuma subir — é o momento de ouro para renegociar ou mudar; pede sempre o comprovativo da data de fim de fidelização (a operadora é obrigada a dá-lo). Litígios de telecom podem ir à arbitragem, que é vinculativa para a empresa.",
+          "links": ["livro-reclamacoes", "resolucao-litigios"]
+        },
+        {
+          "id": "resolucao-litigios",
+          "icon": "⚖️",
+          "term": "Arbitragem de consumo (sem tribunal)",
+          "full": "Resolver conflitos grátis ou quase",
+          "what": "Os centros de arbitragem de consumo resolvem conflitos entre consumidores e empresas de forma gratuita ou muito barata, sem advogado obrigatório. Em serviços essenciais (água, luz, gás, telecom) e em litígios até 5 000 €, se o consumidor optar pela arbitragem, a empresa é OBRIGADA a aceitar a decisão.",
+          "tip": "Caminho típico: reclama primeiro à empresa (guarda prova) → livro de reclamações → centro de arbitragem da tua zona ou do setor. A DECO e o Portal do Consumidor ajudam a encaminhar. Para processos maiores, lembra-te do apoio judiciário (proteção jurídica) na tab Apoios — o Estado paga advogado a quem não pode.",
+          "links": ["livro-reclamacoes", "garantia-3anos", "fidelizacao-telecom"]
+        }
+      ]
     }
   ]
 }

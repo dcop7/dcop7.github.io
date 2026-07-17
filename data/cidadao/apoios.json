@@ -648,6 +648,20 @@
       "url": "https://www.seg-social.pt/cartao-europeu-de-seguro-de-doenca"
     },
     {
+      "id": "bupi",
+      "icon": "🗺️",
+      "cat": "outros",
+      "name": "BUPi — registo gratuito de terrenos",
+      "sum": "Registar os teus terrenos rústicos (incluindo os herdados) é gratuito no BUPi — quem não regista arrisca-se a que fiquem 'sem dono conhecido' e passem para a gestão do Estado.",
+      "who": { "tags": ["proprietario"], "txt": "Proprietários e herdeiros de prédios rústicos nos concelhos aderentes (a maioria do interior e norte)" },
+      "value": "Identificação georreferenciada e registo na Conservatória sem custos (processo normalmente pago)",
+      "how": "Marcar atendimento no balcão BUPi do teu município (ou fazer online) com a caderneta predial; um técnico ajuda a desenhar os limites no mapa.",
+      "state": "continuo",
+      "window": "",
+      "littleKnown": true,
+      "url": "https://bupi.gov.pt/"
+    },
+    {
       "id": "servicos-minimos-bancarios",
       "icon": "🏦",
       "cat": "outros",

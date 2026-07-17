@@ -303,6 +303,32 @@
       "source": "Segurança Social · IEFP"
     },
     {
+      "id": "limpeza-terrenos",
+      "cat": "habitacao",
+      "icon": "🌿",
+      "title": "Limpeza de terrenos (gestão de combustível)",
+      "desc": "Quem tem terrenos rústicos tem de limpar a vegetação nas faixas obrigatórias: 50 metros à volta de casas e edifícios e 100 metros nos aglomerados, parques e zonas industriais. O prazo de referência tem sido até 30 de abril (varia por ano/concelho) — depois disso há coimas elevadas e a câmara pode limpar e cobrar-te os custos.",
+      "action": "Limpar (ou contratar limpeza) das faixas de gestão de combustível",
+      "who": ["proprietario"],
+      "when": { "type": "range", "start": [1, 1], "end": [4, 30] },
+      "approx": true,
+      "url": "https://www.icnf.pt/",
+      "source": "ICNF · Câmaras Municipais"
+    },
+    {
+      "id": "recenseamento-militar",
+      "cat": "documentos",
+      "icon": "🎖️",
+      "title": "Dia da Defesa Nacional (jovens de 18 anos)",
+      "desc": "No ano em que fazem 18 anos, todos os cidadãos são convocados para o Dia da Defesa Nacional — a presença é obrigatória (e precisa dela para pedir passaporte/carta em certas idades sem certidão de situação militar regularizada). A convocatória chega por edital/carta e a data pode ser alterada online.",
+      "action": "Confirmar a convocatória e comparecer (ou remarcar) no portal da Defesa",
+      "who": ["familia", "jovem"],
+      "when": { "type": "info" },
+      "approx": false,
+      "url": "https://www.defesa.gov.pt/",
+      "source": "Ministério da Defesa Nacional"
+    },
+    {
       "id": "porta65-janelas",
       "cat": "habitacao",
       "icon": "🔑",
