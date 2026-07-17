@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-17T19:36:43.547Z",
- "total": 47,
+ "generated": "2026-07-17T20:10:25.184Z",
+ "total": 66,
  "broken": 0,
- "unknown": 13,
+ "unknown": 26,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -35,10 +35,28 @@
    "ok": true
   },
   {
+   "id": "apoios:elar",
+   "url": "https://www.fundoambiental.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
    "id": "apoios:vale-eficiencia",
    "url": "https://www.fundoambiental.pt/",
    "status": 200,
    "ok": true
+  },
+  {
+   "id": "apoios:edificios-sustentaveis",
+   "url": "https://www.fundoambiental.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:tarifa-social-agua",
+   "url": "https://www.ersar.pt/",
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:tarifa-social-energia",
@@ -161,6 +179,84 @@
    "ok": null
   },
   {
+   "id": "apoios:pensao-velhice",
+   "url": "https://www.seg-social.pt/pensao-de-velhice",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:reforma-antecipada",
+   "url": "https://www.seg-social.pt/pensao-de-velhice",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:pensao-social-velhice",
+   "url": "https://www.seg-social.pt/pensao-social-de-velhice",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:pensao-invalidez",
+   "url": "https://www.seg-social.pt/pensao-de-invalidez",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:pensao-sobrevivencia",
+   "url": "https://www.seg-social.pt/pensao-de-sobrevivencia",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:subsidio-morte",
+   "url": "https://www.seg-social.pt/subsidio-por-morte",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:reembolso-funeral",
+   "url": "https://www.seg-social.pt/subsidio-de-funeral",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:complemento-dependencia",
+   "url": "https://www.seg-social.pt/complemento-por-dependencia",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:abono-prenatal",
+   "url": "https://www.seg-social.pt/abono-de-familia-pre-natal",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:assistencia-filho",
+   "url": "https://www.seg-social.pt/subsidio-para-assistencia-a-filho",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:trabalhador-estudante",
+   "url": "https://eportugal.gov.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "apoios:cartao-europeu-saude",
+   "url": "https://www.seg-social.pt/cartao-europeu-de-seguro-de-doenca",
+   "status": 0,
+   "ok": null
+  },
+  {
+   "id": "apoios:servicos-minimos-bancarios",
+   "url": "https://clientebancario.bportugal.pt/",
+   "status": 403,
+   "ok": true
+  },
+  {
    "id": "calendario:efatura-validar",
    "url": "https://faturas.portaldasfinancas.gov.pt/",
    "status": 200,
@@ -227,10 +323,28 @@
    "ok": true
   },
   {
-   "id": "calendario:matriculas-escolares",
+   "id": "calendario:matricula-pre-1ciclo",
    "url": "https://portaldasmatriculas.edu.gov.pt/",
    "status": 405,
    "ok": true
+  },
+  {
+   "id": "calendario:matricula-transicoes",
+   "url": "https://portaldasmatriculas.edu.gov.pt/",
+   "status": 405,
+   "ok": true
+  },
+  {
+   "id": "calendario:exames-inscricao",
+   "url": "https://jnepiepe.dge.mec.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "calendario:creche-inscricao",
+   "url": "https://www.seg-social.pt/creche-feliz",
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:mega-manuais",

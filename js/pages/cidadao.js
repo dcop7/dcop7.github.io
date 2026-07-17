@@ -29,6 +29,7 @@ const CidadaoPage = (function () {
     educacao:  { icon: '🎓', pt: 'Educação',   en: 'Education',  color: '#06b6d4' },
     saude:     { icon: '🏥', pt: 'Saúde',      en: 'Health',     color: '#22c55e' },
     trabalho:  { icon: '💼', pt: 'Trabalho',   en: 'Work',       color: '#a16207' },
+    pensoes:   { icon: '👴', pt: 'Pensões',    en: 'Pensions',   color: '#f472b6' },
     energia:   { icon: '⚡', pt: 'Energia',    en: 'Energy',     color: '#eab308' },
     mobilidade:{ icon: '🚆', pt: 'Mobilidade', en: 'Mobility',   color: '#10b981' },
     outros:    { icon: '✨', pt: 'Outros',     en: 'Other',      color: '#64748b' },
