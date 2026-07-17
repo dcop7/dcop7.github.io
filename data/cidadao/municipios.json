@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "updated": "2026-07-17",
+  "note": "Vertente municipal da secção Cidadão. Cada concelho detalhado tem: taxas (IMI, IMI familiar, participação IRS, derrama) com fonte, e apoios municipais com link oficial. Para adicionar um concelho basta acrescentar um bloco a 'concelhos' — a UI adapta-se. 'verificado' = data em que os valores foram confirmados nas fontes municipais.",
+  "referencias": {
+    "irsMunicipios": { "nome": "Taxas de participação no IRS por município (AT)", "url": "https://www.portaldasfinancas.gov.pt/pt/consultarTaxasIRSMunicipiosForm.action" },
+    "portalAutarquico": { "nome": "Portal Autárquico (DGAL)", "url": "https://portalautarquico.dgal.gov.pt/" }
+  },
+  "concelhos": [
+    {
+      "id": "leiria",
+      "nome": "Leiria",
+      "distrito": "Leiria",
+      "verificado": "2026-07-17",
+      "site": "https://www.cm-leiria.pt/",
+      "taxas": [
+        {
+          "id": "imi",
+          "icon": "🏠",
+          "nome": "IMI 2026",
+          "valor": "0,30% — taxa mínima",
+          "detalhe": "Leiria mantém a taxa de IMI no mínimo legal (0,30%) desde 2018 — está no grupo de municípios que menos cobra. Paga-se em maio (e agosto/novembro consoante o valor).",
+          "fonte": "https://www.cm-leiria.pt/municipio/comunicacao/noticias/noticia/municipio-de-leiria-mantem-taxas-de-derrama-imi-e-irs-para-2026"
+        },
+        {
+          "id": "imi-familiar",
+          "icon": "👨‍👩‍👧",
+          "nome": "IMI familiar",
+          "valor": "−30 € · −70 € · −140 €",
+          "detalhe": "Dedução fixa no IMI da casa de morada de família com 1, 2 ou 3+ dependentes. É aplicada automaticamente pela AT — confirma apenas que a morada fiscal está certa.",
+          "fonte": "https://www.cm-leiria.pt/municipio/comunicacao/noticias/noticia/municipio-de-leiria-mantem-taxas-de-derrama-imi-e-irs-para-2026"
+        },
+        {
+          "id": "irs",
+          "icon": "💶",
+          "nome": "Participação no IRS",
+          "valor": "5% — sem devolução",
+          "detalhe": "O município fica com a participação máxima no IRS: os residentes em Leiria não têm desconto municipal de IRS em 2026 (ao contrário de ~200 concelhos que devolvem parte).",
+          "fonte": "https://www.portaldasfinancas.gov.pt/pt/consultarTaxasIRSMunicipiosForm.action"
+        },
+        {
+          "id": "derrama",
+          "icon": "🏢",
+          "nome": "Derrama (empresas)",
+          "valor": "Mantida em 2026",
+          "detalhe": "Relevante para empresas com sede no concelho (incide sobre o lucro tributável); os valores e isenções para pequenas empresas constam da deliberação municipal.",
+          "fonte": "https://www.cm-leiria.pt/municipio/comunicacao/noticias/noticia/municipio-de-leiria-mantem-taxas-de-derrama-imi-e-irs-para-2026"
+        }
+      ],
+      "apoios": [
+        {
+          "id": "bolsas-leiria",
+          "icon": "🎓",
+          "nome": "Bolsas de estudo do ensino superior",
+          "sum": "100 bolsas de 750 € por ano letivo para estudantes do ensino superior do concelho — acumulável com a bolsa da DGES.",
+          "quem": "Residentes no concelho de Leiria há 5+ anos, com aproveitamento escolar",
+          "janela": "Candidaturas de 1 a 31 de outubro, na plataforma SIGA",
+          "url": "https://www.cm-leiria.pt/areas-de-atividade/educacao/ensino-superior"
+        },
+        {
+          "id": "creche-leiria",
+          "icon": "🍼",
+          "nome": "Apoio à frequência de creche",
+          "sum": "Comparticipação municipal para famílias com crianças dos 3 aos 36 meses que não conseguem vaga em creche apoiada — complementa o Creche Feliz.",
+          "quem": "Famílias nos escalões 1 a 3 do abono de família, com criança em creche licenciada",
+          "janela": "",
+          "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe"
+        },
+        {
+          "id": "cartao-senior-leiria",
+          "icon": "🧓",
+          "nome": "Cartão Leiria Sénior",
+          "sum": "Cartão municipal com descontos e benefícios em serviços, cultura e atividades para maiores de 65.",
+          "quem": "Residentes no concelho com 65+ anos",
+          "janela": "",
+          "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe"
+        },
+        {
+          "id": "apoio-municipe-leiria",
+          "icon": "🤝",
+          "nome": "Programas de Apoio ao Munícipe",
+          "sum": "Conjunto de apoios sociais municipais: emergência social, habitação degradada, incapacidade e outras situações de vulnerabilidade.",
+          "quem": "Munícipes em situação de vulnerabilidade — critérios nos regulamentos municipais",
+          "janela": "",
+          "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe"
+        }
+      ],
+      "notas": "Valores confirmados nas deliberações municipais e notícias oficiais da CM Leiria para 2026."
+    }
+  ]
+}

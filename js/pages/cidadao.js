@@ -74,6 +74,7 @@ const CidadaoPage = (function () {
     ['prazos',    '📅', 'Deadlines', 'Prazos'],
     ['apoios',    '🤝', 'Benefits',  'Apoios'],
     ['aprender',  '📚', 'Learn',     'Aprender'],
+    ['municipio', '🏛️', 'My town',   'Município'],
     ['novidades', '🆕', 'Updates',   'Novidades'],
   ];
 
@@ -85,7 +86,7 @@ const CidadaoPage = (function () {
   ];
 
   /* ── Estado ── */
-  let _cal = null, _apoios = null, _nov = null, _guias = null;
+  let _cal = null, _apoios = null, _nov = null, _guias = null, _muni = null;
   let _tab = 'agora';
   let _gdGuide = 'impostos', _gdQuery = '';
   const _gdOpen = new Set();          /* tópicos expandidos */
@@ -509,6 +510,74 @@ const CidadaoPage = (function () {
       <p class="cd-disclaimer">${_t('Plain-language explanations with indicative values — rates, brackets and thresholds change with the State Budget. For decisions with money involved, confirm at Banco de Portugal, AT or a professional.', 'Explicações em linguagem simples com valores indicativos — taxas, escalões e limiares mudam com o Orçamento do Estado. Para decisões com dinheiro envolvido, confirma no Banco de Portugal, na AT ou com um profissional.')}</p>`;
   }
 
+  /* ═══════════════════ TAB: MUNICÍPIO ═══════════════════ */
+  function _concelhos() { return (_muni && _muni.concelhos) || []; }
+  function _selConcelho() {
+    const list = _concelhos();
+    const saved = _profile.concelho;
+    return list.find(c => c.id === saved) || list.find(c => c.id === 'leiria') || list[0] || null;
+  }
+
+  function renderMunicipio(el) {
+    const list = _concelhos();
+    if (!list.length) {
+      el.innerHTML = `<div class="empty-state"><span class="es-ico">🏛️</span><div class="es-title">${_t('Could not load municipal data', 'Não foi possível carregar os dados municipais')}</div></div>`;
+      return;
+    }
+    const other = _profile.concelho === '__outro';
+    const c = other ? null : _selConcelho();
+    const refs = (_muni && _muni.referencias) || {};
+
+    const picker = `
+      <div class="cd-toolbar">
+        <label class="cd-mx-pick">🏛️ ${_t('My council', 'O meu concelho')}
+          <select id="cd-mx-sel">
+            ${list.map(x => `<option value="${x.id}"${c && c.id === x.id ? ' selected' : ''}>${esc(x.nome)} (${esc(x.distrito)})</option>`).join('')}
+            <option value="__outro"${other ? ' selected' : ''}>${_t('Another council…', 'Outro concelho…')}</option>
+          </select>
+        </label>
+        ${c ? `<a class="btn btn-sm" href="${esc(c.site)}" target="_blank" rel="noopener">🌐 ${_t('Council website', 'Site da Câmara')} ↗</a>` : ''}
+      </div>`;
+
+    if (other || !c) {
+      el.innerHTML = `${picker}
+        <div class="cd-hint cd-hint--soft"><span class="cd-hint-ico">🗺️</span>
+          <div><b>${_t('Your council is not detailed yet.', 'O teu concelho ainda não está detalhado.')}</b>
+          ${_t('For now only the listed councils have curated rates and supports — more can be added easily. Meanwhile, these official tools cover every council:', 'Para já só os concelhos listados têm taxas e apoios curados — é fácil acrescentar mais. Entretanto, estas ferramentas oficiais cobrem todos os concelhos:')}</div>
+        </div>
+        <div class="cd-grid">
+          ${refs.irsMunicipios ? `<a class="card-std cd-mx-ref" href="${esc(refs.irsMunicipios.url)}" target="_blank" rel="noopener">💶 <b>${esc(refs.irsMunicipios.nome)}</b><span>${_t('Check if your council returns part of the IRS', 'Vê se o teu concelho devolve parte do IRS')}</span></a>` : ''}
+          ${refs.portalAutarquico ? `<a class="card-std cd-mx-ref" href="${esc(refs.portalAutarquico.url)}" target="_blank" rel="noopener">🏛️ <b>${esc(refs.portalAutarquico.nome)}</b><span>${_t('Official data on every municipality', 'Dados oficiais de todos os municípios')}</span></a>` : ''}
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = `${picker}
+      <h2 class="cd-h2">🧾 ${_t('Municipal rates', 'Taxas municipais')} <span class="cd-h2-note">${_t('verified', 'confirmadas a')} ${esc(c.verificado)}</span></h2>
+      <div class="cd-grid">
+        ${(c.taxas || []).map(t => `<article class="cd-mx-tax card-std">
+          <div class="cd-mx-tax-h"><span class="cd-mx-ico">${t.icon}</span><span class="cd-mx-nome">${esc(t.nome)}</span></div>
+          <div class="cd-mx-valor">${esc(t.valor)}</div>
+          <p class="cd-mx-det">${esc(t.detalhe)}</p>
+          ${t.fonte ? `<a class="cd-link" href="${esc(t.fonte)}" target="_blank" rel="noopener">${_t('Source', 'Fonte')} ↗</a>` : ''}
+        </article>`).join('')}
+      </div>
+      <h2 class="cd-h2">🤝 ${_t('Municipal supports', 'Apoios municipais')}</h2>
+      <div class="cd-grid">
+        ${(c.apoios || []).map(a => `<article class="cd-ap" style="--cc:var(--pg-accent)">
+          <div class="cd-ap-head"><span class="cd-ap-ico">${a.icon}</span>
+            <div class="cd-ap-t"><span class="cd-ap-name">${esc(a.nome)}</span><span class="cd-ap-cat">🏛️ ${esc(c.nome)}</span></div></div>
+          <p class="cd-ap-sum">${esc(a.sum)}</p>
+          <dl class="cd-ap-facts">
+            <div><dt>${_t('Who', 'Para quem')}</dt><dd>${esc(a.quem || '—')}</dd></div>
+            ${a.janela ? `<div><dt>${_t('When', 'Quando')}</dt><dd>${esc(a.janela)}</dd></div>` : ''}
+          </dl>
+          <div class="cd-ap-foot"><span class="cd-dl-spacer"></span><a class="cd-link" href="${esc(a.url)}" target="_blank" rel="noopener">${_t('Official page', 'Página oficial')} ↗</a></div>
+        </article>`).join('')}
+      </div>
+      <p class="cd-disclaimer">${esc(c.notas || '')} ${_t('Municipal rates and programmes are decided yearly by each council — the official links are the reference.', 'As taxas e programas municipais são deliberados anualmente por cada câmara — os links oficiais são a referência.')}</p>`;
+  }
+
   /* ═══════════════════ TAB: NOVIDADES ═══════════════════ */
   function renderNovidades(el) {
     const items = (_nov && _nov.items) || [];
@@ -618,6 +687,7 @@ const CidadaoPage = (function () {
     if (id === 'prazos') return deadlines().filter(d => !d.info && d.status === 'open' && isMine(d.rule.who)).length || '';
     if (id === 'apoios') return ((_apoios && _apoios.items) || []).length || '';
     if (id === 'aprender') return _allTopics().length || '';
+    if (id === 'municipio') { const c = _profile.concelho === '__outro' ? null : _selConcelho(); return c ? ((c.taxas || []).length + (c.apoios || []).length) || '' : ''; }
     if (id === 'novidades') {
       const cut = Date.now() - 48 * 3600000;
       return (((_nov && _nov.items) || []).filter(n => n.ts >= cut).length) || '';
@@ -640,6 +710,7 @@ const CidadaoPage = (function () {
     if (_tab === 'prazos') renderPrazos(el);
     else if (_tab === 'apoios') renderApoios(el);
     else if (_tab === 'aprender') renderAprender(el);
+    else if (_tab === 'municipio') renderMunicipio(el);
     else if (_tab === 'novidades') renderNovidades(el);
     else renderAgora(el);
     const pb = document.getElementById('cd-profile-btn');
@@ -776,22 +847,29 @@ const CidadaoPage = (function () {
       const map = { 'cd-pf-matmonth': 'matMonth', 'cd-pf-matyear': 'matYear', 'cd-pf-cc': 'ccExpiry', 'cd-pf-carta': 'cartaExpiry' };
       const key = map[e.target.id];
       if (key) { _profile[key] = e.target.value || undefined; saveProfile(_profile); }
+      if (e.target.id === 'cd-mx-sel') {
+        _profile.concelho = e.target.value;
+        saveProfile(_profile);
+        renderTab();
+      }
     });
   }
 
   /* ═══════════════════ dados + show ═══════════════════ */
   let _built = false;
   async function loadData() {
-    const [cal, ap, nov, gd] = await Promise.allSettled([
+    const [cal, ap, nov, gd, mu] = await Promise.allSettled([
       _cal ? Promise.resolve(_cal) : _fetchJSON(BASE + 'calendario.json'),
       _apoios ? Promise.resolve(_apoios) : _fetchJSON(BASE + 'apoios.json'),
       _fetchJSON(BASE + 'novidades.json'),   /* sempre fresco (Action 6/6h) */
       _guias ? Promise.resolve(_guias) : _fetchJSON(BASE + 'guias.json'),
+      _muni ? Promise.resolve(_muni) : _fetchJSON(BASE + 'municipios.json'),
     ]);
     if (cal.status === 'fulfilled') _cal = cal.value;
     if (ap.status === 'fulfilled') _apoios = ap.value;
     if (nov.status === 'fulfilled') _nov = nov.value;
     if (gd.status === 'fulfilled') _guias = gd.value;
+    if (mu.status === 'fulfilled') _muni = mu.value;
   }
 
   async function show(sub) {

@@ -205,6 +205,22 @@ body.light .cd-b-auto   { color: #7e22ce; }
 .cd-tp-link { font-size: var(--fs-xs); padding: .25rem .65rem; }
 @media (max-width: 640px) { .cd-tp-body { padding-left: .9rem; } }
 
+/* ── município ── */
+.cd-mx-pick { display: flex; align-items: center; gap: .6rem; font-size: var(--fs-sm); font-weight: 700; color: var(--text2); }
+.cd-mx-pick select {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xs);
+  color: var(--text); font-size: var(--fs-sm); padding: .45rem .7rem; min-width: 200px;
+}
+.cd-mx-pick select:focus { outline: none; border-color: rgba(var(--pg-accent-rgb), .5); }
+.cd-mx-tax { display: flex; flex-direction: column; gap: .45rem; }
+.cd-mx-tax-h { display: flex; align-items: center; gap: .55rem; }
+.cd-mx-ico { font-size: 1.25rem; }
+.cd-mx-nome { font-weight: 700; }
+.cd-mx-valor { font-family: var(--font-head); font-size: 1.35rem; font-weight: 800; color: var(--pg-accent); letter-spacing: -.01em; }
+.cd-mx-det { font-size: var(--fs-sm); color: var(--text2); line-height: 1.55; flex: 1; }
+.cd-mx-ref { display: flex; flex-direction: column; gap: .3rem; text-decoration: none; color: var(--text); font-size: var(--fs-sm); }
+.cd-mx-ref span { color: var(--muted); font-size: var(--fs-xs); }
+
 /* ── dicas / avisos ── */
 .cd-hint {
   display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;

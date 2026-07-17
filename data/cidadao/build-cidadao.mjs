@@ -230,6 +230,14 @@ try {
     const data = JSON.parse(readFileSync(HERE + '/' + f, 'utf8'));
     for (const it of data.items || []) if (it.url) targets.push({ id: `${f.replace('.json', '')}:${it.id}`, url: it.url });
   }
+  /* municipios.json: sites das câmaras + páginas de apoios/fontes das taxas */
+  try {
+    const mu = JSON.parse(readFileSync(HERE + '/municipios.json', 'utf8'));
+    for (const c of mu.concelhos || []) {
+      if (c.site) targets.push({ id: `municipio:${c.id}`, url: c.site });
+      for (const a of c.apoios || []) if (a.url) targets.push({ id: `municipio:${c.id}:${a.id}`, url: a.url });
+    }
+  } catch {}
   const checks = await pool(targets, 6, async (t) => ({ ...t, ...(await checkLink(t.url)) }));
   const broken = checks.filter(c => c && c.ok === false);
   const unknown = checks.filter(c => c && c.ok === null);

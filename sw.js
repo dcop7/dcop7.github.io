@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v262';
+const CACHE = 'dcop7-v263';
 const STATIC = [
   '/',
   '/index.html',
@@ -65,6 +65,7 @@ const STATIC = [
   '/data/cidadao/apoios.json',
   '/data/cidadao/novidades.json',
   '/data/cidadao/guias.json',
+  '/data/cidadao/municipios.json',
   '/js/f1/f1-data.js',
   '/js/f1/f1-espn.js',
   '/js/f1/f1-track.js',

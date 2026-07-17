@@ -1,6 +1,6 @@
 {
- "generated": "2026-07-17T20:45:32.046Z",
- "total": 74,
+ "generated": "2026-07-17T20:56:07.315Z",
+ "total": 79,
  "broken": 0,
  "unknown": 27,
  "results": [
@@ -445,6 +445,36 @@
   {
    "id": "calendario:porta65-janelas",
    "url": "https://www.portaldahabitacao.pt/porta-65-jovem",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:leiria",
+   "url": "https://www.cm-leiria.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:leiria:bolsas-leiria",
+   "url": "https://www.cm-leiria.pt/areas-de-atividade/educacao/ensino-superior",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:leiria:creche-leiria",
+   "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:leiria:cartao-senior-leiria",
+   "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:leiria:apoio-municipe-leiria",
+   "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
    "status": 200,
    "ok": true
   }
