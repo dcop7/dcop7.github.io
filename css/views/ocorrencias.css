@@ -337,6 +337,8 @@
 .oc-layer-btn-dot.eq   { background: #f97316; box-shadow: 0 0 4px rgba(249,115,22,.6); }
 .oc-layer-btn-dot.fire { background: #ef4444; box-shadow: 0 0 4px rgba(239,68,68,.6); }
 .oc-layer-btn-dot.wx   { background: #38bdf8; box-shadow: 0 0 4px rgba(56,189,248,.5); }
+.oc-layer-btn-dot.hs   { background: #ff3d00; box-shadow: 0 0 4px rgba(255,61,0,.6); }
+.oc-layer-btn-dot.ba   { background: #7f1d1d; box-shadow: 0 0 4px rgba(127,29,29,.7); }
 
 .oc-layer-btn-icon { font-size: .85rem; }
 
@@ -664,6 +666,90 @@
 .oc-providers-body { padding: 0 .9rem .65rem; }
 .oc-providers-section.collapsed .oc-providers-body { display: none; }
 .oc-providers { display: flex; flex-direction: column; gap: .45rem; }
+
+/* ── API Aberta key panel (live-data upgrade, key kept in localStorage) ── */
+.oc-key-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .55rem .6rem .6rem;
+  margin-bottom: .55rem;
+}
+.oc-key-title {
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: .3rem;
+}
+.oc-key-desc {
+  font-size: .63rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin-bottom: .4rem;
+}
+.oc-key-steps {
+  margin: 0 0 .5rem;
+  padding-left: 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: .18rem;
+}
+.oc-key-steps li {
+  font-size: .63rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.oc-key-steps a { color: var(--accent); }
+.oc-key-row {
+  display: flex;
+  gap: .35rem;
+  align-items: center;
+}
+.oc-key-input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: .34rem .5rem;
+  font-size: .68rem;
+  font-family: var(--font-mono);
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+.oc-key-input:focus { border-color: var(--accent); }
+.oc-key-btn {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: .36rem .6rem;
+  font-size: .65rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.oc-key-btn:hover { opacity: .85; }
+.oc-key-btn:disabled { opacity: .5; cursor: wait; }
+.oc-key-btn.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.oc-key-status {
+  margin-top: .35rem;
+  font-size: .62rem;
+  color: var(--muted);
+  line-height: 1.4;
+  min-height: 0;
+}
+.oc-key-status.ok  { color: #22c55e; }
+.oc-key-status.err { color: #ef4444; }
+
+body.light .oc-key-input { background: rgba(0,0,0,.03); }
 
 /* ── Provider card (rich transparency panel) ── */
 .oc-provider-card {

@@ -29,7 +29,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#explorer` | **Explorar** | Hub de exploradores: Terra em Tempo Real (globo 3D dia/noite com camadas ao vivo — sismos, vulcões, incêndios, tempestades, nuvens NASA — viagem no tempo e auto-rotação), Sistema Solar, Galáxia, Corpo Humano 3D (three.js), Portugal (mapa concelhos), Linha do Tempo interativa, Dados do Mundo (Mundo▸Continente▸País▸Cidade), Temas (knowledge base Área→Tema→Subtema) |
 | `#noticias` | **Notícias** | Agregador RSS estático por tópicos (tecnologia, IA, gaming, economia, ciência, F1, fact-check, …) — sem DB, refresh a cada 4h via Action |
 | `#eventos` | **Eventos** | Descoberta de eventos em Portugal (AgendaLX, e-cultura ao vivo + seed offline), mapa Leaflet, geocoding por concelho |
-| `#ocorrencias` | **Ocorrências PT** | Dashboard de proteção civil em tempo real: sismos (USGS, bbox PT/Atlântico), incêndios e ocorrências ANEPC (fogos.pt), avisos meteorológicos por distrito (IPMA, polígonos coloridos), mapa Leaflet multi-basemap com detalhe por ocorrência e ordenação por recência/gravidade |
+| `#ocorrencias` | **Ocorrências PT** | Dashboard de proteção civil em tempo real: sismos (USGS, bbox PT/Atlântico), incêndios/ocorrências ANEPC (3 níveis: API Aberta com chave do utilizador → fogos.pt direto → snapshot via Action a cada 15 min), avisos meteorológicos por distrito (IPMA, polígonos coloridos), camadas de satélite (basemap NASA GIBS do próprio dia, focos de calor + áreas ardidas EFFIS/Copernicus), mapa Leaflet multi-basemap com detalhe por ocorrência e ordenação por recência/gravidade |
 | `#f1` | **Fórmula 1** | Secção experimental: calendário/resultados (Jolpica), posições live/replay em canvas (OpenF1), tudo CORS-direct sem backend |
 | `#oss` | **Descobrir Tech** | Explorador de projetos open-source (índice gerado por Action + GitHub API) |
 | `#discovery` | **Gaming Deals** | Deals de gaming e jogos grátis (refresh 6h) |
@@ -77,7 +77,7 @@ dcop7.github.io/
 ├── quizzes/                   ← base de perguntas offline por quiz/língua/dificuldade
 ├── tools/                     ← scripts de build/curadoria offline (anatomy, explore, f1) — não são servidos
 ├── assets/ · img/ · games/    ← media e assets estáticos
-└── .github/workflows/         ← 7 workflows de refresh de dados
+└── .github/workflows/         ← 8 workflows de refresh de dados
 ```
 
 ### Padrão de módulos
@@ -144,6 +144,7 @@ O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs
 | `f1-refresh.yml` | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | diário, pós-corridas |
 | `oss-refresh.yml` | `data/oss/build-oss.mjs` | `data/oss/index.json` + `projects.json` | diário |
 | `discovery-refresh.yml` | `data/discovery/gaming/build-gaming.mjs` | deals de gaming / jogos grátis | a cada 6h |
+| `ocorrencias-refresh.yml` | `data/ocorrencias/build-ocorrencias.mjs` | `data/ocorrencias/ocorrencias.json` (ocorrências ANEPC ativas via fogos.pt — o fogos.pt fechou o CORS a origens externas, por isso o browser usa este snapshot same-origin como fallback sem chave) | a cada 15 min |
 
 **Regra crítica de agendamento:** o cron do GitHub atrasa minutos a *horas*. Os workflows **nunca** testam a hora do dia como gate (um `== 07h` falhou silenciosamente durante semanas). Em vez disso, o gate é o próprio snapshot ("o `today.json` já é de hoje, Europa/Lisboa?") e vários crons espalhados pelo dia funcionam como retries — o primeiro que dispara faz o trabalho, os restantes no-op. Commits de refresh usam `[skip ci]`.
 
@@ -163,9 +164,11 @@ Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge
 | **Jolpica** (`api.jolpi.ca`) | Dados históricos/calendário F1 (sucessor do Ergast) |
 | **OpenF1** | Posições live/replay das corridas (canvas track-position) |
 | **USGS Earthquakes** | Sismos: Ocorrências PT (bbox Portugal/Atlântico) e Terra em Tempo Real (global) |
-| **fogos.pt** | Ocorrências PT: incêndios/ocorrências ativas (agrega o sistema SADO da ANEPC) |
+| **API Aberta** (`api.apiaberta.pt`) | Ocorrências PT: incêndios ANEPC em direto (`/v1/anpc/incidents/active`, proxy do fogos.pt com CORS aberto) — opcional, requer chave gratuita do utilizador guardada em localStorage |
+| **fogos.pt** | Ocorrências PT: fonte dos incêndios ANEPC (sistema SADO). Deixou de permitir CORS a terceiros (jul/2026) → no browser só via API Aberta ou snapshot da Action |
+| **EFFIS / Copernicus** (WMS) | Ocorrências PT: camadas de focos de calor por satélite (`all.hs`) e áreas ardidas NRT (`effis.nrt.ba`) |
 | **NASA EONET** | Terra em Tempo Real: vulcões, incêndios e tempestades ativos |
-| **NASA GIBS** (WMS) | Terra em Tempo Real: imagem base Blue Marble hi-res + mosaico diário de nuvens VIIRS (com cache e crossfade no cliente) |
+| **NASA GIBS** (WMS/WMTS) | Terra em Tempo Real: imagem base Blue Marble hi-res + mosaico diário de nuvens VIIRS (com cache e crossfade no cliente). Ocorrências PT: basemap «🛰 Hoje» com a imagem VIIRS do próprio dia (auto-fallback D-1/D-2) |
 | **Nominatim** (OSM) | Ocorrências PT: reverse geocoding de sismos (distrito/município/freguesia) |
 | **AgendaLX / e-cultura** | Eventos culturais em direto (com fallback ao seed offline) |
 | **HN Algolia** | Feed Hacker News |

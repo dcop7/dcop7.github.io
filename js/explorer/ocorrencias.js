@@ -1,6 +1,9 @@
 /* ══════════════════════════════════════════════════════════════════
    OCORRÊNCIAS PORTUGAL — Civil alerts & incidents dashboard
-   Providers: USGS (earthquakes), fogos.pt (wildfires), IPMA (weather warnings)
+   Providers: USGS (earthquakes), ANEPC incidents (3-tier: API Aberta
+   live w/ user key → fogos.pt direct → same-origin Action snapshot),
+   IPMA (weather warnings). Satellite layers: NASA GIBS daily imagery,
+   EFFIS/Copernicus fire hotspots + burnt areas.
 ══════════════════════════════════════════════════════════════════ */
 const OcorrenciasPage = (function () {
   'use strict';
@@ -8,10 +11,18 @@ const OcorrenciasPage = (function () {
   /* ── API endpoints ── */
   /* USGS real-time feed — filtered client-side to Portugal/Atlantic bbox */
   const USGS_URL  = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson';
-  const FOGOS_URL = 'https://api.fogos.pt/v2/incidents/active';
+  /* fogos.pt only sends Access-Control-Allow-Origin to its own origin now, so
+     the direct call fails on GitHub Pages — kept as tier 2 (works in local dev
+     and again if they ever reopen CORS). Tier 1 is API Aberta (open CORS,
+     free X-API-Key, proxies the same SADO/fogos.pt data every 5 min); tier 3
+     is the same-origin snapshot a GitHub Action refreshes every 15 min. */
+  const APIABERTA_URL = 'https://api.apiaberta.pt/v1/anpc/incidents/active';
+  const FOGOS_URL     = 'https://api.fogos.pt/v2/incidents/active';
+  const SNAPSHOT_URL  = 'data/ocorrencias/ocorrencias.json';
   const IPMA_URL  = 'https://api.ipma.pt/open-data/forecast/warnings/warnings_www.json';
+  const KEY_LS    = 'apiaberta-key';
   const TTL       = 10 * 60 * 1000;
-  const CACHE     = { eq: 'oc3-eq', fire: 'oc3-fire', warn: 'oc3-warn' };
+  const CACHE     = { eq: 'oc3-eq', fire: 'oc3-fire2', warn: 'oc3-warn' };
 
   /* Portugal + Atlantic seismic zones bounding box (covers mainland, Azores, Madeira) */
   const PT_BBOX = { minLat: 30, maxLat: 43, minLon: -31, maxLon: -6 };
@@ -43,12 +54,12 @@ const OcorrenciasPage = (function () {
       note: null,
     },
     fire: {
-      name: 'fogos.pt',
+      name: 'ANEPC (via fogos.pt)',
       icon: '🔥',
       official: false,
       freq: 'Tempo real (sistema SADO da ANEPC)',
       scope: 'Portugal continental — ocorrências ativas de proteção civil',
-      note: 'Projeto cívico de código aberto. Agrega dados do sistema SADO da ANEPC — não é uma fonte governamental direta.',
+      note: 'Dados do sistema SADO da ANEPC agregados pelo projeto cívico fogos.pt — não é uma fonte governamental direta.',
     },
     warn: {
       name: 'IPMA',
@@ -81,14 +92,22 @@ const OcorrenciasPage = (function () {
     warn: { ok: null, time: null },
   };
 
+  /* Which tier actually delivered the fire data (for the transparency panel):
+     mode: 'live-key' (API Aberta) | 'live' (fogos.pt direct) | 'snapshot' | null.
+     updated: epoch-ms of when that data was produced (snapshot build time). */
+  let _fireSrc = { mode: null, updated: null };
+
   /* ── Module state ── */
   let _map               = null;
   let _inited            = false;
-  let _layers            = { earthquake: true, fire: true, weather: true };
+  let _layers            = { earthquake: true, fire: true, weather: true, hotspots: false, burnt: false };
   let _incidents         = [];
   let _activeFilter      = 'all';
   let _lEq               = null;
   let _lFire             = null;
+  let _lHotspots         = null;   /* EFFIS satellite heat detections (WMS) */
+  let _lBurnt            = null;   /* EFFIS near-real-time burnt areas (WMS) */
+  let _gibsDate          = null;   /* resolved date of the newest GIBS imagery */
   let _districtGeoData   = null;
   let _districtBorderLayer = null;
   let _districtLabelLayer = null;
@@ -98,6 +117,7 @@ const OcorrenciasPage = (function () {
   let _baseStyle         = 'standard';
   let _themeObs          = null;
   let _refreshing        = false;
+  let _keyInvalid        = false;   /* last API Aberta call rejected the key */
   let _detailInc         = null;
   let _sortMode          = 'time';   /* 'time' | 'sev' — list ordering */
   let _lastLoadTs        = null;     /* epoch-ms of the last successful load */
@@ -126,10 +146,20 @@ const OcorrenciasPage = (function () {
   }
 
   /* ── Fetch with abort timeout ── */
-  function _fetch(url, ms = 12000) {
+  function _fetch(url, ms = 12000, headers = null) {
     const ctrl = new AbortController();
     const tid  = setTimeout(() => ctrl.abort(), ms);
-    return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(tid));
+    const opts = { signal: ctrl.signal };
+    if (headers) opts.headers = headers;
+    return fetch(url, opts).finally(() => clearTimeout(tid));
+  }
+
+  /* ── API Aberta key (stored only in this browser) ── */
+  function _apiKey() {
+    try { return (localStorage.getItem(KEY_LS) || '').trim() || null; } catch { return null; }
+  }
+  function _setApiKey(k) {
+    try { k ? localStorage.setItem(KEY_LS, k.trim()) : localStorage.removeItem(KEY_LS); } catch (e) {}
   }
 
   /* ── Leaflet lazy load ── */
@@ -157,6 +187,7 @@ const OcorrenciasPage = (function () {
   /* ── Basemaps (user-selectable layer styles for geographic context) ── */
   const CARTO_ATTR = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>';
   const ESRI_ATTR  = 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics';
+  const GIBS_ATTR  = 'Imagery © <a href="https://worldview.earthdata.nasa.gov/">NASA EOSDIS GIBS</a> (VIIRS)';
   const BASEMAPS = {
     standard: { name: 'Padrão',   url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: CARTO_ATTR },
     dark:     { name: 'Escuro',   url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',             sub: 'abcd', attr: CARTO_ATTR },
@@ -165,20 +196,75 @@ const OcorrenciasPage = (function () {
   /* Esri reference overlay (boundaries + place names) for the satellite+labels mode */
   const SAT_LABELS_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
 
+  /* ── NASA GIBS daily true-colour imagery (the "what does the country look
+     like from space TODAY" view — smoke plumes read instantly). VIIRS is
+     375 m/px, native max zoom 9; today's pass lands mid-afternoon UTC, so we
+     probe today → D-1 → D-2 with a single test tile over Portugal. ── */
+  const GIBS_LAYER = 'VIIRS_NOAA20_CorrectedReflectance_TrueColor';
+  function _gibsUrl(date) {
+    return `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${GIBS_LAYER}/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`;
+  }
+  function _isoDaysAgo(n) {
+    return new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  }
+  function _probeTile(url) {
+    return new Promise(res => {
+      const img = new Image();
+      const t = setTimeout(() => { img.src = ''; res(false); }, 8000);
+      img.onload  = () => { clearTimeout(t); res(true); };
+      img.onerror = () => { clearTimeout(t); res(false); };
+      img.src = url;
+    });
+  }
+  async function _resolveGibsDate() {
+    if (_gibsDate) return _gibsDate;
+    try {
+      const c = JSON.parse(sessionStorage.getItem('oc-gibs-date') || 'null');
+      if (c && Date.now() - c.ts < 30 * 60 * 1000) { _gibsDate = c.date; return c.date; }
+    } catch (e) {}
+    for (let n = 0; n <= 2; n++) {
+      const d = _isoDaysAgo(n);
+      /* z6/y24/x30 covers mainland Portugal — one tiny probe per candidate day. */
+      if (await _probeTile(_gibsUrl(d).replace('{z}/{y}/{x}', '6/24/30'))) {
+        _gibsDate = d;
+        try { sessionStorage.setItem('oc-gibs-date', JSON.stringify({ date: d, ts: Date.now() })); } catch (e) {}
+        return d;
+      }
+    }
+    return null;
+  }
+
+  /* ── EFFIS/Copernicus WMS overlays (satellite fire detections + burnt areas) ── */
+  const EFFIS_WMS  = 'https://maps.effis.emergency.copernicus.eu/effis';
+  const EFFIS_ATTR = '<a href="https://forest-fire.emergency.copernicus.eu/">EFFIS</a> © Copernicus';
+
   /* Apply a basemap style. Satellite modes disable the tile dimming filter and
      switch district borders/labels to a light, high-contrast treatment. */
-  function _setBasemap(style) {
+  async function _setBasemap(style) {
     if (!_map) return;
-    if (!BASEMAPS[style] && style !== 'satellite-labels') style = 'standard';
+    if (!BASEMAPS[style] && style !== 'satellite-labels' && style !== 'gibs') style = 'standard';
     _baseStyle = style;
     try { localStorage.setItem('oc-basemap', style); } catch (e) {}
-    const sat = style === 'satellite' || style === 'satellite-labels';
+    const sat = style === 'satellite' || style === 'satellite-labels' || style === 'gibs';
 
     if (_baseTile)     { _map.removeLayer(_baseTile);     _baseTile = null; }
     if (_satLabelTile) { _map.removeLayer(_satLabelTile); _satLabelTile = null; }
 
-    const base = BASEMAPS[sat ? 'satellite' : style];
-    _baseTile = L.tileLayer(base.url, { attribution: base.attr, subdomains: base.sub, maxZoom: 19 });
+    if (style === 'gibs') {
+      const date = await _resolveGibsDate();
+      if (_baseStyle !== 'gibs') return;   /* user switched again while probing */
+      if (!date) { _setBasemap('satellite'); return; }
+      const isToday = date === _isoDaysAgo(0);
+      _baseTile = L.tileLayer(_gibsUrl(date), {
+        attribution: `${GIBS_ATTR} · ${isToday ? 'hoje' : date}`,
+        maxNativeZoom: 9, maxZoom: 19,
+      });
+      const btn = document.querySelector('.oc-basemap-btn[data-base="gibs"]');
+      if (btn) btn.title = `Imagem VIIRS de ${date}${isToday ? ' (hoje)' : ''} — 375 m/px, nitidez até zoom 9`;
+    } else {
+      const base = BASEMAPS[sat ? 'satellite' : style];
+      _baseTile = L.tileLayer(base.url, { attribution: base.attr, subdomains: base.sub, maxZoom: 19 });
+    }
     _baseTile.addTo(_map);
     _baseTile.bringToBack();
 
@@ -227,7 +313,7 @@ const OcorrenciasPage = (function () {
   function _renderDistrictBorders() {
     if (!_map || !_districtGeoData) return;
     if (_districtBorderLayer) { _districtBorderLayer.remove(); _districtBorderLayer = null; }
-    const sat = _baseStyle === 'satellite' || _baseStyle === 'satellite-labels';
+    const sat = _baseStyle === 'satellite' || _baseStyle === 'satellite-labels' || _baseStyle === 'gibs';
     const color = sat ? 'rgba(255,255,255,.6)'
                 : _isDark() ? 'rgba(180,200,255,.45)' : 'rgba(60,80,140,.4)';
     _districtBorderLayer = L.geoJSON(_districtGeoData, {
@@ -373,15 +459,48 @@ const OcorrenciasPage = (function () {
     return isNaN(t) ? null : t;
   }
 
-  async function _fetchWildfires() {
-    const cached = _fromCache(CACHE.fire);
-    if (cached) { _prov.fire = { ok: true, time: _cacheTimeStr(CACHE.fire) || _nowTime() }; return cached; }
-    try {
-      const r = await _fetch(FOGOS_URL);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const json = await r.json();
-      const raw  = Array.isArray(json) ? json : (json.data || json.incidents || []);
-      const data = raw.map(ev => {
+  /* Normalise an API Aberta /v1/anpc incident (own schema: nested location,
+     resources.ground = ground VEHICLES — it does not expose operacionais). */
+  function _parseApiAbertaList(raw) {
+    return raw.map(ev => {
+      const loc = ev.location || {};
+      const lat = _num(loc.lat), lon = _num(loc.lng);
+      if (lat == null || lon == null) return null;
+      /* address is "Distrito, Concelho, Freguesia" — the concelho only lives there. */
+      const parts = (loc.address || '').split(',').map(s => s.trim());
+      return {
+        type:         'fire',
+        id:           `fire-${ev.id || Math.random()}`,
+        rawId:        ev.id || null,
+        lat, lon,
+        title:        ev.type || 'Ocorrência',
+        especie:      null,
+        familia:      null,
+        district:     loc.district || '—',
+        municipio:    parts[1] || null,
+        freguesia:    loc.freguesia || null,
+        localidade:   null,
+        regiao:       loc.region || null,
+        status:       ev.status || null,
+        statusColor:  null,
+        important:    false,
+        operacionais: null,
+        veiculos:     _num(ev.resources?.ground),
+        aereos:       _num(ev.resources?.aerial),
+        aquaticos:    _num(ev.resources?.water),
+        heli:         null,
+        aviao:        null,
+        time:         ev.datetime || null,
+        lastUpdate:   null,
+        url:          ev.id ? `https://fogos.pt/fogo/${ev.id}` : null,
+        source:       'apiaberta',
+      };
+    }).filter(Boolean);
+  }
+
+  /* Normalise one raw fogos.pt incident list into our shape. */
+  function _parseFireList(raw) {
+    return raw.map(ev => {
         /* Real fogos.pt v2 fields: lng (not lon), comma-decimal strings,
            man/terrain/aerial/meios_aquaticos resources, created/updated {sec}. */
         const lat = _num(ev.lat);
@@ -390,6 +509,7 @@ const OcorrenciasPage = (function () {
         return {
           type:         'fire',
           id:           `fire-${ev.id || ev.sadoId || Math.random()}`,
+          rawId:        ev.id || null,
           lat, lon,
           title:        ev.natureza || ev.especieName || ev.tipo || 'Ocorrência',
           especie:      ev.especieName || null,
@@ -414,13 +534,108 @@ const OcorrenciasPage = (function () {
           source:       'fogos.pt',
         };
       }).filter(Boolean);
-      _toCache(CACHE.fire, data);
-      _prov.fire = { ok: true, time: _nowTime() };
-      return data;
-    } catch (err) {
-      _prov.fire = { ok: false, time: null };
-      return _fromCache(CACHE.fire) || [];
+  }
+
+  function _extractFireRaw(json) {
+    if (Array.isArray(json)) return json;
+    if (Array.isArray(json?.data)) return json.data;
+    if (Array.isArray(json?.incidents)) return json.incidents;
+    return null;
+  }
+
+  /* Multi-source fire fetch, all in parallel:
+       · fogos.pt direct    — richest fields + live, but CORS-blocked on
+                              GitHub Pages since jul/2026 (works in local dev)
+       · API Aberta         — live (~5 min) with open CORS; works without a
+                              key, a saved key raises the rate limits. Its
+                              schema is poorer (no operacionais/important).
+       · Action snapshot    — same-origin JSON a GitHub Action refreshes
+                              every ~15 min; zero-config fallback, full fields.
+     Preference: fogos direct → API Aberta ENRICHED with snapshot fields
+     (matched by incident id) → snapshot alone → stale session cache. */
+  async function _fetchWildfires() {
+    const cached = _fromCache(CACHE.fire);
+    if (cached && Array.isArray(cached.list)) {
+      _fireSrc   = cached.src || { mode: null, updated: null };
+      _prov.fire = { ok: true, time: _cacheTimeStr(CACHE.fire) || _nowTime() };
+      return cached.list;
     }
+
+    const done = (list, src) => {
+      _fireSrc   = src;
+      _toCache(CACHE.fire, { list, src });
+      _prov.fire = { ok: true, time: _nowTime() };
+      _renderKeyStatus();
+      return list;
+    };
+
+    const key = _apiKey();
+    const [rFogos, rAberta, rSnap] = await Promise.allSettled([
+      _fetch(FOGOS_URL, 8000).then(async r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return _extractFireRaw(await r.json());
+      }),
+      _fetch(APIABERTA_URL, 12000, key ? { 'X-API-Key': key } : null).then(async r => {
+        if (key && (r.status === 401 || r.status === 403)) { _keyInvalid = true; throw new Error('key rejected'); }
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const json = await r.json();
+        return { raw: _extractFireRaw(json), asOf: json.as_of ? Date.parse(json.as_of) : null };
+      }),
+      _fetch(`${SNAPSHOT_URL}?t=${Math.floor(Date.now() / 60000)}`, 12000).then(async r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const json = await r.json();
+        const upd  = json.updated ? Date.parse(json.updated) : null;
+        return { raw: _extractFireRaw(json), updated: isNaN(upd) ? null : upd };
+      }),
+    ]);
+
+    if (_apiKey() && rAberta.status === 'fulfilled') _keyInvalid = false;
+
+    /* fogos.pt direct: live AND complete — nothing to merge. */
+    if (rFogos.status === 'fulfilled' && rFogos.value) {
+      return done(_parseFireList(rFogos.value), { mode: 'live', updated: Date.now() });
+    }
+
+    const snap = rSnap.status === 'fulfilled' && rSnap.value.raw
+      ? { list: _parseFireList(rSnap.value.raw), updated: rSnap.value.updated }
+      : null;
+
+    /* API Aberta live list, enriched with the snapshot's richer fields
+       (operacionais, significativo, localidade…) for the same incident ids. */
+    if (rAberta.status === 'fulfilled' && rAberta.value.raw) {
+      let list = _parseApiAbertaList(rAberta.value.raw);
+      if (snap) {
+        const byId = {};
+        snap.list.forEach(f => { if (f.rawId) byId[f.rawId] = f; });
+        list = list.map(f => {
+          const s = f.rawId && byId[f.rawId];
+          if (!s) return f;
+          return {
+            ...s, ...f,
+            /* live feed wins for status + resource counts; snapshot fills the rest */
+            operacionais: s.operacionais,
+            statusColor:  s.statusColor,
+            important:    s.important,
+            especie:      s.especie,   familia: s.familia,
+            localidade:   s.localidade,
+            municipio:    f.municipio || s.municipio,
+            heli:         s.heli,      aviao:   s.aviao,
+            time:         s.time || f.time,
+            lastUpdate:   s.lastUpdate,
+          };
+        });
+      }
+      return done(list, { mode: key ? 'live-key' : 'live-open', updated: rAberta.value.asOf || Date.now() });
+    }
+
+    /* Snapshot alone — still full fields, just up to ~15 min behind. */
+    if (snap) return done(snap.list, { mode: 'snapshot', updated: snap.updated });
+
+    _prov.fire = { ok: false, time: null };
+    _fireSrc   = { mode: null, updated: null };
+    _renderKeyStatus();
+    const stale = _fromCache(CACHE.fire);
+    return (stale && stale.list) || [];
   }
 
   async function _fetchWarnings() {
@@ -485,6 +700,18 @@ const OcorrenciasPage = (function () {
     let _savedBase; try { _savedBase = localStorage.getItem('oc-basemap'); } catch (e) {}
     _setBasemap(_savedBase || (_isDark() ? 'dark' : 'standard'));
 
+    /* EFFIS WMS overlays sit above the district polygons (overlayPane, 400)
+       but below the incident markers (markerPane, 600). */
+    _map.createPane('oc-effis').style.zIndex = 450;
+    _lHotspots = L.tileLayer.wms(EFFIS_WMS, {
+      layers: 'all.hs', format: 'image/png', transparent: true, version: '1.1.1',
+      pane: 'oc-effis', opacity: .85, attribution: EFFIS_ATTR,
+    });
+    _lBurnt = L.tileLayer.wms(EFFIS_WMS, {
+      layers: 'effis.nrt.ba', format: 'image/png', transparent: true, version: '1.1.1',
+      pane: 'oc-effis', opacity: .7, attribution: EFFIS_ATTR,
+    });
+
     _lEq   = L.layerGroup().addTo(_map);
     _lFire = L.layerGroup().addTo(_map);
     _map.on('zoomend', _updateDistrictLabelZoom);
@@ -533,11 +760,17 @@ const OcorrenciasPage = (function () {
     { m: /alerta|despacho|acionament/,    color: '#3b82f6', sev: 1, label: 'Novo / Despacho' },
     { m: /encerr|rescaldo|extint/,        color: '#9ca3af', sev: 0, label: 'Encerrada' },
   ];
+  /* operacionais when known; otherwise a ~4× estimate from ground vehicles
+     (the observed SADO ratio) so API Aberta-only incidents still size sanely. */
+  function _fireMen(inc) {
+    return inc.operacionais != null ? inc.operacionais : (inc.veiculos || 0) * 4;
+  }
+
   function _fireStatus(inc) {
     const s = (inc.status || '').toLowerCase();
     let st = FIRE_STATUS.find(x => x.m.test(s)) || { color: '#f97316', sev: 3, label: inc.status || 'Ativa' };
     st = { ...st };
-    const heavy = (inc.operacionais || 0) >= 50 || (inc.aereos || 0) >= 1;
+    const heavy = _fireMen(inc) >= 50 || (inc.aereos || 0) >= 1;
     if (inc.important && heavy) { st.color = '#b91c1c'; st.sev = 5; st.label = 'Significativo · grande dispositivo'; }
     else if (inc.important)     { st.color = '#ef4444'; st.sev = Math.max(st.sev, 4); st.label = 'Incêndio significativo'; }
     return st;
@@ -554,7 +787,7 @@ const OcorrenciasPage = (function () {
     { min: 100, d: 60, label: 'Grande dispositivo (100+ operacionais)' },
   ];
   function _fireSizeTier(inc) {
-    const op = inc.operacionais || 0;
+    const op = _fireMen(inc);
     let t = FIRE_SIZE_TIERS[0];
     for (const tier of FIRE_SIZE_TIERS) if (op >= tier.min) t = tier;
     return t;
@@ -565,7 +798,7 @@ const OcorrenciasPage = (function () {
     _lFire.clearLayers();
     if (!_layers.fire) return;
     /* Draw biggest fires last so they sit on top of small ones. */
-    const sorted = fires.slice().sort((a, b) => (a.operacionais || 0) - (b.operacionais || 0));
+    const sorted = fires.slice().sort((a, b) => _fireMen(a) - _fireMen(b));
     sorted.forEach(f => {
       const st   = _fireStatus(f);
       const tier = _fireSizeTier(f);
@@ -715,10 +948,10 @@ const OcorrenciasPage = (function () {
           <div class="oc-detail-row"><span class="oc-detail-label">Coordenadas</span><span style="font-family:var(--font-mono);font-size:.78rem">${inc.lat.toFixed(4)}°N, ${Math.abs(inc.lon).toFixed(4)}°W</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Início</span><span>${_fmtTime(inc.time)}</span></div>
           <div class="oc-detail-row"><span class="oc-detail-label">Última atualização</span><span>${_fmtTime(inc.lastUpdate)}</span></div>
-          <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">fogos.pt</span></div>
+          <div class="oc-detail-row"><span class="oc-detail-label">Fonte</span><span class="oc-detail-source">${inc.source === 'apiaberta' ? 'API Aberta (ANEPC)' : 'fogos.pt'}</span></div>
         </div>
         ${inc.url ? `<a class="oc-detail-link" href="${inc.url}" target="_blank" rel="noopener">Ver em fogos.pt ↗</a>` : ''}
-        <div class="oc-detail-notice">Dados via fogos.pt (integra sistema SADO da ANEPC).</div>`;
+        <div class="oc-detail-notice">Dados do sistema SADO da ANEPC${inc.source === 'apiaberta' ? ' via API Aberta/fogos.pt' : ' via fogos.pt'}.</div>`;
 
     } else if (inc.type === 'weather') {
       const clrMap = { yellow: '#eab308', orange: '#f97316', red: '#ef4444', amarelo: '#eab308', laranja: '#f97316', vermelho: '#ef4444' };
@@ -806,14 +1039,51 @@ const OcorrenciasPage = (function () {
     });
   }
 
+  /* The fire provider card reflects which tier actually delivered the data. */
+  function _fireProviderView() {
+    const p = { ...PROVIDERS.fire };
+    const m = _fireSrc.mode;
+    if (m === 'live-key') {
+      p.name = 'ANEPC — em direto via API Aberta';
+      p.freq = 'Tempo real (≈ 5 min, chave própria)';
+    } else if (m === 'live-open') {
+      p.name = 'ANEPC — em direto via API Aberta';
+      p.freq = 'Tempo real (≈ 5 min)';
+      p.note = 'Ligação em direto sem chave. Detalhe extra (operacionais, «significativo») vem do snapshot e pode atrasar alguns minutos em ocorrências novas.';
+    } else if (m === 'live') {
+      p.name = 'ANEPC — em direto via fogos.pt';
+    } else if (m === 'snapshot') {
+      p.name = 'ANEPC — snapshot (GitHub Action)';
+      p.freq = 'Snapshot automático a cada ≈ 15 min';
+      const age = _fireSrc.updated ? Math.round((Date.now() - _fireSrc.updated) / 60000) : null;
+      p.note = `Dados recolhidos do fogos.pt no servidor${age != null ? ` há ${age} min` : ''}. Para tempo real, adiciona uma chave gratuita da API Aberta acima.`;
+    } else if (_prov.fire.ok === false) {
+      p.note = 'Nenhuma das fontes respondeu (API Aberta, fogos.pt, snapshot). Tenta atualizar dentro de momentos.';
+    }
+    return p;
+  }
+
+  /* Static cards for the satellite layers (no fetch status — tiles load on demand). */
+  const SAT_PROVIDERS = [
+    { icon: '🛰', name: 'NASA GIBS — imagem diária', official: true,
+      freq: 'Diária (passagem VIIRS ~13:30 local)',
+      scope: 'Mapa base «🛰 Hoje» — cor real, fumo e nuvens visíveis (375 m/px)' },
+    { icon: '🔥', name: 'EFFIS · Copernicus', official: true,
+      freq: 'Várias vezes por dia (MODIS/VIIRS)',
+      scope: 'Camadas «Focos satélite» e «Área ardida» no mapa' },
+  ];
+
   function _renderProviders() {
     const el = document.querySelector('.oc-providers');
     if (!el) return;
     el.innerHTML = ['eq', 'fire', 'warn'].map(key => {
-      const p   = PROVIDERS[key];
+      const p   = key === 'fire' ? _fireProviderView() : PROVIDERS[key];
       const s   = _prov[key];
       const cls = s.ok === null ? 'loading' : s.ok ? 'ok' : 'err';
-      const tim = s.ok === null ? 'A carregar…' : s.ok ? `Atualizado às ${s.time || '—'}` : 'Falha na ligação';
+      let tim = s.ok === null ? 'A carregar…' : s.ok ? `Atualizado às ${s.time || '—'}` : 'Falha na ligação';
+      if (key === 'fire' && s.ok && _fireSrc.mode === 'snapshot' && _fireSrc.updated) {
+        tim = `Snapshot das ${new Date(_fireSrc.updated).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`;
+      }
       return `<div class="oc-provider-card ${cls}">
         <div class="oc-provider-header">
           <span class="oc-provider-dot ${cls}"></span>
@@ -827,7 +1097,97 @@ const OcorrenciasPage = (function () {
           ${p.note ? `<div class="oc-provider-note">${p.note}</div>` : ''}
         </div>
       </div>`;
-    }).join('');
+    }).join('') + SAT_PROVIDERS.map(p => `
+      <div class="oc-provider-card">
+        <div class="oc-provider-header">
+          <span class="oc-provider-name">${p.icon} ${p.name}</span>
+          <span class="oc-provider-badge official">Oficial</span>
+        </div>
+        <div class="oc-provider-meta">
+          <div class="oc-provider-row"><span class="oc-provider-label">Atualização:</span> ${p.freq}</div>
+          <div class="oc-provider-row"><span class="oc-provider-label">Âmbito:</span> ${p.scope}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ── API Aberta key panel ── */
+  function _renderKeyStatus() {
+    const st = document.getElementById('oc-key-status');
+    const clearBtn = document.getElementById('oc-key-clear');
+    if (!st) return;
+    const key = _apiKey();
+    if (clearBtn) clearBtn.hidden = !key;
+    if (!key) {
+      st.className = 'oc-key-status';
+      st.textContent = '';
+      return;
+    }
+    if (_keyInvalid) {
+      st.className = 'oc-key-status err';
+      st.textContent = '✗ A chave foi rejeitada pela API Aberta — verifica se a copiaste completa.';
+    } else if (_fireSrc.mode === 'live-key') {
+      st.className = 'oc-key-status ok';
+      st.textContent = '✓ Ligado em direto à API Aberta com a tua chave.';
+    } else {
+      st.className = 'oc-key-status';
+      st.textContent = 'Chave guardada — será usada na próxima atualização.';
+    }
+  }
+
+  function _wireKeyPanel() {
+    const input = document.getElementById('oc-key-input');
+    const save  = document.getElementById('oc-key-save');
+    const clear = document.getElementById('oc-key-clear');
+    const st    = document.getElementById('oc-key-status');
+    if (!input || !save) return;
+    if (_apiKey()) input.value = _apiKey();
+
+    const refresh = () => {
+      /* Force a fresh fire fetch through the new key. */
+      sessionStorage.removeItem(CACHE.fire);
+      _load();
+    };
+
+    save.onclick = async () => {
+      const k = input.value.trim();
+      if (!k) return;
+      save.disabled = true;
+      st.className = 'oc-key-status';
+      st.textContent = 'A validar a chave…';
+      try {
+        const r = await _fetch(APIABERTA_URL, 12000, { 'X-API-Key': k });
+        if (r.status === 401 || r.status === 403) {
+          st.className = 'oc-key-status err';
+          st.textContent = '✗ Chave inválida — a API Aberta rejeitou-a.';
+        } else if (!r.ok) {
+          /* Service hiccup, not the key's fault — save it anyway. */
+          _setApiKey(k); _keyInvalid = false;
+          st.className = 'oc-key-status';
+          st.textContent = `Chave guardada (API Aberta respondeu HTTP ${r.status} — tentará de novo).`;
+          refresh();
+        } else {
+          _setApiKey(k); _keyInvalid = false;
+          st.className = 'oc-key-status ok';
+          st.textContent = '✓ Chave guardada e aceite — a carregar dados em direto…';
+          refresh();
+        }
+      } catch (e) {
+        st.className = 'oc-key-status err';
+        st.textContent = '✗ Não foi possível contactar a API Aberta. Tenta de novo.';
+      }
+      save.disabled = false;
+      if (clear) clear.hidden = !_apiKey();
+    };
+
+    if (clear) clear.onclick = () => {
+      _setApiKey(null);
+      _keyInvalid = false;
+      input.value = '';
+      clear.hidden = true;
+      st.className = 'oc-key-status';
+      st.textContent = 'Chave removida — volta ao snapshot automático.';
+      refresh();
+    };
   }
 
   /* Cross-type severity score so "Severidade" ordering can rank a red IPMA
@@ -837,7 +1197,7 @@ const OcorrenciasPage = (function () {
     if (inc.type === 'weather')    return (WARN_SEV[inc.level] || 1) * 16;           /* red → 64 */
     if (inc.type === 'fire') {
       const st = _fireStatus(inc);
-      return st.sev * 18 + Math.min(inc.operacionais || 0, 200) * 0.3;               /* grande dispositivo → 90+ */
+      return st.sev * 18 + Math.min(_fireMen(inc), 200) * 0.3;                       /* grande dispositivo → 90+ */
     }
     return 0;
   }
@@ -942,6 +1302,10 @@ const OcorrenciasPage = (function () {
           if (_warnFillLayer) {
             if (_layers.weather) _warnFillLayer.addTo(_map); else _map?.removeLayer(_warnFillLayer);
           }
+        } else if (layer === 'hotspots') {
+          if (_layers.hotspots) _lHotspots?.addTo(_map); else _lHotspots && _map?.removeLayer(_lHotspots);
+        } else if (layer === 'burnt') {
+          if (_layers.burnt) _lBurnt?.addTo(_map); else _lBurnt && _map?.removeLayer(_lBurnt);
         }
       });
     });
@@ -1053,6 +1417,7 @@ const OcorrenciasPage = (function () {
               <button class="oc-basemap-btn" data-base="dark">Escuro</button>
               <button class="oc-basemap-btn" data-base="satellite">Satélite</button>
               <button class="oc-basemap-btn" data-base="satellite-labels">Satélite + Rótulos</button>
+              <button class="oc-basemap-btn" data-base="gibs" title="Imagem de satélite VIIRS do próprio dia (NASA) — vê fumo e nuvens reais">🛰 Hoje</button>
             </div>
 
             <div class="oc-layer-bar">
@@ -1064,6 +1429,12 @@ const OcorrenciasPage = (function () {
               </button>
               <button class="oc-layer-btn active" data-layer="weather">
                 <span class="oc-layer-btn-dot wx"></span>Avisos
+              </button>
+              <button class="oc-layer-btn" data-layer="hotspots" title="Deteções térmicas por satélite (EFFIS/Copernicus)">
+                <span class="oc-layer-btn-dot hs"></span>Focos satélite
+              </button>
+              <button class="oc-layer-btn" data-layer="burnt" title="Áreas ardidas recentes (EFFIS/Copernicus)">
+                <span class="oc-layer-btn-dot ba"></span>Área ardida
               </button>
             </div>
 
@@ -1099,6 +1470,12 @@ const OcorrenciasPage = (function () {
                 <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#eab30855;border-color:#eab308"></div>Amarelo</div>
                 <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#f9731655;border-color:#f97316"></div>Laranja</div>
                 <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#ef444455;border-color:#ef4444"></div>Vermelho</div>
+              </div>
+              <div class="oc-legend-section">
+                <div class="oc-legend-label">Satélite (EFFIS)</div>
+                <div class="oc-legend-row"><div class="oc-legend-dot" style="background:#ff3d00"></div>Foco de calor</div>
+                <div class="oc-legend-row"><div class="oc-legend-fill" style="background:#7f1d1d88;border-color:#7f1d1d"></div>Área ardida</div>
+                <div class="oc-legend-note">Ativa nas camadas do mapa</div>
               </div>
               </div>
             </div>
@@ -1141,6 +1518,26 @@ const OcorrenciasPage = (function () {
                 <span class="oc-providers-chevron">▸</span>
               </button>
               <div class="oc-providers-body">
+                <div class="oc-key-panel" id="oc-key-panel">
+                  <div class="oc-key-title">🔑 Chave API Aberta (opcional)</div>
+                  <div class="oc-key-desc">
+                    Os incêndios já vêm <b>em direto</b> da API Aberta, com o snapshot automático
+                    (≈ 15 min) como reserva. Uma chave gratuita dá <b>limites de utilização maiores</b>
+                    e garante a ligação em direto se o acesso sem chave for restringido.
+                  </div>
+                  <ol class="oc-key-steps">
+                    <li>Cria uma conta gratuita em <a href="https://apiaberta.pt" target="_blank" rel="noopener">apiaberta.pt</a></li>
+                    <li>No painel de developer, copia a tua <b>API key</b></li>
+                    <li>Cola-a aqui — fica guardada <b>só neste browser</b> (localStorage)</li>
+                  </ol>
+                  <div class="oc-key-row">
+                    <input type="password" class="oc-key-input" id="oc-key-input"
+                           placeholder="A tua X-API-Key…" autocomplete="off" spellcheck="false">
+                    <button class="oc-key-btn" id="oc-key-save">Guardar</button>
+                    <button class="oc-key-btn ghost" id="oc-key-clear" hidden>Remover</button>
+                  </div>
+                  <div class="oc-key-status" id="oc-key-status"></div>
+                </div>
                 <div class="oc-providers"></div>
               </div>
             </div>
@@ -1225,6 +1622,7 @@ const OcorrenciasPage = (function () {
       _wireFilters();
       _wireBasemapBar();
       _wireProvidersToggle();
+      _wireKeyPanel();
       _inited = true;
       _load();
       _startAutoRefresh();

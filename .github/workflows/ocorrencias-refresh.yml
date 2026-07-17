@@ -1,0 +1,45 @@
+name: Refresh ocorrências
+
+# fogos.pt stopped allowing CORS from third-party origins, so the browser on
+# GitHub Pages can't call api.fogos.pt directly. This workflow fetches the
+# active ANEPC incidents server-side every 15 minutes and commits a
+# same-origin JSON snapshot (data/ocorrencias/ocorrencias.json) that the
+# Ocorrências page uses as its zero-config data source. Users who add a free
+# API Aberta key in the UI get live browser-side data instead.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'     # every 15 minutes (UTC; GitHub may delay)
+  workflow_dispatch:           # manual run from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ocorrencias-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Snapshot active incidents → static JSON
+        run: node data/ocorrencias/build-ocorrencias.mjs
+
+      - name: Commit updated snapshot if changed
+        run: |
+          if [ -n "$(git status --porcelain data/ocorrencias/ocorrencias.json)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/ocorrencias/ocorrencias.json
+            git commit -m "chore(ocorrencias): refresh incidents snapshot [skip ci]"
+            git push
+          else
+            echo "No incident changes — nothing to commit."
+          fi
