@@ -66,6 +66,7 @@ const CidadaoPage = (function () {
     saude:      { icon: '🏥', pt: 'Saúde',      en: 'Health' },
     educacao:   { icon: '🎓', pt: 'Educação',   en: 'Education' },
     documentos: { icon: '🪪', pt: 'Documentos', en: 'Documents' },
+    justica:    { icon: '⚖️', pt: 'Justiça',    en: 'Justice' },
     outros:     { icon: '📌', pt: 'Outros',     en: 'Other' },
   };
 
@@ -575,6 +576,12 @@ const CidadaoPage = (function () {
           <div class="cd-ap-foot"><span class="cd-dl-spacer"></span><a class="cd-link" href="${esc(a.url)}" target="_blank" rel="noopener">${_t('Official page', 'Página oficial')} ↗</a></div>
         </article>`).join('')}
       </div>
+      ${(() => {
+        /* novidades do concelho: feed automático site:<câmara> (builder 6/6h) */
+        const news = (((_nov && _nov.items) || []).filter(n => n.source === 'mun-' + c.id)).slice(0, 8);
+        return news.length ? `<h2 class="cd-h2">🆕 ${_t('News from', 'Novidades de')} ${esc(c.nome)} <span class="cd-h2-note">${_t('auto-updated every 6h from the council website', 'atualizado automaticamente de 6 em 6h a partir do site da câmara')}</span></h2>
+          <div class="cd-nv-list">${news.map(novidadeRow).join('')}</div>` : '';
+      })()}
       <p class="cd-disclaimer">${esc(c.notas || '')} ${_t('Municipal rates and programmes are decided yearly by each council — the official links are the reference.', 'As taxas e programas municipais são deliberados anualmente por cada câmara — os links oficiais são a referência.')}</p>`;
   }
 

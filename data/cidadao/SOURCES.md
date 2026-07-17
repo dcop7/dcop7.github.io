@@ -30,6 +30,10 @@ Verificadas a 2026-07-17; todas públicas, sem chaves:
 - **Radar de candidaturas** — pesquisa Google News por anúncios de
   candidaturas/apoios abertos, com filtro de ruído; os resultados aparecem
   na tab Agora ("Radar de candidaturas") e marcados com 🎯.
+- **Fontes municipais dinâmicas** — o builder lê `municipios.json` e cria
+  automaticamente um feed `site:<câmara>` por cada concelho detalhado
+  (`mun-<id>`); a tab Município mostra estas notícias em "Novidades do
+  concelho". Adicionar um concelho ao JSON liga logo o feed respetivo.
 
 Notas de robustez:
 - Uma fonte que falhe não derruba as outras (pool com timeout por fonte).

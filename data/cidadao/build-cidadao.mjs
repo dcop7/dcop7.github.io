@@ -42,6 +42,18 @@ const SOURCES = [
   { id: 'novos',      name: 'Novos apoios anunciados', type: 'gnews', q: '"novo apoio" OR "novo subsídio" OR "nova prestação" OR "novo programa" OR "novo complemento" Portugal governo', site: '' },
 ];
 
+/* Fontes municipais dinâmicas: um feed Google News site:<câmara> por cada
+   concelho detalhado em municipios.json — adicionar um concelho ao JSON
+   passa automaticamente a alimentar a tab Município com novidades locais. */
+try {
+  const mu = JSON.parse(readFileSync(dirname(fileURLToPath(import.meta.url)) + '/municipios.json', 'utf8'));
+  for (const c of mu.concelhos || []) {
+    let host = '';
+    try { host = new URL(c.site).host.replace(/^www\./, ''); } catch {}
+    if (host) SOURCES.push({ id: 'mun-' + c.id, name: 'Câmara de ' + c.nome, type: 'gnews', q: 'site:' + host, site: c.site });
+  }
+} catch (e) { console.warn('municipios.json não lido para fontes:', e.message); }
+
 /* ── Temas (classificação por palavras-chave) ── */
 const TOPIC_KW = [
   ['impostos',  /\bIRS\b|\bIMI\b|\bIUC\b|\bIVA\b|imposto|fiscal|finanças|e-?fatura|contribuint|liquidaç|dedução|retenç/i],
@@ -51,6 +63,7 @@ const TOPIC_KW = [
   ['saude',     /saúde|SNS|médic|vacin|hospital|utente|enfermeir|farmác|dentista/i],
   ['educacao',  /escola|educaç|ensino|estudante|propina|manuais|matrícula|universidade|DGES|creche/i],
   ['documentos', /cartão de cidadão|passaporte|carta de condução|registo|notariado|identidade|IMT\b|inspeção/i],
+  ['justica',   /julgado(s)? de paz|tribunal|custas|advogad|injunç|mediaç|arbitragem|litígio|contraordenaç|multa|seguradora|fundo de garantia autom/i],
 ];
 function classify(...texts) {
   const hay = texts.filter(Boolean).join(' ');

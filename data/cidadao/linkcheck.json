@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-17T20:56:07.315Z",
+ "generated": "2026-07-17T21:03:58.230Z",
  "total": 79,
  "broken": 0,
- "unknown": 27,
+ "unknown": 30,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -37,20 +37,20 @@
   {
    "id": "apoios:elar",
    "url": "https://www.fundoambiental.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:vale-eficiencia",
    "url": "https://www.fundoambiental.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:edificios-sustentaveis",
    "url": "https://www.fundoambiental.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:tarifa-social-agua",

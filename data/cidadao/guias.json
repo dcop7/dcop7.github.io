@@ -355,7 +355,104 @@
           "full": "Resolver conflitos grátis ou quase",
           "what": "Os centros de arbitragem de consumo resolvem conflitos entre consumidores e empresas de forma gratuita ou muito barata, sem advogado obrigatório. Em serviços essenciais (água, luz, gás, telecom) e em litígios até 5 000 €, se o consumidor optar pela arbitragem, a empresa é OBRIGADA a aceitar a decisão.",
           "tip": "Caminho típico: reclama primeiro à empresa (guarda prova) → livro de reclamações → centro de arbitragem da tua zona ou do setor. A DECO e o Portal do Consumidor ajudam a encaminhar. Para processos maiores, lembra-te do apoio judiciário (proteção jurídica) na tab Apoios — o Estado paga advogado a quem não pode.",
-          "links": ["livro-reclamacoes", "garantia-3anos", "fidelizacao-telecom"]
+          "links": ["livro-reclamacoes", "garantia-3anos", "fidelizacao-telecom", "julgados-de-paz"]
+        }
+      ]
+    },
+    {
+      "id": "justica",
+      "icon": "⚖️",
+      "title": "Justiça e conflitos",
+      "desc": "Julgados de paz, injunções, custas — resolver problemas legais sem falência",
+      "topics": [
+        {
+          "id": "julgados-de-paz",
+          "icon": "🕊️",
+          "term": "Julgados de Paz",
+          "full": "O 'tribunal' rápido, barato e sem formalismos",
+          "what": "São tribunais oficiais pensados para o cidadão comum: tratam causas até 15 000 € — dívidas, incumprimento de contratos, condomínio, arrendamento (exceto despejo), vizinhança, consumo e até acidentes de viação sem feridos. A linguagem é simples, NÃO precisas de advogado, e a taxa única de referência é 70 € (paga por quem perde) — sem as custas e a demora dos tribunais comuns.",
+          "tip": "O processo começa com uma tentativa de mediação (se houver acordo, fica ainda mais barato) e, sem acordo, o juiz de paz decide — a sentença vale exatamente o mesmo que a de um tribunal de 1.ª instância. É esta a resposta ao 'não vale a pena, ia gastar mais em advogados': para conflitos do dia-a-dia, muitas vezes vale. Verifica no site da Justiça se o teu concelho é servido por um julgado de paz (funcionam por agrupamentos de concelhos).",
+          "links": ["injuncao", "custas-apoio", "resolucao-litigios", "prazos-prescricao"]
+        },
+        {
+          "id": "injuncao",
+          "icon": "🧾",
+          "term": "Injunção (cobrar dívidas simples)",
+          "full": "Quando te devem dinheiro e não contestam",
+          "what": "Para dívidas claras (faturas por pagar, rendas, serviços prestados) há um atalho: o requerimento de injunção, entregue online no Balcão Nacional de Injunções, por uma taxa que começa em ~50 €. Se o devedor não contestar no prazo, o documento ganha força executiva — passa a permitir penhora, sem julgamento.",
+          "tip": "É o instrumento mais subutilizado por freelancers e senhorios: um cliente que 'se esqueceu' de pagar raramente contesta uma dívida documentada. Até 5 000 € podes tratar tudo sem advogado. Se o devedor contestar, o caso segue para tribunal (ou julgado de paz) — mas a maioria não contesta.",
+          "links": ["julgados-de-paz", "prazos-prescricao", "recibos-verdes"]
+        },
+        {
+          "id": "custas-apoio",
+          "icon": "💼",
+          "term": "Tribunal, custas e apoio judiciário",
+          "full": "Quanto custa mesmo — e quem paga por ti",
+          "what": "No tribunal comum paga-se taxa de justiça (calculada em 'unidades de conta', na ordem das centenas de euros por parte), mais advogado. MAS: quem tem baixos rendimentos tem direito a apoio judiciário — o Estado dispensa as taxas e nomeia e paga um advogado. E muitos seguros (multirriscos, automóvel, saúde) incluem 'proteção jurídica' que paga advogados em litígios cobertos.",
+          "tip": "Ordem de ataque a um problema legal: 1) negociação escrita/carta registada; 2) livro de reclamações + regulador (se for empresa); 3) centro de arbitragem ou julgado de paz; 4) injunção (se for dívida); 5) tribunal — já com apoio judiciário pedido na Segurança Social ou com a proteção jurídica do teu seguro ativada. Consulta jurídica inicial: a Ordem dos Advogados e muitos municípios têm gabinetes de consulta gratuita ou a preços simbólicos.",
+          "links": ["julgados-de-paz", "injuncao", "resolucao-litigios"]
+        },
+        {
+          "id": "prazos-prescricao",
+          "icon": "⏳",
+          "term": "Prazos e prescrições",
+          "full": "Direitos com validade",
+          "what": "Quase tudo na justiça tem prazo: a queixa-crime (ofensas, burla, dano…) tem de ser apresentada no prazo de 6 meses depois de saberes quem foi. As dívidas também prescrevem: contas de água, luz, gás e telecomunicações não podem ser cobradas passados 6 meses sobre a prestação; rendas, juros e quotas prescrevem em 5 anos.",
+          "tip": "A prescrição das contas de serviços essenciais (6 meses) é dos direitos mais desconhecidos: se a operadora te aparece a cobrar uma fatura de há um ano, podes invocar a prescrição por escrito e recusar o pagamento. Atenção ao inverso: se és tu o credor (freelancer, senhorio), não deixes dormir as dívidas — a injunção interrompe a prescrição.",
+          "links": ["injuncao", "julgados-de-paz", "garantia-3anos"]
+        }
+      ]
+    },
+    {
+      "id": "acidentes",
+      "icon": "🚨",
+      "title": "Acidentes e multas",
+      "desc": "O que fazer num acidente (mesmo com fuga), seguros e contraordenações",
+      "topics": [
+        {
+          "id": "acidente-passos",
+          "icon": "🚗",
+          "term": "Tive um acidente — o que faço?",
+          "full": "Os primeiros minutos, por ordem",
+          "what": "1) Liga os quatro-piscas, colete refletor ANTES de sair do carro, triângulo a sinalizar. 2) Há feridos? Liga 112 e não movas as viaturas nem os feridos. 3) Só chapa e ambos de acordo? Tira fotos (posição dos carros, danos, matrículas, estrada) e tira os carros da via. 4) Preenche a Declaração Amigável com o outro condutor. 5) Sem acordo, condutor alterado ou suspeita de álcool? Chama a polícia (GNR/PSP) e não assines nada.",
+          "tip": "Fotografa SEMPRE antes de mover os carros — a posição das viaturas é a prova que desaparece. Aponta os dados de testemunhas (nome e telefone) no momento; depois do acidente ninguém volta atrás. E guarda no telemóvel a app/contacto da tua seguradora: muitas têm assistência que trata do reboque e do processo na hora.",
+          "links": ["declaracao-amigavel", "acidente-fuga", "seguro-auto"]
+        },
+        {
+          "id": "declaracao-amigavel",
+          "icon": "📝",
+          "term": "Declaração Amigável (DAAA)",
+          "full": "O papel azul que acelera tudo",
+          "what": "É o formulário europeu que os dois condutores preenchem e assinam no local: croqui do acidente, danos visíveis, circunstâncias. Assinar NÃO é assumir culpa — é só fixar os factos; a culpa é apurada depois pelas seguradoras. Cada um fica com uma cópia e envia à sua seguradora — o prazo legal de participação é de 8 dias.",
+          "tip": "Se ambas as seguradoras aderirem ao sistema IDS (a esmagadora maioria), é a TUA seguradora que avalia e paga os teus danos diretamente, mesmo sendo o outro o culpado — muito mais rápido do que esperar pela seguradora dele. Traz sempre uma DAAA no porta-luvas (a seguradora dá-tas de graça) e, na dúvida sobre o que escrever, fotografa tudo e escreve pouco: os factos, não opiniões.",
+          "links": ["acidente-passos", "seguro-auto", "acidente-fuga"]
+        },
+        {
+          "id": "acidente-fuga",
+          "icon": "🏃",
+          "term": "O outro condutor fugiu (ou não tem seguro)",
+          "full": "Não estás desprotegido: existe o Fundo de Garantia Automóvel",
+          "what": "Se o responsável fugir sem se identificar ou não tiver seguro, quem indemniza é o Fundo de Garantia Automóvel (FGA), gerido pela ASF: cobre sempre os danos corporais e, quando o responsável é identificado mas não tem seguro (ou há corporais graves), também os danos materiais.",
+          "tip": "No momento: aponta/fotografa TUDO o que conseguires (matrícula mesmo parcial, marca, cor, direção de fuga) e pede contactos a testemunhas. Depois: apresenta queixa à GNR/PSP o mais depressa possível — a participação policial é essencial para acionar o FGA — e participa também à tua seguradora. Fugir do local é crime; com a matrícula, a polícia identifica o condutor na maioria dos casos.",
+          "links": ["acidente-passos", "declaracao-amigavel", "seguro-auto", "julgados-de-paz"]
+        },
+        {
+          "id": "seguro-auto",
+          "icon": "🛡️",
+          "term": "Seguro automóvel — o que cobre mesmo",
+          "full": "Terceiros, danos próprios e as letras pequenas",
+          "what": "O seguro obrigatório ('contra terceiros') cobre os danos que TU causas aos outros — nunca os do teu carro. Danos próprios ('todos os riscos') cobre também o teu, com franquia. Pelo meio há coberturas que fazem diferença: quebra de vidros, assistência em viagem, veículo de substituição, ocupantes e proteção jurídica.",
+          "tip": "Revê a apólice uma vez por ano: o valor seguro do carro desce (desvalorização) mas o prémio muitas vezes não — renegociar ou mudar de seguradora à data-aniversário poupa dezenas/centenas de euros (podes rescindir com 30 dias de aviso prévio antes da renovação). E confirma se tens proteção jurídica: paga advogado em conflitos de acidentes e é das coberturas mais úteis e esquecidas.",
+          "links": ["declaracao-amigavel", "acidente-fuga", "custas-apoio"]
+        },
+        {
+          "id": "multas-defesa",
+          "icon": "🎫",
+          "term": "Multas e contraordenações",
+          "full": "Pagar pelo mínimo ou defender — os prazos",
+          "what": "Depois de notificado tens um prazo curto (15 dias úteis) para escolher: pagar voluntariamente pelo VALOR MÍNIMO da coima, ou apresentar defesa por escrito à ANSR (com provas: fotos, testemunhas, documentos). Não fazer nada é o pior cenário — o valor sobe e pode acrescer apreensão de pontos/inibição.",
+          "tip": "Vale a pena defender quando há erro objetivo (matrícula trocada, sinalização inexistente/encoberta, carro já vendido — junta o comprovativo do registo). O portal da ANSR permite consultar e tratar contraordenações online com a Chave Móvel Digital. Pontos da carta: consulta-os no portal — perder pontos obriga a ações de formação; recuperas pontos por cada 3 anos sem infrações.",
+          "links": ["comprar-vender-carro", "acidente-passos"]
         }
       ]
     }
