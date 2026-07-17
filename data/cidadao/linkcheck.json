@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-17T21:03:58.230Z",
- "total": 79,
+ "generated": "2026-07-17T21:17:56.596Z",
+ "total": 84,
  "broken": 0,
- "unknown": 30,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -37,20 +37,20 @@
   {
    "id": "apoios:elar",
    "url": "https://www.fundoambiental.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:vale-eficiencia",
    "url": "https://www.fundoambiental.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:edificios-sustentaveis",
    "url": "https://www.fundoambiental.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:tarifa-social-agua",
@@ -475,6 +475,36 @@
   {
    "id": "municipio:leiria:apoio-municipe-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:torres-vedras",
+   "url": "https://www.cm-tvedras.pt/",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:torres-vedras:bolsas-tvedras",
+   "url": "https://www.cm-tvedras.pt/educacao/apoio-a-familia/bolsas-ensino-superior",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:torres-vedras:natalidade-tvedras",
+   "url": "https://www.cm-tvedras.pt/artigos/detalhes/torres-vedras-ira-implementar-programa-de-apoio-a-familia-e-natalidade",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:torres-vedras:seniores-tvedras",
+   "url": "https://www.cm-tvedras.pt/seniores",
+   "status": 200,
+   "ok": true
+  },
+  {
+   "id": "municipio:torres-vedras:respostas-sociais-tvedras",
+   "url": "https://www.cm-tvedras.pt/outros/respostassociais/",
    "status": 200,
    "ok": true
   }

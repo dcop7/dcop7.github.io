@@ -86,6 +86,86 @@
         }
       ],
       "notas": "Valores confirmados nas deliberações municipais e notícias oficiais da CM Leiria para 2026."
+    },
+    {
+      "id": "torres-vedras",
+      "nome": "Torres Vedras",
+      "distrito": "Lisboa",
+      "verificado": "2026-07-17",
+      "site": "https://www.cm-tvedras.pt/",
+      "taxas": [
+        {
+          "id": "imi",
+          "icon": "🏠",
+          "nome": "IMI",
+          "valor": "0,35% — prédios urbanos",
+          "detalhe": "Taxa mantida nos últimos anos, com uma redução adicional aprovada para prédios arrendados para habitação — quem é senhorio com contrato registado paga menos.",
+          "fonte": "https://www.cm-tvedras.pt/artigos/detalhes/camara-municipal-de-torres-vedras-aprova-reducao-da-taxa-de-imi-para-predios-arrendado"
+        },
+        {
+          "id": "imi-familiar",
+          "icon": "👨‍👩‍👧",
+          "nome": "IMI familiar",
+          "valor": "−20 € · −40 € · −70 €",
+          "detalhe": "Dedução fixa no IMI da casa de morada de família com 1, 2 ou 3+ dependentes — aplicada automaticamente pela AT; confirma apenas que a morada fiscal está certa.",
+          "fonte": "https://www.cm-tvedras.pt/artigos/detalhes/camara-municipal-de-torres-vedras-mantem-o-beneficio-municipal-para-as-familias"
+        },
+        {
+          "id": "irs",
+          "icon": "💶",
+          "nome": "Participação no IRS",
+          "valor": "3,75% — devolve 1,25%",
+          "detalhe": "Torres Vedras abdica de parte da participação máxima (5%): os residentes recebem 1,25% do IRS de volta no acerto anual — desconto aplicado automaticamente na liquidação.",
+          "fonte": "https://www.portaldasfinancas.gov.pt/pt/consultarTaxasIRSMunicipiosForm.action"
+        },
+        {
+          "id": "derrama",
+          "icon": "🏢",
+          "nome": "Derrama (empresas)",
+          "valor": "Reduzida para 2026",
+          "detalhe": "O município reduziu a derrama para 2026 — relevante para empresas com sede no concelho; valores e isenções na deliberação municipal.",
+          "fonte": "https://www.cm-tvedras.pt/artigos/detalhes/municipio-de-torres-vedras-reduziu-a-derrama-para-2026"
+        }
+      ],
+      "apoios": [
+        {
+          "id": "bolsas-tvedras",
+          "icon": "🎓",
+          "nome": "Bolsas de estudo \"+ FUTURO\" (ensino superior)",
+          "sum": "Bolsas municipais para jovens do concelho no ensino superior, renováveis até 3 anos, com valor consoante o rendimento per capita do agregado.",
+          "quem": "Até 23 anos, secundário concluído com média ≥ 14 valores, residência no concelho há 5+ anos",
+          "janela": "Períodos de candidatura anunciados no site (arranque do ano letivo)",
+          "url": "https://www.cm-tvedras.pt/educacao/apoio-a-familia/bolsas-ensino-superior"
+        },
+        {
+          "id": "natalidade-tvedras",
+          "icon": "👶",
+          "nome": "Nascer e Crescer em Torres Vedras",
+          "sum": "Programa de apoio à natalidade: benefícios em saúde, bem-estar e educação para famílias com crianças até aos 3 anos (ex.: 50% na natação de bebés nas piscinas municipais e vales de 30 € em farmácias aderentes).",
+          "quem": "Famílias com bebés e crianças até aos 3 anos registados no concelho",
+          "janela": "",
+          "url": "https://www.cm-tvedras.pt/artigos/detalhes/torres-vedras-ira-implementar-programa-de-apoio-a-familia-e-natalidade"
+        },
+        {
+          "id": "seniores-tvedras",
+          "icon": "🧓",
+          "nome": "Programas para seniores",
+          "sum": "Conjunto de projetos e serviços municipais para maiores: participação ativa, aprendizagem ao longo da vida e ocupação de tempos livres.",
+          "quem": "Seniores residentes no concelho",
+          "janela": "",
+          "url": "https://www.cm-tvedras.pt/seniores"
+        },
+        {
+          "id": "respostas-sociais-tvedras",
+          "icon": "🤝",
+          "nome": "Respostas sociais municipais",
+          "sum": "Apoios sociais do município para situações de vulnerabilidade — habitação, emergência social e encaminhamento para as respostas certas.",
+          "quem": "Munícipes em situação de vulnerabilidade — critérios nos regulamentos",
+          "janela": "",
+          "url": "https://www.cm-tvedras.pt/outros/respostassociais/"
+        }
+      ],
+      "notas": "Valores confirmados nas notícias e páginas oficiais da CM Torres Vedras (IRS confirmado na tabela da AT)."
     }
   ]
 }
