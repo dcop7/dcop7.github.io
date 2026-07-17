@@ -49,6 +49,7 @@ const HumorPage = (function () {
   const SCOPES = {
     all:     { label: '🎲 Humor Aleatório',     groups: null },
     piadas:  { label: '😂 Piada Aleatória',     groups: ['piadas', 'temas'] },
+    secas:   { label: '🌵 Seca Aleatória',      groups: ['secas'] },
     enigmas: { label: '🧩 Adivinha & Cúmulo',   groups: ['enigmas'] },
     piropos: { label: '💘 Piropo Aleatório',    groups: ['piropos'] }
   };
@@ -77,7 +78,7 @@ const HumorPage = (function () {
           <span class="ph-ico">${AppIcons.icon('humor', 22)}</span>
           <div class="ph-titles">
             <h1 class="ph-title">Humor</h1>
-            <p class="ph-sub">Piadas, adivinhas, cúmulos e piropos — escolhe uma categoria ou arrisca uma aleatória</p>
+            <p class="ph-sub">Piadas, secas por temas, adivinhas, cúmulos e piropos — escolhe uma categoria ou arrisca uma aleatória</p>
           </div>
         </div>
         <div class="hm-toolbar">

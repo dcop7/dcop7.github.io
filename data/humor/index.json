@@ -1,18 +1,28 @@
 {
   "groups": [
     { "id": "piadas", "name": "Piadas", "icon": "😂" },
+    { "id": "secas", "name": "Piadas Secas", "icon": "🌵" },
     { "id": "enigmas", "name": "Adivinhas & Cúmulos", "icon": "🧩" },
     { "id": "piropos", "name": "Piropos", "icon": "💘" },
     { "id": "temas", "name": "Por Tema", "icon": "🗂️" }
   ],
   "categories": [
     { "id": "geral", "name": "Humor Geral", "icon": "😄", "desc": "Um pouco de tudo", "group": "piadas" },
-    { "id": "secas", "name": "Piadas Secas", "icon": "🌵", "desc": "Tão más que têm piada", "group": "piadas" },
     { "id": "trocadilhos", "name": "Trocadilhos", "icon": "🔤", "desc": "Jogos de palavras", "group": "piadas" },
     { "id": "portugues", "name": "Piadas de Português", "icon": "🇵🇹", "desc": "O português que dá a volta a tudo", "group": "piadas" },
     { "id": "sarcasticas", "name": "Sarcásticas", "icon": "😏", "desc": "Com uma pontinha de veneno", "group": "piadas" },
     { "id": "nerd", "name": "Nerd / Geek", "icon": "🤓", "desc": "Tecnologia e ciência", "group": "piadas" },
     { "id": "dadjokes", "name": "Humor de Pai", "icon": "👨", "desc": "Trocadilhos de pai, dos secos", "group": "piadas" },
+
+    { "id": "secas", "name": "Clássicas", "icon": "🌵", "desc": "As secas de sempre, tão más que têm piada", "group": "secas" },
+    { "id": "secas-animais", "name": "Animais", "icon": "🦆", "desc": "A bicharada mais seca do reino", "group": "secas" },
+    { "id": "secas-comida", "name": "Comida & Bebida", "icon": "🍕", "desc": "Secas para acompanhar a refeição", "group": "secas" },
+    { "id": "secas-profissoes", "name": "Profissões", "icon": "👷", "desc": "Cada ofício tem a sua seca", "group": "secas" },
+    { "id": "secas-natureza", "name": "Natureza & Espaço", "icon": "🌵", "desc": "Do fundo do mar ao vácuo", "group": "secas" },
+    { "id": "secas-objetos", "name": "Objetos", "icon": "🔨", "desc": "Coisas que falam (mal)", "group": "secas" },
+    { "id": "secas-festas", "name": "Natal & Festas", "icon": "🎄", "desc": "Secas de época festiva", "group": "secas" },
+    { "id": "secas-personagens", "name": "Filmes & Personagens", "icon": "🦸", "desc": "Da Disney ao Batman", "group": "secas" },
+    { "id": "secas-ingles", "name": "Inglês à Portuguesa", "icon": "🇬🇧", "desc": "Trocadilhos bilingues dos secos", "group": "secas" },
 
     { "id": "adivinhas", "name": "Adivinhas", "icon": "🧩", "desc": "O que é, o que é?", "group": "enigmas" },
     { "id": "cumulos", "name": "Cúmulos", "icon": "🎯", "desc": "Qual é o cúmulo de…?", "group": "enigmas" },
