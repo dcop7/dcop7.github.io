@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "updated": "2026-07-17",
+  "note": "Guias de literacia para a tab Aprender. Cada tópico tem: what (o que é, linguagem simples), tip (na prática/exemplo) e links (ids de outros tópicos a que se liga — alimentam os chips 'liga-se a'). Valores concretos são indicativos e datados; os textos preferem ordens de grandeza a números exatos.",
+  "guides": [
+    {
+      "id": "impostos",
+      "icon": "🧾",
+      "title": "Impostos e rendimento",
+      "desc": "IRS, IRC, retenção na fonte, recibos verdes — o que são e como se ligam",
+      "topics": [
+        {
+          "id": "irs",
+          "icon": "🧾",
+          "term": "IRS",
+          "full": "Imposto sobre o Rendimento das pessoas Singulares",
+          "what": "É o imposto que as pessoas pagam sobre o que ganham num ano: salários, recibos verdes, pensões, rendas, mais-valias. É progressivo — quem ganha mais paga uma percentagem maior — e acerta-se uma vez por ano na declaração de abril–junho.",
+          "tip": "Durante o ano vais adiantando IRS todos os meses (retenção na fonte). A declaração anual serve para fazer as contas certas: se adiantaste a mais, recebes reembolso; se adiantaste a menos, pagas a diferença.",
+          "links": ["retencao", "escaloes", "deducoes", "reembolso", "recibos-verdes"]
+        },
+        {
+          "id": "escaloes",
+          "icon": "📊",
+          "term": "Escalões e taxas progressivas",
+          "full": "Como o IRS cresce com o rendimento",
+          "what": "O rendimento é fatiado em escalões e cada fatia paga a sua taxa — só a parte que cai num escalão mais alto é que paga a taxa desse escalão. Por isso, subir de escalão nunca faz perder dinheiro: a taxa mais alta só se aplica ao excedente.",
+          "tip": "Exemplo simplificado: se o escalão até 10 000 € paga 15% e o seguinte 25%, quem ganha 12 000 € paga 15% sobre os primeiros 10 000 e 25% só sobre os 2 000 restantes. A tua 'taxa efetiva' (o que pagas no total a dividir pelo que ganhas) é sempre mais baixa do que a taxa do teu escalão.",
+          "links": ["irs", "retencao"]
+        },
+        {
+          "id": "retencao",
+          "icon": "💸",
+          "term": "Retenção na fonte",
+          "full": "O adiantamento mensal do IRS",
+          "what": "A entidade que te paga (empresa, cliente, Segurança Social) desconta logo uma parte para o Estado antes de o dinheiro chegar a ti. Não é um imposto à parte — é um adiantamento por conta do IRS que vais acertar no ano seguinte.",
+          "tip": "É por isto que o salário líquido é mais baixo que o bruto, e é daqui que nasce o reembolso: se as tabelas de retenção te descontaram mais do que o IRS final, o excesso volta. Nos recibos verdes a retenção (quando aplicável) é feita pelo cliente à taxa de 25% (serviços, regra geral).",
+          "links": ["irs", "reembolso", "bruto-liquido", "recibos-verdes"]
+        },
+        {
+          "id": "reembolso",
+          "icon": "💰",
+          "term": "Reembolso do IRS",
+          "full": "Porque recebes (ou pagas) no verão",
+          "what": "Depois de entregares a declaração, a AT calcula o imposto devido e compara com o que já adiantaste por retenção. Retiveste a mais → reembolso; a menos → nota de cobrança até 31 de agosto.",
+          "tip": "Reembolso grande não é prémio — significa que emprestaste dinheiro ao Estado a juro zero durante um ano. As deduções (faturas validadas, saúde, educação, rendas) aumentam o reembolso; esquecê-las é deitar dinheiro fora.",
+          "links": ["retencao", "deducoes", "irs"]
+        },
+        {
+          "id": "deducoes",
+          "icon": "📑",
+          "term": "Deduções à coleta",
+          "full": "As despesas que baixam o teu IRS",
+          "what": "Parte do que gastas em saúde, educação, rendas, lares e despesas gerais desconta diretamente no imposto a pagar. Também há dedução por exigires fatura com NIF em restaurantes, oficinas, cabeleireiros, ginásios e veterinários (parte do IVA volta).",
+          "tip": "Só contam faturas com o teu NIF e validadas no e-Fatura até 25 de fevereiro. Pedir fatura com contribuinte custa 5 segundos e no fim do ano são dezenas ou centenas de euros de diferença no acerto.",
+          "links": ["reembolso", "irs"]
+        },
+        {
+          "id": "recibos-verdes",
+          "icon": "🧑‍💻",
+          "term": "Recibos verdes",
+          "full": "Trabalho independente (categoria B)",
+          "what": "Quem trabalha por conta própria abre atividade nas Finanças e emite recibos eletrónicos aos clientes. Paga IRS sobre este rendimento (categoria B) e contribui para a Segurança Social com base no que declara trimestralmente.",
+          "tip": "Três engrenagens para não te perderes: (1) IVA — estás isento até um volume de negócios na casa dos 15 mil €/ano (art. 53.º); acima, cobras IVA e entregas ao Estado. (2) Retenção — clientes com contabilidade organizada podem reter 25% dos teus honorários; no 1.º ano e abaixo de certo volume podes ficar dispensado. (3) Segurança Social — declaração trimestral e contribuição de ~21,4% (com isenção no arranque). No regime simplificado, o IRS incide sobre 75% do que faturas em serviços — os outros 25% são despesas presumidas.",
+          "links": ["irs", "iva", "seguranca-social", "retencao"]
+        },
+        {
+          "id": "irc",
+          "icon": "🏢",
+          "term": "IRC",
+          "full": "Imposto sobre o Rendimento das pessoas Coletivas",
+          "what": "É o 'IRS das empresas': incide sobre o lucro (proveitos menos gastos) das sociedades. A taxa geral anda na casa dos 20%, com taxa reduzida para PME nos primeiros lucros e derramas municipais/estaduais por cima.",
+          "tip": "Um freelancer em nome individual não paga IRC — paga IRS (categoria B). O IRC só entra se criares uma sociedade (ex.: unipessoal Lda.): aí a empresa paga IRC sobre o lucro e tu pagas IRS sobre o salário e/ou dividendos que tirares dela. Vale a pena comparar os dois cenários a partir de rendimentos altos.",
+          "links": ["irs", "recibos-verdes", "iva"]
+        },
+        {
+          "id": "iva",
+          "icon": "🛒",
+          "term": "IVA",
+          "full": "Imposto sobre o Valor Acrescentado",
+          "what": "É o imposto do consumo: está embutido em quase tudo o que compras — taxa normal de 23%, intermédia de 13% e reduzida de 6% (bens essenciais). Quem o entrega ao Estado são as empresas, mas quem o paga és tu no preço final.",
+          "tip": "Se passas recibos verdes: enquanto estiveres no regime de isenção (art. 53.º) não cobras IVA mas também não o deduzes nas tuas compras. Ao sair da isenção, os teus preços 'sobem' 23% para o cliente final — planeia essa transição.",
+          "links": ["recibos-verdes", "deducoes", "irc"]
+        },
+        {
+          "id": "seguranca-social",
+          "icon": "🏦",
+          "term": "Contribuições para a Segurança Social",
+          "full": "TSU — o desconto que não é IRS",
+          "what": "Do teu salário bruto saem dois descontos distintos: o IRS (retenção) e os 11% para a Segurança Social; a empresa paga ainda 23,75% por fora. Estas contribuições financiam as pensões, o subsídio de desemprego, a baixa e a parentalidade — e constroem a TUA carreira contributiva.",
+          "tip": "Independentes pagam ~21,4% sobre uma base apurada da declaração trimestral. Cada mês com contribuições conta para o prazo de garantia das prestações (ex.: 360 dias para subsídio de desemprego) e para a futura pensão — buracos na carreira pagam-se décadas depois.",
+          "links": ["bruto-liquido", "recibos-verdes", "retencao"]
+        },
+        {
+          "id": "bruto-liquido",
+          "icon": "🧮",
+          "term": "Salário bruto → líquido",
+          "full": "Para onde vai a diferença",
+          "what": "Do bruto ao líquido saem duas fatias: retenção de IRS (depende do escalão, situação familiar e tabelas do ano) e 11% de Segurança Social. Subsídios de férias e Natal também descontam.",
+          "tip": "Exemplo com números redondos: bruto de 1 500 € → sai ~165 € de Segurança Social (11%) e uma retenção de IRS que varia (digamos ~180 €) → líquido ≈ 1 155 €. Ao negociar salário, fala sempre em bruto anual (×14 meses) — é essa a linguagem dos contratos.",
+          "links": ["retencao", "seguranca-social", "escaloes"]
+        },
+        {
+          "id": "impostos-propriedade",
+          "icon": "🏠",
+          "term": "IMI, IMT e IUC",
+          "full": "Os impostos de ter casa e carro",
+          "what": "IMI: paga-se todos os anos por ter um imóvel (percentagem do valor patrimonial, definida pelo município). IMT: paga-se uma vez, na compra de um imóvel (jovens até 35 têm isenção na 1.ª casa). IUC: paga-se todos os anos por ter um carro, até ao fim do mês da matrícula.",
+          "tip": "Os três estão no calendário desta secção com os prazos certos. Dica de IMI: o valor patrimonial tributário (VPT) pode estar desatualizado — pedir a reavaliação é gratuito e, em casas antigas, baixa frequentemente o imposto.",
+          "links": ["irs", "deducoes"]
+        }
+      ]
+    },
+    {
+      "id": "financas",
+      "icon": "💶",
+      "title": "Literacia financeira",
+      "desc": "Euribor, juros, inflação e créditos — como as peças encaixam",
+      "topics": [
+        {
+          "id": "inflacao",
+          "icon": "🎈",
+          "term": "Inflação",
+          "full": "Porque o dinheiro parado perde valor",
+          "what": "É a subida generalizada dos preços, medida pelo IPC (Índice de Preços no Consumidor). Com inflação de 3% ao ano, 1 000 € parados compram daqui a um ano o que hoje custam ~970 €. O objetivo do Banco Central Europeu é mantê-la perto de 2%.",
+          "tip": "É o elo que liga tudo: inflação alta → o BCE sobe as taxas de juro para arrefecer a economia → a Euribor sobe → a prestação da casa sobe. E ao contrário quando a inflação acalma. Poupança que renda menos do que a inflação está a encolher em termos reais.",
+          "links": ["taxas-juro", "euribor", "poupanca-estado", "juros-compostos"]
+        },
+        {
+          "id": "taxas-juro",
+          "icon": "🎚️",
+          "term": "Taxas de juro",
+          "full": "O preço do dinheiro",
+          "what": "Juro é o que se paga por usar dinheiro emprestado (ou o que se recebe por emprestá-lo). O BCE fixa as taxas diretoras da zona euro — o 'preço base' do dinheiro — e tudo o resto (Euribor, créditos, depósitos) dança à volta delas.",
+          "tip": "Regra mental: taxas a subir → crédito mais caro, depósitos a render mais, casas a valorizar menos. Taxas a descer → o inverso. Quem tem crédito a taxa variável sente estas decisões diretamente na prestação, com uns meses de atraso.",
+          "links": ["euribor", "inflacao", "credito-habitacao", "tan-taeg"]
+        },
+        {
+          "id": "euribor",
+          "icon": "📈",
+          "term": "Euribor",
+          "full": "O indexante da prestação da casa",
+          "what": "É a taxa média a que os grandes bancos europeus emprestam dinheiro entre si, publicada todos os dias úteis em vários prazos (3, 6 e 12 meses). Em Portugal, a esmagadora maioria dos créditos à habitação a taxa variável está indexada à Euribor a 3 ou 6 meses.",
+          "tip": "Como mexe na tua vida: se o teu contrato é 'Euribor 6M + spread 1%', de 6 em 6 meses o banco recalcula a prestação com a média da Euribor do mês anterior à revisão. Euribor a subir 1 ponto num crédito de 150 000 € a 30 anos = prestação ~80–90 € mais cara.",
+          "links": ["spread", "credito-habitacao", "taxas-juro"]
+        },
+        {
+          "id": "spread",
+          "icon": "➕",
+          "term": "Spread",
+          "full": "A margem do banco",
+          "what": "É a percentagem que o banco soma ao indexante (Euribor) e que constitui o seu ganho no crédito. Ao contrário da Euribor, o spread é fixado no contrato e não mexe — a menos que o renegoceies.",
+          "tip": "O spread 'baixo' vem quase sempre agarrado a vendas associadas (domiciliar ordenado, cartões, seguros do banco). Faz as contas ao pacote todo: às vezes um spread 0,1% mais baixo custa mais caro em seguros do que poupa em juros. O spread é renegociável — e a transferência de crédito para outro banco é uma arma real nessa conversa.",
+          "links": ["euribor", "tan-taeg", "credito-habitacao"]
+        },
+        {
+          "id": "tan-taeg",
+          "icon": "🔍",
+          "term": "TAN vs TAEG",
+          "full": "As duas taxas dos contratos",
+          "what": "TAN é a taxa de juro anual 'nua' (Euribor + spread, no variável). TAEG é o custo total do crédito em percentagem: juros + comissões + seguros obrigatórios + impostos. A TAEG existe precisamente para poderes comparar propostas.",
+          "tip": "Compara créditos SEMPRE pela TAEG e pelo MTIC (montante total imputado ao consumidor — os euros todos que vais pagar até ao fim). Uma TAN aparentemente baixa com seguros caros dá uma TAEG alta. Estes números são obrigatórios na ficha FINE que o banco te entrega antes de assinares.",
+          "links": ["spread", "credito-habitacao", "credito-consumo"]
+        },
+        {
+          "id": "credito-habitacao",
+          "icon": "🏠",
+          "term": "Crédito à habitação",
+          "full": "Variável, fixa ou mista",
+          "what": "Empréstimo de longo prazo (até 40 anos) com a casa como garantia (hipoteca). Três sabores: taxa variável (Euribor + spread — prestação mexe nas revisões), taxa fixa (prestação igual até ao fim — pagas um prémio pela certeza) e mista (fixa uns anos, variável depois).",
+          "tip": "Três alavancas que valem dinheiro: (1) amortizar antecipadamente reduz juros — a comissão legal máxima é 0,5% no variável e 2% no fixo, e no variável tem estado isenta por medidas extraordinárias; (2) transferir o crédito para outro banco com melhor proposta é normal e barato; (3) atenção à taxa de esforço — os bancos não gostam de prestações acima de ~35–40% do rendimento, e tu também não devias.",
+          "links": ["euribor", "spread", "tan-taeg", "taxa-esforco", "juros-compostos"]
+        },
+        {
+          "id": "credito-consumo",
+          "icon": "🛍️",
+          "term": "Crédito pessoal e ao consumo",
+          "full": "O dinheiro mais caro que o da casa",
+          "what": "Créditos sem garantia real (carro, obras, férias, cartões de crédito, descobertos). Como o risco do banco é maior, as taxas são muito mais altas do que na habitação — o Banco de Portugal publica trimestralmente as TAEG máximas permitidas por tipo.",
+          "tip": "Hierarquia do perigo: crédito pessoal clássico < cartão de crédito < revolving/descoberto. Um cartão a 15–18% de TAEG em que só pagas o mínimo é uma bola de neve de juros compostos contra ti. Se tens vários créditos caros, consolidar num só mais barato pode cortar a prestação — mas compara pela TAEG total, não pela prestação mensal.",
+          "links": ["tan-taeg", "juros-compostos", "mapa-credito", "taxa-esforco"]
+        },
+        {
+          "id": "juros-compostos",
+          "icon": "❄️",
+          "term": "Juros compostos",
+          "full": "A bola de neve (a favor e contra)",
+          "what": "Juros que rendem sobre juros: cada período, o rendimento junta-se ao capital e passa também a render. Com o tempo o crescimento é exponencial — a favor na poupança e investimento, contra ti nas dívidas em que só pagas o mínimo.",
+          "tip": "Regra dos 72: divide 72 pela taxa anual e tens os anos para duplicar. A 6%, o dinheiro duplica em ~12 anos; a 2%, em 36. Começar a poupar aos 25 em vez dos 35 pode significar quase o dobro no final — o ingrediente mágico não é a taxa, é o tempo.",
+          "links": ["poupanca-estado", "fundo-emergencia", "credito-consumo", "inflacao"]
+        },
+        {
+          "id": "poupanca-estado",
+          "icon": "🐷",
+          "term": "Certificados de Aforro e do Tesouro",
+          "full": "Emprestar ao Estado sem risco de mercado",
+          "what": "Produtos de poupança do Estado português, subscritos nos CTT ou no AforroNet, com capital garantido. Os Certificados de Aforro têm taxa ligada à Euribor 3M (com teto) e prémios de permanência; os do Tesouro têm taxas crescentes a prazos mais longos.",
+          "tip": "São o degrau natural a seguir ao fundo de emergência: rendem mais que a maioria dos depósitos, sem risco de perder capital. Nota como o circuito fecha: a mesma Euribor que encarece a prestação da casa faz render mais os certificados — as taxas têm sempre dois lados.",
+          "links": ["euribor", "juros-compostos", "fundo-emergencia", "inflacao"]
+        },
+        {
+          "id": "fundo-emergencia",
+          "icon": "🛟",
+          "term": "Fundo de emergência",
+          "full": "O colchão antes de tudo o resto",
+          "what": "Reserva de 3 a 6 meses de despesas essenciais, guardada em algo líquido e sem risco (conta poupança, certificados resgatáveis). Serve para desemprego, avarias e saúde — para não teres de recorrer a crédito caro quando a vida acontece.",
+          "tip": "Ordem de operações das finanças pessoais: 1.º liquidar dívidas caras (cartões), 2.º montar o fundo de emergência, 3.º só depois investir. Automatiza: transferência no dia do ordenado, nem que sejam 50 €. Se ficares desempregado, lembra-te dos 90 dias para pedir o subsídio — está no calendário desta secção.",
+          "links": ["juros-compostos", "poupanca-estado", "credito-consumo"]
+        },
+        {
+          "id": "taxa-esforco",
+          "icon": "⚖️",
+          "term": "Taxa de esforço",
+          "full": "Quanto da tua vida cabe em prestações",
+          "what": "Percentagem do rendimento líquido mensal que vai para prestações de crédito e renda. Abaixo de 35% é considerado saudável; acima disso os bancos torcem o nariz e o orçamento familiar fica frágil a qualquer choque.",
+          "tip": "É um número com consequências práticas: taxa de esforço acima de 35% com a renda é o critério do apoio extraordinário à renda (vê a tab Apoios), e é o que o banco avalia antes de te dar crédito — já com uma subida simulada da Euribor por cima (teste de stress).",
+          "links": ["credito-habitacao", "credito-consumo", "euribor"]
+        },
+        {
+          "id": "mapa-credito",
+          "icon": "🗺️",
+          "term": "Mapa de Responsabilidades de Crédito",
+          "full": "O teu 'cadastro' bancário — grátis",
+          "what": "Registo do Banco de Portugal com todos os teus créditos, fiadores e incumprimentos, que os bancos consultam antes de te emprestar. Podes consultá-lo gratuitamente online no site do Banco de Portugal.",
+          "tip": "Consulta-o antes de pedir um crédito grande: erros e dívidas antigas por limpar chumbam propostas. Cartões de crédito que nunca usas continuam lá a contar para o teu limite de endividamento — cancelar os que não precisas melhora o teu perfil.",
+          "links": ["credito-consumo", "credito-habitacao", "taxa-esforco"]
+        }
+      ]
+    }
+  ]
+}

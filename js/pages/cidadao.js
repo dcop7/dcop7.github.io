@@ -73,6 +73,7 @@ const CidadaoPage = (function () {
     ['agora',     '⚡', 'Now',       'Agora'],
     ['prazos',    '📅', 'Deadlines', 'Prazos'],
     ['apoios',    '🤝', 'Benefits',  'Apoios'],
+    ['aprender',  '📚', 'Learn',     'Aprender'],
     ['novidades', '🆕', 'Updates',   'Novidades'],
   ];
 
@@ -84,8 +85,10 @@ const CidadaoPage = (function () {
   ];
 
   /* ── Estado ── */
-  let _cal = null, _apoios = null, _nov = null;
+  let _cal = null, _apoios = null, _nov = null, _guias = null;
   let _tab = 'agora';
+  let _gdGuide = 'impostos', _gdQuery = '';
+  const _gdOpen = new Set();          /* tópicos expandidos */
   let _view = (() => { try { return localStorage.getItem('cd-view') || 'cards'; } catch { return 'cards'; } })();
   if (!VIEWS.some(v => v[0] === _view)) _view = 'cards';
   let _pzCat = '', _pzMine = false;
@@ -452,6 +455,60 @@ const CidadaoPage = (function () {
       <p class="cd-disclaimer">${_t('Amounts are indicative and change with the State Budget — the official link is always the reference.', 'Os valores são indicativos e mudam com o Orçamento do Estado — o link oficial é sempre a referência.')}</p>`;
   }
 
+  /* ═══════════════════ TAB: APRENDER ═══════════════════ */
+  const _allTopics = () => (((_guias && _guias.guides) || []).flatMap(g => g.topics.map(t => ({ ...t, _guide: g.id }))));
+  function _findTopic(id) { return _allTopics().find(t => t.id === id); }
+
+  function topicCard(t) {
+    const open = _gdOpen.has(t.id);
+    const linkChips = (t.links || []).map(id => {
+      const lt = _findTopic(id);
+      return lt ? `<button class="chip cd-tp-link" data-goto-topic="${id}">${lt.icon} ${esc(lt.term)}</button>` : '';
+    }).join('');
+    return `<article class="cd-tp${open ? ' open' : ''}" id="cd-tp-${t.id}">
+      <button class="cd-tp-head" data-topic="${t.id}" aria-expanded="${open}">
+        <span class="cd-tp-ico">${t.icon}</span>
+        <span class="cd-tp-titles">
+          <span class="cd-tp-term">${esc(t.term)}</span>
+          <span class="cd-tp-full">${esc(t.full || '')}</span>
+        </span>
+        <span class="cd-tp-caret">${open ? '▾' : '▸'}</span>
+      </button>
+      ${open ? `<div class="cd-tp-body">
+        <p class="cd-tp-what">${esc(t.what)}</p>
+        ${t.tip ? `<p class="cd-tp-tip">💡 ${esc(t.tip)}</p>` : ''}
+        ${linkChips ? `<div class="cd-tp-links"><span class="cd-tp-links-l">${_t('Connects to', 'Liga-se a')} →</span>${linkChips}</div>` : ''}
+      </div>` : ''}
+    </article>`;
+  }
+
+  function renderAprender(el) {
+    const guides = (_guias && _guias.guides) || [];
+    if (!guides.length) {
+      el.innerHTML = `<div class="empty-state"><span class="es-ico">📚</span><div class="es-title">${_t('Could not load the guides', 'Não foi possível carregar os guias')}</div></div>`;
+      return;
+    }
+    const q = norm(_gdQuery);
+    let topics;
+    if (q) {
+      topics = _allTopics().filter(t => norm(t.term + ' ' + (t.full || '') + ' ' + t.what + ' ' + (t.tip || '')).includes(q));
+    } else {
+      const g = guides.find(x => x.id === _gdGuide) || guides[0];
+      topics = g.topics;
+    }
+    const active = guides.find(x => x.id === _gdGuide) || guides[0];
+    el.innerHTML = `
+      <div class="cd-toolbar">
+        <input type="search" id="cd-gd-q" class="cd-search" placeholder="${_t('Search a term (e.g. Euribor, IRS)…', 'Pesquisar um termo (ex.: Euribor, IRS)…')}" value="${esc(_gdQuery)}">
+        <div class="seg cd-cats">
+          ${guides.map(g => `<button class="seg-btn${!q && g.id === active.id ? ' active' : ''}" data-guide="${g.id}">${g.icon} ${esc(g.title)}</button>`).join('')}
+        </div>
+      </div>
+      ${q ? '' : `<p class="cd-gd-desc">${esc(active.desc)} — ${_t('tap a term to expand; the "connects to" chips walk you through the web of concepts.', 'toca num termo para abrir; os chips "liga-se a" levam-te de conceito em conceito.')}</p>`}
+      <div class="cd-tp-list">${topics.map(topicCard).join('') || `<div class="empty-state"><span class="es-ico">🔍</span><div class="es-title">${_t('No term found', 'Nenhum termo encontrado')}</div></div>`}</div>
+      <p class="cd-disclaimer">${_t('Plain-language explanations with indicative values — rates, brackets and thresholds change with the State Budget. For decisions with money involved, confirm at Banco de Portugal, AT or a professional.', 'Explicações em linguagem simples com valores indicativos — taxas, escalões e limiares mudam com o Orçamento do Estado. Para decisões com dinheiro envolvido, confirma no Banco de Portugal, na AT ou com um profissional.')}</p>`;
+  }
+
   /* ═══════════════════ TAB: NOVIDADES ═══════════════════ */
   function renderNovidades(el) {
     const items = (_nov && _nov.items) || [];
@@ -560,6 +617,7 @@ const CidadaoPage = (function () {
     }
     if (id === 'prazos') return deadlines().filter(d => !d.info && d.status === 'open' && isMine(d.rule.who)).length || '';
     if (id === 'apoios') return ((_apoios && _apoios.items) || []).length || '';
+    if (id === 'aprender') return _allTopics().length || '';
     if (id === 'novidades') {
       const cut = Date.now() - 48 * 3600000;
       return (((_nov && _nov.items) || []).filter(n => n.ts >= cut).length) || '';
@@ -581,6 +639,7 @@ const CidadaoPage = (function () {
     updateTabs();
     if (_tab === 'prazos') renderPrazos(el);
     else if (_tab === 'apoios') renderApoios(el);
+    else if (_tab === 'aprender') renderAprender(el);
     else if (_tab === 'novidades') renderNovidades(el);
     else renderAgora(el);
     const pb = document.getElementById('cd-profile-btn');
@@ -668,6 +727,27 @@ const CidadaoPage = (function () {
       const ap = e.target.closest('[data-apcat]');
       if (ap) { _apCat = ap.dataset.apcat; renderTab(); return; }
       if (e.target.closest('#cd-ap-little')) { _apLittle = !_apLittle; renderTab(); return; }
+      const gg = e.target.closest('[data-guide]');
+      if (gg) { _gdGuide = gg.dataset.guide; _gdQuery = ''; renderTab(); return; }
+      const gt = e.target.closest('[data-goto-topic]');
+      if (gt) {
+        const id = gt.dataset.gotoTopic;
+        const t = _findTopic(id);
+        if (t) {
+          _gdGuide = t._guide; _gdQuery = ''; _gdOpen.add(id);
+          renderTab();
+          const elT = document.getElementById('cd-tp-' + id);
+          if (elT) elT.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+      const tp = e.target.closest('[data-topic]');
+      if (tp) {
+        const id = tp.dataset.topic;
+        _gdOpen.has(id) ? _gdOpen.delete(id) : _gdOpen.add(id);
+        renderTab();
+        return;
+      }
       const nt = e.target.closest('[data-nvtopic]');
       if (nt) { _nvTopic = nt.dataset.nvtopic; renderTab(); return; }
       const ns = e.target.closest('[data-nvsrc]');
@@ -683,6 +763,14 @@ const CidadaoPage = (function () {
           if (el) { renderApoios(el); const q = document.getElementById('cd-ap-q'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }
         }, 220);
       }
+      if (e.target.id === 'cd-gd-q') {
+        clearTimeout(wire._gt);
+        wire._gt = setTimeout(() => {
+          _gdQuery = e.target.value;
+          const el = document.getElementById('cd-body');
+          if (el) { renderAprender(el); const q = document.getElementById('cd-gd-q'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }
+        }, 220);
+      }
     });
     view.addEventListener('change', (e) => {
       const map = { 'cd-pf-matmonth': 'matMonth', 'cd-pf-matyear': 'matYear', 'cd-pf-cc': 'ccExpiry', 'cd-pf-carta': 'cartaExpiry' };
@@ -694,14 +782,16 @@ const CidadaoPage = (function () {
   /* ═══════════════════ dados + show ═══════════════════ */
   let _built = false;
   async function loadData() {
-    const [cal, ap, nov] = await Promise.allSettled([
+    const [cal, ap, nov, gd] = await Promise.allSettled([
       _cal ? Promise.resolve(_cal) : _fetchJSON(BASE + 'calendario.json'),
       _apoios ? Promise.resolve(_apoios) : _fetchJSON(BASE + 'apoios.json'),
       _fetchJSON(BASE + 'novidades.json'),   /* sempre fresco (Action 6/6h) */
+      _guias ? Promise.resolve(_guias) : _fetchJSON(BASE + 'guias.json'),
     ]);
     if (cal.status === 'fulfilled') _cal = cal.value;
     if (ap.status === 'fulfilled') _apoios = ap.value;
     if (nov.status === 'fulfilled') _nov = nov.value;
+    if (gd.status === 'fulfilled') _guias = gd.value;
   }
 
   async function show(sub) {
