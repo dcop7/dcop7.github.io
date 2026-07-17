@@ -22,7 +22,7 @@ Setting: bright modern minimalist living room, light wood floor, soft warm gray 
 
 Pose: standing upright facing the camera. His head is clearly tilted to HIS RIGHT, right ear moving toward the right shoulder. His RIGHT hand reaches over the top of his head and rests on the left side of his head, gently pulling it further right. His LEFT arm hangs straight down, left shoulder relaxed and pressed down. Eyes closed, calm expression.
 
-Arrow: include exactly ONE smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), placed in the empty space beside the LEFT side of his head, arcing downward toward his right shoulder — showing the direction the head tilts. The arrow must not cover the face or body.
+Arrow: include exactly ONE smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), in the empty space beside the LEFT side of his head (the side opposite the tilt). The arc FOLLOWS the head's tilting motion: the TAIL of the arrow starts low, near his left shoulder, and the arc curves upward — the ARROWHEAD is at the top, pointing up and over toward the crown of his head. The arrowhead must NOT point down toward the shoulder. The arrow must not cover the face or body.
 
 Framing: the ENTIRE body fully visible from head to feet with generous margin on all sides — nothing cropped. Constraints: exactly one person, anatomically correct (exactly two arms and two legs), no text, no logos, no watermarks.
 ```
@@ -38,7 +38,7 @@ Setting: bright modern minimalist living room, light wood floor, soft warm gray 
 
 Pose: standing upright, seen from a three-quarter front view. His head is rotated to HIS RIGHT, looking back over his right shoulder, chin level with the floor. Both arms hang relaxed at his sides — hands NOT in pockets. Torso stays facing forward; only the head rotates.
 
-Arrow: include exactly ONE smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), a horizontal arc floating just above his head, curving in the direction the head rotates (toward his right shoulder). The arrow must not cover the face or body.
+Arrow: include exactly ONE smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), a horizontal arc floating just above his head, tracing the head rotation — the ARROWHEAD points toward the side he is looking at (over his right shoulder), the tail on the opposite side. The arrow must not cover the face or body.
 
 Framing: the ENTIRE body fully visible from head to feet with generous margin on all sides — nothing cropped. Constraints: exactly one person, anatomically correct (exactly two arms and two legs), no text, no logos, no watermarks.
 ```
@@ -70,7 +70,7 @@ Setting: bright modern minimalist living room, light wood floor, soft warm gray 
 
 Pose: sitting upright on a small wooden bench. His RIGHT hand grips the edge of the bench beside his right hip, right arm straight, anchoring the right shoulder down. His head is tilted to HIS LEFT and slightly rotated so the nose points toward the left armpit. His LEFT hand rests gently on the right side of his head, guiding the stretch. Feet flat on the floor.
 
-Arrow: include exactly ONE smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), beside the RIGHT side of his head, arcing down toward his left shoulder — showing the tilt direction. The arrow must not cover the face or body.
+Arrow: include exactly ONE smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), in the empty space beside the RIGHT side of his head (the side opposite the tilt). The arc FOLLOWS the head's tilting motion: the TAIL starts low near his right shoulder and the arc curves upward — the ARROWHEAD is at the top, pointing up and over toward the crown of his head. The arrowhead must NOT point down toward the shoulder. The arrow must not cover the face or body.
 
 Framing: the ENTIRE body and the bench fully visible with generous margin on all sides — nothing cropped. Constraints: exactly one person, anatomically correct (exactly two arms and two legs), no text, no logos, no watermarks.
 ```
@@ -150,7 +150,7 @@ Setting: bright modern minimalist living room, light wood floor, soft warm gray 
 
 Pose: standing facing the camera, feet hip-width apart. His RIGHT arm reaches straight up and arcs over his head toward the left, and his torso is CLEARLY bent sideways to the LEFT in a visible C-curve. His LEFT hand rests on his left hip. Hips stay level and still — only the torso bends.
 
-Arrow: include exactly ONE large smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), in the empty space above him, arcing from right to left following the direction of the side bend. The arrow must not cover the face or body.
+Arrow: include exactly ONE large smooth curved blue arrow (flat modern infographic style, medium blue, clearly visible), in the empty space above him, arcing over his head and following the side bend — the ARROWHEAD is on the SAME side as the hand resting on his hip (the side he bends toward), pointing down along the lean; the tail is on the opposite side, above the raised arm. The arrow must not cover the face or body.
 
 Framing: the ENTIRE body fully visible from head to feet with generous margin on all sides — nothing cropped. Constraints: exactly one person, anatomically correct (exactly two arms and two legs), no text, no logos, no watermarks.
 ```
