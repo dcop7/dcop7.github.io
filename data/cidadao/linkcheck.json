@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-18T03:38:36.903Z",
+ "generated": "2026-07-18T08:12:39.012Z",
  "total": 84,
- "broken": 0,
+ "broken": 1,
  "unknown": 27,
  "results": [
   {
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:bolsa-merito-secundario",
