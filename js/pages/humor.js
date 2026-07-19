@@ -20,6 +20,7 @@ const HumorPage = (function () {
   let root, built = false, index = null, groups = null;
   const cache = {};                 /* cat id → jokes[] */
   let favs = load('humor-favs', {});/* {jokeId: jokeObj} */
+  let revealAll = load('humor-reveal-all', false); /* mostrar respostas dos enigmas */
   let seen = load('humor-seen', []);/* [jokeId] in first-seen order */
   let seenSet = new Set(seen);
   let feed = null;                  /* current group feed state */
@@ -71,6 +72,9 @@ const HumorPage = (function () {
   const catName = id => { const c = (index || []).find(x => x.id === id); return c ? c.name : id; };
   const catIcon = id => { const c = (index || []).find(x => x.id === id); return c ? c.icon : '😂'; };
   const groupOf = gid => (groups || []).find(g => g.id === gid);
+  /* Só os enigmas (adivinhas/cúmulos) escondem a resposta — nas restantes
+     piadas Q&A o remate aparece logo, sem obrigar a clicar. */
+  function isRiddle(cat) { const c = (index || []).find(x => x.id === cat); return !!c && c.group === 'enigmas'; }
   const findJoke = (cat, id) => (cache[cat] || []).find(x => x.id === id) || favs[id] || null;
 
   /* ── shuffle & discovery ───────────────────────────────────────── */
@@ -123,15 +127,36 @@ const HumorPage = (function () {
         <div class="hm-toolbar">
           <button class="hm-tool primary" id="hm-lucky">🎲 Surpreende-me</button>
           <button class="hm-tool" id="hm-favs">⭐ Favoritas <span id="hm-favn">${Object.keys(favs).length || ''}</span></button>
+          <button class="hm-tool${revealAll ? ' on' : ''}" id="hm-reveal-all" aria-pressed="${revealAll}">${revealLabel()}</button>
           <div class="hm-search-wrap"><input class="hm-search" id="hm-search" type="search" placeholder="🔍 Pesquisar em todo o humor…" aria-label="Pesquisar"></div>
         </div>
         <div id="hm-body"><div class="hm-loading">A carregar…</div></div>`;
     root.querySelector('#hm-lucky').addEventListener('click', () => showRandom(null));
     root.querySelector('#hm-favs').addEventListener('click', showFavs);
+    root.querySelector('#hm-reveal-all').addEventListener('click', toggleRevealAll);
     const s = root.querySelector('#hm-search');
     let tmr; s.addEventListener('input', () => { clearTimeout(tmr); tmr = setTimeout(() => doSearch(s.value.trim()), 250); });
   }
   const body = () => root.querySelector('#hm-body');
+
+  /* ── mostrar/ocultar todas as respostas dos enigmas ────────────── */
+  const revealLabel = () => revealAll ? '🙈 Ocultar respostas' : '👀 Mostrar respostas';
+  function toggleRevealAll() {
+    revealAll = !revealAll;
+    save('humor-reveal-all', revealAll);
+    const b = root.querySelector('#hm-reveal-all');
+    if (b) { b.textContent = revealLabel(); b.classList.toggle('on', revealAll); b.setAttribute('aria-pressed', revealAll); }
+    applyReveal(body());
+  }
+  /* Aplica o estado global aos cartões já em ecrã. Um "Ver resposta"
+     clicado à mão (data-open) fica revelado até se ocultar tudo. */
+  function applyReveal(scope) {
+    scope.querySelectorAll('.hm-reveal').forEach(btn => {
+      const a = btn.closest('.hm-joke')?.querySelector('.hm-a');
+      if (revealAll) { btn.hidden = true; if (a) a.hidden = false; }
+      else { delete btn.dataset.open; btn.hidden = false; if (a) a.hidden = true; }
+    });
+  }
 
   /* ── home hub: joke of the day + group cards ───────────────────── */
   async function renderHub() {
@@ -283,9 +308,10 @@ const HumorPage = (function () {
     const tag = opts.hideTag ? '' : `<span class="hm-tag">${catIcon(j.cat)} ${esc(catName(j.cat))}</span>`;
     let inner;
     if (j.q && j.a) {
+      const ans = `<div class="hm-a"${isRiddle(j.cat) && !revealAll ? ' hidden' : ''}>${esc(j.a).replace(/\n/g, '<br>')}</div>`;
       inner = `<div class="hm-q">${esc(j.q)}</div>
-        <button class="hm-reveal">Ver resposta 👀</button>
-        <div class="hm-a" hidden>${esc(j.a).replace(/\n/g, '<br>')}</div>`;
+        ${isRiddle(j.cat) ? `<button class="hm-reveal"${revealAll ? ' hidden' : ''}>Ver resposta 👀</button>` : ''}
+        ${ans}`;
     } else {
       inner = `<div class="hm-t">${esc(j.t || '').replace(/\n/g, '<br>')}</div>`;
     }
@@ -300,7 +326,11 @@ const HumorPage = (function () {
       : `[data-${suffix}]`;
     scope.querySelectorAll('.hm-reveal').forEach(b => {
       if (b.dataset.wired) return; b.dataset.wired = '1';
-      b.addEventListener('click', () => { const a = b.nextElementSibling; if (a) a.hidden = false; b.remove(); });
+      b.addEventListener('click', () => {
+        const a = b.closest('.hm-joke')?.querySelector('.hm-a');
+        if (a) a.hidden = false;
+        b.dataset.open = '1'; b.hidden = true;   /* fica no DOM para o toggle global o poder repor */
+      });
     });
     scope.querySelectorAll(sel('fav')).forEach(b => {
       if (b.dataset.wired) return; b.dataset.wired = '1';
@@ -347,6 +377,7 @@ const HumorPage = (function () {
 .hm-tool{background:var(--card2);border:1px solid var(--border);color:var(--text2);font:inherit;font-size:.85rem;font-weight:600;padding:.5rem 1rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
 .hm-tool:hover{border-color:rgba(var(--accent-rgb),.5);color:var(--text)}
 .hm-tool.primary{background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff;border:none}
+.hm-tool.on{background:var(--accent-soft);border-color:rgba(var(--accent-rgb),.45);color:var(--accent)}
 .hm-search-wrap{flex:1;min-width:160px}
 .hm-search{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);font:inherit;font-size:.85rem;padding:.5rem .9rem;border-radius:var(--radius-sm);outline:none}
 .hm-search:focus{border-color:rgba(var(--accent-rgb),.4)}
