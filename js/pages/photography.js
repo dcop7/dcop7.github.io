@@ -928,283 +928,9 @@ const PhotographyPage = (function () {
     drawWheel();updateInfo();
   }
 
-  // ══ EDIÇÃO — modelo de 3 camadas (data-driven) ═══════════════════
-  // género → objetivo visual → técnica (conceito) → implementação (software).
-  // Conceito e software vivem separados: data/photo/edit-techniques.json (a
-  // teoria, que sobrevive à troca de app) e edit-impl.json (o "como fazer" por
-  // software). Adicionar um editor = acrescentar uma chave ao edit-impl.json.
-  let _EDIT = null, _editP = null;
-  function loadEdit() {
-    if (_EDIT) return Promise.resolve(_EDIT);
-    if (_editP) return _editP;
-    const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
-    _editP = Promise.all([grab('edit-techniques.json'), grab('edit-impl.json')])
-      .then(([t, impl]) => (_EDIT = Object.assign({}, t, { impl })))
-      .catch(() => { _editP = null; return null; });
-    return _editP;
-  }
-  function editSoftware() { try { return localStorage.getItem('ph-edit-sw') || 'lightroom'; } catch (_) { return 'lightroom'; } }
-  function setEditSoftware(s) { try { localStorage.setItem('ph-edit-sw', s); } catch (_) {} }
-  const techById = id => (_EDIT.techniques || []).find(t => t.id === id);
-  const objById = id => (_EDIT.objectives || []).find(o => o.id === id);
-  let _pendingGoal = null;   // deep-link vindo de um portal de género
-
-  // ── Portrait illustrations (crop guide + poses + editorial tips) ──
-  // Poses e "Onde cortar" usam o manequim vetorial paramétrico (Mannequin,
-  // js/pages/photo-mannequin.js): figura neutra, sem rosto/roupa/género, foco
-  // total na linguagem corporal e nas articulações. Reutilizável entre géneros.
-  const POSE_CAPTIONS = {
-    'pose-three-quarter': 'Ângulo 3/4 · peso na perna de trás',
-    'pose-busy-hands': 'Dá algo às mãos (cabelo, anca)',
-    'pose-s-curve': 'Curva em S · anca e ombros em contraste',
-    'pose-leaning': 'Encostar / apoiar · relaxado',
-    'pose-seated': 'Sentado · cotovelos nos joelhos',
-    'pose-pockets': 'Mãos nos bolsos · casual e confiante',
-    'pose-walking': 'Em movimento · passo natural',
-    'pose-crossed': 'Braços cruzados · confiante mas aberto',
-  };
-  // Poses: fotos reais (preferência do user) quando existirem no índice; o
-  // manequim vetorial é o fallback. O "Onde cortar" usa sempre o manequim.
-  function poseFigure(id) { return (typeof Mannequin !== 'undefined') ? `<span class="ph-pose-vis mq">${Mannequin.figure(id)}</span>` : ''; }
-  function posesHTML() {
-    return Object.keys(POSE_CAPTIONS).map(id => {
-      const asset = assetPath(id);
-      const inner = asset
-        ? `<span class="ph-pose-vis" data-pose="${id}"><img class="ph-pose-img" loading="lazy" decoding="async" alt="${POSE_CAPTIONS[id]}" src="${asset}"></span>`
-        : poseFigure(id);
-      return `<div class="ph-pose${asset ? ' has-img' : ''}">${inner}<div class="ph-pose-cap">${POSE_CAPTIONS[id]}</div></div>`;
-    }).join('');
-  }
-  function wirePoses(root) {
-    root.querySelectorAll('.ph-pose-vis[data-pose] img').forEach(img => img.addEventListener('error', () => {
-      const s = img.closest('.ph-pose-vis'); if (!s) return;
-      s.parentElement.classList.remove('has-img');
-      s.outerHTML = poseFigure(s.dataset.pose);
-    }, { once: true }));
-  }
-
-  // "Onde cortar" sobre uma personagem estilizada (crop-standing). Linhas
-  // calibradas às articulações da imagem (fração da altura). Fallback: manequim.
-  const CROP_LINES2 = [
-    { f: 0.02, ok: 1, label: 'espaço p/ cabeça' }, { f: 0.20, ok: 0, label: 'pescoço' },
-    { f: 0.33, ok: 1, label: 'meio do peito' }, { f: 0.46, ok: 0, label: 'cotovelos' },
-    { f: 0.52, ok: 1, label: 'cintura' }, { f: 0.57, ok: 0, label: 'pulsos / mãos' },
-    { f: 0.64, ok: 1, label: 'meio da coxa' }, { f: 0.72, ok: 0, label: 'joelhos' },
-    { f: 0.90, ok: 0, label: 'tornozelos' },
-  ];
-  function cropGuidePhoto(asset) {
-    const GOOD = '#34d399', BAD = '#f87171', VBW = 470, H = 400, figX = 30, figY = 8, figH = 384, figW = Math.round(figH * 0.684), lineX2 = figX + figW + 16;
-    const lines = CROP_LINES2.map(c => {
-      const y = +(figY + c.f * figH).toFixed(1), col = c.ok ? GOOD : BAD;
-      return `<g class="ph-cropp-line" data-y="${y}" tabindex="0" role="button" aria-label="${c.ok ? 'Bom corte' : 'Mau corte'}: ${c.label}">
-        <rect class="ph-cropp-hit" x="0" y="${y - 9}" width="${VBW}" height="18" fill="transparent"/>
-        <line class="ph-cropp-rule" x1="14" y1="${y}" x2="${lineX2}" y2="${y}" stroke="${col}" stroke-width="1.8" stroke-dasharray="5 4"/>
-        <circle cx="${figX + 16}" cy="${y}" r="6" fill="${col}" stroke="#0a1220" stroke-width="1.3"/>
-        <text x="${figX + 16}" y="${y + 2.6}" text-anchor="middle" fill="#04121a" font-size="8" font-weight="800" font-family="var(--font-sans,sans-serif)">${c.ok ? '✓' : '✗'}</text>
-        <text x="${lineX2 + 9}" y="${y + 3.6}" fill="${col}" font-size="11" font-family="var(--font-mono,monospace)">${c.label}</text>
-      </g>`;
-    }).join('');
-    return `<svg viewBox="0 0 ${VBW} ${H}" class="mq-svg ph-cropp" role="img" aria-label="Onde cortar num retrato">
-      <image href="${asset}" x="${figX}" y="${figY}" height="${figH}" preserveAspectRatio="xMinYMin meet"/>
-      <rect class="ph-cropp-dim" x="${figX}" y="0" width="${figW}" height="0" fill="rgba(2,6,14,.55)" style="pointer-events:none"/>
-      ${lines}
-    </svg>`;
-  }
-  function wireCropPhoto(root) {
-    root.querySelectorAll('.ph-cropp').forEach(svg => {
-      const dim = svg.querySelector('.ph-cropp-dim');
-      svg.querySelectorAll('.ph-cropp-line').forEach(g => {
-        const y = +g.dataset.y;
-        const on = () => { if (dim) { dim.setAttribute('y', y); dim.setAttribute('height', 400 - y); } g.classList.add('hot'); };
-        const off = () => { if (dim) dim.setAttribute('height', 0); g.classList.remove('hot'); };
-        g.addEventListener('mouseenter', on); g.addEventListener('mouseleave', off);
-        g.addEventListener('focus', on); g.addEventListener('blur', off);
-      });
-    });
-  }
-  // Exemplos práticos: a MESMA personagem recortada a alturas certas vs erradas.
-  const CROP_EX = [
-    { t: 'Primeiro plano', a: 'crop-standing', ok: 0.31, bad: 0.20, okc: 'Espaço acima da cabeça, corta no peito.', badc: 'Cortar no pescoço.' },
-    { t: 'Meio corpo', a: 'crop-standing', ok: 0.55, bad: 0.72, okc: 'Abaixo da cintura ou no meio da coxa.', badc: 'Cortar nos joelhos.' },
-    { t: 'Três quartos', a: 'crop-standing', ok: 0.66, bad: 0.72, okc: 'Meio da coxa, acima dos joelhos.', badc: 'Cortar nos joelhos.' },
-    { t: 'Corpo inteiro', a: 'crop-standing', ok: 1, bad: 0.90, okc: 'Inclui os pés com um respiro.', badc: 'Cortar nos tornozelos.' },
-  ];
-  function cropShot(asset, cf) {
-    return `<span class="ph-cropex-frame" style="aspect-ratio:${(0.684 / cf).toFixed(3)}"><img loading="lazy" decoding="async" src="${asset}" alt=""></span>`;
-  }
-  function cropExamplesHTML() {
-    const std = assetPath('crop-standing'); if (!std) return '';
-    return `<div class="ph-cropex-grid">${CROP_EX.map(e => {
-      const a = assetPath(e.a) || std;
-      return `<div class="ph-cropex-card"><div class="ph-cropex-title">${e.t}</div>
-        <div class="ph-cropex-pair">
-          <figure class="ph-cropex-shot ok"><span class="ph-cropex-badge">✓ Correto</span>${cropShot(a, e.ok)}<figcaption>${e.okc}</figcaption></figure>
-          <figure class="ph-cropex-shot bad"><span class="ph-cropex-badge">✗ Incorreto</span>${cropShot(a, e.bad)}<figcaption>${e.badc}</figcaption></figure>
-        </div></div>`;
-    }).join('')}</div>`;
-  }
-
-  function portraitExtrasHTML() {
-    const cropAsset = assetPath('crop-standing');
-    const crop = cropAsset ? cropGuidePhoto(cropAsset) : (typeof Mannequin !== 'undefined' ? Mannequin.cropGuide() : '');
-    const examples = cropExamplesHTML();
-    return `
-      <div class="ph-illus-block">
-        <div class="ph-illus-title">✂️ Onde cortar (e onde não)</div>
-        <div class="ph-crop-illus">${crop}</div>
-        <div class="ph-illus-cap">Passa o rato (ou toca) numa linha para veres o corte. Corta <strong>entre</strong> as articulações (verde), <strong>nunca</strong> numa articulação (vermelho) — dá sensação de membro amputado. E deixa sempre espaço acima da cabeça.</div>
-      </div>
-      ${examples ? `<div class="ph-illus-block">
-        <div class="ph-illus-title">📐 Exemplos práticos de corte</div>
-        <div class="ph-illus-cap" style="margin: -.1rem 0 .6rem">A mesma pessoa — cortes certos (verde) vs errados (vermelho).</div>
-        ${examples}
-      </div>` : ''}
-      <div class="ph-illus-block">
-        <div class="ph-illus-title">🧍 Poses que funcionam</div>
-        <div class="ph-pose-grid">${posesHTML()}</div>
-      </div>
-      <div class="ph-illus-block">
-        <div class="ph-illus-title">😌 Olhar editorial / "cara de modelo"</div>
-        <ul class="ph-tip-list">
-          <li><strong>Sorri só com os olhos (smize):</strong> contrai ligeiramente as pálpebras inferiores em vez da boca.</li>
-          <li><strong>Sobrancelhas:</strong> levanta-as muito ligeiramente e relaxa — "abre" e desperta o olhar.</li>
-          <li><strong>Maxilar:</strong> ponta da língua atrás dos dentes de cima define a linha do queixo.</li>
-          <li><strong>Queixo:</strong> para a frente e ligeiramente para baixo (evita papada e o olhar "de cima").</li>
-          <li><strong>Respira:</strong> expira no momento do disparo — os ombros descem e a expressão relaxa.</li>
-        </ul>
-      </div>
-      <div class="ph-illus-block">
-        <div class="ph-illus-title">💡 Confirmar a melhor luz</div>
-        <ul class="ph-tip-list">
-          <li>Roda o sujeito devagar e observa os <strong>catchlights</strong> (reflexos) nos olhos — escolhe o ângulo com brilho vivo.</li>
-          <li>Procura uma sombra suave a descer pela face (padrão <strong>loop</strong> ou <strong>Rembrandt</strong>) — dá volume.</li>
-          <li>Sol a pino faz <strong>olhos-de-guaxinim</strong> → muda para sombra aberta, junto a uma janela a 45°, ou hora dourada.</li>
-        </ul>
-      </div>`;
-  }
-
-  // Unified modal open/close: fresh overlay each time (no stale listeners),
-  // Escape closes only the topmost overlay, body scroll locked while any is open.
-  function _openModal(id, boxHTML) {
-    const old = document.getElementById(id);
-    if (old) old.remove();
-    const modal = document.createElement('div');
-    modal.id = id;
-    modal.className = 'ph-modal-overlay';
-    modal.innerHTML = boxHTML;
-    document.body.appendChild(modal);
-    document.body.classList.add('ph-modal-open');
-    _bindModalClose(modal);
-    return modal;
-  }
-
-  function _bindModalClose(modal) {
-    const close = () => {
-      modal.hidden = true;
-      document.removeEventListener('keydown', esc);
-      if (!document.querySelector('.ph-modal-overlay:not([hidden])')) document.body.classList.remove('ph-modal-open');
-    };
-    function esc(e) {
-      if (e.key !== 'Escape') return;
-      const open = document.querySelectorAll('.ph-modal-overlay:not([hidden])');
-      if (open[open.length - 1] === modal) close();
-    }
-    modal.querySelector('.ph-modal-close').addEventListener('click', close);
-    modal.addEventListener('click', e => { if (e.target === modal) close(); });
-    document.addEventListener('keydown', esc);
-  }
-
-  // ── Laboratório de Edição: drill-down objetivo → técnica → software ──
-  function swTabsHTML(techId) {
-    const impl = (_EDIT.impl || {})[techId] || {};
-    const sw = _EDIT.software || [];
-    const active = editSoftware();
-    const steps = v => Array.isArray(v) ? `<ol class="ph-sw-steps">${v.map(x => `<li>${x}</li>`).join('')}</ol>` : `<p>${v || '—'}</p>`;
-    const tabs = sw.map(s => `<button class="ph-sw-tab${s.id === active ? ' active' : ''}" data-sw="${s.id}" style="--sw:${s.color}">${s.name}</button>`).join('');
-    const bodies = sw.map(s => `<div class="ph-sw-impl" data-sw="${s.id}"${s.id === active ? '' : ' hidden'}>${steps(impl[s.id])}</div>`).join('');
-    return `<div class="ph-sw-tabs">${tabs}</div><div class="ph-sw-bodies">${bodies}</div>`;
-  }
-  function techDetailHTML(t) {
-    const sec = (h, v) => v ? `<div class="ph-know-sec"><h4>${h}</h4><p>${v}</p></div>` : '';
-    const secl = (h, a) => (a && a.length) ? `<div class="ph-know-sec"><h4>${h}</h4><ul class="ph-tip-list">${a.map(x => `<li>${x}</li>`).join('')}</ul></div>` : '';
-    const related = (t.related || []).map(id => { const r = techById(id); return r ? `<button class="ph-chip ph-chip-link" data-tech="${id}">${r.icon} ${r.name}</button>` : ''; }).join('');
-    return `<div class="ph-edit-concept">
-        ${sec('O que resolve', t.solves)}
-        ${sec('Porque funciona', t.why)}
-        <div class="ph-scn-cols">${sec('Quando usar', t.when)}${sec('Quando evitar', t.avoid)}</div>
-        ${secl('Erros comuns', t.errors)}
-        ${sec('Relação com a cor', t.colorTheory)}
-        ${sec('Intensidade recomendada', t.intensity)}
-        ${secl('Variantes', t.variants)}
-        ${secl('Exemplos de utilização', t.examples)}
-      </div>
-      <div class="ph-edit-impl"><div class="ph-edit-impl-hd">🛠️ Como fazer no teu editor</div>${swTabsHTML(t.id)}</div>
-      ${related ? `<div class="ph-know-sec"><h4>Técnicas relacionadas</h4><div class="ph-chips">${related}</div></div>` : ''}`;
-  }
-  function editHomeHTML() {
-    const cats = (_EDIT.categories || []).map(c => `<div class="ph-edit-cat">
-      <div class="ph-edit-cat-hd"><span>${c.icon} ${c.name}</span><small>${c.blurb || ''}</small></div>
-      <div class="ph-chips">${(c.objectives || []).map(oid => { const o = objById(oid); return o ? `<button class="ph-goal-chip" data-goal="${oid}">${o.name}</button>` : ''; }).join('')}</div>
-    </div>`).join('');
-    return `<p class="ph-section-sub">Escolhe um objetivo → depois a técnica → o "como fazer" no teu editor (Lightroom, darktable, Snapseed ou RapidRAW).</p><div class="ph-edit-cats">${cats}</div>`;
-  }
-  function editObjHTML(o) {
-    const techs = (o.techniques || []).map(id => { const t = techById(id); return t ? `<button class="ph-scn-card" data-tech="${id}" data-from="${o.id}">
-      <span class="ph-scn-ico">${t.icon}</span><span class="ph-scn-name">${t.name}</span><span class="ph-scn-blurb-sm">${t.solves}</span></button>` : ''; }).join('');
-    return `<button class="ph-back" data-back="home">← Objetivos</button>
-      <div class="ph-portal-head"><span class="ph-portal-ico">🎯</span><div><h2 class="ph-portal-name">${o.name}</h2><p class="ph-portal-goal">${o.why}</p></div></div>
-      <p class="ph-section-sub">Técnicas que servem este objetivo — a teoria primeiro, depois o teu editor:</p>
-      <div class="ph-scn-grid">${techs}</div>`;
-  }
-  function editTechHTML(t, from) {
-    const back = from ? `obj:${from}` : 'home';
-    return `<button class="ph-back" data-back="${back}">← Voltar</button>
-      <div class="ph-portal-head"><span class="ph-portal-ico">${t.icon}</span><div><h2 class="ph-portal-name">${t.name}</h2></div></div>
-      ${techDetailHTML(t)}`;
-  }
-  function renderStage(stage, view) {
-    if (view.level === 'obj') stage.innerHTML = editObjHTML(objById(view.id));
-    else if (view.level === 'tech') stage.innerHTML = editTechHTML(techById(view.id), view.from);
-    else stage.innerHTML = editHomeHTML();
-    const go = v => renderStage(stage, v);
-    stage.querySelectorAll('[data-editsw]').forEach(b => b.addEventListener('click', () => { setEditSoftware(b.dataset.editsw); go(view); }));
-    stage.querySelectorAll('[data-goal]').forEach(b => b.addEventListener('click', () => go({ level: 'obj', id: b.dataset.goal })));
-    stage.querySelectorAll('[data-tech]').forEach(b => b.addEventListener('click', () => go({ level: 'tech', id: b.dataset.tech, from: b.dataset.from || (view.level === 'obj' ? view.id : null) })));
-    stage.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { const d = b.dataset.back; go(d.startsWith('obj:') ? { level: 'obj', id: d.slice(4) } : { level: 'home' }); }));
-    stage.querySelectorAll('.ph-sw-tab').forEach(tab => tab.addEventListener('click', () => {
-      const sw = tab.dataset.sw; setEditSoftware(sw);
-      stage.querySelectorAll('.ph-sw-tab').forEach(x => x.classList.toggle('active', x === tab));
-      stage.querySelectorAll('.ph-sw-impl').forEach(x => { x.hidden = x.dataset.sw !== sw; });
-    }));
-  }
-  function buildEditTechniques(root) {
-    root.innerHTML = `<div class="ph-section-title">🎞️ Laboratório de Edição</div>
-      <p class="ph-section-sub">Organizado por <b>objetivo visual</b>, não por software. A teoria é independente do editor — escolhe o objetivo → a técnica → vê o "como fazer" no teu editor.</p>
-      <div class="ph-edit-stage"><p class="ph-section-sub">A carregar…</p></div>`;
-    loadEdit().then(db => {
-      const stage = root.querySelector('.ph-edit-stage'); if (!stage) return;
-      if (!db) { stage.innerHTML = `<p class="ph-section-sub">Não foi possível carregar. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p>`; wireRetry(stage, () => buildEditTechniques(root)); return; }
-      if (_pendingGoal && objById(_pendingGoal)) { const id = _pendingGoal; _pendingGoal = null; renderStage(stage, { level: 'obj', id }); }
-      else renderStage(stage, { level: 'home' });
-    });
-  }
-  // Modal de edição — abre a partir dos portais de género SEM sair do portal.
-  // É um mini-Laboratório: drill-down objetivo↔técnica dentro do overlay.
-  function openEditModal(view) {
-    loadEdit().then(db => {
-      if (!db) return;
-      const modal = _openModal('ph-edit-modal', `<div class="ph-modal-box ph-edit-modal-box" role="dialog" aria-modal="true" aria-label="Edição">
-        <div class="ph-modal-hdr"><span class="ph-modal-title">🎞️ Laboratório de Edição</span><button class="ph-modal-close" aria-label="Fechar">✕</button></div>
-        <div class="ph-edit-modal-body"><div class="ph-edit-stage"></div></div>
-      </div>`);
-      renderStage(modal.querySelector('.ph-edit-stage'), view);
-    });
-  }
-
   // ══ PORTAL DE GÉNEROS ═══════════════════════════════════════════
-  // Conteúdo data-driven (data/photo/{gear,genres,know}.json). O seletor
-  // de equipamento (M50 II / S23+ / Ambos) adapta lentes, definições,
-  // limites e dicas em todos os portais e no modo No Terreno.
+  // Conteúdo data-driven (data/photo/*.json). A classe de câmara e o perfil
+  // adaptam objetiva, definições, formato e edição em todos os portais.
   let _DB = null, _dbPromise = null;
   function loadDB() {
     if (_DB) return Promise.resolve(_DB);
@@ -1574,17 +1300,27 @@ const PhotographyPage = (function () {
       </section>` : ''}`;
   }
 
+  /* A secção Edição do género diz APENAS a intenção artística — "preservar a
+     atmosfera", "não matar o céu". O COMO fazer vive na secção Edição, e cada
+     ferramenta mencionada abre lá diretamente. Sem isto, a explicação da mesma
+     ferramenta apareceria repetida em 28 páginas. */
   function editSectionHTML(g) {
     const p = profileDef(), depth = p ? p.editDepth : 'selective';
-    const goals = ((_EDIT && _EDIT.genreGoals && _EDIT.genreGoals[g.id]) || []);
-    const intro = depth === 'minimal'
-      ? `<div class="ph-fmt ph-fmt-lo"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>`
-      : `<div class="ph-scn-blurb">${g.edit.intro}</div>${p ? `<div class="ph-fmt ph-fmt-md"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>` : ''}`;
-    return `${intro}
-      ${depth === 'minimal' ? '' : `<div class="ph-goal-list">${goals.map(oid => {
-        const o = objById(oid);
-        return o ? `<button class="ph-goal-row" data-goal="${oid}"><span class="ph-goal-name">✓ ${o.name}</span><span class="ph-goal-why">${o.why}</span><span class="ph-goal-go">→</span></button>` : '';
-      }).join('') || '<p class="ph-section-sub">—</p>'}</div>`}`;
+    const goals = (g.edit && g.edit.goals) || [];
+    const profNote = p ? `<div class="ph-fmt ph-fmt-${depth === 'minimal' ? 'lo' : 'md'}"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>` : '';
+    if (depth === 'minimal') {
+      return `${profNote}<div class="ph-scn-blurb">${g.edit.intro}</div>
+        <div class="ph-info-card"><b>🎯 O que interessa mesmo aqui</b>
+          <ul>${goals.slice(0, 3).map(o => li(o.text)).join('')}</ul></div>
+        <button class="ph-goto-edit" data-goedit>🎨 Ver como se faz, na secção Edição →</button>`;
+    }
+    return `<div class="ph-scn-blurb">${g.edit.intro}</div>${profNote}
+      <div class="ph-goal-list">${goals.map(o => `<div class="ph-goal-item">
+        <span class="ph-goal-name">✓ ${o.text}</span>
+        ${(o.tools || []).length ? `<span class="ph-goal-tools">${o.tools.map(t =>
+          `<button class="ph-chip ph-chip-link" data-etool="${t.id}">${t.label} →</button>`).join('')}</span>` : ''}
+      </div>`).join('') || '<p class="ph-section-sub">—</p>'}</div>
+      <button class="ph-goto-edit" data-goedit>🎨 Aprender edição de raiz, na secção Edição →</button>`;
   }
 
   function portalSectionHTML(g, sec) {
@@ -1601,7 +1337,7 @@ const PhotographyPage = (function () {
 
   function renderPortal(panel, id) {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-    Promise.all([loadDB(), loadAssets(), loadEdit()]).then(([db]) => {
+    Promise.all([loadDB(), loadAssets(), loadEditDB()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
       const g = db.genres.find(x => x.id === id);
       if (!g) { Nav.go('photography'); return; }
@@ -1632,7 +1368,8 @@ const PhotographyPage = (function () {
           const cv = ch.querySelector('.ph-comp-card-cv'); if (cv) requestAnimationFrame(() => drawCompOverlay(cv, comp));
           ch.addEventListener('click', () => openCompModal(comp, g.id));
         });
-        panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => openEditModal({ level: 'obj', id: ch.dataset.goal })));
+        panel.querySelectorAll('[data-etool]').forEach(ch => ch.addEventListener('click', () => gotoTool(ch.dataset.etool)));
+        panel.querySelector('[data-goedit]')?.addEventListener('click', () => Nav.go('photography/edicao'));
         panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
           _pendingCalc = ch.dataset.tool; Nav.go('photography/ferramentas');
         }));
@@ -1783,6 +1520,172 @@ const PhotographyPage = (function () {
     });
     return { grid, close };
   }
+  /* ══ SECÇÃO EDIÇÃO ══════════════════════════════════════════════════════
+     Área própria, separada dos géneros. Os géneros dizem O QUE se pretende
+     ("preservar a atmosfera do nevoeiro"); esta secção ensina COMO se lá
+     chega, com conceitos que valem em qualquer programa.
+
+     Regra de apresentação de cada ferramenta: conceito primeiro (o que faz,
+     que problema resolve, quando usar, quando evitar, erros), demonstração
+     interativa a seguir, e só no fim "Nos principais programas". */
+  let _EDITDB = null, _editDbP = null;
+  function loadEditDB() {
+    if (_EDITDB) return Promise.resolve(_EDITDB);
+    if (_editDbP) return _editDbP;
+    _editDbP = fetch('data/photo/edit.json').then(r => { if (!r.ok) throw 0; return r.json(); })
+      .then(j => (_EDITDB = j)).catch(() => { _editDbP = null; return null; });
+    return _editDbP;
+  }
+  // Índice ferramenta → secção, para os atalhos vindos dos géneros.
+  function editToolIndex() {
+    const m = {};
+    (_EDITDB ? _EDITDB.sections : []).forEach(s => (s.tools || []).forEach(t => { m[t.id] = { sec: s.id, tool: t }; }));
+    return m;
+  }
+  // Imagem de exemplo das demonstrações: uma foto com céu, primeiro plano e
+  // cor suficiente para todos os ajustes se notarem.
+  function demoImage() {
+    return assetPath('edit-demo') || assetPath('comp-thirds') || assetPath('comp-golden') || '';
+  }
+  let _editSec = null, _editTool = null;
+
+  function appsTableHTML(t) {
+    const sw = (_EDITDB && _EDITDB.software) || [];
+    return `<details class="ph-apps">
+      <summary><span>🛠️ Nos principais programas</span><small>o conceito é o mesmo; muda o nome e o sítio</small></summary>
+      <div class="ph-apps-grid">${sw.map(s => `<div class="ph-app">
+        <span class="ph-app-n">${s.name}</span>
+        <span class="ph-app-v">${(t.apps && t.apps[s.id]) || '—'}</span>
+      </div>`).join('')}</div>
+    </details>`;
+  }
+
+  function toolDetailHTML(t) {
+    const list = (title, cls, arr) => (arr && arr.length)
+      ? `<div class="ph-eq-sec ${cls}"><b>${title}</b><ul>${arr.map(li).join('')}</ul></div>` : '';
+    return `<article class="ph-tool" data-tool-id="${t.id}">
+      <header class="ph-tool-hd">
+        <span class="ph-tool-ico">${t.icon || '🎛️'}</span>
+        <div>
+          <h3 class="ph-tool-name">${t.name} <span class="ph-tool-en">${t.en}</span></h3>
+          <span class="ph-tool-tag">${t.tag || ''}</span>
+        </div>
+      </header>
+      <div class="ph-tool-concept">
+        <div class="ph-eq-what"><b>O que faz</b><p>${t.what}</p></div>
+        <div class="ph-eq-why"><b>Porque existe</b><p>${t.why}</p></div>
+        <div class="ph-tool-pe">
+          <div class="ph-tool-p"><b>Problema que resolve</b><p>${t.problem}</p></div>
+          <div class="ph-tool-p"><b>Efeito na fotografia</b><p>${t.effect}</p></div>
+        </div>
+      </div>
+      <div class="ph-tool-demo" data-demo='${JSON.stringify(Object.assign({}, t.demo, t.presets ? { presets: t.presets } : null)).replace(/'/g, "&#39;")}'></div>
+      <div class="ph-eq-cols">
+        ${list('✅ Quando usar', 'ok', t.when)}
+        ${list('⛔ Quando evitar', 'no', t.avoid)}
+      </div>
+      ${list('⚠️ Erros comuns', 'mist', t.mistakes)}
+      ${t.note ? `<div class="ph-craft-drill"><b>Regra prática</b> ${t.note}</div>` : ''}
+      ${appsTableHTML(t)}
+    </article>`;
+  }
+
+  function workflowHTML(s) {
+    return `<div class="ph-wf">
+      ${s.steps.map(st => `<div class="ph-wf-step">
+        <span class="ph-wf-n">${st.n}</span>
+        <div class="ph-wf-body"><b>${st.name}</b><p class="ph-wf-what">${st.what}</p>
+          <p class="ph-wf-why"><span>Porquê aqui:</span> ${st.why}</p></div>
+      </div>`).join('')}
+    </div>
+    <div class="ph-eq-cols">
+      <div class="ph-eq-sec mist"><b>⚠️ Erros de ordem</b><ul>${s.mistakes.map(li).join('')}</ul></div>
+      <div class="ph-eq-sec ok"><b>✂️ Quando saltar passos</b><ul>${s.skip.map(li).join('')}</ul></div>
+    </div>`;
+  }
+
+  function exportHTML(s) {
+    return `<div class="ph-exp-grid">${s.targets.map(t => `<div class="ph-exp">
+      <div class="ph-exp-hd">${t.icon} ${t.name}</div>
+      <dl class="ph-exp-dl">
+        <dt>Dimensão</dt><dd>${t.size}</dd>
+        <dt>Espaço de cor</dt><dd>${t.space}</dd>
+        <dt>Qualidade</dt><dd>${t.quality}</dd>
+        <dt>Nitidez</dt><dd>${t.sharpen}</dd>
+      </dl>
+      <ul class="ph-exp-notes">${t.notes.map(li).join('')}</ul>
+    </div>`).join('')}</div>
+    <div class="ph-eq-sec mist"><b>⚠️ Erros comuns</b><ul>${s.mistakes.map(li).join('')}</ul></div>`;
+  }
+
+  function buildEdicao(panel, arg) {
+    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+    Promise.all([loadEditDB(), loadAssets()]).then(([db]) => {
+      if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildEdicao(panel, arg)); return; }
+      // arg pode ser id de secção OU id de ferramenta (atalho vindo de um género)
+      const idx = editToolIndex();
+      let secId = _editSec || db.sections[0].id, focusTool = null;
+      if (arg) {
+        if (db.sections.some(s => s.id === arg)) secId = arg;
+        else if (idx[arg]) { secId = idx[arg].sec; focusTool = arg; }
+      }
+      if (_editTool) { focusTool = _editTool; _editTool = null; }
+      _editSec = secId;
+      const sec = db.sections.find(s => s.id === secId) || db.sections[0];
+
+      const body = sec.kind === 'workflow' ? workflowHTML(sec)
+        : sec.kind === 'export' ? exportHTML(sec)
+        : (sec.tools || []).map(toolDetailHTML).join('');
+
+      panel.innerHTML = `
+        <div class="ph-section-title">🎨 Edição</div>
+        <p class="ph-section-sub">Conceitos de edição que valem em qualquer programa. Primeiro o que a ferramenta faz e porquê; a equivalência em Lightroom, Camera Raw, darktable, RawTherapee, Snapseed e RapidRAW fica no fim de cada ficha.</p>
+        <div class="ph-secnav" role="tablist" aria-label="Secções de edição">
+          ${db.sections.map(s => `<button class="ph-secnav-btn${s.id === sec.id ? ' active' : ''}" role="tab" aria-selected="${s.id === sec.id}" data-esec="${s.id}">${s.icon} ${s.name}</button>`).join('')}
+        </div>
+        <p class="ph-eq-intro">${sec.intro}</p>
+        <div class="ph-secbody">${body}</div>`;
+
+      panel.querySelectorAll('[data-esec]').forEach(b => b.addEventListener('click', () => {
+        _editSec = b.dataset.esec;
+        try { history.replaceState(null, '', '#photography/edicao/' + _editSec); } catch (_) {}
+        buildEdicao(panel, _editSec);
+      }));
+
+      // Demonstrações: montadas só quando entram no ecrã (cada uma processa
+      // uma imagem inteira em JS, não vale a pena fazê-lo às cegas).
+      const img = demoImage();
+      const hosts = [...panel.querySelectorAll('[data-demo]')];
+      if (img && typeof EditLab !== 'undefined' && hosts.length) {
+        const mountOne = host => {
+          if (host.dataset.mounted) return;
+          host.dataset.mounted = '1';
+          let demo = null;
+          try { demo = JSON.parse(host.dataset.demo.replace(/&#39;/g, "'")); } catch (_) {}
+          if (demo) EditLab.mount(host, demo, img);
+        };
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mountOne(e.target); io.unobserve(e.target); } }), { rootMargin: '250px' });
+          hosts.forEach(h => io.observe(h));
+        } else hosts.forEach(mountOne);
+      } else {
+        hosts.forEach(h => { h.innerHTML = '<p class="el-loading">Demonstração indisponível.</p>'; });
+      }
+
+      if (focusTool) {
+        const el = panel.querySelector(`[data-tool-id="${focusTool}"]`);
+        if (el) {
+          el.classList.add('flash');
+          requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+          setTimeout(() => el.classList.remove('flash'), 1600);
+        }
+      } else window.scrollTo({ top: 0 });
+    });
+  }
+
+  /* Atalho usado pelos géneros: abre a secção Edição já na ferramenta certa. */
+  function gotoTool(id) { _editTool = id; Nav.go('photography/edicao/' + id); }
+
   /* ══ EQUIPAMENTO ════════════════════════════════════════════════════════
      Guia intemporal, deliberadamente sem marcas nem modelos. Cada item
      responde sempre às mesmas perguntas — que problema resolve, quando usar,
@@ -1892,13 +1795,11 @@ const PhotographyPage = (function () {
   const APR_SEGS = [
     { id: 'fundamentos', label: '📖 Fundamentos' },
     { id: 'composicao',  label: '🖼️ Composição' },
-    { id: 'edicao',      label: '🎨 Edição' },
     { id: 'cores',       label: '🌈 Cores' },
   ];
   const APR_BUILDERS = {
     fundamentos(box) { buildFundamentos(box); },
     composicao(box)  { buildComposition(box); },
-    edicao(box)      { buildEditTechniques(box); },
     cores(box) {
       box.innerHTML = `
         <div class="ph-section-title">🌈 Roda de Cores</div>
@@ -1966,10 +1867,11 @@ const PhotographyPage = (function () {
     { id: 'generos',     label: '🎯 Géneros' },
     { id: 'agora',       label: '⚡ No Terreno' },
     { id: 'equipamento', label: '🎒 Equipamento' },
+    { id: 'edicao',      label: '🎨 Edição' },
     { id: 'aprender',    label: '📚 Aprender' },
     { id: 'ferramentas', label: '🧮 Ferramentas' },
   ];
-  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', equipamento: 'photography/equipamento', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', equipamento: 'photography/equipamento', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
 
   let _activate = null, _curTab = 'generos', _curArg = null;
 
@@ -2006,6 +1908,7 @@ const PhotographyPage = (function () {
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
         else if (id === 'agora') buildAgora(panel, arg);
         else if (id === 'equipamento') buildEquipamento(panel, arg);
+        else if (id === 'edicao') buildEdicao(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
         else buildFerramentas(panel);
       };
@@ -2023,9 +1926,10 @@ const PhotographyPage = (function () {
       else if (a === 'agora')                { tab = 'agora'; arg = rest || null; }
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
       else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
+      else if (a === 'edicao')               { tab = 'edicao'; arg = rest || null; }
       else if (a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
       else if (a === 'cenarios')             tab = 'generos';
-      else if (a === 'composicao' || a === 'edicao' || a === 'cores') { tab = 'aprender'; arg = a; }
+      else if (a === 'composicao' || a === 'cores') { tab = 'aprender'; arg = a; }
     }
     /* Rota "nua" #photography é sempre a home de Géneros — não restaurar a última
        tab (isso impedia voltar a Géneros; ver histórico do bug de navegação). */

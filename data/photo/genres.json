@@ -167,24 +167,58 @@
       ],
       "edit": {
         "intro": "Maximiza a gama dinâmica e a profundidade: céu com detalhe, primeiro plano nítido, cor rica mas natural.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Recuperar o céu e abrir as sombras (alta gama dinâmica)",
-            "rr": "Highlights −, Shadows +, Dehaze leve; Whites/Blacks a fixar os pontos.",
-            "dt": "«filmic rgb» + «tone equalizer» para equilibrar céu e terra.",
-            "sg": "Realces −, Sombras +, depois afina nas Curvas."
+            "text": "Aumentar a profundidade, sem exagerar",
+            "tools": [
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              },
+              {
+                "id": "dehaze",
+                "label": "Neblina"
+              }
+            ]
           },
           {
-            "idea": "Profundidade e textura (rochas, folhagem)",
-            "rr": "Clarity + Structure moderados; Sharpening com máscara.",
-            "dt": "«local contrast» + «diffuse or sharpen».",
-            "sg": "Detalhes → Estrutura; «Ambiente»."
+            "text": "Preservar o céu e as nuvens com detalhe",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              }
+            ]
           },
           {
-            "idea": "Cor natural e rica (céu e vegetação)",
-            "rr": "Vibrance primeiro; HSL: Azul −luminância (céu mais fundo).",
-            "dt": "«velvia» + «color zones» para o verde.",
-            "sg": "Saturação leve + «Ambiente»; Seletivo no céu."
+            "text": "Dar destaque ao primeiro plano",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
+          },
+          {
+            "text": "Manter cores naturais — verdes e azuis credíveis",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              }
+            ]
           }
         ]
       },
@@ -363,24 +397,54 @@
       ],
       "edit": {
         "intro": "O trabalho é quase todo tonal: segurar as altas luzes, dar corpo às sombras e não destruir o gradiente do céu.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Equilibrar céu e terra",
-            "rr": "Highlights −, Shadows +, e um gradiente linear a escurecer o céu.",
-            "dt": "«exposure» + «tone equalizer»; «graduated density» no céu.",
-            "sg": "«Seletivo» num ponto do céu, brilho −."
+            "text": "Preservar o gradiente do céu, sem bandas",
+            "tools": [
+              {
+                "id": "curve",
+                "label": "Curvas"
+              },
+              {
+                "id": "highlights",
+                "label": "Realces"
+              }
+            ]
           },
           {
-            "idea": "Preservar a cor quente",
-            "rr": "Temp para o quente só o suficiente; Color Grading nas sombras para azul.",
-            "dt": "«color balance rgb» — quente nas altas, frio nas sombras.",
-            "sg": "«Branco» quente + Curvas por canal."
+            "text": "Manter o laranja quente que foste lá buscar",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Céu sem bandas",
-            "rr": "Evita Dehaze forte; trabalha em 16 bits (RAW).",
-            "dt": "Módulo «denoise (profile)» ajuda o gradiente.",
-            "sg": "Não empurres Estrutura no céu."
+            "text": "Equilibrar céu claro e terra escura",
+            "tools": [
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              },
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              }
+            ]
+          },
+          {
+            "text": "Sombras frias contra luzes quentes",
+            "tools": [
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
           }
         ]
       },
@@ -555,24 +619,54 @@
       ],
       "edit": {
         "intro": "Mar pede altas luzes controladas, azuis honestos e nada de saturação a mais.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Salvar a espuma",
-            "rr": "Highlights −, Whites − até deixar de piscar.",
-            "dt": "«tone equalizer» a puxar as altas.",
-            "sg": "«Realces» −."
+            "text": "Salvar a espuma branca sem a deixar cinzenta",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "whites",
+                "label": "Brancos"
+              }
+            ]
           },
           {
-            "idea": "Azul limpo (sem virar ciano elétrico)",
-            "rr": "HSL: azul com luminância −, saturação moderada.",
-            "dt": "«color zones» no azul.",
-            "sg": "Curvas no canal azul, subtil."
+            "text": "Azul de mar credível, não ciano elétrico",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "saturation",
+                "label": "Saturação"
+              }
+            ]
           },
           {
-            "idea": "Horizonte e distorção",
-            "rr": "Transform: nivelar + correção de perfil de lente.",
-            "dt": "«rotate and perspective» + «lens correction».",
-            "sg": "«Rodar» / «Perspetiva»."
+            "text": "Horizonte direito e sem distorção",
+            "tools": [
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
+          },
+          {
+            "text": "Areia neutra, sem dominante amarela",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "tint",
+                "label": "Matiz"
+              }
+            ]
           }
         ]
       },
@@ -750,24 +844,58 @@
       ],
       "edit": {
         "intro": "A tentação é 'corrigir' o nevoeiro. Resiste: ajusta o ponto branco e deixa o resto respirar.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Acertar o branco sem matar a névoa",
-            "rr": "Curva: sobe o ponto branco, deixa o preto acima de zero.",
-            "dt": "«levels» — só o ponto branco.",
-            "sg": "«Brilho» + e Contraste ligeiro."
+            "text": "Preservar a atmosfera — não remover a neblina",
+            "tools": [
+              {
+                "id": "dehaze",
+                "label": "Neblina"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Realçar o sujeito",
-            "rr": "Máscara/pincel: contraste + só no sujeito.",
-            "dt": "Instância de «exposure» com máscara desenhada.",
-            "sg": "«Seletivo» sobre o sujeito."
+            "text": "Acertar o ponto branco sem matar a névoa",
+            "tools": [
+              {
+                "id": "whites",
+                "label": "Brancos"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Cor subtil",
-            "rr": "Dessatura globalmente e mantém um único tom frio.",
-            "dt": "«color balance rgb», saturação global −.",
-            "sg": "Saturação − e «Branco» ligeiramente frio."
+            "text": "Contraste suave, só o suficiente para o sujeito",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              }
+            ]
+          },
+          {
+            "text": "Tons frios e baixa saturação",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "saturation",
+                "label": "Saturação"
+              }
+            ]
           }
         ]
       },
@@ -944,24 +1072,54 @@
       ],
       "edit": {
         "intro": "Reforçar o ambiente pesado sem transformar a foto num filtro cinzento morto.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Céu dramático",
-            "rr": "Dehaze +, Highlights −, gradiente sobre o céu.",
-            "dt": "«haze removal» + «graduated density».",
-            "sg": "«Ambiente» + e «Realces» −."
+            "text": "Reforçar o céu pesado sem ficar cinzento morto",
+            "tools": [
+              {
+                "id": "dehaze",
+                "label": "Neblina"
+              },
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              }
+            ]
           },
           {
-            "idea": "Gotas visíveis",
-            "rr": "Clarity/Texture + localizado onde há chuva.",
-            "dt": "«contrast equalizer» nas altas frequências.",
-            "sg": "«Estrutura» + seletiva."
+            "text": "Fazer as gotas lerem-se",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Cor fria coesa",
-            "rr": "Temp − ligeiro + Color Grading azul nas sombras.",
-            "dt": "«color balance rgb», sombras a frio.",
-            "sg": "«Branco» frio + Saturação −."
+            "text": "Cor fria e coesa",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
+          },
+          {
+            "text": "Manter uma cor forte a saltar (guarda-chuva, sinal)",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           }
         ]
       },
@@ -1139,24 +1297,54 @@
       ],
       "edit": {
         "intro": "Cor honesta e fundo limpo. O erro clássico é saturar até a flor parecer plástico.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Cor sem estourar",
-            "rr": "Vibrance em vez de Saturation; HSL para afinar o tom exato.",
-            "dt": "«color zones» no matiz da flor.",
-            "sg": "«Saturação» leve + «Calor»."
+            "text": "Cor fiel, sem plastificar as pétalas",
+            "tools": [
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Fundo mais limpo",
-            "rr": "Máscara radial: exposição − e clarity − no fundo.",
-            "dt": "«exposure» com máscara elíptica invertida.",
-            "sg": "«Vinheta» + «Desfocar»."
+            "text": "Fundo limpo e recuado",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Micro-detalhe nas pétalas",
-            "rr": "Texture + só no sujeito.",
-            "dt": "«contrast equalizer» ligeiro.",
-            "sg": "«Estrutura» + com pincel."
+            "text": "Micro-detalhe só na flor",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
+          },
+          {
+            "text": "Brancos e amarelos com detalhe",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              }
+            ]
           }
         ]
       },
@@ -1337,24 +1525,50 @@
       ],
       "edit": {
         "intro": "Nitidez no plano focado, fundo limpo e suave, cor e textura do sujeito.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Nitidez seletiva no sujeito",
-            "rr": "Sharpening + Structure só no plano nítido (máscara).",
-            "dt": "«diffuse or sharpen» / «sharpen» com máscara.",
-            "sg": "Detalhes → Nitidez; Pincel para localizar."
+            "text": "Máximo detalhe onde o foco acertou",
+            "tools": [
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
           },
           {
-            "idea": "Fundo limpo e suave",
-            "rr": "Máscara no fundo: Exposure/Saturation −; Vignette.",
-            "dt": "Máscara + «exposure» / «color balance rgb».",
-            "sg": "Seletivo no fundo (Saturação/Brilho −); Vinheta."
+            "text": "Fundo a recuar, sem distrair",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              }
+            ]
           },
           {
-            "idea": "Cor e textura do sujeito",
-            "rr": "Vibrance; Clarity/Structure no sujeito.",
-            "dt": "«velvia» + «local contrast».",
-            "sg": "Saturação leve; Estrutura local."
+            "text": "Cor exata do sujeito",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              }
+            ]
+          },
+          {
+            "text": "Ruído controlado (ISO alto é comum aqui)",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
           }
         ]
       },
@@ -1533,24 +1747,54 @@
       ],
       "edit": {
         "intro": "Destacar o animal, olho nítido, fundo desfocado e cor natural.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Sujeito em destaque (dodge + nitidez)",
-            "rr": "Máscara AI «subject»: Exposure +, Sharpening, Clarity; fundo Exposure −.",
-            "dt": "Máscara («exposure» / «sharpen»).",
-            "sg": "Seletivo/Pincel no animal; Vinheta."
+            "text": "Olho nítido e vivo",
+            "tools": [
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              },
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              }
+            ]
           },
           {
-            "idea": "Olho nítido e com vida",
-            "rr": "Máscara Brush no olho: Clarity/Sharpening +.",
-            "dt": "Máscara desenhada + «sharpen».",
-            "sg": "Pincel: Estrutura/Exposição no olho."
+            "text": "Separar o animal do fundo",
+            "tools": [
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Ruído + cor natural",
-            "rr": "Noise Reduction; Vibrance comedida.",
-            "dt": "«denoise (profiled)»; «velvia» leve.",
-            "sg": "Não exagerar; Saturação leve."
+            "text": "Pelagem com detalhe, sem ruído plástico",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
+          },
+          {
+            "text": "Recuperar sombras em pelagem escura",
+            "tools": [
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              }
+            ]
           }
         ]
       },
@@ -1730,24 +1974,58 @@
       ],
       "edit": {
         "intro": "Pele natural e agradável, olhos com vida e um fundo que não compete. Edição subtil — menos é mais.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Pele natural — NÃO exagerar clareza/saturação na pele",
-            "rr": "Reduz Clarity/Texture na pele (máscara AI «subject»); Vibrance baixo.",
-            "dt": "«diffuse or sharpen» com máscara para suavizar; vibrance comedida.",
-            "sg": "Pincel: baixa Estrutura na pele; evita Saturação global alta."
+            "text": "Pele natural — nem laranja nem plástica",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
           },
           {
-            "idea": "Teal & Orange para separar do fundo",
-            "rr": "Rodas de cor: sombras → teal, realces → laranja; HSL afina o Laranja (pele).",
-            "dt": "«color balance rgb» (4-vias).",
-            "sg": "Curvas (Azul/Vermelho) + Balanço de Brancos no Seletivo sobre a pele."
+            "text": "Olhos vivos, com um brilho",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              }
+            ]
           },
           {
-            "idea": "Realçar os olhos (dodge) e escurecer distrações (burn)",
-            "rr": "Máscara Brush nos olhos: Exposure/Clarity +; Vinheta subtil.",
-            "dt": "«exposure» +/− com máscaras desenhadas.",
-            "sg": "Pincel → Exposição + nos olhos; Vinheta nas bordas."
+            "text": "Separar a pessoa do fundo",
+            "tools": [
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
+          },
+          {
+            "text": "Luz suave, sem endurecer o rosto",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           }
         ]
       },
@@ -1923,24 +2201,54 @@
       ],
       "edit": {
         "intro": "Pele natural e cores quentes. Nada de suavização a mais — daqui a 20 anos quem olha quer ver a pessoa, não o filtro.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Tom de pele correto",
-            "rr": "WB primeiro, depois HSL: laranja com saturação − e luminância +.",
-            "dt": "«color calibration» + «color zones».",
-            "sg": "«Branco» + «Calor» ligeiro."
+            "text": "Tons de pele corretos e consistentes",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Levantar interiores escuros",
-            "rr": "Shadows +, Blacks ligeiramente −, ruído tratado.",
-            "dt": "«tone equalizer» + «denoise (profile)».",
-            "sg": "«Sombras» + e «Redução de ruído»."
+            "text": "Levantar interiores escuros sem revelar ruído",
+            "tools": [
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              },
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
           },
           {
-            "idea": "Limpeza mínima",
-            "rr": "Healing só em distrações de fundo.",
-            "dt": "«retouch» pontual.",
-            "sg": "«Cura» em objetos, não em rostos."
+            "text": "Cores quentes e acolhedoras",
+            "tools": [
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              },
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
+          },
+          {
+            "text": "Nada de suavização a mais — daqui a 20 anos quer-se a pessoa",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
           }
         ]
       },
@@ -2118,24 +2426,58 @@
       ],
       "edit": {
         "intro": "Textura de pelo e olhos vivos, sem exagerar na nitidez (o pelo fica crocante depressa).",
-        "steps": [
+        "goals": [
           {
-            "idea": "Olhos vivos",
-            "rr": "Pincel: exposição + e clarity + só nos olhos.",
-            "dt": "«exposure» com máscara de pincel.",
-            "sg": "«Seletivo» sobre os olhos, brilho +."
+            "text": "Olhos com brilho e detalhe",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              }
+            ]
           },
           {
-            "idea": "Textura do pelo",
-            "rr": "Texture +, Sharpening com máscara alta.",
-            "dt": "«contrast equalizer» nas frequências médias.",
-            "sg": "«Estrutura» moderada."
+            "text": "Textura de pelo sem ficar crocante",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              }
+            ]
           },
           {
-            "idea": "Pelo preto ou branco recuperado",
-            "rr": "Shadows + em pelo preto; Highlights − em branco.",
-            "dt": "«tone equalizer» na zona certa.",
-            "sg": "«Sombras» + / «Realces» −."
+            "text": "Recuperar pelo preto ou branco",
+            "tools": [
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              },
+              {
+                "id": "highlights",
+                "label": "Realces"
+              }
+            ]
+          },
+          {
+            "text": "Fundo doméstico que não distraia",
+            "tools": [
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           }
         ]
       },
@@ -2313,24 +2655,54 @@
       ],
       "edit": {
         "intro": "Mesmo tratamento de um retrato: pele natural, olhos vivos, fundo que não compete.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Pele natural",
-            "rr": "HSL laranja: saturação −, luminância +; nada de suavizar demais.",
-            "dt": "«color zones» + «surface blur» muito leve.",
-            "sg": "«Cura» pontual, «Retrato» com mão leve."
+            "text": "Pele natural, com mão leve",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
           },
           {
-            "idea": "Olhos e estrutura",
-            "rr": "Pincel: exposição + nos olhos, clarity + subtil.",
-            "dt": "«exposure» com máscara.",
-            "sg": "«Seletivo» nos olhos."
+            "text": "Olhar em destaque",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              }
+            ]
           },
           {
-            "idea": "Fundo secundário",
-            "rr": "Vinheta subtil + exposição − no fundo.",
-            "dt": "«vignetting» + máscara elíptica.",
-            "sg": "«Vinheta»."
+            "text": "Fundo secundário",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
+          },
+          {
+            "text": "Série coerente entre disparos",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           }
         ]
       },
@@ -2508,24 +2880,54 @@
       ],
       "edit": {
         "intro": "Salvar luz de palco difícil, manter a atmosfera e controlar cor e ruído.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Recuperar realces das luzes e abrir o artista",
-            "rr": "Highlights −, Shadows +; máscara «subject» Exposure +.",
-            "dt": "«tone equalizer» / «filmic rgb»; máscara.",
-            "sg": "Realces −, Sombras +; Seletivo no artista."
+            "text": "Salvar rostos sob luz de palco",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
           },
           {
-            "idea": "Controlar cores de palco saturadas",
-            "rr": "HSL: baixa saturação/luminância da cor dominante; WB.",
-            "dt": "«color zones» / «color calibration».",
-            "sg": "Curvas por canal; Saturação − no Seletivo."
+            "text": "Ruído tratado sem perder a atmosfera",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
           },
           {
-            "idea": "Reduzir ruído (ISO muito alto)",
-            "rr": "Noise Reduction (luminância + cor).",
-            "dt": "«denoise (profiled)».",
-            "sg": "Evita puxar as sombras ao limite."
+            "text": "Cor de palco controlada (vermelhos saturam depressa)",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "saturation",
+                "label": "Saturação"
+              }
+            ]
+          },
+          {
+            "text": "Pretos verdadeiros — a escuridão faz parte",
+            "tools": [
+              {
+                "id": "blacks",
+                "label": "Pretos"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           }
         ]
       },
@@ -2703,24 +3105,54 @@
       ],
       "edit": {
         "intro": "Energia e clareza: atleta nítido, cores vivas e recortes dinâmicos.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Punch e clareza no atleta",
-            "rr": "Clarity/Structure; Contrast; Sharpening com máscara.",
-            "dt": "«local contrast» + «contrast equalizer».",
-            "sg": "Estrutura + Contraste; Nitidez."
+            "text": "Sujeito nítido e destacado",
+            "tools": [
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              },
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
           },
           {
-            "idea": "Cores vivas (equipa, relva)",
-            "rr": "Vibrance + HSL por cor.",
-            "dt": "«velvia» / «color zones».",
-            "sg": "Saturação/«Ambiente»; Seletivo."
+            "text": "Fundo de bancadas atenuado",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Ruído (interior) + recorte dinâmico",
-            "rr": "Noise Reduction; crop diagonal.",
-            "dt": "«denoise (profiled)»; «crop».",
-            "sg": "Recortar para reforçar o movimento."
+            "text": "Cor de equipamento fiel",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              }
+            ]
+          },
+          {
+            "text": "Ruído de ISO alto sob controlo",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
           }
         ]
       },
@@ -2894,24 +3326,58 @@
       ],
       "edit": {
         "intro": "Carácter urbano: contraste, atmosfera e, muitas vezes, um look mate ou de film.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Look mate / film (sombras levantadas)",
-            "rr": "Tone Curve: levanta o ponto preto; Color Grading subtil.",
-            "dt": "«rgb curve» (lift dos pretos) + «color balance rgb».",
-            "sg": "Curvas: levanta os pretos; reduz a Saturação levemente."
+            "text": "Look de cidade coerente",
+            "tools": [
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Contraste local e atmosfera",
-            "rr": "Clarity +, Dehaze a gosto.",
-            "dt": "«local contrast» / «haze removal».",
-            "sg": "«Ambiente» + Estrutura."
+            "text": "Contraste com carácter, sem HDR",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Cor coesa (teal&orange ou dessaturado)",
-            "rr": "Rodas de cor, ou baixa a Saturation para mood.",
-            "dt": "«color balance rgb».",
-            "sg": "Curvas por canal, ou Saturação −."
+            "text": "Sombras profundas assumidas",
+            "tools": [
+              {
+                "id": "blacks",
+                "label": "Pretos"
+              },
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              }
+            ]
+          },
+          {
+            "text": "Cor contida — ou preto e branco",
+            "tools": [
+              {
+                "id": "saturation",
+                "label": "Saturação"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           }
         ]
       },
@@ -3082,24 +3548,54 @@
       ],
       "edit": {
         "intro": "Geometria impecável: endireitar, equilibrar a luz e decidir entre cor fiel ou P&B gráfico.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Endireitar e corrigir perspetiva",
-            "rr": "Transform: rotation + perspetiva vertical; crop final.",
-            "dt": "«rotate and perspective» (keystone).",
-            "sg": "Ferramenta «Perspetiva» + «Rodar»."
+            "text": "Verticais direitas e geometria limpa",
+            "tools": [
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Equilibrar céu e fachada",
-            "rr": "Highlights −, Shadows +; máscara linear no céu.",
-            "dt": "«tone equalizer» / máscara gradiente.",
-            "sg": "Realces −, Sombras +; Seletivo no céu."
+            "text": "Textura de fachada realçada",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Look gráfico (opcional P&B)",
-            "rr": "B&W + contraste alto; Azul −luminância para céu negro.",
-            "dt": "«monochrome» + «contrast equalizer».",
-            "sg": "Preto e branco (filtro Vermelho) + Estrutura."
+            "text": "Céu com densidade",
+            "tools": [
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              },
+              {
+                "id": "highlights",
+                "label": "Realces"
+              }
+            ]
+          },
+          {
+            "text": "Cor neutra — betão e pedra sem dominante",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "tint",
+                "label": "Matiz"
+              }
+            ]
           }
         ]
       },
@@ -3270,24 +3766,58 @@
       ],
       "edit": {
         "intro": "Cor rica e fiel ao local, com um look coerente entre as fotos da viagem.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Look coerente (preset / copiar definições)",
-            "rr": "Cria um Preset e aplica à pasta/lote.",
-            "dt": "Guarda um «style» e aplica em lote.",
-            "sg": "«Copiar/Colar look» entre fotos (QR)."
+            "text": "Cor viva mas credível",
+            "tools": [
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Cor e luz do local",
-            "rr": "WB criativa (quente ao pôr do sol); Vibrance; Dehaze.",
-            "dt": "«white balance» + «color balance rgb» + «haze removal».",
-            "sg": "Balanço de Brancos; «Ambiente»; Saturação."
+            "text": "Coerência entre fotografias do mesmo sítio",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
           },
           {
-            "idea": "Endireitar e corrigir perspetiva (arquitetura)",
-            "rr": "Transform: rotation / perspective.",
-            "dt": "«rotate and perspective».",
-            "sg": "Ferramenta «Perspetiva» + «Rodar»."
+            "text": "Céu recuperado sem esforço",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              }
+            ]
+          },
+          {
+            "text": "Edição rápida — é uma série grande",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           }
         ]
       },
@@ -3457,24 +3987,58 @@
       ],
       "edit": {
         "intro": "Chapa com punch, fundo calmo e o look teal & orange que o género adora.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Punch na carroçaria",
-            "rr": "Clarity + Contrast; máscara no carro para Sharpening.",
-            "dt": "«local contrast» + máscara «sharpen».",
-            "sg": "Estrutura + Contraste; Pincel no carro."
+            "text": "Pintura sem brilhos queimados",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
           },
           {
-            "idea": "Fundo mais escuro e calmo",
-            "rr": "Máscara invertida: Exposure −, Saturation −; Vignette.",
-            "dt": "Máscara + «exposure»; «vignetting».",
-            "sg": "Seletivo no fundo (Brilho −); Vinheta."
+            "text": "Linhas da carroçaria realçadas",
+            "tools": [
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
           },
           {
-            "idea": "Look teal & orange automóvel",
-            "rr": "Rodas de cor: sombras teal, realces quentes; HSL na chapa.",
-            "dt": "«color balance rgb» 4-vias.",
-            "sg": "Curvas Azul/Vermelho por canal."
+            "text": "Separar o carro do fundo",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
+          },
+          {
+            "text": "Cor da pintura exata",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              }
+            ]
           }
         ]
       },
@@ -3655,24 +4219,54 @@
       ],
       "edit": {
         "intro": "Limpa o ruído, revela estrelas e luzes sem queimar, e controla a cor do céu.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Reduzir ruído primeiro (ISO alto)",
-            "rr": "Noise Reduction (luminância + cor) antes de afiar.",
-            "dt": "«denoise (profiled)» — essencial.",
-            "sg": "Evita puxar Sombras/Estrutura ao máximo (amplifica o ruído)."
+            "text": "Ruído reduzido sem apagar estrelas",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
           },
           {
-            "idea": "Revelar a Via Láctea / as luzes",
-            "rr": "Shadows +, Whites +, Dehaze; Clarity localizada (máscara).",
-            "dt": "«tone equalizer» + «local contrast» com máscara.",
-            "sg": "Sombras +; Estrutura local com o Pincel; Curvas."
+            "text": "Contraste da Via Láctea, com mão firme",
+            "tools": [
+              {
+                "id": "curve",
+                "label": "Curvas"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Cor do céu noturno",
-            "rr": "Temperature mais fria; HSL tira a dominante laranja da poluição luminosa.",
-            "dt": "«white balance» + «color zones» no laranja.",
-            "sg": "Balanço de Brancos mais frio; Seletivo."
+            "text": "Céu neutro ou frio, sem poluição amarela",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
+          },
+          {
+            "text": "Primeiro plano legível",
+            "tools": [
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              },
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              }
+            ]
           }
         ]
       },
@@ -3849,24 +4443,50 @@
       ],
       "edit": {
         "intro": "Ruído controlado, cor decidida e pretos que continuam pretos.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Ruído sem plástico",
-            "rr": "Denoise moderado + Sharpening com máscara.",
-            "dt": "«denoise (profile)» + «sharpen» com máscara.",
-            "sg": "«Redução de ruído» leve."
+            "text": "A noite tem de parecer noite",
+            "tools": [
+              {
+                "id": "blacks",
+                "label": "Pretos"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Look de cidade à noite",
-            "rr": "Color Grading: sombras azul/teal, altas laranja.",
-            "dt": "«color balance rgb» (4 vias).",
-            "sg": "Curvas por canal."
+            "text": "Néons com cor, sem estourar",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Pretos reais",
-            "rr": "Blacks − até o histograma tocar a esquerda.",
-            "dt": "«levels» → ponto preto.",
-            "sg": "Contraste + e «Ambiente» −."
+            "text": "Ruído tratado, mantendo textura",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
+          },
+          {
+            "text": "Look cinematográfico coerente",
+            "tools": [
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
           }
         ]
       },
@@ -4045,24 +4665,50 @@
       ],
       "edit": {
         "intro": "Manter o quente sem virar laranja, e ruído tratado com mão leve.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Quente credível",
-            "rr": "Temp + moderado; HSL: laranja com luminância +.",
-            "dt": "«color balance rgb» nas altas luzes.",
-            "sg": "«Calor» + moderado."
+            "text": "Quente credível, sem virar laranja",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Ruído de interior",
-            "rr": "Denoise + Sharpening com máscara alta.",
-            "dt": "«denoise (profile)».",
-            "sg": "«Redução de ruído» leve."
+            "text": "Bokeh das luzes bonito e sem estourar",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              }
+            ]
           },
           {
-            "idea": "Bokeh mais bonito",
-            "rr": "Highlights − nas luzes para não estourarem em disco branco.",
-            "dt": "«tone equalizer» nas altas.",
-            "sg": "«Realces» −."
+            "text": "Ruído de interior sob controlo",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
+          },
+          {
+            "text": "Pele natural sob luz quente",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              }
+            ]
           }
         ]
       },
@@ -4240,24 +4886,58 @@
       ],
       "edit": {
         "intro": "Fundo limpo, cor fiel e bordas nítidas — edição técnica, não artística.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Fundo branco limpo",
-            "rr": "Máscara no fundo: Exposure + até quase puro; Whites +.",
-            "dt": "Máscara desenhada + «exposure».",
-            "sg": "Seletivo no fundo: Brilho +; Pincel nos cantos."
+            "text": "Cor absolutamente fiel",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           },
           {
-            "idea": "Cor fiel do produto",
-            "rr": "WB pelo conta-gotas num cinza; Vibrance mínima.",
-            "dt": "«white balance» conta-gotas; «velvia» off.",
-            "sg": "Balanço de Brancos manual; Saturação neutra."
+            "text": "Fundo branco mesmo branco",
+            "tools": [
+              {
+                "id": "whites",
+                "label": "Brancos"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Nitidez e micro-contraste nas bordas",
-            "rr": "Sharpening + Clarity leve; máscara para não afiar o fundo.",
-            "dt": "«sharpen» / «diffuse or sharpen» mascarado.",
-            "sg": "Detalhes → Nitidez; Estrutura leve."
+            "text": "Detalhe e material legíveis",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "sharpen",
+                "label": "Nitidez"
+              }
+            ]
+          },
+          {
+            "text": "Reflexos controlados",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
           }
         ]
       },
@@ -4429,24 +5109,54 @@
       ],
       "edit": {
         "intro": "Apetite: quente, vibrante e com textura — mas sempre credível.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Temperatura apetitosa",
-            "rr": "Temperature +200–400K; Tint a evitar verde.",
-            "dt": "«white balance» ligeiramente quente.",
-            "sg": "Balanço de Brancos → Calor +."
+            "text": "Comida apetitosa — quente e viva",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              }
+            ]
           },
           {
-            "idea": "Vida nas cores certas",
-            "rr": "Vibrance +; HSL: Laranja/Vermelho saturação +, Verde controlado.",
-            "dt": "«velvia» leve + «color zones».",
-            "sg": "Saturação leve; Seletivo nos elementos."
+            "text": "Textura que se sinta",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Textura no ponto de mordida",
-            "rr": "Clarity/Structure local no herói do prato.",
-            "dt": "«local contrast» mascarado.",
-            "sg": "Pincel → Estrutura no centro do prato."
+            "text": "Prato destacado do resto da mesa",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              }
+            ]
+          },
+          {
+            "text": "Brancos da loiça sem estourar",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "whites",
+                "label": "Brancos"
+              }
+            ]
           }
         ]
       },
@@ -4622,24 +5332,54 @@
       ],
       "edit": {
         "intro": "Correção geométrica primeiro, tonal depois. O objetivo é fiel e limpo, não artístico.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Endireitar verticais",
-            "rr": "Transform → vertical/auto + correção de perfil.",
-            "dt": "«rotate and perspective» (auto vertical) + «lens correction».",
-            "sg": "«Perspetiva» → Vertical."
+            "text": "Verticais direitas e espaço credível",
+            "tools": [
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Janela recuperada",
-            "rr": "Funde o bracketing, ou Highlights −− e máscara na janela.",
-            "dt": "Fusão de exposições, ou «tone equalizer» com máscara.",
-            "sg": "«Seletivo» na janela, brilho −."
+            "text": "Janelas com vista, não brancas",
+            "tools": [
+              {
+                "id": "highlights",
+                "label": "Realces"
+              },
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
           },
           {
-            "idea": "Cor neutra e consistente",
-            "rr": "Conta-gotas de WB numa parede branca; copia para toda a série.",
-            "dt": "«white balance» por conta-gotas + copiar histórico.",
-            "sg": "«Branco» ajustado à mão."
+            "text": "Cor neutra e igual em toda a casa",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "tint",
+                "label": "Matiz"
+              }
+            ]
+          },
+          {
+            "text": "Interiores claros e convidativos",
+            "tools": [
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              },
+              {
+                "id": "exposure",
+                "label": "Exposição"
+              }
+            ]
           }
         ]
       },
@@ -4811,24 +5551,58 @@
       ],
       "edit": {
         "intro": "Controla como cada cor vira cinzento e dá-lhe contraste e estrutura. A conversão é uma decisão criativa, não um botão.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Conversão controlada por cor",
-            "rr": "B&W + HSL/luminância: baixar Azul = céu dramático; subir Laranja = pele clara.",
-            "dt": "«color calibration» (channel mixer cinza) ou «monochrome».",
-            "sg": "Filtro «Preto e branco» → filtro Vermelho/Amarelo escurece o céu."
+            "text": "Conversão pensada — decidir o contraste, não aceitá-lo",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Contraste e estrutura para punch",
-            "rr": "Tone Curve em S; Clarity/Structure.",
-            "dt": "«contrast equalizer» / «tone curve».",
-            "sg": "«Tom dramático» + Estrutura + Contraste."
+            "text": "Contraste tonal com carácter",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Granulado film (opcional)",
-            "rr": "Effects → Film Grain.",
-            "dt": "Módulo «grain».",
-            "sg": "Ferramenta «Granulado»."
+            "text": "Textura como assunto",
+            "tools": [
+              {
+                "id": "texture",
+                "label": "Textura"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
+          },
+          {
+            "text": "Pretos e brancos com detalhe nas pontas",
+            "tools": [
+              {
+                "id": "blacks",
+                "label": "Pretos"
+              },
+              {
+                "id": "whites",
+                "label": "Brancos"
+              }
+            ]
           }
         ]
       },
@@ -5008,24 +5782,54 @@
       ],
       "edit": {
         "intro": "Contraste entre o estático nítido e o fluido — e realces de luz sob controlo.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Segurar realces (rastos, céu)",
-            "rr": "Highlights −, Whites ajustados; máscara nos rastos.",
-            "dt": "«filmic rgb» / «tone equalizer».",
-            "sg": "Realces −; Curvas no topo."
+            "text": "Água sedosa com contraste suave",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
           },
           {
-            "idea": "Nitidez só no estático",
-            "rr": "Sharpening mascarado nas rochas/edifícios.",
-            "dt": "«sharpen» com máscara.",
-            "sg": "Pincel → Estrutura no estático."
+            "text": "Céu com movimento legível",
+            "tools": [
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              },
+              {
+                "id": "clarity",
+                "label": "Claridade"
+              }
+            ]
           },
           {
-            "idea": "Mood (frio na água, quente nas luzes)",
-            "rr": "WB dividido via Color Grading.",
-            "dt": "«color balance rgb» sombras/realces.",
-            "sg": "Curvas por canal; Seletivo."
+            "text": "Ruído de exposição longa tratado",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
+          },
+          {
+            "text": "Tons frios e limpos",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
           }
         ]
       },
@@ -5202,24 +6006,50 @@
       ],
       "edit": {
         "intro": "Pouca coisa: limpar ruído, decidir a cor dos traços e apagar o que apareceu sem querer.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Traços mais fortes",
-            "rr": "Whites + e Blacks − para separar traço do fundo.",
-            "dt": "«levels» + «tone equalizer».",
-            "sg": "Contraste + e «Realces» +."
+            "text": "Traços de luz fortes e separados do fundo",
+            "tools": [
+              {
+                "id": "whites",
+                "label": "Brancos"
+              },
+              {
+                "id": "blacks",
+                "label": "Pretos"
+              }
+            ]
           },
           {
-            "idea": "Cor dos traços",
-            "rr": "HSL no matiz do traço (saturação/luminância).",
-            "dt": "«color zones».",
-            "sg": "Curvas por canal."
+            "text": "Cor dos traços decidida",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "grading",
+                "label": "Gradação de cor"
+              }
+            ]
           },
           {
-            "idea": "Limpar fantasmas",
-            "rr": "Healing sobre a tua silhueta se apareceu.",
-            "dt": "«retouch».",
-            "sg": "«Cura»."
+            "text": "Ruído de exposição longa reduzido",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Ruído"
+              }
+            ]
+          },
+          {
+            "text": "Limpar o que apareceu sem querer",
+            "tools": [
+              {
+                "id": "mask-subject",
+                "label": "Máscaras"
+              }
+            ]
           }
         ]
       },
@@ -5397,24 +6227,54 @@
       ],
       "edit": {
         "intro": "Simetria exata e decisão sobre o quanto o reflexo deve competir com o real.",
-        "steps": [
+        "goals": [
           {
-            "idea": "Simetria perfeita",
-            "rr": "Transform + corte alinhado ao eixo do reflexo.",
-            "dt": "«rotate and perspective» + «crop».",
-            "sg": "«Rodar» e «Cortar» com grelha."
+            "text": "Reflexo com densidade, não lavado",
+            "tools": [
+              {
+                "id": "contrast",
+                "label": "Contraste"
+              },
+              {
+                "id": "blacks",
+                "label": "Pretos"
+              }
+            ]
           },
           {
-            "idea": "Dosear o reflexo",
-            "rr": "Máscara sobre o reflexo: exposição/clarity a gosto.",
-            "dt": "«exposure» com máscara desenhada.",
-            "sg": "«Seletivo» sobre a área refletida."
+            "text": "Decidir quanto o reflexo compete com o real",
+            "tools": [
+              {
+                "id": "mask-grad",
+                "label": "Gradiente"
+              },
+              {
+                "id": "exposure",
+                "label": "Exposição"
+              }
+            ]
           },
           {
-            "idea": "Coerência de cor",
-            "rr": "Iguala WB entre a cena e o reflexo.",
-            "dt": "«color balance rgb» localizado.",
-            "sg": "«Branco» global."
+            "text": "Simetria exata",
+            "tools": [
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
+          },
+          {
+            "text": "Cor coerente entre cena e reflexo",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
+              }
+            ]
           }
         ]
       },

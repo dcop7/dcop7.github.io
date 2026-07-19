@@ -1017,3 +1017,101 @@ body.density-list .lp-link-tags { display: none; }
 
 .ph-eq-hero { margin: 0 0 1rem; max-width: 620px; }
 .ph-eq-hero svg { width: 100%; height: auto; display: block; border-radius: var(--radius); border: 1px solid var(--border); background: var(--card); }
+
+/* ══ secção Edição: fichas de ferramenta + demonstrações interativas ══════ */
+.ph-tool { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: 1rem; scroll-margin-top: 1rem; }
+.ph-tool.flash { animation: ph-toolflash 1.6s var(--ease); }
+@keyframes ph-toolflash { 0%, 100% { box-shadow: none; } 20%, 60% { box-shadow: 0 0 0 2px var(--accent); } }
+.ph-tool-hd { display: flex; align-items: flex-start; gap: .7rem; margin-bottom: .8rem; }
+.ph-tool-ico { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+.ph-tool-name { font-family: var(--font-head); font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0; }
+.ph-tool-en { font-size: .82rem; font-weight: 600; color: var(--accent); margin-left: .35rem; }
+.ph-tool-tag { font-size: .74rem; color: var(--muted); }
+.ph-tool-concept { margin-bottom: .9rem; }
+.ph-tool-pe { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .3rem; }
+.ph-tool-p { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: .5rem .65rem; }
+.ph-tool-p b { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .15rem; }
+.ph-tool-p p { margin: 0; font-size: .8rem; color: var(--text2); line-height: 1.5; }
+.ph-tool-demo { margin: .9rem 0; }
+
+/* "Nos principais programas" — deliberadamente fechado por omissão: o conceito
+   vem primeiro, a tradução para cada app é consulta. */
+.ph-apps { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card2); margin-top: .9rem; }
+.ph-apps summary { display: flex; align-items: baseline; gap: .5rem; cursor: pointer; padding: .6rem .8rem; list-style: none; font-size: .86rem; font-weight: 700; color: var(--text); }
+.ph-apps summary::-webkit-details-marker { display: none; }
+.ph-apps summary::after { content: "▾"; margin-left: auto; color: var(--muted); transition: transform var(--ease); }
+.ph-apps[open] summary::after { transform: rotate(180deg); }
+.ph-apps summary small { font-weight: 500; color: var(--muted); font-size: .74rem; }
+.ph-apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .4rem; padding: 0 .8rem .8rem; }
+.ph-app { display: flex; flex-direction: column; gap: .1rem; background: var(--card); border: 1px solid var(--border); border-radius: 7px; padding: .45rem .6rem; }
+.ph-app-n { font-size: .74rem; font-weight: 700; color: var(--accent); }
+.ph-app-v { font-size: .78rem; color: var(--text2); line-height: 1.4; }
+
+/* fluxo de trabalho */
+.ph-wf { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+.ph-wf-step { display: flex; gap: .7rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .7rem .85rem; }
+.ph-wf-n { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .8rem; font-weight: 800; display: grid; place-items: center; }
+.ph-wf-body b { font-family: var(--font-head); font-size: .92rem; color: var(--text); }
+.ph-wf-what { margin: .15rem 0 .3rem; font-size: .82rem; color: var(--text2); line-height: 1.5; }
+.ph-wf-why { margin: 0; font-size: .78rem; color: var(--muted); line-height: 1.5; }
+.ph-wf-why span { color: var(--accent); font-weight: 700; }
+
+/* exportação */
+.ph-exp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .7rem; margin-bottom: .9rem; }
+.ph-exp { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem .9rem; }
+.ph-exp-hd { font-family: var(--font-head); font-size: .95rem; font-weight: 800; color: var(--text); margin-bottom: .5rem; }
+.ph-exp-dl { display: grid; grid-template-columns: auto 1fr; gap: .2rem .6rem; margin: 0 0 .5rem; font-size: .78rem; }
+.ph-exp-dl dt { color: var(--muted); }
+.ph-exp-dl dd { margin: 0; color: var(--text); font-weight: 600; }
+.ph-exp-notes { margin: 0; padding-left: 1rem; font-size: .76rem; color: var(--text2); line-height: 1.5; }
+
+/* objetivos de edição do género (só intenção + atalhos) */
+.ph-goal-item { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: .6rem .75rem; margin-bottom: .45rem; }
+.ph-goal-tools { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .4rem; }
+.ph-goto-edit { display: block; width: 100%; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; color: var(--accent); background: var(--card2); border: 1px dashed var(--border); border-radius: var(--radius); padding: .7rem; margin-top: .7rem; transition: all var(--ease); }
+.ph-goto-edit:hover { border-color: var(--accent); background: var(--card); }
+
+/* ══ EditLab: componentes interativos ═════════════════════════════════ */
+.el-stage { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--card2); border: 1px solid var(--border); max-width: 560px; }
+.el-compare .el-stage { max-width: none; }
+.el-canvas { display: block; width: 100%; height: auto; }
+.el-controls { margin-top: .6rem; display: flex; flex-direction: column; gap: .4rem; }
+.el-row { display: grid; grid-template-columns: minmax(90px, auto) 1fr minmax(46px, auto); align-items: center; gap: .6rem; }
+.el-lbl { font-size: .78rem; font-weight: 600; color: var(--text2); }
+.el-range { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.el-val { font-size: .78rem; font-weight: 700; color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+.el-actions { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+.el-btn { font: inherit; font-size: .75rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .3rem .7rem; transition: all var(--ease); user-select: none; }
+.el-btn:hover { border-color: var(--accent); color: var(--text); }
+.el-btn:active { background: var(--accent); color: #fff; }
+.el-check { display: inline-flex; align-items: center; gap: .3rem; font-size: .75rem; color: var(--text2); cursor: pointer; }
+.el-check input { accent-color: var(--accent); cursor: pointer; }
+.el-note { font-size: .78rem; color: var(--muted); line-height: 1.55; margin: .6rem 0 0; }
+.el-loading { font-size: .8rem; color: var(--muted); padding: 1.5rem; text-align: center; background: var(--card2); border: 1px dashed var(--border); border-radius: var(--radius); margin: 0; }
+
+.el-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .5rem; }
+.el-cmp { margin: 0; }
+.el-cmp figcaption { font-size: .74rem; color: var(--text2); text-align: center; margin-top: .3rem; }
+.el-cmp figcaption b { color: var(--accent); }
+
+.el-curve-wrap { display: grid; grid-template-columns: 1fr auto; gap: .7rem; align-items: start; }
+.el-curve { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); touch-action: none; cursor: crosshair; display: block; }
+.el-curve-side { display: flex; flex-direction: column; gap: .4rem; }
+.el-presets { display: flex; flex-wrap: wrap; gap: .3rem; max-width: 240px; }
+.el-chip { font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .25rem .6rem; transition: all var(--ease); }
+.el-chip:hover { border-color: var(--accent); }
+.el-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.el-bands { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .6rem; }
+.el-band { display: inline-flex; align-items: center; gap: .3rem; font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .25rem .6rem; transition: all var(--ease); }
+.el-band span { width: 10px; height: 10px; border-radius: 50%; background: var(--bc); }
+.el-band.active { border-color: var(--bc); color: var(--text); box-shadow: 0 0 0 1px var(--bc) inset; }
+
+@media (max-width: 640px) {
+  .ph-tool-pe { grid-template-columns: 1fr; }
+  .el-curve-wrap { grid-template-columns: 1fr; }
+  .el-curve { width: 100%; height: auto; max-width: 240px; margin: 0 auto; }
+  .el-presets { max-width: none; }
+  .el-row { grid-template-columns: 1fr; gap: .15rem; }
+  .el-val { text-align: left; }
+}

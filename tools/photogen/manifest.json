@@ -19,7 +19,8 @@
     "scene_illus": "cinematic semi-realistic digital illustration, stylized concept art, dramatic atmospheric lighting, rich saturated colors, painterly detail, artstation trending, beautiful, no text, no watermark",
     "char_illus": "stylized semi-realistic 3D character render, Pixar Disney style, appealing clean design, soft cinematic lighting, subsurface scattering skin, friendly, full figure, no text, no watermark",
     "genre_icon": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with soft gradient shading, very few elements, minimal detail, limited palette of deep indigo, cyan and warm amber, dark navy background, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering",
-    "genre_icon_mono": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with smooth gradient shading, very few elements, minimal detail, strictly black white and grey monochrome, no colour at all, greyscale, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering"
+    "genre_icon_mono": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with smooth gradient shading, very few elements, minimal detail, strictly black white and grey monochrome, no colour at all, greyscale, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering",
+    "edit_demo": "photorealistic landscape photograph, wide dynamic range scene, bright detailed sky with textured clouds, sunlit mountains in the distance, dark rocky foreground with visible texture, a lake with reflections, rich but natural colours, green vegetation and warm rock tones, deep shadows retaining some detail, sharp focus throughout, golden hour side light, shot on 24mm f/8, high detail, no people"
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
@@ -1688,6 +1689,21 @@
       "seed": 881202,
       "caption": "reflexos",
       "maxWidth": 256
+    },
+    {
+      "group": "edit-demo",
+      "style": "edit_demo",
+      "matte": false,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, logo, cartoon, illustration, painting, 3d render, oversaturated, hdr halo, blurry, low quality, jpeg artifacts, vignette, frame, border, black and white",
+      "id": "edit-demo",
+      "maxWidth": 1120,
+      "prompt": "a mountain lake at golden hour with rocks in the foreground, clouds catching warm light",
+      "seed": 990101,
+      "caption": "imagem de demonstração da secção Edição"
     }
   ]
 }
