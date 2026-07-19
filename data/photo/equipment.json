@@ -1,0 +1,1049 @@
+{
+  "_doc": "Guia de equipamento intemporal. NÃO é um catálogo de marcas/modelos — são conceitos que continuam válidos daqui a 10 anos. Cada item responde: que problema resolve · quando usar · quando NÃO vale a pena · erros de iniciante. O campo 'visual' é um id de PhotoIllus (js/pages/photo-illus.js) ou de assets/photo/index.json.",
+  "categories": [
+    {
+      "id": "cameras",
+      "icon": "📷",
+      "name": "Câmaras",
+      "intro": "O tamanho do sensor é a decisão que mais afeta o resultado — muito mais que os megapíxeis. Sensor maior significa mais luz recolhida, menos ruído e desfoque de fundo mais fácil; sensor menor significa equipamento mais pequeno, mais barato e com mais profundidade de campo (que às vezes é o que queres).",
+      "visual": "eq-sensors",
+      "items": [
+        {
+          "id": "phone",
+          "icon": "📱",
+          "name": "Smartphone",
+          "tag": "sensor ~1/1.5\" · 24–70mm eq",
+          "what": "Um sensor minúsculo compensado por software: várias exposições fundidas em milissegundos, redução de ruído por IA e mapas de profundidade para simular desfoque.",
+          "why": "Resolve o problema de ter sempre uma câmara contigo. A melhor câmara continua a ser a que trazes ao bolso — e a fotografia computacional fechou grande parte da distância técnica.",
+          "when": [
+            "Documentar o dia-a-dia, viagem leve, redes sociais",
+            "Cenas de muito contraste — o HDR multi-frame é genuinamente melhor que um único disparo",
+            "Sítios onde uma câmara grande é intrusiva ou não é permitida",
+            "Fotografia noturna estática (modo Noite empilha vários segundos)"
+          ],
+          "notWhen": [
+            "Desporto e vida selvagem — falta alcance real e velocidade de resposta",
+            "Ampliações grandes para impressão",
+            "Quando queres desfoque de fundo verdadeiro em vez de simulado",
+            "Luz muito fraca com sujeitos em movimento"
+          ],
+          "mistakes": [
+            "Usar zoom digital em vez de dar dois passos em frente",
+            "Fotografar com a lente suja de dedadas — é a causa nº1 de fotografias lavadas",
+            "Confiar no modo Retrato para cabelo, óculos e folhagem (o recorte falha)"
+          ],
+          "tips": [
+            "A câmara principal (1×) é quase sempre a melhor das três — usa-a por defeito.",
+            "Toque longo bloqueia foco e exposição: é o teu controlo manual escondido.",
+            "Limpa a lente com a t-shirt antes de cada série. É o upgrade mais barato que existe."
+          ]
+        },
+        {
+          "id": "apsc",
+          "icon": "📷",
+          "name": "APS-C",
+          "tag": "crop 1.5–1.6× · o meio-termo",
+          "what": "Sensor com cerca de metade da área de um full frame. Multiplica a distância focal por 1.5× ou 1.6×: uma 50mm comporta-se como uma 75–80mm.",
+          "why": "Resolve o compromisso entre qualidade e custo/peso. Dá 90% do resultado de um full frame por metade do preço e do tamanho.",
+          "when": [
+            "Primeira câmara a sério — é onde está a melhor relação qualidade/preço",
+            "Vida selvagem e desporto: o fator de corte dá alcance extra de graça",
+            "Viagem e caminhada, onde peso importa",
+            "Vídeo — a maioria das câmaras APS-C atuais é excelente nisso"
+          ],
+          "notWhen": [
+            "Trabalho regular com pouquíssima luz onde cada meio-diafragma conta",
+            "Quando queres o máximo de desfoque de fundo com objetivas acessíveis"
+          ],
+          "mistakes": [
+            "Comprar objetivas full frame caras para um corpo APS-C sem precisar — há objetivas dedicadas mais pequenas e baratas",
+            "Esquecer o fator de corte ao escolher focal: uma 24mm num APS-C é uma 36mm, já não é grande angular",
+            "Achar que 'APS-C é para amadores' — muitos trabalhos publicados são feitos assim"
+          ],
+          "tips": [
+            "Pensa sempre em focal EQUIVALENTE. É a única linguagem que se traduz entre sistemas.",
+            "Uma objetiva fixa luminosa (o clássico 'nifty fifty') num APS-C dá-te um retrato de 75–80mm eq por muito pouco dinheiro."
+          ]
+        },
+        {
+          "id": "ff",
+          "icon": "🎞️",
+          "name": "Full Frame",
+          "tag": "36×24mm · a referência",
+          "what": "Sensor do tamanho de um fotograma de filme 35mm. É a referência a que todas as focais equivalentes se referem: aqui, uma 50mm é mesmo uma 50mm.",
+          "why": "Mais área de sensor recolhe mais luz. Resolve dois problemas concretos: ruído em luz fraca e dificuldade em separar o sujeito do fundo.",
+          "when": [
+            "Trabalho frequente com pouca luz (casamentos, concertos, interiores, astro)",
+            "Retrato onde queres separação de fundo com facilidade",
+            "Paisagem para impressão grande, onde a gama dinâmica conta",
+            "Quando já sabes exatamente o que te limita no sistema atual"
+          ],
+          "notWhen": [
+            "És iniciante — o dinheiro rende muito mais em objetivas, luz e viagens",
+            "Fotografas sobretudo com muita luz e a fechar o diafragma (paisagem a f/11)",
+            "Peso e discrição importam mais que o último diafragma"
+          ],
+          "mistakes": [
+            "Comprar full frame e ficar sem dinheiro para objetivas decentes — o corpo é a parte menos importante",
+            "Esperar melhores fotografias em vez de melhores ficheiros: a câmara não compõe por ti",
+            "Fotografar tudo a f/1.4 porque agora dá — metade da cara fica desfocada"
+          ],
+          "tips": [
+            "A vantagem real aparece a partir de ISO 3200. Se fotografas quase sempre a ISO 100, o salto vai desiludir-te.",
+            "Antes de mudar de sistema, escreve o que te limita hoje. Se não conseguires escrever, ainda não precisas."
+          ]
+        },
+        {
+          "id": "mft",
+          "icon": "🔲",
+          "name": "Micro Four Thirds",
+          "tag": "crop 2× · pequeno e estabilizado",
+          "what": "Sensor com cerca de um quarto da área do full frame, com fator de corte 2×: uma 25mm é uma 50mm equivalente.",
+          "why": "Resolve o problema do peso. O sistema inteiro — corpo e objetivas — é drasticamente mais pequeno, e sobra espaço para estabilização no corpo muito eficaz.",
+          "when": [
+            "Viagem, caminhada e montanha, onde cada grama conta",
+            "Vídeo à mão — a estabilização no corpo destes sistemas é das melhores",
+            "Macro e vida selvagem: o corte 2× dá alcance e profundidade de campo generosa"
+          ],
+          "notWhen": [
+            "Luz muito fraca é o ponto fraco estrutural do formato",
+            "Quando queres desfoque de fundo extremo"
+          ],
+          "mistakes": [
+            "Comparar diafragmas entre formatos sem contar o corte: f/2.8 em MFT dá a profundidade de campo de f/5.6 em full frame",
+            "Descartar o formato por causa dos megapíxeis — para ecrã e impressão normal sobram sempre"
+          ],
+          "tips": [
+            "A profundidade de campo generosa é uma VANTAGEM em macro e paisagem, não só um defeito.",
+            "É o sistema onde é mais fácil ter uma super-teleobjetiva sem hipoteca."
+          ]
+        },
+        {
+          "id": "compact",
+          "icon": "🤏",
+          "name": "Compactas",
+          "tag": "objetiva fixa · sempre contigo",
+          "what": "Câmara de objetiva não-permutável, hoje tipicamente com sensor de 1 polegada — bastante maior que o de um telemóvel.",
+          "why": "Resolve o problema de querer mais qualidade e controlo que o telemóvel sem carregar um sistema inteiro.",
+          "when": [
+            "Fotografia de rua discreta",
+            "Segunda câmara para levar sempre",
+            "Quando queres controlos físicos e RAW num objeto de bolso"
+          ],
+          "notWhen": [
+            "Precisas de várias focais muito diferentes",
+            "O telemóvel que já tens chega para o que fazes — nesse caso não acrescenta nada"
+          ],
+          "mistakes": [
+            "Comprar uma compacta de sensor pequeno: se o sensor for do tamanho do de um telemóvel, o telemóvel ganha por causa do software"
+          ],
+          "tips": [
+            "Uma focal fixa obriga-te a mexer os pés — e isso torna-te melhor fotógrafo mais depressa do que qualquer zoom."
+          ]
+        },
+        {
+          "id": "bridge",
+          "icon": "🔭",
+          "name": "Bridge / superzoom",
+          "tag": "alcance enorme num só corpo",
+          "what": "Corpo com aparência de reflex e um zoom fixo de alcance muito grande (por exemplo 24–1200mm eq), quase sempre com sensor pequeno.",
+          "why": "Resolve o problema do alcance sem trocar de objetiva nem carregar peso — em safari, aviação ou lua, ver ao longe é o que importa.",
+          "when": [
+            "Safari, aves, aviões, lua — alcance acima de tudo",
+            "Uma câmara só para uma viagem, sem querer pensar em objetivas"
+          ],
+          "notWhen": [
+            "Luz fraca (o sensor pequeno mais o zoom escuro é a pior combinação possível)",
+            "Quando queres qualidade máxima por fotografia em vez de alcance"
+          ],
+          "mistakes": [
+            "Usar a ponta máxima do zoom à mão, ao anoitecer — é garantido ficar tremido e mole",
+            "Acreditar que 1200mm equivalentes são utilizáveis sem apoio"
+          ],
+          "tips": [
+            "Recua um pouco do zoom máximo: as últimas focais são quase sempre as piores oticamente.",
+            "Com sensor pequeno, ISO baixo e muita luz é onde estas câmaras brilham."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lenses",
+      "icon": "🔍",
+      "name": "Objetivas",
+      "intro": "A objetiva decide o aspeto da fotografia muito mais que o corpo. A distância focal não é só 'aproximar': muda a perspetiva, a relação entre primeiro plano e fundo, e a sensação de estar dentro ou fora da cena. Todos os valores aqui são em equivalente 35mm.",
+      "visual": "eq-focal-fov",
+      "items": [
+        {
+          "id": "uwa",
+          "icon": "🌐",
+          "name": "Ultra grande angular",
+          "tag": "10–20mm eq",
+          "what": "Campo de visão muito mais largo que o da visão humana, com exagero de perspetiva: o que está perto fica enorme, o que está longe encolhe.",
+          "why": "Resolve dois problemas: espaços apertados onde não podes recuar, e a vontade de dar uma sensação de imensidão e envolvimento.",
+          "when": [
+            "Interiores pequenos e arquitetura onde não há espaço para recuar",
+            "Paisagem com um primeiro plano forte muito perto da objetiva",
+            "Astro — campo largo apanha mais céu e permite exposições mais longas",
+            "Quando queres que quem vê sinta que está DENTRO da cena"
+          ],
+          "notWhen": [
+            "Retrato a curta distância — deforma narizes e mãos de forma pouco simpática",
+            "Quando o sujeito está longe: vai ficar minúsculo e perdido",
+            "Cenas desarrumadas — o grande angular apanha tudo o que não querias"
+          ],
+          "mistakes": [
+            "Usá-la para 'apanhar tudo' e ficar com uma fotografia vazia sem sujeito",
+            "Inclinar a câmara para cima e depois queixar-se de que os prédios caem para trás",
+            "Esquecer que as bordas esticam — não ponhas caras nem objetos importantes nos cantos"
+          ],
+          "tips": [
+            "Regra prática: com ultra grande angular, aproxima-te MUITO de alguma coisa. Sem primeiro plano forte, a fotografia fica vazia.",
+            "Mantém a câmara nivelada para as verticais ficarem direitas; se quiseres drama, inclina a sério — meio-termo parece erro."
+          ]
+        },
+        {
+          "id": "wide",
+          "icon": "🏞️",
+          "name": "Grande angular",
+          "tag": "24–35mm eq",
+          "what": "Mais largo que a visão humana, mas ainda sem distorção dramática. A focal mais usada em fotojornalismo e rua.",
+          "why": "Resolve o problema de mostrar o sujeito E o contexto onde ele está. Conta histórias em vez de isolar objetos.",
+          "when": [
+            "Fotografia de rua e documental (35mm eq é o clássico absoluto)",
+            "Paisagem com primeiro plano",
+            "Interiores e ambientes",
+            "Retrato ambiental, mostrando a pessoa no seu espaço"
+          ],
+          "notWhen": [
+            "Retrato apertado de rosto — ainda deforma a esta distância",
+            "Quando não te podes aproximar do sujeito"
+          ],
+          "mistakes": [
+            "Ficar longe. Grande angular pede proximidade — se estiveres longe, tudo fica pequeno e a fotografia fica sem assunto.",
+            "Deixar entrar bordas de cena desnecessárias em vez de dar um passo em frente"
+          ],
+          "tips": [
+            "Se fotografas com uma só focal durante um mês, escolhe 35mm eq. É a que mais ensina.",
+            "Aproxima-te até parecer demasiado. Provavelmente ainda está bem."
+          ]
+        },
+        {
+          "id": "normal",
+          "icon": "👁️",
+          "name": "Normal",
+          "tag": "40–55mm eq",
+          "what": "A focal cujo enquadramento e perspetiva mais se aproximam do que o olho humano percebe como natural.",
+          "why": "Resolve o problema da naturalidade: nada é exagerado nem comprimido. O que vês é o que sai.",
+          "when": [
+            "Fotografia do dia-a-dia e documental",
+            "Retrato de meio corpo em ambiente",
+            "Quando queres que a atenção esteja no assunto e não no efeito da objetiva",
+            "Luz fraca — as fixas normais são baratas e muito luminosas"
+          ],
+          "notWhen": [
+            "Espaços apertados (vais bater na parede)",
+            "Quando queres um efeito visual marcado"
+          ],
+          "mistakes": [
+            "Achar que é aborrecida. A ausência de efeito é precisamente o que a torna versátil.",
+            "Comprar um zoom caro antes de ter experimentado uma fixa normal barata"
+          ],
+          "tips": [
+            "A objetiva fixa mais barata do teu sistema é quase sempre melhor oticamente que o zoom do kit — e muito mais luminosa.",
+            "Num APS-C, procura uma 30–35mm; em MFT, uma 25mm."
+          ]
+        },
+        {
+          "id": "portrait",
+          "icon": "👤",
+          "name": "Retrato (tele curta)",
+          "tag": "85–135mm eq",
+          "what": "Teleobjetiva curta. A distância de trabalho maior achata ligeiramente as feições, o que é lisonjeiro, e desfoca o fundo com facilidade.",
+          "why": "Resolve o problema de fotografar rostos sem os deformar e de separar a pessoa de um fundo desarrumado.",
+          "when": [
+            "Retrato de rosto e meio corpo",
+            "Detalhes a distância confortável (comida, produto, flores)",
+            "Sempre que queres um fundo limpo sem ter de o arranjar"
+          ],
+          "notWhen": [
+            "Espaços muito apertados",
+            "Retrato de grupo em interior",
+            "Retrato ambiental onde o contexto importa"
+          ],
+          "mistakes": [
+            "Abrir ao máximo e ficar com um olho nítido e o outro desfocado — f/2.8 a f/4 é mais seguro",
+            "Focar na cara em geral em vez de focar no OLHO mais próximo"
+          ],
+          "tips": [
+            "O desfoque de fundo depende mais da distância entre o sujeito e o fundo do que do diafragma. Afasta a pessoa da parede.",
+            "Um telemóvel com tele 3× (≈70mm eq) faz retratos melhores que a câmara principal — usa-o."
+          ]
+        },
+        {
+          "id": "tele",
+          "icon": "🔭",
+          "name": "Teleobjetiva",
+          "tag": "150–300mm eq",
+          "what": "Campo de visão estreito que comprime a perspetiva: aproxima visualmente planos que estão a distâncias muito diferentes.",
+          "why": "Resolve o problema de não te poderes aproximar — e dá um efeito que nenhuma outra objetiva dá: camadas empilhadas umas contra as outras.",
+          "when": [
+            "Desporto, animais, pessoas à distância",
+            "Paisagem em camadas (serras, nevoeiro, o sol grande atrás de algo)",
+            "Isolar detalhes de arquitetura",
+            "Quando queres um fundo completamente limpo"
+          ],
+          "notWhen": [
+            "Espaços fechados",
+            "Luz fraca sem apoio — a regra 1/focal torna-se cruel",
+            "Quando o contexto é parte da história"
+          ],
+          "mistakes": [
+            "Ignorar a velocidade mínima: a 300mm precisas de 1/300 s ou mais (a não ser que haja estabilização)",
+            "Fotografar através de muito ar quente ao meio-dia e culpar a objetiva pela falta de nitidez",
+            "Usar teleobjetiva só para 'aproximar' e nunca para comprimir de propósito"
+          ],
+          "tips": [
+            "O truque da compressão: para o sol ou a lua parecerem enormes atrás de um edifício, afasta-te MUITO e usa a focal mais longa que tens.",
+            "Regra da velocidade: 1/(focal equivalente) como mínimo à mão."
+          ]
+        },
+        {
+          "id": "supertele",
+          "icon": "🦅",
+          "name": "Super-teleobjetiva",
+          "tag": "400mm eq e acima",
+          "what": "Alcance extremo, profundidade de campo muito reduzida e exigência total de técnica e apoio.",
+          "why": "Resolve o problema de fotografar aquilo que nunca te deixa aproximar: aves, vida selvagem, desporto de campo grande, lua.",
+          "when": [
+            "Aves e vida selvagem",
+            "Desporto ao ar livre",
+            "Lua e astro-paisagem comprimida"
+          ],
+          "notWhen": [
+            "Praticamente tudo o resto — é uma objetiva de especialidade, não de uso geral",
+            "Sem monopé, tripé ou estabilização muito boa"
+          ],
+          "mistakes": [
+            "Comprar alcance antes de ter técnica: com má técnica, 600mm dá 600mm de tremido",
+            "Esquecer que a esta focal a profundidade de campo é de centímetros — o olho tem de estar exatamente no plano de foco"
+          ],
+          "tips": [
+            "Aproximares-te 2 metros vale mais que 200mm extra. Trabalha o campo antes de trabalhar a carteira.",
+            "Um monopé transforma esta categoria de objetivas de frustrante em utilizável."
+          ]
+        },
+        {
+          "id": "macro",
+          "icon": "🔬",
+          "name": "Macro",
+          "tag": "ampliação 1:1",
+          "what": "Objetiva que foca muito perto e projeta o sujeito no sensor ao tamanho real (1:1) ou próximo disso.",
+          "why": "Resolve um problema físico: as objetivas normais não focam perto o suficiente. Uma macro abre um mundo que existe a 10 cm de ti.",
+          "when": [
+            "Insetos, flores, texturas, detalhes de produto",
+            "Quando queres um assunto sem sair de casa ou do quintal",
+            "Dias de mau tempo (podes fotografar dentro de casa)"
+          ],
+          "notWhen": [
+            "Como objetiva de uso geral — o AF costuma ser lento a procurar",
+            "Sem luz abundante ou apoio: a profundidade de campo é de milímetros"
+          ],
+          "mistakes": [
+            "Abrir o diafragma para deixar entrar luz — a f/2.8 em macro fica quase tudo desfocado. Usa f/8 a f/16.",
+            "Tentar focar com o anel: em macro, foca-se aproximando e afastando o CORPO, milímetro a milímetro",
+            "Esquecer que a tua própria sombra tapa o sujeito quando te aproximas"
+          ],
+          "tips": [
+            "Alternativas baratas: tubos de extensão (sem vidro, sem perda de qualidade) ou uma lente close-up enroscada.",
+            "Fotografa de manhã cedo: menos vento e insetos mais lentos."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filters",
+      "icon": "🔵",
+      "name": "Filtros",
+      "intro": "Há dois filtros que fazem coisas impossíveis de replicar na edição (polarizador e ND) e vários que não vale a pena comprar. Saber a diferença poupa dinheiro e melhora fotografias.",
+      "visual": "eq-cpl",
+      "items": [
+        {
+          "id": "cpl",
+          "icon": "🔄",
+          "name": "Polarizador circular (CPL)",
+          "tag": "o único filtro insubstituível",
+          "what": "Filtro rotativo que bloqueia luz polarizada — a que é refletida por superfícies não-metálicas como água, vidro e folhas.",
+          "why": "Resolve um problema que NENHUMA edição resolve: remover reflexos. Nenhum controlo deslizante inventa o que está por baixo de um reflexo.",
+          "effect": "Escurece céus azuis, satura vegetação, remove o brilho branco das folhas molhadas e deixa ver o fundo da água.",
+          "when": [
+            "Paisagem com céu azul e vegetação",
+            "Fotografar através de vidro (montras, janelas de avião, aquários)",
+            "Rios, lagos e mar quando queres ver as pedras no fundo",
+            "Depois da chuva — remove o brilho das folhas e a cor salta"
+          ],
+          "notWhen": [
+            "Com ultra grande angular e céu azul: o efeito é desigual e fica uma mancha escura no céu",
+            "Quando o reflexo é o assunto (reflexos em poças, espelhos de água)",
+            "Com pouca luz — custa-te 1 a 2 diafragmas que podes não ter para dar"
+          ],
+          "mistakes": [
+            "Deixá-lo montado permanentemente. Rouba luz e, muitas vezes, piora a fotografia.",
+            "Não o RODAR — o filtro só funciona quando o rodas até ao efeito máximo, e isso depende do ângulo do sol",
+            "Usá-lo em céu nublado (não há praticamente nada para polarizar)"
+          ],
+          "tips": [
+            "O efeito é máximo a 90° do sol. Aponta o polegar ao sol e faz um L com o indicador: o indicador aponta para a zona de máximo efeito.",
+            "Se só puderes comprar um filtro na vida, compra este.",
+            "Compra-o para a tua objetiva de maior diâmetro e usa anéis adaptadores nas outras."
+          ]
+        },
+        {
+          "id": "nd",
+          "icon": "🌑",
+          "name": "Filtro ND",
+          "tag": "óculos de sol para a objetiva",
+          "what": "Vidro cinzento neutro que corta luz de forma uniforme, sem alterar a cor. Medido em passos (ND8 = 3 passos, ND1000 = 10 passos).",
+          "why": "Resolve o problema de querer uma velocidade lenta (ou um diafragma aberto) quando há luz a mais. Sem ele, à luz do dia não consegues água sedosa nem nuvens em movimento.",
+          "effect": "Permite exposições de segundos ou minutos em pleno dia: água transforma-se em névoa, nuvens tornam-se riscos, pessoas em movimento desaparecem.",
+          "when": [
+            "Cascatas e mar com efeito sedoso à luz do dia",
+            "Nuvens em movimento sobre arquitetura",
+            "Fazer desaparecer multidões de um monumento (exposição muito longa)",
+            "Vídeo à luz do dia, para manter o obturador ao dobro da cadência"
+          ],
+          "notWhen": [
+            "Ao anoitecer ou de noite — já tens pouca luz, não precisas de cortar mais",
+            "Quando queres congelar movimento",
+            "Sem tripé (uma exposição longa à mão não existe)"
+          ],
+          "mistakes": [
+            "Focar DEPOIS de montar um ND forte — a câmara não vê nada. Compõe e foca primeiro, monta o filtro depois, e passa a foco manual.",
+            "Comprar um ND barato e ficar com uma dominante de cor forte (normalmente magenta ou castanha)",
+            "Esquecer de tapar o visor ótico em exposições longas — entra luz por trás e estraga a exposição"
+          ],
+          "tips": [
+            "Se só puderes ter um: ND1000 (10 passos) é o mais versátil para água sedosa.",
+            "Regra rápida: cada passo duplica o tempo. 1/125 s com 10 passos passa a ≈8 s.",
+            "Usa a calculadora de ND deste portal — evita contas erradas no terreno."
+          ]
+        },
+        {
+          "id": "ndvar",
+          "icon": "🔆",
+          "name": "ND variável",
+          "tag": "conveniente, com senões",
+          "what": "Dois polarizadores sobrepostos: rodar um faz variar a densidade de forma contínua, tipicamente entre 2 e 8 passos.",
+          "why": "Resolve o problema de andar com vários ND na mochila e de estar sempre a trocar de filtro — sobretudo em vídeo, onde a luz muda a meio de um plano.",
+          "when": [
+            "Vídeo, onde ajustas continuamente sem parar",
+            "Quando a luz muda depressa e não queres trocar filtros",
+            "Viajar leve, com um filtro em vez de três"
+          ],
+          "notWhen": [
+            "No extremo máximo da escala — aparece uma cruz escura em X no enquadramento",
+            "Com grande angular, onde o efeito desigual se nota mais",
+            "Quando precisas de cor absolutamente fiel"
+          ],
+          "mistakes": [
+            "Forçar até ao limite máximo e não perceber de onde vem o X escuro na imagem",
+            "Comprar o mais barato — nesta categoria a diferença de qualidade é enorme e visível"
+          ],
+          "tips": [
+            "Fica um pouco aquém do máximo e nunca vês o X.",
+            "Para fotografia parada, ND fixos dão melhor qualidade pelo mesmo dinheiro."
+          ]
+        },
+        {
+          "id": "ndgrad",
+          "icon": "🌗",
+          "name": "ND graduado",
+          "tag": "metade escura, metade transparente",
+          "what": "Filtro retangular que é escuro em cima e transparente em baixo, com uma transição suave ou dura ao meio.",
+          "why": "Resolve o contraste entre um céu muito claro e um terreno escuro — no momento do disparo, em vez de na edição.",
+          "when": [
+            "Nascer e pôr do sol com horizonte reto (mar, planície)",
+            "Quando fotografas em JPG e não vais editar",
+            "Quando queres ver o resultado final já no ecrã"
+          ],
+          "notWhen": [
+            "Horizontes irregulares (montanhas, árvores) — a linha do filtro escurece o que não devia",
+            "Se fotografas em RAW e editas: um gradiente digital faz o mesmo, sem limitações de forma"
+          ],
+          "mistakes": [
+            "Colocar a transição no sítio errado e escurecer o topo das montanhas",
+            "Comprá-lo antes de ter percebido se o teu fluxo de trabalho o justifica"
+          ],
+          "tips": [
+            "Para quem edita em RAW, este filtro perdeu quase toda a razão de existir. Não compres por hábito.",
+            "Alternativa sem custo: duas exposições (uma para o céu, outra para o terreno) e fusão na edição."
+          ]
+        },
+        {
+          "id": "uv",
+          "icon": "🛡️",
+          "name": "Filtro UV / protetor",
+          "tag": "não faz nada à imagem",
+          "what": "Vidro transparente. Nas câmaras digitais não tem qualquer efeito ótico — o sensor já tem filtragem UV.",
+          "why": "A única razão para o usar hoje é proteção física da lente frontal.",
+          "when": [
+            "Praia (salpicos salgados), montanha com areia, obras, multidões",
+            "Quando fotografas perto de água salgada ou pó"
+          ],
+          "notWhen": [
+            "Como hábito permanente — acrescenta duas superfícies de vidro que só podem piorar a imagem",
+            "Em contraluz forte: é a principal causa de flare e reflexos fantasma",
+            "Um filtro barato à frente de uma objetiva cara não faz sentido nenhum"
+          ],
+          "mistakes": [
+            "Comprar um filtro de 10€ para uma objetiva de 500€ e admirar-se com a perda de contraste",
+            "Deixá-lo montado ao fotografar contra luzes à noite"
+          ],
+          "tips": [
+            "O para-sol protege melhor contra pancadas do que o filtro, e melhora o contraste em vez de o piorar.",
+            "Se o usares, tira-o sempre que fotografares contra a luz."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "icon": "🦵",
+      "name": "Estabilização e apoio",
+      "intro": "Há dois problemas diferentes que se confundem: a CÂMARA a tremer (resolve-se com estabilização ou apoio) e o SUJEITO a mexer-se (só se resolve com velocidade de obturador). Estabilização nenhuma congela uma criança a correr.",
+      "visual": "eq-tripod",
+      "items": [
+        {
+          "id": "tripod",
+          "icon": "🎬",
+          "name": "Tripé",
+          "tag": "obrigatório em exposição longa",
+          "what": "Três pernas e uma cabeça que imobilizam a câmara e permitem repetir exatamente o mesmo enquadramento.",
+          "why": "Resolve o tremido em exposições longas e — o que muita gente não valoriza — obriga-te a abrandar e a compor com atenção.",
+          "when": [
+            "Exposições acima de ~1/(focal equivalente) segundos",
+            "Astro, longa exposição, light painting, fogo de artifício",
+            "Paisagem ao amanhecer e anoitecer",
+            "Bracketing e panorâmicas, onde os enquadramentos têm de coincidir",
+            "Quando queres aparecer na fotografia (temporizador)",
+            "Macro e produto, onde compões ao milímetro"
+          ],
+          "notWhen": [
+            "Fotografia de rua e eventos — torna-te lento e visível",
+            "Quando há luz de sobra e velocidade rápida",
+            "Sítios onde é proibido (muitos museus e monumentos)"
+          ],
+          "mistakes": [
+            "Deixar a estabilização ligada em cima do tripé — em muitas objetivas antigas isso INTRODUZ vibração",
+            "Comprar um tripé barato que treme: um tripé que abana não resolve o problema que foi comprado para resolver",
+            "Estender a coluna central ao máximo — é a parte menos estável de todas",
+            "Carregar no botão à mão e anular todo o benefício (usa temporizador de 2 s)"
+          ],
+          "tips": [
+            "Regra do orçamento: o tripé deve custar em proporção ao que suporta. Um tripé bom dura décadas e sobrevive a várias câmaras.",
+            "Sem tripé? Um muro, uma mochila, o chão ou uma árvore fazem o mesmo trabalho por zero euros.",
+            "Pendura a mochila no gancho central em dias de vento."
+          ]
+        },
+        {
+          "id": "monopod",
+          "icon": "🦯",
+          "name": "Monopé",
+          "tag": "o meio-termo dos teles",
+          "what": "Uma perna só. Não imobiliza, mas aguenta o peso e elimina o tremido vertical.",
+          "why": "Resolve o cansaço e a fadiga de segurar objetivas pesadas durante horas, sem a lentidão de um tripé.",
+          "when": [
+            "Desporto e vida selvagem com teleobjetivas pesadas",
+            "Eventos onde tens de te mexer depressa",
+            "Sítios onde tripés são proibidos mas monopés são tolerados"
+          ],
+          "notWhen": [
+            "Exposições verdadeiramente longas (precisas de tripé)",
+            "Objetivas leves — nesse caso é peso a mais sem ganho"
+          ],
+          "mistakes": [
+            "Esperar dele o mesmo que de um tripé",
+            "Não o usar como apoio corporal: encosta-o ao corpo e forma um triângulo com as tuas duas pernas"
+          ],
+          "tips": [
+            "Ganhas tipicamente 2 a 3 velocidades de obturador. Não é imobilidade, mas muda o jogo em tele."
+          ]
+        },
+        {
+          "id": "remote",
+          "icon": "🎚️",
+          "name": "Disparador remoto",
+          "tag": "ou o temporizador que já tens",
+          "what": "Cabo, comando sem fios ou app que dispara a câmara sem lhe tocares.",
+          "why": "Resolve a vibração causada pelo teu próprio dedo — que em exposições longas ou macro estraga fotografias que estavam certas.",
+          "when": [
+            "Exposições em modo Bulb (acima de 30 s)",
+            "Astro e light painting",
+            "Autorretrato e fotografia de grupo onde entras",
+            "Macro e produto"
+          ],
+          "notWhen": [
+            "Quando o temporizador de 2 s da câmara resolve — e resolve quase sempre"
+          ],
+          "mistakes": [
+            "Comprar um comando antes de perceber que o temporizador integrado faz 90% do trabalho de graça"
+          ],
+          "tips": [
+            "Temporizador de 2 s é o disparador remoto que já tens no bolso.",
+            "A app do fabricante costuma servir de remoto E de visor à distância — útil em autorretrato."
+          ]
+        },
+        {
+          "id": "ois",
+          "icon": "🔀",
+          "name": "Estabilização ótica (na objetiva)",
+          "tag": "IS · OS · VR · OIS",
+          "what": "Elementos móveis dentro da objetiva que compensam o tremido das tuas mãos.",
+          "why": "Resolve o tremido da câmara em velocidades lentas, permitindo fotografar à mão com menos luz.",
+          "when": [
+            "Teleobjetivas (é onde faz mais diferença)",
+            "Vídeo à mão",
+            "Luz fraca com sujeitos parados"
+          ],
+          "notWhen": [
+            "Em tripé — desliga (em objetivas antigas pode introduzir vibração)",
+            "Para congelar sujeitos em movimento — não faz absolutamente nada por isso"
+          ],
+          "mistakes": [
+            "Confundir estabilização com velocidade: uma pessoa a andar fica tremida a 1/15 s por muito estabilizada que a objetiva esteja",
+            "Contar com 5 passos de ganho quando na prática são 2 a 3"
+          ],
+          "tips": [
+            "Ganho típico real: 2 a 3 velocidades. Se a regra pede 1/200, com estabilização safas-te a 1/30–1/50."
+          ]
+        },
+        {
+          "id": "ibis",
+          "icon": "🎯",
+          "name": "Estabilização no sensor (IBIS)",
+          "tag": "funciona com qualquer objetiva",
+          "what": "O próprio sensor move-se para compensar o tremido, muitas vezes em 5 eixos.",
+          "why": "Resolve o mesmo problema que a estabilização ótica, mas para TODAS as objetivas — incluindo fixas antigas e adaptadas que nunca tiveram estabilização.",
+          "when": [
+            "Objetivas fixas luminosas sem estabilização própria",
+            "Objetivas manuais e adaptadas",
+            "Vídeo à mão",
+            "Fotografia noturna à mão"
+          ],
+          "notWhen": [
+            "Em tripé (desliga)",
+            "Como critério único de compra — é bom ter, raramente é decisivo"
+          ],
+          "mistakes": [
+            "Comprar um corpo só por causa do IBIS quando o problema real era falta de velocidade de obturador"
+          ],
+          "tips": [
+            "Quando o corpo e a objetiva têm estabilização, os sistemas modernos cooperam e dão mais que qualquer um sozinho.",
+            "Não tens IBIS? Encosta os cotovelos ao corpo, expira e dispara no fim da expiração. Ganhas quase uma velocidade."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "light",
+      "icon": "💡",
+      "name": "Flash e iluminação",
+      "intro": "Luz direta e pequena é dura: sombras marcadas e brilhos. Luz grande e difusa é suave: transições macias. Todo o material de iluminação existe basicamente para tornar a fonte de luz maior, mais suave ou mais direcionada.",
+      "visual": "eq-flash",
+      "items": [
+        {
+          "id": "popup",
+          "icon": "⚡",
+          "name": "Flash integrado",
+          "tag": "pequeno e duro",
+          "what": "Flash minúsculo na câmara, apontado diretamente à frente.",
+          "why": "Existe para emergências: quando sem ele não há fotografia nenhuma.",
+          "when": [
+            "Fill-in à luz do dia — clarear sombras em contraluz (o melhor uso, e o menos conhecido)",
+            "Quando a alternativa é não ter fotografia",
+            "Macro, com um difusor improvisado à frente"
+          ],
+          "notWhen": [
+            "Retrato — achata a cara, cria sombra dura atrás e olhos vermelhos",
+            "Concertos, museus e teatros (não chega lá e incomoda toda a gente)",
+            "Quando queres preservar a atmosfera de luz existente"
+          ],
+          "mistakes": [
+            "Usá-lo como fonte principal em interiores escuros e queixar-se do resultado",
+            "Apontá-lo a assuntos a 20 metros — não chega a mais de 3 ou 4",
+            "Não saber que a compensação de exposição do FLASH é independente da da câmara"
+          ],
+          "tips": [
+            "Baixa a potência do flash 1 a 2 passos e usa-o para clarear sombras à luz do dia. Ninguém percebe que houve flash — que é o objetivo.",
+            "Um pedaço de papel vegetal à frente já suaviza bastante."
+          ]
+        },
+        {
+          "id": "speedlight",
+          "icon": "🔦",
+          "name": "Flash externo (speedlight)",
+          "tag": "roda e inclina — é isso que muda tudo",
+          "what": "Flash de sapata com cabeça articulada, potência bastante maior e capacidade de disparar fora da câmara.",
+          "why": "Resolve o problema da luz dura: ao apontar ao teto ou a uma parede, transformas uma fonte minúscula numa fonte enorme e suave.",
+          "when": [
+            "Interiores com teto branco e baixo — rebate e tens luz de estúdio instantânea",
+            "Eventos e festas",
+            "Retrato fora da câmara, com um pé e um difusor",
+            "Fill-in em contraluz forte"
+          ],
+          "notWhen": [
+            "Tetos altos, escuros ou coloridos (o rebate não volta, ou volta com a cor errada)",
+            "Grandes espaços abertos, onde não há em que rebater",
+            "Quando a luz existente já é bonita"
+          ],
+          "mistakes": [
+            "Apontá-lo diretamente à pessoa — se fizeres isso, é igual ao flash integrado, só que mais caro",
+            "Rebater num teto de madeira ou colorido e não perceber porque a pele ficou amarela",
+            "Esquecer que a velocidade de sincronização limita a ~1/200 s"
+          ],
+          "tips": [
+            "Rebate a 45° para trás e para cima. É a receita mais fiável de luz agradável em interiores.",
+            "Fora da câmara e de lado, ganhas volume. Na sapata, achatas. A posição importa mais que a potência."
+          ]
+        },
+        {
+          "id": "diffuser",
+          "icon": "☁️",
+          "name": "Difusores",
+          "tag": "tornam a fonte maior",
+          "what": "Qualquer material translúcido entre a luz e o sujeito: softbox, guarda-chuva, papel vegetal, um lençol branco.",
+          "why": "Resolve a dureza da luz. Uma fonte grande e próxima produz sombras suaves — é o princípio único por trás de todo o material de iluminação.",
+          "when": [
+            "Retrato",
+            "Produto e gastronomia",
+            "Sempre que as sombras estiverem demasiado marcadas"
+          ],
+          "notWhen": [
+            "Quando queres drama e sombras duras (não é defeito, é escolha)",
+            "Ao ar livre com vento — um difusor grande vira uma vela"
+          ],
+          "mistakes": [
+            "Manter o difusor longe do sujeito: quanto mais perto, maior é a fonte relativa e mais suave a luz. Longe, volta a ser dura.",
+            "Comprar material caro quando uma janela com cortina fina faz o mesmo"
+          ],
+          "tips": [
+            "A melhor softbox do mundo é uma janela grande com cortina branca, e é grátis.",
+            "Regra: fonte maior que o sujeito e o mais perto possível fora do enquadramento."
+          ]
+        },
+        {
+          "id": "reflector",
+          "icon": "🪞",
+          "name": "Rebatedores",
+          "tag": "luz de graça",
+          "what": "Superfície branca, prateada ou dourada que devolve à cena parte da luz que já lá está.",
+          "why": "Resolve sombras demasiado fechadas sem acrescentar uma segunda fonte de luz — mais simples, mais barato, mais natural.",
+          "when": [
+            "Retrato em contraluz (rebate por baixo ou de lado, para clarear o rosto)",
+            "Macro e produto",
+            "Sempre que tens luz boa de um lado e escuridão do outro"
+          ],
+          "notWhen": [
+            "Sem ninguém para o segurar e sem sítio para o encostar",
+            "Quando a sombra profunda é o efeito que queres"
+          ],
+          "mistakes": [
+            "Rebater de baixo para cima com força e criar uma luz de filme de terror",
+            "Usar o lado dourado em pele já quente e ficar com laranja"
+          ],
+          "tips": [
+            "Uma folha A3 branca, uma toalha ou uma parede clara funcionam como rebatedor. Não precisas de comprar nada.",
+            "Branco é o mais natural; prateado é mais forte e mais frio."
+          ]
+        },
+        {
+          "id": "continuous",
+          "icon": "💡",
+          "name": "Luz contínua",
+          "tag": "vês o resultado antes de disparar",
+          "what": "Painéis LED ou lâmpadas que estão sempre acesas, em vez de darem um clarão.",
+          "why": "Resolve a curva de aprendizagem da iluminação: vês exatamente o que a luz está a fazer, sem ter de disparar para descobrir.",
+          "when": [
+            "Aprender iluminação (a vantagem pedagógica é enorme)",
+            "Vídeo",
+            "Produto, gastronomia e macro em mesa",
+            "Retrato parado"
+          ],
+          "notWhen": [
+            "Competir com o sol ao ar livre — o flash ganha por larga margem",
+            "Congelar movimento rápido"
+          ],
+          "mistakes": [
+            "Misturar LED com luz de janela e ficar com duas temperaturas de cor na mesma cara",
+            "Comprar LEDs baratos com má reprodução de cor: verdes e vermelhos ficam impossíveis de corrigir"
+          ],
+          "tips": [
+            "Para aprender luz, a contínua ensina em uma tarde o que o flash demora semanas.",
+            "Desliga as outras luzes da divisão. Uma fonte só, controlada, é sempre melhor que quatro descontroladas."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessories",
+      "icon": "🎒",
+      "name": "Acessórios e mochila",
+      "intro": "Quase nenhum acessório melhora a fotografia diretamente. Melhoram é a probabilidade de teres a câmara pronta, com bateria, com espaço e limpa — que é onde as fotografias se perdem de verdade.",
+      "visual": "eq-bag",
+      "items": [
+        {
+          "id": "cards",
+          "icon": "💾",
+          "name": "Cartões de memória",
+          "tag": "dois pequenos > um grande",
+          "what": "O suporte onde as fotografias ficam até serem copiadas. A velocidade de escrita determina quanto tempo aguentas uma rajada.",
+          "why": "Resolve a captura contínua: um cartão lento enche o buffer e a câmara bloqueia no meio da ação.",
+          "when": ["Sempre — mas escolhe velocidade se fotografas rajadas ou vídeo"],
+          "notWhen": ["Não compres o maior possível: perder um cartão de 512GB é perder tudo"],
+          "mistakes": [
+            "Usar um só cartão gigante — se falhar, perdes a viagem inteira",
+            "Formatar no computador em vez de na câmara (a câmara cria a estrutura correta)",
+            "Comprar cartões muito baratos de marcas desconhecidas: é onde estão as falsificações"
+          ],
+          "tips": [
+            "Formata SEMPRE na câmara, e só depois de teres a certeza de que copiaste.",
+            "Dois ou três cartões médios em vez de um enorme. Espalha o risco."
+          ]
+        },
+        {
+          "id": "batteries",
+          "icon": "🔋",
+          "name": "Baterias",
+          "tag": "o frio corta-as a meio",
+          "what": "A energia. Câmaras sem espelho consomem muito mais que reflex porque alimentam um visor eletrónico permanentemente.",
+          "why": "Resolve o problema mais banal e mais frustrante de todos: a câmara desligar-se na melhor altura.",
+          "when": ["Leva sempre pelo menos uma extra. Duas no frio."],
+          "notWhen": ["Não precisas de cinco — precisas de saber quanto dura a tua"],
+          "mistakes": [
+            "Deixar a bateria extra em casa a carregar no dia da saída",
+            "Guardar baterias completamente descarregadas durante meses (danifica-as)",
+            "Confiar em baterias genéricas muito baratas em frio"
+          ],
+          "tips": [
+            "No frio, guarda a bateria extra num bolso interior. Quente, dura muito mais.",
+            "Uma bateria que 'morreu' no frio muitas vezes ressuscita ao aquecer no bolso."
+          ]
+        },
+        {
+          "id": "bag",
+          "icon": "🎒",
+          "name": "Mochila / saco",
+          "tag": "acesso rápido > capacidade",
+          "what": "Onde transportas e proteges o equipamento.",
+          "why": "Resolve dois problemas em conflito: proteger o material e conseguir chegar-lhe depressa. Uma mochila que obriga a descalçar tudo faz-te perder fotografias.",
+          "when": ["Escolhe pelo acesso e conforto, não pelo número de compartimentos"],
+          "notWhen": ["Não compres a maior: uma mochila grande enche-se sempre, e depois pesa"],
+          "mistakes": [
+            "Comprar uma mochila que grita 'material caro lá dentro'",
+            "Levar tudo o que tens em todas as saídas — acabas por não usar nada e por te cansares",
+            "Não experimentar tirar a câmara com a mochila às costas antes de comprar"
+          ],
+          "tips": [
+            "Uma saída típica precisa de: corpo, uma ou duas objetivas, bateria extra, cartão extra, pano. Mais que isso é quase sempre peso morto.",
+            "Sacos de acesso lateral deixam-te tirar a câmara sem pousar nada."
+          ]
+        },
+        {
+          "id": "cleaning",
+          "icon": "🧻",
+          "name": "Limpeza",
+          "tag": "pano + soprador",
+          "what": "Pano de microfibras, soprador de ar e (opcionalmente) toalhitas de lente.",
+          "why": "Resolve o problema silencioso: uma lente com gordura ou pó tira contraste a TODAS as fotografias do dia sem se notar no ecrã.",
+          "when": ["Antes de cada saída e sempre que fotografas perto de mar, pó ou chuva"],
+          "notWhen": ["Não limpes o sensor por hábito — só quando vires manchas em céus a f/16"],
+          "mistakes": [
+            "Esfregar areia na lente com o pano (sopra SEMPRE primeiro)",
+            "Usar a ponta da t-shirt com produto de limpeza doméstico",
+            "Limpar o sensor sem necessidade e piorar o que estava bem"
+          ],
+          "tips": [
+            "Sopra, depois limpa. Nunca ao contrário.",
+            "Dois panos: um para o vidro, outro (mais sujo) para o corpo."
+          ]
+        },
+        {
+          "id": "light-tools",
+          "icon": "🔦",
+          "name": "Lanterna frontal",
+          "tag": "para tudo o que é de noite",
+          "what": "Lanterna de cabeça, idealmente com modo vermelho.",
+          "why": "Resolve o problema de mexer nos botões, montar o tripé e caminhar no escuro com as duas mãos ocupadas.",
+          "when": ["Astro, light painting, nascer do sol (chegas antes de haver luz), hora azul"],
+          "notWhen": ["Nunca a apontes a outros fotógrafos numa sessão de astro"],
+          "mistakes": [
+            "Usar luz branca forte e perder a visão noturna — demora 20 minutos a recuperar",
+            "Chegar a um sítio de astro sem lanterna e descobrir que o telemóvel não chega"
+          ],
+          "tips": [
+            "O modo vermelho preserva a visão noturna e não estraga a exposição de ninguém.",
+            "Serve também de fonte de luz para light painting e para iluminar primeiros planos."
+          ]
+        },
+        {
+          "id": "strap",
+          "icon": "🎗️",
+          "name": "Alça",
+          "tag": "a que vem na caixa é a pior",
+          "what": "O que impede a câmara de cair e determina como a transportas durante horas.",
+          "why": "Resolve dor de pescoço e a lentidão de trazer a câmara guardada. Uma câmara pendurada e acessível é uma câmara que dispara.",
+          "when": ["Sempre. Uma alça cruzada ao ombro é muito mais confortável que ao pescoço."],
+          "notWhen": ["Em tripé, tira ou prende a alça — ao vento funciona como vela e treme a câmara"],
+          "mistakes": [
+            "Deixar a alça a balançar em exposições longas",
+            "Andar horas com a câmara pendurada ao pescoço e culpar a idade pelas dores"
+          ],
+          "tips": [
+            "Alça de ombro cruzada ou de pulso: escolhe conforme andas mais ou estás mais parado."
+          ]
+        },
+        {
+          "id": "backup",
+          "icon": "💽",
+          "name": "Backup",
+          "tag": "duas cópias, sítios diferentes",
+          "what": "Discos externos, SSD ou nuvem onde as fotografias vivem depois do cartão.",
+          "why": "Resolve a única perda verdadeiramente irreversível na fotografia: o ficheiro deixar de existir. Equipamento compra-se outra vez; fotografias não.",
+          "when": ["Sempre, e antes de formatar o cartão"],
+          "notWhen": ["Nunca 'depois' — é sempre nesse dia que o disco falha"],
+          "mistakes": [
+            "Ter uma só cópia e chamar-lhe backup",
+            "Guardar as duas cópias em casa (roubo, incêndio, inundação levam ambas)",
+            "Formatar o cartão antes de confirmar que a cópia abre mesmo"
+          ],
+          "tips": [
+            "Regra 3-2-1: três cópias, dois suportes diferentes, uma fora de casa.",
+            "Um SSD pequeno na mochila em viagem vale mais que qualquer objetiva nova."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "smartphone",
+      "icon": "📱",
+      "name": "Smartphone a sério",
+      "intro": "O telemóvel não é uma câmara pequena — é um computador com uma lente. Perceber o que o software está a fazer por ti (e quando o desligar) é o que separa fotografias de telemóvel boas das banais.",
+      "visual": "eq-zoom",
+      "items": [
+        {
+          "id": "phone-lenses",
+          "icon": "🔭",
+          "name": "As três câmaras",
+          "tag": "ultra larga · principal · tele",
+          "what": "Módulos fixos e separados. Não há zoom real entre eles: mudar de 1× para 3× troca fisicamente de câmara.",
+          "why": "Cada um resolve um enquadramento diferente. A principal tem quase sempre o maior sensor e a melhor qualidade.",
+          "when": [
+            "Ultra larga (0.6×): interiores apertados, arquitetura, drama de perspetiva",
+            "Principal (1×): tudo o resto, e sempre que a luz for fraca",
+            "Tele (3× ou mais): retrato, detalhes, comprimir camadas"
+          ],
+          "notWhen": [
+            "Ultra larga com pessoas nas bordas — deforma-as",
+            "Tele com pouca luz — costuma ser o módulo mais fraco"
+          ],
+          "mistakes": [
+            "Usar a ultra larga por defeito porque 'apanha mais'",
+            "Não saber que o modo Retrato usa a tele — e por isso precisa de recuar"
+          ],
+          "tips": [
+            "Na dúvida e com pouca luz: 1×. É quase sempre a melhor câmara do telemóvel.",
+            "Para retrato, a tele é obrigatória: a principal deforma as feições de perto."
+          ]
+        },
+        {
+          "id": "phone-zoom",
+          "icon": "🔎",
+          "name": "Zoom ótico vs digital",
+          "tag": "um é real, o outro é corte",
+          "what": "Zoom ótico muda de módulo e mantém a resolução. Zoom digital corta a imagem e amplia por software — é o mesmo que cortar depois.",
+          "why": "Saber a diferença evita a perda de qualidade mais comum na fotografia de telemóvel.",
+          "when": ["Fica nos valores óticos: 0.6×, 1×, 3× (ou o que o teu tiver)"],
+          "notWhen": ["Acima do máximo ótico, se puderes aproximar-te fisicamente"],
+          "mistakes": [
+            "Fazer 30× de zoom e não perceber porque a fotografia parece pintada a óleo",
+            "Ampliar em vez de dar cinco passos em frente"
+          ],
+          "tips": [
+            "Regra: se podes andar, anda. Se não podes, fotografa a 1× e corta depois — dá o mesmo com mais controlo.",
+            "Os valores marcados no botão (0.6/1/3) são os óticos. Tudo o que fica entre eles já é interpolado."
+          ]
+        },
+        {
+          "id": "phone-hdr",
+          "icon": "🌗",
+          "name": "HDR",
+          "tag": "a maior vantagem do telemóvel",
+          "what": "Várias exposições captadas e fundidas em milissegundos para manter céu e sombras ao mesmo tempo.",
+          "why": "Resolve a limitação física do sensor pequeno. É genuinamente melhor do que qualquer exposição única.",
+          "when": ["Contraluz, interiores com janelas, paisagem com céu claro, praticamente sempre"],
+          "notWhen": [
+            "Quando queres silhuetas — o HDR levanta as sombras e destrói o efeito",
+            "Sujeitos em movimento rápido (as várias exposições não coincidem)",
+            "Quando queres luz dramática e contrastada"
+          ],
+          "mistakes": [
+            "Deixar o HDR decidir tudo e ficar com fotografias planas, sem sombras nem volume",
+            "Tentar fazer silhuetas com HDR ligado"
+          ],
+          "tips": [
+            "Para silhuetas: desliga o HDR e toca na parte MAIS CLARA da cena.",
+            "O HDR é o teu aliado por defeito, mas desliga-o quando a sombra faz parte da fotografia."
+          ]
+        },
+        {
+          "id": "phone-pro",
+          "icon": "🎛️",
+          "name": "Modo Pro e RAW",
+          "tag": "controlo manual quando precisas",
+          "what": "Modo que expõe ISO, velocidade, foco e balanço de brancos, e permite gravar em RAW (DNG).",
+          "why": "Resolve as situações em que o automático decide mal: noite, luz mista, longa exposição, ou quando queres que seja escuro.",
+          "when": [
+            "Exposições longas (rastos de luz, água sedosa) — chega tipicamente a 30 s",
+            "Cenas noturnas onde o automático clareia demasiado",
+            "Luz artificial de cor difícil (fixar o balanço de brancos)",
+            "Quando queres editar a sério"
+          ],
+          "notWhen": [
+            "No dia-a-dia — o automático do telemóvel é muito bom e muito mais rápido",
+            "Se não vais editar: um RAW não editado é pior que o JPG que o telemóvel produziria",
+            "Em cenas de contraste extremo — muitas vezes o RAW de um só disparo perde para o HDR multi-frame"
+          ],
+          "mistakes": [
+            "Fotografar tudo em RAW no telemóvel e nunca editar (é o pior dos dois mundos)",
+            "Esquecer que sem apoio, 1 s de exposição é sempre tremido"
+          ],
+          "tips": [
+            "RAW no telemóvel vale a pena quando a cena é difícil E vais mesmo editar. Fora disso, o processamento do telemóvel ganha.",
+            "Com o telemóvel apoiado num muro e 2 a 4 s no modo Pro, tens rastos de carros sem tripé nenhum."
+          ]
+        },
+        {
+          "id": "phone-night",
+          "icon": "🌙",
+          "name": "Modo noturno",
+          "tag": "empilha vários segundos",
+          "what": "Captura uma sequência de imagens durante alguns segundos e alinha-as para reduzir ruído e revelar sombras.",
+          "why": "Resolve a falta de luz por acumulação em vez de por sensor grande — e fá-lo surpreendentemente bem.",
+          "when": ["Cenas noturnas estáticas: ruas, paisagem urbana, interiores escuros"],
+          "notWhen": [
+            "Com pessoas ou qualquer coisa em movimento (ficam fantasmas)",
+            "Quando queres preservar a escuridão como parte da imagem"
+          ],
+          "mistakes": [
+            "Mexer o telemóvel durante os segundos de captura",
+            "Deixá-lo clarear a noite até parecer meio-dia — perde-se toda a atmosfera"
+          ],
+          "tips": [
+            "Apoia o telemóvel em alguma coisa e o modo noturno passa de bom a excelente.",
+            "Se o resultado parecer irreal, baixa a exposição um traço antes de disparar."
+          ]
+        }
+      ]
+    }
+  ]
+}

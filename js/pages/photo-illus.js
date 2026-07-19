@@ -328,6 +328,316 @@ const PhotoIllus = (function () {
     return `<svg viewBox="0 0 ${W} ${H}" class="ph-svg" role="img" aria-label="Filtros CPL e ND">${cpl}${nd}</svg>`;
   };
 
+
+  /* ══ OFÍCIO (craft.json) ═════════════════════════════════════════════
+     Esquemas de vista lateral / planta: ensinam POSIÇÃO, que é o que o
+     texto explica pior. Todos com o mesmo vocabulário visual: a câmara é
+     um trapézio ciano, o sujeito é uma silhueta escura, o dourado marca a
+     escolha recomendada. */
+
+  // Câmara estilizada apontada para a direita (ou rodada por `rot`).
+  function cam(x, y, s = 1, rot = 0, col = C.cyan) {
+    return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" fill="${col}">
+      <rect x="-9" y="-6" width="16" height="12" rx="2"/>
+      <path d="M7 -4 L14 -7 L14 7 L7 4 Z"/>
+      <circle cx="-1" cy="0" r="3" fill="#04121f"/></g>`;
+  }
+  // Pessoa de pé, vista de lado.
+  function figure(x, base, h, col = '#0a1725') {
+    return `<g fill="${col}">
+      <circle cx="${x}" cy="${base - h}" r="${h * 0.15}"/>
+      <path d="M${x - h * 0.11} ${base - h * 0.82} Q${x} ${base - h * 0.95} ${x + h * 0.11} ${base - h * 0.82}
+        L${x + h * 0.14} ${base - h * 0.34} L${x + h * 0.09} ${base} L${x} ${base - h * 0.36}
+        L${x - h * 0.09} ${base} L${x - h * 0.14} ${base - h * 0.34} Z"/></g>`;
+  }
+  const ground = (w, y) => `<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="${C.dim}" stroke-width="1.5"/>`;
+
+  // Altura da câmara — três alturas, mesma cena, resultado diferente.
+  ART['craft-height'] = () => {
+    const W = 430, H = 210, gy = H - 30;
+    const rows = [
+      { y: gy - 6, lbl: 'Baixa · dá grandeza', col: C.gold },
+      { y: gy - 52, lbl: 'Ao nível dos olhos · ligação', col: C.good },
+      { y: gy - 96, lbl: 'Alta · diminui o sujeito', col: C.dim },
+    ];
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Efeito da altura da câmara">
+      ${ground(W, gy)}
+      ${figure(W * 0.72, gy, 96)}
+      ${rows.map(r => `${cam(60, r.y, 1, 0, r.col)}
+        ${arrow(78, r.y, W * 0.66, r.y + (gy - 46 - r.y) * 0.28, r.col, 1.4)}
+        ${tag(96, r.y - 8, r.lbl, { fg: r.col })}`).join('')}
+      ${tag(W * 0.72, H - 8, 'mesmo sujeito', { anchor: 'middle', fg: C.dim })}
+    </svg>`;
+  };
+
+  // Ângulo — planta vista de cima: mover-te lateralmente muda o FUNDO.
+  ART['craft-angle'] = () => {
+    const W = 430, H = 200, cx = W * 0.5, cy = H * 0.56, R = 74;
+    const pos = [
+      { a: 180, lbl: 'Frontal', col: C.dim },
+      { a: 138, lbl: 'Três-quartos', col: C.gold },
+      { a: 90, lbl: 'Perfil', col: C.cyan },
+      { a: 0, lbl: 'Por trás', col: C.dim },
+    ];
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Ângulos à volta do sujeito">
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.dim}" stroke-width="1" stroke-dasharray="3 4"/>
+      <circle cx="${cx}" cy="${cy}" r="13" fill="#0a1725"/>
+      <path d="M${cx - 5} ${cy - 14} h10 v-4 h-10 z" fill="${C.ink}" opacity=".5"/>
+      ${tag(cx, cy + 34, 'sujeito', { anchor: 'middle', fg: C.dim })}
+      ${pos.map(p => {
+        const rad = p.a * Math.PI / 180;
+        const x = cx + Math.cos(rad) * R, y = cy - Math.sin(rad) * R;
+        const rot = -p.a + 180;
+        return `${cam(x, y, 0.85, rot, p.col)}${tag(x, y - 16, p.lbl, { anchor: 'middle', fg: p.col })}`;
+      }).join('')}
+      ${tag(10, H - 8, 'Um passo ao lado troca o fundo todo', { fg: C.gold })}
+    </svg>`;
+  };
+
+  // Distância — o mesmo sujeito em quatro planos.
+  ART['craft-distance'] = () => {
+    const W = 430, H = 180, gap = 5, pw = (W - gap * 3) / 4;
+    const cells = [
+      { s: 0.30, lbl: 'Geral' }, { s: 0.55, lbl: 'Médio' },
+      { s: 0.95, lbl: 'Grande plano' }, { s: 1.7, lbl: 'Pormenor' },
+    ];
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Planos por distância ao sujeito">
+      ${cells.map((c, i) => panel(i * (pw + gap), pw, H, `
+        <rect x="0" y="0" width="${pw}" height="${H - 22}" rx="4" fill="#0d2135"/>
+        <g clip-path="inset(0 0 ${22}px 0)">${figure(pw / 2, (H - 22) * 0.5 + 88 * c.s * 0.5, 88 * c.s, '#7fb2d9')}</g>
+        ${tag(pw / 2, H - 6, c.lbl, { anchor: 'middle', fg: i === 1 ? C.gold : C.dim })}`)).join('')}
+    </svg>`;
+  };
+
+  // Primeiro plano — com e sem. A comparação que mais convence.
+  ART['craft-foreground'] = () => {
+    const W = 430, H = 190, gap = 8, pw = (W - gap) / 2;
+    const body = (withFg) => `
+      ${scene(pw, H - 20, { subject: 'tree' })}
+      ${withFg ? `<path d="M0 ${H - 20} Q${pw * 0.22} ${H - 62} ${pw * 0.46} ${H - 26} T${pw} ${H - 34} V${H - 20} Z" fill="#04101c"/>
+        <ellipse cx="${pw * 0.2}" cy="${H - 40}" rx="16" ry="10" fill="#061726"/>` : ''}`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Com e sem primeiro plano">
+      ${panel(0, pw, H, `${body(false)}${tag(pw / 2, H - 4, '✗ sem primeiro plano', { anchor: 'middle', fg: C.bad })}`)}
+      ${panel(pw + gap, pw, H, `${body(true)}${tag(pw / 2, H - 4, '✓ com primeiro plano', { anchor: 'middle', fg: C.good })}`)}
+    </svg>`;
+  };
+
+  // Direção da luz — planta com o sol em quatro posições.
+  ART['craft-lightdir'] = () => {
+    const W = 430, H = 200, gap = 5, pw = (W - gap * 3) / 4;
+    const cell = (sunSide, lbl, col) => {
+      // sunSide: -1 atrás do fotógrafo, 0 lateral, 1 contraluz, 2 difusa
+      const face = sunSide === 1 ? '#04101c' : sunSide === 0 ? '#274b6b' : '#4d7ea8';
+      const rim = sunSide === 1 ? `<path d="M${pw / 2 - 13} ${H - 88} a13 13 0 0 1 26 0" fill="none" stroke="${C.gold}" stroke-width="2.5"/>` : '';
+      const side = sunSide === 0 ? `<path d="M${pw / 2} ${H - 101} a13 13 0 0 1 0 26 z" fill="#8fc0e4"/>` : '';
+      const sun = sunSide === 2
+        ? `<rect x="6" y="8" width="${pw - 12}" height="16" rx="8" fill="#7aa8c9" opacity=".5"/>`
+        : `<circle cx="${sunSide === 1 ? pw / 2 : sunSide === 0 ? pw - 14 : pw / 2}" cy="${sunSide === 1 ? 22 : 20}" r="8" fill="#ffd98a"/>`;
+      return `<rect x="0" y="0" width="${pw}" height="${H - 22}" rx="4" fill="#0d2135"/>
+        ${sun}${rim}
+        <circle cx="${pw / 2}" cy="${H - 88}" r="13" fill="${face}"/>
+        <path d="M${pw / 2 - 12} ${H - 72} h24 v${34} h-24 z" fill="${face}"/>
+        ${side}
+        ${tag(pw / 2, H - 6, lbl, { anchor: 'middle', fg: col })}`;
+    };
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Direções da luz">
+      ${panel(0, pw, H, cell(-1, 'Frontal', C.dim))}
+      ${panel(pw + gap, pw, H, cell(0, 'Lateral', C.gold))}
+      ${panel((pw + gap) * 2, pw, H, cell(1, 'Contraluz', C.cyan))}
+      ${panel((pw + gap) * 3, pw, H, cell(2, 'Difusa', C.good))}
+    </svg>`;
+  };
+
+  // Ler o fundo — poste atrás da cabeça vs. um passo ao lado.
+  ART['craft-background'] = () => {
+    const W = 430, H = 185, gap = 8, pw = (W - gap) / 2;
+    const base = H - 26, fh = 96;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Fundo limpo e fundo desarrumado">
+      ${panel(0, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>
+        <rect x="${pw * 0.47}" y="14" width="5" height="${base - 14}" fill="#3d5a73"/>
+        <rect x="${pw * 0.2}" y="${base - 26}" width="20" height="26" fill="#33506a"/>
+        ${figure(pw * 0.5, base, fh, '#7fb2d9')}
+        <circle cx="${pw * 0.5}" cy="${base - fh}" r="${fh * 0.24}" fill="none" stroke="${C.bad}" stroke-width="2"/>
+        ${tag(pw / 2, H - 4, '✗ poste a sair da cabeça', { anchor: 'middle', fg: C.bad })}`)}
+      ${panel(pw + gap, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>
+        <rect x="${pw * 0.86}" y="14" width="5" height="${base - 14}" fill="#22384c"/>
+        ${figure(pw * 0.42, base, fh, '#7fb2d9')}
+        ${tag(pw / 2, H - 4, '✓ um passo ao lado', { anchor: 'middle', fg: C.good })}`)}
+    </svg>`;
+  };
+
+  // Esperar o momento — cena composta, sujeito entra.
+  ART['craft-moment'] = () => {
+    const W = 430, H = 175, gap = 8, pw = (W - gap) / 2;
+    const base = H - 26;
+    const box = (inner, lbl, col) => `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>
+      <rect x="${pw * 0.14}" y="18" width="${pw * 0.34}" height="${base - 18}" fill="#16334d"/>
+      <rect x="${pw * 0.55}" y="34" width="${pw * 0.3}" height="${base - 34}" fill="#12293f"/>
+      <path d="M${pw * 0.48} ${base} l${pw * 0.09} -${base - 18} h${pw * 0.05} l-${pw * 0.07} ${base - 18} z" fill="#f3d9a0" opacity=".28"/>
+      ${inner}${tag(pw / 2, H - 4, lbl, { anchor: 'middle', fg: col })}`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Compor primeiro, esperar depois">
+      ${panel(0, pw, H, box(`${thirds(pw, base, 'rgba(34,211,238,.35)')}`, '1. compõe e espera', C.cyan))}
+      ${panel(pw + gap, pw, H, box(`${thirds(pw, base, 'rgba(34,211,238,.2)')}${figure(pw * 0.52, base, 74, '#04101c')}`, '2. o sujeito entra', C.gold))}
+    </svg>`;
+  };
+
+  // Simplificar — cena cheia vs. um assunto só.
+  ART['craft-simplify'] = () => {
+    const W = 430, H = 175, gap = 8, pw = (W - gap) / 2;
+    const base = H - 26;
+    const clutter = Array.from({ length: 7 }, (_, i) =>
+      `<rect x="${8 + i * (pw - 24) / 6}" y="${base - 20 - (i % 3) * 16}" width="14" height="${20 + (i % 3) * 16}" fill="#2b4761"/>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Cena cheia e cena simplificada">
+      ${panel(0, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>${clutter}
+        ${figure(pw * 0.5, base, 66, '#7fb2d9')}
+        ${tag(pw / 2, H - 4, '✗ qual é o assunto?', { anchor: 'middle', fg: C.bad })}`)}
+      ${panel(pw + gap, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>
+        ${figure(pw * 0.5, base, 66, '#7fb2d9')}
+        ${tag(pw / 2, H - 4, '✓ um assunto só', { anchor: 'middle', fg: C.good })}`)}
+    </svg>`;
+  };
+
+  /* ══ EQUIPAMENTO (equipment.json) ════════════════════════════════════ */
+
+  // Tamanhos de sensor, à escala relativa real.
+  ART['eq-sensors'] = () => {
+    const W = 430, H = 190, cx = W / 2, cy = H / 2 - 6;
+    const boxes = [
+      { w: 36, h: 24, lbl: 'FF 36×24', col: C.gold },
+      { w: 23.6, h: 15.7, lbl: 'APS-C', col: C.cyan },
+      { w: 17.3, h: 13, lbl: 'M4/3', col: C.good },
+      { w: 9.6, h: 7.2, lbl: 'telemóvel', col: C.dim },
+    ];
+    const k = 4.2;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Tamanhos de sensor comparados">
+      ${boxes.map(b => `<rect x="${cx - b.w * k / 2}" y="${cy - b.h * k / 2}" width="${b.w * k}" height="${b.h * k}"
+        fill="none" stroke="${b.col}" stroke-width="1.8" rx="2"/>`).join('')}
+      ${boxes.map((b, i) => tag(cx + b.w * k / 2 + 4, cy - b.h * k / 2 + 12 + i * 0, b.lbl, { fg: b.col })).join('')}
+      ${tag(cx, H - 6, 'mais área = mais luz e menos ruído', { anchor: 'middle', fg: C.ink })}
+    </svg>`;
+  };
+
+  // Campo de visão por focal equivalente.
+  ART['eq-focal-fov'] = () => {
+    const W = 430, H = 200, ox = 40, oy = H - 26, L = 300;
+    const fovs = [
+      { a: 100, lbl: '14mm', col: C.dim },
+      { a: 63, lbl: '35mm', col: C.cyan },
+      { a: 40, lbl: '50mm', col: C.good },
+      { a: 24, lbl: '85mm', col: C.gold },
+      { a: 8, lbl: '300mm', col: C.bad },
+    ];
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Campo de visão por distância focal">
+      ${fovs.map(f => {
+        const r = (f.a / 2) * Math.PI / 180;
+        const x = ox + Math.cos(r) * 0, y = 0;
+        const x1 = ox + L, y1 = oy - Math.tan(r) * L, y2 = oy + Math.tan(r) * L;
+        return `<path d="M${ox} ${oy} L${x1} ${Math.max(6, y1)} M${ox} ${oy} L${x1} ${Math.min(H - 6, y2)}"
+          stroke="${f.col}" stroke-width="1.4" fill="none" opacity=".85"/>
+          ${tag(x1 + 2, Math.max(14, y1) + 4, f.lbl, { fg: f.col })}`;
+      }).join('')}
+      ${cam(ox - 6, oy, 1, 0)}
+      ${tag(ox + 6, 16, 'ângulo de visão (equivalente 35mm)', { fg: C.ink })}
+    </svg>`;
+  };
+
+  // Polarizador ligado / desligado.
+  ART['eq-cpl'] = () => {
+    const W = 430, H = 180, gap = 8, pw = (W - gap) / 2;
+    const water = (pol) => `
+      <rect width="${pw}" height="${H - 20}" rx="4" fill="${pol ? '#0a2c4a' : '#12405f'}"/>
+      <rect y="0" width="${pw}" height="${(H - 20) * 0.42}" fill="${pol ? '#12508a' : '#4d86ad'}"/>
+      ${pol ? '' : `<ellipse cx="${pw * 0.38}" cy="${(H - 20) * 0.68}" rx="${pw * 0.3}" ry="12" fill="#cfe6f5" opacity=".55"/>
+        <ellipse cx="${pw * 0.7}" cy="${(H - 20) * 0.8}" rx="${pw * 0.2}" ry="8" fill="#cfe6f5" opacity=".4"/>`}
+      ${pol ? `<path d="M${pw * 0.3} ${(H - 20) * 0.74} q14 -8 28 0 t28 0" stroke="#2f6b52" stroke-width="3" fill="none" opacity=".8"/>` : ''}`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Polarizador ligado e desligado">
+      ${panel(0, pw, H, `${water(false)}${tag(pw / 2, H - 4, 'sem polarizador · reflexos', { anchor: 'middle', fg: C.dim })}`)}
+      ${panel(pw + gap, pw, H, `${water(true)}${tag(pw / 2, H - 4, 'com polarizador · vê-se o fundo', { anchor: 'middle', fg: C.gold })}`)}
+    </svg>`;
+  };
+
+  // Filtro ND: velocidade curta vs longa sobre água.
+  ART['eq-nd'] = () => {
+    const W = 430, H = 180, gap = 8, pw = (W - gap) / 2;
+    const rock = `<path d="M${pw * 0.3} ${H - 46} q14 -22 30 0 z" fill="#0a1725"/>`;
+    const drops = Array.from({ length: 26 }, (_, i) =>
+      `<circle cx="${10 + (i * 37) % (pw - 20)}" cy="${60 + (i * 23) % 70}" r="2.4" fill="#cfe6f5" opacity=".8"/>`).join('');
+    const silk = Array.from({ length: 6 }, (_, i) =>
+      `<path d="M6 ${66 + i * 12} q${pw / 2} ${i % 2 ? 8 : -8} ${pw - 12} 0" stroke="#dbeaf6" stroke-width="${5 - i * 0.5}" fill="none" opacity=".4"/>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Efeito de um filtro ND">
+      ${panel(0, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>${drops}${rock}
+        ${tag(pw / 2, H - 4, '1/500 s · gotas paradas', { anchor: 'middle', fg: C.dim })}`)}
+      ${panel(pw + gap, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>${silk}${rock}
+        ${tag(pw / 2, H - 4, 'ND + 8 s · água sedosa', { anchor: 'middle', fg: C.gold })}`)}
+    </svg>`;
+  };
+
+  // Tripé: mesma exposição, à mão e apoiada.
+  ART['eq-tripod'] = () => {
+    const W = 430, H = 180, gap = 8, pw = (W - gap) / 2;
+    const star = (x, y, blur) => blur
+      ? `<ellipse cx="${x}" cy="${y}" rx="9" ry="2.4" fill="${C.ink}" opacity=".55" transform="rotate(-18 ${x} ${y})"/>`
+      : `<circle cx="${x}" cy="${y}" r="2.6" fill="${C.ink}"/>`;
+    const pts = [[0.22, 0.3], [0.44, 0.5], [0.66, 0.26], [0.8, 0.6], [0.34, 0.68], [0.56, 0.8]];
+    const field = (blur) => `<rect width="${pw}" height="${H - 20}" rx="4" fill="#08192b"/>
+      ${pts.map(p => star(pw * p[0], (H - 20) * p[1], blur)).join('')}`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="À mão e com tripé">
+      ${panel(0, pw, H, `${field(true)}${tag(pw / 2, H - 4, 'à mão · tremido', { anchor: 'middle', fg: C.bad })}`)}
+      ${panel(pw + gap, pw, H, `${field(false)}${tag(pw / 2, H - 4, 'com tripé · nítido', { anchor: 'middle', fg: C.good })}`)}
+    </svg>`;
+  };
+
+  // Flash: direto vs rebatido no teto.
+  ART['eq-flash'] = () => {
+    const W = 430, H = 190, gap = 8, pw = (W - gap) / 2;
+    const base = H - 30;
+    const room = (bounce) => `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>
+      <line x1="6" y1="14" x2="${pw - 6}" y2="14" stroke="${C.dim}" stroke-width="2"/>
+      ${cam(24, base - 30, 0.9)}
+      ${bounce
+        ? `${arrow(34, base - 34, pw * 0.5, 18, C.gold, 1.6)}${arrow(pw * 0.5, 18, pw * 0.66, base - 44, C.gold, 1.6)}
+           <ellipse cx="${pw * 0.5}" cy="16" rx="26" ry="5" fill="${C.gold}" opacity=".35"/>`
+        : `${arrow(36, base - 32, pw * 0.6, base - 44, C.bad, 1.8)}
+           <path d="M${pw * 0.72} ${base - 40} l22 8 v34 h-22 z" fill="#04101c" opacity=".75"/>`}
+      ${figure(pw * 0.66, base, 62, bounce ? '#8fc0e4' : '#5d8cb3')}`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Flash direto e rebatido">
+      ${panel(0, pw, H, `${room(false)}${tag(pw / 2, H - 4, 'direto · sombra dura', { anchor: 'middle', fg: C.bad })}`)}
+      ${panel(pw + gap, pw, H, `${room(true)}${tag(pw / 2, H - 4, 'rebatido · luz suave', { anchor: 'middle', fg: C.good })}`)}
+    </svg>`;
+  };
+
+  // Zoom ótico vs digital.
+  ART['eq-zoom'] = () => {
+    const W = 430, H = 180, gap = 8, pw = (W - gap) / 2;
+    const sub = (crisp) => crisp
+      ? figure(pw / 2, H - 44, 84, '#8fc0e4')
+      : `<g opacity=".85">${figure(pw / 2, H - 44, 84, '#6b93b8')}</g>
+         <g fill="#0d2135" opacity=".55">${Array.from({ length: 60 }, (_, i) =>
+            `<rect x="${(i * 13) % pw}" y="${((i * 29) % (H - 40))}" width="7" height="7"/>`).join('')}</g>`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Zoom ótico e zoom digital">
+      ${panel(0, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>${sub(true)}
+        ${tag(pw / 2, H - 4, 'ótico · detalhe real', { anchor: 'middle', fg: C.good })}`)}
+      ${panel(pw + gap, pw, H, `<rect width="${pw}" height="${H - 20}" rx="4" fill="#0d2135"/>${sub(false)}
+        ${tag(pw / 2, H - 4, 'digital · é só corte', { anchor: 'middle', fg: C.bad })}`)}
+    </svg>`;
+  };
+
+  // Mochila: o que levar mesmo.
+  ART['eq-bag'] = () => {
+    const W = 430, H = 175;
+    const items = [
+      { lbl: 'corpo', w: 54 }, { lbl: '1–2 objetivas', w: 76 }, { lbl: 'bateria', w: 48 },
+      { lbl: 'cartão', w: 44 }, { lbl: 'pano', w: 38 },
+    ];
+    let x = 16;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="O essencial de uma saída">
+      <rect x="8" y="24" width="${W - 16}" height="${H - 58}" rx="10" fill="#0d2135" stroke="${C.dim}" stroke-width="1.2"/>
+      <path d="M${W / 2 - 26} 24 q26 -18 52 0" fill="none" stroke="${C.dim}" stroke-width="3"/>
+      ${items.map(it => { const r = `<g><rect x="${x}" y="52" width="${it.w}" height="34" rx="5" fill="#17395a" stroke="${C.cyan}" stroke-width="1"/>${tag(x + it.w / 2, 106, it.lbl, { anchor: 'middle', fg: C.ink })}</g>`; x += it.w + 10; return r; }).join('')}
+      ${tag(W / 2, H - 10, 'mais do que isto é quase sempre peso morto', { anchor: 'middle', fg: C.gold })}
+    </svg>`;
+  };
+
   // ── API pública ───────────────────────────────────────────────────
   function svg(id) { return ART[id] ? ART[id]() : ''; }
   function has(id) { return !!ART[id]; }

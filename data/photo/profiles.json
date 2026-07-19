@@ -1,0 +1,105 @@
+{
+  "_doc": "Perfil de fotografia. Adapta as recomendações do portal ao objetivo de quem fotografa, em vez de assumir que toda a gente quer o máximo de qualidade técnica. O motor está em js/pages/photography.js (profile(), fmtForGenre(), profileNote()). Regra editorial: NUNCA empurrar RAW por defeito — o RAW é uma ferramenta para quando há vantagem real, e essa vantagem deve ser explicada.",
+  "default": "entusiasta",
+  "profiles": [
+    {
+      "id": "casual",
+      "icon": "🙂",
+      "name": "Casual",
+      "tagline": "Boas fotografias, sem tempo de edição",
+      "who": "Queres fotografias bonitas para guardar e partilhar, e não te apetece passar tempo ao computador.",
+      "format": "JPG",
+      "formatLine": "JPG + HDR automático",
+      "philosophy": "A câmara (ou o telemóvel) processa melhor do que a maioria das pessoas edita à pressa. Deixa-a trabalhar e concentra-te na luz e no enquadramento — é aí que está 90% da qualidade de uma fotografia.",
+      "pros": [
+        "Fotografias prontas a partilhar mal saem da câmara",
+        "Cartões e telemóvel duram muito mais",
+        "Zero tempo de pós-produção"
+      ],
+      "cons": [
+        "Pouca margem para salvar céus queimados ou sombras muito fechadas",
+        "O balanço de brancos fica praticamente decidido no momento"
+      ],
+      "shoot": [
+        "Liga o HDR automático — resolve sozinho a maior parte dos contrastes difíceis.",
+        "Acerta a exposição no momento: toca no ecrã (telemóvel) ou usa a compensação de exposição (câmara).",
+        "Se a cena tiver muito contraste, expõe pela parte que te interessa e aceita o resto.",
+        "Dispara mais do que achas necessário e escolhe depois — é grátis."
+      ],
+      "edit": "Se editares, que seja no telemóvel e em menos de um minuto: corte, endireitar, um toque de contraste. Snapseed ou o editor do Google Fotos chegam perfeitamente.",
+      "editDepth": "minimal"
+    },
+    {
+      "id": "entusiasta",
+      "icon": "🎯",
+      "name": "Entusiasta",
+      "tagline": "JPG no dia-a-dia, RAW quando compensa",
+      "who": "Gostas de fotografia e queres melhorar, mas não queres editar todas as fotografias que tiras.",
+      "format": "JPG · RAW quando vale a pena",
+      "formatLine": "JPG por defeito · RAW nas fotografias que contam",
+      "philosophy": "Fotografar tudo em RAW enche cartões e cria uma dívida de edição que nunca pagas. A maioria das fotografias fica ótima em JPG. Guarda o RAW para as imagens onde ele te dá alguma coisa que o JPG não dá — e este portal diz-te, em cada género, quando é esse o caso.",
+      "pros": [
+        "O melhor dos dois mundos: rapidez no dia-a-dia, margem quando interessa",
+        "Só editas o que vale a pena editar",
+        "Aprendes a reconhecer quando o RAW faz diferença"
+      ],
+      "cons": [
+        "Exige decidir no momento — e às vezes falhas a decisão",
+        "Muitas câmaras obrigam a mudar o formato no menu (aprende o atalho)"
+      ],
+      "shoot": [
+        "Deixa a câmara em JPG como estado normal.",
+        "Muda para RAW (ou RAW+JPG) quando a cena tiver contraste extremo, luz de cor difícil, ou for uma fotografia que queres mesmo.",
+        "Vigia o aviso de altas luzes: se estiver a piscar muito, é sinal de que o RAW compensa aqui.",
+        "RAW+JPG é um bom compromisso enquanto ganhas confiança na decisão."
+      ],
+      "edit": "Edita só a seleção — tipicamente 5 a 10 fotografias de uma saída. Nos JPG, mexe pouco: corte, endireitar, contraste, um ajuste de cor.",
+      "editDepth": "selective"
+    },
+    {
+      "id": "pro",
+      "icon": "🔬",
+      "name": "Profissional",
+      "tagline": "RAW e pós-produção completa",
+      "who": "Queres extrair o máximo de cada ficheiro e a edição faz parte do processo, não é um extra.",
+      "format": "RAW",
+      "formatLine": "RAW sempre · fluxo de edição completo",
+      "philosophy": "O ficheiro que sai da câmara é matéria-prima, não resultado. Expor para preservar informação vale mais do que expor para ficar bonito no ecrã — o aspeto final decide-se depois.",
+      "pros": [
+        "Máxima recuperação de sombras e altas luzes",
+        "Balanço de brancos e perfil de cor totalmente reversíveis",
+        "Melhor resultado em impressão e em ampliações grandes"
+      ],
+      "cons": [
+        "Ficheiros grandes: cartões, discos e backup a sério",
+        "Cada fotografia precisa de trabalho — sem edição, o RAW fica pior que o JPG"
+      ],
+      "shoot": [
+        "RAW sempre; expõe à direita sem estourar as altas luzes (vigia o histograma, não o ecrã).",
+        "Em contraste extremo, faz bracketing e decide na edição se fundes.",
+        "Balanço de brancos pode ficar em Auto — corriges depois com precisão sobre um cinzento da cena.",
+        "Fotografa uma referência de cor no início da sessão se a cor tiver de ser fiel."
+      ],
+      "edit": "Fluxo completo: correção de perfil e geometria, base tonal, recuperação seletiva, cor, máscaras locais, nitidez e ruído no fim, à escala de saída.",
+      "editDepth": "full"
+    }
+  ],
+  "rawAdvice": {
+    "_doc": "Texto composto pelo motor conforme genre.raw.value × perfil. O 'why' específico de cada género é acrescentado a seguir.",
+    "high": {
+      "casual": "Este género tem contraste ou luz difícil. Em JPG, liga o HDR e expõe pela zona que te interessa — vais perder alguma margem, mas evitas a edição.",
+      "entusiasta": "Aqui o RAW compensa mesmo — é um dos géneros onde a diferença se vê.",
+      "pro": "RAW obrigatório, e considera bracketing: a gama dinâmica desta cena passa o sensor."
+    },
+    "medium": {
+      "casual": "JPG chega bem. Acerta a exposição no momento e não te preocupes com mais nada.",
+      "entusiasta": "JPG resolve a maioria das vezes. Passa a RAW só nas fotografias que já sabes que vais querer editar.",
+      "pro": "RAW por hábito, mas sem drama — esta cena não costuma exigir recuperação agressiva."
+    },
+    "low": {
+      "casual": "JPG, sem hesitar. O processamento da câmara faz aqui um bom trabalho.",
+      "entusiasta": "Fica em JPG. Neste género o RAW raramente te dá alguma coisa que justifique o trabalho.",
+      "pro": "Mesmo em RAW, esta cena precisa de pouca edição — não sobre-processes."
+    }
+  }
+}

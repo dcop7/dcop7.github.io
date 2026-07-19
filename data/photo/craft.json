@@ -1,0 +1,150 @@
+{
+  "_doc": "Módulos de OFÍCIO reutilizáveis. Cada módulo ensina UMA VEZ um princípio universal (com ilustração), e cada género só acrescenta a sua aplicação específica em genres[].scene. Evita repetir a mesma lição 28 vezes e garante que todos os portais têm a mesma estrutura. 'visual' = id de PhotoIllus.",
+  "modules": [
+    {
+      "id": "height",
+      "icon": "📏",
+      "name": "Altura da câmara",
+      "principle": "A altura a que pousas a câmara muda a relação de poder e a sensação da fotografia mais do que qualquer definição. É a decisão mais barata e mais ignorada da fotografia.",
+      "visual": "craft-height",
+      "options": [
+        { "id": "low", "label": "Baixa (ao nível do chão)", "effect": "O sujeito ganha grandeza e domínio. O primeiro plano fica enorme e a linha do horizonte desce.", "when": "Animais, crianças, flores, arquitetura imponente, reflexos em poças." },
+        { "id": "subject", "label": "Ao nível dos olhos do sujeito", "effect": "Cria ligação e empatia — quem vê sente que está com o sujeito, não a olhar para ele de cima.", "when": "Retrato, crianças, animais de estimação. É a escolha certa por defeito." },
+        { "id": "eye", "label": "Ao teu nível dos olhos", "effect": "Neutro e familiar. É a altura da maioria das fotografias — e é por isso que raramente surpreende.", "when": "Documental e rua, quando queres a perspetiva natural de quem passa." },
+        { "id": "high", "label": "Alta (acima da cabeça)", "effect": "O sujeito diminui e o padrão do chão aparece. Dá ordem e leitura de mapa à cena.", "when": "Gastronomia vista de cima, multidões, padrões, mostrar disposição de um espaço." }
+      ],
+      "mistakes": [
+        "Fotografar tudo da altura a que estás de pé, por comodidade — é o que torna a maioria das fotografias banal.",
+        "Fotografar crianças e animais de cima para baixo, transformando-os em objetos pequenos e distantes."
+      ],
+      "drill": "Escolhe um sujeito e fotografa-o de três alturas: ao nível do chão, ao nível dos olhos dele e de cima. Compara. Vais usar esta lição para sempre."
+    },
+    {
+      "id": "angle",
+      "icon": "🧭",
+      "name": "Ângulo e posição",
+      "principle": "Mudar a tua posição lateralmente muda o FUNDO sem mudar o sujeito. É a forma mais rápida de limpar uma fotografia sem tocar em nada da cena.",
+      "visual": "craft-angle",
+      "options": [
+        { "id": "front", "label": "Frontal", "effect": "Direto, simétrico e confrontador. Achata o volume.", "when": "Simetria, arquitetura frontal, retrato de confronto direto." },
+        { "id": "three", "label": "Três-quartos", "effect": "Mostra duas faces do sujeito e dá volume e profundidade. O ângulo mais versátil que existe.", "when": "Retrato, automóvel, produto, edifícios." },
+        { "id": "side", "label": "Perfil", "effect": "Recorta a silhueta com clareza e elimina a profundidade.", "when": "Silhuetas, contraluz, movimento a atravessar o enquadramento." },
+        { "id": "behind", "label": "Por trás / sobre o ombro", "effect": "Coloca quem vê no lugar do sujeito — vemos o que ele vê.", "when": "Viagem, narrativa, paisagem com figura humana." }
+      ],
+      "mistakes": [
+        "Aceitar o primeiro ângulo em que chegaste. O primeiro é quase nunca o melhor.",
+        "Tentar arrumar a cena em vez de dar dois passos ao lado — muitas vezes o passo resolve o que a arrumação não resolveria."
+      ],
+      "drill": "Fica com o mesmo sujeito e dá uma volta completa de 360° à sua volta, disparando de 45 em 45 graus. Descobre onde estava a boa luz e o bom fundo."
+    },
+    {
+      "id": "distance",
+      "icon": "📐",
+      "name": "Distância e aproximação",
+      "principle": "A distância a que estás decide a perspetiva; a focal só decide o enquadramento. Aproximar-te 2 metros muda a fotografia; ampliar 200mm não muda a perspetiva nenhuma.",
+      "visual": "craft-distance",
+      "options": [
+        { "id": "wide", "label": "Plano geral", "effect": "Situa o sujeito no espaço e conta onde a cena acontece.", "when": "Primeira fotografia de um sítio novo, para estabelecer contexto." },
+        { "id": "medium", "label": "Plano médio", "effect": "Equilíbrio entre sujeito e ambiente — a relação entre os dois é o assunto.", "when": "Retrato ambiental, rua, documental." },
+        { "id": "close", "label": "Grande plano", "effect": "Elimina o contexto e força a atenção na expressão, textura ou forma.", "when": "Emoção, detalhe, textura." },
+        { "id": "detail", "label": "Pormenor", "effect": "Abstrai: deixa de se perceber a escala e passa a ver-se forma e padrão.", "when": "Fechar uma série, mostrar a matéria de que a cena é feita." }
+      ],
+      "mistakes": [
+        "Ficar sempre à mesma distância e voltar para casa com 200 fotografias iguais.",
+        "Usar o zoom quando podias andar. O zoom enquadra; os pés compõem."
+      ],
+      "drill": "Trabalha o mesmo assunto em quatro planos: geral, médio, grande plano e pormenor. Uma série assim conta uma história; uma fotografia isolada raramente conta."
+    },
+    {
+      "id": "foreground",
+      "icon": "🪨",
+      "name": "Primeiro plano e profundidade",
+      "principle": "Uma fotografia é uma superfície plana. O primeiro plano é o truque mais eficaz para dar a ilusão de três dimensões: com algo perto, algo a meio e algo longe, o olho lê profundidade.",
+      "visual": "craft-foreground",
+      "options": [
+        { "id": "anchor", "label": "Âncora no canto inferior", "effect": "Uma pedra, uma flor ou uma folha muito perto ancora a cena e dá escala.", "when": "Paisagem, sobretudo com grande angular." },
+        { "id": "frame", "label": "Moldura natural", "effect": "Ramos, arcos ou janelas em primeiro plano fecham a composição e dirigem o olhar.", "when": "Arquitetura, paisagem, retrato de rua." },
+        { "id": "blur", "label": "Primeiro plano desfocado", "effect": "Um elemento desfocado muito perto da objetiva cria uma camada suave e sensação de espreitar.", "when": "Retrato, vida selvagem, flores." },
+        { "id": "leading", "label": "Linha que entra", "effect": "Um caminho, um muro ou um rio que começa no primeiro plano leva o olhar para dentro.", "when": "Paisagem, rua, arquitetura." }
+      ],
+      "mistakes": [
+        "Fotografar paisagem com grande angular sem nada no primeiro plano — resulta sempre numa fotografia vazia.",
+        "Pôr um primeiro plano confuso que compete com o sujeito em vez de o servir."
+      ],
+      "drill": "Na próxima paisagem, antes de disparar, pergunta em voz alta: o que está no meu primeiro plano? Se a resposta for 'nada', baixa-te e encontra alguma coisa."
+    },
+    {
+      "id": "lightdir",
+      "icon": "☀️",
+      "name": "Direção da luz",
+      "principle": "Não é a quantidade de luz que faz a fotografia — é a direção de onde vem. A mesma cena com o sol atrás de ti ou à tua frente são duas fotografias completamente diferentes.",
+      "visual": "craft-lightdir",
+      "options": [
+        { "id": "front", "label": "Frontal (sol atrás de ti)", "effect": "Ilumina tudo por igual, cor saturada, mas achata o volume e faz as pessoas semicerrar os olhos.", "when": "Quando a cor e a nitidez importam mais que o volume." },
+        { "id": "side", "label": "Lateral", "effect": "Sombras revelam textura e forma. É a luz que dá volume e tridimensionalidade.", "when": "Retrato com carácter, arquitetura, texturas, paisagem ao início e fim do dia." },
+        { "id": "back", "label": "Contraluz (sol à tua frente)", "effect": "Recorta o sujeito, cria silhuetas, acende cabelos e folhas translúcidas e enche a cena de atmosfera.", "when": "Silhuetas, retrato com luz de recorte, folhagem, nevoeiro, fumo." },
+        { "id": "diffuse", "label": "Difusa (nublado)", "effect": "Sem sombras marcadas. Suave e igual — ótima para pele e cor, fraca para drama.", "when": "Retrato, flores, macro, gastronomia. Um dia nublado é um softbox do tamanho do céu." }
+      ],
+      "mistakes": [
+        "Pôr sempre o sol atrás de si porque 'assim vê-se bem' — é a luz mais aborrecida de todas.",
+        "Fugir do contraluz por ser difícil de expor. É exatamente onde estão as fotografias mais bonitas.",
+        "Fotografar retrato ao meio-dia com sol direto: sombras nos olhos e sob o nariz."
+      ],
+      "drill": "Fotografa o mesmo objeto com a luz de frente, de lado e de trás, sem lhe tocar. A diferença entre as três vai ensinar-te mais que qualquer tutorial."
+    },
+    {
+      "id": "background",
+      "icon": "🧹",
+      "name": "Ler o fundo",
+      "principle": "Toda a gente olha para o sujeito. Os fotógrafos olham para o fundo. Postes a sair de cabeças, caixotes, sinais e manchas claras nas bordas são o que separa uma fotografia amadora de uma limpa.",
+      "visual": "craft-background",
+      "options": [
+        { "id": "scan", "label": "Varrer as bordas", "effect": "Antes de disparar, percorre os quatro cantos com os olhos. Elimina o que não devia lá estar.", "when": "Sempre. É um hábito, não uma técnica." },
+        { "id": "move", "label": "Mudar de posição", "effect": "Um passo ao lado troca um fundo confuso por um fundo limpo, sem tocar em nada.", "when": "Quando o fundo está desarrumado e não o podes arrumar." },
+        { "id": "separate", "label": "Afastar o sujeito do fundo", "effect": "Quanto mais longe o fundo estiver, mais desfocado fica — mais eficaz que abrir o diafragma.", "when": "Retrato, produto, flores, animais." },
+        { "id": "dark", "label": "Procurar fundo escuro", "effect": "Um sujeito iluminado contra sombra recorta-se sozinho, sem edição nenhuma.", "when": "Flores, retrato, macro, rua." }
+      ],
+      "mistakes": [
+        "Reparar no poste atrás da cabeça só em casa, quando já não há remédio.",
+        "Tentar resolver na edição o que um passo ao lado teria resolvido em dois segundos."
+      ],
+      "drill": "Durante uma saída inteira, obriga-te a olhar primeiro para o fundo e só depois para o sujeito. Vais apagar metade dos teus erros habituais."
+    },
+    {
+      "id": "moment",
+      "icon": "⏱️",
+      "name": "Esperar o momento",
+      "principle": "Compor primeiro e esperar depois é a inversão que muda tudo. Encontra a boa luz e o bom fundo, prepara o enquadramento, e só então espera que o sujeito entre.",
+      "visual": "craft-moment",
+      "options": [
+        { "id": "compose", "label": "Compor e esperar", "effect": "Enquadras uma cena vazia e esperas que alguém entre no sítio certo.", "when": "Rua, arquitetura com figura, paisagem com pessoa." },
+        { "id": "anticipate", "label": "Antecipar", "effect": "Prevês onde a ação vai acontecer e apontas para lá ANTES de acontecer.", "when": "Desporto, animais, crianças." },
+        { "id": "burst", "label": "Rajada", "effect": "Vários disparos por segundo aumentam a probabilidade de apanhar o pico do gesto.", "when": "Movimento, expressões, saltos, ondas." },
+        { "id": "after", "label": "Continuar depois", "effect": "O momento verdadeiro vem quase sempre dois segundos depois da pose oficial.", "when": "Retrato, família, eventos." }
+      ],
+      "mistakes": [
+        "Disparar assim que vês algo e ir embora. Fica mais 30 segundos — a cena costuma melhorar.",
+        "Baixar a câmara logo a seguir à fotografia 'oficial', mesmo a tempo de perder a boa."
+      ],
+      "drill": "Escolhe um sítio com boa luz, enquadra e fica cinco minutos parado à espera. É desconfortável e é assim que se fazem boas fotografias de rua."
+    },
+    {
+      "id": "simplify",
+      "icon": "✂️",
+      "name": "Simplificar",
+      "principle": "A pergunta que resolve mais fotografias: qual é o assunto? Se a resposta demorar, a fotografia tem elementos a mais. Tirar quase sempre vale mais do que acrescentar.",
+      "visual": "craft-simplify",
+      "options": [
+        { "id": "one", "label": "Um assunto só", "effect": "Uma fotografia com dois assuntos costuma não ter nenhum.", "when": "Sempre que a cena parecer confusa." },
+        { "id": "closer", "label": "Aproximar", "effect": "Cortar o que não interessa é a forma mais direta de simplificar.", "when": "Quando não consegues limpar a cena de outra forma." },
+        { "id": "negative", "label": "Espaço vazio", "effect": "Vazio à volta do sujeito dá-lhe importância e respiração.", "when": "Minimalismo, nevoeiro, praia, neve, céu." },
+        { "id": "pattern", "label": "Repetição e quebra", "effect": "Um padrão organiza a cena; um elemento que quebra o padrão torna-se automaticamente o assunto.", "when": "Arquitetura, multidões, natureza." }
+      ],
+      "mistakes": [
+        "Tentar meter tudo o que é bonito na mesma fotografia.",
+        "Confundir uma cena impressionante ao vivo com uma boa fotografia — a câmara não capta o cheiro, o som nem a escala."
+      ],
+      "drill": "Fotografa uma cena cheia. Depois faz outra do mesmo sítio com metade dos elementos. Repete até só sobrar o essencial."
+    }
+  ]
+}

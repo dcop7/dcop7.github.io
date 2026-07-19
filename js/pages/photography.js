@@ -579,67 +579,136 @@ const PhotographyPage = (function () {
     ctx.save(); comp.draw(ctx, W, H); ctx.restore();
   }
 
-  let _compView = (() => { try { return localStorage.getItem('ph-comp-view') || 'both'; } catch (_) { return 'both'; } })();
+  /* ══ VISUALIZADOR DE COMPOSIÇÃO ═════════════════════════════════════════
+     Substitui os três modos (Grelha/Exemplo/Ambos), que obrigavam a trocar de
+     vista para comparar. Agora há uma só cena com duas camadas de leitura:
+       • cortina arrastável entre a versão CORRETA e a INCORRETA — a comparação
+         acontece no mesmo sítio do ecrã, que é o que torna a diferença óbvia;
+       • marcações geométricas por cima, que se ligam e desligam.
+     Uma régua de miniaturas permite saltar entre técnicas sem fechar. */
   let _compIdx = 0, _compGenre = null;
-  function setCompView(v) { _compView = v; try { localStorage.setItem('ph-comp-view', v); } catch (_) {} }
-  // Ilustração da composição no contexto de um género (ex.: comp-retrato-thirds);
-  // se não existir, cai na ilustração geral (comp-thirds).
+  let _compOv = (() => { try { return localStorage.getItem('ph-comp-ov') !== '0'; } catch (_) { return true; } })();
+  let _compWipe = 55;
+  const setCompOv = v => { _compOv = v; try { localStorage.setItem('ph-comp-ov', v ? '1' : '0'); } catch (_) {} };
   const compSlug = name => (COMP_ASSET[name] || '').replace(/^comp-/, '');
   const genreCompAsset = (genre, comp) => genre ? assetPath('comp-' + genre + '-' + compSlug(comp.name)) : null;
 
   function openCompModal(comp, genreId) {
     _compGenre = genreId || null;
     _compIdx = Math.max(0, COMPOSITIONS.indexOf(comp));
-    const modal = _openModal('ph-comp-modal', `<div class="ph-modal-box ph-comp2-box" role="dialog" aria-modal="true" aria-label="Composição">
+    const modal = _openModal('ph-comp-modal', `<div class="ph-modal-box ph-cv-box" role="dialog" aria-modal="true" aria-label="Técnica de composição">
       <div class="ph-modal-hdr">
         <span class="ph-modal-title" data-comp-title></span>
-        <div class="seg ph-comp2-seg" role="group" aria-label="Vista">
-          <button class="seg-btn" data-view="grid">Grelha</button>
-          <button class="seg-btn" data-view="example">Exemplo</button>
-          <button class="seg-btn" data-view="both">Ambos</button>
-        </div>
         <button class="ph-modal-close" aria-label="Fechar">✕</button>
       </div>
-      <div class="ph-comp2-body"></div>
+      <div class="ph-cv-body"></div>
     </div>`);
-    modal.querySelectorAll('.ph-comp2-seg .seg-btn').forEach(b => b.addEventListener('click', () => { setCompView(b.dataset.view); renderCompModal(modal); }));
     document.addEventListener('keydown', function nav(e) {
       if (!document.getElementById('ph-comp-modal')) { document.removeEventListener('keydown', nav); return; }
-      if (e.key === 'ArrowLeft') { _compIdx = (_compIdx - 1 + COMPOSITIONS.length) % COMPOSITIONS.length; renderCompModal(modal); }
-      else if (e.key === 'ArrowRight') { _compIdx = (_compIdx + 1) % COMPOSITIONS.length; renderCompModal(modal); }
+      if (e.key === 'ArrowLeft') { step(-1); }
+      else if (e.key === 'ArrowRight') { step(1); }
+      else if (e.key.toLowerCase() === 'g') { setCompOv(!_compOv); renderCompModal(modal); }
     });
+    function step(d) { _compIdx = (_compIdx + d + COMPOSITIONS.length) % COMPOSITIONS.length; renderCompModal(modal); }
+    modal._step = step;
     renderCompModal(modal);
   }
+
   function renderCompModal(modal) {
-    const comp = COMPOSITIONS[_compIdx], gAsset = genreCompAsset(_compGenre, comp), asset = gAsset || compAsset(comp);
+    const comp = COMPOSITIONS[_compIdx];
+    const gAsset = genreCompAsset(_compGenre, comp), asset = gAsset || compAsset(comp);
+    const slug = COMP_ASSET[comp.name];
+    // A versão "incorreta" só existe para as ilustrações gerais.
+    const bad = gAsset ? null : assetPath(slug + '-bad');
+    const why = COMP_WHY[slug] || {};
     modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
-    modal.querySelectorAll('.ph-comp2-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.view === _compView));
-    const slug = COMP_ASSET[comp.name], bad = gAsset ? null : assetPath(slug + '-bad'), why = COMP_WHY[slug] || {};
-    const shot = (src, role) => `<figure class="ph-comp2-shot ${role}">
-        <div class="ph-comp2-frame">${src ? `<img class="ph-comp2-img" src="${src}" alt="">` : '<div class="ph-comp2-img ph-comp2-noimg"></div>'}<canvas class="ph-comp2-canvas ph-comp2-anim"></canvas></div>
-        ${bad ? `<span class="ph-comp2-badge ${role}">${role === 'ok' ? '✓ Correto' : '✗ Incorreto'}</span><figcaption>${role === 'ok' ? (why.ok || '') : (why.bad || '')}</figcaption>` : ''}
-      </figure>`;
-    modal.querySelector('.ph-comp2-body').innerHTML = `
-      <div class="ph-comp2-stage${bad ? ' dual' : ''}" data-view="${_compView}">
-        <button class="ph-comp2-nav prev" aria-label="Composição anterior">‹</button>
-        <div class="ph-comp2-frames">${shot(asset, 'ok')}${bad ? shot(bad, 'bad') : ''}</div>
-        <button class="ph-comp2-nav next" aria-label="Composição seguinte">›</button>
+
+    const stage = bad ? `
+      <div class="ph-cv-frame" data-wipe>
+        <img class="ph-cv-layer" src="${bad}" alt="Exemplo incorreto" draggable="false">
+        <div class="ph-cv-layer ph-cv-ok" style="clip-path:inset(0 ${100 - _compWipe}% 0 0)">
+          <img src="${asset}" alt="Exemplo correto" draggable="false">
+        </div>
+        <canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>
+        <span class="ph-cv-tag ok">✓ Correto</span>
+        <span class="ph-cv-tag bad">✗ Incorreto</span>
+        <div class="ph-cv-handle" style="left:${_compWipe}%"><span class="ph-cv-grip">⇔</span></div>
       </div>
-      <div class="ph-comp2-count">${_compIdx + 1} / ${COMPOSITIONS.length}</div>
-      <div class="ph-comp2-info">
-        <p class="ph-comp2-desc">${comp.desc}</p>
-        ${comp.tips ? `<div class="ph-modal-tips"><strong>💡 Dica prática:</strong> ${comp.tips}</div>` : ''}
-        ${comp.examples ? `<div class="ph-know-sec"><h4>📷 Exemplos</h4><p>${comp.examples}</p></div>` : ''}
+      <input class="ph-cv-range" type="range" min="0" max="100" value="${_compWipe}" aria-label="Comparar correto e incorreto">
+      <div class="ph-cv-why">
+        <span class="ph-cv-why-ok"><b>✓</b> ${why.ok || ''}</span>
+        <span class="ph-cv-why-bad"><b>✗</b> ${why.bad || ''}</span>
+      </div>`
+      : `<div class="ph-cv-frame">
+        ${asset ? `<img class="ph-cv-layer" src="${asset}" alt="" draggable="false">` : '<div class="ph-cv-layer ph-cv-noimg"></div>'}
+        <canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>
       </div>`;
-    requestAnimationFrame(() => {
-      modal.querySelectorAll('.ph-comp2-canvas').forEach(canvas => {
-        const frame = canvas.closest('.ph-comp2-frame'), w = frame.clientWidth || 560, h = Math.round(w * 832 / 1216);
-        canvas.width = w; canvas.height = h;
-        drawCompOverlay(canvas, comp);
-      });
+
+    modal.querySelector('.ph-cv-body').innerHTML = `
+      <div class="ph-cv-controls">
+        <button class="ph-cv-nav" data-step="-1" aria-label="Técnica anterior">‹</button>
+        <label class="ph-cv-toggle"><input type="checkbox" ${_compOv ? 'checked' : ''} data-ov>
+          <span>Marcações</span></label>
+        <span class="ph-cv-count">${_compIdx + 1} / ${COMPOSITIONS.length}</span>
+        <button class="ph-cv-nav" data-step="1" aria-label="Técnica seguinte">›</button>
+      </div>
+      ${stage}
+      <div class="ph-cv-info">
+        <div class="ph-cv-sec"><b>Como funciona</b><p>${comp.desc}</p></div>
+        ${comp.tips ? `<div class="ph-cv-sec apply"><b>🎯 Como aplicar no terreno</b><p>${comp.tips}</p></div>` : ''}
+        ${comp.examples ? `<div class="ph-cv-sec"><b>📷 Onde encontrar</b><p>${comp.examples}</p></div>` : ''}
+      </div>
+      <div class="ph-cv-rail" role="tablist" aria-label="Técnicas de composição">
+        ${COMPOSITIONS.map((c, i) => {
+          const a = genreCompAsset(_compGenre, c) || compAsset(c);
+          return `<button class="ph-cv-thumb${i === _compIdx ? ' active' : ''}" data-jump="${i}" role="tab" aria-selected="${i === _compIdx}" title="${c.name}">
+            ${a ? `<img src="${a}" alt="" loading="lazy" draggable="false">` : '<span class="ph-cv-thumb-no"></span>'}
+            <span class="ph-cv-thumb-n">${c.name}</span></button>`;
+        }).join('')}
+      </div>`;
+
+    const drawOv = () => {
+      const cv = modal.querySelector('.ph-cv-ov'); if (!cv) return;
+      const frame = cv.closest('.ph-cv-frame'), w = frame.clientWidth || 560;
+      const h = frame.clientHeight || Math.round(w * 832 / 1216);
+      cv.width = w; cv.height = h;
+      drawCompOverlay(cv, comp, { bg: !asset });
+    };
+    requestAnimationFrame(drawOv);
+
+    modal.querySelectorAll('[data-step]').forEach(b =>
+      b.addEventListener('click', () => modal._step(+b.dataset.step)));
+    modal.querySelectorAll('[data-jump]').forEach(b =>
+      b.addEventListener('click', () => { _compIdx = +b.dataset.jump; renderCompModal(modal); }));
+    modal.querySelector('[data-ov]')?.addEventListener('change', e => {
+      setCompOv(e.target.checked);
+      modal.querySelector('.ph-cv-ov')?.classList.toggle('off', !e.target.checked);
     });
-    modal.querySelector('.prev').addEventListener('click', () => { _compIdx = (_compIdx - 1 + COMPOSITIONS.length) % COMPOSITIONS.length; renderCompModal(modal); });
-    modal.querySelector('.next').addEventListener('click', () => { _compIdx = (_compIdx + 1) % COMPOSITIONS.length; renderCompModal(modal); });
+
+    // Cortina: arrastar no próprio enquadramento, ou o range (teclado/leitores).
+    const frame = modal.querySelector('[data-wipe]');
+    if (frame) {
+      const range = modal.querySelector('.ph-cv-range');
+      const apply = pct => {
+        _compWipe = Math.max(0, Math.min(100, pct));
+        frame.querySelector('.ph-cv-ok').style.clipPath = `inset(0 ${100 - _compWipe}% 0 0)`;
+        frame.querySelector('.ph-cv-handle').style.left = _compWipe + '%';
+        if (range && +range.value !== Math.round(_compWipe)) range.value = Math.round(_compWipe);
+      };
+      const fromEvent = e => {
+        const r = frame.getBoundingClientRect();
+        apply(((e.clientX - r.left) / r.width) * 100);
+      };
+      let dragging = false;
+      frame.addEventListener('pointerdown', e => {
+        dragging = true; frame.setPointerCapture(e.pointerId); fromEvent(e); e.preventDefault();
+      });
+      frame.addEventListener('pointermove', e => { if (dragging) fromEvent(e); });
+      frame.addEventListener('pointerup', e => { dragging = false; try { frame.releasePointerCapture(e.pointerId); } catch (_) {} });
+      frame.addEventListener('pointercancel', () => { dragging = false; });
+      range?.addEventListener('input', () => apply(+range.value));
+    }
+    window.addEventListener('resize', drawOv, { once: true });
   }
 
   function buildComposition(root) {
@@ -1141,8 +1210,14 @@ const PhotographyPage = (function () {
     if (_DB) return Promise.resolve(_DB);
     if (_dbPromise) return _dbPromise;
     const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
-    _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json')])
-      .then(([g, gen, k]) => (_DB = { profiles: g.profiles, genres: gen.genres, know: k.topics }))
+    _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json'),
+                              grab('profiles.json'), grab('craft.json'), grab('equipment.json')])
+      .then(([g, gen, k, p, c, e]) => (_DB = {
+        classes: g.classes, lensClasses: g.lensClasses, mine: g.mine, gearDefault: g.default,
+        genres: gen.genres, know: k.topics,
+        profiles: p.profiles, profileDefault: p.default, rawAdvice: p.rawAdvice,
+        craft: c.modules, equipment: e.categories,
+      }))
       .catch(() => { _dbPromise = null; return null; });
     return _dbPromise;
   }
@@ -1166,28 +1241,96 @@ const PhotographyPage = (function () {
   const li = x => `<li>${x}</li>`;
   const kvHTML = s => `<div class="ph-kv"><span class="ph-kv-k">${s.k}</span><span class="ph-kv-v">${s.v}</span></div>`;
 
-  // ── seletor de equipamento ──
-  const GEAR_OPTS = [
-    { id: 'canon', label: '📷 M50 II' },
-    { id: 's23',   label: '📱 S23+' },
-    { id: 'all',   label: '🎒 Ambos' },
-  ];
-  function gear() { try { const g = localStorage.getItem('ph-gear'); return GEAR_OPTS.some(o => o.id === g) ? g : 'canon'; } catch (_) { return 'canon'; } }
-  function setGear(g) { try { localStorage.setItem('ph-gear', g); } catch (_) {} }
-  function gearBarHTML(opts) {
-    const g = gear();
-    const list = (opts && opts.noAll) ? GEAR_OPTS.filter(o => o.id !== 'all') : GEAR_OPTS;
-    return `<div class="ph-gearbar" role="group" aria-label="Equipamento">
-      <span class="ph-gearbar-lbl">Equipamento</span>
-      ${list.map(o => `<button class="ph-gear-btn${o.id === g ? ' active' : ''}" data-gear="${o.id}">${o.label}</button>`).join('')}
+  /* ── Contexto do utilizador: CLASSE de câmara + PERFIL de fotografia ──────
+     Duas preferências globais que adaptam todo o portal. A classe traduz as
+     focais equivalentes para o que cada tipo de câmara tem; o perfil decide
+     formato, profundidade de edição e o tom dos conselhos. Ambas em
+     localStorage e ambas com fallback seguro se o DB ainda não carregou. */
+  function gearClass() {
+    try { const g = localStorage.getItem('ph-class'); if (_DB && _DB.classes.some(c => c.id === g)) return g; } catch (_) {}
+    return (_DB && _DB.gearDefault) || 'apsc';
+  }
+  function setGearClass(c) { try { localStorage.setItem('ph-class', c); } catch (_) {} }
+  function classDef(id) { return (_DB && _DB.classes.find(c => c.id === (id || gearClass()))) || null; }
+
+  function profile() {
+    try { const p = localStorage.getItem('ph-profile'); if (_DB && _DB.profiles.some(x => x.id === p)) return p; } catch (_) {}
+    return (_DB && _DB.profileDefault) || 'entusiasta';
+  }
+  function setProfile(p) { try { localStorage.setItem('ph-profile', p); } catch (_) {} }
+  function profileDef(id) { return (_DB && _DB.profiles.find(p => p.id === (id || profile()))) || null; }
+
+  /* Barra de contexto: aparece no topo de todos os ecrãs que dependem destas
+     escolhas, para o utilizador perceber sempre em nome de quem o portal fala. */
+  function contextBarHTML() {
+    const cls = gearClass(), pr = profile();
+    return `<div class="ph-ctx">
+      <div class="ph-ctx-grp" role="group" aria-label="Tipo de câmara">
+        <span class="ph-ctx-lbl">Câmara</span>
+        ${(_DB ? _DB.classes : []).map(c => `<button class="ph-ctx-btn${c.id === cls ? ' active' : ''}" data-class="${c.id}" title="${c.oneLine}">${c.icon} ${c.short}</button>`).join('')}
+      </div>
+      <div class="ph-ctx-grp" role="group" aria-label="Perfil de fotografia">
+        <span class="ph-ctx-lbl">Perfil</span>
+        ${(_DB ? _DB.profiles : []).map(p => `<button class="ph-ctx-btn${p.id === pr ? ' active' : ''}" data-profile="${p.id}" title="${p.tagline}">${p.icon} ${p.name}</button>`).join('')}
+        <button class="ph-ctx-info" data-profile-info aria-label="O que muda entre perfis">?</button>
+      </div>
     </div>`;
   }
-  function wireGearBar(panel, rerender) {
-    panel.querySelectorAll('.ph-gear-btn').forEach(b => b.addEventListener('click', () => {
-      if (b.dataset.gear === gear()) return;
-      setGear(b.dataset.gear);
-      rerender();
+  function wireContextBar(panel, rerender) {
+    panel.querySelectorAll('[data-class]').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.class === gearClass()) return;
+      setGearClass(b.dataset.class); rerender();
     }));
+    panel.querySelectorAll('[data-profile]').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.profile === profile()) return;
+      setProfile(b.dataset.profile); rerender();
+    }));
+    panel.querySelector('[data-profile-info]')?.addEventListener('click', openProfileModal);
+  }
+
+  /* Modal comparativo dos perfis — o utilizador tem de perceber o que muda
+     antes de escolher, senão o seletor é ruído. */
+  function openProfileModal() {
+    const cur = profile();
+    const modal = _openModal('ph-profile-modal', `<div class="ph-modal-box ph-prof-box" role="dialog" aria-modal="true" aria-label="Perfil de fotografia">
+      <div class="ph-modal-hdr"><span class="ph-modal-title">🎯 Perfil de fotografia</span><button class="ph-modal-close" aria-label="Fechar">✕</button></div>
+      <p class="ph-section-sub">O portal adapta formato, definições, checklists e edição ao teu objetivo. Não há um perfil certo — há o que corresponde ao que queres das tuas fotografias.</p>
+      <div class="ph-prof-grid">
+        ${(_DB ? _DB.profiles : []).map(p => `<button class="ph-prof-card${p.id === cur ? ' active' : ''}" data-pick="${p.id}">
+          <span class="ph-prof-top"><span class="ph-prof-ico">${p.icon}</span><span class="ph-prof-name">${p.name}</span>${p.id === cur ? '<span class="ph-prof-cur">atual</span>' : ''}</span>
+          <span class="ph-prof-tag">${p.tagline}</span>
+          <span class="ph-prof-fmt">${p.formatLine}</span>
+          <span class="ph-prof-who">${p.who}</span>
+          <span class="ph-prof-phil">${p.philosophy}</span>
+          <span class="ph-prof-cols">
+            <span class="ph-prof-col"><b>✅ A favor</b><ul>${p.pros.map(li).join('')}</ul></span>
+            <span class="ph-prof-col"><b>⚠️ Contra</b><ul>${p.cons.map(li).join('')}</ul></span>
+          </span>
+        </button>`).join('')}
+      </div>
+    </div>`);
+    modal.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
+      setProfile(b.dataset.pick);
+      modal.remove(); document.body.classList.remove('modal-open');
+      if (_activate) _activate(_curTab, _curArg);
+    }));
+  }
+
+  /* Conselho de formato composto: regra do perfil × exigência do género.
+     É aqui que "não assumir RAW" deixa de ser um slogan e passa a ser lógica. */
+  function formatAdvice(g) {
+    const p = profileDef(), lvl = (g.raw && g.raw.value) || 'medium';
+    const base = (_DB && _DB.rawAdvice && _DB.rawAdvice[lvl] && _DB.rawAdvice[lvl][p ? p.id : 'entusiasta']) || '';
+    return { label: p ? p.formatLine : 'JPG', text: base, why: (g.raw && g.raw.why) || '', level: lvl };
+  }
+  const RAW_BADGE = { high: { t: 'RAW compensa muito', c: 'hi' }, medium: { t: 'RAW opcional', c: 'md' }, low: { t: 'JPG chega', c: 'lo' } };
+
+  /* Traduz a classe de objetiva do género para o que ESTA câmara tem. */
+  function lensLine(g, clsId) {
+    const cls = clsId || gearClass();
+    const lc = (_DB && _DB.lensClasses.find(l => l.id === g.gear.lensClass)) || null;
+    const concrete = lc ? (lc[cls] || lc.eq) : '';
+    return { name: lc ? lc.name : '', eq: g.gear.focal, concrete };
   }
 
   // ── ferramentas: metadados p/ chips contextuais e âncoras ──
@@ -1208,7 +1351,7 @@ const PhotographyPage = (function () {
     Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildGeneros(panel)); return; }
       panel.innerHTML = `
-        ${gearBarHTML()}
+        ${contextBarHTML()}
         <button class="ph-field-cta" id="ph-goto-field">
           <span class="ph-field-cta-ico">⚡</span>
           <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Assistente de bolso: lente, definições e erros a evitar — em segundos</small></span>
@@ -1221,7 +1364,7 @@ const PhotographyPage = (function () {
         </div>
         <div id="ph-genre-grid">${genreGroupsHTML(db.genres)}</div>
         <p class="ph-section-sub ph-genre-empty" id="ph-genre-none" hidden>Nenhum género corresponde à procura.</p>`;
-      wireGearBar(panel, () => buildGeneros(panel));
+      wireContextBar(panel, () => buildGeneros(panel));
       panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/agora'));
       panel.querySelectorAll('[data-genre]').forEach(c =>
         c.addEventListener('click', () => Nav.go('photography/g/' + c.dataset.genre)));
@@ -1292,84 +1435,231 @@ const PhotographyPage = (function () {
         <span class="ph-comp-card-name">${name}</span></button>`;
     }).join('')}</div>`;
   }
-  function kitCardHTML(db, g, k) {
-    const kit = g[k];
-    const prof = db.profiles.find(p => p.id === k) || { icon: '', short: k };
-    if (!kit) return '';
-    return `<div class="ph-kit ph-kit-${k}">
-      <div class="ph-kit-head">${prof.icon} ${prof.short}</div>
-      <div class="ph-kit-lens">${kit.lens}</div>
-      <div class="ph-kit-why">${kit.why}</div>
-      ${kit.mode ? `<div class="ph-kit-mode">✨ ${kit.mode}</div>` : ''}
-      <div class="ph-kv-grid">${kit.settings.map(kvHTML).join('')}</div>
-      ${kit.af ? `<div class="ph-kit-af"><b>Foco:</b> ${kit.af}</div>` : ''}
-      ${kit.alt ? `<div class="ph-kit-alt"><b>Alternativa:</b> ${kit.alt}</div>` : ''}
-      ${kit.limits && kit.limits.length ? `<div class="ph-kit-lims"><b>⚠️ Limites reais</b><ul>${kit.limits.map(li).join('')}</ul></div>` : ''}
-      ${kit.tips && kit.tips.length ? `<ul class="ph-tip-list">${kit.tips.map(li).join('')}</ul>` : ''}
+  /* ══ PORTAL DE GÉNERO ═══════════════════════════════════════════════════
+     Antes era uma página única e muito longa. Agora é um portal com secções
+     navegáveis: no terreno consultas "Erros" ou "A cena" sem percorrer tudo.
+     As secções são as MESMAS em todos os géneros — a previsibilidade é o que
+     torna a consulta rápida. */
+  const PORTAL_SECS = [
+    { id: 'essencial',  icon: '🎯', label: 'Essencial' },
+    { id: 'cena',       icon: '👁️', label: 'A cena' },
+    { id: 'luz',        icon: '💡', label: 'Luz' },
+    { id: 'composicao', icon: '🖼️', label: 'Composição' },
+    { id: 'ideias',     icon: '💭', label: 'Ideias' },
+    { id: 'erros',      icon: '⚠️', label: 'Erros' },
+    { id: 'praticar',   icon: '🎓', label: 'Praticar' },
+    { id: 'edicao',     icon: '✏️', label: 'Edição' },
+  ];
+  let _portalSec = 'essencial';
+
+  /* Cartão de equipamento: focal equivalente primeiro (universal), depois a
+     tradução para a câmara escolhida, e só no fim o exemplo pessoal. */
+  function gearCardHTML(g) {
+    const cls = classDef(), ll = lensLine(g);
+    const note = (g.gear.byClass || {})[gearClass()];
+    const noteTxt = typeof note === 'string' ? note : (note && note.note) || '';
+    const phone = gearClass() === 'phone' ? (g.gear.byClass || {}).phone : null;
+    const pmode = phone && typeof phone === 'object' ? phone.mode : null;
+    return `<div class="ph-gear-card">
+      <div class="ph-gear-hd">
+        <span class="ph-gear-cls">${cls ? cls.icon + ' ' + cls.name : ''}</span>
+        <span class="ph-gear-lensname">${ll.name}</span>
+      </div>
+      <div class="ph-gear-focal">${ll.eq}</div>
+      <div class="ph-gear-concrete">${cls ? cls.icon : ''} No teu equipamento: <b>${ll.concrete}</b></div>
+      <p class="ph-gear-why">${g.gear.why}</p>
+      ${pmode ? `<div class="ph-kit-mode">✨ ${pmode}</div>` : ''}
+      ${noteTxt ? `<div class="ph-gear-note">${noteTxt}</div>` : ''}
+      <div class="ph-kv-grid">${(g.gear.settings || []).map(kvHTML).join('')}</div>
+      ${g.gear.af ? `<div class="ph-kit-af"><b>Foco:</b> ${g.gear.af}</div>` : ''}
+      ${g.gear.alt ? `<div class="ph-kit-alt"><b>Alternativa:</b> ${g.gear.alt}</div>` : ''}
+      ${(g.gear.limits || []).length ? `<div class="ph-kit-lims"><b>⚠️ Limites reais</b><ul>${g.gear.limits.map(li).join('')}</ul></div>` : ''}
+      ${g.gear.mine ? `<div class="ph-gear-mine"><b>🎒 No meu equipamento</b> ${g.gear.mine}</div>` : ''}
     </div>`;
   }
+
+  /* Bloco de formato — a materialização visível do perfil escolhido. */
+  function formatBlockHTML(g) {
+    const a = formatAdvice(g), b = RAW_BADGE[a.level] || RAW_BADGE.medium, p = profileDef();
+    return `<div class="ph-fmt ph-fmt-${b.c}">
+      <div class="ph-fmt-hd">
+        <span class="ph-fmt-lbl">${p ? p.icon : ''} ${a.label}</span>
+        <span class="ph-fmt-badge ${b.c}">${b.t}</span>
+      </div>
+      <p class="ph-fmt-txt">${a.text}</p>
+      ${a.why ? `<p class="ph-fmt-why"><b>Porquê neste género:</b> ${a.why}.</p>` : ''}
+    </div>`;
+  }
+
+  /* Módulo de ofício + aplicação ao género. O princípio universal vive em
+     craft.json e ensina-se uma vez; o género só acrescenta o caso concreto. */
+  function craftBlockHTML(mod, applied) {
+    if (!mod) return '';
+    const vis = (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(mod.visual))
+      ? `<div class="ph-craft-vis">${PhotoIllus.svg(mod.visual)}</div>` : '';
+    return `<details class="ph-craft" data-craft="${mod.id}">
+      <summary class="ph-craft-sum">
+        <span class="ph-craft-ico">${mod.icon}</span>
+        <span class="ph-craft-ttl">${mod.name}</span>
+        <span class="ph-craft-applied">${applied || ''}</span>
+      </summary>
+      <div class="ph-craft-body">
+        ${vis}
+        <p class="ph-craft-prin">${mod.principle}</p>
+        <div class="ph-craft-opts">${(mod.options || []).map(o => `<div class="ph-craft-opt">
+          <b>${o.label}</b><span class="ph-craft-eff">${o.effect}</span><span class="ph-craft-when">${o.when}</span>
+        </div>`).join('')}</div>
+        ${(mod.mistakes || []).length ? `<div class="ph-craft-mist"><b>⚠️ Erros comuns</b><ul>${mod.mistakes.map(li).join('')}</ul></div>` : ''}
+        ${mod.drill ? `<div class="ph-craft-drill"><b>🎓 Exercício</b> ${mod.drill}</div>` : ''}
+      </div>
+    </details>`;
+  }
+  const craftMod = id => (_DB && _DB.craft.find(m => m.id === id)) || null;
+
+  function sceneSectionHTML(g) {
+    const s = g.scene || {};
+    return `
+      <div class="ph-scn-grid2">
+        <div class="ph-info-card"><b>🔎 O que procurar</b><ul>${(s.look || []).map(li).join('')}</ul></div>
+        <div class="ph-info-card"><b>📍 Onde te colocares</b><p>${s.position || ''}</p></div>
+      </div>
+      <div class="ph-craft-list">
+        ${craftBlockHTML(craftMod('height'), s.height)}
+        ${craftBlockHTML(craftMod('angle'), (s.angles || []).join(' · '))}
+        ${craftBlockHTML(craftMod('distance'), s.approach)}
+        ${craftBlockHTML(craftMod('foreground'), (s.foreground || []).join(' · '))}
+        ${craftBlockHTML(craftMod('background'), '')}
+        ${craftBlockHTML(craftMod('simplify'), '')}
+      </div>`;
+  }
+
+  function lightSectionHTML(g) {
+    const lm = craftMod('lightdir');
+    return `
+      <div class="ph-light-box">${g.light}</div>
+      <div class="ph-lc-grid">${(g.lightConditions || []).map(l => `<div class="ph-lc">
+        <span class="ph-lc-when">${l.when}</span><span class="ph-lc-what">${l.what}</span>
+      </div>`).join('')}</div>
+      <div class="ph-craft-list">${craftBlockHTML(lm, '')}${craftBlockHTML(craftMod('moment'), '')}</div>`;
+  }
+
+  function ideasSectionHTML(g) {
+    return `
+      <div class="ph-info-card ph-ideas"><b>💭 Ideias para experimentar aqui</b><ul>${(g.ideas || []).map(li).join('')}</ul></div>
+      <div class="ph-info-card ph-tricks"><b>🎩 Truques de quem já lá esteve</b><ul>${(g.tricks || []).map(li).join('')}</ul></div>`;
+  }
+
+  function errorsSectionHTML(g) {
+    return `
+      <div class="ph-mist-list">${(g.mistakes || []).map(m => `<div class="ph-mist">
+        <div class="ph-mist-err"><span class="ph-mist-tag">Erro</span>${m.err}</div>
+        <div class="ph-mist-fix"><span class="ph-mist-tag ok">Correção</span>${m.fix}</div>
+      </div>`).join('')}</div>
+      <div class="ph-scn-cols">
+        <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${(g.dos || []).map(li).join('')}</ul></section>
+        <section class="ph-scn-sec"><h4>⛔ Evitar</h4><ul class="ph-dont">${(g.donts || []).map(li).join('')}</ul></section>
+      </div>`;
+  }
+
+  function practiceSectionHTML(g) {
+    return `
+      <div class="ph-info-card"><b>🎓 Objetivos para praticar</b>
+        <p class="ph-section-sub">Exercícios concretos para este género. Fazer um de cada vez ensina mais do que ler tudo.</p>
+        <ul class="ph-drills">${(g.drills || []).map(li).join('')}</ul></div>
+      <section class="ph-scn-sec"><h4>☑️ Checklist antes de sair</h4>
+        <ul class="ph-check">${(g.checklist || []).map(c => `<li><label><input type="checkbox"><span>${c}</span></label></li>`).join('')}</ul>
+      </section>
+      ${(g.tools || []).length ? `<section class="ph-scn-sec"><h4>🧮 Ferramentas para este género</h4>
+        <div class="ph-chips">${g.tools.map(tid => TOOL_META[tid] ? `<button class="ph-chip ph-chip-link" data-tool="${tid}">🧮 ${TOOL_META[tid].label}</button>` : '').join('')}</div>
+      </section>` : ''}`;
+  }
+
+  function editSectionHTML(g) {
+    const p = profileDef(), depth = p ? p.editDepth : 'selective';
+    const goals = ((_EDIT && _EDIT.genreGoals && _EDIT.genreGoals[g.id]) || []);
+    const intro = depth === 'minimal'
+      ? `<div class="ph-fmt ph-fmt-lo"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>`
+      : `<div class="ph-scn-blurb">${g.edit.intro}</div>${p ? `<div class="ph-fmt ph-fmt-md"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>` : ''}`;
+    return `${intro}
+      ${depth === 'minimal' ? '' : `<div class="ph-goal-list">${goals.map(oid => {
+        const o = objById(oid);
+        return o ? `<button class="ph-goal-row" data-goal="${oid}"><span class="ph-goal-name">✓ ${o.name}</span><span class="ph-goal-why">${o.why}</span><span class="ph-goal-go">→</span></button>` : '';
+      }).join('') || '<p class="ph-section-sub">—</p>'}</div>`}`;
+  }
+
+  function portalSectionHTML(g, sec) {
+    if (sec === 'essencial') return `${formatBlockHTML(g)}${gearCardHTML(g)}`;
+    if (sec === 'cena') return sceneSectionHTML(g);
+    if (sec === 'luz') return lightSectionHTML(g);
+    if (sec === 'composicao') return `<p class="ph-section-sub">As composições que melhor funcionam neste género. Toca para ver o exemplo e a grelha.</p>${compCardsHTML(g.composition, g.id)}`;
+    if (sec === 'ideias') return ideasSectionHTML(g);
+    if (sec === 'erros') return errorsSectionHTML(g);
+    if (sec === 'praticar') return practiceSectionHTML(g);
+    if (sec === 'edicao') return editSectionHTML(g);
+    return '';
+  }
+
   function renderPortal(panel, id) {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
     Promise.all([loadDB(), loadAssets(), loadEdit()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
       const g = db.genres.find(x => x.id === id);
       if (!g) { Nav.go('photography'); return; }
-      const kits = gear() === 'all' ? ['canon', 's23'] : [gear()];
+      if (!PORTAL_SECS.some(s => s.id === _portalSec)) _portalSec = 'essencial';
+
       panel.innerHTML = `
-        <div class="ph-portal-top">
-          <button class="ph-back" id="ph-back">← Géneros</button>
-          ${gearBarHTML()}
-        </div>
+        <div class="ph-portal-top"><button class="ph-back" id="ph-back">← Géneros</button></div>
         <div class="ph-portal-head">
           ${genreIcoHTML(g, 'ph-portal-ico')}
           <div><h2 class="ph-portal-name">${g.name}</h2><p class="ph-portal-goal">${g.goal}</p></div>
         </div>
-        <div class="ph-kit-wrap${kits.length > 1 ? ' both' : ''}">${kits.map(k => kitCardHTML(db, g, k)).join('')}</div>
-        <section class="ph-scn-sec"><h4>💡 Luz</h4><div class="ph-light-box">${g.light}</div></section>
-        <section class="ph-scn-sec"><h4>🖼️ Composição</h4>${compCardsHTML(g.composition, g.id)}</section>
-        <div class="ph-scn-cols">
-          <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${g.dos.map(li).join('')}</ul></section>
-          <section class="ph-scn-sec"><h4>⛔ Evitar</h4><ul class="ph-dont">${g.donts.map(li).join('')}</ul></section>
+        ${contextBarHTML()}
+        <div class="ph-secnav" role="tablist" aria-label="Secções do género">
+          ${PORTAL_SECS.map(s => `<button class="ph-secnav-btn${s.id === _portalSec ? ' active' : ''}" role="tab" aria-selected="${s.id === _portalSec}" data-sec="${s.id}">${s.icon} ${s.label}</button>`).join('')}
         </div>
-        ${g.portrait ? portraitExtrasHTML() : ''}
-        <section class="ph-scn-sec"><h4>☑️ Checklist antes de sair</h4>
-          <ul class="ph-check">${g.checklist.map(c => `<li><label><input type="checkbox"><span>${c}</span></label></li>`).join('')}</ul>
-        </section>
-        <section class="ph-scn-sec"><h4>✏️ Objetivos de edição</h4>
-          <div class="ph-scn-blurb">${g.edit.intro}</div>
-          <div class="ph-goal-list">${(((_EDIT && _EDIT.genreGoals && _EDIT.genreGoals[g.id]) || []).map(oid => {
-            const o = objById(oid); return o ? `<button class="ph-goal-row" data-goal="${oid}"><span class="ph-goal-name">✓ ${o.name}</span><span class="ph-goal-why">${o.why}</span><span class="ph-goal-go">→</span></button>` : '';
-          }).join('')) || '<p class="ph-section-sub">—</p>'}</div>
-        </section>
-        ${(g.tools || []).length ? `<section class="ph-scn-sec"><h4>🧮 Ferramentas para este género</h4>
-          <div class="ph-chips">${g.tools.map(tid => TOOL_META[tid] ? `<button class="ph-chip ph-chip-link" data-tool="${tid}">🧮 ${TOOL_META[tid].label}</button>` : '').join('')}</div>
-        </section>` : ''}
+        <div class="ph-secbody" id="ph-secbody">${portalSectionHTML(g, _portalSec)}</div>
         <button class="ph-field-cta small" data-agora="${g.id}">
           <span class="ph-field-cta-ico">⚡</span>
           <span class="ph-field-cta-txt"><b>Modo terreno: ${g.name}</b><small>Só o essencial, para consultar com a câmara na mão</small></span>
           <span class="ph-field-cta-go">→</span>
         </button>`;
-      panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
-      wireGearBar(panel, () => renderPortal(panel, id));
-      panel.querySelectorAll('[data-comp]').forEach(ch => {
-        const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
-        if (!comp) return;
-        const cv = ch.querySelector('.ph-comp-card-cv'); if (cv) requestAnimationFrame(() => drawCompOverlay(cv, comp));
-        ch.addEventListener('click', () => openCompModal(comp, g.id));
-      });
-      panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => openEditModal({ level: 'obj', id: ch.dataset.goal })));
-      panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
-        _pendingCalc = ch.dataset.tool;
-        Nav.go('photography/ferramentas');
+
+      const body = panel.querySelector('#ph-secbody');
+      const wireBody = () => {
+        panel.querySelectorAll('[data-comp]').forEach(ch => {
+          const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
+          if (!comp) return;
+          const cv = ch.querySelector('.ph-comp-card-cv'); if (cv) requestAnimationFrame(() => drawCompOverlay(cv, comp));
+          ch.addEventListener('click', () => openCompModal(comp, g.id));
+        });
+        panel.querySelectorAll('[data-goal]').forEach(ch => ch.addEventListener('click', () => openEditModal({ level: 'obj', id: ch.dataset.goal })));
+        panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
+          _pendingCalc = ch.dataset.tool; Nav.go('photography/ferramentas');
+        }));
+        if (g.portrait && _portalSec === 'cena') { wirePoses(panel); wireCropPhoto(panel); if (typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel); }
+      };
+      wireBody();
+
+      panel.querySelectorAll('[data-sec]').forEach(b => b.addEventListener('click', () => {
+        _portalSec = b.dataset.sec;
+        panel.querySelectorAll('[data-sec]').forEach(x => {
+          const on = x.dataset.sec === _portalSec;
+          x.classList.toggle('active', on); x.setAttribute('aria-selected', on);
+        });
+        body.innerHTML = portalSectionHTML(g, _portalSec);
+        wireBody();
+        b.scrollIntoView({ inline: 'center', block: 'nearest' });
       }));
+      panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
+      wireContextBar(panel, () => renderPortal(panel, id));
       panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
-      if (g.portrait) { wirePoses(panel); wireCropPhoto(panel); if (typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel); }
       window.scrollTo({ top: 0 });
     });
   }
 
   // ── modo No Terreno (assistente de bolso) ──
-  let _fieldGear = null;   // escolha efémera; não força quem prefere "Ambos"
+  /* Cartão de consulta rápida: o mínimo indispensável com a câmara na mão.
+     Adapta-se à classe de câmara e ao perfil, tal como o portal completo. */
   function buildAgora(panel, genreId) {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
     loadDB().then(db => {
@@ -1379,37 +1669,36 @@ const PhotographyPage = (function () {
       if (!db.genres.some(g => g.id === id)) id = db.genres[0].id;
       try { localStorage.setItem('ph-field-genre', id); } catch (_) {}
       const g = db.genres.find(x => x.id === id);
-      if (!_fieldGear) _fieldGear = gear() === 'all' ? 'canon' : gear();
-      const kit = g[_fieldGear];
+      const ll = lensLine(g), fa = formatAdvice(g), badge = RAW_BADGE[fa.level] || RAW_BADGE.medium;
       const firstLight = g.light.split(/(?<=\.)\s/)[0] || g.light;
+      const s = g.scene || {};
       panel.innerHTML = `
         <div class="ph-field-pills" role="tablist" aria-label="Género">
           ${db.genres.map(x => `<button class="ph-field-pill${x.id === id ? ' active' : ''}" data-fg="${x.id}" role="tab" aria-selected="${x.id === id}">${x.icon} ${x.name}</button>`).join('')}
         </div>
+        ${contextBarHTML()}
         <div class="ph-field-card">
           <div class="ph-field-top">
             <div class="ph-field-title">${g.icon} ${g.name}</div>
-            <div class="ph-field-gear" role="group" aria-label="Equipamento">
-              ${GEAR_OPTS.filter(o => o.id !== 'all').map(o => `<button class="ph-gear-btn${o.id === _fieldGear ? ' active' : ''}" data-fgear="${o.id}">${o.label}</button>`).join('')}
-            </div>
+            <span class="ph-fmt-badge ${badge.c}" title="${fa.label}">${(profileDef() || {}).format || ''} · ${badge.t}</span>
           </div>
-          <div class="ph-field-lens">${kit.lens}</div>
-          ${kit.mode ? `<div class="ph-field-mode">✨ ${kit.mode}</div>` : ''}
-          <div class="ph-kv-grid ph-field-kv">${kit.settings.map(kvHTML).join('')}</div>
+          <div class="ph-field-lens">${ll.concrete}</div>
+          <div class="ph-field-mode">${ll.name} · ${ll.eq}</div>
+          <div class="ph-kv-grid ph-field-kv">${(g.gear.settings || []).map(kvHTML).join('')}</div>
+          ${s.height ? `<div class="ph-field-row">📏 <b>Altura:</b> ${s.height}</div>` : ''}
+          ${s.position ? `<div class="ph-field-row">📍 <b>Posição:</b> ${s.position}</div>` : ''}
+          <div class="ph-field-row">🔎 <b>Procura:</b> ${(s.look || []).slice(0, 2).join(' · ')}</div>
           <div class="ph-field-row">🖼️ <b>Compõe:</b> ${g.composition.slice(0, 2).join(' · ')}</div>
           <div class="ph-field-row">💡 ${firstLight}</div>
-          <div class="ph-field-avoid"><b>⛔ Evita:</b><ul>${g.donts.slice(0, 3).map(li).join('')}</ul></div>
-          <div class="ph-field-row ph-field-edit">✏️ <b>Depois:</b> ${g.edit.intro}</div>
+          <div class="ph-field-avoid"><b>⛔ Evita:</b><ul>${(g.mistakes || []).slice(0, 3).map(m => li(m.err)).join('')}</ul></div>
+          ${(g.tricks || []).length ? `<div class="ph-field-row ph-field-trick">🎩 <b>Truque:</b> ${g.tricks[0]}</div>` : ''}
           <button class="ph-back ph-field-more" data-portal="${id}">Portal completo de ${g.name} →</button>
         </div>`;
       panel.querySelectorAll('[data-fg]').forEach(p => p.addEventListener('click', () => {
         try { history.replaceState(null, '', '#photography/agora/' + p.dataset.fg); } catch (_) {}
         buildAgora(panel, p.dataset.fg);
       }));
-      panel.querySelectorAll('[data-fgear]').forEach(b => b.addEventListener('click', () => {
-        _fieldGear = b.dataset.fgear;
-        buildAgora(panel, id);
-      }));
+      wireContextBar(panel, () => buildAgora(panel, id));
       panel.querySelector('[data-portal]').addEventListener('click', () => Nav.go('photography/g/' + id));
       panel.querySelector('.ph-field-pill.active')?.scrollIntoView({ inline: 'center', block: 'nearest' });
     });
@@ -1494,6 +1783,97 @@ const PhotographyPage = (function () {
     });
     return { grid, close };
   }
+  /* ══ EQUIPAMENTO ════════════════════════════════════════════════════════
+     Guia intemporal, deliberadamente sem marcas nem modelos. Cada item
+     responde sempre às mesmas perguntas — que problema resolve, quando usar,
+     quando NÃO vale a pena, que erros os iniciantes cometem — para que a
+     leitura seja previsível. Usa a mesma grelha expansível de Aprender. */
+  let _eqCat = null;
+  /* Nem todo o item tem esquema próprio: vários partilham o mesmo princípio
+     (todo o flash existe para tornar a fonte maior; qualquer apoio resolve
+     tremido). O alias evita desenhar dez vezes a mesma lição. */
+  const EQ_ILLUS = {
+    phone: 'eq-sensors', apsc: 'eq-sensors', ff: 'eq-sensors', mft: 'eq-sensors',
+    compact: 'eq-sensors', bridge: 'eq-focal-fov',
+    uwa: 'eq-focal-fov', wide: 'eq-focal-fov', normal: 'eq-focal-fov',
+    portrait: 'eq-focal-fov', tele: 'eq-focal-fov', supertele: 'eq-focal-fov', macro: 'eq-focal-fov',
+    cpl: 'eq-cpl', nd: 'eq-nd', ndvar: 'eq-nd', ndgrad: 'eq-nd', uv: 'eq-cpl',
+    tripod: 'eq-tripod', monopod: 'eq-tripod', remote: 'eq-tripod', ois: 'eq-tripod', ibis: 'eq-tripod',
+    popup: 'eq-flash', speedlight: 'eq-flash', diffuser: 'eq-flash', reflector: 'eq-flash', continuous: 'eq-flash',
+    cards: 'eq-bag', batteries: 'eq-bag', bag: 'eq-bag', cleaning: 'eq-bag',
+    'light-tools': 'eq-bag', strap: 'eq-bag', backup: 'eq-bag',
+    'phone-lenses': 'eq-focal-fov', 'phone-zoom': 'eq-zoom', 'phone-hdr': 'eq-sensors',
+    'phone-pro': 'eq-zoom', 'phone-night': 'eq-tripod',
+  };
+  const eqIllus = it => {
+    const id = EQ_ILLUS[it.id] || ('eq-' + it.id);
+    return (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(id)) ? id : null;
+  };
+  function eqDetailHTML(it) {
+    const sec = (t, cls, arr) => (arr && arr.length)
+      ? `<div class="ph-eq-sec ${cls}"><b>${t}</b><ul>${arr.map(li).join('')}</ul></div>` : '';
+    const vid = eqIllus(it);
+    const vis = vid ? `<div class="ph-detail-art">${PhotoIllus.svg(vid)}</div>` : '';
+    return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+      <div class="ph-detail-head"><span class="ph-detail-ico">${it.icon || '📷'}</span>
+        <h3 class="ph-detail-title">${it.name}</h3><span class="ph-eq-tag">${it.tag || ''}</span></div>
+      ${vis}
+      <div class="ph-detail-body">
+        <div class="ph-eq-what"><b>O que é</b><p>${it.what}</p></div>
+        <div class="ph-eq-why"><b>Que problema resolve</b><p>${it.why}</p></div>
+        ${it.effect ? `<div class="ph-eq-effect"><b>Efeito na fotografia</b><p>${it.effect}</p></div>` : ''}
+        <div class="ph-eq-cols">
+          ${sec('✅ Quando usar', 'ok', it.when)}
+          ${sec('⛔ Quando não vale a pena', 'no', it.notWhen)}
+        </div>
+        ${sec('⚠️ Erros de iniciante', 'mist', it.mistakes)}
+        ${sec('💡 Na prática', 'tips', it.tips)}
+      </div>`;
+  }
+  function buildEquipamento(panel, sub) {
+    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+      if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildEquipamento(panel, sub)); return; }
+      const cats = db.equipment;
+      let cat = cats.find(c => c.id === (sub || _eqCat)) || cats[0];
+      _eqCat = cat.id;
+      panel.innerHTML = `
+        <div class="ph-section-title">🎒 Equipamento</div>
+        <p class="ph-section-sub">Conceitos que continuam válidos daqui a dez anos, sem marcas nem modelos. Cada item explica o problema que resolve — e quando não vale a pena.</p>
+        <div class="ph-secnav" role="tablist" aria-label="Categorias de equipamento">
+          ${cats.map(c => `<button class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" role="tab" aria-selected="${c.id === cat.id}" data-eqcat="${c.id}">${c.icon} ${c.name}</button>`).join('')}
+        </div>
+        <p class="ph-eq-intro">${cat.intro}</p>
+        ${(typeof PhotoIllus !== 'undefined' && PhotoIllus.has(cat.visual))
+          ? `<div class="ph-eq-hero">${PhotoIllus.svg(cat.visual)}</div>` : ''}
+        <div id="ph-eq-body"></div>
+        <div class="ph-eq-mine" id="ph-eq-mine"></div>`;
+      const body = panel.querySelector('#ph-eq-body');
+      expandableGrid(body, cat.items, {
+        thumb: it => { const v = eqIllus(it); return v ? `<span class="ph-vis ph-learn-art">${PhotoIllus.svg(v)}</span>` : ''; },
+        blurb: it => it.tag || '',
+        detail: eqDetailHTML,
+      });
+      // O equipamento pessoal fica no fim e claramente separado: é exemplo, não norma.
+      if (cat.id === 'cameras' && db.mine) {
+        panel.querySelector('#ph-eq-mine').innerHTML = `
+          <div class="ph-section-title" style="margin-top:1.5rem">🎒 ${db.mine.label}</div>
+          <p class="ph-section-sub">O equipamento com que este portal é escrito. Aparece como exemplo concreto — as recomendações acima aplicam-se a qualquer câmara.</p>
+          <div class="ph-mine-grid">${db.mine.bodies.map(b => `<div class="ph-mine-card">
+            <div class="ph-mine-hd">${b.icon} ${b.name} <span class="ph-eq-tag">${(db.classes.find(c => c.id === b.class) || {}).name || ''}</span></div>
+            <p class="ph-mine-body">${b.body}</p>
+            <ul class="ph-mine-lenses">${b.lenses.map(l => `<li><b>${l.name}</b> <span class="ph-mine-eq">${l.eq}</span><span class="ph-mine-tr">${l.traits}</span></li>`).join('')}</ul>
+            <ul class="ph-tip-list">${b.notes.map(li).join('')}</ul>
+          </div>`).join('')}</div>`;
+      }
+      panel.querySelectorAll('[data-eqcat]').forEach(b => b.addEventListener('click', () => {
+        _eqCat = b.dataset.eqcat;
+        buildEquipamento(panel, _eqCat);
+      }));
+      window.scrollTo({ top: 0 });
+    });
+  }
+
   const APR_HEAD = `<div class="ph-section-title">📖 Fundamentos</div>
     <p class="ph-section-sub">O conhecimento transversal a todos os géneros. Cada conceito abre com uma ilustração — percebe a ideia antes de ler.</p>`;
   function buildFundamentos(box) {
@@ -1585,12 +1965,13 @@ const PhotographyPage = (function () {
   const PH_TABS = [
     { id: 'generos',     label: '🎯 Géneros' },
     { id: 'agora',       label: '⚡ No Terreno' },
+    { id: 'equipamento', label: '🎒 Equipamento' },
     { id: 'aprender',    label: '📚 Aprender' },
     { id: 'ferramentas', label: '🧮 Ferramentas' },
   ];
-  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', equipamento: 'photography/equipamento', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
 
-  let _activate = null;
+  let _activate = null, _curTab = 'generos', _curArg = null;
 
   function show(sub) {
     const view = document.getElementById('view-photography');
@@ -1604,7 +1985,7 @@ const PhotographyPage = (function () {
             <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
             <div class="ph-titles">
               <h1 class="ph-title">Fotografia</h1>
-              <p class="ph-sub">Portais por género, assistente de terreno, aprendizagem e ferramentas · Canon M50 II & Galaxy S23+</p>
+              <p class="ph-sub">Assistente de fotografia: 28 géneros, guia de equipamento, aprendizagem e ferramentas — adaptado à tua câmara e ao teu perfil</p>
             </div>
           </div>
           <div class="ph-nav seg" role="tablist" aria-label="Secções de fotografia">
@@ -1614,6 +1995,7 @@ const PhotographyPage = (function () {
         </div>`;
 
       _activate = (id, arg) => {
+        _curTab = id; _curArg = arg || null;
         view.querySelectorAll('.ph-nav-btn').forEach(b => {
           const on = b.dataset.tab === id;
           b.classList.toggle('active', on);
@@ -1623,6 +2005,7 @@ const PhotographyPage = (function () {
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
         else if (id === 'agora') buildAgora(panel, arg);
+        else if (id === 'equipamento') buildEquipamento(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
         else buildFerramentas(panel);
       };
@@ -1639,6 +2022,7 @@ const PhotographyPage = (function () {
       if (a === 'g' && rest)                 { tab = 'generos'; arg = rest; }
       else if (a === 'agora')                { tab = 'agora'; arg = rest || null; }
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
+      else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
       else if (a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
       else if (a === 'cenarios')             tab = 'generos';
       else if (a === 'composicao' || a === 'edicao' || a === 'cores') { tab = 'aprender'; arg = a; }

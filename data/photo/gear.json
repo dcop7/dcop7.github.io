@@ -1,39 +1,168 @@
 {
-  "profiles": [
+  "_doc": "Modelo de equipamento por CLASSE, não por modelo. A linguagem comum do portal é a distância focal EQUIVALENTE (35mm) — é a única que se traduz entre sistemas e não envelhece. Cada género declara a focal equivalente e a classe de objetiva; este ficheiro traduz isso para o que cada tipo de câmara tem na prática. 'mine' guarda o equipamento pessoal, usado como exemplo concreto e nunca como base do conteúdo.",
+  "default": "apsc",
+  "classes": [
     {
-      "id": "canon",
-      "icon": "📷",
-      "name": "Canon M50 Mark II",
-      "short": "M50 II",
-      "body": "APS-C 24MP (crop 1.6×) · Dual Pixel AF com deteção de olhos (pessoas) · até 10 fps · sem IBIS · obturador máx. 1/4000 · ISO útil até ~3200–6400",
-      "lenses": [
-        { "id": "kit1545", "name": "EF-M 15-45mm f/3.5-6.3 IS STM", "eq": "24–72mm eq", "traits": "estabilizada · versátil · rosca 49mm" },
-        { "id": "prime22", "name": "EF-M 22mm f/2 STM", "eq": "35mm eq", "traits": "luminosa · panqueca discreta · sem IS · rosca 43mm" },
-        { "id": "tele55200", "name": "EF-M 55-200mm f/4.5-6.3 IS STM", "eq": "88–320mm eq", "traits": "estabilizada · alcance · escura no lado longo · rosca 52mm" },
-        { "id": "ef50", "name": "EF 50mm f/1.8 STM (adaptador Viltrox)", "eq": "80mm eq", "traits": "muito luminosa · AF funcional via adaptador · sem IS" }
+      "id": "phone",
+      "icon": "📱",
+      "name": "Smartphone",
+      "short": "Telemóvel",
+      "crop": "~7×",
+      "tag": "sensor pequeno · software forte",
+      "oneLine": "Compensa o sensor pequeno com fotografia computacional. É a câmara que tens sempre.",
+      "focals": "13mm (0.6×) · 24mm (1×) · 70mm (3×) equivalentes",
+      "strengths": [
+        "HDR multi-frame melhor que qualquer disparo único",
+        "Modo noturno empilha segundos de luz",
+        "Discreto — ninguém repara em ti",
+        "Sempre contigo, sempre pronto"
       ],
-      "notes": [
-        "Sem estabilização no corpo: com a 22mm e a 50mm respeita a regra 1/(focal equivalente).",
-        "Eye AF só deteta pessoas — para animais usa zona AF pequena sobre o olho.",
-        "Em tripé, desliga o IS da objetiva e usa temporizador de 2s ou a app Canon."
-      ]
+      "limits": [
+        "Alcance real limitado ao módulo tele; acima disso é corte digital",
+        "Desfoque de fundo é simulado e falha em cabelos e folhagem",
+        "Sujeitos em movimento com pouca luz ficam borrados",
+        "Pouca margem de recuperação, mesmo em RAW"
+      ],
+      "settingsNote": "Sem controlo direto de diafragma. Onde este portal indicar uma abertura, no telemóvel traduz-se em escolher o módulo certo e afastar o fundo.",
+      "howTo": {
+        "expose": "Toca no ecrã sobre a zona que interessa e arrasta para cima/baixo para corrigir a exposição.",
+        "lock": "Toque longo bloqueia foco e exposição — é o teu 'manual' escondido.",
+        "manual": "Modo Pro/Expert para ISO, velocidade (até ~30 s), foco manual e RAW."
+      }
     },
     {
-      "id": "s23",
-      "icon": "📱",
-      "name": "Samsung Galaxy S23+",
-      "short": "S23+",
-      "body": "Ultra grande angular 13mm eq f/2.2 (12MP) · Principal 23mm eq f/1.8 (50MP→12MP) · Tele 3× ~70mm eq f/2.4 (10MP) · OIS na principal e tele",
-      "lenses": [
-        { "id": "uw", "name": "Ultra grande angular (0.6×)", "eq": "13mm eq", "traits": "drama e amplitude · distorce nas bordas · mais fraca em luz baixa" },
-        { "id": "main", "name": "Principal (1×)", "eq": "23mm eq", "traits": "o melhor sensor dos três · 50MP para recortar · OIS" },
-        { "id": "tele", "name": "Teleobjetiva (3×)", "eq": "~70mm eq", "traits": "compressão de retrato · 10MP · evita-a em luz muito fraca" }
+      "id": "apsc",
+      "icon": "📷",
+      "name": "APS-C",
+      "short": "APS-C",
+      "crop": "1.5–1.6×",
+      "tag": "o meio-termo · melhor relação qualidade/preço",
+      "oneLine": "Qualidade a sério sem o peso nem o preço do full frame. O corte dá alcance extra de graça.",
+      "focals": "Multiplica a focal marcada por 1.5× ou 1.6× para saberes a equivalente",
+      "strengths": [
+        "Alcance extra em teleobjetiva (bom para desporto e animais)",
+        "Corpos e objetivas mais pequenos e mais baratos",
+        "Profundidade de campo generosa ajuda em macro e paisagem",
+        "Qualidade mais que suficiente para impressão normal"
       ],
-      "notes": [
-        "Zoom acima de 3× é digital: até ~10× aguenta-se, além disso é \"pintura\" — aproxima-te em vez de ampliares.",
-        "Modo Pro / Expert RAW dá controlo manual (ISO, velocidade até 30s, RAW DNG) e multi-frame de alta gama dinâmica.",
-        "A fotografia computacional (Noite, Retrato, HDR) é a tua vantagem — usa-a em vez de lutar contra o sensor pequeno."
-      ]
+      "limits": [
+        "Cerca de um diafragma atrás do full frame em ruído",
+        "Desfoque de fundo exige objetivas mais luminosas para igualar",
+        "Grande angular verdadeiro exige objetivas dedicadas (uma 16mm só dá 24mm eq)"
+      ],
+      "settingsNote": "Para obteres o enquadramento equivalente indicado, divide por 1.5–1.6. Ex.: 35mm eq ≈ objetiva de 23mm; 85mm eq ≈ objetiva de 56mm.",
+      "howTo": {
+        "expose": "Modo Av/A para controlar profundidade de campo; Tv/S quando o movimento manda.",
+        "lock": "Bloqueio AE/AF ou modo M quando a luz da cena for estável.",
+        "manual": "Modo M com ISO automático limitado é o melhor dos dois mundos."
+      }
+    },
+    {
+      "id": "ff",
+      "icon": "🎞️",
+      "name": "Full Frame",
+      "short": "Full Frame",
+      "crop": "1×",
+      "tag": "a referência das focais equivalentes",
+      "oneLine": "Mais área de sensor: menos ruído com pouca luz e separação de fundo mais fácil.",
+      "focals": "A focal marcada É a equivalente — não há contas a fazer",
+      "strengths": [
+        "Melhor desempenho a ISO alto",
+        "Desfoque de fundo mais fácil na mesma focal e diafragma",
+        "Mais gama dinâmica para recuperar sombras e altas luzes",
+        "Grande angular verdadeiro sem objetivas especiais"
+      ],
+      "limits": [
+        "Corpos e objetivas maiores, mais pesados e mais caros",
+        "Perde o alcance extra que o corte dá em tele",
+        "Profundidade de campo curta pode ser um problema em macro e paisagem",
+        "Exige objetivas boas para justificar o sensor"
+      ],
+      "settingsNote": "As focais indicadas neste portal aplicam-se diretamente, sem conversão.",
+      "howTo": {
+        "expose": "Modo Av/A na maioria dos casos; vigia o histograma em vez do ecrã.",
+        "lock": "Modo M com ISO automático dá controlo total sem perder agilidade.",
+        "manual": "Aproveita a gama dinâmica: expõe à direita sem estourar as altas luzes."
+      }
+    },
+    {
+      "id": "mft",
+      "icon": "🔲",
+      "name": "Micro 4/3",
+      "short": "MFT",
+      "crop": "2×",
+      "tag": "leve e muito estabilizado",
+      "oneLine": "O sistema mais compacto com objetivas permutáveis. Estabilização no corpo costuma ser excelente.",
+      "focals": "Multiplica a focal marcada por 2× para a equivalente",
+      "strengths": [
+        "Conjunto muito mais leve e pequeno",
+        "Estabilização no corpo entre as melhores do mercado",
+        "Super-teleobjetivas acessíveis (uma 300mm dá 600mm eq)",
+        "Profundidade de campo generosa é uma vantagem em macro"
+      ],
+      "limits": [
+        "O formato mais limitado com pouca luz",
+        "Desfoque de fundo extremo é difícil",
+        "Menos margem para cortes agressivos"
+      ],
+      "settingsNote": "Divide a focal equivalente por 2. Ex.: 50mm eq = objetiva de 25mm. A profundidade de campo equivale a fechar 2 diafragmas face ao full frame.",
+      "howTo": {
+        "expose": "Aproveita a estabilização: podes descer bastante a velocidade com sujeitos parados.",
+        "lock": "Visor eletrónico mostra a exposição final — confia nele.",
+        "manual": "ISO baixo sempre que possível; é onde o formato se defende melhor."
+      }
     }
-  ]
+  ],
+  "lensClasses": [
+    { "id": "uwa", "name": "Ultra grande angular", "eq": "10–20mm eq", "phone": "Ultra larga (0.6×)", "apsc": "objetiva de 8–14mm", "ff": "objetiva de 12–20mm", "mft": "objetiva de 7–10mm" },
+    { "id": "wide", "name": "Grande angular", "eq": "24–35mm eq", "phone": "Principal (1×)", "apsc": "objetiva de 16–23mm", "ff": "objetiva de 24–35mm", "mft": "objetiva de 12–17mm" },
+    { "id": "normal", "name": "Normal", "eq": "40–55mm eq", "phone": "Principal (1×) com corte, ou 2× se existir", "apsc": "objetiva de 28–35mm", "ff": "objetiva de 40–55mm", "mft": "objetiva de 20–25mm" },
+    { "id": "portrait", "name": "Retrato (tele curta)", "eq": "85–135mm eq", "phone": "Tele (3×) — o módulo certo para rostos", "apsc": "objetiva de 50–85mm", "ff": "objetiva de 85–135mm", "mft": "objetiva de 42–65mm" },
+    { "id": "tele", "name": "Teleobjetiva", "eq": "150–300mm eq", "phone": "Fora do alcance ótico — aproxima-te", "apsc": "objetiva de 100–200mm", "ff": "objetiva de 150–300mm", "mft": "objetiva de 75–150mm" },
+    { "id": "supertele", "name": "Super-teleobjetiva", "eq": "400mm eq e acima", "phone": "Não aplicável", "apsc": "objetiva de 250mm e acima", "ff": "objetiva de 400mm e acima", "mft": "objetiva de 200mm e acima" },
+    { "id": "macro", "name": "Macro", "eq": "ampliação 1:1", "phone": "Câmara principal de muito perto, ou lente close-up", "apsc": "macro dedicada, tubos de extensão ou lente close-up", "ff": "macro dedicada", "mft": "macro dedicada (a profundidade de campo ajuda-te aqui)" }
+  ],
+  "mine": {
+    "_doc": "Equipamento pessoal do autor. Aparece como exemplo concreto (campo genre.gear.mine) e na aba Equipamento, nunca como base das recomendações.",
+    "label": "O meu equipamento",
+    "bodies": [
+      {
+        "id": "canon",
+        "icon": "📷",
+        "class": "apsc",
+        "name": "Canon EOS M50 Mark II",
+        "short": "M50 II",
+        "body": "APS-C 24MP (corte 1.6×) · Dual Pixel AF com deteção de olhos (só pessoas) · até 10 fps · sem estabilização no corpo · ISO útil até ~3200–6400",
+        "lenses": [
+          { "id": "kit1545", "name": "EF-M 15-45mm f/3.5-6.3 IS", "eq": "24–72mm eq", "traits": "estabilizada · versátil · rosca 49mm" },
+          { "id": "prime22", "name": "EF-M 22mm f/2", "eq": "35mm eq", "traits": "luminosa · discreta · SEM estabilização · rosca 43mm" },
+          { "id": "tele55200", "name": "EF-M 55-200mm f/4.5-6.3 IS", "eq": "88–320mm eq", "traits": "estabilizada · alcance · escura no lado longo · rosca 52mm" },
+          { "id": "ef50", "name": "EF 50mm f/1.8 (adaptador)", "eq": "80mm eq", "traits": "muito luminosa · AF funcional · SEM estabilização" }
+        ],
+        "notes": [
+          "Sem estabilização no corpo: com a 22mm e a 50mm respeita a regra 1/(focal equivalente).",
+          "A deteção de olhos só funciona com pessoas — para animais usa ponto AF pequeno sobre o olho.",
+          "Em tripé, desliga a estabilização da objetiva e usa temporizador de 2 s."
+        ]
+      },
+      {
+        "id": "s23",
+        "icon": "📱",
+        "class": "phone",
+        "name": "Samsung Galaxy S23+",
+        "short": "S23+",
+        "body": "Ultra larga 13mm eq f/2.2 · Principal 23mm eq f/1.8 (50MP) · Tele 3× ~70mm eq f/2.4 · estabilização ótica na principal e na tele",
+        "lenses": [
+          { "id": "uw", "name": "Ultra larga (0.6×)", "eq": "13mm eq", "traits": "amplitude · distorce nas bordas · mais fraca com pouca luz" },
+          { "id": "main", "name": "Principal (1×)", "eq": "23mm eq", "traits": "o melhor dos três módulos · 50MP para cortar" },
+          { "id": "tele", "name": "Tele (3×)", "eq": "~70mm eq", "traits": "a escolha certa para retrato · evita-a com pouca luz" }
+        ],
+        "notes": [
+          "Acima de 3× é zoom digital — até ~10× aguenta-se, acima disso é pintura.",
+          "Expert RAW / Pro dá manual completo e até 30 s de exposição.",
+          "A fotografia computacional é a vantagem: usa-a em vez de lutar contra o sensor pequeno."
+        ]
+      }
+    ]
+  }
 }
