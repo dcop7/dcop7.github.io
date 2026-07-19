@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-19T13:57:27.169Z",
+ "generated": "2026-07-19T19:36:46.096Z",
  "total": 84,
- "broken": 3,
+ "broken": 2,
  "unknown": 27,
  "results": [
   {
@@ -121,8 +121,8 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:cartao-jovem",
@@ -337,8 +337,8 @@
   {
    "id": "calendario:inspecao",
    "url": "https://www.imt-ip.pt/sites/IMTT/Portugues/Veiculos/InspecaoVeiculos/Paginas/InspeccaodeVeiculos.aspx",
-   "status": 415,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:cc-renovar",
@@ -349,8 +349,8 @@
   {
    "id": "calendario:carta-revalidar",
    "url": "https://www.imt-ip.pt/",
-   "status": 415,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:ss-prova-escolar",
