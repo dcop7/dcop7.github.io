@@ -1,23 +1,51 @@
 /* ══════════════════════════════════════════════════════════════════
    HumorPage — the "😂 Humor" section. Fully data-driven: categories live
    in data/humor/index.json and each category in data/humor/<id>.json
-   (array of { id, t } one-liners or { id, q, a } two-part / Q&A jokes).
+   (array of { t } one-liners or { q, a } two-part / Q&A jokes).
    Add thousands of jokes by editing JSON only — no code changes.
-   Features: categories, random joke, joke of the day, search, favourites.
+
+   UX model: the home shows the joke of the day + 5 group cards (not the
+   28 categories). Opening a group shows a mixed feed of its jokes,
+   shuffled fresh on every visit with not-yet-seen jokes surfaced first
+   ("seen" ids persist in localStorage), paged in batches. Category
+   chips filter within the group. Joke ids are content hashes, so
+   favourites stay stable when the JSON files are edited or reordered.
    Offline (service-worker cached); no third-party calls at runtime.
 ══════════════════════════════════════════════════════════════════ */
 const HumorPage = (function () {
   'use strict';
 
   const BASE = 'data/humor/';
+  const PAGE = 24;                  /* jokes per feed batch */
   let root, built = false, index = null, groups = null;
-  const cache = {};                 /* id → jokes[] */
+  const cache = {};                 /* cat id → jokes[] */
   let favs = load('humor-favs', {});/* {jokeId: jokeObj} */
+  let seen = load('humor-seen', []);/* [jokeId] in first-seen order */
+  let seenSet = new Set(seen);
+  let feed = null;                  /* current group feed state */
 
   function load(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const lang = () => (typeof I18n !== 'undefined' && I18n.getLang() === 'en') ? 'en' : 'pt';
+
+  /* Stable content-based id: survives edits/reordering of the JSON files
+     (the old ids were array indexes, which favourites depended on). */
+  function jid(cat, j) {
+    const s = (j.t || '') + '|' + (j.q || '') + '|' + (j.a || '');
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return cat + '-' + (h >>> 0).toString(36);
+  }
+  /* Re-key favourites saved under the old index-based ids. */
+  (function migrateFavs() {
+    let changed = false; const out = {};
+    Object.entries(favs).forEach(([k, j]) => {
+      const id = (j && j.cat) ? jid(j.cat, j) : k;
+      if (id !== k) changed = true;
+      out[id] = { ...j, id };
+    });
+    if (changed) { favs = out; save('humor-favs', favs); }
+  })();
 
   async function getJSON(url) { try { const r = await fetch(url, { cache: 'force-cache' }); return r.ok ? await r.json() : null; } catch (e) { return null; } }
 
@@ -31,33 +59,43 @@ const HumorPage = (function () {
   async function loadCat(id) {
     if (cache[id]) return cache[id];
     const d = await getJSON(BASE + id + '.json');
-    /* Stamp a stable per-joke id (index-based) so favourites & copy work —
-       the source JSON entries carry no id of their own. */
-    cache[id] = (Array.isArray(d) ? d : []).map((j, i) => ({ ...j, cat: id, id: j.id || `${id}-${i}` }));
+    cache[id] = (Array.isArray(d) ? d : []).map(j => ({ ...j, cat: id, id: jid(id, j) }));
     return cache[id];
   }
-  async function loadAll() {
+  async function loadGroupJokes(gid) {
     const idx = await loadIndex();
-    const all = await Promise.all(idx.map(c => loadCat(c.id)));
+    const cats = gid ? idx.filter(c => c.group === gid) : idx;
+    const all = await Promise.all(cats.map(c => loadCat(c.id)));
     return all.flat();
   }
   const catName = id => { const c = (index || []).find(x => x.id === id); return c ? c.name : id; };
   const catIcon = id => { const c = (index || []).find(x => x.id === id); return c ? c.icon : '😂'; };
+  const groupOf = gid => (groups || []).find(g => g.id === gid);
+  const findJoke = (cat, id) => (cache[cat] || []).find(x => x.id === id) || favs[id] || null;
 
-  /* Random scopes: one button per group of categories + one with everything.
-     `groups: null` = all categories. */
-  const SCOPES = {
-    all:     { label: '🎲 Humor Aleatório',     groups: null },
-    piadas:  { label: '😂 Piada Aleatória',     groups: ['piadas', 'temas'] },
-    secas:   { label: '🌵 Seca Aleatória',      groups: ['secas'] },
-    enigmas: { label: '🧩 Adivinha & Cúmulo',   groups: ['enigmas'] },
-    piropos: { label: '💘 Piropo Aleatório',    groups: ['piropos'] }
-  };
-  async function loadScope(groupIds) {
-    const idx = await loadIndex();
-    const cats = groupIds ? idx.filter(c => groupIds.includes(c.group)) : idx;
-    const all = await Promise.all(cats.map(c => loadCat(c.id)));
-    return all.flat();
+  /* ── shuffle & discovery ───────────────────────────────────────── */
+  function shuffle(a) {
+    a = a.slice();
+    for (let i = a.length - 1; i > 0; i--) { const k = Math.floor(Math.random() * (i + 1)); [a[i], a[k]] = [a[k], a[i]]; }
+    return a;
+  }
+  /* Fresh random order on every visit, with never-seen jokes first, so
+     returning to a category surfaces new content instead of the same top. */
+  function freshOrder(list) {
+    const un = [], sn = [];
+    list.forEach(j => (seenSet.has(j.id) ? sn : un).push(j));
+    return shuffle(un).concat(shuffle(sn));
+  }
+  function markSeen(list) {
+    let dirty = false;
+    list.forEach(j => { if (!seenSet.has(j.id)) { seenSet.add(j.id); seen.push(j.id); dirty = true; } });
+    if (seen.length > 3000) { seen = seen.slice(-2000); seenSet = new Set(seen); }
+    if (dirty) save('humor-seen', seen);
+  }
+  function pickRandom(list) {
+    const un = list.filter(j => !seenSet.has(j.id));
+    const pool = un.length ? un : list;
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   /* ── lifecycle ─────────────────────────────────────────────────── */
@@ -65,133 +103,184 @@ const HumorPage = (function () {
     root = document.getElementById('view-humor');
     if (!root) return;
     injectCSS();
-    renderHome();
+    renderShell();
+    renderHub();
     built = true;
   }
   function show() { if (!built) init(); }
 
-  /* ── views ─────────────────────────────────────────────────────── */
-  async function renderHome() {
+  /* ── shell (head + persistent toolbar) ─────────────────────────── */
+  function renderShell() {
     root.innerHTML = `
       <div class="view-inner">
         <div class="page-head">
           <span class="ph-ico">${AppIcons.icon('humor', 22)}</span>
           <div class="ph-titles">
             <h1 class="ph-title">Humor</h1>
-            <p class="ph-sub">Piadas, secas por temas, adivinhas, cúmulos e piropos — escolhe uma categoria ou arrisca uma aleatória</p>
+            <p class="ph-sub">Piadas, secas, adivinhas, cúmulos e piropos — todos os dias por uma ordem diferente</p>
           </div>
         </div>
         <div class="hm-toolbar">
-          ${Object.entries(SCOPES).map(([k, s]) =>
-            `<button class="hm-tool${k === 'all' ? ' primary' : ''}" data-scope="${k}">${s.label}</button>`).join('')}
-          <button class="hm-tool" id="hm-daily">📅 Piada do Dia</button>
+          <button class="hm-tool primary" id="hm-lucky">🎲 Surpreende-me</button>
           <button class="hm-tool" id="hm-favs">⭐ Favoritas <span id="hm-favn">${Object.keys(favs).length || ''}</span></button>
-          <div class="hm-search-wrap"><input class="hm-search" id="hm-search" type="search" placeholder="🔍 Pesquisar piadas…" aria-label="Pesquisar"></div>
+          <div class="hm-search-wrap"><input class="hm-search" id="hm-search" type="search" placeholder="🔍 Pesquisar em todo o humor…" aria-label="Pesquisar"></div>
         </div>
         <div id="hm-body"><div class="hm-loading">A carregar…</div></div>`;
-
-    root.querySelectorAll('[data-scope]').forEach(b => b.addEventListener('click', () => showRandom(b.dataset.scope)));
-    root.querySelector('#hm-daily').addEventListener('click', showDaily);
+    root.querySelector('#hm-lucky').addEventListener('click', () => showRandom(null));
     root.querySelector('#hm-favs').addEventListener('click', showFavs);
     const s = root.querySelector('#hm-search');
     let tmr; s.addEventListener('input', () => { clearTimeout(tmr); tmr = setTimeout(() => doSearch(s.value.trim()), 250); });
+  }
+  const body = () => root.querySelector('#hm-body');
 
+  /* ── home hub: joke of the day + group cards ───────────────────── */
+  async function renderHub() {
+    feed = null;
+    body().innerHTML = `
+      <section class="hm-daily">
+        <h2 class="hm-sec-ttl">📅 Piada do dia</h2>
+        <div id="hm-daily-card" class="hm-single"><div class="hm-loading">A escolher…</div></div>
+      </section>
+      <h2 class="hm-sec-ttl">Explorar</h2>
+      <div class="hm-hub" id="hm-hub"><div class="hm-loading">A carregar…</div></div>`;
     const idx = await loadIndex();
-    const body = root.querySelector('#hm-body');
-    if (!idx.length) { body.innerHTML = `<div class="hm-loading">Sem categorias.</div>`; return; }
-
-    const catCard = c => `
-      <button class="hm-cat" data-id="${c.id}">
-        <span class="hm-cat-ico">${c.icon}</span>
-        <span class="hm-cat-body">
-          <span class="hm-cat-name">${esc(c.name)}</span>
-          ${c.desc ? `<span class="hm-cat-desc">${esc(c.desc)}</span>` : ''}
-        </span>
-      </button>`;
-
-    if (groups && groups.length) {
-      /* group the categories under their section heading; any category whose
-         group is missing falls into a trailing "Outras" bucket. */
-      const seen = new Set();
-      const sections = groups.map(g => {
-        const items = idx.filter(c => c.group === g.id);
-        items.forEach(c => seen.add(c.id));
-        return { g, items };
-      }).filter(s => s.items.length);
-      const orphans = idx.filter(c => !seen.has(c.id));
-      if (orphans.length) sections.push({ g: { name: 'Outras', icon: '📁' }, items: orphans });
-      body.innerHTML = sections.map(s => `
-        <section class="hm-group">
-          <h2 class="hm-group-ttl"><span class="hm-group-ico">${s.g.icon || ''}</span>${esc(s.g.name)}</h2>
-          <div class="hm-cat-grid">${s.items.map(catCard).join('')}</div>
-        </section>`).join('');
-    } else {
-      body.innerHTML = `<div class="hm-cat-grid">${idx.map(catCard).join('')}</div>`;
-    }
-    body.querySelectorAll('.hm-cat').forEach(b => b.addEventListener('click', () => renderCategory(b.dataset.id)));
+    const hub = root.querySelector('#hm-hub');
+    if (!idx.length) { hub.innerHTML = `<div class="hm-empty">Sem categorias.</div>`; return; }
+    hub.innerHTML = (groups || []).map(g => {
+      const cats = idx.filter(c => c.group === g.id);
+      if (!cats.length) return '';
+      return `
+        <button class="hm-gcard" data-group="${g.id}">
+          <span class="hm-gcard-ico">${g.icon}</span>
+          <span class="hm-gcard-body">
+            <span class="hm-gcard-name">${esc(g.name)}</span>
+            <span class="hm-gcard-cats">${cats.map(c => esc(c.name)).join(' · ')}</span>
+          </span>
+          <span class="hm-gcard-arrow">›</span>
+        </button>`;
+    }).join('');
+    hub.querySelectorAll('.hm-gcard').forEach(b => b.addEventListener('click', () => renderGroup(b.dataset.group)));
+    fillDaily();
+  }
+  async function fillDaily() {
+    const idx = await loadIndex();
+    const el = root.querySelector('#hm-daily-card');
+    if (!idx.length || !el) return;
+    const d = new Date();
+    const seed = d.getFullYear() * 1000 + Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+    const cat = idx[seed % idx.length];
+    const jokes = await loadCat(cat.id);
+    if (!jokes.length || !root.querySelector('#hm-daily-card')) return;
+    const j = jokes[seed % jokes.length];
+    el.innerHTML = jokeCard(j, { big: true });
+    wireCards(el);
   }
 
+  /* ── group view: chips + shuffled feed ─────────────────────────── */
   function backBar(title) {
     return `<div class="hm-detail-bar"><button class="hm-back" id="hm-back">← Voltar</button><h2 class="hm-detail-ttl">${title}</h2></div>`;
   }
-  function wireBack() { root.querySelector('#hm-back')?.addEventListener('click', renderHome); }
+  function wireBack() { root.querySelector('#hm-back')?.addEventListener('click', renderHub); }
 
-  async function renderCategory(id) {
-    const body = root.querySelector('#hm-body');
-    body.innerHTML = `<div class="hm-loading">A carregar…</div>`;
-    const jokes = await loadCat(id);
-    body.innerHTML = backBar(`${catIcon(id)} ${esc(catName(id))} <span class="hm-count">${jokes.length}</span>`) +
-      `<div class="hm-list">${jokes.map(jokeCard).join('')}</div>`;
-    wireBack(); wireCards(body);
+  async function renderGroup(gid, keepFilter) {
+    const idx = await loadIndex();
+    const g = groupOf(gid);
+    if (!g) return renderHub();
+    const cats = idx.filter(c => c.group === gid);
+    const filter = keepFilter && cats.some(c => c.id === keepFilter) ? keepFilter : null;
+    body().innerHTML = backBar(`${g.icon} ${esc(g.name)} <span class="hm-count" id="hm-gcount">…</span>`) + `
+      <div class="hm-chips" role="tablist">
+        <button class="chip${filter ? '' : ' active'}" data-cat="">Tudo</button>
+        ${cats.map(c => `<button class="chip${filter === c.id ? ' active' : ''}" data-cat="${c.id}" title="${esc(c.desc || '')}">${c.icon} ${esc(c.name)}</button>`).join('')}
+        <button class="chip hm-chip-rand" id="hm-grand">🎲 Aleatória</button>
+      </div>
+      <div class="hm-list" id="hm-feed"></div>
+      <div class="hm-more-wrap" id="hm-more-wrap"></div>`;
+    wireBack();
+    const all = await loadGroupJokes(gid);
+    if (!root.querySelector('#hm-feed')) return;   /* user navigated away */
+    feed = { gid, all, filter, list: [], shown: 0 };
+    root.querySelectorAll('.hm-chips .chip[data-cat]').forEach(b => b.addEventListener('click', () => {
+      root.querySelectorAll('.hm-chips .chip[data-cat]').forEach(x => x.classList.toggle('active', x === b));
+      applyFilter(b.dataset.cat || null);
+    }));
+    root.querySelector('#hm-grand').addEventListener('click', () => showRandom(gid));
+    applyFilter(filter);
+  }
+  function applyFilter(catId) {
+    if (!feed) return;
+    feed.filter = catId;
+    const pool = catId ? feed.all.filter(j => j.cat === catId) : feed.all;
+    feed.list = freshOrder(pool);
+    feed.shown = 0;
+    const n = root.querySelector('#hm-gcount'); if (n) n.textContent = pool.length;
+    const fe = root.querySelector('#hm-feed'); if (fe) fe.innerHTML = '';
+    renderBatch();
+  }
+  function renderBatch() {
+    if (!feed) return;
+    const fe = root.querySelector('#hm-feed'), mw = root.querySelector('#hm-more-wrap');
+    if (!fe) return;
+    const batch = feed.list.slice(feed.shown, feed.shown + PAGE);
+    feed.shown += batch.length;
+    const frag = document.createElement('div');
+    frag.innerHTML = batch.map(j => jokeCard(j, { hideTag: !!feed.filter })).join('');
+    while (frag.firstChild) fe.appendChild(frag.firstChild);
+    wireCards(fe, batch.map(j => j.id));
+    markSeen(batch);
+    const left = feed.list.length - feed.shown;
+    mw.innerHTML = left > 0 ? `<button class="hm-tool" id="hm-more">Mostrar mais (${left})</button>` : (feed.list.length ? `<div class="hm-end">🎉 Viste tudo — volta amanhã ou baralha outra vez.</div>` : `<div class="hm-empty">Sem piadas nesta categoria.</div>`);
+    root.querySelector('#hm-more')?.addEventListener('click', renderBatch);
   }
 
+  /* ── favourites / search / single ──────────────────────────────── */
   async function showFavs() {
-    const body = root.querySelector('#hm-body');
+    await loadIndex();
+    feed = null;
     const list = Object.values(favs);
-    body.innerHTML = backBar(`⭐ Favoritas <span class="hm-count">${list.length}</span>`) +
-      (list.length ? `<div class="hm-list">${list.map(jokeCard).join('')}</div>`
+    body().innerHTML = backBar(`⭐ Favoritas <span class="hm-count">${list.length}</span>`) +
+      (list.length ? `<div class="hm-list">${list.map(j => jokeCard(j)).join('')}</div>`
                    : `<div class="hm-empty">Ainda não tens favoritas. Toca na ⭐ de uma piada para a guardar.</div>`);
-    wireBack(); wireCards(body);
+    wireBack(); wireCards(body());
   }
 
   async function doSearch(q) {
-    const body = root.querySelector('#hm-body');
-    if (!q) { renderHome(); return; }
-    body.innerHTML = `<div class="hm-loading">A pesquisar…</div>`;
-    const all = await loadAll();
+    if (!q) { renderHub(); return; }
+    feed = null;
+    body().innerHTML = `<div class="hm-loading">A pesquisar…</div>`;
+    const all = await loadGroupJokes(null);
     const nq = q.toLowerCase();
     const hits = all.filter(j => ((j.t || '') + ' ' + (j.q || '') + ' ' + (j.a || '')).toLowerCase().includes(nq)).slice(0, 200);
-    body.innerHTML = backBar(`🔍 "${esc(q)}" <span class="hm-count">${hits.length}</span>`) +
-      (hits.length ? `<div class="hm-list">${hits.map(jokeCard).join('')}</div>` : `<div class="hm-empty">Sem resultados para “${esc(q)}”.</div>`);
-    wireBack(); wireCards(body);
+    body().innerHTML = backBar(`🔍 "${esc(q)}" <span class="hm-count">${hits.length}</span>`) +
+      (hits.length ? `<div class="hm-list">${hits.map(j => jokeCard(j)).join('')}</div>` : `<div class="hm-empty">Sem resultados para “${esc(q)}”.</div>`);
+    wireBack(); wireCards(body());
   }
 
-  async function showRandom(scope) {
-    const s = SCOPES[scope] || SCOPES.all;
-    const all = await loadScope(s.groups);
+  async function showRandom(gid) {
+    const all = await loadGroupJokes(gid);
     if (!all.length) return;
-    showSingle(all[Math.floor(Math.random() * all.length)], s.label, scope in SCOPES ? scope : 'all');
+    const g = groupOf(gid);
+    showSingle(pickRandom(all), g ? `${g.icon} ${esc(g.name)} — aleatória` : '🎲 Humor aleatório', gid);
   }
-  async function showDaily() {
-    const all = await loadAll();
-    if (!all.length) return;
-    const d = new Date(); const seed = d.getFullYear() * 1000 + (Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000));
-    showSingle(all[seed % all.length], '📅 Piada do Dia', null);
-  }
-  function showSingle(j, title, againScope) {
-    const body = root.querySelector('#hm-body');
-    body.innerHTML = backBar(title) +
-      `<div class="hm-single">${jokeCard(j, true)}</div>` +
-      (againScope ? `<div class="hm-single-actions"><button class="hm-tool primary" id="hm-again">🎲 Outra</button></div>` : '');
-    wireBack(); wireCards(body);
-    root.querySelector('#hm-again')?.addEventListener('click', () => showRandom(againScope));
+  function showSingle(j, title, againGid) {
+    feed = null;
+    body().innerHTML = backBar(title) +
+      `<div class="hm-single">${jokeCard(j, { big: true })}</div>
+       <div class="hm-single-actions"><button class="hm-tool primary" id="hm-again">🎲 Outra</button></div>`;
+    wireCards(body());
+    markSeen([j]);
+    root.querySelector('#hm-again')?.addEventListener('click', () => showRandom(againGid));
+    root.querySelector('#hm-back')?.addEventListener('click', () => againGid ? renderGroup(againGid) : renderHub());
   }
 
   /* ── joke card ─────────────────────────────────────────────────── */
-  function jokeCard(j, big) {
+  const canShare = typeof navigator !== 'undefined' && !!navigator.share;
+  function jokeCard(j, opts) {
+    opts = opts || {};
     const fav = !!favs[j.id];
     const star = `<button class="hm-star${fav ? ' on' : ''}" data-fav="${j.id}" title="Favorita" aria-label="Favorita">${fav ? '★' : '☆'}</button>`;
-    const cat = `<span class="hm-tag">${catIcon(j.cat)} ${esc(catName(j.cat))}</span>`;
+    const share = canShare ? `<button class="hm-copy" data-share="${j.id}" title="Partilhar" aria-label="Partilhar">📤</button>` : '';
+    const tag = opts.hideTag ? '' : `<span class="hm-tag">${catIcon(j.cat)} ${esc(catName(j.cat))}</span>`;
     let inner;
     if (j.q && j.a) {
       inner = `<div class="hm-q">${esc(j.q)}</div>
@@ -200,33 +289,53 @@ const HumorPage = (function () {
     } else {
       inner = `<div class="hm-t">${esc(j.t || '').replace(/\n/g, '<br>')}</div>`;
     }
-    return `<article class="hm-joke${big ? ' big' : ''}" data-id="${j.id}" data-cat="${j.cat}">
-      <div class="hm-joke-top">${cat}<div class="hm-joke-actions">${star}<button class="hm-copy" data-copy="${j.id}" title="Copiar">📋</button></div></div>
+    return `<article class="hm-joke${opts.big ? ' big' : ''}" data-id="${j.id}" data-cat="${j.cat}">
+      <div class="hm-joke-top">${tag}<div class="hm-joke-actions">${star}${share}<button class="hm-copy" data-copy="${j.id}" title="Copiar">📋</button></div></div>
       ${inner}</article>`;
   }
 
-  function wireCards(scope) {
-    scope.querySelectorAll('.hm-reveal').forEach(b => b.addEventListener('click', () => {
-      const a = b.nextElementSibling; if (a) a.hidden = false; b.remove();
-    }));
-    scope.querySelectorAll('.hm-star').forEach(b => b.addEventListener('click', e => {
-      e.stopPropagation();
-      const id = b.dataset.fav;
-      if (favs[id]) { delete favs[id]; b.classList.remove('on'); b.textContent = '☆'; }
-      else {
-        const art = b.closest('.hm-joke');
-        const cat = art.dataset.cat, j = (cache[cat] || []).find(x => x.id === id);
-        if (j) { favs[id] = j; b.classList.add('on'); b.textContent = '★'; }
-      }
-      save('humor-favs', favs);
-      const n = root.querySelector('#hm-favn'); if (n) n.textContent = Object.keys(favs).length || '';
-    }));
-    scope.querySelectorAll('.hm-copy').forEach(b => b.addEventListener('click', () => {
-      const art = b.closest('.hm-joke'); const id = b.dataset.copy, cat = art.dataset.cat;
-      const j = (cache[cat] || Object.values(favs)).find(x => x.id === id) || favs[id];
-      const txt = j ? (j.q ? `${j.q}\n${j.a}` : j.t) : '';
-      if (txt) { navigator.clipboard?.writeText(txt).then(() => { b.textContent = '✅'; setTimeout(() => b.textContent = '📋', 1200); }).catch(() => {}); }
-    }));
+  function wireCards(scope, onlyIds) {
+    const sel = suffix => onlyIds
+      ? onlyIds.map(id => `[data-${suffix}="${id}"]`).join(',')
+      : `[data-${suffix}]`;
+    scope.querySelectorAll('.hm-reveal').forEach(b => {
+      if (b.dataset.wired) return; b.dataset.wired = '1';
+      b.addEventListener('click', () => { const a = b.nextElementSibling; if (a) a.hidden = false; b.remove(); });
+    });
+    scope.querySelectorAll(sel('fav')).forEach(b => {
+      if (b.dataset.wired) return; b.dataset.wired = '1';
+      b.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = b.dataset.fav;
+        if (favs[id]) { delete favs[id]; b.classList.remove('on'); b.textContent = '☆'; }
+        else {
+          const art = b.closest('.hm-joke');
+          const j = findJoke(art.dataset.cat, id);
+          if (j) { favs[id] = j; b.classList.add('on'); b.textContent = '★'; }
+        }
+        save('humor-favs', favs);
+        const n = root.querySelector('#hm-favn'); if (n) n.textContent = Object.keys(favs).length || '';
+      });
+    });
+    const jokeText = b => {
+      const art = b.closest('.hm-joke');
+      const j = findJoke(art.dataset.cat, b.dataset.copy || b.dataset.share);
+      return j ? (j.q ? `${j.q}\n${j.a}` : j.t) : '';
+    };
+    scope.querySelectorAll(sel('copy')).forEach(b => {
+      if (b.dataset.wired) return; b.dataset.wired = '1';
+      b.addEventListener('click', () => {
+        const txt = jokeText(b);
+        if (txt) navigator.clipboard?.writeText(txt).then(() => { b.textContent = '✅'; setTimeout(() => b.textContent = '📋', 1200); }).catch(() => {});
+      });
+    });
+    scope.querySelectorAll(sel('share')).forEach(b => {
+      if (b.dataset.wired) return; b.dataset.wired = '1';
+      b.addEventListener('click', () => {
+        const txt = jokeText(b);
+        if (txt) navigator.share({ text: txt }).catch(() => {});
+      });
+    });
   }
 
   /* ── CSS ───────────────────────────────────────────────────────── */
@@ -241,16 +350,18 @@ const HumorPage = (function () {
 .hm-search-wrap{flex:1;min-width:160px}
 .hm-search{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);font:inherit;font-size:.85rem;padding:.5rem .9rem;border-radius:var(--radius-sm);outline:none}
 .hm-search:focus{border-color:rgba(var(--accent-rgb),.4)}
-.hm-group{margin-bottom:1.6rem}
-.hm-group-ttl{display:flex;align-items:center;gap:.5rem;font-family:var(--font-head,inherit);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
-.hm-group-ico{font-size:1rem}
-.hm-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem}
-.hm-cat{display:flex;align-items:center;text-align:left;gap:.75rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem .95rem;cursor:pointer;font:inherit;transition:all .18s;min-width:0}
-.hm-cat:hover{border-color:rgba(var(--accent-rgb),.45);transform:translateY(-2px);box-shadow:var(--shadow-2, 0 4px 16px rgba(0,0,0,.28))}
-.hm-cat-ico{font-size:1.3rem;flex-shrink:0;width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,rgba(var(--accent-rgb),.14),rgba(var(--accent-rgb),.03));border:1px solid rgba(var(--accent-rgb),.22);border-radius:11px}
-.hm-cat-body{min-width:0;display:flex;flex-direction:column;gap:.15rem}
-.hm-cat-name{font-family:var(--font-head,inherit);font-weight:700;font-size:.88rem;color:var(--text)}
-.hm-cat-desc{font-size:.68rem;color:var(--muted);text-align:left;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hm-sec-ttl{display:flex;align-items:center;gap:.5rem;font-family:var(--font-head,inherit);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .7rem}
+.hm-daily{margin-bottom:1.6rem}
+.hm-hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem}
+.hm-gcard{display:flex;align-items:center;text-align:left;gap:.85rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;cursor:pointer;font:inherit;transition:all .18s;min-width:0}
+.hm-gcard:hover{border-color:rgba(var(--accent-rgb),.45);transform:translateY(-2px);box-shadow:var(--shadow-2, 0 4px 16px rgba(0,0,0,.28))}
+.hm-gcard-ico{font-size:1.5rem;flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,rgba(var(--accent-rgb),.14),rgba(var(--accent-rgb),.03));border:1px solid rgba(var(--accent-rgb),.22);border-radius:12px}
+.hm-gcard-body{min-width:0;display:flex;flex-direction:column;gap:.2rem;flex:1}
+.hm-gcard-name{font-family:var(--font-head,inherit);font-weight:700;font-size:.95rem;color:var(--text)}
+.hm-gcard-cats{font-size:.68rem;color:var(--muted);line-height:1.45;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hm-gcard-arrow{color:var(--muted);font-size:1.2rem;flex-shrink:0}
+.hm-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;align-items:center}
+.hm-chip-rand{margin-left:auto}
 .hm-detail-bar{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
 .hm-back{background:var(--card2);border:1px solid var(--border);color:var(--text2);font:inherit;font-size:.8rem;font-weight:600;padding:.35rem .8rem;border-radius:var(--radius-sm);cursor:pointer}
 .hm-back:hover{color:var(--accent);border-color:rgba(var(--accent-rgb),.4)}
@@ -258,10 +369,10 @@ const HumorPage = (function () {
 .hm-count{font-size:.7rem;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid rgba(var(--accent-rgb),.3);padding:.1rem .5rem;border-radius:999px}
 .hm-list{column-width:340px;column-gap:1rem}
 .hm-joke{break-inside:avoid;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1rem;margin-bottom:1rem;display:inline-block;width:100%}
-.hm-joke.big{font-size:1.1rem;max-width:560px;margin:0 auto}
-.hm-joke-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.hm-joke.big{font-size:1.1rem;max-width:560px;margin:0 auto;display:block}
+.hm-joke-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;min-height:1.2rem}
 .hm-tag{font-size:.64rem;color:var(--muted);font-weight:600}
-.hm-joke-actions{display:flex;gap:.3rem;align-items:center}
+.hm-joke-actions{display:flex;gap:.3rem;align-items:center;margin-left:auto}
 .hm-star,.hm-copy{background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:.1rem .2rem;line-height:1}
 .hm-star.on{color:#f5b400}
 .hm-star:hover,.hm-copy:hover{color:var(--accent)}
@@ -269,10 +380,12 @@ const HumorPage = (function () {
 .hm-q{color:var(--text);font-size:.92rem;line-height:1.5;font-weight:600;margin-bottom:.6rem}
 .hm-reveal{background:var(--accent-soft);border:1px solid rgba(var(--accent-rgb),.3);color:var(--accent);font:inherit;font-size:.78rem;font-weight:600;padding:.3rem .8rem;border-radius:999px;cursor:pointer}
 .hm-a{margin-top:.6rem;color:var(--green,#34d399);font-size:.92rem;line-height:1.5;font-weight:600}
-.hm-single{max-width:600px;margin:1rem auto}
+.hm-single{max-width:600px;margin:0 auto}
 .hm-single-actions{text-align:center;margin-top:1rem}
+.hm-more-wrap{text-align:center;margin:.4rem 0 1rem}
+.hm-end{color:var(--muted);font-size:.8rem;text-align:center;padding:.8rem}
 .hm-loading,.hm-empty{color:var(--muted);text-align:center;padding:2.5rem 1rem}
-@media (max-width:600px){.hm-list{column-width:auto;column-count:1}}`;
+@media (max-width:600px){.hm-list{column-width:auto;column-count:1}.hm-chip-rand{margin-left:0}}`;
     document.head.appendChild(s);
   }
 

@@ -5,7 +5,6 @@
   { "q": "Para perceberes o que é recursão...", "a": "Primeiro tens de perceber o que é recursão." },
   { "t": "Fazer debugging é como ser o detetive de um filme policial em que também és o assassino." },
   { "q": "Como é que um engenheiro vê o copo?", "a": "Nem meio cheio nem meio vazio: com o dobro do tamanho que era preciso." },
-  { "t": "Não confio em átomos. Inventam tudo." },
   { "q": "O que é que um eletrão disse ao outro?", "a": "Não me sigas, eu sou muito negativo." },
   { "t": "Estão quatro engenheiros num carro que não pega. O mecânico diz 'é o motor de arranque'. O eletricista diz 'é a bateria'. O químico diz 'é o combustível'. O de informática diz: 'e se saíssemos todos e voltássemos a entrar?'" },
   { "q": "Porque é que o programador foi à falência?", "a": "Porque gastou toda a cache." },
@@ -22,7 +21,7 @@
   { "q": "O que é que o router disse ao médico?", "a": "Dói-me quando faço ping." },
   { "t": "Há dois tipos de pessoas: as que conseguem extrapolar a partir de dados incompletos." },
   { "q": "Qual é a melhor coisa de um Boolean?", "a": "Mesmo que estejas errado, falhas só por um bit." },
-  { "q": "Onde é que os programadores gostam de comer?", "a": "Sempre no mesmo sítio: o restaurante 'RESTaurante' da API." },
+  { "q": "Onde é que os programadores gostam de comer?", "a": "Num sítio com boa API: o RESTaurante." },
   { "t": "Disse à inteligência artificial para contar uma piada original. Ela contou-me uma que já tinha ouvido em mil sítios." },
   { "q": "Porque é que o protão andava convencido?", "a": "Porque tinha sempre carga positiva." },
   { "q": "O que é que um zero disse ao binário?", "a": "Não és nada sem mim." }

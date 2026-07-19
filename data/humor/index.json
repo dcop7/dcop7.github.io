@@ -7,7 +7,7 @@
     { "id": "temas", "name": "Por Tema", "icon": "🗂️" }
   ],
   "categories": [
-    { "id": "geral", "name": "Humor Geral", "icon": "😄", "desc": "Um pouco de tudo", "group": "piadas" },
+    { "id": "geral", "name": "Humor Geral", "icon": "😄", "desc": "Anedotas e histórias do dia a dia", "group": "piadas" },
     { "id": "trocadilhos", "name": "Trocadilhos", "icon": "🔤", "desc": "Jogos de palavras", "group": "piadas" },
     { "id": "portugues", "name": "Piadas de Português", "icon": "🇵🇹", "desc": "O português que dá a volta a tudo", "group": "piadas" },
     { "id": "sarcasticas", "name": "Sarcásticas", "icon": "😏", "desc": "Com uma pontinha de veneno", "group": "piadas" },

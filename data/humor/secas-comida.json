@@ -13,7 +13,7 @@
   { "t": "Estavam dois queijos ao sol. Diz um: «Acho que estou a derreter.» E o outro: «E eu, ralado!»" },
   { "q": "O que é um pontinho verde no meio do gelo?", "a": "Uma azeitona a esquiar." },
   { "q": "O que disse a mãe tomate ao filho tomate que vinha atrasado?", "a": "«Ketchup!»" },
-  { "t": "Diz a banana à manga: «Não ias comigo às compras?» — «Não, mas a Melancia…»" },
+  { "t": "O limão anda sempre stressado — qualquer coisinha e azeda logo." },
   { "q": "Qual é a comida mais sagrada de todas?", "a": "O amém-doim." },
   { "q": "Qual é o maior produtor de vinho do mundo?", "a": "O UvaTicano." },
   { "q": "Qual é a única sobremesa que nunca sai direita?", "a": "A torta." },
@@ -25,5 +25,8 @@
   { "q": "O que é que o açúcar disse ao leite?", "a": "«Encontramo-nos no café.»" },
   { "q": "O que é um pontinho amarelo dentro de uma limusina?", "a": "Um milho-nário." },
   { "q": "Qual é o cereal preferido do vampiro?", "a": "A a-veia." },
-  { "q": "O que é que um tomate disse ao outro?", "a": "«Tu matas-me.»" }
+  { "q": "O que é que um tomate disse ao outro?", "a": "«Tu matas-me.»" },
+  { "q": "O que é que o pai tomate disse ao filho tomate que ia atrás a chorar?", "a": "Anda lá, deixa-te de molho!" },
+  { "q": "O que é que um ovo disse ao outro na frigideira?", "a": "Que calor! E ainda dizem que não estamos fritos." },
+  { "q": "O que é que o café disse à chávena?", "a": "Sem ti, eu não passava de uma nódoa na toalha." }
 ]
