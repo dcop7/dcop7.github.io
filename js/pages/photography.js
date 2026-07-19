@@ -1560,33 +1560,76 @@ const PhotographyPage = (function () {
     </details>`;
   }
 
+  /* Ficha de ferramenta. Deliberadamente NÃO é o mesmo molde para todas:
+     o `layout` decide o que ocupa o lugar de destaque. As de detalhe abrem
+     com a lupa (o efeito não se vê ajustado ao ecrã), as tonais abrem com a
+     demonstração em grande, as de conceito emparelham demo e explicação.
+       hero  → demonstração a toda a largura, texto por baixo
+       split → demonstração e conceito lado a lado
+       loupe → demonstração com recorte 1:1 em destaque
+       pair  → comparação lado a lado (saturação vs vibrância) */
   function toolDetailHTML(t) {
     const list = (title, cls, arr) => (arr && arr.length)
       ? `<div class="ph-eq-sec ${cls}"><b>${title}</b><ul>${arr.map(li).join('')}</ul></div>` : '';
-    return `<article class="ph-tool" data-tool-id="${t.id}">
-      <header class="ph-tool-hd">
-        <span class="ph-tool-ico">${t.icon || '🎛️'}</span>
-        <div>
-          <h3 class="ph-tool-name">${t.name} <span class="ph-tool-en">${t.en}</span></h3>
-          <span class="ph-tool-tag">${t.tag || ''}</span>
-        </div>
-      </header>
-      <div class="ph-tool-concept">
-        <div class="ph-eq-what"><b>O que faz</b><p>${t.what}</p></div>
-        <div class="ph-eq-why"><b>Porque existe</b><p>${t.why}</p></div>
-        <div class="ph-tool-pe">
-          <div class="ph-tool-p"><b>Problema que resolve</b><p>${t.problem}</p></div>
-          <div class="ph-tool-p"><b>Efeito na fotografia</b><p>${t.effect}</p></div>
-        </div>
+    const layout = t.layout || 'split';
+    const demoAttr = JSON.stringify(Object.assign({}, t.demo, t.presets ? { presets: t.presets } : null)).replace(/'/g, "&#39;");
+    const demo = `<div class="ph-tool-demo" data-demo='${demoAttr}'></div>`;
+
+    // "Em 20 segundos": a ideia inteira numa frase, com um antes/depois
+    // gerado a partir do próprio motor — sem imagens extra.
+    const quick = t.quick ? `<div class="ph-quick">
+      <span class="ph-quick-badge">em 20 segundos</span>
+      <p class="ph-quick-txt">${t.quick}</p>
+      ${t.quickVis ? `<div class="ph-quick-vis" data-quickvis='${JSON.stringify(t.quickVis)}'></div>` : ''}
+    </div>` : '';
+
+    const concept = `<div class="ph-tool-concept">
+      <div class="ph-eq-what"><b>O que faz</b><p>${t.what}</p></div>
+      <div class="ph-eq-why"><b>Porque existe</b><p>${t.why}</p></div>
+      <div class="ph-tool-pe">
+        <div class="ph-tool-p"><b>Problema que resolve</b><p>${t.problem}</p></div>
+        <div class="ph-tool-p"><b>Efeito na fotografia</b><p>${t.effect}</p></div>
       </div>
-      <div class="ph-tool-demo" data-demo='${JSON.stringify(Object.assign({}, t.demo, t.presets ? { presets: t.presets } : null)).replace(/'/g, "&#39;")}'></div>
-      <div class="ph-eq-cols">
-        ${list('✅ Quando usar', 'ok', t.when)}
-        ${list('⛔ Quando evitar', 'no', t.avoid)}
+    </div>`;
+
+    // Relações: aprender por associação. Cada ligação diz PORQUÊ, senão é
+    // só uma lista de nomes.
+    const rel = (t.relations || []).length ? `<div class="ph-rel">
+      <b class="ph-rel-hd">🔗 Como se liga a outras ferramentas</b>
+      <div class="ph-rel-list">${t.relations.map(r => `<button class="ph-rel-item" data-etool="${r.id}">
+        <span class="ph-rel-n">${r.id}</span><span class="ph-rel-w">${r.why}</span><span class="ph-rel-go">→</span>
+      </button>`).join('')}</div></div>` : '';
+
+    const gen = (t.genres || []).length ? `<div class="ph-tgen">
+      <b class="ph-tgen-hd">📷 Onde isto aparece</b>
+      <div class="ph-tgen-list">${t.genres.map(g => `<button class="ph-tgen-item" data-genre-link="${g.id}">
+        <span class="ph-tgen-n" data-genre-name="${g.id}">${g.id}</span><span class="ph-tgen-w">${g.why}</span>
+      </button>`).join('')}</div></div>` : '';
+
+    const cols = `<div class="ph-eq-cols">
+      ${list('✅ Quando usar', 'ok', t.when)}
+      ${list('⛔ Quando evitar', 'no', t.avoid)}
+    </div>
+    ${list('⚠️ Erros comuns', 'mist', t.mistakes)}
+    ${t.note ? `<div class="ph-craft-drill"><b>Regra prática</b> ${t.note}</div>` : ''}`;
+
+    const head = `<header class="ph-tool-hd">
+      <span class="ph-tool-ico">${t.icon || '🎛️'}</span>
+      <div>
+        <h3 class="ph-tool-name">${t.name} <span class="ph-tool-en">${t.en}</span></h3>
+        <span class="ph-tool-tag">${t.tag || ''}</span>
       </div>
-      ${list('⚠️ Erros comuns', 'mist', t.mistakes)}
-      ${t.note ? `<div class="ph-craft-drill"><b>Regra prática</b> ${t.note}</div>` : ''}
-      ${appsTableHTML(t)}
+    </header>`;
+
+    const body = layout === 'split'
+      ? `<div class="ph-tsplit"><div class="ph-tsplit-a">${demo}</div>
+         <div class="ph-tsplit-b">${concept}</div></div>${cols}`
+      : layout === 'loupe' || layout === 'pair'
+      ? `${demo}${cols}<details class="ph-tool-more"><summary>Explicação completa</summary>${concept}</details>`
+      : `${demo}${concept}${cols}`;
+
+    return `<article class="ph-tool ph-tool-${layout}" data-tool-id="${t.id}">
+      ${head}${quick}${body}${rel}${gen}${appsTableHTML(t)}
     </article>`;
   }
 
@@ -1655,6 +1698,7 @@ const PhotographyPage = (function () {
       // Demonstrações: montadas só quando entram no ecrã (cada uma processa
       // uma imagem inteira em JS, não vale a pena fazê-lo às cegas).
       const img = demoImage();
+      if (typeof EditLab !== 'undefined') EditLab._img = img;
       const hosts = [...panel.querySelectorAll('[data-demo]')];
       if (img && typeof EditLab !== 'undefined' && hosts.length) {
         const mountOne = host => {
@@ -1671,6 +1715,36 @@ const PhotographyPage = (function () {
       } else {
         hosts.forEach(h => { h.innerHTML = '<p class="el-loading">Demonstração indisponível.</p>'; });
       }
+
+      // Miniaturas "em 20 segundos": antes/depois geradas pelo mesmo motor,
+      // para a ideia entrar antes de se ler uma linha.
+      const qvs = [...panel.querySelectorAll('[data-quickvis]')];
+      if (img && typeof EditLab !== 'undefined' && qvs.length) {
+        const mountQ = el => {
+          if (el.dataset.mounted) return;
+          el.dataset.mounted = '1';
+          let v = null;
+          try { v = JSON.parse(el.dataset.quickvis); } catch (_) { return; }
+          EditLab.beforeAfter(el, v);
+        };
+        if ('IntersectionObserver' in window) {
+          const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mountQ(e.target); io2.unobserve(e.target); } }), { rootMargin: '300px' });
+          qvs.forEach(el => io2.observe(el));
+        } else qvs.forEach(mountQ);
+      }
+
+      // Ligações entre ferramentas e para os géneros.
+      panel.querySelectorAll('[data-etool]').forEach(b => b.addEventListener('click', () => gotoTool(b.dataset.etool)));
+      panel.querySelectorAll('[data-genre-link]').forEach(b =>
+        b.addEventListener('click', () => Nav.go('photography/g/' + b.dataset.genreLink)));
+      // Nomes bonitos dos géneros (o JSON só guarda o id).
+      loadDB().then(gdb => {
+        if (!gdb) return;
+        panel.querySelectorAll('[data-genre-name]').forEach(el => {
+          const g = gdb.genres.find(x => x.id === el.dataset.genreName);
+          if (g) el.textContent = g.icon + ' ' + g.name;
+        });
+      });
 
       if (focusTool) {
         const el = panel.querySelector(`[data-tool-id="${focusTool}"]`);

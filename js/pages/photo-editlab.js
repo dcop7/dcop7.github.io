@@ -48,6 +48,66 @@ const EditLab = (function () {
   function stageHTML(cls) {
     return `<div class="el-stage ${cls || ''}"><canvas class="el-canvas"></canvas></div>`;
   }
+
+  /* ── histograma ao vivo ────────────────────────────────────────────
+     Encostado à demonstração: mostra o que o ajuste faz à distribuição
+     tonal, que é onde o efeito se percebe antes de se ver na imagem. */
+  function histoHTML() {
+    return `<figure class="el-histo">
+      <canvas class="el-histo-cv" width="256" height="74"></canvas>
+      <figcaption><span class="el-histo-lo">pretos</span><span>histograma ao vivo</span><span class="el-histo-hi">brancos</span></figcaption>
+    </figure>`;
+  }
+  function attachHisto(host, state) {
+    const cv = host.querySelector('.el-histo-cv');
+    if (!cv) return () => {};
+    const ref = PhotoLab.histogram(state.src);
+    return img => {
+      PhotoLab.drawHistogram(cv, PhotoLab.histogram(img || state.dst), ref);
+    };
+  }
+
+  /* ── lupa 1:1 ──────────────────────────────────────────────────────
+     Nitidez, textura e ruído são invisíveis com a imagem ajustada ao ecrã.
+     Sem um recorte a 100% estas ferramentas não se conseguem ensinar. */
+  function loupeHTML() {
+    return `<div class="el-loupe">
+      <figure><canvas class="el-loupe-a" width="150" height="150"></canvas><figcaption>antes · 1:1</figcaption></figure>
+      <figure><canvas class="el-loupe-b" width="150" height="150"></canvas><figcaption>depois · 1:1</figcaption></figure>
+      <p class="el-loupe-hint">Passa o rato sobre a fotografia para mover a lupa.</p>
+    </div>`;
+  }
+  function attachLoupe(host, state) {
+    const a = host.querySelector('.el-loupe-a'), b = host.querySelector('.el-loupe-b');
+    if (!a || !b) return () => {};
+    const S = 150, ca = a.getContext('2d'), cb = b.getContext('2d');
+    ca.imageSmoothingEnabled = cb.imageSmoothingEnabled = false;
+    // ponto de partida: zona com detalhe (terço inferior esquerdo)
+    let cx = Math.round(state.w * 0.3), cy = Math.round(state.h * 0.72);
+    const tmp = document.createElement('canvas');
+    tmp.width = state.w; tmp.height = state.h;
+    const tctx = tmp.getContext('2d');
+    const src = document.createElement('canvas');
+    src.width = state.w; src.height = state.h;
+    src.getContext('2d').putImageData(state.src, 0, 0);
+
+    const paint = () => {
+      const x = Math.max(0, Math.min(state.w - S / 2, cx - S / 4));
+      const y = Math.max(0, Math.min(state.h - S / 2, cy - S / 4));
+      ca.clearRect(0, 0, S, S); cb.clearRect(0, 0, S, S);
+      ca.drawImage(src, x, y, S / 2, S / 2, 0, 0, S, S);
+      tctx.putImageData(state.dst, 0, 0);
+      cb.drawImage(tmp, x, y, S / 2, S / 2, 0, 0, S, S);
+    };
+    const stage = host.querySelector('.el-stage');
+    if (stage) stage.addEventListener('pointermove', e => {
+      const r = stage.getBoundingClientRect();
+      cx = ((e.clientX - r.left) / r.width) * state.w;
+      cy = ((e.clientY - r.top) / r.height) * state.h;
+      paint();
+    });
+    return paint;
+  }
   function rangeRow(id, label, min, max, step, val, unit) {
     return `<div class="el-row">
       <label class="el-lbl" for="${id}">${label}</label>
@@ -59,27 +119,47 @@ const EditLab = (function () {
   /* ── 1. cursor único: um parâmetro, ao vivo ───────────────────────── */
   function mountSlider(host, demo, state) {
     const id = 'el-' + demo.param;
+    const wantHisto = demo.histogram !== false;
+    const wantLoupe = !!demo.loupe;
     host.innerHTML = `
-      ${stageHTML()}
+      <div class="el-lab${wantLoupe ? ' has-loupe' : ''}">
+        <div class="el-lab-main">${stageHTML()}</div>
+        <aside class="el-lab-side">
+          ${wantHisto ? histoHTML() : ''}
+          ${wantLoupe ? loupeHTML() : ''}
+          ${demo.marks ? `<div class="el-marks">${demo.marks.map(m =>
+            `<button class="el-chip" data-mark="${m.v}">${m.label}</button>`).join('')}</div>` : ''}
+        </aside>
+      </div>
       <div class="el-controls">
         ${rangeRow(id, demo.label || 'Ajuste', demo.min, demo.max, demo.step, 0, demo.unit)}
         <div class="el-actions">
           <button class="el-btn" data-reset>Repor</button>
-          <button class="el-btn" data-hold>Comparar (manter premido)</button>
+          <button class="el-btn" data-hold>Ver original (manter premido)</button>
         </div>
       </div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-canvas').remove();
     const range = host.querySelector('.el-range'), out = host.querySelector('.el-val');
+    const histo = wantHisto ? attachHisto(host, state) : () => {};
+    const loupe = wantLoupe ? attachLoupe(host, state) : () => {};
     const draw = () => {
       const v = +range.value;
       out.textContent = fmt(v, demo.unit);
       render(state, { [demo.param]: v });
+      histo(); loupe();
     };
     range.addEventListener('input', draw);
-    host.querySelector('[data-reset]').addEventListener('click', () => { range.value = 0; draw(); });
+    host.querySelectorAll('[data-mark]').forEach(b => b.addEventListener('click', () => {
+      range.value = b.dataset.mark; draw();
+      host.querySelectorAll('[data-mark]').forEach(x => x.classList.toggle('active', x === b));
+    }));
+    host.querySelector('[data-reset]').addEventListener('click', () => {
+      range.value = 0; draw();
+      host.querySelectorAll('[data-mark]').forEach(x => x.classList.remove('active'));
+    });
     const hold = host.querySelector('[data-hold]');
-    const showOrig = () => state.ctx.putImageData(state.src, 0, 0);
+    const showOrig = () => { state.ctx.putImageData(state.src, 0, 0); histo(state.src); };
     ['pointerdown', 'touchstart'].forEach(e => hold.addEventListener(e, ev => { ev.preventDefault(); showOrig(); }));
     ['pointerup', 'pointerleave', 'touchend'].forEach(e => hold.addEventListener(e, draw));
     draw();
@@ -126,6 +206,7 @@ const EditLab = (function () {
         ${stageHTML('el-stage-curve')}
         <div class="el-curve-side">
           <canvas class="el-curve" width="240" height="240" aria-label="Curva de tons"></canvas>
+          ${histoHTML()}
           <div class="el-presets">${(demo.presets || []).map((p, i) =>
             `<button class="el-chip${i === 0 ? ' active' : ''}" data-preset="${p.id}">${p.name}</button>`).join('')}
             <button class="el-chip" data-preset="linear">Neutra</button></div>
@@ -137,6 +218,7 @@ const EditLab = (function () {
 
     const cv = host.querySelector('.el-curve'), cx = cv.getContext('2d');
     const why = host.querySelector('[data-why]');
+    const histo = attachHisto(host, state);
     const LINEAR = [[0, 0], [1, 1]];
     let pts = (demo.presets && demo.presets[0] ? demo.presets[0].points : LINEAR).map(p => p.slice());
 
@@ -163,6 +245,7 @@ const EditLab = (function () {
       cx.fillStyle = accent;
       pts.forEach(p => { cx.beginPath(); cx.arc(px(p[0]), py(p[1]), 4.5, 0, 7); cx.fill(); });
       render(state, { curve: lut });
+      histo();
     };
     host.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
       host.querySelectorAll('[data-preset]').forEach(x => x.classList.remove('active'));
@@ -210,7 +293,8 @@ const EditLab = (function () {
     let band = 'blue';
     const vals = {};
     host.innerHTML = `
-      ${stageHTML()}
+      <div class="el-lab"><div class="el-lab-main">${stageHTML()}</div>
+        <aside class="el-lab-side">${histoHTML()}</aside></div>
       <div class="el-bands">${bands.map(b => `<button class="el-band${b.id === band ? ' active' : ''}" data-band="${b.id}"
         style="--bc:${b.c}" title="${b.name}"><span></span>${b.name}</button>`).join('')}</div>
       <div class="el-controls">
@@ -222,6 +306,7 @@ const EditLab = (function () {
       <p class="el-note">Escolhe uma cor e mexe só nela. Repara que o resto da imagem fica intacto — é isto que distingue o HSL da saturação global.</p>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
+    const histo = attachHisto(host, state);
     const [rh, rs, rl] = ['el-h', 'el-s', 'el-l'].map(i => host.querySelector('#' + i));
     const outs = host.querySelectorAll('.el-val');
     const draw = () => {
@@ -232,6 +317,7 @@ const EditLab = (function () {
         hsl[b + 'Hue'] = vals[b].h; hsl[b + 'Sat'] = vals[b].s; hsl[b + 'Lum'] = vals[b].l;
       });
       render(state, { hsl });
+      histo();
     };
     [rh, rs, rl].forEach(r => r.addEventListener('input', draw));
     host.querySelectorAll('[data-band]').forEach(b => b.addEventListener('click', () => {
@@ -313,7 +399,8 @@ const EditLab = (function () {
   /* ── 6. ruído: simula ISO e depois reduz ──────────────────────────── */
   function mountNoise(host, demo, state) {
     host.innerHTML = `
-      ${stageHTML()}
+      <div class="el-lab has-loupe"><div class="el-lab-main">${stageHTML()}</div>
+        <aside class="el-lab-side">${loupeHTML()}</aside></div>
       <div class="el-controls">
         ${rangeRow('el-iso', 'Ruído (simula ISO alto)', 0, 100, 1, 55)}
         ${rangeRow('el-dn', 'Redução de ruído', 0, 100, 1, 0)}
@@ -325,12 +412,14 @@ const EditLab = (function () {
     const rs = host.querySelectorAll('.el-range'), outs = host.querySelectorAll('.el-val');
     // O ruído é gerado uma vez e fixado, senão cintila a cada movimento.
     let noisy = state.ctx.createImageData(state.w, state.h), lastISO = -1;
+    const loupe = attachLoupe(host, state);
     const draw = () => {
       const iso = +rs[0].value, dn = +rs[1].value, sh = +rs[2].value;
       outs[0].textContent = iso; outs[1].textContent = dn; outs[2].textContent = sh;
       if (iso !== lastISO) { PhotoLab.process(state.src, noisy, { noise: iso }); lastISO = iso; }
       PhotoLab.process(noisy, state.dst, { denoise: dn, sharpen: sh });
       state.ctx.putImageData(state.dst, 0, 0);
+      loupe();
     };
     rs.forEach(r => r.addEventListener('input', draw));
     draw();
@@ -347,17 +436,20 @@ const EditLab = (function () {
     ];
     let cur = PRE[0];
     host.innerHTML = `
-      ${stageHTML()}
+      <div class="el-lab"><div class="el-lab-main">${stageHTML()}</div>
+        <aside class="el-lab-side">${histoHTML()}</aside></div>
       <div class="el-presets">${PRE.map((p, i) => `<button class="el-chip${i === 0 ? ' active' : ''}" data-g="${p.id}">${p.name}</button>`).join('')}</div>
       <div class="el-controls">${rangeRow('el-gi', 'Intensidade', 0, 100, 1, 70, '%')}</div>
       <p class="el-note">Sombras e altas luzes recebem cores diferentes. É isto que dá identidade a uma série — e nota como perde o efeito assim que passa dos 70%.</p>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
+    const histo = attachHisto(host, state);
     const range = host.querySelector('.el-range'), out = host.querySelector('.el-val');
     const draw = () => {
       const k = +range.value / 100;
       out.textContent = range.value + '%';
       render(state, { splitShadow: cur.s.map(v => v * k), splitHigh: cur.h.map(v => v * k) });
+      histo();
     };
     host.querySelectorAll('[data-g]').forEach(b => b.addEventListener('click', () => {
       host.querySelectorAll('[data-g]').forEach(x => x.classList.toggle('active', x === b));
@@ -372,7 +464,53 @@ const EditLab = (function () {
     hsl: mountHSL, mask: mountMask, noise: mountNoise, grading: mountGrading,
   };
 
+  /* Antes/depois compacto para o resumo "em 20 segundos". Usa uma cópia
+     pequena da imagem: é só para dar a ideia, não para inspecionar. */
+  let _thumbP = null;
+  function thumbState(imgSrc) {
+    if (_thumbP) return _thumbP;
+    _thumbP = new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => {
+        const w = 220, h = Math.round(img.naturalHeight * (w / img.naturalWidth));
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0, w, h);
+        res({ src: ctx.getImageData(0, 0, w, h), w, h });
+      };
+      img.onerror = rej; img.src = imgSrc;
+    }).catch(() => null);
+    return _thumbP;
+  }
+  function beforeAfter(host, vis) {
+    return thumbState(host.closest('[data-demo-img]')?.dataset.demoImg || EditLab._img).then(st => {
+      if (!st) return false;
+      const mk = (params, cap, cls) => {
+        const c = document.createElement('canvas');
+        c.width = st.w; c.height = st.h;
+        const ctx = c.getContext('2d');
+        if (params) {
+          const out = ctx.createImageData(st.w, st.h);
+          PhotoLab.process(st.src, out, params);
+          ctx.putImageData(out, 0, 0);
+        } else ctx.putImageData(st.src, 0, 0);
+        const f = document.createElement('figure');
+        f.className = 'ph-qv ' + cls;
+        f.appendChild(c);
+        const fc = document.createElement('figcaption'); fc.textContent = cap;
+        f.appendChild(fc);
+        return f;
+      };
+      host.innerHTML = '';
+      host.appendChild(mk(null, 'antes', 'a'));
+      const label = (vis.value > 0 ? '+' : '') + vis.value;
+      host.appendChild(mk({ [vis.param]: vis.value }, `${vis.param} ${label}`, 'b'));
+      return true;
+    });
+  }
+
   function mount(host, demo, imgSrc) {
+    EditLab._img = imgSrc;
     if (!host || !demo || !MOUNTS[demo.type]) return Promise.resolve(false);
     if (typeof PhotoLab === 'undefined') return Promise.resolve(false);
     host.innerHTML = `<p class="el-loading">A preparar a demonstração…</p>`;
@@ -386,5 +524,5 @@ const EditLab = (function () {
     });
   }
 
-  return { mount, TYPES: Object.keys(MOUNTS) };
+  return { mount, beforeAfter, TYPES: Object.keys(MOUNTS), _img: null };
 })();

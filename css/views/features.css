@@ -1115,3 +1115,91 @@ body.density-list .lp-link-tags { display: none; }
   .el-row { grid-template-columns: 1fr; gap: .15rem; }
   .el-val { text-align: left; }
 }
+
+/* ══ Edição v2: laboratório visual ═══════════════════════════════════════ */
+
+/* "Em 20 segundos" — a ideia inteira antes de qualquer parágrafo */
+.ph-quick { display: grid; grid-template-columns: 1fr auto; gap: .6rem 1rem; align-items: center;
+  background: linear-gradient(90deg, var(--card2), transparent); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0; padding: .7rem .9rem; margin-bottom: .9rem; }
+.ph-quick-badge { grid-column: 1; font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: .1rem .45rem; justify-self: start; }
+.ph-quick-txt { grid-column: 1; margin: 0; font-size: .95rem; font-weight: 600; color: var(--text); line-height: 1.5; }
+.ph-quick-vis { grid-column: 2; grid-row: 1 / 3; display: flex; gap: .35rem; }
+.ph-qv { margin: 0; }
+.ph-qv canvas { display: block; width: 110px; height: auto; border-radius: 6px; border: 1px solid var(--border); }
+.ph-qv figcaption { font-size: .58rem; color: var(--muted); text-align: center; margin-top: .15rem; }
+.ph-qv.b figcaption { color: var(--accent); font-weight: 700; }
+
+/* laboratório: demonstração + painel lateral de leitura */
+.el-lab { display: grid; grid-template-columns: 1fr 262px; gap: .7rem; align-items: start; }
+.el-lab-main { min-width: 0; }
+.el-lab-main .el-stage { max-width: none; }
+.el-lab-side { display: flex; flex-direction: column; gap: .5rem; }
+
+/* histograma ao vivo */
+.el-histo { margin: 0; }
+.el-histo-cv { display: block; width: 100%; height: 74px; background: #060d18; border: 1px solid var(--border); border-radius: 8px; }
+.el-histo figcaption { display: flex; justify-content: space-between; font-size: .58rem; color: var(--muted); margin-top: .2rem; }
+.el-histo-lo { color: #60a5fa; } .el-histo-hi { color: #f87171; }
+
+/* lupa 1:1 */
+.el-loupe { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+.el-loupe figure { margin: 0; }
+.el-loupe canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; border-radius: 6px; border: 1px solid var(--border); background: #060d18; }
+.el-loupe figcaption { font-size: .58rem; color: var(--muted); text-align: center; margin-top: .15rem; }
+.el-loupe figure:last-of-type figcaption { color: var(--accent); font-weight: 700; }
+.el-loupe-hint { grid-column: 1 / -1; margin: 0; font-size: .6rem; color: var(--muted); text-align: center; line-height: 1.3; }
+.el-lab.has-loupe .el-stage { cursor: crosshair; }
+.el-marks { display: flex; flex-wrap: wrap; gap: .25rem; }
+
+/* variantes de layout — as fichas deixam de ser todas iguais */
+.ph-tsplit { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: .8rem; align-items: start; }
+.ph-tsplit-a, .ph-tsplit-b { min-width: 0; }
+.ph-tsplit-b .ph-tool-concept { margin-bottom: 0; }
+.ph-tool-split .el-lab { grid-template-columns: 1fr; }
+.ph-tool-split .el-lab-side { flex-direction: row; }
+.ph-tool-split .el-histo { flex: 1; }
+.ph-tool-hero .ph-tool-demo { margin-bottom: 1rem; }
+.ph-tool-more { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card2); margin-top: .8rem; }
+.ph-tool-more summary { cursor: pointer; padding: .55rem .8rem; font-size: .82rem; font-weight: 700; color: var(--text2); list-style: none; }
+.ph-tool-more summary::-webkit-details-marker { display: none; }
+.ph-tool-more summary::after { content: " ▾"; color: var(--muted); }
+.ph-tool-more[open] summary::after { content: " ▴"; }
+.ph-tool-more .ph-tool-concept { padding: 0 .8rem .8rem; margin: 0; }
+
+/* relações entre ferramentas — aprender por associação */
+.ph-rel { margin-top: 1rem; }
+.ph-rel-hd, .ph-tgen-hd { display: block; font-size: .78rem; font-weight: 700; color: var(--text2); margin-bottom: .4rem; }
+.ph-rel-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .4rem; }
+.ph-rel-item { display: grid; grid-template-columns: 1fr auto; gap: .1rem .5rem; text-align: left; font: inherit; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--border); border-left: 2px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: .5rem .6rem; transition: all var(--ease); }
+.ph-rel-item:hover { border-color: var(--accent); transform: translateX(2px); }
+.ph-rel-n { font-size: .8rem; font-weight: 700; color: var(--accent); text-transform: capitalize; }
+.ph-rel-w { grid-column: 1 / -1; font-size: .74rem; color: var(--text2); line-height: 1.45; }
+.ph-rel-go { color: var(--muted); font-size: .8rem; }
+
+/* onde a ferramenta aparece, por género */
+.ph-tgen { margin-top: .9rem; }
+.ph-tgen-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ph-tgen-item { display: flex; flex-direction: column; gap: .1rem; text-align: left; font: inherit; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: .4rem .6rem;
+  flex: 1 1 200px; transition: all var(--ease); }
+.ph-tgen-item:hover { border-color: var(--accent); }
+.ph-tgen-n { font-size: .76rem; font-weight: 700; color: var(--text); }
+.ph-tgen-w { font-size: .7rem; color: var(--muted); line-height: 1.4; }
+
+@media (max-width: 900px) {
+  .el-lab { grid-template-columns: 1fr; }
+  .el-lab-side { flex-direction: row; flex-wrap: wrap; }
+  .el-histo { flex: 1 1 240px; }
+  .el-loupe { flex: 1 1 240px; }
+  .ph-tsplit { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .ph-quick { grid-template-columns: 1fr; }
+  .ph-quick-vis { grid-column: 1; grid-row: auto; }
+  .ph-qv canvas { width: 100%; }
+  .ph-rel-list { grid-template-columns: 1fr; }
+}

@@ -269,5 +269,54 @@ const PhotoLab = (function () {
     return dst;
   }
 
-  return { process, curveLUT, defaults, BANDS, boxBlur };
+  /* ── histograma ───────────────────────────────────────────────────
+     A distribuição tonal é a melhor forma de VER o que um ajuste faz: a
+     exposição desloca o monte, o contraste alarga-o, os realces comprimem
+     a ponta direita. Amostra de 4 em 4 píxeis (chega para a forma). */
+  function histogram(img) {
+    const r = new Uint32Array(256), g = new Uint32Array(256), b = new Uint32Array(256), l = new Uint32Array(256);
+    const D = img.data;
+    for (let i = 0; i < D.length; i += 16) {
+      r[D[i]]++; g[D[i + 1]]++; b[D[i + 2]]++;
+      l[Math.min(255, LUMA(D[i], D[i + 1], D[i + 2]) | 0)]++;
+    }
+    let mx = 0;
+    for (let i = 1; i < 255; i++) { if (l[i] > mx) mx = l[i]; if (r[i] > mx) mx = r[i]; if (g[i] > mx) mx = g[i]; if (b[i] > mx) mx = b[i]; }
+    // recorte: fração de píxeis encostados às pontas (avisos de estouro)
+    const total = l.reduce((a, v) => a + v, 0) || 1;
+    return { r, g, b, l, max: mx || 1, clipLow: (l[0] + l[1]) / total, clipHigh: (l[254] + l[255]) / total };
+  }
+
+  /* Desenha o histograma num canvas. `ref` (opcional) desenha o original
+     por baixo, a tracejado, para se ver o antes e o depois ao mesmo tempo. */
+  function drawHistogram(cv, h, ref) {
+    const ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    const path = (arr, max) => {
+      ctx.beginPath(); ctx.moveTo(0, H);
+      for (let i = 0; i < 256; i++) ctx.lineTo((i / 255) * W, H - Math.min(1, arr[i] / max) * (H - 2));
+      ctx.lineTo(W, H); ctx.closePath();
+    };
+    if (ref) {                      // silhueta do original
+      ctx.fillStyle = 'rgba(255,255,255,.10)';
+      path(ref.l, ref.max); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    [['r', 'rgba(239,68,68,.55)'], ['g', 'rgba(34,197,94,.55)'], ['b', 'rgba(59,130,246,.55)']].forEach(([k, col]) => {
+      ctx.fillStyle = col; path(h[k], h.max); ctx.fill();
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i < 256; i++) {
+      const x = (i / 255) * W, y = H - Math.min(1, h.l[i] / h.max) * (H - 2);
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+    // marcas de recorte nas pontas
+    if (h.clipHigh > 0.002) { ctx.fillStyle = 'rgba(248,113,113,.9)'; ctx.fillRect(W - 3, 0, 3, H); }
+    if (h.clipLow > 0.002) { ctx.fillStyle = 'rgba(96,165,250,.9)'; ctx.fillRect(0, 0, 3, H); }
+  }
+
+  return { process, curveLUT, defaults, BANDS, boxBlur, histogram, drawHistogram };
 })();

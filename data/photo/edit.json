@@ -1,12 +1,36 @@
 {
   "_doc": "Secção Edição — ensina CONCEITOS de edição, independentes de software. Regra de ouro: primeiro o que a ferramenta faz e que problema resolve; só no fim 'Nos principais programas'. Cada ferramenta tem nome em português E o termo internacional (para procurar tutoriais). O campo 'demo' liga ao motor de píxeis PhotoLab (js/pages/photo-lab.js): as demonstrações aplicam mesmo o ajuste, não são imagens pré-feitas.",
   "software": [
-    { "id": "lightroom", "name": "Lightroom", "short": "Lr" },
-    { "id": "acr", "name": "Camera Raw", "short": "ACR" },
-    { "id": "darktable", "name": "darktable", "short": "dt" },
-    { "id": "rawtherapee", "name": "RawTherapee", "short": "RT" },
-    { "id": "snapseed", "name": "Snapseed", "short": "Sg" },
-    { "id": "rapidraw", "name": "RapidRAW", "short": "RR" }
+    {
+      "id": "lightroom",
+      "name": "Lightroom",
+      "short": "Lr"
+    },
+    {
+      "id": "acr",
+      "name": "Camera Raw",
+      "short": "ACR"
+    },
+    {
+      "id": "darktable",
+      "name": "darktable",
+      "short": "dt"
+    },
+    {
+      "id": "rawtherapee",
+      "name": "RawTherapee",
+      "short": "RT"
+    },
+    {
+      "id": "snapseed",
+      "name": "Snapseed",
+      "short": "Sg"
+    },
+    {
+      "id": "rapidraw",
+      "name": "RapidRAW",
+      "short": "RR"
+    }
   ],
   "sections": [
     {
@@ -16,14 +40,54 @@
       "intro": "A ordem pela qual editas importa mais do que parece. Cada passo altera a base sobre a qual o seguinte trabalha — corrigir cor depois de ter esticado o contraste é resolver um problema que tu próprio criaste.",
       "kind": "workflow",
       "steps": [
-        { "n": 1, "name": "Correções técnicas", "what": "Perfil de objetiva, distorção, aberração cromática, endireitar horizonte e corte.", "why": "Geometria e corte mudam o enquadramento e, com ele, o histograma. Fazer isto no fim obriga a reajustar tudo o resto." },
-        { "n": 2, "name": "Balanço de brancos", "what": "Temperatura e matiz, até os neutros ficarem neutros.", "why": "É a fundação da cor. Toda a decisão de cor seguinte assume que o branco está certo — se não estiver, andas a corrigir o mesmo erro em cinco sítios diferentes." },
-        { "n": 3, "name": "Exposição e tonalidade", "what": "Exposição, realces, sombras, brancos, pretos — o mapa tonal geral.", "why": "Define onde ficam as pontas do histograma. Só depois disto faz sentido falar de contraste ou de curva." },
-        { "n": 4, "name": "Contraste e curva", "what": "Contraste global e curva de tons para o carácter da imagem.", "why": "A curva assume que já tens os extremos onde queres. Aplicá-la antes significa refazê-la a seguir." },
-        { "n": 5, "name": "Cor", "what": "Saturação, vibrância, HSL e color grading.", "why": "A saturação percebida depende do contraste. Se ajustares cor antes do contraste, a cor muda outra vez quando o contraste entrar." },
-        { "n": 6, "name": "Ajustes locais", "what": "Máscaras: céu, sujeito, gradientes, pincel.", "why": "O local corrige o que o global não conseguiu. Fazê-lo primeiro é pintar sobre uma base que ainda vai mudar." },
-        { "n": 7, "name": "Detalhe e ruído", "what": "Nitidez, textura, redução de ruído.", "why": "Sempre no fim, e à escala de saída: aumentar contraste depois de afiar amplifica halos e ruído que já lá estavam." },
-        { "n": 8, "name": "Exportar", "what": "Dimensão, espaço de cor, compressão e nitidez de saída.", "why": "A nitidez certa para impressão é diferente da nitidez certa para Instagram. Só se decide quando se sabe o destino." }
+        {
+          "n": 1,
+          "name": "Correções técnicas",
+          "what": "Perfil de objetiva, distorção, aberração cromática, endireitar horizonte e corte.",
+          "why": "Geometria e corte mudam o enquadramento e, com ele, o histograma. Fazer isto no fim obriga a reajustar tudo o resto."
+        },
+        {
+          "n": 2,
+          "name": "Balanço de brancos",
+          "what": "Temperatura e matiz, até os neutros ficarem neutros.",
+          "why": "É a fundação da cor. Toda a decisão de cor seguinte assume que o branco está certo — se não estiver, andas a corrigir o mesmo erro em cinco sítios diferentes."
+        },
+        {
+          "n": 3,
+          "name": "Exposição e tonalidade",
+          "what": "Exposição, realces, sombras, brancos, pretos — o mapa tonal geral.",
+          "why": "Define onde ficam as pontas do histograma. Só depois disto faz sentido falar de contraste ou de curva."
+        },
+        {
+          "n": 4,
+          "name": "Contraste e curva",
+          "what": "Contraste global e curva de tons para o carácter da imagem.",
+          "why": "A curva assume que já tens os extremos onde queres. Aplicá-la antes significa refazê-la a seguir."
+        },
+        {
+          "n": 5,
+          "name": "Cor",
+          "what": "Saturação, vibrância, HSL e color grading.",
+          "why": "A saturação percebida depende do contraste. Se ajustares cor antes do contraste, a cor muda outra vez quando o contraste entrar."
+        },
+        {
+          "n": 6,
+          "name": "Ajustes locais",
+          "what": "Máscaras: céu, sujeito, gradientes, pincel.",
+          "why": "O local corrige o que o global não conseguiu. Fazê-lo primeiro é pintar sobre uma base que ainda vai mudar."
+        },
+        {
+          "n": 7,
+          "name": "Detalhe e ruído",
+          "what": "Nitidez, textura, redução de ruído.",
+          "why": "Sempre no fim, e à escala de saída: aumentar contraste depois de afiar amplifica halos e ruído que já lá estavam."
+        },
+        {
+          "n": 8,
+          "name": "Exportar",
+          "what": "Dimensão, espaço de cor, compressão e nitidez de saída.",
+          "why": "A nitidez certa para impressão é diferente da nitidez certa para Instagram. Só se decide quando se sabe o destino."
+        }
       ],
       "mistakes": [
         "Começar pelos filtros e predefinições e só depois tentar corrigir a base — fica sempre pior do que começar pelo princípio.",
@@ -45,82 +109,514 @@
       "intro": "Estes seis cursores decidem onde cada zona da fotografia cai no histograma. A diferença entre eles é apenas QUE PARTE do histograma movem — e perceber isso resolve metade das dúvidas de edição.",
       "tools": [
         {
-          "id": "exposure", "name": "Exposição", "en": "Exposure", "icon": "☀️",
+          "id": "exposure",
+          "name": "Exposição",
+          "en": "Exposure",
+          "icon": "☀️",
           "tag": "move a imagem toda",
           "what": "Multiplica o brilho de todos os píxeis por igual. Medido em passos (EV): +1 EV é o dobro da luz, −1 EV é metade.",
           "why": "Existe para corrigir um erro de medição ou uma decisão deliberada tomada no momento do disparo. É o ajuste mais básico e o primeiro a fazer depois da cor.",
           "problem": "A fotografia está globalmente demasiado escura ou demasiado clara.",
           "effect": "Desloca o histograma inteiro para a esquerda ou para a direita, sem mudar a relação entre as zonas.",
-          "when": ["A imagem está globalmente escura ou clara", "Como primeiro passo tonal, antes de tudo o resto", "Para uniformizar uma série de fotografias da mesma cena"],
-          "avoid": ["Para corrigir só o céu ou só as sombras — isso é trabalho dos realces, sombras ou de uma máscara", "Empurrar +2 EV num JPG: o ruído e as bandas aparecem depressa"],
-          "mistakes": ["Usar exposição para salvar um céu queimado — se estourou, estourou; a informação não existe", "Corrigir exposição olhando para um ecrã com brilho no máximo e admirar-se que a impressão saia escura"],
-          "demo": { "type": "slider", "param": "exposure", "min": -2, "max": 2, "step": 0.05, "unit": " EV" },
-          "apps": { "lightroom": "Básico › Exposição", "acr": "Básico › Exposição", "darktable": "módulo «exposure»", "rawtherapee": "Exposição › Compensação de exposição", "snapseed": "Ajustar imagem › Brilho", "rapidraw": "Exposure" }
+          "when": [
+            "A imagem está globalmente escura ou clara",
+            "Como primeiro passo tonal, antes de tudo o resto",
+            "Para uniformizar uma série de fotografias da mesma cena"
+          ],
+          "avoid": [
+            "Para corrigir só o céu ou só as sombras — isso é trabalho dos realces, sombras ou de uma máscara",
+            "Empurrar +2 EV num JPG: o ruído e as bandas aparecem depressa"
+          ],
+          "mistakes": [
+            "Usar exposição para salvar um céu queimado — se estourou, estourou; a informação não existe",
+            "Corrigir exposição olhando para um ecrã com brilho no máximo e admirar-se que a impressão saia escura"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "exposure",
+            "min": -2,
+            "max": 2,
+            "step": 0.05,
+            "unit": " EV",
+            "marks": [
+              {
+                "v": -1,
+                "label": "−1 EV"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 1,
+                "label": "+1 EV"
+              }
+            ]
+          },
+          "apps": {
+            "lightroom": "Básico › Exposição",
+            "acr": "Básico › Exposição",
+            "darktable": "módulo «exposure»",
+            "rawtherapee": "Exposição › Compensação de exposição",
+            "snapseed": "Ajustar imagem › Brilho",
+            "rapidraw": "Exposure"
+          },
+          "quick": "Move a fotografia inteira para cima ou para baixo. Se só uma parte está mal, não é este o cursor.",
+          "quickVis": {
+            "param": "exposure",
+            "value": -1.2
+          },
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "highlights",
+              "why": "subir a exposição empurra os claros para fora — os realces trazem-nos de volta"
+            },
+            {
+              "id": "shadows",
+              "why": "descer a exposição fecha as sombras; é aqui que as vais reabrir"
+            },
+            {
+              "id": "curve",
+              "why": "a curva faz o mesmo com controlo por zona, em vez de tudo ao mesmo tempo"
+            }
+          ],
+          "genres": [
+            {
+              "id": "paisagem",
+              "why": "expor pelo céu e recuperar o resto depois"
+            },
+            {
+              "id": "noturna",
+              "why": "a tentação é clarear demais — a noite deve parecer noite"
+            },
+            {
+              "id": "retrato",
+              "why": "expor pela cara, não pela cena"
+            }
+          ]
         },
         {
-          "id": "contrast", "name": "Contraste", "en": "Contrast", "icon": "◐",
+          "id": "contrast",
+          "name": "Contraste",
+          "en": "Contrast",
+          "icon": "◐",
           "tag": "afasta claros de escuros",
           "what": "Afasta os tons claros dos escuros em torno do cinzento médio. Aumentar contraste escurece o que já era escuro e clareia o que já era claro.",
           "why": "Existe porque uma imagem sem contraste parece lavada e sem estrutura. É a forma mais rápida de dar presença — e a mais fácil de exagerar.",
           "problem": "A fotografia parece plana, cinzenta, sem impacto.",
           "effect": "Estica o histograma a partir do centro. Ganha-se presença e perde-se detalhe nas duas pontas.",
-          "when": ["Cenas de luz plana (nublado, neblina, sombra)", "Depois de acertar exposição e pontas", "Quando o assunto ganha com drama"],
-          "avoid": ["Cenas que já têm contraste extremo (contraluz, palco)", "Quando queres preservar detalhe nas sombras e nas altas luzes", "Retrato — o contraste global endurece a pele"],
-          "mistakes": ["Subir contraste para compensar uma imagem mal exposta, em vez de corrigir a exposição", "Não perceber que a curva de tons faz o mesmo com muito mais controlo"],
-          "demo": { "type": "slider", "param": "contrast", "min": -60, "max": 80, "step": 1 },
-          "apps": { "lightroom": "Básico › Contraste", "acr": "Básico › Contraste", "darktable": "«contrast equalizer» ou curva", "rawtherapee": "Exposição › Contraste", "snapseed": "Ajustar imagem › Contraste", "rapidraw": "Contrast" }
+          "when": [
+            "Cenas de luz plana (nublado, neblina, sombra)",
+            "Depois de acertar exposição e pontas",
+            "Quando o assunto ganha com drama"
+          ],
+          "avoid": [
+            "Cenas que já têm contraste extremo (contraluz, palco)",
+            "Quando queres preservar detalhe nas sombras e nas altas luzes",
+            "Retrato — o contraste global endurece a pele"
+          ],
+          "mistakes": [
+            "Subir contraste para compensar uma imagem mal exposta, em vez de corrigir a exposição",
+            "Não perceber que a curva de tons faz o mesmo com muito mais controlo"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "contrast",
+            "min": -60,
+            "max": 80,
+            "step": 1,
+            "marks": [
+              {
+                "v": -40,
+                "label": "suave"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 60,
+                "label": "forte"
+              }
+            ]
+          },
+          "apps": {
+            "lightroom": "Básico › Contraste",
+            "acr": "Básico › Contraste",
+            "darktable": "«contrast equalizer» ou curva",
+            "rawtherapee": "Exposição › Contraste",
+            "snapseed": "Ajustar imagem › Contraste",
+            "rapidraw": "Contrast"
+          },
+          "quick": "Afasta claros de escuros a partir do centro. Rápido, mas cego: não escolhe onde age.",
+          "quickVis": {
+            "param": "contrast",
+            "value": 55
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "curve",
+              "why": "faz o mesmo com controlo total — se o contraste te souber a pouco, é para aqui que vais"
+            },
+            {
+              "id": "clarity",
+              "why": "contraste local em vez de global: dá volume sem esticar o histograma"
+            },
+            {
+              "id": "blacks",
+              "why": "muito do que se procura no contraste resolve-se melhor com o ponto preto"
+            }
+          ],
+          "genres": [
+            {
+              "id": "nevoeiro",
+              "why": "aqui contraste a mais destrói o assunto"
+            },
+            {
+              "id": "pb",
+              "why": "sem cor, o contraste é quase tudo"
+            },
+            {
+              "id": "rua",
+              "why": "carácter urbano vive de contraste com sombras assumidas"
+            }
+          ]
         },
         {
-          "id": "highlights", "name": "Realces", "en": "Highlights", "icon": "🔺",
+          "id": "highlights",
+          "name": "Realces",
+          "en": "Highlights",
+          "icon": "🔺",
           "tag": "só a parte clara",
           "what": "Age apenas nos tons claros, deixando os médios e as sombras praticamente intactos. Negativo recupera detalhe; positivo abre ainda mais.",
           "why": "Existe porque o problema mais comum da fotografia digital é o céu queimado. Este cursor recupera informação que ainda existe no ficheiro, mas que não se vê.",
           "problem": "Céus brancos, nuvens sem detalhe, testas e reflexos a estourar.",
           "effect": "Comprime a ponta direita do histograma sem escurecer o resto da imagem.",
-          "when": ["Céu claro sobre paisagem escura", "Contraluz", "Vestuário branco e pele muito iluminada"],
-          "avoid": ["Levar a −100 sempre por hábito: a imagem fica cinzenta e irreal", "Contar com ele em JPG — a margem é muito menor que em RAW"],
-          "mistakes": ["Confundir com Brancos: realces trata a ZONA clara, brancos tratam o PONTO mais claro", "Achar que recupera um céu totalmente branco — se o valor é 255 em todos os canais, não há nada lá"],
-          "demo": { "type": "slider", "param": "highlights", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Realces", "acr": "Básico › Realces", "darktable": "«tone equalizer» (zonas claras)", "rawtherapee": "Exposição › Compressão de realces", "snapseed": "Ajustar imagem › Realces", "rapidraw": "Highlights" }
+          "when": [
+            "Céu claro sobre paisagem escura",
+            "Contraluz",
+            "Vestuário branco e pele muito iluminada"
+          ],
+          "avoid": [
+            "Levar a −100 sempre por hábito: a imagem fica cinzenta e irreal",
+            "Contar com ele em JPG — a margem é muito menor que em RAW"
+          ],
+          "mistakes": [
+            "Confundir com Brancos: realces trata a ZONA clara, brancos tratam o PONTO mais claro",
+            "Achar que recupera um céu totalmente branco — se o valor é 255 em todos os canais, não há nada lá"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "highlights",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -100,
+                "label": "recuperar"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 60,
+                "label": "abrir"
+              }
+            ]
+          },
+          "apps": {
+            "lightroom": "Básico › Realces",
+            "acr": "Básico › Realces",
+            "darktable": "«tone equalizer» (zonas claras)",
+            "rawtherapee": "Exposição › Compressão de realces",
+            "snapseed": "Ajustar imagem › Realces",
+            "rapidraw": "Highlights"
+          },
+          "quick": "Só a parte clara. Negativo recupera céus e nuvens que pareciam perdidos.",
+          "quickVis": {
+            "param": "highlights",
+            "value": -85
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "whites",
+              "why": "realces tratam a ZONA clara; brancos tratam o PONTO mais claro"
+            },
+            {
+              "id": "mask-grad",
+              "why": "se só o céu é que está claro, um gradiente faz melhor trabalho"
+            },
+            {
+              "id": "exposure",
+              "why": "muitas vezes o problema é exposição a mais, não realces a menos"
+            }
+          ],
+          "genres": [
+            {
+              "id": "nascer-por-sol",
+              "why": "o maior contraste do dia está aqui"
+            },
+            {
+              "id": "praia",
+              "why": "espuma branca queima com muita facilidade"
+            },
+            {
+              "id": "imobiliario",
+              "why": "janelas brancas são o problema nº1 do género"
+            }
+          ]
         },
         {
-          "id": "shadows", "name": "Sombras", "en": "Shadows", "icon": "🔻",
+          "id": "shadows",
+          "name": "Sombras",
+          "en": "Shadows",
+          "icon": "🔻",
           "tag": "só a parte escura",
           "what": "O espelho dos realces: age apenas nos tons escuros. Positivo revela detalhe nas sombras; negativo fecha-as.",
           "why": "Existe para recuperar o que ficou escondido na parte escura da cena — tipicamente quando expuseste para o céu.",
           "problem": "Zonas escuras completamente fechadas, sem detalhe legível.",
           "effect": "Levanta a ponta esquerda do histograma. Revela detalhe, mas também revela ruído.",
-          "when": ["Contraluz e cenas de alto contraste", "Interiores com janela", "Depois de expor para as altas luzes"],
-          "avoid": ["Levantar tudo a +100: a imagem fica plana e o ruído das sombras salta à vista", "Quando a sombra profunda faz parte da intenção (nocturno, retrato dramático)"],
-          "mistakes": ["Levantar sombras sem depois olhar para o ruído que apareceu", "Usar sombras onde o correto era uma máscara — a sombra do rosto e a sombra do canto não precisam do mesmo tratamento"],
-          "demo": { "type": "slider", "param": "shadows", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Sombras", "acr": "Básico › Sombras", "darktable": "«tone equalizer» (zonas escuras)", "rawtherapee": "Exposição › Compressão de sombras", "snapseed": "Ajustar imagem › Sombras", "rapidraw": "Shadows" }
+          "when": [
+            "Contraluz e cenas de alto contraste",
+            "Interiores com janela",
+            "Depois de expor para as altas luzes"
+          ],
+          "avoid": [
+            "Levantar tudo a +100: a imagem fica plana e o ruído das sombras salta à vista",
+            "Quando a sombra profunda faz parte da intenção (nocturno, retrato dramático)"
+          ],
+          "mistakes": [
+            "Levantar sombras sem depois olhar para o ruído que apareceu",
+            "Usar sombras onde o correto era uma máscara — a sombra do rosto e a sombra do canto não precisam do mesmo tratamento"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "shadows",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -60,
+                "label": "fechar"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 80,
+                "label": "abrir"
+              }
+            ]
+          },
+          "apps": {
+            "lightroom": "Básico › Sombras",
+            "acr": "Básico › Sombras",
+            "darktable": "«tone equalizer» (zonas escuras)",
+            "rawtherapee": "Exposição › Compressão de sombras",
+            "snapseed": "Ajustar imagem › Sombras",
+            "rapidraw": "Shadows"
+          },
+          "quick": "Só a parte escura. Positivo revela o que estava escondido — e o ruído que estava com ele.",
+          "quickVis": {
+            "param": "shadows",
+            "value": 75
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "noise",
+              "why": "levantar sombras revela sempre ruído: trata-o a seguir"
+            },
+            {
+              "id": "blacks",
+              "why": "se ficar tudo plano, recupera densidade com o ponto preto"
+            },
+            {
+              "id": "mask-subject",
+              "why": "clarear só o sujeito costuma ser melhor que clarear todas as sombras"
+            }
+          ],
+          "genres": [
+            {
+              "id": "familia",
+              "why": "interiores escuros pedem quase sempre sombras +"
+            },
+            {
+              "id": "vida-selvagem",
+              "why": "pelagem escura vive nas sombras"
+            },
+            {
+              "id": "noturna",
+              "why": "cuidado: nem toda a sombra deve ser levantada"
+            }
+          ]
         },
         {
-          "id": "whites", "name": "Brancos", "en": "Whites", "icon": "⬜",
+          "id": "whites",
+          "name": "Brancos",
+          "en": "Whites",
+          "icon": "⬜",
           "tag": "o ponto mais claro",
           "what": "Define onde fica o branco puro da imagem — o extremo direito do histograma.",
           "why": "Existe para dar à imagem um branco verdadeiro. Sem um ponto branco definido, a fotografia parece sempre ligeiramente suja.",
           "problem": "A imagem não tem nenhum ponto verdadeiramente branco e parece lavada.",
           "effect": "Estica ou comprime a extremidade direita do histograma.",
-          "when": ["Depois de acertar exposição e realces", "Cenas de neblina ou luz plana, para dar mordida", "Fotografia de produto sobre fundo branco"],
-          "avoid": ["Subir até a ponta encostar à direita e estourar o canal", "Antes de ter tratado os realces — a ordem certa é realces primeiro"],
-          "mistakes": ["Confundir com Realces (zona vs ponto)", "Definir o ponto branco olhando para o ecrã em vez de olhar para o histograma"],
-          "demo": { "type": "slider", "param": "whites", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Brancos", "acr": "Básico › Brancos", "darktable": "«levels» › ponto branco", "rawtherapee": "Exposição › Nível de branco", "snapseed": "—  (usa Brilho/Realces)", "rapidraw": "Whites" }
+          "when": [
+            "Depois de acertar exposição e realces",
+            "Cenas de neblina ou luz plana, para dar mordida",
+            "Fotografia de produto sobre fundo branco"
+          ],
+          "avoid": [
+            "Subir até a ponta encostar à direita e estourar o canal",
+            "Antes de ter tratado os realces — a ordem certa é realces primeiro"
+          ],
+          "mistakes": [
+            "Confundir com Realces (zona vs ponto)",
+            "Definir o ponto branco olhando para o ecrã em vez de olhar para o histograma"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "whites",
+            "min": -100,
+            "max": 100,
+            "step": 1
+          },
+          "apps": {
+            "lightroom": "Básico › Brancos",
+            "acr": "Básico › Brancos",
+            "darktable": "«levels» › ponto branco",
+            "rawtherapee": "Exposição › Nível de branco",
+            "snapseed": "—  (usa Brilho/Realces)",
+            "rapidraw": "Whites"
+          },
+          "quick": "Define onde fica o branco puro. Sem ponto branco, a fotografia parece sempre suja.",
+          "quickVis": {
+            "param": "whites",
+            "value": 60
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "blacks",
+              "why": "os dois definem as pontas do histograma — trabalham em par"
+            },
+            {
+              "id": "highlights",
+              "why": "trata a zona clara antes de definir o ponto branco"
+            },
+            {
+              "id": "curve",
+              "why": "a ponta direita da curva faz exatamente isto"
+            }
+          ],
+          "genres": [
+            {
+              "id": "produto",
+              "why": "fundo branco tem de ser mesmo branco"
+            },
+            {
+              "id": "nevoeiro",
+              "why": "o branco certo é o que salva uma cena lavada"
+            },
+            {
+              "id": "pb",
+              "why": "as pontas do histograma são metade da conversão"
+            }
+          ]
         },
         {
-          "id": "blacks", "name": "Pretos", "en": "Blacks", "icon": "⬛",
+          "id": "blacks",
+          "name": "Pretos",
+          "en": "Blacks",
+          "icon": "⬛",
           "tag": "o ponto mais escuro",
           "what": "Define onde fica o preto puro — o extremo esquerdo do histograma.",
           "why": "Existe pela mesma razão que os brancos: uma imagem sem preto verdadeiro parece desmaiada. E, ao contrário, levantar os pretos de propósito cria o look «matte».",
           "problem": "A imagem não tem densidade; nada é verdadeiramente escuro.",
           "effect": "Estica ou comprime a extremidade esquerda. Levantá-los produz o efeito de filme desbotado.",
-          "when": ["Dar densidade a uma imagem plana", "Fotografia noturna, para os pretos serem mesmo pretos", "Levantar de propósito, para um look film/matte"],
-          "avoid": ["Esmagar até perder todo o detalhe das sombras", "Em cenas de neblina, onde o preto profundo destrói a atmosfera"],
-          "mistakes": ["Esmagar os pretos e só descobrir na impressão que se perdeu metade da imagem", "Não perceber que levantar os pretos é uma decisão estética válida, não um erro"],
-          "demo": { "type": "slider", "param": "blacks", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Pretos", "acr": "Básico › Pretos", "darktable": "«levels» › ponto preto", "rawtherapee": "Exposição › Preto", "snapseed": "Ajustar imagem › Ambiente", "rapidraw": "Blacks" }
+          "when": [
+            "Dar densidade a uma imagem plana",
+            "Fotografia noturna, para os pretos serem mesmo pretos",
+            "Levantar de propósito, para um look film/matte"
+          ],
+          "avoid": [
+            "Esmagar até perder todo o detalhe das sombras",
+            "Em cenas de neblina, onde o preto profundo destrói a atmosfera"
+          ],
+          "mistakes": [
+            "Esmagar os pretos e só descobrir na impressão que se perdeu metade da imagem",
+            "Não perceber que levantar os pretos é uma decisão estética válida, não um erro"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "blacks",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -70,
+                "label": "densidade"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 45,
+                "label": "matte"
+              }
+            ]
+          },
+          "apps": {
+            "lightroom": "Básico › Pretos",
+            "acr": "Básico › Pretos",
+            "darktable": "«levels» › ponto preto",
+            "rawtherapee": "Exposição › Preto",
+            "snapseed": "Ajustar imagem › Ambiente",
+            "rapidraw": "Blacks"
+          },
+          "quick": "Define o preto puro. Esmagar dá densidade; levantar dá o look de filme desbotado.",
+          "quickVis": {
+            "param": "blacks",
+            "value": -55
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "whites",
+              "why": "o par simétrico: os dois fecham o histograma"
+            },
+            {
+              "id": "curve",
+              "why": "levantar o ponto preto na curva é o mesmo efeito, com mais controlo"
+            },
+            {
+              "id": "grading",
+              "why": "com os pretos levantados, a cor nas sombras nota-se muito mais"
+            }
+          ],
+          "genres": [
+            {
+              "id": "noturna",
+              "why": "pretos verdadeiros são o que faz a noite parecer noite"
+            },
+            {
+              "id": "rua",
+              "why": "levantar os pretos é a base do look film"
+            },
+            {
+              "id": "nevoeiro",
+              "why": "aqui esmagar pretos destrói a atmosfera"
+            }
+          ]
         }
       ]
     },
@@ -131,69 +627,378 @@
       "intro": "A cor divide-se em duas decisões: primeiro tornar a cor CORRETA (balanço de brancos), depois torná-la EXPRESSIVA (saturação, vibrância, grading). Fazer a segunda antes da primeira é trabalho a dobrar.",
       "tools": [
         {
-          "id": "temp", "name": "Temperatura", "en": "Temperature", "icon": "🌡️",
+          "id": "temp",
+          "name": "Temperatura",
+          "en": "Temperature",
+          "icon": "🌡️",
           "tag": "eixo azul ↔ laranja",
           "what": "Desloca a cor no eixo frio–quente. Medida em Kelvin: valores baixos arrefecem, valores altos aquecem.",
           "why": "Existe porque a luz tem cor — uma lâmpada é laranja, a sombra é azul — e o olho compensa automaticamente, mas o sensor não. É a correção que faz o branco parecer branco.",
           "problem": "A fotografia tem uma dominante de cor: azulada à sombra, alaranjada em interiores.",
           "effect": "Muda a cor global. Também é uma ferramenta estética: aquecer um pôr do sol, arrefecer uma cena de nevoeiro.",
-          "when": ["Sempre — é o segundo passo do fluxo", "Luz mista (janela fria + lâmpada quente)", "Para reforçar a intenção: quente para acolhedor, frio para melancólico"],
-          "avoid": ["Neutralizar completamente um pôr do sol: mata a razão de teres ido lá", "Corrigir por número em vez de olhar — o 'correto' nem sempre é o bonito"],
-          "mistakes": ["Deixar em automático e ficar com cada fotografia da série com uma cor diferente", "Corrigir a temperatura ao fim, depois de já ter ajustado saturação e HSL"],
-          "demo": { "type": "slider", "param": "temp", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Temperatura", "acr": "Básico › Temperatura", "darktable": "«white balance» / «color calibration»", "rawtherapee": "Cor › Balanço de brancos", "snapseed": "Ajustar imagem › Calor", "rapidraw": "Temperature" }
+          "when": [
+            "Sempre — é o segundo passo do fluxo",
+            "Luz mista (janela fria + lâmpada quente)",
+            "Para reforçar a intenção: quente para acolhedor, frio para melancólico"
+          ],
+          "avoid": [
+            "Neutralizar completamente um pôr do sol: mata a razão de teres ido lá",
+            "Corrigir por número em vez de olhar — o 'correto' nem sempre é o bonito"
+          ],
+          "mistakes": [
+            "Deixar em automático e ficar com cada fotografia da série com uma cor diferente",
+            "Corrigir a temperatura ao fim, depois de já ter ajustado saturação e HSL"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "temp",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -60,
+                "label": "frio"
+              },
+              {
+                "v": 0,
+                "label": "neutro"
+              },
+              {
+                "v": 55,
+                "label": "quente"
+              }
+            ]
+          },
+          "apps": {
+            "lightroom": "Básico › Temperatura",
+            "acr": "Básico › Temperatura",
+            "darktable": "«white balance» / «color calibration»",
+            "rawtherapee": "Cor › Balanço de brancos",
+            "snapseed": "Ajustar imagem › Calor",
+            "rapidraw": "Temperature"
+          },
+          "quick": "Eixo azul ↔ laranja. É a fundação da cor: acerta isto antes de tudo o resto.",
+          "quickVis": {
+            "param": "temp",
+            "value": 45
+          },
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "tint",
+              "why": "o segundo eixo; os dois juntos são o balanço de brancos"
+            },
+            {
+              "id": "hsl",
+              "why": "depois de neutralizar, o HSL afina cores específicas"
+            },
+            {
+              "id": "grading",
+              "why": "temperatura corrige, gradação interpreta"
+            }
+          ],
+          "genres": [
+            {
+              "id": "nascer-por-sol",
+              "why": "não neutralizes o laranja que foste lá buscar"
+            },
+            {
+              "id": "nevoeiro",
+              "why": "frio reforça a atmosfera"
+            },
+            {
+              "id": "familia",
+              "why": "tons de pele dependem disto mais do que de qualquer outra coisa"
+            }
+          ]
         },
         {
-          "id": "tint", "name": "Matiz", "en": "Tint", "icon": "💚",
+          "id": "tint",
+          "name": "Matiz",
+          "en": "Tint",
+          "icon": "💚",
           "tag": "eixo verde ↔ magenta",
           "what": "O segundo eixo do balanço de brancos, perpendicular à temperatura: corrige dominantes verdes ou magenta.",
           "why": "Existe porque a temperatura sozinha não chega. Luz fluorescente e LED barato produzem dominantes verdes que nenhuma quantidade de Kelvin corrige.",
           "problem": "A imagem está verde ou magenta, tipicamente sob luz artificial ou sob copa de árvores.",
           "effect": "Desloca a cor no eixo verde–magenta, sem alterar o eixo quente–frio.",
-          "when": ["Luz fluorescente ou LED de má qualidade", "Sombra sob vegetação (a folhagem tinge tudo de verde)", "Depois da temperatura, para afinar"],
-          "avoid": ["Mexer sem referência — usa um cinzento ou uma pele como guia", "Compensar com matiz o que era um problema de temperatura"],
-          "mistakes": ["Ignorá-lo por completo e culpar a câmara por 'cores estranhas'", "Empurrar magenta e ficar com pele avermelhada"],
-          "demo": { "type": "slider", "param": "tint", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Matiz", "acr": "Básico › Matiz", "darktable": "«white balance» › tint", "rawtherapee": "Cor › Balanço de brancos › Tint", "snapseed": "—  (usa Calor/Saturação)", "rapidraw": "Tint" }
+          "when": [
+            "Luz fluorescente ou LED de má qualidade",
+            "Sombra sob vegetação (a folhagem tinge tudo de verde)",
+            "Depois da temperatura, para afinar"
+          ],
+          "avoid": [
+            "Mexer sem referência — usa um cinzento ou uma pele como guia",
+            "Compensar com matiz o que era um problema de temperatura"
+          ],
+          "mistakes": [
+            "Ignorá-lo por completo e culpar a câmara por 'cores estranhas'",
+            "Empurrar magenta e ficar com pele avermelhada"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "tint",
+            "min": -100,
+            "max": 100,
+            "step": 1
+          },
+          "apps": {
+            "lightroom": "Básico › Matiz",
+            "acr": "Básico › Matiz",
+            "darktable": "«white balance» › tint",
+            "rawtherapee": "Cor › Balanço de brancos › Tint",
+            "snapseed": "—  (usa Calor/Saturação)",
+            "rapidraw": "Tint"
+          },
+          "quick": "Eixo verde ↔ magenta. Resolve dominantes que a temperatura sozinha não corrige.",
+          "quickVis": {
+            "param": "tint",
+            "value": -40
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "temp",
+              "why": "os dois formam o balanço de brancos; raramente se mexe num só"
+            },
+            {
+              "id": "hsl",
+              "why": "dominantes numa cor específica são trabalho do HSL, não do matiz global"
+            }
+          ],
+          "genres": [
+            {
+              "id": "eventos",
+              "why": "luz de palco e LED barato dão dominantes verdes"
+            },
+            {
+              "id": "flores",
+              "why": "sombra sob folhagem tinge tudo de verde"
+            },
+            {
+              "id": "imobiliario",
+              "why": "luz mista é a regra, não a exceção"
+            }
+          ]
         },
         {
-          "id": "saturation", "name": "Saturação", "en": "Saturation", "icon": "🔴",
+          "id": "saturation",
+          "name": "Saturação",
+          "en": "Saturation",
+          "icon": "🔴",
           "tag": "reforça TODAS as cores",
           "what": "Aumenta ou diminui a intensidade de todas as cores por igual, independentemente de quão saturadas já estão.",
           "why": "Existe como controlo bruto de intensidade cromática. É útil sobretudo para BAIXAR — para subir, a vibrância costuma ser melhor.",
           "problem": "As cores estão apagadas — ou, ao contrário, berrantes de mais.",
           "effect": "Multiplica a distância de cada píxel ao cinzento. Cores já saturadas saturam ainda mais e perdem detalhe.",
-          "when": ["Para DESSATURAR (é onde brilha)", "Cenas monocromáticas onde queres reforçar um só tom", "Quando queres um efeito assumidamente forte"],
-          "avoid": ["Como primeira escolha para 'dar vida' — usa vibrância", "Em fotografias com pele: a pele fica laranja muito antes do resto da cena mudar", "Céus já azuis: saturam para ciano elétrico e perdem gradação"],
-          "mistakes": ["Subir saturação global e destruir os tons de pele", "Não perceber que saturação e vibrância existem para coisas diferentes"],
-          "demo": { "type": "compare", "params": [{ "param": "saturation", "label": "Saturação", "value": 70 }, { "param": "vibrance", "label": "Vibrância", "value": 70 }], "note": "A mesma intensidade nos dois: repara em como a saturação empurra o que já era forte (céu, pele) e a vibrância trabalha sobretudo o que estava apagado." },
-          "apps": { "lightroom": "Básico › Saturação", "acr": "Básico › Saturação", "darktable": "«color balance rgb» › saturação global", "rawtherapee": "Cor › Saturação", "snapseed": "Ajustar imagem › Saturação", "rapidraw": "Saturation" }
+          "when": [
+            "Para DESSATURAR (é onde brilha)",
+            "Cenas monocromáticas onde queres reforçar um só tom",
+            "Quando queres um efeito assumidamente forte"
+          ],
+          "avoid": [
+            "Como primeira escolha para 'dar vida' — usa vibrância",
+            "Em fotografias com pele: a pele fica laranja muito antes do resto da cena mudar",
+            "Céus já azuis: saturam para ciano elétrico e perdem gradação"
+          ],
+          "mistakes": [
+            "Subir saturação global e destruir os tons de pele",
+            "Não perceber que saturação e vibrância existem para coisas diferentes"
+          ],
+          "demo": {
+            "type": "compare",
+            "params": [
+              {
+                "param": "saturation",
+                "label": "Saturação",
+                "value": 70
+              },
+              {
+                "param": "vibrance",
+                "label": "Vibrância",
+                "value": 70
+              }
+            ],
+            "note": "A mesma intensidade nos dois: repara em como a saturação empurra o que já era forte (céu, pele) e a vibrância trabalha sobretudo o que estava apagado."
+          },
+          "apps": {
+            "lightroom": "Básico › Saturação",
+            "acr": "Básico › Saturação",
+            "darktable": "«color balance rgb» › saturação global",
+            "rawtherapee": "Cor › Saturação",
+            "snapseed": "Ajustar imagem › Saturação",
+            "rapidraw": "Saturation"
+          },
+          "quick": "Reforça TODAS as cores por igual — incluindo as que já estavam no limite.",
+          "layout": "pair",
+          "relations": [
+            {
+              "id": "vibrance",
+              "why": "a versão inteligente: quase sempre a escolha certa para SUBIR cor"
+            },
+            {
+              "id": "hsl",
+              "why": "quando o problema é uma cor só, não mexas na saturação global"
+            },
+            {
+              "id": "temp",
+              "why": "cor errada não se resolve com mais cor"
+            }
+          ],
+          "genres": [
+            {
+              "id": "pb",
+              "why": "dessaturar é onde a saturação brilha"
+            },
+            {
+              "id": "produto",
+              "why": "cor fiel: mexer pouco"
+            },
+            {
+              "id": "rua",
+              "why": "dessaturar dá coesão a uma série urbana"
+            }
+          ]
         },
         {
-          "id": "vibrance", "name": "Vibrância", "en": "Vibrance", "icon": "🌈",
+          "id": "vibrance",
+          "name": "Vibrância",
+          "en": "Vibrance",
+          "icon": "🌈",
           "tag": "reforça só as cores fracas",
           "what": "Saturação inteligente: aumenta sobretudo as cores pouco saturadas e quase não toca nas que já estão fortes. Costuma também proteger os tons de pele.",
           "why": "Existe precisamente porque a saturação global estraga pele e céus. A vibrância dá o mesmo ganho de cor sem os efeitos secundários.",
           "problem": "Cores apagadas numa fotografia que tem pessoas ou céu — onde a saturação global seria destrutiva.",
           "effect": "Aumenta a cor de forma desigual: muito no que estava cinzento, pouco no que já era vivo.",
-          "when": ["Quase sempre que quiseres MAIS cor", "Retrato e fotografia com pessoas", "Paisagem com céu já azul"],
-          "avoid": ["Esperar dela um efeito dramático — é deliberadamente subtil", "Como substituto de um balanço de brancos correto"],
-          "mistakes": ["Usar saturação quando devia usar vibrância (o erro mais comum de todos)", "Empilhar vibrância +60 com saturação +40 e admirar-se do resultado berrante"],
-          "demo": { "type": "slider", "param": "vibrance", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Vibração", "acr": "Básico › Vibração", "darktable": "«color balance rgb» › vibrance", "rawtherapee": "Cor › Vibrância", "snapseed": "Ajustar imagem › Saturação (comporta-se como vibrância)", "rapidraw": "Vibrance" }
+          "when": [
+            "Quase sempre que quiseres MAIS cor",
+            "Retrato e fotografia com pessoas",
+            "Paisagem com céu já azul"
+          ],
+          "avoid": [
+            "Esperar dela um efeito dramático — é deliberadamente subtil",
+            "Como substituto de um balanço de brancos correto"
+          ],
+          "mistakes": [
+            "Usar saturação quando devia usar vibrância (o erro mais comum de todos)",
+            "Empilhar vibrância +60 com saturação +40 e admirar-se do resultado berrante"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "vibrance",
+            "min": -100,
+            "max": 100,
+            "step": 1
+          },
+          "apps": {
+            "lightroom": "Básico › Vibração",
+            "acr": "Básico › Vibração",
+            "darktable": "«color balance rgb» › vibrance",
+            "rawtherapee": "Cor › Vibrância",
+            "snapseed": "Ajustar imagem › Saturação (comporta-se como vibrância)",
+            "rapidraw": "Vibrance"
+          },
+          "quick": "Sobe sobretudo as cores apagadas e poupa as que já estão fortes — e a pele.",
+          "quickVis": {
+            "param": "vibrance",
+            "value": 70
+          },
+          "layout": "split",
+          "relations": [
+            {
+              "id": "saturation",
+              "why": "compara os dois lado a lado na ficha da Saturação"
+            },
+            {
+              "id": "hsl",
+              "why": "para uma cor específica, o HSL é mais preciso"
+            },
+            {
+              "id": "grading",
+              "why": "vibrância dá intensidade; a gradação dá identidade"
+            }
+          ],
+          "genres": [
+            {
+              "id": "viagem",
+              "why": "cor viva sem estragar tons de pele"
+            },
+            {
+              "id": "paisagem",
+              "why": "verdes e azuis ganham sem ficarem artificiais"
+            },
+            {
+              "id": "retrato",
+              "why": "a escolha segura quando há pessoas"
+            }
+          ]
         },
         {
-          "id": "grading", "name": "Gradação de cor", "en": "Color Grading / Split Toning", "icon": "🎞️",
+          "id": "grading",
+          "name": "Gradação de cor",
+          "en": "Color Grading / Split Toning",
+          "icon": "🎞️",
           "tag": "cor diferente em sombras e luzes",
           "what": "Aplica uma tonalidade às sombras e outra às altas luzes, de forma independente.",
           "why": "Existe para criar identidade cromática. É o que dá a uma série de fotografias um 'look' coerente, e é a base do teal & orange do cinema.",
           "problem": "As fotografias estão tecnicamente corretas mas não têm carácter nem coerência entre si.",
           "effect": "Introduz cor onde a imagem era neutra, criando separação entre planos claros e escuros.",
-          "when": ["Dar coerência a uma série", "Reforçar a separação entre sujeito quente e fundo frio", "Simular processos de filme"],
-          "avoid": ["Antes de o balanço de brancos estar certo", "Em fotografia documental ou de produto, onde a cor deve ser fiel", "Com mão pesada: se se nota à primeira, é de mais"],
-          "mistakes": ["Empurrar as sombras para teal até a imagem ficar esverdeada e doentia", "Aplicar um look forte a uma fotografia que já tinha cor bonita"],
-          "demo": { "type": "grading" },
-          "apps": { "lightroom": "Gradação de cor (roda de sombras/médios/realces)", "acr": "Gradação de cor", "darktable": "«color balance rgb» (4 vias)", "rawtherapee": "Cor › Tonalização dividida", "snapseed": "Curvas por canal", "rapidraw": "Color Grading" }
+          "when": [
+            "Dar coerência a uma série",
+            "Reforçar a separação entre sujeito quente e fundo frio",
+            "Simular processos de filme"
+          ],
+          "avoid": [
+            "Antes de o balanço de brancos estar certo",
+            "Em fotografia documental ou de produto, onde a cor deve ser fiel",
+            "Com mão pesada: se se nota à primeira, é de mais"
+          ],
+          "mistakes": [
+            "Empurrar as sombras para teal até a imagem ficar esverdeada e doentia",
+            "Aplicar um look forte a uma fotografia que já tinha cor bonita"
+          ],
+          "demo": {
+            "type": "grading"
+          },
+          "apps": {
+            "lightroom": "Gradação de cor (roda de sombras/médios/realces)",
+            "acr": "Gradação de cor",
+            "darktable": "«color balance rgb» (4 vias)",
+            "rawtherapee": "Cor › Tonalização dividida",
+            "snapseed": "Curvas por canal",
+            "rapidraw": "Color Grading"
+          },
+          "quick": "Cor diferente nas sombras e nas luzes. É o que dá identidade a uma série.",
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "blacks",
+              "why": "levanta os pretos primeiro e a cor das sombras nota-se muito mais"
+            },
+            {
+              "id": "temp",
+              "why": "corrige antes de interpretar"
+            },
+            {
+              "id": "curve",
+              "why": "curvas por canal fazem o mesmo, de outra maneira"
+            }
+          ],
+          "genres": [
+            {
+              "id": "rua",
+              "why": "look cinematográfico coerente"
+            },
+            {
+              "id": "automovel",
+              "why": "separar o carro do fundo pela cor"
+            },
+            {
+              "id": "noturna",
+              "why": "teal e laranja são a linguagem da noite urbana"
+            }
+          ]
         }
       ]
     },
@@ -204,24 +1009,179 @@
       "intro": "A curva faz tudo o que os cursores de tonalidade fazem, mas dá-te controlo exato sobre QUE tons se movem e quanto. O eixo horizontal é o tom original, o vertical é o tom final: levantar um ponto clareia esse tom.",
       "tools": [
         {
-          "id": "curve", "name": "Curva de tons", "en": "Tone Curve", "icon": "📈",
+          "id": "curve",
+          "name": "Curva de tons",
+          "en": "Tone Curve",
+          "icon": "📈",
           "tag": "controlo tonal preciso",
           "what": "Um gráfico que mapeia cada tom de entrada num tom de saída. A diagonal é 'não mexer'; qualquer desvio clareia (acima) ou escurece (abaixo) esse tom.",
           "why": "Existe porque os cursores são atalhos com zonas fixas. A curva deixa-te escolher exatamente onde começa e acaba o ajuste — é o instrumento mais preciso de toda a edição tonal.",
           "problem": "Precisas de contraste, mas só nos médios. Ou de levantar sombras sem tocar no resto. Nenhum cursor faz isso.",
           "effect": "Inclinação mais vertical = mais contraste nessa zona. Mais horizontal = menos contraste. A inclinação é literalmente o contraste local.",
-          "when": ["Contraste com controlo (curva em S)", "Look matte, levantando o ponto preto", "Recuperar altas luzes sem tocar nos médios", "Ajustar cor por canal, quando disponível"],
-          "avoid": ["Movimentos bruscos: criam saltos e bandas visíveis nos gradientes", "Como primeiro ajuste — a curva assume que a exposição já está certa"],
-          "mistakes": ["Fazer uma curva em S muito agressiva e perder detalhe nas duas pontas", "Não perceber que a inclinação da curva É o contraste"],
-          "demo": { "type": "curve" },
-          "presets": [
-            { "id": "s", "name": "Curva em S", "why": "Escurece as sombras e clareia as altas luzes: contraste com carácter, mantendo os médios.", "points": [[0, 0], [0.25, 0.17], [0.75, 0.83], [1, 1]] },
-            { "id": "flat", "name": "Reduzir contraste", "why": "Aproxima os tons do centro. Útil quando a cena já tem contraste a mais.", "points": [[0, 0.08], [0.5, 0.5], [1, 0.92]] },
-            { "id": "matte", "name": "Matte / film", "why": "Levanta o ponto preto: as sombras deixam de ser pretas e a imagem ganha aquele ar de filme desbotado.", "points": [[0, 0.14], [0.5, 0.52], [1, 0.96]] },
-            { "id": "recover", "name": "Recuperar altas luzes", "why": "Baixa só a ponta direita, comprimindo os tons claros sem escurecer o resto.", "points": [[0, 0], [0.5, 0.5], [0.8, 0.76], [1, 0.88]] },
-            { "id": "lift", "name": "Levantar sombras", "why": "Sobe só a ponta esquerda: revela detalhe escuro sem mexer nos médios nem nas luzes.", "points": [[0, 0.06], [0.25, 0.36], [0.5, 0.5], [1, 1]] }
+          "when": [
+            "Contraste com controlo (curva em S)",
+            "Look matte, levantando o ponto preto",
+            "Recuperar altas luzes sem tocar nos médios",
+            "Ajustar cor por canal, quando disponível"
           ],
-          "apps": { "lightroom": "Curva de tons (ponto e paramétrica)", "acr": "Curva de tons", "darktable": "«tone curve» ou «rgb curve»", "rawtherapee": "Exposição › Curva de tons 1 e 2", "snapseed": "Curvas", "rapidraw": "Tone Curve" }
+          "avoid": [
+            "Movimentos bruscos: criam saltos e bandas visíveis nos gradientes",
+            "Como primeiro ajuste — a curva assume que a exposição já está certa"
+          ],
+          "mistakes": [
+            "Fazer uma curva em S muito agressiva e perder detalhe nas duas pontas",
+            "Não perceber que a inclinação da curva É o contraste"
+          ],
+          "demo": {
+            "type": "curve"
+          },
+          "presets": [
+            {
+              "id": "s",
+              "name": "Curva em S",
+              "why": "Escurece as sombras e clareia as altas luzes: contraste com carácter, mantendo os médios.",
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0.25,
+                  0.17
+                ],
+                [
+                  0.75,
+                  0.83
+                ],
+                [
+                  1,
+                  1
+                ]
+              ]
+            },
+            {
+              "id": "flat",
+              "name": "Reduzir contraste",
+              "why": "Aproxima os tons do centro. Útil quando a cena já tem contraste a mais.",
+              "points": [
+                [
+                  0,
+                  0.08
+                ],
+                [
+                  0.5,
+                  0.5
+                ],
+                [
+                  1,
+                  0.92
+                ]
+              ]
+            },
+            {
+              "id": "matte",
+              "name": "Matte / film",
+              "why": "Levanta o ponto preto: as sombras deixam de ser pretas e a imagem ganha aquele ar de filme desbotado.",
+              "points": [
+                [
+                  0,
+                  0.14
+                ],
+                [
+                  0.5,
+                  0.52
+                ],
+                [
+                  1,
+                  0.96
+                ]
+              ]
+            },
+            {
+              "id": "recover",
+              "name": "Recuperar altas luzes",
+              "why": "Baixa só a ponta direita, comprimindo os tons claros sem escurecer o resto.",
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0.5,
+                  0.5
+                ],
+                [
+                  0.8,
+                  0.76
+                ],
+                [
+                  1,
+                  0.88
+                ]
+              ]
+            },
+            {
+              "id": "lift",
+              "name": "Levantar sombras",
+              "why": "Sobe só a ponta esquerda: revela detalhe escuro sem mexer nos médios nem nas luzes.",
+              "points": [
+                [
+                  0,
+                  0.06
+                ],
+                [
+                  0.25,
+                  0.36
+                ],
+                [
+                  0.5,
+                  0.5
+                ],
+                [
+                  1,
+                  1
+                ]
+              ]
+            }
+          ],
+          "apps": {
+            "lightroom": "Curva de tons (ponto e paramétrica)",
+            "acr": "Curva de tons",
+            "darktable": "«tone curve» ou «rgb curve»",
+            "rawtherapee": "Exposição › Curva de tons 1 e 2",
+            "snapseed": "Curvas",
+            "rapidraw": "Tone Curve"
+          },
+          "quick": "Faz tudo o que os cursores fazem, mas escolhes exatamente que tons se movem. A inclinação É o contraste.",
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "contrast",
+              "why": "a curva é o contraste com controlo — se o cursor te sabe a pouco, vem para aqui"
+            },
+            {
+              "id": "blacks",
+              "why": "levantar o canto inferior esquerdo é o look matte"
+            },
+            {
+              "id": "highlights",
+              "why": "baixar a ponta direita comprime os claros sem tocar nos médios"
+            }
+          ],
+          "genres": [
+            {
+              "id": "pb",
+              "why": "a conversão vive da curva"
+            },
+            {
+              "id": "rua",
+              "why": "o look film faz-se aqui"
+            },
+            {
+              "id": "paisagem",
+              "why": "contraste nos médios sem perder as pontas"
+            }
+          ]
         }
       ]
     },
@@ -232,17 +1192,71 @@
       "intro": "HSL trata cada família de cor em separado. Podes escurecer só o azul do céu, tirar saturação só ao verde da relva ou corrigir só o laranja da pele — sem tocar em mais nada da imagem.",
       "tools": [
         {
-          "id": "hsl", "name": "HSL", "en": "Hue · Saturation · Luminance", "icon": "🎚️",
+          "id": "hsl",
+          "name": "HSL",
+          "en": "Hue · Saturation · Luminance",
+          "icon": "🎚️",
           "tag": "cada cor em separado",
           "what": "Três controlos por cada família de cor. Matiz (Hue) desloca o tom; Saturação (Saturation) reforça ou apaga; Luminância (Luminance) clareia ou escurece essa cor.",
           "why": "Existe porque quase nunca queres mexer em TODAS as cores. O problema real é normalmente uma cor específica: o céu que não fica azul, a relva demasiado amarela, a pele avermelhada.",
           "problem": "Uma cor específica está errada, mas o resto da imagem está bem.",
           "effect": "Altera uma banda de matiz e deixa as outras intactas — o ajuste mais cirúrgico que existe sem usar máscaras.",
-          "when": ["Escurecer o azul do céu (o truque mais usado em paisagem)", "Corrigir tons de pele: baixar saturação e subir luminância do laranja", "Uniformizar verdes de vegetação, que raramente saem bem", "Fazer uma cor destacar-se, dessaturando as vizinhas"],
-          "avoid": ["Movimentos grandes: aparecem bordas duras entre bandas de cor", "Como substituto do balanço de brancos", "Em cores que ocupam grandes áreas com gradientes suaves — as transições denunciam-se"],
-          "mistakes": ["Escurecer o azul a −80 e ficar com um céu com halos à volta das nuvens", "Corrigir pele com o vermelho quando a banda certa é quase sempre o laranja"],
-          "demo": { "type": "hsl" },
-          "apps": { "lightroom": "Misturador de cores (HSL)", "acr": "Misturador de cores", "darktable": "«color zones»", "rawtherapee": "Cor › Equalizador HSV / Cor L*a*b*", "snapseed": "Curvas por canal (aproximação)", "rapidraw": "HSL" }
+          "when": [
+            "Escurecer o azul do céu (o truque mais usado em paisagem)",
+            "Corrigir tons de pele: baixar saturação e subir luminância do laranja",
+            "Uniformizar verdes de vegetação, que raramente saem bem",
+            "Fazer uma cor destacar-se, dessaturando as vizinhas"
+          ],
+          "avoid": [
+            "Movimentos grandes: aparecem bordas duras entre bandas de cor",
+            "Como substituto do balanço de brancos",
+            "Em cores que ocupam grandes áreas com gradientes suaves — as transições denunciam-se"
+          ],
+          "mistakes": [
+            "Escurecer o azul a −80 e ficar com um céu com halos à volta das nuvens",
+            "Corrigir pele com o vermelho quando a banda certa é quase sempre o laranja"
+          ],
+          "demo": {
+            "type": "hsl"
+          },
+          "apps": {
+            "lightroom": "Misturador de cores (HSL)",
+            "acr": "Misturador de cores",
+            "darktable": "«color zones»",
+            "rawtherapee": "Cor › Equalizador HSV / Cor L*a*b*",
+            "snapseed": "Curvas por canal (aproximação)",
+            "rapidraw": "HSL"
+          },
+          "quick": "Cada família de cor em separado. Escurecer só o azul do céu é o truque mais usado em paisagem.",
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "saturation",
+              "why": "o oposto: o HSL é cirúrgico, a saturação é cega"
+            },
+            {
+              "id": "temp",
+              "why": "corrige a dominante global antes de afinar cores"
+            },
+            {
+              "id": "mask-subject",
+              "why": "se a cor aparece em dois sítios e só queres um, precisas de máscara"
+            }
+          ],
+          "genres": [
+            {
+              "id": "paisagem",
+              "why": "azul do céu e verdes de vegetação"
+            },
+            {
+              "id": "retrato",
+              "why": "o laranja é a banda dos tons de pele"
+            },
+            {
+              "id": "automovel",
+              "why": "cor exata da pintura"
+            }
+          ]
         }
       ]
     },
@@ -253,43 +1267,216 @@
       "intro": "Tudo o que vimos até aqui aplica-se à imagem inteira. As máscaras deixam-te aplicar um ajuste só a uma parte — e é aqui que a edição deixa de ser correção e passa a ser direção da atenção de quem vê.",
       "tools": [
         {
-          "id": "mask-grad", "name": "Gradiente linear", "en": "Linear Gradient", "icon": "🌅",
+          "id": "mask-grad",
+          "name": "Gradiente linear",
+          "en": "Linear Gradient",
+          "icon": "🌅",
           "tag": "transição reta e suave",
           "what": "Aplica um ajuste que se desvanece linearmente ao longo de uma direção.",
           "why": "Existe para reproduzir digitalmente o filtro ND graduado: escurecer um céu claro sem uma linha visível de separação.",
           "problem": "O céu está demasiado claro em relação ao terreno.",
           "effect": "Ajuste forte de um lado, nulo do outro, com transição contínua.",
-          "when": ["Escurecer o céu numa paisagem com horizonte reto", "Clarear o primeiro plano", "Dar profundidade, escurecendo os cantos de forma direcional"],
-          "avoid": ["Horizontes irregulares (montanhas, árvores) — a linha reta escurece o que não devia", "Como substituto de uma máscara de céu automática, quando esta existe"],
-          "mistakes": ["Deixar a transição demasiado curta e criar uma banda visível", "Escurecer o céu e esquecer que também escureceu o topo de um edifício"],
-          "demo": { "type": "mask", "shape": "linear", "params": { "exposure": -0.9, "contrast": 12 } },
-          "apps": { "lightroom": "Máscara › Gradiente linear", "acr": "Máscara › Gradiente", "darktable": "máscara desenhada › gradiente", "rawtherapee": "Editor de áreas › Gradiente", "snapseed": "—  (usa Seletivo)", "rapidraw": "Linear Gradient" }
+          "when": [
+            "Escurecer o céu numa paisagem com horizonte reto",
+            "Clarear o primeiro plano",
+            "Dar profundidade, escurecendo os cantos de forma direcional"
+          ],
+          "avoid": [
+            "Horizontes irregulares (montanhas, árvores) — a linha reta escurece o que não devia",
+            "Como substituto de uma máscara de céu automática, quando esta existe"
+          ],
+          "mistakes": [
+            "Deixar a transição demasiado curta e criar uma banda visível",
+            "Escurecer o céu e esquecer que também escureceu o topo de um edifício"
+          ],
+          "demo": {
+            "type": "mask",
+            "shape": "linear",
+            "params": {
+              "exposure": -0.9,
+              "contrast": 12
+            }
+          },
+          "apps": {
+            "lightroom": "Máscara › Gradiente linear",
+            "acr": "Máscara › Gradiente",
+            "darktable": "máscara desenhada › gradiente",
+            "rawtherapee": "Editor de áreas › Gradiente",
+            "snapseed": "—  (usa Seletivo)",
+            "rapidraw": "Linear Gradient"
+          },
+          "quick": "Um ajuste que se desvanece numa direção. O filtro ND graduado, em digital.",
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "highlights",
+              "why": "alternativa global quando o céu não tem uma linha reta"
+            },
+            {
+              "id": "mask-subject",
+              "why": "horizontes irregulares pedem uma seleção por conteúdo"
+            },
+            {
+              "id": "exposure",
+              "why": "o gradiente é exposição aplicada só a metade"
+            }
+          ],
+          "genres": [
+            {
+              "id": "paisagem",
+              "why": "escurecer o céu com horizonte reto"
+            },
+            {
+              "id": "praia",
+              "why": "mar e céu separam-se numa linha"
+            },
+            {
+              "id": "longa-exposicao",
+              "why": "céu com movimento pede densidade"
+            }
+          ]
         },
         {
-          "id": "mask-radial", "name": "Gradiente radial", "en": "Radial Gradient", "icon": "⭕",
+          "id": "mask-radial",
+          "name": "Gradiente radial",
+          "en": "Radial Gradient",
+          "icon": "⭕",
           "tag": "ilumina ou escurece uma zona",
           "what": "Aplica um ajuste dentro (ou fora) de uma elipse, com transição suave nas bordas.",
           "why": "Existe para criar ou reforçar a luz sobre o sujeito. É a forma mais eficaz de dirigir o olhar sem que se note.",
           "problem": "O sujeito não se destaca do que o rodeia.",
           "effect": "Cria um foco de atenção — clareando o sujeito, escurecendo o resto, ou ambos.",
-          "when": ["Realçar um rosto ou um sujeito", "Vinheta com controlo (posição e forma à tua escolha)", "Simular uma luz que não existia na cena"],
-          "avoid": ["Exagerar até parecer um foco de teatro", "Quando o sujeito não é elíptico — nesse caso, pincel ou máscara de sujeito"],
-          "mistakes": ["Esquecer de suavizar a borda e ficar com um halo visível", "Clarear o sujeito e não escurecer nada: o contraste relativo é que faz o efeito"],
-          "demo": { "type": "mask", "shape": "radial", "params": { "exposure": 0.55, "contrast": 10, "saturation": 12 } },
-          "apps": { "lightroom": "Máscara › Gradiente radial", "acr": "Máscara › Radial", "darktable": "máscara desenhada › elipse", "rawtherapee": "Editor de áreas › Elipse", "snapseed": "Seletivo", "rapidraw": "Radial" }
+          "when": [
+            "Realçar um rosto ou um sujeito",
+            "Vinheta com controlo (posição e forma à tua escolha)",
+            "Simular uma luz que não existia na cena"
+          ],
+          "avoid": [
+            "Exagerar até parecer um foco de teatro",
+            "Quando o sujeito não é elíptico — nesse caso, pincel ou máscara de sujeito"
+          ],
+          "mistakes": [
+            "Esquecer de suavizar a borda e ficar com um halo visível",
+            "Clarear o sujeito e não escurecer nada: o contraste relativo é que faz o efeito"
+          ],
+          "demo": {
+            "type": "mask",
+            "shape": "radial",
+            "params": {
+              "exposure": 0.55,
+              "contrast": 10,
+              "saturation": 12
+            }
+          },
+          "apps": {
+            "lightroom": "Máscara › Gradiente radial",
+            "acr": "Máscara › Radial",
+            "darktable": "máscara desenhada › elipse",
+            "rawtherapee": "Editor de áreas › Elipse",
+            "snapseed": "Seletivo",
+            "rapidraw": "Radial"
+          },
+          "quick": "Cria luz onde não havia. É como se dirige o olhar sem que se note.",
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "mask-subject",
+              "why": "quando o sujeito não é elíptico"
+            },
+            {
+              "id": "exposure",
+              "why": "clarear o sujeito E escurecer o resto é o que faz o efeito"
+            },
+            {
+              "id": "clarity",
+              "why": "volume localizado reforça o mesmo destaque"
+            }
+          ],
+          "genres": [
+            {
+              "id": "retrato",
+              "why": "realçar o rosto"
+            },
+            {
+              "id": "produto",
+              "why": "luz que não existia na cena"
+            },
+            {
+              "id": "gastronomia",
+              "why": "destacar o prato do resto da mesa"
+            }
+          ]
         },
         {
-          "id": "mask-subject", "name": "Céu, sujeito e pincel", "en": "Sky · Subject · Brush", "icon": "🖌️",
+          "id": "mask-subject",
+          "name": "Céu, sujeito e pincel",
+          "en": "Sky · Subject · Brush",
+          "icon": "🖌️",
           "tag": "seleções por conteúdo",
           "what": "Seleções que seguem o conteúdo: céu e sujeito detetados automaticamente, ou pintados à mão com um pincel.",
           "why": "Existem porque as formas geométricas não chegam. Um céu com árvores recortadas ou um rosto não cabem numa elipse.",
           "problem": "Precisas de ajustar exatamente uma área com forma irregular.",
           "effect": "Ajuste limitado a uma região precisa, seguindo bordas reais.",
-          "when": ["Escurecer um céu com skyline irregular", "Clarear um rosto sem tocar no fundo", "Corrigir uma zona específica que nenhuma outra máscara alcança"],
-          "avoid": ["Confiar cegamente na seleção automática em cabelo, folhagem e vidro — verifica sempre as bordas", "Ajustes fortes: quanto mais forte, mais a máscara se denuncia"],
-          "mistakes": ["Aplicar +2 EV numa máscara de céu e ficar com um halo à volta das árvores", "Pintar com pincel duro e deixar marcas visíveis — usa sempre borda suave"],
-          "demo": { "type": "mask", "shape": "sky", "params": { "exposure": -0.7, "saturation": 25, "contrast": 14 } },
-          "apps": { "lightroom": "Máscara › Selecionar céu / sujeito / pincel", "acr": "Máscara › Céu, Sujeito, Pincel", "darktable": "máscara paramétrica + desenhada", "rawtherapee": "Editor de áreas + máscaras de cor", "snapseed": "Seletivo / Pincel", "rapidraw": "Brush / AI Mask" }
+          "when": [
+            "Escurecer um céu com skyline irregular",
+            "Clarear um rosto sem tocar no fundo",
+            "Corrigir uma zona específica que nenhuma outra máscara alcança"
+          ],
+          "avoid": [
+            "Confiar cegamente na seleção automática em cabelo, folhagem e vidro — verifica sempre as bordas",
+            "Ajustes fortes: quanto mais forte, mais a máscara se denuncia"
+          ],
+          "mistakes": [
+            "Aplicar +2 EV numa máscara de céu e ficar com um halo à volta das árvores",
+            "Pintar com pincel duro e deixar marcas visíveis — usa sempre borda suave"
+          ],
+          "demo": {
+            "type": "mask",
+            "shape": "sky",
+            "params": {
+              "exposure": -0.7,
+              "saturation": 25,
+              "contrast": 14
+            }
+          },
+          "apps": {
+            "lightroom": "Máscara › Selecionar céu / sujeito / pincel",
+            "acr": "Máscara › Céu, Sujeito, Pincel",
+            "darktable": "máscara paramétrica + desenhada",
+            "rawtherapee": "Editor de áreas + máscaras de cor",
+            "snapseed": "Seletivo / Pincel",
+            "rapidraw": "Brush / AI Mask"
+          },
+          "quick": "Seleções que seguem o conteúdo. Verifica sempre as bordas em cabelo e folhagem.",
+          "layout": "hero",
+          "relations": [
+            {
+              "id": "mask-grad",
+              "why": "mais simples e mais seguro quando o horizonte é reto"
+            },
+            {
+              "id": "shadows",
+              "why": "clarear só o sujeito é melhor que clarear todas as sombras"
+            },
+            {
+              "id": "hsl",
+              "why": "às vezes basta mexer na cor, sem seleção nenhuma"
+            }
+          ],
+          "genres": [
+            {
+              "id": "arquitetura",
+              "why": "céu com skyline irregular"
+            },
+            {
+              "id": "vida-selvagem",
+              "why": "separar o animal do fundo"
+            },
+            {
+              "id": "imobiliario",
+              "why": "janelas com forma própria"
+            }
+          ]
         }
       ]
     },
@@ -300,56 +1487,347 @@
       "intro": "Quatro ferramentas que parecem fazer o mesmo mas atuam a escalas diferentes. A diferença entre elas é o TAMANHO do detalhe que afetam — e escolher a errada é o erro mais comum desta secção.",
       "tools": [
         {
-          "id": "sharpen", "name": "Nitidez", "en": "Sharpening", "icon": "🔪",
+          "id": "sharpen",
+          "name": "Nitidez",
+          "en": "Sharpening",
+          "icon": "🔪",
           "tag": "escala fina — bordas",
           "what": "Aumenta o contraste em torno das bordas, num raio de um ou dois píxeis, para criar a impressão de foco.",
           "why": "Existe porque todo o sensor com filtro de cor perde um pouco de definição, e porque redimensionar uma imagem amolece-a. Não recupera foco perdido — cria uma ilusão de nitidez.",
           "problem": "A imagem parece ligeiramente mole, mesmo estando focada.",
           "effect": "Realça microcontraste nas bordas. Em excesso, produz halos claros e escuros visíveis.",
-          "when": ["Sempre no fim do fluxo", "À escala de saída (uma imagem para web precisa de menos que uma para impressão)", "Com máscara, para afiar bordas e não o céu liso"],
-          "avoid": ["Como tentativa de salvar uma fotografia desfocada — não funciona", "Antes do redimensionamento", "Em céus, pele e superfícies lisas: só amplifica ruído"],
-          "mistakes": ["Afiar a 100% de zoom até parecer bom nesse zoom — na imagem inteira fica exagerado", "Afiar antes de reduzir ruído, e assim afiar o próprio ruído"],
-          "demo": { "type": "slider", "param": "sharpen", "min": 0, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Detalhe › Nitidez (com Máscara)", "acr": "Detalhe › Nitidez", "darktable": "«sharpen» ou «contrast equalizer»", "rawtherapee": "Detalhe › Nitidez (USM/RL)", "snapseed": "Detalhes › Nitidez", "rapidraw": "Sharpening" }
+          "when": [
+            "Sempre no fim do fluxo",
+            "À escala de saída (uma imagem para web precisa de menos que uma para impressão)",
+            "Com máscara, para afiar bordas e não o céu liso"
+          ],
+          "avoid": [
+            "Como tentativa de salvar uma fotografia desfocada — não funciona",
+            "Antes do redimensionamento",
+            "Em céus, pele e superfícies lisas: só amplifica ruído"
+          ],
+          "mistakes": [
+            "Afiar a 100% de zoom até parecer bom nesse zoom — na imagem inteira fica exagerado",
+            "Afiar antes de reduzir ruído, e assim afiar o próprio ruído"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "sharpen",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "loupe": true
+          },
+          "apps": {
+            "lightroom": "Detalhe › Nitidez (com Máscara)",
+            "acr": "Detalhe › Nitidez",
+            "darktable": "«sharpen» ou «contrast equalizer»",
+            "rawtherapee": "Detalhe › Nitidez (USM/RL)",
+            "snapseed": "Detalhes › Nitidez",
+            "rapidraw": "Sharpening"
+          },
+          "quick": "Contraste nas bordas, num raio de um ou dois píxeis. Cria a ilusão de foco — não recupera foco perdido.",
+          "quickVis": {
+            "param": "sharpen",
+            "value": 80
+          },
+          "layout": "loupe",
+          "relations": [
+            {
+              "id": "noise",
+              "why": "reduz ruído ANTES de afiar, senão afias o ruído"
+            },
+            {
+              "id": "texture",
+              "why": "escala média, para superfícies em vez de bordas"
+            },
+            {
+              "id": "clarity",
+              "why": "escala grossa, para volume em vez de detalhe"
+            }
+          ],
+          "genres": [
+            {
+              "id": "vida-selvagem",
+              "why": "o olho tem de estar nítido"
+            },
+            {
+              "id": "produto",
+              "why": "detalhe e material legíveis"
+            },
+            {
+              "id": "retrato",
+              "why": "com muita moderação, e nunca na pele"
+            }
+          ]
         },
         {
-          "id": "texture", "name": "Textura", "en": "Texture", "icon": "🪵",
+          "id": "texture",
+          "name": "Textura",
+          "en": "Texture",
+          "icon": "🪵",
           "tag": "escala média — superfícies",
           "what": "Realça detalhe de escala média — poros, tecido, casca, pelo — sem tocar nas bordas finas nem no contraste geral.",
           "why": "Existe porque a nitidez é agressiva de mais e a claridade é grosseira de mais para trabalhar superfícies. É o meio-termo que faltava.",
           "problem": "Queres mostrar a matéria de que a coisa é feita, sem endurecer a imagem.",
           "effect": "Detalhe de superfície mais legível, sem halos e sem alterar o contraste global.",
-          "when": ["Paisagem: rocha, casca, areia", "Produto e gastronomia", "Retrato masculino, quando queres carácter", "Negativo, para suavizar pele de forma natural"],
-          "avoid": ["Positivo forte em retrato feminino ou de crianças — realça tudo o que não interessa", "Em céus e água lisa"],
-          "mistakes": ["Confundir com claridade: a textura é fina, a claridade é grossa", "Não experimentar valores NEGATIVOS, que são excelentes para pele"],
-          "demo": { "type": "slider", "param": "texture", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Textura", "acr": "Básico › Textura", "darktable": "«contrast equalizer» (frequências médias)", "rawtherapee": "Detalhe › Microcontraste", "snapseed": "Detalhes › Estrutura", "rapidraw": "Texture" }
+          "when": [
+            "Paisagem: rocha, casca, areia",
+            "Produto e gastronomia",
+            "Retrato masculino, quando queres carácter",
+            "Negativo, para suavizar pele de forma natural"
+          ],
+          "avoid": [
+            "Positivo forte em retrato feminino ou de crianças — realça tudo o que não interessa",
+            "Em céus e água lisa"
+          ],
+          "mistakes": [
+            "Confundir com claridade: a textura é fina, a claridade é grossa",
+            "Não experimentar valores NEGATIVOS, que são excelentes para pele"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "texture",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -70,
+                "label": "suavizar pele"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 70,
+                "label": "realçar"
+              }
+            ],
+            "loupe": true
+          },
+          "apps": {
+            "lightroom": "Básico › Textura",
+            "acr": "Básico › Textura",
+            "darktable": "«contrast equalizer» (frequências médias)",
+            "rawtherapee": "Detalhe › Microcontraste",
+            "snapseed": "Detalhes › Estrutura",
+            "rapidraw": "Texture"
+          },
+          "quick": "Escala média: poros, tecido, casca. Em negativo, suaviza pele sem a plastificar.",
+          "quickVis": {
+            "param": "texture",
+            "value": 75
+          },
+          "layout": "loupe",
+          "relations": [
+            {
+              "id": "clarity",
+              "why": "mais grossa: volume em vez de superfície"
+            },
+            {
+              "id": "sharpen",
+              "why": "mais fina: bordas em vez de superfície"
+            },
+            {
+              "id": "noise",
+              "why": "textura + amplifica ruído tal como a nitidez"
+            }
+          ],
+          "genres": [
+            {
+              "id": "macro",
+              "why": "é a ferramenta central do género"
+            },
+            {
+              "id": "paisagem",
+              "why": "rocha, casca e areia"
+            },
+            {
+              "id": "retrato",
+              "why": "valores negativos para pele natural"
+            }
+          ]
         },
         {
-          "id": "clarity", "name": "Claridade", "en": "Clarity", "icon": "💠",
+          "id": "clarity",
+          "name": "Claridade",
+          "en": "Clarity",
+          "icon": "💠",
           "tag": "escala grossa — volume",
           "what": "Contraste local de raio grande: aumenta a diferença entre zonas amplas claras e escuras, dando sensação de volume e presença.",
           "why": "Existe para dar 'mordida' a uma imagem plana sem esticar o histograma como o contraste global faria.",
           "problem": "A fotografia parece sem volume e sem presença, apesar de bem exposta.",
           "effect": "Volume e tridimensionalidade. Em excesso, produz o aspeto 'HDR' com halos escuros à volta dos contornos.",
-          "when": ["Paisagem urbana e arquitetura", "Cenas de luz plana", "Preto e branco, onde ajuda muito", "Negativo, para um efeito etéreo e sonhador"],
-          "avoid": ["Retrato em valores positivos — endurece a pele imediatamente", "Nevoeiro e neblina: destrói a atmosfera que foste lá buscar", "Céus com nuvens suaves: aparecem halos"],
-          "mistakes": ["Empilhar claridade com contraste e dehaze e obter a estética 'HDR de 2010'", "Usá-la em retrato por hábito"],
-          "demo": { "type": "slider", "param": "clarity", "min": -100, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Claridade", "acr": "Básico › Claridade", "darktable": "«local contrast»", "rawtherapee": "Detalhe › Contraste por níveis de detalhe", "snapseed": "Ajustar imagem › Ambiente", "rapidraw": "Clarity" }
+          "when": [
+            "Paisagem urbana e arquitetura",
+            "Cenas de luz plana",
+            "Preto e branco, onde ajuda muito",
+            "Negativo, para um efeito etéreo e sonhador"
+          ],
+          "avoid": [
+            "Retrato em valores positivos — endurece a pele imediatamente",
+            "Nevoeiro e neblina: destrói a atmosfera que foste lá buscar",
+            "Céus com nuvens suaves: aparecem halos"
+          ],
+          "mistakes": [
+            "Empilhar claridade com contraste e dehaze e obter a estética 'HDR de 2010'",
+            "Usá-la em retrato por hábito"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "clarity",
+            "min": -100,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -60,
+                "label": "etéreo"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 70,
+                "label": "volume"
+              }
+            ],
+            "loupe": true
+          },
+          "apps": {
+            "lightroom": "Básico › Claridade",
+            "acr": "Básico › Claridade",
+            "darktable": "«local contrast»",
+            "rawtherapee": "Detalhe › Contraste por níveis de detalhe",
+            "snapseed": "Ajustar imagem › Ambiente",
+            "rapidraw": "Clarity"
+          },
+          "quick": "Contraste local de raio grande: dá volume. Em retrato e nevoeiro, quase sempre a ferramenta errada.",
+          "quickVis": {
+            "param": "clarity",
+            "value": 70
+          },
+          "layout": "loupe",
+          "relations": [
+            {
+              "id": "dehaze",
+              "why": "o primo agressivo: mexe também na cor e nas sombras"
+            },
+            {
+              "id": "texture",
+              "why": "escala mais fina, para superfícies"
+            },
+            {
+              "id": "contrast",
+              "why": "claridade é local, contraste é global"
+            }
+          ],
+          "genres": [
+            {
+              "id": "arquitetura",
+              "why": "volume em fachadas"
+            },
+            {
+              "id": "pb",
+              "why": "ajuda muito sem cor"
+            },
+            {
+              "id": "nevoeiro",
+              "why": "aqui destrói a atmosfera — usa negativo, se usares"
+            }
+          ]
         },
         {
-          "id": "dehaze", "name": "Remoção de neblina", "en": "Dehaze", "icon": "🌫️",
+          "id": "dehaze",
+          "name": "Remoção de neblina",
+          "en": "Dehaze",
+          "icon": "🌫️",
           "tag": "atmosfera e contraste extremo",
           "what": "Estima a componente de neblina — baixo contraste e baixa saturação espalhados pela imagem — e remove-a, ou acrescenta-a se for negativo.",
           "why": "Existe porque a atmosfera lava a cor e o contraste dos planos distantes, e nenhum ajuste global corrige isso sem destruir os planos próximos.",
           "problem": "Montanhas ao longe lavadas, sem cor nem contraste; ou o oposto, uma cena sem atmosfera nenhuma.",
           "effect": "Contraste e saturação sobem sobretudo nas zonas de baixo contraste. É o ajuste mais agressivo de toda a edição.",
-          "when": ["Paisagem com muita distância e ar húmido", "Céus muito lavados", "Negativo para ACRESCENTAR atmosfera e profundidade"],
-          "avoid": ["Nevoeiro e neblina fotografados de propósito — apagas o assunto", "Valores altos: escurece as sombras brutalmente e satura demais", "Sem verificar as sombras e o ruído depois"],
-          "mistakes": ["Usar dehaze onde bastava contraste ou claridade", "Aplicar +50 numa paisagem com nevoeiro e ficar sem a razão da fotografia"],
-          "demo": { "type": "slider", "param": "dehaze", "min": -60, "max": 100, "step": 1 },
-          "apps": { "lightroom": "Básico › Remover neblina", "acr": "Básico › Remover neblina", "darktable": "«haze removal»", "rawtherapee": "Detalhe › Remoção de neblina", "snapseed": "—  (aproxima com Ambiente + Contraste)", "rapidraw": "Dehaze" }
+          "when": [
+            "Paisagem com muita distância e ar húmido",
+            "Céus muito lavados",
+            "Negativo para ACRESCENTAR atmosfera e profundidade"
+          ],
+          "avoid": [
+            "Nevoeiro e neblina fotografados de propósito — apagas o assunto",
+            "Valores altos: escurece as sombras brutalmente e satura demais",
+            "Sem verificar as sombras e o ruído depois"
+          ],
+          "mistakes": [
+            "Usar dehaze onde bastava contraste ou claridade",
+            "Aplicar +50 numa paisagem com nevoeiro e ficar sem a razão da fotografia"
+          ],
+          "demo": {
+            "type": "slider",
+            "param": "dehaze",
+            "min": -60,
+            "max": 100,
+            "step": 1,
+            "marks": [
+              {
+                "v": -50,
+                "label": "+ atmosfera"
+              },
+              {
+                "v": 0,
+                "label": "0"
+              },
+              {
+                "v": 70,
+                "label": "− neblina"
+              }
+            ],
+            "loupe": true
+          },
+          "apps": {
+            "lightroom": "Básico › Remover neblina",
+            "acr": "Básico › Remover neblina",
+            "darktable": "«haze removal»",
+            "rawtherapee": "Detalhe › Remoção de neblina",
+            "snapseed": "—  (aproxima com Ambiente + Contraste)",
+            "rapidraw": "Dehaze"
+          },
+          "quick": "Remove (ou acrescenta) atmosfera. O ajuste mais agressivo de toda a edição — vai devagar.",
+          "quickVis": {
+            "param": "dehaze",
+            "value": 65
+          },
+          "layout": "loupe",
+          "relations": [
+            {
+              "id": "clarity",
+              "why": "muitas vezes é o que realmente querias, e é mais seguro"
+            },
+            {
+              "id": "shadows",
+              "why": "o dehaze fecha sombras: reabre-as a seguir"
+            },
+            {
+              "id": "saturation",
+              "why": "também satura — cuidado com o efeito duplo"
+            }
+          ],
+          "genres": [
+            {
+              "id": "paisagem",
+              "why": "planos distantes lavados"
+            },
+            {
+              "id": "nevoeiro",
+              "why": "é o género onde NÃO se deve usar"
+            },
+            {
+              "id": "chuva",
+              "why": "reforça céus pesados"
+            }
+          ]
         }
       ]
     },
@@ -360,18 +1838,73 @@
       "intro": "O ruído é o preço de fotografar com pouca luz. Há dois tipos e tratam-se de maneiras diferentes — e há um limite a partir do qual reduzir ruído custa mais detalhe do que vale.",
       "tools": [
         {
-          "id": "noise", "name": "Redução de ruído", "en": "Noise Reduction", "icon": "📻",
+          "id": "noise",
+          "name": "Redução de ruído",
+          "en": "Noise Reduction",
+          "icon": "📻",
           "tag": "ISO alto e sombras levantadas",
           "what": "Suaviza a variação aleatória de brilho e cor entre píxeis vizinhos. Divide-se em ruído de LUMINÂNCIA (grão, variação de brilho) e ruído de COR (manchas coloridas).",
           "why": "Existe porque sensores com pouca luz amplificam sinal fraco e, com ele, o erro. Levantar sombras faz exatamente o mesmo.",
           "problem": "Grão visível e manchas de cor, tipicamente em ISO alto ou em sombras muito levantadas.",
           "effect": "Imagem mais limpa. Em excesso, plástica: pele sem poros, folhagem em manchas, texto ilegível.",
-          "when": ["ISO alto (concertos, interiores, astro)", "Depois de levantar sombras", "Sempre ANTES da nitidez"],
-          "avoid": ["Aplicar por hábito a fotografias de ISO baixo", "Valores altos de luminância: o detalhe fino é o primeiro a desaparecer", "Julgar o resultado a 100% de zoom — vê à dimensão de saída"],
-          "mistakes": ["Tratar ruído de cor com o cursor de luminância (são controlos diferentes)", "Perseguir ruído zero: algum grão é natural e preferível a uma imagem plástica", "Afiar antes de reduzir ruído"],
+          "when": [
+            "ISO alto (concertos, interiores, astro)",
+            "Depois de levantar sombras",
+            "Sempre ANTES da nitidez"
+          ],
+          "avoid": [
+            "Aplicar por hábito a fotografias de ISO baixo",
+            "Valores altos de luminância: o detalhe fino é o primeiro a desaparecer",
+            "Julgar o resultado a 100% de zoom — vê à dimensão de saída"
+          ],
+          "mistakes": [
+            "Tratar ruído de cor com o cursor de luminância (são controlos diferentes)",
+            "Perseguir ruído zero: algum grão é natural e preferível a uma imagem plástica",
+            "Afiar antes de reduzir ruído"
+          ],
           "note": "Regra prática: o ruído de COR pode ir alto quase sem custo — as manchas coloridas não têm valor nenhum. O de LUMINÂNCIA deve ir com muita moderação, porque é aí que vive o detalhe.",
-          "demo": { "type": "noise" },
-          "apps": { "lightroom": "Detalhe › Redução de ruído (Luminância e Cor)", "acr": "Detalhe › Redução de ruído", "darktable": "«denoise (profile)»", "rawtherapee": "Detalhe › Redução de ruído", "snapseed": "Detalhes / Cura", "rapidraw": "Noise Reduction" }
+          "demo": {
+            "type": "noise",
+            "loupe": true
+          },
+          "apps": {
+            "lightroom": "Detalhe › Redução de ruído (Luminância e Cor)",
+            "acr": "Detalhe › Redução de ruído",
+            "darktable": "«denoise (profile)»",
+            "rawtherapee": "Detalhe › Redução de ruído",
+            "snapseed": "Detalhes / Cura",
+            "rapidraw": "Noise Reduction"
+          },
+          "quick": "Ruído de cor pode ir alto quase sem custo. O de luminância é onde vive o detalhe — vai com pinças.",
+          "layout": "loupe",
+          "relations": [
+            {
+              "id": "shadows",
+              "why": "levantar sombras é a causa mais comum de ruído visível"
+            },
+            {
+              "id": "sharpen",
+              "why": "reduz ruído primeiro, afia depois. Nunca ao contrário."
+            },
+            {
+              "id": "texture",
+              "why": "a textura amplifica o ruído que ainda lá está"
+            }
+          ],
+          "genres": [
+            {
+              "id": "astro",
+              "why": "é o género onde mais importa"
+            },
+            {
+              "id": "eventos",
+              "why": "ISO alto é a norma"
+            },
+            {
+              "id": "noturna",
+              "why": "tratar sem plastificar"
+            }
+          ]
         }
       ]
     },
@@ -383,28 +1916,46 @@
       "kind": "export",
       "targets": [
         {
-          "id": "web", "icon": "🌐", "name": "Web e portfólio",
+          "id": "web",
+          "icon": "🌐",
+          "name": "Web e portfólio",
           "size": "Lado maior 2000–2560 px",
           "space": "sRGB",
           "quality": "JPEG qualidade 80–85",
           "sharpen": "Nitidez de saída para ecrã, baixa",
-          "notes": ["sRGB é obrigatório: qualquer outro espaço aparece dessaturado em muitos browsers.", "Acima de 2560 px do lado maior raramente se ganha alguma coisa e o ficheiro pesa o dobro.", "Qualidade 90+ dá ficheiros muito maiores sem diferença visível."]
+          "notes": [
+            "sRGB é obrigatório: qualquer outro espaço aparece dessaturado em muitos browsers.",
+            "Acima de 2560 px do lado maior raramente se ganha alguma coisa e o ficheiro pesa o dobro.",
+            "Qualidade 90+ dá ficheiros muito maiores sem diferença visível."
+          ]
         },
         {
-          "id": "social", "icon": "📱", "name": "Redes sociais",
+          "id": "social",
+          "icon": "📱",
+          "name": "Redes sociais",
           "size": "Lado maior 1080–2048 px",
           "space": "sRGB",
           "quality": "JPEG qualidade 85",
           "sharpen": "Nitidez de saída média",
-          "notes": ["As plataformas voltam a comprimir: exportar já pequeno e nítido dá melhor resultado final do que enviar um ficheiro enorme.", "Contraste e saturação ligeiramente acima do teu gosto sobrevivem melhor à recompressão.", "Verifica o enquadramento: muitas plataformas cortam a pré-visualização."]
+          "notes": [
+            "As plataformas voltam a comprimir: exportar já pequeno e nítido dá melhor resultado final do que enviar um ficheiro enorme.",
+            "Contraste e saturação ligeiramente acima do teu gosto sobrevivem melhor à recompressão.",
+            "Verifica o enquadramento: muitas plataformas cortam a pré-visualização."
+          ]
         },
         {
-          "id": "print", "icon": "🖨️", "name": "Impressão",
+          "id": "print",
+          "icon": "🖨️",
+          "name": "Impressão",
           "size": "Dimensão real a 300 ppi",
           "space": "Adobe RGB ou perfil do laboratório",
           "quality": "TIFF ou JPEG qualidade máxima",
           "sharpen": "Nitidez de saída alta (o papel absorve)",
-          "notes": ["O papel escurece a imagem: uma prova costuma sair mais escura que o ecrã. Muitos laboratórios pedem +1/3 de exposição.", "Pede o perfil ICC do laboratório e faz soft proof antes de imprimir uma série.", "Pretos esmagados no ecrã ficam num bloco sem detalhe no papel — deixa alguma informação nas sombras."]
+          "notes": [
+            "O papel escurece a imagem: uma prova costuma sair mais escura que o ecrã. Muitos laboratórios pedem +1/3 de exposição.",
+            "Pede o perfil ICC do laboratório e faz soft proof antes de imprimir uma série.",
+            "Pretos esmagados no ecrã ficam num bloco sem detalhe no papel — deixa alguma informação nas sombras."
+          ]
         }
       ],
       "mistakes": [
