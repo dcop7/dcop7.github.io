@@ -16,6 +16,7 @@ const HumorPage = (function () {
   'use strict';
 
   const BASE = 'data/humor/';
+  const TEMAS = 'temas';            /* grupo mostrado achatado no hub */
   const PAGE = 24;                  /* jokes per feed batch */
   let root, built = false, index = null, groups = null;
   const cache = {};                 /* cat id → jokes[] */
@@ -176,12 +177,18 @@ const HumorPage = (function () {
         <div id="hm-daily-card" class="hm-single"><div class="hm-loading">A escolher…</div></div>
       </section>
       <h2 class="hm-sec-ttl">Explorar</h2>
-      <div class="hm-hub" id="hm-hub"><div class="hm-loading">A carregar…</div></div>`;
+      <div class="hm-hub" id="hm-hub"><div class="hm-loading">A carregar…</div></div>
+      <section id="hm-temas-sec" hidden>
+        <h2 class="hm-sec-ttl">🗂️ Por tema</h2>
+        <div class="hm-temas" id="hm-temas"></div>
+      </section>`;
     refreshRevealBtn();
     const idx = await loadIndex();
     const hub = root.querySelector('#hm-hub');
     if (!idx.length) { hub.innerHTML = `<div class="hm-empty">Sem categorias.</div>`; return; }
-    hub.innerHTML = (groups || []).map(g => {
+    /* "Por Tema" não ganha nada com o ecrã intermédio de grupo — os seus
+       temas entram direto no hub e abrem já filtrados. */
+    hub.innerHTML = (groups || []).filter(g => g.id !== TEMAS).map(g => {
       const cats = idx.filter(c => c.group === g.id);
       if (!cats.length) return '';
       return `
@@ -195,6 +202,20 @@ const HumorPage = (function () {
         </button>`;
     }).join('');
     hub.querySelectorAll('.hm-gcard').forEach(b => b.addEventListener('click', () => renderGroup(b.dataset.group)));
+
+    const temas = idx.filter(c => c.group === TEMAS);
+    const sec = root.querySelector('#hm-temas-sec'), tw = root.querySelector('#hm-temas');
+    if (temas.length && sec && tw) {
+      sec.hidden = false;
+      tw.innerHTML = temas.map(c => `
+        <button class="hm-tcard" data-cat="${c.id}">
+          <span class="hm-tcard-ico">${c.icon}</span>
+          <span class="hm-tcard-name">${esc(c.name)}</span>
+          <span class="hm-tcard-desc">${esc(c.desc || '')}</span>
+        </button>`).join('');
+      tw.querySelectorAll('.hm-tcard').forEach(b =>
+        b.addEventListener('click', () => renderGroup(TEMAS, b.dataset.cat)));
+    }
     fillDaily();
   }
   async function fillDaily() {
@@ -223,7 +244,12 @@ const HumorPage = (function () {
     if (!g) return renderHub();
     const cats = idx.filter(c => c.group === gid);
     const filter = keepFilter && cats.some(c => c.id === keepFilter) ? keepFilter : null;
-    body().innerHTML = backBar(`${g.icon} ${esc(g.name)} <span class="hm-count" id="hm-gcount">…</span>`) + `
+    /* Vindo de um cartão de tema, o título é o tema — "Por Tema" não diria
+       nada a quem clicou em "Escola". */
+    const head = gid === TEMAS && filter
+      ? `${catIcon(filter)} ${esc(catName(filter))}`
+      : `${g.icon} ${esc(g.name)}`;
+    body().innerHTML = backBar(`${head} <span class="hm-count" id="hm-gcount">…</span>`) + `
       <div class="hm-chips" role="tablist">
         <button class="chip${filter ? '' : ' active'}" data-cat="">Tudo</button>
         ${cats.map(c => `<button class="chip${filter === c.id ? ' active' : ''}" data-cat="${c.id}" title="${esc(c.desc || '')}">${c.icon} ${esc(c.name)}</button>`).join('')}
@@ -381,6 +407,12 @@ const HumorPage = (function () {
 .hm-gcard-name{font-family:var(--font-head,inherit);font-weight:700;font-size:.95rem;color:var(--text)}
 .hm-gcard-cats{font-size:.68rem;color:var(--muted);line-height:1.45;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .hm-gcard-arrow{color:var(--muted);font-size:1.2rem;flex-shrink:0}
+.hm-temas{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem;margin-bottom:1.4rem}
+.hm-tcard{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem .9rem;cursor:pointer;font:inherit;transition:all .18s;min-width:0}
+.hm-tcard:hover{border-color:rgba(var(--accent-rgb),.45);transform:translateY(-2px);box-shadow:var(--shadow-2, 0 4px 16px rgba(0,0,0,.28))}
+.hm-tcard-ico{font-size:1.25rem;line-height:1;margin-bottom:.25rem}
+.hm-tcard-name{font-family:var(--font-head,inherit);font-weight:700;font-size:.88rem;color:var(--text)}
+.hm-tcard-desc{font-size:.66rem;color:var(--muted);line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .hm-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;align-items:center}
 .hm-chip-rand{margin-left:auto}
 .hm-detail-bar{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
