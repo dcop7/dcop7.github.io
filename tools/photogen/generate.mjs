@@ -125,7 +125,7 @@ async function main() {
     } else if (a.matte) {
       const fn = a.matte === 'green' ? greenScreenToWebp : whiteScreenToWebp;
       if (await fn(png, dest, a.matteOpts || {})) done = rel;
-    } else if (await toWebp(png, dest, {})) done = rel;
+    } else if (await toWebp(png, dest, { maxWidth: a.maxWidth })) done = rel;
     if (!done) { // sem sharp → guarda PNG cru versionável
       await writeFile(dest.replace(/\.webp$/, '.png'), png);
       done = `${a.group}/${a.id}.png`;

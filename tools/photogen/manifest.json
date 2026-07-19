@@ -17,7 +17,9 @@
     "studio_cutout": "full body head-to-toe, standing, isolated on a seamless pure white studio background, high-key evenly lit white backdrop, subject clearly separated from the background, soft three-point softbox lighting, sharp focus, shot on 50mm f8, photorealistic, natural skin texture, high detail",
     "portrait_light": "upper body portrait, plain dark neutral studio background, photorealistic, natural skin texture, shot on 85mm f2, high detail",
     "scene_illus": "cinematic semi-realistic digital illustration, stylized concept art, dramatic atmospheric lighting, rich saturated colors, painterly detail, artstation trending, beautiful, no text, no watermark",
-    "char_illus": "stylized semi-realistic 3D character render, Pixar Disney style, appealing clean design, soft cinematic lighting, subsurface scattering skin, friendly, full figure, no text, no watermark"
+    "char_illus": "stylized semi-realistic 3D character render, Pixar Disney style, appealing clean design, soft cinematic lighting, subsurface scattering skin, friendly, full figure, no text, no watermark",
+    "genre_icon": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with soft gradient shading, very few elements, minimal detail, limited palette of deep indigo, cyan and warm amber, dark navy background, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering",
+    "genre_icon_mono": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with smooth gradient shading, very few elements, minimal detail, strictly black white and grey monochrome, no colour at all, greyscale, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering"
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
@@ -1266,6 +1268,426 @@
         1024,
         1024
       ]
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-paisagem",
+      "prompt": "a layered mountain range with a valley receding into haze",
+      "seed": 880100,
+      "caption": "paisagem",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-nascer-por-sol",
+      "prompt": "a low sun disc half over the horizon with radiating warm light",
+      "seed": 880101,
+      "caption": "nascer-por-sol",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-praia",
+      "prompt": "a curling ocean wave with foam over a shoreline",
+      "seed": 880102,
+      "caption": "praia",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-nevoeiro",
+      "prompt": "a lone pine tree emerging from thick drifting fog",
+      "seed": 880103,
+      "caption": "nevoeiro",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-chuva",
+      "prompt": "a dark storm cloud with falling rain streaks and one bright break of light",
+      "seed": 880104,
+      "caption": "chuva",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-flores",
+      "prompt": "a single blossom on a stem with two leaves, shallow depth",
+      "seed": 880105,
+      "caption": "flores",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-macro",
+      "prompt": "one huge dew drop on a single blade of grass, extreme close up",
+      "seed": 881206,
+      "caption": "macro",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-vida-selvagem",
+      "prompt": "a single deer head with antlers in clean side profile",
+      "seed": 881201,
+      "caption": "vida-selvagem",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-retrato",
+      "prompt": "a human head and shoulders in profile lit by a single soft key light",
+      "seed": 880108,
+      "caption": "retrato",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-familia",
+      "prompt": "two adult silhouettes and a small child silhouette holding hands",
+      "seed": 880109,
+      "caption": "familia",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-animais",
+      "prompt": "a sitting dog seen in profile, alert ears",
+      "seed": 880110,
+      "caption": "animais",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-autorretrato",
+      "prompt": "a camera on a tripod facing a person silhouette standing on a floor mark",
+      "seed": 880111,
+      "caption": "autorretrato",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-eventos",
+      "prompt": "a single vintage stage microphone lit by one bright spotlight beam",
+      "seed": 881207,
+      "caption": "eventos",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-desporto",
+      "prompt": "a running athlete silhouette in mid stride with motion streaks",
+      "seed": 880113,
+      "caption": "desporto",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-rua",
+      "prompt": "a lone pedestrian silhouette crossing a shaft of light between buildings",
+      "seed": 880114,
+      "caption": "rua",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-arquitetura",
+      "prompt": "a modern building facade in strong upward perspective, converging lines",
+      "seed": 880115,
+      "caption": "arquitetura",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-viagem",
+      "prompt": "a vintage suitcase with a small globe resting on top of it",
+      "seed": 881208,
+      "caption": "viagem",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-automovel",
+      "prompt": "a sleek sports car in three-quarter view with light streaks along the body",
+      "seed": 880117,
+      "caption": "automovel",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-astro",
+      "prompt": "a swirling spiral galaxy with a few bright stars on empty dark sky",
+      "seed": 881204,
+      "caption": "astro",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-noturna",
+      "prompt": "a neon-lit city street at night reflected in wet asphalt",
+      "seed": 880119,
+      "caption": "noturna",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-festividades",
+      "prompt": "a decorated evergreen tree with glowing bokeh string lights",
+      "seed": 880120,
+      "caption": "festividades",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-produto",
+      "prompt": "a single perfume-like bottle on a seamless sweep with studio highlight",
+      "seed": 880121,
+      "caption": "produto",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-gastronomia",
+      "prompt": "a tall stacked burger and a drinking glass side by side on a wooden table, simple side view",
+      "seed": 881301,
+      "caption": "gastronomia",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-imobiliario",
+      "prompt": "a bright living room interior with a large window and straight vertical lines",
+      "seed": 880123,
+      "caption": "imobiliario",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon_mono",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-pb",
+      "prompt": "a human face in three-quarter view, half lit and half in deep shadow, high contrast tonal study",
+      "seed": 881210,
+      "caption": "pb",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-longa-exposicao",
+      "prompt": "a highway curve at night made of two long continuous red and white light trails",
+      "seed": 881205,
+      "caption": "longa-exposicao",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-light-painting",
+      "prompt": "a glowing spiral of light drawn in mid air in darkness",
+      "seed": 880126,
+      "caption": "light-painting",
+      "maxWidth": 256
+    },
+    {
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "gico-reflexos",
+      "prompt": "a perfectly still lake surface with one mountain mirrored upside down below it, clear horizontal mirror line",
+      "seed": 881202,
+      "caption": "reflexos",
+      "maxWidth": 256
     }
   ]
 }

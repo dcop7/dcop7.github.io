@@ -813,3 +813,20 @@ body.density-list .lp-link-tags { display: none; }
   .ph-field-kv { grid-template-columns: 1fr 1fr; }
   .ph-check { grid-template-columns: 1fr; }
 }
+
+/* géneros agrupados + procura (28 géneros: grelha plana deixou de funcionar) */
+.ph-genre-search { margin: .75rem 0 .25rem; }
+.ph-genre-q { width: 100%; max-width: 380px; font: inherit; font-size: .88rem; color: var(--text); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .5rem .95rem; transition: border-color var(--ease); }
+.ph-genre-q:focus-visible { outline: none; border-color: var(--accent); }
+.ph-genre-q::placeholder { color: var(--muted); }
+.ph-genre-group + .ph-genre-group { margin-top: 1.25rem; }
+.ph-genre-group-title { display: flex; align-items: center; gap: .5rem; font-family: var(--font-head); font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 1rem 0 .55rem; }
+.ph-genre-group-n { font-size: .72rem; font-weight: 700; letter-spacing: 0; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .05rem .45rem; }
+.ph-genre-empty { margin-top: .75rem; }
+
+/* ícones de género gerados (miniatura) — emoji continua a ser o fallback */
+.ph-scn-ico-img, .ph-portal-ico-img { display: block; overflow: hidden; border-radius: 10px; border: 1px solid var(--border); background: var(--card2); }
+.ph-scn-ico-img { width: 46px; height: 46px; }
+.ph-portal-ico-img { width: 60px; height: 60px; border-radius: 12px; flex-shrink: 0; }
+.ph-scn-ico-img img, .ph-portal-ico-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-scn-card:hover .ph-scn-ico-img { border-color: var(--accent); }

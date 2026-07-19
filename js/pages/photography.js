@@ -1205,7 +1205,7 @@ const PhotographyPage = (function () {
   // ── home: grelha de géneros ──
   function buildGeneros(panel) {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-    loadDB().then(db => {
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildGeneros(panel)); return; }
       panel.innerHTML = `
         ${gearBarHTML()}
@@ -1216,15 +1216,67 @@ const PhotographyPage = (function () {
         </button>
         <div class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</div>
         <p class="ph-section-sub">Escolhe o que vais fotografar — cada portal junta equipamento, definições, luz, composição, checklist e edição.</p>
-        <div class="ph-scn-grid" id="ph-genre-grid">
-          ${db.genres.map(g => `<button class="ph-scn-card" data-genre="${g.id}">
-            <span class="ph-scn-ico">${g.icon}</span><span class="ph-scn-name">${g.name}</span>
-            <span class="ph-scn-blurb-sm">${g.blurb}</span></button>`).join('')}
-        </div>`;
+        <div class="ph-genre-search">
+          <input type="search" id="ph-genre-q" class="ph-genre-q" placeholder="Procurar género (praia, nevoeiro, retrato…)" aria-label="Procurar género" autocomplete="off">
+        </div>
+        <div id="ph-genre-grid">${genreGroupsHTML(db.genres)}</div>
+        <p class="ph-section-sub ph-genre-empty" id="ph-genre-none" hidden>Nenhum género corresponde à procura.</p>`;
       wireGearBar(panel, () => buildGeneros(panel));
       panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/agora'));
       panel.querySelectorAll('[data-genre]').forEach(c =>
         c.addEventListener('click', () => Nav.go('photography/g/' + c.dataset.genre)));
+      wireGenreSearch(panel);
+    });
+  }
+
+  // Ícone do género: miniatura gerada (assets/photo/genre-ico) com o emoji do
+  // JSON como fallback — o site continua a funcionar sem os assets.
+  function genreIcoHTML(g, cls) {
+    const src = assetPath('gico-' + g.id);
+    return src
+      ? `<span class="${cls} ${cls}-img"><img src="${src}" alt="" loading="lazy" decoding="async"></span>`
+      : `<span class="${cls}">${g.icon}</span>`;
+  }
+
+  // Géneros agrupados por família (28 cartões numa grelha plana era ilegível).
+  // A ordem dos grupos segue a 1ª ocorrência no JSON, por isso é controlada nos dados.
+  function genreGroupsHTML(genres) {
+    const groups = [];
+    genres.forEach(g => {
+      const key = g.group || 'Outros';
+      let grp = groups.find(x => x.key === key);
+      if (!grp) groups.push(grp = { key, items: [] });
+      grp.items.push(g);
+    });
+    return groups.map(grp => `<section class="ph-genre-group" data-group="${grp.key}">
+      <h3 class="ph-genre-group-title">${grp.key} <span class="ph-genre-group-n">${grp.items.length}</span></h3>
+      <div class="ph-scn-grid">
+        ${grp.items.map(g => `<button class="ph-scn-card" data-genre="${g.id}" data-search="${(g.name + ' ' + g.blurb + ' ' + grp.key).toLowerCase()}">
+          ${genreIcoHTML(g, 'ph-scn-ico')}<span class="ph-scn-name">${g.name}</span>
+          <span class="ph-scn-blurb-sm">${g.blurb}</span></button>`).join('')}
+      </div>
+    </section>`).join('');
+  }
+  // Filtro por texto: esconde cartões e, quando um grupo fica vazio, o grupo todo.
+  function wireGenreSearch(panel) {
+    const input = panel.querySelector('#ph-genre-q');
+    const none = panel.querySelector('#ph-genre-none');
+    if (!input) return;
+    const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+    input.addEventListener('input', () => {
+      const q = norm(input.value);
+      let shown = 0;
+      panel.querySelectorAll('.ph-genre-group').forEach(grp => {
+        let vis = 0;
+        grp.querySelectorAll('[data-genre]').forEach(card => {
+          const hit = !q || norm(card.dataset.search).includes(q);
+          card.hidden = !hit;
+          if (hit) vis++;
+        });
+        grp.hidden = vis === 0;
+        shown += vis;
+      });
+      none.hidden = shown > 0;
     });
   }
 
@@ -1269,7 +1321,7 @@ const PhotographyPage = (function () {
           ${gearBarHTML()}
         </div>
         <div class="ph-portal-head">
-          <span class="ph-portal-ico">${g.icon}</span>
+          ${genreIcoHTML(g, 'ph-portal-ico')}
           <div><h2 class="ph-portal-name">${g.name}</h2><p class="ph-portal-goal">${g.goal}</p></div>
         </div>
         <div class="ph-kit-wrap${kits.length > 1 ? ' both' : ''}">${kits.map(k => kitCardHTML(db, g, k)).join('')}</div>
