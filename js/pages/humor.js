@@ -309,12 +309,10 @@ const HumorPage = (function () {
   }
 
   /* ── joke card ─────────────────────────────────────────────────── */
-  const canShare = typeof navigator !== 'undefined' && !!navigator.share;
   function jokeCard(j, opts) {
     opts = opts || {};
     const fav = !!favs[j.id];
     const star = `<button class="hm-star${fav ? ' on' : ''}" data-fav="${j.id}" title="Favorita" aria-label="Favorita">${fav ? '★' : '☆'}</button>`;
-    const share = canShare ? `<button class="hm-copy" data-share="${j.id}" title="Partilhar" aria-label="Partilhar">📤</button>` : '';
     const tag = opts.hideTag ? '' : `<span class="hm-tag">${catIcon(j.cat)} ${esc(catName(j.cat))}</span>`;
     let inner;
     if (j.q && j.a) {
@@ -326,7 +324,7 @@ const HumorPage = (function () {
       inner = `<div class="hm-t">${esc(j.t || '').replace(/\n/g, '<br>')}</div>`;
     }
     return `<article class="hm-joke${opts.big ? ' big' : ''}" data-id="${j.id}" data-cat="${j.cat}">
-      <div class="hm-joke-top">${tag}<div class="hm-joke-actions">${star}${share}<button class="hm-copy" data-copy="${j.id}" title="Copiar">📋</button></div></div>
+      <div class="hm-joke-top">${tag}<div class="hm-joke-actions">${star}</div></div>
       ${inner}</article>`;
   }
 
@@ -355,25 +353,6 @@ const HumorPage = (function () {
         }
         save('humor-favs', favs);
         const n = root.querySelector('#hm-favn'); if (n) n.textContent = Object.keys(favs).length || '';
-      });
-    });
-    const jokeText = b => {
-      const art = b.closest('.hm-joke');
-      const j = findJoke(art.dataset.cat, b.dataset.copy || b.dataset.share);
-      return j ? (j.q ? `${j.q}\n${j.a}` : j.t) : '';
-    };
-    scope.querySelectorAll(sel('copy')).forEach(b => {
-      if (b.dataset.wired) return; b.dataset.wired = '1';
-      b.addEventListener('click', () => {
-        const txt = jokeText(b);
-        if (txt) navigator.clipboard?.writeText(txt).then(() => { b.textContent = '✅'; setTimeout(() => b.textContent = '📋', 1200); }).catch(() => {});
-      });
-    });
-    scope.querySelectorAll(sel('share')).forEach(b => {
-      if (b.dataset.wired) return; b.dataset.wired = '1';
-      b.addEventListener('click', () => {
-        const txt = jokeText(b);
-        if (txt) navigator.share({ text: txt }).catch(() => {});
       });
     });
     refreshRevealBtn();
@@ -415,9 +394,9 @@ const HumorPage = (function () {
 .hm-joke-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;min-height:1.2rem}
 .hm-tag{font-size:.64rem;color:var(--muted);font-weight:600}
 .hm-joke-actions{display:flex;gap:.3rem;align-items:center;margin-left:auto}
-.hm-star,.hm-copy{background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:.1rem .2rem;line-height:1}
+.hm-star{background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted);padding:.1rem .2rem;line-height:1}
 .hm-star.on{color:#f5b400}
-.hm-star:hover,.hm-copy:hover{color:var(--accent)}
+.hm-star:hover{color:var(--accent)}
 .hm-t{color:var(--text);font-size:.92rem;line-height:1.5}
 .hm-q{color:var(--text);font-size:.92rem;line-height:1.5;font-weight:600;margin-bottom:.6rem}
 .hm-reveal{background:var(--accent-soft);border:1px solid rgba(var(--accent-rgb),.3);color:var(--accent);font:inherit;font-size:.78rem;font-weight:600;padding:.3rem .8rem;border-radius:999px;cursor:pointer}
