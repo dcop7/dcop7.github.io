@@ -20,7 +20,9 @@ const HumorPage = (function () {
   let root, built = false, index = null, groups = null;
   const cache = {};                 /* cat id → jokes[] */
   let favs = load('humor-favs', {});/* {jokeId: jokeObj} */
-  let revealAll = load('humor-reveal-all', false); /* mostrar respostas dos enigmas */
+  /* v2: chave nova para o default voltar a ser "ocultas" para quem já tinha
+     ligado o toggle antigo (que parecia não fazer nada). */
+  let revealAll = load('humor-reveal-all-v2', false);
   let seen = load('humor-seen', []);/* [jokeId] in first-seen order */
   let seenSet = new Set(seen);
   let feed = null;                  /* current group feed state */
@@ -127,7 +129,7 @@ const HumorPage = (function () {
         <div class="hm-toolbar">
           <button class="hm-tool primary" id="hm-lucky">🎲 Surpreende-me</button>
           <button class="hm-tool" id="hm-favs">⭐ Favoritas <span id="hm-favn">${Object.keys(favs).length || ''}</span></button>
-          <button class="hm-tool${revealAll ? ' on' : ''}" id="hm-reveal-all" aria-pressed="${revealAll}">${revealLabel()}</button>
+          <button class="hm-tool${revealAll ? ' on' : ''}" id="hm-reveal-all" aria-pressed="${revealAll}" hidden>${revealLabel()}</button>
           <div class="hm-search-wrap"><input class="hm-search" id="hm-search" type="search" placeholder="🔍 Pesquisar em todo o humor…" aria-label="Pesquisar"></div>
         </div>
         <div id="hm-body"><div class="hm-loading">A carregar…</div></div>`;
@@ -143,10 +145,17 @@ const HumorPage = (function () {
   const revealLabel = () => revealAll ? '🙈 Ocultar respostas' : '👀 Mostrar respostas';
   function toggleRevealAll() {
     revealAll = !revealAll;
-    save('humor-reveal-all', revealAll);
+    save('humor-reveal-all-v2', revealAll);
     const b = root.querySelector('#hm-reveal-all');
     if (b) { b.textContent = revealLabel(); b.classList.toggle('on', revealAll); b.setAttribute('aria-pressed', revealAll); }
     applyReveal(body());
+  }
+  /* O toggle só faz sentido em vistas que tenham enigmas (adivinhas/cúmulos);
+     nas restantes a resposta está sempre à vista, por isso o botão esconde-se
+     em vez de ficar ali a não fazer nada. */
+  function refreshRevealBtn() {
+    const b = root && root.querySelector('#hm-reveal-all');
+    if (b) b.hidden = !body()?.querySelector('.hm-reveal');
   }
   /* Aplica o estado global aos cartões já em ecrã. Um "Ver resposta"
      clicado à mão (data-open) fica revelado até se ocultar tudo. */
@@ -168,6 +177,7 @@ const HumorPage = (function () {
       </section>
       <h2 class="hm-sec-ttl">Explorar</h2>
       <div class="hm-hub" id="hm-hub"><div class="hm-loading">A carregar…</div></div>`;
+    refreshRevealBtn();
     const idx = await loadIndex();
     const hub = root.querySelector('#hm-hub');
     if (!idx.length) { hub.innerHTML = `<div class="hm-empty">Sem categorias.</div>`; return; }
@@ -366,6 +376,7 @@ const HumorPage = (function () {
         if (txt) navigator.share({ text: txt }).catch(() => {});
       });
     });
+    refreshRevealBtn();
   }
 
   /* ── CSS ───────────────────────────────────────────────────────── */
