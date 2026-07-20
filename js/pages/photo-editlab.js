@@ -63,6 +63,12 @@ const EditLab = (function () {
     if (!cv) return () => {};
     const ref = PhotoLab.histogram(state.src);
     return img => {
+      // O histograma tonal estica-se para ocupar a folga da coluna (ver
+      // fitStage): sem acertar a resolução ao tamanho real, o desenho ficava
+      // esticado a partir dos 74px originais.
+      const r = cv.getBoundingClientRect();
+      const w = Math.round(r.width), h = Math.round(r.height);
+      if (w > 0 && h > 0 && (cv.width !== w || cv.height !== h)) { cv.width = w; cv.height = h; }
       PhotoLab.drawHistogram(cv, PhotoLab.histogram(img || state.dst), ref);
     };
   }

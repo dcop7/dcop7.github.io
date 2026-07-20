@@ -1547,7 +1547,7 @@ const PhotographyPage = (function () {
   function demoImage() {
     return assetPath('edit-demo') || assetPath('comp-thirds') || assetPath('comp-golden') || '';
   }
-  let _editSec = null, _editTool = null;
+  let _editSec = null, _editTool = null, _fitBound = false;
 
   function appsTableHTML(t) {
     const sw = (_EDITDB && _EDITDB.software) || [];
@@ -1634,7 +1634,10 @@ const PhotographyPage = (function () {
     // e a orientação; quem quer o porquê abre. É o que separa isto de um manual.
     const more = `<details class="ph-tool-more"><summary>Explicação completa</summary>${concept}</details>`;
 
-    const body = layout === 'tonal'
+    // Duas colunas em todas as famílias menos "pair" (essa já são três
+    // miniaturas lado a lado — encolhê-las para meia largura não ensinava
+    // nada). A demonstração e a orientação prática lêem-se em conjunto.
+    const body = layout !== 'pair'
       ? `<div class="ph-tgrid"><div class="ph-tgrid-demo">${demo}</div>
          <div class="ph-tgrid-guide">${cols}</div></div>${more}`
       : `${demo}${cols}${more}`;
@@ -1642,6 +1645,53 @@ const PhotographyPage = (function () {
     return `<article class="ph-tool ph-tool-${layout}" data-tool-id="${t.id}">
       ${head}${quick}${body}${rel}${gen}${appsTableHTML(t)}
     </article>`;
+  }
+
+  /* ── ocupar a folga vertical ─────────────────────────────────────────
+     A ficha são duas colunas de alturas diferentes, e a mais curta é quase
+     sempre a da demonstração: sobrava uma goteira vazia por baixo da
+     fotografia enquanto a orientação continuava ao lado.
+
+     Em vez de afinar mais um número à mão por família, a fotografia cresce
+     até consumir a folga — limitada ao dobro do valor da família, senão as
+     fichas de orientação longa voltavam a virar um ecrã inteiro de foto.
+     Converge em passagens porque, ao crescer em altura, a imagem também
+     cresce em largura e pode bater no limite da coluna antes de fechar a
+     folga — nesse caso pára onde estiver, sem ciclo infinito. */
+  function fitStage(article) {
+    const grid = article && article.querySelector('.ph-tgrid');
+    if (!grid) return;
+    const demo = grid.querySelector('.ph-tgrid-demo');
+    const guide = grid.querySelector('.ph-tgrid-guide');
+    // A coluna da demonstração é esticada pela grelha, por isso a folga não se
+    // mede entre colunas: mede-se entre a coluna e o que está lá dentro.
+    const inner = demo && demo.querySelector('.ph-tool-demo');
+    if (!demo || !guide || !inner || !demo.querySelector('.el-canvas')) return;
+
+    if (!article.dataset.stageBase) {
+      article.dataset.stageBase =
+        parseFloat(getComputedStyle(article).getPropertyValue('--stage-h')) || 200;
+    }
+    const base = +article.dataset.stageBase;
+    article.style.setProperty('--stage-h', base + 'px');
+    // empilhado (ecrã estreito): as colunas partilham a esquerda, não há folga
+    if (Math.abs(demo.offsetLeft - guide.offsetLeft) < 2) return;
+
+    let h = base;
+    for (let i = 0; i < 4; i++) {
+      const slack = demo.offsetHeight - inner.offsetHeight;
+      if (slack < 16) break;
+      const next = Math.min(base * 2, h + slack);
+      if (next - h < 1) break;
+      h = next;
+      article.style.setProperty('--stage-h', Math.round(h) + 'px');
+    }
+
+    // O histograma tonal muda de tamanho com a folga; um "input" falso põe a
+    // demonstração a redesenhar-se na resolução nova, sem mexer nos valores.
+    const cv = article.querySelector('.el-histo-cv');
+    if (cv && Math.round(cv.getBoundingClientRect().height) !== cv.height)
+      article.querySelectorAll('.el-range').forEach(r => r.dispatchEvent(new Event('input')));
   }
 
   function workflowHTML(s) {
@@ -1717,7 +1767,13 @@ const PhotographyPage = (function () {
           host.dataset.mounted = '1';
           let demo = null;
           try { demo = JSON.parse(host.dataset.demo.replace(/&#39;/g, "'")); } catch (_) {}
-          if (demo) EditLab.mount(host, demo, img);
+          // A folga só se mede depois de a fotografia estar pintada e de o
+          // navegador ter feito o layout com ela lá dentro. Reajusta-se a
+          // ficha inteira porque a primeira de cada secção chega a ser
+          // medida antes de a página assentar (tipos de letra, miniaturas).
+          if (demo) EditLab.mount(host, demo, img)
+            .then(() => requestAnimationFrame(() =>
+              panel.querySelectorAll('.ph-tool').forEach(fitStage)));
         };
         if ('IntersectionObserver' in window) {
           const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { mountOne(e.target); io.unobserve(e.target); } }), { rootMargin: '250px' });
@@ -1725,6 +1781,17 @@ const PhotographyPage = (function () {
         } else hosts.forEach(mountOne);
       } else {
         hosts.forEach(h => { h.innerHTML = '<p class="el-loading">Demonstração indisponível.</p>'; });
+      }
+
+      // A folga depende da largura: ao redimensionar, as colunas mudam de
+      // altura (e abaixo de 900px empilham, onde não há folga nenhuma).
+      if (!_fitBound) {
+        _fitBound = true;
+        let t = 0;
+        window.addEventListener('resize', () => {
+          clearTimeout(t);
+          t = setTimeout(() => document.querySelectorAll('.ph-tool').forEach(fitStage), 160);
+        });
       }
 
       // Miniaturas "em 20 segundos": antes/depois geradas pelo mesmo motor,

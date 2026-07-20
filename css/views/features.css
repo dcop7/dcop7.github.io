@@ -1170,8 +1170,13 @@ body.density-list .lp-link-tags { display: none; }
 
 /* demo à esquerda, orientação à direita: imagem, cursor, usar, evitar e erros
    ficam todos no mesmo ecrã. É o molde das ferramentas de leitura rápida. */
-.ph-tgrid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: .85rem; align-items: start; }
+/* stretch + centrar: a fotografia cresce (ver fitStage) até quase fechar a
+   folga, e o que sobrar reparte-se acima e abaixo em vez de cair todo numa
+   goteira por baixo da imagem. */
+.ph-tgrid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: .85rem; align-items: stretch; }
 .ph-tgrid-demo, .ph-tgrid-guide { min-width: 0; }
+.ph-tgrid-demo { display: flex; flex-direction: column; justify-content: center; }
+.ph-tgrid-demo > .ph-tool-demo { width: 100%; }
 .ph-tgrid-guide .ph-guide { grid-template-columns: 1fr; gap: .45rem; }
 
 /* usar / evitar / erros — uma só faixa, lado a lado */
@@ -1181,15 +1186,38 @@ body.density-list .lp-link-tags { display: none; }
    matiz, vibrância, gradação): o efeito lê-se num instante. Foto pequena,
    histograma ao vivo e cursor por baixo. */
 .ph-tool-tonal { --stage-h: 200px; }
-.ph-tool-tonal .el-lab { grid-template-columns: auto minmax(0, 1fr); gap: .6rem; }
+/* piso na coluna do histograma: sem ele, a foto (que agora cresce para
+   ocupar a folga) esmagava o cursor e os rótulos do histograma um sobre o
+   outro. A fotografia cede a largura, não o contrário. */
+.ph-tool-tonal .el-lab { grid-template-columns: auto minmax(215px, 1fr); gap: .6rem; }
+/* a foto cresce para ocupar a folga vertical e precisa da largura a condizer;
+   o piso de 215px acima garante que é ela a ceder, não o histograma. */
+.ph-tool-tonal .ph-tgrid { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+/* A foto tonal é limitada pela LARGURA da coluna, por isso crescer em altura
+   deixa de fechar a folga a certa altura. O que sobra vai para o histograma
+   — que nestas ferramentas é precisamente o que se está a aprender a ler. */
+.ph-tool-tonal .ph-tgrid-demo > .ph-tool-demo,
+.ph-tool-detail .ph-tgrid-demo > .ph-tool-demo { flex: 1 1 auto; display: flex; }
+.ph-tool-tonal .ph-tgrid-demo .el-lab,
+.ph-tool-detail .ph-tgrid-demo .el-lab { flex: 1; align-items: stretch; }
+.ph-tool-tonal .ph-tgrid-demo .el-lab-side,
+.ph-tool-detail .ph-tgrid-demo .el-lab-side { min-height: 0; }
+.ph-tool-tonal .ph-tgrid-demo .el-histo,
+.ph-tool-detail .ph-tgrid-demo .el-histo { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+.ph-tool-tonal .ph-tgrid-demo .el-histo-cv,
+.ph-tool-detail .ph-tgrid-demo .el-histo-cv { flex: 1 1 auto; height: auto; min-height: 58px; }
 
 /* detalhe (nitidez, textura, clarity, dehaze, ruído): ajustado ao ecrã não se
    vê nada. Manda a lupa 1:1; a foto fica reduzida a navegador. */
 .ph-tool-detail { --stage-h: 180px; }
-.ph-tool-detail .el-lab { grid-template-columns: auto minmax(0, 1fr); }
+/* piso largo: a lupa 1:1 é o que ensina esta família e são dois recortes lado
+   a lado — abaixo disto o grão deixa de se ler. */
+.ph-tool-detail .el-lab { grid-template-columns: minmax(0, auto) minmax(250px, 1fr); }
+/* a lupa e a foto precisam de largura: a demonstração leva a coluna maior */
+.ph-tool-detail .ph-tgrid, .ph-tool-mask .ph-tgrid { grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); }
 /* a lupa é o elemento principal, mas ampliada sem limite vira mancha: 2× de
    zoom sobre um recorte de 95 px é o ponto onde o grão ainda se lê. */
-.ph-tool-detail .el-loupe { grid-template-columns: repeat(2, minmax(0, 190px)); justify-content: start; gap: .45rem; }
+.ph-tool-detail .el-loupe { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: start; gap: .45rem; }
 .ph-tool-detail .el-loupe figcaption { font-size: .64rem; }
 .ph-tool-detail .el-histo { max-width: 385px; }
 
@@ -1201,7 +1229,13 @@ body.density-list .lp-link-tags { display: none; }
 /* máscaras: o efeito é espacial (onde a seleção começa e acaba) — é a única
    família em que ampliar a foto ensina mesmo mais. */
 .ph-tool-mask { --stage-h: 290px; }
-.ph-tool-mask .el-lab { grid-template-columns: auto minmax(0, 1fr); }
+/* Nas máscaras é a área da foto que ensina (é onde se vê a seleção começar e
+   acabar), por isso os controlos passam para baixo e a imagem leva a coluna
+   inteira — ao lado ficavam esmagados numa tira de texto vertical. */
+.ph-tool-mask .el-lab { grid-template-columns: minmax(0, 1fr); }
+.ph-tool-mask .el-lab-side { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: .6rem; }
+.ph-tool-mask .el-lab-side .el-controls { flex: 1 1 200px; }
+.ph-tool-mask .el-lab-side .el-note { flex: 1 1 220px; margin: 0; }
 
 /* par (saturação vs vibrância): três miniaturas chegam — o que importa é a
    diferença entre elas, não o detalhe de cada uma */
@@ -1246,7 +1280,9 @@ body.density-list .lp-link-tags { display: none; }
   .el-histo { flex: 1 1 200px; }
   .el-loupe { flex: 1 1 240px; }
   .el-lab-side .el-controls { flex: 1 1 240px; }
-  .ph-tgrid, .ph-tool-mask .ph-tgrid { grid-template-columns: 1fr; }
+  /* qualificadas por família porque as variantes acima também o são */
+  .ph-tgrid, .ph-tool-mask .ph-tgrid, .ph-tool-detail .ph-tgrid,
+  .ph-tool-tonal .ph-tgrid { grid-template-columns: 1fr; }
   .ph-tgrid-guide .ph-guide { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
   .el-curve-wrap { grid-template-columns: 1fr; }
   .el-curve { width: 100%; height: auto; max-width: 260px; }
