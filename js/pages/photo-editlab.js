@@ -72,15 +72,15 @@ const EditLab = (function () {
      Sem um recorte a 100% estas ferramentas não se conseguem ensinar. */
   function loupeHTML() {
     return `<div class="el-loupe">
-      <figure><canvas class="el-loupe-a" width="150" height="150"></canvas><figcaption>antes · 1:1</figcaption></figure>
-      <figure><canvas class="el-loupe-b" width="150" height="150"></canvas><figcaption>depois · 1:1</figcaption></figure>
+      <figure><canvas class="el-loupe-a" width="190" height="190"></canvas><figcaption>antes · 1:1</figcaption></figure>
+      <figure><canvas class="el-loupe-b" width="190" height="190"></canvas><figcaption>depois · 1:1</figcaption></figure>
       <p class="el-loupe-hint">Passa o rato sobre a fotografia para mover a lupa.</p>
     </div>`;
   }
   function attachLoupe(host, state) {
     const a = host.querySelector('.el-loupe-a'), b = host.querySelector('.el-loupe-b');
     if (!a || !b) return () => {};
-    const S = 150, ca = a.getContext('2d'), cb = b.getContext('2d');
+    const S = 190, ca = a.getContext('2d'), cb = b.getContext('2d');
     ca.imageSmoothingEnabled = cb.imageSmoothingEnabled = false;
     // ponto de partida: zona com detalhe (terço inferior esquerdo)
     let cx = Math.round(state.w * 0.3), cy = Math.round(state.h * 0.72);
@@ -99,11 +99,14 @@ const EditLab = (function () {
       tctx.putImageData(state.dst, 0, 0);
       cb.drawImage(tmp, x, y, S / 2, S / 2, 0, 0, S, S);
     };
+    // Mapeia sobre o CANVAS, não sobre o palco: o palco pode ser mais alto ou
+    // mais largo que a imagem (é ele que centra), e aí as coordenadas fugiam.
     const stage = host.querySelector('.el-stage');
     if (stage) stage.addEventListener('pointermove', e => {
-      const r = stage.getBoundingClientRect();
-      cx = ((e.clientX - r.left) / r.width) * state.w;
-      cy = ((e.clientY - r.top) / r.height) * state.h;
+      const cv = stage.querySelector('.el-canvas');
+      const r = (cv || stage).getBoundingClientRect();
+      cx = Math.max(0, Math.min(state.w, ((e.clientX - r.left) / r.width) * state.w));
+      cy = Math.max(0, Math.min(state.h, ((e.clientY - r.top) / r.height) * state.h));
       paint();
     });
     return paint;
@@ -121,22 +124,26 @@ const EditLab = (function () {
     const id = 'el-' + demo.param;
     const wantHisto = demo.histogram !== false;
     const wantLoupe = !!demo.loupe;
+    // O cursor vive ao lado da imagem, não por baixo: quem está a aprender tem
+    // de ver o ajuste e o efeito no mesmo golpe de vista, sem scroll.
+    // Quando há lupa é ela que ocupa a coluna lateral (é o que ensina), por
+    // isso os controlos acompanham a fotografia na coluna principal.
+    const controls = `<div class="el-controls">
+      ${rangeRow(id, demo.label || 'Ajuste', demo.min, demo.max, demo.step, 0, demo.unit)}
+      ${demo.marks ? `<div class="el-marks">${demo.marks.map(m =>
+        `<button class="el-chip" data-mark="${m.v}">${m.label}</button>`).join('')}</div>` : ''}
+      <div class="el-actions">
+        <button class="el-btn" data-reset>Repor</button>
+        <button class="el-btn" data-hold>Ver original</button>
+      </div>
+    </div>`;
     host.innerHTML = `
       <div class="el-lab${wantLoupe ? ' has-loupe' : ''}">
-        <div class="el-lab-main">${stageHTML()}</div>
+        <div class="el-lab-main">${stageHTML()}${wantLoupe ? controls : ''}</div>
         <aside class="el-lab-side">
           ${wantHisto ? histoHTML() : ''}
-          ${wantLoupe ? loupeHTML() : ''}
-          ${demo.marks ? `<div class="el-marks">${demo.marks.map(m =>
-            `<button class="el-chip" data-mark="${m.v}">${m.label}</button>`).join('')}</div>` : ''}
+          ${wantLoupe ? loupeHTML() : controls}
         </aside>
-      </div>
-      <div class="el-controls">
-        ${rangeRow(id, demo.label || 'Ajuste', demo.min, demo.max, demo.step, 0, demo.unit)}
-        <div class="el-actions">
-          <button class="el-btn" data-reset>Repor</button>
-          <button class="el-btn" data-hold>Ver original (manter premido)</button>
-        </div>
       </div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-canvas').remove();
@@ -203,16 +210,18 @@ const EditLab = (function () {
   function mountCurve(host, demo, state) {
     host.innerHTML = `
       <div class="el-curve-wrap">
-        ${stageHTML('el-stage-curve')}
         <div class="el-curve-side">
           <canvas class="el-curve" width="240" height="240" aria-label="Curva de tons"></canvas>
-          ${histoHTML()}
           <div class="el-presets">${(demo.presets || []).map((p, i) =>
             `<button class="el-chip${i === 0 ? ' active' : ''}" data-preset="${p.id}">${p.name}</button>`).join('')}
             <button class="el-chip" data-preset="linear">Neutra</button></div>
         </div>
-      </div>
-      <p class="el-note" data-why></p>`;
+        <div class="el-curve-main">
+          ${stageHTML()}
+          ${histoHTML()}
+          <p class="el-note" data-why></p>
+        </div>
+      </div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
 
@@ -293,17 +302,18 @@ const EditLab = (function () {
     let band = 'blue';
     const vals = {};
     host.innerHTML = `
-      <div class="el-lab"><div class="el-lab-main">${stageHTML()}</div>
-        <aside class="el-lab-side">${histoHTML()}</aside></div>
-      <div class="el-bands">${bands.map(b => `<button class="el-band${b.id === band ? ' active' : ''}" data-band="${b.id}"
-        style="--bc:${b.c}" title="${b.name}"><span></span>${b.name}</button>`).join('')}</div>
-      <div class="el-controls">
-        ${rangeRow('el-h', 'Matiz (Hue)', -40, 40, 1, 0)}
-        ${rangeRow('el-s', 'Saturação (Saturation)', -100, 100, 1, 0)}
-        ${rangeRow('el-l', 'Luminância (Luminance)', -100, 100, 1, 0)}
-        <div class="el-actions"><button class="el-btn" data-reset>Repor tudo</button></div>
-      </div>
-      <p class="el-note">Escolhe uma cor e mexe só nela. Repara que o resto da imagem fica intacto — é isto que distingue o HSL da saturação global.</p>`;
+      <div class="el-lab"><div class="el-lab-main">${stageHTML()}${histoHTML()}</div>
+        <aside class="el-lab-side">
+          <div class="el-bands">${bands.map(b => `<button class="el-band${b.id === band ? ' active' : ''}" data-band="${b.id}"
+            style="--bc:${b.c}" title="${b.name}"><span></span>${b.name}</button>`).join('')}</div>
+          <div class="el-controls">
+            ${rangeRow('el-h', 'Matiz', -40, 40, 1, 0)}
+            ${rangeRow('el-s', 'Saturação', -100, 100, 1, 0)}
+            ${rangeRow('el-l', 'Luminância', -100, 100, 1, 0)}
+            <div class="el-actions"><button class="el-btn" data-reset>Repor tudo</button></div>
+          </div>
+          <p class="el-note">Escolhe uma cor e mexe só nela: o resto da imagem fica intacto. É isto que distingue o HSL da saturação global.</p>
+        </aside></div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
     const histo = attachHisto(host, state);
@@ -355,15 +365,17 @@ const EditLab = (function () {
   }
   function mountMask(host, demo, state) {
     host.innerHTML = `
-      ${stageHTML()}
-      <div class="el-controls">
-        ${rangeRow('el-mk', 'Intensidade do ajuste', 0, 100, 1, 100, '%')}
-        <div class="el-actions">
-          <label class="el-check"><input type="checkbox" data-showmask> Ver a máscara</label>
-          <button class="el-btn" data-hold>Comparar (manter premido)</button>
-        </div>
-      </div>
-      <p class="el-note">A vermelho está a zona selecionada. O ajuste só acontece lá dentro — e desvanece-se nas bordas, que é o que o torna invisível.</p>`;
+      <div class="el-lab"><div class="el-lab-main">${stageHTML()}</div>
+        <aside class="el-lab-side">
+          <div class="el-controls">
+            ${rangeRow('el-mk', 'Intensidade', 0, 100, 1, 100, '%')}
+            <div class="el-actions">
+              <label class="el-check"><input type="checkbox" data-showmask> Ver a máscara</label>
+              <button class="el-btn" data-hold>Comparar</button>
+            </div>
+          </div>
+          <p class="el-note">A vermelho está a zona selecionada. O ajuste só acontece lá dentro — e desvanece-se nas bordas, que é o que o torna invisível.</p>
+        </aside></div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
     const field = maskField(demo.shape, state.w, state.h);
@@ -399,14 +411,16 @@ const EditLab = (function () {
   /* ── 6. ruído: simula ISO e depois reduz ──────────────────────────── */
   function mountNoise(host, demo, state) {
     host.innerHTML = `
-      <div class="el-lab has-loupe"><div class="el-lab-main">${stageHTML()}</div>
-        <aside class="el-lab-side">${loupeHTML()}</aside></div>
-      <div class="el-controls">
-        ${rangeRow('el-iso', 'Ruído (simula ISO alto)', 0, 100, 1, 55)}
-        ${rangeRow('el-dn', 'Redução de ruído', 0, 100, 1, 0)}
-        ${rangeRow('el-sh', 'Nitidez depois', 0, 100, 1, 0)}
-      </div>
-      <p class="el-note">Sobe o ruído, depois reduz. Repara no ponto em que o grão desaparece mas a textura também — é aí que está o limite útil. E experimenta afiar ANTES de reduzir: vais ver o ruído a ser afiado.</p>`;
+      <div class="el-lab has-loupe"><div class="el-lab-main">${stageHTML()}
+          <div class="el-controls">
+            ${rangeRow('el-iso', 'Ruído (ISO alto)', 0, 100, 1, 55)}
+            ${rangeRow('el-dn', 'Redução de ruído', 0, 100, 1, 0)}
+            ${rangeRow('el-sh', 'Nitidez depois', 0, 100, 1, 0)}
+          </div>
+        </div>
+        <aside class="el-lab-side">${loupeHTML()}
+          <p class="el-note">Sobe o ruído, depois reduz. Repara no ponto em que o grão desaparece mas a textura também — é aí o limite útil. Experimenta afiar ANTES de reduzir: vais ver o ruído a ser afiado.</p>
+        </aside></div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
     const rs = host.querySelectorAll('.el-range'), outs = host.querySelectorAll('.el-val');
@@ -437,10 +451,12 @@ const EditLab = (function () {
     let cur = PRE[0];
     host.innerHTML = `
       <div class="el-lab"><div class="el-lab-main">${stageHTML()}</div>
-        <aside class="el-lab-side">${histoHTML()}</aside></div>
-      <div class="el-presets">${PRE.map((p, i) => `<button class="el-chip${i === 0 ? ' active' : ''}" data-g="${p.id}">${p.name}</button>`).join('')}</div>
-      <div class="el-controls">${rangeRow('el-gi', 'Intensidade', 0, 100, 1, 70, '%')}</div>
-      <p class="el-note">Sombras e altas luzes recebem cores diferentes. É isto que dá identidade a uma série — e nota como perde o efeito assim que passa dos 70%.</p>`;
+        <aside class="el-lab-side">
+          ${histoHTML()}
+          <div class="el-presets">${PRE.map((p, i) => `<button class="el-chip${i === 0 ? ' active' : ''}" data-g="${p.id}">${p.name}</button>`).join('')}</div>
+          <div class="el-controls">${rangeRow('el-gi', 'Intensidade', 0, 100, 1, 70, '%')}</div>
+          <p class="el-note">Sombras e altas luzes recebem cores diferentes — é isto que dá identidade a uma série. Nota como perde o efeito acima dos 70%.</p>
+        </aside></div>`;
     host.querySelector('.el-stage').appendChild(state.canvas);
     host.querySelector('.el-stage .el-canvas').remove();
     const histo = attachHisto(host, state);

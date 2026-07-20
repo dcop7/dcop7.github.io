@@ -166,7 +166,7 @@
             "param": "exposure",
             "value": -1.2
           },
-          "layout": "hero",
+          "layout": "tonal",
           "relations": [
             {
               "id": "highlights",
@@ -254,7 +254,7 @@
             "param": "contrast",
             "value": 55
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "curve",
@@ -341,7 +341,7 @@
             "param": "highlights",
             "value": -85
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "whites",
@@ -428,7 +428,7 @@
             "param": "shadows",
             "value": 75
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "noise",
@@ -501,7 +501,7 @@
             "param": "whites",
             "value": 60
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "blacks",
@@ -588,7 +588,7 @@
             "param": "blacks",
             "value": -55
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "whites",
@@ -683,7 +683,7 @@
             "param": "temp",
             "value": 45
           },
-          "layout": "hero",
+          "layout": "tonal",
           "relations": [
             {
               "id": "tint",
@@ -756,7 +756,7 @@
             "param": "tint",
             "value": -40
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "temp",
@@ -904,7 +904,7 @@
             "param": "vibrance",
             "value": 70
           },
-          "layout": "split",
+          "layout": "tonal",
           "relations": [
             {
               "id": "saturation",
@@ -970,7 +970,7 @@
             "rapidraw": "Color Grading"
           },
           "quick": "Cor diferente nas sombras e nas luzes. É o que dá identidade a uma série.",
-          "layout": "hero",
+          "layout": "tonal",
           "relations": [
             {
               "id": "blacks",
@@ -1153,7 +1153,7 @@
             "rapidraw": "Tone Curve"
           },
           "quick": "Faz tudo o que os cursores fazem, mas escolhes exatamente que tons se movem. A inclinação É o contraste.",
-          "layout": "hero",
+          "layout": "graph",
           "relations": [
             {
               "id": "contrast",
@@ -1228,7 +1228,7 @@
             "rapidraw": "HSL"
           },
           "quick": "Cada família de cor em separado. Escurecer só o azul do céu é o truque mais usado em paisagem.",
-          "layout": "hero",
+          "layout": "graph",
           "relations": [
             {
               "id": "saturation",
@@ -1306,7 +1306,7 @@
             "rapidraw": "Linear Gradient"
           },
           "quick": "Um ajuste que se desvanece numa direção. O filtro ND graduado, em digital.",
-          "layout": "hero",
+          "layout": "mask",
           "relations": [
             {
               "id": "highlights",
@@ -1377,7 +1377,7 @@
             "rapidraw": "Radial"
           },
           "quick": "Cria luz onde não havia. É como se dirige o olhar sem que se note.",
-          "layout": "hero",
+          "layout": "mask",
           "relations": [
             {
               "id": "mask-subject",
@@ -1448,7 +1448,7 @@
             "rapidraw": "Brush / AI Mask"
           },
           "quick": "Seleções que seguem o conteúdo. Verifica sempre as bordas em cabelo e folhagem.",
-          "layout": "hero",
+          "layout": "mask",
           "relations": [
             {
               "id": "mask-grad",
@@ -1516,7 +1516,8 @@
             "min": 0,
             "max": 100,
             "step": 1,
-            "loupe": true
+            "loupe": true,
+            "histogram": false
           },
           "apps": {
             "lightroom": "Detalhe › Nitidez (com Máscara)",
@@ -1531,7 +1532,7 @@
             "param": "sharpen",
             "value": 80
           },
-          "layout": "loupe",
+          "layout": "detail",
           "relations": [
             {
               "id": "noise",
@@ -1605,7 +1606,8 @@
                 "label": "realçar"
               }
             ],
-            "loupe": true
+            "loupe": true,
+            "histogram": false
           },
           "apps": {
             "lightroom": "Básico › Textura",
@@ -1620,7 +1622,7 @@
             "param": "texture",
             "value": 75
           },
-          "layout": "loupe",
+          "layout": "detail",
           "relations": [
             {
               "id": "clarity",
@@ -1710,7 +1712,7 @@
             "param": "clarity",
             "value": 70
           },
-          "layout": "loupe",
+          "layout": "detail",
           "relations": [
             {
               "id": "dehaze",
@@ -1799,7 +1801,7 @@
             "param": "dehaze",
             "value": 65
           },
-          "layout": "loupe",
+          "layout": "detail",
           "relations": [
             {
               "id": "clarity",
@@ -1876,7 +1878,7 @@
             "rapidraw": "Noise Reduction"
           },
           "quick": "Ruído de cor pode ir alto quase sem custo. O de luminância é onde vive o detalhe — vai com pinças.",
-          "layout": "loupe",
+          "layout": "detail",
           "relations": [
             {
               "id": "shadows",

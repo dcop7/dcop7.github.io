@@ -1560,14 +1560,21 @@ const PhotographyPage = (function () {
     </details>`;
   }
 
-  /* Ficha de ferramenta. Deliberadamente NÃO é o mesmo molde para todas:
-     o `layout` decide o que ocupa o lugar de destaque. As de detalhe abrem
-     com a lupa (o efeito não se vê ajustado ao ecrã), as tonais abrem com a
-     demonstração em grande, as de conceito emparelham demo e explicação.
-       hero  → demonstração a toda a largura, texto por baixo
-       split → demonstração e conceito lado a lado
-       loupe → demonstração com recorte 1:1 em destaque
-       pair  → comparação lado a lado (saturação vs vibrância) */
+  /* Ficha de ferramenta. Deliberadamente NÃO é o mesmo molde para todas: o
+     `layout` decide QUAL elemento visual explica melhor a ferramenta e dá-lhe
+     o destaque. A fotografia é apoio ao conceito, nunca o elemento principal —
+     por isso está sempre limitada em altura, e o que cresce é o gráfico, a
+     lupa ou a curva, conforme o que ensina mais.
+
+       tonal  → efeito percebe-se num instante: foto pequena + histograma ao
+                vivo à esquerda, orientação (usar/evitar/erros) logo à direita.
+                Tudo cabe num ecrã, sem scroll.
+       detail → o efeito é invisível ajustado ao ecrã: a lupa 1:1 manda, a foto
+                fica reduzida a navegador.
+       graph  → a curva / as bandas HSL explicam melhor que ampliar a foto.
+       mask   → a máscara é espacial: a foto precisa de área, os controlos vão
+                para o lado.
+       pair   → comparação de dois parâmetros nos mesmos píxeis. */
   function toolDetailHTML(t) {
     const list = (title, cls, arr) => (arr && arr.length)
       ? `<div class="ph-eq-sec ${cls}"><b>${title}</b><ul>${arr.map(li).join('')}</ul></div>` : '';
@@ -1606,11 +1613,13 @@ const PhotographyPage = (function () {
         <span class="ph-tgen-n" data-genre-name="${g.id}">${g.id}</span><span class="ph-tgen-w">${g.why}</span>
       </button>`).join('')}</div></div>` : '';
 
-    const cols = `<div class="ph-eq-cols">
+    // Usar / evitar / erros num só bloco: são a orientação prática e devem
+    // ler-se ao mesmo tempo que a demonstração, não três ecrãs abaixo.
+    const cols = `<div class="ph-guide">
       ${list('✅ Quando usar', 'ok', t.when)}
       ${list('⛔ Quando evitar', 'no', t.avoid)}
+      ${list('⚠️ Erros comuns', 'mist', t.mistakes)}
     </div>
-    ${list('⚠️ Erros comuns', 'mist', t.mistakes)}
     ${t.note ? `<div class="ph-craft-drill"><b>Regra prática</b> ${t.note}</div>` : ''}`;
 
     const head = `<header class="ph-tool-hd">
@@ -1621,12 +1630,14 @@ const PhotographyPage = (function () {
       </div>
     </header>`;
 
-    const body = layout === 'split'
-      ? `<div class="ph-tsplit"><div class="ph-tsplit-a">${demo}</div>
-         <div class="ph-tsplit-b">${concept}</div></div>${cols}`
-      : layout === 'loupe' || layout === 'pair'
-      ? `${demo}${cols}<details class="ph-tool-more"><summary>Explicação completa</summary>${concept}</details>`
-      : `${demo}${concept}${cols}`;
+    // A explicação longa fica sempre recolhida: quem consulta quer ver o efeito
+    // e a orientação; quem quer o porquê abre. É o que separa isto de um manual.
+    const more = `<details class="ph-tool-more"><summary>Explicação completa</summary>${concept}</details>`;
+
+    const body = layout === 'tonal'
+      ? `<div class="ph-tgrid"><div class="ph-tgrid-demo">${demo}</div>
+         <div class="ph-tgrid-guide">${cols}</div></div>${more}`
+      : `${demo}${cols}${more}`;
 
     return `<article class="ph-tool ph-tool-${layout}" data-tool-id="${t.id}">
       ${head}${quick}${body}${rel}${gen}${appsTableHTML(t)}
