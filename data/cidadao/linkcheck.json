@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-20T20:00:33.256Z",
+ "generated": "2026-07-21T03:51:53.894Z",
  "total": 84,
- "broken": 0,
+ "broken": 1,
  "unknown": 27,
  "results": [
   {
@@ -121,8 +121,8 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:cartao-jovem",
