@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-22T09:03:05.886Z",
+ "generated": "2026-07-22T14:29:35.531Z",
  "total": 84,
- "broken": 2,
+ "broken": 0,
  "unknown": 27,
  "results": [
   {
@@ -337,8 +337,8 @@
   {
    "id": "calendario:inspecao",
    "url": "https://www.imt-ip.pt/sites/IMTT/Portugues/Veiculos/InspecaoVeiculos/Paginas/InspeccaodeVeiculos.aspx",
-   "status": 415,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:cc-renovar",
@@ -349,8 +349,8 @@
   {
    "id": "calendario:carta-revalidar",
    "url": "https://www.imt-ip.pt/",
-   "status": 415,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:ss-prova-escolar",
