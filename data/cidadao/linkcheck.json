@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-22T03:52:06.588Z",
+ "generated": "2026-07-22T09:03:05.886Z",
  "total": 84,
- "broken": 1,
- "unknown": 28,
+ "broken": 2,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -121,14 +121,14 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -337,8 +337,8 @@
   {
    "id": "calendario:inspecao",
    "url": "https://www.imt-ip.pt/sites/IMTT/Portugues/Veiculos/InspecaoVeiculos/Paginas/InspeccaodeVeiculos.aspx",
-   "status": 200,
-   "ok": true
+   "status": 415,
+   "ok": false
   },
   {
    "id": "calendario:cc-renovar",
@@ -349,8 +349,8 @@
   {
    "id": "calendario:carta-revalidar",
    "url": "https://www.imt-ip.pt/",
-   "status": 200,
-   "ok": true
+   "status": 415,
+   "ok": false
   },
   {
    "id": "calendario:ss-prova-escolar",
