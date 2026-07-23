@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-22T19:49:03.512Z",
+ "generated": "2026-07-23T03:49:45.462Z",
  "total": 84,
- "broken": 1,
- "unknown": 27,
+ "broken": 25,
+ "unknown": 3,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -73,44 +73,44 @@
   {
    "id": "apoios:abono-familia",
    "url": "https://www.seg-social.pt/abono-de-familia-para-criancas-e-jovens",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:garantia-infancia",
    "url": "https://www.seg-social.pt/garantia-para-a-infancia",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:creche-gratis",
    "url": "https://www.seg-social.pt/creche-feliz",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:licencas-parentais",
    "url": "https://www.seg-social.pt/parentalidade",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:csi",
    "url": "https://www.seg-social.pt/complemento-solidario-para-idosos",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:psi",
    "url": "https://www.seg-social.pt/prestacao-social-para-a-inclusao",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:cuidador-informal",
    "url": "https://www.seg-social.pt/cuidador-informal",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:descontos-transportes",
@@ -151,8 +151,8 @@
   {
    "id": "apoios:subsidio-desemprego",
    "url": "https://www.seg-social.pt/subsidio-de-desemprego",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:medidas-emprego",
@@ -193,80 +193,80 @@
   {
    "id": "apoios:rsi",
    "url": "https://www.seg-social.pt/rendimento-social-de-insercao",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:protecao-juridica",
    "url": "https://www.seg-social.pt/protecao-juridica",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:adse-isencoes-taxas",
    "url": "https://www.seg-social.pt/subsidio-de-doenca",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:pensao-velhice",
    "url": "https://www.seg-social.pt/pensao-de-velhice",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:reforma-antecipada",
    "url": "https://www.seg-social.pt/pensao-de-velhice",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:pensao-social-velhice",
    "url": "https://www.seg-social.pt/pensao-social-de-velhice",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:pensao-invalidez",
    "url": "https://www.seg-social.pt/pensao-de-invalidez",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:pensao-sobrevivencia",
    "url": "https://www.seg-social.pt/pensao-de-sobrevivencia",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:subsidio-morte",
    "url": "https://www.seg-social.pt/subsidio-por-morte",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:reembolso-funeral",
    "url": "https://www.seg-social.pt/subsidio-de-funeral",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:complemento-dependencia",
    "url": "https://www.seg-social.pt/complemento-por-dependencia",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:abono-prenatal",
    "url": "https://www.seg-social.pt/abono-de-familia-pre-natal",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:assistencia-filho",
    "url": "https://www.seg-social.pt/subsidio-para-assistencia-a-filho",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:trabalhador-estudante",
@@ -277,8 +277,8 @@
   {
    "id": "apoios:cartao-europeu-saude",
    "url": "https://www.seg-social.pt/cartao-europeu-de-seguro-de-doenca",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "apoios:bupi",
@@ -379,8 +379,8 @@
   {
    "id": "calendario:creche-inscricao",
    "url": "https://www.seg-social.pt/creche-feliz",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "calendario:mega-manuais",
@@ -427,8 +427,8 @@
   {
    "id": "calendario:subsidio-desemprego-prazo",
    "url": "https://www.seg-social.pt/subsidio-de-desemprego",
-   "status": 0,
-   "ok": null
+   "status": 503,
+   "ok": false
   },
   {
    "id": "calendario:limpeza-terrenos",
