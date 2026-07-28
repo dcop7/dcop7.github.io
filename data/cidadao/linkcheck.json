@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-28T09:10:23.098Z",
+ "generated": "2026-07-28T14:44:30.264Z",
  "total": 84,
- "broken": 5,
+ "broken": 0,
  "unknown": 31,
  "results": [
   {
@@ -451,32 +451,32 @@
   {
    "id": "municipio:leiria",
    "url": "https://www.cm-leiria.pt/",
-   "status": 502,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "municipio:leiria:bolsas-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/educacao/ensino-superior",
-   "status": 502,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "municipio:leiria:creche-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 502,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "municipio:leiria:cartao-senior-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 502,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "municipio:leiria:apoio-municipe-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 502,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "municipio:torres-vedras",
