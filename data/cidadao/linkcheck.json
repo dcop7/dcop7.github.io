@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-29T03:45:38.376Z",
+ "generated": "2026-07-29T09:15:29.498Z",
  "total": 84,
- "broken": 1,
- "unknown": 32,
+ "broken": 0,
+ "unknown": 31,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -121,14 +121,14 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
