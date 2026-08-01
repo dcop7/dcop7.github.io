@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-01T14:02:52.343Z",
+ "generated": "2026-08-01T19:38:19.728Z",
  "total": 84,
- "broken": 1,
- "unknown": 28,
+ "broken": 0,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -121,8 +121,8 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cartao-jovem",
@@ -373,8 +373,8 @@
   {
    "id": "calendario:exames-inscricao",
    "url": "https://jnepiepe.dge.mec.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:creche-inscricao",
