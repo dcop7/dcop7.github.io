@@ -1,7 +1,7 @@
 {
- "generated": "2026-08-01T08:36:41.101Z",
+ "generated": "2026-08-01T14:02:52.343Z",
  "total": 84,
- "broken": 0,
+ "broken": 1,
  "unknown": 28,
  "results": [
   {
@@ -121,14 +121,14 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -373,8 +373,8 @@
   {
    "id": "calendario:exames-inscricao",
    "url": "https://jnepiepe.dge.mec.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:creche-inscricao",
