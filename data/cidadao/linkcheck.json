@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-02T14:02:54.287Z",
+ "generated": "2026-08-02T19:39:17.407Z",
  "total": 84,
- "broken": 0,
- "unknown": 27,
+ "broken": 1,
+ "unknown": 28,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -121,8 +121,8 @@
   {
    "id": "apoios:museus-gratis",
    "url": "https://www.museusemonumentos.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:cartao-jovem",
@@ -397,8 +397,8 @@
   {
    "id": "calendario:bolsas-dges",
    "url": "https://www.dges.gov.pt/pt",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:passe-sub23",
