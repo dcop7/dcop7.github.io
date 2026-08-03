@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-03T10:09:42.113Z",
+ "generated": "2026-08-03T15:21:43.516Z",
  "total": 84,
  "broken": 0,
  "unknown": 33,
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -157,8 +157,8 @@
   {
    "id": "apoios:medidas-emprego",
    "url": "https://www.iefp.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:programa-regressar",
