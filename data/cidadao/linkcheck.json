@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-02T19:39:17.407Z",
+ "generated": "2026-08-03T04:01:14.872Z",
  "total": 84,
  "broken": 1,
- "unknown": 28,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
@@ -397,8 +397,8 @@
   {
    "id": "calendario:bolsas-dges",
    "url": "https://www.dges.gov.pt/pt",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:passe-sub23",
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
