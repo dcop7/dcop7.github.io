@@ -231,6 +231,7 @@
         "gh",
         "dof",
         "focal",
+        "hf",
         "nd"
       ]
     },
@@ -457,7 +458,8 @@
       "tools": [
         "gh",
         "exposure",
-        "focal"
+        "focal",
+        "hf"
       ]
     },
     {

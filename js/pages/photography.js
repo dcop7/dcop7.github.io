@@ -98,12 +98,10 @@ const PhotographyPage = (function () {
           <div class="ph-field">
             <label class="ph-label">Sensor (círculo de confusão, mm)</label>
             <select class="ph-select" id="dof-coc">
-              <option value="0.029">Full Frame 35mm (0.029mm)</option>
-              <option value="0.018" selected>Canon APS-C — M50 Mark II (0.018mm)</option>
-              <option value="0.019">APS-C Nikon/Sony (0.019mm)</option>
-              <option value="0.015">MFT (0.015mm)</option>
-              <option value="0.010">1" sensor (0.010mm)</option>
-              <option value="0.005">1/2.3" (0.005mm)</option>
+              ${[['0.03', 'Full Frame 35mm (0.03mm)'], ['0.019', 'APS-C (0.019mm)'],
+                 ['0.015', 'Micro 4/3 (0.015mm)'], ['0.010', '1" sensor (0.010mm)'],
+                 ['0.006', 'Telemóvel 1/1.5" (0.006mm)'], ['0.005', 'Telemóvel 1/2.3" (0.005mm)']]
+                .map(([v, t]) => `<option value="${v}"${v === classCoC() ? ' selected' : ''}>${t}</option>`).join('')}
             </select>
           </div>
         </div>
@@ -154,8 +152,27 @@ const PhotographyPage = (function () {
           </div>
         </div>
         <div id="fc-result" class="ph-result"></div>
-        <hr style="border:none;border-top:1px solid var(--border);margin:.85rem 0">
-        <div class="ph-card-title" style="font-size:.82rem;margin-bottom:.5rem">Distância Hiperfocal</div>
+      </div>`;
+
+    function calcFc() {
+      const fl=+root.querySelector('#fc-fl').value, crop=+root.querySelector('#fc-crop').value;
+      const eq=fl*crop;
+      root.querySelector('#fc-result').innerHTML=`
+        <div class="ph-result-val">${eq.toFixed(0)} mm equivalente FF</div>
+        <div class="ph-result-desc">Ângulo de visão como ${eq.toFixed(0)}mm numa câmara full frame. Factor de crop: ${crop}×</div>`;
+    }
+    root.querySelectorAll('#fc-fl,#fc-crop').forEach(el=>el.addEventListener('input',calcFc));
+    calcFc();
+  }
+
+  /* ── Distância Hiperfocal ──────────────────────────────────────────
+     Cartão próprio. Vivia dentro do Focal + Crop, e era a única ficha com
+     duas calculadoras: ficava o dobro da altura das vizinhas e desalinhava
+     a grelha toda. O CoC vem da classe de câmara, como o crop. */
+  function buildHyperfocal(root) {
+    root.innerHTML=`
+      <div class="ph-card">
+        <div class="ph-card-title">🎯 Distância Hiperfocal</div>
         <div class="ph-row">
           <div class="ph-field">
             <label class="ph-label">Focal (mm)</label>
@@ -167,19 +184,12 @@ const PhotographyPage = (function () {
           </div>
           <div class="ph-field">
             <label class="ph-label">CoC (mm)</label>
-            <input type="number" class="ph-input" id="hf-coc" value="0.018" step="0.001" min="0.001">
+            <input type="number" class="ph-input" id="hf-coc" value="${classCoC()}" step="0.001" min="0.001">
           </div>
         </div>
         <div id="hf-result" class="ph-result"></div>
       </div>`;
 
-    function calcFc() {
-      const fl=+root.querySelector('#fc-fl').value, crop=+root.querySelector('#fc-crop').value;
-      const eq=fl*crop;
-      root.querySelector('#fc-result').innerHTML=`
-        <div class="ph-result-val">${eq.toFixed(0)} mm equivalente FF</div>
-        <div class="ph-result-desc">Ângulo de visão como ${eq.toFixed(0)}mm numa câmara full frame. Factor de crop: ${crop}×</div>`;
-    }
     function calcHf() {
       const fl=+root.querySelector('#hf-fl').value, ap=+root.querySelector('#hf-ap').value, coc=+root.querySelector('#hf-coc').value;
       const H=(fl*fl)/(ap*coc)/1000;
@@ -187,9 +197,8 @@ const PhotographyPage = (function () {
         <div class="ph-result-val">${H.toFixed(2)} m</div>
         <div class="ph-result-desc">Foca a ${H.toFixed(2)} m → tudo de ${(H/2).toFixed(2)} m ao infinito em foco.</div>`;
     }
-    root.querySelectorAll('#fc-fl,#fc-crop').forEach(el=>el.addEventListener('input',calcFc));
     root.querySelectorAll('#hf-fl,#hf-ap,#hf-coc').forEach(el=>el.addEventListener('input',calcHf));
-    calcFc(); calcHf();
+    calcHf();
   }
 
   // ── ND Filter ─────────────────────────────────────────────────────
@@ -1032,6 +1041,9 @@ const PhotographyPage = (function () {
      que contradizia o seletor de câmara que manda em todo o resto do portal. */
   const CLASS_CROP = { phone: '4.7', apsc: '1.6', ff: '1', mft: '2' };
   const classCrop = () => CLASS_CROP[gearClass()] || '1.6';
+  /* Círculo de confusão: 0.03mm em full frame, dividido pelo crop da classe. */
+  const CLASS_COC = { phone: '0.006', apsc: '0.019', ff: '0.03', mft: '0.015' };
+  const classCoC = () => CLASS_COC[gearClass()] || '0.019';
   function classDef(id) { return (_DB && _DB.classes.find(c => c.id === (id || gearClass()))) || null; }
 
   function profile() {
@@ -1118,7 +1130,8 @@ const PhotographyPage = (function () {
   const TOOL_META = {
     exposure: { fn: buildExposure,     label: 'Exposição' },
     dof:      { fn: buildDof,          label: 'Prof. de campo' },
-    focal:    { fn: buildFocal,        label: 'Focal & hiperfocal' },
+    focal:    { fn: buildFocal,        label: 'Focal & crop' },
+    hf:       { fn: buildHyperfocal,   label: 'Hiperfocal' },
     nd:       { fn: buildNd,           label: 'Filtro ND' },
     flash:    { fn: buildFlash,        label: 'Flash' },
     le:       { fn: buildLongExposure, label: 'Longa exposição' },
