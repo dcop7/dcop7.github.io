@@ -39,13 +39,13 @@ jobs:
 
       - name: Checkout
         if: steps.gate.outputs.go == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
         if: steps.gate.outputs.go == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Build NoCartaz national snapshot
         if: steps.gate.outputs.go == 'true'
