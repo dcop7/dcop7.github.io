@@ -27,6 +27,11 @@ const EditLab = (function () {
         const h = Math.round(img.naturalHeight * (w / img.naturalWidth));
         const c = document.createElement('canvas');
         c.width = w; c.height = h;
+        // Este canvas SUBSTITUI o de stageHTML no DOM, por isso o rotulo tem de
+        // vir daqui: no marcador ele seria removido antes de chegar ao ecra.
+        c.className = 'el-canvas';
+        c.setAttribute('role', 'img');
+        c.setAttribute('aria-label', 'Fotografia de demonstracao com o ajuste aplicado');
         const ctx = c.getContext('2d', { willReadFrequently: true });
         ctx.drawImage(img, 0, 0, w, h);
         const src = ctx.getImageData(0, 0, w, h);
@@ -46,7 +51,7 @@ const EditLab = (function () {
 
   /* Canvas visível + rótulo "antes/depois" opcional. */
   function stageHTML(cls) {
-    return `<div class="el-stage ${cls || ''}"><canvas class="el-canvas"></canvas></div>`;
+    return `<div class="el-stage ${cls || ''}"><canvas class="el-canvas" role="img" aria-label="Fotografia de demonstração com o ajuste aplicado"></canvas></div>`;
   }
 
   /* ── histograma ao vivo ────────────────────────────────────────────

@@ -500,20 +500,29 @@ const PhotoIllus = (function () {
   /* ══ EQUIPAMENTO (equipment.json) ════════════════════════════════════ */
 
   // Tamanhos de sensor, à escala relativa real.
+  /* Os retângulos são concêntricos, por isso rótulos colados à borda direita de
+     cada um caíam todos dentro do retângulo maior e uns por cima dos outros (o
+     `i * 0` era um escalonamento que ficou a zero). Passam a legenda à direita,
+     com amostra de cor por linha: cada tamanho fica identificado sem ambiguidade
+     e as caixas ficam livres para se comparar a área, que é o que se ensina. */
   ART['eq-sensors'] = () => {
-    const W = 430, H = 190, cx = W / 2, cy = H / 2 - 6;
+    const W = 430, H = 190, cx = 150, cy = H / 2 - 4;
     const boxes = [
-      { w: 36, h: 24, lbl: 'FF 36×24', col: C.gold },
-      { w: 23.6, h: 15.7, lbl: 'APS-C', col: C.cyan },
-      { w: 17.3, h: 13, lbl: 'M4/3', col: C.good },
-      { w: 9.6, h: 7.2, lbl: 'telemóvel', col: C.dim },
+      { w: 36, h: 24, lbl: 'Full frame', sub: '36×24 mm', col: C.gold },
+      { w: 23.6, h: 15.7, lbl: 'APS-C', sub: 'crop 1.5–1.6×', col: C.cyan },
+      { w: 17.3, h: 13, lbl: 'Micro 4/3', sub: 'crop 2×', col: C.good },
+      { w: 9.6, h: 7.2, lbl: 'Telemóvel', sub: '~1/1.5"', col: C.dim },
     ];
-    const k = 4.2;
-    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Tamanhos de sensor comparados">
-      ${boxes.map(b => `<rect x="${cx - b.w * k / 2}" y="${cy - b.h * k / 2}" width="${b.w * k}" height="${b.h * k}"
+    const k = 4.2, lx = 268, ly = 42, step = 27;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Tamanhos de sensor comparados: full frame, APS-C, Micro 4/3 e telemóvel">
+      ${boxes.map(b => `<rect x="${(cx - b.w * k / 2).toFixed(1)}" y="${(cy - b.h * k / 2).toFixed(1)}" width="${(b.w * k).toFixed(1)}" height="${(b.h * k).toFixed(1)}"
         fill="none" stroke="${b.col}" stroke-width="1.8" rx="2"/>`).join('')}
-      ${boxes.map((b, i) => tag(cx + b.w * k / 2 + 4, cy - b.h * k / 2 + 12 + i * 0, b.lbl, { fg: b.col })).join('')}
-      ${tag(cx, H - 6, 'mais área = mais luz e menos ruído', { anchor: 'middle', fg: C.ink })}
+      ${boxes.map((b, i) => `<g>
+        <rect x="${lx}" y="${ly + i * step - 9}" width="13" height="10" rx="2" fill="none" stroke="${b.col}" stroke-width="1.8"/>
+        <text x="${lx + 20}" y="${ly + i * step}" font-family="var(--font-sans, sans-serif)" font-size="10" font-weight="700" fill="${b.col}">${esc(b.lbl)}</text>
+        <text x="${lx + 20}" y="${ly + i * step + 11}" font-family="var(--font-sans, sans-serif)" font-size="8.5" fill="${C.dim}">${esc(b.sub)}</text>
+      </g>`).join('')}
+      ${tag(cx, H - 4, 'mais área = mais luz e menos ruído', { anchor: 'middle', fg: C.ink })}
     </svg>`;
   };
 

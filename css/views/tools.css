@@ -68,7 +68,7 @@ body.light .t-input, body.light .t-textarea, body.light .t-select { background: 
 .tool-opts-lbl { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .tool-seg { display: flex; gap: .25rem; }
 .tsb { background: var(--card2); border: 1px solid var(--border); color: var(--muted); font-size: .72rem; padding: .3rem .65rem; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--ease); font-family: inherit; }
-.tsb.active, .tsb:hover { background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.3); color: var(--accent); }
+.tsb.active, .tsb:hover { background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.3); color: var(--accent-txt); }
 .tool-colors { display: flex; gap: .4rem; align-items: center; }
 .tcol { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all var(--ease); background: var(--tc, #3b82f6); }
 .tcol.active { border-color: rgba(255,255,255,.6); transform: scale(1.15); }

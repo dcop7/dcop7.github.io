@@ -22,6 +22,14 @@
 
   /* ── Accent ── */
   --accent: #6366f1;
+  /* Indigo-500 dá 3.9:1 sobre --card2 e 4.3:1 sobre --bg: chega para
+     preenchimentos e bordas (3:1) mas falha AA em texto pequeno (4.5:1).
+     --accent-txt é a mesma cor um degrau mais clara, só para TEXTO. */
+  --accent-txt: #818cf8;
+  /* Branco sobre indigo-500 e 4.47:1 — falha AA por pouco. --accent-fill e o
+     mesmo indigo um degrau mais escuro: 4.94:1 com texto branco e ainda 3.9:1
+     como borda. Usar em controlos PREENCHIDOS com texto branco. */
+  --accent-fill: #5b5fe8;
   --accent2: #22d3ee;
   --accent-rgb: 99,102,241;
   --accent-soft: rgba(99,102,241,.12);
@@ -132,6 +140,8 @@ body.light {
   --text2: #334155;
   --muted: #64748b;
   --accent: #6366f1;
+  --accent-txt: #4f46e5;   /* 4.47:1 sobre branco falha AA; indigo-600 dá 6.3:1 */
+  --accent-fill: #5b5fe8;
   --accent2: #0891b2;
   --accent-soft: rgba(99,102,241,.08);
   --accent-glow: rgba(99,102,241,.15);

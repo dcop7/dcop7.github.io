@@ -145,12 +145,11 @@ const PhotographyPage = (function () {
           <div class="ph-field">
             <label class="ph-label">Crop factor</label>
             <select class="ph-select" id="fc-crop">
-              <option value="1">Full Frame (1×)</option>
-              <option value="1.5">APS-C Nikon/Sony (1.5×)</option>
-              <option value="1.6" selected>APS-C Canon (1.6×) — M50 Mark II</option>
-              <option value="2">Micro 4/3 (2×)</option>
-              <option value="2.7">1" sensor (2.7×)</option>
-              <option value="5.6">1/2.3" (5.6×)</option>
+              ${[['1', 'Full Frame (1×)'], ['1.5', 'APS-C Nikon/Sony (1.5×)'],
+                 ['1.6', 'APS-C Canon (1.6×)'], ['2', 'Micro 4/3 (2×)'],
+                 ['2.7', '1" sensor (2.7×)'], ['4.7', 'Telemóvel 1/1.5" (4.7×)'],
+                 ['5.6', 'Telemóvel 1/2.3" (5.6×)']]
+                .map(([v, t]) => `<option value="${v}"${v === classCrop() ? ' selected' : ''}>${t}</option>`).join('')}
             </select>
           </div>
         </div>
@@ -369,8 +368,8 @@ const PhotographyPage = (function () {
         <div class="ph-result-desc ph-gh-grid">
           ${row('🌑','Hora azul manhã:',range(noon-hBlue,noon-hGoldLo),'var(--accent2)')}
           ${row('🌅','Hora dourada manhã:',range(noon-hGoldLo,noon-hGoldHi),'var(--amber)')}
-          ${row('☀️','Nascer do sol:',hhmm(hSun==null?null:noon-hSun),'var(--accent)')}
-          ${row('🌇','Pôr do sol:',hhmm(hSun==null?null:noon+hSun),'var(--accent)')}
+          ${row('☀️','Nascer do sol:',hhmm(hSun==null?null:noon-hSun),'var(--accent-txt)')}
+          ${row('🌇','Pôr do sol:',hhmm(hSun==null?null:noon+hSun),'var(--accent-txt)')}
           ${row('🌆','Hora dourada tarde:',range(noon+hGoldHi,noon+hGoldLo),'var(--amber)')}
           ${row('🌑','Hora azul tarde:',range(noon+hGoldLo,noon+hBlue),'var(--accent2)')}
         </div>`;
@@ -742,7 +741,7 @@ const PhotographyPage = (function () {
         card.type = 'button'; card.className = 'ph-comp-card';
         card.innerHTML = `<span class="ph-comp-card-frame">
             ${asset ? `<img class="ph-comp-card-img" loading="lazy" decoding="async" src="${asset}" alt="">` : '<span class="ph-comp-card-noimg"></span>'}
-            <canvas class="ph-comp-card-cv" width="320" height="219"></canvas>
+            <canvas class="ph-comp-card-cv" width="320" height="219" role="img" aria-label="Marcações da composição sobre o exemplo"></canvas>
           </span>
           <span class="ph-comp-card-name">${comp.name}</span>
           <span class="ph-comp-card-desc">${comp.desc}</span>`;
@@ -766,7 +765,7 @@ const PhotographyPage = (function () {
                 <button class="tsb" data-s="280">L</button>
               </div>
             </div>
-            <canvas id="cw-canvas" class="cw-canvas" width="220" height="220"></canvas>
+            <canvas id="cw-canvas" class="cw-canvas" width="220" height="220" role="img" aria-label="Roda de cores: anel de tonalidade e quadrado de saturacao e luminosidade"></canvas>
           </div>
           <div class="cw-info-col">
             <div class="tool-opts-grp">
@@ -1029,6 +1028,10 @@ const PhotographyPage = (function () {
     return (_DB && _DB.gearDefault) || 'apsc';
   }
   function setGearClass(c) { try { localStorage.setItem('ph-class', c); } catch (_) {} }
+  /* Crop pré-selecionado nas calculadoras. Antes vinha fixo na M50 do autor, o
+     que contradizia o seletor de câmara que manda em todo o resto do portal. */
+  const CLASS_CROP = { phone: '4.7', apsc: '1.6', ff: '1', mft: '2' };
+  const classCrop = () => CLASS_CROP[gearClass()] || '1.6';
   function classDef(id) { return (_DB && _DB.classes.find(c => c.id === (id || gearClass()))) || null; }
 
   function profile() {
@@ -1215,7 +1218,7 @@ const PhotographyPage = (function () {
       const comp = COMPOSITIONS.find(c => c.name === name); if (!comp) return '';
       const asset = (genreId && assetPath('comp-' + genreId + '-' + compSlug(name))) || assetPath(COMP_ASSET[name]);
       return `<button class="ph-comp-card" data-comp="${name}">
-        <span class="ph-comp-card-frame">${asset ? `<img class="ph-comp-card-img" loading="lazy" decoding="async" src="${asset}" alt="">` : '<span class="ph-comp-card-noimg"></span>'}<canvas class="ph-comp-card-cv" width="320" height="219"></canvas></span>
+        <span class="ph-comp-card-frame">${asset ? `<img class="ph-comp-card-img" loading="lazy" decoding="async" src="${asset}" alt="">` : '<span class="ph-comp-card-noimg"></span>'}<canvas class="ph-comp-card-cv" width="320" height="219" role="img" aria-label="Marcacoes da composicao sobre o exemplo"></canvas></span>
         <span class="ph-comp-card-name">${name}</span></button>`;
     }).join('')}</div>`;
   }
@@ -1545,11 +1548,12 @@ const PhotographyPage = (function () {
         <div class="ph-field-card">
           <div class="ph-field-top">
             <div class="ph-field-title">${g.icon} ${g.name}</div>
-            <span class="ph-fmt-badge ${badge.c}" title="${fa.label}">${(profileDef() || {}).format || ''} · ${badge.t}</span>
+            <span class="ph-fmt-badge ${badge.c}" title="Quanto o RAW compensa em ${g.name}">${badge.t}</span>
           </div>
           ${(visionOf(g) || {}).lead ? `<div class="ph-field-intent">🧠 ${visionOf(g).lead}</div>` : ''}
           <div class="ph-field-lens">${ll.concrete}</div>
           <div class="ph-field-mode">${ll.name} · ${ll.eq}</div>
+          ${(profileDef() || {}).format ? `<div class="ph-field-fmt">${profileDef().icon} Disparar em <b>${profileDef().format}</b></div>` : ''}
           <div class="ph-kv-grid ph-field-kv">${(g.gear.settings || []).map(kvHTML).join('')}</div>
           ${s.height ? `<div class="ph-field-row">📏 <b>Altura:</b> ${s.height}</div>` : ''}
           ${s.position ? `<div class="ph-field-row">📍 <b>Posição:</b> ${s.position}</div>` : ''}
@@ -1615,7 +1619,7 @@ const PhotographyPage = (function () {
   // Grelha expansível reutilizável (mata os modais de Aprender): ao clicar num
   // cartão abre um painel inline em largura total logo a seguir a esse cartão.
   function expandableGrid(box, items, opt) {
-    box.innerHTML = `${opt.head || ''}<div class="ph-learn-grid"></div>`;
+    box.innerHTML = `${opt.head || ''}<div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div>`;
     const grid = box.querySelector('.ph-learn-grid');
     const detail = document.createElement('div');
     detail.className = 'ph-learn-detail'; detail.hidden = true;
@@ -1627,10 +1631,12 @@ const PhotographyPage = (function () {
     items.forEach(t => {
       const card = document.createElement('button');
       card.type = 'button';
-      const th = opt.thumb(t);
-      card.className = 'ph-learn-card' + (th ? '' : ' no-art');
+      const th = opt.compact ? '' : opt.thumb(t);
+      card.className = 'ph-learn-card' + (opt.compact ? ' compact' : th ? '' : ' no-art');
       card.setAttribute('aria-expanded', 'false');
-      card.innerHTML = `<span class="ph-learn-thumb">${th || `<span class="ph-learn-ico">${t.icon || '📷'}</span>`}</span>
+      // `compact` omite o bloco da miniatura em vez de o deixar vazio: reservar
+      // um 21:10 só para centrar um emoji dava cartões altos e ocos.
+      card.innerHTML = `${opt.compact ? '' : `<span class="ph-learn-thumb">${th || `<span class="ph-learn-ico">${t.icon || '📷'}</span>`}</span>`}
         <span class="ph-learn-info"><span class="ph-learn-name">${t.icon ? t.icon + ' ' : ''}${t.name}</span>
         <span class="ph-scn-blurb-sm">${opt.blurb(t)}</span></span><span class="ph-learn-caret" aria-hidden="true"></span>`;
       card.addEventListener('click', () => {
@@ -1816,11 +1822,14 @@ const PhotographyPage = (function () {
       article.style.setProperty('--stage-h', Math.round(h) + 'px');
     }
 
-    // O histograma tonal muda de tamanho com a folga; um "input" falso põe a
+    // A largura do histograma acompanha a coluna; um "input" falso põe a
     // demonstração a redesenhar-se na resolução nova, sem mexer nos valores.
     const cv = article.querySelector('.el-histo-cv');
-    if (cv && Math.round(cv.getBoundingClientRect().height) !== cv.height)
-      article.querySelectorAll('.el-range').forEach(r => r.dispatchEvent(new Event('input')));
+    if (cv) {
+      const r = cv.getBoundingClientRect();
+      if (Math.round(r.width) !== cv.width || Math.round(r.height) !== cv.height)
+        article.querySelectorAll('.el-range').forEach(x => x.dispatchEvent(new Event('input')));
+    }
   }
 
   function workflowHTML(s) {
@@ -2034,7 +2043,13 @@ const PhotographyPage = (function () {
         <div class="ph-eq-mine" id="ph-eq-mine"></div>`;
       const body = panel.querySelector('#ph-eq-body');
       expandableGrid(body, cat.items, {
-        thumb: it => { const v = eqIllus(it); return v ? `<span class="ph-vis ph-learn-art">${PhotoIllus.svg(v)}</span>` : ''; },
+        // Cartões compactos de propósito. As ilustrações são por FAMÍLIA, não
+        // por item: em 4 das 7 categorias os cartões mostravam todos exatamente
+        // a ilustração do hero que está logo acima, e a 275×130 as legendas nem
+        // se leem. A ilustração continua onde ensina — grande no hero e grande
+        // na ficha aberta; a grelha passa a caber de uma vez no ecrã.
+        compact: true,
+        thumb: () => '',
         blurb: it => it.tag || '',
         detail: eqDetailHTML,
       });
@@ -2157,10 +2172,18 @@ const PhotographyPage = (function () {
   // ── Ferramentas (calculadoras) ──
   let _toolsBuilt = false;
   function buildFerramentas(panel) {
+    // O crop pré-selecionado depende da classe de câmara, e gearClass() só a
+    // sabe validar depois do DB carregar — sem esperar, quem tem Full Frame
+    // escolhido apanhava o valor de omissão numa carga fria desta secção.
+    if (!_toolsBuilt && !_DB) {
+      panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+      loadDB().then(() => buildFerramentas(panel));
+      return;
+    }
     if (!_toolsBuilt) {
       _toolsBuilt = true;
       panel.innerHTML = `
-        <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Calculadoras de exposição e ótica — os resultados atualizam automaticamente. Pré-definidas para a Canon M50 Mark II (APS-C 1.6×).</p>
+        <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Calculadoras de exposição e ótica — os resultados atualizam automaticamente. O crop vem pré-selecionado a partir do tipo de câmara que escolheste (${(classDef() || {}).name || 'APS-C'}); podes trocá-lo em qualquer campo.</p>
         <div class="ph-grid"></div>`;
       const grid = panel.querySelector('.ph-grid');
       Object.keys(TOOL_META).forEach(key => {
