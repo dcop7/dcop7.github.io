@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-06T03:45:41.852Z",
+ "generated": "2026-08-06T09:12:29.262Z",
  "total": 84,
- "broken": 1,
- "unknown": 32,
+ "broken": 0,
+ "unknown": 33,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 500,
-   "ok": false
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:bolsa-merito-secundario",
