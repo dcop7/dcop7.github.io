@@ -1,0 +1,1593 @@
+{
+  "_nota": "Visão: a camada criativa de cada género — porque se fotografa aquilo e o que se está a tentar dizer. NÃO repete equipamento, exposição, composição, luz técnica nem edição (isso vive em genres.json, craft.json e edit.json). Campos todos opcionais: cada género usa os que fazem sentido, para ter voz própria. lead=tese numa linha · why=porque fotografar isto · subject=qual é o verdadeiro assunto · compare=legendas do par banal/forte · gap=o que separa banal de memorável · ask=perguntas antes de disparar · language=escolha visual → o que significa · trap=a armadilha criativa do género · ethic=a responsabilidade de quem fotografa · series=pensar em conjunto. Além dos géneros, `principles` guarda os princípios criativos transversais (secção Aprender ▸ Visão): cada um liga aos géneros onde mais se treina. `hook` é a etiqueta curta usada nos cartões da grelha de géneros.",
+  "genres": {
+    "paisagem": {
+      "hook": "Comunicar o lugar, não registá-lo",
+      "lead": "Uma paisagem não documenta um lugar — comunica o que era estar ali.",
+      "why": "O olho vê 180°, com profundidade, temperatura e som. O enquadramento apanha um retângulo mudo. É por isso que a fotografia da vista que te deixou sem fala volta para casa banal: registaste o sítio, não a experiência. Uma paisagem funciona quando escolhe uma sensação — imensidão, isolamento, calma, ameaça — e organiza tudo em função dela.",
+      "subject": "O assunto raramente é a montanha. É a relação entre alguma coisa perto de ti e o que está longe: é aí que nasce a escala, e a escala é o que faz o espectador sentir-se pequeno.",
+      "compare": {
+        "strong": "Primeiro plano forte, camadas que recuam e luz a separá-las: dá para sentir o ar entre elas.",
+        "flat": "A mesma vista, tecnicamente correta, sem nada perto nem luz que separe — um registo do sítio."
+      },
+      "gap": [
+        {
+          "ord": "Fotografada do miradouro, onde todos param.",
+          "mem": "Fotografada dez minutos depois de sair do caminho, de um ponto que obrigou a escolher."
+        },
+        {
+          "ord": "Mostra tudo o que estava lá.",
+          "mem": "Deixa de fora tudo o que não servia a ideia."
+        },
+        {
+          "ord": "Bonita.",
+          "mem": "Diz uma coisa: aqui é solitário. Aqui é hostil. Aqui parou o tempo."
+        }
+      ],
+      "ask": [
+        "Se tivesse de descrever esta cena numa palavra, qual era? Está essa palavra no enquadramento?",
+        "O que é que o espectador vê primeiro — e é isso que eu quero?",
+        "O que é que está aqui só porque estava, e não porque eu escolhi?"
+      ],
+      "language": [
+        {
+          "n": "Primeiro plano ocupado",
+          "m": "convite: o espectador entra na cena em vez de a olhar de fora"
+        },
+        {
+          "n": "Figura humana minúscula",
+          "m": "escala e solidão — dá a medida do que é grande"
+        },
+        {
+          "n": "Céu vazio a dominar",
+          "m": "quase sempre lê-se como espaço desperdiçado, não como amplitude"
+        },
+        {
+          "n": "Camadas de nevoeiro ou luz",
+          "m": "distância e profundidade: o espectador percebe quanto ar há ali"
+        }
+      ],
+      "trap": "Confiar que a beleza do lugar faz o trabalho. Não faz: transfere-se muito pouco. O lugar mais espetacular do mundo dá uma fotografia comum se a fotografia não tiver ideia."
+    },
+    "nascer-por-sol": {
+      "hook": "A luz é o assunto, não o sol",
+      "lead": "O sol não é o assunto — o assunto é o que a luz dele faz ao resto.",
+      "why": "Um nascer do sol é irresistível ao vivo porque é um acontecimento: a temperatura muda, a cor muda de minuto a minuto, e tu estás lá. Na fotografia, um disco laranja num céu laranja é uma imagem que já existe um milhão de vezes. O que não existe é o que aquela luz específica fez àquele sítio específico — a parede que ficou rosa, a névoa que se levantou, a sombra comprida que atravessou o campo.",
+      "subject": "A luz é a personagem principal e a paisagem é o palco. Vira-te de costas ao sol e vê o que ele está a iluminar: normalmente é aí que está a fotografia.",
+      "compare": {
+        "strong": "A luz baixa a atravessar a cena de lado, a acender uma superfície e a deixar o resto em sombra.",
+        "flat": "O sol de frente, ao centro, num céu bonito e vazio — o postal que já se viu mil vezes."
+      },
+      "gap": [
+        {
+          "ord": "Chega quando o sol nasce e vai-se embora quando acabou.",
+          "mem": "Chega quarenta minutos antes e fica vinte depois — é aí que a luz é rara."
+        },
+        {
+          "ord": "Aponta ao sol.",
+          "mem": "Aponta ao que o sol está a iluminar."
+        },
+        {
+          "ord": "Uma fotografia do céu.",
+          "mem": "Uma fotografia de um lugar transformado por cinco minutos de luz."
+        }
+      ],
+      "ask": [
+        "Se tirasse o sol do enquadramento, ainda havia fotografia? Se não, ainda não há.",
+        "O que é que esta luz está a fazer que a luz do meio-dia não fazia?",
+        "Vale mais o céu ou vale mais o que está debaixo dele, agora?"
+      ],
+      "language": [
+        {
+          "n": "Luz rasante de lado",
+          "m": "revela relevo e textura — dá corpo às coisas"
+        },
+        {
+          "n": "Contraluz e silhueta",
+          "m": "reduz tudo a forma; conta menos e sugere mais"
+        },
+        {
+          "n": "Azul da hora antes",
+          "m": "calma, frio, ainda não é dia — outra emoção que o laranja não dá"
+        }
+      ],
+      "trap": "Tratar a hora dourada como garantia de qualidade. Luz bonita sobre uma composição sem ideia dá uma fotografia bonita e esquecível."
+    },
+    "praia": {
+      "hook": "O mar fotografado como tempo",
+      "lead": "O mar é a única coisa na paisagem que se pode fotografar como tempo.",
+      "why": "Ninguém se lembra de uma fotografia de mar por causa da água. Lembra-se por causa do estado de espírito: a placidez de um mar longo e leitoso, a violência de uma onda a rebentar congelada, o vazio de uma praia de inverno. A escolha do que fazer ao movimento da água é a escolha da emoção — e é a decisão mais expressiva que este género tem.",
+      "subject": "O encontro entre duas matérias: água e o que a interrompe. Rocha, pontão, areia, um corpo. Sem esse ponto de fricção, o mar é uma superfície.",
+      "compare": {
+        "strong": "Uma rocha a interromper a água, movimento resolvido numa direção clara, luz a dar forma à espuma.",
+        "flat": "Mar e céu divididos ao meio, água indefinida, sem nada que interrompa — bonito e sem assunto."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa o mar.",
+          "mem": "Fotografa o que o mar está a fazer a alguma coisa."
+        },
+        {
+          "ord": "Ao meio-dia, com toda a gente.",
+          "mem": "Ao fim do dia ou com mau tempo — quando a praia tem carácter em vez de luz."
+        },
+        {
+          "ord": "Vista geral da praia.",
+          "mem": "Um detalhe que diz praia melhor do que a praia toda: uma marca de maré, um par de pés, tinta descascada."
+        }
+      ],
+      "ask": [
+        "Quero água parada (calma, silêncio) ou água congelada (energia, violência)?",
+        "O que é que a maré me está a dar hoje que não me dá amanhã?",
+        "Há aqui vazio suficiente para se sentir o espaço, ou está tudo cheio?"
+      ],
+      "language": [
+        {
+          "n": "Água leitosa e longa",
+          "m": "silêncio, tempo suspenso, quase abstração"
+        },
+        {
+          "n": "Onda congelada",
+          "m": "força e instante — devolve a violência real do mar"
+        },
+        {
+          "n": "Praia deserta",
+          "m": "melancolia; a ausência de pessoas é ela mesma um assunto"
+        }
+      ],
+      "trap": "Deixar o mar ser só a metade de baixo de uma fotografia de céu."
+    },
+    "nevoeiro": {
+      "hook": "Fotografar por subtração",
+      "lead": "O nevoeiro é a única condição em que fotografar é sobretudo subtrair.",
+      "why": "Normalmente lutamos contra o excesso: fundos ocupados, elementos a competir, informação a mais. O nevoeiro faz esse trabalho por ti — apaga o que está longe, separa os planos, deixa um sujeito sozinho contra o nada. É por isso que uma cena banal com nevoeiro ganha mistério imediato: passa a haver menos para ver e mais para imaginar.",
+      "subject": "O que o nevoeiro esconde vale mais do que o que mostra. O assunto é a incerteza — e a incerteza precisa de uma coisa reconhecível à frente para se medir contra ela.",
+      "compare": {
+        "strong": "Uma árvore isolada, nítida, contra planos que desaparecem — o vazio dá-lhe peso e o resto sugere-se.",
+        "flat": "Nevoeiro sem sujeito: cinzento uniforme, nada para o olho agarrar."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa o nevoeiro.",
+          "mem": "Fotografa uma coisa dentro do nevoeiro."
+        },
+        {
+          "ord": "Espera que levante para ver melhor.",
+          "mem": "Trabalha enquanto está denso e aceita perder detalhe — é isso que é o assunto."
+        },
+        {
+          "ord": "Enche o enquadramento.",
+          "mem": "Deixa dois terços vazios e não tem medo do quase-nada."
+        }
+      ],
+      "ask": [
+        "Qual é a única coisa que quero que se veja com clareza?",
+        "Estou a mostrar o que se esconde, ou estou a tentar salvá-lo?",
+        "Isto está misterioso ou está apenas cinzento?"
+      ],
+      "language": [
+        {
+          "n": "Sujeito único no vazio",
+          "m": "solidão, silêncio, isolamento"
+        },
+        {
+          "n": "Planos que desaparecem por camadas",
+          "m": "profundidade e distância sem precisar de perspetiva"
+        },
+        {
+          "n": "Contraste baixo mantido",
+          "m": "sonho, memória, coisa mal lembrada — recuperar contraste destrói isto"
+        }
+      ],
+      "trap": "Corrigir o nevoeiro. Puxar contraste e claridade até ficar 'normal' apaga a única razão de ter fotografado."
+    },
+    "chuva": {
+      "hook": "A água revela o invisível",
+      "lead": "A chuva não é um obstáculo à fotografia — é o que torna visível o que estava invisível.",
+      "why": "Molhada, uma cidade banal duplica-se: o asfalto vira espelho, os néons esticam-se pelo chão, cada gota agarra um ponto de luz. Além disso, o mau tempo dá o que a luz bonita nunca dá — drama, urgência, uma razão para as pessoas estarem a fazer alguma coisa em vez de estarem simplesmente ali. É o género onde o desconforto do fotógrafo é diretamente proporcional à raridade da imagem.",
+      "subject": "Não a chuva em si (que quase não se fotografa), mas os seus efeitos: reflexos, brilhos, gente encurvada, guarda-chuvas, vidro corrido, vapor.",
+      "compare": {
+        "strong": "Asfalto molhado a devolver a luz, uma figura a atravessar, chuva visível contra uma fonte de luz.",
+        "flat": "A mesma rua fotografada do abrigo, à distância: chuva invisível, chão sem brilho, nada a acontecer."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa de dentro do carro, à distância segura.",
+          "mem": "Sai, aproxima-se e aceita ficar molhado — a chuva só se lê de perto."
+        },
+        {
+          "ord": "Espera que pare.",
+          "mem": "Trabalha durante, e fica para os dez minutos depois, quando tudo brilha e a luz volta."
+        },
+        {
+          "ord": "Chuva como legenda ('estava a chover').",
+          "mem": "Chuva como atmosfera: dá para sentir o frio e o barulho."
+        }
+      ],
+      "ask": [
+        "Onde está a fonte de luz que vai fazer as gotas aparecerem?",
+        "O que é que a água está a refletir que eu podia usar?",
+        "Isto diz 'está a chover' ou diz 'estar aqui agora é assim'?"
+      ],
+      "language": [
+        {
+          "n": "Reflexo no asfalto",
+          "m": "duplica a cidade e enche o primeiro plano com luz de graça"
+        },
+        {
+          "n": "Gotas contra luz escura",
+          "m": "prova física da chuva; sem contraluz, a chuva desaparece"
+        },
+        {
+          "n": "Vidro corrido à frente do sujeito",
+          "m": "distância, intimidade interrompida, observação de fora"
+        }
+      ],
+      "trap": "Esperar por bom tempo. Céu limpo é a condição menos interessante que existe — o mau tempo é a que menos gente teve paciência para fotografar."
+    },
+    "flores": {
+      "hook": "Um retrato, não um catálogo",
+      "lead": "Uma boa fotografia de flor não é um registo botânico — é um retrato.",
+      "why": "A flor é o assunto mais fotografado e menos bem fotografado que existe, porque é bonita antes de a fotografia começar: dá a ilusão de que basta apontar. Mas o que torna uma flor comovente não é a cor — é a fragilidade. Pétala translúcida contra a luz, uma haste vencida, uma flor no fim, uma única no meio de muitas. Trata-la como pessoa (uma, escolhida, com fundo controlado, com luz que a favorece) muda tudo.",
+      "subject": "Uma flor, não um canteiro. O canteiro é informação; a flor escolhida é uma personagem.",
+      "compare": {
+        "strong": "Uma flor isolada em contraluz, pétalas translúcidas, fundo escuro e limpo a dar-lhe destaque.",
+        "flat": "Um canteiro inteiro visto de cima, cores bonitas e nenhuma protagonista."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa o jardim.",
+          "mem": "Escolhe uma flor e passa cinco minutos com ela."
+        },
+        {
+          "ord": "De cima, como a vimos ao passar.",
+          "mem": "Ao nível dela ou por baixo — a perspetiva de quem a leva a sério."
+        },
+        {
+          "ord": "A flor perfeita.",
+          "mem": "A flor com história: seca, comida, no fim, sozinha depois das outras."
+        }
+      ],
+      "ask": [
+        "Porque é que escolhi esta e não a do lado?",
+        "O fundo está a ajudar ou está apenas atrás?",
+        "O que é que a luz consegue fazer a esta pétala que não faz às outras?"
+      ],
+      "language": [
+        {
+          "n": "Contraluz em pétala fina",
+          "m": "fragilidade, transparência, vida"
+        },
+        {
+          "n": "Fundo escuro e liso",
+          "m": "solenidade, tratamento de retrato de estúdio"
+        },
+        {
+          "n": "Flor murcha ou já sem pétalas",
+          "m": "tempo e fim — muito mais expressivo do que a flor no auge"
+        }
+      ],
+      "trap": "Fotografar porque a flor é bonita. A fotografia tem de acrescentar algo que a flor sozinha não dava."
+    },
+    "macro": {
+      "hook": "Revelar o que ninguém vê",
+      "lead": "Macro é o único género que mostra ao espectador coisas que ele nunca viu, mesmo tendo passado por elas mil vezes.",
+      "why": "O poder da macro é a revelação. Uma escala à qual o olho não tem acesso transforma o familiar em desconhecido: o olho de uma mosca vira paisagem, o sal vira arquitetura, a superfície de uma folha vira mapa. É o género com maior distância entre o que se espera e o que se recebe — e é essa distância que faz o espectador aproximar-se do ecrã.",
+      "subject": "Não o objeto, mas a escala. Quem vê tem de sentir que está a espiar; se não houver essa sensação, é apenas um close-up.",
+      "compare": {
+        "strong": "Detalhe irreconhecível de tão perto, estrutura repetida, luz lateral a revelar textura — dá vontade de perceber o que é.",
+        "flat": "O mesmo objeto de perto mas identificável e sem surpresa: nítido, correto, sem revelação."
+      },
+      "gap": [
+        {
+          "ord": "Nítido.",
+          "mem": "Nítido e estranho: obriga a segunda leitura."
+        },
+        {
+          "ord": "O inseto todo.",
+          "mem": "A parte do inseto que ninguém sabia que existia."
+        },
+        {
+          "ord": "Mostra que estiveste perto.",
+          "mem": "Mostra um mundo com regras próprias — padrão, simetria, arquitetura."
+        }
+      ],
+      "ask": [
+        "Alguém que passa por isto todos os dias reconhece o que está a ver?",
+        "Estou a mostrar detalhe ou estou a mostrar um mundo?",
+        "O que é que aqui é padrão, e o que é que quebra o padrão?"
+      ],
+      "language": [
+        {
+          "n": "Objeto irreconhecível",
+          "m": "abstração e curiosidade: o espectador tem de trabalhar"
+        },
+        {
+          "n": "Padrão repetido",
+          "m": "ordem oculta na natureza — leitura quase científica"
+        },
+        {
+          "n": "Um olho, uma gota, um reflexo",
+          "m": "cria um sujeito com quem se estabelece contacto"
+        }
+      ],
+      "trap": "A imagem tecnicamente impecável que não diz nada. Foco perfeito não é assunto — a macro falha mais por falta de ideia do que por falta de nitidez."
+    },
+    "vida-selvagem": {
+      "hook": "Ligação, não prova de avistamento",
+      "lead": "Uma boa fotografia de vida selvagem cria uma ligação — não prova um avistamento.",
+      "why": "Quase todas as fotografias de animais são recibos: estive lá, vi aquilo, aqui está a prova. São interessantes para quem esteve e indiferentes para todos os outros. A fotografia que fica é a que faz o espectador olhar o animal como indivíduo — porque há um olhar, um comportamento, uma tensão, uma vulnerabilidade. O animal deixa de ser espécie e passa a ser alguém.",
+      "subject": "Comportamento ou relação. Um animal a fazer algo (caçar, cuidar, brigar, descansar exposto) vale sempre mais do que um animal a olhar para a câmara.",
+      "compare": {
+        "strong": "Ao nível dos olhos, animal a fazer algo, fundo limpo e habitat legível — cria contacto.",
+        "flat": "Fotografado de cima e de longe, centrado, a olhar para a câmara: a prova de que se viu."
+      },
+      "gap": [
+        {
+          "ord": "O animal está no enquadramento.",
+          "mem": "O animal está no seu mundo, e percebe-se qual é."
+        },
+        {
+          "ord": "Fotografado de pé, de cima.",
+          "mem": "Fotografado ao nível dos olhos dele — a altura decide se é observação ou vigilância."
+        },
+        {
+          "ord": "Mostra a espécie.",
+          "mem": "Mostra um indivíduo com estado de espírito."
+        }
+      ],
+      "ask": [
+        "Isto faz sentir alguma coisa a quem não sabe o nome deste animal?",
+        "Estou a fotografar o animal ou a fotografar a vida dele?",
+        "Se recuar e mostrar o habitat, ganho ou perco?"
+      ],
+      "language": [
+        {
+          "n": "Nível dos olhos",
+          "m": "igualdade e empatia; de cima lê-se como domínio"
+        },
+        {
+          "n": "Animal pequeno no enquadramento",
+          "m": "o habitat torna-se parte da história — solidão, imensidão, ameaça"
+        },
+        {
+          "n": "Olhar fora do enquadramento",
+          "m": "atenção, alerta, tensão: alguma coisa está a acontecer fora da imagem"
+        }
+      ],
+      "trap": "Deixar a raridade do animal substituir a qualidade da imagem. Uma espécie difícil mal fotografada continua a ser uma fotografia fraca.",
+      "ethic": "O bem-estar do animal está acima de qualquer imagem. Se o comportamento muda por tua causa, estás demasiado perto e a fotografia já não é honesta. Não se atrai com comida, não se aproximam ninhos, não se afasta um animal do abrigo por uma pose melhor — e uma fotografia obtida assim mostra medo, não confiança."
+    },
+    "retrato": {
+      "hook": "Revelar alguém, não uma cara nítida",
+      "lead": "Um retrato é sobre revelar alguém — não sobre produzir uma cara nítida.",
+      "why": "A parte difícil do retrato não é técnica; é humana. Uma pessoa desconfortável dá sempre uma fotografia desconfortável, por muito bem iluminada que esteja. O que faz um retrato memorável é o estado da pessoa no momento: relaxada, desafiadora, distraída, a rir a sério, apanhada entre duas expressões. Tudo isso depende da relação, não do equipamento — e é por isso que o retrato é o género onde falar vale mais do que ajustar.",
+      "subject": "A pessoa, não o rosto. Mãos, postura, o que veste, onde está e o que está a fazer contam tanto como a expressão.",
+      "compare": {
+        "strong": "Expressão apanhada entre poses, olhar com intenção, ambiente a dizer algo sobre a pessoa.",
+        "flat": "Sorriso de fotografia, olhar direto e vazio, fundo neutro que não diz nada: correto e anónimo."
+      },
+      "gap": [
+        {
+          "ord": "A pessoa a posar.",
+          "mem": "A pessoa a ser — normalmente um segundo antes ou depois da pose."
+        },
+        {
+          "ord": "Sorriso pedido.",
+          "mem": "Reação real a algo que disseste."
+        },
+        {
+          "ord": "Rosto isolado sem contexto.",
+          "mem": "Rosto e um pedaço de mundo que explica quem é aquela pessoa."
+        }
+      ],
+      "ask": [
+        "O que é que eu quero que se perceba sobre esta pessoa?",
+        "Ela está confortável? Se não, isso é o problema — não a luz.",
+        "Estou a fotografá-la como ela se vê, ou como eu a vejo? Ambos servem, mas tenho de saber qual."
+      ],
+      "language": [
+        {
+          "n": "Olhar para a câmara",
+          "m": "confronto e presença: a pessoa reconhece que está a ser vista"
+        },
+        {
+          "n": "Olhar fora do enquadramento",
+          "m": "introspeção, narrativa, distância"
+        },
+        {
+          "n": "Espaço largo em volta",
+          "m": "a pessoa no seu contexto — retrato ambiental"
+        },
+        {
+          "n": "Sombra a cobrir metade do rosto",
+          "m": "reserva, gravidade, algo não revelado"
+        }
+      ],
+      "trap": "Otimizar a imagem e esquecer a pessoa. Pele perfeita e olhos nítidos num retrato sem expressão dão uma fotografia de identificação de alta qualidade.",
+      "ethic": "Estás a decidir como alguém vai ser visto. Mostra as fotografias, aceita que uma pessoa não goste de uma imagem sua, e pergunta antes de publicar. A confiança é a matéria-prima do género — sem ela, nunca chegas às expressões que interessam."
+    },
+    "familia": {
+      "hook": "Fotografar para daqui a vinte anos",
+      "lead": "Estas fotografias não são para agora — são para daqui a vinte anos.",
+      "why": "É o único género em que o valor da imagem cresce com o tempo e não depende de mais ninguém gostar dela. Isso muda completamente o critério: o que vais querer ver dentro de vinte anos não é a pose alinhada em frente ao monumento, é a mesa da cozinha, o brinquedo preferido que se perdeu, a expressão de aborrecimento, a forma como alguém pegava numa criança ao colo. O caos não é o inimigo — é o conteúdo.",
+      "subject": "Rotina e relação. As fotografias que ficam mostram como era a vida, não como toda a gente ficava quando lhes pediam para sorrir.",
+      "compare": {
+        "strong": "Momento de rotina, interação real, casa reconhecível — daqui a vinte anos isto ainda diz algo.",
+        "flat": "Todos alinhados a sorrir para a câmara: bonito, repetível, sem informação sobre a vida deles."
+      },
+      "gap": [
+        {
+          "ord": "Toda a gente a olhar para a câmara.",
+          "mem": "Toda a gente a olhar uns para os outros."
+        },
+        {
+          "ord": "Nos dias especiais.",
+          "mem": "Nos dias normais — é deles que não há registo nenhum."
+        },
+        {
+          "ord": "As crianças bem-comportadas.",
+          "mem": "As crianças como realmente eram naquele ano."
+        }
+      ],
+      "ask": [
+        "Isto vai fazer alguém lembrar-se de como era esta fase, ou só de que houve uma fotografia?",
+        "O que é que está nesta casa hoje que dentro de cinco anos já não existe?",
+        "Estou a interromper o momento para o fotografar? Consigo não interromper?"
+      ],
+      "language": [
+        {
+          "n": "Fotografado à altura da criança",
+          "m": "o mundo como ela o vê, em vez de visto por um adulto de pé"
+        },
+        {
+          "n": "Mãos, pés, detalhes sem rosto",
+          "m": "escala e ternura; funciona quando ninguém colabora"
+        },
+        {
+          "n": "Desarrumação incluída",
+          "m": "verdade e época: os objetos datam a memória melhor do que as caras"
+        }
+      ],
+      "trap": "Guardar a câmara para as ocasiões. A ocasião está documentada por dez pessoas; a terça-feira não está documentada por ninguém."
+    },
+    "animais": {
+      "hook": "Carácter, não fotografia de identificação",
+      "lead": "O objetivo é a personalidade do animal — não uma fotografia de identificação.",
+      "why": "Quem vive com um animal conhece-lhe as manias: a cara que faz antes de saltar, a forma de dormir, o sítio onde se põe quando está ofendido. Quase nenhuma fotografia mostra isso, porque quase todas são feitas de pé, de cima, com o animal a olhar para a lente. Um retrato de animal funciona pelas mesmas razões que um retrato humano: altura, expressão, contexto e paciência.",
+      "subject": "O carácter. Um animal a fazer o que faz sempre é mais reconhecível do que um animal parado e a olhar.",
+      "compare": {
+        "strong": "Ao nível dele, expressão característica, luz a acender o olho — reconhece-se o bicho, não a espécie.",
+        "flat": "De cima, animal centrado a olhar para a lente: qualquer animal daquela raça daria a mesma imagem."
+      },
+      "gap": [
+        {
+          "ord": "O cão sentado a olhar para a câmara.",
+          "mem": "O cão a fazer aquilo que só ele faz."
+        },
+        {
+          "ord": "Fotografado de pé.",
+          "mem": "Fotografado no chão, ao nível dos olhos dele."
+        },
+        {
+          "ord": "Bonito.",
+          "mem": "Reconhecível: quem o conhece diz logo 'é ele'."
+        }
+      ],
+      "ask": [
+        "Qual é a mania dele que ainda não fotografei?",
+        "Estou ao nível dele ou a olhar para baixo?",
+        "Isto podia ser qualquer animal da mesma raça? Se sim, falta carácter."
+      ],
+      "language": [
+        {
+          "n": "Nível do olhar",
+          "m": "presença e igualdade — transforma o animal em sujeito"
+        },
+        {
+          "n": "Grande plano de olhos e nariz",
+          "m": "intimidade; funciona melhor com pouca profundidade de campo"
+        },
+        {
+          "n": "Animal pequeno na sua casa",
+          "m": "conta a vida dele, não só a cara"
+        }
+      ],
+      "trap": "Insistir em obediência. As melhores fotografias aparecem quando se desiste de mandar e se começa a esperar."
+    },
+    "autorretrato": {
+      "hook": "Construir imagem, não registar presença",
+      "lead": "É o único género em que decides ao mesmo tempo como te vês e como queres ser visto.",
+      "why": "O autorretrato tem má fama porque se confunde com selfie, e a diferença é a intenção: a selfie regista presença, o autorretrato constrói uma imagem. Tens controlo total — luz, pose, cenário, tempo, quantas tentativas quiseres — e é por isso que é o melhor exercício de autoria que existe. Também é o mais desconfortável, porque obriga a decidir o que estás disposto a mostrar.",
+      "subject": "Uma ideia sobre ti — não a tua cara. Pode ser feita com as mãos, uma sombra, um reflexo, as costas.",
+      "compare": {
+        "strong": "Luz e cenário escolhidos, pose deliberada, rosto parcialmente escondido: há uma ideia antes da pessoa.",
+        "flat": "Braço estendido, luz de cima, fundo aleatório — registo de presença, não imagem construída."
+      },
+      "gap": [
+        {
+          "ord": "Prova que estiveste.",
+          "mem": "Diz alguma coisa sobre como estavas."
+        },
+        {
+          "ord": "Cara centrada, braço estendido.",
+          "mem": "Tripé, temporizador e tantas tentativas quantas forem precisas."
+        },
+        {
+          "ord": "Mostra tudo.",
+          "mem": "Esconde o suficiente para o espectador querer perceber."
+        }
+      ],
+      "ask": [
+        "O que é que quero dizer sobre mim — e a imagem diz isso?",
+        "Preciso de mostrar o rosto para dizer isto?",
+        "Isto sou eu como me vejo, ou como quero que me vejam? Qual dos dois estou a fazer hoje?"
+      ],
+      "language": [
+        {
+          "n": "Rosto parcialmente oculto",
+          "m": "reserva e universalidade: pode ser qualquer pessoa"
+        },
+        {
+          "n": "Sombra ou reflexo em vez do corpo",
+          "m": "presença sem exposição"
+        },
+        {
+          "n": "Costas viradas",
+          "m": "o espectador olha na tua direção — passa a partilhar o teu ponto de vista"
+        }
+      ],
+      "trap": "Repetir a mesma pose favorável. O autorretrato só ensina algo quando arriscas uma imagem de que não estás seguro."
+    },
+    "eventos": {
+      "hook": "Contar a noite, não recolhê-la",
+      "lead": "Não se recolhem fotografias de uma noite — conta-se a noite.",
+      "why": "A diferença entre um monte de fotografias de um concerto e a cobertura de um concerto é a estrutura. Quem vê deve perceber o que aquilo era: a sala a encher, a expectativa, o primeiro acorde, o suor, a plateia, o fim. Isso significa fotografar coisas que não são o palco — e significa decidir, durante o evento, que fotografias ainda faltam. É o género em que se pensa em conjunto e não em imagem.",
+      "subject": "A energia partilhada. Um evento é uma relação entre quem está em cima e quem está em baixo; fotografar só metade conta metade.",
+      "compare": {
+        "strong": "Momento de pico, expressão de quem atua e reação da plateia no mesmo enquadramento — a energia lê-se.",
+        "flat": "Plano frontal do palco, bem exposto, sem momento nem público: uma fotografia de que houve um concerto."
+      },
+      "gap": [
+        {
+          "ord": "Vinte fotografias do vocalista.",
+          "mem": "Cinco fotografias que contam a noite inteira."
+        },
+        {
+          "ord": "Só o palco.",
+          "mem": "Palco, plateia, bastidores, corredores, o fim."
+        },
+        {
+          "ord": "Fotografia bem exposta do momento errado.",
+          "mem": "Fotografia imperfeita do momento em que tudo aconteceu."
+        }
+      ],
+      "ask": [
+        "Se só pudesse mostrar cinco imagens, que cinco contavam isto?",
+        "Que parte da história ainda não tenho — princípio, meio ou fim?",
+        "Estou a fotografar quem atua ou o efeito que está a causar?"
+      ],
+      "language": [
+        {
+          "n": "Reação do público",
+          "m": "prova a energia; o palco sozinho só documenta"
+        },
+        {
+          "n": "Silhueta contra os projetores",
+          "m": "atmosfera e escala da sala — resolve luz difícil a favor da imagem"
+        },
+        {
+          "n": "Detalhe fora do palco",
+          "m": "ritmo na sequência e informação sobre o sítio"
+        }
+      ],
+      "trap": "Fotografar sem parar e nunca decidir. Sem escolha, uma cobertura é um arquivo — e ninguém vê arquivos.",
+      "series": "Este género vive de sequência. Pensa em seis a dez imagens com princípio, meio e fim, com planos alternados (largo, médio, detalhe) para que a série tenha ritmo em vez de repetição."
+    },
+    "desporto": {
+      "hook": "O esforço, não só a ação",
+      "lead": "O que fica não é a ação nítida — é o esforço e o que vem depois dele.",
+      "why": "Congelar um salto é um problema resolvido: com luz e velocidade suficientes, qualquer pessoa o faz. O que distingue uma fotografia de desporto é a emoção legível — o esgar de esforço, o olhar do treinador, o abraço, a derrota sozinha no relvado. O desporto é uma máquina de produzir emoções extremas em público, e a maior parte delas acontece antes ou depois da jogada que todos estavam a fotografar.",
+      "subject": "O ponto de decisão. O instante em que o resultado se define, ou o instante em que se percebe qual foi.",
+      "compare": {
+        "strong": "Pico do esforço com o rosto visível, corpo em tensão máxima, fundo limpo a isolar a ação.",
+        "flat": "Jogada nítida vista de longe, de costas, com fundo confuso: prova que houve jogo."
+      },
+      "gap": [
+        {
+          "ord": "A bola.",
+          "mem": "A cara de quem a vai receber."
+        },
+        {
+          "ord": "O momento da jogada.",
+          "mem": "O segundo depois — celebração, frustração, exaustão."
+        },
+        {
+          "ord": "Fotografado de onde estava sentado.",
+          "mem": "Fotografado de um sítio escolhido pela luz e pelo fundo."
+        }
+      ],
+      "ask": [
+        "Onde é que vai acontecer a emoção — e estou virado para lá?",
+        "Consigo ver o rosto de alguém nesta imagem? Se não, perde metade.",
+        "Estou a fotografar o desporto ou o atleta?"
+      ],
+      "language": [
+        {
+          "n": "Rosto em esforço",
+          "m": "empatia física: o espectador sente o cansaço"
+        },
+        {
+          "n": "Corpo no ar, sem contacto com o chão",
+          "m": "leitura imediata de ação e leveza"
+        },
+        {
+          "n": "Atleta sozinho depois do jogo",
+          "m": "narrativa e derrota — muitas vezes a imagem mais forte do dia"
+        }
+      ],
+      "trap": "Ficar preso à ação principal. Enquanto todos apontam à bola, a fotografia está na bancada, no banco ou no túnel."
+    },
+    "rua": {
+      "hook": "Comportamento humano, não ruas",
+      "lead": "Fotografia de rua é observar comportamento humano — não fotografar ruas.",
+      "why": "O nome engana. O assunto é gente: como as pessoas se movem, esperam, se ignoram, coincidem por um segundo com um fundo que lhes dá sentido. Nada disto se pode organizar; só se pode reconhecer e apanhar. É o género que treina o olho mais depressa do que qualquer outro, porque obriga a ver e decidir ao mesmo tempo — e porque quase tudo o que se tenta falha.",
+      "subject": "Coincidência. O instante em que um gesto, uma luz e um fundo se alinham por acaso e desalinham logo depois.",
+      "compare": {
+        "strong": "Cenário escolhido, luz preparada, e uma pessoa a entrar no sítio exato num gesto irrepetível.",
+        "flat": "Rua bonita e vazia, ou pessoas de costas ao longe: geometria correta, nada humano a acontecer."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa pessoas na rua.",
+          "mem": "Fotografa um momento que não se repete."
+        },
+        {
+          "ord": "Anda à procura.",
+          "mem": "Encontra o sítio certo e espera lá — a paciência é a técnica principal."
+        },
+        {
+          "ord": "Uma pessoa a passar.",
+          "mem": "Uma relação: entre duas pessoas, entre a pessoa e um cartaz, entre a pessoa e a própria sombra."
+        }
+      ],
+      "ask": [
+        "Se ninguém entrasse nesta cena, valia a pena? Se valesse, ainda não é fotografia de rua.",
+        "O que é que aqui é estranho, engraçado ou humano — e está no enquadramento?",
+        "Estou a fotografar uma pessoa, ou estou a fotografar uma situação?"
+      ],
+      "language": [
+        {
+          "n": "Retângulo de luz numa rua escura",
+          "m": "palco: quem entra ali vira personagem"
+        },
+        {
+          "n": "Gesto apanhado a meio",
+          "m": "instante irrepetível — o que dá a sensação de vida"
+        },
+        {
+          "n": "Pessoa pequena em arquitetura grande",
+          "m": "escala e anonimato urbano"
+        },
+        {
+          "n": "Camadas sobrepostas (montra, reflexo, rua)",
+          "m": "complexidade e ambiguidade: obriga a olhar duas vezes"
+        }
+      ],
+      "trap": "Confundir 'estava na rua' com fotografia de rua. Uma rua fotogénica sem acontecimento humano é arquitetura.",
+      "ethic": "Fotografar em público é legal em Portugal, mas a dignidade não é negociável. Não transformes vulnerabilidade em espetáculo — sem-abrigo, pessoas doentes ou embriagadas não são temas, são pessoas. Se alguém pede para apagar, apaga. Se sentes que precisavas de esconder o que estás a fazer para a imagem funcionar, essa é a resposta."
+    },
+    "arquitetura": {
+      "hook": "Ler a intenção de quem desenhou",
+      "lead": "Fotografar um edifício é ler a intenção de quem o desenhou — e escolher se concordas.",
+      "why": "Um edifício é uma ideia construída: alguém decidiu aquele ritmo de janelas, aquela entrada, aquela relação com a rua. A fotografia pode servir essa ideia (mostrar o que o arquiteto queria que se sentisse) ou contrariá-la (mostrar como aquilo é habitado, degradado, ignorado). Ambas são posições legítimas — mas fotografar sem posição dá o que se vê em quase todas as fotografias de edifícios: uma fachada bem enquadrada e muda.",
+      "subject": "A forma sob a luz, e a relação com quem passa. A luz é o que transforma geometria em emoção; a escala humana é o que a torna compreensível.",
+      "compare": {
+        "strong": "Luz lateral a esculpir a forma, ritmo isolado do resto, uma figura a dar escala — a geometria ganha intenção.",
+        "flat": "Fachada de frente, luz plana, tudo dentro do enquadramento: um registo de que o edifício existe."
+      },
+      "gap": [
+        {
+          "ord": "Mostra o edifício todo.",
+          "mem": "Escolhe a parte que explica o edifício."
+        },
+        {
+          "ord": "Fachada de frente, luz plana.",
+          "mem": "Luz de lado que revela relevo, ou contraluz que reduz a forma."
+        },
+        {
+          "ord": "Vazio e limpo.",
+          "mem": "Com uma pessoa a dar escala — sem escala, não se percebe se é enorme ou pequeno."
+        }
+      ],
+      "ask": [
+        "O que é que o arquiteto queria que eu sentisse aqui? Estou a ajudar ou a contrariar?",
+        "Qual é o padrão — e onde é que ele se quebra?",
+        "Isto é um retrato do edifício ou uma fotografia de formas? Ambos servem, mas tenho de saber qual."
+      ],
+      "language": [
+        {
+          "n": "Repetição de elementos",
+          "m": "ritmo e ordem, quase musical"
+        },
+        {
+          "n": "Uma quebra no padrão",
+          "m": "cria assunto: uma janela aberta entre cem fechadas conta uma história"
+        },
+        {
+          "n": "Contra-picado extremo",
+          "m": "monumentalidade e opressão — leitura de poder"
+        },
+        {
+          "n": "Figura minúscula na estrutura",
+          "m": "escala e a relação entre o humano e o construído"
+        }
+      ],
+      "trap": "Deixar a geometria substituir a ideia. Linhas perfeitas e simetria impecável não são conteúdo — é fácil confundir organização com significado."
+    },
+    "viagem": {
+      "hook": "O que é próprio do lugar, não o postal",
+      "lead": "O objetivo é o que aquele lugar tem de próprio — não o postal que já existe.",
+      "why": "A fotografia de viagem tem um adversário difícil: a imagem que já existe. A vista principal de qualquer sítio famoso está fotografada em melhores condições do que as tuas por profissionais que esperaram uma semana pela luz. O que ninguém tem é a tua experiência daquele lugar: o mercado às sete da manhã, o autocarro, a comida, as mãos de quem te servia, a luz do quarto. É o género onde a honestidade vale mais do que o espetáculo.",
+      "subject": "O carácter do lugar, sobretudo nas coisas comuns: sinais, comida, transporte, gente a trabalhar, materiais, cores locais.",
+      "compare": {
+        "strong": "Cena vivida do dia a dia local, luz do momento, gente a fazer o que faz — este sítio e nenhum outro.",
+        "flat": "O monumento principal ao meio-dia, de frente, com turistas: uma versão pior de uma imagem que já existe."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa os pontos de interesse.",
+          "mem": "Fotografa o que te surpreendeu por ser diferente de casa."
+        },
+        {
+          "ord": "Chega, fotografa, sai.",
+          "mem": "Volta ao mesmo sítio a outra hora — a segunda visita é sempre melhor."
+        },
+        {
+          "ord": "Fotografias soltas de um sítio.",
+          "mem": "Uma série que dá a sensação de ter estado lá."
+        }
+      ],
+      "ask": [
+        "Isto poderia ter sido fotografado em qualquer outro país?",
+        "Estou a fotografar o que é bonito, ou o que é característico?",
+        "Que imagem me falta para alguém perceber como era estar ali?"
+      ],
+      "language": [
+        {
+          "n": "Detalhe do quotidiano",
+          "m": "autenticidade; diz mais sobre um sítio do que o monumento"
+        },
+        {
+          "n": "Gente a trabalhar",
+          "m": "vida real em vez de cenário turístico"
+        },
+        {
+          "n": "Luz e cor locais",
+          "m": "identidade — a paleta de um sítio é reconhecível"
+        }
+      ],
+      "trap": "Colecionar em vez de olhar. Uma fotografia de cada coisa não faz uma viagem; três fotografias de uma coisa fazem.",
+      "ethic": "As pessoas que lá vivem não são cenário. Pede, sorri, mostra o resultado, e não fotografes pobreza como se fosse pitoresco. Fotografar alguém de longe com uma tele porque não te atreves a aproximar-te é a definição de fotografia desonesta.",
+      "series": "Pensa numa série curta por destino: um plano largo que situa, dois ou três médios com gente, e detalhes que dão textura. É a estrutura que transforma um álbum numa história."
+    },
+    "automovel": {
+      "hook": "O que o carro significa",
+      "lead": "Fotografa-se um carro pelo que ele significa — não pelo que ele é.",
+      "why": "Um carro é um objeto desenhado para provocar desejo, e a fotografia tem de continuar esse trabalho. Isso raramente se faz mostrando o carro todo, de lado, num parque: faz-se com a linha que o desenhador quis que se visse, com o reflexo que descreve a superfície, com o contexto que explica o carácter — um clássico numa rua velha, um utilitário sujo de terra, um desportivo numa estrada vazia. A superfície é espelho, e por isso este género é sobretudo sobre o que está em volta.",
+      "subject": "Carácter e movimento. Um carro parado é um produto; um carro em contexto é uma personagem.",
+      "compare": {
+        "strong": "Ângulo baixo a valorizar a linha, reflexo limpo a descrever a superfície, contexto que dá carácter.",
+        "flat": "Carro inteiro de lado num parque, ao meio-dia, com reflexos confusos: um anúncio de venda."
+      },
+      "gap": [
+        {
+          "ord": "O carro todo, de lado.",
+          "mem": "A parte que define o carro — a linha do ombro, a frente, uma jante, o detalhe do interior."
+        },
+        {
+          "ord": "No parque de estacionamento.",
+          "mem": "Num sítio que diz algo sobre ele."
+        },
+        {
+          "ord": "Parado.",
+          "mem": "Com sinal de movimento — mesmo que seja só a estrada a arrastar-se."
+        }
+      ],
+      "ask": [
+        "O que é que este carro quer ser? Estou a mostrar isso?",
+        "O que é que a chapa está a refletir — e isso ajuda ou estraga?",
+        "Isto é uma fotografia para vender ou uma fotografia para desejar?"
+      ],
+      "language": [
+        {
+          "n": "Ângulo baixo",
+          "m": "presença e agressividade: o carro impõe-se"
+        },
+        {
+          "n": "Reflexos longos e limpos",
+          "m": "descrevem a forma e leem-se como qualidade"
+        },
+        {
+          "n": "Fundo arrastado",
+          "m": "velocidade real; um carro nítido em fundo nítido parece uma maqueta"
+        },
+        {
+          "n": "Detalhe isolado",
+          "m": "sugere o resto e trata o carro como objeto de design"
+        }
+      ],
+      "trap": "Fotografar o carro em vez da ideia do carro. O plano geral no parque é a imagem que qualquer anúncio de venda tem."
+    },
+    "astro": {
+      "hook": "Escala — e a escala precisa de chão",
+      "lead": "O assunto é a escala — e a escala só se sente se houver Terra na fotografia.",
+      "why": "Um céu estrelado isolado é impressionante durante dois segundos e depois é um padrão. O que provoca vertigem é a comparação: uma árvore, uma casa, uma pessoa, uma montanha debaixo de uma galáxia. A fotografia astro passa a dizer 'isto é o tamanho do que está acima de nós, e aquilo é o tamanho do que somos'. É também o género que mostra o que o olho literalmente não consegue ver — o que lhe dá um poder de revelação parecido com o da macro, na direção oposta.",
+      "subject": "A relação entre o céu e uma âncora terrestre reconhecível. Sem âncora, não há emoção; há astronomia.",
+      "compare": {
+        "strong": "Via Láctea sobre uma âncora terrestre reconhecível: dá a medida do que está acima.",
+        "flat": "Só céu estrelado, tecnicamente correto: um padrão de pontos sem escala nem emoção."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa o céu.",
+          "mem": "Fotografa o céu sobre um lugar."
+        },
+        {
+          "ord": "Mostra que havia muitas estrelas.",
+          "mem": "Faz sentir a distância."
+        },
+        {
+          "ord": "Uma noite qualquer.",
+          "mem": "Uma noite escolhida: sem lua, sem luzes, num sítio pensado de antemão."
+        }
+      ],
+      "ask": [
+        "O que é que está no chão desta fotografia — e é interessante?",
+        "Quero mostrar o céu como padrão ou como profundidade?",
+        "Isto podia ter sido fotografado em qualquer sítio do mundo? Se sim, falta lugar."
+      ],
+      "language": [
+        {
+          "n": "Âncora terrestre pequena",
+          "m": "escala cósmica e insignificância humana"
+        },
+        {
+          "n": "Rastos de estrelas",
+          "m": "torna visível a rotação da Terra: o assunto passa a ser o tempo"
+        },
+        {
+          "n": "Silhueta em vez de terreno iluminado",
+          "m": "simplicidade e mistério; iluminar demais o chão traz a imagem de volta ao banal"
+        }
+      ],
+      "trap": "Tratar a nitidez das estrelas como objetivo final. Uma Via Láctea impecável sobre um horizonte vazio é papel de parede, não fotografia."
+    },
+    "noturna": {
+      "hook": "A cidade feita de luz",
+      "lead": "De noite a cidade deixa de ser iluminada e passa a ser feita de luz.",
+      "why": "De dia, uma cidade é matéria com luz por cima. De noite, as fontes de luz estão dentro da cena — janelas, letreiros, faróis, ecrãs — e passam a ser o próprio assunto. A escuridão apaga tudo o que sobrava e deixa apenas pontos e manchas escolhidos por outra pessoa. É por isso que a cidade noturna é mais fácil de compor: já vem simplificada, e o teu trabalho é decidir o que fica ligado.",
+      "subject": "Luz artificial como matéria, e as pessoas que ela deixa isoladas. Um interior aceso visto de fora é a definição de fotografia noturna urbana.",
+      "compare": {
+        "strong": "Luz artificial a estruturar o enquadramento, escuridão a apagar o resto, uma figura isolada numa janela ou num pedaço de luz.",
+        "flat": "Rua noturna toda visível e cinzenta, sombras abertas em edição: a noite corrigida até desaparecer."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa a cidade à noite.",
+          "mem": "Fotografa uma fonte de luz e o que ela revela."
+        },
+        {
+          "ord": "Levanta as sombras para se ver tudo.",
+          "mem": "Deixa o negro ser negro — a noite é feita de ausência."
+        },
+        {
+          "ord": "Rua vazia bonita.",
+          "mem": "Rua com alguém — a solidão urbana precisa de uma pessoa para se ler."
+        }
+      ],
+      "ask": [
+        "Que luzes estão a fazer o trabalho, e quais estão só a atrapalhar?",
+        "Estou a mostrar a noite, ou a tentar que pareça dia?",
+        "Há aqui alguém? Se não, o que é que substitui a presença humana?"
+      ],
+      "language": [
+        {
+          "n": "Negros profundos mantidos",
+          "m": "atmosfera e mistério; recuperar tudo destrói a noite"
+        },
+        {
+          "n": "Janela acesa",
+          "m": "narrativa instantânea — uma vida a acontecer que não conhecemos"
+        },
+        {
+          "n": "Mistura de temperaturas de cor",
+          "m": "carácter urbano; corrigir tudo para neutro apaga a identidade do sítio"
+        }
+      ],
+      "trap": "Editar a noite até ficar um dia mal iluminado. Se o histograma está confortável, provavelmente a atmosfera foi-se."
+    },
+    "festividades": {
+      "hook": "A noite, não a decoração",
+      "lead": "O que se fotografa não é a decoração — é a sensação de estar naquela noite.",
+      "why": "Uma árvore de Natal fotografada de frente é um objeto. O que faz uma imagem de festa funcionar é a memória afetiva: a luz quente numa cara, o desfoque das luzes que imita a forma como as vemos quando estamos cansados e contentes, mãos a fazer coisas, a mesa a meio. É um dos poucos géneros em que a imperfeição técnica ajuda — um pouco de movimento e de desfoque leem-se como calor, não como erro.",
+      "subject": "Pessoas dentro da luz da festa. A decoração é iluminação de cenário, não o tema.",
+      "compare": {
+        "strong": "Luz quente das lâmpadas numa cara, luzes desfocadas atrás, gesto a meio: lê-se como memória.",
+        "flat": "A árvore decorada de frente, bem exposta, sem ninguém: um inventário de enfeites."
+      },
+      "gap": [
+        {
+          "ord": "Fotografa as luzes.",
+          "mem": "Fotografa alguém iluminado pelas luzes."
+        },
+        {
+          "ord": "A mesa posta e perfeita.",
+          "mem": "A mesa a meio, com gente a comer e a falar."
+        },
+        {
+          "ord": "Tudo nítido.",
+          "mem": "Um pouco de movimento — porque era assim que a noite se sentia."
+        }
+      ],
+      "ask": [
+        "O que é que quero lembrar desta noite dentro de dez anos?",
+        "As luzes estão a iluminar alguém ou estão só a decorar o fundo?",
+        "Estou a documentar os enfeites ou as pessoas?"
+      ],
+      "language": [
+        {
+          "n": "Luzes desfocadas no fundo",
+          "m": "sensação, não informação: é assim que a memória guarda a noite"
+        },
+        {
+          "n": "Luz quente sobre rosto",
+          "m": "intimidade e conforto"
+        },
+        {
+          "n": "Ligeiro arrasto de movimento",
+          "m": "vida e barulho; a nitidez total esteriliza a cena"
+        }
+      ],
+      "trap": "Fotografar a produção em vez da noite. Ninguém revisita fotografias de decoração; revisita-se fotografias de gente."
+    },
+    "produto": {
+      "hook": "Fazer desejar, não descrever",
+      "lead": "Um objeto bem fotografado não é descrito — é desejado.",
+      "why": "A fotografia de produto tem uma função clara: fazer alguém querer aquilo. Isso é uma decisão sobre a ideia que o objeto deve transmitir — precisão, artesania, robustez, luxo, simplicidade — e depois sobre como a luz conta essa ideia. A luz é o texto: descreve o material. Mate ou brilhante, macio ou duro, quente ou clínico. Um objeto igual fotografado com duas luzes diferentes vende duas coisas diferentes.",
+      "subject": "O material e a forma. Antes de montar nada, decide que adjetivo é que a imagem tem de provar.",
+      "compare": {
+        "strong": "Luz que descreve o material, fundo controlado, forma legível: o objeto parece valer mais do que custa.",
+        "flat": "Objeto centrado com luz frontal plana e reflexos duros: descreve o produto sem o valorizar."
+      },
+      "gap": [
+        {
+          "ord": "Mostra o objeto.",
+          "mem": "Prova uma qualidade do objeto."
+        },
+        {
+          "ord": "Luz frontal para se ver tudo.",
+          "mem": "Luz escolhida para dizer de que material é feito."
+        },
+        {
+          "ord": "Fundo branco por omissão.",
+          "mem": "Fundo escolhido: contexto de uso, ou vazio absoluto, conforme a ideia."
+        }
+      ],
+      "ask": [
+        "Que adjetivo é que esta imagem tem de provar?",
+        "O que é que a luz está a dizer sobre o material?",
+        "Quem vai ver isto — e o que precisa de perceber em dois segundos?"
+      ],
+      "language": [
+        {
+          "n": "Reflexo comprido e suave",
+          "m": "qualidade e superfície polida"
+        },
+        {
+          "n": "Sombra dura e curta",
+          "m": "precisão, modernidade, tom clínico"
+        },
+        {
+          "n": "Objeto em uso ou com mão humana",
+          "m": "escala e desejo: mostra o que é ter aquilo"
+        },
+        {
+          "n": "Muito espaço vazio",
+          "m": "valor e exclusividade — o vazio lê-se como luxo"
+        }
+      ],
+      "trap": "Iluminar para se ver bem em vez de iluminar para significar algo. Uma imagem legível e sem intenção parece um catálogo de peças."
+    },
+    "gastronomia": {
+      "hook": "Dar fome, não descrever o prato",
+      "lead": "Uma fotografia de comida tem de dar fome — não descrever um prato.",
+      "why": "É o género mais físico de todos: o objetivo é provocar uma reação no corpo de quem vê. Isso não vem da comida estar perfeita; vem de sinais de frescura e de vestígios de vida. Vapor, brilho húmido, uma migalha fora do sítio, uma colher usada, uma mão a servir. A comida demasiado arranjada lê-se como plástico; a comida com sinais de estar a ser comida lê-se como comida.",
+      "subject": "Textura e temperatura. Se der para adivinhar se está quente ou frio, crocante ou macio, a imagem está a funcionar.",
+      "compare": {
+        "strong": "Luz de lado ou de trás a acender o vapor e o brilho, textura legível, sinais de estar a ser comido.",
+        "flat": "Prato de cima com flash frontal: plano, seco, sem temperatura nem apetite."
+      },
+      "gap": [
+        {
+          "ord": "O prato bem apresentado.",
+          "mem": "O prato a ser comido."
+        },
+        {
+          "ord": "Luz de frente.",
+          "mem": "Luz de trás ou de lado — é a única que mostra vapor, brilho e textura."
+        },
+        {
+          "ord": "Perfeito.",
+          "mem": "Com uma imperfeição escolhida: uma migalha, um pingo, um corte."
+        }
+      ],
+      "ask": [
+        "Isto dá-me fome? É a única pergunta que importa.",
+        "Consigo perceber a textura ou é só cor?",
+        "Está demasiado arranjado para parecer verdadeiro?"
+      ],
+      "language": [
+        {
+          "n": "Contraluz sobre vapor",
+          "m": "temperatura: prova que está quente"
+        },
+        {
+          "n": "Brilho húmido",
+          "m": "frescura e sabor"
+        },
+        {
+          "n": "Mão a servir ou a cortar",
+          "m": "convite: o espectador entra na mesa"
+        },
+        {
+          "n": "Migalhas e desalinho",
+          "m": "verdade — o excesso de arranjo lê-se como falso"
+        }
+      ],
+      "trap": "Estilizar até esterilizar. Um prato geometricamente perfeito e absolutamente limpo deixa de parecer comida."
+    },
+    "imobiliario": {
+      "hook": "Uma vida possível, não metros quadrados",
+      "lead": "Não se fotografam metros quadrados — fotografa-se uma vida possível ali dentro.",
+      "why": "Quem procura casa não está a comparar plantas; está a tentar imaginar-se a viver naquele espaço. As fotografias que funcionam são as que ajudam essa projeção: luz natural que mostra como é a casa às dez da manhã, espaço que se percebe, uma sequência que deixa perceber o percurso entre as divisões. O que destrói tudo é a desonestidade — porque a decepção acontece na visita, e aí a fotografia não serviu de nada.",
+      "subject": "Espaço e luz. A sensação de amplitude e a qualidade da luz natural são as duas coisas que decidem se alguém quer ver a casa.",
+      "compare": {
+        "strong": "Luz natural real, espaço legível, verticais direitas e enquadramento honesto do que a divisão é.",
+        "flat": "Grande angular exagerada de um canto, luz mista amarelada, objetos pessoais espalhados: confuso e pouco convincente."
+      },
+      "gap": [
+        {
+          "ord": "Mostra cada divisão.",
+          "mem": "Mostra como se vive entre elas."
+        },
+        {
+          "ord": "Fotografa como estava.",
+          "mem": "Arruma e retira o que é pessoal — quem vê precisa de espaço para se imaginar lá."
+        },
+        {
+          "ord": "Grande angular ao máximo.",
+          "mem": "Enquadramento que dá a dimensão certa sem enganar."
+        }
+      ],
+      "ask": [
+        "Isto ajuda alguém a imaginar-se a viver aqui?",
+        "Estou a mostrar o espaço ou a exagerá-lo?",
+        "Qual é a melhor coisa desta casa — e é isso que a primeira fotografia mostra?"
+      ],
+      "language": [
+        {
+          "n": "Luz natural predominante",
+          "m": "honestidade e conforto; a luz artificial mista parece institucional"
+        },
+        {
+          "n": "Verticais direitas",
+          "m": "credibilidade — linhas tortas leem-se como amadorismo"
+        },
+        {
+          "n": "Espaço arrumado e despersonalizado",
+          "m": "convite à projeção: a casa fica disponível na cabeça de quem vê"
+        }
+      ],
+      "trap": "Fazer a casa parecer maior do que é. A grande angular extrema resolve a fotografia e estraga a visita.",
+      "ethic": "Este é o género em que a fotografia tem consequências financeiras para outra pessoa. Não corrijas o que a casa não tem: não apagues o edifício em frente, não inventes vista, não abras janelas que não existem. Mostrar o melhor é o trabalho; fabricar não é."
+    },
+    "pb": {
+      "hook": "Interpretar, não reproduzir",
+      "lead": "O preto e branco não é uma reprodução fiel da realidade — é uma interpretação dela.",
+      "why": "Retirar a cor não é retirar informação por acidente: é decidir que a cor estava a distrair. O que sobra — luz, tom, contraste, forma, textura — passa a ter todo o peso da imagem. É por isso que o preto e branco é ao mesmo tempo o género mais honesto (não há cor bonita para esconder falta de conteúdo) e o mais interpretativo (tu decides que cinzento cada cor vai ser). Ver a preto e branco é uma aprendizagem: começa-se a olhar para a luz em vez de olhar para as coisas.",
+      "subject": "A relação entre tons. Um assunto a preto e branco existe quando há separação — claro contra escuro, textura contra liso, forma contra fundo.",
+      "compare": {
+        "strong": "Luz dura e direcional, tons separados, forma e textura a carregar a imagem inteira.",
+        "flat": "Cena de luz plana convertida sem intenção: cinzentos médios, nada a separar-se, imagem sem estrutura."
+      },
+      "gap": [
+        {
+          "ord": "Convertido porque a cor não estava boa.",
+          "mem": "Fotografado desde o início a pensar em tons."
+        },
+        {
+          "ord": "Sem cor.",
+          "mem": "Com estrutura: um branco que interessa, um negro que interessa, e tudo a apontar para o assunto."
+        },
+        {
+          "ord": "Cena com muitas cores diferentes e a mesma luminosidade.",
+          "mem": "Cena com luz que separa — sombra profunda, alta luz clara, e diferença entre elas."
+        }
+      ],
+      "ask": [
+        "Se isto a cores é banal, o que é que o preto e branco lhe acrescenta?",
+        "O que é que estou a tirar — e a cor era importante para o assunto?",
+        "Há aqui separação de tons suficiente, ou vai ficar tudo cinzento igual?"
+      ],
+      "language": [
+        {
+          "n": "Contraste alto, negros fechados",
+          "m": "drama, força, leitura gráfica"
+        },
+        {
+          "n": "Contraste baixo, cinzentos médios",
+          "m": "melancolia, silêncio, delicadeza"
+        },
+        {
+          "n": "Textura acentuada",
+          "m": "tempo e matéria — pele, pedra, ferrugem contam idade"
+        },
+        {
+          "n": "Silhueta pura",
+          "m": "reduz a informação ao mínimo e força a leitura pela forma"
+        }
+      ],
+      "trap": "Usar o preto e branco como remendo. Uma fotografia fraca a cores é uma fotografia fraca a preto e branco — o P&B não salva conteúdo, só reorganiza prioridades."
+    },
+    "longa-exposicao": {
+      "hook": "O assunto é o tempo",
+      "lead": "É o único género cujo assunto é o tempo — e não o instante.",
+      "why": "A fotografia normalmente corta uma fatia de realidade tão fina que nem existe na experiência humana. A longa exposição faz o contrário: acumula minutos numa imagem e mostra uma coisa que ninguém viu — porque ninguém consegue ver trinta segundos ao mesmo tempo. A água fica sólida, as nuvens tornam-se direção, as pessoas desaparecem. É um género de revelação, mas de revelação inventada: o resultado é verdadeiro e ao mesmo tempo impossível.",
+      "subject": "O contraste entre o que fica e o que passa. Sem um elemento perfeitamente fixo, o movimento não tem contra o que se medir e a imagem só fica esfumada.",
+      "compare": {
+        "strong": "Estrutura fixa e nítida contra água e nuvens transformadas em movimento — o tempo lê-se na imagem.",
+        "flat": "Longa exposição sem âncora fixa: tudo esfumado, nada com que comparar, efeito sem assunto."
+      },
+      "gap": [
+        {
+          "ord": "Faz longa exposição porque tem o filtro.",
+          "mem": "Faz longa exposição porque há movimento que vale a pena mostrar."
+        },
+        {
+          "ord": "Tudo em movimento.",
+          "mem": "Uma coisa dura e imóvel, e o resto a fluir."
+        },
+        {
+          "ord": "Água leitosa como efeito.",
+          "mem": "Água leitosa como escolha: silêncio, calma, tempo suspenso."
+        }
+      ],
+      "ask": [
+        "O que é que se move aqui — e mostrá-lo em movimento acrescenta algo?",
+        "Qual é o elemento fixo que vai dar sentido ao movimento?",
+        "Isto seria melhor congelado? Se sim, congela."
+      ],
+      "language": [
+        {
+          "n": "Água transformada em névoa",
+          "m": "calma e tempo suspenso; quase abstração"
+        },
+        {
+          "n": "Nuvens esticadas numa direção",
+          "m": "energia e sentido de movimento no céu"
+        },
+        {
+          "n": "Pessoas apagadas de um espaço público",
+          "m": "solidão e estranheza: a cidade fica vazia sem estar"
+        }
+      ],
+      "trap": "Fazer longa exposição por hábito. É um efeito visível e por isso viciante — mas quando se aplica a tudo, deixa de ser leitura e passa a ser maneirismo."
+    },
+    "light-painting": {
+      "hook": "Inventar a luz, não registá-la",
+      "lead": "É o género em que se deixa de registar luz e se começa a inventá-la.",
+      "why": "Em quase todos os outros géneros, a luz é uma condição que se aceita ou se espera. Aqui, é matéria-prima nas tuas mãos: escolhes onde há luz, quanta, de que cor e por quanto tempo. Isso muda o papel do fotógrafo — passa a ser o iluminador da cena, e a imagem final é uma coisa que nunca existiu à frente de ninguém. É autoria em estado quase puro, e é o exercício mais direto para perceber que a luz é uma decisão.",
+      "subject": "A intenção. Como não há realidade a registar, tudo o que aparece na imagem foi escolhido — e tudo o que não foi escolhido é ruído.",
+      "compare": {
+        "strong": "Luz aplicada com intenção — só o que interessa iluminado, direção clara, resto em negro.",
+        "flat": "Rabiscos luminosos aleatórios sobre uma cena mal escolhida: efeito sem ideia."
+      },
+      "gap": [
+        {
+          "ord": "Rabisca luz no ar.",
+          "mem": "Ilumina uma coisa que vale a pena ver iluminada."
+        },
+        {
+          "ord": "Ilumina tudo.",
+          "mem": "Escolhe o que fica no escuro — o negro é o material principal."
+        },
+        {
+          "ord": "Efeito.",
+          "mem": "Imagem: reconhece-se um assunto e percebe-se uma intenção."
+        }
+      ],
+      "ask": [
+        "O que é que quero que exista nesta imagem? Tudo o resto fica preto.",
+        "De que direção é que a luz devia vir para dar forma a isto?",
+        "Isto é um efeito bonito ou é uma fotografia?"
+      ],
+      "language": [
+        {
+          "n": "Objeto pintado de lado",
+          "m": "revela relevo e volume — luz como escultura"
+        },
+        {
+          "n": "Traço luminoso contínuo",
+          "m": "gesto e tempo visíveis; caligrafia"
+        },
+        {
+          "n": "Negro dominante",
+          "m": "concentração absoluta no que foi escolhido"
+        }
+      ],
+      "trap": "Confundir novidade com resultado. O efeito impressiona à primeira e cansa à segunda — o que aguenta é haver assunto por baixo."
+    },
+    "reflexos": {
+      "hook": "Obrigar a olhar duas vezes",
+      "lead": "Um reflexo é a maneira mais simples de obrigar alguém a olhar duas vezes.",
+      "why": "A fotografia é lida em dois segundos, e quase sempre é isso. Um reflexo quebra essa leitura: o espectador percebe que há duas realidades no mesmo enquadramento, hesita, e volta ao início. Essa hesitação é o objetivo. Serve para duplicar (simetria, ordem, calma), para confundir (dois planos a existirem no mesmo vidro) ou para comentar (a cara de alguém sobre a cidade que está do outro lado).",
+      "subject": "A ambiguidade entre o que está e o que está refletido. Se for imediatamente óbvio o que é o quê, o reflexo é decoração.",
+      "compare": {
+        "strong": "Duas realidades sobrepostas com relação entre elas — obriga a hesitar e a voltar ao início.",
+        "flat": "Reflexo nítido e óbvio de um edifício numa poça: bonito, imediato, sem segunda leitura."
+      },
+      "gap": [
+        {
+          "ord": "Há um reflexo na fotografia.",
+          "mem": "O reflexo é a razão da fotografia."
+        },
+        {
+          "ord": "Duplica uma coisa bonita.",
+          "mem": "Junta duas coisas que não estavam juntas e cria uma terceira."
+        },
+        {
+          "ord": "Percebe-se logo o que é.",
+          "mem": "Demora um segundo a perceber — e é nesse segundo que a imagem funciona."
+        }
+      ],
+      "ask": [
+        "O que é que este reflexo está a juntar que de outro modo não podia estar junto?",
+        "Quero simetria (ordem) ou sobreposição (confusão)?",
+        "Se tapasse o reflexo, ainda havia fotografia? Se sim, o reflexo é só enfeite."
+      ],
+      "language": [
+        {
+          "n": "Real e refletido em espelho exato",
+          "m": "calma, ordem, quase irrealidade"
+        },
+        {
+          "n": "Vidro que mostra os dois lados ao mesmo tempo",
+          "m": "complexidade urbana e ambiguidade"
+        },
+        {
+          "n": "Rosto refletido sobre outra cena",
+          "m": "comentário: relaciona a pessoa com o que está do outro lado"
+        },
+        {
+          "n": "Reflexo cortado ou parcial",
+          "m": "estranheza; a realidade fica incompleta"
+        }
+      ],
+      "trap": "Fotografar o reflexo por ser um reflexo. A técnica é imediatamente visível e por isso engana — sem ideia por baixo, fica um truque."
+    }
+  },
+  "principles": [
+    {
+      "id": "intencao",
+      "icon": "🎯",
+      "name": "Decidir o que se está a dizer",
+      "blurb": "A pergunta que vem antes de todas as definições.",
+      "thumb": "vis-paisagem",
+      "genres": [
+        "paisagem",
+        "retrato",
+        "produto"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "Uma fotografia técnica responde a \"como\". Uma fotografia que fica responde primeiro a \"o quê\" — o que é que isto quer dizer a quem vê. A ordem importa: quem decide a intenção antes de levantar a câmara escolhe o ponto de vista, o momento e o que deixa de fora em função dela. Quem decide depois fica com uma imagem correta à espera de significado."
+        },
+        {
+          "h": "O teste de uma frase",
+          "t": "Antes de disparar, obriga-te a completar: \"esta fotografia é sobre ___\". Se a frase sair vaga (\"sobre a paisagem\", \"sobre este edifício\"), ainda não há fotografia — há um assunto. Se sair concreta (\"sobre o quanto aquele sítio é hostil\"), já sabes o que tem de estar no enquadramento e o que tem de sair."
+        },
+        {
+          "h": "O que muda na prática",
+          "t": "A intenção não é filosofia: é a regra que decide os conflitos. Quando não sabes se recuar ou aproximar, se incluir a pessoa ou não, se esperar mais dez minutos — a resposta é a que serve a frase. Sem frase, essas decisões tomam-se ao acaso."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Confundir \"reconheci uma coisa bonita\" com \"tenho uma fotografia\". O reconhecimento é o princípio do trabalho, não o fim."
+        },
+        {
+          "h": "🎓 Onde treinar",
+          "t": "Numa saída, escreve a frase ANTES de cada fotografia. Dez fotografias com frase ensinam mais do que duzentas sem."
+        }
+      ]
+    },
+    {
+      "id": "subtrair",
+      "icon": "✂️",
+      "name": "Subtrair em vez de acrescentar",
+      "blurb": "Quase todas as fotografias fracas têm coisas a mais, não a menos.",
+      "thumb": "vis-nevoeiro",
+      "genres": [
+        "nevoeiro",
+        "macro",
+        "noturna",
+        "light-painting"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "O instinto é encher: mais cena, mais contexto, mais informação, com medo de deixar coisas de fora. Mas quem vê só consegue prestar atenção a uma coisa de cada vez. Tudo o que não serve a intenção compete com ela — e o que compete ganha uma parte da atenção que devia ser do assunto."
+        },
+        {
+          "h": "Formas de subtrair",
+          "t": "Aproximar. Mudar de ângulo até o fundo ficar limpo. Esperar que alguém saia do enquadramento. Deixar o negro ser negro. Usar nevoeiro, sombra, vazio ou desfoque como borracha. Subtrair não é fotografar menos: é fotografar só."
+        },
+        {
+          "h": "O vazio é conteúdo",
+          "t": "Espaço aparentemente desperdiçado faz trabalho: dá escala, dá silêncio, dá ao assunto sítio para respirar. Uma imagem com dois terços vazios costuma ser mais forte do que a mesma imagem preenchida."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Corrigir na edição o que se devia ter deixado de fora. Recuperar sombras, levantar nevoeiro e clarear tudo devolve informação — e devolve também a confusão."
+        },
+        {
+          "h": "🎓 Onde treinar",
+          "t": "Escolhe uma cena e faz cinco fotografias, cada uma com menos elementos do que a anterior. A melhor é quase sempre uma das últimas."
+        }
+      ]
+    },
+    {
+      "id": "ancora",
+      "icon": "📐",
+      "name": "A âncora e a escala",
+      "blurb": "Nada é grande, pequeno ou distante sem algo ao lado que o meça.",
+      "thumb": "vis-astro",
+      "genres": [
+        "astro",
+        "paisagem",
+        "arquitetura",
+        "macro"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "A escala não existe na imagem — deduz-se. Quem vê compara o que não conhece com o que conhece, e sem esse ponto de comparação a informação perde-se. Uma montanha sem referência é uma forma; a mesma montanha com uma casa ao fundo passa a ter altura."
+        },
+        {
+          "h": "O que serve de âncora",
+          "t": "Qualquer coisa cujo tamanho o espectador já saiba: uma pessoa, um carro, uma casa, uma mão, um objeto do dia a dia. Quanto mais banal, melhor funciona — precisamente porque é conhecida."
+        },
+        {
+          "h": "Funciona nos dois sentidos",
+          "t": "Na paisagem e na astrofotografia, a âncora torna o grande enorme. Na macro faz o contrário: mostra que aquele mundo é minúsculo. É a mesma ferramenta a servir emoções opostas."
+        },
+        {
+          "h": "Também ancora o movimento",
+          "t": "O mesmo princípio explica porque é que uma longa exposição precisa de um elemento perfeitamente nítido: sem ponto fixo, o movimento não tem contra o que se medir e a imagem lê-se como falha de foco."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Tirar a pessoa do enquadramento para \"não estragar a paisagem\". Quase sempre era ela que dava a medida."
+        }
+      ]
+    },
+    {
+      "id": "momento",
+      "icon": "⏱️",
+      "name": "O momento não se organiza",
+      "blurb": "Nos géneros com gente, a diferença são dois décimos de segundo.",
+      "thumb": "vis-rua",
+      "genres": [
+        "rua",
+        "desporto",
+        "eventos",
+        "familia"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "Há géneros em que tudo pode estar decidido de antemão — luz, fundo, enquadramento — e a fotografia ainda depende de um instante que não controlas. Isso muda o método: em vez de procurar, prepara-se e espera-se."
+        },
+        {
+          "h": "Preparar em vez de perseguir",
+          "t": "Encontra a cena primeiro: um fundo que diga algo, uma luz que funcione, um enquadramento já decidido. Fica lá. Quando o momento entrar, só falta disparar — e é por isso que quem espera acerta mais do que quem anda."
+        },
+        {
+          "h": "O momento é quase sempre ao lado",
+          "t": "O pico da ação é o instante mais fotografado e raramente o mais expressivo. A emoção está no segundo seguinte: a reação, o abraço, a exaustão, a cara de quem percebeu o que aconteceu."
+        },
+        {
+          "h": "Antecipar é ler comportamento",
+          "t": "Ninguém tem reflexos suficientes para reagir ao momento. Acerta-se porque se percebeu, um segundo antes, o que ia acontecer — e isso treina-se a olhar para as pessoas, não para a câmara."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Disparar em rajada em vez de olhar. Trezentas imagens do momento errado continuam a ser o momento errado."
+        }
+      ]
+    },
+    {
+      "id": "ambiguidade",
+      "icon": "🔍",
+      "name": "Fazer olhar duas vezes",
+      "blurb": "Uma imagem que se percebe toda em dois segundos dura dois segundos.",
+      "thumb": "vis-reflexos",
+      "genres": [
+        "reflexos",
+        "macro",
+        "pb",
+        "autorretrato"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "Quem vê uma fotografia decide muito depressa se já a percebeu. Se percebeu, passa. As imagens que ficam deixam alguma coisa por resolver — uma escala que não se identifica, um reflexo que confunde planos, uma expressão que não se sabe ler, um pedaço de informação que falta."
+        },
+        {
+          "h": "Não é esconder por esconder",
+          "t": "A ambiguidade tem de ser sobre o assunto, não sobre a legibilidade. Uma imagem confusa não é ambígua — é confusa. A diferença: na ambígua o espectador sabe o que está a ver e não sabe o que aquilo significa; na confusa não sabe nem o que está a ver."
+        },
+        {
+          "h": "Formas de conseguir",
+          "t": "Mostrar uma parte em vez do todo. Cortar. Aproximar até se perder a referência. Deixar metade em sombra. Sobrepor duas realidades. Apanhar alguém entre duas expressões."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Explicar tudo. Enquadramento completo, sujeito ao centro, tudo iluminado e nada por decidir — a imagem responde a perguntas que ninguém fez."
+        },
+        {
+          "h": "🎓 Onde treinar",
+          "t": "Fotografa o mesmo assunto duas vezes: uma que explica e uma que sugere. Mostra as duas a alguém e vê qual é que gera perguntas."
+        }
+      ]
+    },
+    {
+      "id": "luz-diz",
+      "icon": "💡",
+      "name": "O que a luz diz",
+      "blurb": "A mesma cena com duas luzes conta duas histórias diferentes.",
+      "thumb": "vis-nascer-por-sol",
+      "genres": [
+        "nascer-por-sol",
+        "pb",
+        "produto",
+        "retrato"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "A direção e a qualidade da luz medem-se, e isso é técnica — vive nos Fundamentos. Aqui interessa outra coisa: a luz é o principal veículo de emoção de uma fotografia, e escolhê-la é escolher o que a imagem sente."
+        },
+        {
+          "h": "O vocabulário básico",
+          "t": "Luz dura e lateral: drama, relevo, matéria, tempo. Luz difusa: calma, delicadeza, verdade. Contraluz: mistério, redução à forma. Luz baixa e quente: nostalgia, conforto, fim de dia. Luz de cima e plana: clínico, institucional, sem emoção — quase sempre o que se quer evitar."
+        },
+        {
+          "h": "A luz descreve matéria",
+          "t": "É a luz que diz de que é feita uma coisa: macia ou dura, húmida ou seca, quente ou fria. Num prato, num objeto, numa pele ou numa pedra, mudar a luz muda o material aparente sem tocar no material real."
+        },
+        {
+          "h": "Escolher, não aceitar",
+          "t": "Na maior parte dos géneros a luz não se controla — mas escolhe-se: a hora, o lado da rua, esperar uma nuvem, voltar amanhã. É a decisão criativa mais barata e mais eficaz que existe."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Tratar a hora dourada como garantia de qualidade. Luz bonita sobre uma composição sem intenção dá uma fotografia bonita e esquecível."
+        }
+      ]
+    },
+    {
+      "id": "interpretar",
+      "icon": "🎭",
+      "name": "Interpretar ou registar",
+      "blurb": "Duas posições legítimas — mas tens de saber em qual estás.",
+      "thumb": "vis-pb",
+      "genres": [
+        "pb",
+        "longa-exposicao",
+        "light-painting",
+        "imobiliario"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "Uma fotografia pode tentar ser fiel ao que estava lá, ou assumir-se como leitura de quem fotografou. Preto e branco, longa exposição e light painting são interpretações declaradas: nenhuma mostra o que o olho via. Documentação, imobiliário e fotojornalismo são o oposto — o valor está na fidelidade."
+        },
+        {
+          "h": "O problema não é escolher",
+          "t": "É não escolher. Uma imagem que se apresenta como registo e foi construída perde credibilidade quando se descobre. Uma imagem que se apresenta como interpretação não deve nada a ninguém: quem vê sabe que está diante de um ponto de vista."
+        },
+        {
+          "h": "Interpretar não é embelezar",
+          "t": "Interpretação é uma decisão sobre o significado — reduzir a tons para falar de forma, acumular tempo para falar de duração. Embelezar é aumentar a saturação. A primeira acrescenta leitura; a segunda acrescenta ruído."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Aplicar um tratamento forte a tudo por hábito. Quando todas as fotografias têm o mesmo look, o look deixou de ser leitura e passou a ser assinatura automática."
+        }
+      ]
+    },
+    {
+      "id": "serie",
+      "icon": "🎞️",
+      "name": "Pensar em série, não em fotografia",
+      "blurb": "Uma imagem mostra um instante; três contam uma história.",
+      "thumb": "vis-viagem",
+      "genres": [
+        "viagem",
+        "eventos",
+        "familia",
+        "desporto"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "Há coisas que uma única fotografia não consegue dizer — como era um sítio, como correu uma noite, como é a vida de alguém. Isso conta-se em conjunto, e um conjunto tem regras próprias que uma imagem isolada não tem."
+        },
+        {
+          "h": "Ritmo",
+          "t": "Uma série precisa de variedade de plano: um largo que situa, médios com gente e ação, detalhes que dão textura. Seis fotografias do mesmo enquadramento não são uma série — são repetição."
+        },
+        {
+          "h": "Estrutura",
+          "t": "Princípio, meio e fim. Durante o trabalho, a pergunta útil não é \"mais uma fotografia?\" mas \"que parte ainda me falta?\". É essa pergunta que faz sair do sítio onde se está confortável."
+        },
+        {
+          "h": "Editar é metade do trabalho",
+          "t": "Uma série de seis imagens escolhidas vale mais do que duzentas guardadas. Escolher é doloroso e é onde se aprende mais: obriga a perceber o que cada imagem estava, na verdade, a dizer."
+        },
+        {
+          "h": "⚠️ O erro típico",
+          "t": "Colecionar. Uma fotografia de cada coisa dá um inventário; três de uma coisa dão um assunto."
+        }
+      ]
+    },
+    {
+      "id": "honestidade",
+      "icon": "⚖️",
+      "name": "Honestidade e responsabilidade",
+      "blurb": "Fotografar pessoas, animais e casas tem consequências para outros.",
+      "thumb": "vis-vida-selvagem",
+      "genres": [
+        "rua",
+        "vida-selvagem",
+        "retrato",
+        "imobiliario",
+        "viagem"
+      ],
+      "body": [
+        {
+          "h": "A ideia",
+          "t": "Na maior parte dos géneros, a única coisa em jogo é a qualidade da imagem. Quando há uma pessoa, um animal ou uma transação do outro lado, há mais: a fotografia afeta alguém que não decidiu nada sobre ela."
+        },
+        {
+          "h": "Pessoas",
+          "t": "Ser legal não é o mesmo que ser correto. Não transformes vulnerabilidade em espetáculo, mostra o resultado a quem fotografaste e apaga quando alguém pede. O teste prático: se precisavas de esconder o que estavas a fazer para a imagem funcionar, a imagem não funciona."
+        },
+        {
+          "h": "Animais",
+          "t": "O bem-estar está acima de qualquer fotografia. Se o comportamento muda por tua causa, estás demasiado perto — e a imagem passa a mostrar stress, não natureza."
+        },
+        {
+          "h": "Quando a imagem vale dinheiro",
+          "t": "Em imobiliário, produto ou gastronomia, mostrar o melhor é o trabalho; fabricar o que não existe é outra coisa. A decepção acontece sempre depois, e nesse momento a fotografia não serviu de nada."
+        },
+        {
+          "h": "Porque é que isto é criativo e não burocrático",
+          "t": "Estas restrições melhoram as imagens. Quem se aproxima em vez de fotografar de longe com uma teleobjetiva consegue fotografias mais próximas. Quem espera que um animal confie consegue comportamento em vez de fuga."
+        }
+      ]
+    }
+  ]
+}

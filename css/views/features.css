@@ -284,11 +284,19 @@ body.ph-modal-open { overflow: hidden; }
 .ph-scn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: .6rem; }
 .ph-scn-card { display: flex; flex-direction: column; align-items: flex-start; gap: .18rem; text-align: left; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .7rem .8rem; cursor: pointer; font: inherit; color: var(--text); transition: all var(--ease); }
 .ph-scn-card:hover { border-color: rgba(var(--accent-rgb),.45); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+/* O `display:flex` acima ganha ao `display:none` do [hidden] do browser, e sem
+   isto a procura por género esconde os grupos mas não os cartões. */
+.ph-scn-card[hidden] { display: none; }
 .ph-scn-ico { font-size: 1.5rem; }
 .ph-scn-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; }
 .ph-scn-blurb-sm {
   font-size: .66rem; color: var(--muted); line-height: 1.4;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* Gancho da Visão no cartão do género: a razão antes da descrição. */
+.ph-scn-hook {
+  font-size: .68rem; font-weight: 600; color: var(--accent); line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 
 .ph-scn-box { max-width: 880px; }
@@ -786,6 +794,9 @@ body.density-list .lp-link-tags { display: none; }
 .ph-field-top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; margin-bottom: .7rem; }
 .ph-field-title { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; }
 .ph-field-gear { display: flex; gap: .35rem; }
+/* A tese da Visão chega também ao terreno: uma linha antes dos números. */
+.ph-field-intent { font-size: .81rem; line-height: 1.5; color: var(--text2); background: var(--card2);
+  border-radius: 6px; padding: .4rem .55rem; margin-bottom: .5rem; }
 .ph-field-lens { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: .3rem; }
 .ph-field-mode { font-size: .82rem; color: var(--text2); margin-bottom: .55rem; }
 .ph-field-kv { margin-bottom: .75rem; }
@@ -983,6 +994,53 @@ body.density-list .lp-link-tags { display: none; }
 .ph-cv-thumb.active img, .ph-cv-thumb.active .ph-cv-thumb-no { border-color: var(--accent); }
 .ph-cv-thumb-n { font-size: .6rem; color: var(--muted); line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
+/* ══ secção Visão (camada criativa de cada género) ════════════════════ */
+.ph-vis-lead { margin: 0 0 .8rem; padding-left: .85rem; border-left: 3px solid var(--accent);
+  font-family: var(--font-head); font-size: 1.06rem; font-weight: 700; line-height: 1.45; color: var(--text); }
+.ph-vis-why { margin: 0 0 .9rem; font-size: .87rem; line-height: 1.72; color: var(--text2); max-width: 74ch; }
+/* O par de imagens é argumento, não decoração: limitado para não engolir o texto. */
+.ph-vis-stage { max-width: 720px; margin: 0 0 .3rem; }
+.ph-vis-cap { margin: 0 0 1rem; font-size: .74rem; line-height: 1.5; color: var(--muted); text-align: center; }
+.ph-vis-subject { background: var(--card2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); padding: .65rem .8rem; margin-bottom: .9rem; }
+.ph-vis-subject b { display: block; font-size: .8rem; color: var(--accent); margin-bottom: .2rem; }
+.ph-vis-subject p { margin: 0; font-size: .84rem; color: var(--text2); line-height: 1.6; }
+
+.ph-vis-sec { margin-bottom: .9rem; }
+.ph-vis-sec h4 { margin: 0 0 .35rem; font-family: var(--font-head); font-size: .88rem; font-weight: 800; color: var(--text); }
+.ph-vis-sec > .ph-section-sub { margin: -.15rem 0 .45rem; }
+
+.ph-vis-gap { display: flex; flex-direction: column; gap: .4rem; }
+.ph-vis-gap-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .55rem;
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: .55rem .7rem; }
+.ph-vis-ord { font-size: .8rem; line-height: 1.5; color: var(--muted); }
+.ph-vis-arrow { font-size: .9rem; color: var(--accent); }
+.ph-vis-mem { font-size: .8rem; line-height: 1.5; color: var(--text); font-weight: 600; }
+
+.ph-vis-ask { margin: 0; padding-left: 1.2rem; font-size: .84rem; color: var(--text2); line-height: 1.7; }
+.ph-vis-ask li { margin-bottom: .3rem; }
+.ph-vis-ask li::marker { color: var(--accent); font-weight: 700; }
+
+.ph-vis-lang { display: flex; flex-direction: column; gap: .3rem; }
+.ph-vis-lang-row { display: grid; grid-template-columns: minmax(150px, 30%) 1fr; gap: .6rem; align-items: baseline;
+  background: var(--card2); border-radius: 6px; padding: .45rem .6rem; }
+.ph-vis-lang-n { font-size: .79rem; font-weight: 700; color: var(--text); }
+.ph-vis-lang-m { font-size: .79rem; line-height: 1.55; color: var(--text2); }
+
+.ph-vis-trap, .ph-vis-ethic, .ph-vis-series { border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .65rem .8rem; margin-bottom: .7rem; background: var(--card2); }
+.ph-vis-trap { border-left: 3px solid #f59e0b; }
+.ph-vis-ethic { border-left: 3px solid #38bdf8; }
+.ph-vis-series { border-left: 3px solid #a78bfa; }
+.ph-vis-trap b, .ph-vis-ethic b, .ph-vis-series b { display: block; font-size: .8rem; margin-bottom: .2rem; }
+.ph-vis-trap b { color: #f59e0b; }
+.ph-vis-ethic b { color: #38bdf8; }
+.ph-vis-series b { color: #a78bfa; }
+.ph-vis-trap p, .ph-vis-ethic p, .ph-vis-series p { margin: 0; font-size: .82rem; color: var(--text2); line-height: 1.62; }
+.ph-vis-foot { margin: .9rem 0 0; padding-top: .6rem; border-top: 1px dashed var(--border);
+  font-size: .78rem; line-height: 1.6; color: var(--muted); }
+.ph-vis-foot b { color: var(--text2); }
+
 /* ══ secção Equipamento ═══════════════════════════════════════════════ */
 .ph-eq-intro { font-size: .85rem; color: var(--text2); line-height: 1.6; margin: .2rem 0 .9rem; max-width: 72ch; }
 .ph-eq-tag { font-size: .68rem; font-weight: 600; color: var(--muted); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .15rem .5rem; }
@@ -1011,6 +1069,9 @@ body.density-list .lp-link-tags { display: none; }
   .ph-ctx { flex-direction: column; align-items: stretch; gap: .5rem; }
   .ph-prof-cols { grid-template-columns: 1fr; }
   .ph-cv-why { grid-template-columns: 1fr; }
+  .ph-vis-gap-row { grid-template-columns: 1fr; gap: .15rem; }
+  .ph-vis-arrow { transform: rotate(90deg); justify-self: start; }
+  .ph-vis-lang-row { grid-template-columns: 1fr; gap: .1rem; }
   .ph-craft-applied { display: none; }
   .ph-eq-cols, .ph-scn-grid2 { grid-template-columns: 1fr; }
 }

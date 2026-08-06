@@ -45,6 +45,7 @@ node tools/photogen/generate.mjs
 node tools/photogen/generate.mjs --force            # regera tudo
 node tools/photogen/generate.mjs --only pose-s-curve
 node tools/photogen/generate.mjs --group poses      # só as poses
+node tools/photogen/generate.mjs --group vision     # só os pares da Visão
 node tools/photogen/generate.mjs --steps 10         # rascunho rápido p/ testar prompts
 
 # host alternativo
@@ -68,6 +69,16 @@ Saída:
   - `matteOpts` afina os limiares do recorte por asset.
 
 Os `id` das poses casam com o array `POSES` em `js/pages/photography.js`.
+
+### Grupo `vision` (secção Visão)
+
+Um **par por género** — `vis-<genero>` (com intenção) e `vis-<genero>-flat`
+(tecnicamente correta e banal) — comparados com a cortina arrastável em
+`data/photo/vision.json` → `compare.strong` / `compare.flat`. Ao gerar um par
+novo, os dois prompts têm de descrever a **mesma cena**: só muda a intenção
+(luz, ponto de vista, momento, primeiro plano), nunca a qualidade técnica —
+a lição é precisamente que a diferença não está na técnica. Os `id` casam com
+os `genres[].id` de `data/photo/genres.json`.
 
 ## Notas de qualidade (importante)
 

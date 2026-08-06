@@ -20,7 +20,9 @@
     "char_illus": "stylized semi-realistic 3D character render, Pixar Disney style, appealing clean design, soft cinematic lighting, subsurface scattering skin, friendly, full figure, no text, no watermark",
     "genre_icon": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with soft gradient shading, very few elements, minimal detail, limited palette of deep indigo, cyan and warm amber, dark navy background, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering",
     "genre_icon_mono": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with smooth gradient shading, very few elements, minimal detail, strictly black white and grey monochrome, no colour at all, greyscale, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering",
-    "edit_demo": "photorealistic landscape photograph, wide dynamic range scene, bright detailed sky with textured clouds, sunlit mountains in the distance, dark rocky foreground with visible texture, a lake with reflections, rich but natural colours, green vegetation and warm rock tones, deep shadows retaining some detail, sharp focus throughout, golden hour side light, shot on 24mm f/8, high detail, no people"
+    "edit_demo": "photorealistic landscape photograph, wide dynamic range scene, bright detailed sky with textured clouds, sunlit mountains in the distance, dark rocky foreground with visible texture, a lake with reflections, rich but natural colours, green vegetation and warm rock tones, deep shadows retaining some detail, sharp focus throughout, golden hour side light, shot on 24mm f/8, high detail, no people",
+    "vision_strong": "photorealistic photograph, natural colours, excellent light, intentional composition, award winning, high detail, no text, no watermark",
+    "vision_flat": "photorealistic amateur snapshot, technically correct exposure but visually uninspired, flat lighting, no intention, ordinary phone photo, no text, no watermark"
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
@@ -1704,6 +1706,734 @@
       "prompt": "a mountain lake at golden hour with rocks in the foreground, clouds catching warm light",
       "seed": 990101,
       "caption": "imagem de demonstração da secção Edição"
+    },
+    {
+      "id": "vis-paisagem",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a mountain valley at dawn, a lone hiker tiny on a ridge silhouetted against layers of mist receding into the distance, warm light raking across the ridgelines, strong dark rocky foreground, sense of scale and solitude, 24mm f/11"
+    },
+    {
+      "id": "vis-paisagem-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a mountain valley at midday, flat overcast grey light, horizon across the middle of the frame, no foreground interest, pale empty sky, correctly exposed but visually dull tourist snapshot"
+    },
+    {
+      "id": "vis-nascer-por-sol",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "low morning sun out of frame raking across an old stone village wall, long shadows stretching over cobblestones, mist rising from a field behind, warm light describing texture, the light is the subject"
+    },
+    {
+      "id": "vis-nascer-por-sol-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995004,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a sunrise with the sun disc centred in an orange sky, flat dark empty foreground, generic postcard sunset, nothing lit in the scene"
+    },
+    {
+      "id": "vis-praia",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a dark jagged rock interrupting silky smooth long-exposure sea water, warm low side light catching the foam, moody sky with direction, strong sense of time and calm"
+    },
+    {
+      "id": "vis-praia-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a beach with the horizon exactly across the middle, undefined grey choppy water, flat harsh midday light, nothing interrupting the sea"
+    },
+    {
+      "id": "vis-nevoeiro",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a single bare tree sharp and isolated in dense fog, receding planes of forest vanishing into white, two thirds of the frame almost empty, quiet minimal atmosphere, low contrast"
+    },
+    {
+      "id": "vis-nevoeiro-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "uniform featureless grey fog over a field, no subject, nothing for the eye to hold onto, flat and empty"
+    },
+    {
+      "id": "vis-chuva",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995009,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a rainy city street at night, wet asphalt mirroring neon signs, a lone figure with an umbrella crossing through the light, rain streaks visible against a bright backlight, moody and atmospheric"
+    },
+    {
+      "id": "vis-chuva-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a rainy street photographed from under a shelter, far away, dull flat daylight, dry-looking road with no reflections, rain not visible"
+    },
+    {
+      "id": "vis-flores",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995011,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a single wild flower backlit by low sun, translucent glowing petals with visible veins, dark clean out-of-focus background, treated like a portrait, delicate and fragile"
+    },
+    {
+      "id": "vis-flores-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995012,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a whole flower bed photographed from above, many colours competing, no protagonist, flat midday light, ordinary garden snapshot"
+    },
+    {
+      "id": "vis-macro",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995013,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "extreme macro of an unidentifiable natural surface with repeated crystalline structure, hard side light revealing texture, shallow plane of focus, abstract and strange, looks like an alien landscape"
+    },
+    {
+      "id": "vis-macro-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995014,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "an ordinary close-up of a green leaf, immediately recognisable, sharp and correctly exposed, no surprise, flat lighting"
+    },
+    {
+      "id": "vis-vida-selvagem",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995015,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a red fox at eye level in tall grass, caught mid-behaviour looking off frame, alert and tense, clean softly blurred background, warm low light, habitat legible around it"
+    },
+    {
+      "id": "vis-vida-selvagem-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995016,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a red fox standing centred in a mown grass field, photographed from a high standing viewpoint looking down at it, small and distant in the frame, facing straight at the camera, flat overcast light, plain empty record shot, no people, no crowd"
+    },
+    {
+      "id": "vis-retrato",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995017,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "candid environmental portrait of a woman in her workshop, soft window light from 45 degrees, caught between expressions looking slightly off camera, hands and tools visible, natural skin, shallow depth of field"
+    },
+    {
+      "id": "vis-retrato-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995018,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a posed studio headshot with a fixed polite smile, direct empty gaze into the lens, plain neutral grey backdrop, flat frontal lighting, technically correct and anonymous"
+    },
+    {
+      "id": "vis-familia",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995019,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a family at a kitchen table in soft morning window light, a child mid-laugh reaching for something, adults looking at each other not at the camera, lived-in home visible around them, warm and unposed"
+    },
+    {
+      "id": "vis-familia-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995020,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a family lined up in a row in front of a monument, all smiling at the camera, harsh midday light, generic holiday group photo"
+    },
+    {
+      "id": "vis-animais",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995021,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a dog photographed from floor level at its own eye height, characteristic tilted head expression, bright catchlight in the eye, soft window light, home context softly blurred behind"
+    },
+    {
+      "id": "vis-animais-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995022,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a dog photographed from standing height looking down at it, centred, sitting and staring at the lens, flat indoor lighting, generic pet snapshot"
+    },
+    {
+      "id": "vis-autorretrato",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995023,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a deliberate self-portrait, half the face in deep shadow with a single hard window light, chosen dark set, thoughtful reserved expression, strong intention, cinematic"
+    },
+    {
+      "id": "vis-autorretrato-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995024,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "an arms-length selfie with overhead ceiling light, random cluttered background, snapshot of presence with no composition"
+    },
+    {
+      "id": "vis-eventos",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995025,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a concert peak moment, the singer lit by a spotlight in the background and in the foreground the silhouetted raised hands of the crowd, haze in the beams, energy of a shared night"
+    },
+    {
+      "id": "vis-eventos-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995026,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a frontal shot of a concert stage, well exposed, band standing still, no crowd visible, no moment happening, flat documentation"
+    },
+    {
+      "id": "vis-desporto",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995027,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a runner at the peak of effort, face contorted with strain, body in maximum tension, clean blurred background isolating the athlete, low angle, dramatic side light"
+    },
+    {
+      "id": "vis-desporto-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995028,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a distant sports action shot from the stands, the athlete seen from behind, cluttered busy background, small in the frame, flat light"
+    },
+    {
+      "id": "vis-rua",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995029,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "street photography, a person stepping into a bright rectangle of sunlight on a dark narrow street, caught mid-gesture, long shadow, strong geometry, decisive moment"
+    },
+    {
+      "id": "vis-rua-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995030,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a pretty empty European street with nobody in it, or distant people with their backs turned far away, correct geometry, nothing human happening"
+    },
+    {
+      "id": "vis-arquitetura",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995031,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "hard side light sculpting the rhythm of a concrete brutalist facade, one tiny human figure at the bottom giving scale, deep shadows, strong graphic repetition with one break in the pattern"
+    },
+    {
+      "id": "vis-arquitetura-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995032,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a building photographed straight on at midday, flat even light, the whole facade fitted into the frame, no shadow, no scale, plain record of a building"
+    },
+    {
+      "id": "vis-viagem",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995033,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a local market at seven in the morning, a vendors weathered hands arranging produce, warm low light through the awning, steam and everyday life, specific to its place"
+    },
+    {
+      "id": "vis-viagem-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995034,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a famous monument at midday photographed head on with tourists in front of it, harsh light, the same picture that already exists a million times"
+    },
+    {
+      "id": "vis-automovel",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995035,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "low angle of a classic car in a narrow old cobbled street, long clean reflection running along the shoulder line describing the surface, warm evening light, moody and desirable"
+    },
+    {
+      "id": "vis-automovel-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995036,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a whole car photographed side on in a supermarket car park at midday, cluttered reflections in the paint, flat light, a sales listing photo"
+    },
+    {
+      "id": "vis-astro",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995037,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "the milky way arching over the silhouette of a small stone hut on a dark hillside, the tiny building giving cosmic scale, deep blue night, faint airglow on the horizon"
+    },
+    {
+      "id": "vis-astro-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995038,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "only a starry night sky filling the entire frame, no landscape, no anchor, technically clean but just a pattern of dots"
+    },
+    {
+      "id": "vis-noturna",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995039,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a single lit window seen from a dark street at night, warm interior glow with a figure inside, deep black surroundings, wet reflective pavement, urban solitude"
+    },
+    {
+      "id": "vis-noturna-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995040,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a night street with all shadows lifted in editing, everything visible and grey, noisy flat exposure, the night corrected until it looks like a dull day"
+    },
+    {
+      "id": "vis-festividades",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995041,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "warm fairy lights reflected on a persons face in a dark room, big soft bokeh light circles behind, hands mid-gesture with slight motion blur, feels like a memory of the evening"
+    },
+    {
+      "id": "vis-festividades-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995042,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a decorated christmas tree photographed straight on, well exposed and sharp, nobody in the picture, an inventory of ornaments"
+    },
+    {
+      "id": "vis-produto",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995043,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a leather and steel wristwatch on a dark surface, one long soft specular reflection describing the polished case, controlled gradient light, generous empty space, feels expensive"
+    },
+    {
+      "id": "vis-produto-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995044,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a wristwatch centred on a white background with flat frontal flash, harsh small reflections, everything visible and nothing desirable, catalogue photo"
+    },
+    {
+      "id": "vis-gastronomia",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995045,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a rustic bowl of soup with visible steam backlit by a window, glossy moist sheen on the surface, a used spoon and crumbs on the wooden table, warm side light, texture legible, appetising"
+    },
+    {
+      "id": "vis-gastronomia-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995046,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a plate of food photographed from directly above with frontal flash, flat and dry looking, cold colours, no steam and no texture"
+    },
+    {
+      "id": "vis-imobiliario",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995047,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a living room in genuine soft morning daylight through a large window, straight verticals, tidy and depersonalised, natural colour, honest sense of space and light"
+    },
+    {
+      "id": "vis-imobiliario-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995048,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a room shot with an exaggerated ultra wide angle from a corner, converging tilted walls, mixed yellow artificial and blue window light, personal clutter on surfaces"
+    },
+    {
+      "id": "vis-pb",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995049,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "black and white photograph, hard directional light across a textured stone wall and a staircase, deep blacks and clean whites, strong separation of tones, form and texture carrying the whole image"
+    },
+    {
+      "id": "vis-pb-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995050,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a black and white conversion of a flat overcast scene, muddy mid greys throughout, no separation of tones, no structure, converted because the colour was poor"
+    },
+    {
+      "id": "vis-longa-exposicao",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995051,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a sharp weathered wooden pier standing perfectly still against silky smooth long-exposure water and clouds streaked in one direction, the fixed structure giving the movement meaning"
+    },
+    {
+      "id": "vis-longa-exposicao-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995052,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "a long exposure of windblown tree branches and tall grass, everything soft and smeared, not one sharp element anywhere in the frame, no solid structure to anchor the movement, muddy blurred mess, flat grey light"
+    },
+    {
+      "id": "vis-light-painting",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995053,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "an abandoned wooden boat in total darkness painted with light from the side during a long exposure, only the hull revealed with raking light and volume, everything else pure black, deliberate and sculptural"
+    },
+    {
+      "id": "vis-light-painting-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995054,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "random bright light squiggles waved in the air during a long exposure over a dull cluttered scene, effect with no subject"
+    },
+    {
+      "id": "vis-reflexos",
+      "group": "vision",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 995055,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a shop window at dusk with layers overlapping, the reflection of a persons face floating over the city street behind the glass, ambiguous reading, two realities in one frame"
+    },
+    {
+      "id": "vis-reflexos-flat",
+      "group": "vision",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 995056,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "an obvious clear reflection of a building in a puddle, perfectly readable at a glance, pretty and immediate with no second reading"
     }
   ]
 }

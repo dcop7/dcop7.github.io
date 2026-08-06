@@ -590,6 +590,52 @@ const PhotographyPage = (function () {
   let _compOv = (() => { try { return localStorage.getItem('ph-comp-ov') !== '0'; } catch (_) { return true; } })();
   let _compWipe = 55;
   const setCompOv = v => { _compOv = v; try { localStorage.setItem('ph-comp-ov', v ? '1' : '0'); } catch (_) {} };
+
+  /* ── Cortina comparativa (componente partilhado) ──────────────────────────
+     Duas imagens no mesmo sítio do ecrã com uma cortina arrastável. É o que
+     torna uma diferença óbvia sem obrigar a trocar de vista. Usada pelo
+     visualizador de composição (correto/incorreto) e pela secção Visão
+     (memorável/banal); `extra` permite injetar camadas por cima (a grelha). */
+  function wipeStageHTML(o) {
+    const pct = o.pct == null ? 55 : o.pct;
+    return `<div class="ph-cv-frame" data-wipe>
+        <img class="ph-cv-layer" src="${o.b}" alt="${o.bAlt || ''}" draggable="false">
+        <div class="ph-cv-layer ph-cv-ok" style="clip-path:inset(0 ${100 - pct}% 0 0)">
+          <img src="${o.a}" alt="${o.aAlt || ''}" draggable="false">
+        </div>
+        ${o.extra || ''}
+        <span class="ph-cv-tag ok">${o.aTag || '✓ Correto'}</span>
+        <span class="ph-cv-tag bad">${o.bTag || '✗ Incorreto'}</span>
+        <div class="ph-cv-handle" style="left:${pct}%"><span class="ph-cv-grip">⇔</span></div>
+      </div>
+      <input class="ph-cv-range" type="range" min="0" max="100" value="${pct}" aria-label="${o.label || 'Comparar as duas versões'}">`;
+  }
+
+  /* Arrastar no próprio enquadramento, ou o range (teclado e leitores de ecrã).
+     `onPct` guarda a posição para sobreviver a um re-render da secção. */
+  function wireWipeStage(scope, onPct) {
+    const frame = scope.querySelector('[data-wipe]'); if (!frame) return;
+    const range = scope.querySelector('.ph-cv-range');
+    const apply = p => {
+      const pct = Math.max(0, Math.min(100, p));
+      frame.querySelector('.ph-cv-ok').style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+      frame.querySelector('.ph-cv-handle').style.left = pct + '%';
+      if (range && +range.value !== Math.round(pct)) range.value = Math.round(pct);
+      if (onPct) onPct(pct);
+    };
+    const fromEvent = e => {
+      const r = frame.getBoundingClientRect();
+      apply(((e.clientX - r.left) / r.width) * 100);
+    };
+    let dragging = false;
+    frame.addEventListener('pointerdown', e => {
+      dragging = true; frame.setPointerCapture(e.pointerId); fromEvent(e); e.preventDefault();
+    });
+    frame.addEventListener('pointermove', e => { if (dragging) fromEvent(e); });
+    frame.addEventListener('pointerup', e => { dragging = false; try { frame.releasePointerCapture(e.pointerId); } catch (_) {} });
+    frame.addEventListener('pointercancel', () => { dragging = false; });
+    range?.addEventListener('input', () => apply(+range.value));
+  }
   const compSlug = name => (COMP_ASSET[name] || '').replace(/^comp-/, '');
   const genreCompAsset = (genre, comp) => genre ? assetPath('comp-' + genre + '-' + compSlug(comp.name)) : null;
 
@@ -624,17 +670,11 @@ const PhotographyPage = (function () {
     modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
 
     const stage = bad ? `
-      <div class="ph-cv-frame" data-wipe>
-        <img class="ph-cv-layer" src="${bad}" alt="Exemplo incorreto" draggable="false">
-        <div class="ph-cv-layer ph-cv-ok" style="clip-path:inset(0 ${100 - _compWipe}% 0 0)">
-          <img src="${asset}" alt="Exemplo correto" draggable="false">
-        </div>
-        <canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>
-        <span class="ph-cv-tag ok">✓ Correto</span>
-        <span class="ph-cv-tag bad">✗ Incorreto</span>
-        <div class="ph-cv-handle" style="left:${_compWipe}%"><span class="ph-cv-grip">⇔</span></div>
-      </div>
-      <input class="ph-cv-range" type="range" min="0" max="100" value="${_compWipe}" aria-label="Comparar correto e incorreto">
+      ${wipeStageHTML({
+        a: asset, b: bad, aAlt: 'Exemplo correto', bAlt: 'Exemplo incorreto',
+        pct: _compWipe, label: 'Comparar correto e incorreto',
+        extra: `<canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>`,
+      })}
       <div class="ph-cv-why">
         <span class="ph-cv-why-ok"><b>✓</b> ${why.ok || ''}</span>
         <span class="ph-cv-why-bad"><b>✗</b> ${why.bad || ''}</span>
@@ -685,29 +725,7 @@ const PhotographyPage = (function () {
       modal.querySelector('.ph-cv-ov')?.classList.toggle('off', !e.target.checked);
     });
 
-    // Cortina: arrastar no próprio enquadramento, ou o range (teclado/leitores).
-    const frame = modal.querySelector('[data-wipe]');
-    if (frame) {
-      const range = modal.querySelector('.ph-cv-range');
-      const apply = pct => {
-        _compWipe = Math.max(0, Math.min(100, pct));
-        frame.querySelector('.ph-cv-ok').style.clipPath = `inset(0 ${100 - _compWipe}% 0 0)`;
-        frame.querySelector('.ph-cv-handle').style.left = _compWipe + '%';
-        if (range && +range.value !== Math.round(_compWipe)) range.value = Math.round(_compWipe);
-      };
-      const fromEvent = e => {
-        const r = frame.getBoundingClientRect();
-        apply(((e.clientX - r.left) / r.width) * 100);
-      };
-      let dragging = false;
-      frame.addEventListener('pointerdown', e => {
-        dragging = true; frame.setPointerCapture(e.pointerId); fromEvent(e); e.preventDefault();
-      });
-      frame.addEventListener('pointermove', e => { if (dragging) fromEvent(e); });
-      frame.addEventListener('pointerup', e => { dragging = false; try { frame.releasePointerCapture(e.pointerId); } catch (_) {} });
-      frame.addEventListener('pointercancel', () => { dragging = false; });
-      range?.addEventListener('input', () => apply(+range.value));
-    }
+    wireWipeStage(modal, pct => { _compWipe = pct; });
     window.addEventListener('resize', drawOv, { once: true });
   }
 
@@ -937,18 +955,52 @@ const PhotographyPage = (function () {
     if (_dbPromise) return _dbPromise;
     const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
     _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json'),
-                              grab('profiles.json'), grab('craft.json'), grab('equipment.json')])
-      .then(([g, gen, k, p, c, e]) => (_DB = {
+                              grab('profiles.json'), grab('craft.json'), grab('equipment.json'),
+                              grab('vision.json')])
+      .then(([g, gen, k, p, c, e, v]) => (_DB = {
         classes: g.classes, lensClasses: g.lensClasses, mine: g.mine, gearDefault: g.default,
         genres: gen.genres, know: k.topics,
         profiles: p.profiles, profileDefault: p.default, rawAdvice: p.rawAdvice,
         craft: c.modules, equipment: e.categories,
+        vision: v.genres, principles: v.principles,
       }))
       .catch(() => { _dbPromise = null; return null; });
     return _dbPromise;
   }
   function dbErrorHTML() {
     return `<div class="ph-section-box"><p class="ph-section-sub">Não foi possível carregar o conteúdo de fotografia. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p></div>`;
+  }
+
+  /* ── Modais do portal ─────────────────────────────────────────────────────
+     Overlay novo em cada abertura (sem listeners velhos), Escape só fecha o de
+     cima, e o scroll do corpo fica travado enquanto houver algum aberto. */
+  function _openModal(id, boxHTML) {
+    document.getElementById(id)?.remove();
+    const modal = document.createElement('div');
+    modal.id = id;
+    modal.className = 'ph-modal-overlay';
+    modal.innerHTML = boxHTML;
+    document.body.appendChild(modal);
+    document.body.classList.add('ph-modal-open');
+    _bindModalClose(modal);
+    return modal;
+  }
+
+  function _closeModal(modal) {
+    modal.remove();
+    if (!document.querySelector('.ph-modal-overlay')) document.body.classList.remove('ph-modal-open');
+  }
+
+  function _bindModalClose(modal) {
+    const close = () => { document.removeEventListener('keydown', esc); _closeModal(modal); };
+    function esc(e) {
+      if (e.key !== 'Escape') return;
+      const open = document.querySelectorAll('.ph-modal-overlay');
+      if (open[open.length - 1] === modal) close();
+    }
+    modal.querySelector('.ph-modal-close')?.addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', esc);
   }
   // Índice opcional de assets foto-reais (gerado localmente por tools/photogen).
   // Ausente por omissão → tudo usa as ilustrações/SVG procedurais como fallback.
@@ -1037,7 +1089,7 @@ const PhotographyPage = (function () {
     </div>`);
     modal.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => {
       setProfile(b.dataset.pick);
-      modal.remove(); document.body.classList.remove('modal-open');
+      _closeModal(modal);
       if (_activate) _activate(_curTab, _curArg);
     }));
   }
@@ -1120,9 +1172,15 @@ const PhotographyPage = (function () {
     return groups.map(grp => `<section class="ph-genre-group" data-group="${grp.key}">
       <h3 class="ph-genre-group-title">${grp.key} <span class="ph-genre-group-n">${grp.items.length}</span></h3>
       <div class="ph-scn-grid">
-        ${grp.items.map(g => `<button class="ph-scn-card" data-genre="${g.id}" data-search="${(g.name + ' ' + g.blurb + ' ' + grp.key).toLowerCase()}">
-          ${genreIcoHTML(g, 'ph-scn-ico')}<span class="ph-scn-name">${g.name}</span>
-          <span class="ph-scn-blurb-sm">${g.blurb}</span></button>`).join('')}
+        ${grp.items.map(g => {
+          // O gancho da Visão vem antes do resumo técnico: ao escolher um género
+          // interessa primeiro porque é que vale a pena, e só depois o que é.
+          const hook = (visionOf(g) || {}).hook || '';
+          return `<button class="ph-scn-card" data-genre="${g.id}" data-search="${(g.name + ' ' + g.blurb + ' ' + hook + ' ' + grp.key).toLowerCase()}">
+            ${genreIcoHTML(g, 'ph-scn-ico')}<span class="ph-scn-name">${g.name}</span>
+            ${hook ? `<span class="ph-scn-hook">${hook}</span>` : ''}
+            <span class="ph-scn-blurb-sm">${g.blurb}</span></button>`;
+        }).join('')}
       </div>
     </section>`).join('');
   }
@@ -1167,6 +1225,7 @@ const PhotographyPage = (function () {
      As secções são as MESMAS em todos os géneros — a previsibilidade é o que
      torna a consulta rápida. */
   const PORTAL_SECS = [
+    { id: 'visao',      icon: '🧠', label: 'Visão' },
     { id: 'essencial',  icon: '🎯', label: 'Essencial' },
     { id: 'cena',       icon: '👁️', label: 'A cena' },
     { id: 'luz',        icon: '💡', label: 'Luz' },
@@ -1176,7 +1235,9 @@ const PhotographyPage = (function () {
     { id: 'praticar',   icon: '🎓', label: 'Praticar' },
     { id: 'edicao',     icon: '✏️', label: 'Edição' },
   ];
-  let _portalSec = 'essencial';
+  /* Visão é a secção inicial de propósito: a intenção antes das definições.
+     Quem quer só os números tem o "No Terreno" a um toque. */
+  let _portalSec = 'visao';
 
   /* Cartão de equipamento: focal equivalente primeiro (universal), depois a
      tradução para a câmara escolhida, e só no fim o exemplo pessoal. */
@@ -1323,7 +1384,73 @@ const PhotographyPage = (function () {
       <button class="ph-goto-edit" data-goedit>🎨 Aprender edição de raiz, na secção Edição →</button>`;
   }
 
+  /* ══ VISÃO ══════════════════════════════════════════════════════════════
+     A camada criativa do género: porque é que se fotografa aquilo e o que se
+     está a tentar dizer. Deliberadamente NÃO fala de equipamento, exposição,
+     grelhas nem edição — isso já existe nas outras secções, e repeti-lo aqui
+     tornaria a Visão num resumo em vez de um acrescento.
+     O par de imagens (memorável × banal) usa a mesma cortina da Composição:
+     é o argumento visual de que a diferença não está na técnica.
+     Todos os campos são opcionais — é assim que cada género tem voz própria
+     em vez de 28 páginas com o mesmo esqueleto. */
+  let _visWipe = 55;
+  const visionOf = g => (_DB && _DB.vision && _DB.vision[g.id]) || null;
+
+  function visionSectionHTML(g) {
+    const v = visionOf(g);
+    if (!v) return `<p class="ph-section-sub">A camada de visão deste género ainda não está escrita.</p>`;
+    const strong = assetPath('vis-' + g.id), flat = assetPath('vis-' + g.id + '-flat');
+    const cmp = v.compare || {};
+
+    const stage = (strong && flat) ? `
+      <div class="ph-vis-stage">
+      ${wipeStageHTML({
+        a: strong, b: flat, pct: _visWipe,
+        aAlt: 'Exemplo com intenção', bAlt: 'Exemplo banal',
+        aTag: '✓ Com intenção', bTag: '✗ Correta e banal',
+        label: 'Comparar a versão com intenção e a versão banal',
+      })}
+      <div class="ph-cv-why">
+        <span class="ph-cv-why-ok"><b>✓</b> ${cmp.strong || ''}</span>
+        <span class="ph-cv-why-bad"><b>✗</b> ${cmp.flat || ''}</span>
+      </div>
+      <p class="ph-vis-cap">Arrasta a cortina. As duas estão bem expostas e focadas — o que as separa é a intenção, não a técnica.</p>
+      </div>`
+      : (strong ? `<div class="ph-vis-stage"><div class="ph-cv-frame"><img class="ph-cv-layer" src="${strong}" alt=""></div></div>` : '');
+
+    return `
+      <blockquote class="ph-vis-lead">${v.lead || ''}</blockquote>
+      ${v.why ? `<p class="ph-vis-why">${v.why}</p>` : ''}
+      ${stage}
+      ${v.subject ? `<div class="ph-vis-subject"><b>🎯 Qual é o verdadeiro assunto</b><p>${v.subject}</p></div>` : ''}
+      ${(v.gap || []).length ? `<section class="ph-vis-sec">
+        <h4>↗️ O que separa uma banal de uma memorável</h4>
+        <div class="ph-vis-gap">${v.gap.map(x => `<div class="ph-vis-gap-row">
+          <span class="ph-vis-ord">${x.ord}</span>
+          <span class="ph-vis-arrow" aria-hidden="true">→</span>
+          <span class="ph-vis-mem">${x.mem}</span>
+        </div>`).join('')}</div>
+      </section>` : ''}
+      ${(v.ask || []).length ? `<section class="ph-vis-sec">
+        <h4>❓ Antes de disparar, pergunta</h4>
+        <ol class="ph-vis-ask">${v.ask.map(li).join('')}</ol>
+      </section>` : ''}
+      ${(v.language || []).length ? `<section class="ph-vis-sec">
+        <h4>🗣️ Vocabulário visual deste género</h4>
+        <p class="ph-section-sub">O que cada escolha diz a quem vê — não como se faz.</p>
+        <div class="ph-vis-lang">${v.language.map(x => `<div class="ph-vis-lang-row">
+          <span class="ph-vis-lang-n">${x.n}</span><span class="ph-vis-lang-m">${x.m}</span>
+        </div>`).join('')}</div>
+      </section>` : ''}
+      ${v.trap ? `<div class="ph-vis-trap"><b>🪤 A armadilha deste género</b><p>${v.trap}</p></div>` : ''}
+      ${v.ethic ? `<div class="ph-vis-ethic"><b>⚖️ A responsabilidade de quem fotografa</b><p>${v.ethic}</p></div>` : ''}
+      ${v.series ? `<div class="ph-vis-series"><b>🎞️ Pensar em série, não em fotografia</b><p>${v.series}</p></div>` : ''}
+      <p class="ph-vis-foot">Percebida a intenção, o <b>como</b> está nas secções seguintes: 🎯 Essencial, 👁️ A cena, 💡 Luz, 🖼️ Composição.
+        <button class="ph-chip ph-chip-link" data-goprinc>🧠 Princípios transversais a todos os géneros →</button></p>`;
+  }
+
   function portalSectionHTML(g, sec) {
+    if (sec === 'visao') return visionSectionHTML(g);
     if (sec === 'essencial') return `${formatBlockHTML(g)}${gearCardHTML(g)}`;
     if (sec === 'cena') return sceneSectionHTML(g);
     if (sec === 'luz') return lightSectionHTML(g);
@@ -1373,7 +1500,8 @@ const PhotographyPage = (function () {
         panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
           _pendingCalc = ch.dataset.tool; Nav.go('photography/ferramentas');
         }));
-        if (g.portrait && _portalSec === 'cena') { wirePoses(panel); wireCropPhoto(panel); if (typeof Mannequin !== 'undefined') Mannequin.wireCropGuide(panel); }
+        if (_portalSec === 'visao') wireWipeStage(body, pct => { _visWipe = pct; });
+        panel.querySelector('[data-goprinc]')?.addEventListener('click', () => Nav.go('photography/aprender/visao'));
       };
       wireBody();
 
@@ -1419,6 +1547,7 @@ const PhotographyPage = (function () {
             <div class="ph-field-title">${g.icon} ${g.name}</div>
             <span class="ph-fmt-badge ${badge.c}" title="${fa.label}">${(profileDef() || {}).format || ''} · ${badge.t}</span>
           </div>
+          ${(visionOf(g) || {}).lead ? `<div class="ph-field-intent">🧠 ${visionOf(g).lead}</div>` : ''}
           <div class="ph-field-lens">${ll.concrete}</div>
           <div class="ph-field-mode">${ll.name} · ${ll.eq}</div>
           <div class="ph-kv-grid ph-field-kv">${(g.gear.settings || []).map(kvHTML).join('')}</div>
@@ -1944,12 +2073,52 @@ const PhotographyPage = (function () {
     });
   }
 
+  /* ── Aprender ▸ Visão: os princípios criativos transversais ───────────────
+     A Visão de cada género responde "porque é que se fotografa ISTO". Estes
+     princípios são a camada acima: as decisões que se repetem em todos os
+     géneros (intenção, subtração, escala, momento, ambiguidade, série…).
+     Cada princípio liga aos géneros onde mais se treina — é a ponte entre o
+     capítulo geral e a prática concreta. */
+  const APR_VIS_HEAD = `<div class="ph-section-title">🧠 Visão</div>
+    <p class="ph-section-sub">Os princípios criativos que valem em qualquer género — o que se decide antes de haver definições. Cada um liga aos géneros onde melhor se treina.</p>`;
+  function buildVisaoAprender(box) {
+    box.innerHTML = `${APR_VIS_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+      const fail = () => { const g = box.querySelector('.ph-learn-grid'); if (g) g.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; };
+      if (!db || !(db.principles || []).length) return fail();
+      const named = id => (db.genres.find(x => x.id === id) || {});
+      expandableGrid(box, db.principles, {
+        head: APR_VIS_HEAD,
+        thumb: p => { const src = assetPath(p.thumb); return src ? `<span class="ph-vis ph-learn-art"><img loading="lazy" decoding="async" alt="" src="${src}"></span>` : ''; },
+        blurb: p => p.blurb,
+        detail: p => {
+          const src = assetPath(p.thumb);
+          const chips = (p.genres || []).map(id => {
+            const g = named(id);
+            return g.name ? `<button class="ph-chip ph-chip-link" data-vgenre="${id}">${g.icon} ${g.name} →</button>` : '';
+          }).join('');
+          return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+            <div class="ph-detail-head"><span class="ph-detail-ico">${p.icon}</span><h3 class="ph-detail-title">${p.name}</h3></div>
+            ${src ? `<div class="ph-detail-art ph-photo-art"><img loading="lazy" decoding="async" alt="" src="${src}"></div>` : ''}
+            <div class="ph-detail-body">
+              ${p.body.map(x => `<div class="ph-know-sec"><h4>${x.h}</h4><p>${x.t}</p></div>`).join('')}
+              ${chips ? `<div class="ph-know-sec"><h4>🎯 Treina-se sobretudo em</h4><div class="ph-chips">${chips}</div></div>` : ''}
+            </div>`;
+        },
+        afterOpen: detail => detail.querySelectorAll('[data-vgenre]').forEach(b =>
+          b.addEventListener('click', () => { _portalSec = 'visao'; Nav.go('photography/g/' + b.dataset.vgenre); })),
+      });
+    });
+  }
+
   const APR_SEGS = [
+    { id: 'visao',       label: '🧠 Visão' },
     { id: 'fundamentos', label: '📖 Fundamentos' },
     { id: 'composicao',  label: '🖼️ Composição' },
     { id: 'cores',       label: '🌈 Cores' },
   ];
   const APR_BUILDERS = {
+    visao(box) { buildVisaoAprender(box); },
     fundamentos(box) { buildFundamentos(box); },
     composicao(box)  { buildComposition(box); },
     cores(box) {
@@ -1971,7 +2140,7 @@ const PhotographyPage = (function () {
         ${APR_SEGS.map(s => `<div class="ph-apr-panel ph-section-box" data-apr="${s.id}" hidden></div>`).join('')}`;
       const done = new Set();
       _aprActivate = (id) => {
-        if (!APR_BUILDERS[id]) id = 'fundamentos';
+        if (!APR_BUILDERS[id]) id = 'visao';
         panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.seg === id));
         panel.querySelectorAll('.ph-apr-panel').forEach(p => { p.hidden = p.dataset.apr !== id; });
         if (!done.has(id)) { done.add(id); APR_BUILDERS[id](panel.querySelector(`.ph-apr-panel[data-apr="${id}"]`)); }
@@ -1982,7 +2151,7 @@ const PhotographyPage = (function () {
     }
     let initial = seg;
     if (!initial) { try { initial = localStorage.getItem('ph-apr-seg'); } catch (_) {} }
-    _aprActivate(initial || 'fundamentos');
+    _aprActivate(initial || 'visao');
   }
 
   // ── Ferramentas (calculadoras) ──
