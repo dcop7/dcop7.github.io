@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-07T07:47:35.113Z",
+ "generated": "2026-08-07T13:43:35.615Z",
  "total": 84,
  "broken": 0,
- "unknown": 32,
+ "unknown": 31,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -439,8 +439,8 @@
   {
    "id": "calendario:recenseamento-militar",
    "url": "https://www.defesa.gov.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:porta65-janelas",
