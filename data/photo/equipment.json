@@ -200,6 +200,11 @@
           "tips": [
             "Regra prática: com ultra grande angular, aproxima-te MUITO de alguma coisa. Sem primeiro plano forte, a fotografia fica vazia.",
             "Mantém a câmara nivelada para as verticais ficarem direitas; se quiseres drama, inclina a sério — meio-termo parece erro."
+          ],
+          "links": [
+            "g:paisagem",
+            "g:arquitetura",
+            "know:focal-crop"
           ]
         },
         {
@@ -226,6 +231,10 @@
           "tips": [
             "Se fotografas com uma só focal durante um mês, escolhe 35mm eq. É a que mais ensina.",
             "Aproxima-te até parecer demasiado. Provavelmente ainda está bem."
+          ],
+          "links": [
+            "g:rua",
+            "g:viagem"
           ]
         },
         {
@@ -252,6 +261,10 @@
           "tips": [
             "A objetiva fixa mais barata do teu sistema é quase sempre melhor oticamente que o zoom do kit — e muito mais luminosa.",
             "Num APS-C, procura uma 30–35mm; em MFT, uma 25mm."
+          ],
+          "links": [
+            "g:rua",
+            "g:familia"
           ]
         },
         {
@@ -278,6 +291,11 @@
           "tips": [
             "O desfoque de fundo depende mais da distância entre o sujeito e o fundo do que do diafragma. Afasta a pessoa da parede.",
             "Um telemóvel com tele 3× (≈70mm eq) faz retratos melhores que a câmara principal — usa-o."
+          ],
+          "links": [
+            "g:retrato",
+            "know:compressao",
+            "look:cinematico"
           ]
         },
         {
@@ -306,6 +324,11 @@
           "tips": [
             "O truque da compressão: para o sol ou a lua parecerem enormes atrás de um edifício, afasta-te MUITO e usa a focal mais longa que tens.",
             "Regra da velocidade: 1/(focal equivalente) como mínimo à mão."
+          ],
+          "links": [
+            "g:desporto",
+            "g:vida-selvagem",
+            "know:compressao"
           ]
         },
         {
@@ -331,6 +354,10 @@
           "tips": [
             "Aproximares-te 2 metros vale mais que 200mm extra. Trabalha o campo antes de trabalhar a carteira.",
             "Um monopé transforma esta categoria de objetivas de frustrante em utilizável."
+          ],
+          "links": [
+            "g:vida-selvagem",
+            "g:astro"
           ]
         },
         {
@@ -357,6 +384,11 @@
           "tips": [
             "Alternativas baratas: tubos de extensão (sem vidro, sem perda de qualidade) ou uma lente close-up enroscada.",
             "Fotografa de manhã cedo: menos vento e insetos mais lentos."
+          ],
+          "links": [
+            "g:macro",
+            "g:flores",
+            "tool:dof"
           ]
         }
       ]
@@ -396,6 +428,11 @@
             "O efeito é máximo a 90° do sol. Aponta o polegar ao sol e faz um L com o indicador: o indicador aponta para a zona de máximo efeito.",
             "Se só puderes comprar um filtro na vida, compra este.",
             "Compra-o para a tua objetiva de maior diâmetro e usa anéis adaptadores nas outras."
+          ],
+          "links": [
+            "g:paisagem",
+            "tec:reflexos",
+            "know:filtros"
           ]
         },
         {
@@ -426,6 +463,11 @@
             "Se só puderes ter um: ND1000 (10 passos) é o mais versátil para água sedosa.",
             "Regra rápida: cada passo duplica o tempo. 1/125 s com 10 passos passa a ≈8 s.",
             "Usa a calculadora de ND deste portal — evita contas erradas no terreno."
+          ],
+          "links": [
+            "tec:longa-exposicao",
+            "tool:nd",
+            "g:longa-exposicao"
           ]
         },
         {
@@ -452,6 +494,10 @@
           "tips": [
             "Fica um pouco aquém do máximo e nunca vês o X.",
             "Para fotografia parada, ND fixos dão melhor qualidade pelo mesmo dinheiro."
+          ],
+          "links": [
+            "tec:longa-exposicao",
+            "tool:nd"
           ]
         },
         {
@@ -477,6 +523,10 @@
           "tips": [
             "Para quem edita em RAW, este filtro perdeu quase toda a razão de existir. Não compres por hábito.",
             "Alternativa sem custo: duas exposições (uma para o céu, outra para o terreno) e fusão na edição."
+          ],
+          "links": [
+            "g:paisagem",
+            "know:histograma"
           ]
         },
         {
@@ -543,6 +593,11 @@
             "Regra do orçamento: o tripé deve custar em proporção ao que suporta. Um tripé bom dura décadas e sobrevive a várias câmaras.",
             "Sem tripé? Um muro, uma mochila, o chão ou uma árvore fazem o mesmo trabalho por zero euros.",
             "Pendura a mochila no gancho central em dias de vento."
+          ],
+          "links": [
+            "g:astro",
+            "tec:longa-exposicao",
+            "g:noturna"
           ]
         },
         {
@@ -567,6 +622,10 @@
           ],
           "tips": [
             "Ganhas tipicamente 2 a 3 velocidades de obturador. Não é imobilidade, mas muda o jogo em tele."
+          ],
+          "links": [
+            "g:desporto",
+            "g:eventos"
           ]
         },
         {
@@ -591,6 +650,10 @@
           "tips": [
             "Temporizador de 2 s é o disparador remoto que já tens no bolso.",
             "A app do fabricante costuma servir de remoto E de visor à distância — útil em autorretrato."
+          ],
+          "links": [
+            "g:astro",
+            "tec:longa-exposicao"
           ]
         },
         {
@@ -615,6 +678,9 @@
           ],
           "tips": [
             "Ganho típico real: 2 a 3 velocidades. Se a regra pede 1/200, com estabilização safas-te a 1/30–1/50."
+          ],
+          "links": [
+            "know:velocidade"
           ]
         },
         {
@@ -640,6 +706,9 @@
           "tips": [
             "Quando o corpo e a objetiva têm estabilização, os sistemas modernos cooperam e dão mais que qualquer um sozinho.",
             "Não tens IBIS? Encosta os cotovelos ao corpo, expira e dispara no fim da expiração. Ganhas quase uma velocidade."
+          ],
+          "links": [
+            "know:velocidade"
           ]
         }
       ]
@@ -704,6 +773,11 @@
           "tips": [
             "Rebate a 45° para trás e para cima. É a receita mais fiável de luz agradável em interiores.",
             "Fora da câmara e de lado, ganhas volume. Na sapata, achatas. A posição importa mais que a potência."
+          ],
+          "links": [
+            "g:eventos",
+            "tool:flash",
+            "know:luz"
           ]
         },
         {
@@ -729,6 +803,10 @@
           "tips": [
             "A melhor softbox do mundo é uma janela grande com cortina branca, e é grátis.",
             "Regra: fonte maior que o sujeito e o mais perto possível fora do enquadramento."
+          ],
+          "links": [
+            "g:retrato",
+            "know:luz"
           ]
         },
         {
@@ -754,6 +832,10 @@
           "tips": [
             "Uma folha A3 branca, uma toalha ou uma parede clara funcionam como rebatedor. Não precisas de comprar nada.",
             "Branco é o mais natural; prateado é mais forte e mais frio."
+          ],
+          "links": [
+            "g:retrato",
+            "know:luz"
           ]
         },
         {
@@ -780,6 +862,11 @@
           "tips": [
             "Para aprender luz, a contínua ensina em uma tarde o que o flash demora semanas.",
             "Desliga as outras luzes da divisão. Uma fonte só, controlada, é sempre melhor que quatro descontroladas."
+          ],
+          "links": [
+            "g:produto",
+            "g:gastronomia",
+            "look:low-key"
           ]
         }
       ]
@@ -798,8 +885,12 @@
           "tag": "dois pequenos > um grande",
           "what": "O suporte onde as fotografias ficam até serem copiadas. A velocidade de escrita determina quanto tempo aguentas uma rajada.",
           "why": "Resolve a captura contínua: um cartão lento enche o buffer e a câmara bloqueia no meio da ação.",
-          "when": ["Sempre — mas escolhe velocidade se fotografas rajadas ou vídeo"],
-          "notWhen": ["Não compres o maior possível: perder um cartão de 512GB é perder tudo"],
+          "when": [
+            "Sempre — mas escolhe velocidade se fotografas rajadas ou vídeo"
+          ],
+          "notWhen": [
+            "Não compres o maior possível: perder um cartão de 512GB é perder tudo"
+          ],
           "mistakes": [
             "Usar um só cartão gigante — se falhar, perdes a viagem inteira",
             "Formatar no computador em vez de na câmara (a câmara cria a estrutura correta)",
@@ -817,8 +908,12 @@
           "tag": "o frio corta-as a meio",
           "what": "A energia. Câmaras sem espelho consomem muito mais que reflex porque alimentam um visor eletrónico permanentemente.",
           "why": "Resolve o problema mais banal e mais frustrante de todos: a câmara desligar-se na melhor altura.",
-          "when": ["Leva sempre pelo menos uma extra. Duas no frio."],
-          "notWhen": ["Não precisas de cinco — precisas de saber quanto dura a tua"],
+          "when": [
+            "Leva sempre pelo menos uma extra. Duas no frio."
+          ],
+          "notWhen": [
+            "Não precisas de cinco — precisas de saber quanto dura a tua"
+          ],
           "mistakes": [
             "Deixar a bateria extra em casa a carregar no dia da saída",
             "Guardar baterias completamente descarregadas durante meses (danifica-as)",
@@ -836,8 +931,12 @@
           "tag": "acesso rápido > capacidade",
           "what": "Onde transportas e proteges o equipamento.",
           "why": "Resolve dois problemas em conflito: proteger o material e conseguir chegar-lhe depressa. Uma mochila que obriga a descalçar tudo faz-te perder fotografias.",
-          "when": ["Escolhe pelo acesso e conforto, não pelo número de compartimentos"],
-          "notWhen": ["Não compres a maior: uma mochila grande enche-se sempre, e depois pesa"],
+          "when": [
+            "Escolhe pelo acesso e conforto, não pelo número de compartimentos"
+          ],
+          "notWhen": [
+            "Não compres a maior: uma mochila grande enche-se sempre, e depois pesa"
+          ],
           "mistakes": [
             "Comprar uma mochila que grita 'material caro lá dentro'",
             "Levar tudo o que tens em todas as saídas — acabas por não usar nada e por te cansares",
@@ -855,8 +954,12 @@
           "tag": "pano + soprador",
           "what": "Pano de microfibras, soprador de ar e (opcionalmente) toalhitas de lente.",
           "why": "Resolve o problema silencioso: uma lente com gordura ou pó tira contraste a TODAS as fotografias do dia sem se notar no ecrã.",
-          "when": ["Antes de cada saída e sempre que fotografas perto de mar, pó ou chuva"],
-          "notWhen": ["Não limpes o sensor por hábito — só quando vires manchas em céus a f/16"],
+          "when": [
+            "Antes de cada saída e sempre que fotografas perto de mar, pó ou chuva"
+          ],
+          "notWhen": [
+            "Não limpes o sensor por hábito — só quando vires manchas em céus a f/16"
+          ],
           "mistakes": [
             "Esfregar areia na lente com o pano (sopra SEMPRE primeiro)",
             "Usar a ponta da t-shirt com produto de limpeza doméstico",
@@ -874,8 +977,12 @@
           "tag": "para tudo o que é de noite",
           "what": "Lanterna de cabeça, idealmente com modo vermelho.",
           "why": "Resolve o problema de mexer nos botões, montar o tripé e caminhar no escuro com as duas mãos ocupadas.",
-          "when": ["Astro, light painting, nascer do sol (chegas antes de haver luz), hora azul"],
-          "notWhen": ["Nunca a apontes a outros fotógrafos numa sessão de astro"],
+          "when": [
+            "Astro, light painting, nascer do sol (chegas antes de haver luz), hora azul"
+          ],
+          "notWhen": [
+            "Nunca a apontes a outros fotógrafos numa sessão de astro"
+          ],
           "mistakes": [
             "Usar luz branca forte e perder a visão noturna — demora 20 minutos a recuperar",
             "Chegar a um sítio de astro sem lanterna e descobrir que o telemóvel não chega"
@@ -892,8 +999,12 @@
           "tag": "a que vem na caixa é a pior",
           "what": "O que impede a câmara de cair e determina como a transportas durante horas.",
           "why": "Resolve dor de pescoço e a lentidão de trazer a câmara guardada. Uma câmara pendurada e acessível é uma câmara que dispara.",
-          "when": ["Sempre. Uma alça cruzada ao ombro é muito mais confortável que ao pescoço."],
-          "notWhen": ["Em tripé, tira ou prende a alça — ao vento funciona como vela e treme a câmara"],
+          "when": [
+            "Sempre. Uma alça cruzada ao ombro é muito mais confortável que ao pescoço."
+          ],
+          "notWhen": [
+            "Em tripé, tira ou prende a alça — ao vento funciona como vela e treme a câmara"
+          ],
           "mistakes": [
             "Deixar a alça a balançar em exposições longas",
             "Andar horas com a câmara pendurada ao pescoço e culpar a idade pelas dores"
@@ -909,8 +1020,12 @@
           "tag": "duas cópias, sítios diferentes",
           "what": "Discos externos, SSD ou nuvem onde as fotografias vivem depois do cartão.",
           "why": "Resolve a única perda verdadeiramente irreversível na fotografia: o ficheiro deixar de existir. Equipamento compra-se outra vez; fotografias não.",
-          "when": ["Sempre, e antes de formatar o cartão"],
-          "notWhen": ["Nunca 'depois' — é sempre nesse dia que o disco falha"],
+          "when": [
+            "Sempre, e antes de formatar o cartão"
+          ],
+          "notWhen": [
+            "Nunca 'depois' — é sempre nesse dia que o disco falha"
+          ],
           "mistakes": [
             "Ter uma só cópia e chamar-lhe backup",
             "Guardar as duas cópias em casa (roubo, incêndio, inundação levam ambas)",
@@ -962,8 +1077,12 @@
           "tag": "um é real, o outro é corte",
           "what": "Zoom ótico muda de módulo e mantém a resolução. Zoom digital corta a imagem e amplia por software — é o mesmo que cortar depois.",
           "why": "Saber a diferença evita a perda de qualidade mais comum na fotografia de telemóvel.",
-          "when": ["Fica nos valores óticos: 0.6×, 1×, 3× (ou o que o teu tiver)"],
-          "notWhen": ["Acima do máximo ótico, se puderes aproximar-te fisicamente"],
+          "when": [
+            "Fica nos valores óticos: 0.6×, 1×, 3× (ou o que o teu tiver)"
+          ],
+          "notWhen": [
+            "Acima do máximo ótico, se puderes aproximar-te fisicamente"
+          ],
           "mistakes": [
             "Fazer 30× de zoom e não perceber porque a fotografia parece pintada a óleo",
             "Ampliar em vez de dar cinco passos em frente"
@@ -971,6 +1090,9 @@
           "tips": [
             "Regra: se podes andar, anda. Se não podes, fotografa a 1× e corta depois — dá o mesmo com mais controlo.",
             "Os valores marcados no botão (0.6/1/3) são os óticos. Tudo o que fica entre eles já é interpolado."
+          ],
+          "links": [
+            "know:focal-crop"
           ]
         },
         {
@@ -980,7 +1102,9 @@
           "tag": "a maior vantagem do telemóvel",
           "what": "Várias exposições captadas e fundidas em milissegundos para manter céu e sombras ao mesmo tempo.",
           "why": "Resolve a limitação física do sensor pequeno. É genuinamente melhor do que qualquer exposição única.",
-          "when": ["Contraluz, interiores com janelas, paisagem com céu claro, praticamente sempre"],
+          "when": [
+            "Contraluz, interiores com janelas, paisagem com céu claro, praticamente sempre"
+          ],
           "notWhen": [
             "Quando queres silhuetas — o HDR levanta as sombras e destrói o efeito",
             "Sujeitos em movimento rápido (as várias exposições não coincidem)",
@@ -993,6 +1117,10 @@
           "tips": [
             "Para silhuetas: desliga o HDR e toca na parte MAIS CLARA da cena.",
             "O HDR é o teu aliado por defeito, mas desliga-o quando a sombra faz parte da fotografia."
+          ],
+          "links": [
+            "know:histograma",
+            "g:paisagem"
           ]
         },
         {
@@ -1020,6 +1148,10 @@
           "tips": [
             "RAW no telemóvel vale a pena quando a cena é difícil E vais mesmo editar. Fora disso, o processamento do telemóvel ganha.",
             "Com o telemóvel apoiado num muro e 2 a 4 s no modo Pro, tens rastos de carros sem tripé nenhum."
+          ],
+          "links": [
+            "know:raw-jpeg",
+            "g:noturna"
           ]
         },
         {
@@ -1029,7 +1161,9 @@
           "tag": "empilha vários segundos",
           "what": "Captura uma sequência de imagens durante alguns segundos e alinha-as para reduzir ruído e revelar sombras.",
           "why": "Resolve a falta de luz por acumulação em vez de por sensor grande — e fá-lo surpreendentemente bem.",
-          "when": ["Cenas noturnas estáticas: ruas, paisagem urbana, interiores escuros"],
+          "when": [
+            "Cenas noturnas estáticas: ruas, paisagem urbana, interiores escuros"
+          ],
           "notWhen": [
             "Com pessoas ou qualquer coisa em movimento (ficam fantasmas)",
             "Quando queres preservar a escuridão como parte da imagem"
@@ -1041,6 +1175,10 @@
           "tips": [
             "Apoia o telemóvel em alguma coisa e o modo noturno passa de bom a excelente.",
             "Se o resultado parecer irreal, baixa a exposição um traço antes de disparar."
+          ],
+          "links": [
+            "g:noturna",
+            "g:astro"
           ]
         }
       ]

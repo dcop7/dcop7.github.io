@@ -131,9 +131,31 @@ Estilos, nas Técnicas, em Ler fotografias e no visualizador de Composição.
 | `reveal(o)` / `drill(o)` | Linha que esconde a resposta / exercício com estado em localStorage |
 | `lesson(o)` / `chips(o)` | Esqueleto da lição (ideia → ver → levar → treinar) e ligações cruzadas via `data-go` |
 
-Os chips `data-go` (`g:`, `look:`, `tec:`, `comp:`, `apr:`, `tool:`) são
-resolvidos por `plGo()` em `photography.js` — é o que permite uma lição
-apontar para outra sem saber nada sobre rotas.
+Os chips `data-go` (`g:`, `look:`, `tec:`, `know:`, `comp:`, `apr:`, `tool:`,
+`etool:`, `edicao`) são resolvidos por `plGo()` em `photography.js` — é o que
+permite uma lição apontar para outra sem saber nada sobre rotas.
+`resolveLinks(list, head)` transforma uma lista destes alvos em chips com o
+nome procurado no DB em runtime; os dados guardam só o id.
+
+#### Fronteiras entre capítulos (auditoria ago/2026)
+
+O que decide em que capítulo um conceito vive:
+
+| Capítulo | Responde a | Fronteira |
+|----------|-----------|-----------|
+| **Visão** | o que quero dizer | intenção, narrativa, atmosfera |
+| **Fundamentos** | como a fotografia funciona | exposição, ótica, foco, ficheiro |
+| **Composição** | como se organiza o enquadramento | as **regras** (onde pôr) + as **decisões** (de onde fotografar, `craft.json`) |
+| **Cores** | como a cor comunica | relações, temperatura, harmonias |
+| **Estilos** | que linguagem visual escolho | receitas de look aplicadas ao vivo |
+| **Técnicas** | que procedimento produz este resultado | algo que de outra maneira não se obtinha (panning, halação, dupla exposição) |
+| **Edição** | como se manipula o ficheiro | os controlos, em qualquer programa |
+
+Regra prática que resolveu a maior duplicação: **um arranjo do enquadramento é
+Composição, não Técnica.** Espaço negativo, moldura natural e âncora no
+primeiro plano tinham ficha própria em Técnicas e já eram ensinados em
+Composição — o significado e o limite passaram para `COMP_MEANING`, junto do
+exemplo e da grelha que já lá estavam.
 
 ### Design system
 

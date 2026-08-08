@@ -4,14 +4,62 @@
     "hook": "Uma fotografia memorável não se explica pelo assunto — explica-se pelas decisões.",
     "idea": "Estas cinco perguntas servem para qualquer imagem, tua ou de outra pessoa. Feitas por esta ordem, respondem quase sempre à única pergunta que interessa: porque é que esta funciona e aquela não.",
     "steps": [
-      { "n": "1", "q": "Onde é que o olho vai primeiro?", "t": "Antes de pensar. O que atrai o olho é quase sempre o mais claro, o mais contrastado, o mais saturado ou o único rosto. Se não for o assunto, a fotografia está a trabalhar contra si própria." },
-      { "n": "2", "q": "Sobre o que é isto, numa frase?", "t": "Não «uma paisagem» — «sobre o quanto aquele sítio é hostil». Se a frase não sair concreta, o problema não é técnico: não havia ideia." },
-      { "n": "3", "q": "O que é que a luz está a fazer?", "t": "De onde vem, se é dura ou difusa, o que revela e o que esconde. A direção da luz é a decisão mais visível de todas e a que menos se repara." },
-      { "n": "4", "q": "O que está aqui que não devia estar?", "t": "Objetos que crescem de cabeças, cantos claros, cores que competem, pessoas cortadas ao meio. Se retirar mentalmente uma coisa melhora a imagem, essa coisa era um erro." },
-      { "n": "5", "q": "O que é que eu sinto — e o que fez isso?", "t": "A resposta emocional vem antes da análise. Nomeá-la e depois procurar a decisão que a produziu (a cor, o corte, o momento, a distância) é o exercício que mais depressa educa o olho." }
+      {
+        "n": "1",
+        "q": "Onde é que o olho vai primeiro?",
+        "t": "Antes de pensar. O que atrai o olho é quase sempre o mais claro, o mais contrastado, o mais saturado ou o único rosto. Se não for o assunto, a fotografia está a trabalhar contra si própria."
+      },
+      {
+        "n": "2",
+        "q": "Sobre o que é isto, numa frase?",
+        "t": "Não «uma paisagem» — «sobre o quanto aquele sítio é hostil». Se a frase não sair concreta, o problema não é técnico: não havia ideia."
+      },
+      {
+        "n": "3",
+        "q": "O que é que a luz está a fazer?",
+        "t": "De onde vem, se é dura ou difusa, o que revela e o que esconde. A direção da luz é a decisão mais visível de todas e a que menos se repara."
+      },
+      {
+        "n": "4",
+        "q": "O que está aqui que não devia estar?",
+        "t": "Objetos que crescem de cabeças, cantos claros, cores que competem, pessoas cortadas ao meio. Se retirar mentalmente uma coisa melhora a imagem, essa coisa era um erro."
+      },
+      {
+        "n": "5",
+        "q": "O que é que eu sinto — e o que fez isso?",
+        "t": "A resposta emocional vem antes da análise. Nomeá-la e depois procurar a decisão que a produziu (a cor, o corte, o momento, a distância) é o exercício que mais depressa educa o olho."
+      }
     ],
     "takeaway": "Fazer estas cinco perguntas a dez fotografias de outras pessoas ensina mais do que tirar cem sem as fazer.",
-    "drill": "Escolhe uma fotografia de que gostes e uma de que não gostes, ambas de outra pessoa. Responde às cinco perguntas às duas. A diferença entre as respostas é a lição."
+    "drill": "Escolhe uma fotografia de que gostes e uma de que não gostes, ambas de outra pessoa. Responde às cinco perguntas às duas. A diferença entre as respostas é a lição.",
+    "demo": {
+      "src": "cmp-historia",
+      "alt": "Um padeiro a trabalhar, iluminado por uma janela lateral",
+      "intro": "Olha para ela durante cinco segundos antes de abrires qualquer resposta.",
+      "answers": [
+        {
+          "q": "Onde é que o teu olho foi primeiro?",
+          "a": "Às mãos e à massa. São a zona mais clara e a mais nítida — e é aí que está o assunto. A fotografia e o olho concordam, que é o que se quer."
+        },
+        {
+          "q": "Sobre o que é isto, numa frase?",
+          "a": "«Sobre o gesto de quem faz pão há quarenta anos.» Não «sobre uma padaria» — é o trabalho a acontecer, não o sítio onde acontece."
+        },
+        {
+          "q": "O que está a luz a fazer?",
+          "a": "Vem de uma janela só, à direita, e é lateral. Esculpe as mãos e a farinha no ar, e deixa cair para a sombra tudo o que não interessa. Ao meio-dia, com luz de cima, esta fotografia não existia."
+        },
+        {
+          "q": "O que está aqui que não devia estar?",
+          "a": "Quase nada — e isso foi decidido. As prateleiras e a parede não foram removidas: foram subtraídas pela exposição. Subtrair com luz é mais barato do que arrumar a cena."
+        },
+        {
+          "q": "O que sentes — e o que fez isso?",
+          "a": "Calma e ofício. Vem de três coisas: o gesto apanhado a meio, a luz quente de uma direção só, e o escuro à volta que não deixa o olho vaguear."
+        }
+      ],
+      "close": "Cinco perguntas, cinco decisões. Nenhuma delas precisou de saber que câmara era."
+    }
   },
   "analyses": [
     {
@@ -23,15 +71,48 @@
       "q": "Antes de leres: onde é que o teu olho vai primeiro, e porquê?",
       "lesson": "Documental e retrato ambiental — a fotografia de trabalho.",
       "pins": [
-        { "x": 79, "y": 32, "tone": "info", "label": "A fonte", "t": "Uma janela só, à direita. Toda a cena está organizada em relação a ela: o que apanha luz é o que existe na fotografia." },
-        { "x": 46, "y": 26, "tone": "ok", "label": "O olhar", "t": "A cabeça inclinada aponta para as mãos. É este gesto que liga o homem ao trabalho — sem ele, era um senhor parado numa padaria." },
-        { "x": 49, "y": 77, "tone": "ok", "label": "O assunto verdadeiro", "t": "Não é o padeiro: é o que as mãos estão a fazer. É também a zona mais clara e a mais nítida do enquadramento, que é como o olho é levado até lá." },
-        { "x": 11, "y": 20, "tone": "ok", "label": "O que ficou de fora", "t": "As prateleiras e a parede caíram para a sombra. Não foram removidas — foram subtraídas pela exposição, que é a forma mais barata de limpar um enquadramento." }
+        {
+          "x": 79,
+          "y": 32,
+          "tone": "info",
+          "label": "A fonte",
+          "t": "Uma janela só, à direita. Toda a cena está organizada em relação a ela: o que apanha luz é o que existe na fotografia."
+        },
+        {
+          "x": 46,
+          "y": 26,
+          "tone": "ok",
+          "label": "O olhar",
+          "t": "A cabeça inclinada aponta para as mãos. É este gesto que liga o homem ao trabalho — sem ele, era um senhor parado numa padaria."
+        },
+        {
+          "x": 49,
+          "y": 77,
+          "tone": "ok",
+          "label": "O assunto verdadeiro",
+          "t": "Não é o padeiro: é o que as mãos estão a fazer. É também a zona mais clara e a mais nítida do enquadramento, que é como o olho é levado até lá."
+        },
+        {
+          "x": 11,
+          "y": 20,
+          "tone": "ok",
+          "label": "O que ficou de fora",
+          "t": "As prateleiras e a parede caíram para a sombra. Não foram removidas — foram subtraídas pela exposição, que é a forma mais barata de limpar um enquadramento."
+        }
       ],
       "verdict": "Luz de uma direção só, um gesto no momento certo, e escuridão a apagar o resto. Nenhuma destas três decisões precisou de equipamento.",
-      "genres": ["eventos", "rua", "retrato"],
-      "techniques": ["vinheta"],
-      "looks": ["documental", "low-key"]
+      "genres": [
+        "eventos",
+        "rua",
+        "retrato"
+      ],
+      "techniques": [
+        "vinheta"
+      ],
+      "looks": [
+        "documental",
+        "low-key"
+      ]
     },
     {
       "id": "distracoes",
@@ -42,15 +123,44 @@
       "q": "Esta fotografia está bem exposta e focada. Encontra as quatro coisas que estão a roubar o assunto.",
       "lesson": "Retrato — o fundo é metade da fotografia.",
       "pins": [
-        { "x": 34, "y": 13, "tone": "bad", "label": "Sinal azul", "t": "Mais claro, mais saturado e mais geométrico do que o rosto. O olho vai lá primeiro e só depois desce à pessoa." },
-        { "x": 60, "y": 21, "tone": "bad", "label": "Poste a nascer do ombro", "t": "Uma vertical dura encostada à cabeça. Dois passos de lado resolviam — é o erro mais comum e o mais fácil de evitar." },
-        { "x": 13, "y": 62, "tone": "bad", "label": "Carro azul", "t": "Ocupa mais enquadramento do que o assunto e tem a cor mais forte da cena. Um objeto grande e colorido nunca fica em segundo plano só porque está atrás." },
-        { "x": 85, "y": 50, "tone": "bad", "label": "Fundo tão nítido como ela", "t": "A f/8 tudo tem o mesmo detalhe, e detalhe igual lê-se como importância igual. Abrir o diafragma ou afastar a pessoa do fundo separa-a sem mexer em mais nada." }
+        {
+          "x": 34,
+          "y": 13,
+          "tone": "bad",
+          "label": "Sinal azul",
+          "t": "Mais claro, mais saturado e mais geométrico do que o rosto. O olho vai lá primeiro e só depois desce à pessoa."
+        },
+        {
+          "x": 60,
+          "y": 21,
+          "tone": "bad",
+          "label": "Poste a nascer do ombro",
+          "t": "Uma vertical dura encostada à cabeça. Dois passos de lado resolviam — é o erro mais comum e o mais fácil de evitar."
+        },
+        {
+          "x": 13,
+          "y": 62,
+          "tone": "bad",
+          "label": "Carro azul",
+          "t": "Ocupa mais enquadramento do que o assunto e tem a cor mais forte da cena. Um objeto grande e colorido nunca fica em segundo plano só porque está atrás."
+        },
+        {
+          "x": 85,
+          "y": 50,
+          "tone": "bad",
+          "label": "Fundo tão nítido como ela",
+          "t": "A f/8 tudo tem o mesmo detalhe, e detalhe igual lê-se como importância igual. Abrir o diafragma ou afastar a pessoa do fundo separa-a sem mexer em mais nada."
+        }
       ],
       "verdict": "Nenhum destes problemas é de exposição, foco ou câmara. Todos se resolviam antes de disparar, andando.",
-      "genres": ["retrato", "familia", "autorretrato"],
-      "techniques": ["espaco-negativo"],
-      "looks": []
+      "genres": [
+        "retrato",
+        "familia",
+        "autorretrato"
+      ],
+      "techniques": [],
+      "looks": [],
+      "comp": "Espaço Negativo"
     },
     {
       "id": "salto",
@@ -61,15 +171,48 @@
       "q": "O que é que nesta fotografia prova que ela foi tirada no momento certo?",
       "lesson": "Rua e família — o momento decisivo.",
       "pins": [
-        { "x": 50, "y": 12, "tone": "ok", "label": "O ápice", "t": "Braços no ponto mais alto, cabelo ainda a subir. Meio segundo depois já não há fotografia — e é por isso que estas se fazem em rajada." },
-        { "x": 50, "y": 85, "tone": "ok", "label": "A coroa de água", "t": "O respingo é a prova do instante. É a única coisa no enquadramento que não podia ser encenada nem repetida igual." },
-        { "x": 50, "y": 74, "tone": "info", "label": "O reflexo", "t": "Duplica a figura e dá conteúdo à metade de baixo, que sem ele era chão molhado. A câmara está quase encostada ao solo de propósito." },
-        { "x": 22, "y": 33, "tone": "info", "label": "A rua como palco", "t": "As duas fileiras de lojas convergem e entregam o centro do enquadramento à figura. O sítio foi escolhido antes de haver salto." }
+        {
+          "x": 50,
+          "y": 12,
+          "tone": "ok",
+          "label": "O ápice",
+          "t": "Braços no ponto mais alto, cabelo ainda a subir. Meio segundo depois já não há fotografia — e é por isso que estas se fazem em rajada."
+        },
+        {
+          "x": 50,
+          "y": 85,
+          "tone": "ok",
+          "label": "A coroa de água",
+          "t": "O respingo é a prova do instante. É a única coisa no enquadramento que não podia ser encenada nem repetida igual."
+        },
+        {
+          "x": 50,
+          "y": 74,
+          "tone": "info",
+          "label": "O reflexo",
+          "t": "Duplica a figura e dá conteúdo à metade de baixo, que sem ele era chão molhado. A câmara está quase encostada ao solo de propósito."
+        },
+        {
+          "x": 22,
+          "y": 33,
+          "tone": "info",
+          "label": "A rua como palco",
+          "t": "As duas fileiras de lojas convergem e entregam o centro do enquadramento à figura. O sítio foi escolhido antes de haver salto."
+        }
       ],
       "verdict": "O momento não se organiza, mas o sítio onde se espera por ele organiza-se sempre. Metade desta fotografia foi decidida antes de acontecer.",
-      "genres": ["rua", "familia", "desporto"],
-      "techniques": ["movimento", "reflexos"],
-      "looks": ["documental"]
+      "genres": [
+        "rua",
+        "familia",
+        "desporto"
+      ],
+      "techniques": [
+        "movimento",
+        "reflexos"
+      ],
+      "looks": [
+        "documental"
+      ]
     },
     {
       "id": "escala",
@@ -80,15 +223,49 @@
       "q": "Tapa a figura com o dedo. O que é que a fotografia perde?",
       "lesson": "Paisagem — a escala nasce da relação, não do tamanho.",
       "pins": [
-        { "x": 14, "y": 54, "tone": "ok", "label": "A figura", "t": "Minúscula e escura contra o nevoeiro claro. É ela que dá a medida de tudo o resto: sem figura, a montanha podia ter mil metros ou cem." },
-        { "x": 13, "y": 84, "tone": "ok", "label": "O primeiro plano", "t": "A encosta entra pelo canto e põe o espectador na montanha em vez de à frente dela. É a diferença entre olhar e estar." },
-        { "x": 58, "y": 45, "tone": "info", "label": "As camadas", "t": "Nevoeiro entre planos sucessivos. O olho lê aquela sequência de tons cada vez mais claros como distância — é assim que se sente o ar." },
-        { "x": 33, "y": 8, "tone": "info", "label": "A luz rasante", "t": "Bate nas cristas e separa-as umas das outras. Ao meio-dia seriam todas a mesma massa cinzenta." }
+        {
+          "x": 14,
+          "y": 54,
+          "tone": "ok",
+          "label": "A figura",
+          "t": "Minúscula e escura contra o nevoeiro claro. É ela que dá a medida de tudo o resto: sem figura, a montanha podia ter mil metros ou cem."
+        },
+        {
+          "x": 13,
+          "y": 84,
+          "tone": "ok",
+          "label": "O primeiro plano",
+          "t": "A encosta entra pelo canto e põe o espectador na montanha em vez de à frente dela. É a diferença entre olhar e estar."
+        },
+        {
+          "x": 58,
+          "y": 45,
+          "tone": "info",
+          "label": "As camadas",
+          "t": "Nevoeiro entre planos sucessivos. O olho lê aquela sequência de tons cada vez mais claros como distância — é assim que se sente o ar."
+        },
+        {
+          "x": 33,
+          "y": 8,
+          "tone": "info",
+          "label": "A luz rasante",
+          "t": "Bate nas cristas e separa-as umas das outras. Ao meio-dia seriam todas a mesma massa cinzenta."
+        }
       ],
       "verdict": "Retirando a figura, sobra uma vista bonita. Com ela, há uma medida — e uma pessoa a atravessá-la.",
-      "genres": ["paisagem", "viagem", "nevoeiro"],
-      "techniques": ["primeiro-plano", "profundidade"],
-      "looks": ["moody", "golden-hour"]
+      "genres": [
+        "paisagem",
+        "viagem",
+        "nevoeiro"
+      ],
+      "techniques": [
+        "profundidade",
+        "profundidade"
+      ],
+      "looks": [
+        "moody",
+        "golden-hour"
+      ]
     },
     {
       "id": "neon",
@@ -99,15 +276,49 @@
       "q": "Tira mentalmente a pessoa do enquadramento. O que é que isto passa a ser?",
       "lesson": "Noturna — cor artificial como matéria-prima.",
       "pins": [
-        { "x": 55, "y": 50, "tone": "ok", "label": "A âncora", "t": "Uma figura sozinha, escura, quase ao centro. Sem ela isto era um catálogo de letreiros — com ela passa a haver alguém, e portanto uma história." },
-        { "x": 14, "y": 26, "tone": "info", "label": "Vermelho contra ciano", "t": "As duas cores são opostas na roda. A legibilidade vem daí e não da saturação: aumentar a saturação das duas não aumentaria a diferença." },
-        { "x": 30, "y": 78, "tone": "info", "label": "O chão molhado", "t": "Duplica todas as fontes de luz e transforma um passeio vazio em metade útil da fotografia. Sem chuva, a metade de baixo seria asfalto preto." },
-        { "x": 50, "y": 33, "tone": "info", "label": "A rua a afastar-se", "t": "Os letreiros ficam mais pequenos e mais escuros à medida que recuam. À noite é assim que se vê profundidade — a atmosfera não ajuda como de dia." }
+        {
+          "x": 55,
+          "y": 50,
+          "tone": "ok",
+          "label": "A âncora",
+          "t": "Uma figura sozinha, escura, quase ao centro. Sem ela isto era um catálogo de letreiros — com ela passa a haver alguém, e portanto uma história."
+        },
+        {
+          "x": 14,
+          "y": 26,
+          "tone": "info",
+          "label": "Vermelho contra ciano",
+          "t": "As duas cores são opostas na roda. A legibilidade vem daí e não da saturação: aumentar a saturação das duas não aumentaria a diferença."
+        },
+        {
+          "x": 30,
+          "y": 78,
+          "tone": "info",
+          "label": "O chão molhado",
+          "t": "Duplica todas as fontes de luz e transforma um passeio vazio em metade útil da fotografia. Sem chuva, a metade de baixo seria asfalto preto."
+        },
+        {
+          "x": 50,
+          "y": 33,
+          "tone": "info",
+          "label": "A rua a afastar-se",
+          "t": "Os letreiros ficam mais pequenos e mais escuros à medida que recuam. À noite é assim que se vê profundidade — a atmosfera não ajuda como de dia."
+        }
       ],
       "verdict": "Nenhuma cor desta imagem foi inventada na edição. O trabalho foi escolher a hora, o chão molhado e o instante em que havia uma pessoa a passar.",
-      "genres": ["noturna", "rua", "chuva"],
-      "techniques": ["reflexos", "contraste-cor"],
-      "looks": ["neon", "teal-orange"]
+      "genres": [
+        "noturna",
+        "rua",
+        "chuva"
+      ],
+      "techniques": [
+        "reflexos",
+        "contraste-cor"
+      ],
+      "looks": [
+        "neon",
+        "teal-orange"
+      ]
     },
     {
       "id": "silhueta",
@@ -118,15 +329,49 @@
       "q": "Esta fotografia não tem detalhe nenhum no assunto. Porque é que continua a funcionar?",
       "lesson": "Contraluz — quando tirar informação é a decisão.",
       "pins": [
-        { "x": 20, "y": 16, "tone": "ok", "label": "O guarda-chuva separado", "t": "Não toca no corpo. Se tocasse, as duas formas fundiam-se numa mancha e deixava de se perceber o que era." },
-        { "x": 37, "y": 23, "tone": "ok", "label": "O chapéu", "t": "Metade do reconhecimento está aqui. Uma silhueta identifica-se por acessórios e contorno — nunca por rosto." },
-        { "x": 37, "y": 89, "tone": "ok", "label": "Os pés contra o claro", "t": "Estão sobre a zona mais luminosa do céu, mesmo acima da colina. Meio metro mais abaixo desapareciam no escuro do terreno." },
-        { "x": 76, "y": 45, "tone": "info", "label": "Céu limpo", "t": "Nem nuvens fortes nem objetos: o fundo é uma superfície contínua. É essa uniformidade que deixa a forma ler-se de imediato." }
+        {
+          "x": 20,
+          "y": 16,
+          "tone": "ok",
+          "label": "O guarda-chuva separado",
+          "t": "Não toca no corpo. Se tocasse, as duas formas fundiam-se numa mancha e deixava de se perceber o que era."
+        },
+        {
+          "x": 37,
+          "y": 23,
+          "tone": "ok",
+          "label": "O chapéu",
+          "t": "Metade do reconhecimento está aqui. Uma silhueta identifica-se por acessórios e contorno — nunca por rosto."
+        },
+        {
+          "x": 37,
+          "y": 89,
+          "tone": "ok",
+          "label": "Os pés contra o claro",
+          "t": "Estão sobre a zona mais luminosa do céu, mesmo acima da colina. Meio metro mais abaixo desapareciam no escuro do terreno."
+        },
+        {
+          "x": 76,
+          "y": 45,
+          "tone": "info",
+          "label": "Céu limpo",
+          "t": "Nem nuvens fortes nem objetos: o fundo é uma superfície contínua. É essa uniformidade que deixa a forma ler-se de imediato."
+        }
       ],
       "verdict": "Uma silhueta é um teste de contorno. Se a forma não se percebe reduzida à unha do polegar, não há fotografia — há uma mancha escura.",
-      "genres": ["nascer-por-sol", "praia", "pb"],
-      "techniques": ["silhueta", "espaco-negativo"],
-      "looks": ["golden-hour", "noir"]
+      "genres": [
+        "nascer-por-sol",
+        "praia",
+        "pb"
+      ],
+      "techniques": [
+        "silhueta"
+      ],
+      "looks": [
+        "golden-hour",
+        "noir"
+      ],
+      "comp": "Espaço Negativo"
     }
   ],
   "crops": [
@@ -136,9 +381,39 @@
       "src": "vis-paisagem",
       "q": "A mesma fotografia, três cortes. Qual deles mantém aquilo que a tornava forte?",
       "options": [
-        { "label": "Como está", "rect": [0, 0, 100, 100], "ok": true, "hint": "Primeiro plano, figura e camadas ao mesmo tempo: é a relação entre eles que dá a escala." },
-        { "label": "Só as montanhas", "rect": [22, 0, 78, 52], "ok": false, "hint": "Sobra a vista do miradouro. Sem primeiro plano nem figura, deixou de haver medida — e a fotografia ficou igual a milhares." },
-        { "label": "Fechar no caminhante", "rect": [0, 32, 42, 62], "ok": false, "hint": "Ganha-se a figura e perde-se exactamente aquilo que ela estava a medir. A escala vive da relação, não do tamanho do assunto." }
+        {
+          "label": "Como está",
+          "rect": [
+            0,
+            0,
+            100,
+            100
+          ],
+          "ok": true,
+          "hint": "Primeiro plano, figura e camadas ao mesmo tempo: é a relação entre eles que dá a escala."
+        },
+        {
+          "label": "Só as montanhas",
+          "rect": [
+            22,
+            0,
+            78,
+            52
+          ],
+          "ok": false,
+          "hint": "Sobra a vista do miradouro. Sem primeiro plano nem figura, deixou de haver medida — e a fotografia ficou igual a milhares."
+        },
+        {
+          "label": "Fechar no caminhante",
+          "rect": [
+            0,
+            32,
+            42,
+            62
+          ],
+          "ok": false,
+          "hint": "Ganha-se a figura e perde-se exactamente aquilo que ela estava a medir. A escala vive da relação, não do tamanho do assunto."
+        }
       ]
     },
     {
@@ -147,9 +422,39 @@
       "src": "cmp-momento",
       "q": "Apertar o enquadramento parece sempre uma boa ideia. Aqui, qual dos cortes aguenta?",
       "options": [
-        { "label": "Como está", "rect": [0, 0, 100, 100], "ok": true, "hint": "O salto, o reflexo e a rua. O sítio faz parte do que está a ser contado." },
-        { "label": "Fechar no salto", "rect": [30, 3, 40, 74], "ok": false, "hint": "Sem chão nem reflexo, ela podia estar a saltar em qualquer lado — e podia até não estar a saltar." },
-        { "label": "Só o reflexo", "rect": [18, 58, 64, 42], "ok": false, "hint": "Bonito e mudo. O assunto ficou fora do enquadramento e o que resta é uma textura." }
+        {
+          "label": "Como está",
+          "rect": [
+            0,
+            0,
+            100,
+            100
+          ],
+          "ok": true,
+          "hint": "O salto, o reflexo e a rua. O sítio faz parte do que está a ser contado."
+        },
+        {
+          "label": "Fechar no salto",
+          "rect": [
+            30,
+            3,
+            40,
+            74
+          ],
+          "ok": false,
+          "hint": "Sem chão nem reflexo, ela podia estar a saltar em qualquer lado — e podia até não estar a saltar."
+        },
+        {
+          "label": "Só o reflexo",
+          "rect": [
+            18,
+            58,
+            64,
+            42
+          ],
+          "ok": false,
+          "hint": "Bonito e mudo. O assunto ficou fora do enquadramento e o que resta é uma textura."
+        }
       ]
     }
   ]

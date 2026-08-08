@@ -30,6 +30,10 @@
           "h": "⚠️ Erros comuns",
           "t": "Subir o ISO por preguiça (usa Auto-ISO com teto); confiar no brilho do ecrã ao sol; expor 'ao centro' e queimar o céu; esquecer que a abertura também mexe na profundidade de campo."
         }
+      ],
+      "links": [
+        "tool:exposure",
+        "etool:exposure"
       ]
     },
     {
@@ -58,6 +62,10 @@
           "h": "⚠️ Erros comuns",
           "t": "Achar que existe um histograma 'certo' — depende da cena; ignorar o aviso de realces; corrigir a exposição pelo brilho do ecrã em vez do histograma; cortar sombras à esquerda sem querer."
         }
+      ],
+      "links": [
+        "etool:exposure",
+        "etool:curve"
       ]
     },
     {
@@ -83,13 +91,17 @@
           "t": "Astro (live view ampliado numa estrela), macro (o AF caça) e longa exposição com ND (foca antes, muda para MF). Focus peaking pinta de cor o que está nítido."
         },
         {
-          "h": "Profundidade como rede",
-          "t": "Zone focusing: a f/8 focado a 2.5m, quase tudo entre 1.5m e o infinito está aceitável — dispara sem esperar pelo AF (rua)."
+          "h": "Zone focusing (foco por zona)",
+          "t": "Zone focusing: em vez de esperar pelo AF, fecha o diafragma e foca à distância certa uma vez só. A distância certa é a hiperfocal — e depende da focal e do formato. Numa grande angular APS-C (22 mm, ~35 eq) a f/8 é ~3,2 m, e daí tudo entre ~1,6 m e o infinito sai aceitável; num full-frame a 35 mm a f/8 já são ~5,1 m. Focar mais perto do que a hiperfocal fecha o limite distante depressa: os mesmos 22 mm f/8 focados a 2,5 m só cobrem até ~11 m. Usa a calculadora de hiperfocal para o teu caso."
         },
         {
           "h": "⚠️ Erros comuns",
           "t": "Usar One-Shot num sujeito que se mexe; deixar a zona larga focar o fundo; focar-e-recompor a f/1.8 (o plano de foco desloca-se e o olho sai de foco); esquecer de ligar o Eye AF."
         }
+      ],
+      "links": [
+        "tool:dof",
+        "tool:hf"
       ]
     },
     {
@@ -118,25 +130,25 @@
           "h": "⚠️ Erros comuns",
           "t": "Disparar JPEG e só depois tentar recuperar um céu queimado (já não há informação); 'editar' um JPEG como se fosse RAW; disparar tudo em RAW numa reportagem casual e encher o cartão sem necessidade."
         }
+      ],
+      "links": [
+        "edicao:"
       ]
     },
     {
       "id": "focal-crop",
       "icon": "📏",
       "name": "Distância Focal & Crop",
-      "blurb": "mm, equivalências APS-C 1.6× e o que 'zoom' realmente muda.",
+      "blurb": "mm, ângulo de visão e o que o «zoom» realmente muda — com as contas do teu formato.",
       "body": [
         {
           "h": "Focal e ângulo",
           "t": "Focal curta (15mm) = ângulo largo; focal longa (200mm) = ângulo estreito e compressão (fundos 'aproximam-se'). A perspetiva muda com a TUA posição, não com o zoom."
         },
         {
-          "h": "Crop 1.6×",
-          "t": "O sensor APS-C da M50 vê um recorte do círculo da lente: multiplica a focal por 1.6 para comparar com full-frame. 22mm → 35mm eq; 50mm → 80mm eq; 15-45 → 24-72 eq; 55-200 → 88-320 eq."
-        },
-        {
-          "h": "No S23+",
-          "t": "As focais já se anunciam em equivalente: UGA 13mm, principal 23mm, tele ~70mm. O zoom além de 3× é digital — recorte com maquilhagem."
+          "h": "Fator de crop",
+          "dyn": "crop",
+          "t": ""
         },
         {
           "h": "Escolher focal",
@@ -144,8 +156,12 @@
         },
         {
           "h": "⚠️ Erros comuns",
-          "t": "Pensar em 'zoom' só como aproximar — muda a perspetiva, não apenas o tamanho; esquecer o crop 1.6× ao comprar/comparar lentes; pôr uma grande angular perto de um rosto (distorce o nariz)."
+          "t": "Pensar em 'zoom' só como aproximar — muda o tamanho, não a perspetiva; esquecer o fator de crop ao comparar objetivas de sistemas diferentes; e culpar a grande angular pelo nariz deformado num retrato — quem deforma é a distância curta a que ela deixa fotografar, não a objetiva. Recua e corta: à mesma distância, qualquer focal dá a mesma perspetiva."
         }
+      ],
+      "links": [
+        "tool:focal",
+        "know:compressao"
       ]
     },
     {
@@ -174,6 +190,10 @@
           "h": "⚠️ Erros comuns",
           "t": "f/1.8 para um grupo (metade fica desfocada); fechar a f/22 'para ficar tudo nítido' e perder nitidez por difração; esquecer que aproximar do sujeito reduz muito a profundidade de campo."
         }
+      ],
+      "links": [
+        "tool:dof",
+        "tool:hf"
       ]
     },
     {
@@ -202,6 +222,11 @@
           "h": "⚠️ Erros comuns",
           "t": "Velocidade lenta de mais à mão → tremido; usar 1/1000 sem necessidade e matar luz (sobe o ISO à toa); tentar panning sem acompanhar o sujeito de forma fluida."
         }
+      ],
+      "links": [
+        "tec:movimento",
+        "tec:longa-exposicao",
+        "tool:le"
       ]
     },
     {
@@ -230,6 +255,9 @@
           "h": "⚠️ Erros comuns",
           "t": "Ter medo do ISO e subexpor — o ruído nas sombras levantadas fica PIOR do que teria com ISO mais alto; aplicar denoise a mais (aspeto plástico); culpar o número ISO em vez da falta de luz."
         }
+      ],
+      "links": [
+        "etool:noise"
       ]
     },
     {
@@ -258,6 +286,10 @@
           "h": "⚠️ Erros comuns",
           "t": "Confiar no automático em neve/palco (sai cinzento ou queimado); compensar e esquecer de repor no próximo enquadramento; usar medição pontual sem saber sobre que ponto está a medir."
         }
+      ],
+      "links": [
+        "know:histograma",
+        "etool:exposure"
       ]
     },
     {
@@ -286,6 +318,12 @@
           "h": "⚠️ Erros comuns",
           "t": "Fotografar ao meio-dia com sol a pino (sombras duras, olhos-de-guaxinim); usar o flash frontal direto (achata e cria olhos vermelhos); ignorar a direção da luz e depois estranhar o resultado plano."
         }
+      ],
+      "links": [
+        "tec:silhueta",
+        "look:low-key",
+        "look:golden-hour",
+        "g:retrato"
       ]
     },
     {
@@ -314,6 +352,11 @@
           "h": "⚠️ Erros comuns",
           "t": "CPL 'a todo o gás' numa grande angular → céu com manchas de polarização irregular; filtros UV baratos que degradam a imagem; ND forte que faz o AF caçar; esquecer de reajustar a exposição depois de pôr o ND."
         }
+      ],
+      "links": [
+        "tool:nd",
+        "tec:longa-exposicao",
+        "tec:reflexos"
       ]
     },
     {
@@ -422,6 +465,10 @@
           "h": "Conceitos próximos",
           "t": "É uma forma de luz lateral levada a um ponto específico; quando o contraste é extremo, aproxima-se do chiaroscuro."
         }
+      ],
+      "links": [
+        "g:retrato",
+        "look:low-key"
       ]
     },
     {
@@ -450,6 +497,10 @@
           "h": "Conceitos próximos",
           "t": "A iluminação Rembrandt é uma variante controlada; partilha família com a luz dura e o low-key."
         }
+      ],
+      "links": [
+        "look:noir",
+        "look:low-key"
       ]
     },
     {
@@ -478,6 +529,10 @@
           "h": "Conceitos próximos",
           "t": "Ligado à distância focal e crop; combina bem com a profundidade atmosférica para dar escala."
         }
+      ],
+      "links": [
+        "tool:focal",
+        "g:retrato"
       ]
     },
     {
@@ -506,6 +561,10 @@
           "h": "Conceitos próximos",
           "t": "Reforça-se com a compressão de perspetiva; na edição liga-se ao dehaze."
         }
+      ],
+      "links": [
+        "tec:profundidade",
+        "g:paisagem"
       ]
     }
   ]

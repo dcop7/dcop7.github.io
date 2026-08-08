@@ -565,6 +565,37 @@ const PhotographyPage = (function () {
     'Curva em S': 'comp-scurve', 'Composição em Triângulo': 'comp-triangle',
   };
   const compAsset = comp => assetPath(COMP_ASSET[comp.name]);
+  /* O que cada arranjo COMUNICA e quando falha.
+     Isto viveu durante uma versão em Técnicas, como fichas próprias («espaço
+     negativo», «moldura no primeiro plano»). Estava no sítio errado: uma
+     técnica é um procedimento que produz um resultado que de outra maneira
+     não se obtinha (panning, longa exposição, dupla exposição); estes são
+     ARRANJOS do enquadramento, que é exactamente o que a Composição ensina.
+     O resultado eram duas lições para o mesmo conceito, com palavras
+     diferentes. O que as fichas tinham de próprio — o significado, o limite
+     e o exercício — passou para aqui, onde já estava o exemplo e a grelha. */
+  const COMP_MEANING = {
+    'Espaço Negativo': {
+      says: 'Isolamento, escala, silêncio. Também confiança: uma fotografia que se permite estar quase vazia anuncia que sabe o que está a fazer.',
+      avoid: 'Quando o vazio não é uniforme. Um céu com nuvens desiguais e cabos elétricos não é espaço negativo — é fundo desarrumado com pouco lá dentro.',
+      drill: 'Fotografa o mesmo assunto a ocupar 50%, 20% e 5% do enquadramento. A de 5% costuma ser a que ninguém teria tentado — e muitas vezes a melhor.',
+    },
+    'Enquadramento Natural': {
+      says: 'Profundidade e ponto de vista. E sobretudo presença: uma moldura diz que havia alguém num sítio concreto a olhar dali, o que uma vista limpa nunca diz.',
+      avoid: 'Quando a moldura é mais interessante do que o assunto, ou quando fica desfocada de forma indecisa — nem nítida nem claramente fora de foco.',
+      drill: 'Numa saída, obriga-te a que TODAS as fotografias tenham alguma coisa no primeiro plano. É desconfortável ao início e muda a forma de andar.',
+    },
+    'Linhas Convergentes': {
+      says: 'Direção e distância: as linhas dizem ao olhar por onde entrar e quanto caminho há até ao fundo.',
+      avoid: 'Quando convergem para um sítio onde não está nada. Uma estrada que leva o olhar a um canto vazio trabalha contra a fotografia.',
+      drill: 'Fotografa a mesma linha de fuga à altura dos olhos e depois quase encostado ao chão. A segunda quase sempre puxa mais.',
+    },
+    'Regra dos Terços': {
+      says: 'Que houve uma decisão. Um assunto ao centro lê-se como apontar a câmara; fora do centro lê-se como escolher.',
+      avoid: 'Como obrigação. Simetria, retratos frontais e minimalismo pedem centro — a regra descreve um hábito do olhar, não uma lei.',
+      drill: 'Fotografa a mesma cena com o assunto ao centro e num ponto forte. Fica com a que te obriga a percorrer o enquadramento.',
+    },
+  };
   // Legendas correto/incorreto (quando existe a versão "errada" comp-<slug>-bad).
   const COMP_WHY = {
     'comp-thirds': { ok: 'Farol e horizonte alinhados com os pontos fortes.', bad: 'Sujeito ao centro e horizonte ao meio — estático.' },
@@ -630,7 +661,7 @@ const PhotographyPage = (function () {
     const slug = COMP_ASSET[comp.name];
     // A versão "incorreta" só existe para as ilustrações gerais.
     const bad = gAsset ? null : assetPath(slug + '-bad');
-    const why = COMP_WHY[slug] || {};
+    const why = COMP_WHY[slug] || {}, mean = COMP_MEANING[comp.name] || {};
     modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
 
     /* Parte 3 — a cortina deixou de ser o único modo aqui.
@@ -667,8 +698,11 @@ const PhotographyPage = (function () {
       ${stage}
       <div class="ph-cv-info">
         <div class="ph-cv-sec"><b>Como funciona</b><p>${comp.desc}</p></div>
+        ${mean.says ? `<div class="ph-cv-sec says"><b>🗣️ O que comunica</b><p>${mean.says}</p></div>` : ''}
         ${comp.tips ? `<div class="ph-cv-sec apply"><b>🎯 Como aplicar no terreno</b><p>${comp.tips}</p></div>` : ''}
+        ${mean.avoid ? `<div class="ph-cv-sec over"><b>🪤 Quando falha</b><p>${mean.avoid}</p></div>` : ''}
         ${comp.examples ? `<div class="ph-cv-sec"><b>📷 Onde encontrar</b><p>${comp.examples}</p></div>` : ''}
+        ${mean.drill ? PhotoLearn.drill({ key: 'comp-' + slug, t: mean.drill }) : ''}
       </div>
       <div class="ph-cv-rail" role="tablist" aria-label="Técnicas de composição">
         ${COMPOSITIONS.map((c, i) => {
@@ -708,11 +742,35 @@ const PhotographyPage = (function () {
     window.addEventListener('resize', drawOv, { once: true });
   }
 
+  /* ── Composição ▸ as decisões ─────────────────────────────────────────────
+     Os 8 módulos de craft.json (altura, ângulo, distância, primeiro plano,
+     fundo, momento, direção da luz, simplificar) só eram alcançáveis abrindo
+     um género e encontrando a secção certa — 8 lições ilustradas escondidas
+     atrás de dois cliques e do conhecimento de que ali estavam.
+
+     São a camada que responde a "como decido", e ficam aqui por duas razões:
+     Composição é onde vive a organização do enquadramento (a mesma fronteira
+     que já tinha as regras geométricas), e é a página mais curta do Aprender.
+     Não é um separador novo: as regras dizem ONDE pôr as coisas, as decisões
+     dizem DE ONDE fotografar. São as duas metades da mesma pergunta.
+     O género continua a mostrá-las, com a sua aplicação concreta — é o mesmo
+     `craftBlockHTML`, e por isso não há duas versões do texto para manter. */
+  function compDecisionsHTML(db) {
+    const mods = (db && db.craft) || [];
+    if (!mods.length) return '';
+    return `<div class="ph-section-title sub">🎚️ As decisões</div>
+      <p class="ph-section-sub">As regras acima dizem <b>onde</b> pôr as coisas no enquadramento. Estas dizem <b>de onde</b> fotografar — e mudam a fotografia mais do que qualquer definição da câmara. Cada uma reaparece aplicada dentro de cada género.</p>
+      <div class="ph-craft-list">${mods.map(m => craftBlockHTML(m, '')).join('')}</div>`;
+  }
+
   function buildComposition(root) {
-    root.innerHTML = `<div class="ph-section-title">🖼️ Guias de Composição</div>
-      <p class="ph-section-sub">As regras clássicas para organizar o enquadramento — cada uma com um exemplo ilustrado e a grelha por cima. Toca para explorar.</p>
-      <div class="ph-comp-grid2"><p class="ph-section-sub">A carregar…</p></div>`;
-    loadAssets().then(() => {
+    root.innerHTML = `<div class="ph-section-title">🖼️ Composição</div>
+      <p class="ph-section-sub">Como se organizam os elementos dentro do enquadramento — as regras clássicas, cada uma com exemplo, grelha e o que comunica. Toca para explorar.</p>
+      <div class="ph-comp-grid2"><p class="ph-section-sub">A carregar…</p></div>
+      <div data-comp-decisions></div>`;
+    Promise.all([loadAssets(), loadDB()]).then(([, db]) => {
+      const dec = root.querySelector('[data-comp-decisions]');
+      if (dec) { dec.innerHTML = compDecisionsHTML(db); if (typeof PhotoIllus !== 'undefined') PhotoIllus.wire(dec); }
       const grid = root.querySelector('.ph-comp-grid2'); if (!grid) return;
       grid.innerHTML = '';
       COMPOSITIONS.forEach(comp => {
@@ -1128,8 +1186,9 @@ const PhotographyPage = (function () {
       if (sec) _portalSec = sec;
       return Nav.go('photography/g/' + gid);
     }
-    if (kind === 'look' || kind === 'tec' || kind === 'ler') {
-      const seg = kind === 'look' ? 'estilos' : kind === 'tec' ? 'tecnicas' : 'ler';
+    if (kind === 'look' || kind === 'tec' || kind === 'ler' || kind === 'know') {
+      const seg = kind === 'look' ? 'estilos' : kind === 'tec' ? 'tecnicas'
+        : kind === 'know' ? 'fundamentos' : 'ler';
       _pendingLearn = { seg, id: arg };
       return Nav.go('photography/aprender/' + seg);
     }
@@ -2095,6 +2154,7 @@ const PhotographyPage = (function () {
         </div>
         ${sec('⚠️ Erros de iniciante', 'mist', it.mistakes)}
         ${sec('💡 Na prática', 'tips', it.tips)}
+        ${resolveLinks(it.links, '🔗 Onde é que isto se usa')}
       </div>`;
   }
   function buildEquipamento(panel, sub) {
@@ -2126,6 +2186,7 @@ const PhotographyPage = (function () {
         thumb: () => '',
         blurb: it => it.tag || '',
         detail: eqDetailHTML,
+        afterOpen: detail => PhotoLearn.wire(detail, plGo),
       });
       // O equipamento pessoal fica no fim e claramente separado: é exemplo, não norma.
       if (cat.id === 'cameras' && db.mine) {
@@ -2147,18 +2208,61 @@ const PhotographyPage = (function () {
     });
   }
 
+  /* Resolve uma lista de alvos ("tool:dof", "tec:movimento", "g:retrato") em
+     chips com o nome certo, procurado no DB em runtime. Os dados guardam só o
+     id — assim renomear uma técnica não obriga a caçar strings pelos JSON. */
+  const LINK_ICO = { edicao: '🎨', etool: '🎨', tool: '🧮', know: '📖', apr: '📚', comp: '🖼️' };
+  function resolveLinks(list, head) {
+    if (!(list || []).length || !_DB) return '';
+    const out = [];
+    list.forEach(spec => {
+      const i = String(spec).indexOf(':');
+      const kind = spec.slice(0, i), id = spec.slice(i + 1);
+      let label = null, icon = LINK_ICO[kind] || '';
+      if (kind === 'g') { const g = (_DB.genres || []).find(x => x.id === id); if (g) { label = g.name; icon = g.icon; } }
+      else if (kind === 'look') { const l = (_DB.looks || []).find(x => x.id === id); if (l) { label = l.name; icon = l.icon; } }
+      else if (kind === 'tec') { const t = (_DB.techniques || []).find(x => x.id === id); if (t) { label = t.name; icon = t.icon; } }
+      else if (kind === 'know') { const k = (_DB.know || []).find(x => x.id === id); if (k) { label = k.name; icon = k.icon || '📖'; } }
+      else if (kind === 'tool') { label = TOOL_META[id] && TOOL_META[id].label; }
+      else if (kind === 'etool') { const t = editToolIndex()[id]; label = t ? 'Edição · ' + t.name : null; }
+      else if (kind === 'edicao') { label = 'Secção Edição'; }
+      else if (kind === 'comp') { label = id; }
+      if (label) out.push({ go: kind === 'edicao' ? 'edicao' : spec, icon, label });
+    });
+    return PhotoLearn.chips(out, head);
+  }
+
+  /* O fator de crop dependia de um corpo concreto (1.6×) apesar de existir um
+     seletor de câmara que o resto do portal respeita: quem escolhia Full Frame
+     continuava a ler a matemática de um APS-C. Agora o bloco é escrito a
+     partir da classe escolhida, com os dados que o gear.json já tinha. */
+  function cropSectionHTML() {
+    const c = classDef();
+    if (!c) return '';
+    return `<div class="ph-know-sec"><h4>${c.icon} Fator de crop — ${c.name}</h4>
+      <p><b>${c.crop}</b> · ${c.focals}</p>
+      <p class="ph-know-scope">Estás a ver os números de <b>${c.name}</b>. Troca a câmara acima para os do teu sistema — a focal equivalente é a única linguagem que se traduz entre formatos.</p></div>`;
+  }
+
   const APR_HEAD = `<div class="ph-section-title">📖 Fundamentos</div>
-    <p class="ph-section-sub">O conhecimento transversal a todos os géneros. Cada conceito abre com uma ilustração — percebe a ideia antes de ler.</p>`;
+    <p class="ph-section-sub">Como a fotografia funciona tecnicamente. Cada conceito abre com uma ilustração e termina com onde o vais usar.</p>`;
   function buildFundamentos(box) {
     box.innerHTML = `${APR_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
     Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db) { const g = box.querySelector('.ph-learn-grid'); if (g) g.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
-      expandableGrid(box, db.know, {
-        head: APR_HEAD,
+      const head = `${APR_HEAD}${contextBarHTML()}`;
+      const secHTML = s => (s.dyn === 'crop' ? cropSectionHTML()
+        : `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`);
+      const grid = expandableGrid(box, db.know, {
+        head,
         thumb: t => conceptThumb(t.id),
         blurb: t => t.blurb,
-        detail: t => conceptDetailHTML(t, t.body.map(s => `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`).join('')),
+        detail: t => conceptDetailHTML(t,
+          t.body.map(secHTML).join('') + resolveLinks(t.links, '🔗 E agora — onde é que isto se usa')),
+        afterOpen: detail => PhotoLearn.wire(detail, plGo),
       });
+      wireContextBar(box, () => buildFundamentos(box));
+      openPending(box, 'fundamentos', db.know, grid);
     });
   }
 
@@ -2383,15 +2487,34 @@ const PhotographyPage = (function () {
     box.innerHTML = `${APR_LER_HEAD}<p class="ph-section-sub">A carregar…</p>`;
     Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db || !db.readMethod) { box.innerHTML = `${APR_LER_HEAD}<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
-      const m = db.readMethod;
+      const m = db.readMethod, demo = m.demo || {}, dsrc = assetPath(demo.src);
+      /* O método era enunciado antes de haver uma fotografia no ecrã: ~470
+         palavras de leitura corrida a abrir precisamente a secção cujo
+         argumento é «não leias uma análise, olha». Passa a ser demonstrado —
+         as mesmas cinco perguntas, feitas sobre uma imagem concreta, com a
+         resposta escondida até ao toque. A lista genérica continua completa,
+         mas fechada: é referência, não introdução. */
+      const walk = dsrc ? `<div class="ph-read-walk">
+          <figure class="ph-read-walk-img">
+            <img src="${dsrc}" alt="${demo.alt || ''}" loading="lazy" decoding="async">
+            <figcaption>${demo.intro || ''}</figcaption>
+          </figure>
+          <div class="ph-read-walk-qs">
+            <div class="pl-revs">${(demo.answers || []).map((a, i) =>
+              PhotoLearn.reveal({ q: `<b>${i + 1}.</b> ${a.q}`, a: a.a })).join('')}</div>
+            ${demo.close ? `<p class="ph-read-walk-close">${demo.close}</p>` : ''}
+          </div>
+        </div>` : '';
       box.innerHTML = `${APR_LER_HEAD}
         <section class="ph-read-method">
           ${PhotoLearn.lesson({
             kicker: 'O método',
             hook: m.hook,
-            idea: m.idea,
-            body: `<ol class="ph-read-steps">${m.steps.map(s =>
-              `<li><b>${s.q}</b><span>${s.t}</span></li>`).join('')}</ol>`,
+            visual: walk,
+            body: `<details class="pl-more"><summary>As cinco perguntas, por extenso</summary><div>
+              <p>${m.idea}</p>
+              <ol class="ph-read-steps">${m.steps.map(s =>
+                `<li><b>${s.q}</b><span>${s.t}</span></li>`).join('')}</ol></div></details>`,
             takeaway: m.takeaway,
             drill: PhotoLearn.drill({ key: 'ler-metodo', t: m.drill }),
           })}
@@ -2491,6 +2614,13 @@ const PhotographyPage = (function () {
       if (t) out.push({ go: 'tec:' + id, icon: t.icon, label: t.name });
     });
     if (item.comp) out.push({ go: 'comp:' + item.comp, icon: '🖼️', label: item.comp });
+    /* `know` aponta para a explicação canónica em Fundamentos. Existe para que
+       uma técnica possa dizer "a teoria disto está ali" em vez de a repetir —
+       foi assim que a profundidade deixou de ser ensinada em dois sítios. */
+    if (item.know) {
+      const k = (db.know || []).find(x => x.id === item.know);
+      if (k) out.push({ go: 'know:' + item.know, icon: '📖', label: 'Fundamentos · ' + k.name });
+    }
     if (item.cores) out.push({ go: 'apr:cores', icon: '🌈', label: 'Roda de cores' });
     (item.tools || []).forEach(id => {
       if (TOOL_META[id]) out.push({ go: 'tool:' + id, icon: '🧮', label: TOOL_META[id].label });
@@ -2551,6 +2681,8 @@ const PhotographyPage = (function () {
         panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.seg === id));
         panel.querySelectorAll('.ph-apr-panel').forEach(p => { p.hidden = p.dataset.apr !== id; });
         if (!done.has(id)) { done.add(id); APR_BUILDERS[id](panel.querySelector(`.ph-apr-panel[data-apr="${id}"]`)); }
+        // com 7 segmentos, o ativo pode estar fora do ecrã num telemóvel
+        panel.querySelector(`.ph-apr-seg .seg-btn[data-seg="${id}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' });
         try { localStorage.setItem('ph-apr-seg', id); } catch (_) {}
       };
       panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b =>

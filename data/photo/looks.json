@@ -579,9 +579,8 @@
         "flores",
         "retrato"
       ],
-      "techniques": [
-        "espaco-negativo"
-      ]
+      "techniques": [],
+      "comp": "Espaço Negativo"
     },
     {
       "id": "low-key",
