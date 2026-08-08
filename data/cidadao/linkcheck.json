@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-07T19:24:58.241Z",
+ "generated": "2026-08-08T02:25:21.406Z",
  "total": 84,
- "broken": 0,
- "unknown": 26,
+ "broken": 1,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -397,8 +397,8 @@
   {
    "id": "calendario:bolsas-dges",
    "url": "https://www.dges.gov.pt/pt",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:passe-sub23",
