@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v280';
+const CACHE = 'dcop7-v281';
 const STATIC = [
   '/',
   '/index.html',
@@ -21,6 +21,7 @@ const STATIC = [
   '/css/views/f1.css',
   '/css/views/oss.css',
   '/css/views/quiz.css',
+  '/css/views/photo-learn.css',
   '/data/countries.json',
   '/data/worlddata/indicators.json',
   '/data/worlddata/values.json',
@@ -85,6 +86,7 @@ const STATIC = [
   '/js/pages/photo-mannequin.js',
   '/js/pages/photo-lab.js',
   '/js/pages/photo-editlab.js',
+  '/js/pages/photo-learn.js',
   '/js/pages/photography.js',
   '/data/photo/gear.json',
   '/data/photo/genres.json',
@@ -94,6 +96,9 @@ const STATIC = [
   '/data/photo/craft.json',
   '/data/photo/equipment.json',
   '/data/photo/vision.json',
+  '/data/photo/looks.json',
+  '/data/photo/techniques.json',
+  '/data/photo/read.json',
   '/js/pages/humor.js',
   '/js/pages/cheatsheets.js',
   /* Quiz */

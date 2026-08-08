@@ -1,0 +1,1030 @@
+{
+  "_nota": "Estilos visuais (Aprender ▸ Estilos). Cada estilo é uma RECEITA aplicada ao vivo pelo PhotoLab a uma fotografia de base, com cursor de dose e troca de base — trocar a base é o que ensina 'onde funciona' e 'quando se torna gasto'. Campos: why (porque existe), says (o que comunica), works (onde resulta), overused (quando se gasta), decisions[] (as decisões visuais que o criam). `recipe` usa os parâmetros do PhotoLab (js/pages/photo-lab.js); `curvePts` é convertido em LUT e escalado pela dose. `bases` são ids de assets/photo/index.json. `genres` e `techniques` são as ligações cruzadas.",
+  "bases": [
+    {
+      "id": "look-retrato",
+      "label": "Retrato"
+    },
+    {
+      "id": "look-cidade",
+      "label": "Cidade à noite"
+    },
+    {
+      "id": "look-praia",
+      "label": "Praia ao meio-dia"
+    },
+    {
+      "id": "edit-demo",
+      "label": "Paisagem"
+    }
+  ],
+  "looks": [
+    {
+      "id": "cinematico",
+      "icon": "🎬",
+      "name": "Cinemático",
+      "blurb": "Contraste contido, pele quente, sombras frias.",
+      "hook": "O cinema não grada para ficar bonito — grada para separar as pessoas do sítio.",
+      "idea": "É o look que quase toda a gente pede sem saber descrever. Não é o contraste alto nem o azul: é a pele ficar quente enquanto tudo à volta arrefece, para que o olhar caia sempre nas pessoas.",
+      "why": "Nasce de um problema prático da projeção: uma sala escura come contraste e satura mal, por isso os coloristas aprenderam a proteger os tons de pele e a arrefecer o resto. Quando a imagem passou para ecrãs pequenos o hábito ficou, já como linguagem.",
+      "says": "«Isto é uma cena, não um instantâneo.» O espectador percebe que há uma personagem e que alguém decidiu onde ele devia olhar.",
+      "works": "Retrato ambiental, rua, viagem, casamentos — tudo onde há uma pessoa dentro de um cenário que interessa mas não deve ganhar.",
+      "overused": "Quando não há pessoa nenhuma. Numa paisagem sem figura o azul das sombras não separa nada e a fotografia só fica com um tom sujo. E aplicado a 100% em tudo, deixa de ser uma escolha e passa a ser o filtro da aplicação.",
+      "decisions": [
+        "Sombras arrefecidas e altas luzes aquecidas — é o eixo do estilo, não um acessório.",
+        "Pretos levemente levantados: nada no fotograma é totalmente preto.",
+        "Saturação global em baixo para que a pele seja a cor mais viva do enquadramento.",
+        "Vinheta discreta a fechar os cantos."
+      ],
+      "recipe": {
+        "contrast": 8,
+        "blacks": -10,
+        "fade": 14,
+        "saturation": -15,
+        "vignette": 22,
+        "splitShadow": [
+          -0.22,
+          0.02,
+          0.3
+        ],
+        "splitHigh": [
+          0.26,
+          0.08,
+          -0.14
+        ],
+        "curvePts": [
+          [
+            0,
+            0.04
+          ],
+          [
+            0.25,
+            0.22
+          ],
+          [
+            0.75,
+            0.79
+          ],
+          [
+            1,
+            0.97
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "splitShadow",
+          "label": "Sombras frias",
+          "note": "o azul-esverdeado que afasta o cenário"
+        },
+        {
+          "k": "splitHigh",
+          "label": "Luzes quentes",
+          "note": "protege a pele e traz a pessoa para a frente"
+        },
+        {
+          "k": "fade",
+          "label": "Pretos levantados",
+          "note": "tira a dureza do digital"
+        },
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "baixa, para a pele ficar a cor mais viva"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "look-cidade",
+        "edit-demo"
+      ],
+      "genres": [
+        "retrato",
+        "rua",
+        "viagem",
+        "eventos"
+      ],
+      "techniques": [
+        "split-toning",
+        "vinheta"
+      ]
+    },
+    {
+      "id": "filme",
+      "icon": "🎞️",
+      "name": "Look de filme",
+      "blurb": "Grão, halo quente nas luzes, cor imperfeita.",
+      "hook": "O que se imita no filme são os defeitos dele, não a fidelidade.",
+      "idea": "Ninguém procura filme por ser mais rigoroso — é menos. Procura-se o grão, o halo à volta das luzes e a cor que nunca é exactamente a certa. São imperfeições que o olho lê como memória.",
+      "why": "A emulsão tem grão físico, a luz espalha-se dentro dela (halação) e cada película falha a cor à sua maneira. O digital limpou tudo isso; o look de filme é a tentativa de devolver a textura que a limpeza levou.",
+      "says": "«Isto já aconteceu.» Um ficheiro impecável lê-se como presente; grão e halo empurram a imagem para o passado.",
+      "works": "Retrato, rua, família, festas — cenas onde a emoção importa mais do que o detalhe. E em fotografias com luzes fortes no enquadramento, porque é aí que a halação se vê.",
+      "overused": "Grão a mais numa fotografia já ruidosa é ruído com nome bonito. E aplicar filme a produto ou imobiliário destrói exactamente aquilo por que a fotografia existe: mostrar o objeto tal como é.",
+      "decisions": [
+        "Grão de luminância, forte nos meios-tons e quase ausente nos pretos e nas luzes.",
+        "Halação: um halo quente só à volta do que é muito claro.",
+        "Pretos levantados e altas luzes que fecham devagar em vez de estourar.",
+        "Um desvio de cor assumido — normalmente para o quente."
+      ],
+      "recipe": {
+        "grain": 44,
+        "grainSize": 2,
+        "halation": 34,
+        "fade": 18,
+        "temp": 6,
+        "saturation": -6,
+        "contrast": 4,
+        "highlights": -10,
+        "curvePts": [
+          [
+            0,
+            0.05
+          ],
+          [
+            0.3,
+            0.3
+          ],
+          [
+            0.8,
+            0.82
+          ],
+          [
+            1,
+            0.95
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "grain",
+          "label": "Grão",
+          "note": "textura, não sujidade: máximo nos meios-tons"
+        },
+        {
+          "k": "halation",
+          "label": "Halação",
+          "note": "o halo quente que a emulsão fazia à volta das luzes"
+        },
+        {
+          "k": "fade",
+          "label": "Pretos levantados",
+          "note": "o preto do filme nunca foi preto absoluto"
+        },
+        {
+          "k": "highlights",
+          "label": "Realces",
+          "note": "fecham devagar em vez de estourar"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "look-cidade",
+        "edit-demo"
+      ],
+      "genres": [
+        "retrato",
+        "rua",
+        "familia",
+        "festividades"
+      ],
+      "techniques": [
+        "grao",
+        "halacao",
+        "pretos-levantados"
+      ]
+    },
+    {
+      "id": "vintage",
+      "icon": "📻",
+      "name": "Vintage",
+      "blurb": "Amarelo, contraste baixo, cores que envelheceram.",
+      "hook": "Vintage não é filme antigo — é filme antigo mal guardado.",
+      "idea": "O que se copia aqui não é a película nova: é o que lhe aconteceu depois. Corantes que desapareceram a ritmos diferentes, papel amarelecido, contraste perdido.",
+      "why": "As provas a cor dos anos 70 e 80 degradaram-se de forma previsível — o ciano foi-se primeiro, e o que sobra puxa a amarelo e magenta. Toda uma geração viu a sua infância nessas cores, e é essa associação que o estilo compra.",
+      "says": "Nostalgia, e sobretudo nostalgia doméstica: álbum de família, férias, o que já não volta.",
+      "works": "Família, festividades, viagem, autorretrato — e especialmente em séries, porque a coerência de cor faz o conjunto ler-se como um álbum.",
+      "overused": "Numa fotografia de 2026 que não tem nada de nostálgico, é só uma camada de amarelo por cima. Se a imagem não ganha sentido com a data, o vintage é decoração.",
+      "decisions": [
+        "Desvio quente global (amarelo, com um toque de magenta nas sombras).",
+        "Contraste baixo e pretos muito levantados — a prova desbotou.",
+        "Saturação em baixo, mas desigual: os azuis perdem mais do que os quentes.",
+        "Grão fino e uma vinheta suave, como a de uma objetiva simples."
+      ],
+      "recipe": {
+        "temp": 16,
+        "tint": 8,
+        "fade": 30,
+        "contrast": -12,
+        "saturation": -22,
+        "grain": 26,
+        "grainSize": 2,
+        "vignette": 16,
+        "splitShadow": [
+          0.16,
+          0,
+          0.14
+        ],
+        "splitHigh": [
+          0.24,
+          0.16,
+          -0.08
+        ],
+        "hsl": {
+          "blueSat": -30,
+          "aquaSat": -25,
+          "orangeSat": 8
+        }
+      },
+      "ingredients": [
+        {
+          "k": "temp",
+          "label": "Temperatura",
+          "note": "o amarelo do papel envelhecido"
+        },
+        {
+          "k": "fade",
+          "label": "Pretos levantados",
+          "note": "muito mais do que no look de filme"
+        },
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "negativo: a prova perdeu força"
+        },
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "os corantes frios desapareceram primeiro"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "look-praia",
+        "look-cidade"
+      ],
+      "genres": [
+        "familia",
+        "festividades",
+        "viagem",
+        "autorretrato"
+      ],
+      "techniques": [
+        "pretos-levantados",
+        "split-toning",
+        "grao"
+      ]
+    },
+    {
+      "id": "matte",
+      "icon": "🌫️",
+      "name": "Matte",
+      "blurb": "Pretos levantados, contraste baixo, cor neutra.",
+      "hook": "Tirar o preto à fotografia é tirar-lhe a urgência.",
+      "idea": "O matte é uma decisão só: o ponto preto sobe e nada no fotograma volta a ser preto. Tudo o resto — contraste mais baixo, cor mais calma — é consequência.",
+      "why": "Chega da impressão em papel mate, que nunca conseguiu o preto denso do brilhante. Quando as redes sociais premiaram imagens suaves e claras, o defeito da impressão virou assinatura.",
+      "says": "Calma, distância, contenção. Uma imagem sem pretos não grita — o que ajuda quando o assunto já é forte e prejudica quando não é.",
+      "works": "Retrato sereno, nevoeiro, minimalismo, imobiliário e lifestyle de marca — situações em que se quer que a imagem respire.",
+      "overused": "É o estilo mais fácil de aplicar e por isso o mais gasto. Aplicado a uma cena que precisava de peso (noturna, desporto, preto e branco dramático) rouba-lhe a espinha e deixa uma imagem lavada.",
+      "decisions": [
+        "Ponto preto levantado — é isto, e o resto é ajuste.",
+        "Contraste global reduzido, sem recuperar nas sombras.",
+        "Cor neutra: ao contrário do vintage, o matte não tinge.",
+        "Realces contidos para o topo não compensar o que se perdeu em baixo."
+      ],
+      "recipe": {
+        "fade": 34,
+        "contrast": -14,
+        "blacks": 16,
+        "saturation": -12,
+        "highlights": -12,
+        "curvePts": [
+          [
+            0,
+            0.11
+          ],
+          [
+            0.5,
+            0.52
+          ],
+          [
+            1,
+            0.94
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "fade",
+          "label": "Pretos levantados",
+          "note": "a decisão que define o estilo"
+        },
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "baixo, para não recuperar pela força"
+        },
+        {
+          "k": "blacks",
+          "label": "Pretos",
+          "note": "abre a zona mais escura"
+        },
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "ligeiramente abaixo, nunca tingida"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "look-praia",
+        "edit-demo"
+      ],
+      "genres": [
+        "retrato",
+        "nevoeiro",
+        "imobiliario",
+        "produto"
+      ],
+      "techniques": [
+        "pretos-levantados"
+      ]
+    },
+    {
+      "id": "noir",
+      "icon": "🕶️",
+      "name": "Noir",
+      "blurb": "Preto e branco duro, sombra a ocupar o enquadramento.",
+      "hook": "No noir a sombra não é o que sobra da luz — é o assunto.",
+      "idea": "Preto e branco com pretos densos, luz dura e uma direção só. A informação que falta é deliberada: o que não se vê é o que faz a fotografia funcionar.",
+      "why": "Vem do cinema americano dos anos 40, que herdou o expressionismo alemão e o transformou em código moral — a personagem ambígua fotografada meia às escuras. Sobreviveu porque resolve um problema real: sem cor, resta a forma.",
+      "says": "Tensão, ambiguidade, ameaça. Também isolamento: uma figura pequena com muita sombra à volta lê-se sozinha.",
+      "works": "Rua à noite, arquitetura, retrato com uma janela ou um candeeiro como única fonte, preto e branco em geral.",
+      "overused": "Passar uma fotografia a preto e branco não a torna noir — torna-a sem cor. Sem luz dura e sem uma direção clara, o que fica é uma imagem cinzenta a fingir profundidade. E numa cena de luz plana é impossível: não há sombra para trabalhar.",
+      "decisions": [
+        "Preto e branco total — não é dessaturação parcial.",
+        "Pretos fechados e brancos limpos: a curva é um S acentuado.",
+        "Contraste local (clarity) em cima, para a textura ganhar aresta.",
+        "Vinheta e grão a apertar o enquadramento."
+      ],
+      "recipe": {
+        "saturation": -100,
+        "contrast": 30,
+        "blacks": -24,
+        "whites": 12,
+        "clarity": 18,
+        "grain": 30,
+        "grainSize": 1,
+        "vignette": 28,
+        "curvePts": [
+          [
+            0,
+            0
+          ],
+          [
+            0.28,
+            0.16
+          ],
+          [
+            0.72,
+            0.86
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "a zero: sem cor, resta a forma"
+        },
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "alto, sem medo de fechar sombras"
+        },
+        {
+          "k": "clarity",
+          "label": "Contraste local",
+          "note": "dá aresta à textura"
+        },
+        {
+          "k": "vignette",
+          "label": "Vinheta",
+          "note": "fecha o enquadramento à volta da figura"
+        }
+      ],
+      "bases": [
+        "look-cidade",
+        "look-retrato",
+        "look-praia"
+      ],
+      "genres": [
+        "pb",
+        "rua",
+        "noturna",
+        "arquitetura"
+      ],
+      "techniques": [
+        "vinheta",
+        "silhueta",
+        "grao"
+      ]
+    },
+    {
+      "id": "moody",
+      "icon": "🌧️",
+      "name": "Moody",
+      "blurb": "Escuro, verdes apagados, sombras frias.",
+      "hook": "Escurecer não cria atmosfera — escurecer o sítio certo cria.",
+      "idea": "Expor abaixo do «correto» e deixar grande parte do enquadramento em sombra, com os verdes puxados para um tom apagado e as sombras arrefecidas.",
+      "why": "Popularizou-se com a fotografia de montanha e floresta do norte da Europa: cenas que realmente são assim, com luz fraca e vegetação escura. O estilo é a codificação de um clima concreto.",
+      "says": "Melancolia, isolamento, tempo suspenso. Também escala: quanto mais escuro o à volta, maior parece o que está lá.",
+      "works": "Nevoeiro, chuva, floresta, montanha, retrato interior com uma janela só, viagem no norte.",
+      "overused": "Uma cena que era luminosa e alegre escurecida à força fica só subexposta. E o verde-caqui aplicado a tudo é hoje um clique reconhecível — o mesmo problema do teal & orange.",
+      "decisions": [
+        "Exposição global abaixo do neutro, com as sombras a fechar mais ainda.",
+        "Verdes dessaturados e escurecidos — é a banda que denuncia o estilo.",
+        "Sombras frias, altas luzes quase neutras.",
+        "Vinheta forte a empurrar o olhar para o centro."
+      ],
+      "recipe": {
+        "exposure": -0.32,
+        "shadows": -18,
+        "contrast": 10,
+        "saturation": -20,
+        "temp": -10,
+        "vignette": 32,
+        "splitShadow": [
+          -0.14,
+          0.02,
+          0.2
+        ],
+        "hsl": {
+          "greenSat": -40,
+          "greenLum": -25,
+          "yellowSat": -20
+        }
+      },
+      "ingredients": [
+        {
+          "k": "exposure",
+          "label": "Exposição",
+          "note": "abaixo do neutro, de propósito"
+        },
+        {
+          "k": "shadows",
+          "label": "Sombras",
+          "note": "fecham em vez de abrir"
+        },
+        {
+          "k": "hsl",
+          "label": "Verdes",
+          "note": "apagados e escuros — a assinatura do estilo"
+        },
+        {
+          "k": "vignette",
+          "label": "Vinheta",
+          "note": "concentra o pouco que fica visível"
+        }
+      ],
+      "bases": [
+        "edit-demo",
+        "look-retrato",
+        "look-cidade"
+      ],
+      "genres": [
+        "nevoeiro",
+        "chuva",
+        "paisagem",
+        "viagem"
+      ],
+      "techniques": [
+        "vinheta",
+        "silhueta"
+      ]
+    },
+    {
+      "id": "high-key",
+      "icon": "⚪",
+      "name": "High Key",
+      "blurb": "Claro, quase sem sombra, contraste baixo.",
+      "hook": "Sem sombras não há drama — e às vezes é exactamente isso que se quer.",
+      "idea": "Quase toda a informação vive na metade clara da escala. As sombras existem, mas são cinzentos altos: nada pesa.",
+      "why": "Vem do estúdio, onde encher a cena de luz difusa era a forma de fotografar produtos e retratos comerciais sem sombras a distrair. Ficou associado a limpeza e a otimismo.",
+      "says": "Leveza, higiene, otimismo, inocência. É o estilo da publicidade a produtos de saúde e da fotografia de recém-nascidos por alguma razão.",
+      "works": "Retrato em estúdio, produto, gastronomia clara, flores, nevoeiro, praia ao meio-dia — cenas que já são claras.",
+      "overused": "Aplicado a uma cena dramática desmonta-a. E há um limite físico: levantar sombras que não têm informação só revela ruído e bandas.",
+      "decisions": [
+        "Exposição acima do neutro, sem estourar as luzes que interessam.",
+        "Sombras e pretos muito abertos: o histograma encosta à direita.",
+        "Contraste baixo — o high key não é uma imagem clara e contrastada.",
+        "Saturação ligeiramente abaixo, para o claro não ficar berrante."
+      ],
+      "recipe": {
+        "exposure": 0.5,
+        "shadows": 34,
+        "blacks": 26,
+        "contrast": -18,
+        "whites": 10,
+        "fade": 10,
+        "saturation": -6,
+        "curvePts": [
+          [
+            0,
+            0.14
+          ],
+          [
+            0.5,
+            0.62
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "exposure",
+          "label": "Exposição",
+          "note": "acima do neutro"
+        },
+        {
+          "k": "shadows",
+          "label": "Sombras",
+          "note": "abertas até quase desaparecerem"
+        },
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "baixo: claro não é o mesmo que contrastado"
+        },
+        {
+          "k": "whites",
+          "label": "Brancos",
+          "note": "encostam sem estourar o que interessa"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "look-praia",
+        "edit-demo"
+      ],
+      "genres": [
+        "produto",
+        "gastronomia",
+        "flores",
+        "retrato"
+      ],
+      "techniques": [
+        "espaco-negativo"
+      ]
+    },
+    {
+      "id": "low-key",
+      "icon": "⚫",
+      "name": "Low Key",
+      "blurb": "Escuro, uma fonte só, o resto entregue à sombra.",
+      "hook": "O low key não escurece a fotografia — decide o que fica de fora dela.",
+      "idea": "Quase tudo em sombra e uma zona pequena com luz. Não é subexposição: o que está iluminado está bem exposto, o resto é que foi abandonado.",
+      "why": "É a fotografia possível com uma fonte só, que foi durante séculos a condição normal da pintura — uma janela, uma vela. O olho lê isso como intimidade porque é assim que vemos à noite.",
+      "says": "Intimidade, mistério, concentração. Obriga a olhar para uma coisa só.",
+      "works": "Retrato com janela, noturna, gastronomia escura, produto com uma fonte, música ao vivo.",
+      "overused": "Confundido com «puxar a exposição para baixo». Se não houver uma zona verdadeiramente bem exposta, o resultado não é low key — é uma fotografia escura e sem assunto.",
+      "decisions": [
+        "Uma zona pequena correctamente exposta; o resto cai.",
+        "Sombras e pretos fechados sem tentar recuperar.",
+        "Contraste médio-alto para separar a zona de luz do fundo.",
+        "Vinheta a reforçar o que a luz já estava a fazer."
+      ],
+      "recipe": {
+        "exposure": -0.62,
+        "shadows": -34,
+        "blacks": -22,
+        "contrast": 18,
+        "highlights": -6,
+        "vignette": 34,
+        "curvePts": [
+          [
+            0,
+            0
+          ],
+          [
+            0.4,
+            0.24
+          ],
+          [
+            0.8,
+            0.78
+          ],
+          [
+            1,
+            0.98
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "exposure",
+          "label": "Exposição",
+          "note": "abaixo, mas com uma zona a manter-se certa"
+        },
+        {
+          "k": "blacks",
+          "label": "Pretos",
+          "note": "fecham sem tentativa de recuperação"
+        },
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "separa a luz do que ficou às escuras"
+        },
+        {
+          "k": "vignette",
+          "label": "Vinheta",
+          "note": "acompanha a queda natural da fonte"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "look-cidade",
+        "look-praia"
+      ],
+      "genres": [
+        "retrato",
+        "noturna",
+        "gastronomia",
+        "produto"
+      ],
+      "techniques": [
+        "vinheta",
+        "silhueta"
+      ]
+    },
+    {
+      "id": "bleach-bypass",
+      "icon": "🥈",
+      "name": "Bleach Bypass",
+      "blurb": "Contraste alto, cor quase toda fora, prata.",
+      "hook": "Uma imagem a preto e branco e uma a cores ao mesmo tempo.",
+      "idea": "Cor muito reduzida mas não eliminada, com contraste e textura em cima. O resultado parece metálico — daí o nome «prata retida».",
+      "why": "Era literalmente um erro de laboratório: saltar o branqueamento no processamento do filme deixava a prata na película por cima da imagem a cores. Filmes de guerra e thrillers dos anos 90 adotaram-no porque tirava conforto à imagem.",
+      "says": "Aspereza, urgência, realidade sem verniz. É o oposto exacto do golden hour.",
+      "works": "Reportagem, desporto, indústria, arquitetura brutalista, retrato de carácter com pele texturada.",
+      "overused": "Numa cena que precisava de cor (gastronomia, flores, produto) tira-lhe o assunto. E em pele jovem e lisa a textura acrescentada parece um defeito.",
+      "decisions": [
+        "Saturação muito baixa mas nunca a zero — o resto de cor é o que o distingue do preto e branco.",
+        "Contraste alto com pretos fechados.",
+        "Contraste local e textura em cima: quer-se ver o material.",
+        "Brancos a encostar, sem suavidade."
+      ],
+      "recipe": {
+        "saturation": -62,
+        "contrast": 28,
+        "clarity": 16,
+        "texture": 14,
+        "whites": 10,
+        "blacks": -14,
+        "curvePts": [
+          [
+            0,
+            0
+          ],
+          [
+            0.3,
+            0.2
+          ],
+          [
+            0.7,
+            0.84
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "quase fora, mas não a zero"
+        },
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "alto e sem cedências"
+        },
+        {
+          "k": "clarity",
+          "label": "Contraste local",
+          "note": "o aspeto metálico vem daqui"
+        },
+        {
+          "k": "texture",
+          "label": "Textura",
+          "note": "quer-se ver o material"
+        }
+      ],
+      "bases": [
+        "look-cidade",
+        "look-retrato",
+        "edit-demo"
+      ],
+      "genres": [
+        "rua",
+        "desporto",
+        "arquitetura",
+        "eventos"
+      ],
+      "techniques": [
+        "contraste-cor"
+      ]
+    },
+    {
+      "id": "teal-orange",
+      "icon": "🟠",
+      "name": "Teal & Orange",
+      "blurb": "Pele quente contra tudo o que é frio.",
+      "hook": "Funciona por uma razão só: a pele humana e o azul são complementares.",
+      "idea": "Empurrar as sombras para o azul-esverdeado e as altas luzes para o laranja põe a pele no extremo oposto de tudo o resto na roda de cores. É a separação mais forte que existe sem mexer na composição.",
+      "why": "Quando a graduação passou a ser digital, os coloristas descobriram que este par dava separação instantânea em qualquer plano com pessoas. Espalhou-se pelos trailers de Hollywood dos anos 2000 até virar sinónimo de «cinema».",
+      "says": "Espetáculo, produção, escala. Diz «isto foi feito por uma equipa», mesmo quando não foi.",
+      "works": "Cenas com pessoas e um cenário frio: cidade à noite, interiores industriais, praia ao fim da tarde, desporto.",
+      "overused": "É o estilo mais gasto da lista, e a razão é a mesma que o tornou eficaz: aplica-se a tudo. Numa cena que já é laranja e azul (pôr do sol sobre o mar) não separa nada — só exagera. Se não há pele no enquadramento, quase de certeza não é este o estilo.",
+      "decisions": [
+        "Sombras para o teal, altas luzes para o laranja — os dois ao mesmo tempo.",
+        "Saturação global ligeiramente em baixo para o par não ficar berrante.",
+        "Os laranjas e vermelhos protegidos: é onde vive a pele.",
+        "Verdes puxados para o teal, senão a vegetação luta com a pele."
+      ],
+      "recipe": {
+        "saturation": -8,
+        "contrast": 10,
+        "splitShadow": [
+          -0.42,
+          0.05,
+          0.48
+        ],
+        "splitHigh": [
+          0.46,
+          0.14,
+          -0.28
+        ],
+        "hsl": {
+          "orangeSat": 14,
+          "greenHue": -18,
+          "greenSat": -22,
+          "blueSat": 10
+        }
+      },
+      "ingredients": [
+        {
+          "k": "splitShadow",
+          "label": "Sombras teal",
+          "note": "metade do par"
+        },
+        {
+          "k": "splitHigh",
+          "label": "Luzes laranja",
+          "note": "a outra metade — nunca uma sem a outra"
+        },
+        {
+          "k": "hsl",
+          "label": "Bandas",
+          "note": "protege a pele e afasta os verdes"
+        },
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "em baixo para o contraste de cor não gritar"
+        }
+      ],
+      "bases": [
+        "look-cidade",
+        "look-retrato",
+        "look-praia"
+      ],
+      "genres": [
+        "rua",
+        "noturna",
+        "desporto",
+        "automovel"
+      ],
+      "techniques": [
+        "split-toning",
+        "contraste-cor"
+      ]
+    },
+    {
+      "id": "golden-hour",
+      "icon": "🌅",
+      "name": "Golden Hour",
+      "blurb": "Sol baixo, luz quente, halo à volta de tudo.",
+      "hook": "Não é um estilo de edição — é uma hora do dia que se pode reforçar, não inventar.",
+      "idea": "O sol baixo atravessa mais atmosfera, perde azul e ganha laranja, e bate de lado. É a única entrada desta lista que se ganha no terreno; a edição só sublinha o que já lá está.",
+      "why": "Existe porque a luz rasante faz três coisas ao mesmo tempo: revela textura, separa planos com sombras longas e aquece a pele. Nenhuma edição consegue as sombras longas.",
+      "says": "Calor, fim, nostalgia, generosidade. É a luz da memória feliz.",
+      "works": "Praticamente tudo o que esteja lá fora: paisagem, retrato, viagem, casamentos, automóvel, rua.",
+      "overused": "Quando se tenta forjar. Aquecer uma fotografia de meio-dia dá uma imagem amarela com sombras curtas por baixo dos olhos — o cérebro percebe a contradição mesmo sem a saber explicar.",
+      "decisions": [
+        "Temperatura quente, mas sem passar a amarelo puro.",
+        "Altas luzes tingidas de dourado; sombras deixadas neutras ou levemente frias.",
+        "Bloom discreto — o halo que a luz rasante faz mesmo na objetiva.",
+        "Vibrância em vez de saturação, para o céu não ficar laranja-plástico."
+      ],
+      "recipe": {
+        "temp": 20,
+        "vibrance": 16,
+        "bloom": 22,
+        "contrast": 4,
+        "shadows": 10,
+        "highlights": -8,
+        "splitHigh": [
+          0.28,
+          0.14,
+          -0.12
+        ],
+        "splitShadow": [
+          -0.06,
+          0,
+          0.1
+        ]
+      },
+      "ingredients": [
+        {
+          "k": "temp",
+          "label": "Temperatura",
+          "note": "quente — o azul que a atmosfera comeu"
+        },
+        {
+          "k": "bloom",
+          "label": "Bloom",
+          "note": "o halo da luz rasante a bater na objetiva"
+        },
+        {
+          "k": "vibrance",
+          "label": "Vibrância",
+          "note": "poupa o que já está saturado"
+        },
+        {
+          "k": "splitHigh",
+          "label": "Luzes douradas",
+          "note": "só as altas luzes, não a imagem toda"
+        }
+      ],
+      "bases": [
+        "edit-demo",
+        "look-praia",
+        "look-retrato"
+      ],
+      "genres": [
+        "nascer-por-sol",
+        "paisagem",
+        "retrato",
+        "viagem"
+      ],
+      "techniques": [
+        "bloom",
+        "split-toning",
+        "silhueta"
+      ]
+    },
+    {
+      "id": "neon",
+      "icon": "🌃",
+      "name": "Paleta neon",
+      "blurb": "Cor artificial saturada, reflexos, escuro à volta.",
+      "hook": "A cor não vem da edição: vem das lâmpadas que já estavam na rua.",
+      "idea": "Uma cena escura com fontes de cor forte e concorrente — néon, LED, montras. O trabalho é proteger essas cores e deixar cair tudo o que não é luz.",
+      "why": "As cidades encheram-se de fontes de espectro estreito que nenhum balanço de brancos consegue neutralizar. Em vez de corrigir o «erro», o estilo assume-o. O cinema de ficção científica fez o resto.",
+      "says": "Modernidade, insónia, artificialidade, solidão urbana. Uma figura sozinha nesta luz lê-se sempre como isolada.",
+      "works": "Noturna, rua à noite, chuva na cidade, retrato com montra ou letreiro como fonte, automóvel.",
+      "overused": "Empurrar a saturação de uma noite sem cor não cria néon — cria ruído colorido. Sem fontes de cor reais no enquadramento não há estilo nenhum para reforçar.",
+      "decisions": [
+        "Pretos fechados: o néon só brilha se houver escuro à volta.",
+        "Saturação e vibrância em cima, mas nas bandas certas.",
+        "Bloom nas fontes de luz — a luz forte espalha-se mesmo.",
+        "Sombras arrefecidas para as luzes quentes ganharem contraste de cor."
+      ],
+      "recipe": {
+        "saturation": 24,
+        "vibrance": 16,
+        "contrast": 16,
+        "blacks": -20,
+        "bloom": 32,
+        "splitShadow": [
+          -0.16,
+          0,
+          0.28
+        ],
+        "hsl": {
+          "magentaSat": 20,
+          "blueSat": 18,
+          "orangeSat": 10
+        }
+      },
+      "ingredients": [
+        {
+          "k": "blacks",
+          "label": "Pretos",
+          "note": "fechados: sem escuro não há néon"
+        },
+        {
+          "k": "bloom",
+          "label": "Bloom",
+          "note": "a luz forte espalha-se à volta da fonte"
+        },
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "em cima, mas só onde há cor real"
+        },
+        {
+          "k": "splitShadow",
+          "label": "Sombras frias",
+          "note": "faz o contraste com as luzes quentes"
+        }
+      ],
+      "bases": [
+        "look-cidade",
+        "look-retrato",
+        "look-praia"
+      ],
+      "genres": [
+        "noturna",
+        "rua",
+        "chuva",
+        "automovel"
+      ],
+      "techniques": [
+        "bloom",
+        "reflexos",
+        "contraste-cor"
+      ]
+    },
+    {
+      "id": "documental",
+      "icon": "📰",
+      "name": "Documental",
+      "blurb": "Cor honesta, contraste natural, nenhum estilo por cima.",
+      "hook": "Não ter estilo é um estilo — e é o mais difícil de manter.",
+      "idea": "Cor fiel, contraste próximo do que a cena tinha, nenhuma tonalidade acrescentada. A imagem pede para ser acreditada, e qualquer graduação visível estraga isso.",
+      "why": "Existe por razões éticas antes de estéticas: o fotojornalismo tem códigos explícitos sobre o que se pode ajustar. Mas também funciona esteticamente — uma cena forte não precisa de ajuda e resiste melhor ao tempo do que qualquer look da moda.",
+      "says": "«Isto aconteceu assim.» A ausência de tratamento é, ela própria, um argumento de credibilidade.",
+      "works": "Reportagem, eventos, rua, família, viagem — e sempre que a fotografia vai servir de registo para outra pessoa.",
+      "overused": "Não se gasta. Mas é usado como desculpa: uma imagem sem intenção não fica documental por não ser editada — fica só por acabar.",
+      "decisions": [
+        "Balanço de brancos correcto, não «bonito».",
+        "Ajustes de exposição e recuperação apenas onde a cena o exige.",
+        "Nada de tonalidade separada, nada de vinheta, nada de grão.",
+        "O corte é a única liberdade — e mesmo essa com limites em contexto jornalístico."
+      ],
+      "recipe": {
+        "contrast": 5,
+        "vibrance": 8,
+        "shadows": 6,
+        "highlights": -6,
+        "sharpen": 10
+      },
+      "ingredients": [
+        {
+          "k": "contrast",
+          "label": "Contraste",
+          "note": "o mínimo para a imagem não ficar mole"
+        },
+        {
+          "k": "vibrance",
+          "label": "Vibrância",
+          "note": "discreta, nunca saturação global"
+        },
+        {
+          "k": "shadows",
+          "label": "Sombras",
+          "note": "só o que a cena perdeu na captação"
+        },
+        {
+          "k": "sharpen",
+          "label": "Nitidez",
+          "note": "compensa o filtro do sensor, não acrescenta"
+        }
+      ],
+      "bases": [
+        "look-cidade",
+        "look-retrato",
+        "look-praia",
+        "edit-demo"
+      ],
+      "genres": [
+        "eventos",
+        "rua",
+        "familia",
+        "viagem"
+      ],
+      "techniques": []
+    }
+  ]
+}

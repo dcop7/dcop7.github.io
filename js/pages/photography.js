@@ -588,62 +588,18 @@ const PhotographyPage = (function () {
   }
 
   /* ══ VISUALIZADOR DE COMPOSIÇÃO ═════════════════════════════════════════
-     Substitui os três modos (Grelha/Exemplo/Ambos), que obrigavam a trocar de
-     vista para comparar. Agora há uma só cena com duas camadas de leitura:
-       • cortina arrastável entre a versão CORRETA e a INCORRETA — a comparação
-         acontece no mesmo sítio do ecrã, que é o que torna a diferença óbvia;
-       • marcações geométricas por cima, que se ligam e desligam.
-     Uma régua de miniaturas permite saltar entre técnicas sem fechar. */
+     Uma cena com duas camadas de leitura: a comparação entre a versão
+     CORRETA e a INCORRETA, e as marcações geométricas por cima, que se
+     ligam e desligam. Uma régua de miniaturas salta entre técnicas sem
+     fechar o modal.
+
+     A comparação em si passou a ser o PhotoLearn.compare (lado a lado por
+     omissão, cortina à distância de um toque) — a cortina local que aqui
+     existia era a mesma coisa sem os outros modos e sem o seletor. */
   let _compIdx = 0, _compGenre = null;
   let _compOv = (() => { try { return localStorage.getItem('ph-comp-ov') !== '0'; } catch (_) { return true; } })();
-  let _compWipe = 55;
   const setCompOv = v => { _compOv = v; try { localStorage.setItem('ph-comp-ov', v ? '1' : '0'); } catch (_) {} };
 
-  /* ── Cortina comparativa (componente partilhado) ──────────────────────────
-     Duas imagens no mesmo sítio do ecrã com uma cortina arrastável. É o que
-     torna uma diferença óbvia sem obrigar a trocar de vista. Usada pelo
-     visualizador de composição (correto/incorreto) e pela secção Visão
-     (memorável/banal); `extra` permite injetar camadas por cima (a grelha). */
-  function wipeStageHTML(o) {
-    const pct = o.pct == null ? 55 : o.pct;
-    return `<div class="ph-cv-frame" data-wipe>
-        <img class="ph-cv-layer" src="${o.b}" alt="${o.bAlt || ''}" draggable="false">
-        <div class="ph-cv-layer ph-cv-ok" style="clip-path:inset(0 ${100 - pct}% 0 0)">
-          <img src="${o.a}" alt="${o.aAlt || ''}" draggable="false">
-        </div>
-        ${o.extra || ''}
-        <span class="ph-cv-tag ok">${o.aTag || '✓ Correto'}</span>
-        <span class="ph-cv-tag bad">${o.bTag || '✗ Incorreto'}</span>
-        <div class="ph-cv-handle" style="left:${pct}%"><span class="ph-cv-grip">⇔</span></div>
-      </div>
-      <input class="ph-cv-range" type="range" min="0" max="100" value="${pct}" aria-label="${o.label || 'Comparar as duas versões'}">`;
-  }
-
-  /* Arrastar no próprio enquadramento, ou o range (teclado e leitores de ecrã).
-     `onPct` guarda a posição para sobreviver a um re-render da secção. */
-  function wireWipeStage(scope, onPct) {
-    const frame = scope.querySelector('[data-wipe]'); if (!frame) return;
-    const range = scope.querySelector('.ph-cv-range');
-    const apply = p => {
-      const pct = Math.max(0, Math.min(100, p));
-      frame.querySelector('.ph-cv-ok').style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
-      frame.querySelector('.ph-cv-handle').style.left = pct + '%';
-      if (range && +range.value !== Math.round(pct)) range.value = Math.round(pct);
-      if (onPct) onPct(pct);
-    };
-    const fromEvent = e => {
-      const r = frame.getBoundingClientRect();
-      apply(((e.clientX - r.left) / r.width) * 100);
-    };
-    let dragging = false;
-    frame.addEventListener('pointerdown', e => {
-      dragging = true; frame.setPointerCapture(e.pointerId); fromEvent(e); e.preventDefault();
-    });
-    frame.addEventListener('pointermove', e => { if (dragging) fromEvent(e); });
-    frame.addEventListener('pointerup', e => { dragging = false; try { frame.releasePointerCapture(e.pointerId); } catch (_) {} });
-    frame.addEventListener('pointercancel', () => { dragging = false; });
-    range?.addEventListener('input', () => apply(+range.value));
-  }
   const compSlug = name => (COMP_ASSET[name] || '').replace(/^comp-/, '');
   const genreCompAsset = (genre, comp) => genre ? assetPath('comp-' + genre + '-' + compSlug(comp.name)) : null;
 
@@ -677,19 +633,27 @@ const PhotographyPage = (function () {
     const why = COMP_WHY[slug] || {};
     modal.querySelector('[data-comp-title]').textContent = `🖼️ ${comp.name}`;
 
-    const stage = bad ? `
-      ${wipeStageHTML({
-        a: asset, b: bad, aAlt: 'Exemplo correto', bAlt: 'Exemplo incorreto',
-        pct: _compWipe, label: 'Comparar correto e incorreto',
-        extra: `<canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>`,
-      })}
-      <div class="ph-cv-why">
-        <span class="ph-cv-why-ok"><b>✓</b> ${why.ok || ''}</span>
-        <span class="ph-cv-why-bad"><b>✗</b> ${why.bad || ''}</span>
-      </div>`
-      : `<div class="ph-cv-frame">
-        ${asset ? `<img class="ph-cv-layer" src="${asset}" alt="" draggable="false">` : '<div class="ph-cv-layer ph-cv-noimg"></div>'}
-        <canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>
+    /* Parte 3 — a cortina deixou de ser o único modo aqui.
+       O par correto/incorreto de uma composição são DUAS CENAS diferentes:
+       com a cortina via-se metade de cada uma, e a geometria que se está a
+       ensinar (onde cai o assunto, para onde vão as linhas) fica cortada ao
+       meio precisamente onde interessa. Lado a lado mostra as duas decisões
+       inteiras, cada uma com a sua grelha por cima — que é a comparação que
+       esta secção sempre quis fazer. A cortina continua a um toque, porque
+       para quem já percebeu a diferença ela é mais rápida. */
+    const ovHTML = () => `<canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>`;
+    const stage = bad
+      ? PhotoLearn.compare({
+          fam: 'composicao', mode: 'side', a: asset, b: bad,
+          aAlt: 'Exemplo correto', bAlt: 'Exemplo incorreto',
+          aTag: '✓ Correto', bTag: '✗ Incorreto',
+          aWhy: why.ok || '', bWhy: why.bad || '',
+          label: 'Comparar correto e incorreto',
+          extraA: ovHTML(), extraB: ovHTML(),
+        })
+      : `<div class="pl-frame">
+        ${asset ? `<img src="${asset}" alt="" draggable="false">` : '<div class="ph-cv-noimg"></div>'}
+        ${ovHTML()}
       </div>`;
 
     modal.querySelector('.ph-cv-body').innerHTML = `
@@ -715,12 +679,17 @@ const PhotographyPage = (function () {
         }).join('')}
       </div>`;
 
+    /* Em lado a lado há DUAS grelhas: a do exemplo correto mostra onde as
+       linhas caem, e a do incorreto mostra que não caem em lado nenhum. É
+       essa segunda que faltava enquanto só havia uma cena de cada vez. */
     const drawOv = () => {
-      const cv = modal.querySelector('.ph-cv-ov'); if (!cv) return;
-      const frame = cv.closest('.ph-cv-frame'), w = frame.clientWidth || 560;
-      const h = frame.clientHeight || Math.round(w * 832 / 1216);
-      cv.width = w; cv.height = h;
-      drawCompOverlay(cv, comp, { bg: !asset });
+      modal.querySelectorAll('.ph-cv-ov').forEach(cv => {
+        const frame = cv.closest('.pl-frame') || cv.parentElement;
+        const w = frame.clientWidth || 560;
+        const h = frame.clientHeight || Math.round(w * 832 / 1216);
+        cv.width = w; cv.height = h;
+        drawCompOverlay(cv, comp, { bg: !asset });
+      });
     };
     requestAnimationFrame(drawOv);
 
@@ -730,10 +699,12 @@ const PhotographyPage = (function () {
       b.addEventListener('click', () => { _compIdx = +b.dataset.jump; renderCompModal(modal); }));
     modal.querySelector('[data-ov]')?.addEventListener('change', e => {
       setCompOv(e.target.checked);
-      modal.querySelector('.ph-cv-ov')?.classList.toggle('off', !e.target.checked);
+      modal.querySelectorAll('.ph-cv-ov').forEach(cv => cv.classList.toggle('off', !e.target.checked));
     });
 
-    wireWipeStage(modal, pct => { _compWipe = pct; });
+    PhotoLearn.wire(modal, plGo);
+    // trocar de modo recria as molduras: as grelhas têm de ser repintadas
+    modal.querySelector('.pl-cmp')?.addEventListener('pl:mode', () => requestAnimationFrame(drawOv));
     window.addEventListener('resize', drawOv, { once: true });
   }
 
@@ -964,13 +935,16 @@ const PhotographyPage = (function () {
     const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
     _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json'),
                               grab('profiles.json'), grab('craft.json'), grab('equipment.json'),
-                              grab('vision.json')])
-      .then(([g, gen, k, p, c, e, v]) => (_DB = {
+                              grab('vision.json'), grab('looks.json'), grab('techniques.json'),
+                              grab('read.json')])
+      .then(([g, gen, k, p, c, e, v, lk, tc, rd]) => (_DB = {
         classes: g.classes, lensClasses: g.lensClasses, mine: g.mine, gearDefault: g.default,
         genres: gen.genres, know: k.topics,
         profiles: p.profiles, profileDefault: p.default, rawAdvice: p.rawAdvice,
         craft: c.modules, equipment: e.categories,
         vision: v.genres, principles: v.principles,
+        looks: lk.looks, lookBases: lk.bases, techniques: tc.techniques,
+        readMethod: rd.method, readAnalyses: rd.analyses, readCrops: rd.crops,
       }))
       .catch(() => { _dbPromise = null; return null; });
     return _dbPromise;
@@ -1138,6 +1112,37 @@ const PhotographyPage = (function () {
     gh:       { fn: buildGoldenHour,   label: 'Hora dourada' },
   };
   let _pendingCalc = null;
+
+  /* ── router das ligações cruzadas ─────────────────────────────────────────
+     Todos os componentes do PhotoLearn emitem chips com data-go="<alvo>", e é
+     aqui que um alvo vira navegação. Existe para que uma lição possa apontar
+     para outra sem saber nada sobre rotas — sem isto, cada secção nova teria
+     de reimplementar a mesma tabela e o portal voltava a ser um conjunto de
+     páginas isoladas em vez de um sistema. */
+  let _pendingLearn = null;   // {seg, id} — cartão a abrir ao chegar a Aprender
+  function plGo(target) {
+    const [kind, arg] = String(target || '').split(':');
+    if (kind === 'g' && arg) { _portalSec = 'visao'; return Nav.go('photography/g/' + arg); }
+    if (kind === 'gsec' && arg) {                    // g:<id>/<secção>
+      const [gid, sec] = arg.split('/');
+      if (sec) _portalSec = sec;
+      return Nav.go('photography/g/' + gid);
+    }
+    if (kind === 'look' || kind === 'tec' || kind === 'ler') {
+      const seg = kind === 'look' ? 'estilos' : kind === 'tec' ? 'tecnicas' : 'ler';
+      _pendingLearn = { seg, id: arg };
+      return Nav.go('photography/aprender/' + seg);
+    }
+    if (kind === 'apr') return Nav.go('photography/aprender/' + arg);
+    if (kind === 'comp' && arg) {
+      const comp = COMPOSITIONS.find(c => c.name === arg);
+      if (comp) return openCompModal(comp);
+      return Nav.go('photography/aprender/composicao');
+    }
+    if (kind === 'tool' && arg) { _pendingCalc = arg; return Nav.go('photography/ferramentas'); }
+    if (kind === 'etool' && arg) return gotoTool(arg);
+    if (kind === 'edicao') return Nav.go('photography/edicao');
+  }
 
   // ── home: grelha de géneros ──
   function buildGeneros(panel) {
@@ -1381,14 +1386,28 @@ const PhotographyPage = (function () {
      atmosfera", "não matar o céu". O COMO fazer vive na secção Edição, e cada
      ferramenta mencionada abre lá diretamente. Sem isto, a explicação da mesma
      ferramenta apareceria repetida em 28 páginas. */
+  /* Índice inverso: estilos e técnicas que declaram este género. Sem ele as
+     ligações só existiam num sentido — um estilo sabia onde se aplica, mas o
+     género não sabia que estilos lhe assentam, e quem entra por um género
+     nunca descobria a secção Estilos (Parte 8). */
+  function genreCross(gid, kind, max = 4) {
+    const list = (_DB && _DB[kind === 'look' ? 'looks' : 'techniques']) || [];
+    return list.filter(x => (x.genres || []).includes(gid)).slice(0, max)
+      .map(x => ({ go: kind + ':' + x.id, icon: x.icon, label: x.name }));
+  }
+
   function editSectionHTML(g) {
     const p = profileDef(), depth = p ? p.editDepth : 'selective';
     const goals = (g.edit && g.edit.goals) || [];
     const profNote = p ? `<div class="ph-fmt ph-fmt-${depth === 'minimal' ? 'lo' : 'md'}"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>` : '';
+    /* O estilo é a camada acima do "como se faz": a secção Edição ensina os
+       controlos, e estes chips dizem que aspeto vale a pena procurar aqui. */
+    const styles = PhotoLearn.chips(genreCross(g.id, 'look'), '🎨 Estilos que assentam neste género');
     if (depth === 'minimal') {
       return `${profNote}<div class="ph-scn-blurb">${g.edit.intro}</div>
         <div class="ph-info-card"><b>🎯 O que interessa mesmo aqui</b>
           <ul>${goals.slice(0, 3).map(o => li(o.text)).join('')}</ul></div>
+        ${styles}
         <button class="ph-goto-edit" data-goedit>🎨 Ver como se faz, na secção Edição →</button>`;
     }
     return `<div class="ph-scn-blurb">${g.edit.intro}</div>${profNote}
@@ -1397,20 +1416,57 @@ const PhotographyPage = (function () {
         ${(o.tools || []).length ? `<span class="ph-goal-tools">${o.tools.map(t =>
           `<button class="ph-chip ph-chip-link" data-etool="${t.id}">${t.label} →</button>`).join('')}</span>` : ''}
       </div>`).join('') || '<p class="ph-section-sub">—</p>'}</div>
+      ${styles}
       <button class="ph-goto-edit" data-goedit>🎨 Aprender edição de raiz, na secção Edição →</button>`;
   }
 
   /* ══ VISÃO ══════════════════════════════════════════════════════════════
      A camada criativa do género: porque é que se fotografa aquilo e o que se
      está a tentar dizer. Deliberadamente NÃO fala de equipamento, exposição,
-     grelhas nem edição — isso já existe nas outras secções, e repeti-lo aqui
-     tornaria a Visão num resumo em vez de um acrescento.
-     O par de imagens (memorável × banal) usa a mesma cortina da Composição:
-     é o argumento visual de que a diferença não está na técnica.
+     grelhas nem edição — isso já existe nas outras secções.
+
+     Reescrita para deixar de se ler como artigo. O conteúdo é o mesmo; o que
+     mudou foi a ORDEM e o estado inicial de cada peça:
+
+       • o par de fotografias sobe para primeiro lugar (antes vinha depois de
+         um parágrafo de quatro linhas, e quem lê num telemóvel raramente
+         chegava lá);
+       • o "porquê" passa a `<details>` — continua inteiro, mas fechado, para
+         quem quer o argumento e não a explicação;
+       • o quadro banal→memorável vira toca-para-revelar: a mesma informação,
+         mas com uma pergunta de um segundo antes da resposta;
+       • o vocabulário visual esconde o significado até ao toque, pela mesma
+         razão — uma lista de definições lê-se de enfiada e não se fixa;
+       • armadilha, ética e série passam a acordeões: uma linha visível cada.
+
+     Resultado: o ecrã inicial de uma Visão passou de ~15 linhas de texto para
+     uma pergunta, duas fotografias e três frases.
+
+     A comparação usa PhotoLearn.compare em modo LADO A LADO por omissão. A
+     cortina antiga mostrava metade de cada fotografia, e nestes pares as duas
+     imagens não estão alinhadas — a decisão que se quer comparar ficava
+     precisamente tapada. A cortina continua disponível no seletor.
      Todos os campos são opcionais — é assim que cada género tem voz própria
      em vez de 28 páginas com o mesmo esqueleto. */
-  let _visWipe = 55;
   const visionOf = g => (_DB && _DB.vision && _DB.vision[g.id]) || null;
+
+  /* Géneros que partilham um princípio criativo com este — a ponte para o
+     capítulo geral funcionar nos dois sentidos (Parte 8). */
+  function visionSiblings(gid, max = 4) {
+    if (!_DB || !_DB.principles) return [];
+    const seen = new Set([gid]), out = [];
+    _DB.principles.forEach(p => {
+      if (!(p.genres || []).includes(gid)) return;
+      (p.genres || []).forEach(id => {
+        if (seen.has(id) || out.length >= max) return;
+        const g = _DB.genres.find(x => x.id === id);
+        if (!g) return;
+        seen.add(id);
+        out.push({ go: 'g:' + id, icon: g.icon, label: `${g.name} · ${p.name.toLowerCase()}` });
+      });
+    });
+    return out;
+  }
 
   function visionSectionHTML(g) {
     const v = visionOf(g);
@@ -1418,34 +1474,24 @@ const PhotographyPage = (function () {
     const strong = assetPath('vis-' + g.id), flat = assetPath('vis-' + g.id + '-flat');
     const cmp = v.compare || {};
 
-    const stage = (strong && flat) ? `
-      <div class="ph-vis-stage">
-      ${wipeStageHTML({
-        a: strong, b: flat, pct: _visWipe,
-        aAlt: 'Exemplo com intenção', bAlt: 'Exemplo banal',
-        aTag: '✓ Com intenção', bTag: '✗ Correta e banal',
-        label: 'Comparar a versão com intenção e a versão banal',
-      })}
-      <div class="ph-cv-why">
-        <span class="ph-cv-why-ok"><b>✓</b> ${cmp.strong || ''}</span>
-        <span class="ph-cv-why-bad"><b>✗</b> ${cmp.flat || ''}</span>
-      </div>
-      <p class="ph-vis-cap">Arrasta a cortina. As duas estão bem expostas e focadas — o que as separa é a intenção, não a técnica.</p>
-      </div>`
-      : (strong ? `<div class="ph-vis-stage"><div class="ph-cv-frame"><img class="ph-cv-layer" src="${strong}" alt=""></div></div>` : '');
+    const visual = (strong && flat)
+      ? PhotoLearn.compare({
+          fam: 'visao', mode: 'side', a: strong, b: flat,
+          aAlt: 'Exemplo com intenção', bAlt: 'Exemplo tecnicamente correto mas banal',
+          aTag: '✓ Com intenção', bTag: '✗ Correta e banal',
+          aWhy: cmp.strong || '', bWhy: cmp.flat || '',
+          q: 'Antes de leres: as duas estão bem expostas e focadas. O que é que separa uma da outra?',
+          caption: 'Nenhuma diferença aqui é técnica. Todas são decisões.',
+          label: 'Comparar a versão com intenção e a versão banal',
+        })
+      : (strong ? `<figure class="pl-cmp"><div class="pl-frame"><img src="${strong}" alt=""></div></figure>` : '');
 
-    return `
-      <blockquote class="ph-vis-lead">${v.lead || ''}</blockquote>
-      ${v.why ? `<p class="ph-vis-why">${v.why}</p>` : ''}
-      ${stage}
+    const body = `
       ${v.subject ? `<div class="ph-vis-subject"><b>🎯 Qual é o verdadeiro assunto</b><p>${v.subject}</p></div>` : ''}
       ${(v.gap || []).length ? `<section class="ph-vis-sec">
-        <h4>↗️ O que separa uma banal de uma memorável</h4>
-        <div class="ph-vis-gap">${v.gap.map(x => `<div class="ph-vis-gap-row">
-          <span class="ph-vis-ord">${x.ord}</span>
-          <span class="ph-vis-arrow" aria-hidden="true">→</span>
-          <span class="ph-vis-mem">${x.mem}</span>
-        </div>`).join('')}</div>
+        <h4>↗️ De banal a memorável</h4>
+        <p class="ph-section-sub">Cada linha mostra o hábito. Toca para ver o que se faz em vez disso.</p>
+        <div class="pl-revs">${v.gap.map(x => PhotoLearn.reveal({ q: x.ord, a: x.mem })).join('')}</div>
       </section>` : ''}
       ${(v.ask || []).length ? `<section class="ph-vis-sec">
         <h4>❓ Antes de disparar, pergunta</h4>
@@ -1453,16 +1499,30 @@ const PhotographyPage = (function () {
       </section>` : ''}
       ${(v.language || []).length ? `<section class="ph-vis-sec">
         <h4>🗣️ Vocabulário visual deste género</h4>
-        <p class="ph-section-sub">O que cada escolha diz a quem vê — não como se faz.</p>
-        <div class="ph-vis-lang">${v.language.map(x => `<div class="ph-vis-lang-row">
-          <span class="ph-vis-lang-n">${x.n}</span><span class="ph-vis-lang-m">${x.m}</span>
-        </div>`).join('')}</div>
+        <p class="ph-section-sub">Cada escolha diz alguma coisa a quem vê. Toca para saber o quê.</p>
+        <div class="pl-revs">${v.language.map(x => PhotoLearn.reveal({ q: `<b>${x.n}</b>`, a: x.m })).join('')}</div>
       </section>` : ''}
-      ${v.trap ? `<div class="ph-vis-trap"><b>🪤 A armadilha deste género</b><p>${v.trap}</p></div>` : ''}
-      ${v.ethic ? `<div class="ph-vis-ethic"><b>⚖️ A responsabilidade de quem fotografa</b><p>${v.ethic}</p></div>` : ''}
-      ${v.series ? `<div class="ph-vis-series"><b>🎞️ Pensar em série, não em fotografia</b><p>${v.series}</p></div>` : ''}
-      <p class="ph-vis-foot">Percebida a intenção, o <b>como</b> está nas secções seguintes: 🎯 Essencial, 👁️ A cena, 💡 Luz, 🖼️ Composição.
-        <button class="ph-chip ph-chip-link" data-goprinc>🧠 Princípios transversais a todos os géneros →</button></p>`;
+      ${v.trap ? `<details class="ph-vis-acc trap"><summary><b>🪤 A armadilha deste género</b></summary><p>${v.trap}</p></details>` : ''}
+      ${v.ethic ? `<details class="ph-vis-acc ethic"><summary><b>⚖️ A responsabilidade de quem fotografa</b></summary><p>${v.ethic}</p></details>` : ''}
+      ${v.series ? `<details class="ph-vis-acc series"><summary><b>🎞️ Pensar em série, não em fotografia</b></summary><p>${v.series}</p></details>` : ''}`;
+
+    const sib = visionSiblings(g.id);
+    return PhotoLearn.lesson({
+      kicker: v.hook || 'Visão',
+      hook: v.lead || '',
+      visual,
+      more: v.why || '',
+      moreLabel: 'Porquê é que isto acontece neste género',
+      body,
+      /* Um exercício fecha a lição. O primeiro drill do género já existia na
+         secção Praticar, mas lá chega-se depois de percorrer tudo — aqui
+         aparece no momento em que a intenção acabou de ser explicada, que é
+         quando faz diferença. Continua a ser o mesmo texto, não outro. */
+      drill: (g.drills || []).length ? PhotoLearn.drill({ key: 'vis-' + g.id, t: g.drills[0] }) : '',
+      links: `${PhotoLearn.chips(sib, '🔗 A mesma ideia treina-se também em')}
+        <p class="ph-vis-foot">Percebida a intenção, o <b>como</b> está nas secções seguintes: 🎯 Essencial, 👁️ A cena, 💡 Luz, 🖼️ Composição.
+          <button class="ph-chip ph-chip-link" data-goprinc>🧠 Princípios transversais a todos os géneros →</button></p>`,
+    });
   }
 
   function portalSectionHTML(g, sec) {
@@ -1470,7 +1530,8 @@ const PhotographyPage = (function () {
     if (sec === 'essencial') return `${formatBlockHTML(g)}${gearCardHTML(g)}`;
     if (sec === 'cena') return sceneSectionHTML(g);
     if (sec === 'luz') return lightSectionHTML(g);
-    if (sec === 'composicao') return `<p class="ph-section-sub">As composições que melhor funcionam neste género. Toca para ver o exemplo e a grelha.</p>${compCardsHTML(g.composition, g.id)}`;
+    if (sec === 'composicao') return `<p class="ph-section-sub">As composições que melhor funcionam neste género. Toca para ver o exemplo e a grelha.</p>${compCardsHTML(g.composition, g.id)}
+      ${PhotoLearn.chips(genreCross(g.id, 'tec'), '🧪 Técnicas criativas que costumam entrar aqui')}`;
     if (sec === 'ideias') return ideasSectionHTML(g);
     if (sec === 'erros') return errorsSectionHTML(g);
     if (sec === 'praticar') return practiceSectionHTML(g);
@@ -1516,7 +1577,7 @@ const PhotographyPage = (function () {
         panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
           _pendingCalc = ch.dataset.tool; Nav.go('photography/ferramentas');
         }));
-        if (_portalSec === 'visao') wireWipeStage(body, pct => { _visWipe = pct; });
+        PhotoLearn.wire(body, plGo);
         panel.querySelector('[data-goprinc]')?.addEventListener('click', () => Nav.go('photography/aprender/visao'));
       };
       wireBody();
@@ -2125,30 +2186,348 @@ const PhotographyPage = (function () {
             const g = named(id);
             return g.name ? `<button class="ph-chip ph-chip-link" data-vgenre="${id}">${g.icon} ${g.name} →</button>` : '';
           }).join('');
+          /* Cada princípio ganhou o SEU par de fotografias (Parte 2). Antes
+             havia só a imagem do género que servia de exemplo, e o princípio
+             ficava por explicar em texto; agora a diferença que ele descreve
+             está lá para ser vista antes de ser lida. Quem não tem par
+             (série, ética, ambiguidade — ideias que não cabem em duas
+             imagens) mantém a fotografia única. */
+          const c = p.compare, a = c && assetPath(c.a), b = c && assetPath(c.b);
+          const art = (a && b)
+            ? PhotoLearn.compare({
+                fam: 'principio', mode: c.mode || 'side', a, b,
+                aTag: c.aTag, bTag: c.bTag, aWhy: c.aWhy, bWhy: c.bWhy,
+                caption: c.caption, aAlt: c.aTag, bAlt: c.bTag,
+              })
+            : (src ? `<div class="ph-detail-art ph-photo-art"><img loading="lazy" decoding="async" alt="" src="${src}"></div>` : '');
           return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
             <div class="ph-detail-head"><span class="ph-detail-ico">${p.icon}</span><h3 class="ph-detail-title">${p.name}</h3></div>
-            ${src ? `<div class="ph-detail-art ph-photo-art"><img loading="lazy" decoding="async" alt="" src="${src}"></div>` : ''}
+            ${art}
             <div class="ph-detail-body">
               ${p.body.map(x => `<div class="ph-know-sec"><h4>${x.h}</h4><p>${x.t}</p></div>`).join('')}
               ${chips ? `<div class="ph-know-sec"><h4>🎯 Treina-se sobretudo em</h4><div class="ph-chips">${chips}</div></div>` : ''}
             </div>`;
         },
-        afterOpen: detail => detail.querySelectorAll('[data-vgenre]').forEach(b =>
-          b.addEventListener('click', () => { _portalSec = 'visao'; Nav.go('photography/g/' + b.dataset.vgenre); })),
+        afterOpen: detail => {
+          PhotoLearn.wire(detail, plGo);
+          detail.querySelectorAll('[data-vgenre]').forEach(b =>
+            b.addEventListener('click', () => { _portalSec = 'visao'; Nav.go('photography/g/' + b.dataset.vgenre); }));
+        },
       });
     });
   }
 
+  /* ══ APRENDER ▸ ESTILOS ══════════════════════════════════════════════════
+     Um estilo visual descrito por escrito é uma lista de adjetivos ("quente",
+     "contrastado", "cinematográfico") que não ensina nada — cada leitor
+     imagina uma imagem diferente. Aqui a receita é aplicada AOS PÍXEIS pelo
+     PhotoLab: mexe-se na dose e vê-se o estilo a nascer.
+
+     A troca da fotografia de base é a parte deliberadamente educativa: os
+     campos "onde funciona" e "quando se gasta" deixam de ser avisos escritos
+     e passam a ser demonstráveis — aplicar Noir a uma praia ao meio-dia
+     explica o limite melhor do que qualquer parágrafo. */
+  const APR_LOOK_HEAD = `<div class="ph-section-title">🎨 Estilos</div>
+    <p class="ph-section-sub">Os looks que se reconhecem à distância — porque existem, o que dizem a quem vê e que decisões os criam. Cada um aplica-se ao vivo: mexe na dose e troca a fotografia para ver onde funciona e onde falha.</p>`;
+
+  function lookBases(item, db) {
+    const wanted = (item.bases || []).length ? item.bases : (db.lookBases || []).map(b => b.id);
+    const label = id => ((db.lookBases || []).find(b => b.id === id) || {}).label || id;
+    return wanted.map(id => ({ src: assetPath(id), label: label(id) })).filter(b => b.src);
+  }
+
+  function buildEstilos(box) {
+    box.innerHTML = `${APR_LOOK_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+      const fail = () => { const g = box.querySelector('.ph-learn-grid'); if (g) g.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; };
+      if (!db || !(db.looks || []).length) return fail();
+      // uma base comum para todas as miniaturas: assim a grelha compara
+      // estilos e não fotografias (ver PhotoLearn.paintThumb)
+      const swatch = assetPath('look-retrato') || (lookBases(db.looks[0], db)[0] || {}).src;
+      const grid = expandableGrid(box, db.looks, {
+        head: APR_LOOK_HEAD,
+        thumb: () => (swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : ''),
+        blurb: l => l.blurb,
+        detail: l => lookDetailHTML(l, db),
+        afterCard: (card, l) => PhotoLearn.paintThumb(card.querySelector('.ph-look-thumb'), swatch, l.recipe),
+        afterOpen: detail => PhotoLearn.wire(detail, plGo),
+      });
+      openPending(box, 'estilos', db.looks, grid);
+    });
+  }
+
+  /* O mesmo esqueleto serve estilos e técnicas: as duas respondem às mesmas
+     perguntas (o que diz, quando usar, quando evitar) e só mudam na
+     demonstração. Manter uma função é o que garante que continuam a
+     responder às mesmas perguntas quando alguém acrescentar entradas. */
+  function lookDetailHTML(l, db) {
+    const bases = lookBases(l, db);
+    const demo = bases.length
+      ? PhotoLearn.look({ name: l.name, recipe: l.recipe, ingredients: l.ingredients, bases })
+      : '<p class="ph-section-sub">Sem fotografia de base para demonstrar este estilo.</p>';
+    return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+      <div class="ph-detail-head"><span class="ph-detail-ico">${l.icon}</span><h3 class="ph-detail-title">${l.name}</h3></div>
+      ${PhotoLearn.lesson({
+        kicker: 'Estilo',
+        hook: l.hook,
+        idea: l.idea,
+        visual: demo,
+        more: l.why,
+        moreLabel: 'De onde é que este estilo veio',
+        body: `<div class="ph-look-grid">
+            <div class="ph-info-card says"><b>🗣️ O que comunica</b><p>${l.says}</p></div>
+            <div class="ph-info-card works"><b>✅ Onde resulta</b><p>${l.works}</p></div>
+            <div class="ph-info-card over"><b>🪤 Quando se gasta</b><p>${l.overused}</p></div>
+          </div>
+          <section class="ph-vis-sec"><h4>🔧 As decisões que o criam</h4>
+            <ul class="ph-do">${(l.decisions || []).map(li).join('')}</ul></section>`,
+        links: crossChips(l, db),
+      })}`;
+  }
+
+  /* ══ APRENDER ▸ TÉCNICAS ═════════════════════════════════════════════════
+     Duas famílias com demonstrações diferentes, e é essa a razão de existir
+     a distinção: uma técnica de revelação prova-se a mexer nos píxeis, uma
+     técnica de captação só se prova com duas fotografias, porque a decisão
+     foi tomada antes de haver ficheiro. Todas respondem a "o que é que isto
+     comunica" antes de dizerem como se faz — é o que separa esta secção da
+     secção Edição, que ensina os controlos. */
+  const APR_TEC_HEAD = `<div class="ph-section-title">🧪 Técnicas</div>
+    <p class="ph-section-sub">O que cada técnica DIZ a quem vê, e não só que cursor a produz. As de revelação aplicam-se aqui mesmo; as de captação comparam-se com o par de fotografias que as separa.</p>`;
+
+  function buildTecnicas(box) {
+    box.innerHTML = `${APR_TEC_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+      const fail = () => { const g = box.querySelector('.ph-learn-grid'); if (g) g.innerHTML = `<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; };
+      if (!db || !(db.techniques || []).length) return fail();
+      /* As de captação já têm a sua fotografia; as de revelação não têm nada
+         para mostrar sem passar pelo motor — a miniatura é gerada com a
+         receita, senão a grelha mostrava a mesma imagem crua sete vezes. */
+      const swatch = assetPath('look-retrato');
+      const capSrc = t => (t.compare && assetPath(t.compare.a)) || (t.single && assetPath(t.single.src));
+      const grid = expandableGrid(box, db.techniques, {
+        head: APR_TEC_HEAD,
+        thumb: t => {
+          if (t.kind === 'revelacao') return swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : '';
+          const s = capSrc(t);
+          return s ? `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${s}"></span>` : '';
+        },
+        blurb: t => t.blurb,
+        detail: t => tecDetailHTML(t, db),
+        afterCard: (card, t) => {
+          if (t.kind !== 'revelacao') return;
+          const src = (lookBases(t, db)[0] || {}).src || swatch;
+          PhotoLearn.paintThumb(card.querySelector('.ph-look-thumb'), src, t.recipe);
+        },
+        afterOpen: detail => PhotoLearn.wire(detail, plGo),
+      });
+      openPending(box, 'tecnicas', db.techniques, grid);
+    });
+  }
+
+  function tecDetailHTML(t, db) {
+    let demo = '';
+    if (t.kind === 'revelacao') {
+      const bases = lookBases(t, db);
+      demo = bases.length
+        ? PhotoLearn.look({ name: t.name, recipe: t.recipe, ingredients: t.ingredients, bases })
+        : '';
+    } else if (t.compare) {
+      const a = assetPath(t.compare.a), b = assetPath(t.compare.b);
+      if (a && b) demo = PhotoLearn.compare({
+        fam: 'tecnica', mode: t.compare.mode || 'side', a, b,
+        aTag: t.compare.aTag, bTag: t.compare.bTag,
+        aWhy: t.compare.aWhy, bWhy: t.compare.bWhy,
+        aAlt: t.compare.aTag, bAlt: t.compare.bTag,
+        caption: t.compare.caption,
+      });
+    }
+    if (!demo && t.single) {
+      const s = assetPath(t.single.src);
+      if (s) demo = `<figure class="pl-cmp"><div class="pl-frame"><img src="${s}" alt="" loading="lazy"></div>
+        <figcaption class="pl-cap">${t.single.caption || ''}</figcaption></figure>`;
+    }
+    return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+      <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon}</span><h3 class="ph-detail-title">${t.name}</h3>
+        <span class="ph-eq-tag">${t.kind === 'revelacao' ? 'revelação' : 'captação'}</span></div>
+      ${PhotoLearn.lesson({
+        kicker: 'Técnica',
+        hook: t.hook,
+        idea: t.idea,
+        visual: demo,
+        body: `<div class="ph-look-grid">
+            <div class="ph-info-card says"><b>🗣️ O que comunica</b><p>${t.says}</p></div>
+            <div class="ph-info-card works"><b>✅ Quando usar</b><p>${t.when}</p></div>
+            <div class="ph-info-card over"><b>🪤 Quando falha</b><p>${t.avoid}</p></div>
+          </div>`,
+        drill: t.drill ? PhotoLearn.drill({ key: 'tec-' + t.id, t: t.drill }) : '',
+        links: crossChips(t, db),
+      })}`;
+  }
+
+  /* ══ APRENDER ▸ LER FOTOGRAFIAS ══════════════════════════════════════════
+     O portal ensinava a fazer e nunca a olhar, e são coisas diferentes: quem
+     não sabe dizer porque é que uma fotografia funciona repete o que resultou
+     por acaso. Aqui a leitura é feita a apontar (fotografia anotada), a
+     escolher (qual é a mais forte) e a cortar — nunca a ler uma análise
+     escrita, que seria exactamente o erro que esta secção quer corrigir.
+
+     Os exercícios de escolha são GERADOS a partir dos pares de vision.json:
+     28 géneros já têm o par memorável/banal e a explicação de cada lado, por
+     isso duplicá-los aqui só criaria duas versões da mesma frase para manter. */
+  const APR_LER_HEAD = `<div class="ph-section-title">🔍 Ler fotografias</div>
+    <p class="ph-section-sub">Perceber porque é que uma fotografia funciona ensina mais depressa do que tirar outra. Aqui aponta-se, escolhe-se e corta-se — não se lê uma análise.</p>`;
+
+  let _lerSeed = 0;
+  function buildLer(box) {
+    box.innerHTML = `${APR_LER_HEAD}<p class="ph-section-sub">A carregar…</p>`;
+    Promise.all([loadDB(), loadAssets()]).then(([db]) => {
+      if (!db || !db.readMethod) { box.innerHTML = `${APR_LER_HEAD}<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
+      const m = db.readMethod;
+      box.innerHTML = `${APR_LER_HEAD}
+        <section class="ph-read-method">
+          ${PhotoLearn.lesson({
+            kicker: 'O método',
+            hook: m.hook,
+            idea: m.idea,
+            body: `<ol class="ph-read-steps">${m.steps.map(s =>
+              `<li><b>${s.q}</b><span>${s.t}</span></li>`).join('')}</ol>`,
+            takeaway: m.takeaway,
+            drill: PhotoLearn.drill({ key: 'ler-metodo', t: m.drill }),
+          })}
+        </section>
+        <div class="ph-section-title sub">🔬 Fotografias para analisar</div>
+        <p class="ph-section-sub">Cada uma esconde as suas decisões atrás de pontos. Responde à pergunta antes de os tocar.</p>
+        <div class="ph-learn-grid" data-analyses></div>
+        <div class="ph-section-title sub">✂️ Treinar o corte</div>
+        <p class="ph-section-sub">A mesma fotografia com cortes diferentes é outra fotografia. Escolhe e vê o que fica.</p>
+        <div data-crops></div>
+        <div class="ph-section-title sub">👁️ Treinar o olho</div>
+        <p class="ph-section-sub">Duas fotografias do mesmo género: uma com intenção, outra tecnicamente correta. Escolhe antes de ver a resposta.</p>
+        <div data-eye></div>`;
+
+      buildAnalyses(box, db);
+      box.querySelector('[data-crops]').innerHTML = (db.readCrops || []).map(c => {
+        const src = assetPath(c.src);
+        return src ? `<div class="ph-read-crop"><h4>${c.name}</h4>${PhotoLearn.crop({ src, q: c.q, options: c.options })}</div>` : '';
+      }).join('');
+      buildEyeTrainer(box, db);
+      PhotoLearn.wire(box, plGo);
+    });
+  }
+
+  /* As análises usam a mesma grelha expansível do resto do Aprender: abrir
+     uma de cada vez é o que impede a secção de virar uma parede de imagens. */
+  function buildAnalyses(box, db) {
+    const host = box.querySelector('[data-analyses]');
+    if (!host) return;
+    const holder = document.createElement('div');
+    host.replaceWith(holder);
+    expandableGrid(holder, (db.readAnalyses || []).filter(a => assetPath(a.src)), {
+      head: '',
+      thumb: a => `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${assetPath(a.src)}"></span>`,
+      blurb: a => a.blurb,
+      detail: a => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+        <div class="ph-detail-head"><span class="ph-detail-ico">${a.icon}</span><h3 class="ph-detail-title">${a.name}</h3>
+          <span class="ph-eq-tag">${a.lesson}</span></div>
+        ${PhotoLearn.hotspots({ src: assetPath(a.src), alt: a.name, q: a.q, pins: a.pins })}
+        <p class="pl-takeaway"><b>O que isto ensina</b> ${a.verdict}</p>
+        ${crossChips(a, db)}`,
+      afterOpen: detail => PhotoLearn.wire(detail, plGo),
+    });
+  }
+
+  /* Treinar o olho: um par por vez, sorteado entre os géneros que têm as duas
+     imagens. O botão "outra" é o que transforma isto num treino em vez de
+     um exemplo — a repetição é a única coisa que educa o olho. */
+  function buildEyeTrainer(box, db) {
+    const host = box.querySelector('[data-eye]');
+    if (!host) return;
+    const pool = (db.genres || []).filter(g => {
+      const v = (db.vision || {})[g.id];
+      return v && v.compare && assetPath('vis-' + g.id) && assetPath('vis-' + g.id + '-flat');
+    });
+    if (!pool.length) { host.remove(); return; }
+    const render = () => {
+      const g = pool[_lerSeed++ % pool.length];
+      const v = db.vision[g.id];
+      // a ordem alterna para a resposta não ser sempre a da esquerda
+      const strong = { src: assetPath('vis-' + g.id), label: 'A', ok: true, why: v.compare.strong, alt: 'Opção A' };
+      const flat = { src: assetPath('vis-' + g.id + '-flat'), label: 'B', ok: false, why: v.compare.flat, alt: 'Opção B' };
+      const opts = (_lerSeed % 2) ? [flat, strong] : [strong, flat];
+      opts.forEach((o, i) => { o.label = String.fromCharCode(65 + i); });
+      host.innerHTML = `<div class="ph-eye-card">
+          <p class="ph-eye-genre">${g.icon} ${g.name}</p>
+          ${PhotoLearn.pick({
+            q: 'Qual destas tem uma ideia por trás?',
+            options: opts,
+            after: `${v.hook ? `<b>${v.hook}.</b> ` : ''}${v.subject || ''}`,
+          })}
+          <div class="ph-eye-actions">
+            <button type="button" class="ph-chip ph-chip-link" data-again>🔁 Outro par</button>
+            <button type="button" class="ph-chip ph-chip-link" data-go="g:${g.id}">${g.icon} Ver a Visão de ${g.name} →</button>
+          </div>
+        </div>`;
+      PhotoLearn.wire(host, plGo);
+      host.querySelector('[data-again]').addEventListener('click', render);
+    };
+    render();
+  }
+
+  /* Chips de ligação partilhados por estilos, técnicas e análises: cada
+     lição diz sempre onde é que a mesma ideia volta a aparecer. */
+  function crossChips(item, db) {
+    const out = [];
+    (item.genres || []).forEach(id => {
+      const g = (db.genres || []).find(x => x.id === id);
+      if (g) out.push({ go: 'g:' + id, icon: g.icon, label: g.name });
+    });
+    (item.looks || []).forEach(id => {
+      const l = (db.looks || []).find(x => x.id === id);
+      if (l) out.push({ go: 'look:' + id, icon: l.icon, label: l.name });
+    });
+    (item.techniques || []).forEach(id => {
+      const t = (db.techniques || []).find(x => x.id === id);
+      if (t) out.push({ go: 'tec:' + id, icon: t.icon, label: t.name });
+    });
+    if (item.comp) out.push({ go: 'comp:' + item.comp, icon: '🖼️', label: item.comp });
+    if (item.cores) out.push({ go: 'apr:cores', icon: '🌈', label: 'Roda de cores' });
+    (item.tools || []).forEach(id => {
+      if (TOOL_META[id]) out.push({ go: 'tool:' + id, icon: '🧮', label: TOOL_META[id].label });
+    });
+    return PhotoLearn.chips(out, '🔗 Onde isto volta a aparecer');
+  }
+
+  /* Um chip noutra secção pediu um cartão concreto: abre-o e leva-o ao ecrã.
+     Sem isto, "ver a técnica X" deixava o utilizador numa grelha de vinte
+     cartões à procura do que tinha acabado de pedir. */
+  function openPending(box, seg, items, grid) {
+    if (!_pendingLearn || _pendingLearn.seg !== seg) return;
+    const id = _pendingLearn.id; _pendingLearn = null;
+    if (!id) return;
+    const i = items.findIndex(x => x.id === id);
+    if (i < 0) return;
+    const card = (grid && grid.grid ? grid.grid : box).querySelectorAll('.ph-learn-card')[i];
+    if (!card) return;
+    setTimeout(() => { card.click(); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
+  }
+
   const APR_SEGS = [
     { id: 'visao',       label: '🧠 Visão' },
+    { id: 'ler',         label: '🔍 Ler' },
     { id: 'fundamentos', label: '📖 Fundamentos' },
     { id: 'composicao',  label: '🖼️ Composição' },
+    { id: 'estilos',     label: '🎨 Estilos' },
+    { id: 'tecnicas',    label: '🧪 Técnicas' },
     { id: 'cores',       label: '🌈 Cores' },
   ];
   const APR_BUILDERS = {
     visao(box) { buildVisaoAprender(box); },
+    ler(box) { buildLer(box); },
     fundamentos(box) { buildFundamentos(box); },
     composicao(box)  { buildComposition(box); },
+    estilos(box) { buildEstilos(box); },
+    tecnicas(box) { buildTecnicas(box); },
     cores(box) {
       box.innerHTML = `
         <div class="ph-section-title">🌈 Roda de Cores</div>
@@ -2244,7 +2623,7 @@ const PhotographyPage = (function () {
             <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
             <div class="ph-titles">
               <h1 class="ph-title">Fotografia</h1>
-              <p class="ph-sub">Assistente de fotografia: 28 géneros, guia de equipamento, aprendizagem e ferramentas — adaptado à tua câmara e ao teu perfil</p>
+              <p class="ph-sub">Escola de fotografia: 28 géneros, estilos e técnicas aplicados ao vivo, exercícios de leitura de imagem e ferramentas — adaptado à tua câmara e ao teu perfil</p>
             </div>
           </div>
           <div class="ph-nav seg" role="tablist" aria-label="Secções de fotografia">

@@ -2434,6 +2434,240 @@
       ],
       "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
       "prompt": "an obvious clear reflection of a building in a puddle, perfectly readable at a glance, pretty and immediate with no second reading"
+    },
+    {
+      "id": "cmp-fundo",
+      "group": "cmp",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 996001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic portrait of a young woman outdoors in a city park, shot at 85mm f/2, the background is a clean uncluttered wash of soft green foliage completely out of focus, nothing growing out of her head, she is cleanly separated from the background by soft rim light, natural skin texture"
+    },
+    {
+      "id": "cmp-fundo-bad",
+      "group": "cmp",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 996002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic portrait of the same young woman in the same city park, shot at 28mm f/8, a lamp post and a tree trunk rise directly behind her head, parked cars bins and bright signage clutter the background, everything equally sharp, correctly exposed but visually messy"
+    },
+    {
+      "id": "cmp-historia",
+      "group": "cmp",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 996003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic documentary photograph inside a small traditional bakery, an old baker mid gesture shaping dough with flour suspended in a shaft of window light, his concentrated face and worn hands both visible, warm interior, tells a story about the work"
+    },
+    {
+      "id": "cmp-historia-bad",
+      "group": "cmp",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 996004,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic photograph of the same small bakery, the baker standing still facing the camera beside a tray of bread, flat even lighting, tidy and correctly exposed, a plain record of the place with nothing happening"
+    },
+    {
+      "id": "cmp-emocao",
+      "group": "cmp",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 996005,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic candid portrait of an elderly fisherman laughing mid laugh with his eyes creased shut, caught between words, warm late afternoon side light on his weathered face, alive and unposed"
+    },
+    {
+      "id": "cmp-emocao-bad",
+      "group": "cmp",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 996006,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic posed portrait of the same elderly fisherman standing straight and looking blankly into the camera, neutral expression, flat overcast light, technically correct identification photo with no feeling"
+    },
+    {
+      "id": "cmp-momento",
+      "group": "cmp",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 996007,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic street photograph of a child jumping into a rain puddle at the exact apex of the splash, water crown frozen in the air, arms out, joyful, wet pavement reflecting a grey street"
+    },
+    {
+      "id": "cmp-momento-bad",
+      "group": "cmp",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 996008,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic street photograph of the same child standing in the same rain puddle a moment later, splash already gone, arms down, nothing is happening, same street same exposure"
+    },
+    {
+      "id": "cmp-simplificar",
+      "group": "cmp",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 996009,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic minimal photograph of a single small red wooden boat alone on flat calm water, vast empty pale surface around it, nothing else in the frame, quiet and simple"
+    },
+    {
+      "id": "cmp-simplificar-bad",
+      "group": "cmp",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 996010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated",
+      "prompt": "photorealistic photograph of the same bay crowded with dozens of moored boats buoys ropes masts and parked cars along the quay, busy cluttered frame, correctly exposed but the eye has nowhere to rest"
+    },
+    {
+      "id": "look-retrato",
+      "group": "look",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated, heavy colour grading, strong filter",
+      "prompt": "photorealistic natural portrait of a woman in her thirties outdoors on an overcast day, plain neutral colours, soft even daylight, medium contrast, no colour grading, straight out of camera look, 85mm f/2.8, natural skin texture, neutral white balance"
+    },
+    {
+      "id": "look-praia",
+      "group": "look",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated, heavy colour grading, strong filter",
+      "prompt": "photorealistic bright sunny beach at midday, pale sand, turquoise sea, clear blue sky, two people walking far away, cheerful high key daylight, neutral colours, no colour grading, straight out of camera, 35mm f/8"
+    },
+    {
+      "id": "look-cidade",
+      "group": "look",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated, heavy colour grading, strong filter",
+      "prompt": "photorealistic night city street with neon shop signs and wet asphalt reflecting the lights, a lone pedestrian in the middle distance, mixed artificial lighting, neutral straight out of camera rendering, 35mm f/1.8"
+    },
+    {
+      "id": "tec-silhueta",
+      "group": "tec",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997211,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "nude, nudity, naked, undressed, lingerie, two people overlapping, cluttered background, watermark, text, logo, low quality, cartoon, 3d render",
+      "prompt": "photorealistic clean silhouette photograph, a person in a long coat and a wide brimmed hat holding an umbrella, completely black and unmistakable in shape, standing on a ridge against a bright orange sunset sky, arms and legs clearly separated from the body, no overlap, no detail inside the figure, strong graphic readable outline, fully clothed"
+    },
+    {
+      "id": "tec-silhueta-bad",
+      "group": "tec",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997231,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "nude, nudity, naked, undressed, lingerie, clear separated silhouette, readable outline, watermark, text, logo, low quality, cartoon, 3d render",
+      "prompt": "photorealistic backlit photograph at sunset, a person in a bulky winter coat standing right in front of a large dark tree trunk, the figure merges into the tree, arms held tight against the body, the outline is unreadable and ambiguous, neither a clean silhouette nor a lit portrait, fully clothed"
+    },
+    {
+      "id": "tec-panning",
+      "group": "tec",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997013,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated, heavy colour grading, strong filter",
+      "prompt": "photorealistic panning shot of a cyclist, the rider sharp and readable while the entire background is stretched into horizontal motion streaks, strong sense of speed, 1/30s panned with the subject"
+    },
+    {
+      "id": "tec-panning-bad",
+      "group": "tec",
+      "style": "vision_flat",
+      "matte": false,
+      "seed": 997120,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "motion blur, panning, streaks, speed lines, blurry background, camera shake, watermark, text, logo, low quality, deformed face, bad anatomy",
+      "prompt": "photorealistic photograph of a cyclist on a road shot at 1/2000s, absolutely everything frozen and pin sharp including the background trees and road, no motion blur anywhere, static and lifeless, looks like the bicycle is parked"
+    },
+    {
+      "id": "tec-multipla",
+      "group": "tec",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 997015,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated, heavy colour grading, strong filter",
+      "prompt": "photorealistic double exposure photograph, the profile of a woman filled with a forest of bare winter trees and mist, the two images blended into one frame, dark background, fine art"
     }
   ]
 }

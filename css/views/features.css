@@ -1038,19 +1038,55 @@ body.density-list .lp-link-tags { display: none; }
 .ph-vis-lang-n { font-size: .79rem; font-weight: 700; color: var(--text); }
 .ph-vis-lang-m { font-size: .79rem; line-height: 1.55; color: var(--text2); }
 
-.ph-vis-trap, .ph-vis-ethic, .ph-vis-series { border: 1px solid var(--border); border-radius: var(--radius);
-  padding: .65rem .8rem; margin-bottom: .7rem; background: var(--card2); }
-.ph-vis-trap { border-left: 3px solid #f59e0b; }
-.ph-vis-ethic { border-left: 3px solid #38bdf8; }
-.ph-vis-series { border-left: 3px solid #a78bfa; }
-.ph-vis-trap b, .ph-vis-ethic b, .ph-vis-series b { display: block; font-size: .8rem; margin-bottom: .2rem; }
-.ph-vis-trap b { color: #f59e0b; }
-.ph-vis-ethic b { color: #38bdf8; }
-.ph-vis-series b { color: #a78bfa; }
-.ph-vis-trap p, .ph-vis-ethic p, .ph-vis-series p { margin: 0; font-size: .82rem; color: var(--text2); line-height: 1.62; }
+/* Armadilha, ética e série passaram a acordeões: continuam inteiras, mas o
+   ecrã inicial da Visão deixou de mostrar três parágrafos que quase ninguém
+   lia de seguida. Uma linha visível cada, e abre quem quiser. */
+.ph-vis-acc { border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .55rem .8rem; margin-bottom: .5rem; background: var(--card2); }
+.ph-vis-acc.trap { border-left: 3px solid #f59e0b; }
+.ph-vis-acc.ethic { border-left: 3px solid #38bdf8; }
+.ph-vis-acc.series { border-left: 3px solid #a78bfa; }
+.ph-vis-acc > summary { cursor: pointer; list-style: none; display: flex; align-items: center;
+  justify-content: space-between; gap: .5rem; font-size: .8rem; }
+.ph-vis-acc > summary::-webkit-details-marker { display: none; }
+.ph-vis-acc > summary::after { content: '＋'; color: var(--muted); font-size: .85rem; }
+.ph-vis-acc[open] > summary::after { content: '−'; }
+.ph-vis-acc.trap b { color: #f59e0b; }
+.ph-vis-acc.ethic b { color: #38bdf8; }
+.ph-vis-acc.series b { color: #a78bfa; }
+.ph-vis-acc p { margin: .4rem 0 0; font-size: .82rem; color: var(--text2); line-height: 1.62; }
 .ph-vis-foot { margin: .9rem 0 0; padding-top: .6rem; border-top: 1px dashed var(--border);
   font-size: .78rem; line-height: 1.6; color: var(--muted); }
 .ph-vis-foot b { color: var(--text2); }
+
+/* ══ Aprender ▸ Estilos e Técnicas ════════════════════════════════════
+   As três perguntas (o que diz / onde resulta / quando se gasta) ficam
+   lado a lado de propósito: é a comparação entre elas que impede um
+   estilo de ser lido como receita a aplicar em tudo. */
+.ph-look-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .55rem; margin: .9rem 0; }
+.ph-info-card.says { border-left: 3px solid #a78bfa; } .ph-info-card.says b { color: #a78bfa; }
+.ph-info-card.works { border-left: 3px solid #34d399; } .ph-info-card.works b { color: #34d399; }
+.ph-info-card.over { border-left: 3px solid #f59e0b; } .ph-info-card.over b { color: #f59e0b; }
+/* a grelha das marcações de composição precisa de cobrir a moldura do
+   PhotoLearn tal como cobria a antiga */
+.pl-frame > .ph-cv-ov { position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; transition: opacity .22s var(--ease); z-index: 1; }
+.pl-frame > .ph-cv-ov.off { opacity: 0; }
+
+/* ══ Aprender ▸ Ler fotografias ═══════════════════════════════════════ */
+.ph-section-title.sub { margin-top: 1.6rem; }
+.ph-read-method { margin-bottom: .4rem; }
+.ph-read-steps { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .5rem; }
+.ph-read-steps li::marker { color: var(--accent-txt); font-weight: 800; }
+.ph-read-steps b { display: block; font-size: .84rem; color: var(--text); margin-bottom: .1rem; }
+.ph-read-steps span { font-size: .81rem; line-height: 1.6; color: var(--text2); }
+.ph-read-crop { margin-bottom: 1.2rem; }
+.ph-read-crop h4 { margin: 0 0 .4rem; font-family: var(--font-head); font-size: .88rem; font-weight: 800; }
+.ph-eye-card { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .8rem .9rem; }
+.ph-eye-genre { margin: 0 0 .5rem; font-size: .74rem; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--muted); }
+.ph-eye-actions { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
 
 /* ══ secção Equipamento ═══════════════════════════════════════════════ */
 .ph-eq-intro { font-size: .85rem; color: var(--text2); line-height: 1.6; margin: .2rem 0 .9rem; max-width: 72ch; }
@@ -1375,3 +1411,8 @@ body.density-list .lp-link-tags { display: none; }
   .ph-guide, .ph-tgrid-guide .ph-guide { grid-template-columns: 1fr; }
   .ph-tool-mask { --stage-h: 240px; }
 }
+
+/* miniatura de estilo/técnica pintada em canvas pelo PhotoLab */
+.ph-look-thumb { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ph-learn-thumb .ph-photo-thumb:has(.ph-look-thumb) { aspect-ratio: 21 / 10; overflow: hidden; }
+.ph-photo-thumb .ph-look-thumb { width: 100%; height: 100%; }

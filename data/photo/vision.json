@@ -1310,7 +1310,16 @@
           "h": "🎓 Onde treinar",
           "t": "Numa saída, escreve a frase ANTES de cada fotografia. Dez fotografias com frase ensinam mais do que duzentas sem."
         }
-      ]
+      ],
+      "compare": {
+        "a": "cmp-emocao",
+        "b": "cmp-emocao-bad",
+        "aTag": "✓ Uma pessoa",
+        "bTag": "✗ Um retrato",
+        "aWhy": "A fotografia é sobre o riso dele. Tudo — o instante, a luz de lado, a distância — serve essa frase.",
+        "bWhy": "Correcta, nítida e sem frase nenhuma: regista a cara, não diz nada sobre o homem.",
+        "caption": "O mesmo pescador nas duas. A diferença não é técnica — é ter havido, ou não, uma decisão sobre o que dizer."
+      }
     },
     {
       "id": "subtrair",
@@ -1345,7 +1354,16 @@
           "h": "🎓 Onde treinar",
           "t": "Escolhe uma cena e faz cinco fotografias, cada uma com menos elementos do que a anterior. A melhor é quase sempre uma das últimas."
         }
-      ]
+      ],
+      "compare": {
+        "a": "cmp-simplificar",
+        "b": "cmp-simplificar-bad",
+        "aTag": "✓ Uma coisa só",
+        "bTag": "✗ Tudo o que lá estava",
+        "aWhy": "Um assunto, muito vazio à volta: o olho sabe onde pousar em menos de um segundo.",
+        "bWhy": "Dezenas de barcos igualmente interessantes — nenhum deles se torna o assunto.",
+        "caption": "A mesma baía. Fotografar é escolher o que fica de fora."
+      }
     },
     {
       "id": "ancora",
@@ -1380,7 +1398,16 @@
           "h": "⚠️ O erro típico",
           "t": "Tirar a pessoa do enquadramento para \"não estragar a paisagem\". Quase sempre era ela que dava a medida."
         }
-      ]
+      ],
+      "compare": {
+        "a": "vis-paisagem",
+        "b": "vis-paisagem-flat",
+        "aTag": "✓ Com escala",
+        "bTag": "✗ Só a vista",
+        "aWhy": "Rocha perto, figura minúscula ao longe: percebe-se o tamanho porque há com que o comparar.",
+        "bWhy": "A mesma vista sem nada perto nem ninguém — bonita e sem medida.",
+        "caption": "A escala não está na cena: nasce da relação entre o que está perto e o que está longe."
+      }
     },
     {
       "id": "momento",
@@ -1415,7 +1442,16 @@
           "h": "⚠️ O erro típico",
           "t": "Disparar em rajada em vez de olhar. Trezentas imagens do momento errado continuam a ser o momento errado."
         }
-      ]
+      ],
+      "compare": {
+        "a": "cmp-momento",
+        "b": "cmp-momento-bad",
+        "aTag": "✓ No instante",
+        "bTag": "✗ Um segundo depois",
+        "aWhy": "O ápice do salto com a coroa de água ainda no ar. Não se repete.",
+        "bWhy": "Mesmo sítio, mesma criança, mesma exposição — e já não está a acontecer nada.",
+        "caption": "Não há definição de câmara que recupere o instante que passou."
+      }
     },
     {
       "id": "ambiguidade",
@@ -1485,7 +1521,17 @@
           "h": "⚠️ O erro típico",
           "t": "Tratar a hora dourada como garantia de qualidade. Luz bonita sobre uma composição sem intenção dá uma fotografia bonita e esquecível."
         }
-      ]
+      ],
+      "compare": {
+        "a": "light-side",
+        "b": "light-frontal",
+        "aTag": "✓ Luz de lado",
+        "bTag": "✗ Luz de frente",
+        "aWhy": "A sombra atravessa o rosto e devolve-lhe volume: percebe-se a forma da cara.",
+        "bWhy": "Luz frontal apaga as sombras e com elas o relevo — o rosto fica chapado.",
+        "caption": "A mesma pessoa e a mesma exposição. Só mudou de onde vinha a luz.",
+        "mode": "flip"
+      }
     },
     {
       "id": "interpretar",
@@ -1516,7 +1562,16 @@
           "h": "⚠️ O erro típico",
           "t": "Aplicar um tratamento forte a tudo por hábito. Quando todas as fotografias têm o mesmo look, o look deixou de ser leitura e passou a ser assinatura automática."
         }
-      ]
+      ],
+      "compare": {
+        "a": "cmp-historia",
+        "b": "cmp-historia-bad",
+        "aTag": "✓ Interpretar",
+        "bTag": "✗ Registar",
+        "aWhy": "Um gesto apanhado a acontecer, luz de uma direção só, e sombra a apagar o resto.",
+        "bWhy": "Toda a informação está lá: o homem, o pão, a loja. E não há nada a acontecer.",
+        "caption": "A mesma padaria documentada das duas maneiras. Uma explica o sítio; a outra explica o trabalho."
+      }
     },
     {
       "id": "serie",

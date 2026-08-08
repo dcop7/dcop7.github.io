@@ -30,6 +30,16 @@ const PhotoLab = (function () {
       temp: 0, tint: 0, saturation: 0, vibrance: 0,
       clarity: 0, texture: 0, dehaze: 0, sharpen: 0,
       noise: 0, denoise: 0,
+      // ── primitivas de "look" (estilos e técnicas criativas) ──────────
+      // Existem porque um estilo não se explica com exposição e contraste: o
+      // que o define são estas decisões. Todas neutras a 0, por isso nada do
+      // que já existia muda de comportamento.
+      fade: 0,              // pretos levantados (matte/film): 0..100
+      grain: 0,             // grão de filme (luminância, estável entre frames)
+      grainSize: 1,         // 1 = fino, 2..3 = grosso (ISO alto / 35mm push)
+      bloom: 0,             // halo difuso a partir das altas luzes
+      halation: 0,          // o mesmo halo, tingido de vermelho (filme)
+      vignette: 0,          // -100 (cantos claros) .. 100 (cantos escuros)
       curve: null,          // LUT (Uint8Array 256) ou null
       hsl: null,            // { redHue, redSat, redLum, ... } por banda
       splitShadow: null, splitHigh: null,  // color grading: [r,g,b] -1..1
@@ -126,6 +136,36 @@ const PhotoLab = (function () {
     return d >= 45 ? 0 : 1 - d / 45;
   }
 
+  /* ── grão determinístico ──────────────────────────────────────────────
+     Um `Math.random()` por píxel faz a imagem "ferver" a cada re-render, o
+     que num cursor de dose lê-se como avaria e não como grão. Esta hash dá
+     sempre o mesmo valor para o mesmo píxel: mexer no cursor muda a
+     quantidade de grão, não o desenho dele. */
+  /* Math.imul e não `*`: a multiplicação normal passa por double e perde os
+     bits baixos acima de 2^53, o que enviesa a distribuição — o grão saía com
+     média negativa e escurecia a imagem em vez de só a texturar. */
+  function grainAt(x, y, size) {
+    const gx = size > 1 ? (x / size) | 0 : x, gy = size > 1 ? (y / size) | 0 : y;
+    let n = Math.imul(gx, 374761393) + Math.imul(gy, 668265263) | 0;
+    n = Math.imul(n ^ (n >>> 13), 1274126177);
+    return (((n ^ (n >>> 16)) >>> 0) / 4294967295) - 0.5;   // -0.5 .. 0.5
+  }
+
+  /* Máscara de altas luzes desfocada — a base do bloom e da halação. O halo
+     de filme nasce da luz a espalhar-se DENTRO da emulsão a partir das zonas
+     mais claras, por isso primeiro isola-se o que é claro e só depois se
+     desfoca; desfocar a imagem toda daria neblina, não halo. */
+  function highlightGlow(S, w, h, thresh) {
+    const m = new Uint8ClampedArray(S.length);
+    const t = thresh * 255, span = 255 - t || 1;
+    for (let i = 0; i < S.length; i += 4) {
+      const L = LUMA(S[i], S[i + 1], S[i + 2]);
+      const k = L <= t ? 0 : Math.pow((L - t) / span, 1.6);
+      m[i] = S[i] * k; m[i + 1] = S[i + 1] * k; m[i + 2] = S[i + 2] * k; m[i + 3] = 255;
+    }
+    return boxBlur(m, w, h, Math.max(3, Math.round(Math.min(w, h) / 26)));
+  }
+
   /* ── processamento principal ──────────────────────────────────────── */
   function process(src, dst, p) {
     const w = src.width, h = src.height;
@@ -150,6 +190,13 @@ const PhotoLab = (function () {
     const dnK = par.denoise / 100, nzK = par.noise / 100;
     const hsl = par.hsl, curve = par.curve;
     const ss = par.splitShadow, sh2 = par.splitHigh;
+
+    // primitivas de look
+    const fadeK = par.fade / 100, grK = par.grain / 100, grSz = Math.max(1, par.grainSize | 0);
+    const blK2 = par.bloom / 100, haK = par.halation / 100, vgK = par.vignette / 100;
+    const glow = (blK2 || haK) ? highlightGlow(S, w, h, 0.62) : null;
+    // raio da vinheta em coordenadas normalizadas (1 = canto)
+    const cx = w / 2, cy = h / 2, maxD = Math.hypot(cx, cy) || 1;
 
     for (let i = 0; i < S.length; i += 4) {
       let r = S[i], g = S[i + 1], b = S[i + 2];
@@ -262,6 +309,39 @@ const PhotoLab = (function () {
         const n = (Math.random() - 0.5) * nzK * 110;
         const nc = (Math.random() - 0.5) * nzK * 55;   // ruído de cor
         r += n + nc; g += n; b += n - nc;
+      }
+
+      /* ── camada de LOOK ───────────────────────────────────────────────
+         Vem no fim de propósito: um estilo aplica-se a uma imagem já
+         revelada. É também a ordem em que a Edição o ensina. */
+
+      // 13. halo das altas luzes: bloom (neutro) e halação (tingida)
+      if (glow) {
+        const gr = glow[i], gg = glow[i + 1], gb = glow[i + 2];
+        if (blK2) { r += gr * blK2 * 0.55; g += gg * blK2 * 0.55; b += gb * blK2 * 0.55; }
+        // halação: a camada vermelha do filme é a que mais espalha, por isso
+        // o halo é quente — é esse desequilíbrio que o torna reconhecível.
+        if (haK) { const L = (gr + gg + gb) / 3; r += L * haK * 0.85; g += L * haK * 0.30; b += L * haK * 0.12; }
+      }
+
+      // 14. pretos levantados (matte / film): o preto deixa de ser preto
+      if (fadeK) { const lift = fadeK * 46; r = lift + r * (1 - lift / 255); g = lift + g * (1 - lift / 255); b = lift + b * (1 - lift / 255); }
+
+      // 15. vinheta: escurece (ou clareia) os cantos para prender o olhar
+      if (vgK) {
+        const px = (i >> 2) % w, py = (i >> 2) / w | 0;
+        const d = Math.hypot(px - cx, py - cy) / maxD;
+        const k = 1 - vgK * Math.pow(Math.max(0, (d - 0.35) / 0.65), 1.8) * 0.85;
+        r *= k; g *= k; b *= k;
+      }
+
+      // 16. grão: máximo nos meios-tons, quase ausente nos pretos e brancos
+      //     — é assim no filme e é o que impede o grão de sujar as luzes.
+      if (grK) {
+        const px = (i >> 2) % w, py = (i >> 2) / w | 0;
+        const L = LUMA(r, g, b) / 255;
+        const wgt = 1 - Math.abs(L - 0.5) * 1.55;
+        if (wgt > 0) { const n = grainAt(px, py, grSz) * grK * 78 * wgt; r += n; g += n; b += n; }
       }
 
       D[i] = clamp255(r); D[i + 1] = clamp255(g); D[i + 2] = clamp255(b); D[i + 3] = S[i + 3];

@@ -1,0 +1,279 @@
+/* ══════════════════════════════════════════════════════════════════════
+   PhotoLearn — componentes de aprendizagem visual da Fotografia.
+
+   Vive num ficheiro próprio (e não em features.css) porque estes blocos são
+   reutilizáveis: a mesma comparação, o mesmo laboratório e a mesma
+   fotografia anotada aparecem na Visão de um género, nos Estilos, nas
+   Técnicas e em Ler fotografias. Herdam os tokens do sistema — nenhuma cor
+   nova é inventada aqui, à excepção dos pares certo/errado que já existiam
+   na secção de composição (#34d399 / #f87171).
+
+   Regra de ouro do módulo: a IMAGEM manda. O texto que a acompanha é
+   sempre mais pequeno, mais claro e limitado em largura, para que nunca
+   volte a ser ele o centro do ecrã.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── moldura base, partilhada por quase todos os componentes ─────────── */
+.pl-frame { position: relative; display: block; width: 100%; aspect-ratio: 1216 / 832;
+  border-radius: var(--radius); overflow: hidden; background: var(--card2); }
+.pl-frame > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pl-frame-empty { position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, var(--card2) 0 10px, var(--card) 10px 20px); }
+.pl-tag { position: absolute; top: .5rem; left: .5rem; z-index: 2; font-size: .68rem; font-weight: 700;
+  border-radius: 999px; padding: .2rem .55rem; pointer-events: none; background: #04121fcc; }
+.pl-tag.ok { color: #34d399; border: 1px solid #34d39966; }
+.pl-tag.bad { color: #f87171; border: 1px solid #f8717166; left: auto; right: .5rem; }
+.pl-cmp-side .pl-tag.bad { left: .5rem; right: auto; }
+
+.pl-ask { margin: 0 0 .5rem; font-family: var(--font-head); font-size: .86rem; font-weight: 700;
+  line-height: 1.45; color: var(--text); }
+.pl-cap { margin: .45rem 0 0; font-size: .74rem; line-height: 1.5; color: var(--muted); text-align: center; }
+
+/* ── comparação A/B ─────────────────────────────────────────────────── */
+.pl-cmp { margin: 0 0 1rem; max-width: 860px; }
+.pl-modes { display: flex; gap: .3rem; margin-bottom: .45rem; }
+.pl-mode { font: inherit; font-size: .7rem; font-weight: 600; cursor: pointer; color: var(--muted);
+  background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .22rem .6rem;
+  transition: all var(--ease); }
+.pl-mode:hover { color: var(--text); border-color: var(--border2); }
+.pl-mode.active { color: var(--accent-txt); background: var(--accent-fill); border-color: var(--accent); }
+
+.pl-cmp-side { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.pl-cmp-wipe .pl-frame { cursor: ew-resize; touch-action: none; }
+.pl-wipe-b { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pl-wipe-a { position: absolute; inset: 0; overflow: hidden; }
+.pl-wipe-a img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pl-wipe-handle { position: absolute; top: 0; bottom: 0; z-index: 3; width: 2px; background: #fff;
+  box-shadow: 0 0 0 1px #0006; transform: translateX(-1px); pointer-events: none; }
+.pl-wipe-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 30px; height: 30px; border-radius: 50%; background: #fff; color: #04121f; font-size: .8rem;
+  display: grid; place-items: center; box-shadow: 0 2px 8px #0006; }
+.pl-wipe-range { width: 100%; margin: .45rem 0 0; accent-color: var(--accent); }
+
+/* alternar: as duas no mesmo sítio, uma por cima da outra */
+.pl-cmp-flip { position: relative; }
+.pl-cmp-flip .pl-flip-a { position: absolute; inset: 0; transition: opacity .12s linear; }
+.pl-cmp-flip.showing-b .pl-flip-a { opacity: 0; }
+.pl-flip-tag { position: absolute; top: .5rem; left: .5rem; z-index: 4; }
+.pl-flip-btn { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%); z-index: 4;
+  font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer; user-select: none;
+  color: #04121f; background: #ffffffe6; border: none; border-radius: 999px; padding: .3rem .8rem;
+  box-shadow: 0 2px 10px #0006; touch-action: none; }
+.pl-flip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.pl-cmp-why { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: .5rem; }
+.pl-why { font-size: .76rem; line-height: 1.5; color: var(--text2); }
+.pl-why.ok b { color: #34d399; }
+.pl-why.bad b { color: #f87171; }
+
+/* ── fotografia anotada ─────────────────────────────────────────────── */
+.pl-hs { margin: 0 0 1rem; max-width: 760px; }
+.pl-hs-frame { position: relative; width: 100%; aspect-ratio: 1216 / 832; border-radius: var(--radius);
+  overflow: hidden; background: var(--card2); }
+.pl-hs-frame > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pl-pin { position: absolute; transform: translate(-50%, -50%); z-index: 2; cursor: pointer;
+  width: 26px; height: 26px; border-radius: 50%; font: inherit; font-size: .74rem; font-weight: 800;
+  display: grid; place-items: center; color: #04121f; background: #fff; border: 2px solid #fff;
+  box-shadow: 0 2px 8px #0008; transition: transform var(--ease), background var(--ease); }
+.pl-pin:hover { transform: translate(-50%, -50%) scale(1.15); }
+.pl-pin.ok { background: #34d399; border-color: #d1fae5; }
+.pl-pin.bad { background: #f87171; border-color: #fee2e2; }
+.pl-pin.info { background: #7dd3fc; border-color: #e0f2fe; }
+.pl-pin.seen { opacity: .82; }
+.pl-pin.active { transform: translate(-50%, -50%) scale(1.28); box-shadow: 0 0 0 4px #ffffff40, 0 2px 10px #000a; }
+.pl-hs-notes { margin-top: .5rem; min-height: 3.1rem; }
+/* `display: flex` ganha ao [hidden] do agente do utilizador — sem esta regra
+   apareciam as quatro notas ao mesmo tempo e o exercício de procurar os
+   pontos deixava de existir. */
+.pl-hs-note[hidden] { display: none; }
+.pl-hs-note { display: flex; flex-direction: column; gap: .12rem; border-radius: var(--radius);
+  background: var(--card2); border: 1px solid var(--border); border-left: 3px solid var(--border2);
+  padding: .55rem .7rem; animation: pl-fade .2s var(--ease-out, ease); }
+.pl-hs-note.ok { border-left-color: #34d399; } .pl-hs-note.ok b { color: #34d399; }
+.pl-hs-note.bad { border-left-color: #f87171; } .pl-hs-note.bad b { color: #f87171; }
+.pl-hs-note.info { border-left-color: #7dd3fc; } .pl-hs-note.info b { color: #7dd3fc; }
+.pl-hs-note b { font-size: .78rem; }
+.pl-hs-note span { font-size: .8rem; line-height: 1.55; color: var(--text2); }
+.pl-hs-hint { margin: 0; padding: .55rem .1rem; font-size: .76rem; color: var(--muted); }
+.pl-hs-hint.done { color: #34d399; font-weight: 600; }
+@keyframes pl-fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* ── escolher antes de saber ────────────────────────────────────────── */
+.pl-pick { margin: 0 0 1rem; max-width: 860px; }
+.pl-pick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .55rem; }
+.pl-pick-opt { font: inherit; text-align: left; cursor: pointer; padding: 0; background: none;
+  border: 2px solid var(--border); border-radius: var(--radius); overflow: hidden;
+  display: flex; flex-direction: column; transition: border-color var(--ease), transform var(--ease); }
+.pl-pick-opt:hover { border-color: rgba(var(--accent-rgb), .55); transform: translateY(-2px); }
+.pl-pick-opt .pl-frame { border-radius: 0; }
+.pl-pick-mark { position: absolute; top: .45rem; right: .45rem; z-index: 2; width: 24px; height: 24px;
+  border-radius: 50%; display: grid; place-items: center; font-size: .8rem; font-weight: 800;
+  opacity: 0; transition: opacity var(--ease); }
+.pl-pick-label { padding: .45rem .6rem .1rem; font-size: .78rem; font-weight: 700; color: var(--text); }
+.pl-pick-why { padding: 0 .6rem .55rem; font-size: .76rem; line-height: 1.5; color: var(--text2); }
+.pl-pick.answered .pl-pick-opt { cursor: default; transform: none; }
+.pl-pick-opt.is-ok { border-color: #34d39988; }
+.pl-pick-opt.is-ok .pl-pick-mark { opacity: 1; background: #34d399; color: #04121f; }
+.pl-pick-opt.is-ok .pl-pick-mark::after { content: '✓'; }
+.pl-pick-opt.is-bad { border-color: #f8717155; }
+.pl-pick-opt.is-bad .pl-pick-mark { opacity: 1; background: #f87171; color: #04121f; }
+.pl-pick-opt.is-bad .pl-pick-mark::after { content: '✕'; }
+.pl-pick-opt.chosen { box-shadow: 0 0 0 2px var(--accent) inset; }
+.pl-pick-verdict { margin: .55rem 0 0; font-size: .8rem; font-weight: 600; }
+.pl-pick-verdict.ok { color: #34d399; } .pl-pick-verdict.bad { color: #f87171; }
+.pl-pick-after { margin-top: .5rem; font-size: .82rem; line-height: 1.6; color: var(--text2);
+  border-left: 3px solid var(--accent); padding-left: .7rem; }
+
+/* ── laboratório de estilo ──────────────────────────────────────────── */
+.pl-look { margin: 0 0 1rem; }
+.pl-look-stage { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(190px, .65fr);
+  gap: .7rem; align-items: start; }
+.pl-look-frame { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--card2); }
+.pl-look-cv, .pl-look-orig { display: block; width: 100%; height: auto; }
+.pl-look-orig { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pl-look-hold { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%); z-index: 3;
+  font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer; user-select: none;
+  color: #04121f; background: #ffffffe6; border: none; border-radius: 999px; padding: .3rem .8rem;
+  box-shadow: 0 2px 10px #0006; touch-action: none; }
+.pl-look-off .pl-look-frame { min-height: 160px;
+  background: repeating-linear-gradient(45deg, var(--card2) 0 10px, var(--card) 10px 20px); }
+.pl-look-off .pl-look-hold, .pl-look-off .pl-look-ctl { display: none; }
+.pl-look-ctl { display: flex; flex-direction: column; gap: .6rem; }
+.pl-slider { display: block; }
+.pl-slider-lbl { display: flex; justify-content: space-between; font-size: .76rem; color: var(--text2);
+  margin-bottom: .2rem; }
+.pl-slider-lbl b { color: var(--accent-txt); font-variant-numeric: tabular-nums; }
+.pl-slider input { width: 100%; accent-color: var(--accent); }
+.pl-look-bases { display: flex; flex-wrap: wrap; gap: .3rem; }
+.pl-look-base { font: inherit; font-size: .71rem; font-weight: 600; cursor: pointer; color: var(--muted);
+  background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .22rem .6rem;
+  transition: all var(--ease); }
+.pl-look-base:hover { color: var(--text); border-color: var(--border2); }
+.pl-look-base.active { color: var(--accent-txt); background: var(--accent-fill); border-color: var(--accent); }
+.pl-look-basehint { margin: 0; font-size: .71rem; line-height: 1.45; color: var(--muted); }
+
+.pl-ingr { margin-top: .7rem; }
+.pl-ingr-h { display: block; font-size: .78rem; color: var(--text); margin-bottom: .3rem; }
+.pl-ingr-list { display: flex; flex-direction: column; gap: .25rem; }
+.pl-ingr-row { display: grid; grid-template-columns: minmax(120px, 22%) 52px 1fr; gap: .55rem;
+  align-items: baseline; background: var(--card2); border-radius: 6px; padding: .4rem .6rem; }
+.pl-ingr-n { font-size: .76rem; font-weight: 700; color: var(--text); }
+.pl-ingr-v { font-size: .74rem; font-family: var(--font-mono, monospace); color: var(--accent-txt);
+  font-variant-numeric: tabular-nums; }
+.pl-swatch { display: inline-block; width: 34px; height: 14px; border-radius: 3px;
+  border: 1px solid var(--border2); vertical-align: middle; }
+.pl-ingr-t { font-size: .76rem; line-height: 1.5; color: var(--text2); }
+
+/* ── escolher o corte ───────────────────────────────────────────────── */
+.pl-crop { margin: 0 0 1rem; max-width: 860px; }
+.pl-crop-stage { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; align-items: start; }
+.pl-crop-pane { margin: 0; }
+.pl-crop-pane figcaption { margin-top: .25rem; font-size: .7rem; color: var(--muted); text-align: center; }
+.pl-crop-frame { position: relative; width: 100%; aspect-ratio: 1216 / 832; border-radius: var(--radius);
+  overflow: hidden; background: var(--card2); }
+.pl-crop-frame > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pl-crop-box { position: absolute; z-index: 2; border: 2px solid #fff; box-shadow: 0 0 0 9999px #04121fa6;
+  transition: all .28s var(--ease-out, ease); }
+.pl-crop-box.ok { border-color: #34d399; } .pl-crop-box.bad { border-color: #f87171; }
+.pl-crop-out { position: relative; width: 100%; aspect-ratio: 1216 / 832; border-radius: var(--radius);
+  overflow: hidden; background: var(--card2); display: grid; place-items: center;
+  transition: aspect-ratio .28s var(--ease-out, ease); }
+/* Sem escolha feita, a imagem ainda não tem posição nem escala: mostrá-la
+   assim deixaria um recorte arbitrário no painel do resultado e o exercício
+   parecia já respondido. Só aparece depois de haver um corte escolhido. */
+.pl-crop-out > img { position: absolute; max-width: none; display: block; opacity: 0;
+  transition: opacity .2s linear, top .28s var(--ease-out, ease), left .28s var(--ease-out, ease), width .28s var(--ease-out, ease); }
+.pl-crop.chosen .pl-crop-out > img { opacity: 1; }
+.pl-crop-idle { position: relative; z-index: 2; font-size: .76rem; color: var(--muted); }
+.pl-crop-opts { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .55rem; }
+.pl-crop-opt { flex: 1 1 150px; font: inherit; text-align: left; cursor: pointer; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .45rem .6rem; transition: all var(--ease); }
+.pl-crop-opt:hover { border-color: var(--border2); }
+.pl-crop-opt.active { border-color: var(--accent); background: var(--accent-fill); }
+.pl-crop-opt b { display: block; font-size: .77rem; color: var(--text); }
+/* O `span` de cada opção é a fonte do veredicto e nunca se mostra dentro do
+   botão: até haver escolha entregaria a resposta, e depois de haver ficava a
+   mesma frase repetida duas vezes no ecrã. */
+.pl-crop-opt span { display: none; }
+.pl-crop-verdict { margin: .5rem 0 0; font-size: .8rem; line-height: 1.55; font-weight: 600; }
+.pl-crop-verdict.ok { color: #34d399; } .pl-crop-verdict.bad { color: #f87171; }
+
+/* ── revelar ────────────────────────────────────────────────────────── */
+/* Uma linha larga e cinzenta lia-se como campo de formulário vazio, não como
+   pergunta. Texto ao nível do corpo, largura limitada e a marca encostada ao
+   texto: o convite a tocar tem de estar onde os olhos já estão. */
+.pl-rev { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: .55rem; width: 100%;
+  max-width: 72ch; font: inherit; text-align: left; cursor: pointer; background: var(--card2);
+  border: 1px solid var(--border); border-left: 3px solid transparent;
+  border-radius: var(--radius); padding: .55rem .7rem;
+  transition: border-color var(--ease), background var(--ease); }
+.pl-rev:hover { border-color: var(--border2); border-left-color: var(--border2); background: var(--card); }
+.pl-rev.open { border-left-color: var(--accent); }
+.pl-rev-q { font-size: .82rem; line-height: 1.5; color: var(--text2); }
+.pl-rev-q b { color: var(--text); }
+.pl-rev-go { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  font-size: .72rem; font-weight: 800; color: var(--accent-txt); background: var(--accent-fill);
+  border: 1px solid var(--accent); }
+.pl-rev.open .pl-rev-go { color: #34d399; background: transparent; border-color: #34d39966; }
+.pl-rev-a { grid-column: 1 / -1; margin-top: .35rem; padding-top: .35rem; border-top: 1px dashed var(--border);
+  font-size: .82rem; line-height: 1.55; font-weight: 600; color: var(--text);
+  animation: pl-fade .2s var(--ease-out, ease); }
+.pl-revs { display: flex; flex-direction: column; gap: .35rem; }
+
+/* ── exercício ──────────────────────────────────────────────────────── */
+.pl-drill { display: grid; grid-template-columns: auto 1fr; gap: .55rem; align-items: start;
+  cursor: pointer; background: var(--card2); border: 1px solid var(--border);
+  border-left: 3px solid #a78bfa; border-radius: var(--radius); padding: .6rem .75rem; margin: .7rem 0 0; }
+.pl-drill input { accent-color: var(--accent); width: 16px; height: 16px; margin-top: .15rem; cursor: pointer; }
+.pl-drill-body { display: flex; flex-direction: column; gap: .12rem; }
+.pl-drill-body b { font-size: .78rem; color: #a78bfa; }
+.pl-drill-body span { font-size: .81rem; line-height: 1.6; color: var(--text2); }
+.pl-drill.done { opacity: .62; }
+.pl-drill.done .pl-drill-body span { text-decoration: line-through; }
+
+/* ── ligações cruzadas ──────────────────────────────────────────────── */
+.pl-links { margin-top: .85rem; padding-top: .6rem; border-top: 1px dashed var(--border); }
+.pl-links-h { display: block; font-size: .76rem; color: var(--muted); margin-bottom: .35rem; }
+.pl-links-row { display: flex; flex-wrap: wrap; gap: .35rem; }
+
+/* ── esqueleto da lição ─────────────────────────────────────────────── */
+.pl-lesson { display: block; }
+.pl-kicker { margin: 0 0 .15rem; font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--accent-txt); }
+.pl-hook { margin: 0 0 .5rem; font-family: var(--font-head); font-size: 1.06rem; font-weight: 800;
+  line-height: 1.35; color: var(--text); }
+/* a ideia é UMA frase: se crescer, a lição volta a ser um artigo */
+.pl-idea { margin: 0 0 .8rem; font-size: .88rem; line-height: 1.65; color: var(--text2); max-width: 66ch; }
+.pl-more { margin: .1rem 0 .9rem; }
+.pl-more > summary { cursor: pointer; font-size: .78rem; font-weight: 600; color: var(--muted);
+  list-style: none; display: inline-flex; align-items: center; gap: .35rem;
+  border: 1px dashed var(--border); border-radius: 999px; padding: .22rem .7rem; transition: all var(--ease); }
+.pl-more > summary::-webkit-details-marker { display: none; }
+.pl-more > summary::before { content: '＋'; font-size: .8rem; }
+.pl-more[open] > summary::before { content: '−'; }
+.pl-more > summary:hover { color: var(--text2); border-color: var(--border2); }
+.pl-more > div { margin-top: .5rem; font-size: .84rem; line-height: 1.7; color: var(--text2); max-width: 72ch; }
+.pl-takeaway { margin: .9rem 0 0; font-size: .85rem; line-height: 1.6; color: var(--text);
+  background: var(--card2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); padding: .6rem .8rem; }
+.pl-takeaway b { display: block; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent-txt); margin-bottom: .15rem; }
+
+/* ── responsivo ─────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .pl-look-stage { grid-template-columns: 1fr; }
+  .pl-look-ctl { flex-direction: row; flex-wrap: wrap; align-items: flex-end; }
+  .pl-look-ctl .pl-slider { flex: 1 1 200px; }
+  .pl-ingr-row { grid-template-columns: 1fr 52px; }
+  .pl-ingr-t { grid-column: 1 / -1; }
+}
+@media (max-width: 620px) {
+  /* Em ecrã estreito, duas fotografias lado a lado ficam pequenas demais
+     para se ver a decisão — que é a única razão para elas ali estarem.
+     Empilhar mantém cada uma legível; a comparação faz-se a rolar. */
+  .pl-cmp-side, .pl-crop-stage { grid-template-columns: 1fr; }
+  .pl-cmp-why { grid-template-columns: 1fr; gap: .3rem; }
+  .pl-pick-grid { grid-template-columns: 1fr; }
+  .pl-modes { flex-wrap: wrap; }
+}

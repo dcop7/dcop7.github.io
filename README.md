@@ -39,7 +39,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), 17 categorias (incl. piropos e cúmulos) organizadas por grupos, centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
-| `#photography` | **Fotografia** | Portal por géneros (15 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S23+ / ambos), modo "No Terreno" (assistente de bolso), Aprender (fundamentos, composição, 12 técnicas de edição RapidRAW/darktable/Snapseed, roda de cores) e 7 calculadoras (`data/photo/*.json`) |
+| `#photography` | **Fotografia** | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S23+ / ambos), modo "No Terreno" (assistente de bolso), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
 | `#settings` | **Preferências** | Tema, tamanho de letra, língua, bookmarks, cidade da meteo |
 
@@ -111,6 +111,29 @@ Hash-based via `js/core/nav.js`. Rotas: `home · links · tools · cheatsheets �
 | `Particles` / `GameAudio` / `GameInput` | partículas, sons Web Audio, teclado + D-pad touch |
 | `GameStorage` / `GameProgress` | highscores, níveis, stats unificados por jogo |
 | `otd-lib` (`js/core/otd-lib.js`) | reconstrói o painel de descoberta em direto a partir da Wikimedia quando o `today.json` está desatualizado |
+| `PhotoLab` (`js/pages/photo-lab.js`) | motor de revelação em canvas: exposição, tonalidade, curva, HSL por banda, tonalidade separada e primitivas de *look* (`fade`, `grain`, `bloom`, `halation`, `vignette`) |
+| `PhotoLearn` (`js/pages/photo-learn.js`) | componentes de aprendizagem visual da Fotografia (ver abaixo) |
+
+#### PhotoLearn — componentes de aprendizagem visual
+
+Todos devolvem HTML e ficam inertes até `PhotoLearn.wire(scope, onGo)`; uma só
+chamada liga tudo o que está dentro, o que importa porque as secções da
+Fotografia re-renderizam inteiras. Reutilizados na Visão de cada género, nos
+Estilos, nas Técnicas, em Ler fotografias e no visualizador de Composição.
+
+| Componente | O que ensina |
+|-----------|--------------|
+| `compare(o)` | A/B em três modos — **lado a lado** (cenas diferentes: vê-se a decisão inteira), **cortina** (pares alinhados), **alternar** (diferenças subtis). O modo fica guardado por família (`fam`). |
+| `hotspots(o)` | Fotografia anotada: pontos numerados e mudos até ao toque, para o olho procurar antes de ler |
+| `pick(o)` | "Qual é a mais forte?" — a resposta só aparece depois da escolha |
+| `look(o)` | Laboratório ao vivo sobre o PhotoLab: cursor de dose, troca da fotografia de base, receita com valores reais |
+| `crop(o)` | Escolher o corte e ver, ao lado, o que a fotografia passa a ser |
+| `reveal(o)` / `drill(o)` | Linha que esconde a resposta / exercício com estado em localStorage |
+| `lesson(o)` / `chips(o)` | Esqueleto da lição (ideia → ver → levar → treinar) e ligações cruzadas via `data-go` |
+
+Os chips `data-go` (`g:`, `look:`, `tec:`, `comp:`, `apr:`, `tool:`) são
+resolvidos por `plGo()` em `photography.js` — é o que permite uma lição
+apontar para outra sem saber nada sobre rotas.
 
 ### Design system
 
@@ -241,3 +264,23 @@ animation render, soft ambient lighting, instructional exercise demonstration, c
 **Negative prompt base:** `photo, photograph, photorealistic, realistic skin texture, text, watermark, words, letters, logo, brand, nike, adidas, blurry, low quality, lowres, ugly, deformed, extra limbs, extra arms, three arms, extra legs, bad anatomy, malformed hands, cropped, cut off, out of frame, second person, duplicate person, nude, shirtless` — acrescentar negativos de pose conforme o movimento (ex.: `arms raised, hands behind head` quando os braços devem ficar em baixo; `both arms raised, two hands on head` quando só um braço sobe). Descrever a pose com termos inequívocos (e nomes de yoga quando existam: balasana, bhujangasana, baddha konasana) e gerar 3+ seeds, escolhendo a melhor. Comprimir para JPEG ~60-90 KB antes de commitar.
 
 **Poses difíceis → ControlNet OpenPose** (instalado 16 jul 2026): quando o prompt não chega (ex.: segurar o tornozelo atrás, braço cruzado sobre o peito), usar o ControlNet `controlnet-openpose-sdxl-xinsir.safetensors` (em `D:/AI/StabilityMatrix/Data/Models/ControlNet`, formato diffusers — o ComfyUI carrega-o nativamente). Fluxo: desenhar o esqueleto OpenPose COCO-18 (cores/ligações padrão) com `C:\tmp\fit-skeletons.cjs` (coordenadas por articulação; fundo preto, traços sólidos) e gerar com `C:\tmp\gen-cn.cjs` (grafo `ControlNetLoader`→`ControlNetApplyAdvanced` entre os CLIPTextEncode e o KSampler; **strength 1.0, end_percent 0.9** — valores mais baixos são ignorados pelo xinsir). Poses deitadas vistas de lado (ex.: figura-4 no chão) continuam pouco fiáveis — preferir variantes em pé/joelhos ou knee-hug.
+
+### Assets da Fotografia (`tools/photogen`, dev-only)
+`node tools/photogen/generate.mjs --group <grupo>` gera as imagens estáticas da
+secção via ComfyUI local (JuggernautXL, 32 steps) e escreve
+`assets/photo/<grupo>/<id>.webp` + o índice `assets/photo/index.json`. Grupos:
+
+| Grupo | Para quê |
+|-------|----------|
+| `vision` | Par por género (`vis-<id>` / `vis-<id>-flat`) — com intenção × correta e banal. Os dois prompts descrevem a MESMA cena: só muda a intenção, nunca a qualidade técnica |
+| `cmp` | Pares dos princípios transversais (fundo limpo/sujo, história/registo, emoção/registo, momento, simplificar) |
+| `look` | Bases NEUTRAS do laboratório de estilos (`look-retrato`, `look-cidade`, `look-praia`). Têm de ser mesmo neutras — uma base já graduada não aceita um look por cima e deixa de ensinar |
+| `tec` | Exemplos das técnicas de captação (silhueta, panning, dupla exposição) |
+| `comp` / `comp-bad` / `comp-genre*` | Ilustrações das técnicas de composição, gerais e por género |
+| `poses` / `light` / `crop` / `know` / `genre-ico` / `edit-demo` | Retrato: poses, direção de luz, onde cortar, conceitos, ícones dos géneros, foto de demonstração da Edição |
+
+O site funciona sem estes ficheiros: `assetPath()` devolve `null` e cada
+componente cai no seu fallback (SVG procedural do `PhotoIllus`, ou o bloco
+simplesmente não aparece). Rever sempre as imagens a olho antes de commitar —
+prompts de contraexemplo ("tudo desfocado", "silhueta ilegível") são os que o
+SDXL mais resiste a cumprir e costumam precisar de outra abordagem à lição.
