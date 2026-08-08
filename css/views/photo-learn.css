@@ -277,3 +277,40 @@
   .pl-pick-grid { grid-template-columns: 1fr; }
   .pl-modes { flex-wrap: wrap; }
 }
+
+/* ── sequência ──────────────────────────────────────────────────────────
+   `steps` empilha: as imagens já vistas ficam no ecrã, porque comparar o que
+   se pensava com o que se sabe agora é metade da lição. `strip` põe tudo em
+   linha, porque numa série o que ensina é a relação entre as fotografias e
+   isso desaparece se elas forem vistas uma de cada vez. */
+.pl-seq { margin: 0 0 1rem; }
+.pl-seq-track { display: grid; gap: .6rem; }
+.pl-seq-steps .pl-seq-track { grid-template-columns: 1fr; max-width: 720px; }
+.pl-seq-strip .pl-seq-track { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.pl-seq-item { margin: 0; animation: pl-fade .28s var(--ease-out, ease); }
+.pl-seq-item[hidden] { display: none; }
+.pl-seq-item figcaption { margin-top: .35rem; font-size: .8rem; line-height: 1.55; color: var(--text2); }
+.pl-tag.info { color: #7dd3fc; border: 1px solid #7dd3fc66; }
+.pl-seq-ctl { display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  margin-top: .7rem; max-width: 720px; }
+.pl-seq-btn { font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .35rem .85rem;
+  transition: all var(--ease); }
+.pl-seq-btn:hover:not(:disabled) { color: var(--text); border-color: var(--border2); }
+.pl-seq-btn.primary { color: var(--accent-txt); background: var(--accent-fill); border-color: var(--accent); }
+.pl-seq-btn:disabled { opacity: .4; cursor: default; }
+.pl-seq-dots { display: inline-flex; gap: .3rem; }
+.pl-seq-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); transition: background var(--ease); }
+.pl-seq-dot.on { background: var(--accent); }
+.pl-seq-after { margin-top: .8rem; font-size: .84rem; line-height: 1.65; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); padding: .65rem .8rem; max-width: 74ch; animation: pl-fade .28s var(--ease-out, ease); }
+.pl-seq-after[hidden] { display: none; }
+@media (max-width: 620px) {
+  .pl-seq-strip .pl-seq-track { grid-template-columns: repeat(2, 1fr); }
+  .pl-seq-ctl { flex-wrap: wrap; }
+}
+/* comparação neutra: nenhum dos lados é melhor, os dois são decisões */
+.pl-tag.info { color: #7dd3fc; background: #04121fcc; border: 1px solid #7dd3fc66; }
+.pl-cmp-side .pl-tag.info ~ .pl-tag.info, .pl-frame.info .pl-tag { left: .5rem; right: auto; }
+.pl-why.info b { color: #7dd3fc; }

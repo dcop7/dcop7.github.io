@@ -298,8 +298,28 @@ secção via ComfyUI local (JuggernautXL, 32 steps) e escreve
 | `cmp` | Pares dos princípios transversais (fundo limpo/sujo, história/registo, emoção/registo, momento, simplificar) |
 | `look` | Bases NEUTRAS do laboratório de estilos (`look-retrato`, `look-cidade`, `look-praia`). Têm de ser mesmo neutras — uma base já graduada não aceita um look por cima e deixa de ensinar |
 | `tec` | Exemplos das técnicas de captação (silhueta, panning, dupla exposição) |
-| `comp` / `comp-bad` / `comp-genre*` | Ilustrações das técnicas de composição, gerais e por género |
+| `comp2` | Pares de composição CONTROLADOS: mesma cena, mesma luz, muda só a decisão de enquadramento. Substituiu `comp`/`comp-bad`, onde o lado "incorreto" era muitas vezes outra fotografia perfeitamente válida |
+| `comp-base` | Cenas largas de onde `derive-crops.cjs` extrai dois enquadramentos da MESMA imagem (proporção áurea, espaço negativo) |
+| `cor` | Pares da secção Cores: mesma situação, muda a relação de cor |
+| `seq` | Sequências de ambiguidade, série e honestidade |
+| `comp` / `comp-genre*` | Sobra a Curva em S (o único par antigo que já era controlado) e as composições por género |
 | `poses` / `light` / `crop` / `know` / `genre-ico` / `edit-demo` | Retrato: poses, direção de luz, onde cortar, conceitos, ícones dos géneros, foto de demonstração da Edição |
+
+**Pares de composição.** A regra é que os dois lados sejam a mesma situação
+fotográfica e mude uma só decisão de enquadramento — senão o exercício vira
+"boa fotografia contra má fotografia", que é falso e ensina a desconfiar do
+portal. Duas maneiras de o conseguir, por ordem de preferência:
+1. **`derive-crops.cjs`** — dois enquadramentos tirados da MESMA imagem. É o
+   par mais honesto que existe (mesmos píxeis) e é a única via fiável quando o
+   modelo se recusa a produzir o contraexemplo (o SDXL nunca aceitou estragar
+   um reflexo, por exemplo).
+2. **Mesma seed + mesma descrição de cena**, mudando só a cláusula de
+   composição.
+
+**Cuidado com ids repetidos entre grupos:** `generate.mjs` usa `find` pelo id,
+por isso um id existente noutro grupo faz com que as correções de prompt vão
+parar ao asset errado — e ambos escrevem em `index.json`. Ao substituir um
+grupo, apagar as entradas antigas do manifesto.
 
 O site funciona sem estes ficheiros: `assetPath()` devolve `null` e cada
 componente cai no seu fallback (SVG procedural do `PhotoIllus`, ou o bloco

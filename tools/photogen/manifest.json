@@ -147,110 +147,6 @@
       "caption": "pose-crossed"
     },
     {
-      "id": "comp-thirds",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880001,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a dramatic rocky coastline at golden sunset, a lighthouse on a rocky outcrop placed on the right-third line, horizon on the lower third, calm reflective sea, rule of thirds composition"
-    },
-    {
-      "id": "comp-converging",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880002,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a long wooden pier extending straight toward distant mountains at sunrise, strong converging leading lines to a central vanishing point in the middle of the frame, calm misty lake"
-    },
-    {
-      "id": "comp-diagonal",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880003,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a winding coastal mountain road cutting diagonally from the lower-left to the upper-right of the frame at sunset, a sleek dark sports car on the road, dynamic diagonal composition"
-    },
-    {
-      "id": "comp-golden",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880005,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a lone traveler standing by a calm mountain lake at sunset, placed at the golden ratio point on the right side, the shoreline and clouds curving gently toward the subject, harmonious balanced landscape"
-    },
-    {
-      "id": "comp-spiral",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880006,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "aerial view of a curving sandy bay and cliffs forming a natural golden spiral that leads the eye inward to a small boat near the tight center, warm sunset light"
-    },
-    {
-      "id": "comp-symmetry",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880007,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a perfectly symmetrical snow mountain reflected in a still mirror-like lake at dawn, centered vertical symmetry, calm and balanced"
-    },
-    {
-      "id": "comp-framing",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880008,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a lone hiker seen through a natural stone arch that frames them, the dark arch in the foreground framing a bright sunlit valley beyond, natural framing composition"
-    },
-    {
-      "id": "comp-negative",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880009,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "a tiny lone figure standing on a vast empty misty plain under an enormous pale sky, extreme negative space, minimalist, sense of scale and solitude"
-    },
-    {
       "id": "comp-scurve",
       "group": "comp",
       "style": "scene_illus",
@@ -262,19 +158,6 @@
       ],
       "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
       "prompt": "aerial view of a river winding in a graceful S-curve through a lush green valley at golden hour, the curve leading the eye smoothly through the scene"
-    },
-    {
-      "id": "comp-triangle",
-      "group": "comp",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 880011,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph, harsh flat lighting",
-      "prompt": "three tall rock sea stacks arranged forming a stable triangular composition rising from a calm ocean at sunset, balanced and harmonious"
     },
     {
       "id": "comp-retrato-thirds",
@@ -1059,110 +942,6 @@
       "prompt": "layered mountain ridges receding into the distance at dawn, each successive ridge paler and more blue-grey than the one in front, strong atmospheric perspective, hazy sense of depth"
     },
     {
-      "id": "comp-thirds-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881001,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a coastline at sunset with the lighthouse and the horizon both placed dead center in the middle of the frame, perfectly centered, static boring composition"
-    },
-    {
-      "id": "comp-converging-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881002,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a flat open green meadow scattered with wildflowers under a plain empty sky, one small lone tree off to one side, absolutely no roads, no paths, no fences, no rows, no lines of any kind, nothing leads the eye, completely flat and directionless"
-    },
-    {
-      "id": "comp-diagonal-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881003,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a sports car parked dead center facing the camera head-on on a flat straight horizontal road, completely static frontal composition, no diagonal"
-    },
-    {
-      "id": "comp-golden-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881005,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a lone traveler standing exactly in the dead center of a symmetric mountain lake scene, mechanically centered, static lifeless balance"
-    },
-    {
-      "id": "comp-spiral-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881006,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a completely flat straight empty beach and calm sea at sunset, no curves, no spiral, no leading shapes, static and empty"
-    },
-    {
-      "id": "comp-symmetry-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881007,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a messy asymmetric rocky mountain landscape at midday with a strongly tilted crooked horizon, everything lopsided and unbalanced, dry ground with no water and no reflection at all, no symmetry"
-    },
-    {
-      "id": "comp-framing-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881008,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "a hiker standing tiny in the middle of a wide flat empty open plain with absolutely nothing in the foreground to frame them, bland empty and flat"
-    },
-    {
-      "id": "comp-negative-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881009,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "an extremely cluttered chaotic rocky shore crammed with countless competing rocks and elements filling the whole frame, no empty space at all, a figure lost in the clutter"
-    },
-    {
       "id": "comp-scurve-bad",
       "group": "comp-bad",
       "style": "scene_illus",
@@ -1174,19 +953,6 @@
       ],
       "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
       "prompt": "an aerial view of a perfectly straight rigid river running straight down the middle of the frame like a ruler, no curve or bend, static"
-    },
-    {
-      "id": "comp-triangle-bad",
-      "group": "comp-bad",
-      "style": "scene_illus",
-      "matte": false,
-      "seed": 881011,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "text, watermark, signature, low quality, blurry, deformed, ugly, photograph",
-      "prompt": "three sea stacks scattered randomly and unevenly all bunched to one side with no triangular arrangement, awkward unbalanced placement"
     },
     {
       "id": "crop-standing",
@@ -2668,6 +2434,435 @@
       ],
       "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts, oversaturated, heavy colour grading, strong filter",
       "prompt": "photorealistic double exposure photograph, the profile of a woman filled with a forest of bare winter trees and mist, the two images blended into one frame, dark background, fine art"
+    },
+    {
+      "id": "base-golden",
+      "group": "comp-base",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910102,
+      "size": [
+        1536,
+        1024
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "a single hiker standing still on the shore of a mirror-calm mountain lake at dawn, the figure small and clearly separated against the pale water, mountains receding behind, generous empty space on both sides of the figure and above"
+    },
+    {
+      "id": "base-negative",
+      "group": "comp-base",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910103,
+      "size": [
+        1536,
+        1024
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "a single small dark figure standing alone on an immense flat pale salt plain in soft fog, almost the entire frame is empty pale ground and sky, minimal, quiet, the figure tiny and isolated near the middle"
+    },
+    {
+      "id": "comp-spiral",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910201,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "an aerial view of a curving sandy cove, the shoreline sweeping inward in a tightening spiral of sand and turquoise water, a small wooden boat resting exactly at the inner end of the curve where the eye arrives, golden light"
+    },
+    {
+      "id": "comp-spiral-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910201,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "an aerial view of the same curving sandy cove with the same turquoise water and golden light, but the small wooden boat sits far out at the open edge of the frame, away from where the sweep of the shoreline leads, the curve arrives at empty sand"
+    },
+    {
+      "id": "comp-diagonal",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910202,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "a dark sports car on a coastal mountain road at sunset, the road cutting across the frame as one strong diagonal from the lower left corner to the upper right, the car placed along that diagonal, sense of speed and depth"
+    },
+    {
+      "id": "comp-diagonal-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910202,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "the same dark sports car on the same coastal mountain road at the same sunset, but photographed square from the side so the road runs flat and horizontal across the middle of the frame, the car centred and static, no diagonal"
+    },
+    {
+      "id": "comp-converging",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910203,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "a long wooden pier photographed from its centre line, the two railings converging sharply to a single vanishing point at a distant mountain, strong perspective, calm lake at dawn"
+    },
+    {
+      "id": "comp-converging-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910203,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "the same long wooden pier on the same calm lake at dawn, but photographed from the shore side on, so the pier crosses the frame as a flat parallel band and the railings never converge, no perspective lines"
+    },
+    {
+      "id": "comp-symmetry",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910204,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "a snow capped mountain perfectly mirrored in a mirror-still lake, the horizon exactly on the centre line, the reflection a complete and unbroken twin of the peak, deliberate symmetry"
+    },
+    {
+      "id": "comp-symmetry-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910204,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "the same snow capped mountain and the same lake, but the horizon sits high and off centre and a breeze has broken the water so the reflection is fragmented and incomplete, the peak sits to one side, the mirror is lost"
+    },
+    {
+      "id": "comp-framing",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910205,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "a hiker on a path seen through a natural stone arch, the dark arch occupying the edges of the frame and opening onto a sunlit green valley with peaks beyond, the opening surrounds and points to the hiker"
+    },
+    {
+      "id": "comp-framing-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910205,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "the same hiker on the same path in the same sunlit green valley with the same peaks, photographed out in the open with nothing in the foreground, no arch, no branches, an unobstructed plain view"
+    },
+    {
+      "id": "comp-triangle",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910241,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "still life on a plain wooden table in soft window light: one tall ceramic vase standing in the upper middle of the frame, one small bowl in the lower left corner of the frame and one small bowl in the lower right corner of the frame, wide empty space between the three objects, their three positions clearly forming a large triangle, plain neutral background"
+    },
+    {
+      "id": "comp-triangle-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910231,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
+      "prompt": "the same three ceramic bowls on the same plain wooden table in the same soft window light, lined up side by side in a perfectly straight row all at the same distance from the camera, flat row arrangement, no triangle"
+    },
+    {
+      "id": "cor-dominante",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920101,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a narrow alley in Morocco painted entirely in shades of deep blue, blue walls blue doors blue steps, a person in blue walking through, one single colour governs the whole frame, coherent colour identity"
+    },
+    {
+      "id": "cor-dominante-b",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920102,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a similar narrow old-town alley, but every surface is a different colour — ochre wall, green shutters, red door, pink awning, blue bicycle — many equally strong colours competing, no colour governs"
+    },
+    {
+      "id": "cor-atencao",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920103,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a grey rainy city street, wet asphalt, grey buildings, people in dark coats, and ONE person carrying a bright red umbrella clearly separated in the middle distance, the red is the only saturated colour in the frame"
+    },
+    {
+      "id": "cor-atencao-b",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920104,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of the same grey rainy city street with the same people in dark coats, but the one umbrella is dark grey like everything else, the whole frame is a single muted grey range, nothing stands out"
+    },
+    {
+      "id": "cor-complementar",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920105,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a fisherman in a bright orange jacket on a deep teal blue sea at dusk, the orange and the blue directly opposite each other, strong chromatic tension, the figure separates instantly from the water"
+    },
+    {
+      "id": "cor-complementar-b",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920106,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a field of tall dry grass under a warm hazy sky at dusk, everything within a narrow band of gold amber and soft brown, analogous colours, calm and cohesive with no colour tension"
+    },
+    {
+      "id": "cor-paleta",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920107,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic minimal photograph of a foggy pine forest at dawn, the entire image restricted to three tones — dark green, pale grey and off white, restrained limited palette, calm and quiet"
+    },
+    {
+      "id": "cor-paleta-b",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920108,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a busy seaside amusement pier in full sun, red green yellow blue and pink signage all at maximum saturation at once, every colour of the spectrum in one frame, visually loud"
+    },
+    {
+      "id": "seq-amb-1",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920231,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic tight close photograph of two fully clothed people in winter coats embracing, only their coat shoulders scarves and the side of their faces visible, warm indoor light, emotional, no context at all around them, nothing else in frame"
+    },
+    {
+      "id": "seq-amb-2",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920202,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic medium photograph of the same two people embracing on a railway platform, suitcases at their feet, a train waiting behind them, departure atmosphere"
+    },
+    {
+      "id": "seq-amb-3",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920203,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic wide photograph of the same railway platform revealing a film crew — a camera on a dolly, a boom microphone, a director watching a monitor and crew members standing around the embracing couple, clearly a film set"
+    },
+    {
+      "id": "seq-ser-1",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920211,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a weathered wooden door painted faded blue in a whitewashed stone wall, centred, flat frontal view, soft overcast light, typological documentary style"
+    },
+    {
+      "id": "seq-ser-2",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920212,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a weathered wooden door painted faded green in a whitewashed stone wall, centred, flat frontal view, soft overcast light, identical framing and distance, typological documentary style"
+    },
+    {
+      "id": "seq-ser-3",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920213,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a weathered wooden door painted faded ochre in a whitewashed stone wall, centred, flat frontal view, soft overcast light, identical framing and distance, typological documentary style"
+    },
+    {
+      "id": "seq-ser-4",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920214,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of a weathered wooden door painted faded deep red in a whitewashed stone wall, centred, flat frontal view, soft overcast light, identical framing and distance, typological documentary style"
+    },
+    {
+      "id": "seq-hon-1",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920221,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic wide documentary photograph of a small public square with a handful of protesters holding signs in one corner, the rest of the square almost empty, pedestrians walking past uninterested, overcast daylight"
+    },
+    {
+      "id": "seq-hon-2",
+      "group": "seq",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920222,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic tight documentary photograph taken low among the same protesters, the frame completely filled with raised signs and shouting faces pressed together, looks like a huge crowd, same overcast daylight"
+    },
+    {
+      "id": "comp-thirds",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910221,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "a white lighthouse on a rocky headland at sunset, the lighthouse standing on the right third of the frame and the sea horizon running along the upper third line, large calm sea filling the lower two thirds, balanced off centre composition"
+    },
+    {
+      "id": "comp-thirds-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 910221,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph",
+      "prompt": "the same white lighthouse on the same rocky headland at the same sunset, but placed exactly in the dead centre of the frame with the sea horizon running exactly through the middle of the picture, perfectly centred and evenly split composition"
     }
   ]
 }

@@ -1486,7 +1486,33 @@
           "h": "🎓 Onde treinar",
           "t": "Fotografa o mesmo assunto duas vezes: uma que explica e uma que sugere. Mostra as duas a alguém e vê qual é que gera perguntas."
         }
-      ]
+      ],
+      "sequence": {
+        "mode": "steps",
+        "q": "Olha só para a primeira. O que está a acontecer aqui?",
+        "nextLabel": "Mostrar mais contexto",
+        "items": [
+          {
+            "src": "seq-amb-1",
+            "tag": "1 · o que vês",
+            "alt": "Duas pessoas abraçadas, muito perto",
+            "cap": "Duas pessoas abraçadas. Sem mais nada no enquadramento, quase toda a gente lê reencontro."
+          },
+          {
+            "src": "seq-amb-2",
+            "tag": "2 · mais contexto",
+            "alt": "O mesmo abraço, agora numa gare com malas",
+            "cap": "Malas, uma gare, um comboio à espera. A mesma imagem passa a ler-se como despedida — e não mudou nada nas duas pessoas."
+          },
+          {
+            "src": "seq-amb-3",
+            "tag": "3 · o resto da cena",
+            "alt": "A mesma gare, revelando uma equipa de filmagem",
+            "cap": "Uma câmara sobre carris, um microfone, uma equipa a ver o monitor. Não era reencontro nem despedida: era uma rodagem."
+          }
+        ],
+        "after": "Nenhuma das três está errada. O que muda é quanto o enquadramento decidiu mostrar — e é essa decisão que fabrica o significado. Uma fotografia ambígua não é uma fotografia confusa: é uma que sabe o que está a esconder e porquê."
+      }
     },
     {
       "id": "luz-diz",
@@ -1606,7 +1632,30 @@
           "h": "⚠️ O erro típico",
           "t": "Colecionar. Uma fotografia de cada coisa dá um inventário; três de uma coisa dão um assunto."
         }
-      ]
+      ],
+      "sequence": {
+        "mode": "strip",
+        "q": "Quatro fotografias de portas. Olha para o conjunto antes de leres — o que é que as torna uma série e não quatro fotografias?",
+        "items": [
+          {
+            "src": "seq-ser-1",
+            "alt": "Porta azul desbotada numa parede caiada"
+          },
+          {
+            "src": "seq-ser-2",
+            "alt": "Porta verde desbotada numa parede caiada"
+          },
+          {
+            "src": "seq-ser-3",
+            "alt": "Porta ocre desbotada numa parede caiada"
+          },
+          {
+            "src": "seq-ser-4",
+            "alt": "Porta vermelha desbotada numa parede caiada"
+          }
+        ],
+        "after": "<b>Constante:</b> mesma distância, mesma altura, porta ao centro, mesma luz difusa. <b>Variável:</b> só a cor e o desgaste. É a constante que cria a regra e a variável que cria o interesse — sozinha, cada uma destas é uma fotografia de uma porta; juntas, são um retrato de uma aldeia. Uma série precisa de uma regra suficientemente rígida para se notar quando ela é quebrada."
+      }
     },
     {
       "id": "honestidade",
@@ -1642,7 +1691,20 @@
           "h": "Porque é que isto é criativo e não burocrático",
           "t": "Estas restrições melhoram as imagens. Quem se aproxima em vez de fotografar de longe com uma teleobjetiva consegue fotografias mais próximas. Quem espera que um animal confie consegue comportamento em vez de fuga."
         }
-      ]
+      ],
+      "sequence": {
+        "mode": "compare",
+        "neutral": true,
+        "q": "A mesma manifestação, na mesma tarde, fotografada por duas pessoas. Qual delas é verdadeira?",
+        "a": "seq-hon-1",
+        "b": "seq-hon-2",
+        "aTag": "◆ Enquadramento aberto",
+        "bTag": "◆ Enquadramento fechado",
+        "aWhy": "Uma praça quase vazia com um punhado de pessoas num canto. Ninguém mentiu: estava assim.",
+        "bWhy": "Cartazes a encher o enquadramento, fotografado de baixo e de perto. Também ninguém mentiu: aquilo estava mesmo ali.",
+        "caption": "As duas são honestas ao nível do píxel. As duas publicam manchetes opostas.",
+        "after": "As duas são verdadeiras e nenhuma é a verdade. Toda a fotografia é uma seleção — do que entra, do instante, do corte, do tratamento e da legenda. Isto não faz da fotografia documental uma mentira nem da fotografia editada uma fraude; faz de quem fotografa alguém que escolhe, e portanto alguém responsável pelo que a escolha deixa perceber."
+      }
     }
   ]
 }

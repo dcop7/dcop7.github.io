@@ -55,7 +55,11 @@ export async function queue(graph) {
   return (await r.json()).prompt_id;
 }
 
-export async function waitForImages(promptId, { timeout = 240000, interval = 1500 } = {}) {
+/* 10 min e não 4: numa GPU AMD a PRIMEIRA imagem de cada resolução nova
+   obriga o ROCm a compilar kernels e passa facilmente dos 4 minutos. As
+   seguintes na mesma resolução são rápidas — o timeout só precisa de cobrir
+   esse arranque. */
+export async function waitForImages(promptId, { timeout = 600000, interval = 1500 } = {}) {
   const t0 = Date.now();
   while (Date.now() - t0 < timeout) {
     const r = await fetch(`${HOST}/history/${promptId}`);

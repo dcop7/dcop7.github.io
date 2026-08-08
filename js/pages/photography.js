@@ -429,13 +429,16 @@ const PhotographyPage = (function () {
           ctx.beginPath();ctx.arc(x,y,5,0,2*Math.PI);ctx.fillStyle='rgba(245,158,11,.8)';ctx.fill();
         }));
       }},
-    { name:'Espiral Dourada', desc:'Espiral logarítmica baseada na proporção áurea — o olhar segue naturalmente a curva até ao ponto focal no centro. O raio cresce por um fator de φ=1.618 a cada 90°. É a mesma proporção que se encontra em conchas de nautilus, galáxias espirais e em obras de Da Vinci.',
+    { name:'Espiral Dourada', focal:[0.47,0.76], desc:'Espiral logarítmica baseada na proporção áurea — o olhar segue naturalmente a curva até ao ponto focal no centro. O raio cresce por um fator de φ=1.618 a cada 90°. É a mesma proporção que se encontra em conchas de nautilus, galáxias espirais e em obras de Da Vinci.',
       tips:'Roda o enquadramento (ou o telemóvel/câmara) para que o elemento principal coincida com o centro apertado da espiral. O movimento da curva deve guiar o olhar. Funciona melhor quando há uma linha natural em curva (estrada, rio, braço, silhueta).',
       examples:'Retratos de beleza (rosto no centro da espiral), paisagens com rios sinuosos, macro de flores, composições arquitetónicas com escadas em espiral.',
       draw(ctx,W,H){
         const phi=1.618033988749895,b=Math.log(phi)/(Math.PI/2);
-        // Focal point at the phi-division intersection (upper-left quadrant anchor)
-        const cx=W/phi, cy=H/phi;
+        /* O centro da espiral tem de cair onde o assunto está NA fotografia.
+           Estava fixo na divisão phi e a ilustração tinha o barco noutro
+           sítio — a espiral desenhava uma relação que a imagem não tinha,
+           que é exactamente o erro que uma marcação nunca pode cometer. */
+        const cx=W*(this.focal ? this.focal[0] : 1/phi), cy=H*(this.focal ? this.focal[1] : 1/phi);
         // Subtle phi grid
         ctx.strokeStyle='rgba(245,158,11,.18)';ctx.lineWidth=0.7;
         [W/phi,W-W/phi].forEach(gx=>{ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();});
@@ -470,7 +473,7 @@ const PhotographyPage = (function () {
       examples:'Estradas e sombras em diagonal, escadarias, braços e olhares em retrato, arquitetura moderna.',
       draw(ctx,W,H){
         ctx.strokeStyle='rgba(34,197,94,.7)';ctx.lineWidth=2;
-        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,H);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(0,H);ctx.lineTo(W,0);ctx.stroke();
         ctx.strokeStyle='rgba(34,197,94,.2)';ctx.lineWidth=1;
         ctx.beginPath();ctx.moveTo(W,0);ctx.lineTo(0,H);ctx.stroke();
         ctx.fillStyle='rgba(34,197,94,.06)';
@@ -518,10 +521,10 @@ const PhotographyPage = (function () {
       tips:'Quanto mais pequeno o sujeito no espaço, maior a sensação de vastidão. Deixa espaço à frente do sujeito (espaço de movimento). Fundos limpos são essenciais.',
       examples:'Silhueta contra o céu, barco num mar calmo, minimalismo com nevoeiro, retrato contra parede lisa.',
       draw(ctx,W,H){
-        ctx.fillStyle='rgba(99,102,241,.06)';ctx.fillRect(W*0.04,H*0.08,W*0.58,H*0.84);
+        ctx.fillStyle='rgba(99,102,241,.06)';ctx.fillRect(W*0.42,H*0.08,W*0.54,H*0.84);
         ctx.strokeStyle='rgba(99,102,241,.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
-        ctx.strokeRect(W*0.04,H*0.08,W*0.58,H*0.84);ctx.setLineDash([]);
-        ctx.fillStyle='rgba(99,102,241,.35)';ctx.beginPath();ctx.arc(W*0.74,H/2,W*0.09,0,Math.PI*2);ctx.fill();
+        ctx.strokeRect(W*0.42,H*0.08,W*0.54,H*0.84);ctx.setLineDash([]);
+        
         ctx.strokeStyle='rgba(99,102,241,.65)';ctx.lineWidth=1.5;ctx.stroke();
         ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1;
         ctx.beginPath();ctx.moveTo(W*0.64,H/2);ctx.lineTo(W*0.28,H/2);ctx.stroke();
@@ -597,17 +600,19 @@ const PhotographyPage = (function () {
     },
   };
   // Legendas correto/incorreto (quando existe a versão "errada" comp-<slug>-bad).
+  /* Descrevem a DECISÃO, não a qualidade. O lado direito diz o que a segunda
+     versão faz em vez do princípio — nunca que está errada. */
   const COMP_WHY = {
-    'comp-thirds': { ok: 'Farol e horizonte alinhados com os pontos fortes.', bad: 'Sujeito ao centro e horizonte ao meio — estático.' },
-    'comp-golden': { ok: 'Sujeito no ponto áureo — equilíbrio natural.', bad: 'Ao centro — previsível e sem tensão.' },
-    'comp-spiral': { ok: 'A curva guia o olhar até ao centro.', bad: 'Reta e vazia — nada conduz o olhar.' },
-    'comp-diagonal': { ok: 'A diagonal cria movimento e destaca o sujeito.', bad: 'Frontal e estático — sem energia.' },
-    'comp-converging': { ok: 'As linhas do cais conduzem o olhar ao ponto focal.', bad: 'Sem direção visual, o olhar não é guiado.' },
-    'comp-symmetry': { ok: 'Simetria equilibrada e harmoniosa.', bad: 'Horizonte torto e desequilíbrio.' },
-    'comp-framing': { ok: 'A moldura natural dirige o olhar e dá profundidade.', bad: 'Sem moldura, a cena fica plana.' },
-    'comp-negative': { ok: 'O vazio destaca o sujeito e dá escala.', bad: 'Cena confusa — o sujeito perde-se.' },
-    'comp-scurve': { ok: 'A curva em S conduz o olhar com fluidez.', bad: 'Linha reta rígida — sem dinâmica.' },
-    'comp-triangle': { ok: 'Arranjo triangular estável e equilibrado.', bad: 'Disposição aleatória e desequilibrada.' },
+    'comp-thirds': { ok: 'Farol num ponto forte e horizonte na linha de cima: o olho percorre o enquadramento.', bad: 'Mesma cena, farol ao centro e horizonte ao meio — o enquadramento fica simétrico e parado.' },
+    'comp-golden': { ok: 'A figura cai na divisão áurea, um pouco mais fora do centro do que nos terços.', bad: 'Mesma cena com a figura ao centro: o equilíbrio passa a ser simétrico em vez de proporcional.' },
+    'comp-spiral': { ok: 'A curva da areia aperta e entrega o olhar ao barco, no fim do percurso.', bad: 'Mesma enseada, mas o barco está fora do caminho que a curva desenha — a espiral chega a areia vazia.' },
+    'comp-diagonal': { ok: 'A estrada atravessa o enquadramento na diagonal e leva o olho com ela.', bad: 'Mesmo carro e mesma estrada vistos de lado: a linha fica horizontal e a cena perde direção.' },
+    'comp-converging': { ok: 'Visto do eixo, os dois corrimões fecham num ponto de fuga e criam profundidade.', bad: 'Mesmo cais visto de lado: as linhas ficam paralelas ao enquadramento e já não convergem.' },
+    'comp-symmetry': { ok: 'Horizonte no eixo e reflexo inteiro: a simetria é a decisão da fotografia.', bad: 'Mesma montanha com o horizonte alto e o reflexo partido pelo vento — a simetria deixa de existir.' },
+    'comp-framing': { ok: 'O arco escuro rodeia o vale e aponta ao caminhante.', bad: 'Mesmo vale e mesmo caminhante sem nada em primeiro plano — a cena fica aberta e plana.' },
+    'comp-negative': { ok: 'Muito vazio à volta de uma figura pequena: o espaço dá escala e isolamento.', bad: 'Mesma fotografia fechada sobre a figura — o vazio desaparece e com ele a sensação de escala.' },
+    'comp-scurve': { ok: 'O rio desenha um S e conduz o olhar de baixo até ao fundo do vale.', bad: 'Mesmo tipo de vale com o curso de água a direito: o olhar atravessa sem percurso.' },
+    'comp-triangle': { ok: 'Três alturas diferentes: os topos fecham um triângulo estável.', bad: 'Os mesmos três rochedos alinhados e à mesma altura — ficam uma fila, não um triângulo.' },
   };
   // Desenha só o overlay geométrico (fundo transparente para assentar na imagem);
   // opts.bg preenche um fundo neutro (vista "só grelha" sem imagem).
@@ -673,13 +678,18 @@ const PhotographyPage = (function () {
        esta secção sempre quis fazer. A cortina continua a um toque, porque
        para quem já percebeu a diferença ela é mais rápida. */
     const ovHTML = () => `<canvas class="ph-cv-ov${_compOv ? '' : ' off'}"></canvas>`;
+    /* Os rótulos eram "✓ Correto" e "✗ Incorreto", e isso era falso: as duas
+       fotografias são válidas — só uma delas usa o princípio. Chamar má a uma
+       fotografia centrada e simétrica ensina o aluno a desconfiar do portal,
+       não a compor. O par passa a dizer o que realmente o separa. */
     const stage = bad
       ? PhotoLearn.compare({
           fam: 'composicao', mode: 'side', a: asset, b: bad,
-          aAlt: 'Exemplo correto', bAlt: 'Exemplo incorreto',
-          aTag: '✓ Correto', bTag: '✗ Incorreto',
+          aAlt: 'Enquadramento que aplica o princípio',
+          bAlt: 'Mesma cena sem aplicar o princípio',
+          aTag: '✓ Aplica', bTag: '↔ Não aplica',
           aWhy: why.ok || '', bWhy: why.bad || '',
-          label: 'Comparar correto e incorreto',
+          label: 'Comparar os dois enquadramentos',
           extraA: ovHTML(), extraB: ovHTML(),
         })
       : `<div class="pl-frame">
@@ -764,8 +774,12 @@ const PhotographyPage = (function () {
   }
 
   function buildComposition(root) {
+    /* Dito uma vez, aqui em cima, e não repetido dentro de cada comparação:
+       sem esta ressalva os pares leem-se como um julgamento de qualidade, que
+       é exactamente o que não são. */
     root.innerHTML = `<div class="ph-section-title">🖼️ Composição</div>
       <p class="ph-section-sub">Como se organizam os elementos dentro do enquadramento — as regras clássicas, cada uma com exemplo, grelha e o que comunica. Toca para explorar.</p>
+      <p class="ph-comp-note">⚖️ <b>Isto são ferramentas, não leis.</b> Em cada par, as duas fotografias são válidas: uma usa o princípio e a outra, na mesma cena, não o usa. Muita fotografia excelente ignora estas regras de propósito — saber usá-las é também saber quando as deixar de lado.</p>
       <div class="ph-comp-grid2"><p class="ph-section-sub">A carregar…</p></div>
       <div data-comp-decisions></div>`;
     Promise.all([loadAssets(), loadDB()]).then(([, db]) => {
@@ -994,8 +1008,8 @@ const PhotographyPage = (function () {
     _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json'),
                               grab('profiles.json'), grab('craft.json'), grab('equipment.json'),
                               grab('vision.json'), grab('looks.json'), grab('techniques.json'),
-                              grab('read.json')])
-      .then(([g, gen, k, p, c, e, v, lk, tc, rd]) => (_DB = {
+                              grab('read.json'), grab('colour.json')])
+      .then(([g, gen, k, p, c, e, v, lk, tc, rd, cl]) => (_DB = {
         classes: g.classes, lensClasses: g.lensClasses, mine: g.mine, gearDefault: g.default,
         genres: gen.genres, know: k.topics,
         profiles: p.profiles, profileDefault: p.default, rawAdvice: p.rawAdvice,
@@ -1003,6 +1017,7 @@ const PhotographyPage = (function () {
         vision: v.genres, principles: v.principles,
         looks: lk.looks, lookBases: lk.bases, techniques: tc.techniques,
         readMethod: rd.method, readAnalyses: rd.analyses, readCrops: rd.crops,
+        colour: cl.lessons, colourChain: cl.chain,
       }))
       .catch(() => { _dbPromise = null; return null; });
     return _dbPromise;
@@ -2224,7 +2239,7 @@ const PhotographyPage = (function () {
       else if (kind === 'tec') { const t = (_DB.techniques || []).find(x => x.id === id); if (t) { label = t.name; icon = t.icon; } }
       else if (kind === 'know') { const k = (_DB.know || []).find(x => x.id === id); if (k) { label = k.name; icon = k.icon || '📖'; } }
       else if (kind === 'tool') { label = TOOL_META[id] && TOOL_META[id].label; }
-      else if (kind === 'etool') { const t = editToolIndex()[id]; label = t ? 'Edição · ' + t.name : null; }
+      else if (kind === 'etool') { const t = editToolIndex()[id]; label = t ? 'Edição · ' + t.tool.name : null; }
       else if (kind === 'edicao') { label = 'Secção Edição'; }
       else if (kind === 'comp') { label = id; }
       if (label) out.push({ go: kind === 'edicao' ? 'edicao' : spec, icon, label });
@@ -2242,6 +2257,32 @@ const PhotographyPage = (function () {
     return `<div class="ph-know-sec"><h4>${c.icon} Fator de crop — ${c.name}</h4>
       <p><b>${c.crop}</b> · ${c.focals}</p>
       <p class="ph-know-scope">Estás a ver os números de <b>${c.name}</b>. Troca a câmara acima para os do teu sistema — a focal equivalente é a única linguagem que se traduz entre formatos.</p></div>`;
+  }
+
+  /* ── princípios que não cabem num par ────────────────────────────────────
+     Ambiguidade, série e honestidade resistiam a A/B, e forçá-los a um par
+     ensinaria o contrário do que dizem: que há um lado certo. Cada um recebe
+     a forma que a lição pede.
+       steps   — ambiguidade: o significado só muda porque entra mais contexto,
+                 e isso é um percurso, não uma oposição.
+       strip   — série: o que se ensina é a relação entre as fotografias, e ela
+                 desaparece se elas forem vistas uma de cada vez.
+       compare — honestidade: dois enquadramentos honestos do mesmo
+                 acontecimento. É um par, mas NEUTRO: nenhum dos dois mente. */
+  function principleSequenceHTML(sq) {
+    if (sq.mode === 'compare') {
+      const a = assetPath(sq.a), b = assetPath(sq.b);
+      if (!a || !b) return '';
+      return PhotoLearn.compare({
+        fam: 'principio', mode: 'side', modes: ['side', 'flip'], neutral: !!sq.neutral,
+        a, b, aTag: sq.aTag, bTag: sq.bTag, aWhy: sq.aWhy, bWhy: sq.bWhy,
+        aAlt: sq.aTag, bAlt: sq.bTag, q: sq.q, caption: sq.caption,
+      }) + (sq.after ? `<div class="pl-seq-after">${sq.after}</div>` : '');
+    }
+    const items = (sq.items || []).map(it => Object.assign({}, it, { src: assetPath(it.src) }))
+      .filter(it => it.src);
+    if (!items.length) return '';
+    return PhotoLearn.sequence({ mode: sq.mode, q: sq.q, nextLabel: sq.nextLabel, items, after: sq.after });
   }
 
   const APR_HEAD = `<div class="ph-section-title">📖 Fundamentos</div>
@@ -2297,7 +2338,8 @@ const PhotographyPage = (function () {
              (série, ética, ambiguidade — ideias que não cabem em duas
              imagens) mantém a fotografia única. */
           const c = p.compare, a = c && assetPath(c.a), b = c && assetPath(c.b);
-          const art = (a && b)
+          const art = p.sequence ? principleSequenceHTML(p.sequence)
+            : (a && b)
             ? PhotoLearn.compare({
                 fam: 'principio', mode: c.mode || 'side', a, b,
                 aTag: c.aTag, bTag: c.bTag, aWhy: c.aWhy, bWhy: c.bWhy,
@@ -2642,6 +2684,114 @@ const PhotographyPage = (function () {
     setTimeout(() => { card.click(); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
   }
 
+  /* ══ APRENDER ▸ CORES ════════════════════════════════════════════════════
+     A roda já existia e mostra RELAÇÕES; a Edição ensina os controlos (temp,
+     saturação, HSL, gradação) e os Estilos são receitas prontas. Faltava a
+     camada do meio, que é a única coisa que esta secção acrescenta: o que uma
+     decisão de cor FAZ a quem vê, e porque é que se escolheria uma relação em
+     vez de outra. Nada aqui explica um cursor — se explicasse, seria Edição
+     escrita duas vezes.
+
+     Duas formas de demonstrar, escolhidas pelo que a lição precisa:
+       lab  — temperatura e saturação vivem nos MESMOS píxeis. Duas fotografias
+              diferentes provariam nada; o cursor sobre a mesma imagem prova tudo.
+       pair — dominante, ponto de atenção, relação e paleta são propriedades da
+              CENA. Não se demonstram com um cursor, porque não se resolvem com um. */
+  const APR_COR_HEAD = `<div class="ph-section-title">🌈 Cores</div>
+    <p class="ph-section-sub">O que a cor faz a quem vê — e porque é que um fotógrafo escolhe uma relação de cor em vez de outra. Os controlos que produzem estes resultados vivem na secção Edição; aqui trata-se de decidir.</p>`;
+
+  function colourLessonHTML(l, db) {
+    let demo = '';
+    if (l.kind === 'lab') {
+      const bases = lookBases(l, db);
+      if (bases.length) demo = PhotoLearn.look({ name: l.name, recipe: l.recipe, ingredients: l.ingredients, bases });
+    } else if (l.compare) {
+      const a = assetPath(l.compare.a), b = assetPath(l.compare.b);
+      if (a && b) demo = PhotoLearn.compare({
+        fam: 'cores', mode: 'side', neutral: !!l.compare.neutral,
+        a, b, aTag: l.compare.aTag, bTag: l.compare.bTag,
+        aWhy: l.compare.aWhy, bWhy: l.compare.bWhy,
+        aAlt: l.compare.aTag, bAlt: l.compare.bTag, caption: l.compare.caption,
+      });
+    }
+    const links = [];
+    (l.genres || []).forEach(id => links.push('g:' + id));
+    (l.looks || []).forEach(id => links.push('look:' + id));
+    (l.techniques || []).forEach(id => links.push('tec:' + id));
+    (l.etools || []).forEach(id => links.push('etool:' + id));
+    if (l.cores) links.push('apr:cores');
+    return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
+      <div class="ph-detail-head"><span class="ph-detail-ico">${l.icon}</span><h3 class="ph-detail-title">${l.name}</h3></div>
+      ${PhotoLearn.lesson({
+        kicker: 'Cor',
+        hook: l.hook,
+        idea: l.idea,
+        visual: demo,
+        body: `<div class="ph-look-grid">
+            <div class="ph-info-card says"><b>🗣️ O que comunica</b><p>${l.says}</p></div>
+            ${l.ressalva ? `<div class="ph-info-card over"><b>⚖️ Com que ressalva</b><p>${l.ressalva}</p></div>` : ''}
+          </div>`,
+        drill: l.drill ? PhotoLearn.drill({ key: 'cor-' + l.id, t: l.drill }) : '',
+        links: resolveLinks(links, '🔗 Onde isto continua'),
+      })}`;
+  }
+
+  /* A cadeia intenção → cor → estilo → edição existe porque era a pergunta que
+     ficava por responder: percebi a cor, e agora? Mostra a ordem sem a impor —
+     cada linha é um exemplo navegável, não um fluxo obrigatório. */
+  function colourChainHTML(ch, db) {
+    if (!ch) return '';
+    const look = id => (db.looks || []).find(x => x.id === id);
+    const et = id => editToolIndex()[id];
+    return `<div class="ph-section-title sub">🔗 ${ch.title}</div>
+      <p class="ph-section-sub">${ch.sub}</p>
+      <div class="ph-chain">${(ch.rows || []).map(r => {
+        const l = look(r.look), t = (et(r.etool) || {}).tool;
+        return `<div class="ph-chain-row">
+          <span class="ph-chain-step want"><b>Visão</b>${r.want}</span>
+          <span class="ph-chain-arrow" aria-hidden="true">→</span>
+          <span class="ph-chain-step"><b>Cor</b>${r.colour}</span>
+          <span class="ph-chain-arrow" aria-hidden="true">→</span>
+          ${l ? `<button class="ph-chain-step go" data-go="look:${l.id}"><b>Estilo</b>${l.icon} ${l.name} →</button>` : ''}
+          ${t ? `<button class="ph-chain-step go" data-go="etool:${r.etool}"><b>Edição</b>${t.name} →</button>` : ''}
+        </div>`;
+      }).join('')}</div>`;
+  }
+
+  function buildCores(box) {
+    box.innerHTML = `${APR_COR_HEAD}<p class="ph-section-sub">A carregar…</p>`;
+    Promise.all([loadDB(), loadAssets(), loadEditDB()]).then(([db]) => {
+      if (!db || !(db.colour || []).length) { box.innerHTML = `${APR_COR_HEAD}<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
+      const grid = expandableGrid(box, db.colour, {
+        head: APR_COR_HEAD,
+        thumb: l => {
+          // a lição de laboratório mostra-se já tratada; a de par mostra o lado
+          // que a demonstra — a miniatura tem de ser a própria lição
+          if (l.kind === 'lab') return `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>`;
+          const src = l.compare && assetPath(l.compare.a);
+          return src ? `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${src}"></span>` : '';
+        },
+        blurb: l => l.blurb,
+        detail: l => colourLessonHTML(l, db),
+        afterCard: (card, l) => {
+          if (l.kind !== 'lab') return;
+          const b = lookBases(l, db)[0];
+          if (b) PhotoLearn.paintThumb(card.querySelector('.ph-look-thumb'), b.src, l.recipe);
+        },
+        afterOpen: detail => PhotoLearn.wire(detail, plGo),
+      });
+      const extra = document.createElement('div');
+      extra.innerHTML = `${colourChainHTML(db.colourChain, db)}
+        <div class="ph-section-title sub">🎡 Roda de cores</div>
+        <p class="ph-section-sub">A ferramenta para experimentar as relações acima: arrasta no anel para o tom e no quadrado interior para saturação e luminosidade.</p>
+        <div id="ph-cw-inner"></div>`;
+      box.appendChild(extra);
+      buildColorWheel(extra.querySelector('#ph-cw-inner'));
+      PhotoLearn.wire(extra, plGo);
+      openPending(box, 'cores', db.colour, grid);
+    });
+  }
+
   const APR_SEGS = [
     { id: 'visao',       label: '🧠 Visão' },
     { id: 'ler',         label: '🔍 Ler' },
@@ -2658,13 +2808,7 @@ const PhotographyPage = (function () {
     composicao(box)  { buildComposition(box); },
     estilos(box) { buildEstilos(box); },
     tecnicas(box) { buildTecnicas(box); },
-    cores(box) {
-      box.innerHTML = `
-        <div class="ph-section-title">🌈 Roda de Cores</div>
-        <p class="ph-section-sub">Explora harmonias de cor para planear paletas de cena e color grading. Arrasta no anel para o tom e no quadrado interior para saturação/luminosidade.</p>
-        <div id="ph-cw-inner"></div>`;
-      buildColorWheel(box.querySelector('#ph-cw-inner'));
-    },
+    cores(box) { buildCores(box); },
   };
   let _aprBuilt = false, _aprActivate = null;
   function buildAprender(panel, seg) {

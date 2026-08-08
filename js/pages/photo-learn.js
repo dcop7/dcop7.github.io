@@ -78,19 +78,24 @@ const PhotoLearn = (function () {
     </div>`;
   }
 
+  /* `neutral` existe porque nem toda a comparação tem um lado melhor.
+     Complementares × análogas, ou dois enquadramentos honestos do mesmo
+     acontecimento, são escolhas — pintá-las de verde e vermelho ensinaria
+     precisamente o contrário do que a lição diz. */
   function cmpStageHTML(o, mode) {
     const aTag = o.aTag || '✓ Melhor', bTag = o.bTag || '✗ Mais fraca';
+    const kA = o.neutral ? 'info' : 'ok', kB = o.neutral ? 'info' : 'bad';
     if (mode === 'side') {
       return `<div class="pl-cmp-side">
-        ${frameHTML(o.a, o.aAlt, aTag, 'ok', o.extraA)}
-        ${frameHTML(o.b, o.bAlt, bTag, 'bad', o.extraB)}
+        ${frameHTML(o.a, o.aAlt, aTag, kA, o.extraA)}
+        ${frameHTML(o.b, o.bAlt, bTag, kB, o.extraB)}
       </div>`;
     }
     if (mode === 'flip') {
       return `<div class="pl-cmp-flip">
-        ${frameHTML(o.b, o.bAlt, '', 'bad pl-flip-b', o.extraB)}
-        <div class="pl-flip-a">${frameHTML(o.a, o.aAlt, '', 'ok', o.extraA)}</div>
-        <span class="pl-tag ok pl-flip-tag" data-flip-tag>${aTag}</span>
+        ${frameHTML(o.b, o.bAlt, '', kB + ' pl-flip-b', o.extraB)}
+        <div class="pl-flip-a">${frameHTML(o.a, o.aAlt, '', kA, o.extraA)}</div>
+        <span class="pl-tag ${kA} pl-flip-tag" data-flip-tag>${aTag}</span>
         <button type="button" class="pl-flip-btn" data-flip>Manter premido para ver a outra</button>
       </div>`;
     }
@@ -102,8 +107,8 @@ const PhotoLearn = (function () {
           ${o.a ? `<img src="${esc(o.a)}" alt="${esc(o.aAlt || '')}" draggable="false">` : ''}
         </div>
         ${o.extraA || ''}
-        <span class="pl-tag ok">${aTag}</span>
-        <span class="pl-tag bad">${bTag}</span>
+        <span class="pl-tag ${kA}">${aTag}</span>
+        <span class="pl-tag ${kB}">${bTag}</span>
         <div class="pl-wipe-handle" style="left:${pct}%"><span>⇔</span></div>
       </div>
       <input class="pl-wipe-range" type="range" min="0" max="100" value="${pct}"
@@ -114,9 +119,11 @@ const PhotoLearn = (function () {
   function compare(o) {
     const allowed = o.modes || ['side', 'wipe', 'flip'];
     const mode = cmpMode(o);
+    const mk = o.neutral ? ['◆', '◆'] : ['✓', '✗'];
+    const wk = o.neutral ? ['info', 'info'] : ['ok', 'bad'];
     const why = (o.aWhy || o.bWhy) ? `<div class="pl-cmp-why">
-      <span class="pl-why ok"><b>✓</b> ${o.aWhy || ''}</span>
-      <span class="pl-why bad"><b>✗</b> ${o.bWhy || ''}</span>
+      <span class="pl-why ${wk[0]}"><b>${mk[0]}</b> ${o.aWhy || ''}</span>
+      <span class="pl-why ${wk[1]}"><b>${mk[1]}</b> ${o.bWhy || ''}</span>
     </div>` : '';
     const sw = allowed.length > 1 ? `<div class="pl-modes" role="group" aria-label="Modo de comparação">
       ${allowed.map(m => `<button type="button" class="pl-mode${m === mode ? ' active' : ''}" data-mode="${m}"
@@ -127,6 +134,7 @@ const PhotoLearn = (function () {
                 a: o.a || '', b: o.b || '', aAlt: o.aAlt || '', bAlt: o.bAlt || '',
                 aTag: o.aTag || '', bTag: o.bTag || '', label: o.label || '',
                 modes: allowed, extraA: o.extraA || '', extraB: o.extraB || '',
+                neutral: !!o.neutral,
               }))}">
       ${o.q ? `<figcaption class="pl-ask">${o.q}</figcaption>` : ''}
       ${sw}
@@ -539,6 +547,73 @@ const PhotoLearn = (function () {
     }));
   }
 
+  /* ══ SEQUÊNCIA ═════════════════════════════════════════════════════════
+     O único componente novo desta ronda, e só porque há lições que DUAS
+     imagens não conseguem carregar:
+
+       • ambiguidade — o significado muda quando entra mais contexto. É um
+         processo de três passos, não uma oposição; com um par ficava
+         "esta contra aquela", que é precisamente a leitura errada.
+       • série — o que se ensina é a RELAÇÃO entre fotografias. Tem de se
+         ver o conjunto ao mesmo tempo; mostradas duas a duas, a repetição
+         e a variação (que são a lição) desaparecem.
+
+     Daí os dois modos, com a mesma marcação:
+       steps — avança-se uma de cada vez, e cada passo reescreve a anterior
+       strip — todas juntas, porque é o conjunto que significa
+
+     Honestidade NÃO usa isto: dois enquadramentos do mesmo acontecimento são
+     exactamente o que o `compare` já faz bem. */
+  function sequence(o) {
+    const items = o.items || [];
+    const mode = o.mode === 'strip' ? 'strip' : 'steps';
+    const frames = items.map((it, i) => `<figure class="pl-seq-item" data-seq-i="${i}"${mode === 'steps' && i ? ' hidden' : ''}>
+        <div class="pl-frame">
+          ${it.src ? `<img src="${esc(it.src)}" alt="${esc(it.alt || '')}" loading="lazy" decoding="async">`
+                   : '<span class="pl-frame-empty"></span>'}
+          ${it.tag ? `<span class="pl-tag info">${it.tag}</span>` : ''}
+        </div>
+        ${it.cap ? `<figcaption>${it.cap}</figcaption>` : ''}
+      </figure>`).join('');
+
+    return `<div class="pl-seq pl-seq-${mode}" data-pl="sequence" data-mode="${mode}">
+      ${o.q ? `<p class="pl-ask">${o.q}</p>` : ''}
+      <div class="pl-seq-track">${frames}</div>
+      ${mode === 'steps' ? `<div class="pl-seq-ctl">
+        <button type="button" class="pl-seq-btn" data-seq-prev disabled>‹ Anterior</button>
+        <span class="pl-seq-dots">${items.map((_, i) =>
+          `<span class="pl-seq-dot${i ? '' : ' on'}" data-seq-dot="${i}"></span>`).join('')}</span>
+        <button type="button" class="pl-seq-btn primary" data-seq-next>${esc(o.nextLabel || 'Mostrar mais contexto')} ›</button>
+      </div>` : ''}
+      ${o.after ? `<div class="pl-seq-after" data-seq-after${mode === 'steps' ? ' hidden' : ''}>${o.after}</div>` : ''}
+    </div>`;
+  }
+
+  function wireSequence(box) {
+    if (box.dataset.mode !== 'steps') return;
+    const items = [...box.querySelectorAll('[data-seq-i]')];
+    const dots = [...box.querySelectorAll('[data-seq-dot]')];
+    const prev = box.querySelector('[data-seq-prev]');
+    const next = box.querySelector('[data-seq-next]');
+    const after = box.querySelector('[data-seq-after]');
+    let i = 0;
+    const show = n => {
+      i = Math.max(0, Math.min(items.length - 1, n));
+      // as anteriores ficam visíveis: ver o que se pensava antes ao lado do
+      // que se sabe agora é metade da lição da ambiguidade
+      items.forEach((el, k) => { el.hidden = k > i; });
+      dots.forEach((d, k) => d.classList.toggle('on', k <= i));
+      prev.disabled = i === 0;
+      next.disabled = i === items.length - 1;
+      next.textContent = i === items.length - 1 ? 'É tudo' : (box.dataset.nextLabel || next.dataset.lbl || 'Mostrar mais contexto') + ' ›';
+      if (after) after.hidden = i < items.length - 1;
+    };
+    next.dataset.lbl = next.textContent.replace(/\s*›$/, '');
+    prev.addEventListener('click', () => show(i - 1));
+    next.addEventListener('click', () => show(i + 1));
+    show(0);
+  }
+
   /* ══ REVELAR ═══════════════════════════════════════════════════════════
      Uma tabela de duas colunas ("banal → memorável") lê-se de uma vez e
      não se fixa. Escondendo o lado direito, cada linha vira uma pergunta
@@ -616,6 +691,7 @@ const PhotoLearn = (function () {
   const WIRERS = {
     compare: wireCompare, hotspots: wireHotspots, pick: wirePick,
     look: wireLook, crop: wireCrop, reveal: wireReveal, drill: wireDrill,
+    sequence: wireSequence,
   };
   function wire(scope, onGo) {
     if (!scope) return;
@@ -632,5 +708,5 @@ const PhotoLearn = (function () {
     });
   }
 
-  return { compare, hotspots, pick, look, crop, reveal, drill, chips, lesson, wire, esc, scaleRecipe, paintThumb };
+  return { compare, hotspots, pick, look, crop, reveal, drill, chips, lesson, sequence, wire, esc, scaleRecipe, paintThumb };
 })();

@@ -1450,3 +1450,22 @@ body.density-list .lp-link-tags { display: none; }
     pointer-events: none; background: linear-gradient(to right, transparent, var(--bg, #0b1020) 85%);
   }
 }
+
+/* ressalva das regras de composição — dita uma vez no topo da secção */
+.ph-comp-note { margin: -.3rem 0 .9rem; font-size: .81rem; line-height: 1.6; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-left: 3px solid #f59e0b;
+  border-radius: var(--radius); padding: .6rem .8rem; max-width: 78ch; }
+.ph-comp-note b { color: #f59e0b; }
+
+/* cadeia intenção → cor → estilo → edição (Aprender ▸ Cores) */
+.ph-chain { display: flex; flex-direction: column; gap: .5rem; }
+.ph-chain-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: .4rem; }
+.ph-chain-step { display: flex; flex-direction: column; gap: .1rem; flex: 1 1 170px;
+  font: inherit; text-align: left; font-size: .79rem; line-height: 1.45; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: .5rem .65rem; }
+.ph-chain-step b { font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.ph-chain-step.want { border-left: 3px solid #a78bfa; } .ph-chain-step.want b { color: #a78bfa; }
+.ph-chain-step.go { cursor: pointer; transition: all var(--ease); }
+.ph-chain-step.go:hover { color: var(--text); border-color: var(--accent); background: var(--accent-fill); }
+.ph-chain-arrow { align-self: center; color: var(--accent-txt); font-size: .9rem; }
+@media (max-width: 700px) { .ph-chain-arrow { display: none; } }

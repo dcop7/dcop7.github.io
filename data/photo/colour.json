@@ -1,0 +1,265 @@
+{
+  "_nota": "Cores (Aprender ▸ Cores). A fronteira é estreita de propósito: a roda de cores (já existente) mostra as RELAÇÕES, a Edição ensina os CONTROLOS (temp, saturação, HSL, gradação) e os Estilos são receitas prontas. O que faltava — e o que esta secção é — é a camada intermédia: o que uma decisão de cor FAZ a quem vê, e porque é que um fotógrafo escolheria uma relação em vez de outra. Nada aqui explica um cursor.\n\nDois tipos de lição: `lab` usa o PhotoLab sobre os MESMOS píxeis (temperatura, saturação — onde o que importa é a mesma fotografia tratada de duas maneiras) e `pair` usa duas fotografias (onde a diferença tem de estar na cena, não no tratamento).\n\nAs associações emocionais são escritas como TENDÊNCIAS culturais e contextuais, nunca como leis psicológicas: ver o campo `ressalva` das lições que as usam.",
+  "lessons": [
+    {
+      "id": "temperatura",
+      "icon": "🌡️",
+      "kind": "lab",
+      "name": "Temperatura",
+      "blurb": "A mesma cena, quente ou fria — e a sensação muda antes de tu pensares.",
+      "hook": "O branco é uma decisão, não uma medição.",
+      "idea": "Só existe uma temperatura de cor «correta» quando o objetivo é reproduzir fielmente — num produto, numa obra de arte, numa peça de reportagem. No resto, a temperatura é uma escolha: a mesma fotografia puxada para o quente ou para o frio conta duas histórias diferentes com os mesmos píxeis.",
+      "says": "O quente tende a ler-se como proximidade, fim de tarde, memória e conforto; o frio como distância, cedo, silêncio e isolamento. Puxa o cursor e repara que a leitura muda antes de teres decidido o que achas.",
+      "ressalva": "Estas leituras são hábitos culturais e dependem do assunto, não leis. Luz quente numa sala de espera de hospital não lê como conforto; azul numa piscina ao sol não lê como isolamento. A cor sublinha o que a cena já diz — não a contraria.",
+      "recipe": {
+        "temp": 34,
+        "splitHigh": [
+          0.2,
+          0.08,
+          -0.1
+        ],
+        "vibrance": 8
+      },
+      "coldRecipe": {
+        "temp": -34,
+        "splitShadow": [
+          -0.18,
+          0,
+          0.24
+        ],
+        "vibrance": 4
+      },
+      "ingredients": [
+        {
+          "k": "temp",
+          "label": "Temperatura",
+          "note": "para a direita aquece, para a esquerda arrefece"
+        },
+        {
+          "k": "splitHigh",
+          "label": "Luzes",
+          "note": "o tom que a luz principal deixa"
+        }
+      ],
+      "bases": [
+        "look-retrato",
+        "edit-demo",
+        "look-cidade"
+      ],
+      "drill": "Revela a mesma fotografia duas vezes, uma quente e uma fria, e mostra-as a alguém com um dia de intervalo. Pergunta o que sentem. É o teste mais barato que existe para saber se a tua cor está a trabalhar.",
+      "genres": [
+        "retrato",
+        "nascer-por-sol",
+        "nevoeiro",
+        "noturna"
+      ],
+      "looks": [
+        "golden-hour",
+        "moody",
+        "vintage"
+      ],
+      "etools": [
+        "temp"
+      ]
+    },
+    {
+      "id": "saturacao",
+      "icon": "💧",
+      "kind": "lab",
+      "name": "Saturação",
+      "blurb": "Quanto é que a cor grita — e porque é que mais raramente é melhor.",
+      "hook": "Saturação a mais não torna a cor mais visível: torna todas as cores igualmente visíveis.",
+      "idea": "Subir a saturação global aumenta TODAS as cores ao mesmo tempo. A diferença entre elas — que é o que faz o olho escolher onde pousar — fica igual. Por isso uma fotografia muito saturada parece cheia de cor e vazia de hierarquia.",
+      "says": "Cor contida lê-se como observação e documento; cor forte lê-se como energia, publicidade e espetáculo. Nenhuma é melhor: uma reportagem saturada perde credibilidade, e um cartaz de festival contido perde a função.",
+      "ressalva": "O ecrã engana. O que num painel calibrado parece vibrante, num telemóvel ao sol parece plano — e o contrário também. Se as fotografias vão viver num sítio concreto, decide a saturação a olhar para esse sítio.",
+      "recipe": {
+        "saturation": 55,
+        "vibrance": 20
+      },
+      "ingredients": [
+        {
+          "k": "saturation",
+          "label": "Saturação",
+          "note": "sobe tudo por igual — inclusive o que não interessa"
+        },
+        {
+          "k": "vibrance",
+          "label": "Vibrância",
+          "note": "poupa o que já está saturado; quase sempre a escolha melhor"
+        }
+      ],
+      "bases": [
+        "look-praia",
+        "look-retrato",
+        "edit-demo"
+      ],
+      "drill": "Leva uma fotografia até à saturação que te parece boa. Depois desce 15 e deixa-a repousar um dia. Escolhe outra vez. Quase toda a gente escolhe a segunda.",
+      "genres": [
+        "produto",
+        "rua",
+        "eventos"
+      ],
+      "looks": [
+        "documental",
+        "bleach-bypass",
+        "neon"
+      ],
+      "etools": [
+        "saturation",
+        "vibrance"
+      ]
+    },
+    {
+      "id": "dominante",
+      "icon": "🟦",
+      "kind": "pair",
+      "name": "Cor dominante",
+      "blurb": "Uma cor a governar o enquadramento — ou muitas a discutir.",
+      "hook": "Ter muita cor não é o mesmo que ter uma linguagem de cor.",
+      "idea": "Quando uma só cor ocupa a maior parte do enquadramento, tudo o que não é essa cor ganha importância automaticamente. Quando cinco cores fortes partilham o espaço, nenhuma governa e o olho não recebe indicação nenhuma.",
+      "says": "Identidade e coerência. Uma dominante forte faz a fotografia ser reconhecível de longe e faz um conjunto parecer um conjunto.",
+      "compare": {
+        "a": "cor-dominante",
+        "b": "cor-dominante-b",
+        "aTag": "✓ Uma cor governa",
+        "bTag": "↔ Muitas cores iguais",
+        "aWhy": "O azul ocupa quase tudo: o que não for azul salta imediatamente, e o enquadramento tem identidade.",
+        "bWhy": "Cinco cores igualmente fortes ao mesmo tempo — nenhuma manda, e o olho não sabe onde pousar.",
+        "caption": "As duas são ruas antigas com cor. Só uma tem uma decisão de cor."
+      },
+      "drill": "Numa saída, obriga-te a fotografar cinco cenas onde uma cor ocupe mais de metade do enquadramento. É o exercício que ensina a ver cor em vez de objetos.",
+      "genres": [
+        "viagem",
+        "arquitetura",
+        "rua"
+      ],
+      "looks": [
+        "neon",
+        "moody"
+      ]
+    },
+    {
+      "id": "atencao",
+      "icon": "🔴",
+      "kind": "pair",
+      "name": "Cor como ponto de atenção",
+      "blurb": "Pouca cor no sítio certo manda mais do que muita cor em todo o lado.",
+      "hook": "Numa cena cinzenta, um ponto de cor é uma seta.",
+      "idea": "O olho vai ao que é diferente, não ao que é forte. Um único ponto saturado num enquadramento neutro atrai mais atenção do que uma cena inteira saturada — porque ali a cor é informação e não ruído.",
+      "says": "Hierarquia: diz a quem vê onde está o assunto sem precisar de o pôr ao centro nem de o iluminar.",
+      "ressalva": "Isto é o mecanismo por trás da cor seletiva na edição — e a razão pela qual ela se gasta tão depressa. Aqui a cor estava lá; ali foi acrescentada, e nota-se.",
+      "compare": {
+        "a": "cor-atencao",
+        "b": "cor-atencao-b",
+        "aTag": "✓ Um ponto de cor",
+        "bTag": "↔ Tudo na mesma gama",
+        "aWhy": "Uma só mancha vermelha num cinzento uniforme: o olho encontra o assunto sem hesitar.",
+        "bWhy": "Mesma rua, mesma luz, sem essa mancha — a fotografia continua correta e deixa de ter para onde apontar.",
+        "caption": "A diferença não é a quantidade de cor: é o contraste entre uma cor e o resto."
+      },
+      "drill": "Fotografa a mesma cena com o assunto a usar uma cor que destoa e outra que se funde com o fundo. É a decisão mais barata que há em retrato de rua.",
+      "genres": [
+        "rua",
+        "chuva",
+        "eventos"
+      ],
+      "techniques": [
+        "cor-seletiva",
+        "contraste-cor"
+      ]
+    },
+    {
+      "id": "relacao",
+      "icon": "🎯",
+      "kind": "pair",
+      "name": "Contraste ou harmonia",
+      "blurb": "Cores opostas criam tensão; cores vizinhas criam calma.",
+      "hook": "A distância entre duas cores na roda é uma decisão emocional.",
+      "idea": "Cores opostas na roda (laranja e azul, vermelho e verde) separam-se ao máximo: dão tensão, energia e leitura instantânea. Cores vizinhas (dourado, âmbar, castanho) fundem-se: dão coesão, calma e uma sensação de conjunto.",
+      "says": "Contraste lê-se como acontecimento; harmonia lê-se como estado. É por isso que o desporto e a noite vivem de complementares e a paisagem serena vive de análogas.",
+      "compare": {
+        "a": "cor-complementar",
+        "b": "cor-complementar-b",
+        "aTag": "⚡ Complementares",
+        "bTag": "🍂 Análogas",
+        "aWhy": "Laranja contra azul-petróleo: opostos na roda. A figura separa-se do fundo sem precisar de luz nem de foco.",
+        "bWhy": "Tudo dentro da mesma fatia da roda. Nada se separa — e é isso que dá a sensação de calma.",
+        "caption": "Nenhuma é melhor. São duas ferramentas para duas intenções diferentes.",
+        "neutral": true
+      },
+      "drill": "Abre a roda de cores, escolhe o tom da roupa do teu sujeito e vê o que fica no lado oposto. Depois procura um fundo dessa cor. Funciona quase sempre.",
+      "genres": [
+        "desporto",
+        "noturna",
+        "paisagem"
+      ],
+      "looks": [
+        "teal-orange",
+        "golden-hour"
+      ],
+      "cores": true
+    },
+    {
+      "id": "paleta",
+      "icon": "🎨",
+      "kind": "pair",
+      "name": "Paleta limitada",
+      "blurb": "Menos cores, mais intenção.",
+      "hook": "Restringir a paleta é a forma mais rápida de uma fotografia parecer decidida.",
+      "idea": "Uma fotografia com três tons parece composta; uma com dez parece encontrada. Limitar a paleta não é um efeito de edição — faz-se sobretudo a escolher onde apontar, a que horas e o que deixar fora do enquadramento.",
+      "says": "Controlo e calma. Também série: um conjunto com a mesma paleta lê-se como um corpo de trabalho, e não como uma pasta de fotografias.",
+      "compare": {
+        "a": "cor-paleta",
+        "b": "cor-paleta-b",
+        "aTag": "✓ Três tons",
+        "bTag": "↔ Todo o espectro",
+        "aWhy": "Verde escuro, cinzento pálido e branco-sujo. Nada mais entra — e o silêncio da cena vem daí.",
+        "bWhy": "Todas as cores no máximo ao mesmo tempo. É uma fotografia honesta de um sítio barulhento; simplesmente não tem paleta.",
+        "caption": "A paleta escolhe-se no terreno, não no cursor de saturação."
+      },
+      "ressalva": "Nem toda a cena permite. Um mercado, um carnaval ou um parque de diversões são cheios de cor por natureza — e forçar-lhes uma paleta limitada tira-lhes o assunto.",
+      "drill": "Escolhe três fotografias tuas que gostes e conta as cores de cada uma. É provável que as que gostas mais tenham menos.",
+      "genres": [
+        "nevoeiro",
+        "pb",
+        "produto",
+        "imobiliario"
+      ],
+      "looks": [
+        "matte",
+        "moody",
+        "high-key"
+      ]
+    }
+  ],
+  "chain": {
+    "title": "Da intenção à cor",
+    "sub": "A cor não é o primeiro passo nem o último. Entra depois de saberes o que queres dizer e antes de mexeres num cursor — e é isso que a separa da Edição.",
+    "rows": [
+      {
+        "want": "Quero transmitir nostalgia",
+        "colour": "Paleta quente e pouco saturada, pretos levantados",
+        "look": "vintage",
+        "etool": "temp"
+      },
+      {
+        "want": "Quero criar tensão",
+        "colour": "Contraste cromático forte — opostos na roda",
+        "look": "teal-orange",
+        "etool": "grading"
+      },
+      {
+        "want": "Quero calma e silêncio",
+        "colour": "Paleta limitada e análoga, saturação contida",
+        "look": "matte",
+        "etool": "saturation"
+      },
+      {
+        "want": "Quero que se veja logo o assunto",
+        "colour": "Um ponto de cor num ambiente neutro",
+        "look": "documental",
+        "etool": "hsl"
+      }
+    ]
+  }
+}
