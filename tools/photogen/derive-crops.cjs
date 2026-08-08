@@ -26,6 +26,12 @@ const JOBS = [
   // simetria é uma decisão de enquadramento e não uma propriedade do sítio.
   { from: 'comp2/comp-symmetry.webp', to: 'comp2/comp-symmetry-bad.webp', id: 'comp-symmetry-bad',
     rect: [290, 0, 810, 580] },
+  // Linhas convergentes: o modelo desenha SEMPRE perspetiva de um ponto numa
+  // arcada, viesse o prompt de onde viesse. O contraexemplo honesto é a mesma
+  // arcada com o ponto de fuga fora do enquadramento — as linhas continuam lá
+  // e deixam de levar a algum sítio, que é exactamente a lição.
+  { from: 'comp2/comp-converging.webp', to: 'comp2/comp-converging-bad.webp', id: 'comp-converging-bad',
+    rect: [572, 45, 506, 474] },
   // Proporção áurea: uma base larga, duas janelas — figura na divisão áurea
   // ou ao centro.
   { from: 'comp-base/base-golden.webp', to: 'comp2/comp-golden.webp', id: 'comp-golden',

@@ -230,6 +230,49 @@
         "moody",
         "high-key"
       ]
+    },
+    {
+      "id": "narrativa",
+      "icon": "📖",
+      "kind": "seq",
+      "name": "Cor e narrativa",
+      "blurb": "A paleta que se desloca — e conta a história sozinha.",
+      "hook": "Numa série, a cor pode ser o enredo.",
+      "idea": "Numa fotografia isolada a cor dá atmosfera. Num conjunto pode fazer mais: se a paleta se deslocar de forma consistente, ela própria conta a passagem do tempo, a mudança de estado ou o fim de alguma coisa — sem legenda e sem que ninguém repare que foi a cor a fazê-lo.",
+      "says": "Progressão. O espectador percebe que houve um antes e um depois mesmo quando o assunto é o mesmo em todas as imagens.",
+      "ressalva": "Só funciona se a paleta mudar por uma razão que a cena justifica — a hora, o tempo, o sítio. Uma gradação diferente aplicada por capricho a cada imagem lê-se como inconsistência, não como narrativa.",
+      "sequence": {
+        "mode": "strip",
+        "q": "Três fotografias do mesmo passeio marítimo. Sem ler as legendas: o que é que muda entre elas?",
+        "items": [
+          {
+            "src": "cor-nar-1",
+            "alt": "Passeio marítimo de manhã cedo, luz dourada",
+            "cap": "Manhã · âmbar e creme"
+          },
+          {
+            "src": "cor-nar-2",
+            "alt": "O mesmo passeio ao meio-dia, luz neutra",
+            "cap": "Meio-dia · cinzento e azul pálido"
+          },
+          {
+            "src": "cor-nar-3",
+            "alt": "O mesmo passeio ao anoitecer, azul profundo",
+            "cap": "Anoitecer · azul e verde-petróleo"
+          }
+        ],
+        "after": "O sítio é o mesmo e o enquadramento quase igual. O que conta a história é a temperatura a arrefecer de imagem para imagem — quente e cheio de promessa, depois neutro e banal, depois frio e vazio. Nenhuma das três diz isso por escrito."
+      },
+      "drill": "Fotografa o mesmo sítio três vezes no mesmo dia — cedo, ao meio-dia e ao fim da tarde. Põe as três lado a lado. É o exercício que mostra quanta narrativa há na hora a que se sai de casa.",
+      "genres": [
+        "viagem",
+        "rua",
+        "nascer-por-sol"
+      ],
+      "looks": [
+        "golden-hour",
+        "moody"
+      ]
     }
   ],
   "chain": {

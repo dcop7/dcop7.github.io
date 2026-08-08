@@ -2518,26 +2518,26 @@
       "group": "comp2",
       "style": "scene_illus",
       "matte": false,
-      "seed": 910203,
+      "seed": 910251,
       "size": [
         1216,
         832
       ],
       "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
-      "prompt": "a long wooden pier photographed from its centre line, the two railings converging sharply to a single vanishing point at a distant mountain, strong perspective, calm lake at dawn"
+      "prompt": "a long stone arcade photographed from the exact centre of the walkway, the two rows of arches and the paving lines converging sharply to a small bright opening far away at the end, powerful one point perspective, warm light at the far end"
     },
     {
       "id": "comp-converging-bad",
       "group": "comp2",
       "style": "scene_illus",
       "matte": false,
-      "seed": 910203,
+      "seed": 910251,
       "size": [
         1216,
         832
       ],
       "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
-      "prompt": "the same long wooden pier on the same calm lake at dawn, but photographed from the shore side on, so the pier crosses the frame as a flat parallel band and the railings never converge, no perspective lines"
+      "prompt": "the same stone arcade photographed from outside standing directly in front of the facade, the arches seen as a flat evenly spaced row of identical openings straight across the frame, every line parallel to the edges of the picture, no perspective and no vanishing point, flat elevation"
     },
     {
       "id": "comp-symmetry",
@@ -2863,6 +2863,45 @@
       ],
       "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph",
       "prompt": "the same white lighthouse on the same rocky headland at the same sunset, but placed exactly in the dead centre of the frame with the sea horizon running exactly through the middle of the picture, perfectly centred and evenly split composition"
+    },
+    {
+      "id": "cor-nar-1",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920301,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, extra limbs, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of an empty seaside promenade very early in the morning, warm golden low sun, long soft shadows, calm and hopeful, warm amber and cream palette"
+    },
+    {
+      "id": "cor-nar-2",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920302,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, extra limbs, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of the same seaside promenade at midday, flat neutral daylight, plain grey and pale blue palette, ordinary and unremarkable, people walking past"
+    },
+    {
+      "id": "cor-nar-3",
+      "group": "cor",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 920303,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, extra limbs, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "photorealistic photograph of the same seaside promenade at dusk after everyone has left, deep blue and teal palette, cold, a single lamp switched on, quiet and lonely"
     }
   ]
 }

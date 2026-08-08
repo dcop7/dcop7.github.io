@@ -590,7 +590,7 @@ const PhotographyPage = (function () {
     },
     'Linhas Convergentes': {
       says: 'Direção e distância: as linhas dizem ao olhar por onde entrar e quanto caminho há até ao fundo.',
-      avoid: 'Quando convergem para um sítio onde não está nada. Uma estrada que leva o olhar a um canto vazio trabalha contra a fotografia.',
+      avoid: 'Quando convergem para um sítio onde não está nada, e quando o ponto de fuga fica fora do enquadramento — aí as linhas continuam lá e deixam de conduzir.',
       drill: 'Fotografa a mesma linha de fuga à altura dos olhos e depois quase encostado ao chão. A segunda quase sempre puxa mais.',
     },
     'Regra dos Terços': {
@@ -607,7 +607,7 @@ const PhotographyPage = (function () {
     'comp-golden': { ok: 'A figura cai na divisão áurea, um pouco mais fora do centro do que nos terços.', bad: 'Mesma cena com a figura ao centro: o equilíbrio passa a ser simétrico em vez de proporcional.' },
     'comp-spiral': { ok: 'A curva da areia aperta e entrega o olhar ao barco, no fim do percurso.', bad: 'Mesma enseada, mas o barco está fora do caminho que a curva desenha — a espiral chega a areia vazia.' },
     'comp-diagonal': { ok: 'A estrada atravessa o enquadramento na diagonal e leva o olho com ela.', bad: 'Mesmo carro e mesma estrada vistos de lado: a linha fica horizontal e a cena perde direção.' },
-    'comp-converging': { ok: 'Visto do eixo, os dois corrimões fecham num ponto de fuga e criam profundidade.', bad: 'Mesmo cais visto de lado: as linhas ficam paralelas ao enquadramento e já não convergem.' },
+    'comp-converging': { ok: 'Visto pelo eixo, as duas filas de arcos fecham num ponto de fuga e criam profundidade.', bad: 'A mesma arcada com o ponto de fuga fora do enquadramento: as linhas continuam lá e deixam de levar a algum sítio.' },
     'comp-symmetry': { ok: 'Horizonte no eixo e reflexo inteiro: a simetria é a decisão da fotografia.', bad: 'Mesma montanha com o horizonte alto e o reflexo partido pelo vento — a simetria deixa de existir.' },
     'comp-framing': { ok: 'O arco escuro rodeia o vale e aponta ao caminhante.', bad: 'Mesmo vale e mesmo caminhante sem nada em primeiro plano — a cena fica aberta e plana.' },
     'comp-negative': { ok: 'Muito vazio à volta de uma figura pequena: o espaço dá escala e isolamento.', bad: 'Mesma fotografia fechada sobre a figura — o vazio desaparece e com ele a sensação de escala.' },
@@ -2702,7 +2702,8 @@ const PhotographyPage = (function () {
 
   function colourLessonHTML(l, db) {
     let demo = '';
-    if (l.kind === 'lab') {
+    if (l.kind === 'seq' && l.sequence) demo = principleSequenceHTML(l.sequence);
+    else if (l.kind === 'lab') {
       const bases = lookBases(l, db);
       if (bases.length) demo = PhotoLearn.look({ name: l.name, recipe: l.recipe, ingredients: l.ingredients, bases });
     } else if (l.compare) {
@@ -2768,7 +2769,8 @@ const PhotographyPage = (function () {
           // a lição de laboratório mostra-se já tratada; a de par mostra o lado
           // que a demonstra — a miniatura tem de ser a própria lição
           if (l.kind === 'lab') return `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>`;
-          const src = l.compare && assetPath(l.compare.a);
+          const src = (l.compare && assetPath(l.compare.a))
+            || (l.sequence && l.sequence.items && assetPath(l.sequence.items[0].src));
           return src ? `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${src}"></span>` : '';
         },
         blurb: l => l.blurb,

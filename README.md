@@ -128,8 +128,14 @@ Estilos, nas Técnicas, em Ler fotografias e no visualizador de Composição.
 | `pick(o)` | "Qual é a mais forte?" — a resposta só aparece depois da escolha |
 | `look(o)` | Laboratório ao vivo sobre o PhotoLab: cursor de dose, troca da fotografia de base, receita com valores reais |
 | `crop(o)` | Escolher o corte e ver, ao lado, o que a fotografia passa a ser |
+| `sequence(o)` | Sequências de 3+ imagens. `steps` avança uma de cada vez e mantém as anteriores no ecrã (ambiguidade); `strip` mostra tudo junto porque é a relação que ensina (série) |
 | `reveal(o)` / `drill(o)` | Linha que esconde a resposta / exercício com estado em localStorage |
 | `lesson(o)` / `chips(o)` | Esqueleto da lição (ideia → ver → levar → treinar) e ligações cruzadas via `data-go` |
+
+`compare(o)` aceita `neutral: true` — marcadores azuis e ◆ em vez de verde/vermelho
+e ✓/✗. Existe porque nem toda a comparação tem um lado melhor: complementares ×
+análogas, ou dois enquadramentos igualmente honestos do mesmo acontecimento.
+Pintá-las de verde e vermelho ensinaria o contrário do que a lição diz.
 
 Os chips `data-go` (`g:`, `look:`, `tec:`, `know:`, `comp:`, `apr:`, `tool:`,
 `etool:`, `edicao`) são resolvidos por `plGo()` em `photography.js` — é o que
@@ -146,10 +152,18 @@ O que decide em que capítulo um conceito vive:
 | **Visão** | o que quero dizer | intenção, narrativa, atmosfera |
 | **Fundamentos** | como a fotografia funciona | exposição, ótica, foco, ficheiro |
 | **Composição** | como se organiza o enquadramento | as **regras** (onde pôr) + as **decisões** (de onde fotografar, `craft.json`) |
-| **Cores** | como a cor comunica | relações, temperatura, harmonias |
+| **Cores** | como a cor comunica | o que uma decisão de cor FAZ a quem vê. A roda mostra relações, a Edição os controlos, os Estilos são receitas — Cores é a camada do meio, e não explica cursores |
 | **Estilos** | que linguagem visual escolho | receitas de look aplicadas ao vivo |
 | **Técnicas** | que procedimento produz este resultado | algo que de outra maneira não se obtinha (panning, halação, dupla exposição) |
 | **Edição** | como se manipula o ficheiro | os controlos, em qualquer programa |
+
+**Composição — regra dos pares (ago/2026).** Os dois lados de uma comparação
+têm de ser a MESMA situação fotográfica, mudando **uma só** decisão de
+enquadramento. Os rótulos são `✓ Aplica` / `↔ Não aplica`, nunca
+correto/incorreto: as duas fotografias são válidas e a ressalva "isto são
+ferramentas, não leis" aparece **uma vez** no topo da secção. As marcações
+(`draw` de cada `COMPOSITIONS`) têm de corresponder ao que está na imagem —
+uma grelha que desenha uma relação inexistente é pior do que grelha nenhuma.
 
 Regra prática que resolveu a maior duplicação: **um arranjo do enquadramento é
 Composição, não Técnica.** Espaço negativo, moldura natural e âncora no
