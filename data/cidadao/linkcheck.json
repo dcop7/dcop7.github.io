@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-09T13:23:25.233Z",
+ "generated": "2026-08-09T19:06:04.901Z",
  "total": 84,
- "broken": 6,
- "unknown": 28,
+ "broken": 0,
+ "unknown": 26,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,14 +127,14 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
    "url": "https://eportugal.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:transporte-doentes",
@@ -175,8 +175,8 @@
   {
    "id": "apoios:ase-escolar",
    "url": "https://eportugal.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:passe-ferroviario-verde",
@@ -187,8 +187,8 @@
   {
    "id": "apoios:passes-jovens-gratis",
    "url": "https://eportugal.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:rsi",
@@ -271,8 +271,8 @@
   {
    "id": "apoios:trabalhador-estudante",
    "url": "https://eportugal.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cartao-europeu-saude",
@@ -343,8 +343,8 @@
   {
    "id": "calendario:cc-renovar",
    "url": "https://www.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:carta-revalidar",
@@ -403,8 +403,8 @@
   {
    "id": "calendario:passe-sub23",
    "url": "https://eportugal.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:gripe-vacina",
@@ -439,8 +439,8 @@
   {
    "id": "calendario:recenseamento-militar",
    "url": "https://www.defesa.gov.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:porta65-janelas",
