@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-10T02:38:30.676Z",
+ "generated": "2026-08-10T08:09:17.098Z",
  "total": 84,
  "broken": 0,
  "unknown": 26,
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
