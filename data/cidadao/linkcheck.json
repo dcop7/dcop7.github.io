@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-10T08:09:17.098Z",
+ "generated": "2026-08-10T13:49:27.760Z",
  "total": 84,
- "broken": 0,
- "unknown": 26,
+ "broken": 1,
+ "unknown": 29,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 404,
+   "ok": false
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -271,8 +271,8 @@
   {
    "id": "apoios:trabalhador-estudante",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:cartao-europeu-saude",
@@ -343,8 +343,8 @@
   {
    "id": "calendario:cc-renovar",
    "url": "https://www.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:carta-revalidar",
@@ -403,8 +403,8 @@
   {
    "id": "calendario:passe-sub23",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:gripe-vacina",
