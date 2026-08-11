@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-10T19:26:00.318Z",
+ "generated": "2026-08-11T02:31:41.899Z",
  "total": 84,
  "broken": 1,
  "unknown": 27,
@@ -157,8 +157,8 @@
   {
    "id": "apoios:medidas-emprego",
    "url": "https://www.iefp.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:programa-regressar",
@@ -439,8 +439,8 @@
   {
    "id": "calendario:recenseamento-militar",
    "url": "https://www.defesa.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:porta65-janelas",
