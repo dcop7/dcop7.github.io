@@ -1,7 +1,7 @@
 {
- "generated": "2026-08-11T07:42:04.102Z",
+ "generated": "2026-08-11T13:47:40.126Z",
  "total": 84,
- "broken": 1,
+ "broken": 0,
  "unknown": 26,
  "results": [
   {
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
