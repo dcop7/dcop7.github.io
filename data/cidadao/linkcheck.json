@@ -1,7 +1,7 @@
 {
- "generated": "2026-08-12T03:00:07.984Z",
+ "generated": "2026-08-12T07:56:19.540Z",
  "total": 84,
- "broken": 0,
+ "broken": 1,
  "unknown": 26,
  "results": [
   {
@@ -61,8 +61,8 @@
   {
    "id": "apoios:tarifa-social-energia",
    "url": "https://www.dgeg.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:tarifa-social-net",
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
