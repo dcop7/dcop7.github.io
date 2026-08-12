@@ -1,7 +1,7 @@
 {
- "generated": "2026-08-12T13:52:50.754Z",
+ "generated": "2026-08-12T19:31:05.552Z",
  "total": 84,
- "broken": 0,
+ "broken": 2,
  "unknown": 26,
  "results": [
   {
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -439,8 +439,8 @@
   {
    "id": "calendario:recenseamento-militar",
    "url": "https://www.defesa.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 503,
+   "ok": false
   },
   {
    "id": "calendario:porta65-janelas",
