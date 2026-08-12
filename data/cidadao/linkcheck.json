@@ -1,7 +1,7 @@
 {
- "generated": "2026-08-12T07:56:19.540Z",
+ "generated": "2026-08-12T13:52:50.754Z",
  "total": 84,
- "broken": 1,
+ "broken": 0,
  "unknown": 26,
  "results": [
   {
@@ -61,8 +61,8 @@
   {
    "id": "apoios:tarifa-social-energia",
    "url": "https://www.dgeg.gov.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:tarifa-social-net",
