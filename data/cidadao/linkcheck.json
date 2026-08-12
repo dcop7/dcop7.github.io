@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-11T19:29:58.134Z",
+ "generated": "2026-08-12T03:00:07.984Z",
  "total": 84,
  "broken": 0,
- "unknown": 27,
+ "unknown": 26,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -145,7 +145,7 @@
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
