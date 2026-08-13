@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-13T07:57:42.967Z",
+ "generated": "2026-08-13T13:52:54.530Z",
  "total": 84,
- "broken": 1,
- "unknown": 26,
+ "broken": 0,
+ "unknown": 30,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
@@ -187,8 +187,8 @@
   {
    "id": "apoios:passes-jovens-gratis",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:rsi",
@@ -271,8 +271,8 @@
   {
    "id": "apoios:trabalhador-estudante",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:cartao-europeu-saude",
@@ -343,8 +343,8 @@
   {
    "id": "calendario:cc-renovar",
    "url": "https://www.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:carta-revalidar",
@@ -403,13 +403,13 @@
   {
    "id": "calendario:passe-sub23",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
