@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-14T19:18:07.043Z",
+ "generated": "2026-08-15T01:53:04.462Z",
  "total": 84,
  "broken": 0,
- "unknown": 26,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
@@ -439,8 +439,8 @@
   {
    "id": "calendario:recenseamento-militar",
    "url": "https://www.defesa.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:porta65-janelas",
