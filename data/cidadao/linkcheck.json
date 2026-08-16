@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-16T07:03:54.329Z",
+ "generated": "2026-08-16T13:04:39.215Z",
  "total": 84,
  "broken": 0,
- "unknown": 27,
+ "unknown": 32,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -139,13 +139,13 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 405,
+   "status": 200,
    "ok": true
   },
   {
@@ -451,32 +451,32 @@
   {
    "id": "municipio:leiria",
    "url": "https://www.cm-leiria.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:bolsas-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/educacao/ensino-superior",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:creche-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:cartao-senior-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:apoio-municipe-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:torres-vedras",
