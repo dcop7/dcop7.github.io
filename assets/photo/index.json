@@ -218,5 +218,9 @@
   "seq-hon-2": "seq/seq-hon-2.webp",
   "cor-nar-1": "cor/cor-nar-1.webp",
   "cor-nar-2": "cor/cor-nar-2.webp",
-  "cor-nar-3": "cor/cor-nar-3.webp"
+  "cor-nar-3": "cor/cor-nar-3.webp",
+  "lp-window": "lightpat/lp-window.webp",
+  "lp-golden-back": "lightpat/lp-golden-back.webp",
+  "lp-open-shade": "lightpat/lp-open-shade.webp",
+  "lp-window-reflector": "lightpat/lp-window-reflector.webp"
 }

@@ -1208,6 +1208,11 @@ const PhotographyPage = (function () {
       return Nav.go('photography/aprender/' + seg);
     }
     if (kind === 'apr') return Nav.go('photography/aprender/' + arg);
+    // cs:            → hub dos cheatsheets
+    // cs:<id>        → cartão
+    // cs:g/<genero>  → cartão de um género
+    if (kind === 'cs') return Nav.go('photography/cheatsheets' + (arg ? '/' + arg : ''));
+    if (kind === 'agora') return Nav.go('photography/agora' + (arg ? '/' + arg : ''));
     if (kind === 'comp' && arg) {
       const comp = COMPOSITIONS.find(c => c.name === arg);
       if (comp) return openCompModal(comp);
@@ -2880,12 +2885,21 @@ const PhotographyPage = (function () {
   const PH_TABS = [
     { id: 'generos',     label: '🎯 Géneros' },
     { id: 'agora',       label: '⚡ No Terreno' },
+    { id: 'cheats',      label: '📋 Cheatsheets' },
     { id: 'equipamento', label: '🎒 Equipamento' },
     { id: 'edicao',      label: '🎨 Edição' },
     { id: 'aprender',    label: '📚 Aprender' },
     { id: 'ferramentas', label: '🧮 Ferramentas' },
   ];
-  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', equipamento: 'photography/equipamento', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', cheats: 'photography/cheatsheets', equipamento: 'photography/equipamento', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+
+  /* Contexto entregue ao PhotoCheats: dá-lhe acesso ao DB, aos assets, à
+     classe de câmara e ao router de ligações cruzadas sem que ele precise
+     de conhecer rotas nem de duplicar estado. */
+  const cheatsCtx = () => ({
+    loadDB, loadAssets, assetPath, lensLine, classDef, classCrop, gearClass, go: plGo,
+    contextBarHTML, wireContextBar,
+  });
 
   let _activate = null, _curTab = 'generos', _curArg = null;
 
@@ -2901,7 +2915,7 @@ const PhotographyPage = (function () {
             <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
             <div class="ph-titles">
               <h1 class="ph-title">Fotografia</h1>
-              <p class="ph-sub">Escola de fotografia: 28 géneros, estilos e técnicas aplicados ao vivo, exercícios de leitura de imagem e ferramentas — adaptado à tua câmara e ao teu perfil</p>
+              <p class="ph-sub">Escola de fotografia: 28 géneros, estilos e técnicas aplicados ao vivo, cheatsheets de consulta rápida, exercícios de leitura de imagem e ferramentas — adaptado à tua câmara e ao teu perfil</p>
             </div>
           </div>
           <div class="ph-nav seg" role="tablist" aria-label="Secções de fotografia">
@@ -2921,6 +2935,7 @@ const PhotographyPage = (function () {
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
         else if (id === 'agora') buildAgora(panel, arg);
+        else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
         else if (id === 'equipamento') buildEquipamento(panel, arg);
         else if (id === 'edicao') buildEdicao(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
@@ -2941,6 +2956,7 @@ const PhotographyPage = (function () {
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
       else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
       else if (a === 'edicao')               { tab = 'edicao'; arg = rest || null; }
+      else if (a === 'cheatsheets' || a === 'cs') { tab = 'cheats'; arg = rest || null; }
       else if (a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
       else if (a === 'cenarios')             tab = 'generos';
       else if (a === 'composicao' || a === 'cores') { tab = 'aprender'; arg = a; }

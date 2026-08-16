@@ -80,6 +80,30 @@ novo, os dois prompts têm de descrever a **mesma cena**: só muda a intenção
 a lição é precisamente que a diferença não está na técnica. Os `id` casam com
 os `genres[].id` de `data/photo/genres.json`.
 
+### Grupo `lightpat` — SÓ luz natural (não voltar a tentar o estúdio)
+
+São quatro: `lp-window`, `lp-window-reflector`, `lp-golden-back`, `lp-open-shade`.
+Alimentam a grelha de "Luz de retrato" nos Cheatsheets
+(`js/pages/photo-cheats.js`).
+
+**Os 16 padrões de estúdio foram tentados e removidos.** O SDXL/Juggernaut não
+desenha Rembrandt, split, butterfly nem loop: devolve sempre luz de beleza
+plana, independentemente do CFG, da ordem do prompt ou dos negativos
+(`flat lighting, even lighting, ring light, shadowless`). Empurrado com
+`film noir` / `extreme chiaroscuro` chega a produzir sombra — mas perde o
+guarda-roupa da personagem e deriva para nu artístico. Como todas as células
+sairiam parecidas (e algumas erradas), a lição morria.
+
+Esses padrões passaram a ser **desenhados por código** em
+`js/pages/photo-lightart.js`: planta vista de cima + rosto com a sombra exata.
+A geometria está sempre certa e é consistente entre as 20 células. Se
+aparecer um IPAdapter/InstantID ou um ControlNet de normais na instalação,
+vale a pena reavaliar; até lá, **não regerar o estúdio**.
+
+O campo `lead` do manifesto existe por causa desta experiência: põe texto à
+cabeça do prompt, antes da personagem e do estilo, porque os primeiros tokens
+do CLIP pesam mais.
+
 ## Notas de qualidade (importante)
 
 - **Steps:** usa ≥ 30 para qualidade final. `--steps 8/10` é só para validar

@@ -94,7 +94,10 @@ async function main() {
 
     const character = manifest.characters[a.character] || '';
     const style = manifest.styles[a.style] || '';
-    const positive = [character, a.prompt, style].filter(Boolean).join(', ');
+    // `lead` vai à cabeça do prompt: os primeiros tokens do CLIP pesam mais, e
+    // há pedidos (a direção da luz, p.ex.) que o modelo ignora se ficarem atrás
+    // da descrição da personagem e do estilo.
+    const positive = [a.lead, character, a.prompt, style].filter(Boolean).join(', ');
     const [width, height] = a.size || [832, 1216];
     const steps = +(opt('steps') || a.steps || d.steps);
 

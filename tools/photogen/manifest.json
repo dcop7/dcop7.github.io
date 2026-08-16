@@ -22,7 +22,8 @@
     "genre_icon_mono": "bold graphic pictogram illustration, ONE single simple subject, strong readable silhouette, flat stylised shapes with smooth gradient shading, very few elements, minimal detail, strictly black white and grey monochrome, no colour at all, greyscale, dramatic rim light, the whole subject comfortably inside the image and not cropped, edge-to-edge artwork filling the entire square canvas, poster art, crisp edges, no text, no lettering",
     "edit_demo": "photorealistic landscape photograph, wide dynamic range scene, bright detailed sky with textured clouds, sunlit mountains in the distance, dark rocky foreground with visible texture, a lake with reflections, rich but natural colours, green vegetation and warm rock tones, deep shadows retaining some detail, sharp focus throughout, golden hour side light, shot on 24mm f/8, high detail, no people",
     "vision_strong": "photorealistic photograph, natural colours, excellent light, intentional composition, award winning, high detail, no text, no watermark",
-    "vision_flat": "photorealistic amateur snapshot, technically correct exposure but visually uninspired, flat lighting, no intention, ordinary phone photo, no text, no watermark"
+    "vision_flat": "photorealistic amateur snapshot, technically correct exposure but visually uninspired, flat lighting, no intention, ordinary phone photo, no text, no watermark",
+    "portrait_natural": "close up head and shoulders portrait, the head fills most of the frame, photorealistic photograph, natural skin texture with visible pores, sharp focus on the eyes, shot on 85mm f2, high detail"
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
@@ -2902,6 +2903,71 @@
       ],
       "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, extra limbs, watermark, text, logo, low quality, jpeg artifacts",
       "prompt": "photorealistic photograph of the same seaside promenade at dusk after everyone has left, deep blue and teal palette, cold, a single lamp switched on, quiet and lonely"
+    },
+    {
+      "id": "lp-window",
+      "group": "lightpat",
+      "character": "aria",
+      "style": "portrait_natural",
+      "matte": false,
+      "seed": 940101,
+      "size": [
+        896,
+        1152
+      ],
+      "cfg": 7,
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed",
+      "lead": "soft natural window light, indoors right beside a large bright window, directional daylight falling across the face from one side with a gentle falloff into shadow on the far side",
+      "prompt": "no studio equipment, plain domestic wall behind, quiet natural mood"
+    },
+    {
+      "id": "lp-window-reflector",
+      "group": "lightpat",
+      "character": "aria",
+      "style": "portrait_natural",
+      "matte": false,
+      "seed": 940101,
+      "size": [
+        896,
+        1152
+      ],
+      "cfg": 7,
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, topless, nude, bare shoulders, sleeveless, undressed",
+      "lead": "soft natural window light with a large white reflector held on the shadow side, directional daylight from one side with the shadows lifted and open",
+      "prompt": "no studio equipment, plain domestic wall behind, gentle even natural light"
+    },
+    {
+      "id": "lp-golden-back",
+      "group": "lightpat",
+      "character": "aria",
+      "style": "portrait_natural",
+      "matte": false,
+      "seed": 940101,
+      "size": [
+        896,
+        1152
+      ],
+      "cfg": 7,
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed",
+      "lead": "backlit at golden hour, the low warm sun directly behind her head creating a glowing orange rim of light through the hair, warm haze and gentle lens flare, the face lit softly by bounced light from the front",
+      "prompt": "outdoors, blurred golden bokeh background, warm romantic light"
+    },
+    {
+      "id": "lp-open-shade",
+      "group": "lightpat",
+      "character": "aria",
+      "style": "portrait_natural",
+      "matte": false,
+      "seed": 940101,
+      "size": [
+        896,
+        1152
+      ],
+      "cfg": 7,
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, topless, nude, bare shoulders, sleeveless, undressed",
+      "lead": "outdoors in open shade at the edge of a building, soft even indirect daylight coming from the open sky above, no harsh shadows, large soft catchlights in the eyes",
+      "prompt": "outdoors, blurred neutral green background, clean natural light"
     }
-  ]
+  ],
+  "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em js/pages/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los."
 }

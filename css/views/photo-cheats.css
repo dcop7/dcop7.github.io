@@ -1,0 +1,165 @@
+/* ══════════════════════════════════════════════════════════════════════
+   PhotoCheats — cartões de consulta rápida da Fotografia.
+
+   Ficheiro próprio porque a linguagem visual aqui é deliberadamente
+   diferente do resto do portal: densidade alta, tabelas, e a leitura
+   feita de relance com a câmara na mão. Herda todos os tokens — não
+   inventa cores, à excepção dos amarelos de "regra de ouro" e do verde
+   do valor calculado, que já existem no sistema.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* A barra de tabs da Fotografia é sticky: sem esta margem, abrir um cartão
+   encosta o título dele ao topo e a barra tapa-o. */
+.cs-wrap { display: block; scroll-margin-top: 110px; }
+
+/* ── hub ───────────────────────────────────────────────────────────── */
+.cs-group { margin: 0 0 1.6rem; }
+.cs-group-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem;
+  margin: 0 0 .7rem; font-family: var(--font-head); font-size: .95rem; font-weight: 700; color: var(--text); }
+.cs-group-t small { font-size: .74rem; font-weight: 400; color: var(--muted); }
+
+.cs-grid { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
+.cs-grid-sm { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); }
+
+.cs-card { display: flex; align-items: center; gap: .7rem; width: 100%; text-align: left; cursor: pointer;
+  font: inherit; padding: .7rem .8rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); transition: all var(--ease); }
+.cs-card:hover { border-color: rgba(var(--accent-rgb), .45); background: var(--card2); transform: translateY(-1px); }
+.cs-card-ico { flex: none; font-size: 1.3rem; line-height: 1; }
+.cs-card-txt { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.cs-card-name { font-family: var(--font-head); font-size: .84rem; font-weight: 700; color: var(--text); }
+.cs-card-blurb { font-size: .72rem; line-height: 1.45; color: var(--muted); }
+.cs-card-caret { margin-left: auto; color: var(--muted); font-size: 1.1rem; }
+.cs-grid-sm .cs-card { padding: .55rem .65rem; }
+.cs-grid-sm .cs-card-ico { font-size: 1.1rem; }
+.cs-grid-sm .cs-card-name { font-size: .79rem; }
+
+/* ── cabeçalho de um cartão ────────────────────────────────────────── */
+.cs-back { margin: 0 0 .9rem; }
+.cs-head { display: flex; align-items: center; gap: .6rem; margin: 0 0 .9rem; }
+.cs-head-ico { font-size: 1.6rem; line-height: 1; }
+.cs-head-t { margin: 0; font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; color: var(--text); }
+
+/* ── corpo ─────────────────────────────────────────────────────────── */
+.cs-sheet { display: block; }
+.cs-lead { margin: 0 0 1rem; max-width: 74ch; font-size: .86rem; line-height: 1.6; color: var(--text2); }
+.cs-lead-sm { font-size: .78rem; color: var(--muted); margin-top: -.6rem; }
+.cs-lead b { color: var(--text); }
+
+.cs-block { margin: 0 0 1rem; padding: .9rem 1rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); }
+.cs-block-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem;
+  margin: 0 0 .55rem; font-family: var(--font-head); font-size: .82rem; font-weight: 700; color: var(--text); }
+.cs-block-t small { font-size: .72rem; font-weight: 400; color: var(--muted); }
+
+.cs-list { margin: 0; padding-left: 1.1rem; display: grid; gap: .35rem; }
+.cs-list li { font-size: .8rem; line-height: 1.55; color: var(--text2); }
+.cs-list li b { color: var(--text); }
+.cs-list li i { font-style: italic; color: var(--muted); }
+
+.cs-art { margin: 0 0 1rem; max-width: 640px; }
+.cs-art svg { width: 100%; height: auto; display: block; border-radius: var(--radius); }
+
+/* Tabela: rola dentro da própria caixa — a página nunca rola na horizontal. */
+.cs-tablewrap { margin: 0 0 1rem; overflow-x: auto; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--card); }
+.cs-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+.cs-table th, .cs-table td { padding: .5rem .65rem; text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--border); line-height: 1.45; }
+.cs-table th { font-family: var(--font-head); font-size: .72rem; font-weight: 700; color: var(--text);
+  background: var(--card2); position: sticky; top: 0; white-space: nowrap; }
+.cs-table td { color: var(--text2); }
+.cs-table tr:last-child td { border-bottom: none; }
+.cs-table tbody tr:hover td { background: var(--card2); }
+.cs-td-k { color: var(--text); font-weight: 600; }
+.cs-dim { color: var(--muted); }
+
+.cs-rule { margin: 1rem 0; padding: .7rem .9rem; border-radius: var(--radius); font-size: .82rem;
+  line-height: 1.55; color: var(--text); background: rgba(245, 183, 74, .09);
+  border: 1px solid rgba(245, 183, 74, .3); }
+
+.cs-note { margin: .55rem 0 0; font-size: .76rem; line-height: 1.5; color: var(--muted); }
+.cs-note b { color: var(--text2); }
+.cs-note-alt { color: var(--text2); }
+
+.cs-go { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 0; }
+
+/* ── cartão de género ──────────────────────────────────────────────── */
+/* Duas colunas fixas e não auto-fit: com auto-fit os quatro blocos caíam
+   em 3+1 e o "Evita" ficava sozinho numa linha inteira. */
+.cs-gcols { display: grid; gap: .7rem; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .cs-gcols { grid-template-columns: 1fr 1fr; } }
+.cs-gcol { padding: .8rem .9rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); }
+.cs-gcol-warn { border-color: rgba(248, 113, 113, .3); }
+.cs-kvgrid { display: grid; gap: .3rem; }
+.cs-kv { display: flex; justify-content: space-between; gap: .6rem; font-size: .77rem;
+  padding: .25rem .45rem; border-radius: 6px; background: var(--card2); }
+.cs-kv-k { color: var(--muted); }
+.cs-kv-v { color: var(--text); font-weight: 600; text-align: right; }
+
+/* ── calculadora de velocidade ─────────────────────────────────────── */
+.cs-shot-controls { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.cs-field { display: flex; flex-direction: column; gap: .25rem; }
+.cs-field.cs-field-sm { max-width: 100%; }
+.cs-lbl { font-size: .72rem; font-weight: 600; color: var(--muted); }
+.cs-lbl small { font-weight: 400; }
+
+.cs-quick { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .7rem 0 0; }
+.cs-quick-lbl { font-size: .72rem; color: var(--muted); }
+.cs-quick-btn { cursor: pointer; }
+.cs-quick-btn:hover { border-color: rgba(var(--accent-rgb), .45); color: var(--text); }
+
+.cs-shot-out { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem;
+  margin: 1rem 0 .8rem; padding: .9rem 1rem; border-radius: var(--radius);
+  background: var(--accent-soft); border: 1px solid rgba(var(--accent-rgb), .35); }
+.cs-shot-big { display: flex; align-items: baseline; gap: .5rem; }
+.cs-shot-val { font-family: var(--font-head); font-size: 2.1rem; font-weight: 800; line-height: 1;
+  color: var(--accent-txt); font-variant-numeric: tabular-nums; }
+.cs-shot-cap { font-size: .74rem; color: var(--muted); }
+.cs-shot-driver { flex: 1 1 260px; margin: 0; font-size: .79rem; line-height: 1.55; color: var(--text2); }
+.cs-shot-driver b { color: var(--text); }
+
+.cs-shot-rows { display: grid; gap: .35rem; }
+.cs-shot-row { display: flex; align-items: center; justify-content: space-between; gap: .7rem;
+  padding: .45rem .65rem; border-radius: 8px; background: var(--card2);
+  border: 1px solid transparent; }
+/* O constrangimento que MANDA fica marcado: é a resposta à pergunta. */
+.cs-shot-row.on { border-color: rgba(var(--accent-rgb), .45); background: var(--accent-soft); }
+.cs-shot-k { display: flex; flex-direction: column; gap: .1rem; font-size: .78rem; color: var(--text); }
+.cs-shot-k small { font-size: .7rem; font-weight: 400; color: var(--muted); }
+.cs-shot-v { flex: none; font-family: var(--font-mono, monospace); font-size: .88rem; font-weight: 700;
+  color: var(--text); font-variant-numeric: tabular-nums; }
+.cs-shot-row.on .cs-shot-v { color: var(--accent-txt); }
+
+.cs-shot-ctx, .cs-shot-next { margin: .6rem 0 0; font-size: .76rem; line-height: 1.55; color: var(--muted); }
+.cs-shot-ctx b { color: var(--text2); }
+
+/* ── grelha dos esquemas de luz ────────────────────────────────────── */
+.cs-lgrid { display: grid; gap: .7rem; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); }
+.cs-lcell { margin: 0; padding: .6rem .65rem .7rem; border-radius: var(--radius);
+  background: var(--card2); border: 1px solid var(--border); }
+.cs-lcell.star { border-color: rgba(245, 183, 74, .38); }
+.cs-lcell-h { display: flex; align-items: center; gap: .35rem; margin: 0 0 .45rem;
+  font-family: var(--font-head); font-size: .8rem; font-weight: 700; color: var(--text); }
+.cs-star { color: #f5b74a; font-size: .8rem; }
+
+/* A planta é ~quadrada e o rosto é 4:5 — sem `center` a planta encostava ao
+   topo e sobrava um buraco por baixo dela em todas as células. */
+.cs-lpair { display: grid; grid-template-columns: 1.05fr .95fr; gap: .4rem;
+  align-items: center; margin: 0 0 .55rem; }
+.cs-lart svg, .cs-lart .plt-photo { width: 100%; height: auto; display: block; border-radius: 8px; }
+.cs-lart .plt-photo { aspect-ratio: 7 / 9; object-fit: cover; }
+
+.cs-lbody { display: grid; gap: .28rem; }
+.cs-lkit { margin: 0 0 .1rem; font-size: .71rem; color: var(--muted); }
+.cs-lrow { margin: 0; font-size: .74rem; line-height: 1.5; color: var(--text2); }
+.cs-lrow b { color: var(--text); }
+.cs-lwatch { color: var(--muted); }
+
+@media (max-width: 560px) {
+  .cs-shot-val { font-size: 1.75rem; }
+  .cs-head-t { font-size: 1.05rem; }
+  .cs-block { padding: .8rem .75rem; }
+  .cs-lgrid { grid-template-columns: 1fr; }
+}
