@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-18T13:13:11.172Z",
+ "generated": "2026-08-18T19:02:07.104Z",
  "total": 84,
  "broken": 0,
  "unknown": 27,
@@ -145,7 +145,7 @@
   {
    "id": "apoios:cheque-dentista",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
@@ -409,7 +409,7 @@
   {
    "id": "calendario:gripe-vacina",
    "url": "https://www.sns24.gov.pt/",
-   "status": 200,
+   "status": 405,
    "ok": true
   },
   {
