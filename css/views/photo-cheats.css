@@ -1,113 +1,283 @@
 /* ══════════════════════════════════════════════════════════════════════
-   PhotoCheats — cartões de consulta rápida da Fotografia.
+   PhotoCheats — os cheatsheets visuais da Fotografia.
 
    Ficheiro próprio porque a linguagem visual aqui é deliberadamente
-   diferente do resto do portal: densidade alta, tabelas, e a leitura
-   feita de relance com a câmara na mão. Herda todos os tokens — não
-   inventa cores, à excepção dos amarelos de "regra de ouro" e do verde
-   do valor calculado, que já existem no sistema.
+   diferente do resto do portal. Um cheatsheet não é um artigo curto: é
+   uma infografia de consulta. O que manda é o VISUAL, o valor vem a
+   seguir em grande, e o texto é uma linha — nunca um parágrafo.
+
+   Escrito primeiro para telemóvel, que é onde estes cartões são mesmo
+   usados (com a câmara na outra mão): as progressões são tiras que se
+   arrastam com o dedo, com encaixe, e só em ecrã largo é que passam a
+   grelha de uma linha só. Herda todos os tokens do sistema.
    ════════════════════════════════════════════════════════════════════ */
 
 /* A barra de tabs da Fotografia é sticky: sem esta margem, abrir um cartão
    encosta o título dele ao topo e a barra tapa-o. */
 .cs-wrap { display: block; scroll-margin-top: 110px; }
 
-/* ── hub ───────────────────────────────────────────────────────────── */
-.cs-group { margin: 0 0 1.6rem; }
+/* ══ HUB ═══════════════════════════════════════════════════════════════ */
+
+/* O primeiro ecrã tem de dizer o que isto é e em que difere de Aprender e
+   de Ferramentas — sem isso, um visitante novo lê "mais um índice". */
+/* Uma faixa de contexto, nao tres cartoes. A versao anterior gastava 150px
+   de altura a repetir "icone + titulo + frase" tres vezes para dizer onde
+   estamos - numa pagina cujo proposito e caber num relance. */
+.cs-intro { margin: 0 0 1rem; padding: .8rem .95rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); }
+.cs-intro-lead { margin: 0; font-size: .86rem; line-height: 1.55; color: var(--text2); }
+.cs-intro-lead b { color: var(--text); }
+.cs-intro-map { display: flex; flex-wrap: wrap; gap: .3rem .55rem; align-items: baseline;
+  margin: .5rem 0 0; font-size: .74rem; color: var(--muted); }
+.cs-intro-map b { font-weight: 700; color: var(--text2); }
+.cs-intro-map span { color: var(--border2); }
+
+.cs-search { margin: 0 0 1rem; }
+.cs-search input { width: 100%; padding: .6rem .8rem; font: inherit; font-size: .85rem;
+  color: var(--text); background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); }
+.cs-search input:focus-visible { outline: none; border-color: rgba(var(--pg-accent-rgb), .55); box-shadow: var(--ring); }
+
+.cs-group { margin: 0 0 1.5rem; }
 .cs-group-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem;
-  margin: 0 0 .7rem; font-family: var(--font-head); font-size: .95rem; font-weight: 700; color: var(--text); }
+  margin: 0 0 .65rem; font-family: var(--font-head); font-size: .95rem; font-weight: 700; color: var(--text); }
 .cs-group-t small { font-size: .74rem; font-weight: 400; color: var(--muted); }
 
-.cs-grid { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
-.cs-grid-sm { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); }
+/* Cartoes mais estreitos: a 230px cabiam 4 por linha num ecra de 1440 e o
+   hub tinha 3000px de altura. A 196px cabem 5-6 e a miniatura 16:9 continua
+   a ler-se - e ler a miniatura e a unica coisa que o cartao tem de fazer. */
+.cs-grid { display: grid; gap: .55rem; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); }
+.cs-grid-sm { grid-template-columns: repeat(auto-fill, minmax(164px, 1fr)); }
 
-.cs-card { display: flex; align-items: center; gap: .7rem; width: 100%; text-align: left; cursor: pointer;
-  font: inherit; padding: .7rem .8rem; border-radius: var(--radius);
+/* O cartão do hub mostra o visual do cheatsheet, não um emoji: é o que
+   diz, antes de qualquer texto, que isto se consulta a olhar. */
+.cs-card { display: flex; flex-direction: column; gap: .5rem; width: 100%; text-align: left;
+  cursor: pointer; font: inherit; padding: .5rem .5rem .65rem; border-radius: var(--radius);
   background: var(--card); border: 1px solid var(--border); transition: all var(--ease); }
-.cs-card:hover { border-color: rgba(var(--accent-rgb), .45); background: var(--card2); transform: translateY(-1px); }
-.cs-card-ico { flex: none; font-size: 1.3rem; line-height: 1; }
-.cs-card-txt { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
-.cs-card-name { font-family: var(--font-head); font-size: .84rem; font-weight: 700; color: var(--text); }
+.cs-card:hover, .cs-card:focus-visible { border-color: rgba(var(--pg-accent-rgb), .5);
+  background: var(--card2); transform: translateY(-2px); outline: none; }
+.cs-card-vis { display: block; overflow: hidden; border-radius: var(--radius-sm);
+  background: #0a1421; aspect-ratio: 16 / 9; }
+.cs-card-vis svg, .cs-card-vis img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cs-card-vis .cc-svg { object-fit: contain; }
+.cs-card-body { display: flex; align-items: flex-start; gap: .45rem; padding: 0 .25rem; }
+.cs-card-ico { flex: none; font-size: 1rem; line-height: 1.3; }
+.cs-card-txt { display: grid; gap: .12rem; min-width: 0; }
+.cs-card-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; color: var(--text); }
 .cs-card-blurb { font-size: .72rem; line-height: 1.45; color: var(--muted); }
-.cs-card-caret { margin-left: auto; color: var(--muted); font-size: 1.1rem; }
-.cs-grid-sm .cs-card { padding: .55rem .65rem; }
-.cs-grid-sm .cs-card-ico { font-size: 1.1rem; }
-.cs-grid-sm .cs-card-name { font-size: .79rem; }
+.cs-card-badge { align-self: flex-start; margin-left: auto; flex: none; padding: .1rem .35rem;
+  border-radius: 999px; font-size: .62rem; font-weight: 700; letter-spacing: .02em;
+  color: var(--accent-txt); background: var(--accent-soft); border: 1px solid rgba(var(--accent-rgb), .3); }
+.cs-grid-sm .cs-card-vis { aspect-ratio: 2 / 1; }
+.cs-grid-sm .cs-card-name { font-size: .78rem; }
 
-/* ── cabeçalho de um cartão ────────────────────────────────────────── */
-.cs-back { margin: 0 0 .9rem; }
-.cs-head { display: flex; align-items: center; gap: .6rem; margin: 0 0 .9rem; }
-.cs-head-ico { font-size: 1.6rem; line-height: 1; }
-.cs-head-t { margin: 0; font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; color: var(--text); }
+/* Cartão de género: junta a miniatura do género e o nº de fichas dentro. */
+.cs-gcount { font-size: .68rem; color: var(--muted); }
+.cs-empty { margin: .4rem 0 1rem; font-size: .8rem; color: var(--muted); }
 
-/* ── corpo ─────────────────────────────────────────────────────────── */
+/* ══ CABEÇALHO DE UM CHEATSHEET ════════════════════════════════════════ */
+.cs-back { margin: 0 0 .8rem; }
+.cs-head { display: flex; align-items: flex-start; gap: .6rem; margin: 0 0 .5rem; }
+.cs-head-ico { font-size: 1.5rem; line-height: 1.1; }
+.cs-head-t { margin: 0; font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: var(--text); }
+.cs-head-sub { margin: .15rem 0 0; font-size: .78rem; color: var(--muted); }
+.cs-crumb { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; margin: 0 0 .7rem;
+  font-size: .72rem; color: var(--muted); }
+.cs-crumb b { color: var(--text2); font-weight: 600; }
+
+/* A "resposta rápida": uma frase, destacada, para quem só tem 3 segundos. */
+.cs-answer { display: flex; gap: .55rem; align-items: flex-start; margin: 0 0 1rem;
+  padding: .7rem .85rem; border-radius: var(--radius); font-size: .86rem; line-height: 1.55;
+  color: var(--text); background: rgba(245, 183, 74, .1); border: 1px solid rgba(245, 183, 74, .32); }
+.cs-answer b { color: var(--text); }
+.cs-answer-ico { flex: none; }
+
 .cs-sheet { display: block; }
-.cs-lead { margin: 0 0 1rem; max-width: 74ch; font-size: .86rem; line-height: 1.6; color: var(--text2); }
-.cs-lead-sm { font-size: .78rem; color: var(--muted); margin-top: -.6rem; }
-.cs-lead b { color: var(--text); }
 
+/* Dois blocos estreitos lado a lado (ver blocksHTML). Em coluna única
+   voltam a empilhar — abaixo de ~820px não há largura para dois. */
+.cs-row { display: grid; gap: .6rem; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 820px) { .cs-row { grid-template-columns: 1fr 1fr; } }
+.cs-row > .cc-block { margin-bottom: 1rem; }
+
+/* ══ BLOCOS VISUAIS (PhotoCard) ════════════════════════════════════════ */
+.cc-block { margin: 0 0 1rem; }
+
+.cc-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem .55rem; margin: 0 0 .5rem; }
+.cc-t { font-family: var(--font-head); font-size: .84rem; font-weight: 700; color: var(--text); }
+.cc-hint { font-size: .74rem; line-height: 1.45; color: var(--muted); }
+/* Selo de honestidade: estas tiras são a MESMA fotografia processada ao
+   vivo, e o leitor tem direito a saber que não são cinco fotografias. */
+.cc-sim { margin-left: auto; flex: none; padding: .08rem .38rem; border-radius: 999px;
+  font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted); background: var(--card2); border: 1px solid var(--border2); cursor: help; }
+
+.cc-foot { margin: .5rem 0 0; font-size: .74rem; line-height: 1.5; color: var(--muted); }
+.cc-foot b { color: var(--text2); }
+
+/* ── progressão ─────────────────────────────────────────────────────── */
+.cc-track { display: grid; grid-auto-flow: column; grid-auto-columns: 62%;
+  gap: .45rem; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; padding-bottom: .3rem;
+  scrollbar-width: thin; }
+.cc-track:focus-visible { outline: 2px solid rgba(var(--pg-accent-rgb), .6); outline-offset: 3px; border-radius: var(--radius-sm); }
+.cc-cell { scroll-snap-align: start; display: grid; gap: .25rem; align-content: start;
+  padding: .45rem .5rem .55rem; border-radius: var(--radius-sm);
+  background: var(--card); border: 1px solid var(--border); }
+/* A escolha recomendada é uma ETIQUETA, não um estado selecionado: com
+   fundo tingido e moldura forte, a célula parecia um botão escolhido e
+   quem lia tentava (em vão) clicar nas outras. Fica só um filete. */
+.cc-cell.mark { border-color: rgba(245, 183, 74, .3); }
+.cc-cell.mark .cc-v { color: #f5b74a; }
+.cc-mark { justify-self: start; padding: .05rem .38rem; border-radius: 999px;
+  font-size: .63rem; font-weight: 700; letter-spacing: .01em; color: #f5b74a;
+  background: rgba(245, 183, 74, .12); border: 1px solid rgba(245, 183, 74, .3); }
+
+.cc-vis { position: relative; display: block; overflow: hidden; border-radius: var(--radius-xs); background: #0a1421; }
+/* Grelha de composição por cima de uma fotografia real: a mesma imagem
+   com e sem marcação seria duas imagens; sobrepor é mais barato e lê-se
+   melhor. `preserveAspectRatio=none` no SVG faz a grelha acompanhar
+   exatamente o recorte da fotografia. */
+.cc-ov { position: absolute; inset: 0; display: block; pointer-events: none; }
+.cc-ov svg { width: 100%; height: 100%; }
+.cc-vis svg { display: block; width: 100%; height: auto; }
+.cc-vis-photo { aspect-ratio: 3 / 2; }
+.cc-vis-photo canvas, .cc-vis-photo img { display: block; width: 100%; height: 100%;
+  object-fit: cover; background: #0a1421; }
+.cc-vis-swatch { height: 46px; border-radius: var(--radius-xs); }
+.cc-vis-ico { display: grid; place-items: center; aspect-ratio: 2 / 1; font-size: 1.5rem; background: var(--card2); }
+
+.cc-v { font-family: var(--font-mono, monospace); font-size: .92rem; font-weight: 700;
+  color: var(--text); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.cc-lab { font-family: var(--font-head); font-size: .74rem; font-weight: 700; color: var(--accent-txt); }
+.cc-note { margin: 0; font-size: .72rem; line-height: 1.45; color: var(--muted); }
+.cc-note b { color: var(--text2); }
+
+.cc-axis { display: flex; justify-content: space-between; gap: .5rem; margin: .35rem 0 0;
+  font-size: .68rem; color: var(--muted); }
+
+/* ── grelha de referência ───────────────────────────────────────────── */
+.cc-gitems { display: grid; gap: .45rem; grid-template-columns: 1fr; }
+.cc-gitem { display: flex; align-items: flex-start; gap: .55rem; padding: .5rem .6rem;
+  border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); }
+.cc-gitem.mark { border-color: rgba(245, 183, 74, .3); }
+.cc-gitem.mark .cc-gv { color: #f5b74a; }
+.cc-gitem .cc-vis { flex: none; width: 76px; }
+/* Quando a imagem É o conteúdo, a célula passa a cartão: visual a toda a
+   largura em cima, texto por baixo. */
+.cc-grid.cards .cc-gitem { flex-direction: column; align-items: stretch; gap: .4rem; }
+.cc-grid.cards .cc-gitem .cc-vis { width: 100%; aspect-ratio: 3 / 2; }
+.cc-gitem .cc-vis-ico { width: 32px; aspect-ratio: 1; font-size: 1.15rem; border-radius: var(--radius-xs); }
+.cc-gtxt { display: grid; gap: .12rem; min-width: 0; }
+.cc-gk { font-family: var(--font-head); font-size: .78rem; font-weight: 700; color: var(--text); }
+.cc-gv { font-family: var(--font-mono, monospace); font-size: .78rem; font-weight: 700; color: var(--accent-txt); }
+.cc-gn { font-size: .73rem; line-height: 1.45; color: var(--muted); }
+
+/* ── comparação ─────────────────────────────────────────────────────── */
+.cc-vs-pair { display: grid; gap: .5rem; grid-template-columns: 1fr 1fr; }
+.cc-vs-side { margin: 0; display: grid; gap: .3rem; }
+.cc-vs-side .cc-vis { aspect-ratio: 3 / 2; }
+.cc-vs-side .cc-vis svg { height: 100%; object-fit: contain; }
+.cc-vs-side figcaption { display: grid; gap: .15rem; }
+
+/* ── diagrama ─────────────────────────────────────────────────────────
+   Os diagramas são desenhados para ~460–640px de largura. Deixados a
+   toda a largura de um ecrã grande, os rótulos de 9px viram títulos e o
+   desenho perde a densidade que o torna consultável. */
+.cc-diag-art { max-width: 660px; border-radius: var(--radius-sm); overflow: hidden; }
+.cs-row .cc-diag-art { max-width: 100%; }
+
+/* Num cheatsheet a comparacao E o conteudo, nao uma ilustracao de apoio:
+   o tecto de 860px do comparador partilhado deixava 300px de vazio ao
+   lado num ecra de 1440. Dentro da row emparelhada volta a valer. */
+.cc-cmp .pl-cmp { max-width: 1040px; }
+.cs-row .cc-cmp .pl-cmp { max-width: 100%; }
+.cc-diag-art svg { display: block; width: 100%; height: auto; }
+
+/* ── regras e passos ────────────────────────────────────────────────── */
+.cc-rules, .cc-steps { padding: .75rem .85rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); }
+.cc-rules ul, .cc-steps ol { margin: 0; padding-left: 1.1rem; display: grid; gap: .32rem; }
+.cc-rules li, .cc-steps li { font-size: .79rem; line-height: 1.5; color: var(--text2); }
+.cc-rules li b, .cc-steps li b { color: var(--text); }
+.cc-rules ul { list-style: none; padding-left: 0; }
+.cc-rules li { padding-left: 1.05rem; position: relative; }
+.cc-rules li::before { content: '▸'; position: absolute; left: 0; color: var(--accent-txt); }
+
+/* ── tabela (só quando a informação é mesmo tabular) ────────────────── */
+.cc-tablewrap { overflow-x: auto; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--card); }
+.cc-tablewrap .cc-head { padding: .6rem .7rem 0; margin-bottom: .35rem; }
+.cc-table { width: 100%; border-collapse: collapse; font-size: .77rem; }
+.cc-table th, .cc-table td { padding: .45rem .6rem; text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--border); line-height: 1.45; }
+.cc-table th { font-family: var(--font-head); font-size: .71rem; font-weight: 700; color: var(--text);
+  background: var(--card2); white-space: nowrap; }
+.cc-table td { color: var(--text2); }
+.cc-table tr:last-child td { border-bottom: none; }
+.cc-td-k { color: var(--text); font-weight: 600; }
+
+.cc-inline-note { padding: .55rem .75rem; border-radius: var(--radius-sm); font-size: .78rem;
+  line-height: 1.5; color: var(--text2); background: var(--card2); border: 1px solid var(--border); }
+.cc-inline-note.warn { color: var(--text); background: rgba(248, 113, 113, .08);
+  border-color: rgba(248, 113, 113, .3); }
+
+/* ══ RODAPÉ DE UM CHEATSHEET ═══════════════════════════════════════════ */
+.cs-rule { margin: 1rem 0; padding: .7rem .9rem; border-radius: var(--radius); font-size: .82rem;
+  line-height: 1.55; color: var(--text); background: rgba(245, 183, 74, .09);
+  border: 1px solid rgba(245, 183, 74, .3); }
+.cs-go { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 0; }
+.cs-go-t { width: 100%; margin: 0 0 .1rem; font-size: .72rem; color: var(--muted); }
+.cs-note { margin: .55rem 0 0; font-size: .76rem; line-height: 1.5; color: var(--muted); }
+.cs-note b { color: var(--text2); }
+.cs-lead { margin: 0 0 1rem; max-width: 74ch; font-size: .86rem; line-height: 1.6; color: var(--text2); }
+.cs-lead b { color: var(--text); }
 .cs-block { margin: 0 0 1rem; padding: .9rem 1rem; border-radius: var(--radius);
   background: var(--card); border: 1px solid var(--border); }
 .cs-block-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem;
   margin: 0 0 .55rem; font-family: var(--font-head); font-size: .82rem; font-weight: 700; color: var(--text); }
 .cs-block-t small { font-size: .72rem; font-weight: 400; color: var(--muted); }
-
 .cs-list { margin: 0; padding-left: 1.1rem; display: grid; gap: .35rem; }
 .cs-list li { font-size: .8rem; line-height: 1.55; color: var(--text2); }
 .cs-list li b { color: var(--text); }
-.cs-list li i { font-style: italic; color: var(--muted); }
 
-.cs-art { margin: 0 0 1rem; max-width: 640px; }
-.cs-art svg { width: 100%; height: auto; display: block; border-radius: var(--radius); }
+/* ── género = UMA página ───────────────────────────────────────────────
+   As fichas vêm todas empilhadas e a barra de saltos fica colada ao topo
+   enquanto se rola: consulta rápida não pode custar três cliques e um
+   "voltar atrás". A barra rola na horizontal no telemóvel. */
+.cs-jump { position: sticky; top: calc(var(--hdr-h) + var(--cs-navh, 3rem)); z-index: 4;
+  display: flex; gap: .35rem; margin: 0 0 .8rem; padding: .45rem .1rem;
+  overflow-x: auto; scrollbar-width: thin;
+  background: linear-gradient(var(--bg) 68%, transparent); }
+.cs-jump-b { flex: none; display: inline-flex; align-items: center; gap: .3rem;
+  min-height: 34px; padding: .3rem .6rem; border-radius: 999px; white-space: nowrap;
+  font-size: .75rem; font-weight: 600; text-decoration: none; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); transition: all var(--ease); }
+.cs-jump-b:hover, .cs-jump-b:focus-visible { color: var(--text);
+  border-color: rgba(var(--pg-accent-rgb), .55); background: rgba(var(--pg-accent-rgb), .12); }
 
-/* Tabela: rola dentro da própria caixa — a página nunca rola na horizontal. */
-.cs-tablewrap { margin: 0 0 1rem; overflow-x: auto; border-radius: var(--radius);
-  border: 1px solid var(--border); background: var(--card); }
-.cs-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-.cs-table th, .cs-table td { padding: .5rem .65rem; text-align: left; vertical-align: top;
-  border-bottom: 1px solid var(--border); line-height: 1.45; }
-.cs-table th { font-family: var(--font-head); font-size: .72rem; font-weight: 700; color: var(--text);
-  background: var(--card2); position: sticky; top: 0; white-space: nowrap; }
-.cs-table td { color: var(--text2); }
-.cs-table tr:last-child td { border-bottom: none; }
-.cs-table tbody tr:hover td { background: var(--card2); }
-.cs-td-k { color: var(--text); font-weight: 600; }
-.cs-dim { color: var(--muted); }
+.cs-ficha { margin: 1.6rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--border);
+  scroll-margin-top: calc(var(--hdr-h) + var(--cs-navh, 3rem) + 3.4rem); }
+.cs-answer { scroll-margin-top: calc(var(--hdr-h) + var(--cs-navh, 3rem) + 3.4rem); }
+.cs-ficha-h { display: flex; align-items: flex-start; gap: .55rem; margin: 0 0 .7rem; }
+.cs-ficha-ico { font-size: 1.3rem; line-height: 1.2; }
+.cs-ficha-t { margin: 0; font-family: var(--font-head); font-size: 1.02rem; font-weight: 700; color: var(--text); }
+.cs-ficha-q { margin: .1rem 0 0; font-size: .76rem; color: var(--muted); }
+/* Chegar por link direto tem de se notar, senão parece que não aconteceu nada. */
+.cs-flash { animation: cs-flash 1.3s var(--ease-out-fn); }
+@keyframes cs-flash { 0%, 40% { background: rgba(var(--pg-accent-rgb), .14); } 100% { background: transparent; } }
+.cs-answer.cs-flash { border-radius: var(--radius); }
 
-.cs-rule { margin: 1rem 0; padding: .7rem .9rem; border-radius: var(--radius); font-size: .82rem;
-  line-height: 1.55; color: var(--text); background: rgba(245, 183, 74, .09);
-  border: 1px solid rgba(245, 183, 74, .3); }
+.cs-sublist { display: grid; gap: .45rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin: 0 0 1.1rem; }
 
-.cs-note { margin: .55rem 0 0; font-size: .76rem; line-height: 1.5; color: var(--muted); }
-.cs-note b { color: var(--text2); }
-.cs-note-alt { color: var(--text2); }
-
-.cs-go { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 0; }
-
-/* ── cartão de género ──────────────────────────────────────────────── */
-/* Duas colunas fixas e não auto-fit: com auto-fit os quatro blocos caíam
-   em 3+1 e o "Evita" ficava sozinho numa linha inteira. */
-.cs-gcols { display: grid; gap: .7rem; grid-template-columns: 1fr; }
-@media (min-width: 760px) { .cs-gcols { grid-template-columns: 1fr 1fr; } }
-.cs-gcol { padding: .8rem .9rem; border-radius: var(--radius);
-  background: var(--card); border: 1px solid var(--border); }
-.cs-gcol-warn { border-color: rgba(248, 113, 113, .3); }
-.cs-kvgrid { display: grid; gap: .3rem; }
-.cs-kv { display: flex; justify-content: space-between; gap: .6rem; font-size: .77rem;
-  padding: .25rem .45rem; border-radius: 6px; background: var(--card2); }
-.cs-kv-k { color: var(--muted); }
-.cs-kv-v { color: var(--text); font-weight: 600; text-align: right; }
-
-/* ── calculadora de velocidade ─────────────────────────────────────── */
-.cs-shot-controls { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+/* ══ CALCULADORA DE VELOCIDADE ════════════════════════════════════════ */
+.cs-shot-controls { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
 .cs-field { display: flex; flex-direction: column; gap: .25rem; }
-.cs-field.cs-field-sm { max-width: 100%; }
 .cs-lbl { font-size: .72rem; font-weight: 600; color: var(--muted); }
 .cs-lbl small { font-weight: 400; }
-
 .cs-quick { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .7rem 0 0; }
 .cs-quick-lbl { font-size: .72rem; color: var(--muted); }
-.cs-quick-btn { cursor: pointer; }
+.cs-quick-btn { cursor: pointer; min-height: 34px; }
 .cs-quick-btn:hover { border-color: rgba(var(--accent-rgb), .45); color: var(--text); }
 
 .cs-shot-out { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem;
@@ -119,11 +289,9 @@
 .cs-shot-cap { font-size: .74rem; color: var(--muted); }
 .cs-shot-driver { flex: 1 1 260px; margin: 0; font-size: .79rem; line-height: 1.55; color: var(--text2); }
 .cs-shot-driver b { color: var(--text); }
-
 .cs-shot-rows { display: grid; gap: .35rem; }
 .cs-shot-row { display: flex; align-items: center; justify-content: space-between; gap: .7rem;
-  padding: .45rem .65rem; border-radius: 8px; background: var(--card2);
-  border: 1px solid transparent; }
+  padding: .45rem .65rem; border-radius: 8px; background: var(--card2); border: 1px solid transparent; }
 /* O constrangimento que MANDA fica marcado: é a resposta à pergunta. */
 .cs-shot-row.on { border-color: rgba(var(--accent-rgb), .45); background: var(--accent-soft); }
 .cs-shot-k { display: flex; flex-direction: column; gap: .1rem; font-size: .78rem; color: var(--text); }
@@ -131,35 +299,97 @@
 .cs-shot-v { flex: none; font-family: var(--font-mono, monospace); font-size: .88rem; font-weight: 700;
   color: var(--text); font-variant-numeric: tabular-nums; }
 .cs-shot-row.on .cs-shot-v { color: var(--accent-txt); }
-
 .cs-shot-ctx, .cs-shot-next { margin: .6rem 0 0; font-size: .76rem; line-height: 1.55; color: var(--muted); }
 .cs-shot-ctx b { color: var(--text2); }
 
-/* ── grelha dos esquemas de luz ────────────────────────────────────── */
-.cs-lgrid { display: grid; gap: .7rem; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); }
-.cs-lcell { margin: 0; padding: .6rem .65rem .7rem; border-radius: var(--radius);
-  background: var(--card2); border: 1px solid var(--border); }
+/* ══ ESQUEMAS DE LUZ DE RETRATO ═══════════════════════════════════════ */
+.cs-lgrid { display: grid; gap: .6rem; grid-template-columns: 1fr; }
+.cs-lcell { margin: 0; padding: .55rem .6rem .6rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); }
 .cs-lcell.star { border-color: rgba(245, 183, 74, .38); }
-.cs-lcell-h { display: flex; align-items: center; gap: .35rem; margin: 0 0 .45rem;
+.cs-lcell-h { display: flex; align-items: baseline; gap: .35rem; margin: 0 0 .4rem;
   font-family: var(--font-head); font-size: .8rem; font-weight: 700; color: var(--text); }
+.cs-lcell-h small { font-size: .68rem; font-weight: 400; color: var(--muted); }
 .cs-star { color: #f5b74a; font-size: .8rem; }
-
 /* A planta é ~quadrada e o rosto é 4:5 — sem `center` a planta encostava ao
    topo e sobrava um buraco por baixo dela em todas as células. */
-.cs-lpair { display: grid; grid-template-columns: 1.05fr .95fr; gap: .4rem;
-  align-items: center; margin: 0 0 .55rem; }
+.cs-lpair { display: grid; grid-template-columns: 1.05fr .95fr; gap: .35rem;
+  align-items: center; margin: 0 0 .45rem; }
 .cs-lart svg, .cs-lart .plt-photo { width: 100%; height: auto; display: block; border-radius: 8px; }
 .cs-lart .plt-photo { aspect-ratio: 7 / 9; object-fit: cover; }
-
-.cs-lbody { display: grid; gap: .28rem; }
-.cs-lkit { margin: 0 0 .1rem; font-size: .71rem; color: var(--muted); }
-.cs-lrow { margin: 0; font-size: .74rem; line-height: 1.5; color: var(--text2); }
+/* O texto de cada esquema é de consulta: o que se reconhece e o que se
+   monta. O resto (porquê, cuidados) fica num <details> para a grelha se
+   poder ler de relance. */
+.cs-lrow { margin: 0 0 .2rem; font-size: .74rem; line-height: 1.45; color: var(--text2); }
 .cs-lrow b { color: var(--text); }
-.cs-lwatch { color: var(--muted); }
+.cs-lmore { margin: .3rem 0 0; }
+.cs-lmore summary { cursor: pointer; font-size: .71rem; color: var(--muted); }
+.cs-lmore summary::marker { color: var(--muted); }
+.cs-lmore p { margin: .3rem 0 0; font-size: .73rem; line-height: 1.45; color: var(--muted); }
+.cs-lkit { margin: .3rem 0 0; font-size: .7rem; color: var(--muted); }
+
+/* A frase de intenção sozinha deixava uma faixa de 1160×40 vazia. A
+   fotografia do género ocupa-a e faz o trabalho que o texto não faz:
+   dizer com que se parece o resultado. */
+.cs-ghead { display: grid; gap: .6rem; grid-template-columns: 1fr; margin: 0 0 .8rem;
+  scroll-margin-top: calc(var(--hdr-h) + var(--cs-navh, 3rem) + 3.4rem); }
+/* 38% e nao o centro: nestas fotografias o assunto (rosto, horizonte) vive
+   no terco superior e um `cover` centrado decapitava-o no telemovel. */
+.cs-ghero { display: block; width: 100%; height: 132px; object-fit: cover; object-position: 50% 38%;
+  border-radius: var(--radius); border: 1px solid var(--border); }
+.cs-ghead-txt { display: grid; gap: .5rem; align-content: center; }
+.cs-answer-flat, .cs-rule-flat { margin: 0; }
+/* Em flex (e nao grid) a altura da faixa e dada pelo TEXTO e a fotografia
+   estica-se para a acompanhar. Em grid, `height:100%` numa imagem cai para
+   `auto` e era a fotografia a mandar: 300px de largura davam 200px de
+   altura e sobrava um buraco ao lado do texto. */
+@media (min-width: 820px) {
+  .cs-ghead { display: flex; align-items: stretch; }
+  .cs-ghero { flex: 0 0 300px; width: 300px; height: auto; min-height: 108px; align-self: stretch; }
+  .cs-ghead-txt { flex: 1 1 auto; min-width: 0; }
+}
+
+/* ══ CARTÃO DE GÉNERO ═════════════════════════════════════════════════ */
+.cs-gcols { display: grid; gap: .6rem; grid-template-columns: 1fr; align-items: start; }
+.cs-gcol { padding: .75rem .85rem; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--border); }
+.cs-gcol-warn { border-color: rgba(248, 113, 113, .3); }
+.cs-kvgrid { display: grid; gap: .3rem; }
+.cs-kv { display: flex; justify-content: space-between; gap: .6rem; font-size: .77rem;
+  padding: .25rem .45rem; border-radius: 6px; background: var(--card2); }
+.cs-kv-k { color: var(--muted); }
+.cs-kv-v { color: var(--text); font-weight: 600; text-align: right; }
+
+/* ══ ECRÃS LARGOS ═════════════════════════════════════════════════════
+   Só aqui é que as tiras deixam de se arrastar e passam a ver-se de uma
+   vez. Abaixo disto, arrastar é melhor do que espremer cinco células. */
+@media (min-width: 700px) {
+  .cc-track { grid-auto-columns: 1fr; overflow-x: visible; scroll-snap-type: none; }
+  .cc-strip[data-cells="2"] .cc-track { grid-template-columns: repeat(2, 1fr); grid-auto-flow: row; }
+  .cc-strip[data-cells="3"] .cc-track { grid-template-columns: repeat(3, 1fr); grid-auto-flow: row; }
+  .cc-strip[data-cells="4"] .cc-track { grid-template-columns: repeat(4, 1fr); grid-auto-flow: row; }
+  .cc-strip[data-cells="5"] .cc-track { grid-template-columns: repeat(5, 1fr); grid-auto-flow: row; }
+  .cc-strip[data-cells="6"] .cc-track { grid-template-columns: repeat(6, 1fr); grid-auto-flow: row; }
+  .cc-strip[data-cells="7"] .cc-track { grid-template-columns: repeat(7, 1fr); grid-auto-flow: row; }
+  .cc-gitems { grid-template-columns: repeat(2, 1fr); }
+  .cc-grid[data-cols="1"] .cc-gitems { grid-template-columns: 1fr; }
+  .cc-grid[data-cols="3"] .cc-gitems { grid-template-columns: repeat(3, 1fr); }
+  .cs-gcols { grid-template-columns: 1fr 1fr; }
+  .cs-gcol { padding: .65rem .75rem; }
+  .cs-lgrid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .cc-grid[data-cols="0"] .cc-gitems { grid-template-columns: repeat(3, 1fr); }
+  /* As quatro colunas do cartão de bolso cabem numa linha: a página de um
+     género passa a abrir com definições, cena, composição e erros TODOS
+     visíveis, que é o que "consulta rápida" quer dizer. */
+  .cs-gcols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 
 @media (max-width: 560px) {
-  .cs-shot-val { font-size: 1.75rem; }
+  .cs-shot-val { font-size: 1.7rem; }
   .cs-head-t { font-size: 1.05rem; }
-  .cs-block { padding: .8rem .75rem; }
-  .cs-lgrid { grid-template-columns: 1fr; }
+  .cc-vs-pair { grid-template-columns: 1fr; }
+  /* Numa tira de duas células não vale a pena arrastar: cabem lado a lado. */
+  .cc-strip[data-cells="2"] .cc-track { grid-auto-columns: 1fr; grid-template-columns: repeat(2, 1fr); grid-auto-flow: row; overflow-x: visible; }
 }

@@ -401,7 +401,7 @@ const PhotographyPage = (function () {
 
   // ── Composition Guides ────────────────────────────────────────────
   const COMPOSITIONS = [
-    { name:'Regra dos Terços', desc:'Divide o enquadramento em 9 partes iguais com 2 linhas horizontais e 2 verticais. Os 4 pontos de cruzamento são os pontos focais ideais — o olho humano navega naturalmente por eles, tornando a imagem mais dinâmica e equilibrada do que colocar o sujeito ao centro.',
+    { name:'Regra dos Terços', anchor:[1/3,1/3], short:'Assunto num dos quatro cruzamentos, nunca ao centro.', desc:'Divide o enquadramento em 9 partes iguais com 2 linhas horizontais e 2 verticais. Os 4 pontos de cruzamento são os pontos focais ideais — o olho humano navega naturalmente por eles, tornando a imagem mais dinâmica e equilibrada do que colocar o sujeito ao centro.',
       tips:'Horizontes: coloca na linha 1/3 superior (céu dramático) ou inferior (terra/água em destaque). Rostos: olho mais próximo no cruzamento superior. Sujeitos em movimento: posiciona-os no terço oposto à direção do movimento — dá espaço de respiração.',
       examples:'Fotografia de paisagem (horizonte a 1/3), retratos (olhos no cruzamento superior), fotografia de street (sujeito no terço lateral).',
       draw(ctx,W,H){
@@ -410,14 +410,22 @@ const PhotographyPage = (function () {
           ctx.beginPath();ctx.moveTo(W*f,0);ctx.lineTo(W*f,H);ctx.stroke();
           ctx.beginPath();ctx.moveTo(0,H*f);ctx.lineTo(W,H*f);ctx.stroke();
         });
+        // O cruzamento ONDE O ASSUNTO ESTA fica cheio; os outros ficam vazios.
+        // Quatro pontos iguais nao dizem qual e que a fotografia usou.
+        /* Os quatro pontos sao IGUAIS: um deles maior lia-se como defeito, nao
+           como destaque. Quem indica onde o assunto esta e um anel solto por
+           cima do cruzamento usado. */
+        const a=(this.anchor||[1/3,1/3]);
         [1/3,2/3].forEach(x=>[1/3,2/3].forEach(y=>{
-          ctx.beginPath();ctx.arc(W*x,H*y,6,0,2*Math.PI);
-          ctx.fillStyle='rgba(99,102,241,.75)';ctx.fill();
-          ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;ctx.stroke();
-          ctx.strokeStyle='rgba(99,102,241,.55)';ctx.lineWidth=1;
+          ctx.beginPath();ctx.arc(W*x,H*y,4.5,0,2*Math.PI);
+          ctx.fillStyle='rgba(99,102,241,.7)';ctx.fill();
+          ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.4;ctx.stroke();
         }));
+        ctx.strokeStyle='rgba(99,102,241,.95)';ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(W*a[0],H*a[1],13,0,2*Math.PI);ctx.stroke();
+        ctx.strokeStyle='rgba(99,102,241,.55)';ctx.lineWidth=1;
       }},
-    { name:'Proporção Áurea (Phi)', desc:'Proporção 1:1.618 (número phi) — ligeiramente diferente dos terços mas considerada a mais harmoniosa pela natureza. As linhas divisórias criam a mesma proporção entre os segmentos que se encontra em conchas, galáxias e flores. Os 4 pontos de cruzamento são mais precisos e naturais que os dos terços.',
+    { name:'Proporção Áurea (Phi)', anchor:[0.618,0.618], short:'Como os terços, com as linhas mais chegadas ao centro.', desc:'Proporção 1:1.618 (número phi) — ligeiramente diferente dos terços mas considerada a mais harmoniosa pela natureza. As linhas divisórias criam a mesma proporção entre os segmentos que se encontra em conchas, galáxias e flores. Os 4 pontos de cruzamento são mais precisos e naturais que os dos terços.',
       tips:'Mais subtil e elegante que os terços. Ideal para retratos formais, fotografia de produto e composições arquitetónicas. A divisão phi não está a 1/3 (33.3%) mas a 38.2% e 61.8% do lado — note a diferença subtil mas importante.',
       examples:'Retratos clássicos (estilo Rembrandt, Caravaggio), fotografia de produto de luxo, arquitetura com proporções geométricas.',
       draw(ctx,W,H){
@@ -425,11 +433,15 @@ const PhotographyPage = (function () {
         ctx.strokeStyle='rgba(245,158,11,.55)';ctx.lineWidth=1;
         [gx,W-gx].forEach(x=>{ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();});
         [gy,H-gy].forEach(y=>{ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();});
+        const a=this.anchor||[1-1/phi,1/phi];
         [gx,W-gx].forEach(x=>[gy,H-gy].forEach(y=>{
-          ctx.beginPath();ctx.arc(x,y,5,0,2*Math.PI);ctx.fillStyle='rgba(245,158,11,.8)';ctx.fill();
+          const on=Math.abs(x-W*a[0])<2&&Math.abs(y-H*a[1])<2;
+          ctx.beginPath();ctx.arc(x,y,on?7:4,0,2*Math.PI);
+          ctx.fillStyle=on?'rgba(245,158,11,.9)':'rgba(245,158,11,.25)';ctx.fill();
+          if(on){ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1.5;ctx.stroke();}
         }));
       }},
-    { name:'Espiral Dourada', focal:[0.47,0.76], desc:'Espiral logarítmica baseada na proporção áurea — o olhar segue naturalmente a curva até ao ponto focal no centro. O raio cresce por um fator de φ=1.618 a cada 90°. É a mesma proporção que se encontra em conchas de nautilus, galáxias espirais e em obras de Da Vinci.',
+    { name:'Espiral Dourada', traced:1, short:'A curva da própria cena leva o olho até ao assunto.', focal:[0.49,0.66], desc:'Espiral logarítmica baseada na proporção áurea — o olhar segue naturalmente a curva até ao ponto focal no centro. O raio cresce por um fator de φ=1.618 a cada 90°. É a mesma proporção que se encontra em conchas de nautilus, galáxias espirais e em obras de Da Vinci.',
       tips:'Roda o enquadramento (ou o telemóvel/câmara) para que o elemento principal coincida com o centro apertado da espiral. O movimento da curva deve guiar o olhar. Funciona melhor quando há uma linha natural em curva (estrada, rio, braço, silhueta).',
       examples:'Retratos de beleza (rosto no centro da espiral), paisagens com rios sinuosos, macro de flores, composições arquitetónicas com escadas em espiral.',
       draw(ctx,W,H){
@@ -448,13 +460,20 @@ const PhotographyPage = (function () {
         // At t=5π/2 (down): r*1 ≤ H-cy
         // At t=2π (right): r*1 ≤ W-cx
         // At t=3π/2 (up): r*1 ≤ cy
-        const tMax=Math.PI*3;
+        /* Duas voltas e meia e nao tres: com tres, a condicao de caber tudo
+           dentro da moldura obrigava o raio inicial a ser tao pequeno que a
+           espiral ficava do tamanho de uma moeda no meio de uma escadaria que
+           ocupa a imagem toda — desenhava a regra, nao a fotografia. Com duas
+           voltas e meia (e a ultima a poder sair pela margem, como acontece em
+           qualquer sobreposicao de espiral aurea) a curva acompanha mesmo a
+           escadaria. */
+        const tMax=Math.PI*2.5;
         const r0=Math.min(
           (W-cx) / Math.exp(b*Math.PI*2),
-          (H-cy) / Math.exp(b*Math.PI*5/2),
-          cx      / Math.exp(b*Math.PI*3),
+          (H-cy) * 2.4 / Math.exp(b*Math.PI*5/2),
+          cx      / Math.exp(b*Math.PI),
           cy      / Math.exp(b*Math.PI*3/2)
-        )*0.88;
+        )*0.95;
         // Draw spiral from center outward
         ctx.strokeStyle='rgba(245,158,11,.9)';ctx.lineWidth=2;ctx.beginPath();
         for(let i=0;i<=800;i++){
@@ -468,23 +487,32 @@ const PhotographyPage = (function () {
         ctx.fillStyle='rgba(245,158,11,.9)';ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();
         ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;ctx.stroke();
       }},
-    { name:'Diagonal Principal', desc:'Elementos ao longo da diagonal criam tensão, energia e movimento — muito mais dinâmicos que horizontais ou verticais.',
+    { name:'Diagonal Principal', traced:1, short:'Uma linha inclinada dá movimento onde a horizontal dá calma.', desc:'Elementos ao longo da diagonal criam tensão, energia e movimento — muito mais dinâmicos que horizontais ou verticais.',
       tips:'Diagonal ↗: lida como movimento natural no sentido de leitura. Diagonal ↙: tensão e drama. Estradas, rios, sombras e braços funcionam bem.',
       examples:'Estradas e sombras em diagonal, escadarias, braços e olhares em retrato, arquitetura moderna.',
+      /* A diagonal desta fotografia e a guarda da estrada: entra a 0.62 da
+         altura, a esquerda, e sobe ate 0.28 a direita. A diagonal exacta do
+         rectangulo (canto a canto) passava a 20% de distancia dela. */
+      line:[[0,0.58],[1,0.27]],
       draw(ctx,W,H){
-        ctx.strokeStyle='rgba(34,197,94,.7)';ctx.lineWidth=2;
-        ctx.beginPath();ctx.moveTo(0,H);ctx.lineTo(W,0);ctx.stroke();
-        ctx.strokeStyle='rgba(34,197,94,.2)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(W,0);ctx.lineTo(0,H);ctx.stroke();
-        ctx.fillStyle='rgba(34,197,94,.06)';
-        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+        const L=this.line||[[0,1],[1,0]];
+        const x1=W*L[0][0],y1=H*L[0][1],x2=W*L[1][0],y2=H*L[1][1];
+        ctx.strokeStyle='rgba(34,197,94,.22)';ctx.lineWidth=14;
+        ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+        ctx.strokeStyle='rgba(34,197,94,.85)';ctx.lineWidth=2.5;
+        ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+        // horizontal de referencia: e contra ela que a diagonal ganha energia
+        ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+        ctx.beginPath();ctx.moveTo(0,(y1+y2)/2);ctx.lineTo(W,(y1+y2)/2);ctx.stroke();ctx.setLineDash([]);
       }},
-    { name:'Linhas Convergentes', desc:'Linhas que convergem num ponto de fuga criam profundidade, escala e perspetiva muito fortes. O olhar é irresistivelmente atraído.',
+    { name:'Linhas Convergentes', traced:1, short:'Tudo aponta para o mesmo ponto de fuga.', desc:'Linhas que convergem num ponto de fuga criam profundidade, escala e perspetiva muito fortes. O olhar é irresistivelmente atraído.',
       tips:'Estradas, carris, corredores, árvores em linha. O sujeito fica no ou perto do ponto de convergência. O ponto de fuga pode estar fora do enquadramento.',
       examples:'Carris e pontes, corredores e túneis, avenidas arborizadas, pontões a entrar no mar.',
+      /* Ponto de fuga MEDIDO: e a porta iluminada ao fundo da arcada. */
+      vp:[0.505,0.555],
       draw(ctx,W,H){
-        const vx=W/2,vy=H*0.38;
-        ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1;
+        const v=this.vp||[0.5,0.38];const vx=W*v[0],vy=H*v[1];
+        ctx.strokeStyle='rgba(99,102,241,.6)';ctx.lineWidth=1.4;
         [[0,H],[W*0.22,H],[W*0.44,H],[W*0.56,H],[W*0.78,H],[W,H],[0,H*0.7],[W,H*0.7]].forEach(([px,py])=>{
           ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(vx,vy);ctx.stroke();
         });
@@ -493,61 +521,87 @@ const PhotographyPage = (function () {
         ctx.strokeStyle='rgba(99,102,241,.2)';ctx.lineWidth=0.8;ctx.setLineDash([4,4]);
         ctx.beginPath();ctx.moveTo(0,vy);ctx.lineTo(W,vy);ctx.stroke();ctx.setLineDash([]);
       }},
-    { name:'Simetria & Reflexo', desc:'Simetria perfeita cria equilíbrio e harmonia. Reflexos em água duplicam o sujeito. Quebrar a simetria com um elemento cria interesse.',
+    { name:'Simetria & Reflexo', traced:1, short:'Eixo exato — ou é rigorosa, ou lê-se como descuido.', desc:'Simetria perfeita cria equilíbrio e harmonia. Reflexos em água duplicam o sujeito. Quebrar a simetria com um elemento cria interesse.',
       tips:'Superfícies de água, espelhos, janelas. Assimetria deliberada (60/40) é mais interessante que perfeição (50/50). Inclina ligeiramente para dinamismo.',
       examples:'Reflexos em lagos e poças, fachadas e claustros, interiores de igrejas, retratos frontais centrados.',
+      /* Um eixo, o que a fotografia tem: aqui e a linha de agua, a 0.575 da
+         altura. Desenhar tambem um eixo vertical num reflexo horizontal
+         dizia que havia uma simetria que a imagem nao tem. */
+      axis:['h',0.575],
       draw(ctx,W,H){
-        ctx.strokeStyle='rgba(239,68,68,.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
-        ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();ctx.setLineDash([]);
-        ctx.fillStyle='rgba(239,68,68,.04)';
-        ctx.fillRect(0,0,W/2,H/2);ctx.fillRect(W/2,H/2,W/2,H/2);
+        const ax=this.axis||['h',0.5];
+        ctx.strokeStyle='rgba(239,68,68,.75)';ctx.lineWidth=2;ctx.setLineDash([7,5]);
+        ctx.beginPath();
+        if(ax[0]==='h'){ctx.moveTo(0,H*ax[1]);ctx.lineTo(W,H*ax[1]);}
+        else{ctx.moveTo(W*ax[1],0);ctx.lineTo(W*ax[1],H);}
+        ctx.stroke();ctx.setLineDash([]);
+        ctx.fillStyle='rgba(239,68,68,.07)';
+        if(ax[0]==='h') ctx.fillRect(0,H*ax[1],W,H-H*ax[1]);
+        else ctx.fillRect(W*ax[1],0,W-W*ax[1],H);
       }},
-    { name:'Enquadramento Natural', desc:'Elementos da cena (arcos, janelas, ramos, portas) funcionam como moldura, dirigindo o olhar ao sujeito e dando contexto e profundidade.',
+    { name:'Enquadramento Natural', traced:1, short:'Algo na cena faz de moldura e fecha as bordas.', desc:'Elementos da cena (arcos, janelas, ramos, portas) funcionam como moldura, dirigindo o olhar ao sujeito e dando contexto e profundidade.',
       tips:'Procura arcos, portas, túneis, copas de árvores. Foca no sujeito dentro da moldura — o enquadramento pode estar desfocado. Dá camadas à imagem.',
       examples:'Portas e arcos, janelas, ramos de árvores em primeiro plano, túneis e pontes a emoldurar o sujeito.',
+      /* A abertura do arco desta fotografia (medida) e o caminhante que ela
+         emoldura. A moldura estava centrada no rectangulo e nao no arco. */
+      hole:[0.356,0.125,0.70,0.93], subj:[0.53,0.74],
       draw(ctx,W,H){
-        const m=W*0.16,mt=H*0.14;
-        ctx.strokeStyle='rgba(34,197,94,.55)';ctx.lineWidth=2;
-        ctx.strokeRect(m,mt,W-m*2,H-mt*2);
-        ctx.strokeStyle='rgba(34,197,94,.35)';ctx.lineWidth=1.5;
-        [[0,0,m,mt],[W,0,W-m,mt],[0,H,m,H-mt],[W,H,W-m,H-mt]].forEach(([x1,y1,x2,y2])=>{
-          ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-        });
-        ctx.fillStyle='rgba(34,197,94,.12)';ctx.fillRect(m,mt,W-m*2,H-mt*2);
-        ctx.fillStyle='rgba(34,197,94,.3)';ctx.beginPath();ctx.arc(W/2,H/2,W*0.09,0,Math.PI*2);ctx.fill();
+        const k=this.hole||[0.2,0.15,0.8,0.9], s2=this.subj||[0.5,0.6];
+        const x=W*k[0],y=H*k[1],w2=W*(k[2]-k[0]),h2=H*(k[3]-k[1]);
+        // escurece TUDO menos a abertura: e o que a moldura faz ao olhar
+        ctx.fillStyle='rgba(4,10,20,.4)';
+        ctx.fillRect(0,0,x,H); ctx.fillRect(x+w2,0,W-x-w2,H);
+        ctx.fillRect(x,0,w2,y); ctx.fillRect(x,y+h2,w2,H-y-h2);
+        ctx.strokeStyle='rgba(34,197,94,.8)';ctx.lineWidth=2;ctx.strokeRect(x,y,w2,h2);
+        ctx.strokeStyle='rgba(34,197,94,.85)';ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(W*s2[0],H*s2[1],Math.min(W,H)*0.055,0,Math.PI*2);ctx.stroke();
       }},
-    { name:'Espaço Negativo', desc:'Espaço vazio intencional em torno do sujeito. O vazio define o sujeito, cria respiração visual e reforça emoção (solidão, imensidão).',
+    { name:'Espaço Negativo', traced:1, short:'Muito vazio à volta de pouco assunto.', desc:'Espaço vazio intencional em torno do sujeito. O vazio define o sujeito, cria respiração visual e reforça emoção (solidão, imensidão).',
       tips:'Quanto mais pequeno o sujeito no espaço, maior a sensação de vastidão. Deixa espaço à frente do sujeito (espaço de movimento). Fundos limpos são essenciais.',
       examples:'Silhueta contra o céu, barco num mar calmo, minimalismo com nevoeiro, retrato contra parede lisa.',
+      /* O "vazio" era um rectangulo fixo que CONTINHA o sujeito — dizia
+         exactamente o contrario da licao. Agora o vazio e tudo menos um disco
+         a volta da figura, medida na fotografia. */
+      subj:[0.35,0.66],
       draw(ctx,W,H){
-        ctx.fillStyle='rgba(99,102,241,.06)';ctx.fillRect(W*0.42,H*0.08,W*0.54,H*0.84);
-        ctx.strokeStyle='rgba(99,102,241,.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
-        ctx.strokeRect(W*0.42,H*0.08,W*0.54,H*0.84);ctx.setLineDash([]);
-        
-        ctx.strokeStyle='rgba(99,102,241,.65)';ctx.lineWidth=1.5;ctx.stroke();
-        ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(W*0.64,H/2);ctx.lineTo(W*0.28,H/2);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(W*0.32,H/2-6);ctx.lineTo(W*0.26,H/2);ctx.lineTo(W*0.32,H/2+6);ctx.stroke();
+        const s2=this.subj||[0.5,0.6], r=Math.min(W,H)*0.13;
+        ctx.save();
+        ctx.fillStyle='rgba(99,102,241,.13)';
+        ctx.beginPath();ctx.rect(0,0,W,H);
+        ctx.arc(W*s2[0],H*s2[1],r,0,Math.PI*2,true);
+        ctx.fill('evenodd');
+        ctx.restore();
+        ctx.strokeStyle='rgba(99,102,241,.8)';ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(W*s2[0],H*s2[1],r,0,Math.PI*2);ctx.stroke();
       }},
-    { name:'Curva em S', desc:'Linhas sinuosas em forma de S (ou C) guiam o olhar suavemente pelo enquadramento, criando fluidez, elegância e profundidade.',
+    { name:'Curva em S', traced:1, short:'O olho percorre a cena a passear, não a correr.', desc:'Linhas sinuosas em forma de S (ou C) guiam o olhar suavemente pelo enquadramento, criando fluidez, elegância e profundidade.',
       tips:'Estradas sinuosas, rios, caminhos, postura do corpo, praias. A curva S divide o espaço e dá profundidade — especialmente eficaz em paisagens.',
       examples:'Estradas de montanha, rios e ribeiras, linha de costa, dunas, caminhos pedonais em jardins.',
+      /* O S DESTA fotografia: o rio entra a 0.53 em baixo, faz bojo a direita
+         a meia altura e sai a 0.37 ao fundo do vale. O S generico de canto a
+         canto que estava aqui nao passava por cima da agua em lado nenhum. */
+      path:[[0.51,1.00],[0.51,0.72,0.575,0.57,0.615,0.50],[0.645,0.44,0.60,0.36,0.52,0.30],[0.46,0.25,0.40,0.20,0.365,0.16]],
       draw(ctx,W,H){
-        ctx.strokeStyle='rgba(168,85,247,.15)';ctx.lineWidth=12;
-        ctx.beginPath();ctx.moveTo(W*0.2,H);ctx.bezierCurveTo(W*0.2,H*0.6,W*0.8,H*0.4,W*0.8,0);ctx.stroke();
-        ctx.strokeStyle='rgba(168,85,247,.8)';ctx.lineWidth=2.5;
-        ctx.beginPath();ctx.moveTo(W*0.2,H);ctx.bezierCurveTo(W*0.2,H*0.6,W*0.8,H*0.4,W*0.8,0);ctx.stroke();
-        ctx.fillStyle='rgba(168,85,247,.6)';
-        [[W*0.22,H*0.85],[W*0.35,H*0.65],[W*0.5,H*0.5],[W*0.65,H*0.35],[W*0.78,H*0.15]].forEach(([x,y])=>{
-          ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+        const P=this.path;
+        const trace=()=>{ctx.beginPath();ctx.moveTo(W*P[0][0],H*P[0][1]);
+          for(let i=1;i<P.length;i++){const c=P[i];
+            ctx.bezierCurveTo(W*c[0],H*c[1],W*c[2],H*c[3],W*c[4],H*c[5]);}};
+        ctx.strokeStyle='rgba(168,85,247,.18)';ctx.lineWidth=14;trace();ctx.stroke();
+        ctx.strokeStyle='rgba(168,85,247,.9)';ctx.lineWidth=2.5;trace();ctx.stroke();
+        ctx.fillStyle='rgba(168,85,247,.75)';
+        [[0.51,0.97],[0.55,0.75],[0.615,0.50],[0.56,0.35],[0.40,0.20]].forEach(([x,y])=>{
+          ctx.beginPath();ctx.arc(W*x,H*y,3.4,0,Math.PI*2);ctx.fill();
         });
       }},
-    { name:'Composição em Triângulo', desc:'Três pontos ou elementos formam um triângulo visual — estável, equilibrado e harmonioso. Guia o olhar em ciclo pelos três vértices.',
+    { name:'Composição em Triângulo', traced:1, short:'Três pontos que se sustentam entre si.', desc:'Três pontos ou elementos formam um triângulo visual — estável, equilibrado e harmonioso. Guia o olhar em ciclo pelos três vértices.',
       tips:'Não precisa ser explícito: três objetos, olhares ou linhas imaginárias formam o triângulo. Triângulo invertido cria instabilidade intencional e tensão.',
       examples:'Retratos de grupo (3 pessoas), montanhas, pose com braços na anca, still life com três objetos.',
+      /* Os TRES objectos desta natureza-morta, medidos: espigas no alto do
+         jarro, taca de barro a esquerda, taca branca a direita. O triangulo
+         generico (centro-baixo-esquerda-baixo-direita) caia no vazio. */
+      pts:[[0.59,0.10],[0.24,0.70],[0.78,0.76]],
       draw(ctx,W,H){
-        const pts=[[W/2,H*0.12],[W*0.82,H*0.82],[W*0.18,H*0.82]];
+        const pts=(this.pts||[[0.5,0.12],[0.82,0.82],[0.18,0.82]]).map(([x,y])=>[W*x,H*y]);
         ctx.strokeStyle='rgba(251,146,60,.65)';ctx.lineWidth=1.5;
         ctx.beginPath();ctx.moveTo(...pts[0]);ctx.lineTo(...pts[1]);ctx.lineTo(...pts[2]);ctx.closePath();ctx.stroke();
         ctx.fillStyle='rgba(251,146,60,.06)';ctx.fill();
@@ -605,12 +659,12 @@ const PhotographyPage = (function () {
   const COMP_WHY = {
     'comp-thirds': { ok: 'Farol num ponto forte e horizonte na linha de cima: o olho percorre o enquadramento.', bad: 'Mesma cena, farol ao centro e horizonte ao meio — o enquadramento fica simétrico e parado.' },
     'comp-golden': { ok: 'A figura cai na divisão áurea, um pouco mais fora do centro do que nos terços.', bad: 'Mesma cena com a figura ao centro: o equilíbrio passa a ser simétrico em vez de proporcional.' },
-    'comp-spiral': { ok: 'A curva da areia aperta e entrega o olhar ao barco, no fim do percurso.', bad: 'Mesma enseada, mas o barco está fora do caminho que a curva desenha — a espiral chega a areia vazia.' },
+    'comp-spiral': { ok: 'De cima, os degraus apertam volta após volta e entregam o olhar à luz no centro.', bad: 'A mesma escadaria vista de baixo: a curva achata-se em corrimãos sobrepostos e o centro sai do enquadramento.' },
     'comp-diagonal': { ok: 'A estrada atravessa o enquadramento na diagonal e leva o olho com ela.', bad: 'Mesmo carro e mesma estrada vistos de lado: a linha fica horizontal e a cena perde direção.' },
-    'comp-converging': { ok: 'Visto pelo eixo, as duas filas de arcos fecham num ponto de fuga e criam profundidade.', bad: 'A mesma arcada com o ponto de fuga fora do enquadramento: as linhas continuam lá e deixam de levar a algum sítio.' },
+    'comp-converging': { ok: 'Visto pelo eixo, as duas filas de arcos fecham num ponto de fuga e criam profundidade.', bad: 'A mesma parede de arcos fotografada de frente: todas as linhas ficam paralelas às margens, não há ponto de fuga nenhum e a imagem perde a profundidade.' },
     'comp-symmetry': { ok: 'Horizonte no eixo e reflexo inteiro: a simetria é a decisão da fotografia.', bad: 'Mesma montanha com o horizonte alto e o reflexo partido pelo vento — a simetria deixa de existir.' },
     'comp-framing': { ok: 'O arco escuro rodeia o vale e aponta ao caminhante.', bad: 'Mesmo vale e mesmo caminhante sem nada em primeiro plano — a cena fica aberta e plana.' },
-    'comp-negative': { ok: 'Muito vazio à volta de uma figura pequena: o espaço dá escala e isolamento.', bad: 'Mesma fotografia fechada sobre a figura — o vazio desaparece e com ele a sensação de escala.' },
+    'comp-negative': { ok: 'Muito vazio à volta de uma figura pequena: o espaço dá escala e isolamento.', bad: 'A mesma figura num enquadramento cheio de ponta a ponta: sem vazio nenhum à volta, deixa de haver escala e de se saber para onde olhar.' },
     'comp-scurve': { ok: 'O rio desenha um S e conduz o olhar de baixo até ao fundo do vale.', bad: 'Mesmo tipo de vale com o curso de água a direito: o olhar atravessa sem percurso.' },
     'comp-triangle': { ok: 'Três alturas diferentes: os topos fecham um triângulo estável.', bad: 'Os mesmos três rochedos alinhados e à mesma altura — ficam uma fila, não um triângulo.' },
   };
@@ -620,7 +674,13 @@ const PhotographyPage = (function () {
     const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
     if (opts.bg) { ctx.fillStyle = document.body.classList.contains('light') ? '#dbe3ef' : '#0b1020'; ctx.fillRect(0, 0, W, H); }
-    ctx.save(); comp.draw(ctx, W, H); ctx.restore();
+    ctx.save();
+    /* Halo escuro por baixo de cada traço. Sem ele, uma linha âmbar de 1px
+       sobre areia clara ou céu queimado é invisível — e uma marcação que
+       não se vê não é marcação. Uma linha aqui resolve as dez. */
+    ctx.shadowColor = 'rgba(0,0,0,.85)'; ctx.shadowBlur = 4;
+    comp.draw(ctx, W, H);
+    ctx.restore();
   }
 
   /* ══ VISUALIZADOR DE COMPOSIÇÃO ═════════════════════════════════════════
@@ -690,7 +750,13 @@ const PhotographyPage = (function () {
           aTag: '✓ Aplica', bTag: '↔ Não aplica',
           aWhy: why.ok || '', bWhy: why.bad || '',
           label: 'Comparar os dois enquadramentos',
-          extraA: ovHTML(), extraB: ovHTML(),
+          /* As marcacoes que SEGUEM um elemento (a linha da estrada, o rio, o
+             ponto de fuga, o arco, os tres objectos) foram MEDIDAS na
+             fotografia que aplica o principio. Desenha-las por cima da outra
+             fotografia era garantir que caiam ao lado do que existe la — e
+             foi isso que aconteceu com a diagonal. As grelhas (tercos, phi),
+             que nao dependem do conteudo, continuam nas duas. */
+          extraA: ovHTML(), extraB: comp.traced ? '' : ovHTML(),
         })
       : `<div class="pl-frame">
         ${asset ? `<img src="${asset}" alt="" draggable="false">` : '<div class="ph-cv-noimg"></div>'}
@@ -796,7 +862,7 @@ const PhotographyPage = (function () {
             <canvas class="ph-comp-card-cv" width="320" height="219" role="img" aria-label="Marcações da composição sobre o exemplo"></canvas>
           </span>
           <span class="ph-comp-card-name">${comp.name}</span>
-          <span class="ph-comp-card-desc">${comp.desc}</span>`;
+          <span class="ph-comp-card-desc">${comp.short || comp.desc}</span>`;
         grid.appendChild(card);
         requestAnimationFrame(() => { const cv = card.querySelector('canvas'); if (cv) drawCompOverlay(cv, comp, { bg: !asset }); });
         card.addEventListener('click', () => openCompModal(comp));
@@ -1064,10 +1130,30 @@ const PhotographyPage = (function () {
     if (_assets) return Promise.resolve(_assets);
     if (_assetsP) return _assetsP;
     _assetsP = fetch('assets/photo/index.json')
-      .then(r => (r.ok ? r.json() : {})).then(j => (_assets = j || {})).catch(() => (_assets = {}));
+      .then(r => (r.ok ? r.json() : {}))
+      .then(j => { _assets = j || {}; shareSubject(); return _assets; })
+      .catch(() => (_assets = {}));
     return _assetsP;
   }
   function assetPath(id) { return (_assets && _assets[id]) ? 'assets/photo/' + _assets[id] : null; }
+  /* Os motores de ilustração desenham pessoas. Em vez de um boneco
+     vetorial, usam a personagem recortada do portal — é entregue uma vez,
+     assim que os assets existem, para nenhum deles precisar de saber o
+     caminho dos ficheiros. */
+  function shareSubject() {
+    const url = assetPath('crop-standing');
+    if (url) {
+      if (typeof PhotoIllus !== 'undefined' && PhotoIllus.setSubject) PhotoIllus.setSubject(url);
+      if (typeof PhotoCard !== 'undefined' && PhotoCard.setSubject) PhotoCard.setSubject(url);
+    }
+    /* O motor dos padroes de luz compoe a sombra sobre uma fotografia de
+       rosto com luz plana, gerada de proposito para servir de tela. Duas
+       telas: `a` de frente para tudo, `c` de tres-quartos para o par
+       Short/Broad, que so existe se a cabeca estiver virada. */
+    if (typeof PhotoLightArt === 'undefined' || !PhotoLightArt.setFace) return;
+    const fa = assetPath('lb-face-a'); if (fa) PhotoLightArt.setFace(fa, 'a');
+    const fcq = assetPath('lb-face-c'); if (fcq) PhotoLightArt.setFace(fcq, 'c');
+  }
   function wireRetry(panel, again) {
     panel.querySelector('[data-retry]')?.addEventListener('click', again);
   }
@@ -1212,7 +1298,8 @@ const PhotographyPage = (function () {
     // cs:<id>        → cartão
     // cs:g/<genero>  → cartão de um género
     if (kind === 'cs') return Nav.go('photography/cheatsheets' + (arg ? '/' + arg : ''));
-    if (kind === 'agora') return Nav.go('photography/agora' + (arg ? '/' + arg : ''));
+    // rota histórica: agora:<género> → cheatsheet do género
+    if (kind === 'agora') return Nav.go('photography/cheatsheets' + (arg ? '/g/' + arg : ''));
     if (kind === 'comp' && arg) {
       const comp = COMPOSITIONS.find(c => c.name === arg);
       if (comp) return openCompModal(comp);
@@ -1231,8 +1318,8 @@ const PhotographyPage = (function () {
       panel.innerHTML = `
         ${contextBarHTML()}
         <button class="ph-field-cta" id="ph-goto-field">
-          <span class="ph-field-cta-ico">⚡</span>
-          <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Assistente de bolso: lente, definições e erros a evitar — em segundos</small></span>
+          <span class="ph-field-cta-ico">📋</span>
+          <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Cheatsheets: lente, definições e erros a evitar — numa página, a olhar</small></span>
           <span class="ph-field-cta-go">→</span>
         </button>
         <div class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</div>
@@ -1243,7 +1330,7 @@ const PhotographyPage = (function () {
         <div id="ph-genre-grid">${genreGroupsHTML(db.genres)}</div>
         <p class="ph-section-sub ph-genre-empty" id="ph-genre-none" hidden>Nenhum género corresponde à procura.</p>`;
       wireContextBar(panel, () => buildGeneros(panel));
-      panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/agora'));
+      panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/cheatsheets'));
       panel.querySelectorAll('[data-genre]').forEach(c =>
         c.addEventListener('click', () => Nav.go('photography/g/' + c.dataset.genre)));
       wireGenreSearch(panel);
@@ -1321,7 +1408,7 @@ const PhotographyPage = (function () {
   }
   /* ══ PORTAL DE GÉNERO ═══════════════════════════════════════════════════
      Antes era uma página única e muito longa. Agora é um portal com secções
-     navegáveis: no terreno consultas "Erros" ou "A cena" sem percorrer tudo.
+     navegáveis: consultas "Erros" ou "A cena" sem percorrer tudo.
      As secções são as MESMAS em todos os géneros — a previsibilidade é o que
      torna a consulta rápida. */
   const PORTAL_SECS = [
@@ -1336,7 +1423,7 @@ const PhotographyPage = (function () {
     { id: 'edicao',     icon: '✏️', label: 'Edição' },
   ];
   /* Visão é a secção inicial de propósito: a intenção antes das definições.
-     Quem quer só os números tem o "No Terreno" a um toque. */
+     Quem quer só os números tem o cheatsheet do género a um toque. */
   let _portalSec = 'visao';
 
   /* Cartão de equipamento: focal equivalente primeiro (universal), depois a
@@ -1556,8 +1643,14 @@ const PhotographyPage = (function () {
     const visual = (strong && flat)
       ? PhotoLearn.compare({
           fam: 'visao', mode: 'side', a: strong, b: flat,
-          aAlt: 'Exemplo com intenção', bAlt: 'Exemplo tecnicamente correto mas banal',
-          aTag: '✓ Com intenção', bTag: '✗ Correta e banal',
+          aAlt: 'Exemplo com intenção', bAlt: 'Exemplo tecnicamente correto mas sem intenção',
+          /* `neutral` porque as duas fotografias são competentes: marcar a
+             segunda com um ✗ vermelho contradiz a legenda logo abaixo
+             ("nenhuma diferença aqui é técnica") e ensina o observador a
+             ler isto como um erro de execução, que não é. A diferença é
+             de DECISÃO, e os marcadores têm de o dizer. */
+          neutral: true,
+          aTag: 'Com intenção', bTag: 'Sem intenção',
           aWhy: cmp.strong || '', bWhy: cmp.flat || '',
           q: 'Antes de leres: as duas estão bem expostas e focadas. O que é que separa uma da outra?',
           caption: 'Nenhuma diferença aqui é técnica. Todas são decisões.',
@@ -1637,9 +1730,9 @@ const PhotographyPage = (function () {
           ${PORTAL_SECS.map(s => `<button class="ph-secnav-btn${s.id === _portalSec ? ' active' : ''}" role="tab" aria-selected="${s.id === _portalSec}" data-sec="${s.id}">${s.icon} ${s.label}</button>`).join('')}
         </div>
         <div class="ph-secbody" id="ph-secbody">${portalSectionHTML(g, _portalSec)}</div>
-        <button class="ph-field-cta small" data-agora="${g.id}">
-          <span class="ph-field-cta-ico">⚡</span>
-          <span class="ph-field-cta-txt"><b>Modo terreno: ${g.name}</b><small>Só o essencial, para consultar com a câmara na mão</small></span>
+        <button class="ph-field-cta small" data-cscta="${g.id}">
+          <span class="ph-field-cta-ico">📋</span>
+          <span class="ph-field-cta-txt"><b>Cheatsheet: ${g.name}</b><small>Definições, cena e erros numa página — para consultar com a câmara na mão</small></span>
           <span class="ph-field-cta-go">→</span>
         </button>`;
 
@@ -1673,57 +1766,8 @@ const PhotographyPage = (function () {
       }));
       panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
       wireContextBar(panel, () => renderPortal(panel, id));
-      panel.querySelector('[data-agora]').addEventListener('click', () => Nav.go('photography/agora/' + g.id));
+      panel.querySelector('[data-cscta]').addEventListener('click', () => Nav.go('photography/cheatsheets/g/' + g.id));
       window.scrollTo({ top: 0 });
-    });
-  }
-
-  // ── modo No Terreno (assistente de bolso) ──
-  /* Cartão de consulta rápida: o mínimo indispensável com a câmara na mão.
-     Adapta-se à classe de câmara e ao perfil, tal como o portal completo. */
-  function buildAgora(panel, genreId) {
-    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-    loadDB().then(db => {
-      if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildAgora(panel, genreId)); return; }
-      let id = genreId;
-      try { id = id || localStorage.getItem('ph-field-genre'); } catch (_) {}
-      if (!db.genres.some(g => g.id === id)) id = db.genres[0].id;
-      try { localStorage.setItem('ph-field-genre', id); } catch (_) {}
-      const g = db.genres.find(x => x.id === id);
-      const ll = lensLine(g), fa = formatAdvice(g), badge = RAW_BADGE[fa.level] || RAW_BADGE.medium;
-      const firstLight = g.light.split(/(?<=\.)\s/)[0] || g.light;
-      const s = g.scene || {};
-      panel.innerHTML = `
-        <div class="ph-field-pills" role="tablist" aria-label="Género">
-          ${db.genres.map(x => `<button class="ph-field-pill${x.id === id ? ' active' : ''}" data-fg="${x.id}" role="tab" aria-selected="${x.id === id}">${x.icon} ${x.name}</button>`).join('')}
-        </div>
-        ${contextBarHTML()}
-        <div class="ph-field-card">
-          <div class="ph-field-top">
-            <div class="ph-field-title">${g.icon} ${g.name}</div>
-            <span class="ph-fmt-badge ${badge.c}" title="Quanto o RAW compensa em ${g.name}">${badge.t}</span>
-          </div>
-          ${(visionOf(g) || {}).lead ? `<div class="ph-field-intent">🧠 ${visionOf(g).lead}</div>` : ''}
-          <div class="ph-field-lens">${ll.concrete}</div>
-          <div class="ph-field-mode">${ll.name} · ${ll.eq}</div>
-          ${(profileDef() || {}).format ? `<div class="ph-field-fmt">${profileDef().icon} Disparar em <b>${profileDef().format}</b></div>` : ''}
-          <div class="ph-kv-grid ph-field-kv">${(g.gear.settings || []).map(kvHTML).join('')}</div>
-          ${s.height ? `<div class="ph-field-row">📏 <b>Altura:</b> ${s.height}</div>` : ''}
-          ${s.position ? `<div class="ph-field-row">📍 <b>Posição:</b> ${s.position}</div>` : ''}
-          <div class="ph-field-row">🔎 <b>Procura:</b> ${(s.look || []).slice(0, 2).join(' · ')}</div>
-          <div class="ph-field-row">🖼️ <b>Compõe:</b> ${g.composition.slice(0, 2).join(' · ')}</div>
-          <div class="ph-field-row">💡 ${firstLight}</div>
-          <div class="ph-field-avoid"><b>⛔ Evita:</b><ul>${(g.mistakes || []).slice(0, 3).map(m => li(m.err)).join('')}</ul></div>
-          ${(g.tricks || []).length ? `<div class="ph-field-row ph-field-trick">🎩 <b>Truque:</b> ${g.tricks[0]}</div>` : ''}
-          <button class="ph-back ph-field-more" data-portal="${id}">Portal completo de ${g.name} →</button>
-        </div>`;
-      panel.querySelectorAll('[data-fg]').forEach(p => p.addEventListener('click', () => {
-        try { history.replaceState(null, '', '#photography/agora/' + p.dataset.fg); } catch (_) {}
-        buildAgora(panel, p.dataset.fg);
-      }));
-      wireContextBar(panel, () => buildAgora(panel, id));
-      panel.querySelector('[data-portal]').addEventListener('click', () => Nav.go('photography/g/' + id));
-      panel.querySelector('.ph-field-pill.active')?.scrollIntoView({ inline: 'center', block: 'nearest' });
     });
   }
 
@@ -1752,9 +1796,18 @@ const PhotographyPage = (function () {
     return (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(id))
       ? `<span class="ph-vis ph-learn-art">${PhotoIllus.svg(id)}</span>` : '';
   }
+  /* Duas imagens diferentes para dois trabalhos diferentes:
+       conceptCover — CAPA do cartão. Serve para identificar e para a
+                      grelha ler como um sistema; pode ser decorativa.
+       conceptImg   — ILUSTRAÇÃO da ficha aberta. Só entra se ENSINAR;
+                      caso contrário manda o diagrama procedural, que é
+                      o que explica o conceito. Uma capa decorativa a
+                      abrir a ficha empurra o conteúdo para fora do ecrã
+                      e não acrescenta nada. */
+  const conceptCover = id => assetPath('know-' + id) || assetPath('api-k-' + id);
   const conceptImg = id => assetPath('know-' + id);
   function conceptThumb(id) {
-    const img = conceptImg(id);
+    const img = conceptCover(id);
     if (img) return `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${img}"></span>`;
     const g = galleryItems(id);
     if (g) return `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${g[1].src}"></span>`;
@@ -1762,18 +1815,34 @@ const PhotographyPage = (function () {
   }
   function conceptDetailHTML(t, sections) {
     const img = conceptImg(t.id), g = galleryItems(t.id);
-    const art = img ? `<div class="ph-detail-art ph-photo-art"><img loading="lazy" decoding="async" alt="" src="${img}"></div>`
-      : g ? `<div class="ph-detail-art ph-photo-art">${galleryHTML(g)}</div>`
-      : (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(t.id)) ? `<div class="ph-detail-art">${PhotoIllus.svg(t.id)}</div>` : '';
+    const diagram = (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(t.id))
+      ? `<div class="ph-detail-art">${PhotoIllus.svg(t.id)}</div>` : '';
+    // O diagrama vem à frente da fotografia decorativa: aqui o que se
+    // quer é a explicação, não a capa.
+    const art = diagram
+      || (img ? `<div class="ph-detail-art ph-photo-art"><img loading="lazy" decoding="async" alt="" src="${img}"></div>` : '')
+      || (g ? `<div class="ph-detail-art ph-photo-art">${galleryHTML(g)}</div>` : '');
     return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
       <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon || ''}</span><h3 class="ph-detail-title">${t.name}</h3></div>
       ${art}<div class="ph-detail-body">${sections}</div>`;
   }
   // Grelha expansível reutilizável (mata os modais de Aprender): ao clicar num
   // cartão abre um painel inline em largura total logo a seguir a esse cartão.
+  /* `opt.split` — em ecrã largo, lista à esquerda e ficha à direita, com a
+     ficha colada ao topo. O padrão anterior (ficha inserida a seguir ao
+     cartão) empurrava os restantes itens para baixo da ficha inteira: com
+     seis câmaras na grelha, abrir a primeira escondia as outras cinco.
+     Em ecrã estreito não há espaço para duas colunas e mantém-se o
+     acordeão, que aí é o comportamento certo. */
+  const SPLIT_MQ = '(min-width: 1000px)';
   function expandableGrid(box, items, opt) {
-    box.innerHTML = `${opt.head || ''}<div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div>`;
+    const split = !!opt.split;
+    box.innerHTML = `${opt.head || ''}${split
+      ? `<div class="ph-md"><div class="ph-md-list"><div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div></div><div class="ph-md-detail"></div></div>`
+      : `<div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div>`}`;
     const grid = box.querySelector('.ph-learn-grid');
+    const host = box.querySelector('.ph-md-detail');
+    const wide = () => split && window.matchMedia(SPLIT_MQ).matches;
     const detail = document.createElement('div');
     detail.className = 'ph-learn-detail'; detail.hidden = true;
     let sel = null;
@@ -1797,11 +1866,13 @@ const PhotographyPage = (function () {
         sel = t;
         grid.querySelectorAll('.ph-learn-card').forEach(c => { const on = c === card; c.classList.toggle('active', on); c.setAttribute('aria-expanded', on); });
         detail.innerHTML = opt.detail(t);
-        card.after(detail); detail.hidden = false;
+        if (wide()) host.appendChild(detail); else card.after(detail);
+        detail.hidden = false;
         if (typeof PhotoIllus !== 'undefined') PhotoIllus.wire(detail);
         opt.afterOpen && opt.afterOpen(detail, t);
         detail.querySelector('.ph-detail-close')?.addEventListener('click', () => { close(); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
-        requestAnimationFrame(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
+        // Em coluna dupla a ficha já está à vista: rolar até ela salta a página sem razão.
+        if (!wide()) requestAnimationFrame(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
       });
       grid.appendChild(card);
       opt.afterCard && opt.afterCard(card, t);
@@ -2151,15 +2222,19 @@ const PhotographyPage = (function () {
     'phone-lenses': 'eq-focal-fov', 'phone-zoom': 'eq-zoom', 'phone-hdr': 'eq-sensors',
     'phone-pro': 'eq-zoom', 'phone-night': 'eq-tripod',
   };
+  /* Qual dos sensores da comparação é o do item aberto. Sem isto a mesma
+     ilustração aparecia em cinco fichas sem dizer qual delas era. */
+  const EQ_SENSOR_HL = { phone: 'phone', 'phone-hdr': 'phone', apsc: 'apsc', ff: 'ff', mft: 'mft', compact: 'one' };
   const eqIllus = it => {
     const id = EQ_ILLUS[it.id] || ('eq-' + it.id);
-    return (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(id)) ? id : null;
+    if (typeof PhotoIllus === 'undefined' || !PhotoIllus.has(id)) return null;
+    return { id, opts: id === 'eq-sensors' ? { hl: EQ_SENSOR_HL[it.id] || null } : null };
   };
   function eqDetailHTML(it) {
     const sec = (t, cls, arr) => (arr && arr.length)
       ? `<div class="ph-eq-sec ${cls}"><b>${t}</b><ul>${arr.map(li).join('')}</ul></div>` : '';
     const vid = eqIllus(it);
-    const vis = vid ? `<div class="ph-detail-art">${PhotoIllus.svg(vid)}</div>` : '';
+    const vis = vid ? `<div class="ph-detail-art">${PhotoIllus.svg(vid.id, vid.opts)}</div>` : '';
     return `<button class="ph-detail-close" aria-label="Fechar">✕</button>
       <div class="ph-detail-head"><span class="ph-detail-ico">${it.icon || '📷'}</span>
         <h3 class="ph-detail-title">${it.name}</h3><span class="ph-eq-tag">${it.tag || ''}</span></div>
@@ -2191,8 +2266,10 @@ const PhotographyPage = (function () {
           ${cats.map(c => `<button class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" role="tab" aria-selected="${c.id === cat.id}" data-eqcat="${c.id}">${c.icon} ${c.name}</button>`).join('')}
         </div>
         <p class="ph-eq-intro">${cat.intro}</p>
-        ${(typeof PhotoIllus !== 'undefined' && PhotoIllus.has(cat.visual))
-          ? `<div class="ph-eq-hero">${PhotoIllus.svg(cat.visual)}</div>` : ''}
+        ${assetPath('eqi-' + cat.id)
+          ? `<div class="ph-eq-hero ph-eq-hero-img"><img loading="lazy" decoding="async" alt="" src="${assetPath('eqi-' + cat.id)}"></div>`
+          : (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(cat.visual))
+            ? `<div class="ph-eq-hero">${PhotoIllus.svg(cat.visual)}</div>` : ''}
         <div id="ph-eq-body"></div>
         <div class="ph-eq-mine" id="ph-eq-mine"></div>`;
       const body = panel.querySelector('#ph-eq-body');
@@ -2203,6 +2280,7 @@ const PhotographyPage = (function () {
         // se leem. A ilustração continua onde ensina — grande no hero e grande
         // na ficha aberta; a grelha passa a caber de uma vez no ecrã.
         compact: true,
+        split: true,
         thumb: () => '',
         blurb: it => it.tag || '',
         detail: eqDetailHTML,
@@ -2300,7 +2378,7 @@ const PhotographyPage = (function () {
       const secHTML = s => (s.dyn === 'crop' ? cropSectionHTML()
         : `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`);
       const grid = expandableGrid(box, db.know, {
-        head,
+        head, split: true,
         thumb: t => conceptThumb(t.id),
         blurb: t => t.blurb,
         detail: t => conceptDetailHTML(t,
@@ -2327,7 +2405,7 @@ const PhotographyPage = (function () {
       if (!db || !(db.principles || []).length) return fail();
       const named = id => (db.genres.find(x => x.id === id) || {});
       expandableGrid(box, db.principles, {
-        head: APR_VIS_HEAD,
+        head: APR_VIS_HEAD, split: true,
         thumb: p => { const src = assetPath(p.thumb); return src ? `<span class="ph-vis ph-learn-art"><img loading="lazy" decoding="async" alt="" src="${src}"></span>` : ''; },
         blurb: p => p.blurb,
         detail: p => {
@@ -2346,7 +2424,7 @@ const PhotographyPage = (function () {
           const art = p.sequence ? principleSequenceHTML(p.sequence)
             : (a && b)
             ? PhotoLearn.compare({
-                fam: 'principio', mode: c.mode || 'side', a, b,
+                fam: 'principio', mode: c.mode || 'side', a, b, ar: c.ar,
                 aTag: c.aTag, bTag: c.bTag, aWhy: c.aWhy, bWhy: c.bWhy,
                 caption: c.caption, aAlt: c.aTag, bAlt: c.bTag,
               })
@@ -2396,7 +2474,7 @@ const PhotographyPage = (function () {
       // estilos e não fotografias (ver PhotoLearn.paintThumb)
       const swatch = assetPath('look-retrato') || (lookBases(db.looks[0], db)[0] || {}).src;
       const grid = expandableGrid(box, db.looks, {
-        head: APR_LOOK_HEAD,
+        head: APR_LOOK_HEAD, split: true,
         thumb: () => (swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : ''),
         blurb: l => l.blurb,
         detail: l => lookDetailHTML(l, db),
@@ -2457,7 +2535,7 @@ const PhotographyPage = (function () {
       const swatch = assetPath('look-retrato');
       const capSrc = t => (t.compare && assetPath(t.compare.a)) || (t.single && assetPath(t.single.src));
       const grid = expandableGrid(box, db.techniques, {
-        head: APR_TEC_HEAD,
+        head: APR_TEC_HEAD, split: true,
         thumb: t => {
           if (t.kind === 'revelacao') return swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : '';
           const s = capSrc(t);
@@ -2594,7 +2672,7 @@ const PhotographyPage = (function () {
     const holder = document.createElement('div');
     host.replaceWith(holder);
     expandableGrid(holder, (db.readAnalyses || []).filter(a => assetPath(a.src)), {
-      head: '',
+      head: '', split: true,
       thumb: a => `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${assetPath(a.src)}"></span>`,
       blurb: a => a.blurb,
       detail: a => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
@@ -2769,7 +2847,7 @@ const PhotographyPage = (function () {
     Promise.all([loadDB(), loadAssets(), loadEditDB()]).then(([db]) => {
       if (!db || !(db.colour || []).length) { box.innerHTML = `${APR_COR_HEAD}<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
       const grid = expandableGrid(box, db.colour, {
-        head: APR_COR_HEAD,
+        head: APR_COR_HEAD, split: true,
         thumb: l => {
           // a lição de laboratório mostra-se já tratada; a de par mostra o lado
           // que a demonstra — a miniatura tem de ser a própria lição
@@ -2850,9 +2928,11 @@ const PhotographyPage = (function () {
     // O crop pré-selecionado depende da classe de câmara, e gearClass() só a
     // sabe validar depois do DB carregar — sem esperar, quem tem Full Frame
     // escolhido apanhava o valor de omissão numa carga fria desta secção.
-    if (!_toolsBuilt && !_DB) {
+    // (E os assets têm de estar carregados também, senão as capas das
+    // calculadoras não existem ainda quando as fichas se desenham.)
+    if (!_toolsBuilt && (!_DB || !_assets)) {
       panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-      loadDB().then(() => buildFerramentas(panel));
+      Promise.all([loadDB(), loadAssets()]).then(() => buildFerramentas(panel));
       return;
     }
     if (!_toolsBuilt) {
@@ -2865,6 +2945,14 @@ const PhotographyPage = (function () {
         const wrapper = document.createElement('div');
         wrapper.id = 'ph-calc-' + key;
         TOOL_META[key].fn(wrapper);
+        /* Capa gráfica da calculadora (grupo `tool-ico`): a grelha era só
+           texto e números e não se distinguia uma ficha da outra de
+           relance. A capa é injetada depois de a ficha se desenhar para
+           as calculadoras não precisarem de saber que ela existe. */
+        const cover = assetPath('tli-' + key);
+        const title = cover && wrapper.querySelector('.ph-card-title');
+        if (title) title.insertAdjacentHTML('beforebegin',
+          `<span class="ph-tool-cover"><img loading="lazy" decoding="async" alt="" src="${cover}"></span>`);
         grid.appendChild(wrapper);
       });
     }
@@ -2884,14 +2972,13 @@ const PhotographyPage = (function () {
   // ── Main ──────────────────────────────────────────────────────────
   const PH_TABS = [
     { id: 'generos',     label: '🎯 Géneros' },
-    { id: 'agora',       label: '⚡ No Terreno' },
     { id: 'cheats',      label: '📋 Cheatsheets' },
     { id: 'equipamento', label: '🎒 Equipamento' },
     { id: 'edicao',      label: '🎨 Edição' },
     { id: 'aprender',    label: '📚 Aprender' },
     { id: 'ferramentas', label: '🧮 Ferramentas' },
   ];
-  const TAB_ROUTE = { generos: 'photography', agora: 'photography/agora', cheats: 'photography/cheatsheets', equipamento: 'photography/equipamento', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+  const TAB_ROUTE = { generos: 'photography', cheats: 'photography/cheatsheets', equipamento: 'photography/equipamento', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
 
   /* Contexto entregue ao PhotoCheats: dá-lhe acesso ao DB, aos assets, à
      classe de câmara e ao router de ligações cruzadas sem que ele precise
@@ -2934,8 +3021,7 @@ const PhotographyPage = (function () {
         view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
-        else if (id === 'agora') buildAgora(panel, arg);
-        else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
+          else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
         else if (id === 'equipamento') buildEquipamento(panel, arg);
         else if (id === 'edicao') buildEdicao(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
@@ -2952,7 +3038,10 @@ const PhotographyPage = (function () {
       const seg = sub.split('/');
       const a = seg[0], rest = seg.slice(1).join('/');
       if (a === 'g' && rest)                 { tab = 'generos'; arg = rest; }
-      else if (a === 'agora')                { tab = 'agora'; arg = rest || null; }
+      /* "No Terreno" foi absorvido pelos Cheatsheets: a página de um género já
+         abre com o cartão de bolso (Definições · Na cena · Compõe · Evita) e
+         com as fichas visuais por baixo. As rotas antigas continuam a valer. */
+      else if (a === 'agora')                { tab = 'cheats'; arg = rest ? 'g/' + rest : null; }
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
       else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
       else if (a === 'edicao')               { tab = 'edicao'; arg = rest || null; }

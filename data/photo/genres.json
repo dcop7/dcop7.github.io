@@ -485,7 +485,7 @@
           },
           {
             "k": "Medição",
-            "v": "−2/3 EV — a espuma branca engana o fotómetro"
+            "v": "+2/3 a +1 EV — a areia e a espuma claras enganam o fotómetro para cinzento"
           },
           {
             "k": "Ficheiro",
@@ -509,7 +509,7 @@
           "apsc": "Um filtro protetor barato compensa aqui; areia e sal são os inimigos.",
           "ff": "Não troques de objetiva na praia com vento. Escolhe uma e vive com ela."
         },
-        "mine": "Na M50 II uso a 15-45mm com filtro protetor de 49mm; o S23+ vai para a linha de água."
+        "mine": "Na M50 II uso a 15-45mm com filtro protetor de 49mm; o S26+ vai para a linha de água."
       },
       "raw": {
         "value": "medium",
@@ -927,7 +927,7 @@
         "settings": [
           {
             "k": "Modo",
-            "v": "Tv 1/125 (chuva como riscos) · 1/1000 (gotas paradas)"
+            "v": "Tv 1/60 – 1/125 (chuva como riscos) · 1/1000 (gotas paradas)"
           },
           {
             "k": "Abertura",
@@ -963,7 +963,7 @@
           "apsc": "Corpo não selado? Alpendres, carros e passagens cobertas são o teu estúdio.",
           "ff": "Se o corpo for selado, aproveita — mas seca as juntas depois e nunca troques de objetiva à chuva."
         },
-        "mine": "A M50 II não é selada — fotografo de dentro do carro ou sob alpendre; o S23+ (IP68) vai para a chuva."
+        "mine": "A M50 II não é selada — fotografo de dentro do carro ou sob alpendre; o S26+ (IP68) vai para a chuva."
       },
       "raw": {
         "value": "medium",
@@ -1833,7 +1833,7 @@
           },
           {
             "k": "Velocidade",
-            "v": "≥ 1/200 (a 50mm não tem IS!)"
+            "v": "≥ 1/200 — e mais, se a objetiva não tiver estabilização"
           },
           {
             "k": "ISO",
@@ -1864,7 +1864,7 @@
           "apsc": "Uma 50mm dá 75–80mm eq: é o retrato clássico pelo preço mais baixo que existe.",
           "ff": "85mm f/1.8 é o padrão do género. A 135mm dá ainda mais compressão e fundo mais cremoso."
         },
-        "mine": "Na M50 II, a EF 50mm f/1.8 (80mm eq) é a minha lente de retrato; no S23+, a tele 3×."
+        "mine": "Na M50 II, a EF 50mm f/1.8 (80mm eq) é a minha lente de retrato; no S26+, a tele 3×."
       },
       "raw": {
         "value": "high",
@@ -1969,7 +1969,7 @@
       "checklist": [
         "Local com fundo limpo e distante",
         "Luz suave identificada (janela/sombra)",
-        "Eye AF ativo (Canon) / foco no olho (S23)",
+        "Eye AF ativo (Canon) / foco no olho (S26)",
         "Velocidade ≥ 1/200 confirmada",
         "Poses de referência vistas",
         "Conversa preparada — pessoa à vontade"
@@ -2183,7 +2183,6 @@
         "Pedir autorização antes de publicar fotos de crianças de outras famílias"
       ],
       "donts": [
-        "Dizer 'olha para aqui e sorri' vinte vezes",
         "Flash direto",
         "Sessões longas com crianças pequenas (15–20 min é o limite real)",
         "f/1.8 em fotos de grupo",
@@ -2752,7 +2751,7 @@
           },
           {
             "k": "Flash",
-            "v": "NUNCA"
+            "v": "Proibido em quase todas as salas — e a essa distância não chegaria lá"
           }
         ],
         "af": "Servo com deteção de rosto quando o artista está iluminado; nos blackouts, espera — o AF não vê no escuro.",
@@ -3203,7 +3202,7 @@
         ],
         "af": "Zone focusing: a f/8 focado a 2.5m, tens (aprox.) de 1.5m ao infinito nítido — confirma na calculadora de DOF e dispara sem esperar pelo AF.",
         "limits": [
-          "A 22mm não tem IS: de noite mantém ≥ 1/125 e deixa o ISO subir — grão é melhor que tremido.",
+          "Sem estabilização na objetiva, de noite mantém ≥ 1/125 e deixa o ISO subir — grão é melhor que tremido.",
           "35mm eq obriga a aproximares-te — faz parte do género."
         ],
         "tips": [
@@ -3439,7 +3438,7 @@
           "apsc": "Uma 10–18mm dá o ultra grande angular que este género pede.",
           "ff": "24mm ou mais largo. Se levares a sério, uma objetiva de descentramento resolve as verticais na câmara."
         },
-        "mine": "Na M50 II, a 15-45mm a 15mm (24mm eq); o S23+ na ultra larga vai onde a M50 não chega."
+        "mine": "Na M50 II, a 15-45mm a 15mm (24mm eq); o S26+ na ultra larga vai onde a M50 não chega."
       },
       "raw": {
         "value": "high",
@@ -4082,7 +4081,7 @@
           },
           {
             "k": "Velocidade",
-            "v": "10–13s (regra 500: 500÷35eq ≈ 14s máx)"
+            "v": "500 ÷ focal equivalente — 14mm eq ≈ 35 s · 20mm eq ≈ 25 s · 24mm eq ≈ 21 s"
           },
           {
             "k": "Foco",
@@ -4302,7 +4301,7 @@
           },
           {
             "k": "Velocidade",
-            "v": "≥ 1/60 à mão (22mm não tem IS)"
+            "v": "≥ 1/60 à mão — e ≥ 1/125 se a objetiva não for estabilizada"
           },
           {
             "k": "ISO",
@@ -5000,7 +4999,7 @@
           "apsc": "Uma 35–50mm cobre desde a mesa inteira ao detalhe.",
           "ff": "50mm para a mesa, 100mm macro para o detalhe da textura."
         },
-        "mine": "Na M50 II, a 50mm f/1.8; no restaurante, o S23+ é mais discreto e igualmente eficaz."
+        "mine": "Na M50 II, a 50mm f/1.8; no restaurante, o S26+ é mais discreto e igualmente eficaz."
       },
       "raw": {
         "value": "low",
@@ -5223,7 +5222,7 @@
           "apsc": "Uma 10–18mm dá os 16–28mm eq que este género pede.",
           "ff": "16–24mm. Se fizeres isto a sério, uma objetiva de descentramento resolve as verticais sem cortar píxeis."
         },
-        "mine": "Na M50 II, 24mm eq é o mais largo que tenho — em casas de banho pequenas uso o S23+ na ultra larga."
+        "mine": "Na M50 II, 24mm eq é o mais largo que tenho — em casas de banho pequenas uso o S26+ na ultra larga."
       },
       "raw": {
         "value": "high",
@@ -5988,8 +5987,6 @@
         "Repetir muitas vezes — é tentativa e erro"
       ],
       "donts": [
-        "Deixar o AF ligado",
-        "Ficar parado de frente para a câmara com a lanterna acesa",
         "Usar ISO alto (o ruído acumula em exposições longas)",
         "Escrever texto sem inverter",
         "Ir sozinho para sítios isolados a meio da noite"
@@ -6090,7 +6087,7 @@
           },
           {
             "k": "Exposição",
-            "v": "−2/3 (reflexos são mais escuros que a cena real)"
+            "v": "Mede na zona que interessa: um reflexo é 1–2 stops mais escuro que a cena real"
           },
           {
             "k": "ISO",
@@ -6118,7 +6115,7 @@
           "apsc": "Qualquer objetiva. O que muda o jogo é um polarizador — para controlar quanto reflexo queres.",
           "ff": "Igual. A decisão importante é onde focar: no reflexo ou na superfície."
         },
-        "mine": "Na M50 II, a 22mm chega perto do chão; o S23+ vai onde a M50 não cabe."
+        "mine": "Na M50 II, a 22mm chega perto do chão; o S26+ vai onde a M50 não cabe."
       },
       "raw": {
         "value": "medium",

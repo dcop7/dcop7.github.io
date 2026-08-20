@@ -124,7 +124,7 @@
         },
         {
           "h": "No teu kit",
-          "t": "M50 II: RAW (CR3) por defeito para tudo o que interessa. S23+: o modo normal faz um JPEG computacional excelente; o Expert RAW dá DNG com multi-frame — o melhor dos dois mundos nos momentos importantes."
+          "t": "M50 II: RAW (CR3) por defeito para tudo o que interessa. S26+: o modo normal faz um JPEG computacional excelente; o Expert RAW dá DNG com multi-frame — o melhor dos dois mundos nos momentos importantes."
         },
         {
           "h": "⚠️ Erros comuns",
@@ -241,7 +241,7 @@
         },
         {
           "h": "Limites práticos",
-          "t": "M50 II: até 1600 limpo, 3200 ótimo com denoise, 6400 utilizável, 12800 para memórias. S23+: o multi-frame disfarça, mas acima de ISO 800 num só frame nota-se."
+          "t": "M50 II: até 1600 limpo, 3200 ótimo com denoise, 6400 utilizável, 12800 para memórias. S26+: o multi-frame disfarça, mas acima de ISO 800 num só frame nota-se."
         },
         {
           "h": "Auto-ISO",
@@ -272,7 +272,7 @@
         },
         {
           "h": "Compensação (±EV)",
-          "t": "Neve/areia: +1 a +2 EV. Silhuetas e palcos: −1 a −2 EV. No S23: toca no sujeito e arrasta o slider — é a mesma coisa."
+          "t": "Neve/areia: +1 a +2 EV. Silhuetas e palcos: −1 a −2 EV. No S26: toca no sujeito e arrasta o slider — é a mesma coisa."
         },
         {
           "h": "Modos de medição",
@@ -357,86 +357,6 @@
         "tool:nd",
         "tec:longa-exposicao",
         "tec:reflexos"
-      ]
-    },
-    {
-      "id": "glossario",
-      "icon": "📖",
-      "name": "Glossário",
-      "blurb": "Os termos que aparecem em manuais, vídeos e fóruns.",
-      "body": [
-        {
-          "h": "Stop",
-          "t": "Duplicação ou metade da luz. +1 stop = 2× luz (via abertura, tempo ou ISO)."
-        },
-        {
-          "h": "Bokeh",
-          "t": "A qualidade (não a quantidade) do desfoque — a forma como os pontos de luz desfocados se desenham."
-        },
-        {
-          "h": "DOF",
-          "t": "Profundidade de campo: a faixa de distâncias aceitavelmente nítidas."
-        },
-        {
-          "h": "Hiperfocal",
-          "t": "Distância de foco que estica a nitidez até ao infinito para uma dada focal/abertura."
-        },
-        {
-          "h": "ETTR",
-          "t": "Expose To The Right — expor o mais claro possível sem queimar, para minimizar ruído."
-        },
-        {
-          "h": "Clipping",
-          "t": "Corte de informação: realces 'queimados' ou sombras 'entupidas' sem detalhe."
-        },
-        {
-          "h": "Focus peaking",
-          "t": "Realce colorido no ecrã sobre as zonas em foco (ouro do foco manual)."
-        },
-        {
-          "h": "Zone focusing",
-          "t": "Pré-focar a uma distância com abertura fechada, confiando na DOF (rua)."
-        },
-        {
-          "h": "Panning",
-          "t": "Seguir o sujeito com velocidade lenta: sujeito nítido, fundo varrido."
-        },
-        {
-          "h": "Focus stacking",
-          "t": "Combinar várias fotos com focos diferentes numa só toda nítida (macro/paisagem)."
-        },
-        {
-          "h": "Golden hour",
-          "t": "±1h após o nascer / antes do pôr do sol: luz quente, baixa e suave."
-        },
-        {
-          "h": "Blue hour",
-          "t": "Crepúsculo civil: céu azul profundo que equilibra com as luzes artificiais."
-        },
-        {
-          "h": "IBIS / IS",
-          "t": "Estabilização no corpo / na lente. A M50 II só tem IS nas lentes que o trazem."
-        },
-        {
-          "h": "Rolling shutter",
-          "t": "Distorção de objetos rápidos por leitura progressiva do sensor (hélices tortas)."
-        },
-        {
-          "h": "Chimping",
-          "t": "Ver o ecrã depois de cada disparo — útil com histograma, vício sem ele."
-        },
-        {
-          "h": "TFP",
-          "t": "Time for prints: colaboração modelo/fotógrafo com troca de fotos em vez de pagamento."
-        },
-        {
-          "h": "Golden ratio",
-          "t": "Proporção 1:1.618 usada em composição (phi grid, espiral áurea)."
-        },
-        {
-          "h": "Sweet spot",
-          "t": "Abertura de nitidez máxima de uma lente (tipicamente 2–3 stops fechada)."
-        }
       ]
     },
     {
@@ -565,6 +485,86 @@
       "links": [
         "tec:profundidade",
         "g:paisagem"
+      ]
+    },
+    {
+      "id": "glossario",
+      "icon": "📖",
+      "name": "Glossário",
+      "blurb": "Os termos que aparecem em manuais, vídeos e fóruns.",
+      "body": [
+        {
+          "h": "Stop",
+          "t": "Duplicação ou metade da luz. +1 stop = 2× luz (via abertura, tempo ou ISO)."
+        },
+        {
+          "h": "Bokeh",
+          "t": "A qualidade (não a quantidade) do desfoque — a forma como os pontos de luz desfocados se desenham."
+        },
+        {
+          "h": "DOF",
+          "t": "Profundidade de campo: a faixa de distâncias aceitavelmente nítidas."
+        },
+        {
+          "h": "Hiperfocal",
+          "t": "Distância de foco que estica a nitidez até ao infinito para uma dada focal/abertura."
+        },
+        {
+          "h": "ETTR",
+          "t": "Expose To The Right — expor o mais claro possível sem queimar, para minimizar ruído."
+        },
+        {
+          "h": "Clipping",
+          "t": "Corte de informação: realces 'queimados' ou sombras 'entupidas' sem detalhe."
+        },
+        {
+          "h": "Focus peaking",
+          "t": "Realce colorido no ecrã sobre as zonas em foco (ouro do foco manual)."
+        },
+        {
+          "h": "Zone focusing",
+          "t": "Pré-focar a uma distância com abertura fechada, confiando na DOF (rua)."
+        },
+        {
+          "h": "Panning",
+          "t": "Seguir o sujeito com velocidade lenta: sujeito nítido, fundo varrido."
+        },
+        {
+          "h": "Focus stacking",
+          "t": "Combinar várias fotos com focos diferentes numa só toda nítida (macro/paisagem)."
+        },
+        {
+          "h": "Golden hour",
+          "t": "±1h após o nascer / antes do pôr do sol: luz quente, baixa e suave."
+        },
+        {
+          "h": "Blue hour",
+          "t": "Crepúsculo civil: céu azul profundo que equilibra com as luzes artificiais."
+        },
+        {
+          "h": "IBIS / IS",
+          "t": "Estabilização no corpo / na lente. A M50 II só tem IS nas lentes que o trazem."
+        },
+        {
+          "h": "Rolling shutter",
+          "t": "Distorção de objetos rápidos por leitura progressiva do sensor (hélices tortas)."
+        },
+        {
+          "h": "Chimping",
+          "t": "Ver o ecrã depois de cada disparo — útil com histograma, vício sem ele."
+        },
+        {
+          "h": "TFP",
+          "t": "Time for prints: colaboração modelo/fotógrafo com troca de fotos em vez de pagamento."
+        },
+        {
+          "h": "Golden ratio",
+          "t": "Proporção 1:1.618 usada em composição (phi grid, espiral áurea)."
+        },
+        {
+          "h": "Sweet spot",
+          "t": "Abertura de nitidez máxima de uma lente (tipicamente 2–3 stops fechada)."
+        }
       ]
     }
   ]

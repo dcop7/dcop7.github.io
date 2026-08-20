@@ -9,13 +9,18 @@
                  padrão (triângulo de Rembrandt, borboleta sob o nariz,
                  linha dura do split, laço do loop…).
 
-   Porquê desenhado por código e não fotografado por IA: os padrões de
-   estúdio foram testados no ComfyUI local (SDXL/Juggernaut) e o modelo
-   devolve sempre luz de beleza plana — as 16 imagens sairiam iguais e a
-   lição morria. Aqui a sombra é geometria, portanto está sempre certa,
-   é consistente entre células e funciona offline. A luz NATURAL é o
-   contrário (o modelo acerta), e essa vem em fotografia real via
-   tools/photogen (grupo `lightpat`).
+   Como se chegou aqui (medido, não assumido — ver `_test-lp` no
+   manifesto): pedir os padrões a um modelo de imagem dá 1 acerto em 6.
+   O Rembrandt sai mesmo bem (o termo está muito representado no treino);
+   split, butterfly, contraluz e luz de baixo saem todos como o mesmo
+   retrato escuro e macio. E há um problema independente: a personagem
+   muda a cada geração — cabelo, roupa, enquadramento — por isso mesmo
+   que todos acertassem, a grelha deixaria de ser uma comparação, que é
+   todo o argumento deste cartão. Daí a inversão: gerou-se de propósito UM retrato com luz
+   perfeitamente plana (`lb-face-a`) e é o código que desenha a luz por
+   cima dele. Fica pele real E sombra geométrica — sempre certa, sempre
+   consistente entre células, e offline. A luz NATURAL é o único caso em
+   que o modelo acerta sozinho, e essa vem fotografada (grupo `lightpat`).
 
    Convenção de ângulos: `az` = graus a partir do eixo da câmara.
    Positivo = luz do lado ESQUERDO da imagem (ilumina o lado esquerdo do
@@ -96,8 +101,10 @@ const PhotoLightArt = (function () {
       const bx = D.cx + px * half, by = D.cy + py * half;
       const cx2 = D.cx - px * half, cy2 = D.cy - py * half;
       const col = l.tint || '#f5b74a';
+      /* O cone tinha 20% de opacidade e desaparecia sobre o fundo escuro:
+         numa planta, o que se tem de ver primeiro é POR ONDE a luz vai. */
       return `<path d="M${n(ax)} ${n(ay)} L${n(bx)} ${n(by)} L${n(cx2)} ${n(cy2)} Z"
-        fill="${col}" opacity="${l.role === 'fill' ? 0.1 : l.role === 'rim' ? 0.16 : 0.2}"/>`;
+        fill="${col}" opacity="${l.role === 'fill' ? 0.18 : l.role === 'rim' ? 0.26 : 0.34}"/>`;
     }).join('');
 
     const heads = lights.map(l => {
@@ -137,192 +144,352 @@ const PhotoLightArt = (function () {
       <!-- fundo do estúdio -->
       <rect x="26" y="7" width="158" height="8" rx="2" fill="${p.bgLit ? '#dbe6f2' : '#31445c'}"/>
       ${beams}
-      <!-- sujeito: cabeça vista de cima, nariz a apontar à câmara -->
-      <circle cx="${D.cx}" cy="${D.cy}" r="13" fill="#e9cdb0"/>
-      <path d="M${D.cx} ${D.cy + 18} L${D.cx - 4} ${D.cy + 11} L${D.cx + 4} ${D.cy + 11} Z" fill="#c9a882"/>
+      <!-- Sujeito visto de cima. Antes era um círculo cor de pele com um
+           bico: à escala da grelha lia-se como um balão, não como uma
+           pessoa. Agora tem ombros, cabelo em volta e só a FRENTE da cara
+           em tom de pele — vê-se de imediato para onde está virado. -->
+      <g>
+        <ellipse cx="${D.cx}" cy="${D.cy + 9}" rx="27" ry="13" fill="#2c4059"/>
+        <circle cx="${D.cx}" cy="${D.cy}" r="15" fill="#2f2016"/>
+        <path d="M${D.cx - 13.6} ${D.cy + 2.5} A13.8 13.8 0 0 0 ${D.cx + 13.6} ${D.cy + 2.5} Z" fill="#e9cdb0"/>
+        <path d="M${D.cx} ${D.cy + 15.5} L${D.cx - 3.4} ${D.cy + 9.5} L${D.cx + 3.4} ${D.cy + 9.5} Z" fill="#c9a882"/>
+      </g>
       ${heads}
-      <!-- câmara -->
+      <!-- Câmara: corpo, pentaprisma e objetiva a apontar ao sujeito. -->
       <g transform="translate(${D.cx} ${D.cam})">
-        <rect x="-11" y="-7" width="22" height="14" rx="3" fill="#cbd5e1"/>
-        <circle cx="0" cy="0" r="4.5" fill="#0b1220"/>
-        <path d="M-11 -7 L-4 -11 L4 -11 L11 -7" fill="#cbd5e1"/>
+        <rect x="-13" y="-6" width="26" height="15" rx="3" fill="#8fd3ea"/>
+        <path d="M-6 -6 L-4 -11 L4 -11 L6 -6 Z" fill="#8fd3ea"/>
+        <path d="M-7 -6 L-5.5 -14 L5.5 -14 L7 -6 Z" fill="#6fb9d4"/>
+        <circle cx="0" cy="-11" r="3.6" fill="#08121e"/>
+        <circle cx="9" cy="-2" r="1.7" fill="#08121e" opacity=".7"/>
       </g>
     </svg>`;
   }
 
   /* ══ 2. ROSTO (resultado) ════════════════════════════════════════════
-     Cabeça de frente, viewBox 160×200, desenhada por camadas:
+     A base é uma FOTOGRAFIA de estúdio com luz deliberadamente PLANA
+     (`lb-face-a` frontal, `lb-face-c` de três-quartos — geradas de
+     propósito, porque luz plana é a única coisa que este modelo faz
+     sempre bem) e é o código que desenha a luz por cima. Ganha-se pele
+     real e mantém-se o que fazia o desenho valer a pena: a sombra é
+     geometria, portanto está certa e é igual em todas as células.
 
-       1. fundo (liso, pool de luz, high/low key)
-       2. cabelo, rosto e ombros em pele/cabelo neutros
-       3. feições (olhos, nariz, boca)
-       4. SOMBRA por cima de tudo, em `multiply`
+     TRÊS CAMADAS, todas dentro de UM grupo `multiply` isolado — e é essa
+     a diferença para a versão anterior:
+       1. sombra de forma  — gradiente com o terminador DENTRO da cara;
+       2. sombra do nariz  — um TRAÇO estreito ancorado na asa da narina;
+       3. triângulo de Rembrandt — branco, a DEVOLVER luz dentro da sombra.
+     A versão anterior pintava o triângulo em `screen` por cima de tudo e
+     lia-se como um foco colado à bochecha; e desenhava a sombra do nariz
+     como uma mancha cheia de 10px que lia como sujidade por cima do
+     lábio. Um triângulo de Rembrandt é a AUSÊNCIA de sombra, não luz
+     acrescentada — por isso agora é branco DENTRO do grupo multiply.
 
-     A ordem importa: a sombra tem de vir DEPOIS das feições. Quando ela
-     ficava por baixo, o olho e o lábio do lado escuro continuavam a
-     brilhar dentro da sombra e o split parecia um erro de desenho.
+     Marcas MEDIDAS em cada base, já convertidas para o viewBox 160×200
+     (a imagem entra com `slice`: escala 160/896, sobra vertical centrada).
+     Se a fotografia-base mudar, estas marcas TÊM de ser medidas outra vez —
+     é delas que depende a sombra cair no sítio certo. */
 
-     A sombra tem duas componentes multiplicadas:
-       horizontal — vem do `az` (de que lado está a luz) e do `edge`
-       vertical   — vem da altura da luz (`elev`): luz alta escurece o
-                    maxilar, luz baixa escurece a testa.
-     Por cima, as sombras próprias do padrão (nariz, queixo, maçãs) e o
-     triângulo iluminado do Rembrandt, esse em `screen`. */
+  const F = { W: 160, H: 200 };
 
-  const FACE_PATH = 'M80 40 C57 40 50 56 50 80 C50 92 52 102 56 110 C62 124 70 134 80 134 C90 134 98 124 104 110 C108 102 110 92 110 80 C110 56 103 40 80 40 Z';
-  const HAIR_PATH = 'M80 24 C45 24 34 52 36 92 C37 114 42 130 47 142 L61 142 C52 124 47 106 48 86 C50 64 61 52 80 52 C99 52 110 64 112 86 C113 106 108 124 99 142 L113 142 C118 130 123 114 124 92 C126 52 115 24 80 24 Z';
-  const NECK_PATH = 'M68 122 L92 122 L92 150 L68 150 Z';
-  const BODY_PATH = 'M62 138 L98 138 L98 148 C120 154 134 168 138 200 L22 200 C26 168 40 154 62 148 Z';
+  const BASES = {
+    // frontal — estúdio, tonalidade, multi-luz e luz natural
+    a: {
+      src: null, cx: 80, eye: 74, nose: 102, noseBase: 105, mouth: 118, chin: 143,
+      faceL: 40, faceR: 121, wingL: 71, wingR: 89, cornerL: 66, cornerR: 94,
+      eyeOutL: 48, eyeOutR: 112, headCx: 80, headCy: 74, headRx: 48, headRy: 71,
+    },
+    // três-quartos — só Short e Broad, que não existem num rosto de frente
+    /* Tres-quartos: a cabeca esta virada para a DIREITA de quem ve, por isso
+       o lado LARGO (perto da camara, 46 unidades do nariz ao ouvido) fica a
+       esquerda e o lado CURTO (longe, 20 unidades) fica a direita. E dessa
+       assimetria que o terminador tira a diferenca entre Short e Broad. */
+    c: {
+      src: null, cx: 98, eye: 73, nose: 100, noseBase: 106, mouth: 118, chin: 140,
+      faceL: 52, faceR: 118, wingL: 90, wingR: 104, cornerL: 88, cornerR: 112,
+      eyeOutL: 64, eyeOutR: 110, headCx: 71, headCy: 72, headRx: 51, headRy: 68,
+    },
+  };
 
-  const SKIN = { base: '#e6c09a', hair: '#3b2a1e', lips: '#b4705d', shirt: '#9aa4b0' };
+  function setFace(url, id) { BASES[id || 'a'].src = url || null; }
 
-  /* Rampa de multiplicação: branco = intocado, escuro = sombra.
-     `fill` levanta o fundo da rampa (refletor, preenchimento, sombra aberta). */
-  function shadeStops(edge, fill, amt) {
-    const floor = 0.16 + fill * 0.72;                    // luminância mínima
-    const lo = Math.round(255 * Math.min(1, floor));
-    const mi = Math.round(255 * Math.min(1, floor + (1 - floor) * 0.45));
-    const hex = v => '#' + v.toString(16).padStart(2, '0').repeat(3);
-    const mid = 0.5 + (1 - amt) * 0.4;
-    const half = Math.max(0.015, edge * 0.4);
-    return `
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="${n(Math.max(0, mid - half))}" stop-color="#ffffff"/>
-      <stop offset="${n(mid)}" stop-color="${hex(mi)}"/>
-      <stop offset="${n(Math.min(1, mid + half))}" stop-color="${hex(lo)}"/>
-      <stop offset="1" stop-color="${hex(lo)}"/>`;
+  const hex = v => '#' + Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0').repeat(3);
+
+  /* Sombra de forma. O terminador vive em COORDENADAS DA CARA e não numa
+     fração da imagem: com a luz a 45° tem de cair logo a seguir ao nariz,
+     e a versão anterior punha-o em x=0.67 da imagem — fora da bochecha —
+     por isso o rosto aparecia quase todo iluminado em metade dos cartões.
+       amt = 1 (luz a 90°)     → terminador no eixo do nariz
+       amt = 0 (luz de frente) → terminador fora da cara, sem sombra */
+  function formStops(B, amt, edge, fill, right) {
+    const dir = right ? 1 : -1;
+    const far = right ? B.faceR : B.faceL;
+    const tx = B.cx + dir * (1 - amt) * Math.abs(far - B.cx) * 0.98;
+    const half = 3 + edge * 26;
+    const floor = Math.min(1, 0.2 + fill * 0.66);
+    const dk = hex(255 * floor);
+    const md = hex(255 * (floor + (1 - floor) * 0.5));
+    // 3 casas: `n()` arredonda a 0.1 e uma parada de gradiente a 0.1 da
+    // saltos de 16px na transicao — visiveis como um degrau na bochecha.
+    const o = x => (Math.max(0, Math.min(1, x / F.W))).toFixed(3);
+    return right
+      ? `<stop offset="0" stop-color="#ffffff"/>
+         <stop offset="${o(tx - half)}" stop-color="#ffffff"/>
+         <stop offset="${o(tx)}" stop-color="${md}"/>
+         <stop offset="${o(tx + half)}" stop-color="${dk}"/>
+         <stop offset="1" stop-color="${dk}"/>`
+      : `<stop offset="0" stop-color="${dk}"/>
+         <stop offset="${o(tx - half)}" stop-color="${dk}"/>
+         <stop offset="${o(tx)}" stop-color="${md}"/>
+         <stop offset="${o(tx + half)}" stop-color="#ffffff"/>
+         <stop offset="1" stop-color="#ffffff"/>`;
   }
 
-  /* Sombra do nariz — a assinatura de cada padrão. */
-  function noseShadow(kind, left) {
-    const m = (d, o) => `<path d="${d}" fill="#000" opacity="${o || 0.42}"/>`;
-    const flip = s => (left ? s : `<g transform="translate(160 0) scale(-1 1)">${s}</g>`);
+  /* Sombra própria do nariz — a ASSINATURA de cada esquema, e por isso a
+     única forma desenhada à mão.
+
+     A primeira versão era um `stroke` de 5 a 6 unidades com ponta redonda.
+     Num nariz que mede 18 unidades de ponta a ponta, isso não é uma sombra:
+     é um caroço cinzento de densidade constante colado à narina — que foi
+     exatamente o que se viu no portal ("parece que sai alguma coisa do
+     nariz"). Uma sombra projetada não se comporta assim. Nasce colada à asa
+     do nariz, é densa aí, e vai perdendo forma e densidade até desaparecer.
+
+     Daí o desenho atual: uma FORMA fechada em folha (larga onde nasce,
+     afilada na ponta) preenchida com um gradiente ao longo do próprio eixo.
+     `taper()` constrói a folha a partir de uma espinha; `leaf()` junta-lhe
+     o gradiente. A opacidade máxima desceu de .58–.68 para .38–.48: a
+     sombra do nariz é um detalhe que se lê, não a mancha principal do
+     cartão — essa é a sombra de forma da bochecha. */
+  let _nsId = 0;
+
+  /* Folha afilada: espinha (x0,y0)→(x1,y1), meia-largura w na origem,
+     `bow` empurra a barriga para fora do eixo (a sombra do nariz curva
+     para o canto da boca em vez de descer a direito). */
+  function taper(x0, y0, x1, y1, w, bow) {
+    const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy) || 1;
+    const px = -dy / len, py = dx / len;
+    const mx = (x0 + x1) / 2 + px * (bow || 0), my = (y0 + y1) / 2 + py * (bow || 0);
+    return `M${n(x0 + px * w)} ${n(y0 + py * w)}
+      Q${n(mx + px * w * 1.15)} ${n(my + py * w * 1.15)} ${n(x1)} ${n(y1)}
+      Q${n(mx - px * w * 1.15)} ${n(my - py * w * 1.15)} ${n(x0 - px * w)} ${n(y0 - py * w)} Z`
+      .replace(/\s+/g, ' ');
+  }
+
+  /* Forma + gradiente longitudinal. `#0b0b0e` com alfa (e não branco) para
+     que, dentro do grupo `multiply`, o que não é sombra deixe passar a
+     sombra de forma que está por baixo em vez de a apagar. */
+  function leaf(d, x0, y0, x1, y1, o0, fid) {
+    const id = 'nsg' + (++_nsId);
+    return `<defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse"
+        x1="${n(x0)}" y1="${n(y0)}" x2="${n(x1)}" y2="${n(y1)}">
+        <stop offset="0" stop-color="#0b0b0e" stop-opacity="${o0}"/>
+        <stop offset="0.5" stop-color="#0b0b0e" stop-opacity="${(o0 * 0.62).toFixed(3)}"/>
+        <stop offset="1" stop-color="#0b0b0e" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="${d}" fill="url(#${id})" filter="url(#${fid})"/>`;
+  }
+
+  function noseShadow(kind, B, right, fid) {
+    const s = right ? 1 : -1;
+    const wing = right ? B.wingR : B.wingL;
+    const corner = right ? B.cornerR : B.cornerL;
+    /* A sombra nasce na ASA da narina (B.nose), não no sulco do lábio
+       (B.noseBase): dois pontos separados por 3 unidades, mas começar no
+       segundo descolava a sombra do nariz e era metade do efeito de caroço. */
+    const y0 = B.nose - 2;
     switch (kind) {
-      case 'butterfly':   // simétrica, mesmo por baixo do nariz
-        return m('M69 103 Q80 120 91 103 Q80 109 69 103 Z', 0.52);
-      case 'loop':        // laço curto virado ao canto da boca, sem tocar na maçã
-        return flip(m('M83 100 Q93 105 91 113 Q86 115 83 107 Z'));
-      case 'rembrandt':   // desce ao canto do lábio e junta-se à sombra da face
-        return flip(m('M83 98 Q97 105 96 117 Q91 123 84 117 Q81 108 83 98 Z'));
-      case 'split':       // metade do rosto É a sombra: não há sombra própria
-        return '';
-      case 'under':       // luz de baixo: a sombra sobe
-        return m('M71 96 Q80 86 89 96 Q80 92 71 96 Z', 0.35);
-      default:
-        return '';
+      case 'loop': {
+        // pequena e oval, virada ao canto da boca sem lá chegar
+        const x0 = wing + s * 0.2, x1 = wing + s * 3.4, y1 = y0 + 9.5;
+        return leaf(taper(x0, y0, x1, y1, 1.9, s * 0.9), x0, y0, x1, y1, 0.46, fid);
+      }
+      case 'rembrandt': {
+        // desce até ao canto da boca, onde encontra a sombra da bochecha
+        const x0 = wing + s * 0.2, x1 = corner - s * 0.6, y1 = B.mouth - 2.5;
+        return leaf(taper(x0, y0, x1, y1, 2.1, s * 1.4), x0, y0, x1, y1, 0.48, fid);
+      }
+      case 'butterfly': {
+        /* Crescente simétrico sob o septo. Nunca chega ao lábio: uma
+           borboleta que toca na boca quer dizer luz alta demais. */
+        const yt = y0 + 0.5, dep = yt + 8;
+        const d = `M${n(B.wingL + 1.2)} ${n(yt)} Q${n(B.cx)} ${n(dep)} ${n(B.wingR - 1.2)} ${n(yt)}
+          Q${n(B.cx)} ${n(yt - 1.2)} ${n(B.wingL + 1.2)} ${n(yt)} Z`.replace(/\s+/g, ' ');
+        /* A borboleta é o SINAL do esquema: se se esbate como a sombra do
+           loop deixa de haver cartão. Mais densa, e o desvanecimento só
+           começa depois de metade da forma. */
+        return leaf(d, B.cx, yt - 1, B.cx, dep, 0.6, fid);
+      }
+      case 'under': {
+        // luz de baixo: a sombra sobe pela cana do nariz até à testa
+        const yt = y0 - 1, top = yt - 9;
+        const d = `M${n(B.wingL + 1.8)} ${n(yt)} Q${n(B.cx)} ${n(top)} ${n(B.wingR - 1.8)} ${n(yt)}
+          Q${n(B.cx)} ${n(yt - 2.4)} ${n(B.wingL + 1.8)} ${n(yt)} Z`.replace(/\s+/g, ' ');
+        return leaf(d, B.cx, yt, B.cx, top, 0.3, fid);
+      }
+      default: return '';
     }
+  }
+
+  /* Triângulo de Rembrandt: uma nesga de luz na maçã do lado ESCURO, entre
+     a sombra do nariz e a sombra da bochecha, do tamanho de um olho. Vai
+     dentro do grupo `multiply` e é BRANCO: onde é branco não há
+     escurecimento, ou seja, devolve a luz que a sombra tinha tirado. */
+  function rembrandtTriangle(B, right, fid) {
+    const s = right ? 1 : -1;
+    const inner = (right ? B.wingR : B.wingL) + s * 5;
+    const outer = right ? B.eyeOutR : B.eyeOutL;
+    return `<path d="M${n(inner)} ${n(B.eye + 9)} L${n(outer - s * 3)} ${n(B.eye + 13)} L${n(inner + s * 3)} ${n(B.noseBase - 1)} Z"
+      fill="#ffffff" opacity="0.95" filter="url(#${fid})"/>`;
   }
 
   function face(p) {
     const g = uid('fc');
+    const B = BASES[p.base || 'a'];
+    if (!B || !B.src) {
+      return `<svg class="plt-face" viewBox="0 0 ${F.W} ${F.H}" role="img" aria-label="Resultado indisponível">
+        <rect width="${F.W}" height="${F.H}" rx="10" fill="#16202e"/></svg>`;
+    }
+
     const az = p.faceAz != null ? p.faceAz : (p.lights && p.lights[0] ? p.lights[0].az : 0);
     const elev = p.faceElev != null ? p.faceElev : (p.lights && p.lights[0] ? (p.lights[0].elev || 0) : 0);
-    const left = az > 0;
+    const right = az > 0;                    // luz da esquerda → sombra à direita
     const amt = Math.min(1, Math.abs(az) / 90);
     const edge = p.edge == null ? 0.5 : p.edge;
     const fill = p.fill == null ? 0 : p.fill;
     const hard = p.nose === 'split';
 
-    /* Sombras próprias: queixo sempre, maçãs só quando a luz vem de cima. */
-    const chin = `<path d="M63 124 Q80 141 97 124 Q80 132 63 124 Z" fill="#000" opacity="${elev > 0.6 ? 0.34 : 0.2}"/>`;
-    const cheeks = elev > 0.8 && Math.abs(az) < 20
-      ? `<path d="M51 92 Q61 107 64 121 Q53 112 51 92 Z" fill="#000" opacity="${p.fill > 0.7 ? 0.2 : 0.34}"/>
-         <path d="M109 92 Q99 107 96 121 Q107 112 109 92 Z" fill="#000" opacity="${p.fill > 0.7 ? 0.2 : 0.34}"/>
-         <path d="M64 72 Q80 66 96 72 Q80 76 64 72 Z" fill="#000" opacity=".18"/>` : '';
-    /* O triângulo iluminado sob o olho do lado escuro é o que faz um
-       Rembrandt ser um Rembrandt — vem depois da sombra, em `screen`. */
-    const tri = p.tri
-      ? (left
-        ? '<path d="M95 95 L107 93 L99 111 Z" fill="#dfba91" opacity=".9"/>'
-        : '<path d="M65 95 L53 93 L61 111 Z" fill="#dfba91" opacity=".9"/>')
-      : '';
+    const fSoft = g + 'sf';
+    const fNose = g + 'sn';
 
-    const eye = cx => `<g>
-      <path d="M${cx - 8} 86 Q${cx} 79 ${cx + 8} 86 Q${cx} 93 ${cx - 8} 86 Z" fill="#f7f2ea"/>
-      <circle cx="${cx}" cy="86" r="3.6" fill="#4a3524"/>
-      <circle cx="${cx}" cy="86" r="1.7" fill="#150e08"/>
-      <circle cx="${cx + (left ? -1.6 : 1.6)}" cy="84.4" r="1.3" fill="#fff" opacity=".95"/>
-      <path d="M${cx - 9} 86 Q${cx} 78 ${cx + 9} 86" fill="none" stroke="#3a2a1c" stroke-width="1.3" stroke-linecap="round"/>
-      <path d="M${cx - 9.5} 75 Q${cx} 70 ${cx + 9.5} 75" fill="none" stroke="#4a3524" stroke-width="2.6" stroke-linecap="round"/>
+    /* Split: o terminador é uma FORMA que desce pela linha do meio da cara
+       (testa, crista do nariz, sulco do lábio, queixo). Um gradiente linear
+       dava uma navalha vertical de alto a baixo da IMAGEM e lia-se como uma
+       fotografia cortada ao meio no editor, não como luz. */
+    const splitPath = (() => {
+      const x = B.cx;
+      return `M${x + 4} 0 C${x + 1} ${n(B.eye * 0.6)} ${x + 1} ${n(B.eye * 0.85)} ${x + 2} ${B.eye}
+        C${x + 4} ${B.nose - 9} ${x + 7} ${B.nose - 2} ${x + 6} ${B.noseBase}
+        C${x + 5} ${B.mouth - 5} ${x + 1} ${B.mouth + 1} ${x + 2} ${B.chin}
+        C${x + 3} ${F.H - 22} ${x + 3} ${F.H - 10} ${x + 4} ${F.H} L${F.W} ${F.H} L${F.W} 0 Z`
+        .replace(/\s+/g, ' ');
+    })();
+    const splitTone = hex(255 * Math.min(1, 0.16 + fill * 0.62));
+
+    const vAmt = Math.min(1, Math.abs(elev));
+    const vOn = vAmt > 0.4;
+
+    /* A camada de sombra inteira num só grupo isolado: dentro dele as formas
+       compõem-se normalmente (o branco do triângulo apaga o cinzento por
+       baixo) e só o resultado é multiplicado pela fotografia. */
+    const shadow = `<g style="mix-blend-mode:multiply">
+      ${hard
+        ? `<g${right ? '' : ` transform="translate(${F.W} 0) scale(-1 1)"`}>
+             <rect width="${F.W}" height="${F.H}" fill="#fff"/>
+             <path d="${splitPath}" fill="${splitTone}" filter="url(#${g}sp)"/>
+           </g>`
+        : `<rect width="${F.W}" height="${F.H}" fill="url(#${g}h)"/>`}
+      ${vOn ? `<rect width="${F.W}" height="${F.H}" fill="url(#${g}v)" style="mix-blend-mode:multiply"/>` : ''}
+      ${noseShadow(p.nose, B, right, fNose)}
+      ${p.tri ? rembrandtTriangle(B, right, fSoft) : ''}
     </g>`;
 
-    const features = `${eye(64)}${eye(96)}
-      <path d="M79 82 Q77 94 74 102" fill="none" stroke="#b08a63" stroke-width="1.2" opacity=".7" stroke-linecap="round"/>
-      <path d="M73 104 Q80 108 87 104" fill="none" stroke="#a97f57" stroke-width="1.4" opacity=".75" stroke-linecap="round"/>
-      <path d="M69 116 Q80 111 91 116 Q80 125 69 116 Z" fill="${SKIN.lips}"/>
-      <path d="M69 116 Q80 118 91 116" fill="none" stroke="#7a4234" stroke-width=".9" opacity=".85"/>`;
+    const hGrad = hard ? '' : `<linearGradient id="${g}h" x1="0" y1="0" x2="1" y2="0">
+      ${formStops(B, amt, edge, fill, right)}
+    </linearGradient>`;
+    const vGrad = vOn ? `<linearGradient id="${g}v" x1="0" y1="${elev > 0 ? 0 : 1}" x2="0" y2="${elev > 0 ? 1 : 0}">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.55" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="${hex(255 * (1 - vAmt * 0.3 * (1 - fill * 0.6)))}"/>
+    </linearGradient>` : '';
 
-    /* Recorte e luz de cabelo: luz ACRESCENTADA, por isso vão por cima de
-       tudo — inclusive da sombra — em traço claro e sem blend (um <g> com
-       clip-path isola o grupo e mataria qualquer mix-blend-mode aqui). */
+    /* Luz de recorte. Antes eram duas faixas coladas às MARGENS DA IMAGEM,
+       a 40 unidades da cara: liam-se como duas cortinas a brilhar e nao como
+       luz. Agora os gradientes arrancam na aresta da CARA (`faceL`/`faceR`) e
+       apagam-se para dentro em 16 unidades — e o contorno da maçã do rosto,
+       do queixo e do ombro que acende, que e o que o cartao promete. */
+    /* Luz de recorte = o CONTORNO da cabeca a acender. Duas tentativas
+       falhadas ficam aqui registadas porque a licao vale: faixas coladas as
+       margens da imagem liam-se como cortinas a brilhar, e faixas coladas a
+       aresta da cara liam-se como duas barras verticais a cortar o rosto.
+       Uma luz de recorte segue a SILHUETA — logo e um traco eliptico com o
+       tamanho da cabeca, desfocado, em `screen`. */
     const rimC = p.rimTint || '#ffe9c0';
-    const rw = p.rim === 2 ? 7 : 5;
-    /* Só as ARESTAS EXTERIORES da silhueta: contornar o cabelo todo dava um
-       tubo luminoso à volta da cara, que é o oposto de uma luz de recorte. */
-    const rim = p.rim
-      ? `<g fill="none" stroke="${rimC}" stroke-linecap="round" clip-path="url(#${g}clipAll)">
-          <path d="M47 142 C39 118 36 96 37 86 C39 50 54 24 80 24" stroke-width="${rw}" opacity=".8"/>
-          <path d="M113 142 C121 118 124 96 123 86 C121 50 106 24 80 24" stroke-width="${rw}" opacity=".8"/>
-          <path d="M22 200 C26 168 40 154 62 148" stroke-width="${rw - 1}" opacity=".55"/>
-          <path d="M138 200 C134 168 120 154 98 148" stroke-width="${rw - 1}" opacity=".55"/>
-         </g>
-         <path d="${FACE_PATH}" fill="none" stroke="${rimC}" stroke-width="${rw - 1.5}"
-           opacity=".6" clip-path="url(#${g}clipFace)" transform="translate(${left ? 4 : -4} 0)"/>` : '';
+    const rim = p.rim ? `<g mask="url(#${g}rm)" style="mix-blend-mode:screen">
+      <ellipse cx="${B.headCx}" cy="${B.headCy}" rx="${B.headRx}" ry="${B.headRy}"
+        fill="none" stroke="${rimC}" stroke-width="${p.rim === 2 ? 6 : 5}"
+        opacity="${p.rim === 2 ? 0.85 : 0.66}" filter="url(#${g}rb)"/></g>` : '';
+    const rimGrads = '';
+
+    /* Luz de cabelo: uma mancha em cima da COROA, nao uma faixa a atravessar
+       a imagem toda — essa levantava tambem o fundo e a testa e lia-se como
+       sobre-exposicao. */
     const hairLight = p.hairLight
-      ? `<path d="M50 58 Q80 26 110 58" fill="none" stroke="#ffeccb" stroke-width="7"
-           opacity=".5" stroke-linecap="round" clip-path="url(#${g}clipAll)"/>` : '';
+      ? `<ellipse cx="${B.cx}" cy="${B.eye - 46}" rx="46" ry="34" fill="url(#${g}top)" style="mix-blend-mode:screen"/>` : '';
+    const hairGrad = p.hairLight
+      ? `<radialGradient id="${g}top" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#ffeccb" stop-opacity=".7"/>
+          <stop offset="1" stop-color="#ffeccb" stop-opacity="0"/></radialGradient>` : '';
 
-    const gelWash = p.gels
-      ? `<rect x="0" width="80" height="200" fill="${p.gels[0]}" opacity=".5"
-           clip-path="url(#${g}clipAll)" style="mix-blend-mode:multiply"/>
-         <rect x="80" width="80" height="200" fill="${p.gels[1]}" opacity=".5"
-           clip-path="url(#${g}clipAll)" style="mix-blend-mode:multiply"/>` : '';
+    const gels = p.gels ? `
+      <rect x="0" width="${F.W / 2}" height="${F.H}" fill="${p.gels[0]}" opacity=".42" style="mix-blend-mode:multiply"/>
+      <rect x="${F.W / 2}" width="${F.W / 2}" height="${F.H}" fill="${p.gels[1]}" opacity=".42" style="mix-blend-mode:multiply"/>` : '';
 
-    /* Componente vertical da sombra: só existe quando a luz é claramente
-       alta ou claramente baixa. */
-    const vAmt = Math.min(1, Math.abs(elev));
-    const vgrad = vAmt > 0.4 && !hard
-      ? `<linearGradient id="${g}v" x1="0" y1="${elev > 0 ? 0 : 1}" x2="0" y2="${elev > 0 ? 1 : 0}">
-          <stop offset="0" stop-color="#ffffff"/>
-          <stop offset="0.55" stop-color="#ffffff"/>
-          <stop offset="1" stop-color="#${Math.round(255 * (1 - vAmt * 0.3 * (1 - fill * 0.7))).toString(16).padStart(2, '0').repeat(3)}"/>
-        </linearGradient>` : '';
+    const dark = p.faceBg === '#080b10' || p.faceBg === '#0a0f16';
+    const bg = p.bgPool
+      ? `<ellipse cx="${B.cx}" cy="${B.eye + 4}" rx="86" ry="96" fill="url(#${g}pool)" style="mix-blend-mode:screen"/>`
+      : (p.bgLit && p.faceBg === '#f2f5f8')
+        ? `<rect width="${F.W}" height="${F.H}" fill="#fff" opacity=".3" style="mix-blend-mode:screen"/>`
+        : dark
+          ? `<ellipse cx="${B.cx}" cy="${B.eye + 10}" rx="${F.W * 0.6}" ry="${F.H * 0.56}" fill="url(#${g}vig)"/>`
+          : '';
+    const bgGrads = `
+      ${p.bgPool ? `<radialGradient id="${g}pool" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#cfe0f2" stop-opacity=".55"/><stop offset="1" stop-color="#cfe0f2" stop-opacity="0"/></radialGradient>` : ''}
+      ${dark ? `<radialGradient id="${g}vig" cx="50%" cy="50%" r="50%">
+        <stop offset="0.42" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".93"/></radialGradient>` : ''}`;
 
-    return `<svg class="plt-face" viewBox="0 0 160 200" role="img" aria-label="O que este esquema faz ao rosto">
+    const tint = p.bgTint
+      ? `<rect width="${F.W}" height="${F.H}" fill="${p.bgTint}" opacity=".18" style="mix-blend-mode:screen"/>` : '';
+
+    return `<svg class="plt-face" viewBox="0 0 ${F.W} ${F.H}" role="img"
+      aria-label="O que este esquema faz ao rosto">
       <defs>
-        <linearGradient id="${g}h" x1="${left ? 0 : 1}" y1="0" x2="${left ? 1 : 0}" y2="0">
-          ${hard
-        ? `<stop offset="0" stop-color="#ffffff"/><stop offset="0.497" stop-color="#ffffff"/>
-             <stop offset="0.503" stop-color="#${Math.round(255 * (0.1 + fill * 0.7)).toString(16).padStart(2, '0').repeat(3)}"/>
-             <stop offset="1" stop-color="#${Math.round(255 * (0.1 + fill * 0.7)).toString(16).padStart(2, '0').repeat(3)}"/>`
-        : shadeStops(edge, fill, amt)}
-        </linearGradient>
-        ${vgrad}
-        ${p.bgPool ? `<radialGradient id="${g}pool" cx="50%" cy="40%" r="62%">
-          <stop offset="0" stop-color="#a8bbd1"/><stop offset="1" stop-color="#0f1824"/></radialGradient>` : ''}
-        <clipPath id="${g}clipFace"><path d="${FACE_PATH}"/></clipPath>
-        <clipPath id="${g}clipAll">
-          <path d="${HAIR_PATH}"/><path d="${FACE_PATH}"/><path d="${NECK_PATH}"/><path d="${BODY_PATH}"/>
-        </clipPath>
+        ${hGrad}${vGrad}${rimGrads}${hairGrad}${bgGrads}
+        <!-- userSpaceOnUse e nao a caixa do objeto: a sombra do nariz e um
+             traco quase vertical, logo a sua bounding box tem 3 unidades de
+             largura e uma regiao de filtro de 220% dessa caixa CORTAVA o
+             contorno esbatido — o resultado era um rectangulo cinzento de
+             arestas duras ao lado do nariz, que foi o que se viu no portal. -->
+        <filter id="${fSoft}" filterUnits="userSpaceOnUse" x="0" y="0" width="${F.W}" height="${F.H}">
+          <feGaussianBlur stdDeviation="${n(1.3 + edge * 1.6)}"/></filter>
+        <!-- O desfoque da sombra do nariz nao pode escalar como o da sombra
+             de forma: a forma cobre meia cara e aguenta 2+ unidades de
+             desfoque, a sombra do nariz tem 3 ou 4 unidades de largura e
+             com esse valor desaparecia (era o que acontecia a borboleta,
+             que e justamente o unico sinal do cartao Paramount). -->
+        <filter id="${fNose}" filterUnits="userSpaceOnUse" x="0" y="0" width="${F.W}" height="${F.H}">
+          <feGaussianBlur stdDeviation="${n(0.6 + edge * 0.9)}"/></filter>
+        ${hard ? `<filter id="${g}sp" filterUnits="userSpaceOnUse" x="0" y="0" width="${F.W}" height="${F.H}">
+          <feGaussianBlur stdDeviation="${n(1 + edge * 7)}"/></filter>` : ''}
+        ${p.rim ? `<filter id="${g}rb" filterUnits="userSpaceOnUse" x="0" y="0" width="${F.W}" height="${F.H}">
+          <feGaussianBlur stdDeviation="2.6"/></filter>
+          <!-- So os DOIS ARCOS laterais: um recorte vem de tras e de lado, e
+               um anel fechado a volta da cara lia-se como uma auréola. -->
+          <linearGradient id="${g}rmg" gradientUnits="userSpaceOnUse" x1="0" x2="${F.W}" y1="0" y2="0">
+            <stop offset="0" stop-color="#fff"/>
+            <stop offset="${((B.headCx - B.headRx * 0.94) / F.W).toFixed(3)}" stop-color="#fff"/>
+            <stop offset="${((B.headCx - B.headRx * (p.rim === 2 ? 0.6 : 0.32)) / F.W).toFixed(3)}" stop-color="#000"/>
+            <stop offset="${((B.headCx + B.headRx * (p.rim === 2 ? 0.6 : 0.32)) / F.W).toFixed(3)}" stop-color="#000"/>
+            <stop offset="${((B.headCx + B.headRx * 0.94) / F.W).toFixed(3)}" stop-color="#fff"/>
+            <stop offset="1" stop-color="#fff"/></linearGradient>
+          <mask id="${g}rm"><rect width="${F.W}" height="${F.H}" fill="url(#${g}rmg)"/></mask>` : ''}
+        <clipPath id="${g}clip"><rect width="${F.W}" height="${F.H}" rx="10"/></clipPath>
       </defs>
-      <rect width="160" height="200" rx="10" fill="${p.bgPool ? `url(#${g}pool)` : (p.faceBg || '#1b2635')}"/>
-      ${p.bgTint ? `<rect width="160" height="200" rx="10" fill="${p.bgTint}" opacity=".55"/>` : ''}
-
-      <!-- 2. matéria: cabelo, pescoço, ombros, rosto -->
-      <path d="${HAIR_PATH}" fill="${SKIN.hair}"/>
-      <path d="${NECK_PATH}" fill="${SKIN.base}"/>
-      <path d="${BODY_PATH}" fill="${SKIN.shirt}"/>
-      <path d="${FACE_PATH}" fill="${SKIN.base}"/>
-      <!-- 3. feições -->
-      <g clip-path="url(#${g}clipFace)">${features}</g>
-      <!-- 4. sombra por cima de tudo.
-           clip-path e mix-blend-mode TÊM de estar no mesmo elemento: um <g>
-           com clip-path à volta isola o grupo e o multiply passa a compor
-           contra vazio — o desenho todo saía branco. -->
-      <rect width="160" height="200" fill="url(#${g}h)" clip-path="url(#${g}clipAll)" style="mix-blend-mode:multiply"/>
-      ${vgrad ? `<rect width="160" height="200" fill="url(#${g}v)" clip-path="url(#${g}clipAll)" style="mix-blend-mode:multiply"/>` : ''}
-      <g clip-path="url(#${g}clipFace)">${cheeks}${chin}${noseShadow(p.nose, left)}${tri}</g>
-      ${hairLight}${rim}${gelWash}
+      <g clip-path="url(#${g}clip)">
+        <image href="${esc(B.src)}" x="0" y="0" width="${F.W}" height="${F.H}" preserveAspectRatio="xMidYMid slice"/>
+        ${shadow}
+        ${bg}${tint}${hairLight}${rim}${gels}
+      </g>
     </svg>`;
   }
 
@@ -406,8 +573,15 @@ const PhotoLightArt = (function () {
       tell: 'O lado do rosto virado à câmara está em sombra; a luz cai no lado estreito.',
       why: 'Afina o rosto. É a escolha por omissão para rostos redondos ou largos.',
       watch: 'Precisa de fundo escuro para ler bem — em fundo claro perde-se a sombra.',
-      lights: [{ az: 55, elev: 0.5, kind: 'softbox', tag: 'lado curto' }],
-      nose: 'rembrandt', tri: 1, edge: 0.35, fill: 0.1,
+      /* Short e Broad nao existem num rosto de frente: o que muda e o LADO
+         para onde a cabeca esta virada. Por isso estes dois (e so estes) usam
+         a base de tres-quartos `lb-face-c`. Nela o nariz esta a esquerda do
+         centro, logo o lado LARGO (perto da camara) e o da direita e o lado
+         CURTO (longe) e o da esquerda. Short = luz no lado curto = luz da
+         esquerda; Broad = luz no lado largo = luz da direita. */
+      base: 'c',
+      lights: [{ az: -55, elev: 0.5, kind: 'softbox', tag: 'lado curto' }],
+      nose: 'rembrandt', tri: 1, edge: 0.4, fill: 0.15,
     },
     {
       id: 'broad', name: 'Broad (luz larga)', family: 'forma',
@@ -416,8 +590,9 @@ const PhotoLightArt = (function () {
       tell: 'O lado grande do rosto, o que está virado à câmara, é o que está aceso.',
       why: 'Alarga e abre o rosto — bom para rostos muito magros ou para um tom mais aberto e simpático.',
       watch: 'Num rosto já cheio engorda. É o erro mais comum de quem posiciona a luz sem pensar.',
-      lights: [{ az: 35, elev: 0.5, kind: 'softbox', tag: 'lado largo' }],
-      nose: 'loop', edge: 0.7, fill: 0.5,
+      base: 'c',
+      lights: [{ az: 45, elev: 0.5, kind: 'softbox', tag: 'lado largo' }],
+      nose: 'loop', edge: 0.55, fill: 0.3,
     },
     /* ── multi-luz ── */
     {
@@ -431,7 +606,7 @@ const PhotoLightArt = (function () {
         { az: 45, elev: 0.5, kind: 'softbox', tag: 'chave' },
         { az: -50, elev: 0, kind: 'softbox', role: 'fill', dist: 'far', tag: 'fill −1EV' },
       ],
-      nose: 'loop', edge: 0.7, fill: 0.6,
+      nose: 'loop', edge: 0.6, fill: 0.5,
     },
     {
       id: 'three-point', name: 'Chave + fill + cabelo', family: 'multi',
@@ -445,7 +620,7 @@ const PhotoLightArt = (function () {
         { az: -50, elev: 0, kind: 'softbox', role: 'fill', dist: 'far', tag: 'fill' },
         { az: 155, elev: 1, kind: 'honeycomb', role: 'rim', tag: 'cabelo' },
       ],
-      nose: 'loop', edge: 0.7, fill: 0.55, hairLight: 1,
+      nose: 'loop', edge: 0.6, fill: 0.45, hairLight: 1,
     },
     {
       id: 'rim', name: 'Contraluz / recorte', family: 'multi',
@@ -459,7 +634,7 @@ const PhotoLightArt = (function () {
         { az: -145, elev: 0.5, kind: 'honeycomb', role: 'rim', tag: 'recorte' },
         { az: 20, elev: 0.5, kind: 'softbox', role: 'fill', dist: 'far', tag: 'chave fraca' },
       ],
-      nose: 'loop', edge: 0.5, fill: 0.05, rim: 2, faceBg: '#0a0f16',
+      nose: 'loop', edge: 0.5, fill: 0.02, rim: 2, faceBg: '#0a0f16',
     },
     {
       id: 'bg-light', name: 'Luz no fundo', family: 'multi',
@@ -472,7 +647,7 @@ const PhotoLightArt = (function () {
         { az: 45, elev: 0.5, kind: 'softbox', tag: 'chave' },
         { az: 180, elev: 0, kind: 'strobe', role: 'fill', dist: 'close', tag: '→ fundo' },
       ],
-      nose: 'loop', edge: 0.65, fill: 0.4, bgPool: 1, bgLit: 1,
+      nose: 'loop', edge: 0.6, fill: 0.3, bgPool: 1, bgLit: 1,
     },
     /* ── tonalidade ── */
     {
@@ -535,7 +710,7 @@ const PhotoLightArt = (function () {
       why: 'É o softbox que já tens em casa. Metade dos retratos publicados são isto.',
       watch: 'Desliga a luz do teto: misturar tungsténio com luz de dia dá dois brancos na mesma cara.',
       lights: [{ az: 60, elev: 0.3, kind: 'window', tag: 'janela' }],
-      nose: 'loop', edge: 0.75, fill: 0.3,
+      nose: 'loop', edge: 0.7, fill: 0.18,
     },
     {
       id: 'window-fill', name: 'Janela + refletor', family: 'natural', photo: 'lp-window-reflector',
@@ -548,7 +723,7 @@ const PhotoLightArt = (function () {
         { az: 60, elev: 0.3, kind: 'window', tag: 'janela' },
         { az: -60, elev: 0, kind: 'reflector', role: 'fill', dist: 'close', tag: 'cartão' },
       ],
-      nose: 'loop', edge: 0.85, fill: 0.75,
+      nose: 'loop', edge: 0.8, fill: 0.62,
     },
     {
       id: 'golden-back', name: 'Contraluz de hora dourada', family: 'natural', star: 1, photo: 'lp-golden-back',
@@ -585,5 +760,5 @@ const PhotoLightArt = (function () {
 
   const byId = id => PATTERNS.find(p => p.id === id) || null;
 
-  return { setup, face, PATTERNS, FAMILIES, byId };
+  return { setup, face, setFace, PATTERNS, FAMILIES, byId };
 })();

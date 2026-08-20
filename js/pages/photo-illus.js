@@ -74,12 +74,8 @@ const PhotoIllus = (function () {
 
     let subject = '';
     if (subj === 'person') {
-      const px = w * 0.3, base = h * 0.9, ph = h * 0.42;
-      subject = `<g fill="#050b14">
-        <circle cx="${px}" cy="${base - ph}" r="${ph * 0.15}"/>
-        <path d="M${px - ph * 0.12} ${base - ph * 0.82} Q${px} ${base - ph * 0.95} ${px + ph * 0.12} ${base - ph * 0.82}
-          L${px + ph * 0.16} ${base - ph * 0.32} L${px + ph * 0.1} ${base} L${px} ${base - ph * 0.35}
-          L${px - ph * 0.1} ${base} L${px - ph * 0.16} ${base - ph * 0.32} Z"/></g>`;
+      // a MESMA pessoa do resto do portal, em silhueta (ver figure)
+      subject = figure(w * 0.3, h * 0.9, h * 0.44, '#050b14', { sil: 1 });
     } else if (subj === 'tree') {
       const px = w * 0.32, base = h * 0.92, th = h * 0.5;
       subject = `<g fill="#050b14">
@@ -342,8 +338,33 @@ const PhotoIllus = (function () {
       <path d="M7 -4 L14 -7 L14 7 L7 4 Z"/>
       <circle cx="-1" cy="0" r="3" fill="#04121f"/></g>`;
   }
-  // Pessoa de pé, vista de lado.
-  function figure(x, base, h, col = '#0a1725') {
+  /* Pessoa de pé. O boneco vetorial que aqui estava era o elo mais fraco
+     de todos os esquemas — chamava mais atenção a si próprio do que ao que
+     o diagrama queria mostrar. Quando a personagem recortada do portal
+     está disponível (`crop-standing`, fundo transparente), é ela que entra;
+     a silhueta fica apenas como recurso se o asset faltar.
+     `setSubject(url)` é chamado uma vez pela photography.js. */
+  let _subject = null;
+  const SUBJ_AR = 832 / 1216;
+  function setSubject(url) { _subject = url || null; }
+  /* `sil` recorta a MESMA fotografia mas achatada a uma silhueta: nas cenas
+     desenhadas (exposicao, DOF, focal, movimento) o sujeito e contraluz, e
+     um recorte a cores lia-se como uma colagem. A silhueta tem as proporcoes,
+     o cabelo e a roupa de uma pessoa a serio — que e o que faltava ao boneco
+     de circulo-e-duas-pernas que estava aqui antes. */
+  let _silId = 0;
+  function figure(x, base, h, col = '#0a1725', opt = {}) {
+    if (_subject) {
+      const w = h * SUBJ_AR;
+      const img = `<image href="${esc(_subject)}" x="${(x - w / 2).toFixed(1)}" y="${(base - h).toFixed(1)}"
+        width="${w.toFixed(1)}" height="${h.toFixed(1)}" preserveAspectRatio="xMidYMid meet"`;
+      if (!opt.sil) return img + '/>';
+      const id = 'phsil' + (++_silId);
+      return `<defs><filter id="${id}" x="-5%" y="-5%" width="110%" height="110%"
+        color-interpolation-filters="sRGB"><feColorMatrix type="matrix"
+        values="0 0 0 0 0.02  0 0 0 0 0.045  0 0 0 0 0.08  0 0 0 1 0"/></filter></defs>
+        ${img} filter="url(#${id})"/>`;
+    }
     return `<g fill="${col}">
       <circle cx="${x}" cy="${base - h}" r="${h * 0.15}"/>
       <path d="M${x - h * 0.11} ${base - h * 0.82} Q${x} ${base - h * 0.95} ${x + h * 0.11} ${base - h * 0.82}
@@ -505,24 +526,37 @@ const PhotoIllus = (function () {
      `i * 0` era um escalonamento que ficou a zero). Passam a legenda à direita,
      com amostra de cor por linha: cada tamanho fica identificado sem ambiguidade
      e as caixas ficam livres para se comparar a área, que é o que se ensina. */
-  ART['eq-sensors'] = () => {
-    const W = 430, H = 190, cx = 150, cy = H / 2 - 4;
+  /* Tamanhos de sensor à escala real. `hl` marca o sensor de que se está
+     a falar: sem isso, esta ilustração aparecia igual em Telemóvel, APS-C,
+     Full Frame e Micro 4/3 — e quem clicava em "Smartphone" via um
+     desenho onde o maior retângulo parecia ser o dele. Uma comparação só
+     ensina se disser ONDE está a coisa escolhida. */
+  ART['eq-sensors'] = (o = {}) => {
+    const W = 430, H = 200, cx = 148, cy = H / 2 - 6;
     const boxes = [
-      { w: 36, h: 24, lbl: 'Full frame', sub: '36×24 mm', col: C.gold },
-      { w: 23.6, h: 15.7, lbl: 'APS-C', sub: 'crop 1.5–1.6×', col: C.cyan },
-      { w: 17.3, h: 13, lbl: 'Micro 4/3', sub: 'crop 2×', col: C.good },
-      { w: 9.6, h: 7.2, lbl: 'Telemóvel', sub: '~1/1.5"', col: C.dim },
+      { id: 'ff', w: 36, h: 24, lbl: 'Full frame', sub: '36×24 mm', col: C.gold },
+      { id: 'apsc', w: 23.6, h: 15.7, lbl: 'APS-C', sub: 'crop 1.5–1.6×', col: C.cyan },
+      { id: 'mft', w: 17.3, h: 13, lbl: 'Micro 4/3', sub: 'crop 2×', col: C.good },
+      { id: 'one', w: 13.2, h: 8.8, lbl: '1 polegada', sub: 'compactas · crop 2.7×', col: '#c084fc' },
+      { id: 'phone', w: 9.6, h: 7.2, lbl: 'Telemóvel', sub: '~1/1.5" · crop ~4.7×', col: C.bad },
     ];
-    const k = 4.2, lx = 268, ly = 42, step = 27;
-    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img" aria-label="Tamanhos de sensor comparados: full frame, APS-C, Micro 4/3 e telemóvel">
-      ${boxes.map(b => `<rect x="${(cx - b.w * k / 2).toFixed(1)}" y="${(cy - b.h * k / 2).toFixed(1)}" width="${(b.w * k).toFixed(1)}" height="${(b.h * k).toFixed(1)}"
-        fill="none" stroke="${b.col}" stroke-width="1.8" rx="2"/>`).join('')}
-      ${boxes.map((b, i) => `<g>
-        <rect x="${lx}" y="${ly + i * step - 9}" width="13" height="10" rx="2" fill="none" stroke="${b.col}" stroke-width="1.8"/>
-        <text x="${lx + 20}" y="${ly + i * step}" font-family="var(--font-sans, sans-serif)" font-size="10" font-weight="700" fill="${b.col}">${esc(b.lbl)}</text>
+    const hl = o.hl || null;
+    const k = 4.2, lx = 262, ly = 34, step = 31;
+    const on = b => !hl || b.id === hl;
+    return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img"
+      aria-label="Tamanhos de sensor comparados${hl ? ', com o sensor em causa destacado' : ''}">
+      ${boxes.map(b => `<rect x="${(cx - b.w * k / 2).toFixed(1)}" y="${(cy - b.h * k / 2).toFixed(1)}"
+        width="${(b.w * k).toFixed(1)}" height="${(b.h * k).toFixed(1)}" rx="2"
+        fill="${b.id === hl ? b.col : 'none'}" fill-opacity="${b.id === hl ? 0.22 : 0}"
+        stroke="${b.col}" stroke-width="${b.id === hl ? 2.6 : 1.4}" opacity="${on(b) ? 1 : 0.32}"/>`).join('')}
+      ${boxes.map((b, i) => `<g opacity="${on(b) ? 1 : 0.4}">
+        <rect x="${lx}" y="${ly + i * step - 9}" width="13" height="10" rx="2" fill="${b.id === hl ? b.col : 'none'}" stroke="${b.col}" stroke-width="1.8"/>
+        <text x="${lx + 20}" y="${ly + i * step}" font-family="var(--font-sans, sans-serif)" font-size="10"
+          font-weight="${b.id === hl ? 800 : 700}" fill="${b.col}">${esc(b.lbl)}${b.id === hl ? '  ←' : ''}</text>
         <text x="${lx + 20}" y="${ly + i * step + 11}" font-family="var(--font-sans, sans-serif)" font-size="8.5" fill="${C.dim}">${esc(b.sub)}</text>
       </g>`).join('')}
-      ${tag(cx, H - 4, 'mais área = mais luz e menos ruído', { anchor: 'middle', fg: C.ink })}
+      ${tag(cx, H - 4, hl ? 'à escala real — o teu está a cheio' : 'mais área = mais luz e menos ruído',
+        { anchor: 'middle', fg: C.ink })}
     </svg>`;
   };
 
@@ -648,7 +682,7 @@ const PhotoIllus = (function () {
   };
 
   // ── API pública ───────────────────────────────────────────────────
-  function svg(id) { return ART[id] ? ART[id]() : ''; }
+  function svg(id, opts) { return ART[id] ? ART[id](opts || {}) : ''; }
   function has(id) { return !!ART[id]; }
 
   function visual(id, opts = {}) {
@@ -670,5 +704,5 @@ const PhotoIllus = (function () {
     });
   }
 
-  return { svg, has, visual, wire, list: () => Object.keys(ART) };
+  return { svg, has, visual, wire, setSubject, list: () => Object.keys(ART) };
 })();

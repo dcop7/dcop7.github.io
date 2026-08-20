@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v285';
+const CACHE = 'dcop7-v299';
 const STATIC = [
   '/',
   '/index.html',
@@ -89,6 +89,7 @@ const STATIC = [
   '/js/pages/photo-editlab.js',
   '/js/pages/photo-learn.js',
   '/js/pages/photo-lightart.js',
+  '/js/pages/photo-cards.js',
   '/js/pages/photo-cheats.js',
   '/js/pages/photography.js',
   '/data/photo/gear.json',

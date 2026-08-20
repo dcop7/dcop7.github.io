@@ -1003,13 +1003,16 @@
       "character": "aria",
       "style": "portrait_light",
       "matte": false,
-      "seed": 771001,
-      "prompt": "lit by soft frontal light, even flat illumination on the face, minimal shadows, catchlights centered in the eyes",
+      "seed": 881001,
+      "prompt": "completely shadowless face, no modelling at all, both cheeks exactly the same brightness, no shadow beside the nose, no shadow under the chin, flat clinical passport-photo light, dark charcoal grey studio background",
       "caption": "Luz frontal / suave",
       "size": [
         1024,
         1024
-      ]
+      ],
+      "negative": "side light, side lighting, directional light, key light from the side, rim light, backlight, hard shadow, cast shadow, shadow on the cheek, shadow under the nose, chiaroscuro, dramatic lighting, moody lighting, low key, half the face in shadow, sculpted cheekbone, strong contrast, white background, bright background, high key background, cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts",
+      "lead": "flat frontal lighting straight down the camera axis, a huge ring light right behind the lens, the face lit perfectly evenly from the front",
+      "steps": 30
     },
     {
       "id": "light-side",
@@ -1817,13 +1820,13 @@
       "group": "vision",
       "style": "vision_strong",
       "matte": false,
-      "seed": 995027,
+      "seed": 961001,
       "size": [
         1216,
         832
       ],
-      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
-      "prompt": "a runner at the peak of effort, face contorted with strain, body in maximum tension, clean blurred background isolating the athlete, low angle, dramatic side light"
+      "negative": "hands merging with the body, arm ending without a hand, fused limbs, missing arm, missing hand, extra limbs, extra fingers, mutated hands, bad anatomy, deformed face, disfigured, uncanny eyes, cartoon, 3d render, cgi, watermark, text, logo, low quality, jpeg artifacts",
+      "prompt": "a sprinter photographed side-on in mid stride at the peak of effort, both arms clearly separated from the body with the hands fully visible, one knee driving forward, face contorted with strain, clean blurred stadium background isolating the athlete, low angle, dramatic side light"
     },
     {
       "id": "vis-desporto-flat",
@@ -2467,26 +2470,26 @@
       "group": "comp2",
       "style": "scene_illus",
       "matte": false,
-      "seed": 910201,
+      "seed": 912400,
       "size": [
         1216,
         832
       ],
       "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
-      "prompt": "an aerial view of a curving sandy cove, the shoreline sweeping inward in a tightening spiral of sand and turquoise water, a small wooden boat resting exactly at the inner end of the curve where the eye arrives, golden light"
+      "prompt": "looking straight down a grand spiral staircase from the top, the steps curling inward turn after turn to a small bright opening at the very centre, warm light from above"
     },
     {
       "id": "comp-spiral-bad",
       "group": "comp2",
       "style": "scene_illus",
       "matte": false,
-      "seed": 910201,
+      "seed": 912401,
       "size": [
         1216,
         832
       ],
       "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
-      "prompt": "an aerial view of the same curving sandy cove with the same turquoise water and golden light, but the small wooden boat sits far out at the open edge of the frame, away from where the sweep of the shoreline leads, the curve arrives at empty sand"
+      "prompt": "the same grand spiral staircase photographed from the ground floor looking up at an angle, the curve flattened into overlapping rails, the centre out of frame"
     },
     {
       "id": "comp-diagonal",
@@ -2532,13 +2535,13 @@
       "group": "comp2",
       "style": "scene_illus",
       "matte": false,
-      "seed": 910251,
+      "seed": 931002,
       "size": [
         1216,
         832
       ],
-      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph, people faces, extra limbs",
-      "prompt": "the same stone arcade photographed from outside standing directly in front of the facade, the arches seen as a flat evenly spaced row of identical openings straight across the frame, every line parallel to the edges of the picture, no perspective and no vanishing point, flat elevation"
+      "negative": "perspective, vanishing point, converging lines, receding corridor, tunnel, depth, arches getting smaller, diagonal lines, looking down a passage, text, watermark, signature, letters, low quality, blurry, deformed, ugly, extra limbs",
+      "prompt": "a long terracotta wall photographed dead square from the front, a row of identical round arched openings all exactly the same size straight across the frame, flat elevation, no depth at all, nothing receding into the distance, everything at the same distance from the camera, every line parallel to the picture edges, warm evening light, cinematic semi-realistic digital illustration, stylized concept art, dramatic atmospheric lighting, rich saturated colors, painterly detail, beautiful, no text, no watermark"
     },
     {
       "id": "comp-symmetry",
@@ -2753,13 +2756,13 @@
       "group": "seq",
       "style": "vision_strong",
       "matte": false,
-      "seed": 920203,
+      "seed": 931020,
       "size": [
         1216,
         832
       ],
-      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, watermark, text, logo, low quality, jpeg artifacts",
-      "prompt": "photorealistic wide photograph of the same railway platform revealing a film crew — a camera on a dolly, a boom microphone, a director watching a monitor and crew members standing around the embracing couple, clearly a film set"
+      "negative": "legs merging with a tripod, body merging with equipment, half a person, torso without legs, extra legs, three legs, fused limbs, missing legs, deformed body, mutated anatomy, extra arms, extra fingers, deformed face, cartoon, illustration, 3d render, painting, watermark, text, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "photorealistic wide photograph of a railway platform revealing a film crew at work: a cinema camera mounted on a dolly track, a boom microphone operator, a director watching a monitor, crew members standing and watching, a couple embracing in the middle of the set, everyone standing with both legs clearly visible and separate from the tripods, documentary photograph, natural daylight, high detail"
     },
     {
       "id": "seq-ser-1",
@@ -2910,15 +2913,15 @@
       "character": "aria",
       "style": "portrait_natural",
       "matte": false,
-      "seed": 940101,
+      "seed": 662001,
       "size": [
         896,
         1152
       ],
       "cfg": 7,
-      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed",
-      "lead": "soft natural window light, indoors right beside a large bright window, directional daylight falling across the face from one side with a gentle falloff into shadow on the far side",
-      "prompt": "no studio equipment, plain domestic wall behind, quiet natural mood"
+      "negative": "old woman, elderly, wrinkles, grey hair, flat lighting, even lighting, shadowless, both sides of the face equally lit, ring light, beauty dish, fill light, symmetrical lighting, softbox visible, light stand, cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, full body, wide shot, leaning on a wall, bare shoulders",
+      "lead": "moody chiaroscuro indoor portrait lit only by a window on the left, deep shadow covering the right half of her face, strong side light, dark unlit room, high contrast, dramatic natural daylight",
+      "prompt": "indoors, no studio equipment, quiet natural mood"
     },
     {
       "id": "lp-window-reflector",
@@ -2926,15 +2929,15 @@
       "character": "aria",
       "style": "portrait_natural",
       "matte": false,
-      "seed": 940101,
+      "seed": 662001,
       "size": [
         896,
         1152
       ],
       "cfg": 7,
-      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, topless, nude, bare shoulders, sleeveless, undressed",
-      "lead": "soft natural window light with a large white reflector held on the shadow side, directional daylight from one side with the shadows lifted and open",
-      "prompt": "no studio equipment, plain domestic wall behind, gentle even natural light"
+      "negative": "old woman, elderly, wrinkles, grey hair, flat lighting, even lighting, shadowless, both sides of the face equally lit, ring light, beauty dish, fill light, symmetrical lighting, softbox visible, light stand, cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, full body, wide shot, leaning on a wall, bare shoulders",
+      "lead": "indoor portrait lit by a window on the left with a big white reflector card bouncing light back from the right, soft directional daylight, the shadow side of the face stays open and detailed, gentle contrast, dim room behind",
+      "prompt": "indoors, no studio equipment, quiet natural mood"
     },
     {
       "id": "lp-golden-back",
@@ -2967,7 +2970,940 @@
       "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, topless, nude, bare shoulders, sleeveless, undressed",
       "lead": "outdoors in open shade at the edge of a building, soft even indirect daylight coming from the open sky above, no harsh shadows, large soft catchlights in the eyes",
       "prompt": "outdoors, blurred neutral green background, clean natural light"
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "ci-triangulo",
+      "prompt": "three thick glowing bars joined into one large triangle shape, geometric emblem",
+      "seed": 884100,
+      "caption": "triangulo",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-abertura",
+      "prompt": "an extreme close-up of a camera lens aperture with visible diaphragm blades",
+      "seed": 884001,
+      "caption": "abertura",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "ci-velocidade",
+      "prompt": "a sprinting runner with a long streaked motion blur trail stretching behind the body",
+      "seed": 884103,
+      "caption": "velocidade",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "ci-iso",
+      "prompt": "a dark grainy night scene with one glowing street lamp and heavy visible film grain",
+      "seed": 884101,
+      "caption": "iso",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-exposicao",
+      "prompt": "a balance scale with a small bright sun on one side and a dark sphere on the other",
+      "seed": 884004,
+      "caption": "exposicao",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-wb",
+      "prompt": "a thermometer shape with a smooth gradient from warm orange to cool blue",
+      "seed": 884005,
+      "caption": "wb",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-focal",
+      "prompt": "a long telephoto camera lens seen from the side",
+      "seed": 884006,
+      "caption": "focal",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-foco",
+      "prompt": "a single human eye with a square viewfinder bracket over the iris",
+      "seed": 884007,
+      "caption": "foco",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-modos",
+      "prompt": "a camera mode dial seen from directly above with notch marks around it",
+      "seed": 884008,
+      "caption": "modos",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-medicao",
+      "prompt": "a glowing histogram of vertical bars rising and falling",
+      "seed": 884009,
+      "caption": "medicao",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-luz-dia",
+      "prompt": "a low sun over rolling hills casting very long rays",
+      "seed": 884010,
+      "caption": "luz-dia",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-enquadrar",
+      "prompt": "an empty rectangular picture frame held up in front of a landscape",
+      "seed": 884011,
+      "caption": "enquadrar",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-angulos",
+      "prompt": "a camera on a tripod tilted steeply upward towards a tall figure",
+      "seed": 884012,
+      "caption": "angulos",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "ci-flash",
+      "prompt": "a large square softbox on a light stand pointing left, wide cone of light coming out of it",
+      "seed": 884102,
+      "caption": "flash",
+      "maxWidth": 512
+    },
+    {
+      "group": "cheat-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "id": "ci-luz-retrato",
+      "prompt": "a human face in profile lit from one side with a strong rim light",
+      "seed": 884014,
+      "caption": "luz-retrato",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-visao",
+      "prompt": "a human eye with a glowing light beam coming out of it towards a horizon",
+      "seed": 885000,
+      "caption": "visao",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-ler",
+      "prompt": "a magnifying glass held over a framed photograph",
+      "seed": 885001,
+      "caption": "ler",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-fundamentos",
+      "prompt": "three interlocking gear wheels of different sizes",
+      "seed": 885002,
+      "caption": "fundamentos",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-composicao",
+      "prompt": "a large golden spiral curve drawn over a simple horizon landscape",
+      "seed": 886001,
+      "caption": "composicao",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-estilos",
+      "prompt": "a wide paint brush stroking a band of colour across a plain photograph",
+      "seed": 886002,
+      "caption": "estilos",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-tecnicas",
+      "prompt": "a hand holding a camera with light streaks curving around it",
+      "seed": 885005,
+      "caption": "tecnicas",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-cores",
+      "prompt": "a colour wheel disc with smooth gradient segments",
+      "seed": 885006,
+      "caption": "cores",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-exposicao",
+      "prompt": "a balance scale with a bright sun on one side and a dark moon on the other",
+      "seed": 885100,
+      "caption": "exposicao",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-histograma",
+      "prompt": "a glowing mountain-shaped histogram curve rising over a baseline",
+      "seed": 885101,
+      "caption": "histograma",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-foco-af",
+      "prompt": "a single sharp eye surrounded by a blurred ring",
+      "seed": 885102,
+      "caption": "foco-af",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-raw-jpeg",
+      "prompt": "one photograph split down the middle, flat grey on the left and rich colour on the right",
+      "seed": 886003,
+      "caption": "raw-jpeg",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-focal-crop",
+      "prompt": "a camera sensor rectangle with a smaller rectangle cropped inside it",
+      "seed": 885104,
+      "caption": "focal-crop",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-abertura-dof",
+      "prompt": "a lens diaphragm with visible blades and a soft glow behind",
+      "seed": 885105,
+      "caption": "abertura-dof",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-velocidade",
+      "prompt": "a stopwatch with a motion blur trail sweeping around it",
+      "seed": 885106,
+      "caption": "velocidade",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-iso-ruido",
+      "prompt": "a dark square with heavy visible grain texture and one bright point of light",
+      "seed": 885107,
+      "caption": "iso-ruido",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-medicao",
+      "prompt": "a light meter dome with radiating measurement lines",
+      "seed": 885108,
+      "caption": "medicao",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-luz",
+      "prompt": "a smooth sphere lit hard from the left with a crisp dark shadow on its right side and a long cast shadow on the ground",
+      "seed": 886004,
+      "caption": "luz",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-filtros",
+      "prompt": "a round polarising filter held over a landscape, the part seen through it deeply saturated",
+      "seed": 886005,
+      "caption": "filtros",
+      "maxWidth": 512
+    },
+    {
+      "group": "apr-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "api-k-glossario",
+      "prompt": "an open book with a small camera resting on its pages",
+      "seed": 885111,
+      "caption": "glossario",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-cameras",
+      "prompt": "a mirrorless camera body seen from the front three-quarter angle",
+      "seed": 885200,
+      "caption": "cameras",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-lenses",
+      "prompt": "one large camera lens standing upright at a three-quarter angle with visible focus rings",
+      "seed": 886006,
+      "caption": "lenses",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-filters",
+      "prompt": "a round screw-on lens filter standing on its edge",
+      "seed": 885202,
+      "caption": "filters",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-support",
+      "prompt": "a camera tripod with legs spread, seen from the side",
+      "seed": 885203,
+      "caption": "support",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-light",
+      "prompt": "a flash speedlight standing upright with a burst of light",
+      "seed": 885204,
+      "caption": "light",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-accessories",
+      "prompt": "an open camera bag with a battery and a memory card beside it",
+      "seed": 885205,
+      "caption": "accessories",
+      "maxWidth": 512
+    },
+    {
+      "group": "eq-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "eqi-smartphone",
+      "prompt": "a smartphone held upright showing its rear camera module",
+      "seed": 885206,
+      "caption": "smartphone",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-exposure",
+      "prompt": "a balance scale perfectly level with a small sun above it",
+      "seed": 885300,
+      "caption": "exposure",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-dof",
+      "prompt": "a row of identical posts receding into the distance, the nearest sharp and the far ones soft",
+      "seed": 886007,
+      "caption": "dof",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-focal",
+      "prompt": "a telephoto lens seen from the side with a measuring ruler beneath it",
+      "seed": 885302,
+      "caption": "focal",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-hf",
+      "prompt": "a road receding to a vanishing point with a marker at one third",
+      "seed": 885303,
+      "caption": "hf",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-nd",
+      "prompt": "a dark round glass filter with water flowing smoothly behind it",
+      "seed": 885304,
+      "caption": "nd",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-flash",
+      "prompt": "a camera flash speedlight with its head tilted upward emitting a bright burst of light",
+      "seed": 886008,
+      "caption": "flash",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-le",
+      "prompt": "a long trail of light curving across a dark scene",
+      "seed": 885306,
+      "caption": "le",
+      "maxWidth": 512
+    },
+    {
+      "group": "tool-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise, picture inside a picture, poster on a wall, canvas on an easel, framed artwork",
+      "id": "tli-gh",
+      "prompt": "a low sun on the horizon with a clock face beside it",
+      "seed": 885307,
+      "caption": "gh",
+      "maxWidth": 512
+    },
+    {
+      "group": "cs-pairs",
+      "style": "scene_illus",
+      "matte": false,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph",
+      "id": "cs-altura",
+      "prompt": "a small child crouching to look at something on the ground in a park, photographed from the child's own eye level, camera low to the ground, the child large and engaged in the frame",
+      "seed": 913000,
+      "caption": "cs-altura",
+      "maxWidth": 1100
+    },
+    {
+      "group": "cs-pairs",
+      "style": "scene_illus",
+      "matte": false,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph",
+      "id": "cs-altura-bad",
+      "prompt": "the same small child crouching on the ground in the same park, but photographed looking down from an adult standing height, the child small and seen from above",
+      "seed": 913000,
+      "caption": "cs-altura-bad",
+      "maxWidth": 1100
+    },
+    {
+      "group": "cs-pairs",
+      "style": "scene_illus",
+      "matte": false,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "text, watermark, signature, letters, low quality, blurry, deformed, ugly, photograph",
+      "id": "cs-horizonte",
+      "prompt": "a calm sea horizon with a distant sailing boat, the horizon line perfectly level across the frame",
+      "seed": 913001,
+      "caption": "cs-horizonte",
+      "maxWidth": 1100,
+      "note": "cs-horizonte-bad é esta MESMA imagem rodada 3.5° e recortada (script pontual), não uma segunda geração: o SDXL recusa-se a inclinar um horizonte."
+    },
+    {
+      "group": "lightbase",
+      "style": "portrait_natural",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, dramatic lighting, hard shadow, side light, rim light, chiaroscuro, moody, coloured gels, smiling widely, hands, jewellery",
+      "id": "lb-face-a",
+      "lead": "perfectly flat frontal lighting, no visible shadows anywhere on the face",
+      "prompt": "a young woman looking straight into the lens, calm neutral expression, mouth closed, hair pulled back away from the face, wearing a plain dark grey crew-neck t-shirt, plain dark grey seamless studio background, head and shoulders centred and facing the camera square-on",
+      "seed": 884910,
+      "caption": "lb-face-a",
+      "maxWidth": 900
+    },
+    {
+      "group": "lightbase",
+      "style": "portrait_natural",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, dramatic lighting, hard shadow, side light, rim light, chiaroscuro, moody, coloured gels, smiling widely, hands, jewellery",
+      "id": "lb-face-b",
+      "lead": "perfectly flat frontal lighting, no visible shadows anywhere on the face",
+      "prompt": "a man in his thirties looking straight into the lens, calm neutral expression, short hair, clean shaven, wearing a plain dark grey crew-neck t-shirt, plain dark grey seamless studio background, head and shoulders centred and facing the camera square-on",
+      "seed": 884911,
+      "caption": "lb-face-b",
+      "maxWidth": 900
+    },
+    {
+      "group": "_test-rembrandt",
+      "style": "portrait_natural",
+      "character": "aria",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "maxWidth": 900,
+      "seed": 770101,
+      "caption": "teste rembrandt",
+      "id": "test-rembrandt",
+      "lead": "dramatic Rembrandt lighting, a single hard light high and 45 degrees to camera left, the entire right side of the face falls into deep shadow, one small bright triangle of light on the shadowed cheek just below the eye, the nose casts a long shadow down to the corner of the mouth",
+      "prompt": "studio portrait against a plain dark background, head and shoulders, strong chiaroscuro, deep black shadows, only one light source, no fill light, no reflector",
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, flat lighting, even lighting, soft lighting, beauty lighting, ring light, shadowless, two lights, fill light, bright background, high key",
+      "note": "PROVA REPRODUZIVEL, nao e um asset do site (fora do index.json). Pedir Rembrandt explicitamente devolve um retrato escuro e macio, sem sombra do nariz e sem triangulo. E a razao pela qual os padroes de estudio sao compostos por codigo sobre lb-face-a."
+    },
+    {
+      "group": "_test-lp",
+      "style": "portrait_natural",
+      "character": "aria",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "maxWidth": 900,
+      "id": "t-split",
+      "lead": "split lighting, a single hard light exactly 90 degrees to the side at eye level, one half of the face fully lit and the other half in complete darkness, the dividing line falling straight down the middle of the nose",
+      "prompt": "studio portrait against a plain dark background, head and shoulders, strong chiaroscuro, deep black shadows, only one light source, no fill light, no reflector",
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, flat lighting, even lighting, soft lighting, beauty lighting, ring light, shadowless, two lights, fill light, bright background, high key",
+      "seed": 770201,
+      "caption": "t-split"
+    },
+    {
+      "group": "_test-lp",
+      "style": "portrait_natural",
+      "character": "aria",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "maxWidth": 900,
+      "id": "t-loop",
+      "lead": "loop lighting, a single soft light 30 degrees to the side and slightly above eye level, a small oval shadow from the nose pointing down towards the corner of the mouth but not touching the cheek shadow",
+      "prompt": "studio portrait against a plain dark background, head and shoulders, strong chiaroscuro, deep black shadows, only one light source, no fill light, no reflector",
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, flat lighting, even lighting, soft lighting, beauty lighting, ring light, shadowless, two lights, fill light, bright background, high key",
+      "seed": 770202,
+      "caption": "t-loop"
+    },
+    {
+      "group": "_test-lp",
+      "style": "portrait_natural",
+      "character": "aria",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "maxWidth": 900,
+      "id": "t-butterfly",
+      "lead": "butterfly lighting, a single light directly above and in front of the face pointing down, a small symmetrical butterfly shaped shadow directly under the nose, both cheeks equally lit, shadows under the cheekbones and chin",
+      "prompt": "studio portrait against a plain dark background, head and shoulders, strong chiaroscuro, deep black shadows, only one light source, no fill light, no reflector",
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, flat lighting, even lighting, soft lighting, beauty lighting, ring light, shadowless, two lights, fill light, bright background, high key",
+      "seed": 770203,
+      "caption": "t-butterfly"
+    },
+    {
+      "group": "_test-lp",
+      "style": "portrait_natural",
+      "character": "aria",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "maxWidth": 900,
+      "id": "t-rim",
+      "lead": "rim lighting, two hard lights behind the subject pointing back at the camera, a bright line of light outlining the cheekbone jaw and shoulder, the front of the face almost completely dark, black background",
+      "prompt": "studio portrait against a plain dark background, head and shoulders, strong chiaroscuro, deep black shadows, only one light source, no fill light, no reflector",
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, flat lighting, even lighting, soft lighting, beauty lighting, ring light, shadowless, two lights, fill light, bright background, high key",
+      "seed": 770204,
+      "caption": "t-rim"
+    },
+    {
+      "group": "_test-lp",
+      "style": "portrait_natural",
+      "character": "aria",
+      "matte": false,
+      "size": [
+        896,
+        1152
+      ],
+      "maxWidth": 900,
+      "id": "t-under",
+      "lead": "under lighting, a single light placed low below the chin pointing upward, shadows rising up the face, the nose shadow going up towards the forehead, eerie horror lighting",
+      "prompt": "studio portrait against a plain dark background, head and shoulders, strong chiaroscuro, deep black shadows, only one light source, no fill light, no reflector",
+      "negative": "cartoon, illustration, 3d render, cgi, painting, deformed face, disfigured, extra limbs, extra fingers, bad anatomy, watermark, text, logo, low quality, blurry, jpeg artifacts, light stand visible, softbox visible in frame, studio equipment in frame, hands, cropped head, full body, wide shot, flat lighting, even lighting, ring light, symmetrical lighting, shadowless, soft beauty dish frontal light, topless, nude, bare shoulders, sleeveless, undressed, flat lighting, even lighting, soft lighting, beauty lighting, ring light, shadowless, two lights, fill light, bright background, high key",
+      "seed": 770205,
+      "caption": "t-under"
+    },
+    {
+      "id": "comp-negative-bad",
+      "group": "comp2",
+      "style": "scene_illus",
+      "matte": false,
+      "seed": 931010,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "empty space, negative space, minimalism, sky, fog, emptiness, isolated subject, wide open landscape, plain background, simple composition, text, watermark, signature, letters, low quality, blurry, deformed, ugly, extra limbs",
+      "prompt": "a lone figure in a long dark coat completely surrounded and pressed in by a dense crowd, the frame packed edge to edge with people, market stalls, signs and hanging lanterns, absolutely no empty space anywhere in the picture, cluttered busy chaotic composition, cold misty daylight, cinematic semi-realistic digital illustration, stylized concept art, dramatic atmospheric lighting, rich saturated colors, painterly detail, beautiful, no text, no watermark"
     }
   ],
-  "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em js/pages/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los."
+  "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em js/pages/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los.",
+  "_nota_luz_natural": "lp-window / lp-window-reflector: o par foi refeito (ago/2026). As primeiras versoes tinham luz frontal chapada e nao ensinavam nada. O que destrava a luz direcional neste checkpoint e descrever a FOTOGRAFIA e nao a luz: \"chiaroscuro\", \"dark unlit room\", \"deep shadow covering the right half of her face\". Os dois partilham a seed 662001 de proposito - so muda o refletor, e por isso podem entrar num comparador lado a lado.",
+  "_nota_luz_frontal": "light-frontal foi refeito duas vezes. A 2.a versao (pedido \"two big softboxes either side of the camera\") continuava a sair com relevo — o modelo le \"either side\" como luz LATERAL e devolvia sombra do nariz e da bochecha, ou seja, ilustrava exatamente o contrario do cartao; e o pedido de luz plana clareava tambem o FUNDO, o que quebrava o \"mesmo fundo\" prometido na legenda do par. A versao que resulta pede um RING LIGHT no eixo da objetiva (uma so fonte, frontal por definicao), nomeia o fundo escuro no positivo e poe no negativo tudo o que e lateral E o fundo claro. Nota util: \"two softboxes\" em prompts com pessoas tambem convida o modelo a desenhar DUAS pessoas — aconteceu em 3 de 4 sementes de teste.",
+  "_nota_contraexemplos": "REGRA: um contraexemplo tem de ser a AUSENCIA do principio, nao uma variacao dele. comp-converging-bad tinha uma arcada em fuga e comp-negative-bad tinha MAIS vazio do que o exemplo bom — os dois ensinavam o contrario do que diziam. O que destrava: pedir a ausencia de forma absoluta no positivo (\"flat elevation, no depth at all\", \"absolutely no empty space anywhere\") E por o principio todo no negativo (\"perspective, vanishing point, converging lines\" / \"empty space, negative space, minimalism, sky\").",
+  "_nota_anatomia": "Defeitos de anatomia que este checkpoint produz e que NAO se veem numa miniatura: membros fundidos com objectos (uma pessoa cuja metade de baixo era um tripe, em seq-amb-3) e maos que desaparecem dentro do corpo (vis-desporto). O negativo generico \"bad anatomy, extra limbs\" nao chega — e preciso nomear o defeito concreto (\"legs merging with a tripod\", \"arm ending without a hand\") E pedir o contrario no positivo (\"both legs clearly visible and separate from the tripods\", \"both arms clearly separated from the body with the hands fully visible). Rever sempre a tamanho real, nunca em contact sheet."
 }

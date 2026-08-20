@@ -1,432 +1,1708 @@
 {
-  "_nota": "Cheatsheets = cartões de CONSULTA RÁPIDA, não lições. A lição vive em Aprender (know.json, craft.json…) e as contas em Ferramentas; aqui só entra o que se lê de relance com a câmara na mão. Se um cartão precisar de um parágrafo a explicar, pertence a Aprender e não aqui. `art` refere um id do PhotoIllus (js/pages/photo-illus.js).",
+  "_nota": "Cheatsheets = INFOGRAFIAS de consulta rápida. Regra editorial: o visual manda, o valor vem em grande, o texto é uma linha. Se um bloco precisa de um parágrafo a explicar, pertence a Aprender (know.json, craft.json…) e não aqui; as contas vivem em Ferramentas. Blocos disponíveis (js/pages/photo-cards.js): strip · grid · versus · diagram · rules · steps · table · note. `art` refere uma primitiva do PhotoCard OU um id do PhotoIllus. `recipe` é passada ao motor de píxeis (PhotoLab) sobre a fotografia `base` — a mesma imagem, uma só variável a mudar. `coc: \"auto\"` é substituído em runtime pelo círculo de confusão da câmara escolhida.",
+  "groups": [
+    {
+      "id": "camara",
+      "name": "📷 Câmara e exposição",
+      "hint": "O que cada controlo faz à imagem — e o que custa."
+    },
+    {
+      "id": "luz",
+      "name": "💡 Luz e enquadramento",
+      "hint": "Onde está a luz, de onde fotografas, o que entra na moldura."
+    }
+  ],
   "sheets": [
     {
       "id": "triangulo",
       "icon": "📐",
       "name": "Triângulo de exposição",
-      "level": "basico",
-      "blurb": "Os três controlos e o que cada um custa.",
-      "lead": "Três controlos, uma só exposição. Mexer num obriga a compensar noutro — é isso e mais nada.",
-      "art": "exposicao",
-      "table": {
-        "cols": ["Controlo", "Faz isto à imagem", "Sobe quando", "Paga-se em"],
-        "rows": [
-          ["⏱️ Velocidade", "Congela ou arrasta o movimento", "Há coisas a mexer", "Menos luz — obriga a abrir ou a subir ISO"],
-          ["🔵 Abertura", "Decide quanto da cena fica nítido", "Precisas de tudo nítido (nº alto)", "Menos luz e, acima de f/11, difração"],
-          ["☀️ ISO", "Amplifica o sinal do sensor", "Já não há luz para dar", "Ruído e menos margem na edição"]
-        ]
+      "level": "camara",
+      "blurb": "Velocidade, abertura e ISO: o que se troca por quê.",
+      "q": "Mexi num controlo — onde tenho de compensar?",
+      "thumb": {
+        "asset": "ci-triangulo"
       },
+      "answer": "Três controlos, **uma só exposição**. O stop que tiras a um tens de o devolver a outro — e cada um cobra um preço diferente.",
       "blocks": [
         {
-          "t": "1 stop = o dobro ou metade da luz",
+          "kind": "diagram",
+          "art": "triangle",
+          "foot": "Um **stop** é o dobro ou metade da luz. É a unidade comum aos três: por isso é que −1 stop de abertura se paga com +1 stop de velocidade ou de ISO."
+        },
+        {
+          "kind": "strip",
+          "t": "A mesma exposição, três decisões diferentes",
+          "hint": "Mesma luz, mesmo brilho final. Muda o que a fotografia diz.",
+          "base": "vis-retrato",
+          "ar": "3/2",
+          "axis": [
+            "isolar o sujeito",
+            "mostrar o sítio"
+          ],
+          "cells": [
+            {
+              "v": "f/2.8",
+              "lab": "1/500 · ISO 100",
+              "recipe": {
+                "defocus": 78,
+                "defocusCx": 0.52,
+                "defocusR": 0.2
+              },
+              "note": "Fundo derretido. A oficina desaparece."
+            },
+            {
+              "v": "f/5.6",
+              "lab": "1/125 · ISO 100",
+              "recipe": {
+                "defocus": 34,
+                "defocusCx": 0.52,
+                "defocusR": 0.26
+              },
+              "mark": true,
+              "note": "Compromisso: percebe-se onde ela está."
+            },
+            {
+              "v": "f/11",
+              "lab": "1/30 · ISO 100",
+              "recipe": {
+                "defocus": 0,
+                "motion": 7
+              },
+              "note": "Fundo legível de ponta a ponta — mas a 1/30 já arrasta quem se mexe."
+            }
+          ],
+          "foot": "Entre cada passo: **−2 stops de abertura, +2 de velocidade**. A exposição não muda; a fotografia muda toda."
+        },
+        {
+          "kind": "grid",
+          "t": "1 stop, nos três controlos",
+          "cols": 3,
           "items": [
-            "Velocidade: 1/60 → 1/125 tira 1 stop.",
-            "Abertura: f/4 → f/5.6 tira 1 stop.",
-            "ISO: 800 → 400 tira 1 stop.",
-            "O stop que tiras num tens de o devolver noutro — senão muda a exposição."
+            {
+              "ico": "⏱️",
+              "k": "Velocidade",
+              "v": "1/60 → 1/125",
+              "note": "Metade do tempo, metade da luz."
+            },
+            {
+              "ico": "🔵",
+              "k": "Abertura",
+              "v": "f/4 → f/5.6",
+              "note": "Metade da área do buraco, metade da luz."
+            },
+            {
+              "ico": "☀️",
+              "k": "ISO",
+              "v": "800 → 400",
+              "note": "Metade da amplificação, metade do brilho."
+            }
           ]
         },
         {
-          "t": "Ordem de decisão (funciona sempre)",
+          "kind": "steps",
+          "t": "Ordem de decisão — funciona sempre",
           "items": [
-            "1. Pergunta o que a foto exige: congelar? desfocar o fundo? — fixa esse controlo primeiro.",
-            "2. Ajusta o outro dos dois até a exposição estar certa.",
-            "3. Só no fim mexes no ISO. É o único dos três que degrada o ficheiro."
+            "Pergunta o que a fotografia **exige**: congelar? desfocar o fundo? Fixa esse controlo primeiro.",
+            "Ajusta o outro dos dois até a exposição estar certa.",
+            "Só no fim mexes no ISO. É o único dos três que degrada o ficheiro."
           ]
         }
       ],
       "rule": "Fixa primeiro o controlo que a fotografia exige. O ISO é o último a subir, nunca o primeiro.",
       "go": [
-        { "label": "Calculadora de exposição", "t": "tool:exposure" },
-        { "label": "Fundamentos", "t": "apr:fundamentos" }
+        {
+          "label": "Calculadora de exposição",
+          "t": "tool:exposure"
+        },
+        {
+          "label": "Fundamentos",
+          "t": "apr:fundamentos"
+        }
       ]
-    },
-    {
-      "id": "modos",
-      "icon": "🎛️",
-      "name": "Que modo usar",
-      "level": "basico",
-      "blurb": "P, Av, Tv, M — quem decide o quê.",
-      "lead": "O modo não muda a qualidade da imagem. Muda só quem decide o quê — escolhe pelo que não podes deixar ao acaso.",
-      "table": {
-        "cols": ["Modo", "Fixas tu", "Escolhe a câmara", "Usa quando"],
-        "rows": [
-          ["Auto 🟩", "Nada", "Tudo", "Passas a câmara a outra pessoa"],
-          ["P", "ISO e compensação", "Velocidade + abertura", "Andas na rua e a luz muda a cada esquina"],
-          ["Av / A", "Abertura (e ISO)", "Velocidade", "Quase sempre: retrato, paisagem, viagem"],
-          ["Tv / S", "Velocidade (e ISO)", "Abertura", "Há movimento: crianças, desporto, água"],
-          ["M", "Tudo", "Nada — só te mede", "A luz é constante: estúdio, palco, astro, flash"],
-          ["M + Auto ISO", "Velocidade e abertura", "ISO", "Queres mandar no look sem perder a luz que muda"]
-        ]
-      },
-      "blocks": [
-        {
-          "t": "Compensação de exposição (+/−)",
-          "items": [
-            "Funciona em P, Av e Tv — e em M só se o ISO estiver automático.",
-            "Neve, praia, parede branca, contraluz: +1 a +2 EV.",
-            "Palco, fato preto, fundo escuro: −1 a −2 EV.",
-            "Volta a pôr a zero quando acabares. É o erro mais esquecido que há."
-          ]
-        },
-        {
-          "t": "Auto-ISO bem configurado vale por um modo novo",
-          "items": [
-            "Define o teto: o ISO máximo que aceitas ver nas tuas fotos.",
-            "Define a velocidade mínima — é isto que evita fotos tremidas em Av.",
-            "Se a câmara tiver 'Auto (rápido/lento)', põe em rápido quando fotografas pessoas."
-          ]
-        }
-      ],
-      "rule": "Av para quase tudo. Tv quando há movimento. M + Auto ISO quando queres mandar sem perder a luz.",
-      "go": [{ "label": "No terreno", "t": "agora" }]
-    },
-    {
-      "id": "foco",
-      "icon": "🎯",
-      "name": "Focagem por situação",
-      "level": "basico",
-      "blurb": "Que modo AF e que área, caso a caso.",
-      "lead": "Metade das fotos falhadas não estão mal expostas — estão focadas no sítio errado.",
-      "art": "foco-af",
-      "table": {
-        "cols": ["Situação", "Modo AF", "Área", "Nota"],
-        "rows": [
-          ["Retrato, pessoa parada", "One-Shot / AF-S", "1 ponto, no olho", "Usa deteção de olho se a câmara tiver"],
-          ["Criança, animal, desporto", "AI Servo / AF-C", "Zona ou seguimento", "E dispara em rajada"],
-          ["Não sabes se vai mexer", "AI Focus / AF-A", "Zona", "Compromisso — evita-o se puderes decidir"],
-          ["Paisagem", "One-Shot", "1 ponto a ~1/3 da cena", "Ou manual na distância hiperfocal"],
-          ["Macro", "Manual", "—", "Foca movendo o corpo, não o anel"],
-          ["Noite, astro", "Manual + live view 10×", "—", "Foca numa estrela ou numa luz distante"]
-        ]
-      },
-      "blocks": [
-        {
-          "t": "Back-button focus — vale mesmo a pena",
-          "items": [
-            "Tira a focagem do disparador e põe-na no botão AF-ON (ou ✱).",
-            "Passas a focar uma vez e a recompor à vontade, sem a câmara voltar a focar quando disparas.",
-            "Com AF-C ligado tens os dois modos num só: enquanto carregas segue, quando largas trava."
-          ]
-        },
-        {
-          "t": "Quando o AF não engata",
-          "items": [
-            "Pouca luz: aponta a uma aresta de contraste, nunca a uma superfície lisa.",
-            "Contraluz: foca numa zona do sujeito que ainda tenha detalhe.",
-            "Vidro ou rede: encosta a lente e passa a manual.",
-            "Repetidamente falhado no mesmo sítio: o ponto AF está sobre algo sem contraste — muda de ponto."
-          ]
-        }
-      ],
-      "rule": "Parado = One-Shot num ponto. A mexer = AF-C com zona. Em dúvida, AF-C.",
-      "go": [{ "label": "Fundamentos", "t": "apr:fundamentos" }]
-    },
-    {
-      "id": "luz-dia",
-      "icon": "🌅",
-      "name": "A luz ao longo do dia",
-      "level": "basico",
-      "blurb": "Que luz dá a cada hora e o que fazer com ela.",
-      "lead": "A mesma câmara, a mesma lente e o mesmo sítio dão fotografias diferentes só por causa da hora a que lá vais.",
-      "art": "luz",
-      "table": {
-        "cols": ["Momento", "Como é a luz", "Fica bem", "Evita"],
-        "rows": [
-          ["Hora azul", "Fria, suave, uniforme", "Cidade com luzes acesas, água, silhuetas", "Retrato sem luz artificial"],
-          ["Hora dourada", "Quente, baixa, direcional", "Retrato, paisagem, contraluz com halo", "Nada — é a melhor hora do dia"],
-          ["Manhã / fim de tarde", "Ainda inclinada", "Rua, arquitetura, viagem", "Sombras muito compridas a cortar o sujeito"],
-          ["Meio-dia com sol", "Dura, de cima, contrastada", "Preto e branco, sombras gráficas, água", "Retrato ao sol direto"],
-          ["Nublado", "Difusa, plana, sem sombra", "Retrato, flores, macro, floresta", "Meter o céu no enquadramento — fica branco"],
-          ["Sombra aberta", "Suave e fria", "Retrato a qualquer hora do dia", "Esquecer de corrigir o balanço de brancos"]
-        ]
-      },
-      "blocks": [
-        {
-          "t": "Sunny 16 — medir sem fotómetro",
-          "items": [
-            "Sol direto: f/16 com velocidade = 1/ISO (ISO 100 → 1/100).",
-            "Sol com nuvens finas: f/11. Nublado: f/8. Sombra ou muito nublado: f/5.6.",
-            "Serve para confirmar que a câmara não se enganou, não para substituir a medição."
-          ]
-        },
-        {
-          "t": "Direção da luz",
-          "items": [
-            "Frontal: cores fiéis mas pouca forma — a mais fácil e a mais aborrecida.",
-            "Lateral: dá volume e textura. É a mais útil das três.",
-            "Contraluz: recorta e cria halo. Mede no rosto ou ficas com uma silhueta."
-          ]
-        }
-      ],
-      "rule": "Se puderes escolher a hora, escolhe. Sai mais barato do que qualquer lente.",
-      "go": [
-        { "label": "Calculadora de hora dourada", "t": "tool:gh" },
-        { "label": "Luz de retrato", "t": "cs:luz-retrato" }
-      ]
-    },
-    {
-      "id": "enquadrar",
-      "icon": "🖼️",
-      "name": "Enquadrar em 5 segundos",
-      "level": "basico",
-      "blurb": "A checklist antes de carregar no botão.",
-      "lead": "Não é preciso saber a teoria toda. São cinco perguntas, e fazem-se em cinco segundos.",
-      "blocks": [
-        {
-          "t": "As cinco perguntas",
-          "items": [
-            "Qual é o assunto? Se há dois, são duas fotografias.",
-            "O que há atrás dele? Um passo para o lado tira postes, ramos e caixotes.",
-            "Está direito? Horizonte e verticais — é o que mais denuncia uma foto descuidada.",
-            "O que posso deixar de fora? Aproxima-te antes de pensar em cortar depois.",
-            "Para onde olha ou anda? Deixa-lhe espaço à frente, não atrás."
-          ]
-        },
-        {
-          "t": "Se tiveres mais dez segundos",
-          "items": [
-            "Baixa-te ou sobe. A altura do olhar é a mais banal que existe.",
-            "Procura uma linha que leve o olho ao assunto.",
-            "Põe alguma coisa em primeiro plano — é o que dá profundidade."
-          ]
-        }
-      ],
-      "table": {
-        "cols": ["Regra", "Em que consiste", "Quando puxa mais"],
-        "rows": [
-          ["Terços", "Assunto num dos cruzamentos, não no centro", "Quase sempre, por omissão"],
-          ["Linhas condutoras", "Uma linha que entra e leva ao assunto", "Paisagem, rua, arquitetura"],
-          ["Moldura natural", "Arco, janela, ramos a rodear o assunto", "Viagem, arquitetura"],
-          ["Simetria", "Centrar de propósito, com rigor", "Reflexos, interiores, fachadas"],
-          ["Padrão e quebra", "Repetição com uma coisa fora do sítio", "Rua, abstrato"],
-          ["Espaço negativo", "Muito vazio à volta de pouco assunto", "Minimalismo, produto, retrato ambiente"],
-          ["Camadas", "Primeiro plano, meio e fundo", "Paisagem, viagem"],
-          ["Ponto de vista", "Muito baixo ou muito alto", "Quando a cena já foi fotografada mil vezes"]
-        ]
-      },
-      "rule": "Uma fotografia, um assunto. Tudo o resto no enquadramento ou ajuda ou está a atrapalhar.",
-      "go": [{ "label": "Composição a fundo", "t": "apr:composicao" }]
-    },
-
-    {
-      "id": "iso",
-      "icon": "☀️",
-      "name": "ISO",
-      "level": "avancado",
-      "blurb": "Onde pôr o teto e porque o ruído não é culpa do ISO.",
-      "lead": "O ISO não faz ruído. A falta de luz é que faz — o ISO só amplifica o que já lá estava.",
-      "art": "iso-ruido",
-      "table": {
-        "cols": ["Cenário", "ISO típico", "Nota"],
-        "rows": [
-          ["Exterior com sol", "100", "O ISO base dá sempre o melhor ficheiro"],
-          ["Nublado, sombra aberta", "200–400", "Ainda totalmente limpo em qualquer câmara"],
-          ["Interior com boa luz de dia", "400–800", "Num telemóvel já se começa a ver"],
-          ["Interior à noite, luz de casa", "1600–3200", "APS-C aguenta bem; telemóvel sofre"],
-          ["Concerto, bar, palco", "3200–6400", "Prefere ruído a tremido — sempre"],
-          ["Astrofotografia", "1600–6400", "Com tripé: ISO alto + 15–25 s"]
-        ]
-      },
-      "blocks": [
-        {
-          "t": "A parte contraintuitiva",
-          "items": [
-            "Uma foto a ISO 3200 bem exposta tem MENOS ruído do que uma a ISO 800 levantada 2 stops na edição.",
-            "Subir o ISO na câmara é amplificar antes do ruído de leitura; levantar na edição é amplificar depois.",
-            "Conclusão prática: expõe bem no momento, mesmo que isso obrigue a subir o ISO."
-          ]
-        },
-        {
-          "t": "Descobre o teu teto (15 minutos, uma vez na vida)",
-          "items": [
-            "Fotografa a mesma cena a 800, 1600, 3200, 6400 e 12800.",
-            "Vê-as a 100% e no tamanho em que costumas partilhar — são julgamentos diferentes.",
-            "O último que te agrada é o teu limite. Mete-o como teto do Auto-ISO e nunca mais penses nisto."
-          ]
-        }
-      ],
-      "rule": "Ruído tem solução na edição. Tremido e desfocado não têm.",
-      "go": [{ "label": "Fundamentos", "t": "apr:fundamentos" }]
     },
     {
       "id": "abertura",
       "icon": "🔵",
       "name": "Abertura",
-      "level": "avancado",
-      "blurb": "Profundidade, ponto doce e difração.",
-      "lead": "A abertura decide duas coisas ao mesmo tempo: quanta luz entra e quanto da cena fica nítido. É por isso que raramente se escolhe só por causa da luz.",
-      "art": "abertura-dof",
-      "table": {
-        "cols": ["Abertura", "Profundidade de campo", "Usa para"],
-        "rows": [
-          ["f/1.2 – f/2", "Muito curta — só os olhos", "Isolar em pouca luz; foco crítico"],
-          ["f/2.8 – f/4", "Curta", "Retrato com fundo limpo, eventos, palco"],
-          ["f/5.6 – f/8", "Média", "Grupos, rua, viagem — o intervalo mais seguro"],
-          ["f/8 – f/11", "Longa", "Paisagem, arquitetura, produto"],
-          ["f/16 – f/22", "Muito longa mas com difração", "Só para arrastar o tempo ou para sunstars"]
-        ]
+      "level": "camara",
+      "blurb": "f/1.4 → f/16: fundo, nitidez e luz.",
+      "q": "Que f/ uso — e quanto da cena vai ficar nítido?",
+      "alias": "aperture · f-stop",
+      "thumb": {
+        "asset": "ci-abertura"
       },
+      "answer": "Número pequeno = **buraco grande** = mais luz e menos cena nítida. f/8 resolve 80% das fotografias.",
       "blocks": [
         {
-          "t": "O ponto doce da lente",
-          "items": [
-            "Quase todas as lentes ficam mais nítidas 2 a 3 stops acima da abertura máxima.",
-            "Uma f/1.8 está no seu melhor entre f/4 e f/5.6.",
-            "Uma lente de kit f/3.5–5.6 está no seu melhor entre f/7.1 e f/8."
+          "kind": "strip",
+          "t": "O buraco, ao tamanho certo",
+          "hint": "O diâmetro é proporcional a 1/nº. De f/1.4 a f/22 há ~8 stops de luz.",
+          "axis": [
+            "mais luz",
+            "mais cena nítida"
+          ],
+          "cells": [
+            {
+              "art": "iris",
+              "opts": {
+                "f": 1.4
+              },
+              "v": "f/1.4",
+              "note": "Só os olhos nítidos. Foco crítico."
+            },
+            {
+              "art": "iris",
+              "opts": {
+                "f": 2.8
+              },
+              "v": "f/2.8",
+              "note": "Retrato com fundo limpo, palco, eventos."
+            },
+            {
+              "art": "iris",
+              "opts": {
+                "f": 5.6
+              },
+              "v": "f/5.6",
+              "mark": true,
+              "note": "Duas pessoas, rua, viagem. O mais seguro."
+            },
+            {
+              "art": "iris",
+              "opts": {
+                "f": 11
+              },
+              "v": "f/11",
+              "note": "Paisagem e arquitetura."
+            },
+            {
+              "art": "iris",
+              "opts": {
+                "f": 22
+              },
+              "v": "f/22",
+              "note": "Difração: perde nitidez em toda a imagem."
+            }
           ]
         },
         {
-          "t": "Difração — o limite do outro lado",
-          "items": [
-            "A partir de f/11 em APS-C (f/16 em full frame, f/5.6 num telemóvel) a imagem perde nitidez em TODA a área, não só no fundo.",
-            "Se precisas de mais profundidade do que isso, a resposta é hiperfocal ou focus stacking, não fechar mais."
-          ]
+          "kind": "strip",
+          "t": "O que isso faz ao fundo",
+          "hint": "Mesma fotografia, mesmo enquadramento — só muda a abertura.",
+          "base": "vis-retrato",
+          "ar": "3/2",
+          "cells": [
+            {
+              "v": "f/1.4",
+              "recipe": {
+                "defocus": 100,
+                "defocusCx": 0.52,
+                "defocusR": 0.17
+              },
+              "note": "Fundo sem informação nenhuma."
+            },
+            {
+              "v": "f/2.8",
+              "recipe": {
+                "defocus": 68,
+                "defocusCx": 0.52,
+                "defocusR": 0.21
+              },
+              "note": "Percebem-se formas, não detalhes."
+            },
+            {
+              "v": "f/5.6",
+              "recipe": {
+                "defocus": 34,
+                "defocusCx": 0.52,
+                "defocusR": 0.26
+              },
+              "note": "O sítio ainda conta a história."
+            },
+            {
+              "v": "f/8",
+              "recipe": {
+                "defocus": 14,
+                "defocusCx": 0.52,
+                "defocusR": 0.32
+              },
+              "note": "Quase tudo legível."
+            },
+            {
+              "v": "f/11",
+              "recipe": {
+                "defocus": 0
+              },
+              "note": "O fundo recupera o detalhe que a lente deixou entrar."
+            }
+          ],
+          "foot": "Simulação sobre uma fotografia do portal: só a variável desta tira muda. A fotografia-base já foi feita com alguma separação, por isso a célula da direita mostra o fundo **mais nítido**, não perfeitamente nítido. **O fundo real também depende da distância** — ver a régua abaixo."
         },
         {
+          "kind": "diagram",
+          "art": "dofband",
+          "t": "Quanto fica nítido, a sério",
+          "hint": "Contas reais para a tua câmara: 50mm focado a 3 m.",
+          "opts": {
+            "focal": 50,
+            "dist": 3,
+            "coc": "auto",
+            "rows": [
+              1.8,
+              4,
+              8,
+              16
+            ]
+          },
+          "foot": "A zona nítida cresce **muito mais para trás** do que para a frente — por isso é que focar a 1/3 da cena funciona em paisagem."
+        },
+        {
+          "kind": "rules",
           "t": "O que desfoca o fundo, por ordem de impacto",
           "items": [
-            "1.º — Distância entre o sujeito e o fundo. Afasta-o da parede.",
-            "2.º — Distância da câmara ao sujeito. Chega-te à frente.",
-            "3.º — Focal. 200mm desfoca muitíssimo mais que 24mm à mesma abertura.",
-            "4.º — Abertura. É o último da lista, não o primeiro."
+            "**1.º — distância do sujeito ao fundo.** Afasta-o da parede: é de longe o que mais rende.",
+            "**2.º — distância da câmara ao sujeito.** Chega-te à frente.",
+            "**3.º — focal.** 200mm desfoca muito mais que 24mm à mesma abertura.",
+            "**4.º — abertura.** É o último da lista, não o primeiro."
+          ]
+        },
+        {
+          "kind": "grid",
+          "t": "O ponto doce e o limite do outro lado",
+          "cols": 1,
+          "items": [
+            {
+              "ico": "🎯",
+              "k": "Ponto doce",
+              "v": "2 a 3 stops acima da máxima",
+              "note": "Uma f/1.8 está no seu melhor entre f/4 e f/5.6; uma lente de kit f/3.5–5.6, entre f/7.1 e f/8."
+            },
+            {
+              "ico": "🌫️",
+              "k": "Difração",
+              "v": "f/11 APS-C · f/16 FF · f/5.6 telemóvel",
+              "note": "A partir daqui perde-se nitidez em TODA a imagem. Se precisas de mais profundidade, a resposta é hiperfocal ou focus stacking — não fechar mais."
+            }
           ]
         }
       ],
-      "rule": "f/8 resolve 80% das fotografias. Abre para isolar, fecha para explicar.",
+      "rule": "Abre para isolar, fecha para explicar. Se não sabes, f/8.",
       "go": [
-        { "label": "Profundidade de campo", "t": "tool:dof" },
-        { "label": "Hiperfocal", "t": "tool:hf" }
+        {
+          "label": "Profundidade de campo",
+          "t": "tool:dof"
+        },
+        {
+          "label": "Hiperfocal",
+          "t": "tool:hf"
+        },
+        {
+          "label": "Focal e enquadramento",
+          "t": "cs:focal"
+        }
+      ]
+    },
+    {
+      "id": "velocidade",
+      "icon": "⏱️",
+      "name": "Velocidade do obturador",
+      "level": "camara",
+      "blurb": "Congelar ou arrastar — e a calculadora do mínimo seguro.",
+      "q": "Que velocidade preciso para isto não sair tremido?",
+      "alias": "shutter speed · tempo de exposição",
+      "thumb": {
+        "asset": "ci-velocidade"
+      },
+      "answer": "Há sempre **duas** respostas — o teu tremido e o movimento do sujeito — e vale a mais rápida das duas.",
+      "special": "shutter",
+      "blocks": [
+        {
+          "kind": "strip",
+          "t": "O que o tempo faz ao que se move",
+          "hint": "Mesma atleta, mesma luz. O rasto cresce com o tempo de exposição.",
+          "base": "vis-desporto",
+          "ar": "3/2",
+          "axis": [
+            "congela",
+            "arrasta"
+          ],
+          "cells": [
+            {
+              "v": "1/1000",
+              "recipe": {
+                "motion": 0
+              },
+              "mark": "referência",
+              "note": "Congela mesmo. Ponta das asas, pé na bola."
+            },
+            {
+              "v": "1/250",
+              "recipe": {
+                "motion": 2
+              },
+              "note": "Cara nítida, mãos e pés já arrastam."
+            },
+            {
+              "v": "1/60",
+              "recipe": {
+                "motion": 8
+              },
+              "note": "Só serve para quem está quieto."
+            },
+            {
+              "v": "1/15",
+              "recipe": {
+                "motion": 33
+              },
+              "note": "Arrasto assumido: panning ou intenção."
+            },
+            {
+              "v": "1/4",
+              "recipe": {
+                "motion": 90
+              },
+              "note": "Já não é uma pessoa, é um gesto."
+            }
+          ],
+          "foot": "O rasto é **proporcional ao tempo**: de 1/1000 para 1/15 são 66× mais tempo — e 66× mais arrasto."
+        },
+        {
+          "kind": "compare",
+          "fam": "cs-vel",
+          "a": "tec-panning",
+          "b": "tec-panning-bad",
+          "t": "Arrastar de propósito: panning",
+          "q": "Qual das duas diz 'velocidade'?",
+          "aTag": "1/60 a acompanhar",
+          "bTag": "1/1000 parado",
+          "neutral": true,
+          "aWhy": "Sujeito nítido e fundo em riscos: lê-se movimento.",
+          "bWhy": "Tudo nítido — sem rasto nenhum, o ciclista parece parado à beira da estrada.",
+          "foot": "Duas fotografias reais do portal: aqui a diferença é a técnica, não um filtro."
+        }
+      ],
+      "rule": "Entre ruído e tremido, escolhe sempre ruído. O ruído edita-se; o tremido não.",
+      "go": [
+        {
+          "label": "ISO",
+          "t": "cs:iso"
+        },
+        {
+          "label": "Longa exposição",
+          "t": "tool:le"
+        }
+      ]
+    },
+    {
+      "id": "iso",
+      "icon": "☀️",
+      "name": "ISO",
+      "level": "camara",
+      "blurb": "100 → 12800: onde pôr o teto e o que se perde.",
+      "q": "Até onde posso subir o ISO sem estragar a fotografia?",
+      "thumb": {
+        "asset": "ci-iso"
+      },
+      "answer": "O ISO não faz ruído — a **falta de luz** faz. O ISO só amplifica o que já lá estava.",
+      "blocks": [
+        {
+          "kind": "strip",
+          "t": "A mesma cena, com cada vez menos luz",
+          "hint": "Brilho igual em todas: o ISO subiu para o manter à medida que a luz baixa.",
+          "base": "look-cidade",
+          "ar": "3/2",
+          "axis": [
+            "ficheiro limpo",
+            "grão e menos cor"
+          ],
+          "cells": [
+            {
+              "v": "100",
+              "recipe": {
+                "noise": 0
+              },
+              "note": "Só com tripé nesta luz — mas dá o ficheiro mais limpo possível."
+            },
+            {
+              "v": "400",
+              "recipe": {
+                "noise": 7
+              },
+              "mark": true,
+              "note": "À mão, encostado. Sem custo visível."
+            },
+            {
+              "v": "1600",
+              "recipe": {
+                "noise": 20
+              },
+              "note": "O compromisso normal de uma rua à noite."
+            },
+            {
+              "v": "6400",
+              "recipe": {
+                "noise": 44,
+                "grainSize": 2,
+                "fade": 6
+              },
+              "note": "Sombras a fervilhar; a cor começa a esmorecer."
+            },
+            {
+              "v": "12800",
+              "recipe": {
+                "noise": 72,
+                "grainSize": 2,
+                "fade": 12,
+                "saturation": -12
+              },
+              "note": "Último recurso: perde-se detalhe fino e cor."
+            }
+          ],
+          "foot": "Grão simulado sobre a mesma fotografia. Cada câmara tem o seu limite — o exercício abaixo diz-te o **teu**."
+        },
+        {
+          "kind": "grid",
+          "t": "ISO típico por cenário",
+          "items": [
+            {
+              "ico": "☀️",
+              "k": "Exterior com sol",
+              "v": "100",
+              "note": "O ISO base dá sempre o melhor ficheiro."
+            },
+            {
+              "ico": "☁️",
+              "k": "Nublado, sombra aberta",
+              "v": "200–400",
+              "note": "Limpo em qualquer câmara."
+            },
+            {
+              "ico": "🪟",
+              "k": "Interior com luz de dia",
+              "v": "400–800",
+              "note": "Num telemóvel já se começa a ver."
+            },
+            {
+              "ico": "🛋️",
+              "k": "Interior à noite",
+              "v": "1600–3200",
+              "note": "APS-C aguenta bem; telemóvel sofre."
+            },
+            {
+              "ico": "🎤",
+              "k": "Concerto, bar, palco",
+              "v": "3200–6400",
+              "note": "Prefere ruído a tremido — sempre."
+            },
+            {
+              "ico": "🌌",
+              "k": "Astrofotografia",
+              "v": "1600–6400",
+              "note": "Com tripé: ISO alto + 15–25 s."
+            }
+          ]
+        },
+        {
+          "kind": "rules",
+          "t": "A parte contraintuitiva",
+          "items": [
+            "Uma foto a **ISO 3200 bem exposta** tem menos ruído do que uma a ISO 800 levantada 2 stops na edição.",
+            "Subir o ISO na câmara amplifica **antes** do ruído de leitura; levantar na edição amplifica **depois**.",
+            "Conclusão prática: expõe bem no momento, mesmo que isso obrigue a subir o ISO."
+          ]
+        },
+        {
+          "kind": "steps",
+          "t": "Descobre o teu teto — 15 minutos, uma vez na vida",
+          "items": [
+            "Fotografa a mesma cena a 800, 1600, 3200, 6400 e 12800.",
+            "Vê-as a 100% **e** no tamanho em que costumas partilhar — são julgamentos diferentes.",
+            "O último que te agrada é o teu limite. Mete-o como teto do Auto-ISO e nunca mais penses nisto."
+          ]
+        }
+      ],
+      "rule": "Ruído tem solução na edição. Tremido e desfocado não têm.",
+      "go": [
+        {
+          "label": "Velocidade do obturador",
+          "t": "cs:velocidade"
+        },
+        {
+          "label": "Redução de ruído",
+          "t": "etool:noise"
+        }
+      ]
+    },
+    {
+      "id": "exposicao",
+      "icon": "🎚️",
+      "name": "Compensação de exposição",
+      "level": "camara",
+      "blurb": "−2 → +2 EV: quando a câmara se engana e para que lado.",
+      "q": "A foto saiu cinzenta ou queimada — para que lado corrijo?",
+      "alias": "exposure compensation · EV",
+      "thumb": {
+        "asset": "ci-exposicao"
+      },
+      "answer": "A câmara mede tudo como se fosse **cinzento a 18%**. Numa cena clara entrega-a escura de mais — e é isso que a compensação corrige.",
+      "blocks": [
+        {
+          "kind": "strip",
+          "t": "O que a câmara entrega e o que a cena pedia",
+          "hint": "Areia clara ao sol: o fotómetro puxa-a para cinzento médio.",
+          "base": "look-praia",
+          "ar": "3/2",
+          "axis": [
+            "o que a câmara faz",
+            "o que tu querias"
+          ],
+          "cells": [
+            {
+              "v": "0 EV",
+              "lab": "sem compensação",
+              "recipe": {
+                "exposure": -1
+              },
+              "note": "A areia fica baça e o mar perde brilho. É o erro clássico da praia e da neve."
+            },
+            {
+              "v": "+1 EV",
+              "lab": "com compensação",
+              "recipe": {
+                "exposure": 0
+              },
+              "mark": "a certa aqui",
+              "note": "A areia volta ao tom real e o céu mantém-se. Confirma no histograma."
+            },
+            {
+              "v": "+2 EV",
+              "lab": "de mais",
+              "recipe": {
+                "exposure": 1
+              },
+              "note": "A areia perde textura e as nuvens queimam. O que queima não volta."
+            }
+          ],
+          "foot": "A tira parte da exposição **certa** e recua: a célula da esquerda é o que o fotómetro daria sozinho. Não é uma fotografia queimada a fingir de correta."
+        },
+        {
+          "kind": "grid",
+          "t": "Quanto compensar, de cor",
+          "items": [
+            {
+              "ico": "🏖️",
+              "k": "Neve, praia, parede branca",
+              "v": "+1 a +2 EV",
+              "note": "Superfícies claras enganam o fotómetro. Sem isto ficam acinzentadas."
+            },
+            {
+              "ico": "🌅",
+              "k": "Contraluz com o sujeito à sombra",
+              "v": "+1 a +2 EV",
+              "note": "Ou mede no rosto, ou usa flash de preenchimento."
+            },
+            {
+              "ico": "🎭",
+              "k": "Palco, fato preto, fundo escuro",
+              "v": "−1 a −2 EV",
+              "note": "Sem isto ficam cinzentos também."
+            },
+            {
+              "ico": "🌃",
+              "k": "Noite com luzes fortes",
+              "v": "−1 EV",
+              "note": "Protege os néons de queimar."
+            },
+            {
+              "ico": "🌫️",
+              "k": "Nevoeiro, névoa, alta chave",
+              "v": "+1 EV",
+              "note": "O branco tem de ficar branco."
+            },
+            {
+              "ico": "↩️",
+              "k": "Quando acabares",
+              "v": "volta a 0",
+              "note": "É o erro mais esquecido que há."
+            }
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Funciona em **P, Av e Tv** — e em M só se o ISO estiver automático. Em M puro não há nada a compensar: és tu que mandas nos três."
+        }
+      ],
+      "rule": "Não olhes para o brilho do ecrã: olha para o histograma e para o alerta de altas luzes.",
+      "go": [
+        {
+          "label": "Medição e histograma",
+          "t": "cs:medicao"
+        },
+        {
+          "label": "Que modo usar",
+          "t": "cs:modos"
+        }
       ]
     },
     {
       "id": "wb",
       "icon": "🌡️",
       "name": "Balanço de brancos",
-      "level": "avancado",
-      "blurb": "Kelvin, presets e quando o automático mente.",
-      "lead": "O automático acerta em 90% das cenas. O cartão é sobre os outros 10%.",
-      "table": {
-        "cols": ["Fonte de luz", "Kelvin", "Preset"],
-        "rows": [
-          ["Vela, fogueira", "≈1900 K", "Manual / Kelvin"],
-          ["Lâmpada incandescente", "≈2800 K", "Tungsténio 💡"],
-          ["Interior quente, halogéneo", "≈3200 K", "Tungsténio"],
-          ["LED branco, fluorescente", "≈4000 K", "Fluorescente"],
-          ["Flash", "≈5500 K", "Flash ⚡"],
-          ["Sol do meio-dia", "≈5500 K", "Luz do dia ☀️"],
-          ["Nublado", "≈6500 K", "Nublado ☁️"],
-          ["Sombra aberta", "≈7500 K", "Sombra 🏠"],
-          ["Hora azul", "9000 K e acima", "Kelvin manual"]
-        ]
+      "level": "camara",
+      "blurb": "Kelvin: a mesma cena mais fria ou mais quente.",
+      "q": "As cores saíram amarelas ou azuis — o que ponho?",
+      "alias": "white balance · WB · temperatura de cor",
+      "thumb": {
+        "asset": "ci-wb"
       },
+      "answer": "Em **RAW** é só uma etiqueta: decides depois, sem perda. Em **JPG** fica cozido no ficheiro.",
       "blocks": [
         {
-          "t": "Quando o automático se engana",
-          "items": [
-            "Luz mista (janela + lâmpada): a câmara escolhe uma e erra a outra. A solução é desligar a lâmpada.",
-            "Cena dominada por uma cor (relva, parede vermelha): o automático tenta neutralizá-la e desvia tudo.",
-            "Nascer e pôr do sol: o automático 'corrige' precisamente o laranja que tu foste lá buscar. Põe Luz do dia."
-          ]
+          "kind": "strip",
+          "t": "O mesmo retrato, cinco valores",
+          "hint": "Subir o Kelvin aquece a imagem; baixar arrefece-a.",
+          "base": "look-retrato",
+          "ar": "3/2",
+          "axis": [
+            "mais frio",
+            "mais quente"
+          ],
+          "cells": [
+            {
+              "v": "2800 K",
+              "recipe": {
+                "temp": -45,
+                "tint": -4
+              },
+              "note": "Valor de lâmpada aplicado a luz de dia: azul."
+            },
+            {
+              "v": "4000 K",
+              "recipe": {
+                "temp": -25
+              },
+              "note": "Ligeiramente frio. Serve para arrefecer de propósito."
+            },
+            {
+              "v": "5500 K",
+              "recipe": {
+                "temp": 0
+              },
+              "mark": "a certa aqui",
+              "note": "Luz do dia: a pele fica com a cor certa."
+            },
+            {
+              "v": "7500 K",
+              "recipe": {
+                "temp": 30
+              },
+              "note": "Valor de sombra: aquece e favorece a pele."
+            },
+            {
+              "v": "9000 K",
+              "recipe": {
+                "temp": 55,
+                "tint": 6
+              },
+              "note": "Demasiado: a pele fica cor de tijolo."
+            }
+          ],
+          "foot": "Regra de leitura: **o Kelvin que escolhes é o da luz que dizes ter**. Se disseres à câmara que a luz é quente, ela arrefece a imagem para compensar."
         },
         {
-          "t": "RAW ou JPG muda tudo aqui",
+          "kind": "diagram",
+          "art": "scalebar",
+          "t": "A cor de cada fonte de luz",
+          "hint": "A amostra é a cor real dessa temperatura.",
+          "opts": {
+            "h": 96,
+            "left": "quente",
+            "right": "frio",
+            "items": [
+              {
+                "k": 1900,
+                "v": "1900 K",
+                "lab": "vela"
+              },
+              {
+                "k": 2800,
+                "v": "2800 K",
+                "lab": "incandescente"
+              },
+              {
+                "k": 4000,
+                "v": "4000 K",
+                "lab": "LED, fluorescente"
+              },
+              {
+                "k": 5500,
+                "v": "5500 K",
+                "lab": "sol · flash"
+              },
+              {
+                "k": 6500,
+                "v": "6500 K",
+                "lab": "nublado"
+              },
+              {
+                "k": 7500,
+                "v": "7500 K",
+                "lab": "sombra"
+              },
+              {
+                "k": 9500,
+                "v": "9500 K",
+                "lab": "hora azul"
+              }
+            ]
+          },
+          "foot": "Nas câmaras, os presets ☀️ ⛅ 🏠 💡 são atalhos para estes valores."
+        },
+        {
+          "kind": "rules",
+          "t": "Onde o automático se engana",
           "items": [
-            "Em RAW o balanço de brancos é só uma etiqueta: mudas depois, sem perda nenhuma.",
-            "Em JPG fica cozido no ficheiro — aí vale mesmo a pena acertar no momento."
+            "**Luz mista** (janela + lâmpada): a câmara escolhe uma e erra a outra. A solução é desligar a lâmpada.",
+            "**Cena dominada por uma cor** (relva, parede vermelha): o automático tenta neutralizá-la e desvia tudo.",
+            "**Nascer e pôr do sol:** o automático 'corrige' precisamente o laranja que foste lá buscar. Põe Luz do dia.",
+            "**Sombra aberta:** fica azulada. Sobe para 7000–7500 K ou usa o preset de sombra."
           ]
         }
       ],
       "rule": "Se disparas RAW, não penses nisto no momento. Se disparas JPG, põe 'Luz do dia' e confirma no ecrã.",
-      "go": [{ "label": "Cores", "t": "apr:cores" }]
+      "go": [
+        {
+          "label": "Cores",
+          "t": "apr:cores"
+        },
+        {
+          "label": "Temperatura na edição",
+          "t": "etool:temp"
+        }
+      ]
+    },
+    {
+      "id": "focal",
+      "icon": "🔭",
+      "name": "Distância focal",
+      "level": "camara",
+      "blurb": "14 → 200mm: o que cabe e o que muda no rosto.",
+      "q": "Que lente para isto — e porque é que a cara sai deformada?",
+      "alias": "focal length · mm · zoom",
+      "thumb": {
+        "asset": "ci-focal"
+      },
+      "answer": "A focal decide **o que cabe**. A distância a que ficas decide **a forma** — e são coisas diferentes.",
+      "blocks": [
+        {
+          "kind": "diagram",
+          "art": "fov",
+          "t": "Quanto do mundo entra na moldura",
+          "hint": "Ângulo horizontal, em focal equivalente 35mm.",
+          "foot": "Numa câmara com crop, multiplica a focal real pelo fator da tua câmara antes de usar esta escala."
+        },
+        {
+          "kind": "diagram",
+          "art": "compress",
+          "t": "Porque é que a mesma cara sai diferente",
+          "hint": "A pessoa fica do mesmo tamanho; muda a distância a que estás.",
+          "foot": "Perto, o nariz está **muito mais perto** da lente do que as orelhas — e é isso que o alarga. Não é a lente: é a distância. Um retrato a 85mm eq obriga-te a recuar, e é o recuo que favorece."
+        },
+        {
+          "kind": "grid",
+          "t": "Para que serve cada intervalo",
+          "items": [
+            {
+              "ico": "🏛️",
+              "k": "14–20mm eq",
+              "v": "ultra grande angular",
+              "note": "Interiores apertados, céu enorme, drama. Cuidado com as verticais."
+            },
+            {
+              "ico": "🏞️",
+              "k": "24–35mm eq",
+              "v": "grande angular",
+              "note": "Paisagem, rua, viagem, retrato ambiental."
+            },
+            {
+              "ico": "👁️",
+              "k": "50mm eq",
+              "v": "normal",
+              "note": "O mais parecido com o que o olho seleciona."
+            },
+            {
+              "ico": "👤",
+              "k": "85–135mm eq",
+              "v": "tele curta",
+              "note": "Retrato: separa do fundo e não deforma."
+            },
+            {
+              "ico": "🦅",
+              "k": "200–600mm eq",
+              "v": "tele longa",
+              "note": "Desporto e aves. Comprime planos e apoia-se sempre."
+            },
+            {
+              "ico": "🌸",
+              "k": "macro",
+              "v": "1:1",
+              "note": "Não é a focal que manda, é a ampliação."
+            }
+          ]
+        },
+        {
+          "kind": "rules",
+          "t": "Regras de bolso",
+          "items": [
+            "Queres **mais fundo desfocado** sem mudar de abertura? Recua e usa mais mm.",
+            "Queres **mais contexto** sem apanhar mais coisas feias? Aproxima-te e usa menos mm.",
+            "**Zoom com os pés primeiro.** Mudar de posição muda a perspetiva; mudar de focal só recorta.",
+            "Duas pessoas lado a lado a 85mm eq exigem que recues bastante — em interiores usa 50mm eq."
+          ]
+        }
+      ],
+      "rule": "Escolhe a distância pela cara que queres; escolhe a focal para enquadrar dessa distância.",
+      "go": [
+        {
+          "label": "Focal e crop",
+          "t": "tool:focal"
+        },
+        {
+          "label": "Abertura",
+          "t": "cs:abertura"
+        }
+      ]
+    },
+    {
+      "id": "foco",
+      "icon": "🎯",
+      "name": "Focagem",
+      "level": "camara",
+      "blurb": "Que modo AF e que área, situação a situação.",
+      "q": "A câmara está a focar no sítio errado — que modo ponho?",
+      "alias": "autofocus · AF · focus",
+      "thumb": {
+        "asset": "ci-foco"
+      },
+      "answer": "Parado = **um ponto**, no olho. A mexer = **contínuo com zona**. Em dúvida, contínuo.",
+      "blocks": [
+        {
+          "kind": "grid",
+          "t": "A área certa para cada situação",
+          "items": [
+            {
+              "art": "af",
+              "opts": {
+                "k": "single"
+              },
+              "k": "Pessoa parada, produto",
+              "v": "AF-S · 1 ponto",
+              "note": "Põe o ponto no olho mais próximo e não recomponhas muito."
+            },
+            {
+              "art": "af",
+              "opts": {
+                "k": "olho"
+              },
+              "k": "Retrato",
+              "v": "AF-C · deteção de olhos",
+              "note": "Confirma ampliado: com o diafragma aberto a margem é milimétrica."
+            },
+            {
+              "art": "af",
+              "opts": {
+                "k": "zona"
+              },
+              "k": "Criança, animal, evento",
+              "v": "AF-C · zona",
+              "note": "A zona apanha o sujeito sem exigir pontaria."
+            },
+            {
+              "art": "af",
+              "opts": {
+                "k": "seguir"
+              },
+              "k": "Desporto, aves em voo",
+              "v": "AF-C · seguimento",
+              "note": "Engata primeiro num sítio de contraste e depois acompanha."
+            },
+            {
+              "art": "af",
+              "opts": {
+                "k": "manual"
+              },
+              "k": "Macro, noite, astro",
+              "v": "Manual + ampliação 10×",
+              "note": "Em macro foca-se movendo o corpo, não o anel."
+            }
+          ]
+        },
+        {
+          "kind": "rules",
+          "t": "Quando o AF não engata",
+          "items": [
+            "**Pouca luz:** aponta a uma aresta de contraste, nunca a uma superfície lisa.",
+            "**Contraluz:** foca numa zona do sujeito que ainda tenha detalhe.",
+            "**Vidro ou rede:** encosta a lente e passa a manual.",
+            "**Falha sempre no mesmo sítio:** o ponto está sobre algo sem contraste — muda de ponto."
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "**Back-button focus:** tira a focagem do disparador e põe-na no botão AF-ON. Passas a focar uma vez e a recompor à vontade — e com AF-C ligado tens os dois modos num só (enquanto carregas segue, quando largas trava)."
+        }
+      ],
+      "rule": "Metade das fotos falhadas não estão mal expostas: estão focadas no sítio errado.",
+      "go": [
+        {
+          "label": "Abertura e profundidade",
+          "t": "cs:abertura"
+        },
+        {
+          "label": "Fundamentos",
+          "t": "apr:fundamentos"
+        }
+      ]
+    },
+    {
+      "id": "modos",
+      "icon": "🎛️",
+      "name": "Que modo usar",
+      "level": "camara",
+      "blurb": "P, Av, Tv, M — quem decide o quê.",
+      "q": "Que letra ponho na roda?",
+      "thumb": {
+        "asset": "ci-modos"
+      },
+      "answer": "O modo não muda a qualidade da imagem. Muda só **quem decide o quê** — escolhe pelo que não podes deixar ao acaso.",
+      "blocks": [
+        {
+          "kind": "grid",
+          "t": "Quem decide o quê",
+          "cols": 2,
+          "items": [
+            {
+              "art": "dial",
+              "opts": {
+                "on": "AUTO"
+              },
+              "k": "Auto",
+              "v": "tu: nada",
+              "note": "Para passar a câmara a outra pessoa."
+            },
+            {
+              "art": "dial",
+              "opts": {
+                "on": "P"
+              },
+              "k": "P",
+              "v": "tu: ISO e ±EV",
+              "note": "A luz muda a cada esquina e não queres pensar."
+            },
+            {
+              "art": "dial",
+              "opts": {
+                "on": "Av"
+              },
+              "k": "Av / A",
+              "v": "tu: abertura",
+              "mark": "por omissão",
+              "note": "Quase sempre: retrato, paisagem, viagem."
+            },
+            {
+              "art": "dial",
+              "opts": {
+                "on": "Tv"
+              },
+              "k": "Tv / S",
+              "v": "tu: velocidade",
+              "note": "Há movimento: crianças, desporto, água."
+            },
+            {
+              "art": "dial",
+              "opts": {
+                "on": "M"
+              },
+              "k": "M",
+              "v": "tu: tudo",
+              "note": "A luz é constante: estúdio, palco, astro, flash."
+            },
+            {
+              "art": "dial",
+              "opts": {
+                "on": "M"
+              },
+              "k": "M + Auto ISO",
+              "v": "tu: velocidade e abertura",
+              "note": "Mandas no look sem perder a luz que muda."
+            }
+          ]
+        },
+        {
+          "kind": "steps",
+          "t": "Auto-ISO bem configurado vale por um modo novo",
+          "items": [
+            "Define o **teto**: o ISO máximo que aceitas ver nas tuas fotografias.",
+            "Define a **velocidade mínima** — é isto que evita fotos tremidas em Av.",
+            "Se a câmara tiver 'Auto (rápido/lento)', põe em rápido quando fotografas pessoas."
+          ]
+        }
+      ],
+      "rule": "Av para quase tudo. Tv quando há movimento. M + Auto ISO quando queres mandar sem perder a luz.",
+      "go": [
+        {
+          "label": "Compensação de exposição",
+          "t": "cs:exposicao"
+        },
+        {
+          "label": "Medição e histograma",
+          "t": "cs:medicao"
+        }
+      ]
     },
     {
       "id": "medicao",
       "icon": "📊",
       "name": "Medição e histograma",
-      "level": "avancado",
-      "blurb": "Porque a câmara se engana e como corrigi-la.",
-      "lead": "A câmara mede tudo como se a cena fosse cinzento a 18%. Saber isto explica quase todos os erros de exposição.",
-      "art": "histograma",
-      "table": {
-        "cols": ["Modo de medição", "Como mede", "Usa quando"],
-        "rows": [
-          ["Avaliativa / Matricial", "Toda a cena, com pesos", "Por omissão, em quase tudo"],
-          ["Ponderada ao centro", "Toda a cena, a favorecer o meio", "Retrato centrado"],
-          ["Parcial", "≈10% do enquadramento", "Sujeito com fundo muito mais claro"],
-          ["Spot", "≈2% num ponto", "Palco, contraluz, lua — onde só interessa uma zona"]
-        ]
+      "level": "camara",
+      "blurb": "Que zona a câmara mede e como ler o gráfico.",
+      "q": "Em que é que a câmara se está a basear para expor?",
+      "thumb": {
+        "asset": "ci-medicao"
       },
+      "answer": "Cada modo mede uma **zona diferente**. Saber qual explica quase todos os erros de exposição.",
       "blocks": [
         {
-          "t": "Compensar pela cor da cena",
+          "kind": "grid",
+          "t": "O que cada modo mede",
+          "cols": 2,
           "items": [
-            "Cena clara (neve, praia, parede branca): +1 a +2 EV, senão fica cinzenta.",
-            "Cena escura (fato preto, palco, fundo preto): −1 a −2 EV, senão fica cinzenta também.",
-            "É sempre o mesmo erro e sempre a mesma correção."
+            {
+              "art": "metering",
+              "opts": {
+                "k": "matricial"
+              },
+              "k": "Avaliativa / matricial",
+              "v": "toda a cena, com pesos",
+              "mark": "por omissão",
+              "note": "Por omissão, em quase tudo."
+            },
+            {
+              "art": "metering",
+              "opts": {
+                "k": "central"
+              },
+              "k": "Ponderada ao centro",
+              "v": "tudo, a favorecer o meio",
+              "note": "Retrato centrado."
+            },
+            {
+              "art": "metering",
+              "opts": {
+                "k": "parcial"
+              },
+              "k": "Parcial",
+              "v": "≈10% do enquadramento",
+              "note": "Sujeito com fundo muito mais claro."
+            },
+            {
+              "art": "metering",
+              "opts": {
+                "k": "spot"
+              },
+              "k": "Spot",
+              "v": "≈2% num ponto",
+              "note": "Palco, contraluz, lua — onde só interessa uma zona."
+            }
           ]
         },
         {
-          "t": "Ler o histograma",
-          "items": [
-            "Encostado à esquerda: sombras cortadas, perdidas para sempre.",
-            "Encostado à direita: altas luzes queimadas, também perdidas.",
-            "Não existe histograma 'certo' — uma cena escura DEVE ter o gráfico à esquerda.",
-            "Liga o alerta de altas luzes ('blinkies'): é o aviso que o ecrã não te dá."
-          ]
+          "kind": "diagram",
+          "art": "histograma",
+          "t": "Ler o histograma em quatro estados",
+          "hint": "Encostado a uma ponta = informação perdida para sempre.",
+          "foot": "Não existe histograma 'certo': uma cena escura **deve** ter o gráfico à esquerda. O que não pode é estar encostado."
         },
         {
-          "t": "Expor à direita (ETTR) — só faz sentido em RAW",
+          "kind": "rules",
+          "t": "O que fazer com isso",
           "items": [
-            "Empurra a exposição o mais para a direita possível sem queimar nada.",
-            "Baixa-a depois na edição: as sombras saem muito mais limpas.",
-            "Em JPG não faças isto — o que queimares não volta."
+            "Liga o **alerta de altas luzes** ('blinkies'): é o aviso que o brilho do ecrã não te dá.",
+            "Cena clara → **+1 a +2 EV**. Cena escura → **−1 a −2 EV**. É sempre o mesmo erro e a mesma correção.",
+            "**ETTR** (empurrar para a direita sem queimar) só faz sentido em RAW — em JPG o que queimares não volta."
           ]
         }
       ],
       "rule": "Fia-te no histograma, não no ecrã. O brilho do ecrã mente-te de cada vez que mudas de sítio.",
-      "go": [{ "label": "Calculadora de exposição", "t": "tool:exposure" }]
+      "go": [
+        {
+          "label": "Compensação de exposição",
+          "t": "cs:exposicao"
+        },
+        {
+          "label": "Calculadora de exposição",
+          "t": "tool:exposure"
+        }
+      ]
+    },
+    {
+      "id": "luz-dia",
+      "icon": "🌅",
+      "name": "A luz ao longo do dia",
+      "level": "luz",
+      "blurb": "Que luz dá cada hora e o que fazer com ela.",
+      "q": "É esta hora que eu quero para esta fotografia?",
+      "thumb": {
+        "asset": "ci-luz-dia"
+      },
+      "answer": "A mesma câmara, o mesmo sítio e a mesma lente dão fotografias diferentes **só por causa da hora**.",
+      "blocks": [
+        {
+          "kind": "diagram",
+          "art": "dayarc",
+          "t": "Altura do sol e cor da luz",
+          "hint": "A barra em baixo é a cor real da luz a cada momento.",
+          "foot": "Quanto mais baixo o sol, mais longa a sombra e mais quente a luz — as duas coisas ao mesmo tempo."
+        },
+        {
+          "kind": "strip",
+          "t": "A direção muda tudo",
+          "hint": "Três fotografias do portal: a mesma ideia, a luz noutro sítio.",
+          "ar": "3/2",
+          "cells": [
+            {
+              "asset": "light-frontal",
+              "v": "Frontal",
+              "note": "Cores fiéis, pouca forma. A mais fácil e a mais banal."
+            },
+            {
+              "asset": "light-side",
+              "v": "Lateral",
+              "mark": true,
+              "note": "Dá volume e textura. É a mais útil das três."
+            },
+            {
+              "asset": "light-back",
+              "v": "Contraluz",
+              "note": "Recorta e cria halo. Mede no rosto ou ficas com silhueta."
+            }
+          ]
+        },
+        {
+          "kind": "compare",
+          "fam": "cs-luz",
+          "a": "tec-silhueta",
+          "b": "tec-silhueta-bad",
+          "t": "Contraluz: silhueta ou cara?",
+          "q": "O sol está atrás nas duas. O que decide o resultado?",
+          "aTag": "Medido no céu",
+          "bTag": "Medido no rosto",
+          "neutral": true,
+          "aWhy": "Expondo para o céu, o sujeito fecha em silhueta — forma pura, sem detalhe.",
+          "bWhy": "Expondo para o rosto, ganhas a cara e entregas o céu. Ou usas refletor e ficas com os dois.",
+          "foot": "Nenhuma está errada: são duas fotografias diferentes da mesma situação."
+        },
+        {
+          "kind": "grid",
+          "t": "Que luz dá cada momento",
+          "items": [
+            {
+              "kelvin": 9500,
+              "k": "Hora azul",
+              "v": "fria, suave, uniforme",
+              "note": "Cidade com luzes acesas, água, silhuetas. Má para retrato sem luz artificial."
+            },
+            {
+              "kelvin": 2700,
+              "k": "Hora dourada",
+              "v": "quente, baixa, direcional",
+              "note": "Retrato, paisagem, contraluz com halo. Não há nada a evitar."
+            },
+            {
+              "kelvin": 4300,
+              "k": "Manhã / fim de tarde",
+              "v": "ainda inclinada",
+              "note": "Rua, arquitetura, viagem. Cuidado com sombras compridas a cortar o sujeito."
+            },
+            {
+              "kelvin": 5600,
+              "k": "Meio-dia com sol",
+              "v": "dura, de cima",
+              "note": "Preto e branco, sombras gráficas, água. Péssima para retrato ao sol direto."
+            },
+            {
+              "kelvin": 6500,
+              "k": "Nublado",
+              "v": "difusa, sem sombra",
+              "note": "Retrato, flores, macro, floresta. Evita meter o céu — fica branco."
+            },
+            {
+              "kelvin": 7500,
+              "k": "Sombra aberta",
+              "v": "suave e fria",
+              "note": "Salva um retrato a qualquer hora. Corrige o balanço de brancos."
+            }
+          ]
+        },
+        {
+          "kind": "rules",
+          "t": "Sunny 16 — medir sem fotómetro",
+          "items": [
+            "**Sol direto:** f/16 com velocidade = 1/ISO (ISO 100 → 1/100).",
+            "Sol com nuvens finas: **f/11**. Nublado: **f/8**. Sombra ou muito nublado: **f/5.6**.",
+            "Serve para confirmar que a câmara não se enganou — não para substituir a medição."
+          ]
+        }
+      ],
+      "rule": "Se puderes escolher a hora, escolhe. Sai mais barato do que qualquer lente.",
+      "go": [
+        {
+          "label": "Calculadora de hora dourada",
+          "t": "tool:gh"
+        },
+        {
+          "label": "Luz de retrato",
+          "t": "cs:luz-retrato"
+        }
+      ]
+    },
+    {
+      "id": "enquadrar",
+      "icon": "🖼️",
+      "name": "Enquadrar em 5 segundos",
+      "level": "luz",
+      "blurb": "As grelhas que resolvem, sobre fotografias reais.",
+      "q": "Onde ponho o assunto dentro da moldura?",
+      "thumb": {
+        "asset": "ci-enquadrar"
+      },
+      "answer": "Uma fotografia, **um assunto**. Tudo o resto na moldura ou ajuda ou está a atrapalhar.",
+      "blocks": [
+        {
+          "kind": "grid",
+          "t": "As grelhas que resolvem 90% dos casos",
+          "cols": 3,
+          "hint": "Fotografias do portal com a marcação por cima.",
+          "ar": "3/2",
+          "items": [
+            {
+              "asset": "comp-thirds",
+              "overlay": {
+                "art": "guide",
+                "opts": {
+                  "k": "thirds",
+                  "sx": 0.28,
+                  "sy": 0.22
+                }
+              },
+              "k": "Terços",
+              "v": "assunto num cruzamento",
+              "note": "O farol cai na intersecção de cima à esquerda e o horizonte no terço de baixo."
+            },
+            {
+              "asset": "comp-converging",
+              "overlay": {
+                "art": "guide",
+                "opts": {
+                  "k": "linhas",
+                  "sx": 0.53,
+                  "sy": 0.5
+                }
+              },
+              "k": "Linhas condutoras",
+              "v": "as linhas levam ao assunto",
+              "note": "As arcadas convergem para a luz ao fundo: o olho não tem outro caminho."
+            },
+            {
+              "asset": "comp-framing",
+              "overlay": {
+                "art": "guide",
+                "opts": {
+                  "k": "moldura",
+                  "sx": 0.53,
+                  "sy": 0.72
+                }
+              },
+              "k": "Moldura natural",
+              "v": "arco, janela, ramos",
+              "note": "O arco escuro fecha as bordas e empurra o olho para a figura."
+            },
+            {
+              "asset": "comp-symmetry",
+              "overlay": {
+                "art": "guide",
+                "opts": {
+                  "k": "centro",
+                  "axis": "h",
+                  "ax": 0.53,
+                  "sx": 0.42,
+                  "sy": 0.3
+                }
+              },
+              "k": "Simetria",
+              "v": "eixo exato",
+              "note": "Aqui o eixo é horizontal: a linha de água. Ou é exata, ou não é simetria."
+            },
+            {
+              "asset": "comp-negative",
+              "overlay": {
+                "art": "guide",
+                "opts": {
+                  "k": "espaco",
+                  "sx": 0.37,
+                  "sy": 0.68
+                }
+              },
+              "k": "Espaço negativo",
+              "v": "muito vazio, pouco assunto",
+              "note": "A figura ocupa pouco e o vazio à direita é que conta a escala."
+            },
+            {
+              "asset": "comp-diagonal",
+              "overlay": {
+                "art": "guide",
+                "opts": {
+                  "k": "diagonal",
+                  "d": [
+                    0.26,
+                    0.3,
+                    0.95,
+                    0.88
+                  ],
+                  "sx": 0.8,
+                  "sy": 0.72
+                }
+              },
+              "k": "Diagonal",
+              "v": "uma linha que atravessa",
+              "note": "A estrada corta o enquadramento em diagonal e acaba no carro."
+            }
+          ],
+          "foot": "São ferramentas, não leis: servem para decidir depressa. As marcações correspondem ao que está em cada fotografia — se não correspondessem, seria melhor não as ter.",
+          "layout": "cards"
+        },
+        {
+          "kind": "compare",
+          "fam": "cs-enq",
+          "a": "cmp-fundo",
+          "b": "cmp-fundo-bad",
+          "t": "O que há atrás dele?",
+          "q": "As duas estão bem expostas e focadas. O que muda?",
+          "aTag": "Fundo escolhido",
+          "bTag": "Fundo por acaso",
+          "aWhy": "Um passo para o lado e o fundo passa a ser uma superfície, não uma lista de objetos.",
+          "bWhy": "Postes, ramos e manchas claras a competir com o assunto — o olho não sabe onde ficar.",
+          "foot": "Usa 'alternar' para trocar entre as duas: é a mesma cena, muda só de onde se fotografou.",
+          "modes": [
+            "side",
+            "flip"
+          ]
+        },
+        {
+          "kind": "compare",
+          "fam": "cs-enq",
+          "a": "comp-thirds",
+          "b": "comp-thirds-bad",
+          "t": "Terços: com e sem",
+          "q": "Mesma cena, mesma luz. Onde é que o assunto foi parar?",
+          "aTag": "Aplica",
+          "bTag": "Não aplica",
+          "neutral": true,
+          "aWhy": "Farol no cruzamento e horizonte no terço de baixo: o céu tem espaço para respirar.",
+          "bWhy": "Farol ao centro e horizonte a meio: a fotografia não escolheu o que é o assunto.",
+          "foot": "As duas são fotografias válidas — a segunda é que não usa o princípio."
+        },
+        {
+          "kind": "compare",
+          "fam": "cs-enq",
+          "a": "cs-horizonte",
+          "b": "cs-horizonte-bad",
+          "t": "Está direito?",
+          "q": "A diferença é pequena. Consegues vê-la?",
+          "aTag": "Horizonte a nível",
+          "bTag": "Horizonte torto",
+          "aWhy": "O mar assenta. A fotografia deixa de chamar atenção para si própria.",
+          "bWhy": "Três graus e meio chegam: a água parece escorrer para fora do enquadramento.",
+          "foot": "É a mesma fotografia, rodada. Liga o nível eletrónico da câmara e este erro desaparece."
+        },
+        {
+          "kind": "steps",
+          "t": "As cinco perguntas, em cinco segundos",
+          "items": [
+            "**Qual é o assunto?** Se há dois, são duas fotografias.",
+            "**O que há atrás dele?** Um passo para o lado tira postes, ramos e caixotes.",
+            "**Está direito?** Horizonte e verticais — é o que mais denuncia uma foto descuidada.",
+            "**O que posso deixar de fora?** Aproxima-te antes de pensar em cortar depois.",
+            "**Para onde olha ou anda?** Deixa-lhe espaço à frente, não atrás."
+          ]
+        },
+        {
+          "kind": "diagram",
+          "art": "crop",
+          "t": "Onde cortar uma pessoa",
+          "hint": "Corta na carne, nunca numa articulação.",
+          "foot": "As linhas a tracejado doem porque o olho lê uma amputação; as contínuas leem-se como enquadramento.",
+          "opts": {
+            "img": "crop-standing"
+          }
+        }
+      ],
+      "rule": "Se tiveres mais dez segundos: baixa-te ou sobe. A altura do olhar é a mais banal que existe.",
+      "go": [
+        {
+          "label": "Composição a fundo",
+          "t": "apr:composicao"
+        },
+        {
+          "label": "Ângulo e altura",
+          "t": "cs:angulos"
+        }
+      ]
+    },
+    {
+      "id": "angulos",
+      "icon": "📐",
+      "name": "Ângulo e altura da câmara",
+      "level": "luz",
+      "blurb": "De onde fotografas muda quem manda na imagem.",
+      "q": "Estou de pé a fotografar tudo à altura dos olhos. E depois?",
+      "alias": "camera angle · ponto de vista",
+      "thumb": {
+        "asset": "ci-angulos"
+      },
+      "answer": "A altura da câmara decide **quem manda** na fotografia. É a decisão mais barata que há — basta dobrar os joelhos.",
+      "blocks": [
+        {
+          "kind": "strip",
+          "t": "A mesma pessoa, cinco alturas",
+          "hint": "O sujeito não mudou; mudou de onde se olha para ele.",
+          "axis": [
+            "engrandece",
+            "diminui"
+          ],
+          "cells": [
+            {
+              "art": "angle",
+              "opts": {
+                "k": "chao"
+              },
+              "v": "Do chão",
+              "note": "Heroico e teatral. Ótimo para crianças, animais e monumentos."
+            },
+            {
+              "art": "angle",
+              "opts": {
+                "k": "baixo"
+              },
+              "v": "Abaixo dos olhos",
+              "note": "Dá poder e altura. Raramente favorece um rosto."
+            },
+            {
+              "art": "angle",
+              "opts": {
+                "k": "eye"
+              },
+              "v": "Aos olhos",
+              "mark": true,
+              "note": "Ligação e neutralidade. Aos olhos DELE, não aos teus."
+            },
+            {
+              "art": "angle",
+              "opts": {
+                "k": "alto"
+              },
+              "v": "Acima dos olhos",
+              "note": "Afina o queixo e abre o olhar. O clássico do retrato."
+            },
+            {
+              "art": "angle",
+              "opts": {
+                "k": "topo"
+              },
+              "v": "A pique",
+              "note": "Transforma a cena em gráfico. Comida, objetos, padrões."
+            }
+          ]
+        },
+        {
+          "kind": "compare",
+          "fam": "cs-ang",
+          "a": "cs-altura",
+          "b": "cs-altura-bad",
+          "t": "A mesma criança, duas alturas de câmara",
+          "q": "Qual delas te põe ao lado dela?",
+          "aTag": "Aos olhos dela",
+          "bTag": "À altura de um adulto",
+          "neutral": true,
+          "aWhy": "Ao nível dos olhos dela ficas no mundo dela: o gesto lê-se e o fundo abre.",
+          "bWhy": "De pé, olha-se para baixo: a criança fica pequena, distante, e o chão come o enquadramento.",
+          "foot": "Nada mudou na câmara nem na luz. Mudaram os joelhos de quem fotografa."
+        },
+        {
+          "kind": "diagram",
+          "art": "craft-angle",
+          "t": "Um passo ao lado troca o fundo todo",
+          "hint": "Planta: rodar à volta do sujeito muda o que lhe fica atrás.",
+          "foot": "Três-quartos é o ângulo mais versátil para pessoas; o perfil dá forma, o frontal dá confronto."
+        },
+        {
+          "kind": "rules",
+          "t": "Regras de bolso",
+          "items": [
+            "Fotografar uma criança **à tua altura** é a forma mais rápida de a fazer parecer pequena e distante.",
+            "Um passo para o lado resolve mais fundos do que qualquer abertura.",
+            "Se a cena já foi fotografada mil vezes, muda a **altura** antes de mudar de lente.",
+            "Horizonte ao meio = a fotografia não escolheu. Sobe ou desce o horizonte de propósito."
+          ]
+        }
+      ],
+      "rule": "Antes de disparar, pergunta: 'estou aqui porque escolhi, ou porque é onde estava de pé?'",
+      "go": [
+        {
+          "label": "Enquadrar em 5 segundos",
+          "t": "cs:enquadrar"
+        },
+        {
+          "label": "Composição a fundo",
+          "t": "apr:composicao"
+        }
+      ]
     },
     {
       "id": "flash",
       "icon": "⚡",
       "name": "Flash",
-      "level": "avancado",
-      "blurb": "Sincronização, ricochete, TTL e potência.",
-      "lead": "Flash apontado à frente e na potência máxima é a receita da fotografia de bilhete de identidade. Tudo o resto neste cartão é como fugir disso.",
-      "art": "eq-flash",
-      "table": {
-        "cols": ["Situação", "Como", "Nota"],
-        "rows": [
-          ["Interior com teto branco", "Cabeça do flash para cima, TTL", "A luz chega grande e suave"],
-          ["Interior com teto alto ou colorido", "Ricochete numa parede lateral", "Teto amarelado tinge tudo"],
-          ["Retrato ao ar livre com sol", "Flash de preenchimento, −1 a −2 EV", "Abre as sombras dos olhos"],
-          ["Contraluz ao pôr do sol", "Flash a preencher + medir no céu", "Fundo exposto, sujeito também"],
-          ["Estúdio, produto", "Manual (1/1, 1/2, 1/4…)", "Nada muda entre disparos: TTL só atrapalha"],
-          ["Evento, casamento", "TTL + compensação de flash", "Tudo muda a cada foto"]
-        ]
+      "level": "luz",
+      "blurb": "Ricochete, preenchimento e o limite de sincronização.",
+      "q": "Como é que uso o flash sem ficar com foto de bilhete de identidade?",
+      "thumb": {
+        "asset": "ci-flash"
       },
+      "answer": "Nunca apontes o flash **diretamente** ao sujeito se houver um teto ou uma parede clara por perto.",
       "blocks": [
         {
-          "t": "Velocidade de sincronização",
+          "kind": "strip",
+          "t": "Três maneiras de o usar",
+          "cells": [
+            {
+              "art": "flash",
+              "opts": {
+                "k": "direto"
+              },
+              "v": "Direto",
+              "note": "Sombra dura atrás e pele lavada. É o que se evita."
+            },
+            {
+              "art": "flash",
+              "opts": {
+                "k": "ricochete"
+              },
+              "v": "Ricochete",
+              "mark": true,
+              "note": "Aponta ao teto branco: transforma 6 cm de flash num softbox de 2 m."
+            },
+            {
+              "art": "flash",
+              "opts": {
+                "k": "preenche"
+              },
+              "v": "Preenchimento",
+              "note": "Ao sol, a −1/−2 EV: abre as sombras dos olhos sem se notar."
+            }
+          ],
+          "foot": "**Tamanho aparente é tudo:** fonte grande e perto = luz suave; pequena e longe = luz dura."
+        },
+        {
+          "kind": "diagram",
+          "art": "sync",
+          "t": "Onde está o limite de sincronização",
+          "hint": "Acima dele aparece uma faixa preta na imagem.",
+          "foot": "A maioria das câmaras sincroniza até **1/200 ou 1/250**. O HSS passa esse limite mas custa muita potência."
+        },
+        {
+          "kind": "grid",
+          "t": "Que fazer em cada situação",
           "items": [
-            "A maioria das câmaras sincroniza até 1/200 ou 1/250. Acima disso aparece uma faixa preta na imagem.",
-            "HSS (alta velocidade) passa esse limite, mas custa muita potência ao flash.",
-            "No escuro há uma divisão de trabalho útil: a velocidade controla a luz ambiente, a potência do flash controla o sujeito."
+            {
+              "ico": "🏠",
+              "k": "Interior com teto branco",
+              "v": "cabeça para cima, TTL",
+              "note": "A luz chega grande e suave."
+            },
+            {
+              "ico": "🎨",
+              "k": "Teto alto ou colorido",
+              "v": "ricochete numa parede",
+              "note": "Teto amarelado tinge tudo de amarelo."
+            },
+            {
+              "ico": "☀️",
+              "k": "Retrato ao sol",
+              "v": "preenchimento −1 a −2 EV",
+              "note": "Abre as sombras dos olhos."
+            },
+            {
+              "ico": "🌇",
+              "k": "Contraluz ao pôr do sol",
+              "v": "flash + medir no céu",
+              "note": "Fundo exposto e sujeito também."
+            },
+            {
+              "ico": "📦",
+              "k": "Estúdio, produto",
+              "v": "manual (1/1, 1/2…)",
+              "note": "Nada muda entre disparos: o TTL só atrapalha."
+            },
+            {
+              "ico": "💒",
+              "k": "Evento, casamento",
+              "v": "TTL + compensação",
+              "note": "Tudo muda a cada foto."
+            }
           ]
         },
         {
-          "t": "Tamanho aparente é tudo",
-          "items": [
-            "Uma fonte grande e perto dá luz suave; pequena e longe dá luz dura.",
-            "É por isso que o ricochete no teto funciona: transforma um flash de 6 cm num softbox de 2 metros.",
-            "Ao ar livre não há onde bater — aí o flash só serve como preenchimento."
-          ]
+          "kind": "note",
+          "text": "No escuro há uma divisão de trabalho útil: a **velocidade** controla a luz ambiente, a **potência do flash** controla o sujeito."
         }
       ],
-      "rule": "Nunca apontes o flash diretamente ao sujeito se houver uma parede ou um teto claro por perto.",
-      "go": [{ "label": "Calculadora de flash", "t": "tool:flash" }]
+      "rule": "Se não há onde bater, o flash só serve como preenchimento — nunca como luz principal.",
+      "go": [
+        {
+          "label": "Calculadora de flash",
+          "t": "tool:flash"
+        },
+        {
+          "label": "Luz de retrato",
+          "t": "cs:luz-retrato"
+        }
+      ]
+    },
+    {
+      "id": "luz-retrato",
+      "icon": "💡",
+      "name": "Luz de retrato",
+      "level": "luz",
+      "blurb": "20 esquemas: planta + a sombra que desenham num rosto real.",
+      "q": "Onde ponho a luz para o rosto ficar assim?",
+      "thumb": {
+        "asset": "ci-luz-retrato"
+      },
+      "answer": "O nome do padrão é sempre o nome da **sombra**. Se souberes ler a sombra, sabes montar o esquema.",
+      "special": "lightart",
+      "blocks": [],
+      "rule": "Uma luz e um refletor fazem 80% do que está nesta página. O que muda o retrato é a posição, não o número de flashes.",
+      "go": [
+        {
+          "label": "Retrato: fichas do género",
+          "t": "cs:g/retrato"
+        },
+        {
+          "label": "Flash",
+          "t": "cs:flash"
+        }
+      ]
     }
   ]
 }

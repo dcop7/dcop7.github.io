@@ -146,16 +146,16 @@
         ]
       },
       {
-        "id": "s23",
+        "id": "s26",
         "icon": "📱",
         "class": "phone",
-        "name": "Samsung Galaxy S23+",
-        "short": "S23+",
-        "body": "Ultra larga 13mm eq f/2.2 · Principal 23mm eq f/1.8 (50MP) · Tele 3× ~70mm eq f/2.4 · estabilização ótica na principal e na tele",
+        "name": "Samsung Galaxy S26+",
+        "short": "S26+",
+        "body": "Ultra larga 13mm eq f/2.2 (12MP) · Principal 24mm eq f/1.8 (50MP, 1/1.56\") · Tele 3× 67mm eq f/2.4 (10MP) · estabilização ótica na principal e na tele · IP68",
         "lenses": [
           { "id": "uw", "name": "Ultra larga (0.6×)", "eq": "13mm eq", "traits": "amplitude · distorce nas bordas · mais fraca com pouca luz" },
-          { "id": "main", "name": "Principal (1×)", "eq": "23mm eq", "traits": "o melhor dos três módulos · 50MP para cortar" },
-          { "id": "tele", "name": "Tele (3×)", "eq": "~70mm eq", "traits": "a escolha certa para retrato · evita-a com pouca luz" }
+          { "id": "main", "name": "Principal (1×)", "eq": "24mm eq", "traits": "o melhor dos três módulos · 50MP para cortar" },
+          { "id": "tele", "name": "Tele (3×)", "eq": "67mm eq", "traits": "a escolha certa para retrato · evita-a com pouca luz" }
         ],
         "notes": [
           "Acima de 3× é zoom digital — até ~10× aguenta-se, acima disso é pintura.",

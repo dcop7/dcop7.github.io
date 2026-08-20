@@ -46,36 +46,13 @@ img { display: block; max-width: 100%; }
   .icon-btn, .sb-toggle, .lang-btn { min-width: 38px; min-height: 38px; }
 }
 
-/* ── BACKGROUND SYSTEM ── */
-.bg-canvas {
-  position: fixed; inset: 0; z-index: -1;
-  pointer-events: none; overflow: hidden;
-}
-.bg-orb {
-  position: absolute; border-radius: 50%; filter: blur(110px);
-}
-.orb-1 {
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(var(--accent-rgb),.07) 0%, transparent 70%);
-  top: -250px; left: -200px;
-  animation: orb-drift1 28s ease-in-out infinite alternate;
-}
-.orb-2 {
-  width: 550px; height: 550px;
-  background: radial-gradient(circle, rgba(139,92,246,.05) 0%, transparent 70%);
-  bottom: -150px; right: -150px;
-  animation: orb-drift2 35s ease-in-out infinite alternate;
-}
-.orb-3 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(6,182,212,.04) 0%, transparent 70%);
-  top: 50%; left: 50%; transform: translate(-50%,-50%);
-  animation: orb-drift3 22s ease-in-out infinite alternate;
-}
-@keyframes orb-drift1 { to { transform: translate(70px,50px); } }
-@keyframes orb-drift2 { to { transform: translate(-60px,-40px); } }
-@keyframes orb-drift3 { to { transform: translate(calc(-50% + 40px),calc(-50% - 30px)); } }
-body.light .bg-orb { opacity: .3; }
+/* ── BACKGROUND SYSTEM ──
+   Aqui viveram tres "orbs" de ambiente (.bg-canvas > .bg-orb): circulos de
+   400 a 700px com gradiente radial e blur(110px), fixos atras do site todo.
+   Foram removidos: no tema escuro nao acrescentavam nada visivel e no tema
+   claro liam-se como um circulo esbatido por tras do conteudo — algo entre
+   uma nodoa e um erro de render, e nao a profundidade que era a intencao.
+   O fundo do site e agora so o gradiente de tokens.css + o wallpaper. */
 
 /* ── WALLPAPER SYSTEM ── */
 .bg-wallpaper {
@@ -116,13 +93,11 @@ body.wp-active.light .widget {
     transition-duration: .01ms !important;
     animation-iteration-count: 1 !important;
   }
-  .bg-canvas { transform: none !important; }
 }
 
 /* ── PARALLAX SYSTEM ──
-   Smooth transform for the wallpaper + orb canvas (mouse depth handled in JS). */
+   Smooth transform for the wallpaper (mouse depth handled in JS). */
 #bg-wallpaper { transition: background-position .05s linear; }
-.bg-canvas    { transition: transform .05s linear; will-change: transform; }
 
 /* Content layer: intentionally NOT parallaxed.
    A persistent `will-change: transform` here promotes the whole view to a

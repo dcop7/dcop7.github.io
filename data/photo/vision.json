@@ -1555,8 +1555,9 @@
         "bTag": "✗ Luz de frente",
         "aWhy": "A sombra atravessa o rosto e devolve-lhe volume: percebe-se a forma da cara.",
         "bWhy": "Luz frontal apaga as sombras e com elas o relevo — o rosto fica chapado.",
-        "caption": "A mesma pessoa e a mesma exposição. Só mudou de onde vinha a luz.",
-        "mode": "flip"
+        "caption": "Mesma roupa, mesmo fundo e mesma exposição. Só mudou de onde vinha a luz.",
+        "mode": "flip",
+        "ar": "1 / 1"
       }
     },
     {
@@ -1701,7 +1702,7 @@
         "aTag": "◆ Enquadramento aberto",
         "bTag": "◆ Enquadramento fechado",
         "aWhy": "Uma praça quase vazia com um punhado de pessoas num canto. Ninguém mentiu: estava assim.",
-        "bWhy": "Cartazes a encher o enquadramento, fotografado de baixo e de perto. Também ninguém mentiu: aquilo estava mesmo ali.",
+        "bWhy": "A mesma tarde, filmada onde a manifestação era densa: a avenida cheia de ponta a ponta. Também ninguém mentiu — aquilo estava mesmo ali.",
         "caption": "As duas são honestas ao nível do píxel. As duas publicam manchetes opostas.",
         "after": "As duas são verdadeiras e nenhuma é a verdade. Toda a fotografia é uma seleção — do que entra, do instante, do corte, do tratamento e da legenda. Isto não faz da fotografia documental uma mentira nem da fotografia editada uma fraude; faz de quem fotografa alguém que escolhe, e portanto alguém responsável pelo que a escolha deixa perceber."
       }

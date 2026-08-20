@@ -96,7 +96,7 @@ const PhotoLearn = (function () {
         ${frameHTML(o.b, o.bAlt, '', kB + ' pl-flip-b', o.extraB)}
         <div class="pl-flip-a">${frameHTML(o.a, o.aAlt, '', kA, o.extraA)}</div>
         <span class="pl-tag ${kA} pl-flip-tag" data-flip-tag>${aTag}</span>
-        <button type="button" class="pl-flip-btn" data-flip>Manter premido para ver a outra</button>
+        <button type="button" class="pl-flip-btn" data-flip title="Manter premido para ver a outra" aria-label="Manter premido para ver a outra">✋ ver a outra</button>
       </div>`;
     }
     const pct = o.pct == null ? 52 : o.pct;
@@ -129,7 +129,16 @@ const PhotoLearn = (function () {
       ${allowed.map(m => `<button type="button" class="pl-mode${m === mode ? ' active' : ''}" data-mode="${m}"
         title="${CMP_MODES[m].label}" aria-pressed="${m === mode}"><span aria-hidden="true">${CMP_MODES[m].icon}</span> ${CMP_MODES[m].label}</button>`).join('')}
     </div>` : '';
-    return `<figure class="pl-cmp" data-pl="compare" data-fam="${esc(o.fam || '')}"
+    /* `ar` — pares em retrato (rostos, corpo inteiro) ficavam decapitados
+       dentro de uma moldura fixa 3:2. O rácio vive numa variável CSS na
+       figura, por isso sobrevive à troca de modo (lado a lado / cortina /
+       alternar), que volta a desenhar só o palco. */
+    /* Um rácio próprio é sempre mais alto do que o 3:2 de origem, e à
+       largura total da coluna isso dá uma moldura de 700px que empurra o
+       texto todo para fora do ecrã. `--pl-w` estreita a figura para que a
+       ALTURA fique em meia dobra; `o.w` permite afinar caso a caso. */
+    const arStyle = o.ar ? ` style="--pl-ar:${esc(o.ar)};--pl-w:${esc(o.w || '520px')}"` : '';
+    return `<figure class="pl-cmp" data-pl="compare"${arStyle} data-fam="${esc(o.fam || '')}"
               data-opts="${esc(JSON.stringify({
                 a: o.a || '', b: o.b || '', aAlt: o.aAlt || '', bAlt: o.bAlt || '',
                 aTag: o.aTag || '', bTag: o.bTag || '', label: o.label || '',
@@ -316,7 +325,7 @@ const PhotoLearn = (function () {
           <canvas class="pl-look-cv" role="img" aria-label="Fotografia com o estilo aplicado"></canvas>
           <img class="pl-look-orig" alt="" hidden>
           <span class="pl-tag ok" data-look-tag>${esc(o.name || 'Estilo')}</span>
-          <button type="button" class="pl-look-hold" data-hold>Manter premido para ver o original</button>
+          <button type="button" class="pl-look-hold" data-hold title="Manter premido para ver o original" aria-label="Manter premido para ver o original">✋ ver o original</button>
         </div>
         <div class="pl-look-ctl">
           <label class="pl-slider">
@@ -438,19 +447,27 @@ const PhotoLearn = (function () {
      que é a única forma de os comparar a sério.
      A base é partilhada de propósito: se cada cartão usasse a sua melhor
      fotografia, a diferença entre cartões seria a fotografia e não o estilo. */
+  /* `w` = largura a que a imagem é REALMENTE processada. Ficava fixa em
+     300px, o que chegava para as miniaturas dos Estilos mas deixava as
+     tiras dos Cheatsheets visivelmente moles em ecrã grande (em modo de
+     ecrã inteiro cada célula passa dos 500px e a imagem era esticada a
+     partir de 300). Quem chama pede a largura que vai mostrar; a cache é
+     por origem E largura, senão a primeira largura pedida ficava a servir
+     todas as outras. */
   const _thumbCache = new Map();
-  function paintThumb(canvas, src, recipe) {
+  function paintThumb(canvas, src, recipe, w) {
     if (!canvas || !src || typeof PhotoLab === 'undefined') return;
-    const W = 300;
+    const W = Math.max(120, Math.min(900, Math.round(w || 300)));
+    const key = src + '@' + W;
     const draw = base => {
-      const h = Math.round(base.height * (W / base.width));
-      canvas.width = W; canvas.height = h;
+      if (!base) return;
+      canvas.width = base.width; canvas.height = base.height;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      const dst = ctx.createImageData(W, h);
+      const dst = ctx.createImageData(base.width, base.height);
       PhotoLab.process(base.data, dst, recipe && recipe.curvePts ? scaleRecipe(recipe, 1) : (recipe || {}));
       ctx.putImageData(dst, 0, 0);
     };
-    const cached = _thumbCache.get(src);
+    const cached = _thumbCache.get(key);
     if (cached) { if (cached.then) cached.then(draw); else draw(cached); return; }
     const p = new Promise(res => {
       const img = new Image();
@@ -461,13 +478,13 @@ const PhotoLearn = (function () {
         const cx = c.getContext('2d', { willReadFrequently: true });
         cx.drawImage(img, 0, 0, W, h);
         const base = { data: cx.getImageData(0, 0, W, h), width: W, height: h };
-        _thumbCache.set(src, base);
+        _thumbCache.set(key, base);
         res(base);
       };
       img.onerror = () => res(null);
       img.src = src;
     });
-    _thumbCache.set(src, p);
+    _thumbCache.set(key, p);
     p.then(b => { if (b) draw(b); });
   }
 

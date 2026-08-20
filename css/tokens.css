@@ -83,9 +83,16 @@
   --font-head: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* ── Motion ── */
+  /* ── Motion ──
+     ATENÇÃO: --ease e --ease-out são pares DURAÇÃO+CURVA, feitos para
+     `transition: <prop> var(--ease)`. Numa shorthand `animation:` o
+     segundo tempo é o DELAY — usá-los lá dava animações a arrancar
+     150–200ms depois de o elemento já estar visível (o painel abria e
+     "piscava" logo a seguir). Para `animation:` usar as curvas puras. */
   --ease: 150ms ease;
   --ease-out: 200ms cubic-bezier(.4,0,.2,1);
+  --ease-fn: ease;
+  --ease-out-fn: cubic-bezier(.4,0,.2,1);
 
   /* ── Theme-aware overlay glass (used by Explorer, Ocorrências, etc.) ── */
   --glass:        rgba(8,12,20,.88);

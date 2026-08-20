@@ -39,7 +39,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), 17 categorias (incl. piropos e cúmulos) organizadas por grupos, centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
-| `#photography` | **Fotografia** | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S23+ / ambos), modo "No Terreno" (assistente de bolso), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
+| `#photography` | **Fotografia** | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S26+ / ambos), Cheatsheets visuais de consulta rápida (15 gerais + 8 géneros com fichas próprias + cartão de bolso dos restantes 20), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
 | `#settings` | **Preferências** | Tema, tamanho de letra, língua, bookmarks, cidade da meteo |
 
@@ -142,6 +142,45 @@ Os chips `data-go` (`g:`, `look:`, `tec:`, `know:`, `comp:`, `apr:`, `tool:`,
 permite uma lição apontar para outra sem saber nada sobre rotas.
 `resolveLinks(list, head)` transforma uma lista destes alvos em chips com o
 nome procurado no DB em runtime; os dados guardam só o id.
+
+#### Cheatsheets = infografias de consulta (ago/2026)
+
+Um cheatsheet **não é um artigo curto**: é uma infografia que se lê a olhar,
+com a câmara na mão. Regra editorial: **o visual manda, o valor vem em grande,
+o texto é uma linha**. Se um bloco precisa de um parágrafo, pertence a Aprender.
+
+| Secção | Responde a |
+|--------|-----------|
+| **Cheatsheets** | "preciso desta resposta agora" |
+| **Aprender** | "quero perceber isto" |
+| **Ferramentas** | "quero calcular isto" |
+
+- **Motor visual:** `js/pages/photo-cards.js` (`PhotoCard`) — primitivas SVG
+  parametrizadas + 8 tipos de bloco (`strip · grid · versus · diagram · rules ·
+  steps · table · note`) pedidos pelo JSON. Cai para o `PhotoIllus` quando a
+  ilustração já existe, para não redesenhar o que o portal já sabe desenhar.
+- **Diagramas calculados, não decorativos:** a régua de profundidade de campo
+  usa a fórmula real (hiperfocal + planos próximo/distante) com o círculo de
+  confusão da câmara escolhida (`coc: "auto"` no JSON); as cunhas de campo de
+  visão usam 2·atan(18/f); o diafragma tem o diâmetro proporcional a 1/N.
+- **Progressões = uma fotografia, uma variável.** ISO, exposição, temperatura,
+  abertura e obturador são calculados **ao vivo** sobre UMA imagem do projeto
+  pelo `PhotoLab` (que ganhou para isso `motion` e `defocus`, neutros a 0).
+  Cinco fotografias diferentes ensinariam mal — mudava tudo ao mesmo tempo. As
+  tiras identificam-se com o selo **"simulado"**.
+- **Um género é UMA página.** As fichas específicas vêm todas empilhadas com
+  uma barra de saltos sticky; `cs:g/<género>/<ficha>` salta para a âncora em
+  vez de abrir outra página. Consulta rápida não pode custar três cliques.
+- **Fichas de género só existem se a resposta mudar** por ser aquele género
+  (`data/photo/cheats-genre.json`, 8 géneros). Repetir o cartão geral dentro de
+  um género é conteúdo a mais, não conteúdo específico.
+- **Capas:** grupos `cheat-ico`, `apr-ico`, `eq-ico` e `tool-ico` do photogen,
+  todos no estilo `genre_icon` — o mesmo dos ícones de género, para o portal
+  inteiro ler como um sistema só. **A fronteira:** este estilo serve para
+  IDENTIDADE (capas, ícones, tiles). As imagens que **são** a lição — pares de
+  Composição, pares da Visão, bases dos Estilos, Técnicas, "Ler fotografias",
+  luz natural de retrato — continuam a ser fotografia, porque a lição é olhar
+  para uma fotografia e lê-la.
 
 #### Fronteiras entre capítulos (auditoria ago/2026)
 

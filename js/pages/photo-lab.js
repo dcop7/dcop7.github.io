@@ -40,6 +40,13 @@ const PhotoLab = (function () {
       bloom: 0,             // halo difuso a partir das altas luzes
       halation: 0,          // o mesmo halo, tingido de vermelho (filme)
       vignette: 0,          // -100 (cantos claros) .. 100 (cantos escuros)
+      // ── primitivas GEOMÉTRICAS (cheatsheets de velocidade e abertura) ──
+      motion: 0,            // arrasto direcional: 0..100 (∝ tempo de exposição)
+      motionAngle: 0,       // direção do arrasto, em graus (0 = horizontal)
+      defocus: 0,           // desfoque fora do plano de foco: 0..100 (∝ ∅ da abertura)
+      defocusCx: 0.5, defocusCy: 0.55,   // onde está focado, em fração da imagem
+      defocusR: 0.24,       // raio nítido (fração da meia-diagonal)
+      defocusFeather: 0.55, // quão depressa o desfoque cresce a partir daí
       curve: null,          // LUT (Uint8Array 256) ou null
       hsl: null,            // { redHue, redSat, redLum, ... } por banda
       splitShadow: null, splitHigh: null,  // color grading: [r,g,b] -1..1
@@ -95,6 +102,84 @@ const PhotoLab = (function () {
       }
     }
     return out;
+  }
+
+  /* ── desfoques GEOMÉTRICOS (cheatsheets de velocidade e de abertura) ──
+     Os cursores todos acima são tonais: mudam a cor de cada píxel no sítio
+     onde ele está. Estes dois mudam PARA ONDE a luz vai — que é exatamente
+     o que a velocidade e a abertura fazem à imagem — e por isso correm
+     ANTES do resto do pipeline, sobre a fotografia crua.
+
+     `motion`  — arrasto direcional: média ao longo de uma reta. É o que
+                 acontece quando o sujeito (ou a câmara) percorre pixels
+                 enquanto o obturador está aberto: o comprimento do rasto é
+                 proporcional ao TEMPO de exposição, e é essa proporção que
+                 torna a progressão 1/1000 → 1/30 honesta e não decorativa.
+     `defocus` — desfoque que CRESCE com a distância ao plano de foco. Não
+                 há mapa de profundidade numa fotografia já feita, por isso
+                 o plano é declarado (centro + raio, em fração da imagem):
+                 dentro do raio fica nítido, fora vai abrindo. Aproximação
+                 assumida — serve para ver a relação abertura ⇄ fundo, não
+                 para medir bokeh. */
+
+  // Mistura por píxel entre três níveis de nitidez (0 = nítido, 1 = máximo).
+  function blendLevels(S, A, B, mask, n) {
+    const out = new Uint8ClampedArray(S.length);
+    for (let i = 0, p = 0; p < n; p++, i += 4) {
+      const m = mask[p];
+      if (m <= 0) { out[i] = S[i]; out[i + 1] = S[i + 1]; out[i + 2] = S[i + 2]; out[i + 3] = S[i + 3]; continue; }
+      let lo, hi, t;
+      if (m < 0.5) { lo = S; hi = A; t = m * 2; } else { lo = A; hi = B; t = (m - 0.5) * 2; }
+      out[i] = lo[i] + (hi[i] - lo[i]) * t;
+      out[i + 1] = lo[i + 1] + (hi[i + 1] - lo[i + 1]) * t;
+      out[i + 2] = lo[i + 2] + (hi[i + 2] - lo[i + 2]) * t;
+      out[i + 3] = S[i + 3];
+    }
+    return out;
+  }
+
+  function motionBlur(S, w, h, amount, angleDeg) {
+    // comprimento do rasto em píxeis, relativo à largura (0..100 → 0..18%)
+    const len = Math.max(1, Math.round((amount / 100) * w * 0.18));
+    const a = (angleDeg || 0) * Math.PI / 180;
+    const dx = Math.cos(a), dy = Math.sin(a);
+    const taps = Math.min(48, Math.max(3, len));
+    const out = new Uint8ClampedArray(S.length);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        let r = 0, g = 0, b = 0;
+        for (let t = 0; t < taps; t++) {
+          const f = taps === 1 ? 0 : (t / (taps - 1) - 0.5) * len;
+          const sx = clamp(Math.round(x + dx * f), 0, w - 1);
+          const sy = clamp(Math.round(y + dy * f), 0, h - 1);
+          const j = (sy * w + sx) * 4;
+          r += S[j]; g += S[j + 1]; b += S[j + 2];
+        }
+        const i = (y * w + x) * 4;
+        out[i] = r / taps; out[i + 1] = g / taps; out[i + 2] = b / taps; out[i + 3] = S[i + 3];
+      }
+    }
+    return out;
+  }
+
+  function defocusBlur(S, w, h, p) {
+    const amt = p.defocus / 100;
+    const rMax = Math.max(2, Math.round(Math.min(w, h) * 0.09 * amt));
+    const A = boxBlur(S, w, h, Math.max(1, Math.round(rMax * 0.45)));
+    const B = boxBlur(S, w, h, rMax);
+    const cx = (p.defocusCx == null ? 0.5 : p.defocusCx) * w;
+    const cy = (p.defocusCy == null ? 0.55 : p.defocusCy) * h;
+    const inner = (p.defocusR == null ? 0.24 : p.defocusR) * Math.hypot(w, h) / 2;
+    const outer = inner + (p.defocusFeather == null ? 0.55 : p.defocusFeather) * Math.hypot(w, h) / 2;
+    const mask = new Float32Array(w * h);
+    for (let y = 0, k = 0; y < h; y++) {
+      for (let x = 0; x < w; x++, k++) {
+        const d = Math.hypot(x - cx, y - cy);
+        const t = d <= inner ? 0 : d >= outer ? 1 : (d - inner) / (outer - inner);
+        mask[k] = t * t * (3 - 2 * t);           // smoothstep: sem aresta visível
+      }
+    }
+    return blendLevels(S, A, B, mask, w * h);
   }
 
   const LUMA = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -169,8 +254,16 @@ const PhotoLab = (function () {
   /* ── processamento principal ──────────────────────────────────────── */
   function process(src, dst, p) {
     const w = src.width, h = src.height;
-    const S = src.data, D = dst.data;
+    let S = src.data;
+    const D = dst.data;
     const par = Object.assign(defaults(), p || {});
+
+    /* Geometria primeiro: o arrasto e o desfoque acontecem na ótica, antes
+       de qualquer decisão de revelação. Feito depois, a nitidez e o grão
+       seriam aplicados a uma imagem que ainda ia ser borrada — e o grão de
+       ISO alto ficaria borrado com ela, que é o contrário do que se vê. */
+    if (par.motion > 0) S = motionBlur(S, w, h, par.motion, par.motionAngle);
+    if (par.defocus > 0) S = defocusBlur(S, w, h, par);
 
     // Pré-cálculos que dependem da imagem inteira
     const needBlur = par.clarity || par.dehaze || par.sharpen || par.texture || par.denoise;

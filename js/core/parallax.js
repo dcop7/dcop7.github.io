@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════
    PARALLAX & DEPTH SYSTEM
-   Subtle mouse/touch-driven depth on the wallpaper + background orbs.
+   Subtle mouse/touch-driven depth on the wallpaper.
    Premium defaults, always on. The only switch is the OS-level
    prefers-reduced-motion, which disables the effect entirely.
    The content layer is never transformed (keeps text pixel-crisp).
@@ -32,8 +32,6 @@ const ParallaxSystem = (function () {
     if (_reduced()) {
       const wp = document.getElementById('bg-wallpaper');
       if (wp) wp.style.backgroundPosition = '';
-      const canvas = document.querySelector('.bg-canvas');
-      if (canvas) canvas.style.transform = '';
       _cx = 0; _cy = 0;
       return;
     }
@@ -49,14 +47,8 @@ const ParallaxSystem = (function () {
       wp.style.backgroundPosition = `calc(50% + ${dx.toFixed(2)}px) calc(50% + ${dy.toFixed(2)}px)`;
     }
 
-    /* Layer 1 — orbs canvas: transform the whole fixed container */
-    const canvas = document.querySelector('.bg-canvas');
-    if (canvas) {
-      const dx = _cx * 22, dy = _cy * 16;
-      canvas.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px)`;
-    }
-
-    /* Layer 2 — content: intentionally NOT transformed (keeps text crisp). */
+    /* Layer 1 (orb canvas) is gone with the orbs themselves — see base.css.
+       Layer 2 — content: intentionally NOT transformed (keeps text crisp). */
   }
 
   /* Kept for backwards-compat with any external callers (no-op now). */

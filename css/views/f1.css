@@ -618,7 +618,7 @@ body.light .f1-lv-cfg-panel, body.light .f1-lv-driver { background: #f4f6fb; }
 .f1-live2-side { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: .6rem .7rem; }
 .f1-live2-side h4 { margin: 0 0 .5rem; font-size: .8rem; color: var(--text); }
 .f1-live2-events { display: flex; flex-direction: column; gap: .35rem; max-height: 62vh; overflow-y: auto; }
-.f1-live2-events .f1-ev { animation: f1-ev-in .35s var(--ease); }
+.f1-live2-events .f1-ev { animation: f1-ev-in .35s var(--ease-fn); }
 @keyframes f1-ev-in { from { opacity: 0; transform: translateY(-4px); } }
 /* the ESPN table left-aligns its first 5 identity columns (Pos·mv·#·Driver·Team) */
 .f1-espn-table th:nth-child(-n+5), .f1-espn-table td:nth-child(-n+5) { text-align: left; }

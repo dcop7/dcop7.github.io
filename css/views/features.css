@@ -225,6 +225,13 @@ body.theme-terminal .cs-cmd { color: var(--accent-txt); background: rgba(34,197,
 }
 .ph-input:focus { border-color: rgba(var(--accent-rgb),.4); }
 .ph-select { appearance: none; cursor: pointer; }
+/* A lista aberta de um <select> é desenhada pelo sistema, não herda os
+   tokens: em tema escuro os <optgroup> saíam com fundo branco e texto
+   cinzento-claro, praticamente ilegíveis. Estas três regras são o que o
+   Chrome/Edge respeitam na lista. */
+.ph-select option, .ph-select optgroup { background: var(--card-solid); color: var(--text); }
+.ph-select optgroup { font-weight: 700; color: var(--accent-txt); }
+.ph-select option { font-weight: 400; padding: .2rem .3rem; }
 .ph-result {
   background: rgba(var(--accent-rgb),.06); border: 1px solid rgba(var(--accent-rgb),.15);
   border-radius: var(--radius-sm); padding: .65rem .85rem; margin-top: .6rem;
@@ -413,7 +420,7 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
   grid-column: 1 / -1; position: relative; margin: .1rem 0 .3rem;
   background: linear-gradient(180deg, rgba(var(--accent-rgb), .06), transparent 60%), var(--card);
   border: 1px solid rgba(var(--accent-rgb), .4); border-radius: var(--radius); padding: 1rem 1.15rem 1.15rem;
-  animation: ph-detail-in .28s var(--ease-out, ease);
+  animation: ph-detail-in .28s var(--ease-out-fn, ease);
 }
 @keyframes ph-detail-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .ph-detail-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; padding-right: 2rem; }
@@ -727,7 +734,7 @@ body.density-list .lp-link-desc { display: none; }
 body.density-list .lp-link-tags { display: none; }
 
 /* ══ FOTOGRAFIA · portal de géneros (v2) ═════════════════════════════
-   Seletor de equipamento, portais por género, modo No Terreno e
+   Seletor de equipamento, portais por género e
    fundamentos. Reutiliza ph-scn-card/ph-kv/ph-chips/ph-do/ph-dont. */
 .ph-gearbar { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin-bottom: .9rem; }
 .ph-gearbar-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; margin-right: .2rem; }
@@ -790,34 +797,6 @@ body.density-list .lp-link-tags { display: none; }
 .ph-check input { accent-color: var(--accent); margin-top: .05rem; flex-shrink: 0; width: 18px; height: 18px; cursor: pointer; }
 .ph-check input:checked + span { color: var(--muted); text-decoration: line-through; }
 
-/* modo No Terreno */
-/* 28 géneros numa tira que rola: sem pista, quem olha vê ~8 e não faz ideia de
-   que há mais. A máscara esfuma a borda direita e denuncia que há continuação. */
-.ph-field-pills { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .5rem; margin-bottom: .75rem; scrollbar-width: none; -webkit-overflow-scrolling: touch;
-  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 42px), transparent 100%);
-  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 42px), transparent 100%); }
-.ph-field-pills::-webkit-scrollbar { display: none; }
-.ph-field-pill { flex-shrink: 0; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .45rem .85rem; transition: all var(--ease); }
-.ph-field-pill.active { background: var(--accent-fill); border-color: var(--accent); color: #fff; }
-.ph-field-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.15rem; max-width: 640px; margin-inline: auto; }
-.ph-field-fmt { font-size: .78rem; color: var(--text2); margin-bottom: .55rem; }
-.ph-field-fmt b { color: var(--accent-txt); }
-.ph-field-top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; margin-bottom: .7rem; }
-.ph-field-title { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; }
-.ph-field-gear { display: flex; gap: .35rem; }
-/* A tese da Visão chega também ao terreno: uma linha antes dos números. */
-.ph-field-intent { font-size: .81rem; line-height: 1.5; color: var(--text2); background: var(--card2);
-  border-radius: 6px; padding: .4rem .55rem; margin-bottom: .5rem; }
-.ph-field-lens { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--accent-txt); margin-bottom: .3rem; }
-.ph-field-mode { font-size: .82rem; color: var(--text2); margin-bottom: .55rem; }
-.ph-field-kv { margin-bottom: .75rem; }
-.ph-field-kv .ph-kv-v { font-size: .84rem; }
-.ph-field-row { font-size: .84rem; line-height: 1.55; color: var(--text2); margin-bottom: .55rem; }
-.ph-field-avoid { background: rgba(239, 68, 68, .07); border: 1px solid rgba(239, 68, 68, .22); border-radius: var(--radius-sm); padding: .55rem .7rem .45rem; margin-bottom: .6rem; font-size: .8rem; }
-.ph-field-avoid ul { margin: .25rem 0 0; padding-left: 1.05rem; }
-.ph-field-avoid li { margin-bottom: .15rem; line-height: 1.5; color: var(--text2); }
-.ph-field-more { display: inline-block; margin-top: .3rem; }
-
 /* aprender + fundamentos */
 .ph-apr-seg { margin-bottom: 1rem; }
 .ph-apr-panel[hidden] { display: none; }
@@ -831,8 +810,6 @@ body.density-list .lp-link-tags { display: none; }
 
 @media (max-width: 640px) {
   .ph-portal-top { flex-direction: column; align-items: flex-start; }
-  .ph-field-card { padding: .9rem; }
-  .ph-field-kv { grid-template-columns: 1fr 1fr; }
   .ph-check { grid-template-columns: 1fr; }
 }
 
@@ -889,7 +866,7 @@ body.density-list .lp-link-tags { display: none; }
 .ph-secnav-btn { flex-shrink: 0; font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 999px; padding: .42rem .85rem; transition: all var(--ease); }
 .ph-secnav-btn:hover { border-color: var(--accent); color: var(--text); }
 .ph-secnav-btn.active { background: var(--accent-fill); border-color: var(--accent); color: #fff; }
-.ph-secbody { animation: ph-fade .22s var(--ease); }
+.ph-secbody { animation: ph-fade .22s var(--ease-fn); }
 @keyframes ph-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
 /* bloco de formato (perfil × exigência do género) */
@@ -1110,7 +1087,6 @@ body.density-list .lp-link-tags { display: none; }
 .ph-mine-lenses li { font-size: .78rem; color: var(--text2); background: var(--card2); border-radius: 6px; padding: .35rem .5rem; }
 .ph-mine-eq { color: var(--accent-txt); font-weight: 600; margin-left: .3rem; }
 .ph-mine-tr { display: block; font-size: .72rem; color: var(--muted); }
-.ph-field-trick { border-top: 1px dashed var(--border); padding-top: .5rem; margin-top: .3rem; }
 
 @media (max-width: 640px) {
   .ph-ctx { flex-direction: column; align-items: stretch; gap: .5rem; }
@@ -1128,7 +1104,7 @@ body.density-list .lp-link-tags { display: none; }
 
 /* ══ secção Edição: fichas de ferramenta + demonstrações interativas ══════ */
 .ph-tool { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: 1rem; scroll-margin-top: 1rem; }
-.ph-tool.flash { animation: ph-toolflash 1.6s var(--ease); }
+.ph-tool.flash { animation: ph-toolflash 1.6s var(--ease-fn); }
 @keyframes ph-toolflash { 0%, 100% { box-shadow: none; } 20%, 60% { box-shadow: 0 0 0 2px var(--accent); } }
 .ph-tool-hd { display: flex; align-items: flex-start; gap: .7rem; margin-bottom: .8rem; }
 .ph-tool-ico { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
@@ -1469,3 +1445,79 @@ body.density-list .lp-link-tags { display: none; }
 .ph-chain-step.go:hover { color: var(--text); border-color: var(--accent); background: var(--accent-fill); }
 .ph-chain-arrow { align-self: center; color: var(--accent-txt); font-size: .9rem; }
 @media (max-width: 700px) { .ph-chain-arrow { display: none; } }
+
+
+/* ── Capas gráficas (grupo genre_icon do photogen) ────────────────────
+   Equipamento e Ferramentas passaram a ter a mesma linguagem visual dos
+   ícones de género e das capas dos Cheatsheets: o portal inteiro lê-se
+   como um sistema só, em vez de alternar entre fotografia, diagrama e
+   texto puro conforme a secção. */
+.ph-eq-hero-img { overflow: hidden; border-radius: var(--radius); aspect-ratio: 21 / 6; }
+.ph-eq-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-tool-cover { display: block; overflow: hidden; margin: -1.15rem -1.15rem .85rem;
+  aspect-ratio: 12 / 5; border-radius: var(--radius) var(--radius) 0 0; background: #0a1421; }
+.ph-tool-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── Lista + ficha em duas colunas (Equipamento) ──────────────────────
+   Abrir um item deixava os restantes debaixo da ficha inteira. Em ecrã
+   largo a lista fica de um lado e a ficha do outro, colada ao topo: pode
+   saltar-se de item para item sem perder o sítio nem rolar a página. */
+.ph-md { display: grid; gap: 1rem; grid-template-columns: 1fr; align-items: start; }
+.ph-md-detail:empty { display: none; }
+@media (min-width: 1000px) {
+  .ph-md { grid-template-columns: minmax(230px, 300px) minmax(0, 1fr); }
+  .ph-md-list .ph-learn-grid { grid-template-columns: 1fr; }
+  .ph-md-detail { position: sticky; top: calc(var(--hdr-h) + 3.6rem); }
+  .ph-md-detail .ph-learn-detail { margin: 0; }
+  /* Sem item aberto, a coluna da direita explica o que vai aparecer lá. */
+  .ph-md-detail:empty { display: block; min-height: 120px; border-radius: var(--radius);
+    border: 1px dashed var(--border2); }
+  .ph-md-detail:empty::after { content: 'Escolhe um item à esquerda para ver a ficha completa.';
+    display: block; padding: 2.2rem 1rem; text-align: center; font-size: .8rem; color: var(--muted); }
+
+  /* A ficha nunca deve fazer a lista sair do ecrã: se for mais alta do que a
+     janela, rola dentro dela própria e a lista fica sempre ao alcance. */
+  .ph-md-detail .ph-learn-detail { max-height: calc(100vh - var(--hdr-h) - 5.4rem); overflow-y: auto; overscroll-behavior: contain; }
+  .ph-md-detail .ph-learn-detail::-webkit-scrollbar { width: 8px; }
+  .ph-md-detail .ph-learn-detail::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  /* Na coluna estreita o cartão passa a LINHA: miniatura pequena à esquerda,
+     nome e resumo à direita. Doze itens empilhados em formato 21:10 davam uma
+     lista de 2000px — que é o problema que esta coluna existe para resolver. */
+  .ph-md-list .ph-learn-card { display: grid; grid-template-columns: 74px minmax(0, 1fr); align-items: stretch; }
+  .ph-md-list .ph-learn-card.compact { grid-template-columns: minmax(0, 1fr); }
+  .ph-md-list .ph-learn-thumb { border-bottom: 0; border-right: 1px solid var(--border); height: 100%; }
+  .ph-md-list .ph-learn-thumb .ph-svg,
+  .ph-md-list .ph-learn-thumb .ph-vis,
+  .ph-md-list .ph-learn-thumb .ph-photo-thumb,
+  .ph-md-list .ph-learn-thumb .ph-comp-thumb { aspect-ratio: auto; height: 100%; min-height: 62px; }
+  .ph-md-list .ph-learn-thumb img, .ph-md-list .ph-learn-thumb canvas { height: 100%; object-fit: cover; }
+  .ph-md-list .ph-learn-info { padding: .5rem 1.9rem .55rem .65rem; gap: .12rem; }
+  .ph-md-list .ph-learn-name { font-size: .81rem; }
+  .ph-md-list .ph-scn-blurb-sm { font-size: .71rem; line-height: 1.4; }
+  /* Em lista+ficha o "+"/"-" mentia: parecia que ia ACRESCENTAR a ficha as
+     que ja estavam abertas, quando na verdade SUBSTITUI a que esta a direita.
+     Numa lista de selecao o sinal certo e uma seta: aponta para onde a ficha
+     vai aparecer, e no item escolhido enche-se. */
+  .ph-md-list .ph-learn-caret,
+  .ph-md-list .ph-learn-card.active .ph-learn-caret { top: 50%; right: .5rem; transform: translateY(-50%);
+    width: 16px; height: 16px; background: none; border: 0; backdrop-filter: none; }
+  .ph-md-list .ph-learn-caret::before { width: 6px; height: 6px; background: none; border-radius: 0;
+    border-right: 1.7px solid currentColor; border-top: 1.7px solid currentColor;
+    transform: rotate(45deg) translate(-1px, 1px); opacity: .5; color: var(--text2); }
+  .ph-md-list .ph-learn-caret::after { display: none; }
+  .ph-md-list .ph-learn-card:hover .ph-learn-caret::before { opacity: .9; }
+  .ph-md-list .ph-learn-card.active .ph-learn-caret::before { opacity: 1; color: var(--accent-txt); }
+  /* barra do lado esquerdo: o "estas aqui" da lista */
+  .ph-md-list .ph-learn-card { position: relative; }
+  .ph-md-list .ph-learn-card.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; border-radius: 3px 0 0 3px; background: var(--accent); }
+  .ph-md-list .ph-learn-card:hover { transform: none; }
+}
+
+/* Nenhuma ilustração de ficha passa de meia dobra: uma imagem de 500px a
+   abrir uma ficha empurra o texto todo para fora do ecrã e faz a página
+   parecer um poster em vez de uma explicação. */
+.ph-detail-art { max-width: 620px; }
+.ph-detail-art img, .ph-detail-art svg { max-height: 320px; width: auto; max-width: 100%; }
+.ph-detail-art.ph-photo-art img { object-fit: cover; }
