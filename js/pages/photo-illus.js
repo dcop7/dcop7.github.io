@@ -530,21 +530,36 @@ const PhotoIllus = (function () {
      a falar: sem isso, esta ilustração aparecia igual em Telemóvel, APS-C,
      Full Frame e Micro 4/3 — e quem clicava em "Smartphone" via um
      desenho onde o maior retângulo parecia ser o dele. Uma comparação só
-     ensina se disser ONDE está a coisa escolhida. */
+     ensina se disser ONDE está a coisa escolhida.
+
+     As medidas são as REAIS em milímetros e todas as caixas usam o mesmo
+     `k` px/mm — a comparação de área é literal, não estilizada. O fator de
+     crop deixou de ser texto escrito à mão e passa a ser CALCULADO a partir
+     dessas medidas (diagonal do full frame ÷ diagonal do sensor), por isso
+     o número e o retângulo já não podem divergir. Foi assim que se apanhou
+     o erro do telemóvel: a legenda dizia «~1/1.5" · crop ~4.7×» mas a caixa
+     estava desenhada a 9.6×7.2 mm, que dá 3.6× — três valores e nenhum
+     deles certo. O sensor principal do Galaxy S26+ (ISOCELL GNG) é 1/1.56":
+     8160×6144 píxeis de 1.0 µm = 8.2×6.1 mm, diagonal 10.2 mm, crop 4.2×. */
+  const FF_DIAG = Math.hypot(36, 24);            // 43.27 mm — a referência
+  const cropTxt = b => (Math.round((FF_DIAG / Math.hypot(b.w, b.h)) * 10) / 10) + '×';
   ART['eq-sensors'] = (o = {}) => {
-    const W = 430, H = 200, cx = 148, cy = H / 2 - 6;
+    const W = 430, H = 200, cx = 118, cy = H / 2 - 6;
     const boxes = [
-      { id: 'ff', w: 36, h: 24, lbl: 'Full frame', sub: '36×24 mm', col: C.gold },
-      { id: 'apsc', w: 23.6, h: 15.7, lbl: 'APS-C', sub: 'crop 1.5–1.6×', col: C.cyan },
-      { id: 'mft', w: 17.3, h: 13, lbl: 'Micro 4/3', sub: 'crop 2×', col: C.good },
-      { id: 'one', w: 13.2, h: 8.8, lbl: '1 polegada', sub: 'compactas · crop 2.7×', col: '#c084fc' },
-      { id: 'phone', w: 9.6, h: 7.2, lbl: 'Telemóvel', sub: '~1/1.5" · crop ~4.7×', col: C.bad },
+      { id: 'ff', w: 36, h: 24, lbl: 'Full frame', col: C.gold, note: 'a referência' },
+      /* A classe tem dois tamanhos reais: 23.6×15.7 (Sony/Nikon/Fuji, 1.5×) e
+         22.3×14.9 (Canon, 1.6×). Desenha-se o maior e diz-se o outro. */
+      { id: 'apsc', w: 23.6, h: 15.7, lbl: 'APS-C', col: C.cyan, note: 'Canon 22.3×14.9 · 1.6×' },
+      { id: 'mft', w: 17.3, h: 13, lbl: 'Micro 4/3', col: C.good },
+      { id: 'one', w: 13.2, h: 8.8, lbl: '1 polegada', col: '#c084fc', note: 'compactas' },
+      { id: 'phone', w: 8.2, h: 6.1, lbl: 'Telemóvel', col: C.bad, note: '1/1.56" — Galaxy S26+' },
     ];
     const hl = o.hl || null;
-    const k = 4.2, lx = 262, ly = 34, step = 31;
+    const k = 4.2, lx = 206, ly = 34, step = 31;
     const on = b => !hl || b.id === hl;
+    const sub = b => `${b.w}×${b.h} mm · crop ${cropTxt(b)}${b.note ? ' · ' + b.note : ''}`;
     return `<svg viewBox="0 0 ${W} ${H}" class="ph-illus" role="img"
-      aria-label="Tamanhos de sensor comparados${hl ? ', com o sensor em causa destacado' : ''}">
+      aria-label="Tamanhos de sensor comparados à escala real${hl ? ', com o sensor desta ficha destacado' : ''}">
       ${boxes.map(b => `<rect x="${(cx - b.w * k / 2).toFixed(1)}" y="${(cy - b.h * k / 2).toFixed(1)}"
         width="${(b.w * k).toFixed(1)}" height="${(b.h * k).toFixed(1)}" rx="2"
         fill="${b.id === hl ? b.col : 'none'}" fill-opacity="${b.id === hl ? 0.22 : 0}"
@@ -553,9 +568,9 @@ const PhotoIllus = (function () {
         <rect x="${lx}" y="${ly + i * step - 9}" width="13" height="10" rx="2" fill="${b.id === hl ? b.col : 'none'}" stroke="${b.col}" stroke-width="1.8"/>
         <text x="${lx + 20}" y="${ly + i * step}" font-family="var(--font-sans, sans-serif)" font-size="10"
           font-weight="${b.id === hl ? 800 : 700}" fill="${b.col}">${esc(b.lbl)}${b.id === hl ? '  ←' : ''}</text>
-        <text x="${lx + 20}" y="${ly + i * step + 11}" font-family="var(--font-sans, sans-serif)" font-size="8.5" fill="${C.dim}">${esc(b.sub)}</text>
+        <text x="${lx + 20}" y="${ly + i * step + 11}" font-family="var(--font-sans, sans-serif)" font-size="8" fill="${C.dim}">${esc(sub(b))}</text>
       </g>`).join('')}
-      ${tag(cx, H - 4, hl ? 'à escala real — o teu está a cheio' : 'mais área = mais luz e menos ruído',
+      ${tag(W / 2, H - 4, hl ? 'à escala real — o selecionado está a cheio' : 'mais área = mais luz e menos ruído',
         { anchor: 'middle', fg: C.ink })}
     </svg>`;
   };

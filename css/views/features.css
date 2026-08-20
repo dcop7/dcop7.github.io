@@ -1499,10 +1499,14 @@ body.density-list .lp-link-tags { display: none; }
      que ja estavam abertas, quando na verdade SUBSTITUI a que esta a direita.
      Numa lista de selecao o sinal certo e uma seta: aponta para onde a ficha
      vai aparecer, e no item escolhido enche-se. */
-  .ph-md-list .ph-learn-caret,
+  /* `.ph-learn-card` no seletor não é decoração: sem ele isto perde para
+     `.ph-learn-card.compact .ph-learn-caret { top: .5rem }` e só a seta do
+     item ATIVO (que casa com o seletor mais específico da linha de baixo)
+     ficava centrada — as outras ficavam encostadas ao topo do cartão. */
+  .ph-md-list .ph-learn-card .ph-learn-caret,
   .ph-md-list .ph-learn-card.active .ph-learn-caret { top: 50%; right: .5rem; transform: translateY(-50%);
     width: 16px; height: 16px; background: none; border: 0; backdrop-filter: none; }
-  .ph-md-list .ph-learn-caret::before { width: 6px; height: 6px; background: none; border-radius: 0;
+  .ph-md-list .ph-learn-card .ph-learn-caret::before { width: 6px; height: 6px; background: none; border-radius: 0;
     border-right: 1.7px solid currentColor; border-top: 1.7px solid currentColor;
     transform: rotate(45deg) translate(-1px, 1px); opacity: .5; color: var(--text2); }
   .ph-md-list .ph-learn-caret::after { display: none; }
