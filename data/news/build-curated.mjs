@@ -1,10 +1,14 @@
 /* ══════════════════════════════════════════════════════════════════
-   build-curated.mjs — Notícias AI (V2): daily editorial pass over the
-   articles the existing RSS pipeline already collected.
+   build-curated.mjs — Notícias AI (V2): the daily editorial pass.
 
-       data/news/topic-*.json      (input — written by build-news.mjs)
+       curated-sources.mjs         70 SITES grouped into 13 themes
                  │
-                 ▼  consolidate 17 raw topics → 13 editorial themes
+                 ▼  curated-fetch.mjs resolves each site: known feed →
+                 │  autodiscovery → news sitemap. A feed is a hint about
+                 │  where a site's articles are, not the site's identity,
+                 │  so a publisher moving or dropping RSS keeps working.
+                 │  (V1's topic-*.json is read only as a safety net for
+                 │  sources that come back empty.)
                  ▼  pre-filter: 24h window, dedupe, cap 60 candidates
                  ▼  chunk to a conservative Groq token budget
                  ▼  Groq: group + rank + summarise  (returns IDs ONLY)
@@ -13,6 +17,7 @@
        data/news/curated/d/YYYY-MM-DD.json   daily detail (0–30 days)
        data/news/curated/latest.json         what the V2 page reads
        data/news/curated/index.json          catalog + archive listing
+       data/news/curated/sources-resolved.json  resolver cache (7-day TTL)
 
    HARD RULES, in order of importance:
 
