@@ -37,8 +37,13 @@ const DestaquesPage = (function () {
 
   let _inited = false, _doc = null, _theme = null, _wired = false;
   let _index = null, _day = '';           /* '' = the latest edition */
-  let _mode = _ls('na-mode', 'cards');
-  if (!VIEW_MODES.some(m => m[0] === _mode)) _mode = 'cards';
+  /* List by default: with a ceiling of 15 stories per theme, full cards
+     turn a theme into a long scroll before the reader can see what the
+     day held. The denser modes keep the rank, the score and the measured
+     source count, so nothing that carries the editorial signal is lost.
+     A stored preference always wins over this default. */
+  let _mode = _ls('na-mode', 'list');
+  if (!VIEW_MODES.some(m => m[0] === _mode)) _mode = 'list';
 
   /* ── helpers ── */
   const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

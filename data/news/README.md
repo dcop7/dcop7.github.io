@@ -79,9 +79,9 @@ sem que a vista Todas dê por isso.
 | Dados | `topic-*.json` | `curated/*` |
 | Página | `js/pages/noticias.js` | `js/pages/noticias-destaques.js` |
 | Fontes | registos com `topic` | registos com `theme` |
-| Conteúdo | ~150 artigos cronológicos | ≤12 histórias por tema |
+| Conteúdo | ~150 artigos cronológicos | ≤15 histórias por tema |
 
-O teto de 12 é um **limite, nunca uma quota**: temas sem material
+O teto de 15 é um **limite, nunca uma quota**: temas sem material
 suficiente devolvem menos, e um tema sem nada acima do mínimo editorial
 (`MIN_SCORE`) desaparece do dia em vez de aparecer vazio.
 

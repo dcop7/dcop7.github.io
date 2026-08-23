@@ -79,9 +79,9 @@ const WINDOW_H_MAX = 36;      /* widened for a theme too quiet to judge at 24h *
 const MIN_CANDIDATES = 6;     /* below this, widen the window before giving up */
 const MIN_TO_CURATE = 3;      /* fewer than this: not worth a request at all   */
 const MAX_CANDIDATES = 60;    /* per theme, newest first — keeps chunks small  */
-const MAX_STORIES = 12;       /* per theme per day. A ceiling, never a quota.  */
+const MAX_STORIES = 15;       /* per theme per day. A ceiling, never a quota.  */
 /* Measured pools are wildly uneven (portugal 60 candidates, ia 5), so a
-   ceiling of 12 is meaningless for half the themes and that is the point:
+   ceiling of 15 is meaningless for half the themes and that is the point:
    it exists to give the busy themes room, not to be reached. The floor
    below is what keeps the extra room from filling with filler — the model
    is told to use the full 0–100 range, and anything it scores under this
@@ -102,7 +102,7 @@ const TITLE_MAX = 120;
    response (see settle() below), so unused output allowance is freed
    immediately instead of blocking the next call for a full minute.
 
-     per-request ceiling  4 600 in + 3 200 out  = 7 800
+     per-request ceiling  4 400 in + 3 200 out  = 7 600
      rolling budget       7 000 tokens / 60 s           (87% of TPM)
 
    Note the output ceiling is now larger than the rolling budget. That is
@@ -116,8 +116,11 @@ const TITLE_MAX = 120;
    `x-ratelimit-remaining-tokens` rather than our arithmetic.          */
 const MODEL = 'openai/gpt-oss-120b';
 const TOK_BUDGET_PER_MIN = 7000;
-const MAX_INPUT_TOK = 4600;
-const MAX_OUTPUT_TOK = 3200;  /* ceiling for a 12-story reply, not an estimate */
+/* Sized so MAX_INPUT_TOK + estOut(MAX_STORIES) still fits inside
+   TOK_BUDGET_PER_MIN: 4400 + 2570 = 6970. Raising the story ceiling
+   without lowering this would make a full-size request unbookable. */
+const MAX_INPUT_TOK = 4400;
+const MAX_OUTPUT_TOK = 3200;  /* ceiling for a 15-story reply, not an estimate */
 
 /* What a reply asking for `n` stories is expected to cost. Measured on
    real runs: 5 stories came back at ~500–900 output tokens including the
@@ -366,7 +369,7 @@ NOT A STORY — never select these, however well written
 - Puzzle answers, horoscopes, quizzes and other daily filler.
 
 HOW MANY
-The user message gives you a maximum. It is a ceiling, NEVER a quota, and it is usually far more than the material deserves. Select only the items that genuinely clear the bar, then stop. Returning 4 strong stories when you were allowed 12 is a correct answer, and the expected one on a quiet day. Returning 0 is right when nothing of substance came in. Padding is the worst thing you can do here: a reader who finds filler at position 9 stops trusting positions 1 to 8.
+The user message gives you a maximum. It is a ceiling, NEVER a quota, and it is usually far more than the material deserves. Select only the items that genuinely clear the bar, then stop. Returning 4 strong stories when you were allowed 15 is a correct answer, and the expected one on a quiet day. Returning 0 is right when nothing of substance came in. Padding is the worst thing you can do here: a reader who finds filler at position 9 stops trusting positions 1 to 8.
 
 OUTPUT
 Strict JSON, no markdown fence, exactly this shape:
@@ -969,7 +972,7 @@ async function main() {
     date: dayISO,
     generated: new Date(now).toISOString(),
     model: MOCK ? 'mock' : MODEL,
-    promptVersion: 4,          /* bump when SYSTEM changes, so drift is traceable */
+    promptVersion: 5,          /* bump when SYSTEM changes, so drift is traceable */
     maxStories: MAX_STORIES,
     windowHours: WINDOW_H,
     themes: themesOut,
