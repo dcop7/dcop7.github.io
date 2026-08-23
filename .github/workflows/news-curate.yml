@@ -83,7 +83,22 @@ jobs:
             git add data/news/curated
             git commit -m "chore(destaques): refresh curadoria diária [skip ci]"
             git pull --rebase origin main
-            git push
+            # Ten workflows commit to main and one of them runs every 15 minutes,
+            # so losing the push race is normal, not exceptional. Rebase onto
+            # whatever landed and try again instead of failing the run. The
+            # snapshot this job wrote is the newest, so replaying it on top is
+            # always the intended result.
+            push_with_retry() {
+              for i in 1 2 3 4 5; do
+                if git push; then return 0; fi
+                echo "push rejected (attempt $i/5) — rebasing onto origin/main"
+                git pull --rebase origin main || { git rebase --abort || true; return 1; }
+                sleep $(( (RANDOM % 5) + 3 ))
+              done
+              echo "::error::could not push after 5 attempts"
+              return 1
+            }
+            push_with_retry
           else
             echo "No curation changes — nothing to commit."
           fi
