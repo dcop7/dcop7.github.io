@@ -73,16 +73,24 @@
     return withThumb.concat(without).slice(0, n);
   }
 
+  /* How many items a section carries when nobody says otherwise. This is
+     what the browser renders and what the live rebuild produces. The
+     GitHub Action asks for a bigger pool (`opts.limit`) because it then
+     has data/home/curate-otd.mjs rank that pool down to LIMIT again —
+     ranking 10 candidates into 10 slots would not be a selection. */
+  const LIMIT = 10;
+
   /* feeds → the three homepage sections; empty sections fall back to
      the matching section of `fallback` (may be {}). */
-  function buildSections(pt, en, fallback) {
+  function buildSections(pt, en, fallback, opts) {
     fallback = fallback || {};
+    const N = Math.max(1, (opts && opts.limit) || LIMIT);
     const ptAll = pt ? [...(pt.selected || []), ...(pt.events || [])] : [];
     const enAll = en ? [...(en.events || []), ...(en.selected || [])] : [];
 
     /* 🎂 Nasceram Hoje — relevant people, PT feed first, up to 15 */
-    let births = rankBirths(pt ? (pt.births || []) : [], 15);
-    if (births.length < 6 && en) births = births.concat(rankBirths(en.births || [], 15).filter(x => !births.find(o => o.title === x.title))).slice(0, 15);
+    let births = rankBirths(pt ? (pt.births || []) : [], N);
+    if (births.length < 6 && en) births = births.concat(rankBirths(en.births || [], N).filter(x => !births.find(o => o.title === x.title))).slice(0, N);
     if (!births.length) births = fallback.births || [];
 
     /* 🌍 Hoje em Portugal — Portugal-related items across the whole PT feed
@@ -91,13 +99,13 @@
        the extract is matched only against strong proper-noun signals. */
     const ptPool = pt ? [...(pt.selected || []), ...(pt.events || []), ...(pt.births || []), ...(pt.deaths || [])] : [];
     const ptExtract = x => clean((x.pages && x.pages[0] && x.pages[0].extract) || '');
-    let portugal = pick(ptPool.filter(x => PT_RE.test(clean(x.text)) || PT_STRONG.test(ptExtract(x))), 15);
+    let portugal = pick(ptPool.filter(x => PT_RE.test(clean(x.text)) || PT_STRONG.test(ptExtract(x))), N);
     if (!portugal.length) portugal = fallback.portugal || [];
     const ptUsed = new Set(portugal.map(x => x.title));
 
     /* 📜 Hoje na História — world efemérides in Portuguese (minus Portugal ones) */
-    let history = pick(ptAll.filter(x => !PT_RE.test(clean(x.text))), 15).filter(x => !ptUsed.has(x.title));
-    if (history.length < 6 && en) history = history.concat(pick(enAll, 15).filter(x => !history.find(o => o.title === x.title))).slice(0, 15);
+    let history = pick(ptAll.filter(x => !PT_RE.test(clean(x.text))), N).filter(x => !ptUsed.has(x.title));
+    if (history.length < 6 && en) history = history.concat(pick(enAll, N).filter(x => !history.find(o => o.title === x.title))).slice(0, N);
     if (!history.length) history = fallback.history || [];
 
     return { births, portugal, history };
@@ -105,5 +113,5 @@
 
   const MONTHS_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
-  return { buildSections, clean, cap, MONTHS_PT };
+  return { buildSections, clean, cap, MONTHS_PT, LIMIT };
 });

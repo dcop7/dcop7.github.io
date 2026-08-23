@@ -7,6 +7,8 @@
    Sources (one feed can serve several sections):
      • Wikimedia "on this day" EN+PT → 📜 História, 🌍 Hoje em Portugal,
                                        🎂 Nasceram Hoje
+       (candidates from otd-lib, then ranked by curate-otd.mjs — which
+        reorders records and never writes any of their text)
      • data/news/topic-geral.json   → 📰 Destaque do Dia (reuses the news pipeline)
      • data/home/quotes.json        → 💡 Inspiração do Dia (curated, rotated by date)
 
@@ -22,6 +24,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { curateSections } from './curate-otd.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
@@ -63,10 +66,23 @@ console.log('Wikimedia on this day…');
 const en = await getJSON(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`);
 const pt = await getJSON(`https://pt.wikipedia.org/api/rest_v1/feed/onthisday/all/${MM}/${DD}`);
 
-const sec = OTD.buildSections(pt, en, fallback);
-out.births = sec.births;
-out.portugal = sec.portugal;
-out.history = sec.history;
+/* A deliberately WIDE pool: otd-lib orders by "has a picture, then
+   newest", which is a list rather than a selection. curate-otd.mjs ranks
+   that pool by what each section is actually about and cuts it back to
+   OTD.LIMIT. Asking for a pool the same size as the output would leave
+   nothing to select from. */
+const CANDIDATE_POOL = 26;
+const sec = OTD.buildSections(pt, en, fallback, { limit: CANDIDATE_POOL });
+
+console.log('\nRanking the three sections…');
+const ranked = await curateSections(sec, { key: process.env.GROQ_KEY || '' });
+
+/* Whatever came back curated is used; whatever did not keeps the
+   heuristic order, trimmed to the same visible ceiling. The homepage
+   cannot tell the difference apart from the order of the items. */
+for (const k of ['history', 'portugal', 'births']) {
+  out[k] = ranked[k] || (sec[k] || []).slice(0, OTD.LIMIT);
+}
 
 /* link to the full Portuguese "on this day" Wikipedia page (Ver mais) */
 out.links = { onthisday: `https://pt.wikipedia.org/wiki/${lisbon.getDate()}_de_${MONTHS_PT[lisbon.getMonth()]}` };
@@ -95,5 +111,6 @@ writeFileSync(join(HERE, 'today.json'), JSON.stringify(out));
 console.log(`\ntoday.json written for ${ISO}:`);
 for (const k of ['history', 'portugal', 'births', 'inspiration']) {
   const v = out[k];
-  console.log(`  ${k}: ${Array.isArray(v) ? v.length + ' items' : (v ? 'ok' : '— (empty)')}`);
+  const from = Array.isArray(v) && sec[k] ? ` (from ${sec[k].length} candidates${ranked[k] ? ', ranked' : ', heuristic order'})` : '';
+  console.log(`  ${k}: ${Array.isArray(v) ? v.length + ' items' + from : (v ? 'ok' : '— (empty)')}`);
 }

@@ -3,7 +3,8 @@ name: Refresh homepage data
 # Builds data/home/today.json (Hoje na História/Portugal, Nasceram Hoje,
 # Destaque, Inspiração) server-side once a day, so the browser only reads one
 # local JSON — no API keys in the client, no per-visit third-party calls,
-# works offline.
+# works offline. The three "on this day" sections are ranked here too; the
+# browser never calls a model.
 #
 # Scheduling note: GitHub delays cron runs by minutes to HOURS, so the gate
 # must never test the hour of day (an "== 07h" gate silently skipped every
@@ -53,8 +54,14 @@ jobs:
         with:
           node-version: '24'
 
+      # GROQ_KEY only ranks the three "on this day" sections (ids in, ids
+      # out — no text is generated). Without it the build still succeeds
+      # and those sections keep their heuristic order, so a missing or
+      # rejected secret degrades the homepage rather than breaking it.
       - name: Build homepage snapshot
         if: steps.gate.outputs.go == 'true'
+        env:
+          GROQ_KEY: ${{ secrets.GROQ_KEY }}
         run: node data/home/build-home.mjs
 
       - name: Commit snapshot if it changed
