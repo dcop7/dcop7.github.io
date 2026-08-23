@@ -2,25 +2,25 @@
  "https://www.slashfilm.com": {
   "feed": "https://www.slashfilm.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-23T18:48:24.024Z",
+  "checked": "2026-08-23T18:55:25.499Z",
   "ok": true
  },
  "https://movieweb.com": {
   "feed": "https://movieweb.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-23T18:48:24.404Z",
+  "checked": "2026-08-23T18:55:25.576Z",
   "ok": true
  },
  "https://screenrant.com": {
   "feed": "https://screenrant.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-23T18:48:24.471Z",
+  "checked": "2026-08-23T18:55:25.716Z",
   "ok": true
  },
  "https://abertoatedemadrugada.com": {
   "feed": "https://abertoatedemadrugada.com/feeds/posts/default?alt=rss",
   "via": "known feed",
-  "checked": "2026-08-23T18:48:24.487Z",
+  "checked": "2026-08-23T18:55:26.021Z",
   "ok": true
  }
 }
