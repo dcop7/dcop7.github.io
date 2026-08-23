@@ -56,20 +56,32 @@ nada do que está descrito nesta página: mesmos feeds, mesmos
 
 ### Como funciona
 
-1. `build-curated.mjs` lê os `topic-*.json` **já commitados** (não faz
-   fetch de feeds nenhum).
-2. Consolida os 17 tópicos brutos em **13 temas editoriais**
-   (`curated-themes.mjs`). `carros`+`f1` → `automovel`; `tldr`,
-   `trailers` e `factcheck` ficam de fora — são formatos, não temas.
-3. Pré-filtra: janela de 24 h medida a partir do `generated` do snapshot
-   (**não** do relógio — o cron do GitHub atrasa horas), dedupe por URL,
-   máximo 60 candidatos por tema.
+1. `build-curated.mjs` recolhe as **suas próprias fontes**
+   (`curated-sources.mjs`), independentes do `feeds.opml` do V1.
+2. A unidade é o **site**, não o feed. `curated-fetch.mjs` resolve cada
+   fonte por uma cadeia, e guarda o que funcionou em
+   `curated/sources-resolved.json` (TTL 7 dias):
+
+   | # | Estratégia | Para quê |
+   |---|---|---|
+   | 1 | feed conhecido | o caminho normal |
+   | 2 | autodiscovery no site | apanha feeds que **mudaram** |
+   | 3 | news sitemap (via robots.txt) | sites sem RSS; funciona mesmo com homepage a dar 403 |
+   | — | snapshot do V1 | rede de segurança, marcada como `v1 snapshot` |
+
+   Acrescentar uma fonte = uma linha `{ name, site }`. O `feed` é
+   opcional. Um site que tire o RSS cai sozinho para o nível seguinte.
+3. Consolida em **13 temas editoriais** (`curated-themes.mjs`).
+   `carros`+`f1` → `automovel`; `tldr`, `trailers` e `factcheck` ficam de
+   fora — são formatos, não temas.
+4. Pré-filtra: janela de 24 h (alarga para 36 h num tema demasiado
+   parado), dedupe por URL, máximo 60 candidatos por tema.
 4. Divide em blocos dentro do orçamento de tokens da Groq e pede ao
    modelo que agrupe, ordene, resuma e justifique.
 5. **O modelo devolve só `id`s de artigos.** URLs, fontes, datas e
    imagens são reanexados por lookup. Um `id` que não exista invalida a
    história — inventar uma fonte é estruturalmente impossível.
-6. Valida contra o esquema e só então escreve.
+7. Valida contra o esquema e só então escreve.
 
 ### Output (gerado — não editar à mão)
 
@@ -78,6 +90,7 @@ nada do que está descrito nesta página: mesmos feeds, mesmos
 | `curated/latest.json` | a edição que a página lê |
 | `curated/d/AAAA-MM-DD.json` | detalhe diário (retenção: 30 dias) |
 | `curated/index.json` | catálogo + arquivo (`days`, e `weeks`/`months` reservados) |
+| `curated/sources-resolved.json` | cache do resolvedor: que estratégia serve cada site |
 
 Retenção futura (semanal 30 d–6 m, mensal 6–18 m) é **determinística**:
 o `rank` e o `score` diários já estão gravados, por isso a compactação é

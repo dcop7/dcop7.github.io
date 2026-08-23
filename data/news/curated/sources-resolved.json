@@ -1,0 +1,26 @@
+{
+ "https://www.slashfilm.com": {
+  "feed": "https://www.slashfilm.com/feed/",
+  "via": "known feed",
+  "checked": "2026-08-23T18:48:24.024Z",
+  "ok": true
+ },
+ "https://movieweb.com": {
+  "feed": "https://movieweb.com/feed/",
+  "via": "known feed",
+  "checked": "2026-08-23T18:48:24.404Z",
+  "ok": true
+ },
+ "https://screenrant.com": {
+  "feed": "https://screenrant.com/feed/",
+  "via": "known feed",
+  "checked": "2026-08-23T18:48:24.471Z",
+  "ok": true
+ },
+ "https://abertoatedemadrugada.com": {
+  "feed": "https://abertoatedemadrugada.com/feeds/posts/default?alt=rss",
+  "via": "known feed",
+  "checked": "2026-08-23T18:48:24.487Z",
+  "ok": true
+ }
+}

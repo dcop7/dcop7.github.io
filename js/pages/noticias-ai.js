@@ -20,9 +20,22 @@ const NoticiasAiPage = (function () {
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
   const _t = (en, pt) => (_lang() === 'en' ? en : pt);
-  const SRC = 'data/news/curated/latest.json';
+  const BASE = 'data/news/curated/';
+
+  /* Same three densities the RSS reader offers, so moving between the two
+     pages does not mean relearning the controls. */
+  const VIEW_MODES = [
+    ['cards',   '▦', 'Cards',        'Cartões'],
+    ['list',    '▤', 'List',         'Lista'],
+    ['compact', '≣', 'Compact list', 'Lista compacta'],
+  ];
+
+  const _ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch { return d; } };
 
   let _inited = false, _doc = null, _theme = null, _wired = false;
+  let _index = null, _day = '';           /* '' = the latest edition */
+  let _mode = _ls('na-mode', 'cards');
+  if (!VIEW_MODES.some(m => m[0] === _mode)) _mode = 'cards';
 
   /* ── helpers ── */
   const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -57,14 +70,28 @@ const NoticiasAiPage = (function () {
   }
 
   /* ── data ── */
-  async function load() {
+  async function getJSON(url) {
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), 12000);
     try {
-      const r = await fetch(SRC, { signal: ctrl.signal, cache: 'no-store' });
+      const r = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
       if (!r.ok) throw new Error(String(r.status));
       return await r.json();
     } finally { clearTimeout(to); }
+  }
+  const load = (day) => getJSON(day ? `${BASE}d/${day}.json` : `${BASE}latest.json`);
+
+  /* The archive listing. Optional: without it the page still works and
+     simply offers no other day — which is exactly the state on day one,
+     when only today's edition exists. */
+  async function loadIndex() {
+    try { _index = await getJSON(BASE + 'index.json'); } catch { _index = null; }
+    return _index;
+  }
+  function archiveDays() {
+    const days = (_index && Array.isArray(_index.days)) ? _index.days.slice() : [];
+    if (_doc && _doc.date) days.push(_doc.date);
+    return [...new Set(days)].sort().reverse();
   }
 
   /* One chip per publisher, not per article. A publisher legitimately
@@ -133,6 +160,47 @@ const NoticiasAiPage = (function () {
     </article>`;
   }
 
+  /* Denser renderings of the same story. They drop the image and the
+     "why" line first, because those are the parts a reader scanning a
+     list is not reading — but the rank, the score and the measured
+     source count survive every mode, since they are the whole point. */
+  function storyRow(s) {
+    const band = scoreBand(s.score);
+    const pubs = byPublisher(s.sources);
+    const lead = s.sources[0] || {};
+    const thumb = s.image
+      ? `<img class="na-r-img" src="${esc(s.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`
+      : '';
+    return `<article class="na-row">
+      <span class="na-rank na-rank--sm" aria-hidden="true">${s.rank}</span>
+      ${thumb}
+      <div class="na-r-body">
+        <a class="na-r-title" href="${esc(lead.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>
+        ${s.summary ? `<p class="na-r-sum">${esc(s.summary)}</p>` : ''}
+        <div class="na-r-meta">
+          <span class="na-score na-score--${band.cls}" title="${_t('AI estimate of importance — an opinion', 'Estimativa de importância da IA — uma opinião')}"><span class="na-score-n">${s.score}</span><span class="na-score-l">${_t(band.en, band.pt)}</span></span>
+          <span class="na-cov${s.sourceCount > 1 ? '' : ' na-cov--one'}" title="${_t('Measured: distinct feeds', 'Medido: fontes distintas')}">📡 ${s.sourceCount}</span>
+          ${pubs.slice(0, 3).map(p => `<a class="na-src" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.source)}${p.count > 1 ? `<span class="na-src-n">×${p.count}</span>` : ''}</a>`).join('')}
+          <span class="na-time">${esc(relTime(s.ts))}</span>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function storyCompact(s) {
+    const band = scoreBand(s.score);
+    const lead = s.sources[0] || {};
+    return `<a class="na-cmp" href="${esc(lead.url)}" target="_blank" rel="noopener">
+      <span class="na-rank na-rank--sm" aria-hidden="true">${s.rank}</span>
+      <span class="na-cmp-score na-score--${band.cls}" title="${_t('AI estimate of importance', 'Estimativa de importância da IA')}">${s.score}</span>
+      <span class="na-cmp-title">${esc(s.title)}</span>
+      <span class="na-cmp-src">${esc(lead.source)}${s.sourceCount > 1 ? ` +${s.sourceCount - 1}` : ''}</span>
+      <span class="na-time">${esc(relTime(s.ts))}</span>
+    </a>`;
+  }
+
+  const renderer = () => (_mode === 'compact' ? storyCompact : _mode === 'list' ? storyRow : storyCard);
+
   /* ── render: theme ── */
   function renderTheme() {
     const grid = document.getElementById('na-grid');
@@ -157,6 +225,9 @@ const NoticiasAiPage = (function () {
     }
 
     if (!t.stories.length) {
+      const nEl = document.getElementById('na-note');
+      if (nEl) { nEl.textContent = ''; nEl.hidden = true; }   /* don't leave the previous theme's note above an empty list */
+      grid.className = 'na-grid';
       grid.innerHTML = `<div class="empty-state na-empty">
         <div class="es-ico">🌤️</div>
         <p><strong>${_t('A quiet day for this topic.', 'Um dia calmo neste tema.')}</strong></p>
@@ -165,16 +236,20 @@ const NoticiasAiPage = (function () {
       return;
     }
 
-    /* Fewer than five is a deliberate outcome, not a loading bug — say so. */
+    /* Fewer than five is a deliberate outcome, not a loading bug — say so.
+       The note lives in its own element outside the grid, so the compact
+       mode's bordered list does not swallow it. */
+    const when = _day ? _t('in this edition', 'nesta edição') : _t('today', 'hoje');
     const note = t.stories.length < 5
-      ? `<p class="na-note">${_t(
-          `${t.stories.length} ${t.stories.length === 1 ? 'story' : 'stories'} today — the rest of the ${t.candidates} articles were not worth featuring.`,
-          `${t.stories.length} ${t.stories.length === 1 ? 'história' : 'histórias'} hoje — os restantes ${t.candidates} artigos não mereciam destaque.`)}</p>`
-      : `<p class="na-note">${_t(
-          `The 5 strongest of ${t.candidates} articles from the last ${t.windowHours}h.`,
-          `As 5 mais fortes de ${t.candidates} artigos das últimas ${t.windowHours}h.`)}</p>`;
+      ? _t(`${t.stories.length} ${t.stories.length === 1 ? 'story' : 'stories'} ${when} — the rest of the ${t.candidates} articles were not worth featuring.`,
+           `${t.stories.length} ${t.stories.length === 1 ? 'história' : 'histórias'} ${when} — os restantes ${t.candidates} artigos não mereciam destaque.`)
+      : _t(`The 5 strongest of ${t.candidates} articles from the last ${t.windowHours}h.`,
+           `As 5 mais fortes de ${t.candidates} artigos das últimas ${t.windowHours}h.`);
 
-    grid.innerHTML = note + t.stories.map(storyCard).join('');
+    const noteEl = document.getElementById('na-note');
+    if (noteEl) { noteEl.textContent = note; noteEl.hidden = false; }
+    grid.className = 'na-grid na-grid--' + _mode;
+    grid.innerHTML = t.stories.map(renderer()).join('');
   }
 
   function goTheme(id) {
@@ -182,11 +257,50 @@ const NoticiasAiPage = (function () {
     location.hash = '#noticias-ai/' + id;
   }
 
+  function setMode(m) {
+    if (!m || m === _mode || !VIEW_MODES.some(x => x[0] === m)) return;
+    _mode = m;
+    try { localStorage.setItem('na-mode', m); } catch {}
+    document.querySelectorAll('#na-view .na-view-b').forEach(b => {
+      const on = b.dataset.mode === m;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    renderTheme();
+  }
+
+  /* Switching edition reloads that day's file and keeps the current
+     theme when it exists there — a theme can be absent on a quiet day. */
+  async function goDay(date) {
+    const isLatest = _index && date === _index.latest;
+    const want = isLatest ? '' : date;
+    if (want === _day) return;
+    const grid = document.getElementById('na-grid');
+    if (grid) grid.innerHTML = `<div class="na-loading"><span class="na-spin"></span> ${_t('Loading…', 'A carregar…')}</div>`;
+    try {
+      const doc = await load(want);
+      if (!doc || !Array.isArray(doc.themes) || !doc.themes.length) throw new Error('empty');
+      _doc = doc; _day = want;
+      const still = doc.themes.find(t => t.id === _theme && t.stories.length);
+      _theme = (still || doc.themes.find(t => t.stories.length) || doc.themes[0]).id;
+      shell(document.getElementById('view-noticias-ai'));
+      renderTheme();
+    } catch (e) {
+      if (grid) grid.innerHTML = `<div class="empty-state na-empty"><div class="es-ico">📭</div><p>${
+        _t('That edition could not be loaded.', 'Não foi possível carregar essa edição.')}</p></div>`;
+    }
+  }
+
   /* ── shell ── */
   function shell(view) {
     const themes = _doc.themes || [];
     const total = themes.reduce((s, t) => s + t.stories.length, 0);
-    const stale = _doc.date !== new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Lisbon' });
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Lisbon' });
+    /* Only flag staleness on the live edition — an archived day is
+       *supposed* to be old, and labelling it "previous edition" there
+       would be noise. */
+    const stale = !_day && _doc.date !== today;
+    const days = archiveDays();
 
     view.innerHTML = `
       <div class="na-wrap">
@@ -203,10 +317,19 @@ const NoticiasAiPage = (function () {
         </header>
 
         <div class="na-meta">
-          <span class="na-day">🗓️ ${esc(fmtDay(_doc.date))}</span>
+          ${days.length > 1
+            ? `<label class="na-daysel"><span class="na-daysel-l">🗓️ ${_t('Edition', 'Edição')}</span>
+                 <select id="na-day" class="na-sel" aria-label="${_t('Choose an edition', 'Escolher edição')}">
+                   ${days.map(d => `<option value="${esc(d)}"${d === _doc.date ? ' selected' : ''}>${esc(fmtDay(d))}</option>`).join('')}
+                 </select></label>`
+            : `<span class="na-day">🗓️ ${esc(fmtDay(_doc.date))}</span>`}
           <span class="na-dot">·</span>
           <span>${total} ${_t('stories', 'histórias')} ${_t('in', 'em')} ${themes.length} ${_t('topics', 'temas')}</span>
           ${stale ? `<span class="na-stale" title="${_t('The daily job has not run yet today', 'A tarefa diária ainda não correu hoje')}">${_t('previous edition', 'edição anterior')}</span>` : ''}
+          ${days.length === 1 ? `<span class="na-onlyday" title="${_t('The archive starts on the first run; earlier days do not exist yet', 'O arquivo começa na primeira corrida; dias anteriores ainda não existem')}">${_t('only edition so far', 'única edição por agora')}</span>` : ''}
+          <div class="na-view seg" id="na-view" role="group" aria-label="${_t('View mode', 'Modo de visualização')}">
+            ${VIEW_MODES.map(([id, ic, en, pt]) => `<button class="na-view-b${id === _mode ? ' active' : ''}" data-mode="${id}" title="${_t(en, pt)}" aria-label="${_t(en, pt)}" aria-pressed="${id === _mode}">${ic}</button>`).join('')}
+          </div>
         </div>
 
         <div class="na-themes seg" id="na-themes" role="tablist" aria-label="${_t('Topics', 'Temas')}">
@@ -216,6 +339,7 @@ const NoticiasAiPage = (function () {
             </button>`).join('')}
         </div>
 
+        <p class="na-note" id="na-note"></p>
         <div class="na-grid" id="na-grid"></div>
 
         <footer class="na-foot">
@@ -227,8 +351,13 @@ const NoticiasAiPage = (function () {
 
     if (!_wired) {
       view.addEventListener('click', (e) => {
-        const b = e.target.closest('.na-theme');
-        if (b) goTheme(b.dataset.theme);
+        const t = e.target.closest('.na-theme');
+        if (t) { goTheme(t.dataset.theme); return; }
+        const v = e.target.closest('.na-view-b');
+        if (v) setMode(v.dataset.mode);
+      });
+      view.addEventListener('change', (e) => {
+        if (e.target && e.target.id === 'na-day') goDay(e.target.value);
       });
       _wired = true;
     }
@@ -262,7 +391,8 @@ const NoticiasAiPage = (function () {
 
     view.innerHTML = `<div class="na-wrap"><div class="na-loading"><span class="na-spin"></span> ${_t('Loading the edition…', 'A carregar a edição…')}</div></div>`;
     try {
-      _doc = await load();
+      const [doc] = await Promise.all([load(), loadIndex()]);
+      _doc = doc;
       if (!_doc || !Array.isArray(_doc.themes) || !_doc.themes.length) throw new Error('empty');
       /* Default to the first theme that actually has something to show. */
       const withStories = _doc.themes.filter(t => t.stories && t.stories.length);

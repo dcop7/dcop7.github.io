@@ -50,6 +50,8 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, readdir
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { THEMES } from './curated-themes.mjs';
+import { SOURCES } from './curated-sources.mjs';
+import { fetchSources, saveCache } from './curated-fetch.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(HERE, 'curated');
@@ -199,6 +201,17 @@ function parseDuration(v, fallback) {
 }
 
 /* ════════════════════════ 1 · CANDIDATES ════════════════════════ */
+/* V2 fetches its OWN sources (curated-sources.mjs), resolved by site
+   rather than by feed URL — see curated-fetch.mjs. It no longer depends
+   on V1's topic-*.json shards to decide what exists, which means a
+   publisher dropping or moving its RSS no longer silently removes it
+   from the curated edition.
+
+   The shards are still read, but only as a safety net: any source that
+   yields nothing live falls back to whatever V1 last committed for it.
+   That is free (the file is already on disk), read-only, and reported
+   explicitly as `v1 snapshot` so a source living on the net is visible
+   rather than silently propped up. */
 function loadShard(id) {
   const p = join(HERE, `topic-${id}.json`);
   if (!existsSync(p)) return [];
@@ -206,31 +219,53 @@ function loadShard(id) {
   catch (e) { console.warn(`  ! unreadable topic-${id}.json — ${e.message}`); return []; }
 }
 
-/* The "last 24 hours" must be measured from when the RSS snapshot was
-   built, NOT from wall-clock now. GitHub delays crons by minutes to
-   hours (the rule this repo learned the hard way), and anchoring to
-   now() would silently shrink the window every time the runner started
-   late — a theme that had 34 candidates would quietly become 5.
-   Falls back to now() only if no shard carries a timestamp. */
-function snapshotNow() {
-  let newest = 0;
-  for (const t of THEMES) for (const raw of t.from) {
-    const p = join(HERE, `topic-${raw}.json`);
-    if (!existsSync(p)) continue;
-    try {
-      const g = Date.parse(JSON.parse(readFileSync(p, 'utf8')).generated || '');
-      if (Number.isFinite(g) && g > newest) newest = g;
-    } catch {}
+/* All V1 articles for a source name, newest first. */
+function shardFallback(theme, sourceName) {
+  const out = [];
+  for (const raw of theme.from) for (const a of loadShard(raw)) if (a && a.source === sourceName) out.push(a);
+  return out.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+}
+
+/* Fetch every configured source once, then partition by theme. */
+async function gatherAll(now) {
+  const byTheme = {};
+  const allReport = [];
+  let cacheRef = null;
+
+  for (const theme of THEMES) {
+    const srcs = SOURCES[theme.id] || [];
+    if (!srcs.length) { byTheme[theme.id] = []; continue; }
+    const { articles, report, cache } = await fetchSources(srcs);
+    cacheRef = cache;
+
+    /* Safety net for sources that came back empty. */
+    const got = new Map(report.map(r => [r.name, r.count]));
+    for (const src of srcs) {
+      if (got.get(src.name)) continue;
+      const back = shardFallback(theme, src.name);
+      if (!back.length) continue;
+      articles.push(...back.slice(0, 40));
+      const row = report.find(r => r.name === src.name);
+      if (row) { row.via = 'v1 snapshot'; row.count = Math.min(40, back.length); }
+    }
+
+    /* Undated items (some news sitemaps) are treated as just-published
+       only if the source gave us nothing dated — otherwise they would
+       outrank real news. */
+    for (const a of articles) if (a.ts == null) a.ts = now - 12 * 3600000;
+
+    byTheme[theme.id] = articles;
+    allReport.push({ theme: theme.id, rows: report });
   }
-  return newest || Date.now();
+  if (cacheRef) saveCache(cacheRef);
+  return { byTheme, allReport };
 }
 
 /* Newest-first, deduped, capped. Widens the window once when a theme is
    too quiet to judge, rather than curating three articles as if they
    were a day's news. */
-function candidatesFor(theme, now) {
-  const raw = [];
-  for (const t of theme.from) raw.push(...loadShard(t));
+function candidatesFor(theme, now, pooled) {
+  const raw = pooled[theme.id] || [];
 
   const pick = (hours) => {
     const min = now - hours * 3600000;
@@ -604,15 +639,30 @@ async function main() {
     return 0;
   }
 
-  const now = snapshotNow();
+  const now = Date.now();
   const dayISO = lisbonToday();
-  const lagH = ((Date.now() - now) / 3600000).toFixed(1);
-  console.log(`[curated] ${dayISO} · model=${MODEL} · themes=${THEMES.length}${DRY ? ' · DRY RUN' : ''}`);
-  console.log(`RSS snapshot: ${new Date(now).toISOString()} (${lagH}h old) — windows measured from there.`);
+  const nSources = THEMES.reduce((n, t) => n + (SOURCES[t.id] || []).length, 0);
+  console.log(`[curated] ${dayISO} · model=${MODEL} · themes=${THEMES.length} · sources=${nSources}${DRY ? ' · DRY RUN' : ''}`);
+
+  /* ── gather: resolve every site, live ── */
+  console.log('\nResolving sources…');
+  const { byTheme, allReport } = await gatherAll(now);
+
+  /* Report which strategy each source ended up on: anything not on its
+     own feed is either drifting or blocked, and that should be visible
+     in the log rather than discovered months later. */
+  const viaCount = {};
+  const notable = [];
+  for (const { theme, rows } of allReport) for (const r of rows) {
+    viaCount[r.via] = (viaCount[r.via] || 0) + 1;
+    if (r.via !== 'known feed' && r.via !== 'cache') notable.push(`${theme}/${r.name}: ${r.via}${r.count ? ` (${r.count})` : ''}${r.feed && r.via !== 'none' ? ` → ${r.feed}` : ''}`);
+  }
+  console.log('  strategies: ' + Object.entries(viaCount).map(([k, v]) => `${k}=${v}`).join(' · '));
+  notable.forEach(n => console.log('   · ' + n));
 
   /* ── plan ── */
   const plan = THEMES.map(theme => {
-    const { arts, hours } = candidatesFor(theme, now);
+    const { arts, hours } = candidatesFor(theme, now, byTheme);
     const overhead = estTok(SYSTEM) + estTok(MODE_HINT[theme.mode]) + 80;
     const chunks = arts.length >= MIN_TO_CURATE ? chunkCandidates(arts, now, overhead) : [];
     return { theme, arts, hours, chunks };

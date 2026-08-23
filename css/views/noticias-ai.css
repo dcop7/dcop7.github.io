@@ -30,6 +30,28 @@
   background: rgba(245, 158, 11, .16); color: var(--amber-txt);
 }
 
+/* seletor de edição (arquivo) + modos de vista, na mesma linha da meta */
+.na-daysel { display: inline-flex; align-items: center; gap: .4rem; }
+.na-daysel-l { color: var(--muted); }
+.na-sel {
+  background: var(--card); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); padding: .2rem .45rem;
+  font: inherit; font-size: var(--fs-sm); cursor: pointer; max-width: 15rem;
+}
+.na-sel:hover { border-color: var(--border2); }
+.na-sel:focus-visible { outline: 2px solid var(--pg-accent); outline-offset: 1px; }
+.na-onlyday { font-size: var(--fs-xs); color: var(--muted); opacity: .8; font-style: italic; }
+
+.na-view { margin-left: auto; gap: 2px; }
+.na-view-b {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  cursor: pointer; font-size: .95rem; line-height: 1;
+  padding: .3rem .55rem; border-radius: var(--radius-xs);
+  transition: all var(--ease);
+}
+.na-view-b:hover { color: var(--text); border-color: var(--border2); }
+.na-view-b.active { color: var(--pg-accent); border-color: rgba(var(--pg-accent-rgb), .5); background: rgba(var(--pg-accent-rgb), .12); }
+
 /* ── seletor de temas ── */
 .na-themes { margin-bottom: calc(var(--sp-5) * var(--den)); }
 .na-theme { display: inline-flex; align-items: center; gap: .35rem; }
@@ -149,6 +171,51 @@
 
 .na-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
 .na-tag { font-size: var(--fs-xs); color: var(--muted); opacity: .75; }
+
+/* ══════════ MODO LISTA ══════════ */
+.na-grid--list { gap: calc(var(--sp-2) * var(--den)); }
+.na-row {
+  display: grid; grid-template-columns: 1.5rem auto minmax(0, 1fr); gap: .7rem;
+  align-items: start;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: .7rem .8rem;
+  transition: border-color var(--ease), background var(--ease);
+}
+.na-row:hover { border-color: var(--border2); background: var(--card2); }
+.na-rank--sm { font-size: 1rem; padding-top: .05rem; }
+.na-r-img { width: 84px; height: 60px; object-fit: cover; border-radius: var(--radius-xs); border: 1px solid var(--border); }
+.na-r-body { min-width: 0; }
+.na-r-title {
+  display: block; font-family: var(--font-head); font-weight: 700;
+  font-size: var(--fs-md); line-height: 1.3; color: var(--text); text-decoration: none;
+}
+.na-r-title:hover { color: var(--pg-accent); text-decoration: underline; text-underline-offset: 2px; }
+.na-r-sum {
+  font-size: var(--fs-sm); color: var(--muted); line-height: 1.5; margin: .25rem 0 .35rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.na-r-meta { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; font-size: var(--fs-xs); }
+.na-row .na-time { margin-left: auto; }
+
+/* ══════════ MODO COMPACTO ══════════ */
+.na-grid--compact { gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.na-cmp {
+  display: grid; grid-template-columns: 1.4rem 2.2rem minmax(0, 1fr) auto auto;
+  gap: .6rem; align-items: center;
+  padding: .5rem .7rem; text-decoration: none; color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-sm);
+}
+.na-grid--compact .na-cmp:last-child { border-bottom: 0; }
+.na-cmp:hover { background: var(--card2); }
+.na-cmp-score {
+  font-weight: 800; font-variant-numeric: tabular-nums; text-align: center;
+  color: var(--pg-accent); font-size: var(--fs-xs);
+  border: 1px dashed rgba(var(--pg-accent-rgb), .45); border-radius: 999px; padding: .05rem 0;
+}
+.na-cmp-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.na-cmp:hover .na-cmp-title { color: var(--pg-accent); }
+.na-cmp-src { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
 
 /* ── estados vazios ── */
 .na-empty { margin: var(--sp-6) 0; }
