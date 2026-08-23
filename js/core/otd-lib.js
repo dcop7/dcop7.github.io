@@ -77,8 +77,8 @@
      what the browser renders and what the live rebuild produces. The
      GitHub Action asks for a bigger pool (`opts.limit`) because it then
      has data/home/curate-otd.mjs rank that pool down to LIMIT again —
-     ranking 10 candidates into 10 slots would not be a selection. */
-  const LIMIT = 10;
+     ranking 15 candidates into 15 slots would not be a selection. */
+  const LIMIT = 15;
 
   /* feeds → the three homepage sections; empty sections fall back to
      the matching section of `fallback` (may be {}). */

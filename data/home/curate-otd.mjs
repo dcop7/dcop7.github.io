@@ -31,9 +31,16 @@
    200k/day free-tier budget, and only on the days the Action runs.
 ══════════════════════════════════════════════════════════════════ */
 
-export const MAX_ITEMS = 10;
+/* A CEILING, and one the sections reach very unevenly. Measured on the
+   24/08 pool: História had 26 candidates of which ~20 are substantial
+   (Rome sacked, Gorbachev resigns, Ukraine independent, NATO in force,
+   Windows 95) so 15 is comfortably real; Nasceram Hoje had 26 with a
+   clear cliff around 12; Hoje em Portugal had ELEVEN, one of which was a
+   duplicate and two of which were not about Portugal — there 15 is
+   unreachable, and the floor below is what stops it being padded. */
+export const MAX_ITEMS = 15;
 /* The model is told to use the whole 0–100 range and to leave weak
-   candidates out entirely. This makes "up to 10, fewer when the material
+   candidates out entirely. This makes "up to 15, fewer when the material
    is thin" mechanical rather than merely requested. */
 const MIN_SCORE = 50;
 

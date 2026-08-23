@@ -44,6 +44,29 @@
 .na-sel:focus-visible { outline: 2px solid var(--pg-accent); outline-offset: 1px; }
 .na-onlyday { font-size: var(--fs-xs); color: var(--muted); opacity: .8; font-style: italic; }
 
+/* Dia · Semana · Mês. Same shape as the view-mode group so the meta line
+   reads as one row of controls rather than two competing widgets. */
+.na-period { gap: 2px; }
+.na-period-b {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  cursor: pointer; font: inherit; font-size: var(--fs-xs); font-weight: 600;
+  padding: .25rem .6rem; border-radius: var(--radius-xs);
+  transition: all var(--ease);
+}
+.na-period-b:hover { color: var(--text); border-color: var(--border2); }
+.na-period-b.active { color: var(--pg-accent); border-color: rgba(var(--pg-accent-rgb), .5); background: rgba(var(--pg-accent-rgb), .12); }
+.na-period-b:focus-visible { outline: 2px solid var(--pg-accent); outline-offset: 1px; }
+
+/* How many days a rollup story survived — the signal a single day cannot
+   give, so it is shown rather than folded into the score. */
+.na-days {
+  display: inline-flex; align-items: center; gap: .25rem;
+  font-size: var(--fs-xs); font-weight: 700; color: var(--pg-accent);
+  background: rgba(var(--pg-accent-rgb), .1);
+  border: 1px solid rgba(var(--pg-accent-rgb), .3);
+  padding: .12rem .5rem; border-radius: 999px;
+}
+
 .na-view { margin-left: auto; gap: 2px; }
 .na-view-b {
   background: var(--card); border: 1px solid var(--border); color: var(--muted);

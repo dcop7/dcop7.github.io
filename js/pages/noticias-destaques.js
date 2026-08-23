@@ -36,7 +36,20 @@ const DestaquesPage = (function () {
   const _ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch { return d; } };
 
   let _inited = false, _doc = null, _theme = null, _wired = false;
-  let _index = null, _day = '';           /* '' = the latest edition */
+  let _index = null, _day = '';           /* '' = the latest daily edition */
+
+  /* Dia · Semana · Mês. A day you did not open is a day you lost, and the
+     day-by-day picker is no help after a week away; the rollups answer
+     "what mattered while I was not looking". Period lives in state rather
+     than in the hash so existing #noticias/destaques/<tema> links keep
+     working unchanged. */
+  const PERIODS = [
+    ['day',   'Day',   'Dia'],
+    ['week',  'Week',  'Semana'],
+    ['month', 'Month', 'Mês'],
+  ];
+  let _period = _ls('na-period', 'day');
+  if (!PERIODS.some(p => p[0] === _period)) _period = 'day';
   /* List by default: with a ceiling of 15 stories per theme, full cards
      turn a theme into a long scroll before the reader can see what the
      day held. The denser modes keep the rank, the score and the measured
@@ -101,6 +114,34 @@ const DestaquesPage = (function () {
     } finally { clearTimeout(to); }
   }
   const load = (day) => getJSON(day ? `${BASE}d/${day}.json` : `${BASE}latest.json`);
+  const loadPeriod = (period, id) =>
+    period === 'week' ? getJSON(`${BASE}w/${id}.json`)
+      : period === 'month' ? getJSON(`${BASE}m/${id}.json`)
+        : load(id);
+
+  /* Editions available for a period, newest first. Empty until enough
+     days exist to compact — a "week" built from one day would be that day
+     wearing a different label, so the build refuses to make one. */
+  const editions = (period) => {
+    if (!_index) return [];
+    if (period === 'week') return (_index.weeks || []).map(w => ({ id: w.id, label: weekLabel(w) }));
+    if (period === 'month') return (_index.months || []).map(m => ({ id: m.id, label: monthLabel(m.id) }));
+    return archiveDays().map(d => ({ id: d, label: fmtDay(d) }));
+  };
+  const hasPeriod = (p) => p === 'day' || editions(p).length > 0;
+
+  function weekLabel(w) {
+    const f = new Date(w.from + 'T12:00:00'), t = new Date(w.to + 'T12:00:00');
+    const loc = _lang() === 'en' ? 'en-GB' : 'pt-PT';
+    const d = (x, withMonth) => x.toLocaleDateString(loc, withMonth ? { day: 'numeric', month: 'short' } : { day: 'numeric' });
+    const sameMonth = f.getMonth() === t.getMonth();
+    return `${d(f, !sameMonth)} – ${d(t, true)}`;
+  }
+  function monthLabel(id) {
+    const d = new Date(id + '-01T12:00:00');
+    const s2 = d.toLocaleDateString(_lang() === 'en' ? 'en-GB' : 'pt-PT', { month: 'long', year: 'numeric' });
+    return s2.charAt(0).toUpperCase() + s2.slice(1);
+  }
 
   /* The archive listing. Optional: without it the page still works and
      simply offers no other day — which is exactly the state on day one,
@@ -131,6 +172,13 @@ const DestaquesPage = (function () {
     return [...map.values()];
   }
 
+  /* In a rollup, how many daily editions carried this story. Measured over
+     time, so it is shown next to the measured source count rather than
+     next to the model's score. Absent on daily editions. */
+  const daysBadge = (s2) => (s2.days > 1
+    ? `<span class="na-days" title="${_t(`Featured on ${s2.days} days`, `Em destaque em ${s2.days} dias`)}">📆 ${s2.days} ${_t('days', 'dias')}</span>`
+    : '');
+
   /* ── render: one story ── */
   function storyCard(s) {
     const band = scoreBand(s.score);
@@ -157,6 +205,7 @@ const DestaquesPage = (function () {
       <div class="na-body">
         <div class="na-top">
           ${coverage}
+          ${daysBadge(s)}
           <span class="na-score na-score--${band.cls}" title="${_t('Editorial importance estimated by the AI — an opinion, not a measurement', 'Importância editorial estimada pela IA — uma opinião, não uma medição')}">
             <span class="na-score-n">${s.score}</span><span class="na-score-l">${_t(band.en, band.pt)}</span>
           </span>
@@ -212,6 +261,7 @@ const DestaquesPage = (function () {
         <div class="na-r-meta">
           <span class="na-score na-score--${band.cls}" title="${_t('AI estimate of importance — an opinion', 'Estimativa de importância da IA — uma opinião')}"><span class="na-score-n">${s.score}</span><span class="na-score-l">${_t(band.en, band.pt)}</span></span>
           <span class="na-cov${s.sourceCount > 1 ? '' : ' na-cov--one'}" title="${_t('Measured: distinct feeds', 'Medido: fontes distintas')}">📡 ${s.sourceCount}</span>
+          ${daysBadge(s)}
           ${pubs.slice(0, 3).map(p => `<a class="na-src" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.source)}${p.count > 1 ? `<span class="na-src-n">×${p.count}</span>` : ''}</a>`).join('')}
         </div>
       </div>
@@ -273,14 +323,25 @@ const DestaquesPage = (function () {
        it in the build script does not leave this line lying. The note has
        its own element outside the grid, so the compact mode's bordered
        list does not swallow it. */
-    const cap = Number(_doc.maxStories) || 12;
+    const cap = Number(_doc.maxStories) || 15;
     const n = t.stories.length;
-    const when = _day ? _t('in this edition', 'nesta edição') : _t('today', 'hoje');
-    const note = n < cap
-      ? _t(`${n} ${n === 1 ? 'story' : 'stories'} ${when} — of ${t.candidates} articles, the rest were not worth featuring.`,
-           `${n} ${n === 1 ? 'história' : 'histórias'} ${when} — dos ${t.candidates} artigos, os restantes não mereciam destaque.`)
-      : _t(`The ${n} strongest of ${t.candidates} articles from the last ${t.windowHours}h.`,
-           `As ${n} mais fortes de ${t.candidates} artigos das últimas ${t.windowHours}h.`);
+    let note;
+    if (_period !== 'day') {
+      /* A rollup is ordered by how long a story stayed in the edition as
+         well as how strongly it scored, so say that rather than implying
+         it is a 24h snapshot. */
+      const nd = (_doc.days && _doc.days.length) || 0;
+      const kept = t.stories.filter(x => x.days > 1).length;
+      note = _t(`${n} ${n === 1 ? 'story' : 'stories'} from ${nd} daily editions${kept ? `, ${kept} of which ran for more than one day` : ''}.`,
+                `${n} ${n === 1 ? 'história' : 'histórias'} de ${nd} edições diárias${kept ? `, ${kept} ${kept === 1 ? 'delas manteve-se' : 'delas mantiveram-se'} mais do que um dia` : ''}.`);
+    } else {
+      const when = _day ? _t('in this edition', 'nesta edição') : _t('today', 'hoje');
+      note = n < cap
+        ? _t(`${n} ${n === 1 ? 'story' : 'stories'} ${when} — of ${t.candidates} articles, the rest were not worth featuring.`,
+             `${n} ${n === 1 ? 'história' : 'histórias'} ${when} — dos ${t.candidates} artigos, os restantes não mereciam destaque.`)
+        : _t(`The ${n} strongest of ${t.candidates} articles from the last ${t.windowHours}h.`,
+             `As ${n} mais fortes de ${t.candidates} artigos das últimas ${t.windowHours}h.`);
+    }
 
     const noteEl = document.getElementById('na-note');
     if (noteEl) { noteEl.textContent = note; noteEl.hidden = false; }
@@ -307,14 +368,24 @@ const DestaquesPage = (function () {
 
   /* Switching edition reloads that day's file and keeps the current
      theme when it exists there — a theme can be absent on a quiet day. */
-  async function goDay(date) {
-    const isLatest = _index && date === _index.latest;
-    const want = isLatest ? '' : date;
-    if (want === _day) return;
+  /* Switch period: load that period's newest edition. */
+  async function goPeriod(p) {
+    if (!p || p === _period || !hasPeriod(p)) return;
+    const list = editions(p);
+    if (p !== 'day' && !list.length) return;
+    _period = p;
+    try { localStorage.setItem('na-period', p); } catch {}
+    await goEdition(p === 'day' ? '' : list[0].id, true);
+  }
+
+  async function goEdition(id, force) {
+    const isLatest = _period === 'day' && _index && id === _index.latest;
+    const want = isLatest ? '' : id;
+    if (!force && want === _day) return;
     const grid = document.getElementById('na-grid');
     if (grid) grid.innerHTML = `<div class="na-loading"><span class="na-spin"></span> ${_t('Loading…', 'A carregar…')}</div>`;
     try {
-      const doc = await load(want);
+      const doc = await loadPeriod(_period, want);
       if (!doc || !Array.isArray(doc.themes) || !doc.themes.length) throw new Error('empty');
       _doc = doc; _day = want;
       const still = doc.themes.find(t => t.id === _theme && t.stories.length);
@@ -335,8 +406,18 @@ const DestaquesPage = (function () {
     /* Only flag staleness on the live edition — an archived day is
        *supposed* to be old, and labelling it "previous edition" there
        would be noise. */
-    const stale = !_day && _doc.date !== today;
+    const stale = _period === 'day' && !_day && _doc.date !== today;
     const days = archiveDays();
+
+    /* Only offer a period that actually has editions; on day one that is
+       Dia alone, and the control disappears rather than showing two tabs
+       that lead nowhere. */
+    const avail = PERIODS.filter(p => hasPeriod(p[0]));
+    const list = editions(_period);
+    const curId = _period === 'day' ? _doc.date : _doc.id;
+    const curLabel = _period === 'day' ? fmtDay(_doc.date)
+      : _period === 'week' ? weekLabel({ from: _doc.from, to: _doc.to })
+        : monthLabel(_doc.id);
 
     view.innerHTML = `
       <div class="na-wrap">
@@ -351,16 +432,20 @@ const DestaquesPage = (function () {
         ${tabsHTML('destaques')}
 
         <div class="na-meta">
-          ${days.length > 1
+          ${avail.length > 1 ? `<div class="na-period seg" id="na-period" role="group" aria-label="${_t('Period', 'Período')}">
+            ${avail.map(([id, en, pt]) => `<button class="na-period-b${id === _period ? ' active' : ''}" data-period="${id}" aria-pressed="${id === _period}">${_t(en, pt)}</button>`).join('')}
+          </div>` : ''}
+          ${list.length > 1
             ? `<label class="na-daysel"><span class="na-daysel-l">🗓️ ${_t('Edition', 'Edição')}</span>
                  <select id="na-day" class="na-sel" aria-label="${_t('Choose an edition', 'Escolher edição')}">
-                   ${days.map(d => `<option value="${esc(d)}"${d === _doc.date ? ' selected' : ''}>${esc(fmtDay(d))}</option>`).join('')}
+                   ${list.map(e => `<option value="${esc(e.id)}"${e.id === curId ? ' selected' : ''}>${esc(e.label)}</option>`).join('')}
                  </select></label>`
-            : `<span class="na-day">🗓️ ${esc(fmtDay(_doc.date))}</span>`}
+            : `<span class="na-day">🗓️ ${esc(curLabel)}</span>`}
           <span class="na-dot">·</span>
           <span>${total} ${_t('stories', 'histórias')} ${_t('in', 'em')} ${themes.length} ${_t('topics', 'temas')}</span>
           ${stale ? `<span class="na-stale" title="${_t('The daily job has not run yet today', 'A tarefa diária ainda não correu hoje')}">${_t('previous edition', 'edição anterior')}</span>` : ''}
-          ${days.length === 1 ? `<span class="na-onlyday" title="${_t('The archive starts on the first run; earlier days do not exist yet', 'O arquivo começa na primeira corrida; dias anteriores ainda não existem')}">${_t('only edition so far', 'única edição por agora')}</span>` : ''}
+          ${_period === 'day' && days.length === 1 ? `<span class="na-onlyday" title="${_t('The archive starts on the first run; earlier days do not exist yet', 'O arquivo começa na primeira corrida; dias anteriores ainda não existem')}">${_t('only edition so far', 'única edição por agora')}</span>` : ''}
+          ${_period !== 'day' ? `<span class="na-onlyday">${_t(`from ${_doc.days ? _doc.days.length : 0} daily editions`, `de ${_doc.days ? _doc.days.length : 0} edições diárias`)}</span>` : ''}
           <div class="na-view seg" id="na-view" role="group" aria-label="${_t('View mode', 'Modo de visualização')}">
             ${VIEW_MODES.map(([id, ic, en, pt]) => `<button class="na-view-b${id === _mode ? ' active' : ''}" data-mode="${id}" title="${_t(en, pt)}" aria-label="${_t(en, pt)}" aria-pressed="${id === _mode}">${ic}</button>`).join('')}
           </div>
@@ -388,10 +473,12 @@ const DestaquesPage = (function () {
         const t = e.target.closest('.na-theme');
         if (t) { goTheme(t.dataset.theme); return; }
         const v = e.target.closest('.na-view-b');
-        if (v) setMode(v.dataset.mode);
+        if (v) { setMode(v.dataset.mode); return; }
+        const p = e.target.closest('.na-period-b');
+        if (p) goPeriod(p.dataset.period);
       });
       view.addEventListener('change', (e) => {
-        if (e.target && e.target.id === 'na-day') goDay(e.target.value);
+        if (e.target && e.target.id === 'na-day') goEdition(e.target.value);
       });
       _wired = true;
     }
@@ -425,7 +512,16 @@ const DestaquesPage = (function () {
 
     view.innerHTML = `<div class="na-wrap"><div class="na-loading"><span class="na-spin"></span> ${_t('Loading the edition…', 'A carregar a edição…')}</div></div>`;
     try {
-      const [doc] = await Promise.all([load(), loadIndex()]);
+      await loadIndex();
+      /* A stored period whose editions have since been pruned (or never
+         existed) falls back to the daily edition rather than 404-ing. */
+      if (!hasPeriod(_period)) _period = 'day';
+      const list = editions(_period);
+      let doc = null;
+      if (_period !== 'day' && list.length) {
+        try { doc = await loadPeriod(_period, list[0].id); } catch { _period = 'day'; }
+      }
+      if (!doc) { _period = 'day'; doc = await load(); }
       _doc = doc;
       if (!_doc || !Array.isArray(_doc.themes) || !_doc.themes.length) throw new Error('empty');
       /* Default to the first theme that actually has something to show. */

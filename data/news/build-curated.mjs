@@ -17,6 +17,8 @@
                  ▼  write atomically
        data/news/curated/d/YYYY-MM-DD.json   daily detail (0–30 days)
        data/news/curated/latest.json         what the V2 page reads
+       data/news/curated/w/YYYY-Www.json     weekly edition (rollup.mjs)
+       data/news/curated/m/YYYY-MM.json      monthly edition (rollup.mjs)
        data/news/curated/index.json          catalog + archive listing
        data/news/sources-resolved.json       resolver cache (7-day TTL)
 
@@ -58,6 +60,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { THEMES } from './curated-themes.mjs';
 import { byTheme as sourcesForTheme } from './sources.mjs';
 import { acquire, saveCache } from './acquire.mjs';
+import { buildRollups } from './rollup.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(HERE, 'curated');
@@ -795,11 +798,9 @@ function validateDay(doc) {
 }
 
 /* ════════════════════════ 6 · ARCHIVE ══════════════════════════ */
-/* Prunes daily files past the detail window. Weekly/monthly rollups are
-   deliberately NOT built yet — the daily files carry rank and score, so
-   compaction stays a pure function of data already on disk and can be
-   added later without another model call, and without changing anything
-   written here. `w/` and `m/` are reserved for that. */
+/* Prunes daily files past the detail window. The weekly and monthly
+   rollups (rollup.mjs) are built from whatever survives here, so pruning
+   runs first and the rollups are always consistent with what is on disk. */
 const DETAIL_DAYS = 30;
 function pruneDays(todayISO) {
   if (!existsSync(DAY_DIR)) return [];
@@ -992,6 +993,14 @@ async function main() {
   writeJSON(join(OUT_DIR, 'latest.json'), doc);
 
   const days = pruneDays(dayISO);
+
+  /* Weekly and monthly editions, recomputed from every daily file on
+     disk. No model call: the dailies already carry the scores. Rebuilt
+     from scratch each run so a corrected day propagates, and so pruning
+     a day past the detail window cannot leave a stale rollup behind. */
+  console.log('\nRollups:');
+  const { weeks, months } = buildRollups();
+
   writeJSON(join(OUT_DIR, 'index.json'), {
     generated: doc.generated,
     latest: dayISO,
@@ -1000,8 +1009,8 @@ async function main() {
     detailDays: DETAIL_DAYS,
     themes: themesOut.map(t => ({ id: t.id, icon: t.icon, pt: t.pt, en: t.en, count: t.stories.length })),
     days,                       /* daily archive, newest first */
-    weeks: [],                  /* reserved: 30 days – 6 months */
-    months: [],                 /* reserved: 6 – 18 months */
+    weeks,                      /* { id, from, to, days, stories }, newest first */
+    months,                     /* { id, days, stories }, newest first */
   });
 
   console.log(`\n✓ ${totalStories} stories across ${themesOut.length} themes → curated/d/${dayISO}.json + latest.json`);
@@ -1014,7 +1023,7 @@ async function main() {
    like a story that was never selected. It needs to be exercised against
    both real and adversarial input, which means importing it without
    running a build. */
-export { crossThemeDedupe, sigWords, regroup, materialise, validateDay };
+export { crossThemeDedupe, sigWords, entities, sharedEntities, regroup, materialise, validateDay };
 
 /* Set exitCode rather than calling process.exit(): an aborted fetch may
    still be tearing its socket down, and exiting mid-teardown makes Node
