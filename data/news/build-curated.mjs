@@ -82,19 +82,22 @@ const TITLE_MAX = 120;
    budget below is a TOKEN budget, and requests are paced by it.
 
    A request costs input + output, and gpt-oss emits reasoning tokens
-   that count as output, so the bucket reserves the full max_tokens up
-   front and refunds nothing — deliberately pessimistic.
+   that count as output. The bucket books the pessimistic figure up
+   front and then reconciles it against `usage.total_tokens` from the
+   response (see settle() below), so unused output allowance is freed
+   immediately instead of blocking the next call for a full minute.
 
-     per-request ceiling  3 200 in + 1 600 out  = 4 800  (60% of TPM)
-     rolling budget       6 000 tokens / 60 s           (75% of TPM)
+     per-request ceiling  4 800 in + 1 600 out  = 6 400  (80% of TPM)
+     rolling budget       7 000 tokens / 60 s           (87% of TPM)
 
-   That leaves 2 000 TPM of headroom so a retry lands without queuing
-   behind our own traffic. Measured on the real corpus: 21 requests/day
-   = 2% of RPD, ~101k tokens worst case = 50% of TPD, and well under
-   that in practice since few chunks fill their input budget.        */
+   A single request therefore always fits inside one TPM window on its
+   own, and the remaining headroom is checked against Groq's own
+   `x-ratelimit-remaining-tokens` rather than our arithmetic. Bigger
+   chunks also mean fewer requests: 21 → ~15 on the real corpus, ~2% of
+   RPD and well under half the 200k TPD.                              */
 const MODEL = 'openai/gpt-oss-120b';
-const TOK_BUDGET_PER_MIN = 6000;
-const MAX_INPUT_TOK = 3200;
+const TOK_BUDGET_PER_MIN = 7000;
+const MAX_INPUT_TOK = 4800;
 const MAX_OUTPUT_TOK = 1600;
 const REQ_TIMEOUT = 90000;
 const MAX_ATTEMPTS = 3;       /* per chunk, including the initial call */
@@ -133,18 +136,66 @@ function lisbonToday() {
   return `${l.getFullYear()}-${String(l.getMonth() + 1).padStart(2, '0')}-${String(l.getDate()).padStart(2, '0')}`;
 }
 
-/* ── token bucket: rolling 60 s window ───────────────────────────── */
-const _spent = [];   /* [{ t, n }] */
+/* ── token bucket: rolling 60 s window ─────────────────────────────
+   A request must be booked BEFORE it is sent (we cannot know its cost
+   in advance), so it reserves an estimate: input + the full
+   MAX_OUTPUT_TOK. That estimate is deliberately pessimistic — the model
+   rarely uses its whole output allowance — and if it were left standing
+   the bucket would think it is nearly full after a single request and
+   idle for ~58s before every call, turning a 21-request run into 21
+   minutes of mostly waiting.
+
+   So each reservation is reconciled once the response comes back:
+   `settle()` rewrites the booking with the real figure Groq reports in
+   `usage.total_tokens`, freeing the difference immediately. The server's
+   own `x-ratelimit-remaining-tokens` is then the final authority — if it
+   says we are nearly out, we wait for its reset rather than trusting our
+   arithmetic. */
+const _spent = [];   /* [{ t, n }] — rolling window of booked tokens */
+
 async function reserve(n) {
   for (;;) {
     const cut = Date.now() - 60000;
     while (_spent.length && _spent[0].t < cut) _spent.shift();
     const used = _spent.reduce((s, x) => s + x.n, 0);
-    if (used + n <= TOK_BUDGET_PER_MIN) { _spent.push({ t: Date.now(), n }); return; }
+    if (used + n <= TOK_BUDGET_PER_MIN) { const b = { t: Date.now(), n }; _spent.push(b); return b; }
     const waitMs = Math.max(1000, 60000 - (Date.now() - _spent[0].t) + 250);
     console.log(`   ⏳ token budget: ${used}/${TOK_BUDGET_PER_MIN} used — waiting ${Math.round(waitMs / 1000)}s`);
     await sleep(waitMs);
   }
+}
+
+/* Replace an estimate with what the request actually cost. */
+function settle(booking, actual) {
+  if (booking && Number.isFinite(actual) && actual > 0) booking.n = actual;
+}
+
+/* The server's remaining-token budget beats our estimate. When it drops
+   below one request's worth, wait out the window it tells us to. */
+async function respectHeaders(r) {
+  const rem = Number(r.headers.get('x-ratelimit-remaining-tokens'));
+  if (!Number.isFinite(rem) || rem > MAX_INPUT_TOK + MAX_OUTPUT_TOK) return;
+  const secs = parseDuration(r.headers.get('x-ratelimit-reset-tokens'), 10);
+  console.log(`   ⏳ Groq reports ${rem} tokens left this minute — waiting ${secs}s`);
+  await sleep(secs * 1000);
+  _spent.length = 0;   /* the window it just reset is the one we track */
+}
+
+/* Groq expresses resets as Go durations: "7.66s", "2m59.56s", "1h2m3s".
+   parseFloat("2m59.56s") is 2, which would resume far too early, so sum
+   the components instead. Clamped so a malformed header cannot stall the
+   whole run. */
+function parseDuration(v, fallback) {
+  const s = String(v || '').trim();
+  let total = 0, seen = false;
+  for (const [, n, unit] of s.matchAll(/([\d.]+)\s*(ms|h|m|s)/g)) {
+    const x = parseFloat(n);
+    if (!Number.isFinite(x)) continue;
+    seen = true;
+    total += unit === 'h' ? x * 3600 : unit === 'm' ? x * 60 : unit === 'ms' ? x / 1000 : x;
+  }
+  if (!seen) { const plain = parseFloat(s); if (Number.isFinite(plain)) { total = plain; seen = true; } }
+  return Math.max(1, Math.min(120, Math.ceil(seen ? total : fallback)));
 }
 
 /* ════════════════════════ 1 · CANDIDATES ════════════════════════ */
@@ -231,8 +282,10 @@ ABSOLUTE RULES
 YOUR JOB
 1. GROUP: when several articles report the SAME underlying event, emit ONE story listing all their ids in "articleIds", most informative article first. Articles that merely share a topic are NOT the same event and must stay separate.
 2. RANK: order stories by editorial importance — consequence, how many people it affects, novelty, and how much it changes what a reader already assumed. Not by recency, and not by how dramatic the headline sounds.
-3. SUMMARISE: 1–2 factual sentences, in European Portuguese, drawn strictly from the supplied title and summary.
-4. EXPLAIN: "why" is one short sentence on why this matters to a general reader. No hype.
+3. SUMMARISE: 1–2 factual sentences drawn strictly from the supplied title and summary.
+   - Report the EVENT, never the reporting of it. Write "A China adiou a missão Chang'e 7 para 2027", never "A TechCrunch descreve…", "O artigo explica…", "Segundo a reportagem…" or "O conceito de X destaca…". The publisher is shown separately; naming it inside the summary wastes the reader's attention.
+   - EUROPEAN Portuguese (pt-PT), not Brazilian. Use: adiado (not postergado), autónomo (not autônomo), mil milhões (not bilhão), equipa (not equipe), utilizador (not usuário), telemóvel (not celular), ecrã (not tela), o seu/a sua where natural. Prefer "está a fazer" over "está fazendo".
+4. EXPLAIN: "why" is one short sentence on why this matters to a general reader. Also pt-PT. No hype, and do not restate the summary in other words — say the consequence.
 5. SCORE: integer 0–100 for your editorial judgement of importance. This is your opinion, and it is labelled as such to readers. Use the full range; do not cluster everything at 70–80.
 
 HOW MANY
@@ -291,7 +344,7 @@ async function groqJSON(system, user, label) {
 
   let lastErr = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    await reserve(inTok + MAX_OUTPUT_TOK);
+    const booking = await reserve(inTok + MAX_OUTPUT_TOK);
 
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), REQ_TIMEOUT);
@@ -311,6 +364,8 @@ async function groqJSON(system, user, label) {
       });
 
       if (r.status === 429) {
+        /* A refused request cost nothing — release its booking. */
+        settle(booking, 1);
         /* Respect the server's own backoff rather than guessing. */
         const wait = Math.min(180, Math.ceil(Number(r.headers.get('retry-after') || 30))) * 1000;
         console.log(`   ⏳ ${label}: 429 — waiting ${wait / 1000}s (attempt ${attempt}/${MAX_ATTEMPTS})`);
@@ -319,6 +374,7 @@ async function groqJSON(system, user, label) {
         continue;
       }
       if (!r.ok) {
+        settle(booking, 1);
         /* Body may carry a provider message; it never carries the key. */
         const body = await r.text().catch(() => '');
         const err = new Error(`HTTP ${r.status} ${clamp(body, 200)}`);
@@ -333,6 +389,13 @@ async function groqJSON(system, user, label) {
       }
 
       const j = await r.json();
+      /* Swap the pessimistic estimate for the real cost, so the next
+         request is not queued behind output tokens we never used. */
+      const realTok = Number(j?.usage?.total_tokens);
+      settle(booking, realTok);
+      if (Number.isFinite(realTok)) console.log(`   · ${label}: ${realTok} tok (est. ${inTok + MAX_OUTPUT_TOK})`);
+      await respectHeaders(r);
+
       const txt = j?.choices?.[0]?.message?.content || '';
       if (!txt.trim()) throw new Error('empty completion');
       return JSON.parse(txt);
@@ -625,7 +688,7 @@ async function main() {
     date: dayISO,
     generated: new Date(now).toISOString(),
     model: MOCK ? 'mock' : MODEL,
-    promptVersion: 1,          /* bump when SYSTEM changes, so drift is traceable */
+    promptVersion: 2,          /* bump when SYSTEM changes, so drift is traceable */
     maxStories: MAX_STORIES,
     windowHours: WINDOW_H,
     themes: themesOut,

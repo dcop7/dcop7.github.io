@@ -67,6 +67,22 @@ const NoticiasAiPage = (function () {
     } finally { clearTimeout(to); }
   }
 
+  /* One chip per publisher, not per article. A publisher legitimately
+     runs several pieces on one event (RTP filed five separate stories on
+     the same medal haul), and rendering one chip each printed
+     "RTP · RTP · RTP · RTP · RTP", which reads as a bug. Collapse to the
+     newest article per publisher and show ×N when there are more. */
+  function byPublisher(sources) {
+    const map = new Map();
+    for (const x of sources) {
+      const k = x.source || x.url;
+      const cur = map.get(k);
+      if (!cur) map.set(k, { ...x, count: 1 });
+      else { cur.count++; if (x.ts > cur.ts) { cur.url = x.url; cur.title = x.title; cur.ts = x.ts; } }
+    }
+    return [...map.values()];
+  }
+
   /* ── render: one story ── */
   function storyCard(s) {
     const band = scoreBand(s.score);
@@ -104,11 +120,12 @@ const NoticiasAiPage = (function () {
         ${s.why ? `<p class="na-why"><span class="na-why-l">${_t('Why it matters', 'Porque importa')}</span> ${esc(s.why)}</p>` : ''}
 
         <div class="na-srcs">
-          ${sources.map((x, i) => {
-            const f = favURL(x.site || x.url);
-            return `<a class="na-src${i === 0 ? ' na-src--lead' : ''}" href="${esc(x.url)}" target="_blank" rel="noopener" title="${esc(x.title)}">
+          ${byPublisher(sources).map((p, i) => {
+            const f = favURL(p.site || p.url);
+            const n = p.count > 1 ? `<span class="na-src-n" title="${_t(`${p.count} articles from this publisher`, `${p.count} artigos deste editor`)}">×${p.count}</span>` : '';
+            return `<a class="na-src${i === 0 ? ' na-src--lead' : ''}" href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.title)}">
               ${f ? `<img src="${esc(f)}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-              <span>${esc(x.source)}</span></a>`;
+              <span>${esc(p.source)}</span>${n}</a>`;
           }).join('')}
         </div>
         ${tags ? `<div class="na-tags">${tags}</div>` : ''}

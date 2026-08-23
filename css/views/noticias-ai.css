@@ -141,6 +141,11 @@
 .na-src img { width: 13px; height: 13px; border-radius: 2px; flex-shrink: 0; }
 .na-src:hover { color: var(--pg-accent); border-color: rgba(var(--pg-accent-rgb), .45); }
 .na-src--lead { color: var(--text2); }
+/* ×N quando o mesmo editor publicou vários artigos sobre a história */
+.na-src-n {
+  font-size: .9em; font-weight: 800; opacity: .65;
+  font-variant-numeric: tabular-nums; margin-left: .1rem;
+}
 
 .na-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
 .na-tag { font-size: var(--fs-xs); color: var(--muted); opacity: .75; }
