@@ -140,7 +140,7 @@ body.light .lp-sidebar { background: rgba(248,250,252,.98); }
 .cs-item:hover { background: rgba(255,255,255,.025); }
 .cs-item.hidden { display: none; }
 .cs-cmd {
-  font-family: var(--font-mono); font-size: .76rem; font-weight: 500; color: var(--accent2);
+  font-family: var(--font-mono); font-size: .76rem; font-weight: 500; color: var(--accent2-txt, var(--accent2));
   background: rgba(34,211,238,.06); border: 1px solid rgba(34,211,238,.12);
   border-radius: var(--radius-xs); padding: .25rem .6rem; white-space: nowrap; flex-shrink: 0;
 }
@@ -214,7 +214,8 @@ body.theme-terminal .cs-cmd { color: var(--accent-txt); background: rgba(34,197,
 .ph-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1rem; }
 .ph-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.15rem; }
 .ph-section-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
-.ph-section-title { font-family: var(--font-head); font-size: .95rem; font-weight: 700; margin-bottom: .85rem; }
+/* Real headings (h2 / h3.sub) — reset the UA margins so the rhythm is ours. */
+.ph-section-title { font-family: var(--font-head); font-size: .95rem; font-weight: 700; margin: 0 0 .85rem; }
 .ph-card-title { font-family: var(--font-head); font-size: .88rem; font-weight: 700; margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem; }
 .ph-field { margin-bottom: .6rem; }
 .ph-label { font-size: .7rem; font-weight: 600; color: var(--muted); margin-bottom: .28rem; display: block; }
@@ -1420,7 +1421,10 @@ body.density-list .lp-link-tags { display: none; }
    components.css) — faltava dizê-lo. Sombra de bordo só onde há overflow
    garantido, e o separador ativo é trazido para dentro do ecrã em JS. */
 @media (max-width: 700px) {
-  .ph-nav, .ph-apr-seg { position: relative; }
+  /* `top` still applies to a relatively-positioned box, so dropping sticky here
+     without clearing it left the tab rail painted 56px lower than its own
+     layout box — sitting on top of the first row of the context bar. */
+  .ph-nav, .ph-apr-seg { position: relative; top: auto; }
   .ph-nav::after, .ph-apr-seg::after {
     content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 2.2rem;
     pointer-events: none; background: linear-gradient(to right, transparent, var(--bg, #0b1020) 85%);

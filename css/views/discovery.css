@@ -84,12 +84,12 @@
 .dc-card-meta { display: flex; align-items: center; justify-content: space-between; gap: .4rem; font-size: .7rem; color: var(--muted); }
 .dc-store { display: inline-flex; align-items: center; gap: .3rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dc-rating { color: #3fb950; white-space: nowrap; }
+.dc-rating { color: var(--green-txt); white-space: nowrap; }
 .dc-card-price { display: flex; align-items: center; gap: .45rem; margin-top: auto; }
 .dc-now { font-weight: 800; font-size: .98rem; color: var(--text); }
 .dc-was { color: var(--muted); text-decoration: line-through; font-size: .76rem; }
 .dc-verdict { margin-left: auto; font-size: .8rem; }
-.dc-lowtag { font-size: .68rem; color: #58a6ff; font-weight: 600; }
+.dc-lowtag { font-size: .68rem; color: var(--blue-txt); font-weight: 600; }
 
 /* free card */
 .dc-free-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .8rem; }
@@ -105,8 +105,8 @@
 .dc-free-store { display: flex; align-items: center; gap: .3rem; font-size: .74rem; color: var(--muted); }
 .dc-free-prices { display: flex; align-items: center; gap: .5rem; }
 .dc-free-orig { color: var(--muted); text-decoration: line-through; font-size: .82rem; }
-.dc-free-now { color: #3fb950; font-weight: 800; font-size: 1.05rem; }
-.dc-free-end { font-size: .74rem; color: #f0883e; font-weight: 600; }
+.dc-free-now { color: var(--green-txt); font-weight: 800; font-size: 1.05rem; }
+.dc-free-end { font-size: .74rem; color: var(--amber-txt); font-weight: 600; }
 .dc-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: auto; gap: .3rem; cursor: pointer;
   background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: .5rem .8rem;
   font: inherit; font-size: .82rem; font-weight: 700; transition: filter var(--ease); text-decoration: none; }

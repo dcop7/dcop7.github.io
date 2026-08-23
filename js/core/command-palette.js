@@ -1,6 +1,10 @@
 const CommandPalette = (function () {
   'use strict';
 
+  /* The palette's own chrome (placeholder, footer hints) is written in PT in
+     index.html; these two strings were the only English left in it. */
+  const _t = (en, pt) => ((typeof I18n !== 'undefined' && I18n.getLang() === 'en') ? en : pt);
+
   const NAV_ITEMS = [
     { name: 'Início',            desc: 'Painel do dia',                    icon: '🏠', type: 'nav', action: () => Nav.go('home') },
     { name: 'Explorar',          desc: 'Terra, Espaço e Corpo Humano',     icon: '🌍', type: 'nav', action: () => Nav.go('explorer') },
@@ -131,11 +135,11 @@ const CommandPalette = (function () {
 
     if (!results) return;
     if (!matched.length) {
-      results.innerHTML = '<div class="cp-empty">No results</div>';
+      results.innerHTML = `<div class="cp-empty">${_t('No results', 'Sem resultados')}</div>`;
       return;
     }
 
-    const groupLabel = ql ? '' : '<div class="cp-section-label">Quick navigation</div>';
+    const groupLabel = ql ? '' : `<div class="cp-section-label">${_t('Quick navigation', 'Navegação rápida')}</div>`;
     results.innerHTML = groupLabel + matched.map((item, i) => `
       <div class="cp-item" data-idx="${i}" role="option">
         <div class="cp-item-icon">${item.icon}</div>

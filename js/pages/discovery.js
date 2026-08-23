@@ -134,7 +134,7 @@ const DiscoveryPage = (function () {
 
       _root.innerHTML = `<div class="dc-wrap">
         <header class="dc-hero">
-          <h1>🛍️ ${_t('Product Discovery', 'Product Discovery')}</h1>
+          <h1>🛍️ Gaming Deals</h1>
           <p>${_t('Discover deals, free games and all-time-low prices — updated automatically.', 'Descobre promoções, jogos grátis e mínimos históricos — atualizado automaticamente.')}</p>
           <label class="dc-search"><span aria-hidden="true">🔍</span><input id="dc-q" type="search" placeholder="${_t('Search a game…', 'Pesquisar um jogo…')}" autocomplete="off"></label>
           <div class="dc-meta">${_t('Updated', 'Atualizado')} ${ago(Date.parse(ix.generatedAt))} · ${ix.count} ${_t('deals tracked', 'promoções')}</div>

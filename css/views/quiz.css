@@ -98,7 +98,7 @@
 }
 
 /* Difficulty pills get a colour cue when active (Fácil/Médio/Difícil). */
-.qp-is-diff-easy.active   { background: rgba(34,197,94,.16);  border-color: rgba(34,197,94,.5);  color: #22c55e; }
+.qp-is-diff-easy.active   { background: rgba(34,197,94,.16);  border-color: rgba(34,197,94,.5);  color: var(--green-txt); }
 .qp-is-diff-medium.active { background: rgba(234,179,8,.16);  border-color: rgba(234,179,8,.5);  color: #eab308; }
 .qp-is-diff-hard.active   { background: rgba(239,68,68,.16);  border-color: rgba(239,68,68,.5);  color: #ef4444; }
 

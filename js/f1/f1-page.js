@@ -283,7 +283,7 @@ const F1Page = (function () {
     view.innerHTML = `
       <div class="f1-wrap">
         <header class="f1-head">
-          <div class="f1-title"><span class="f1-logo"><img class="f1-logo-img" src="data/f1/icons/logo.jpg" alt="" onerror="this.outerHTML='🏎️'"></span> <span>Fórmula 1</span></div>
+          <h1 class="f1-title"><span class="f1-logo"><img class="f1-logo-img" src="data/f1/icons/logo.jpg" alt="" onerror="this.outerHTML='🏎️'"></span> <span>Fórmula 1</span></h1>
           <nav class="f1-tabs" id="f1-tabs" role="tablist">
             ${TABS.map(t => `<button class="f1-tab${t.id === want ? ' on' : ''}" data-tab="${t.id}" role="tab">
               <span class="f1-tab-ic"><img class="f1-tab-img" src="data/f1/icons/${t.id}.jpg" alt="" loading="lazy" onerror="this.outerHTML='${t.ic}'"></span><span>${_t(t.en, t.pt)}</span></button>`).join('')}

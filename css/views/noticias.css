@@ -121,6 +121,9 @@
 .nw-c-body { padding: .8rem .95rem .9rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
 .nw-c-top { display: flex; align-items: center; gap: .4rem; font-size: .74rem; }
 .nw-c-src { font-weight: 700; color: var(--tc, var(--accent)); text-transform: uppercase; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: auto; }
+/* Topic hues are tuned for the dark cards; on white they sit near 3:1 as text.
+   Darkened only where the hue IS the text — chips and rules keep the hue. */
+body.light .nw-c-src, body.light .nw-chip { color: color-mix(in srgb, var(--tc, var(--accent)) 65%, #000); }
 .nw-c-time { color: var(--muted); white-space: nowrap; flex-shrink: 0; }
 .nw-c-title {
   font-family: var(--font-head); font-size: calc(1rem * var(--nw-scale, 1)); font-weight: 700; line-height: 1.3;

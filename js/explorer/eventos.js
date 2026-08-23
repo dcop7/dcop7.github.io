@@ -42,13 +42,18 @@ const EventosPage = (function () {
     familia:    { icon: '👨‍👩‍👧', en: 'Family',      pt: 'Família',           color: '#14b8a6' },
     educacao:   { icon: '📚', en: 'Education',       pt: 'Educação',          color: '#3b82f6' },
     tecnologia: { icon: '💻', en: 'Technology',      pt: 'Tecnologia',        color: '#06b6d4' },
-    feiras:     { icon: '🛍️', en: 'Fairs & Markets', pt: 'Feiras e Mercados', color: '#a16207' },
+    feiras:     { icon: '🛍️', en: 'Fairs & Markets', pt: 'Feiras e Mercados', color: '#d97706' },
     exposicoes: { icon: '🖼️', en: 'Exhibitions',     pt: 'Exposições',        color: '#d946ef' },
     outros:     { icon: '✨', en: 'Other',           pt: 'Outros',            color: '#64748b' },
   };
   const catLabel = (k) => _t((CATS[k] || CATS.outros).en, (CATS[k] || CATS.outros).pt);
   const catIcon  = (k) => (CATS[k] || CATS.outros).icon;
   const catColor = (k) => (CATS[k] || CATS.outros).color;
+  /* Most snapshot events carry no image, and a grid of identical tinted emoji
+     squares was the weakest thing on the page. One generated cover per category
+     gives the card a subject; the category is still named in words next to it,
+     so the picture reinforces rather than replaces the label. */
+  const catCover = (k) => 'assets/events/' + (CATS[k] ? k : 'outros') + '.jpg';
 
   /* Map a free-text label (PT/EN, slug or numeric) → category key. */
   const CAT_KW = [
@@ -62,9 +67,19 @@ const EventosPage = (function () {
     ['exposicoes',  /exposi[cç]|exhibit|mostra|museu|museum|galeria|pintura|escultura|fotografia/i],
     ['cultura',     /cultur|teatro|theatre|dan[cç]|cinema|cine|patrim[oó]ni|hist[oó]ri|visita|palaci|castelo|mosteiro|igreja|literat|po[eé]si|dance/i],
   ];
+  /* Second pass, for the live sources that ship no category of their own. Gigs
+     are usually announced by artist name plus a venue or a tour, none of which
+     the specific table above matches — so these broader signals only get a say
+     once nothing more specific has claimed the event ("Festival Literário"
+     still lands in Cultura, not Música). */
+  const CAT_KW2 = [
+    ['cultura', /stand.?up|com[eé]dia|comedy|humor|mon[oó]logo|circo|bailado|revista|magia/i],
+    ['musica',  /tour|ao vivo|live|tribut|coliseu|arena|pavilh[ãa]o|casa da m[uú]sica|altice|campo pequeno|festival|blues|metal|rap|hip.?hop|soul|indie|funk|trio|quarteto|quinteto|[oó]pera|canta|em concerto/i],
+  ];
   function classify(...texts) {
     const s = texts.filter(Boolean).join(' ');
     for (const [key, re] of CAT_KW) if (re.test(s)) return key;
+    for (const [key, re] of CAT_KW2) if (re.test(s)) return key;
     return 'outros';
   }
 
@@ -350,7 +365,10 @@ const EventosPage = (function () {
         id: e.id, source: 'nocartaz',
         title: e.title, lead: e.desc || '', desc: e.desc || '',
         start, end: start,
-        category: classify(e.title, e.desc),
+        /* `cat` is decided at build time from NoCartaz' own genre/tags, which
+           the keyword table cannot see (a title like "Bryan Adams" has no
+           keyword in it). Older snapshots have no `cat` — hence the fallback. */
+        category: (e.cat && CATS[e.cat]) ? e.cat : classify(e.title, e.desc),
         venue: '', district: e.district || '', concelho: '',
         image: e.image || '',
         url: e.url || 'https://www.nocartaz.pt/',
@@ -657,7 +675,7 @@ const EventosPage = (function () {
     const dist = (e.dist != null && !e.coarse) ? `<span class="ev-c-dist">📍 ${e.dist < 1 ? '<1' : Math.round(e.dist)} km</span>` : '';
     const img = (e.image && /^https?:/.test(e.image))
       ? `<div class="ev-c-img" style="background-image:url('${esc(e.image)}')"></div>`
-      : `<div class="ev-c-img ev-c-img-ph" style="--cc:${catColor(e.category)}">${catIcon(e.category)}</div>`;
+      : `<div class="ev-c-img ev-c-img-cat" style="--cc:${catColor(e.category)};background-image:url('${catCover(e.category)}')"></div>`;
     const where = esc(e.venue || e.concelho || e.district || 'Portugal');
     const price = e.free ? `<span class="ev-c-free">${_t('Free', 'Grátis')}</span>` : (e.price ? `<span class="ev-c-price">${esc(e.price)}</span>` : '');
     return `<article class="ev-card${compact ? ' ev-card-c' : ''}" data-id="${esc(e.id)}" tabindex="0">

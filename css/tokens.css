@@ -31,6 +31,7 @@
      como borda. Usar em controlos PREENCHIDOS com texto branco. */
   --accent-fill: #5b5fe8;
   --accent2: #22d3ee;
+  --accent2-txt: #22d3ee;
   --accent-rgb: 99,102,241;
   --accent-soft: rgba(99,102,241,.12);
   --accent-glow: rgba(99,102,241,.25);
@@ -39,6 +40,16 @@
   --red: #ef4444;
   --green: #22c55e;
   --amber: #f59e0b;
+
+  /* Status colours for TEXT. The fills above are tuned to read on the dark
+     surfaces and stay the same everywhere (bars, dots, borders, charts); these
+     are the same hues pushed dark enough to clear 4.5:1 on the light theme's
+     white cards, where #22c55e only manages 2.3:1. Use --*-txt whenever the
+     colour IS the text; keep the plain token for anything painted as a shape. */
+  --red-txt: #ef4444;
+  --green-txt: #22c55e;
+  --amber-txt: #f59e0b;
+  --blue-txt: #3b82f6;
 
   /* ── Shape ── */
   --radius: 12px;
@@ -134,6 +145,28 @@ body.density-list    { --den: .58; }
 #view-photography { --pg-accent: #fbbf24; --pg-accent-rgb: 251,191,36; }
 #view-visual      { --pg-accent: #f472b6; --pg-accent-rgb: 244,114,182; }
 
+/* Light theme: the hues above are picked to glow on the dark surfaces, and as
+   TEXT on a white card several of them collapse (photography amber lands at
+   1.6:1, visual pink at 2.5:1). Same hue, darker value — every consumer of
+   --pg-accent (tab labels, section links, chips, primary fills) clears AA at
+   once, and the soft rgba() tints just get a touch deeper. */
+body.light #view-explorer    { --pg-accent: #24799f; --pg-accent-rgb: 36,121,159; }
+body.light #view-noticias    { --pg-accent: #8a5fb5; --pg-accent-rgb: 138,95,181; }
+body.light #view-eventos     { --pg-accent: #1b7f73; --pg-accent-rgb: 27,127,115; }
+body.light #view-cidadao     { --pg-accent: #0b815a; --pg-accent-rgb: 11,129,90; }
+body.light #view-ocorrencias { --pg-accent: #9d6507; --pg-accent-rgb: 157,101,7; }
+body.light #view-f1          { --pg-accent: #d23c3c; --pg-accent-rgb: 210,60,60; }
+body.light #view-oss         { --pg-accent: #2b814a; --pg-accent-rgb: 43,129,74; }
+body.light #view-discovery   { --pg-accent: #a255ae; --pg-accent-rgb: 162,85,174; }
+body.light #view-links       { --pg-accent: #a66028; --pg-accent-rgb: 166,96,40; }
+body.light #view-tools       { --pg-accent: #626abc; --pg-accent-rgb: 98,106,188; }
+body.light #view-cheatsheets { --pg-accent: #7864b4; --pg-accent-rgb: 120,100,180; }
+body.light #view-games       { --pg-accent: #1f7f5c; --pg-accent-rgb: 31,127,92; }
+body.light #view-quiz        { --pg-accent: #147f8f; --pg-accent-rgb: 20,127,143; }
+body.light #view-humor       { --pg-accent: #876e0b; --pg-accent-rgb: 135,110,11; }
+body.light #view-photography { --pg-accent: #8d6b14; --pg-accent-rgb: 141,107,20; }
+body.light #view-visual      { --pg-accent: #b05283; --pg-accent-rgb: 176,82,131; }
+
 /* ── LIGHT THEME ── */
 body.light {
   --bg: #f8fafc;
@@ -146,16 +179,27 @@ body.light {
   --text: #0f172a;
   --text2: #334155;
   --muted: #64748b;
-  --accent: #6366f1;
+  /* Indigo-600, not indigo-500: --accent is read as TEXT in a lot of places
+     (labels of active tabs, "ver todos", section kickers) and indigo-500 only
+     reaches 4.3:1 on the light cards. As a fill it also improves — 6.3:1 with
+     white on top instead of 4.5:1. */
+  --accent: #4f46e5;
   --accent-txt: #4f46e5;   /* 4.47:1 sobre branco falha AA; indigo-600 dá 6.3:1 */
   --accent-fill: #5b5fe8;
   --accent2: #0891b2;
+  --accent2-txt: #0e7490;  /* cyan-700 — 5.4:1; cyan-600 as code text is 3.7:1 */
   --accent-soft: rgba(99,102,241,.08);
   --accent-glow: rgba(99,102,241,.15);
 
   --shadow-1: 0 1px 2px rgba(15,23,42,.06);
   --shadow-2: 0 4px 16px rgba(15,23,42,.08);
   --shadow-3: 0 16px 48px rgba(15,23,42,.14);
+
+  /* Status text: the dark-theme hues fail AA on white (see --red-txt above). */
+  --red-txt: #b91c1c;      /* 6.5:1 on #fff */
+  --green-txt: #15803d;    /* 5.0:1 */
+  --amber-txt: #a16207;    /* 4.9:1 */
+  --blue-txt: #1d4ed8;     /* 6.7:1 */
 
   /* Light-mode glass overlays */
   --glass:        rgba(255,255,255,.92);

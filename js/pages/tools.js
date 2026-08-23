@@ -78,14 +78,14 @@ const ToolsPage = (function () {
           </div>
           <div class="tool-opts-grp">
             <span class="tool-opts-lbl">Cor</span>
-            <div class="tool-colors" id="cd-colors">
-              ${['#3b82f6','#10b981','#ef4444','#a855f7','#f97316'].map((c,i)=>
-                `<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c}"></button>`).join('')}
+            <div class="tool-colors" id="cd-colors" role="group" aria-label="Cor do temporizador">
+              ${[['#3b82f6','Azul'],['#10b981','Verde'],['#ef4444','Vermelho'],['#a855f7','Roxo'],['#f97316','Laranja']].map(([c,n],i)=>
+                `<button class="tcol${i===0?' active':''}" data-c="${c}" style="--tc:${c}" aria-label="${n}" title="${n}" aria-pressed="${i===0}"></button>`).join('')}
             </div>
           </div>
           <div class="tool-opts-grp">
             <span class="tool-opts-lbl">Som</span>
-            <button class="tool-sound active" id="cd-sound">🔔</button>
+            <button class="tool-sound active" id="cd-sound" aria-label="Som no fim" title="Som no fim" aria-pressed="true">🔔</button>
           </div>
         </div>
         <div class="cd-presets">
@@ -93,9 +93,9 @@ const ToolsPage = (function () {
             `<button class="cdp" data-m="${v}">${l}</button>`).join('')}
         </div>
         <div class="cd-custom-row">
-          <input class="cd-inp" id="cd-min" type="number" min="0" max="99" value="5">
-          <span class="cd-sep">:</span>
-          <input class="cd-inp" id="cd-sec" type="number" min="0" max="59" value="0">
+          <input class="cd-inp" id="cd-min" type="number" min="0" max="99" value="5" aria-label="Minutos">
+          <span class="cd-sep" aria-hidden="true">:</span>
+          <input class="cd-inp" id="cd-sec" type="number" min="0" max="59" value="0" aria-label="Segundos">
           <button class="cd-set-btn" id="cd-set">Definir</button>
         </div>
         <div class="cd-visual" id="cd-visual">
@@ -164,14 +164,14 @@ const ToolsPage = (function () {
     }));
     root.querySelectorAll('.tcol').forEach(b => b.addEventListener('click', () => {
       cdColor = b.dataset.c;
-      root.querySelectorAll('.tcol').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
+      root.querySelectorAll('.tcol').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-pressed', 'false'); });
+      b.classList.add('active'); b.setAttribute('aria-pressed', 'true');
       const fill = root.querySelector('#cd-fill'); if (fill) fill.style.stroke = cdColor;
       ['#hg-gt0','#hg-gt1','#hg-gb0','#hg-gb1'].forEach(id => { const s = root.querySelector(id); if (s) s.setAttribute('stop-color', cdColor); });
       root.querySelectorAll('.hg-fc').forEach(g => g.setAttribute('fill', cdColor));
     }));
     const sBtn = root.querySelector('#cd-sound');
-    sBtn.addEventListener('click', () => { cdSound = !cdSound; sBtn.classList.toggle('active', cdSound); sBtn.textContent = cdSound ? '🔔' : '🔕'; });
+    sBtn.addEventListener('click', () => { cdSound = !cdSound; sBtn.classList.toggle('active', cdSound); sBtn.setAttribute('aria-pressed', String(cdSound)); sBtn.textContent = cdSound ? '🔔' : '🔕'; });
     root.querySelectorAll('.cdp').forEach(b => b.addEventListener('click', () => { root.querySelector('#cd-min').value = b.dataset.m; root.querySelector('#cd-sec').value = 0; setCD(root); }));
     root.querySelector('#cd-set').addEventListener('click', () => setCD(root));
     root.querySelector('#cd-start').addEventListener('click', () => runCD(root));
@@ -1205,7 +1205,9 @@ const ToolsPage = (function () {
           }`;
         }).join('')
       }</div>`;
-      view.innerHTML = `<div class="tools-layout">${sidebar}<div class="tools-content" id="tool-host"></div></div>`;
+      /* Two-pane app shell with no room for a visible title block — the page
+         still needs one <h1> so the route announces itself to assistive tech. */
+      view.innerHTML = `<h1 class="sr-only">Ferramentas</h1><div class="tools-layout">${sidebar}<div class="tools-content" id="tool-host"></div></div>`;
       view.querySelectorAll('.tool-nav-btn').forEach(btn=>btn.addEventListener('click',()=>_select(btn.dataset.tid)));
     }
 

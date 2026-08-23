@@ -331,6 +331,13 @@ body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--r
 .page-title { font-family: var(--font-head); font-size: clamp(1.2rem,3vw,1.5rem); font-weight: 800; letter-spacing: -.03em; display: flex; align-items: center; gap: .6rem; }
 .page-subtitle { font-size: .82rem; color: var(--muted); margin-top: .25rem; }
 
+/* Mobile search entry point (the inline search bar is desktop-only).
+   Declared BEFORE the breakpoint below on purpose: with equal specificity the
+   later rule wins even from outside a media query, and this hiding rule sitting
+   after @media(max-width:900px) is what used to leave phones with no way to
+   reach global search at all. */
+.hdr-search-btn { display: none; }
+
 /* ── RESPONSIVE BREAKPOINTS ── */
 @media (max-width: 900px) {
   :root { --sb-w: 264px; }
@@ -341,8 +348,6 @@ body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--r
   /* Roomier drawer tap targets on touch screens. */
   .sb-nav-item { padding: .7rem .85rem; font-size: .9rem; }
 }
-/* Mobile search entry point (the inline search bar is desktop-only) */
-.hdr-search-btn { display: none; }
 @media (max-width: 600px) {
   /* Declutter the header so the brand + essential controls always fit
      (the date is redundant with the Home greeting on phones). */

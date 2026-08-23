@@ -30,6 +30,47 @@ const all = Array.isArray(raw) ? raw : (raw.events || []);
 console.log('Total events from source:', all.length);
 
 const clean = (s) => (s || '').toString().replace(/\s+/g, ' ').trim();
+
+/* Category, decided here rather than in the browser. NoCartaz ships a `genre`
+   and a `tags` array that the snapshot used to throw away, which left the site
+   guessing from the title alone — and a title like "Bryan Adams" carries no
+   keyword at all, so 61% of the agenda fell into "Outros" and the category
+   filter was close to useless. Mapping the source's own vocabulary once, at
+   build time, costs ~15 bytes per event and gets it right. Events we still
+   cannot place ship without `cat` and the client falls back to its keywords. */
+const GENRE_CAT = {
+  'rock-pop': 'musica', 'folk': 'musica', 'musica-classica': 'musica', 'indie': 'musica',
+  'eletronica': 'musica', 'jazz': 'musica', 'fado': 'musica', 'opera': 'musica', 'reggae': 'musica',
+  'teatro': 'cultura', 'cinema': 'cultura', 'danca': 'cultura', 'literatura': 'cultura',
+  'performance': 'cultura',
+  'exposicao': 'exposicoes', 'conferencia': 'educacao', 'infantil': 'familia',
+};
+const TAG_CAT = {
+  gastronomia: 'gastronomia', vinho: 'gastronomia', cerveja: 'gastronomia', 'food-market': 'gastronomia',
+  desporto: 'desporto', caminhada: 'desporto', corrida: 'desporto', ciclismo: 'desporto',
+  feira: 'feiras', artesanato: 'feiras', mercado: 'feiras', 'feira-do-livro': 'feiras',
+  workshop: 'educacao', debate: 'educacao', conferencia: 'educacao', ciencia: 'educacao',
+  criancas: 'familia', familia: 'familia', infantil: 'familia',
+  exposicao: 'exposicoes', 'arte-contemporanea': 'exposicoes', fotografia: 'exposicoes',
+  tecnologia: 'tecnologia', videojogos: 'tecnologia',
+  teatro: 'cultura', cinema: 'cultura', danca: 'cultura', literatura: 'cultura', livros: 'cultura',
+  comedia: 'cultura', 'stand-up': 'cultura', humor: 'cultura', magia: 'cultura',
+  patrimonio: 'cultura', historia: 'cultura', 'visita-guiada': 'cultura',
+  concerto: 'musica', musica: 'musica', 'musica-ao-vivo': 'musica', 'musica-portuguesa': 'musica',
+  'musica-filarmonica': 'musica', jazz: 'musica', fado: 'musica',
+};
+function categoryOf(e) {
+  const g = clean(e.genre).toLowerCase();
+  if (GENRE_CAT[g]) return GENRE_CAT[g];
+  for (const t of (e.tags || [])) {
+    const k = clean(t).toLowerCase();
+    if (TAG_CAT[k]) return TAG_CAT[k];
+  }
+  /* `festival` says nothing on its own — a literary festival is not a gig — so
+     it only resolves once the tags above have had their say. */
+  if (g === 'festival') return 'musica';
+  return null;
+}
 /* NoCartaz descriptions are raw HTML and sometimes embed third-party widgets
    (e.g. a Google Maps <iframe> carrying that site's API key). Strip all markup
    to plain text, decode the common entities, hard-redact anything that looks
@@ -70,6 +111,7 @@ const final = spread.concat(overflow).slice(0, CAP);
 
 const events = final.map(({ e, start }) => ({
   id: 'nc-' + e.id,
+  cat: categoryOf(e) || undefined,
   title: stripHtml(e.title, 160),
   desc: stripHtml(e.description),
   start: start.toISOString(),
@@ -85,5 +127,22 @@ const events = final.map(({ e, start }) => ({
 
 const out = { source: 'NoCartaz', generated: now.toISOString().slice(0, 10), count: events.length, events };
 writeFileSync(HERE + '/nocartaz.json', JSON.stringify(out));
+
+/* home.json — the same snapshot trimmed for the Home "Eventos perto" card,
+   which only ever shows the next two weeks and never renders `desc`. The full
+   file is ~700 KB of descriptions the home page throws away; this near-horizon
+   slice is a fraction of that and keeps the first load light. Home falls back
+   to nocartaz.json when this file is missing or has run past its horizon. */
+const HOME_DAYS = 45;
+const homeHorizon = today.getTime() + HOME_DAYS * 86400000;
+const homeEvents = events
+  .filter(e => Date.parse(e.start) <= homeHorizon)
+  .map(e => ({ title: e.title, start: e.start, district: e.district, url: e.url, free: e.free }));
+writeFileSync(HERE + '/home.json', JSON.stringify({
+  source: 'NoCartaz', generated: now.toISOString().slice(0, 10),
+  horizon: new Date(homeHorizon).toISOString().slice(0, 10),
+  count: homeEvents.length, events: homeEvents,
+}));
+console.log(`home.json: ${homeEvents.length} events (next ${HOME_DAYS} days)`);
 const dists = [...new Set(events.map(e => e.district))].filter(Boolean);
 console.log(`nocartaz.json: ${events.length} events, ${dists.length} districts (${dists.slice(0, 22).join(', ')})`);

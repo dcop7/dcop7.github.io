@@ -399,6 +399,10 @@ const HumorPage = (function () {
 .hm-search:focus{border-color:rgba(var(--accent-rgb),.4)}
 .hm-sec-ttl{display:flex;align-items:center;gap:.5rem;font-family:var(--font-head,inherit);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .7rem}
 .hm-daily{margin-bottom:1.6rem}
+/* A piada do dia é uma secção do hub, não uma página: alinha com o rótulo
+   "Piada do dia" e com os cartões abaixo em vez de flutuar ao centro. */
+.hm-daily .hm-single{max-width:760px;margin:0}
+.hm-daily .hm-joke.big{max-width:none;margin:0}
 .hm-hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem}
 .hm-gcard{display:flex;align-items:center;text-align:left;gap:.85rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;cursor:pointer;font:inherit;transition:all .18s;min-width:0}
 .hm-gcard:hover{border-color:rgba(var(--accent-rgb),.45);transform:translateY(-2px);box-shadow:var(--shadow-2, 0 4px 16px rgba(0,0,0,.28))}

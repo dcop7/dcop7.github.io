@@ -15,6 +15,7 @@ const I18n = (function () {
       'theme.title':'Theme','theme.dark':'Dark','theme.light':'Light',
       'hdr.textsize':'Text size','hdr.theme':'Change theme','hdr.lang.title':'Switch language',
       'hdr.menu':'Menu','hdr.fav.edit':'Edit favourites',
+      'a11y.skip':'Skip to content',
       'lp.all':'All','lp.title':'🔗 Useful Sites',
       'lp.count':'{n} sites in {m} categories',
       // Games
@@ -121,6 +122,7 @@ const I18n = (function () {
       'theme.title':'Tema','theme.dark':'Escuro','theme.light':'Claro',
       'hdr.textsize':'Tamanho do texto','hdr.theme':'Mudar tema','hdr.lang.title':'Mudar idioma',
       'hdr.menu':'Menu','hdr.fav.edit':'Editar favoritos',
+      'a11y.skip':'Saltar para o conteúdo',
       'lp.all':'Todos','lp.title':'🔗 Sites Úteis',
       'lp.count':'{n} sites em {m} categorias',
       // Games

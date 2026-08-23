@@ -468,7 +468,7 @@ body.light .uw-sk-lab { text-shadow: 0 1px 3px rgba(255,255,255,.8); }
    (.uw-day.uw-mm outranks the generic .uw-day chip rules) */
 .uw-mm, .uw-day.uw-mm { margin-left: auto; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: .15rem; font-size: .8rem; font-weight: 600; text-align: right; padding: .35rem .55rem; }
 .uw-mmrow { display: flex; flex-direction: column; gap: .15rem; }
-.uw-max { color: #ef4444; } .uw-min { color: #3b82f6; }
+.uw-max { color: var(--red-txt); } .uw-min { color: var(--blue-txt); }
 /* forecast: 5 compact chips side by side; detail pops ABOVE the row so the
    highlighted chip stays visible under the cursor */
 .uw-fc-wrap { position: relative; border-top: 1px solid var(--border); padding-top: .4rem; }
@@ -495,7 +495,7 @@ body.light .uw-sk-lab { text-shadow: 0 1px 3px rgba(255,255,255,.8); }
 .uf-p { margin-left: auto; font-size: .95rem; font-weight: 700; color: var(--text); white-space: nowrap; }
 .uf-p small { font-size: .62rem; font-weight: 500; color: var(--muted); }
 .uf-d { font-size: .68rem; font-weight: 700; min-width: 52px; text-align: right; }
-.uf-d.up { color: #ef4444; } .uf-d.dn { color: #22c55e; }
+.uf-d.up { color: var(--red-txt); } .uf-d.dn { color: var(--green-txt); }
 
 /* electricity */
 .ue-now { display: flex; align-items: baseline; gap: .4rem; }
@@ -553,7 +553,7 @@ body.light .uw-sk-lab { text-shadow: 0 1px 3px rgba(255,255,255,.8); }
 .he-item { display: flex; gap: .6rem; align-items: baseline; }
 .he-date { flex-shrink: 0; min-width: 2.8em; font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; }
 .he-loc { color: var(--muted); }
-.he-free { margin-left: .35rem; font-size: .62rem; font-weight: 700; color: #16a34a; background: rgba(22,163,74,.12); padding: .05rem .35rem; border-radius: 4px; }
+.he-free { margin-left: .35rem; font-size: .62rem; font-weight: 700; color: var(--green-txt); background: rgba(22,163,74,.12); padding: .05rem .35rem; border-radius: 4px; }
 .he-empty { font-size: .8rem; color: var(--muted); padding: .3rem 0 .5rem; line-height: 1.5; }
 
 /* ── Holidays modal ────────────────────────────────────────────── */

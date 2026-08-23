@@ -163,7 +163,7 @@
 .gh-daily-ico { font-size: 2.3rem; flex-shrink: 0; filter: drop-shadow(0 3px 8px rgba(0,0,0,.5)); }
 .gh-daily-body { flex: 1; min-width: 0; }
 .gh-daily-kicker { font-size: .67rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
-.gh-daily-name { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; color: #fff; }
+.gh-daily-name { font-family: var(--font-head); font-size: 1.05rem; font-weight: 800; color: var(--text); }
 .gh-daily-desc { font-size: .76rem; color: var(--text2); margin-top: .1rem; }
 .gh-daily-go { flex-shrink: 0; font-size: .82rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
 @media (max-width: 480px) { .gh-daily-desc, .gh-daily-go { display: none; } }

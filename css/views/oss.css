@@ -77,16 +77,16 @@
 .oss-card-owner { font-size: .72rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .oss-card-name { font-weight: 800; font-size: .96rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .oss-card-new { flex-shrink: 0; font-size: .6rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
-  color: #34d399; background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.35); border-radius: 5px; padding: .15rem .35rem; }
+  color: var(--green-txt); background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.35); border-radius: 5px; padding: .15rem .35rem; }
 .oss-card-desc { font-size: .8rem; color: var(--text2); line-height: 1.45; flex: 1;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .oss-card-foot { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; font-size: .74rem; color: var(--muted); }
 .oss-card-foot .oss-stat { display: inline-flex; align-items: center; gap: .25rem; }
 .oss-lang { display: inline-flex; align-items: center; gap: .3rem; }
 .oss-lang-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--d, #8b949e); flex-shrink: 0; }
-.oss-delta { color: #34d399; font-weight: 700; }
-.oss-delta.boot { color: #9ca3af; font-weight: 600; }
-.oss-hnbadge { color: #ff8a3d; font-weight: 700; }
+.oss-delta { color: var(--green-txt); font-weight: 700; }
+.oss-delta.boot { color: var(--muted); font-weight: 600; }
+.oss-hnbadge { color: var(--amber-txt); font-weight: 700; }
 .oss-card-tags { display: flex; gap: .3rem; flex-wrap: wrap; }
 .oss-tag { font-size: .66rem; color: var(--muted); background: var(--card2); border: 1px solid var(--border);
   border-radius: 5px; padding: .1rem .35rem; }

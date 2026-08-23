@@ -313,6 +313,16 @@ async function loadDailyContent() {
 /* ── HOME: daily discovery panel (data from data/home/today.json) ──── */
 function _escH(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
+/* Wikimedia thumbnails arrive from the API at 330px wide (~80-250 KB each) but
+   the discovery panel renders them at 46px. Rewriting the width segment of the
+   /thumb/ URL asks the CDN for the size we actually paint — same picture, a
+   fraction of the bytes. Non-Wikimedia URLs are returned untouched. */
+function _thumbW(url, w) {
+  const u = String(url || '');
+  if (!/\/thumb\//.test(u)) return u;
+  return u.replace(/\/(\d{2,4})px-/, (m, cur) => (+cur > w ? `/${w}px-` : m));
+}
+
 function updateDiscGreeting() {
   const gEl = document.getElementById('disc-greeting');
   if (!gEl) return;
@@ -404,12 +414,12 @@ async function renderHomeDiscovery() {
   }
   const evItem = it => {
     const yr = it.year ? `<b class="disc-yr">${it.year}</b>` : '';
-    const thumb = it.thumb ? `<img class="disc-thumb" src="${e(it.thumb)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+    const thumb = it.thumb ? `<img class="disc-thumb" src="${e(_thumbW(it.thumb, 120))}" alt="" loading="lazy" decoding="async" width="46" height="46" onerror="this.style.display='none'">` : '';
     const body = `${thumb}<span class="disc-item-txt">${yr}${e(it.text || it.title)}</span>`;
     return it.url ? `<a class="disc-item" href="${e(it.url)}" target="_blank" rel="noopener">${body}</a>` : `<div class="disc-item">${body}</div>`;
   };
   const person = p => {
-    const thumb = p.thumb ? `<img class="disc-thumb rnd" src="${e(p.thumb)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="disc-thumb rnd ph">🎂</span>`;
+    const thumb = p.thumb ? `<img class="disc-thumb rnd" src="${e(_thumbW(p.thumb, 120))}" alt="" loading="lazy" decoding="async" width="46" height="46" onerror="this.style.visibility='hidden'">` : `<span class="disc-thumb rnd ph">🎂</span>`;
     return `<a class="disc-person" href="${e(p.url || '#')}" target="_blank" rel="noopener">${thumb}<span class="disc-person-txt"><b>${e(p.title)}</b>${p.year ? ` <span class="disc-yr">· ${p.year}</span>` : ''}<small>${e(p.extract || p.text || '')}</small></span></a>`;
   };
   const listCard = (icon, title, items, renderer, cls, moreUrl, moreLbl) =>
@@ -425,7 +435,11 @@ async function renderHomeDiscovery() {
   ];
 
   panel.innerHTML = `<div class="disc-grid">${cards.join('')}</div>`;
-  renderHomeEvents();
+  /* The events card is the fourth tile and needs a JSON an order of magnitude
+     bigger than anything else on the page. Let the rest of the load finish
+     first — it appends itself when it arrives, so nothing above it moves. */
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(() => renderHomeEvents(), { timeout: 2500 });
+  else setTimeout(renderHomeEvents, 400);
 }
 document.addEventListener('DOMContentLoaded', renderHomeDiscovery);
 
@@ -461,8 +475,24 @@ async function renderHomeEvents() {
   if (wloc.lat != null) { lat = wloc.lat; lon = wloc.lon; cityName = wloc.name; }
   else try { const w = await fetchWeatherForLoc(wloc); if (w && w.lat != null) { lat = w.lat; lon = w.lon; cityName = w.city; } } catch (er) {}
 
+  /* home.json is the near-horizon slice of the same snapshot without the
+     descriptions this card never renders — a fraction of nocartaz.json, which
+     is the full five-month agenda. Fall back to the full file if the slim one
+     is missing or its horizon has already gone by. */
   try {
-    if (!_ncEvents) { const r = await fetch('data/events/nocartaz.json'); _ncEvents = r.ok ? await r.json() : []; }
+    if (!_ncEvents) {
+      let slim = null;
+      try {
+        const rh = await fetch('data/events/home.json');
+        if (rh.ok) {
+          const j = await rh.json();
+          const fresh = !j.horizon || Date.parse(j.horizon) > AppTime.today().getTime();
+          if (fresh && Array.isArray(j.events)) slim = j;
+        }
+      } catch (e) { /* fall through to the full snapshot */ }
+      if (slim) _ncEvents = slim;
+      else { const r = await fetch('data/events/nocartaz.json'); _ncEvents = r.ok ? await r.json() : []; }
+    }
     if (!_ncPlaces) { const r = await fetch('data/events/pt-places.json'); _ncPlaces = r.ok ? await r.json() : {}; }
   } catch (er) { return; }
 

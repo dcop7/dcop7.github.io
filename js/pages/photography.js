@@ -834,7 +834,7 @@ const PhotographyPage = (function () {
   function compDecisionsHTML(db) {
     const mods = (db && db.craft) || [];
     if (!mods.length) return '';
-    return `<div class="ph-section-title sub">🎚️ As decisões</div>
+    return `<h3 class="ph-section-title sub">🎚️ As decisões</h3>
       <p class="ph-section-sub">As regras acima dizem <b>onde</b> pôr as coisas no enquadramento. Estas dizem <b>de onde</b> fotografar — e mudam a fotografia mais do que qualquer definição da câmara. Cada uma reaparece aplicada dentro de cada género.</p>
       <div class="ph-craft-list">${mods.map(m => craftBlockHTML(m, '')).join('')}</div>`;
   }
@@ -843,7 +843,7 @@ const PhotographyPage = (function () {
     /* Dito uma vez, aqui em cima, e não repetido dentro de cada comparação:
        sem esta ressalva os pares leem-se como um julgamento de qualidade, que
        é exactamente o que não são. */
-    root.innerHTML = `<div class="ph-section-title">🖼️ Composição</div>
+    root.innerHTML = `<h2 class="ph-section-title">🖼️ Composição</h2>
       <p class="ph-section-sub">Como se organizam os elementos dentro do enquadramento — as regras clássicas, cada uma com exemplo, grelha e o que comunica. Toca para explorar.</p>
       <p class="ph-comp-note">⚖️ <b>Isto são ferramentas, não leis.</b> Em cada par, as duas fotografias são válidas: uma usa o princípio e a outra, na mesma cena, não o usa. Muita fotografia excelente ignora estas regras de propósito — saber usá-las é também saber quando as deixar de lado.</p>
       <div class="ph-comp-grid2"><p class="ph-section-sub">A carregar…</p></div>
@@ -1322,7 +1322,7 @@ const PhotographyPage = (function () {
           <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Cheatsheets: lente, definições e erros a evitar — numa página, a olhar</small></span>
           <span class="ph-field-cta-go">→</span>
         </button>
-        <div class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</div>
+        <h2 class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</h2>
         <p class="ph-section-sub">Escolhe o que vais fotografar — cada portal junta equipamento, definições, luz, composição, checklist e edição.</p>
         <div class="ph-genre-search">
           <input type="search" id="ph-genre-q" class="ph-genre-q" placeholder="Procurar género (praia, nevoeiro, retrato…)" aria-label="Procurar género" autocomplete="off">
@@ -2104,7 +2104,7 @@ const PhotographyPage = (function () {
         : (sec.tools || []).map(toolDetailHTML).join('');
 
       panel.innerHTML = `
-        <div class="ph-section-title">🎨 Edição</div>
+        <h2 class="ph-section-title">🎨 Edição</h2>
         <p class="ph-section-sub">Conceitos de edição que valem em qualquer programa. Primeiro o que a ferramenta faz e porquê; a equivalência em Lightroom, Camera Raw, darktable, RawTherapee, Snapseed e RapidRAW fica no fim de cada ficha.</p>
         <div class="ph-secnav" role="tablist" aria-label="Secções de edição">
           ${db.sections.map(s => `<button class="ph-secnav-btn${s.id === sec.id ? ' active' : ''}" role="tab" aria-selected="${s.id === sec.id}" data-esec="${s.id}">${s.icon} ${s.name}</button>`).join('')}
@@ -2260,7 +2260,7 @@ const PhotographyPage = (function () {
       let cat = cats.find(c => c.id === (sub || _eqCat)) || cats[0];
       _eqCat = cat.id;
       panel.innerHTML = `
-        <div class="ph-section-title">🎒 Equipamento</div>
+        <h2 class="ph-section-title">🎒 Equipamento</h2>
         <p class="ph-section-sub">Conceitos que continuam válidos daqui a dez anos, sem marcas nem modelos. Cada item explica o problema que resolve — e quando não vale a pena.</p>
         <div class="ph-secnav" role="tablist" aria-label="Categorias de equipamento">
           ${cats.map(c => `<button class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" role="tab" aria-selected="${c.id === cat.id}" data-eqcat="${c.id}">${c.icon} ${c.name}</button>`).join('')}
@@ -2289,7 +2289,7 @@ const PhotographyPage = (function () {
       // O equipamento pessoal fica no fim e claramente separado: é exemplo, não norma.
       if (cat.id === 'cameras' && db.mine) {
         panel.querySelector('#ph-eq-mine').innerHTML = `
-          <div class="ph-section-title" style="margin-top:1.5rem">🎒 ${db.mine.label}</div>
+          <h2 class="ph-section-title" style="margin-top:1.5rem">🎒 ${db.mine.label}</h2>
           <p class="ph-section-sub">O equipamento com que este portal é escrito. Aparece como exemplo concreto — as recomendações acima aplicam-se a qualquer câmara.</p>
           <div class="ph-mine-grid">${db.mine.bodies.map(b => `<div class="ph-mine-card">
             <div class="ph-mine-hd">${b.icon} ${b.name} <span class="ph-eq-tag">${(db.classes.find(c => c.id === b.class) || {}).name || ''}</span></div>
@@ -2368,7 +2368,7 @@ const PhotographyPage = (function () {
     return PhotoLearn.sequence({ mode: sq.mode, q: sq.q, nextLabel: sq.nextLabel, items, after: sq.after });
   }
 
-  const APR_HEAD = `<div class="ph-section-title">📖 Fundamentos</div>
+  const APR_HEAD = `<h2 class="ph-section-title">📖 Fundamentos</h2>
     <p class="ph-section-sub">Como a fotografia funciona tecnicamente. Cada conceito abre com uma ilustração e termina com onde o vais usar.</p>`;
   function buildFundamentos(box) {
     box.innerHTML = `${APR_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
@@ -2396,7 +2396,7 @@ const PhotographyPage = (function () {
      géneros (intenção, subtração, escala, momento, ambiguidade, série…).
      Cada princípio liga aos géneros onde mais se treina — é a ponte entre o
      capítulo geral e a prática concreta. */
-  const APR_VIS_HEAD = `<div class="ph-section-title">🧠 Visão</div>
+  const APR_VIS_HEAD = `<h2 class="ph-section-title">🧠 Visão</h2>
     <p class="ph-section-sub">Os princípios criativos que valem em qualquer género — o que se decide antes de haver definições. Cada um liga aos géneros onde melhor se treina.</p>`;
   function buildVisaoAprender(box) {
     box.innerHTML = `${APR_VIS_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
@@ -2456,7 +2456,7 @@ const PhotographyPage = (function () {
      campos "onde funciona" e "quando se gasta" deixam de ser avisos escritos
      e passam a ser demonstráveis — aplicar Noir a uma praia ao meio-dia
      explica o limite melhor do que qualquer parágrafo. */
-  const APR_LOOK_HEAD = `<div class="ph-section-title">🎨 Estilos</div>
+  const APR_LOOK_HEAD = `<h2 class="ph-section-title">🎨 Estilos</h2>
     <p class="ph-section-sub">Os looks que se reconhecem à distância — porque existem, o que dizem a quem vê e que decisões os criam. Cada um aplica-se ao vivo: mexe na dose e troca a fotografia para ver onde funciona e onde falha.</p>`;
 
   function lookBases(item, db) {
@@ -2521,7 +2521,7 @@ const PhotographyPage = (function () {
      foi tomada antes de haver ficheiro. Todas respondem a "o que é que isto
      comunica" antes de dizerem como se faz — é o que separa esta secção da
      secção Edição, que ensina os controlos. */
-  const APR_TEC_HEAD = `<div class="ph-section-title">🧪 Técnicas</div>
+  const APR_TEC_HEAD = `<h2 class="ph-section-title">🧪 Técnicas</h2>
     <p class="ph-section-sub">O que cada técnica DIZ a quem vê, e não só que cursor a produz. As de revelação aplicam-se aqui mesmo; as de captação comparam-se com o par de fotografias que as separa.</p>`;
 
   function buildTecnicas(box) {
@@ -2604,7 +2604,7 @@ const PhotographyPage = (function () {
      Os exercícios de escolha são GERADOS a partir dos pares de vision.json:
      28 géneros já têm o par memorável/banal e a explicação de cada lado, por
      isso duplicá-los aqui só criaria duas versões da mesma frase para manter. */
-  const APR_LER_HEAD = `<div class="ph-section-title">🔍 Ler fotografias</div>
+  const APR_LER_HEAD = `<h2 class="ph-section-title">🔍 Ler fotografias</h2>
     <p class="ph-section-sub">Perceber porque é que uma fotografia funciona ensina mais depressa do que tirar outra. Aqui aponta-se, escolhe-se e corta-se — não se lê uma análise.</p>`;
 
   let _lerSeed = 0;
@@ -2644,13 +2644,13 @@ const PhotographyPage = (function () {
             drill: PhotoLearn.drill({ key: 'ler-metodo', t: m.drill }),
           })}
         </section>
-        <div class="ph-section-title sub">🔬 Fotografias para analisar</div>
+        <h3 class="ph-section-title sub">🔬 Fotografias para analisar</h3>
         <p class="ph-section-sub">Cada uma esconde as suas decisões atrás de pontos. Responde à pergunta antes de os tocar.</p>
         <div class="ph-learn-grid" data-analyses></div>
-        <div class="ph-section-title sub">✂️ Treinar o corte</div>
+        <h3 class="ph-section-title sub">✂️ Treinar o corte</h3>
         <p class="ph-section-sub">A mesma fotografia com cortes diferentes é outra fotografia. Escolhe e vê o que fica.</p>
         <div data-crops></div>
-        <div class="ph-section-title sub">👁️ Treinar o olho</div>
+        <h3 class="ph-section-title sub">👁️ Treinar o olho</h3>
         <p class="ph-section-sub">Duas fotografias do mesmo género: uma com intenção, outra tecnicamente correta. Escolhe antes de ver a resposta.</p>
         <div data-eye></div>`;
 
@@ -2780,7 +2780,7 @@ const PhotographyPage = (function () {
               diferentes provariam nada; o cursor sobre a mesma imagem prova tudo.
        pair — dominante, ponto de atenção, relação e paleta são propriedades da
               CENA. Não se demonstram com um cursor, porque não se resolvem com um. */
-  const APR_COR_HEAD = `<div class="ph-section-title">🌈 Cores</div>
+  const APR_COR_HEAD = `<h2 class="ph-section-title">🌈 Cores</h2>
     <p class="ph-section-sub">O que a cor faz a quem vê — e porque é que um fotógrafo escolhe uma relação de cor em vez de outra. Os controlos que produzem estes resultados vivem na secção Edição; aqui trata-se de decidir.</p>`;
 
   function colourLessonHTML(l, db) {
@@ -2827,7 +2827,7 @@ const PhotographyPage = (function () {
     if (!ch) return '';
     const look = id => (db.looks || []).find(x => x.id === id);
     const et = id => editToolIndex()[id];
-    return `<div class="ph-section-title sub">🔗 ${ch.title}</div>
+    return `<h3 class="ph-section-title sub">🔗 ${ch.title}</h3>
       <p class="ph-section-sub">${ch.sub}</p>
       <div class="ph-chain">${(ch.rows || []).map(r => {
         const l = look(r.look), t = (et(r.etool) || {}).tool;
@@ -2867,7 +2867,7 @@ const PhotographyPage = (function () {
       });
       const extra = document.createElement('div');
       extra.innerHTML = `${colourChainHTML(db.colourChain, db)}
-        <div class="ph-section-title sub">🎡 Roda de cores</div>
+        <h3 class="ph-section-title sub">🎡 Roda de cores</h3>
         <p class="ph-section-sub">A ferramenta para experimentar as relações acima: arrasta no anel para o tom e no quadrado interior para saturação e luminosidade.</p>
         <div id="ph-cw-inner"></div>`;
       box.appendChild(extra);

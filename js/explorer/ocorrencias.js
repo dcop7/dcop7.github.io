@@ -1389,10 +1389,10 @@ const OcorrenciasPage = (function () {
     view.innerHTML = `
       <div class="oc-shell">
         <div class="oc-header">
-          <div class="oc-header-title">
-            <span class="oc-header-title-icon">🚨</span>
+          <h1 class="oc-header-title">
+            <span class="oc-header-title-icon" aria-hidden="true">🚨</span>
             Ocorrências Portugal
-          </div>
+          </h1>
           <div class="oc-header-meta">
             <div class="oc-status-dot" id="oc-status-dot"></div>
             <span class="oc-last-update">A carregar…</span>

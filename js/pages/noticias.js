@@ -120,7 +120,11 @@ const NoticiasPage = (function () {
   function articleCard(a) {
     const top = a.topics && a.topics[0] || _topic;
     const chips = (a.topics || []).map(t => `<span class="nw-chip" style="--tc:${tColor(t)}">${tIcon(t)} ${esc(tLabel(t))}</span>`).join('');
-    const thumb = a.image ? `<a class="nw-c-thumb" href="${esc(a.url)}" target="_blank" rel="noopener"><img src="${esc(a.image)}" alt="" loading="lazy" onerror="this.closest('.nw-c-thumb').remove()"></a>` : '';
+    /* The thumbnail is a third link to the same article as the title and "Ler":
+       decorative, so keep it clickable with the mouse but out of the tab order
+       and out of the accessibility tree — otherwise every card announces an
+       unnamed link and costs an extra tab stop. */
+    const thumb = a.image ? `<a class="nw-c-thumb" href="${esc(a.url)}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="${esc(a.image)}" alt="" loading="lazy" onerror="this.closest('.nw-c-thumb').remove()"></a>` : '';
     return `<article class="nw-card${a.image ? ' nw-has-img' : ''}" style="--tc:${tColor(top)}">
       ${thumb}
       <div class="nw-c-body">

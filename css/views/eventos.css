@@ -167,17 +167,24 @@
   background-size: cover; background-position: center;
   background-color: var(--card2);
 }
-.ev-c-img-ph {
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.6rem;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--cc) 22%, transparent), color-mix(in srgb, var(--cc) 8%, transparent));
+/* The category hue doubles as the label colour. On the light theme those hues
+   (teal, amber, green…) land around 2.5:1 on a white card — darkening them
+   keeps the identity and clears AA. Shapes painted in --cc are left alone. */
+body.light .ev-c-cat { color: color-mix(in srgb, var(--cc, var(--accent)) 65%, #000); }
+
+/* Category cover: a generated photograph washed with the category hue so the
+   colour still does the sorting at a glance and the tone matches the real
+   provider thumbnails standing next to it. */
+.ev-c-img-cat { position: relative; background-size: cover; background-position: center; }
+.ev-c-img-cat::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--cc) 40%, transparent), rgba(8,12,20,.32) 70%);
 }
 .ev-card-c .ev-c-img { height: 74px; }
 .ev-card-c .ev-c-body { padding: .45rem .5rem .5rem; gap: .22rem; }
 .ev-card-c .ev-c-cat { font-size: .6rem; }
 .ev-card-c .ev-c-title { font-size: .8rem; -webkit-line-clamp: 2; }
 .ev-card-c .ev-c-meta { font-size: .68rem; }
-.ev-card-c .ev-c-img-ph { font-size: 1.7rem; }
 .ev-c-body { padding: .7rem .8rem .65rem; display: flex; flex-direction: column; gap: .35rem; flex: 1; }
 .ev-c-cat {
   display: inline-flex; align-items: center; gap: .3rem;
@@ -196,7 +203,7 @@
 .ev-c-lead { font-size: .8rem; color: var(--muted); margin: .1rem 0 0; line-height: 1.35;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .ev-c-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: .35rem; }
-.ev-c-free { color: var(--green); font-weight: 700; font-size: .76rem; }
+.ev-c-free { color: var(--green-txt); font-weight: 700; font-size: .76rem; }
 .ev-c-price { color: var(--text2); font-weight: 600; font-size: .76rem; }
 .ev-c-src { opacity: .6; font-size: .8rem; }
 

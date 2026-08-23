@@ -40,6 +40,7 @@
 }
 
 .oc-header-title {
+  margin: 0;                 /* it is the view's <h1> */
   display: flex;
   align-items: center;
   gap: .5rem;
@@ -614,6 +615,11 @@
 .oc-stat-card.eq .oc-stat-num   { color: #f97316; }
 .oc-stat-card.wx .oc-stat-num   { color: #38bdf8; }
 .oc-stat-card.fire .oc-stat-num { color: #ef4444; }
+/* Same hues, darkened for the light theme's white stat cards (sky-400 as a
+   number on white is 2.1:1). */
+body.light .oc-stat-card.eq .oc-stat-num   { color: #b4530a; }
+body.light .oc-stat-card.wx .oc-stat-num   { color: #0a6f97; }
+body.light .oc-stat-card.fire .oc-stat-num { color: var(--red-txt); }
 .oc-stat-card.all .oc-stat-num  { color: var(--text); }
 .oc-stat-label {
   font-size: .65rem;

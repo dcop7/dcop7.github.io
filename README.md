@@ -217,6 +217,17 @@ exemplo e da grelha que já lá estavam.
 - UI kit unificado em `components.css`: `.btn`, `.chip`, `.seg`, `.page-head`, `.empty-state`.
 - Ícones de chrome **exclusivamente SVG** (sem emoji na navegação); favicon SVG path-based (D dourado + planeta).
 - Temas: light via `body.light`; acentos via `body.theme-*` (blue, purple, green, amber, red, cyan, terminal).
+- **Cor como texto vs cor como forma.** As cores de estado (`--red`, `--green`,
+  `--amber`) e o acento de cada secção (`--pg-accent`) estão afinados para brilhar
+  nas superfícies escuras e, escritos sobre um cartão branco, caem para 2–3:1.
+  Por isso existem tokens paralelos só para TEXTO — `--red-txt`, `--green-txt`,
+  `--amber-txt`, `--blue-txt`, `--accent2-txt` e um bloco `body.light #view-*`
+  que redefine cada `--pg-accent` no mesmo tom, mais escuro. Regra: **usa o token
+  `-txt` quando a cor É o texto; mantém o token normal em barras, pontos, bordas
+  e gráficos**, onde o contraste de leitura não se aplica.
+- **Utilitários de acessibilidade** em `components.css`: `.sr-only` (título das
+  secções em app-shell que não têm espaço para um cabeçalho visível) e
+  `.skip-link` (a sidebar põe ~20 itens antes do conteúdo em todas as rotas).
 - Fontes: Space Grotesk (títulos), Inter (UI), JetBrains Mono (código/timers).
 
 ### I18n
@@ -238,13 +249,25 @@ O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs
 | `home-refresh.yml` | `data/home/build-home.mjs` | `data/home/today.json` (efemérides, nascimentos, destaque, citação) | diário ~07:20 Lisboa + catch-ups |
 | `utility-refresh.yml` | `data/home/build-utility.mjs` | `data/home/utility.json` (meteo, combustíveis DGEG, eletricidade indexada, feriados) | 2×/dia + catch-up |
 | `news-refresh.yml` | `data/news/build-news.mjs` | `data/news/topic-*.json` (a partir de `feeds.opml`) | a cada 4h |
-| `events-refresh.yml` | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` | diário |
+| `events-refresh.yml` | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` + `data/events/home.json` | diário |
 | `f1-refresh.yml` | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | diário, pós-corridas |
 | `oss-refresh.yml` | `data/oss/build-oss.mjs` | `data/oss/index.json` + `projects.json` | diário |
 | `discovery-refresh.yml` | `data/discovery/gaming/build-gaming.mjs` | deals de gaming / jogos grátis | a cada 6h |
 | `ocorrencias-refresh.yml` | `data/ocorrencias/build-ocorrencias.mjs` | `data/ocorrencias/ocorrencias.json` (ocorrências ANEPC ativas via fogos.pt — o fogos.pt fechou o CORS a origens externas, por isso o browser usa este snapshot same-origin como fallback sem chave) | a cada 15 min |
 
 **Regra crítica de agendamento:** o cron do GitHub atrasa minutos a *horas*. Os workflows **nunca** testam a hora do dia como gate (um `== 07h` falhou silenciosamente durante semanas). Em vez disso, o gate é o próprio snapshot ("o `today.json` já é de hoje, Europa/Lisboa?") e vários crons espalhados pelo dia funcionam como retries — o primeiro que dispara faz o trabalho, os restantes no-op. Commits de refresh usam `[skip ci]`.
+
+O `build-nocartaz.mjs` escreve **dois** ficheiros e decide a **categoria no build**:
+
+- `nocartaz.json` — agenda completa (~5 meses) usada pela secção Eventos.
+- `home.json` — a mesma agenda cortada aos 45 dias e sem `desc`, para o cartão
+  «Eventos perto» da Home, que só mostra duas semanas e nunca pinta a descrição.
+  A Home cai para o ficheiro completo se este faltar ou se o `horizon` já passou.
+- `cat` — a categoria sai do `genre`/`tags` da própria fonte em vez de ser
+  adivinhada no browser a partir do título. Sem isto 61% da agenda caía em
+  «Outros» (um concerto anunciado como «Bryan Adams» não tem palavra-chave
+  nenhuma) e o filtro de categorias era decorativo; com isto sobram ~3%, que o
+  cliente ainda tenta classificar por palavras-chave.
 
 Dados **curados offline** (não têm workflow): `data/explore/*.json` (knowledge base de temas), `data/worlddata/` (pipeline OWID+GeoNames), `data/humor/`, `data/galaxy/`, `data/anatomy/`, `quizzes/`, `data/timeline.json`, GeoJSON de Portugal e do mundo. Os scripts em `tools/` (anatomy, explore, f1) fazem a curadoria/geração local.
 
@@ -339,6 +362,28 @@ animation render, soft ambient lighting, instructional exercise demonstration, c
 **Negative prompt base:** `photo, photograph, photorealistic, realistic skin texture, text, watermark, words, letters, logo, brand, nike, adidas, blurry, low quality, lowres, ugly, deformed, extra limbs, extra arms, three arms, extra legs, bad anatomy, malformed hands, cropped, cut off, out of frame, second person, duplicate person, nude, shirtless` — acrescentar negativos de pose conforme o movimento (ex.: `arms raised, hands behind head` quando os braços devem ficar em baixo; `both arms raised, two hands on head` quando só um braço sobe). Descrever a pose com termos inequívocos (e nomes de yoga quando existam: balasana, bhujangasana, baddha konasana) e gerar 3+ seeds, escolhendo a melhor. Comprimir para JPEG ~60-90 KB antes de commitar.
 
 **Poses difíceis → ControlNet OpenPose** (instalado 16 jul 2026): quando o prompt não chega (ex.: segurar o tornozelo atrás, braço cruzado sobre o peito), usar o ControlNet `controlnet-openpose-sdxl-xinsir.safetensors` (em `D:/AI/StabilityMatrix/Data/Models/ControlNet`, formato diffusers — o ComfyUI carrega-o nativamente). Fluxo: desenhar o esqueleto OpenPose COCO-18 (cores/ligações padrão) com `C:\tmp\fit-skeletons.cjs` (coordenadas por articulação; fundo preto, traços sólidos) e gerar com `C:\tmp\gen-cn.cjs` (grafo `ControlNetLoader`→`ControlNetApplyAdvanced` entre os CLIPTextEncode e o KSampler; **strength 1.0, end_percent 0.9** — valores mais baixos são ignorados pelo xinsir). Poses deitadas vistas de lado (ex.: figura-4 no chão) continuam pouco fiáveis — preferir variantes em pé/joelhos ou knee-hug.
+
+### Capas das secções (`assets/{explorer,games,quiz,events}/*.jpg`)
+
+Imagens geradas localmente pelo mesmo ComfyUI do photogen, usadas como fundo dos
+cartões de Explorar, Jogos, Quizzes e Eventos. Linguagem visual comum:
+**fotografia cinematográfica escura, sem texto, o assunto legível em miniatura**
+— o cartão põe-lhes por cima um gradiente e o título.
+
+- **Eventos** tem uma capa por categoria (`assets/events/<categoria>.jpg`). A
+  maioria dos eventos do snapshot não traz imagem e os cartões mostravam todos o
+  mesmo emoji num quadrado tingido; a capa dá assunto ao cartão sem inventar
+  conteúdo, porque a categoria continua escrita ao lado.
+- **Peso.** `tools/photogen/optimize-covers.mjs` recomprime estas pastas para o
+  tamanho a que são de facto pintadas (mozjpeg q78; os quizzes descem para 448 px
+  porque o cartão tem ~115). É idempotente — correr depois de gerar capas novas.
+  O lote original estava gravado quase sem compressão: 33 MB de JPEG para pintar
+  miniaturas, agora 2,4 MB.
+
+```bash
+node tools/photogen/optimize-covers.mjs --dry   # relatório
+node tools/photogen/optimize-covers.mjs         # aplica
+```
 
 ### Assets da Fotografia (`tools/photogen`, dev-only)
 `node tools/photogen/generate.mjs --group <grupo>` gera as imagens estáticas da

@@ -1891,6 +1891,7 @@ const CheatsheetsPage = (function () {
     };
 
     page.innerHTML = `
+      <h1 class="sr-only">${_t('Cheatsheets', 'Cheatsheets')}</h1>
       <div class="cs-layout">
         <div class="cs-sidebar">
           <div class="cs-search-wrap">
