@@ -12,21 +12,13 @@
 .nw-sub { margin: .25rem 0 0; color: var(--muted); font-size: .92rem; max-width: 64ch; }
 .nw-updated { color: var(--muted); font-size: .82rem; font-weight: 600; white-space: nowrap; }
 
-/* ── TOPIC TABS ── */
-.nw-tabs { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .2rem; scrollbar-width: none; -ms-overflow-style: none; }
-.nw-tabs::-webkit-scrollbar { display: none; height: 0; }
-.nw-tab {
-  display: inline-flex; align-items: center; gap: .35rem;
-  padding: .5rem .85rem; border-radius: 999px;
-  border: 1px solid var(--border); background: var(--card-solid);
-  color: var(--text2); font-size: .86rem; font-weight: 600; white-space: nowrap; cursor: pointer;
-  transition: all .15s var(--ease);
-}
-.nw-tab:hover { background: var(--glass-hover); }
-.nw-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-.nw-tab small { opacity: .7; font-weight: 700; }
-.nw-tab.active small { opacity: .85; }
-.nw-tab-sep { flex: 0 0 auto; align-self: center; width: 1px; height: 22px; background: var(--border2); margin: 0 .3rem; }
+/* The old pill-shaped TOPIC TABS block lived here. It was dead CSS — the
+   topic list moved into the left rail (.nw-topic) long ago and nothing
+   emitted .nw-tab any more — but it still matched the section tab strip
+   added below, which reuses the same class names. The result was the
+   strip's `background: var(--accent)` (indigo) showing under the strip's
+   own `color: var(--pg-accent)` (purple): purple text on an indigo pill.
+   Deleted rather than renamed, so the collision cannot come back. */
 
 /* ── TOOLBAR ── */
 /* ══════════ VISTAS DA SECÇÃO (Destaques · Todas) ══════════
@@ -50,7 +42,16 @@
   transition: color var(--ease), border-color var(--ease), background var(--ease);
 }
 .nw-tab:hover { color: var(--text); background: var(--card2); }
-.nw-tab.active { color: var(--pg-accent); border-bottom-color: var(--pg-accent); }
+/* O separador ativo usa o dourado da marca — o mesmo do anel do favicon —
+   em vez do acento teal da secção. Dá-lhe um papel próprio (onde estou)
+   distinto do resto do acento (o que é importante), e é a única coisa na
+   página pintada de dourado, por isso não compete com nada. */
+/* --nw-tab-on vive em tokens.css, ao lado dos acentos por secção, para o
+   override de tema claro seguir exatamente o mesmo padrão de todos os
+   outros. O dourado é o do anel do favicon; no tema claro escurece para
+   #8a6114, senão fica em 1.8:1 contra o fundo — muito abaixo de AA. */
+.nw-tab.active { color: var(--nw-tab-on); border-bottom-color: var(--nw-tab-on); }
+.nw-tab.active:focus-visible { outline-color: var(--nw-tab-on); }
 .nw-tab:focus-visible { outline: 2px solid var(--pg-accent); outline-offset: -2px; }
 
 .nw-toolbar { display: flex; gap: .55rem; align-items: center; flex-wrap: wrap; }
