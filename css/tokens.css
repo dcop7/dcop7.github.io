@@ -130,6 +130,7 @@ body.density-list    { --den: .58; }
    via --pg-accent; the colours mirror the sidebar icon palette. */
 #view-explorer    { --pg-accent: #38bdf8; --pg-accent-rgb: 56,189,248; }
 #view-noticias    { --pg-accent: #c084fc; --pg-accent-rgb: 192,132,252; }
+#view-noticias-ai { --pg-accent: #38bdf8; --pg-accent-rgb: 56,189,248; }
 #view-eventos     { --pg-accent: #2dd4bf; --pg-accent-rgb: 45,212,191; }
 #view-cidadao     { --pg-accent: #10b981; --pg-accent-rgb: 16,185,129; }
 #view-ocorrencias { --pg-accent: #f59e0b; --pg-accent-rgb: 245,158,11; }
@@ -152,6 +153,7 @@ body.density-list    { --den: .58; }
    once, and the soft rgba() tints just get a touch deeper. */
 body.light #view-explorer    { --pg-accent: #24799f; --pg-accent-rgb: 36,121,159; }
 body.light #view-noticias    { --pg-accent: #8a5fb5; --pg-accent-rgb: 138,95,181; }
+body.light #view-noticias-ai { --pg-accent: #0369a1; --pg-accent-rgb: 3,105,161; }
 body.light #view-eventos     { --pg-accent: #1b7f73; --pg-accent-rgb: 27,127,115; }
 body.light #view-cidadao     { --pg-accent: #0b815a; --pg-accent-rgb: 11,129,90; }
 body.light #view-ocorrencias { --pg-accent: #9d6507; --pg-accent-rgb: 157,101,7; }

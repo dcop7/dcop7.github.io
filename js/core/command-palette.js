@@ -9,6 +9,7 @@ const CommandPalette = (function () {
     { name: 'Início',            desc: 'Painel do dia',                    icon: '🏠', type: 'nav', action: () => Nav.go('home') },
     { name: 'Explorar',          desc: 'Terra, Espaço e Corpo Humano',     icon: '🌍', type: 'nav', action: () => Nav.go('explorer') },
     { name: 'Notícias',          desc: 'Feeds RSS por tema',               icon: '📰', type: 'nav', action: () => Nav.go('noticias') },
+    { name: 'Notícias AI',       desc: 'Edição diária curada por IA',      icon: '✨', type: 'nav', action: () => Nav.go('noticias-ai') },
     { name: 'Eventos',           desc: 'Eventos em Portugal',              icon: '📅', type: 'nav', action: () => Nav.go('eventos') },
     { name: 'Cidadão',           desc: 'Prazos, apoios e novidades do Estado', icon: '🇵🇹', type: 'nav', action: () => Nav.go('cidadao') },
     { name: 'Ocorrências PT',    desc: 'Sismos, incêndios e avisos',       icon: '🚨', type: 'nav', action: () => Nav.go('ocorrencias') },

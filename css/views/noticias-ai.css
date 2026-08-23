@@ -1,0 +1,169 @@
+/* ══════════════ NOTÍCIAS AI (V2) — edição diária curada ══════════════
+   Usa o kit unificado (components.css): .page-head/.seg/.btn/.empty-state.
+   Acento da página: #view-noticias-ai em tokens.css.
+
+   Prioridade desta primeira versão é inspecionar a qualidade editorial,
+   não impressionar: cartões largos, um por linha, com a hierarquia
+   ordem → título → resumo → porque importa → fontes. Mobile-first. */
+
+.na-wrap { max-width: 940px; margin: 0 auto; }
+
+.na-loading { color: var(--muted); padding: var(--sp-7) 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: .6rem; }
+.na-spin {
+  width: 1rem; height: 1rem; border-radius: 50%;
+  border: 2px solid var(--border2); border-top-color: var(--pg-accent);
+  animation: na-spin .7s linear infinite;
+}
+@keyframes na-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .na-spin { animation: none; } }
+
+/* ── linha de meta (data da edição) ── */
+.na-meta {
+  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  font-size: var(--fs-sm); color: var(--muted);
+  margin-bottom: calc(var(--sp-4) * var(--den));
+}
+.na-day { color: var(--text2); font-weight: 600; }
+.na-dot { opacity: .5; }
+.na-stale {
+  font-size: var(--fs-xs); font-weight: 700; padding: .12rem .5rem; border-radius: 999px;
+  background: rgba(245, 158, 11, .16); color: var(--amber-txt);
+}
+
+/* ── seletor de temas ── */
+.na-themes { margin-bottom: calc(var(--sp-5) * var(--den)); }
+.na-theme { display: inline-flex; align-items: center; gap: .35rem; }
+.na-theme-c {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.3em; padding: 0 .3em; margin-left: .1rem;
+  font-size: .72em; font-weight: 800; line-height: 1.5;
+  border-radius: 999px; background: var(--card2); color: var(--muted);
+}
+.na-theme.active .na-theme-c { background: rgba(var(--pg-accent-rgb), .2); color: var(--pg-accent); }
+
+/* ── nota de contexto acima da lista ── */
+.na-note {
+  font-size: var(--fs-sm); color: var(--muted);
+  margin: 0 0 calc(var(--sp-4) * var(--den));
+  padding-left: .1rem;
+}
+
+/* ── cartão de história ── */
+.na-grid { display: flex; flex-direction: column; gap: calc(var(--sp-4) * var(--den)); }
+
+.na-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.1rem minmax(0, 1fr);
+  gap: 0 .85rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+  transition: border-color var(--ease), background var(--ease);
+}
+.na-card:hover { border-color: var(--border2); background: var(--card2); }
+
+/* ordem editorial — informação, não decoração: é o ranking da IA */
+.na-rank {
+  font-family: var(--font-head); font-size: 1.25rem; font-weight: 800;
+  line-height: 1; color: var(--pg-accent); opacity: .55;
+  font-variant-numeric: tabular-nums; padding-top: .1rem;
+}
+
+.na-thumb {
+  grid-column: 2; display: block; margin-bottom: var(--sp-3);
+  border-radius: var(--radius-sm); overflow: hidden; line-height: 0;
+  border: 1px solid var(--border);
+}
+.na-thumb img { width: 100%; height: 150px; object-fit: cover; display: block; }
+
+.na-body { grid-column: 2; min-width: 0; }
+
+/* ── barra de sinais: medido à esquerda, opinião da IA a seguir ── */
+.na-top {
+  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  font-size: var(--fs-xs); margin-bottom: .45rem;
+}
+.na-cov {
+  display: inline-flex; align-items: center; gap: .25rem;
+  font-weight: 700; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border);
+  padding: .12rem .5rem; border-radius: 999px;
+}
+.na-cov--one { color: var(--muted); font-weight: 600; }
+
+/* A pontuação é um juízo do modelo: fica visualmente distinta do sinal
+   medido (contorno tracejado) e sempre acompanhada da etiqueta, para
+   nunca se ler como uma medição de popularidade. */
+.na-score {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .12rem .5rem .12rem .35rem; border-radius: 999px;
+  border: 1px dashed rgba(var(--pg-accent-rgb), .45);
+  background: rgba(var(--pg-accent-rgb), .08);
+}
+.na-score-n { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--pg-accent); }
+.na-score-l { color: var(--muted); font-weight: 600; }
+.na-score--hi { border-color: rgba(var(--pg-accent-rgb), .8); background: rgba(var(--pg-accent-rgb), .16); }
+.na-score--lo { opacity: .78; }
+
+.na-time { color: var(--muted); margin-left: auto; }
+
+/* ── texto ── */
+.na-title {
+  font-family: var(--font-head); font-size: var(--fs-lg); font-weight: 700;
+  line-height: 1.28; letter-spacing: -.01em; margin: 0 0 .4rem; text-wrap: balance;
+}
+.na-title a { color: var(--text); text-decoration: none; }
+.na-title a:hover { color: var(--pg-accent); text-decoration: underline; text-underline-offset: 2px; }
+
+.na-sum { font-size: var(--fs-sm); color: var(--text2); line-height: 1.6; margin: 0 0 .5rem; max-width: 68ch; }
+
+.na-why {
+  font-size: var(--fs-sm); color: var(--muted); line-height: 1.55;
+  margin: 0 0 .7rem; padding-left: .7rem;
+  border-left: 2px solid rgba(var(--pg-accent-rgb), .35);
+  max-width: 68ch;
+}
+.na-why-l { font-weight: 700; color: var(--text2); }
+.na-why-l::after { content: ' ·'; opacity: .5; }
+
+/* ── fontes: sempre visíveis e sempre clicáveis ── */
+.na-srcs { display: flex; flex-wrap: wrap; gap: .35rem; }
+.na-src {
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-size: var(--fs-xs); font-weight: 600; color: var(--muted);
+  background: var(--card2); border: 1px solid var(--border);
+  padding: .2rem .55rem; border-radius: 999px;
+  text-decoration: none; transition: all var(--ease); max-width: 100%;
+}
+.na-src span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.na-src img { width: 13px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+.na-src:hover { color: var(--pg-accent); border-color: rgba(var(--pg-accent-rgb), .45); }
+.na-src--lead { color: var(--text2); }
+
+.na-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
+.na-tag { font-size: var(--fs-xs); color: var(--muted); opacity: .75; }
+
+/* ── estados vazios ── */
+.na-empty { margin: var(--sp-6) 0; }
+.na-empty p { margin: .3rem 0; max-width: 52ch; }
+
+/* ── rodapé explicativo (transparência sobre o método) ── */
+.na-foot {
+  margin-top: calc(var(--sp-6) * var(--den));
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-xs); color: var(--muted); line-height: 1.6;
+}
+.na-foot p { max-width: 78ch; margin: 0; }
+.na-foot strong { color: var(--text2); }
+
+/* ── mobile ── */
+@media (max-width: 620px) {
+  .na-card { grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0 .6rem; padding: var(--sp-3); }
+  .na-rank { font-size: 1rem; }
+  .na-thumb img { height: 120px; }
+  .na-time { margin-left: 0; }
+  .na-title { font-size: var(--fs-md); }
+}

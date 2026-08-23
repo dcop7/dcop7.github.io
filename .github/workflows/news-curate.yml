@@ -1,0 +1,85 @@
+name: Refresh Notícias AI
+
+# Notícias AI (V2) — daily editorial pass over the articles the RSS
+# pipeline already collected. Reads data/news/topic-*.json from the repo,
+# asks Groq to group/rank/summarise, validates, and commits
+# data/news/curated/*. The browser only ever reads that JSON: GROQ_KEY
+# lives in GitHub Secrets and never leaves this runner.
+#
+# ISOLATION: this workflow is deliberately separate from news-refresh.yml.
+# It never writes to data/news/topic-*.json or index.json, so a Groq
+# outage, a quota exhaustion or a bad model day cannot affect the
+# existing Notícias page — that page does not read data/news/curated/ at
+# all. If curation fails, build-curated.mjs exits non-zero WITHOUT
+# writing, there is no diff, and yesterday's curated data stays live.
+#
+# Scheduling note: GitHub delays cron runs by minutes to HOURS, so the
+# gate must never test the hour of day (an "== 08h" gate silently
+# skipped every run for weeks elsewhere in this repo). Instead we gate
+# on the snapshot itself: run whenever curated/latest.json is not yet
+# from today (Europe/Lisbon). The later crons are catch-up retries;
+# whichever fires first does the work and the rest no-op.
+
+on:
+  schedule:
+    - cron: '35 7 * * *'      # target ~08:35 Lisbon (summer), after news-refresh 04:00/08:00
+    - cron: '35 8 * * *'      # target ~08:35 Lisbon (winter)
+    - cron: '15 12 * * *'     # catch-up
+    - cron: '15 17 * * *'     # last-chance catch-up
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-curate
+  cancel-in-progress: false
+
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Skip if today's curation already exists (Europe/Lisbon)
+        id: gate
+        run: |
+          want="$(TZ=Europe/Lisbon date +%F)"
+          have="$(jq -r '.date // empty' data/news/curated/latest.json 2>/dev/null || true)"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$have" = "$want" ]; then
+            echo "Already curated for $have — nothing to do."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v7
+        if: steps.gate.outputs.go == 'true'
+        with:
+          node-version: '24'
+
+      - name: Curate the day's stories → static JSON
+        if: steps.gate.outputs.go == 'true'
+        env:
+          # Free-tier Groq key. Secret only — never echoed, never written
+          # into the generated JSON, never shipped to the browser.
+          GROQ_KEY: ${{ secrets.GROQ_KEY }}
+        run: node data/news/build-curated.mjs
+
+      - name: Validate the committed result against the schema
+        if: steps.gate.outputs.go == 'true'
+        run: node data/news/build-curated.mjs --check
+
+      - name: Commit if the curation changed
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          if [ -n "$(git status --porcelain data/news/curated)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/news/curated
+            git commit -m "chore(noticias-ai): refresh curadoria diária [skip ci]"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No curation changes — nothing to commit."
+          fi
