@@ -500,7 +500,7 @@ const PhotoLightArt = (function () {
   const PATTERNS = [
     /* ── um só foco ── */
     {
-      id: 'rembrandt', name: 'Rembrandt', family: 'estudio', star: 1,
+      id: 'rembrandt', name: 'Rembrandt', family: 'estudio', star: 1, photo: 'lp-rembrandt',
       kit: '1 flash · 1 tripé · softbox 60cm',
       how: 'Luz a 45° do sujeito e bem acima da altura dos olhos, a apontar ligeiramente para baixo.',
       tell: 'Um triângulo de luz na bochecha do lado escuro, logo abaixo do olho — nem maior que o olho, nem a chegar ao queixo.',
@@ -510,7 +510,7 @@ const PhotoLightArt = (function () {
       nose: 'rembrandt', tri: 1, edge: 0.45, fill: 0.15,
     },
     {
-      id: 'loop', name: 'Loop', family: 'estudio', star: 1,
+      id: 'loop', name: 'Loop', family: 'estudio', star: 1, photo: 'lp-loop',
       kit: '1 flash · 1 tripé · softbox 60cm',
       how: 'Luz a 30° e só um pouco acima dos olhos. É o Rembrandt «mais fechado».',
       tell: 'Uma sombra pequena e oval do nariz, virada para o canto da boca — sem tocar na sombra da bochecha.',
@@ -520,7 +520,7 @@ const PhotoLightArt = (function () {
       nose: 'loop', edge: 0.6, fill: 0.35,
     },
     {
-      id: 'split', name: 'Split', family: 'estudio',
+      id: 'split', name: 'Split', family: 'estudio', photo: 'lp-split',
       kit: '1 flash · 1 tripé · refletor nu (luz dura)',
       how: 'Luz exatamente a 90°, à altura dos olhos. Nada do outro lado.',
       tell: 'Metade do rosto acesa, metade em sombra, com a linha a cair a direito pelo nariz.',
@@ -530,7 +530,7 @@ const PhotoLightArt = (function () {
       nose: 'split', edge: 0.05, fill: 0,
     },
     {
-      id: 'split-fill', name: 'Split com preenchimento', family: 'estudio',
+      id: 'split-fill', name: 'Split com preenchimento', family: 'estudio', photo: 'lp-split-fill',
       kit: '1 flash · 1 tripé · 1 refletor prateado',
       how: 'O mesmo Split, mas com um refletor do lado escuro a devolver luz ao rosto.',
       tell: 'A divisão mantém-se, mas o lado escuro já tem detalhe em vez de ser preto.',
@@ -543,7 +543,7 @@ const PhotoLightArt = (function () {
       nose: 'split', edge: 0.05, fill: 0.45,
     },
     {
-      id: 'butterfly', name: 'Butterfly (Paramount)', family: 'estudio', star: 1,
+      id: 'butterfly', name: 'Butterfly (Paramount)', family: 'estudio', star: 1, photo: 'lp-butterfly',
       kit: '1 flash · 1 girafa · softbox ou beauty dish por cima',
       how: 'Luz mesmo em cima e à frente do rosto, na vertical do nariz, a apontar para baixo.',
       tell: 'Uma sombra pequena e simétrica em forma de borboleta, mesmo por baixo do nariz.',
@@ -553,7 +553,7 @@ const PhotoLightArt = (function () {
       faceAz: 0, nose: 'butterfly', edge: 0.9, fill: 0.5,
     },
     {
-      id: 'clamshell', name: 'Clamshell', family: 'estudio',
+      id: 'clamshell', name: 'Clamshell', family: 'estudio', photo: 'lp-clamshell',
       kit: '2 fontes · softbox em cima + refletor (ou 2.º flash) por baixo',
       how: 'Butterfly com uma segunda fonte por baixo do queixo, virada para cima e mais fraca.',
       tell: 'Quase sem sombras, pele luminosa e dois brilhos empilhados em cada olho.',
@@ -567,7 +567,7 @@ const PhotoLightArt = (function () {
     },
     /* ── largo vs curto ── */
     {
-      id: 'short', name: 'Short (luz curta)', family: 'forma', star: 1,
+      id: 'short', name: 'Short (luz curta)', family: 'forma', star: 1, photo: 'lp-short',
       kit: '1 flash · 1 tripé · softbox 60cm',
       how: 'Qualquer padrão + o rosto voltado PARA a luz: fica iluminado o lado que está mais longe da câmara.',
       tell: 'O lado do rosto virado à câmara está em sombra; a luz cai no lado estreito.',
@@ -584,7 +584,7 @@ const PhotoLightArt = (function () {
       nose: 'rembrandt', tri: 1, edge: 0.4, fill: 0.15,
     },
     {
-      id: 'broad', name: 'Broad (luz larga)', family: 'forma',
+      id: 'broad', name: 'Broad (luz larga)', family: 'forma', photo: 'lp-broad',
       kit: '1 flash · 1 tripé · softbox 60cm',
       how: 'O mesmo, mas com o rosto voltado AO CONTRÁRIO da luz: iluminado o lado mais perto da câmara.',
       tell: 'O lado grande do rosto, o que está virado à câmara, é o que está aceso.',
@@ -596,7 +596,7 @@ const PhotoLightArt = (function () {
     },
     /* ── multi-luz ── */
     {
-      id: 'key-fill', name: 'Principal + preenchimento', family: 'multi', star: 1,
+      id: 'key-fill', name: 'Principal + preenchimento', family: 'multi', star: 1, photo: 'lp-key-fill',
       kit: '2 flashes · 2 tripés · 2 softboxes',
       how: 'Chave a 45°, preenchimento do lado oposto a metade da potência (ou mais longe).',
       tell: 'Sombra suave e legível: há um lado mais claro, mas o escuro nunca fecha.',
@@ -609,7 +609,7 @@ const PhotoLightArt = (function () {
       nose: 'loop', edge: 0.6, fill: 0.5,
     },
     {
-      id: 'three-point', name: 'Chave + fill + cabelo', family: 'multi',
+      id: 'three-point', name: 'Chave + fill + cabelo', family: 'multi', photo: 'lp-three-point',
       kit: '3 flashes · 3 tripés · 2 softboxes + 1 grelha',
       how: 'Ao esquema anterior junta-se uma luz alta atrás da cabeça, apontada ao cabelo.',
       tell: 'Um fio de luz no alto do cabelo e nos ombros, que descola o sujeito do fundo.',
@@ -623,7 +623,7 @@ const PhotoLightArt = (function () {
       nose: 'loop', edge: 0.6, fill: 0.45, hairLight: 1,
     },
     {
-      id: 'rim', name: 'Contraluz / recorte', family: 'multi',
+      id: 'rim', name: 'Contraluz / recorte', family: 'multi', photo: 'lp-rim',
       kit: '2–3 flashes · grelhas ou snoots atrás do sujeito',
       how: 'Luzes atrás do sujeito, viradas para a câmara mas fora de enquadramento. Chave fraca à frente (ou nenhuma).',
       tell: 'Uma linha de luz a desenhar a maçã do rosto, o queixo e o ombro, contra um fundo quase preto.',
@@ -637,7 +637,7 @@ const PhotoLightArt = (function () {
       nose: 'loop', edge: 0.5, fill: 0.02, rim: 2, faceBg: '#0a0f16',
     },
     {
-      id: 'bg-light', name: 'Luz no fundo', family: 'multi',
+      id: 'bg-light', name: 'Luz no fundo', family: 'multi', photo: 'lp-bg-light',
       kit: '2 flashes · 1 softbox + 1 refletor virado ao fundo',
       how: 'Chave normal no rosto; a segunda luz atrás do sujeito, apontada ao fundo e não a ele.',
       tell: 'Uma mancha de luz no fundo atrás da cabeça, que escurece para os cantos.',
@@ -651,7 +651,7 @@ const PhotoLightArt = (function () {
     },
     /* ── tonalidade ── */
     {
-      id: 'flat', name: 'Luz plana', family: 'tom',
+      id: 'flat', name: 'Luz plana', family: 'tom', photo: 'lp-flat',
       kit: '2 flashes · 2 softboxes iguais aos lados da câmara',
       how: 'Duas fontes iguais, simétricas, ambas na linha da câmara.',
       tell: 'Nenhuma sombra em lado nenhum. O rosto lê-se como uma superfície, não como um volume.',
@@ -664,7 +664,7 @@ const PhotoLightArt = (function () {
       faceAz: 0, nose: 'none', edge: 1, fill: 1,
     },
     {
-      id: 'high-key', name: 'High key', family: 'tom',
+      id: 'high-key', name: 'High key', family: 'tom', photo: 'lp-high-key',
       kit: '3–4 flashes · 2 no fundo + 1 softbox grande à frente',
       how: 'Ilumina o fundo 1,5–2 stops ACIMA do sujeito para o queimar a branco puro; à frente, luz ampla e envolvente.',
       tell: 'Fundo branco sem textura, sombras quase inexistentes, imagem clara e leve.',
@@ -678,7 +678,7 @@ const PhotoLightArt = (function () {
       faceAz: 15, nose: 'none', edge: 1, fill: 1, bgLit: 1, faceBg: '#f2f5f8',
     },
     {
-      id: 'low-key', name: 'Low key', family: 'tom',
+      id: 'low-key', name: 'Low key', family: 'tom', photo: 'lp-low-key',
       kit: '1 flash · 1 grelha ou snoot · fundo preto',
       how: 'Uma única fonte pequena e dura, longe do fundo. Bandeiras (ou paredes escuras) para matar o ressalto.',
       tell: 'A imagem é quase toda preta e só uma parte do rosto emerge.',
@@ -688,7 +688,7 @@ const PhotoLightArt = (function () {
       nose: 'rembrandt', edge: 0.15, fill: 0, faceBg: '#080b10',
     },
     {
-      id: 'gels', name: 'Géis de cor', family: 'tom',
+      id: 'gels', name: 'Géis de cor', family: 'tom', photo: 'lp-gels',
       kit: '2–4 flashes · géis de cor + 1 luz limpa no rosto',
       how: 'Um gel quente de um lado, um frio do outro. Se quiseres a pele natural, mantém uma fonte sem gel na cara.',
       tell: 'Dois lados do rosto com temperaturas opostas e o fundo pintado por uma terceira cor.',

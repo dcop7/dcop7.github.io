@@ -316,7 +316,10 @@
 .cs-lpair { display: grid; grid-template-columns: 1.05fr .95fr; gap: .35rem;
   align-items: center; margin: 0 0 .45rem; }
 .cs-lart svg, .cs-lart .plt-photo { width: 100%; height: auto; display: block; border-radius: 8px; }
-.cs-lart .plt-photo { aspect-ratio: 7 / 9; object-fit: cover; }
+/* 4:5 = o formato em que as fotografias dos padroes foram geradas
+   (832x1040) e o mesmo do viewBox do rosto composto (160x200), para o par
+   planta+resultado nao mudar de altura consoante o que esta a ser mostrado. */
+.cs-lart .plt-photo { aspect-ratio: 4 / 5; object-fit: cover; background: var(--card2, #14181f); }
 /* O texto de cada esquema é de consulta: o que se reconhece e o que se
    monta. O resto (porquê, cuidados) fica num <details> para a grelha se
    poder ler de relance. */

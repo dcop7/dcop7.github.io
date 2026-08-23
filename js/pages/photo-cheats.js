@@ -327,10 +327,15 @@ const PhotoCheats = (function () {
   /* ══ Luz de retrato (motor próprio) ═════════════════════════════════ */
 
   /* A grelha e UMA comparacao controlada: o mesmo rosto, a mesma moldura,
-     so muda a luz. Misturar aqui fotografias reais de outra pessoa, com
-     outro enquadramento, partia exactamente isso — as ultimas quatro
-     celulas deixavam de se poder comparar com as de cima. As fotografias
-     nao se perdem: vao para uma tira propria no fim, com o seu titulo. */
+     so muda a luz. Era por isso que as quatro luzes NATURAIS ficavam de fora
+     — sao outra pessoa e outro enquadramento — e continuam de fora, na tira
+     do fim.
+     Os 16 padroes de estudio passaram a ser FOTOGRAFIA (grupo `lightpat`,
+     `lp-<id>`), geradas de proposito com a mesma modelo, o mesmo plano de
+     cabeca e ombros, o mesmo fundo e o mesmo 4:5 — ou seja, sem partir a
+     comparacao. O rosto composto por codigo (`PhotoLightArt.face`) fica como
+     recurso para quando o asset falta. Receita e historico da geracao em
+     `_rembrandt/REFERENCIA-luz-de-retrato.md` (fora do repo). */
   function lightArtHTML() {
     const fams = PhotoLightArt.FAMILIES;
     const grid = fams.map(f => `
@@ -344,12 +349,18 @@ const PhotoCheats = (function () {
   }
 
   /* As quatro luzes naturais, em fotografia — fora da grelha, porque sao
-     outra pessoa e outro enquadramento e nao se comparam com o resto. */
+     outra pessoa e outro enquadramento e nao se comparam com o resto.
+     O filtro por `family` e obrigatorio: desde que os padroes de estudio
+     ganharam `photo`, filtrar so por `p.photo` traria os 20 para aqui. */
+  /* BUG que estava aqui desde que a tira foi criada: as celulas levavam
+     `src` com o URL ja resolvido, mas o `PhotoCard.cellVis` so sabe ler
+     `asset` (o ID, que ele proprio resolve). Resultado: a tira aparecia com
+     titulos e notas e SEM fotografias nenhumas. Passa a levar `asset`. */
   function realLightHTML() {
     const path = id => (_ctx && _ctx.assetPath && _ctx.assetPath(id)) || '';
     const cells = PhotoLightArt.PATTERNS
-      .filter(p => p.photo && path(p.photo))
-      .map(p => ({ src: path(p.photo), v: p.name, note: p.tell }));
+      .filter(p => p.family === 'natural' && p.photo && path(p.photo))
+      .map(p => ({ asset: p.photo, v: p.name, note: p.tell, alt: `${p.name}: ${p.tell}` }));
     if (!cells.length || typeof PhotoCard === 'undefined') return '';
     return PhotoCard.block({
       kind: 'strip', t: 'As mesmas luzes naturais, fotografadas', ar: '7/9',
@@ -361,12 +372,25 @@ const PhotoCheats = (function () {
   /* Cada célula é um par: à esquerda ONDE se põe a luz, à direita a
      SOMBRA que isso desenha. O texto que sobra (porquê, cuidados) fica
      fechado — a grelha tem de se poder ler de relance. */
+  /* O lado direito da celula e o RESULTADO. Para os padroes de estudio e
+     agora a fotografia gerada (`lp-<id>`, 832x1040); o rosto composto por
+     codigo so entra se o asset faltar. As luzes naturais continuam a usar o
+     rosto composto AQUI de proposito — a fotografia delas e de outra pessoa
+     e vive na tira do fim, senao a grelha deixava de ser comparavel. */
+  function patternResultHTML(p) {
+    const src = p.family !== 'natural' && p.photo && _ctx && _ctx.assetPath
+      ? (_ctx.assetPath(p.photo) || '') : '';
+    if (!src) return PhotoLightArt.face(p);
+    return `<img class="plt-photo" src="${esc(src)}" width="832" height="1040"
+      loading="lazy" decoding="async" alt="${esc(p.name)}: ${esc(p.tell)}">`;
+  }
+
   function patternCellHTML(p) {
     return `<figure class="cs-lcell${p.star ? ' star' : ''}">
       <figcaption class="cs-lcell-h">${esc(p.name)}${p.star ? '<span class="cs-star" title="Começa por este">★</span>' : ''}</figcaption>
       <div class="cs-lpair">
         <div class="cs-lart">${PhotoLightArt.setup(p)}</div>
-        <div class="cs-lart">${PhotoLightArt.face(p)}</div>
+        <div class="cs-lart">${patternResultHTML(p)}</div>
       </div>
       <p class="cs-lrow"><b>Monta:</b> ${esc(p.how)}</p>
       <p class="cs-lrow"><b>Vê-se por:</b> ${esc(p.tell)}</p>
