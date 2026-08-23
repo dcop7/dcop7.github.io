@@ -495,7 +495,13 @@ const PhotoLightArt = (function () {
 
   /* ══ 3. Os padrões ═══════════════════════════════════════════════════
      `kit` e `how` são o texto do cartão; `lights`, `nose`, `edge`, `fill`
-     e `tri` alimentam os dois desenhos. */
+     e `tri` alimentam os dois desenhos.
+
+     O SINAL de `az` não é livre: a planta e a fotografia da mesma célula
+     têm de mostrar a luz do MESMO lado, senão o cartão ensina o contrário
+     do que mostra. Os sinais abaixo foram conferidos um a um contra
+     `assets/photo/lightpat/lp-<id>.webp` — quem trocar uma fotografia tem
+     de voltar a conferir o sinal. */
 
   const PATTERNS = [
     /* ── um só foco ── */
@@ -516,7 +522,7 @@ const PhotoLightArt = (function () {
       tell: 'Uma sombra pequena e oval do nariz, virada para o canto da boca — sem tocar na sombra da bochecha.',
       why: 'O padrão mais universal: favorece quase toda a gente e perdoa erros de posição.',
       watch: 'Se a sombra do nariz encosta à bochecha, já andaste para o Rembrandt.',
-      lights: [{ az: 30, elev: 0.5, kind: 'softbox', tag: '30° · acima' }],
+      lights: [{ az: -30, elev: 0.5, kind: 'softbox', tag: '30° · acima' }],
       nose: 'loop', edge: 0.6, fill: 0.35,
     },
     {
@@ -526,7 +532,7 @@ const PhotoLightArt = (function () {
       tell: 'Metade do rosto acesa, metade em sombra, com a linha a cair a direito pelo nariz.',
       why: 'Drama imediato: tensão, mistério, força. Funciona bem em rostos angulosos.',
       watch: 'É implacável com a pele. Se for demais, passa ao Split com preenchimento.',
-      lights: [{ az: 90, elev: 0, kind: 'strobe', tag: '90° · olhos' }],
+      lights: [{ az: -90, elev: 0, kind: 'strobe', tag: '90° · olhos' }],
       nose: 'split', edge: 0.05, fill: 0,
     },
     {
@@ -537,8 +543,8 @@ const PhotoLightArt = (function () {
       why: 'Guarda o drama e devolve a informação. É o Split «utilizável» num retrato de encomenda.',
       watch: 'Aproxima ou afasta o refletor — é assim que se dosea o contraste, não com a potência do flash.',
       lights: [
-        { az: 90, elev: 0, kind: 'strobe', tag: '90°' },
-        { az: -75, elev: 0, kind: 'reflector', role: 'fill', tag: 'refletor' },
+        { az: -90, elev: 0, kind: 'strobe', tag: '90°' },
+        { az: 75, elev: 0, kind: 'reflector', role: 'fill', tag: 'refletor' },
       ],
       nose: 'split', edge: 0.05, fill: 0.45,
     },
@@ -580,7 +586,7 @@ const PhotoLightArt = (function () {
          CURTO (longe) e o da esquerda. Short = luz no lado curto = luz da
          esquerda; Broad = luz no lado largo = luz da direita. */
       base: 'c',
-      lights: [{ az: -55, elev: 0.5, kind: 'softbox', tag: 'lado curto' }],
+      lights: [{ az: 55, elev: 0.5, kind: 'softbox', tag: 'lado curto' }],
       nose: 'rembrandt', tri: 1, edge: 0.4, fill: 0.15,
     },
     {
@@ -591,7 +597,7 @@ const PhotoLightArt = (function () {
       why: 'Alarga e abre o rosto — bom para rostos muito magros ou para um tom mais aberto e simpático.',
       watch: 'Num rosto já cheio engorda. É o erro mais comum de quem posiciona a luz sem pensar.',
       base: 'c',
-      lights: [{ az: 45, elev: 0.5, kind: 'softbox', tag: 'lado largo' }],
+      lights: [{ az: -45, elev: 0.5, kind: 'softbox', tag: 'lado largo' }],
       nose: 'loop', edge: 0.55, fill: 0.3,
     },
     /* ── multi-luz ── */
@@ -603,8 +609,8 @@ const PhotoLightArt = (function () {
       why: 'O cavalo de batalha do retrato corporativo e de família. Controlas o contraste com a razão entre as duas.',
       watch: 'Preenchimento à mesma potência = luz plana. Mantém-no 1 a 2 stops abaixo.',
       lights: [
-        { az: 45, elev: 0.5, kind: 'softbox', tag: 'chave' },
-        { az: -50, elev: 0, kind: 'softbox', role: 'fill', dist: 'far', tag: 'fill −1EV' },
+        { az: -45, elev: 0.5, kind: 'softbox', tag: 'chave' },
+        { az: 50, elev: 0, kind: 'softbox', role: 'fill', dist: 'far', tag: 'fill −1EV' },
       ],
       nose: 'loop', edge: 0.6, fill: 0.5,
     },
@@ -616,8 +622,8 @@ const PhotoLightArt = (function () {
       why: 'Sem ela, cabelo escuro em fundo escuro funde-se. É o que faz o retrato parecer «profissional».',
       watch: 'Não deixes o feixe bater na testa: usa grelha e vê o retorno pelo lado.',
       lights: [
-        { az: 45, elev: 0.5, kind: 'softbox', tag: 'chave' },
-        { az: -50, elev: 0, kind: 'softbox', role: 'fill', dist: 'far', tag: 'fill' },
+        { az: -45, elev: 0.5, kind: 'softbox', tag: 'chave' },
+        { az: 50, elev: 0, kind: 'softbox', role: 'fill', dist: 'far', tag: 'fill' },
         { az: 155, elev: 1, kind: 'honeycomb', role: 'rim', tag: 'cabelo' },
       ],
       nose: 'loop', edge: 0.6, fill: 0.45, hairLight: 1,
