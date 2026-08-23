@@ -90,6 +90,19 @@ const NoticiasPage = (function () {
   function favURL(site) { let h = ''; try { h = new URL(site).host; } catch { return ''; } return h ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=64` : ''; }
   function favicon(a) { const u = favURL(a.site || a.url); return u ? `<img class="nw-fav" src="${u}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''; }
 
+  /* The two views of the News section. Duplicated in the Destaques module
+     rather than shared: five lines, and it keeps the two modules
+     independent — which is what lets one fail without touching the other. */
+  function tabsHTML(active) {
+    const tabs = [
+      ['destaques', '⭐', 'Highlights', 'Destaques', '#noticias/destaques'],
+      ['todas',     '🗞️', 'All',        'Todas',     '#noticias/todas'],
+    ];
+    return `<nav class="nw-tabs" aria-label="${_t('News views', 'Vistas das notícias')}">
+      ${tabs.map(([id, ic, en, pt, href]) => `<a class="nw-tab${id === active ? ' active' : ''}" href="${href}"${id === active ? ' aria-current="page"' : ''}><span aria-hidden="true">${ic}</span> ${_t(en, pt)}</a>`).join('')}
+    </nav>`;
+  }
+
   /* ── data ── */
   async function ensureIndex() {
     if (_index) return _index;
@@ -249,6 +262,8 @@ const NoticiasPage = (function () {
           <div class="ph-actions"><div class="nw-updated" id="nw-updated"></div></div>
         </header>
 
+        ${tabsHTML('todas')}
+
         <div class="nw-toolbar">
           <input id="nw-q" class="nw-search" type="search" placeholder="${_t('Search headlines…', 'Pesquisar notícias…')}">
           <label class="nw-fl"><span>${_t('Date', 'Data')}</span>
@@ -293,8 +308,10 @@ const NoticiasPage = (function () {
   function goTopic(id) {
     closeTopicPop();
     if (!id || id === _topic) return;
-    /* Topic lives in the URL (#noticias/<topic>) so refresh keeps the category. */
-    location.hash = '#noticias/' + id;
+    /* Topic lives in the URL so refresh keeps the category. The view
+       segment is explicit — `#noticias/<topic>` alone stays valid as a
+       legacy form (nav.js maps it here), but nothing generates it. */
+    location.hash = '#noticias/todas/' + id;
   }
   function openTopicPop() {
     const pop = document.getElementById('nw-topic-pop');

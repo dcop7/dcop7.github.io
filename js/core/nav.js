@@ -40,7 +40,6 @@ const Nav = (function () {
           <div class="sb-grp" data-grp="discover">${TN('nav.grp.discover')}</div>
           <a class="sb-nav-item" data-route="explorer"    href="#explorer">${navIcon('explorer')}<span>${TN('nav.explorer')}</span></a>
           <a class="sb-nav-item" data-route="noticias"    href="#noticias">${navIcon('noticias')}<span>${TN('nav.noticias')}</span></a>
-          <a class="sb-nav-item" data-route="noticias-ai" href="#noticias-ai">${navIcon('noticiasai')}<span>${TN('nav.noticiasai')}</span></a>
           <a class="sb-nav-item" data-route="cidadao"     href="#cidadao">${navIcon('cidadao')}<span>${TN('nav.cidadao')}</span></a>
           <a class="sb-nav-item" data-route="eventos"     href="#eventos">${navIcon('eventos')}<span>${TN('nav.eventos')}</span></a>
           <a class="sb-nav-item" data-route="ocorrencias" href="#ocorrencias">${navIcon('ocorrencias')}<span>${TN('nav.ocorrencias')}</span></a>
@@ -112,7 +111,18 @@ const Nav = (function () {
   }
 
   function renderView(raw) {
-    const hash = raw || 'home';
+    let hash = raw || 'home';
+
+    /* Rota antiga: a página era uma secção própria (#noticias-ai) antes de
+       passar a ser a vista Destaques dentro de Notícias. Redireciona em vez
+       de mostrar o Home — links partilhados e favoritos continuam a abrir
+       no sítio certo. replaceState para não criar uma entrada no histórico
+       que devolveria o utilizador à rota morta ao carregar em "voltar". */
+    if (hash === 'noticias-ai' || hash.startsWith('noticias-ai/')) {
+      hash = 'noticias/destaques' + hash.slice('noticias-ai'.length);
+      history.replaceState(null, '', '#' + hash);
+    }
+
     const qIdx = hash.indexOf('?');
     const path  = qIdx >= 0 ? hash.slice(0, qIdx) : hash;
     const qs    = qIdx >= 0 ? hash.slice(qIdx + 1) : '';
@@ -164,12 +174,25 @@ const Nav = (function () {
     } else if (page === 'eventos') {
       document.getElementById('view-eventos')?.classList.add('active');
       typeof EventosPage !== 'undefined' && EventosPage.show();
-    } else if (page === 'noticias-ai') {
-      document.getElementById('view-noticias-ai')?.classList.add('active');
-      typeof NoticiasAiPage !== 'undefined' && NoticiasAiPage.show(sub || null);
     } else if (page === 'noticias') {
-      document.getElementById('view-noticias')?.classList.add('active');
-      typeof NoticiasPage !== 'undefined' && NoticiasPage.show(sub || null);
+      /* One section, two views:
+           #noticias                    → Destaques (predefinição)
+           #noticias/destaques[/<tema>] → Destaques
+           #noticias/todas[/<topico>]   → leitor RSS completo
+           #noticias/<topico>           → forma antiga; todos os favoritos
+                                          existentes eram tópicos do leitor,
+                                          por isso mapeia para Todas.       */
+      const seg = path.split('/').slice(1);          // [view?, sub?]
+      const isView = seg[0] === 'destaques' || seg[0] === 'todas';
+      const view = isView ? seg[0] : (seg[0] ? 'todas' : 'destaques');
+      const sub2 = (isView ? seg[1] : seg[0]) || null;
+      if (view === 'todas') {
+        document.getElementById('view-noticias')?.classList.add('active');
+        typeof NoticiasPage !== 'undefined' && NoticiasPage.show(sub2);
+      } else {
+        document.getElementById('view-destaques')?.classList.add('active');
+        typeof DestaquesPage !== 'undefined' && DestaquesPage.show(sub2);
+      }
     } else if (page === 'cidadao') {
       document.getElementById('view-cidadao')?.classList.add('active');
       typeof CidadaoPage !== 'undefined' && CidadaoPage.show(sub || null);
@@ -226,10 +249,9 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','noticias-ai','cidadao','f1','oss','discovery','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
-      /* chaves i18n não têm hífen: noticias-ai → nav.noticiasai */
       if (el) el.textContent = TN(`nav.${r.replace(/-/g, '')}`);
     });
     /* Sidebar group labels. */

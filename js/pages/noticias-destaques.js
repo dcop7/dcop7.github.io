@@ -1,21 +1,24 @@
 /* ══════════════════════════════════════════════════════════════════
-   NOTÍCIAS AI (V2) — leitor da curadoria diária.
+   NOTÍCIAS ▸ DESTAQUES — a edição do dia.
+
+   Uma das duas vistas da secção Notícias:
+     Destaques  (esta)  o que vale a pena ler, agrupado e ordenado
+     Todas      #noticias/todas  o leitor RSS completo, cronológico
 
    Lê APENAS data/news/curated/latest.json, gerado uma vez por dia pela
-   Action `news-curate.yml` (data/news/build-curated.mjs). Não há chave
-   de API no cliente e o browser nunca fala com a Groq nem com nenhum
-   fornecedor de IA — tal como no resto do site, o "backend" é um
-   ficheiro JSON commitado.
+   Action `news-curate.yml` (data/news/build-curated.mjs). O browser não
+   fala com nenhum fornecedor de IA e não existe chave no cliente — como
+   no resto do site, o "backend" é um ficheiro JSON commitado.
 
-   Corre em paralelo com #noticias (o agregador RSS cronológico), que
-   fica intacto: páginas diferentes, dados diferentes, Actions
-   diferentes. Se a curadoria falhar num dia, esta página mostra a
-   última boa e diz de quando é; a página antiga nem dá por isso.
+   O leitor completo é independente: dados diferentes, Action diferente,
+   módulo diferente. Se a curadoria falhar num dia, esta vista mostra a
+   última boa e diz de quando é; a vista Todas nem dá por isso.
 
-   Rota: #noticias-ai            → primeiro tema com histórias
-         #noticias-ai/<tema>     → tema específico (sobrevive a refresh)
+   Rota: #noticias                    → Destaques (predefinição)
+         #noticias/destaques          → idem
+         #noticias/destaques/<tema>   → tema específico (sobrevive a refresh)
 ══════════════════════════════════════════════════════════════════ */
-const NoticiasAiPage = (function () {
+const DestaquesPage = (function () {
   'use strict';
 
   const _lang = () => (typeof I18n !== 'undefined' ? I18n.getLang() : 'pt');
@@ -58,6 +61,19 @@ const NoticiasAiPage = (function () {
   }
   function favURL(site) { try { const h = new URL(site).host; return h ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=64` : ''; } catch { return ''; } }
   const themeLabel = (t) => (_lang() === 'en' ? (t.en || t.pt) : t.pt);
+
+  /* As duas vistas da secção. Duplicado (em vez de partilhado) no leitor
+     RSS: são cinco linhas e mantém os dois módulos independentes, que é
+     a propriedade que faz a curadoria poder falhar sem afetar o resto. */
+  function tabsHTML(active) {
+    const tabs = [
+      ['destaques', '⭐', 'Highlights', 'Destaques', '#noticias/destaques'],
+      ['todas',     '🗞️', 'All',        'Todas',     '#noticias/todas'],
+    ];
+    return `<nav class="nw-tabs" aria-label="${_t('News views', 'Vistas das notícias')}">
+      ${tabs.map(([id, ic, en, pt, href]) => `<a class="nw-tab${id === active ? ' active' : ''}" href="${href}"${id === active ? ' aria-current="page"' : ''}><span aria-hidden="true">${ic}</span> ${_t(en, pt)}</a>`).join('')}
+    </nav>`;
+  }
 
   /* The score is a model's judgement, not a measurement. The UI must
      never let it read as an objective ranking, so it is labelled, given
@@ -236,15 +252,19 @@ const NoticiasAiPage = (function () {
       return;
     }
 
-    /* Fewer than five is a deliberate outcome, not a loading bug — say so.
-       The note lives in its own element outside the grid, so the compact
-       mode's bordered list does not swallow it. */
+    /* A short list is a deliberate outcome, not a loading bug — say so.
+       The ceiling is read from the data rather than hard-coded, so raising
+       it in the build script does not leave this line lying. The note has
+       its own element outside the grid, so the compact mode's bordered
+       list does not swallow it. */
+    const cap = Number(_doc.maxStories) || 12;
+    const n = t.stories.length;
     const when = _day ? _t('in this edition', 'nesta edição') : _t('today', 'hoje');
-    const note = t.stories.length < 5
-      ? _t(`${t.stories.length} ${t.stories.length === 1 ? 'story' : 'stories'} ${when} — the rest of the ${t.candidates} articles were not worth featuring.`,
-           `${t.stories.length} ${t.stories.length === 1 ? 'história' : 'histórias'} ${when} — os restantes ${t.candidates} artigos não mereciam destaque.`)
-      : _t(`The 5 strongest of ${t.candidates} articles from the last ${t.windowHours}h.`,
-           `As 5 mais fortes de ${t.candidates} artigos das últimas ${t.windowHours}h.`);
+    const note = n < cap
+      ? _t(`${n} ${n === 1 ? 'story' : 'stories'} ${when} — of ${t.candidates} articles, the rest were not worth featuring.`,
+           `${n} ${n === 1 ? 'história' : 'histórias'} ${when} — dos ${t.candidates} artigos, os restantes não mereciam destaque.`)
+      : _t(`The ${n} strongest of ${t.candidates} articles from the last ${t.windowHours}h.`,
+           `As ${n} mais fortes de ${t.candidates} artigos das últimas ${t.windowHours}h.`);
 
     const noteEl = document.getElementById('na-note');
     if (noteEl) { noteEl.textContent = note; noteEl.hidden = false; }
@@ -254,7 +274,7 @@ const NoticiasAiPage = (function () {
 
   function goTheme(id) {
     if (!id || id === _theme) return;
-    location.hash = '#noticias-ai/' + id;
+    location.hash = '#noticias/destaques/' + id;
   }
 
   function setMode(m) {
@@ -283,7 +303,7 @@ const NoticiasAiPage = (function () {
       _doc = doc; _day = want;
       const still = doc.themes.find(t => t.id === _theme && t.stories.length);
       _theme = (still || doc.themes.find(t => t.stories.length) || doc.themes[0]).id;
-      shell(document.getElementById('view-noticias-ai'));
+      shell(document.getElementById('view-destaques'));
       renderTheme();
     } catch (e) {
       if (grid) grid.innerHTML = `<div class="empty-state na-empty"><div class="es-ico">📭</div><p>${
@@ -305,16 +325,14 @@ const NoticiasAiPage = (function () {
     view.innerHTML = `
       <div class="na-wrap">
         <header class="page-head">
-          <span class="ph-ico">${AppIcons.icon('noticiasai', 22)}</span>
+          <span class="ph-ico">${AppIcons.icon('noticias', 22)}</span>
           <div class="ph-titles">
-            <h1 class="ph-title">${_t('News AI', 'Notícias AI')}</h1>
-            <p class="ph-sub">${_t('The day’s news, grouped and ranked by an AI editor — at most 5 stories per topic. Experimental, running alongside the full RSS reader.',
-                                   'As notícias do dia, agrupadas e ordenadas por um editor de IA — no máximo 5 histórias por tema. Experimental, a correr ao lado do leitor RSS completo.')}</p>
-          </div>
-          <div class="ph-actions">
-            <a class="btn btn-sm" href="#noticias">${_t('Full RSS reader', 'Leitor RSS completo')} →</a>
+            <h1 class="ph-title">${_t('News', 'Notícias')}</h1>
+            <p class="ph-sub">${_t('What is worth reading today: articles covering the same event grouped into one story, ordered by editorial importance.',
+                                   'O que vale a pena ler hoje: artigos sobre o mesmo acontecimento agrupados numa história, por importância editorial.')}</p>
           </div>
         </header>
+        ${tabsHTML('destaques')}
 
         <div class="na-meta">
           ${days.length > 1
@@ -344,8 +362,8 @@ const NoticiasAiPage = (function () {
 
         <footer class="na-foot">
           <p><strong>${_t('How this is made', 'Como isto é feito')}</strong> —
-          ${_t('The same RSS feeds as the main News page are collected first; once a day an AI editor groups articles covering the same event, ranks them and writes the summaries. The score is the AI’s own estimate of importance — an opinion. The source count is measured. Headlines link to the original publishers.',
-               'São recolhidos os mesmos feeds RSS da página Notícias; uma vez por dia um editor de IA agrupa os artigos sobre o mesmo acontecimento, ordena-os e escreve os resumos. A pontuação é a estimativa de importância da própria IA — uma opinião. O número de fontes é medido. Os títulos ligam aos editores originais.')}</p>
+          ${_t('Once a day the articles collected from the same sources as the All view are grouped by event, ordered and summarised automatically. Summaries are generated from the source material — nothing is written from scratch, and every headline links to the publisher that reported it. The score is an estimate of importance; the source count is measured.',
+               'Uma vez por dia, os artigos recolhidos das mesmas fontes da vista Todas são agrupados por acontecimento, ordenados e resumidos automaticamente. Os resumos são gerados a partir do material das fontes — nada é escrito de raiz, e cada título liga ao editor que o publicou. A pontuação é uma estimativa de importância; o número de fontes é medido.')}</p>
         </footer>
       </div>`;
 
@@ -366,13 +384,13 @@ const NoticiasAiPage = (function () {
   function emptyShell(view, msg) {
     view.innerHTML = `<div class="na-wrap">
       <header class="page-head">
-        <span class="ph-ico">${AppIcons.icon('noticiasai', 22)}</span>
+        <span class="ph-ico">${AppIcons.icon('noticias', 22)}</span>
         <div class="ph-titles">
-          <h1 class="ph-title">${_t('News AI', 'Notícias AI')}</h1>
-          <p class="ph-sub">${_t('AI-curated daily edition (experimental).', 'Edição diária curada por IA (experimental).')}</p>
+          <h1 class="ph-title">${_t('News', 'Notícias')}</h1>
+          <p class="ph-sub">${_t('The day’s selection.', 'A seleção do dia.')}</p>
         </div>
-        <div class="ph-actions"><a class="btn btn-sm" href="#noticias">${_t('Full RSS reader', 'Leitor RSS completo')} →</a></div>
       </header>
+      ${tabsHTML('destaques')}
       <div class="empty-state na-empty"><div class="es-ico">📭</div><p>${msg}</p></div>
     </div>`;
   }
@@ -381,7 +399,7 @@ const NoticiasAiPage = (function () {
   const valid = (id) => !!(id && _doc && (_doc.themes || []).some(t => t.id === id));
 
   async function show(sub) {
-    const view = document.getElementById('view-noticias-ai');
+    const view = document.getElementById('view-destaques');
     if (!view) return;
 
     if (_inited) {
@@ -402,8 +420,8 @@ const NoticiasAiPage = (function () {
       _inited = true;
     } catch (e) {
       emptyShell(view, _t(
-        'The curated edition has not been generated yet. It is produced once a day by a GitHub Action — check back shortly, or use the full RSS reader.',
-        'A edição curada ainda não foi gerada. É produzida uma vez por dia por uma GitHub Action — volta daqui a pouco, ou usa o leitor RSS completo.'));
+        'Today’s selection has not been generated yet. It is produced once a day — check back shortly, or open All for the full feed.',
+        'A seleção de hoje ainda não foi gerada. É produzida uma vez por dia — volta daqui a pouco, ou abre Todas para o feed completo.'));
     }
   }
 

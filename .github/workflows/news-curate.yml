@@ -1,6 +1,6 @@
-name: Refresh Notícias AI
+name: Refresh Notícias ▸ Destaques
 
-# Notícias AI (V2) — daily editorial pass over the articles the RSS
+# Notícias ▸ Destaques — daily editorial pass over the articles the RSS
 # pipeline already collected. Reads data/news/topic-*.json from the repo,
 # asks Groq to group/rank/summarise, validates, and commits
 # data/news/curated/*. The browser only ever reads that JSON: GROQ_KEY
@@ -77,7 +77,7 @@ jobs:
             git config user.name  "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/news/curated
-            git commit -m "chore(noticias-ai): refresh curadoria diária [skip ci]"
+            git commit -m "chore(destaques): refresh curadoria diária [skip ci]"
             git pull --rebase origin main
             git push
           else

@@ -53,7 +53,7 @@
 ══════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { THEMES } from './curated-themes.mjs';
 import { SOURCES } from './curated-sources.mjs';
 import { fetchSources, saveCache } from './curated-fetch.mjs';
@@ -78,7 +78,14 @@ const WINDOW_H_MAX = 36;      /* widened for a theme too quiet to judge at 24h *
 const MIN_CANDIDATES = 6;     /* below this, widen the window before giving up */
 const MIN_TO_CURATE = 3;      /* fewer than this: not worth a request at all   */
 const MAX_CANDIDATES = 60;    /* per theme, newest first — keeps chunks small  */
-const MAX_STORIES = 5;        /* per theme per day. A ceiling, never a quota.  */
+const MAX_STORIES = 12;       /* per theme per day. A ceiling, never a quota.  */
+/* Measured pools are wildly uneven (portugal 60 candidates, ia 5), so a
+   ceiling of 12 is meaningless for half the themes and that is the point:
+   it exists to give the busy themes room, not to be reached. The floor
+   below is what keeps the extra room from filling with filler — the model
+   is told to use the full 0–100 range, and anything it scores under this
+   is not worth a slot even when the slot is empty. */
+const MIN_SCORE = 45;
 const SUMMARY_MAX = 260;
 const WHY_MAX = 180;
 const TITLE_MAX = 120;
@@ -94,18 +101,29 @@ const TITLE_MAX = 120;
    response (see settle() below), so unused output allowance is freed
    immediately instead of blocking the next call for a full minute.
 
-     per-request ceiling  4 800 in + 1 600 out  = 6 400  (80% of TPM)
+     per-request ceiling  4 600 in + 3 200 out  = 7 800
      rolling budget       7 000 tokens / 60 s           (87% of TPM)
 
-   A single request therefore always fits inside one TPM window on its
-   own, and the remaining headroom is checked against Groq's own
-   `x-ratelimit-remaining-tokens` rather than our arithmetic. Bigger
-   chunks also mean fewer requests: 21 → ~15 on the real corpus, ~2% of
-   RPD and well under half the 200k TPD.                              */
+   Note the output ceiling is now larger than the rolling budget. That is
+   deliberate and safe: `max_tokens` is a cap on what the model MAY emit,
+   while the bucket books what it is EXPECTED to emit (estOut() below,
+   ~150 tokens per requested story) and then reconciles against the real
+   `usage.total_tokens`. Booking the 3 200 ceiling instead would idle the
+   run for a full minute before every single call — the exact pacing bug
+   that turned an earlier run into 21 minutes of mostly waiting. The
+   remaining headroom is checked against Groq's own
+   `x-ratelimit-remaining-tokens` rather than our arithmetic.          */
 const MODEL = 'openai/gpt-oss-120b';
 const TOK_BUDGET_PER_MIN = 7000;
-const MAX_INPUT_TOK = 4800;
-const MAX_OUTPUT_TOK = 1600;
+const MAX_INPUT_TOK = 4600;
+const MAX_OUTPUT_TOK = 3200;  /* ceiling for a 12-story reply, not an estimate */
+
+/* What a reply asking for `n` stories is expected to cost. Measured on
+   real runs: 5 stories came back at ~500–900 output tokens including the
+   reasoning gpt-oss emits, so ~150/story plus a fixed preamble. Must stay
+   low enough that MAX_INPUT_TOK + estOut(MAX_STORIES) fits inside
+   TOK_BUDGET_PER_MIN, or a single request could never be booked. */
+const estOut = (n) => Math.min(MAX_OUTPUT_TOK, 320 + n * 150);
 const REQ_TIMEOUT = 90000;
 const MAX_ATTEMPTS = 3;       /* per chunk, including the initial call */
 
@@ -161,6 +179,14 @@ function lisbonToday() {
 const _spent = [];   /* [{ t, n }] — rolling window of booked tokens */
 
 async function reserve(n) {
+  /* A booking larger than the whole budget could never be granted, and
+     the loop below would spin forever waiting for room that cannot
+     exist. Clamp instead: an oversized request is still bounded by
+     Groq's own limit, which respectHeaders() enforces afterwards. */
+  if (n > TOK_BUDGET_PER_MIN) {
+    console.warn(`   ! booking ${n} tok exceeds the ${TOK_BUDGET_PER_MIN}/min budget — clamped`);
+    n = TOK_BUDGET_PER_MIN;
+  }
   for (;;) {
     const cut = Date.now() - 60000;
     while (_spent.length && _spent[0].t < cut) _spent.shift();
@@ -294,7 +320,7 @@ function candidatesFor(theme, now, pooled) {
 const candLine = (a, now) => JSON.stringify({
   i: a.id,
   t: clamp(a.title, 150),
-  s: clamp(a.summary, 190),
+  s: clamp(a.summary, 150),
   f: a.source,
   h: Math.max(0, Math.round((now - a.ts) / 3600000)),
 });
@@ -329,8 +355,16 @@ YOUR JOB
 4. EXPLAIN: "why" is one short sentence on why this matters to a general reader. Also pt-PT. No hype, and do not restate the summary in other words — say the consequence.
 5. SCORE: integer 0–100 for your editorial judgement of importance. This is your opinion, and it is labelled as such to readers. Use the full range; do not cluster everything at 70–80.
 
+NOT A STORY — never select these, however well written
+- HOW-TO AND TIPS. Anything teaching the reader a technique or a setting: "how to…", "5 dicas para…", "corrija em 10 segundos", "o truque para…", "devia ativar já", "assim se faz". Useful is not the same as news. If the headline promises a technique rather than reporting an event, reject it.
+- Listicles and roundups: "os 10 melhores…", "3 filmes para ver este fim de semana", "tudo o que saiu esta semana".
+- Deals, prices and promotions: "está com desconto", "por apenas 99€", "a melhor oferta de hoje".
+- Routine product updates, changelogs, version bumps, release notes and sponsored posts.
+- Opinion, editorials, reviews, personal essays, forum questions and "ask the community" threads.
+- Puzzle answers, horoscopes, quizzes and other daily filler.
+
 HOW MANY
-Return AT MOST 5 stories. Fewer is correct and expected when the material is thin — routine product updates, listicles, sponsored posts, "best deals" roundups and opinion filler are not stories. Returning 2 strong stories is a better answer than 5 padded ones. Returning 0 is right when nothing of substance came in.
+The user message gives you a maximum. It is a ceiling, NEVER a quota, and it is usually far more than the material deserves. Select only the items that genuinely clear the bar, then stop. Returning 4 strong stories when you were allowed 12 is a correct answer, and the expected one on a quiet day. Returning 0 is right when nothing of substance came in. Padding is the worst thing you can do here: a reader who finds filler at position 9 stops trusting positions 1 to 8.
 
 OUTPUT
 Strict JSON, no markdown fence, exactly this shape:
@@ -343,10 +377,10 @@ const MODE_HINT = {
   discovery: 'These feeds are specialist outlets that rarely cover the same event. Expect few or no duplicates — do not force groupings. Your value here is choosing the few items that matter out of many, and saying why.',
 };
 
-function userPrompt(theme, arts, now, lang) {
+function userPrompt(theme, arts, now, want) {
   const label = theme.pt;
   return `Theme: ${label}. ${MODE_HINT[theme.mode]}
-Select at most ${MAX_STORIES} stories from the ${arts.length} articles below.
+Select AT MOST ${want} stories from the ${arts.length} articles below — fewer if fewer deserve it. Anything you would score below ${MIN_SCORE} should be left out, not included with a low score.
 
 [${arts.map(a => candLine(a, now)).join(',\n')}]`;
 }
@@ -355,7 +389,7 @@ Select at most ${MAX_STORIES} stories from the ${arts.length} articles below.
 /* Offline stand-in (--mock): groups articles that share ≥3 significant
    title words, scores by recency + coverage, returns the top 5. Shaped
    exactly like a model reply so it flows through the same validation. */
-function mockReply(arts) {
+function mockReply(arts, want = MAX_STORIES) {
   const groups = [];
   for (const a of arts) {
     const w = sigWords(a.title);
@@ -375,17 +409,18 @@ function mockReply(arts) {
         tags: ['mock'],
       }))
       .sort((x, y) => y.score - x.score)
-      .slice(0, MAX_STORIES),
+      .slice(0, want),
   };
 }
 
-async function groqJSON(system, user, label) {
+async function groqJSON(system, user, label, wantStories = MAX_STORIES) {
   const inTok = estTok(system) + estTok(user) + 40;
+  const outTok = estOut(wantStories);
   if (inTok > MAX_INPUT_TOK + 400) console.warn(`   ! ${label}: prompt ~${inTok} tok, above the ${MAX_INPUT_TOK} target`);
 
   let lastErr = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const booking = await reserve(inTok + MAX_OUTPUT_TOK);
+    const booking = await reserve(inTok + outTok);
 
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), REQ_TIMEOUT);
@@ -434,7 +469,7 @@ async function groqJSON(system, user, label) {
          request is not queued behind output tokens we never used. */
       const realTok = Number(j?.usage?.total_tokens);
       settle(booking, realTok);
-      if (Number.isFinite(realTok)) console.log(`   · ${label}: ${realTok} tok (est. ${inTok + MAX_OUTPUT_TOK})`);
+      if (Number.isFinite(realTok)) console.log(`   · ${label}: ${realTok} tok (est. ${inTok + outTok})`);
       await respectHeaders(r);
 
       const txt = j?.choices?.[0]?.message?.content || '';
@@ -486,6 +521,12 @@ function materialise(reply, byId, theme, dayISO) {
     let score = Math.round(Number(s.score));
     if (!Number.isFinite(score)) score = 50;
     score = Math.max(0, Math.min(100, score));
+    /* The ceiling rose from 5 to 12, so the tail of the list is where
+       filler would now appear. The prompt asks the model to leave weak
+       items out; this makes it structural for the cases where it does
+       not, and it is the model's OWN score being held to the model's own
+       instruction — not a second opinion imposed on top. */
+    if (score < MIN_SCORE) { console.log(`   · ${theme.id}: dropped "${clamp(s.title, 48)}" — self-scored ${score} < ${MIN_SCORE}`); continue; }
 
     arts.sort((a, b) => b.ts - a.ts);
     const lead = arts.find(a => a.image) || arts[0];
@@ -550,6 +591,156 @@ function regroup(stories) {
     if (!twin.image && s.image) twin.image = s.image;
   }
   return out;
+}
+
+/* ── Cross-theme deduplication ────────────────────────────────────
+   Themes draw from disjoint source lists, so the same ARTICLE can never
+   land in two themes — but the same EVENT can, reported by different
+   outlets. Measured on the 2026-08-23 edition: the Dutch GP appeared in
+   both `portugal` and `automovel`, and the US/Canada trade war in both
+   `mundo` and `economia`, with near-identical "why" lines. A reader
+   going through the whole edition sees the same news twice.
+
+   No extra model call: this is deterministic title matching. The risk is
+   entirely on the false-positive side — wrongly merging two different
+   events silently deletes a legitimate story, and it deletes it in a way
+   that is indistinguishable from never having selected it. So all three
+   gates below must pass, and each was added because a test case broke
+   the version without it:
+
+   • WORD OVERLAP. ≥3 significant words in common.
+   • CONTAINMENT. Those shared words must be ≥55% of the SHORTER title.
+     Containment rather than Jaccard: two outlets rarely write titles of
+     the same length, and the short one sitting inside the long one is
+     precisely the signal — Jaccard penalises it.
+   • ENTITY AGREEMENT. ≥2 named things (capitalised mid-title words, or
+     numbers) present in BOTH. This is the gate that does the real work.
+     Word overlap alone folded "Fuga de dados expõe milhões de
+     utilizadores da Vodafone" into the LinkedIn story — five of six
+     words shared, completely unrelated events — and folded a Fed rate
+     rise into an ECB one. What separates those pairs is not what they
+     share but what they name.
+   • SAME DAY-ISH. Stories more than SAME_EVENT_H apart are not one event.
+
+   Tuned to fail closed: a missed merge shows the reader one duplicate,
+   a wrong merge silently removes a story they will never know existed.
+
+   Which copy survives is an editorial call, not a numeric one: `portugal`
+   and `mundo` are generalist catch-alls, so when a story also fits a
+   specific theme the specific theme keeps it. Only between two equally
+   specific (or two generalist) themes does score decide.               */
+const SAME_EVENT_H = 30;           /* further apart than this: different events */
+const MIN_SHARED = 3;              /* significant title words in common          */
+const MIN_CONTAINMENT = 0.55;      /* shared / smaller title's word count        */
+/* Three, not two. Two is enough to fold "Norris vence o Grande Prémio de
+   Itália" into "Verstappen vence o Grande Prémio de Espanha" — different
+   races, but "Grande" and "Prémio" are both capitalised proper-noun parts
+   and the containment lands at exactly 0.60. Requiring a third agreeing
+   name costs one real merge in testing (a pair whose only names were
+   "Oeiras Parque") and prevents that class of deletion entirely. */
+const MIN_SHARED_ENTITIES = 3;     /* named things both titles agree on          */
+const GENERALIST = new Set(['portugal', 'mundo']);
+
+/* Named things in a title: capitalised words plus any number, accent-folded
+   to match sigWords. Works because every curated title is written by the
+   model in European Portuguese sentence case, so a capital mid-sentence
+   means a proper noun.
+
+   The FIRST word is the awkward one — sentence case capitalises it whether
+   or not it is a name, so "Teto do Oeiras Parque…" and "Oeiras Parque…"
+   disagree about whether "Oeiras" is an entity purely by word order. It is
+   returned separately and only counts when the OTHER title confirms it by
+   using the same word capitalised mid-sentence. */
+function entities(title) {
+  const conf = new Set();
+  let first = '';
+  const fold = (w) => w.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const toks = String(title).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  toks.forEach((w, i) => {
+    if (/^\d/.test(w)) { conf.add(w); return; }
+    if (w.length < 3) return;
+    if (w[0] === w[0].toLowerCase()) return;            /* not capitalised */
+    if (i === 0) { first = fold(w); return; }
+    conf.add(fold(w));
+  });
+  return { conf, first };
+}
+
+/* Entities both titles agree on, giving the first word the benefit of the
+   doubt only when the other title confirms it. */
+function sharedEntities(a, b) {
+  const out = [];
+  for (const x of a.conf) if (b.conf.has(x)) out.push(x);
+  if (a.first && b.conf.has(a.first)) out.push(a.first);
+  if (b.first && a.conf.has(b.first)) out.push(b.first);
+  return out;
+}
+
+function crossThemeDedupe(themesOut) {
+  const all = [];
+  for (const t of themesOut) for (const s of t.stories) {
+    all.push({ t, s, w: sigWords(s.title), e: entities(s.title) });
+  }
+  if (all.length < 2) return 0;
+
+  const sameEvent = (a, b) => {
+    if (Math.abs(a.s.ts - b.s.ts) > SAME_EVENT_H * 3600 * 1000) return null;
+
+    const shared = [];
+    for (const x of a.w) if (b.w.has(x)) shared.push(x);
+    if (shared.length < MIN_SHARED) return null;
+    /* Containment, not Jaccard: two outlets rarely write titles of the
+       same length, and the shorter one being wholly contained in the
+       longer is the signal. Jaccard punishes exactly that case. */
+    const cont = shared.length / Math.min(a.w.size, b.w.size);
+    if (cont < MIN_CONTAINMENT) return null;
+
+    /* The gate that matters. Two reports of one event name the same
+       actors; two different events that happen to share vocabulary do
+       not. "Fuga de dados expõe milhões de utilizadores da Vodafone" and
+       "…do LinkedIn" share five of six significant words and are
+       unrelated — what separates them is the one word that differs. */
+    const ents = sharedEntities(a.e, b.e);
+    if (ents.length < MIN_SHARED_ENTITIES) return null;
+
+    return { shared, ents, cont };
+  };
+
+  /* Keep the copy in the more specific theme; between equals, the better
+     story. Returns [keeper, loser]. */
+  const decide = (a, b) => {
+    const ga = GENERALIST.has(a.t.id), gb = GENERALIST.has(b.t.id);
+    if (ga !== gb) return ga ? [b, a] : [a, b];
+    if (a.s.score !== b.s.score) return a.s.score > b.s.score ? [a, b] : [b, a];
+    if (a.s.sourceCount !== b.s.sourceCount) return a.s.sourceCount > b.s.sourceCount ? [a, b] : [b, a];
+    return a.s.ts >= b.s.ts ? [a, b] : [b, a];
+  };
+
+  const dropped = new Set();
+  let n = 0;
+  for (let i = 0; i < all.length; i++) {
+    if (dropped.has(all[i].s)) continue;
+    for (let k = i + 1; k < all.length; k++) {
+      if (dropped.has(all[k].s) || all[i].t === all[k].t) continue;
+      const m = sameEvent(all[i], all[k]);
+      if (!m) continue;
+      const [keep, lose] = decide(all[i], all[k]);
+      /* The loser's articles are real coverage of the same event: fold
+         them into the survivor so the measured source count reflects it. */
+      const have = new Set(keep.s.sources.map(x => x.id));
+      for (const src of lose.s.sources) if (!have.has(src.id)) { keep.s.sources.push(src); have.add(src.id); }
+      keep.s.sources.sort((x, y) => y.ts - x.ts);
+      keep.s.sourceCount = new Set(keep.s.sources.map(x => x.source)).size;
+      if (!keep.s.image && lose.s.image) keep.s.image = lose.s.image;
+      dropped.add(lose.s);
+      n++;
+      console.log(`   · cross-theme: "${clamp(lose.s.title, 44)}" (${lose.t.id}) folded into ${keep.t.id} `
+        + `[${m.shared.length} words, ${(m.cont * 100) | 0}% contained, entities: ${m.ents.join(' ')}]`);
+      if (dropped.has(all[i].s)) break;   /* i itself lost — stop pairing it */
+    }
+  }
+  if (n) for (const t of themesOut) t.stories = t.stories.filter(s => !dropped.has(s));
+  return n;
 }
 
 /* Schema gate. Runs over the assembled file before it is written, and
@@ -693,10 +884,22 @@ async function main() {
     let stories = [];
     let chunkFailed = 0;
 
+    /* Each chunk only sees its own slice, so asking every chunk for the
+       full 12 would produce up to 36 stories for a 3-chunk theme, of
+       which two thirds are discarded — paying output tokens for work
+       thrown away, and pushing the model to pad each slice. Ask for a
+       proportional share plus a small margin, so the merge still has
+       something to choose between. */
+    const wantPerChunk = chunks.length === 1
+      ? MAX_STORIES
+      : Math.min(MAX_STORIES, Math.max(4, Math.ceil(MAX_STORIES / chunks.length) + 2));
+
     for (let c = 0; c < chunks.length; c++) {
       const label = `${theme.id}${chunks.length > 1 ? ` [${c + 1}/${chunks.length}]` : ''}`;
+      const want = Math.min(wantPerChunk, chunks[c].length);
       try {
-        const reply = MOCK ? mockReply(chunks[c]) : await groqJSON(SYSTEM, userPrompt(theme, chunks[c], now), label);
+        const reply = MOCK ? mockReply(chunks[c], want)
+          : await groqJSON(SYSTEM, userPrompt(theme, chunks[c], now, want), label, want);
         stories.push(...materialise(reply, byId, theme, dayISO));
       } catch (e) {
         chunkFailed++;
@@ -712,13 +915,14 @@ async function main() {
 
     /* Merge chunks deterministically: fold any story two chunks raised
        twice, then highest editorial score wins, ties broken by measured
-       coverage and recency. Only then the ceiling of 5. */
+       coverage and recency. The ceiling is NOT applied here — the
+       cross-theme pass below may still remove a story, and slicing first
+       would leave that theme one short instead of letting the next best
+       candidate move up. */
     const before = stories.length;
     if (chunks.length > 1) stories = regroup(stories);
     if (stories.length < before) console.log(`   · ${theme.id}: regrouped ${before - stories.length} cross-chunk duplicate(s)`);
     stories.sort((a, b) => b.score - a.score || b.sourceCount - a.sourceCount || b.ts - a.ts);
-    stories = stories.slice(0, MAX_STORIES);
-    stories.forEach((s, i) => { s.rank = i + 1; });
 
     themesOut.push({
       id: theme.id, icon: theme.icon, pt: theme.pt, en: theme.en, mode: theme.mode,
@@ -726,7 +930,26 @@ async function main() {
       partial: chunkFailed > 0 || undefined,
       stories,
     });
-    console.log(`✓ ${theme.id.padEnd(14)} ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} from ${arts.length} candidates`);
+    console.log(`✓ ${theme.id.padEnd(14)} ${stories.length} candidate stor${stories.length === 1 ? 'y' : 'ies'} from ${arts.length} articles`);
+  }
+
+  /* ── one event, one card, across the whole edition ── */
+  const folded = crossThemeDedupe(themesOut);
+  if (folded) console.log(`\n· folded ${folded} cross-theme duplicate(s)`);
+
+  /* ── now the ceiling, and only now the ranks ── */
+  for (const t of themesOut) {
+    t.stories = t.stories.slice(0, MAX_STORIES);
+    t.stories.forEach((s, i) => { s.rank = i + 1; });
+  }
+  /* A theme can end empty when everything it had was folded elsewhere or
+     fell under the score floor; publishing an empty tab is worse than
+     not offering the tab at all. */
+  for (let i = themesOut.length - 1; i >= 0; i--) {
+    if (!themesOut[i].stories.length) {
+      console.log(`· ${themesOut[i].id}: nothing left after filtering — theme omitted`);
+      themesOut.splice(i, 1);
+    }
   }
 
   /* ── refuse to publish a result that is not worth publishing ── */
@@ -744,7 +967,7 @@ async function main() {
     date: dayISO,
     generated: new Date(now).toISOString(),
     model: MOCK ? 'mock' : MODEL,
-    promptVersion: 3,          /* bump when SYSTEM changes, so drift is traceable */
+    promptVersion: 4,          /* bump when SYSTEM changes, so drift is traceable */
     maxStories: MAX_STORIES,
     windowHours: WINDOW_H,
     themes: themesOut,
@@ -781,9 +1004,19 @@ async function main() {
   return 0;
 }
 
+/* Exported for tests. crossThemeDedupe deletes stories, so it is the one
+   piece here whose failure mode is silent — a wrong merge looks exactly
+   like a story that was never selected. It needs to be exercised against
+   both real and adversarial input, which means importing it without
+   running a build. */
+export { crossThemeDedupe, sigWords, regroup, materialise, validateDay };
+
 /* Set exitCode rather than calling process.exit(): an aborted fetch may
    still be tearing its socket down, and exiting mid-teardown makes Node
    print a libuv assertion that reads like a crash in the Action log. */
-main()
-  .then(c => { process.exitCode = c; })
-  .catch(e => { console.error('fatal:', e && e.message || e); process.exitCode = 1; });
+const IS_CLI = process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url;
+if (IS_CLI) {
+  main()
+    .then(c => { process.exitCode = c; })
+    .catch(e => { console.error('fatal:', e && e.message || e); process.exitCode = 1; });
+}

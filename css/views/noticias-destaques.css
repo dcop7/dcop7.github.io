@@ -1,12 +1,14 @@
-/* ══════════════ NOTÍCIAS AI (V2) — edição diária curada ══════════════
-   Usa o kit unificado (components.css): .page-head/.seg/.btn/.empty-state.
-   Acento da página: #view-noticias-ai em tokens.css.
+/* ══════════ NOTÍCIAS ▸ DESTAQUES — a edição do dia ══════════
+   Usa o kit unificado (components.css): .page-head/.seg/.btn/.empty-state,
+   e o acento de #view-destaques (o mesmo de Notícias) em tokens.css.
 
-   Prioridade desta primeira versão é inspecionar a qualidade editorial,
-   não impressionar: cartões largos, um por linha, com a hierarquia
-   ordem → título → resumo → porque importa → fontes. Mobile-first. */
+   Cartões largos, um por linha, com a hierarquia
+   ordem → título → resumo → porque importa → fontes. Mobile-first.
+   As vistas lista/compacta usam as mesmas peças mais densas. */
 
 .na-wrap { max-width: 940px; margin: 0 auto; }
+/* .nw-wrap usa flex+gap; aqui a barra precisa da margem explícita. */
+.na-wrap .nw-tabs { margin-bottom: calc(var(--sp-5) * var(--den)); }
 
 .na-loading { color: var(--muted); padding: var(--sp-7) 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: .6rem; }
 .na-spin {

@@ -40,15 +40,6 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <rect x="5.8" y="7.4" width="5" height="3.6" rx=".7" fill="C2" fill-opacity=".55" stroke="none"/>
       <path d="M13.4 8h1.6M13.4 10.4h1.6M5.9 13.8h9.1M5.9 16.6h9.1" stroke="C2" opacity=".85"/>`),
 
-    /* Notícias AI (V2): o mesmo jornal do ícone `noticias`, mas com as
-       linhas de texto reduzidas a três destaques e um brilho de curadoria
-       — lê-se como "o mesmo conteúdo, escolhido". Tom ponte azul→ciano
-       para ficar irmão de `noticias` sem se confundir com ele. */
-    noticiasai: duo('noticiasai', '#38bdf8', '#22d3ee', `
-      <path d="M3.6 4.6h12.8a1 1 0 0 1 1 1V19a1.5 1.5 0 0 0 3 0V8.2h1.4V19a2.9 2.9 0 0 1-2.9 2.9H5.5A2.9 2.9 0 0 1 2.6 19V5.6a1 1 0 0 1 1-1z" fill="G" fill-opacity=".13" stroke="G"/>
-      <path d="M5.9 9.2h9.1M5.9 12.6h9.1M5.9 16h5.4" stroke="C2" opacity=".85"/>
-      <path d="M15.4 15.1l.62 1.68 1.68.62-1.68.62-.62 1.68-.62-1.68-1.68-.62 1.68-.62z" fill="C2" stroke="none"/>`),
-
     /* cartão de cidadão: retrato + linhas de dados, tom frio (grupo Descobrir) */
     cidadao: duo('cidadao', '#38bdf8', '#67e8f9', `
       <rect x="2.8" y="5" width="18.4" height="14" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>

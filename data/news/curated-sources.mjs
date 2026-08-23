@@ -64,14 +64,31 @@ export const SOURCES = {
     { name: 'BleepingComputer',   site: 'https://www.bleepingcomputer.com', feed: 'https://www.bleepingcomputer.com/feed/', },
     { name: 'Dark Reading',       site: 'https://www.darkreading.com', feed: 'https://www.darkreading.com/rss.xml', },
   ],
+  /* Reworked 2026-08-23 after the quality audit. The theme was producing
+     2 curated stories from 31 candidates, and 29 of those 31 came from
+     two sources that do not publish news: `DevOps on Medium` (a tag feed
+     of tutorials — "How to Install Docker Desktop") and `Reddit —
+     selfhosted` (discussion threads — "Why Proxmox?"). Both are dropped.
+
+     Replacements were chosen by measured publication RATE, not just by
+     reachability, because a 24h window never sees a weekly blog. Rates
+     over the 7 days to 2026-08-23: The Register 5.7/day, The New Stack
+     3.7, InfoWorld 2.9, Data Center Dynamics 2.9, Google Cloud 2.3.
+     Rejected after measuring: Techmeme (an aggregator of these same
+     outlets — it would duplicate every story), InfoQ DevOps/Cloud (0 and
+     0.1/day), SDxCentral (feed does not resolve), and the vendor blogs
+     Kubernetes/HashiCorp/Docker/Grafana/GitLab/Red Hat (all under
+     1.5/day, and mostly release notes the prompt rejects anyway). */
   devops: [
-    { name: 'DevOps on Medium',                   site: 'https://medium.com/tag/devops', feed: 'https://medium.com/feed/tag/devops', },
+    { name: 'The Register',                       site: 'https://www.theregister.com', feed: 'https://www.theregister.com/headlines.atom', },
     { name: 'The New Stack',                      site: 'https://thenewstack.io', feed: 'http://thenewstack.io/feed/', },
+    { name: 'InfoWorld',                          site: 'https://www.infoworld.com', },
+    { name: 'Data Center Dynamics',               site: 'https://www.datacenterdynamics.com', feed: 'https://www.datacenterdynamics.com/en/rss/', },
     { name: 'DevOps.com',                         site: 'https://devops.com', feed: 'http://devops.com/feed/', },
+    { name: 'Google Cloud Blog',                  site: 'https://cloud.google.com/blog', feed: 'https://cloudblog.withgoogle.com/rss/', },
     { name: 'Cloud Native Now',                   site: 'https://cloudnativenow.com', feed: 'http://containerjournal.com/feed/', },
     { name: 'Platform Engineering',               site: 'https://platformengineering.org', feed: 'https://platformengineering.org/blog/rss.xml', },
     { name: 'Cloud Native Computing Foundation',  site: 'https://www.cncf.io', feed: 'https://www.cncf.io/feed', },
-    { name: 'Reddit — selfhosted',                site: 'https://www.reddit.com/r/selfhosted', feed: 'https://www.reddit.com/r/selfhosted/.rss', },
   ],
   android: [
     { name: 'MakeUseOf - Android',  site: 'https://www.makeuseof.com', feed: 'http://www.makeuseof.com/service/google-android/feed/', },
@@ -99,7 +116,13 @@ export const SOURCES = {
     { name: 'Autoblog',         site: 'http://www.autoblog.pt', feed: 'http://feeds.feedburner.com/autoblogpt', pt: true, },
     { name: 'AutoSport',        site: 'https://www.autosport.pt', feed: 'http://www.autosport.pt/feed/', pt: true, },
     { name: 'Latest F1 News',   site: 'https://www.formula1.com', feed: 'https://www.formula1.com/content/fom-website/en/latest/all.xml', },
-    { name: 'Motor24',          site: 'https://www.motor24.pt', feed: 'https://www.motor24.pt/feed/', pt: true, },
+    /* Motor24 removido 2026-08-23. O domínio continua de pé, mas o feed
+       passou a servir a redação generalista do grupo (Diário de Notícias):
+       dos 4 artigos devolvidos, 0 eram automóveis — futebol, dívida dos
+       EUA, política. O sitemap de recurso resolve literalmente para
+       dn.pt/news_sitemap.xml. Não é uma fonte de automóveis, e injetava no
+       tema `automovel` cópias do que `portugal` já cobre. Fica no
+       feeds.opml do V1, que é uma lista cronológica e não é afetado. */
     { name: 'What Car?',        site: 'https://www.whatcar.com', feed: 'https://www.whatcar.com/rss', },
     { name: 'InsideEVs',        site: 'https://insideevs.com', feed: 'https://insideevs.com/rss/articles/all/', },
   ],

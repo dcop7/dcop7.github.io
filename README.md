@@ -28,7 +28,8 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#home` | **Home** | Saudação, pesquisa, painel de descoberta diária (Hoje na História/Portugal, Nasceram Hoje, Destaque, Inspiração), bloco "Útil hoje" (meteo, combustíveis, eletricidade, feriados), bookmarks, feeds |
 | `#explorer` | **Explorar** | Hub de exploradores: Terra em Tempo Real (globo 3D dia/noite com camadas ao vivo — sismos, vulcões, incêndios, tempestades, nuvens NASA — viagem no tempo e auto-rotação), Sistema Solar, Galáxia, Corpo Humano 3D (three.js), Portugal (mapa concelhos), Linha do Tempo interativa, Dados do Mundo (Mundo▸Continente▸País▸Cidade), Temas (knowledge base Área→Tema→Subtema) |
 | `#noticias` | **Notícias** | Agregador RSS estático por tópicos (tecnologia, IA, gaming, economia, ciência, F1, fact-check, …) — sem DB, refresh a cada 4h via Action |
-| `#noticias-ai` | **Notícias AI** (experimental) | Edição diária curada: um editor de IA (Groq, na Action) agrupa, ordena e resume os mesmos artigos RSS — no máximo 5 histórias por tema. Corre **em paralelo** com `#noticias`, que fica intacto |
+| `#noticias/destaques` | **Notícias ▸ Destaques** | A seleção do dia: artigos sobre o mesmo acontecimento agrupados numa história, ordenados por importância editorial e resumidos — até 12 por tema, menos quando não há mais que mereça. Gerado na Action (Groq); o browser nunca fala com a IA |
+| `#noticias/todas` | **Notícias ▸ Todas** | O leitor RSS completo e cronológico. Pipeline independente do de Destaques |
 | `#eventos` | **Eventos** | Descoberta de eventos em Portugal (AgendaLX, e-cultura ao vivo + seed offline), mapa Leaflet, geocoding por concelho |
 | `#ocorrencias` | **Ocorrências PT** | Dashboard de proteção civil em tempo real: sismos (USGS, bbox PT/Atlântico), incêndios/ocorrências ANEPC (3 níveis: API Aberta com chave do utilizador → fogos.pt direto → snapshot via Action a cada 15 min), avisos meteorológicos por distrito (IPMA, polígonos coloridos), camadas de satélite (basemap NASA GIBS do próprio dia, focos de calor + áreas ardidas EFFIS/Copernicus), mapa Leaflet multi-basemap com detalhe por ocorrência e ordenação por recência/gravidade |
 | `#f1` | **Fórmula 1** | Secção experimental: calendário/resultados (Jolpica), posições live/replay em canvas (OpenF1), tudo CORS-direct sem backend |
@@ -250,7 +251,7 @@ O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs
 | `home-refresh.yml` | `data/home/build-home.mjs` | `data/home/today.json` (efemérides, nascimentos, destaque, citação) | diário ~07:20 Lisboa + catch-ups |
 | `utility-refresh.yml` | `data/home/build-utility.mjs` | `data/home/utility.json` (meteo, combustíveis DGEG, eletricidade indexada, feriados) | 2×/dia + catch-up |
 | `news-refresh.yml` | `data/news/build-news.mjs` | `data/news/topic-*.json` (a partir de `feeds.opml`) | a cada 4h |
-| `news-curate.yml` | `data/news/build-curated.mjs` | `data/news/curated/*` (edição diária curada por IA — **Notícias AI / V2**) | diário + catch-ups |
+| `news-curate.yml` | `data/news/build-curated.mjs` | `data/news/curated/*` (a seleção diária — **Notícias ▸ Destaques**) | diário + catch-ups |
 | `events-refresh.yml` | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` + `data/events/home.json` | diário |
 | `f1-refresh.yml` | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | diário, pós-corridas |
 | `oss-refresh.yml` | `data/oss/build-oss.mjs` | `data/oss/index.json` + `projects.json` | diário |
@@ -314,7 +315,7 @@ Google Fonts (CSS), Excalidraw (whiteboard), tiles de mapa (Carto/Esri/OSM) para
 3. **Actions nunca com gate por hora do dia** — gate pelo estado do snapshot (ver acima).
 4. **Assets só CC0/MIT/CC-BY/originais** — registar em `ASSET-REGISTRY.json`; preferir procedural/próprio.
 5. **Chrome da UI só com ícones SVG**; não reintroduzir bottom-nav mobile.
-6. **Nunca commitar chaves** — se um serviço exige chave, corre na Action com secret. Secrets em uso: `TMDB_KEY` (trailers), `ITAD_KEY` (deals), `GROQ_KEY` (Notícias AI). Todos opcionais: sem a chave, o build salta esse bloco e não estraga nada.
+6. **Nunca commitar chaves** — se um serviço exige chave, corre na Action com secret. Secrets em uso: `TMDB_KEY` (trailers), `ITAD_KEY` (deals), `GROQ_KEY` (Notícias ▸ Destaques). Todos opcionais: sem a chave, o build salta esse bloco e não estraga nada.
 7. **Dados primeiro** — conteúdo (quizzes, humor, temas, timeline) vive em JSON, não em código.
 8. **PT-first** — strings novas passam pelo `I18n` com pt e en.
 

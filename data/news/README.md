@@ -39,20 +39,28 @@ Sem chaves de API. Todas as fontes são feeds RSS/Atom públicos do OPML.
 
 ---
 
-## Notícias AI (V2) — curadoria diária
+## Destaques — a curadoria diária
 
 Camada **separada e opcional** por cima do agregador acima. Não toca em
 nada do que está descrito nesta página: mesmos feeds, mesmos
 `topic-*.json`, mesma Action. Só acrescenta uma segunda passagem.
 
-| | Notícias (V1) | Notícias AI (V2) |
+As duas são vistas da mesma secção Notícias, mas os pipelines são
+independentes de ponta a ponta — a curadoria pode falhar um dia inteiro
+sem que a vista Todas dê por isso.
+
+| | Todas | Destaques |
 |---|---|---|
-| Rota | `#noticias` | `#noticias-ai` |
+| Rota | `#noticias/todas` | `#noticias/destaques` (predefinição) |
 | Script | `build-news.mjs` | `build-curated.mjs` |
 | Action | `news-refresh.yml` (4/4h) | `news-curate.yml` (diária) |
 | Dados | `topic-*.json` | `curated/*` |
-| Página | `js/pages/noticias.js` | `js/pages/noticias-ai.js` |
-| Conteúdo | ~150 artigos cronológicos | ≤5 histórias por tema |
+| Página | `js/pages/noticias.js` | `js/pages/noticias-destaques.js` |
+| Conteúdo | ~150 artigos cronológicos | ≤12 histórias por tema |
+
+O teto de 12 é um **limite, nunca uma quota**: temas sem material
+suficiente devolvem menos, e um tema sem nada acima do mínimo editorial
+(`MIN_SCORE`) desaparece do dia em vez de aparecer vazio.
 
 ### Como funciona
 
