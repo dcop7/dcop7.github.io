@@ -177,12 +177,18 @@
 /* ══════════ MODO LISTA ══════════ */
 .na-grid--list { gap: calc(var(--sp-2) * var(--den)); }
 .na-row {
-  display: grid; grid-template-columns: 1.5rem auto minmax(0, 1fr); gap: .7rem;
+  /* rank · thumb · body · time — the time is a column of its own so it
+     lands in the same place on every row regardless of how many
+     publisher chips the meta line carries. */
+  display: grid; grid-template-columns: 1.5rem auto minmax(0, 1fr) auto; gap: .7rem;
   align-items: start;
   background: var(--card); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: .7rem .8rem;
   transition: border-color var(--ease), background var(--ease);
 }
+/* No thumbnail: drop the image column rather than letting auto-placement
+   shift everything left and strand the time in the wrong cell. */
+.na-row--noimg { grid-template-columns: 1.5rem minmax(0, 1fr) auto; }
 .na-row:hover { border-color: var(--border2); background: var(--card2); }
 .na-rank--sm { font-size: 1rem; padding-top: .05rem; }
 .na-r-img { width: 84px; height: 60px; object-fit: cover; border-radius: var(--radius-xs); border: 1px solid var(--border); }
@@ -197,7 +203,7 @@
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .na-r-meta { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; font-size: var(--fs-xs); }
-.na-row .na-time { margin-left: auto; }
+.na-r-time { margin-left: 0; white-space: nowrap; padding-top: .15rem; font-size: var(--fs-xs); }
 
 /* ══════════ MODO COMPACTO ══════════ */
 .na-grid--compact { gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }

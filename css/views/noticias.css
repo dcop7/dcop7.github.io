@@ -50,7 +50,18 @@
    override de tema claro seguir exatamente o mesmo padrão de todos os
    outros. O dourado é o do anel do favicon; no tema claro escurece para
    #8a6114, senão fica em 1.8:1 contra o fundo — muito abaixo de AA. */
-.nw-tab.active { color: var(--nw-tab-on); border-bottom-color: var(--nw-tab-on); }
+/* Colour alone was not enough of a signal: with the old filled pill gone,
+   a selected tab read as "gold text" rather than "you are here". It gets a
+   tinted ground and a thicker rule, so the state is legible from shape as
+   well as from hue — which is also what makes it work for a reader who
+   cannot separate the gold from the teal. */
+.nw-tab.active {
+  color: var(--nw-tab-on);
+  background: rgba(var(--nw-tab-on-rgb), .13);
+  border-bottom-color: var(--nw-tab-on);
+  border-bottom-width: 3px;
+}
+.nw-tab.active:hover { background: rgba(var(--nw-tab-on-rgb), .18); color: var(--nw-tab-on); }
 .nw-tab.active:focus-visible { outline-color: var(--nw-tab-on); }
 .nw-tab:focus-visible { outline: 2px solid var(--pg-accent); outline-offset: -2px; }
 

@@ -133,7 +133,7 @@ body.density-list    { --den: .58; }
    Teal em vez do roxo anterior — mais fundo que o mint de Eventos, para
    as duas secções não se confundirem na barra lateral. */
 #view-noticias,
-#view-destaques   { --pg-accent: #14b8a6; --pg-accent-rgb: 20,184,166; --nw-tab-on: #f2b344; }
+#view-destaques   { --pg-accent: #14b8a6; --pg-accent-rgb: 20,184,166; --nw-tab-on: #f2b344; --nw-tab-on-rgb: 242,179,68; }
 #view-eventos     { --pg-accent: #2dd4bf; --pg-accent-rgb: 45,212,191; }
 #view-cidadao     { --pg-accent: #10b981; --pg-accent-rgb: 16,185,129; }
 #view-ocorrencias { --pg-accent: #f59e0b; --pg-accent-rgb: 245,158,11; }
@@ -156,7 +156,7 @@ body.density-list    { --den: .58; }
    once, and the soft rgba() tints just get a touch deeper. */
 body.light #view-explorer    { --pg-accent: #24799f; --pg-accent-rgb: 36,121,159; }
 body.light #view-noticias,
-body.light #view-destaques   { --pg-accent: #0f766e; --pg-accent-rgb: 15,118,110; --nw-tab-on: #8a6114; }
+body.light #view-destaques   { --pg-accent: #0f766e; --pg-accent-rgb: 15,118,110; --nw-tab-on: #8a6114; --nw-tab-on-rgb: 138,97,20; }
 body.light #view-eventos     { --pg-accent: #1b7f73; --pg-accent-rgb: 27,127,115; }
 body.light #view-cidadao     { --pg-accent: #0b815a; --pg-accent-rgb: 11,129,90; }
 body.light #view-ocorrencias { --pg-accent: #9d6507; --pg-accent-rgb: 157,101,7; }

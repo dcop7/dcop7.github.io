@@ -192,7 +192,18 @@ const DestaquesPage = (function () {
     const thumb = s.image
       ? `<img class="na-r-img" src="${esc(s.image)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`
       : '';
-    return `<article class="na-row">
+    /* The timestamp sits in its own grid column, not inside .na-r-meta.
+       That row wraps, so a story with several publisher chips pushed the
+       time onto a second line where `margin-left:auto` right-aligned it
+       against the wrong baseline — the same "há 14h" was flush right on
+       some rows and adrift on others. A column always lands in the same
+       place, however many chips the story has.
+
+       The row is told explicitly when it has no thumbnail: with one fewer
+       child, auto-placement slid every remaining item one column left and
+       left the time column empty, which is what knocked the imageless
+       story out of alignment with the ones above and below it. */
+    return `<article class="na-row${thumb ? '' : ' na-row--noimg'}">
       <span class="na-rank na-rank--sm" aria-hidden="true">${s.rank}</span>
       ${thumb}
       <div class="na-r-body">
@@ -202,9 +213,9 @@ const DestaquesPage = (function () {
           <span class="na-score na-score--${band.cls}" title="${_t('AI estimate of importance — an opinion', 'Estimativa de importância da IA — uma opinião')}"><span class="na-score-n">${s.score}</span><span class="na-score-l">${_t(band.en, band.pt)}</span></span>
           <span class="na-cov${s.sourceCount > 1 ? '' : ' na-cov--one'}" title="${_t('Measured: distinct feeds', 'Medido: fontes distintas')}">📡 ${s.sourceCount}</span>
           ${pubs.slice(0, 3).map(p => `<a class="na-src" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.source)}${p.count > 1 ? `<span class="na-src-n">×${p.count}</span>` : ''}</a>`).join('')}
-          <span class="na-time">${esc(relTime(s.ts))}</span>
         </div>
       </div>
+      <span class="na-time na-r-time">${esc(relTime(s.ts))}</span>
     </article>`;
   }
 
