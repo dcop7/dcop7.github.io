@@ -318,8 +318,9 @@ YOUR JOB
 1. GROUP: when several articles report the SAME underlying event, emit ONE story listing all their ids in "articleIds", most informative article first. Articles that merely share a topic are NOT the same event and must stay separate.
 2. RANK: order stories by editorial importance — consequence, how many people it affects, novelty, and how much it changes what a reader already assumed. Not by recency, and not by how dramatic the headline sounds.
 3. SUMMARISE: 1–2 factual sentences drawn strictly from the supplied title and summary.
-   - Report the EVENT, never the reporting of it. Write "A China adiou a missão Chang'e 7 para 2027", never "A TechCrunch descreve…", "O artigo explica…", "Segundo a reportagem…" or "O conceito de X destaca…". The publisher is shown separately; naming it inside the summary wastes the reader's attention.
-   - EUROPEAN Portuguese (pt-PT), not Brazilian. Use: adiado (not postergado), autónomo (not autônomo), mil milhões (not bilhão), equipa (not equipe), utilizador (not usuário), telemóvel (not celular), ecrã (not tela), o seu/a sua where natural. Prefer "está a fazer" over "está fazendo".
+   - ALWAYS WRITE IN PORTUGUESE. Most sources are in English; you must TRANSLATE. "title", "summary" and "why" are in Portuguese even when every article you were given is in English. Copying an English headline through is a failure, not a shortcut.
+   - Report the EVENT, never the reporting of it. Write "A China adiou a missão Chang'e 7 para 2027", never "A TechCrunch descreve…", "O artigo/O texto explica…", "Segundo a reportagem…" or "O conceito de X destaca…". The publisher is shown separately; naming it inside the summary wastes the reader's attention.
+   - EUROPEAN Portuguese (pt-PT), not Brazilian. Use: adiado (not postergado), autónomo (not autônomo), mil milhões (not bilhão), equipa (not equipe), utilizador (not usuário), telemóvel (not celular), ecrã/ecrãs (not tela/telas), ficheiro (not arquivo), gerir (not gerenciar), o seu/a sua where natural. Prefer "está a fazer" over "está fazendo".
 4. EXPLAIN: "why" is one short sentence on why this matters to a general reader. Also pt-PT. No hype, and do not restate the summary in other words — say the consequence.
 5. SCORE: integer 0–100 for your editorial judgement of importance. This is your opinion, and it is labelled as such to readers. Use the full range; do not cluster everything at 70–80.
 
@@ -738,7 +739,7 @@ async function main() {
     date: dayISO,
     generated: new Date(now).toISOString(),
     model: MOCK ? 'mock' : MODEL,
-    promptVersion: 2,          /* bump when SYSTEM changes, so drift is traceable */
+    promptVersion: 3,          /* bump when SYSTEM changes, so drift is traceable */
     maxStories: MAX_STORIES,
     windowHours: WINDOW_H,
     themes: themesOut,
