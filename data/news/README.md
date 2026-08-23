@@ -2,21 +2,43 @@
 
 Agregador de notícias **sem backend e sem base de dados**, para GitHub Pages.
 
-## Como funciona
+## Arquitetura
 
-1. **`feeds.opml`** — exportação do Feedly, é a **fonte de verdade** das subscrições
-   RSS. Para adicionar/remover feeds, edita este ficheiro (ou substitui-o por um
-   novo export). Suporta centenas de feeds.
-2. **`build-news.mjs`** — corre no servidor (GitHub Action, sem CORS):
-   - lê o OPML, faz fetch de todos os feeds (pool concorrente, timeout por feed,
-     falhas isoladas — um feed morto não estraga a corrida);
-   - parser próprio de **RSS e Atom** (sem dependências);
-   - **remove duplicados** (por URL normalizado + fonte+título);
-   - **classifica por tópico** (mapa fonte→tópico + palavras-chave);
-   - escreve **JSON estático**.
-3. **`.github/workflows/news-refresh.yml`** — corre **de 4 em 4 horas** (e manualmente),
-   corre o build e faz commit dos JSON se mudarem.
-4. O browser (`js/pages/noticias.js`, secção `#noticias`) lê apenas o JSON estático.
+Uma lista de fontes, uma camada de aquisição, duas vistas.
+
+```
+sources.mjs        1 registo por fonte, com topic (Todas) e theme (Destaques)
+     │
+     ▼
+acquire.mjs        o ÚNICO sítio que faz fetch e parse de um feed
+     │             cadeia: scrape → feed conhecido → autodiscovery
+     │                     → news sitemap → pesquisa
+     │
+     ├──▶ build-news.mjs      → topic-*.json   Notícias ▸ Todas   (4/4h)
+     └──▶ build-curated.mjs   → curated/*      Notícias ▸ Destaques (diário)
+```
+
+Antes havia duas implementações do mesmo trabalho — uma sobre o
+`feeds.opml`, outra sobre um `curated-sources.mjs` — com dois parsers e
+dois normalizadores de URL. O mesmo bug do Blogger (atributos Atom com
+plicas, que devolviam zero itens em todos os feeds Blogger) teve de ser
+encontrado e corrigido **duas vezes**. Agora corrige-se uma.
+
+O `feeds.opml` continua no repositório como o export original do Feedly,
+mas **já não é lido por nada**.
+
+1. **`sources.mjs`** — a lista. Cada registo tem `topic` (em que separador
+   aparece em Todas) e `theme` (que tema de Destaques alimenta, ou `null`
+   quando a fonte não é curada de propósito: formatos como TLDR/fact-check,
+   ou fontes retiradas da curadoria por qualidade).
+2. **`acquire.mjs`** — resolve cada fonte pela cadeia, com pool concorrente,
+   timeout por fonte e falhas isoladas (uma fonte morta não estraga a
+   corrida). Parser próprio de RSS e Atom, sem dependências.
+3. **`build-news.mjs`** — só o que é específico de Todas: 17 tópicos,
+   classificação por palavra-chave, trailers TMDB, janela de 30 dias,
+   dedupe e os shards por tópico.
+4. **`.github/workflows/news-refresh.yml`** — de 4 em 4 horas (e manualmente).
+5. O browser (`js/pages/noticias.js`) lê apenas o JSON estático.
 
 ## Output (gerado — não editar à mão)
 
@@ -56,6 +78,7 @@ sem que a vista Todas dê por isso.
 | Action | `news-refresh.yml` (4/4h) | `news-curate.yml` (diária) |
 | Dados | `topic-*.json` | `curated/*` |
 | Página | `js/pages/noticias.js` | `js/pages/noticias-destaques.js` |
+| Fontes | registos com `topic` | registos com `theme` |
 | Conteúdo | ~150 artigos cronológicos | ≤12 histórias por tema |
 
 O teto de 12 é um **limite, nunca uma quota**: temas sem material
@@ -64,18 +87,28 @@ suficiente devolvem menos, e um tema sem nada acima do mínimo editorial
 
 ### Como funciona
 
-1. `build-curated.mjs` recolhe as **suas próprias fontes**
-   (`curated-sources.mjs`), independentes do `feeds.opml` do V1.
-2. A unidade é o **site**, não o feed. `curated-fetch.mjs` resolve cada
-   fonte por uma cadeia, e guarda o que funcionou em
-   `curated/sources-resolved.json` (TTL 7 dias):
+1. `build-curated.mjs` usa os registos de `sources.mjs` que têm `theme`.
+2. A unidade é o **site**, não o feed. `acquire.mjs` resolve cada fonte
+   por uma cadeia e guarda o que funcionou em
+   `sources-resolved.json` (TTL 7 dias, chaveado pelo **nome** da fonte —
+   sete secções do MakeUseOf e cinco newsletters TLDR partilham o mesmo
+   site e colidiam quando a chave era o site):
 
    | # | Estratégia | Para quê |
    |---|---|---|
+   | 0 | scrape | só para fontes com `kind:'scrape'` — as 4 que nunca tiveram feed |
    | 1 | feed conhecido | o caminho normal |
    | 2 | autodiscovery no site | apanha feeds que **mudaram** |
    | 3 | news sitemap (via robots.txt) | sites sem RSS; funciona mesmo com homepage a dar 403 |
+   | 4 | pesquisa (TinyFish) | **último recurso**, só para sites que recusam fetch automático |
    | — | snapshot do V1 | rede de segurança, marcada como `v1 snapshot` |
+
+   A estratégia 4 precisa de `TINYFISH_KEY` (secret da Action). Sem chave,
+   sem rede ou com resposta inválida, a fonte fica `none` — exatamente o
+   comportamento que existia antes da estratégia. Nunca corre quando
+   qualquer estratégia anterior devolveu artigos: a pesquisa ordena por
+   relevância e o RSS enumera por recência, por isso é um chão por baixo
+   das fontes bloqueadas, nunca um substituto do feed.
 
    Acrescentar uma fonte = uma linha `{ name, site }`. O `feed` é
    opcional. Um site que tire o RSS cai sozinho para o nível seguinte.

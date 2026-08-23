@@ -32,6 +32,8 @@ jobs:
         run: node data/news/build-news.mjs
         env:
           TMDB_KEY: ${{ secrets.TMDB_KEY }}   # optional: enables the Trailers tab (free key from themoviedb.org)
+          # optional: last-resort acquisition for sources that block fetching
+          TINYFISH_KEY: ${{ secrets.TINYFISH_KEY }}
 
       - name: Commit updated news if changed
         run: |

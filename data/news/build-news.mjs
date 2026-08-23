@@ -1,26 +1,28 @@
 /* ══════════════════════════════════════════════════════════════════
-   build-news.mjs — static news aggregator (no DB, no runtime deps)
-   Reads the Feedly OPML (data/news/feeds.opml) as the source of truth,
-   fetches every RSS/Atom feed server-side (a GitHub Action runs this every
-   4h — no CORS there), parses + dedupes + classifies by topic, and writes
-   static JSON for GitHub Pages:
+   build-news.mjs — Notícias ▸ Todas: the complete chronological reader.
+
+   Reads the shared list in sources.mjs and acquires articles through
+   acquire.mjs — the SAME module Notícias ▸ Destaques uses, so a feed
+   parsed here is parsed by exactly one implementation. This file owns
+   only what is specific to Todas: the 17 topics, keyword classification,
+   TMDB trailers, the 30-day retention window and the per-topic shards.
+
+   A GitHub Action runs it every 4h (no CORS there). Writes static JSON
+   for GitHub Pages:
        data/news/index.json        catalog: topics, sources, counts, ts
        data/news/latest.json       newest ~180 across all topics
        data/news/topic-<id>.json   newest ~140 per topic
-   Pure Node (global fetch, Node 18+). Scales to hundreds of feeds via a
-   bounded fetch pool with per-feed timeout and isolated failures.
+   Pure Node (global fetch, Node 18+).
    Run: node data/news/build-news.mjs
 ══════════════════════════════════════════════════════════════════ */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SOURCES } from './sources.mjs';
+import { acquire, saveCache, urlKey, slug, cleanText } from './acquire.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-/* A real browser UA recovers feeds that block generic/bot user-agents. */
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const CONCURRENCY = 10;
-const FEED_TIMEOUT = 14000;
-const ITEMS_PER_FEED = 80;     /* capture as many as each feed offers (most give fewer) */
 const RETAIN_DAYS = 30;   /* retain a bit longer so slower feeds (e.g. fact-checkers) still surface */
 const PER_TOPIC = 500;         /* topic shard cap — serves the "all ≤500" view option */
 const SUMMARY_LEN = 220;
@@ -50,266 +52,21 @@ const TOPICS = [
 const TOPIC_IDS = new Set(TOPICS.map(t => t[0]));
 const FEATURED = new Set(TOPICS.filter(t => t[4]).map(t => t[0]));
 
-/* ── Source → primary topic + Portuguese flag (keyed by OPML title) ── */
-const SRC = {
-  /* Tecnologia */
-  'MakeUseOf - Technology News': ['tecnologia', false], 'MakeUseOf - Internet': ['tecnologia', false],
-  'MakeUseOf - Windows': ['tecnologia', false], 'MakeUseOf - Linux': ['tecnologia', false],
-  'Pplware': ['tecnologia', true], 'MaisTecnologia': ['tecnologia', true], 'Leak': ['tecnologia', true],
-  'Tek Notícias': ['tecnologia', true], 'PCGuia': ['tecnologia', true], 'Minuto Digital': ['tecnologia', true],
-  'Xa das 5': ['tecnologia', true], 'A tecnologia está do teu lado': ['tecnologia', true],
-  'XDA': ['tecnologia', false], 'ZDNet': ['tecnologia', false], 'Forbes - Innovation': ['tecnologia', false],
-  'TechCrunch': ['tecnologia', false], 'The Verge': ['tecnologia', false], 'Ars Technica': ['tecnologia', false],
-  'HowToGeek': ['tecnologia', false],
-  /* IA */
-  'Simon Willison': ['ia', false], 'OpenAI': ['ia', false],
-  'Google DeepMind': ['ia', false], 'Latent Space': ['ia', false], 'One Useful Thing': ['ia', false],
-  'Future Tools': ['ia', false],
-  /* TLDR (isolated newsletter section) */
-  'TLDR Tech': ['tldr', false], 'TLDR IT': ['tldr', false], 'TLDR DevOps': ['tldr', false],
-  'TLDR AI': ['tldr', false], 'TLDR Data': ['tldr', false], 'TLDR Hardware': ['tldr', false],
-  /* Android */
-  'MakeUseOf - Android': ['android', false], '9to5Google': ['android', false], 'Android Police': ['android', false],
-  'AndroidGeek': ['android', true], 'Android Authority': ['android', false],
-  /* Produtividade */
-  'MakeUseOf - Productivity': ['produtividade', false], 'Lifehacker': ['produtividade', false],
-  /* DevOps */
-  'DevOps on Medium': ['devops', false],
-  'The New Stack': ['devops', false], 'DevOps.com': ['devops', false], 'Cloud Native Now': ['devops', false],
-  'Platform Engineering': ['devops', false], 'Cloud Native Computing Foundation': ['devops', false],
-  'Reddit — selfhosted': ['devops', false],
-  /* Segurança */
-  'The Hacker News': ['seguranca', false], 'Krebs on Security': ['seguranca', false],
-  'BleepingComputer': ['seguranca', false], 'Dark Reading': ['seguranca', false],
-  /* Ciência */
-  'ScienceDaily': ['ciencia', false], 'Nature': ['ciencia', false], 'New Scientist': ['ciencia', false],
-  /* Carros */
-  'Razão Automóvel': ['carros', true], 'Autoblog': ['carros', true], 'Motor24': ['carros', true],
-  'What Car?': ['carros', false], 'InsideEVs': ['carros', false],
-  /* F1 & Motorsport */
-  'Latest F1 News': ['f1', false], 'AutoSport': ['f1', true],
-  /* Gaming */
-  'IGN Portugal': ['gaming', true], 'Eurogamer.pt': ['gaming', true],
-  /* Filmes e TV */
-  'MovieWeb': ['filmes', false], '/Film': ['filmes', false], 'ScreenRant': ['filmes', false],
-  'Aberto até de Madrugada': ['filmes', true],
-  /* Fact Check */
-  'Polígrafo': ['factcheck', true], 'Lusa — Combate Fake News': ['factcheck', true],
-  'Público — Prova dos Factos': ['factcheck', true], 'EU vs Disinfo': ['factcheck', false],
-  'FactCheck.org': ['factcheck', false], 'Snopes': ['factcheck', false],
-  /* Geral PT */
-  'SIC Notícias': ['geral', true], 'Diário de Notícias': ['geral', true],
-  'RTP Notícias / Geral / Últimas': ['geral', true], 'Expresso': ['geral', true], 'Região de Leiria': ['geral', true],
-  /* Mundo */
-  'The Guardian — World': ['mundo', false],
-  'BBC News': ['mundo', false], 'Euronews': ['mundo', false],
-  /* Economia */
-  'Contas Poupança': ['economia', true], 'Jornal de Negócios': ['economia', true],
-  'Literacia Financeira': ['economia', true],
-};
+/* Topic and Portuguese flag now live on each record in sources.mjs, so
+   the old title-keyed SRC map is gone: one source, one place. */
 
-/* No cross-cutting keyword tags — each article keeps its source's topic, so
-   the tabs stay clean (a tech article never leaks into Geral PT). */
 const KW = [];
 
-/* ── tiny helpers ── */
-const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', ldquo: '“', rdquo: '”', laquo: '«', raquo: '»', deg: '°', euro: '€' };
-const decodeEntities = (s) => (s || '')
-  .replace(/&#x([0-9a-f]+);/gi, (_, h) => { try { return String.fromCodePoint(parseInt(h, 16)); } catch { return ''; } })
-  .replace(/&#(\d+);/g, (_, d) => { try { return String.fromCodePoint(+d); } catch { return ''; } })
-  .replace(/&([a-z]+[0-9]?);/gi, (m, n) => (n.toLowerCase() in NAMED ? NAMED[n.toLowerCase()] : m));
-const stripCdata = (s) => (s || '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
-const stripTags = (s) => (s || '').replace(/<[^>]+>/g, ' ');
-const cleanText = (s) => decodeEntities(stripTags(stripCdata(s || ''))).replace(/\s+/g, ' ').trim();
-const cleanTitle = (s) => decodeEntities(stripTags(stripCdata(s || ''))).replace(/\s+/g, ' ').trim();
-
-function tagInner(block, name) {
-  const re = new RegExp('<(?:\\w+:)?' + name + '(?:\\s[^>]*)?>([\\s\\S]*?)<\\/(?:\\w+:)?' + name + '>', 'i');
-  const m = block.match(re); return m ? m[1] : '';
-}
-/* Atom <link href=…>: prefer rel="alternate" or no rel; skip rel="self". */
-function atomLink(block) {
-  const links = block.match(/<link\b[^>]*\/?>/gi) || [];
-  let best = '';
-  for (const l of links) {
-    const href = (l.match(/href="([^"]+)"/i) || [])[1];
-    if (!href) continue;
-    const rel = (l.match(/rel="([^"]+)"/i) || [])[1] || 'alternate';
-    if (rel === 'self') continue;
-    if (rel === 'alternate') return href;
-    if (!best) best = href;
-  }
-  return best;
-}
-
-/* ── OPML ── (supports type="rss"/"atom" feeds and type="scrape" sources:
-   a scrape outline points xmlUrl at an HTML listing page and carries a
-   `match` regex selecting article hrefs — a fallback for sites without RSS.) */
-function parseOPML(xml) {
-  const feeds = [];
-  const re = /<outline\b[^>]*type="(rss|atom|scrape)"[^>]*>/gi;
-  let m;
-  while ((m = re.exec(xml))) {
-    const o = m[0];
-    const kind = (m[1] || 'rss').toLowerCase();
-    const xmlUrl = (o.match(/xmlUrl="([^"]+)"/i) || [])[1];
-    const title = decodeEntities((o.match(/(?:title|text)="([^"]+)"/i) || [])[1] || '');
-    const htmlUrl = (o.match(/htmlUrl="([^"]+)"/i) || [])[1] || '';
-    const match = (o.match(/\bmatch="([^"]+)"/i) || [])[1] || '';
-    const titlefrom = (o.match(/\btitlefrom="([^"]+)"/i) || [])[1] || '';
-    const datefrom = (o.match(/\bdatefrom="([^"]+)"/i) || [])[1] || '';
-    if (xmlUrl) feeds.push({ title, kind, match, titlefrom, datefrom, xmlUrl: decodeEntities(xmlUrl), htmlUrl: decodeEntities(htmlUrl) });
-  }
-  /* de-dup identical feed URLs (the OPML has a couple) */
-  const seen = new Set();
-  return feeds.filter(f => (seen.has(f.xmlUrl) ? false : seen.add(f.xmlUrl)));
-}
-
-/* Title from a URL slug (for scraped links whose anchor text is JS-rendered). */
-function slugTitle(u) {
-  try {
-    const seg = (new URL(u).pathname.replace(/\/$/, '').split('/').pop() || '').replace(/-\d{4,}$/, '');
-    const t = decodeEntities(decodeURIComponent(seg)).replace(/[-_]+/g, ' ').trim();
-    return t.replace(/\b\p{L}/gu, c => c.toUpperCase());
-  } catch { return ''; }
-}
-
-/* Real publish date from an article page (JSON-LD datePublished or og meta). */
-function extractPubDate(html) {
-  let m = html.match(/"datePublished"\s*:\s*"([^"]+)"/i);
-  if (m) { const t = Date.parse(m[1]); if (!isNaN(t)) return t; }
-  m = html.match(/property="article:published_time"[^>]*content="([^"]+)"/i) || html.match(/content="([^"]+)"[^>]*property="article:published_time"/i);
-  if (m) { const t = Date.parse(m[1]); if (!isNaN(t)) return t; }
-  return null;
-}
-/* Date embedded in a URL path, e.g. /2026/06/13/… (Público). */
-function urlDate(u) {
-  const m = (u || '').match(/\/(20\d{2})\/(\d{2})\/(\d{2})\//);
-  if (m) { const t = Date.parse(`${m[1]}-${m[2]}-${m[3]}T12:00:00Z`); if (!isNaN(t)) return t; }
-  return null;
-}
-
-/* Scrape article links from an HTML listing page (no-RSS fallback). Dating:
-   datefrom="url"  → parse the date out of the article URL;
-   datefrom="page" → flagged here, resolved later by fetching each article;
-   otherwise       → staggered just-past timestamp (kept present but never
-   burying real dated news, e.g. Literacia Financeira inside Economia). */
-const SCRAPE_JUNK = /^(ler mais|leia mais|saiba mais|ver mais|read more|continuar a ler|continue reading)$|arrow_|read_more|chevron|material-icons/i;
-function scrapeArticles(html, f, now) {
-  let origin = ''; try { origin = new URL(f.xmlUrl).origin; } catch {}
-  const matchRe = f.match ? new RegExp(f.match, 'i') : /^https?:/i;
-  const forceSlug = f.titlefrom === 'slug';
-  const re = /<a\b[^>]*href="([^"#]+)"[^>]*>([\s\S]*?)<\/a>/gi;
-  const out = [], seen = new Set();
-  let m, idx = 0;
-  while ((m = re.exec(html))) {
-    let href = m[1];
-    if (!matchRe.test(href)) continue;
-    if (href.startsWith('/')) href = origin + href;
-    else if (!/^https?:/i.test(href)) continue;
-    const key = href.replace(/\/$/, '');
-    if (seen.has(key)) continue; seen.add(key);
-    let title = '';
-    if (!forceSlug) {
-      const txt = cleanTitle(m[2]).replace(/^Media\s+/, '').trim();   /* drop inline category label */
-      if (txt.length >= 12 && !SCRAPE_JUNK.test(txt)) title = txt;
-    }
-    if (!title) title = slugTitle(href);
-    if (!title || title.length < 6) continue;
-    let ts = now - 2 * 86400000 - idx * 3600000, needDate = false;   /* default: buried */
-    if (f.datefrom === 'url') { const ud = urlDate(href); if (ud != null) ts = ud; else ts = now - idx * 3600000; }
-    else if (f.datefrom === 'page') needDate = true;                  /* resolved after fetch */
-    out.push({ title: title.slice(0, 160), link: href, ts, _needDate: needDate, _idx: idx, summary: '', image: '' });
-    idx++;
-  }
-  return out;
-}
-
-/* ── fetch with timeout ── */
-async function fetchText(url) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), FEED_TIMEOUT);
-  try {
-    const r = await fetch(url, {
-      signal: ctrl.signal, redirect: 'follow',
-      headers: { 'User-Agent': UA, 'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*' },
-    });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return await r.text();
-  } finally { clearTimeout(t); }
-}
-
-/* Best-effort thumbnail: media:content/thumbnail, image enclosure, <img> in
-   the content, or itunes:image. Returns '' if none found. */
-function extractImage(block, rawDesc) {
-  const cands = [];
-  let m, re = /<media:(?:content|thumbnail)\b[^>]*\burl="([^"]+)"/gi;
-  while ((m = re.exec(block))) cands.push(m[1]);
-  re = /<enclosure\b[^>]*\burl="([^"]+)"[^>]*>/gi;
-  while ((m = re.exec(block))) { if (/type="image\//i.test(m[0]) || /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(m[1])) cands.push(m[1]); }
-  const im = (rawDesc || '').match(/<img\b[^>]*\bsrc="([^"]+)"/i); if (im) cands.push(im[1]);
-  const it = block.match(/<itunes:image\b[^>]*\bhref="([^"]+)"/i); if (it) cands.push(it[1]);
-  for (const c of cands) { const u = decodeEntities(c).trim(); if (/^https?:\/\//i.test(u)) return u; }
-  return '';
-}
-
-/* ── feed parsing (RSS <item> + Atom <entry>) ── */
-function parseFeed(xml) {
-  const out = [];
-  const isAtom = /<entry[\s>]/i.test(xml) && !/<item[\s>]/i.test(xml);
-  const blocks = xml.match(isAtom ? /<entry[\s>][\s\S]*?<\/entry>/gi : /<item[\s>][\s\S]*?<\/item>/gi) || [];
-  for (const b of blocks) {
-    const title = cleanTitle(tagInner(b, 'title'));
-    let link = '';
-    if (isAtom) link = atomLink(b);
-    if (!link) link = cleanText(tagInner(b, 'link'));
-    if (!link) {
-      const guid = cleanText(tagInner(b, 'guid'));
-      if (/^https?:\/\//i.test(guid)) link = guid;
-    }
-    const dateStr = tagInner(b, 'pubDate') || tagInner(b, 'published') || tagInner(b, 'updated') || tagInner(b, 'date');
-    const ts = Date.parse(cleanText(dateStr));
-    const rawDesc = tagInner(b, 'encoded') || tagInner(b, 'description') || tagInner(b, 'content') || tagInner(b, 'summary');
-    const desc = cleanText(rawDesc);
-    const image = extractImage(b, rawDesc);
-    if (!title || !link) continue;
-    out.push({ title, link: link.trim(), ts: isNaN(ts) ? null : ts, summary: desc, image });
-  }
-  return out;
-}
-
-/* ── url normalisation for dedupe ── */
-function urlKey(u) {
-  try {
-    const x = new URL(u);
-    x.hash = '';
-    const drop = [...x.searchParams.keys()].filter(k => /^utm_|^fbclid$|^gclid$|^mc_|^ref$|^source$/i.test(k));
-    drop.forEach(k => x.searchParams.delete(k));
-    let s = (x.host + x.pathname).toLowerCase().replace(/\/$/, '');
-    const q = x.searchParams.toString();
-    return s + (q ? '?' + q : '');
-  } catch { return (u || '').toLowerCase(); }
-}
+/* ── classification + dedupe helpers (specific to Todas) ──────────
+   Everything to do with fetching and parsing now lives in acquire.mjs;
+   what remains here is only how Todas organises what it was given. */
 const normTitle = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
-/* ── classify ── */
 function classify(art, primary) {
   const topics = new Set([primary]);
   const hay = art.title + ' ' + art.summary;
   for (const [tp, re] of KW) if (re.test(hay)) topics.add(tp);
   return [...topics].filter(t => TOPIC_IDS.has(t));
-}
-
-const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
-
-/* ── bounded pool ── */
-async function pool(items, n, fn) {
-  const ret = new Array(items.length);
-  let i = 0;
-  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => {
-    while (i < items.length) { const idx = i++; try { ret[idx] = await fn(items[idx], idx); } catch (e) { ret[idx] = { _err: String(e && e.message || e) }; } }
-  }));
-  return ret;
 }
 
 /* ── Trailers via TMDB API (mainstream only, scored to hide obscure films) ──
@@ -375,75 +132,62 @@ async function fetchTrailers(now) {
 }
 
 /* ════════════════════════════ MAIN ════════════════════════════ */
-const opml = readFileSync(HERE + '/feeds.opml', 'utf8');
-const feeds = parseOPML(opml);
-console.log(`OPML: ${feeds.length} feeds`);
-
 const now = Date.now();
 const minTs = now - RETAIN_DAYS * 86400000;
 const maxTs = now + 36 * 3600000; /* allow slight clock skew / scheduled posts */
 
-const results = await pool(feeds, CONCURRENCY, async (f) => {
-  const text = await fetchText(f.xmlUrl);
-  const items = (f.kind === 'scrape' ? scrapeArticles(text, f, now) : parseFeed(text)).slice(0, ITEMS_PER_FEED);
-  return { feed: f, items };
+console.log(`Sources: ${SOURCES.length} (shared list)`);
+
+/* One call. Fetching, feed/scrape parsing, feed rediscovery, sitemap
+   fallback, search fallback and datefrom=page resolution all happen
+   inside acquire.mjs — the same code path Destaques uses. */
+const { articles: acquired, report, cache } = await acquire(SOURCES, {
+  concurrency: CONCURRENCY, now, windowH: RETAIN_DAYS * 24,
 });
+saveCache(cache);
 
-/* Resolve REAL publish dates for scrape sources flagged datefrom="page"
-   (e.g. Polígrafo, Lusa): fetch each of the most recent articles and read its
-   datePublished, so recent fact-checks aren't hidden behind the date filter.
-   Bounded to the newest DATE_CAP per source; failures fall back to recent. */
-const DATE_CAP = 32;
-const toDate = [];
-for (const r of results) { if (r && r.items) for (const it of r.items.slice(0, DATE_CAP)) if (it._needDate) toDate.push(it); }
-if (toDate.length) {
-  console.log(`Resolving ${toDate.length} article dates (datefrom=page)…`);
-  await pool(toDate, 6, async (it) => {
-    const html = await fetchText(it.link).catch(() => '');
-    const t = html ? extractPubDate(html) : null;
-    it.ts = t != null ? t : (now - (it._idx + 1) * 4 * 3600000);   /* unknown → recent, staggered */
-  });
-}
+const viaCount = {};
+for (const r of report) viaCount[r.via] = (viaCount[r.via] || 0) + 1;
+console.log('  strategies: ' + Object.entries(viaCount).map(([k, v]) => `${k}=${v}`).join(' · '));
+for (const r of report) if (r.via !== 'known feed' && r.via !== 'cache') console.log(`   · ${r.name}: ${r.via}${r.count ? ` (${r.count})` : ''}`);
 
-const sourcesMeta = [];
+/* ── shape into Todas' article records ── */
+const byName = new Map(SOURCES.map(x => [x.name, x]));
+const counts = new Map();
 const all = [];
-let okFeeds = 0, failFeeds = 0;
-for (let k = 0; k < results.length; k++) {
-  const f = feeds[k];
-  const map = SRC[f.title] || ['mundo', false];
-  const [primary, pt] = map;
-  const r = results[k];
-  if (!r || r._err || !r.items) { failFeeds++; sourcesMeta.push({ name: f.title, topic: primary, pt, site: f.htmlUrl, count: 0, ok: false }); continue; }
-  okFeeds++;
-  let kept = 0;
-  for (const it of r.items) {
-    if (it.ts == null) it.ts = now; /* undated → treat as fresh-ish */
-    if (it.ts < minTs || it.ts > maxTs) continue;
-    const topics = classify(it, primary);
-    if (pt && !topics.includes('portugal') && primary !== 'portugal') { /* keep pt flag, no forced topic */ }
-    all.push({
-      id: slug(f.title) + '-' + Math.abs(hash(it.link)).toString(36),
-      title: it.title.slice(0, 200),
-      url: it.link,
-      source: f.title,
-      site: f.htmlUrl,
-      topics, pt,
-      ts: it.ts,
-      summary: it.summary.slice(0, SUMMARY_LEN),
-      image: (it.image || '').slice(0, 300),
-    });
-    kept++;
-  }
-  sourcesMeta.push({ name: f.title, topic: primary, pt, site: f.htmlUrl, count: kept, ok: true });
+for (const a of acquired) {
+  const src = byName.get(a.source);
+  if (!src) continue;
+  let ts = a.ts;
+  if (ts == null) ts = now;                    /* undated → treat as fresh-ish */
+  if (ts < minTs || ts > maxTs) continue;
+  all.push({
+    id: a.id,
+    title: a.title.slice(0, 200),
+    url: a.url,
+    source: a.source,
+    site: a.site,
+    topics: classify(a, src.topic),
+    pt: !!src.pt,
+    ts,
+    summary: (a.summary || '').slice(0, SUMMARY_LEN),
+    image: a.image || '',
+  });
+  counts.set(a.source, (counts.get(a.source) || 0) + 1);
 }
+
+const okFeeds = report.filter(r => r.count > 0).length;
+const failFeeds = report.length - okFeeds;
+const sourcesMeta = SOURCES.map(src => ({
+  name: src.name, topic: src.topic, pt: !!src.pt, site: src.site,
+  count: counts.get(src.name) || 0, ok: (counts.get(src.name) || 0) > 0,
+}));
 
 /* Trailers (TMDB) — appended to the same pipeline (dedupe/shard) as a topic. */
 const trailerItems = await fetchTrailers(now);
 let trailerKept = 0;
 for (const t of trailerItems) { if (t.ts >= minTs && t.ts <= maxTs) { all.push(t); trailerKept++; } }
 if (trailerKept) sourcesMeta.push({ name: 'Trailers', topic: 'trailers', pt: false, site: 'https://www.themoviedb.org', count: trailerKept, ok: true });
-
-function hash(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
 
 /* dedupe: by URL, and by (source + normalised title) */
 const seenUrl = new Set(), seenST = new Set();
@@ -477,7 +221,7 @@ for (const [id] of TOPICS) {
 writeFileSync(HERE + '/index.json', JSON.stringify({
   generated,
   total: deduped.length,
-  feeds: { total: feeds.length, ok: okFeeds, failed: failFeeds },
+  feeds: { total: SOURCES.length, ok: okFeeds, failed: failFeeds },
   topics: TOPICS.map(([id, icon, en, pt, feature]) => ({ id, icon, en, pt, feature: !!feature, count: topicCounts[id] })).filter(t => t.count > 0),
   sources: sourcesMeta.sort((a, b) => b.count - a.count),
 }));

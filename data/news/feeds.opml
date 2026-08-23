@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  NOT READ BY ANYTHING. This is the original Feedly export the source list
+  was first built from, kept for reference and for re-importing elsewhere.
+  The live source of truth is data/news/sources.mjs — edit that.
+-->
 <opml version="1.0">
     <head>
         <title>Diogo subscriptions</title>

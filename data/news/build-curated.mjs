@@ -1,12 +1,13 @@
 /* ══════════════════════════════════════════════════════════════════
    build-curated.mjs — Notícias AI (V2): the daily editorial pass.
 
-       curated-sources.mjs         70 SITES grouped into 13 themes
-                 │
-                 ▼  curated-fetch.mjs resolves each site: known feed →
-                 │  autodiscovery → news sitemap. A feed is a hint about
-                 │  where a site's articles are, not the site's identity,
-                 │  so a publisher moving or dropping RSS keeps working.
+       sources.mjs                 the shared source list, filtered to
+                 │                  the records that carry a `theme`
+                 ▼  acquire.mjs resolves each site: scrape → known feed →
+                 │  autodiscovery → news sitemap → search. A feed is a hint
+                 │  about where a site's articles are, not the site's
+                 │  identity, so a publisher moving or dropping RSS keeps
+                 │  working. The SAME module feeds Notícias ▸ Todas.
                  │  (V1's topic-*.json is read only as a safety net for
                  │  sources that come back empty.)
                  ▼  pre-filter: 24h window, dedupe, cap 60 candidates
@@ -17,7 +18,7 @@
        data/news/curated/d/YYYY-MM-DD.json   daily detail (0–30 days)
        data/news/curated/latest.json         what the V2 page reads
        data/news/curated/index.json          catalog + archive listing
-       data/news/curated/sources-resolved.json  resolver cache (7-day TTL)
+       data/news/sources-resolved.json       resolver cache (7-day TTL)
 
    HARD RULES, in order of importance:
 
@@ -55,8 +56,8 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, readdir
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { THEMES } from './curated-themes.mjs';
-import { SOURCES } from './curated-sources.mjs';
-import { fetchSources, saveCache } from './curated-fetch.mjs';
+import { byTheme as sourcesForTheme } from './sources.mjs';
+import { acquire, saveCache } from './acquire.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(HERE, 'curated');
@@ -232,9 +233,10 @@ function parseDuration(v, fallback) {
 }
 
 /* ════════════════════════ 1 · CANDIDATES ════════════════════════ */
-/* V2 fetches its OWN sources (curated-sources.mjs), resolved by site
-   rather than by feed URL — see curated-fetch.mjs. It no longer depends
-   on V1's topic-*.json shards to decide what exists, which means a
+/* Candidates come from the shared list in sources.mjs — the records that
+   carry a `theme` — resolved by site rather than by feed URL through
+   acquire.mjs, the same module Notícias ▸ Todas uses. Curation does not
+   depend on V1's topic-*.json shards to decide what exists, which means a
    publisher dropping or moving its RSS no longer silently removes it
    from the curated edition.
 
@@ -264,9 +266,9 @@ async function gatherAll(now) {
   let cacheRef = null;
 
   for (const theme of THEMES) {
-    const srcs = SOURCES[theme.id] || [];
+    const srcs = sourcesForTheme(theme.id);
     if (!srcs.length) { byTheme[theme.id] = []; continue; }
-    const { articles, report, cache } = await fetchSources(srcs);
+    const { articles, report, cache } = await acquire(srcs, { now, windowH: WINDOW_H_MAX });
     cacheRef = cache;
 
     /* Safety net for sources that came back empty. */
@@ -838,7 +840,7 @@ async function main() {
 
   const now = Date.now();
   const dayISO = lisbonToday();
-  const nSources = THEMES.reduce((n, t) => n + (SOURCES[t.id] || []).length, 0);
+  const nSources = THEMES.reduce((n, t) => n + sourcesForTheme(t.id).length, 0);
   console.log(`[curated] ${dayISO} · model=${MODEL} · themes=${THEMES.length} · sources=${nSources}${DRY ? ' · DRY RUN' : ''}`);
 
   /* ── gather: resolve every site, live ── */

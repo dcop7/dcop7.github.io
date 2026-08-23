@@ -64,6 +64,10 @@ jobs:
           # Free-tier Groq key. Secret only — never echoed, never written
           # into the generated JSON, never shipped to the browser.
           GROQ_KEY: ${{ secrets.GROQ_KEY }}
+          # Last-resort acquisition for sources that refuse automated
+          # fetching. Optional: without it those sources are reported
+          # `none`, exactly as before the fallback existed.
+          TINYFISH_KEY: ${{ secrets.TINYFISH_KEY }}
         run: node data/news/build-curated.mjs
 
       - name: Validate the committed result against the schema

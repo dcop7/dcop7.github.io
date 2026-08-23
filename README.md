@@ -250,7 +250,7 @@ O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs
 |----------|--------|--------|---------------|
 | `home-refresh.yml` | `data/home/build-home.mjs` | `data/home/today.json` (efemérides, nascimentos, destaque, citação) | diário ~07:20 Lisboa + catch-ups |
 | `utility-refresh.yml` | `data/home/build-utility.mjs` | `data/home/utility.json` (meteo, combustíveis DGEG, eletricidade indexada, feriados) | 2×/dia + catch-up |
-| `news-refresh.yml` | `data/news/build-news.mjs` | `data/news/topic-*.json` (a partir de `feeds.opml`) | a cada 4h |
+| `news-refresh.yml` | `data/news/build-news.mjs` | `data/news/topic-*.json` (a partir de `sources.mjs`, via `acquire.mjs`) | a cada 4h |
 | `news-curate.yml` | `data/news/build-curated.mjs` | `data/news/curated/*` (a seleção diária — **Notícias ▸ Destaques**) | diário + catch-ups |
 | `events-refresh.yml` | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` + `data/events/home.json` | diário |
 | `f1-refresh.yml` | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | diário, pós-corridas |
@@ -315,7 +315,7 @@ Google Fonts (CSS), Excalidraw (whiteboard), tiles de mapa (Carto/Esri/OSM) para
 3. **Actions nunca com gate por hora do dia** — gate pelo estado do snapshot (ver acima).
 4. **Assets só CC0/MIT/CC-BY/originais** — registar em `ASSET-REGISTRY.json`; preferir procedural/próprio.
 5. **Chrome da UI só com ícones SVG**; não reintroduzir bottom-nav mobile.
-6. **Nunca commitar chaves** — se um serviço exige chave, corre na Action com secret. Secrets em uso: `TMDB_KEY` (trailers), `ITAD_KEY` (deals), `GROQ_KEY` (Notícias ▸ Destaques). Todos opcionais: sem a chave, o build salta esse bloco e não estraga nada.
+6. **Nunca commitar chaves** — se um serviço exige chave, corre na Action com secret. Secrets em uso: `TMDB_KEY` (trailers), `ITAD_KEY` (deals), `GROQ_KEY` (Notícias ▸ Destaques), `TINYFISH_KEY` (último recurso para fontes que bloqueiam fetch). Todos opcionais: sem a chave, o build salta esse bloco e não estraga nada.
 7. **Dados primeiro** — conteúdo (quizzes, humor, temas, timeline) vive em JSON, não em código.
 8. **PT-first** — strings novas passam pelo `I18n` com pt e en.
 
@@ -344,7 +344,7 @@ Criar `quizzes/<id>/{pt,en}/{easy,medium,hard}.json` (cada pergunta com `exp` �
 Criar `data/explore/<tema>.json` seguindo a estrutura Área→Tema→Subtema→Conteúdo (ver `jogos.json` como modelo) e referenciar no `index.json`.
 
 ### Adicionar uma fonte de notícias
-Acrescentar o feed ao `data/news/feeds.opml` com o tópico certo; o workflow trata do resto.
+Acrescentar um registo a `data/news/sources.mjs` com o `topic` certo (e `theme`, se também deve entrar em Destaques); o workflow trata do resto.
 
 ### Estilo canónico de imagens geradas (personagem 3D "em casa")
 Receita para gerar imagens de demonstração/ilustração consistentes (usada na experiência Fitness de jul/2026; reutilizável em futuras secções). ComfyUI local: JuggernautXL/SDXL, dpmpp_2m/karras, cfg 5.5, 30 steps; retrato 896×1152 para poses de pé/sentado, paisagem 1152×896 para poses de chão. ChatGPT: 1024×1536 / 1536×1024.
