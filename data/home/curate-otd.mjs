@@ -109,6 +109,9 @@ ABSOLUTE RULES
 HOW MANY
 Return AT MOST ${MAX_ITEMS} ids, best first. That is a ceiling, never a quota. If only 6 candidates genuinely deserve a place, return 6. If the day is thin, return fewer. Padding the list with weak entries is worse than a short list, because it pushes the good ones down and makes the section look unconsidered.
 
+READING THE INPUT
+Each candidate may carry "n": the number of Wikipedia language editions covering it. Treat it as evidence of reach, never as the answer. A high "n" on someone famous only recently does not make them historically important, and a low "n" on a decisive treaty does not make it minor. Where your own judgement and "n" disagree, say so with the score and trust the section's criteria.
+
 SCORING
 Give each pick an integer 0–100 for how strongly it deserves its place. Use the FULL range — do not cluster everything between 70 and 80. Anything you would score below ${MIN_SCORE} should be left out rather than included with a low score.
 
@@ -122,6 +125,12 @@ Strict JSON, no markdown fence, exactly this shape:
 function candLine(item, id, kind) {
   const o = { i: id };
   if (item.year) o.y = item.year;
+  /* `n` is measured, not judged: how many language editions of Wikipedia
+     carry an article on this subject. Given to the model as evidence, not
+     as an instruction — a high count can mean lasting importance or
+     merely present-day fame, which is exactly the distinction the section
+     criteria ask it to make. */
+  if (item.sl) o.n = item.sl;
   o.t = clamp(kind === 'births' ? (item.title || item.text) : (item.text || item.title), 180);
   const d = clamp(item.extract || '', 130);
   /* Skip a description that just repeats the headline — pure token waste. */

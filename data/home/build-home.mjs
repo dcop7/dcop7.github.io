@@ -74,6 +74,17 @@ const pt = await getJSON(`https://pt.wikipedia.org/api/rest_v1/feed/onthisday/al
 const CANDIDATE_POOL = 26;
 const sec = OTD.buildSections(pt, en, fallback, { limit: CANDIDATE_POOL });
 
+/* Attach how many language editions cover each subject — a measured
+   notability signal the model gets to rank with, and which also repairs
+   the heuristic fallback (it scored births by year, so medieval nobles
+   outranked Borges). Two requests, ~1s, and entirely optional. */
+console.log('\nMeasuring notability…');
+await OTD.enrich(sec);
+for (const k of ['history', 'portugal', 'births']) {
+  const n = (sec[k] || []).length;
+  console.log(`  ${k}: ${(sec[k] || []).filter(x => x.sl).length}/${n} resolved`);
+}
+
 console.log('\nRanking the three sections…');
 const ranked = await curateSections(sec, { key: process.env.GROQ_KEY || '' });
 
