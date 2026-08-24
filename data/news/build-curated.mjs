@@ -82,6 +82,16 @@ const WINDOW_H_MAX = 36;      /* widened for a theme too quiet to judge at 24h *
 const MIN_CANDIDATES = 6;     /* below this, widen the window before giving up */
 const MIN_TO_CURATE = 3;      /* fewer than this: not worth a request at all   */
 const MAX_CANDIDATES = 60;    /* per theme, newest first — keeps chunks small  */
+/* The binding limit is not the per-minute budget, it is the 200 000 daily
+   one, and 13 themes at 2 chunks each planned for ~160k of it — leaving
+   no room for a second attempt on a bad day. One run then exhausted the
+   day for every other run, which is how a 55-minute job ended up making
+   25 requests and having 24 refused.
+   Capping requests rather than candidates keeps the cap adaptive: a theme
+   whose headlines are terse fits more of them into its one request than a
+   theme whose headlines are long. What falls off is always the oldest end
+   of the 24h window, and only for the busiest themes. */
+const MAX_REQUESTS_PER_THEME = 1;
 const MAX_STORIES = 15;       /* per theme per day. A ceiling, never a quota.  */
 /* Measured pools are wildly uneven (portugal 60 candidates, ia 5), so a
    ceiling of 15 is meaningless for half the themes and that is the point:
@@ -135,6 +145,10 @@ const MAX_OUTPUT_TOK = 3200;  /* ceiling for a 15-story reply, not an estimate *
 const estOut = (n) => Math.min(MAX_OUTPUT_TOK, 320 + n * 150);
 const REQ_TIMEOUT = 90000;
 const MAX_ATTEMPTS = 3;       /* per chunk, including the initial call */
+/* A 429 that clears within a couple of minutes is the per-minute budget
+   and worth waiting out. Anything longer is a wall — the daily cap, or
+   an org-wide throttle — that no retry clears inside this run. */
+const MAX_429_WAIT_S = 120;
 
 /* ── wall clock ───────────────────────────────────────────────────
    The workflow kills the job at 30 minutes, and a killed job writes
@@ -154,6 +168,13 @@ const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 /* ── tiny helpers ────────────────────────────────────────────────── */
 const clamp = (s, n) => { s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s; };
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* Groq puts the useful sentence in error.message and wraps it in JSON.
+   Falling back to the raw body keeps a plain-text 502 from a proxy
+   readable too. Neither ever contains the key. */
+function errMessage(body) {
+  try { return JSON.parse(body)?.error?.message || String(body); } catch { return String(body); }
+}
 
 /* Estimated tokens. Portuguese + English mixed JSON runs ~3.5 chars/token;
    3.2 is used so the estimate errs high and the bucket stays honest. */
@@ -281,7 +302,7 @@ function serverWaitMs(n) {
    parseFloat("2m59.56s") is 2, which would resume far too early, so sum
    the components instead. Clamped so a malformed header cannot stall the
    whole run. */
-function parseDuration(v, fallback) {
+function parseDuration(v, fallback, maxS = 120) {
   const s = String(v || '').trim();
   let total = 0, seen = false;
   for (const [, n, unit] of s.matchAll(/([\d.]+)\s*(ms|h|m|s)/g)) {
@@ -291,7 +312,16 @@ function parseDuration(v, fallback) {
     total += unit === 'h' ? x * 3600 : unit === 'm' ? x * 60 : unit === 'ms' ? x / 1000 : x;
   }
   if (!seen) { const plain = parseFloat(s); if (Number.isFinite(plain)) { total = plain; seen = true; } }
-  return Math.max(1, Math.min(120, Math.ceil(seen ? total : fallback)));
+  return Math.max(1, Math.min(maxS, Math.ceil(seen ? total : fallback)));
+}
+
+/* Groq spells out the wait inside the 429 message — "Please try again in
+   2m59.56s" — and that is often the ONLY place it appears: a daily-cap
+   refusal has been seen without a retry-after header at all. Read from
+   the sentence, with hours allowed: a TPD refusal can be hours away. */
+function retryHintS(msg) {
+  const m = /try again in ([\d.hms\s]+)/i.exec(String(msg || ''));
+  return m ? parseDuration(m[1], 0, 86400) : 0;
 }
 
 /* ════════════════════════ 1 · CANDIDATES ════════════════════════ */
@@ -520,10 +550,25 @@ async function groqJSON(system, buildUser, label, wantStories = MAX_STORIES) {
       if (r.status === 429) {
         /* A refused request cost nothing — release its booking. */
         settle(booking, 1);
-        /* Respect the server's own backoff rather than guessing. */
-        const wait = Math.min(180, Math.ceil(Number(r.headers.get('retry-after') || 30))) * 1000;
-        console.log(`   ⏳ ${label}: 429 — waiting ${wait / 1000}s (attempt ${attempt}/${MAX_ATTEMPTS})`);
-        await sleep(wait);
+        /* Groq names the limit it hit and when it clears, and the old
+           code threw that away: it logged a bare "429 — waiting 180s"
+           and retried three times. A run that had exhausted the DAILY
+           budget therefore spent 55 minutes discovering, 25 times over,
+           that it had no budget. The message never carries the key. */
+        const why = clamp(errMessage(await r.text().catch(() => '')), 300);
+        const waitS = Math.ceil(Number(r.headers.get('retry-after'))) || retryHintS(why) || 30;
+
+        /* A wait this long is not a minute-budget hiccup, it is a wall:
+           the daily cap, or an organisation-wide throttle. No number of
+           retries clears it inside this run, and every later chunk will
+           hit exactly the same wall. Stop the whole run now. */
+        if (waitS > MAX_429_WAIT_S || /per day|\bTPD\b|\bRPD\b/i.test(why)) {
+          const e = new Error(`rate limited for ${waitS}s — ${why}`);
+          e.fatal = true; e.exhausted = true; e.waitS = waitS;
+          throw e;
+        }
+        console.log(`   ⏳ ${label}: 429, retry in ${waitS}s (attempt ${attempt}/${MAX_ATTEMPTS}) — ${why}`);
+        await sleep(waitS * 1000);
         lastErr = new Error('429 rate limited');
         continue;
       }
@@ -951,14 +996,20 @@ async function main() {
   const plan = THEMES.map(theme => {
     const { arts, hours } = candidatesFor(theme, now, byTheme);
     const overhead = estTok(SYSTEM) + estTok(MODE_HINT[theme.mode]) + 80;
-    const chunks = arts.length >= MIN_TO_CURATE ? chunkCandidates(arts, now, overhead) : [];
-    return { theme, arts, hours, chunks };
+    const all = arts.length >= MIN_TO_CURATE ? chunkCandidates(arts, now, overhead) : [];
+    const chunks = all.slice(0, MAX_REQUESTS_PER_THEME);
+    /* Candidates in the chunks we dropped are out of the edition, so the
+       theme must not keep claiming them: byId is built from `arts`, and a
+       story may only cite an article the model was actually shown. */
+    const kept = chunks.length ? chunks.flat() : arts;
+    return { theme, arts: kept, hours, chunks, dropped: arts.length - kept.length };
   });
 
   const totalReq = plan.reduce((s, p) => s + p.chunks.length, 0);
   console.log(`\nPlan: ${totalReq} requests · worst case ≈${(totalReq * (MAX_INPUT_TOK + MAX_OUTPUT_TOK) / 1000).toFixed(0)}k tokens of the 200k daily budget`);
   for (const p of plan) {
-    const note = p.arts.length && !p.chunks.length ? ` — below ${MIN_TO_CURATE}, not worth a request` : '';
+    const note = p.arts.length && !p.chunks.length ? ` — below ${MIN_TO_CURATE}, not worth a request`
+      : p.dropped ? ` — ${p.dropped} older candidate(s) dropped to stay within ${MAX_REQUESTS_PER_THEME} request` : '';
     console.log(`  ${p.theme.id.padEnd(14)} ${String(p.arts.length).padStart(3)} candidates (${p.hours}h) → ${p.chunks.length} request(s)${note}`);
   }
   if (DRY) { console.log('\nDry run — no API calls, no files written.'); return 0; }
@@ -1003,6 +1054,14 @@ async function main() {
            Stop now so the run ends in seconds instead of grinding
            through 20 more doomed requests. */
         if (e.auth) { console.error('\n✗ Groq rejected the credential — aborting. Previous data left untouched.'); return 1; }
+        /* Same reasoning as a rejected key: the wall is per organisation,
+           not per chunk, so the remaining themes would each spend three
+           attempts rediscovering it. Out in seconds instead of an hour. */
+        if (e.exhausted) {
+          console.error(`\n✗ Groq budget exhausted (clears in ~${Math.round(e.waitS / 60)}min) — aborting after ${elapsed()}. Previous data left untouched.`);
+          console.error('  If this repeats, the day\'s 200k token budget is being spent by re-runs: each full pass plans for ~100k.');
+          return 1;
+        }
       }
     }
 
@@ -1126,7 +1185,7 @@ export { crossThemeDedupe, sigWords, entities, sharedEntities, regroup, material
    cost a day's edition: too eager and Groq refuses, too cautious and the
    job is killed before it publishes. Neither shows up as a wrong value
    anywhere — only as a run that takes 21 minutes instead of 8. */
-export { parseDuration, noteHeaders, serverWaitMs };
+export { parseDuration, noteHeaders, serverWaitMs, retryHintS, errMessage };
 
 /* Set exitCode rather than calling process.exit(): an aborted fetch may
    still be tearing its socket down, and exiting mid-teardown makes Node

@@ -6,7 +6,7 @@
    slow run, not like a bug — so it is pinned down here instead. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDuration, noteHeaders, serverWaitMs } from './build-curated.mjs';
+import { parseDuration, noteHeaders, serverWaitMs, retryHintS, errMessage } from './build-curated.mjs';
 
 /* Minimal stand-in for a fetch Response: serverWaitMs only ever reads
    headers, and only through get(). */
@@ -63,4 +63,37 @@ test('Go durations are summed, not parseFloat-ed', () => {
   assert.equal(parseDuration('500ms', 10), 1);
   assert.equal(parseDuration('', 10), 10, 'falls back rather than resuming immediately');
   assert.equal(parseDuration('nonsense', 10), 10);
+});
+
+/* ── refusals ───────────────────────────────────────────────────────
+   The run of 2026-08-24 made 25 requests and had 24 refused, spending
+   55 minutes on it: the 429 body says which limit was hit and when it
+   clears, and the old code read neither. These pin down that it now
+   tells a per-minute hiccup (wait it out) apart from a wall (stop). */
+
+test('the reason for a refusal is read out of the body, not discarded', () => {
+  const body = JSON.stringify({ error: { message: 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_x` on tokens per day (TPD): Limit 200000, Used 199481. Please try again in 3h51m20.5s.', type: 'tokens' } });
+  const msg = errMessage(body);
+  assert.match(msg, /tokens per day \(TPD\)/);
+  assert.ok(/per day|\bTPD\b/i.test(msg), 'a daily wall must be recognisable from the message alone');
+});
+
+test('a plain-text body (proxy, gateway) stays readable', () => {
+  assert.equal(errMessage('502 Bad Gateway'), '502 Bad Gateway');
+  assert.equal(errMessage(''), '');
+});
+
+test('the wait is recovered from the sentence when there is no retry-after', () => {
+  /* Hours are allowed here, unlike the header parser: a daily cap can be
+     most of a day away, and clamping that to 120s is what would make the
+     run retry into a wall. */
+  assert.equal(retryHintS('Please try again in 3h51m20.5s.'), 3 * 3600 + 51 * 60 + 21);
+  assert.equal(retryHintS('Please try again in 7.66s'), 8);
+  assert.equal(retryHintS('no hint here'), 0);
+});
+
+test('a per-minute hiccup is worth waiting out, a wall is not', () => {
+  /* MAX_429_WAIT_S is 120: the rule the retry loop applies. */
+  assert.ok(retryHintS('try again in 12s') <= 120, 'TPM refusals clear in seconds');
+  assert.ok(retryHintS('try again in 3h51m20.5s') > 120, 'TPD refusals do not clear inside a run');
 });
