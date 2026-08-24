@@ -6,7 +6,7 @@
      Todas      #noticias/todas  o leitor RSS completo, cronológico
 
    Lê APENAS data/news/curated/latest.json, gerado uma vez por dia pela
-   Action `news-curate.yml` (data/news/build-curated.mjs). O browser não
+   Action `refresh-destaques.yml` (data/news/build-curated.mjs). O browser não
    fala com nenhum fornecedor de IA e não existe chave no cliente — como
    no resto do site, o "backend" é um ficheiro JSON commitado.
 

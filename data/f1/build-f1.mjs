@@ -1,6 +1,6 @@
 /* Build data/f1/cache.json — the slow F1 data (standings, calendar, last
    results, full circuit list and computed season stats) snapshotted
-   server-side by the f1-refresh GitHub Action so the browser reads one local
+   server-side by the refresh-daily GitHub Action so the browser reads one local
    JSON first (fast, offline) and only hits the live API as a fallback.
 
    Source: Jolpica (api.jolpi.ca, the Ergast successor) — free, open, no key.

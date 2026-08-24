@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════
    build-gaming.mjs — Product Discovery / 🎮 Gaming deals pipeline
 
-   A GitHub Action (.github/workflows/discovery-refresh.yml) runs this every
+   A GitHub Action (.github/workflows/refresh-often.yml) runs this every
    few hours. It collects game deals/giveaways from public sources, normalises
    them, computes deal metrics and writes static JSON for GitHub Pages — the
    browser only ever reads that JSON (no API calls, no backend).

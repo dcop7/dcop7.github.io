@@ -21,7 +21,7 @@ todas as fontes são públicas.
 
 Algumas fontes **bloqueiam o CORS ao próprio domínio**, pelo que o browser não as
 consegue buscar em direto a partir de dcop7.github.io. São obtidas no servidor
-(Node não tem CORS) por uma **GitHub Action diária** (`.github/workflows/events-refresh.yml`,
+(Node não tem CORS) por uma **GitHub Action diária** (`.github/workflows/refresh-daily.yml`, passo "Eventos",
 cron ~05:17 UTC + execução manual), que corre os build scripts e faz commit do
 snapshot atualizado — cobertura nacional fresca sem backend.
 

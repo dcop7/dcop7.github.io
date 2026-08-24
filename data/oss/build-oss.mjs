@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════
    build-oss.mjs — "Descobrir Tech" static data pipeline (no backend)
 
-   A GitHub Action (.github/workflows/oss-refresh.yml) runs this daily. It:
+   A GitHub Action (.github/workflows/refresh-daily.yml) runs this daily. It:
      1. DISCOVERS repos via the GitHub Search API (full repo metadata comes
         back in one call: stars, forks, language, license, dates, topics…),
         across curated categories + languages + a "recent & rising" sweep.

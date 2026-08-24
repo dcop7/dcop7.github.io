@@ -1,0 +1,123 @@
+name: Refresh ▸ dados frequentes
+
+# The three snapshots that need refreshing several times a day: the RSS news
+# aggregator (~4 h), the gaming deal catalog (~6 h) and the Cidadão feed of
+# official announcements (~6 h). They used to be three workflows on three
+# crons; they are one job now, so they cost one checkout and one commit
+# instead of three of each.
+#
+# The cron fires every two hours and each step decides for itself whether its
+# own data is old enough to rebuild — see refresh-daily.yml for why nothing
+# here is allowed to gate on the hour of day. The upside of the short cron is
+# that a run GitHub delays or drops costs at most two hours, not a full cycle.
+#
+# A manual run rebuilds everything, gates included.
+
+on:
+  schedule:
+    - cron: '7 */2 * * *'      # UTC, off the :00/:15/:30/:45 peaks
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-often
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      FORCE: ${{ github.event_name != 'schedule' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # RSS feeds rarely allow CORS, so the browser cannot fetch them; this
+      # runs server-side, dedupes + classifies by topic and commits static
+      # JSON. data/news/feeds.opml is the source of truth.
+      - name: Notícias ▸ agregar feeds
+        id: news
+        continue-on-error: true
+        env:
+          TMDB_KEY: ${{ secrets.TMDB_KEY }}       # optional: enables the Trailers tab
+          TINYFISH_KEY: ${{ secrets.TINYFISH_KEY }}  # optional: last-resort acquisition
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/news/index.json 3.5)" = true ] || {
+            echo "Construído há menos de 3,5 h — nada a fazer."; exit 0; }
+          node data/news/build-news.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Product Discovery ▸ promoções de jogos
+        id: discovery
+        continue-on-error: true
+        env:
+          # Optional: free key from isthereanydeal.com/apps/ → EUR prices +
+          # full price-history charts. Works fine without it (USD via CheapShark).
+          ITAD_KEY: ${{ secrets.ITAD_KEY }}
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/discovery/gaming/index.json 5.5)" = true ] || {
+            echo "Construído há menos de 5,5 h — nada a fazer."; exit 0; }
+          node data/discovery/gaming/build-gaming.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      # Official portals rarely expose usable CORS/feeds, so the aggregation
+      # of Diário da República + official-domain news happens here.
+      - name: Cidadão ▸ novidades oficiais
+        id: cidadao
+        continue-on-error: true
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/cidadao/novidades.json 5.5)" = true ] || {
+            echo "Construído há menos de 5,5 h — nada a fazer."; exit 0; }
+          node data/cidadao/build-cidadao.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Assunto do commit
+        id: msg
+        run: |
+          list=""
+          for row in "notícias:${{ steps.news.outputs.built }}" \
+                     "promoções:${{ steps.discovery.outputs.built }}" \
+                     "cidadão:${{ steps.cidadao.outputs.built }}"; do
+            [ "${row##*:}" = yes ] && list="${list:+$list, }${row%%:*}"
+          done
+          echo "text=chore(data): refresh ${list:-nada}" >> "$GITHUB_OUTPUT"
+
+      # Whole directories, not file lists: build-news.mjs writes topic-*.json,
+      # index.json AND the sources-resolved.json acquisition cache, and it was
+      # exactly that unlisted cache file that broke the Destaques workflow.
+      # Sharing data/news with news-curate.yml is safe because the rebase
+      # replays only this job's diff — the curated/ tree it never touches
+      # keeps whatever that workflow published.
+      - uses: ./.github/actions/commit-push
+        with:
+          paths: data/news data/discovery data/cidadao
+          message: ${{ steps.msg.outputs.text }}
+
+      - name: Resumo
+        if: always()
+        run: |
+          rows=("notícias:${{ steps.news.outcome }}:${{ steps.news.outputs.built }}"
+                "promoções:${{ steps.discovery.outcome }}:${{ steps.discovery.outputs.built }}"
+                "cidadão:${{ steps.cidadao.outcome }}:${{ steps.cidadao.outputs.built }}")
+
+          echo "| build | estado |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|"          >> "$GITHUB_STEP_SUMMARY"
+          failed=""
+          for row in "${rows[@]}"; do
+            name="${row%%:*}"; rest="${row#*:}"; outcome="${rest%%:*}"; built="${rest##*:}"
+            if   [ "$outcome" = failure ]; then state="❌ falhou"; failed="$failed $name"
+            elif [ "$built"   = yes     ]; then state="✅ reconstruído"
+            else                               state="⏭️ ainda fresco"
+            fi
+            echo "| $name | $state |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          if [ -n "$failed" ]; then
+            echo "::error::builds falhados:$failed"
+            exit 1
+          fi

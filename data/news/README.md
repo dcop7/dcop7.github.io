@@ -37,7 +37,7 @@ mas **já não é lido por nada**.
 3. **`build-news.mjs`** — só o que é específico de Todas: 17 tópicos,
    classificação por palavra-chave, trailers TMDB, janela de 30 dias,
    dedupe e os shards por tópico.
-4. **`.github/workflows/news-refresh.yml`** — de 4 em 4 horas (e manualmente).
+4. **`.github/workflows/refresh-often.yml`** — passo "Notícias", quando o `index.json` tem mais de 3,5 h (e manualmente).
 5. O browser (`js/pages/noticias.js`) lê apenas o JSON estático.
 
 ## Output (gerado — não editar à mão)
@@ -75,7 +75,7 @@ sem que a vista Todas dê por isso.
 |---|---|---|
 | Rota | `#noticias/todas` | `#noticias/destaques` (predefinição) |
 | Script | `build-news.mjs` | `build-curated.mjs` |
-| Action | `news-refresh.yml` (4/4h) | `news-curate.yml` (diária) |
+| Action | `refresh-often.yml` ▸ Notícias (~4/4h) | `refresh-destaques.yml` (diária) |
 | Dados | `topic-*.json` | `curated/*` |
 | Página | `js/pages/noticias.js` | `js/pages/noticias-destaques.js` |
 | Fontes | registos com `topic` | registos com `theme` |

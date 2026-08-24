@@ -79,7 +79,10 @@ dcop7.github.io/
 ├── quizzes/                   ← base de perguntas offline por quiz/língua/dificuldade
 ├── tools/                     ← scripts de build/curadoria offline (anatomy, explore, f1) — não são servidos
 ├── assets/ · img/ · games/    ← media e assets estáticos
-└── .github/workflows/         ← 8 workflows de refresh de dados
+└── .github/
+    ├── workflows/             ← 4 workflows de refresh de dados
+    ├── actions/commit-push/   ← commit+push partilhado (stage, rebase, retry)
+    └── scripts/stale.mjs      ← gate de frescura (nunca hora-do-dia)
 ```
 
 ### Padrão de módulos
@@ -246,19 +249,28 @@ Dois locales: `pt` (default) e `en`. `I18n.set('en')` ou botão no header. `i18n
 
 O padrão central do site: **Actions agendadas correm scripts Node (`build-*.mjs`), agregam APIs externas e fazem commit de JSON estático**. O browser lê só ficheiros locais — rápido, offline, sem chaves expostas.
 
-| Workflow | Script | Output | Cadência alvo |
-|----------|--------|--------|---------------|
-| `home-refresh.yml` | `data/home/build-home.mjs` | `data/home/today.json` (efemérides, nascimentos, destaque, citação) | diário ~07:20 Lisboa + catch-ups |
-| `utility-refresh.yml` | `data/home/build-utility.mjs` | `data/home/utility.json` (meteo, combustíveis DGEG, eletricidade indexada, feriados) | 2×/dia + catch-up |
-| `news-refresh.yml` | `data/news/build-news.mjs` | `data/news/topic-*.json` (a partir de `sources.mjs`, via `acquire.mjs`) | a cada 4h |
-| `news-curate.yml` | `data/news/build-curated.mjs` | `data/news/curated/*` (a seleção diária — **Notícias ▸ Destaques**) | diário + catch-ups |
-| `events-refresh.yml` | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` + `data/events/home.json` | diário |
-| `f1-refresh.yml` | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | diário, pós-corridas |
-| `oss-refresh.yml` | `data/oss/build-oss.mjs` | `data/oss/index.json` + `projects.json` | diário |
-| `discovery-refresh.yml` | `data/discovery/gaming/build-gaming.mjs` | deals de gaming / jogos grátis | a cada 6h |
-| `ocorrencias-refresh.yml` | `data/ocorrencias/build-ocorrencias.mjs` | `data/ocorrencias/ocorrencias.json` (ocorrências ANEPC ativas via fogos.pt — o fogos.pt fechou o CORS a origens externas, por isso o browser usa este snapshot same-origin como fallback sem chave) | a cada 15 min |
+| Workflow | Passo | Script | Output | Rebuild quando |
+|----------|-------|--------|--------|----------------|
+| `refresh-ocorrencias.yml` | — | `data/ocorrencias/build-ocorrencias.mjs` | `data/ocorrencias/ocorrencias.json` (ocorrências ANEPC ativas via fogos.pt — o fogos.pt fechou o CORS a origens externas, por isso o browser usa este snapshot same-origin como fallback sem chave) | sempre (cron `*/15`) |
+| `refresh-often.yml`<br>cron `7 */2` | Notícias | `data/news/build-news.mjs` | `data/news/topic-*.json` + `index.json` (a partir de `sources.mjs`, via `acquire.mjs`) | `index.json` > 3,5 h |
+| | Discovery | `data/discovery/gaming/build-gaming.mjs` | deals de gaming / jogos grátis | `index.json` > 5,5 h |
+| | Cidadão | `data/cidadao/build-cidadao.mjs` | `data/cidadao/novidades.json` + `linkcheck.json` | `novidades.json` > 5,5 h |
+| `refresh-daily.yml`<br>cron `20 5,6,10,13,14,18` | Homepage | `data/home/build-home.mjs` | `data/home/today.json` (efemérides, nascimentos, destaque, citação) | não é de hoje |
+| | Útil hoje | `data/home/build-utility.mjs` | `data/home/utility.json` (meteo, combustíveis DGEG, eletricidade indexada, feriados) | > 4 h (apanha o OMIE da tarde) |
+| | Descobrir Tech | `data/oss/build-oss.mjs` | `data/oss/index.json` + `projects.json` | não é de hoje |
+| | Fórmula 1 | `data/f1/build-f1.mjs` | `data/f1/cache.json` (calendário, resultados) | não é de hoje |
+| | Eventos | `data/events/build-nocartaz.mjs` | `data/events/nocartaz.json` + `data/events/home.json` | não é de hoje |
+| `refresh-destaques.yml`<br>cron `35 7,8,12,17` | — | `data/news/build-curated.mjs` | `data/news/curated/*` (a seleção diária — **Notícias ▸ Destaques**) | `latest.json` não é de hoje |
 
-**Regra crítica de agendamento:** o cron do GitHub atrasa minutos a *horas*. Os workflows **nunca** testam a hora do dia como gate (um `== 07h` falhou silenciosamente durante semanas). Em vez disso, o gate é o próprio snapshot ("o `today.json` já é de hoje, Europa/Lisboa?") e vários crons espalhados pelo dia funcionam como retries — o primeiro que dispara faz o trabalho, os restantes no-op. Commits de refresh usam `[skip ci]`.
+Os builds diários e frequentes estão agrupados de propósito: um job em vez de cinco significa um checkout, um commit e uma corrida ao push em vez de cinco. Dentro de cada workflow os passos são independentes (`continue-on-error`) — uma fonte partida não custa ao site as outras — tudo o que correu bem é commitado, e o run acaba a vermelho na mesma para a avaria não se esconder atrás do que ainda funciona.
+
+O `refresh-ocorrencias.yml` é o único que fica sozinho: a ~96 corridas por dia é de longe o escritor mais barulhento, e pô-lo num grupo de concorrência partilhado com os outros deixá-lo-ia cancelar runs em fila — trocava uma corrida ao push, que o `commit-push` já absorve, por builds diários perdidos.
+
+**Regra crítica de agendamento:** o cron do GitHub atrasa minutos a *horas*. Os workflows **nunca** testam a hora do dia como gate (um `== 07h` falhou silenciosamente durante semanas, e o snapshot de Eventos deixou de ser atualizado nos dias em que o runner arrancou tarde). Em vez disso o gate é o próprio snapshot, via `.github/scripts/stale.mjs` — `stale.mjs <ficheiro> day` (uma vez por dia de Lisboa) ou `stale.mjs <ficheiro> <horas>`. Os vários crons espalhados pelo dia são retries: o primeiro que encontra dados velhos faz o trabalho, os restantes custam ~20 s e não commitam nada. O gate falha sempre para o lado de reconstruir — um snapshot ilegível nunca parte o pipeline. `FORCE=true` (todas as corridas manuais) ignora-o.
+
+**Commit e push:** todos os workflows publicam através de `.github/actions/commit-push`, que recebe os caminhos que o job possui e a mensagem. Faz `git add -A` desses caminhos (por isso apanha ficheiros novos *e* os que a poda apaga), descarta com aviso o que ficou sujo fora deles, e em caso de push recusado rebaseia sobre o `main` mais recente e tenta outra vez, até 6 vezes. O rebase só reaplica o *diff* deste job, por isso um caminho que outro workflow publicou entretanto e este não tocou fica intacto. Commits de refresh usam `[skip ci]`.
+
+> Ter os caminhos completos é obrigatório: o `build-curated.mjs` também escreve `data/news/sources-resolved.json` e o workflow antigo só fazia stage de `data/news/curated`, o que deixava esse ficheiro por commitar e abortava o rebase com *"cannot pull with rebase: You have unstaged changes"*. Pelo mesmo motivo o Eventos publicava `nocartaz.json` mas nunca `home.json`.
 
 O `build-nocartaz.mjs` escreve **dois** ficheiros e decide a **categoria no build**:
 

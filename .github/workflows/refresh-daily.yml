@@ -1,0 +1,154 @@
+name: Refresh ▸ dados diários
+
+# One job for every snapshot that only needs rebuilding once a day, plus the
+# utility snapshot, which wants a few passes. Merging them replaced five
+# separate workflows — five runner start-ups, five checkouts and five racing
+# pushes — with one run and one commit.
+#
+# Two rules make this reliable:
+#
+#  1. Nothing is gated on the hour of day. GitHub delays cron runs by minutes
+#     to HOURS, so "is it 07h in Lisbon?" silently skipped whole days — which
+#     is exactly what had been happening to the Eventos snapshot. Every step
+#     asks stale.mjs whether ITS OWN data is out of date instead, so the crons
+#     below are just catch-up attempts: the first one to find stale data does
+#     the work, the rest cost ~20 s and commit nothing.
+#
+#  2. Each build is independent. One failing source must not cost the site the
+#     other four, so every step continues on error, everything that did
+#     succeed is committed, and the run is marked failed at the end so a real
+#     breakage is still visible.
+#
+# A manual run rebuilds everything, gates included.
+
+on:
+  schedule:
+    - cron: '20 5,6,10,13,14,18 * * *'   # UTC; 5 and 6 cover the Lisbon DST pair
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FORCE: ${{ github.event_name != 'schedule' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # GROQ_KEY only ranks the three "on this day" sections (ids in, ids out
+      # — no text is generated). Without it the build still succeeds and those
+      # sections keep their heuristic order, so a missing or rejected secret
+      # degrades the homepage rather than breaking it.
+      - name: Homepage ▸ today.json
+        id: home
+        continue-on-error: true
+        env:
+          GROQ_KEY: ${{ secrets.GROQ_KEY }}
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/home/today.json day)" = true ] || {
+            echo "Já é de hoje — nada a fazer."; exit 0; }
+          node data/home/build-home.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      # Fuel (DGEG), electricity (OMIE day-ahead) and the weather fallback.
+      # The 4 h window is what gives this one several passes a day, so the
+      # afternoon OMIE publication is picked up on the same day.
+      - name: Útil hoje ▸ utility.json
+        id: utility
+        continue-on-error: true
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/home/utility.json 4)" = true ] || {
+            echo "Construído há menos de 4 h — nada a fazer."; exit 0; }
+          node data/home/build-utility.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Descobrir Tech ▸ catálogo open-source
+        id: oss
+        continue-on-error: true
+        env:
+          # Automatic, repo-scoped token (no user-managed secret). Lifts rate
+          # limits and enables GraphQL enrichment (languages, watchers).
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/oss/index.json day)" = true ] || {
+            echo "Já é de hoje — nada a fazer."; exit 0; }
+          node data/oss/build-oss.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Fórmula 1 ▸ classificações e calendário
+        id: f1
+        continue-on-error: true
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/f1/cache.json day)" = true ] || {
+            echo "Já é de hoje — nada a fazer."; exit 0; }
+          node data/f1/build-f1.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Eventos ▸ snapshot nacional NoCartaz
+        id: events
+        continue-on-error: true
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/events/nocartaz.json day)" = true ] || {
+            echo "Já é de hoje — nada a fazer."; exit 0; }
+          node data/events/build-nocartaz.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Assunto do commit
+        id: msg
+        run: |
+          list=""
+          for row in "homepage:${{ steps.home.outputs.built }}" \
+                     "útil:${{ steps.utility.outputs.built }}" \
+                     "oss:${{ steps.oss.outputs.built }}" \
+                     "f1:${{ steps.f1.outputs.built }}" \
+                     "eventos:${{ steps.events.outputs.built }}"; do
+            [ "${row##*:}" = yes ] && list="${list:+$list, }${row%%:*}"
+          done
+          echo "text=chore(data): refresh ${list:-nada}" >> "$GITHUB_OUTPUT"
+
+      # data/events covers nocartaz.json AND home.json — the old workflow
+      # staged only the first, so the second never reached the site.
+      - uses: ./.github/actions/commit-push
+        with:
+          paths: data/home data/oss data/f1 data/events
+          message: ${{ steps.msg.outputs.text }}
+
+      - name: Resumo
+        if: always()
+        run: |
+          rows=("homepage:${{ steps.home.outcome }}:${{ steps.home.outputs.built }}"
+                "útil:${{ steps.utility.outcome }}:${{ steps.utility.outputs.built }}"
+                "oss:${{ steps.oss.outcome }}:${{ steps.oss.outputs.built }}"
+                "f1:${{ steps.f1.outcome }}:${{ steps.f1.outputs.built }}"
+                "eventos:${{ steps.events.outcome }}:${{ steps.events.outputs.built }}")
+
+          echo "| build | estado |"        >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|"                 >> "$GITHUB_STEP_SUMMARY"
+          failed=""
+          for row in "${rows[@]}"; do
+            name="${row%%:*}"; rest="${row#*:}"; outcome="${rest%%:*}"; built="${rest##*:}"
+            if   [ "$outcome" = failure ]; then state="❌ falhou"; failed="$failed $name"
+            elif [ "$built"   = yes     ]; then state="✅ reconstruído"
+            else                               state="⏭️ ainda fresco"
+            fi
+            echo "| $name | $state |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          # Everything that worked is already committed. Fail the run anyway,
+          # so a source that is genuinely broken cannot hide behind the ones
+          # that still work.
+          if [ -n "$failed" ]; then
+            echo "::error::builds falhados:$failed"
+            exit 1
+          fi

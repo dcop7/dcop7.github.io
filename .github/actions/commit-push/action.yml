@@ -1,0 +1,114 @@
+name: Commit & push generated data
+description: >
+  Stage the paths a refresh job owns, commit them and push to the default
+  branch, replaying onto whatever landed meanwhile. Losing a push race is
+  routine here, so it is handled rather than reported as a failure.
+
+inputs:
+  paths:
+    description: >
+      Space-separated repo paths this job owns (files or directories). Must
+      cover EVERY file the build writes — a build side effect left out of this
+      list is discarded, and its data never reaches the site.
+    required: true
+  message:
+    description: Commit subject. "[skip ci]" is appended here, not by callers.
+    required: true
+  branch:
+    description: Branch to push to.
+    required: false
+    default: main
+
+outputs:
+  committed:
+    description: '"true" when a commit was pushed, "false" when there was nothing to do.'
+    value: ${{ steps.push.outputs.committed }}
+
+runs:
+  using: composite
+  steps:
+    - id: push
+      shell: bash
+      env:
+        PATHS: ${{ inputs.paths }}
+        MESSAGE: ${{ inputs.message }}
+        BRANCH: ${{ inputs.branch }}
+      run: |
+        set -euo pipefail
+
+        git config user.name  "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        # `git add` aborts the whole run on a pathspec that matches nothing, so
+        # a path a build has not produced yet — or one left behind by a rename
+        # — would take the commit down with it. Drop those with a warning
+        # instead; the paths that do exist still get published.
+        owned=""
+        for p in $PATHS; do
+          if [ -e "$p" ] || git cat-file -e "HEAD:$p" 2>/dev/null; then
+            owned="${owned:+$owned }$p"
+          else
+            echo "::warning::caminho declarado que não existe, ignorado: $p"
+          fi
+        done
+        if [ -z "$owned" ]; then
+          echo "::error::nenhum dos caminhos declarados existe: $PATHS"
+          exit 1
+        fi
+
+        # $owned is deliberately unquoted: it is a space-separated list.
+        # -A also records the files the pruning passes delete, which the old
+        # per-workflow `git add <one file>` used to miss.
+        git add -A -- $owned
+
+        # Whatever is still dirty was written outside the declared paths. Two
+        # reasons it cannot stay: it is data nobody asked to publish, and a
+        # single unstaged change is enough to abort the rebase below with
+        # "cannot pull with rebase: You have unstaged changes" — the failure
+        # this action was written to end. (That was data/news/sources-resolved.json,
+        # an acquisition cache the Destaques build writes and its workflow
+        # never staged.) Report it loudly, then drop it.
+        stray="$( { git diff --name-only; git ls-files --others --exclude-standard; } | sort -u )"
+        if [ -n "$stray" ]; then
+          echo "::warning::alterações fora de '$owned' descartadas:"
+          printf '  %s\n' $stray
+        fi
+        git checkout --quiet -- .   # index → worktree: staged data kept, dirt reverted
+        git clean --quiet -fd       # untracked leftovers; ignored files (node_modules) kept
+
+        if git diff --cached --quiet; then
+          echo "Sem alterações em: $owned"
+          echo "committed=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        git commit -q -m "$MESSAGE [skip ci]"
+
+        # Several jobs commit to this branch and the busiest one runs every 15
+        # minutes, so a rejected push is expected traffic, not an incident.
+        # Rebasing replays only this job's diff, so a path another job owns and
+        # this one did not touch keeps whatever that job published.
+        for attempt in 1 2 3 4 5 6; do
+          if git push --quiet origin "HEAD:$BRANCH"; then
+            echo "Publicado: $MESSAGE"
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Push recusado (tentativa $attempt/6) — a rebasear sobre o $BRANCH mais recente."
+          sleep $(( (RANDOM % 5) + attempt * 2 ))
+          git fetch --quiet origin "$BRANCH"
+
+          # During a rebase "theirs" is the commit being replayed — this run's
+          # snapshot. Each path is owned by exactly one job, so a conflict
+          # should not arise; if one does, the freshest data wins instead of
+          # the run stalling in a half-finished rebase.
+          if ! git rebase --quiet -X theirs FETCH_HEAD; then
+            git rebase --abort >/dev/null 2>&1 || true
+            echo "::error::rebase sobre $BRANCH falhou — $MESSAGE"
+            exit 1
+          fi
+        done
+
+        echo "::error::não foi possível publicar ao fim de 6 tentativas — $MESSAGE"
+        exit 1

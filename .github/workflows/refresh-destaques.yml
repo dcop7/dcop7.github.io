@@ -1,0 +1,76 @@
+name: Refresh ▸ Notícias ▸ Destaques
+
+# Notícias ▸ Destaques — the daily editorial pass over the articles the RSS
+# pipeline already collected. Reads data/news/topic-*.json from the repo, asks
+# Groq to group/rank/summarise, validates, and commits data/news/curated/*.
+# The browser only ever reads that JSON: GROQ_KEY lives in GitHub Secrets and
+# never leaves this runner.
+#
+# ISOLATION: this stays out of refresh-often.yml on purpose. It never writes
+# data/news/topic-*.json or index.json, so a Groq outage, an exhausted quota
+# or a bad model day cannot affect the existing Notícias page — that page does
+# not read data/news/curated/ at all. If curation fails, build-curated.mjs
+# exits non-zero WITHOUT writing, there is no diff, and yesterday's curated
+# data stays live.
+#
+# The gate is on the snapshot's own date, never on the hour of day: GitHub
+# delays cron runs by minutes to HOURS, so an "== 08h" gate silently skips
+# whole days. The later crons are catch-up retries; whichever fires first does
+# the work and the rest no-op.
+
+on:
+  schedule:
+    - cron: '35 7,8,12,17 * * *'   # UTC; 7/8 covers the Lisbon DST pair, then two catch-ups
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-destaques
+  cancel-in-progress: false
+
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FORCE: ${{ github.event_name != 'schedule' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Curar as histórias do dia → JSON estático
+        id: curate
+        env:
+          # Free-tier Groq key. Secret only — never echoed, never written into
+          # the generated JSON, never shipped to the browser.
+          GROQ_KEY: ${{ secrets.GROQ_KEY }}
+          # Last-resort acquisition for sources that refuse automated
+          # fetching. Optional: without it those sources are reported `none`,
+          # exactly as before the fallback existed.
+          TINYFISH_KEY: ${{ secrets.TINYFISH_KEY }}
+        run: |
+          [ "$(node .github/scripts/stale.mjs data/news/curated/latest.json day)" = true ] || {
+            echo "Já curado hoje — nada a fazer."; exit 0; }
+          node data/news/build-curated.mjs
+          echo "built=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Validar o resultado contra o esquema
+        if: steps.curate.outputs.built == 'yes'
+        run: node data/news/build-curated.mjs --check
+
+      # build-curated.mjs writes data/news/curated/** AND the
+      # data/news/sources-resolved.json acquisition cache. The old workflow
+      # staged only the first, so the cache stayed unstaged and aborted the
+      # rebase — "cannot pull with rebase: You have unstaged changes". Naming
+      # the whole data/news tree is safe: the rebase replays this job's diff
+      # only, so the topic files refresh-often.yml owns are left alone.
+      - uses: ./.github/actions/commit-push
+        if: steps.curate.outputs.built == 'yes'
+        with:
+          paths: data/news
+          message: 'chore(destaques): refresh curadoria diária'

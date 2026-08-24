@@ -1,0 +1,44 @@
+name: Refresh ▸ ocorrências
+
+# fogos.pt stopped allowing CORS from third-party origins, so the browser on
+# GitHub Pages cannot call api.fogos.pt directly. This fetches the active
+# ANEPC incidents server-side every 15 minutes and commits a same-origin JSON
+# snapshot (data/ocorrencias/ocorrencias.json) that the Ocorrências page uses
+# as its zero-config data source. Users who add a free API Aberta key in the
+# UI get live browser-side data instead.
+#
+# This is the only refresh kept on its own workflow: at ~96 runs a day it is
+# by far the noisiest writer, and putting it in a shared concurrency group
+# with the other refreshes would let it cancel their queued runs — trading a
+# push race, which commit-push already absorbs, for lost daily builds.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'     # UTC; GitHub may delay a run, never mind the exact minute
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-ocorrencias
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Snapshot das ocorrências ativas → JSON estático
+        run: node data/ocorrencias/build-ocorrencias.mjs
+
+      - uses: ./.github/actions/commit-push
+        with:
+          paths: data/ocorrencias
+          message: 'chore(ocorrencias): refresh incidents snapshot'
