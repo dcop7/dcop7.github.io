@@ -1019,10 +1019,11 @@ async function main() {
   const themesOut = [];
   const failed = [];
   const skipped = [];
+  let budgetGone = null;
   console.log('');
   for (const { theme, arts, hours, chunks } of plan) {
     if (!chunks.length) { console.log(`· ${theme.id}: ${arts.length} candidate(s) — too few to curate, skipped`); continue; }
-    if (!MOCK && outOfTime()) { skipped.push(theme.id); continue; }
+    if (!MOCK && (budgetGone || outOfTime())) { skipped.push(theme.id); continue; }
     const byId = new Map(arts.map(a => [a.id, a]));
     let stories = [];
     let chunkFailed = 0;
@@ -1054,14 +1055,14 @@ async function main() {
            Stop now so the run ends in seconds instead of grinding
            through 20 more doomed requests. */
         if (e.auth) { console.error('\n✗ Groq rejected the credential — aborting. Previous data left untouched.'); return 1; }
-        /* Same reasoning as a rejected key: the wall is per organisation,
-           not per chunk, so the remaining themes would each spend three
-           attempts rediscovering it. Out in seconds instead of an hour. */
-        if (e.exhausted) {
-          console.error(`\n✗ Groq budget exhausted (clears in ~${Math.round(e.waitS / 60)}min) — aborting after ${elapsed()}. Previous data left untouched.`);
-          console.error('  If this repeats, the day\'s 200k token budget is being spent by re-runs: each full pass plans for ~100k.');
-          return 1;
-        }
+        /* The wall is per organisation, not per chunk, so every remaining
+           theme would spend three attempts rediscovering it. Stop asking
+           — but do NOT return: unlike a rejected key, which produces
+           nothing at all, running out of budget half way means the themes
+           already curated are paid for. Throwing them away wastes the
+           tokens AND loses the edition. Fall through to the normal
+           publish path and let the degraded-gate below decide. */
+        if (e.exhausted) { budgetGone = e; break; }
       }
     }
 
@@ -1086,7 +1087,12 @@ async function main() {
     });
     console.log(`✓ ${theme.id.padEnd(14)} ${stories.length} candidate stor${stories.length === 1 ? 'y' : 'ies'} from ${arts.length} articles · ${elapsed()}`);
   }
-  if (skipped.length) console.warn(`\n! deadline reached at ${elapsed()} — ${skipped.length} theme(s) left uncurated: ${skipped.join(', ')}`);
+  if (budgetGone) {
+    console.warn(`\n! Groq's daily budget ran out at ${elapsed()} (clears in ~${Math.round(budgetGone.waitS / 60)}min) — ${skipped.length} theme(s) left uncurated: ${skipped.join(', ') || 'none'}`);
+    console.warn('  Each full pass plans for ~100k of the day\'s 200 000. If this repeats, the budget is going to re-runs.');
+  } else if (skipped.length) {
+    console.warn(`\n! deadline reached at ${elapsed()} — ${skipped.length} theme(s) left uncurated: ${skipped.join(', ')}`);
+  }
 
   /* ── one event, one card, across the whole edition ── */
   const folded = crossThemeDedupe(themesOut);
@@ -1119,7 +1125,7 @@ async function main() {
      themes beat yesterday's thirteen. */
   const lost = failed.length + skipped.length;
   if (lost > THEMES.length / 2) {
-    console.error(`\n✗ ${lost}/${THEMES.length} themes missing (${failed.length} failed, ${skipped.length} out of time) — too degraded to publish. Previous data left untouched.`);
+    console.error(`\n✗ ${lost}/${THEMES.length} themes missing (${failed.length} failed, ${skipped.length} ${budgetGone ? 'unfunded' : 'out of time'}) — too degraded to publish. Previous data left untouched.`);
     return 1;
   }
 
@@ -1133,6 +1139,9 @@ async function main() {
     themes: themesOut,
     failedThemes: failed.length ? failed : undefined,
     skippedThemes: skipped.length ? skipped : undefined,
+    /* Why the edition is short, when it is: tells a genuinely quiet news
+       day apart from a budget that ran out mid-run. */
+    cutShort: budgetGone ? 'groq-daily-budget' : skipped.length ? 'deadline' : undefined,
   };
 
   /* ── validate BEFORE anything reaches disk ── */
