@@ -116,7 +116,9 @@ const TITLE_MAX = 120;
    run for a full minute before every single call — the exact pacing bug
    that turned an earlier run into 21 minutes of mostly waiting. The
    remaining headroom is checked against Groq's own
-   `x-ratelimit-remaining-tokens` rather than our arithmetic.          */
+   `x-ratelimit-remaining-tokens` rather than our arithmetic — see
+   noteHeaders()/serverWaitMs(), which wait only for the shortfall the
+   NEXT request actually has, at the bucket's refill rate.             */
 const MODEL = 'openai/gpt-oss-120b';
 const TOK_BUDGET_PER_MIN = 7000;
 /* Sized so MAX_INPUT_TOK + estOut(MAX_STORIES) still fits inside
@@ -133,6 +135,18 @@ const MAX_OUTPUT_TOK = 3200;  /* ceiling for a 15-story reply, not an estimate *
 const estOut = (n) => Math.min(MAX_OUTPUT_TOK, 320 + n * 150);
 const REQ_TIMEOUT = 90000;
 const MAX_ATTEMPTS = 3;       /* per chunk, including the initial call */
+
+/* ── wall clock ───────────────────────────────────────────────────
+   The workflow kills the job at 30 minutes, and a killed job writes
+   NOTHING: no diff, no commit, yesterday's edition stays live for
+   another day. So the run stops ASKING for stories at its own, earlier
+   deadline and publishes what it already has. Counted from process
+   start, so a slow source-resolution phase eats into the same budget
+   rather than pushing the model calls past the job limit. */
+const T0 = Date.now();
+const DEADLINE_MS = Math.max(1, Number(process.env.CURATE_DEADLINE_MIN) || 21) * 60000;
+const elapsed = () => `${Math.floor((Date.now() - T0) / 60000)}m${String(Math.floor((Date.now() - T0) / 1000) % 60).padStart(2, '0')}s`;
+const outOfTime = () => Date.now() - T0 > DEADLINE_MS;
 
 const GROQ_KEY = process.env.GROQ_KEY || '';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -189,7 +203,7 @@ async function reserve(n) {
   /* A booking larger than the whole budget could never be granted, and
      the loop below would spin forever waiting for room that cannot
      exist. Clamp instead: an oversized request is still bounded by
-     Groq's own limit, which respectHeaders() enforces afterwards. */
+     Groq's own limit, which serverWaitMs() enforces afterwards. */
   if (n > TOK_BUDGET_PER_MIN) {
     console.warn(`   ! booking ${n} tok exceeds the ${TOK_BUDGET_PER_MIN}/min budget — clamped`);
     n = TOK_BUDGET_PER_MIN;
@@ -198,10 +212,20 @@ async function reserve(n) {
     const cut = Date.now() - 60000;
     while (_spent.length && _spent[0].t < cut) _spent.shift();
     const used = _spent.reduce((s, x) => s + x.n, 0);
-    if (used + n <= TOK_BUDGET_PER_MIN) { const b = { t: Date.now(), n }; _spent.push(b); return b; }
-    const waitMs = Math.max(1000, 60000 - (Date.now() - _spent[0].t) + 250);
-    console.log(`   ⏳ token budget: ${used}/${TOK_BUDGET_PER_MIN} used — waiting ${Math.round(waitMs / 1000)}s`);
-    await sleep(waitMs);
+    if (used + n > TOK_BUDGET_PER_MIN) {
+      const waitMs = Math.max(1000, 60000 - (Date.now() - _spent[0].t) + 250);
+      console.log(`   ⏳ token budget: ${used}/${TOK_BUDGET_PER_MIN} used — waiting ${Math.round(waitMs / 1000)}s`);
+      await sleep(waitMs);
+      continue;
+    }
+    /* Our estimate says there is room; the server has the last word. */
+    const sw = serverWaitMs(n);
+    if (sw > 0) {
+      console.log(`   ⏳ Groq: ${_srvRem} tok left at last reply, ${n} needed — waiting ${Math.round(sw / 1000)}s`);
+      await sleep(sw);
+      continue;
+    }
+    const b = { t: Date.now(), n }; _spent.push(b); return b;
   }
 }
 
@@ -210,15 +234,47 @@ function settle(booking, actual) {
   if (booking && Number.isFinite(actual) && actual > 0) booking.n = actual;
 }
 
-/* The server's remaining-token budget beats our estimate. When it drops
-   below one request's worth, wait out the window it tells us to. */
-async function respectHeaders(r) {
+/* ── what the server itself says is left ───────────────────────────
+   Every reply carries x-ratelimit-remaining-tokens / -reset-tokens, and
+   those beat our arithmetic. They are RECORDED here and consulted by
+   reserve(), never acted on the moment they arrive.
+
+   That distinction is the whole point. The previous version slept as
+   soon as `remaining` fell below one worst-case request (7 600 of an
+   8 000 TPM ceiling) — which is true after the very first call of any
+   size, so every single request was followed by a full-window wait. A
+   21-request run became 21 minutes of mostly waiting and died on the
+   job's 30-minute timeout with nothing written. What matters is not
+   whether the bucket is below the worst case, it is whether it holds
+   enough for the request we are actually about to send. */
+let TPM_LIMIT = 8000;      /* overwritten by x-ratelimit-limit-tokens */
+let _srvRem = Infinity;    /* tokens the server said were left…       */
+let _srvAt = 0;            /* …at this moment                          */
+let _srvResetMs = 0;       /* …and this long until the bucket is full  */
+
+function noteHeaders(r) {
+  const lim = Number(r.headers.get('x-ratelimit-limit-tokens'));
+  if (Number.isFinite(lim) && lim > 0) TPM_LIMIT = lim;
   const rem = Number(r.headers.get('x-ratelimit-remaining-tokens'));
-  if (!Number.isFinite(rem) || rem > MAX_INPUT_TOK + MAX_OUTPUT_TOK) return;
-  const secs = parseDuration(r.headers.get('x-ratelimit-reset-tokens'), 10);
-  console.log(`   ⏳ Groq reports ${rem} tokens left this minute — waiting ${secs}s`);
-  await sleep(secs * 1000);
-  _spent.length = 0;   /* the window it just reset is the one we track */
+  if (!Number.isFinite(rem)) return;
+  _srvRem = rem;
+  _srvAt = Date.now();
+  _srvResetMs = parseDuration(r.headers.get('x-ratelimit-reset-tokens'), 10) * 1000;
+}
+
+/* Groq's bucket refills continuously at TPM/60 per second, so a shortfall
+   of k tokens clears in k/(TPM/60) seconds — normally far sooner than the
+   full reset the header advertises, which is only the time to refill to
+   the brim. Waiting the advertised reset for a request that needs a third
+   of the bucket is what the old code did on every call. */
+function serverWaitMs(n) {
+  if (!Number.isFinite(_srvRem)) return 0;
+  const rate = TPM_LIMIT / 60;
+  const avail = Math.min(TPM_LIMIT, _srvRem + (Date.now() - _srvAt) / 1000 * rate);
+  if (avail >= n) return 0;
+  const needS = (n - avail) / rate;
+  const capS = (_srvAt + _srvResetMs - Date.now()) / 1000;
+  return Math.ceil(Math.min(needS, capS > 0 ? capS : needS) * 1000) + 250;
 }
 
 /* Groq expresses resets as Go durations: "7.66s", "2m59.56s", "1h2m3s".
@@ -421,13 +477,23 @@ function mockReply(arts, want = MAX_STORIES) {
   };
 }
 
-async function groqJSON(system, user, label, wantStories = MAX_STORIES) {
-  const inTok = estTok(system) + estTok(user) + 40;
-  const outTok = estOut(wantStories);
-  if (inTok > MAX_INPUT_TOK + 400) console.warn(`   ! ${label}: prompt ~${inTok} tok, above the ${MAX_INPUT_TOK} target`);
+/* `buildUser` is a function of the story count, not a finished string,
+   because the retry may need to ask for fewer: gpt-oss counts its own
+   reasoning against max_tokens, and a reply that hits the ceiling comes
+   back empty or as truncated JSON. Re-sending the identical request then
+   fails identically three times over, burning 3 × MAX_OUTPUT_TOK of an
+   8 000 TPM budget for nothing — minutes of pacing spent on a request
+   that could never succeed. Asking for fewer stories is the one change
+   that makes the second attempt different from the first. */
+async function groqJSON(system, buildUser, label, wantStories = MAX_STORIES) {
+  let want = wantStories;
+  let user = buildUser(want);
+  if (estTok(system) + estTok(user) + 40 > MAX_INPUT_TOK + 400) console.warn(`   ! ${label}: prompt ~${estTok(system) + estTok(user) + 40} tok, above the ${MAX_INPUT_TOK} target`);
 
   let lastErr = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const inTok = estTok(system) + estTok(user) + 40;
+    const outTok = estOut(want);
     const booking = await reserve(inTok + outTok);
 
     const ctrl = new AbortController();
@@ -446,6 +512,10 @@ async function groqJSON(system, user, label, wantStories = MAX_STORIES) {
           reasoning_effort: 'low',
         }),
       });
+
+      /* Record the server's accounting for every status, 429 included —
+         a refusal is exactly when its numbers matter most. */
+      noteHeaders(r);
 
       if (r.status === 429) {
         /* A refused request cost nothing — release its booking. */
@@ -477,17 +547,30 @@ async function groqJSON(system, user, label, wantStories = MAX_STORIES) {
          request is not queued behind output tokens we never used. */
       const realTok = Number(j?.usage?.total_tokens);
       settle(booking, realTok);
-      if (Number.isFinite(realTok)) console.log(`   · ${label}: ${realTok} tok (est. ${inTok + outTok})`);
-      await respectHeaders(r);
+      if (Number.isFinite(realTok)) console.log(`   · ${label}: ${realTok} tok (est. ${inTok + outTok}) · ${Number.isFinite(_srvRem) ? `${_srvRem} left` : 'no header'} · ${elapsed()}`);
 
+      const fin = j?.choices?.[0]?.finish_reason || '?';
       const txt = j?.choices?.[0]?.message?.content || '';
-      if (!txt.trim()) throw new Error('empty completion');
+      /* finish_reason "length" means the ceiling was hit, so whatever
+         came back is truncated even when it is not empty — JSON.parse
+         would fail on it a line later with a message that says nothing
+         about why. Name the cause here instead. */
+      if (fin === 'length') { const e = new Error(`reply hit the ${MAX_OUTPUT_TOK}-token ceiling (finish_reason=length)`); e.truncated = true; throw e; }
+      if (!txt.trim()) throw new Error(`empty completion (finish_reason=${fin})`);
       return JSON.parse(txt);
     } catch (e) {
       lastErr = e;
       if (e.fatal) { console.warn(`   ! ${label}: ${e.message} — not retryable`); throw e; }
       const msg = e.name === 'AbortError' ? `timeout after ${REQ_TIMEOUT / 1000}s` : e.message;
       console.warn(`   ! ${label}: ${msg} (attempt ${attempt}/${MAX_ATTEMPTS})`);
+      /* Halve the ask so the retry is a genuinely smaller request. Below
+         3 stories the chunk is not worth curating at all, so stop. */
+      if (e.truncated) {
+        if (want <= 3) { console.warn(`   ! ${label}: already down to ${want} stories — giving up on this chunk`); throw e; }
+        want = Math.max(3, Math.floor(want / 2));
+        user = buildUser(want);
+        console.warn(`   ↺ ${label}: retrying for ${want} stories instead`);
+      }
       if (attempt < MAX_ATTEMPTS) await sleep(2000 * attempt);
     } finally { clearTimeout(to); }
   }
@@ -860,6 +943,7 @@ async function main() {
     viaCount[r.via] = (viaCount[r.via] || 0) + 1;
     if (r.via !== 'known feed' && r.via !== 'cache') notable.push(`${theme}/${r.name}: ${r.via}${r.count ? ` (${r.count})` : ''}${r.feed && r.via !== 'none' ? ` → ${r.feed}` : ''}`);
   }
+  console.log(`  resolved in ${elapsed()} of the ${DEADLINE_MS / 60000}min budget`);
   console.log('  strategies: ' + Object.entries(viaCount).map(([k, v]) => `${k}=${v}`).join(' · '));
   notable.forEach(n => console.log('   · ' + n));
 
@@ -883,9 +967,11 @@ async function main() {
   /* ── curate ── */
   const themesOut = [];
   const failed = [];
+  const skipped = [];
   console.log('');
   for (const { theme, arts, hours, chunks } of plan) {
     if (!chunks.length) { console.log(`· ${theme.id}: ${arts.length} candidate(s) — too few to curate, skipped`); continue; }
+    if (!MOCK && outOfTime()) { skipped.push(theme.id); continue; }
     const byId = new Map(arts.map(a => [a.id, a]));
     let stories = [];
     let chunkFailed = 0;
@@ -902,10 +988,13 @@ async function main() {
 
     for (let c = 0; c < chunks.length; c++) {
       const label = `${theme.id}${chunks.length > 1 ? ` [${c + 1}/${chunks.length}]` : ''}`;
+      /* Out of time mid-theme: keep the chunks already curated rather
+         than dropping the theme, and mark it partial like a failure. */
+      if (!MOCK && c > 0 && outOfTime()) { chunkFailed++; console.warn(`   · ${label}: past the ${DEADLINE_MS / 60000}min deadline — chunk skipped`); continue; }
       const want = Math.min(wantPerChunk, chunks[c].length);
       try {
         const reply = MOCK ? mockReply(chunks[c], want)
-          : await groqJSON(SYSTEM, userPrompt(theme, chunks[c], now, want), label, want);
+          : await groqJSON(SYSTEM, (n) => userPrompt(theme, chunks[c], now, n), label, want);
         stories.push(...materialise(reply, byId, theme, dayISO));
       } catch (e) {
         chunkFailed++;
@@ -936,8 +1025,9 @@ async function main() {
       partial: chunkFailed > 0 || undefined,
       stories,
     });
-    console.log(`✓ ${theme.id.padEnd(14)} ${stories.length} candidate stor${stories.length === 1 ? 'y' : 'ies'} from ${arts.length} articles`);
+    console.log(`✓ ${theme.id.padEnd(14)} ${stories.length} candidate stor${stories.length === 1 ? 'y' : 'ies'} from ${arts.length} articles · ${elapsed()}`);
   }
+  if (skipped.length) console.warn(`\n! deadline reached at ${elapsed()} — ${skipped.length} theme(s) left uncurated: ${skipped.join(', ')}`);
 
   /* ── one event, one card, across the whole edition ── */
   const folded = crossThemeDedupe(themesOut);
@@ -964,8 +1054,13 @@ async function main() {
     console.error('\n✗ No usable stories produced — previous data left untouched.');
     return 1;
   }
-  if (failed.length > THEMES.length / 2) {
-    console.error(`\n✗ ${failed.length}/${THEMES.length} themes failed — too degraded to publish. Previous data left untouched.`);
+  /* A theme lost to the clock is as absent from the edition as one lost
+     to an API failure, so both count towards "too degraded". Below that
+     line a partial edition is still worth publishing: today's five
+     themes beat yesterday's thirteen. */
+  const lost = failed.length + skipped.length;
+  if (lost > THEMES.length / 2) {
+    console.error(`\n✗ ${lost}/${THEMES.length} themes missing (${failed.length} failed, ${skipped.length} out of time) — too degraded to publish. Previous data left untouched.`);
     return 1;
   }
 
@@ -978,6 +1073,7 @@ async function main() {
     windowHours: WINDOW_H,
     themes: themesOut,
     failedThemes: failed.length ? failed : undefined,
+    skippedThemes: skipped.length ? skipped : undefined,
   };
 
   /* ── validate BEFORE anything reaches disk ── */
@@ -1013,8 +1109,9 @@ async function main() {
     months,                     /* { id, days, stories }, newest first */
   });
 
-  console.log(`\n✓ ${totalStories} stories across ${themesOut.length} themes → curated/d/${dayISO}.json + latest.json`);
+  console.log(`\n✓ ${totalStories} stories across ${themesOut.length} themes in ${elapsed()} → curated/d/${dayISO}.json + latest.json`);
   if (failed.length) console.log(`  (themes omitted after failures: ${failed.join(', ')})`);
+  if (skipped.length) console.log(`  (themes omitted for time: ${skipped.join(', ')})`);
   return 0;
 }
 
@@ -1024,6 +1121,12 @@ async function main() {
    both real and adversarial input, which means importing it without
    running a build. */
 export { crossThemeDedupe, sigWords, entities, sharedEntities, regroup, materialise, validateDay };
+
+/* Pacing is the other silent failure mode, and the one that actually
+   cost a day's edition: too eager and Groq refuses, too cautious and the
+   job is killed before it publishes. Neither shows up as a wrong value
+   anywhere — only as a run that takes 21 minutes instead of 8. */
+export { parseDuration, noteHeaders, serverWaitMs };
 
 /* Set exitCode rather than calling process.exit(): an aborted fetch may
    still be tearing its socket down, and exiting mid-teardown makes Node

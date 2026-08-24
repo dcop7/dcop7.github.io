@@ -26,6 +26,11 @@ on:
 permissions:
   contents: write
 
+# Never two curations at once: they would spend the same Groq minute
+# budget against each other and race for the same commit. With the job
+# ceiling at 60 min the 07:35 and 08:35 crons can now overlap — the later
+# one queues instead of running, and by the time it starts the staleness
+# gate below finds the day already curated and exits in seconds.
 concurrency:
   group: refresh-destaques
   cancel-in-progress: false
@@ -33,7 +38,12 @@ concurrency:
 jobs:
   curate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Headroom, not a plan: with the pacing fixed the run takes ~10 min, and
+    # the script's own CURATE_DEADLINE_MIN below is what actually bounds it.
+    # This ceiling exists so a slow day (sources timing out, Groq throttling
+    # harder than usual) ends in a published partial edition rather than in
+    # a killed job — a killed job writes nothing at all.
+    timeout-minutes: 60
     env:
       FORCE: ${{ github.event_name != 'schedule' }}
     steps:
@@ -53,6 +63,13 @@ jobs:
           # fetching. Optional: without it those sources are reported `none`,
           # exactly as before the fallback existed.
           TINYFISH_KEY: ${{ secrets.TINYFISH_KEY }}
+          # Must stay BELOW timeout-minutes above. The script stops asking
+          # the model for stories at this mark and publishes what it has;
+          # the runner killing the job instead publishes nothing at all,
+          # which is how a run once ended with yesterday's edition still
+          # live. The remaining ~10 min cover validation, rollups, the
+          # commit and the rebase-retry against a busy main.
+          CURATE_DEADLINE_MIN: '50'
         run: |
           [ "$(node .github/scripts/stale.mjs data/news/curated/latest.json day)" = true ] || {
             echo "Já curado hoje — nada a fazer."; exit 0; }
