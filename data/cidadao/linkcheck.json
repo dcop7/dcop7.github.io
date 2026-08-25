@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-25T03:04:37.407Z",
+ "generated": "2026-08-25T08:50:55.628Z",
  "total": 84,
  "broken": 0,
- "unknown": 31,
+ "unknown": 37,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -133,8 +133,8 @@
   {
    "id": "apoios:bolsa-merito-secundario",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:transporte-doentes",
@@ -175,20 +175,20 @@
   {
    "id": "apoios:ase-escolar",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:passe-ferroviario-verde",
    "url": "https://www.cp.pt/passageiros/pt",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:passes-jovens-gratis",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:rsi",
@@ -271,8 +271,8 @@
   {
    "id": "apoios:trabalhador-estudante",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:cartao-europeu-saude",
@@ -403,8 +403,8 @@
   {
    "id": "calendario:passe-sub23",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:gripe-vacina",
