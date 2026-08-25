@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-24T20:36:49.685Z",
+ "generated": "2026-08-25T03:04:37.407Z",
  "total": 84,
  "broken": 0,
- "unknown": 27,
+ "unknown": 31,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -13,14 +13,14 @@
   {
    "id": "apoios:porta65",
    "url": "https://www.portaldahabitacao.pt/porta-65-jovem",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:garantia-1casa",
    "url": "https://www.portaldahabitacao.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:isencao-imt-jovem",
@@ -31,8 +31,8 @@
   {
    "id": "apoios:apoio-renda",
    "url": "https://www.portaldahabitacao.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:elar",
@@ -445,8 +445,8 @@
   {
    "id": "calendario:porta65-janelas",
    "url": "https://www.portaldahabitacao.pt/porta-65-jovem",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria",
