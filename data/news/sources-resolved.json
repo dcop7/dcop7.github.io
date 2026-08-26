@@ -2,601 +2,601 @@
  "RTP Notícias / Geral / Últimas": {
   "feed": "http://www.rtp.pt/noticias/rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.687Z",
+  "checked": "2026-08-26T10:39:42.623Z",
   "ok": true
  },
  "Ars Technica": {
   "feed": "https://feeds.arstechnica.com/arstechnica/index",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.643Z",
+  "checked": "2026-08-26T10:39:42.495Z",
   "ok": true
  },
  "The Guardian — World": {
   "feed": "https://www.theguardian.com/world/rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.113Z",
+  "checked": "2026-08-26T10:39:42.352Z",
   "ok": true
  },
  "Diário de Notícias": {
-  "feed": "https://www.dn.pt/news_sitemap.xml",
-  "via": "news sitemap",
-  "checked": "2026-08-26T06:57:33.788Z",
+  "feed": "https://www.dn.pt/feed/",
+  "via": "known feed",
+  "checked": "2026-08-26T10:39:42.591Z",
   "ok": true
  },
  "MaisTecnologia": {
   "feed": "https://www.maistecnologia.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.176Z",
+  "checked": "2026-08-26T10:39:44.644Z",
   "ok": true
  },
  "Forbes - Innovation": {
   "feed": "http://www.forbes.com/innovation/feed2/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.531Z",
+  "checked": "2026-08-26T10:39:42.519Z",
   "ok": true
  },
  "BBC News": {
   "feed": "http://feeds.bbci.co.uk/news/world/europe/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.433Z",
+  "checked": "2026-08-26T10:39:43.128Z",
   "ok": true
  },
  "Região de Leiria": {
   "feed": "http://feeds.feedburner.com/RegiodeLeiria",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.202Z",
+  "checked": "2026-08-26T10:39:42.467Z",
   "ok": true
  },
  "Euronews": {
   "feed": "http://feeds.feedburner.com/euronews/en/home/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.311Z",
+  "checked": "2026-08-26T10:39:42.540Z",
   "ok": true
  },
  "Leak": {
   "feed": "http://feeds.feedburner.com/leak/jOFQ",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.329Z",
+  "checked": "2026-08-26T10:39:42.657Z",
   "ok": true
  },
  "Expresso": {
   "feed": "http://feeds.feedburner.com/expresso-geral",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.210Z",
+  "checked": "2026-08-26T10:39:42.725Z",
   "ok": true
  },
  "SIC Notícias": {
   "feed": "http://feeds.feedburner.com/sicnoticias-ultimas",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.220Z",
+  "checked": "2026-08-26T10:39:42.533Z",
   "ok": true
  },
  "Pplware": {
   "feed": "http://pplware.sapo.pt/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.943Z",
+  "checked": "2026-08-26T10:39:44.203Z",
   "ok": true
  },
  "PCGuia": {
   "feed": "http://www.pcguia.pt/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.868Z",
+  "checked": "2026-08-26T10:39:43.652Z",
   "ok": true
  },
  "The Verge": {
   "feed": "https://www.theverge.com/rss/index.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.981Z",
+  "checked": "2026-08-26T10:39:43.763Z",
   "ok": true
  },
  "HowToGeek": {
   "feed": "https://www.howtogeek.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.585Z",
+  "checked": "2026-08-26T10:39:42.909Z",
   "ok": true
  },
  "Tek Notícias": {
   "feed": "http://tek.sapo.pt/rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.734Z",
+  "checked": "2026-08-26T10:39:44.608Z",
   "ok": true
  },
  "Minuto Digital": {
   "feed": "https://minutodigital.pt/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.924Z",
+  "checked": "2026-08-26T10:39:43.526Z",
   "ok": true
  },
  "A tecnologia está do teu lado": {
   "feed": "http://www.4gnews.pt/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.531Z",
+  "checked": "2026-08-26T10:39:44.676Z",
   "ok": true
  },
  "TechCrunch": {
   "feed": "https://techcrunch.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.914Z",
+  "checked": "2026-08-26T10:39:43.611Z",
   "ok": true
  },
  "Latent Space": {
   "feed": "https://www.latent.space/feed.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.633Z",
+  "checked": "2026-08-26T10:39:44.694Z",
   "ok": true
  },
  "Google DeepMind": {
   "feed": "https://deepmind.google/blog/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.450Z",
+  "checked": "2026-08-26T10:39:44.402Z",
   "ok": true
  },
  "ZDNet": {
   "feed": "http://www.zdnet.com/news/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.319Z",
+  "checked": "2026-08-26T10:39:44.411Z",
   "ok": true
  },
  "One Useful Thing": {
   "feed": "https://www.oneusefulthing.org/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.545Z",
+  "checked": "2026-08-26T10:39:44.706Z",
   "ok": true
  },
  "Simon Willison": {
   "feed": "https://simonwillison.net/atom/everything/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.651Z",
+  "checked": "2026-08-26T10:39:44.740Z",
   "ok": true
  },
  "OpenAI": {
   "feed": "https://openai.com/news/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.580Z",
+  "checked": "2026-08-26T10:39:44.730Z",
   "ok": true
  },
  "MakeUseOf - Linux": {
   "feed": "http://www.makeuseof.com/service/linux/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.054Z",
+  "checked": "2026-08-26T10:39:43.601Z",
   "ok": true
  },
  "MakeUseOf - Windows": {
   "feed": "http://www.makeuseof.com/service/windows/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.002Z",
+  "checked": "2026-08-26T10:39:43.709Z",
   "ok": true
  },
  "MakeUseOf - Technology News": {
   "feed": "http://www.makeuseof.com/service/news/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.894Z",
+  "checked": "2026-08-26T10:39:43.688Z",
   "ok": true
  },
  "TLDR AI": {
   "feed": "https://tldr.tech/api/rss/ai",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.875Z",
+  "checked": "2026-08-26T10:39:44.920Z",
   "ok": true
  },
  "XDA": {
   "feed": "http://www.xda-developers.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.647Z",
+  "checked": "2026-08-26T10:39:44.551Z",
   "ok": true
  },
  "TLDR Data": {
   "feed": "https://tldr.tech/api/rss/data",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.871Z",
+  "checked": "2026-08-26T10:39:45.032Z",
   "ok": true
  },
  "MakeUseOf - Internet": {
   "feed": "http://www.makeuseof.com/service/web-based/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:33.884Z",
+  "checked": "2026-08-26T10:39:43.815Z",
   "ok": true
  },
  "TLDR IT": {
   "feed": "https://tldr.tech/api/rss/it",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.916Z",
+  "checked": "2026-08-26T10:39:45.011Z",
   "ok": true
  },
  "BleepingComputer": {
   "feed": "https://www.bleepingcomputer.com/feed/",
   "via": "none",
-  "checked": "2026-08-26T06:57:37.002Z",
+  "checked": "2026-08-26T10:39:47.664Z",
   "ok": false
  },
  "Xa das 5": {
   "feed": "http://xadas5.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.175Z",
+  "checked": "2026-08-26T10:39:44.892Z",
   "ok": true
  },
  "Future Tools": {
   "feed": "https://www.futuretools.io/news/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.963Z",
+  "checked": "2026-08-26T10:39:45.240Z",
   "ok": true
  },
  "Help Net Security": {
   "feed": "https://www.helpnetsecurity.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.941Z",
+  "checked": "2026-08-26T10:39:45.100Z",
   "ok": true
  },
  "TLDR Tech": {
   "feed": "https://tldr.tech/api/rss/tech",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.964Z",
+  "checked": "2026-08-26T10:39:45.022Z",
   "ok": true
  },
  "TLDR DevOps": {
   "feed": "https://tldr.tech/api/rss/devops",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:34.902Z",
+  "checked": "2026-08-26T10:39:44.979Z",
   "ok": true
  },
  "Infosecurity Magazine": {
   "feed": "https://www.infosecurity-magazine.com/rss/news/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.139Z",
+  "checked": "2026-08-26T10:39:45.333Z",
   "ok": true
  },
  "Data Center Dynamics": {
   "feed": "https://www.datacenterdynamics.com/en/rss/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.309Z",
+  "checked": "2026-08-26T10:39:45.744Z",
   "ok": true
  },
  "Krebs on Security": {
   "feed": "https://krebsonsecurity.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.741Z",
+  "checked": "2026-08-26T10:39:45.358Z",
   "ok": true
  },
  "Dark Reading": {
   "feed": "https://www.darkreading.com/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.340Z",
+  "checked": "2026-08-26T10:39:45.634Z",
   "ok": true
  },
  "Cloud Native Computing Foundation": {
   "feed": "https://www.cncf.io/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.228Z",
+  "checked": "2026-08-26T10:39:45.675Z",
   "ok": true
  },
  "Platform Engineering": {
   "feed": "https://platformengineering.org/blog/rss.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.545Z",
+  "checked": "2026-08-26T10:39:45.966Z",
   "ok": true
  },
  "DevOps on Medium": {
   "feed": "https://medium.com/feed/tag/devops",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.325Z",
+  "checked": "2026-08-26T10:39:45.726Z",
   "ok": true
  },
  "The Record": {
   "feed": "https://therecord.media/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.145Z",
+  "checked": "2026-08-26T10:39:45.545Z",
   "ok": true
  },
  "SecurityWeek": {
   "feed": "https://www.securityweek.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.109Z",
+  "checked": "2026-08-26T10:39:45.480Z",
   "ok": true
  },
  "9to5Google": {
   "feed": "http://9to5google.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.679Z",
+  "checked": "2026-08-26T10:39:46.442Z",
   "ok": true
  },
  "DevOps.com": {
   "feed": "http://devops.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.611Z",
+  "checked": "2026-08-26T10:39:46.154Z",
   "ok": true
  },
  "The New Stack": {
   "feed": "http://thenewstack.io/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.790Z",
+  "checked": "2026-08-26T10:39:46.379Z",
   "ok": true
  },
  "The Hacker News": {
   "feed": "http://thehackernews.com/feeds/posts/default",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.737Z",
+  "checked": "2026-08-26T10:39:46.502Z",
   "ok": true
  },
  "The Register": {
   "feed": "https://www.theregister.com/headlines.atom",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.326Z",
+  "checked": "2026-08-26T10:39:46.947Z",
   "ok": true
  },
  "Lifehacker": {
   "feed": "https://lifehacker.com/rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.029Z",
+  "checked": "2026-08-26T10:39:47.075Z",
   "ok": true
  },
  "MakeUseOf - Productivity": {
   "feed": "https://www.makeuseof.com/feed/category/productivity/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.066Z",
+  "checked": "2026-08-26T10:39:46.628Z",
   "ok": true
  },
  "Android Authority": {
   "feed": "http://feeds.feedburner.com/androidauthority",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.145Z",
+  "checked": "2026-08-26T10:39:46.634Z",
   "ok": true
  },
  "Reddit — selfhosted": {
   "feed": "https://www.reddit.com/r/selfhosted/.rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.129Z",
+  "checked": "2026-08-26T10:39:46.455Z",
   "ok": true
  },
  "MakeUseOf - Android": {
   "feed": "http://www.makeuseof.com/service/google-android/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:35.945Z",
+  "checked": "2026-08-26T10:39:46.670Z",
   "ok": true
  },
  "Live Science": {
   "feed": "https://www.livescience.com/feeds/all",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.286Z",
+  "checked": "2026-08-26T10:39:47.279Z",
   "ok": true
  },
  "InfoWorld": {
   "feed": "https://www.infoworld.com/feed/",
   "via": "autodiscovery",
-  "checked": "2026-08-26T06:57:35.435Z",
+  "checked": "2026-08-26T10:39:45.911Z",
   "ok": true
  },
  "Android Police": {
   "feed": "http://www.androidpolice.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.045Z",
+  "checked": "2026-08-26T10:39:46.856Z",
   "ok": true
  },
  "Nature": {
   "feed": "https://www.nature.com/latest-news/sitemap.xml",
   "via": "news sitemap",
-  "checked": "2026-08-26T06:57:38.346Z",
+  "checked": "2026-08-26T10:39:48.719Z",
   "ok": true
  },
  "Quanta Magazine": {
   "feed": "https://www.quantamagazine.org/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.366Z",
+  "checked": "2026-08-26T10:39:47.282Z",
   "ok": true
  },
  "Space.com": {
   "feed": "https://www.space.com/feeds/all",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.790Z",
+  "checked": "2026-08-26T10:39:48.227Z",
   "ok": true
  },
  "Zapier Blog": {
   "feed": "https://zapier.com/blog/feeds/latest/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.368Z",
+  "checked": "2026-08-26T10:39:46.999Z",
   "ok": true
  },
  "Contas Poupança": {
   "feed": "https://rss.impresa.pt/feed/latest/contaspoupanca.rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.378Z",
+  "checked": "2026-08-26T10:39:48.192Z",
   "ok": true
  },
  "Scientific American": {
   "feed": "https://www.scientificamerican.com/platform/syndication/rss/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.399Z",
+  "checked": "2026-08-26T10:39:47.399Z",
   "ok": true
  },
  "Jornal de Negócios": {
   "feed": "https://www.jornaldenegocios.pt/rss",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.000Z",
+  "checked": "2026-08-26T10:39:48.291Z",
   "ok": true
  },
  "Literacia Financeira": {
   "feed": "https://www.literaciafinanceira.pt/artigos",
   "via": "scrape",
-  "checked": "2026-08-26T06:57:36.974Z",
+  "checked": "2026-08-26T10:39:48.283Z",
   "ok": true
  },
  "New Scientist": {
   "feed": "https://www.newscientist.com/feed/home/",
   "via": "none",
-  "checked": "2026-08-26T06:57:38.679Z",
+  "checked": "2026-08-26T10:39:50.779Z",
   "ok": false
  },
  "Motor24": {
-  "feed": "https://www.dn.pt/news_sitemap.xml",
-  "via": "news sitemap",
-  "checked": "2026-08-26T06:57:37.268Z",
+  "feed": "https://www.motor24.pt/feed/",
+  "via": "known feed",
+  "checked": "2026-08-26T10:39:49.086Z",
   "ok": true
  },
  "Google Cloud Blog": {
   "feed": "https://cloudblog.withgoogle.com/rss/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.549Z",
+  "checked": "2026-08-26T10:39:47.154Z",
   "ok": true
  },
  "InsideEVs": {
   "feed": "https://insideevs.com/rss/articles/all/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.046Z",
+  "checked": "2026-08-26T10:39:48.270Z",
   "ok": true
  },
  "Phys.org": {
   "feed": "https://phys.org/rss-feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.289Z",
+  "checked": "2026-08-26T10:39:47.346Z",
   "ok": true
  },
  "Autoblog": {
   "feed": "http://feeds.feedburner.com/autoblogpt",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.944Z",
+  "checked": "2026-08-26T10:39:47.767Z",
   "ok": true
  },
  "Eurogamer": {
   "feed": "https://www.eurogamer.net/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.323Z",
+  "checked": "2026-08-26T10:39:50.949Z",
   "ok": true
  },
  "Eurogamer.pt": {
   "feed": "https://www.eurogamer.pt/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:39.005Z",
+  "checked": "2026-08-26T10:39:49.214Z",
   "ok": true
  },
  "Latest F1 News": {
   "feed": "https://www.formula1.com/content/fom-website/en/latest/all.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.174Z",
+  "checked": "2026-08-26T10:39:49.125Z",
   "ok": true
  },
  "AutoSport": {
   "feed": "http://www.autosport.pt/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:38.168Z",
+  "checked": "2026-08-26T10:39:49.651Z",
   "ok": true
  },
  "ScienceDaily": {
   "feed": "https://www.sciencedaily.com/rss/all.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.776Z",
+  "checked": "2026-08-26T10:39:47.487Z",
   "ok": true
  },
  "PC Gamer": {
   "feed": "https://www.pcgamer.com/rss/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.565Z",
+  "checked": "2026-08-26T10:39:49.494Z",
   "ok": true
  },
  "IGN Portugal": {
   "feed": "http://pt.ign.com/feed.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.629Z",
+  "checked": "2026-08-26T10:39:49.813Z",
   "ok": true
  },
  "Rock Paper Shotgun": {
   "feed": "https://www.rockpapershotgun.com/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.652Z",
+  "checked": "2026-08-26T10:39:49.340Z",
   "ok": true
  },
  "MakeUseOf - Software": {
   "feed": "https://www.makeuseof.com/post_google_news.xml",
   "via": "news sitemap",
-  "checked": "2026-08-26T06:57:36.759Z",
+  "checked": "2026-08-26T10:39:47.492Z",
   "ok": true
  },
  "/Film": {
   "feed": "https://www.slashfilm.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T08:21:11.888Z",
+  "checked": "2026-08-26T10:39:49.763Z",
   "ok": true
  },
  "EU vs Disinfo": {
   "feed": "https://euvsdisinfo.eu/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:38.935Z",
+  "checked": "2026-08-26T10:39:50.747Z",
   "ok": true
  },
  "What Car?": {
   "feed": "",
   "via": "search",
-  "checked": "2026-08-26T06:57:41.792Z",
+  "checked": "2026-08-26T10:39:53.458Z",
   "ok": false
  },
  "MovieWeb": {
   "feed": "https://movieweb.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T08:21:12.194Z",
+  "checked": "2026-08-26T10:39:50.039Z",
   "ok": true
  },
  "Público — Prova dos Factos": {
   "feed": "https://www.publico.pt/prova-dos-factos",
   "via": "scrape",
-  "checked": "2026-08-26T06:57:38.413Z",
+  "checked": "2026-08-26T10:39:50.540Z",
   "ok": false
  },
  "ScreenRant": {
   "feed": "https://screenrant.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T08:21:12.168Z",
+  "checked": "2026-08-26T10:39:50.140Z",
   "ok": true
  },
  "Polígrafo": {
   "feed": "https://poligrafo.sapo.pt/",
   "via": "scrape",
-  "checked": "2026-08-26T06:57:41.236Z",
+  "checked": "2026-08-26T10:39:51.469Z",
   "ok": true
  },
  "Snopes": {
   "feed": "https://www.snopes.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:38.516Z",
+  "checked": "2026-08-26T10:39:50.748Z",
   "ok": true
  },
  "Aberto até de Madrugada": {
   "feed": "https://abertoatedemadrugada.com/feeds/posts/default?alt=rss",
   "via": "known feed",
-  "checked": "2026-08-26T08:21:12.343Z",
+  "checked": "2026-08-26T10:39:50.142Z",
   "ok": true
  },
  "Polygon": {
   "feed": "https://www.polygon.com/rss/index.xml",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:37.939Z",
+  "checked": "2026-08-26T10:39:49.908Z",
   "ok": true
  },
  "FactCheck.org": {
   "feed": "https://www.factcheck.org/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:38.967Z",
+  "checked": "2026-08-26T10:39:50.684Z",
   "ok": true
  },
  "AndroidGeek": {
   "feed": "https://androidgeek.pt/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:39.752Z",
+  "checked": "2026-08-26T10:39:50.887Z",
   "ok": true
  },
  "Lusa — Combate Fake News": {
   "feed": "https://combatefakenews.lusa.pt/",
   "via": "scrape",
-  "checked": "2026-08-26T06:57:41.302Z",
+  "checked": "2026-08-26T10:39:52.925Z",
   "ok": false
  },
  "Razão Automóvel": {
   "feed": "http://razaoautomovel.com/feed",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:41.104Z",
+  "checked": "2026-08-26T10:39:52.344Z",
   "ok": true
  },
  "Cloud Native Now": {
   "feed": "http://containerjournal.com/feed/",
   "via": "known feed",
-  "checked": "2026-08-26T06:57:36.151Z",
+  "checked": "2026-08-26T10:39:46.561Z",
   "ok": true
  }
 }
