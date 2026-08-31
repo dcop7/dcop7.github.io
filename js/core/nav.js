@@ -63,6 +63,17 @@ const Nav = (function () {
       </div>`;
 
     sb.addEventListener('click', onSidebarClick);
+
+    /* Aquecimento por intenção: o código da secção começa a descarregar
+       ao passar o rato (ou ao pousar o dedo, que chega ~100 ms antes do
+       clique), por isso na prática a troca continua a ser instantânea. */
+    const warm = e => {
+      const a = e.target.closest && e.target.closest('[data-route]');
+      if (a && typeof Lazy !== 'undefined') Lazy.prefetch(a.dataset.route);
+    };
+    sb.addEventListener('pointerenter', warm, true);
+    sb.addEventListener('pointerdown', warm, true);
+    sb.addEventListener('focusin', warm);
   }
 
   function onSidebarClick(e) {
@@ -110,6 +121,27 @@ const Nav = (function () {
     document.dispatchEvent(new CustomEvent('routechange', { detail: hash }));
   }
 
+  /* Rota → a .view que lhe pertence. Serve para acender a secção de
+     imediato, antes de o código dela chegar: o utilizador vê a mudança
+     no clique e o conteúdo entra a seguir, em vez de ficar a olhar para
+     a secção anterior enquanto o bundle desce. */
+  const VIEW_OF = {
+    cheatsheets: 'view-cheatsheets', games: 'view-games', links: 'view-links',
+    tools: 'view-tools', visual: 'view-visual', photography: 'view-photography',
+    settings: 'view-settings', quiz: 'view-quiz', humor: 'view-humor',
+    explorer: 'view-explorer', ocorrencias: 'view-ocorrencias',
+    eventos: 'view-eventos', cidadao: 'view-cidadao', f1: 'view-f1',
+    oss: 'view-oss', discovery: 'view-discovery', search: 'view-search',
+    /* Notícias tem duas vistas; Destaques é a predefinição e o paint()
+       troca para o leitor quando a sub-rota é /todas. */
+    noticias: 'view-destaques',
+    home: 'view-home',
+  };
+
+  /* Navegar duas vezes depressa (A→B→A) deixa duas cargas em voo. Só a
+     última pode pintar, senão a resposta lenta de B aparecia por cima de A. */
+  let _navSeq = 0;
+
   function renderView(raw) {
     let hash = raw || 'home';
 
@@ -136,6 +168,16 @@ const Nav = (function () {
 
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
+    /* Acende já a secção de destino (o Lazy só traz o código, o shell da
+       vista está inline no index.html). */
+    document.getElementById(VIEW_OF[page] || 'view-home')?.classList.add('active');
+
+    const seq = ++_navSeq;
+    const paint = () => {
+    if (seq !== _navSeq) return;   /* já saímos daqui — não pintar por cima */
+    /* O shell acendido acima é um palpite (Notícias tem duas vistas); a
+       cadeia abaixo é que manda, por isso limpa antes de decidir. */
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     if (page === 'cheatsheets') {
       document.getElementById('view-cheatsheets')?.classList.add('active');
       typeof CheatsheetsPage !== 'undefined' && CheatsheetsPage.show();
@@ -213,6 +255,10 @@ const Nav = (function () {
     } else {
       document.getElementById('view-home')?.classList.add('active');
     }
+    };
+
+    if (typeof Lazy !== 'undefined') Lazy.ensure(page).then(paint);
+    else paint();
   }
 
   function measureHeader() {
