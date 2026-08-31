@@ -286,7 +286,12 @@ body.light .daily-card { background: rgba(255,255,255,.85); border-color: rgba(0
 .disc-hero-quote blockquote { font-family: var(--font-head, inherit); font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--text); margin: .4rem 0; max-width: 640px; }
 
 /* bento grid of cards */
-.disc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--den-gap); align-items: stretch; }
+/* align-items:start, não stretch. Em grelha, o stretch estica os quatro
+   cartões à altura do mais alto: com 15 efemérides numa coluna e 8 na
+   outra, «Hoje em Portugal» e «Eventos perto» ficavam com ~1150 px de
+   vazio entre o último item e o «Ver mais», que o margin-top:auto empurra
+   para o fundo. Cada cartão passa a ter a altura do seu próprio conteúdo. */
+.disc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--den-gap); align-items: start; }
 @media (min-width: 1080px) { .disc-grid { grid-template-columns: repeat(4, 1fr); } }
 .disc-card {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
@@ -351,10 +356,16 @@ a.disc-item:hover { background: var(--accent-soft); color: var(--text); }
   .util-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .util-card.util-weather { grid-column: span 2; }
 }
-.util-h { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
+/* Envolve em vez de cortar: nos cartões estreitos o par «título +
+   emblema da fonte» não cabe numa linha, e truncar qualquer um dos
+   dois dava «Combust…» ou «Cont…». A mudar de linha lêem-se ambos. */
+.util-h { display: flex; align-items: center; flex-wrap: wrap; row-gap: .3rem; gap: .5rem; margin-bottom: .75rem; }
 .util-h .util-ico { font-size: 1.15rem; }
-.util-h h2 { font-family: var(--font-head, inherit); font-size: .95rem; font-weight: 700; margin: 0; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.util-tag { margin-left: auto; flex-shrink: 0; white-space: nowrap; max-width: 45%; overflow: hidden; text-overflow: ellipsis; font-size: .68rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: .15rem .5rem; border-radius: 999px; }
+/* O título do cartão ganha ao emblema da fonte: com flex-shrink:0 no
+   .util-tag era «Combustíveis» que encolhia e a Home mostrava um
+   «Combust…» com ar de avaria, para caber um rótulo secundário. */
+.util-h h2 { font-family: var(--font-head, inherit); font-size: .95rem; font-weight: 700; margin: 0; color: var(--text); min-width: 0; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.util-tag { margin-left: auto; flex-shrink: 1; min-width: 0; white-space: nowrap; max-width: 45%; overflow: hidden; text-overflow: ellipsis; font-size: .68rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: .15rem .5rem; border-radius: 999px; }
 .util-foot { margin-top: auto; padding-top: .55rem; font-size: .66rem; color: var(--muted); }
 .util-empty { color: var(--muted); font-size: .8rem; padding: .5rem 0; }
 
