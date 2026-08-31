@@ -15,9 +15,18 @@
 }
 
 /* ── TAB BAR ── */
+/* Onze separadores não cabem em 1440 px (1422 px de conteúdo para 1216 px
+   de barra). Com overflow-x:auto e a barra de deslocamento escondida, os
+   dois últimos — «Linha do Tempo» e «Dados do Mundo» — ficavam invisíveis
+   e inalcançáveis com rato: não há gesto de arrastar horizontal num rato,
+   nem indicação nenhuma de que havia mais. Em ecrã largo os separadores
+   passam a mudar de linha; o deslocamento horizontal fica só para o
+   telemóvel, onde é gesto natural e há a máscara nas pontas a sugeri-lo. */
 .ex-tabs {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: .3rem;
   gap: .25rem;
   padding: .45rem .85rem;
   background: linear-gradient(180deg, var(--glass-strong), var(--glass-hover));
@@ -25,10 +34,6 @@
   flex-shrink: 0;
   position: relative;
   z-index: 10;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
 }
 .ex-tabs::-webkit-scrollbar { display: none; }
 .ex-tab { scroll-snap-align: center; }
@@ -1625,6 +1630,13 @@ body.light .ex-country-label {
   .ex-tabs {
     gap: .3rem;
     padding: .4rem .7rem;
+    /* No telemóvel a barra volta a ser uma tira que se arrasta — mudar de
+       linha aqui comeria meio ecrã antes de o conteúdo começar. */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
     /* fade the edges to hint the bar scrolls horizontally */
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
             mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);

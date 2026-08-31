@@ -663,7 +663,7 @@ const ExplorerPage = (function () {
       <div class="ex-hub">
         <div class="ex-hub-header">
           <h1 class="ex-hub-title">${_t('Explore the World', 'Explorar o Mundo')}</h1>
-          <p class="ex-hub-subtitle">${_t('Three worlds to explore: Earth, Space and the Human Body.', 'Três mundos para explorar: a Terra, o Espaço e o Corpo Humano.')}</p>
+          <p class="ex-hub-subtitle">${_t('Four worlds to explore: Earth, Space, the Human Body and knowledge.', 'Quatro mundos para explorar: a Terra, o Espaço, o Corpo Humano e o conhecimento.')}</p>
           <div class="ex-hub-search">
             <span class="ex-hub-search-ic" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" id="ex-hub-search" class="ex-hub-search-input" placeholder="${_t('Search any country…', 'Pesquisar qualquer país…')}" autocomplete="off" aria-label="${_t('Search any country', 'Pesquisar qualquer país')}" aria-controls="ex-hub-search-results"/>
@@ -696,9 +696,17 @@ const ExplorerPage = (function () {
               <div class="ex-feature-card-desc">${_t('Live earthquakes, volcanoes, wildfires, storms, clouds, temperature and flights — with time travel.', 'Sismos, vulcões, incêndios, tempestades, nuvens, temperatura e aviões em tempo real — com viagem no tempo.')}</div>
             </div>
             <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
-              <span class="ex-feature-card-icon">🇵🇹</span>
+              <!-- Castelo, não a bandeira: o Windows não tem glifo para os
+                   pares de indicadores regionais e desenha “PT” em letras — a
+                   2,5rem por cima da capa de Lisboa parecia um erro. -->
+              <span class="ex-feature-card-icon">🏰</span>
               <div class="ex-feature-card-title">Portugal</div>
               <div class="ex-feature-card-desc">${_t('Explore the 20 districts with history, cuisine, traditions and curiosities of each region.', 'Explora os 20 distritos com história, gastronomia, tradições e curiosidades de cada região.')}</div>
+            </div>
+            <div class="ex-feature-card ex-feature-card--data" data-tab="data">
+              <span class="ex-feature-card-icon">📊</span>
+              <div class="ex-feature-card-title">${_t('World Data', 'Dados do Mundo')}</div>
+              <div class="ex-feature-card-desc">${_t('Discover and compare global statistics — from the World down to continents, countries and cities: life expectancy, economy, internet, climate and more, with maps, rankings and trends.', 'Descobre e compara estatísticas globais — do Mundo aos continentes, países e cidades: esperança de vida, economia, internet, clima e mais, com mapas, rankings e tendências.')}</div>
             </div>
           </div>
         </div>
@@ -738,7 +746,7 @@ const ExplorerPage = (function () {
         <div class="ex-cat-group">
           <div class="ex-cat-head">
             <span class="ex-cat-emoji">⏳</span>
-            <span class="ex-cat-name">${_t('History & Time', 'História e Tempo')}</span>
+            <span class="ex-cat-name">${_t('Knowledge & Time', 'Conhecimento e Tempo')}</span>
             <span class="ex-cat-line"></span>
           </div>
           <div class="ex-feature-grid">
@@ -751,11 +759,6 @@ const ExplorerPage = (function () {
               <span class="ex-feature-card-icon">⏳</span>
               <div class="ex-feature-card-title">${_t('Timeline', 'Linha do Tempo')}</div>
               <div class="ex-feature-card-desc">${_t('Travel from the Big Bang to today on a single interactive timeline — searchable and filterable.', 'Viaja do Big Bang até hoje numa linha do tempo interativa única — com pesquisa e filtros.')}</div>
-            </div>
-            <div class="ex-feature-card ex-feature-card--data" data-tab="data">
-              <span class="ex-feature-card-icon">📊</span>
-              <div class="ex-feature-card-title">${_t('World Data', 'Dados do Mundo')}</div>
-              <div class="ex-feature-card-desc">${_t('Discover and compare global statistics — from the World down to continents, countries and cities: life expectancy, economy, internet, climate and more, with maps, rankings and trends.', 'Descobre e compara estatísticas globais — do Mundo aos continentes, países e cidades: esperança de vida, economia, internet, clima e mais, com mapas, rankings e tendências.')}</div>
             </div>
           </div>
         </div>
@@ -1633,7 +1636,7 @@ const ExplorerPage = (function () {
     ['hub', '🏠', _t('Home', 'Início')],
     ['map', '🗺', _t('Map', 'Mapa')],
     ['globe', '🌍', _t('Globe', 'Globo')],
-    ['portugal', '🇵🇹', 'Portugal'],
+    ['portugal', '🏰', 'Portugal'],
     ['realtime', '🛰', _t('Live Earth', 'Terra em Tempo Real')],
     ['solar', '☀', _t('Solar System', 'Sistema Solar')],
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
