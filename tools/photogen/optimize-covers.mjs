@@ -17,6 +17,17 @@
      assets/explorer  cartão ~290 px  → mantém 768, recomprime
      assets/games     cartão ~205 px  → mantém 768, recomprime
      assets/quiz      cartão ~115 px  → 448 chega e sobra
+     assets/planets   textura 3D      → mantém a resolução, só recomprime
+     assets/space     textura 3D      → mantém a resolução, só recomprime
+
+   As texturas do Sistema Solar são o caso mais desequilibrado do repo: no
+   mesmo lote de 4096×2048, o Saturno pesa 159 KB e o Mercúrio 1479 KB —
+   nove vezes mais por pixel, não por ter nove vezes mais detalhe, mas por
+   ter sido gravado quase sem compressão. A rota #explorer/solar puxava
+   8,5 MB de imagens. Aqui a largura NUNCA desce (a esfera dá zoom e a
+   resolução é a razão de ser da textura); muda só a qualidade JPEG, e num
+   patamar mais alto que o das capas — 88 em vez de 78 — porque estas são
+   olhadas de perto e não por baixo de um gradiente a 55%.
 
    Só escreve quando o resultado é mais pequeno que o original, por isso pode
    voltar a correr sempre que forem geradas capas novas.
@@ -34,6 +45,9 @@ const TARGETS = [
   { dir: 'assets/explorer', maxWidth: 768 },
   { dir: 'assets/games',    maxWidth: 768 },
   { dir: 'assets/quiz',     maxWidth: 448 },
+  /* Infinity = não redimensiona; a textura mantém-se do tamanho que é. */
+  { dir: 'assets/planets',  maxWidth: Infinity, quality: 88 },
+  { dir: 'assets/space',    maxWidth: Infinity, quality: 88 },
 ];
 
 const kb = n => (n / 1024).toFixed(0).padStart(4) + ' KB';
@@ -51,7 +65,7 @@ for (const t of TARGETS) {
     const meta = await sharp(src).metadata();
     const buf = await sharp(src)
       .resize({ width: Math.min(meta.width, t.maxWidth), withoutEnlargement: true })
-      .jpeg({ quality: QUALITY, mozjpeg: true, progressive: true })
+      .jpeg({ quality: t.quality || QUALITY, mozjpeg: true, progressive: true })
       .toBuffer();
     before += orig;
     if (buf.length < orig * 0.95) {
