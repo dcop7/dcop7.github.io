@@ -1,7 +1,7 @@
 {
- "generated": "2026-09-09T04:06:31.564Z",
+ "generated": "2026-09-09T14:19:13.474Z",
  "total": 84,
- "broken": 1,
+ "broken": 0,
  "unknown": 27,
  "results": [
   {
@@ -481,8 +481,8 @@
   {
    "id": "municipio:torres-vedras",
    "url": "https://www.cm-tvedras.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "municipio:torres-vedras:bolsas-tvedras",
