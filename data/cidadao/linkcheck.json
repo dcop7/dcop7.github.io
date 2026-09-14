@@ -1,7 +1,7 @@
 {
- "generated": "2026-09-14T12:22:53.126Z",
+ "generated": "2026-09-14T19:10:24.638Z",
  "total": 84,
- "broken": 1,
+ "broken": 0,
  "unknown": 27,
  "results": [
   {
@@ -433,8 +433,8 @@
   {
    "id": "calendario:limpeza-terrenos",
    "url": "https://www.icnf.pt/",
-   "status": 500,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:recenseamento-militar",
