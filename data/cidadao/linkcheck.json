@@ -1,8 +1,8 @@
 {
- "generated": "2026-09-14T04:21:27.068Z",
+ "generated": "2026-09-14T12:22:53.126Z",
  "total": 84,
- "broken": 0,
- "unknown": 28,
+ "broken": 1,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -433,8 +433,8 @@
   {
    "id": "calendario:limpeza-terrenos",
    "url": "https://www.icnf.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "calendario:recenseamento-militar",
