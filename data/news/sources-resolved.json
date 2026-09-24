@@ -512,7 +512,7 @@
  "/Film": {
   "feed": "https://www.slashfilm.com/feed/",
   "via": "known feed",
-  "checked": "2026-09-24T11:27:26.293Z",
+  "checked": "2026-09-24T12:52:24.649Z",
   "ok": true
  },
  "EU vs Disinfo": {
@@ -530,7 +530,7 @@
  "MovieWeb": {
   "feed": "https://movieweb.com/feed/",
   "via": "known feed",
-  "checked": "2026-09-24T11:27:26.445Z",
+  "checked": "2026-09-24T12:52:24.651Z",
   "ok": true
  },
  "Público — Prova dos Factos": {
@@ -542,7 +542,7 @@
  "ScreenRant": {
   "feed": "https://screenrant.com/feed/",
   "via": "known feed",
-  "checked": "2026-09-24T11:27:26.493Z",
+  "checked": "2026-09-24T12:52:24.752Z",
   "ok": true
  },
  "Polígrafo": {
@@ -560,7 +560,7 @@
  "Aberto até de Madrugada": {
   "feed": "https://abertoatedemadrugada.com/feeds/posts/default?alt=rss",
   "via": "known feed",
-  "checked": "2026-09-24T11:27:26.732Z",
+  "checked": "2026-09-24T12:52:24.899Z",
   "ok": true
  },
  "Polygon": {
