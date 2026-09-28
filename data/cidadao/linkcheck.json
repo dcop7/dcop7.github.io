@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28T04:47:26.968Z",
+ "generated": "2026-09-28T13:28:19.464Z",
  "total": 84,
  "broken": 0,
  "unknown": 28,
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -271,8 +271,8 @@
   {
    "id": "apoios:trabalhador-estudante",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:cartao-europeu-saude",
