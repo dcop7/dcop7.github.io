@@ -251,6 +251,8 @@ const ArcadeKit = (function () {
     /* ── sessão de jogo ───────────────────────────────────────────── */
     function stop() {
       if (!S) return;
+      /* recursos do próprio jogo (ex.: cena WebGL) */
+      if (spec.destroy && S.G) { try { spec.destroy(S.G); } catch (e) {} }
       S.dead = true;
       if (S.eng) S.eng.destroy();
       if (S.raf) cancelAnimationFrame(S.raf);
@@ -308,6 +310,7 @@ const ArcadeKit = (function () {
         get state() { return sess.state; },
         get ptrs() { return sess.ptrs; },
         get layer() { return root.querySelector('.ak-layer'); },
+        get stage() { return stage; },
         get best() { return GP() ? GP().bestScore(id, modeKey(sess.mode, sess.diff)) : null; },
         /* retomar uma partida guardada noutro modo/dificuldade */
         setMode(m, d) { sess.mode = m; if (d !== undefined) sess.diff = d; },
@@ -385,6 +388,7 @@ const ArcadeKit = (function () {
         showPanel({ icon: '⏸', title: 'Pausa', buttons: [
           { label: '▶ Continuar', primary: true, fn: () => { closeOverlay(); sess.state = 'play'; } },
           { label: '↺ Recomeçar', fn: () => start(sess.mode) },
+          ...(spec.pauseButtons ? spec.pauseButtons(sess.G, api) : []),
           { label: 'Sair para o menu', fn: renderMenu },
         ] });
         sess.state = 'pause';
@@ -471,7 +475,9 @@ const ArcadeKit = (function () {
         if (sess.dead || !sess.G) return;
         const k = cv.width / cw;
         ctx.setTransform(k, 0, 0, k, 0, 0);
-        ctx.fillStyle = spec.bg || '#0b0e1a'; ctx.fillRect(0, 0, cw, ch);
+        /* transparent: o jogo pinta noutra camada (WebGL) e o canvas 2D só leva sobreposições */
+        if (spec.transparent) ctx.clearRect(0, 0, cw, ch);
+        else { ctx.fillStyle = spec.bg || '#0b0e1a'; ctx.fillRect(0, 0, cw, ch); }
         let sx = 0, sy = 0;
         if (sess.shakeT > 0) { const m = sess.shakeM * (sess.shakeT / .25); sx = (Math.random() - .5) * m; sy = (Math.random() - .5) * m; }
         else sess.shakeM = 0;
