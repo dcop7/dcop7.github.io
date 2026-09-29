@@ -168,7 +168,42 @@
 .gh-daily-go { flex-shrink: 0; font-size: .82rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
 @media (max-width: 480px) { .gh-daily-desc, .gh-daily-go { display: none; } }
 
-.game-hub-card[hidden], .games-group[hidden] { display: none !important; }
+.game-hub-card[hidden], .games-group[hidden], .gh-card[hidden] { display: none !important; }
+
+/* ── FAVORITOS (até 5) ── */
+/* o cartão continua a ser um <button>; a estrela é irmã (botão dentro de
+   botão não é HTML válido) e fica por cima, no canto */
+.gh-card { position: relative; display: flex; min-width: 0; }
+.gh-card > .game-hub-card { flex: 1; min-width: 0; }
+.gh-fav-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.22); background: rgba(8,12,20,.55); color: rgba(255,255,255,.85);
+  font-size: 1.05rem; line-height: 1; cursor: pointer; backdrop-filter: blur(4px);
+  transition: transform .15s, background .15s, color .15s, border-color .15s; font-family: inherit;
+}
+.gh-fav-btn:hover { transform: scale(1.1); border-color: #fbbf24; color: #fbbf24; }
+.gh-fav-btn.on { color: #fbbf24; border-color: rgba(251,191,36,.6); background: rgba(40,28,6,.7); text-shadow: 0 0 10px rgba(251,191,36,.6); }
+.gh-fav-btn:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+.gh-fav-btn.gh-fav-pop { animation: ghFavPop .38s cubic-bezier(.2,1.5,.4,1); }
+.gh-fav-btn.gh-fav-deny { animation: ghFavDeny .4s; }
+@keyframes ghFavPop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@keyframes ghFavDeny { 0%,100% { transform: none; } 25%,75% { transform: translateX(-4px); } 50% { transform: translateX(4px); } }
+/* com rato, a estrela vazia fica discreta até se passar por cima do cartão */
+@media (hover: hover) { .gh-card .gh-fav-btn:not(.on) { opacity: .55; } .gh-card:hover .gh-fav-btn, .gh-card .gh-fav-btn:focus-visible { opacity: 1; } }
+.gh-favs .games-group-title { color: #fbbf24; border-bottom-color: rgba(251,191,36,.25); }
+.gh-fav-count { margin-left: auto; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.gh-fav-empty {
+  display: flex; align-items: center; gap: .75rem; padding: .85rem 1rem; border-radius: var(--radius);
+  border: 1px dashed rgba(251,191,36,.3); background: rgba(251,191,36,.04); color: var(--text2); font-size: .82rem;
+}
+.gh-fav-empty-star { font-size: 1.4rem; color: #fbbf24; opacity: .7; }
+[data-theme="light"] .gh-favs .games-group-title, [data-theme="light"] .gh-fav-empty-star { color: #b45309; }
+[data-theme="light"] .gh-fav-empty { border-color: rgba(180,83,9,.35); background: rgba(251,191,36,.08); }
+/* estrela no breadcrumb do jogo aberto */
+.gh-bc-fav { position: static; width: 30px; height: 30px; margin-left: .35rem; font-size: .95rem; background: var(--card2); border-color: var(--border); color: var(--muted); backdrop-filter: none; }
+.gh-bc-fav.on { background: rgba(251,191,36,.12); }
+@media (prefers-reduced-motion: reduce) { .gh-fav-btn.gh-fav-pop, .gh-fav-btn.gh-fav-deny { animation: none; } }
 
 /* ── UNIFIED DIFFICULTY SELECTOR (matches the Quizzes Fácil/Médio/Difícil) ── */
 .gh-diff-seg { display: flex; flex-wrap: wrap; gap: .4rem; }

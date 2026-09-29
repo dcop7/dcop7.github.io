@@ -7,13 +7,16 @@ const CanvasEngine = (function () {
     let _lastTime = 0;
     let _observer = null;
     const _onResize = opts.onResize || null;
+    /* maxDpr (opcional): telemóveis a 3× pintam 9× os píxeis de um ecrã
+       normal; os jogos arcade limitam a 2 sem perda visível. */
+    let _dpr = 1;
 
     function _scale() {
-      const dpr = window.devicePixelRatio || 1;
+      _dpr = Math.min(window.devicePixelRatio || 1, opts.maxDpr || Infinity);
       const rect = canvas.getBoundingClientRect();
-      canvas.width  = rect.width  * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      canvas.width  = Math.round(rect.width  * _dpr);
+      canvas.height = Math.round(rect.height * _dpr);
+      ctx.scale(_dpr, _dpr);
       if (_onResize) _onResize(rect.width, rect.height);
     }
 
@@ -29,14 +32,15 @@ const CanvasEngine = (function () {
       const dt = Math.min((ts - _lastTime) / 1000, 0.05);
       _lastTime = ts;
       if (opts.update) opts.update(dt);
-      if (opts.draw)   opts.draw(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+      if (opts.draw)   opts.draw(ctx, canvas.width / _dpr, canvas.height / _dpr);
       _raf = requestAnimationFrame(_tick);
     }
 
     return {
       ctx,
-      get width()  { return canvas.width  / (window.devicePixelRatio || 1); },
-      get height() { return canvas.height / (window.devicePixelRatio || 1); },
+      get dpr()    { return _dpr; },
+      get width()  { return canvas.width  / _dpr; },
+      get height() { return canvas.height / _dpr; },
       start() {
         if (_running) return;
         _running = true;

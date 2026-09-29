@@ -147,6 +147,25 @@ const GameProgress = (function () {
   }
   function isDailyDone(gameId) { return !!_gget('daily:' + todayKey(), {})[gameId]; }
 
+  /* ── favoritos (até 5, só neste browser) ───────────────────────────
+     Guardados por ordem de marcação em 'gp:favs'. Ids que deixaram de
+     existir (jogo removido) caem fora na próxima leitura. */
+  const MAX_FAVS = 5;
+  function favorites() {
+    const f = _gget('favs', []);
+    if (!Array.isArray(f)) return [];
+    return f.filter((id, i) => typeof id === 'string' && f.indexOf(id) === i && (!_ids.length || _ids.includes(id))).slice(0, MAX_FAVS);
+  }
+  function isFavorite(id) { return favorites().includes(id); }
+  /* devolve { on, favs, full } — full=true quando já há 5 e não entrou */
+  function toggleFavorite(id) {
+    const f = favorites(), i = f.indexOf(id);
+    if (i >= 0) { f.splice(i, 1); _gset('favs', f); return { on: false, favs: f, full: false }; }
+    if (f.length >= MAX_FAVS) return { on: false, favs: f, full: true };
+    f.push(id); _gset('favs', f);
+    return { on: true, favs: f, full: false };
+  }
+
   /* ── shared UI (CSS injected once) ─────────────────────────────── */
   function _injectCSS() {
     if (document.getElementById('gp-css')) return;
@@ -262,7 +281,7 @@ const GameProgress = (function () {
   defineAchievements('_global', [
     { id: 'g.first',     name: 'Primeiro Jogo',   icon: '🎮', desc: 'Joga qualquer jogo.',                   test: c => c.totalPlays >= 1 },
     { id: 'g.explorer',  name: 'Explorador',      icon: '🧭', desc: 'Joga 5 jogos diferentes.',              test: c => c.distinctPlayed >= 5 },
-    { id: 'g.collector', name: 'Colecionador',    icon: '🗂️', desc: 'Experimenta todos os jogos.',           test: c => c.distinctPlayed >= 13 },
+    { id: 'g.collector', name: 'Colecionador',    icon: '🗂️', desc: 'Experimenta todos os jogos.',           test: c => _ids.length > 0 && c.distinctPlayed >= _ids.length },
     { id: 'g.dedicated', name: 'Dedicado',        icon: '🔥', desc: 'Joga 50 partidas no total.',            test: c => c.totalPlays >= 50 },
     { id: 'g.streak3',   name: 'Em Forma',        icon: '📅', desc: 'Joga 3 dias seguidos.',                 test: c => c.streak >= 3 },
     { id: 'g.streak7',   name: 'Imparável',       icon: '⚡', desc: 'Joga 7 dias seguidos.',                 test: c => c.streak >= 7 },
@@ -273,6 +292,7 @@ const GameProgress = (function () {
     defineAchievements, isUnlocked, achievementCount, totalAchievements, unlockedMap,
     todayKey, dailySeed, rng, hashStr, streak,
     isDailyDone, registerIds, distinctPlayedCount, totalPlays,
+    favorites, isFavorite, toggleFavorite, MAX_FAVS,
     toast, badgesHTML, openStats,
   };
 })();

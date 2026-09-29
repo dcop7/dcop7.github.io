@@ -28,6 +28,52 @@ const GameHost = (function () {
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
     { id: 'dobble',        name: 'Olho Vivo',            icon: '👁️', color: '#f2b344', group: 'Arcade',
       desc: 'Encontra o único símbolo em comum entre as duas cartas. Rápido, o tempo não perdoa!' },
+    /* ── arcade (set/2026) — todos sobre o ArcadeKit ── */
+    { id: 'target',        name: 'Alvo',                 icon: '🎯', color: '#14b8a6', group: 'Clássicos',
+      desc: 'Acerta nos alvos que aparecem, o mais depressa e o mais ao centro que conseguires.' },
+    { id: 'golf',          name: 'Minigolfe',            icon: '⛳', color: '#22c55e', group: 'Clássicos',
+      desc: '9 buracos compactos: aponta, doseia a força e tenta fazer o par.' },
+    { id: 'arrow-wall',    name: 'Muro das Setas',       icon: '🧱', color: '#22c55e', group: 'Puzzle & Lógica',
+      desc: 'Segue a seta verde, contraria a vermelha, fica no azul — antes de a parede chegar.' },
+    { id: 'quick-maths',   name: 'Contas Rápidas',       icon: '➗', color: '#3b82f6', group: 'Puzzle & Lógica',
+      desc: 'Resolve contas cada vez mais difíceis contra o relógio.' },
+    { id: 'knife-throw',   name: 'Lança-Facas',          icon: '🔪', color: '#fb923c', group: 'Arcade',
+      desc: 'Crava facas num tronco que gira sem tocar nas que já lá estão.' },
+    { id: 'stack',         name: 'Torre',                icon: '🏗️', color: '#2dd4bf', group: 'Arcade',
+      desc: 'Empilha os blocos em movimento. O que ficar de fora é cortado.' },
+    { id: 'lane-rush',     name: 'Faixa Rápida',         icon: '🏎️', color: '#f472b6', group: 'Arcade',
+      desc: 'Troca de faixa para fugir aos obstáculos — cada vez mais depressa.' },
+    { id: 'ninja-chop',    name: 'Corte Ninja',          icon: '🥷', color: '#ef4444', group: 'Arcade',
+      desc: 'Corta a fruta com o rato ou com o dedo, mas foge às bombas.' },
+    { id: 'dangerwall',    name: 'Parede Mortal',        icon: '🚀', color: '#ef4444', group: 'Arcade',
+      desc: 'Guia a nave pelos buracos das paredes que vêm a toda a velocidade.' },
+    { id: 'jumpy',         name: 'Saltitão',             icon: '🦘', color: '#a855f7', group: 'Arcade',
+      desc: 'Salta de plataforma em plataforma e sobe o mais alto possível.' },
+    { id: 'chicken-up',    name: 'Galinha Acima',        icon: '🐔', color: '#f59e0b', group: 'Arcade',
+      desc: 'Salta no momento certo para as tábuas que deslizam e não pares de subir.' },
+    { id: 'drift',         name: 'Drift',                icon: '🚗', color: '#ef4444', group: 'Arcade',
+      desc: 'Derrapa em pistas compactas e bate o teu melhor tempo por volta.' },
+    { id: 'ballracer',     name: 'Bola Veloz',           icon: '🔵', color: '#f97316', group: 'Arcade',
+      desc: 'Guia a bola por pistas suspensas sem cair nos buracos nem bater.' },
+    { id: 'balldrop',      name: 'Queda Livre',          icon: '🟡', color: '#a855f7', group: 'Arcade',
+      desc: 'Conduz a bola em queda pelos obstáculos até à zona de aterragem.' },
+    { id: 'keep-up',       name: 'Toques',               icon: '⚽', color: '#22c55e', group: 'Arcade',
+      desc: 'Mantém a bola no ar com toques, sem a deixar cair.' },
+    /* ── lote 2 (set/2026) ── */
+    { id: 'bubble-shooter', name: 'Bolhas', icon: '🫧', color: '#a78bfa', group: 'Clássicos',
+      desc: 'Aponta, ressalta nas paredes e junta 3 bolhas da mesma cor.' },
+    { id: 'brick-breaker', name: 'Parte-Tijolos', icon: '🟦', color: '#60a5fa', group: 'Clássicos',
+      desc: 'Raquete, bola e uma parede de tijolos. 12 níveis e cápsulas de poder.' },
+    { id: 'sudoku', name: 'Sudoku', icon: '9️⃣', color: '#60a5fa', group: 'Puzzle & Lógica',
+      desc: 'Grelhas com solução única, notas, pistas e o Sudoku do dia.' },
+    { id: '2048', name: '2048', icon: '🔢', color: '#edc22e', group: 'Puzzle & Lógica',
+      desc: 'Desliza e junta peças iguais até chegares a 2048.' },
+    { id: 'yahtzee', name: 'General', icon: '🎲', color: '#4ade80', group: 'Tabuleiro & Estratégia',
+      desc: '5 dados, 3 lançamentos, 13 casas. Sozinho ou contra o computador.' },
+    { id: 'crossy-road', name: 'Travessia', icon: '🐸', color: '#84cc16', group: 'Arcade',
+      desc: 'Atravessa estradas, rios e comboios sem fim. Não fiques para trás.' },
+    { id: 'hole', name: 'Buraco Guloso', icon: '🕳️', color: '#22c55e', group: 'Arcade',
+      desc: 'Engole a cidade — ou aspira a casa — e cresce. Contra buracos rivais.' },
   ];
 
   const GROUP_ORDER = ['Clássicos', 'Tabuleiro & Estratégia', 'Puzzle & Lógica', 'Arcade'];
@@ -48,6 +94,24 @@ const GameHost = (function () {
     'gravity-lab':   { init: () => GravityLabGame.init(document.getElementById('pane-gravity-lab')),     initialized: false },
     dobble:          { init: () => DobbleGame.init(document.getElementById('pane-dobble')),              initialized: false },
   };
+  /* jogos arcade: pane criado aqui (não no index.html) e init pelo ArcadeKit */
+  const ARCADE = {
+    'knife-throw': () => KnifeThrowGame, stack: () => StackGame, 'lane-rush': () => LaneRushGame,
+    'arrow-wall': () => ArrowWallGame, jumpy: () => JumpyGame, 'ninja-chop': () => NinjaChopGame,
+    dangerwall: () => DangerwallGame, drift: () => DriftGame, target: () => TargetGame,
+    'quick-maths': () => QuickMathsGame, golf: () => GolfGame, ballracer: () => BallracerGame,
+    'chicken-up': () => ChickenUpGame, balldrop: () => BalldropGame, 'keep-up': () => KeepUpGame,
+    'bubble-shooter': () => BubbleShooterGame,
+    'brick-breaker': () => BrickBreakerGame,
+    'sudoku': () => SudokuGame,
+    '2048': () => Game2048,
+    'yahtzee': () => YahtzeeGame,
+    'crossy-road': () => CrossyRoadGame,
+    'hole': () => HoleGame,
+  };
+  Object.keys(ARCADE).forEach(id => {
+    registry[id] = { initialized: false, init: () => ARCADE[id]().init(document.getElementById('pane-' + id)) };
+  });
 
   /* ── Dificuldade POR JOGO ──────────────────────────────────────────
      Já não há um seletor global no hub: cada jogo tem a sua dificuldade,
@@ -113,9 +177,104 @@ const GameHost = (function () {
     return wrap;
   }
 
+  /* ── Favoritos (até 5, guardados pelo GameProgress) ─────────────── */
+  const GPx = () => (typeof GameProgress !== 'undefined' ? GameProgress : null);
+  const favList = () => (GPx() && GPx().favorites ? GPx().favorites() : []);
+  const MAXF = () => (GPx() && GPx().MAX_FAVS) || 5;
+
+  function starBtn(id, on, extra) {
+    const g = GAMES.find(x => x.id === id);
+    return `<button type="button" class="gh-fav-btn${on ? ' on' : ''}${extra ? ' ' + extra : ''}" data-fav="${id}" aria-pressed="${on}"
+      aria-label="${on ? 'Remover' : 'Adicionar'} ${g ? g.name : ''} ${on ? 'dos' : 'aos'} favoritos" title="${on ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${on ? '★' : '☆'}</button>`;
+  }
+
+  function cardHTML(g, favs, GP) {
+    const on = favs.includes(g.id);
+    return `
+      <div class="gh-card" data-card="${g.id}">
+        <button class="game-hub-card" data-game="${g.id}" data-name="${g.name.toLowerCase()}">
+          <img class="game-hub-card-img" src="assets/games/${g.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
+          <div class="game-hub-card-icon">${g.icon}</div>
+          <div class="game-hub-card-name">${g.name}</div>
+          <div class="game-hub-card-desc">${g.desc}</div>
+          ${GP ? GP.badgesHTML(g.id) : ''}
+        </button>
+        ${GP && GP.toggleFavorite ? starBtn(g.id, on) : ''}
+      </div>`;
+  }
+
+  function favSectionHTML(favs, GP) {
+    const items = favs.map(id => GAMES.find(g => g.id === id)).filter(Boolean);
+    return `
+      <div class="games-group-title">★ Favoritos <span class="gh-fav-count">${items.length}/${MAXF()}</span></div>
+      ${items.length
+        ? `<div class="games-hub-grid">${items.map(g => cardHTML(g, favs, GP)).join('')}</div>`
+        : `<div class="gh-fav-empty"><span class="gh-fav-empty-star" aria-hidden="true">☆</span><span>Ainda não tens favoritos. Toca na <b>☆</b> de um jogo para o fixares aqui — até ${MAXF()} jogos.</span></div>`}`;
+  }
+
+  /* Liga/desliga um favorito a partir de qualquer estrela (hub ou jogo). */
+  function toggleFav(id, anchorEl) {
+    const GP = GPx(); if (!GP || !GP.toggleFavorite) return;
+    const r = GP.toggleFavorite(id);
+    if (r.full) {
+      GP.toast({ icon: '★', name: `Já tens ${MAXF()} favoritos`, desc: 'Tira a estrela a um deles para adicionares este.' }, 'info');
+      anchorEl && anchorEl.classList.add('gh-fav-deny');
+      anchorEl && setTimeout(() => anchorEl.classList.remove('gh-fav-deny'), 450);
+      return;
+    }
+    refreshFavs(anchorEl);
+    syncBcFav();
+  }
+
+  /* Re-pinta só a secção de favoritos e as estrelas, compensando o
+     scroll para o cartão clicado não "fugir" quando a secção cresce. */
+  function refreshFavs(anchorEl) {
+    const hub = document.getElementById('games-hub');
+    const sec = hub && hub.querySelector('#gh-favs');
+    if (!sec) return;
+    const GP = GPx(), favs = favList();
+    const anchorId = anchorEl && anchorEl.dataset.fav;
+    const inFavSec = anchorEl && sec.contains(anchorEl);
+    const before = anchorEl && !inFavSec ? anchorEl.getBoundingClientRect().top : null;
+    sec.innerHTML = favSectionHTML(favs, GP);
+    hub.querySelectorAll('.gh-fav-btn[data-fav]').forEach(b => {
+      const on = favs.includes(b.dataset.fav), g = GAMES.find(x => x.id === b.dataset.fav);
+      b.classList.toggle('on', on); b.textContent = on ? '★' : '☆'; b.setAttribute('aria-pressed', on);
+      b.title = on ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+      b.setAttribute('aria-label', `${on ? 'Remover' : 'Adicionar'} ${g ? g.name : ''} ${on ? 'dos' : 'aos'} favoritos`);
+    });
+    if (before != null && anchorEl.isConnected) window.scrollBy(0, anchorEl.getBoundingClientRect().top - before);
+    const nowOn = favs.includes(anchorId);
+    const pop = hub.querySelectorAll(`.gh-fav-btn[data-fav="${anchorId}"]`);
+    if (nowOn) pop.forEach(b => b.classList.add('gh-fav-pop'));
+    applySearch();
+  }
+
+  function applySearch() {
+    const hub = document.getElementById('games-hub');
+    const search = hub && hub.querySelector('#gh-search');
+    if (!search) return;
+    const q = search.value.trim().toLowerCase();
+    let any = false;
+    const favSec = hub.querySelector('#gh-favs');
+    if (favSec) favSec.hidden = !!q;
+    hub.querySelectorAll('.games-group[data-group]').forEach(grp => {
+      let groupHas = false;
+      grp.querySelectorAll('.gh-card').forEach(card => {
+        const btn = card.querySelector('.game-hub-card');
+        const match = !q || btn.dataset.name.includes(q) || (btn.querySelector('.game-hub-card-desc')?.textContent.toLowerCase().includes(q));
+        card.hidden = !match;
+        if (match) { groupHas = true; any = true; }
+      });
+      grp.hidden = !groupHas;
+    });
+    hub.querySelector('#gh-noresults').hidden = any;
+  }
+
   function renderHub() {
     const hub = document.getElementById('games-hub');
     if (!hub) return;
+    const prevQ = hub.querySelector('#gh-search')?.value || '';
 
     const groups = {};
     GAMES.forEach(g => {
@@ -123,11 +282,12 @@ const GameHost = (function () {
       groups[g.group].push(g);
     });
 
-    const GP = (typeof GameProgress !== 'undefined') ? GameProgress : null;
+    const GP = GPx();
     if (GP) GP.registerIds(GAMES.map(g => g.id));
+    const favs = favList();
 
     /* Daily challenge: a deterministic game-of-the-day from a daily-friendly pool */
-    const dailyPool = ['wordle', 'minesweeper', 'memory', 'bomb', 'reaction'].filter(id => GAMES.some(g => g.id === id));
+    const dailyPool = ['wordle', 'minesweeper', 'memory', 'bomb', 'reaction', 'sudoku'].filter(id => GAMES.some(g => g.id === id));
     let dailyGame = null, dailyDone = false;
     if (dailyPool.length) {
       const idx = GP ? Math.floor(GP.rng(GP.dailySeed('hub'))() * dailyPool.length) : 0;
@@ -161,43 +321,43 @@ const GameHost = (function () {
         </button>
       </div>
       <div id="gh-noresults" class="gh-noresults" hidden>Nenhum jogo encontrado.</div>
+      ${GP && GP.toggleFavorite ? `<div class="games-group gh-favs" id="gh-favs">${favSectionHTML(favs, GP)}</div>` : ''}
       ${GROUP_ORDER.filter(g => groups[g]).map(gName => `
         <div class="games-group" data-group>
           <div class="games-group-title">${GROUP_ICONS[gName]} ${gName}</div>
           <div class="games-hub-grid">
-            ${groups[gName].map(g => `
-              <button class="game-hub-card" data-game="${g.id}" data-name="${g.name.toLowerCase()}">
-                <img class="game-hub-card-img" src="assets/games/${g.id}.jpg" alt="" loading="lazy" onerror="this.remove()">
-                <div class="game-hub-card-icon">${g.icon}</div>
-                <div class="game-hub-card-name">${g.name}</div>
-                <div class="game-hub-card-desc">${g.desc}</div>
-                ${GP ? GP.badgesHTML(g.id) : ''}
-              </button>`).join('')}
+            ${groups[gName].map(g => cardHTML(g, favs, GP)).join('')}
           </div>
         </div>`).join('')}`;
 
-    hub.querySelectorAll('.game-hub-card').forEach(btn => {
-      btn.addEventListener('click', () => Nav.go('games/' + btn.dataset.game));
-    });
+    /* delegação: os cartões da secção de favoritos são re-pintados */
+    hub.onclick = e => {
+      const star = e.target.closest('.gh-fav-btn[data-fav]');
+      if (star) { e.preventDefault(); toggleFav(star.dataset.fav, star); return; }
+      const card = e.target.closest('.game-hub-card[data-game]');
+      if (card) Nav.go('games/' + card.dataset.game);
+    };
     hub.querySelector('#gh-daily')?.addEventListener('click', () => Nav.go('games/' + dailyGame.id));
     hub.querySelector('#gh-stats')?.addEventListener('click', () => GP && GP.openStats());
 
-    /* Live search across cards */
     const search = hub.querySelector('#gh-search');
-    search?.addEventListener('input', () => {
-      const q = search.value.trim().toLowerCase();
-      let any = false;
-      hub.querySelectorAll('.games-group[data-group]').forEach(grp => {
-        let groupHas = false;
-        grp.querySelectorAll('.game-hub-card').forEach(card => {
-          const match = !q || card.dataset.name.includes(q) || (card.querySelector('.game-hub-card-desc')?.textContent.toLowerCase().includes(q));
-          card.hidden = !match;
-          if (match) { groupHas = true; any = true; }
-        });
-        grp.hidden = !groupHas;
-      });
-      hub.querySelector('#gh-noresults').hidden = any;
-    });
+    if (prevQ) { search.value = prevQ; applySearch(); }
+    search?.addEventListener('input', applySearch);
+  }
+
+  /* Estrela no breadcrumb do jogo aberto */
+  let _curGame = null;
+  function syncBcFav() {
+    const b = document.getElementById('game-bc-fav');
+    if (!b) return;
+    const GP = GPx();
+    if (!_curGame || !GP || !GP.toggleFavorite) { b.hidden = true; return; }
+    const on = favList().includes(_curGame);
+    b.hidden = false; b.dataset.fav = _curGame;
+    b.classList.toggle('on', on); b.textContent = on ? '★' : '☆';
+    b.setAttribute('aria-pressed', on);
+    b.title = on ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+    b.setAttribute('aria-label', on ? 'Remover dos favoritos' : 'Adicionar aos favoritos');
   }
 
   function show(gameId) {
@@ -206,8 +366,11 @@ const GameHost = (function () {
     if (!hub || !area) return;
 
     if (!gameId) {
+      /* ao voltar de um jogo, re-pinta: recordes/estrelas podem ter mudado */
+      if (hub.hidden) renderHub();
       hub.hidden  = false;
       area.hidden = true;
+      _curGame = null; syncBcFav();
       return;
     }
 
@@ -226,6 +389,7 @@ const GameHost = (function () {
     const g = GAMES.find(x => x.id === gameId);
     const bcName = document.getElementById('game-bc-name');
     if (bcName) bcName.textContent = g?.name || gameId;
+    _curGame = gameId; syncBcFav();
 
     document.querySelectorAll('.game-pane').forEach(p => p.classList.remove('active'));
     document.getElementById('pane-' + gameId)?.classList.add('active');
@@ -241,6 +405,8 @@ const GameHost = (function () {
   function setup() {
     renderHub();
     document.getElementById('game-bc-back')?.addEventListener('click', () => Nav.go('games'));
+    const bf = document.getElementById('game-bc-fav');
+    bf?.addEventListener('click', () => { if (_curGame) { toggleFav(_curGame, bf); syncBcFav(); } });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
