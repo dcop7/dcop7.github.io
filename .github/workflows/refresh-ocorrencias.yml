@@ -12,9 +12,11 @@ name: Refresh ▸ ocorrências
 # with the other refreshes would let it cancel their queued runs — trading a
 # push race, which commit-push already absorbs, for lost daily builds.
 
+# DESATIVADO (set/2026): a secção Ocorrências PT está desligada no site
+# (DISABLED_ROUTES em js/core/nav.js). Para reativar, repõe o schedule.
 on:
-  schedule:
-    - cron: '*/15 * * * *'     # UTC; GitHub may delay a run, never mind the exact minute
+  # schedule:
+  #   - cron: '*/15 * * * *'     # UTC; GitHub may delay a run, never mind the exact minute
   workflow_dispatch:
 
 permissions:

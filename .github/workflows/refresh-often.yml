@@ -41,8 +41,11 @@ jobs:
       # RSS feeds rarely allow CORS, so the browser cannot fetch them; this
       # runs server-side, dedupes + classifies by topic and commits static
       # JSON. data/news/feeds.opml is the source of truth.
+      # DESATIVADO (set/2026): a secção Notícias está desligada no site
+      # (DISABLED_ROUTES em js/core/nav.js). Para reativar, apaga o `if`.
       - name: Notícias ▸ agregar feeds
         id: news
+        if: false
         continue-on-error: true
         env:
           TMDB_KEY: ${{ secrets.TMDB_KEY }}       # optional: enables the Trailers tab
@@ -112,6 +115,7 @@ jobs:
           for row in "${rows[@]}"; do
             name="${row%%:*}"; rest="${row#*:}"; outcome="${rest%%:*}"; built="${rest##*:}"
             if   [ "$outcome" = failure ]; then state="❌ falhou"; failed="$failed $name"
+            elif [ "$outcome" = skipped ]; then state="⏸️ desativado"
             elif [ "$built"   = yes     ]; then state="✅ reconstruído"
             else                               state="⏭️ ainda fresco"
             fi

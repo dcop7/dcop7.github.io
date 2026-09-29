@@ -20,6 +20,12 @@ const Nav = (function () {
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
+  /* Secções desativadas: saem do menu e da paleta, e a rota cai na Home.
+     O código, os dados e os estilos ficam todos no sítio — para reativar
+     basta tirar a rota daqui (e voltar a ligar o cron no workflow dela). */
+  const DISABLED_ROUTES = new Set(['noticias', 'ocorrencias']);
+  const isDisabled = r => DISABLED_ROUTES.has(String(r || '').split(/[/?]/)[0]);
+
 
   // Bespoke duotone icon in a tinted tile (single set lives in js/core/icons.js).
   function navIcon(r) {
@@ -61,6 +67,10 @@ const Nav = (function () {
                painel do header (a página/rota #settings mantém-se no código). -->
         </nav>
       </div>`;
+
+    sb.querySelectorAll('.sb-nav-item[data-route]').forEach(a => {
+      if (isDisabled(a.dataset.route)) a.remove();
+    });
 
     sb.addEventListener('click', onSidebarClick);
 
@@ -153,6 +163,12 @@ const Nav = (function () {
     if (hash === 'noticias-ai' || hash.startsWith('noticias-ai/')) {
       hash = 'noticias/destaques' + hash.slice('noticias-ai'.length);
       history.replaceState(null, '', '#' + hash);
+    }
+
+    /* Favoritos e links antigos para uma secção desativada abrem a Home. */
+    if (isDisabled(hash)) {
+      hash = 'home';
+      history.replaceState(null, '', '#home');
     }
 
     const qIdx = hash.indexOf('?');
@@ -304,5 +320,5 @@ const Nav = (function () {
     document.querySelectorAll('.sb-grp').forEach(el => { el.textContent = TN(`nav.grp.${el.dataset.grp}`); });
   });
 
-  return { go, renderView, icon };
+  return { go, renderView, icon, isDisabled };
 })();

@@ -8,12 +8,12 @@ const CommandPalette = (function () {
   const NAV_ITEMS = [
     { name: 'Início',            desc: 'Painel do dia',                    icon: '🏠', type: 'nav', action: () => Nav.go('home') },
     { name: 'Explorar',          desc: 'Terra, Espaço e Corpo Humano',     icon: '🌍', type: 'nav', action: () => Nav.go('explorer') },
-    { name: 'Notícias',          desc: 'Destaques do dia e leitor RSS',    icon: '📰', type: 'nav', action: () => Nav.go('noticias') },
-    { name: 'Notícias · Destaques', desc: 'O que vale a pena ler hoje',    icon: '⭐', type: 'nav', action: () => Nav.go('noticias/destaques') },
-    { name: 'Notícias · Todas',  desc: 'Feeds RSS por tema',               icon: '🗞️', type: 'nav', action: () => Nav.go('noticias/todas') },
+    { name: 'Notícias',          desc: 'Destaques do dia e leitor RSS',    icon: '📰', type: 'nav', route: 'noticias', action: () => Nav.go('noticias') },
+    { name: 'Notícias · Destaques', desc: 'O que vale a pena ler hoje',    icon: '⭐', type: 'nav', route: 'noticias', action: () => Nav.go('noticias/destaques') },
+    { name: 'Notícias · Todas',  desc: 'Feeds RSS por tema',               icon: '🗞️', type: 'nav', route: 'noticias', action: () => Nav.go('noticias/todas') },
     { name: 'Eventos',           desc: 'Eventos em Portugal',              icon: '📅', type: 'nav', action: () => Nav.go('eventos') },
     { name: 'Cidadão',           desc: 'Prazos, apoios e novidades do Estado', icon: '🇵🇹', type: 'nav', action: () => Nav.go('cidadao') },
-    { name: 'Ocorrências PT',    desc: 'Sismos, incêndios e avisos',       icon: '🚨', type: 'nav', action: () => Nav.go('ocorrencias') },
+    { name: 'Ocorrências PT',    desc: 'Sismos, incêndios e avisos',       icon: '🚨', type: 'nav', route: 'ocorrencias', action: () => Nav.go('ocorrencias') },
     { name: 'Fórmula 1',         desc: 'Corrida ao vivo e classificações', icon: '🏎️', type: 'nav', action: () => Nav.go('f1') },
     { name: 'Descobrir Tech',    desc: 'Projetos open source',             icon: '⚡', type: 'nav', action: () => Nav.go('oss') },
     { name: 'Gaming Deals',      desc: 'Promoções e jogos grátis',         icon: '🏷️', type: 'nav', action: () => Nav.go('discovery') },
@@ -50,9 +50,12 @@ const CommandPalette = (function () {
     return items;
   }
 
+  /* Secções desativadas (lista em nav.js) não aparecem na paleta. */
+  const navItems = () => NAV_ITEMS.filter(i => !(i.route && typeof Nav !== 'undefined' && Nav.isDisabled(i.route)));
+
   function buildIndex() {
     const bookmarks = getBookmarkItems();
-    return [...NAV_ITEMS, ...THEME_ITEMS, ...bookmarks];
+    return [...navItems(), ...THEME_ITEMS, ...bookmarks];
   }
 
   function fuzzy(str, q) {
@@ -106,7 +109,7 @@ const CommandPalette = (function () {
 
     let matched;
     if (!ql) {
-      matched = NAV_ITEMS.slice(0, 8);
+      matched = navItems().slice(0, 8);
     } else {
       matched = index
         .map(item => {

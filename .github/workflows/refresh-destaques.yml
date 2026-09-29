@@ -18,9 +18,11 @@ name: Refresh ▸ Notícias ▸ Destaques
 # whole days. The later crons are catch-up retries; whichever fires first does
 # the work and the rest no-op.
 
+# DESATIVADO (set/2026): a secção Notícias está desligada no site
+# (DISABLED_ROUTES em js/core/nav.js). Para reativar, repõe o schedule.
 on:
-  schedule:
-    - cron: '35 7,8,12,17 * * *'   # UTC; 7/8 covers the Lisbon DST pair, then two catch-ups
+  # schedule:
+  #   - cron: '35 7,8,12,17 * * *'   # UTC; 7/8 covers the Lisbon DST pair, then two catch-ups
   workflow_dispatch:
 
 permissions:
