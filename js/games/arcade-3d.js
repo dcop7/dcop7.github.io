@@ -86,5 +86,100 @@ const Arcade3D = (function () {
     return _v;
   }
 
-  return { load, attach, fit, detach, disposeScene, toScreen, coarse };
+  /* ── cena "de estúdio": céu/chão (hemisfério) + sol com sombras suaves ── */
+  function stdScene(o = {}) {
+    const scene = new THREE.Scene();
+    const hemi = new THREE.HemisphereLight(o.sky || '#eef4ff', o.ground || '#3b3f58', o.hemi != null ? o.hemi : 1.3);
+    const sun = new THREE.DirectionalLight(o.sun || '#fff4e6', o.sunI != null ? o.sunI : 2.2);
+    if (o.shadow !== false) {
+      sun.castShadow = true;
+      const sm = coarse() ? 1024 : 2048; sun.shadow.mapSize.set(sm, sm);
+      sun.shadow.bias = -.0005; sun.shadow.normalBias = o.normalBias != null ? o.normalBias : .6;
+    }
+    scene.add(hemi, sun, sun.target);
+    if (o.fill !== false) { const f = new THREE.DirectionalLight(o.fillC || '#b4c6ff', o.fillI != null ? o.fillI : .5); f.position.set(-300, 150, 260); scene.add(f); }
+    return { scene, sun, hemi };
+  }
+  /* o sol (e a caixa da sombra) segue um ponto de interesse */
+  function sunAt(sun, x, y, z, ext, dir) {
+    const d = dir || [-.35, 1, .5];
+    sun.position.set(x + d[0] * ext * 2, y + d[1] * ext * 2, z + d[2] * ext * 2); sun.target.position.set(x, y, z);
+    const c = sun.shadow.camera; c.left = -ext; c.right = ext; c.top = ext; c.bottom = -ext; c.near = 1; c.far = ext * 6; c.updateProjectionMatrix();
+  }
+
+  /* ── caixa unitária de arestas arredondadas (luz a correr nas arestas) ── */
+  const _rb = {};
+  function roundBox(r) {
+    r = r || .08; if (_rb[r]) return _rb[r];
+    const s = new THREE.Shape(), h = .5, q = Math.min(r, .45);
+    s.moveTo(-h + q, -h); s.lineTo(h - q, -h); s.quadraticCurveTo(h, -h, h, -h + q); s.lineTo(h, h - q);
+    s.quadraticCurveTo(h, h, h - q, h); s.lineTo(-h + q, h); s.quadraticCurveTo(-h, h, -h, h - q); s.lineTo(-h, -h + q); s.quadraticCurveTo(-h, -h, -h + q, -h);
+    const b = q * .6;
+    const g = new THREE.ExtrudeGeometry(s, { depth: 1 - b * 2, bevelEnabled: true, bevelThickness: b, bevelSize: 0, bevelSegments: 2, curveSegments: 4 });
+    g.rotateX(-Math.PI / 2); g.translate(0, -.5 + b, 0); g.computeVertexNormals();
+    g.userData.shared = true;
+    return (_rb[r] = g);
+  }
+
+  /* ── materiais partilhados por chave ── */
+  const _mats = new Map();
+  function mat(key, make) {
+    let m = _mats.get(key);
+    if (!m) { m = make ? make() : new THREE.MeshStandardMaterial({ color: key, roughness: .5, metalness: .05 }); m.userData.shared = true; _mats.set(key, m); }
+    return m;
+  }
+  const std = (color, o) => mat('std:' + color + ':' + JSON.stringify(o || {}), () => new THREE.MeshStandardMaterial(Object.assign({ color, roughness: .5, metalness: .05 }, o || {})));
+  const glowMat = color => mat('glow:' + color, () => new THREE.MeshBasicMaterial({ color, toneMapped: false }));
+
+  /* ── textura de brilho radial (sprites aditivos: luzes, faíscas, halos) ── */
+  let _glow = null;
+  function glowTex() {
+    if (_glow) return _glow;
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.25, 'rgba(255,255,255,.55)'); g.addColorStop(.6, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    _glow = new THREE.CanvasTexture(c); _glow.colorSpace = THREE.SRGBColorSpace;
+    return _glow;
+  }
+  const glowSprite = color => mat('gsp:' + color, () => new THREE.SpriteMaterial({ map: glowTex(), color, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, toneMapped: false }));
+
+  /* ── textura com um emoji/texto (ícones de power-ups, rótulos) ── */
+  const _emo = new Map();
+  function emojiTex(ch, px) {
+    const k = ch + ':' + (px || 96); if (_emo.has(k)) return _emo.get(k);
+    const s = px || 96, c = document.createElement('canvas'); c.width = c.height = s; const x = c.getContext('2d');
+    x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `${Math.round(s * .78)}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+    x.fillText(ch, s / 2, s / 2 + s * .04);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; _emo.set(k, t); return t;
+  }
+
+  /* ── "pool" de meshes para desenhar em modo imediato (como no canvas 2D):
+       begin() → get(chave, fábrica) por objeto → end() esconde os que sobraram ── */
+  function pool(scene) {
+    const groups = new Map();
+    return {
+      begin() { groups.forEach(g => { g.used = 0; }); },
+      get(key, make) {
+        let g = groups.get(key); if (!g) groups.set(key, g = { list: [], used: 0 });
+        let m = g.list[g.used];
+        if (!m) { m = make(); scene.add(m); g.list.push(m); }
+        m.visible = true; g.used++;
+        return m;
+      },
+      end() { groups.forEach(g => { for (let i = g.used; i < g.list.length; i++) g.list[i].visible = false; }); },
+    };
+  }
+
+  /* liberta tudo o que não é partilhado (geometrias/materiais em cache ficam) */
+  function disposeOwn(scene) {
+    scene.traverse(o => {
+      if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose();
+      const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      ms.forEach(m => { if (!m.userData.shared) m.dispose(); });
+    });
+  }
+
+  return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse,
+    stdScene, sunAt, roundBox, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool };
 })();

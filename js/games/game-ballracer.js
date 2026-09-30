@@ -29,6 +29,7 @@ const BallracerGame = (function () {
       roll: 0, air: false, fall: 0, inv: 0, gems: 0, score: 0, camX: 0, clouds: Array.from({ length: 14 }, () => ({ x: U.rand(-1, 1), y: U.rand(.55, 1), s: U.rand(.5, 1.4), sp: U.rand(.01, .03) })) };
     for (let i = 0; i < 14; i++) pushRow(G, [F, F, F, F, F]);
     while (G.genZ < G.z + FAR + 4) genSegment(G);
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { try { build3D(G, api); } catch (e) { console.warn('[bola] 3D falhou', e); } }).catch(() => {});
     return G;
   }
 
@@ -134,8 +135,147 @@ const BallracerGame = (function () {
     G.camX = U.lerp(G.camX, G.x, Math.min(1, dt * 5));
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     3D — pista de mosaicos em relevo suspensa no céu, câmara atrás da
+     bola, nevoeiro que funde a pista com o horizonte, nuvens por baixo.
+     Mosaicos, blocos e diamantes são InstancedMesh (poucas chamadas).
+  ════════════════════════════════════════════════════════════════ */
+  const MAXT = 5 * (FAR + 8);
+  function skyTex(th) {
+    const c = document.createElement('canvas'); c.width = 4; c.height = 256; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, th.sky[0]); g.addColorStop(.62, th.sky[1]); g.addColorStop(1, th.sky[1]);
+    x.fillStyle = g; x.fillRect(0, 0, 4, 256);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  function ballTex() {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#fdba74'); g.addColorStop(.5, '#f97316'); g.addColorStop(1, '#c2410c');
+    x.fillStyle = g; x.fillRect(0, 0, 256, 128);
+    x.fillStyle = '#fff7ed'; x.fillRect(0, 56, 256, 16);                   /* faixa branca à volta */
+    x.fillStyle = 'rgba(255,255,255,.35)'; for (let i = 0; i < 8; i++) x.fillRect(i * 32 + 8, 0, 6, 128);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#fff7ed', ground: '#64748b', hemi: 1.25, sunI: 2.4, normalBias: .02 });
+    sun.shadow.bias = -.0008;
+    const cam = new THREE.PerspectiveCamera(62, 1, .1, 200);
+    const tileMat = new THREE.MeshStandardMaterial({ roughness: .5, metalness: .02 });
+    const tiles = new THREE.InstancedMesh(Arcade3D.roundBox(.1), tileMat, MAXT);
+    tiles.castShadow = true; tiles.receiveShadow = true; tiles.frustumCulled = false;
+    const blocks = new THREE.InstancedMesh(Arcade3D.roundBox(.14), new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: .35 }), 80);
+    blocks.castShadow = true; blocks.receiveShadow = true; blocks.frustumCulled = false;
+    const stripe = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false }), 80);
+    stripe.frustumCulled = false;
+    const gems = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.2, 0), new THREE.MeshStandardMaterial({ color: '#22d3ee', emissive: '#0891b2', emissiveIntensity: .8, roughness: .15, metalness: .3, flatShading: true }), 60);
+    gems.castShadow = true; gems.frustumCulled = false;
+    const chevGeo = new THREE.BufferGeometry();
+    chevGeo.setAttribute('position', new THREE.Float32BufferAttribute([-.32, 0, -.1, 0, 0, .28, 0, 0, .1, -.32, 0, -.1, 0, 0, .1, -.32, 0, -.3, .32, 0, -.1, 0, 0, .1, 0, 0, .28, .32, 0, -.1, .32, 0, -.3, 0, 0, .1], 3));
+    const chev = new THREE.InstancedMesh(chevGeo, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, toneMapped: false }), 120);
+    chev.frustumCulled = false;
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(BR, 40, 28), new THREE.MeshStandardMaterial({ map: ballTex(), roughness: .28, metalness: .1 }));
+    ball.castShadow = true;
+    const glow = new THREE.Sprite(Arcade3D.glowSprite('#67e8f9')); glow.scale.set(1.6, 1.6, 1);
+    const sunDisc = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fff7d6', transparent: true, depthWrite: false, fog: false, toneMapped: false }));
+    sunDisc.scale.set(28, 28, 1);
+    /* nuvens: elipsoides brancos por baixo da pista */
+    const cloudGeo = new THREE.SphereGeometry(1, 14, 10), cloudMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 1, transparent: true, opacity: .9 });
+    const clouds = Array.from({ length: 16 }, (_, i) => {
+      const g = new THREE.Group();
+      for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(cloudGeo, cloudMat); m.position.set(k * 1.6 - 1.6, Math.random() * .4, Math.random() - .5); m.scale.set(1.6 + Math.random(), .75 + Math.random() * .3, 1.2 + Math.random() * .5); g.add(m); }
+      g.userData = { dx: (Math.random() - .5) * 26, dy: -5 - Math.random() * 6, dz: i * 5 };
+      scene.add(g); return g;
+    });
+    scene.add(tiles, blocks, stripe, gems, chev, ball, glow, sunDisc);
+    scene.fog = new THREE.Fog('#ffffff', FAR * .45, FAR + 2);
+    G.r3 = { renderer, scene, sun, cam, tiles, blocks, stripe, gems, chev, ball, glow, sunDisc, clouds, themeI: -1, m4: new THREE.Matrix4(), q: new THREE.Quaternion(), v: new THREE.Vector3(), sc: new THREE.Vector3(), c: new THREE.Color(), roll: new THREE.Quaternion(), camX: 0 };
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, th = THEMES[(G.theme || 0) % THEMES.length], ti = (G.theme || 0) % THEMES.length;
+    if (R.themeI !== ti) {
+      R.themeI = ti;
+      if (R.scene.background) R.scene.background.dispose();
+      R.scene.background = skyTex(th);
+      R.scene.fog.color.set(th.sky[1]);
+      R.clouds.forEach(g => g.children.forEach(m => { m.material.color.set(th.cloud.startsWith('rgba') ? '#ffffff' : th.cloud); }));
+      R.clouds[0].children[0].material.opacity = ti === 2 ? .35 : .85;
+    }
+    Arcade3D.fit(api.stage, R.cam);
+    const { m4, q, v, sc, c } = R;
+    const z0 = Math.max(0, Math.floor(G.z - CAMB - 1)), z1 = Math.min(G.rows.length - 1, Math.floor(G.z + FAR));
+    let nt = 0, nb = 0, ng = 0, nc = 0;
+    const TH = .35, qI = new THREE.Quaternion();
+    for (let zi = z0; zi <= z1; zi++) {
+      const row = G.rows[zi]; if (!row) continue;
+      for (let ci = 0; ci < 5; ci++) {
+        const t = row[ci]; if (t === E) continue;
+        const x = ci - 2;
+        if (nt < MAXT) {
+          v.set(x, -TH / 2, zi + .5); sc.set(.97, TH, .97); m4.compose(v, qI, sc); R.tiles.setMatrixAt(nt, m4);
+          c.set(t === BO ? '#22d3ee' : t === J ? '#facc15' : (ci + zi) % 2 ? th.a : th.b); if (t === F || t === GEM || t === B) c.multiplyScalar((ci + zi) % 2 ? .95 : .82); R.tiles.setColorAt(nt, c); nt++;
+        }
+        if ((t === BO || t === J) && nc < 120) {
+          for (let k = 0; k < 2 && nc < 120; k++) {
+            v.set(x, .004, zi + .3 + k * .38); sc.set(1, 1, 1); m4.compose(v, qI, sc); R.chev.setMatrixAt(nc, m4);
+            c.set(t === BO ? '#0e7490' : '#a16207'); R.chev.setColorAt(nc, c); nc++;
+          }
+        }
+        if (t === B && nb < 80) {
+          v.set(x, .4, zi + .5); sc.set(.84, .8, .8); m4.compose(v, qI, sc); R.blocks.setMatrixAt(nb, m4);
+          v.set(x, .44, zi + .09); sc.set(.86, .07, .02); m4.compose(v, qI, sc); R.stripe.setMatrixAt(nb, m4); nb++;
+        }
+        if (t === GEM && ng < 60) {
+          q.setFromAxisAngle(v.set(0, 1, 0), api.t * 2.2 + zi);
+          v.set(x, .5 + Math.sin(api.t * 4 + zi) * .08, zi + .5); sc.set(1, 1.3, 1); m4.compose(v, q, sc); R.gems.setMatrixAt(ng++, m4);
+        }
+      }
+    }
+    [[R.tiles, nt], [R.blocks, nb], [R.stripe, nb], [R.gems, ng], [R.chev, nc]].forEach(([m, n]) => {
+      m.count = n; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    });
+    /* bola: rola em torno do eixo x (e inclina com o desvio lateral) */
+    const b = R.ball;
+    b.position.set(G.x, G.y + BR, G.z);
+    R.roll.setFromAxisAngle(v.set(1, 0, 0), G.roll);
+    b.quaternion.copy(R.roll);
+    b.visible = !(G.inv > 0 && Math.floor(G.inv * 12) % 2);
+    R.glow.visible = G.boost > 0; R.glow.position.set(G.x, G.y + BR, G.z - .35); R.glow.material.opacity = .6 + Math.sin(api.t * 30) * .2;
+    /* câmara atrás e acima; um bocadinho de balanço lateral */
+    R.camX = U.lerp(R.camX, G.camX, .2);
+    const [shx, shy] = api.shakeXY;
+    R.cam.position.set(R.camX * .75 + shx * .01, 3.6 + shy * .01, G.z - 4.6);
+    R.cam.lookAt(R.camX * .55, 0, G.z + 5);
+    R.cam.rotateZ(-(G.x - R.camX) * .03);
+    R.cam.fov = 52 + Math.min(9, (G.v - G.cfg.v0) * .8) + (G.boost > 0 ? 6 : 0);   /* sensação de velocidade */
+    R.cam.updateProjectionMatrix();
+    Arcade3D.sunAt(R.sun, G.x, 0, G.z + 6, 12, [-.3, 1, -.35]);
+    R.sunDisc.position.set(R.cam.position.x + 30, 22, G.z + 90);
+    R.clouds.forEach(g => {
+      const u = g.userData; let z = u.dz - (G.z * .35) % 80; if (z < -10) z += 80;
+      g.position.set(u.dx, u.dy, G.z + z);
+    });
+    R.renderer.render(R.scene, R.cam);
+    /* vidas e "prepara-te" no canvas 2D */
+    for (let i = 0; i < G.cfg.lives; i++) { ctx.globalAlpha = i < G.lives ? 1 : .22; ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(20 + i * 22, H - 20, 8, 0, 6.3); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.arc(17 + i * 22, H - 23, 3, 0, 6.3); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    if (G.pause > 0) { ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.font = "800 24px 'Space Grotesk', system-ui"; ctx.textAlign = 'center'; ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 10; ctx.fillText('Prepara-te…', W / 2, H * .35); ctx.shadowBlur = 0; }
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    if (R.scene.background) R.scene.background.dispose();
+    R.ball.material.map.dispose();
+    Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   /* ── desenho ── */
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const th = THEMES[(G.theme || 0) % THEMES.length];
     const f = W * .5, hY = H * .75 - CAMH * f / CAMB;
     const sky = ctx.createLinearGradient(0, 0, 0, H);
@@ -214,7 +354,7 @@ const BallracerGame = (function () {
 
   return ArcadeKit.create({
     id: 'ballracer', title: 'Bola Veloz', icon: '🔵',
-    accent: '#fb923c', accent2: '#67e8f9', bg: '#fb923c',
+    accent: '#fb923c', accent2: '#67e8f9', bg: '#fb923c', transparent: true, destroy,
     tagline: 'Uma pista suspensa no céu, cheia de buracos e blocos. A bola não pára — tu guias.',
     view: { w: 400 },
     how: [

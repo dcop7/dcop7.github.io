@@ -118,6 +118,11 @@ const ArcadeKit = (function () {
 /* ── palco ── */
 .ak-stage{position:relative;margin:0 auto;height:min(760px,calc(100dvh - 176px));min-height:400px;border-radius:18px;overflow:hidden;background:var(--ak-bg);user-select:none;-webkit-user-select:none;touch-action:none;overscroll-behavior:contain;box-shadow:0 18px 50px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);-webkit-tap-highlight-color:transparent}
 .ak-cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.ak-stage{animation:akStageIn .38s cubic-bezier(.2,.9,.3,1) both}
+@keyframes akStageIn{from{opacity:0;transform:scale(.965) translateY(6px)}to{opacity:1;transform:none}}
+.ak-cell b{display:inline-block;transition:color .2s}
+.ak-cell.bump b{animation:akBump .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes akBump{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
 .ak-layer{position:absolute;inset:0;overflow:hidden}
 .ak-hud{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 10px 18px;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent);pointer-events:none}
 .ak-hud-mid{flex:1;display:flex;justify-content:center;gap:14px;flex-wrap:nowrap;min-width:0;overflow:hidden}
@@ -171,7 +176,7 @@ const ArcadeKit = (function () {
   .ak-cell b{font-size:1.02rem}
   .ak-hbtn{width:36px;height:36px;border-radius:10px}
 }
-@media (prefers-reduced-motion:reduce){.ak-panel,.ak-ov,.ak-banner,.ak-conf i,.ak-ready .ak-tap{animation:none!important}}`;
+@media (prefers-reduced-motion:reduce){.ak-panel,.ak-ov,.ak-banner,.ak-conf i,.ak-ready .ak-tap,.ak-stage,.ak-cell.bump b{animation:none!important}}`;
     document.head.appendChild(s);
   }
 
@@ -289,7 +294,8 @@ const ArcadeKit = (function () {
         mode, diff, state: 'ready', G: null, eng: null, dead: false,
         W: spec.view.w, H: spec.view.h || 600, s: 1, ox: 0, oy: 0, cssW: 0, cssH: 0,
         parts: (typeof Particles !== 'undefined') ? Particles.create() : null,
-        floats: [], shakeT: 0, shakeM: 0, flashT: 0, flashC: '#fff', t: 0, hudStr: '',
+        floats: [], shakeT: 0, shakeM: 0, shakeD: .25, shakeP: 0, flashT: 0, flashC: '#fff', t: 0, hudStr: '', hudVals: [],
+        stopT: 0, slowT: 0, slowK: 1,
         ptrs: new Map(), onKey: null,
       };
 
@@ -314,6 +320,8 @@ const ArcadeKit = (function () {
         get mode() { return sess.mode; }, get diff() { return sess.diff; },
         get state() { return sess.state; },
         get ptrs() { return sess.ptrs; },
+        /* deslocamento atual do tremor (px lógicos) — para jogos 3D abanarem a câmara */
+        get shakeXY() { return [sess.sx || 0, sess.sy || 0]; },
         get layer() { return root.querySelector('.ak-layer'); },
         get stage() { return stage; },
         get best() { return GP() ? GP().bestScore(id, modeKey(sess.mode, sess.diff)) : null; },
@@ -322,8 +330,13 @@ const ArcadeKit = (function () {
         parts: sess.parts,
         burst(x, y, n, o) { if (sess.parts) sess.parts.spawnBurst(x, y, n, o || {}); },
         spark(o) { if (sess.parts) sess.parts.spawn(o); },
-        float(x, y, text, color, size) { const m = Math.min(sess.W / 2, String(text).length * (size || 20) * .3 + 8); x = Math.max(m, Math.min(sess.W - m, x)); sess.floats.push({ x, y, text, color: color || '#fff', size: size || 20, life: .9, max: .9 }); },
-        shake(m, d) { if (reduced()) return; sess.shakeM = Math.max(sess.shakeM, m); sess.shakeT = Math.max(sess.shakeT, d || .25); },
+        float(x, y, text, color, size) { const m = Math.min(sess.W / 2, String(text).length * (size || 20) * .3 + 8); x = Math.max(m, Math.min(sess.W - m, x)); sess.floats.push({ x, y, y0: y, text, color: color || '#fff', size: size || 20, life: 1, max: 1 }); },
+        /* tremor amortecido (onda com fase aleatória), não ruído branco a cada frame */
+        shake(m, d) { if (reduced()) return; if (m >= sess.shakeM * (sess.shakeT / sess.shakeD || 0)) { sess.shakeM = m; sess.shakeD = sess.shakeT = d || .25; sess.shakeP = Math.random() * 6.28; } },
+        /* "hit-stop": congela a lógica uns milissegundos num impacto forte */
+        hitstop(sec) { if (!reduced()) sess.stopT = Math.max(sess.stopT, sec || .06); },
+        /* câmara lenta: fator k durante d segundos */
+        slowmo(k, d) { sess.slowK = k; sess.slowT = d; },
         flash(c, d) { sess.flashC = c || '#fff'; sess.flashT = d || .15; },
         banner(text, sub) {
           if (sess.dead) return;
@@ -449,7 +462,9 @@ const ArcadeKit = (function () {
         const str = cells.map(c => c.join('\u0001')).join('\u0002');
         if (str === sess.hudStr) return;
         sess.hudStr = str;
-        hudMid.innerHTML = cells.map(c => `<div class="ak-cell${c[2] ? ' ' + c[2] : ''}"><small>${esc(c[0])}</small><b>${esc(c[1])}</b></div>`).join('');
+        const prev = sess.hudVals;
+        hudMid.innerHTML = cells.map((c, i) => `<div class="ak-cell${c[2] ? ' ' + c[2] : ''}${prev.length && prev[i] !== undefined && prev[i] !== String(c[1]) ? ' bump' : ''}"><small>${esc(c[0])}</small><b>${esc(c[1])}</b></div>`).join('');
+        sess.hudVals = cells.map(c => String(c[1]));
       }
       stage.querySelector('.ak-hud').addEventListener('click', e => {
         const a = e.target.closest('[data-a]'); if (!a) return;
@@ -462,16 +477,20 @@ const ArcadeKit = (function () {
       function frame(dt) {
         if (sess.dead) return;
         sess.t += dt;
-        if (sess.state === 'play') spec.update(sess.G, dt, api);
+        const frozen = sess.stopT > 0;
+        if (frozen) sess.stopT -= dt;
+        else if (sess.slowT > 0) { sess.slowT -= dt; dt *= sess.slowK; }
+        if (sess.state === 'play' && !frozen) spec.update(sess.G, dt, api);
         else if (spec.idle && sess.state === 'ready') spec.idle(sess.G, dt, api);
         else if (spec.after && sess.state === 'over') spec.after(sess.G, dt, api);   /* animação pós-derrota */
         if (sess.state === 'play' || sess.state === 'ready' || sess.state === 'over') {
           if (sess.parts) sess.parts.update(dt);
           for (let i = sess.floats.length - 1; i >= 0; i--) {
-            const f = sess.floats[i]; f.life -= dt; f.y -= 46 * dt;
+            const f = sess.floats[i]; f.life -= dt;
+            const k = 1 - f.life / f.max; f.y = f.y0 - 52 * (1 - (1 - k) * (1 - k));   /* sobe depressa e abranda */
             if (f.life <= 0) sess.floats.splice(i, 1);
           }
-          if (sess.shakeT > 0) sess.shakeT = Math.max(0, sess.shakeT - dt);
+          if (sess.shakeT > 0) sess.shakeT = Math.max(0, sess.shakeT - (dt || 1 / 60));
           if (sess.flashT > 0) sess.flashT = Math.max(0, sess.flashT - dt);
         }
         drawHud();
@@ -484,8 +503,11 @@ const ArcadeKit = (function () {
         if (spec.transparent) ctx.clearRect(0, 0, cw, ch);
         else { ctx.fillStyle = spec.bg || '#0b0e1a'; ctx.fillRect(0, 0, cw, ch); }
         let sx = 0, sy = 0;
-        if (sess.shakeT > 0) { const m = sess.shakeM * (sess.shakeT / .25); sx = (Math.random() - .5) * m; sy = (Math.random() - .5) * m; }
-        else sess.shakeM = 0;
+        if (sess.shakeT > 0) {
+          const k = sess.shakeT / sess.shakeD, m = sess.shakeM * k * k, w = sess.t * 55 + sess.shakeP;
+          sx = Math.sin(w) * m * .6; sy = Math.cos(w * 1.31) * m * .6;
+        } else sess.shakeM = 0;
+        sess.sx = sx; sess.sy = sy;
         const s = sess.s;
         ctx.setTransform(k * s, 0, 0, k * s, k * (sess.ox + sx), k * (sess.oy + sy));
         ctx.save();
@@ -496,10 +518,15 @@ const ArcadeKit = (function () {
         if (sess.floats.length) {
           ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           sess.floats.forEach(f => {
-            ctx.globalAlpha = Math.min(1, f.life / f.max * 1.6);
+            const k = 1 - f.life / f.max;
+            /* entra com "pop" (1.35 → 1) e só desvanece no fim */
+            const sc = k < .14 ? 1.35 - (k / .14) * .35 : 1;
+            ctx.globalAlpha = Math.min(1, f.life / f.max * 2.4);
+            ctx.save(); ctx.translate(f.x, f.y); ctx.scale(sc, sc);
             ctx.font = `800 ${f.size}px 'Space Grotesk', system-ui, sans-serif`;
-            ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.strokeText(f.text, f.x, f.y);
-            ctx.fillStyle = f.color; ctx.fillText(f.text, f.x, f.y);
+            ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.strokeText(f.text, 0, 0);
+            ctx.fillStyle = f.color; ctx.fillText(f.text, 0, 0);
+            ctx.restore();
           });
           ctx.restore();
         }

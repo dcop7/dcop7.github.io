@@ -73,6 +73,7 @@ const CrossyRoadGame = (function () {
     const G = { cfg: DIFF[o.diff] || DIFF.medium, ch, rows: [], run: { left: 0 }, lastType: null,
       col: 4, z: 0, px: colX(4), hop: null, queue: null, cam: -2, camMin: -2, t: 0, best: 0, coins: 0, dead: null, idle: 0 };
     ensure(G, 30);
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { try { build3D(G, api); } catch (e) { console.warn('[travessia] 3D falhou', e); } }).catch(() => {});
     return G;
   }
 
@@ -170,7 +171,174 @@ const CrossyRoadGame = (function () {
     ctx.fillStyle = top; ctx.fillRect(x, y - h, w, d);
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     3D "voxel" — cubos com sombras suaves, câmara alta e inclinada que
+     segue o avanço; relva escura com árvores para lá das margens.
+     1 unidade = 1 casa; x = coluna − 4, z = −fila (a frente é −z).
+  ════════════════════════════════════════════════════════════════ */
+  const wx = px => (px - X0) / CELL - 4.5;
+  function vox(scene) {
+    const B = new THREE.BoxGeometry(1, 1, 1); B.userData.shared = true;
+    const mk = (g, x, y, z, sx, sy, sz, c, sh) => { const m = new THREE.Mesh(B, Arcade3D.std(c, { roughness: .78 })); m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.castShadow = sh !== false; m.receiveShadow = true; g.add(m); return m; };
+    return { B, mk };
+  }
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#f0f9ff', ground: '#4d7c0f', hemi: 1.15, sunI: 2.5, normalBias: .03 });
+    sun.shadow.bias = -.0006;
+    scene.background = new THREE.Color('#65a30d');
+    const cam = new THREE.PerspectiveCamera(34, 1, .5, 120);
+    const V = vox(scene);
+    G.r3 = { renderer, scene, sun, cam, V, pool: Arcade3D.pool(scene), camZ: 0, camX: 0 };
+    api.stage.style.background = '#4d7c0f';
+  }
+
+  /* modelos (construídos uma vez por tipo, reaproveitados pelo pool) */
+  function tree(V, tall) {
+    const g = new THREE.Group();
+    V.mk(g, 0, .35, 0, .28, .7, .28, '#92400e');
+    V.mk(g, 0, .95, 0, .78, .6, .78, '#16a34a');
+    if (tall) V.mk(g, 0, 1.45, 0, .56, .5, .56, '#22c55e');
+    return g;
+  }
+  function carModel(V, hue, truck, len) {
+    const g = new THREE.Group(), body = `hsl(${hue},72%,52%)`, dark = `hsl(${hue},70%,36%)`;
+    if (truck) {
+      V.mk(g, -len / 2 + .5, .62, 0, .9, .76, .72, body);
+      V.mk(g, -len / 2 + .55, .78, 0, .6, .3, .74, '#1e3a5f', false);
+      V.mk(g, .45, .78, 0, len - 1.05, 1.1, .78, '#f1f5f9');
+      V.mk(g, .45, 1.34, 0, len - 1.05, .04, .8, '#cbd5e1', false);
+    } else {
+      V.mk(g, 0, .42, 0, len, .42, .72, body);
+      V.mk(g, .05, .78, 0, len * .55, .34, .64, dark);
+      V.mk(g, .05, .8, 0, len * .56, .22, .66, '#1e3a5f', false);
+    }
+    const wheel = x => { V.mk(g, x, .18, .34, .26, .26, .08, '#111827', false); V.mk(g, x, .18, -.34, .26, .26, .08, '#111827', false); };
+    wheel(len / 2 - .28); wheel(-len / 2 + .28); if (truck) wheel(0);
+    const hl = new THREE.Mesh(V.B, Arcade3D.glowMat('#fef08a')); hl.position.set(len / 2 + .01, .48, 0); hl.scale.set(.03, .1, .5); g.add(hl);
+    const tl = new THREE.Mesh(V.B, Arcade3D.glowMat('#ef4444')); tl.position.set(-len / 2 - .01, .48, 0); tl.scale.set(.03, .1, .5); g.add(tl);
+    return g;
+  }
+  function charModel(V, ch) {
+    const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
+    const b = V.mk(body, 0, .3, 0, .5, .5, .5, ch.body);
+    if (ch.id === 'frog') { V.mk(body, 0, .12, 0, .56, .12, .56, ch.dark); V.mk(body, 0, .56, .02, .5, .06, .02, ch.acc); ['-', '+'].forEach(sd => { const x = sd === '-' ? -.14 : .14; V.mk(body, x, .6, -.12, .14, .14, .14, '#fff'); V.mk(body, x, .62, -.19, .07, .07, .03, '#111'); }); }
+    if (ch.id === 'bunny') { [-.12, .12].forEach(x => { V.mk(body, x, .78, .05, .1, .42, .1, ch.body); V.mk(body, x, .8, .0, .05, .3, .02, ch.acc); }); [-.12, .12].forEach(x => V.mk(body, x, .42, -.26, .06, .06, .02, '#111')); V.mk(body, 0, .34, -.26, .06, .05, .02, ch.acc); }
+    if (ch.id === 'penguin') { V.mk(body, 0, .28, -.2, .34, .38, .12, '#f8fafc'); V.mk(body, 0, .38, -.3, .12, .06, .12, ch.acc); [-.12, .12].forEach(x => V.mk(body, x, .48, -.26, .06, .06, .02, '#fff')); V.mk(body, 0, .03, -.1, .4, .06, .2, ch.acc); }
+    if (ch.id === 'fox') { [-.15, .15].forEach(x => V.mk(body, x, .64, .05, .14, .2, .1, ch.dark)); V.mk(body, 0, .22, -.3, .26, .18, .14, ch.acc); V.mk(body, 0, .3, .36, .18, .18, .3, ch.body); V.mk(body, 0, .3, .52, .12, .12, .06, ch.acc); [-.12, .12].forEach(x => V.mk(body, x, .44, -.26, .06, .06, .02, '#111')); }
+    g.userData.body = body; b.userData.main = true;
+    return g;
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, V = R.V, P = R.pool;
+    Arcade3D.fit(api.stage, R.cam);
+    const zf = G.zf != null ? G.zf : G.z;
+    const lo = Math.max(-6, Math.floor(G.cam) - 5), hi = Math.min(G.rows.length - 1, Math.ceil(G.cam) + 22);
+    P.begin();
+    for (let z = hi; z >= lo; z--) {
+      const row = z >= 0 ? G.rows[z] : null, Z = -z;
+      const t = row ? row.t : 'grass';
+      /* chão da fila: faixa jogável + margens mais escuras */
+      const top = t === 'grass' ? ((row ? row.shade : z & 1) ? '#84cc16' : '#7ac31a') : t === 'road' ? '#3f4652' : t === 'river' ? '#38bdf8' : '#a8a29e';
+      const hgt = t === 'river' ? .1 : t === 'grass' ? .3 : .2, y = t === 'river' ? -.25 : -hgt / 2 + (t === 'grass' ? 0 : -.05);
+      const g1 = P.get('floor:' + top, () => { const m = new THREE.Mesh(V.B, t === 'river' ? new THREE.MeshStandardMaterial({ color: top, roughness: .15, metalness: .1, transparent: true, opacity: .92 }) : Arcade3D.std(top, { roughness: .9 })); m.receiveShadow = true; return m; });
+      g1.position.set(0, y, Z); g1.scale.set(9, hgt, 1.001);
+      const sideC = t === 'grass' ? ((row ? row.shade : z & 1) ? '#5f8f12' : '#58860f') : t === 'road' ? '#2d333c' : t === 'river' ? '#0ea5e9' : '#8a837d';
+      [-1, 1].forEach(sd => { const m = P.get('side:' + sideC + t, () => { const mm = new THREE.Mesh(V.B, Arcade3D.std(sideC, { roughness: .9 })); mm.receiveShadow = true; return mm; }); m.position.set(sd * 9, y, Z); m.scale.set(9, hgt, 1.001); });
+      if (t === 'road') {
+        const nxt = G.rows[z + 1];
+        if (nxt && nxt.t === 'road') for (let x = -4.2; x < 4.5; x += 1.4) { const d = P.get('dash', () => new THREE.Mesh(V.B, Arcade3D.std('#e5e7eb', { roughness: .6 }))); d.position.set(x, .001, Z - .5); d.scale.set(.6, .02, .06); }
+      }
+      if (t === 'river') {
+        for (let x = -4; x < 5; x += 2) { const w = P.get('wave', () => new THREE.Mesh(V.B, new THREE.MeshBasicMaterial({ color: '#e0f2fe', transparent: true, opacity: .45 }))); w.position.set(x + ((api.t * .8 * (row.dir || 1)) % 2 + 2) % 2 - 1, -.19, Z + ((x * 7) % 3) * .1 - .1); w.scale.set(.5, .01, .04); }
+      }
+      if (t === 'rail') {
+        for (let x = -4.4; x < 4.6; x += .5) { const sl = P.get('sleeper', () => { const m = new THREE.Mesh(V.B, Arcade3D.std('#78350f', { roughness: .9 })); m.receiveShadow = true; return m; }); sl.position.set(x, -.02, Z); sl.scale.set(.22, .06, .8); }
+        [-.25, .25].forEach(dz => { const r = P.get('rail', () => new THREE.Mesh(V.B, Arcade3D.std('#e5e7eb', { roughness: .3, metalness: .7 }))); r.position.set(0, .04, Z + dz); r.scale.set(9, .06, .06); });
+        const warn = row && !row.train && row.trainT < 1.3, on = warn && Math.floor(G.t * 8) % 2;
+        const pole = P.get('signal', () => { const g = new THREE.Group(); V.mk(g, 0, .6, 0, .08, 1.2, .08, '#1f2937'); const l = new THREE.Mesh(new THREE.SphereGeometry(.12, 10, 8), Arcade3D.std('#450a0a')); l.position.y = 1.25; g.add(l); g.userData.l = l; const s = new THREE.Sprite(Arcade3D.glowSprite('#ef4444')); s.position.y = 1.25; g.add(s); g.userData.s = s; return g; });
+        pole.position.set(4.3, 0, Z - .45); pole.userData.l.material = on ? Arcade3D.glowMat('#ef4444') : Arcade3D.std('#450a0a'); pole.userData.s.scale.setScalar(on ? 1.4 : 0);
+        if (row && row.train) {
+          const tr = row.train, x0 = wx(tr.x), len = tr.w / CELL;
+          for (let k = 0; k < len; k += 3) {
+            const car = P.get('wagon', () => { const g = new THREE.Group(); V.mk(g, 0, .7, 0, 2.9, 1.1, .8, '#dc2626'); V.mk(g, 0, 1.3, 0, 2.95, .1, .84, '#991b1b', false); for (let w = -1; w <= 1; w++) { const m = new THREE.Mesh(V.B, Arcade3D.glowMat('#fef9c3')); m.position.set(w * .9, .85, .41); m.scale.set(.5, .3, .02); g.add(m); } return g; });
+            car.position.set(x0 + k + 1.5, 0, Z);
+          }
+        }
+      }
+      /* árvores fora da área de jogo (fecham o mundo, como no original) */
+      if (t === 'grass' || z < 0) {
+        for (let k = 0; k < 3; k++) {
+          const hsh = Math.sin(z * 12.9898 + k * 78.233) * 43758.5, f = hsh - Math.floor(hsh);
+          [-1, 1].forEach(sd => { const tr = P.get(f > .5 ? 'treeT' : 'tree', () => tree(V, f > .5)); tr.position.set(sd * (5.1 + k * 1.3 + f * .4), 0, Z); });
+        }
+      }
+      if (z < 0) {
+        for (let c = 0; c < 9; c++) { const hh = Math.sin(z * 31.1 + c * 17.7) * 9999, f = hh - Math.floor(hh); if (f > (z === -1 ? .18 : .4)) continue; const tr = P.get(z === -1 ? 'bush' : 'tree', () => z === -1 ? (() => { const g = new THREE.Group(); V.mk(g, 0, .2, 0, .6, .4, .6, '#22c55e'); return g; })() : tree(V, false)); tr.position.set(c - 4, 0, Z); }
+      }
+      if (!row) continue;
+      if (t === 'grass') {
+        row.block.forEach(c => { const tr = P.get((c + z) % 3 ? 'tree' : 'treeT', () => tree(V, !((c + z) % 3))); tr.position.set(c - 4, 0, Z); });
+        for (let i = 0; i < 3; i++) { const h = Math.sin(z * 91.7 + i * 37.3) * 43758.5, f = h - Math.floor(h); const fl = P.get('flower' + (i % 3), () => new THREE.Mesh(V.B, Arcade3D.std(['#fde047', '#f9a8d4', '#ffffff'][i % 3]))); fl.position.set(-4.3 + f * 8.6, .03, Z - .3 + ((f * 7.3) % 1) * .6); fl.scale.set(.1, .06, .1); }
+      }
+      if (t === 'river') row.objs.forEach(o => {
+        const x0 = wx(o.x), w = o.w / CELL;
+        if (o.pad) { const m = P.get('pad', () => { const g = new THREE.Group(); const c = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .06, 18), Arcade3D.std('#16a34a')); c.receiveShadow = true; g.add(c); const f = new THREE.Mesh(new THREE.SphereGeometry(.07, 8, 6), Arcade3D.std('#f9a8d4')); f.position.set(.15, .06, .1); g.add(f); return g; }); m.position.set(x0 + w / 2, -.17, Z); m.rotation.y = z; }
+        else { const m = P.get('log', () => { const g = new THREE.Group(); const l = V.mk(g, 0, 0, 0, 1, .34, .66, '#a16207'); g.userData.l = l; const e = V.mk(g, .5, 0, 0, .02, .28, .58, '#fde68a', false); g.userData.e = e; return g; }); m.position.set(x0 + w / 2, -.12, Z); m.userData.l.scale.x = w; m.userData.e.position.x = w / 2; }
+      });
+      if (t === 'road') row.objs.forEach(o => {
+        const x0 = wx(o.x), w = o.w / CELL, key = 'car:' + o.hue + (o.truck ? 'T' : '');
+        const m = P.get(key, () => carModel(V, o.hue, o.truck, o.truck ? 2.1 : .95));
+        m.position.set(x0 + w / 2, 0, Z); m.rotation.y = row.dir > 0 ? 0 : Math.PI;
+      });
+      row.coins.forEach(c => { const m = P.get('coin', () => { const mm = new THREE.Mesh(new THREE.CylinderGeometry(.2, .2, .06, 16), Arcade3D.std('#fbbf24', { metalness: .8, roughness: .25, emissive: '#b45309', emissiveIntensity: .35 })); mm.rotation.x = Math.PI / 2; mm.castShadow = true; const g = new THREE.Group(); g.add(mm); return g; }); m.position.set(c - 4, .45 + Math.sin(G.t * 4 + c) * .08, Z); m.rotation.y = G.t * 3 + c; });
+    }
+    /* personagem */
+    const ch = P.get('char:' + G.ch.id, () => charModel(V, G.ch));
+    const hopK = G.hop ? Math.min(1, G.hop.t / HOP) : 0, lift = G.hop ? Math.sin(hopK * Math.PI) * .45 : 0;
+    const dead = G.dead;
+    ch.visible = !(dead && dead.kind === 'water');
+    ch.position.set(wx(G.px), lift + (G.rows[G.z] && G.rows[G.z].t === 'river' ? -.12 : 0), -zf);
+    const face = { up: Math.PI, down: 0, left: -Math.PI / 2, right: Math.PI / 2 }[G.dir || 'up'];
+    ch.rotation.y = U.lerp(ch.rotation.y || Math.PI, face, .35);
+    const body = ch.userData.body, sq = G.hop ? 1 + Math.sin(hopK * Math.PI) * .12 : 1;
+    if (dead && (dead.kind === 'car' || dead.kind === 'train')) body.scale.set(1.5, .15, 1.3);
+    else body.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
+    if (G.bumpT) body.position.x = Math.sin(G.bumpT * 60) * .05; else body.position.x = 0;
+    if (dead && dead.kind === 'water') {
+      const sp = P.get('splash', () => new THREE.Mesh(new THREE.TorusGeometry(.4, .04, 6, 24), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true })));
+      const k = (api.t % 1); sp.position.set(wx(G.px), -.18, -G.z); sp.rotation.x = Math.PI / 2; sp.scale.setScalar(.6 + k * 1.6); sp.material.opacity = 1 - k;
+    }
+    P.end();
+    /* câmara alta, inclinada, a seguir o avanço (com a mesma "pressão" do jogo 2D) */
+    R.camZ = U.lerp(R.camZ, -(G.cam + 3.2), .15); R.camX = U.lerp(R.camX, wx(G.px) * .35, .08);
+    const [shx, shy] = api.shakeXY;
+    R.cam.position.set(R.camX + 3 + shx * .01, 13.5 + shy * .01, R.camZ + 8.2);
+    R.cam.lookAt(R.camX + .35, 0, R.camZ - 3);
+    Arcade3D.sunAt(R.sun, R.camX, 0, R.camZ - 2, 12, [.5, 1, .45]);
+    R.renderer.render(R.scene, R.cam);
+    /* aviso de ficar para trás + dica inicial (2D) */
+    const lag = zf - G.cam;
+    if (lag < 0 && !G.dead) { ctx.fillStyle = `rgba(0,0,0,${Math.min(.35, -lag * .25)})`; ctx.fillRect(0, H - 90, W, 90); }
+    if (G.best === 0 && !G.dead) {
+      ctx.font = '700 14px system-ui'; ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(20,40,10,.55)'; U.rr(ctx, W / 2 - 170, H - 50, 340, 30, 15); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText('Toca para saltar em frente · desliza para os lados', W / 2, H - 30);
+    }
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const base = H - 120, rowY = z => base - (z - G.cam) * CELL;
     ctx.fillStyle = '#65a30d'; ctx.fillRect(0, 0, W, H);
     const lo = Math.max(0, Math.floor(G.cam) - 3), hi = Math.min(G.rows.length - 1, Math.ceil(G.cam + (H / CELL)) + 1);
@@ -313,7 +481,7 @@ const CrossyRoadGame = (function () {
 
   const game = ArcadeKit.create({
     id: 'crossy-road', title: 'Travessia', icon: '🐸',
-    accent: '#84cc16', accent2: '#38bdf8', bg: '#65a30d',
+    accent: '#84cc16', accent2: '#38bdf8', bg: '#65a30d', transparent: true, destroy,
     tagline: 'Atravessa estradas, rios e linhas de comboio sem fim. Não te deixes ficar para trás.',
     view: { w: 400 },
     how: [

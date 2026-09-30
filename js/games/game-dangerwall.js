@@ -21,7 +21,8 @@ const DangerwallGame = (function () {
 
   function setup(api, o) {
     const cfg = DIFF[o.diff] || DIFF.medium;
-    return { cfg, lives: cfg.lives, px: 0, py: 0, tx: 0, ty: 0, vx: 0, walls: [], n: 0, spawned: 0, score: 0, tights: 0, inv: 0, level: 1, t: 0, next: .6,
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { const G = api.G3; if (G && !G.r3) try { build3D(G, api); } catch (e) { console.warn('[parede] 3D falhou', e); } }).catch(() => {});
+    return api.G3 = { cfg, lives: cfg.lives, px: 0, py: 0, tx: 0, ty: 0, vx: 0, walls: [], n: 0, spawned: 0, score: 0, tights: 0, inv: 0, level: 1, t: 0, next: .6,
       stars: Array.from({ length: 70 }, () => ({ a: Math.random() * 6.283, d: Math.random(), s: U.rand(.4, 1) })) };
   }
 
@@ -130,7 +131,144 @@ const DangerwallGame = (function () {
     return half;
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     3D — túnel de néon com grelha a correr, paredes de vidro escuro com
+     buracos recortados (ExtrudeGeometry com "holes") e arestas a brilhar,
+     nave low-poly com reator. A câmara é calculada para o plano da nave
+     coincidir com a arena 2D (o rato/dedo continua a mapear igual).
+  ════════════════════════════════════════════════════════════════ */
+  const S3 = 4, DEPTH = 70;
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog('#04050d', 30, DEPTH + 8);
+    scene.add(new THREE.HemisphereLight('#c7d2fe', '#0b0b1a', .9));
+    const key = new THREE.PointLight('#ffffff', 60, 30, 1.6); key.position.set(0, 2, 5); scene.add(key);
+    const cam = new THREE.PerspectiveCamera(60, 1, .1, 200);
+    /* túnel: 4 painéis com grelha (a textura corre para dar velocidade) */
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    x.fillStyle = '#05060f'; x.fillRect(0, 0, 128, 128); x.strokeStyle = '#ffffff'; x.globalAlpha = .6; x.lineWidth = 2; x.strokeRect(1, 1, 126, 126);
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(4, DEPTH / 4);
+    const tunM = new THREE.MeshBasicMaterial({ map: tex, color: '#38bdf8', side: THREE.BackSide });
+    const tun = new THREE.Mesh(new THREE.BoxGeometry(S3 * 2 + .02, S3 * 2 + .02, DEPTH), tunM);
+    tun.position.z = -DEPTH / 2 - .01; scene.add(tun);
+    /* molduras a vir (como no 2D) */
+    const frameGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(S3 * 2, S3 * 2));
+    const frames = Array.from({ length: 9 }, () => { const l = new THREE.LineSegments(frameGeo, new THREE.LineBasicMaterial({ color: '#38bdf8', transparent: true, opacity: .5 })); scene.add(l); return l; });
+    /* estrelas em "warp" à frente */
+    const sv = []; for (let i = 0; i < 300; i++) { const a = Math.random() * 6.28, r = .3 + Math.random() * 3.6; sv.push(Math.cos(a) * r, Math.sin(a) * r, -Math.random() * DEPTH); }
+    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sv, 3));
+    const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: '#dbeafe', size: .06, transparent: true, opacity: .8 })); scene.add(stars);
+    /* nave */
+    const ship = new THREE.Group();
+    const hull = new THREE.Mesh(new THREE.ConeGeometry(.28, 1.1, 6), new THREE.MeshStandardMaterial({ color: '#e0f2fe', metalness: .6, roughness: .25, flatShading: true }));
+    hull.rotation.x = -Math.PI / 2; ship.add(hull);
+    const wingM = new THREE.MeshStandardMaterial({ color: '#0ea5e9', metalness: .5, roughness: .3, flatShading: true });
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(1.3, .06, .42), wingM); wing.position.set(0, -.04, .22); ship.add(wing);
+    [-1, 1].forEach(sd => { const f = new THREE.Mesh(new THREE.BoxGeometry(.06, .3, .34), wingM); f.position.set(sd * .64, .1, .28); ship.add(f); });
+    const cockpit = new THREE.Mesh(new THREE.SphereGeometry(.13, 12, 8), new THREE.MeshStandardMaterial({ color: '#22d3ee', emissive: '#0891b2', emissiveIntensity: .8, roughness: .1 })); cockpit.scale.set(1, .7, 1.6); cockpit.position.set(0, .12, -.05); ship.add(cockpit);
+    const flame = new THREE.Sprite(Arcade3D.glowSprite('#fb923c')); flame.position.set(0, 0, .62); flame.scale.set(.9, .9, 1); ship.add(flame);
+    const halo = new THREE.Sprite(Arcade3D.glowSprite('#38bdf8')); halo.scale.set(2.2, 2.2, 1); halo.material.opacity = .35; ship.add(halo);
+    ship.scale.setScalar(SR * S3 * 1.9);
+    scene.add(ship);
+    G.r3 = { renderer, scene, cam, tun, tex, frames, stars, ship, flame, walls: new Map() };
+  }
+
+  function wallMesh(R, w, hue) {
+    /* geometria do painel com buracos; recalculada se os buracos se mexem */
+    const keyOf = () => w.holes.map(h => { const [hx, hy] = holePos(w, h); return hx.toFixed(3) + ',' + hy.toFixed(3); }).join('|');
+    let o = R.walls.get(w);
+    const k = keyOf();
+    if (!o) {
+      const g = new THREE.Group();
+      const mat = new THREE.MeshStandardMaterial({ color: `hsl(${hue},55%,16%)`, emissive: `hsl(${hue},80%,30%)`, emissiveIntensity: .35, roughness: .35, metalness: .3, transparent: true, opacity: .93 });
+      const edgeM = new THREE.LineBasicMaterial({ color: `hsl(${hue},95%,62%)`, transparent: true });
+      o = { g, mat, edgeM, key: '', mesh: null, edge: null };
+      R.scene.add(g); R.walls.set(w, o);
+    }
+    if (o.key !== k) {
+      o.key = k;
+      if (o.mesh) { o.g.remove(o.mesh, o.edge); o.mesh.geometry.dispose(); o.edge.geometry.dispose(); }
+      const sh = new THREE.Shape(); const E = S3 * 1.0;
+      sh.moveTo(-E, -E); sh.lineTo(E, -E); sh.lineTo(E, E); sh.lineTo(-E, E); sh.lineTo(-E, -E);
+      w.holes.forEach(h => {
+        const [hx, hy] = holePos(w, h), cx = hx * S3, cy = -hy * S3;
+        const path = new THREE.Path();
+        if (h.s === 'c') path.absarc(cx, cy, h.r * S3, 0, Math.PI * 2, true);
+        else { const hw = h.w / 2 * S3, hh = h.h / 2 * S3; path.moveTo(cx - hw, cy - hh); path.lineTo(cx - hw, cy + hh); path.lineTo(cx + hw, cy + hh); path.lineTo(cx + hw, cy - hh); path.lineTo(cx - hw, cy - hh); }
+        sh.holes.push(path);
+      });
+      const geo = new THREE.ExtrudeGeometry(sh, { depth: .35, bevelEnabled: false, curveSegments: 20 });
+      geo.translate(0, 0, -.35);
+      o.mesh = new THREE.Mesh(geo, o.mat);
+      o.edge = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), o.edgeM);
+      o.g.add(o.mesh, o.edge);
+    }
+    return o;
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, A = arena(api);
+    const hue = 175 + ((G.level - 1) * 37) % 125;
+    Arcade3D.fit(api.stage, R.cam);
+    /* câmara: o plano z=0 coincide com a arena 2D */
+    const u = S3 / A.h, fovR = R.cam.fov * Math.PI / 180, D = (H / 2 * u) / Math.tan(fovR / 2);
+    const [shx, shy] = api.shakeXY;
+    R.cam.position.set((W / 2 - A.cx) * u + shx * u, (A.cy - H / 2) * u - shy * u, D);
+    R.cam.lookAt(R.cam.position.x, R.cam.position.y, 0);
+    R.tun.material.color.setHSL(hue / 360, .9, .55);
+    R.tex.offset.y = (G.t * (1.2 + G.level * .15)) % 1;
+    R.frames.forEach((f, i) => { const z = ((i + 1 - (G.t * (1.2 + G.level * .15)) % 1) / 9); f.position.z = -z * DEPTH; f.material.color.setHSL(hue / 360, .9, .6); f.material.opacity = Math.min(.55, (1 - z) * .6); });
+    const sp = R.stars.geometry.attributes.position;
+    for (let i = 0; i < sp.count; i++) { let z = sp.getZ(i) + (20 + G.level * 4) * (1 / 60); if (z > 2) z -= DEPTH; sp.setZ(i, z); }
+    sp.needsUpdate = true;
+    /* paredes */
+    const live = new Set();
+    G.walls.forEach(w => {
+      live.add(w);
+      const o = wallMesh(R, w, hue);
+      const z = w.z <= 0 ? (w.pass ? (w.fx || 0) * 14 : 0) : -w.z * DEPTH;
+      o.g.position.set(0, 0, z); o.g.rotation.z = -w.rot;
+      const a = w.z <= 0 ? Math.max(0, 1 - (w.fx || 0) / .45) : Math.min(1, (1 - w.z) * 2.5);
+      o.mat.opacity = .93 * a * (w.pass ? .6 : 1); o.edgeM.opacity = a;
+      const danger = w.z < .25 && w.z > 0 && clearance(w, G.px, G.py) < 0;
+      o.edgeM.color.set(danger || w.hit ? '#f87171' : `hsl(${hue},95%,62%)`);
+      o.mat.emissive.set(w.hit ? '#b91c1c' : `hsl(${hue},80%,30%)`);
+    });
+    R.walls.forEach((o, w) => { if (!live.has(w)) { R.scene.remove(o.g); o.mesh && o.mesh.geometry.dispose(); o.edge && o.edge.geometry.dispose(); o.mat.dispose(); o.edgeM.dispose(); R.walls.delete(w); } });
+    /* nave */
+    const sh = R.ship;
+    sh.visible = !(G.inv > 0 && Math.floor(G.t * 14) % 2);
+    sh.position.set(G.px * S3, -G.py * S3, .2);
+    /* vista de cima-trás (de trás seria só uma linha): nariz inclinado para o túnel */
+    sh.rotation.set(1.05 - G.py * .15, 0, -U.clamp(G.vx * .12, -.6, .6));
+    R.flame.scale.setScalar(.7 + Math.random() * .4);
+    R.renderer.render(R.scene, R.cam);
+    /* 2D por cima: mira, escudos, dica */
+    const x = A.cx + G.px * A.h, y = A.cy + G.py * A.h, r = SR * A.h;
+    ctx.strokeStyle = 'rgba(125,211,252,.35)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.arc(x, y, r * 1.3, 0, 6.3); ctx.stroke(); ctx.setLineDash([]);
+    for (let i = 0; i < G.cfg.lives; i++) {
+      const sx = W / 2 - (G.cfg.lives - 1) * 16 + i * 32, sy = H - 30;
+      ctx.globalAlpha = i < G.lives ? 1 : .2;
+      ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.moveTo(sx, sy - 11); ctx.lineTo(sx + 10, sy - 6); ctx.lineTo(sx + 8, sy + 5); ctx.lineTo(sx, sy + 11); ctx.lineTo(sx - 8, sy + 5); ctx.lineTo(sx - 10, sy - 6); ctx.closePath(); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (G.t < 3.5) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '600 14px system-ui'; ctx.textAlign = 'center'; ctx.fillText(G.touchMode ? 'Arrasta o dedo em qualquer lado para mover a nave' : 'A nave segue o cursor', W / 2, A.cy + A.h + 34); }
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    R.walls.forEach(o => { o.mesh && o.mesh.geometry.dispose(); o.edge && o.edge.geometry.dispose(); o.mat.dispose(); o.edgeM.dispose(); });
+    R.tex.dispose();
+    Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const A = arena(api);
     /* tons frios (ciano → violeta): o vermelho fica reservado ao aviso de colisão */
     const lvlHue = 175 + ((G.level - 1) * 37) % 125;
@@ -193,7 +331,7 @@ const DangerwallGame = (function () {
 
   return ArcadeKit.create({
     id: 'dangerwall', title: 'Parede Mortal', icon: '🚀',
-    accent: '#ef4444', accent2: '#38bdf8', bg: '#04050d',
+    accent: '#ef4444', accent2: '#38bdf8', bg: '#04050d', transparent: true, destroy,
     tagline: 'As paredes vêm a toda a velocidade. Encontra o buraco e mete lá a nave inteira.',
     view: { w: 400 },
     how: [

@@ -80,6 +80,7 @@ const DriftGame = (function () {
       gKey: 'drift:ghost:' + tr.id + ':' + (o.diff || 'medium'), ghost: null, rec: [],
     };
     try { const g = JSON.parse(localStorage.getItem(G.gKey)); if (g && g.t > 0 && Array.isArray(g.p)) G.ghost = g; } catch (e) {}
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { try { build3D(G, api); } catch (e) { console.warn('[drift] 3D falhou', e); } }).catch(() => {});
     return G;
   }
   const GHZ = 10;
@@ -236,7 +237,153 @@ const DriftGame = (function () {
     ctx.restore();
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     3D — câmara de perseguição atrás do carro (roda com ele), pista em
+     fita de asfalto com zebras vermelho/branco, escapatória, barreira
+     de pneus, tufos de relva, marcas de pneus e fumo, carro low-poly com
+     rodas da frente a virar e carroçaria a inclinar na derrapagem.
+     1 unidade = 1 px da pista; x = x, z = y.
+  ════════════════════════════════════════════════════════════════ */
+  function ribbon(poly, tan, o0, o1, colorAt) {
+    const n = poly.length, pos = [], col = [], idx = [], c = new THREE.Color();
+    for (let i = 0; i <= n; i++) {
+      const k = i % n, p = poly[k], a = tan[k], nx = -Math.sin(a), nz = Math.cos(a);
+      pos.push(p[0] + nx * o0, 0, p[1] + nz * o0, p[0] + nx * o1, 0, p[1] + nz * o1);
+      c.set(colorAt(i)); col.push(c.r, c.g, c.b, c.r, c.g, c.b);
+      if (i < n) { const b = i * 2; idx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    g.setIndex(idx); g.computeVertexNormals();
+    return g;
+  }
+  function carModel3(color, ghost) {
+    const g = new THREE.Group(), rb = Arcade3D.roundBox(.14);
+    const body = ghost ? new THREE.MeshBasicMaterial({ color: '#bae6fd', transparent: true, opacity: .35, depthWrite: false })
+      : new THREE.MeshStandardMaterial({ color, roughness: .28, metalness: .5 });
+    const glass = ghost ? body : Arcade3D.std('#1e293b', { roughness: .08, metalness: .8 });
+    const add = (geo, m, x, y, z, sx, sy, sz) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); o.castShadow = !ghost; g.add(o); return o; };
+    const chassis = new THREE.Group(); g.add(chassis);
+    const addC = (geo, m, x, y, z, sx, sy, sz) => { const o = add(geo, m, x, y, z, sx, sy, sz); g.remove(o); chassis.add(o); return o; };
+    addC(rb, body, 0, 5, 0, 42, 7, 20);
+    addC(rb, body, -2, 9.5, 0, 22, 4, 17);
+    addC(rb, glass, 1, 11, 0, 16, 5, 15.4);
+    if (!ghost) {
+      addC(new THREE.BoxGeometry(1, 1, 1), Arcade3D.std('#f8fafc'), 0, 8.8, 0, 38, .4, 3);            /* risca branca */
+      addC(new THREE.BoxGeometry(1, 1, 1), Arcade3D.std('#111827'), -22, 9, 0, 3, 3, 19);             /* aileron */
+      [[21.2, 6], [21.2, -6]].forEach(([x, z]) => addC(new THREE.BoxGeometry(1, 1, 1), Arcade3D.glowMat('#fef9c3'), x, 5.6, z, .6, 2.2, 4));
+      [[-21.2, 6], [-21.2, -6]].forEach(([x, z]) => addC(new THREE.BoxGeometry(1, 1, 1), Arcade3D.glowMat('#ef4444'), x, 5.6, z, .6, 2, 4));
+    }
+    const wheel = new THREE.CylinderGeometry(4, 4, 3.4, 14); wheel.rotateX(Math.PI / 2);
+    const tire = ghost ? body : Arcade3D.std('#0b0b10', { roughness: .9 });
+    g.userData.front = [[13, 10.6], [13, -10.6]].map(([x, z]) => add(wheel, tire, x, 4, z, 1, 1, 1));
+    [[-13, 10.6], [-13, -10.6]].forEach(([x, z]) => add(wheel, tire, x, 4, z, 1, 1, 1));
+    g.userData.chassis = chassis;
+    return g;
+  }
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#eff6ff', ground: '#3f6212', hemi: 1.05, sunI: 2.5, normalBias: 1.2 });
+    sun.shadow.bias = -.0004;
+    scene.background = new THREE.Color('#9fd3f5');
+    scene.fog = new THREE.Fog('#9fd3f5', 700, 1600);
+    const cam = new THREE.PerspectiveCamera(58, 1, 2, 2400);
+    const tr = G.tr;
+    /* relva */
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    x.fillStyle = '#3d7a33'; x.fillRect(0, 0, 128, 128);
+    for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${Math.random() < .5 ? '150,210,110' : '20,60,20'},.16)`; x.fillRect(Math.random() * 128, Math.random() * 128, 2, 3); }
+    const gt = new THREE.CanvasTexture(c); gt.wrapS = gt.wrapT = THREE.RepeatWrapping; gt.repeat.set(60, 60); gt.colorSpace = THREE.SRGBColorSpace;
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.set(640, -.6, 480); ground.receiveShadow = true; scene.add(ground);
+    const vc = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .8, side: THREE.DoubleSide });
+    const addR = (o0, o1, y, colAt, mat) => { const m = new THREE.Mesh(ribbon(tr.poly, tr.tan, o0, o1, colAt), mat || vc); m.position.y = y; m.receiveShadow = true; scene.add(m); return m; };
+    addR(-(TW / 2 + BAR), TW / 2 + BAR, -.3, () => '#4a8a3f');                                  /* escapatória */
+    [-1, 1].forEach(sd => addR(sd * TW / 2, sd * (TW / 2 + 9), .3, i => (Math.floor(i / 2) % 2 ? '#dc2626' : '#f8fafc')));   /* zebras */
+    addR(-TW / 2, TW / 2, .15, i => (i % 6 < 3 ? '#41454f' : '#3d414a'), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .72, metalness: .05 }));
+    addR(-1.2, 1.2, .35, i => (i % 5 < 2 ? '#e5e7eb' : '#3d414a'));                               /* linha central tracejada */
+    /* barreira de pneus (cilindros empilhados) */
+    const tires = new THREE.InstancedMesh(new THREE.TorusGeometry(4.2, 2.4, 8, 14), new THREE.MeshStandardMaterial({ roughness: .9 }), tr.poly.length * 4);
+    tires.castShadow = true; tires.receiveShadow = true;
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2), v = new THREE.Vector3(), sc = new THREE.Vector3(1, 1, 1), col = new THREE.Color();
+    let n = 0;
+    tr.poly.forEach((p, i) => { const a = tr.tan[i], nx = -Math.sin(a), nz = Math.cos(a); [-1, 1].forEach(sd => { for (let h = 0; h < 2; h++) { v.set(p[0] + nx * sd * (TW / 2 + BAR + 10), 2.4 + h * 4.8, p[1] + nz * sd * (TW / 2 + BAR + 10)); m4.compose(v, q, sc); tires.setMatrixAt(n, m4); col.set((i + h) % 2 ? '#1f2937' : '#e5e7eb'); tires.setColorAt(n++, col); } }); });
+    tires.count = n; scene.add(tires);
+    /* tufos de relva */
+    const tuft = new THREE.InstancedMesh(new THREE.ConeGeometry(6, 14, 5), Arcade3D.std('#2f6b25', { roughness: 1, flatShading: true }), tr.tufts.length);
+    tr.tufts.forEach(([x0, y0, r], i) => { v.set(x0, 5, y0); sc.set(1 + r, .6 + r * .8, 1 + r); m4.compose(v, new THREE.Quaternion(), sc); tuft.setMatrixAt(i, m4); });
+    scene.add(tuft); sc.set(1, 1, 1);
+    /* partida/chegada: xadrez + pórtico */
+    const p0 = tr.poly[0], a0 = tr.tan[0];
+    const cc = document.createElement('canvas'); cc.width = 16; cc.height = 96; const cx2 = cc.getContext('2d');
+    for (let i = 0; i < 12; i++) for (let j = 0; j < 2; j++) { cx2.fillStyle = (i + j) % 2 ? '#111' : '#fff'; cx2.fillRect(j * 8, i * 8, 8, 8); }
+    const ct = new THREE.CanvasTexture(cc); ct.magFilter = THREE.NearestFilter;
+    const start = new THREE.Mesh(new THREE.PlaneGeometry(16, TW), new THREE.MeshStandardMaterial({ map: ct, roughness: .7 }));
+    start.rotation.x = -Math.PI / 2; start.rotation.z = -a0; start.position.set(p0[0], .5, p0[1]); start.receiveShadow = true; scene.add(start);
+    const gantry = new THREE.Group(); gantry.position.set(p0[0], 0, p0[1]); gantry.rotation.y = -a0;
+    [-1, 1].forEach(sd => { const post = new THREE.Mesh(new THREE.BoxGeometry(4, 46, 4), Arcade3D.std('#e5e7eb', { metalness: .5, roughness: .3 })); post.position.set(0, 23, sd * (TW / 2 + 12)); post.castShadow = true; gantry.add(post); });
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(6, 8, TW + 30), new THREE.MeshStandardMaterial({ map: ct, roughness: .6 })); beam.position.y = 46; beam.castShadow = true; gantry.add(beam);
+    scene.add(gantry);
+    /* carros, marcas, fumo */
+    const car = carModel3('#dc2626', false), ghost = carModel3('#bae6fd', true);
+    scene.add(car, ghost);
+    const skids = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 4), new THREE.MeshBasicMaterial({ color: '#111114', transparent: true, opacity: .45, depthWrite: false }), 720);
+    skids.rotation.x = 0; skids.frustumCulled = false; skids.count = 0; scene.add(skids);
+    G.r3 = { renderer, scene, sun, cam, car, ghost, skids, gt, ct, pool: Arcade3D.pool(scene), yaw: G.a, skN: -1, m4, v, sc, q: new THREE.Quaternion(), lean: 0 };
+    api.stage.style.background = '#9fd3f5';
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, { m4, v, sc } = R;
+    const asp = Arcade3D.fit(api.stage, R.cam), port = asp < .8 ? 1.45 : 1;
+    /* carro */
+    const c = R.car, spd = Math.hypot(G.vx, G.vy);
+    c.position.set(G.x, 0, G.y); c.rotation.y = -G.a;
+    const fx = Math.cos(G.a), fy = Math.sin(G.a), vL = -fy * G.vx + fx * G.vy;
+    R.lean = U.lerp(R.lean, U.clamp(vL / 400, -.12, .12), .15);
+    c.userData.chassis.rotation.x = R.lean;                       /* inclina para fora na derrapagem */
+    c.userData.front.forEach(w => { w.rotation.y = -G.steerVis * .45; });
+    /* fantasma */
+    const gp = G.ghost && G.started && !G.done ? ghostAt(G) : null;
+    R.ghost.visible = !!gp; if (gp) { R.ghost.position.set(gp.x, 0, gp.y); R.ghost.rotation.y = -gp.a; }
+    /* marcas de pneus (só se atualizam quando mudam) */
+    if (R.skN !== G.skids.length || G.skids.length === 720) {
+      R.skN = G.skids.length;
+      G.skids.forEach((s2, i) => {
+        const dx = s2[2] - s2[0], dz = s2[3] - s2[1], L = Math.hypot(dx, dz) || 1;
+        v.set((s2[0] + s2[2]) / 2, .5, (s2[1] + s2[3]) / 2);
+        R.q.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, -Math.atan2(dz, dx) + Math.PI / 2, 'XYZ'));
+        sc.set(4, L + 1, 1); m4.compose(v, R.q, sc); R.skids.setMatrixAt(i, m4);
+      });
+      R.skids.count = G.skids.length; R.skids.instanceMatrix.needsUpdate = true;
+    }
+    const P = R.pool; P.begin();
+    G.smoke.forEach(p => { const s2 = P.get(p.dirt ? 'dirt' : 'smoke', () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: p.dirt ? '#8a6a3c' : '#f1f5f9', transparent: true, depthWrite: false }))); s2.position.set(p.x, 6 + (1 - p.life) * 10, p.y); s2.scale.set(p.r * 2.4, p.r * 2.4, 1); s2.material.opacity = p.life * (p.dirt ? .45 : .6); });
+    P.end();
+    /* câmara de perseguição: atrás do carro, suaviza a rotação (vê-se a derrapagem) */
+    R.yaw += U.angDiff(G.a, R.yaw) * Math.min(1, .06 + spd / 9000);
+    const back = (118 + spd * .06) * port, up = (62 + spd * .02) * port, [shx, shy] = api.shakeXY;
+    const cx = G.x - Math.cos(R.yaw) * back, cz = G.y - Math.sin(R.yaw) * back;
+    R.cam.position.set(cx + shx * .3, up + shy * .3, cz);
+    R.cam.lookAt(G.x + Math.cos(R.yaw) * 70, 8, G.y + Math.sin(R.yaw) * 70);
+    R.cam.fov = 56 + Math.min(10, spd / 50); R.cam.updateProjectionMatrix();
+    Arcade3D.sunAt(R.sun, G.x, 0, G.y, 220, [-.5, 1, .35]);
+    R.renderer.render(R.scene, R.cam);
+    hud2D(G, ctx, W, H);
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    R.gt.dispose(); R.ct.dispose();
+    Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const tr = G.tr;
     ctx.fillStyle = '#2f6b2f'; ctx.fillRect(0, 0, W, H);
     ctx.save();
@@ -267,7 +414,12 @@ const DriftGame = (function () {
     if (G.ghost && G.started && !G.done) { const gp = ghostAt(G); if (gp) car(ctx, gp, true); }
     car(ctx, G);
     ctx.restore();
+    hud2D(G, ctx, W, H);
+  }
 
+  /* mini-mapa, zonas de toque, contagem e avisos (iguais em 2D e 3D) */
+  function hud2D(G, ctx, W, H) {
+    const tr = G.tr;
     /* mini-mapa */
     const [bx0, by0, bx1, by1] = tr.box, mw = 92, sc = mw / (bx1 - bx0), mh = (by1 - by0) * sc;
     ctx.save(); ctx.translate(W - mw - 12, H - mh - 70);
@@ -296,7 +448,7 @@ const DriftGame = (function () {
 
   return ArcadeKit.create({
     id: 'drift', title: 'Drift', icon: '🚗',
-    accent: '#ef4444', accent2: '#fbbf24', bg: '#2f6b2f', aspect: 'wide',
+    accent: '#ef4444', accent2: '#fbbf24', bg: '#2f6b2f', aspect: 'wide', transparent: true, destroy,
     tagline: 'O carro acelera sozinho; tu só viras. Curva depressa e ele derrapa — domina isso.',
     view: { w: 600 }, lowerIsBetter: true, bestLabel: 'Melhor tempo',
     scoreFmt: v => U.fmtTime(v),

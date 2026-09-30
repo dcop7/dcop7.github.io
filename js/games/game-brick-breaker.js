@@ -68,6 +68,7 @@ const BrickBreakerGame = (function () {
     const G = { diff, basePw: PW[diff], pw: PW[diff], px: api.W / 2, py: api.H - 58, lives: 3, score: 0, bestCombo: 0, t: 0, pause: 0, bricksBroken: 0 };
     const start = o.mode === 'cont' ? Math.max(1, store().getPref('maxLevel', 1)) : 1;
     loadLevel(G, start);
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { try { build3D(G, api); } catch (e) { console.warn('[tijolos] 3D falhou', e); } }).catch(() => {});
     return G;
   }
 
@@ -96,7 +97,7 @@ const BrickBreakerGame = (function () {
     api.sfx.tone(600 + Math.min(G.combo, 16) * 45, .06, 'sine', .07);
     if (G.combo >= 5 && G.combo % 5 === 0) api.float(cx, cy, 'Combo ×' + G.combo, '#fde047', 16);
     if (br.t === 'X') {
-      api.shake(6, .2); api.sfx.noise(.25, .12, 0, 400, 'lowpass');
+      api.shake(7, .25); api.hitstop(.05); api.sfx.noise(.25, .12, 0, 400, 'lowpass');
       G.bricks.forEach(o => { if (!o.dead && o !== br && Math.abs(o.x - br.x) < BW * 1.6 && Math.abs(o.y - br.y) < (BH + 4) * 1.6 && o.hp !== Infinity) { o.hp = 0; setTimeout(() => breakBrick(G, api, o), 60); } });
     }
     const chance = br.t === 'G' ? 1 : .11;
@@ -209,7 +210,117 @@ const BrickBreakerGame = (function () {
   }
 
   /* ── desenho ── */
+  /* ════════════════════════════════════════════════════════════════
+     3D — câmara a pique sobre a mesa (o plano do jogo coincide com o 2D,
+     por isso o rato continua exato). Tijolos em relevo com arestas
+     arredondadas, raquete-cápsula metálica, bola que brilha, cápsulas
+     de poder com ícone, mesa com grelha e bermas de néon.
+     1 unidade = 1 px lógico; x = lx − W/2, y = H/2 − ly.
+  ════════════════════════════════════════════════════════════════ */
+  const BZ = 18;                                          /* altura dos tijolos */
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#c7d2fe', ground: '#0b1026', hemi: .7, sunI: 2.8, fillC: '#f472b6', fillI: .5, normalBias: .5 });
+    const cam = new THREE.PerspectiveCamera(52, 1, 10, 4000);
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+    x.fillStyle = '#070b1d'; x.fillRect(0, 0, 64, 64); x.strokeStyle = 'rgba(96,165,250,.18)'; x.lineWidth = 2; x.strokeRect(0, 0, 64, 64);
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: tex, color: '#6b7aa8', roughness: .9 }));
+    floor.receiveShadow = true; scene.add(floor);
+    const rail = Arcade3D.glowMat('#60a5fa');
+    const rails = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), rail); scene.add(m); return m; });
+    const bricks = new THREE.InstancedMesh(Arcade3D.roundBox(.18), new THREE.MeshStandardMaterial({ roughness: .28, metalness: .05 }), 200);
+    bricks.castShadow = true; bricks.receiveShadow = true; bricks.frustumCulled = false;
+    const metal = new THREE.InstancedMesh(Arcade3D.roundBox(.18), new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: .18, metalness: .9 }), 80);
+    metal.castShadow = true; metal.frustumCulled = false;
+    const paddle = new THREE.Mesh(new THREE.CapsuleGeometry(1, 1, 6, 16), new THREE.MeshStandardMaterial({ color: '#93c5fd', roughness: .2, metalness: .6, emissive: '#1d4ed8', emissiveIntensity: .35 }));
+    paddle.rotation.z = Math.PI / 2; paddle.castShadow = true; scene.add(paddle);
+    const pglow = new THREE.Sprite(Arcade3D.glowSprite('#60a5fa')); scene.add(pglow);
+    scene.add(bricks, metal);
+    G.r3 = { renderer, scene, sun, cam, floor, tex, rails, bricks, metal, paddle, pglow, pool: Arcade3D.pool(scene), m4: new THREE.Matrix4(), v: new THREE.Vector3(), sc: new THREE.Vector3(), c: new THREE.Color(), q: new THREE.Quaternion() };
+    api.stage.style.background = 'radial-gradient(120% 80% at 50% 0%, #0f1a3d, #05060f 70%)';
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, P = R.pool, { m4, v, sc, c } = R, q0 = R.q.identity();
+    Arcade3D.fit(api.stage, R.cam);
+    const X = lx => lx - W / 2, Y = ly => H / 2 - ly;
+    /* câmara: o plano z=0 bate certo com o ecrã lógico */
+    const D = (H / 2) / Math.tan(R.cam.fov * Math.PI / 360);
+    const [shx, shy] = api.shakeXY;
+    R.cam.position.set(-shx, shy, D); R.cam.lookAt(-shx, shy, 0);
+    R.cam.near = D * .5; R.cam.far = D * 1.6; R.cam.updateProjectionMatrix();
+    R.floor.scale.set(W, H, 1); R.floor.position.set(0, 0, -1); R.tex.repeat.set(W / 37.2, H / 37.2);
+    R.rails[0].scale.set(4, H, 6); R.rails[0].position.set(X(2), 0, 3);
+    R.rails[1].scale.set(4, H, 6); R.rails[1].position.set(X(W - 2), 0, 3);
+    R.rails[2].scale.set(W, 4, 6); R.rails[2].position.set(0, Y(62), 3);
+    Arcade3D.sunAt(R.sun, 0, 0, 0, Math.max(W, H) * .6, [-.55, .45, 1]);
+    /* tijolos */
+    let nb = 0, nm = 0;
+    G.bricks.forEach(b => {
+      if (b.dead) return;
+      const hit = b.hit > 0 ? b.hit / .15 : 0;
+      v.set(X(b.x + b.w / 2), Y(b.y + b.h / 2), BZ / 2 + hit * 2); sc.set(b.w, b.h, BZ);
+      /* a caixa arredondada é "de pé" em y: roda para ficar deitada na mesa */
+      m4.compose(v, R.q.setFromAxisAngle(R.v2 || (R.v2 = new THREE.Vector3(1, 0, 0)), Math.PI / 2), sc.set(b.w, BZ, b.h));
+      if (b.t === 'M') { R.metal.setMatrixAt(nm++, m4); return; }
+      const col = (COL[b.t === 'X' || b.t === 'G' ? b.t : Math.min(b.hp, 4)] || COL[1])[0];
+      c.set(col); if (b.hp < b.max && b.hp !== Infinity) c.multiplyScalar(.82); if (hit) c.lerp(R.white || (R.white = new THREE.Color('#ffffff')), hit * .7);
+      R.bricks.setMatrixAt(nb, m4); R.bricks.setColorAt(nb, c); nb++;
+    });
+    R.bricks.count = nb; R.bricks.instanceMatrix.needsUpdate = true; if (R.bricks.instanceColor) R.bricks.instanceColor.needsUpdate = true;
+    R.metal.count = nm; R.metal.instanceMatrix.needsUpdate = true;
+    P.begin();
+    /* ícones nos tijolos especiais (✸ explosivo, ★ prenda) */
+    G.bricks.forEach(b => {
+      if (b.dead || (b.t !== 'X' && b.t !== 'G')) return;
+      const s = P.get('ico' + b.t, () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.emojiTex(b.t === 'X' ? '💥' : '⭐', 64), depthTest: false })));
+      s.position.set(X(b.x + b.w / 2), Y(b.y + b.h / 2), BZ + 2); s.scale.set(14, 14, 1);
+    });
+    /* raquete */
+    const pw = G.pw;
+    R.paddle.scale.set(7, Math.max(1, (pw - 14) / 2), 7); R.paddle.position.set(X(G.px), Y(G.py), 7);
+    R.paddle.material.color.set(G.effects.laser ? '#fca5a5' : '#93c5fd'); R.paddle.material.emissive.set(G.effects.laser ? '#b91c1c' : '#1d4ed8');
+    R.pglow.position.set(X(G.px), Y(G.py), 2); R.pglow.scale.set(pw * 1.6, 40, 1); R.pglow.material.opacity = .55;
+    /* bolas (com rasto) */
+    const fire = !!G.effects.fire;
+    G.balls.forEach(b => {
+      const m = P.get(fire ? 'ballF' : 'ball', () => { const g = new THREE.Group(); g.add(new THREE.Mesh(new THREE.SphereGeometry(BR, 20, 14), fire ? Arcade3D.glowMat('#fed7aa') : new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#e0f2fe', emissiveIntensity: .6, roughness: .1, metalness: .3 }))); const s = new THREE.Sprite(Arcade3D.glowSprite(fire ? '#fb923c' : '#bae6fd')); s.scale.set(BR * 7, BR * 7, 1); g.add(s); g.children[0].castShadow = true; return g; });
+      m.position.set(X(b.x), Y(b.y), BR + 1);
+      b.trail.forEach((p, i) => { const t = P.get('trail' + (fire ? 'F' : ''), () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: fire ? '#fb923c' : '#7dd3fc', blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }))); t.position.set(X(p[0]), Y(p[1]), BR); const k = 1 - i / b.trail.length; t.scale.set(BR * 3.4 * k + 1, BR * 3.4 * k + 1, 1); t.material.opacity = .5 * k; });
+    });
+    /* cápsulas de poder */
+    G.caps.forEach(cp => {
+      const m = P.get('cap:' + cp.k, () => {
+        const g = new THREE.Group();
+        const pill = new THREE.Mesh(new THREE.CapsuleGeometry(7, 16, 6, 12), new THREE.MeshStandardMaterial({ color: POW[cp.k][1], roughness: .25, metalness: .3, emissive: POW[cp.k][1], emissiveIntensity: .25 }));
+        pill.rotation.z = Math.PI / 2; pill.castShadow = true; g.add(pill);
+        const ic = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.emojiTex(POW[cp.k][0], 64), depthTest: false })); ic.position.z = 9; ic.scale.set(13, 13, 1); g.add(ic);
+        return g;
+      });
+      m.position.set(X(cp.x), Y(cp.y), 9); m.children[0].rotation.x = api.t * 3;
+    });
+    /* laser */
+    G.shots.forEach(sh => { const m = P.get('laser', () => new THREE.Mesh(new THREE.BoxGeometry(3, 12, 3), Arcade3D.glowMat('#fca5a5'))); m.position.set(X(sh.x), Y(sh.y - 3), 6); });
+    P.end();
+    R.renderer.render(R.scene, R.cam);
+    /* 2D por cima: dica, vidas, efeitos */
+    if (G.balls.some(b => b.stuck)) { ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = '600 13px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Toca para lançar', W / 2, G.py - 44); }
+    for (let i = 0; i < G.lives; i++) { ctx.fillStyle = '#93c5fd'; ctx.beginPath(); ctx.arc(16 + i * 16, H - 16, 5, 0, 6.3); ctx.fill(); }
+    let ex = W - 14; Object.keys(G.effects).forEach(k => { if (!POW[k]) return; ctx.fillStyle = POW[k][1]; ctx.font = '700 12px system-ui'; ctx.textAlign = 'right'; ctx.fillText(POW[k][0] + ' ' + Math.ceil(G.effects[k]), ex, H - 12); ex -= 44; });
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    R.tex.dispose(); Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#0b1026'); g.addColorStop(1, '#05060f');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -251,7 +362,7 @@ const BrickBreakerGame = (function () {
 
   return ArcadeKit.create({
     id: 'brick-breaker', title: 'Parte-Tijolos', icon: '🟦',
-    accent: '#60a5fa', accent2: '#f472b6', bg: '#05060f',
+    accent: '#60a5fa', accent2: '#f472b6', bg: '#05060f', transparent: true, destroy,
     tagline: 'Raquete, bola e uma parede de tijolos por partir. 12 níveis desenhados e depois muitos mais.',
     view: { w: 400 },
     modes: () => {
