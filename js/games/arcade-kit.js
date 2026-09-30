@@ -95,6 +95,8 @@ const ArcadeKit = (function () {
 .ak-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:14px}
 .ak-mode{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--border,rgba(255,255,255,.1));background:var(--card,rgba(255,255,255,.03));color:inherit;font:inherit;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
 .ak-mode:hover{border-color:var(--ak);transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.22)}
+.ak-mode.on{border-color:var(--ak);box-shadow:0 0 0 1px var(--ak) inset;background:color-mix(in srgb,var(--ak) 10%,transparent)}
+.ak-chip:disabled{opacity:.4;cursor:not-allowed}
 .ak-mode-ico{font-size:1.6rem;flex:0 0 auto}
 .ak-mode-body{flex:1;min-width:0}
 .ak-mode-body b{display:block;font-size:.95rem}
@@ -187,7 +189,7 @@ const ArcadeKit = (function () {
     const modeList = () => (typeof spec.modes === 'function' ? spec.modes() : spec.modes) || [];
     const modeKey = (mode, diff) => {
       /* modos com noDiff (ex.: General a solo) têm um só recorde, seja qual for a dificuldade */
-      const d = modeList().some(m => m.id === mode && m.noDiff) ? null : diff !== undefined ? diff : diffOf();
+      const d = (spec.noDiff ? spec.noDiff(mode) : modeList().some(m => m.id === mode && m.noDiff)) ? null : diff !== undefined ? diff : diffOf();
       return [mode, d].filter(Boolean).join('-') || 'default';
     };
     const fmtScore = v => (spec.scoreFmt ? spec.scoreFmt(v) : String(v));
@@ -209,11 +211,11 @@ const ArcadeKit = (function () {
             <h2>${esc(spec.title)}</h2>
             <p>${esc(spec.tagline)}</p>
             <div class="ak-bests">
-              ${!modes ? `<span class="ak-best">${spec.bestLabel || 'Recorde'}: <b>${b0 != null ? esc(fmtScore(b0)) : '—'}</b></span>` : ''}
+              ${!modes && !spec.picker ? `<span class="ak-best">${spec.bestLabel || 'Recorde'}: <b>${b0 != null ? esc(fmtScore(b0)) : '—'}</b></span>` : ''}
               <span class="ak-best">Partidas: <b>${st.plays || 0}</b></span>
             </div>
           </div>
-          ${modes ? `<div class="ak-modes">${modes.map(m => {
+          ${spec.picker ? `<div class="ak-picker">${spec.picker.html(bestOf)}</div>` : modes ? `<div class="ak-modes">${modes.map(m => {
             const b = m.noBest ? null : bestOf(m.id);
             return `<button class="ak-mode" data-mode="${m.id}">
               <span class="ak-mode-ico">${m.icon}</span>
@@ -245,6 +247,8 @@ const ArcadeKit = (function () {
       vib && vib.addEventListener('click', () => { const v = !vibeOn(); setPref('vibe', v); vib.classList.toggle('on', v); vib.setAttribute('aria-pressed', v); vibe(20); });
       /* bloco extra do jogo (ex.: escolha de personagem) */
       if (spec.menuWire) spec.menuWire(root.querySelector('.ak-extra'), renderMenu);
+      /* seletor próprio do jogo (ex.: cenário → tamanho → modo) */
+      if (spec.picker) spec.picker.wire(root.querySelector('.ak-picker'), m => start(m), bestOf);
       if (window.Motion && Motion.stagger) Motion.stagger(root.querySelectorAll('.ak-mode,.ak-play,.ak-how-step'), { y: 8, step: 30 });
     }
 
