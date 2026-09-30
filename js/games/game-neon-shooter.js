@@ -49,6 +49,7 @@ const NeonShooterGame = (function () {
   function init(r) { root = r; if (!r) return; injectCSS(); showMenu(); }
 
   function showMenu() {
+    destroy3D();
     const hi = localStorage.getItem('ns-hi') || 0;
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:3rem;filter:drop-shadow(0 0 20px #a855f7)">🚀</div>
@@ -79,7 +80,10 @@ const NeonShooterGame = (function () {
     G = null;
     resize(); window.removeEventListener('resize', resize); window.addEventListener('resize', resize);
     /* newG2: a 1.ª vaga já tem inimigos (antes spawnMax era 0 e a vaga 1 ficava vazia) */
+    destroy3D();
     G = newG2(); setupControls();
+    const g0 = G;
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { if (G === g0 && G.running) try { build3D(); } catch (e) { console.warn('[neon] 3D falhou', e); } }).catch(() => {});
     root.querySelector('#ns-pause').addEventListener('click', () => pause(true));
     lastTs = performance.now();
     raf = requestAnimationFrame(loop);
@@ -422,6 +426,7 @@ const NeonShooterGame = (function () {
 
   function gameOver() {
     G.running = false;
+    destroy3D();
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', resize);
     if (G.score > G.hiScore) { localStorage.setItem('ns-hi', G.score); G.hiScore = G.score; }
@@ -447,7 +452,118 @@ const NeonShooterGame = (function () {
   }
 
   /* ── RENDER ──────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════
+     3D — naves low-poly com luz e brilho aditivo, inimigos com volume
+     (dardo, hexágono a rodar, anel, cristal), chefe com anel a girar,
+     balas de plasma, campo de estrelas em profundidade e nebulosas.
+     O plano z=0 coincide com o ecrã (o rato/dedo continua exato).
+  ════════════════════════════════════════════════════════════════ */
+  let R3 = null;
+  function build3D() {
+    const host = root.querySelector('.ns-host'); if (!host) return;
+    const renderer = Arcade3D.attach(host);
+    cv.style.position = 'relative'; cv.style.zIndex = '1';
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#c4b5fd', ground: '#0b0322', hemi: .85, sun: '#e0f2fe', sunI: 1.8, fillC: '#f0abfc', fillI: .6, shadow: false });
+    const cam = new THREE.PerspectiveCamera(50, 1, 10, 6000);
+    /* estrelas em 3 camadas de profundidade */
+    const layers = [0, 1, 2].map(k => {
+      const n = 160, pos = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { pos[i * 3] = (Math.random() - .5) * 2400; pos[i * 3 + 1] = (Math.random() - .5) * 2400; pos[i * 3 + 2] = -200 - k * 500 - Math.random() * 300; }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const pts = new THREE.Points(g, new THREE.PointsMaterial({ color: k ? '#c7d2fe' : '#ffffff', size: 2.6 - k * .6, transparent: true, opacity: .9 - k * .2, depthWrite: false }));
+      scene.add(pts); return pts;
+    });
+    const neb = ['#7c3aed', '#db2777', '#0891b2'].map((c, i) => { const s2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: c, transparent: true, opacity: .22, depthWrite: false, blending: THREE.AdditiveBlending })); s2.scale.set(1400, 1400, 1); s2.position.set((i - 1) * 600, (i % 2 ? 1 : -1) * 300, -1400); scene.add(s2); return s2; });
+    const planet = new THREE.Mesh(new THREE.SphereGeometry(260, 40, 28), new THREE.MeshStandardMaterial({ color: '#4c1d95', roughness: .85, emissive: '#1e1b4b', emissiveIntensity: .4 }));
+    planet.position.set(700, -300, -1300); scene.add(planet);
+    const ringP = new THREE.Mesh(new THREE.TorusGeometry(420, 26, 6, 60), new THREE.MeshBasicMaterial({ color: '#a78bfa', transparent: true, opacity: .25 })); ringP.rotation.x = 1.2; planet.add(ringP);
+    /* jogador */
+    const ship = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.ConeGeometry(9, 34, 6), new THREE.MeshStandardMaterial({ color: '#e0f2fe', metalness: .7, roughness: .22, flatShading: true }));
+    ship.add(body);
+    const wingS = new THREE.Shape(); wingS.moveTo(0, 8); wingS.lineTo(22, -12); wingS.lineTo(18, -16); wingS.lineTo(0, -8); wingS.lineTo(-18, -16); wingS.lineTo(-22, -12); wingS.lineTo(0, 8);
+    const wing = new THREE.Mesh(new THREE.ExtrudeGeometry(wingS, { depth: 3, bevelEnabled: true, bevelSize: .8, bevelThickness: .8, bevelSegments: 1 }), new THREE.MeshStandardMaterial({ color: '#06b6d4', metalness: .5, roughness: .3, emissive: '#0e7490', emissiveIntensity: .5 }));
+    wing.position.z = -1.5; ship.add(wing);
+    const canopy = new THREE.Mesh(new THREE.SphereGeometry(4.2, 14, 10), new THREE.MeshStandardMaterial({ color: '#a855f7', emissive: '#7c3aed', emissiveIntensity: .8, roughness: .1 })); canopy.scale.set(1, 1.8, .9); canopy.position.set(0, 3, 4); ship.add(canopy);
+    const flame = new THREE.Sprite(Arcade3D.glowSprite('#c084fc')); flame.position.set(0, -20, 0); ship.add(flame);
+    const shieldM = new THREE.Mesh(new THREE.SphereGeometry(26, 24, 16), new THREE.MeshBasicMaterial({ color: '#22d3ee', transparent: true, opacity: .16, depthWrite: false })); ship.add(shieldM);
+    ship.scale.setScalar(1.35); scene.add(ship);
+    R3 = { renderer, scene, cam, layers, neb, planet, ship, flame, shieldM, pool: Arcade3D.pool(scene), host };
+  }
+  function destroy3D() {
+    if (!R3) return;
+    Arcade3D.disposeOwn(R3.scene); Arcade3D.detach();
+    if (cv) { cv.style.position = ''; cv.style.zIndex = ''; }
+    R3 = null;
+  }
+
+  function enemyModel(type, color) {
+    const g = new THREE.Group();
+    const m = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: .45, metalness: .5, roughness: .3, flatShading: true });
+    if (type === 'basic') { const c = new THREE.Mesh(new THREE.ConeGeometry(11, 26, 4), m); c.rotation.z = Math.PI; g.add(c); const w = new THREE.Mesh(new THREE.BoxGeometry(26, 4, 3), m); w.position.y = 4; g.add(w); }
+    else if (type === 'zigzag') { const h = new THREE.Mesh(new THREE.CylinderGeometry(13, 13, 6, 6), m); h.rotation.x = Math.PI / 2; g.add(h); const c = new THREE.Mesh(new THREE.SphereGeometry(5, 10, 8), new THREE.MeshBasicMaterial({ color: '#ffffff' })); c.position.z = 3; g.add(c); g.userData.spin = true; }
+    else if (type === 'circle') { const t = new THREE.Mesh(new THREE.TorusGeometry(12, 4, 10, 24), m); g.add(t); const c = new THREE.Mesh(new THREE.SphereGeometry(5, 12, 10), new THREE.MeshBasicMaterial({ color })); g.add(c); g.userData.spin = true; }
+    else { const o = new THREE.Mesh(new THREE.OctahedronGeometry(10, 0), m); o.scale.set(.8, 1.4, .8); g.add(o); }
+    const s2 = new THREE.Sprite(Arcade3D.glowSprite(color)); s2.scale.set(52, 52, 1); s2.material.opacity = .45; g.add(s2);
+    return g;
+  }
+  function bossModel() {
+    const g = new THREE.Group();
+    const m = new THREE.MeshStandardMaterial({ color: '#b91c1c', emissive: '#7f1d1d', emissiveIntensity: .6, metalness: .6, roughness: .3, flatShading: true });
+    const b = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 0), m); b.scale.set(1.3, .9, .7); g.add(b);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(14, 20, 14), new THREE.MeshBasicMaterial({ color: '#fb923c' })); core.position.z = 16; g.add(core); g.userData.core = core;
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(46, 3, 8, 40), new THREE.MeshStandardMaterial({ color: '#ff6600', emissive: '#ff3300', emissiveIntensity: 1 })); g.add(ring); g.userData.ring = ring;
+    for (let i = 0; i < 8; i++) { const sp = new THREE.Mesh(new THREE.ConeGeometry(5, 18, 5), m); const a = i / 8 * Math.PI * 2; sp.position.set(Math.cos(a) * 40, Math.sin(a) * 30, 0); sp.rotation.z = a - Math.PI / 2; g.add(sp); }
+    const s2 = new THREE.Sprite(Arcade3D.glowSprite('#ff3333')); s2.scale.set(220, 220, 1); s2.material.opacity = .5; g.add(s2);
+    return g;
+  }
+
+  function render3D() {
+    const R = R3, P = R.pool;
+    Arcade3D.fit(R.host, R.cam);
+    const X = x => x - W / 2, Y = y => H / 2 - y;
+    const D = (H / 2) / Math.tan(R.cam.fov * Math.PI / 360);
+    R.cam.position.set(0, 0, D); R.cam.lookAt(0, 0, 0); R.cam.far = D + 3000; R.cam.updateProjectionMatrix();
+    const t = performance.now() / 1000;
+    R.layers.forEach((l, k) => { l.position.y = -((t * (40 - k * 12)) % 1200) + 600; });
+    R.planet.rotation.y = t * .05;
+    /* jogador */
+    const sh = R.ship;
+    sh.visible = !(G.invTimer > 0 && Math.floor(G.invTimer * 10) % 2 === 0);
+    sh.position.set(X(G.px), Y(G.py), 0);
+    const vx = (mx - G.px);
+    sh.rotation.set(-.5, U_clamp(vx * .01, -.7, .7), 0);
+    R.flame.scale.setScalar(16 + Math.random() * 10);
+    R.shieldM.visible = !!G.shield; R.shieldM.material.opacity = .12 + Math.sin(t * 6) * .05;
+    P.begin();
+    G.enemies.forEach(e => {
+      const m = P.get('en:' + e.type, () => enemyModel(e.type, e.color));
+      m.position.set(X(e.x), Y(e.y), 0);
+      if (m.userData.spin) m.rotation.z = e.timer * 3; else m.rotation.set(-.4, Math.sin(e.timer * 3) * .5, 0);
+    });
+    if (G.boss) {
+      const b = P.get('boss', bossModel), bb = G.boss;
+      b.position.set(X(bb.x), Y(bb.y), 0); b.rotation.set(-.3, Math.sin(bb.timer) * .3, 0);
+      b.userData.ring.rotation.z = bb.timer * 2; b.userData.core.scale.setScalar(1 + Math.sin(bb.timer * 8) * .15);
+      b.scale.setScalar(bb.r / 38);
+    }
+    G.bullets.forEach(b => { const m = P.get('pb', () => { const g = new THREE.Group(); const c = new THREE.Mesh(new THREE.CapsuleGeometry(2.4, 12, 4, 8), new THREE.MeshBasicMaterial({ color: '#e0ffff' })); g.add(c); const s2 = new THREE.Sprite(Arcade3D.glowSprite('#00ffff')); s2.scale.set(22, 34, 1); g.add(s2); return g; }); m.position.set(X(b.x), Y(b.y), 2); m.rotation.z = Math.atan2(b.vx, -b.vy); });
+    G.eBullets.forEach(b => { const m = P.get('eb:' + b.color, () => { const g = new THREE.Group(); g.add(new THREE.Mesh(new THREE.SphereGeometry(4.5, 10, 8), new THREE.MeshBasicMaterial({ color: '#fff1f2' }))); const s2 = new THREE.Sprite(Arcade3D.glowSprite(b.color)); s2.scale.set(26, 26, 1); g.add(s2); return g; }); m.position.set(X(b.x), Y(b.y), 1); });
+    G.powerups.forEach(p => { const m = P.get('pw:' + p.type, () => { const g = new THREE.Group(); const box = new THREE.Mesh(Arcade3D.roundBox(.3), new THREE.MeshStandardMaterial({ color: '#fde047', emissive: '#ca8a04', emissiveIntensity: .5, metalness: .4, roughness: .2, transparent: true, opacity: .55 })); box.scale.setScalar(24); g.add(box); const ic = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.emojiTex({ shield: '🛡️', spread: '💥', rapid: '⚡', bomb: '💣' }[p.type] || '⭐', 64), depthTest: false })); ic.scale.set(20, 20, 1); ic.position.z = 14; g.add(ic); return g; }); m.position.set(X(p.x), Y(p.y), 0); m.children[0].rotation.set(t * 1.5, t * 2, 0); });
+    P.end();
+    R.renderer.render(R.scene, R.cam);
+  }
+  function U_clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+
   function render() {
+    if (R3) {
+      cx.clearRect(0, 0, W, H);
+      render3D();
+      drawParticles();
+      /* barras de vida dos inimigos por cima (2D) */
+      G.enemies.forEach(e => { if (e.hp > 1) { const full = 1 + Math.floor(G.wave / 3) + (e.type === 'circle' ? 3 : e.type === 'zigzag' ? 2 : 0); cx.fillStyle = 'rgba(0,0,0,.5)'; cx.fillRect(e.x - e.r, e.y - e.r - 14, e.r * 2, 4); cx.fillStyle = e.color; cx.fillRect(e.x - e.r, e.y - e.r - 14, e.r * 2 * Math.min(1, e.hp / full), 4); } });
+      return;
+    }
     cx.clearRect(0, 0, W, H);
     cx.fillStyle = '#000011'; cx.fillRect(0, 0, W, H);
     drawStars(); drawPowerups(); drawBoss();

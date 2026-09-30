@@ -57,6 +57,7 @@ const BalldropGame = (function () {
     const G = { cfg: DIFF[o.diff] || DIFF.medium, level: 1, lives: 0, score: 0, gems: 0, inv: 0, bestMult: 0, dead: false };
     G.lives = G.cfg.lives;
     buildLevel(G, api.W);
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { try { build3D(G, api); } catch (e) { console.warn('[queda] 3D falhou', e); } }).catch(() => {});
     return G;
   }
 
@@ -177,7 +178,104 @@ const BalldropGame = (function () {
   }
 
   /* ── desenho ── */
+  /* ════════════════════════════════════════════════════════════════
+     3D — poço de néon visto de frente (o plano do jogo bate certo com o
+     ecrã, por isso o rato continua exato): barras de vidro com brilho,
+     picos em cone, pára-choques em anel, hélices, ouriços com espinhos,
+     diamantes, copos de aterragem em relevo e colunas ao fundo.
+     x = lx − W/2, y = H/2 − (ly − câmara).
+  ════════════════════════════════════════════════════════════════ */
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#e9d5ff', ground: '#1e0b3a', hemi: .8, sun: '#fff1f2', sunI: 1.9, fillC: '#22d3ee', fillI: .6, normalBias: .6 });
+    const cam = new THREE.PerspectiveCamera(46, 1, 10, 3000);
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+    x.fillStyle = '#12062a'; x.fillRect(0, 0, 64, 64); x.strokeStyle = 'rgba(168,85,247,.35)'; x.lineWidth = 1.5; x.strokeRect(0, 0, 64, 64);
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: tex, roughness: .9, color: '#8b7fb0' }));
+    back.position.z = -60; back.receiveShadow = true; scene.add(back);
+    const ball = new THREE.Group();
+    const core = new THREE.Mesh(new THREE.SphereGeometry(R, 28, 20), new THREE.MeshStandardMaterial({ color: '#facc15', emissive: '#b45309', emissiveIntensity: .5, metalness: .6, roughness: .2 }));
+    core.castShadow = true; ball.add(core);
+    const halo = new THREE.Sprite(Arcade3D.glowSprite('#fde047')); halo.scale.set(R * 6, R * 6, 1); ball.add(halo);
+    scene.add(ball);
+    G.r3 = { renderer, scene, sun, cam, back, tex, ball, core, pool: Arcade3D.pool(scene), lvl: -1 };
+    api.stage.style.background = 'radial-gradient(120% 80% at 50% 0%, #2a1050, #0b0418 70%)';
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, P = R.pool, cam = G.cam;
+    Arcade3D.fit(api.stage, R.cam);
+    const X = lx => lx - W / 2, Y = ly => H / 2 - (ly - cam);
+    const D = (H / 2) / Math.tan(R.cam.fov * Math.PI / 360), [shx, shy] = api.shakeXY;
+    R.cam.position.set(-shx, shy, D); R.cam.lookAt(-shx, shy, 0); R.cam.near = D * .4; R.cam.far = D * 2; R.cam.updateProjectionMatrix();
+    R.back.scale.set(W * 1.6, H * 1.6, 1); R.tex.repeat.set(W * 1.6 / 40, H * 1.6 / 40); R.tex.offset.y = (cam * .5 / 40) % 1;
+    Arcade3D.sunAt(R.sun, 0, 0, 0, Math.max(W, H) * .7, [-.4, .6, 1]);
+    P.begin();
+    const vis = o => o.y > cam - 160 && o.y < cam + H + 160;
+    const barM = () => { const m = new THREE.Mesh(Arcade3D.roundBox(.25), new THREE.MeshStandardMaterial({ color: '#c084fc', emissive: '#7e22ce', emissiveIntensity: .45, roughness: .25, metalness: .2 })); m.castShadow = true; m.receiveShadow = true; return m; };
+    G.obs.forEach(o => {
+      if (!vis(o)) return;
+      if (o.t === 'bar') {
+        const a = o.gx - o.gw / 2, b = o.gx + o.gw / 2;
+        if (a > 0) { const m = P.get('bar', barM); m.scale.set(a, BT, 26); m.position.set(X(a / 2), Y(o.y + BT / 2), 0); }
+        if (b < W) { const m = P.get('bar', barM); m.scale.set(W - b, BT, 26); m.position.set(X((b + W) / 2), Y(o.y + BT / 2), 0); }
+        o.spikes.forEach(([x0, x1]) => { for (let x = x0; x < x1 - 6; x += 12) { const sp = P.get('spike', () => { const m = new THREE.Mesh(new THREE.ConeGeometry(6, 13, 6), new THREE.MeshStandardMaterial({ color: '#f43f5e', emissive: '#be123c', emissiveIntensity: .45, metalness: .5, roughness: .25, flatShading: true })); m.castShadow = true; return m; }); sp.position.set(X(x + 6), Y(o.y) + 6.5, 0); } });
+        if (o.vx) { const ar = P.get('arrow' + (o.vx > 0), () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.emojiTex(o.vx > 0 ? '→' : '←', 64), opacity: .5, transparent: true }))); ar.position.set(X(o.gx), Y(o.y + 30), 2); ar.scale.set(14, 14, 1); }
+      } else if (o.t === 'bump') {
+        const k = o.hit ? 1 + o.hit * 1.5 : 1;
+        const m = P.get('bump', () => { const g = new THREE.Group(); const t = new THREE.Mesh(new THREE.TorusGeometry(1, .22, 10, 28), new THREE.MeshStandardMaterial({ color: '#f472b6', emissive: '#db2777', emissiveIntensity: .7, roughness: .2, metalness: .3 })); t.castShadow = true; g.add(t); const d = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, .3, 20), new THREE.MeshStandardMaterial({ color: '#fbcfe8', emissive: '#f472b6', emissiveIntensity: .4 })); d.rotation.x = Math.PI / 2; g.add(d); const s2 = new THREE.Sprite(Arcade3D.glowSprite('#f472b6')); s2.scale.set(3.6, 3.6, 1); g.add(s2); return g; });
+        m.position.set(X(o.x), Y(o.y), 0); m.scale.setScalar(o.r * k);
+      } else if (o.t === 'spin') {
+        const m = P.get('spin', () => { const g = new THREE.Group(); const bl = new THREE.Mesh(Arcade3D.roundBox(.4), new THREE.MeshStandardMaterial({ color: '#facc15', emissive: '#ca8a04', emissiveIntensity: .5, metalness: .4, roughness: .25 })); bl.castShadow = true; g.add(bl); g.userData.bl = bl; const hub = new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 14, 18), Arcade3D.std('#ffffff', { metalness: .6, roughness: .2 })); hub.rotation.x = Math.PI / 2; g.add(hub); return g; });
+        m.position.set(X(o.x), Y(o.y), 0); m.rotation.z = -o.a; m.userData.bl.scale.set(o.L * 2, 9, 12);
+      } else if (o.t === 'sball') {
+        const m = P.get('sball', () => { const g = new THREE.Group(); const b = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color: '#4c0519', roughness: .4, flatShading: true })); g.add(b); const sp = new THREE.ConeGeometry(.28, .9, 5); const sm = new THREE.MeshStandardMaterial({ color: '#f43f5e', emissive: '#be123c', emissiveIntensity: .5, flatShading: true }); const ico = new THREE.IcosahedronGeometry(1, 0).attributes.position; const seen = new Set(); for (let i = 0; i < ico.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(ico, i); const k = v.toArray().map(n => n.toFixed(2)).join(); if (seen.has(k)) continue; seen.add(k); const c2 = new THREE.Mesh(sp, sm); c2.position.copy(v.clone().multiplyScalar(1.15)); c2.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), v.clone().normalize()); c2.castShadow = true; g.add(c2); } return g; });
+        m.position.set(X(o.x), Y(o.y), 0); m.scale.setScalar(o.r); m.rotation.set(api.t * 2, api.t * 3, 0);
+      } else if (o.t === 'gem' && !o.got) {
+        const m = P.get('gem', () => { const g = new THREE.Group(); const gm = new THREE.Mesh(new THREE.OctahedronGeometry(10, 0), new THREE.MeshStandardMaterial({ color: '#22d3ee', emissive: '#0891b2', emissiveIntensity: .9, roughness: .1, metalness: .3, flatShading: true })); gm.scale.y = 1.25; g.add(gm); const s2 = new THREE.Sprite(Arcade3D.glowSprite('#67e8f9')); s2.scale.set(34, 34, 1); g.add(s2); return g; });
+        m.position.set(X(o.x), Y(o.y) + Math.sin(api.t * 4 + o.y) * 3, 6); m.rotation.y = api.t * 2.5 + o.y;
+      }
+    });
+    /* zona de aterragem: copos com multiplicador */
+    const cw = W / 5, Dd = G.D;
+    if (Dd - cam < H + 100) {
+      MULT.forEach((m, i) => {
+        const hue = m === 5 ? '#facc15' : m === 2 ? '#a855f7' : '#475569';
+        const cup = P.get('cup' + m, () => { const mm = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: hue, emissive: hue, emissiveIntensity: .35, transparent: true, opacity: .35 })); return mm; });
+        cup.scale.set(cw - 6, 64, 30); cup.position.set(X(i * cw + cw / 2), Y(Dd - 32), -10);
+        const base = P.get('cupb' + m, () => new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), Arcade3D.glowMat(hue))); base.scale.set(cw, 6, 30); base.position.set(X(i * cw + cw / 2), Y(Dd - 3), 0);
+        const lab = P.get('lab' + m, () => new THREE.Sprite(new THREE.SpriteMaterial({ map: (() => { const c2 = document.createElement('canvas'); c2.width = 128; c2.height = 64; const x2 = c2.getContext('2d'); x2.font = "800 44px 'Space Grotesk', system-ui"; x2.textAlign = 'center'; x2.textBaseline = 'middle'; x2.fillStyle = '#fff'; x2.fillText('×' + m, 64, 34); const t = new THREE.CanvasTexture(c2); t.colorSpace = THREE.SRGBColorSpace; return t; })(), transparent: true })));
+        lab.position.set(X(i * cw + cw / 2), Y(Dd - 30), 20); lab.scale.set(48, 24, 1);
+      });
+      for (let i = 1; i < 5; i++) { const w = P.get('cupw', () => { const mm = new THREE.Mesh(Arcade3D.roundBox(.3), Arcade3D.std('#e9d5ff', { roughness: .3 })); mm.castShadow = true; return mm; }); w.scale.set(6, 64, 30); w.position.set(X(i * cw), Y(Dd - 32), 0); }
+    }
+    /* bola + rasto */
+    G.trail.forEach((p, i) => { const t = P.get('trail', () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fde047', blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }))); t.position.set(X(p[0]), Y(p[1]), 0); const k = 1 - i / 9; t.scale.set(R * 3 * k, R * 3 * k, 1); t.material.opacity = .45 * k; });
+    P.end();
+    R.ball.position.set(X(G.x), Y(G.y), 0);
+    R.core.rotation.z -= (G.vx || 0) / R / 60; R.core.rotation.x += (G.vy || 0) / R / 120;
+    R.ball.visible = !(G.inv > 0 && Math.floor(G.inv * 12) % 2);
+    R.renderer.render(R.scene, R.cam);
+    /* 2D: profundidade + vidas */
+    const k = U.clamp(G.y / G.D, 0, 1);
+    ctx.fillStyle = 'rgba(255,255,255,.1)'; U.rr(ctx, W - 10, 70, 4, H - 110, 2); ctx.fill();
+    ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(W - 8, 70 + k * (H - 110), 5, 0, 6.3); ctx.fill();
+    for (let i = 0; i < G.cfg.lives; i++) { ctx.globalAlpha = i < G.lives ? 1 : .22; ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(18 + i * 20, H - 18, 7, 0, 6.3); ctx.fill(); }
+    ctx.globalAlpha = 1;
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    R.tex.dispose(); Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const cam = G.cam;
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#1e0b3a'); g.addColorStop(1, '#0b0418');
@@ -245,7 +343,7 @@ const BalldropGame = (function () {
 
   return ArcadeKit.create({
     id: 'balldrop', title: 'Queda Livre', icon: '🟡',
-    accent: '#facc15', accent2: '#c084fc', bg: '#0b0418',
+    accent: '#facc15', accent2: '#c084fc', bg: '#0b0418', transparent: true, destroy,
     tagline: 'Guia a bola a descer por barras, picos e hélices até ao copo certo lá em baixo.',
     view: { w: 400 },
     how: [
