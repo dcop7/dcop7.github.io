@@ -44,6 +44,7 @@ const Lazy = (function () {
     'js/games/game-gravity-lab.js',
     /* arcade (set/2026): casca comum + 15 jogos */
     'js/games/arcade-kit.js',
+    'js/games/arcade-3d.js',
     'js/games/game-knife-throw.js',
     'js/games/game-stack.js',
     'js/games/game-lane-rush.js',

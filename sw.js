@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v319';
+const CACHE = 'dcop7-v320';
 const STATIC = [
   '/',
   '/index.html',
@@ -155,6 +155,7 @@ const STATIC = [
   '/src/games/engine/canvas.js',
   '/src/games/engine/particles.js',
   '/js/games/arcade-kit.js',
+  '/js/games/arcade-3d.js',
   '/js/games/game-knife-throw.js',
   '/js/games/game-stack.js',
   '/js/games/game-lane-rush.js',
