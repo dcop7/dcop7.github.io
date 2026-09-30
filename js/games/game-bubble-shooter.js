@@ -80,6 +80,7 @@ const BubbleShooterGame = (function () {
     const G = { mode, cfg: DIFF[o.diff] || DIFF.medium, level: 1, score: 0, popped: 0, dropped: 0, shots: 0, aim: -Math.PI / 2, aiming: false, fly: null, fx: [], falling: [], t: 0, bestChain: 0 };
     if (mode === 'endless') { G.cfg = { ...G.cfg }; buildLevel(G, 3); }
     else buildLevel(G, 1);
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { try { build3D(G, api); } catch (e) { console.warn('[bolhas] 3D falhou', e); } }).catch(() => {});
     return G;
   }
 
@@ -266,7 +267,105 @@ const BubbleShooterGame = (function () {
   }
   const shade = hex => { const n = parseInt(hex.slice(1), 16); return `rgb(${(n >> 16) * .45 | 0},${(n >> 8 & 255) * .45 | 0},${(n & 255) * .45 | 0})`; };
 
+  /* ════════════════════════════════════════════════════════════════
+     3D — bolhas de vidro colorido com reflexos (mapa de ambiente),
+     teto de metal que desce, canhão com cano que roda, bolhas a cair com
+     física e a rodar. Câmara de frente: o plano do jogo bate certo com a
+     caixa lógica (400×660), por isso a mira e os toques não mudam.
+  ════════════════════════════════════════════════════════════════ */
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#e0e7ff', ground: '#1e1b4b', hemi: .9, sunI: 2.1, fillC: '#f472b6', fillI: .5, shadow: false });
+    const cam = new THREE.PerspectiveCamera(40, 1, 10, 4000);
+    const glass = new THREE.MeshPhysicalMaterial({ roughness: .08, metalness: .05, clearcoat: 1, clearcoatRoughness: .08 });
+    const balls = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 28, 20), glass, 260);
+    balls.frustumCulled = false;
+    const sheen = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .55, depthWrite: false }), 260);
+    sheen.frustumCulled = false;
+    scene.add(balls, sheen);
+    /* fundo: painel com brilho suave */
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ color: '#191645', roughness: .95 }));
+    back.position.z = -40; scene.add(back);
+    const ceil = new THREE.Mesh(Arcade3D.roundBox(.1), new THREE.MeshStandardMaterial({ color: '#4338ca', metalness: .7, roughness: .3, emissive: '#312e81', emissiveIntensity: .4 }));
+    scene.add(ceil);
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), Arcade3D.glowMat('#818cf8')); scene.add(edge);
+    /* canhão: base + cano */
+    const base = new THREE.Mesh(new THREE.SphereGeometry(34, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#312e81', metalness: .6, roughness: .3 }));
+    base.rotation.x = Math.PI / 2; scene.add(base);
+    const barrel = new THREE.Group(); const bm = new THREE.Mesh(new THREE.CylinderGeometry(9, 11, 46, 20), new THREE.MeshStandardMaterial({ color: '#6366f1', metalness: .7, roughness: .25 })); bm.position.y = 24; barrel.add(bm);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(10.5, 2.2, 8, 20), Arcade3D.glowMat('#c4b5fd')); ring.rotation.x = Math.PI / 2; ring.position.y = 44; barrel.add(ring);
+    scene.add(barrel);
+    G.r3 = { renderer, scene, cam, balls, sheen, back, ceil, edge, base, barrel, pool: Arcade3D.pool(scene), m4: new THREE.Matrix4(), v: new THREE.Vector3(), q: new THREE.Quaternion(), sc: new THREE.Vector3(), c: new THREE.Color() };
+    api.stage.style.background = '#0b0a1f';
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R3 = G.r3, { m4, v, q, sc, c } = R3;
+    const st = api.stage, cw = st.clientWidth, ch = st.clientHeight, S = Math.min(cw / 400, ch / 660);
+    Arcade3D.fit(st, R3.cam);
+    /* 1 unidade = 1 px lógico; a caixa lógica fica centrada no palco */
+    const X = x => x - W / 2, Y = y => H / 2 - y;
+    const D = (ch / 2 / S) / Math.tan(R3.cam.fov * Math.PI / 360), [shx, shy] = api.shakeXY;
+    R3.cam.position.set(-shx, shy, D); R3.cam.lookAt(-shx, shy, 0); R3.cam.far = D + 400; R3.cam.updateProjectionMatrix();
+    const kb = (D + 40) / D; R3.back.scale.set(cw / S * kb, ch / S * kb, 1);
+    const ceilY = TOP + G.ceil * RH;
+    R3.ceil.scale.set(W + 20, ceilY + 40, 30); R3.ceil.position.set(0, Y(ceilY / 2 - 20), -8);
+    R3.edge.scale.set(W, 3, 3); R3.edge.position.set(0, Y(ceilY - 2), 8);
+    let n = 0;
+    const put = (x, y, col, r, spin) => {
+      if (n >= 260) return;
+      q.setFromAxisAngle(v.set(.3, 1, 0).normalize(), spin || 0);
+      v.set(X(x), Y(y), 0); sc.set(r, r, r); m4.compose(v, q, sc); R3.balls.setMatrixAt(n, m4);
+      c.set(col); R3.balls.setColorAt(n, c);
+      v.set(X(x) - r * .32, Y(y) + r * .38, r * .8); sc.set(r * .28, r * .18, r * .1); m4.compose(v, R3.q.identity(), sc); R3.sheen.setMatrixAt(n, m4);
+      n++;
+    };
+    const col = k => k === -1 ? '#1f2937' : k === -2 ? '#e879f9' : PAL[k];
+    G.grid.forEach((row, r) => row && row.forEach((b, cc) => { if (b) put(cx(G, r, cc), cy(G, r), col(b.c), R - 1); }));
+    G.fx.forEach(p => { if (p.t < 0) put(p.x, p.y, col(p.c), R - 1); });
+    G.falling.forEach((p, i) => put(p.x, p.y, col(p.c), R - 1, p.y * .05 + i));
+    const s0 = shooter(api);
+    if (G.fly) put(G.fly.x, G.fly.y, col(G.fly.b.c), R - 1, G.t * 10);
+    else put(s0.x, s0.y, col(G.cur.c), R - 1);
+    put(s0.x - 78, s0.y + 16, col(G.next.c), R - 5);
+    R3.balls.count = R3.sheen.count = n;
+    R3.balls.instanceMatrix.needsUpdate = true; R3.sheen.instanceMatrix.needsUpdate = true; if (R3.balls.instanceColor) R3.balls.instanceColor.needsUpdate = true;
+    R3.base.position.set(X(s0.x), Y(s0.y + 26), -14); R3.base.scale.set(1.15, 1, .3);
+    R3.barrel.position.set(X(s0.x), Y(s0.y), -24); R3.barrel.rotation.z = -(G.aim + Math.PI / 2);
+    /* ícones das bolhas especiais */
+    const P = R3.pool; P.begin();
+    const icon = (x, y, ch2) => { const sp = P.get('ic' + ch2, () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.emojiTex(ch2, 64), depthTest: false }))); sp.position.set(X(x), Y(y), R + 2); sp.scale.set(R * 1.2, R * 1.2, 1); };
+    G.grid.forEach((row, r) => row && row.forEach((b, cc) => { if (b && b.c === -1) icon(cx(G, r, cc), cy(G, r), '💥'); if (b && b.c === -2) icon(cx(G, r, cc), cy(G, r), '🌈'); }));
+    const cur = G.fly ? G.fly.b : G.cur, cp = G.fly ? [G.fly.x, G.fly.y] : [s0.x, s0.y];
+    if (cur.c === -1) icon(cp[0], cp[1], '💥'); if (cur.c === -2) icon(cp[0], cp[1], '🌈');
+    P.end();
+    R3.renderer.render(R3.scene, R3.cam);
+    /* 2D por cima: linha de perigo, anéis dos rebentamentos, mira, legendas */
+    const lim = s0.y - 46;
+    ctx.strokeStyle = 'rgba(248,113,113,.45)'; ctx.setLineDash([6, 6]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, lim); ctx.lineTo(W, lim); ctx.stroke(); ctx.setLineDash([]);
+    G.fx.forEach(p => { if (p.t < 0) return; const k = p.t / .35; ctx.strokeStyle = p.c >= 0 ? PAL[p.c] : '#fde047'; ctx.globalAlpha = 1 - k; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(p.x, p.y, R * (1 + k * 1.4), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; });
+    if (!G.fly && !G.over) {
+      const ap = aimPath(G, api);
+      ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 3; ctx.setLineDash([2, 10]); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(ap.pts[0][0], ap.pts[0][1]); ap.pts.slice(1).forEach(p => ctx.lineTo(p[0], p[1])); ctx.stroke(); ctx.setLineDash([]);
+      if (ap.landing) { const [lr, lc] = ap.landing; ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx(G, lr, lc), cy(G, lr), R - 3, 0, 6.3); ctx.stroke(); }
+    }
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '600 10px system-ui'; ctx.textAlign = 'center'; ctx.fillText('trocar', s0.x - 78, s0.y + 16 + R + 12);
+    for (let i = 0; i < G.cfg.miss; i++) { ctx.fillStyle = i < G.cfg.miss - G.miss ? '#a5b4fc' : 'rgba(165,180,252,.18)'; ctx.beginPath(); ctx.arc(s0.x + 60 + i * 11, s0.y + 20, 4, 0, 6.3); ctx.fill(); }
+    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '600 10px system-ui'; ctx.textAlign = 'left'; ctx.fillText(G.mode === 'endless' ? 'nova fila' : 'teto desce', s0.x + 56, s0.y + 38);
+  }
+
+  function destroy(G) {
+    const R3 = G.r3; if (!R3) return;
+    Arcade3D.disposeOwn(R3.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#1e1b4b'); g.addColorStop(1, '#0b0a1f');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -309,7 +408,7 @@ const BubbleShooterGame = (function () {
 
   return ArcadeKit.create({
     id: 'bubble-shooter', title: 'Bolhas', icon: '🫧',
-    accent: '#a78bfa', accent2: '#f472b6', bg: '#0b0a1f',
+    accent: '#a78bfa', accent2: '#f472b6', bg: '#0b0a1f', transparent: true, destroy,
     tagline: 'Aponta, ressalta nas paredes e junta três da mesma cor. O que ficar pendurado cai.',
     view: { w: 400, h: 660 },   /* caixa fixa: a distância até à linha vermelha não depende da altura do ecrã */
     modes: [

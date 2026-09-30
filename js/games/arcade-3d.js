@@ -86,9 +86,29 @@ const Arcade3D = (function () {
     return _v;
   }
 
+  /* ── mapa de ambiente de "estúdio" (reflexos nos metais e vernizes) ──
+     Sem isto, materiais metálicos ficam quase pretos. Uma esfera com um
+     gradiente discreto e três "softboxes" claras, pré-filtrada com PMREM
+     (do núcleo do three.js) — gerada uma vez e partilhada. */
+  let _env = null;
+  function env() {
+    if (_env || !R) return _env;
+    const s = new THREE.Scene();
+    const g = new THREE.SphereGeometry(50, 32, 16), col = [], c = new THREE.Color(), pos = g.attributes.position;
+    for (let i = 0; i < pos.count; i++) { const y = pos.getY(i) / 50; c.setRGB(.16 + Math.max(0, y) * .32, .17 + Math.max(0, y) * .34, .2 + Math.max(0, y) * .38); if (y < 0) c.multiplyScalar(.55 + y * .35); col.push(c.r, c.g, c.b); }
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    s.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+    [[0, 40, 0, 40, 40], [34, 18, 20, 18, 26], [-30, 14, -24, 14, 20]].forEach(([x, y, z, w, h]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: '#ffffff', side: THREE.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 0, 0); s.add(m); });
+    const pm = new THREE.PMREMGenerator(R);
+    _env = pm.fromScene(s, .04).texture; pm.dispose();
+    s.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+    return _env;
+  }
+
   /* ── cena "de estúdio": céu/chão (hemisfério) + sol com sombras suaves ── */
   function stdScene(o = {}) {
     const scene = new THREE.Scene();
+    if (o.env !== false) scene.environment = env();
     const hemi = new THREE.HemisphereLight(o.sky || '#eef4ff', o.ground || '#3b3f58', o.hemi != null ? o.hemi : 1.3);
     const sun = new THREE.DirectionalLight(o.sun || '#fff4e6', o.sunI != null ? o.sunI : 2.2);
     if (o.shadow !== false) {
@@ -181,5 +201,5 @@ const Arcade3D = (function () {
   }
 
   return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse,
-    stdScene, sunAt, roundBox, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool };
+    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool };
 })();

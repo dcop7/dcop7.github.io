@@ -23,7 +23,8 @@ const NinjaChopGame = (function () {
   };
 
   function setup(api, o) {
-    return {
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { const G = api.G3; if (G && !G.r3) try { build3D(G, api); } catch (e) { console.warn('[ninja] 3D falhou', e); } }).catch(() => {});
+    return api.G3 = {
       cfg: DIFF[o.diff] || DIFF.medium, mode: o.mode || 'classic',
       items: [], halves: [], splats: [], trail: [],
       score: 0, sliced: 0, missed: 0, lives: 3, t: 0, spawnT: .6, timeLeft: 60,
@@ -55,7 +56,7 @@ const NinjaChopGame = (function () {
     it.dead = true;
     const W = api.W;
     if (it.k === 'bomb') {
-      api.shake(16, .5); api.flash('#fff', .35); api.vibe([80, 40, 120]);
+      api.shake(16, .5); api.flash('#fff', .35); api.vibe([80, 40, 120]); api.hitstop(.12);
       api.sfx.noise(.6, .25, 0, 300, 'lowpass'); api.sfx.tone(90, .5, 'sawtooth', .08, 0, 40);
       for (let i = 0; i < 40; i++) api.spark({ x: it.x, y: it.y, vx: U.rand(-420, 420), vy: U.rand(-420, 300), color: U.pick(['#fde047', '#fb923c', '#ef4444', '#fff']), size: U.rand(2, 5), life: U.rand(.4, .9), gravity: 300 });
       if (G.mode === 'classic') { end(G, api, 'Cortaste uma bomba!'); }
@@ -126,7 +127,7 @@ const NinjaChopGame = (function () {
     const now = G.t;
     G.trail = G.trail.filter(p => now - p.t < .14);
     if (G.swipeN && now - G.swipeT > .18) {
-      if (G.swipeN >= 3) { const b = G.swipeN; G.score += b; api.float(api.W / 2, api.H * .3, 'Combo ' + b + '! +' + b, '#fde047', 26); api.sfx.arp([659, 784, 988], .05, .1, 'triangle', .07); }
+      if (G.swipeN >= 3) { const b = G.swipeN; api.slowmo(.35, .35); G.score += b; api.float(api.W / 2, api.H * .3, 'Combo ' + b + '! +' + b, '#fde047', 26); api.sfx.arp([659, 784, 988], .05, .1, 'triangle', .07); }
       G.bestSwipe = Math.max(G.bestSwipe, G.swipeN);
       G.swipeN = 0;
     }
@@ -181,7 +182,152 @@ const NinjaChopGame = (function () {
     ctx.restore();
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     3D — fruta com volume e brilho a rodar no ar; ao cortar, duas
+     metades que mostram a polpa (anéis, sementes) e se afastam a girar;
+     manchas de sumo na tábua do dojo; bombas com rastilho a faiscar.
+     O plano z=0 coincide com o ecrã (os golpes continuam exatos).
+  ════════════════════════════════════════════════════════════════ */
+  const _tx = {};
+  function ctex(key, w, h, paint) {
+    if (_tx[key]) return _tx[key];
+    const c = document.createElement('canvas'); c.width = w; c.height = h; paint(c.getContext('2d'), w, h);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.userData.shared = true;
+    return (_tx[key] = t);
+  }
+  function skinTex(f) {
+    return ctex('skin:' + f.k, 256, 128, (x, w, h) => {
+      const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, f.skin[0]); g.addColorStop(1, f.skin[1]);
+      x.fillStyle = g; x.fillRect(0, 0, w, h);
+      if (f.k === 'melon') { x.fillStyle = 'rgba(20,83,45,.85)'; for (let i = 0; i < 10; i++) { x.beginPath(); for (let y = 0; y <= h; y += 4) x.lineTo(i * w / 10 + Math.sin(y * .15 + i) * 5, y); for (let y = h; y >= 0; y -= 4) x.lineTo(i * w / 10 + 9 + Math.sin(y * .15 + i) * 5, y); x.fill(); } }
+      if (f.k === 'orange' || f.k === 'lemon') { for (let i = 0; i < 900; i++) { x.fillStyle = 'rgba(0,0,0,.07)'; x.beginPath(); x.arc(Math.random() * w, Math.random() * h, 1.2, 0, 6.3); x.fill(); } }
+      if (f.k === 'kiwi') { for (let i = 0; i < 1600; i++) { x.fillStyle = `rgba(${Math.random() < .5 ? '60,35,10' : '160,120,60'},.25)`; x.fillRect(Math.random() * w, Math.random() * h, 1, 2); } }
+      if (f.k === 'apple' || f.k === 'plum') { for (let i = 0; i < 120; i++) { x.fillStyle = 'rgba(255,240,200,.18)'; x.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5); } }
+    });
+  }
+  function fleshTex(f) {
+    return ctex('flesh:' + f.k, 128, 128, (x, w) => {
+      const c = w / 2;
+      x.fillStyle = f.skin[1]; x.beginPath(); x.arc(c, c, c, 0, 6.3); x.fill();
+      x.fillStyle = f.rind; x.beginPath(); x.arc(c, c, c * .9, 0, 6.3); x.fill();
+      const g = x.createRadialGradient(c, c, 2, c, c, c * .8); g.addColorStop(0, '#ffffff'); g.addColorStop(.25, f.flesh); g.addColorStop(1, f.flesh);
+      x.fillStyle = g; x.beginPath(); x.arc(c, c, c * .8, 0, 6.3); x.fill();
+      if (f.k === 'orange' || f.k === 'lemon') { x.strokeStyle = f.rind; x.lineWidth = 3; for (let i = 0; i < 10; i++) { const a = i / 10 * 6.283; x.beginPath(); x.moveTo(c, c); x.lineTo(c + Math.cos(a) * c * .8, c + Math.sin(a) * c * .8); x.stroke(); } }
+      if (f.k === 'melon' || f.k === 'kiwi') { x.fillStyle = '#111'; for (let i = 0; i < 14; i++) { const a = i / 14 * 6.283, d = c * (f.k === 'kiwi' ? .38 : .5); x.beginPath(); x.ellipse(c + Math.cos(a) * d, c + Math.sin(a) * d, 2, 4.5, a, 0, 6.3); x.fill(); } if (f.k === 'kiwi') { x.fillStyle = '#f7fee7'; x.beginPath(); x.arc(c, c, c * .2, 0, 6.3); x.fill(); } }
+      if (f.k === 'apple') { x.fillStyle = '#78350f'; [[-8, -4], [8, -4], [0, 8]].forEach(([dx, dy]) => { x.beginPath(); x.ellipse(c + dx, c + dy, 3, 5, 0, 0, 6.3); x.fill(); }); }
+      if (f.k === 'plum' || f.k === 'gold') { x.fillStyle = f.skin[1]; x.beginPath(); x.ellipse(c, c, 10, 14, 0, 0, 6.3); x.fill(); }
+    });
+  }
+  function splatTex() {
+    return ctex('splat', 128, 128, (x) => {
+      x.fillStyle = '#fff'; const pts = Array.from({ length: 14 }, (_, i) => { const a = i / 14 * 6.283, r = 36 + Math.random() * 18; return [64 + Math.cos(a) * r, 64 + Math.sin(a) * r]; });
+      x.beginPath(); pts.forEach((p, i) => { const q = pts[(i + 1) % pts.length]; if (!i) x.moveTo((p[0] + q[0]) / 2, (p[1] + q[1]) / 2); x.quadraticCurveTo(q[0], q[1], (q[0] + pts[(i + 2) % pts.length][0]) / 2, (q[1] + pts[(i + 2) % pts.length][1]) / 2); }); x.fill();
+      for (let i = 0; i < 9; i++) { const a = Math.random() * 6.283, d = 48 + Math.random() * 12; x.beginPath(); x.arc(64 + Math.cos(a) * d, 64 + Math.sin(a) * d, 2 + Math.random() * 5, 0, 6.3); x.fill(); }
+    });
+  }
+  function fruitModel(f) {
+    const g = new THREE.Group();
+    if (f.k === 'bomb') {
+      const b = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), Arcade3D.std('#111827', { metalness: .6, roughness: .35 })); b.castShadow = true; g.add(b);
+      const band = new THREE.Mesh(new THREE.TorusGeometry(.93, .06, 8, 36), Arcade3D.glowMat('#ef4444')); band.rotation.x = Math.PI / 2 - .3; g.add(band);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(.24, .28, .3, 12), Arcade3D.std('#6b7280', { metalness: .7, roughness: .3 })); cap.position.y = 1.02; g.add(cap);
+      const fuse = new THREE.Mesh(new THREE.TorusGeometry(.35, .05, 6, 12, Math.PI), Arcade3D.std('#d6b48a')); fuse.position.set(.35, 1.18, 0); g.add(fuse);
+      const sp = new THREE.Sprite(Arcade3D.glowSprite('#fde047')); sp.position.set(.7, 1.2, 0); sp.scale.set(.9, .9, 1); g.add(sp); g.userData.spark = sp;
+      return g;
+    }
+    if (f.k === 'ice') { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: '#bae6fd', emissive: '#38bdf8', emissiveIntensity: .35, transparent: true, opacity: .82, roughness: .05, metalness: .1, flatShading: true })); g.add(m); return g; }
+    const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), new THREE.MeshStandardMaterial({ map: skinTex(f), roughness: f.k === 'apple' || f.k === 'plum' || f.k === 'gold' ? .25 : .55, metalness: f.k === 'gold' ? .8 : .02 }));
+    if (f.k === 'lemon') m.scale.set(1.18, .88, .88);
+    if (f.k === 'melon') m.scale.set(1.08, 1, 1);
+    m.castShadow = true; g.add(m);
+    if (f.k === 'apple' || f.k === 'plum' || f.k === 'gold') {
+      const st = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, .4, 6), Arcade3D.std('#4b2e12')); st.position.y = 1.05; g.add(st);
+      const lf = new THREE.Mesh(new THREE.SphereGeometry(.2, 8, 6), Arcade3D.std('#22c55e')); lf.scale.set(1.6, .35, .8); lf.position.set(.25, 1.12, 0); lf.rotation.z = -.4; g.add(lf);
+    }
+    if (f.k === 'gold') { const s2 = new THREE.Sprite(Arcade3D.glowSprite('#fde047')); s2.scale.set(3.4, 3.4, 1); g.add(s2); }
+    return g;
+  }
+  function halfModel(f) {
+    const g = new THREE.Group();
+    const skin = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ map: skinTex(f), roughness: .5, side: THREE.DoubleSide }));
+    skin.castShadow = true; g.add(skin);
+    const face = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshStandardMaterial({ map: fleshTex(f), roughness: .4 }));
+    face.rotation.x = Math.PI / 2; g.add(face);
+    return g;
+  }
+  function build3D(G, api) {
+    const renderer = Arcade3D.attach(api.stage);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#fff7ed', ground: '#2a1a10', hemi: 1.0, sun: '#fff1dc', sunI: 2.4, fillC: '#fdba74', fillI: .4, normalBias: .8 });
+    const cam = new THREE.PerspectiveCamera(42, 1, 10, 4000);
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; const x = c.getContext('2d');
+    for (let i = 0; i < 6; i++) { x.fillStyle = ['#3b2414', '#352012', '#40281a'][i % 3]; x.fillRect(i * 86, 0, 86, 512); x.fillStyle = 'rgba(0,0,0,.45)'; x.fillRect(i * 86, 0, 3, 512); x.strokeStyle = 'rgba(255,220,180,.05)'; for (let k = 0; k < 7; k++) { x.beginPath(); const xx = i * 86 + 8 + k * 11; x.moveTo(xx, 0); x.bezierCurveTo(xx + 6, 170, xx - 6, 340, xx + 3, 512); x.stroke(); } }
+    const wt = new THREE.CanvasTexture(c); wt.colorSpace = THREE.SRGBColorSpace; wt.wrapS = wt.wrapT = THREE.RepeatWrapping;
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: wt, roughness: .85 }));
+    board.position.z = -90; board.receiveShadow = true; scene.add(board);
+    G.r3 = { renderer, scene, sun, cam, board, wt, pool: Arcade3D.pool(scene), spin: new WeakMap() };
+    api.stage.style.background = '#140c07';
+  }
+
+  function draw3D(G, ctx, W, H, api) {
+    const R = G.r3, P = R.pool;
+    Arcade3D.fit(api.stage, R.cam);
+    const X = x => x - W / 2, Y = y => H / 2 - y;
+    const D = (H / 2) / Math.tan(R.cam.fov * Math.PI / 360), [shx, shy] = api.shakeXY;
+    R.cam.position.set(-shx, shy, D); R.cam.lookAt(-shx, shy, 0); R.cam.far = D + 600; R.cam.updateProjectionMatrix();
+    const k = (D + 90) / D;
+    R.board.scale.set(W * k * 1.05, H * k * 1.05, 1); R.wt.repeat.set(W / 520, 1);
+    Arcade3D.sunAt(R.sun, 0, 0, 0, Math.max(W, H) * .7, [-.45, .6, 1]);
+    P.begin();
+    /* manchas de sumo na tábua */
+    G.splats.forEach(sp => { const m = P.get('spl:' + sp.c, () => new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: splatTex(), color: new THREE.Color(sp.c).multiplyScalar(.8), transparent: true, depthWrite: false }))); m.position.set(X(sp.x) * k, Y(sp.y) * k, -89); m.rotation.z = sp.rot; m.scale.set(sp.r * 2.6 * k, sp.r * 2.6 * k, 1); m.material.opacity = Math.min(.85, sp.a * 1.7); });
+    /* metades */
+    G.halves.forEach(h => {
+      const m = P.get('half:' + h.k, () => halfModel(h));
+      m.position.set(X(h.x), Y(h.y), 0); m.scale.setScalar(h.r);
+      m.rotation.set(h.side * .9, 0, -h.rot);
+      m.traverse(o => { if (o.material) { o.material.transparent = h.life < 1; o.material.opacity = Math.min(1, h.life); } });
+    });
+    /* fruta e bombas inteiras */
+    G.items.forEach(it => {
+      if (it.delay > 0) return;
+      const m = P.get('fruit:' + it.k, () => fruitModel(it));
+      m.position.set(X(it.x), Y(it.y), 0); m.scale.setScalar(it.r);
+      m.rotation.set(it.rot * .7, it.rot, -it.rot * .4);
+      if (m.userData.spark) m.userData.spark.scale.setScalar(.6 + Math.random() * .6);
+    });
+    P.end();
+    R.renderer.render(R.scene, R.cam);
+    /* 2D por cima: gelo (câmara lenta), lâmina, vidas/tempo */
+    if (G.slow > 0) { ctx.fillStyle = `rgba(125,211,252,${Math.min(.16, G.slow * .05)})`; ctx.fillRect(0, 0, W, H); }
+    const tr = G.trail;
+    if (tr.length > 1) {
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      for (let i = 1; i < tr.length; i++) { const kk = i / tr.length; ctx.strokeStyle = `rgba(125,211,252,${kk * .55})`; ctx.lineWidth = 6 + kk * 12; ctx.beginPath(); ctx.moveTo(tr[i - 1].x, tr[i - 1].y); ctx.lineTo(tr[i].x, tr[i].y); ctx.stroke(); }
+      ctx.restore();
+      for (let i = 1; i < tr.length; i++) { const kk = i / tr.length; ctx.strokeStyle = `rgba(240,253,255,${kk})`; ctx.lineWidth = 1.5 + kk * 4; ctx.beginPath(); ctx.moveTo(tr[i - 1].x, tr[i - 1].y); ctx.lineTo(tr[i].x, tr[i].y); ctx.stroke(); }
+    }
+    if (G.mode === 'classic') {
+      ctx.font = '800 26px system-ui'; ctx.textAlign = 'right';
+      for (let i = 0; i < 3; i++) { ctx.fillStyle = i < 3 - G.lives ? '#ef4444' : 'rgba(255,255,255,.2)'; ctx.fillText('✕', W - 14 - i * 28, H - 18); }
+    } else {
+      const kk = G.timeLeft / 60;
+      ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.fillRect(16, H - 18, W - 32, 6);
+      ctx.fillStyle = kk < .2 ? '#ef4444' : '#fbbf24'; ctx.fillRect(16, H - 18, (W - 32) * kk, 6);
+    }
+  }
+
+  function destroy(G) {
+    const R = G.r3; if (!R) return;
+    R.wt.dispose(); Arcade3D.disposeOwn(R.scene);
+    Arcade3D.detach(); G.r3 = null;
+  }
+
   function draw(G, ctx, W, H, api) {
+    if (G.r3) { draw3D(G, ctx, W, H, api); return; }
+    draw2D(G, ctx, W, H, api);
+  }
+  function draw2D(G, ctx, W, H, api) {
     /* tábua do dojo */
     const bg = ctx.createLinearGradient(0, 0, 0, H);
     bg.addColorStop(0, '#2a1a10'); bg.addColorStop(1, '#140c07');
@@ -231,7 +377,7 @@ const NinjaChopGame = (function () {
 
   return ArcadeKit.create({
     id: 'ninja-chop', title: 'Corte Ninja', icon: '🥷',
-    accent: '#ef4444', accent2: '#fbbf24', bg: '#140c07', aspect: 'wide',
+    accent: '#ef4444', accent2: '#fbbf24', bg: '#140c07', aspect: 'wide', transparent: true, destroy,
     tagline: 'Fruta pelo ar, bombas à mistura. Um golpe rápido corta tudo o que apanhar.',
     view: { w: 640 },
     modes: [

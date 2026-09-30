@@ -123,6 +123,7 @@ const YahtzeeGame = (function () {
       </div>`;
     G.el = { root: L.querySelector('.yz'), dice: [...L.querySelectorAll('.yz-die')], roll: L.querySelector('.yz-roll'), status: L.querySelector('.yz-status'), rows: [...L.querySelectorAll('.yz-row[data-cat]')] };
     G.el.dice.forEach(b => b.addEventListener('click', () => toggleHold(G, api, +b.dataset.d)));
+    if (typeof Arcade3D !== 'undefined') Arcade3D.load().then(() => { if (G.el.root.isConnected) try { build3D(G, api); } catch (e) { console.warn('[general] 3D falhou', e); } }).catch(() => {});
     G.el.roll.addEventListener('click', () => roll(G, api));
     G.el.rows.forEach(b => b.addEventListener('click', () => pick(G, api, b.dataset.cat)));
     paint(G);
@@ -140,6 +141,16 @@ const YahtzeeGame = (function () {
     G.busy = true; G.rolls++;
     api.sfx.noise(.25, .08, 0, 1800); api.sfx.noise(.18, .06, .12, 1200);
     const idx = [0, 1, 2, 3, 4].filter(i => !G.hold[i]);
+    if (G.r3) {
+      /* 3D: os valores decidem-se já; os dados voam, rodam, batem e param nessa face */
+      idx.forEach(i => { G.dice[i] = U.randi(1, 6); });
+      paint(G);
+      return throw3D(G, api, idx).then(() => {
+        G.busy = false;
+        if (Math.max(...counts(G.dice)) === 5) { api.banner('General!', cur(G).ai ? 'o computador' : '5 iguais'); api.sfx.win(); }
+        paint(G);
+      });
+    }
     idx.forEach(i => G.el.dice[i].classList.add('rolling'));
     return new Promise(res => {
       let k = 0;
@@ -213,6 +224,108 @@ const YahtzeeGame = (function () {
       sub: vs ? `Tu ${myT} · Computador ${aiT}` : '',
       stats: [['Parte de cima', upperSum(me.card) + (bonus ? ' +35' : '')], ['Generais', me.gens], ['Bónus extra', me.ybonus]],
       meta: { bonus, gens: me.gens, beatAI: !!vs && won, lvl: G.lvl } });
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     3D — cinco dados de verdade num tabuleiro de feltro: lançam-se do
+     fundo, dão voltas, ressaltam duas vezes e param com a face certa.
+     Guardados sobem e ficam com aura dourada. Câmara ortográfica
+     inclinada: os botões dos dados (transparentes) ficam por cima de cada
+     dado, por isso tocar/clicar e o teclado continuam iguais.
+  ════════════════════════════════════════════════════════════════ */
+  const FACE_Q = {};
+  function faceTex(v) {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 128, 128); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#e2e8f0');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    x.strokeStyle = 'rgba(148,163,184,.55)'; x.lineWidth = 6; x.strokeRect(3, 3, 122, 122);
+    const P = { 1: [[64, 64]], 2: [[36, 36], [92, 92]], 3: [[34, 34], [64, 64], [94, 94]], 4: [[36, 36], [92, 36], [36, 92], [92, 92]], 5: [[34, 34], [94, 34], [64, 64], [34, 94], [94, 94]], 6: [[36, 30], [92, 30], [36, 64], [92, 64], [36, 98], [92, 98]] }[v];
+    P.forEach(([px, py]) => { const r = v === 1 ? 15 : 11; const rg = x.createRadialGradient(px - 3, py - 3, 1, px, py, r); rg.addColorStop(0, v === 1 ? '#ef4444' : '#334155'); rg.addColorStop(1, v === 1 ? '#991b1b' : '#0f172a'); x.fillStyle = rg; x.beginPath(); x.arc(px, py, r, 0, 6.3); x.fill(); });
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+  }
+  function build3D(G, api) {
+    const box = G.el.root.querySelector('.yz-dice');
+    const host = document.createElement('div'); host.className = 'yz-3d'; box.prepend(host);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setClearColor(0, 0); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none';
+    host.appendChild(renderer.domElement);
+    const { scene, sun } = Arcade3D.stdScene({ sky: '#fefce8', ground: '#14532d', hemi: 1.2, sunI: 2.1, fillI: .35, normalBias: .02 });
+    const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 100);
+    const felt = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), new THREE.ShadowMaterial({ opacity: .35 }));
+    felt.rotation.x = -Math.PI / 2; felt.receiveShadow = true; scene.add(felt);
+    const mats = [3, 4, 1, 6, 2, 5].map(v => new THREE.MeshStandardMaterial({ map: faceTex(v), roughness: .32, metalness: .02 }));
+    const geo = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+    const E = (x, y, z) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
+    Object.assign(FACE_Q, { 1: E(0, 0, 0), 6: E(Math.PI, 0, 0), 3: E(0, 0, Math.PI / 2), 4: E(0, 0, -Math.PI / 2), 2: E(-Math.PI / 2, 0, 0), 5: E(Math.PI / 2, 0, 0) });
+    const dice = G.dice.map((v, i) => {
+      const g = new THREE.Group();
+      const m = new THREE.Mesh(geo, mats); m.castShadow = true; m.scale.setScalar(.8); g.add(m);
+      const aura = new THREE.Sprite(Arcade3D.glowSprite('#fbbf24')); aura.scale.set(2.4, 2.4, 1); aura.visible = false; g.add(aura);
+      g.userData = { die: m, aura, q: FACE_Q[v].clone(), yaw: (Math.random() - .5) * .5, anim: null };
+      m.quaternion.copy(g.userData.q);
+      scene.add(g); return g;
+    });
+    G.r3 = { renderer, scene, sun, cam, dice, host, box, mats, geo, t: 0 };
+    G.el.root.classList.add('yz3d');
+    G.api3 = api;
+  }
+  function slotX(G, i) {
+    /* x do centro do botão i, em unidades do mundo (1 dado = 1 unidade) */
+    const R = G.r3, br = R.box.getBoundingClientRect(), b = G.el.dice[i].getBoundingClientRect();
+    return ((b.left + b.width / 2 - br.left) / br.width - .5) * (R.hw * 2);
+  }
+  function throw3D(G, api, idx) {
+    const R = G.r3, dur = .95;
+    idx.forEach((i, k) => {
+      const d = R.dice[i].userData, spinAx = new THREE.Vector3(Math.random() - .5, Math.random() - .5, Math.random() - .5).normalize();
+      const endQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - .5) * .6).multiply(FACE_Q[G.dice[i]]);
+      d.anim = { t: -k * .05, dur, x0: slotX(G, i) + (Math.random() - .5) * 3, z0: -3.2 - Math.random(), spinAx, turns: 2 + Math.random() * 2, endQ, startQ: R.dice[i].userData.die.quaternion.clone() };
+    });
+    return new Promise(res => { R.onDone = res; R.pending = idx.length; });
+  }
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  function tick3D(G, dt) {
+    const R = G.r3; if (!R || !R.host.isConnected) return;
+    const w = R.host.clientWidth, h = R.host.clientHeight; if (!w || !h) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (R.w !== w || R.h !== h) { R.w = w; R.h = h; R.renderer.setPixelRatio(dpr); R.renderer.setSize(w, h, false); }
+    /* câmara: 1 dado ≈ largura de um botão */
+    const bw = G.el.dice[0].getBoundingClientRect().width || 56, unit = bw * 1.02;
+    R.hw = w / 2 / unit; const hh = h / 2 / unit;
+    R.cam.left = -R.hw; R.cam.right = R.hw; R.cam.top = hh; R.cam.bottom = -hh; R.cam.updateProjectionMatrix();
+    R.cam.position.set(0, 10.8, 7.2); R.cam.lookAt(0, 1.05, 0);
+    Arcade3D.sunAt(R.sun, 0, 0, 0, 7, [-.5, 1, .4]);
+    R.t += dt;
+    R.dice.forEach((g, i) => {
+      const d = g.userData, held = G.hold[i];
+      const x = slotX(G, i);
+      if (d.anim) {
+        const a = d.anim; a.t += dt;
+        const k = Math.max(0, Math.min(1, a.t / a.dur));
+        /* trajetória: do fundo para a ranhura, com dois ressaltos que diminuem */
+        const px = a.x0 + (x - a.x0) * ease(k), pz = a.z0 * (1 - ease(k));
+        const hop = k < .55 ? Math.sin(k / .55 * Math.PI) * 2.2 : k < .85 ? Math.sin((k - .55) / .3 * Math.PI) * .55 : Math.sin((k - .85) / .15 * Math.PI) * .12;
+        g.position.set(px, .4 + hop, pz);
+        const spin = new THREE.Quaternion().setFromAxisAngle(a.spinAx, (1 - ease(k)) * a.turns * Math.PI * 2);
+        d.die.quaternion.copy(a.endQ).premultiply(spin);
+        if (k >= 1) {
+          d.anim = null; d.die.quaternion.copy(a.endQ);
+          if (G.api3) G.api3.sfx.tone(180 + i * 30, .05, 'triangle', .05);
+          if (--R.pending <= 0 && R.onDone) { const f = R.onDone; R.onDone = null; f(); }
+        }
+      } else {
+        const ty = .4 + (held ? .5 : 0);
+        g.position.x += (x - g.position.x) * Math.min(1, dt * 12);
+        g.position.y += (ty - g.position.y) * Math.min(1, dt * 12);
+        g.position.z += (0 - g.position.z) * Math.min(1, dt * 12);
+        if (!d.anim && d.die.quaternion.angleTo(FACE_Q[G.dice[i]]) > 1.2 && !G.busy) d.die.quaternion.copy(FACE_Q[G.dice[i]]);   /* retomada/estado novo */
+      }
+      d.aura.visible = held; d.aura.material.opacity = .55 + Math.sin(R.t * 5) * .15;
+      d.die.material.forEach ? null : null;
+    });
+    R.renderer.render(R.scene, R.cam);
   }
 
   function paint(G) {
@@ -292,6 +405,13 @@ const YahtzeeGame = (function () {
 .yz-roll.pulse{animation:yzPulse 1.4s ease-in-out infinite}
 @keyframes yzPulse{50%{box-shadow:0 0 0 6px rgba(74,222,128,.25),0 8px 20px rgba(0,0,0,.3)}}
 .yz.ai-turn .yz-dice{filter:drop-shadow(0 0 10px rgba(147,197,253,.35))}
+.yz-dice{position:relative}
+.yz-3d{position:absolute;left:-10px;right:-10px;top:-46px;bottom:-12px;pointer-events:none}
+.yz.yz3d .yz-dice{padding:18px 0 4px}
+.yz.yz3d .yz-die .yz-face{opacity:0!important}
+.yz.yz3d .yz-die{transform:none!important}
+.yz.yz3d .yz-die.held::after{bottom:-12px}
+.yz.yz3d .yz-die.rolling{animation:none}
 @media (max-width:400px){.yz-row{font-size:.72rem;padding:0 4px}.yz-cn em{display:none}}
 @media (prefers-reduced-motion:reduce){.yz-die.rolling,.yz-roll.pulse,.yz-row.flash{animation:none}}`;
     document.head.appendChild(s);
@@ -312,7 +432,8 @@ const YahtzeeGame = (function () {
       'Soma 63+ na parte de cima e ganhas +35. General = 5 iguais (50); cada General extra vale +100 e serve de joker no Full e nas sequências.',
     ],
     controls: ['🖱️ Clicar', '👆 Tocar', '⌨️ Espaço lança, 1–5 guarda'],
-    setup, update: () => {},
+    setup, update: (G, dt) => { if (G.r3) tick3D(G, dt); },
+    destroy: G => { const R = G.r3; if (!R) return; R.mats.forEach(m => { m.map.dispose(); m.dispose(); }); R.geo.dispose(); Arcade3D.disposeOwn(R.scene); R.renderer.dispose(); R.host.remove(); G.r3 = null; },
     key: (G, e, api) => {
       if (e.key === ' ' || e.key === 'r') { roll(G, api); return true; }
       if (/^[1-5]$/.test(e.key)) { toggleHold(G, api, +e.key - 1); return true; }
