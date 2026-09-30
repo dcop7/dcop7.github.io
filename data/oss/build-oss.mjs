@@ -22,6 +22,13 @@
    automatic token — the user manages no key). Without a token it still works
    unauthenticated at reduced volume (handy for local testing).
 
+   Time budget: OSS_BUDGET_MIN (set by the Action) is a soft deadline. Past
+   it, the orphan fetches and the GraphQL enrichment stop early and the build
+   goes straight to writing, so the step never reaches its hard timeout with
+   nothing on disk. Enrichment is cached per project (enrichedOn) and only
+   repeated every ENRICH_TTL days, which is what keeps a normal run well under
+   the budget in the first place.
+
    Pure Node 18+ (global fetch). Run: node data/oss/build-oss.mjs
 ══════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'node:fs';
@@ -46,14 +53,20 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const SEARCH_PAGES = AUTHED ? 2 : 1;        // 100 repos/page
 const SEARCH_GAP   = AUTHED ? 2200 : 6500;  // respect search rate (30/min vs 10/min)
 const ENRICH       = AUTHED;                 // languages breakdown via GraphQL needs a token
+const ENRICH_TTL   = 7;                      // days a project's languages/watchers stay fresh
 
-console.log(`[oss] start ${TODAY} | auth=${AUTHED} | pages=${SEARCH_PAGES}`);
+const BUDGET_MIN = +process.env.OSS_BUDGET_MIN || 0;
+const DEADLINE = BUDGET_MIN ? NOW + BUDGET_MIN * 60e3 : Infinity;
+const overBudget = () => Date.now() > DEADLINE;
+
+console.log(`[oss] start ${TODAY} | auth=${AUTHED} | pages=${SEARCH_PAGES} | budget=${BUDGET_MIN || '∞'} min`);
 
 /* ── low-level fetchers (retry + rate-limit aware) ───────────────────── */
 async function ghJSON(url, { search = false } = {}) {
   const headers = { 'User-Agent': UA, Accept: 'application/vnd.github+json' };
   if (TOKEN) headers.Authorization = 'Bearer ' + TOKEN;
   for (let i = 0; i < 6; i++) {
+    if (overBudget()) throw new Error('over budget');
     const r = await fetch(url, { headers });
     if (r.status === 403 || r.status === 429) {       // primary/secondary rate limit
       const reset = +r.headers.get('x-ratelimit-reset') * 1000;
@@ -155,6 +168,7 @@ async function fetchHnOrphans() {
   console.log(`  HN orphans to fetch: ${top.length}`);
   let ok = 0;
   for (const { key, arr } of top) {
+    if (overBudget()) { console.log('  HN orphans: budget reached, stopping early'); break; }
     try {
       const it = await ghJSON(`https://api.github.com/repos/${key}`);
       if (it && it.full_name && !it.fork) {
@@ -218,6 +232,7 @@ async function fetchAwesomeOrphans() {
   console.log(`  awesome orphans to fetch: ${top.length}`);
   let ok = 0;
   for (const key of top) {
+    if (overBudget()) { console.log('  awesome orphans: budget reached, stopping early'); break; }
     try {
       const it = await ghJSON(`https://api.github.com/repos/${key}`);   // REST: full repo metadata
       if (it && it.full_name) {
@@ -235,9 +250,31 @@ async function fetchAwesomeOrphans() {
 
 /* ── GraphQL enrichment (languages %) — token only, batched ───────────── */
 async function enrich() {
+  /* Languages and watcher counts barely move day to day, so reuse what the
+     last run wrote and only re-query projects that are new or were enriched
+     ENRICH_TTL+ days ago — about a seventh of the catalog on a normal day
+     instead of all of it. Files from before enrichedOn existed get a stable
+     pseudo-random age, spreading their refresh over the next week instead of
+     landing on one run. */
+  const due = [];
+  for (const [key, rec] of repos) {
+    const id = rec.it.full_name.replace('/', '__');
+    const prev = prevDetail(id);
+    if (prev && prev.watchers != null) {   // watchers only ever come from GraphQL
+      rec.watchers = prev.watchers;
+      rec.langs = prev.langs;
+      rec.enrichedOn = prev.enrichedOn || legacyEnrichedOn(id);
+      if (daysBetween(rec.enrichedOn, TODAY) < ENRICH_TTL) continue;
+    }
+    due.push(key);
+  }
+  // never-enriched first, then oldest, so a budget cut drops the least urgent
+  due.sort((a, b) => (repos.get(a).enrichedOn || '').localeCompare(repos.get(b).enrichedOn || ''));
+  console.log(`  enrich: ${due.length} due, ${repos.size - due.length} reused from cache`);
   if (!ENRICH) { console.log('  enrich: skipped (no token)'); return; }
-  const keys = [...repos.keys()];
+  const keys = due;
   for (let i = 0; i < keys.length; i += 80) {
+    if (overBudget()) { console.log(`  enrich: budget reached, ${keys.length - i} left for the next run`); break; }
     const batch = keys.slice(i, i + 80);
     const q = `query{${batch.map((k, j) => {
       const [o, n] = k.split('/');
@@ -254,6 +291,7 @@ async function enrich() {
         const rr = data.data[k]; if (!rr) continue;
         const rec = repos.get(canon(rr.nameWithOwner)); if (!rec) continue;
         rec.watchers = rr.watchers?.totalCount;
+        rec.enrichedOn = TODAY;
         const tot = rr.languages?.totalSize || 0;
         rec.langs = (rr.languages?.edges || []).map(e => ({ name: e.node.name, color: e.node.color, pct: tot ? Math.round(e.size / tot * 100) : 0 }));
       }
@@ -261,6 +299,14 @@ async function enrich() {
     await sleep(800);
   }
   console.log(`  enrich: languages for ${[...repos.values()].filter(r => r.langs).length} repos`);
+}
+function prevDetail(id) {
+  try { return JSON.parse(readFileSync(join(P_DIR, id + '.json'), 'utf8')); } catch { return null; }
+}
+function legacyEnrichedOn(id) {
+  let h = 0;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return new Date(NOW - (h % ENRICH_TTL) * DAY).toISOString().slice(0, 10);
 }
 
 /* ── star history snapshot (compact, weekly points, 90d window) ───────── */
@@ -340,6 +386,7 @@ function build() {
       descFull: it.description || '', homepage: it.homepage || '', avatar: it.owner?.avatar_url || '',
       ghUrl: it.html_url, defaultBranch: it.default_branch,
       watchers: rec.watchers,   // real subscriber count (GraphQL only); REST watchers_count == stars, so omit it
+      enrichedOn: rec.watchers != null ? rec.enrichedOn : undefined,
       langs: rec.langs || (it.language ? [{ name: it.language, color: langColor[it.language] || '#8b949e', pct: 100 }] : []),
       hnPosts: hnPosts.slice(0, 5),
       awesomeIn: awesomeIn.map(a => ({ list: a.id, label: a.label, emoji: a.emoji, heading: a.heading, category: a.category })),

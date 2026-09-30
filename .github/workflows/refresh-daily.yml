@@ -126,6 +126,13 @@ jobs:
       # disk — and, thanks to always() below, still get committed — however
       # this one ends. build-oss.mjs writes nothing until it finishes, so a
       # step cut here leaves the previous catalog intact, never a half one.
+      #
+      # By late September the full build ran 27–38 min against this 38 min
+      # ceiling, so about a third of the builds were cut and the catalog went days
+      # without updating. Two things keep it inside now: GraphQL enrichment is
+      # cached for 7 days per project (≈1/7 of the catalog re-queried a day),
+      # and OSS_BUDGET_MIN is a soft deadline — past it the build stops
+      # fetching and writes what it has, leaving ~6 min before the hard cut.
       - name: Descobrir Tech ▸ catálogo open-source
         id: oss
         continue-on-error: true
@@ -134,6 +141,7 @@ jobs:
           # Automatic, repo-scoped token (no user-managed secret). Lifts rate
           # limits and enables GraphQL enrichment (languages, watchers).
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OSS_BUDGET_MIN: 32
         run: |
           [ "$(node .github/scripts/stale.mjs data/oss/index.json day)" = true ] || {
             echo "Já é de hoje — nada a fazer."; exit 0; }
