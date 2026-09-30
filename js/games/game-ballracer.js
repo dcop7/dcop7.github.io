@@ -141,6 +141,11 @@ const BallracerGame = (function () {
      Mosaicos, blocos e diamantes são InstancedMesh (poucas chamadas).
   ════════════════════════════════════════════════════════════════ */
   const MAXT = 5 * (FAR + 8);
+  /* A câmara fica atrás da bola a olhar para +z, e no three.js isso põe o +x do
+     mundo à ESQUERDA do ecrã. Sem espelhar, a pista 3D aparecia ao contrário do
+     jogo (guiavas para a direita e a bola ia para a esquerda). Tudo o que se
+     posiciona em x no 3D passa por MX. */
+  const MX = x => -x;
   function skyTex(th) {
     const c = document.createElement('canvas'); c.width = 4; c.height = 256; const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, th.sky[0]); g.addColorStop(.62, th.sky[1]); g.addColorStop(1, th.sky[1]);
@@ -201,7 +206,11 @@ const BallracerGame = (function () {
       R.clouds.forEach(g => g.children.forEach(m => { m.material.color.set(th.cloud.startsWith('rgba') ? '#ffffff' : th.cloud); }));
       R.clouds[0].children[0].material.opacity = ti === 2 ? .35 : .85;
     }
-    Arcade3D.fit(api.stage, R.cam);
+    const aspect = Arcade3D.fit(api.stage, R.cam);
+    /* ecrã estreito (telemóvel ao alto): a câmara recua e sobe para as 5 colunas
+       caberem — antes as colunas das pontas saíam do ecrã e os buracos só se
+       viam em cima da hora */
+    const nk = U.clamp((.8 - aspect) / .3, 0, 1);
     const { m4, q, v, sc, c } = R;
     const z0 = Math.max(0, Math.floor(G.z - CAMB - 1)), z1 = Math.min(G.rows.length - 1, Math.floor(G.z + FAR));
     let nt = 0, nb = 0, ng = 0, nc = 0;
@@ -210,7 +219,7 @@ const BallracerGame = (function () {
       const row = G.rows[zi]; if (!row) continue;
       for (let ci = 0; ci < 5; ci++) {
         const t = row[ci]; if (t === E) continue;
-        const x = ci - 2;
+        const x = MX(ci - 2);
         if (nt < MAXT) {
           v.set(x, -TH / 2, zi + .5); sc.set(.97, TH, .97); m4.compose(v, qI, sc); R.tiles.setMatrixAt(nt, m4);
           c.set(t === BO ? '#22d3ee' : t === J ? '#facc15' : (ci + zi) % 2 ? th.a : th.b); if (t === F || t === GEM || t === B) c.multiplyScalar((ci + zi) % 2 ? .95 : .82); R.tiles.setColorAt(nt, c); nt++;
@@ -236,20 +245,20 @@ const BallracerGame = (function () {
     });
     /* bola: rola em torno do eixo x (e inclina com o desvio lateral) */
     const b = R.ball;
-    b.position.set(G.x, G.y + BR, G.z);
+    b.position.set(MX(G.x), G.y + BR, G.z);
     R.roll.setFromAxisAngle(v.set(1, 0, 0), G.roll);
     b.quaternion.copy(R.roll);
     b.visible = !(G.inv > 0 && Math.floor(G.inv * 12) % 2);
-    R.glow.visible = G.boost > 0; R.glow.position.set(G.x, G.y + BR, G.z - .35); R.glow.material.opacity = .6 + Math.sin(api.t * 30) * .2;
+    R.glow.visible = G.boost > 0; R.glow.position.set(MX(G.x), G.y + BR, G.z - .35); R.glow.material.opacity = .6 + Math.sin(api.t * 30) * .2;
     /* câmara atrás e acima; um bocadinho de balanço lateral */
     R.camX = U.lerp(R.camX, G.camX, .2);
     const [shx, shy] = api.shakeXY;
-    R.cam.position.set(R.camX * .75 + shx * .01, 3.6 + shy * .01, G.z - 4.6);
-    R.cam.lookAt(R.camX * .55, 0, G.z + 5);
-    R.cam.rotateZ(-(G.x - R.camX) * .03);
-    R.cam.fov = 52 + Math.min(9, (G.v - G.cfg.v0) * .8) + (G.boost > 0 ? 6 : 0);   /* sensação de velocidade */
+    R.cam.position.set(MX(R.camX * .6) + shx * .01, 3.6 + nk * 1.5 + shy * .01, G.z - 4.6 - nk * 2.2);
+    R.cam.lookAt(MX(R.camX * .45), 0, G.z + 5 + nk);
+    R.cam.rotateZ((G.x - R.camX) * .03);   /* inclina para o lado para onde vais */
+    R.cam.fov = 52 + nk * 8 + Math.min(9, (G.v - G.cfg.v0) * .8) + (G.boost > 0 ? 6 : 0);   /* sensação de velocidade */
     R.cam.updateProjectionMatrix();
-    Arcade3D.sunAt(R.sun, G.x, 0, G.z + 6, 12, [-.3, 1, -.35]);
+    Arcade3D.sunAt(R.sun, MX(G.x), 0, G.z + 6, 12, [-.3, 1, -.35]);
     R.sunDisc.position.set(R.cam.position.x + 30, 22, G.z + 90);
     R.clouds.forEach(g => {
       const u = g.userData; let z = u.dz - (G.z * .35) % 80; if (z < -10) z += 80;

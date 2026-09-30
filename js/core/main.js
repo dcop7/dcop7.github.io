@@ -1458,6 +1458,7 @@ const ALL_GAMES = [
   { id:'balldrop', key:'game.balldrop', icon:'🟡' },
   { id:'bubble-shooter', key:'game.bubble-shooter', icon:'🫧' },
   { id:'brick-breaker', key:'game.brick-breaker', icon:'🟦' },
+  { id:'ball-blast', key:'game.ball-blast', icon:'🟣' },
   { id:'sudoku', key:'game.sudoku', icon:'9️⃣' },
   { id:'2048', key:'game.2048', icon:'🔢' },
   { id:'yahtzee', key:'game.yahtzee', icon:'🎲' },

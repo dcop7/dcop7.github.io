@@ -51,6 +51,7 @@ const Search = (function () {
     { label: 'Queda Livre', id: 'games/balldrop', icon: '🟡', tags: ['queda', 'bola', 'cair', 'obstáculos', 'drop'] },
     { label: 'Bolhas', id: 'games/bubble-shooter', icon: '🫧', tags: ['bolhas', 'bubble', 'shooter', 'cores', 'disparar'] },
     { label: 'Parte-Tijolos', id: 'games/brick-breaker', icon: '🟦', tags: ['tijolos', 'breakout', 'arkanoid', 'raquete', 'bola', 'brick'] },
+    { label: 'Rajada', id: 'games/ball-blast', icon: '🟣', tags: ['rajada', 'bolas', 'blocos', 'ballz', 'números', 'disparar', 'brick'] },
     { label: 'Sudoku', id: 'games/sudoku', icon: '9️⃣', tags: ['sudoku', 'números', 'grelha', 'lógica', 'puzzle'] },
     { label: '2048', id: 'games/2048', icon: '🔢', tags: ['2048', 'peças', 'deslizar', 'números', 'puzzle'] },
     { label: 'General', id: 'games/yahtzee', icon: '🎲', tags: ['general', 'yahtzee', 'dados', 'póquer de dados', 'dice'] },

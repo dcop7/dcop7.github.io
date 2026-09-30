@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v326';
+const CACHE = 'dcop7-v327';
 const STATIC = [
   '/',
   '/index.html',
@@ -173,6 +173,7 @@ const STATIC = [
   '/js/games/game-balldrop.js',
   '/js/games/game-bubble-shooter.js',
   '/js/games/game-brick-breaker.js',
+  '/js/games/game-ball-blast.js',
   '/js/games/game-sudoku.js',
   '/js/games/game-2048.js',
   '/js/games/game-yahtzee.js',

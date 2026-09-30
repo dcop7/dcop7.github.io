@@ -18,9 +18,9 @@ const Chess3D = (function () {
     /* junta geometrias simples (todas não indexadas) numa só */
     const arrs = parts.map(g => (g.index ? g.toNonIndexed() : g));
     let n = 0; arrs.forEach(g => { n += g.attributes.position.count; });
-    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3); let o = 0;
-    arrs.forEach(g => { pos.set(g.attributes.position.array, o * 3); nor.set(g.attributes.normal.array, o * 3); o += g.attributes.position.count; });
-    const m = new THREE.BufferGeometry(); m.setAttribute('position', new THREE.BufferAttribute(pos, 3)); m.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uv = new Float32Array(n * 2); let o = 0;
+    arrs.forEach(g => { pos.set(g.attributes.position.array, o * 3); nor.set(g.attributes.normal.array, o * 3); if (g.attributes.uv) uv.set(g.attributes.uv.array, o * 2); o += g.attributes.position.count; });
+    const m = new THREE.BufferGeometry(); m.setAttribute('position', new THREE.BufferAttribute(pos, 3)); m.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); m.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     return m;
   }
   /* Proporções Staunton (rei = referência): peão baixo e redondo, torre
@@ -53,55 +53,71 @@ const Chess3D = (function () {
       const sh = new THREE.Shape();
       sh.moveTo(-.19, .18); sh.lineTo(.21, .18); sh.quadraticCurveTo(.2, .42, .07, .55); sh.lineTo(.28, .64); sh.quadraticCurveTo(.35, .72, .27, .83);
       sh.lineTo(.1, .88); sh.quadraticCurveTo(.05, 1.0, -.07, .93); sh.quadraticCurveTo(-.23, .8, -.22, .56); sh.quadraticCurveTo(-.22, .34, -.19, .18);
-      const head = new THREE.ExtrudeGeometry(sh, { depth: .2, bevelEnabled: true, bevelThickness: .045, bevelSize: .035, bevelSegments: 3, curveSegments: 12 });
-      head.translate(0, 0, -.1); head.rotateY(-Math.PI / 2);
-      body = merge([lathe(base(.33).concat([[.22, .2], [0, .2]])), head]);
-      const mane = new THREE.BoxGeometry(.05, .5, .26).rotateX(.45).translate(0, .66, .17);
-      const eyes = [-1, 1].map(sd => new THREE.SphereGeometry(.035, 8, 6).translate(sd * .13, .76, -.03));
+      const head = new THREE.ExtrudeGeometry(sh, { depth: .16, bevelEnabled: true, bevelThickness: .07, bevelSize: .05, bevelSegments: 5, curveSegments: 16 });
+      head.translate(0, 0, -.08); head.rotateY(-Math.PI / 2); head.computeVertexNormals();
+      const ears = [-1, 1].map(sd => new THREE.ConeGeometry(.045, .13, 10).rotateX(.35).translate(sd * .06, .95, .05));
+      body = merge([lathe(base(.33).concat([[.22, .2], [0, .2]])), head, ...ears]);
+      const mane = new THREE.BoxGeometry(.06, .52, .07).rotateX(.5).translate(0, .67, .2);
+      const eyes = [-1, 1].map(sd => new THREE.SphereGeometry(.03, 10, 8).translate(sd * .145, .77, -.05));
       accent = merge([mane, ...eyes]);
     }
     const top = { p: .66, r: .82, b: 1.07, q: 1.16, k: 1.35, n: .98 }[t];
     return (_geo[t] = { body, accent, top });
   }
-  /* emblema com o símbolo da peça (lê-se sempre, de qualquer ângulo) */
-  const _badge = {};
-  function badgeTex(t, color) {
-    const k = t + color; if (_badge[k]) return _badge[k];
-    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
-    x.beginPath(); x.arc(64, 64, 58, 0, 6.3);
-    x.fillStyle = color === 'w' ? 'rgba(248,245,236,.96)' : 'rgba(24,27,34,.96)'; x.fill();
-    x.lineWidth = 6; x.strokeStyle = color === 'w' ? '#1f2937' : '#f5d98b'; x.stroke();
-    x.font = '84px "Segoe UI Symbol","Apple Symbols","Noto Sans Symbols2","DejaVu Sans",sans-serif';
-    x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillStyle = color === 'w' ? '#111827' : '#f5d98b';
-    x.fillText({ p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚' }[t], 64, 70);
-    const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
-    return (_badge[k] = tx);
+  /* veio da madeira: riscas ao longo do perfil (u = à volta da peça, v = ao longo
+     do torneado) — o marfim/buxo e o ébano ganham textura sem imagens */
+  const _tex = {};
+  function grainTex(key, base, dark, light, n) {
+    if (_tex[key]) return _tex[key];
+    const c = document.createElement('canvas'); c.width = 256; c.height = 256; const x = c.getContext('2d');
+    x.fillStyle = base; x.fillRect(0, 0, 256, 256);
+    let sd = 7; const rnd = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+    for (let i = 0; i < n; i++) {
+      const x0 = rnd() * 256, w = .6 + rnd() * 2.2, amp = 2 + rnd() * 6, fr = 1 + rnd() * 3;
+      x.strokeStyle = rnd() < .6 ? dark : light; x.globalAlpha = .08 + rnd() * .22; x.lineWidth = w;
+      x.beginPath(); for (let y = 0; y <= 256; y += 8) { const xx = x0 + Math.sin(y / 256 * Math.PI * 2 * fr + i) * amp; if (y) x.lineTo(xx, y); else x.moveTo(xx, y); } x.stroke();
+    }
+    x.globalAlpha = 1;
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+    return (_tex[key] = t);
   }
+  /* sombra de contacto (mancha radial suave debaixo de cada peça) */
+  function contactTex() {
+    if (_tex.contact) return _tex.contact;
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(0,0,0,.75)'); g.addColorStop(.45, 'rgba(0,0,0,.45)'); g.addColorStop(.75, 'rgba(0,0,0,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    return (_tex.contact = new THREE.CanvasTexture(c));
+  }
+  const RAD = { p: .29, r: .34, b: .31, q: .35, k: .36, n: .33 };
 
   function create(stage, onSquare) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setClearColor(0, 0); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+    renderer.setClearColor(0, 0); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = .92;
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     const cv = renderer.domElement; cv.className = 'ch3d';
     cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;z-index:3;touch-action:manipulation;cursor:pointer';
     stage.appendChild(cv);
     const scene = new THREE.Scene(); scene.environment = Arcade3D.env(renderer);
-    scene.add(new THREE.HemisphereLight('#f8fafc', '#1f2937', .8));
-    const sun = new THREE.DirectionalLight('#fff4e6', 2.2); sun.position.set(-4, 10, 5); sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .02;
-    Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 30 }); scene.add(sun);
+    /* três luzes de estúdio: chave quente (sombras), enchimento frio e recorte por trás */
+    scene.add(new THREE.HemisphereLight('#fff7ed', '#1e1b18', .45));
+    const sun = new THREE.DirectionalLight('#ffe8c7', 2.6); sun.position.set(-5, 11, 6); sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0003; sun.shadow.normalBias = .015;
+    Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 2, far: 30 }); scene.add(sun);
+    const fill = new THREE.DirectionalLight('#c7d7ff', .55); fill.position.set(7, 5, 4); scene.add(fill);
     const cam = new THREE.PerspectiveCamera(30, 1, .1, 100);
     /* tabuleiro */
     const sqGeo = new THREE.BoxGeometry(1, .16, 1);
-    const lightM = new THREE.MeshStandardMaterial({ roughness: .45, metalness: .05 }), darkM = new THREE.MeshStandardMaterial({ roughness: .45, metalness: .05 });
+    const sqGrain = grainTex('sq', '#ffffff', '#b8a58a', '#ffffff', 40);
+    const lightM = new THREE.MeshStandardMaterial({ map: sqGrain, roughness: .5, metalness: 0, envMapIntensity: .6 }), darkM = new THREE.MeshStandardMaterial({ map: sqGrain, roughness: .5, metalness: 0, envMapIntensity: .6 });
     const squares = [];
     for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
       const m = new THREE.Mesh(sqGeo, (r + c) % 2 ? darkM : lightM);
       m.position.set(c - 3.5, -.08, r - 3.5); m.receiveShadow = true;
       m.userData.sq = FILES[c] + (8 - r); scene.add(m); squares.push(m);
     }
-    const frameM = new THREE.MeshStandardMaterial({ roughness: .35, metalness: .15 });
+    const frameM = new THREE.MeshPhysicalMaterial({ map: grainTex('frame', '#ffffff', '#6b4a2a', '#ffffff', 70), roughness: .45, metalness: 0, clearcoat: .45, clearcoatRoughness: .3, envMapIntensity: .5 });
     const frame = new THREE.Mesh(Arcade3D.roundBox(.06), frameM); frame.scale.set(9, .3, 9); frame.position.y = -.2; frame.receiveShadow = true; scene.add(frame);
     /* coordenadas (a..h, 1..8) na moldura */
     const lbl = (ch) => { const c2 = document.createElement('canvas'); c2.width = c2.height = 64; const x = c2.getContext('2d'); x.font = '700 40px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = 'rgba(255,255,255,.75)'; x.fillText(ch, 32, 34); const t = new THREE.CanvasTexture(c2); t.colorSpace = THREE.SRGBColorSpace; return new THREE.Mesh(new THREE.PlaneGeometry(.34, .34), new THREE.MeshBasicMaterial({ map: t, transparent: true })); };
@@ -114,30 +130,34 @@ const Chess3D = (function () {
     const checkM = mk(new THREE.CircleGeometry(.5, 32), '#ef4444', .6);
     const dots = [], rings = [];
     for (let i = 0; i < 28; i++) { dots.push(mk(new THREE.CircleGeometry(.14, 20), '#22c55e', .75)); rings.push(mk(new THREE.RingGeometry(.4, .47, 28), '#22c55e', .8)); }
-    const pieceM = { w: new THREE.MeshStandardMaterial({ roughness: .3, metalness: .05 }), b: new THREE.MeshStandardMaterial({ roughness: .2, metalness: .25, envMapIntensity: 1.5 }) };
-    /* contorno (casca virada para dentro, um pouco maior): claro nas pretas, escuro nas brancas —
-       as peças destacam-se de qualquer casa, mesmo nos temas escuros */
-    const outM = { w: new THREE.MeshBasicMaterial({ color: '#111827', side: THREE.BackSide }), b: new THREE.MeshBasicMaterial({ color: '#f8fafc', side: THREE.BackSide }) };
-    /* luz de recorte vinda de trás: acende as silhuetas */
-    const accM = { w: new THREE.MeshStandardMaterial({ color: '#8a6a2f', metalness: .7, roughness: .3 }), b: new THREE.MeshStandardMaterial({ color: '#d9b25b', metalness: .8, roughness: .25 }) };
-    let badges = true;
-    const rim = new THREE.DirectionalLight('#dbeafe', 2.4); rim.position.set(0, 6, -9); scene.add(rim);
-    const pieces = [];            /* { mesh, type, color, sq, anim } */
-    let flip = false, raf = 0, lastT = performance.now(), dead = false;
+    /* marfim/buxo quente e ébano, ambos envernizados (clearcoat = brilho do verniz
+       por cima do veio). Sem contorno "de desenho animado": o contraste vem da luz. */
+    const pieceM = {
+      w: new THREE.MeshPhysicalMaterial({ color: '#e9d3ad', map: grainTex('w', '#ffffff', '#c9a979', '#ffffff', 55), roughness: .42, metalness: 0, clearcoat: .8, clearcoatRoughness: .18, sheen: .25, sheenColor: '#fff0d0', sheenRoughness: .5, envMapIntensity: .8 }),
+      b: new THREE.MeshPhysicalMaterial({ color: '#2b211c', map: grainTex('b', '#ffffff', '#3a2a22', '#b08a6a', 70), roughness: .32, metalness: 0, clearcoat: 1, clearcoatRoughness: .08, sheen: .5, sheenColor: '#8a6a55', sheenRoughness: .4, envMapIntensity: 1.3 }),
+    };
+    /* detalhes (ranhuras, faixas, cruz, crina): nogueira escura nas brancas, latão nas pretas */
+    const accM = { w: new THREE.MeshPhysicalMaterial({ color: '#5b3a1f', roughness: .45, clearcoat: .6, clearcoatRoughness: .2 }), b: new THREE.MeshStandardMaterial({ color: '#c9a14a', metalness: .85, roughness: .28 }) };
+    const shM = new THREE.MeshBasicMaterial({ map: contactTex(), transparent: true, depthWrite: false, opacity: .8 });
+    const shGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+    /* luz de recorte vinda de trás: acende as silhuetas (substitui o contorno) */
+    const rim = new THREE.DirectionalLight('#dbeafe', 2.1); rim.position.set(0, 5, -9); scene.add(rim);
+    const pieces = [];            /* { mesh, sh, type, color, sq, anim, lift } */
+    let flip = false, raf = 0, lastT = performance.now(), dead = false, selSq = null;
 
     const pos = sq => { const c = FILES.indexOf(sq[0]), r = 8 - (+sq[1]); return [c - 3.5, r - 3.5]; };
     function addPiece(type, color, sq, fadeIn) {
       const G = geoFor(type);
       const m = new THREE.Mesh(G.body, pieceM[color]); m.castShadow = true; m.receiveShadow = true;
-      const o = new THREE.Mesh(G.body, outM[color]); o.scale.set(1.09, 1.04, 1.09); o.position.y = -.018; m.add(o);
       const ac = new THREE.Mesh(G.accent, accM[color]); ac.castShadow = true; m.add(ac);
-      const bd = new THREE.Sprite(new THREE.SpriteMaterial({ map: badgeTex(type, color), depthTest: true, transparent: true }));
-      bd.position.y = G.top + .18; bd.scale.set(.42, .42, 1); bd.visible = badges; m.add(bd); m.userData.badge = bd;
+      /* a sombra de contacto fica no tabuleiro (não sobe com a peça) */
+      const sh = new THREE.Mesh(shGeo, shM); sh.renderOrder = 1; scene.add(sh);
       const [x, z] = pos(sq); m.position.set(x, 0, z);
-      if (type === 'n') m.rotation.y = color === 'w' ? 0 : Math.PI;
+      /* cavalo a ¾ de perfil: de frente era só uma placa */
+      if (type === 'n') m.rotation.y = color === 'w' ? 1.15 : Math.PI + 1.15;
       m.scale.setScalar(fadeIn ? .01 : 1);
       scene.add(m);
-      const p = { mesh: m, type, color, sq, anim: fadeIn ? { k: 'in', t: 0 } : null };
+      const p = { mesh: m, sh, type, color, sq, lift: 0, anim: fadeIn ? { k: 'in', t: 0 } : null };
       pieces.push(p); return p;
     }
 
@@ -148,7 +168,6 @@ const Chess3D = (function () {
       lightM.color.set(th.light); darkM.color.set(th.dark); frameM.color.set(th.frame);
       /* cores do tema, mas com contraste garantido: brancas claras, pretas escuras mas não negras */
       /* em 3D as peças têm sempre marfim e ébano (a cor do tema confundia-se com as casas) */
-      pieceM.w.color.set('#f4efe4'); pieceM.b.color.set('#23262e');
       rim.position.z = st.flip ? 9 : -9;
       /* peças: emparelha o que existe com o novo tabuleiro e anima as diferenças */
       const want = new Map();
@@ -168,7 +187,8 @@ const Chess3D = (function () {
           src.sq = sq; keep.add(src);
         } else addPiece(pc.type, pc.color, sq, st.animate);     /* promoção / começo */
       });
-      free.forEach(p => { p.anim = st.animate ? { k: 'out', t: 0, out: true } : null; if (!st.animate) { scene.remove(p.mesh); pieces.splice(pieces.indexOf(p), 1); } });
+      free.forEach(p => { p.anim = st.animate ? { k: 'out', t: 0, out: true } : null; if (!st.animate) { scene.remove(p.mesh, p.sh); pieces.splice(pieces.indexOf(p), 1); } });
+      selSq = st.selected || null;
       /* marcadores */
       const at = (m, sq, y) => { if (!sq) { m.visible = false; return; } const [x, z] = pos(sq); m.position.set(x, y || .005, z); m.visible = true; };
       at(selM, st.selected, .01);
@@ -213,15 +233,22 @@ const Chess3D = (function () {
       cam.position.set(0, 11 * fit.f * elev / 1.3, 8.6 * fit.f * s); cam.lookAt(0, 0, .35 * s);
       cam.setViewOffset(fit.w, fit.h, 0, -(fit.cy || 0) * fit.h / 2, fit.w, fit.h);
       for (let i = pieces.length - 1; i >= 0; i--) {
-        const p = pieces[i], a = p.anim; if (!a) continue;
+        const p = pieces[i], a = p.anim;
+        /* a peça escolhida levanta-se um pouco (a sombra de contacto alarga e esbate) */
+        const lt = !a && p.sq === selSq ? .16 : 0; p.lift += (lt - p.lift) * Math.min(1, dt * 14);
+        if (!a) p.mesh.position.y = p.lift;
+        const hk = Math.max(0, p.mesh.position.y);
+        p.sh.position.set(p.mesh.position.x, .004, p.mesh.position.z);
+        p.sh.scale.setScalar(RAD[p.type] * 3.1 * (1 + hk * .9) * Math.min(1, p.mesh.scale.x * 1.2));
+        if (!a) continue;
         a.t += dt;
         if (a.k === 'move') {
           const k = Math.min(1, a.t / .32), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
           p.mesh.position.set(a.x0 + (a.x1 - a.x0) * e, Math.sin(k * Math.PI) * a.hop, a.z0 + (a.z1 - a.z0) * e);
-          if (k >= 1) { p.anim = null; p.mesh.position.y = 0; }
+          if (k >= 1) { p.anim = null; p.mesh.position.y = p.lift = 0; }
         } else if (a.k === 'out') {
           const k = Math.min(1, a.t / .35); p.mesh.position.y = -k * .6; p.mesh.scale.setScalar(1 - k * .6);
-          if (k >= 1) { scene.remove(p.mesh); pieces.splice(i, 1); }
+          if (k >= 1) { scene.remove(p.mesh, p.sh); pieces.splice(i, 1); }
         } else if (a.k === 'in') {
           const k = Math.min(1, a.t / .3); p.mesh.scale.setScalar(.01 + k * .99 * (1 + Math.sin(k * Math.PI) * .15));
           if (k >= 1) { p.anim = null; p.mesh.scale.setScalar(1); }
@@ -245,10 +272,11 @@ const Chess3D = (function () {
 
     function dispose() {
       dead = true; cancelAnimationFrame(raf);
-      scene.traverse(o => { if (o.geometry && !Object.values(_geo).some(g => g.body === o.geometry || g.accent === o.geometry)) o.geometry.dispose(); if (o.material) { if (o.material.map && !Object.values(_badge).includes(o.material.map)) o.material.map.dispose(); o.material.dispose(); } });
+      const keepTex = Object.values(_tex);
+      scene.traverse(o => { if (o.geometry && !Object.values(_geo).some(g => g.body === o.geometry || g.accent === o.geometry)) o.geometry.dispose(); if (o.material) { if (o.material.map && !keepTex.includes(o.material.map)) o.material.map.dispose(); o.material.dispose(); } });
       renderer.dispose(); cv.remove();
     }
-    return { sync, dispose, canvas: cv, setBadges(on) { badges = on; pieces.forEach(p => { p.mesh.userData.badge.visible = on; }); } };
+    return { sync, dispose, canvas: cv };
   }
 
   return { create };

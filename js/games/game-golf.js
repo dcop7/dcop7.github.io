@@ -274,7 +274,9 @@ const GolfGame = (function () {
   function flat(geo) { geo.rotateX(Math.PI / 2); return geo; }
   function buildHole(G) {
     const R = G.r3, h = G.h;
-    if (R.hole) { R.scene.remove(R.hole); R.hole.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && !o.material.userData.shared && !Object.values(R.T).includes(o.material.map)) o.material.dispose(); }); }
+    /* o relvado tem um array de materiais (topo + lados): disposeOwn trata disso
+       e não liberta as texturas partilhadas de R.T (antes rebentava no buraco 2) */
+    if (R.hole) { R.scene.remove(R.hole); Arcade3D.disposeOwn(R.hole); }
     const g = new THREE.Group(); R.hole = g; R.hi = G.hi; R.scene.add(g);
     const add = (geo, mat, y, cast) => { const m = new THREE.Mesh(geo, mat); m.position.y = y || 0; m.receiveShadow = true; m.castShadow = !!cast; g.add(m); return m; };
     /* relvado: bloco com a forma do buraco (topo em y=0) */

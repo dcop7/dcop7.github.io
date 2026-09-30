@@ -9,10 +9,13 @@ const LaneRushGame = (function () {
   'use strict';
   const U = ArcadeKit.U;
   const ZMAX = 70, F = 7, LANE = 124;
+  /* v em unidades/s (km/h = v·6). Afinado para toque (out/2026): antes o médio
+     arrancava a 114 km/h, chegava ao máximo em ~80 s e as filas podiam vir a
+     0,56 s umas das outras — no telemóvel o dedo não acompanhava. */
   const DIFF = {
-    easy:   { v0: 16, vMax: 40, acc: .28, tMin: .72 },
-    medium: { v0: 19, vMax: 48, acc: .36, tMin: .56 },
-    hard:   { v0: 23, vMax: 56, acc: .46, tMin: .44 },
+    easy:   { v0: 12, vMax: 30, acc: .14, tMin: 1.0 },
+    medium: { v0: 14, vMax: 36, acc: .19, tMin: .82 },
+    hard:   { v0: 17, vMax: 44, acc: .26, tMin: .66 },
   };
 
   function setup(api, o) {
@@ -42,7 +45,9 @@ const LaneRushGame = (function () {
     const kinds = G.rows < 3 ? ['one', 'coins'] : ['one', 'one', 'two', 'two', 'coins', 'car', 'mix'];
     const k = U.pick(kinds);
     const z = ZMAX;
-    const free = U.randi(0, 2);
+    /* duas filas de barreiras seguidas nunca obrigam a saltar 2 faixas de uma vez */
+    const free = G.lastFree == null ? U.randi(0, 2) : U.pick([0, 1, 2].filter(l => Math.abs(l - G.lastFree) <= 1));
+    G.lastFree = k === 'two' || k === 'mix' ? free : null;
     if (k === 'one') G.objs.push({ t: 'bar', lane: U.randi(0, 2), z });
     else if (k === 'two') [0, 1, 2].filter(l => l !== free).forEach(l => G.objs.push({ t: 'bar', lane: l, z }));
     else if (k === 'coins') { const l = U.randi(0, 2); for (let i = 0; i < 4; i++) G.objs.push({ t: 'coin', lane: l, z: z + i * 3 }); }
@@ -99,7 +104,7 @@ const LaneRushGame = (function () {
     G.nextRow -= dz;
     if (G.nextRow <= 0) {
       spawnRow(G);
-      const T = Math.max(c.tMin, 1.2 - G.time * .0075);
+      const T = Math.max(c.tMin, 1.45 - G.time * .006);
       G.nextRow = G.v * T + U.rand(0, 4);
       /* os carros andam (a .35 v): a fila seguinte não os pode apanhar antes
          de passarem por ti, senão carro + barreiras fechavam as 3 faixas */
