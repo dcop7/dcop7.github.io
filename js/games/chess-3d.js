@@ -52,7 +52,7 @@ const Chess3D = (function () {
     renderer.setClearColor(0, 0); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     const cv = renderer.domElement; cv.className = 'ch3d';
-    cv.style.cssText = 'position:absolute;inset:-8% -4% 0 -4%;width:108%;height:108%;display:block;z-index:3;touch-action:manipulation;cursor:pointer';
+    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;z-index:3;touch-action:manipulation;cursor:pointer';
     stage.appendChild(cv);
     const scene = new THREE.Scene(); scene.environment = Arcade3D.env(renderer);
     scene.add(new THREE.HemisphereLight('#f8fafc', '#1f2937', .8));
@@ -82,13 +82,19 @@ const Chess3D = (function () {
     const checkM = mk(new THREE.CircleGeometry(.5, 32), '#ef4444', .6);
     const dots = [], rings = [];
     for (let i = 0; i < 28; i++) { dots.push(mk(new THREE.CircleGeometry(.14, 20), '#22c55e', .75)); rings.push(mk(new THREE.RingGeometry(.4, .47, 28), '#22c55e', .8)); }
-    const pieceM = { w: new THREE.MeshStandardMaterial({ roughness: .28, metalness: .08 }), b: new THREE.MeshStandardMaterial({ roughness: .28, metalness: .08 }) };
+    const pieceM = { w: new THREE.MeshStandardMaterial({ roughness: .3, metalness: .05 }), b: new THREE.MeshStandardMaterial({ roughness: .2, metalness: .25, envMapIntensity: 1.5 }) };
+    /* contorno (casca virada para dentro, um pouco maior): claro nas pretas, escuro nas brancas —
+       as peças destacam-se de qualquer casa, mesmo nos temas escuros */
+    const outM = { w: new THREE.MeshBasicMaterial({ color: '#111827', side: THREE.BackSide }), b: new THREE.MeshBasicMaterial({ color: '#f8fafc', side: THREE.BackSide }) };
+    /* luz de recorte vinda de trás: acende as silhuetas */
+    const rim = new THREE.DirectionalLight('#dbeafe', 2.4); rim.position.set(0, 6, -9); scene.add(rim);
     const pieces = [];            /* { mesh, type, color, sq, anim } */
     let flip = false, raf = 0, lastT = performance.now(), dead = false;
 
     const pos = sq => { const c = FILES.indexOf(sq[0]), r = 8 - (+sq[1]); return [c - 3.5, r - 3.5]; };
     function addPiece(type, color, sq, fadeIn) {
       const m = new THREE.Mesh(geoFor(type), pieceM[color]); m.castShadow = true; m.receiveShadow = true;
+      const o = new THREE.Mesh(geoFor(type), outM[color]); o.scale.set(1.1, 1.05, 1.1); o.position.y = -.02; m.add(o);
       const [x, z] = pos(sq); m.position.set(x, 0, z);
       if (type === 'n') m.rotation.y = color === 'w' ? 0 : Math.PI;
       m.scale.setScalar(fadeIn ? .01 : 1);
@@ -102,7 +108,10 @@ const Chess3D = (function () {
       flip = st.flip;
       const th = st.theme;
       lightM.color.set(th.light); darkM.color.set(th.dark); frameM.color.set(th.frame);
-      pieceM.w.color.set(th.pcLight); pieceM.b.color.set(th.pcDark);
+      /* cores do tema, mas com contraste garantido: brancas claras, pretas escuras mas não negras */
+      /* em 3D as peças têm sempre marfim e ébano (a cor do tema confundia-se com as casas) */
+      pieceM.w.color.set('#f4efe4'); pieceM.b.color.set('#23262e');
+      rim.position.z = st.flip ? 9 : -9;
       /* peças: emparelha o que existe com o novo tabuleiro e anima as diferenças */
       const want = new Map();
       st.board.forEach((row, r) => row.forEach((pc, c) => { if (pc) want.set(FILES[c] + (8 - r), pc); }));
@@ -142,8 +151,20 @@ const Chess3D = (function () {
       const now = performance.now(), dt = Math.min(.05, (now - lastT) / 1000); lastT = now;
       fit();
       const s = flip ? -1 : 1;
-      const far = cam.aspect < .95 ? 1.18 : 1;   /* ecrãs estreitos: afasta para caber a largura */
-      cam.position.set(0, 11.4 * far, 9.2 * far * s); cam.lookAt(0, -.5, .45 * s);
+      /* afasta a câmara até os cantos da moldura e o topo das peças do fundo caberem com folga */
+      if (fit.s !== s || fit.a !== cam.aspect) {
+        fit.s = s; fit.a = cam.aspect;
+        const pts = [[-4.6, -.35, 4.6], [4.6, -.35, 4.6], [-4.6, -.35, -4.6], [4.6, -.35, -4.6], [-3.5, 1.25, -3.5 * s], [3.5, 1.25, -3.5 * s]].map(p => new THREE.Vector3(p[0], p[1], p[2] * s));
+        let lo = .6, hi = 3;
+        for (let i = 0; i < 18; i++) {
+          const f = (lo + hi) / 2;
+          cam.position.set(0, 11 * f, 8.6 * f * s); cam.lookAt(0, 0, .15 * s); cam.updateMatrixWorld();
+          const ok = pts.every(p => { const v = p.clone().project(cam); return Math.abs(v.x) < .95 && Math.abs(v.y) < .95; });
+          if (ok) hi = f; else lo = f;
+        }
+        fit.f = hi;
+      }
+      cam.position.set(0, 11 * fit.f, 8.6 * fit.f * s); cam.lookAt(0, 0, .15 * s);
       for (let i = pieces.length - 1; i >= 0; i--) {
         const p = pieces[i], a = p.anim; if (!a) continue;
         a.t += dt;
