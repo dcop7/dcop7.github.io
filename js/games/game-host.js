@@ -57,8 +57,6 @@ const GameHost = (function () {
       desc: 'Guia a bola por pistas suspensas sem cair nos buracos nem bater.' },
     { id: 'balldrop',      name: 'Queda Livre',          icon: '🟡', color: '#a855f7', group: 'Arcade',
       desc: 'Conduz a bola em queda pelos obstáculos até à zona de aterragem.' },
-    { id: 'keep-up',       name: 'Toques',               icon: '⚽', color: '#22c55e', group: 'Arcade',
-      desc: 'Mantém a bola no ar com toques, sem a deixar cair.' },
     /* ── lote 2 (set/2026) ── */
     { id: 'bubble-shooter', name: 'Bolhas', icon: '🫧', color: '#a78bfa', group: 'Clássicos',
       desc: 'Aponta, ressalta nas paredes e junta 3 bolhas da mesma cor.' },
@@ -100,7 +98,7 @@ const GameHost = (function () {
     'arrow-wall': () => ArrowWallGame, jumpy: () => JumpyGame, 'ninja-chop': () => NinjaChopGame,
     dangerwall: () => DangerwallGame, drift: () => DriftGame, target: () => TargetGame,
     'quick-maths': () => QuickMathsGame, golf: () => GolfGame, ballracer: () => BallracerGame,
-    'chicken-up': () => ChickenUpGame, balldrop: () => BalldropGame, 'keep-up': () => KeepUpGame,
+    'chicken-up': () => ChickenUpGame, balldrop: () => BalldropGame,
     'bubble-shooter': () => BubbleShooterGame,
     'brick-breaker': () => BrickBreakerGame,
     'sudoku': () => SudokuGame,

@@ -58,7 +58,6 @@ const Lazy = (function () {
     'js/games/game-golf.js',
     'js/games/game-ballracer.js',
     'js/games/game-balldrop.js',
-    'js/games/game-keep-up.js',
     'js/games/game-bubble-shooter.js',
     'js/games/game-brick-breaker.js',
     'js/games/game-sudoku.js',

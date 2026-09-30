@@ -1456,7 +1456,6 @@ const ALL_GAMES = [
   { id:'drift', key:'game.drift', icon:'🚗' },
   { id:'ballracer', key:'game.ballracer', icon:'🔵' },
   { id:'balldrop', key:'game.balldrop', icon:'🟡' },
-  { id:'keep-up', key:'game.keep-up', icon:'⚽' },
   { id:'bubble-shooter', key:'game.bubble-shooter', icon:'🫧' },
   { id:'brick-breaker', key:'game.brick-breaker', icon:'🟦' },
   { id:'sudoku', key:'game.sudoku', icon:'9️⃣' },

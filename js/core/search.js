@@ -49,7 +49,6 @@ const Search = (function () {
     { label: 'Drift', id: 'games/drift', icon: '🚗', tags: ['drift', 'carro', 'pista', 'derrapar', 'corrida', 'voltas'] },
     { label: 'Bola Veloz', id: 'games/ballracer', icon: '🔵', tags: ['bola', 'pista', 'rolar', 'ball'] },
     { label: 'Queda Livre', id: 'games/balldrop', icon: '🟡', tags: ['queda', 'bola', 'cair', 'obstáculos', 'drop'] },
-    { label: 'Toques', id: 'games/keep-up', icon: '⚽', tags: ['toques', 'bola', 'futebol', 'keepy uppy', 'keep up'] },
     { label: 'Bolhas', id: 'games/bubble-shooter', icon: '🫧', tags: ['bolhas', 'bubble', 'shooter', 'cores', 'disparar'] },
     { label: 'Parte-Tijolos', id: 'games/brick-breaker', icon: '🟦', tags: ['tijolos', 'breakout', 'arkanoid', 'raquete', 'bola', 'brick'] },
     { label: 'Sudoku', id: 'games/sudoku', icon: '9️⃣', tags: ['sudoku', 'números', 'grelha', 'lógica', 'puzzle'] },
