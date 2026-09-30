@@ -58,7 +58,7 @@ const GolfGame = (function () {
     const h = HOLES[i];
     h._sx = h.slider ? (h.slider.x0 + h.slider.x1) / 2 : 0; h._sd = 1;
     G.hi = i; G.h = h; G.bx = h.tee[0]; G.by = h.tee[1]; G.vx = 0; G.vy = 0; G.strokes = 0; G.last = [h.tee[0], h.tee[1]];
-    G.sunk = 0; G.moving = false; G.trail = []; G.ht = 0; G.aim = null; G.splash = 0;
+    G.sunk = 0; G.sunkName = ''; G.fin = false; G.moving = false; G.trail = []; G.ht = 0; G.aim = null; G.splash = 0;
   }
 
   function setup(api, o) {
@@ -81,8 +81,7 @@ const GolfGame = (function () {
   function capCheck(G, api) {
     if (G.strokes < G.cfg.cap || G.sunk) return false;
     api.float(G.bx, G.by - 20, 'Máximo de pancadas', '#fca5a5', 16);
-    G.strokes = G.cfg.cap + 1; G.sunk = .001;
-    setTimeout(() => finishHole(G, api, 'Limite'), 900);
+    G.strokes = G.cfg.cap + 1; G.sunk = .001; G.sunkName = 'Limite';
     return true;
   }
 
@@ -92,7 +91,7 @@ const GolfGame = (function () {
     const name = G.strokes === 1 ? 'Buraco à primeira!' : (NAMES[diff] || (diff > 0 ? '+' + diff : diff));
     api.sfx.arp(diff <= 0 ? [523, 659, 784, 1047] : [392, 523], .07, .14, 'triangle', .09); api.vibe([20, 30, 40]);
     for (let i = 0; i < 24; i++) api.spark({ x: G.h.cup[0], y: G.h.cup[1], vx: U.rand(-200, 200), vy: U.rand(-260, 40), color: U.pick(['#fde047', '#fff', '#86efac', '#f472b6']), size: U.rand(2, 4), life: .9, gravity: 500 });
-    setTimeout(() => finishHole(G, api, name), 900);
+    G.sunkName = name;
   }
 
   function finishHole(G, api, name) {
@@ -157,7 +156,8 @@ const GolfGame = (function () {
     if (h.slider) { const sl = h.slider; h._sx += h._sd * sl.v * dt; if (h._sx > sl.x1 - sl.w / 2) { h._sx = sl.x1 - sl.w / 2; h._sd = -1; } if (h._sx < sl.x0 + sl.w / 2) { h._sx = sl.x0 + sl.w / 2; h._sd = 1; } }
     if (G.bump) { G.bump.t -= dt; if (G.bump.t <= 0) G.bump = null; }
     if (G.splash > 0) { G.splash -= dt; if (G.splash <= 0) { G.bx = G.last[0]; G.by = G.last[1]; G.vx = G.vy = 0; capCheck(G, api); } return; }
-    if (G.sunk) { G.sunk += dt; return; }
+    /* o painel do buraco abre pelo relógio do jogo (não por setTimeout: em pausa espera) */
+    if (G.sunk) { G.sunk += dt; if (G.sunk > .9 && !G.fin) { G.fin = true; finishHole(G, api, G.sunkName); } return; }
     const sub = 5, sdt = dt / sub;
     let maxHit = 0;
     for (let k = 0; k < sub; k++) {

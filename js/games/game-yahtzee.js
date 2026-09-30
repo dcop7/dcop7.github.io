@@ -256,7 +256,7 @@ const YahtzeeGame = (function () {
 .yz-head{display:grid;grid-template-columns:1fr 42px;gap:4px;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:#86efac;padding:0 6px}
 .yz.vs .yz-head,.yz.vs .yz-row{grid-template-columns:1fr 36px 30px}
 .yz-head b,.yz-head span:last-child{text-align:center}
-.yz-row{display:grid;grid-template-columns:1fr 42px;gap:4px;align-items:center;flex:1;min-height:26px;max-height:40px;padding:0 6px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:inherit;font:600 .8rem system-ui;text-align:left;cursor:pointer;transition:background .12s,border-color .12s}
+.yz-row{display:grid;grid-template-columns:1fr 42px;gap:4px;align-items:center;flex:1;min-height:26px;max-height:50px;padding:0 8px;border-radius:9px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:inherit;font:600 .8rem system-ui;text-align:left;cursor:pointer;transition:background .12s,border-color .12s}
 .yz-row:not(:disabled):hover{border-color:#fbbf24;background:rgba(251,191,36,.1)}
 .yz-row:disabled{cursor:default}
 .yz-row.sub{cursor:default;background:transparent;border-style:dashed}

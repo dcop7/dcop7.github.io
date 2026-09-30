@@ -99,7 +99,7 @@ const NinjaChopGame = (function () {
     G.slow = Math.max(0, G.slow - dt);
     G.t += dt;
     if (G.mode === 'timed') { G.timeLeft -= dt; if (G.timeLeft <= 0) { G.timeLeft = 0; end(G, api, 'Tempo!'); return; } }
-    G.spawnT -= dt;
+    G.spawnT -= sdt;                    /* o gelo também abranda os lançamentos (senão a fruta acumula) */
     if (G.spawnT <= 0) { spawn(G, api); const k = Math.min(1, G.t / 90); G.spawnT = U.lerp(G.cfg.every[0], G.cfg.every[1], k) * U.rand(.8, 1.2) + (G.items.length > 5 ? .4 : 0); }
 
     for (const it of G.items) {
@@ -190,6 +190,9 @@ const NinjaChopGame = (function () {
     for (let x = 0; x < W; x += 90) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
     ctx.strokeStyle = 'rgba(255,220,180,.04)'; ctx.lineWidth = 1;
     for (let x = 12; x < W; x += 23) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.bezierCurveTo(x + 6, H * .3, x - 6, H * .6, x + 3, H); ctx.stroke(); }
+    const vg = ctx.createRadialGradient(W / 2, H * .45, Math.min(W, H) * .3, W / 2, H * .5, Math.max(W, H) * .75);
+    vg.addColorStop(0, 'rgba(255,190,120,.06)'); vg.addColorStop(1, 'rgba(0,0,0,.45)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
     G.splats.forEach(s => {
       ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot); ctx.globalAlpha = s.a; ctx.fillStyle = s.c;
       /* mancha orgânica: contorno suave por curvas entre raios aleatórios + gotas soltas */
@@ -246,7 +249,8 @@ const NinjaChopGame = (function () {
     down: (G, x, y, api, e) => { G.lastP = { x, y, t: G.t, rt: ((e && e.timeStamp) || performance.now()) / 1000 }; },
     move: onMove,
     up: G => { G.lastP = null; },
-    hud: G => [['Pontos', G.score], G.mode === 'timed' ? ['Tempo', Math.ceil(G.timeLeft) + 's', G.timeLeft < 10 ? 'hot' : ''] : ['Vidas', '❤'.repeat(Math.max(0, G.lives))]],
+    /* as falhas do Clássico já aparecem como ✕ no canto; o HUD mostra a fruta cortada */
+    hud: G => [['Pontos', G.score], G.mode === 'timed' ? ['Tempo', Math.ceil(G.timeLeft) + 's', G.timeLeft < 10 ? 'hot' : ''] : ['Frutas', G.sliced]],
     achievements: [
       { id: 'nc.combo5', name: 'Golpe Duplo… Quíntuplo', icon: '🥷', desc: 'Corta 5 frutas num só golpe.', test: c => ((c.result.meta || {}).bestSwipe || 0) >= 5 },
       { id: 'nc.100',    name: 'Mestre da Lâmina',       icon: '🍉', desc: 'Faz 100 pontos no Corte Ninja.', test: c => (c.result.score || 0) >= 100 },

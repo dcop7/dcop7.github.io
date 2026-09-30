@@ -6,8 +6,8 @@ const NeonShooterGame = (function () {
 
   /* UI strings live in games/neon-shooter/i18n.json (offline fallback below). */
   const FB_I18N = {
-    pt: { record:'Recorde', pts:'pts', play:'▶ Jogar', tip:'Move o rato / arrasta o dedo para voar<br>A tua nave dispara automaticamente', gameOver:'Fim de Jogo', wave:'Vaga', reached:'alcançada', enemies:'inimigos', maxCombo:'combo máx.', retry:'🔄 Jogar de Novo', menu:'Menu' },
-    en: { record:'Best', pts:'pts', play:'▶ Play', tip:'Move the mouse / drag to fly<br>Your ship fires automatically', gameOver:'Game Over', wave:'Wave', reached:'reached', enemies:'enemies', maxCombo:'max combo', retry:'🔄 Play Again', menu:'Menu' },
+    pt: { record:'Recorde', pts:'pts', play:'▶ Jogar', tip:'Move o rato / arrasta o dedo para voar<br>A tua nave dispara automaticamente', gameOver:'Fim de Jogo', wave:'Vaga', reached:'alcançada', enemies:'inimigos', maxCombo:'combo máx.', retry:'🔄 Jogar de Novo', menu:'Menu', paused:'Pausa', resume:'▶ Continuar' },
+    en: { record:'Best', pts:'pts', play:'▶ Play', tip:'Move the mouse / drag to fly<br>Your ship fires automatically', gameOver:'Game Over', wave:'Wave', reached:'reached', enemies:'enemies', maxCombo:'max combo', retry:'🔄 Play Again', menu:'Menu', paused:'Paused', resume:'▶ Resume' },
   };
   const _has = typeof GameData !== 'undefined';
   const t = _has ? GameData.translator(FB_I18N) : (k => (FB_I18N.pt[k] || k));
@@ -16,7 +16,7 @@ const NeonShooterGame = (function () {
     if (document.getElementById('ns-css')) return;
     const s = document.createElement('style'); s.id = 'ns-css';
     s.textContent = `
-.ns-host{position:relative;width:100%;height:100%;min-height:520px;background:#000;overflow:hidden;display:flex;flex-direction:column}
+.ns-host{position:relative;width:100%;max-width:720px;margin:0 auto;height:min(760px,calc(100dvh - 170px));min-height:480px;background:#000;overflow:hidden;display:flex;flex-direction:column;border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.45);border:1px solid rgba(168,85,247,.18)}
 .ns-cv{display:block;width:100%;flex:1;min-height:0;cursor:none}
 .ns-ui{position:absolute;inset:0;pointer-events:none;z-index:5}
 .ns-hud{position:absolute;top:0;left:0;right:0;padding:10px 14px;display:flex;align-items:center;gap:12px;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
@@ -24,6 +24,9 @@ const NeonShooterGame = (function () {
 .ns-hud-wave{font-size:.8rem;color:#a855f7;font-weight:700;text-shadow:0 0 8px #a855f7}
 .ns-hud-lives{display:flex;gap:4px;align-items:center}
 .ns-hud-combo{font-size:.8rem;color:#ffdd00;font-weight:700;text-shadow:0 0 8px #ffdd00;min-width:54px;text-align:right}
+.ns-pbtn{pointer-events:all;width:34px;height:34px;border-radius:10px;border:1px solid rgba(168,85,247,.45);background:rgba(10,0,30,.6);color:#e9d5ff;cursor:pointer;font-size:.9rem}
+.ns-pause{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,12,.72);backdrop-filter:blur(3px)}
+.ns-pause b{font-size:1.6rem;color:#e9d5ff;letter-spacing:.08em}
 .ns-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 40%,#0d0028 0%,#000 75%);z-index:10}
 .ns-title{font-size:2rem;font-weight:900;background:linear-gradient(120deg,#00ffff,#a855f7,#ff00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;letter-spacing:.05em;line-height:1.1}
 .ns-score-big{font-size:2.4rem;font-weight:900;color:#a855f7;text-shadow:0 0 20px rgba(168,85,247,.6);font-family:monospace}
@@ -66,21 +69,51 @@ const NeonShooterGame = (function () {
           <div class="ns-hud-wave" id="ns-wave">WAVE 1</div>
           <div class="ns-hud-lives" id="ns-lives"></div>
           <div class="ns-hud-combo" id="ns-combo"></div>
+          <button class="ns-pbtn" id="ns-pause" aria-label="Pausa">⏸</button>
         </div>
       </div>
     </div>`;
     cv = root.querySelector('#ns-cv');
     cx = cv.getContext('2d');
-    resize(); window.addEventListener('resize', resize);
-    G = newG(); setupControls();
+    cancelAnimationFrame(raf);
+    G = null;
+    resize(); window.removeEventListener('resize', resize); window.addEventListener('resize', resize);
+    /* newG2: a 1.ª vaga já tem inimigos (antes spawnMax era 0 e a vaga 1 ficava vazia) */
+    G = newG2(); setupControls();
+    root.querySelector('#ns-pause').addEventListener('click', () => pause(true));
+    lastTs = performance.now();
     raf = requestAnimationFrame(loop);
   }
 
+  /* pausa: botão, Esc/P, e sozinha quando o jogo sai do ecrã (outra secção,
+     outro separador) — antes continuava a correr e perdias vidas sem ver */
+  function pause(on) {
+    if (!G || !G.running) return;
+    G.paused = on;
+    const ui = root.querySelector('.ns-ui'); if (!ui) return;
+    ui.querySelector('.ns-pause')?.remove();
+    if (on) {
+      const d = document.createElement('div'); d.className = 'ns-pause';
+      d.innerHTML = `<b>${t('paused')}</b><button class="ns-play-btn" id="ns-resume">${t('resume')}</button>`;
+      ui.appendChild(d);
+      d.querySelector('#ns-resume').addEventListener('click', () => pause(false));
+    } else lastTs = performance.now();
+  }
+  document.addEventListener('keydown', e => {
+    if (!G || !G.running || !root || !root.getClientRects().length) return;
+    if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') { e.preventDefault(); pause(!G.paused); }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && G && G.running && !G.paused) pause(true); });
+
   function resize() {
-    W = cv.offsetWidth || 400; H = cv.offsetHeight || 520;
-    cv.width = W; cv.height = H;
-    if (G) { G.px = W / 2; }
-    mx = W / 2; my = H * 0.8;
+    if (!cv || !cv.isConnected) return;
+    const w = cv.offsetWidth || 400, h = cv.offsetHeight || 520, dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (G && w === W && h === H) return;
+    W = w; H = h;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);          /* nítido em ecrãs retina */
+    if (G) { G.px = Math.min(G.px, W - 16); G.py = Math.min(G.py, H - 20); }
+    else { mx = W / 2; my = H * 0.8; }
   }
 
   function newG() {
@@ -104,7 +137,11 @@ const NeonShooterGame = (function () {
   let lastTs = 0;
   function loop(ts) {
     const dt = Math.min((ts - lastTs) / 1000, 0.05); lastTs = ts;
-    if (G.running) { update(dt); render(); raf = requestAnimationFrame(loop); }
+    if (!G.running) return;
+    if (!root.isConnected) return;
+    if (!root.getClientRects().length && !G.paused) pause(true);
+    if (!G.paused) { if (cv.offsetWidth !== W || cv.offsetHeight !== H) resize(); update(dt); render(); }
+    raf = requestAnimationFrame(loop);
   }
 
   function update(dt) {
@@ -378,7 +415,7 @@ const NeonShooterGame = (function () {
 
   function updateHUD() {
     const sc = root.querySelector('#ns-score'); if (sc) sc.textContent = G.score;
-    const wv = root.querySelector('#ns-wave');  if (wv) wv.textContent = `WAVE ${G.wave}`;
+    const wv = root.querySelector('#ns-wave');  if (wv) wv.textContent = `${t('wave').toUpperCase()} ${G.wave}`;
     const lv = root.querySelector('#ns-lives'); if (lv) lv.innerHTML = Array.from({length:G.lives}).map(()=>'<span style="font-size:.9rem">❤️</span>').join('') + (G.shield?'<span style="font-size:.9rem;filter:drop-shadow(0 0 4px #00ffff)">🛡️</span>':'');
     const cb = root.querySelector('#ns-combo');  if (cb) cb.textContent = G.combo > 1 ? `×${G.combo}` : '';
   }
@@ -452,7 +489,9 @@ const NeonShooterGame = (function () {
       glow(e.color, 12);
       cx.fillStyle = e.color;
       if (e.type === 'basic') {
+        cx.rotate(Math.PI);                 /* os inimigos descem: nariz para baixo */
         cx.beginPath(); cx.moveTo(0,-e.r); cx.lineTo(e.r*.7,e.r*.7); cx.lineTo(0,e.r*.3); cx.lineTo(-e.r*.7,e.r*.7); cx.closePath(); cx.fill();
+        cx.rotate(-Math.PI);
       } else if (e.type === 'zigzag') {
         for (let i=0;i<6;i++) { const a=i*Math.PI/3; cx.beginPath(); cx.moveTo(0,0); cx.lineTo(Math.cos(a)*e.r,Math.sin(a)*e.r); cx.stroke(); }
         cx.beginPath(); for(let i=0;i<6;i++){const a=i*Math.PI/3;i===0?cx.moveTo(Math.cos(a)*e.r,Math.sin(a)*e.r):cx.lineTo(Math.cos(a)*e.r,Math.sin(a)*e.r);} cx.closePath(); cx.fill();
@@ -513,6 +552,7 @@ const NeonShooterGame = (function () {
   }
 
   function drawParticles() {
+    cx.globalCompositeOperation = 'lighter';
     G.parts.forEach(p => {
       const a = Math.min(1, p.life / (p.maxLife || 0.5));
       if (p.text) {
@@ -528,19 +568,31 @@ const NeonShooterGame = (function () {
         cx.lineWidth = 2; cx.beginPath(); cx.arc(p.x, p.y, r, 0, Math.PI*2); cx.stroke();
         noGlow(); return;
       }
-      glow(p.color, 6);
       cx.globalAlpha = a; cx.fillStyle = p.color;
       cx.beginPath(); cx.arc(p.x, p.y, p.size, 0, Math.PI*2); cx.fill();
-      cx.globalAlpha = 1; noGlow();
+      cx.globalAlpha = a * .25; cx.beginPath(); cx.arc(p.x, p.y, p.size * 2.4, 0, Math.PI*2); cx.fill();
+      cx.globalAlpha = 1;
     });
+    cx.globalCompositeOperation = 'source-over';
   }
 
   function setupControls() {
     const host = root.querySelector('.ns-host');
     host.addEventListener('mousemove', e => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
-    host.addEventListener('touchstart', e => { e.preventDefault(); touching = true; const t = e.touches[0]; const r = cv.getBoundingClientRect(); mx = t.clientX - r.left; my = t.clientY - r.top; }, {passive:false});
-    host.addEventListener('touchmove',  e => { e.preventDefault(); const t = e.touches[0]; const r = cv.getBoundingClientRect(); mx = t.clientX - r.left; my = t.clientY - r.top; }, {passive:false});
-    host.addEventListener('touchend', () => touching = false);
+    /* toque: arrasto relativo — a nave mexe-se como o dedo, sem ficar tapada por ele */
+    let t0 = null;
+    host.addEventListener('touchstart', e => {
+      if (e.target.closest('button')) return;
+      e.preventDefault(); touching = true; const t = e.touches[0];
+      t0 = { x: t.clientX, y: t.clientY, sx: G ? G.px : mx, sy: G ? G.py : my };
+    }, {passive:false});
+    host.addEventListener('touchmove',  e => {
+      if (!t0) return;
+      e.preventDefault(); const t = e.touches[0];
+      mx = Math.max(16, Math.min(W - 16, t0.sx + (t.clientX - t0.x) * 1.25));
+      my = Math.max(60, Math.min(H - 20, t0.sy + (t.clientY - t0.y) * 1.25));
+    }, {passive:false});
+    host.addEventListener('touchend', () => { touching = false; t0 = null; });
   }
 
   function dist(ax, ay, bx, by) { const dx=ax-bx,dy=ay-by; return Math.sqrt(dx*dx+dy*dy); }

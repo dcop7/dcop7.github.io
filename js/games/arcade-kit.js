@@ -262,6 +262,7 @@ const ArcadeKit = (function () {
       if (S.raf) cancelAnimationFrame(S.raf);
       window.removeEventListener('keydown', S.onKey);
       window.removeEventListener('keyup', S.onKeyUp);
+      window.removeEventListener('blur', S.onBlur);
       S = null;
     }
 
@@ -559,9 +560,17 @@ const ArcadeKit = (function () {
         if (sess.state === 'play' && spec.key && spec.key(sess.G, e, api) === true) e.preventDefault();
       };
       window.addEventListener('keydown', sess.onKey);
-      /* keyup só para os jogos que o pedem (movimento contínuo) */
-      sess.onKeyUp = e => { if (!sess.dead && sess.state === 'play' && spec.keyup) spec.keyup(sess.G, e, api); };
+      /* keyup só para os jogos que o pedem (movimento contínuo). Chega também em
+         pausa (largar a tecla durante a pausa não a pode deixar "presa"), e ao
+         perder o foco da janela solta-se tudo (o keyup nunca chegaria). */
+      sess.onKeyUp = e => { if (!sess.dead && sess.G && spec.keyup) spec.keyup(sess.G, e, api); };
       window.addEventListener('keyup', sess.onKeyUp);
+      sess.onBlur = () => {
+        if (sess.dead || !sess.G || !spec.keyup) return;
+        ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'd', 'w', 's', 'A', 'D', 'W', 'S', ' ', 'Shift']
+          .forEach(key => { try { spec.keyup(sess.G, { key, code: '', preventDefault() {} }, api); } catch (err) {} });
+      };
+      window.addEventListener('blur', sess.onBlur);
 
       drawHud();
       if (spec.ready !== false) showReady(); else begin();

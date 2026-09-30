@@ -182,7 +182,11 @@ const BombGame = (function () {
     showModule(0);
   }
 
+  /* só conta com a bomba à vista: noutra secção/jogo ou com o separador escondido
+     o relógio (e o tique-taque) param — antes rebentava sozinha em segundo plano */
+  const visible = () => !!container && container.isConnected && container.getClientRects().length > 0 && !document.hidden;
   function tick() {
+    if (!visible()) return;
     S.timeLeft--;
     updateTimer();
     if (S.timeLeft <= 0) { S.timeLeft = 0; updateTimer(); explode('exploded'); return; }
@@ -465,14 +469,23 @@ const BombGame = (function () {
     let val = '';
     const disp = m.querySelector('#bmb-input');
     const paint = () => { disp.textContent = (val + '·'.repeat(maxLen)).slice(0, maxLen); };
-    m.querySelectorAll('.bmb-key').forEach(b => b.addEventListener('click', () => {
-      if (S.busy) return;
-      const k = b.dataset.k;
+    const press = k => {
+      if (S.busy || S.state !== 'running') return;
       if (k === 'clr') { val = val.slice(0, -1); }
-      else if (k === 'ok') { onSubmit(val); return; }
+      else if (k === 'ok') { onSubmit(val); val = ''; paint(); return; }   /* errado: o visor limpa para tentar outra vez */
       else if (val.length < maxLen) { val += k; tone(800, 'square', 0.03, 0.08); }
       paint();
-    }));
+    };
+    m.querySelectorAll('.bmb-key').forEach(b => b.addEventListener('click', () => press(b.dataset.k)));
+    /* teclado físico: algarismos, Enter, Backspace (enquanto este teclado estiver no ecrã) */
+    const onKey = e => {
+      if (!disp.isConnected) { document.removeEventListener('keydown', onKey); return; }
+      if (!visible() || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (/^[0-9]$/.test(e.key)) { e.preventDefault(); press(e.key); }
+      else if (e.key === 'Enter') { e.preventDefault(); press('ok'); }
+      else if (e.key === 'Backspace') { e.preventDefault(); press('clr'); }
+    };
+    document.addEventListener('keydown', onKey);
     paint();
   }
 

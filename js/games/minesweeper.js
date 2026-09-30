@@ -4,8 +4,8 @@ const MinesweeperGame = (function () {
   /* Board sizes + UI strings live in games/minesweeper/{config,i18n}.json,
      loaded at runtime; these are the offline fallback. */
   const FB_I18N = {
-    pt: { title:'💣 Campo de Minas', easy:'Fácil', medium:'Médio', hard:'Difícil', start:'▶ Iniciar', kaboom:'💥 Kaboom! Tenta novamente.', won:'🏆 Ganhou em {t}s!' },
-    en: { title:'💣 Minesweeper', easy:'Easy', medium:'Medium', hard:'Hard', start:'▶ Start', kaboom:'💥 Kaboom! Try again.', won:'🏆 Solved in {t}s!' },
+    pt: { title:'💣 Campo de Minas', easy:'Fácil', medium:'Médio', hard:'Difícil', start:'↺ Novo jogo', kaboom:'💥 Kaboom! Tenta novamente.', won:'🏆 Ganhou em {t}s!' },
+    en: { title:'💣 Minesweeper', easy:'Easy', medium:'Medium', hard:'Hard', start:'↺ New game', kaboom:'💥 Kaboom! Try again.', won:'🏆 Solved in {t}s!' },
   };
   let DIFFS = {
     easy:   { rows: 9,  cols: 9,  mines: 10 },
@@ -77,6 +77,7 @@ const MinesweeperGame = (function () {
     board = [];
     minesEl.textContent = mines;
     timerEl.textContent = '0';
+    if (gridEl) gridEl.classList.remove('ms-won', 'ms-lost');
     statusEl.textContent = '';
     buildGrid();
   }
@@ -85,7 +86,7 @@ const MinesweeperGame = (function () {
     const wrap = container.querySelector('.ms-grid-wrap');
     const availW = (wrap ? wrap.clientWidth : container.clientWidth || 380) - 8;
     const availH = Math.min(window.innerHeight * 0.52, 440);
-    const cellSize = Math.max(18, Math.min(32, Math.floor(availW / cols), Math.floor(availH / rows)));
+    const cellSize = Math.max(18, Math.min(cols <= 9 ? 44 : 34, Math.floor((availW - cols * 2) / cols), Math.floor(availH / rows)));
 
     gridEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
     gridEl.innerHTML = '';
@@ -177,10 +178,24 @@ const MinesweeperGame = (function () {
     handleFlag(r, c);
   }
 
+  /* "acorde": clicar num número já aberto com as bandeiras certas à volta abre
+     os vizinhos que faltam (se uma bandeira estiver errada, rebenta) */
+  function chord(r, c) {
+    const cell = board[r][c];
+    if (!cell.revealed || !cell.adj) return;
+    let flags = 0; eachNeighbor(r, c, (nr, nc) => { if (board[nr][nc].flagged) flags++; });
+    if (flags !== cell.adj) return;
+    let boom = null;
+    eachNeighbor(r, c, (nr, nc) => { const n = board[nr][nc]; if (n.flagged || n.revealed) return; if (n.mine) boom = boom || [nr, nc]; else reveal(nr, nc); });
+    if (boom) { explode(boom[0], boom[1]); return; }
+    checkWin();
+  }
+
   function handleLeft(r, c) {
     if (gameState === 'won' || gameState === 'lost') return;
     const cell = board[r][c];
-    if (cell.flagged || cell.revealed) return;
+    if (cell.revealed) { if (gameState === 'running') chord(r, c); return; }
+    if (cell.flagged) return;
 
     if (gameState === 'idle') {
       gameState = 'running';
@@ -224,10 +239,10 @@ const MinesweeperGame = (function () {
     el.className = 'ms-cell';
     el.style.cssText = savedStyle;
     el.textContent = '';
-    if (cell.flagged) { el.classList.add('ms-flag'); el.textContent = '🚩'; return; }
+    if (cell.flagged) { el.classList.add('ms-flag'); el.textContent = cell.wrong ? '❌' : '🚩'; if (cell.wrong) el.classList.add('ms-wrongflag'); return; }
     if (!cell.revealed) return;
     el.classList.add('ms-revealed');
-    if (cell.mine) { el.classList.add('ms-mine'); el.textContent = '💥'; return; }
+    if (cell.mine) { el.classList.add('ms-mine'); if (cell.hit) el.classList.add('ms-hit'); el.textContent = cell.hit ? '💥' : '💣'; return; }
     if (cell.adj > 0) {
       el.textContent = cell.adj;
       el.classList.add('ms-n' + cell.adj);
@@ -237,16 +252,16 @@ const MinesweeperGame = (function () {
   function explode(hitR, hitC) {
     clearInterval(timerInt);
     gameState = 'lost';
-    board[hitR][hitC].revealed = true;
+    board[hitR][hitC].revealed = true; board[hitR][hitC].hit = true;
     renderCell(hitR, hitC);
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        if (board[r][c].mine && !board[r][c].flagged) {
-          board[r][c].revealed = true;
-          renderCell(r, c);
-        }
+        const b = board[r][c];
+        if (b.mine && !b.flagged) { b.revealed = true; renderCell(r, c); }
+        else if (!b.mine && b.flagged) { b.wrong = true; renderCell(r, c); }   /* bandeiras erradas à vista */
       }
     }
+    gridEl.classList.add('ms-lost');
     statusEl.textContent = t('kaboom');
     statusEl.style.color = '#f87171';
     if (typeof GameProgress !== 'undefined') {
@@ -259,6 +274,10 @@ const MinesweeperGame = (function () {
     if (revealed === safe) {
       clearInterval(timerInt);
       gameState = 'won';
+      /* as minas que faltavam ficam marcadas */
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (board[r][c].mine && !board[r][c].flagged) { board[r][c].flagged = true; renderCell(r, c); }
+      minesEl.textContent = 0;
+      gridEl.classList.add('ms-won');
       const secs = Math.floor((Date.now() - startTime) / 1000);
       let msg = t('won').replace('{t}', secs);
       if (typeof GameProgress !== 'undefined') {

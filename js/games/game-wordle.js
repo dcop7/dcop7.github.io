@@ -98,11 +98,11 @@ const WordleGame = (function () {
           <div class="wrd-grid" id="wrd-grid"></div>
           <div class="wrd-msg" id="wrd-msg"></div>
           <div class="wrd-keyboard" id="wrd-kb"></div>
-          <button class="hf-new-btn" id="wrd-new" style="margin-top:.75rem">${_t('newWord')}</button>
+          <button type="button" class="hf-new-btn" id="wrd-new" style="margin-top:.75rem">${_t('newWord')}</button>
         </div>`;
       if (typeof GameHost !== 'undefined' && GameHost.diffSeg)
         root.querySelector('#wrd-diff').appendChild(GameHost.diffSeg('wordle', { onChange: () => startGame() }));
-      root.querySelector('#wrd-new').addEventListener('click', startGame);
+      root.querySelector('#wrd-new').addEventListener('click', e => { e.currentTarget.blur(); startGame(); });
       buildKeyboard();
     }
 
@@ -125,7 +125,7 @@ const WordleGame = (function () {
       const rows = [['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['↵','Z','X','C','V','B','N','M','⌫']];
       const kb = root.querySelector('#wrd-kb');
       kb.innerHTML = rows.map(row =>
-        `<div class="wrd-kb-row">${row.map(k => `<button class="wrd-key" data-key="${k}">${k}</button>`).join('')}</div>`
+        `<div class="wrd-kb-row">${row.map(k => `<button type="button" class="wrd-key${k === '↵' || k === '⌫' ? ' wide' : ''}" data-key="${k}" aria-label="${k === '↵' ? 'Enter' : k === '⌫' ? 'Apagar' : k}">${k === '↵' ? 'ENTER' : k}</button>`).join('')}</div>`
       ).join('');
       kb.addEventListener('click', e => {
         const key = e.target.closest('.wrd-key');
@@ -135,17 +135,22 @@ const WordleGame = (function () {
     }
 
     function handleKeydown(e) {
-      if (!root.closest('#view-games')?.classList.contains('active')) return;
-      if (e.key === 'Enter') handleKey('↵');
-      else if (e.key === 'Backspace') handleKey('⌫');
-      else if (/^[a-zA-ZÀ-ÿ]$/.test(e.key)) handleKey(e.key.toUpperCase());
+      /* só quando é ESTE jogo que está à vista (antes apanhava as letras da Forca) */
+      if (!root.isConnected || !root.classList.contains('active') || !root.closest('#view-games')?.classList.contains('active')) return;
+      if (e.ctrlKey || e.altKey || e.metaKey || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (e.key === 'Enter') { e.preventDefault(); handleKey('↵'); }   /* sem isto o Enter também "clicava" no botão focado */
+      else if (e.key === 'Backspace') { e.preventDefault(); handleKey('⌫'); }
+      else if (/^[a-zA-ZÀ-ÿ]$/.test(e.key)) handleKey(e.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase());
     }
 
     function handleKey(k) {
       if (gameOver) return;
       if (k === '⌫') { if (current.length > 0) { current = current.slice(0, -1); updateRow(); } }
-      else if (k === '↵') { if (current.length === LEN) submitGuess(); }
-      else if (current.length < LEN && /^[A-ZÀ-Ÿ]$/.test(k)) { current += k; updateRow(); }
+      else if (k === '↵') {
+        if (current.length === LEN) submitGuess();
+        else { const r = root.querySelector(`.wrd-row[data-row="${guesses.length}"]`); if (r) { r.classList.remove('shake'); void r.offsetWidth; r.classList.add('shake'); } }
+      }
+      else if (current.length < LEN && /^[A-Z]$/.test(k)) { current += k; updateRow(); }
     }
 
     function updateRow() {
@@ -171,10 +176,12 @@ const WordleGame = (function () {
 
       const row = guesses.length;
       root.querySelectorAll(`[data-row="${row}"] .wrd-cell`).forEach((cell, i) => {
+        cell.style.setProperty('--d', (i * 130) + 'ms');
+        cell.classList.add('flip');
         setTimeout(() => {
           cell.textContent = guess[i];
-          cell.className = 'wrd-cell wrd-' + result[i];
-        }, i * 120);
+          cell.className = 'wrd-cell flip wrd-' + result[i];
+        }, i * 130 + 160);
       });
 
       updateKeys(guess, result);
@@ -183,6 +190,7 @@ const WordleGame = (function () {
 
       setTimeout(() => {
         if (result.every(r => r === 'correct')) {
+          const rr = root.querySelector(`.wrd-row[data-row="${row}"]`); if (rr) rr.classList.add('win');
           stats.wins++; stats.played++; stats.streak++;
           setMsg(_t('win'), 'correct');
           gameOver = true; updateStats();
@@ -197,7 +205,7 @@ const WordleGame = (function () {
             try { GameProgress.record('wordle', { won: false, meta: { wstreak: 0 } }); } catch (e) {}
           }
         }
-      }, 700);
+      }, LEN * 130 + 420);
     }
 
     function updateKeys(guess, result) {

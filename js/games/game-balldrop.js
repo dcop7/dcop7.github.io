@@ -83,7 +83,8 @@ const BalldropGame = (function () {
   function update(G, dt, api) {
     const W = api.W, H = api.H;
     G.inv = Math.max(0, G.inv - dt);
-    if (G.landed) return;
+    /* o painel do nível abre pelo relógio do jogo (em pausa, espera) */
+    if (G.landed) { G.landT += dt; if (G.landT > .7 && G.onLanded) { const f = G.onLanded; G.onLanded = null; f(); } return; }
     /* controlo */
     const want = U.clamp((G.tx - G.x) * 9, -460, 460);
     G.vx = U.lerp(G.vx, want, Math.min(1, dt * 8));
@@ -167,11 +168,12 @@ const BalldropGame = (function () {
     G.score += pts; G.bestMult = Math.max(G.bestMult, m);
     api.sfx.arp(m >= 5 ? [523, 659, 784, 1047, 1319] : [523, 659, 784], .07, .14, 'triangle', .09); api.vibe([20, 30, 40]);
     for (let i = 0; i < 26; i++) api.spark({ x: G.x, y: G.y - G.cam, vx: U.rand(-220, 220), vy: U.rand(-320, -60), color: U.pick(['#fde047', '#f0abfc', '#67e8f9', '#fff']), size: U.rand(2, 4), life: 1, gravity: 500 });
-    setTimeout(() => api.panel({ icon: m >= 5 ? '🎯' : '🟡', title: `Nível ${G.level} concluído`, big: '×' + m,
+    G.landT = 0;
+    G.onLanded = () => api.panel({ icon: m >= 5 ? '🎯' : '🟡', title: `Nível ${G.level} concluído`, big: '×' + m,
       sub: `+${pts} pontos · ${G.lives} ${G.lives === 1 ? 'vida' : 'vidas'}`,
       stats: [['Pontos', G.score], ['Diamantes', G.gems], ['Tempo', G.lt.toFixed(1) + 's']],
       buttons: [{ label: '▶ Nível ' + (G.level + 1), primary: true, fn: () => { G.level++; buildLevel(G, api.W); api.resume(); api.banner('Nível ' + G.level, 'Mais fundo'); } },
-        { label: 'Terminar aqui', fn: () => { G.dead = true; api.over({ score: G.score, won: true, delay: 0, title: 'Boa descida!', icon: '🟡', stats: [['Níveis', G.level], ['Diamantes', G.gems], ['Melhor copo', '×' + G.bestMult]], meta: { level: G.level } }); } }] }), 700);
+        { label: 'Terminar aqui', fn: () => { G.dead = true; api.over({ score: G.score, won: true, delay: 0, title: 'Boa descida!', icon: '🟡', stats: [['Níveis', G.level], ['Diamantes', G.gems], ['Melhor copo', '×' + G.bestMult]], meta: { level: G.level } }); } }] });
   }
 
   /* ── desenho ── */
@@ -257,7 +259,10 @@ const BalldropGame = (function () {
     down: (G, x, y, api, e) => { if (e.pointerType !== 'mouse') G.drag = { x, tx: G.tx }; else G.tx = x; },
     move: (G, x, y, api, e, isDown) => { if (e.pointerType === 'mouse') G.tx = x; else if (isDown && G.drag) G.tx = U.clamp(G.drag.tx + (x - G.drag.x) * 1.4, R, api.W - R); },
     up: G => { G.drag = null; },
-    key: (G, e, api) => { if (e.key === 'ArrowLeft') { G.tx = U.clamp(G.x - 70, R, api.W - R); return true; } if (e.key === 'ArrowRight') { G.tx = U.clamp(G.x + 70, R, api.W - R); return true; } },
+    key: (G, e, api) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { G.tx = U.clamp(G.x - 70, R, api.W - R); return true; }
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { G.tx = U.clamp(G.x + 70, R, api.W - R); return true; }
+    },
     hud: G => [['Pontos', G.score], ['Nível', G.level], ['💎', G.gems]],
     achievements: [
       { id: 'bd.l5', name: 'Mergulhador', icon: '🟡', desc: 'Chega ao nível 5 na Queda Livre.', test: c => ((c.result.meta || {}).level || 0) >= 5 },

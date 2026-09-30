@@ -82,12 +82,14 @@ const ChessGame = (function () {
       return bv - av;
     });
   }
+  /* uma só geração de lances por nó (antes: in_checkmate + in_draw + repetição
+     a cada nó, que geravam os lances várias vezes) */
   function negamax(g, depth, alpha, beta, ply) {
-    if (g.in_checkmate()) return -MATE + ply;
-    if (g.in_draw() || g.in_stalemate() || g.in_threefold_repetition() || g.insufficient_material()) return 0;
-    if (depth === 0) return evaluate(g);
+    if (depth === 0) { if (g.in_check() && !g.moves().length) return -MATE + ply; return evaluate(g); }
+    const moves = g.moves({ verbose: true });
+    if (!moves.length) return g.in_check() ? -MATE + ply : 0;
     let best = -Infinity;
-    for (const m of orderMoves(g.moves({ verbose: true }))) {
+    for (const m of orderMoves(moves)) {
       g.move(m);
       const score = -negamax(g, depth - 1, -beta, -alpha, ply + 1);
       g.undo();
@@ -225,7 +227,7 @@ const ChessGame = (function () {
   }
 
   function showMenu() {
-    stopClock();
+    stopClock(); aiSeq++; busy = false;
     const opp = [
       { k: 'ai-easy',   t: '🟢 IA Fácil' }, { k: 'ai-medium', t: '🟡 IA Médio' },
       { k: 'ai-hard',   t: '🔴 IA Difícil' }, { k: '2p',       t: '👥 2 Jogadores' },
@@ -270,6 +272,7 @@ const ChessGame = (function () {
   }
 
   function startGame() {
+    aiSeq++;
     game = new Chess();
     selected = null; legalDests = []; lastMove = null; busy = false; animMove = null;
     startClock();
@@ -358,7 +361,12 @@ const ChessGame = (function () {
     if (dt > 5) dt = 5;                      /* tab was backgrounded — don't dump a huge chunk */
     if (!game.game_over()) clock[game.turn()] += dt;
   }
-  function tick() { if (!game || game.game_over()) { stopClock(); return; } accrue(); updateClock(); }
+  function tick() {
+    if (!game || game.game_over()) { stopClock(); return; }
+    /* fora do ecrã (outra secção/jogo, separador escondido) o relógio não conta */
+    if (!root.isConnected || !root.getClientRects().length || document.hidden) { lastTick = performance.now(); return; }
+    accrue(); updateClock();
+  }
   function fmt(sec) { sec = Math.floor(sec); const m = Math.floor(sec / 60); return m + ':' + String(sec % 60).padStart(2, '0'); }
   function updateClock() {
     if (!game) return;
@@ -592,18 +600,42 @@ const ChessGame = (function () {
     node.style.setProperty('--pcl', t.pcLight); node.style.setProperty('--pcd', t.pcDark);
   }
 
+  /* A procura corre num Web Worker (js/games/chess-ai.worker.js) para a página não
+     congelar enquanto a IA pensa; sem Worker, cai no cálculo local. `aiSeq` descarta
+     respostas antigas (novo jogo / menu entretanto). */
+  let aiWorker = null, aiSeq = 0;
+  function worker() {
+    if (aiWorker === false) return null;
+    if (!aiWorker) {
+      try { aiWorker = new Worker('js/games/chess-ai.worker.js'); aiWorker.onerror = () => { aiWorker = false; }; }
+      catch (e) { aiWorker = false; return null; }
+    }
+    return aiWorker;
+  }
   function aiTurn() {
     busy = true; updateStatus();
-    setTimeout(() => {
-      const mv = chooseAIMove();
+    const id = ++aiSeq, g0 = game, t0 = performance.now();
+    const play = mv => {
+      if (id !== aiSeq || game !== g0 || !root.isConnected) return;
       busy = false;
       if (!mv) { updateStatus(); return; }
       accrue();                                        /* bank the AI's think time */
       const res = game.move(mv);
+      if (!res) { updateStatus(); return; }
       lastMove = { from: res.from, to: res.to };
       selected = null; legalDests = [];
       commitMove(res);
-    }, 240);
+    };
+    /* pelo menos ~350 ms: uma resposta instantânea parece brusca */
+    const later = mv => setTimeout(() => play(mv), Math.max(0, 350 - (performance.now() - t0)));
+    const w = worker(), lvl = LEVELS[diffKey] || LEVELS.medium;
+    if (w) {
+      const onMsg = e => { if (e.data && e.data.id === id) { w.removeEventListener('message', onMsg); later(e.data.move); } };
+      w.addEventListener('message', onMsg);
+      w.postMessage({ id, fen: game.fen(), depth: lvl.depth, blunder: lvl.blunder });
+      /* se o worker falhar, calcula aqui ao fim de 8 s */
+      setTimeout(() => { if (id === aiSeq && busy && game === g0) { w.removeEventListener('message', onMsg); play(chooseAIMove()); } }, 8000);
+    } else setTimeout(() => play(chooseAIMove()), 240);
   }
 
   function undo() {

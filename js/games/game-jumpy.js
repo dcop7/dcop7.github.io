@@ -154,7 +154,7 @@ const JumpyGame = (function () {
     ctx.fillStyle = `rgba(255,255,255,${.55 * (1 - night)})`;
     G.clouds.forEach(c => {
       const y = ((c.y - G.cam * .35) % (H + 80) + H + 80) % (H + 80) - 40;
-      ctx.beginPath(); ctx.ellipse(c.x, y, 38 * c.s, 13 * c.s, 0, 0, 6.3); ctx.ellipse(c.x + 22 * c.s, y - 8 * c.s, 24 * c.s, 13 * c.s, 0, 0, 6.3); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(c.x + 38 * c.s, y); ctx.ellipse(c.x, y, 38 * c.s, 13 * c.s, 0, 0, 6.3); ctx.moveTo(c.x + 22 * c.s + 24 * c.s, y - 8 * c.s); ctx.ellipse(c.x + 22 * c.s, y - 8 * c.s, 24 * c.s, 13 * c.s, 0, 0, 6.3); ctx.fill();
     });
 
     ctx.save(); ctx.translate(0, -G.cam);
@@ -228,11 +228,15 @@ const JumpyGame = (function () {
     down: (G, x, y, api, e) => { G.touch = e.pointerType !== 'mouse'; G.tx = x; },
     move: (G, x, y, api, e, isDown) => { if (e.pointerType === 'mouse' || isDown) G.tx = x; },
     up: (G, x, y, api, e) => { if (e.pointerType !== 'mouse') G.tx = null; },
+    /* esquerda e direita em separado: largar uma com a outra ainda carregada não pára a geleia */
     key: (G, e) => {
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { G.keys = -1; G.tx = null; return true; }
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { G.keys = 1; G.tx = null; return true; }
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { G.kl = 1; G.keys = -1; G.tx = null; return true; }
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { G.kr = 1; G.keys = 1; G.tx = null; return true; }
     },
-    keyup: (G, e) => { if (/^(ArrowLeft|ArrowRight|a|d|A|D)$/.test(e.key)) G.keys = 0; },
+    keyup: (G, e) => {
+      if (/^(ArrowLeft|a|A)$/.test(e.key)) { G.kl = 0; G.keys = G.kr ? 1 : 0; }
+      if (/^(ArrowRight|d|D)$/.test(e.key)) { G.kr = 0; G.keys = G.kl ? -1 : 0; }
+    },
     hud: G => [['Altura', height(G) + ' m'], ['Pontos', G.score]],
     achievements: [
       { id: 'jp.1k', name: 'Nas Nuvens',   icon: '☁️', desc: 'Sobe 1000 m no Saltitão.', test: c => ((c.result.meta || {}).height || 0) >= 1000 },

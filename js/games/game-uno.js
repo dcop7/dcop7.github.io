@@ -169,6 +169,7 @@ const UnoGame = (function () {
   }
 
   function start() {
+    if (S) { clearTimeout(S.unoTimer); root.querySelector('#uno-call')?.remove(); root.querySelector('.uno-overlay')?.remove(); }
     S = {
       deck: shuffle(buildDeck()), discard: [], color: null,
       hands: [], names: [], turn: 0, dir: 1,
@@ -192,7 +193,10 @@ const UnoGame = (function () {
   function next(steps) { S.turn = (S.turn + S.dir * (steps || 1) + 4) % 4; }
 
   /* central play routine for any player */
+  /* Cada partida é um objeto S novo: depois de cada await, se o S mudou (Novo jogo
+     a meio da vez de um CPU), a cadeia antiga pára em vez de jogar na partida nova. */
   async function playCard(pi, card, chosenColor) {
+    const st = S;
     const hand = S.hands[pi];
     const idx = hand.indexOf(card);
     if (idx === -1) return;
@@ -202,6 +206,7 @@ const UnoGame = (function () {
     S.color = isWild(card) ? chosenColor : card.color;
 
     await animatePlay(pi, card);
+    if (S !== st) return;
     renderTable();
 
     /* UNO check */
@@ -214,7 +219,7 @@ const UnoGame = (function () {
 
     /* effects */
     let skip = 0;
-    if (card.type === 'reverse') { S.dir *= -1; flash(t('reversed')); await pulseDir(); }
+    if (card.type === 'reverse') { S.dir *= -1; flash(t('reversed')); await pulseDir(); if (S !== st) return; }
     else if (card.type === 'skip') { const v = (S.turn + S.dir + 4) % 4; flash(fmt('skipped', { n: S.names[v] })); skip = 1; }
     else if (card.type === 'draw2') {
       const v = (S.turn + S.dir + 4) % 4;
@@ -227,6 +232,7 @@ const UnoGame = (function () {
     renderTable();
     next(1 + skip);
     if (pi !== 0) await wait(HOLD);         /* hold so the player can read what a CPU just did */
+    if (S !== st) return;
     await advance();
   }
 
@@ -250,7 +256,9 @@ const UnoGame = (function () {
     if (!legal(card)) { bump(card); return; }
     S.busy = true;
     if (isWild(card)) {
+      const st = S;
       const col = await pickColor();
+      if (S !== st) return;
       await playCard(0, card, col);
     } else {
       await playCard(0, card);
@@ -264,7 +272,9 @@ const UnoGame = (function () {
     if (!c) { S.busy = false; return; }
     S.hands[0].push(c);
     renderTable();
+    const st = S;
     await animateDrawTo(0);
+    if (S !== st) return;
     if (legal(c)) {
       /* offer to play the freshly drawn card */
       setHint(fmt('youDrew', { c: cardName(c) }));
@@ -287,16 +297,20 @@ const UnoGame = (function () {
 
   /* ══ AI ════════════════════════════════════════════════════════ */
   async function cpuTurn(pi) {
+    const st = S;
     S.busy = true;
     setHint(fmt('cpuThinking', { n: S.names[pi] }));
     setActive(pi);
     await wait(THINK + Math.random() * 500);
+    /* partida nova entretanto, ou saíste do jogo (espera até voltares) */
+    while (S === st && root && !root.getClientRects().length && root.isConnected) await wait(400);
+    if (S !== st || !root.isConnected) return;
 
     const hand = S.hands[pi];
     let playable = hand.filter(c => legalFor(c, hand));
     if (!playable.length) {
       const c = drawFromDeck();
-      if (c) { hand.push(c); renderTable(); await animateDrawTo(pi); }
+      if (c) { hand.push(c); renderTable(); await animateDrawTo(pi); if (S !== st) return; }
       if (c && legalFor(c, hand)) { playable = [c]; }     /* play what we just drew */
       else { flash(fmt('cpuDrew', { n: S.names[pi] })); next(1); await advance(); return; }
     }
@@ -358,8 +372,9 @@ const UnoGame = (function () {
     clearTimeout(S.unoTimer);
     S.unoCalled = false;
     showUnoButton(true);
+    const st = S;
     S.unoTimer = setTimeout(() => {
-      if (!S.unoCalled && S.hands[0].length === 1) {
+      if (S === st && !S.unoCalled && S.hands[0].length === 1 && S.phase !== 'over') {
         give(S.hands[0], 2);
         flash(t('caughtUno'));
         showUnoButton(false);
@@ -467,6 +482,9 @@ const UnoGame = (function () {
   function drawHand() {
     const hand = root.querySelector('#uno-hand'); if (!hand) return;
     const cards = S.hands[0];
+    /* mão arrumada por cor e depois por número/símbolo (mágicas no fim) */
+    const CO = { red: 0, yellow: 1, green: 2, blue: 3, wild: 4 }, TO = { num: 0, skip: 10, reverse: 11, draw2: 12, wild: 13, wild4: 14 };
+    cards.sort((a, b) => (CO[a.color] - CO[b.color]) || ((TO[a.type] + (a.value || 0)) - (TO[b.type] + (b.value || 0))));
     const yourTurn = S.turn === 0 && S.phase === 'play' && !S.busy;
     hand.innerHTML = cards.map((c, i) => {
       const playableNow = yourTurn && (S.drawnPlayable ? c === S.drawnPlayable : legal(c));

@@ -193,7 +193,7 @@ const ChickenUpGame = (function () {
     ctx.fillStyle = 'rgba(255,255,255,.75)';
     for (let i = 0; i < 6; i++) {
       const y = ((i * 190 + cam * .4) % (H + 120)) - 60, x = (i * 137 + G.t * (8 + i * 3)) % (W + 140) - 70;
-      ctx.beginPath(); ctx.ellipse(x, y, 42, 14, 0, 0, 6.3); ctx.ellipse(x + 26, y - 9, 26, 14, 0, 0, 6.3); ctx.ellipse(x - 24, y - 4, 20, 11, 0, 0, 6.3); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x + 42, y); ctx.ellipse(x, y, 42, 14, 0, 0, 6.3); ctx.moveTo(x + 26 + 26, y - 9); ctx.ellipse(x + 26, y - 9, 26, 14, 0, 0, 6.3); ctx.moveTo(x - 24 + 20, y - 4); ctx.ellipse(x - 24, y - 4, 20, 11, 0, 0, 6.3); ctx.fill();
     }
     /* colinas lá em baixo (só no início) */
     const hy = H * .72 + 40 + cam;

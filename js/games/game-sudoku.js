@@ -17,6 +17,9 @@ const SudokuGame = (function () {
   };
   const clock = v => { v = Math.round(v); const m = Math.floor(v / 60), s = v % 60; return m ? m + ':' + String(s).padStart(2, '0') : s + 's'; };
   const store = () => (typeof GameProgress !== 'undefined' ? GameProgress.store(ID) : { getPref: (k, d) => d, setPref: () => {} });
+  const today = () => (typeof GameProgress !== 'undefined' ? GameProgress.todayKey() : '');
+  /* dificuldades em que o Sudoku do dia de HOJE já foi resolvido */
+  const dailySolved = () => { const d = store().getPref('dailyWon', null); return d && d.day === today() ? d.diffs : []; };
   const BOX = i => Math.floor(Math.floor(i / 9) / 3) * 3 + Math.floor((i % 9) / 3);
   const PEERS = Array.from({ length: 81 }, (_, i) => {
     const r = Math.floor(i / 9), c = i % 9, b = BOX(i), s = new Set();
@@ -74,7 +77,14 @@ const SudokuGame = (function () {
   /* ── partida ── */
   function setup(api, o) {
     let mode = o.mode || 'classic', saved = null;
-    if (mode === 'resume') { saved = store().getPref('save', null); if (saved) { mode = saved.mode; api.setMode(mode, saved.diff); } else mode = 'classic'; }
+    if (mode === 'resume') {
+      saved = store().getPref('save', null);
+      if (saved) {
+        /* o "do dia" de outro dia continua como grelha normal (não conta como o de hoje) */
+        mode = saved.mode === 'daily' && saved.day !== today() ? 'classic' : saved.mode;
+        api.setMode(mode, saved.diff);
+      } else mode = 'classic';
+    }
     const diff = saved ? saved.diff : (o.diff || 'medium');
     const G = { mode, diff, cfg: DIFF[diff] || DIFF.medium, t: 0, err: 0, hints: 0, sel: -1, notes: false, hist: [], over: false, api };
     if (saved) Object.assign(G, { puz: saved.puz, sol: saved.sol, val: saved.val, nts: saved.nts, t: saved.t, err: saved.err, hints: saved.hints });
@@ -196,6 +206,7 @@ const SudokuGame = (function () {
 
   function win(G, api) {
     G.over = true; save(G);
+    if (G.mode === 'daily') { const ds = dailySolved(); if (!ds.includes(G.diff)) store().setPref('dailyWon', { day: today(), diffs: ds.concat(G.diff) }); }
     const t = Math.round(G.t);
     api.over({ score: t, won: true, delay: 700, title: G.mode === 'daily' ? 'Sudoku do dia resolvido!' : 'Resolvido!', icon: '🧩',
       stars: G.err === 0 && G.hints === 0 ? 3 : G.err + G.hints <= 2 ? 2 : 1,
@@ -276,12 +287,12 @@ const SudokuGame = (function () {
     view: { w: 400 },
     modes: () => {
       const sv = store().getPref('save', null);
-      const GP = typeof GameProgress !== 'undefined' ? GameProgress : null;
-      const done = GP && GP.isDailyDone(ID);
+      /* ✓ só quando o Sudoku do dia foi mesmo resolvido (não basta ter jogado hoje) */
+      const done = dailySolved().length > 0;
       return [
-        ...(sv ? [{ id: 'resume', icon: '▶️', name: 'Continuar', desc: `${sv.mode === 'daily' ? 'Sudoku do dia' : 'Sudoku'} · ${DIFF[sv.diff] ? DIFF[sv.diff].label : ''} · ${Math.floor(sv.t / 60)} min`, noBest: true, note: 'guardado' }] : []),
+        ...(sv ? [{ id: 'resume', icon: '▶️', name: 'Continuar', desc: `${sv.mode === 'daily' ? (sv.day === today() ? 'Sudoku do dia' : 'Sudoku de outro dia') : 'Sudoku'} · ${DIFF[sv.diff] ? DIFF[sv.diff].label : ''} · ${Math.floor(sv.t / 60)} min`, noBest: true, note: 'guardado' }] : []),
         { id: 'classic', icon: '🧩', name: 'Novo sudoku', desc: 'Uma grelha nova, sempre com uma única solução.' },
-        { id: 'daily', icon: '📅', name: 'Sudoku do dia' + (done ? ' ✓' : ''), desc: 'O mesmo para toda a gente, hoje. Amanhã há outro.' },
+        { id: 'daily', icon: '📅', name: 'Sudoku do dia' + (done ? ' ✓' : ''), desc: done ? `Resolvido hoje em ${dailySolved().map(d => DIFF[d].label).join(', ')}. Amanhã há outro.` : 'O mesmo para toda a gente, hoje. Amanhã há outro.' },
       ];
     },
     how: [

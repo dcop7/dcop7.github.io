@@ -200,15 +200,18 @@ const BubbleShooterGame = (function () {
       const bonus = 200 + G.level * 50;
       G.score += bonus;
       api.sfx.win();
-      setTimeout(() => api.panel({ icon: '🫧', title: `Nível ${G.level} limpo!`, big: '+' + bonus, sub: `Pontuação: ${G.score}`,
+      G.clearT = .5;
+      G.onClear = () => api.panel({ icon: '🫧', title: `Nível ${G.level} limpo!`, big: '+' + bonus, sub: `Pontuação: ${G.score}`,
         buttons: [{ label: '▶ Nível ' + (G.level + 1), primary: true, fn: () => { G.level++; buildLevel(G, G.level); G.lock = false; api.resume(); api.banner('Nível ' + G.level, G.ncol + ' cores'); } },
-          { label: 'Terminar aqui', fn: () => api.over({ score: G.score, won: true, delay: 0, title: 'Boa partida!', icon: '🫧', stats: [['Níveis', G.level], ['Rebentadas', G.popped], ['Caídas', G.dropped]], meta: { level: G.level } }) }] }), 500);
+          { label: 'Terminar aqui', fn: () => api.over({ score: G.score, won: true, delay: 0, title: 'Boa partida!', icon: '🫧', stats: [['Níveis', G.level], ['Rebentadas', G.popped], ['Caídas', G.dropped]], meta: { level: G.level } }) }] });
     }
   }
 
   function update(G, dt, api) {
     const W = api.W;
     G.t += dt;
+    /* painel de nível limpo pelo relógio do jogo (em pausa, espera) */
+    if (G.onClear) { G.clearT -= dt; if (G.clearT <= 0) { const fn = G.onClear; G.onClear = null; fn(); } }
     const f = G.fly;
     if (f) {
       const sub = 6, sdt = dt / sub;
@@ -308,7 +311,7 @@ const BubbleShooterGame = (function () {
     id: 'bubble-shooter', title: 'Bolhas', icon: '🫧',
     accent: '#a78bfa', accent2: '#f472b6', bg: '#0b0a1f',
     tagline: 'Aponta, ressalta nas paredes e junta três da mesma cor. O que ficar pendurado cai.',
-    view: { w: 400 },
+    view: { w: 400, h: 660 },   /* caixa fixa: a distância até à linha vermelha não depende da altura do ecrã */
     modes: [
       { id: 'levels', icon: '🗺️', name: 'Aventura', desc: 'Limpa a grelha para passar de nível. Falhar muito faz o teto descer.' },
       { id: 'endless', icon: '♾️', name: 'Infinito', desc: 'Nascem filas novas lá em cima. Aguenta o máximo possível.' },

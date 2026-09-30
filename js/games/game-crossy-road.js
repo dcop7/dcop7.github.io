@@ -177,7 +177,15 @@ const CrossyRoadGame = (function () {
     /* chão de cada fila, de trás para a frente */
     for (let z = hi; z >= lo; z--) {
       const row = G.rows[z], y = rowY(z) - CELL;
-      if (row.t === 'grass') { ctx.fillStyle = row.shade ? '#84cc16' : '#7ac31a'; ctx.fillRect(0, y, W, CELL); }
+      if (row.t === 'grass') {
+        ctx.fillStyle = row.shade ? '#84cc16' : '#7ac31a'; ctx.fillRect(0, y, W, CELL);
+        /* flores e tufos (só decoração, não bloqueiam) */
+        for (let i = 0; i < 3; i++) {
+          const h = Math.sin(z * 91.7 + i * 37.3) * 43758.5, f = h - Math.floor(h), fx = 8 + f * (W - 16), fy = y + 10 + ((f * 7.3) % 1) * (CELL - 20);
+          ctx.fillStyle = i % 2 ? 'rgba(21,128,61,.45)' : ['#fde047', '#f9a8d4', '#fff'][i % 3];
+          if (i % 2) ctx.fillRect(fx, fy, 7, 3); else { ctx.fillRect(fx, fy, 4, 4); ctx.fillStyle = '#facc15'; ctx.fillRect(fx + 1, fy + 1, 2, 2); }
+        }
+      }
       else if (row.t === 'road') {
         ctx.fillStyle = '#374151'; ctx.fillRect(0, y, W, CELL);
         const nxt = G.rows[z + 1];
@@ -195,6 +203,11 @@ const CrossyRoadGame = (function () {
         ctx.fillStyle = warn && Math.floor(G.t * 8) % 2 ? '#ef4444' : '#450a0a'; ctx.beginPath(); ctx.arc(W - 14, y - 20, 6, 0, 6.3); ctx.fill();
       }
     }
+    /* margem de partida (atrás da fila 0): relva com arbustos e árvores */
+    for (let z = -1; z >= Math.floor(G.cam) - 3; z--) {
+      const y = rowY(z) - CELL;
+      ctx.fillStyle = z % 2 ? '#7ac31a' : '#84cc16'; ctx.fillRect(0, y, W, CELL);
+    }
     /* objetos e personagem, de trás para a frente (profundidade correta) */
     for (let z = hi; z >= lo; z--) {
       const row = G.rows[z], y = rowY(z);
@@ -210,12 +223,27 @@ const CrossyRoadGame = (function () {
         box(ctx, x + 5, y - 38, CELL - 22, CELL - 26, 14, '#22c55e', '#16a34a');
       });
       if (row.t === 'road') row.objs.forEach(o => {
-        const top = `hsl(${o.hue},70%,58%)`, fr = `hsl(${o.hue},70%,40%)`;
+        const top = `hsl(${o.hue},70%,58%)`, fr = `hsl(${o.hue},70%,40%)`, fwd = row.dir > 0;
         ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(o.x + 3, y - 10, o.w, 8);
-        box(ctx, o.x, y - 8, o.w, CELL - 20, 14, top, fr);
-        box(ctx, o.x + (o.truck ? 4 : o.w * .22), y - 22, o.truck ? CELL * .7 : o.w * .56, CELL - 24, 12, '#e0f2fe', '#7dd3fc');
-        ctx.fillStyle = '#111827'; [o.x + 6, o.x + o.w - 14].forEach(wx => ctx.fillRect(wx, y - 10, 8, 6));
-        ctx.fillStyle = row.dir > 0 ? '#fef08a' : '#fca5a5'; ctx.fillRect(row.dir > 0 ? o.x + o.w - 3 : o.x, y - 18, 3, 5);
+        /* rodas por baixo da carroçaria */
+        ctx.fillStyle = '#111827'; [o.x + 5, o.x + o.w - 15].forEach(wx => ctx.fillRect(wx, y - 11, 10, 7));
+        if (o.truck) {
+          /* camião: cabina à frente (no sentido da marcha) + caixa branca atrás */
+          const cw = CELL * .72, cx = fwd ? o.x + o.w - cw : o.x;
+          box(ctx, fwd ? o.x : o.x + cw + 2, y - 8, o.w - cw - 2, CELL - 20, 26, '#f8fafc', '#cbd5e1');
+          ctx.fillStyle = 'rgba(100,116,139,.35)'; ctx.fillRect((fwd ? o.x : o.x + cw + 2) + 6, y - 22, o.w - cw - 14, 3);
+          box(ctx, cx, y - 8, cw, CELL - 20, 18, top, fr);
+          ctx.fillStyle = '#1e3a5f'; ctx.fillRect(fwd ? cx + cw - 12 : cx + 3, y - 20, 9, 7);
+        } else {
+          box(ctx, o.x, y - 8, o.w, CELL - 20, 12, top, fr);
+          /* cabina com vidros escuros, mais clara no tejadilho */
+          const cx = o.x + o.w * .2, cw = o.w * .6;
+          box(ctx, cx, y - 20, cw, CELL - 26, 10, `hsl(${o.hue},60%,72%)`, '#1e3a5f');
+          ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(cx + 3, y - 18, cw * .3, 2);
+        }
+        /* faróis à frente, farolins atrás */
+        ctx.fillStyle = '#fef08a'; ctx.fillRect(fwd ? o.x + o.w - 3 : o.x, y - 16, 3, 4);
+        ctx.fillStyle = '#ef4444'; ctx.fillRect(fwd ? o.x : o.x + o.w - 3, y - 16, 3, 4);
       });
       if (row.t === 'rail' && row.train) {
         const tr = row.train;
@@ -225,10 +253,25 @@ const CrossyRoadGame = (function () {
       /* personagem nesta fila */
       if (Math.round(G.zf || G.z) === z || (G.dead && G.z === z)) drawChar(G, ctx, y, api);
     }
+    for (let z = -1; z >= Math.floor(G.cam) - 3; z--) {
+      const y = rowY(z);
+      for (let c = 0; c < COLS; c++) {
+        const hh = Math.sin(z * 12.9898 + c * 78.233) * 43758.5; if (hh - Math.floor(hh) > (z === -1 ? .25 : .45)) continue;
+        const x = X0 + c * CELL + 6;
+        if (z === -1) { box(ctx, x + 6, y - 14, CELL - 24, 10, 10, '#22c55e', '#15803d'); continue; }   /* arbustos baixos: não tapam a personagem */
+        box(ctx, x + 10, y - 6, 12, 6, 16, '#92400e', '#78350f');
+        box(ctx, x, y - 18, CELL - 12, CELL - 18, 26, '#16a34a', '#15803d');
+        box(ctx, x + 5, y - 38, CELL - 22, CELL - 26, 14, '#22c55e', '#16a34a');
+      }
+    }
     /* sombra da câmara a empurrar (aviso) */
     const lag = (G.zf || G.z) - G.cam;
     if (lag < 0 && !G.dead) { ctx.fillStyle = `rgba(0,0,0,${Math.min(.35, -lag * .25)})`; ctx.fillRect(0, H - 90, W, 90); }
-    if (G.best === 0 && !G.dead) { ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '700 14px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Toca para saltar em frente · desliza para os lados', W / 2, H - 30); }
+    if (G.best === 0 && !G.dead) {
+      ctx.font = '700 14px system-ui'; ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(20,40,10,.55)'; U.rr(ctx, W / 2 - 170, H - 50, 340, 30, 15); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText('Toca para saltar em frente · desliza para os lados', W / 2, H - 30);
+    }
   }
 
   function drawChar(G, ctx, rowBase, api) {

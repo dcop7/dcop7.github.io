@@ -76,8 +76,18 @@ const DriftGame = (function () {
       idx: si, prog: -5, lap: 0, t: 0, lapT: 0, laps: [], count: 3.4, started: false,
       drift: 0, driftPts: 0, driftCur: 0, off: false, wrong: 0, skids: [], smoke: [],
       camX: sp[0], camY: sp[1], keys: 0, done: false, lastBeep: 4,
+      /* fantasma: a melhor corrida nesta pista/dificuldade, gravada a 10 Hz */
+      gKey: 'drift:ghost:' + tr.id + ':' + (o.diff || 'medium'), ghost: null, rec: [],
     };
+    try { const g = JSON.parse(localStorage.getItem(G.gKey)); if (g && g.t > 0 && Array.isArray(g.p)) G.ghost = g; } catch (e) {}
     return G;
+  }
+  const GHZ = 10;
+  function ghostAt(G) {
+    const p = G.ghost.p, f = G.t * GHZ, i = Math.floor(f);
+    if (i >= p.length - 1) return null;
+    const a = p[i], b = p[i + 1], k = f - i;
+    return { x: a[0] + (b[0] - a[0]) * k, y: a[1] + (b[1] - a[1]) * k, a: a[2] + U.angDiff(b[2], a[2]) * k, steerVis: 0 };
   }
 
   function nearest(G) {
@@ -163,6 +173,8 @@ const DriftGame = (function () {
     G.smoke.forEach(p => { p.life -= dt; p.r += dt * 26; });
     G.smoke = G.smoke.filter(p => p.life > 0);
 
+    while (G.rec.length <= G.t * GHZ) G.rec.push([Math.round(G.x), Math.round(G.y), Math.round(G.a * 100) / 100]);
+
     /* sentido contrário */
     const tdir = tr.tan[G.idx], along = Math.cos(tdir) * G.vx + Math.sin(tdir) * G.vy;
     G.wrong = along < -40 ? G.wrong + dt : 0;
@@ -188,8 +200,10 @@ const DriftGame = (function () {
     G.done = true;
     const total = Math.round(G.t * 100) / 100, p = par(G);
     const stars = total <= p ? 3 : total <= p * 1.14 ? 2 : 1;
+    const beatGhost = !G.ghost || total < G.ghost.t;
+    if (beatGhost) { try { localStorage.setItem(G.gKey, JSON.stringify({ t: total, p: G.rec })); } catch (e) {} }
     api.over({ score: total, won: true, stars, delay: 900, title: 'Corrida terminada', icon: '🏁',
-      sub: `Para ★★★: ${U.fmtTime(p)}`,
+      sub: `Para ★★★: ${U.fmtTime(p)}` + (G.ghost ? (beatGhost ? '<br>👻 Bateste o fantasma!' : `<br>👻 Fantasma: ${U.fmtTime(G.ghost.t)}`) : ''),
       stats: [['Melhor volta', U.fmtTime(Math.min(...G.laps))], ['Pontos de drift', G.driftPts]],
       meta: { stars, drift: G.driftPts } });
   }
@@ -201,8 +215,14 @@ const DriftGame = (function () {
     ctx.setLineDash([]);
   }
 
-  function car(ctx, G) {
+  function car(ctx, G, ghost) {
     ctx.save(); ctx.translate(G.x, G.y); ctx.rotate(G.a);
+    if (ghost) {
+      ctx.globalAlpha = .38;
+      ctx.fillStyle = '#e0f2fe'; U.rr(ctx, -21, -10, 42, 20, 7); ctx.fill();
+      ctx.fillStyle = '#38bdf8'; U.rr(ctx, -4, -7.5, 12, 15, 3); ctx.fill();
+      ctx.restore(); return;
+    }
     ctx.fillStyle = 'rgba(0,0,0,.35)'; U.rr(ctx, -20, -9, 44, 22, 7); ctx.fill();
     ctx.fillStyle = '#111';
     [[-13, -11], [-13, 11], [11, -11], [11, 11]].forEach(([x, y], i) => { ctx.save(); ctx.translate(x, y); if (i > 1) ctx.rotate(G.steerVis * .45); ctx.fillRect(-5, -2.5, 10, 5); ctx.restore(); });
@@ -244,6 +264,7 @@ const DriftGame = (function () {
     ctx.strokeStyle = 'rgba(15,15,20,.42)'; ctx.lineWidth = 4; ctx.lineCap = 'round';
     ctx.beginPath(); G.skids.forEach(s => { ctx.moveTo(s[0], s[1]); ctx.lineTo(s[2], s[3]); }); ctx.stroke();
     G.smoke.forEach(p => { ctx.fillStyle = p.dirt ? `rgba(120,86,40,${p.life * .5})` : `rgba(230,230,235,${p.life * .45})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill(); });
+    if (G.ghost && G.started && !G.done) { const gp = ghostAt(G); if (gp) car(ctx, gp, true); }
     car(ctx, G);
     ctx.restore();
 
@@ -284,15 +305,20 @@ const DriftGame = (function () {
       'Mantém premida a <b>metade esquerda</b> do ecrã para virar à esquerda e a <b>direita</b> para virar à direita (rato ou dedo; também ← →).',
       'Virar a alta velocidade faz o carro <b>derrapar</b> — larga a tempo para endireitar. Derrapagens longas dão pontos.',
       'A relva abranda-te e as barreiras fazem-te ressaltar. Faz 3 voltas o mais depressa possível: ⭐⭐⭐ abaixo do tempo-alvo.',
+      'O carro <b>fantasma</b> 👻 repete a tua melhor corrida nessa pista — tenta ganhar-lhe.',
     ],
     controls: ['🖱️ Premir esq./dir.', '👆 Manter o dedo esq./dir.', '⌨️ ← →'],
     ready: { title: 'Toca para a grelha', hint: 'Mantém premido à esquerda ou à direita para virar.' },
     setup, update, draw,
+    /* esquerda e direita em separado: largar uma com a outra ainda carregada continua a virar */
     key: (G, e) => {
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { G.keys = -1; return true; }
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { G.keys = 1; return true; }
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { G.kl = 1; G.keys = -1; return true; }
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { G.kr = 1; G.keys = 1; return true; }
     },
-    keyup: (G, e) => { if (/^(ArrowLeft|ArrowRight|a|d|A|D)$/.test(e.key)) G.keys = 0; },
+    keyup: (G, e) => {
+      if (/^(ArrowLeft|a|A)$/.test(e.key)) { G.kl = 0; G.keys = G.kr ? 1 : 0; }
+      if (/^(ArrowRight|d|D)$/.test(e.key)) { G.kr = 0; G.keys = G.kl ? -1 : 0; }
+    },
     hud: G => [['Volta', Math.min(G.lap + 1, LAPS) + '/' + LAPS], ['Tempo', U.fmtTime(G.t)], ['Drift', G.driftPts + Math.round(G.driftCur)]],
     achievements: [
       { id: 'dr.fin',   name: 'Bandeira Xadrez', icon: '🏁', desc: 'Termina uma corrida no Drift.', test: c => c.result.won === true },

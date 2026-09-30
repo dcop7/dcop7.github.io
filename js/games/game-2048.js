@@ -91,7 +91,7 @@ const Game2048 = (function () {
     L.innerHTML = `
       <div class="t48">
         <div class="t48-top">
-          <div class="t48-goal">Objetivo: <b>${GOAL[G.n]}</b></div>
+          <div class="t48-goal">Objetivo: <b>${GOAL[G.n]}</b><span class="t48-add" aria-hidden="true"></span></div>
           <div class="t48-btns">
             <button type="button" class="t48-btn" data-act="undo">↶ Desfazer <span></span></button>
             <button type="button" class="t48-btn" data-act="new">Novo</button>
@@ -103,7 +103,7 @@ const Game2048 = (function () {
         </div>
         <div class="t48-hint">Desliza o dedo, arrasta com o rato ou usa as setas.</div>
       </div>`;
-    G.el = { tiles: L.querySelector('.t48-tiles'), board: L.querySelector('.t48-board'), undo: L.querySelector('[data-act="undo"]') };
+    G.el = { tiles: L.querySelector('.t48-tiles'), board: L.querySelector('.t48-board'), undo: L.querySelector('[data-act="undo"]'), add: L.querySelector('.t48-add') };
     G.nodes = new Map();
     L.querySelector('.t48-top').addEventListener('click', e => {
       const b = e.target.closest('[data-act]'); if (!b) return;
@@ -165,6 +165,7 @@ const Game2048 = (function () {
     spawn(G);
     render(G);
     G.busy = true; setTimeout(() => { G.busy = false; }, 70);
+    if (r.gained) { const a = G.el.add; a.textContent = '+' + r.gained; a.classList.remove('go'); void a.offsetWidth; a.classList.add('go'); }
     if (r.merges) {
       const top = Math.log2(Math.max(4, ...G.tiles.map(t => t.v)));
       api.sfx.tone(220 * Math.pow(2, Math.min(top, 14) / 6), .09, 'sine', .07);
@@ -206,6 +207,10 @@ const Game2048 = (function () {
 .t48-top{width:min(100%,calc(100dvh - 330px),520px);min-width:min(100%,300px);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .t48-goal{font-size:.8rem;color:#e7d3b8}
 .t48-goal b{color:#edc22e}
+.t48-goal{position:relative}
+.t48-add{position:absolute;left:100%;top:0;margin-left:10px;font:800 .9rem 'Space Grotesk',system-ui,sans-serif;color:#fde68a;opacity:0;pointer-events:none;white-space:nowrap}
+.t48-add.go{animation:t48Add .7s ease-out}
+@keyframes t48Add{0%{opacity:0;transform:translateY(6px)}20%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-14px)}}
 .t48-btns{display:flex;gap:6px}
 .t48-btn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#f5ecdf;border-radius:10px;padding:8px 12px;font:700 .82rem system-ui;cursor:pointer}
 .t48-btn:disabled{opacity:.4;cursor:default}
@@ -250,7 +255,7 @@ const Game2048 = (function () {
     setup, update: (G, dt) => { G.t += dt; },
     resize: G => { if (G.el) { const w = G.el.board.clientWidth; G.el.board.style.setProperty('--cell', (w / G.n) + 'px'); } },
     key: (G, e, api) => {
-      const d = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' }[e.key];
+      const d = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down', A: 'left', D: 'right', W: 'up', S: 'down' }[e.key];
       if (d) { move(G, api, d); return true; }
       if ((e.key === 'z' || e.key === 'u') && !e.ctrlKey) { doUndo(G, api); return true; }
     },

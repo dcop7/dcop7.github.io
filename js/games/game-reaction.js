@@ -22,7 +22,7 @@ const ReactionGame = (function () {
         <div class="game-card" style="max-width:500px;margin:0 auto">
           <h2 style="text-align:center;margin-bottom:1rem">${t('title')}</h2>
           <div id="react-diff" style="display:flex;justify-content:center;margin-bottom:1rem"></div>
-          <div class="react-box" id="react-box">
+          <div class="react-box" id="react-box" tabindex="0" role="button" aria-live="polite">
             <div class="react-msg" id="react-msg">${t('clickToStart')}</div>
             <div class="react-hint" id="react-hint">${t('instr')}</div>
           </div>
@@ -75,13 +75,17 @@ const ReactionGame = (function () {
       }
       const avg = Math.round(results.reduce((s, x) => s + x, 0) / results.length);
       const best = allTimeBest != null ? allTimeBest : Math.min(...results);
+      /* últimas tentativas em barras (mais curta = mais rápida) */
+      const last = results.slice(-10), mx = Math.max(400, ...last);
+      const col = v => v < a ? '#22c55e' : v < b ? '#84cc16' : v < c ? '#eab308' : v < e ? '#f97316' : '#ef4444';
       root.querySelector('#react-stats').innerHTML = `
         <div class="react-stat-row">
-          <span>${t('attempts')}: <strong>${results.length}</strong></span>
-          <span>${t('best')}: <strong>${best} ms</strong></span>
-          <span>${t('avg')}: <strong>${avg} ms</strong></span>
+          <span class="react-pill">${t('attempts')} <strong>${results.length}</strong></span>
+          <span class="react-pill">${t('best')} <strong>${best} ms</strong></span>
+          <span class="react-pill">${t('avg')} <strong>${avg} ms</strong></span>
           <button class="hf-new-btn" id="react-reset">${t('reset')}</button>
-        </div>`;
+        </div>
+        <div class="react-bars" aria-hidden="true">${last.map((v, i) => `<div class="react-bar${i === last.length - 1 ? ' now' : ''}" style="--h:${Math.round(v / mx * 100)}%;--c:${col(v)}"><span>${v}</span></div>`).join('')}</div>`;
       root.querySelector('#react-reset').addEventListener('click', () => {
         results = [];
         root.querySelector('#react-stats').innerHTML = '';
@@ -93,21 +97,25 @@ const ReactionGame = (function () {
       box = root.querySelector('#react-box');
       msg = root.querySelector('#react-msg');
       hint = root.querySelector('#react-hint');
-      box.addEventListener('click', () => {
+      /* pointerdown (não click): o tempo conta no instante do toque, não quando se levanta o dedo */
+      const act = () => {
         if (state === 'idle') {
           setWait();
         } else if (state === 'waiting') {
           clearTimeout(timer);
+          state = 'early';
           box.className = 'react-box react-too-early';
           msg.textContent = t('tooEarly');
           hint.textContent = t('waitGreen');
-          setTimeout(setIdle, 1200);
+          setTimeout(() => { if (state === 'early') setIdle(); }, 1200);
         } else if (state === 'go') {
           setResult(Math.round(performance.now() - startTime));
         } else if (state === 'result') {
           setWait();
         }
-      });
+      };
+      box.addEventListener('pointerdown', e => { if (e.button > 0) return; e.preventDefault(); act(); });
+      box.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); act(); } });
     }
 
     build();

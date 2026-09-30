@@ -75,6 +75,8 @@ const DangerwallGame = (function () {
   function update(G, dt, api) {
     const c = G.cfg, A = arena(api);
     G.t += dt; G.inv = Math.max(0, G.inv - dt);
+    /* estrelas em warp: avançam com o tempo de jogo (não com os frames, nem em pausa) */
+    G.stars.forEach(st => { st.d = (st.d + .24 * dt * (1 + G.level * .2) * st.s) % 1; });
     /* nave: persegue o alvo com velocidade máxima */
     const dx = G.tx - G.px, dy = G.ty - G.py, d = Math.hypot(dx, dy), mx = c.spd * dt;
     const k = d > mx ? mx / d : 1;
@@ -130,11 +132,11 @@ const DangerwallGame = (function () {
 
   function draw(G, ctx, W, H, api) {
     const A = arena(api);
-    const lvlHue = (350 + G.level * 28) % 360;
+    /* tons frios (ciano → violeta): o vermelho fica reservado ao aviso de colisão */
+    const lvlHue = 175 + ((G.level - 1) * 37) % 125;
     ctx.fillStyle = '#04050d'; ctx.fillRect(0, 0, W, H);
     /* estrelas em warp */
     G.stars.forEach(st => {
-      st.d = (st.d + .004 * (1 + G.level * .2) * st.s) % 1;
       const r0 = st.d * st.d * W * .8, r1 = r0 * 1.08 + 2;
       ctx.strokeStyle = `rgba(200,220,255,${st.d * .8})`; ctx.lineWidth = st.s * 1.4;
       ctx.beginPath(); ctx.moveTo(A.cx + Math.cos(st.a) * r0, A.cy + Math.sin(st.a) * r0); ctx.lineTo(A.cx + Math.cos(st.a) * r1, A.cy + Math.sin(st.a) * r1); ctx.stroke();

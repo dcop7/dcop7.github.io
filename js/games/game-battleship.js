@@ -155,7 +155,7 @@ const BattleshipGame = (function () {
 @keyframes bs-drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-60px,18px,0)}}
 .bs-wrap>*:not(.bs-ocean){position:relative;z-index:1}
 .bs-title{font-family:var(--font-head,inherit);font-size:1.4rem;font-weight:900;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.5)}
-.bs-hint{font-size:.82rem;color:#bcd6ea;text-align:center;max-width:460px;min-height:18px}
+.bs-hint{font-size:.82rem;color:#bcd6ea;text-align:center;max-width:460px;min-height:2.9em;display:flex;align-items:center;justify-content:center}   /* altura fixa: o tabuleiro não salta quando a dica muda */
 .bs-board-lbl{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9fc0d8;margin-bottom:4px;text-align:center}
 .bs-board{position:relative;display:grid;grid-template-columns:repeat(${N},1fr);grid-template-rows:repeat(${N},1fr);
   width:min(92vw,392px);aspect-ratio:1;gap:0;padding:0;border-radius:8px;overflow:hidden;
@@ -245,7 +245,7 @@ const BattleshipGame = (function () {
       <div class="bs-wrap">
         <div class="bs-ocean"></div>
         <div class="bs-title">🚢 Posiciona a tua frota</div>
-        <div class="bs-hint" id="bs-hint">Arrasta os navios para a tua água. Botão <b>Rodar</b> (ou duplo-clique) para virar; clica num navio já colocado para o mover.</div>
+        <div class="bs-hint" id="bs-hint">Arrasta os navios para a tua água. <b>Toca num navio já colocado</b> para o rodar, ou arrasta-o para o mudar de sítio. (Com o rato, <b>R</b> roda enquanto arrastas.)</div>
         <div id="bs-diff" style="display:flex;justify-content:center;margin:0 0 .6rem"></div>
         <div class="bs-place-layout">
           <div style="display:flex;flex-direction:column;align-items:center">
@@ -303,8 +303,11 @@ const BattleshipGame = (function () {
         const idx = player.occ[r][c];
         if (idx === -1 || drag) return;
         const ship = player.ships[idx];
+        /* agarra pela casa tocada: ao largar, o navio não "salta" para essa casa */
+        const k = ship.cells.findIndex(cell => cell.r === r && cell.c === c);
+        const orig = { r: ship.cells[0].r, c: ship.cells[0].c, ori: ship.ori };
         liftShip(idx);
-        startDrag(e, ship.fleetIdx, ship.ori, true);
+        startDrag(e, ship.fleetIdx, ship.ori, true, { k: Math.max(0, k), orig });
       });
     });
   }
@@ -332,11 +335,12 @@ const BattleshipGame = (function () {
   }
 
   /* ── drag & drop ────────────────────────────────────────────────── */
-  function startDrag(e, fleetIdx, ori, fromBoard) {
+  function startDrag(e, fleetIdx, ori, fromBoard, grab) {
     if (e.button != null && e.button !== 0) return;
     e.preventDefault();
     const sh = FLEET[fleetIdx];
-    drag = { fleetIdx, ori, fromBoard, size: sh.size, kind: sh.kind, ghost: null };
+    drag = { fleetIdx, ori, fromBoard, size: sh.size, kind: sh.kind, ghost: null,
+      k: grab ? grab.k : 0, orig: grab ? grab.orig : null, x0: e.clientX, y0: e.clientY, moved: false };
     const ghost = document.createElement('div');
     ghost.className = 'bs-drag-ghost';
     drag.ghost = ghost;
@@ -361,9 +365,15 @@ const BattleshipGame = (function () {
   }
   function moveGhost(x, y) {
     if (!drag || !drag.ghost) return;
-    const cp = cellPx();
-    drag.ghost.style.left = (x - cp / 2) + 'px';
-    drag.ghost.style.top = (y - cp / 2) + 'px';
+    const cp = cellPx(), k = drag.k || 0;
+    drag.ghost.style.left = (x - cp / 2 - (drag.ori === 'h' ? k * cp : 0)) + 'px';
+    drag.ghost.style.top = (y - cp / 2 - (drag.ori === 'v' ? k * cp : 0)) + 'px';
+  }
+  /* casa de origem do navio (a casa agarrada fica debaixo do dedo) */
+  function originAt(x, y) {
+    const cell = boardCellAt(x, y); if (!cell) return null;
+    const k = drag.k || 0;
+    return drag.ori === 'h' ? { r: cell.r, c: cell.c - k } : { r: cell.r - k, c: cell.c };
   }
   function boardCellAt(x, y) {
     const bd = root.querySelector('#bs-place'); if (!bd) return null;
@@ -376,8 +386,9 @@ const BattleshipGame = (function () {
   function onDragMove(e) {
     if (!drag) return;
     moveGhost(e.clientX, e.clientY);
+    if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 6) drag.moved = true;
     const fx = root.querySelector('#bs-place .bs-fx-layer'); if (fx) clearPreview();
-    const cell = boardCellAt(e.clientX, e.clientY);
+    const cell = originAt(e.clientX, e.clientY);
     if (cell && fx) {
       const ok = canPlace(player, cell.r, cell.c, drag.size, drag.ori);
       const ghost = document.createElement('div');
@@ -390,13 +401,20 @@ const BattleshipGame = (function () {
   }
   function onDragUp(e) {
     if (!drag) return;
-    const cell = boardCellAt(e.clientX, e.clientY);
+    const cell = originAt(e.clientX, e.clientY);
     const d = drag;
     endDrag();
-    if (cell && canPlace(player, cell.r, cell.c, d.size, d.ori)) {
-      const sh = FLEET[d.fleetIdx];
-      placeShip(player, cell.r, cell.c, d.size, d.ori, Object.assign({ fleetIdx: d.fleetIdx }, sh));
-      sfx.place();
+    const sh = Object.assign({ fleetIdx: d.fleetIdx }, FLEET[d.fleetIdx]);
+    const put = (r, c, ori) => { placeShip(player, r, c, d.size, ori, sh); };
+    if (d.fromBoard && !d.moved && d.orig) {
+      /* toque num navio colocado: roda-o no mesmo sítio (se couber; senão fica como estava) */
+      const o = d.orig, no = o.ori === 'h' ? 'v' : 'h';
+      if (canPlace(player, o.r, o.c, d.size, no)) { put(o.r, o.c, no); sfx.rotate(); }
+      else { put(o.r, o.c, o.ori); setHint('Não há espaço para o rodar aqui.'); }
+    } else if (cell && canPlace(player, cell.r, cell.c, d.size, d.ori)) {
+      put(cell.r, cell.c, d.ori); sfx.place();
+    } else if (d.fromBoard && d.orig && canPlace(player, d.orig.r, d.orig.c, d.size, d.orig.ori)) {
+      put(d.orig.r, d.orig.c, d.orig.ori);   /* largado fora: volta ao sítio de onde veio */
     }
     renderPlacement();
   }

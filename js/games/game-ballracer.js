@@ -143,7 +143,7 @@ const BallracerGame = (function () {
     ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.beginPath(); ctx.arc(W * .72, hY - 40, 34, 0, 6.3); ctx.fill();
     G.clouds.forEach(c => { const x = ((c.x - G.camX * .03 + G.z * c.sp * .1) % 2.4 + 2.4) % 2.4 - 1.2; const cx = W / 2 + x * W, cy = hY + c.y * (H - hY);
-      ctx.fillStyle = th.cloud; ctx.beginPath(); ctx.ellipse(cx, cy, 60 * c.s, 16 * c.s, 0, 0, 6.3); ctx.ellipse(cx + 30 * c.s, cy - 9 * c.s, 34 * c.s, 14 * c.s, 0, 0, 6.3); ctx.fill(); });
+      ctx.fillStyle = th.cloud; ctx.beginPath(); ctx.moveTo(cx + 60 * c.s, cy); ctx.ellipse(cx, cy, 60 * c.s, 16 * c.s, 0, 0, 6.3); ctx.moveTo(cx + 30 * c.s + 34 * c.s, cy - 9 * c.s); ctx.ellipse(cx + 30 * c.s, cy - 9 * c.s, 34 * c.s, 14 * c.s, 0, 0, 6.3); ctx.fill(); });
 
     const camZ = G.z - CAMB;
     const P = (X, Y, Z) => { const dz = Z - camZ; return [W / 2 + (X - G.camX * .55) * f / dz, hY + (CAMH - Y) * f / dz]; };

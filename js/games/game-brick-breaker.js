@@ -129,6 +129,7 @@ const BrickBreakerGame = (function () {
     G.t += dt;
     if (G.pause > 0) { G.pause -= dt; return; }
     for (const k in G.effects) { G.effects[k] -= dt; if (G.effects[k] <= 0) { delete G.effects[k]; if (k === 'wide') G.pw = G.basePw; } }
+    if (G.kl || G.kr) G.px += ((G.kr ? 1 : 0) - (G.kl ? 1 : 0)) * 560 * dt;   /* teclado: movimento contínuo enquanto a tecla está premida */
     G.px = U.clamp(G.px, G.pw / 2 + 4, W - G.pw / 2 - 4);
     G.bricks.forEach(b => { if (b.hit > 0) b.hit -= dt; });
 
@@ -275,9 +276,13 @@ const BrickBreakerGame = (function () {
     },
     up: G => { G.drag = null; },
     key: (G, e, api) => {
-      if (e.key === 'ArrowLeft') { G.px -= 34; return true; }
-      if (e.key === 'ArrowRight') { G.px += 34; return true; }
-      if (e.key === ' ') { launch(G, api); return true; }
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { G.kl = 1; return true; }
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { G.kr = 1; return true; }
+      if (e.key === ' ' || e.key === 'ArrowUp') { launch(G, api); return true; }
+    },
+    keyup: (G, e) => {
+      if (/^(ArrowLeft|a|A)$/.test(e.key)) G.kl = 0;
+      if (/^(ArrowRight|d|D)$/.test(e.key)) G.kr = 0;
     },
     hud: G => [['Pontos', G.score], ['Nível', G.level], ['Combo', G.combo > 1 ? '×' + G.combo : '—', G.combo >= 5 ? 'hot' : '']],
     achievements: [

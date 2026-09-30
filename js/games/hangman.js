@@ -49,6 +49,7 @@
   let guessed = new Set();
   let wrongCount = 0;
   let gameOver = false;
+  let lastGuess = '';   /* só as letras acabadas de descobrir fazem a animação */
   /* Hangman has its OWN age (6–14), independent of the global game difficulty
      that drives the other games. Persisted under 'hangman-age'. */
   const AGES = [6, 7, 8, 9, 10, 11, 12, 13, 14];
@@ -70,12 +71,28 @@
      the word list scales without touching code. Embedded defaults below keep
      the game fully playable offline if a file is momentarily unavailable. */
   const _STR = {
-    pt: { age:'Idade:', category:'Categoria:', letters:'Letras:', wrong:'Letras erradas:', newWord:'🔄 Nova Palavra', lettersWord:'letras', win:'🎉 Parabéns! Acertaste!', loss:'😢 Perdeste! A palavra era: {word}' },
-    en: { age:'Age:', category:'Category:', letters:'Letters:', wrong:'Wrong letters:', newWord:'🔄 New Word', lettersWord:'letters', win:'🎉 Well done! You got it!', loss:'😢 You lost! The word was: {word}' },
+    pt: { age:'Idade:', category:'Categoria:', letters:'Letras:', wrong:'Letras erradas:', newWord:'🔄 Nova Palavra', lettersWord:'letras', win:'🎉 Parabéns! Acertaste!', loss:'😢 Perdeste! A palavra era: {word}', streak:'Série', wins:'Acertadas' },
+    en: { age:'Age:', category:'Category:', letters:'Letters:', wrong:'Wrong letters:', newWord:'🔄 New Word', lettersWord:'letters', win:'🎉 Well done! You got it!', loss:'😢 You lost! The word was: {word}', streak:'Streak', wins:'Solved' },
   };
   let _i18n = {};
   function _lang() { return (typeof I18n !== 'undefined' && I18n.getLang() === 'en') ? 'en' : 'pt'; }
   function _t(key) { return (_i18n[key] != null) ? _i18n[key] : (_STR[_lang()][key] || key); }
+
+  /* série de palavras acertadas seguidas + total (só neste browser) */
+  function _score() { try { return JSON.parse(localStorage.getItem('hangman-score')) || { streak: 0, best: 0, wins: 0 }; } catch (e) { return { streak: 0, best: 0, wins: 0 }; } }
+  function _bump(won) {
+    const s = _score();
+    if (won) { s.streak++; s.wins++; s.best = Math.max(s.best, s.streak); } else s.streak = 0;
+    try { localStorage.setItem('hangman-score', JSON.stringify(s)); } catch (e) {}
+    renderStats();
+  }
+  function renderStats() {
+    const top = document.querySelector('#pane-hangman .hf-top'); if (!top) return;
+    let el = top.querySelector('.hf-stats');
+    if (!el) { el = document.createElement('div'); el.className = 'hf-stats'; top.insertBefore(el, top.querySelector('.hf-age-wrap')); }
+    const s = _score();
+    el.innerHTML = `<span class="hf-stat${s.streak >= 3 ? ' hot' : ''}">🔥 ${_t('streak')} <b>${s.streak}</b></span><span class="hf-stat">✅ ${_t('wins')} <b>${s.wins}</b></span>`;
+  }
   let _loadedLang = null;
 
   async function _loadData() {
@@ -121,6 +138,7 @@
   const wrongEl   = document.getElementById('hf-wrong-letters');
   const msgEl     = document.getElementById('hf-msg');
   const newBtn    = document.getElementById('hf-new-btn');
+  const card      = document.querySelector('#pane-hangman .hf-card');
 
   // ── HELPERS ───────────────────────────────────────────────────────
   function norm(ch) {
@@ -157,7 +175,7 @@
       const revealed = guessed.has(n);
       const showLoss = revealAll && !revealed;
       let cls = 'hf-letter';
-      if (revealed) cls += ' hf-revealed';
+      if (revealed) cls += ' hf-revealed' + (n === lastGuess ? ' hf-new' : '');
       else if (showLoss) cls += ' hf-reveal-loss';
       return `<span class="${cls}">${revealed || showLoss ? ch : ''}</span>`;
     }).join('');
@@ -196,11 +214,12 @@
 
   function handleGuess(letter) {
     if (gameOver || guessed.has(letter)) return;
-    guessed.add(letter);
+    guessed.add(letter); lastGuess = letter;
     if (!normWord(currentWord).includes(letter)) wrongCount++;
     renderGallows(); renderLives(); renderWord(false); renderWrong(); renderKeyboard();
     if (checkWin()) {
       gameOver = true; renderKeyboard();
+      card && card.classList.add('hf-won'); _bump(true);
       showMsg(_t('win'), 'win');
       celebrateWin();
       if (typeof GameProgress !== 'undefined') {
@@ -208,6 +227,7 @@
       }
     } else if (wrongCount >= MAX_WRONG) {
       gameOver = true; renderWord(true); renderKeyboard();
+      card && card.classList.add('hf-lost'); _bump(false);
       showMsg(_t('loss').replace('{word}', currentWord), 'lose');
       if (typeof GameProgress !== 'undefined') {
         try { GameProgress.record('hangman', { won: false, mode: String(currentAge) }); } catch (e) {}
@@ -242,7 +262,7 @@
 
     currentWord = entry.w.toUpperCase();
     currentCat  = entry.c;
-    guessed     = new Set();
+    guessed     = new Set(); lastGuess = '';
     wrongCount  = 0;
     gameOver    = false;
 
@@ -255,6 +275,8 @@
         : currentWord.replace(/\s/g, '').length + ' ' + _t('lettersWord');
     }
     hideMsg();
+    if (card) card.classList.remove('hf-won', 'hf-lost');
+    renderStats();
     renderGallows(); renderLives(); renderWord(false); renderWrong(); renderKeyboard();
   }
 
@@ -293,7 +315,7 @@
   if (typeof GameProgress !== 'undefined') {
     GameProgress.defineAchievements('hangman', [
       { id: 'hm.win',     name: 'Enforcado Salvo', icon: '🪢', desc: 'Acerta uma palavra na Forca.',      test: c => c.gameId === 'hangman' && c.result.won === true },
-      { id: 'hm.perfect', name: 'Sem Erros',       icon: '✨', desc: 'Acerta sem nenhuma letra errada.', test: c => c.gameId === 'hangman' && c.result.won === true && c.result.perfect === true },
+      { id: 'hm.perfect', name: 'Sem Erros',       icon: '✨', desc: 'Acerta sem nenhuma letra errada.', test: c => c.gameId === 'hangman' && c.result.won === true && (c.result.meta || {}).perfect === true },
     ]);
   }
 

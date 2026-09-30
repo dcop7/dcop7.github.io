@@ -84,6 +84,7 @@ const LaneRushGame = (function () {
     G.dist += dz * .8;
     G.score = Math.floor(G.dist / 2) + G.coins * 5 + G.nears * 3;
     G.stripe = (G.stripe + dz) % 6;
+    G.post = ((G.post || 0) + dz) % 12;
     G.px = U.lerp(G.px, G.lane, Math.min(1, dt * 16));
     G.tilt = U.lerp(G.tilt, (G.lane - G.px) * 1.4, Math.min(1, dt * 12));
     G.shieldFx = Math.max(0, G.shieldFx - dt * 2);
@@ -93,18 +94,21 @@ const LaneRushGame = (function () {
       spawnRow(G);
       const T = Math.max(c.tMin, 1.2 - G.time * .0075);
       G.nextRow = G.v * T + U.rand(0, 4);
+      /* os carros andam (a .35 v): a fila seguinte não os pode apanhar antes
+         de passarem por ti, senão carro + barreiras fechavam as 3 faixas */
+      if (G.objs.some(o => o.t === 'car' && o.z > ZMAX - 2)) G.nextRow = Math.max(G.nextRow, 42);
     }
     if (Math.floor(G.dist / 500) > Math.floor((G.dist - dz * .8) / 500)) { api.banner(Math.floor(G.dist / 500) * 500 + ' m', 'Mais rápido!'); api.sfx.arp([523, 784], .07, .1, 'triangle', .06); }
 
     for (let i = G.objs.length - 1; i >= 0; i--) {
-      const o = G.objs[i];
+      const o = G.objs[i], z0 = o.z;
       o.z -= dz;
       if (o.t === 'car') {
         o.z += G.v * .35 * dt;           /* os carros andam, mas mais devagar que tu */
         if (o.z < 34 && o.from !== o.to) { o.lane = U.lerp(o.lane, o.to, Math.min(1, dt * 2.2)); }
       }
       if (o.dead) { G.objs.splice(i, 1); continue; }
-      const near = o.z < .9 && o.z > -.9;
+      const near = o.z < .9 && z0 > -.9;       /* atravessou a zona do carro neste passo (fps baixo não salta obstáculos) */
       const dl = Math.abs(o.lane - G.px);
       if (near && dl < .55) {
         if (o.t === 'coin') { G.coins++; o.dead = true; api.sfx.tone(988, .06, 'sine', .07); api.sfx.tone(1319, .08, 'sine', .05, .05); api.float(laneX(api, o.lane, 0), rowY(api, 0) - 60, '+5', '#fde047', 16); continue; }
@@ -140,6 +144,13 @@ const LaneRushGame = (function () {
     const sky = ctx.createLinearGradient(0, 0, 0, hz);
     sky.addColorStop(0, '#0b0322'); sky.addColorStop(1, '#4a0f55');
     ctx.fillStyle = sky; ctx.fillRect(0, 0, W, hz);
+    /* estrelas */
+    for (let i = 0; i < 42; i++) {
+      const x = (i * 97.3) % W, y = (i * 53.7) % (hz - 40);
+      ctx.globalAlpha = .25 + .5 * Math.abs(Math.sin(api.t * (.6 + i % 5 * .3) + i));
+      ctx.fillStyle = i % 7 ? '#fff' : '#f9a8d4'; ctx.fillRect(x, y, i % 3 ? 1.2 : 2, i % 3 ? 1.2 : 2);
+    }
+    ctx.globalAlpha = 1;
     const sunR = 70, sy = hz - 18;
     const sg = ctx.createLinearGradient(0, sy - sunR, 0, sy + sunR);
     sg.addColorStop(0, '#fde047'); sg.addColorStop(1, '#f43f5e');
@@ -167,6 +178,20 @@ const LaneRushGame = (function () {
     ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 3; ctx.shadowColor = '#f472b6'; ctx.shadowBlur = 10;
     [-1, 1].forEach(sd => { ctx.beginPath(); ctx.moveTo(W / 2 + sd * hw(zF), rowY(api, zF)); ctx.lineTo(W / 2 + sd * hw(zN), rowY(api, zN)); ctx.stroke(); });
     ctx.shadowBlur = 0;
+    /* postes néon nas bermas (do fundo para a frente) */
+    for (let z = ZMAX - ((ZMAX + (G.post || 0)) % 12); z > zN; z -= 12) {
+      const s = scale(z), y = rowY(api, z), ph = 70 * s, fade = Math.min(1, (ZMAX - z) / 12);
+      ctx.globalAlpha = fade;
+      [-1, 1].forEach(sd => {
+        const x = W / 2 + sd * hw(z) * 1.18;
+        ctx.fillStyle = '#2a1340'; ctx.fillRect(x - 1.6 * s - .4, y - ph, 3.2 * s + .8, ph);
+        ctx.fillStyle = sd < 0 ? '#22d3ee' : '#f472b6';
+        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 12 * s;
+        ctx.beginPath(); ctx.arc(x, y - ph, 4.5 * s + .6, 0, 6.3); ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+    }
+    ctx.globalAlpha = 1;
     /* tracejado das faixas */
     ctx.fillStyle = 'rgba(103,232,249,.75)';
     [.5, 1.5].forEach(l => {

@@ -44,7 +44,8 @@ const ArrowWallGame = (function () {
 
   function choose(G, d, api) {
     const w = G.wall;
-    if (!w || G.choice || w.z <= 0) return;
+    /* pode corrigir a decisão até ao impacto (conta a última; o bónus de rapidez também) */
+    if (!w || w.z <= 0 || G.choice === d) return;
     if (w.type === 'spin' && w.z > w.spinLock) { G.wait = .35; api.sfx.tone(200, .05, 'square', .03); return; }
     G.choice = d; G.chosenAt = w.age;
     api.sfx.tone(d === 'center' ? 440 : 620, .06, 'triangle', .05, 0, d === 'center' ? 440 : 880);
@@ -118,6 +119,9 @@ const ArrowWallGame = (function () {
   function draw(G, ctx, W, H, api) {
     const cx = W / 2, cy = H * .5;
     ctx.fillStyle = '#050b16'; ctx.fillRect(0, 0, W, H);
+    const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(W, H) * .6);
+    glow.addColorStop(0, G.hurt > 0 ? `rgba(239,68,68,${.18 * G.hurt + .06})` : 'rgba(34,211,238,.10)'); glow.addColorStop(1, 'rgba(5,11,22,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
     /* túnel: molduras concêntricas a vir */
     for (let i = 0; i < 9; i++) {
       const z = ((i + 1 - G.scroll) / 9);
@@ -222,7 +226,7 @@ const ArrowWallGame = (function () {
     how: [
       '<b style="color:#22c55e">Seta verde</b>: vai para onde aponta. <b style="color:#ef4444">Seta vermelha</b>: vai para o lado oposto.',
       '<b style="color:#60a5fa">Círculo azul</b>: fica no centro. <b style="color:#eab308">Seta a girar</b>: só conta quando parar.',
-      'Toca/clica na direção (ou no centro), desliza o dedo, ou usa as setas e o Espaço. Quanto mais cedo acertares, mais pontos.',
+      'Toca/clica na direção (ou no centro), desliza o dedo, ou usa as setas e o Espaço. Podes corrigir até ao impacto — quanto mais cedo acertares, mais pontos.',
     ],
     controls: ['🖱️ Clique na direção', '👆 Toque ou deslizar', '⌨️ Setas + Espaço'],
     ready: { title: 'Toca para começar', hint: 'Verde segue, vermelha oposto, azul fica. Decide antes do impacto!' },

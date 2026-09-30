@@ -68,9 +68,18 @@ const KnifeThrowGame = (function () {
     return G;
   }
 
+  /* altura virtual: em ecrãs baixos o palco encolhe (zoom < 1) em vez de a
+     faca à espera ficar por baixo das facas cravadas no fundo do tronco */
+  const MINH = 560;
+  const VH = api => Math.max(api.H, MINH);
+  const zoom = api => api.H / VH(api);
   const cx = (G, api) => api.W / 2;
-  const cy = (G, api) => Math.max(R + 90, Math.min(api.H * .34, 290));
-  const restY = api => api.H - KLEN - 26;
+  const cy = (G, api) => Math.max(R + OUT + 48, Math.min(VH(api) * .36, 300));
+  const restY = api => VH(api) - KLEN - 26;
+  /* coordenadas do jogo → ecrã (partículas e textos do kit não têm zoom) */
+  const scr = (api, x, y) => { const z = zoom(api); return [api.W / 2 + (x - api.W / 2) * z, y * z]; };
+  const spark = (api, o) => { const [x, y] = scr(api, o.x, o.y), z = zoom(api); o.x = x; o.y = y; o.vx *= z; o.vy *= z; api.spark(o); };
+  const float = (api, x, y, t, c, s) => { const [a, b] = scr(api, x, y); api.float(a, b, t, c, s); };
 
   function throwKnife(G, api) {
     if (G.over || G.flying || G.cool > 0 || G.left <= 0 || G.clearT > 0) return;
@@ -115,8 +124,8 @@ const KnifeThrowGame = (function () {
           const a = G.apples[i].a + G.rot, ax = X + Math.cos(a) * (R + 10), ay = Y + Math.sin(a) * (R + 10);
           if (Math.abs(ax - X) < 16 && ay > top - 12 && ay < bot) {
             G.apples.splice(i, 1); G.applesTot++; G.score += 2;
-            api.float(ax, ay - 10, '+2 🍎', '#ff6b6b', 18);
-            for (let j = 0; j < 12; j++) api.spark({ x: ax, y: ay, vx: U.rand(-160, 160), vy: U.rand(-220, 40), color: j % 2 ? '#ef4444' : '#fca5a5', size: U.rand(2, 4), life: .6, gravity: 600 });
+            float(api, ax, ay - 10, '+2 🍎', '#ff6b6b', 18);
+            for (let j = 0; j < 12; j++) spark(api, { x: ax, y: ay, vx: U.rand(-160, 160), vy: U.rand(-220, 40), color: j % 2 ? '#ef4444' : '#fca5a5', size: U.rand(2, 4), life: .6, gravity: 600 });
             api.sfx.tone(880, .08, 'sine', .08); api.sfx.tone(1320, .1, 'sine', .06, .05);
           }
         }
@@ -128,7 +137,7 @@ const KnifeThrowGame = (function () {
         G.score += 1; G.hitFx = 1;
         api.shake(4, .12); api.vibe(12);
         api.sfx.noise(.08, .14, 0, 500, 'lowpass'); api.sfx.tone(140, .09, 'triangle', .1);
-        for (let j = 0; j < 9; j++) api.spark({ x: X + U.rand(-6, 6), y: rim, vx: U.rand(-190, 190), vy: U.rand(-60, 160), color: j % 3 ? '#c98a4b' : '#f3c58a', size: U.rand(1.5, 3.5), life: .55, gravity: 700 });
+        for (let j = 0; j < 9; j++) spark(api, { x: X + U.rand(-6, 6), y: rim, vx: U.rand(-190, 190), vy: U.rand(-60, 160), color: j % 3 ? '#c98a4b' : '#f3c58a', size: U.rand(1.5, 3.5), life: .55, gravity: 700 });
         if (G.left === 0) G.clearT = .001;
       }
     }
@@ -151,7 +160,7 @@ const KnifeThrowGame = (function () {
         G.stuck = []; G.apples = [];
         api.shake(10, .3); api.vibe([20, 30, 40]);
         api.sfx.noise(.35, .2, 0, 300, 'lowpass'); api.sfx.arp([392, 523, 659], .06, .12, 'triangle', .08);
-        api.float(X, Y, '+' + bonus, '#fde68a', 26);
+        float(api, X, Y, '+' + bonus, '#fde68a', 26);
       }
       if (G.clearT > 1.15) {
         G.burst = false;
@@ -249,13 +258,16 @@ const KnifeThrowGame = (function () {
   }
 
   function draw(G, ctx, W, H, api) {
-    const X = cx(G, api), Y = cy(G, api);
+    const X = cx(G, api), z = zoom(api), Y = cy(G, api);
     /* fundo: oficina escura, foco de luz sobre o tronco */
-    const bg = ctx.createRadialGradient(X, Y, 20, X, Y, Math.max(W, H) * .9);
+    const bg = ctx.createRadialGradient(X, Y * z, 20, X, Y * z, Math.max(W, H) * .9);
     bg.addColorStop(0, G.boss ? '#3a1715' : '#2c2118'); bg.addColorStop(.55, '#15110e'); bg.addColorStop(1, '#0a0807');
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
     ctx.strokeStyle = 'rgba(255,255,255,.025)'; ctx.lineWidth = 1;
     for (let y = 0; y < H; y += 26) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y + 8); ctx.stroke(); }
+    ctx.save();
+    if (z < 1) { ctx.translate(W / 2 * (1 - z), 0); ctx.scale(z, z); }
+    H = VH(api);
 
     /* facas cravadas (por baixo do tronco, que esconde a parte enterrada) */
     G.stuck.forEach(k => {
@@ -296,6 +308,7 @@ const KnifeThrowGame = (function () {
       ctx.fillStyle = used ? '#4b5563' : '#d4a64a'; ctx.fillRect(-2, 3, 4, 7);
       ctx.restore();
     }
+    ctx.restore();
   }
 
   const game = ArcadeKit.create({

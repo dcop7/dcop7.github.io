@@ -4,7 +4,7 @@ const GravityLabGame = (function () {
   let root, cv, cx, raf, W, H, G;
   let _keyHandler = null;
 
-  const TILE = 40;
+  const TILE = 64;          /* casa máxima (px); a física escala com a casa real */
 
   const LEVELS = [
     { title:'Nível 1', hint:'Usa as setas ou toca para mudar a gravidade!',
@@ -39,9 +39,9 @@ const GravityLabGame = (function () {
   /* UI strings + per-level hints live in games/gravity-lab/i18n.json
      (offline fallback below; `hints` is an array indexed by level). */
   const FB_I18N = {
-    pt: { play:'▶ Jogar', continue:'▶ Continuar', restart:'↺ Recomeçar do Nível 1', tip:'Setas ↑↓←→ para definir a gravidade<br>Ou toca / clica para alternar a direção<br>Leva a bola até ao portal de saída', level:'Nível', levelDone:'Nível Concluído!', flipsUsed:'Inversões usadas: {u} / {n}', nextLevel:'▶ Próximo Nível', allDoneBtn:'🏆 Tudo Concluído!', labDone:'Laboratório Concluído!', playAgain:'▶ Jogar de Novo', repeat:'↺ Repetir', menu:'☰ Menu', allCleared:'Todos os {n} níveis superados!',
+    pt: { play:'▶ Jogar', continue:'▶ Continuar', restart:'↺ Recomeçar do Nível 1', tip:'Setas ↑↓←→ para definir a gravidade<br>Ou toca/clica do lado para onde a bola deve cair (ou desliza)<br>Leva a bola até ao portal de saída', level:'Nível', levelDone:'Nível Concluído!', flipsUsed:'Inversões usadas: {u} / {n}', nextLevel:'▶ Próximo Nível', allDoneBtn:'🏆 Tudo Concluído!', labDone:'Laboratório Concluído!', playAgain:'▶ Jogar de Novo', repeat:'↺ Repetir', menu:'☰ Menu', allCleared:'Todos os {n} níveis superados!',
       hints:['Usa as setas ou toca para mudar a gravidade!','Usa o interruptor para recuperar inversões','Calcula bem o momento das inversões','Várias plataformas para atravessar','A gravidade também vai para os lados!','Percurso complexo — planeia as inversões!','Avançado — usa cada inversão com cuidado','Desafio mestre!'] },
-    en: { play:'▶ Play', continue:'▶ Continue', restart:'↺ Restart from Level 1', tip:'Arrows ↑↓←→ to set gravity<br>Or tap / click to flip the direction<br>Get the ball to the exit portal', level:'Level', levelDone:'Level Complete!', flipsUsed:'Flips used: {u} / {n}', nextLevel:'▶ Next Level', allDoneBtn:'🏆 All Done!', labDone:'Lab Complete!', playAgain:'▶ Play Again', repeat:'↺ Repeat', menu:'☰ Menu', allCleared:'All {n} levels cleared!',
+    en: { play:'▶ Play', continue:'▶ Continue', restart:'↺ Restart from Level 1', tip:'Arrows ↑↓←→ to set gravity<br>Or tap/click on the side the ball should fall to (or swipe)<br>Get the ball to the exit portal', level:'Level', levelDone:'Level Complete!', flipsUsed:'Flips used: {u} / {n}', nextLevel:'▶ Next Level', allDoneBtn:'🏆 All Done!', labDone:'Lab Complete!', playAgain:'▶ Play Again', repeat:'↺ Repeat', menu:'☰ Menu', allCleared:'All {n} levels cleared!',
       hints:['Use the arrows or tap to change gravity!','Use the switch to regain flips','Time your flips carefully','Several platforms to cross','Gravity can go sideways too!','Complex route — plan your flips!','Advanced — use each flip with care','Master challenge!'] },
   };
   const _has = typeof GameData !== 'undefined';
@@ -108,28 +108,44 @@ const GravityLabGame = (function () {
         <div class="gl-hud-title">${t('level')} ${idx+1}</div>
         <div class="gl-hud-grav" id="gl-grav">${GRAV_LABELS[lvl.gravStart]}</div>
         <div class="gl-hud-flips" id="gl-flips"></div>
-        <button class="gl-hud-btn" id="gl-hud-new">↺ Novo</button>
+        <button class="gl-hud-btn" id="gl-hud-retry" title="Repetir o nível (R)">↺</button>
+        <button class="gl-hud-btn" id="gl-hud-new" title="Menu">☰</button>
       </div>
     </div>`;
     cv = root.querySelector('#gl-cv');
     cx = cv.getContext('2d');
-    resize(); window.addEventListener('resize', resize);
+    cancelAnimationFrame(raf);
+    G = null;
+    resize(); window.removeEventListener('resize', resize); window.addEventListener('resize', resize);
     G = buildLevel(idx, lvl);
+    G.t0 = performance.now();
     updateFlipHUD();
-    cv.addEventListener('click', flipGravity);
-    cv.addEventListener('touchstart', e => { e.preventDefault(); flipGravity(); }, { passive: false });
-    root.querySelector('#gl-hud-new').addEventListener('click', () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', resize);
-      _removeKeyHandler();
-      showMenu();
+    /* toque/clique: a gravidade aponta da bola para onde tocaste (eixo dominante);
+       deslizar também serve. Antes cada toque rodava ↓→↑→←→→ e gastava inversões. */
+    let down = null;
+    cv.addEventListener('pointerdown', e => { e.preventDefault(); down = { x: e.clientX, y: e.clientY }; });
+    cv.addEventListener('pointerup', e => {
+      if (!down || !G || G.state !== 'playing') { down = null; return; }
+      const r = cv.getBoundingClientRect();
+      let dx = e.clientX - down.x, dy = e.clientY - down.y;
+      if (Math.hypot(dx, dy) < 24) { dx = e.clientX - r.left - G.ball.x; dy = e.clientY - r.top - G.ball.y; }
+      down = null;
+      if (Math.hypot(dx, dy) < 6) return;
+      setGrav(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
     });
+    cv.addEventListener('pointercancel', () => { down = null; });
+    const leave = () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); _removeKeyHandler(); };
+    root.querySelector('#gl-hud-new').addEventListener('click', () => { leave(); showMenu(); });
+    root.querySelector('#gl-hud-retry').addEventListener('click', () => { leave(); playLevel(idx); });
     _keyHandler = function(e) {
-      const map = { ArrowDown:'down', ArrowUp:'up', ArrowLeft:'left', ArrowRight:'right' };
+      if (!root.isConnected || !root.getClientRects().length || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;   /* só com o jogo à vista */
+      const map = { ArrowDown:'down', ArrowUp:'up', ArrowLeft:'left', ArrowRight:'right', s:'down', w:'up', a:'left', d:'right' };
       if (map[e.key]) { e.preventDefault(); setGrav(map[e.key]); return; }
       if (e.key === ' ') { e.preventDefault(); flipGravity(); }
+      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); leave(); playLevel(idx); }
     };
     document.addEventListener('keydown', _keyHandler);
+    lastTs = performance.now();
     raf = requestAnimationFrame(loop);
   }
 
@@ -147,8 +163,12 @@ const GravityLabGame = (function () {
   }
 
   function resize() {
-    W = cv.offsetWidth || 360; H = cv.offsetHeight || 500;
-    cv.width = W; cv.height = H;
+    if (!cv || !cv.isConnected) return;
+    const w = cv.offsetWidth || 360, h = cv.offsetHeight || 500, dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (G && w === W && h === H) return;
+    W = w; H = h;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);      /* nítido em ecrãs retina */
     if (G) scaleLevel();
   }
 
@@ -193,9 +213,16 @@ const GravityLabGame = (function () {
     const rows = G.lvl.grid;
     const gridH = rows.length, gridW = rows[0].length;
     const tile = Math.min(Math.floor(Math.min(W, H*(gridW/gridH))/gridW), Math.floor(Math.min(H, W*(gridH/gridW))/gridH), TILE);
+    /* a bola (e o ponto de partida) mantêm a posição na grelha */
+    const toGrid = p => ({ gx: (p.x - G.offX) / G.tile, gy: (p.y - G.offY) / G.tile });
+    const b0 = toGrid(G.ball), s0 = toGrid(G.startBall), used = G.switches.map(sw => sw.used);
     G.tile = tile;
     G.offX = (W - tile * gridW) / 2;
     G.offY = (H - tile * gridH) / 2;
+    const k = tile / (G.ball.r / 0.28);
+    Object.assign(G.ball, { x: G.offX + b0.gx * tile, y: G.offY + b0.gy * tile, r: tile * 0.28, vx: G.ball.vx * k, vy: G.ball.vy * k });
+    Object.assign(G.startBall, { x: G.offX + s0.gx * tile, y: G.offY + s0.gy * tile, r: tile * 0.28 });
+    G.trail = [];
     G.walls = []; G.exit = null; G.switches = [];
     rows.forEach((row, ri) => {
       for (let ci = 0; ci < row.length; ci++) {
@@ -203,7 +230,7 @@ const GravityLabGame = (function () {
         const wx = G.offX + ci * tile, wy = G.offY + ri * tile;
         if (ch === '#') G.walls.push({ x: wx, y: wy, w: tile, h: tile });
         if (ch === 'E') G.exit = { x: wx, y: wy, w: tile, h: tile };
-        if (ch === 'W') G.switches.push({ x: wx + tile/2, y: wy + tile/2, r: tile*0.32, used: false });
+        if (ch === 'W') G.switches.push({ x: wx + tile/2, y: wy + tile/2, r: tile*0.32, used: !!used[G.switches.length] });
       }
     });
   }
@@ -237,6 +264,9 @@ const GravityLabGame = (function () {
   let lastTs = 0;
   function loop(ts) {
     const dt = Math.min((ts - lastTs) / 1000, 0.05); lastTs = ts;
+    /* fora do ecrã não simula nem desenha (antes o ciclo ficava a correr para sempre) */
+    if (!root.isConnected || !root.getClientRects().length) { if (!root.isConnected) return; raf = requestAnimationFrame(loop); return; }
+    if (cv.offsetWidth !== W || cv.offsetHeight !== H) resize();
     if (G.state === 'playing') updatePhysics(dt);
     updateParticles(dt);
     render();
@@ -247,11 +277,11 @@ const GravityLabGame = (function () {
 
   function updatePhysics(dt) {
     const b = G.ball;
-    const [gx, gy] = GRAVS[G.grav];
-    b.vx += gx * GRAV_FORCE * dt;
-    b.vy += gy * GRAV_FORCE * dt;
-    const spd = Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    if (spd > BALL_SPEED) { b.vx = b.vx/spd*BALL_SPEED; b.vy = b.vy/spd*BALL_SPEED; }
+    const [gx, gy] = GRAVS[G.grav], ks = G.tile / 40;   /* afinada para casas de 40 px */
+    b.vx += gx * GRAV_FORCE * ks * dt;
+    b.vy += gy * GRAV_FORCE * ks * dt;
+    const spd = Math.sqrt(b.vx*b.vx+b.vy*b.vy), vmax = BALL_SPEED * ks;
+    if (spd > vmax) { b.vx = b.vx/spd*vmax; b.vy = b.vy/spd*vmax; }
 
     b.x += b.vx * dt;
     resolveWalls(b, 'x');
@@ -472,13 +502,16 @@ const GravityLabGame = (function () {
   }
 
   function drawHint() {
-    const t = performance.now()/1000;
-    if (t < 3) {
-      cx.globalAlpha = Math.min(1, Math.min(t, 3-t)*2);
-      cx.fillStyle = '#334155'; cx.font = '13px sans-serif';
-      cx.textAlign = 'center'; cx.textBaseline = 'bottom';
-      cx.fillText(_hint(G.idx), W/2, H - 10);
+    const t = (performance.now() - (G.t0 || 0)) / 1000;   /* desde o início do nível (antes: desde que a página abriu) */
+    cx.textAlign = 'center'; cx.textBaseline = 'bottom'; cx.font = '600 13px system-ui, sans-serif';
+    if (t < 4) {
+      cx.globalAlpha = Math.min(1, Math.min(t, 4 - t) * 2);
+      cx.fillStyle = '#7dd3fc';
+      cx.fillText(_hint(G.idx), W/2, H - 12);
       cx.globalAlpha = 1;
+    } else if (G.state === 'playing' && G.flipsLeft <= 0 && Math.hypot(G.ball.vx, G.ball.vy) < 8) {
+      cx.fillStyle = '#fca5a5';
+      cx.fillText('Sem inversões — ↺ (ou R) para repetir o nível', W/2, H - 12);
     }
   }
 
