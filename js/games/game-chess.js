@@ -157,6 +157,7 @@ const ChessGame = (function () {
 /* board */
 .ch-stage{position:relative;width:min(94vw,480px);line-height:0}
 .ch-stage .ch3d{border-radius:12px}
+.ch-stage.is3d{aspect-ratio:1.12;width:min(98vw,600px)}      /* em 3D o tabuleiro inclinado é mais largo do que alto */
 .ch-board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
   border:7px solid var(--frm);border-radius:10px;overflow:hidden;touch-action:manipulation;
   box-shadow:0 16px 44px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.06) inset,inset 0 0 0 1px rgba(0,0,0,.25)}
@@ -423,6 +424,7 @@ const ChessGame = (function () {
   function sync3D(checkSq, anim) {
     const stage = root.querySelector('#ch-stage'), bd = root.querySelector('#ch-board');
     if (view3D && (!show3D || !view3D.canvas.isConnected || view3D.canvas.parentNode !== stage)) { view3D.dispose(); view3D = null; }
+    if (stage) stage.classList.toggle('is3d', !!show3D);
     if (!show3D || !stage) { if (bd) bd.style.visibility = ''; return; }
     if (typeof Chess3D === 'undefined' || typeof Arcade3D === 'undefined') return;
     if (!view3D) {

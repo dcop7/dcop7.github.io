@@ -23,28 +23,60 @@ const Chess3D = (function () {
     const m = new THREE.BufferGeometry(); m.setAttribute('position', new THREE.BufferAttribute(pos, 3)); m.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
     return m;
   }
-  const BASE = [[0, 0], [.36, 0], [.37, .04], [.34, .09], [.3, .1], [.29, .14], [.24, .16]];
+  /* Proporções Staunton (rei = referência): peão baixo e redondo, torre
+     larga e atarracada, bispo esguio com mitra e ranhura, dama com coroa
+     de bolas, rei o mais alto com cruz. Cada tipo devolve { body, accent }:
+     o "accent" (ranhura, faixas, cruz) pinta-se com a cor de contraste. */
+  const base = R => [[0, 0], [R, 0], [R + .01, .045], [R * .93, .09], [R * .85, .105], [R * .84, .14], [R * .66, .17]];
+  const band = (r, y, h) => new THREE.CylinderGeometry(r, r, h, 28).translate(0, y, 0);
   function geoFor(t) {
     if (_geo[t]) return _geo[t];
-    let g;
-    if (t === 'p') g = merge([lathe([...BASE, [.17, .22], [.12, .42], [.2, .45], [.2, .48], [.1, .5], [0, .5]]), new THREE.SphereGeometry(.15, 20, 14).translate(0, .62, 0)]);
-    else if (t === 'r') g = merge([lathe([...BASE, [.22, .22], [.2, .58], [.27, .6], [.27, .76], [.2, .76], [.2, .7], [0, .7]]),
-      ...[0, 1, 2, 3].map(i => new THREE.BoxGeometry(.1, .1, .14).translate(Math.cos(i * Math.PI / 2 + Math.PI / 4) * .21, .81, Math.sin(i * Math.PI / 2 + Math.PI / 4) * .21).rotateY(0))]);
-    else if (t === 'b') g = merge([lathe([...BASE, [.17, .22], [.11, .56], [.2, .6], [.2, .63], [.12, .66], [.17, .74], [.16, .84], [.09, .93], [0, .96]]), new THREE.SphereGeometry(.05, 10, 8).translate(0, 1.0, 0)]);
-    else if (t === 'q') g = merge([lathe([...BASE, [.2, .22], [.12, .62], [.23, .68], [.23, .71], [.14, .74], [.22, .9], [.2, .96], [.1, .98], [0, .98]]),
-      ...Array.from({ length: 8 }, (_, i) => new THREE.SphereGeometry(.045, 8, 6).translate(Math.cos(i / 8 * Math.PI * 2) * .2, .99, Math.sin(i / 8 * Math.PI * 2) * .2)), new THREE.SphereGeometry(.07, 12, 10).translate(0, 1.06, 0)]);
-    else if (t === 'k') g = merge([lathe([...BASE, [.21, .22], [.13, .66], [.24, .72], [.24, .75], [.15, .78], [.21, .96], [.12, 1.0], [0, 1.0]]),
-      new THREE.BoxGeometry(.06, .26, .06).translate(0, 1.13, 0), new THREE.BoxGeometry(.2, .06, .06).translate(0, 1.16, 0)]);
-    else { /* cavalo: base torneada + cabeça em perfil extrudido */
-      const s = new THREE.Shape();
-      s.moveTo(-.17, .2); s.lineTo(.2, .2); s.quadraticCurveTo(.2, .44, .06, .56); s.lineTo(.26, .64); s.quadraticCurveTo(.32, .72, .24, .82);
-      s.lineTo(.08, .86); s.quadraticCurveTo(.02, .98, -.08, .9); s.quadraticCurveTo(-.2, .78, -.2, .56); s.quadraticCurveTo(-.2, .36, -.17, .2);
-      const head = new THREE.ExtrudeGeometry(s, { depth: .18, bevelEnabled: true, bevelThickness: .04, bevelSize: .03, bevelSegments: 2, curveSegments: 10 });
-      head.translate(0, 0, -.09); head.rotateY(-Math.PI / 2); head.computeVertexNormals();
-      g = merge([lathe(BASE.concat([[.2, .2], [0, .2]])), head]);
+    let body, accent;
+    if (t === 'p') {                    /* altura ≈ .66 */
+      body = merge([lathe([...base(.29), [.15, .26], [.1, .36], [.19, .385], [.19, .41], [.09, .43], [0, .43]]), new THREE.SphereGeometry(.13, 24, 16).translate(0, .53, 0)]);
+      accent = band(.195, .397, .018);
+    } else if (t === 'r') {             /* ≈ .82 */
+      const cren = [0, 1, 2, 3].map(i => { const a = i * Math.PI / 2 + Math.PI / 4; return new THREE.BoxGeometry(.13, .12, .11).rotateY(-a).translate(Math.cos(a) * .2, .76, Math.sin(a) * .2); });
+      body = merge([lathe([...base(.34), [.24, .22], [.21, .58], [.28, .61], [.28, .7], [.17, .7], [.17, .66], [0, .66]]), ...cren]);
+      accent = band(.285, .605, .03);
+    } else if (t === 'b') {             /* ≈ 1.07 */
+      body = merge([lathe([...base(.31), [.14, .24], [.085, .6], [.18, .63], [.18, .66], [.08, .68], [.12, .72], [.165, .8], [.16, .88], [.11, .95], [.04, .98], [0, .98]]), new THREE.SphereGeometry(.055, 12, 10).translate(0, 1.02, 0)]);
+      accent = merge([new THREE.BoxGeometry(.34, .035, .06).rotateZ(-.7).translate(.02, .86, 0), band(.185, .645, .02)]);
+    } else if (t === 'q') {             /* ≈ 1.16 */
+      const balls = Array.from({ length: 9 }, (_, i) => new THREE.SphereGeometry(.045, 10, 8).translate(Math.cos(i / 9 * Math.PI * 2) * .2, .99, Math.sin(i / 9 * Math.PI * 2) * .2));
+      body = merge([lathe([...base(.35), [.2, .24], [.115, .66], [.23, .7], [.23, .73], [.12, .76], [.2, .92], [.23, .97], [.14, .97], [.1, 1.01], [0, 1.01]]), ...balls, new THREE.SphereGeometry(.075, 14, 12).translate(0, 1.08, 0)]);
+      accent = merge([band(.235, .715, .03), band(.232, .955, .02)]);
+    } else if (t === 'k') {             /* ≈ 1.35 */
+      body = merge([lathe([...base(.36), [.21, .24], [.125, .72], [.245, .76], [.245, .79], [.13, .82], [.21, 1.0], [.23, 1.03], [.12, 1.05], [.07, 1.08], [0, 1.08]])]);
+      accent = merge([new THREE.BoxGeometry(.075, .26, .075).translate(0, 1.2, 0), new THREE.BoxGeometry(.22, .07, .075).translate(0, 1.22, 0), band(.25, .775, .03)]);
+    } else {                            /* cavalo ≈ .98: cabeça em perfil com crina e olhos */
+      const sh = new THREE.Shape();
+      sh.moveTo(-.19, .18); sh.lineTo(.21, .18); sh.quadraticCurveTo(.2, .42, .07, .55); sh.lineTo(.28, .64); sh.quadraticCurveTo(.35, .72, .27, .83);
+      sh.lineTo(.1, .88); sh.quadraticCurveTo(.05, 1.0, -.07, .93); sh.quadraticCurveTo(-.23, .8, -.22, .56); sh.quadraticCurveTo(-.22, .34, -.19, .18);
+      const head = new THREE.ExtrudeGeometry(sh, { depth: .2, bevelEnabled: true, bevelThickness: .045, bevelSize: .035, bevelSegments: 3, curveSegments: 12 });
+      head.translate(0, 0, -.1); head.rotateY(-Math.PI / 2);
+      body = merge([lathe(base(.33).concat([[.22, .2], [0, .2]])), head]);
+      const mane = new THREE.BoxGeometry(.05, .5, .26).rotateX(.45).translate(0, .66, .17);
+      const eyes = [-1, 1].map(sd => new THREE.SphereGeometry(.035, 8, 6).translate(sd * .13, .76, -.03));
+      accent = merge([mane, ...eyes]);
     }
-    g.computeBoundingSphere();
-    return (_geo[t] = g);
+    const top = { p: .66, r: .82, b: 1.07, q: 1.16, k: 1.35, n: .98 }[t];
+    return (_geo[t] = { body, accent, top });
+  }
+  /* emblema com o símbolo da peça (lê-se sempre, de qualquer ângulo) */
+  const _badge = {};
+  function badgeTex(t, color) {
+    const k = t + color; if (_badge[k]) return _badge[k];
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    x.beginPath(); x.arc(64, 64, 58, 0, 6.3);
+    x.fillStyle = color === 'w' ? 'rgba(248,245,236,.96)' : 'rgba(24,27,34,.96)'; x.fill();
+    x.lineWidth = 6; x.strokeStyle = color === 'w' ? '#1f2937' : '#f5d98b'; x.stroke();
+    x.font = '84px "Segoe UI Symbol","Apple Symbols","Noto Sans Symbols2","DejaVu Sans",sans-serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = color === 'w' ? '#111827' : '#f5d98b';
+    x.fillText({ p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚' }[t], 64, 70);
+    const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
+    return (_badge[k] = tx);
   }
 
   function create(stage, onSquare) {
@@ -59,7 +91,7 @@ const Chess3D = (function () {
     const sun = new THREE.DirectionalLight('#fff4e6', 2.2); sun.position.set(-4, 10, 5); sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .02;
     Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 30 }); scene.add(sun);
-    const cam = new THREE.PerspectiveCamera(38, 1, .1, 100);
+    const cam = new THREE.PerspectiveCamera(30, 1, .1, 100);
     /* tabuleiro */
     const sqGeo = new THREE.BoxGeometry(1, .16, 1);
     const lightM = new THREE.MeshStandardMaterial({ roughness: .45, metalness: .05 }), darkM = new THREE.MeshStandardMaterial({ roughness: .45, metalness: .05 });
@@ -87,14 +119,20 @@ const Chess3D = (function () {
        as peças destacam-se de qualquer casa, mesmo nos temas escuros */
     const outM = { w: new THREE.MeshBasicMaterial({ color: '#111827', side: THREE.BackSide }), b: new THREE.MeshBasicMaterial({ color: '#f8fafc', side: THREE.BackSide }) };
     /* luz de recorte vinda de trás: acende as silhuetas */
+    const accM = { w: new THREE.MeshStandardMaterial({ color: '#8a6a2f', metalness: .7, roughness: .3 }), b: new THREE.MeshStandardMaterial({ color: '#d9b25b', metalness: .8, roughness: .25 }) };
+    let badges = true;
     const rim = new THREE.DirectionalLight('#dbeafe', 2.4); rim.position.set(0, 6, -9); scene.add(rim);
     const pieces = [];            /* { mesh, type, color, sq, anim } */
     let flip = false, raf = 0, lastT = performance.now(), dead = false;
 
     const pos = sq => { const c = FILES.indexOf(sq[0]), r = 8 - (+sq[1]); return [c - 3.5, r - 3.5]; };
     function addPiece(type, color, sq, fadeIn) {
-      const m = new THREE.Mesh(geoFor(type), pieceM[color]); m.castShadow = true; m.receiveShadow = true;
-      const o = new THREE.Mesh(geoFor(type), outM[color]); o.scale.set(1.1, 1.05, 1.1); o.position.y = -.02; m.add(o);
+      const G = geoFor(type);
+      const m = new THREE.Mesh(G.body, pieceM[color]); m.castShadow = true; m.receiveShadow = true;
+      const o = new THREE.Mesh(G.body, outM[color]); o.scale.set(1.09, 1.04, 1.09); o.position.y = -.018; m.add(o);
+      const ac = new THREE.Mesh(G.accent, accM[color]); ac.castShadow = true; m.add(ac);
+      const bd = new THREE.Sprite(new THREE.SpriteMaterial({ map: badgeTex(type, color), depthTest: true, transparent: true }));
+      bd.position.y = G.top + .18; bd.scale.set(.42, .42, 1); bd.visible = badges; m.add(bd); m.userData.badge = bd;
       const [x, z] = pos(sq); m.position.set(x, 0, z);
       if (type === 'n') m.rotation.y = color === 'w' ? 0 : Math.PI;
       m.scale.setScalar(fadeIn ? .01 : 1);
@@ -154,17 +192,26 @@ const Chess3D = (function () {
       /* afasta a câmara até os cantos da moldura e o topo das peças do fundo caberem com folga */
       if (fit.s !== s || fit.a !== cam.aspect) {
         fit.s = s; fit.a = cam.aspect;
-        const pts = [[-4.6, -.35, 4.6], [4.6, -.35, 4.6], [-4.6, -.35, -4.6], [4.6, -.35, -4.6], [-3.5, 1.25, -3.5 * s], [3.5, 1.25, -3.5 * s]].map(p => new THREE.Vector3(p[0], p[1], p[2] * s));
-        let lo = .6, hi = 3;
+        /* só a moldura e o topo das peças do fundo têm de caber — o resto é margem desperdiçada */
+        const pts = [[-4.55, -.3, 4.55], [4.55, -.3, 4.55], [-4.55, -.3, -4.55], [4.55, -.3, -4.55], [-3.5, 1.6, -3.5], [3.5, 1.6, -3.5], [0, 1.6, -3.5]].map(p => new THREE.Vector3(p[0], p[1], p[2] * s));
+        const elev = cam.aspect < .95 ? 1.45 : 1.3;          /* ecrã ao alto: câmara mais a pique */
+        let lo = .5, hi = 3;
         for (let i = 0; i < 18; i++) {
           const f = (lo + hi) / 2;
-          cam.position.set(0, 11 * f, 8.6 * f * s); cam.lookAt(0, 0, .15 * s); cam.updateMatrixWorld();
-          const ok = pts.every(p => { const v = p.clone().project(cam); return Math.abs(v.x) < .95 && Math.abs(v.y) < .95; });
+          cam.position.set(0, 11 * f * elev / 1.3, 8.6 * f * s); cam.lookAt(0, 0, .35 * s); cam.updateMatrixWorld();
+          /* conta a extensão (não a posição): depois centra-se na vertical com setViewOffset */
+          cam.clearViewOffset();
+          let x0 = 9, x1 = -9, y0 = 9, y1 = -9;
+          pts.forEach(p => { const v = p.clone().project(cam); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); });
+          const ok = x1 - x0 < 1.96 && y1 - y0 < 1.94 && y0 > -9;
+          if (ok) fit.cy = (y0 + y1) / 2;
           if (ok) hi = f; else lo = f;
         }
         fit.f = hi;
       }
-      cam.position.set(0, 11 * fit.f, 8.6 * fit.f * s); cam.lookAt(0, 0, .15 * s);
+      const elev = cam.aspect < .95 ? 1.45 : 1.3;
+      cam.position.set(0, 11 * fit.f * elev / 1.3, 8.6 * fit.f * s); cam.lookAt(0, 0, .35 * s);
+      cam.setViewOffset(fit.w, fit.h, 0, -(fit.cy || 0) * fit.h / 2, fit.w, fit.h);
       for (let i = pieces.length - 1; i >= 0; i--) {
         const p = pieces[i], a = p.anim; if (!a) continue;
         a.t += dt;
@@ -198,10 +245,10 @@ const Chess3D = (function () {
 
     function dispose() {
       dead = true; cancelAnimationFrame(raf);
-      scene.traverse(o => { if (o.geometry && !Object.values(_geo).includes(o.geometry)) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+      scene.traverse(o => { if (o.geometry && !Object.values(_geo).some(g => g.body === o.geometry || g.accent === o.geometry)) o.geometry.dispose(); if (o.material) { if (o.material.map && !Object.values(_badge).includes(o.material.map)) o.material.map.dispose(); o.material.dispose(); } });
       renderer.dispose(); cv.remove();
     }
-    return { sync, dispose, canvas: cv };
+    return { sync, dispose, canvas: cv, setBadges(on) { badges = on; pieces.forEach(p => { p.mesh.userData.badge.visible = on; }); } };
   }
 
   return { create };
