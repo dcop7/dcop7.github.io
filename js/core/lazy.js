@@ -36,6 +36,7 @@ const Lazy = (function () {
     'js/games/game-reaction.js',
     'js/games/vendor/chess.min.js',
     'js/games/game-chess.js',
+    'js/games/chess-3d.js',
     'js/games/game-battleship.js',
     'js/games/game-uno.js',
     'js/games/game-sueca.js',

@@ -59,6 +59,8 @@ const ChessGame = (function () {
   function loadPref(k, def) { try { const v = localStorage.getItem(k); return v == null ? def : v; } catch (e) { return def; } }
   function savePref(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   let showHints = loadPref('chess-hints', '0') === '1';
+  /* tabuleiro 3D: opcional (o 2D é o padrão) */
+  let show3D = loadPref('chess-3d', '0') === '1', view3D = null;
   let themeKey  = (THEMES[loadPref('chess-theme', 'wood')] ? loadPref('chess-theme', 'wood') : 'wood');
   let clock = { w: 0, b: 0 }, clockTimer = null, lastTick = 0;
   function theme() { return THEMES[themeKey] || THEMES.wood; }
@@ -154,6 +156,7 @@ const ChessGame = (function () {
 .ch-adv{font-size:.8rem;font-weight:800;color:var(--muted,#9aa);margin-left:8px;align-self:center}
 /* board */
 .ch-stage{position:relative;width:min(94vw,480px);line-height:0}
+.ch-stage .ch3d{border-radius:12px}
 .ch-board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
   border:7px solid var(--frm);border-radius:10px;overflow:hidden;touch-action:manipulation;
   box-shadow:0 16px 44px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.06) inset,inset 0 0 0 1px rgba(0,0,0,.25)}
@@ -306,6 +309,7 @@ const ChessGame = (function () {
         <div class="ch-ctrls">
           <button class="ch-btn${showHints ? ' on' : ''}" id="ch-hint-btn">💡 Dicas</button>
           <button class="ch-btn" id="ch-theme-btn">🎨 Tema</button>
+          <button class="ch-btn${show3D ? ' on' : ''}" id="ch-3d-btn" title="Tabuleiro em 3D">🧊 3D</button>
           <button class="ch-btn" id="ch-undo">↩ Desfazer</button>
           <button class="ch-btn" id="ch-new">🔄 Novo</button>
           <button class="ch-btn" id="ch-menu">☰ Menu</button>
@@ -314,6 +318,11 @@ const ChessGame = (function () {
     applyThemeVars();
     root.querySelector('#ch-hint-btn').addEventListener('click', () => setHints(!showHints));
     root.querySelector('#ch-theme-btn').addEventListener('click', openThemePicker);
+    root.querySelector('#ch-3d-btn').addEventListener('click', () => {
+      show3D = !show3D; savePref('chess-3d', show3D ? '1' : '0');
+      root.querySelector('#ch-3d-btn').classList.toggle('on', show3D);
+      draw2D();
+    });
     root.querySelector('#ch-undo').addEventListener('click', undo);
     root.querySelector('#ch-new').addEventListener('click', startGame);
     root.querySelector('#ch-menu').addEventListener('click', showMenu);
@@ -410,6 +419,20 @@ const ChessGame = (function () {
       <text x="50" y="82" text-anchor="middle" font-size="92">${GLYPH[type]}</text></svg>`;
   }
 
+  /* 3D: instância ligada ao palco atual; o tabuleiro DOM fica por baixo (invisível) a dar o tamanho */
+  function sync3D(checkSq, anim) {
+    const stage = root.querySelector('#ch-stage'), bd = root.querySelector('#ch-board');
+    if (view3D && (!show3D || !view3D.canvas.isConnected || view3D.canvas.parentNode !== stage)) { view3D.dispose(); view3D = null; }
+    if (!show3D || !stage) { if (bd) bd.style.visibility = ''; return; }
+    if (typeof Chess3D === 'undefined' || typeof Arcade3D === 'undefined') return;
+    if (!view3D) {
+      if (!window.THREE) { Arcade3D.load().then(() => draw2D()).catch(() => {}); return; }
+      try { view3D = Chess3D.create(stage, sq => onSquare(sq)); } catch (e) { console.warn('[xadrez] 3D falhou', e); show3D = false; return; }
+    }
+    bd.style.visibility = 'hidden';
+    view3D.sync({ board: game.board(), flip: mode === 'ai' && humanColor === 'b', theme: theme(), selected, dests: legalDests, lastMove, checkSq, hints: showHints, anim, animate: !!anim && !(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) });
+  }
+
   function draw2D() {
     const bd = root.querySelector('#ch-board'); if (!bd) return;
     const flip = (mode === 'ai' && humanColor === 'b');
@@ -447,6 +470,7 @@ const ChessGame = (function () {
     });
     bd.innerHTML = html;
     bd.querySelectorAll('.ch-sq').forEach(el => el.addEventListener('click', () => onSquare(el.dataset.sq)));
+    sync3D(checkSq, animMove);
 
     /* slide the moved piece from its origin (FLIP) */
     if (animMove) {

@@ -224,6 +224,12 @@ const BattleshipGame = (function () {
 .bs-end-emo{font-size:3rem}
 .bs-end-title{font-size:1.5rem;font-weight:900;color:#fff}
 .bs-grids{display:flex;flex-direction:column;gap:16px;align-items:center;width:100%}
+.bs-board .bs-3d{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none}
+.bs-board.bs3d{background:#06243a}
+.bs-board.bs3d .bs-cell{z-index:1;background:transparent}
+.bs-board.bs3d .bs-layer{z-index:2}
+.bs-board.bs3d .bs-hull-layer .bs-hull{opacity:0}
+.bs-board.bs3d .bs-cell.miss::after{z-index:2}
 @media (min-width:760px){.bs-grids{flex-direction:row;justify-content:center;align-items:flex-start;gap:26px}}
 @media (prefers-reduced-motion:reduce){.bs-fx *,.bs-hull.enter,.bs-hull.bs-sink,.bs-ocean::before,.bs-ocean::after{animation:none!important}}`;
     document.head.appendChild(s);
@@ -487,9 +493,114 @@ const BattleshipGame = (function () {
     return { position: 'absolute', left: pct(c) + '%', top: pct(r) + '%', width: pct(1) + '%', height: pct(1) + '%' };
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     3D — cada tabuleiro tem por baixo um mar a sério (ondas animadas com
+     reflexos) e navios em relevo que balançam; os afundados inclinam e
+     descem. As casas (botões) continuam por cima, transparentes: os
+     cliques, o arrastar e os efeitos de disparo não mudam.
+  ════════════════════════════════════════════════════════════════ */
+  const views = new Map();          /* id do tabuleiro → vista 3D */
+  function hullGeo(size) {
+    const L = size - .16, W = .62, s = new THREE.Shape();
+    s.moveTo(-L / 2 + .1, -W / 2); s.lineTo(L / 2 - .35, -W / 2); s.quadraticCurveTo(L / 2, -W * .2, L / 2 + .02, 0); s.quadraticCurveTo(L / 2, W * .2, L / 2 - .35, W / 2);
+    s.lineTo(-L / 2 + .1, W / 2); s.quadraticCurveTo(-L / 2 - .04, 0, -L / 2 + .1, -W / 2);
+    const g = new THREE.ExtrudeGeometry(s, { depth: .3, bevelEnabled: true, bevelThickness: .05, bevelSize: .04, bevelSegments: 2, curveSegments: 8 });
+    g.rotateX(-Math.PI / 2); g.translate(0, -.1, 0); g.computeVertexNormals(); return g;
+  }
+  function shipModel(ship) {
+    const g = new THREE.Group(), size = ship.size;
+    const hull = new THREE.Mesh(hullGeo(size), new THREE.MeshStandardMaterial({ color: '#48637f', metalness: .45, roughness: .45 }));
+    hull.castShadow = true; g.add(hull);
+    const deckM = new THREE.MeshStandardMaterial({ color: '#5d7c9c', metalness: .3, roughness: .55 });
+    const add = (w, h, d, x, y, z, m) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m || deckM); b.position.set(x, y, z); b.castShadow = true; g.add(b); return b; };
+    if (ship.kind === 'carrier') { add(size - .6, .05, .5, 0, .23, 0, new THREE.MeshStandardMaterial({ color: '#334155' })); add(.5, .38, .18, size / 2 - 1.1, .42, .2); add(size - 1.2, .01, .03, 0, .26, 0, new THREE.MeshBasicMaterial({ color: '#e5e7eb' })); }
+    else if (ship.kind === 'submarine') { const t = new THREE.Mesh(new THREE.CylinderGeometry(.14, .16, .34, 12), deckM); t.position.set(-size * .05, .38, 0); t.castShadow = true; g.add(t); }
+    else {
+      add(Math.min(.8, size * .24), .3, .4, -size * .08, .37, 0);
+      add(.3, .18, .3, -size * .08 + .02, .6, 0);
+      for (let i = 0; i < Math.max(1, size - 2); i++) { const tur = new THREE.Mesh(new THREE.CylinderGeometry(.13, .13, .1, 12), deckM); tur.position.set(size * .18 + i * .5 - (size > 3 ? .3 : 0), .27, 0); g.add(tur); const gun = add(.34, .05, .05, size * .18 + i * .5 + .15 - (size > 3 ? .3 : 0), .3, 0); gun.castShadow = false; }
+    }
+    if (ship.ori === 'v') g.rotation.y = -Math.PI / 2;
+    return g;
+  }
+  function attach3D(bd, board, reveal) {
+    if (typeof Arcade3D === 'undefined' || !bd.id) return;
+    if (!window.THREE) { Arcade3D.load().then(() => { if (bd.isConnected) attach3D(bd, board, reveal); }).catch(() => {}); return; }
+    let v = views.get(bd.id);
+    if (v && v.board !== board) { v.dispose(); v = null; }       /* novo jogo */
+    if (!v) { try { v = makeView(bd, board); views.set(bd.id, v); } catch (e) { console.warn('[naval] 3D falhou', e); return; } }
+    v.el = bd; v.reveal = reveal;
+    if (v.canvas.parentNode !== bd) bd.prepend(v.canvas);
+    bd.classList.add('bs3d');
+    v.syncShips(); v.start();
+  }
+  function makeView(bd, board) {
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const canvas = renderer.domElement; canvas.className = 'bs-3d';
+    const scene = new THREE.Scene(); scene.environment = Arcade3D.env(renderer); scene.background = new THREE.Color('#06243a');
+    scene.add(new THREE.HemisphereLight('#dbeafe', '#082f49', .9));
+    const sun = new THREE.DirectionalLight('#fff7ed', 2.4); sun.position.set(-6, 7, 4); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+    Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 }); sun.shadow.bias = -.0005; scene.add(sun);
+    const cam = new THREE.PerspectiveCamera(30, 1, .1, 100);
+    /* mar: grelha fina deslocada por ondas somadas (CPU, 48×48) */
+    const seg = 48, water = new THREE.PlaneGeometry(12, 12, seg, seg); water.rotateX(-Math.PI / 2);
+    const base = Float32Array.from(water.attributes.position.array);
+    const sea = new THREE.Mesh(water, new THREE.MeshStandardMaterial({ color: '#0a3a5c', roughness: .28, metalness: 0, envMapIntensity: .6 }));
+    sea.receiveShadow = true; scene.add(sea);
+    const shipG = new THREE.Group(); scene.add(shipG);
+    let raf = 0, dead = false, t0 = performance.now();
+    const v = { board, canvas, el: bd, reveal: () => true, meshes: new Map(),
+      syncShips() {
+        const live = new Set();
+        board.ships.forEach(ship => {
+          if (!v.reveal(ship)) return;
+          live.add(ship);
+          let m = v.meshes.get(ship);
+          if (!m) { m = shipModel(ship); shipG.add(m); v.meshes.set(ship, m); m.userData.ph = Math.random() * 6; }
+          const f = ship.cells[0], L = ship.size;
+          m.userData.x = ship.ori === 'h' ? f.c + L / 2 - 5 : f.c + .5 - 5;
+          m.userData.z = ship.ori === 'h' ? f.r + .5 - 5 : f.r + L / 2 - 5;
+          m.userData.sunk = ship.hits >= ship.size;
+        });
+        v.meshes.forEach((m, ship) => { if (!live.has(ship)) { shipG.remove(m); m.traverse(o => { o.geometry && o.geometry.dispose(); o.material && o.material.dispose && o.material.dispose(); }); v.meshes.delete(ship); } });
+      },
+      start() { if (!raf) raf = requestAnimationFrame(frame); },
+      dispose() { dead = true; cancelAnimationFrame(raf); canvas.remove(); v.meshes.forEach(m => m.traverse(o => { o.geometry && o.geometry.dispose(); })); water.dispose(); sea.material.dispose(); renderer.dispose(); },
+    };
+    function frame(now) {
+      raf = 0;
+      if (dead || !v.el.isConnected || v.canvas.parentNode !== v.el) return;
+      if (!v.el.getClientRects().length) { raf = requestAnimationFrame(frame); return; }
+      const w = v.el.clientWidth, h = v.el.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+      if (w !== frame.w || h !== frame.h) { frame.w = w; frame.h = h; renderer.setPixelRatio(dpr); renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+      /* câmara a pique: o plano da água (10×10 casas) enche exatamente o tabuleiro */
+      const D = 5 / Math.tan(cam.fov * Math.PI / 360);
+      cam.position.set(0, D + .15, 0); cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0);
+      const t = (now - t0) / 1000, pa = water.attributes.position;
+      for (let i = 0; i < pa.count; i++) {
+        const x = base[i * 3], z = base[i * 3 + 2];
+        pa.setY(i, Math.sin(x * 1.3 + t * 1.4) * .08 + Math.sin(z * 1.7 - t * 1.1) * .06 + Math.sin((x + z) * 2.6 + t * 2.2) * .03);
+      }
+      pa.needsUpdate = true; water.computeVertexNormals();
+      v.meshes.forEach(m => {
+        const u = m.userData, bob = Math.sin(t * 1.6 + u.ph) * .03;
+        if (u.sunk) { u.sk = Math.min(1, (u.sk || 0) + 1 / 60 / 1.2); } else u.sk = 0;
+        m.position.set(u.x, .08 + bob - (u.sk || 0) * .28, u.z);
+        m.rotation.z = Math.sin(t * 1.3 + u.ph) * .03 + (u.sk || 0) * .22;
+        m.rotation.x = (u.sk || 0) * .12;
+      });
+      renderer.render(scene, cam);
+      raf = requestAnimationFrame(frame);
+    }
+    return v;
+  }
+
   function drawOverlays(bd, board, reveal, animateReveal) {
     const hl = bd.querySelector('.bs-hull-layer'), fx = bd.querySelector('.bs-fx-layer');
     if (!hl) return;
+    attach3D(bd, board, reveal);
     hl.innerHTML = '';
     board.ships.forEach(ship => {
       const sunk = ship.hits >= ship.size;

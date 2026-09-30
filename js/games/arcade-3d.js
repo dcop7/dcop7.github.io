@@ -90,19 +90,21 @@ const Arcade3D = (function () {
      Sem isto, materiais metálicos ficam quase pretos. Uma esfera com um
      gradiente discreto e três "softboxes" claras, pré-filtrada com PMREM
      (do núcleo do three.js) — gerada uma vez e partilhada. */
-  let _env = null;
-  function env() {
-    if (_env || !R) return _env;
+  const _envs = new WeakMap();
+  /* r: um renderer próprio (ex.: Xadrez, General); por defeito o partilhado */
+  function env(r) {
+    r = r || R; if (!r) return null;
+    if (_envs.has(r)) return _envs.get(r);
     const s = new THREE.Scene();
     const g = new THREE.SphereGeometry(50, 32, 16), col = [], c = new THREE.Color(), pos = g.attributes.position;
     for (let i = 0; i < pos.count; i++) { const y = pos.getY(i) / 50; c.setRGB(.16 + Math.max(0, y) * .32, .17 + Math.max(0, y) * .34, .2 + Math.max(0, y) * .38); if (y < 0) c.multiplyScalar(.55 + y * .35); col.push(c.r, c.g, c.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
     s.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
     [[0, 40, 0, 40, 40], [34, 18, 20, 18, 26], [-30, 14, -24, 14, 20]].forEach(([x, y, z, w, h]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: '#ffffff', side: THREE.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 0, 0); s.add(m); });
-    const pm = new THREE.PMREMGenerator(R);
-    _env = pm.fromScene(s, .04).texture; pm.dispose();
+    const pm = new THREE.PMREMGenerator(r);
+    const tex = pm.fromScene(s, .04).texture; pm.dispose(); _envs.set(r, tex);
     s.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
-    return _env;
+    return tex;
   }
 
   /* ── cena "de estúdio": céu/chão (hemisfério) + sol com sombras suaves ── */
