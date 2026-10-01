@@ -39,6 +39,16 @@ const Nav = (function () {
     { id: 'yahtzee', key: 'game.yahtzee', icon: '🎲' },
     { id: 'crossy-road', key: 'game.crossy-road', icon: '🐸' },
     { id: 'hole', key: 'game.hole', icon: '🕳️' },
+    { id: 'platformer', key: 'game.platformer', icon: '🦊' },
+    { id: 'runner', key: 'game.runner', icon: '🐒' },
+    { id: 'mono-puzzle', key: 'game.mono-puzzle', icon: '🗼' },
+    { id: 'platformer-3d', key: 'game.platformer-3d', icon: '🏝️' },
+    { id: 'path-memory', key: 'game.path-memory', icon: '👣' },
+    { id: 'what-changed', key: 'game.what-changed', icon: '🔍' },
+    { id: 'simon', key: 'game.simon', icon: '🔴' },
+    { id: 'pattern-recall', key: 'game.pattern-recall', icon: '🟪' },
+    { id: 'memory-chain', key: 'game.memory-chain', icon: '🔗' },
+    { id: 'block-count', key: 'game.block-count', icon: '🧮' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 

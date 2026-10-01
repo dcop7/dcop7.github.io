@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v327';
+const CACHE = 'dcop7-v328';
 const STATIC = [
   '/',
   '/index.html',
@@ -179,6 +179,19 @@ const STATIC = [
   '/js/games/game-yahtzee.js',
   '/js/games/game-crossy-road.js',
   '/js/games/game-hole.js',
+  '/js/games/memo-kit.js',
+  '/js/games/game-path-memory.js',
+  '/js/games/game-what-changed.js',
+  '/js/games/game-simon.js',
+  '/js/games/game-pattern-recall.js',
+  '/js/games/game-memory-chain.js',
+  '/js/games/game-block-count.js',
+  '/js/games/game-runner.js',
+  '/js/games/platformer-levels.js',
+  '/js/games/game-platformer.js',
+  '/js/games/mono-levels.js',
+  '/js/games/game-mono-puzzle.js',
+  '/js/games/game-platformer-3d.js',
   '/favicon.svg',
   '/manifest.json',
 ];
