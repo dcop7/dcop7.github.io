@@ -6,7 +6,7 @@
      3. Cristal    — barras de fogo a rodar, bolas de picos, gelo nas bordas
      4. Vulcão     — lava, jatos de fogo e uma subida final
    Cada ilha tem 5 estrelas: a Grande Estrela no fim + 4 escondidas
-   (num sítio alto, num desafio de moedas vermelhas, atrás de caixotes, …).
+   (num sítio alto, num desafio de 8 flores azuis, atrás de caixotes, …).
 
    Física própria (sem motor externo): o Pip é um cilindro (r .35, alto
    1.1) contra caixas alinhadas aos eixos e ilhas redondas (cilindros);
@@ -252,6 +252,13 @@ const Platformer3DGame = (function () {
 
   function coinMesh(red) {
     const g = new THREE.Group();
+    if (red) {
+      /* flor azul (desafio das 8 flores) */
+      const pet = S('#60a5fa', { roughness: .35, emissive: '#1e3a8a', emissiveIntensity: .35 });
+      for (let i = 0; i < 5; i++) { const a = i / 5 * TAU, m = new THREE.Mesh(new THREE.SphereGeometry(.15, 10, 8), pet); m.scale.set(1, .45, 1.4); m.position.set(Math.cos(a) * .17, 0, Math.sin(a) * .17); m.rotation.y = -a; g.add(m); }
+      const c = new THREE.Mesh(new THREE.SphereGeometry(.1, 10, 8), S('#fde047', { roughness: .4 })); c.position.y = .04; g.add(c);
+      g.rotation.x = Math.PI / 2.4; const w = new THREE.Group(); w.add(g); return w;
+    }
     const m = new THREE.Mesh(new THREE.CylinderGeometry(.32, .32, .08, 22), S(red ? '#ef4444' : '#fbbf24', { metalness: .85, roughness: .25, emissive: red ? '#7f1d1d' : '#7c4a03', emissiveIntensity: .4 }));
     m.rotation.x = Math.PI / 2; m.castShadow = true; g.add(m);
     const s = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, .1, 16), S(red ? '#fca5a5' : '#fde68a', { metalness: .8, roughness: .2 })); s.rotation.x = Math.PI / 2; g.add(s);
@@ -267,7 +274,6 @@ const Platformer3DGame = (function () {
     const m = new THREE.Mesh(new THREE.ExtrudeGeometry(starShape(), { depth: .25, bevelEnabled: true, bevelThickness: .12, bevelSize: .1, bevelSegments: 3 }), S('#facc15', { metalness: .6, roughness: .25, emissive: '#b45309', emissiveIntensity: .5 }));
     m.geometry.center(); m.castShadow = true; g.add(m);
     const glow = new THREE.Sprite(Arcade3D.glowSprite('#fde68a')); glow.scale.set(3, 3, 1); g.add(glow);
-    [-.2, .2].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(.07, 8, 6), S('#1f2937')); e.position.set(x, .1, .26); g.add(e); });
     g.scale.setScalar(.7 * sc); return g;
   }
   function springMesh(cloud) {
@@ -583,9 +589,9 @@ const Platformer3DGame = (function () {
       if (c.pop) { c.vy -= 20 * dt; c.y += c.vy * dt; const f = G.solids.find(s => !s.gone && overXZ(s, c.x, c.z, -.5) && c.y <= s.y + .5 && c.y >= s.y - .5); if (f && c.vy < 0) { c.y = f.y + .5; c.vy = 0; c.pop = false; } if (c.y < -40) c.got = true; }
       if (Math.hypot(c.x - p.x, c.z - p.z) < .75 && c.y > p.y - .3 && c.y < p.y + PH + .4) {
         c.got = true; if (c.mesh) c.mesh.visible = false;
-        if (c.red) { G.reds++; sfx(api, 'red', G.reds); if (G.reds >= G.redTotal) { const rs = G.stars.find(s => s.red); if (rs) { rs.red = false; if (rs.mesh) rs.mesh.visible = true; banner(G, api, 'Estrela das moedas vermelhas!', 'Apareceu no centro'); } } }
+        if (c.red) { G.reds++; sfx(api, 'red', G.reds); if (G.reds >= G.redTotal) { const rs = G.stars.find(s => s.red); if (rs) { rs.red = false; if (rs.mesh) rs.mesh.visible = true; banner(G, api, 'Estrela das flores azuis!', 'Apareceu no centro'); } } }
         else { G.coinsN++; sfx(api, 'coin'); }
-        burst3(G, c.x, c.y, c.z, c.red ? '#fca5a5' : '#fde68a', 6);
+        burst3(G, c.x, c.y, c.z, c.red ? '#93c5fd' : '#fde68a', 6);
       }
       if (c.mesh) { c.mesh.position.set(c.x, c.y + Math.sin(G.t * 3 + c.x) * .08, c.z); c.mesh.rotation.y = G.t * 3 + c.z; }
     });
@@ -598,7 +604,7 @@ const Platformer3DGame = (function () {
         s.got = true; G.got.add(s.id); if (s.mesh) s.mesh.visible = false;
         burst3(G, s.x, s.y, s.z, '#fde047', 26); sfx(api, 'star');
         api.hitstop(.06);
-        banner(G, api, `★ Estrela ${G.got.size}/${G.totalStars}`, s.id === 'r' ? 'Desafio vermelho!' : s.high ? 'Bem alto!' : s.hide ? 'Escondida!' : '');
+        banner(G, api, `★ Estrela ${G.got.size}/${G.totalStars}`, s.id === 'r' ? 'Desafio das flores!' : s.high ? 'Bem alto!' : s.hide ? 'Escondida!' : '');
       }
     });
     /* caixotes (malha segue o sólido) */
@@ -762,8 +768,8 @@ const Platformer3DGame = (function () {
     ctx.save();
     /* corações */
     for (let i = 0; i < 3; i++) { const x = (24 + i * 26) * k, y = 78 * k, on = i < p.hp; ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.fillStyle = on ? '#f43f5e' : 'rgba(0,0,0,.35)'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, 8); ctx.bezierCurveTo(-12, -2, -6, -11, 0, -5); ctx.bezierCurveTo(6, -11, 12, -2, 0, 8); ctx.fill(); ctx.stroke(); ctx.restore(); }
-    /* moedas vermelhas (quando já apanhaste alguma) */
-    if (G.reds > 0 && G.reds < G.redTotal) { ctx.fillStyle = '#fecaca'; ctx.font = `800 ${14 * k}px 'Space Grotesk', system-ui`; ctx.textAlign = 'left'; ctx.fillText(`🔴 ${G.reds}/${G.redTotal}`, 104 * k, 84 * k); }
+    /* flores azuis (quando já apanhaste alguma) */
+    if (G.reds > 0 && G.reds < G.redTotal) { ctx.fillStyle = '#bfdbfe'; ctx.font = `800 ${14 * k}px 'Space Grotesk', system-ui`; ctx.textAlign = 'left'; ctx.fillText(`🌼 ${G.reds}/${G.redTotal}`, 104 * k, 84 * k); }
     /* placa com dica perto */
     const sg = G.signs.find(s => Math.hypot(s.x - p.x, s.z - p.z) < 3);
     if (sg && !G.won) { ctx.font = `700 ${14 * k}px 'Space Grotesk', system-ui`; const tw = ctx.measureText(sg.txt).width + 28 * k; ctx.fillStyle = 'rgba(20,20,40,.7)'; U.rr(ctx, (W - tw) / 2, 108 * k, tw, 32 * k, 16 * k); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(sg.txt, W / 2, 129 * k); }
@@ -819,7 +825,7 @@ const Platformer3DGame = (function () {
     if (k === 'jump') s.tone(380, .12, 'triangle', .06, 0, 700);
     else if (k === 'jump2') s.tone(560, .14, 'triangle', .06, 0, 1000);
     else if (k === 'land') s.noise(.06, .03, 0, 500, 'lowpass');
-    else if (k === 'coin') { s.tone(988, .06, 'square', .03); s.tone(1319, .12, 'square', .03, .05); }
+    else if (k === 'coin') { s.tone(1568, .05, 'triangle', .045); s.tone(2093, .09, 'sine', .03, .035); }
     else if (k === 'red') s.tone(523 * Math.pow(2, (n || 0) / 8), .14, 'triangle', .06);
     else if (k === 'star') s.arp([784, 988, 1175, 1568, 1976], .07, .2, 'triangle', .08);
     else if (k === 'spring') s.tone(260, .3, 'sine', .08, 0, 900);
@@ -859,7 +865,7 @@ const Platformer3DGame = (function () {
     how: [
       '<b>WASD / setas</b> para andar (em relação à câmara), <b>Espaço</b> para saltar — e outra vez no ar para o <b>duplo salto</b>.',
       'Salta em cima das geleias. No ar, <b>Shift</b> (ou C) faz o Pip <b>bater no chão</b>: parte caixotes e derruba inimigos à volta.',
-      'Cada ilha tem <b>5 estrelas</b>: a Grande Estrela no fim, uma bem alta, uma escondida atrás de caixotes, uma pelas 8 moedas vermelhas e outra à tua espera. <b>Arrasta</b> (ou Q/E) para rodar a câmara.',
+      'Cada ilha tem <b>5 estrelas</b>: a Grande Estrela no fim, uma bem alta, uma escondida atrás de caixotes, uma pelas 8 flores azuis e outra à tua espera. <b>Arrasta</b> (ou Q/E) para rodar a câmara.',
     ],
     controls: ['⌨️ WASD Espaço Shift Q E', '🖱️ arrastar = câmara', '👆 joystick + botões'],
     setup, update, draw, down, move, up, key, keyup,

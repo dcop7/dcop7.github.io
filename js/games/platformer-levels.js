@@ -9,11 +9,11 @@
      =  plataforma de passagem (só por cima)
      / \  rampas 45°   a b  rampa suave a subir   c d  a descer
      ^  picos         ~  lava          F  parede falsa (atravessa-se)
-     S  início  G  meta  K  bandeira   o  moeda   *  moeda-estrela
-     e  bolota  s  ouriço  f  abelha  l  bola de lava  W  Rei Bolota
+     S  início  G  meta (arco)  K  lanterna   o  moeda   *  pena dourada
+     e  lagarta  s  castanha-espinhosa  f  abelha  l  salpico de lava  W  Escaravelho-Rei
      u  mola    R  acelerador   O  loop (centro, no chão)
      m  plataforma ↔   v  plataforma ↕   x  plataforma que cai
-     T  barra de fogo   X Y Z  portas (aos pares)
+     T  roda de cristais   X Y Z  portas (aos pares)
 
    Coordenadas: x = coluna, y = linha (0 em cima). Altura 18 linhas;
    o chão "normal" tem o topo na linha 15.
@@ -51,7 +51,7 @@ const PIP_LEVELS = (function () {
 
   return [
     /* ════════════ MUNDO 1 · PRADO VERDE ════════════ */
-    build({ id: 'L1', world: 0, name: 'Colinas Verdes', par: 110 }, 196, b => {
+    build({ id: 'L1', world: 0, name: 'Prado das Papoilas', par: 110 }, 196, b => {
       b.ground(0, 24, 15);
       b.str(3, 14, 'S');
       b.coins(8, 11, 11);
@@ -61,7 +61,7 @@ const PIP_LEVELS = (function () {
       /* primeiro buraco (3) */
       b.arc(24, 29, 12, 2);
       b.ground(28, 40, 15);
-      /* mola → saliência alta com a 1.ª moeda-estrela */
+      /* mola → saliência alta com a 1.ª pena dourada */
       b.str(30, 14, 'u');
       b.rect(32, 7, 39, 7, '%');
       b.coins(33, 36, 6); b.str(38, 6, '*');
@@ -121,7 +121,7 @@ const PIP_LEVELS = (function () {
       b.rect(183, 8, 190, 8, '=');
     }),
 
-    build({ id: 'L2', world: 0, name: 'Vale dos Loops', par: 100 }, 214, b => {
+    build({ id: 'L2', world: 0, name: 'Vale do Vento', par: 100 }, 214, b => {
       b.ground(0, 12, 6);
       b.str(2, 5, 'S');
       b.coins(5, 9, 3);
@@ -156,7 +156,7 @@ const PIP_LEVELS = (function () {
       b.str(113, 6, 'f'); b.str(118, 8, 'f');
       b.coins(107, 109, 11); b.coins(112, 114, 9); b.coins(117, 119, 11);
       b.ground(122, 150, 15);
-      /* segredo: tijolos por cima com uma moeda-estrela atrás */
+      /* segredo: caixotes por cima com uma pena dourada atrás */
       b.rect(128, 9, 136, 9, 'B');
       b.str(130, 9, '?'); b.str(134, 9, '!');
       b.rect(140, 5, 146, 5, '%');
@@ -258,7 +258,7 @@ const PIP_LEVELS = (function () {
       b.rect(55, 10, 61, 10, 'B'); b.str(58, 10, 'H');
       b.str(57, 6, 'h');
       b.str(69, 14, 'K');
-      /* coluna alta com plataforma vertical e moeda-estrela */
+      /* coluna alta com plataforma vertical e pena dourada */
       b.ground(73, 75, 15);
       b.str(77, 10, 'v');
       b.rect(81, 5, 86, 5, '%');
@@ -280,7 +280,7 @@ const PIP_LEVELS = (function () {
       top = b.down(124, top, 3);
       b.ground(127, 140, 15);
       b.str(131, 14, 'e'); b.str(135, 14, 'e');
-      /* parede falsa: atalho com a 3.ª moeda-estrela */
+      /* parede falsa: atalho com a 3.ª pena dourada */
       b.rect(141, 12, 146, 14, '%');
       b.rect(141, 13, 146, 14, 'F');
       b.str(144, 14, '*');
@@ -329,7 +329,7 @@ const PIP_LEVELS = (function () {
       b.str(122, 14, 'O');
       b.str(122, 9, 'o'); b.str(119, 11, 'o'); b.str(125, 11, 'o');
       b.str(129, 14, 'e');
-      /* bloco escondido por cima do fosso com moeda-estrela */
+      /* bloco escondido por cima do fosso com pena dourada */
       b.ground(134, 150, 15);
       b.str(132, 11, 'h');
       b.rect(137, 8, 139, 8, '=');
