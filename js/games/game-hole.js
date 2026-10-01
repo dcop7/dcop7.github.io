@@ -883,7 +883,12 @@ const HoleGame = (function () {
     for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) { const a = G.hash.get(i * 4096 + j); if (a) for (const o of a) fn(o); }
   }
   const canEat = (h, o) => o.r < h.R * .92;
-  const speedOf = (G, h) => (h.ai ? 165 * G.cfg.ai : 185 * G.cfg.spd) * (1 + Math.min(.4, (h.R - G.startR) / 380)) * (G.vac ? .85 : 1 + Math.max(0, G.NB - 8) * .014);
+  /* velocidade gradual: começa a ~55% e chega à velocidade normal quando o buraco
+     tem ~6× o tamanho inicial; daí para a frente ainda ganha um pouco (até +40%) */
+  const speedOf = (G, h) => {
+    const g = U.clamp((h.R - G.startR) / (G.startR * 5), 0, 1);
+    return (h.ai ? 165 * G.cfg.ai : 185 * G.cfg.spd) * (.55 + .45 * g) * (1 + Math.min(.4, Math.max(0, h.R - G.startR * 6) / 380)) * (G.vac ? .85 : 1 + Math.max(0, G.NB - 8) * .014);
+  };
   const alive = G => G.holes.filter(h => !h.out);
 
   function grow(G, h, gain, api) {
@@ -1450,6 +1455,10 @@ const HoleGame = (function () {
     r.cam.lookAt(G.cam.x, 0, G.cam.y + d * .05);
     /* o nevoeiro esconde o horizonte — e tudo o que está para lá dele nem é desenhado */
     r.scene.fog.near = d * 2.1; r.scene.fog.far = d * 3.4 + 1000;
+    /* o plano próximo cresce com a distância: com near fixo em 2, ao afastar a
+       câmara as camadas do chão (estrada, passadeiras, passeios, quarteirões,
+       heliportos — separadas por décimas) perdiam precisão e piscavam */
+    r.cam.near = Math.max(2, d * .06);
     r.cam.far = d * 3.6 + 1200; r.cam.updateProjectionMatrix();
     const ca = r.cullAt;
     if (!ca || Math.hypot(G.cam.x - ca.x, G.cam.y - ca.y) > d * .25 + 20 || Math.abs(d - ca.d) > ca.d * .12 || G.t - ca.t > .8) cull(G);
