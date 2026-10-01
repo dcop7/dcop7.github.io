@@ -57,6 +57,16 @@ const Search = (function () {
     { label: 'General', id: 'games/yahtzee', icon: '🎲', tags: ['general', 'yahtzee', 'dados', 'póquer de dados', 'dice'] },
     { label: 'Travessia', id: 'games/crossy-road', icon: '🐸', tags: ['travessia', 'crossy', 'estrada', 'sapo', 'atravessar', 'frogger'] },
     { label: 'Buraco Guloso', id: 'games/hole', icon: '🕳️', tags: ['buraco', 'hole', 'engolir', 'aspirador', 'vacuum', 'cidade'] },
+    { label: 'Mundos de Pip', id: 'games/platformer', icon: '🦊', tags: ['plataformas', 'mario', 'sonic', 'raposa', 'pip', 'saltar', 'loops', 'aventura', 'platformer'] },
+    { label: 'Fuga na Selva', id: 'games/runner', icon: '🐒', tags: ['corrida', 'runner', 'macaco', 'bananas', 'selva', 'lianas', 'banana kong', 'infinita'] },
+    { label: 'Torres Impossíveis', id: 'games/mono-puzzle', icon: '🗼', tags: ['puzzle', '3d', 'perspetiva', 'ilusão', 'monument valley', 'torres', 'lia'] },
+    { label: 'Ilhas Flutuantes', id: 'games/platformer-3d', icon: '🏝️', tags: ['plataformas 3d', '3d', 'ilhas', 'estrelas', 'pip', 'raposa', 'aventura', 'mario 64'] },
+    { label: 'Caminho', id: 'games/path-memory', icon: '👣', tags: ['memória', 'caminho', 'grelha', 'percurso', 'remember the path'] },
+    { label: 'O Que Mudou?', id: 'games/what-changed', icon: '🔍', tags: ['memória', 'diferenças', 'observar', 'estante', 'atenção', 'what changed'] },
+    { label: 'Ecos', id: 'games/simon', icon: '🔴', tags: ['memória', 'simon', 'sequência', 'cores', 'sons', 'genius'] },
+    { label: 'Padrão', id: 'games/pattern-recall', icon: '🟪', tags: ['memória', 'padrão', 'grelha', 'pattern', 'matrix'] },
+    { label: 'Cadeia', id: 'games/memory-chain', icon: '🔗', tags: ['memória', 'cadeia', 'sequência', 'formas', 'memory chain'] },
+    { label: 'Conta Blocos', id: 'games/block-count', icon: '🧮', tags: ['contar', 'blocos', 'atenção', 'memória', '3d', 'count'] },
   ];
 
   function buildIndex() {

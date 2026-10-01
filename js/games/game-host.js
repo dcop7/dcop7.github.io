@@ -2,82 +2,145 @@ const GameHost = (function () {
   'use strict';
 
   const GAMES = [
-    { id: 'hangman',       name: 'Jogo da Forca',       icon: '🪢', color: '#3b82f6', group: 'Clássicos',
+    { id: 'hangman',       name: 'Jogo da Forca',       icon: '🪢', color: '#3b82f6', group: 'Puzzle & Lógica',
       desc: 'Adivinha a palavra letra a letra. Quantas tentativas precisas?' },
-    { id: 'minesweeper',   name: 'Campo de Minas',       icon: '💣', color: '#10b981', group: 'Clássicos',
+    { id: 'minesweeper',   name: 'Campo de Minas',       icon: '💣', color: '#10b981', group: 'Puzzle & Lógica',
       desc: 'Encontra as minas sem as detonar. O clássico que nunca enjoa.' },
-    { id: 'memory',        name: 'Memória',              icon: '🃏', color: '#a855f7', group: 'Clássicos',
+    { id: 'memory',        name: 'Memória',              icon: '🃏', color: '#a855f7', group: 'Memória & Atenção',
       desc: 'Encontra todos os pares de cartas. Até 32 pares!' },
-    { id: 'wordle',        name: 'Palavra do Dia',       icon: '📝', color: '#10b981', group: 'Clássicos',
+    { id: 'wordle',        name: 'Palavra do Dia',       icon: '📝', color: '#10b981', group: 'Puzzle & Lógica',
       desc: 'Descobre a palavra de 5 letras em 6 tentativas. Estilo Wordle!' },
-    { id: 'reaction',      name: 'Teste de Reação',      icon: '⚡', color: '#22d3ee', group: 'Clássicos',
+    { id: 'reaction',      name: 'Teste de Reação',      icon: '⚡', color: '#22d3ee', group: 'Reflexos',
       desc: 'Quanto tempo demoras a reagir? Testa os teus reflexos.' },
-    { id: 'chess',         name: 'Xadrez',               icon: '♟️', color: '#f59e0b', group: 'Tabuleiro & Estratégia',
+    { id: 'chess',         name: 'Xadrez',               icon: '♟️', color: '#f59e0b', group: 'Tabuleiro & Cartas',
       desc: 'O rei dos jogos de estratégia. Enfrenta a IA em 3 níveis ou joga a 2.' },
-    { id: 'battleship',    name: 'Batalha Naval',        icon: '🚢', color: '#0ea5e9', group: 'Tabuleiro & Estratégia',
+    { id: 'battleship',    name: 'Batalha Naval',        icon: '🚢', color: '#0ea5e9', group: 'Tabuleiro & Cartas',
       desc: 'Afunda a frota inimiga. IA cada vez mais esperta em 3 níveis.' },
     { id: 'bomb',          name: 'Desarmar Bomba',       icon: '💥', color: '#ef4444', group: 'Puzzle & Lógica',
       desc: '5–7 desafios, conta decrescente. Consegues desarmar a bomba a tempo?' },
     { id: 'gravity-lab',   name: 'Gravity Lab',          icon: '🔬', color: '#22d3ee', group: 'Puzzle & Lógica',
       desc: 'Muda a direção da gravidade para guiar a bola até à saída.' },
-    { id: 'uno',           name: 'Uno',                  icon: '🃏', color: '#ef4444', group: 'Tabuleiro & Estratégia',
+    { id: 'uno',           name: 'Uno',                  icon: '🃏', color: '#ef4444', group: 'Tabuleiro & Cartas',
       desc: 'O clássico jogo de cartas. Enfrenta 3 adversários com IA. Não te esqueças do UNO!' },
-    { id: 'sueca',         name: 'Sueca',                icon: '♠️', color: '#1a7a4a', group: 'Tabuleiro & Estratégia',
+    { id: 'sueca',         name: 'Sueca',                icon: '♠️', color: '#1a7a4a', group: 'Tabuleiro & Cartas',
       desc: 'A sueca portuguesa: tu e o teu parceiro contra 2 IA. 120 pontos, trunfos e bandeiras.' },
-    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Arcade',
+    { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Ação & Velocidade',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
-    { id: 'dobble',        name: 'Olho Vivo',            icon: '👁️', color: '#f2b344', group: 'Arcade',
+    { id: 'dobble',        name: 'Olho Vivo',            icon: '👁️', color: '#f2b344', group: 'Memória & Atenção',
       desc: 'Encontra o único símbolo em comum entre as duas cartas. Rápido, o tempo não perdoa!' },
     /* ── arcade (set/2026) — todos sobre o ArcadeKit ── */
-    { id: 'target',        name: 'Alvo',                 icon: '🎯', color: '#14b8a6', group: 'Clássicos',
+    { id: 'target',        name: 'Alvo',                 icon: '🎯', color: '#14b8a6', group: 'Pontaria & Física',
       desc: 'Acerta nos alvos que aparecem, o mais depressa e o mais ao centro que conseguires.' },
-    { id: 'golf',          name: 'Minigolfe',            icon: '⛳', color: '#22c55e', group: 'Clássicos',
+    { id: 'golf',          name: 'Minigolfe',            icon: '⛳', color: '#22c55e', group: 'Pontaria & Física',
       desc: '9 buracos compactos: aponta, doseia a força e tenta fazer o par.' },
-    { id: 'arrow-wall',    name: 'Muro das Setas',       icon: '🧱', color: '#22c55e', group: 'Puzzle & Lógica',
+    { id: 'arrow-wall',    name: 'Muro das Setas',       icon: '🧱', color: '#22c55e', group: 'Reflexos',
       desc: 'Segue a seta verde, contraria a vermelha, fica no azul — antes de a parede chegar.' },
     { id: 'quick-maths',   name: 'Contas Rápidas',       icon: '➗', color: '#3b82f6', group: 'Puzzle & Lógica',
       desc: 'Resolve contas cada vez mais difíceis contra o relógio.' },
-    { id: 'knife-throw',   name: 'Lança-Facas',          icon: '🔪', color: '#fb923c', group: 'Arcade',
+    { id: 'knife-throw',   name: 'Lança-Facas',          icon: '🔪', color: '#fb923c', group: 'Pontaria & Física',
       desc: 'Crava facas num tronco que gira sem tocar nas que já lá estão.' },
-    { id: 'stack',         name: 'Torre',                icon: '🏗️', color: '#2dd4bf', group: 'Arcade',
+    { id: 'stack',         name: 'Torre',                icon: '🏗️', color: '#2dd4bf', group: 'Reflexos',
       desc: 'Empilha os blocos em movimento. O que ficar de fora é cortado.' },
-    { id: 'lane-rush',     name: 'Faixa Rápida',         icon: '🏎️', color: '#f472b6', group: 'Arcade',
+    { id: 'lane-rush',     name: 'Faixa Rápida',         icon: '🏎️', color: '#f472b6', group: 'Ação & Velocidade',
       desc: 'Troca de faixa para fugir aos obstáculos — cada vez mais depressa.' },
-    { id: 'ninja-chop',    name: 'Corte Ninja',          icon: '🥷', color: '#ef4444', group: 'Arcade',
+    { id: 'ninja-chop',    name: 'Corte Ninja',          icon: '🥷', color: '#ef4444', group: 'Reflexos',
       desc: 'Corta a fruta com o rato ou com o dedo, mas foge às bombas.' },
-    { id: 'dangerwall',    name: 'Parede Mortal',        icon: '🚀', color: '#ef4444', group: 'Arcade',
+    { id: 'dangerwall',    name: 'Parede Mortal',        icon: '🚀', color: '#ef4444', group: 'Ação & Velocidade',
       desc: 'Guia a nave pelos buracos das paredes que vêm a toda a velocidade.' },
-    { id: 'jumpy',         name: 'Saltitão',             icon: '🦘', color: '#a855f7', group: 'Arcade',
+    { id: 'jumpy',         name: 'Saltitão',             icon: '🦘', color: '#a855f7', group: 'Reflexos',
       desc: 'Salta de plataforma em plataforma e sobe o mais alto possível.' },
-    { id: 'chicken-up',    name: 'Galinha Acima',        icon: '🐔', color: '#f59e0b', group: 'Arcade',
+    { id: 'chicken-up',    name: 'Galinha Acima',        icon: '🐔', color: '#f59e0b', group: 'Reflexos',
       desc: 'Salta no momento certo para as tábuas que deslizam e não pares de subir.' },
-    { id: 'drift',         name: 'Drift',                icon: '🚗', color: '#ef4444', group: 'Arcade',
+    { id: 'drift',         name: 'Drift',                icon: '🚗', color: '#ef4444', group: 'Ação & Velocidade',
       desc: 'Derrapa em pistas compactas e bate o teu melhor tempo por volta.' },
-    { id: 'ballracer',     name: 'Bola Veloz',           icon: '🔵', color: '#f97316', group: 'Arcade',
+    { id: 'ballracer',     name: 'Bola Veloz',           icon: '🔵', color: '#f97316', group: 'Ação & Velocidade',
       desc: 'Guia a bola por pistas suspensas sem cair nos buracos nem bater.' },
-    { id: 'balldrop',      name: 'Queda Livre',          icon: '🟡', color: '#a855f7', group: 'Arcade',
+    { id: 'balldrop',      name: 'Queda Livre',          icon: '🟡', color: '#a855f7', group: 'Ação & Velocidade',
       desc: 'Conduz a bola em queda pelos obstáculos até à zona de aterragem.' },
     /* ── lote 2 (set/2026) ── */
-    { id: 'bubble-shooter', name: 'Bolhas', icon: '🫧', color: '#a78bfa', group: 'Clássicos',
+    { id: 'bubble-shooter', name: 'Bolhas', icon: '🫧', color: '#a78bfa', group: 'Pontaria & Física',
       desc: 'Aponta, ressalta nas paredes e junta 3 bolhas da mesma cor.' },
-    { id: 'brick-breaker', name: 'Parte-Tijolos', icon: '🟦', color: '#60a5fa', group: 'Clássicos',
+    { id: 'brick-breaker', name: 'Parte-Tijolos', icon: '🟦', color: '#60a5fa', group: 'Pontaria & Física',
       desc: 'Raquete, bola e uma parede de tijolos. 12 níveis, 14 cápsulas de poder e tijolos que explodem.' },
-    { id: 'ball-blast', name: 'Rajada', icon: '🟣', color: '#a78bfa', group: 'Clássicos',
+    { id: 'ball-blast', name: 'Rajada', icon: '🟣', color: '#a78bfa', group: 'Pontaria & Física',
       desc: 'Dispara todas as bolas de uma vez contra blocos numerados que descem a cada jogada.' },
     { id: 'sudoku', name: 'Sudoku', icon: '9️⃣', color: '#60a5fa', group: 'Puzzle & Lógica',
       desc: 'Grelhas com solução única, notas, pistas e o Sudoku do dia.' },
     { id: '2048', name: '2048', icon: '🔢', color: '#edc22e', group: 'Puzzle & Lógica',
       desc: 'Desliza e junta peças iguais até chegares a 2048.' },
-    { id: 'yahtzee', name: 'General', icon: '🎲', color: '#4ade80', group: 'Tabuleiro & Estratégia',
+    { id: 'yahtzee', name: 'General', icon: '🎲', color: '#4ade80', group: 'Tabuleiro & Cartas',
       desc: '5 dados, 3 lançamentos, 13 casas. Sozinho ou contra o computador.' },
-    { id: 'crossy-road', name: 'Travessia', icon: '🐸', color: '#84cc16', group: 'Arcade',
+    { id: 'crossy-road', name: 'Travessia', icon: '🐸', color: '#84cc16', group: 'Ação & Velocidade',
       desc: 'Atravessa estradas, rios e comboios sem fim. Não fiques para trás.' },
-    { id: 'hole', name: 'Buraco Guloso', icon: '🕳️', color: '#22c55e', group: 'Arcade',
+    { id: 'hole', name: 'Buraco Guloso', icon: '🕳️', color: '#22c55e', group: 'Ação & Velocidade',
       desc: 'Engole a cidade — ou aspira a casa — e cresce. Contra buracos rivais.' },
+    /* ── aventura (out/2026) — jogos grandes, carregados só ao abrir ── */
+    { id: 'platformer', name: 'Mundos de Pip', icon: '🦊', color: '#f59e0b', group: 'Aventura',
+      desc: 'Plataformas 2D: corre, salta, ganha embalo nos loops e descobre as zonas secretas de 4 mundos.' },
+    { id: 'runner', name: 'Fuga na Selva', icon: '🐒', color: '#84cc16', group: 'Aventura',
+      desc: 'Corrida sem fim: salta, desliza e trepa pelas lianas antes que a onda de bananas te apanhe.' },
+    { id: 'mono-puzzle', name: 'Torres Impossíveis', icon: '🗼', color: '#f472b6', group: 'Aventura',
+      desc: 'Puzzle 3D de perspetiva: roda torres, desliza pontes e usa ilusões para abrir caminho.' },
+    { id: 'platformer-3d', name: 'Ilhas Flutuantes', icon: '🏝️', color: '#38bdf8', group: 'Aventura',
+      desc: 'Plataformas 3D: explora ilhas no céu, salta, enfrenta inimigos e encontra todas as estrelas.' },
+    /* ── memória (out/2026) ── */
+    { id: 'path-memory', name: 'Caminho', icon: '👣', color: '#22d3ee', group: 'Memória & Atenção',
+      desc: 'Um caminho acende-se na grelha. Memoriza-o e refaz-o passo a passo.' },
+    { id: 'what-changed', name: 'O Que Mudou?', icon: '🔍', color: '#fb923c', group: 'Memória & Atenção',
+      desc: 'Observa a cena, ela apaga-se por um instante… descobre o que mudou.' },
+    { id: 'simon', name: 'Ecos', icon: '🔴', color: '#ef4444', group: 'Memória & Atenção',
+      desc: 'Luzes e sons numa sequência que cresce a cada ronda. Até onde consegues repetir?' },
+    { id: 'pattern-recall', name: 'Padrão', icon: '🟪', color: '#a78bfa', group: 'Memória & Atenção',
+      desc: 'Um padrão aparece na grelha por segundos. Reconstrói-o — mais tarde, com cores.' },
+    { id: 'memory-chain', name: 'Cadeia', icon: '🔗', color: '#f2b344', group: 'Memória & Atenção',
+      desc: 'Uma cadeia de objetos cresce a cada ronda e as opções baralham-se. Lembras-te da ordem?' },
+    { id: 'block-count', name: 'Conta Blocos', icon: '🧮', color: '#60a5fa', group: 'Memória & Atenção',
+      desc: 'Blocos atravessam o ecrã a toda a velocidade. Conta-os — e não te deixes enganar.' },
   ];
 
-  const GROUP_ORDER = ['Clássicos', 'Tabuleiro & Estratégia', 'Puzzle & Lógica', 'Arcade'];
-  const GROUP_ICONS = { 'Clássicos': '🎲', 'Tabuleiro & Estratégia': '♟️', 'Puzzle & Lógica': '🧩', 'Arcade': '⚡' };
+  const GROUP_ORDER = ['Aventura', 'Memória & Atenção', 'Puzzle & Lógica', 'Tabuleiro & Cartas', 'Pontaria & Física', 'Reflexos', 'Ação & Velocidade'];
+  const GROUP_ICONS = { 'Aventura': '🌟', 'Memória & Atenção': '🧠', 'Puzzle & Lógica': '🧩', 'Tabuleiro & Cartas': '♟️', 'Pontaria & Física': '🎯', 'Reflexos': '⚡', 'Ação & Velocidade': '🏁' };
+  /* id curto do grupo para o filtro do hub (e para #games?g=…) */
+  const GROUP_KEY = { 'Aventura': 'aventura', 'Memória & Atenção': 'memoria', 'Puzzle & Lógica': 'puzzle', 'Tabuleiro & Cartas': 'tabuleiro', 'Pontaria & Física': 'pontaria', 'Reflexos': 'reflexos', 'Ação & Velocidade': 'acao' };
+
+  /* Jogos carregados só quando se abrem (não pesam no resto da secção).
+     deps partilhadas entram primeiro e só uma vez. */
+  const MEMO = ['js/games/memo-kit.js'];
+  const LAZY = {
+    platformer:      { g: () => PlatformerGame,  src: ['js/games/platformer-levels.js', 'js/games/game-platformer.js'] },
+    runner:          { g: () => RunnerGame,      src: ['js/games/game-runner.js'] },
+    'mono-puzzle':   { g: () => MonoPuzzleGame,  src: ['js/games/mono-levels.js', 'js/games/game-mono-puzzle.js'] },
+    'platformer-3d': { g: () => Platformer3DGame, src: ['js/games/game-platformer-3d.js'] },
+    'path-memory':   { g: () => PathMemoryGame,  src: MEMO.concat('js/games/game-path-memory.js') },
+    'what-changed':  { g: () => WhatChangedGame, src: MEMO.concat('js/games/game-what-changed.js') },
+    simon:           { g: () => SimonGame,       src: MEMO.concat('js/games/game-simon.js') },
+    'pattern-recall': { g: () => PatternRecallGame, src: MEMO.concat('js/games/game-pattern-recall.js') },
+    'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
+    'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
+  };
+  const _loaded = new Map();
+  function loadScript(src) {
+    if (_loaded.has(src)) return _loaded.get(src);
+    const p = new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.async = false;
+      s.onload = res; s.onerror = () => { _loaded.delete(src); rej(new Error(src)); };
+      document.head.appendChild(s);
+    });
+    _loaded.set(src, p);
+    return p;
+  }
+  const loadAll = list => list.reduce((p, src) => p.then(() => loadScript(src)), Promise.resolve());
+  function paneFor(id) {
+    let el = document.getElementById('pane-' + id);
+    if (!el) {
+      const host = document.querySelector('#games-area .game-pane-host') || document.getElementById('pane-hole')?.parentElement;
+      if (!host) return null;
+      el = document.createElement('div'); el.className = 'game-pane'; el.id = 'pane-' + id;
+      host.appendChild(el);
+    }
+    return el;
+  }
 
   const registry = {
     hangman:        { initialized: true },
@@ -112,6 +175,18 @@ const GameHost = (function () {
   };
   Object.keys(ARCADE).forEach(id => {
     registry[id] = { initialized: false, init: () => ARCADE[id]().init(document.getElementById('pane-' + id)) };
+  });
+  Object.keys(LAZY).forEach(id => {
+    registry[id] = { initialized: false, init: () => {
+      const pane = paneFor(id);
+      if (!pane) return;
+      pane.innerHTML = '<div class="gh-loading" role="status"><span class="gh-spin"></span>A carregar…</div>';
+      loadAll(LAZY[id].src).then(() => LAZY[id].g().init(pane)).catch(err => {
+        console.warn('[jogos] falhou o carregamento de', id, err);
+        registry[id].initialized = false;
+        pane.innerHTML = '<div class="empty-state"><b>Não foi possível carregar o jogo.</b><span>Verifica a ligação e tenta outra vez.</span></div>';
+      });
+    } };
   });
 
   /* ── Dificuldade POR JOGO ──────────────────────────────────────────
@@ -258,9 +333,10 @@ const GameHost = (function () {
     const q = search.value.trim().toLowerCase();
     let any = false;
     const favSec = hub.querySelector('#gh-favs');
-    if (favSec) favSec.hidden = !!q;
+    if (favSec) favSec.hidden = !!q || !!curGroup;
     hub.querySelectorAll('.games-group[data-group]').forEach(grp => {
       let groupHas = false;
+      if (curGroup && grp.dataset.group !== curGroup) { grp.hidden = true; return; }
       grp.querySelectorAll('.gh-card').forEach(card => {
         const btn = card.querySelector('.game-hub-card');
         const match = !q || btn.dataset.name.includes(q) || (btn.querySelector('.game-hub-card-desc')?.textContent.toLowerCase().includes(q));
@@ -272,6 +348,7 @@ const GameHost = (function () {
     hub.querySelector('#gh-noresults').hidden = any;
   }
 
+  let curGroup = (() => { try { return sessionStorage.getItem('gh-group') || ''; } catch (e) { return ''; } })();
   function renderHub() {
     const hub = document.getElementById('games-hub');
     if (!hub) return;
@@ -321,10 +398,14 @@ const GameHost = (function () {
           📊 <span>${GP ? GP.streak() : 0}🔥 · ${GP ? GP.achievementCount() : 0}🏅</span>
         </button>
       </div>
+      <div class="gh-filter seg" id="gh-filter" role="tablist" aria-label="Categorias">
+        <button class="seg-btn${curGroup ? '' : ' active'}" data-g="" role="tab" aria-selected="${!curGroup}">Todos <small>${GAMES.length}</small></button>
+        ${GROUP_ORDER.filter(g => groups[g]).map(gName => `<button class="seg-btn${curGroup === GROUP_KEY[gName] ? ' active' : ''}" data-g="${GROUP_KEY[gName]}" role="tab" aria-selected="${curGroup === GROUP_KEY[gName]}" title="${gName}">${GROUP_ICONS[gName]} ${gName.split(' & ')[0]} <small>${groups[gName].length}</small></button>`).join('')}
+      </div>
       <div id="gh-noresults" class="gh-noresults" hidden>Nenhum jogo encontrado.</div>
       ${GP && GP.toggleFavorite ? `<div class="games-group gh-favs" id="gh-favs">${favSectionHTML(favs, GP)}</div>` : ''}
       ${GROUP_ORDER.filter(g => groups[g]).map(gName => `
-        <div class="games-group" data-group>
+        <div class="games-group${gName === 'Aventura' ? ' gh-feature' : ''}" data-group="${GROUP_KEY[gName]}">
           <div class="games-group-title">${GROUP_ICONS[gName]} ${gName}</div>
           <div class="games-hub-grid">
             ${groups[gName].map(g => cardHTML(g, favs, GP)).join('')}
@@ -341,8 +422,15 @@ const GameHost = (function () {
     hub.querySelector('#gh-daily')?.addEventListener('click', () => Nav.go('games/' + dailyGame.id));
     hub.querySelector('#gh-stats')?.addEventListener('click', () => GP && GP.openStats());
 
+    hub.querySelector('#gh-filter')?.addEventListener('click', e => {
+      const b = e.target.closest('[data-g]'); if (!b) return;
+      curGroup = b.dataset.g || '';
+      try { sessionStorage.setItem('gh-group', curGroup); } catch (err) {}
+      hub.querySelectorAll('#gh-filter [data-g]').forEach(x => { const on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-selected', on); });
+      applySearch();
+    });
     const search = hub.querySelector('#gh-search');
-    if (prevQ) { search.value = prevQ; applySearch(); }
+    if (prevQ || curGroup) { if (prevQ) search.value = prevQ; applySearch(); }
     search?.addEventListener('input', applySearch);
   }
 
@@ -393,7 +481,7 @@ const GameHost = (function () {
     _curGame = gameId; syncBcFav();
 
     document.querySelectorAll('.game-pane').forEach(p => p.classList.remove('active'));
-    document.getElementById('pane-' + gameId)?.classList.add('active');
+    paneFor(gameId)?.classList.add('active');
 
     if (!entry.initialized) {
       entry.init();

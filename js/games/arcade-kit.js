@@ -349,6 +349,8 @@ const ArcadeKit = (function () {
         resume() { closeOverlay(); sess.state = 'play'; },
         over(res) { if (!sess.dead) endRun(res); },
         restart() { start(sess.mode); },
+        /* começar outro modo/nível (ex.: "Próximo nível") */
+        play(m) { start(m); },
         menu() { renderMenu(); },
       };
 

@@ -243,6 +243,21 @@
 
 /* ── GAME GROUPS ── */
 .games-group { margin-bottom: 1.75rem; }
+/* filtro de categorias (out/2026) */
+.gh-filter { margin: -.6rem 0 1.4rem; }
+.gh-filter .seg-btn small { font-size: .68em; opacity: .65; font-variant-numeric: tabular-nums; }
+/* Aventura: cartões maiores, em destaque */
+.gh-feature .games-hub-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.gh-feature .game-hub-card { min-height: 200px; }
+.gh-feature .game-hub-card-img { opacity: .78; }
+.gh-feature .game-hub-card-name { font-size: 1.05rem; }
+.gh-feature .games-group-title { color: #fbbf24; border-bottom-color: rgba(251,191,36,.25); }
+[data-theme="light"] .gh-feature .games-group-title { color: #b45309; }
+@media (max-width: 600px) { .gh-feature .games-hub-grid { grid-template-columns: 1fr; } }
+/* jogo a carregar (os jogos grandes chegam só quando se abrem) */
+.gh-loading { display: flex; align-items: center; justify-content: center; gap: .7rem; min-height: 320px; color: var(--muted); font-size: .9rem; }
+.gh-spin { width: 22px; height: 22px; border-radius: 50%; border: 3px solid rgba(var(--accent-rgb),.2); border-top-color: var(--accent); animation: ghSpin .8s linear infinite; }
+@keyframes ghSpin { to { transform: rotate(360deg); } }
 .games-group-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: .65rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .4rem; }
 
 /* ── MINESWEEPER ── */
