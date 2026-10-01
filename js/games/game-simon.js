@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   Ecos (Simon) — um disco de botões de luz toca uma sequência que
+   Ecos — um disco de botões de luz toca uma sequência que
    cresce uma nota a cada ronda; repete-a. Modos: Clássico (4 cores),
    Seis Cores, Reverso (repetir de trás para a frente) e Treino.
    Cada botão tem também um símbolo, para não depender só da cor.

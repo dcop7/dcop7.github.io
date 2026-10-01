@@ -1,6 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   Torres Impossíveis — puzzle 3D de perspetiva (inspirado em Monument
-   Valley). Guia a viajante Lia até à porta de luz de cada nível.
+   Torres Impossíveis — puzzle 3D de perspetiva isométrica. Guia a viajante Lia até à porta de luz de cada nível.
 
    O truque: a câmara é ortográfica e isométrica (olha na direção
    (−1,−1,−1)). Dois sítios que diferem de k·(1,1,1) caem no MESMO ponto
@@ -332,16 +331,27 @@ const MonoPuzzleGame = (function () {
     return h;
   }
 
+  /* a Lia: capa turquesa com capuz redondo, cachecol coral e uma lanterna */
   function liaMesh(pal) {
     const g = new THREE.Group();
-    const white = new THREE.MeshBasicMaterial({ color: '#fbfbff', toneMapped: false }), shade = new THREE.MeshBasicMaterial({ color: '#d9d6ee', toneMapped: false });
-    const body = new THREE.Mesh(new THREE.ConeGeometry(.2, .5, 20, 1, true), white); body.position.y = .25; g.add(body);
-    const body2 = new THREE.Mesh(new THREE.ConeGeometry(.2, .5, 20, 1, true, Math.PI * .75, Math.PI), shade); body2.position.y = .25; body2.scale.setScalar(1.01); g.add(body2);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(.11, 16, 12), new THREE.MeshBasicMaterial({ color: '#fde2c8', toneMapped: false })); head.position.y = .58; g.add(head);
-    const hat = new THREE.Mesh(new THREE.ConeGeometry(.12, .34, 16), white); hat.position.y = .78; g.add(hat);
-    const brim = new THREE.Mesh(new THREE.CylinderGeometry(.16, .16, .02, 16), white); brim.position.y = .64; g.add(brim);
-    const shadow = new THREE.Mesh(new THREE.CircleGeometry(.2, 20), new THREE.MeshBasicMaterial({ color: '#000', transparent: true, opacity: .18, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = .01; g.add(shadow);
-    g.userData.body = [body, body2, head, hat, brim];
+    const M = c => new THREE.MeshBasicMaterial({ color: c, toneMapped: false });
+    const cloak = M('#14b8a6'), cloakD = M('#0f766e'), scarf = M('#fb7185'), skin = M('#fde2c8');
+    /* capa em forma de sino (lathe), com o lado de trás mais escuro */
+    const prof = [[0, 0], [.24, 0], [.23, .08], [.19, .25], [.15, .42], [.12, .5], [0, .52]].map(q => new THREE.Vector2(q[0], q[1]));
+    const body = new THREE.Mesh(new THREE.LatheGeometry(prof, 24), cloak); g.add(body);
+    const back = new THREE.Mesh(new THREE.LatheGeometry(prof, 24, Math.PI * .6, Math.PI * .8), cloakD); back.scale.setScalar(1.01); body.add(back);
+    const sc = new THREE.Mesh(new THREE.TorusGeometry(.12, .045, 8, 20), scarf); sc.rotation.x = Math.PI / 2; sc.position.y = .5; body.add(sc);
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(.06, .2, .03), scarf); tail.position.set(.07, .38, -.13); tail.rotation.z = .25; body.add(tail);
+    /* capuz redondo com a cara à vista */
+    const hood = new THREE.Mesh(new THREE.SphereGeometry(.15, 18, 14), cloak); hood.position.y = .64; body.add(hood);
+    const face = new THREE.Mesh(new THREE.SphereGeometry(.105, 16, 12), skin); face.position.set(0, .63, .065); body.add(face);
+    const eyes = M('#3b2d5a'); [-1, 1].forEach(k => { const e = new THREE.Mesh(new THREE.SphereGeometry(.014, 6, 4), eyes); e.position.set(k * .035, .645, .165); body.add(e); });
+    /* lanterna na mão */
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .18, 6), cloakD); arm.position.set(.17, .36, .06); arm.rotation.z = .5; body.add(arm);
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(.05, 10, 8), M('#fef3c7')); lamp.position.set(.23, .25, .08); body.add(lamp);
+    const glow = new THREE.Sprite(Arcade3D.glowSprite('#fde68a').clone()); glow.scale.set(.45, .45, 1); glow.position.copy(lamp.position); body.add(glow);
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(.22, 20), new THREE.MeshBasicMaterial({ color: '#000', transparent: true, opacity: .18, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = .01; g.add(shadow);
+    g.userData.body = [body];
     return g;
   }
 
@@ -465,7 +475,7 @@ const MonoPuzzleGame = (function () {
     lia.position.set(G.pos[0], G.pos[1], G.pos[2]);
     const walking = !!G.mv;
     lia.userData.body.forEach(m => { m.position.y = m.position.y; });
-    lia.children[0].position.y = .25 + (walking ? Math.abs(Math.sin(G.t * 14)) * .04 : Math.sin(G.t * 2) * .01);
+    lia.children[0].position.y = (walking ? Math.abs(Math.sin(G.t * 14)) * .04 : Math.sin(G.t * 2) * .01);
     if (G.face != null) lia.rotation.y = G.face;
     /* em arestas de ilusão desenha-se por cima de tudo (como no original) */
     const ill = G.mv && G.mv.ill;

@@ -4,7 +4,7 @@
    mapa de tiles (o mesmo formato de texto que o motor lê):
 
      .  ar            #  terra (relva/areia/neve em cima)   %  pedra
-     B  tijolo        ?  bloco-moeda   P  poder (fogo/coração)
+     B  tijolo        ?  bloco-estrela (moeda)   P  poder (fogo/coração)
      !  estrela       H  coração       h  bloco escondido (5 moedas)
      =  plataforma de passagem (só por cima)
      / \  rampas 45°   a b  rampa suave a subir   c d  a descer
@@ -37,7 +37,7 @@ const PIP_LEVELS = (function () {
       /* rampa suave: sobe 1 linha a cada 2 colunas */
       upG(x, top, n) { for (let i = 0; i < n; i++) { set(x + 2 * i, top - 1 - i, 'a'); set(x + 2 * i + 1, top - 1 - i, 'b'); b.rect(x + 2 * i, top - i, x + 2 * i + 1, H - 1, '#'); } return top - n; },
       downG(x, top, n) { for (let i = 0; i < n; i++) { set(x + 2 * i, top + i, 'c'); set(x + 2 * i + 1, top + i, 'd'); b.rect(x + 2 * i, top + i + 1, x + 2 * i + 1, H - 1, '#'); } return top + n; },
-      /* escadaria de blocos (fim de nível à Mario) */
+      /* escadaria de blocos (fim de nível) */
       stairs(x, top, n, ch, dir) { for (let i = 0; i < n; i++) { const h = dir === -1 ? n - i : i + 1; b.rect(x + i, top - h, x + i, top - 1, ch || '%'); } },
       coins(x0, x1, y) { for (let x = x0; x <= x1; x++) set(x, y, 'o'); },
       /* arco de moedas por cima de um salto */

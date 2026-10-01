@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   Fuga na Selva — corrida sem fim em 2D (inspirada em Banana Kong).
+   Fuga na Selva — corrida sem fim em 2D.
    O Kiko corre sozinho; uma avalanche de bananas vem atrás dele. Salta
    (duplo salto), desliza por baixo de troncos, agarra-te às lianas para
    atravessar rios, usa o ARRANQUE (barra de bananas) para partir pedras
@@ -938,7 +938,7 @@ const RunnerGame = (function () {
       { id: 'run.500', name: 'Pernas de Macaco', icon: '🐒', desc: 'Corre 500 m na Fuga na Selva.', test: c => (c.result.score || 0) >= 500 },
       { id: 'run.2000', name: 'Rei da Selva', icon: '👑', desc: 'Corre 2000 m na Fuga na Selva.', test: c => (c.result.score || 0) >= 2000 },
       { id: 'run.ban', name: 'Bananeiro', icon: '🍌', desc: 'Apanha 300 bananas numa só corrida.', test: c => ((c.result.meta || {}).bananas || 0) >= 300 },
-      { id: 'run.tarzan', name: 'Tarzan', icon: '🌿', desc: 'Balança em 15 lianas numa corrida.', test: c => ((c.result.meta || {}).swings || 0) >= 15 },
+      { id: 'run.vines', name: 'Rei das Lianas', icon: '🌿', desc: 'Balança em 15 lianas numa corrida.', test: c => ((c.result.meta || {}).swings || 0) >= 15 },
     ],
   });
 })();

@@ -1,13 +1,13 @@
 /* ══════════════════════════════════════════════════════════════════
-   Mundos de Pip — plataformas 2D (inspirado em Super Mario e Sonic).
+   Mundos de Pip — plataformas 2D.
    O Pip (uma raposa) atravessa 4 mundos × 2 níveis feitos à mão
    (js/games/platformer-levels.js): Prado, Deserto, Gelo e Castelo.
 
-   Motor de tiles com rampas (45° e suaves) e embalo à Sonic: a
+   Motor de tiles com rampas (45° e suaves) e embalo: a
    velocidade segue o chão, as descidas aceleram, as subidas travam,
    rolar (↓) mantém o embalo e derruba inimigos. Loops (com velocidade
    dá a volta, sem ela escorrega para trás), molas, aceleradores,
-   plataformas móveis e que caem, barras de fogo, lava. Blocos "?",
+   plataformas móveis e que caem, barras de fogo, lava. Blocos-estrela,
    tijolos, blocos escondidos, paredes falsas e portas para zonas
    secretas, 3 moedas-estrela por nível, bandeiras de controlo.
    Poderes: flor de fogo (bolas de fogo), estrela (invencível),
@@ -703,13 +703,14 @@ const PlatformerGame = (function () {
       for (let rI = 0; rI < 4; rI++) { const off = rI % 2 ? 8 : 0; for (let xx = off; xx < TS; xx += 16) { x.moveTo(xx, rI * 8); x.lineTo(xx, rI * 8 + 8); } }
       x.stroke(); x.fillStyle = 'rgba(255,255,255,.2)'; x.fillRect(0, 0, TS, 2);
     } else if (ch === '?' || ch === 'P' || ch === '!' || ch === 'H' || ch === 'Q') {
-      const g = x.createLinearGradient(0, 0, 0, TS); g.addColorStop(0, '#ffd34d'); g.addColorStop(1, '#e09412');
-      x.fillStyle = '#8a5200'; rr(0, 0, TS, TS, 5); x.fill();
-      x.fillStyle = g; rr(1.5, 1.5, TS - 3, TS - 4, 4); x.fill();
-      x.fillStyle = 'rgba(255,255,255,.45)'; x.fillRect(4, 3, TS - 8, 2);
-      [[4, 4], [TS - 6, 4], [4, TS - 7], [TS - 6, TS - 7]].forEach(([a, b]) => { x.fillStyle = '#9a5c00'; x.fillRect(a, b, 2, 2); });
-      x.fillStyle = '#fff'; x.strokeStyle = '#8a5200'; x.lineWidth = 2.5; x.font = '900 20px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle';
-      x.strokeText('?', TS / 2, TS / 2 + 1); x.fillText('?', TS / 2, TS / 2 + 1);
+      /* caixa-surpresa: turquesa facetada com uma estrela dourada (desenho próprio) */
+      const g = x.createLinearGradient(0, 0, TS, TS); g.addColorStop(0, '#5eead4'); g.addColorStop(1, '#0f8f86');
+      x.fillStyle = '#0b5550'; rr(0, 0, TS, TS, 7); x.fill();
+      x.fillStyle = g; rr(1.5, 1.5, TS - 3, TS - 4, 6); x.fill();
+      x.fillStyle = 'rgba(255,255,255,.18)'; x.beginPath(); x.moveTo(3, 3); x.lineTo(TS - 3, 3); x.lineTo(TS / 2, TS / 2); x.closePath(); x.fill();
+      x.fillStyle = 'rgba(0,0,0,.12)'; x.beginPath(); x.moveTo(3, TS - 4); x.lineTo(TS - 3, TS - 4); x.lineTo(TS / 2, TS / 2); x.closePath(); x.fill();
+      x.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 4.2 : 9.5; x.lineTo(TS / 2 + Math.cos(a) * r, TS / 2 + 1 + Math.sin(a) * r); } x.closePath();
+      x.fillStyle = '#fde047'; x.fill(); x.strokeStyle = '#a16207'; x.lineWidth = 1.5; x.stroke();
     } else if (ch === 'U') {
       x.fillStyle = '#6b4a2a'; rr(0, 0, TS, TS, 5); x.fill(); x.fillStyle = '#8c6a44'; rr(2, 2, TS - 4, TS - 5, 4); x.fill();
       [[5, 5], [TS - 7, 5], [5, TS - 8], [TS - 7, TS - 8]].forEach(([a, b]) => { x.fillStyle = '#4a3018'; x.fillRect(a, b, 2, 2); });
@@ -1043,7 +1044,7 @@ const PlatformerGame = (function () {
     ctx.restore();
     /* pernas */
     if (sprint) {
-      /* rodas de pernas (desfoque à Sonic) */
+      /* rodas de pernas (desfoque de velocidade) */
       ctx.strokeStyle = 'rgba(194,65,12,.55)'; ctx.lineWidth = 4;
       ctx.beginPath(); ctx.ellipse(0, -6, 9, 6, 0, 0, TAU); ctx.stroke();
       ctx.fillStyle = dark; ctx.beginPath(); ctx.arc(Math.cos(ph * 2) * 8, -6 + Math.sin(ph * 2) * 5, 3.5, 0, TAU); ctx.arc(-Math.cos(ph * 2) * 8, -6 - Math.sin(ph * 2) * 5, 3.5, 0, TAU); ctx.fill();
@@ -1165,7 +1166,7 @@ const PlatformerGame = (function () {
     how: [
       '<b>← →</b> para correr (manter acelera), <b>Espaço</b> para saltar — quanto mais tempo premes, mais alto. Salta em cima dos inimigos!',
       '<b>↓</b> a correr = <b>rolar</b>: as descidas dão embalo e derrubas bolotas e abelhas (os ouriços picam!). Com embalo dás a volta aos <b>loops</b>.',
-      'Bate nos blocos <b>?</b> por baixo. Procura as <b>3 moedas-estrela</b> de cada nível: há paredes falsas, blocos invisíveis e portas (<b>↑</b>) para zonas secretas.',
+      'Bate por baixo nas <b>caixas-surpresa</b> (turquesa, com estrela). Procura as <b>3 moedas-estrela</b> de cada nível: há paredes falsas, blocos invisíveis e portas (<b>↑</b>) para zonas secretas.',
     ],
     controls: ['⌨️ ← → Espaço ↓ ↑ X', '👆 Botões no ecrã'],
     ready: { title: 'Toca para começar', hint: 'Toma o teu tempo: há segredos em todo o lado.' },
