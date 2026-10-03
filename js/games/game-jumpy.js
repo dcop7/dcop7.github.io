@@ -157,6 +157,26 @@ const JumpyGame = (function () {
       ctx.beginPath(); ctx.moveTo(c.x + 38 * c.s, y); ctx.ellipse(c.x, y, 38 * c.s, 13 * c.s, 0, 0, 6.3); ctx.moveTo(c.x + 22 * c.s + 24 * c.s, y - 8 * c.s); ctx.ellipse(c.x + 22 * c.s, y - 8 * c.s, 24 * c.s, 13 * c.s, 0, 0, 6.3); ctx.fill();
     });
 
+    /* paisagem lá em baixo (colinas e árvores em 2 camadas) que fica para trás à medida que sobes,
+       e um planeta com anéis a aparecer no espaço */
+    const ground = G.y0 + 60 - G.cam;
+    [[.25, '#86c5a0', 70, .011], [.55, '#4f9a6b', 34, .019]].forEach(([par, col, amp, fr]) => {
+      const by = G.y0 + 60 - G.cam * par + (1 - par) * 40;
+      if (by - amp * 2 > H) return;
+      ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, H + 400);
+      for (let x = 0; x <= W; x += 8) ctx.lineTo(x, by - amp - Math.sin(x * fr + par * 9) * amp * .6 - Math.sin(x * fr * 2.7) * amp * .2);
+      ctx.lineTo(W, H + 400); ctx.fill();
+      if (par > .5) for (let i = 0; i < 6; i++) { const tx = (i * 83 + 30) % W, ty = by - amp - Math.sin(tx * fr + par * 9) * amp * .6 - Math.sin(tx * fr * 2.7) * amp * .2; ctx.fillStyle = '#2f6b45'; ctx.beginPath(); ctx.moveTo(tx - 9, ty + 2); ctx.lineTo(tx, ty - 26); ctx.lineTo(tx + 9, ty + 2); ctx.fill(); }
+    });
+    if (night > .3) {
+      ctx.save(); ctx.globalAlpha = Math.min(1, (night - .3) * 1.5);
+      const px = W * .78, py = H * .22 + (h % 4000) * .02;
+      const pg = ctx.createRadialGradient(px - 14, py - 14, 4, px, py, 40); pg.addColorStop(0, '#fcd34d'); pg.addColorStop(1, '#b45309');
+      ctx.strokeStyle = 'rgba(253,230,138,.55)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.ellipse(px, py, 62, 14, -.3, Math.PI, 0); ctx.stroke();
+      ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(px, py, 36, 0, 6.3); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(px, py, 62, 14, -.3, 0, Math.PI); ctx.stroke();
+      ctx.restore();
+    }
     ctx.save(); ctx.translate(0, -G.cam);
     /* plataformas */
     G.plats.forEach(p => {
@@ -166,12 +186,36 @@ const JumpyGame = (function () {
       ctx.globalAlpha = a;
       const col = { n: ['#4ade80', '#15803d'], m: ['#60a5fa', '#1d4ed8'], b: ['#b45309', '#78350f'], v: ['#f8fafc', '#94a3b8'] }[p.t];
       ctx.save(); ctx.translate(p.x + p.w / 2, y + PH / 2); ctx.rotate(rot);
-      ctx.fillStyle = 'rgba(0,0,0,.18)'; U.rr(ctx, -p.w / 2 + 3, -PH / 2 + 5, p.w, PH, 7); ctx.fill();
-      const pg = ctx.createLinearGradient(0, -PH / 2, 0, PH / 2); pg.addColorStop(0, col[0]); pg.addColorStop(1, col[1]);
-      ctx.fillStyle = pg; U.rr(ctx, -p.w / 2, -PH / 2, p.w, PH, 7); ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,.35)'; U.rr(ctx, -p.w / 2 + 5, -PH / 2 + 2, p.w - 10, 3, 2); ctx.fill();
-      if (p.t === 'b') { ctx.strokeStyle = '#451a03'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-6, -PH / 2); ctx.lineTo(2, 0); ctx.lineTo(-3, PH / 2); ctx.stroke(); }
-      if (p.t === 'v') { ctx.setLineDash([4, 4]); ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5; U.rr(ctx, -p.w / 2, -PH / 2, p.w, PH, 7); ctx.stroke(); ctx.setLineDash([]); }
+      if (p.t === 'm' || p.t === 'b') { ctx.fillStyle = 'rgba(0,0,0,.15)'; U.rr(ctx, -p.w / 2 + 3, -PH / 2 + 5, p.w, PH, 7); ctx.fill(); }
+      const hw = p.w / 2;
+      if (p.t === 'n') {
+        /* ilhota: terra por baixo, relva com franja por cima */
+        ctx.fillStyle = '#8a5a34'; ctx.beginPath(); ctx.moveTo(-hw + 2, -PH / 2 + 4); ctx.lineTo(hw - 2, -PH / 2 + 4); ctx.quadraticCurveTo(hw - 6, PH * .9, 0, PH * 1.25); ctx.quadraticCurveTo(-hw + 6, PH * .9, -hw + 2, -PH / 2 + 4); ctx.fill();
+        ctx.fillStyle = 'rgba(0,0,0,.18)'; [[-hw * .4, 4], [hw * .3, 7]].forEach(([a, b]) => { ctx.beginPath(); ctx.ellipse(a, b, 4, 2.4, 0, 0, 6.3); ctx.fill(); });
+        const gg = ctx.createLinearGradient(0, -PH / 2, 0, PH / 2); gg.addColorStop(0, '#86efac'); gg.addColorStop(1, '#16a34a');
+        ctx.fillStyle = gg; U.rr(ctx, -hw, -PH / 2, p.w, PH * .7, 6); ctx.fill();
+        ctx.fillStyle = '#15803d'; for (let k = -hw + 5; k < hw - 3; k += 7) { ctx.beginPath(); ctx.arc(k, -PH / 2 + PH * .66, 3.2, 0, Math.PI); ctx.fill(); }
+        ctx.fillStyle = 'rgba(255,255,255,.4)'; U.rr(ctx, -hw + 5, -PH / 2 + 2, p.w - 10, 2.5, 2); ctx.fill();
+      } else if (p.t === 'm') {
+        /* plataforma voadora: metal azul com hélices pequenas nas pontas */
+        const mg = ctx.createLinearGradient(0, -PH / 2, 0, PH / 2); mg.addColorStop(0, '#93c5fd'); mg.addColorStop(1, '#1d4ed8');
+        ctx.fillStyle = mg; U.rr(ctx, -hw, -PH / 2, p.w, PH, 7); ctx.fill();
+        ctx.strokeStyle = '#1e3a8a'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = '#facc15'; [-hw + 9, hw - 9].forEach(a => { ctx.beginPath(); ctx.arc(a, 0, 2.5, 0, 6.3); ctx.fill(); });
+        const sp = Math.abs(Math.sin(api.t * 30)); ctx.fillStyle = 'rgba(226,232,240,.8)'; [-hw + 9, hw - 9].forEach(a => { ctx.fillRect(a - 1, PH / 2, 2, 5); ctx.beginPath(); ctx.ellipse(a, PH / 2 + 6, 9 * sp + 1, 2, 0, 0, 6.3); ctx.fill(); });
+        ctx.fillStyle = 'rgba(255,255,255,.4)'; U.rr(ctx, -hw + 5, -PH / 2 + 2, p.w - 10, 2.5, 2); ctx.fill();
+      } else if (p.t === 'b') {
+        /* tábua velha: veios, pregos e uma racha (parte-se) */
+        const wg = ctx.createLinearGradient(0, -PH / 2, 0, PH / 2); wg.addColorStop(0, '#d39a5c'); wg.addColorStop(1, '#8a5524');
+        ctx.fillStyle = wg; U.rr(ctx, -hw, -PH / 2, p.w, PH, 3); ctx.fill(); ctx.strokeStyle = '#5a3412'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.strokeStyle = 'rgba(90,52,18,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-hw + 4, -1); ctx.bezierCurveTo(-10, -3, 10, 2, hw - 4, 0); ctx.stroke();
+        ctx.strokeStyle = '#451a03'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-6, -PH / 2); ctx.lineTo(2, 0); ctx.lineTo(-3, PH / 2); ctx.stroke();
+        ctx.fillStyle = '#3f2a14'; [-hw + 5, hw - 5].forEach(a => { ctx.beginPath(); ctx.arc(a, 0, 1.6, 0, 6.3); ctx.fill(); });
+      } else {
+        /* nuvem-fantasma: some quando a pisas */
+        ctx.fillStyle = 'rgba(248,250,252,.88)'; ctx.beginPath(); for (let k = 0; k < 4; k++) { const a = -hw + 10 + k * (p.w - 20) / 3; ctx.moveTo(a + 10, -1); ctx.arc(a, -1 - (k % 2) * 3, 10, 0, 6.3); } ctx.fill();
+        ctx.fillStyle = 'rgba(148,163,184,.35)'; U.rr(ctx, -hw + 4, 4, p.w - 8, 5, 3); ctx.fill();
+      }
       if (p.spring) {
         const sq = p.sprung ? 1 + p.sprung * 2 : 1;
         ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 3; ctx.beginPath();
@@ -197,12 +241,17 @@ const JumpyGame = (function () {
     ctx.save(); ctx.translate(G.x, G.y + 18); ctx.scale(sx, sy);
     const bg = ctx.createRadialGradient(-6, -26, 3, 0, -16, 24);
     bg.addColorStop(0, '#f0abfc'); bg.addColorStop(.5, '#c026d3'); bg.addColorStop(1, '#6b21a8');
+    ctx.fillStyle = '#6b21a8'; [-9, 9].forEach(a => { ctx.beginPath(); ctx.ellipse(a + G.face, 1, 6, 3.5, 0, 0, 6.3); ctx.fill(); });
     ctx.fillStyle = bg;
     ctx.beginPath(); ctx.moveTo(-19, 0); ctx.bezierCurveTo(-22, -24, -12, -38, 0, -38); ctx.bezierCurveTo(12, -38, 22, -24, 19, 0); ctx.quadraticCurveTo(0, 5, -19, 0); ctx.fill();
+    ctx.strokeStyle = '#3b0764'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.ellipse(4, -10, 11, 6, 0, 0, 6.3); ctx.fill();
+    ctx.fillStyle = 'rgba(244,114,182,.55)'; [-12, 12].forEach(a => { ctx.beginPath(); ctx.ellipse(a + G.face * 2, -13, 3.5, 2.2, 0, 0, 6.3); ctx.fill(); });
     ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-8, -28, 5, 3, -.6, 0, 6.3); ctx.fill();
     const ex = G.face * 3;
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(-6 + ex, -20, 5, 6, 0, 0, 6.3); ctx.ellipse(6 + ex, -20, 5, 6, 0, 0, 6.3); ctx.fill();
     ctx.fillStyle = '#1e1b4b'; ctx.beginPath(); ctx.arc(-5 + ex * 1.4, -19 + (G.vy > 0 ? 2 : -1), 2.6, 0, 6.3); ctx.arc(7 + ex * 1.4, -19 + (G.vy > 0 ? 2 : -1), 2.6, 0, 6.3); ctx.fill();
+    ctx.fillStyle = '#fff'; [-5, 7].forEach(a => { ctx.beginPath(); ctx.arc(a + ex * 1.4 + .9, -20.2 + (G.vy > 0 ? 2 : -1), .9, 0, 6.3); ctx.fill(); });
     ctx.strokeStyle = '#3b0764'; ctx.lineWidth = 1.8; ctx.beginPath();
     if (G.vy < 0) ctx.arc(ex, -11, 4, .2, Math.PI - .2); else { ctx.ellipse(ex, -9, 3, 2.4, 0, 0, 6.3); }
     ctx.stroke();

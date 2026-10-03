@@ -35,8 +35,12 @@ const NeonShooterGame = (function () {
 .ns-stat-val{font-size:1rem;font-weight:700;color:#a855f7}
 .ns-play-btn{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:12px;padding:14px 40px;font-size:1.1rem;font-weight:700;cursor:pointer;pointer-events:all;box-shadow:0 0 24px rgba(168,85,247,.4);transition:transform .15s}
 .ns-play-btn:hover{transform:scale(1.05)}
-.ns-tip{font-size:.75rem;color:#333;text-align:center;max-width:240px;line-height:1.5}
-.ns-hi{font-size:.8rem;color:#555}
+.ns-tip{font-size:.75rem;color:#7c7c9c;text-align:center;max-width:240px;line-height:1.5}
+.ns-hi{font-size:.8rem;color:#8b8ba7}
+.ns-diff{display:flex;gap:6px;padding:4px;border-radius:12px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25)}
+.ns-diff button{border:0;border-radius:9px;padding:7px 14px;background:transparent;color:#c4b5fd;font-weight:700;cursor:pointer;font-size:.85rem}
+.ns-diff button.on{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 0 14px rgba(168,85,247,.45)}
+.ns-diff button:focus-visible{outline:2px solid #22d3ee;outline-offset:2px}
 .ns-boss-bar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:min(340px,80%);pointer-events:none}
 .ns-boss-lbl{font-size:.65rem;color:#ff3333;text-align:center;letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px #ff3333;margin-bottom:3px}
 .ns-boss-track{height:8px;background:rgba(255,0,0,.12);border-radius:4px;border:1px solid rgba(255,51,51,.3);overflow:hidden}
@@ -48,17 +52,28 @@ const NeonShooterGame = (function () {
 
   function init(r) { root = r; if (!r) return; injectCSS(); showMenu(); }
 
+  /* dificuldade: vidas, velocidade/cadência dos inimigos e ritmo das vagas */
+  const DIFF = {
+    easy:   { name: 'Fácil',   lives: 5, spd: .78, fire: 1.45, bullet: .8, spawn: 1.25, power: 1.4 },
+    medium: { name: 'Médio',   lives: 3, spd: 1,   fire: 1,    bullet: 1,  spawn: 1,    power: 1 },
+    hard:   { name: 'Difícil', lives: 2, spd: 1.22, fire: .72, bullet: 1.2, spawn: .82, power: .75 },
+  };
+  let diffKey = (() => { try { return localStorage.getItem('ns-diff') || 'medium'; } catch (e) { return 'medium'; } })();
+  const DF = () => DIFF[diffKey] || DIFF.medium;
+  const hiKey = () => diffKey === 'medium' ? 'ns-hi' : 'ns-hi-' + diffKey;
   function showMenu() {
     destroy3D();
-    const hi = localStorage.getItem('ns-hi') || 0;
+    const hi = localStorage.getItem(hiKey()) || 0;
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:3rem;filter:drop-shadow(0 0 20px #a855f7)">🚀</div>
       <div class="ns-title">Neon Space<br>Shooter</div>
+      <div class="ns-diff" role="radiogroup" aria-label="Dificuldade">${Object.keys(DIFF).map(k => `<button type="button" role="radio" aria-checked="${k === diffKey}" data-d="${k}" class="${k === diffKey ? 'on' : ''}">${DIFF[k].name}</button>`).join('')}</div>
       <div class="ns-hi">${t('record')}: ${hi} ${t('pts')}</div>
       <button class="ns-play-btn" id="ns-start">${t('play')}</button>
       <div class="ns-tip">${t('tip')}</div>
     </div></div>`;
     root.querySelector('#ns-start').addEventListener('click', startGame);
+    root.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => { diffKey = b.dataset.d; try { localStorage.setItem('ns-diff', diffKey); } catch (e) {} showMenu(); }));
   }
 
   function startGame() {
@@ -260,7 +275,7 @@ const NeonShooterGame = (function () {
       if (G.spawnCount >= G.spawnMax && G.enemies.length === 0) G.waveDone = true;
       return;
     }
-    G.spawnTimer = 0.6 - Math.min(0.45, G.wave * 0.04);
+    G.spawnTimer = (0.6 - Math.min(0.45, G.wave * 0.04)) * DF().spawn;
     G.spawnCount++;
     const types = ['basic','basic','zigzag','circle','fast'];
     const t = G.wave < 3 ? 'basic' : types[Math.floor(Math.random()*Math.min(G.wave+1, types.length))];
@@ -274,6 +289,7 @@ const NeonShooterGame = (function () {
     if (type === 'zigzag') { e.r=13; e.hp=2+Math.floor(G.wave/2); e.vx=80; e.vy=50+G.wave*6; e.color='#ff00ff'; e.fireRate=3; e.ft=0; }
     if (type === 'circle') { e.r=15; e.hp=3+G.wave; e.vx=0; e.vy=30; e.color='#ff6600'; e.fireRate=2; e.ft=0; e.angle=0; }
     if (type === 'fast')   { e.r=10; e.hp=1; e.vx=0; e.vy=180+G.wave*12; e.color='#00ff88'; e.fireRate=0; }
+    e.vy *= DF().spd; e.vx *= DF().spd; if (e.fireRate) e.fireRate *= DF().fire;
     G.enemies.push(e);
   }
 
@@ -300,7 +316,7 @@ const NeonShooterGame = (function () {
   function fireAtPlayer(e) {
     const dx = G.px - e.x, dy = G.py - e.y;
     const l = Math.sqrt(dx*dx+dy*dy) || 1;
-    const spd = 180;
+    const spd = 180 * DF().bullet;
     G.eBullets.push({ x:e.x, y:e.y, vx:dx/l*spd, vy:dy/l*spd, color:'#ff4444' });
   }
 
@@ -315,7 +331,7 @@ const NeonShooterGame = (function () {
     const pts = (10 + G.wave * 5) * G.combo;
     G.score += pts;
     spawnExplosion(e.x, e.y, e.color);
-    if (Math.random() < 0.12 + G.wave * 0.01) spawnPower(e.x, e.y);
+    if (Math.random() < (0.12 + G.wave * 0.01) * DF().power) spawnPower(e.x, e.y);
     floatScore(e.x, e.y, `+${pts}`);
   }
 
@@ -429,11 +445,11 @@ const NeonShooterGame = (function () {
     destroy3D();
     cancelAnimationFrame(raf);
     window.removeEventListener('resize', resize);
-    if (G.score > G.hiScore) { localStorage.setItem('ns-hi', G.score); G.hiScore = G.score; }
+    if (G.score > G.hiScore) { localStorage.setItem(hiKey(), G.score); G.hiScore = G.score; }
     if (typeof GameProgress !== 'undefined') {
-      try { GameProgress.record('neon-shooter', { score: G.score, meta: { wave: G.wave } }); } catch (e) {}
+      try { GameProgress.record('neon-shooter', { score: G.score, mode: diffKey, meta: { wave: G.wave, diff: diffKey } }); } catch (e) {}
     }
-    const hi = localStorage.getItem('ns-hi') || 0;
+    const hi = localStorage.getItem(hiKey()) || 0;
     root.innerHTML = `<div class="ns-host"><div class="ns-overlay">
       <div style="font-size:2.5rem">💥</div>
       <div class="ns-title" style="font-size:1.6rem">${t('gameOver')}</div>
@@ -746,7 +762,7 @@ const NeonShooterGame = (function () {
 
   // Override newG to include wave init
   const _newG = newG;
-  function newG2() { const g = _newG(); g.spawnMax = 9; g.spawnTimer = 1.2; return g; }
+  function newG2() { const g = _newG(); g.spawnMax = 9; g.spawnTimer = 1.2; g.lives = DF().lives; g.hiScore = +localStorage.getItem(hiKey()) || 0; return g; }
 
   function init2(r) { root = r; if (!r) return; injectCSS(); showMenu(); }
 

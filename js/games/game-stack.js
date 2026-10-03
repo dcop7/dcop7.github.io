@@ -168,7 +168,9 @@ const StackGame = (function () {
     const geo = bevelBox();
     const R3 = { renderer, scene, cam, sun, geo, meshes: [], falls: new Map(), rips: new Map(), mv: null };
     /* pedestal alto por baixo da 1.ª camada */
-    const ped = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: '#2a3048', roughness: .75 }));
+    /* pedestal: mesma cor da 1.ª camada no topo, a escurecer para o fundo (antes era um bloco azul-escuro desligado da torre) */
+    const pt = (() => { const c = document.createElement('canvas'); c.width = 8; c.height = 256; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#ffffff'); g.addColorStop(.06, '#d9d9d9'); g.addColorStop(.35, '#6b6b6b'); g.addColorStop(1, '#141414'); x.fillStyle = g; x.fillRect(0, 0, 8, 256); for (let i = 0; i < 6; i++) { x.fillStyle = 'rgba(255,255,255,.08)'; x.fillRect(0, 8 + i * 6, 8, 1); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+    const ped = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), [0, 1, 2, 3, 4, 5].map(i => new THREE.MeshStandardMaterial({ map: i === 2 || i === 3 ? null : pt, color: '#ffffff', roughness: .6 })));
     ped.receiveShadow = true; scene.add(ped); R3.ped = ped;
     G.r3 = R3;
   }
@@ -192,6 +194,7 @@ const StackGame = (function () {
     }
     if (!R3.meshes[0]) { const m = R3.meshes[0] = blockMesh(R3, G.layers[0], .5); place3(m, G.layers[0], 0, LH); }
     const b0 = G.layers[0]; R3.ped.scale.set(b0.w - 2, 900, b0.d - 2); R3.ped.position.set(b0.x, -450, b0.z);
+    if (R3.pedHue !== b0.hue) { R3.pedHue = b0.hue; R3.ped.material.forEach(m => m.color.copy(col3(b0.hue, .5))); }
     /* bloco em movimento (um só mesh reutilizado) */
     if (G.mv) {
       if (!R3.mv) R3.mv = blockMesh(R3, G.mv);

@@ -318,7 +318,9 @@ const GolfGame = (function () {
     /* bloco deslizante */
     if (h.slider) { const sl = h.slider; R.slider = add(Arcade3D.roundBox(.2), Arcade3D.std('#94a3b8', { metalness: .6, roughness: .3 }), 0, true); R.slider.scale.set(sl.w, 16, sl.h); } else R.slider = null;
     /* tapete de partida */
-    const tee = add(Arcade3D.roundBox(.3), Arcade3D.std('#dcfce7', { roughness: .9 }), .5); tee.scale.set(34, 1, 22); tee.position.set(h.tee[0] - 200, .5, h.tee[1] - 320);
+    /* tapete de partida: relva sintética mais escura com 2 marcadores (antes era um retângulo branco que parecia uma caixa) */
+    const tee = add(Arcade3D.roundBox(.3), Arcade3D.std('#15803d', { roughness: 1 }), .5); tee.scale.set(36, .8, 24); tee.position.set(h.tee[0] - 200, .4, h.tee[1] - 320);
+    [-1, 1].forEach(sd => { const mk = add(new THREE.SphereGeometry(2.6, 12, 8), Arcade3D.std(sd < 0 ? '#ef4444' : '#2563eb', { roughness: .4 }), 2, true); mk.position.set(h.tee[0] - 200 + sd * 14, 2, h.tee[1] - 320 - 8); });
     /* copo + bandeira */
     const cr = CUP * G.cfg.cup, cx = h.cup[0] - 200, cz = h.cup[1] - 320;
     const hole = add(new THREE.CircleGeometry(cr, 32), new THREE.MeshBasicMaterial({ color: '#050b07' }), .35); hole.rotation.x = -Math.PI / 2; hole.position.set(cx, .35, cz);
@@ -329,6 +331,23 @@ const GolfGame = (function () {
     R.flag = flag; R.flagBase = Float32Array.from(fg.attributes.position.array);
     /* árvores à volta do campo (fixas por buraco) */
     let seed = G.hi * 97 + 13; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    /* junto ao campo (dentro da vista): canteiros de flores, arbustos e pedras — nunca dentro do relvado nem colados às bermas */
+    {
+      const inside = (x, y) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; };
+      const near = (x, y) => { for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; if (U.segDist(x, y, a[0], a[1], b[0], b[1]) < 20) return true; } return false; };
+      const xs = P.map(p => p[0]), ys = P.map(p => p[1]), x0 = Math.min(...xs) - 90, x1 = Math.max(...xs) + 90, y0 = Math.min(...ys) - 60, y1 = Math.max(...ys) + 40;
+      const bushM = Arcade3D.std('#2f7d32', { roughness: .9, flatShading: true }), bushL = Arcade3D.std('#4caf50', { roughness: .9, flatShading: true }), rockM = Arcade3D.std('#9ca3af', { roughness: .9, flatShading: true });
+      const FL = ['#f472b6', '#facc15', '#ffffff', '#a78bfa', '#fb923c'];
+      for (let k = 0, placed = 0; k < 400 && placed < 46; k++) {
+        const x = x0 + rnd() * (x1 - x0), y = y0 + rnd() * (y1 - y0);
+        if (inside(x, y) || near(x, y)) continue;
+        placed++;
+        const r = rnd(), px = x - 200, pz = y - 320;
+        if (r < .4) { const b = new THREE.Group(); [[0, 0, 9], [7, 2, 6], [-6, 3, 6.5]].forEach(([a, c, s], i) => { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(s, 0), i ? bushL : bushM); m.position.set(a, s * .6 - 8, c); m.castShadow = true; b.add(m); }); b.position.set(px, 0, pz); g.add(b); }
+        else if (r < .75) { for (let f = 0; f < 6; f++) { const fl = new THREE.Mesh(new THREE.SphereGeometry(1.8, 6, 5), Arcade3D.std(FL[(f + placed) % FL.length], { roughness: .6 })); fl.position.set(px + (rnd() - .5) * 16, -6.5, pz + (rnd() - .5) * 16); g.add(fl); } }
+        else { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(4 + rnd() * 5, 0), rockM); m.scale.y = .6; m.position.set(px, -7, pz); m.rotation.y = rnd() * 6; m.castShadow = true; g.add(m); }
+      }
+    }
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1, x = side * (230 + rnd() * 140), z = -380 + rnd() * 760;
       const t = new THREE.Group(); t.position.set(x, -8, z);
