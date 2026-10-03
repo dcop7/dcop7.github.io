@@ -63,6 +63,17 @@
 .hf-part { stroke: var(--accent); fill: none; opacity: 0; stroke-dasharray: 100; stroke-dashoffset: 100; }
 .hf-part.hf-show { opacity: 1; stroke-dashoffset: 0; transition: stroke-dashoffset .45s cubic-bezier(.4,0,.2,1), opacity .1s; }
 #hf-head.hf-show { fill: var(--accent-soft); }
+.hf-frame, .hf-scene, .hf-rope { stroke-linecap: round; }
+.hf-scene > circle, .hf-scene > path, .hf-scene > g[fill] { stroke: none; }
+.hf-face { opacity: 0; transition: opacity .3s .3s; stroke: var(--text); stroke-width: 1.8; fill: none; }
+.hf-face .hf-eyes { fill: var(--text); stroke: none; }
+.hf-face .hf-xeyes, .hf-face .hf-smile { display: none; }
+#hf-head.hf-show ~ .hf-face { opacity: 1; }
+.hf-card.hf-lost .hf-face .hf-eyes { display: none; }
+.hf-card.hf-lost .hf-face .hf-xeyes { display: inline; stroke: var(--red); }
+.hf-card.hf-won .hf-face { opacity: 1; }
+.hf-card.hf-won .hf-face .hf-mouth { display: none; }
+.hf-card.hf-won .hf-face .hf-smile { display: inline; stroke: var(--green); }
 .hf-card.hf-lost .hf-part { stroke: var(--red); }
 .hf-card.hf-won .hf-part { stroke: var(--green); }
 .hf-lives { display: flex; gap: .2rem; flex-wrap: wrap; justify-content: center; font-size: .95rem; }

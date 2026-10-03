@@ -152,12 +152,33 @@
                 </div>
                 <div class="hf-body">
                   <div class="hf-gallows-col">
-                    <svg class="hf-svg" id="hf-svg" viewBox="0 0 130 185" xmlns="http://www.w3.org/2000/svg">
-                      <line x1="10" y1="175" x2="120" y2="175"/>
-                      <line x1="40" y1="175" x2="40" y2="10"/>
-                      <line x1="40" y1="10" x2="95" y2="10"/>
-                      <line x1="95" y1="10" x2="95" y2="30"/>
+                    <svg class="hf-svg" id="hf-svg" viewBox="0 0 130 185" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="hf-wood" x1="0" x2="1"><stop offset="0" stop-color="#b07a46"/><stop offset=".5" stop-color="#8b5a2b"/><stop offset="1" stop-color="#6b4220"/></linearGradient>
+                        <linearGradient id="hf-hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4caf50"/><stop offset="1" stop-color="#2e7d32"/></linearGradient>
+                      </defs>
+                      <g class="hf-scene">
+                        <circle cx="120" cy="44" r="7" fill="#fde68a" opacity=".8"/>
+                        <g fill="#ffffff" opacity=".22"><ellipse cx="18" cy="30" rx="12" ry="4.5"/><ellipse cx="26" cy="27" rx="8" ry="4.5"/></g>
+                        <path d="M0 174 Q 30 160 66 168 T 130 164 L 130 185 L 0 185 Z" fill="url(#hf-hill)"/>
+                        <g stroke="#1b5e20" stroke-width="1.4" fill="none"><path d="M18 168 l-2 -5 M22 167 l1 -6 M104 166 l-1 -5 M108 166 l2 -5"/></g>
+                      </g>
+                      <g class="hf-frame" stroke="#3b2412" stroke-width="1.2">
+                        <rect x="16" y="168" width="58" height="8" rx="2" fill="url(#hf-wood)"/>
+                        <rect x="36" y="8" width="8" height="162" rx="2" fill="url(#hf-wood)"/>
+                        <rect x="36" y="6" width="64" height="8" rx="2" fill="url(#hf-wood)"/>
+                        <path d="M44 34 L 66 14 L 71 14 L 44 40 Z" fill="url(#hf-wood)"/>
+                        <g stroke="#5a3a1a" stroke-width=".8" opacity=".6"><path d="M39 30 v24 M41 70 v30 M39 120 v26 M52 10 h18 M80 9 h12"/></g>
+                        <g fill="#cbd5e1" stroke="none"><circle cx="40" cy="10" r="1.2"/><circle cx="94" cy="10" r="1.2"/><circle cx="40" cy="172" r="1.2"/></g>
+                      </g>
+                      <path class="hf-rope" d="M95 14 C 93 20, 97 24, 95 30" stroke="#d6b48a" stroke-width="3" fill="none"/>
                       <circle id="hf-head" class="hf-part" pathLength="100" cx="95" cy="46" r="16"/>
+                      <g class="hf-face">
+                        <g class="hf-eyes"><circle cx="89" cy="44" r="2.2"/><circle cx="101" cy="44" r="2.2"/></g>
+                        <g class="hf-xeyes"><path d="M86.5 41.5 l5 5 M91.5 41.5 l-5 5 M98.5 41.5 l5 5 M103.5 41.5 l-5 5"/></g>
+                        <path class="hf-mouth" d="M89 53 q 6 -4 12 0"/>
+                        <path class="hf-smile" d="M88 51 q 7 7 14 0"/>
+                      </g>
                       <line id="hf-body-line" class="hf-part" pathLength="100" x1="95" y1="62" x2="95" y2="112"/>
                       <line id="hf-arm-l" class="hf-part" pathLength="100" x1="95" y1="76" x2="68" y2="98"/>
                       <line id="hf-arm-r" class="hf-part" pathLength="100" x1="95" y1="76" x2="122" y2="98"/>
