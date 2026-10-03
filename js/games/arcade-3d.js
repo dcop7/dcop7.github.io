@@ -272,6 +272,28 @@ const Arcade3D = (function () {
       box(chrome, mid + .05, T.belt - .02, sd * (W / 2 + .002), .028, .006, .004);
       box(chrome, mid - .09, T.belt - .02, sd * (W / 2 + .002), .028, .006, .004);
     });
+    /* pormenores: frisos das portas, embaladeiras, entrada de ar e faróis de nevoeiro, escape, antena */
+    const seam = std('#0b0d12', { roughness: .6 });
+    [-1, 1].forEach(sd => {
+      const zs = sd * (W / 2 + .0015);
+      box(seam, mid + .005, (T.bot + T.belt) / 2 + .01, zs, .004, (T.belt - T.bot) * .78, .002);                 /* entre portas */
+      if (type !== 'van') box(seam, c3 + .015, (T.bot + T.belt) / 2 + .02, zs, .004, (T.belt - T.bot) * .6, .002);  /* frente da porta da frente */
+      box(seam, c0 - .01, (T.bot + T.belt) / 2 + .02, zs, .004, (T.belt - T.bot) * .6, .002);                   /* trás da porta de trás */
+      box(plastic, (fx + rx) / 2, T.bot + .012, sd * (W / 2 - .004), (fx - rx) - ar * 2.1, .022, .012);          /* embaladeira */
+      box(chrome, (c0 + c3) / 2, T.belt + .004, sd * (W / 2 - .003), (c3 - c0) * .96, .005, .006);             /* friso cromado da janela */
+      box(glowMat('#fff7d6'), .514, T.bot + .028, sd * W * .36, .006, .014, .05);                                  /* nevoeiro */
+    });
+    box(seam, .513, T.bot + .03, 0, .006, .03, W * .5);                                                          /* entrada de ar */
+    box(chrome, -.51, T.bot + .02, -W * .26, .03, .016, .03); if (type === 'sport') box(chrome, -.51, T.bot + .02, W * .26, .03, .016, .03);   /* escape */
+    if (type !== 'police' && type !== 'taxi') { const fin = new THREE.Mesh(new THREE.ConeGeometry(.014, .03, 4), seam); fin.scale.set(1.6, 1, .5); fin.position.set(c1 + .02, T.roof + .018, 0); fin.rotation.z = .6; chassis.add(fin); }
+    /* piscas (âmbar) nos 4 cantos e brilho dos farolins/faróis (para travar, piscar e circular de noite) */
+    const amber = glowMat('#ffb020'), blinkL = [], blinkR = [];
+    [[.5, 1], [-.5, 1], [.5, -1], [-.5, -1]].forEach(([x, sd]) => { const b = box(amber, x + Math.sign(x) * .012, x > 0 ? T.nose - .022 : T.tail - .06, sd * W * .47, .012, .022, W * .07); b.visible = false; (sd > 0 ? blinkL : blinkR).push(b); });
+    const spr = (col, x, y, z, s) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: col, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })); m.position.set(x, y, z); m.scale.set(s, s, 1); chassis.add(m); return m; };
+    const tailGlow = [-1, 1].map(sd => spr('#ff2040', -.54, T.tail - .06, sd * W * .32, .12));
+    const headGlow = [-1, 1].map(sd => spr('#fff4d0', .54, T.nose - .022, sd * W * .31, .1));
+    const blinkGlow = [[.53, 1], [-.53, 1], [.53, -1], [-.53, -1]].map(([x, sd]) => { const s2 = spr('#ffb020', x, x > 0 ? T.nose - .022 : T.tail - .06, sd * W * .47, .16); s2.visible = false; (sd > 0 ? blinkL : blinkR).push(s2); return s2; });
+    outer.userData.blinkL = blinkL; outer.userData.blinkR = blinkR; outer.userData.tailGlow = tailGlow; outer.userData.headGlow = headGlow;
     const plateT = carTex('plate', (x, w, h) => { x.fillStyle = '#f8fafc'; x.fillRect(0, 0, w, h); x.fillStyle = '#1d4ed8'; x.fillRect(0, 0, w * .12, h); x.fillStyle = '#111'; x.font = `bold ${h * .7}px monospace`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('DU-26', w * .56, h * .54); }, 128, 32);
     const plate = new THREE.MeshBasicMaterial({ map: plateT });
     [[.523, 1], [-.523, -1]].forEach(([x, sd]) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(W * .3, .028), plate); p.position.set(x, T.bot + .045, 0); p.rotation.y = sd * Math.PI / 2; chassis.add(p); });
@@ -315,10 +337,38 @@ const Arcade3D = (function () {
       bl.rotation.x = -Math.PI / 2; bl.position.y = .004; root.add(bl);
     }
     outer.userData.wheels = wheels; outer.userData.front = front; outer.userData.chassis = chassis; outer.userData.paint = paint; outer.userData.r = T.r;
+    /* junta as peças fixas por material (de ~80 malhas para ~25): muitos carros no ecrã sem pesar */
+    if (o.merge !== false) {
+      const keep = new Set([...blinkL, ...blinkR, ...(outer.userData.siren || [])]);
+      mergeStatic(chassis, keep); wheels.forEach(w => mergeStatic(w, keep));
+    }
     outer.scale.setScalar(o.len || 1);
     return outer;
   }
 
+  /* junta as malhas descendentes de `parent` que partilham material numa só (coordenadas relativas ao parent);
+     ignora sprites, malhas com vários materiais e as que estão em `keep` */
+  function mergeStatic(parent, keep) {
+    parent.updateMatrixWorld(true);
+    const inv = new THREE.Matrix4().copy(parent.matrixWorld).invert(), byMat = new Map(), victims = [];
+    parent.traverse(m => {
+      if (m === parent || !m.isMesh || Array.isArray(m.material) || (keep && keep.has(m))) return;
+      const g = m.geometry; if (!g.attributes.normal || !g.attributes.uv) return;
+      const rel = new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld);
+      (byMat.get(m.material) || byMat.set(m.material, []).get(m.material)).push([g, rel, m.castShadow]);
+      victims.push(m);
+    });
+    byMat.forEach((list, mat) => {
+      if (list.length < 2) return;
+      let n = 0; const gs = list.map(([g, rel]) => { const c = g.index ? g.toNonIndexed() : g.clone(); c.applyMatrix4(rel); n += c.attributes.position.count; return c; });
+      const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uv = new Float32Array(n * 2); let o3 = 0, o2 = 0;
+      gs.forEach(c => { pos.set(c.attributes.position.array, o3); nor.set(c.attributes.normal.array, o3); uv.set(c.attributes.uv.array, o2); o3 += c.attributes.position.count * 3; o2 += c.attributes.position.count * 2; c.dispose(); });
+      const out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      const mm = new THREE.Mesh(out, mat); mm.castShadow = list.some(l => l[2]); mm.receiveShadow = true; parent.add(mm);
+      victims.forEach(v => { if (v.material === mat) { v.parent.remove(v); if (!v.geometry.userData.shared) v.geometry.dispose(); } });
+    });
+  }
+
   return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse,
-    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool, car, CAR_T };
+    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool, car, CAR_T, mergeStatic };
 })();
