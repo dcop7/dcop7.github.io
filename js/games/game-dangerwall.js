@@ -141,6 +141,14 @@ const DangerwallGame = (function () {
   function build3D(G, api) {
     const renderer = Arcade3D.attach(api.stage);
     const scene = new THREE.Scene();
+    /* fundo: nebulosa e estrelas (fora da boca do túnel já não é preto liso) */
+    scene.background = (() => {
+      const c = document.createElement('canvas'); c.width = 512; c.height = 1024; const x = c.getContext('2d');
+      x.fillStyle = '#04050d'; x.fillRect(0, 0, 512, 1024);
+      [['#3b0764', 120, 220, 300], ['#1e3a8a', 380, 520, 340], ['#701a75', 160, 820, 260], ['#0e7490', 420, 120, 200]].forEach(([col, cx, cy, r]) => { const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col + 'aa'); g.addColorStop(1, col + '00'); x.fillStyle = g; x.fillRect(0, 0, 512, 1024); });
+      for (let i = 0; i < 700; i++) { x.fillStyle = `rgba(255,255,255,${Math.random() * .8})`; const s = Math.random() < .08 ? 2 : 1; x.fillRect(Math.random() * 512, Math.random() * 1024, s, s); }
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    })();
     scene.fog = new THREE.Fog('#04050d', 30, DEPTH + 8);
     scene.add(new THREE.HemisphereLight('#c7d2fe', '#0b0b1a', .9));
     const key = new THREE.PointLight('#ffffff', 60, 30, 1.6); key.position.set(0, 2, 5); scene.add(key);
@@ -159,14 +167,45 @@ const DangerwallGame = (function () {
     const sv = []; for (let i = 0; i < 300; i++) { const a = Math.random() * 6.28, r = .3 + Math.random() * 3.6; sv.push(Math.cos(a) * r, Math.sin(a) * r, -Math.random() * DEPTH); }
     const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sv, 3));
     const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: '#dbeafe', size: .06, transparent: true, opacity: .8 })); scene.add(stars);
-    /* nave */
+    /* moldura metálica da boca do túnel (com riscas de perigo e aresta a brilhar) */
+    {
+      const sh = new THREE.Shape(), E = S3 + .55, I = S3 + .02;
+      sh.moveTo(-E, -E); sh.lineTo(E, -E); sh.lineTo(E, E); sh.lineTo(-E, E); sh.lineTo(-E, -E);
+      const hole = new THREE.Path(); hole.moveTo(-I, -I); hole.lineTo(-I, I); hole.lineTo(I, I); hole.lineTo(I, -I); hole.lineTo(-I, -I); sh.holes.push(hole);
+      /* textura em coordenadas da forma (−E..E → 0..1): metal escuro com rebites e uma faixa fina de perigo junto à abertura */
+      const ft = (() => {
+        const N = 512, c = document.createElement('canvas'); c.width = c.height = N; const y = c.getContext('2d'), px = v => (v / E + 1) / 2 * N;
+        y.fillStyle = '#23283a'; y.fillRect(0, 0, N, N);
+        for (let i = 0; i < 40; i++) { y.strokeStyle = 'rgba(255,255,255,.05)'; y.beginPath(); y.moveTo(i * N / 40, 0); y.lineTo(i * N / 40, N); y.stroke(); }
+        const a = px(-I - .2), b = px(I + .2);
+        y.save(); y.beginPath(); y.rect(a, a, b - a, b - a); y.rect(px(I), px(-I), px(-I) - px(I), px(I) - px(-I)); y.clip('evenodd');
+        y.fillStyle = '#16181f'; y.fillRect(0, 0, N, N); y.fillStyle = 'rgba(250,204,21,.85)';
+        for (let i = -40; i < 80; i++) { y.beginPath(); y.moveTo(i * 12, N); y.lineTo(i * 12 + 6, N); y.lineTo(i * 12 + 6 + N, 0); y.lineTo(i * 12 + N, 0); y.fill(); }
+        y.restore();
+        y.fillStyle = 'rgba(0,0,0,.45)'; for (let k = 0; k < 24; k++) { const t2 = k / 24 * N; [[t2, px(-E + .14)], [t2, px(E - .14)], [px(-E + .14), t2], [px(E - .14), t2]].forEach(([u, v]) => { y.beginPath(); y.arc(u, v, 2.4, 0, 6.3); y.fill(); }); }
+        const t = new THREE.CanvasTexture(c); t.repeat.set(1 / (2 * E), 1 / (2 * E)); t.offset.set(.5, .5); t.colorSpace = THREE.SRGBColorSpace; return t;
+      })();
+      const frame = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: .6, bevelEnabled: true, bevelThickness: .08, bevelSize: .08, bevelSegments: 2 }), new THREE.MeshStandardMaterial({ map: ft, metalness: .55, roughness: .45 }));
+      frame.position.z = -.3; scene.add(frame);
+      const lip = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(I * 2, I * 2)), new THREE.LineBasicMaterial({ color: '#7dd3fc' })); lip.position.z = .32; scene.add(lip);
+    }
+    /* nave: fuselagem, cabine de vidro, asas em delta com motores e pontas a brilhar */
     const ship = new THREE.Group();
-    const hull = new THREE.Mesh(new THREE.ConeGeometry(.28, 1.1, 6), new THREE.MeshStandardMaterial({ color: '#e0f2fe', metalness: .6, roughness: .25, flatShading: true }));
-    hull.rotation.x = -Math.PI / 2; ship.add(hull);
+    const hullM = new THREE.MeshStandardMaterial({ color: '#e8eef6', metalness: .6, roughness: .28, flatShading: true });
+    const hull = new THREE.Mesh(new THREE.CylinderGeometry(.08, .26, 1.15, 8), hullM); hull.rotation.x = -Math.PI / 2; hull.scale.set(1, 1, .7); ship.add(hull);
+    const nose = new THREE.Mesh(new THREE.ConeGeometry(.08, .35, 8), hullM); nose.rotation.x = -Math.PI / 2; nose.position.z = -.75; ship.add(nose);
     const wingM = new THREE.MeshStandardMaterial({ color: '#0ea5e9', metalness: .5, roughness: .3, flatShading: true });
-    const wing = new THREE.Mesh(new THREE.BoxGeometry(1.3, .06, .42), wingM); wing.position.set(0, -.04, .22); ship.add(wing);
-    [-1, 1].forEach(sd => { const f = new THREE.Mesh(new THREE.BoxGeometry(.06, .3, .34), wingM); f.position.set(sd * .64, .1, .28); ship.add(f); });
-    const cockpit = new THREE.Mesh(new THREE.SphereGeometry(.13, 12, 8), new THREE.MeshStandardMaterial({ color: '#22d3ee', emissive: '#0891b2', emissiveIntensity: .8, roughness: .1 })); cockpit.scale.set(1, .7, 1.6); cockpit.position.set(0, .12, -.05); ship.add(cockpit);
+    const wsh = new THREE.Shape(); wsh.moveTo(0, -.25); wsh.lineTo(.78, .32); wsh.lineTo(.74, .44); wsh.lineTo(0, .3); wsh.lineTo(-.74, .44); wsh.lineTo(-.78, .32); wsh.lineTo(0, -.25);
+    const wing = new THREE.Mesh(new THREE.ExtrudeGeometry(wsh, { depth: .05, bevelEnabled: false }), wingM); wing.rotation.x = Math.PI / 2; wing.position.set(0, -.02, .06); ship.add(wing);
+    const stripeM = new THREE.MeshStandardMaterial({ color: '#f97316', metalness: .3, roughness: .4 });
+    [-1, 1].forEach(sd => {
+      const pod = new THREE.Mesh(new THREE.CylinderGeometry(.075, .09, .5, 8), hullM); pod.rotation.x = -Math.PI / 2; pod.position.set(sd * .34, -.02, .32); ship.add(pod);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(.085, .018, 6, 12), stripeM); ring.position.set(sd * .34, -.02, .58); ship.add(ring);
+      const eng = new THREE.Sprite(Arcade3D.glowSprite('#38bdf8')); eng.position.set(sd * .34, -.02, .66); eng.scale.set(.5, .5, 1); ship.add(eng);
+      const tip = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 6), Arcade3D.glowMat(sd < 0 ? '#ef4444' : '#22c55e')); tip.position.set(sd * .77, -.02, .44); ship.add(tip);
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(.04, .26, .3), wingM); fin.position.set(sd * .74, .1, .38); ship.add(fin);
+    });
+    const cockpit = new THREE.Mesh(new THREE.SphereGeometry(.13, 14, 10), new THREE.MeshStandardMaterial({ color: '#22d3ee', emissive: '#0891b2', emissiveIntensity: .8, roughness: .05, metalness: .3 })); cockpit.scale.set(.85, .65, 1.9); cockpit.position.set(0, .1, -.2); ship.add(cockpit);
     const flame = new THREE.Sprite(Arcade3D.glowSprite('#fb923c')); flame.position.set(0, 0, .62); flame.scale.set(.9, .9, 1); ship.add(flame);
     const halo = new THREE.Sprite(Arcade3D.glowSprite('#38bdf8')); halo.scale.set(2.2, 2.2, 1); halo.material.opacity = .35; ship.add(halo);
     ship.scale.setScalar(SR * S3 * 1.9);
@@ -181,13 +220,28 @@ const DangerwallGame = (function () {
     const k = keyOf();
     if (!o) {
       const g = new THREE.Group();
-      const mat = new THREE.MeshStandardMaterial({ color: `hsl(${hue},55%,16%)`, emissive: `hsl(${hue},80%,30%)`, emissiveIntensity: .35, roughness: .35, metalness: .3, transparent: true, opacity: .93 });
+      /* textura do painel: chapas com rebites e riscas de perigo à volta de cada buraco
+         (as UV da ExtrudeGeometry são as coordenadas da forma: −S3..S3 → 0..1) */
+      const tc = document.createElement('canvas'); tc.width = tc.height = 256; const tx = tc.getContext('2d');
+      const paint = () => { tx.fillStyle = '#9aa3b5'; tx.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { tx.fillStyle = (i + j) % 2 ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.05)'; tx.fillRect(i * 64 + 2, j * 64 + 2, 60, 60); tx.strokeStyle = 'rgba(0,0,0,.35)'; tx.strokeRect(i * 64 + 2, j * 64 + 2, 60, 60); tx.fillStyle = 'rgba(0,0,0,.4)'; [[6, 6], [56, 6], [6, 56], [56, 56]].forEach(([a, b]) => { tx.beginPath(); tx.arc(i * 64 + 2 + a, j * 64 + 2 + b, 2, 0, 6.3); tx.fill(); }); }
+      w.holes.forEach(h => {
+        const [hx, hy] = holePos(w, h), cx = (hx + 1) * 128, cy = (hy + 1) * 128;
+        tx.save(); tx.beginPath();
+        if (h.s === 'c') { tx.arc(cx, cy, h.r * 128 + 12, 0, 6.3); tx.arc(cx, cy, h.r * 128, 0, 6.3, true); }
+        else { const hw = h.w * 64, hh = h.h * 64; tx.rect(cx - hw - 12, cy - hh - 12, hw * 2 + 24, hh * 2 + 24); tx.rect(cx + hw, cy - hh, -hw * 2, hh * 2); }
+        tx.clip('evenodd'); tx.fillStyle = '#111827'; tx.fillRect(0, 0, 256, 256); tx.fillStyle = '#facc15';
+        for (let i = -20; i < 40; i++) { tx.beginPath(); tx.moveTo(i * 14, 256); tx.lineTo(i * 14 + 7, 256); tx.lineTo(i * 14 + 263, 0); tx.lineTo(i * 14 + 256, 0); tx.fill(); }
+        tx.restore();
+      }); wt.needsUpdate = true; };
+      const wt = new THREE.CanvasTexture(tc); wt.colorSpace = THREE.SRGBColorSpace; wt.repeat.set(1 / (S3 * 2), 1 / (S3 * 2)); wt.offset.set(.5, .5);
+      const mat = new THREE.MeshStandardMaterial({ map: wt, color: `hsl(${hue},40%,62%)`, emissive: `hsl(${hue},80%,30%)`, emissiveIntensity: .25, roughness: .5, metalness: .35, transparent: true, opacity: .96 });
       const edgeM = new THREE.LineBasicMaterial({ color: `hsl(${hue},95%,62%)`, transparent: true });
-      o = { g, mat, edgeM, key: '', mesh: null, edge: null };
+      o = { g, mat, edgeM, key: '', mesh: null, edge: null, paint, tex: wt };
       R.scene.add(g); R.walls.set(w, o);
     }
     if (o.key !== k) {
-      o.key = k;
+      o.key = k; o.paint();
       if (o.mesh) { o.g.remove(o.mesh, o.edge); o.mesh.geometry.dispose(); o.edge.geometry.dispose(); }
       const sh = new THREE.Shape(); const E = S3 * 1.0;
       sh.moveTo(-E, -E); sh.lineTo(E, -E); sh.lineTo(E, E); sh.lineTo(-E, E); sh.lineTo(-E, -E);
@@ -235,7 +289,7 @@ const DangerwallGame = (function () {
       o.edgeM.color.set(danger || w.hit ? '#f87171' : `hsl(${hue},95%,62%)`);
       o.mat.emissive.set(w.hit ? '#b91c1c' : `hsl(${hue},80%,30%)`);
     });
-    R.walls.forEach((o, w) => { if (!live.has(w)) { R.scene.remove(o.g); o.mesh && o.mesh.geometry.dispose(); o.edge && o.edge.geometry.dispose(); o.mat.dispose(); o.edgeM.dispose(); R.walls.delete(w); } });
+    R.walls.forEach((o, w) => { if (!live.has(w)) { R.scene.remove(o.g); o.mesh && o.mesh.geometry.dispose(); o.edge && o.edge.geometry.dispose(); o.mat.dispose(); o.edgeM.dispose(); o.tex && o.tex.dispose(); R.walls.delete(w); } });
     /* nave */
     const sh = R.ship;
     sh.visible = !(G.inv > 0 && Math.floor(G.t * 14) % 2);
@@ -258,7 +312,7 @@ const DangerwallGame = (function () {
 
   function destroy(G) {
     const R = G.r3; if (!R) return;
-    R.walls.forEach(o => { o.mesh && o.mesh.geometry.dispose(); o.edge && o.edge.geometry.dispose(); o.mat.dispose(); o.edgeM.dispose(); });
+    R.walls.forEach(o => { o.mesh && o.mesh.geometry.dispose(); o.edge && o.edge.geometry.dispose(); o.mat.dispose(); o.edgeM.dispose(); o.tex && o.tex.dispose(); });
     R.tex.dispose();
     Arcade3D.disposeOwn(R.scene);
     Arcade3D.detach(); G.r3 = null;

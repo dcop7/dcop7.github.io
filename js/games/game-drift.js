@@ -63,7 +63,12 @@ const DriftGame = (function () {
     def.tan = poly.map((p, i) => { const q = poly[(i + 1) % poly.length]; return Math.atan2(q[1] - p[1], q[0] - p[0]); });
     const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]);
     def.box = [Math.min(...xs) - 200, Math.min(...ys) - 200, Math.max(...xs) + 200, Math.max(...ys) + 200];
-    def.tufts = Array.from({ length: 260 }, () => [U.rand(def.box[0], def.box[2]), U.rand(def.box[1], def.box[3]), Math.random()]);
+    /* distância (aprox.) de um ponto à pista */
+    const dTrack = (x, y) => { let m = Infinity; for (let i = 0; i < poly.length; i += 2) { const d = (poly[i][0] - x) ** 2 + (poly[i][1] - y) ** 2; if (d < m) m = d; } return Math.sqrt(m); };
+    const scatter = (n, dMin, dMax, pad) => { const out = []; for (let k = 0; out.length < n && k < n * 40; k++) { const x = U.rand(def.box[0] - pad, def.box[2] + pad), y = U.rand(def.box[1] - pad, def.box[3] + pad), d = dTrack(x, y); if (d > dMin && d < dMax) out.push([x, y, Math.random()]); } return out; };
+    /* tufos de relva só na escapatória (nunca no asfalto/zebras); árvores só para lá da barreira de pneus */
+    def.tufts = scatter(240, TW / 2 + 18, TW / 2 + BAR - 6, 0);
+    def.trees = scatter(170, TW / 2 + BAR + 44, 1100, 600);
     return def;
   }
 
@@ -245,15 +250,17 @@ const DriftGame = (function () {
      1 unidade = 1 px da pista; x = x, z = y.
   ════════════════════════════════════════════════════════════════ */
   function ribbon(poly, tan, o0, o1, colorAt) {
-    const n = poly.length, pos = [], col = [], idx = [], c = new THREE.Color();
+    const n = poly.length, pos = [], col = [], idx = [], uv = [], c = new THREE.Color();
     for (let i = 0; i <= n; i++) {
       const k = i % n, p = poly[k], a = tan[k], nx = -Math.sin(a), nz = Math.cos(a);
       pos.push(p[0] + nx * o0, 0, p[1] + nz * o0, p[0] + nx * o1, 0, p[1] + nz * o1);
       c.set(colorAt(i)); col.push(c.r, c.g, c.b, c.r, c.g, c.b);
+      uv.push(0, i * STEP / 96, Math.abs(o1 - o0) / 96, i * STEP / 96);
       if (i < n) { const b = i * 2; idx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2); }
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
     g.setIndex(idx); g.computeVertexNormals();
     return g;
   }
@@ -285,34 +292,109 @@ const DriftGame = (function () {
     const renderer = Arcade3D.attach(api.stage);
     const { scene, sun } = Arcade3D.stdScene({ sky: '#eff6ff', ground: '#3f6212', hemi: 1.05, sunI: 2.5, normalBias: 1.2 });
     sun.shadow.bias = -.0004;
+    /* céu: gradiente com nuvens pintadas (cúpula) */
+    const skyT = (() => {
+      const c = document.createElement('canvas'); c.width = 1024; c.height = 512; const x = c.getContext('2d');
+      const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#3b82d6'); g.addColorStop(.45, '#8cc8f2'); g.addColorStop(.62, '#d8eefc'); g.addColorStop(1, '#eef7ff');
+      x.fillStyle = g; x.fillRect(0, 0, 1024, 512);
+      for (let i = 0; i < 26; i++) {
+        const cx = Math.random() * 1024, cy = 120 + Math.random() * 150, s = 18 + Math.random() * 30;
+        for (let k = 0; k < 6; k++) { const gx = cx + (k - 3) * s * .9 + Math.random() * 10, gy = cy + Math.sin(k) * s * .25, r = s * (.7 + Math.random() * .5); const rg = x.createRadialGradient(gx, gy, 0, gx, gy, r); rg.addColorStop(0, 'rgba(255,255,255,.85)'); rg.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = rg; x.fillRect(gx - r, gy - r, r * 2, r * 2); [-1024, 1024].forEach(o => { x.save(); x.translate(o, 0); x.fillRect(gx - r, gy - r, r * 2, r * 2); x.restore(); }); }
+      }
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; return t;
+    })();
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(2200, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ map: skyT, side: THREE.BackSide, fog: false, depthWrite: false }));
+    dome.position.set(640, -40, 480); scene.add(dome);
     scene.background = new THREE.Color('#9fd3f5');
-    scene.fog = new THREE.Fog('#9fd3f5', 700, 1600);
-    const cam = new THREE.PerspectiveCamera(58, 1, 2, 2400);
+    scene.fog = new THREE.Fog('#cfe6f5', 900, 2000);
+    const cam = new THREE.PerspectiveCamera(58, 1, 2, 4800);
     const tr = G.tr;
-    /* relva */
-    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
-    x.fillStyle = '#3d7a33'; x.fillRect(0, 0, 128, 128);
-    for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${Math.random() < .5 ? '150,210,110' : '20,60,20'},.16)`; x.fillRect(Math.random() * 128, Math.random() * 128, 2, 3); }
-    const gt = new THREE.CanvasTexture(c); gt.wrapS = gt.wrapT = THREE.RepeatWrapping; gt.repeat.set(60, 60); gt.colorSpace = THREE.SRGBColorSpace;
+    /* relva (manchas, riscas de corte e grão) */
+    const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+    x.fillStyle = '#4a8b3c'; x.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.035)'; x.fillRect(0, i * 32, 256, 32); }
+    for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(${Math.random() < .5 ? '170,220,120' : '25,70,25'},.18)`; x.fillRect(Math.random() * 256, Math.random() * 256, 1.5, 3); }
+    for (let i = 0; i < 30; i++) { x.fillStyle = 'rgba(20,60,20,.08)'; x.beginPath(); x.ellipse(Math.random() * 256, Math.random() * 256, 10 + Math.random() * 20, 6 + Math.random() * 10, Math.random() * 3, 0, 6.3); x.fill(); }
+    const gt = new THREE.CanvasTexture(c); gt.wrapS = gt.wrapT = THREE.RepeatWrapping; gt.repeat.set(40, 40); gt.colorSpace = THREE.SRGBColorSpace; gt.anisotropy = 4;
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }));
     ground.rotation.x = -Math.PI / 2; ground.position.set(640, -.6, 480); ground.receiveShadow = true; scene.add(ground);
+    /* asfalto: grão, remendos e marcas escuras na trajetória (textura ao longo da fita) */
+    const at = (() => {
+      const cv = document.createElement('canvas'); cv.width = 256; cv.height = 256; const y = cv.getContext('2d');
+      y.fillStyle = '#4a4e57'; y.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 9000; i++) { const v = Math.random(); y.fillStyle = v < .5 ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.07)'; y.fillRect(Math.random() * 256, Math.random() * 256, 1.2, 1.2); }
+      const lg = y.createLinearGradient(0, 0, 256, 0); lg.addColorStop(0, 'rgba(0,0,0,.18)'); lg.addColorStop(.3, 'rgba(0,0,0,0)'); lg.addColorStop(.5, 'rgba(0,0,0,.1)'); lg.addColorStop(.7, 'rgba(0,0,0,0)'); lg.addColorStop(1, 'rgba(0,0,0,.18)');
+      y.fillStyle = lg; y.fillRect(0, 0, 256, 256);
+      const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+    })();
     const vc = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .8, side: THREE.DoubleSide });
     const addR = (o0, o1, y, colAt, mat) => { const m = new THREE.Mesh(ribbon(tr.poly, tr.tan, o0, o1, colAt), mat || vc); m.position.y = y; m.receiveShadow = true; scene.add(m); return m; };
-    addR(-(TW / 2 + BAR), TW / 2 + BAR, -.3, () => '#4a8a3f');                                  /* escapatória */
+    addR(-(TW / 2 + BAR), TW / 2 + BAR, -.3, () => '#5a9a49');                                  /* escapatória */
+    [-1, 1].forEach(sd => addR(sd * (TW / 2 + 9), sd * (TW / 2 + 18), -.1, () => '#c9b78f'));        /* gravilha junto às zebras */
     [-1, 1].forEach(sd => addR(sd * TW / 2, sd * (TW / 2 + 9), .3, i => (Math.floor(i / 2) % 2 ? '#dc2626' : '#f8fafc')));   /* zebras */
-    addR(-TW / 2, TW / 2, .15, i => (i % 6 < 3 ? '#41454f' : '#3d414a'), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .72, metalness: .05 }));
-    addR(-1.2, 1.2, .35, i => (i % 5 < 2 ? '#e5e7eb' : '#3d414a'));                               /* linha central tracejada */
+    addR(-TW / 2, TW / 2, .15, () => '#ffffff', new THREE.MeshStandardMaterial({ map: at, roughness: .78, metalness: .02 }));
+    [-1, 1].forEach(sd => addR(sd * (TW / 2 - 6), sd * (TW / 2 - 4), .32, () => '#f1f5f9'));          /* linhas brancas das bermas */
     /* barreira de pneus (cilindros empilhados) */
     const tires = new THREE.InstancedMesh(new THREE.TorusGeometry(4.2, 2.4, 8, 14), new THREE.MeshStandardMaterial({ roughness: .9 }), tr.poly.length * 4);
     tires.castShadow = true; tires.receiveShadow = true;
     const m4 = new THREE.Matrix4(), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2), v = new THREE.Vector3(), sc = new THREE.Vector3(1, 1, 1), col = new THREE.Color();
     let n = 0;
-    tr.poly.forEach((p, i) => { const a = tr.tan[i], nx = -Math.sin(a), nz = Math.cos(a); [-1, 1].forEach(sd => { for (let h = 0; h < 2; h++) { v.set(p[0] + nx * sd * (TW / 2 + BAR + 10), 2.4 + h * 4.8, p[1] + nz * sd * (TW / 2 + BAR + 10)); m4.compose(v, q, sc); tires.setMatrixAt(n, m4); col.set((i + h) % 2 ? '#1f2937' : '#e5e7eb'); tires.setColorAt(n++, col); } }); });
+    /* sem pneus a invadir a escapatória de outro troço (curvas apertadas, cruzamento do oito) nem pneus uns em cima dos outros */
+    const near = (x, z, R2) => { for (let k = 0; k < tr.poly.length; k += 2) { const pp = tr.poly[k]; if ((pp[0] - x) ** 2 + (pp[1] - z) ** 2 < R2) return true; } return false; };
+    const grid = new Map(), key = (x, z) => Math.round(x / 7) + ',' + Math.round(z / 7);
+    const taken = (x, z) => { for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const l = grid.get((Math.round(x / 7) + a) + ',' + (Math.round(z / 7) + b)); if (l && l.some(([u, w]) => (u - x) ** 2 + (w - z) ** 2 < 49)) return true; } return false; };
+    tr.poly.forEach((p, i) => { const a = tr.tan[i], nx = -Math.sin(a), nz = Math.cos(a); [-1, 1].forEach(sd => {
+      const x0 = p[0] + nx * sd * (TW / 2 + BAR + 10), z0 = p[1] + nz * sd * (TW / 2 + BAR + 10);
+      if (near(x0, z0, (TW / 2 + BAR + 4) ** 2) || taken(x0, z0)) return;
+      const k = key(x0, z0); (grid.get(k) || grid.set(k, []).get(k)).push([x0, z0]);
+      for (let h = 0; h < 2; h++) { v.set(x0, 2.4 + h * 4.8, z0); m4.compose(v, q, sc); tires.setMatrixAt(n, m4); col.set((i + h) % 2 ? '#1f2937' : '#e5e7eb'); tires.setColorAt(n++, col); }
+    }); });
     tires.count = n; scene.add(tires);
-    /* tufos de relva */
-    const tuft = new THREE.InstancedMesh(new THREE.ConeGeometry(6, 14, 5), Arcade3D.std('#2f6b25', { roughness: 1, flatShading: true }), tr.tufts.length);
-    tr.tufts.forEach(([x0, y0, r], i) => { v.set(x0, 5, y0); sc.set(1 + r, .6 + r * .8, 1 + r); m4.compose(v, new THREE.Quaternion(), sc); tuft.setMatrixAt(i, m4); });
-    scene.add(tuft); sc.set(1, 1, 1);
+    /* tufos de relva baixos (só na escapatória) */
+    const tuftG = new THREE.IcosahedronGeometry(4, 0); tuftG.scale(1, .55, 1); tuftG.translate(0, 1.2, 0);
+    const tuft = new THREE.InstancedMesh(tuftG, Arcade3D.std('#4c8f3a', { roughness: 1, flatShading: true }), tr.tufts.length * 3);
+    let tn = 0; const qy = new THREE.Quaternion();
+    tr.tufts.forEach(([x0, y0, r]) => { for (let k = 0; k < 3; k++) { v.set(x0 + (k - 1) * 3.5, -.3, y0 + Math.sin(k * 2 + r * 9) * 3); qy.setFromAxisAngle(new THREE.Vector3(Math.sin(k + r), 0, Math.cos(k * 3 + r)).normalize(), .25); sc.set(.7 + r * .5, .7 + r * .6 + k * .15, .7 + r * .5); m4.compose(v, qy, sc); tuft.setMatrixAt(tn++, m4); } });
+    tuft.count = tn; tuft.receiveShadow = true; scene.add(tuft); sc.set(1, 1, 1);
+    /* árvores (folhosas e pinheiros) para lá da barreira: tronco + copa em camadas, instanciadas */
+    const trunkG = new THREE.CylinderGeometry(2.2, 3.2, 26, 7); trunkG.translate(0, 13, 0);
+    const crownG = new THREE.IcosahedronGeometry(16, 1); crownG.translate(0, 40, 0);
+    const crown2G = new THREE.IcosahedronGeometry(11, 1); crown2G.translate(7, 50, 4);
+    const pineG = new THREE.ConeGeometry(15, 34, 8); pineG.translate(0, 34, 0);
+    const pine2G = new THREE.ConeGeometry(11, 26, 8); pine2G.translate(0, 52, 0);
+    const nT = tr.trees.length;
+    const mkI = (geo, col, n) => { const m = new THREE.InstancedMesh(geo, Arcade3D.std(col, { roughness: .95, flatShading: true }), n); m.castShadow = true; m.receiveShadow = true; scene.add(m); return m; };
+    const trunks = mkI(trunkG, '#6b4a2e', nT), crowns = mkI(crownG, '#3f8f3a', nT), crowns2 = mkI(crown2G, '#58a84a', nT), pines = mkI(pineG, '#2f6b45', nT), pines2 = mkI(pine2G, '#3c8055', nT);
+    let nd = 0, np = 0;
+    tr.trees.forEach(([x0, y0, r]) => {
+      const s = .75 + r * .7; qy.setFromAxisAngle(new THREE.Vector3(0, 1, 0), r * 6); sc.set(s, s, s); v.set(x0, -.5, y0); m4.compose(v, qy, sc);
+      trunks.setMatrixAt(nd + np, m4);
+      if (r < .55) { crowns.setMatrixAt(nd, m4); crowns2.setMatrixAt(nd, m4); nd++; } else { pines.setMatrixAt(np, m4); pines2.setMatrixAt(np, m4); np++; }
+    });
+    crowns.count = crowns2.count = nd; pines.count = pines2.count = np; trunks.count = nd + np;
+    /* colinas ao longe (anel) */
+    const hills = new THREE.Mesh(new THREE.CylinderGeometry(1900, 1900, 260, 64, 1, true), new THREE.MeshBasicMaterial({ map: (() => { const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 128; const y = cv.getContext('2d'); y.fillStyle = '#7fae86'; y.beginPath(); y.moveTo(0, 128); for (let X = 0; X <= 1024; X += 8) y.lineTo(X, 60 - Math.sin(X * .012) * 26 - Math.sin(X * .037 + 1) * 14); y.lineTo(1024, 128); y.fill(); y.fillStyle = '#5f9a6c'; y.beginPath(); y.moveTo(0, 128); for (let X = 0; X <= 1024; X += 8) y.lineTo(X, 92 - Math.sin(X * .02 + 2) * 16 - Math.sin(X * .05) * 8); y.lineTo(1024, 128); y.fill(); const t = new THREE.CanvasTexture(cv); t.wrapS = THREE.RepeatWrapping; t.repeat.x = 3; t.colorSpace = THREE.SRGBColorSpace; return t; })(), transparent: true, side: THREE.BackSide, fog: false, depthWrite: false }));
+    hills.position.set(640, 90, 480); scene.add(hills);
+    /* bancada com público junto à reta da meta */
+    {
+      const pS = tr.poly[Math.floor(tr.N * .06)], aS = tr.tan[Math.floor(tr.N * .06)], nx = -Math.sin(aS), nz = Math.cos(aS);
+      /* lado da pista onde a bancada não toca noutro troço (no oito e na serpente a pista volta perto) */
+      const clear = sdd => { const cx = pS[0] + nx * sdd * (TW / 2 + BAR + 110), cz = pS[1] + nz * sdd * (TW / 2 + BAR + 110); return tr.poly.every(p => Math.hypot(p[0] - cx, p[1] - cz) > TW / 2 + BAR + 150); };
+      const sd = clear(-1) ? -1 : clear(1) ? 1 : 0;
+      if (sd) {
+      const gs = new THREE.Group(); gs.position.set(pS[0] + nx * sd * (TW / 2 + BAR + 70), 0, pS[1] + nz * sd * (TW / 2 + BAR + 70)); gs.rotation.y = -aS + (sd < 0 ? Math.PI : 0);
+      const stepM = Arcade3D.std('#cbd5e1', { roughness: .7 }), roofM = Arcade3D.std('#dc2626', { roughness: .5 });
+      for (let k = 0; k < 5; k++) { const st = new THREE.Mesh(new THREE.BoxGeometry(260, 6, 14), stepM); st.position.set(0, 3 + k * 6, k * 14); st.castShadow = st.receiveShadow = true; gs.add(st); }
+      const back = new THREE.Mesh(new THREE.BoxGeometry(264, 60, 4), stepM); back.position.set(0, 30, 74); gs.add(back);
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(270, 3, 86), roofM); roof.position.set(0, 64, 34); roof.rotation.x = -.08; roof.castShadow = true; gs.add(roof);
+      [-125, 0, 125].forEach(px => { const pole = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 64, 8), Arcade3D.std('#94a3b8', { metalness: .6, roughness: .3 })); pole.position.set(px, 32, -4); gs.add(pole); });
+      const fanG = new THREE.CapsuleGeometry(2, 3, 3, 6), fans = new THREE.InstancedMesh(fanG, new THREE.MeshStandardMaterial({ roughness: .8 }), 5 * 40), FC = ['#ef4444', '#3b82f6', '#facc15', '#22c55e', '#f8fafc', '#a855f7', '#f97316', '#111827'];
+      let fn = 0; const cc2 = new THREE.Color();
+      for (let k = 0; k < 5; k++) for (let i = 0; i < 40; i++) { if (Math.random() < .2) continue; v.set(-125 + i * 6.4 + Math.random() * 2, 9 + k * 6 + 3, k * 14 + 2); m4.makeTranslation(v.x, v.y, v.z); fans.setMatrixAt(fn, m4); fans.setColorAt(fn++, cc2.set(FC[(i * 7 + k * 3) % FC.length])); }
+      fans.count = fn; gs.add(fans); G.fans = fans;
+      scene.add(gs);
+      }
+    }
     /* partida/chegada: xadrez + pórtico */
     const p0 = tr.poly[0], a0 = tr.tan[0];
     const cc = document.createElement('canvas'); cc.width = 16; cc.height = 96; const cx2 = cc.getContext('2d');
@@ -325,9 +407,9 @@ const DriftGame = (function () {
     const beam = new THREE.Mesh(new THREE.BoxGeometry(6, 8, TW + 30), new THREE.MeshStandardMaterial({ map: ct, roughness: .6 })); beam.position.y = 46; beam.castShadow = true; gantry.add(beam);
     scene.add(gantry);
     /* carros, marcas, fumo */
-    const car = carModel3('#dc2626', false), ghost = carModel3('#bae6fd', true);
+    const car = Arcade3D.car({ type: 'sport', color: '#dc2626', len: 44, rim: '#d4d4d8' }), ghost = carModel3('#bae6fd', true);
     scene.add(car, ghost);
-    const skids = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 4), new THREE.MeshBasicMaterial({ color: '#111114', transparent: true, opacity: .45, depthWrite: false }), 720);
+    const skids = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 4), new THREE.MeshBasicMaterial({ color: '#1c1c22', transparent: true, opacity: .3, depthWrite: false }), 720);
     skids.rotation.x = 0; skids.frustumCulled = false; skids.count = 0; scene.add(skids);
     G.r3 = { renderer, scene, sun, cam, car, ghost, skids, gt, ct, pool: Arcade3D.pool(scene), yaw: G.a, skN: -1, m4, v, sc, q: new THREE.Quaternion(), lean: 0 };
     api.stage.style.background = '#9fd3f5';
@@ -343,6 +425,11 @@ const DriftGame = (function () {
     R.lean = U.lerp(R.lean, U.clamp(vL / 400, -.12, .12), .15);
     c.userData.chassis.rotation.x = R.lean;                       /* inclina para fora na derrapagem */
     c.userData.front.forEach(w => { w.rotation.y = -G.steerVis * .45; });
+    const dtv = Math.min(.05, api.t - (R.lt || api.t)); R.lt = api.t;
+    const vF = fx * G.vx + fy * G.vy, rr = c.userData.r * 44;
+    c.userData.wheels.forEach(w => { w.rotation.z -= vF * dtv / rr; });
+    /* público a saltar quando passas a derrapar */
+    if (G.fans) G.fans.position.y = G.drift > .3 ? Math.abs(Math.sin(api.t * 14)) * 1.6 : 0;
     /* fantasma */
     const gp = G.ghost && G.started && !G.done ? ghostAt(G) : null;
     R.ghost.visible = !!gp; if (gp) { R.ghost.position.set(gp.x, 0, gp.y); R.ghost.rotation.y = -gp.a; }
@@ -437,10 +524,22 @@ const DriftGame = (function () {
       ctx.fillStyle = on ? '#fff' : 'rgba(255,255,255,.4)'; ctx.font = '800 28px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(ch, x0 + W / 4, H - 36);
     });
-    if (G.count > 0) {
-      const s = Math.ceil(G.count), k = G.count - Math.floor(G.count);
-      ctx.fillStyle = '#fff'; ctx.font = `800 ${Math.round(70 + k * 30)}px 'Space Grotesk', system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.globalAlpha = .4 + k * .6; ctx.fillText(s, W / 2, H * .38); ctx.globalAlpha = 1;
+    if (G.count > 0 || (G.started && G.t < .7)) {
+      /* semáforo de partida: 3 luzes vermelhas acendem uma a uma; ao "Vai!" ficam todas verdes */
+      const lit = G.count > 0 ? Math.min(3, Math.max(0, 4 - Math.ceil(G.count))) : 3, go = G.count <= 0;
+      const bw = 168, bh = 58, bx = W / 2 - bw / 2, by = Math.min(H * .2, 74);
+      ctx.save();
+      ctx.globalAlpha = go ? Math.max(0, 1 - G.t / .7) : 1;
+      ctx.fillStyle = 'rgba(0,0,0,.35)'; U.rr(ctx, bx + 3, by + 5, bw, bh, 14); ctx.fill();
+      const pg = ctx.createLinearGradient(0, by, 0, by + bh); pg.addColorStop(0, '#2b2f38'); pg.addColorStop(1, '#111318');
+      ctx.fillStyle = pg; U.rr(ctx, bx, by, bw, bh, 14); ctx.fill(); ctx.strokeStyle = '#4b5563'; ctx.lineWidth = 2; ctx.stroke();
+      for (let i = 0; i < 3; i++) {
+        const cx = bx + 34 + i * 50, cy = by + bh / 2, on = go || i < lit, col = go ? '#22c55e' : '#ef4444';
+        ctx.fillStyle = '#0b0c10'; ctx.beginPath(); ctx.arc(cx, cy, 19, 0, 6.3); ctx.fill();
+        if (on) { const g = ctx.createRadialGradient(cx - 4, cy - 5, 2, cx, cy, 26); g.addColorStop(0, '#fff'); g.addColorStop(.25, col); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 26, 0, 6.3); ctx.fill(); }
+        else { ctx.fillStyle = '#3a1414'; ctx.beginPath(); ctx.arc(cx, cy, 15, 0, 6.3); ctx.fill(); }
+      }
+      ctx.restore();
     }
     if (G.wrong > .8) { ctx.fillStyle = '#fca5a5'; ctx.font = '800 22px system-ui'; ctx.textAlign = 'center'; ctx.fillText('⟲ Sentido contrário!', W / 2, H * .3); }
     if (G.off && G.started && !G.done) { ctx.fillStyle = 'rgba(253,224,71,.85)'; ctx.font = '700 14px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Fora de pista', W / 2, H * .3 + 26); }

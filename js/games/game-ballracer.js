@@ -191,9 +191,15 @@ const BallracerGame = (function () {
       g.userData = { dx: (Math.random() - .5) * 26, dy: -5 - Math.random() * 6, dz: i * 5 };
       scene.add(g); return g;
     });
-    scene.add(tiles, blocks, stripe, gems, chev, ball, glow, sunDisc);
+    /* pilares por baixo da pista e rochedos a flutuar dos lados (dão escala e profundidade) */
+    const pillars = new THREE.InstancedMesh((() => { const g2 = new THREE.ConeGeometry(.42, 1, 6); g2.rotateX(Math.PI); return g2; })(), new THREE.MeshStandardMaterial({ roughness: .9, flatShading: true }), 40); pillars.frustumCulled = false; pillars.castShadow = true;
+    const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ roughness: .9, flatShading: true }), 40); rocks.frustumCulled = false; rocks.castShadow = true;
+    const caps = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, .8, .25, 7), new THREE.MeshStandardMaterial({ roughness: .8, flatShading: true }), 40); caps.frustumCulled = false;
+    const shards = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.3, 0), new THREE.MeshStandardMaterial({ color: '#a5f3fc', emissive: '#22d3ee', emissiveIntensity: .6, roughness: .2, flatShading: true }), 40); shards.frustumCulled = false;
+    const trail = Array.from({ length: 10 }, () => { const s2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fdba74', transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(s2); return s2; });
+    scene.add(tiles, blocks, stripe, gems, chev, ball, glow, sunDisc, pillars, rocks, caps, shards);
     scene.fog = new THREE.Fog('#ffffff', FAR * .45, FAR + 2);
-    G.r3 = { renderer, scene, sun, cam, tiles, blocks, stripe, gems, chev, ball, glow, sunDisc, clouds, themeI: -1, m4: new THREE.Matrix4(), q: new THREE.Quaternion(), v: new THREE.Vector3(), sc: new THREE.Vector3(), c: new THREE.Color(), roll: new THREE.Quaternion(), camX: 0 };
+    G.r3 = { renderer, scene, sun, cam, tiles, blocks, stripe, gems, chev, ball, glow, sunDisc, clouds, pillars, rocks, caps, shards, trail, tp: [], themeI: -1, m4: new THREE.Matrix4(), q: new THREE.Quaternion(), v: new THREE.Vector3(), sc: new THREE.Vector3(), c: new THREE.Color(), roll: new THREE.Quaternion(), camX: 0 };
   }
 
   function draw3D(G, ctx, W, H, api) {
@@ -240,6 +246,14 @@ const BallracerGame = (function () {
         }
       }
     }
+    /* pilares (a cada 7 filas, debaixo de um mosaico) e rochedos laterais (posições estáveis por fila) */
+    let np = 0, nr = 0; const hsh = n => { const x2 = Math.sin(n * 127.1) * 43758.5; return x2 - Math.floor(x2); };
+    for (let zi = z0 - z0 % 3; zi <= z1; zi += 3) { const row = G.rows[zi]; if (!row) continue; const ci = [2, 1, 3, 0, 4].find(k => row[k] !== E); if (ci == null || np >= 40) continue; v.set(MX(ci - 2), -TH - 1.1, zi + .5); sc.set(1, 2.2, 1); m4.compose(v, qI, sc); R.pillars.setMatrixAt(np, m4); c.set(th.side); R.pillars.setColorAt(np++, c); }
+    for (let zi = z0 - z0 % 5; zi <= z1 + 10; zi += 5) { const h = hsh(zi); if (h < .35 || nr >= 40) continue; const sd = h > .67 ? 1 : -1, s2 = .6 + hsh(zi + 3) * 1.1, x2 = sd * (5 + hsh(zi + 7) * 6), y2 = -1.5 + hsh(zi + 9) * 3 + Math.sin(api.t * .8 + zi) * .2;
+      q.setFromAxisAngle(v.set(0, 1, 0), zi); v.set(MX(x2), y2, zi); sc.set(s2, s2 * .8, s2); m4.compose(v, q, sc); R.rocks.setMatrixAt(nr, m4); c.set(th.side); R.rocks.setColorAt(nr, c);
+      v.set(MX(x2), y2 + s2 * .72, zi); sc.set(s2 * .85, 1, s2 * .85); m4.compose(v, q, sc); R.caps.setMatrixAt(nr, m4); c.set(ti === 2 ? '#93c5fd' : ti === 1 ? '#f0abfc' : '#86efac'); R.caps.setColorAt(nr, c);
+      v.set(MX(x2 + s2 * .3), y2 + s2 * .72 + .35, zi + .2); sc.set(1, 1.6, 1); m4.compose(v, q, sc); R.shards.setMatrixAt(nr, m4); nr++; }
+    [[R.pillars, np], [R.rocks, nr], [R.caps, nr], [R.shards, nr]].forEach(([m, n]) => { m.count = n; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
     [[R.tiles, nt], [R.blocks, nb], [R.stripe, nb], [R.gems, ng], [R.chev, nc]].forEach(([m, n]) => {
       m.count = n; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true;
     });
@@ -249,6 +263,10 @@ const BallracerGame = (function () {
     R.roll.setFromAxisAngle(v.set(1, 0, 0), G.roll);
     b.quaternion.copy(R.roll);
     b.visible = !(G.inv > 0 && Math.floor(G.inv * 12) % 2);
+    /* rasto: posições recentes da bola, a desvanecer (mais forte com o acelerador) */
+    R.tp.unshift([MX(G.x), G.y + BR, G.z]); if (R.tp.length > 30) R.tp.pop();
+    const fast = Math.min(1, (G.v - G.cfg.v0) / 5) * .5 + (G.boost > 0 ? .5 : 0);
+    R.trail.forEach((s2, i) => { const p = R.tp[Math.min(R.tp.length - 1, i * 2 + 1)]; s2.visible = !!p && fast > .05 && G.fall === 0; if (p) { s2.position.set(p[0], p[1], p[2] - .1); const k = 1 - i / 10; s2.scale.set(.7 * k, .7 * k, 1); s2.material.opacity = .45 * k * fast; s2.material.color.set(G.boost > 0 ? '#67e8f9' : '#fdba74'); } });
     R.glow.visible = G.boost > 0; R.glow.position.set(MX(G.x), G.y + BR, G.z - .35); R.glow.material.opacity = .6 + Math.sin(api.t * 30) * .2;
     /* câmara atrás e acima; um bocadinho de balanço lateral */
     R.camX = U.lerp(R.camX, G.camX, .2);

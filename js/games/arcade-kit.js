@@ -330,7 +330,13 @@ const ArcadeKit = (function () {
         parts: sess.parts,
         burst(x, y, n, o) { if (sess.parts) sess.parts.spawnBurst(x, y, n, o || {}); },
         spark(o) { if (sess.parts) sess.parts.spawn(o); },
-        float(x, y, text, color, size) { const m = Math.min(sess.W / 2, String(text).length * (size || 20) * .3 + 8); x = Math.max(m, Math.min(sess.W - m, x)); sess.floats.push({ x, y, y0: y, text, color: color || '#fff', size: size || 20, life: 1, max: 1 }); },
+        float(x, y, text, color, size) {
+          const m = Math.min(sess.W / 2, String(text).length * (size || 20) * .3 + 8); x = Math.max(m, Math.min(sess.W - m, x));
+          /* textos ao mesmo tempo no mesmo sítio empilham-se (não se sobrepõem) */
+          const h = (size || 20) * 1.15;
+          for (let k = 0; k < 6 && sess.floats.some(f => f.life > .45 && Math.abs(f.x - x) < m + 30 && Math.abs(f.y0 - y) < h); k++) y -= h;
+          sess.floats.push({ x, y, y0: y, text, color: color || '#fff', size: size || 20, life: 1, max: 1 });
+        },
         /* tremor amortecido (onda com fase aleatória), não ruído branco a cada frame */
         shake(m, d) { if (reduced()) return; if (m >= sess.shakeM * (sess.shakeT / sess.shakeD || 0)) { sess.shakeM = m; sess.shakeD = sess.shakeT = d || .25; sess.shakeP = Math.random() * 6.28; } },
         /* "hit-stop": congela a lógica uns milissegundos num impacto forte */

@@ -339,7 +339,7 @@ const NeonShooterGame = (function () {
     const el = root.querySelector('.ns-ui');
     const old = el?.querySelector('.ns-power-badge');
     if (old) old.remove();
-    const map = {shield:'🛡️ Shield Active', spread:'💥 Spread Shot', rapid:'⚡ Rapid Fire', bomb:'💣 Bomb!'};
+    const map = {shield:'🛡️ Escudo ativo', spread:'💥 Tiro triplo', rapid:'⚡ Tiro rápido', bomb:'💣 Bomba!'};
     if (!el) return;
     const d = document.createElement('div'); d.className = 'ns-power-badge';
     d.textContent = map[type] || type;
@@ -474,7 +474,9 @@ const NeonShooterGame = (function () {
       scene.add(pts); return pts;
     });
     const neb = ['#7c3aed', '#db2777', '#0891b2'].map((c, i) => { const s2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: c, transparent: true, opacity: .22, depthWrite: false, blending: THREE.AdditiveBlending })); s2.scale.set(1400, 1400, 1); s2.position.set((i - 1) * 600, (i % 2 ? 1 : -1) * 300, -1400); scene.add(s2); return s2; });
-    const planet = new THREE.Mesh(new THREE.SphereGeometry(260, 40, 28), new THREE.MeshStandardMaterial({ color: '#4c1d95', roughness: .85, emissive: '#1e1b4b', emissiveIntensity: .4 }));
+    const pt = (() => { const c2 = document.createElement('canvas'); c2.width = 512; c2.height = 256; const y = c2.getContext('2d'); const cols = ['#4c1d95', '#6d28d9', '#5b21b6', '#7c3aed', '#3b0764', '#a855f7', '#4c1d95']; let yy = 0; while (yy < 256) { const hgt = 8 + Math.random() * 30; y.fillStyle = cols[Math.floor(Math.random() * cols.length)]; y.fillRect(0, yy, 512, hgt); yy += hgt; } for (let i = 0; i < 40; i++) { y.strokeStyle = 'rgba(255,255,255,.06)'; y.lineWidth = 2 + Math.random() * 4; y.beginPath(); const by = Math.random() * 256; y.moveTo(0, by); for (let x = 0; x <= 512; x += 16) y.lineTo(x, by + Math.sin(x * .03 + i) * 4); y.stroke(); } y.fillStyle = 'rgba(244,114,182,.5)'; y.beginPath(); y.ellipse(330, 150, 34, 16, 0, 0, 6.3); y.fill(); const t2 = new THREE.CanvasTexture(c2); t2.colorSpace = THREE.SRGBColorSpace; return t2; })();
+    const planet = new THREE.Mesh(new THREE.SphereGeometry(260, 40, 28), new THREE.MeshStandardMaterial({ map: pt, roughness: .85, emissive: '#1e1b4b', emissiveIntensity: .35 }));
+    const atm = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#a78bfa', transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending })); atm.scale.set(760, 760, 1); planet.add(atm);
     planet.position.set(700, -300, -1300); scene.add(planet);
     const ringP = new THREE.Mesh(new THREE.TorusGeometry(420, 26, 6, 60), new THREE.MeshBasicMaterial({ color: '#a78bfa', transparent: true, opacity: .25 })); ringP.rotation.x = 1.2; planet.add(ringP);
     /* jogador */
@@ -498,13 +500,39 @@ const NeonShooterGame = (function () {
   }
 
   function enemyModel(type, color) {
+    /* 4 inimigos com silhueta própria (lê-se o tipo de relance): caça, drone, disco e intercetor */
     const g = new THREE.Group();
-    const m = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: .45, metalness: .5, roughness: .3, flatShading: true });
-    if (type === 'basic') { const c = new THREE.Mesh(new THREE.ConeGeometry(11, 26, 4), m); c.rotation.z = Math.PI; g.add(c); const w = new THREE.Mesh(new THREE.BoxGeometry(26, 4, 3), m); w.position.y = 4; g.add(w); }
-    else if (type === 'zigzag') { const h = new THREE.Mesh(new THREE.CylinderGeometry(13, 13, 6, 6), m); h.rotation.x = Math.PI / 2; g.add(h); const c = new THREE.Mesh(new THREE.SphereGeometry(5, 10, 8), new THREE.MeshBasicMaterial({ color: '#ffffff' })); c.position.z = 3; g.add(c); g.userData.spin = true; }
-    else if (type === 'circle') { const t = new THREE.Mesh(new THREE.TorusGeometry(12, 4, 10, 24), m); g.add(t); const c = new THREE.Mesh(new THREE.SphereGeometry(5, 12, 10), new THREE.MeshBasicMaterial({ color })); g.add(c); g.userData.spin = true; }
-    else { const o = new THREE.Mesh(new THREE.OctahedronGeometry(10, 0), m); o.scale.set(.8, 1.4, .8); g.add(o); }
-    const s2 = new THREE.Sprite(Arcade3D.glowSprite(color)); s2.scale.set(52, 52, 1); s2.material.opacity = .45; g.add(s2);
+    const m = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: .35, metalness: .55, roughness: .3, flatShading: true });
+    const dark = new THREE.MeshStandardMaterial({ color: '#1e1b2e', metalness: .7, roughness: .35, flatShading: true });
+    const eye = c2 => new THREE.MeshBasicMaterial({ color: c2 });
+    const ws = pts => { const s = new THREE.Shape(); pts.forEach(([x, y], i) => (i ? s.lineTo(x, y) : s.moveTo(x, y))); return new THREE.ExtrudeGeometry(s, { depth: 3, bevelEnabled: true, bevelSize: .6, bevelThickness: .6, bevelSegments: 1 }); };
+    if (type === 'basic') {
+      /* caça: fuselagem, asas em flecha para trás (nariz para baixo, para o jogador), cabine vermelha, motores */
+      const f = new THREE.Mesh(new THREE.ConeGeometry(6, 26, 6), m); f.rotation.z = Math.PI; g.add(f);
+      const w = new THREE.Mesh(ws([[0, -6], [17, 8], [15, 12], [0, 6], [-15, 12], [-17, 8]]), dark); w.position.z = -1.5; g.add(w);
+      [-1, 1].forEach(sd => { const tip = new THREE.Mesh(new THREE.BoxGeometry(3, 8, 3), m); tip.position.set(sd * 16, 9, 0); g.add(tip); const en = new THREE.Sprite(Arcade3D.glowSprite('#f472b6')); en.position.set(sd * 5, 14, 0); en.scale.set(12, 12, 1); g.add(en); });
+      const ck = new THREE.Mesh(new THREE.SphereGeometry(3.4, 10, 8), eye('#fb7185')); ck.scale.set(1, 1.6, .8); ck.position.set(0, -2, 4); g.add(ck);
+    } else if (type === 'zigzag') {
+      /* drone: hexágono com olho vermelho e 3 hélices em braços (roda) */
+      const h = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 6, 6), m); h.rotation.x = Math.PI / 2; g.add(h);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(10.5, 1.4, 6, 6), dark); g.add(ring);
+      const e = new THREE.Mesh(new THREE.SphereGeometry(4.5, 12, 10), eye('#ffffff')); e.position.z = 3.5; g.add(e);
+      const p = new THREE.Mesh(new THREE.SphereGeometry(2.4, 10, 8), eye('#ef4444')); p.position.z = 7; g.add(p);
+      for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2, arm = new THREE.Mesh(new THREE.BoxGeometry(12, 2, 2), dark); arm.position.set(Math.cos(a) * 14, Math.sin(a) * 14, 0); arm.rotation.z = a; g.add(arm); const rot = new THREE.Mesh(new THREE.CylinderGeometry(5.5, 5.5, .6, 12), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .45 })); rot.rotation.x = Math.PI / 2; rot.position.set(Math.cos(a) * 20, Math.sin(a) * 20, 1); g.add(rot); }
+      g.userData.spin = true;
+    } else if (type === 'circle') {
+      /* disco voador: prato metálico, cúpula de vidro e anel de luzes a piscar */
+      const d = new THREE.Mesh(new THREE.SphereGeometry(15, 20, 10), dark); d.scale.set(1, .32, 1); d.rotation.x = Math.PI / 2 - .5; g.add(d);
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(14, 1.6, 8, 28), m); rim.rotation.x = -.5; g.add(rim);
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(7, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#a5f3fc', emissive: '#0891b2', emissiveIntensity: .6, transparent: true, opacity: .8, roughness: .05 })); dome.rotation.x = Math.PI / 2 - .5; dome.position.set(0, 1.5, 2.5); g.add(dome);
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, l = new THREE.Mesh(new THREE.SphereGeometry(1.6, 6, 5), eye(i % 2 ? '#fde047' : color)); l.position.set(Math.cos(a) * 14, Math.sin(a) * 14 * Math.cos(.5), Math.sin(a) * 14 * Math.sin(-.5) + 2); g.add(l); }
+    } else {
+      /* intercetor: agulha comprida com asas finas e rasto verde */
+      const o = new THREE.Mesh(new THREE.ConeGeometry(4, 30, 4), m); o.rotation.z = Math.PI; g.add(o);
+      const w = new THREE.Mesh(ws([[0, -2], [12, 10], [10, 12], [0, 6], [-10, 12], [-12, 10]]), m); w.position.z = -1.5; g.add(w);
+      const tr = new THREE.Sprite(Arcade3D.glowSprite('#00ff88')); tr.position.set(0, 20, 0); tr.scale.set(12, 30, 1); g.add(tr);
+    }
+    const s2 = new THREE.Sprite(Arcade3D.glowSprite(color)); s2.scale.set(52, 52, 1); s2.material.opacity = .3; g.add(s2);
     return g;
   }
   function bossModel() {
