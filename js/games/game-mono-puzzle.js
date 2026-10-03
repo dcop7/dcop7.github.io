@@ -237,7 +237,8 @@ const MonoPuzzleGame = (function () {
         m.position.set(b[0] + .5, b[1] + .5, b[2] + .5);
         m.userData = { part: i, b };
         grp.add(m);
-        if (b[4]) deco(G, grp, b, b[4]);
+        /* decoração encostada à porta de saída sobrepunha-se a ela: cúpula vira janela */
+        if (b[4]) { const gl = G.L.goal, nearGoal = Math.abs(b[0] - gl[0]) <= 1 && Math.abs(b[2] - gl[2]) <= 1 && b[1] >= gl[1] - 1 && b[1] <= gl[1] + 1; deco(G, grp, b, nearGoal && b[4] === 'dome' ? 'win' : b[4]); }
       });
       (p.stairs || []).forEach(s => grp.add(stairMesh(s, pal)));
       if (i === 0) (L.stairs || []).forEach(s => grp.add(stairMesh(s, pal)));
@@ -255,6 +256,12 @@ const MonoPuzzleGame = (function () {
     const arch = new THREE.Mesh(new THREE.TorusGeometry(.32, .06, 10, 24, Math.PI), new THREE.MeshBasicMaterial({ color: pal.goal || '#fde68a', toneMapped: false }));
     arch.position.y = .55; door.add(arch);
     [-1, 1].forEach(s => { const c = new THREE.Mesh(new THREE.BoxGeometry(.1, .55, .1), arch.material); c.position.set(s * .32, .27, 0); door.add(c); });
+    /* interior da porta: véu de luz em arco (lê-se como passagem, não como uma bola) + degrau de pedra */
+    const veil = new THREE.Shape(); veil.moveTo(-.27, 0); veil.lineTo(-.27, .55); veil.absarc(0, .55, .27, Math.PI, 0, true); veil.lineTo(.27, 0); veil.lineTo(-.27, 0);
+    const vt = (() => { const c = document.createElement('canvas'); c.width = 8; c.height = 64; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 0, 64); g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.6, 'rgba(255,243,196,.75)'); g.addColorStop(1, 'rgba(255,214,120,.35)'); x.fillStyle = g; x.fillRect(0, 0, 8, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+    const vgeo = new THREE.ShapeGeometry(veil); vgeo.computeBoundingBox(); { const uv = vgeo.attributes.uv, pp = vgeo.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, .5, 1 - pp.getY(i) / .82); }
+    [0, Math.PI].forEach(ry => { const vm = new THREE.Mesh(vgeo, new THREE.MeshBasicMaterial({ map: vt, transparent: true, depthWrite: false, toneMapped: false, side: THREE.DoubleSide })); vm.rotation.y = ry; door.add(vm); });
+    const step = new THREE.Mesh(new THREE.BoxGeometry(.8, .06, .32), faceMats(pal.goal || '#fde68a')[2]); step.position.y = .03; door.add(step);
     const glow = new THREE.Sprite(Arcade3D.glowSprite('#fff3c4')); glow.scale.set(1.3, 1.3, 1); glow.position.y = .45; door.add(glow); R3.glow = glow;
     door.position.set(gl[0] + .5, gl[1], gl[2] + .5); door.rotation.y = Math.PI / 4; door.scale.setScalar(1.35);
     scene.add(door); R3.door = door;

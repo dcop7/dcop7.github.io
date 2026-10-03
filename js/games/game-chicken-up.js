@@ -135,26 +135,34 @@ const ChickenUpGame = (function () {
     const sq = c.squash || 0;
     ctx.scale(1 + sq * .18, 1 - sq * .16);
     if (c.inv && Math.floor(t * 12) % 2) ctx.globalAlpha = .45;
-    /* pernas */
-    ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-    const leg = c.air ? 4 : 0;
-    ctx.beginPath(); ctx.moveTo(-6, -10); ctx.lineTo(-7, -1 + leg); ctx.moveTo(6, -10); ctx.lineTo(7, -1 + leg); ctx.stroke();
+    const OL = '#3a2416', ol = w => { ctx.strokeStyle = OL; ctx.lineWidth = w || 1.6; ctx.lineJoin = 'round'; ctx.stroke(); };
+    /* pernas com joelho e dedos (encolhidas no ar) */
+    const leg = c.air ? 1 : 0;
+    ctx.strokeStyle = '#d97706'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+    [-6, 6].forEach(lx => { ctx.beginPath(); ctx.moveTo(lx, -10); ctx.lineTo(lx + (leg ? -3 : 1), -5 + leg * 2); ctx.lineTo(lx, -1 - leg * 3); ctx.stroke();
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(lx, -1 - leg * 3); ctx.lineTo(lx + 4, -leg * 3); ctx.moveTo(lx, -1 - leg * 3); ctx.lineTo(lx - 3, -leg * 3); ctx.moveTo(lx, -1 - leg * 3); ctx.lineTo(lx + 1, 1 - leg * 3); ctx.stroke(); ctx.lineWidth = 2.6; });
+    /* cauda em penas */
+    ctx.fillStyle = '#f8fafc'; [[-15, -34, -.9], [-17, -28, -.6], [-15, -22, -.3]].forEach(([a, b, r]) => { ctx.beginPath(); ctx.ellipse(a, b, 4, 9, r, 0, 6.3); ctx.fill(); ol(1.2); });
     /* corpo */
     const g = ctx.createRadialGradient(-6, -32, 3, 0, -24, 24);
-    g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#e5e7eb');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, -24, 18, 16, 0, 0, 6.3); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(-12, -30, 7, 10, -.5, 0, 6.3); ctx.fill();     /* cauda */
-    /* asa */
+    g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#dfe3ea');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, -24, 18, 16, 0, 0, 6.3); ctx.fill(); ol(1.8);
+    ctx.fillStyle = 'rgba(203,213,225,.55)'; ctx.beginPath(); ctx.ellipse(2, -15, 12, 5, 0, 0, 6.3); ctx.fill();
+    /* asa (bate no ar) */
     const f = c.air ? Math.sin(c.flap) * .9 : 0;
-    ctx.save(); ctx.translate(3, -24); ctx.rotate(-.3 + f);
-    ctx.fillStyle = '#f3f4f6'; ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.ellipse(6, 0, 11, 6, 0, 0, 6.3); ctx.fill(); ctx.stroke(); ctx.restore();
-    /* cabeça */
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(10, -42, 10, 0, 6.3); ctx.fill();
-    ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(7, -53, 4, 0, 6.3); ctx.arc(12, -54, 4.5, 0, 6.3); ctx.arc(16, -51, 3.5, 0, 6.3); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(18, -36, 2.5, 4, 0, 0, 6.3); ctx.fill();
-    ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(18, -44); ctx.lineTo(26, -41); ctx.lineTo(18, -38); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(13, -45, 2, 0, 6.3); ctx.fill();
+    ctx.save(); ctx.translate(-2, -25); ctx.rotate(-.25 + f);
+    ctx.fillStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(-2, -4); ctx.quadraticCurveTo(14, -10, 16, 2); ctx.quadraticCurveTo(12, 1, 10, 6); ctx.quadraticCurveTo(6, 3, 3, 8); ctx.quadraticCurveTo(-2, 4, -2, -4); ctx.fill(); ol(1.3);
+    ctx.restore();
+    /* cabeça: crista, barbela, bico em 2 partes, olho com brilho e pestana */
+    ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(6, -52, 4, 0, 6.3); ctx.arc(11, -54.5, 4.6, 0, 6.3); ctx.arc(16, -51.5, 3.6, 0, 6.3); ctx.fill(); ol(1.2);
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(10, -42, 10, 0, 6.3); ctx.fill(); ol(1.6);
+    ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.ellipse(17.5, -34.5, 2.6, 4.2, .1, 0, 6.3); ctx.fill(); ol(1);
+    ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(18, -45); ctx.lineTo(27, -42); ctx.lineTo(18, -40.5); ctx.closePath(); ctx.fill(); ol(1);
+    ctx.fillStyle = '#d97706'; ctx.beginPath(); ctx.moveTo(18, -40.5); ctx.lineTo(25, -41.4); ctx.lineTo(18, -38); ctx.closePath(); ctx.fill(); ol(1);
+    const blink = !c.air && (t % 3.4) > 3.25;
+    if (blink) { ctx.strokeStyle = '#111'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(10.5, -45); ctx.lineTo(15.5, -45); ctx.stroke(); }
+    else { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.ellipse(13, -45, 2.2, 2.6, 0, 0, 6.3); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(13.8, -46, .8, 0, 6.3); ctx.fill(); }
+    ctx.fillStyle = 'rgba(251,113,133,.45)'; ctx.beginPath(); ctx.ellipse(11, -38.5, 3, 1.8, 0, 0, 6.3); ctx.fill();
     ctx.restore();
   }
 
