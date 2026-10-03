@@ -194,22 +194,28 @@ const BalldropGame = (function () {
     const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     const back = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: tex, roughness: .9, color: '#8b7fb0' }));
     back.position.z = -60; back.receiveShadow = true; scene.add(back);
+    /* colunas ao fundo (paralaxe) para dar profundidade ao poço */
+    const cols = new THREE.Group(); scene.add(cols);
+    for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(new THREE.BoxGeometry(18, 4000, 18), new THREE.MeshStandardMaterial({ color: '#1f0f3d', emissive: '#2e1065', emissiveIntensity: .2, roughness: .6 })); m.position.set((i - 2.5) * 140, 0, -56); cols.add(m); const l = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4000, 1), new THREE.MeshBasicMaterial({ color: i % 2 ? '#22d3ee' : '#c084fc', transparent: true, opacity: .25 })); l.position.set((i - 2.5) * 140, 0, -46); cols.add(l); }
     const ball = new THREE.Group();
-    const core = new THREE.Mesh(new THREE.SphereGeometry(R, 28, 20), new THREE.MeshStandardMaterial({ color: '#facc15', emissive: '#b45309', emissiveIntensity: .5, metalness: .6, roughness: .2 }));
+    const bt = (() => { const c2 = document.createElement('canvas'); c2.width = 256; c2.height = 128; const y = c2.getContext('2d'); const g = y.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#fff3b0'); g.addColorStop(.5, '#facc15'); g.addColorStop(1, '#b45309'); y.fillStyle = g; y.fillRect(0, 0, 256, 128); y.fillStyle = '#f97316'; for (let i = 0; i < 6; i++) y.fillRect(i * 43, 0, 14, 128); y.fillStyle = '#fff7ed'; y.fillRect(0, 58, 256, 12); const t = new THREE.CanvasTexture(c2); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+    const core = new THREE.Mesh(new THREE.SphereGeometry(R, 28, 20), new THREE.MeshStandardMaterial({ map: bt, emissive: '#b45309', emissiveIntensity: .25, metalness: .3, roughness: .25 }));
     core.castShadow = true; ball.add(core);
-    const halo = new THREE.Sprite(Arcade3D.glowSprite('#fde047')); halo.scale.set(R * 6, R * 6, 1); ball.add(halo);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fde047', blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .35 })); halo.scale.set(R * 3.6, R * 3.6, 1); halo.position.z = -R; ball.add(halo);
     scene.add(ball);
-    G.r3 = { renderer, scene, sun, cam, back, tex, ball, core, pool: Arcade3D.pool(scene), lvl: -1 };
+    G.r3 = { renderer, scene, sun, cam, back, tex, ball, core, cols, pool: Arcade3D.pool(scene), lvl: -1 };
     api.stage.style.background = 'radial-gradient(120% 80% at 50% 0%, #2a1050, #0b0418 70%)';
   }
 
+  /* (dentro de draw3D, R é a cena: o raio da bola é BALL_R — antes a sombra do nome dava NaN e a bola não aparecia) */
+  const BALL_R = R;
   function draw3D(G, ctx, W, H, api) {
     const R = G.r3, P = R.pool, cam = G.cam;
     Arcade3D.fit(api.stage, R.cam);
     const X = lx => lx - W / 2, Y = ly => H / 2 - (ly - cam);
     const D = (H / 2) / Math.tan(R.cam.fov * Math.PI / 360), [shx, shy] = api.shakeXY;
     R.cam.position.set(-shx, shy, D); R.cam.lookAt(-shx, shy, 0); R.cam.near = D * .4; R.cam.far = D * 2; R.cam.updateProjectionMatrix();
-    R.back.scale.set(W * 1.6, H * 1.6, 1); R.tex.repeat.set(W * 1.6 / 40, H * 1.6 / 40); R.tex.offset.y = (cam * .5 / 40) % 1;
+    R.cols.position.y = (cam * .35) % 4000 - 0; R.back.scale.set(W * 1.6, H * 1.6, 1); R.tex.repeat.set(W * 1.6 / 40, H * 1.6 / 40); R.tex.offset.y = (cam * .5 / 40) % 1;
     Arcade3D.sunAt(R.sun, 0, 0, 0, Math.max(W, H) * .7, [-.4, .6, 1]);
     P.begin();
     const vis = o => o.y > cam - 160 && o.y < cam + H + 160;
@@ -218,8 +224,9 @@ const BalldropGame = (function () {
       if (!vis(o)) return;
       if (o.t === 'bar') {
         const a = o.gx - o.gw / 2, b = o.gx + o.gw / 2;
-        if (a > 0) { const m = P.get('bar', barM); m.scale.set(a, BT, 26); m.position.set(X(a / 2), Y(o.y + BT / 2), 0); }
-        if (b < W) { const m = P.get('bar', barM); m.scale.set(W - b, BT, 26); m.position.set(X((b + W) / 2), Y(o.y + BT / 2), 0); }
+        const strip = () => new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), Arcade3D.glowMat('#e9d5ff')), capM = () => { const g = new THREE.Group(); const cm = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 28, 14), Arcade3D.glowMat('#f472b6')); cm.rotation.x = Math.PI / 2; g.add(cm); const gs = new THREE.Sprite(Arcade3D.glowSprite('#f472b6')); gs.scale.set(30, 30, 1); g.add(gs); return g; };
+        if (a > 0) { const m = P.get('bar', barM); m.scale.set(a, BT, 26); m.position.set(X(a / 2), Y(o.y + BT / 2), 0); const st = P.get('strip', strip); st.scale.set(a - 4, 2, 27); st.position.set(X(a / 2), Y(o.y) - 1, 0); const cp = P.get('cap', capM); cp.position.set(X(a), Y(o.y + BT / 2), 0); }
+        if (b < W) { const m = P.get('bar', barM); m.scale.set(W - b, BT, 26); m.position.set(X((b + W) / 2), Y(o.y + BT / 2), 0); const st = P.get('strip', strip); st.scale.set(W - b - 4, 2, 27); st.position.set(X((b + W) / 2), Y(o.y) - 1, 0); const cp = P.get('cap', capM); cp.position.set(X(b), Y(o.y + BT / 2), 0); }
         o.spikes.forEach(([x0, x1]) => { for (let x = x0; x < x1 - 6; x += 12) { const sp = P.get('spike', () => { const m = new THREE.Mesh(new THREE.ConeGeometry(6, 13, 6), new THREE.MeshStandardMaterial({ color: '#f43f5e', emissive: '#be123c', emissiveIntensity: .45, metalness: .5, roughness: .25, flatShading: true })); m.castShadow = true; return m; }); sp.position.set(X(x + 6), Y(o.y) + 6.5, 0); } });
         if (o.vx) { const ar = P.get('arrow' + (o.vx > 0), () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.emojiTex(o.vx > 0 ? '→' : '←', 64), opacity: .5, transparent: true }))); ar.position.set(X(o.gx), Y(o.y + 30), 2); ar.scale.set(14, 14, 1); }
       } else if (o.t === 'bump') {
@@ -251,10 +258,10 @@ const BalldropGame = (function () {
       for (let i = 1; i < 5; i++) { const w = P.get('cupw', () => { const mm = new THREE.Mesh(Arcade3D.roundBox(.3), Arcade3D.std('#e9d5ff', { roughness: .3 })); mm.castShadow = true; return mm; }); w.scale.set(6, 64, 30); w.position.set(X(i * cw), Y(Dd - 32), 0); }
     }
     /* bola + rasto */
-    G.trail.forEach((p, i) => { const t = P.get('trail', () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fde047', blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }))); t.position.set(X(p[0]), Y(p[1]), 0); const k = 1 - i / 9; t.scale.set(R * 3 * k, R * 3 * k, 1); t.material.opacity = .45 * k; });
+    G.trail.forEach((p, i) => { const t = P.get('trail', () => new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fde047', blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }))); t.position.set(X(p[0]), Y(p[1]), 0); const k = 1 - i / 9; t.scale.set(BALL_R * 3 * k, BALL_R * 3 * k, 1); t.material.opacity = .45 * k; });
     P.end();
     R.ball.position.set(X(G.x), Y(G.y), 0);
-    R.core.rotation.z -= (G.vx || 0) / R / 60; R.core.rotation.x += (G.vy || 0) / R / 120;
+    R.core.rotation.z -= (G.vx || 0) / BALL_R / 60; R.core.rotation.x += (G.vy || 0) / BALL_R / 120;
     R.ball.visible = !(G.inv > 0 && Math.floor(G.inv * 12) % 2);
     R.renderer.render(R.scene, R.cam);
     /* 2D: profundidade + vidas */

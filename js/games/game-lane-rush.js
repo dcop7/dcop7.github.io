@@ -42,18 +42,22 @@ const LaneRushGame = (function () {
   }
 
   function spawnRow(G) {
-    const kinds = G.rows < 3 ? ['one', 'coins'] : ['one', 'one', 'two', 'two', 'coins', 'car', 'mix'];
+    /* trânsito a sério: carros (um a mudar de faixa, ou dois lado a lado com uma faixa livre) tão frequentes como as barreiras */
+    const kinds = G.rows < 3 ? ['one', 'coins'] : G.rows < 8 ? ['one', 'two', 'coins', 'car', 'mix'] : ['one', 'two', 'two', 'coins', 'car', 'car', 'cars2', 'mix'];
     const k = U.pick(kinds);
     const z = ZMAX;
     /* duas filas de barreiras seguidas nunca obrigam a saltar 2 faixas de uma vez */
     const free = G.lastFree == null ? U.randi(0, 2) : U.pick([0, 1, 2].filter(l => Math.abs(l - G.lastFree) <= 1));
-    G.lastFree = k === 'two' || k === 'mix' ? free : null;
+    G.lastFree = k === 'two' || k === 'mix' || k === 'cars2' ? free : null;
     if (k === 'one') G.objs.push({ t: 'bar', lane: U.randi(0, 2), z });
     else if (k === 'two') [0, 1, 2].filter(l => l !== free).forEach(l => G.objs.push({ t: 'bar', lane: l, z }));
     else if (k === 'coins') { const l = U.randi(0, 2); for (let i = 0; i < 4; i++) G.objs.push({ t: 'coin', lane: l, z: z + i * 3 }); }
     else if (k === 'car') {
       const l = U.randi(0, 2), to = l === 0 ? 1 : l === 2 ? 1 : U.pick([0, 2]);
-      G.objs.push({ t: 'car', lane: l, from: l, to, z, hue: U.pick([200, 280, 30, 140]) });
+      G.objs.push({ t: 'car', lane: l, from: l, to, z, hue: U.pick([200, 280, 30, 140, 330, 60, 0]) });
+    } else if (k === 'cars2') {
+      [0, 1, 2].filter(l => l !== free).forEach((l, i) => G.objs.push({ t: 'car', lane: l, from: l, to: l, z: z + i * 2.5, hue: U.pick([200, 280, 30, 140, 330, 60, 0]) }));
+      G.objs.push({ t: 'coin', lane: free, z: z + 1 });
     } else {
       G.objs.push({ t: 'bar', lane: free === 0 ? 1 : 0, z });
       G.objs.push({ t: 'coin', lane: free, z: z + 1 });
@@ -149,24 +153,17 @@ const LaneRushGame = (function () {
     return t;
   }
   function carModel(body, player) {
-    const g = new THREE.Group(), rb = Arcade3D.roundBox(.12);
-    const bodyM = new THREE.MeshStandardMaterial({ color: body, roughness: .32, metalness: .45 });
-    const glass = Arcade3D.std('#1e3a5f', { roughness: .08, metalness: .7 });
-    const add = (geo, m, x, y, z, sx, sy, sz) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); o.castShadow = true; g.add(o); return o; };
-    add(rb, bodyM, 0, .42, 0, 1.9, .5, 3.7);
-    add(rb, bodyM, 0, .66, -.95, 1.76, .16, 1.5);                 /* capot/traseira mais baixa */
-    add(rb, glass, 0, .86, .15, 1.5, .44, 1.7);                    /* cabina (vidros) */
-    add(rb, bodyM, 0, 1.09, .2, 1.38, .06, 1.3);                   /* tejadilho */
-    const wheel = new THREE.CylinderGeometry(.36, .36, .3, 16); wheel.rotateZ(Math.PI / 2);
-    const tire = Arcade3D.std('#0b0b10', { roughness: .9 });
-    [[.92, 1.15], [-.92, 1.15], [.92, -1.2], [-.92, -1.2]].forEach(([x, z]) => add(wheel, tire, x, .36, z, 1, 1, 1));
-    const tl = Arcade3D.glowMat('#ff2d55'), hl = Arcade3D.glowMat('#fffbe6');
-    add(new THREE.BoxGeometry(1, 1, 1), tl, .62, .5, 1.86, .5, .12, .04); add(new THREE.BoxGeometry(1, 1, 1), tl, -.62, .5, 1.86, .5, .12, .04);
-    add(new THREE.BoxGeometry(1, 1, 1), hl, .6, .48, -1.86, .36, .1, .04); add(new THREE.BoxGeometry(1, 1, 1), hl, -.6, .48, -1.86, .36, .1, .04);
-    const sp = (c, x, y, z, s) => { const o = new THREE.Sprite(Arcade3D.glowSprite(c)); o.position.set(x, y, z); o.scale.set(s, s, 1); g.add(o); return o; };
-    sp('#ff2d55', .62, .5, 1.95, .9); sp('#ff2d55', -.62, .5, 1.95, .9);
+    /* carro partilhado (Arcade3D.car): carroçaria em perfil, vidros, jantes, faróis; o trânsito varia de modelo */
+    const g = new THREE.Group();
+    const types = ['sedan', 'hatch', 'suv', 'van', 'sedan', 'taxi'], hue = parseInt(String(body).replace(/\D+/g, ' ').trim().split(' ')[0], 10) || 0;
+    const type = player ? 'sport' : types[Math.floor(hue / 37) % types.length];
+    const c = Arcade3D.car({ type, color: type === 'taxi' ? undefined : body, len: type === 'van' ? 4.3 : 3.9, wid: type === 'sport' ? .48 : .46, forward: '-z', night: true });
+    g.add(c); g.userData.car = c;
+    const sp = (col, x, y, z, s) => { const o = new THREE.Sprite(Arcade3D.glowSprite(col)); o.position.set(x, y, z); o.scale.set(s, s, 1); g.add(o); return o; };
+    sp('#ff2d55', .6, .62, 2.02, .9); sp('#ff2d55', -.6, .62, 2.02, .9);                 /* brilho dos farolins */
+    sp('#fffbe6', .55, .45, -2.02, .7); sp('#fffbe6', -.55, .45, -2.02, .7);
     if (player) { const u = sp('#f472b6', 0, .08, 0, 4.2); u.scale.set(4.2, 2.2, 1); g.userData.under = u; }
-    g.userData.bodyM = bodyM;
+    g.userData.bodyM = c.userData.paint;
     g.userData.blinkL = sp('#fbbf24', -.95, .55, -1.7, 0); g.userData.blinkR = sp('#fbbf24', .95, .55, -1.7, 0);
     return g;
   }
@@ -213,7 +210,7 @@ const LaneRushGame = (function () {
     scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: '#ffffff', size: 1.1, sizeAttenuation: true, fog: false, transparent: true, opacity: .8 })));
     /* carro do jogador + pool de objetos */
     const player = carModel('#22d3ee', true); scene.add(player);
-    const shieldM = new THREE.Mesh(new THREE.SphereGeometry(2.6, 24, 16), new THREE.MeshBasicMaterial({ color: '#67e8f9', transparent: true, opacity: .18, depthWrite: false, toneMapped: false }));
+    const shieldM = new THREE.Mesh(new THREE.IcosahedronGeometry(2.6, 2), new THREE.MeshBasicMaterial({ color: '#67e8f9', transparent: true, opacity: .18, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending, wireframe: true }));
     shieldM.scale.set(1, .6, 1.4); scene.add(shieldM);
     G.r3 = { renderer, scene, sun, cam, gridT, roadT, dash, player, shieldM, pool: Arcade3D.pool(scene), m4: new THREE.Matrix4(), q: new THREE.Quaternion(), v: new THREE.Vector3(), sc: new THREE.Vector3(), carCache: new Map(), lean: 0 };
   }
@@ -266,8 +263,9 @@ const LaneRushGame = (function () {
     R.lean = U.lerp(R.lean, (G.lane - G.px) * .5, .25);
     pl.rotation.set(0, -R.lean * .5, R.lean * .12);
     pl.userData.under.material.opacity = .55 + Math.sin(api.t * 7) * .12;
+    pl.userData.car.userData.wheels.forEach(w => { w.rotation.z = -api.t * (6 + G.v * .02); });
     R.shieldM.visible = !G.boom && (G.shield || G.shieldFx > 0);
-    R.shieldM.position.set(px, .8, 0); R.shieldM.material.opacity = G.shield ? .14 + .06 * Math.sin(api.t * 6) : G.shieldFx * .3;
+    R.shieldM.position.set(px, .8, 0); R.shieldM.material.opacity = G.shield ? .38 + .14 * Math.sin(api.t * 6) : G.shieldFx * .8; R.shieldM.rotation.y = api.t * .6;
     /* obstáculos, moedas, carros */
     const P = R.pool; P.begin();
     const blink = Math.floor(api.t * 6) % 2;
@@ -280,6 +278,7 @@ const LaneRushGame = (function () {
       else if (o.t === 'car') {
         const m = P.get('car' + o.hue, () => carModel(`hsl(${o.hue},70%,48%)`, false));
         m.position.set(x, 0, z); m.rotation.y = (o.to - o.lane) * -.25;
+        m.userData.car.userData.wheels.forEach(w => { w.rotation.z = -api.t * 7; });
         const turning = o.from !== o.to && o.z < 50;
         m.userData.blinkL.scale.setScalar(turning && o.to < o.from && blink ? 1.4 : 0);
         m.userData.blinkR.scale.setScalar(turning && o.to > o.from && blink ? 1.4 : 0);
@@ -294,11 +293,22 @@ const LaneRushGame = (function () {
           const arm = new THREE.Mesh(new THREE.BoxGeometry(1.1, .1, .1), Arcade3D.std('#2a1340')); arm.position.set(0, 4.15, 0); g.add(arm); g.userData.arm = arm;
           const bulb = new THREE.Mesh(new THREE.SphereGeometry(.16, 10, 8), Arcade3D.glowMat('#ffffff')); bulb.position.set(0, 4.05, 0); g.add(bulb); g.userData.bulb = bulb;
           const gl = new THREE.Sprite(Arcade3D.glowSprite('#ffffff')); gl.scale.set(2.4, 2.4, 1); gl.position.set(0, 4.05, 0); g.add(gl); g.userData.gl = gl;
+          /* palmeira em silhueta com rebordo néon, um pouco para fora da estrada */
+          const palm = new THREE.Group(); palm.position.set(0, 0, -6); g.add(palm); g.userData.palm = palm;
+          const trunkM = Arcade3D.std('#1b0b2a', { roughness: .8 }), edge = Arcade3D.glowMat('#f472b6');
+          for (let k = 0; k < 6; k++) { const s2 = new THREE.Mesh(new THREE.CylinderGeometry(.16 - k * .012, .2 - k * .012, 1.05, 7), trunkM); s2.position.set(Math.sin(k * .35) * .5, .5 + k * .98, 0); s2.rotation.z = -.12 - k * .03; palm.add(s2); }
+          const top = new THREE.Vector3(Math.sin(5 * .35) * .5 + .1, 6.3, 0);
+          for (let k = 0; k < 7; k++) {
+            const a = k / 7 * Math.PI * 2, fr = new THREE.Group(); fr.position.copy(top); fr.rotation.y = a; palm.add(fr);
+            const leaf = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 6), trunkM); leaf.scale.set(1.7, .07, .32); leaf.position.set(1.5, -.35, 0); leaf.rotation.z = -.42; fr.add(leaf);
+            const rim = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 6), edge); rim.scale.set(1.7, .02, .05); rim.position.set(1.5, -.3, 0); rim.rotation.z = -.42; fr.add(rim);
+          }
           return g;
         });
         const x = sd * (LW * 1.5 + 1.6);
         m.position.set(x, 0, -z * ZS);
         m.userData.arm.position.x = -sd * .5; m.userData.bulb.position.x = -sd * 1; m.userData.gl.position.x = -sd * 1;
+        m.userData.palm.position.x = sd * 2.2; m.userData.palm.rotation.y = sd > 0 ? Math.PI : 0; m.userData.palm.visible = Math.round((z + G.dist / .8) / 12) % 2 === 0;
         const c = sd < 0 ? '#22d3ee' : '#f472b6'; m.userData.bulb.material = Arcade3D.glowMat(c); m.userData.gl.material = Arcade3D.glowSprite(c);
       });
     }

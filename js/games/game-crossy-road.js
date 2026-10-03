@@ -194,39 +194,90 @@ const CrossyRoadGame = (function () {
   }
 
   /* modelos (construídos uma vez por tipo, reaproveitados pelo pool) */
-  function tree(V, tall) {
+  /* árvores voxel em camadas (2 tons + tronco com raiz); 3 variantes */
+  function tree(V, tall, kind) {
     const g = new THREE.Group();
-    V.mk(g, 0, .35, 0, .28, .7, .28, '#92400e');
-    V.mk(g, 0, .95, 0, .78, .6, .78, '#16a34a');
-    if (tall) V.mk(g, 0, 1.45, 0, .56, .5, .56, '#22c55e');
-    return g;
-  }
-  function carModel(V, hue, truck, len) {
-    const g = new THREE.Group(), body = `hsl(${hue},72%,52%)`, dark = `hsl(${hue},70%,36%)`;
-    if (truck) {
-      V.mk(g, -len / 2 + .5, .62, 0, .9, .76, .72, body);
-      V.mk(g, -len / 2 + .55, .78, 0, .6, .3, .74, '#1e3a5f', false);
-      V.mk(g, .45, .78, 0, len - 1.05, 1.1, .78, '#f1f5f9');
-      V.mk(g, .45, 1.34, 0, len - 1.05, .04, .8, '#cbd5e1', false);
-    } else {
-      V.mk(g, 0, .42, 0, len, .42, .72, body);
-      V.mk(g, .05, .78, 0, len * .55, .34, .64, dark);
-      V.mk(g, .05, .8, 0, len * .56, .22, .66, '#1e3a5f', false);
+    V.mk(g, 0, .3, 0, .26, .6, .26, '#8a4b1c');
+    V.mk(g, 0, .04, 0, .36, .08, .36, '#6b3a16');
+    if (kind === 'pine') {
+      V.mk(g, 0, .72, 0, .86, .28, .86, '#15803d'); V.mk(g, 0, 1.0, 0, .66, .28, .66, '#16a34a'); V.mk(g, 0, 1.26, 0, .44, .26, .44, '#22c55e'); V.mk(g, 0, 1.46, 0, .2, .16, .2, '#4ade80');
+      return g;
     }
-    const wheel = x => { V.mk(g, x, .18, .34, .26, .26, .08, '#111827', false); V.mk(g, x, .18, -.34, .26, .26, .08, '#111827', false); };
-    wheel(len / 2 - .28); wheel(-len / 2 + .28); if (truck) wheel(0);
-    const hl = new THREE.Mesh(V.B, Arcade3D.glowMat('#fef08a')); hl.position.set(len / 2 + .01, .48, 0); hl.scale.set(.03, .1, .5); g.add(hl);
-    const tl = new THREE.Mesh(V.B, Arcade3D.glowMat('#ef4444')); tl.position.set(-len / 2 - .01, .48, 0); tl.scale.set(.03, .1, .5); g.add(tl);
+    V.mk(g, 0, .9, 0, .82, .58, .82, '#16a34a');
+    V.mk(g, -.08, 1.06, -.08, .6, .32, .6, '#22c55e');
+    V.mk(g, .18, .82, .2, .3, .26, .3, '#15803d', false);
+    if (tall) { V.mk(g, 0, 1.42, 0, .58, .46, .58, '#22c55e'); V.mk(g, -.06, 1.58, -.06, .36, .2, .36, '#4ade80'); }
+    if (kind === 'apple') [[.42, .95, .1], [-.2, .8, .42], [.1, 1.12, -.42]].forEach(([x, y, z]) => V.mk(g, x, y, z, .1, .1, .1, '#ef4444', false));
     return g;
   }
+  /* carros voxel com pormenor: carroçaria em 2 níveis, vidros dos lados/frente/trás, jantes,
+     para-choques, faróis e farolins; táxi, polícia e autocarro; camião com cabina e caixa */
+  function carModel(V, hue, truck, len) {
+    const g = new THREE.Group(), body = `hsl(${hue},72%,52%)`, dark = `hsl(${hue},70%,38%)`, light = `hsl(${hue},75%,66%)`;
+    const kind = truck ? 'truck' : hue === 45 ? 'taxi' : hue === 210 && len > .9 ? 'police' : 'car';
+    const glass = '#1e3a5f', glassL = '#3b6ea5';
+    const B = (x, y, z, sx, sy, sz, c, sh) => V.mk(g, x, y, z, sx, sy, sz, c, sh);
+    if (truck) {
+      const cx = len / 2 - .48;
+      B(cx, .55, 0, .86, .62, .74, body); B(cx + .02, .92, 0, .8, .26, .72, light);
+      B(cx + .42, .9, 0, .02, .2, .6, glass, false); [-1, 1].forEach(sd => B(cx + .12, .9, sd * .365, .36, .18, .02, glassL, false));
+      B(cx + .44, .4, 0, .04, .14, .7, '#d1d5db', false);
+      const bl = len - 1.0, bx = -len / 2 + bl / 2 + .02;
+      B(bx, .82, 0, bl, 1.1, .8, '#f8fafc'); B(bx, 1.38, 0, bl + .02, .04, .82, '#cbd5e1', false);
+      [-1, 1].forEach(sd => B(bx, .68, sd * .405, bl * .92, .16, .01, body, false));
+      B(-len / 2 + .01, .82, 0, .02, 1.02, .74, '#e2e8f0', false);
+      B(bx, .22, 0, bl, .1, .62, '#374151', false);
+    } else if (kind === 'police' || kind === 'taxi' || kind === 'car') {
+      B(0, .36, 0, len, .3, .72, kind === 'police' ? '#f8fafc' : body);
+      B(-.04, .62, 0, len * .58, .26, .64, kind === 'police' ? '#f1f5f9' : dark);
+      B(-.04, .76, 0, len * .5, .04, .6, kind === 'police' ? '#e5e7eb' : light, false);
+      B(len * .25 + .005, .62, 0, .02, .2, .56, glass, false); B(-len * .33 - .005, .62, 0, .02, .18, .56, glass, false);
+      [-1, 1].forEach(sd => { B(-.04 + len * .12, .62, sd * .325, len * .2, .17, .02, glassL, false); B(-.04 - len * .14, .62, sd * .325, len * .2, .17, .02, glassL, false); });
+      B(len / 2 + .005, .26, 0, .04, .1, .74, '#9ca3af', false); B(-len / 2 - .005, .26, 0, .04, .1, .74, '#9ca3af', false);
+      if (kind === 'taxi') { B(-.04, .84, 0, .26, .1, .3, '#fde047'); B(-.04, .84, 0, .27, .04, .31, '#111', false); [-1, 1].forEach(sd => B(0, .38, sd * .365, len * .9, .05, .01, '#111', false)); }
+      if (kind === 'police') { [-1, 1].forEach(sd => B(0, .36, sd * .365, len * .96, .14, .01, '#1d4ed8', false)); const r = new THREE.Mesh(V.B, Arcade3D.glowMat('#ef4444')), b = new THREE.Mesh(V.B, Arcade3D.glowMat('#3b82f6')); r.position.set(-.04, .84, -.14); b.position.set(-.04, .84, .14); r.scale.set(.18, .08, .2); b.scale.set(.18, .08, .2); g.add(r, b); }
+    }
+    const wheel = x => [-1, 1].forEach(sd => { B(x, .17, sd * .35, .28, .28, .08, '#111827', false); B(x, .17, sd * .392, .14, .14, .01, '#cbd5e1', false); });
+    wheel(len / 2 - .26); wheel(-len / 2 + .26); if (truck) wheel(-len / 2 + .6);
+    [-1, 1].forEach(sd => {
+      const hl = new THREE.Mesh(V.B, Arcade3D.glowMat('#fef9c3')); hl.position.set(len / 2 + .02, .42, sd * .25); hl.scale.set(.03, .09, .14); g.add(hl);
+      const tl = new THREE.Mesh(V.B, Arcade3D.glowMat('#ef4444')); tl.position.set(-len / 2 - .02, .42, sd * .27); tl.scale.set(.03, .08, .12); g.add(tl);
+    });
+    return g;
+  }
+  /* personagens voxel: olhos com branco, pupila e brilho (piscam), boca, bochechas e patas */
   function charModel(V, ch) {
     const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
-    const b = V.mk(body, 0, .3, 0, .5, .5, .5, ch.body);
-    if (ch.id === 'frog') { V.mk(body, 0, .12, 0, .56, .12, .56, ch.dark); V.mk(body, 0, .56, .02, .5, .06, .02, ch.acc); ['-', '+'].forEach(sd => { const x = sd === '-' ? -.14 : .14; V.mk(body, x, .6, -.12, .14, .14, .14, '#fff'); V.mk(body, x, .62, -.19, .07, .07, .03, '#111'); }); }
-    if (ch.id === 'bunny') { [-.12, .12].forEach(x => { V.mk(body, x, .78, .05, .1, .42, .1, ch.body); V.mk(body, x, .8, .0, .05, .3, .02, ch.acc); }); [-.12, .12].forEach(x => V.mk(body, x, .42, -.26, .06, .06, .02, '#111')); V.mk(body, 0, .34, -.26, .06, .05, .02, ch.acc); }
-    if (ch.id === 'penguin') { V.mk(body, 0, .28, -.2, .34, .38, .12, '#f8fafc'); V.mk(body, 0, .38, -.3, .12, .06, .12, ch.acc); [-.12, .12].forEach(x => V.mk(body, x, .48, -.26, .06, .06, .02, '#fff')); V.mk(body, 0, .03, -.1, .4, .06, .2, ch.acc); }
-    if (ch.id === 'fox') { [-.15, .15].forEach(x => V.mk(body, x, .64, .05, .14, .2, .1, ch.dark)); V.mk(body, 0, .22, -.3, .26, .18, .14, ch.acc); V.mk(body, 0, .3, .36, .18, .18, .3, ch.body); V.mk(body, 0, .3, .52, .12, .12, .06, ch.acc); [-.12, .12].forEach(x => V.mk(body, x, .44, -.26, .06, .06, .02, '#111')); }
-    g.userData.body = body; b.userData.main = true;
+    const M = (x, y, z, sx, sy, sz, c, sh) => V.mk(body, x, y, z, sx, sy, sz, c, sh);
+    const b = M(0, .3, 0, .5, .48, .5, ch.body);
+    const eyes = [];
+    /* olho: frente = −z; branco + pupila + brilho */
+    const eye = (x, y, z, s, white) => { const e = new THREE.Group(); e.position.set(x, y, z); body.add(e); V.mk(e, 0, 0, 0, s, s, .03, white || '#ffffff', false); V.mk(e, 0, -s * .1, -.02, s * .52, s * .58, .02, '#111827', false); V.mk(e, s * .14, s * .14, -.032, s * .2, s * .2, .01, '#ffffff', false); eyes.push(e); };
+    [-.13, .13].forEach(x => M(x, .03, -.06, .14, .06, .2, ch.dark, false));      /* patas */
+    if (ch.id === 'frog') {
+      M(0, .1, 0, .56, .1, .56, ch.dark); M(0, .5, .02, .5, .04, .5, '#86efac', false);
+      [-.15, .15].forEach(x => { M(x, .6, -.1, .18, .14, .18, ch.body); eye(x, .61, -.195, .13); });
+      M(0, .3, -.255, .32, .04, .02, '#14532d', false); [-.18, .18].forEach(x => M(x, .36, -.253, .07, .05, .01, '#f472b6', false));
+      M(0, .2, -.26, .4, .1, .02, ch.acc, false);
+    }
+    if (ch.id === 'bunny') {
+      [-.12, .12].forEach(x => { M(x, .78, .05, .11, .44, .11, ch.body); M(x, .8, -.005, .06, .32, .01, ch.acc, false); });
+      [-.12, .12].forEach(x => eye(x, .43, -.255, .1));
+      M(0, .33, -.262, .07, .05, .02, ch.acc, false); M(0, .26, -.262, .1, .03, .01, '#a8a29e', false);
+      M(0, .32, .28, .14, .14, .1, '#ffffff');
+    }
+    if (ch.id === 'penguin') {
+      M(0, .28, -.2, .36, .4, .12, '#f8fafc'); M(0, .38, -.31, .14, .07, .12, ch.acc);
+      [-.12, .12].forEach(x => eye(x, .48, -.258, .1));
+      M(0, .03, -.1, .42, .06, .22, ch.acc); [-1, 1].forEach(sd => M(sd * .28, .3, 0, .06, .3, .3, ch.dark));
+    }
+    if (ch.id === 'fox') {
+      [-.15, .15].forEach(x => { M(x, .64, .05, .15, .22, .1, ch.body); M(x, .74, .05, .07, .07, .101, '#1f1208', false); });
+      M(0, .22, -.3, .28, .2, .16, ch.acc); M(0, .27, -.39, .08, .06, .03, '#1f1208', false);
+      [-.12, .12].forEach(x => eye(x, .44, -.258, .1));
+      M(0, .3, .36, .2, .2, .32, ch.body); M(0, .3, .55, .14, .14, .08, ch.acc);
+    }
+    g.userData.body = body; g.userData.eyes = eyes; b.userData.main = true;
     return g;
   }
 
@@ -240,7 +291,7 @@ const CrossyRoadGame = (function () {
       const row = z >= 0 ? G.rows[z] : null, Z = -z;
       const t = row ? row.t : 'grass';
       /* chão da fila: faixa jogável + margens mais escuras */
-      const top = t === 'grass' ? ((row ? row.shade : z & 1) ? '#84cc16' : '#7ac31a') : t === 'road' ? '#3f4652' : t === 'river' ? '#38bdf8' : '#a8a29e';
+      const top = t === 'grass' ? ((row ? row.shade : z & 1) ? '#84cc16' : '#7ac31a') : t === 'road' ? '#3f4652' : t === 'river' ? '#1d9bd8' : '#a8a29e';
       const hgt = t === 'river' ? .1 : t === 'grass' ? .3 : .2, y = t === 'river' ? -.25 : -hgt / 2 + (t === 'grass' ? 0 : -.05);
       const g1 = P.get('floor:' + top, () => { const m = new THREE.Mesh(V.B, t === 'river' ? new THREE.MeshStandardMaterial({ color: top, roughness: .15, metalness: .1, transparent: true, opacity: .92 }) : Arcade3D.std(top, { roughness: .9 })); m.receiveShadow = true; return m; });
       g1.position.set(0, y, Z); g1.scale.set(9, hgt, 1.001);
@@ -251,6 +302,8 @@ const CrossyRoadGame = (function () {
         if (nxt && nxt.t === 'road') for (let x = -4.2; x < 4.5; x += 1.4) { const d = P.get('dash', () => new THREE.Mesh(V.B, Arcade3D.std('#e5e7eb', { roughness: .6 }))); d.position.set(x, .001, Z - .5); d.scale.set(.6, .02, .06); }
       }
       if (t === 'river') {
+        /* espuma junto às margens */
+        [-1, 1].forEach(sd => { const fz = P.get('foam', () => new THREE.Mesh(V.B, new THREE.MeshBasicMaterial({ color: '#e0f7ff', transparent: true, opacity: .55 }))); fz.position.set(0, -.19, Z + sd * .47); fz.scale.set(9, .012, .06 + .02 * Math.sin(api.t * 3 + z)); });
         for (let x = -4; x < 5; x += 2) { const w = P.get('wave', () => new THREE.Mesh(V.B, new THREE.MeshBasicMaterial({ color: '#e0f2fe', transparent: true, opacity: .45 }))); w.position.set(x + ((api.t * .8 * (row.dir || 1)) % 2 + 2) % 2 - 1, -.19, Z + ((x * 7) % 3) * .1 - .1); w.scale.set(.5, .01, .04); }
       }
       if (t === 'rail') {
@@ -261,7 +314,18 @@ const CrossyRoadGame = (function () {
         pole.position.set(4.3, 0, Z - .45); pole.userData.l.material = on ? Arcade3D.glowMat('#ef4444') : Arcade3D.std('#450a0a'); pole.userData.s.scale.setScalar(on ? 1.4 : 0);
         if (row && row.train) {
           const tr = row.train, x0 = wx(tr.x), len = tr.w / CELL;
-          for (let k = 0; k < len; k += 3) {
+          /* locomotiva à frente (no sentido da marcha) + carruagens */
+          const loco = P.get('loco', () => {
+            const g = new THREE.Group();
+            V.mk(g, 0, .55, 0, 2.6, .8, .82, '#1d4ed8'); V.mk(g, -.7, 1.05, 0, 1.1, .3, .78, '#1e40af'); V.mk(g, .55, 1.12, 0, .9, .5, .84, '#facc15');
+            V.mk(g, 1.0, 1.15, 0, .02, .26, .6, '#1e3a5f', false); [-1, 1].forEach(sd => V.mk(g, .55, 1.15, sd * .425, .5, .22, .01, '#1e3a5f', false));
+            V.mk(g, -.9, 1.35, 0, .2, .4, .2, '#374151'); V.mk(g, 1.32, .3, 0, .08, .3, .8, '#111827');
+            const hl = new THREE.Mesh(V.B, Arcade3D.glowMat('#fef9c3')); hl.position.set(1.31, .7, 0); hl.scale.set(.03, .16, .3); g.add(hl);
+            for (let k2 = -1; k2 <= 1; k2++) [-1, 1].forEach(sd => V.mk(g, k2 * .8, .16, sd * .38, .3, .3, .06, '#111827', false));
+            return g;
+          });
+          loco.position.set(tr.v > 0 ? x0 + len - 1.3 : x0 + 1.3, 0, Z); loco.rotation.y = tr.v > 0 ? 0 : Math.PI;
+          for (let k = tr.v > 0 ? 0 : 3; k < (tr.v > 0 ? len - 3 : len); k += 3) {
             const car = P.get('wagon', () => { const g = new THREE.Group(); V.mk(g, 0, .7, 0, 2.9, 1.1, .8, '#dc2626'); V.mk(g, 0, 1.3, 0, 2.95, .1, .84, '#991b1b', false); for (let w = -1; w <= 1; w++) { const m = new THREE.Mesh(V.B, Arcade3D.glowMat('#fef9c3')); m.position.set(w * .9, .85, .41); m.scale.set(.5, .3, .02); g.add(m); } return g; });
             car.position.set(x0 + k + 1.5, 0, Z);
           }
@@ -271,7 +335,7 @@ const CrossyRoadGame = (function () {
       if (t === 'grass' || z < 0) {
         for (let k = 0; k < 3; k++) {
           const hsh = Math.sin(z * 12.9898 + k * 78.233) * 43758.5, f = hsh - Math.floor(hsh);
-          [-1, 1].forEach(sd => { const tr = P.get(f > .5 ? 'treeT' : 'tree', () => tree(V, f > .5)); tr.position.set(sd * (5.1 + k * 1.3 + f * .4), 0, Z); });
+          [-1, 1].forEach(sd => { const kd = f > .72 ? 'pine' : f > .5 ? 'treeT' : f > .2 ? 'tree' : 'apple'; const tr = P.get('t:' + kd, () => tree(V, kd === 'treeT', kd)); tr.position.set(sd * (5.1 + k * 1.3 + f * .4), 0, Z); });
         }
       }
       if (z < 0) {
@@ -279,20 +343,39 @@ const CrossyRoadGame = (function () {
       }
       if (!row) continue;
       if (t === 'grass') {
-        row.block.forEach(c => { const tr = P.get((c + z) % 3 ? 'tree' : 'treeT', () => tree(V, !((c + z) % 3))); tr.position.set(c - 4, 0, Z); });
+        row.block.forEach(c => {
+          const v2 = (c * 7 + z * 3) % 5, kd = v2 === 0 ? 'pine' : v2 === 1 ? 'treeT' : v2 === 2 ? 'apple' : v2 === 3 ? 'rock' : 'tree';
+          const tr = P.get('t:' + kd, () => kd === 'rock' ? (() => { const g = new THREE.Group(); V.mk(g, 0, .22, 0, .7, .44, .62, '#9ca3af'); V.mk(g, -.08, .48, .04, .46, .16, .4, '#d1d5db'); V.mk(g, .26, .16, -.2, .26, .24, .24, '#6b7280'); return g; })() : tree(V, kd === 'treeT', kd));
+          tr.position.set(c - 4, 0, Z);
+        });
         for (let i = 0; i < 3; i++) { const h = Math.sin(z * 91.7 + i * 37.3) * 43758.5, f = h - Math.floor(h); const fl = P.get('flower' + (i % 3), () => new THREE.Mesh(V.B, Arcade3D.std(['#fde047', '#f9a8d4', '#ffffff'][i % 3]))); fl.position.set(-4.3 + f * 8.6, .03, Z - .3 + ((f * 7.3) % 1) * .6); fl.scale.set(.1, .06, .1); }
       }
       if (t === 'river') row.objs.forEach(o => {
         const x0 = wx(o.x), w = o.w / CELL;
         if (o.pad) { const m = P.get('pad', () => { const g = new THREE.Group(); const c = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .06, 18), Arcade3D.std('#16a34a')); c.receiveShadow = true; g.add(c); const f = new THREE.Mesh(new THREE.SphereGeometry(.07, 8, 6), Arcade3D.std('#f9a8d4')); f.position.set(.15, .06, .1); g.add(f); return g; }); m.position.set(x0 + w / 2, -.17, Z); m.rotation.y = z; }
-        else { const m = P.get('log', () => { const g = new THREE.Group(); const l = V.mk(g, 0, 0, 0, 1, .34, .66, '#a16207'); g.userData.l = l; const e = V.mk(g, .5, 0, 0, .02, .28, .58, '#fde68a', false); g.userData.e = e; return g; }); m.position.set(x0 + w / 2, -.12, Z); m.userData.l.scale.x = w; m.userData.e.position.x = w / 2; }
+        else {
+          /* tronco redondo com casca, anéis nas pontas e às vezes um rebento */
+          const L = Math.round(w);
+          const m = P.get('log' + L, () => {
+            const g = new THREE.Group(), cyl = new THREE.CylinderGeometry(.3, .3, 1, 10); cyl.rotateZ(Math.PI / 2);
+            const bark = new THREE.Mesh(cyl, Arcade3D.std('#8a5524', { roughness: .95, flatShading: true })); bark.scale.set(L - .02, 1, 1); bark.castShadow = bark.receiveShadow = true; g.add(bark);
+            [-1, 1].forEach(sd => {
+              const ring = new THREE.Mesh(new THREE.CircleGeometry(.29, 10), Arcade3D.std('#f2c98a', { roughness: .8 })); ring.position.x = sd * (L / 2 - .005); ring.rotation.y = sd * Math.PI / 2; g.add(ring);
+              const core = new THREE.Mesh(new THREE.CircleGeometry(.12, 10), Arcade3D.std('#c98d4a')); core.position.x = sd * (L / 2 - .002); core.rotation.y = sd * Math.PI / 2; g.add(core);
+            });
+            for (let k2 = 0; k2 < L * 2 - 1; k2++) V.mk(g, -L / 2 + .45 + k2 * .5, .27, k2 % 2 ? .1 : -.12, .2, .05, .08, '#6b3f17', false);
+            if (L > 2) { V.mk(g, .3, .36, .12, .06, .14, .06, '#16a34a', false); V.mk(g, .34, .44, .12, .18, .04, .14, '#22c55e', false); }
+            return g;
+          });
+          m.position.set(x0 + w / 2, -.08, Z);
+        }
       });
       if (t === 'road') row.objs.forEach(o => {
         const x0 = wx(o.x), w = o.w / CELL, key = 'car:' + o.hue + (o.truck ? 'T' : '');
         const m = P.get(key, () => carModel(V, o.hue, o.truck, o.truck ? 2.1 : .95));
         m.position.set(x0 + w / 2, 0, Z); m.rotation.y = row.dir > 0 ? 0 : Math.PI;
       });
-      row.coins.forEach(c => { const m = P.get('coin', () => { const mm = new THREE.Mesh(new THREE.CylinderGeometry(.2, .2, .06, 16), Arcade3D.std('#fbbf24', { metalness: .8, roughness: .25, emissive: '#b45309', emissiveIntensity: .35 })); mm.rotation.x = Math.PI / 2; mm.castShadow = true; const g = new THREE.Group(); g.add(mm); return g; }); m.position.set(c - 4, .45 + Math.sin(G.t * 4 + c) * .08, Z); m.rotation.y = G.t * 3 + c; });
+      row.coins.forEach(c => { const m = P.get('coin', () => { const mm = new THREE.Mesh(new THREE.CylinderGeometry(.2, .2, .06, 16), Arcade3D.std('#fcd34d', { metalness: .25, roughness: .35, emissive: '#f59e0b', emissiveIntensity: .45 })); mm.rotation.x = Math.PI / 2; mm.castShadow = true; const g = new THREE.Group(); g.add(mm); return g; }); m.position.set(c - 4, .45 + Math.sin(G.t * 4 + c) * .08, Z); m.rotation.y = G.t * 3 + c; });
     }
     /* personagem */
     const ch = P.get('char:' + G.ch.id, () => charModel(V, G.ch));
@@ -306,6 +389,8 @@ const CrossyRoadGame = (function () {
     if (dead && (dead.kind === 'car' || dead.kind === 'train')) body.scale.set(1.5, .15, 1.3);
     else body.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
     if (G.bumpT) body.position.x = Math.sin(G.bumpT * 60) * .05; else body.position.x = 0;
+    /* piscar os olhos */
+    const blink = (G.t % 3.2) > 3.08 || !!(dead && dead.kind !== 'water'); (ch.userData.eyes || []).forEach(e => { e.scale.y = blink ? .15 : 1; });
     if (dead && dead.kind === 'water') {
       const sp = P.get('splash', () => new THREE.Mesh(new THREE.TorusGeometry(.4, .04, 6, 24), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true })));
       const k = (api.t % 1); sp.position.set(wx(G.px), -.18, -G.z); sp.rotation.x = Math.PI / 2; sp.scale.setScalar(.6 + k * 1.6); sp.material.opacity = 1 - k;

@@ -15,6 +15,10 @@ const NinjaChopGame = (function () {
     { k: 'kiwi',   r: 22, skin: ['#a16207', '#713f12'], flesh: '#84cc16', rind: '#d9f99d', juice: '#a3e635', pts: 1 },
     { k: 'lemon',  r: 23, skin: ['#fef08a', '#ca8a04'], flesh: '#fde047', rind: '#fef9c3', juice: '#fef08a', pts: 1 },
     { k: 'plum',   r: 21, skin: ['#c084fc', '#6b21a8'], flesh: '#f5d0fe', rind: '#e9d5ff', juice: '#d8b4fe', pts: 1 },
+    { k: 'banana', r: 26, skin: ['#fde68a', '#eab308'], flesh: '#fef9c3', rind: '#fde68a', juice: '#fef08a', pts: 1 },
+    { k: 'pineapple', r: 30, skin: ['#f59e0b', '#a16207'], flesh: '#fde047', rind: '#fef08a', juice: '#fde047', pts: 2 },
+    { k: 'strawberry', r: 20, skin: ['#f87171', '#b91c1c'], flesh: '#fecaca', rind: '#f87171', juice: '#f43f5e', pts: 1 },
+    { k: 'coconut', r: 27, skin: ['#92400e', '#451a03'], flesh: '#fafaf9', rind: '#d6d3d1', juice: '#f5f5f4', pts: 2 },
   ];
   const DIFF = {
     easy:   { every: [1.5, .95], bomb: [.05, .14], burst: 3 },
@@ -202,8 +206,37 @@ const NinjaChopGame = (function () {
       if (f.k === 'melon') { x.fillStyle = 'rgba(20,83,45,.85)'; for (let i = 0; i < 10; i++) { x.beginPath(); for (let y = 0; y <= h; y += 4) x.lineTo(i * w / 10 + Math.sin(y * .15 + i) * 5, y); for (let y = h; y >= 0; y -= 4) x.lineTo(i * w / 10 + 9 + Math.sin(y * .15 + i) * 5, y); x.fill(); } }
       if (f.k === 'orange' || f.k === 'lemon') { for (let i = 0; i < 900; i++) { x.fillStyle = 'rgba(0,0,0,.07)'; x.beginPath(); x.arc(Math.random() * w, Math.random() * h, 1.2, 0, 6.3); x.fill(); } }
       if (f.k === 'kiwi') { for (let i = 0; i < 1600; i++) { x.fillStyle = `rgba(${Math.random() < .5 ? '60,35,10' : '160,120,60'},.25)`; x.fillRect(Math.random() * w, Math.random() * h, 1, 2); } }
-      if (f.k === 'apple' || f.k === 'plum') { for (let i = 0; i < 120; i++) { x.fillStyle = 'rgba(255,240,200,.18)'; x.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5); } }
+      if (f.k === 'apple' || f.k === 'plum') { for (let i = 0; i < 120; i++) { x.fillStyle = 'rgba(255,240,200,.18)'; x.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5); } if (f.k === 'apple') for (let i = 0; i < 40; i++) { x.strokeStyle = 'rgba(253,224,71,.18)'; x.lineWidth = 2; x.beginPath(); const xx = Math.random() * w; x.moveTo(xx, 0); x.lineTo(xx + Math.random() * 8 - 4, h * .7); x.stroke(); } }
+      if (f.k === 'banana') { x.fillStyle = 'rgba(120,80,20,.35)'; for (let i = 0; i < 5; i++) x.fillRect(i * w / 5, 0, 3, h); for (let i = 0; i < 40; i++) { x.fillStyle = 'rgba(90,55,15,.4)'; x.beginPath(); x.arc(Math.random() * w, Math.random() * h, 1 + Math.random() * 2, 0, 6.3); x.fill(); } }
+      if (f.k === 'pineapple') { x.strokeStyle = 'rgba(90,50,10,.75)'; x.lineWidth = 2.5; for (let i = -8; i < 16; i++) { x.beginPath(); x.moveTo(i * 22, 0); x.lineTo(i * 22 + h, h); x.stroke(); x.beginPath(); x.moveTo(i * 22, h); x.lineTo(i * 22 + h, 0); x.stroke(); } x.fillStyle = 'rgba(253,224,71,.55)'; for (let i = 0; i < 12; i++) for (let j = 0; j < 6; j++) { x.beginPath(); x.arc(i * 22 + (j % 2) * 11, j * 22 + 11, 2.4, 0, 6.3); x.fill(); } }
+      if (f.k === 'strawberry') { for (let i = 0; i < 18; i++) for (let j = 0; j < 9; j++) { const sx = i * w / 18 + (j % 2) * 7, sy = j * h / 9 + 6; x.fillStyle = 'rgba(120,20,20,.35)'; x.beginPath(); x.ellipse(sx, sy, 3.4, 4, 0, 0, 6.3); x.fill(); x.fillStyle = '#fde047'; x.beginPath(); x.ellipse(sx, sy, 1.2, 1.8, 0, 0, 6.3); x.fill(); } }
+      if (f.k === 'coconut') { for (let i = 0; i < 2600; i++) { x.strokeStyle = `rgba(${Math.random() < .5 ? '40,20,5' : '180,120,60'},.35)`; x.lineWidth = 1; x.beginPath(); const xx = Math.random() * w, yy = Math.random() * h; x.moveTo(xx, yy); x.lineTo(xx + Math.random() * 6 - 3, yy + 5); x.stroke(); } }
     });
+  }
+  /* relevo (bump): poros dos citrinos, penugem do kiwi, casca do coco */
+  function bumpTex(k) {
+    return ctex('bump:' + k, 128, 64, (x, w, h) => {
+      x.fillStyle = '#808080'; x.fillRect(0, 0, w, h);
+      const n = k === 'orange' || k === 'lemon' ? 700 : k === 'kiwi' || k === 'coconut' ? 1400 : k === 'strawberry' ? 0 : 120;
+      for (let i = 0; i < n; i++) { x.fillStyle = Math.random() < .5 ? '#5a5a5a' : '#a8a8a8'; x.beginPath(); x.arc(Math.random() * w, Math.random() * h, k === 'kiwi' || k === 'coconut' ? .6 : 1, 0, 6.3); x.fill(); }
+      if (k === 'strawberry') for (let i = 0; i < 9; i++) for (let j = 0; j < 5; j++) { x.fillStyle = '#4a4a4a'; x.beginPath(); x.arc(i * w / 9 + (j % 2) * 3.5, j * h / 5 + 3, 1.6, 0, 6.3); x.fill(); }
+    });
+  }
+  /* formas de fruta (torno: perfil a rodar) — longe de esferas todas iguais */
+  const _geo = {};
+  function lathe(key, pts) { if (_geo[key]) return _geo[key]; const g = new THREE.LatheGeometry(pts.map(([a, b]) => new THREE.Vector2(a, b)), 32); g.computeVertexNormals(); g.userData.shared = true; return (_geo[key] = g); }
+  function fruitGeo(k) {
+    if (k === 'apple') return lathe('apple', [[0, -.86], [.32, -.92], [.7, -.74], [.96, -.25], [1, .2], [.88, .62], [.6, .9], [.28, .86], [.08, .7], [0, .66]]);
+    if (k === 'lemon') { if (_geo.lemon) return _geo.lemon; const g = lathe('lemon0', [[0, -1.22], [.14, -1.12], [.5, -.86], [.8, -.42], [.88, 0], [.8, .42], [.5, .86], [.14, 1.12], [0, 1.22]]).clone(); g.rotateZ(Math.PI / 2); g.userData.shared = true; return (_geo.lemon = g); }
+    if (k === 'strawberry') return lathe('strawberry', [[0, -1.08], [.22, -.98], [.55, -.62], [.82, -.08], [.92, .36], [.78, .74], [.42, .92], [0, .9]]);
+    if (k === 'pineapple') return lathe('pineapple', [[0, -1.12], [.5, -1.06], [.8, -.7], [.88, 0], [.8, .7], [.5, 1.02], [0, 1.08]]);
+    if (k === 'banana') {
+      if (_geo.banana) return _geo.banana;
+      const g = new THREE.CapsuleGeometry(.36, 1.7, 8, 16), p = g.attributes.position, Rb = 1.5;
+      for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), t = 1 - Math.pow(Math.abs(y) / 1.2, 3) * .55, a = y / Rb; p.setXYZ(i, Math.cos(a) * (Rb + x * t) - Rb, Math.sin(a) * (Rb + x * t), z * t); }
+      g.computeVertexNormals(); g.userData.shared = true; return (_geo.banana = g);
+    }
+    return null;
   }
   function fleshTex(f) {
     return ctex('flesh:' + f.k, 128, 128, (x, w) => {
@@ -216,6 +249,10 @@ const NinjaChopGame = (function () {
       if (f.k === 'melon' || f.k === 'kiwi') { x.fillStyle = '#111'; for (let i = 0; i < 14; i++) { const a = i / 14 * 6.283, d = c * (f.k === 'kiwi' ? .38 : .5); x.beginPath(); x.ellipse(c + Math.cos(a) * d, c + Math.sin(a) * d, 2, 4.5, a, 0, 6.3); x.fill(); } if (f.k === 'kiwi') { x.fillStyle = '#f7fee7'; x.beginPath(); x.arc(c, c, c * .2, 0, 6.3); x.fill(); } }
       if (f.k === 'apple') { x.fillStyle = '#78350f'; [[-8, -4], [8, -4], [0, 8]].forEach(([dx, dy]) => { x.beginPath(); x.ellipse(c + dx, c + dy, 3, 5, 0, 0, 6.3); x.fill(); }); }
       if (f.k === 'plum' || f.k === 'gold') { x.fillStyle = f.skin[1]; x.beginPath(); x.ellipse(c, c, 10, 14, 0, 0, 6.3); x.fill(); }
+      if (f.k === 'banana') { x.fillStyle = 'rgba(120,80,30,.6)'; for (let i = 0; i < 3; i++) { const a = i / 3 * 6.283; x.beginPath(); x.arc(c + Math.cos(a) * 6, c + Math.sin(a) * 6, 2.2, 0, 6.3); x.fill(); } }
+      if (f.k === 'pineapple') { x.strokeStyle = 'rgba(250,204,21,.9)'; x.lineWidth = 2; for (let i = 0; i < 24; i++) { const a = i / 24 * 6.283; x.beginPath(); x.moveTo(c + Math.cos(a) * 14, c + Math.sin(a) * 14); x.lineTo(c + Math.cos(a) * c * .78, c + Math.sin(a) * c * .78); x.stroke(); } x.fillStyle = '#fef3c7'; x.beginPath(); x.arc(c, c, 14, 0, 6.3); x.fill(); }
+      if (f.k === 'strawberry') { x.fillStyle = '#fff1f2'; x.beginPath(); x.ellipse(c, c, c * .32, c * .5, 0, 0, 6.3); x.fill(); x.strokeStyle = 'rgba(255,241,242,.8)'; x.lineWidth = 2; for (let i = 0; i < 10; i++) { const a = i / 10 * 6.283; x.beginPath(); x.moveTo(c, c); x.lineTo(c + Math.cos(a) * c * .7, c + Math.sin(a) * c * .7); x.stroke(); } }
+      if (f.k === 'coconut') { x.fillStyle = '#5b3410'; x.beginPath(); x.arc(c, c, c, 0, 6.3); x.fill(); x.fillStyle = '#fafaf9'; x.beginPath(); x.arc(c, c, c * .82, 0, 6.3); x.fill(); x.fillStyle = 'rgba(219,234,254,.6)'; x.beginPath(); x.arc(c, c, c * .45, 0, 6.3); x.fill(); }
     });
   }
   function splatTex() {
@@ -236,14 +273,21 @@ const NinjaChopGame = (function () {
       return g;
     }
     if (f.k === 'ice') { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: '#bae6fd', emissive: '#38bdf8', emissiveIntensity: .35, transparent: true, opacity: .82, roughness: .05, metalness: .1, flatShading: true })); g.add(m); return g; }
-    const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), new THREE.MeshStandardMaterial({ map: skinTex(f), roughness: f.k === 'apple' || f.k === 'plum' || f.k === 'gold' ? .25 : .55, metalness: f.k === 'gold' ? .8 : .02 }));
-    if (f.k === 'lemon') m.scale.set(1.18, .88, .88);
-    if (f.k === 'melon') m.scale.set(1.08, 1, 1);
+    const shiny = f.k === 'apple' || f.k === 'plum' || f.k === 'gold' || f.k === 'strawberry';
+    const m = new THREE.Mesh(fruitGeo(f.k) || new THREE.SphereGeometry(1, 28, 20), new THREE.MeshStandardMaterial({ map: skinTex(f), bumpMap: bumpTex(f.k), bumpScale: f.k === 'orange' || f.k === 'lemon' ? 1.6 : 1, roughness: shiny ? .25 : f.k === 'kiwi' || f.k === 'coconut' ? .95 : .55, metalness: f.k === 'gold' ? .8 : .02 }));
+    if (f.k === 'melon') m.scale.set(1.25, .95, .95);
+    if (f.k === 'plum') m.scale.set(.95, 1.05, .95);
     m.castShadow = true; g.add(m);
+    const leafM = Arcade3D.std('#22c55e', { roughness: .6 }), leafD = Arcade3D.std('#15803d', { roughness: .6 });
     if (f.k === 'apple' || f.k === 'plum' || f.k === 'gold') {
-      const st = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, .4, 6), Arcade3D.std('#4b2e12')); st.position.y = 1.05; g.add(st);
-      const lf = new THREE.Mesh(new THREE.SphereGeometry(.2, 8, 6), Arcade3D.std('#22c55e')); lf.scale.set(1.6, .35, .8); lf.position.set(.25, 1.12, 0); lf.rotation.z = -.4; g.add(lf);
+      const st = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, .4, 6), Arcade3D.std('#4b2e12')); st.position.y = f.k === 'apple' ? .82 : 1.05; st.rotation.z = .15; g.add(st);
+      const lf = new THREE.Mesh(new THREE.SphereGeometry(.2, 8, 6), leafM); lf.scale.set(1.6, .35, .8); lf.position.set(.25, f.k === 'apple' ? .9 : 1.12, 0); lf.rotation.z = -.4; g.add(lf);
     }
+    if (f.k === 'orange') { const nv = new THREE.Mesh(new THREE.SphereGeometry(.12, 8, 6), Arcade3D.std('#9a3412')); nv.position.y = -.97; g.add(nv); for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2, sp = new THREE.Mesh(new THREE.SphereGeometry(.1, 6, 4), leafD); sp.scale.set(1.4, .3, .5); sp.position.set(Math.cos(a) * .09, .99, Math.sin(a) * .09); sp.rotation.y = -a; g.add(sp); } }
+    if (f.k === 'strawberry') for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2, l = new THREE.Mesh(new THREE.ConeGeometry(.16, .55, 4), i % 2 ? leafM : leafD); l.position.set(Math.cos(a) * .28, .88, Math.sin(a) * .28); l.rotation.set(Math.sin(a) * 1.6, 0, -Math.cos(a) * 1.6); g.add(l); }
+    if (f.k === 'pineapple') for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2, tilt = i % 2 ? .45 : .25, h = i % 2 ? .7 : 1.05, l = new THREE.Mesh(new THREE.ConeGeometry(.1, h, 4), i % 2 ? leafM : leafD); l.position.set(Math.cos(a) * .12, 1 + h * .45, Math.sin(a) * .12); l.rotation.set(Math.sin(a) * tilt, 0, -Math.cos(a) * tilt); g.add(l); }
+    if (f.k === 'coconut') [[0, .25], [.2, -.12], [-.2, -.12]].forEach(([a, b]) => { const e = new THREE.Mesh(new THREE.SphereGeometry(.1, 8, 6), Arcade3D.std('#1c0d03')); e.position.set(a, .97, b); g.add(e); });
+    if (f.k === 'banana') { const p = fruitGeo('banana').attributes.position; let lo = null, hi = null; for (let i = 0; i < p.count; i++) { const y = p.getY(i); if (!lo || y < lo[1]) lo = [p.getX(i), y, p.getZ(i)]; if (!hi || y > hi[1]) hi = [p.getX(i), y, p.getZ(i)]; } [lo, hi].forEach(q => { const tip = new THREE.Mesh(new THREE.SphereGeometry(.12, 8, 6), Arcade3D.std('#3f2a0d')); tip.position.set(q[0], q[1], q[2]); g.add(tip); }); }
     if (f.k === 'gold') { const s2 = new THREE.Sprite(Arcade3D.glowSprite('#fde047')); s2.scale.set(3.4, 3.4, 1); g.add(s2); }
     return g;
   }

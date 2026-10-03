@@ -202,6 +202,123 @@ const Arcade3D = (function () {
     });
   }
 
+  /* ── carro partilhado (Drift, Faixa Rápida, …) ──
+     Carroçaria = perfil lateral extrudido (com as cavas das rodas recortadas e arestas boleadas),
+     habitáculo de vidro com painéis laterais com janelas recortadas (pilares A/B/C), tejadilho,
+     rodas com pneu + jante de 5 raios + cubo, faróis/farolins, grelha, para-choques, matrículas,
+     espelhos e puxadores. Tipos: sport, sedan, hatch, suv, van, taxi, police.
+     Construído com comprimento 1 e frente para +x; opts.len escala, opts.forward '-z' roda a frente.
+     userData: wheels (rodar: rotation.z), front (virar: rotation.y), chassis (inclinar), body (material),
+     siren (polícia: [vermelho, azul]) */
+  const CAR_T = {
+    sport: { w: .44, r: .074, wx: [.33, -.32], bot: .045, nose: .115, hood: .165, belt: .195, tail: .205, cab: [-.3, -.11, .03, .17], roof: .285 },
+    sedan: { w: .42, r: .074, wx: [.32, -.31], bot: .05, nose: .13, hood: .19, belt: .215, tail: .22, cab: [-.25, -.15, .07, .19], roof: .33 },
+    hatch: { w: .43, r: .076, wx: [.31, -.31], bot: .05, nose: .13, hood: .19, belt: .22, tail: .23, cab: [-.43, -.38, .07, .19], roof: .34 },
+    suv: { w: .44, r: .09, wx: [.31, -.31], bot: .075, nose: .19, hood: .26, belt: .29, tail: .3, cab: [-.45, -.43, .11, .22], roof: .44 },
+    van: { w: .42, r: .08, wx: [.32, -.32], bot: .065, nose: .2, hood: .27, belt: .3, tail: .3, cab: [-.47, -.465, .26, .37], roof: .53 },
+  };
+  CAR_T.taxi = CAR_T.sedan; CAR_T.police = CAR_T.sedan;
+  const _carTex = {};
+  function carTex(key, draw, w, h) {
+    if (_carTex[key]) return _carTex[key];
+    const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return (_carTex[key] = t);
+  }
+  function car(o) {
+    o = o || {};
+    const type = o.type || 'sedan', T = CAR_T[type] || CAR_T.sedan, W = o.wid || T.w;
+    const color = o.color || (type === 'taxi' ? '#facc15' : type === 'police' ? '#f8fafc' : '#dc2626');
+    const outer = new THREE.Group(), root = new THREE.Group(); outer.add(root);
+    if (o.forward === '-z') root.rotation.y = Math.PI / 2;
+    const chassis = new THREE.Group(); root.add(chassis);
+    const paint = mat('carpaint:' + color + (o.matte ? 'm' : ''), () => new THREE.MeshPhysicalMaterial({ color, metalness: o.matte ? .1 : .45, roughness: o.matte ? .6 : .32, clearcoat: o.matte ? 0 : 1, clearcoatRoughness: .08 }));
+    const glass = mat('carglass', () => new THREE.MeshPhysicalMaterial({ color: '#0b1424', metalness: .6, roughness: .06, clearcoat: 1 }));
+    const plastic = std('#16181d', { roughness: .7 }), chrome = std('#e5e7eb', { metalness: .95, roughness: .18 });
+    const sh = m => { m.castShadow = true; m.receiveShadow = true; return m; };
+    const extr = (pts, depth, bevel, holes) => {
+      const s = new THREE.Shape(); pts.forEach((p, i) => (p.arc ? s.absarc(p.arc[0], p.arc[1], p.arc[2], Math.PI, 0, true) : p.q ? s.quadraticCurveTo(p.q[0], p.q[1], p.q[2], p.q[3]) : i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1])));
+      (holes || []).forEach(h => { const pa = new THREE.Path(); h.forEach((p, i) => (i ? pa.lineTo(p[0], p[1]) : pa.moveTo(p[0], p[1]))); s.holes.push(pa); });
+      const b = bevel || 0, g = new THREE.ExtrudeGeometry(s, { depth: Math.max(.001, depth - b * 2), bevelEnabled: b > 0, bevelThickness: b, bevelSize: b * .8, bevelSegments: 3, curveSegments: 14 });
+      g.translate(0, 0, -depth / 2 + b); return g;
+    };
+    /* carroçaria (abaixo da linha de cintura) com cavas */
+    const ar = T.r * 1.18, [fx, rx] = T.wx, [c0, c1, c2, c3] = T.cab;
+    const body = [[-.49, T.bot + .012], { arc: [rx, T.r, ar] }, { arc: [fx, T.r, ar] }, [.48, T.bot + .012], { q: [.502, T.bot + .016, .5, T.bot + .04] }, [.5, T.nose - .02], { q: [.5, T.nose + .012, .465, T.hood - .012] }, { q: [(.465 + c3) / 2 + .05, T.hood + .01, c3 + .03, T.hood] }, [c3, T.belt], [c0, T.belt], { q: [-.43, T.tail + .012, -.475, T.tail - .008] }, { q: [-.502, T.tail - .02, -.5, T.tail - .05] }, [-.5, T.bot + .04], { q: [-.502, T.bot + .016, -.49, T.bot + .012] }];
+    chassis.add(sh(new THREE.Mesh(extr(body, W, .02), paint)));
+    /* habitáculo: vidro + painéis laterais com janelas + tejadilho */
+    const cab = [[c0, T.belt - .01], [c1, T.roof], [c2, T.roof], [c3, T.belt - .01]];
+    const gm = new THREE.Mesh(extr(cab, W * .84, .012), glass); chassis.add(gm);
+    const xAt = (xa, xb, y) => xa + (xb - xa) * (y - T.belt) / (T.roof - T.belt);
+    const y0 = T.belt + .012, y1 = T.roof - .016, mid = type === 'van' ? (c1 + c2) / 2 : (c1 + c2) / 2 - .01;
+    const holes = [
+      [[xAt(c0, c1, y0) + .025, y0], [xAt(c0, c1, y1) + .02, y1], [mid - .015, y1], [mid - .015, y0]],
+      [[mid + .015, y0], [mid + .015, y1], [xAt(c3, c2, y1) - .02, y1], [xAt(c3, c2, y0) - .025, y0]],
+    ];
+    [-1, 1].forEach(sd => { const p = new THREE.Mesh(extr(cab, .012, 0, holes), paint); p.position.z = sd * W * .425; chassis.add(p); });
+    const roofM = sh(new THREE.Mesh(extr([[c1 - .01, T.roof - .018], [c1 + .005, T.roof + .006], [c2 - .005, T.roof + .006], [c2 + .01, T.roof - .018]], W * .86, .008), paint)); chassis.add(roofM);
+    /* frente e traseira */
+    const box = (m, x, y, z, sx, sy, sz, p) => { const b = new THREE.Mesh(roundBox(.25), m); b.position.set(x, y, z); b.scale.set(sx, sy, sz); (p || chassis).add(b); return b; };
+    box(plastic, .512, T.bot + .03, 0, .02, .05, W * .96);                        /* para-choques */
+    box(plastic, -.512, T.bot + .03, 0, .02, .05, W * .96);
+    box(plastic, .514, (T.nose + T.bot) / 2 + .018, 0, .01, .034, W * .38);         /* grelha */
+    const hl = glowMat(o.night ? '#fffbe6' : '#f8fafc'), tl = glowMat('#ef1d3a');
+    [-1, 1].forEach(sd => {
+      box(hl, .516, T.nose - .022, sd * W * .31, .01, .026, W * .19);
+      box(chrome, .514, T.nose - .022, sd * W * .31, .01, .034, W * .22);
+      box(tl, -.517, T.tail - .06, sd * W * .32, .01, .028, W * .22);
+      /* espelhos */
+      box(paint, c3 - .02, T.belt + .03, sd * (W / 2 + .018), .035, .022, .03);
+      /* puxadores */
+      box(chrome, mid + .05, T.belt - .02, sd * (W / 2 + .002), .028, .006, .004);
+      box(chrome, mid - .09, T.belt - .02, sd * (W / 2 + .002), .028, .006, .004);
+    });
+    const plateT = carTex('plate', (x, w, h) => { x.fillStyle = '#f8fafc'; x.fillRect(0, 0, w, h); x.fillStyle = '#1d4ed8'; x.fillRect(0, 0, w * .12, h); x.fillStyle = '#111'; x.font = `bold ${h * .7}px monospace`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('DU-26', w * .56, h * .54); }, 128, 32);
+    const plate = new THREE.MeshBasicMaterial({ map: plateT });
+    [[.523, 1], [-.523, -1]].forEach(([x, sd]) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(W * .3, .028), plate); p.position.set(x, T.bot + .045, 0); p.rotation.y = sd * Math.PI / 2; chassis.add(p); });
+    /* extras por tipo */
+    if (type === 'sport') {
+      [-1, 1].forEach(sd => box(plastic, -.44, T.tail + .02, sd * W * .3, .02, .04, .012));
+      box(plastic, -.45, T.tail + .045, 0, .06, .01, W * .9);
+    }
+    if (type === 'suv') [-1, 1].forEach(sd => box(chrome, (c1 + c2) / 2, T.roof + .02, sd * W * .36, (c2 - c1) * .9, .01, .012));
+    if (type === 'taxi') {
+      const sT = carTex('taxi', (x, w, h) => { x.fillStyle = '#facc15'; x.fillRect(0, 0, w, h); x.fillStyle = '#111'; x.font = `900 ${h * .62}px system-ui`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('TAXI', w / 2, h * .55); }, 128, 40);
+      const s = new THREE.Mesh(new THREE.BoxGeometry(.09, .035, W * .4), [std('#facc15'), std('#facc15'), std('#facc15'), std('#facc15'), new THREE.MeshBasicMaterial({ map: sT }), new THREE.MeshBasicMaterial({ map: sT })]);
+      s.position.set((c1 + c2) / 2, T.roof + .022, 0); s.rotation.y = Math.PI / 2; chassis.add(s);
+      [-1, 1].forEach(sd => box(std('#111'), (c0 + c3) / 2, T.belt - .045, sd * (W / 2 + .001), .5, .012, .003));
+    }
+    if (type === 'police') {
+      [-1, 1].forEach(sd => box(std('#1e3a8a'), 0, (T.bot + T.belt) / 2, sd * (W / 2 + .002), .62, .05, .004));
+      box(plastic, (c1 + c2) / 2, T.roof + .015, 0, .06, .02, W * .62);
+      const red = new THREE.Mesh(roundBox(.25), glowMat('#ef4444')), blue = new THREE.Mesh(roundBox(.25), glowMat('#3b82f6'));
+      [[red, 1], [blue, -1]].forEach(([m, sd]) => { m.position.set((c1 + c2) / 2, T.roof + .032, sd * W * .17); m.scale.set(.05, .02, W * .26); chassis.add(m); });
+      outer.userData.siren = [red, blue];
+    }
+    /* rodas */
+    const tireG = new THREE.CylinderGeometry(T.r, T.r, .06, 22); tireG.rotateX(Math.PI / 2);
+    const rimG = new THREE.CylinderGeometry(T.r * .64, T.r * .64, .062, 18); rimG.rotateX(Math.PI / 2);
+    const tire = std('#14151a', { roughness: .85 }), rimM = o.rim ? std(o.rim, { metalness: .9, roughness: .25 }) : chrome, dark = std('#3a3d45', { metalness: .6, roughness: .4 });
+    const wheels = [], front = [];
+    [[fx, 1], [fx, -1], [rx, 1], [rx, -1]].forEach(([x, sd], i) => {
+      const steer = new THREE.Group(); steer.position.set(x, T.r, sd * (W / 2 - .022)); root.add(steer);
+      const wheel = new THREE.Group(); steer.add(wheel);
+      wheel.add(sh(new THREE.Mesh(tireG, tire)));
+      const rim = new THREE.Mesh(rimG, dark); wheel.add(rim);
+      for (let k = 0; k < 5; k++) { const sp = new THREE.Mesh(new THREE.BoxGeometry(T.r * .58, T.r * .13, .01), rimM); sp.position.z = sd * .032; sp.rotation.z = k / 5 * Math.PI * 2; sp.geometry.translate(T.r * .29, 0, 0); wheel.add(sp); }
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(T.r * .16, T.r * .16, .066, 10), rimM); hub.rotation.x = Math.PI / 2; wheel.add(hub);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(T.r * .62, T.r * .05, 6, 20), rimM); ring.position.z = sd * .031; wheel.add(ring);
+      wheels.push(wheel); if (i < 2) front.push(steer);
+    });
+    /* sombra de contacto (mancha escura por baixo) */
+    if (o.blob !== false) {
+      const bl = new THREE.Mesh(new THREE.PlaneGeometry(1.08, W * 1.25), new THREE.MeshBasicMaterial({ map: glowTex(), color: '#000', transparent: true, opacity: .45, depthWrite: false }));
+      bl.rotation.x = -Math.PI / 2; bl.position.y = .004; root.add(bl);
+    }
+    outer.userData.wheels = wheels; outer.userData.front = front; outer.userData.chassis = chassis; outer.userData.paint = paint; outer.userData.r = T.r;
+    outer.scale.setScalar(o.len || 1);
+    return outer;
+  }
+
   return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse,
-    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool };
+    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool, car, CAR_T };
 })();
