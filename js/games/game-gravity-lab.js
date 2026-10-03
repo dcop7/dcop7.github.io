@@ -400,6 +400,14 @@ const GravityLabGame = (function () {
   function render() {
     if (!cx) return;
     cx.fillStyle = '#020814'; cx.fillRect(0, 0, W, H);
+    /* laboratório ao fundo: grelha fina, brilho radial e partículas a flutuar */
+    const t0 = performance.now() / 1000, rg = cx.createRadialGradient(W / 2, H * .45, 0, W / 2, H * .45, Math.max(W, H) * .7);
+    rg.addColorStop(0, 'rgba(14,116,144,.22)'); rg.addColorStop(1, 'rgba(2,8,20,0)'); cx.fillStyle = rg; cx.fillRect(0, 0, W, H);
+    cx.strokeStyle = 'rgba(56,189,248,.05)'; cx.lineWidth = 1; cx.beginPath();
+    for (let x = (G.tile ? (G.walls[0] ? G.walls[0].x % (G.tile / 2) : 0) : 0); x < W; x += (G.tile || 40) / 2) { cx.moveTo(x, 0); cx.lineTo(x, H); }
+    for (let y = 0; y < H; y += (G.tile || 40) / 2) { cx.moveTo(0, y); cx.lineTo(W, y); }
+    cx.stroke();
+    for (let i = 0; i < 24; i++) { const px = (i * 97.3 + t0 * 6 * (i % 3 + 1)) % W, py = (i * 53.7 + Math.sin(t0 + i) * 20 + H) % H; cx.fillStyle = `rgba(103,232,249,${.12 + (i % 4) * .05})`; cx.beginPath(); cx.arc(px, py, 1 + (i % 3) * .6, 0, 6.3); cx.fill(); }
     drawGrid(); drawSwitches(); drawExit(); drawTrail(); drawBall(); drawParticles();
     drawHint();
   }
@@ -408,29 +416,39 @@ const GravityLabGame = (function () {
   function noGlow() { cx.shadowBlur = 0; }
 
   function drawGrid() {
+    /* placas de metal com bisel, rebites e uma risca de luz nas arestas que dão para o espaço livre */
+    const solid = new Set(G.walls.map(w => Math.round(w.x) + ',' + Math.round(w.y)));
+    const has = (x, y) => solid.has(Math.round(x) + ',' + Math.round(y));
     G.walls.forEach(w => {
-      const grad = cx.createLinearGradient(w.x, w.y, w.x+w.w, w.y+w.h);
-      grad.addColorStop(0,'#0a1628'); grad.addColorStop(1,'#0f1f3a');
+      const grad = cx.createLinearGradient(w.x, w.y, w.x + w.w, w.y + w.h);
+      grad.addColorStop(0, '#1b2b46'); grad.addColorStop(1, '#0c1730');
       cx.fillStyle = grad; cx.fillRect(w.x, w.y, w.w, w.h);
-      glow('#1e40af', 4);
-      cx.strokeStyle = '#1e3a5f'; cx.lineWidth = 1;
-      cx.strokeRect(w.x+.5, w.y+.5, w.w-1, w.h-1);
-      noGlow();
+      cx.fillStyle = 'rgba(255,255,255,.06)'; cx.fillRect(w.x + 2, w.y + 2, w.w - 4, 2);
+      cx.fillStyle = 'rgba(0,0,0,.35)'; cx.fillRect(w.x + 2, w.y + w.h - 3, w.w - 4, 2);
+      cx.strokeStyle = 'rgba(30,58,95,.9)'; cx.lineWidth = 1; cx.strokeRect(w.x + .5, w.y + .5, w.w - 1, w.h - 1);
+      const r = Math.max(1.2, w.w * .045); cx.fillStyle = '#3b5578';
+      [[.18, .18], [.82, .18], [.18, .82], [.82, .82]].forEach(([a, b]) => { cx.beginPath(); cx.arc(w.x + w.w * a, w.y + w.h * b, r, 0, 6.3); cx.fill(); });
+      glow('#38bdf8', 8); cx.strokeStyle = 'rgba(56,189,248,.75)'; cx.lineWidth = 2; cx.beginPath();
+      if (!has(w.x, w.y - w.h)) { cx.moveTo(w.x, w.y + 1); cx.lineTo(w.x + w.w, w.y + 1); }
+      if (!has(w.x, w.y + w.h)) { cx.moveTo(w.x, w.y + w.h - 1); cx.lineTo(w.x + w.w, w.y + w.h - 1); }
+      if (!has(w.x - w.w, w.y)) { cx.moveTo(w.x + 1, w.y); cx.lineTo(w.x + 1, w.y + w.h); }
+      if (!has(w.x + w.w, w.y)) { cx.moveTo(w.x + w.w - 1, w.y); cx.lineTo(w.x + w.w - 1, w.y + w.h); }
+      cx.stroke(); noGlow();
     });
   }
 
   function drawExit() {
     if (!G.exit) return;
     const e = G.exit, t = performance.now()/1000;
-    glow('#22d3ee', 20);
-    cx.fillStyle = `rgba(34,211,238,${0.3+Math.sin(t*3)*.15})`;
-    cx.fillRect(e.x, e.y, e.w, e.h);
-    cx.strokeStyle = '#22d3ee'; cx.lineWidth = 2;
-    cx.strokeRect(e.x+1, e.y+1, e.w-2, e.h-2);
-    cx.fillStyle = '#22d3ee'; cx.font = `${G.tile*.6}px serif`;
-    cx.textAlign='center'; cx.textBaseline='middle';
-    cx.fillText('🚪', e.x+e.w/2, e.y+e.h/2);
-    noGlow();
+    /* portal de saída: vórtice em espiral a rodar dentro de um anel */
+    const ccx = e.x + e.w / 2, ccy = e.y + e.h / 2, R = e.w * .44;
+    const pg = cx.createRadialGradient(ccx, ccy, 0, ccx, ccy, R); pg.addColorStop(0, '#ecfeff'); pg.addColorStop(.35, '#22d3ee'); pg.addColorStop(1, 'rgba(8,47,73,.9)');
+    glow('#22d3ee', 22); cx.fillStyle = pg; cx.beginPath(); cx.arc(ccx, ccy, R, 0, 6.3); cx.fill(); noGlow();
+    cx.save(); cx.translate(ccx, ccy); cx.rotate(t * 2.4);
+    cx.strokeStyle = 'rgba(236,254,255,.75)'; cx.lineWidth = Math.max(1.5, R * .09); cx.lineCap = 'round';
+    for (let k = 0; k < 3; k++) { cx.rotate(Math.PI * 2 / 3); cx.beginPath(); for (let a = 0; a < 3.2; a += .2) { const rr = R * (.15 + a / 3.2 * .75); cx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } cx.stroke(); }
+    cx.restore();
+    cx.strokeStyle = `rgba(103,232,249,${.6 + Math.sin(t * 3) * .3})`; cx.lineWidth = 2.5; cx.beginPath(); cx.arc(ccx, ccy, R + 3 + Math.sin(t * 3) * 1.5, 0, 6.3); cx.stroke();
   }
 
   function drawSwitches() {

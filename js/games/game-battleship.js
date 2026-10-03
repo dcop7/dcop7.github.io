@@ -155,7 +155,7 @@ const BattleshipGame = (function () {
 @keyframes bs-drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-60px,18px,0)}}
 .bs-wrap>*:not(.bs-ocean){position:relative;z-index:1}
 .bs-title{font-family:var(--font-head,inherit);font-size:1.4rem;font-weight:900;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.5)}
-.bs-hint{font-size:.82rem;color:#bcd6ea;text-align:center;max-width:460px;min-height:2.9em;display:flex;align-items:center;justify-content:center}   /* altura fixa: o tabuleiro não salta quando a dica muda */
+.bs-hint{font-size:.82rem;color:#bcd6ea;text-align:center;max-width:460px;min-height:2.9em;display:block;line-height:1.45;text-wrap:balance}   /* altura fixa: o tabuleiro não salta quando a dica muda */
 .bs-board-lbl{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9fc0d8;margin-bottom:4px;text-align:center}
 .bs-board{position:relative;display:grid;grid-template-columns:repeat(${N},1fr);grid-template-rows:repeat(${N},1fr);
   width:min(92vw,392px);aspect-ratio:1;gap:0;padding:0;border-radius:8px;overflow:hidden;

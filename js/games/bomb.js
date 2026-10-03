@@ -38,7 +38,7 @@ const BombGame = (function () {
       title: '💣 Desarmar a Bomba', tagline: 'Mantém a calma. Corta certo. Não rebentes.',
       chooseDiff: 'Escolhe o nível de dificuldade', start: '▶ Começar',
       easy: 'Fácil', medium: 'Médio', hard: 'Difícil', extreme: 'Extremo',
-      modules: 'módulos', strikesWord: 'erros', noStrikes: 'sem margem',
+      modules: 'módulos', strikesWord: 'erros', strikeWord: 'erro', noStrikes: 'sem margem',
       hud_time: 'TEMPO', hud_serial: 'SÉRIE', hud_strikes: 'ERROS', module: 'Módulo',
       mod_wires: 'Fios', mod_button: 'Botão', mod_simon: 'Simon', mod_code: 'Código', mod_maths: 'Cálculo',
       c_red: 'vermelho', c_blue: 'azul', c_green: 'verde', c_yellow: 'amarelo', c_white: 'branco', c_black: 'preto',
@@ -66,7 +66,7 @@ const BombGame = (function () {
       title: '💣 Defuse the Bomb', tagline: 'Stay calm. Cut right. Don\'t blow up.',
       chooseDiff: 'Choose the difficulty', start: '▶ Start',
       easy: 'Easy', medium: 'Medium', hard: 'Hard', extreme: 'Extreme',
-      modules: 'modules', strikesWord: 'strikes', noStrikes: 'no margin',
+      modules: 'modules', strikesWord: 'strikes', strikeWord: 'strike', noStrikes: 'no margin',
       hud_time: 'TIME', hud_serial: 'SERIAL', hud_strikes: 'STRIKES', module: 'Module',
       mod_wires: 'Wires', mod_button: 'Button', mod_simon: 'Simon', mod_code: 'Code', mod_maths: 'Maths',
       c_red: 'red', c_blue: 'blue', c_green: 'green', c_yellow: 'yellow', c_white: 'white', c_black: 'black',
@@ -153,7 +153,7 @@ const BombGame = (function () {
                 <span class="bmb-diff-emoji">${d.emoji}</span>
                 <span class="bmb-diff-label">${t(k)}</span>
                 <span class="bmb-diff-info">${d.modules.length} ${t('modules')} · ${d.time}s</span>
-                <span class="bmb-diff-info2">${d.strikes > 0 ? d.strikes + ' ' + t('strikesWord') : t('noStrikes')}</span>
+                <span class="bmb-diff-info2">${d.strikes > 0 ? d.strikes + ' ' + (d.strikes === 1 ? t('strikeWord') : t('strikesWord')) : t('noStrikes')}</span>
               </button>`).join('')}
           </div>
         </div>
