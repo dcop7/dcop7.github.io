@@ -155,7 +155,10 @@ const WhatChangedGame = (function () {
     const cam = new THREE.PerspectiveCamera(26, 1, .1, 100);
     const R3 = { renderer, scene, cam, sun, objs: new Map() };
     const cols = G.cols, rows = G.rows, SW = cols * CW + T, SH = rows * CH + T;
-    const wood = S('#8a5a36', { roughness: .62 }), woodD = S('#6b4429', { roughness: .7 });
+    /* madeira com veios (textura própria em vez de cor lisa) */
+    const grain = (base, dark, knots) => { const c = document.createElement('canvas'); c.width = 256; c.height = 64; const x = c.getContext('2d'); x.fillStyle = base; x.fillRect(0, 0, 256, 64); for (let i = 0; i < 26; i++) { x.strokeStyle = `rgba(${dark},${.12 + Math.random() * .18})`; x.lineWidth = .6 + Math.random() * 1.6; x.beginPath(); const y0 = Math.random() * 64; for (let X = 0; X <= 256; X += 8) x.lineTo(X, y0 + Math.sin(X * .03 + i) * 2.5); x.stroke(); } for (let k = 0; k < (knots || 0); k++) { const kx = 40 + Math.random() * 180, ky = 14 + Math.random() * 36; x.strokeStyle = `rgba(${dark},.35)`; for (let r = 2; r < 9; r += 2) { x.beginPath(); x.ellipse(kx, ky, r * 2.2, r * .8, 0, 0, 6.3); x.stroke(); } } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; };
+    const wood = new THREE.MeshStandardMaterial({ map: grain('#9a6740', '60,30,10', 1), roughness: .62 }), woodD = new THREE.MeshStandardMaterial({ map: grain('#6b4429', '30,15,5'), roughness: .75 });
+    wood.map.repeat.set(2, 1); woodD.map.repeat.set(3, 6);
     const wallM = own(WALLS[0], { roughness: .95 }); R3.wallM = wallM;
     const wall = mesh(new THREE.PlaneGeometry(30, 20), wallM, 0, SH / 2, -CD / 2 - .02); wall.castShadow = false; scene.add(wall);
     const back = mesh(new THREE.BoxGeometry(SW, SH, .03), woodD, 0, SH / 2, -CD / 2 + .015); scene.add(back);

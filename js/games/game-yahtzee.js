@@ -238,9 +238,12 @@ const YahtzeeGame = (function () {
     const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 128, 128); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#e2e8f0');
     x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-    x.strokeStyle = 'rgba(148,163,184,.55)'; x.lineWidth = 6; x.strokeRect(3, 3, 122, 122);
+    const vg = x.createRadialGradient(64, 64, 30, 64, 64, 92); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(100,116,139,.22)'); x.fillStyle = vg; x.fillRect(0, 0, 128, 128);
     const P = { 1: [[64, 64]], 2: [[36, 36], [92, 92]], 3: [[34, 34], [64, 64], [94, 94]], 4: [[36, 36], [92, 36], [36, 92], [92, 92]], 5: [[34, 34], [94, 34], [64, 64], [34, 94], [94, 94]], 6: [[36, 30], [92, 30], [36, 64], [92, 64], [36, 98], [92, 98]] }[v];
-    P.forEach(([px, py]) => { const r = v === 1 ? 15 : 11; const rg = x.createRadialGradient(px - 3, py - 3, 1, px, py, r); rg.addColorStop(0, v === 1 ? '#ef4444' : '#334155'); rg.addColorStop(1, v === 1 ? '#991b1b' : '#0f172a'); x.fillStyle = rg; x.beginPath(); x.arc(px, py, r, 0, 6.3); x.fill(); });
+    /* pintas cavadas: sombra por cima, brilho por baixo (luz vem de cima) */
+    P.forEach(([px, py]) => { const r = v === 1 ? 15 : 11;
+      x.fillStyle = 'rgba(255,255,255,.9)'; x.beginPath(); x.arc(px + 1, py + 1.6, r + 1, 0, 6.3); x.fill();
+      const rg = x.createRadialGradient(px + 3, py + 3, 1, px, py, r); rg.addColorStop(0, v === 1 ? '#f87171' : '#475569'); rg.addColorStop(1, v === 1 ? '#7f1d1d' : '#0b1120'); x.fillStyle = rg; x.beginPath(); x.arc(px, py, r, 0, 6.3); x.fill(); });
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
   }
   function build3D(G, api) {
@@ -256,7 +259,16 @@ const YahtzeeGame = (function () {
     const felt = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), new THREE.ShadowMaterial({ opacity: .35 }));
     felt.rotation.x = -Math.PI / 2; felt.receiveShadow = true; scene.add(felt);
     const mats = [3, 4, 1, 6, 2, 5].map(v => new THREE.MeshStandardMaterial({ map: faceTex(v), roughness: .32, metalness: .02 }));
-    const geo = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+    /* dado de cantos arredondados: caixa subdividida em que cada vértice é empurrado para fora
+       a partir de uma caixa interior (mantém os 6 grupos de faces → 6 texturas) */
+    const geo = (() => {
+      const g = new THREE.BoxGeometry(1, 1, 1, 10, 10, 10), p = g.attributes.position, r = .14, h = .5 - r, v = new THREE.Vector3(), c = new THREE.Vector3();
+      for (let i = 0; i < p.count; i++) {
+        v.fromBufferAttribute(p, i); c.set(Math.max(-h, Math.min(h, v.x)), Math.max(-h, Math.min(h, v.y)), Math.max(-h, Math.min(h, v.z)));
+        v.sub(c).normalize().multiplyScalar(r).add(c); p.setXYZ(i, v.x, v.y, v.z);
+      }
+      g.computeVertexNormals(); return g;
+    })();
     const E = (x, y, z) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
     Object.assign(FACE_Q, { 1: E(0, 0, 0), 6: E(Math.PI, 0, 0), 3: E(0, 0, Math.PI / 2), 4: E(0, 0, -Math.PI / 2), 2: E(-Math.PI / 2, 0, 0), 5: E(Math.PI / 2, 0, 0) });
     const dice = G.dice.map((v, i) => {
