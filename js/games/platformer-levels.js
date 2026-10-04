@@ -1,5 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════
-   Mundos de Pip — níveis (4 mundos × 2).
+   Mundos de Pip — níveis (4 mundos × 3; o Escaravelho-Rei fica sempre no fim).
+   A ordem do array é a ordem de desbloqueio; os ids (L1…L12) não mudam
+   por causa dos recordes guardados.
    Cada nível é construído com um pequeno "construtor" que escreve o
    mapa de tiles (o mesmo formato de texto que o motor lê):
 
@@ -178,6 +180,72 @@ const PIP_LEVELS = (function () {
       b.coins(190, 193, 9);
     }),
 
+    build({ id: 'L9', world: 0, name: 'Bosque das Molas', par: 120 }, 206, b => {
+      b.ground(0, 22, 15);
+      b.str(2, 14, 'S');
+      b.str(8, 11, '?P?');
+      b.str(14, 14, 'e');
+      b.coins(16, 20, 12);
+      /* mola → trilho alto por cima das copas (pena no fim) */
+      b.str(21, 14, 'u');
+      b.rect(23, 7, 33, 7, '=');
+      b.coins(24, 31, 6);
+      b.str(33, 6, '*');
+      b.str(29, 3, 'f');
+      b.ground(23, 36, 15);
+      b.str(27, 14, 'e'); b.str(33, 14, 's');
+      /* barranco com plataforma móvel */
+      b.str(40, 12, 'm');
+      b.coins(39, 45, 10);
+      b.ground(50, 72, 15);
+      b.str(52, 14, 'K');
+      /* colina íngreme com caixas por cima */
+      let top = b.up(56, 15, 4);
+      b.ground(60, 66, top);
+      b.str(64, top - 1, 'e');
+      b.str(61, top - 4, '?B?');
+      top = b.down(67, top, 4);
+      b.ground(71, 96, 15);
+      b.str(74, 14, 'R');
+      b.str(80, 14, 'O');
+      b.str(80, 9, 'o'); b.str(77, 11, 'o'); b.str(83, 11, 'o');
+      b.str(89, 14, 'e'); b.str(93, 14, 'e');
+      b.str(91, 11, 'h');
+      /* poço com plataforma vertical → saliência alta com a 2.ª pena */
+      b.str(98, 11, 'v');
+      b.ground(103, 130, 15);
+      b.rect(103, 7, 109, 7, '%');
+      b.str(107, 6, '*');
+      b.coins(104, 106, 6);
+      b.str(113, 14, 's'); b.str(119, 14, 'e');
+      b.str(116, 11, 'B?B');
+      /* porta para a toca secreta */
+      b.str(125, 14, 'X');
+      /* rampa suave e tábuas sobre um buraco largo (com mola para as moedas de cima) */
+      top = b.upG(131, 15, 2);
+      b.ground(135, 138, top);
+      b.str(137, top - 1, 'u');
+      b.rect(141, 11, 143, 11, '='); b.rect(147, 10, 149, 10, '=');
+      b.coins(141, 143, 10); b.coins(147, 149, 9);
+      b.arc(138, 150, 5, 2);
+      b.str(146, 4, 'f');
+      b.ground(153, 180, 15);
+      b.str(157, 14, 'e'); b.str(161, 14, 'e'); b.str(165, 14, 's');
+      b.str(159, 11, '?B?');
+      b.stairs(168, 15, 5, '%');
+      b.coins(169, 172, 8);
+      b.str(177, 14, 'G');
+      /* toca secreta */
+      b.room(184, 4, 205, 16);
+      b.ground(185, 204, 15, '%');
+      b.str(186, 14, 'X');
+      b.coins(189, 201, 14);
+      b.rect(190, 11, 193, 11, '='); b.rect(196, 8, 199, 8, '=');
+      b.coins(190, 193, 10);
+      b.str(198, 7, '*');
+      b.str(201, 14, 'e');
+    }),
+
     /* ════════════ MUNDO 2 · DESERTO DOURADO ════════════ */
     build({ id: 'L3', world: 1, name: 'Dunas Douradas', par: 130 }, 220, b => {
       b.ground(0, 18, 15);
@@ -296,6 +364,71 @@ const PIP_LEVELS = (function () {
       b.str(178, 14, 'G');
     }),
 
+    build({ id: 'L10', world: 1, name: 'Oásis Escondido', par: 140 }, 214, b => {
+      b.ground(0, 16, 15);
+      b.str(2, 14, 'S');
+      b.str(8, 11, '?P?');
+      b.str(13, 14, 's');
+      /* duna grande: embalo para o loop */
+      let top = b.upG(17, 15, 3);
+      b.ground(23, 27, top);
+      b.coins(23, 27, top - 3);
+      top = b.down(28, top, 3);
+      b.ground(31, 56, 15);
+      b.str(32, 14, 'R');
+      b.str(38, 14, 'O');
+      b.str(38, 9, 'o'); b.str(35, 11, 'o'); b.str(41, 11, 'o');
+      b.str(46, 14, 'e'); b.str(51, 14, 's');
+      b.str(48, 11, 'B?B');
+      b.str(54, 14, 'K');
+      /* areias movediças: plataformas que caem, com uma pena lá em cima */
+      b.str(58, 13, 'x'); b.str(60, 12, 'x'); b.str(62, 11, 'x'); b.str(64, 11, 'x'); b.str(66, 12, 'x'); b.str(68, 13, 'x');
+      b.coins(58, 61, 9); b.coins(65, 68, 9);
+      b.str(63, 7, '*');
+      b.ground(71, 90, 15);
+      /* palmeira: mola até às tâmaras (moedas) */
+      b.str(74, 14, 'u');
+      b.rect(73, 5, 77, 5, '=');
+      b.coins(73, 74, 4); b.str(76, 4, '*');
+      b.str(81, 14, 's'); b.str(86, 14, 'e');
+      /* fosso com plataforma móvel */
+      b.str(93, 12, 'm');
+      b.coins(93, 99, 9);
+      b.ground(105, 132, 15);
+      b.str(109, 14, 'e'); b.str(114, 14, 's');
+      /* porta para o oásis escondido (antes da pirâmide) */
+      b.str(118, 14, 'X');
+      b.stairs(120, 15, 6, '%');
+      b.stairs(126, 15, 6, '%', -1);
+      b.str(125, 8, 'e');
+      b.arc(120, 131, 7, 2);
+      b.ground(132, 172, 15);
+      b.str(136, 14, 's'); b.str(141, 14, 'e');
+      /* picos com tábuas por cima */
+      b.rect(145, 14, 151, 14, '^');
+      b.rect(144, 11, 152, 11, '=');
+      b.coins(145, 151, 10);
+      b.str(156, 14, 'R');
+      top = b.up(160, 15, 3);
+      b.ground(163, 166, top);
+      b.str(165, top - 4, '?');
+      top = b.down(167, top, 3);
+      b.str(171, 14, 'e');
+      b.ground(170, 186, 15);
+      b.stairs(176, 15, 4, '%');
+      b.coins(177, 179, 9);
+      b.str(183, 14, 'G');
+      /* o oásis (sala secreta) */
+      b.room(190, 3, 213, 16);
+      b.ground(191, 212, 15, '%');
+      b.str(192, 14, 'X');
+      b.coins(195, 208, 14);
+      b.rect(196, 11, 199, 11, '='); b.rect(203, 8, 206, 8, '=');
+      b.coins(196, 199, 10);
+      b.str(205, 7, '*');
+      b.str(201, 14, 's');
+    }),
+
     /* ════════════ MUNDO 3 · PICOS GELADOS ════════════ */
     build({ id: 'L5', world: 2, name: 'Encosta Gelada', par: 130 }, 200, b => {
       b.ground(0, 16, 15);
@@ -406,6 +539,66 @@ const PIP_LEVELS = (function () {
       b.str(164, 14, 'G');
     }),
 
+    build({ id: 'L11', world: 2, name: 'Lago Congelado', par: 140 }, 210, b => {
+      b.ground(0, 16, 15);
+      b.str(2, 14, 'S');
+      b.str(8, 11, '?P?');
+      b.str(13, 14, 'e');
+      /* lago: blocos de gelo baixos separados por água gelada */
+      b.ground(19, 23, 15); b.ground(26, 29, 14); b.ground(32, 35, 13); b.ground(38, 41, 14);
+      b.arc(23, 26, 12, 2); b.arc(29, 32, 11, 2); b.arc(35, 38, 11, 2); b.arc(41, 44, 12, 2);
+      b.str(39, 13, 'e');
+      b.ground(44, 62, 15);
+      b.str(50, 14, 'K');
+      b.str(55, 8, 'f'); b.str(58, 14, 's');
+      /* gruta de gelo com teto */
+      b.rect(63, 6, 85, 8, '%');
+      b.ground(63, 104, 15);
+      b.str(68, 14, 'e'); b.str(74, 14, 's'); b.str(80, 14, 'e');
+      b.str(70, 11, '?B?');
+      b.rect(77, 12, 79, 12, '=');
+      b.coins(66, 72, 13);
+      /* parede com passagem falsa: pena escondida */
+      b.rect(86, 12, 91, 14, '%');
+      b.rect(86, 13, 88, 14, 'F');
+      b.str(87, 14, '*');
+      b.coins(88, 91, 10);
+      b.str(97, 14, 'e');
+      /* plataformas verticais sobre o abismo */
+      b.str(106, 12, 'v'); b.str(112, 10, 'v');
+      b.coins(106, 108, 6); b.coins(112, 114, 4);
+      b.str(113, 2, '*');
+      b.ground(118, 140, 15);
+      b.str(122, 14, 'R');
+      b.str(128, 14, 'O');
+      b.str(128, 9, 'o'); b.str(125, 11, 'o'); b.str(131, 11, 'o');
+      b.str(137, 14, 'e');
+      /* ponte de gelo que cai com abelhas */
+      b.str(142, 13, 'x'); b.str(143, 13, 'x'); b.str(144, 13, 'x'); b.str(145, 13, 'x'); b.str(146, 13, 'x'); b.str(147, 13, 'x'); b.str(148, 13, 'x'); b.str(149, 13, 'x'); b.str(150, 13, 'x');
+      b.coins(142, 150, 11);
+      b.str(146, 8, 'f');
+      b.ground(153, 192, 15);
+      b.str(155, 14, 'X');
+      b.str(158, 14, 's');
+      let top = b.upG(162, 15, 3);
+      b.ground(168, 172, top);
+      b.str(170, top - 1, 's');
+      b.str(169, top - 4, '?!?');
+      top = b.downG(173, top, 3);
+      b.str(181, 14, 'e');
+      b.stairs(183, 15, 4, '%');
+      b.coins(184, 186, 9);
+      b.str(190, 14, 'G');
+      /* caverna de gelo secreta */
+      b.room(195, 4, 209, 16);
+      b.ground(196, 208, 15, '%');
+      b.str(197, 14, 'X');
+      b.coins(199, 207, 14);
+      b.rect(199, 11, 201, 11, '='); b.rect(204, 8, 206, 8, '=');
+      b.str(205, 7, '*');
+      b.coins(199, 201, 10);
+    }),
+
     /* ════════════ MUNDO 4 · CASTELO DE LAVA ════════════ */
     build({ id: 'L7', world: 3, name: 'Muralhas de Fogo', par: 160 }, 210, b => {
       b.ground(0, 14, 15, '%');
@@ -460,6 +653,59 @@ const PIP_LEVELS = (function () {
       b.rect(179, 10, 181, 10, '=');
       b.stairs(182, 15, 4, '%');
       b.str(188, 14, 'G');
+    }),
+
+    build({ id: 'L12', world: 3, name: 'Forja Ardente', par: 160 }, 192, b => {
+      b.ground(0, 14, 15, '%');
+      b.str(2, 14, 'S');
+      b.str(8, 11, '?P?');
+      b.rect(15, 16, 20, 17, '~');
+      b.str(17, 16, 'l');
+      b.ground(21, 36, 15, '%');
+      b.str(26, 11, 'T');
+      b.str(31, 14, 's'); b.str(34, 14, 'e');
+      /* pilares sobre um lago de lava */
+      b.rect(37, 16, 60, 17, '~');
+      b.str(43, 16, 'l'); b.str(48, 16, 'l'); b.str(53, 16, 'l');
+      b.rect(40, 12, 41, 15, '%'); b.rect(45, 10, 46, 15, '%'); b.rect(50, 12, 51, 15, '%'); b.rect(55, 11, 56, 15, '%');
+      b.coins(40, 41, 11); b.coins(45, 46, 9); b.coins(50, 51, 11); b.coins(55, 56, 10);
+      b.str(45, 5, '*');
+      b.ground(61, 78, 15, '%');
+      b.str(64, 14, 'K');
+      b.str(68, 14, 'e'); b.str(72, 14, 's');
+      b.str(70, 10, 'T');
+      b.str(75, 11, 'B?B');
+      /* forja: corredor com teto, barra de fogo e plataforma móvel sobre lava */
+      b.rect(79, 4, 120, 6, '%');
+      b.ground(79, 90, 15, '%');
+      b.str(84, 11, 'T');
+      b.rect(91, 16, 104, 17, '~');
+      b.str(95, 16, 'l'); b.str(101, 16, 'l');
+      b.str(93, 12, 'm');
+      b.coins(93, 99, 10);
+      b.ground(105, 120, 15, '%');
+      b.str(108, 14, 's'); b.str(112, 14, 'e');
+      b.str(116, 10, 'T');
+      b.coins(106, 110, 13);
+      /* fosso com plataformas que caem (pena lá em cima) */
+      b.rect(121, 16, 138, 17, '~');
+      b.str(126, 16, 'l'); b.str(133, 16, 'l');
+      b.str(122, 13, 'x'); b.str(125, 12, 'x'); b.str(128, 11, 'x'); b.str(131, 11, 'x'); b.str(134, 12, 'x'); b.str(137, 13, 'x');
+      b.str(129, 7, '*');
+      b.ground(139, 190, 15, '%');
+      b.str(142, 14, 'K');
+      b.str(146, 14, 'e'); b.str(150, 14, 's'); b.str(154, 14, 'e');
+      /* torre com uma passagem falsa do lado de lá */
+      b.rect(155, 12, 156, 12, '=');
+      b.rect(157, 11, 164, 14, '%');
+      b.rect(162, 13, 164, 14, 'F');
+      b.str(163, 14, '*');
+      b.str(160, 10, 'e');
+      b.str(169, 14, 's');
+      b.str(172, 11, '?!?');
+      b.stairs(176, 15, 4, '%');
+      b.coins(177, 179, 9);
+      b.str(184, 14, 'G');
     }),
 
     build({ id: 'L8', world: 3, name: 'Sala do Trono', par: 150 }, 150, b => {

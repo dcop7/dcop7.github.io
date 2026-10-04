@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════
    Mundos de Pip — plataformas 2D.
-   O Pip (uma raposa) atravessa 4 mundos × 2 níveis feitos à mão
+   O Pip (uma raposa) atravessa 4 mundos × 3 níveis feitos à mão
    (js/games/platformer-levels.js): Prado, Deserto, Gelo e Castelo.
 
    Motor de tiles com rampas (45° e suaves) e embalo: a
@@ -138,6 +138,10 @@ const PlatformerGame = (function () {
   ════════════════════════════════════════════════════════════════ */
   const SAVE = 'pip:save';
   function save() { try { return JSON.parse(localStorage.getItem(SAVE)) || { u: 1, s: {} }; } catch (e) { return { u: 1, s: {} }; } }
+  /* desbloqueio pelo nível anterior concluído (os níveis novos entraram a meio da lista:
+     um índice "u" antigo deixaria de bater certo) */
+  const unlocked = (sv, i) => i === 0 || (sv.s[LEVELS[i].id] || 0) > 0 || (sv.s[(LEVELS[i - 1] || {}).id] || 0) > 0;
+  const inWorld = L => LEVELS.filter(l => l.world === L.world).indexOf(L) + 1;
   function putSave(v) { try { localStorage.setItem(SAVE, JSON.stringify(v)); } catch (e) {} }
 
   function setup(api, o) {
@@ -1781,12 +1785,12 @@ const PlatformerGame = (function () {
     html(bestOf) {
       const sv = save();
       return `<style>
-.pp-worlds{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:4px 0 6px}
+.pp-worlds{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px;margin:4px 0 6px}
 .pp-world{border-radius:16px;padding:12px;border:1px solid rgba(255,255,255,.1);position:relative;overflow:hidden}
 .pp-world h4{margin:0 0 2px;font:800 .95rem 'Space Grotesk',system-ui;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4)}
 .pp-world small{color:rgba(255,255,255,.85);font-size:.72rem}
-.pp-lvls{display:flex;gap:8px;margin-top:10px}
-.pp-lvl{flex:1;border:0;border-radius:12px;padding:9px 6px;background:rgba(0,0,0,.32);color:#fff;cursor:pointer;font:700 .8rem system-ui;transition:transform .15s,background .15s;text-align:center}
+.pp-lvls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.pp-lvl{flex:1;border:0;border-radius:12px;padding:9px 6px;background:rgba(0,0,0,.32);color:#fff;cursor:pointer;font:700 .76rem system-ui;line-height:1.2;transition:transform .15s,background .15s;text-align:center}
 .pp-lvl:hover:not([disabled]){transform:translateY(-2px);background:rgba(0,0,0,.45)}
 .pp-lvl[disabled]{opacity:.45;cursor:not-allowed}
 .pp-lvl b{display:block;font-size:.95rem}.pp-lvl i{font-style:normal;color:#fde047;letter-spacing:1px}.pp-lvl em{display:block;font-style:normal;font-size:.68rem;opacity:.8;margin-top:2px}
@@ -1794,7 +1798,7 @@ const PlatformerGame = (function () {
         const lv = LEVELS.filter(l => l.world === wi);
         return `<div class="pp-world" style="background:linear-gradient(160deg,${t.sky[0]},${t.mid} 70%,${t.near})">
           <h4>${wi + 1}. ${t.name}</h4><small>${['Rampas, loops e molas', 'Aceleradores e plataformas que caem', 'Gelo escorregadio', 'Lava, cristais e o Escaravelho-Rei'][wi]}</small>
-          <div class="pp-lvls">${lv.map(l => { const idx = LEVELS.indexOf(l), lock = idx + 1 > (sv.u || 1), st = sv.s[l.id] || 0, b = bestOf(l.id);
+          <div class="pp-lvls">${lv.map(l => { const idx = LEVELS.indexOf(l), lock = !unlocked(sv, idx), st = sv.s[l.id] || 0, b = bestOf(l.id);
             return `<button class="pp-lvl" data-lvl="${l.id}" ${lock ? 'disabled' : ''}><b>${lock ? '🔒' : wi + 1 + '-' + (lv.indexOf(l) + 1)}</b>${l.name}<em>${lock ? 'bloqueado' : `<i>${'★'.repeat(st)}<span style="opacity:.35">${'★'.repeat(3 - st)}</span></i>${b != null ? ' · ' + b : ''}`}</em></button>`; }).join('')}</div>
         </div>`; }).join('')}</div>`;
     },
@@ -1812,7 +1816,7 @@ const PlatformerGame = (function () {
 
   const KIT = ArcadeKit.create({
     id: 'platformer', title: 'Mundos de Pip', icon: '🦊', accent: '#f59e0b', accent2: '#22c55e', bg: '#5fbef7', aspect: 'wide', diff: false,
-    tagline: 'Corre, salta e rola por 4 mundos — rampas, loops, molas, zonas secretas e o Escaravelho-Rei no fim.',
+    tagline: 'Corre, salta e rola por 4 mundos e 12 níveis — rampas, loops, molas, zonas secretas e o Escaravelho-Rei no fim.',
     view: { w: 960 }, picker, bestLabel: 'Recorde',
     how: [
       '<b>← →</b> para correr (manter acelera), <b>Espaço</b> para saltar — quanto mais tempo premes, mais alto. Salta em cima dos inimigos!',
@@ -1826,11 +1830,11 @@ const PlatformerGame = (function () {
     down: (G, x, y, api, e) => { if (e && e.pointerType !== 'mouse') G.touch = true; },
     begin: (G, api) => { if (matchMedia('(pointer: coarse)').matches) G.touch = true; if (api.H > api.W * 1.15) api.banner('Dica: roda o telemóvel', 'Vês mais do nível'); },
     idle: (G, dt, api) => { G.t += dt; camera(G, api, dt, true); },
-    hud: (G) => [['Mundo', `${G.L.world + 1}-${G.li % 2 + 1}`], ['Moedas', G.coins], ['Tempo', `${Math.floor(G.time / 60)}:${String(Math.floor(G.time % 60)).padStart(2, '0')}`]],
+    hud: (G) => [['Mundo', `${G.L.world + 1}-${inWorld(G.L)}`], ['Moedas', G.coins], ['Tempo', `${Math.floor(G.time / 60)}:${String(Math.floor(G.time % 60)).padStart(2, '0')}`]],
     pauseButtons: (G, api) => [{ label: 'Mapa dos mundos', fn: () => api.menu() }],
     achievements: [
-      { id: 'pip.w1', name: 'Primeiros Saltos', icon: '🦊', desc: 'Conclui o Mundo 1 de Mundos de Pip.', test: c => ((c.result.meta || {}).level || 0) >= 2 },
-      { id: 'pip.all', name: 'Herói dos Mundos', icon: '👑', desc: 'Vence o Escaravelho-Rei em Mundos de Pip.', test: c => ((c.result.meta || {}).level || 0) >= 8 },
+      { id: 'pip.w1', name: 'Primeiros Saltos', icon: '🦊', desc: 'Conclui o Mundo 1 de Mundos de Pip.', test: c => ((c.result.meta || {}).world || 0) > 0 || ((c.result.meta || {}).level || 0) >= LEVELS.filter(l => l.world === 0).length },
+      { id: 'pip.all', name: 'Herói dos Mundos', icon: '👑', desc: 'Vence o Escaravelho-Rei em Mundos de Pip.', test: c => ((c.result.meta || {}).level || 0) >= LEVELS.length },
       { id: 'pip.stars', name: 'Pena Dourada', icon: '🪶', desc: 'Apanha as 3 penas douradas de um nível.', test: c => !!(c.result.meta || {}).all },
       { id: 'pip.perfect', name: 'Três Estrelas', icon: '🌟', desc: 'Conclui um nível com ★★★.', test: c => ((c.result.meta || {}).stars || 0) >= 3 },
     ],
