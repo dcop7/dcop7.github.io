@@ -5,7 +5,9 @@
    groups: peças que rodam (pivot = célula central, axis 'x'|'y'|'z').
    sliders: peças que deslizam (dir, min..max). plates: botões.
    stairs: { at, dir } — escada na célula `at` a subir na direção dir.
-   Cada nível é verificado pelo solucionador (MonoPuzzleGame._solve).
+   Cada nível é verificado pelo solucionador (MonoPuzzleGame._solve);
+   12 níveis: os 4 últimos juntam 2–3 mecanismos (jangada, comportas,
+   carrossel com ilusão, farol).
 ══════════════════════════════════════════════════════════════════ */
 const MONO_LEVELS = (function () {
   'use strict';
@@ -122,6 +124,62 @@ const MONO_LEVELS = (function () {
       stairs: [{ at: [3, 1, 0], dir: [1, 0, 0] }, { at: [6, 2, 0], dir: [1, 0, 0] }],
       groups: [{ id: 'rodo', blocks: [[5, -1, -3, '#ddd6fe'], [6, -1, -3, '#ede9fe'], [7, -1, -3, '#ddd6fe']], pivot: [6, -1, -3], axis: 'y', state: 1, handle: [6, -2, -5] }],
       start: [0, 1, 0], goal: [3, 0, -3],
+    },
+    {
+      id: 'M9', name: 'A Jangada do Céu', sky: ['#fef3c7', '#99f6e4'], par: 12, parTurns: 2,
+      pal: { a: '#fde68a', b: '#99f6e4', c: '#fff7ed', d: '#5eead4', goal: '#fef3c7', tree: '#4ade80', handle: '#db2777' },
+      hint: 'O puxador desliza a jangada… e leva quem estiver em cima.',
+      outro: 'Quem não tem ponte, arranja jangada.',
+      blocks: [
+        ...row(0, 2, 0, 0, '#fde68a'), ...col(0, 0, -4, -1, '#f5c451'), [1, 1, -1, '#fde68a', 'tree'], [1, 0, -1, '#fde68a'],
+        [5, 0, 4, '#99f6e4'], ...col(5, 4, -3, -1, '#5eead4'),
+        ...row(6, 8, 1, 4, '#99f6e4'), ...col(8, 4, -3, 0, '#5eead4'), [8, 2, 3, '#99f6e4', 'dome'], [8, 1, 3, '#99f6e4'],
+      ],
+      stairs: [{ at: [5, 1, 4], dir: [1, 0, 0] }],
+      sliders: [{ id: 'jangada', blocks: [[3, 0, 0, '#fdba74'], [4, 0, 0, '#fed7aa']], dir: [0, 0, 1], min: 0, max: 4, pos: 2, handle: [3, -1, 2] }],
+      start: [0, 1, 0], goal: [8, 2, 4],
+    },
+    {
+      id: 'M10', name: 'As Comportas', sky: ['#bae6fd', '#bbf7d0'], par: 18, parTurns: 1,
+      pal: { a: '#bfdbfe', b: '#93c5fd', c: '#fff7ed', d: '#86efac', goal: '#fde68a', tree: '#22c55e', plate: '#fb7185', handle: '#be123c' },
+      hint: 'Primeiro abre caminho. Depois procura um botão.',
+      outro: 'Uma porta deitada é uma ponte; um botão é um convite.',
+      blocks: [
+        ...row(0, 3, 0, 0, '#bfdbfe'), ...col(1, 0, -4, -1, '#93c5fd'),
+        ...slab(7, 9, 0, -1, 1, '#bbf7d0'), ...col(8, 0, -4, -1, '#86efac'), [9, 1, -1, '#bbf7d0', 'tree'],
+        ...slab(7, 9, 0, 5, 7, '#bfdbfe'), ...col(8, 6, -4, -1, '#93c5fd'), [7, 1, 5, '#bfdbfe', 'dome'],
+      ],
+      groups: [{ id: 'comporta', blocks: [[4, 0, 0, '#fef08a'], [4, 1, 0, '#fde047', 'win'], [4, 2, 0, '#eab308']], pivot: [4, 0, 0], axis: 'z', state: 0, range: [-1, 0], handle: [4, 0, 2] }],
+      sliders: [{ id: 'ponte', blocks: [[8, -3, 2, '#fecaca', 'winz'], [8, -3, 3, '#fecaca', 'winz'], [8, -3, 4, '#fecaca', 'winz']], dir: [0, 1, 0], min: 0, max: 3, pos: 0 }],
+      plates: [{ node: [8, 1, 1], act: { id: 'ponte', to: 3 } }],
+      start: [0, 1, 0], goal: [8, 1, 6],
+    },
+    {
+      id: 'M11', name: 'O Carrossel Encantado', sky: ['#fbcfe8', '#fde68a'], par: 10, parTurns: 2,
+      pal: { a: '#fbcfe8', b: '#f9a8d4', c: '#fff7ed', d: '#fcd34d', goal: '#fef3c7', tree: '#a7f3d0', handle: '#9d174d' },
+      hint: 'Sobe para a ponta do carrossel e roda-o contigo. Depois, olha para onde aponta.',
+      outro: 'O caminho estava lá — só faltava vê-lo de lado.',
+      blocks: [
+        ...row(0, 3, 0, 4, '#fbcfe8'), ...col(0, 4, -4, -1, '#f9a8d4'),
+        ...col(5, 4, -4, -1, '#fde68a'),
+        ...rowz(7, 2, 8, 10, '#fde68a'), ...col(7, 10, -2, 1, '#fcd34d'), [6, 3, 10, '#fde68a', 'dome'], [6, 2, 10, '#fde68a'],
+      ],
+      groups: [{ id: 'carrossel', blocks: [[4, 0, 4, '#fef3c7'], [5, 0, 4, '#fde68a'], [6, 0, 4, '#fef3c7']], pivot: [5, 0, 4], axis: 'y', state: 1, handle: [5, -1, 2] }],
+      start: [0, 1, 4], goal: [7, 3, 10],
+    },
+    {
+      id: 'M12', name: 'O Farol das Estrelas', sky: ['#c7d2fe', '#f5d0fe'], par: 14, parTurns: 3,
+      pal: { a: '#e0e7ff', b: '#c7d2fe', c: '#fff7ed', d: '#f0abfc', goal: '#fde68a', tree: '#bbf7d0', handle: '#7e22ce' },
+      hint: 'Elevador, braço, perspetiva… mas por que ordem?',
+      outro: 'Chegaste ao topo das torres. O impossível era só um ponto de vista.',
+      blocks: [
+        ...row(0, 2, 0, 0, '#e0e7ff'), ...col(0, 0, -4, -1, '#c7d2fe'),
+        [4, 3, 0, '#f5d0fe'], ...col(4, 0, -1, 2, '#e9a8f5'),
+        ...row(8, 10, 5, 0, '#e0e7ff'), ...col(10, 0, -1, 4, '#c7d2fe'), [10, 6, -1, '#e0e7ff', 'dome'], [10, 5, -1, '#e0e7ff'],
+      ],
+      sliders: [{ id: 'elev', blocks: [[3, 0, 0, '#fef3c7']], dir: [0, 1, 0], min: 0, max: 3, pos: 0, handle: [3, -1, 1] }],
+      groups: [{ id: 'braco', blocks: [[5, 3, 0, '#fde68a'], [6, 3, 0, '#fef3c7'], [7, 3, 0, '#fde68a']], pivot: [6, 3, 0], axis: 'y', state: 1, handle: [6, 2, 3] }],
+      start: [0, 1, 0], goal: [10, 6, 0],
     },
   ];
 })();

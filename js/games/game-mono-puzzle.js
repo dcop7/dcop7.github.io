@@ -154,7 +154,7 @@ const MonoPuzzleGame = (function () {
         });
         /* manivelas/puxadores (não se mexe a peça em que a Lia está, exceto rotação em y) */
         for (let i = 1; i < n; i++) {
-          const p = Mo.parts[i]; if (p.kind === 'lift') continue;
+          const p = Mo.parts[i]; if (p.kind === 'lift' || !p.handle) continue;   /* sem manivela/puxador só se mexe por botões */
           const on = Gr.nodes.get(nd) && Gr.nodes.get(nd).part === i;
           if (on && !((p.kind === 'rot' && p.axis === 'y') || p.kind === 'slide')) continue;
           for (let s = minSt[i]; s < minSt[i] + maxSt[i]; s++) {

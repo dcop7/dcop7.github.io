@@ -1,12 +1,20 @@
 const MemoryGame = (function () {
   'use strict';
 
-  const EMOJIS = [
-    '🍎','🍌','🍇','🍓','🍒','🍑','🥝','🍍',
-    '🥭','🍋','🍊','🍐','🫐','🍉','🥑','🌽',
-    '🐶','🐱','🐭','🐰','🦊','🐻','🐼','🐨',
-    '🐯','🦁','🐮','🐷','🐸','🐵','🦋','🌈'
-  ];
+  /* Temas de símbolos (7 anos → adultos): nada de bonecos de bebé, e dentro de
+     cada tema há pares parecidos (instrumentos, luas, monumentos…) que obrigam
+     a olhar com atenção. Só emojis até à versão 12 (aparecem em todo o lado). */
+  const THEMES = {
+    mix:    { pt: 'Variado',     en: 'Mixed',        icon: '🎲', set: ['🚀','🛰️','🔭','🧭','⚓','🗺️','🏰','🗿','🎸','🎻','🎺','🥁','🎯','♟️','🧩','⌛','⚽','🏀','⛵','🚂','✈️','🚁','🏔️','🌋','⚡','🔥','❄️','🌙','💎','🔑','🕰️','💡','🔬','🧪','🧲','📷','🎨','🪐','☄️','🦉','🦅','🐙','🦈','🐢','🦖','🌵','🍄','🏆'] },
+    space:  { pt: 'Espaço e Ciência', en: 'Space & Science', icon: '🪐', set: ['🚀','🛰️','🔭','🪐','☄️','🌙','☀️','⭐','🌍','🌌','👽','🛸','🌠','🌑','🌕','🌗','🔬','🧪','🧬','🧲','⚗️','💡','🔋','⚛️','🌡️','🦠','🧫','🩺','🔌','⚙️','📡','🤖','🧠','💻','🧮','🔦'] },
+    world:  { pt: 'Viagens',     en: 'Travel',       icon: '🗺️', set: ['🗽','🗼','🏰','🏯','🕌','⛩️','🗿','🏛️','🕍','⛪','🌋','🏔️','🏝️','🏜️','🗻','🌉','🎡','🎢','⛺','🧭','🗺️','⛵','🚂','✈️','🚁','🚠','🚤','🛶','🚲','🏍️','🚗','🚌','🚢','🚜','🚒','🚓'] },
+    sport:  { pt: 'Música e Desporto', en: 'Music & Sport', icon: '🎸', set: ['🎸','🎻','🎺','🎷','🥁','🎹','🪕','🎤','🎧','🎼','📯','🔔','⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','🥊','🥋','⛳','🏹','🎿','🛹','⛸️','🏆','🥇','🎯','🤿','🛷','🏒','🎳'] },
+    wild:   { pt: 'Vida Selvagem', en: 'Wildlife',   icon: '🦅', set: ['🦁','🐅','🐆','🦅','🦉','🐺','🦊','🦌','🐘','🦒','🦓','🦏','🦛','🐊','🐢','🦎','🐍','🦈','🐋','🐬','🐙','🦑','🦀','🦞','🐝','🦋','🐞','🦂','🦚','🦜','🦩','🐧','🦇','🦔','🦍','🐫'] },
+  };
+  const THEME_KEY = 'mem:theme';
+  const getTheme = () => { try { const k = localStorage.getItem(THEME_KEY); return THEMES[k] ? k : 'mix'; } catch (e) { return 'mix'; } };
+  const setTheme = k => { try { localStorage.setItem(THEME_KEY, k); } catch (e) {} };
+  const lang = () => (document.documentElement.lang || 'pt').slice(0, 2) === 'en' ? 'en' : 'pt';
 
   /* UI strings + difficulty config live in games/memory/{i18n,config}.json,
      loaded at runtime; these are the offline fallback. */
@@ -31,10 +39,11 @@ const MemoryGame = (function () {
   function init(root) {
     if (!root) return;
 
+    let theme = getTheme();
     let flipped = [], matched = [], moves = 0, locked = false, timer = 0, timerInt = null, started = false, missT = null, unflip = null;
 
     function getCards(pairs) {
-      const pool = shuffle(EMOJIS).slice(0, pairs);
+      const pool = shuffle(THEMES[theme].set).slice(0, pairs);
       return shuffle([...pool, ...pool]);
     }
 
@@ -70,12 +79,18 @@ const MemoryGame = (function () {
               ${_pairOptions.map(p => `<button class="mem-nb${p === pairs ? ' on' : ''}" data-p="${p}" aria-pressed="${p === pairs}">${t('pairsBtn').replace('{n}', p)}</button>`).join('')}
             </div>
           </div>
+          <div class="mem-themes" role="group" aria-label="${lang() === 'en' ? 'Card theme' : 'Tema das cartas'}">
+            ${Object.entries(THEMES).map(([k, th]) => `<button class="mem-th${k === theme ? ' on' : ''}" data-th="${k}" aria-pressed="${k === theme}"><span aria-hidden="true">${th.icon}</span>${th[lang()]}</button>`).join('')}
+          </div>
           <div class="mem-grid" id="mem-grid" style="grid-template-columns:repeat(${cols},minmax(0,${cardW}px));justify-content:center;--cw:${cardW}px">
             ${cards.map((e, i) => `<div class="mem-card" data-idx="${i}" data-emoji="${e}" style="--i:${i}"><div class="mem-inner"><div class="mem-front"><span>✦</span></div><div class="mem-back">${e}</div></div></div>`).join('')}
           </div>
           <div class="mem-msg" id="mem-msg"></div>
         </div>`;
 
+      root.querySelectorAll('.mem-th').forEach(btn => {
+        btn.addEventListener('click', () => { theme = btn.dataset.th; setTheme(theme); render(pairs); });
+      });
       root.querySelectorAll('.mem-nb').forEach(btn => {
         btn.addEventListener('click', () => render(+btn.dataset.p));
       });
