@@ -1,8 +1,8 @@
 {
- "generated": "2026-10-08T05:52:40.493Z",
+ "generated": "2026-10-08T13:09:56.163Z",
  "total": 84,
  "broken": 0,
- "unknown": 28,
+ "unknown": 26,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -55,8 +55,8 @@
   {
    "id": "apoios:tarifa-social-agua",
    "url": "https://www.ersar.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:tarifa-social-energia",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
