@@ -1,8 +1,8 @@
 {
- "generated": "2026-10-11T18:44:53.602Z",
+ "generated": "2026-10-12T05:22:49.168Z",
  "total": 84,
  "broken": 0,
- "unknown": 28,
+ "unknown": 32,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -451,32 +451,32 @@
   {
    "id": "municipio:leiria",
    "url": "https://www.cm-leiria.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:bolsas-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/educacao/ensino-superior",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:creche-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:cartao-senior-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:apoio-municipe-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:torres-vedras",
