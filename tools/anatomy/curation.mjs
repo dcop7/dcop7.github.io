@@ -28,8 +28,8 @@ export const SYSTEMS = [
     desc_pt:'O cérebro, a medula espinal e os nervos — a rede de comando que sente, pensa e controla todo o corpo.',
     desc_en:'The brain, spinal cord and nerves — the command network that senses, thinks and controls the whole body.' },
   { id:'digestivo',    emoji:'🍽️', color:'#dca15c', pt:'Sistema Digestivo', en:'Digestive system',
-    desc_pt:'Um tubo de ~9 m que transforma a comida em energia e nutrientes e expulsa o que não se aproveita.',
-    desc_en:'A ~9 m tube that turns food into energy and nutrients and expels what is not used.' },
+    desc_pt:'Um tubo de ~9 m (esticado) que transforma a comida em energia e nutrientes e expulsa o que não se aproveita.',
+    desc_en:'A ~9 m tube (stretched out) that turns food into energy and nutrients and expels what is not used.' },
   { id:'urinario',     emoji:'💧', color:'#74c7a6', pt:'Sistema Urinário', en:'Urinary system',
     desc_pt:'Os rins filtram o sangue e formam a urina, que os ureteres levam à bexiga para ser eliminada.',
     desc_en:'The kidneys filter the blood and make urine, which the ureters carry to the bladder to be removed.' },
@@ -49,6 +49,8 @@ export const STRUCTURES = [
     { match:'(frontal bone|parietal bone|temporal bone|occipital bone|sphenoid|ethmoid|maxilla|zygomatic bone|nasal bone|lacrimal bone|vomer|palatine bone|inferior nasal concha)', facts_pt:['É feito de 22 ossos, quase todos fundidos.'], facts_en:['Made of 22 bones, nearly all fused together.'] }),
   S('esqueletico','mandibula','Mandíbula','Mandible','O único osso móvel da cabeça; permite mastigar e falar.','The only movable bone of the head; lets you chew and talk.','Maxilar inferior','Lower jaw',
     { match:'^mandible$', facts_pt:['É o osso mais forte e duro da face.'], facts_en:['It is the strongest, hardest bone of the face.'] }),
+  S('esqueletico','hioide','Osso hioide','Hyoid bone','Pequeno osso em "U" que segura a língua e a laringe e ajuda a engolir e falar.','Small U-shaped bone that anchors the tongue and larynx and helps swallowing and speech.','Pescoço, por cima da laringe','Neck, above the larynx',
+    { match:'^hyoid bone$' }),
   S('esqueletico','coluna','Coluna vertebral','Vertebral column','Sustenta o tronco e protege a medula espinal.','Supports the trunk and protects the spinal cord.','Costas','Back',
     { match:'vertebra$', exclude:'arch|process|body of|cornu', facts_pt:['Tem 33 vértebras; um adulto fica com 24 móveis.'], facts_en:['Has 33 vertebrae; an adult keeps 24 movable ones.'] }),
   S('esqueletico','costelas','Costelas','Ribs','Formam a caixa torácica que protege o coração e os pulmões.','Form the rib cage that shields the heart and lungs.','Tórax','Chest',
@@ -64,19 +66,19 @@ export const STRUCTURES = [
   S('esqueletico','radio_ulna','Rádio e cúbito','Radius & ulna','Os dois ossos do antebraço que permitem rodar a mão.','The two forearm bones that let the hand rotate.','Antebraço','Forearm',
     { match:'^(left |right )?(radius|ulna)$' }),
   S('esqueletico','mao','Ossos da mão','Hand bones','27 ossos que dão à mão a sua destreza única.','27 bones that give the hand its unique dexterity.','Mão e punho','Hand and wrist',
-    { match:'(metacarpal|phalanx of .*hand|carpal|scaphoid|lunate|trapezium|capitate|hamate)', exclude:'foot', facts_pt:['Cada mão tem 27 ossos — um quarto dos ossos do corpo.'], facts_en:['Each hand has 27 bones — a quarter of all the body’s bones.'] }),
+    { match:'(metacarpal bone|phalanx of (left |right )?(thumb|[a-z]+ finger)|^(left |right )(scaphoid|lunate|triquetral|pisiform|trapezium|trapezoid|capitate|hamate)$)', exclude:'^set of', facts_pt:['Cada mão tem 27 ossos — um quarto dos ossos do corpo.'], facts_en:['Each hand has 27 bones — a quarter of all the body’s bones.'] }),
   S('esqueletico','pelve','Pélvis','Pelvis','Anel ósseo que suporta o peso e protege os órgãos inferiores.','Bony ring that bears weight and protects the lower organs.','Anca','Hip',
     { match:'^(pelvis|hip bone|left hip bone|right hip bone|coxal bone)$' }),
   S('esqueletico','sacro','Sacro','Sacrum','Base da coluna que se encaixa na pélvis.','Base of the spine that wedges into the pelvis.','Base das costas','Lower back',
     { match:'^(sacrum|coccyx)$' }),
   S('esqueletico','femur','Fémur','Femur','O osso mais longo e forte do corpo; o osso da coxa.','The longest, strongest bone in the body; the thigh bone.','Coxa','Thigh',
-    { match:'^(left |right )?femur$', facts_pt:['Aguenta cerca de 30× o teu peso corporal.'], facts_en:['It can bear about 30× your body weight.'] }),
+    { match:'^(left |right )?femur$', facts_pt:['É o osso mais comprido do corpo — cerca de um quarto da altura.'], facts_en:['It is the longest bone in the body — about a quarter of your height.'] }),
   S('esqueletico','rotula','Rótula','Patella','Protege o joelho e melhora a força do movimento.','Protects the knee and boosts movement power.','Joelho','Knee',
     { match:'^(left |right )?patella$' }),
   S('esqueletico','tibia_fibula','Tíbia e perónio','Tibia & fibula','Os ossos da perna que suportam o peso até ao tornozelo.','The lower-leg bones that carry weight to the ankle.','Perna','Lower leg',
     { match:'^(left |right )?(tibia|fibula)$' }),
   S('esqueletico','pe','Ossos do pé','Foot bones','26 ossos que suportam o corpo e absorvem o impacto ao andar.','26 bones that hold up the body and absorb each step.','Pé e tornozelo','Foot and ankle',
-    { match:'(metatarsal|phalanx of .*foot|calcaneus|talus|tarsal|navicular|cuboid|cuneiform)', facts_pt:['O calcâneo (calcanhar) é o maior osso do pé.'], facts_en:['The calcaneus (heel) is the largest bone of the foot.'] }),
+    { match:'(metatarsal bone|phalanx of (left |right )?[a-z]+ toe|calcaneus$|talus$|navicular bone|cuboid bone|cuneiform bone|sesamoid bone of)', exclude:'^set of', facts_pt:['O calcâneo (calcanhar) é o maior osso do pé.'], facts_en:['The calcaneus (heel) is the largest bone of the foot.'] }),
 
   /* ───────────────────────── MUSCULAR ───────────────────────── */
   S('muscular','peitoral','Peitoral maior','Pectoralis major','Aproxima o braço do peito; usado a empurrar e abraçar.','Pulls the arm across the chest; used to push and hug.','Peito','Chest',
@@ -110,7 +112,9 @@ export const STRUCTURES = [
 
   /* ───────────────────────── CIRCULATÓRIO ───────────────────────── */
   S('circulatorio','coracao','Coração','Heart','Bombeia o sangue por todo o corpo, ~100 000 vezes por dia.','Pumps blood through the whole body ~100,000 times a day.','Centro do peito','Centre of chest',
-    { match:'(wall of heart|papillary muscle|interventricular|chordae|trabeculae|cardiac)', facts_pt:['Bate cerca de 100 000 vezes por dia.','Tem quatro câmaras.'], facts_en:['Beats about 100,000 times a day.','It has four chambers.'] }),
+    { match:'(wall of heart|papillary muscle|interventricular foramen|chordae|trabeculae)', facts_pt:['Bate cerca de 100 000 vezes por dia.','Tem quatro câmaras.'], facts_en:['Beats about 100,000 times a day.','It has four chambers.'] }),
+  S('circulatorio','coronarias','Vasos coronários','Coronary vessels','As artérias coronárias alimentam o próprio músculo do coração; as veias cardíacas devolvem esse sangue ao seio coronário.','The coronary arteries feed the heart muscle itself; the cardiac veins return that blood to the coronary sinus.','Superfície do coração','Surface of the heart',
+    { match:'(coronary artery|coronary sinus|cardiac vein|interventricular septal branches)' }),
   S('circulatorio','aorta','Aorta','Aorta','A maior artéria; leva o sangue oxigenado do coração ao corpo.','The largest artery; carries oxygen-rich blood from the heart.','Do coração para baixo','From the heart downward',
     { match:'aorta', facts_pt:['Tem cerca de 2,5 cm de diâmetro.'], facts_en:['It is about 2.5 cm wide.'] }),
   S('circulatorio','arterias','Artérias principais','Main arteries','Levam o sangue rico em oxigénio do coração até à cabeça, braços, abdómen e pernas.','Carry oxygen-rich blood from the heart to the head, arms, abdomen and legs.','Por todo o corpo','Throughout the body',
@@ -139,6 +143,8 @@ export const STRUCTURES = [
     { match:'(brainstem|midbrain|^pons$|peduncle of midbrain|medulla oblongata)', facts_pt:['Controla funções vitais automáticas.'], facts_en:['It runs automatic, life-critical functions.'] }),
 
   /* ───────────────────────── DIGESTIVO ───────────────────────── */
+  S('digestivo','dentes','Dentes','Teeth','Cortam, rasgam e trituram a comida — o primeiro passo da digestão.','Cut, tear and grind food — the first step of digestion.','Boca','Mouth',
+    { match:'secondary .*tooth' }),
   S('digestivo','esofago','Esófago','Esophagus','Empurra a comida da boca para o estômago.','Pushes food from the mouth to the stomach.','Pescoço e tórax','Neck and chest',
     { match:'^esophagus$' }),
   S('digestivo','estomago','Estômago','Stomach','Mistura a comida com ácido forte para a digerir.','Mixes food with strong acid to digest it.','Abdómen superior esquerdo','Upper-left abdomen',
@@ -147,15 +153,15 @@ export const STRUCTURES = [
     { match:'^liver$', facts_pt:['Regenera-se a partir de só 25% de si.'], facts_en:['It can regrow from just 25% of itself.'] }),
   S('digestivo','vesicula','Vesícula biliar','Gallbladder','Guarda a bílis que digere as gorduras.','Stores the bile that digests fats.','Sob o fígado','Under the liver',
     { match:'^gallbladder$' }),
-  S('digestivo','intestinodelgado','Intestino delgado','Small intestine','~7 m onde se absorve a maioria dos nutrientes.','~7 m where most nutrients are absorbed.','Centro do abdómen','Centre of the abdomen',
-    { match:'(small intestine|duodenum|jejunum|ileum)', exclude:'artery|vein|papilla', facts_pt:['Esticado, mede ~7 metros.'], facts_en:['Unfolded, it is ~7 metres long.'] }),
+  S('digestivo','intestinodelgado','Intestino delgado','Small intestine','Tubo de 3–5 m (em vida) onde se absorve a maioria dos nutrientes.','A 3–5 m tube (in life) where most nutrients are absorbed.','Centro do abdómen','Centre of the abdomen',
+    { match:'(small intestine|duodenum|jejunum|ileum)', exclude:'artery|vein|papilla', facts_pt:['Depois da morte, sem o tónus dos músculos, chega a medir 6–7 m.'], facts_en:['After death, without muscle tone, it can measure 6–7 m.'] }),
   S('digestivo','intestinogrosso','Intestino grosso','Large intestine','Recupera a água e forma os resíduos sólidos.','Reclaims water and forms solid waste.','À volta do abdómen','Around the abdomen',
     { match:'(large intestine|colon|cecum|caecum|rectum|vermiform appendix)', exclude:'artery|vein|flexure|mesocolon|tenia' }),
   S('digestivo','baco','Baço','Spleen','Filtra o sangue e ajuda a defesa imunitária.','Filters blood and supports immune defence.','Abdómen superior esquerdo','Upper-left abdomen',
     { match:'^spleen$' }),
 
   /* ───────────────────────── URINÁRIO ───────────────────────── */
-  S('urinario','rins','Rins','Kidneys','Filtram o sangue ~40 vezes por dia e fazem a urina.','Filter the blood ~40 times a day and make urine.','Meio das costas','Mid-back',
+  S('urinario','rins','Rins','Kidneys','Filtram todo o plasma do sangue ~60 vezes por dia e fazem a urina.','Filter the whole blood plasma ~60 times a day and make urine.','Meio das costas','Mid-back',
     { match:'^(left kidney|right kidney)$', facts_pt:['Filtram ~180 litros de plasma por dia.'], facts_en:['They filter ~180 litres of plasma a day.'] }),
   S('urinario','ureteres','Ureteres','Ureters','Tubos que levam a urina dos rins à bexiga.','Tubes that carry urine from the kidneys to the bladder.','Abdómen','Abdomen',
     { match:'^(left ureter|right ureter|ureter)$' }),
@@ -164,8 +170,12 @@ export const STRUCTURES = [
 
   /* ───────────────────────── SENTIDOS ───────────────────────── */
   S('sentidos','olhos','Olhos','Eyes','Captam a luz e o cérebro transforma-a em imagens; ~80% do que aprendemos entra pela visão.','Capture light that the brain turns into images; ~80% of what we learn comes through sight.','Cara','Face',
-    { match:'(eyeball|optic nerve)', facts_pt:['A retina tem ~120 milhões de bastonetes.'], facts_en:['The retina has ~120 million rods.'] }),
-  S('sentidos','ouvido','Ouvido','Ear','Transforma as vibrações do ar em som e mantém o equilíbrio.','Turns air vibrations into sound and keeps you balanced.','Lados da cabeça','Sides of the head',
+    { match:'^eyeball$', facts_pt:['A retina tem ~120 milhões de bastonetes.'], facts_en:['The retina has ~120 million rods.'] }),
+  S('sentidos','nervootico','Nervos óticos','Optic nerves','Levam a imagem captada pela retina até ao cérebro; cruzam-se parcialmente no quiasma ótico.','Carry the image captured by the retina to the brain; they partly cross at the optic chiasm.','Atrás dos olhos','Behind the eyes',
+    { match:'optic nerve' }),
+  S('sentidos','palpebras','Pálpebras','Eyelids','O músculo orbicular fecha as pálpebras para piscar, proteger e humedecer o olho.','The orbicularis muscle closes the eyelids to blink, protect and moisten the eye.','À volta dos olhos','Around the eyes',
+    { match:'orbicularis oculi' }),
+  S('sentidos','ouvido','Orelha (ouvido externo)','Outer ear','A orelha (pavilhão auricular) recolhe as ondas sonoras e encaminha-as pelo canal auditivo até ao tímpano.','The auricle (pinna) gathers sound waves and funnels them down the ear canal to the eardrum.','Lados da cabeça','Sides of the head',
     { match:'^ear$', facts_pt:['O ouvido interno também controla o equilíbrio.'], facts_en:['The inner ear also controls balance.'] }),
   S('sentidos','nariz','Nariz','Nose','Deteta milhares de cheiros e aquece o ar que respiras.','Detects thousands of smells and warms the air you breathe.','Centro da cara','Centre of the face',
     { match:'nasal cartilage', facts_pt:['O olfato está ligado à memória e à emoção.'], facts_en:['Smell is wired to memory and emotion.'] }),
@@ -234,9 +244,9 @@ const STATS = {
   circulatorio: [['~5 L', 'de sangue', 'of blood'], ['~100 000', 'batimentos por dia', 'heartbeats a day'], ['~100 000 km', 'de vasos', 'of vessels']],
   respiratorio: [['~20 000', 'respirações por dia', 'breaths a day'], ['~300 M', 'alvéolos', 'alveoli'], ['~70 m²', 'de superfície de troca', 'of exchange surface']],
   nervoso:      [['~86 mil M', 'neurónios', 'neurons'], ['~20 W', 'de consumo', 'of power use'], ['até 120 m/s', 'velocidade dos impulsos', 'nerve-signal speed']],
-  digestivo:    [['~9 m', 'de tubo digestivo', 'of digestive tract'], ['24–72 h', 'da boca à saída', 'mouth to exit'], ['~1,5 L', 'de saliva por dia', 'of saliva a day']],
+  digestivo:    [['~9 m', 'de tubo digestivo (esticado)', 'of digestive tract (stretched out)'], ['24–72 h', 'da boca à saída', 'mouth to exit'], ['~1,5 L', 'de saliva por dia', 'of saliva a day']],
   urinario:     [['~180 L', 'filtrados por dia', 'filtered a day'], ['~1,5 L', 'de urina por dia', 'of urine a day'], ['~2 M', 'nefrónios (filtros)', 'nephrons (filters)']],
-  sentidos:     [['5', 'sentidos clássicos', 'classic senses'], ['~2 m²', 'de pele (tato)', 'of skin (touch)'], ['~10 000', 'papilas gustativas', 'taste buds']],
+  sentidos:     [['5', 'sentidos clássicos', 'classic senses'], ['~2 m²', 'de pele (tato)', 'of skin (touch)'], ['2 000–8 000', 'botões gustativos', 'taste buds']],
 };
 for (const sys of SYSTEMS) sys.stats = (STATS[sys.id] || []).map(([v, pt, en]) => ({ v, pt, en }));
 

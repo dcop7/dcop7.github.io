@@ -30,6 +30,16 @@ const OUT_MODELS = join(ROOT, 'assets', 'models', 'anatomy');
 const OUT_DATA   = join(ROOT, 'data', 'anatomy');
 
 const { SYSTEMS, STRUCTURES, CONTEXT = [] } = await import('./curation.mjs');
+const { PROCEDURAL = [] } = await import('./procedural.mjs');
+/* long-form copy for the info panel (how it works, parts, numbers, health,
+   related structures) — kept apart so curation.mjs stays about the meshes */
+const { DETAILS = {} } = await import('./details.mjs').catch(() => ({}));
+const copyOf = s => ({
+  key: s.key, system: s.system, node: s.key,
+  pt: s.pt, en: s.en, fn_pt: s.fn_pt, fn_en: s.fn_en,
+  loc_pt: s.loc_pt, loc_en: s.loc_en, facts_pt: s.facts_pt || [], facts_en: s.facts_en || [],
+  ...(DETAILS[s.key] ? { more: DETAILS[s.key] } : {}),
+});
 
 /* ── 1. read the whole zip into an in-memory map  id(lowercased name) → buffer ─ */
 function readZip(zipPath) {
@@ -224,11 +234,7 @@ async function main() {
         else { const sub = doc.createNode(`${s.key}_${k}`).setMesh(mesh).setExtras({ part }); node.addChild(sub); }
       });
       scene.addChild(node);
-      manifest.structures.push({
-        key: s.key, system: s.system, node: s.key,
-        pt: s.pt, en: s.en, fn_pt: s.fn_pt, fn_en: s.fn_en,
-        loc_pt: s.loc_pt, loc_en: s.loc_en, facts_pt: s.facts_pt || [], facts_en: s.facts_en || [],
-      });
+      manifest.structures.push(copyOf(s));
     }
 
     await doc.transform(
@@ -281,6 +287,11 @@ async function main() {
     console.log(`✓ ${c.key}.glb  (context, ${(glb.byteLength/1024).toFixed(0)} KB)`);
   }
 
+  /* structures the dataset has no mesh for — built procedurally by the
+     viewer, anchored on real parts — share the same copy pipeline */
+  for (const s of PROCEDURAL) manifest.structures.push({ ...copyOf(s), procedural: true });
+  const missingCopy = manifest.structures.filter(s => !s.more).map(s => s.key);
+  if (missingCopy.length) console.log('ℹ no DETAILS for:', missingCopy.join(', '));
   writeFileSync(join(OUT_DATA, 'manifest.json'), JSON.stringify(manifest));
   console.log(`✓ manifest.json  (${manifest.structures.length} structures, ${SYSTEMS.length} systems)`);
 }

@@ -301,6 +301,54 @@
   outline: 2px solid color-mix(in srgb, var(--sys) 70%, white); outline-offset: 2px;
 }
 
+/* structure detail: tabs, parts, health */
+.hb-tabs {
+  display: flex; gap: 3px; padding: 3px; border-radius: 11px;
+  background: var(--card); border: 1px solid var(--border);
+}
+.hb-tab {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: .35rem;
+  padding: .42rem .5rem; border-radius: 8px; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--font-sans); font-size: .74rem; font-weight: 650; color: var(--muted);
+  transition: background var(--ease), color var(--ease);
+}
+.hb-tab i { font-style: normal; font-size: .64rem; font-weight: 700; opacity: .75; font-variant-numeric: tabular-nums; }
+.hb-tab:hover { color: var(--text); }
+.hb-tab.on { color: var(--text); background: color-mix(in srgb, var(--sys) 18%, var(--card2)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sys) 40%, transparent); }
+.hb-pane { display: flex; flex-direction: column; gap: .7rem; }
+.hb-pane[hidden] { display: none; }
+.hb-how { margin: 0; font-size: .82rem; color: var(--text2); line-height: 1.6; }
+.hb-parts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
+.hb-parts li {
+  display: flex; flex-direction: column; gap: .15rem; padding: .55rem .7rem .55rem .85rem;
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  border-left: 3px solid color-mix(in srgb, var(--sys) 70%, transparent);
+}
+.hb-parts b { font-size: .8rem; font-weight: 650; color: var(--text); }
+.hb-parts span { font-size: .76rem; color: var(--text2); line-height: 1.5; }
+.hb-health li { border-left-color: color-mix(in srgb, #f59e0b 70%, transparent); }
+.hb-care {
+  font-size: .78rem; color: var(--text2); line-height: 1.5; padding: .55rem .7rem; border-radius: 10px;
+  background: color-mix(in srgb, #22c55e 8%, var(--card)); border: 1px solid color-mix(in srgb, #22c55e 25%, var(--border));
+}
+.hb-care b { color: var(--text); margin-right: .25rem; }
+.hb-note { margin: 0; font-size: .66rem; color: var(--muted); }
+.hb-chip i { font-style: normal; font-size: .7rem; }
+/* circulatory: arteries / veins filter */
+.hb-vf { display: flex; gap: 3px; padding: 3px; border-radius: 11px; background: var(--card); border: 1px solid var(--border); }
+.hb-vf-btn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+  padding: .42rem .5rem; border-radius: 8px; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--font-sans); font-size: .74rem; font-weight: 650; color: var(--muted);
+}
+.hb-vf-btn .hb-struct-dot { width: 8px; height: 8px; }
+.hb-vf-btn:hover { color: var(--text); }
+.hb-vf-btn.on { color: var(--text); background: color-mix(in srgb, var(--sys) 18%, var(--card2)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sys) 40%, transparent); }
+.hb-legend { margin: -.3rem 0 0; font-size: .72rem; color: var(--muted); line-height: 1.5; }
+.hb-legend b.a { color: #f0646e; font-weight: 650; }
+.hb-legend b.v { color: #7c9cf0; font-weight: 650; }
+.hb-tab:focus-visible, .hb-vf-btn:focus-visible { outline: 2px solid color-mix(in srgb, var(--sys) 70%, white); outline-offset: 1px; }
+
 /* ── hub category grouping (used by explorer.js hub — keep) ── */
 .ex-cat-group { max-width: 940px; margin: 2.2rem auto 0; }
 .ex-cat-head { display: flex; align-items: center; gap: .6rem; max-width: 900px; margin: 0 auto .9rem; padding: 0 .1rem; }
