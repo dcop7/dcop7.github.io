@@ -185,12 +185,13 @@ const OcorrenciasPage = (function () {
   function _isDark() { return !document.body.classList.contains('light'); }
 
   /* ── Basemaps (user-selectable layer styles for geographic context) ── */
-  const CARTO_ATTR = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>';
+  /* CARTO now watermarks keyless tiles ("API KEY REQUIRED") → OSM + Esri. */
+  const CARTO_ATTR = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
   const ESRI_ATTR  = 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics';
   const GIBS_ATTR  = 'Imagery © <a href="https://worldview.earthdata.nasa.gov/">NASA EOSDIS GIBS</a> (VIIRS)';
   const BASEMAPS = {
-    standard: { name: 'Padrão',   url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: CARTO_ATTR },
-    dark:     { name: 'Escuro',   url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',             sub: 'abcd', attr: CARTO_ATTR },
+    standard: { name: 'Padrão',   url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: '', attr: CARTO_ATTR },
+    dark:     { name: 'Escuro',   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', sub: '', attr: '© Esri, HERE, Garmin, ' + CARTO_ATTR, native: 16 },
     satellite:{ name: 'Satélite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: ESRI_ATTR },
   };
   /* Esri reference overlay (boundaries + place names) for the satellite+labels mode */
@@ -263,7 +264,7 @@ const OcorrenciasPage = (function () {
       if (btn) btn.title = `Imagem VIIRS de ${date}${isToday ? ' (hoje)' : ''} — 375 m/px, nitidez até zoom 9`;
     } else {
       const base = BASEMAPS[sat ? 'satellite' : style];
-      _baseTile = L.tileLayer(base.url, { attribution: base.attr, subdomains: base.sub, maxZoom: 19 });
+      _baseTile = L.tileLayer(base.url, { attribution: base.attr, subdomains: base.sub, maxZoom: 19, maxNativeZoom: base.native || 19 });
     }
     _baseTile.addTo(_map);
     _baseTile.bringToBack();

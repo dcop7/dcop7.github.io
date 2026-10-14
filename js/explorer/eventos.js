@@ -550,11 +550,9 @@ const EventosPage = (function () {
     _map = L.map(el, { center: [39.6, -8.0], zoom: 7, zoomControl: true, scrollWheelZoom: true });
     /* theme-matched basemap: light tiles inside the dark UI looked like a
        foreign widget (Ocorrências already ships the CARTO dark basemap) */
-    const CARTO = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>';
-    const tileUrl = d => d
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-    _baseTile = L.tileLayer(tileUrl(_isDark()), { attribution: CARTO, subdomains: 'abcd', maxZoom: 19 }).addTo(_map);
+    /* CARTO now watermarks keyless tiles → shared keyless Basemaps (Esri dark
+       grey + labels in dark mode, OpenStreetMap in light). */
+    _baseTile = Basemaps.layer(_isDark() ? 'dark' : 'street', { labels: true }).addTo(_map);
     _markerLayer = L.layerGroup().addTo(_map);
     _loadDistricts();
     _watchTheme();
@@ -577,9 +575,10 @@ const EventosPage = (function () {
     if (_themeObs) return;
     _themeObs = new MutationObserver(() => {
       if (_districtLayer) _districtLayer.setStyle({ color: _isDark() ? 'rgba(148,163,184,.35)' : 'rgba(71,85,105,.35)' });
-      if (_baseTile) _baseTile.setUrl(_isDark()
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png');
+      if (_baseTile && _map) {
+        _map.removeLayer(_baseTile);
+        _baseTile = Basemaps.layer(_isDark() ? 'dark' : 'street', { labels: true }).addTo(_map);
+      }
     });
     _themeObs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   }

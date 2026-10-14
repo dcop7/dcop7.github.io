@@ -156,7 +156,7 @@ export const STRUCTURES = [
 
   /* ───────────────────────── URINÁRIO ───────────────────────── */
   S('urinario','rins','Rins','Kidneys','Filtram o sangue ~40 vezes por dia e fazem a urina.','Filter the blood ~40 times a day and make urine.','Meio das costas','Mid-back',
-    { match:'^(left kidney|right kidney)$', facts_pt:['Filtram ~180 litros de sangue por dia.'], facts_en:['They filter ~180 litres of blood a day.'] }),
+    { match:'^(left kidney|right kidney)$', facts_pt:['Filtram ~180 litros de plasma por dia.'], facts_en:['They filter ~180 litres of plasma a day.'] }),
   S('urinario','ureteres','Ureteres','Ureters','Tubos que levam a urina dos rins à bexiga.','Tubes that carry urine from the kidneys to the bladder.','Abdómen','Abdomen',
     { match:'^(left ureter|right ureter|ureter)$' }),
   S('urinario','bexiga','Bexiga','Urinary bladder','Saco muscular que guarda a urina até ser eliminada.','Muscular bag that stores urine until it is released.','Baixo abdómen','Lower abdomen',
@@ -164,9 +164,85 @@ export const STRUCTURES = [
 
   /* ───────────────────────── SENTIDOS ───────────────────────── */
   S('sentidos','olhos','Olhos','Eyes','Captam a luz e o cérebro transforma-a em imagens; ~80% do que aprendemos entra pela visão.','Capture light that the brain turns into images; ~80% of what we learn comes through sight.','Cara','Face',
-    { match:'eyeball', facts_pt:['A retina tem ~120 milhões de bastonetes.'], facts_en:['The retina has ~120 million rods.'] }),
+    { match:'(eyeball|optic nerve)', facts_pt:['A retina tem ~120 milhões de bastonetes.'], facts_en:['The retina has ~120 million rods.'] }),
   S('sentidos','ouvido','Ouvido','Ear','Transforma as vibrações do ar em som e mantém o equilíbrio.','Turns air vibrations into sound and keeps you balanced.','Lados da cabeça','Sides of the head',
     { match:'^ear$', facts_pt:['O ouvido interno também controla o equilíbrio.'], facts_en:['The inner ear also controls balance.'] }),
   S('sentidos','nariz','Nariz','Nose','Deteta milhares de cheiros e aquece o ar que respiras.','Detects thousands of smells and warms the air you breathe.','Centro da cara','Centre of the face',
     { match:'nasal cartilage', facts_pt:['O olfato está ligado à memória e à emoção.'], facts_en:['Smell is wired to memory and emotion.'] }),
+];
+
+/* ── Richer educational copy (out/2026 premium pass) ───────────────────────
+   Extra facts per structure (appended to any inline ones) and headline
+   numbers per system, shown as stat tiles. Every figure is a textbook
+   average for a healthy adult — phrased with "~" where it varies. */
+const EXTRA_FACTS = {
+  cranio:        [['Ao nascer, os ossos do crânio ainda não estão soldados — são as "moleirinhas".', 'At birth the skull bones are not yet joined — the "soft spots" (fontanelles).']],
+  mandibula:     [['A articulação com o crânio é das que mais se usam: falar, mastigar, engolir.', 'Its joint with the skull is among the most used: talking, chewing, swallowing.']],
+  coluna:        [['As curvas em "S" funcionam como uma mola que amortece cada passo.', 'Its S-shaped curves work like a spring that cushions every step.']],
+  esterno:       [['A medula do esterno produz células do sangue durante toda a vida.', 'The sternum’s marrow keeps making blood cells throughout life.']],
+  clavicula:     [['É um dos ossos que mais vezes parte, sobretudo em quedas sobre o braço.', 'One of the most often broken bones, usually in falls onto the arm.'], ['É o primeiro osso a começar a ossificar no embrião.', 'It is the first bone to start ossifying in the embryo.']],
+  omoplata:      [['Não está presa por articulação às costelas: desliza sobre elas, guiada por músculos.', 'It has no joint with the ribs: it glides over them, held by muscles.']],
+  umero:         [['O "choque" ao bater no cotovelo vem do nervo cubital, que passa junto ao úmero.', 'The "funny bone" zing comes from the ulnar nerve passing by the humerus.']],
+  radio_ulna:    [['Ao rodar a palma para baixo, o rádio cruza-se por cima do cúbito.', 'When you turn your palm down, the radius crosses over the ulna.']],
+  pelve:         [['A pélvis feminina é mais larga e arredondada, adaptada ao parto.', 'The female pelvis is wider and rounder, adapted for childbirth.']],
+  sacro:         [['Nasce como 5 vértebras separadas que se fundem até à idade adulta.', 'It starts as 5 separate vertebrae that fuse by adulthood.']],
+  rotula:        [['É o maior osso sesamoide do corpo — cresce dentro de um tendão.', 'It is the body’s largest sesamoid bone — it grows inside a tendon.']],
+  tibia_fibula:  [['A tíbia suporta quase todo o peso; o perónio serve sobretudo de apoio a músculos.', 'The tibia carries almost all the weight; the fibula mainly anchors muscles.']],
+  deltoide:      [['Tem três partes — anterior, média e posterior — que puxam o braço em direções diferentes.', 'It has three parts — front, middle and back — pulling the arm in different directions.']],
+  triceps:       [['Ocupa cerca de dois terços do volume do braço.', 'It makes up about two-thirds of the upper arm’s bulk.']],
+  abdominal:     [['Os "quadradinhos" vêm de faixas de tendão que cruzam o músculo.', 'The "six-pack" squares come from bands of tendon crossing the muscle.']],
+  trapezio:      [['O nome vem da forma: os dois lados juntos desenham um trapézio.', 'Named for its shape: both sides together form a trapezoid.']],
+  grandedorsal:  [['É o músculo mais largo das costas — essencial para nadar e trepar.', 'The broadest back muscle — essential for swimming and climbing.']],
+  ecm:           [['Quando um lado contrai, a cara roda para o lado oposto.', 'When one side contracts, the face turns to the opposite side.']],
+  quadriceps:    [['É o grupo muscular mais forte do corpo.', 'It is the strongest muscle group in the body.']],
+  isquiotibiais: [['São dos músculos que mais se lesionam em desportos de corrida.', 'They are among the most often injured muscles in running sports.']],
+  gemeos:        [['Ligam-se ao calcanhar pelo tendão de Aquiles, o mais forte do corpo.', 'They attach to the heel via the Achilles tendon, the body’s strongest.']],
+  masseter:      [['Pode fechar os dentes com uma força de ~70 kg nos molares.', 'It can close the teeth with ~70 kg of force at the molars.']],
+  arterias:      [['Uma gota de sangue dá a volta completa ao corpo em cerca de um minuto.', 'A drop of blood makes a full lap of the body in about a minute.']],
+  veias:         [['Têm válvulas que impedem o sangue de descer; os músculos das pernas ajudam a empurrá-lo.', 'They have valves that stop blood falling back; leg muscles help push it up.'], ['Em repouso, ~70% do sangue está nas veias.', 'At rest, ~70% of the blood is in the veins.']],
+  pulmonar:      [['As artérias pulmonares são as únicas artérias que levam sangue pobre em oxigénio.', 'The pulmonary arteries are the only arteries carrying oxygen-poor blood.']],
+  traqueia:      [['Anéis de cartilagem em forma de "C" mantêm-na sempre aberta.', 'C-shaped rings of cartilage keep it permanently open.']],
+  laringe:       [['As cordas vocais vibram ~100 a 250 vezes por segundo ao falar.', 'The vocal cords vibrate ~100 to 250 times a second when you speak.']],
+  cerebelo:      [['Tem só ~10% do volume do encéfalo, mas mais de metade dos neurónios.', 'Only ~10% of the brain’s volume, but over half of its neurons.']],
+  esofago:       [['Mede ~25 cm; a comida desce por ondas musculares, mesmo de pernas para o ar.', 'About 25 cm long; food goes down by muscle waves, even upside down.']],
+  estomago:      [['O suco gástrico tem pH de ~1,5 a 3,5 — mais ácido do que o vinagre.', 'Gastric juice has a pH of ~1.5 to 3.5 — more acidic than vinegar.'], ['Renova o revestimento interno a cada poucos dias para não se digerir a si próprio.', 'It renews its lining every few days so it doesn’t digest itself.']],
+  vesicula:      [['Pode-se viver sem ela: o fígado continua a produzir bílis.', 'You can live without it: the liver keeps making bile.']],
+  intestinogrosso:[['Abriga biliões de bactérias que ajudam a digestão e a imunidade.', 'It hosts trillions of bacteria that help digestion and immunity.']],
+  baco:          [['Guarda uma reserva de sangue e recicla os glóbulos vermelhos velhos.', 'It keeps a blood reserve and recycles old red blood cells.']],
+  ureteres:      [['Empurram a urina com ondas de contração, várias por minuto.', 'They push urine along with contraction waves, several a minute.']],
+  rins:          [['Cada rim tem ~1 milhão de filtros microscópicos, os nefrónios.', 'Each kidney has ~1 million microscopic filters, the nephrons.']],
+  ouvido:        [['O estribo, dentro do ouvido, é o osso mais pequeno do corpo (~3 mm).', 'The stapes, inside the ear, is the smallest bone in the body (~3 mm).']],
+  nariz:         [['Temos ~400 tipos de recetores olfativos.', 'We have ~400 types of smell receptors.']],
+  olhos:         [['A imagem chega à retina invertida — é o cérebro que a endireita.', 'The image lands on the retina upside down — the brain flips it.']],
+};
+/* inline facts that were vague or overstated → precise wording */
+const FIX_FACTS = {
+  estomago: { pt: [], en: [] },
+  olhos:    { pt: ['A retina tem ~120 milhões de bastonetes e ~6 milhões de cones.'], en: ['The retina has ~120 million rods and ~6 million cones.'] },
+};
+for (const s of STRUCTURES) {
+  if (FIX_FACTS[s.key]) { s.facts_pt = FIX_FACTS[s.key].pt.slice(); s.facts_en = FIX_FACTS[s.key].en.slice(); }
+  if (s.key === 'olhos') { s.fn_pt = 'Captam a luz e convertem-na em sinais que o cérebro transforma em imagens.'; s.fn_en = 'Capture light and turn it into signals the brain makes into images.'; }
+  if (s.key === 'clavicula') { s.fn_pt = 'Liga o braço ao tronco e mantém o ombro afastado do peito.'; s.fn_en = 'Links the arm to the trunk and holds the shoulder away from the chest.'; }
+  for (const [pt, en] of EXTRA_FACTS[s.key] || []) { s.facts_pt.push(pt); s.facts_en.push(en); }
+}
+
+/* Headline numbers per system (stat tiles in the info panel). */
+const STATS = {
+  esqueletico:  [['206', 'ossos no adulto', 'bones in an adult'], ['~15%', 'do peso corporal', 'of body weight'], ['~300', 'ossos num recém-nascido', 'bones in a newborn']],
+  muscular:     [['600+', 'músculos esqueléticos', 'skeletal muscles'], ['~40%', 'da massa corporal', 'of body mass'], ['43', 'músculos na cara', 'muscles in the face']],
+  circulatorio: [['~5 L', 'de sangue', 'of blood'], ['~100 000', 'batimentos por dia', 'heartbeats a day'], ['~100 000 km', 'de vasos', 'of vessels']],
+  respiratorio: [['~20 000', 'respirações por dia', 'breaths a day'], ['~300 M', 'alvéolos', 'alveoli'], ['~70 m²', 'de superfície de troca', 'of exchange surface']],
+  nervoso:      [['~86 mil M', 'neurónios', 'neurons'], ['~20 W', 'de consumo', 'of power use'], ['até 120 m/s', 'velocidade dos impulsos', 'nerve-signal speed']],
+  digestivo:    [['~9 m', 'de tubo digestivo', 'of digestive tract'], ['24–72 h', 'da boca à saída', 'mouth to exit'], ['~1,5 L', 'de saliva por dia', 'of saliva a day']],
+  urinario:     [['~180 L', 'filtrados por dia', 'filtered a day'], ['~1,5 L', 'de urina por dia', 'of urine a day'], ['~2 M', 'nefrónios (filtros)', 'nephrons (filters)']],
+  sentidos:     [['5', 'sentidos clássicos', 'classic senses'], ['~2 m²', 'de pele (tato)', 'of skin (touch)'], ['~10 000', 'papilas gustativas', 'taste buds']],
+};
+for (const sys of SYSTEMS) sys.stats = (STATS[sys.id] || []).map(([v, pt, en]) => ({ v, pt, en }));
+
+/* Anatomy context shells — built as their own GLB, never a rail system.
+   The real skin surface is the translucent body silhouette every system sits
+   in (and doubles as the organ of touch). */
+export const CONTEXT = [
+  { key: 'pele', match: '^skin$', ratio: 0.06, error: 0.03 },
 ];

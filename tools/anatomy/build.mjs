@@ -29,7 +29,7 @@ const ZIP  = join(WORK, 'obj99.zip');
 const OUT_MODELS = join(ROOT, 'assets', 'models', 'anatomy');
 const OUT_DATA   = join(ROOT, 'data', 'anatomy');
 
-const { SYSTEMS, STRUCTURES } = await import('./curation.mjs');
+const { SYSTEMS, STRUCTURES, CONTEXT = [] } = await import('./curation.mjs');
 
 /* ── 1. read the whole zip into an in-memory map  id(lowercased name) → buffer ─ */
 function readZip(zipPath) {
@@ -135,7 +135,7 @@ async function main() {
   // a structure may specify explicit `fma:[...]` and/or `match` (regex on the
   // English name) — `match` auto-captures left/right/sub-part variants.
   const missing = [];
-  for (const s of STRUCTURES) {
+  for (const s of [...STRUCTURES, ...CONTEXT]) {
     const ids = new Set((s.fma || []).filter(id => zip.has(id)));
     if (s.match) {
       const re = new RegExp(s.match, 'i');
@@ -156,7 +156,7 @@ async function main() {
 
   // parse all included meshes once, compute global transform
   const parsed = new Map();   // id → geometry
-  for (const s of STRUCTURES) for (const id of s._ids)
+  for (const s of [...STRUCTURES, ...CONTEXT]) for (const id of s._ids)
     if (!parsed.has(id)) parsed.set(id, parseOBJ(zip.get(id)));
 
   const b = unionBounds([...parsed.values()]);
@@ -167,13 +167,18 @@ async function main() {
   const cx = (b.lo[axes[0]] + b.hi[axes[0]]) / 2;
   const cz = (b.lo[axes[1]] + b.hi[axes[1]]) / 2;
   const vMin = b.lo[vAxis];
-  // map raw (X,Y,Z) → scene: vertical→Y (feet at 0), horizontals→X,Z centred
+  // map raw (X,Y,Z) → scene: vertical→Y (feet at 0), horizontals→X,Z centred.
+  // Swapping two axes is a REFLECTION, which mirrored the whole body (heart on
+  // the wrong side seen from the front). Negating the depth axis restores a
+  // proper rotation: person's right = −X, anterior (face) = +Z. Triangle
+  // winding is reversed accordingly (flipIdx) so faces still point outward.
   const toScene = (p, i) => {
     const x = (p[i + axes[0]] - cx) * scale;
     const y = (p[i + vAxis] - vMin) * scale;
-    const z = (p[i + axes[1]] - cz) * scale;
+    const z = -(p[i + axes[1]] - cz) * scale;
     return [x, y, z];
   };
+  const flipIdx = idx => { const o = new Uint32Array(idx.length); for (let f = 0; f < idx.length; f += 3) { o[f] = idx[f]; o[f + 1] = idx[f + 2]; o[f + 2] = idx[f + 1]; } return o; };
   console.log('Vertical axis:', vAxis, 'scale:', scale.toFixed(4));
 
   mkdirSync(OUT_MODELS, { recursive: true });
@@ -203,15 +208,20 @@ async function main() {
           const [x, y, z] = toScene(g.positions, i);
           pos[i] = x; pos[i + 1] = y; pos[i + 2] = z;
         }
-        const nrm = computeNormals(pos, g.indices);
+        const tri = flipIdx(g.indices);
+        const nrm = computeNormals(pos, tri);
         const prim = doc.createPrimitive()
           .setMaterial(mat)
           .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(pos).setBuffer(buffer))
           .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(nrm).setBuffer(buffer))
-          .setIndices(doc.createAccessor().setType('SCALAR').setArray(g.indices).setBuffer(buffer));
+          .setIndices(doc.createAccessor().setType('SCALAR').setArray(tri).setBuffer(buffer));
         const mesh = doc.createMesh(`${s.key}_${k}`).addPrimitive(prim);
-        if (k === 0) node.setMesh(mesh);
-        else { const sub = doc.createNode(`${s.key}_${k}`).setMesh(mesh); node.addChild(sub); }
+        /* the source part name travels as extras → three userData.part, so the
+           viewer can anchor procedural geometry on a specific real part
+           (e.g. the distal end of the right external iliac artery). */
+        const part = names[id] || id;
+        if (k === 0) node.setMesh(mesh).setExtras({ part });
+        else { const sub = doc.createNode(`${s.key}_${k}`).setMesh(mesh).setExtras({ part }); node.addChild(sub); }
       });
       scene.addChild(node);
       manifest.structures.push({
@@ -223,7 +233,8 @@ async function main() {
 
     await doc.transform(
       weld(),
-      simplify({ simplifier: MeshoptSimplifier, ratio: 0.25, error: 0.008, lockBorder: false }),
+      /* muscles are the heaviest set and read fine a bit coarser */
+      simplify({ simplifier: MeshoptSimplifier, ratio: sys.id === 'muscular' ? 0.16 : 0.25, error: sys.id === 'muscular' ? 0.012 : 0.008, lockBorder: false }),
       dedup(), prune()
     );
     doc.createExtension(EXTMeshoptCompression).setRequired(true)
@@ -232,6 +243,42 @@ async function main() {
     const glb = await io.writeBinary(doc);
     writeFileSync(join(OUT_MODELS, `${sys.id}.glb`), glb);
     console.log(`✓ ${sys.id}.glb  (${members.length} structures, ${(glb.byteLength/1024).toFixed(0)} KB)`);
+  }
+
+  /* context shells (skin): one node, heavier simplification, own GLB */
+  manifest.context = [];
+  for (const c of CONTEXT) {
+    if (!c._ids.length) continue;
+    const doc = new Document();
+    const buffer = doc.createBuffer();
+    const scene = doc.createScene();
+    const mat = doc.createMaterial(c.key).setBaseColorFactor([0.8, 0.7, 0.65, 1]).setRoughnessFactor(0.7).setMetallicFactor(0);
+    const node = doc.createNode(c.key);
+    c._ids.forEach((id, k) => {
+      const g = parsed.get(id);
+      const pos = new Float32Array(g.positions.length);
+      for (let i = 0; i < g.positions.length; i += 3) { const [x, y, z] = toScene(g.positions, i); pos[i] = x; pos[i + 1] = y; pos[i + 2] = z; }
+      const tri = flipIdx(g.indices);
+      const prim = doc.createPrimitive().setMaterial(mat)
+        .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(pos).setBuffer(buffer))
+        .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(computeNormals(pos, tri)).setBuffer(buffer))
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(tri).setBuffer(buffer));
+      const mesh = doc.createMesh(`${c.key}_${k}`).addPrimitive(prim);
+      if (k === 0) node.setMesh(mesh); else node.addChild(doc.createNode(`${c.key}_${k}`).setMesh(mesh));
+    });
+    scene.addChild(node);
+    await doc.transform(
+      weld(),
+      simplify({ simplifier: MeshoptSimplifier, ratio: c.ratio || 0.1, error: c.error || 0.02, lockBorder: false }),
+      dedup(), prune()
+    );
+    doc.createExtension(EXTMeshoptCompression).setRequired(true)
+      .setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+    const io = new NodeIO().registerExtensions([EXTMeshoptCompression]).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+    const glb = await io.writeBinary(doc);
+    writeFileSync(join(OUT_MODELS, `${c.key}.glb`), glb);
+    manifest.context.push(c.key);
+    console.log(`✓ ${c.key}.glb  (context, ${(glb.byteLength/1024).toFixed(0)} KB)`);
   }
 
   writeFileSync(join(OUT_DATA, 'manifest.json'), JSON.stringify(manifest));

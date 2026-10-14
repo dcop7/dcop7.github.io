@@ -412,8 +412,9 @@ const PortugalExplorer = (function () {
 
   /* Selectable basemap styles (atlas-style detail: roads, places, terrain). */
   const PT_BASEMAPS = {
-    standard:  { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: '© OpenStreetMap © CARTO' },
-    dark:      { url: 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png',          sub: 'abcd', attr: '© OpenStreetMap © CARTO' },
+    /* CARTO now watermarks keyless tiles ("API KEY REQUIRED") → OSM + Esri. */
+    standard:  { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: '', attr: '© OpenStreetMap' },
+    dark:      { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', sub: '', attr: '© Esri, HERE, Garmin, © OpenStreetMap', native: 16 },
     satellite: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: '© Esri, Maxar' },
     terrain:   { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',  sub: '', attr: '© Esri' },
   };
@@ -424,7 +425,7 @@ const PortugalExplorer = (function () {
     try { localStorage.setItem('pt-basemap', style); } catch (e) {}
     if (_baseTile) { _map.removeLayer(_baseTile); _baseTile = null; }
     const b = PT_BASEMAPS[style];
-    _baseTile = L.tileLayer(b.url, { attribution: b.attr, subdomains: b.sub, maxZoom: 18 }).addTo(_map);
+    _baseTile = L.tileLayer(b.url, { attribution: b.attr, subdomains: b.sub, maxZoom: 18, maxNativeZoom: b.native || 19 }).addTo(_map);
     _baseTile.bringToBack();
     const el = document.getElementById('pt-leaflet-map');
     if (el) el.classList.toggle('pt-sat', style === 'satellite');

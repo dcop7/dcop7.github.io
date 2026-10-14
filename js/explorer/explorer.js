@@ -36,12 +36,11 @@ const ExplorerPage = (function () {
   let _lTile       = null;
   let _lLayer      = null;
   let _lLabels     = null;          /* country-name label layer (progressive by zoom) */
-  let _lSatLabels  = null;          /* Esri reference overlay shown in satellite mode */
   let _lInited     = false;
   let _lDataLoaded = false;
   let _contFilter  = 'all';
   let _themeObs    = null;
-  let _mapView     = 'political';   /* 'political' | 'satellite' | 'night' */
+  let _mapView     = 'satellite';   /* 'political' | 'satellite' | 'night' — satellite by default */
   let _nightOverlay = null;
   let _nightLayer   = null;
 
@@ -124,22 +123,6 @@ const ExplorerPage = (function () {
     Antarctica: 'rgba(148,163,184,.45)',
   };
 
-  const MAP_TILES = {
-    political: {
-      dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-      attr:  '© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',
-      sub:   'abcd',
-    },
-    satellite: {
-      url:  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      attr: '© <a href="https://esri.com">Esri</a>, Maxar, Earthstar Geographics',
-      sub:  '',
-      /* Place/boundary reference labels drawn on top of the imagery. */
-      ref:  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-    },
-  };
-
   /* ════════════════════════════════ UTILS ══════════════════════════ */
   function _byCode() {
     const m = {};
@@ -182,10 +165,6 @@ const ExplorerPage = (function () {
     const k = (c?.continents || [])[0] || '';
     if (_lang() === 'en') return _CONT_EN[k] || k || '';
     return _CONT_PT[k] || c?.regionPt || k || '';
-  }
-
-  function _cartoPoliticalUrl() {
-    return _isDark() ? MAP_TILES.political.dark : MAP_TILES.political.light;
   }
 
   /* ── Solar position (Julian day math) ── */
@@ -874,8 +853,8 @@ const ExplorerPage = (function () {
           <div class="ex-search-results" id="ex-map-search-results"></div>
         </div>
         <div class="ex-map-view-btns" id="ex-map-view-btns" role="group" aria-label="${_t('Map view', 'Vista do mapa')}">
-          <button class="ex-map-view-btn active" data-view="political" aria-pressed="true">${_t('Political', 'Político')}</button>
-          <button class="ex-map-view-btn" data-view="satellite" aria-pressed="false">${_t('Satellite', 'Satélite')}</button>
+          <button class="ex-map-view-btn active" data-view="satellite" aria-pressed="true">${_t('Satellite', 'Satélite')}</button>
+          <button class="ex-map-view-btn" data-view="political" aria-pressed="false">${_t('Political', 'Político')}</button>
           <button class="ex-map-view-btn" data-view="night" aria-pressed="false">${_t('Day/Night', 'Dia/Noite')}</button>
         </div>
         <div class="ex-map-controls">
@@ -910,18 +889,20 @@ const ExplorerPage = (function () {
     }
   }
 
-  /* ── Night overlay (custom Leaflet layer) ── */
+  /* ── Night overlay (custom Leaflet layer) ──
+     The sun-altitude field is sampled on a coarse grid (1 sample / 8px) into a
+     tiny offscreen canvas, then drawn upscaled with bilinear smoothing — a soft,
+     band-free twilight gradient at a fraction of the old per-6px fillRect cost.
+     The canvas is re-anchored to the map pane's top-left on every redraw (the
+     overlay pane is CSS-translated while panning, so a fixed 0,0 drifted). */
   function _createNightOverlayClass() {
     return L.Layer.extend({
       onAdd(map) {
         this._map = map;
-        const pane = map.getPane('overlayPane');
-        this._canvas = document.createElement('canvas');
-        Object.assign(this._canvas.style, {
-          position: 'absolute', top: '0', left: '0',
-          pointerEvents: 'none', zIndex: '300',
-        });
-        pane.appendChild(this._canvas);
+        this._canvas = L.DomUtil.create('canvas', 'ex-night-canvas');
+        Object.assign(this._canvas.style, { position: 'absolute', pointerEvents: 'none' });
+        map.getPane('overlayPane').appendChild(this._canvas);
+        this._small = document.createElement('canvas');
         map.on('moveend zoomend resize viewreset', this._draw, this);
         this._draw();
         this._tid = setInterval(() => this._draw(), 60000);
@@ -930,29 +911,63 @@ const ExplorerPage = (function () {
         this._canvas?.remove();
         map.off('moveend zoomend resize viewreset', this._draw, this);
         clearInterval(this._tid);
+        this._map = null;
       },
       _draw() {
-        if (!this._map) return;
-        const sz  = this._map.getSize();
-        const cvs = this._canvas;
-        cvs.width  = sz.x; cvs.height = sz.y;
-        cvs.style.width  = sz.x + 'px';
-        cvs.style.height = sz.y + 'px';
-        const ctx = cvs.getContext('2d');
+        const map = this._map;
+        if (!map) return;
+        const sz = map.getSize();
+        const STEP = 8;
+        const sw = Math.ceil(sz.x / STEP) + 1, sh = Math.ceil(sz.y / STEP) + 1;
+        const sm = this._small;
+        sm.width = sw; sm.height = sh;
+        const sctx = sm.getContext('2d');
+        const img = sctx.createImageData(sw, sh);
+        const px = img.data;
         const sun = _sunPos();
-        const RES = 6;
-        for (let y = 0; y < sz.y; y += RES) {
-          for (let x = 0; x < sz.x; x += RES) {
-            const ll  = this._map.containerPointToLatLng([x + RES / 2, y + RES / 2]);
-            const alt = _sunAlt(sun.lat, sun.lon, ll.lat, ll.lng);
-            if (alt < 6) {
-              const t = Math.max(0, Math.min(1, (-alt + 6) / 12));
-              ctx.fillStyle = `rgba(0,5,25,${(t * 0.72).toFixed(3)})`;
-              ctx.fillRect(x, y, RES, RES);
-            }
+        const toRad = Math.PI / 180;
+        const sLat = sun.lat * toRad, sinS = Math.sin(sLat), cosS = Math.cos(sLat);
+        /* lng only depends on x, lat only on y → precompute both axes once. */
+        const lngs = new Float32Array(sw), sinL = new Float32Array(sh), cosL = new Float32Array(sh);
+        for (let x = 0; x < sw; x++) lngs[x] = map.containerPointToLatLng([x * STEP, 0]).lng;
+        for (let y = 0; y < sh; y++) {
+          const la = map.containerPointToLatLng([0, y * STEP]).lat * toRad;
+          sinL[y] = Math.sin(la); cosL[y] = Math.cos(la);
+        }
+        for (let y = 0; y < sh; y++) {
+          for (let x = 0; x < sw; x++) {
+            const alt = Math.asin(sinS * sinL[y] + cosS * cosL[y] * Math.cos((lngs[x] - sun.lon) * toRad)) / toRad;
+            /* civil→astronomical twilight ramp: +4° fully lit … −14° full night */
+            const t = Math.max(0, Math.min(1, (4 - alt) / 18));
+            const i = (y * sw + x) * 4;
+            px[i] = 2; px[i + 1] = 6; px[i + 2] = 28;
+            px[i + 3] = Math.round(t * t * (3 - 2 * t) * 0.74 * 255);
           }
         }
+        sctx.putImageData(img, 0, 0);
+        const cvs = this._canvas;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        cvs.width = Math.round(sz.x * dpr); cvs.height = Math.round(sz.y * dpr);
+        cvs.style.width = sz.x + 'px'; cvs.style.height = sz.y + 'px';
+        L.DomUtil.setPosition(cvs, map.containerPointToLayerPoint([0, 0]));
+        const ctx = cvs.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(sm, 0, 0, sw, sh, 0, 0, sw * STEP * dpr, sh * STEP * dpr);
       },
+    });
+  }
+
+  /* Map view → basemap. Satellite is the default view; "Político" is a calm
+     label-less grey canvas (our own flag labels do the naming); "Dia/Noite"
+     shades the live night side over the satellite imagery. */
+  function _baseFor(view) {
+    if (view === 'political') return Basemaps.layer(_isDark() ? 'dark' : 'light', { maxZoom: 8 });
+    /* Esri place names only once you're zoomed in — at world scale they would
+       fight our flag labels. */
+    return Basemaps.layer('satellite', {
+      labels: true, labelsMinZoom: 5, maxZoom: 8,
+      retina: (window.devicePixelRatio || 1) > 1.25,
     });
   }
 
@@ -979,26 +994,27 @@ const ExplorerPage = (function () {
     const mapEl = document.getElementById('ex-leaflet-map');
     if (!mapEl) return;
 
-    _lMap = L.map(mapEl, { center: [20, 10], zoom: 2, minZoom: 1, maxZoom: 6, zoomControl: false });
+    /* Canvas renderer: ~250 country polygons pan/zoom far smoother on one
+       <canvas> than as 250 SVG paths (hover + click still work). */
+    _lMap = L.map(mapEl, {
+      center: [25, 10], zoom: 2, minZoom: 1.5, maxZoom: 8,
+      zoomControl: false, worldCopyJump: true,
+      zoomSnap: 0.5, zoomDelta: 0.5, wheelPxPerZoomLevel: 90,
+      maxBounds: [[-85, -540], [85, 540]], maxBoundsViscosity: 0.8,
+      renderer: L.canvas({ padding: 0.4, tolerance: 2 }),
+    });
     L.control.zoom({ position: 'bottomright' }).addTo(_lMap);
-
-    _lTile = L.tileLayer(_cartoPoliticalUrl(), {
-      attribution: MAP_TILES.political.attr,
-      subdomains: MAP_TILES.political.sub,
-    }).addTo(_lMap);
+    /* Fit the whole world on first open whatever the viewport size. */
+    try { _lMap.fitBounds(WORLD_BOUNDS, { animate: false }); } catch (e) {}
 
     _nightOverlay = _createNightOverlayClass();
+    _setMapView(_mapView);
 
     if (_themeObs) _themeObs.disconnect();
     _themeObs = new MutationObserver(() => {
-      if (!_lMap || !_lTile) return;
-      if (_mapView === 'political') {
-        _lMap.removeLayer(_lTile);
-        _lTile = L.tileLayer(_cartoPoliticalUrl(), {
-          attribution: MAP_TILES.political.attr,
-          subdomains: MAP_TILES.political.sub,
-        }).addTo(_lMap);
-      }
+      if (!_lMap) return;
+      if (_mapView === 'political') _setMapView('political');
+      else _restyleCountries();
     });
     _themeObs.observe(document.body, { attributeFilter: ['class'] });
 
@@ -1018,13 +1034,8 @@ const ExplorerPage = (function () {
     if (!bar) return;
     bar.addEventListener('click', e => {
       const btn = e.target.closest('.ex-map-view-btn');
-      if (!btn) return;
+      if (!btn || btn.dataset.view === _mapView) return;
       _setMapView(btn.dataset.view);
-      bar.querySelectorAll('.ex-map-view-btn').forEach(b => {
-        const on = b === btn;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
     });
   }
 
@@ -1032,32 +1043,19 @@ const ExplorerPage = (function () {
     if (!_lMap) return;
     _mapView = view;
 
-    /* Remove existing tile, satellite labels, and night layer */
     if (_lTile) { _lMap.removeLayer(_lTile); _lTile = null; }
-    if (_lSatLabels) { _lMap.removeLayer(_lSatLabels); _lSatLabels = null; }
     if (_nightLayer) { _lMap.removeLayer(_nightLayer); _nightLayer = null; }
 
-    if (view === 'satellite') {
-      _lTile = L.tileLayer(MAP_TILES.satellite.url, {
-        attribution: MAP_TILES.satellite.attr,
-        maxZoom: 18,
-      }).addTo(_lMap);
-      /* Reference labels overlay so satellite mode isn't label-less. */
-      _lSatLabels = L.tileLayer(MAP_TILES.satellite.ref, { maxZoom: 18, pane: 'shadowPane' }).addTo(_lMap);
-    } else if (view === 'night') {
-      _lTile = L.tileLayer(_cartoPoliticalUrl(), {
-        attribution: MAP_TILES.political.attr,
-        subdomains: MAP_TILES.political.sub,
-      }).addTo(_lMap);
-      _nightLayer = new _nightOverlay().addTo(_lMap);
-    } else {
-      _lTile = L.tileLayer(_cartoPoliticalUrl(), {
-        attribution: MAP_TILES.political.attr,
-        subdomains: MAP_TILES.political.sub,
-      }).addTo(_lMap);
-    }
+    _lTile = _baseFor(view).addTo(_lMap);
+    if (view === 'night') _nightLayer = new _nightOverlay().addTo(_lMap);
 
-    /* Bring country layer to front if present */
+    document.getElementById('ex-leaflet-map')?.setAttribute('data-view', view);
+    document.querySelectorAll('#ex-map-view-btns .ex-map-view-btn').forEach(b => {
+      const on = b.dataset.view === view;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    _restyleCountries();
     if (_lLayer) _lLayer.bringToFront();
   }
 
@@ -1084,70 +1082,127 @@ const ExplorerPage = (function () {
     _lDataLoaded = true;
   }
 
+  /* Country polygon style for the active view + continent filter. On imagery
+     the fill is fully transparent (still clickable) so the satellite photo is
+     never tinted; only crisp borders are drawn. */
+  const WORLD_BOUNDS = [[-56, -168], [76, 178]];
+  let _lByCca3 = {};
+  function _countryStyle(feature) {
+    const c  = _lByCca3[feature?.id];
+    const ok = _contFilter === 'all' || (c?.continents || []).includes(_contFilter);
+    if (_mapView !== 'political') return {
+      fillColor: '#050814', fillOpacity: ok ? 0 : 0.6,
+      color: ok ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.07)', weight: ok ? 0.7 : 0.4,
+    };
+    const dark = _isDark();
+    return {
+      fillColor: '#6366f1', fillOpacity: ok ? 0.1 : 0.02,
+      color: ok ? (dark ? 'rgba(255,255,255,.22)' : 'rgba(30,41,59,.25)') : 'rgba(128,128,128,.06)',
+      weight: ok ? 0.8 : 0.4,
+    };
+  }
+  function _countryHoverStyle() {
+    return _mapView === 'political'
+      ? { fillOpacity: 0.34, color: 'rgba(129,140,248,.95)', weight: 1.6 }
+      : { fillColor: '#ffffff', fillOpacity: 0.14, color: 'rgba(255,255,255,.95)', weight: 1.6 };
+  }
+  function _restyleCountries() {
+    if (_lLayer) _lLayer.setStyle(_countryStyle);
+    _declutterLabels();
+  }
+
   function _addCountryLayer() {
     if (!_lMap || !_geoJson) return;
-    const byCca3 = _byCode();
+    _lByCca3 = _byCode();
+    const byCca3 = _lByCca3;
     _lLabels = L.layerGroup();
+    _labelItems = [];
 
     _lLayer = L.geoJSON(_geoJson, {
-      style: () => ({
-        fillColor: '#6366f1',
-        fillOpacity: 0.12,
-        color: _isDark() ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.18)',
-        weight: 0.8,
-      }),
+      style: _countryStyle,
       onEachFeature(feature, layer) {
         const c = byCca3[feature.id];
         layer.on({
-          mouseover(e) { e.target.setStyle({ fillOpacity: 0.42, color: 'rgba(99,102,241,0.85)', weight: 1.4 }); },
-          mouseout(e)  { _lLayer?.resetStyle(e.target); },
+          mouseover(e) { e.target.setStyle(_countryHoverStyle()); },
+          mouseout(e)  { e.target.setStyle(_countryStyle(feature)); },
           click() {
-            /* Fly to country bounds */
-            try { _lMap.flyToBounds(layer.getBounds(), { padding: [30, 30], maxZoom: 6, duration: 0.7 }); } catch (e) {}
-            if (c) {
-              showCountryPanel(c);
-            } else {
-              _showMinimalPanel(feature);
-            }
+            try { _lMap.flyToBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 6, duration: 0.8 }); } catch (e) {}
+            if (c) showCountryPanel(c);
+            else _showMinimalPanel(feature);
           },
         });
-        /* Progressive label: flag emoji + name, placed at the polygon centre.
-           minZoom scales with country size so large countries label first. */
-        if (c) {
-          let center;
-          try { center = layer.getBounds().getCenter(); } catch (e) { return; }
-          const area = c.area || 0;
-          const minZoom = area > 3e6 ? 2 : area > 7e5 ? 3 : area > 1.2e5 ? 4 : 5;
-          const marker = L.marker(center, {
-            interactive: false,
-            keyboard: false,
-            icon: L.divIcon({
-              className: 'ex-country-label',
-              html: `${_flagImg(c, 'ex-cl-flag-img')}<span class="ex-cl-name">${_cName(c)}</span>`,
-              iconSize: [0, 0],
-            }),
-          });
-          marker._minZoom = minZoom;
-          _lLabels.addLayer(marker);
-        }
+        if (!c) return;
+        /* Anchor on the country's own centre point (restcountries latlng) —
+           the bbox centre put the USA label in Canada (Alaska) and France's in
+           the Atlantic (French Guiana). Fall back to the bbox centre. */
+        let center = Array.isArray(c.latlng) && c.latlng.length === 2 ? L.latLng(c.latlng[0], c.latlng[1]) : null;
+        if (!center) { try { center = layer.getBounds().getCenter(); } catch (e) { return; } }
+        const name = _cName(c);
+        const marker = L.marker(center, {
+          interactive: false, keyboard: false,
+          icon: L.divIcon({
+            className: 'ex-country-label is-off',
+            html: `<span class="ex-cl">${_flagImg(c, 'ex-cl-flag-img')}<span class="ex-cl-name">${name}</span></span>`,
+            iconSize: [0, 0],
+          }),
+        });
+        _labelItems.push({
+          marker, ll: center,
+          w: name.length * 6.6 + 28, h: 16,
+          prio: (c.area || 0) + (c.population || 0) / 400,
+          cont: c.continents || [],
+        });
+        _lLabels.addLayer(marker);
       },
     }).addTo(_lMap);
 
+    _labelItems.sort((a, b) => b.prio - a.prio);
     _lLabels.addTo(_lMap);
-    _lMap.on('zoomend', _updateLabelVisibility);
-    _updateLabelVisibility();
+    _lMap.on('zoomend moveend resize', _declutterLabels);
+    _declutterLabels();
 
     _wireMapSearch(byCca3);
     _wireContinent(byCca3);
   }
 
-  /* Show only labels whose size-based threshold is met at the current zoom. */
-  function _updateLabelVisibility() {
-    if (!_lLabels || !_lMap) return;
-    const z = _lMap.getZoom();
-    _lLabels.eachLayer(m => {
-      const el = m.getElement();
-      if (el) el.style.display = z >= (m._minZoom || 5) ? '' : 'none';
+  /* Collision-based label placement: walk labels from the biggest country
+     down, keep each one only if its box doesn't overlap one already placed.
+     Small countries appear naturally as you zoom in; nothing ever stacks. */
+  let _labelItems = [];
+  let _declutterRaf = 0;
+  function _declutterLabels() {
+    if (_declutterRaf) return;
+    _declutterRaf = requestAnimationFrame(() => {
+      _declutterRaf = 0;
+      if (!_lMap || !_labelItems.length) return;
+      const size = _lMap.getSize();
+      /* Floating UI (search, view toggle, continent bar…) counts as already
+         placed, so no label ever hides underneath a control. */
+      const box = _lMap.getContainer().getBoundingClientRect();
+      const placed = [...document.querySelectorAll('.ex-map-wrap .ex-search-bar, .ex-map-wrap .ex-map-view-btns, .ex-map-wrap .ex-map-controls, .ex-map-wrap .ex-continent-filter, .ex-map-wrap .leaflet-control-zoom')]
+        .map(el => el.getBoundingClientRect())
+        .filter(r => r.width && r.height)
+        .map(r => [r.left - box.left, r.top - box.top, r.right - box.left, r.bottom - box.top]);
+      const PAD = 5;
+      for (const it of _labelItems) {
+        const el = it.marker.getElement();
+        if (!el) continue;
+        let show = false;
+        if (_contFilter === 'all' || it.cont.includes(_contFilter)) {
+          const p = _lMap.latLngToContainerPoint(it.ll);
+          const x0 = p.x - it.w / 2 - PAD, x1 = p.x + it.w / 2 + PAD;
+          const y0 = p.y - it.h / 2 - PAD, y1 = p.y + it.h / 2 + PAD;
+          if (x1 > 0 && x0 < size.x && y1 > 0 && y0 < size.y) {
+            show = true;
+            for (let k = 0; k < placed.length; k++) {
+              const r = placed[k];
+              if (x0 < r[2] && x1 > r[0] && y0 < r[3] && y1 > r[1]) { show = false; break; }
+            }
+            if (show) placed.push([x0, y0, x1, y1]);
+          }
+        }
+        if (el._shown !== show) { el._shown = show; el.classList.toggle('is-off', !show); }
+      }
     });
   }
 
@@ -1163,15 +1218,12 @@ const ExplorerPage = (function () {
         b.classList.toggle('active', on);
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
-      if (!_lLayer) return;
-      _lLayer.eachLayer(layer => {
-        const c  = byCca3[layer.feature?.id];
-        const ok = _contFilter === 'all' || (c?.continents || []).includes(_contFilter);
-        layer.setStyle({
-          fillOpacity: ok ? 0.12 : 0.03,
-          color: ok ? (_isDark() ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.15)') : 'rgba(128,128,128,.05)',
-        });
-      });
+      _restyleCountries();
+      /* Frame the chosen continent (or the whole world). */
+      if (!_lMap) return;
+      if (_contFilter === 'all') { _lMap.flyToBounds(WORLD_BOUNDS, { duration: 0.8 }); return; }
+      const pts = _labelItems.filter(it => it.cont.includes(_contFilter) && it.prio > 3e4).map(it => it.ll);
+      if (pts.length) try { _lMap.flyToBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 4, duration: 0.8 }); } catch (e) {}
     });
   }
 

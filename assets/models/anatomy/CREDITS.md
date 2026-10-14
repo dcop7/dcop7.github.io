@@ -2,7 +2,8 @@
 
 The per-system 3D models in this folder (`esqueletico.glb`, `muscular.glb`,
 `circulatorio.glb`, `respiratorio.glb`, `nervoso.glb`, `digestivo.glb`,
-`urinario.glb`, `sentidos.glb`) are derived from **BodyParts3D**.
+`urinario.glb`, `sentidos.glb`) and the skin silhouette `pele.glb` are derived
+from **BodyParts3D**.
 
 > **BodyParts3D**, © The Database Center for Life Science (DBCLS),
 > licensed under **Creative Commons Attribution-ShareAlike 2.1 Japan
@@ -16,10 +17,12 @@ The original BodyParts3D parts are individual OBJ meshes, all in one shared
 coordinate space. Our pipeline (`tools/anatomy/`, Node + glTF-Transform +
 meshoptimizer — no Blender) selects a curated set of structures per anatomical
 system, normalises the shared coordinate space (stand upright, feet at floor,
-centred), merges the parts of each structure into one named, pickable node,
+centred — depth axis negated so the body is not mirrored), merges the parts of each structure into one named, pickable node,
 simplifies and meshopt-compresses the result, and writes one GLB per system.
 
-No anatomical meaning was changed — only polygon count / file size were reduced
+Procedural extras drawn at runtime by the viewer (limb/head vessels, spinal
+cord, peripheral nerves, tongue, irises) are our own geometry, anchored on these
+parts. No anatomical meaning was changed — only polygon count / file size were reduced
 and structures were grouped per system for navigation.
 
 ## Licence note (ShareAlike)

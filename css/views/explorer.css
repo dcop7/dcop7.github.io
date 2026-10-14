@@ -388,6 +388,11 @@
   font-family: var(--font-sans);
 }
 .leaflet-tile-pane { filter: var(--tile-filter); }
+/* Imagery is shown as-is (the global tile filter dulls photos). */
+#ex-leaflet-map[data-view="satellite"] .leaflet-tile-pane,
+#ex-leaflet-map[data-view="night"] .leaflet-tile-pane { filter: saturate(1.06) contrast(1.03); }
+#ex-leaflet-map[data-view="satellite"],
+#ex-leaflet-map[data-view="night"] { background: #06101f !important; }
 
 .leaflet-control-zoom {
   border: none !important;
@@ -957,36 +962,47 @@
 }
 .ex-border-chip-flag { font-size: .85rem; line-height: 1; }
 
-/* Progressive country labels on the Leaflet world map */
+/* Country labels on the Leaflet world map. The marker itself is a 0×0
+   anchor positioned by Leaflet (inline transform); the inner .ex-cl centres
+   itself on it. Visibility is decided by collision-based decluttering in JS
+   (.is-off) — never set an explicit display here, it would beat that. */
 .ex-country-label {
-  display: flex !important;
-  align-items: center;
-  gap: .25rem;
-  white-space: nowrap;
-  pointer-events: none;
-  width: auto !important;
-  height: auto !important;
+  width: 0 !important;
+  height: 0 !important;
   margin: 0 !important;
+  pointer-events: none;
+}
+.ex-country-label .ex-cl {
+  position: absolute;
+  left: 0; top: 0;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  white-space: nowrap;
   font-family: var(--font-sans);
   font-size: .72rem;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: .01em;
   color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8);
+  text-shadow: 0 1px 2px rgba(0,0,0,.95), 0 0 6px rgba(0,0,0,.65);
+  transition: opacity .22s ease;
 }
-.ex-country-label .ex-cl-flag { font-size: .9rem; line-height: 1; }
+.ex-country-label.is-off .ex-cl { opacity: 0; visibility: hidden; transition: opacity .12s ease, visibility 0s .12s; }
 /* Leaflet doesn't constrain <img> inside a divIcon, so pin the flag size hard. */
 .ex-country-label .ex-cl-flag-img {
   width: 15px !important;
   height: 10px !important;
   max-width: 15px !important;
+  margin: 0 !important;
   flex: 0 0 auto;
-  border-radius: 1px;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.3);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.35), 0 1px 3px rgba(0,0,0,.5);
 }
-body.light .ex-country-label {
+#ex-leaflet-map[data-view="political"] .ex-country-label .ex-cl { font-weight: 600; }
+body.light #ex-leaflet-map[data-view="political"] .ex-country-label .ex-cl {
   color: #1a2230;
-  text-shadow: 0 1px 3px rgba(255,255,255,.9), 0 0 2px rgba(255,255,255,.8);
+  text-shadow: 0 1px 2px rgba(255,255,255,.95), 0 0 6px rgba(255,255,255,.7);
 }
 .ex-panel-island-note {
   font-size: .75rem;
@@ -2330,7 +2346,15 @@ body.light .pt-capital-label .pt-cap-dot {
   background:
     radial-gradient(circle at 50% 42%, #0b1426 0%, #060a14 55%, #03050b 100%);
 }
-.ex-rt-globe { position: absolute; inset: 0; }
+.ex-rt-globe {
+  position: absolute; inset: 0;
+  /* Hidden until the baked surface texture is decoded, then faded in once —
+     no placeholder surface is ever shown, so nothing "changes" after opening. */
+  opacity: 0; transform: scale(.965);
+  transition: opacity .9s ease, transform 1.4s cubic-bezier(.16,.84,.24,1);
+}
+.ex-rt-globe.is-ready { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .ex-rt-globe { transform: none; transition: opacity .3s; } }
 
 /* Layer toggle chips (top-left) */
 .ex-rt-layers {
@@ -2376,12 +2400,74 @@ body.light .pt-capital-label .pt-cap-dot {
 .ex-rt-status.loading { color: rgba(var(--accent-rgb), .95); animation: ex-rt-status-pulse 1.3s ease-in-out infinite; }
 @keyframes ex-rt-status-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 
-/* Active-layer legend (bottom-left) */
+/* Key (bottom-left): quake ring colours + day/night */
 .ex-rt-legend {
-  position: absolute; bottom: 1.6rem; left: .75rem; z-index: 9;
-  display: flex; flex-wrap: wrap; gap: .3rem .7rem; max-width: 60%;
+  position: absolute; bottom: 1.4rem; left: .75rem; z-index: 9;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .65rem; max-width: 60%;
+  padding: .38rem .7rem; border-radius: 999px;
+  background: rgba(8,12,22,.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.07);
 }
-.ex-rt-leg { display: inline-flex; align-items: center; gap: .25rem; font-size: .66rem; color: var(--muted); }
+.ex-rt-legend:empty { display: none; }
+.ex-rt-leg-t { font-size: .64rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+.ex-rt-leg { display: inline-flex; align-items: center; gap: .3rem; font-size: .66rem; color: var(--muted); white-space: nowrap; }
+.ex-rt-leg i { width: .55rem; height: .55rem; border-radius: 50%; box-shadow: 0 0 6px currentColor; display: inline-block; }
+.ex-rt-leg i.ex-rt-leg-sun { background: linear-gradient(90deg, #ffd27a 50%, #1c2a4a 50%); box-shadow: none; }
+.ex-rt-leg-sep { width: 1px; height: .8rem; background: rgba(255,255,255,.12); }
+
+/* Live count badge inside each layer chip */
+.ex-rt-chip-n {
+  min-width: 1.15rem; padding: 0 .3rem; border-radius: 999px; text-align: center;
+  font-size: .62rem; font-weight: 700; line-height: 1.05rem; font-variant-numeric: tabular-nums;
+  background: rgba(255,255,255,.1); color: var(--text2);
+}
+.ex-rt-chip-n[hidden], .ex-rt-chip-n:empty { display: none; }
+.ex-rt-chip.on .ex-rt-chip-n { background: rgba(var(--accent-rgb),.28); color: #fff; }
+/* status pill: fixed slot so the bar never jumps when the text changes */
+.ex-rt-status { min-width: 6.5rem; }
+
+/* "Agora no planeta" feed (left column under the chips) */
+.ex-rt-feed {
+  position: absolute; z-index: 10; left: .75rem; top: 5.2rem; bottom: 4.2rem;
+  width: min(300px, 34vw); display: flex; flex-direction: column;
+  background: rgba(9,14,25,.78); backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,.08); border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.45);
+  animation: ex-rt-feed-in .35s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes ex-rt-feed-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+.ex-rt-feed[hidden] { display: none !important; }
+.ex-rt-feed-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem;
+  padding: .75rem .8rem .55rem; border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.ex-rt-feed-head .ex-rt-card-close { position: static; flex: 0 0 auto; }
+.ex-rt-feed-title { font-size: .86rem; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.ex-rt-feed-sub { font-size: .66rem; color: var(--muted); margin-top: .1rem; }
+.ex-rt-feed-list { overflow-y: auto; padding: .35rem .4rem .6rem; scrollbar-width: thin; overscroll-behavior: contain; }
+.ex-rt-feed-grp {
+  font-size: .6rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); padding: .6rem .45rem .3rem;
+}
+.ex-rt-feed-it {
+  width: 100%; display: flex; align-items: center; gap: .6rem; text-align: left;
+  padding: .42rem .45rem; border-radius: 9px; border: 1px solid transparent;
+  background: transparent; color: inherit; cursor: pointer; font-family: var(--font-sans);
+  transition: background var(--ease), border-color var(--ease);
+}
+.ex-rt-feed-it:hover, .ex-rt-feed-it:focus-visible { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); outline: none; }
+.ex-rt-feed-ic {
+  flex: 0 0 auto; width: 2rem; height: 2rem; border-radius: 8px; display: grid; place-items: center;
+  font-size: .95rem; background: rgba(255,255,255,.06);
+}
+.ex-rt-feed-ic.lo, .ex-rt-feed-ic.mid, .ex-rt-feed-ic.hi { font-size: .74rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ex-rt-feed-ic.lo  { color: #ffe08a; background: rgba(255,220,90,.12); }
+.ex-rt-feed-ic.mid { color: #ffb36b; background: rgba(255,160,60,.14); }
+.ex-rt-feed-ic.hi  { color: #ff8080; background: rgba(255,80,80,.16); }
+.ex-rt-feed-tx { min-width: 0; display: flex; flex-direction: column; gap: .08rem; }
+.ex-rt-feed-t { font-size: .74rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex-rt-feed-s { font-size: .64rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex-rt-feed-empty { font-size: .72rem; color: var(--muted); padding: 1rem .6rem; text-align: center; }
 
 /* Hover tooltip for events (rich, multi-line) */
 .ex-rt-tooltip {
@@ -2447,6 +2533,8 @@ body.light .pt-capital-label .pt-cap-dot {
   .ex-rt-legend { display: none; }
   .ex-rt-filters { top: auto; bottom: calc(4.2rem + env(safe-area-inset-bottom, 0px)); left: .6rem; right: .6rem; width: auto; }
   .ex-rt-detail { top: 6.5rem; bottom: auto; left: .6rem; right: .6rem; width: auto; }
+  .ex-rt-feed { left: .6rem; right: .6rem; top: auto; width: auto; bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px)); max-height: 46vh; }
+  .ex-rt-status { min-width: 0; }
 }
 
 /* ══════════════════════════════════════════════════════════════════

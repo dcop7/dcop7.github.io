@@ -25,10 +25,10 @@ const F1Page = (function () {
       s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
     });
   }
-  /* Real map of a circuit (license-clean, keyless): CARTO (OSM) or Esri satellite,
+  /* Real map of a circuit (license-clean, keyless): OpenStreetMap or Esri satellite,
      both with attribution — the same tile sources used by the Portugal explorer. */
   const REALMAP_TILES = {
-    map: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', sub: 'abcd', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>' },
+    map: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: '', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' },
     sat: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: 'Imagery © <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics' },
   };
   /* A STATIC satellite map sized to sit *behind* the animated schematic: no

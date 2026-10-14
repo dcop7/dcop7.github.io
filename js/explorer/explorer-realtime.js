@@ -14,13 +14,24 @@ const RealtimeEarth = (function () {
   /* Bump on every meaningful change — logged on mount so we can confirm from the
      browser console exactly which build is actually running (rules out stale
      cached JS, the usual reason a fix "doesn't show up"). */
-  const BUILD = 'v66 (2026-07-16 crossfade imagery · texture cache · date-step · fly-to · auto-rotate)';
+  const BUILD = 'v70 (2026-10-14 baked NASA textures · single reveal (no swap) · sRGB-correct shader · ocean glint · stars · live feed)';
 
   const THREE_CDN = 'https://unpkg.com/three@0.160.0/build/three.min.js';
   const GLOBE_CDN = 'https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js';
 
-  const TEX_DAY   = 'assets/planets/earth_atmos_2048.jpg';   /* local fallback */
-  const TEX_NIGHT = 'assets/planets/earth-night.jpg';        /* local fallback */
+  /* The surface is ONE baked texture, shown once and never swapped. The old
+     flow opened on a small bundled texture and ~5 s later crossfaded to a NASA
+     download that looked different (bathymetry ridges, other ocean colour) —
+     the "ao abrir mostra um fundo e passado 1-2 s muda" complaint. Now the
+     globe stays hidden behind the loader until this texture is decoded, then
+     fades in: what you first see is what stays.
+     Both are baked offline by tools/earth/bake-day.py from NASA GIBS (public
+     domain): Blue Marble shaded-relief land + a natural depth-shaded ocean,
+     and VIIRS Black Marble city lights isolated into a luminance mask. */
+  const TEX = {
+    day:    { hi: 'assets/planets/earth-day-4k.jpg',    lo: 'assets/planets/earth-day-2k.jpg' },
+    lights: { hi: 'assets/planets/earth-lights-4k.jpg', lo: 'assets/planets/earth-lights-2k.jpg' },
+  };
 
   /* NASA GIBS WMS — one equirectangular image per date (EPSG:4326, 2:1).
      `px` = output width (height = px/2). Large for the static base imagery,
@@ -37,27 +48,15 @@ const RealtimeEarth = (function () {
     return `${GIBS}?${p.toString()}`;
   }
 
-  /* High-res cloud-free base imagery: NASA GIBS "Blue Marble Shaded Relief +
-     Bathymetry" — a STATIC layer (no time dim) that is the bright, colourful
-     topographic Earth, visually matching the bundled texture (unlike
-     "BlueMarble_NextGeneration", which measured ~half as bright and made the
-     globe visibly darken the moment it swapped in — the user's exact report).
-     Request size is capped to the GPU's max texture size at load time so it can
-     never upload as black; the image is also brightness-validated before use. */
-  const DAY_HI_LAYER = 'BlueMarble_ShadedRelief_Bathymetry';
-  /* Measured mean brightness: bundled ≈105, this layer ≈63. We brighten it with
-     a GAMMA curve (not a linear multiply, which blew out bright land while barely
-     lifting the dark oceans that read as "escuro"). Gamma 0.55 lifts the mean to
-     ≈102 — matching the bundled texture — with ZERO highlight clipping, so the
-     hi-res swap is brightness-neutral and can never darken the globe. */
-  const DAY_HI_GAMMA = 0.55;
+  /* (Cloud-free base imagery is now the baked local texture above — no
+     runtime GIBS download for the base, so no swap and no "fica escuro".) */
   /* Clouds layer = NASA "VIIRS NOAA-20" true-colour. VIIRS has a wide enough swath
      for complete daily global coverage, so — unlike MODIS, whose narrow swath
      leaves slanted black ORBITAL GAPS in the daily mosaic ("nuvens cortadas") — it
      is gap-free. True-colour is already ~as bright as the base texture, so it gets
-     only a gentle gamma (not the strong 0.55 used for the dark shaded relief). */
+     only a gentle gamma lift. */
   const CLOUDS_LAYER = 'VIIRS_NOAA20_CorrectedReflectance_TrueColor';
-  const CLOUDS_GAMMA = 0.9;
+  const CLOUDS_GAMMA = 0.92;
 
   /* Max anisotropy keeps the surface crisp at grazing angles (the horizon). */
   let _maxAniso = 8;
@@ -113,7 +112,13 @@ const RealtimeEarth = (function () {
   let _minMag = 4;              /* earthquake magnitude filter (default ≥4) */
   let _recencyDays = 7;         /* show EONET events active within N days */
   let _fireCap = 120;           /* hard safety cap on wildfire visuals */
-  let _baseDayTex = null;       /* cached hi-res Blue Marble (cloud-free base) */
+  let _baseDayTex = null;       /* the baked day texture (cloud-free base) */
+  let _stars = null;            /* background starfield (THREE.Points) */
+  let _refreshT = null;         /* live-mode auto-refresh timer */
+  let _sunAt = 0;               /* last per-frame sun refresh (ms) */
+  let _tipDirty = true;         /* pointer/camera moved since the last pick */
+  let _lastCam = '';            /* camera fingerprint, to detect auto-rotate/zoom */
+  let _updatedAt = 0;           /* when the live data last loaded (ms) */
   let _loadSeq = 0;             /* guards against out-of-order async loads */
   let _tipEl = null, _ptr = null;   /* tooltip element + live pointer state */
   let _maxTexSize = 4096;       /* GPU max texture size (read from the renderer) */
@@ -128,31 +133,55 @@ const RealtimeEarth = (function () {
      camera, so the terminator is camera-independent and stays geographically
      correct under any zoom / drag / rotation. `dayNight` 0 = full daylight. */
   const VERT = `
-    varying vec3 vWorldNormal; varying vec2 vUv;
+    varying vec3 vWorldNormal; varying vec3 vWorldPos; varying vec2 vUv;
     void main(){ vWorldNormal = normalize(mat3(modelMatrix) * normal); vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
+      vec4 wp = modelMatrix * vec4(position, 1.0); vWorldPos = wp.xyz;
+      gl_Position = projectionMatrix * viewMatrix * wp; }`;
+  /* Textures are sampled RAW (no sRGB decode) and written raw, so the image
+     appears exactly as baked. (The old shader decoded sRGB→linear on sample
+     but never re-encoded on output — a hidden ~2.2 gamma darkening that was
+     being "fixed" by hand with gamma 0.55. That was the real "fica escuro".)
+     On top: soft day-side shading, a warm twilight band, a sun glint on open
+     water, VIIRS city lights on the night side and a Fresnel atmosphere rim. */
   const FRAG = `
     uniform sampler2D dayTexture; uniform sampler2D prevDayTexture;
     uniform sampler2D nightTexture;
     uniform vec3 sunDirection; uniform float dayNight;
     uniform float dayGamma; uniform float prevGamma; uniform float texMix;
-    varying vec3 vWorldNormal; varying vec2 vUv;
+    varying vec3 vWorldNormal; varying vec3 vWorldPos; varying vec2 vUv;
     void main(){
-      float i = dot(normalize(vWorldNormal), normalize(sunDirection));
-      /* dayGamma (<1) brightens the day texture's midtones/oceans without
-         clipping bright land — it normalises brightness across textures so the
-         globe never dims when the (darker) hi-res NASA mosaic swaps in. */
-      vec3 dayNew = clamp(pow(texture2D(dayTexture, vUv).rgb, vec3(dayGamma)), 0.0, 1.0);
-      /* Imagery swaps CROSSFADE (texMix 0→1) instead of popping in, so the
-         hi-res upgrade / clouds toggle / date change feels smooth, not jarring. */
-      vec3 dayOld = clamp(pow(texture2D(prevDayTexture, vUv).rgb, vec3(prevGamma)), 0.0, 1.0);
+      vec3 n = normalize(vWorldNormal);
+      vec3 L = normalize(sunDirection);
+      vec3 V = normalize(cameraPosition - vWorldPos);
+      float i = dot(n, L);
+      vec3 dayNew = pow(texture2D(dayTexture, vUv).rgb, vec3(dayGamma));
+      vec3 dayOld = pow(texture2D(prevDayTexture, vUv).rgb, vec3(prevGamma));
+      /* Imagery swaps (clouds toggle / date change) CROSSFADE, never pop. */
       vec3 day = mix(dayOld, dayNew, texMix);
-      /* Night side = a clearly visible dusky Earth (75% of the day texture) + city
-         lights + a blue earthshine floor, so the night hemisphere reads as a dim
-         lit globe, never a dark void — the recurring "fica escuro" complaint. */
-      vec3 night = texture2D(nightTexture, vUv).rgb * 1.1 + day * 0.75 + vec3(0.04, 0.055, 0.09);
-      float blend = mix(1.0, smoothstep(-0.20, 0.35, i), dayNight);
-      gl_FragColor = vec4(mix(night, day, blend), 1.0);
+
+      /* Open water = blue-dominant pixels → specular sun glint there only. */
+      float water = smoothstep(0.015, 0.09, day.b - max(day.r, day.g * 0.9));
+      vec3 H = normalize(L + V);
+      float nh = max(dot(n, H), 0.0);
+      float glint = pow(nh, 220.0) * 0.38 + pow(nh, 40.0) * 0.05;
+      float shade = mix(0.80, 1.06, smoothstep(-0.05, 0.75, i));       /* soft volume */
+      float twilight = 1.0 - smoothstep(0.0, 0.30, abs(i + 0.03));     /* dusk band */
+      vec3 dayLit = day * mix(1.0, shade, dayNight)
+                  + vec3(1.0, 0.94, 0.82) * glint * water * step(0.0, i) * dayNight
+                  + vec3(0.22, 0.09, 0.0) * twilight * dayNight * 0.55;
+
+      /* Night: moonlit Earth (cool, dim but readable) + warm city lights. */
+      float lights = texture2D(nightTexture, vUv).r;
+      vec3 night = day * vec3(0.24, 0.30, 0.46) + vec3(1.0, 0.76, 0.45) * pow(lights, 0.85) * 1.55
+                 + vec3(0.010, 0.016, 0.034);
+
+      float blend = mix(1.0, smoothstep(-0.16, 0.22, i), dayNight);
+      vec3 col = mix(night, dayLit, blend);
+
+      /* Fresnel atmosphere rim — brighter on the lit limb, faint on the night side. */
+      float fres = pow(1.0 - max(dot(n, V), 0.0), 2.6);
+      col += vec3(0.32, 0.58, 1.0) * fres * 0.42 * mix(1.0, mix(0.22, 1.0, blend), dayNight);
+      gl_FragColor = vec4(col, 1.0);
     }`;
 
   /* Subsolar point (lat/lon where the Sun is overhead) — low-precision NOAA
@@ -287,12 +316,12 @@ const RealtimeEarth = (function () {
         <div id="rt-globe" class="ex-rt-globe"></div>
         <div class="ex-loading" id="rt-loading">
           <div class="ex-loading-spinner"></div>
-          <div class="ex-loading-text" id="rt-loading-txt">A inicializar a Terra em tempo real…</div>
+          <div class="ex-loading-text" id="rt-loading-txt">A preparar a Terra…</div>
         </div>
 
         <div class="ex-rt-layers" id="rt-layers">
           ${LAYERS.map(l => `<button class="ex-rt-chip${_on[l.id] ? ' on' : ''}" data-layer="${l.id}" title="${l.label}" aria-pressed="${_on[l.id] ? 'true' : 'false'}" aria-label="${l.label}">
-            <span class="ex-rt-chip-ic">${l.icon}</span><span class="ex-rt-chip-lbl">${l.label}</span></button>`).join('')}
+            <span class="ex-rt-chip-ic">${l.icon}</span><span class="ex-rt-chip-lbl">${l.label}</span><span class="ex-rt-chip-n" data-n="${l.id}"></span></button>`).join('')}
         </div>
 
         <div class="ex-rt-time" id="rt-time">
@@ -301,7 +330,8 @@ const RealtimeEarth = (function () {
           <button class="ex-rt-now" id="rt-date-btn" title="Escolher data">📅 <span id="rt-date-lbl">Data</span></button>
           <button class="ex-rt-now ex-rt-step" id="rt-next" title="Dia seguinte" aria-label="Dia seguinte" disabled>›</button>
           <input type="date" class="ex-rt-date-native" id="rt-date" lang="pt-PT" max="${_ymd(new Date())}"/>
-          <button class="ex-rt-now" id="rt-filters-btn" title="Filtros">⚙ Filtros</button>
+          <button class="ex-rt-now" id="rt-filters-btn" title="Filtros" aria-expanded="false">⚙ Filtros</button>
+          <button class="ex-rt-now" id="rt-feed-btn" title="Eventos em destaque" aria-expanded="false" aria-controls="rt-feed">☰ Destaques</button>
           <span class="ex-rt-status" id="rt-status"></span>
         </div>
 
@@ -317,13 +347,20 @@ const RealtimeEarth = (function () {
           <div class="ex-rt-filter-note">Arrasta até ao fim (“tudo ativo”) para mostrar todos os eventos em curso; mais intensos aparecem maiores.</div>
         </div>
 
+        <aside class="ex-rt-feed" id="rt-feed" aria-label="Eventos em destaque" hidden>
+          <div class="ex-rt-feed-head">
+            <div><div class="ex-rt-feed-title">Agora no planeta</div><div class="ex-rt-feed-sub" id="rt-feed-sub"></div></div>
+            <button class="ex-rt-card-close" id="rt-feed-close" title="Fechar" aria-label="Fechar destaques">✕</button>
+          </div>
+          <div class="ex-rt-feed-list" id="rt-feed-list"><div class="ex-rt-feed-empty">A carregar eventos…</div></div>
+        </aside>
         <div class="ex-rt-legend" id="rt-legend"></div>
         <div class="ex-rt-tooltip" id="rt-tooltip" hidden></div>
         <div class="ex-rt-detail" id="rt-detail" hidden></div>
         <div class="ex-solar-credit">Dados: USGS · NASA EONET · NASA GIBS</div>
       </div>`;
 
-    _mounted = true;
+    _mounted = true; _active = true;
     console.info('%c[RealtimeEarth] build ' + BUILD, 'color:#7fb2ff;font-weight:700');
     _wireControls();
 
@@ -339,10 +376,12 @@ const RealtimeEarth = (function () {
     }
     if (typeof Globe === 'undefined') return;
 
-    _initGlobe();
-    document.getElementById('rt-loading')?.remove();
+    const ready = _initGlobe();
     _start();
-    _reloadAll();
+    _reloadAll();                       /* live data loads while the texture decodes */
+    _startRefresh();
+    await ready;                        /* reveal only once the real surface is in */
+    _reveal();
     /* Once the initial load settles, silently warm the clouds mosaic so the
        first ☁️ toggle shows instantly instead of after a multi-second download. */
     setTimeout(_prefetchClouds, 5000);
@@ -360,6 +399,8 @@ const RealtimeEarth = (function () {
   function _startSunTimer() { if (!_sunTimer) { _updateSun(); _sunTimer = setInterval(_updateSun, 30000); } }
 
   function resume() {
+    _active = true;
+    _startRefresh();
     if (_globe) {
       const e = document.getElementById('rt-globe'); if (e) _globe.width(e.clientWidth).height(e.clientHeight);
       try { _globe.resumeAnimation(); } catch (_) {}
@@ -368,11 +409,34 @@ const RealtimeEarth = (function () {
     _startSunTimer();
   }
   function stop() {
+    _active = false;
+    if (_refreshT) { clearInterval(_refreshT); _refreshT = null; }
     if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
     if (_sunTimer) { clearInterval(_sunTimer); _sunTimer = null; }
     if (_idleT) { clearTimeout(_idleT); _idleT = null; }
     if (_globe) { try { _globe.pauseAnimation(); } catch (_) {} }   /* stop globe.gl's render loop while hidden */
   }
+
+  /* Live mode re-fetches every 10 min so "tempo real" stays true while the tab
+     sits open (skipped for archive dates and while the page is hidden). */
+  function _startRefresh() {
+    if (_refreshT) return;
+    _refreshT = setInterval(() => {
+      if (_active && !_date && !document.hidden) _reloadAll(true);
+    }, 600000);
+  }
+  /* Don't burn GPU/battery rendering a globe nobody can see. */
+  let _active = false;
+  document.addEventListener('visibilitychange', () => {
+    if (!_globe || !_active) return;
+    if (document.hidden) {
+      if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
+      try { _globe.pauseAnimation(); } catch (_) {}
+    } else {
+      try { _globe.resumeAnimation(); } catch (_) {}
+      if (!_raf) _start();
+    }
+  });
 
   /* ═════════════════════════════ GLOBE ══════════════════════════════ */
   function _initGlobe() {
@@ -404,53 +468,42 @@ const RealtimeEarth = (function () {
     if (_q < 0.6) _fireCap = 60;
     else if (_q < 0.8) _fireCap = 90;
 
-    /* Day/night shader material on the globe surface. Start from the bundled
-       textures (instant), then swap in the high-res GIBS imagery once loaded. */
-    const tl = new THREE.TextureLoader(); tl.setCrossOrigin('anonymous');
-    const day = tl.load(TEX_DAY, () => {});
-    const night = tl.load(TEX_NIGHT, () => {});
-    if (THREE.SRGBColorSpace) { day.colorSpace = THREE.SRGBColorSpace; night.colorSpace = THREE.SRGBColorSpace; }
-    _aniso(day); _aniso(night);
-    /* Night side keeps the bundled city-lights texture: the hi-res VIIRS "Black
-       Marble" is almost pure black over land/ocean, so swapping it in turned the
-       whole night hemisphere into a black void a few seconds after load. */
+    /* Day/night shader material. Until the baked textures are decoded the
+       globe stays hidden behind the loader (see _reveal), so no placeholder
+       surface is ever visible and nothing swaps afterwards. */
+    const blank = new THREE.DataTexture(new Uint8Array([6, 12, 26, 255]), 1, 1);
+    blank.needsUpdate = true;
     _matUniforms = {
-      dayTexture: { value: day }, nightTexture: { value: night },
-      prevDayTexture: { value: day }, prevGamma: { value: 1.0 },
+      dayTexture: { value: blank }, nightTexture: { value: blank },
+      prevDayTexture: { value: blank }, prevGamma: { value: 1.0 },
       texMix: { value: 1.0 },          /* 1 = fully on the current texture */
       sunDirection: { value: new THREE.Vector3(1, 0, 0) },
       dayNight: { value: _on.daynight ? 1 : 0 },
-      dayGamma: { value: 1.0 },        /* 1.0 = no change, for the bright bundled texture */
+      dayGamma: { value: 1.0 },
     };
-    /* High-res day upgrade. Cap the request to the GPU's real max texture size:
-       a texture larger than the GPU allows uploads as BLACK, which would turn the
-       daylit globe dark a few seconds after opening (a prime suspect for the
-       persistent "fica escuro"). The loader also verifies the downloaded image is
-       actually bright, so a dark/error response can never darken the globe — and
-       the swap itself is a smooth crossfade, not a sudden pop. */
-    const hiPx = Math.min(4096, _maxTexSize);
-    if (hiPx >= 2048) {
-      _loadGibsTexture(_gibsUrl(DAY_HI_LAYER, null, 'image/jpeg', hiPx), tex => {
-        if (!tex) return;
-        _baseDayTex = tex;
-        if (_matUniforms && !_on.clouds) _setDayTexture(tex, DAY_HI_GAMMA);
-      });
-    }
+    const ready = _loadSurface();
     _shaderMat = new THREE.ShaderMaterial({ uniforms: _matUniforms, vertexShader: VERT, fragmentShader: FRAG });
     try { _globe.globeMaterial(_shaderMat); } catch (_) {}
     _updateSun();   /* set the initial sun direction */
+    _addStars();
 
-    /* Open looking straight at the daylit side (the subsolar point) so the globe
-       is bright and vivid on load, not facing the dark night hemisphere. */
+    /* Open on the daylit side, nudged ~56° east of the subsolar point so the
+       evening terminator (and the first city lights) sit on the right limb —
+       mostly bright, but the day/night layer reads at a glance. */
     const sp0 = _sunPos();
-    _globe.pointOfView({ lat: Math.max(-55, Math.min(55, sp0.lat)), lng: sp0.lon, altitude: 2.4 }, 0);
+    _globe.pointOfView({ lat: Math.max(-35, Math.min(40, sp0.lat + 18)), lng: sp0.lon + 56, altitude: 2.3 }, 0);
 
     /* Keep the terminator anchored to the real Sun. */
     _startSunTimer();
 
     /* Gentle idle auto-rotate so the globe feels alive without input. Any
        interaction (drag/zoom/tap) pauses it; it resumes after 15s of quiet. */
-    try { const c = _globe.controls(); c.autoRotate = true; c.autoRotateSpeed = 0.4; } catch (_) {}
+    try {
+      const c = _globe.controls(); c.autoRotate = true; c.autoRotateSpeed = 0.35;
+      c.enableDamping = true; c.dampingFactor = 0.08;
+      c.minDistance = 112; c.maxDistance = 1100;   /* stay inside the starfield */
+      const cam = _globe.camera(); if (cam.far < 9000) { cam.far = 9000; cam.updateProjectionMatrix(); }
+    } catch (_) {}
     el.addEventListener('pointerdown', _pauseAutoRotate);
     el.addEventListener('wheel', _pauseAutoRotate, { passive: true });
 
@@ -460,6 +513,79 @@ const RealtimeEarth = (function () {
     }).observe(el);
 
     _wireHover(el);
+    return ready;
+  }
+
+  /* 4K surface on desktop-class GPUs, 2K on phones / low-end / data-saver.
+     localStorage 'rt-tex' = 'hi' | 'lo' forces one (debug/testing). */
+  function _useHiTex() {
+    let force = null; try { force = localStorage.getItem('rt-tex'); } catch (_) {}
+    if (force === 'hi' || force === 'lo') return force === 'hi';
+    const save = navigator.connection && navigator.connection.saveData;
+    return !save && _q >= 0.75 && _maxTexSize >= 8192;
+  }
+  function _loadTex(url) {
+    return new Promise(res => {
+      const tl = new THREE.TextureLoader();
+      tl.load(url, t => res(_aniso(t)), undefined, () => res(null));
+    });
+  }
+  /* Load the baked day + city-lights textures (hi → lo → legacy fallback). */
+  async function _loadSurface() {
+    const hi = _useHiTex();
+    let [day, lights] = await Promise.all([
+      _loadTex(hi ? TEX.day.hi : TEX.day.lo), _loadTex(hi ? TEX.lights.hi : TEX.lights.lo)]);
+    if (!day && hi) day = await _loadTex(TEX.day.lo);
+    if (!day) day = await _loadTex('assets/planets/earth_atmos_2048.jpg');
+    if (!lights && hi) lights = await _loadTex(TEX.lights.lo);
+    if (!_matUniforms) return;
+    if (lights) _matUniforms.nightTexture.value = lights;
+    if (day) {
+      _baseDayTex = day;
+      /* Clouds may already be on (re-mount): let the cloud imagery win. */
+      if (!_on.clouds || _matUniforms.dayTexture.value.isDataTexture) {
+        _matUniforms.dayTexture.value = day; _matUniforms.prevDayTexture.value = day;
+        _matUniforms.dayGamma.value = 1.0; _matUniforms.texMix.value = 1.0;
+      }
+      if (_on.clouds) _applyBaseTexture();
+    }
+  }
+  /* Fade the finished globe in (CSS) and drop the loader. */
+  function _reveal() {
+    document.getElementById('rt-loading')?.remove();
+    const el = document.getElementById('rt-globe');
+    if (el) requestAnimationFrame(() => el.classList.add('is-ready'));
+  }
+
+  /* Static starfield far behind the globe: three point layers of decreasing
+     count / increasing size, tinted blue-white to warm. Never pickable. */
+  function _addStars() {
+    if (_stars || !_globe) return;
+    const grp = new THREE.Group();
+    const tiers = [[_q < 0.6 ? 900 : 2000, 1.2, 0.55], [_q < 0.6 ? 260 : 520, 1.9, 0.8], [_q < 0.6 ? 50 : 110, 2.8, 1]];
+    for (const [N, size, alpha] of tiers) {
+      const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        let x, y, z, d;
+        do { x = Math.random() * 2 - 1; y = Math.random() * 2 - 1; z = Math.random() * 2 - 1; d = x * x + y * y + z * z; } while (d > 1 || d < 0.01);
+        const r = (3200 + Math.random() * 2400) / Math.sqrt(d);
+        pos[i * 3] = x * r; pos[i * 3 + 1] = y * r; pos[i * 3 + 2] = z * r;
+        const t = Math.random(), b = 0.45 + Math.random() * 0.55;
+        col[i * 3]     = b * (t < 0.2 ? 0.75 : t > 0.85 ? 1.0 : 0.92);
+        col[i * 3 + 1] = b * (t < 0.2 ? 0.85 : t > 0.85 ? 0.88 : 0.95);
+        col[i * 3 + 2] = b * (t < 0.2 ? 1.0 : t > 0.85 ? 0.7 : 1.0);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      const pts = new THREE.Points(g, new THREE.PointsMaterial({
+        size, sizeAttenuation: false, vertexColors: true, map: _glowTexture(),
+        transparent: true, opacity: alpha, depthWrite: false }));
+      pts.raycast = _noRay;
+      grp.add(pts);
+    }
+    _stars = grp;
+    _scene().add(grp);
   }
 
   function _pauseAutoRotate() {
@@ -488,18 +614,6 @@ const RealtimeEarth = (function () {
     obj.quaternion.setFromUnitVectors(a, v.clone().normalize());
   }
   function _scene() { return _globe.scene(); }
-
-  /* Re-pin objects to the globe surface every frame from their stored lat/lng,
-     so they track the globe exactly however globe.gl moves on drag/zoom (the
-     same approach the planes use). Keeps hover targets aligned with what's
-     drawn — otherwise stale hit-spheres drift and the tooltip gets "stuck". */
-  function _reglue(arr) {
-    if (!_globe) return;
-    for (const o of arr) {
-      const u = o.userData;
-      if (u && u.lat != null) _orient(o, u.lat, u.lng, u.alt, u.axis);
-    }
-  }
 
   /* ═════════════════════════════ VISUALS ════════════════════════════ */
   /* Erupting volcano, sized by significance: a basalt cone, a glowing crater,
@@ -562,7 +676,7 @@ const RealtimeEarth = (function () {
     /* Decoration is non-interactive; a small invisible sphere is the hit target. */
     [lower, upper, crater, vent, glow, lava, streaks, smoke].forEach(o => { o.raycast = _noRay; });
     _addHit(g, 2.0 * S, 1.8 * S);
-    g.userData = { smoke, prog, pph, N, lava, lprog, lspd, lang, LN, streaks, rprog, rang, rspd, RN, vent, crater, glow, S, meta: _eonetMeta(d, 'volcano'), lat: d.lat, lng: d.lng, alt: 0, axis: 'y' };
+    g.userData = { smoke, prog, pph, N, lava, lprog, lspd, lang, LN, streaks, rprog, rang, rspd, RN, vent, crater, glow, S, d, meta: _eonetMeta(d, 'volcano'), lat: d.lat, lng: d.lng, alt: 0, axis: 'y' };
     _orient(g, d.lat, d.lng, 0, 'y');
     _scene().add(g);
     _volcanoes.push(g);
@@ -575,7 +689,7 @@ const RealtimeEarth = (function () {
     const g = new THREE.Group();
     const cols = [0xff2a00, 0xff5a00, 0xffa81e];
     const S = 3.0 + (d.signif || 0) * 7.0;            /* overall scale */
-    g.userData = { sprites: [], meta: _eonetMeta(d, 'fire'), lat: d.lat, lng: d.lng, alt: 0.002, axis: 'y' };
+    g.userData = { sprites: [], d, meta: _eonetMeta(d, 'fire'), lat: d.lat, lng: d.lng, alt: 0.002, axis: 'y' };
     const flames = 5;
     for (let i = 0; i < flames; i++) {
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: cols[i % cols.length], transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
@@ -622,7 +736,7 @@ const RealtimeEarth = (function () {
     g.add(disc);
     disc.raycast = _noRay;
     _addHit(g, 6, 0);
-    g.userData = { disc, meta: _eonetMeta(d, 'storm'), lat: d.lat, lng: d.lng, alt: 0.01, axis: 'z' };
+    g.userData = { disc, d, meta: _eonetMeta(d, 'storm'), lat: d.lat, lng: d.lng, alt: 0.01, axis: 'z' };
     _orient(g, d.lat, d.lng, 0.01, 'z');
     _scene().add(g);
     _storms.push(g);
@@ -785,8 +899,7 @@ const RealtimeEarth = (function () {
     tl.load(url, tex => {
       if (!silent) _imgLoadEnd();
       if (!_isBright(tex.image)) { cb(null); return; }   /* dark/incomplete mosaic */
-      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-      _aniso(tex);
+      _aniso(tex);     /* raw sampling (no sRGB decode) — see FRAG */
       _texCache.set(url, tex);
       cb(tex);
     }, undefined, () => { if (!silent) _imgLoadEnd(); cb(null); });
@@ -810,7 +923,7 @@ const RealtimeEarth = (function () {
     if (!_matUniforms) return;
     /* No clouds → the cached hi-res Blue Marble (or keep the local fallback). */
     if (!_on.clouds) {
-      if (_baseDayTex) _setDayTexture(_baseDayTex, DAY_HI_GAMMA);
+      if (_baseDayTex) _setDayTexture(_baseDayTex, 1.0);
       return;
     }
     /* Clouds on → date-aware true-colour VIIRS mosaic (gap-free, unlike MODIS). */
@@ -828,9 +941,9 @@ const RealtimeEarth = (function () {
   }
 
   /* ═════════════════════════════ RELOAD ════════════════════════════ */
-  async function _reloadAll() {
+  async function _reloadAll(quiet) {
     const seq = ++_loadSeq;
-    _status('a carregar…');
+    if (!quiet) _status('a carregar…');
     _applyBaseTexture();
 
     /* Quakes / tsunami share the USGS dataset. */
@@ -844,24 +957,98 @@ const RealtimeEarth = (function () {
     if (_on.storms)    jobs.push(_loadEonet('severeStorms', seq).then(list => { if (seq === _loadSeq) _filterRecent(list).forEach(_buildStorm); }));
     await Promise.all(jobs);
 
-    if (seq === _loadSeq) _status(_statusText());
+    if (seq === _loadSeq) { if (!_date) _updatedAt = Date.now(); _dataChanged(); }
+  }
+
+  /* Everything that summarises the loaded data: chip counts, status pill,
+     legend and the "Agora no planeta" feed. */
+  function _dataChanged() {
+    _updateCounts();
+    _status(_statusText());
     _updateLegend();
+    _renderFeed();
   }
-
+  function _shownQuakes() {
+    return _quakeData.filter(q => q.mag >= _minMag && (q.tsunami ? (_on.tsunami || _on.quakes) : _on.quakes));
+  }
+  function _updateCounts() {
+    const n = {
+      quakes: _on.quakes ? _quakeData.filter(q => q.mag >= _minMag && !(q.tsunami && _on.tsunami)).length : null,
+      tsunami: _on.tsunami ? _quakeData.filter(q => q.tsunami && q.mag >= _minMag).length : null,
+      volcanoes: _on.volcanoes ? _volcanoes.length : null,
+      fires: _on.fires ? _fires.length : null,
+      storms: _on.storms ? _storms.length : null,
+    };
+    document.querySelectorAll('#rt-layers .ex-rt-chip-n').forEach(el => {
+      const v = n[el.dataset.n];
+      el.textContent = v == null ? '' : String(v);
+      el.hidden = v == null;
+    });
+  }
   function _statusText() {
-    const bits = [];
-    if (_on.quakes || _on.tsunami) bits.push(`${_quakeData.filter(q => q.mag >= _minMag).length} sismos`);
-    if (_on.volcanoes) bits.push(`${_volcanoes.length} vulcões`);
-    if (_on.fires) bits.push(`${_fires.length} incêndios`);
-    if (_on.storms) bits.push(`${_storms.length} tempestades`);
-    return bits.join(' · ');
+    if (_date) { const [y, m, d] = _date.split('-'); return `Arquivo · ${d}/${m}/${y}`; }
+    if (!_updatedAt) return '';
+    return 'Ao vivo · ' + new Date(_updatedAt).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  }
+  function _rel(ms) {
+    if (!ms) return '';
+    const m = Math.max(1, Math.round((_refTime() - ms) / 60000));
+    if (m < 60) return `há ${m} min`;
+    if (m < 48 * 60) return `há ${Math.round(m / 60)} h`;
+    return `há ${Math.round(m / 1440)} d`;
+  }
+  /* "Agora no planeta": the most notable events per layer, each one a button
+     that flies the camera there and opens its detail card. */
+  function _renderFeed() {
+    const list = document.getElementById('rt-feed-list'); if (!list) return;
+    const sub = document.getElementById('rt-feed-sub');
+    if (sub) sub.textContent = _date ? 'Eventos à data escolhida' : 'Os eventos mais relevantes agora';
+    const groups = [];
+    const qs = _shownQuakes().sort((a, b) => b.mag - a.mag).slice(0, 6);
+    if (qs.length) groups.push(['Sismos mais fortes', qs.map(q => ({
+      icon: q.tsunami ? '🌊' : '💢', badge: q.mag.toFixed(1),
+      tone: q.mag >= 6 ? 'hi' : q.mag >= 4.5 ? 'mid' : 'lo',
+      title: (q.place || 'Local desconhecido').replace(/^\d+\s*km\s+[NSEW]{1,3}\s+of\s+/i, ''),
+      sub: _rel(q.time) + (q.depth != null && isFinite(q.depth) ? ` · ${Math.round(q.depth)} km prof.` : ''),
+      lat: q.lat, lng: q.lng, meta: _quakeMeta(q) }))]);
+    const ev = (arr, label, icon, n) => {
+      const items = arr.map(g => g.userData).filter(u => u && u.d)
+        .sort((a, b) => (b.d.signif || 0) - (a.d.signif || 0) || (b.d.lastMs || 0) - (a.d.lastMs || 0))
+        .slice(0, n).map(u => ({
+          icon, title: u.d.title || label, sub: _rel(u.d.lastMs) + (u.d.sizeLabel ? ` · porte ${u.d.sizeLabel}` : ''),
+          lat: u.lat, lng: u.lng, meta: u.meta }));
+      if (items.length) groups.push([label, items]);
+    };
+    if (_on.storms) ev(_storms, 'Tempestades ativas', '🌀', 5);
+    if (_on.volcanoes) ev(_volcanoes, 'Vulcões em atividade', '🌋', 5);
+    if (_on.fires) ev(_fires, 'Grandes incêndios', '🔥', 5);
+    list.__items = [];
+    if (!groups.length) {
+      list.innerHTML = '<div class="ex-rt-feed-empty">Sem eventos para as camadas e filtros ativos.</div>';
+      return;
+    }
+    list.innerHTML = groups.map(([label, items]) => `
+      <div class="ex-rt-feed-grp">${_esc(label)}</div>
+      ${items.map(it => { const i = list.__items.push(it) - 1; return `
+        <button class="ex-rt-feed-it" data-i="${i}">
+          <span class="ex-rt-feed-ic${it.tone ? ' ' + it.tone : ''}">${it.badge ? _esc(it.badge) : it.icon}</span>
+          <span class="ex-rt-feed-tx"><span class="ex-rt-feed-t">${_esc(it.title)}</span><span class="ex-rt-feed-s">${_esc(it.sub)}</span></span>
+        </button>`; }).join('')}`).join('');
   }
 
+  /* Bottom-left key: what the quake ring colours mean (the chips already name
+     the layers, so the old icon list was redundant). */
   function _updateLegend() {
     const el = document.getElementById('rt-legend');
     if (!el) return;
-    const active = LAYERS.filter(l => _on[l.id] && l.id !== 'daynight');
-    el.innerHTML = active.map(l => `<span class="ex-rt-leg"><span>${l.icon}</span>${l.label}</span>`).join('');
+    const parts = [];
+    if (_on.quakes) parts.push(`<span class="ex-rt-leg-t">Sismos</span>
+      <span class="ex-rt-leg"><i style="background:#ffdc5a"></i>&lt; 4,5</span>
+      <span class="ex-rt-leg"><i style="background:#ffa03c"></i>4,5–6</span>
+      <span class="ex-rt-leg"><i style="background:#ff5050"></i>≥ 6</span>`);
+    if (_on.tsunami) parts.push(`<span class="ex-rt-leg"><i style="background:#38bdf8"></i>alerta de tsunami</span>`);
+    if (_on.daynight) parts.push(`<span class="ex-rt-leg"><i class="ex-rt-leg-sun"></i>dia · noite em tempo real</span>`);
+    el.innerHTML = parts.join('<span class="ex-rt-leg-sep"></span>');
   }
 
   /* ═════════════════════════════ ANIMATION ═════════════════════════ */
@@ -873,7 +1060,14 @@ const RealtimeEarth = (function () {
       /* Tooltip FIRST and isolated, so an error in the marker animation below can
          never stop it from hiding (which would leave a "stuck" popup). It also
          runs from pointer events directly — this rAF pass is just a backstop. */
-      try { _updateTooltip(); } catch (_) {}
+      try {
+        const c = _globe && _globe.camera();
+        if (c) {
+          const f = c.position.x.toFixed(1) + ',' + c.position.y.toFixed(1) + ',' + c.position.z.toFixed(1);
+          if (f !== _lastCam) { _lastCam = f; _tipDirty = true; }
+        }
+        if (_tipDirty) _updateTooltip();
+      } catch (_) {}
       try { _frame(t, dt); } catch (_) {}
       last = t;
     };
@@ -881,10 +1075,11 @@ const RealtimeEarth = (function () {
   }
 
   function _frame(t, dt) {
-      /* Keep the sun direction + event markers locked to the globe's current
-         orientation (all camera-independent; cheap). */
-      _updateSun();
-      _reglue(_quakeMarks); _reglue(_volcanoes); _reglue(_fires); _reglue(_storms);
+      /* (No per-frame re-pinning: globe.gl moves the CAMERA, the globe and
+         every marker stay fixed in world space — positions are set once at
+         build time.) The sun direction is re-derived once a second: cheap, and
+         it self-heals if globe.gl wasn't ready for getCoords() at mount. */
+      if (t - _sunAt > 1000) { _sunAt = t; _updateSun(); }
 
       /* Advance the day-texture crossfade (~1s from old imagery to new). */
       if (_matUniforms && _matUniforms.texMix.value < 1) {
@@ -1043,6 +1238,7 @@ const RealtimeEarth = (function () {
   /* Per-frame tooltip sync from the live pointer (the heartbeat that makes a
      "stuck" tooltip impossible). */
   function _updateTooltip() {
+    _tipDirty = false;
     const tip = _tipEl; if (!tip) return;
     const el = document.getElementById('rt-globe'); if (!el) return;
     if (!_ptr || !_ptr.inside || _ptr.down) {
@@ -1099,11 +1295,32 @@ const RealtimeEarth = (function () {
     const fpop = document.getElementById('rt-filters');
     fbtn?.addEventListener('click', () => {
       const open = fpop.hidden; fpop.hidden = !open; fbtn.classList.toggle('on', open);
+      fbtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    /* "Destaques" feed — open by default on wide screens, remembered. */
+    const feed = document.getElementById('rt-feed'), feedBtn = document.getElementById('rt-feed-btn');
+    const setFeed = open => {
+      if (!feed) return;
+      feed.hidden = !open;
+      feedBtn?.classList.toggle('on', open);
+      feedBtn?.setAttribute('aria-expanded', open ? 'true' : 'false');
+      try { localStorage.setItem('rt-feed', open ? '1' : '0'); } catch (_) {}
+    };
+    let saved = null; try { saved = localStorage.getItem('rt-feed'); } catch (_) {}
+    setFeed(saved == null ? window.innerWidth > 980 : saved === '1');
+    feedBtn?.addEventListener('click', () => setFeed(feed.hidden));
+    document.getElementById('rt-feed-close')?.addEventListener('click', () => setFeed(false));
+    document.getElementById('rt-feed-list')?.addEventListener('click', e => {
+      const b = e.target.closest('.ex-rt-feed-it'); if (!b) return;
+      const it = (e.currentTarget.__items || [])[+b.dataset.i]; if (!it) return;
+      _showCard(it.meta); _flyTo(it.lat, it.lng);
+      if (window.innerWidth <= 640) setFeed(false);   /* bottom sheet → get out of the way */
     });
     const magIn = document.getElementById('rt-mag'), magVal = document.getElementById('rt-mag-val');
     magIn?.addEventListener('input', e => {
       _minMag = parseFloat(e.target.value); if (magVal) magVal.textContent = _minMag.toFixed(1);
-      _applyRings(); _status(_statusText());
+      _applyRings(); _dataChanged();
     });
     const daysIn = document.getElementById('rt-days'), daysVal = document.getElementById('rt-days-val');
     let _daysT = null;
@@ -1118,26 +1335,26 @@ const RealtimeEarth = (function () {
         if (_on.volcanoes) jobs.push(_loadEonet('volcanoes', seq).then(l => _filterRecent(l).forEach(_buildVolcano)));
         if (_on.fires)     jobs.push(_loadEonet('wildfires', seq).then(l => _filterRecent(l).slice(0, _fireCap).forEach(_buildFire)));
         if (_on.storms)    jobs.push(_loadEonet('severeStorms', seq).then(l => _filterRecent(l).forEach(_buildStorm)));
-        Promise.all(jobs).then(() => _status(_statusText()));
+        Promise.all(jobs).then(() => _dataChanged());
       }, 320);
     });
   }
 
   /* Apply a single layer toggle with the cheapest update path. */
   function _applyLayer(id) {
-    if (id === 'daynight') { if (_matUniforms) _matUniforms.dayNight.value = _on.daynight ? 1 : 0; return; }
-    if (id === 'clouds') { _applyBaseTexture(); _updateLegend(); return; }
+    if (id === 'daynight') { if (_matUniforms) _matUniforms.dayNight.value = _on.daynight ? 1 : 0; _updateLegend(); return; }
+    if (id === 'clouds') { _applyBaseTexture(); return; }
     if (id === 'quakes' || id === 'tsunami') {
-      if ((_on.quakes || _on.tsunami) && !_quakeData.length) { _loadQuakes(++_loadSeq).then(() => _status(_statusText())); }
+      if ((_on.quakes || _on.tsunami) && !_quakeData.length) { _loadQuakes(++_loadSeq).then(() => _dataChanged()); }
       else _applyRings();
-      _updateLegend(); return;
+      _dataChanged(); return;
     }
     /* volcanoes / fires / storms → (re)load just that layer. */
     const seq = _loadSeq;
-    if (id === 'volcanoes') { _clear(_volcanoes); if (_on.volcanoes) _loadEonet('volcanoes', seq).then(l => _filterRecent(l).forEach(_buildVolcano)).then(() => _status(_statusText())); }
-    if (id === 'fires')     { _clear(_fires);     if (_on.fires)     _loadEonet('wildfires', seq).then(l => _filterRecent(l).slice(0, _fireCap).forEach(_buildFire)).then(() => _status(_statusText())); }
-    if (id === 'storms')    { _clear(_storms);    if (_on.storms)    _loadEonet('severeStorms', seq).then(l => _filterRecent(l).forEach(_buildStorm)).then(() => _status(_statusText())); }
-    _updateLegend();
+    if (id === 'volcanoes') { _clear(_volcanoes); if (_on.volcanoes) _loadEonet('volcanoes', seq).then(l => _filterRecent(l).forEach(_buildVolcano)).then(() => _dataChanged()); }
+    if (id === 'fires')     { _clear(_fires);     if (_on.fires)     _loadEonet('wildfires', seq).then(l => _filterRecent(l).slice(0, _fireCap).forEach(_buildFire)).then(() => _dataChanged()); }
+    if (id === 'storms')    { _clear(_storms);    if (_on.storms)    _loadEonet('severeStorms', seq).then(l => _filterRecent(l).forEach(_buildStorm)).then(() => _dataChanged()); }
+    _dataChanged();
   }
 
   function _setDate(date) {
@@ -1155,5 +1372,18 @@ const RealtimeEarth = (function () {
     _reloadAll();
   }
 
-  return { mount, resume, stop };
+  /* Read-only probe for headless verification (sun, camera, textures). */
+  function _debug() {
+    const u = _matUniforms, sp = _sunPos();
+    const c = _globe && _globe.camera();
+    return {
+      sun: sp, sunDir: u && u.sunDirection.value.toArray().map(v => +v.toFixed(3)),
+      sunCoords: _globe && _globe.getCoords ? Object.values(_globe.getCoords(sp.lat, sp.lon, 0)).map(v => +v.toFixed(1)) : null,
+      cam: c && c.position.toArray().map(v => +v.toFixed(1)), dayNight: u && u.dayNight.value,
+      day: u && u.dayTexture.value.image && u.dayTexture.value.image.width,
+      pov: _globe && _globe.pointOfView(),
+    };
+  }
+
+  return { mount, resume, stop, _debug };
 })();
