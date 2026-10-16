@@ -319,7 +319,8 @@ const ShamanGame = (function () {
       shake: 0, touch: false, tp: new Map(),
     };
     G.player = G.tribes[0];
-    Arcade3D.load().then(() => { try { build(G, api); } catch (e) { console.warn('[xamãs] 3D falhou', e); G.fail3d = true; } }).catch(() => { G.fail3d = true; });
+    if (typeof SkyAceWorld === 'undefined' || !(SkyAceWorld.V >= 3)) { G.fail3d = true; G.failMsg = 'O browser usou uma versão antiga do jogo — recarrega a página (Ctrl+Shift+R).'; return G; }
+    Arcade3D.load().then(() => { try { build(G, api); } catch (e) { console.warn('[xamãs] 3D falhou', e); G.fail3d = true; G.failMsg = 'Erro: ' + (e && e.message || e); } }).catch(() => { G.fail3d = true; G.failMsg = 'Não foi possível carregar o motor 3D.'; });
     return G;
   }
   const tribeOf = (G, t) => G.tribes.find(x => x.idx === t);
@@ -1115,7 +1116,8 @@ const ShamanGame = (function () {
     if (!G.ok) {
       ctx.save(); ctx.scale(k, k); const w = Wl / k, h = Hl / k;
       const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#16233a'); g.addColorStop(1, '#3a5a4a'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = '#fff'; ctx.font = "700 16px 'Space Grotesk', system-ui"; ctx.textAlign = 'center'; ctx.fillText(G.fail3d ? 'Este jogo precisa de WebGL (3D).' : 'A erguer as ilhas…', w / 2, h / 2);
+      ctx.fillStyle = '#fff'; ctx.font = "700 16px 'Space Grotesk', system-ui"; ctx.textAlign = 'center'; ctx.fillText(G.fail3d ? 'Não foi possível arrancar o 3D' : 'A erguer as ilhas…', w / 2, h / 2);
+      if (G.fail3d) { ctx.font = "500 13px 'Space Grotesk', system-ui"; ctx.fillStyle = '#ffd9b0'; ctx.fillText(G.failMsg || 'Este jogo precisa de WebGL (3D).', w / 2, h / 2 + 26); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillText('Se o erro persistir, recarrega a página com Ctrl+Shift+R.', w / 2, h / 2 + 46); }
       ctx.restore(); return;
     }
     if (!_m.m) { _m.m = new THREE.Matrix4(); _m.q = new THREE.Quaternion(); _m.s = new THREE.Vector3(); _m.p = new THREE.Vector3(); _m.e = new THREE.Euler(); }

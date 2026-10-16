@@ -178,7 +178,7 @@ const SkyAceGame = (function () {
     const sv = save(), M = parseMode(o.mode), D = DIFF[o.diff || 'medium'] || DIFF.medium;
     const G = {
       M, D, diff: o.diff || 'medium', mode: o.mode || 'm1', sv, t: 0, time: 0, ok: false, fail: null,
-      plane: PLANES[sv.plane] ? sv.plane : 'falcon', ctrl: sv.ctrl, inv: !!sv.inv,
+      plane: PLANES[sv.plane] ? sv.plane : 'falcon', ctrl: sv.ctrl, inv: (sv.pitch || 'arcade') === 'arcade', help: sv.help !== false,
       keys: {}, act: {}, in: { pitch: 0, roll: 0, yaw: 0, boost: 0, brake: 0, gun: 0 }, mouseGun: false, touch: false, tp: {}, pad: null, padPrev: [],
       ents: [], msls: [], bullets: [], flares: [], rings: [], ringI: 0, feed: [], radio: [], radioT: 0, say: null,
       score: 0, kills: 0, gunKills: 0, hits: 0, shots: 0, dmgTaken: 0, phase: -1, phaseT: 0, nextPhaseT: -1, wave: 0, waveT: 0,
@@ -412,7 +412,7 @@ const SkyAceGame = (function () {
       G.padPrev = pad.buttons.map(x => x.pressed);
       G.pad = pad.id;
     }
-    if (G.inv) pitch = -pitch;
+    if (G.inv) pitch = -pitch;   /* arcada: ↑/W (e alavanca para cima) sobem o nariz */
     const k = Math.min(1, dt * 10);
     I.pitch += (clamp(pitch, -1, 1) - I.pitch) * k; I.roll += (clamp(roll, -1, 1) - I.roll) * k; I.yaw += (clamp(yaw, -1, 1) - I.yaw) * k;
     I.boost = boost; I.brake = brake; I.gun = gun;
@@ -426,6 +426,7 @@ const SkyAceGame = (function () {
       else if (c === 'KeyR') G.act.target = 1;
       else if (c === 'KeyC') G.act.cam = 1;
       else if (c === 'KeyB') G.act.flare = 1;
+      else if (c === 'KeyH') { G.help = !G.help; const sv = save(); sv.help = G.help; putSave(sv); }
     }
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(c)) return true;
   }
@@ -451,6 +452,8 @@ const SkyAceGame = (function () {
     if (!G.ok) return;
     const k = pxK(api), cx = x / k, cy = y / k, id = e && e.pointerId != null ? e.pointerId : 1;
     if (e && e.pointerType === 'mouse') {
+      const hb = G.helpBox;
+      if (e.button === 0 && hb && cx >= hb.x && cx <= hb.x + hb.w && cy >= hb.y && cy <= hb.y + hb.h) { G.help = !G.help; const sv = save(); sv.help = G.help; putSave(sv); return; }
       if (e.button === 2) G.act.fire = 1; else if (e.button === 0) G.mouseGun = true;
       return;
     }
@@ -1416,10 +1419,35 @@ const SkyAceGame = (function () {
     }
     messages(G, ctx, w, h, sm);
     if (G.touch && !P.dead) touchUI(G, ctx, w, h, api);
-    else if (G.time < 9 && G.M.kind !== 'arena' && !P.dead && (G.cp === 0) && (G.M.id === 'm1' || G.M.kind === 'free')) {
-      ctx.font = `600 11px 'Space Grotesk', system-ui`; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,.88)';
-      ctx.fillText('W/S nariz · A/D curva · Shift acelera · Z trava · Espaço míssil · F metralhadora · X especial · R alvo · B flares · C câmara', w / 2, sm ? 112 : 122);
-    }
+    else if (!P.dead) helpPanel(G, ctx, w, h, sm);
+    ctx.restore();
+  }
+  /* lista de comandos à esquerda (PC); H ou clique no título esconde/mostra */
+  function helpPanel(G, ctx, w, h, sm) {
+    const x = sm ? 12 : 22, y = sm ? 110 : 118, bw = 176;
+    ctx.save(); ctx.shadowBlur = 0; ctx.textBaseline = 'alphabetic';
+    const head = (open) => {
+      ctx.fillStyle = 'rgba(4,16,10,.55)'; U.rr(ctx, x, y, bw, 22, 8); ctx.fill();
+      ctx.font = `700 10px ${MONO}`; ctx.fillStyle = HC; ctx.textAlign = 'left';
+      ctx.fillText((open ? '▾ ' : '▸ ') + 'COMANDOS', x + 9, y + 15);
+      ctx.fillStyle = HD; ctx.textAlign = 'right'; ctx.fillText(open ? 'H esconde' : 'H mostra', x + bw - 9, y + 15);
+      G.helpBox = { x, y, w: bw, h: 22 };
+    };
+    const up = G.inv ? '↑ / W' : '↓ / S', dn = G.inv ? '↓ / S' : '↑ / W';
+    const rows = [['PILOTAR'], [up, 'sobe o nariz'], [dn, 'desce o nariz'], ['← → · A D', G.ctrl === 'std' ? 'curva' : 'roda'], ['Q · E', 'leme'], ['Shift', 'acelera'], ['Z', 'trava · curva fechada'],
+      ['COMBATE'], ['Espaço · btn dir.', 'míssil'], ['F · clique', 'metralhadora'], ['X', 'arma especial'], ['R', 'trocar de alvo'], ['B', 'flares'],
+      ['CÂMARA'], ['C', 'cabine / exterior'], ['T (manter)', 'olhar o alvo'], ['P · Esc', 'pausa']];
+    const lh = 14.5, hh = rows.length * lh + 14;
+    const room = h - (sm ? 54 : 74) * 2 - 60 - y - 22;
+    if (!G.help || hh > room) { head(false); ctx.restore(); return; }
+    head(true);
+    ctx.fillStyle = 'rgba(4,16,10,.42)'; U.rr(ctx, x, y + 26, bw, hh, 8); ctx.fill();
+    let yy = y + 26 + 15;
+    rows.forEach(r => {
+      if (r.length === 1) { ctx.font = `800 9px ${MONO}`; ctx.fillStyle = 'rgba(157,255,190,.6)'; ctx.textAlign = 'left'; ctx.fillText(r[0], x + 9, yy); }
+      else { ctx.font = `700 10px ${MONO}`; ctx.fillStyle = HC; ctx.textAlign = 'left'; ctx.fillText(r[0], x + 9, yy); ctx.font = `500 10px 'Space Grotesk', system-ui`; ctx.fillStyle = 'rgba(235,245,240,.9)'; ctx.textAlign = 'right'; ctx.fillText(r[1], x + bw - 9, yy); }
+      yy += lh;
+    });
     ctx.restore();
   }
   function cinematic(G, ctx, w, h) {
@@ -1926,7 +1954,7 @@ const SkyAceGame = (function () {
   </section>
   <section><h4>Opções de voo</h4><div class="sa-opt">
     <div>Pilotagem <span class="sa-chips"><button class="sa-chip ${sv.ctrl === 'std' ? 'on' : ''}" data-ctrl="std" title="Inclina e curva sozinho; nivela ao largar">Normal</button><button class="sa-chip ${sv.ctrl === 'exp' ? 'on' : ''}" data-ctrl="exp" title="A/D rodam o avião; W/S puxam o nariz">Especialista</button></span></div>
-    <div>Eixo vertical <span class="sa-chips"><button class="sa-chip ${!sv.inv ? 'on' : ''}" data-inv="0">Avião (S sobe)</button><button class="sa-chip ${sv.inv ? 'on' : ''}" data-inv="1">Invertido (W sobe)</button></span></div>
+    <div>Subir o nariz <span class="sa-chips"><button class="sa-chip ${(sv.pitch || 'arcade') === 'arcade' ? 'on' : ''}" data-pitch="arcade" title="↑ ou W sobe, ↓ ou S desce">Arcada (↑ / W)</button><button class="sa-chip ${sv.pitch === 'sim' ? 'on' : ''}" data-pitch="sim" title="Como num avião: ↓ ou S puxa o manche e sobe">Avião (↓ / S)</button></span></div>
     <div>Gráficos <span class="sa-chips">${[['auto', 'Auto'], ['high', 'Alta'], ['low', 'Leve']].map(([k, l]) => `<button class="sa-chip ${sv.q === k ? 'on' : ''}" data-q="${k}">${l}</button>`).join('')}</span></div>
   </div></section>
 </div>`;
@@ -1936,7 +1964,7 @@ const SkyAceGame = (function () {
       el.querySelectorAll('[data-pl]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.plane = b.dataset.pl; putSave(sv); el.querySelectorAll('[data-pl]').forEach(x => x.setAttribute('aria-pressed', x === b)); }));
       el.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => start(b.dataset.m)));
       el.querySelectorAll('[data-ctrl]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.ctrl = b.dataset.ctrl; putSave(sv); setOn('[data-ctrl]', 'ctrl', sv.ctrl); }));
-      el.querySelectorAll('[data-inv]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.inv = b.dataset.inv === '1'; putSave(sv); setOn('[data-inv]', 'inv', b.dataset.inv); }));
+      el.querySelectorAll('[data-pitch]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.pitch = b.dataset.pitch; putSave(sv); setOn('[data-pitch]', 'pitch', sv.pitch); }));
       el.querySelectorAll('[data-q]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.q = b.dataset.q; putSave(sv); setOn('[data-q]', 'q', sv.q); }));
     },
   };
@@ -1953,11 +1981,11 @@ const SkyAceGame = (function () {
       return { title: `Missão ${MISSIONS.indexOf(MISSIONS.find(m => m.id === M.id)) + 1} · ${M.name}`, hint: M.brief + ' Toca ou carrega em Espaço para descolar.' };
     },
     how: [
-      '<b>W / S</b> baixam e sobem o nariz, <b>A / D</b> fazem a curva (em Especialista rodam o avião), <b>Q / E</b> leme. <b>Shift</b> pós-combustão, <b>Z</b> travão — travar aperta a curva.',
+      '<b>↑ / W</b> sobe o nariz e <b>↓ / S</b> desce (há a opção "Avião", ao contrário), <b>← → / A D</b> fazem a curva (em Especialista rodam o avião), <b>Q / E</b> leme. <b>Shift</b> pós-combustão, <b>Z</b> travão — travar aperta a curva. A lista de comandos fica à esquerda durante o voo (<b>H</b> esconde).',
       'Põe o alvo no círculo até o losango ficar <b>vermelho</b> (bloqueado) e dispara o <b>míssil</b> com <b>Espaço</b> (ou botão direito). <b>F</b> / clique: metralhadora — aponta à mira de avanço. <b>X</b> troca para a arma especial, <b>R</b> troca de alvo.',
       'Alarme de míssil? <b>Curva com força</b> no último instante e larga <b>flares</b> (B). <b>C</b> muda a câmara (cabine), mantém <b>T</b> para olhar o alvo. Também dá com comando (gamepad) e no telemóvel.',
     ],
-    controls: ['⌨️ WASD Q E Shift Z', '🚀 Espaço · F · X · R · B', '🎮 comando', '👆 alavanca + botões'],
+    controls: ['⌨️ setas / WASD · Q E · Shift Z', '🚀 Espaço · F · X · R · B', '⌨️ H mostra os comandos', '🎮 comando', '👆 alavanca + botões'],
     setup: (api, o) => { curMode = o.mode || 'm1'; return setup(api, o); },
     update, draw, idle, after, down, move, up, key, keyup,
     begin: (G) => { if (matchMedia('(pointer: coarse)').matches) G.touch = true; },
