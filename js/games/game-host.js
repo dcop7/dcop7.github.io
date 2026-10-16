@@ -24,6 +24,9 @@ const GameHost = (function () {
       desc: 'O clássico jogo de cartas. Enfrenta 3 adversários com IA. Não te esqueças do UNO!' },
     { id: 'sueca',         name: 'Sueca',                icon: '♠️', color: '#1a7a4a', group: 'Tabuleiro & Cartas',
       desc: 'A sueca portuguesa: tu e o teu parceiro contra 2 IA. 120 pontos, trunfos e bandeiras.' },
+    /* combate aéreo 3D (out/2026) — o primeiro de Ação & Velocidade */
+    { id: 'sky-ace', name: 'Ás dos Céus', icon: '🛩️', color: '#5cc8ff', group: 'Ação & Velocidade',
+      desc: 'Combate aéreo em 3D: 6 missões, 3 caças, mísseis com bloqueio e uma fortaleza voadora para derrubar.' },
     { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Ação & Velocidade',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
     { id: 'dobble',        name: 'Olho Vivo',            icon: '👁️', color: '#f2b344', group: 'Memória & Atenção',
@@ -117,6 +120,7 @@ const GameHost = (function () {
     'pattern-recall': { g: () => PatternRecallGame, src: MEMO.concat('js/games/game-pattern-recall.js') },
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
+    'sky-ace':       { g: () => SkyAceGame,      src: ['js/games/sky-ace-world.js', 'js/games/game-sky-ace.js'] },
   };
   const _loaded = new Map();
   function loadScript(src) {

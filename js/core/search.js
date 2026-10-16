@@ -67,6 +67,7 @@ const Search = (function () {
     { label: 'Padrão', id: 'games/pattern-recall', icon: '🟪', tags: ['memória', 'padrão', 'grelha', 'pattern', 'matrix'] },
     { label: 'Cadeia', id: 'games/memory-chain', icon: '🔗', tags: ['memória', 'cadeia', 'sequência', 'formas', 'memory chain'] },
     { label: 'Conta Blocos', id: 'games/block-count', icon: '🧮', tags: ['contar', 'blocos', 'atenção', 'memória', '3d', 'count'] },
+    { label: 'Ás dos Céus', id: 'games/sky-ace', icon: '🛩️', tags: ['aviões', 'avião', 'caça', 'combate aéreo', 'mísseis', '3d', 'voo', 'pilotar', 'drones', 'jet'] },
   ];
 
   function buildIndex() {

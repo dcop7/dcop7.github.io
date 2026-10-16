@@ -1474,6 +1474,7 @@ const ALL_GAMES = [
   { id:'pattern-recall', key:'game.pattern-recall', icon:'🟪' },
   { id:'memory-chain', key:'game.memory-chain', icon:'🔗' },
   { id:'block-count', key:'game.block-count', icon:'🧮' },
+  { id:'sky-ace', key:'game.sky-ace', icon:'🛩️' },
 ];
 const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','chess'];
 
