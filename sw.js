@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v338';
+const CACHE = 'dcop7-v339';
 const STATIC = [
   '/',
   '/index.html',
@@ -193,6 +193,8 @@ const STATIC = [
   '/js/games/mono-levels.js',
   '/js/games/game-mono-puzzle.js',
   '/js/games/game-platformer-3d.js',
+  '/js/games/sky-ace-world.js',
+  '/js/games/game-sky-ace.js',
   '/favicon.svg',
   '/manifest.json',
 ];

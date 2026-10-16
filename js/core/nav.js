@@ -49,6 +49,7 @@ const Nav = (function () {
     { id: 'pattern-recall', key: 'game.pattern-recall', icon: '🟪' },
     { id: 'memory-chain', key: 'game.memory-chain', icon: '🔗' },
     { id: 'block-count', key: 'game.block-count', icon: '🧮' },
+    { id: 'sky-ace', key: 'game.sky-ace', icon: '🛩️' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
