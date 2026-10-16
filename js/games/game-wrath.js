@@ -323,8 +323,8 @@ const WrathGame = (function () {
     const marks = [];
     for (let i = 0; i <= G.grid.nx; i++) for (let z = CZ0 + 10; z < CZ1; z += 9) marks.push([CX0 + i * PITCH, z, 0]);
     for (let j = 0; j <= G.grid.nz; j++) for (let x = CX0 + 10; x < CX1; x += 9) marks.push([x, CZ0 + j * PITCH, 1]);
-    const mm = new THREE.InstancedMesh(new THREE.PlaneGeometry(.35, 4).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#d9d4c0' }), marks.length);
-    marks.forEach(([x, z, r], i) => mm.setMatrixAt(i, new THREE.Matrix4().compose(new THREE.Vector3(x, 4.06, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), r ? Math.PI / 2 : 0), new THREE.Vector3(1, 1, 1))));
+    const mm = new THREE.InstancedMesh(new THREE.PlaneGeometry(.35, 4).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#d9d4c0', polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), marks.length);
+    marks.forEach(([x, z, r], i) => mm.setMatrixAt(i, new THREE.Matrix4().compose(new THREE.Vector3(x, 4.18, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), r ? Math.PI / 2 : 0), new THREE.Vector3(1, 1, 1))));
     scene.add(mm);
     /* edifícios: uma InstancedMesh por estilo */
     const box = new THREE.BoxGeometry(1, 1, 1).translate(0, .5, 0);
@@ -1079,13 +1079,18 @@ const WrathGame = (function () {
     const gy = Math.max(4, hAt(G, c.x, c.z)), sh = G.shake;
     cam.position.set(c.x + Math.sin(c.yaw) * Math.cos(c.pitch) * c.dist + rand(-sh, sh), gy + Math.sin(c.pitch) * c.dist + rand(-sh, sh), c.z + Math.cos(c.yaw) * Math.cos(c.pitch) * c.dist + rand(-sh, sh));
     const cmin = Math.max(G.sea, hAt(G, cam.position.x, cam.position.z)) + 8; if (cam.position.y < cmin) cam.position.y = cmin;
-    cam.lookAt(c.x, gy + c.dist * .04, c.z); cam.updateMatrixWorld();
+    cam.lookAt(c.x, gy + c.dist * .04, c.z);
+    /* plano próximo proporcional à distância: sem isto, água e praia (quase coplanares) piscam ao longe */
+    const near = clamp(c.dist * .012, 2.5, 30); if (Math.abs(cam.near - near) > near * .1) { cam.near = near; cam.far = 22000; cam.updateProjectionMatrix(); }
+    cam.updateMatrixWorld();
     r3.skyM.position.copy(cam.position); r3.skyM.material.uniforms.uTime.value = G.t;
     r3.water.position.y = G.sea;
     const nm = r3.water.material.normalMap; nm.offset.x = (G.t * .005) % 1; nm.offset.y = (G.t * .003) % 1;
     /* sombra acompanha a vista */
-    const ext = clamp(c.dist * .7, 200, 1400);
-    r3.sun.position.set(c.x + r3.sunDir.x * 2500, r3.sunDir.y * 2500 + 50, c.z + r3.sunDir.z * 2500); r3.sun.target.position.set(c.x, 0, c.z);
+    /* sombras estáveis: tamanho em degraus e centro alinhado à grelha de texels (não cintilam ao mover a câmara) */
+    const ext = clamp(Math.ceil(c.dist * .7 / 150) * 150, 300, 1500), texel = ext * 2 / r3.sun.shadow.mapSize.x * 4;
+    const sx = Math.round(c.x / texel) * texel, sz = Math.round(c.z / texel) * texel;
+    r3.sun.position.set(sx + r3.sunDir.x * 2500, r3.sunDir.y * 2500 + 50, sz + r3.sunDir.z * 2500); r3.sun.target.position.set(sx, 0, sz);
     const scm = r3.sun.shadow.camera; scm.left = -ext; scm.right = ext; scm.top = ext; scm.bottom = -ext; scm.near = 100; scm.far = 6000; scm.updateProjectionMatrix();
     if (G.fxFrame % 20 === 0) r3.clouds.sort(cam);
     drawBolts(G);

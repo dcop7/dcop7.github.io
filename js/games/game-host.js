@@ -86,8 +86,6 @@ const GameHost = (function () {
       desc: 'Puzzle 3D de perspetiva: roda torres, desliza pontes e usa ilusões para abrir caminho.' },
     { id: 'platformer-3d', name: 'Ilhas Flutuantes', icon: '🏝️', color: '#38bdf8', group: '3D',
       desc: 'Plataformas 3D: explora ilhas no céu, salta, enfrenta inimigos e encontra todas as estrelas.' },
-    { id: 'shaman', name: 'Terra dos Xamãs', icon: '🌋', color: '#7df9ff', group: '3D',
-      desc: 'Estratégia divina em 3D: guia uma tribo, converte nómadas e molda a terra com pontes, terramotos, tornados e vulcões.' },
     { id: 'divine-wrath', name: 'Fúria Divina', icon: '☄️', color: '#ff7a3a', group: '3D',
       desc: 'Sandbox sem objetivos: uma cidade enorme para destruir à vontade com meteoros, tsunamis, vulcões, tornados e muito mais.' },
     /* ── memória (out/2026) ── */
@@ -128,7 +126,6 @@ const GameHost = (function () {
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
     'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=3'] },
-    shaman:          { g: () => ShamanGame,      src: [WORLD3D, 'js/games/game-shaman.js?v=3'] },
     'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=3'] },
   };
   const _loaded = new Map();

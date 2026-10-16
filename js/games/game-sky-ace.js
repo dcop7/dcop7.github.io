@@ -140,7 +140,8 @@ const SkyAceGame = (function () {
   const SAVE = 'skyace:save';
   const save = () => { try { return Object.assign({ u: 1, r: {}, plane: 'falcon', ctrl: 'std', inv: false, q: 'auto' }, JSON.parse(localStorage.getItem(SAVE)) || {}); } catch (e) { return { u: 1, r: {}, plane: 'falcon', ctrl: 'std', inv: false, q: 'auto' }; } };
   const putSave = v => { try { localStorage.setItem(SAVE, JSON.stringify(v)); } catch (e) {} };
-  let CHECKPOINT = null;   /* {mode, phase} — recomeçar na fase onde falhaste */
+  let CHECKPOINT = null;
+  let PITCH = null;   /* escolha do eixo também em memória (se o browser não gravar) */   /* {mode, phase} — recomeçar na fase onde falhaste */
 
   /* ── vetores temporários (criados depois de o three.js carregar) ── */
   let V1, V2, V3, V4, V5, Q1, Q2, M1, UP, E1;
@@ -178,7 +179,7 @@ const SkyAceGame = (function () {
     const sv = save(), M = parseMode(o.mode), D = DIFF[o.diff || 'medium'] || DIFF.medium;
     const G = {
       M, D, diff: o.diff || 'medium', mode: o.mode || 'm1', sv, t: 0, time: 0, ok: false, fail: null,
-      plane: PLANES[sv.plane] ? sv.plane : 'falcon', ctrl: sv.ctrl, inv: (sv.pitch || 'arcade') === 'arcade', help: sv.help !== false,
+      plane: PLANES[sv.plane] ? sv.plane : 'falcon', ctrl: sv.ctrl, inv: (PITCH || sv.pitch || 'sim') === 'arcade', help: sv.help !== false,
       keys: {}, act: {}, in: { pitch: 0, roll: 0, yaw: 0, boost: 0, brake: 0, gun: 0 }, mouseGun: false, touch: false, tp: {}, pad: null, padPrev: [],
       ents: [], msls: [], bullets: [], flares: [], rings: [], ringI: 0, feed: [], radio: [], radioT: 0, say: null,
       score: 0, kills: 0, gunKills: 0, hits: 0, shots: 0, dmgTaken: 0, phase: -1, phaseT: 0, nextPhaseT: -1, wave: 0, waveT: 0,
@@ -1954,7 +1955,7 @@ const SkyAceGame = (function () {
   </section>
   <section><h4>Opções de voo</h4><div class="sa-opt">
     <div>Pilotagem <span class="sa-chips"><button class="sa-chip ${sv.ctrl === 'std' ? 'on' : ''}" data-ctrl="std" title="Inclina e curva sozinho; nivela ao largar">Normal</button><button class="sa-chip ${sv.ctrl === 'exp' ? 'on' : ''}" data-ctrl="exp" title="A/D rodam o avião; W/S puxam o nariz">Especialista</button></span></div>
-    <div>Subir o nariz <span class="sa-chips"><button class="sa-chip ${(sv.pitch || 'arcade') === 'arcade' ? 'on' : ''}" data-pitch="arcade" title="↑ ou W sobe, ↓ ou S desce">Arcada (↑ / W)</button><button class="sa-chip ${sv.pitch === 'sim' ? 'on' : ''}" data-pitch="sim" title="Como num avião: ↓ ou S puxa o manche e sobe">Avião (↓ / S)</button></span></div>
+    <div>Subir o nariz <span class="sa-chips"><button class="sa-chip ${(PITCH || sv.pitch || 'sim') === 'arcade' ? 'on' : ''}" data-pitch="arcade" title="↑ ou W sobe, ↓ ou S desce">Arcada (↑ / W)</button><button class="sa-chip ${(PITCH || sv.pitch || 'sim') === 'sim' ? 'on' : ''}" data-pitch="sim" title="Como num avião: ↓ ou S puxa o manche e sobe">Avião (↓ / S)</button></span></div>
     <div>Gráficos <span class="sa-chips">${[['auto', 'Auto'], ['high', 'Alta'], ['low', 'Leve']].map(([k, l]) => `<button class="sa-chip ${sv.q === k ? 'on' : ''}" data-q="${k}">${l}</button>`).join('')}</span></div>
   </div></section>
 </div>`;
@@ -1964,7 +1965,7 @@ const SkyAceGame = (function () {
       el.querySelectorAll('[data-pl]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.plane = b.dataset.pl; putSave(sv); el.querySelectorAll('[data-pl]').forEach(x => x.setAttribute('aria-pressed', x === b)); }));
       el.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => start(b.dataset.m)));
       el.querySelectorAll('[data-ctrl]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.ctrl = b.dataset.ctrl; putSave(sv); setOn('[data-ctrl]', 'ctrl', sv.ctrl); }));
-      el.querySelectorAll('[data-pitch]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.pitch = b.dataset.pitch; putSave(sv); setOn('[data-pitch]', 'pitch', sv.pitch); }));
+      el.querySelectorAll('[data-pitch]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.pitch = PITCH = b.dataset.pitch; putSave(sv); setOn('[data-pitch]', 'pitch', sv.pitch); }));
       el.querySelectorAll('[data-q]').forEach(b => b.addEventListener('click', () => { const sv = save(); sv.q = b.dataset.q; putSave(sv); setOn('[data-q]', 'q', sv.q); }));
     },
   };
@@ -1981,7 +1982,7 @@ const SkyAceGame = (function () {
       return { title: `Missão ${MISSIONS.indexOf(MISSIONS.find(m => m.id === M.id)) + 1} · ${M.name}`, hint: M.brief + ' Toca ou carrega em Espaço para descolar.' };
     },
     how: [
-      '<b>↑ / W</b> sobe o nariz e <b>↓ / S</b> desce (há a opção "Avião", ao contrário), <b>← → / A D</b> fazem a curva (em Especialista rodam o avião), <b>Q / E</b> leme. <b>Shift</b> pós-combustão, <b>Z</b> travão — travar aperta a curva. A lista de comandos fica à esquerda durante o voo (<b>H</b> esconde).',
+      '<b>↑ / W</b> desce o nariz e <b>↓ / S</b> sobe, como num avião (há a opção "Arcada", ao contrário), <b>← → / A D</b> fazem a curva (em Especialista rodam o avião), <b>Q / E</b> leme. <b>Shift</b> pós-combustão, <b>Z</b> travão — travar aperta a curva. A lista de comandos fica à esquerda durante o voo (<b>H</b> esconde).',
       'Põe o alvo no círculo até o losango ficar <b>vermelho</b> (bloqueado) e dispara o <b>míssil</b> com <b>Espaço</b> (ou botão direito). <b>F</b> / clique: metralhadora — aponta à mira de avanço. <b>X</b> troca para a arma especial, <b>R</b> troca de alvo.',
       'Alarme de míssil? <b>Curva com força</b> no último instante e larga <b>flares</b> (B). <b>C</b> muda a câmara (cabine), mantém <b>T</b> para olhar o alvo. Também dá com comando (gamepad) e no telemóvel.',
     ],
@@ -1998,6 +1999,7 @@ const SkyAceGame = (function () {
       return [['Missão', (MISSIONS.indexOf(MISSIONS.find(m => m.id === M.id)) + 1) + '/' + MISSIONS.length], ['Pontos', G.score], ['Alvos TGT', left]];
     },
     pauseButtons: (G, api) => [
+      { label: G.inv ? 'Eixo: Arcada (↑ sobe) — trocar' : 'Eixo: Avião (↑ desce) — trocar', fn: () => { G.inv = !G.inv; PITCH = G.inv ? 'arcade' : 'sim'; const sv = save(); sv.pitch = PITCH; putSave(sv); api.resume(); } },
       { label: 'Ecrã inteiro', fn: () => { toggleFull(api); api.resume(); } },
     ],
     achievements: [
