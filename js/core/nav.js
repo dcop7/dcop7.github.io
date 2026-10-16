@@ -50,6 +50,8 @@ const Nav = (function () {
     { id: 'memory-chain', key: 'game.memory-chain', icon: '🔗' },
     { id: 'block-count', key: 'game.block-count', icon: '🧮' },
     { id: 'sky-ace', key: 'game.sky-ace', icon: '🛩️' },
+    { id: 'shaman', key: 'game.shaman', icon: '🌋' },
+    { id: 'divine-wrath', key: 'game.divine-wrath', icon: '☄️' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 

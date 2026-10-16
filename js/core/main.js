@@ -1475,6 +1475,8 @@ const ALL_GAMES = [
   { id:'memory-chain', key:'game.memory-chain', icon:'🔗' },
   { id:'block-count', key:'game.block-count', icon:'🧮' },
   { id:'sky-ace', key:'game.sky-ace', icon:'🛩️' },
+  { id:'shaman', key:'game.shaman', icon:'🌋' },
+  { id:'divine-wrath', key:'game.divine-wrath', icon:'☄️' },
 ];
 const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','chess'];
 

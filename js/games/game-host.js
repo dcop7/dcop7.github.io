@@ -86,6 +86,10 @@ const GameHost = (function () {
       desc: 'Puzzle 3D de perspetiva: roda torres, desliza pontes e usa ilusões para abrir caminho.' },
     { id: 'platformer-3d', name: 'Ilhas Flutuantes', icon: '🏝️', color: '#38bdf8', group: 'Aventura',
       desc: 'Plataformas 3D: explora ilhas no céu, salta, enfrenta inimigos e encontra todas as estrelas.' },
+    { id: 'shaman', name: 'Terra dos Xamãs', icon: '🌋', color: '#7df9ff', group: 'Aventura',
+      desc: 'Estratégia divina em 3D: guia uma tribo, converte nómadas e molda a terra com pontes, terramotos, tornados e vulcões.' },
+    { id: 'divine-wrath', name: 'Fúria Divina', icon: '☄️', color: '#ff7a3a', group: 'Aventura',
+      desc: 'Sandbox sem objetivos: uma cidade enorme para destruir à vontade com meteoros, tsunamis, vulcões, tornados e muito mais.' },
     /* ── memória (out/2026) ── */
     { id: 'path-memory', name: 'Caminho', icon: '👣', color: '#22d3ee', group: 'Memória & Atenção',
       desc: 'Um caminho acende-se na grelha. Memoriza-o e refaz-o passo a passo.' },
@@ -121,6 +125,8 @@ const GameHost = (function () {
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
     'sky-ace':       { g: () => SkyAceGame,      src: ['js/games/sky-ace-world.js', 'js/games/game-sky-ace.js'] },
+    shaman:          { g: () => ShamanGame,      src: ['js/games/sky-ace-world.js', 'js/games/game-shaman.js'] },
+    'divine-wrath':  { g: () => WrathGame,       src: ['js/games/sky-ace-world.js', 'js/games/game-wrath.js'] },
   };
   const _loaded = new Map();
   function loadScript(src) {
