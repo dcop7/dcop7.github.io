@@ -1,8 +1,8 @@
 {
- "generated": "2026-10-15T22:59:25.225Z",
+ "generated": "2026-10-16T08:55:21.180Z",
  "total": 84,
  "broken": 0,
- "unknown": 31,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -37,20 +37,20 @@
   {
    "id": "apoios:elar",
    "url": "https://www.fundoambiental.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:vale-eficiencia",
    "url": "https://www.fundoambiental.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:edificios-sustentaveis",
    "url": "https://www.fundoambiental.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:tarifa-social-agua",
@@ -139,8 +139,8 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
