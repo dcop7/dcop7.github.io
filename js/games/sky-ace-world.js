@@ -412,12 +412,13 @@ const SkyAceWorld = (function () {
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }`;
-  function buildClouds(sky, seed, scale) {
-    const r = rng(seed * 5 + 9), puffs = [];
-    const nC = Math.round(sky.clouds * scale);
+  /* o: { area, alt: [min, max], R: [min, max], n } — por omissão, a escala do Ás dos Céus */
+  function buildClouds(sky, seed, scale, o = {}) {
+    const r = rng(seed * 5 + 9), puffs = [], area = o.area || SIZE * 1.3, alt = o.alt || (sky.layer ? [1700, 2200] : [1300, 3000]), RR = o.R || [260, 910];
+    const nC = Math.round((o.n || sky.clouds) * scale);
     for (let i = 0; i < nC; i++) {
-      const cx = (r() - .5) * SIZE * 1.3, cz = (r() - .5) * SIZE * 1.3, cy = sky.layer ? 1700 + r() * 500 : 1300 + r() * 1700;
-      const R = 260 + r() * 650, k = 5 + Math.floor(r() * (sky.layer ? 7 : 10));
+      const cx = (r() - .5) * area, cz = (r() - .5) * area, cy = alt[0] + r() * (alt[1] - alt[0]);
+      const R = RR[0] + r() * (RR[1] - RR[0]), k = 5 + Math.floor(r() * (sky.layer ? 7 : 10));
       for (let j = 0; j < k; j++) {
         const a = r() * TAU, d = r() * R;
         puffs.push({ x: cx + Math.cos(a) * d, y: cy + (r() - .3) * R * .35, z: cz + Math.sin(a) * d * .8, s: R * (.55 + r() * .7), rot: r() * TAU, a: .85 + r() * .15 });
@@ -978,6 +979,6 @@ const SkyAceWorld = (function () {
   return {
     SIZE, MAPS, SKIES, PAL, JETS, LIVERY, rng, perlin, canyonX,
     heightGrid, findSite, buildTerrain, buildFlora, buildTowns, skyMesh, skyEnv, buildWater, buildClouds,
-    buildJet, buildDrone, buildBalloon, buildGround, buildFortress, buildRing, missileMesh, refs, particles, ribbon, tracers, mergeGeos,
+    buildJet, buildDrone, buildBalloon, buildGround, buildFortress, buildRing, missileMesh, refs, particles, ribbon, tracers, mergeGeos, canvasTex, M4, treeGeo, puffTex, softTex, sstep, glowM, plainMat, bodyMat, planform, lathe, prof, addMesh,
   };
 })();
