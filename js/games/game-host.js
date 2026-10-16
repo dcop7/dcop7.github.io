@@ -25,7 +25,7 @@ const GameHost = (function () {
     { id: 'sueca',         name: 'Sueca',                icon: '♠️', color: '#1a7a4a', group: 'Tabuleiro & Cartas',
       desc: 'A sueca portuguesa: tu e o teu parceiro contra 2 IA. 120 pontos, trunfos e bandeiras.' },
     /* combate aéreo 3D (out/2026) — o primeiro de Ação & Velocidade */
-    { id: 'sky-ace', name: 'Ás dos Céus', icon: '🛩️', color: '#5cc8ff', group: 'Ação & Velocidade',
+    { id: 'sky-ace', name: 'Ás dos Céus', icon: '🛩️', color: '#5cc8ff', group: '3D',
       desc: 'Combate aéreo em 3D: 6 missões, 3 caças, mísseis com bloqueio e uma fortaleza voadora para derrubar.' },
     { id: 'neon-shooter',  name: 'Neon Space Shooter',   icon: '🛸', color: '#a855f7', group: 'Ação & Velocidade',
       desc: 'Move a nave, dispara automático, derrota chefes e acumula combos neon!' },
@@ -75,7 +75,7 @@ const GameHost = (function () {
       desc: '5 dados, 3 lançamentos, 13 casas. Sozinho ou contra o computador.' },
     { id: 'crossy-road', name: 'Travessia', icon: '🐸', color: '#84cc16', group: 'Ação & Velocidade',
       desc: 'Atravessa estradas, rios e comboios sem fim. Não fiques para trás.' },
-    { id: 'hole', name: 'Buraco Guloso', icon: '🕳️', color: '#22c55e', group: 'Ação & Velocidade',
+    { id: 'hole', name: 'Buraco Guloso', icon: '🕳️', color: '#22c55e', group: '3D',
       desc: 'Engole a cidade — ou aspira a casa — e cresce. Contra buracos rivais.' },
     /* ── aventura (out/2026) — jogos grandes, carregados só ao abrir ── */
     { id: 'platformer', name: 'Mundos de Pip', icon: '🦊', color: '#f59e0b', group: 'Aventura',
@@ -84,11 +84,11 @@ const GameHost = (function () {
       desc: 'Corrida sem fim: salta, desliza e trepa pelas lianas antes que a onda de bananas te apanhe.' },
     { id: 'mono-puzzle', name: 'Torres Impossíveis', icon: '🗼', color: '#f472b6', group: 'Aventura',
       desc: 'Puzzle 3D de perspetiva: roda torres, desliza pontes e usa ilusões para abrir caminho.' },
-    { id: 'platformer-3d', name: 'Ilhas Flutuantes', icon: '🏝️', color: '#38bdf8', group: 'Aventura',
+    { id: 'platformer-3d', name: 'Ilhas Flutuantes', icon: '🏝️', color: '#38bdf8', group: '3D',
       desc: 'Plataformas 3D: explora ilhas no céu, salta, enfrenta inimigos e encontra todas as estrelas.' },
-    { id: 'shaman', name: 'Terra dos Xamãs', icon: '🌋', color: '#7df9ff', group: 'Aventura',
+    { id: 'shaman', name: 'Terra dos Xamãs', icon: '🌋', color: '#7df9ff', group: '3D',
       desc: 'Estratégia divina em 3D: guia uma tribo, converte nómadas e molda a terra com pontes, terramotos, tornados e vulcões.' },
-    { id: 'divine-wrath', name: 'Fúria Divina', icon: '☄️', color: '#ff7a3a', group: 'Aventura',
+    { id: 'divine-wrath', name: 'Fúria Divina', icon: '☄️', color: '#ff7a3a', group: '3D',
       desc: 'Sandbox sem objetivos: uma cidade enorme para destruir à vontade com meteoros, tsunamis, vulcões, tornados e muito mais.' },
     /* ── memória (out/2026) ── */
     { id: 'path-memory', name: 'Caminho', icon: '👣', color: '#22d3ee', group: 'Memória & Atenção',
@@ -105,14 +105,17 @@ const GameHost = (function () {
       desc: 'Blocos atravessam o ecrã a toda a velocidade. Conta-os — e não te deixes enganar.' },
   ];
 
-  const GROUP_ORDER = ['Aventura', 'Memória & Atenção', 'Puzzle & Lógica', 'Tabuleiro & Cartas', 'Pontaria & Física', 'Reflexos', 'Ação & Velocidade'];
-  const GROUP_ICONS = { 'Aventura': '🌟', 'Memória & Atenção': '🧠', 'Puzzle & Lógica': '🧩', 'Tabuleiro & Cartas': '♟️', 'Pontaria & Física': '🎯', 'Reflexos': '⚡', 'Ação & Velocidade': '🏁' };
+  const GROUP_ORDER = ['3D', 'Aventura', 'Memória & Atenção', 'Puzzle & Lógica', 'Tabuleiro & Cartas', 'Pontaria & Física', 'Reflexos', 'Ação & Velocidade'];
+  const GROUP_ICONS = { '3D': '🧊', 'Aventura': '🌟', 'Memória & Atenção': '🧠', 'Puzzle & Lógica': '🧩', 'Tabuleiro & Cartas': '♟️', 'Pontaria & Física': '🎯', 'Reflexos': '⚡', 'Ação & Velocidade': '🏁' };
   /* id curto do grupo para o filtro do hub (e para #games?g=…) */
-  const GROUP_KEY = { 'Aventura': 'aventura', 'Memória & Atenção': 'memoria', 'Puzzle & Lógica': 'puzzle', 'Tabuleiro & Cartas': 'tabuleiro', 'Pontaria & Física': 'pontaria', 'Reflexos': 'reflexos', 'Ação & Velocidade': 'acao' };
+  const GROUP_KEY = { '3D': '3d', 'Aventura': 'aventura', 'Memória & Atenção': 'memoria', 'Puzzle & Lógica': 'puzzle', 'Tabuleiro & Cartas': 'tabuleiro', 'Pontaria & Física': 'pontaria', 'Reflexos': 'reflexos', 'Ação & Velocidade': 'acao' };
 
   /* Jogos carregados só quando se abrem (não pesam no resto da secção).
      deps partilhadas entram primeiro e só uma vez. */
   const MEMO = ['js/games/memo-kit.js'];
+  /* módulo partilhado dos jogos 3D grandes: o ?v= muda quando a API muda, para o
+     browser nunca juntar um jogo novo com uma cópia antiga em cache (dava "precisa de WebGL") */
+  const WORLD3D = 'js/games/sky-ace-world.js?v=3';
   const LAZY = {
     platformer:      { g: () => PlatformerGame,  src: ['js/games/platformer-levels.js', 'js/games/game-platformer.js'] },
     runner:          { g: () => RunnerGame,      src: ['js/games/game-runner.js'] },
@@ -124,9 +127,9 @@ const GameHost = (function () {
     'pattern-recall': { g: () => PatternRecallGame, src: MEMO.concat('js/games/game-pattern-recall.js') },
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
-    'sky-ace':       { g: () => SkyAceGame,      src: ['js/games/sky-ace-world.js', 'js/games/game-sky-ace.js'] },
-    shaman:          { g: () => ShamanGame,      src: ['js/games/sky-ace-world.js', 'js/games/game-shaman.js'] },
-    'divine-wrath':  { g: () => WrathGame,       src: ['js/games/sky-ace-world.js', 'js/games/game-wrath.js'] },
+    'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=3'] },
+    shaman:          { g: () => ShamanGame,      src: [WORLD3D, 'js/games/game-shaman.js?v=3'] },
+    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=3'] },
   };
   const _loaded = new Map();
   function loadScript(src) {
@@ -415,7 +418,7 @@ const GameHost = (function () {
       <div id="gh-noresults" class="gh-noresults" hidden>Nenhum jogo encontrado.</div>
       ${GP && GP.toggleFavorite ? `<div class="games-group gh-favs" id="gh-favs">${favSectionHTML(favs, GP)}</div>` : ''}
       ${GROUP_ORDER.filter(g => groups[g]).map(gName => `
-        <div class="games-group${gName === 'Aventura' ? ' gh-feature' : ''}" data-group="${GROUP_KEY[gName]}">
+        <div class="games-group${gName === 'Aventura' || gName === '3D' ? ' gh-feature' : ''}" data-group="${GROUP_KEY[gName]}">
           <div class="games-group-title">${GROUP_ICONS[gName]} ${gName}</div>
           <div class="games-hub-grid">
             ${groups[gName].map(g => cardHTML(g, favs, GP)).join('')}

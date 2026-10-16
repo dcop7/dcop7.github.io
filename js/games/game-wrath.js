@@ -129,7 +129,8 @@ const WrathGame = (function () {
       cam: { x: 0, z: 150, yaw: 0.35, pitch: .62, dist: 900, tdist: 900, tx: 0, tz: 150 },
       keys: {}, ptr: { ok: false }, shake: 0, uNight: { value: 0 }, sea: 0, seaT: 0, falling: [], tp: new Map(), msg: [],
     };
-    Arcade3D.load().then(() => { try { build(G, api); } catch (e) { console.warn('[fúria] 3D falhou', e); G.fail3d = true; } }).catch(() => { G.fail3d = true; });
+    if (typeof SkyAceWorld === 'undefined' || !(SkyAceWorld.V >= 3)) { G.fail3d = true; G.failMsg = 'O browser usou uma versão antiga do jogo — recarrega a página (Ctrl+Shift+R).'; return G; }
+    Arcade3D.load().then(() => { try { build(G, api); } catch (e) { console.warn('[fúria] 3D falhou', e); G.fail3d = true; G.failMsg = 'Erro: ' + (e && e.message || e); } }).catch(() => { G.fail3d = true; G.failMsg = 'Não foi possível carregar o motor 3D.'; });
     return G;
   }
 
@@ -1069,7 +1070,8 @@ const WrathGame = (function () {
     if (!G.ok) {
       ctx.save(); ctx.scale(k, k); const w = Wl / k, h = Hl / k;
       const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#2a1a12'); g.addColorStop(1, '#5a2a14'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = '#fff'; ctx.font = "700 16px 'Space Grotesk', system-ui"; ctx.textAlign = 'center'; ctx.fillText(G.fail3d ? 'Este jogo precisa de WebGL (3D).' : 'A construir a cidade…', w / 2, h / 2);
+      ctx.fillStyle = '#fff'; ctx.font = "700 16px 'Space Grotesk', system-ui"; ctx.textAlign = 'center'; ctx.fillText(G.fail3d ? 'Não foi possível arrancar o 3D' : 'A construir a cidade…', w / 2, h / 2);
+      if (G.fail3d) { ctx.font = "500 13px 'Space Grotesk', system-ui"; ctx.fillStyle = '#ffd9b0'; ctx.fillText(G.failMsg || 'Este jogo precisa de WebGL (3D).', w / 2, h / 2 + 26); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillText('Se o erro persistir, recarrega a página com Ctrl+Shift+R.', w / 2, h / 2 + 46); }
       ctx.restore(); return;
     }
     const r3 = G.r3, cam = r3.cam, c = G.cam;

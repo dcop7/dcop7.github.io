@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v340';
+const CACHE = 'dcop7-v341';
 const STATIC = [
   '/',
   '/index.html',
@@ -247,7 +247,7 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(e.request, { cache: 'reload' })
         .then(res => _cachePut(e.request, res))
-        .catch(() => caches.match(e.request))
+        .catch(() => caches.match(e.request, { ignoreSearch: url.search.startsWith('?v=') }))
     );
     return;
   }

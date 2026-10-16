@@ -977,6 +977,7 @@ const SkyAceWorld = (function () {
   }
 
   return {
+    V: 3,   /* sobe quando a API muda — os jogos que dependem dela verificam */
     SIZE, MAPS, SKIES, PAL, JETS, LIVERY, rng, perlin, canyonX,
     heightGrid, findSite, buildTerrain, buildFlora, buildTowns, skyMesh, skyEnv, buildWater, buildClouds,
     buildJet, buildDrone, buildBalloon, buildGround, buildFortress, buildRing, missileMesh, refs, particles, ribbon, tracers, mergeGeos, canvasTex, M4, treeGeo, puffTex, softTex, sstep, glowM, plainMat, bodyMat, planform, lathe, prof, addMesh,
