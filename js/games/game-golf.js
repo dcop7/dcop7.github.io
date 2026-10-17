@@ -257,7 +257,7 @@ const GolfGame = (function () {
       dimple: tex(128, 64, (x, w, h) => { x.fillStyle = '#f8fafc'; x.fillRect(0, 0, w, h); for (let i = 0; i < 160; i++) { x.fillStyle = 'rgba(148,163,184,.35)'; x.beginPath(); x.arc(Math.random() * w, Math.random() * h, 1.6, 0, 6.3); x.fill(); } }),
     };
     T.grass.repeat.set(1 / 64, 1 / 88); T.sand.repeat.set(1 / 40, 1 / 40); T.water.repeat.set(1 / 90, 1 / 90);
-    const lawn = new THREE.Mesh(new THREE.PlaneGeometry(1800, 1800), new THREE.MeshStandardMaterial({ map: T.lawn, roughness: 1 }));
+    const lawn = new THREE.Mesh(new THREE.PlaneGeometry(1800, 1800), Arcade3D.noTile(new THREE.MeshStandardMaterial({ map: T.lawn, roughness: 1 }), { macro: .25 }));
     lawn.rotation.x = -Math.PI / 2; lawn.position.y = -8; lawn.receiveShadow = true; scene.add(lawn);
     const ball = new THREE.Mesh(new THREE.SphereGeometry(BR, 28, 20), new THREE.MeshStandardMaterial({ map: T.dimple, roughness: .35, metalness: .02 }));
     ball.castShadow = true; scene.add(ball);
@@ -284,7 +284,7 @@ const GolfGame = (function () {
     add(turf, [new THREE.MeshStandardMaterial({ map: R.T.grass, roughness: .9 }), Arcade3D.std('#2d6a36', { roughness: .95 })], 0);
     (h.slopes || []).forEach(sl => { add(flat(new THREE.ShapeGeometry(shapeOf(sl.r))), new THREE.MeshStandardMaterial({ color: '#14532d', transparent: true, opacity: .28, depthWrite: false }), .3); });
     (h.sand || []).forEach(P => add(flat(new THREE.ExtrudeGeometry(shapeOf(P), { depth: .6, bevelEnabled: false })), new THREE.MeshStandardMaterial({ map: R.T.sand, roughness: 1 }), .6));
-    R.waterMat = new THREE.MeshStandardMaterial({ map: R.T.water, roughness: .08, metalness: .25, transparent: true, opacity: .92 });
+    R.waterMat = Arcade3D.water({ color: '#1a64c8', shallow: '#3d9bf0', tile: 24, chop: .9, foam: 0, roughness: .06, opacity: .93 });   /* ondulação sem padrão repetido (Arcade3D) */
     (h.water || []).forEach(P => add(flat(new THREE.ShapeGeometry(shapeOf(P))), R.waterMat, .4));
     /* bermas e paredes interiores em madeira (caixas ao longo de cada segmento) */
     const wood = Arcade3D.std('#8b5e34', { roughness: .7 }), wood2 = Arcade3D.std('#a16207', { roughness: .7 }), cap = Arcade3D.std('#d6a064', { roughness: .6 });
@@ -374,7 +374,7 @@ const GolfGame = (function () {
     if (R.blades) R.blades.rotation.y = -G.ht * h.mill.w;
     if (R.slider) R.slider.position.set(h._sx - 200, 8, h.slider.y - 320);
     (R.bumps || []).forEach(b => { const on = G.bump && G.bump.x === b.userData.x && G.bump.y === b.userData.y; const k = on ? 1 + G.bump.t * 1.4 : 1; b.scale.set(k, 1, k); });
-    R.T.water.offset.set(t * .04, t * .02);
+    Arcade3D.waterTick(R.waterMat, t);
     const pa = R.flag.geometry.attributes.position;
     for (let i = 0; i < pa.count; i++) { const x = R.flagBase[i * 3]; pa.setZ(i, Math.sin(x * .25 - t * 6) * x * .09); }
     pa.needsUpdate = true;

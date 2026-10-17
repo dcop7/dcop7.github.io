@@ -216,7 +216,7 @@ const SkyAceGame = (function () {
     const hg = Wd.heightGrid(map, Q.seg);
     const skyM = Wd.skyMesh(sky); scene.add(skyM);
     const terrain = Wd.buildTerrain(map, hg); scene.add(terrain);
-    const water = Wd.buildWater(map, env); scene.add(water);
+    const water = Wd.buildWater(map, env, { depth: Wd.seaDepth(hg) }); scene.add(water);
     scene.add(Wd.buildFlora(map, hg, Q.trees));
     const towns = Wd.buildTowns(map, hg, map.towns); scene.add(towns.mesh);
     const clouds = Wd.buildClouds(sky, map.seed, Q.clouds); scene.add(clouds.mesh);
@@ -1270,7 +1270,7 @@ const SkyAceGame = (function () {
     const r3 = G.r3, R = r3.renderer, st = api.stage, w = st.clientWidth || 1, hh = st.clientHeight || 1;
     const dpr = Math.min(window.devicePixelRatio || 1, r3.Q.dpr) * G.perf.q;
     if (w !== r3.w || hh !== r3.h || Math.abs(dpr - r3.dpr) > .01) {
-      r3.w = w; r3.h = hh; r3.dpr = dpr; R.setPixelRatio(dpr); R.setSize(w, hh, false);
+      r3.w = w; r3.h = hh; r3.dpr = dpr; R.setPixelRatio(dpr); R.setSize(w, hh, false); Arcade3D.outlineRes(w * dpr, hh * dpr);
       r3.cam.aspect = w / hh; r3.cam.updateProjectionMatrix();
     }
   }
@@ -1354,7 +1354,7 @@ const SkyAceGame = (function () {
     camera(G, dt, api);
     cam.updateMatrixWorld();
     r3.skyM.position.copy(cam.position); r3.skyM.material.uniforms.uTime.value = G.t;
-    const nm = r3.water.material.normalMap; nm.offset.x = (G.t * .004) % 1; nm.offset.y = (G.t * .0025) % 1;
+    Arcade3D.waterTick(r3.water.material, G.t, cam);
     /* sol e sombra seguem o jogador */
     r3.sun.position.copy(P.pos).addScaledVector(r3.sunDir, 400); r3.sun.target.position.copy(P.pos);
     if (r3.Q.shadows) { const c = r3.sun.shadow.camera; c.left = -26; c.right = 26; c.top = 26; c.bottom = -26; c.near = 50; c.far = 800; c.updateProjectionMatrix(); }

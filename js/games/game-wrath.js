@@ -176,7 +176,7 @@ const WrathGame = (function () {
     /* céu e luz conforme a hora */
     setTod(G, 1, true);
     /* água */
-    const water = Wd.buildWater({ water: '#1c5f78' }, G.r3.env); water.material.normalMap.repeat.set(5000, 5000); scene.add(water); G.r3.water = water;
+    const water = Wd.buildWater({ water: '#1a5a74', shallow: '#3ea7a0' }, G.r3.env, { tile: 30, clear: 4, depth: seaDepth(G) }); scene.add(water); G.r3.water = water;
     /* cidade */
     genCity(G);
     buildCityMeshes(G);
@@ -190,12 +190,13 @@ const WrathGame = (function () {
     say(G, 'Fúria Divina', 'Escolhe um poder à esquerda e clica na cidade.', 4);
   }
 
+  /* fundo do mar para a água (cor de baixio, espuma na praia, borda transparente) — refeito quando o terreno muda */
+  const seaDepth = G => ({ fn: (x, z) => hAt(G, x, z), x: 0, z: 0, size: WS, res: 256 });
   function terrainMesh(G) {
     const geo = new THREE.PlaneGeometry(WS, WS, TN, TN); geo.rotateX(-Math.PI / 2);
     geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(geo.attributes.position.count * 3), 3));
-    const tex = W().canvasTex(128, 128, x => { const img = x.createImageData(128, 128), d = img.data; for (let k = 0; k < d.length; k += 4) { const v = 210 + Math.random() * 45; d[k] = d[k + 1] = d[k + 2] = v; d[k + 3] = 255; } x.putImageData(img, 0, 0); });
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(160, 160);
-    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, map: tex, roughness: .95, metalness: 0, envMapIntensity: .3 }));
+    const tex = W().detailTex(WS / 30);
+    const m = new THREE.Mesh(geo, Arcade3D.noTile(new THREE.MeshStandardMaterial({ vertexColors: true, map: tex, roughness: .95, metalness: 0, envMapIntensity: .3 }), { macro: .2, wide: .45 }));
     m.receiveShadow = true; G.tm = m;
     refreshTerrain(G);
     return m;
@@ -217,7 +218,7 @@ const WrathGame = (function () {
       col.setXYZ(k, c.r, c.g, c.b);
     }
     pos.needsUpdate = true; col.needsUpdate = true; geo.computeBoundingSphere();
-    G.dirtyT = false;
+    G.dirtyT = false; G.wdDirty = true;
   }
   function hAt(G, x, z) {
     const gx = clamp((x - T0) / TC, 0, TN - 1e-4), gz = clamp((z - T0) / TC, 0, TN - 1e-4), i = Math.floor(gx), j = Math.floor(gz), fx = gx - i, fz = gz - j, h = G.h, w = TN + 1, k = j * w + i;
@@ -244,6 +245,7 @@ const WrathGame = (function () {
     r3.renderer.toneMappingExposure = sky.exp;
     G.uNight.value = sky.stars ? 1 : TODS[i] === 'sunset' ? .35 : 0;
     if (r3.water) r3.water.material.envMap = r3.env;
+    if (r3.pondM) r3.pondM.envMap = r3.env;
     if (!first) syncSkyFx(G);
   }
   function syncSkyFx(G) {
@@ -635,7 +637,7 @@ const WrathGame = (function () {
     greens.forEach((B, i) => { gm.setMatrixAt(i, M4.compose(V.set(B.cx, B.y - .2, B.cz), Q.identity(), S.set(B.w - 4, .85 + B.slope, B.d - 4))); gm.setColorAt(i, c.set(B.zone === 'riverside' ? '#6aa04a' : '#5f9a42')); });
     gm.receiveShadow = true; scene.add(gm);
     /* lagos nos parques */
-    G.blocks.filter(B => B.zone === 'park' && B.main).forEach(B => { const p = new THREE.Mesh(new THREE.CircleGeometry(18, 28).rotateX(-Math.PI / 2), r3.water.material); p.position.set(B.cx + 10, B.y + .75, B.cz - 8); p.scale.set(1.4, 1, 1); scene.add(p); });
+    G.blocks.filter(B => B.zone === 'park' && B.main).forEach(B => { const p = new THREE.Mesh(new THREE.CircleGeometry(18, 28).rotateX(-Math.PI / 2), r3.pondM || (r3.pondM = Arcade3D.water({ color: '#2a6a72', shallow: '#3f8f86', tile: 9, chop: .6, foam: 0, env: r3.env }))); p.position.set(B.cx + 10, B.y + .75, B.cz - 8); p.scale.set(1.4, 1, 1); scene.add(p); });
     /* edifícios especiais */
     G.anims = [];
     const at = zone => G.blocks.filter(B => B.zone === zone && B.main);
@@ -1436,6 +1438,7 @@ const WrathGame = (function () {
     flyerStep(G, dt);
     if (G.treeDirty && G.fxFrame % 4 === 0) { G.treeDirty = 0; treesSync(G); }
     if (G.dirtyT && G.fxFrame % 4 === 0) refreshTerrain(G);
+    if (G.wdDirty && G.r3.water && G.t - (G.wdT || -9) > 1) { G.wdDirty = false; G.wdT = G.t; Arcade3D.waterDepth(G.r3.water.material, seaDepth(G)); }
     G.r3.smoke.update(dt); G.r3.fire.update(dt);
     G.r3.flash.intensity *= Math.max(0, 1 - dt * 6);
     G.shake = Math.max(0, G.shake - dt * 3);
@@ -1492,7 +1495,7 @@ const WrathGame = (function () {
     cam.updateMatrixWorld();
     r3.skyM.position.copy(cam.position); r3.skyM.material.uniforms.uTime.value = G.t;
     r3.water.position.y = G.sea;
-    const nm = r3.water.material.normalMap; nm.offset.x = (G.t * .005) % 1; nm.offset.y = (G.t * .003) % 1;
+    Arcade3D.waterTick(r3.water.material, G.t, cam); if (r3.pondM) Arcade3D.waterTick(r3.pondM, G.t, cam);
     /* sombra acompanha a vista */
     /* sombras estáveis: tamanho em degraus e centro alinhado à grelha de texels (não cintilam ao mover a câmara) */
     const ext = clamp(Math.ceil(c.dist * .7 / 150) * 150, 300, 1500), texel = ext * 2 / r3.sun.shadow.mapSize.x * 4;
