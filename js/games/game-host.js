@@ -88,6 +88,8 @@ const GameHost = (function () {
       desc: 'Plataformas 3D: explora ilhas no céu, salta, enfrenta inimigos e encontra todas as estrelas.' },
     { id: 'divine-wrath', name: 'Fúria Divina', icon: '☄️', color: '#ff7a3a', group: '3D',
       desc: 'Sandbox sem objetivos: uma cidade enorme para destruir à vontade com meteoros, tsunamis, vulcões, tornados e muito mais.' },
+    { id: 'sniper', name: 'Operação Soneca', icon: '🦉', color: '#ff4a7a', group: '3D',
+      desc: 'Atirador furtivo sem violência: 5 missões, vento e queda do dardo, binóculos e câmara do dardo — os alvos adormecem a ressonar.' },
     /* ── memória (out/2026) ── */
     { id: 'path-memory', name: 'Caminho', icon: '👣', color: '#22d3ee', group: 'Memória & Atenção',
       desc: 'Um caminho acende-se na grelha. Memoriza-o e refaz-o passo a passo.' },
@@ -126,7 +128,8 @@ const GameHost = (function () {
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
     'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=3'] },
-    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=3'] },
+    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=4'] },
+    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=1', 'js/games/sniper-kit.js?v=1', 'js/games/game-sniper.js?v=1'] },
   };
   const _loaded = new Map();
   function loadScript(src) {
