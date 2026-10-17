@@ -115,7 +115,7 @@ const GameHost = (function () {
   const MEMO = ['js/games/memo-kit.js'];
   /* módulo partilhado dos jogos 3D grandes: o ?v= muda quando a API muda, para o
      browser nunca juntar um jogo novo com uma cópia antiga em cache (dava "precisa de WebGL") */
-  const WORLD3D = 'js/games/sky-ace-world.js?v=3';
+  const WORLD3D = 'js/games/sky-ace-world.js?v=4';
   const LAZY = {
     platformer:      { g: () => PlatformerGame,  src: ['js/games/platformer-levels.js', 'js/games/game-platformer.js'] },
     runner:          { g: () => RunnerGame,      src: ['js/games/game-runner.js'] },
@@ -127,9 +127,9 @@ const GameHost = (function () {
     'pattern-recall': { g: () => PatternRecallGame, src: MEMO.concat('js/games/game-pattern-recall.js') },
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
-    'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=3'] },
-    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=4'] },
-    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=2', 'js/games/sniper-kit.js?v=2', 'js/games/game-sniper.js?v=2'] },
+    'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=4'] },
+    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=5'] },
+    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=2', 'js/games/sniper-kit.js?v=3', 'js/games/game-sniper.js?v=3'] },
   };
   const _loaded = new Map();
   function loadScript(src) {

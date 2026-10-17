@@ -349,7 +349,7 @@ const SniperGame = (function () {
     },
     extra(G) {
       /* o rio no vale: um plano de água próprio à altura do canal */
-      const wm = G.r3.water.material.clone(); wm.normalMap = G.r3.water.material.normalMap; wm.color = new THREE.Color('#3a7a8a');
+      const wm = Arcade3D.water({ color: '#2f6f7c', shallow: '#5a9a88', tile: 7, chop: .6, clear: 1.6, env: G.r3.env, depth: G.r3.seaDepth }); G.r3.waters.push(wm);
       const g = new THREE.PlaneGeometry(4000, 70); g.rotateX(-Math.PI / 2); const m = new THREE.Mesh(g, wm); m.position.set(0, 5.5, -260); m.renderOrder = 1; G.r3.scene.add(m);
     },
     script(G, dt) {
@@ -498,8 +498,9 @@ const SniperGame = (function () {
     const T = K().Terrain(L.terrain); G.T = T; G.hAt = T.hAt;
     scene.add(T.mesh(env));
     /* água: plano próprio de 16 km em grelha e UV pequenos (no plano de 300 km os UV enormes perdiam precisão e a ondulação tremia) */
-    const water = Wd.buildWater({ water: L.water || '#2a6a80' }, env); water.geometry.dispose(); water.geometry = new THREE.PlaneGeometry(16000, 16000, 24, 24); water.position.set(L.nest.x, 0, L.nest.z - 800);
-    water.material.normalMap.repeat.set(16000 / 14, 16000 / 14); water.material.normalScale.set(.22, .22); scene.add(water); G.r3.water = water;
+    G.r3.seaDepth = { fn: T.hAt, x: T.cx, z: T.cz, size: T.S, res: 512 };
+    const water = Wd.buildWater({ water: L.water || '#2a6a80', shallow: L.shallow || '#4aa59c' }, env, { tile: 11, chop: .85, clear: 3, size: 16000, at: [L.nest.x, L.nest.z - 800], depth: G.r3.seaDepth });
+    water.geometry.dispose(); water.geometry = new THREE.PlaneGeometry(16000, 16000, 24, 24); scene.add(water); G.r3.water = water; G.r3.waters = [water.material];
     /* mundo */
     const B = K().Builder(scene, env, T.hAt, 7 + G.li * 13);
     const specs = L.build(B, G);
@@ -1294,7 +1295,7 @@ const SniperGame = (function () {
       else if (a.k === 'stagelight') { if (!a.s) { a.s = new THREE.Sprite(Arcade3D.glowSprite(a.c)); a.s.position.set(...a.p); G.r3.scene.add(a.s); } const k = .5 + .5 * Math.sin(t * 3 + a.p[0]); a.s.scale.setScalar(1.2 + k * 1.4); }
       else if (a.k === 'craneLight') { if (!a.s) { a.s = new THREE.Sprite(Arcade3D.glowSprite('#ff3a2a')); a.s.position.set(...a.p); G.r3.scene.add(a.s); } a.s.scale.setScalar(Math.sin(t * 3) > .6 ? 3 : .01); }
       else if (a.k === 'bunting' && G.fxFrame % 2 === 0) { const m4 = a._m || (a._m = new THREE.Matrix4()), q = a._q || (a._q = new THREE.Quaternion()), e2 = a._e || (a._e = new THREE.Euler()), v = a._v || (a._v = new THREE.Vector3()), one = a._s || (a._s = new THREE.Vector3(1, 1, 1)); a.flags.forEach((f, i) => { const sw = Math.sin(t * (2.2 + ws * .4) + i * .7) * (.15 + ws * .06) + ws * .05; e2.set(sw * Math.cos(f[3] - wa), f[3] + Math.PI / 2, 0, 'YXZ'); q.setFromEuler(e2); m4.compose(v.set(f[0], f[1], f[2]), q, one); a.im.setMatrixAt(i, m4); }); a.im.instanceMatrix.needsUpdate = true; }
-      else if (a.k === 'pool' && !a.m) { const g = new THREE.PlaneGeometry(a.w - .04, a.d - .04); g.rotateX(-Math.PI / 2); const wm = G.r3.water.material.clone(); wm.color = new THREE.Color('#5ad0f0'); wm.opacity = .62; wm.normalMap = G.r3.water.material.normalMap; a.m = new THREE.Mesh(g, wm); a.m.position.set(...a.p); a.m.position.y -= .07; a.m.rotation.y = a.yaw; a.m.renderOrder = 2; G.r3.scene.add(a.m); }
+      else if (a.k === 'pool' && !a.m) { const g = new THREE.PlaneGeometry(a.w - .04, a.d - .04); g.rotateX(-Math.PI / 2); const wm = Arcade3D.water({ color: '#3cc4e6', shallow: '#7ee0f2', tile: 2.5, chop: .35, foam: 0, opacity: .72, roughness: .05, env: G.r3.env }); G.r3.waters.push(wm); a.m = new THREE.Mesh(g, wm); a.m.position.set(...a.p); a.m.position.y -= .07; a.m.rotation.y = a.yaw; a.m.renderOrder = 2; G.r3.scene.add(a.m); }
     }
   }
 
@@ -1369,7 +1370,7 @@ const SniperGame = (function () {
     emotesDraw(G);
     /* céu, água, sombras à volta do ponto de mira */
     r3.skyM.position.copy(cam.position); r3.skyM.material.uniforms.uTime.value = G.t;
-    const nm = r3.water.material.normalMap; nm.offset.x = (G.gt * .004) % 1; nm.offset.y = (G.gt * .0025) % 1;
+    r3.waters.forEach(m => Arcade3D.waterTick(m, G.gt, cam));
     /* sombras: a caixa de sombra segue o ponto de mira em degraus (tamanho) e encaixa na grelha de texels NO ESPAÇO DA LUZ
        — antes encaixava em x/z do mundo e as bordas das sombras "nadavam" ao mexer a mira */
     const ap = G.dbgCam ? { x: G.dbgCam.l[0], y: G.dbgCam.l[1], z: G.dbgCam.l[2] } : dcam ? (dcam.dart.hitAt || dcam.dart.p) : aimGround(G), ext = clamp((G.range || 120) * Math.tan(cam.fov * Math.PI / 360) * 1.6, 30, 260);

@@ -316,7 +316,7 @@ const DriftGame = (function () {
     for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(${Math.random() < .5 ? '170,220,120' : '25,70,25'},.18)`; x.fillRect(Math.random() * 256, Math.random() * 256, 1.5, 3); }
     for (let i = 0; i < 30; i++) { x.fillStyle = 'rgba(20,60,20,.08)'; x.beginPath(); x.ellipse(Math.random() * 256, Math.random() * 256, 10 + Math.random() * 20, 6 + Math.random() * 10, Math.random() * 3, 0, 6.3); x.fill(); }
     const gt = new THREE.CanvasTexture(c); gt.wrapS = gt.wrapT = THREE.RepeatWrapping; gt.repeat.set(40, 40); gt.colorSpace = THREE.SRGBColorSpace; gt.anisotropy = 4;
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }));
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), Arcade3D.noTile(new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }), { macro: .22, cells: 2.5 }));
     ground.rotation.x = -Math.PI / 2; ground.position.set(640, -.6, 480); ground.receiveShadow = true; scene.add(ground);
     /* asfalto: grão, remendos e marcas escuras na trajetória (textura ao longo da fita) */
     const at = (() => {

@@ -57,7 +57,7 @@ const Arcade3D = (function () {
     const w = stage.clientWidth || 1, h = stage.clientHeight || 1, dpr = Math.min(window.devicePixelRatio || 1, coarse() ? 1.75 : 2);
     if (w !== r._w || h !== r._h || dpr !== r._d) {
       r._w = w; r._h = h; r._d = dpr;
-      r.setPixelRatio(dpr); r.setSize(w, h, false);
+      r.setPixelRatio(dpr); r.setSize(w, h, false); outlineRes(w * dpr, h * dpr);
       if (cam && cam.isPerspectiveCamera) { cam.aspect = w / h; cam.updateProjectionMatrix(); }
     }
     return w / h;
@@ -369,6 +369,196 @@ const Arcade3D = (function () {
     });
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     texturas sem padrão repetido e água (partilhado por todos os jogos 3D)
+  ════════════════════════════════════════════════════════════════ */
+  /* ruído de valor barato em GLSL (sem texturas) */
+  const GLSL_NOISE = `
+    float a3h(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+    float a3n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+      return mix(mix(a3h(i), a3h(i + vec2(1., 0.)), f.x), mix(a3h(i + vec2(0., 1.)), a3h(i + vec2(1., 1.)), f.x), f.y); }`;
+
+  /* tira o "papel de parede" a uma textura repetida (relva, terra, areia, betão…): cada zona usa um
+     pedaço deslocado da textura (técnica "texture no-tile" do Inigo Quilez, com mistura suave entre zonas),
+     uma segunda amostra larga e rodada quebra a repetição de longe e um ruído lento varia o tom.
+     o: { macro (0..1 variação de tom), wide (peso da amostra larga), cells (tamanho das zonas, em repetições) } */
+  function noTile(mat, o = {}) {
+    if (mat._a3nt) return mat;   /* (propriedade fora do userData: o clone() não a copia, tal como não copia o onBeforeCompile) */
+    mat._a3nt = o;
+    const macro = (o.macro != null ? o.macro : .22).toFixed(3), wide = (o.wide != null ? o.wide : .4).toFixed(3), cells = (1 / (o.cells || 3.5)).toFixed(4);
+    const prev = mat.onBeforeCompile;
+    mat.onBeforeCompile = (sh, r) => {
+      if (prev) prev(sh, r);
+      sh.fragmentShader = sh.fragmentShader.replace('void main() {', GLSL_NOISE + `
+    vec4 a3NoTile(sampler2D s, vec2 uv){
+      vec2 dx = dFdx(uv), dy = dFdy(uv);
+      float k = (a3n(uv * ${cells}) * .7 + a3n(uv * ${cells} * 2.3 + 7.1) * .3) * 7.;
+      float ia = floor(k), f = fract(k);
+      vec2 oa = sin(vec2(3., 7.) * ia), ob = sin(vec2(3., 7.) * (ia + 1.));
+      vec4 ca = textureGrad(s, uv + oa, dx, dy), cb = textureGrad(s, uv + ob, dx, dy);
+      vec4 c = mix(ca, cb, smoothstep(.2, .8, f - .1 * dot(ca.rgb - cb.rgb, vec3(1.))));
+      mat2 R = mat2(.82, -.57, .57, .82);
+      vec4 w = textureGrad(s, R * uv * .19 + .37, R * dx * .19, R * dy * .19);
+      vec3 avg = textureLod(s, vec2(.5), 12.).rgb;
+      c.rgb *= mix(vec3(1.), w.rgb / max(avg, vec3(.03)), ${wide});
+      c.rgb *= 1. + (a3n(uv * .045) * .65 + a3n(uv * .13 + 3.3) * .35 - .5) * ${macro} * 2.;
+      return c;
+    }
+    void main() {`).replace('#include <map_fragment>', THREE.ShaderChunk.map_fragment.replace('texture2D( map, vMapUv )', 'a3NoTile( map, vMapUv )'));
+    };
+    const key = mat.customProgramCacheKey ? mat.customProgramCacheKey.bind(mat) : null;
+    mat.customProgramCacheKey = () => (key ? key() : '') + 'a3nt' + macro + wide + cells;
+    mat.needsUpdate = true;
+    return mat;
+  }
+
+  /* textura da ondulação: soma de ondas direcionais periódicas (espectro de mar com vento dominante e
+     ondas cruzadas); RG = declive, B = altura. Gera-se uma vez e partilha-se. */
+  let _wn = null;
+  function waterWaves() {
+    if (_wn) return _wn;
+    const N = 256, h = new Float32Array(N * N), W = [];
+    let s = 977; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    for (let c = 0; c < 110; c++) {
+      const crossW = c % 4 === 3, th = (crossW ? 1.9 : .35) + (r() - .5) * (crossW ? 2.4 : 2.1), km = 2 + Math.pow(r(), 1.4) * 38;
+      const kx = Math.round(Math.cos(th) * km), ky = Math.round(Math.sin(th) * km); if (!kx && !ky) continue;
+      const TAU = Math.PI * 2; W.push([kx * TAU / N, ky * TAU / N, Math.pow(Math.hypot(kx, ky), -1.45) * (crossW ? .35 : 1), r() * TAU]);
+    }
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { let v = 0; for (const [a, b, A, p] of W) v += A * Math.sin(a * i + b * j + p); h[j * N + i] = v; }
+    /* cristas mais vivas e cavas largas (como o mar a sério) */
+    let mx = 0; for (let k = 0; k < h.length; k++) mx = Math.max(mx, Math.abs(h[k]));
+    for (let k = 0; k < h.length; k++) { const v = h[k] / mx; h[k] = v - .35 * v * v; }
+    const sx = new Float32Array(N * N), sz = new Float32Array(N * N); let rms = 0;
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const k = j * N + i; sx[k] = (h[j * N + (i + 1) % N] - h[j * N + (i + N - 1) % N]); sz[k] = (h[((j + 1) % N) * N + i] - h[((j + N - 1) % N) * N + i]); rms += sx[k] * sx[k] + sz[k] * sz[k];
+    }
+    rms = Math.sqrt(rms / (N * N * 2)); let hmin = 1e9, hmax = -1e9; for (let k = 0; k < h.length; k++) { hmin = Math.min(hmin, h[k]); hmax = Math.max(hmax, h[k]); }
+    const d = new Uint8Array(N * N * 4), K = .13 / rms;
+    for (let k = 0; k < N * N; k++) { d[k * 4] = Math.max(0, Math.min(255, (.5 + sx[k] * K) * 255)); d[k * 4 + 1] = Math.max(0, Math.min(255, (.5 + sz[k] * K) * 255)); d[k * 4 + 2] = (h[k] - hmin) / (hmax - hmin) * 255; d[k * 4 + 3] = 255; }
+    const t = new THREE.DataTexture(d, N, N, THREE.RGBAFormat);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.anisotropy = 8; t.needsUpdate = true;
+    t.userData.shared = true;
+    return (_wn = t);
+  }
+
+  /* água a sério: ondulação sem repetição (4 escalas rodadas + rajadas de vento lentas), cor que passa de
+     turquesa na areia a azul fundo, espuma a rebentar na margem e borda transparente — a linha da costa
+     deixa de tremer (o "z-fighting" com a areia fica escondido por baixo da transição).
+     o: { color, shallow, tile (comprimento de onda base em m), chop, env, opacity, roughness, clear (m até ficar
+          fundo), foam (0..1), depth: { fn(x,z) altura do fundo, x, z, size, res } }
+     A cada frame: Arcade3D.waterTick(material, tempo, câmara). */
+  function water(o = {}) {
+    const u = {
+      uA3T: { value: 0 }, uA3Tile: { value: o.tile || 30 }, uA3Chop: { value: o.chop != null ? o.chop : 1 }, uA3WN: { value: waterWaves() },
+      uA3Dep: { value: null }, uA3Box: { value: new THREE.Vector4(0, 0, 0, 0) }, uA3Sh: { value: new THREE.Color(o.shallow || '#3fb8b0') },
+      uA3Foam: { value: o.foam != null ? o.foam : 1 }, uA3Near: { value: 1e-7 }, uA3Clear: { value: o.clear || 4 },
+    };
+    const mat = new THREE.MeshStandardMaterial({ color: o.color || '#1d5f7a', roughness: o.roughness != null ? o.roughness : .12, metalness: .02, envMap: o.env || null, envMapIntensity: o.envI || 1, transparent: true, opacity: o.opacity != null ? o.opacity : .94, depthWrite: true });
+    mat._a3w = u;
+    mat.onBeforeCompile = sh => {
+      Object.assign(sh.uniforms, u);
+      sh.vertexShader = sh.vertexShader.replace('void main() {', 'varying vec3 vA3W;\nvoid main() {')
+        .replace('#include <project_vertex>', '#include <project_vertex>\n  vA3W = (modelMatrix * vec4(transformed, 1.)).xyz;');
+      sh.fragmentShader = sh.fragmentShader.replace('void main() {', `varying vec3 vA3W;
+    uniform float uA3T, uA3Tile, uA3Chop, uA3Foam, uA3Near, uA3Clear; uniform sampler2D uA3WN, uA3Dep; uniform vec4 uA3Box; uniform vec3 uA3Sh;
+    ${GLSL_NOISE}
+    void main() {`).replace('#include <color_fragment>', `#include <color_fragment>
+      float a3D = length(vViewPosition), a3t = uA3T;
+      vec2 a3P = vA3W.xz / uA3Tile;
+      vec4 a3s1 = texture2D(uA3WN, a3P + a3t * vec2(.021, .013));
+      vec4 a3s2 = texture2D(uA3WN, mat2(.974, -.225, .225, .974) * a3P * 1.618 + a3t * vec2(-.017, .026));
+      vec4 a3s3 = texture2D(uA3WN, mat2(.956, .292, -.292, .956) * a3P * .382 + a3t * vec2(.008, -.006));
+      vec4 a3s4 = texture2D(uA3WN, mat2(.988, .156, -.156, .988) * a3P * 3.7 + a3t * vec2(.04, .05));
+      float a3g = a3n(vA3W.xz / (uA3Tile * 19.) + a3t * .012) * .65 + a3n(vA3W.xz / (uA3Tile * 5.3) - a3t * .02) * .35;
+      float a3fine = 1. - smoothstep(uA3Tile * 6., uA3Tile * 50., a3D);
+      vec2 a3sl = (a3s1.xy - .5) + (a3s2.xy - .5) * .8 + (a3s3.xy - .5) * 1.1 + (a3s4.xy - .5) * .6 * a3fine;
+      float a3gr = abs(dot(normalize(vViewPosition), (viewMatrix * vec4(0., 1., 0., 0.)).xyz));
+      a3sl *= .8 * uA3Chop * mix(.4, 1.4, a3g) * mix(1., .35, smoothstep(uA3Tile * 6., uA3Tile * 150., a3D)) * mix(.4, 1., smoothstep(.02, .45, a3gr));
+      vec3 a3N = normalize((viewMatrix * vec4(normalize(vec3(-a3sl.x, 1., -a3sl.y)), 0.)).xyz);
+      float a3crest = a3s1.b * .45 + a3s2.b * .35 + a3s3.b * .2;
+      /* profundidade: altura da água menos a do fundo (se houver mapa do fundo) */
+      float a3dep = 1e4;
+      if (uA3Box.w > .5) { vec2 du = (vA3W.xz - uA3Box.xy) * uA3Box.z; if (du.x > 0. && du.y > 0. && du.x < 1. && du.y < 1.) a3dep = vA3W.y - texture2D(uA3Dep, du).r; }
+      float a3dk = 1. - exp(-max(a3dep, 0.) / uA3Clear);
+      diffuseColor.rgb = mix(uA3Sh, diffuseColor.rgb, a3dk);
+      /* cristas um pouco mais claras (luz a atravessar a onda) */
+      diffuseColor.rgb *= .9 + a3crest * .25;
+      float a3fade = .3 + a3D * a3D * uA3Near;
+      float a3band = max(.8, a3fade * 2.5);
+      float a3fn = a3n(vA3W.xz * .32 + vec2(a3t * .25, 0.)) * .55 + a3n(vA3W.xz * 1.1 - a3t * .35) * .45;
+      a3fn = mix(a3fn, .5, smoothstep(150., 2500., a3D));
+      float a3foam = (1. - smoothstep(0., a3band, a3dep)) * smoothstep(.32, .78, a3fn + .4 * sin(a3dep / a3band * 9. - a3t * 1.8));
+      a3foam += (1. - smoothstep(0., a3band * .35, a3dep)) * .6;
+      a3foam = clamp(a3foam * uA3Foam, 0., 1.);
+      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.9, .94, .95), a3foam);
+      diffuseColor.a = max(diffuseColor.a * mix(.55, 1., a3dk), a3foam * .9) * smoothstep(0., a3fade, a3dep);`)
+        .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
+      roughnessFactor = mix(roughnessFactor, .3, smoothstep(uA3Tile * 25., uA3Tile * 500., a3D));
+      roughnessFactor = mix(roughnessFactor, .85, a3foam);`)
+        .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n      normal = a3N;');
+    };
+    mat.customProgramCacheKey = () => 'a3water';
+    if (o.depth) waterDepth(mat, o.depth);
+    return mat;
+  }
+  /* (re)gera o mapa do fundo: d = { fn(x,z), x, z (centro), size, res } */
+  function waterDepth(mat, d) {
+    const u = mat._a3w; if (!u) return;
+    const N = d.res || 256, x0 = d.x - d.size / 2, z0 = d.z - d.size / 2, a = new Uint16Array(N * N), toH = THREE.DataUtils.toHalfFloat;
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) a[j * N + i] = toH(d.fn(x0 + (i + .5) / N * d.size, z0 + (j + .5) / N * d.size));
+    let t = u.uA3Dep.value;
+    if (t && t.image.width === N) { t.image.data.set(a); t.needsUpdate = true; }
+    else {
+      if (t) t.dispose();
+      t = new THREE.DataTexture(a, N, N, THREE.RedFormat, THREE.HalfFloatType);
+      t.magFilter = t.minFilter = THREE.LinearFilter; t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.needsUpdate = true; u.uA3Dep.value = t;
+    }
+    u.uA3Box.value.set(x0, z0, 1 / d.size, 1);
+  }
+  function waterTick(mat, t, cam) {
+    const u = mat && mat._a3w; if (!u) return;
+    u.uA3T.value = t;
+    /* erro do z-buffer cresce com d²/near: a borda transparente acompanha-o para a costa não tremer */
+    if (cam) u.uA3Near.value = 5 / (cam.near * 16777216);
+  }
+
+  /* ── contorno ("inverted hull"): cópia das faces de trás empurrada X píxeis para fora no ecrã.
+        Normais suavizadas por posição (senão as arestas vivas abrem buracos no contorno). ── */
+  const OL_RES = { value: null };   /* THREE só existe depois do load() */
+  const _olGeo = new WeakMap(), _olMat = new Map();
+  function outlineGeo(g) {
+    let o = _olGeo.get(g); if (o) return o;
+    o = new THREE.BufferGeometry(); const p = g.attributes.position; o.setAttribute('position', p); if (g.index) o.setIndex(g.index);
+    const n = new Float32Array(p.count * 3), acc = new Map(), key = i => `${Math.round(p.getX(i) * 500)},${Math.round(p.getY(i) * 500)},${Math.round(p.getZ(i) * 500)}`;
+    const src = g.attributes.normal;
+    for (let i = 0; i < p.count; i++) { const k = key(i); let a = acc.get(k); if (!a) acc.set(k, a = [0, 0, 0]); if (src) { a[0] += src.getX(i); a[1] += src.getY(i); a[2] += src.getZ(i); } }
+    for (let i = 0; i < p.count; i++) { const a = acc.get(key(i)), l = Math.hypot(a[0], a[1], a[2]) || 1; n[i * 3] = a[0] / l; n[i * 3 + 1] = a[1] / l; n[i * 3 + 2] = a[2] / l; }
+    o.setAttribute('normal', new THREE.BufferAttribute(n, 3)); o.userData.shared = true;
+    _olGeo.set(g, o); return o;
+  }
+  function outlineMat(color, px) {
+    if (!OL_RES.value) OL_RES.value = new THREE.Vector2(1280, 720);
+    const k = color + ':' + px; let m = _olMat.get(k); if (m) return m;
+    m = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide });
+    m.onBeforeCompile = sh => {
+      sh.uniforms.uOlRes = OL_RES;
+      sh.vertexShader = sh.vertexShader.replace('void main() {', 'uniform vec2 uOlRes;\nvoid main() {').replace('#include <project_vertex>', `#include <project_vertex>
+        { vec4 c = projectionMatrix * vec4(normalize(normalMatrix * normal), 0.); vec2 d = c.xy; float l = length(d);
+          if (l > 1e-5) gl_Position.xy += d / l * ${px.toFixed(2)} * 2. / uOlRes * gl_Position.w; }`);
+    };
+    m.customProgramCacheKey = () => 'a3ol' + px;
+    m.userData.shared = true; _olMat.set(k, m); return m;
+  }
+  /* põe contorno em todas as malhas de `root` (menos brilhos, transparentes e peças minúsculas) */
+  function outline(root, o = {}) {
+    const color = o.color || '#0d1117', px = o.px || 1.2, min = o.min || 24, list = [];
+    root.traverse(m => { if (m.isMesh && !m.isInstancedMesh && !m.userData.noOutline && !Array.isArray(m.material) && !m.material.transparent && !m.material.isMeshBasicMaterial && m.geometry.attributes.position.count >= min) list.push(m); });
+    list.forEach(m => { const ol = new THREE.Mesh(outlineGeo(m.geometry), outlineMat(color, px)); ol.userData.noOutline = true; ol.castShadow = false; ol.receiveShadow = false; ol.name = ''; m.add(ol); });
+    return root;
+  }
+  const outlineRes = (w, h) => { if (OL_RES.value) OL_RES.value.set(w, h); };
+
   return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse,
-    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool, car, CAR_T, mergeStatic };
+    stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool, car, CAR_T, mergeStatic,
+    noTile, water, waterDepth, waterTick, waterWaves, outline, outlineRes };
 })();

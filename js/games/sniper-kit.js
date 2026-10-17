@@ -116,8 +116,8 @@ const SniperKit = (function () {
     return {
       plain: m({}), facade: m({ map: T.facade, emissiveMap: T.facadeEm, emissive: new THREE.Color('#ffffff'), emissiveIntensity: 0 }), office: m({ map: T.office, emissiveMap: T.officeEm, emissive: new THREE.Color('#ffffff'), emissiveIntensity: 0, roughness: .4, metalness: .2, envMapIntensity: .9 }),
       shop: m({ map: T.shop }), door: m({ map: T.door }), brick: m({ map: T.brick }), corr: m({ map: T.corr, roughness: .55, metalness: .35 }), tiles: m({ map: T.tiles, roughness: .7 }),
-      wood: m({ map: T.planks, roughness: .8 }), stone: m({ map: T.stone }), cobble: m({ map: T.cobble, roughness: .9 }), asphalt: m({ map: T.asphalt, roughness: .95 }), concrete: m({ map: T.concrete }), leaf: m({ map: T.leaf, roughness: .95 }),
-      grass: m({ map: T.grass, roughness: 1 }), sand: m({ map: T.sand, roughness: 1 }), rails: m({ map: T.rails, roughness: .6, metalness: .4 }),
+      wood: m({ map: T.planks, roughness: .8 }), stone: m({ map: T.stone }), cobble: m({ map: T.cobble, roughness: .9 }), asphalt: Arcade3D.noTile(m({ map: T.asphalt, roughness: .95 }), { macro: .12 }), concrete: m({ map: T.concrete }), leaf: m({ map: T.leaf, roughness: .95 }),
+      grass: Arcade3D.noTile(m({ map: T.grass, roughness: 1 }), { macro: .3, cells: 2.5 }), sand: Arcade3D.noTile(m({ map: T.sand, roughness: 1 }), { macro: .2 }), rails: m({ map: T.rails, roughness: .6, metalness: .4 }),
       metal: m({ roughness: .35, metalness: .75, envMapIntensity: .8 }), glass: m({ roughness: .05, metalness: .3, envMapIntensity: 1.4, transparent: true, opacity: .55, depthWrite: false }), glassS: m({ roughness: .06, metalness: .5, envMapIntensity: 1.2 }),
       glow: new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }), cloth: m({ roughness: .95, side: THREE.DoubleSide }), paint: m({ roughness: .4, metalness: .1, envMapIntensity: .6 }),
     };
@@ -606,7 +606,7 @@ const SniperKit = (function () {
     }
     /* ── piso: retângulos de asfalto, calçada, relva, betão (assentes no chão) ── */
     /* pisos sobrepostos (asfalto, passeio, pintura): cada camada sobe um pouco E usa polygonOffset — antes ficavam a 1 cm e "tremiam" ao mexer a câmara */
-    function decal(mat, layer) { const k = mat + '~' + layer; if (!MT[k]) { const m = MT[mat].clone(); m.polygonOffset = true; m.polygonOffsetFactor = -1 - layer; m.polygonOffsetUnits = -4 - layer * 4; MT[k] = m; } return k; }
+    function decal(mat, layer) { const k = mat + '~' + layer; if (!MT[k]) { const m = MT[mat].clone(); if (MT[mat]._a3nt) Arcade3D.noTile(m, MT[mat]._a3nt); m.polygonOffset = true; m.polygonOffsetFactor = -1 - layer; m.polygonOffsetUnits = -4 - layer * 4; MT[k] = m; } return k; }
     function ground(mat, x, z, w, d, yaw, y, color, s) {
       const base = y != null ? hAt(x, z) : null, layer = base == null ? 0 : clamp(Math.round((y - base) * 100), 0, 3);
       const F = frame(x, z, yaw, y != null ? (base != null && Math.abs(y - base) < .05 ? base : y) : y), g = new THREE.PlaneGeometry(w, d); g.rotateX(-Math.PI / 2); const u = g.attributes.uv; for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * w / (s || 4), u.getY(i) * d / (s || 4));
@@ -872,11 +872,12 @@ const SniperKit = (function () {
         col[k * 3] = c.r; col[k * 3 + 1] = c.g; col[k * 3 + 2] = c.b;
       }
       g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.computeVertexNormals();
-      const t = textures().detail; t.repeat.set(S / 6, S / 6);
-      const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, map: t, roughness: .96, envMap: env, envMapIntensity: .2 }));
+      /* pormenor do chão sem padrão repetido (manchas de várias escalas + Arcade3D.noTile) */
+      const t = typeof SkyAceWorld !== 'undefined' ? SkyAceWorld.detailTex(S / 9) : (textures().detail.repeat.set(S / 6, S / 6), textures().detail);
+      const m = new THREE.Mesh(g, Arcade3D.noTile(new THREE.MeshStandardMaterial({ vertexColors: true, map: t, roughness: .96, envMap: env, envMapIntensity: .2 }), { macro: .25, wide: .5 }));
       m.receiveShadow = true; return m;
     }
-    return { hAt, mesh, S, raw };
+    return { hAt, mesh, S, raw, cx: X0 + S / 2, cz: Z0 + S / 2 };
   }
 
   return { Builder, Terrain, textures, materials, boxGeo, planeGeo, signTex, awningTex, rng, MX };

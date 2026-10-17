@@ -20,6 +20,7 @@ const SkyAceWorld = (function () {
   const lerp = (a, b, t) => a + (b - a) * t;
   const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   const SIZE = 24000;
+  const UNDER = 1.8;   /* fundo do mar visual = altura × UNDER (só abaixo de 0) */
 
   /* ── aleatório com semente e ruído de Perlin 2D ── */
   function rng(seed) {
@@ -55,12 +56,12 @@ const SkyAceWorld = (function () {
     arctic: { sand: '#a7a9ab', grass: '#8d9a8f', grass2: '#a8b3ab', forest: '#2f4a40', rock: '#5d6670', rock2: '#3e454e', snow: '#eef4fb', seabed: '#14354a', snowLine: 250, tree: 'pine' },
   };
   const MAPS = {
-    coast: { name: 'Costa Dourada', seed: 11, kind: 'coast', maxH: 1150, pal: 'temperate', water: '#1d5f7a', towns: 4 },
-    alps: { name: 'Cordilheira Branca', seed: 23, kind: 'alps', maxH: 2300, pal: 'alpine', water: '#1e4f66', towns: 3 },
-    isles: { name: 'Arquipélago Esmeralda', seed: 37, kind: 'isles', maxH: 820, pal: 'tropic', water: '#127a8c', towns: 3 },
-    ocean: { name: 'Mar Cinzento', seed: 41, kind: 'ocean', maxH: 620, pal: 'rocky', water: '#244e5f', towns: 1 },
-    canyon: { name: 'Desfiladeiro Rubro', seed: 53, kind: 'canyon', maxH: 900, pal: 'desert', water: '#2a6577', towns: 1 },
-    arctic: { name: 'Fiorde Boreal', seed: 67, kind: 'arctic', maxH: 1500, pal: 'arctic', water: '#123448', towns: 1 },
+    coast: { name: 'Costa Dourada', seed: 11, kind: 'coast', maxH: 1150, pal: 'temperate', water: '#1a5874', shallow: '#3aa39b', towns: 4 },
+    alps: { name: 'Cordilheira Branca', seed: 23, kind: 'alps', maxH: 2300, pal: 'alpine', water: '#1c4a60', shallow: '#3f8c88', towns: 3 },
+    isles: { name: 'Arquipélago Esmeralda', seed: 37, kind: 'isles', maxH: 820, pal: 'tropic', water: '#0f6f86', shallow: '#36cfc0', towns: 3 },
+    ocean: { name: 'Mar Cinzento', seed: 41, kind: 'ocean', maxH: 620, pal: 'rocky', water: '#21495a', shallow: '#4a8783', towns: 1 },
+    canyon: { name: 'Desfiladeiro Rubro', seed: 53, kind: 'canyon', maxH: 900, pal: 'desert', water: '#265f72', shallow: '#56a597', towns: 1 },
+    arctic: { name: 'Fiorde Boreal', seed: 67, kind: 'arctic', maxH: 1500, pal: 'arctic', water: '#112f42', shallow: '#2f6a78', towns: 1 },
   };
   /* cores em sRGB (o three converte para linear) */
   const SKIES = {
@@ -163,21 +164,34 @@ const SkyAceWorld = (function () {
     const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
     const t = new THREE.CanvasTexture(c); if (srgb !== false) t.colorSpace = THREE.SRGBColorSpace; return t;
   }
-  /* textura de pormenor do chão (multiplica as cores de vértice) */
-  function detailTex() {
-    const t = canvasTex(256, 256, (x, w, h) => {
-      const img = x.createImageData(w, h), n = perlin(5), m = perlin(9), d = img.data;
-      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-        /* ruído periódico (amostrado num toro) para não haver costuras */
-        const a = i / w * TAU, b = j / h * TAU;
-        const v = n(Math.cos(a) * 2 + 9, Math.sin(a) * 2 + Math.cos(b) * 2) * .5 + m(Math.sin(b) * 6 + 3, Math.cos(a) * 6 + Math.cos(b) * 3) * .35;
-        const s = Math.random() < .04 ? -.12 : 0;
-        const g = clamp(.86 + v * .14 + s, 0, 1) * 255;
-        const k = (j * w + i) * 4; d[k] = g; d[k + 1] = g; d[k + 2] = g; d[k + 3] = 255;
+  /* ruído de gradiente periódico e isotrópico (células quadradas em todas as oitavas: sem "veios") */
+  function pnoise(N, octs, seed) {
+    const out = new Float32Array(N * N), r = rng(seed || 5), fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+    octs.forEach(([g, amp]) => {
+      const ang = new Float32Array(g * g).map(() => r() * TAU), c = N / g;
+      const gr = (i, j, dx, dy) => { const a = ang[(j % g) * g + (i % g)]; return Math.cos(a) * dx + Math.sin(a) * dy; };
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const x = i / c, y = j / c, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0, u = fade(fx), v = fade(fy);
+        out[j * N + i] += lerp(lerp(gr(x0, y0, fx, fy), gr(x0 + 1, y0, fx - 1, fy), u), lerp(gr(x0, y0 + 1, fx, fy - 1), gr(x0 + 1, y0 + 1, fx - 1, fy - 1), u), v) * amp;
       }
-      x.putImageData(img, 0, 0);
     });
-    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(220, 220); t.anisotropy = 8;
+    return out;
+  }
+  /* textura de pormenor do chão (multiplica as cores de vértice): manchas de várias escalas, tufos e pedrinhas;
+     no shader passa pelo Arcade3D.noTile, por isso não se vê a repetição */
+  let _detail = null;
+  function detailTex(rep) {
+    if (!_detail) {
+      const N = 256, n = pnoise(N, [[4, 1], [8, .6], [16, .4], [32, .25], [64, .16]], 5), r = rng(19);
+      _detail = canvasTex(N, N, (x) => {
+        const img = x.createImageData(N, N), d = img.data;
+        for (let k = 0; k < N * N; k++) { const g = clamp(.84 + n[k] * .22 + (r() - .5) * .06, 0, 1) * 255; d[k * 4] = g; d[k * 4 + 1] = g * (1.005 + n[k] * .01); d[k * 4 + 2] = g * .985; d[k * 4 + 3] = 255; }
+        x.putImageData(img, 0, 0);
+        for (let i = 0; i < 900; i++) { const v = r() < .55 ? 0 : 255; x.fillStyle = `rgba(${v},${v},${v},${.05 + r() * .07})`; const px = r() * N, py = r() * N, s = .8 + r() * 2.2; x.fillRect(px, py, s, s); x.fillRect(px - N, py, s, s); x.fillRect(px, py - N, s, s); }
+      });
+      _detail.wrapS = _detail.wrapT = THREE.RepeatWrapping; _detail.anisotropy = 8; _detail.userData.shared = true;
+    }
+    const t = _detail.clone(); t.needsUpdate = true; t.repeat.set(rep || 220, rep || 220);
     return t;
   }
 
@@ -208,8 +222,11 @@ const SkyAceWorld = (function () {
       }
       col[k * 3] = c.r; col[k * 3 + 1] = c.g; col[k * 3 + 2] = c.b;
     }
+    /* debaixo de água o fundo desce mais depressa: a costa deixa de ser quase paralela à água (menos tremido ao longe) */
+    for (let k = 0; k < pos.count; k++) { const y = pos.getY(k); if (y < 0) pos.setY(k, y * UNDER); }
+    geo.computeVertexNormals();
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, map: detailTex(), roughness: .96, metalness: 0, envMapIntensity: .35 });
+    const mat = Arcade3D.noTile(new THREE.MeshStandardMaterial({ vertexColors: true, map: detailTex(), roughness: .96, metalness: 0, envMapIntensity: .35 }), { macro: .2, wide: .45 });
     const mesh = new THREE.Mesh(geo, mat); mesh.receiveShadow = true;
     mesh.name = 'terrain';
     return mesh;
@@ -339,40 +356,16 @@ const SkyAceWorld = (function () {
     return tex;
   }
 
-  /* água: mapa de normais periódico, gerado */
-  function waterNormals() {
-    /* ruído de gradiente periódico (sem grelha), alongado como ondulação ao vento */
-    const N = 256, hgt = new Float32Array(N * N), r = rng(77), fade = t => t * t * t * (t * (t * 6 - 15) + 10);
-    [[4, 3, 1], [8, 5, .55], [16, 11, .33], [32, 21, .2], [64, 41, .11]].forEach(([gx, gy, amp]) => {
-      const ang = new Float32Array(gx * gy).map(() => r() * TAU), cx = N / gx, cy = N / gy;
-      const gr = (i, j, dx, dy) => { const a = ang[(j % gy) * gx + (i % gx)]; return Math.cos(a) * dx + Math.sin(a) * dy; };
-      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-        const x = i / cx, y = j / cy, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0, u = fade(fx), v = fade(fy);
-        const n = lerp(lerp(gr(x0, y0, fx, fy), gr(x0 + 1, y0, fx - 1, fy), u), lerp(gr(x0, y0 + 1, fx, fy - 1), gr(x0 + 1, y0 + 1, fx - 1, fy - 1), u), v);
-        hgt[j * N + i] += n * amp;
-      }
-    });
-    return canvasTex(N, N, (x) => {
-      const img = x.createImageData(N, N), d = img.data;
-      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-        const dx = hgt[j * N + (i + 1) % N] - hgt[j * N + (i + N - 1) % N], dy = hgt[((j + 1) % N) * N + i] - hgt[((j + N - 1) % N) * N + i];
-        const nx = -dx * 14, ny = -dy * 14, l = Math.hypot(nx, ny, 1), k = (j * N + i) * 4;
-        d[k] = (nx / l * .5 + .5) * 255; d[k + 1] = (ny / l * .5 + .5) * 255; d[k + 2] = (1 / l * .5 + .5) * 255; d[k + 3] = 255;
-      }
-      x.putImageData(img, 0, 0);
-    }, false);
-  }
-  function buildWater(map, env) {
-    const nt = waterNormals(); nt.wrapS = nt.wrapT = THREE.RepeatWrapping; nt.repeat.set(2400, 2400); nt.anisotropy = 8;
-    const mat = new THREE.MeshStandardMaterial({ color: map.water, roughness: .14, metalness: .05, normalMap: nt, normalScale: new THREE.Vector2(.28, .28), envMap: env, envMapIntensity: 1, transparent: true, opacity: .9 });
-    mat.onBeforeCompile = sh => {
-      sh.fragmentShader = sh.fragmentShader.replace('vec3 mapN = texture2D( normalMap, vNormalMapUv ).xyz * 2.0 - 1.0;',
-        'vec2 wuv2 = mat2( .80, -.60, .60, .80 ) * vNormalMapUv * .19 + vec2( .37, .11 ); vec3 mapN = ( texture2D( normalMap, vNormalMapUv ).xyz * 2.0 - 1.0 ) * vec3( .6, .6, 1. ) + ( texture2D( normalMap, wuv2 ).xyz * 2.0 - 1.0 ) * vec3( .8, .8, .0 ); mapN.xy *= mix( 1., .22, smoothstep( 250., 5000., length( vViewPosition ) ) ); mapN = normalize( mapN );');
-    };
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(300000, 300000, 1, 1), mat); m.rotation.x = -Math.PI / 2; m.position.y = 0; m.receiveShadow = true;
+  /* o: { tile, chop, clear, foam, shallow, depth: { fn, x, z, size, res }, size (lado do plano), at: [x, z] } — ver Arcade3D.water */
+  function buildWater(map, env, o = {}) {
+    const mat = Arcade3D.water({ color: map.water, shallow: o.shallow || map.shallow || '#3aa6a0', tile: o.tile || 48, chop: o.chop, clear: o.clear || 5, foam: o.foam, env, depth: o.depth, opacity: o.opacity });
+    const sz = o.size || 300000, m = new THREE.Mesh(new THREE.PlaneGeometry(sz, sz, 1, 1), mat); m.rotation.x = -Math.PI / 2; m.position.y = 0; m.receiveShadow = true;
+    if (o.at) m.position.set(o.at[0], 0, o.at[1]);
     m.renderOrder = 1;
     return m;
   }
+  /* mapa do fundo do mar do Ás dos Céus (com o mesmo afundamento visual do terreno) */
+  const seaDepth = hg => ({ fn: (x, z) => { const h = hg.at(x, z); return h < 0 ? h * UNDER : h; }, x: 0, z: 0, size: SIZE * 1.04, res: 512 });
 
   /* ════════════════════════════════════════════════════════════════
      nuvens — quadrados virados para a câmara, instanciados
@@ -473,12 +466,12 @@ const SkyAceWorld = (function () {
   const _mc = new Map();
   function jmat(key, make) { let m = _mc.get(key); if (!m) { m = make(); m.userData.shared = true; _mc.set(key, m); } return m; }
   function bodyMat(color, env, wing) {
-    return jmat('body:' + color + (wing ? ':w' : ''), () => {
+    return jmat('body:' + color + (wing ? ':w' : '') + (env ? env.uuid : ''), () => {
       const t = panelTex().clone(); t.needsUpdate = true; if (wing) t.repeat.set(.16, .16); else t.repeat.set(2, 1);
-      return new THREE.MeshStandardMaterial({ color, map: t, metalness: .42, roughness: .4, envMap: env, envMapIntensity: .9 });
+      return new THREE.MeshPhysicalMaterial({ color, map: t, metalness: .38, roughness: .4, clearcoat: .45, clearcoatRoughness: .25, envMap: env, envMapIntensity: .95 });
     });
   }
-  const plainMat = (color, env, o) => jmat('plain:' + color + JSON.stringify(o || {}), () => new THREE.MeshStandardMaterial(Object.assign({ color, metalness: .4, roughness: .45, envMap: env, envMapIntensity: .9 }, o || {})));
+  const plainMat = (color, env, o) => jmat('plain:' + color + JSON.stringify(o || {}) + (env ? env.uuid : ''), () => new THREE.MeshStandardMaterial(Object.assign({ color, metalness: .4, roughness: .45, envMap: env, envMapIntensity: .9 }, o || {})));
   const glowM = (color, op) => jmat('glow:' + color + ':' + (op || 1), () => new THREE.MeshBasicMaterial({ color, toneMapped: false, transparent: op != null, opacity: op != null ? op : 1, depthWrite: op == null, blending: op != null ? THREE.AdditiveBlending : THREE.NormalBlending }));
 
   /* asa (forma no plano XZ: pontos [x, z]) com espessura */
@@ -593,61 +586,184 @@ const SkyAceWorld = (function () {
     thunder: { body: '#3f526e', belly: '#6c7d95', accent: '#ff7a1a', dark: '#22262d' },
   };
 
+  /* ── tinta dos caças: material físico com verniz e cores de vértice (dois tons cima/baixo, radome,
+        painel anti-reflexo, pontas coloridas, metal queimado junto às tubeiras) sobre a textura de painéis ── */
+  function paintMat(env) {
+    return jmat('paint' + (env ? env.uuid : ''), () => new THREE.MeshPhysicalMaterial({ color: '#ffffff', vertexColors: true, map: panelTex(), metalness: .25, roughness: .48, clearcoat: .14, clearcoatRoughness: .35, envMap: env, envMapIntensity: .7 }));
+  }
+  /* põe cor por vértice: fn(cor, x, y, z, nx, ny, nz); uvK escala as UV (a textura de painéis tem ~4 m) */
+  function paintGeo(g, fn, uvK) {
+    g = g.index ? g.toNonIndexed() : g.clone();
+    const p = g.attributes.position, n = g.attributes.normal, col = new Float32Array(p.count * 3), c = new THREE.Color();
+    for (let i = 0; i < p.count; i++) { fn(c, p.getX(i), p.getY(i), p.getZ(i), n.getX(i), n.getY(i), n.getZ(i)); col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    if (uvK && g.attributes.uv) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * uvK, uv.getY(i) * uvK); }
+    return g;
+  }
+  /* insígnias e números (atlas em canvas): roseta fictícia do esquadrão "Ás" + número de cauda */
+  function decalMat(num, env) {
+    return jmat('dec' + num + (env ? env.uuid : ''), () => {
+      const t = canvasTex(512, 256, (x) => {
+        const c = 128;
+        x.fillStyle = '#16305e'; x.beginPath(); x.arc(c, c, 120, 0, TAU); x.fill();
+        x.fillStyle = '#f4f1e8'; x.beginPath(); x.arc(c, c, 92, 0, TAU); x.fill();
+        x.fillStyle = '#1e4fa8'; x.beginPath(); x.arc(c, c, 80, 0, TAU); x.fill();
+        x.fillStyle = '#f5c242'; x.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 30 : 70; x.lineTo(c + Math.cos(a) * r, c + Math.sin(a) * r); } x.closePath(); x.fill();
+        x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = 3; x.stroke();
+        x.font = '900 170px "Arial Black", Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+        x.lineWidth = 12; x.strokeStyle = 'rgba(10,14,20,.85)'; x.strokeText(num, 384, 136); x.fillStyle = '#f2f2ee'; x.fillText(num, 384, 136);
+      });
+      t.anisotropy = 4;
+      return new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: .04, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4, roughness: .45, metalness: .15, envMap: env });
+    });
+  }
+  function decal(g, mat, rect, w, h, x, y, z, rx, ry, rz) {
+    const geo = new THREE.PlaneGeometry(w, h), uv = geo.attributes.uv;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, rect[0] + uv.getX(i) * rect[2], rect[1] + uv.getY(i) * rect[3]);
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx || 0, ry || 0, rz || 0); m.renderOrder = 2; m.receiveShadow = true; g.add(m); return m;
+  }
+
+  /* fuselagem em "loft": secções superelípticas ao longo de z — nariz com arestas (chines), corpo largo onde
+     nasce a asa, lombada atrás da cabine e barriga mais chata. Devolve a geometria e a forma de cada secção. */
+  function fusLoft(J) {
+    const pts = J.fus.map(([r, z]) => new THREE.Vector2(z, r)).sort((a, b) => b.x - a.x);
+    const smp = new THREE.SplineCurve(pts).getPoints(260), z0 = pts[0].x, z1 = pts[pts.length - 1].x;
+    const rAt = z => { for (let i = 1; i < smp.length; i++) if (smp[i].x <= z) { const a = smp[i - 1], b = smp[i], t = (z - a.x) / ((b.x - a.x) || -1e-6); return Math.max(0, a.y + (b.y - a.y) * t); } return smp[smp.length - 1].y; };
+    const cz = J.canopy[2], cl = J.canopy[5], wLE = J.wing[0][1], wTE = J.wing[3][1];
+    const shape = z => {
+      const r = rAt(z), nose = sstep(z0, z0 - 3.2, z);
+      const blend = sstep(wLE + 1.8, wLE - .2, z) * sstep(wTE - 1.5, wTE + .3, z);
+      const spine = sstep(cz - cl * .2, cz - cl * 1.15, z) * (1 - sstep(-3, -6.6, z));
+      return { w: r * J.sx * (1 + .13 * blend), h: r * J.sy * (1 + .3 * spine), hb: r * J.sy * .88, p: 2 + .85 * nose * (1 - .6 * sstep(-3.5, -7, z)) };
+    };
+    const g = sloft(shape, z0, z1, 70, 36, 1.12);
+    /* x da pele a uma altura y numa secção z (para encostar insígnias) */
+    const skinX = (z, y) => { const S = shape(z), hh = y >= 0 ? S.h : S.hb, q = Math.min(.98, Math.abs(y) / hh); return S.w * Math.pow(1 - Math.pow(q, S.p), 1 / S.p); };
+    return { g, shape, skinX, z0, z1 };
+  }
+  /* malha em loft genérica: shape(z) → { w, h, hb, p, y? } (meias-larguras, expoente da superelipse) */
+  function sloft(shape, z0, z1, NZ, NR, k) {
+    const P = [], UV = [], idx = [];
+    for (let i = 0; i <= NZ; i++) {
+      const z = z0 + (z1 - z0) * Math.pow(i / NZ, k || 1), S = shape(z), e = 2 / S.p, yc = S.y || 0;
+      for (let j = 0; j <= NR; j++) {
+        const a = j / NR * TAU, c = Math.cos(a), s = Math.sin(a);
+        P.push(S.w * Math.sign(c) * Math.pow(Math.abs(c), e), yc + (s >= 0 ? S.h : S.hb) * Math.sign(s) * Math.pow(Math.abs(s), e), z);
+        UV.push(j / NR * 2.4, z / 4.2);
+      }
+    }
+    for (let i = 0; i < NZ; i++) for (let j = 0; j < NR; j++) { const a = i * (NR + 1) + j, b = a + NR + 1; idx.push(a, b, a + 1, a + 1, b, b + 1); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2)); g.setIndex(idx); g.computeVertexNormals();
+    /* costura: as duas cópias do ângulo 0 ficam com a mesma normal */
+    const n = g.attributes.normal;
+    for (let i = 0; i <= NZ; i++) { const a = i * (NR + 1), b = a + NR; const x = n.getX(a) + n.getX(b), y = n.getY(a) + n.getY(b), zz = n.getZ(a) + n.getZ(b), l = Math.hypot(x, y, zz) || 1; n.setXYZ(a, x / l, y / l, zz / l); n.setXYZ(b, x / l, y / l, zz / l); }
+    return g;
+  }
+
+  const JET_NUM = { falcon: '01', wasp: '07', thunder: '23' };
   function buildJet(type, env, livery) {
     const J = JETS[type], L = livery || LIVERY[type], g = new THREE.Group(), U = { nozzles: [], flames: [], rails: [], surf: {}, lights: [] };
-    const body = bodyMat(L.body, env), wing = bodyMat(L.body, env, true), dark = plainMat(L.dark, env, { metalness: .75, roughness: .35 }), acc = plainMat(L.accent, env, { metalness: .2, roughness: .4 });
-    addMesh(g, lathe(prof(J.fus), 22, J.sx, J.sy), body);
-    /* radome escuro na ponta */
-    addMesh(g, lathe(prof(J.fus.filter(p => p[1] > J.fus[0][1] - 1.6)), 18, J.sx * 1.004, J.sy * 1.004), plainMat(L.dark, env, { metalness: .2, roughness: .5 }));
-    /* asas */
+    const paint = paintMat(env), dark = plainMat(L.dark, env, { metalness: .75, roughness: .35 }), acc = plainMat(L.accent, env, { metalness: .2, roughness: .4 });
+    const cTop = new THREE.Color(L.body), cBot = new THREE.Color(L.belly), cAcc = new THREE.Color(L.accent), cRad = new THREE.Color('#4d535b').lerp(cTop, .2), cBurn = new THREE.Color('#4a4640'), cEdge = new THREE.Color('#70767e'), cGlare = cTop.clone().multiplyScalar(.45);
+    const twoTone = (c, ny) => c.copy(cBot).lerp(cTop, sstep(-.45, .2, ny));
+    /* fuselagem */
+    const F = fusLoft(J), [cx, cy, cz, cw, ch, cl] = J.canopy;
+    const fg = paintGeo(F.g, (c, x, y, z, nx, ny) => {
+      twoTone(c, ny);
+      c.lerp(cGlare, (ny > .3 ? 1 : 0) * sstep(cz + cl * 1.9, cz + cl * 1.3, z) * sstep(cz + cl * .4, cz + cl * .9, z) * .8);
+      c.lerp(cRad, sstep(F.z0 - 1.75, F.z0 - 1.55, z));
+      if (z < F.z0 - 1.78 && z > F.z0 - 2.0) c.copy(cAcc);
+      c.lerp(cBurn, sstep(F.z1 + 1.6, F.z1 + .2, z) * .75);
+    });
+    addMesh(g, fg, paint);
+    /* tampa escura na cauda (por baixo das tubeiras) */
+    const Se = F.shape(F.z1 + .01); addMesh(g, new THREE.CircleGeometry(1, 28), dark, 0, 0, F.z1 + .02, { ry: Math.PI, s: [Se.w, Se.h, 1] });
+    /* sonda pitot no nariz */
+    addMesh(g, new THREE.CylinderGeometry(.018, .03, 1.1, 6), plainMat('#c9ced4', env, { metalness: .9, roughness: .25 }), 0, 0, F.z0 + .45, { rx: Math.PI / 2 });
+    /* asas, extensões, ailerons, estabilizadores, canards: cima na cor do corpo, baixo mais claro, bordo de ataque cinza, pontas na cor de destaque */
+    const tipX = J.wing[1][0];
+    const wingPaint = gg => paintGeo(gg, (c, x, y, z, nx, ny, nz) => { twoTone(c, ny); c.lerp(cEdge, sstep(.45, .85, nz) * .55); }, .16);
+    const surfPaint = gg => paintGeo(gg, (c, x, y, z, nx, ny, nz) => { twoTone(c, ny); c.lerp(cEdge, sstep(.45, .85, nz) * .5); }, .16);
     const wg = planform(J.wing, J.wth);
-    addMesh(g, wg, wing, 0, J.wingY, 0); addMesh(g, mirrorX(wg), wing, 0, J.wingY, 0);
-    if (J.lerx) { const lg = planform(J.lerx, .12, .04); addMesh(g, lg, wing, 0, J.wingY + .06, 0); addMesh(g, mirrorX(lg), wing, 0, J.wingY + .06, 0); }
-    /* ailerons (superfícies móveis no bordo de fuga) */
+    addMesh(g, wingPaint(wg), paint, 0, J.wingY, 0); addMesh(g, wingPaint(mirrorX(wg)), paint, 0, J.wingY, 0);
+    /* pontas das asas na cor de destaque (peça à parte: as faces da asa são só 2 triângulos, a cor não ficava na ponta) */
+    { const xa = tipX - .75, t = (xa - J.wing[0][0]) / (tipX - J.wing[0][0]), tg = planform([[xa, lerp(J.wing[0][1], J.wing[1][1], t) - .02], [tipX + .02, J.wing[1][1] - .02], [tipX + .02, J.wing[2][1] + .02], [xa, lerp(J.wing[3][1], J.wing[2][1], t) + .02]], J.wth + .02, .01);
+      addMesh(g, tg, acc, 0, J.wingY, 0); addMesh(g, mirrorX(tg), acc, 0, J.wingY, 0); }
+    if (J.lerx) { const lg = planform(J.lerx, .12, .04); addMesh(g, surfPaint(lg), paint, 0, J.wingY + .06, 0); addMesh(g, surfPaint(mirrorX(lg)), paint, 0, J.wingY + .06, 0); }
     const te0 = J.wing[J.wing.length - 1], te1 = J.wing[2], sl = (te1[1] - te0[1]) / (te1[0] - te0[0]);
     const ax = lerp(te0[0], te1[0], .5), az = te0[1] + sl * (ax - te0[0]), aL = te1[0] - ax - .3;
     const ail = planform([[0, .1], [aL, sl * aL + .1], [aL, sl * aL - .6], [0, -.6]], J.wth * .7, .03);
     [1, -1].forEach(sd => {
       const piv = new THREE.Group(); piv.position.set(sd * ax, J.wingY, az); g.add(piv);
-      const m = addMesh(piv, sd > 0 ? ail : mirrorX(ail), wing); void m;
+      addMesh(piv, surfPaint(sd > 0 ? ail : mirrorX(ail)), paint);
       U.surf[sd > 0 ? 'ailL' : 'ailR'] = piv;
     });
-    if (J.canard) { const cg = planform(J.canard, .12, .04); [1, -1].forEach(sd => { const piv = new THREE.Group(); piv.position.set(0, .05, J.canard[2][1]); g.add(piv); addMesh(piv, sd > 0 ? cg : mirrorX(cg), wing, 0, 0, -J.canard[2][1]); U.surf[sd > 0 ? 'canL' : 'canR'] = piv; }); }
+    if (J.canard) { const cg = planform(J.canard, .12, .04); [1, -1].forEach(sd => { const piv = new THREE.Group(); piv.position.set(0, .05, J.canard[2][1]); g.add(piv); addMesh(piv, surfPaint(sd > 0 ? cg : mirrorX(cg)), paint, 0, 0, -J.canard[2][1]); U.surf[sd > 0 ? 'canL' : 'canR'] = piv; }); }
     if (J.stab) {
       const sg = planform(J.stab, .16, .05), pz = (J.stab[0][1] + J.stab[3][1]) / 2;
-      [1, -1].forEach(sd => { const piv = new THREE.Group(); piv.position.set(0, J.stabY, pz); g.add(piv); addMesh(piv, sd > 0 ? sg : mirrorX(sg), wing, 0, 0, -pz); U.surf[sd > 0 ? 'stabL' : 'stabR'] = piv; });
+      [1, -1].forEach(sd => { const piv = new THREE.Group(); piv.position.set(0, J.stabY, pz); g.add(piv); addMesh(piv, surfPaint(sd > 0 ? sg : mirrorX(sg)), paint, 0, 0, -pz); U.surf[sd > 0 ? 'stabL' : 'stabR'] = piv; });
     }
-    /* derivas */
-    const fg = finform(J.tail, .18);
+    /* insígnias nas asas (por cima) */
+    const wbb = new THREE.Box3().setFromBufferAttribute(wg.attributes.position), wy = J.wingY + wbb.max.y + .004, dm = decalMat(JET_NUM[type] || '01', env);
+    { const xs = tipX * .6, t = (xs - J.wing[0][0]) / (tipX - J.wing[0][0]), le = lerp(J.wing[0][1], J.wing[1][1], t), te = lerp(J.wing[3][1], J.wing[2][1], t), zz = (le + te) / 2 - .1;
+      [1, -1].forEach(sd => decal(g, dm, [0, 0, .5, 1], 1.15, 1.15, sd * xs, wy, zz, -Math.PI / 2)); }
+    /* insígnias nos lados da fuselagem */
+    { const zz = Math.min(J.tail[0][0] + 1.3, J.wing[3][1] + 1.2), yy = .2, xs = F.skinX(zz, yy) + .012;
+      [1, -1].forEach(sd => decal(g, dm, [0, 0, .5, 1], .78, .78, sd * xs, yy, zz, 0, sd * Math.PI / 2)); }
+    /* derivas: lados na cor do corpo, faixa no topo e número de cauda */
+    const fin = paintGeo(finform(J.tail, .18), (c, x, y, z, nx, ny, nz) => { c.copy(cTop); c.lerp(cEdge, sstep(.45, .85, nz) * .5); c.lerp(cBurn, sstep(J.tail[0][1] + .5, J.tail[0][1], y) * .15); }, .16);
     J.tails.forEach(([tx, cant]) => {
       [1, -1].forEach(sd => {
         if (tx === 0 && sd < 0) return;
         const piv = new THREE.Group(); piv.position.set(sd * tx, J.tailY, 0); piv.rotation.z = sd * cant; g.add(piv);
-        addMesh(piv, fg, wing);
-        /* faixa colorida no topo da deriva */
+        addMesh(piv, fin, paint);
         const top = J.tail[1][1];
         const stripe = finform([[J.tail[1][0] + .1, top - .9], [J.tail[1][0], top], [J.tail[2][0], top], [J.tail[2][0] + .05, top - .9]], .2);
         addMesh(piv, stripe, acc);
+        const yy = J.tail[0][1] + (top - J.tail[0][1]) * .38, k = (yy - J.tail[0][1]) / (top - J.tail[0][1]), le = lerp(J.tail[0][0], J.tail[1][0], k), te = lerp(J.tail[3][0], J.tail[2][0], k);
+        [1, -1].forEach(s2 => { if (tx !== 0 && s2 !== sd) return; decal(piv, dm, [.5, 0, .5, 1], 1.15, .58, s2 * .1, yy, (le + te) / 2, 0, s2 * Math.PI / 2); });
       });
     });
-    /* cabine */
-    if (J.canopy) {
-      const [cx, cy, cz, w, h, l] = J.canopy;
-      addMesh(g, new THREE.SphereGeometry(1, 24, 14), plainMat('#141c27', env, { metalness: .95, roughness: .06, envMapIntensity: 1.6 }), cx, cy, cz, { s: [w, h, l] });
-    }
-    /* entradas de ar */
+    /* cabine: bolha em gota de vidro fumado (reflete o céu), arcos da armação, piloto de capacete, banco e painel */
+    const cp = []; for (let i = 0; i <= 18; i++) { const t = i / 18, r = t < .38 ? Math.pow(Math.sin(t / .38 * Math.PI / 2), .75) : Math.pow(Math.cos((t - .38) / .62 * Math.PI / 2), .55); cp.push([r, cz + cl - t * 2 * cl]); }
+    const rC = t => t < .38 ? Math.pow(Math.sin(t / .38 * Math.PI / 2), .75) : Math.pow(Math.cos((t - .38) / .62 * Math.PI / 2), .55);
+    const glass = jmat('glass' + (env ? env.uuid : ''), () => new THREE.MeshPhysicalMaterial({ color: '#1d3346', metalness: .25, roughness: .03, clearcoat: 1, clearcoatRoughness: .02, envMap: env, envMapIntensity: 2.4, transparent: true, opacity: .5, depthWrite: false }));
+    const can = addMesh(g, lathe(prof(cp), 30, cw, ch), glass, cx, cy, 0); can.renderOrder = 3; can.castShadow = false;
+    const frameM = plainMat('#23272d', env, { metalness: .6, roughness: .4 });
+    [.3, .74].forEach(t => { const r = rC(t) * .985; addMesh(g, new THREE.TorusGeometry(1, .022, 6, 24, Math.PI), frameM, cx, cy, cz + cl - t * 2 * cl, { s: [cw * r, ch * r, 1] }); });
+    addMesh(g, new THREE.SphereGeometry(1, 20, 10), plainMat('#2a2f37', env, { metalness: .2, roughness: .8 }), cx, cy - .04, cz - .1, { s: [cw * .86, .2, cl * .86] });
+    const helm = addMesh(g, new THREE.SphereGeometry(.19, 16, 12), plainMat('#e8eaee', env, { metalness: .1, roughness: .35 }), cx, cy + .26, cz - .05);
+    addMesh(g, new THREE.SphereGeometry(.17, 14, 10), plainMat('#3a2c12', env, { metalness: .9, roughness: .08 }), cx, cy + .25, cz + .04, { s: [.92, .62, .7] });
+    addMesh(g, Arcade3D.roundBox(.04), plainMat('#1d2025', env, { metalness: .2, roughness: .7 }), cx, cy + .12, cz - .38, { s: [.46, .62, .16] });
+    addMesh(g, Arcade3D.roundBox(.03), plainMat('#1d2025', env, { metalness: .2, roughness: .7 }), cx, cy + .12, cz + cl * .55, { s: [.5, .14, .22] });
+    void helm;
+    /* entradas de ar: carenagem pintada, lábio metálico e interior escuro */
     if (J.intake) {
-      const [ix, iy, iz, w, h, l] = J.intake, ib = Arcade3D.roundBox(.18);
+      const [ix, iy, iz, w, h, l] = J.intake;
+      /* carenagem com boca arredondada que se afunila para trás e se funde na fuselagem */
+      const ig = sloft(z => { const t = clamp((iz + l / 2 - z) / l, 0, 1); return { w: w / 2 * (1 - .45 * t * t), h: h / 2 * (1 - .3 * t * t), hb: h / 2 * (1 - .3 * t * t), p: 3.2 }; }, iz + l / 2, iz - l / 2, 14, 24);
+      const ib = paintGeo(ig, (c, x, y, z, nx, ny) => twoTone(c, ny * .7 - .15), .5);
       (ix === 0 ? [0] : [ix, -ix]).forEach(x => {
-        addMesh(g, ib, body, x, iy - h / 2, iz, { s: [w, h, l] });
-        addMesh(g, new THREE.PlaneGeometry(w * .82, h * .7), plainMat('#0b0d10', env, { metalness: 0, roughness: 1 }), x, iy, iz + l / 2 + .01);
+        addMesh(g, ib, paint, x, iy - h / 2, 0);
+        addMesh(g, new THREE.TorusGeometry(.5, .06, 6, 20), plainMat('#9aa1a9', env, { metalness: .85, roughness: .3 }), x, iy - h / 2, iz + l / 2 - .01, { s: [w * .95, h * .82, 1] });
+        addMesh(g, new THREE.PlaneGeometry(w * .86, h * .74), plainMat('#07090c', env, { metalness: 0, roughness: 1 }), x, iy - h / 2, iz + l / 2 - .06);
       });
     }
-    /* tubeiras e chama da pós-combustão */
+    /* antenas (lombada e barriga) */
+    const blade = planform([[0, .25], [0, -.15], [.32, -.22], [.3, .02]], .025, .006);
+    addMesh(g, blade, dark, 0, F.shape(cz - cl * 1.6).h + .01, cz - cl * 1.6, { rz: Math.PI / 2 });
+    addMesh(g, blade, dark, 0, -F.shape(-1).hb - .01, -1, { rz: -Math.PI / 2 });
+    /* tubeiras: anel exterior em pétalas, metal azulado do calor, interior escuro com o brilho do motor */
     const flameGeo = new THREE.ConeGeometry(1, 1, 14, 1, true); flameGeo.rotateX(-Math.PI / 2); flameGeo.translate(0, 0, -.5);
+    const petM = plainMat('#5d636c', env, { metalness: .9, roughness: .32 }), heat = plainMat('#5a5f7a', env, { metalness: .95, roughness: .25 }), innerM = plainMat('#121418', env, { metalness: .4, roughness: .7, side: THREE.DoubleSide });
     J.noz.forEach(([nx, nz, nr]) => {
-      addMesh(g, new THREE.CylinderGeometry(nr * .92, nr, 1.3, 16, 1, true), dark, nx, 0, nz, { rx: Math.PI / 2 });
-      addMesh(g, new THREE.CircleGeometry(nr * .8, 16), glowM('#ff8a3a'), nx, 0, nz + .35, { ry: Math.PI });
+      const pg = new THREE.CylinderGeometry(nr * .86, nr * 1.02, 1.5, 32, 2, true), pp = pg.attributes.position;
+      for (let i = 0; i < pp.count; i++) { const a = Math.atan2(pp.getZ(i), pp.getX(i)), k = 1 + .045 * Math.sign(Math.cos(a * 16)) * (pp.getY(i) < 0 ? 1 : .3); pp.setX(i, pp.getX(i) * k); pp.setZ(i, pp.getZ(i) * k); }
+      pg.computeVertexNormals();
+      addMesh(g, pg, petM, nx, 0, nz - .1, { rx: Math.PI / 2 });
+      addMesh(g, new THREE.CylinderGeometry(nr * 1.02, nr * 1.04, .35, 32, 1, true), heat, nx, 0, nz + .62, { rx: Math.PI / 2 });
+      addMesh(g, new THREE.CylinderGeometry(nr * .8, nr * .62, 1.2, 20, 1, true), innerM, nx, 0, nz, { rx: Math.PI / 2 });
+      addMesh(g, new THREE.CircleGeometry(nr * .64, 20), glowM('#ff8a3a'), nx, 0, nz + .5, { ry: Math.PI });
       const f1 = new THREE.Mesh(flameGeo, glowM('#ffb36b', .42)); f1.position.set(nx, 0, nz - .6); f1.scale.set(nr * .62, nr * .62, 3); g.add(f1);
       const f2 = new THREE.Mesh(flameGeo, glowM('#7ab8ff', .45)); f2.position.set(nx, 0, nz - .6); f2.scale.set(nr * .4, nr * .4, 1.6); g.add(f2);
       U.flames.push(f1, f2);
@@ -658,10 +774,11 @@ const SkyAceWorld = (function () {
       addMesh(g, Arcade3D.roundBox(.05), dark, rx, ry + .16, rz - .2, { s: [.12, .2, 2.4] });
       const m = missileMesh(env); m.position.set(rx, ry - .02, rz); g.add(m); U.rails.push(m);
     });
-    /* luzes de navegação */
+    /* luzes de navegação e de formação */
     const [tx, ty, tz] = J.tips;
     [[tx, '#ff3b3b'], [-tx, '#3bff7a']].forEach(([x, c]) => { const s = new THREE.Sprite(Arcade3D.glowSprite(c)); s.position.set(x, ty, tz); s.scale.setScalar(1.2); g.add(s); U.lights.push(s); });
     U.wingtips = [new THREE.Vector3(tx, ty, tz), new THREE.Vector3(-tx, ty, tz)];
+    Arcade3D.outline(g, { px: 1.1, min: 60 });
     tag(g, U);
     return g;
   }
@@ -679,7 +796,7 @@ const SkyAceWorld = (function () {
       const w = planform([[.4, .6], [3.4, -.2], [3.4, -.9], [.4, -1.0]], .14, .04); addMesh(g, w, wing); addMesh(g, mirrorX(w), wing);
       const t = finform([[-1.4, .3], [-2.4, 1.6], [-2.9, 1.6], [-2.8, .3]], .12); addMesh(g, t, plainMat('#ff7a1a', env, { metalness: .1 }));
       const s = new THREE.Sprite(Arcade3D.glowSprite('#ffb04a')); s.position.set(0, 0, -2.9); s.scale.setScalar(2.2); g.add(s); U.nozzles.push(s);
-      tag(g, U); return g;
+      Arcade3D.outline(g, { px: 1.1, min: 60 }); tag(g, U); return g;
     }
     if (kind === 'heavy') {
       /* cargueiro: asa voadora grande com 4 motores */
@@ -688,7 +805,7 @@ const SkyAceWorld = (function () {
       [-20, -9, 9, 20].forEach(x => { addMesh(g, new THREE.CylinderGeometry(1.4, 1.6, 7, 14), dark, x, -1.6, -1, { rx: Math.PI / 2 }); const s = new THREE.Sprite(Arcade3D.glowSprite(glow)); s.position.set(x, -1.6, -5); s.scale.setScalar(6); g.add(s); U.nozzles.push(s); });
       const eye = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), glowM(glow)); eye.position.set(0, .4, 15.2); eye.scale.set(1.6, .6, .6); g.add(eye);
       [[34, '#ff3b3b'], [-34, '#3bff7a']].forEach(([x, c]) => { const s = new THREE.Sprite(Arcade3D.glowSprite(c)); s.position.set(x, 0, -8); s.scale.setScalar(4); g.add(s); U.lights.push(s); });
-      tag(g, U); return g;
+      Arcade3D.outline(g, { px: 1.1, min: 60 }); tag(g, U); return g;
     }
     /* caça-drone: asa em delta misturada, cauda em V */
     addMesh(g, lathe(prof([[0, 6.5], [.4, 5.6], [.85, 3.8], [1.05, 1.2], [1.05, -2.5], [.8, -5.2], [.6, -5.8]]), 18, 1.5, .62), body);
@@ -703,7 +820,7 @@ const SkyAceWorld = (function () {
     const s = new THREE.Sprite(Arcade3D.glowSprite(glow)); s.position.set(0, 0, -6.4); s.scale.setScalar(3.2); g.add(s); U.nozzles.push(s);
     [[6.4, '#ff3b3b'], [-6.4, '#3bff7a']].forEach(([x, c]) => { const sp = new THREE.Sprite(Arcade3D.glowSprite(c)); sp.position.set(x, 0, -3.8); sp.scale.setScalar(1.3); g.add(sp); U.lights.push(sp); });
     U.wingtips = [new THREE.Vector3(6.4, 0, -3.8), new THREE.Vector3(-6.4, 0, -3.8)];
-    tag(g, U);
+    Arcade3D.outline(g, { px: 1.1, min: 60 }); tag(g, U);
     return g;
   }
 
@@ -979,7 +1096,7 @@ const SkyAceWorld = (function () {
   return {
     V: 3,   /* sobe quando a API muda — os jogos que dependem dela verificam */
     SIZE, MAPS, SKIES, PAL, JETS, LIVERY, rng, perlin, canyonX,
-    heightGrid, findSite, buildTerrain, buildFlora, buildTowns, skyMesh, skyEnv, buildWater, buildClouds,
+    heightGrid, findSite, buildTerrain, buildFlora, buildTowns, skyMesh, skyEnv, buildWater, seaDepth, detailTex, pnoise, buildClouds,
     buildJet, buildDrone, buildBalloon, buildGround, buildFortress, buildRing, missileMesh, refs, particles, ribbon, tracers, mergeGeos, canvasTex, M4, treeGeo, puffTex, softTex, sstep, glowM, plainMat, bodyMat, planform, lathe, prof, addMesh,
   };
 })();
