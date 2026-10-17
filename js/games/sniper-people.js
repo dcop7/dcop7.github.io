@@ -4,9 +4,15 @@
    cotovelos, joelhos, tornozelos) com dezenas de peças; para caberem
    centenas no ecrã, cada TIPO de peça é UMA InstancedMesh (cor por
    instância) e as matrizes saem de cinemática direta a cada frame.
+   Peças torneadas (tronco, braços e pernas com músculo), cara com
+   olhos de íris e brilho, nariz, orelhas e bochechas; mãos com dedos,
+   sapatos com sola e atacadores; camisa com colarinho e botões.
    Variantes (cabelos, chapéus, bigodes, óculos, coletes, gravatas,
-   adereços) só ocupam "lugares" nas pessoas que as usam.
-   Poses: andar, correr, conversar, telefone, café, dançar, sentar,
+   adereços, espingarda de dardos dos guardas) só ocupam "lugares" nas
+   pessoas que as usam. Os braços têm IK de dois ossos para agarrar a
+   espingarda (ao peito, a apontar) ou o volante.
+   Poses: andar (passada calculada para os pés não escorregarem),
+   correr, conversar, telefone, café, dançar, sentar, conduzir,
    palmas, tocar, binóculos, rádio, braços cruzados, apanhar sol,
    abanar alguém, susto, sono (bocejo, pernas a ceder, cair de lado,
    dormir enroscado com a respiração a mexer o peito).
@@ -21,10 +27,14 @@ const SniperPeople = (function () {
 
   /* ── geometrias (pivô na articulação de cima; o membro estende-se para −Y) ── */
   let GEO = null;
-  function M(x, y, z, rx, ry, rz, sx, sy, sz) { return new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rx || 0, ry || 0, rz || 0)), new THREE.Vector3(sx || 1, sy || 1, sz || 1)); }
-  /* junta geometrias com cor por vértice (branco = tingido pela cor da instância) */
+  function M(x, y, z, rx, ry, rz, sx, sy, sz) { return new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rx || 0, ry || 0, rz || 0)), new THREE.Vector3(sx == null ? 1 : sx, sy == null ? 1 : sy, sz == null ? 1 : sz)); }
+  /* junta geometrias com cor por vértice (branco = tingido pela cor da instância); espelhos invertem a ordem dos triângulos */
   function merge(list) {
-    let n = 0; const parts = list.map(([g, c, m]) => { const q = g.index ? g.toNonIndexed() : g.clone(); if (m) q.applyMatrix4(m); n += q.attributes.position.count; return [q, new THREE.Color(c || '#ffffff')]; });
+    let n = 0; const parts = list.map(([g, c, m]) => {
+      const q = g.index ? g.toNonIndexed() : g.clone(); if (m) q.applyMatrix4(m);
+      if (m && m.determinant() < 0) { const p = q.attributes.position, nn = q.attributes.normal; for (let i = 0; i < p.count; i += 3) { for (const a of [p, nn]) { const x = a.getX(i + 1), y = a.getY(i + 1), z = a.getZ(i + 1); a.setXYZ(i + 1, a.getX(i + 2), a.getY(i + 2), a.getZ(i + 2)); a.setXYZ(i + 2, x, y, z); } } }
+      n += q.attributes.position.count; return [q, new THREE.Color(c || '#ffffff')];
+    });
     const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), col = new Float32Array(n * 3); let o = 0;
     parts.forEach(([q, c]) => { const p = q.attributes.position, nn = q.attributes.normal; for (let i = 0; i < p.count; i++, o++) { pos[o * 3] = p.getX(i); pos[o * 3 + 1] = p.getY(i); pos[o * 3 + 2] = p.getZ(i); nor[o * 3] = nn.getX(i); nor[o * 3 + 1] = nn.getY(i); nor[o * 3 + 2] = nn.getZ(i); col[o * 3] = c.r; col[o * 3 + 1] = c.g; col[o * 3 + 2] = c.b; } q.dispose(); });
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -33,54 +43,104 @@ const SniperPeople = (function () {
   const S = (r, w, h, a, b, c, d) => new THREE.SphereGeometry(r, w || 12, h || 9, a, b, c, d);
   const C = (rt, rb, h, s, open) => new THREE.CylinderGeometry(rt, rb, h, s || 10, 1, !!open);
   const B = (x, y, z) => new THREE.BoxGeometry(x, y, z);
+  /* peça torneada: perfil [[raio, y]…] (qualquer ordem), achatada em z */
+  function lathe(pts, seg, zs, open) {
+    const p = pts.slice().sort((a, b) => a[1] - b[1]).map(([r, y]) => new THREE.Vector2(Math.max(open ? r : 0, r), y));
+    const g = new THREE.LatheGeometry(p, seg || 14); if (zs && zs !== 1) g.scale(1, 1, zs); g.computeVertexNormals(); return g;
+  }
+  /* perfil do tronco (raio por altura) — os coletes e as riscas seguem-no */
+  const TORSO = [[.150, 0], [.153, .04], [.147, .12], [.151, .2], [.162, .29], [.171, .36], [.172, .41], [.164, .455], [.138, .49], [.088, .515], [.045, .526], [.001, .529]];
+  const TZ = .64;
+  function torsoR(y) { for (let i = 1; i < TORSO.length; i++) if (y <= TORSO[i][1]) { const [r0, y0] = TORSO[i - 1], [r1, y1] = TORSO[i]; return lerp(r0, r1, (y - y0) / (y1 - y0)); } return 0; }
+  const band = (y0, y1, off, seg) => lathe([[torsoR(y0) + off, y0], [torsoR((y0 + y1) / 2) + off, (y0 + y1) / 2], [torsoR(y1) + off, y1]], seg || 16, TZ, true);
+  const zf = (y, off) => (torsoR(y) + (off || 0)) * TZ;
+  /* cabeça: esfera com maxilar, queixo e nuca */
+  function headGeo() {
+    const g = S(.106, 18, 13), p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      let x = p.getX(i), y = p.getY(i), z = p.getZ(i); const ny = y / .106;
+      const jaw = clamp((.25 - ny) / 1.25, 0, 1);
+      x *= 1 - .2 * jaw; z *= 1 - .06 * jaw; if (z > 0 && ny < -.2) z += .012 * jaw;
+      if (z < 0) z *= 1.06 + .04 * clamp(ny, 0, 1);
+      y *= 1.1; p.setXYZ(i, x * .95, y, z);
+    }
+    g.computeVertexNormals(); return g;
+  }
   function geos() {
     if (GEO) return GEO;
     const G = {};
-    /* tronco: elíptico, ombros arredondados, peito ligeiramente mais largo */
-    G.torso = merge([[C(.165, .148, .5, 14), 0, M(0, .25, 0, 0, 0, 0, 1, 1, .62)], [S(.07), 0, M(.15, .45, 0, 0, 0, 0, 1, .8, 1)], [S(.07), 0, M(-.15, .45, 0, 0, 0, 0, 1, .8, 1)], [S(.155, 14, 8, 0, TAU, 0, Math.PI / 2), 0, M(0, .47, 0, 0, 0, 0, 1.05, .32, .62)], [C(.148, .155, .08, 14), 0, M(0, .02, 0, 0, 0, 0, 1, 1, .66)]]);
-    G.pelvis = merge([[C(.155, .14, .17, 12), 0, M(0, .01, 0, 0, 0, 0, 1, 1, .7)], [S(.14, 12, 6, 0, TAU, Math.PI / 2, Math.PI / 2), 0, M(0, -.07, 0, 0, 0, 0, 1.05, .45, .72)]]);
-    G.belt = merge([[C(.158, .158, .035, 14, true), '#ffffff', M(0, .08, 0, 0, 0, 0, 1, 1, .7)], [B(.045, .03, .01), '#d6b45a', M(0, .08, .112)]]);
-    G.neck = C(.046, .054, .1, 8).translate(0, .05, 0);
-    /* cabeça: crânio, nariz, orelhas, queixo */
-    G.head = merge([[S(.106, 16, 12), 0, M(0, .105, 0, 0, 0, 0, .94, 1.1, 1)], [S(.06, 10, 8), 0, M(0, .045, .045, 0, 0, 0, 1.1, .7, 1)], [S(.02, 8, 6), 0, M(0, .095, .1, -.3, 0, 0, 1, 1.25, 1.35)], [S(.024, 8, 6), 0, M(.1, .1, 0, 0, 0, 0, .45, 1, .8)], [S(.024, 8, 6), 0, M(-.1, .1, 0, 0, 0, 0, .45, 1, .8)]]);
-    G.eyes = merge([[S(.0155, 8, 6), '#ffffff', M(.036, .118, .088, 0, 0, 0, 1, 1, .7)], [S(.0155, 8, 6), '#ffffff', M(-.036, .118, .088, 0, 0, 0, 1, 1, .7)]]);
-    G.pupils = merge([[S(.009, 6, 5), 0, M(.036, .118, .099)], [S(.009, 6, 5), 0, M(-.036, .118, .099)]]);
-    G.brows = merge([[B(.042, .009, .012), 0, M(.037, .146, .094, 0, 0, -.12)], [B(.042, .009, .012), 0, M(-.037, .146, .094, 0, 0, .12)]]);
-    G.mouth = B(.042, .009, .01).translate(0, .058, .098);
+    /* tronco torneado com camisa: colarinho, carcela, botões, bolso e bainha */
+    G.torso = merge([
+      [lathe(TORSO, 16, TZ), 0],
+      [S(.068, 10, 7), 0, M(.152, .448, 0, 0, 0, 0, 1, .82, 1)], [S(.068, 10, 7), 0, M(-.152, .448, 0, 0, 0, 0, 1, .82, 1)],
+      [new THREE.TorusGeometry(.058, .017, 4, 12), '#e6e6e6', M(0, .508, .006, Math.PI / 2 - .25, 0, 0, 1, .82, 1)],
+      [B(.024, .4, .008), '#d2d2d2', M(0, .29, zf(.29, .002))],
+      ...[.16, .25, .34, .43].map(y => [S(.0075, 4, 3), '#8a8a8a', M(0, y, zf(y, .006))]),
+      [B(.07, .075, .008), '#cfcfcf', M(.075, .37, zf(.37, -.004) - .003, 0, .32)],
+      [band(.0, .035, .004), '#d8d8d8'],
+    ]);
+    G.pelvis = merge([[lathe([[.151, .1], [.155, .05], [.152, -.01], [.135, -.06], [.08, -.095], [.001, -.105]], 16, .72), 0], [B(.02, .1, .008), '#c8c8c8', M(0, .0, .108, .1)]]);
+    G.belt = merge([[band(.07, .1, .006, 18), '#ffffff', M(0, -.005, 0, 0, 0, 0, 1.02, 1, 1.12)], [B(.045, .032, .012), '#d6b45a', M(0, .08, .115)]]);
+    G.neck = merge([[C(.045, .053, .1, 12), 0, M(0, .05, 0)]]);
+    /* cabeça: crânio, nariz, orelhas, bochechas */
+    G.head = merge([[headGeo(), 0, M(0, .105, 0)], [S(.021, 8, 6), 0, M(0, .092, .104, -.35, 0, 0, 1, 1.3, 1.35)], [S(.012, 5, 3), 0, M(.013, .075, .106, 0, 0, 0, 1, .7, 1)], [S(.012, 5, 3), 0, M(-.013, .075, .106, 0, 0, 0, 1, .7, 1)],
+      [S(.025, 8, 6), 0, M(.1, .1, -.004, 0, 0, 0, .42, 1, .78)], [S(.025, 8, 6), 0, M(-.1, .1, -.004, 0, 0, 0, .42, 1, .78)], [S(.012, 5, 3), '#c89890', M(.104, .1, .0, 0, 0, 0, .4, .9, .6)], [S(.012, 5, 3), '#c89890', M(-.104, .1, .0, 0, 0, 0, .4, .9, .6)],
+      [S(.026, 8, 5), '#ffd2c8', M(.058, .072, .075, 0, 0, 0, 1, .7, .45)], [S(.026, 8, 5), '#ffd2c8', M(-.058, .072, .075, 0, 0, 0, 1, .7, .45)]]);
+    /* olhos: branco + brilho (tinge com eyeW), íris + pupila (tinge com a cor dos olhos) */
+    G.eyes = merge([[S(.0168, 8, 6), '#ffffff', M(.036, .118, .086, 0, 0, 0, 1, 1, .72)], [S(.0168, 8, 6), '#ffffff', M(-.036, .118, .086, 0, 0, 0, 1, 1, .72)], [S(.0032, 4, 3), '#ffffff', M(.041, .124, .1095)], [S(.0032, 4, 3), '#ffffff', M(-.031, .124, .1095)]]);
+    G.pupils = merge([[S(.0105, 7, 5), '#ffffff', M(.036, .118, .0985, 0, 0, 0, 1, 1, .5)], [S(.0105, 7, 5), '#ffffff', M(-.036, .118, .0985, 0, 0, 0, 1, 1, .5)], [S(.0058, 5, 4), '#151515', M(.036, .118, .1035, 0, 0, 0, 1, 1, .5)], [S(.0058, 5, 4), '#151515', M(-.036, .118, .1035, 0, 0, 0, 1, 1, .5)]]);
+    G.brows = merge([[C(.0055, .0055, .044, 6), 0, M(.037, .147, .095, 0, 0, Math.PI / 2 - .14)], [C(.0055, .0055, .044, 6), 0, M(-.037, .147, .095, 0, 0, Math.PI / 2 + .14)]]);
+    G.mouth = merge([[S(.019, 8, 5), 0, M(0, .058, .097, 0, 0, 0, 1.25, .34, .5)]]);
     /* cabelos */
-    G.hair_short = merge([[S(.113, 14, 9, 0, TAU, 0, Math.PI * .52), 0, M(0, .115, -.008, -.18, 0, 0, .98, 1.05, 1.06)], [S(.1, 10, 8, 0, TAU, Math.PI * .4, Math.PI * .35), 0, M(0, .1, -.03, 0, 0, 0, .96, 1, 1)]]);
-    G.hair_long = merge([[S(.115, 14, 9, 0, TAU, 0, Math.PI * .55), 0, M(0, .113, -.006, -.15, 0, 0, .99, 1.06, 1.06)], [B(.2, .26, .07), 0, M(0, .0, -.07)], [S(.1, 10, 8), 0, M(0, -.12, -.075, 0, 0, 0, 1, .5, .4)]]);
-    G.hair_bun = merge([[S(.113, 14, 9, 0, TAU, 0, Math.PI * .52), 0, M(0, .115, -.006, -.18, 0, 0, .98, 1.05, 1.06)], [S(.048, 10, 8), 0, M(0, .19, -.09)]]);
-    G.hair_curly = merge([[new THREE.IcosahedronGeometry(.128, 1), 0, M(0, .13, -.015, 0, 0, 0, 1, .92, 1)]]);
-    G.hair_pony = merge([[S(.113, 14, 9, 0, TAU, 0, Math.PI * .52), 0, M(0, .115, -.006, -.18, 0, 0, .98, 1.05, 1.06)], [C(.03, .012, .2, 6), 0, M(0, .06, -.13, .5)]]);
+    const cap = (o) => [S(.114, 16, 8, 0, TAU, 0, Math.PI * (o || .52)), 0, M(0, .116, -.008, -.18, 0, 0, .98, 1.05, 1.06)];
+    const fringe = [0, 1, 2, 3].map(k => [S(.04, 6, 4), 0, M(-.05 + k * .033, .19 - Math.abs(k - 1.5) * .006, .075, -.6, 0, (k - 1.5) * .25, 1.1, .5, .8)]);
+    const hs = [cap(), [S(.1, 12, 8, 0, TAU, Math.PI * .4, Math.PI * .35), 0, M(0, .1, -.03, 0, 0, 0, .96, 1, 1)], [B(.016, .045, .03), 0, M(.097, .085, .03)], [B(.016, .045, .03), 0, M(-.097, .085, .03)]];
+    G.hair_short_h = merge(hs);
+    G.hair_short = merge([cap(), ...fringe, [S(.1, 12, 8, 0, TAU, Math.PI * .4, Math.PI * .35), 0, M(0, .1, -.03, 0, 0, 0, .96, 1, 1)], [B(.016, .045, .03), 0, M(.097, .085, .03)], [B(.016, .045, .03), 0, M(-.097, .085, .03)]]);
+    G.hair_long = merge([cap(.55), ...fringe, [S(.11, 14, 10, 0, TAU, Math.PI * .45, Math.PI * .55), 0, M(0, .03, -.02, 0, 0, 0, 1.02, 1.6, .95)], [S(.05, 10, 8), 0, M(.085, .0, .03, 0, 0, .1, .7, 2.2, .9)], [S(.05, 10, 8), 0, M(-.085, .0, .03, 0, 0, -.1, .7, 2.2, .9)], [S(.1, 12, 8), 0, M(0, -.12, -.07, 0, 0, 0, 1, .55, .45)]]);
+    G.hair_long_h = merge([cap(.55), [S(.11, 14, 10, 0, TAU, Math.PI * .45, Math.PI * .55), 0, M(0, .03, -.02, 0, 0, 0, 1.02, 1.6, .95)], [S(.05, 10, 8), 0, M(.085, .0, .03, 0, 0, .1, .7, 2.2, .9)], [S(.05, 10, 8), 0, M(-.085, .0, .03, 0, 0, -.1, .7, 2.2, .9)], [S(.1, 12, 8), 0, M(0, -.12, -.07, 0, 0, 0, 1, .55, .45)]]);
+    G.hair_pony_h = merge([cap(), [C(.032, .012, .22, 8), 0, M(0, .05, -.15, .45)], [S(.03, 8, 6), 0, M(0, .145, -.13)]]);
+    G.hair_bun = merge([cap(), ...fringe.slice(1, 3), [S(.05, 12, 9), 0, M(0, .19, -.095)], [new THREE.TorusGeometry(.03, .008, 5, 12), '#c8c8c8', M(0, .18, -.085, 1.1)]]);
+    const curls = []; for (let i = 0; i < 20; i++) { const a = i * 2.4, b = .15 + (i % 7) / 7 * 1.15; curls.push([S(.045, 6, 4), 0, M(Math.cos(a) * Math.sin(b) * .108, .13 + Math.cos(b) * .1, Math.sin(a) * Math.sin(b) * .108 - .015)]); }
+    G.hair_curly = merge([[S(.112, 12, 8), 0, M(0, .13, -.015, 0, 0, 0, 1, .9, 1)], ...curls]);
+    G.hair_pony = merge([cap(), ...fringe, [S(.022, 8, 6), '#c8c8c8', M(0, .14, -.12)], [C(.032, .012, .22, 8), 0, M(0, .05, -.15, .45)], [S(.03, 8, 6), 0, M(0, .145, -.13)]]);
     /* chapéus */
-    G.hat_cap = merge([[S(.118, 14, 8, 0, TAU, 0, Math.PI / 2), 0, M(0, .13, 0, 0, 0, 0, 1, .82, 1.04)], [C(.1, .1, .012, 12), 0, M(0, .135, .1, 0, 0, 0, .9, 1, .75)], [S(.012, 6, 5), 0, M(0, .228, 0)]]);
-    G.hat_fedora = merge([[C(.085, .105, .11, 12), 0, M(0, .22, 0, 0, 0, 0, 1, 1, .92)], [C(.19, .19, .012, 16), 0, M(0, .165, 0, 0, 0, 0, 1, 1, .92)], [C(.107, .107, .025, 12), '#333333', M(0, .18, 0, 0, 0, 0, 1, 1, .93)]]);
-    G.hat_beanie = merge([[S(.122, 14, 9, 0, TAU, 0, Math.PI / 2), 0, M(0, .12, -.005, -.1, 0, 0, 1, 1.18, 1.05)], [new THREE.TorusGeometry(.115, .018, 6, 16), 0, M(0, .13, -.005, Math.PI / 2 - .1, 0, 0, 1, 1.05, 1)], [S(.03, 8, 6), 0, M(0, .27, -.02)]]);
-    G.hat_top = merge([[C(.098, .098, .22, 14), 0, M(0, .29, 0)], [C(.17, .17, .012, 16), 0, M(0, .18, 0)], [C(.1, .1, .035, 14), '#c03030', M(0, .205, 0)]]);
-    G.hat_straw = merge([[C(.24, .25, .012, 18), 0, M(0, .165, 0)], [C(.09, .11, .09, 12), 0, M(0, .21, 0)], [C(.112, .112, .02, 12), '#b03a2a', M(0, .18, 0)]]);
-    G.hat_hard = merge([[S(.125, 14, 8, 0, TAU, 0, Math.PI / 2), 0, M(0, .135, 0, 0, 0, 0, 1, .9, 1.06)], [C(.14, .14, .01, 14), 0, M(0, .14, .015, 0, 0, 0, 1, 1, 1.05)], [B(.02, .03, .2), 0, M(0, .245, 0)]]);
-    G.hat_beret = merge([[S(.125, 14, 6, 0, TAU, 0, Math.PI / 2), 0, M(.015, .17, 0, 0, 0, -.25, 1.05, .45, 1.05)], [S(.012, 6, 5), 0, M(.04, .225, 0)]]);
-    G.hat_chef = merge([[C(.11, .1, .1, 12), 0, M(0, .22, 0)], [S(.13, 12, 8), 0, M(0, .31, 0, 0, 0, 0, 1, .7, 1)]]);
+    G.hat_cap = merge([[S(.118, 16, 8, 0, TAU, 0, Math.PI / 2), 0, M(0, .13, 0, 0, 0, 0, 1, .82, 1.04)], [C(.1, .1, .012, 14), 0, M(0, .135, .1, -.08, 0, 0, .9, 1, .78)], [S(.012, 6, 5), 0, M(0, .228, 0)], [C(.119, .119, .02, 16, true), '#bdbdbd', M(0, .14, 0, 0, 0, 0, 1, 1, 1.04)]]);
+    G.hat_fedora = merge([[C(.085, .105, .11, 14), 0, M(0, .22, 0, 0, 0, 0, 1, 1, .92)], [C(.19, .19, .012, 18), 0, M(0, .165, 0, 0, 0, 0, 1, 1, .92)], [C(.107, .107, .025, 14), '#333333', M(0, .18, 0, 0, 0, 0, 1, 1, .93)], [S(.03, 8, 6), 0, M(0, .27, 0, 0, 0, 0, 2.2, .5, 1.5)]]);
+    G.hat_beanie = merge([[S(.122, 16, 9, 0, TAU, 0, Math.PI / 2), 0, M(0, .145, -.01, -.12, 0, 0, 1, 1.05, 1.05)], [new THREE.TorusGeometry(.117, .02, 6, 18), 0, M(0, .15, -.01, Math.PI / 2 - .12, 0, 0, 1, 1.05, 1)], [S(.032, 8, 6), 0, M(0, .28, -.03)]]);
+    G.hat_top = merge([[C(.098, .098, .22, 16), 0, M(0, .29, 0)], [C(.17, .17, .012, 18), 0, M(0, .18, 0)], [C(.1, .1, .035, 16), '#c03030', M(0, .205, 0)]]);
+    G.hat_straw = merge([[C(.24, .25, .012, 20), 0, M(0, .165, 0)], [C(.09, .11, .09, 14), 0, M(0, .21, 0)], [C(.112, .112, .02, 14), '#b03a2a', M(0, .18, 0)]]);
+    G.hat_hard = merge([[S(.125, 16, 8, 0, TAU, 0, Math.PI / 2), 0, M(0, .135, 0, 0, 0, 0, 1, .9, 1.06)], [C(.14, .14, .01, 16), 0, M(0, .14, .015, 0, 0, 0, 1, 1, 1.05)], [B(.02, .03, .2), 0, M(0, .245, 0)]]);
+    G.hat_beret = merge([[S(.125, 16, 6, 0, TAU, 0, Math.PI / 2), 0, M(.015, .17, 0, 0, 0, -.25, 1.05, .45, 1.05)], [S(.012, 6, 5), 0, M(.04, .225, 0)]]);
+    G.hat_chef = merge([[C(.11, .1, .1, 14), 0, M(0, .22, 0)], [S(.13, 14, 9), 0, M(0, .31, 0, 0, 0, 0, 1, .7, 1)]]);
+    /* boné de guarda com emblema dourado */
+    G.hat_guard = merge([[S(.12, 16, 8, 0, TAU, 0, Math.PI / 2), 0, M(0, .13, 0, 0, 0, 0, 1, .7, 1.04)], [C(.123, .118, .05, 16), 0, M(0, .155, 0, 0, 0, 0, 1, 1, 1.04)], [C(.1, .1, .012, 14, false), '#3a3a3a', M(0, .135, .1, -.15, 0, 0, .95, 1, .7)], [S(.016, 8, 6), '#ffd23a', M(0, .17, .121, 0, 0, 0, 1, 1, .4)], [C(.124, .124, .012, 16, true), '#d83a3a', M(0, .175, 0, 0, 0, 0, 1, 1, 1.04)]]);
     /* bigode à "Liga dos Bigodes" (pontas enroladas) e barba */
-    G.mustache = merge([[S(.03, 8, 6), 0, M(.026, .068, .104, 0, 0, -.35, 1.5, .55, .6)], [S(.03, 8, 6), 0, M(-.026, .068, .104, 0, 0, .35, 1.5, .55, .6)], [new THREE.TorusGeometry(.012, .006, 5, 8), 0, M(.068, .08, .096, 0, .3, 0)], [new THREE.TorusGeometry(.012, .006, 5, 8), 0, M(-.068, .08, .096, 0, -.3, 0)]]);
-    G.beard = merge([[S(.085, 12, 8, 0, TAU, Math.PI / 2, Math.PI / 2), 0, M(0, .075, .03, .25, 0, 0, 1.1, 1.05, 1)]]);
-    G.glasses = merge([[C(.026, .026, .008, 12), 0, M(.038, .12, .108, Math.PI / 2)], [C(.026, .026, .008, 12), 0, M(-.038, .12, .108, Math.PI / 2)], [B(.03, .006, .006), 0, M(0, .125, .108)], [B(.006, .006, .11), 0, M(.1, .122, .05)], [B(.006, .006, .11), 0, M(-.1, .122, .05)]]);
-    /* sobreposições do tronco */
-    G.tie = merge([[B(.035, .03, .02), 0, M(0, .44, .1)], [B(.045, .3, .012), 0, M(0, .27, .103, 0, 0, 0, 1, 1, 1)], [new THREE.ConeGeometry(.026, .05, 4), 0, M(0, .1, .103, Math.PI, Math.PI / 4)]]);
-    G.lapel = merge([[B(.06, .26, .012), 0, M(.055, .34, .101, 0, 0, .3)], [B(.06, .26, .012), 0, M(-.055, .34, .101, 0, 0, -.3)], [B(.085, .14, .014), '#ffffff', M(0, .43, .098)]]);
-    G.vest = merge([[C(.172, .156, .36, 14, true), 0, M(0, .25, 0, 0, 0, 0, 1, 1, .64)], [C(.174, .158, .035, 14, true), '#e8eef2', M(0, .22, 0, 0, 0, 0, 1, 1, .645)], [C(.174, .158, .035, 14, true), '#e8eef2', M(0, .33, 0, 0, 0, 0, 1, 1, .645)]]);
-    G.stripes = merge([0, 1, 2, 3, 4, 5].map(i => [C(.168, .162, .03, 14, true), 0, M(0, .06 + i * .075, 0, 0, 0, 0, 1, 1, .632)]));
-    G.apron = merge([[B(.26, .5, .015), 0, M(0, .12, .11)], [B(.3, .015, .2), 0, M(0, .35, .02)]]);
-    G.backpack = merge([[B(.26, .32, .13), 0, M(0, .28, -.16)], [B(.2, .12, .05), 0, M(0, .2, -.235)]]);
+    G.mustache = merge([[S(.03, 10, 6), 0, M(.026, .068, .104, 0, 0, -.35, 1.5, .55, .6)], [S(.03, 10, 6), 0, M(-.026, .068, .104, 0, 0, .35, 1.5, .55, .6)], [new THREE.TorusGeometry(.012, .006, 5, 8), 0, M(.068, .08, .096, 0, .3, 0)], [new THREE.TorusGeometry(.012, .006, 5, 8), 0, M(-.068, .08, .096, 0, -.3, 0)]]);
+    G.beard = merge([[S(.085, 14, 9, 0, TAU, Math.PI / 2, Math.PI / 2), 0, M(0, .075, .03, .25, 0, 0, 1.1, 1.05, 1)], [S(.03, 8, 6), 0, M(0, .066, .102, 0, 0, 0, 1.6, .5, .6)]]);
+    G.glasses = merge([[C(.026, .026, .008, 14), 0, M(.038, .12, .108, Math.PI / 2)], [C(.026, .026, .008, 14), 0, M(-.038, .12, .108, Math.PI / 2)], [B(.03, .006, .006), 0, M(0, .125, .108)], [B(.006, .006, .11), 0, M(.1, .122, .05)], [B(.006, .006, .11), 0, M(-.1, .122, .05)]]);
+    /* sobreposições do tronco (seguem o perfil) */
+    G.tie = merge([[B(.035, .03, .02), 0, M(0, .46, zf(.46, .008))], [B(.045, .3, .012), 0, M(0, .29, zf(.36, .006), -.06)], [new THREE.ConeGeometry(.026, .05, 4), 0, M(0, .12, zf(.15, .008), Math.PI, Math.PI / 4)]]);
+    G.lapel = merge([[B(.06, .26, .012), 0, M(.056, .35, zf(.36, .006), 0, 0, .3)], [B(.06, .26, .012), 0, M(-.056, .35, zf(.36, .006), 0, 0, -.3)], [B(.085, .14, .014), '#ffffff', M(0, .44, zf(.44, .002))], [band(.03, .12, .008), 0], [B(.012, .012, .006), '#d8d8d8', M(.09, .37, zf(.37, .012) + .003)]]);
+    G.vest = merge([[band(.07, .43, .008), 0], [band(.22, .25, .012), '#e8eef2'], [band(.33, .36, .012), '#e8eef2']]);
+    G.stripes = merge([0, 1, 2, 3, 4, 5].map(i => [band(.05 + i * .075, .08 + i * .075, .005), 0]));
+    G.apron = merge([[B(.26, .48, .015), 0, M(0, .12, zf(.2, .012))], [band(.06, .085, .01), 0], [B(.13, .14, .012), 0, M(0, .36, zf(.36, .006))]]);
+    G.backpack = merge([[B(.26, .32, .13), 0, M(0, .28, -.16)], [B(.2, .12, .05), 0, M(0, .2, -.235)], [B(.03, .3, .02), '#3a3a3a', M(.08, .3, .02, -.1)], [B(.03, .3, .02), '#3a3a3a', M(-.08, .3, .02, -.1)]]);
     G.collar = merge([[new THREE.TorusGeometry(.065, .018, 6, 14), 0, M(0, .5, .005, Math.PI / 2, 0, 0, 1, .7, 1)]]);
-    /* braços e pernas */
-    G.uarm = merge([[S(.055, 10, 8), 0, M(0, -.005, 0)], [C(.05, .042, .29, 9), 0, M(0, -.145, 0)]]);
-    G.farm = merge([[S(.043, 8, 6), 0, M(0, 0, 0)], [C(.042, .033, .26, 9), 0, M(0, -.13, 0)]]);
-    G.hand = merge([[S(.04, 8, 6), 0, M(0, -.045, 0, 0, 0, 0, .78, 1.2, .55)], [S(.014, 6, 5), 0, M(.025, -.035, .018, 0, 0, 0, 1, 1.5, 1)]]);
-    G.thigh = merge([[S(.075, 10, 8), 0, M(0, 0, 0)], [C(.075, .058, .43, 10), 0, M(0, -.215, 0)]]);
-    G.shin = merge([[S(.058, 9, 7), 0, M(0, 0, 0)], [C(.058, .043, .42, 10), 0, M(0, -.21, 0)]]);
-    G.shoe = merge([[B(.095, .075, .24), 0, M(0, -.035, .045)], [S(.05, 9, 7), 0, M(0, -.035, .14, 0, 0, 0, .95, .75, 1)], [B(.1, .02, .27), '#3a3a3a', M(0, -.07, .055)]]);
+    /* farda dos guardas: braçadeira vermelha e cinto com bolsas */
+    G.uniform = merge([[band(.05, .1, .009), '#2a2a2a'], [B(.05, .05, .03), '#3a3a3a', M(.09, .07, zf(.07, .014))], [B(.05, .05, .03), '#3a3a3a', M(-.09, .07, zf(.07, .014))], [B(.06, .04, .008), '#ffd23a', M(-.07, .4, zf(.4, .006), 0, -.35)], [B(.012, .3, .012), '#2a2a2a', M(.05, .3, zf(.3, .008), 0, 0, -.55)]]);
+    G.armband = merge([[C(.06, .056, .05, 12, true), 0, M(0, -.1, 0)]]);
+    /* braços e pernas torneados */
+    G.uarm = merge([[lathe([[.001, .048], [.04, .036], [.056, .006], [.055, -.05], [.051, -.12], [.046, -.2], [.042, -.27], [.038, -.295], [.001, -.302]], 12), 0]]);
+    G.farm = merge([[lathe([[.001, .03], [.039, .017], [.043, 0], [.046, -.05], [.043, -.11], [.036, -.2], [.031, -.25], [.001, -.262]], 12), 0]]);
+    const fingers = [-1.5, -.5, .5, 1.5].map(k => [C(.0105, .009, .06, 5, true), 0, M(k * .0175, -.095 + Math.abs(k) * .004, .008, .28, 0, 0)]);
+    const tips = [-1.5, -.5, .5, 1.5].map(k => [S(.0095, 5, 3), 0, M(k * .0175, -.124 + Math.abs(k) * .005, .017)]);
+    const hand = [[S(.041, 8, 6), 0, M(0, -.048, 0, 0, 0, 0, .9, 1, .5)], ...fingers, ...tips, [C(.012, .01, .05, 5, true), 0, M(.035, -.05, .022, .4, 0, -.7)], [S(.011, 5, 3), 0, M(.05, -.068, .03)]];
+    G.hand = merge(hand);
+    G.handL = merge(hand.map(([g, c, m]) => [g, c, new THREE.Matrix4().makeScale(-1, 1, 1).multiply(m)]));
+    G.thigh = merge([[lathe([[.001, .035], [.07, .018], [.079, 0], [.081, -.06], [.075, -.16], [.067, -.28], [.059, -.38], [.054, -.43], [.001, -.442]], 14), 0]]);
+    G.shin = merge([[lathe([[.001, .025], [.054, .012], [.057, 0], [.055, -.04], [.06, -.12], [.055, -.2], [.046, -.3], [.04, -.4], [.001, -.425]], 14), 0]]);
+    G.shoe = merge([[S(.052, 10, 7), 0, M(0, -.03, .055, 0, 0, 0, .95, .78, 2.1)], [S(.05, 8, 6), 0, M(0, -.03, -.02, 0, 0, 0, .95, .85, 1)], [B(.085, .024, .27), '#3a3a3a', M(0, -.064, .045)], [S(.044, 8, 4), '#3a3a3a', M(0, -.064, .17, 0, 0, 0, .98, .27, .9)], [B(.03, .006, .075), '#e0e0e0', M(0, .006, .06, -.25)]]);
     G.sleeve = merge([[C(.06, .052, .17, 9), 0, M(0, -.075, 0)]]);
     /* adereços (na mão direita) */
     G.p_phone = merge([[B(.036, .072, .01), 0, M(0, -.08, .03)], [B(.03, .06, .002), '#2a6dd8', M(0, -.08, .036)]]);
@@ -89,10 +149,20 @@ const SniperPeople = (function () {
     G.p_radio = merge([[B(.045, .09, .03), 0, M(0, -.08, .03)], [C(.004, .004, .07, 4), 0, M(.012, -.005, .03)]]);
     G.p_case = merge([[B(.4, .28, .09), 0, M(0, -.22, 0)], [B(.12, .03, .02), '#222222', M(0, -.065, 0)], [B(.04, .03, .095), '#d8c070', M(.12, -.1, 0)], [B(.04, .03, .095), '#d8c070', M(-.12, -.1, 0)]]);
     G.p_light = merge([[C(.022, .018, .16, 8), 0, M(0, -.06, .06, Math.PI / 2)], [C(.03, .022, .03, 8), '#fff6c0', M(0, -.06, .15, Math.PI / 2)]]);
-    G.p_balloon = merge([[C(.003, .003, 1.1, 3), '#dddddd', M(0, .5, 0)], [S(.16, 12, 10), 0, M(0, 1.15, 0, 0, 0, 0, 1, 1.15, 1)]]);
+    G.p_balloon = merge([[C(.003, .003, 1.1, 3), '#dddddd', M(0, .5, 0)], [S(.16, 14, 10), 0, M(0, 1.15, 0, 0, 0, 0, 1, 1.15, 1)]]);
     G.p_guitar = merge([[S(.16, 12, 8), 0, M(0, -.05, .14, Math.PI / 2, 0, 0, 1, .4, 1)], [S(.12, 12, 8), 0, M(.13, -.05, .14, Math.PI / 2, 0, 0, 1, .4, 1)], [B(.5, .04, .02), '#3a2412', M(-.3, -.05, .15)]]);
     G.p_bino = merge([[C(.025, .028, .1, 8), 0, M(.035, -.03, .06, Math.PI / 2)], [C(.025, .028, .1, 8), 0, M(-.035, -.03, .06, Math.PI / 2)], [B(.05, .02, .03), 0, M(0, -.03, .06)]]);
     G.p_broom = merge([[C(.012, .012, 1.3, 6), '#a07848', M(0, -.25, .05)], [B(.25, .08, .05), '#c8a050', M(0, -.9, .05)]]);
+    /* espingarda de dardos dos guardas (cores próprias: a instância fica branca). Cano para +z, centro entre o punho e o guarda-mão */
+    const dk = '#2c3036', ol = '#4a5640';
+    G.p_rifle = merge([
+      [B(.042, .11, .2), ol, M(0, -.03, -.36, .12)], [B(.046, .12, .03), '#1a1a1a', M(0, -.045, -.465, .12)],
+      [B(.05, .075, .3), dk, M(0, 0, -.1)], [B(.034, .095, .045), dk, M(0, -.075, -.15, .35)], [new THREE.TorusGeometry(.022, .005, 4, 10, Math.PI), dk, M(0, -.045, -.09, 0, Math.PI / 2, Math.PI)],
+      [B(.032, .12, .05), '#ffb020', M(0, -.085, -.01, -.22)], [B(.056, .062, .24), ol, M(0, -.006, .16)],
+      [C(.012, .012, .32, 8), dk, M(0, .005, .42, Math.PI / 2)], [C(.022, .022, .06, 10), '#ff7a1a', M(0, .005, .6, Math.PI / 2)],
+      [C(.022, .022, .2, 10), '#1f2226', M(0, .068, -.08, Math.PI / 2)], [C(.026, .022, .04, 10), '#1f2226', M(0, .068, .03, Math.PI / 2)], [C(.019, .019, .005, 10), '#4a8ac8', M(0, .068, .051, Math.PI / 2)],
+      [B(.01, .03, .03), dk, M(0, .035, -.06)], [B(.01, .03, .03), dk, M(0, .035, -.11)],
+    ]);
     G.dart = merge([[C(.006, .006, .12, 6), '#c9d4dc', M(0, .06, 0)], [new THREE.ConeGeometry(.02, .05, 6), '#ff3d6e', M(0, .14, 0)], [C(.008, .008, .03, 6), '#ffd040', M(0, .03, 0)]]);
     GEO = G; return G;
   }
@@ -100,36 +170,58 @@ const SniperPeople = (function () {
   /* ── catálogo de peças: geometria, material, articulação e de onde vem a cor ── */
   const PARTS = [
     ['pelvis', 'pelvis', 'cloth', 'pants'], ['belt', 'belt', 'cloth', 'belt', 1], ['torso', 'torso', 'cloth', 'shirt'], ['neck', 'neck', 'skin', 'skin'], ['head', 'head', 'skin', 'skin'],
-    ['eyes', 'eyes', 'eye', 'eyeW'], ['pupils', 'pupils', 'dark', 'eyeC'], ['brows', 'brows', 'hair', 'hair'], ['mouth', 'mouth', 'dark', 'lip'],
-    ['uarmL', 'uarm', 'cloth', 'sleeveC'], ['uarmR', 'uarm', 'cloth', 'sleeveC'], ['farmL', 'farm', 'skin', 'farmC'], ['farmR', 'farm', 'skin', 'farmC'], ['handL', 'hand', 'skin', 'handC'], ['handR', 'hand', 'skin', 'handC'],
+    ['eyes', 'eyes', 'eye', 'eyeW'], ['pupils', 'pupils', 'eye', 'eyeC'], ['brows', 'brows', 'hair', 'hair'], ['mouth', 'mouth', 'dark', 'lip'],
+    ['uarmL', 'uarm', 'cloth', 'sleeveC'], ['uarmR', 'uarm', 'cloth', 'sleeveC'], ['farmL', 'farm', 'skin', 'farmC'], ['farmR', 'farm', 'skin', 'farmC'], ['handL', 'handL', 'skin', 'handC'], ['handR', 'hand', 'skin', 'handC'],
     ['thighL', 'thigh', 'cloth', 'pants'], ['thighR', 'thigh', 'cloth', 'pants'], ['shinL', 'shin', 'cloth', 'shinC'], ['shinR', 'shin', 'cloth', 'shinC'], ['shoeL', 'shoe', 'shoe', 'shoes'], ['shoeR', 'shoe', 'shoe', 'shoes'],
   ];
   /* opcionais: [chave, geometria, material, cor, articulação] */
   const OPT = {
-    hair: { short: 'hair_short', long: 'hair_long', bun: 'hair_bun', curly: 'hair_curly', pony: 'hair_pony' },
-    hat: { cap: 'hat_cap', fedora: 'hat_fedora', beanie: 'hat_beanie', top: 'hat_top', straw: 'hat_straw', hard: 'hat_hard', beret: 'hat_beret', chef: 'hat_chef' },
+    hair: { short: 'hair_short', long: 'hair_long', bun: 'hair_bun', curly: 'hair_curly', pony: 'hair_pony', short_h: 'hair_short_h', long_h: 'hair_long_h', pony_h: 'hair_pony_h' },
+    hat: { cap: 'hat_cap', fedora: 'hat_fedora', beanie: 'hat_beanie', top: 'hat_top', straw: 'hat_straw', hard: 'hat_hard', beret: 'hat_beret', chef: 'hat_chef', guard: 'hat_guard' },
     face: { mustache: 'mustache', beard: 'beard' },
     glasses: { sun: 'glasses' },
-    over: { tie: 'tie', lapel: 'lapel', vest: 'vest', stripes: 'stripes', apron: 'apron', backpack: 'backpack', collar: 'collar' },
+    over: { tie: 'tie', lapel: 'lapel', vest: 'vest', stripes: 'stripes', apron: 'apron', backpack: 'backpack', collar: 'collar', uniform: 'uniform' },
+    band: { red: 'armband' },
     prop: { phone: 'p_phone', cup: 'p_cup', ice: 'p_ice', radio: 'p_radio', case: 'p_case', light: 'p_light', balloon: 'p_balloon', guitar: 'p_guitar', bino: 'p_bino', broom: 'p_broom' },
+    gun: { rifle: 'p_rifle' },
   };
-  const SLOT_OF = { hair: 'head', hat: 'head', face: 'head', glasses: 'head', over: 'torso', prop: 'handR' };
 
   /* ── materiais ── */
   function mats(env) {
-    const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ vertexColors: true, envMap: env || null, envMapIntensity: .5 }, o));
+    const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ vertexColors: true, envMap: env || null, envMapIntensity: .55 }, o));
     return {
-      cloth: std({ roughness: .86 }), skin: std({ roughness: .55 }), hair: std({ roughness: .62 }), dark: std({ roughness: .4 }), eye: std({ roughness: .2 }),
-      shoe: std({ roughness: .42, metalness: .1 }), prop: std({ roughness: .45, metalness: .15 }), gloss: std({ roughness: .3, metalness: .2 }),
+      cloth: std({ roughness: .84 }), skin: std({ roughness: .5 }), hair: std({ roughness: .55 }), dark: std({ roughness: .4 }), eye: std({ roughness: .12 }),
+      shoe: std({ roughness: .4, metalness: .1 }), prop: std({ roughness: .45, metalness: .15 }), gloss: std({ roughness: .3, metalness: .2 }), gun: std({ roughness: .5, metalness: .35 }),
     };
   }
 
+  /* ── IK de dois ossos (braço) no referencial da coluna ── */
+  const UA = .29, FA = .26 + .05;
+  let _ik = null;
+  function ik2(sx, sy, sz, tx, ty, tz, px, py, pz, out) {
+    if (!_ik) _ik = { t: new THREE.Vector3(), h: new THREE.Vector3(), e: new THREE.Vector3(), p: new THREE.Vector3(), q1: new THREE.Quaternion(), q2: new THREE.Quaternion(), n: new THREE.Vector3(), c: new THREE.Vector3() };
+    const K = _ik, t = K.t.set(tx - sx, ty - sy, tz - sz), d = clamp(t.length(), .08, UA + FA - .004);
+    const cosI = clamp((UA * UA + FA * FA - d * d) / (2 * UA * FA), -1, 1), eb = Math.PI - Math.acos(cosI);
+    K.h.set(0, -UA - FA * Math.cos(eb), FA * Math.sin(eb)).normalize(); t.normalize();
+    K.q1.setFromUnitVectors(K.h, t);
+    const e = K.e.set(0, -UA, 0).applyQuaternion(K.q1), p = K.p.set(px, py, pz);
+    e.addScaledVector(t, -e.dot(t)); p.addScaledVector(t, -p.dot(t));
+    if (e.lengthSq() > 1e-8 && p.lengthSq() > 1e-8) { const a = Math.atan2(K.c.crossVectors(e, p).dot(t), e.dot(p)); K.q2.setFromAxisAngle(t, a); out.q.multiplyQuaternions(K.q2, K.q1); } else out.q.copy(K.q1);
+    out.eb = eb; return out;
+  }
+  /* poses da espingarda no referencial da coluna: centro, cano (+z), topo (+y) */
+  const GUN = {
+    held: { c: [.04, .22, .22], d: [-.52, .76, .2], up: [.15, 0, -1] },
+    back: { c: [.0, .27, -.165], d: [.5, .84, 0], up: [0, .1, -1] },
+  };
+  const GRIP = [0, -.08, -.14], FORE = [0, -.04, .17];
+
   /* ── multidão: as InstancedMesh e os lugares de cada pessoa ── */
   function Crowd(scene, cap, env) {
-    const G = geos(), MT = mats(env), meshes = {}, groups = [];
+    const G = geos(), MT = mats(env), meshes = {};
     const mk = (key, geo, mat, n) => { const m = new THREE.InstancedMesh(geo, mat, n); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.count = 0; m.setColorAt(0, new THREE.Color()); scene.add(m); meshes[key] = m; return m; };
     PARTS.forEach(([k, g, mt]) => mk(k, G[g], MT[mt], cap));
-    Object.entries(OPT).forEach(([grp, v]) => Object.entries(v).forEach(([name, g]) => mk(grp + ':' + name, G[g], grp === 'prop' ? MT.prop : grp === 'hair' || grp === 'face' ? MT.hair : grp === 'glasses' ? MT.gloss : grp === 'hat' ? MT.cloth : MT.cloth, cap)));
+    Object.entries(OPT).forEach(([grp, v]) => Object.entries(v).forEach(([name, g]) => mk(grp + ':' + name, G[g], grp === 'prop' ? MT.prop : grp === 'gun' ? MT.gun : grp === 'hair' || grp === 'face' ? MT.hair : grp === 'glasses' ? MT.gloss : MT.cloth, grp === 'band' ? cap * 2 : cap)));
     const dartM = mk('dart', G.dart, MT.prop, cap * 3);
     const zero = new THREE.Matrix4().makeScale(0, 0, 0);
     const people = [];
@@ -138,40 +230,47 @@ const SniperPeople = (function () {
     function add(P) {
       P.slots = {}; P.ix = people.length; people.push(P);
       PARTS.forEach(([k]) => { const m = meshes[k]; P.slots[k] = m.count++; });
-      Object.keys(OPT).forEach(grp => { const v = P.look[grp]; if (v && meshes[grp + ':' + v]) { const m = meshes[grp + ':' + v]; P.slots[grp] = [m, m.count++]; } });
+      Object.keys(OPT).forEach(grp => { let v = P.look[grp]; if (grp === 'hair' && P.look.hat && meshes['hair:' + v + '_h']) v += '_h'; if (v && meshes[grp + ':' + v]) { const m = meshes[grp + ':' + v]; P.slots[grp] = [m, m.count++]; if (grp === 'band') P.slots.band2 = [m, m.count++]; } });
       paint(P);
       return P;
     }
     function paint(P) {
       const L = P.look;
-      const cs = { pants: L.pants, belt: L.belt || '#2a2420', shirt: L.shirt, skin: L.skin, eyeW: '#f4f1ea', eyeC: L.eyeC || '#2a1c12', hair: L.hairC, lip: '#7a3a34',
+      const cs = { pants: L.pants, belt: L.belt || '#2a2420', shirt: L.shirt, skin: L.skin, eyeW: '#f4f1ea', eyeC: L.eyeC || '#4a3220', hair: L.hairC, lip: '#8a3a3a',
         sleeveC: L.shirt, farmC: L.long ? L.shirt : L.skin, handC: L.gloves || L.skin, shinC: L.shorts ? L.skin : L.pants, shoes: L.shoes || '#2b2622' };
       PARTS.forEach(([k, , , ck]) => { col.set(cs[ck] || '#ffffff'); meshes[k].setColorAt(P.slots[k], col); });
-      Object.keys(OPT).forEach(grp => { const s = P.slots[grp]; if (!s) return; const c = L[grp + 'C'] || (grp === 'hair' || grp === 'face' ? L.hairC : grp === 'glasses' ? '#15171c' : '#ffffff'); col.set(c); s[0].setColorAt(s[1], col); });
+      Object.keys(OPT).forEach(grp => { const s = P.slots[grp]; if (!s) return; const c = grp === 'gun' ? '#ffffff' : grp === 'band' ? (L.bandC || '#d8302a') : L[grp + 'C'] || (grp === 'hair' || grp === 'face' ? L.hairC : grp === 'glasses' ? '#15171c' : '#ffffff'); col.set(c); s[0].setColorAt(s[1], col); if (grp === 'band') s[0].setColorAt(P.slots.band2[1], col); });
       Object.values(meshes).forEach(m => { if (m.instanceColor) m.instanceColor.needsUpdate = true; });
     }
 
     /* ── cinemática direta ── */
-    const J = {}; ['root', 'hip', 'spine', 'chest', 'neck', 'head', 'shL', 'shR', 'elL', 'elR', 'haL', 'haR', 'hpL', 'hpR', 'knL', 'knR', 'anL', 'anR', 'tmp', 'leaf'].forEach(k => { J[k] = new THREE.Matrix4(); });
+    const J = {}; ['root', 'hip', 'spine', 'chest', 'neck', 'head', 'shL', 'shR', 'elL', 'elR', 'haL', 'haR', 'hpL', 'hpR', 'knL', 'knR', 'anL', 'anR', 'tmp', 'leaf', 'gun'].forEach(k => { J[k] = new THREE.Matrix4(); });
     const _e = new THREE.Euler(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1), _m = new THREE.Matrix4();
+    const _gm = new THREE.Matrix4(), _gx = new THREE.Vector3(), _gy = new THREE.Vector3(), _gz = new THREE.Vector3(), _gp = new THREE.Vector3(), _ikL = { q: new THREE.Quaternion(), eb: 0 }, _ikR = { q: new THREE.Quaternion(), eb: 0 };
     function loc(out, par, x, y, z, rx, ry, rz, order) { _e.set(rx || 0, ry || 0, rz || 0, order || 'ZYX'); _q.setFromEuler(_e); _p.set(x, y, z); _s.set(1, 1, 1); _m.compose(_p, _q, _s); return out.multiplyMatrices(par, _m); }
     function leafS(par, sx, sy, sz) { _m.makeScale(sx, sy, sz); return J.leaf.multiplyMatrices(par, _m); }
     function put(P, k, m) { meshes[k].setMatrixAt(P.slots[k], m); }
     function putOpt(P, grp, m) { const s = P.slots[grp]; if (s) s[0].setMatrixAt(s[1], m); }
+    /* matriz da espingarda (referencial da coluna) a partir de centro, direção do cano e "topo" */
+    function gunLocal(c, d, up) {
+      _gz.set(d[0], d[1], d[2]).normalize(); _gy.set(up[0], up[1], up[2]); _gx.crossVectors(_gy, _gz).normalize(); _gy.crossVectors(_gz, _gx);
+      _gm.makeBasis(_gx, _gy, _gz).setPosition(c[0], c[1], c[2]); return _gm;
+    }
+    const _a = new THREE.Vector3(), _b = new THREE.Vector3();
 
     /* pose → matrizes de todas as peças; guarda as articulações (caixas de colisão) */
     function pose(P, Q) {
-      const s = P.s || 1, L = P.look;
+      const s = P.s || 1, L = P.look, bd = L.build || 1;
       _e.set(0, P.yaw, 0); _q.setFromEuler(_e); _p.set(P.x, P.y + (Q.lift || 0) * s, P.z); _s.set(s, s, s); J.root.compose(_p, _q, _s);
       /* deitar: roda à volta dos pés (cai para o lado ou de costas) */
       if (Q.rollZ || Q.rollX) loc(J.root, J.root, 0, 0, 0, Q.rollX || 0, 0, Q.rollZ || 0, 'XYZ');
       const hipY = .93 - (Q.drop || 0) + (Q.bob || 0);
       loc(J.hip, J.root, Q.sway || 0, hipY, Q.hipZ || 0, Q.lean || 0, Q.twist || 0, Q.side || 0, 'YXZ');
-      put(P, 'pelvis', leafS(J.hip, L.build || 1, 1, L.build || 1));
-      put(P, 'belt', leafS(J.hip, L.build || 1, 1, L.build || 1));
+      put(P, 'pelvis', leafS(J.hip, bd, 1, bd));
+      put(P, 'belt', leafS(J.hip, bd, 1, bd));
       loc(J.spine, J.hip, 0, .06, 0, Q.spine || 0, Q.spineY || 0, Q.spineZ || 0, 'YXZ');
-      const bw = (L.build || 1) * (1 + (Q.breath || 0) * .03), bd = (L.build || 1) * (L.belly || 1) * (1 + (Q.breath || 0) * .05);
-      put(P, 'torso', leafS(J.spine, bw, 1, bd));
+      const bw = bd * (1 + (Q.breath || 0) * .03), bdp = bd * (L.belly || 1) * (1 + (Q.breath || 0) * .05);
+      put(P, 'torso', leafS(J.spine, bw, 1, bdp));
       putOpt(P, 'over', J.leaf);
       loc(J.neck, J.spine, 0, .49, .005, Q.neckP || 0, 0, 0);
       put(P, 'neck', J.neck);
@@ -182,17 +281,30 @@ const SniperPeople = (function () {
       _m.compose(_p.set(0, .118 * (1 - eo), 0), _q.identity(), _s.set(1, eo, 1)); J.tmp.multiplyMatrices(J.head, _m); put(P, 'eyes', J.tmp); put(P, 'pupils', eo < .3 ? zero : J.tmp);
       put(P, 'brows', J.head);
       const yo = Q.yawn || 0; _m.compose(_p.set(0, -.058 * yo * 3.5, 0), _q.identity(), _s.set(1 + yo * .2, 1 + yo * 3.5, 1)); J.tmp.multiplyMatrices(J.head, _m); put(P, 'mouth', J.tmp);
-      /* braços: flexão (x) e abdução (z); cotovelo dobra para a frente */
-      const arm = (side, sh, el, ha, kU, kF, kH, f, ab, tw, eb, wr) => {
-        loc(J[sh], J.spine, side * .185 * (L.build || 1), .44, 0, -f, tw * side, side * ab, 'ZYX');
+      /* espingarda: ao peito, às costas ou a apontar → as mãos vão ao punho e ao guarda-mão */
+      let ikR = Q.ikR, ikL = Q.ikL;
+      if (P.slots.gun) {
+        const gm = Q.gun || 'back';
+        let Mg;
+        if (gm === 'aim') { const p = Q.aimP || 0, d = [-.08, Math.sin(p), Math.cos(p)]; Mg = gunLocal([.13 + d[0] * .46, .45 + d[1] * .46, .05 + d[2] * .46], d, [0, 1, 0]); }
+        else { const g = GUN[gm] || GUN.back; Mg = gunLocal(g.c, g.d, g.up); }
+        J.gun.multiplyMatrices(J.spine, Mg); putOpt(P, 'gun', J.gun);
+        if (gm !== 'back') { _a.set(GRIP[0], GRIP[1], GRIP[2]).applyMatrix4(Mg); _b.set(FORE[0], FORE[1], FORE[2]).applyMatrix4(Mg); ikR = [_a.x, _a.y, _a.z]; ikL = [_b.x, _b.y, _b.z]; }
+      }
+      /* braços: flexão (x) e abdução (z); cotovelo dobra para a frente — ou IK para um alvo */
+      const arm = (side, sh, el, ha, kU, kF, kH, f, ab, tw, eb, wr, tgt, pole, IK) => {
+        const sx = side * .185 * bd;
+        if (tgt) { ik2(sx, .44, 0, tgt[0], tgt[1], tgt[2], pole[0], pole[1], pole[2], IK); _p.set(sx, .44, 0); _s.set(1, 1, 1); _m.compose(_p, IK.q, _s); J[sh].multiplyMatrices(J.spine, _m); eb = IK.eb; }
+        else loc(J[sh], J.spine, sx, .44, 0, -f, tw * side, side * ab, 'ZYX');
         put(P, kU, J[sh]);
         loc(J[el], J[sh], 0, -.29, 0, -eb, 0, 0);
         put(P, kF, J[el]);
         loc(J[ha], J[el], 0, -.26, 0, wr || 0, 0, 0);
         put(P, kH, J[ha]);
       };
-      arm(-1, 'shL', 'elL', 'haL', 'uarmL', 'farmL', 'handL', Q.lSh || 0, (Q.lAb || 0) + .06, Q.lTw || 0, Q.lEl || 0, Q.lWr);
-      arm(1, 'shR', 'elR', 'haR', 'uarmR', 'farmR', 'handR', Q.rSh || 0, (Q.rAb || 0) + .06, Q.rTw || 0, Q.rEl || 0, Q.rWr);
+      arm(-1, 'shL', 'elL', 'haL', 'uarmL', 'farmL', 'handL', Q.lSh || 0, (Q.lAb || 0) + .06, Q.lTw || 0, Q.lEl || 0, Q.lWr, ikL, [-.5, -.5, -.15], _ikL);
+      arm(1, 'shR', 'elR', 'haR', 'uarmR', 'farmR', 'handR', Q.rSh || 0, (Q.rAb || 0) + .06, Q.rTw || 0, Q.rEl || 0, Q.rWr, ikR, [.5, -.6, -.2], _ikR);
+      if (P.slots.band) { loc(J.tmp, J.shL, 0, 0, 0); putOpt(P, 'band', J.tmp); const s3 = P.slots.band2; loc(J.leaf, J.shR, 0, 0, 0); s3[0].setMatrixAt(s3[1], J.leaf); }
       if (L.prop === 'balloon') { _p.setFromMatrixPosition(J.haR); _e.set(Math.sin(P.t * 1.3 + P.seed) * .12, 0, Math.sin(P.t * .9 + P.seed) * .15); _q.setFromEuler(_e); _s.set(s, s, s); J.tmp.compose(_p, _q, _s); putOpt(P, 'prop', J.tmp); }
       else putOpt(P, 'prop', J.haR);
       /* pernas: anca (x), abdução (z), joelho dobra para trás, pé compensa */
@@ -218,6 +330,7 @@ const SniperPeople = (function () {
     function hide(P) {
       PARTS.forEach(([k]) => meshes[k].setMatrixAt(P.slots[k], zero));
       Object.keys(OPT).forEach(g => putOpt(P, g, zero));
+      if (P.slots.band2) P.slots.band2[0].setMatrixAt(P.slots.band2[1], zero);
       if (P.darts) P.darts.forEach(d => dartM.setMatrixAt(d.slot, zero));
     }
     /* espetar um dardo: guarda a posição relativa à articulação mais próxima */
@@ -241,9 +354,11 @@ const SniperPeople = (function () {
   /* ════════════════════════════════════════════════════════════════
      animações → pose (Q). t = tempo da pessoa; P.anim guarda fases
   ════════════════════════════════════════════════════════════════ */
-  const Z = () => ({});
+  const ampOf = v => { const run = clamp((v - 2.2) / 2, 0, 1); return [run, lerp(.42, .72, run) * clamp(v / 1.3, .35, 1.1)]; };
+  /* metros por ciclo de passada (dois passos): o pé de apoio fica parado no chão */
+  function stride(v) { const [run, a] = ampOf(v); return 4 * .88 * Math.sin(a) * (1 + run * .3); }
   function walk(Q, ph, v) {
-    const run = clamp((v - 2.2) / 2, 0, 1), a = lerp(.42, .72, run) * clamp(v / 1.3, .35, 1.1), s = Math.sin(ph), c = Math.cos(ph);
+    const [run, a] = ampOf(v), s = Math.sin(ph), c = Math.cos(ph);
     Q.lHip = s * a; Q.rHip = -s * a;
     Q.lKn = .1 + Math.pow(Math.max(0, c), 1.3) * lerp(.85, 1.6, run) * clamp(v / 1.3, .4, 1.1);
     Q.rKn = .1 + Math.pow(Math.max(0, -c), 1.3) * lerp(.85, 1.6, run) * clamp(v / 1.3, .4, 1.1);
@@ -296,6 +411,10 @@ const SniperPeople = (function () {
     light(Q, t, s) { Q.rSh = 1.2 + Math.sin(t * .7 + s) * .15; Q.rEl = .3; Q.rTw = Math.sin(t * .5 + s) * .3; Q.headY = Math.sin(t * .5 + s) * .35; Q.spineY = Q.headY * .5; },
     case(Q) { Q.rSh = 0; Q.rEl = .05; Q.rAb = .12; },
     balloon(Q) { Q.rSh = .9; Q.rEl = .5; Q.rTw = -.2; },
+    /* ao volante: as mãos no aro (IK) e a cabeça a olhar a estrada */
+    drive(Q, t, s) { const st = Math.sin(t * .7 + s) * .03; Q.ikR = [.15, .34 + st, .37]; Q.ikL = [-.15, .34 - st, .37]; Q.headY = Math.sin(t * .4 + s) * .25; Q.headP = .05; Q.spine = -.1; },
+    /* guarda de sentinela: espingarda ao peito a rodar a cabeça */
+    guard(Q, t, s) { Q.headY = Math.sin(t * .45 + s) * .7; Q.spineY = Q.headY * .2; Q.gun = 'held'; },
   };
   /* sentado (banco, cadeira, esplanada) */
   function sit(Q, t, s, act) {
@@ -306,7 +425,7 @@ const SniperPeople = (function () {
   }
   /* deitado de costas (espreguiçadeira) */
   function recline(Q, t, s, k) {
-    sit(Q, t, s); Q.rollX = -1.15 * (k == null ? 1 : k); Q.lift = .55; Q.lHip = .35; Q.rHip = .35; Q.lKn = .3; Q.rKn = .5; Q.lFt = .2; Q.rFt = .2;
+    sit(Q, t, s); Q.rollX = -1.15 * (k == null ? 1 : k); Q.lift = .47; Q.lHip = .35; Q.rHip = .35; Q.lKn = .3; Q.rKn = .5; Q.lFt = .2; Q.rFt = .2;
     Q.lSh = 2.7; Q.rSh = 2.7; Q.lEl = 2.2; Q.rEl = 2.2; Q.lAb = .5; Q.rAb = .5; Q.headP = .5; Q.headY = Math.sin(t * .15 + s) * .25;
   }
   /* cair a dormir: k = 0..1 (atingido → bocejo → pernas cedem → no chão) */
@@ -350,5 +469,5 @@ const SniperPeople = (function () {
     Q.headY = Math.sin(t * .8 + s) * .6;
   }
 
-  return { Crowd, walk, idle, ACT, sit, recline, sleepPose, shake, crouch, geos, OPT };
+  return { Crowd, walk, stride, idle, ACT, sit, recline, sleepPose, shake, crouch, geos, OPT };
 })();

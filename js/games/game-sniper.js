@@ -28,6 +28,7 @@ const SniperGame = (function () {
   const W = () => SkyAceWorld, K = () => SniperKit, PP = () => SniperPeople;
   const FONT = "'Space Grotesk', system-ui, sans-serif";
   const _v1 = { x: 0, y: 0, z: 0 };
+  let _v3 = null, _v4 = null;
 
   /* ── progresso ── */
   function prog() { try { return Object.assign({ u: 0, s: {}, b: {} }, JSON.parse(localStorage.getItem(SAVE) || '{}')); } catch (e) { return { u: 0, s: {}, b: {} }; } }
@@ -47,6 +48,8 @@ const SniperGame = (function () {
     if (!fem && R() < .25) L.face = pick(['beard', 'mustache']);
     L.long = R() < .35;
     if (kind === 'guard') Object.assign(L, { shirt: '#23262c', pants: '#1d2026', long: true, over: 'lapel', glasses: 'sun', hair: 'short', hat: R() < .3 ? 'cap' : null, hatC: '#1d2026', shoes: '#111111', build: 1.05 + R() * .1, belly: 1, face: R() < .4 ? 'mustache' : null });
+    /* capangas da Liga: farda azul-ardósia, boné com emblema, braçadeira vermelha e espingarda de dardos (ponta laranja) */
+    if (kind === 'henchman') Object.assign(L, { shirt: '#3a4a66', pants: '#28303e', long: true, over: 'uniform', overC: '#3a4a66', band: 'red', bandC: '#e0342c', gun: 'rifle', glasses: R() < .5 ? 'sun' : null, hair: 'short', hat: 'guard', hatC: '#2c3548', shoes: '#151515', gloves: '#2a2a2a', build: 1.04 + R() * .1, belly: 1, face: R() < .45 ? 'mustache' : null });
     if (kind === 'worker') Object.assign(L, { hat: 'hard', hatC: pick(['#f2c230', '#f0f0f0', '#f27a20']), over: 'vest', overC: '#ff7a1a', long: R() < .5, pants: pick(['#3a4a6a', '#4a4a4a']) });
     if (kind === 'vendor') Object.assign(L, { over: 'apron', overC: pick(['#f4f1ea', '#e8d0a0', '#a0c8e8']), hat: R() < .4 ? 'straw' : null, hatC: '#e0c880' });
     if (kind === 'villager') { if (R() < .3) Object.assign(L, { hat: pick(['straw', 'cap', 'beret', 'fedora']), hatC: pick(['#e0c880', '#c83a3a', '#2a2a3a', '#5a4a3a']) }); }
@@ -101,7 +104,8 @@ const SniperGame = (function () {
       G.movers = [B.forklift(-60, -170, 0, y), B.forklift(40, -260, 0, y)].map((fk, i) => ({ fk, path: i ? [[30, -262], [30, -195], [80, -195]] : [[-150, -168], [-62, -168], [-62, -240]], s: 0, v: 3, ping: true }));
       /* casario do cais (atrás da estrada) e um café com esplanada */
       [[-230, -48], [-200, -46], [-170, -50], [-140, -47], [160, -48], [190, -50], [222, -46]].forEach(([x, z], i) => B.house({ x, z, yaw: 0, w: 12 + (i % 3) * 3, d: 12, floors: 2 + (i % 2), y, shop: i === 3 ? { c: '#2a64b8', t: 'CAFÉ DO PORTO' } : i === 5 ? { c: '#c83a3a', t: 'PEIXARIA' } : null, smoke: i % 3 === 0 }));
-      for (let i = 0; i < 4; i++) { B.umbrella(-150 + i * 5, -68, y, ['#e85a3a', '#2a8ae8', '#f2c230', '#3a8a4a'][i]); }
+      /* esplanada do café: mesas com chapéu de sol (as cadeiras aparecem debaixo de quem se senta) */
+      for (let i = 0; i < 4; i++) { B.cafeTable(-152 + i * 5, -66, y); B.umbrella(-152 + i * 5, -66, y, ['#e85a3a', '#2a8ae8', '#f2c230', '#3a8a4a'][i]); }
       /* farol no molhe */
       const F = B.frame(240, -360, 0, 0); B.box(F, 'stone', 20, 4, 70, 0, -4, 25, '#9a948a', { uv: 2 }); B.geo(F, 'paint', new THREE.CylinderGeometry(2.2, 3, 18, 16), 0, 9, 0, '#f4f1ea'); for (let k = 0; k < 3; k++) B.geo(F, 'paint', new THREE.CylinderGeometry(2.25 + k * .0, 2.6 - k * .2, 2, 16), 0, 3 + k * 5, 0, '#d83a2a'); B.geo(F, 'glassS', new THREE.CylinderGeometry(1.6, 1.6, 2.4, 12), 0, 19.2, 0, '#fff4c0'); B.geo(F, 'paint', new THREE.ConeGeometry(2, 1.6, 12), 0, 21.2, 0, '#d83a2a'); B.collider(F, 5, 22, 5, 0, 0, 0, 'wall');
       /* torre de água do ninho (onde está a Coruja) */
@@ -112,22 +116,23 @@ const SniperGame = (function () {
       for (let i = 0; i < 120; i++) T.push({ x: rand(-1800, 1800), z: rand(-2400, -1600), k: 'pine', s: 1 + B.R() });
       G.treeList = T;
       /* barcos */
-      G.boats = [[-175, -318, .05, '#2a64b8'], [-135, -320, -.03, '#c83a2a'], [-95, -319, .04, '#3a8a4a'], [-55, -321, -.06, '#e8a020'], [35, -318, .02, '#2a8a8a']].map(([x, z, r, c]) => B.boat(x, z, Math.PI / 2 + r, { c, flag: '#f4f1ea' }));
-      G.escapeBoat = B.boat(0, -316, Math.PI / 2, { c: '#7a3ab0', L: 8, flag: '#1a1a1a' });
+      G.boats = [[-175, -311, .05, '#2a64b8'], [-135, -311.5, -.03, '#c83a2a'], [-95, -311, .04, '#3a8a4a'], [-55, -312, -.06, '#e8a020'], [35, -311, .02, '#2a8a8a']].map(([x, z, r, c]) => B.boat(x, z, Math.PI / 2 + r, { c, flag: '#f4f1ea' }));
+      G.escapeBoat = B.boat(0, -309, Math.PI / 2, { c: '#7a3ab0', speed: true });
       /* gente */
       const R = B.R;
       const gp = [[[-60, -195], [-60, -262], [-36, -262], [-36, -195]], [[25, -196], [60, -196], [60, -250], [25, -250]], [[-90, -180], [-10, -180]], [[30, -270], [-30, -270], [-30, -290], [30, -290]]];
-      gp.forEach((path, i) => P.push({ role: 'guard', tag: 'guard', name: 'Guarda', look: outfit(R, 'guard'), beh: { type: 'patrol', path: path.map(p => [p[0], p[1], 3 + R() * 4, ['look', 'arms', 'radio', 'bino'][Math.floor(R() * 4)]]) }, aware: true }));
-      P.push({ role: 'guard', tag: 'guard', name: 'Vigia', look: outfit(R, 'guard', { hat: 'cap' }), beh: { type: 'stand', x: 10, z: -215, y: y + 3 * 2.62, yaw: Math.PI * .1, act: 'bino', turn: 1 }, aware: true, range: 55 });
-      P.push({ role: 'boss', tag: 'boss', name: 'Chefe Bigodes', look: outfit(R, 'guard', { shirt: '#5a2a6a', pants: '#3a1a4a', over: 'lapel', overC: '#ffffff', hat: 'fedora', hatC: '#2a1a2a', face: 'mustache', hairC: '#1a1a1a', glasses: null, build: 1.15, belly: 1.25, prop: 'case', propC: '#6a3a1a' }), beh: { type: 'path', path: [[-130, -122], [-100, -160], [-75, -195], [-75, -280], [-20, -285], [0, -302]], speed: 1.25, end: 'escape' }, hidden: true, vip: true, aware: true });
+      gp.forEach((path, i) => P.push({ role: 'guard', tag: 'guard', name: 'Guarda', look: outfit(R, 'henchman'), beh: { type: 'patrol', path: path.map(p => [p[0], p[1], 3 + R() * 4, ['look', 'arms', 'radio', 'bino'][Math.floor(R() * 4)]]) }, aware: true }));
+      P.push({ role: 'guard', tag: 'guard', name: 'Vigia', look: outfit(R, 'henchman'), beh: { type: 'stand', x: 10, z: -215, y: y + 3 * 2.62, yaw: Math.PI * .1, act: 'bino', turn: 1 }, aware: true, range: 55 });
+      P.push({ role: 'boss', tag: 'boss', name: 'Chefe Bigodes', look: outfit(R, 'guard', { shirt: '#5a2a6a', pants: '#3a1a4a', over: 'lapel', overC: '#ffffff', hat: 'fedora', hatC: '#2a1a2a', face: 'mustache', hairC: '#1a1a1a', glasses: null, build: 1.15, belly: 1.25, prop: 'case', propC: '#6a3a1a' }), beh: { type: 'path', path: [[-115.3, -126.5], [-114, -123], [-100, -123], [-100, -160], [-75, -195], [-75, -280], [-20, -285], [0, -302]], speed: 1.25, end: (G, P) => boatEscape(G, P) }, hidden: true, vip: true, aware: true });
       for (let i = 0; i < 6; i++) P.push({ role: 'civ', tag: 'worker', name: 'Estivador', look: outfit(R, 'worker'), beh: { type: 'wander', area: [-200, -275, 200, -150], acts: ['talk', 'arms', 'cup', 'hips', 'point'] } });
       for (let i = 0; i < 3; i++) P.push({ role: 'civ', tag: 'fisher', name: 'Pescador', look: outfit(R, 'fisher'), beh: { type: 'stand', x: -150 + i * 45 + 20, z: -296, yaw: Math.PI + rand(-.4, .4), act: ['talk', 'arms', 'cup'][i] } });
-      for (let i = 0; i < 6; i++) P.push({ role: 'civ', tag: 'civ', name: 'Cliente', look: outfit(R, 'tourist'), beh: { type: 'sit', x: -152 + (i % 4) * 5, z: -66 + Math.floor(i / 4) * 2.2 - 1, yaw: i < 4 ? 0 : Math.PI, act: ['cup', 'talk', 'phone', 'listen'][i % 4] } });
+      for (let i = 0; i < 6; i++) P.push({ role: 'civ', tag: 'civ', name: 'Cliente', look: outfit(R, 'tourist'), beh: { type: 'sit', x: -152 + (i % 4) * 5, z: i < 4 ? -66.78 : -65.22, yaw: i < 4 ? 0 : Math.PI, act: ['cup', 'talk', 'phone', 'listen'][i % 4] } });
       for (let i = 0; i < 6; i++) P.push({ role: 'civ', tag: 'civ', name: 'Transeunte', look: outfit(R, R() < .5 ? 'tourist' : 'villager'), beh: { type: 'path', path: i % 2 ? [[-250, -75], [250, -75]] : [[250, -77], [-250, -77]], loop: 'ping', speed: rand(1.1, 1.6), act: R() < .3 ? 'phone' : null } });
       /* patos de borracha escondidos */
-      G.collect = { kind: 'duck', name: 'patos de borracha', list: [[-130, 0, -330], [128, 1.6, -262], [-205, 1.5, -306]] };
+      /* patos onde o ninho os vê (verificado por raio a partir do ninho): em cima de um contentor, a boiar ao largo e na cumeeira da lota */
+      G.collect = { kind: 'duck', name: 'patos de borracha', list: [[-24, y + 2.62 + .02, -205], [-60, 0, -372], [120, y + 10 + 3.6 + .05, -140]] };
       G.carsDef = [{ path: [[-260, -92], [260, -92]], loop: 'ping', n: 3, speed: 9 }];
-      G.birds = { n: 26, kind: 'gull', centers: [[0, 40, -260], [-140, 30, -300], [150, 45, -200]] };
+      G.birds = { n: 26, kind: 'gull', centers: [[0, 22, -240], [-140, 18, -290], [150, 26, -210]], perch: [[-50, y + 3 * 2.62, -205], [45, y + 2 * 2.62, -205], [-150, y + .9, -295], [10, y + 2.62 + 2.6, -238]] };
       return P;
     },
     onAlarm(G) { const b = G.people.find(p => p.tag === 'boss'); if (b && b.beh) b.beh.speed = 3.4; },
@@ -166,7 +171,7 @@ const SniperGame = (function () {
       const st = [[-28, cz + 16, Math.PI / 2, 'fruit', 'FRUTA'], [-28, cz + 6, Math.PI / 2, 'bread', 'BOLOS'], [-28, cz - 4, Math.PI / 2, 'flowers'], [28, cz + 16, -Math.PI / 2, 'jars', 'MEL'], [28, cz + 6, -Math.PI / 2, 'toys', 'BRINQUEDOS'], [28, cz - 4, -Math.PI / 2, 'fruit'], [-12, cz + 20, Math.PI, 'bread', 'FARTURAS'], [12, cz + 20, Math.PI, 'flowers']];
       st.forEach(([x, z, r, k, t]) => B.stall({ x, z, yaw: r, y, kind: k, t }));
       G.balloonSpots = st.map(([x, z, r]) => [x + Math.sin(r) * -1.6, y + 3.2, z + Math.cos(r) * -1.6]);
-      for (let i = 0; i < 4; i++) { B.umbrella(-14 + i * 9, cz + 28, y, ['#e85a3a', '#2a8ae8', '#f2c230', '#3a8a4a'][i]); }
+      for (let i = 0; i < 4; i++) { B.cafeTable(-14 + i * 9, cz + 28, y); B.umbrella(-14 + i * 9, cz + 28, y, ['#e85a3a', '#2a8ae8', '#f2c230', '#3a8a4a'][i]); }
       for (let i = 0; i < 8; i++) B.bench(-30 + i * 8.5, cz + 32, Math.PI, y);
       const bc = ['#e83a3a', '#f2c230', '#3a8ae8', '#3ac05a', '#f08ab0', '#f4f1ea'];
       B.bunting([[-34, y + 7, cz - 28], [34, y + 7, cz + 20]], bc); B.bunting([[34, y + 7, cz - 28], [-34, y + 7, cz + 20]], bc); B.bunting([[-34, y + 6.5, cz - 6], [34, y + 6.5, cz - 6]], bc);
@@ -185,12 +190,12 @@ const SniperGame = (function () {
       [['sing', 0, null], ['guitar', -2.5, 'guitar'], ['guitar', 2.5, 'guitar'], ['drum', 0, null]].forEach(([a, dx, pr], i) => P.push({ role: 'civ', tag: 'band', name: 'Músico', look: outfit(R, 'villager', { prop: pr, propC: '#c8783a', shirt: ['#c83a3a', '#2a2a2a', '#f2c230', '#2a64b8'][i] }), beh: { type: 'stand', x: dx, z: cz - 19 + (i === 3 ? -1.8 : .8), y: y + 1.2, yaw: 0, act: a } }));
       for (let i = 0; i < 24; i++) { const a = R() * TAU, r = 3 + R() * 9; P.push({ role: 'civ', tag: 'civ', name: 'Festeiro', look: outfit(R, R() < .2 ? 'kid' : 'villager'), s: undefined, beh: { type: 'dance', x: Math.cos(a) * r * 1.3, z: cz - 8 + Math.sin(a) * r * .6, yaw: Math.PI + rand(-.5, .5), act: R() < .75 ? 'dance' : R() < .5 ? 'clap' : 'cheer' } }); }
       st.forEach(([x, z, r], i) => P.push({ role: 'civ', tag: 'vendor', name: 'Vendedor', look: outfit(R, 'vendor'), beh: { type: 'stand', x: x - Math.sin(r) * .7, z: z - Math.cos(r) * .7, yaw: r, act: 'vendor' } }));
-      for (let i = 0; i < 8; i++) P.push({ role: 'civ', tag: 'civ', name: 'Cliente', look: outfit(R, 'villager'), beh: { type: 'sit', x: -14 + (i % 4) * 9 + (i < 4 ? -.9 : .9), z: cz + 28, yaw: i < 4 ? Math.PI / 2 : -Math.PI / 2, act: ['cup', 'talk', 'ice', 'listen'][i % 4] } });
+      for (let i = 0; i < 8; i++) P.push({ role: 'civ', tag: 'civ', name: 'Cliente', look: outfit(R, 'villager'), beh: { type: 'sit', x: -14 + (i % 4) * 9 + (i < 4 ? -.78 : .78), z: cz + 28, yaw: i < 4 ? Math.PI / 2 : -Math.PI / 2, act: ['cup', 'talk', 'ice', 'listen'][i % 4] } });
       for (let i = 0; i < 18; i++) { const kid = R() < .3; P.push({ role: 'civ', tag: 'civ', name: kid ? 'Criança' : 'Visitante', look: outfit(R, kid ? 'kid' : R() < .5 ? 'tourist' : 'villager', { prop: kid && R() < .6 ? 'balloon' : R() < .25 ? 'ice' : R() < .2 ? 'phone' : null, propC: ['#e83a3a', '#3a8ae8', '#f2c230', '#3ac05a'][i % 4] }), s: kid ? .62 + R() * .1 : undefined, beh: { type: 'wander', area: [-26, cz - 12, 26, cz + 24], acts: ['talk', 'look', 'clap', 'cup', 'listen', 'point'], speed: kid ? 1.7 : undefined } }); }
-      for (let i = 0; i < 3; i++) P.push({ role: 'civ', tag: 'civ', name: 'Idoso', look: outfit(R, 'villager', { hairC: '#d8d8d0', hat: R() < .5 ? 'beret' : 'fedora', hatC: '#2a2a3a' }), beh: { type: 'sit', x: -26 + i * 8.5, z: cz + 32, yaw: Math.PI, act: ['listen', 'talk', 'arms'][i] } });
+      for (let i = 0; i < 3; i++) P.push({ role: 'civ', tag: 'civ', name: 'Idoso', look: outfit(R, 'villager', { hairC: '#d8d8d0', hat: R() < .5 ? 'beret' : 'fedora', hatC: '#2a2a3a' }), beh: { type: 'sit', bench: true, x: -30 + i * 8.5 + (i % 2 ? .4 : -.4), z: cz + 32, yaw: Math.PI, act: ['listen', 'talk', 'arms'][i] } });
       /* o gatuno das riscas e os vigias de boné vermelho */
       P.push({ role: 'thief', tag: 'thief', name: 'Gatuno das Riscas', look: outfit(R, 'villager', { shirt: '#f4f1ea', over: 'stripes', overC: '#1a1a1a', hat: 'beanie', hatC: '#1a1a1a', face: 'mustache', hairC: '#1a1a1a', pants: '#2a2a3a', long: true }), beh: { type: 'wander', area: [-24, cz - 10, 24, cz + 22], acts: ['look', 'hips', 'point', 'phone'], speed: 1.15, pick: true }, aware: true, vip: true, range: 22 });
-      [[-30, cz + 26, .7], [31, cz - 24, -2.4]].forEach(([x, z, yaw]) => P.push({ role: 'guard', tag: 'lookout', name: 'Vigia', look: outfit(R, 'villager', { hat: 'cap', hatC: '#d82a2a', face: 'mustache', shirt: '#2a2a3a', glasses: 'sun' }), beh: { type: 'stand', x, z, yaw, act: 'arms', turn: 1 }, aware: true, range: 38 }));
+      [[-30, cz + 26, .7], [31, cz - 24, -2.4]].forEach(([x, z, yaw]) => P.push({ role: 'guard', tag: 'lookout', name: 'Vigia', look: outfit(R, 'villager', { hat: 'cap', hatC: '#d82a2a', face: 'mustache', shirt: '#2a2a3a', glasses: 'sun', gun: 'rifle', band: 'red', bandC: '#e0342c', long: true }), beh: { type: 'stand', x, z, yaw, act: 'arms', turn: 1 }, aware: true, range: 38 }));
       G.escape = [[30, cz + 2], [60, cz + 1], [140, cz + 1], [180, cz + 1]];
       G.escapePath = P => [[P.x, P.z]].concat(G.escape);
       G.collect = { kind: 'balloon', name: 'balões', list: G.balloonSpots.slice(0, 6) };
@@ -242,7 +247,7 @@ const SniperGame = (function () {
       [[-22, -282, 40, 22], [22, -282, 42, 22], [22, -322, 42, 24], [-22, -322, 40, 24]].forEach(([x, z, w, d], i) => B.house({ x, z, yaw: [0, 0, Math.PI, Math.PI][i], w: w - 1, d, floors: 6, y, roof: 'flat', wall: ['#e8c9a0', '#cfe0e8', '#f2d0b8', '#e8eef0'][i], shop: i < 2 ? { c: ['#2a8a4a', '#c83a3a'][i], t: ['MERCADO', 'PIZZARIA'][i] } : null }));
       B.plank(-2, -282, 2, -282, ry); B.plank(-2, -322, 2, -322, ry); B.plank(-22, -293.5, -22, -310, ry); B.plank(22, -293.5, 22, -310, ry);
       /* gnomos nos telhados (brindes) */
-      G.collect = { kind: 'gnome', name: 'gnomos', list: [[-30, ry, -274], [31, ry, -330], [-150, y + 3.2 + 4 * 3 + .05 + .6, -229]] };
+      G.collect = { kind: 'gnome', name: 'gnomos', list: [[-30, ry, -281], [31, ry, -330], [-150, y + 3.2 + 4 * 3 + .05 + .6, -229]] };
       /* árvores nas avenidas */
       const T = []; ZS.forEach(z => { for (let x = -360; x < 360; x += 16) if (Math.abs(x - Math.round(x / 100) * 100) > 14) T.push({ x: x + 3, z: z - 8.6, k: 'leaf', s: .5 + R() * .15 }); });
       for (let i = 0; i < 300; i++) { const a = R() * TAU, r = 900 + R() * 900; T.push({ x: Math.cos(a) * r, z: -230 + Math.sin(a) * r, k: R() < .5 ? 'pine' : 'leaf', s: .8 + R() * .7 }); }
@@ -250,11 +255,12 @@ const SniperGame = (function () {
       for (let i = 0; i < 14; i++) B.lamp(-330 + i * 50, -251, 0, y);
       /* gente na rua */
       for (let i = 0; i < 26; i++) { const z = B.pick(ZS.slice(1, 5)) + (R() < .5 ? -8.6 : 8.6), dir = R() < .5; P.push({ role: 'civ', tag: 'civ', name: 'Transeunte', look: outfit(R, B.pick(['tourist', 'villager', 'villager']), { prop: R() < .3 ? 'phone' : R() < .15 ? 'case' : R() < .1 ? 'ice' : null }), beh: { type: 'path', path: dir ? [[-320, z], [320, z]] : [[320, z], [-320, z]], loop: 'ping', speed: rand(1, 1.6), act: 'phone' }, s: R() < .1 ? .65 : undefined }); }
-      for (let i = 0; i < 8; i++) P.push({ role: 'civ', tag: 'civ', name: 'Cliente', look: outfit(R, 'villager'), beh: { type: 'sit', x: -36 + (i % 4) * 3, z: -251.6 + Math.floor(i / 4) * 1.6, yaw: Math.floor(i / 4) ? Math.PI : 0, act: ['cup', 'talk', 'phone', 'listen'][i % 4] } });
+      for (let i = 0; i < 4; i++) { B.cafeTable(-36 + i * 3, -250.8, y); if (i % 2 === 0) B.umbrella(-34.5 + i * 3, -250.8, y, ['#2a8a4a', '#c83a3a'][i / 2]); }
+      for (let i = 0; i < 8; i++) P.push({ role: 'civ', tag: 'civ', name: 'Cliente', look: outfit(R, 'villager'), beh: { type: 'sit', x: -36 + (i % 4) * 3, z: Math.floor(i / 4) ? -250.02 : -251.58, yaw: Math.floor(i / 4) ? Math.PI : 0, act: ['cup', 'talk', 'phone', 'listen'][i % 4] } });
       /* vigias nos telhados à volta (binóculos) */
       const roofsY = (f) => y + 3.2 + (f - 1) * 3 + .05;
       G.spotters = [[-90, -246, 0, 7], [95, -246, 0, 8], [-100, -352, Math.PI, 6], [100, -352, Math.PI, 7], [-14, -312, Math.PI * .8, 6], [14, -290, Math.PI * .1, 6]];
-      P.push(...G.spotters.slice(4).map(([x, z, yaw]) => ({ role: 'guard', tag: 'guard', name: 'Vigia', look: outfit(R, 'guard', { hat: 'cap' }), beh: { type: 'stand', x, z, y: ry, yaw, act: 'bino', turn: 1 }, aware: true, range: 55 })));
+      P.push(...G.spotters.slice(4).map(([x, z, yaw]) => ({ role: 'guard', tag: 'guard', name: 'Vigia', look: outfit(R, 'henchman'), beh: { type: 'stand', x, z, y: ry, yaw, act: 'bino', turn: 1 }, aware: true, range: 55 })));
       /* estafeta da mala e o comprador */
       P.push({ role: 'boss', tag: 'courier', name: 'Bigodes Júnior', look: outfit(R, 'guard', { shirt: '#c83a3a', over: 'lapel', overC: '#ffffff', hat: 'fedora', hatC: '#1a1a1a', face: 'mustache', glasses: null, prop: 'case', propC: '#3a2a1a' }), beh: { type: 'seq', speed: 1.3, steps: [{ go: [-30, -276] }, { do: 'look', d: 6 }, { go: [-22, -296] }, { go: [-22, -312] }, { go: [-30, -330] }, { do: 'phone', d: 8 }, { go: [0, -322] }, { go: [26, -322] }, { go: [30, -312] }, { go: [22, -296] }, { go: [24, -278] }, { do: 'talk', d: 9, yaw: Math.PI / 2 }, { go: [0, -282] }] }, y: ry, vip: true, aware: true, range: 40 });
       P.push({ role: 'guard', tag: 'buyer', name: 'Comprador', look: outfit(R, 'guard', { shirt: '#2a4a3a', hat: 'fedora', hatC: '#3a3a2a' }), beh: { type: 'stand', x: 32, z: -278, y: ry, yaw: -Math.PI / 2, act: 'arms', turn: 0 }, aware: true, range: 45 });
@@ -272,9 +278,9 @@ const SniperGame = (function () {
       C.fleeing = true; C.beh = { type: 'path', speed: 3.8, path: [[C.x, C.z], [36, -292]], end: (G, P) => { P.hidden = true; G.courierDown = 6; } }; C.wi = 1;
     },
     script(G, dt) {
-      if (G.courierDown > 0) { G.courierDown -= dt; if (G.courierDown <= 0) { const C = G.people.find(p => p.tag === 'courier'); C.hidden = false; C.fy = null; C.x = 46; C.z = -294; C.beh = { type: 'path', speed: 3.6, path: [[46, -294], [52, -298]], end: (G, P) => { P.hidden = true; const car = G.cars.find(c => c.tag === 'escape'); car.go = true; car.parked = false; car.v = 0; car.carrier = P; car.onEnd = G => fail(G, 'Bigodes Júnior fugiu de carro!'); G.obj.find(o => o.id === 'tires').shown = true; hint(G, 'Fugiu para o carro preto — fura-lhe os pneus!', 3, true); } }; C.wi = 1; } }
+      if (G.courierDown > 0) { G.courierDown -= dt; if (G.courierDown <= 0) { const C = G.people.find(p => p.tag === 'courier'); C.hidden = false; C.fy = null; C.x = 46; C.z = -294; C.beh = { type: 'path', speed: 3.6, path: [[46, -294], [52, -298]], end: (G, P) => { const car = G.cars.find(c => c.tag === 'escape'); P.beh = { type: 'ride', obj: car.g, seat: car.seat, rot: Math.PI / 2, act: 'drive' }; P.marked = true; setPip(G, P, 'Bigodes Júnior meteu-se no carro preto!', 4, 3); car.go = true; car.parked = false; car.v = 0; car.carrier = P; car.onEnd = G => fail(G, 'Bigodes Júnior fugiu de carro!'); G.obj.find(o => o.id === 'tires').shown = true; hint(G, 'Fugiu para o carro preto — fura-lhe os pneus!', 3, true); } }; C.wi = 1; } }
       const car = G.cars.find(c => c.tag === 'escape');
-      if (car && car.go && car.flat >= 2 && car.v < .3 && car.carrier) { const C = car.carrier; car.carrier = null; C.hidden = false; C.x = car.x + 2; C.z = car.z + 1; C.fy = null; C.beh = { type: 'path', speed: 3.4, path: [[C.x, C.z], [C.x + 10, C.z], [380, C.z]], end: 'escape' }; C.wi = 1; hint(G, 'Saiu do carro a correr — agora!', 2.5, true); }
+      if (car && car.go && car.flat >= 2 && car.v < .3 && car.carrier) { const C = car.carrier; car.carrier = null; C.hidden = false; C.sitting = false; C.x = car.x + 2; C.z = car.z + 1; C.fy = null; C.beh = { type: 'path', speed: 3.4, path: [[C.x, C.z], [C.x + 10, C.z], [380, C.z]], end: 'escape' }; C.wi = 1; hint(G, 'Saiu do carro a correr — agora!', 2.5, true); }
     },
     objectives: [
       { id: 'courier', text: 'Adormece Bigodes Júnior (mala castanha)', check: G => G.people.some(p => p.tag === 'courier' && p.sleep) },
@@ -324,17 +330,17 @@ const SniperGame = (function () {
       /* floresta nas encostas */
       for (let i = 0; i < 900; i++) { const x = rand(-1600, 1600), z = rand(-1100, 700); if (Math.abs(x) < 80 && Math.abs(z + 525) < 60) continue; if (Math.hypot(x, z) < 40) continue; if (Math.abs(z + 260) < 30) continue; T.push({ x, z, k: R() < .7 ? 'pine' : 'leaf', s: .7 + R() * .8 }); }
       G.treeList = T;
-      G.collect = { kind: 'gnome', gold: true, name: 'gnomos dourados', list: [[-28, y + .05, -510], [30, y + .05, -497], [-12, y + 7.3, -545]] };
+      G.collect = { kind: 'gnome', gold: true, name: 'gnomos dourados', list: [[-46, y + 3.45, -538], [-30, y + 2.72, -492], [-12, y + 7.3, -545]] };
       /* gente */
       const baron = { role: 'boss', tag: 'baron', name: 'Barão Bigodes', look: outfit(R, 'tourist', { shirt: '#f2a020', over: null, shorts: true, hat: 'top', hatC: '#1a1a1a', face: 'mustache', hairC: '#2a1a1a', glasses: 'sun', build: 1.12, belly: 1.35, skin: '#f0c8a8', shoes: '#f2f2f2' }), vip: true, aware: true, range: 30,
-        beh: { type: 'seq', speed: 1.1, steps: [{ recline: 1, x: -9, z: -510, yaw: Math.PI, d: 45 }, { go: [-12, -514] }, { do: 'cup', d: 14, yaw: -Math.PI / 2 }, { go: [-4, -514] }, { do: 'look', d: 8 }, { go: [5, -523] }, { do: 'phone', d: 12 }, { go: [-9, -511] }] } };
+        beh: { type: 'seq', speed: 1.1, steps: [{ recline: 1, x: -9, z: -510, yaw: Math.PI, d: 45 }, { go: [-12, -514] }, { do: 'cup', d: 14, yaw: -Math.PI / 2 }, { go: [-4, -512.8] }, { do: 'look', d: 8 }, { go: [5, -523] }, { do: 'phone', d: 12 }, { go: [-9, -511] }] } };
       P.push(baron);
       const gp = [[[-30, -498, 4, 'look'], [30, -498, 4, 'arms']], [[-32, -535, 3, 'look'], [-32, -505, 3, 'radio']], [[36, -505, 4, 'bino'], [52, -510, 4, 'look'], [52, -534, 3, 'arms']], [[-26, -492, 6, 'arms'], [-34, -488, 5, 'look']], [[18, -530, 4, 'look'], [-18, -530, 4, 'radio']]];
-      gp.forEach(path => P.push({ role: 'guard', tag: 'guard', name: 'Guarda', look: outfit(R, 'guard'), beh: { type: 'patrol', path }, aware: true, range: 36 }));
-      P.push({ role: 'guard', tag: 'guard', name: 'Vigia do terraço', look: outfit(R, 'guard', { hat: 'cap' }), beh: { type: 'stand', x: 6, z: -536, y: y + 7.3, yaw: 0, act: 'bino', turn: 1 }, aware: true, range: 60 });
+      gp.forEach(path => P.push({ role: 'guard', tag: 'guard', name: 'Guarda', look: outfit(R, 'henchman'), beh: { type: 'patrol', path }, aware: true, range: 36 }));
+      P.push({ role: 'guard', tag: 'guard', name: 'Vigia do terraço', look: outfit(R, 'henchman'), beh: { type: 'stand', x: 6, z: -536, y: y + 7.3, yaw: 0, act: 'bino', turn: 1 }, aware: true, range: 60 });
       P.push({ role: 'civ', tag: 'civ', name: 'Mordomo', look: outfit(R, 'guard', { shirt: '#f4f4f0', over: 'lapel', overC: '#1a1a1a', glasses: null, hairC: '#d8d8d0' }), beh: { type: 'seq', speed: 1, steps: [{ go: [-2, -524] }, { do: 'vendor', d: 6 }, { go: [-13, -514] }, { do: 'talk', d: 8, yaw: Math.PI / 2 }, { go: [-6, -528] }, { do: 'arms', d: 10 }] } });
       P.push({ role: 'civ', tag: 'civ', name: 'Jardineiro', look: outfit(R, 'villager', { hat: 'straw', hatC: '#e0c880', prop: 'broom', over: 'apron', overC: '#3a6a3a' }), beh: { type: 'seq', steps: [{ go: [20, -500] }, { do: 'sweep', d: 14 }, { go: [-20, -500] }, { do: 'sweep', d: 14 }] } });
-      P.push({ role: 'civ', tag: 'civ', name: 'Limpa-piscinas', look: outfit(R, 'tourist', { prop: 'broom', shorts: true, hat: 'cap', hatC: '#2a8ae8' }), beh: { type: 'seq', steps: [{ go: [-6, -514.5] }, { do: 'sweep', d: 12, yaw: Math.PI }, { go: [6, -514.5] }, { do: 'sweep', d: 12, yaw: Math.PI }] } });
+      P.push({ role: 'civ', tag: 'civ', name: 'Limpa-piscinas', look: outfit(R, 'tourist', { prop: 'broom', shorts: true, hat: 'cap', hatC: '#2a8ae8' }), beh: { type: 'seq', steps: [{ go: [-6, -513] }, { do: 'sweep', d: 12, yaw: Math.PI }, { go: [6, -513] }, { do: 'sweep', d: 12, yaw: Math.PI }] } });
       P.push({ role: 'civ', tag: 'civ', name: 'Convidada', look: outfit(R, 'tourist', { hair: 'long', shirt: '#e85a8a', glasses: 'sun', hat: 'straw', hatC: '#f2e0b0' }), beh: { type: 'recline', x: 6.5, z: -510, yaw: Math.PI } });
       G.escapePath = P => [[P.x, P.z], [30, -516], [44, -520]];
       G.escapeEnd = (G, P) => { P.hidden = true; G.heliGo = 0; hint(G, 'O Barão entrou no helicóptero — vai descolar!', 3, true); };
@@ -394,16 +400,16 @@ const SniperGame = (function () {
       for (let i = 0; i < 14; i++) { const x = -280 + i * 42; B.house({ x, z: -262, yaw: Math.PI, w: 15, d: 12, floors: 2 + (i % 2), y, wall: WL[(i * 3) % WL.length] }); }
       const T = []; for (let i = 0; i < 500; i++) { const x = rand(-1500, 1500), z = rand(-1200, 600); if (Math.abs(z + 200) < 90 && Math.abs(x) < 500) continue; if (Math.hypot(x, z) < 30) continue; T.push({ x, z, k: R() < .6 ? 'pine' : 'leaf', s: .7 + R() * .6 }); }
       G.treeList = T;
-      G.collect = { kind: 'lantern', name: 'lanternas', list: [[-75, y + 4.6, -209], [78, y + 4.8, -209], [-150, y + 9, -150]] };
+      G.collect = { kind: 'lantern', name: 'lanternas', list: [[-75, y + 4.6, -209], [78, y + 4.8, -209], [-160, y + 8, -140]] };
       /* gente: viajantes, guardas com lanternas, revisor */
       for (let i = 0; i < 10; i++) P.push({ role: 'civ', tag: 'civ', name: 'Viajante', look: outfit(R, R() < .5 ? 'tourist' : 'villager', { prop: R() < .4 ? 'case' : R() < .4 ? 'phone' : null, over: R() < .3 ? 'backpack' : null, overC: '#3a5a8a', long: true }), beh: { type: 'stand', x: -95 + i * 19 + rand(-3, 3), z: -190 + rand(-1.5, 1.5), y: y + 1, yaw: Math.PI + rand(-.4, .4), act: B.pick(['phone', 'arms', 'look', 'listen']) } });
-      for (let i = 0; i < 6; i++) P.push({ role: 'civ', tag: 'civ', name: 'Viajante', look: outfit(R, 'villager', { long: true }), beh: { type: 'sit', x: -90 + i * 25 + (i % 2 ? .6 : -.6), z: -192.2, y: y + 1, yaw: 0, act: B.pick(['phone', 'listen', 'cup']) } });
+      for (let i = 0; i < 6; i++) P.push({ role: 'civ', tag: 'civ', name: 'Viajante', look: outfit(R, 'villager', { long: true }), beh: { type: 'sit', bench: true, x: -90 + i * 25 + (i % 2 ? .6 : -.6), z: -192.4, y: y + 1, yaw: 0, act: B.pick(['phone', 'listen', 'cup']) } });
       P.forEach(p => { if (p.beh.type === 'sit') p.beh.y = y + 1; });
       P.push({ role: 'civ', tag: 'civ', name: 'Revisor', look: outfit(R, 'guard', { shirt: '#2a3a6a', hat: 'cap', hatC: '#2a3a6a', glasses: null, over: null }), beh: { type: 'path', path: [[-60, -189], [70, -189]], loop: 'ping', speed: 1 }, y: y + 1 });
-      for (let i = 0; i < 6; i++) { const z = i < 3 ? -189.5 : -212, x0 = -100 + (i % 3) * 70; P.push({ role: 'guard', tag: 'guard', name: 'Guarda', look: outfit(R, 'guard', { prop: 'light', propC: '#3a3a3a' }), beh: { type: 'patrol', path: [[x0, z, 4, 'light'], [x0 + 45, z, 4, 'light']], speed: 1.1 }, aware: true, range: 30 }); }
+      for (let i = 0; i < 6; i++) { const z = i < 3 ? -189.5 : -212, x0 = -100 + (i % 3) * 70; P.push({ role: 'guard', tag: 'guard', name: 'Guarda', look: outfit(R, 'henchman', { prop: 'light', propC: '#3a3a3a' }), beh: { type: 'patrol', path: [[x0, z, 4, 'light'], [x0 + 45, z, 4, 'light']], speed: 1.1 }, aware: true, range: 30 }); }
       P.forEach(p => { if (p.tag === 'guard' || p.name === 'Revisor') p.beh.y = y + 1; });
       P.push({ role: 'boss', tag: 'madame', name: 'Madame Bigodes', look: outfit(R, 'tourist', { hair: 'bun', hairC: '#c8c8c0', shirt: '#7a2a8a', long: true, face: 'mustache', hat: 'beret', hatC: '#c83a5a', glasses: 'sun', prop: 'case', propC: '#d8a040', build: 1.05 }), beh: { type: 'stand', x: 12, z: -190.5, y: y + 1, yaw: Math.PI, act: 'arms' }, vip: true, aware: true, range: 25 });
-      [[9.5, -190, 'light'], [14.5, -190.2, 'radio']].forEach(([x, z, a]) => P.push({ role: 'guard', tag: 'body', name: 'Guarda-costas', look: outfit(R, 'guard', { build: 1.2, prop: a === 'light' ? 'light' : null }), beh: { type: 'stand', x, z, y: y + 1, yaw: Math.PI, act: a, turn: 1 }, aware: true, range: 34 }));
+      [[9.5, -190, 'light'], [14.5, -190.2, 'radio']].forEach(([x, z, a]) => P.push({ role: 'guard', tag: 'body', name: 'Guarda-costas', look: outfit(R, 'henchman', { build: 1.2, prop: a === 'light' ? 'light' : null }), beh: { type: 'stand', x, z, y: y + 1, yaw: Math.PI, act: a, turn: 1 }, aware: true, range: 34 }));
       G.carsDef = [{ path: [[-440, -168], [440, -168]], loop: 'ping', n: 3, speed: 10 }];
       G.night = true;
       return P;
@@ -448,7 +454,7 @@ const SniperGame = (function () {
   });
 
   /* revelar uma personagem escondida (sai de um edifício) */
-  function reveal(G, tag, msg) { G.people.forEach(p => { if (p.tag === tag && p.hidden) { p.hidden = false; p.mode = null; } }); if (msg) hint(G, msg, 4, true); }
+  function reveal(G, tag, msg) { G.people.forEach(p => { if (p.tag === tag && p.hidden) { p.hidden = false; p.mode = null; p.marked = true; setPip(G, p, msg || p.name, 5, 2); } }); if (msg) hint(G, msg + ' Segue a seta amarela.', 4, true); }
 
   /* ════════════════════════════════════════════════════════════════
      arranque
@@ -474,6 +480,7 @@ const SniperGame = (function () {
 
   function build(G, api) {
     const L = G.L, Wd = W(), coarse = Arcade3D.coarse();
+    if (!_v3) { _v3 = new THREE.Vector3(); _v4 = new THREE.Vector3(); }
     const renderer = Arcade3D.attach(api.stage);
     const scene = new THREE.Scene();
     const cam = new THREE.PerspectiveCamera(FOV, 1, .3, 9000);
@@ -490,11 +497,16 @@ const SniperGame = (function () {
     /* terreno, água */
     const T = K().Terrain(L.terrain); G.T = T; G.hAt = T.hAt;
     scene.add(T.mesh(env));
-    const water = Wd.buildWater({ water: L.water || '#2a6a80' }, env); water.material.normalMap.repeat.set(30000, 30000); scene.add(water); G.r3.water = water;
+    /* água: plano próprio de 16 km em grelha e UV pequenos (no plano de 300 km os UV enormes perdiam precisão e a ondulação tremia) */
+    const water = Wd.buildWater({ water: L.water || '#2a6a80' }, env); water.geometry.dispose(); water.geometry = new THREE.PlaneGeometry(16000, 16000, 24, 24); water.position.set(L.nest.x, 0, L.nest.z - 800);
+    water.material.normalMap.repeat.set(16000 / 14, 16000 / 14); water.material.normalScale.set(.22, .22); scene.add(water); G.r3.water = water;
     /* mundo */
     const B = K().Builder(scene, env, T.hAt, 7 + G.li * 13);
     const specs = L.build(B, G);
-    if (G.treeList) B.trees(G.treeList, uWind, uTime);
+    const lk0 = L.nest.look || [0, 0, -200];
+    if (G.treeList) B.trees(G.treeList, uWind, uTime, [[L.nest.x, L.nest.z, 420], [lk0[0], lk0[2], 380]]);
+    /* quem está sentado tem cadeira por baixo (os bancos de jardim já existem) */
+    specs.forEach(s => { const b = s.beh; if (b && b.type === 'sit' && !b.bench) B.chair(b.x, b.z, b.yaw || 0, b.y != null ? b.y : T.hAt(b.x, b.z)); });
     const fin = B.finish(); G.cols = fin.cols; G.anim = fin.anim; G.MT = fin.MT;
     if (G.r3.night) { ['facade', 'office'].forEach(k => { G.MT[k].emissiveIntensity = 1.2; }); }
     colGrid(G);
@@ -503,11 +515,14 @@ const SniperGame = (function () {
     G.r3.smoke = Wd.particles(scene, coarse ? 1500 : 3000, false, pk); G.r3.spark = Wd.particles(scene, coarse ? 800 : 1600, true, pk);
     G.r3.clouds = Wd.buildClouds(sky, 3 + G.li, .8, { area: 7000, alt: [700, 1300], R: [120, 300], n: sky.stars ? 10 : 26 }); scene.add(G.r3.clouds.mesh);
     /* gente */
-    G.crowd = PP().Crowd(scene, specs.length + 4, env);
+    const nDrivers = (G.carsDef || []).reduce((a, d) => a + (d.parked ? 0 : d.n), 0) + (G.movers || []).length;
+    G.crowd = PP().Crowd(scene, specs.length + 4 + nDrivers, env);
     const R = K().rng(99 + G.li);
     specs.forEach((s, i) => spawnPerson(G, s, R, i));
-    /* carros, aves, alvos extra */
+    /* carros (com condutor ao volante), empilhadores, aves, alvos extra */
     if (G.carsDef) G.carsDef.forEach(d => carsAlong(G, d));
+    G.cars.forEach(C => { if (C.parked) return; spawnPerson(G, { role: 'civ', tag: 'driver', name: 'Condutor', look: outfit(R, R() < .5 ? 'tourist' : 'villager', { hat: null, prop: null, over: null, long: true }), beh: { type: 'ride', obj: C.g, seat: C.seat, rot: Math.PI / 2, act: 'drive' }, s: .95 }, R, G.people.length); });
+    (G.movers || []).forEach(M => spawnPerson(G, { role: 'civ', tag: 'driver', name: 'Operador', look: outfit(R, 'worker'), beh: { type: 'ride', obj: M.fk.g, seat: M.fk.seat, rot: 0, act: 'drive' }, s: .95 }, R, G.people.length));
     if (G.birds) birdsSetup(G, G.birds);
     collectSetup(G);
     bellSetup(G);
@@ -546,7 +561,7 @@ const SniperGame = (function () {
     const cs = G.cgs, seen = new Set(); let best = -1, bc = null;
     const x0 = Math.floor(Math.min(ax, bx) / cs), x1 = Math.floor(Math.max(ax, bx) / cs), z0 = Math.floor(Math.min(az, bz) / cs), z1 = Math.floor(Math.max(az, bz) / cs);
     if ((x1 - x0 + 1) * (z1 - z0 + 1) > 400) { /* segmento longo: parte-o */ const n = Math.ceil(Math.hypot(bx - ax, bz - az) / (cs * 8)); for (let i = 0; i < n; i++) { const r = segWorld(G, lerp(ax, bx, i / n), lerp(ay, by, i / n), lerp(az, bz, i / n), lerp(ax, bx, (i + 1) / n), lerp(ay, by, (i + 1) / n), lerp(az, bz, (i + 1) / n), skip); if (r) { r.t = (i + r.t) / n; return r; } } return null; }
-    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) { const a = G.cg.get(x * 4096 + z); if (!a) continue; for (const c of a) { if (seen.has(c) || (skip && skip(c))) continue; seen.add(c); const t = segBox(ax, ay, az, bx, by, bz, c); if (t >= 0 && (best < 0 || t < best)) { best = t; bc = c; } } }
+    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) { const a = G.cg.get(x * 4096 + z); if (!a) continue; for (const c of a) { if (seen.has(c) || c.gone || (skip && skip(c))) continue; seen.add(c); const t = segBox(ax, ay, az, bx, by, bz, c); if (t >= 0 && (best < 0 || t < best)) { best = t; bc = c; } } }
     if (G.dyn) for (const c of G.dyn) { const t = segBox(ax, ay, az, bx, by, bz, c); if (t >= 0 && (best < 0 || t < best)) { best = t; bc = c; } }
     return bc ? { t: best, c: bc } : null;
   }
@@ -580,7 +595,7 @@ const SniperGame = (function () {
     const b = P.beh || {};
     P.t += dt;
     if (P.hidden) return;
-    if (P.sleep) { P.sleepT += dt; P.spd = 0; if (P.sleepT > 2.4 && Math.random() < dt * .6) emote(G, P, 'z'); if (P.sleepT > 2.4 && Math.random() < dt * .08) snore(G, P); return; }
+    if (P.sleep) { P.sleepT += dt; P.spd = 0; if (P.sleepT > 2.4 && Math.random() < dt * .6) emote(G, P, 'z'); if (P.sleepT > 2.4 && Math.random() < dt * .08) snore(G, P); if (b.type === 'ride') { const a = P.act; ride(P, b); P.act = a; } return; }
     /* estados de reação (por cima do comportamento normal) */
     if (P.react) {
       const r = P.react; r.t += dt;
@@ -591,8 +606,8 @@ const SniperGame = (function () {
         if (d > 1.6) { P.mode = 'walk'; moveTo(G, P, T.x - dx / d * 1.1, T.z - dz / d * 1.1, r.run ? 3.6 : 2.2, dt); if (r.t > 40) P.react = null; return; }
         r.k = 'shake'; r.t = 0; emote(G, P, '!');
       }
-      if (r.k === 'shake') { P.mode = 'shake'; P.yaw += Ut.angDiff(Math.atan2(r.who.x - P.x, r.who.z - P.z), P.yaw) * dt * 4; if (r.t > 2.6) { r.k = 'radio'; r.t = 0; emote(G, P, 'radio'); sfx(G, 'radio'); } return; }
-      if (r.k === 'radio') { P.mode = 'idle'; P.act = 'radio'; if (r.t > 3.2) { P.react = null; raiseAlarm(G, P.name + ' deu o alarme!'); } return; }
+      if (r.k === 'shake') { P.mode = 'shake'; P.yaw += Ut.angDiff(Math.atan2(r.who.x - P.x, r.who.z - P.z), P.yaw) * dt * 4; if (r.t > 2.6) { r.k = 'radio'; r.t = 0; emote(G, P, 'radio'); sfx(G, 'radio'); setPip(G, P, `${P.name} está a chamar pelo rádio!`, 3.2, 2); } return; }
+      if (r.k === 'radio') { P.mode = 'idle'; P.act = 'radio'; if (r.t > 3.2) { P.react = null; G.alarmBy = P; G.alarmByT = 7; raiseAlarm(G, P.name + ' deu o alarme!'); setPip(G, P, `🚨 ${P.name} deu o alarme!`, 3.5, 3); } return; }
       if (r.k === 'spot') { P.mode = 'idle'; P.act = 'point'; lookAt(P, r.x, r.z, dt); if (r.t > 1.4) { r.k = 'go'; r.t = 0; r.run = true; } return; }
       if (r.k === 'check') { const d = Math.hypot(r.x - P.x, r.z - P.z); if (d > 2) { P.mode = 'walk'; moveTo(G, P, r.x, r.z, 2.4, dt); return; } P.mode = 'idle'; P.act = 'look'; if (r.t > 12) P.react = null; return; }
     }
@@ -645,8 +660,14 @@ const SniperGame = (function () {
         if (P.t - P.st0 > (st.d || 10)) { P.si = (P.si || 0) + 1; P.st0 = null; P.sitting = false; }
         break;
       }
-      case 'ride': { const o = b.obj, sp = b.seat; P.mode = 'sit'; P.act = b.act || 'listen'; P.sitting = true; P.x = o.position.x + sp[0]; P.fy = o.position.y + sp[1]; P.z = o.position.z + sp[2]; P.yaw = b.yaw || 0; break; }
+      case 'ride': ride(P, b); break;
     }
+  }
+  /* sentado num veículo (comboio, carro, empilhador, barco); rot = o veículo pode rodar */
+  function ride(P, b) {
+    const o = b.obj, sp = b.seat; P.mode = 'sit'; P.act = b.act || 'listen'; P.sitting = true;
+    if (b.rot != null) { const a = o.rotation.y, c = Math.cos(a), sn = Math.sin(a), k = o.scale.x; P.x = o.position.x + (sp[0] * c + sp[2] * sn) * k; P.z = o.position.z + (-sp[0] * sn + sp[2] * c) * k; P.fy = o.position.y + sp[1] * k - .48 * (P.s || 1); P.yaw = a + b.rot; }
+    else { P.x = o.position.x + sp[0]; P.fy = o.position.y + sp[1]; P.z = o.position.z + sp[2]; P.yaw = b.yaw || 0; }
   }
   function lookAt(P, x, z, dt) { P.yaw += Ut.angDiff(Math.atan2(x - P.x, z - P.z), P.yaw) * Math.min(1, dt * 3); }
 
@@ -663,7 +684,7 @@ const SniperGame = (function () {
         const ang = Math.abs(Ut.angDiff(Math.atan2(S.x - P.x, S.z - P.z), P.yaw + (P.headYaw || 0)));
         if (ang > 1.15 && d > 4) continue;
         if (!los(G, eye, { x: S.x, y: S.y + .35, z: S.z })) continue;
-        S.found = true; P.react = { k: 'spot', t: 0, who: S, x: S.x, z: S.z }; emote(G, P, '!'); sfx(G, 'spot');
+        S.found = true; P.react = { k: 'spot', t: 0, who: S, x: S.x, z: S.z }; emote(G, P, '!'); sfx(G, 'spot'); P.marked = true; setPip(G, P, `${P.name} viu ${S.vip ? S.name : 'um colega'} a dormir!`, 4, 1);
         if (!G.alarm) hint(G, `${P.name} viu ${S.vip ? S.name : 'alguém'} a dormir! Adormece-o antes que dê o alarme.`, 3.5, true);
         break;
       }
@@ -676,6 +697,22 @@ const SniperGame = (function () {
     if (G.L.onAlarm) G.L.onAlarm(G);
   }
   function escaped(G, P) { if (G.done || G.failed) return; P.hidden = true; fail(G, `${P.name} fugiu!`); }
+  /* o chefe salta para a lancha e arranca para o largo (ainda dá para o adormecer a bordo) */
+  function boatEscape(G, P) {
+    const b = G.escapeBoat; if (!b) { escaped(G, P); return; }
+    P.beh = { type: 'ride', obj: b, seat: b.userData.seat, rot: Math.PI, act: 'drive' }; P.fleeing = true; P.marked = true;
+    const c = G.cols.find(q => q.dyn === b); if (c) c.gone = true;
+    G.boatRun = { t: 0, P, v: 0, b }; hint(G, `${P.name} saltou para a lancha — adormece-o antes que se afaste!`, 3.5, true); setPip(G, P, `${P.name} vai fugir de lancha!`, 4, 3);
+  }
+  function boatUpdate(G, dt) {
+    const R = G.boatRun; if (!R) return; const b = R.b, P = R.P; R.t += dt;
+    const go = !P.sleep && R.t > 1.2; R.v = go ? Math.min(11, R.v + dt * 2.6) : Math.max(0, R.v - dt * 2.5);
+    if (go) b.rotation.y += Ut.angDiff(0, b.rotation.y) * Math.min(1, dt * .6);
+    const a = b.rotation.y; b.position.x += -Math.sin(a) * R.v * dt; b.position.z += -Math.cos(a) * R.v * dt;
+    if (R.v > 2 && Math.random() < dt * 30) G.r3.smoke.spawn({ x: b.position.x + Math.sin(a) * 4, y: .3, z: b.position.z + Math.cos(a) * 4, vx: rand(-1, 1), vy: rand(.5, 1.5), vz: rand(-1, 1), life: rand(1, 2), s0: .5, s1: 2.4, c0: '#f2f8ff', a: .55, drag: 1 });
+    G.dyn && G.dyn.push({ x: b.position.x, y: .3, z: b.position.z, hx: 1.35, hy: .85, hz: 4, c: Math.cos(a), s: Math.sin(a), k: 'boat' });
+    if (!P.sleep && R.t > 17) fail(G, `${P.name} fugiu de lancha!`);
+  }
 
   /* ════════════════════════════════════════════════════════════════
      dardos: balística (queda, vento), colisões, câmara do dardo
@@ -899,7 +936,9 @@ const SniperGame = (function () {
         r = .5;
       }
       m.position.set(x, y, z); m.traverse(o => { if (o.isMesh) o.castShadow = true; }); scene.add(m);
-      const T = { m, r, base: { x, y, z }, ph: i * 1.7, pos(G, T) { return T.m.position; }, hit: collectHit };
+      /* brilho que pisca de vez em quando para os brindes se encontrarem com os binóculos */
+      const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#fff6c8', transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); gl.position.set(x, y + .5, z); gl.renderOrder = 15; scene.add(gl);
+      const T = { m, r, gl, base: { x, y, z }, ph: i * 1.7, pos(G, T) { return T.m.position; }, hit: collectHit };
       G.targets.push(T);
     });
   }
@@ -911,7 +950,7 @@ const SniperGame = (function () {
       scareBirds(G, x, z); if (!G.bellHint) { G.bellHint = 1; hint(G, 'O sino distrai toda a gente durante alguns segundos!', 3); } } });
   }
   function collectHit(G, T) {
-    T.done = true; G.got++; T.m.visible = false;
+    T.done = true; G.got++; T.m.visible = false; if (T.gl) T.gl.visible = false;
     const p = T.m.position, C = G.collect;
     confetti(G, p.x, p.y, p.z); sfx(G, C.kind === 'duck' ? 'quack' : C.kind === 'balloon' ? 'pop' : 'chime');
     G.score += 150; float3(G, p.x, p.y + .6, p.z, `${['Quack!', 'Pop!', 'Gnomo!', 'Lanterna!'][['duck', 'balloon', 'gnome', 'lantern'].indexOf(C.kind)] || 'Boa!'} +150  (${G.got}/${C.list.length})`, '#a8f0ff', 20);
@@ -931,7 +970,10 @@ const SniperGame = (function () {
       const g = Arcade3D.car({ type, color: d.color || CARC[Math.floor(Math.random() * CARC.length)], len: type === 'van' ? 4.9 : 4.4 });
       g.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
       G.r3.scene.add(g);
-      const C = { g, path: d.path, L, s: (L / d.n) * i + rand(0, 6), dir: 1, ping: d.loop === 'ping', v: d.speed || 9, vmax: d.speed || 9, lane: d.lane != null ? d.lane : 2.2, stop: d.stop, tag: d.tag, flat: 0, parked: d.parked };
+      /* vidros escurecidos de fábrica → vidro fumado transparente para se ver quem conduz */
+      g.traverse(m => { if (m.isMesh && m.material && m.material.color && m.material.color.getHex() === 0x0b1424) m.material = G.carGlass || (G.carGlass = new THREE.MeshPhysicalMaterial({ color: '#2a3a4c', metalness: .3, roughness: .05, clearcoat: 1, transparent: true, opacity: .42, depthWrite: false, envMap: G.r3.env })); });
+      const hs = { suv: .17, van: .2 }[type] || .13;
+      const C = { g, type, seat: [-.02, hs, -.095], path: d.path, L, s: (L / d.n) * i + rand(0, 6), dir: 1, ping: d.loop === 'ping', v: d.speed || 9, vmax: d.speed || 9, lane: d.lane != null ? d.lane : 2.2, stop: d.stop, tag: d.tag, flat: 0, parked: d.parked };
       if (d.parked) { C.s = d.at || 0; C.v = 0; }
       G.cars.push(C);
       /* pneus como alvos (para o carro de fuga) */
@@ -976,16 +1018,18 @@ const SniperGame = (function () {
   }
   /* aves: gaivotas a planar, pombos no chão que levantam voo */
   function birdsSetup(G, o) {
-    const gull = o.kind === 'gull', k = gull ? 1 : .55, M4 = W().M4;
+    const gull = o.kind === 'gull', k = gull ? 1.5 : .8, M4 = W().M4;
     const bg = W().mergeGeos([[new THREE.SphereGeometry(.12 * k, 10, 8), gull ? '#f6f6f4' : '#8a92a4', M4(0, 0, 0, 0, 0, 0, 1, .85, 2.3)], [new THREE.SphereGeometry(.075 * k, 8, 6), gull ? '#f6f6f4' : '#4a5468', M4(0, .07 * k, .26 * k)], [new THREE.ConeGeometry(.022 * k, .09 * k, 6), gull ? '#f2c230' : '#3a3a3a', M4(0, .06 * k, .36 * k, Math.PI / 2)], [new THREE.ConeGeometry(.06 * k, .16 * k, 4), gull ? '#c8ccd0' : '#5a6478', M4(0, 0, -.3 * k, -Math.PI / 2)]]);
     const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, .12 * k, 0, 0, -.1 * k, .78 * k, .03, -.06 * k, .78 * k, .03, -.06 * k, 0, 0, -.1 * k, .5 * k, .02, -.14 * k], 3)); wg.computeVertexNormals();
     const mt = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .8 }), mw = new THREE.MeshStandardMaterial({ color: gull ? '#eef0f2' : '#7a8496', roughness: .8, side: THREE.DoubleSide });
     const n = o.n, body = new THREE.InstancedMesh(bg, mt, n), wl = new THREE.InstancedMesh(wg, mw, n), wr = new THREE.InstancedMesh(wg, mw, n);
-    [body, wl, wr].forEach(m => { m.castShadow = true; m.frustumCulled = false; G.r3.scene.add(m); });
+    [body, wl, wr].forEach(m => { m.castShadow = false; m.frustumCulled = false; G.r3.scene.add(m); });
     G.birdM = { body, wl, wr, list: [] };
     for (let i = 0; i < n; i++) {
       const cc = o.centers[i % o.centers.length];
-      if (o.kind === 'gull') G.birdM.list.push({ fly: true, c: cc, r: 20 + Math.random() * 40, a: Math.random() * TAU, h: cc[1] + rand(-8, 10), sp: rand(.15, .3) * (Math.random() < .5 ? -1 : 1), flap: Math.random() * 6 });
+      /* gaivotas: umas a planar baixo por cima do cais, outras pousadas nos cabeços e nos contentores */
+      if (o.kind === 'gull' && i % 4 === 3 && o.perch) { const pp = o.perch[i % o.perch.length]; G.birdM.list.push({ fly: false, x: pp[0] + rand(-1, 1), y: pp[1], z: pp[2] + rand(-.5, .5), yaw: Math.random() * TAU, peck: Math.random() * 6, c: [pp[0], pp[1] + 12, pp[2]], flap: 0 }); }
+      else if (o.kind === 'gull') G.birdM.list.push({ fly: true, c: cc, r: 14 + Math.random() * 34, a: Math.random() * TAU, h: cc[1] + rand(-10, 6), sp: rand(.15, .3) * (Math.random() < .5 ? -1 : 1), flap: Math.random() * 6 });
       else G.birdM.list.push({ fly: false, x: cc[0] + rand(-14, 14), y: cc[1], z: cc[2] + rand(-8, 8), yaw: Math.random() * TAU, peck: Math.random() * 6, c: cc, flap: 0 });
     }
   }
@@ -1052,6 +1096,65 @@ const SniperGame = (function () {
   /* textos que sobem: guardados em 3D e desenhados no HUD */
   function float3(G, x, y, z, text, color, size) { G.fx.push({ x, y, z, text, color, size: size || 18, t: 0 }); }
 
+  /* ── câmara de vigilância no canto: mostra quem fez alguma coisa importante (viu um colega a dormir,
+        está a usar o rádio, deu o alarme, apareceu o chefe, fugiu) — prioridade maior substitui a menor ── */
+  function setPip(G, P, label, d, pri) {
+    if (G.pip && G.pip.pri > (pri || 1) && G.pip.t < G.pip.d) return;
+    G.pip = { P, label, d: d || 4, t: 0, pri: pri || 1, a: null };
+  }
+  const _pc = {};
+  function pipRender(G, ren) {
+    const pp = G.pip, P = pp.P; if (pp.t > pp.d || !P.j || P.hidden) { G.pip = null; return; }
+    const r3 = G.r3, W = r3.w, H = r3.h, pw = Math.round(G.touch ? clamp(W * .22, 140, 220) : clamp(W * .28, 160, 320)), ph = Math.round(pw * .6), px = G.touch ? W - pw - 14 : 14, py = G.touch ? 142 : Math.round(Math.max(170, H * .42));
+    const pc = r3.pipCam || (r3.pipCam = new THREE.PerspectiveCamera(36, 1, .3, 4000)); pc.aspect = pw / ph;
+    const c = P.j.chest, base = Math.atan2(G.L.nest.x - c.x, G.L.nest.z - c.z);
+    /* escolhe um ângulo com o alvo à vista (do lado do ninho primeiro) e mantém-no */
+    if (pp.a == null) { pp.a = base + .5; for (const da of [.5, -.5, 1.1, -1.1, 0, 1.7, -1.7, Math.PI]) { const a = base + da; _pc.x = c.x + Math.sin(a) * 6.5; _pc.y = c.y + 2.4; _pc.z = c.z + Math.cos(a) * 6.5; if (los(G, _pc, c)) { pp.a = a; break; } } }
+    const a = pp.a + pp.t * .05; pc.position.set(c.x + Math.sin(a) * 6.5, c.y + 2.4, c.z + Math.cos(a) * 6.5); pc.lookAt(c.x, c.y - .15, c.z); pc.updateProjectionMatrix(); pc.updateMatrixWorld();
+    const y0 = H - py - ph; ren.setScissorTest(true); ren.setScissor(px, y0, pw, ph); ren.setViewport(px, y0, pw, ph);
+    const au = ren.shadowMap.autoUpdate; ren.shadowMap.autoUpdate = false; const e = ren.toneMappingExposure; ren.toneMappingExposure = r3.sky.exp * (G.r3.night ? 2.2 : 1);
+    ren.clearDepth(); ren.render(r3.scene, pc);
+    ren.toneMappingExposure = e; ren.shadowMap.autoUpdate = au; ren.setScissorTest(false); ren.setViewport(0, 0, W, H);
+    pp.rect = [px, py, pw, ph];
+  }
+  function pipHud(G, ctx) {
+    const pp = G.pip; if (!pp || !pp.rect) return; const [x, y, w, h] = pp.rect, k = clamp(Math.min(pp.t * 6, (pp.d - pp.t) * 4), 0, 1);
+    ctx.clearRect(x, y, w, h);   /* destapa a imagem 3D da câmara (a máscara da mira pinta o ecrã todo de preto) */
+    ctx.globalAlpha = k; ctx.strokeStyle = pp.pri >= 3 ? '#ff4a4a' : '#ffcf2a'; ctx.lineWidth = 3; Ut.rr(ctx, x - 1.5, y - 1.5, w + 3, h + 3, 8); ctx.stroke();
+    ctx.fillStyle = 'rgba(8,14,22,.78)'; ctx.fillRect(x, y + h - 24, w, 24);
+    ctx.fillStyle = '#ff4a4a'; ctx.beginPath(); ctx.arc(x + 12, y + 12, 4.5, 0, TAU); ctx.globalAlpha = k * (Math.sin(G.t * 8) > 0 ? 1 : .35); ctx.fill(); ctx.globalAlpha = k;
+    ctx.font = `800 10px ${FONT}`; ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.fillText('CÂMARA', x + 21, y + 16);
+    ctx.font = `700 12px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText(pp.label, x + w / 2, y + h - 8, w - 12);
+    ctx.globalAlpha = 1;
+  }
+  /* quem está a caminho de dar o alarme: marcador vermelho por cima da cabeça (ou seta na borda do ecrã) com o que está a fazer */
+  const THREAT = { spot: 'viu alguém a dormir!', go: 'vai ver o colega…', shake: 'a acordar o colega…', radio: 'a chamar pelo rádio!', check: 'desconfiado…' };
+  function threats(G, ctx, w, h) {
+    const cam = G.r3.cam, v = _v3;
+    for (const P of G.people) {
+      let txt = null, prog = 0, red = false, arrowOnly = false;
+      if (isAwake(P) && P.react && THREAT[P.react.k]) { txt = THREAT[P.react.k]; red = P.react.k !== 'check'; prog = P.react.k === 'radio' ? P.react.t / 3.2 : P.react.k === 'shake' ? P.react.t / 2.6 : 0; }
+      else if (G.alarmBy === P && G.alarmByT > 0) { txt = 'deu o alarme'; red = true; }
+      else if (P.vip && P.marked && !P.sleep && !P.hidden) { txt = P.fleeing ? 'a fugir!' : 'alvo'; arrowOnly = !P.fleeing; }
+      if (!txt || !P.j) continue;
+      v.set(P.j.head.x, P.j.head.y + .7, P.j.head.z).project(cam);
+      const behind = v.z > 1; let sx = (v.x + 1) / 2 * w, sy = (1 - v.y) / 2 * h; if (behind) { sx = w - sx; sy = h - sy; }
+      const col = red ? '#ff4a4a' : '#ffcf2a', pulse = 1 + Math.sin(G.t * 9) * .12;
+      const off = behind || sx < 20 || sx > w - 20 || sy < 70 || sy > h - 30;
+      if (off) {
+        const cx = w / 2, cy = h / 2, a = Math.atan2(sy - cy, sx - cx), R = Math.min(w, h) * .44, ex = cx + Math.cos(a) * R, ey = cy + Math.sin(a) * R;
+        ctx.save(); ctx.translate(ex, ey); ctx.rotate(a); ctx.fillStyle = col; ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(16 * pulse, 0); ctx.lineTo(-8, -11); ctx.lineTo(-8, 11); ctx.closePath(); ctx.stroke(); ctx.fill(); ctx.restore();
+        ctx.font = `800 11px ${FONT}`; ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.7)'; const lx = ex - Math.cos(a) * 26, ly = ey - Math.sin(a) * 22 + 4; ctx.strokeText(P.name, lx, ly); ctx.fillStyle = col; ctx.fillText(P.name, lx, ly);
+        continue;
+      }
+      if (arrowOnly) continue;
+      const r = 11 * pulse; ctx.fillStyle = col; ctx.strokeStyle = 'rgba(0,0,0,.65)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(sx, sy - 10, r, 0, TAU); ctx.fill(); ctx.stroke();
+      if (prog > 0) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(sx, sy - 10, r + 4, -Math.PI / 2, -Math.PI / 2 + TAU * clamp(prog, 0, 1)); ctx.stroke(); }
+      ctx.fillStyle = '#1a1a1a'; ctx.font = `900 14px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText(red ? '!' : '★', sx, sy - 5);
+      ctx.font = `800 11px ${FONT}`; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.75)'; const t2 = `${P.name} — ${txt}`; ctx.strokeText(t2, sx, sy - 27); ctx.fillStyle = col; ctx.fillText(t2, sx, sy - 27);
+    }
+  }
+
   /* ════════════════════════════════════════════════════════════════
      espingarda na primeira pessoa
   ════════════════════════════════════════════════════════════════ */
@@ -1117,15 +1220,20 @@ const SniperGame = (function () {
     dartsUpdate(G, dt);
     carsUpdate(G, dt);
     moversUpdate(G, dt);
+    boatUpdate(G, dt);
     birdsUpdate(G, dt);
     hatsUpdate(G, dt);
     animsUpdate(G, dt);
-    G.targets.forEach(T => { if (T.m && !T.done) { T.m.position.y = T.base.y + Math.sin(G.gt * 1.6 + T.ph) * (G.collect.kind === 'duck' ? .06 : .15); T.m.rotation.y += dt * .4; } });
+    G.targets.forEach(T => {
+      if (T.m && !T.done) { T.m.position.y = T.base.y + Math.sin(G.gt * 1.6 + T.ph) * (G.collect.kind === 'duck' ? .06 : .15); T.m.rotation.y += dt * .4; }
+      if (T.gl) { if (T.done) { T.gl.visible = false; return; } const c = G.r3.cam.position, d = Math.hypot(T.base.x - c.x, T.base.y - c.y, T.base.z - c.z), k = Math.max(0, Math.sin(G.gt * 2.4 + T.ph * 2)); T.gl.visible = k > .55; T.gl.position.y = T.m.position.y + .5; T.gl.scale.setScalar(Math.max(1, d * Math.tan(G.r3.cam.fov * Math.PI / 360) * .05) * (k - .5) * 2); }
+    });
     G.r3.smoke.update(dt); G.r3.spark.update(dt);
     if (G.L.script) G.L.script(G, dt);
     objectives(G, dt);
     if (G.timer > 0 && !G.done && !G.failed) { G.timer -= dt; if (G.timer <= 0) { const tob = G.obj.find(o => o.timer && !o.done); if (tob) { const thief = G.people.find(p => p.vip && isAwake(p)); if (thief && G.escape) { thief.fleeing = true; thief.beh = { type: 'path', path: G.escape.slice(), speed: 3.2, end: 'escape' }; thief.wi = 0; hint(G, 'O tempo acabou — o gatuno está a fugir!', 3, true); } else fail(G, 'O tempo acabou.'); } } }
     G.hints.forEach(h => { h.t += real; }); G.hints = G.hints.filter(h => h.t < h.d);
+    if (G.pip) G.pip.t += real; if (G.alarmByT > 0) G.alarmByT -= real;
     G.fx.forEach(f => { f.t += real; }); G.fx = G.fx.filter(f => f.t < 1.8);
     if (G.endT != null) { G.endT -= real; if (G.endT <= 0) { G.endT = null; finish(G, api); } }
   }
@@ -1171,23 +1279,33 @@ const SniperGame = (function () {
   /* animações do mundo: fumo, bandeiras, roupa, fonte, barcos, luzes */
   function animsUpdate(G, dt) {
     const t = G.gt, w = windAt(G, t), ws = Math.max(.6, w.s), wa = Math.atan2(w.x, w.z);
+    if (G.cloth && G.cloth.dirty) { G.cloth.im.instanceMatrix.needsUpdate = true; G.cloth.dirty = false; }
     for (const a of G.anim) {
       if (a.k === 'smoke') { if (Math.random() < dt * (a.big ? 9 : 6)) G.r3.smoke.spawn({ x: a.p[0], y: a.p[1], z: a.p[2], vx: w.x * .6 + rand(-.2, .2), vy: rand(.8, 1.4) * (a.big ? 2 : 1), vz: w.z * .6 + rand(-.2, .2), life: rand(4, 7) * (a.big ? 1.6 : 1), s0: a.big ? 2 : .6, s1: a.big ? 14 : 4, c0: a.big ? '#8a8a8a' : '#c8c8c8', a: .35, drag: .2 }); }
       else if (a.k === 'fountain') { for (let i = 0; i < 3; i++) if (Math.random() < dt * 30) { const an = Math.random() * TAU; G.r3.smoke.spawn({ x: a.p[0], y: a.p[1], z: a.p[2], vx: Math.cos(an) * 1.1, vy: rand(2.5, 3.2), vz: Math.sin(an) * 1.1, life: 1.1, s0: .14, s1: .28, c0: '#e8f6ff', a: .7, grav: 9.8 }); } }
       else if (a.k === 'boat') { a.g.position.y = Math.sin(t * .9 + a.ph) * .18 - .05; a.g.rotation.z = Math.sin(t * .7 + a.ph) * .035; a.g.rotation.x = Math.sin(t * .55 + a.ph * 2) * .02; }
       else if (a.k === 'flag') { const p = a.m.geometry.attributes.position, b = a.base; for (let i = 0; i < p.count; i++) { const x = b[i * 3], y = b[i * 3 + 1], k = x / 1.8; p.setZ(i, Math.sin(x * 3 - t * (3 + ws)) * .12 * k * (.6 + ws * .15) + Math.sin(y * 4 + t * 2) * .03 * k); } p.needsUpdate = true; a.m.geometry.computeVertexNormals(); a.m.rotation.y = wa - Math.PI / 2; }
       else if (a.k === 'cloth') {
-        if (!a.m) { const g = new THREE.PlaneGeometry(a.w, a.h, 4, 4); g.translate(0, -a.h / 2, 0); a.m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: a.c, side: THREE.DoubleSide, roughness: .9 })); a.m.castShadow = true; a.m.position.set(...a.p); a.m.rotation.y = a.yaw; G.r3.scene.add(a.m); a.ph = Math.random() * 6; }
-        a.m.rotation.x = Math.sin(t * (1.5 + ws * .3) + a.ph) * .08 * ws + Math.cos(a.yaw - wa) * ws * .05;
+        /* roupa a secar: TODAS numa só malha instanciada (eram centenas de malhas → centenas de chamadas de desenho) */
+        const C = G.cloth || (G.cloth = clothSetup(G));
+        if (G.fxFrame % 2 === 0) { const e = C.e.set(Math.sin(t * (1.5 + ws * .3) + a.ph) * .08 * ws + Math.cos(a.yaw - wa) * ws * .05, a.yaw, 0, 'YXZ'); C.q.setFromEuler(e); C.m.compose(C.v.set(...a.p), C.q, C.s.set(a.w, a.h, 1)); C.im.setMatrixAt(a.ci, C.m); C.dirty = true; }
       }
       else if (a.k === 'lamp' && G.r3.night) { if (!a.s) { a.s = new THREE.Sprite(Arcade3D.glowSprite('#ffc878')); a.s.scale.setScalar(3.2); a.s.position.set(...a.p); G.r3.scene.add(a.s); const d = new THREE.Mesh(new THREE.CircleGeometry(5, 20), new THREE.MeshBasicMaterial({ map: Arcade3D.glowTex(), color: '#ffb860', transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending })); d.rotation.x = -Math.PI / 2; d.position.set(a.p[0], G.hAt(a.p[0], a.p[2]) + .08, a.p[2]); G.r3.scene.add(d); } }
       else if (a.k === 'stagelight') { if (!a.s) { a.s = new THREE.Sprite(Arcade3D.glowSprite(a.c)); a.s.position.set(...a.p); G.r3.scene.add(a.s); } const k = .5 + .5 * Math.sin(t * 3 + a.p[0]); a.s.scale.setScalar(1.2 + k * 1.4); }
       else if (a.k === 'craneLight') { if (!a.s) { a.s = new THREE.Sprite(Arcade3D.glowSprite('#ff3a2a')); a.s.position.set(...a.p); G.r3.scene.add(a.s); } a.s.scale.setScalar(Math.sin(t * 3) > .6 ? 3 : .01); }
       else if (a.k === 'bunting' && G.fxFrame % 2 === 0) { const m4 = a._m || (a._m = new THREE.Matrix4()), q = a._q || (a._q = new THREE.Quaternion()), e2 = a._e || (a._e = new THREE.Euler()), v = a._v || (a._v = new THREE.Vector3()), one = a._s || (a._s = new THREE.Vector3(1, 1, 1)); a.flags.forEach((f, i) => { const sw = Math.sin(t * (2.2 + ws * .4) + i * .7) * (.15 + ws * .06) + ws * .05; e2.set(sw * Math.cos(f[3] - wa), f[3] + Math.PI / 2, 0, 'YXZ'); q.setFromEuler(e2); m4.compose(v.set(f[0], f[1], f[2]), q, one); a.im.setMatrixAt(i, m4); }); a.im.instanceMatrix.needsUpdate = true; }
-      else if (a.k === 'pool' && !a.m) { const g = new THREE.PlaneGeometry(a.w - .2, a.d - .2); g.rotateX(-Math.PI / 2); const wm = G.r3.water.material.clone(); wm.color = new THREE.Color('#3ab8e0'); wm.opacity = .85; wm.normalMap = G.r3.water.material.normalMap; a.m = new THREE.Mesh(g, wm); a.m.position.set(...a.p); a.m.rotation.y = a.yaw; a.m.renderOrder = 2; G.r3.scene.add(a.m); }
+      else if (a.k === 'pool' && !a.m) { const g = new THREE.PlaneGeometry(a.w - .04, a.d - .04); g.rotateX(-Math.PI / 2); const wm = G.r3.water.material.clone(); wm.color = new THREE.Color('#5ad0f0'); wm.opacity = .62; wm.normalMap = G.r3.water.material.normalMap; a.m = new THREE.Mesh(g, wm); a.m.position.set(...a.p); a.m.position.y -= .07; a.m.rotation.y = a.yaw; a.m.renderOrder = 2; G.r3.scene.add(a.m); }
     }
   }
 
+  function clothSetup(G) {
+    const L = G.anim.filter(a => a.k === 'cloth'), g = new THREE.PlaneGeometry(1, 1, 2, 3); g.translate(0, -.5, 0);
+    const im = new THREE.InstancedMesh(g, new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: .9 }), Math.max(1, L.length)), c = new THREE.Color();
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+    L.forEach((a, i) => { a.ci = i; a.ph = Math.random() * 6; im.setColorAt(i, c.set(a.c)); m.compose(new THREE.Vector3(...a.p), q.setFromEuler(e.set(0, a.yaw, 0)), new THREE.Vector3(a.w, a.h, 1)); im.setMatrixAt(i, m); });
+    im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false; G.r3.scene.add(im);
+    return { im, e: new THREE.Euler(), q: new THREE.Quaternion(), v: new THREE.Vector3(), s: new THREE.Vector3(), m: new THREE.Matrix4(), dirty: false };
+  }
   /* ── objetivos, fim e falha ── */
   function objectives(G, dt) {
     if (G.done || G.failed) return;
@@ -1228,13 +1346,15 @@ const SniperGame = (function () {
     const r3 = G.r3, cam = r3.cam, n = G.L.nest;
     fit(G, api);
     let dcam = G.dcam;
-    if (dcam) dartCam(G, cam);
+    if (G.dbgCam) { const b = G.dbgCam; cam.position.set(...b.p); cam.up.set(0, 1, 0); cam.lookAt(...b.l); cam.fov = b.fov || 40; cam.near = b.near || .1; cam.updateProjectionMatrix(); }
+    else if (dcam) dartCam(G, cam);
     else {
       cam.position.set(n.x, n.y, n.z);
       const d = aimDir(G, _v1, true), sh = api.shakeXY;
       cam.up.set(0, 1, 0); cam.lookAt(n.x + d.x * 10 + sh[0] * .002, n.y + d.y * 10 + G.recoil * .25 + sh[1] * .002, n.z + d.z * 10);
       if (Math.abs(cam.fov - G.fov) > .01) { cam.fov = G.fov; cam.updateProjectionMatrix(); }
-      const near = G.scope || G.bino ? 1.2 : .3; if (cam.near !== near) { cam.near = near; cam.updateProjectionMatrix(); }
+      /* plano de recorte próximo: quanto mais ampliado, mais longe (a precisão da profundidade cresce com ele e acaba o "tremer" ao longe) */
+      const near = G.scope ? [2, 3.5, 5][G.zi] : G.bino ? 3 : .6; if (cam.near !== near) { cam.near = near; cam.updateProjectionMatrix(); }
     }
     cam.updateMatrixWorld();
     /* pessoas: poses */
@@ -1250,10 +1370,15 @@ const SniperGame = (function () {
     /* céu, água, sombras à volta do ponto de mira */
     r3.skyM.position.copy(cam.position); r3.skyM.material.uniforms.uTime.value = G.t;
     const nm = r3.water.material.normalMap; nm.offset.x = (G.gt * .004) % 1; nm.offset.y = (G.gt * .0025) % 1;
-    const ap = dcam ? (dcam.dart.hitAt || dcam.dart.p) : aimGround(G), ext = clamp((G.range || 120) * Math.tan(cam.fov * Math.PI / 360) * 1.6, 30, 260), texel = ext * 2 / r3.sun.shadow.mapSize.x * 2;
-    const ext2 = Math.ceil(ext / 20) * 20, sx = Math.round(ap.x / texel) * texel, sz = Math.round(ap.z / texel) * texel;
-    r3.sun.position.set(sx + r3.sunDir.x * 600, (ap.y || 0) + r3.sunDir.y * 600, sz + r3.sunDir.z * 600); r3.sun.target.position.set(sx, ap.y || 0, sz);
-    const scm = r3.sun.shadow.camera; scm.left = -ext2; scm.right = ext2; scm.top = ext2; scm.bottom = -ext2; scm.near = 10; scm.far = 1600; scm.updateProjectionMatrix();
+    /* sombras: a caixa de sombra segue o ponto de mira em degraus (tamanho) e encaixa na grelha de texels NO ESPAÇO DA LUZ
+       — antes encaixava em x/z do mundo e as bordas das sombras "nadavam" ao mexer a mira */
+    const ap = G.dbgCam ? { x: G.dbgCam.l[0], y: G.dbgCam.l[1], z: G.dbgCam.l[2] } : dcam ? (dcam.dart.hitAt || dcam.dart.p) : aimGround(G), ext = clamp((G.range || 120) * Math.tan(cam.fov * Math.PI / 360) * 1.6, 30, 260);
+    const ext2 = ext < 60 ? 40 : ext < 120 ? 90 : ext < 190 ? 160 : 260, texel = ext2 * 2 / r3.sun.shadow.mapSize.x;
+    if (!r3.lb) { const f = r3.sunDir.clone().negate(), up = Math.abs(f.y) > .99 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0), rx = new THREE.Vector3().crossVectors(up, f).normalize(); r3.lb = { rx, ry: new THREE.Vector3().crossVectors(f, rx).normalize(), f }; }
+    const lb = r3.lb, apv = _v3.set(ap.x, ap.y || 0, ap.z), u = Math.round(apv.dot(lb.rx) / texel) * texel, v = Math.round(apv.dot(lb.ry) / texel) * texel, w0 = apv.dot(lb.f);
+    const ctr = _v4.copy(lb.rx).multiplyScalar(u).addScaledVector(lb.ry, v).addScaledVector(lb.f, w0);
+    r3.sun.position.copy(ctr).addScaledVector(r3.sunDir, 600); r3.sun.target.position.copy(ctr);
+    if (r3.ext2 !== ext2) { r3.ext2 = ext2; const scm = r3.sun.shadow.camera; scm.left = -ext2; scm.right = ext2; scm.top = ext2; scm.bottom = -ext2; scm.near = 10; scm.far = 1600; scm.updateProjectionMatrix(); r3.sun.shadow.normalBias = .02 + texel * .6; r3.sun.shadow.bias = -.0002; }
     if (G.fxFrame % 30 === 0) r3.clouds.sort(cam);
     const ppu = r3.renderer.domElement.height / (2 * Math.tan(cam.fov * Math.PI / 360));
     r3.smoke.mat.uniforms.uScale.value = ppu; r3.spark.mat.uniforms.uScale.value = ppu;
@@ -1265,8 +1390,9 @@ const SniperGame = (function () {
     const ren = r3.renderer;
     ren.autoClear = false; ren.clear();
     ren.render(r3.scene, cam);
+    if (G.pip && !dcam && !G.dbgCam) pipRender(G, ren);
     /* espingarda (só sem mira) */
-    if (!G.scope && !G.bino && !dcam) {
+    if (!G.scope && !G.bino && !dcam && !G.dbgCam) {
       const fp = G.fp; fp.cam.aspect = cam.aspect; fp.cam.updateProjectionMatrix();
       const b = G.bolt > 0 ? Math.sin((1 - G.bolt / .95) * Math.PI) : 0, rl = G.reload > 0 ? Math.sin(clamp(1 - G.reload / 1.8, 0, 1) * Math.PI) : 0;
       fp.g.position.set(.24 + G.sway.x * 3, -.2 - G.sway.y * 3 - rl * .12 - b * .02, -.5 + G.recoil * .05);
@@ -1304,7 +1430,7 @@ const SniperGame = (function () {
       cam.position.set(c.x + Math.sin(a) * r, c.y + 1 + k * .25, c.z + Math.cos(a) * r);
       cam.lookAt(c.x, c.y - .2, c.z);
     }
-    if (cam.near !== .05) { cam.near = .05; cam.updateProjectionMatrix(); }
+    if (cam.near !== .15) { cam.near = .15; cam.updateProjectionMatrix(); }
   }
   function trailDraw(G) {
     const r3 = G.r3;
@@ -1315,6 +1441,8 @@ const SniperGame = (function () {
     const a = r3.trail.geometry.attributes.position; D.trail.forEach((p, i) => a.setXYZ(i, p[0], p[1], p[2])); for (let i = D.trail.length; i < 40; i++) a.setXYZ(i, D.p.x, D.p.y, D.p.z); a.needsUpdate = true; r3.trail.geometry.setDrawRange(0, Math.max(2, D.trail.length));
     r3.dartM.position.set(D.p.x, D.p.y, D.p.z); r3.dartM.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(-D.v.x, -D.v.y, -D.v.z).normalize());
   }
+  /* atividades que precisam das mãos: a espingarda vai para as costas */
+  const GUN_HANDS = { radio: 1, bino: 1, point: 1, light: 1, talk: 1, cup: 1, phone: 1, vendor: 1, sweep: 1, wave: 1, cheer: 1, clap: 1, drive: 1 };
   /* pose de cada pessoa a partir do estado */
   function pose(G, P, X) {
     const Q = {}, t = P.t, s = P.seed;
@@ -1323,14 +1451,22 @@ const SniperGame = (function () {
       else X.sleepPose(Q, P, t);
       return Q;
     }
+    const gun = P.look.gun;
     if (P.mode === 'walk') {
-      const v = Math.max(.3, P.spd); P.ph += v * G.dtv / 1.45 * Math.PI; X.walk(Q, P.ph, v);
+      /* a fase da passada avança com a distância real percorrida: os pés não escorregam */
+      const vr = Math.hypot(P.vx || 0, P.vz || 0); P.vs = lerp(P.vs || vr, Math.min(vr, 7), .2);
+      const v = Math.max(.3, P.vs); P.ph = (P.ph + v * G.dtv / (X.stride(v) * (P.s || 1)) * TAU) % (TAU * 64); X.walk(Q, P.ph, v);
       const pr = P.look.prop; if (pr === 'case') X.ACT.case(Q); else if (pr === 'light') X.ACT.light(Q, t, s); else if (pr === 'balloon') X.ACT.balloon(Q); else if (P.walkAct === 'phone' && pr === 'phone') { Q.rSh = .35; Q.rAb = .55; Q.rEl = 2.35; Q.rTw = -.5; }
+      if (gun) Q.gun = pr === 'light' ? 'back' : 'held';
     } else if (P.mode === 'sit') X.sit(Q, t, s, P.act);
     else if (P.mode === 'recline') X.recline(Q, t, s);
     else if (P.mode === 'shake') X.shake(Q, t);
-    else if (P.mode === 'crouch') X.crouch(Q, t, s);
-    else { X.idle(Q, t, s, P); const a = P.act || 'listen'; if (X.ACT[a]) X.ACT[a](Q, t, s); const pr = P.look.prop; if (pr === 'balloon' && a !== 'dance') X.ACT.balloon(Q); if (pr === 'light') X.ACT.light(Q, t, s); }
+    else if (P.mode === 'crouch') {
+      X.crouch(Q, t, s);
+      /* alarme: de joelho, a apontar a espingarda para o ninho */
+      if (gun) { const n = G.L.nest, d = Math.hypot(n.x - P.x, n.z - P.z); Q.gun = 'aim'; Q.aimP = clamp(Math.atan2(n.y - P.y - 1.1, d) + (Q.lean || 0), -.6, 1.1); Q.headY = 0; Q.headP = -.1; }
+    }
+    else { X.idle(Q, t, s, P); const a = P.act || 'listen'; if (X.ACT[a]) X.ACT[a](Q, t, s); const pr = P.look.prop; if (pr === 'balloon' && a !== 'dance') X.ACT.balloon(Q); if (pr === 'light') X.ACT.light(Q, t, s); if (gun) Q.gun = GUN_HANDS[a] || pr === 'light' ? 'back' : 'held'; }
     /* cabeça para onde olha (quem fala com alguém) */
     if (P.lookP && P.mode !== 'walk' && !P.lookP.hidden) { const a = Ut.angDiff(Math.atan2(P.lookP.x - P.x, P.lookP.z - P.z), P.yaw); Q.headY = clamp(a, -1.1, 1.1); }
     P.headYaw = Q.headY || 0;
@@ -1357,6 +1493,7 @@ const SniperGame = (function () {
     }
     floats(G, ctx, proj);
     if (G.scope || G.bino) scopeHud(G, ctx, w, h, proj); else hipHud(G, ctx, w, h);
+    threats(G, ctx, w, h); pipHud(G, ctx);
     /* objetivos (canto superior esquerdo) */
     const ob = G.obj.filter(o => o.shown);
     ctx.font = `600 12px ${FONT}`; let bw = 0; ob.forEach(o => { bw = Math.max(bw, ctx.measureText(o.text + (o.prog ? '  ' + o.prog(G) : '')).width); });
@@ -1439,6 +1576,8 @@ const SniperGame = (function () {
       if (P) { const p = proj(P.j.chest.x, P.j.chest.y, P.j.chest.z); if (p && Math.hypot(p.x - cx, p.y - cy) < 40) tgt = P; }
       if (tgt) { G.markT = (G.markP === tgt ? G.markT : 0) + G.dtv / Math.max(.05, G.timeScale); G.markP = tgt; const k = Math.min(1, G.markT / .45); ctx.strokeStyle = tgt.role === 'civ' ? '#c8d0dc' : '#ffcf2a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 26, -Math.PI / 2, -Math.PI / 2 + TAU * k); ctx.stroke(); if (k >= 1 && !tgt.marked) { tgt.marked = true; sfx(G, 'mark'); } ctx.font = `800 13px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.fillText(tgt.marked ? `${tgt.name}${tgt.role === 'civ' ? ' (civil)' : ''}` : 'a identificar…', cx, cy + 48); }
       else { G.markT = 0; G.markP = null; }
+      const C = G.collect; if (C && !tgt) { const nm = { duck: '🦆 Pato de borracha', balloon: '🎈 Balão', gnome: '🧙 Gnomo', lantern: '🏮 Lanterna' }[C.kind] || 'Brinde';
+        for (const T of G.targets) { if (T.done || !T.m) continue; const p = proj(T.m.position.x, T.m.position.y, T.m.position.z); if (p && Math.hypot(p.x - cx, p.y - cy) < 46) { ctx.font = `800 13px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = '#a8f0ff'; ctx.fillText(nm + ' — acerta-lhe com um dardo!', cx, cy + 48); ctx.strokeStyle = '#a8f0ff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, TAU); ctx.stroke(); break; } } }
     }
     /* leituras */
     ctx.font = `700 12px ${FONT}`; ctx.fillStyle = '#d8ffd8'; ctx.textAlign = 'center';

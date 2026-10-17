@@ -129,7 +129,7 @@ const GameHost = (function () {
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
     'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=3'] },
     'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=4'] },
-    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=1', 'js/games/sniper-kit.js?v=1', 'js/games/game-sniper.js?v=1'] },
+    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=2', 'js/games/sniper-kit.js?v=2', 'js/games/game-sniper.js?v=2'] },
   };
   const _loaded = new Map();
   function loadScript(src) {
