@@ -280,7 +280,7 @@ const DripGame = (function () {
       s.textContent = `.dr-ui{position:absolute;right:10px;bottom:12px;z-index:4;display:flex;flex-direction:column;gap:8px}
 .dr-ui button{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(20,12,6,.6);color:#fff;font-size:1.1rem;cursor:pointer;backdrop-filter:blur(6px)}
 .dr-ui button:hover{background:rgba(255,255,255,.15)}
-.dr-tip{position:absolute;left:50%;top:42%;transform:translateX(-50%);z-index:4;background:rgba(20,12,6,.82);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:14px;padding:8px 14px;font:600 .82rem ${FONT};max-width:min(380px,86%);text-align:center;pointer-events:none;transition:opacity .4s;line-height:1.35}`;
+.dr-tip{position:absolute;z-index:4;background:rgba(20,12,6,.72);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:12px;padding:6px 12px;font:600 .74rem ${FONT};text-align:center;pointer-events:none;transition:opacity .4s;line-height:1.3}`;
       document.head.appendChild(s);
     }
     st.appendChild(ui); G.ui = ui;
@@ -299,7 +299,17 @@ const DripGame = (function () {
     let el = G.api.stage.querySelector('.dr-tip');
     if (!el) { el = document.createElement('div'); el.className = 'dr-tip'; G.api.stage.appendChild(el); }
     el.innerHTML = text; el.style.opacity = 1;
+    /* em baixo: na faixa livre sob o tabuleiro (telemóvel) ou entre o medidor do vaso e os botões */
+    const st = G.api.stage, sc = Math.min(st.clientWidth / VW, st.clientHeight / VH), ox = (st.clientWidth - VW * sc) / 2, oy = (st.clientHeight - VH * sc) / 2;
+    const free = oy >= 48;
+    el.style.left = Math.round(free ? 10 : ox + 172 * sc) + 'px'; el.style.right = '62px'; el.style.bottom = Math.round(free ? 10 : oy + 8 * sc) + 'px';
     clearTimeout(G._tip); G._tip = setTimeout(() => { if (el.isConnected) el.style.opacity = 0; }, (dur || 4) * 1000);
+    G.tipOn = true;
+  }
+  /* some pouco depois de se começar a escavar (a dica já foi lida no ecrã inicial) */
+  function tipAway(G) {
+    if (!G.tipOn) return; G.tipOn = false;
+    clearTimeout(G._tip); G._tip = setTimeout(() => { const el = G.api.stage.querySelector('.dr-tip'); if (el) el.style.opacity = 0; }, 900);
   }
 
   /* ════════════════════════════════════════════════════════════════
@@ -631,6 +641,7 @@ const DripGame = (function () {
     const hit = DripSim.tap(G.S, x, y);
     if (hit) { G.pen = null; api.vibe(15); return; }
     G.pen = { x, y };
+    tipAway(G);
     digLine(G, x, y, x, y);
   }
   function move(G, x, y, api, e, pressed) {
