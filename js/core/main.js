@@ -1477,6 +1477,8 @@ const ALL_GAMES = [
   { id:'sky-ace', key:'game.sky-ace', icon:'🛩️' },
   { id:'divine-wrath', key:'game.divine-wrath', icon:'☄️' },
   { id:'sniper', key:'game.sniper', icon:'🦉' },
+  { id:'demolition', key:'game.demolition', icon:'💥' },
+  { id:'drip', key:'game.drip', icon:'💧' },
 ];
 const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','chess'];
 

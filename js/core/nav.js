@@ -52,6 +52,8 @@ const Nav = (function () {
     { id: 'sky-ace', key: 'game.sky-ace', icon: '🛩️' },
     { id: 'divine-wrath', key: 'game.divine-wrath', icon: '☄️' },
     { id: 'sniper', key: 'game.sniper', icon: '🦉' },
+    { id: 'demolition', key: 'game.demolition', icon: '💥' },
+    { id: 'drip', key: 'game.drip', icon: '💧' },
   ];
   const TN = k => typeof I18n !== 'undefined' ? I18n.t(k) : k;
 
