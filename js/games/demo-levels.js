@@ -363,7 +363,7 @@ lvl({ id: 'b6', w: 1, name: 'Moradia com Garagem', tip: 'Casa de dois pisos com 
     ref: (r) => [['cut', r.C.base[1], '+x'], ['cut', r.C.base[3], '+x']] });
 
   lvl({ id: 'p5', w: 2, name: 'Torre de Água', tip: 'Pernas de aço: só a carga de corte as parte. Corta as duas do mesmo lado.',
-    kit: ['pet', 'din', 'cut'], line: 3, pct: .8, money: 2000, s2: 1300, s3: 1050,
+    kit: ['pet', 'din', 'cut'], line: 3.5, pct: .8, money: 2000, s2: 1300, s3: 1050,
     build(B) { const W = B.waterTower(0, 0, { h: 9 }); B.house(0, -10, { part: 'p', tint: '#dfe9f3' }); B.house(-11, 0, { part: 'p', tint: '#f3e3df' }); return { W }; },
     ref: (r) => [['cut', r.W.legs[1], '+x'], ['cut', r.W.legs[3], '+x'], ['cut', r.W.legs[5], '+x', .2], ['cut', r.W.legs[7], '+x', .2]] });
 
@@ -436,7 +436,7 @@ lvl({ id: 'i6', w: 4, name: 'Depósito Gigante', tip: 'Um depósito enorme sobre
 
   /* ── 6. Monumentos ── */
   lvl({ id: 'r1', w: 5, name: 'Pirâmide', tip: 'Pedra maciça, pesada e teimosa. O TNT no sítio certo resolve.',
-    kit: ['pet', 'din', 'cut', 'imp', 'tnt'], line: 2.5, pct: .75, money: 3200, s2: 2200, s3: 1400,
+    kit: ['pet', 'din', 'cut', 'imp', 'tnt'], line: 1.8, pct: .75, money: 3200, s2: 2200, s3: 1400,
     build(B) { const P = B.pyramid(0, 0, { n: 5, s: 1.6, h: 1.2 }); B.deco('palm', 8, 6); B.deco('palm', -9, -5); return { P }; },
     ref: (r) => [['tnt', r.P.layers[1][4], '+y'], ['din', r.P.layers[0][12], '+y', .2]] });
 
@@ -475,12 +475,12 @@ lvl({ id: 'r3', w: 5, name: 'Mega Torre', tip: 'A obra final: catorze andares no
   const SOLS = {
     p2: { par: 350, sol: [['cut', 2, '+x', 0]] },
     p6: { par: 700, sol: [['cut', 1, '-x', 0], ['cut', 14, '+x', 0]] },
-    b1: { par: 1200, sol: [['pet', 0, '-z', 0], ['din', 1, '-z', 0], ['din', 2, '-x', 0], ['din', 3, '+z', 0], ['pet', 4, '+z', 0], ['din', 5, '+x', 0]] },
+    b1: { par: 700, sol: [['pet', 0, '-z', 0], ['din', 3, '+z', 0], ['pet', 4, '+z', 0], ['din', 5, '+x', 0]] },
     b2: { par: 750, sol: [['din', 6, '-z', 0], ['din', 7, '+x', 0], ['din', 8, '+z', 0]] },
     b3: { par: 200, sol: [['pet', 1, '+x', 0], ['pet', 3, '+x', 0]] },
     b4: { par: 500, sol: [['din', 7, '+z', 0], ['din', 10, '+z', 0]] },
     b5: { par: 1000, sol: [['din', 16, '-x', 0], ['din', 17, '+x', 0], ['din', 18, '+x', 0], ['din', 19, '+x', 0]] },
-    b6: { par: 550, sol: [['pet', 10, '+y', 0.3], ['pet', 11, '+y', 0.3], ['pet', 12, '+y', 0.3], ['din', 20, '+y', 0]] },
+    b6: { par: 450, sol: [['pet', 10, '+y', 0.3], ['pet', 11, '+y', 0.3], ['din', 17, '+y', 0]] },
     c1: { par: 750, sol: [['din', 2, '-z', 0], ['din', 5, '-z', 0], ['din', 4, '+z', 0]] },
     c2: { par: 1000, sol: [['din', 2, '+z', 0], ['din', 5, '+z', 0], ['din', 67, '+z', 0], ['din', 68, '+z', 0]] },
     c3: { par: 1000, sol: [['din', 3, '-z', 0], ['din', 4, '+x', 0], ['din', 5, '+z', 0], ['din', 8, '+z', 0]] },
@@ -490,8 +490,8 @@ lvl({ id: 'r3', w: 5, name: 'Mega Torre', tip: 'A obra final: catorze andares no
     i1: { par: 350, sol: [['pet', 2, '+z', 0], ['din', 3, '+z', 0]] },
     i2: { par: 700, sol: [['cut', 3, '+x', 0.3], ['cut', 5, '-x', 0.3]] },
     i3: { par: 750, sol: [['din', 22, '-x', 0], ['din', 24, '-x', 0], ['din', 13, '-x', 0.5]] },
-    i4: { par: 200, sol: [['pet', 29, '+x', 0], ['pet', 31, '+x', 0]] },
-    i5: { par: 250, sol: [['din', 4, '-x', 0]] },
+    i4: { par: 850, sol: [['din', 0, '+x', 0], ['din', 11, '-x', 0], ['pet', 29, '+x', 0], ['din', 31, '+x', 0]] },
+    i5: { par: 500, sol: [['din', 3, '+x', 0], ['din', 4, '-x', 0]] },
     i6: { par: 500, sol: [['din', 2, '+z', 0], ['din', 3, '+z', 0]] },
     o1: { par: 200, sol: [['pet', 2, '-x', 0], ['pet', 1, '+x', 0]] },
     o2: { par: 800, sol: [['pet', 12, '+z', 0], ['pet', 13, '+z', 0], ['pet', 14, '-x', 0], ['pet', 15, '-x', 0], ['pet', 16, '-x', 0], ['pet', 17, '+x', 0], ['pet', 18, '+x', 0], ['pet', 19, '+x', 0]] },
@@ -503,12 +503,12 @@ lvl({ id: 'r3', w: 5, name: 'Mega Torre', tip: 'A obra final: catorze andares no
     p3: { par: 1500, sol: [['din', 28, '+z', 0], ['din', 30, '+x', 0], ['din', 31, '-x', 0], ['din', 32, '+x', 0], ['din', 33, '-x', 0], ['din', 34, '+x', 0]] },
     p4: { par: 700, sol: [['cut', 1, '+x', 0], ['cut', 3, '+x', 0]] },
     p5: { par: 700, sol: [['cut', 1, '+x', 0], ['cut', 9, '+x', 0.2]] },
-    r1: { par: 700, sol: [['tnt', 29, '+y', 0]] },
+    r1: { par: 950, sol: [['tnt', 29, '+y', 0], ['din', 12, '+y', 0.2]] },
     r2: { par: 1200, sol: [['tnt', 1, '-z', 0], ['din', 15, '+x', 0], ['din', 13, '-x', 0]] },
     r3: { par: 750, sol: [['din', 3, '-z', 0], ['din', 6, '-z', 0], ['din', 7, '+x', 0]] },
     r4: { par: 1000, sol: [['din', 0, '-z', 0], ['din', 1, '+z', 0], ['din', 72, '-z', 0], ['din', 73, '+z', 0]] },
     r5: { par: 850, sol: [['din', 3, '+x', 0.25], ['pet', 4, '+x', 0.5], ['din', 5, '+x', 0.75], ['din', 6, '+x', 1]] },
-    r6: { par: 2000, sol: [['din', 2, '+x', 0.2], ['din', 3, '+x', 0.30000000000000004], ['din', 4, '+x', 0.4], ['din', 5, '+x', 0.5], ['din', 6, '+x', 0.6000000000000001], ['din', 7, '+x', 0.7000000000000001], ['din', 8, '+x', 0.8], ['din', 9, '+x', 0.9]] },
+    r6: { par: 1750, sol: [['din', 3, '+x', 0.3], ['din', 4, '+x', 0.4], ['din', 5, '+x', 0.5], ['din', 6, '+x', 0.6], ['din', 7, '+x', 0.7], ['din', 8, '+x', 0.8], ['din', 9, '+x', 0.9]] },
   };
 
   /* monta um nível: blocos + referências */

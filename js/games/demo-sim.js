@@ -457,12 +457,29 @@ const DemoSim = (function () {
     }
 
     /* ── avaliação ── */
+    /* volume da peça que está mesmo acima da linha (a forma real cortada pelo plano y = linha),
+       e não só "o centro está acima?" — uma coluna tombada na diagonal ou um bloco alto em pé
+       com o centro abaixo da linha ficavam a contar como 100% em baixo */
+    function volAbove(p) {
+      const t = p.body.translation();
+      if (p.rad == null) {
+        const poly = p.poly || (p.shape === 'cyl' ? cylPoly(p.size[0] / 2, p.size[1], 14) : boxPoly(...p.size));
+        p.lpoly = poly.map(f => ({ v: f.v.map(q => [q[0] - p.c[0], q[1] - p.c[1], q[2] - p.c[2]]), inner: 0 }));
+        p.rad = 0; p.lpoly.forEach(f => f.v.forEach(q => { p.rad = Math.max(p.rad, Math.hypot(q[0], q[1], q[2])); }));
+        p.lvol = polyMass(p.lpoly).vol || p.vol;
+      }
+      if (t.y - p.rad >= S.lineY) return p.vol;
+      if (t.y + p.rad <= S.lineY) return 0;
+      const q = p.body.rotation();
+      const w = p.lpoly.map(f => ({ v: f.v.map(a => { const r = qrot(q, v3(a[0], a[1], a[2])); return [r.x + t.x, r.y + t.y, r.z + t.z]; }), inner: 0 }));
+      return Math.min(p.vol, polyMass(clip(w, [0, -1, 0], -S.lineY)).vol * p.vol / p.lvol);
+    }
     function evaluate() {
       let up = 0;
       const dam = new Set();
       S.pieces.forEach(p => {
         if (p.part === 's') {
-          if (p.alive && p.body && p.body.translation().y > S.lineY) up += p.vol;
+          if (p.alive && p.body) up += opts.centreEval ? (p.body.translation().y > S.lineY ? p.vol : 0) : volAbove(p);
         } else if (p.part === 'p') {
           let hurt = false;
           if (p.kind === 'block' && !p.alive && !p.fell) hurt = true;

@@ -4,14 +4,14 @@
    Mapa: 24 × 34 células de 20 px (por baixo das 2 linhas da superfície).
    Legenda: '#' terra · 'R' pedra · 'k' pedra rachada (só a bomba parte)
             'w' água · 'p' lodo · 'l' lava · 'm' musgo · ' ' ar
-            'G' vaso do Rebento (canto sup. esq. de 3×2) · 'F' botão de flor
+            'G' vaso do Rebento (canto sup. esq. de 3×2) · 'F' turbina
             'X' bomba · 'H' placa quente · 'C' nuvem fria · 'O' torneira
             'a'/'b'/'c' copo que abre a comporta 'A'/'B'/'C' · 'V' válvula
    Cada nível é desenhado com um pequeno construtor (g) em vez de ASCII à
    mão (menos erros) e traz a solução `sol` — traços de escavação {d} e
    toques {tap} em coordenadas de célula — que o verificador em Node
    (node_modules/.drip-check.cjs) corre para provar que o nível se faz
-   com as 3 flores.
+   com as 3 turbinas.
 ══════════════════════════════════════════════════════════════════ */
 const DripLevels = (function () {
   'use strict';
@@ -44,7 +44,7 @@ const DripLevels = (function () {
   }
 
   const CHAPTERS = [
-    { name: 'Primeiras Gotas', icon: '💧', desc: 'Escava caminhos e rega as flores.', grad: ['#3fb6ff', '#1d6fa8'] },
+    { name: 'Primeiras Gotas', icon: '💧', desc: 'Escava caminhos e liga as turbinas.', grad: ['#3fb6ff', '#1d6fa8'] },
     { name: 'Lodo e Musgo', icon: '🟣', desc: 'O lodo anula a água; o musgo bebe-a. Comportas coloridas.', grad: ['#a855f7', '#5b21b6'] },
     { name: 'Rio de Lava', icon: '🌋', desc: 'Lava + água = pedra e vapor. Nuvens frias fazem chover.', grad: ['#f97316', '#9a3412'] },
     { name: 'Engenhocas', icon: '⚙️', desc: 'Bombas, válvulas, torneiras e tudo junto.', grad: ['#64748b', '#1e293b'] },
@@ -104,7 +104,7 @@ const DripLevels = (function () {
     g.bud(4, 11); g.bud(11, 14); g.bud(13, 10);
   }, [{ d: [[4.5, 7.2], [4.5, 14.5], [12.5, 14.5], [12.5, 10.5], [16.5, 10.5], [16.5, 12]] }]);
 
-  lvl('c1-7', 'Gotas Contadas', { chapter: 0, need: 120, tip: 'Pouca água: cada desvio conta. As flores também bebem!' }, g => {
+  lvl('c1-7', 'Gotas Contadas', { chapter: 0, need: 120, tip: 'Pouca água: cada desvio conta. As turbinas também gastam!' }, g => {
     g.floor(30);
     g.basin(9, 1, 14, 3, 'w', { air: 1 });
     g.basin(1, 10, 4, 11, 'w', { air: 0 });
@@ -232,7 +232,7 @@ const DripLevels = (function () {
   }, [{ d: [[3.5, 4.2], [3.5, 15.3]] }, { d: [[3.5, 6], [11.5, 8.6]] }, { d: [[12, 4.2], [16.5, 6.5], [20.5, 9.5]], t: 5 }, { d: [[20.5, 4.2], [20.5, 9.5], [16.5, 16.5], [11.5, 18.4]], t: 5 }, { d: [[11.5, 20], [11.5, 23.5], [11.5, 27]], t: 5 }]);
 
   /* ═════════ capítulo 3 — Rio de Lava ═════════ */
-  lvl('c3-1', 'Lava Lenta', { chapter: 2, need: 70, tip: 'A lava é espessa e queima tudo — flores e Rebento incluídos. Deixa-a fechada!' }, g => {
+  lvl('c3-1', 'Lava Lenta', { chapter: 2, need: 70, tip: 'A lava é espessa e queima tudo — turbinas e Rebento incluídos. Deixa-a fechada!' }, g => {
     g.floor(30);
     g.basin(15, 1, 21, 3, 'l', { air: 1 }); g.basin(2, 1, 7, 3, 'w', { air: 1 });
     g.rect(13, 6, 23, 6, 'R');

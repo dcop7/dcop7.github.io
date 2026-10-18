@@ -336,7 +336,7 @@ const DripSim = (function () {
     }
   }
 
-  /* ── objetos: vaso, botões de flor, interruptores, placas, nuvens, musgo ── */
+  /* ── objetos: vaso, turbinas, interruptores, placas, nuvens, musgo ── */
   function interact(S) {
     const pot = S.pot;
     S.mossCap = Math.min(6, (S.mossCap || 0) + DT * 18);

@@ -2,7 +2,7 @@
    Gota a Gota (id drip) — puzzle de escavar para levar a água (out/2026).
 
    O Rebento, uma plantinha num vaso lá em baixo, tem sede. Escava a terra
-   com o dedo (ou o rato) para a água lá chegar; rega os botões de flor
+   com o dedo (ou o rato) para a água lá chegar; liga as turbinas
    pelo caminho (estrelas) e cuidado com o lodo, a lava e o musgo.
 
    Camadas no palco do ArcadeKit:
@@ -340,7 +340,12 @@ const DripGame = (function () {
     G.scared = danger < 120;
     G.fx = G.fx.filter(f => (f.t += dt) < f.life);
     G.bloomFx = G.bloomFx.filter(f => (f.t += dt) < f.life);
-    S.buds.forEach(b => { if (b.t > 0) b.t -= dt; if (b.state !== 'bud') b.anim = Math.min(1, (b.anim || 0) + dt * 2.5); });
+    S.buds.forEach(b => {
+      if (b.t > 0) b.t -= dt; if (b.state !== 'bud') b.anim = Math.min(1, (b.anim || 0) + dt * 2.5);
+      /* a roda gira com cada gota que passa; ligada, gira sempre */
+      b.w = b.state === 'bloom' ? (b.w || 0) + (9 - (b.w || 0)) * Math.min(1, dt * 3) : (b.w || 0) * Math.exp(-dt * 2.2);
+      b.rot = (b.rot || 0) + b.w * dt;
+    });
     S.switches.forEach(s => { if (s.on) s.anim = Math.min(1, (s.anim || 0) + dt * 3); });
     if (G.hintT > 0) G.hintT -= dt;
     /* fim */
@@ -354,8 +359,8 @@ const DripGame = (function () {
     const S = G.S, sf = api.sfx;
     for (const e of S.ev) {
       if (e.t === 'drink') { G.drink = 1; if (Math.random() < .25) sf.tone(520 + Math.random() * 300, .06, 'sine', .04, 0, 820); }
-      else if (e.t === 'sip') { sf.tone(900 + e.b.got * 60, .06, 'triangle', .04); }
-      else if (e.t === 'bloom') { sf.arp([660, 880, 1100, 1320], .06, .14, 'triangle', .07); api.vibe(20); G.bloomFx.push({ x: e.b.x, y: e.b.y, t: 0, life: 1.4 }); api.burst(e.b.x, e.b.y, 18, { colors: ['#ff8fc7', '#ffe066', '#ffffff'], speed: 160 }); }
+      else if (e.t === 'sip') { sf.tone(900 + e.b.got * 60, .06, 'triangle', .04); e.b.w = Math.min(10, (e.b.w || 0) + 4); }
+      else if (e.t === 'bloom') { sf.tone(110, .35, 'sawtooth', .04, 0, 330); sf.arp([523, 784, 1046], .05, .1, 'square', .05); api.vibe(20); G.bloomFx.push({ x: e.b.x, y: e.b.y - 34, t: 0, life: 1.2 }); api.burst(e.b.x, e.b.y - 34, 16, { colors: ['#ffe066', '#7ef0ff', '#ffffff'], speed: 170 }); }
       else if (e.t === 'wilt') { sf.tone(300, .3, 'sawtooth', .05, 0, 120); }
       else if (e.t === 'switch') { sf.tone(440, .08, 'square', .05); sf.tone(660, .1, 'square', .05, .08); sf.noise(.5, .05, .1, 600); }
       else if (e.t === 'valve') { sf.noise(.35, .05, 0, 900); sf.tone(330, .08, 'square', .04); }
@@ -380,10 +385,10 @@ const DripGame = (function () {
     } else { try { if (typeof GameProgress !== 'undefined') GameProgress.record(ID, { won: false, score: 0, mode: G.L.id }); } catch (e) {} }
     const next = LV()[G.li + 1];
     api.panel({
-      icon: won ? (stars === 3 ? '🌸' : '🌱') : '🥀', title: won ? (stars === 3 ? 'Jardim perfeito!' : 'O Rebento bebeu!') : 'Oh não…',
+      icon: won ? (stars === 3 ? '⚡' : '🌱') : '💧', title: won ? (stars === 3 ? 'Energia total!' : 'O Rebento bebeu!') : 'Oh não…',
       stars: won ? stars : null,
-      sub: won ? `${G.L.name}${stars < 3 ? '<br><small>Rega as 3 flores para ganhar ★★★</small>' : ''}` : S.failWhy,
-      stats: won ? [['Flores', stars + '/3'], ['Tempo', Math.round(S.t) + ' s']] : null,
+      sub: won ? `${G.L.name}${stars < 3 ? '<br><small>Liga as 3 turbinas para ganhar ★★★</small>' : ''}` : S.failWhy,
+      stats: won ? [['Turbinas', stars + '/3'], ['Tempo', Math.round(S.t) + ' s']] : null,
       buttons: [
         ...(won && next ? [{ label: '▶ Próximo nível', primary: true, fn: () => api.play(String(G.li + 1)) }] : []),
         { label: won ? '↺ Repetir' : '↺ Tentar de novo', primary: !won, fn: () => api.restart() },
@@ -490,11 +495,10 @@ const DripGame = (function () {
     const hg = ctx.createRadialGradient(hx - 5, hy - 6, 2, hx, hy, R + 2); hg.addColorStop(0, '#b6f07a'); hg.addColorStop(1, '#4fa62f');
     ctx.fillStyle = hg; ctx.beginPath(); ctx.ellipse(hx, hy, R, R * .92, 0, 0, 7); ctx.fill();
     ctx.strokeStyle = '#2f6e1c'; ctx.lineWidth = 1.6; ctx.stroke();
-    /* rebento no topo da cabeça / flor quando ganha */
+    /* rebento no topo da cabeça / duas folhas novas quando ganha */
     if (G.won) {
       const b = Math.min(1, G.endT * 1.5);
-      for (let j = 0; j < 6; j++) { const a = j / 6 * 6.28 + t * .6; ctx.fillStyle = j % 2 ? '#ff7eb6' : '#ff9fca'; ctx.beginPath(); ctx.ellipse(hx + Math.cos(a) * 8 * b, hy - R - 2 + Math.sin(a) * 8 * b, 6 * b, 4 * b, a, 0, 7); ctx.fill(); }
-      ctx.fillStyle = '#ffd84a'; ctx.beginPath(); ctx.arc(hx, hy - R - 2, 4.5 * b + .5, 0, 7); ctx.fill();
+      [-1, 1].forEach(sd => { ctx.save(); ctx.translate(hx, hy - R + 2); ctx.rotate(sd * (.55 + Math.sin(t * 3 + sd) * .08)); ctx.fillStyle = sd < 0 ? '#5cbf3a' : '#6fd04a'; ctx.beginPath(); ctx.ellipse(0, -9 * b, 4.5 * b, 9 * b, 0, 0, 7); ctx.fill(); ctx.strokeStyle = '#2f7a20'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -16 * b); ctx.stroke(); ctx.restore(); });
     } else { ctx.fillStyle = '#6fd04a'; ctx.beginPath(); ctx.ellipse(hx + 3, hy - R + 1, 5, 2.6, -.6, 0, 7); ctx.fill(); }
     /* olhos */
     const blink = (t % 3.7) < .12 || G.drink > .6;
@@ -520,30 +524,54 @@ const DripGame = (function () {
     ctx.restore();
   }
 
+  /* turbina: roda de pás que a água faz girar; ao ligar acende a lâmpada */
   function drawBud(ctx, G, b) {
-    const t = G.t, wob = b.t > 0 ? Math.sin(b.t * 40) * .15 : Math.sin(t * 2 + b.x) * .05;
-    ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(wob);
-    if (b.state === 'dead') {
-      ctx.fillStyle = '#6b5236'; ctx.beginPath(); ctx.ellipse(0, 2, 7, 9, .3, 0, 7); ctx.fill(); ctx.strokeStyle = '#3a2a1a'; ctx.lineWidth = 1.2; ctx.stroke();
-      ctx.restore(); return;
+    const t = G.t, on = b.state === 'bloom', dead = b.state === 'dead';
+    const g = on ? 1 : b.got / b.need, rot = b.rot || 0;
+    ctx.save(); ctx.translate(b.x, b.y); ctx.scale(1.2, 1.2);
+    if (b.t > 0) ctx.translate(Math.sin(b.t * 60) * 1.2, 0);
+    if (on) { const a = b.anim || 1; ctx.scale(.85 + a * .15, .85 + a * .15); }
+    /* brilho de fundo (ciano à espera, amarelo ligada) */
+    ctx.fillStyle = dead ? 'rgba(0,0,0,.18)' : on ? `rgba(255,214,90,${.22 + Math.sin(t * 8 + b.x) * .06})` : `rgba(120,220,255,${.13 + Math.sin(t * 3 + b.x) * .05})`;
+    ctx.beginPath(); ctx.arc(0, 0, 21, 0, 7); ctx.fill();
+    /* poste + lâmpada por cima */
+    ctx.strokeStyle = dead ? '#4a4038' : '#5d6b78'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -15); ctx.lineTo(0, -24); ctx.stroke();
+    if (on) {
+      const fl = .85 + Math.sin(t * 23 + b.x) * .08;
+      const lg = ctx.createRadialGradient(0, -28, 1, 0, -28, 16); lg.addColorStop(0, `rgba(255,236,140,${.75 * fl})`); lg.addColorStop(1, 'rgba(255,200,60,0)');
+      ctx.fillStyle = lg; ctx.beginPath(); ctx.arc(0, -28, 16, 0, 7); ctx.fill();
     }
-    if (b.state === 'bloom') {
-      const a = b.anim || 1, s = .6 + a * .5;
-      ctx.scale(s, s);
-      ctx.fillStyle = 'rgba(255,230,120,.25)'; ctx.beginPath(); ctx.arc(0, 0, 22, 0, 7); ctx.fill();
-      for (let j = 0; j < 7; j++) { const an = j / 7 * 6.28 + t * .4; ctx.fillStyle = j % 2 ? '#ff6fa8' : '#ff94c2'; ctx.beginPath(); ctx.ellipse(Math.cos(an) * 9, Math.sin(an) * 9, 8, 5, an, 0, 7); ctx.fill(); }
-      ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.arc(0, 0, 5.5, 0, 7); ctx.fill(); ctx.fillStyle = '#e8a31a'; for (let j = 0; j < 5; j++) { ctx.beginPath(); ctx.arc(Math.cos(j * 1.3) * 2.5, Math.sin(j * 1.3) * 2.5, .9, 0, 7); ctx.fill(); }
-      ctx.restore(); return;
+    ctx.fillStyle = dead ? '#3b342e' : on ? '#ffe680' : '#55606b'; ctx.beginPath(); ctx.arc(0, -28, 4.6, 0, 7); ctx.fill();
+    ctx.strokeStyle = dead ? '#2a241f' : on ? '#e0a922' : '#2f3740'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.fillStyle = '#8a96a2'; ctx.fillRect(-2.6, -24.5, 5.2, 2.4);
+    if (dead) { ctx.strokeStyle = '#a7b0b8'; ctx.lineWidth = .9; ctx.beginPath(); ctx.moveTo(-2, -31); ctx.lineTo(.5, -28); ctx.lineTo(-1, -25.5); ctx.stroke(); }
+    /* raios da lâmpada acesa */
+    if (on) { ctx.strokeStyle = 'rgba(255,230,120,.9)'; ctx.lineWidth = 1.6; for (let j = 0; j < 5; j++) { const a = -Math.PI / 2 + (j - 2) * .55, r0 = 8 + Math.sin(t * 10 + j) * 1.2; ctx.beginPath(); ctx.moveTo(Math.cos(a) * r0, -28 + Math.sin(a) * r0); ctx.lineTo(Math.cos(a) * (r0 + 4), -28 + Math.sin(a) * (r0 + 4)); ctx.stroke(); } }
+    /* caixa / eixo atrás da roda */
+    ctx.fillStyle = dead ? '#3d342c' : '#46525e'; U.rr(ctx, -5, -12, 10, 6, 2); ctx.fill();
+    /* roda de pás */
+    ctx.save(); ctx.rotate(rot);
+    const blade = dead ? '#5a4a3a' : on ? '#d9e3ea' : '#a9b6c2', edge = dead ? '#2e261f' : '#3c4752';
+    /* raios + aro */
+    ctx.strokeStyle = dead ? '#4a3c30' : '#7d8b98'; ctx.lineWidth = 1.6;
+    for (let j = 0; j < 6; j++) { const a = j / 6 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(Math.cos(a) * 3, Math.sin(a) * 3); ctx.lineTo(Math.cos(a) * 10.5, Math.sin(a) * 10.5); ctx.stroke(); }
+    ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(0, 0, 10.5, 0, 7); ctx.stroke();
+    /* pás à volta do aro */
+    for (let j = 0; j < 8; j++) {
+      if (dead && j === 3) continue;   /* pá partida */
+      ctx.save(); ctx.rotate(j / 8 * Math.PI * 2);
+      ctx.fillStyle = blade; U.rr(ctx, -2.6, 9.2, 5.2, 7, 1.2); ctx.fill();
+      ctx.strokeStyle = edge; ctx.lineWidth = .9; ctx.stroke();
+      ctx.restore();
     }
-    const g = b.got / b.need;
-    /* halo + botão fechado que incha com cada gota */
-    ctx.fillStyle = `rgba(255,170,210,${.16 + Math.sin(t * 3 + b.x) * .06})`; ctx.beginPath(); ctx.arc(0, 0, 19, 0, 7); ctx.fill();
-    ctx.fillStyle = '#4caf3a'; ctx.beginPath(); ctx.moveTo(0, 12); ctx.quadraticCurveTo(-11, 4, -6, -4); ctx.lineTo(0, 2); ctx.lineTo(6, -4); ctx.quadraticCurveTo(11, 4, 0, 12); ctx.fill();
-    const s = 1 + g * .35;
-    ctx.fillStyle = '#ff7fb5'; ctx.beginPath(); ctx.moveTo(0, -12 * s); ctx.quadraticCurveTo(9 * s, -4, 0, 6); ctx.quadraticCurveTo(-9 * s, -4, 0, -12 * s); ctx.fill();
-    ctx.strokeStyle = '#c94c86'; ctx.lineWidth = 1.2; ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-2.5, -5 * s, 1.6, 3.5, .3, 0, 7); ctx.fill();
-    if (g > 0) { ctx.strokeStyle = '#7ad8ff'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, 16, -Math.PI / 2, -Math.PI / 2 + g * 6.28); ctx.stroke(); }
+    ctx.restore();
+    /* cubo */
+    ctx.fillStyle = dead ? '#3a2f26' : on ? '#ffcc3a' : '#7b8996'; ctx.beginPath(); ctx.arc(0, 0, 3.8, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.lineWidth = 1; ctx.stroke();
+    /* progresso (quanta água já passou) */
+    if (!on && !dead && g > 0) { ctx.strokeStyle = '#7ad8ff'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, 17.5, -Math.PI / 2, -Math.PI / 2 + g * 6.28); ctx.stroke(); }
+    /* avariada: fumo */
+    if (dead) { for (let j = 0; j < 2; j++) { const k = ((t * .5 + j * .5 + b.x * .01) % 1); ctx.fillStyle = `rgba(90,90,90,${.35 * (1 - k)})`; ctx.beginPath(); ctx.arc(Math.sin(k * 5 + j) * 3, -6 - k * 22, 3 + k * 5, 0, 7); ctx.fill(); } }
     ctx.restore();
   }
   const KEYC = { A: '#ef4444', B: '#f5b301', C: '#22c3e6', V: '#9aa7b4' };
@@ -670,10 +698,10 @@ const DripGame = (function () {
 .dr-l[disabled]{opacity:.42;cursor:not-allowed}
 .dr-l i{font-style:normal;font-size:.56rem;letter-spacing:.5px}
 .dr-tot{font:700 .82rem ${FONT};color:var(--muted,#9aa)}
-</style><div class="dr-m"><div class="dr-tot">🌸 ${tot} / ${LV().length * 3} flores</div>${CHS.map((c, ci) => {
+</style><div class="dr-m"><div class="dr-tot">⚡ ${tot} / ${LV().length * 3} turbinas</div>${CHS.map((c, ci) => {
         const ls = LV().map((l, i) => ({ l, i })).filter(o => o.l.chapter === ci);
         const cs = ls.reduce((s, o) => s + Math.max(0, sv.s[o.l.id] || 0), 0);
-        return `<div class="dr-c" style="background:linear-gradient(140deg,${c.grad[0]},${c.grad[1]})"><h4>${c.icon} ${c.name}<small>🌸 ${cs}/${ls.length * 3}</small></h4><p>${c.desc}</p><div class="dr-ls">${ls.map(({ l, i }) => {
+        return `<div class="dr-c" style="background:linear-gradient(140deg,${c.grad[0]},${c.grad[1]})"><h4>${c.icon} ${c.name}<small>⚡ ${cs}/${ls.length * 3}</small></h4><p>${c.desc}</p><div class="dr-ls">${ls.map(({ l, i }) => {
           const lock = !unlocked(sv, i), st = sv.s[l.id];
           return `<button class="dr-l" data-m="${i}" ${lock ? 'disabled' : ''} title="${l.name}">${lock ? '🔒' : i + 1}<i>${lock ? '' : st == null ? '·' : '★'.repeat(st) + '<span style="opacity:.3">' + '★'.repeat(3 - st) + '</span>'}</i></button>`;
         }).join('')}</div></div>`;
@@ -685,24 +713,24 @@ const DripGame = (function () {
   let CUR = null;
   const spec = {
     id: ID, title: 'Gota a Gota', icon: '💧', accent: '#3fb6ff', accent2: '#7ef0a0', bg: '#2a1a10', transparent: true, diff: false,
-    tagline: 'O Rebento tem sede! Escava a terra com o dedo para levar a água até ao vaso — e rega as flores pelo caminho. Cuidado com o lodo, a lava e o musgo guloso.',
+    tagline: 'O Rebento tem sede! Escava a terra com o dedo para levar a água até ao vaso — e faz girar as turbinas pelo caminho. Cuidado com o lodo, a lava e o musgo guloso.',
     view: { w: VW, h: VH }, picker, cursor: 'crosshair',
     get ready() { const L = CUR || LV()[0]; return { title: (CUR ? 'Nível ' + (CUR.index + 1) + ' · ' : '') + L.name, hint: L.tip || 'Arrasta para escavar a terra.' }; },
     how: [
       'Arrasta o dedo (ou o rato) sobre a <b>terra castanha</b> para a escavar. A <b>pedra</b> cinzenta não se escava.',
       'Leva água suficiente até ao <b>vaso do Rebento</b> — o medidor em baixo mostra quanto falta.',
-      'Rega os 3 <b>botões de flor</b> pelo caminho para ganhar <b>★★★</b> (cada flor bebe um pouco de água!).',
+      'Faz passar água pelas 3 <b>turbinas</b> para as ligar e ganhar <b>★★★</b> (cada uma gasta um pouco de água!).',
       'O <b>lodo roxo</b> anula a água e faz mal ao Rebento; a <b>lava</b> com água vira <b>pedra</b> e vapor; o <b>musgo</b> bebe a água mas o lodo mata-o. Toca em <b>bombas</b> e <b>válvulas</b>; enche os copos coloridos para abrir as comportas da mesma cor.',
     ],
     controls: ['🖱️ arrastar = escavar', '👆 tocar = bomba / válvula', '↻ recomeçar · 💡 dica'],
     setup: (api, o) => { const G = setup(api, o); CUR = G.L; return G; },
     update, draw, down, move, up,
     destroy: G => { G.dead = 1; if (G.ro) G.ro.disconnect(); if (G.ui) G.ui.remove(); [G.bg, G.glc].forEach(c => c && c.remove()); const t = G.api && G.api.stage.querySelector('.dr-tip'); if (t) t.remove(); if (G.glr) { const e = G.glr.gl.getExtension('WEBGL_lose_context'); e && e.loseContext(); } },
-    hud: G => [['Nível', (G.li + 1) + '/' + LV().length], ['Vaso', Math.min(100, Math.round(G.S.fill / G.S.need * 100)) + '%'], ['Flores', G.S.buds.filter(b => b.state === 'bloom').length + '/' + G.S.buds.length]],
+    hud: G => [['Nível', (G.li + 1) + '/' + LV().length], ['Vaso', Math.min(100, Math.round(G.S.fill / G.S.need * 100)) + '%'], ['Turbinas', G.S.buds.filter(b => b.state === 'bloom').length + '/' + G.S.buds.length]],
     pauseButtons: (G, api) => [{ label: 'Escolher nível', fn: () => api.menu() }],
     achievements: [
       { id: 'drip.first', name: 'Primeira Gota', icon: '💧', desc: 'Leva a água até ao Rebento pela primeira vez.', test: c => c.result.won },
-      { id: 'drip.garden', name: 'Jardineiro', icon: '🌸', desc: 'Completa um nível do Gota a Gota com as 3 flores.', test: c => c.result.won && (c.result.meta && c.result.meta.stars) === 3 },
+      { id: 'drip.garden', name: 'Eletricista', icon: '⚡', desc: 'Completa um nível do Gota a Gota com as 3 turbinas ligadas.', test: c => c.result.won && (c.result.meta && c.result.meta.stars) === 3 },
     ],
   };
   const KIT = ArcadeKit.create(spec);
