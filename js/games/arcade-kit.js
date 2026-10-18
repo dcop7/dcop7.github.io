@@ -344,11 +344,21 @@ const ArcadeKit = (function () {
         /* câmara lenta: fator k durante d segundos */
         slowmo(k, d) { sess.slowK = k; sess.slowT = d; },
         flash(c, d) { sess.flashC = c || '#fff'; sess.flashT = d || .15; },
+        /* faixas em fila: duas ao mesmo tempo sobrepunham-se no mesmo sítio */
         banner(text, sub) {
           if (sess.dead) return;
-          const b = document.createElement('div'); b.className = 'ak-banner';
-          b.innerHTML = esc(text) + (sub ? `<small>${esc(sub)}</small>` : '');
-          stage.appendChild(b); setTimeout(() => b.remove(), 1600);
+          const q = sess.bq || (sess.bq = []);
+          q.push([text, sub]);
+          if (q.length > 3) q.splice(1, 1);
+          if (q.length > 1) return;
+          const next = () => {
+            if (sess.dead || !q.length) return;
+            const [tx, sb] = q[0];
+            const b = document.createElement('div'); b.className = 'ak-banner';
+            b.innerHTML = esc(tx) + (sb ? `<small>${esc(sb)}</small>` : '');
+            stage.appendChild(b); setTimeout(() => { b.remove(); q.shift(); next(); }, 1600);
+          };
+          next();
         },
         /* painel intermédio (nível concluído…) — pausa o update */
         panel(o) { if (!sess.dead) showPanel(o); },
@@ -544,7 +554,7 @@ const ArcadeKit = (function () {
         }
       }
 
-      sess.api = api; sess.frame = frame; sess.begin = begin;
+      sess.api = api; sess.frame = frame; sess.begin = begin; sess.paint = paint;
 
       if (cv) {
         if (spec.cursor) cv.style.cursor = spec.cursor;
@@ -635,6 +645,9 @@ const ArcadeKit = (function () {
       start: m => start(m || null),
       begin: () => S && S.begin(),
       step: (dt, n) => { for (let i = 0; i < (n || 1) && S; i++) S.frame(dt); },
+      /* imagens quadro a quadro: parar o rAF e pintar à mão */
+      freeze: () => S && S.eng && S.eng.stop(),
+      render: () => S && S.eng && S.paint(S.eng.ctx, S.eng.width, S.eng.height),
       down: (x, y) => S && S.state === 'play' && spec.down && spec.down(S.G, x, y, S.api, { pointerType: 'touch', pointerId: 1 }),
       move: (x, y, d) => S && S.state === 'play' && spec.move && spec.move(S.G, x, y, S.api, { pointerType: 'touch', pointerId: 1 }, d !== false),
       up: (x, y) => S && S.state === 'play' && spec.up && spec.up(S.G, x, y, S.api, { pointerType: 'touch', pointerId: 1 }),

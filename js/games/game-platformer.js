@@ -143,6 +143,21 @@ const PlatformerGame = (function () {
   const unlocked = (sv, i) => i === 0 || (sv.s[LEVELS[i].id] || 0) > 0 || (sv.s[(LEVELS[i - 1] || {}).id] || 0) > 0;
   const inWorld = L => LEVELS.filter(l => l.world === L.world).indexOf(L) + 1;
   function putSave(v) { try { localStorage.setItem(SAVE, JSON.stringify(v)); } catch (e) {} }
+  /* lenços do Pip: ganham-se com as estrelas dos níveis (nada se compra) */
+  const SCARVES = [
+    { id: 'turquesa', name: 'Turquesa', need: 0, c: '#14b8a6', d: '#0d7d73' },
+    { id: 'vermelho', name: 'Vermelho', need: 5, c: '#ef4444', d: '#991b1b' },
+    { id: 'amarelo', name: 'Amarelo', need: 10, c: '#facc15', d: '#a16207' },
+    { id: 'azul', name: 'Azul', need: 16, c: '#3b82f6', d: '#1e3a8a' },
+    { id: 'rosa', name: 'Rosa', need: 22, c: '#f472b6', d: '#9d174d' },
+    { id: 'branco', name: 'Neve', need: 28, c: '#f8fafc', d: '#94a3b8' },
+    { id: 'ouro', name: 'Ouro', need: 36, c: '#fbbf24', d: '#92400e' },
+  ];
+  const starTotal = sv => Object.values(sv.s || {}).reduce((a, b) => a + (+b || 0), 0);
+  /* fantasma: o percurso do melhor tempo, 10 amostras por segundo de jogo */
+  const GHOST = id => 'pip:ghost:' + id;
+  function loadGhost(id) { try { const g = JSON.parse(localStorage.getItem(GHOST(id))); if (g && g.f) return { t: g.t, f: g.f.split(';').map(r => r.split(',').map(Number)) }; } catch (e) {} return null; }
+  const ghostOn = () => { try { return localStorage.getItem('pip:ghostOn') !== '0'; } catch (e) { return true; } };
 
   function setup(api, o) {
     const li = Math.max(0, LEVELS.findIndex(l => l.id === o.mode));
@@ -166,6 +181,10 @@ const PlatformerGame = (function () {
     mark(M.start[0], M.start[1] + 1);
     spawn(G, M.start[0], M.start[1]);
     camera(G, api, 0, true);
+    const sv0 = save(), sc = SCARVES.find(x => x.id === sv0.scarf && starTotal(sv0) >= x.need) || SCARVES[0];
+    G.scarf = sc.c; G.scarfD = sc.d;
+    G.ghost = ghostOn() ? loadGhost(L.id) : null; G.rec = [];
+    G.coinTotal = M.items.filter(i => i.k === 'coin').length + M.t.flat().filter(c => c === '?' || c === 'Q').length + 5 * M.t.flat().filter(c => c === 'h').length;
     return G;
   }
   function spawn(G, x, y) {
@@ -301,6 +320,7 @@ const PlatformerGame = (function () {
       }
       const prevX = p.x;
       p.x = nx;
+      p.gait = (p.gait || 0) + Math.abs(p.gsp) * dt / pGaitLen(Math.abs(p.gsp));
       const yRef = p.y + (p.plat ? (p.plat.ddy || 0) : 0);
       const gnd = ground(G, p.x, yRef - 22, yRef + 18 + Math.abs(p.gsp) * dt * 1.2, null);
       if (gnd) { p.y = gnd.y; p.a = gnd.a; p.plat = gnd.plat || null; p.ground = gnd; }
@@ -375,6 +395,7 @@ const PlatformerGame = (function () {
           /* aterrar: a velocidade passa a seguir o chão */
           p.gsp = p.vx * Math.cos(p.a) + p.vy * Math.sin(p.a) * .55;
           if (p.vy > 500) { p.sq = Math.min(.3, p.vy / 3500); dust(G, p.x, p.y, 5); }
+          p.gait = 0; p.kick = Math.min(1, p.vy / 1400);
           p.vy = 0; p.jumped = false; p.pounce = false; p.landT = .16;
           if (p.dive) { p.dive = false; p.gsp = 0; diveImpact(G, api, gnd, vyLand); return; }
           if (p.buf > 0) { p.buf = 0; p.on = false; p.vx = p.gsp * Math.cos(p.a); p.vy = p.gsp * Math.sin(p.a) - P.jump; p.jumped = true; api.sfx.tone(330, .14, 'triangle', .06, 0, 620); }
@@ -419,7 +440,7 @@ const PlatformerGame = (function () {
     if (ch === '?' || ch === 'h' || ch === 'Q') {
       M.t[cy][cx] = 'U';
       if (ch === 'h') { for (let i = 0; i < 5; i++) G.pops.push({ x: X + (i - 2) * 10, y: Y - 10, vy: -520 - i * 30, t: 0 }); G.coins += 5; api.sfx.arp([988, 1319, 1568], .05, .1, 'square', .04); G.secrets = (G.secrets || 0) + 1; return; }
-      G.pops.push({ x: X, y: Y - 8, vy: -560, t: 0 }); G.coins++; coinSfx(api);
+      G.pops.push({ x: X, y: Y - 8, vy: -560, t: 0 }); G.coins++; coinSfx(api, G);
       return;
     }
     if (ch === 'P' || ch === '!' || ch === 'H') {
@@ -453,7 +474,13 @@ const PlatformerGame = (function () {
     api.sfx.arp([494, 392, 330, 262], .1, .16, 'triangle', .07); api.vibe([80, 40, 80]);
   }
 
-  function coinSfx(api) { api.sfx.tone(1568, .05, 'triangle', .05); api.sfx.tone(2093, .09, 'sine', .035, .035); }
+  const PENTA = [0, 2, 4, 7, 9];
+  function coinSfx(api, G) {
+    let k = 0;
+    if (G) { k = G.t - (G.coinT || -9) < .45 ? Math.min(14, (G.coinK || 0) + 1) : 0; G.coinK = k; G.coinT = G.t; }
+    const st = PENTA[k % 5] + 12 * Math.floor(k / 5), f = 1046.5 * Math.pow(2, st / 12);
+    api.sfx.tone(f, .05, 'triangle', .05); api.sfx.tone(f * 1.335, .09, 'sine', .035, .035);
+  }
 
   /* ════════════════════════════════════════════════════════════════
      mundo: objetos, inimigos, itens
@@ -556,7 +583,7 @@ const PlatformerGame = (function () {
     p.door = null;
     if (p.on) M.doorList.forEach(d => { if (Math.abs(p.x - d.x) < 16 && Math.abs(p.y - d.y) < 6) p.door = d; });
     /* partículas do mundo */
-    for (let i = G.fx.length - 1; i >= 0; i--) { const f = G.fx[i]; f.life -= dt; f.x += f.vx * dt; f.y += f.vy * dt; f.vy += (f.k === 'dust' ? 0 : P.g) * dt; if (f.r != null) f.r += (f.vr || 0) * dt; if (f.life <= 0) G.fx.splice(i, 1); }
+    for (let i = G.fx.length - 1; i >= 0; i--) { const f = G.fx[i]; f.life -= dt; if (f.k === 'ring') { if (f.life <= 0) G.fx.splice(i, 1); continue; } f.x += f.vx * dt; f.y += f.vy * dt; f.vy += (f.k === 'dust' ? 0 : P.g) * dt; if (f.r != null) f.r += (f.vr || 0) * dt; if (f.life <= 0) G.fx.splice(i, 1); }
   }
 
   function stepBoss(G, dt, api) {
@@ -595,7 +622,7 @@ const PlatformerGame = (function () {
   function collect(G, api, it) {
     it.got = true; it.t = 0;
     const p = G.p, X = sx(G, it.x), Y = sy(G, it.y);
-    if (it.k === 'coin') { G.coins++; coinSfx(api); return; }
+    if (it.k === 'coin') { G.coins++; coinSfx(api, G); sparkle(G, it.x, it.y, 5, '#fff3b0'); G.fx.push({ k: 'ring', x: it.x, y: it.y, life: .3 }); return; }
     if (it.k === 'star') {
       G.stars.push(it); G.score += 1000;
       api.sfx.arp([784, 988, 1175, 1568], .07, .18, 'triangle', .08); api.vibe([20, 30, 20]);
@@ -622,6 +649,11 @@ const PlatformerGame = (function () {
     const total = Math.max(0, G.coins * 10 + G.score + timeB - G.deaths * 250);
     const allStars = G.stars.length >= G.totalStars;
     const stars = 1 + (allStars ? 1 : 0) + (G.time <= par ? 1 : 0);
+    let ghostNew = false;
+    try {
+      const old = loadGhost(L.id);
+      if (!old || G.time < old.t) { localStorage.setItem(GHOST(L.id), JSON.stringify({ t: +G.time.toFixed(2), f: G.rec.map(r => r.join(',')).join(';') })); ghostNew = true; }
+    } catch (e) {}
     const sv = save(); const prev = sv.s[L.id] || 0;
     sv.s[L.id] = Math.max(prev, stars); sv.u = Math.max(sv.u || 1, G.li + 2); putSave(sv);
     let rec = null;
@@ -631,8 +663,8 @@ const PlatformerGame = (function () {
     api.panel({
       icon: G.li === LEVELS.length - 1 ? '👑' : '🏁', title: G.li === LEVELS.length - 1 ? 'Salvaste os Mundos de Pip!' : 'Nível concluído!',
       big: total, stars,
-      sub: (rec && rec.newBest ? '<div class="ak-rec">★ Novo recorde!</div>' : '') + `${L.name}`,
-      stats: [['Tempo', `${mm}:${String(ss).padStart(2, '0')} / ${Math.floor(par / 60)}:${String(par % 60).padStart(2, '0')}`], ['Moedas', G.coins], ['Penas douradas', `${G.stars.length}/${G.totalStars}`], ['Quedas', G.deaths]],
+      sub: (rec && rec.newBest ? '<div class="ak-rec">★ Novo recorde!</div>' : '') + `${L.name}` + (ghostNew ? '<br><small style="opacity:.8">Melhor tempo: da próxima vez corres contra o teu fantasma.</small>' : ''),
+      stats: [['Tempo', `${mm}:${String(ss).padStart(2, '0')} / ${Math.floor(par / 60)}:${String(par % 60).padStart(2, '0')}`], ['Moedas', `${G.coins}/${G.coinTotal}`], ['Penas douradas', `${G.stars.length}/${G.totalStars}`], ['Quedas', G.deaths]],
       buttons: [
         ...(next ? [{ label: '▶ Próximo nível', primary: true, fn: () => api.play(next.id) }] : []),
         { label: '↺ Repetir', primary: !next, fn: () => api.play(L.id) },
@@ -652,7 +684,7 @@ const PlatformerGame = (function () {
     /* canvas ainda sem tamanho (arranque/redimensionar): não estragar a câmara com Infinity/NaN */
     if (!(W > 0 && H > 0 && isFinite(W) && isFinite(H))) return;
     if (!isFinite(G.cam.x) || !isFinite(G.cam.y)) snap = true;
-    const zH = H / mapH, zW = W / (TS * 26);
+    const zH = H / mapH, zW = W / (TS * 22);
     G.z = Math.min(W / (TS * 12), Math.max(zW, zH * .92));
     G.VW = W / G.z; G.VH = H / G.z;
     const p = G.p;
@@ -670,7 +702,13 @@ const PlatformerGame = (function () {
       ty = U.clamp(want, 0, mapH - G.VH + pad);
     }
     if (snap) { G.cam.x = tx; G.cam.y = ty; }
-    else { G.cam.x += (tx - G.cam.x) * Math.min(1, dt * 9); G.cam.y += (ty - G.cam.y) * Math.min(1, dt * (p.on ? 5 : 3)); }
+    else {
+      G.cam.x += (tx - G.cam.x) * Math.min(1, dt * 9); G.cam.y += (ty - G.cam.y) * Math.min(1, dt * (p.on ? 5 : 3));
+      /* margens duras: com molas o Pip sobe depressa demais para a câmara suave */
+      const top = p.y - PH - G.VH * .12, bot = p.y - G.VH * .9;
+      if (G.cam.y > top) G.cam.y = Math.max(top, -G.VH * .35);
+      if (G.cam.y < bot) G.cam.y = Math.min(bot, mapH - G.VH + pad);
+    }
   }
 
   function update(G, dt, api) {
@@ -679,7 +717,7 @@ const PlatformerGame = (function () {
     if (G.win) {
       G.winT += dt;
       const p = G.p; p.gsp = 160; p.face = 1;
-      if (p.on) { p.x += 160 * dt; const g = ground(G, p.x, p.y - 18, p.y + 20); if (g) p.y = g.y; }
+      if (p.on) { p.x += 160 * dt; p.gait = (p.gait || 0) + 160 * dt / pGaitLen(160); const g = ground(G, p.x, p.y - 18, p.y + 20); if (g) p.y = g.y; }
       p.anim += dt * 7;
       if (Math.random() < dt * 6) { const X = U.rand(api.W * .2, api.W * .8), Y = U.rand(api.H * .15, api.H * .5); api.burst(X, Y, 22, { color: U.pick(['#fde047', '#f472b6', '#60a5fa', '#4ade80', '#fb923c']), speed: 220, life: .9, gravity: 120 }); api.sfx.noise(.2, .04, 0, 1500); }
       stepWorld(G, dt, api); camera(G, api, dt);
@@ -700,6 +738,8 @@ const PlatformerGame = (function () {
       return;
     }
     G.time += dt;
+    const fr = Math.floor(G.time * 10);
+    if (G.rec.length <= fr && G.rec.length < 6000) { const p = G.p, ball = p.roll || p.loop || (!p.on && p.jumped && Math.abs(p.vx) > 330 && !p.pounce && !p.dive); G.rec.push([Math.round(p.x), Math.round(p.y), (p.on ? 1 : 0) | (ball ? 2 : 0) | (p.face > 0 ? 4 : 0) | (p.crouch ? 8 : 0) | (p.dive ? 16 : 0), Math.round(Math.abs(p.on ? p.gsp : p.vx) / 10), Math.round(p.vy / 10)]); }
     const I = input(G, api);
     /* entrar numa porta */
     if (I.u && G.p.door && !G.fadeTo && G.fade <= 0) {
@@ -895,6 +935,7 @@ const PlatformerGame = (function () {
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b.x, b.y, 14, 0, TAU); ctx.fill();
       ctx.fillStyle = 'rgba(255,170,60,.45)'; ctx.beginPath(); ctx.arc(b.x - Math.sign(b.vx) * 9, b.y + 2, 5, 0, TAU); ctx.fill();
     });
+    if (G.ghost) drawGhost(G, ctx);
     drawPip(G, ctx);
     G.M.loops.forEach(L => drawLoop(G, ctx, L, true));
     /* paredes falsas por cima (ficam translúcidas quando o Pip está dentro) */
@@ -902,13 +943,39 @@ const PlatformerGame = (function () {
     G.fx.forEach(f => {
       if (f.k === 'dust') { ctx.globalAlpha = Math.max(0, Math.min(1, f.life * 2.4)); ctx.fillStyle = th.cap === 'snow' ? '#fff' : th.cap === 'stone' ? 'rgba(170,165,175,.9)' : 'rgba(245,235,215,.92)'; ctx.beginPath(); ctx.arc(f.x, f.y, f.s * (1.3 - f.life), 0, TAU); ctx.fill(); ctx.globalAlpha = 1; }
       else if (f.k === 'spark') { ctx.globalAlpha = Math.max(0, Math.min(1, f.life * 3)); star(ctx, f.x, f.y, f.s * 1.6, f.c || '#fde68a'); ctx.globalAlpha = 1; }
+      else if (f.k === 'ring') { const k = 1 - f.life / .3; ctx.globalAlpha = Math.max(0, 1 - k); ctx.strokeStyle = '#ffe680'; ctx.lineWidth = 2.5 * (1 - k) + .5; ctx.beginPath(); ctx.arc(f.x, f.y, 6 + k * 16, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; }
       else if (f.k === 'brick') { ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.r); ctx.fillStyle = '#c48a52'; U.rr(ctx, -9, -3, 18, 6, 1.5); ctx.fill(); ctx.strokeStyle = '#4a2a12'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.restore(); }
     });
     G.pops.forEach(c => { const k = Math.abs(Math.cos(c.t * 18)); ctx.fillStyle = '#ffd34d'; ctx.beginPath(); ctx.ellipse(c.x, c.y, 9 * k + 1, 11, 0, 0, TAU); ctx.fill(); ctx.strokeStyle = '#8a5300'; ctx.lineWidth = 1.8; ctx.stroke(); });
     ctx.restore();
+    grade(G, ctx, W, H);
     /* desvanecer ao entrar em portas */
     if (G.fade > 0) { const k = G.fade > .35 ? 1 - (G.fade - .35) / .2 : G.fade / .35; ctx.fillStyle = `rgba(0,0,0,${U.clamp(k, 0, 1)})`; ctx.fillRect(0, 0, W, H); }
     drawHUD(G, ctx, W, H, api);
+  }
+
+  /* luz de cada mundo: feixes de sol a atravessar o ar, gradação quente/fria (soft-light) e vinheta */
+  const GRADE = {
+    prado: ['rgba(255,226,150,.42)', 'rgba(30,70,120,.3)', .12], deserto: ['rgba(255,190,110,.5)', 'rgba(120,50,40,.3)', .16],
+    gelo: ['rgba(230,245,255,.4)', 'rgba(30,70,140,.36)', .1], castelo: ['rgba(255,120,60,.42)', 'rgba(30,5,30,.5)', 0],
+  };
+  function grade(G, ctx, W, H) {
+    const th = G.th, gr = GRADE[th.id] || GRADE.prado, t = G.t, z = G.z;
+    if (gr[2]) {
+      ctx.save(); ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 5; i++) {
+        const span = W + 700, bx = ((i * 260 + 120 - G.cam.x * z * .12) % span + span) % span - 350, a = gr[2] * (.45 + .55 * Math.sin(t * .5 + i * 1.9)) * (i % 2 ? .7 : 1);
+        const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, `rgba(255,246,214,${a})`); g.addColorStop(.75, 'rgba(255,246,214,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(bx, 0); ctx.lineTo(bx + 70 + i * 12, 0); ctx.lineTo(bx + 330 + i * 20, H); ctx.lineTo(bx + 170, H); ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
+    ctx.save(); ctx.globalCompositeOperation = 'soft-light';
+    const lg = ctx.createLinearGradient(0, 0, W * .8, H); lg.addColorStop(0, gr[0]); lg.addColorStop(1, gr[1]);
+    ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); ctx.restore();
+    const vg = ctx.createRadialGradient(W / 2, H * .55, Math.min(W, H) * .45, W / 2, H * .55, Math.max(W, H) * .8);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, th.id === 'castelo' ? 'rgba(10,0,10,.45)' : 'rgba(10,20,40,.22)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   }
 
   /* ── fundo: céu, sol, nuvens e 3 camadas de paralaxe com detalhe próprio de cada mundo ── */
@@ -924,7 +991,7 @@ const PlatformerGame = (function () {
     const baseY = sy(G, G.M.H * TS) - 40 * z;
     const n1 = x => { const i = Math.floor(x), f = x - i, a = hsh(i), b = hsh(i + 1); return a + (b - a) * f * f * (3 - 2 * f); };
     /* sol / brilho */
-    const sunX = W * .74, sunY = H * .2;
+    const sunX = W * .24, sunY = H * .19;
     if (th.id === 'castelo') {
       const lg = ctx.createLinearGradient(0, H * .35, 0, H); lg.addColorStop(0, 'rgba(255,90,40,0)'); lg.addColorStop(1, 'rgba(255,90,40,.4)'); ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
       const mg = ctx.createRadialGradient(W * .2, H * .18, 0, W * .2, H * .18, 90); mg.addColorStop(0, 'rgba(255,220,200,.9)'); mg.addColorStop(.25, 'rgba(255,170,140,.45)'); mg.addColorStop(1, 'rgba(255,120,90,0)');
@@ -935,7 +1002,7 @@ const PlatformerGame = (function () {
       const sg = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 220); sg.addColorStop(0, 'rgba(255,252,230,.95)'); sg.addColorStop(.12, 'rgba(255,240,190,.6)'); sg.addColorStop(1, 'rgba(255,240,190,0)');
       ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H);
       /* raios de luz a rodar devagar */
-      ctx.save(); ctx.translate(sunX, sunY); ctx.rotate(t * .02); ctx.fillStyle = 'rgba(255,255,240,.06)';
+      ctx.save(); ctx.translate(sunX, sunY); ctx.rotate(t * .02); ctx.fillStyle = th.id === 'deserto' ? 'rgba(255,240,200,.08)' : 'rgba(255,255,240,.06)';
       for (let i = 0; i < 9; i++) { ctx.rotate(TAU / 9); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W * 1.2, -60); ctx.lineTo(W * 1.2, 60); ctx.fill(); }
       ctx.restore();
       ctx.fillStyle = 'rgba(255,253,240,.95)'; ctx.beginPath(); ctx.arc(sunX, sunY, 26, 0, TAU); ctx.fill();
@@ -1177,6 +1244,7 @@ const PlatformerGame = (function () {
       const bump = G.bumps.get(x + ',' + y), by = bump ? -Math.sin((1 - bump / .2) * Math.PI) * 8 : 0;
       const mask = (ch === '%' || ch === '=') && !solidish(tAt(G, x, y - 1)) ? 1 : 0;
       const spr = tileSprite(th, ch === 'P' || ch === '!' || ch === 'H' || ch === 'Q' ? '?' : ch, mask);
+      if (ch !== '^' && !solidish(tAt(G, x, y + 1))) { const sg = ctx.createLinearGradient(0, (y + 1) * TS, 0, (y + 1) * TS + 9); sg.addColorStop(0, 'rgba(10,15,30,.22)'); sg.addColorStop(1, 'rgba(10,15,30,0)'); ctx.fillStyle = sg; ctx.fillRect(x * TS + 2, (y + 1) * TS, TS - 4, 9); }
       ctx.drawImage(spr, x * TS, y * TS + by, TS, TS);
       if (ch === '?' || ch === 'P' || ch === '!' || ch === 'H' || ch === 'Q') { /* brilho a correr */ const k = (G.t * .8 + x * .13) % 1; if (k < .25) { ctx.fillStyle = `rgba(255,255,255,${(1 - k * 4) * .35})`; U.rr(ctx, x * TS + 3, y * TS + 3 + by, TS - 6, TS - 7, 4); ctx.fill(); } }
     }
@@ -1224,25 +1292,57 @@ const PlatformerGame = (function () {
     const M = G.M, th = G.th;
     M.obj.forEach(o => {
       if (o.k === 'spring') {
-        const k = o.anim || 0, top = o.y + k * 8;
-        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3; ctx.beginPath();
-        for (let i = 0; i <= 4; i++) { const yy = U.lerp(top + 6, o.y + o.h, i / 4); ctx.lineTo(o.x + (i % 2 ? o.w - 6 : 6), yy); }
-        ctx.stroke();
-        const g = ctx.createLinearGradient(0, top, 0, top + 8); g.addColorStop(0, '#fb7185'); g.addColorStop(1, '#be123c');
-        ctx.fillStyle = g; U.rr(ctx, o.x, top, o.w, 8, 3); ctx.fill();
-        ctx.fillStyle = '#e2e8f0'; U.rr(ctx, o.x + 2, o.y + o.h - 4, o.w - 4, 4, 2); ctx.fill();
+        /* mola: base de ferro, espiral com brilho, prato vermelho com risca branca */
+        const k = o.anim || 0, top = o.y + k * 8 - (k > .6 ? (k - .6) * 10 : 0), cx = o.x + o.w / 2;
+        ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.beginPath(); ctx.ellipse(cx, o.y + o.h, o.w * .55, 3, 0, 0, TAU); ctx.fill();
+        const n = 5, yb = o.y + o.h - 4;
+        ctx.lineCap = 'round';
+        for (let pass = 0; pass < 3; pass++) {
+          ctx.strokeStyle = pass === 0 ? OUT : pass === 1 ? '#9aa6b8' : 'rgba(255,255,255,.75)'; ctx.lineWidth = pass === 0 ? 5 : pass === 1 ? 3 : 1;
+          ctx.beginPath();
+          for (let i = 0; i <= n * 6; i++) { const u = i / (n * 6), yy = U.lerp(top + 7, yb, u), xx = cx + Math.sin(u * n * TAU) * (o.w / 2 - 5); if (pass === 2 && Math.cos(u * n * TAU) < .3) { ctx.moveTo(xx, yy); continue; } ctx.lineTo(xx, yy); }
+          ctx.stroke();
+        }
+        ctx.fillStyle = '#475569'; U.rr(ctx, o.x + 1, yb - 1, o.w - 2, 5, 2); ctx.fill(); ol(ctx, 1.4);
+        const g = ctx.createLinearGradient(0, top, 0, top + 9); g.addColorStop(0, '#fda4af'); g.addColorStop(.45, '#f43f5e'); g.addColorStop(1, '#9f1239');
+        ctx.fillStyle = g; U.rr(ctx, o.x - 1, top, o.w + 2, 9, 4.5); ctx.fill(); ol(ctx, 1.6);
+        ctx.fillStyle = 'rgba(255,255,255,.85)'; U.rr(ctx, o.x + 5, top + 3, o.w - 10, 2.2, 1.1); ctx.fill();
       } else if (o.k === 'pad') {
-        ctx.fillStyle = '#334155'; U.rr(ctx, o.x + 1, o.y, o.w - 2, o.h, 3); ctx.fill();
-        for (let i = 0; i < 2; i++) { const a = ((G.t * 3 + i * .5) % 1); ctx.fillStyle = `rgba(250,204,21,${.4 + a * .6})`; ctx.beginPath(); const bx = o.x + 6 + i * 10 + a * 4; ctx.moveTo(bx, o.y + 1); ctx.lineTo(bx + 7, o.y + 4); ctx.lineTo(bx, o.y + 7); ctx.fill(); }
+        /* acelerador: placa com setas que acendem em sequência e brilho no chão */
+        const gl = ctx.createRadialGradient(o.x + o.w / 2, o.y + 4, 1, o.x + o.w / 2, o.y + 4, 26); gl.addColorStop(0, `rgba(250,204,21,${.35 + Math.sin(G.t * 8) * .1})`); gl.addColorStop(1, 'rgba(250,204,21,0)');
+        ctx.fillStyle = gl; ctx.fillRect(o.x - 14, o.y - 20, o.w + 28, 30);
+        ctx.fillStyle = '#1e293b'; U.rr(ctx, o.x + 1, o.y, o.w - 2, o.h, 3); ctx.fill(); ol(ctx, 1.3);
+        for (let i = 0; i < 3; i++) { const a = ((G.t * 3 - i * .33) % 1 + 1) % 1, bx = o.x + 5 + i * 8; ctx.fillStyle = `rgba(250,204,21,${.25 + (a < .5 ? a * 1.5 : (1 - a) * 1.5)})`; ctx.beginPath(); ctx.moveTo(bx, o.y + 1.5); ctx.lineTo(bx + 6, o.y + 4); ctx.lineTo(bx, o.y + 6.5); ctx.lineTo(bx + 2, o.y + 4); ctx.closePath(); ctx.fill(); }
       } else if (o.k === 'plat' || o.k === 'crumb') {
-        const shake = o.k === 'crumb' && o.st > 0 && !o.gone ? Math.sin(G.t * 60) * 1.5 : 0;
+        const shake = o.k === 'crumb' && o.st > 0 && !o.gone ? Math.sin(G.t * 60) * 1.5 * Math.min(1, o.st * 3) : 0;
         if (o.k === 'crumb' && o.gone && o.y > o.ay + 400) return;
-        const g = ctx.createLinearGradient(0, o.y, 0, o.y + o.h);
-        if (o.k === 'crumb') { g.addColorStop(0, '#c9a577'); g.addColorStop(1, '#8a6a44'); } else { g.addColorStop(0, th.id === 'castelo' ? '#a7adbd' : '#e2e8f0'); g.addColorStop(1, th.id === 'castelo' ? '#5d6274' : '#94a3b8'); }
-        ctx.fillStyle = g; U.rr(ctx, o.x + shake, o.y, o.w, o.h, 5); ctx.fill();
-        ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.fillRect(o.x + 3 + shake, o.y + 1, o.w - 6, 2);
-        if (o.k === 'crumb') { ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.moveTo(o.x + 10 + shake, o.y + 2); ctx.lineTo(o.x + 14 + shake, o.y + o.h - 2); ctx.moveTo(o.x + 22 + shake, o.y + 3); ctx.lineTo(o.x + 19 + shake, o.y + o.h - 3); ctx.stroke(); }
-        else { ctx.fillStyle = '#facc15'; [o.x + 8, o.x + o.w - 8].forEach(bx => { ctx.beginPath(); ctx.arc(bx, o.y + o.h / 2, 2.5, 0, TAU); ctx.fill(); }); }
+        const x = o.x + shake, y = o.y, w = o.w, h = o.h, cast = th.id === 'castelo';
+        if (o.k === 'crumb') {
+          /* laje de arenito rachada: as rachas abrem à medida que treme */
+          const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#e0bd8a'); g.addColorStop(1, '#9a7448');
+          ctx.fillStyle = g; U.rr(ctx, x, y, w, h, 4); ctx.fill(); ol(ctx, 1.6);
+          ctx.fillStyle = 'rgba(255,245,220,.5)'; ctx.fillRect(x + 3, y + 1.5, w - 6, 2);
+          const op = U.clamp(o.st / .45, 0, 1);
+          ctx.strokeStyle = `rgba(60,35,15,${.35 + op * .5})`; ctx.lineWidth = 1 + op; ctx.beginPath(); ctx.moveTo(x + 10, y + 2); ctx.lineTo(x + 14, y + 7); ctx.lineTo(x + 12, y + h - 2); ctx.moveTo(x + 22, y + 3); ctx.lineTo(x + 19, y + h - 3); ctx.stroke();
+          if (op > .3 && Math.random() < .3) G.fx.push({ k: 'dust', x: x + U.rand(2, w - 2), y: y + h, vx: U.rand(-10, 10), vy: U.rand(20, 60), life: .35, s: 2 });
+        } else if (cast) {
+          /* laje de pedra suspensa por correntes, com uma runa acesa */
+          ctx.strokeStyle = '#2b2d3a'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); [x + 10, x + w - 10].forEach(cx => { ctx.beginPath(); ctx.moveTo(cx, y); ctx.lineTo(cx, y - 900); ctx.stroke(); }); ctx.setLineDash([]);
+          const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#9ea4b5'); g.addColorStop(1, '#4f5466');
+          ctx.fillStyle = g; U.rr(ctx, x, y, w, h, 3); ctx.fill(); ol(ctx, 1.6);
+          ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(x + 3, y + 1.5, w - 6, 2);
+          ctx.fillStyle = `rgba(255,140,60,${.6 + Math.sin(G.t * 4) * .25})`; ctx.beginPath(); ctx.moveTo(x + w / 2, y + 3); ctx.lineTo(x + w / 2 + 4, y + h / 2); ctx.lineTo(x + w / 2, y + h - 3); ctx.lineTo(x + w / 2 - 4, y + h / 2); ctx.closePath(); ctx.fill();
+        } else {
+          /* jangada de tábuas com cordas e ponteiras de ferro (as móveis verticais levam um balão de folhas) */
+          ctx.fillStyle = 'rgba(0,0,0,.18)'; U.rr(ctx, x + 3, y + h - 1, w - 6, 4, 2); ctx.fill();
+          const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#d9a066'); g.addColorStop(1, '#8a5530');
+          ctx.fillStyle = '#4a2a12'; U.rr(ctx, x, y, w, h, 4); ctx.fill();
+          const pw = w / 4;
+          for (let i = 0; i < 4; i++) { ctx.fillStyle = g; U.rr(ctx, x + i * pw + 1, y + 1, pw - 2, h - 2.5, 2.5); ctx.fill(); ctx.fillStyle = 'rgba(255,240,210,.35)'; ctx.fillRect(x + i * pw + 3, y + 2.2, pw - 6, 1.6); ctx.strokeStyle = 'rgba(80,40,10,.35)'; ctx.lineWidth = .9; ctx.beginPath(); ctx.moveTo(x + i * pw + 4, y + h * .6); ctx.quadraticCurveTo(x + i * pw + pw / 2, y + h * .45, x + i * pw + pw - 4, y + h * .62); ctx.stroke(); }
+          ctx.strokeStyle = '#c8b28a'; ctx.lineWidth = 2; [x + pw, x + w - pw].forEach(cx => { ctx.beginPath(); ctx.moveTo(cx - 3, y - .5); ctx.lineTo(cx + 3, y + h + .5); ctx.stroke(); });
+          ctx.fillStyle = '#6b7280'; [x + 1, x + w - 6].forEach(cx => { U.rr(ctx, cx, y + 1, 5, h - 2, 1.5); ctx.fill(); });
+          if (o.dy) { ctx.strokeStyle = '#7a5a30'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w / 2, y - 26); ctx.stroke(); ctx.fillStyle = '#4caf50'; [[-8, -30, -.5], [8, -30, .5], [0, -36, 0]].forEach(([a, b, r]) => { ctx.beginPath(); ctx.ellipse(x + w / 2 + a, y + b, 8, 4.5, r, 0, TAU); ctx.fill(); ol(ctx, 1.1); }); }
+        }
       } else if (o.k === 'firebar') {
         /* braço de pedra com cristais afiados a rodar */
         const ex = o.x + Math.cos(o.a) * o.n * 15, ey = o.y + Math.sin(o.a) * o.n * 15;
@@ -1360,6 +1460,7 @@ const PlatformerGame = (function () {
 
   /* ── inimigos: mesmo traço das personagens (contorno quente + sombra em dois tons) ── */
   function ol(ctx, w) { ctx.strokeStyle = OUT; ctx.lineWidth = w || 1.6; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+  function olP(ctx, P, w) { ctx.strokeStyle = OUT; ctx.lineWidth = w || 1.6; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(P); }
   function eyeBall(ctx, x, y, r, lookX, lookY, angry) {
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(x, y, r, r * 1.12, 0, 0, TAU); ctx.fill(); ol(ctx, 1.1);
     ctx.fillStyle = '#1b1008'; ctx.beginPath(); ctx.arc(x + lookX * r * .35, y + lookY * r * .3, r * .58, 0, TAU); ctx.fill();
@@ -1490,68 +1591,127 @@ const PlatformerGame = (function () {
   }
 
   /* ── o Pip ──
-     Raposa bípede, traço de livro ilustrado: contorno quente, sombra em dois tons, "meias" pretas,
+     Raposa bípede, traço de livro ilustrado: contorno quente, sombra "cel" em dois tons com brilho
+     na orla (a luz vem de cima/esquerda e não troca de lado quando o Pip se vira), "meias" pretas,
      cauda farta com ponta branca e um lenço turquesa (a marca do Pip — fica cor de fogo com a
-     malagueta). Rig simples: anca → coxa → canela, ombro → braço → antebraço (ângulos, 0 = para
-     baixo, + = para a frente). A pose sai do estado físico; com os pés no chão, a anca ajusta-se
-     para que o pé mais baixo toque sempre o chão (nada de pés enterrados nem a flutuar). */
-  const FX = { fur: '#f2741f', furL: '#ffa24d', furD: '#c24e14', back: '#b5470f', cream: '#fff4e3', creamD: '#ecd3b2', sock: '#3b2416', ear: '#ffd6bd', eye: '#1d0e05' };
-  const TH = 7.6, SH = 7.4, UA = 5.6, FA = 5.4;
+     malagueta). Rig: anca → coxa → canela, ombro → braço → antebraço (0 = para baixo, + = frente).
+     A corrida é calculada pela DISTÂNCIA (não pelo relógio): o pé de apoio fica preso ao chão — e
+     nas rampas cada pé procura a altura do terreno por baixo dele (IK de dois ossos) — enquanto o
+     outro faz o arco do balanço. As poses são números que se misturam ao mudar de estado; cauda,
+     orelhas e cabeça têm molas; ao virar, o corpo "roda" (escala x passa pelo zero). */
+  const FX = { fur: '#f2741f', furL: '#ffb05e', furD: '#c24e14', back: '#b5470f', cream: '#fff4e3', creamD: '#e6c9a4', sock: '#3b2416', ear: '#ffd6bd', eye: '#1d0e05' };
+  const TH = 7.6, SH = 7.4, UA = 5.6, FA = 5.4, PAW = 2.6, PHIP = 12.6;
+  const PLX = -1.5, PLY = -1.7;   /* deslocamento da cópia para a sombra cel (luz de cima/esquerda) */
   function legEnd(a1, a2) { return [Math.sin(a1) * TH + Math.sin(a1 + a2) * SH, Math.cos(a1) * TH + Math.cos(a1 + a2) * SH]; }
-  function pipPose(G) {
+  const wrapA = a => { a = (a + Math.PI / 2) % TAU; if (a < 0) a += TAU; return a - Math.PI / 2; };
+  function ikA(dx, dy, a, b, bend) {
+    const d = U.clamp(Math.hypot(dx, dy), Math.abs(a - b) + .01, a + b - .01);
+    const th = Math.atan2(dx, dy);
+    const al = Math.acos(U.clamp((a * a + d * d - b * b) / (2 * a * d), -1, 1));
+    const be = Math.acos(U.clamp((a * a + b * b - d * d) / (2 * a * b), -1, 1));
+    return [wrapA(th + bend * al), -bend * (Math.PI - be)];
+  }
+  /* arco do pé no balanço (x em múltiplos da meia-passada, altura em px) */
+  const PSW = [[0, -1, 0], [.26, -1.35, 5.6], [.55, .4, 7.4], [.83, 1.45, 3], [1, 1, 0]];
+  function pSwing(s, R) {
+    let i = 0; while (i < PSW.length - 2 && s > PSW[i + 1][0]) i++;
+    const a = PSW[i], b = PSW[i + 1], d = b[0] - a[0], t = U.clamp((s - a[0]) / d, 0, 1), t2 = t * t, t3 = t2 * t;
+    const tan = (j, c) => { const p = PSW[Math.max(0, j - 1)], n = PSW[Math.min(PSW.length - 1, j + 1)]; return (n[c] - p[c]) / (n[0] - p[0]) * d; };
+    const h = c => (2 * t3 - 3 * t2 + 1) * a[c] + (t3 - 2 * t2 + t) * tan(i, c) + (-2 * t3 + 3 * t2) * b[c] + (t3 - t2) * tan(i + 1, c);
+    return [h(1) * R, h(2)];
+  }
+  const pGaitLen = v => 46 + v * .13;
+  const PKEYS = ['lean', 'rot', 'tilt', 'hipY', 'lf1', 'lf2', 'lb1', 'lb2', 'af1', 'af2', 'ab1', 'ab2', 'ff', 'fb', 'tail', 'ears', 'head'];
+  const PLIN = { hipY: 1, tail: 1, ears: 1 };
+  const pMix = (A, B, k) => { const o = Object.assign({}, B); PKEYS.forEach(n => { const d = B[n] - A[n]; o[n] = A[n] + (PLIN[n] ? d : Math.atan2(Math.sin(d), Math.cos(d))) * k; }); return o; };
+  const smooth = k => k * k * (3 - 2 * k);
+  /* pose antiga ({legs, arms}) → números */
+  function flat(P, p, ground) {
+    const Q = { lean: P.lean || 0, rot: P.rot || 0, tilt: 0, hipY: P.hipY, lf1: P.legs[0][0], lf2: P.legs[0][1], lb1: P.legs[1][0], lb2: P.legs[1][1], af1: P.arms[0][0], af2: P.arms[0][1], ab1: P.arms[1][0], ab2: P.arms[1][1], tail: P.tail, ears: P.ears || 0, head: P.head || 0, eye: P.eye, mouth: P.mouth, brow: P.brow || 0, tailW: P.tailW || 0, scarf: P.scarf };
+    Q.ff = P.air ? Q.lf1 + Q.lf2 : 0; Q.fb = P.air ? Q.lb1 + Q.lb2 : 0;
+    /* no chão (parado/agachado/a travar): o pé mais baixo assenta no chão; a raposa inclina com a rampa */
+    if (ground) { const d = Math.max(legEnd(Q.lf1, Q.lf2)[1], legEnd(Q.lb1, Q.lb2)[1]); Q.hipY = -PAW - d; Q.tilt = (p.a || 0) * .6; }
+    return Q;
+  }
+  const PAIR = {
+    rise: { lean: .12, arms: [[2.45, -.45], [-1, .7]], legs: [[1.05, -1.75], [-.35, -.95]], tail: -.15, ears: .3, mouth: 'open', hipY: -17.5, air: true },
+    apex: { lean: .05, arms: [[1.7, -.25], [-1.35, .35]], legs: [[.6, -.7], [-.55, -.7]], tail: .1, ears: .1, hipY: -17.5, air: true, mouth: 'smile' },
+    fall: { lean: -.05, arms: [[2.6, -.35], [-2.5, .35]], legs: [[.25, -.35], [-.2, -.45]], tail: .45, ears: -.25, eye: 'wide', mouth: 'o', hipY: -17.5, air: true },
+    reach: { lean: .02, arms: [[1.5, -.2], [-1.1, .3]], legs: [[.22, -.18], [-.12, -.22]], tail: .3, ears: -.1, eye: 'wide', mouth: 'open', hipY: -16.5, air: true },
+  };
+  function pipGait(G, p, speed, sprint) {
+    const f = p.face, cyc = pGaitLen(speed), slope = Math.min(1, Math.abs(Math.sin(p.a || 0)) * 1.41);
+    const R = (sprint ? 6.4 : 5.4) * (1 - .45 * slope), b = U.clamp(2 * R / cyc, .1, .42), ph = ((p.gait || 0) % 1 + 1) % 1;
+    const att = [1.6, -1.8];
+    /* altura do terreno por baixo de cada pé (nas rampas os pés não ficam enterrados nem no ar) */
+    const gyAt = x => { if (p.plat || p.loop) return p.y; const fl = floorAt(G, x, p.y - 26, p.y + 26); return fl ? fl.y : p.y; };
+    const feet = [0, .5].map((off, i) => {
+      const u = (ph + off) % 1;
+      let x, h, st = 0;
+      if (u < b) { const q = u / b; x = R - 2 * R * q; h = 0; st = Math.sin(Math.PI * q); }
+      else [x, h] = pSwing((u - b) / (1 - b), R);
+      const gOff = p.y - gyAt(p.x + f * x);   /* >0: chão mais alto que o centro */
+      return { x, h, st, u, g: U.clamp(gOff, -9, 9) };
+    });
+    const w = ph % .5, flight = w >= b ? Math.sin(Math.PI * (w - b) / (.5 - b)) : 0, comp = Math.max(feet[0].st, feet[1].st);
+    const land = p.landT > 0 ? smooth(p.landT / .16) : 0;
+    const H = PHIP - 1.2 * comp + (sprint ? 1.8 : 1.2) * flight - 3.6 * land;
+    const gm = (feet[0].g + feet[1].g) / 2, hipY = -PAW - H - gm + Math.abs(feet[0].g - feet[1].g) * .35;
+    const Q = { lean: 0, rot: 0, tilt: 0, hipY, tail: 0, ears: 0, head: 0, eye: 'open', mouth: sprint ? 'grin' : 'smile', brow: 0, scarf: speed };
+    const L = feet.map((ft, i) => ikA(ft.x - att[i], (-PAW - ft.g - ft.h) - hipY, TH, SH, 1));
+    Q.lf1 = L[0][0]; Q.lf2 = L[0][1]; Q.lb1 = L[1][0]; Q.lb2 = L[1][1];
+    Q.ff = feet[0].h > .4 ? (Q.lf1 + Q.lf2) * .55 : 0; Q.fb = feet[1].h > .4 ? (Q.lb1 + Q.lb2) * .55 : 0;
+    const A = sprint ? 1.05 : U.clamp(speed / 430, .38, .9), sw = Math.cos(TAU * feet[0].u);
+    if (sprint) { Q.af1 = -1.1 + sw * .2; Q.af2 = 1.3; Q.ab1 = -1.3 - sw * .2; Q.ab2 = 1.2; }
+    else { Q.ab1 = -.05 + A * 1.05 * sw; Q.af1 = -.05 - A * 1.05 * sw; Q.ab2 = .85 + A * .5 + .2 * Math.max(0, sw); Q.af2 = .85 + A * .5 + .2 * Math.max(0, -sw); }
+    /* inclina para dentro das subidas; na corrida, para a frente */
+    Q.lean = Math.min(.42, speed / 1300) + (sprint ? .08 : 0) - (p.a || 0) * f * .35 + .02 * Math.sin(TAU * 2 * ph);
+    Q.tail = sprint ? .62 : -.25 + A * .5;
+    Q.ears = sprint ? .7 : A * .35;
+    Q.head = -.04 * comp + .03 * flight;
+    return Q;
+  }
+  function pipBase(G) {
     const p = G.p, t = G.t, speed = Math.abs(p.on ? p.gsp : p.vx);
     const P0 = { lean: 0, legs: [[.08, -.14], [-.1, -.1]], arms: [[.22, -.5], [-.18, -.45]], tail: -.5, tailW: 0, ears: 0, head: 0, eye: 'open', mouth: 'smile', brow: 0, rot: 0, air: !p.on, hipY: -17.5, scarf: speed };
-    if (G.dead) { Object.assign(P0, { arms: [[2.8, -.3], [-2.7, .3]], legs: [[.6, -1], [-.5, -.8]], eye: 'x', mouth: 'o', ears: .8, air: true }); return P0; }
+    if (G.dead) { Object.assign(P0, { arms: [[2.8, -.3], [-2.7, .3]], legs: [[.6, -1], [-.5, -.8]], eye: 'x', mouth: 'o', ears: .8, air: true }); return ['dead', flat(P0, p)]; }
     if (G.win && p.on) {
+      const Q = pipGait(G, p, 160, false);
       const hop = Math.abs(Math.sin(G.winT * 7));
-      Object.assign(P0, { arms: [[2.85 - hop * .25, -.2], [-2.9 + hop * .2, .2]], eye: 'happy', mouth: 'open', tail: -.1 + Math.sin(t * 14) * .25, ears: -.15, lean: -.05 });
-      const ph = p.anim; P0.legs = [[Math.sin(ph) * .5, -.3 - Math.max(0, Math.cos(ph)) * .8], [Math.sin(ph + Math.PI) * .5, -.3 - Math.max(0, Math.cos(ph + Math.PI)) * .8]];
-      return P0;
+      Object.assign(Q, { af1: 2.85 - hop * .25, af2: -.2, ab1: -2.9 + hop * .2, ab2: .2, eye: 'happy', mouth: 'open', tail: -.1 + Math.sin(t * 14) * .25, ears: -.15 });
+      return ['win', Q];
     }
-    if (p.inv > 1.25 && !p.star) { Object.assign(P0, { lean: -.32, arms: [[-2.2, .6], [-1.8, .7]], legs: [[.7, -.9], [.2, -.6]], eye: 'squint', mouth: 'o', ears: .9, tail: .4, air: !p.on }); return P0; }
+    if (p.inv > 1.25 && !p.star) { Object.assign(P0, { lean: -.32, arms: [[-2.2, .6], [-1.8, .7]], legs: [[.7, -.9], [.2, -.6]], eye: 'squint', mouth: 'o', ears: .9, tail: .4, air: !p.on }); return ['hurt', flat(P0, p)]; }
     if (p.dive) {
-      /* mergulho de cabeça: corpo na vertical, patas da frente esticadas para o chão, cauda a esvoaçar */
       Object.assign(P0, { rot: 1.38, arms: [[1.55, .05], [1.35, .1]], legs: [[-1.45, .35], [-1.2, .5]], tail: -.05 + Math.sin(t * 30) * .12, ears: .9, eye: 'focus', mouth: 'grit', brow: 1, air: true });
-      return P0;
+      return ['dive', flat(P0, p)];
     }
     if (!p.on) {
       if (p.pounce && p.vy < 0) {
-        /* bote: o corpo estica-se em arco para a frente */
         Object.assign(P0, { rot: -.5, lean: .2, arms: [[1.9, -.2], [1.6, -.1]], legs: [[-1.1, -.2], [-.8, -.4]], tail: .2, ears: .6, eye: 'focus', mouth: 'open', brow: 1 });
-      } else if (p.vy < -160) {
-        Object.assign(P0, { lean: .12, arms: [[2.45, -.45], [-1, .7]], legs: [[1.05, -1.75], [-.35, -.95]], tail: -.15, ears: .3, mouth: 'open' });
-      } else if (p.vy < 160) {
-        Object.assign(P0, { lean: .05, arms: [[1.7, -.25], [-1.35, .35]], legs: [[.6, -.7], [-.55, -.7]], tail: .1, ears: .1 });
-      } else {
-        const fl = Math.sin(t * 22) * .18;
-        Object.assign(P0, { lean: -.05, arms: [[2.7 + fl, -.35], [-2.6 - fl, .35]], legs: [[.25, -.35], [-.2, -.45]], tail: .45, ears: -.25, eye: 'wide', mouth: 'o' });
+        return ['pounce', flat(P0, p)];
       }
-      return P0;
+      /* uma só pose contínua pela velocidade vertical */
+      const k = U.clamp((p.vy + 480) / 960, 0, 1), F = o => flat(o, p);
+      let Q = k < .5 ? pMix(F(PAIR.rise), F(PAIR.apex), smooth(k * 2)) : pMix(F(PAIR.apex), F(PAIR.fall), smooth(k * 2 - 1));
+      Q.mouth = k < .65 ? 'open' : 'o'; Q.eye = k > .72 ? 'wide' : 'open';
+      if (k > .5) { const fl = Math.sin(t * 13) * .14 * (k - .5) * 2; Q.af1 += fl; Q.ab1 -= fl; }
+      if (p.vy > 0) {
+        const fl = floorAt(G, p.x, p.y, p.y + 70, p.y);
+        if (fl) { const near = U.clamp(1 - (fl.y - p.y) / 50, 0, 1); if (near > 0) Q = pMix(Q, F(PAIR.reach), smooth(near) * .85); }
+      }
+      return ['air', Q];
     }
-    /* no chão */
     if (p.crouch) {
       const ch = p.charge, wig = ch > .2 ? Math.sin(t * (10 + ch * 16)) * (.12 + ch * .2) : 0;
       Object.assign(P0, { lean: .32, legs: [[1.28, -2.45], [1.12, -2.3]], arms: [[.75, -.2], [.55, -.1]], tail: -.2 + wig, ears: .35 + ch * .2, eye: ch >= 1 ? 'focus' : 'open', brow: ch >= 1 ? 1 : 0, head: .12 });
-      return P0;
+      return ['crouch', flat(P0, p, true)];
     }
     if (p.skid > 0 && speed > 60) {
       Object.assign(P0, { lean: -.35, legs: [[.85, -.1], [-.35, -.7]], arms: [[-1.4, .4], [-1.1, .5]], tail: .3, ears: .6, eye: 'wide', mouth: 'grit' });
-      return P0;
+      return ['skid', flat(P0, p, true)];
     }
-    if (speed > 20) {
-      const ph = p.anim, sprint = speed > 470;
-      const A = sprint ? 1.05 : U.clamp(speed / 430, .38, .9);
-      const leg = o => [A * Math.sin(ph + o) * (sprint ? .95 : .85), -(.22 + (sprint ? 1.6 : 1.25) * A * Math.max(0, Math.cos(ph + o)))];
-      P0.legs = [leg(0), leg(Math.PI)];
-      if (sprint) P0.arms = [[-1.1 + Math.sin(ph) * .2, 1.3], [-1.3 - Math.sin(ph) * .2, 1.2]];
-      else P0.arms = [[-A * 1.05 * Math.sin(ph), .85 + A * .5], [A * 1.05 * Math.sin(ph), .85 + A * .5]];
-      P0.lean = Math.min(.42, speed / 1300) + (sprint ? .08 : 0);
-      P0.tail = sprint ? .62 : -.25 + A * .5 + Math.sin(ph * 2) * .08;
-      P0.ears = sprint ? .7 : A * .35;
-      P0.head = -Math.abs(Math.sin(ph)) * .05;
-      if (sprint) P0.mouth = 'grin';
-      return P0;
-    }
+    if (speed > 20) return ['run', pipGait(G, p, speed, speed > 470)];
     /* parado: respira, abana a cauda, pisca; ao fim de uns segundos olha em volta e bate o pé */
     const br = Math.sin(t * 2.6);
     P0.arms = [[.18 + br * .03, -.5], [-.16 - br * .03, -.45]];
@@ -1565,7 +1725,22 @@ const PlatformerGame = (function () {
       const tap = Math.max(0, Math.sin(it * 9));
       P0.legs = [[.08 + tap * .25, -.14 - tap * .35], [-.1, -.1]];
     }
-    return P0;
+    return ['idle', flat(P0, p, true)];
+  }
+  const PBLEND = { run: .1, air: .08, idle: .14, crouch: .08, skid: .07, dive: .06, pounce: .06, hurt: .05, dead: .08, win: .15 };
+  function pipPose(G, dt) {
+    const p = G.p, [key, T] = pipBase(G);
+    const K = p.kp || (p.kp = { key, from: null, bt: 1, bd: 1, shown: T, tail: T.tail, tv: 0, ears: T.ears, ev: 0, head: 0, hv: 0 });
+    if (key !== K.key) { K.from = K.shown; K.key = key; K.bt = 0; K.bd = PBLEND[key] || .1; }
+    K.bt = Math.min(K.bd, K.bt + dt);
+    const Q = K.from && K.bt < K.bd ? pMix(K.from, T, smooth(K.bt / K.bd)) : T;
+    K.shown = Q;
+    const h = Math.min(dt, 1 / 30);
+    K.tv += ((Q.tail - K.tail) * 120 - K.tv * 13) * h; K.tail += K.tv * h;
+    K.ev += ((Q.ears - K.ears) * 220 - K.ev * 16) * h; K.ears += K.ev * h;
+    K.hv += ((Q.head - K.head) * 180 - K.hv * 17) * h; K.head += K.hv * h;
+    if (p.kick) { K.tv -= p.kick * 7; K.ev += p.kick * 9; p.kick = 0; }
+    return Q;
   }
   function limb(ctx, x, y, a1, l1, a2, l2, w, c1, c2) {
     const kx = x + Math.sin(a1) * l1, ky = y + Math.cos(a1) * l1;
@@ -1576,78 +1751,90 @@ const PlatformerGame = (function () {
     ctx.strokeStyle = c2; ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(fx, fy); ctx.stroke();
     return [fx, fy];
   }
-  function paw(ctx, x, y, a, rx, ry, col) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(rx * .35, 0, rx, ry, 0, 0, TAU); ctx.fill(); ol(ctx, 1.3); ctx.restore(); }
-  function foxEar(ctx, x, y, a, col) {
+  function paw(ctx, x, y, a, rx, ry, col) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(rx * .35, 0, rx, ry, 0, 0, TAU); ctx.fill(); ol(ctx, 1.3); ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.ellipse(rx * .5, -ry * .35, rx * .5, ry * .3, 0, 0, TAU); ctx.fill(); ctx.restore(); }
+  /* forma com sombra cel + brilho de orla; lx = sinal do x local (o Pip vira-se com scale(−1, 1)) */
+  function cel(ctx, P, base, shade, hi, k, lx, noLine) {
+    k = k || 1;
+    ctx.fillStyle = base; ctx.fill(P);
+    ctx.save(); ctx.clip(P);
+    const S = new Path2D(); S.rect(-200, -200, 400, 400); S.addPath(P, new DOMMatrix().translate(PLX * k * lx, PLY * k));
+    ctx.fillStyle = shade; ctx.fill(S, 'evenodd');
+    if (hi) { const L = new Path2D(); L.rect(-200, -200, 400, 400); L.addPath(P, new DOMMatrix().translate(-PLX * .55 * k * lx, -PLY * .55 * k)); ctx.fillStyle = hi; ctx.fill(L, 'evenodd'); }
+    ctx.restore();
+    if (!noLine) { ctx.strokeStyle = OUT; ctx.lineWidth = 1.7; ctx.lineJoin = 'round'; ctx.stroke(P); }
+  }
+  function earPath() { const P = new Path2D(); P.moveTo(-4.4, 1.5); P.quadraticCurveTo(-3.8, -8, -.3, -12.8); P.quadraticCurveTo(4.2, -7, 4.4, 1.5); P.closePath(); return P; }
+  function foxEar(ctx, x, y, a, col, lx) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(a);
-    ctx.beginPath(); ctx.moveTo(-4.4, 1.5); ctx.quadraticCurveTo(-3.8, -8, -.3, -12.8); ctx.quadraticCurveTo(4.2, -7, 4.4, 1.5); ctx.closePath();
-    ctx.fillStyle = col; ctx.fill();
-    ctx.save(); ctx.clip(); ctx.fillStyle = FX.sock; ctx.fillRect(-6, -16, 12, 7.5); ctx.restore();
-    ctx.beginPath(); ctx.moveTo(-4.4, 1.5); ctx.quadraticCurveTo(-3.8, -8, -.3, -12.8); ctx.quadraticCurveTo(4.2, -7, 4.4, 1.5); ctx.closePath(); ol(ctx, 1.5);
+    const P = earPath();
+    ctx.fillStyle = col; ctx.fill(P);
+    ctx.save(); ctx.clip(P); ctx.fillStyle = FX.sock; ctx.fillRect(-6, -16, 12, 7.5); ctx.restore();
+    olP(ctx, P, 1.5);
     ctx.fillStyle = FX.ear; ctx.beginPath(); ctx.moveTo(-2.3, .5); ctx.quadraticCurveTo(-2, -5, -.3, -8); ctx.quadraticCurveTo(2.2, -4.5, 2.3, .5); ctx.closePath(); ctx.fill();
     ctx.restore();
   }
-  function headPath(ctx) {
-    ctx.beginPath();
-    ctx.moveTo(-9.6, 1.5);
-    ctx.bezierCurveTo(-11.6, -6, -6, -11.2, 0, -10.6);
-    ctx.bezierCurveTo(5, -10.3, 8.6, -7.2, 10, -3.8);
-    ctx.quadraticCurveTo(14.6, -2.6, 17.6, -1);
-    ctx.quadraticCurveTo(19, 1.2, 16.6, 2.5);
-    ctx.quadraticCurveTo(10.5, 4.6, 5, 6.6);
-    ctx.quadraticCurveTo(-1, 8.6, -5.8, 6.6);
-    ctx.lineTo(-11.8, 7.2); ctx.lineTo(-8.9, 4.4); ctx.lineTo(-12.3, 2.8);
-    ctx.closePath();
-  }
-  function foxTail(ctx, a, col, colD) {
+  const HEAD = (() => {
+    const P = new Path2D();
+    P.moveTo(-9.6, 1.5);
+    P.bezierCurveTo(-11.6, -6, -6, -11.2, 0, -10.6);
+    P.bezierCurveTo(5, -10.3, 8.6, -7.2, 10, -3.8);
+    P.quadraticCurveTo(14.6, -2.6, 17.6, -1);
+    P.quadraticCurveTo(19, 1.2, 16.6, 2.5);
+    P.quadraticCurveTo(10.5, 4.6, 5, 6.6);
+    P.quadraticCurveTo(-1, 8.6, -5.8, 6.6);
+    P.lineTo(-11.8, 7.2); P.lineTo(-8.9, 4.4); P.lineTo(-12.3, 2.8);
+    P.closePath(); return P;
+  })();
+  const TAILP = (() => { const P = new Path2D(); P.moveTo(1, -3.6); P.bezierCurveTo(-6, -10.5, -16, -15.5, -25, -13.2); P.bezierCurveTo(-32.5, -11.6, -34.5, -4, -29, -.8); P.bezierCurveTo(-22, 4.2, -9, 6, 1, 3.6); P.closePath(); return P; })();
+  const BODY = (() => { const P = new Path2D(); P.moveTo(-5.8, 1); P.bezierCurveTo(-8.8, -4, -7.4, -12, -2, -14.2); P.bezierCurveTo(3.5, -15.5, 7.6, -11, 7.2, -5); P.bezierCurveTo(7, -.5, 4, 2.6, -.5, 2.6); P.bezierCurveTo(-3.2, 2.6, -5, 2, -5.8, 1); P.closePath(); return P; })();
+  function foxTail(ctx, a, col, colD, lx) {
     ctx.save(); ctx.rotate(a);
-    const path = () => { ctx.beginPath(); ctx.moveTo(1, -3.6); ctx.bezierCurveTo(-6, -10.5, -16, -15.5, -25, -13.2); ctx.bezierCurveTo(-32.5, -11.6, -34.5, -4, -29, -.8); ctx.bezierCurveTo(-22, 4.2, -9, 6, 1, 3.6); ctx.closePath(); };
-    path();
-    const g = ctx.createLinearGradient(0, -12, 0, 6); g.addColorStop(0, FX.furL); g.addColorStop(.55, col); g.addColorStop(1, colD);
-    ctx.fillStyle = g; ctx.fill();
-    ctx.save(); ctx.clip(); ctx.fillStyle = FX.cream; ctx.beginPath(); ctx.ellipse(-31, -6.5, 8.5, 10, .3, 0, TAU); ctx.fill();
+    cel(ctx, TAILP, col, colD, FX.furL, 1.4, lx, true);
+    ctx.save(); ctx.clip(TAILP); ctx.fillStyle = FX.cream; ctx.beginPath(); ctx.ellipse(-31, -6.5, 8.5, 10, .3, 0, TAU); ctx.fill();
+    ctx.fillStyle = FX.creamD; ctx.beginPath(); ctx.ellipse(-29.5 - PLX * lx, -3.4 - PLY, 7, 5, .3, 0, TAU); ctx.fill();
     ctx.strokeStyle = 'rgba(120,40,0,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-8, -3); ctx.quadraticCurveTo(-14, -6, -19, -5); ctx.moveTo(-11, 2); ctx.quadraticCurveTo(-16, 0, -21, 1); ctx.stroke();
     ctx.restore();
-    path(); ol(ctx, 1.6);
-    /* recorte de pelo na ponta branca */
+    olP(ctx, TAILP, 1.6);
     ctx.strokeStyle = 'rgba(200,170,140,.8)'; ctx.lineWidth = .9; ctx.beginPath(); ctx.moveTo(-23.5, -12.5); ctx.lineTo(-22, -9); ctx.lineTo(-24.5, -7); ctx.lineTo(-22.5, -3.5); ctx.lineTo(-24.5, -.5); ctx.stroke();
     ctx.restore();
   }
   function drawPip(G, ctx) {
     const p = G.p, t = G.t;
+    const dt = U.clamp(t - (p.drawT == null ? t : p.drawT), 0, .05); p.drawT = t;
+    /* virar: a escala x passa pelo zero (lê-se como rodar o corpo) */
+    p.fd = p.fd == null ? p.face : p.fd + (p.face - p.fd) * Math.min(1, dt * 22);
     if (p.inv > 0 && !G.dead && !p.star && Math.floor(G.t * 20) % 2) return;
-    const scarf = p.fire ? '#f97316' : '#14b8a6', scarfD = p.fire ? '#b4300b' : '#0d7d73';
+    const scarf = p.fire ? '#f97316' : (G.scarf || '#14b8a6'), scarfD = p.fire ? '#b4300b' : (G.scarfD || '#0d7d73');
     ctx.save();
     ctx.translate(p.x, p.y);
     if (G.dead) ctx.rotate(G.why === 'fall' ? 0 : Math.min(Math.PI, G.deadT * 6));
     if (p.loop) { ctx.translate(0, -PHR / 2); ctx.rotate(p.a); ctx.translate(0, PHR / 2); }
-    else if (p.on && p.a) ctx.rotate(p.a * .6);
-    /* sombra no chão */
-    if (p.on && !p.loop) { ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(0, 0, 12, 2.6, 0, 0, TAU); ctx.fill(); }
-    const f = p.face, sq = p.sq;
-    ctx.scale(f * (1 - sq * .5), 1 + sq);
+    /* sombra no chão (macia) */
+    if (p.on && !p.loop) { const sg = ctx.createRadialGradient(0, 0, 1, 0, 0, 14); sg.addColorStop(0, 'rgba(20,10,0,.32)'); sg.addColorStop(1, 'rgba(20,10,0,0)'); ctx.save(); ctx.scale(1, .22); ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(0, 0, 14, 0, TAU); ctx.fill(); ctx.restore(); }
+    const ball = p.roll || p.loop || (!p.on && p.jumped && Math.abs(p.vx) > 330 && !p.pounce && !p.dive);
+    const Q = ball ? null : pipPose(G, dt);
+    if (Q && Q.tilt) ctx.rotate(Q.tilt);
+    const fs = Math.abs(p.fd) < .25 ? .25 * Math.sign(p.fd || 1) : p.fd, f = Math.sign(fs) || 1, sq = p.sq;
+    ctx.scale(fs * (1 - sq * .5), 1 + sq);
     if (p.star > 0) { ctx.shadowColor = `hsl(${(G.t * 400) % 360},100%,60%)`; ctx.shadowBlur = 16; }
     /* aura do bote carregado */
     if (p.crouch && p.charge >= 1) { const k = .6 + Math.sin(t * 16) * .2, g = ctx.createRadialGradient(0, -14, 2, 0, -14, 30); g.addColorStop(0, `rgba(253,224,71,${.45 * k})`); g.addColorStop(1, 'rgba(253,224,71,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, -14, 30, 0, TAU); ctx.fill(); }
-    if (p.roll || p.loop || (!p.on && p.jumped && Math.abs(p.vx) > 330 && !p.pounce && !p.dive)) { drawPipBall(G, ctx, scarf); ctx.restore(); return; }
-    const Q = pipPose(G);
-    /* anca: no chão, o pé mais baixo assenta exatamente no chão */
-    let hipY = Q.hipY;
-    if (p.on && !G.dead) { const d = Math.max(legEnd(...Q.legs[0])[1], legEnd(...Q.legs[1])[1]); hipY = -2.6 - d; }
+    if (ball) { drawPipBall(G, ctx, scarf); ctx.restore(); return; }
+    const K = p.kp, hipY = Q.hipY;
     if (Q.rot) { ctx.translate(0, -22); ctx.rotate(Q.rot); ctx.translate(0, 22); }
     /* rasto de velocidade */
     if (p.on && Math.abs(p.gsp) > 470) { ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 2; ctx.lineCap = 'round'; for (let i = 0; i < 3; i++) { const yy = -30 + i * 8 + Math.sin(t * 30 + i) * 1.5; ctx.beginPath(); ctx.moveTo(-16 - i * 5, yy); ctx.lineTo(-34 - i * 9, yy); ctx.stroke(); } }
     const hx = 0, hy = hipY;
-    /* referencial do tronco (inclina à volta da anca) */
     const cl = Math.cos(Q.lean), sl = Math.sin(Q.lean);
     const T = (x, y) => [hx + x * cl - y * sl, hy + x * sl + y * cl];
     const [shx, shy] = T(1.6, -11.5), [nkx, nky] = T(1.2, -13), [hdx, hdy] = T(4.2, -20.5), [tlx, tly] = T(-6, -3.2);
     /* 1. braço e perna de trás (mais escuros) */
-    const fa = limb(ctx, shx - 1.5, shy, Q.arms[1][0] + Q.lean, UA, Q.arms[1][1], FA, 3.4, FX.back, FX.sock);
+    const fa = limb(ctx, shx - 1.5, shy, Q.ab1 + Q.lean, UA, Q.ab2, FA, 3.4, FX.back, FX.sock);
     paw(ctx, fa[0], fa[1], 0, 2.2, 2, FX.sock);
-    const fl = limb(ctx, hx - 1.8, hy, Q.legs[1][0], TH, Q.legs[1][1], SH, 4.2, FX.back, FX.sock);
-    paw(ctx, fl[0], fl[1] + .3, Q.air ? Q.legs[1][0] + Q.legs[1][1] : 0, 3.6, 2.4, FX.sock);
+    const fl = limb(ctx, hx - 1.8, hy, Q.lb1, TH, Q.lb2, SH, 4.2, FX.back, FX.sock);
+    paw(ctx, fl[0], fl[1] + .3, Q.fb, 3.6, 2.4, FX.sock);
     /* 2. pontas do lenço (esvoaçam para trás com a velocidade) */
-    const sp = U.clamp(Q.scarf / 500, .15, 1);
+    const sp = U.clamp((Q.scarf || 0) / 500, .15, 1);
     ctx.lineCap = 'round';
     for (let k = 0; k < 2; k++) {
       const pts = [[nkx - 2.5, nky + .5]];
@@ -1655,30 +1842,28 @@ const PlatformerGame = (function () {
       ctx.strokeStyle = OUT; ctx.lineWidth = 5.6 - k; ctx.beginPath(); pts.forEach((q, i) => ctx[i ? 'lineTo' : 'moveTo'](q[0], q[1])); ctx.stroke();
       ctx.strokeStyle = k ? scarfD : scarf; ctx.lineWidth = 3 - k * .6; ctx.stroke();
     }
-    /* 3. cauda */
-    ctx.save(); ctx.translate(tlx, tly); ctx.scale(1, 1 + (Q.tailW || 0) * .04); foxTail(ctx, Q.tail + Q.lean * .5, FX.fur, FX.furD); ctx.restore();
+    /* 3. cauda (na mola) */
+    ctx.save(); ctx.translate(tlx, tly); ctx.scale(1, 1 + (Q.tailW || 0) * .04); foxTail(ctx, K.tail + Q.lean * .5, FX.fur, FX.furD, f); ctx.restore();
     /* 4. perna da frente */
-    const nl = limb(ctx, hx + 1.6, hy, Q.legs[0][0], TH, Q.legs[0][1], SH, 4.4, FX.fur, FX.sock);
+    const nl = limb(ctx, hx + 1.6, hy, Q.lf1, TH, Q.lf2, SH, 4.4, FX.fur, FX.sock);
     /* 5. tronco */
     ctx.save(); ctx.translate(hx, hy); ctx.rotate(Q.lean);
-    ctx.beginPath(); ctx.moveTo(-5.8, 1); ctx.bezierCurveTo(-8.8, -4, -7.4, -12, -2, -14.2); ctx.bezierCurveTo(3.5, -15.5, 7.6, -11, 7.2, -5); ctx.bezierCurveTo(7, -.5, 4, 2.6, -.5, 2.6); ctx.bezierCurveTo(-3.2, 2.6, -5, 2, -5.8, 1); ctx.closePath();
-    const bg = ctx.createLinearGradient(-6, -14, 6, 2); bg.addColorStop(0, FX.furL); bg.addColorStop(.55, FX.fur); bg.addColorStop(1, FX.furD);
-    ctx.fillStyle = bg; ctx.fill(); ol(ctx, 1.7);
-    ctx.fillStyle = FX.cream; ctx.beginPath(); ctx.moveTo(1, -13); ctx.bezierCurveTo(6.6, -11, 6.8, -3, 3.2, .8); ctx.bezierCurveTo(.6, -2, -.4, -8, 1, -13); ctx.fill();
+    cel(ctx, BODY, FX.fur, FX.furD, FX.furL, 1, f);
+    const Bl = new Path2D(); Bl.moveTo(1, -13); Bl.bezierCurveTo(6.6, -11, 6.8, -3, 3.2, .8); Bl.bezierCurveTo(.6, -2, -.4, -8, 1, -13); Bl.closePath();
+    ctx.save(); ctx.clip(BODY); cel(ctx, Bl, FX.cream, FX.creamD, null, .6, f, true); ctx.restore();
     ctx.restore();
-    paw(ctx, nl[0], nl[1] + .3, Q.air ? Q.legs[0][0] + Q.legs[0][1] : 0, 3.8, 2.5, FX.sock);
-    /* 6. cabeça */
-    ctx.save(); ctx.translate(hdx, hdy); ctx.rotate(Q.lean * .45 + Q.head);
-    foxEar(ctx, -4.2, -7.2, -.5 - Q.ears * .55, FX.furD);
-    foxEar(ctx, 2.4, -8.6, .1 - Q.ears * .65, FX.fur);
-    headPath(ctx);
-    const hg = ctx.createRadialGradient(-2, -6, 1, 1, -1, 15); hg.addColorStop(0, FX.furL); hg.addColorStop(.6, FX.fur); hg.addColorStop(1, FX.furD);
-    ctx.fillStyle = hg; ctx.fill();
-    ctx.save(); ctx.clip();
+    paw(ctx, nl[0], nl[1] + .3, Q.ff, 3.8, 2.5, FX.sock);
+    /* 6. cabeça (orelhas na mola) */
+    ctx.save(); ctx.translate(hdx, hdy); ctx.rotate(Q.lean * .45 + K.head);
+    foxEar(ctx, -4.2, -7.2, -.5 - K.ears * .55, FX.furD, f);
+    foxEar(ctx, 2.4, -8.6, .1 - K.ears * .65, FX.fur, f);
+    cel(ctx, HEAD, FX.fur, FX.furD, FX.furL, 1.2, f, true);
+    ctx.save(); ctx.clip(HEAD);
     ctx.fillStyle = FX.cream; ctx.beginPath(); ctx.moveTo(20, .3); ctx.lineTo(12.5, .1); ctx.quadraticCurveTo(7, .6, 4.5, 2.2); ctx.quadraticCurveTo(0, 3.6, -4, 3.2); ctx.lineTo(-14, 2.6); ctx.lineTo(-14, 12); ctx.lineTo(20, 12); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = FX.creamD; ctx.beginPath(); ctx.ellipse(4, 7.4, 13, 3, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = 'rgba(160,60,10,.18)'; ctx.beginPath(); ctx.ellipse(-6, -2, 6, 7, 0, 0, TAU); ctx.fill();
     ctx.restore();
-    headPath(ctx); ol(ctx, 1.7);
+    olP(ctx, HEAD, 1.7);
     /* nariz */
     ctx.fillStyle = FX.sock; ctx.beginPath(); ctx.ellipse(17.4, -.6, 2.3, 1.8, .2, 0, TAU); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.arc(16.8, -1.3, .7, 0, TAU); ctx.fill();
@@ -1691,18 +1876,18 @@ const PlatformerGame = (function () {
     else if (Q.mouth === 'grin') { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(10, 2.8); ctx.quadraticCurveTo(13, 5.6, 15.8, 2.4); ctx.closePath(); ctx.fill(); ctx.stroke(); }
     else { ctx.beginPath(); ctx.moveTo(15.4, 2.6); ctx.quadraticCurveTo(13, 4.8, 10.6, 3.2); ctx.stroke(); }
     /* olho */
-    p.blink -= 1 / 60; if (p.blink < -.12) p.blink = 2 + Math.random() * 3;
+    p.blink -= dt; if (p.blink < -.12) p.blink = 2 + Math.random() * 3;
     const ex = 5, ey = -3.6;
     if (Q.eye === 'x') { ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(ex - 2.4, ey - 2.4); ctx.lineTo(ex + 2.4, ey + 2.4); ctx.moveTo(ex + 2.4, ey - 2.4); ctx.lineTo(ex - 2.4, ey + 2.4); ctx.stroke(); }
     else if (Q.eye === 'happy') { ctx.lineWidth = 1.7; ctx.beginPath(); ctx.arc(ex, ey + 1, 2.8, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
     else if (Q.eye === 'squint') { ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(ex - 2.5, ey - 2); ctx.lineTo(ex + 1.5, ey); ctx.lineTo(ex - 2.5, ey + 2); ctx.stroke(); }
     else if (p.blink < 0 && Q.eye !== 'wide') { ctx.lineWidth = 1.7; ctx.beginPath(); ctx.moveTo(ex - 2.6, ey + .5); ctx.quadraticCurveTo(ex, ey + 1.8, ex + 2.6, ey + .5); ctx.stroke(); }
     else {
-      const ry = Q.eye === 'focus' ? 2.7 : Q.eye === 'wide' ? 4.1 : 3.7, rx = Q.eye === 'wide' ? 3.2 : 2.9;
+      const ry = Q.eye === 'focus' ? 2.8 : Q.eye === 'wide' ? 4.3 : 3.9, rx = Q.eye === 'wide' ? 3.3 : 3.05;
       ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(ex, ey, rx, ry, 0, 0, TAU); ctx.fill(); ol(ctx, 1.2);
-      ctx.fillStyle = '#4a2410'; ctx.beginPath(); ctx.arc(ex + .9, ey + .2, 2.2, 0, TAU); ctx.fill();
-      ctx.fillStyle = FX.eye; ctx.beginPath(); ctx.arc(ex + 1.1, ey + .3, 1.35, 0, TAU); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ex + 1.8, ey - .9, .85, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(ex + .2, ey + 1.2, .4, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#5a2c12'; ctx.beginPath(); ctx.ellipse(ex + .9, ey + .2, 2.3, 2.6, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = FX.eye; ctx.beginPath(); ctx.arc(ex + 1.1, ey + .3, 1.4, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ex + 1.8, ey - 1, .9, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(ex + .2, ey + 1.3, .42, 0, TAU); ctx.fill();
     }
     /* sobrancelha */
     ctx.strokeStyle = OUT; ctx.lineWidth = 1.2; ctx.beginPath();
@@ -1716,11 +1901,35 @@ const PlatformerGame = (function () {
     ctx.beginPath(); ctx.arc(-4.4, .3, 2.2, 0, TAU); ctx.fillStyle = scarfD; ctx.fill(); ol(ctx, 1.2);
     ctx.restore();
     /* 8. braço da frente */
-    const na = limb(ctx, shx + 1, shy, Q.arms[0][0] + Q.lean, UA, Q.arms[0][1], FA, 3.6, FX.fur, FX.sock);
+    const na = limb(ctx, shx + 1, shy, Q.af1 + Q.lean, UA, Q.af2, FA, 3.6, FX.fur, FX.sock);
     paw(ctx, na[0], na[1], 0, 2.3, 2.1, FX.sock);
     if (p.fire && !p.on) { ctx.fillStyle = `rgba(251,146,60,${.5 + Math.sin(t * 20) * .3})`; ctx.beginPath(); ctx.arc(na[0], na[1], 3.5, 0, TAU); ctx.fill(); }
     ctx.restore();
     if (p.skid > 0 && p.on) dust(G, p.x + p.face * 8, p.y, 1);
+  }
+  /* fantasma do melhor tempo: o mesmo Pip, desenhado à parte e pintado de branco translúcido */
+  let _gc = null;
+  function drawGhost(G, ctx) {
+    const F = G.ghost.f, u = G.time * 10, i = Math.min(F.length - 1, Math.floor(u)), a = F[i], b = F[Math.min(F.length - 1, i + 1)], k = Math.min(1, u - i);
+    if (!a || u > F.length + 20) return;
+    const jump = Math.abs(b[0] - a[0]) > 200;   /* morte/porta no percurso do fantasma: sem deslizar */
+    const gp = G.gp || (G.gp = { blink: 2, sq: 0, inv: 0, hp: 3, a: 0, charge: 0 });
+    gp.x = jump ? a[0] : a[0] + (b[0] - a[0]) * k; gp.y = jump ? a[1] : a[1] + (b[1] - a[1]) * k;
+    const fl = a[2]; gp.on = !!(fl & 1); gp.roll = !!(fl & 2) && gp.on; gp.jumped = !!(fl & 2) && !gp.on; gp.face = fl & 4 ? 1 : -1; gp.crouch = !!(fl & 8); gp.dive = !!(fl & 16);
+    gp.gsp = gp.face * a[3] * 10; gp.vx = gp.gsp; gp.vy = a[4] * 10;
+    const dtg = U.clamp(G.t - (gp.lt == null ? G.t : gp.lt), 0, .05); gp.lt = G.t;
+    if (gp.on) gp.gait = (gp.gait || 0) + Math.abs(gp.gsp) * dtg / pGaitLen(Math.abs(gp.gsp));
+    if (Math.abs(gp.x - G.p.x) > G.VW) return;
+    const m = ctx.getTransform(), sc = Math.max(1, Math.abs(m.a)), S = 120;
+    if (!_gc) _gc = document.createElement('canvas');
+    const W = Math.ceil(S * sc); if (_gc.width !== W) { _gc.width = W; _gc.height = W; }
+    const o = _gc.getContext('2d');
+    o.setTransform(1, 0, 0, 1, 0, 0); o.clearRect(0, 0, W, W);
+    o.setTransform(sc, 0, 0, sc, (S / 2 - gp.x) * sc, (S * .72 - gp.y) * sc);
+    const PG = Object.create(G, { p: { value: gp }, dead: { value: false }, win: { value: false }, scarf: { value: '#e0f2fe' }, scarfD: { value: '#7dd3fc' } });
+    try { drawPip(PG, o); } catch (e) {}
+    o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-atop'; o.fillStyle = 'rgba(220,240,255,.55)'; o.fillRect(0, 0, W, W); o.globalCompositeOperation = 'source-over';
+    ctx.save(); ctx.globalAlpha = .42; ctx.drawImage(_gc, gp.x - S / 2, gp.y - S * .72, S, S); ctx.restore();
   }
   /* enrolado como um novelo: a cauda dá a volta ao corpo, orelhas e lenço de fora */
   function drawPipBall(G, ctx, scarf) {
@@ -1794,7 +2003,14 @@ const PlatformerGame = (function () {
 .pp-lvl:hover:not([disabled]){transform:translateY(-2px);background:rgba(0,0,0,.45)}
 .pp-lvl[disabled]{opacity:.45;cursor:not-allowed}
 .pp-lvl b{display:block;font-size:.95rem}.pp-lvl i{font-style:normal;color:#fde047;letter-spacing:1px}.pp-lvl em{display:block;font-style:normal;font-size:.68rem;opacity:.8;margin-top:2px}
-</style><div class="pp-worlds">${THEMES.map((t, wi) => {
+.pp-scarf{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 12px}
+.pp-scarf h4{margin:0 8px 0 0;font:800 .72rem 'Space Grotesk',system-ui;letter-spacing:.08em;text-transform:uppercase;color:rgba(238,240,247,.6)}
+.pp-sc{display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:inherit;border-radius:999px;padding:4px 10px 4px 4px;font:700 .72rem system-ui;cursor:pointer}
+.pp-sc i{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 -6px 0 var(--d),0 0 0 2px rgba(0,0,0,.25);background:var(--c);display:block}
+.pp-sc.on{box-shadow:inset 0 0 0 2px #f59e0b;background:rgba(245,158,11,.14)}
+.pp-sc[disabled]{opacity:.45;cursor:not-allowed}
+</style>${(() => { const tot = starTotal(sv), cur = (SCARVES.find(x => x.id === sv.scarf && tot >= x.need) || SCARVES[0]).id;
+        return `<div class="pp-scarf"><h4>Lenço do Pip · ★ ${tot}/${LEVELS.length * 3}</h4>${SCARVES.map(x => { const ok = tot >= x.need; return `<button type="button" class="pp-sc${x.id === cur ? ' on' : ''}" data-scarf="${x.id}" ${ok ? '' : 'disabled'} style="--c:${x.c};--d:${x.d}" aria-pressed="${x.id === cur}"><i></i>${ok ? x.name : '★ ' + x.need}</button>`; }).join('')}</div>`; })()}<div class="pp-worlds">${THEMES.map((t, wi) => {
         const lv = LEVELS.filter(l => l.world === wi);
         return `<div class="pp-world" style="background:linear-gradient(160deg,${t.sky[0]},${t.mid} 70%,${t.near})">
           <h4>${wi + 1}. ${t.name}</h4><small>${['Rampas, loops e molas', 'Aceleradores e plataformas que caem', 'Gelo escorregadio', 'Lava, cristais e o Escaravelho-Rei'][wi]}</small>
@@ -1802,7 +2018,13 @@ const PlatformerGame = (function () {
             return `<button class="pp-lvl" data-lvl="${l.id}" ${lock ? 'disabled' : ''}><b>${lock ? '🔒' : wi + 1 + '-' + (lv.indexOf(l) + 1)}</b>${l.name}<em>${lock ? 'bloqueado' : `<i>${'★'.repeat(st)}<span style="opacity:.35">${'★'.repeat(3 - st)}</span></i>${b != null ? ' · ' + b : ''}`}</em></button>`; }).join('')}</div>
         </div>`; }).join('')}</div>`;
     },
-    wire(el, start) { el.querySelectorAll('[data-lvl]').forEach(b => b.addEventListener('click', () => start(b.dataset.lvl))); },
+    wire(el, start) {
+      el.querySelectorAll('[data-lvl]').forEach(b => b.addEventListener('click', () => start(b.dataset.lvl)));
+      el.querySelectorAll('[data-scarf]:not([disabled])').forEach(b => b.addEventListener('click', () => {
+        const sv = save(); sv.scarf = b.dataset.scarf; putSave(sv);
+        el.querySelectorAll('[data-scarf]').forEach(o => { const on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-pressed', on); });
+      }));
+    },
   };
 
   /* ════════════════════════════════════════════════════════════════
@@ -1831,7 +2053,10 @@ const PlatformerGame = (function () {
     begin: (G, api) => { if (matchMedia('(pointer: coarse)').matches) G.touch = true; if (api.H > api.W * 1.15) api.banner('Dica: roda o telemóvel', 'Vês mais do nível'); },
     idle: (G, dt, api) => { G.t += dt; camera(G, api, dt, true); },
     hud: (G) => [['Mundo', `${G.L.world + 1}-${inWorld(G.L)}`], ['Moedas', G.coins], ['Tempo', `${Math.floor(G.time / 60)}:${String(Math.floor(G.time % 60)).padStart(2, '0')}`]],
-    pauseButtons: (G, api) => [{ label: 'Mapa dos mundos', fn: () => api.menu() }],
+    pauseButtons: (G, api) => [
+      { label: ghostOn() ? 'Fantasma: ligado' : 'Fantasma: desligado', fn: () => { const on = !ghostOn(); try { localStorage.setItem('pip:ghostOn', on ? '1' : '0'); } catch (e) {} G.ghost = on ? loadGhost(G.L.id) : null; api.resume(); } },
+      { label: 'Mapa dos mundos', fn: () => api.menu() },
+    ],
     achievements: [
       { id: 'pip.w1', name: 'Primeiros Saltos', icon: '🦊', desc: 'Conclui o Mundo 1 de Mundos de Pip.', test: c => ((c.result.meta || {}).world || 0) > 0 || ((c.result.meta || {}).level || 0) >= LEVELS.filter(l => l.world === 0).length },
       { id: 'pip.all', name: 'Herói dos Mundos', icon: '👑', desc: 'Vence o Escaravelho-Rei em Mundos de Pip.', test: c => ((c.result.meta || {}).level || 0) >= LEVELS.length },
