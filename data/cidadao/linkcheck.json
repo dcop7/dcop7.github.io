@@ -1,8 +1,8 @@
 {
- "generated": "2026-10-23T07:16:10.885Z",
+ "generated": "2026-10-23T13:15:35.912Z",
  "total": 84,
  "broken": 1,
- "unknown": 29,
+ "unknown": 27,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 500,
+   "ok": false
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -139,8 +139,8 @@
   {
    "id": "apoios:transporte-doentes",
    "url": "https://www.sns24.gov.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:cheque-dentista",
@@ -163,8 +163,8 @@
   {
    "id": "apoios:programa-regressar",
    "url": "https://www.programaregressar.gov.pt/",
-   "status": 503,
-   "ok": false
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:bolsa-superior",
@@ -391,8 +391,8 @@
   {
    "id": "calendario:superior-1fase",
    "url": "https://www.dges.gov.pt/online/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:bolsas-dges",
