@@ -130,8 +130,8 @@ const DripGame = (function () {
     x.fillStyle = '#2a1a10'; x.fillRect(0, 0, cw, ch);
     x.setTransform(dpr * s, 0, 0, dpr * s, dpr * ox, dpr * oy);
     const ch2 = G.L.chapter || 0;
-    const caveTop = { 0: '#4a2e1c', 1: '#3a2a3a', 2: '#4a2318', 3: '#2c3440' }[ch2] || '#4a2e1c';
-    const caveBot = { 0: '#26160c', 1: '#1d1420', 2: '#25100a', 3: '#151a22' }[ch2] || '#26160c';
+    const caveTop = { 0: '#4a2e1c', 1: '#3a2a3a', 2: '#4a2318', 3: '#2c3440', 4: '#1f3a38', 5: '#3a2242', 6: '#4a1c22', 7: '#3e3220' }[ch2] || '#4a2e1c';
+    const caveBot = { 0: '#26160c', 1: '#1d1420', 2: '#25100a', 3: '#151a22', 4: '#0e1e1c', 5: '#1c1022', 6: '#220c10', 7: '#1e180c' }[ch2] || '#26160c';
     const g = x.createLinearGradient(0, 40, 0, VH); g.addColorStop(0, caveTop); g.addColorStop(1, caveBot);
     x.fillStyle = g; x.fillRect(-VW, 40, VW * 3, VH + 200);
     /* estratos, raízes, pedrinhas e fósseis na parede do fundo */

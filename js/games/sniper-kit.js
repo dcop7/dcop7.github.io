@@ -639,9 +639,9 @@ const SniperKit = (function () {
         const ci = new THREE.InstancedMesh(tg.c, cmat, L.length), ti = tg.t ? new THREE.InstancedMesh(tg.t, tmat, L.length) : null, c = new THREE.Color();
         L.forEach((t, i) => {
           const s = t.s || 1, ty = t.y != null ? t.y : hAt(t.x, t.z), m = MX(t.x, ty, t.z, t.r != null ? t.r : R() * TAU, 0, 0, s, s * (k === 'cypress' ? 1.05 : .9 + R() * .2), s);
-          ci.setMatrixAt(i, m); ci.setColorAt(i, c.set(t.c || (k === 'pine' ? pick(['#3f6a3a', '#355f35', '#46703f']) : k === 'cypress' ? pick(['#2f5a32', '#3a6638']) : k === 'palm' ? '#5aa04a' : ['#5f8a3a', '#6c9a40', '#4f7d34', '#7aa04a', '#86a848'][i % 5])).offsetHSL((R() - .5) * .03, 0, (R() - .5) * .06));
+          ci.setMatrixAt(i, m); ci.setColorAt(i, c.set(t.c || (k === 'snowpine' ? '#ffffff' : k === 'pine' ? pick(['#3f6a3a', '#355f35', '#46703f']) : k === 'cypress' ? pick(['#2f5a32', '#3a6638']) : k === 'palm' ? '#5aa04a' : ['#5f8a3a', '#6c9a40', '#4f7d34', '#7aa04a', '#86a848'][i % 5])).offsetHSL((R() - .5) * .03, 0, (R() - .5) * .04));
           if (ti) { ti.setMatrixAt(i, m); ti.setColorAt(i, c.set(k === 'palm' ? '#9a7a52' : pick(['#6a4a32', '#5c4030', '#74563a']))); }
-          const nw = k === 'cypress' ? 1 : k === 'palm' ? .5 : k === 'pine' ? 2 : k === 'bush' ? 0 : 2.4;
+          const nw = k === 'cypress' ? 1 : k === 'palm' ? .5 : k === 'pine' || k === 'snowpine' ? 2 : k === 'bush' ? 0 : 2.4;
           if (s > .3 && nw) cols.push({ x: t.x, y: ty + (k === 'palm' ? 9 : 6.5) * s * (k === 'cypress' ? 1.3 : 1), z: t.z, hx: nw * s, hy: 4.5 * s, hz: nw * s, c: 1, s: 0, k: 'tree' });
         });
         [ci, ti].forEach(im => { if (!im) return; im.castShadow = lod === 0 || k === 'bush'; im.receiveShadow = true; scene.add(im); out.push(im); extras.push(im); });
@@ -651,6 +651,12 @@ const SniperKit = (function () {
     const _treeG = {};
     function treeGeo(k, lod) {
       const key = k + lod; if (_treeG[key]) return _treeG[key];
+      /* pinheiro com neve: a mesma árvore, verde por baixo e neve nas faces viradas para cima (a cor da instância fica branca) */
+      if (k === 'snowpine') {
+        const src = treeGeo('pine', lod), g = src.c.clone(), cl = g.attributes.color, nr = g.attributes.normal, gr = new THREE.Color('#2f5a34'), wh = new THREE.Color('#f4f7fb'), q = new THREE.Color();
+        const ps = g.attributes.position; for (let i = 0; i < cl.count; i++) { const f = cl.getX(i), x = ps.getX(i), y = ps.getY(i), z = ps.getZ(i), up = nr.getY(i) > .25 ? clamp((Math.sin(x * 1.7 + y * 2.3) * Math.cos(z * 1.5 - y * 1.1) * .5 + .5 - .2) * 2.2, 0, .92) : 0; q.copy(gr).multiplyScalar(f).lerp(wh.clone().multiplyScalar(Math.min(1.05, .82 + f * .2)), up); cl.setXYZ(i, q.r, q.g, q.b); }
+        return (_treeG[key] = { c: g, t: src.t });
+      }
       const r2 = rng(k.length * 131 + lod * 7), M4 = W().M4;
       /* tufo: icosaedro com relevo aleatório; normais de esfera para sombrear liso */
       const blob = (r, x, y, z, det, sq) => { const g = new THREE.IcosahedronGeometry(r, det), p = g.attributes.position, n = g.attributes.normal, cache = new Map(); for (let i = 0; i < p.count; i++) { const X = p.getX(i), Y = p.getY(i), Z = p.getZ(i), kk = Math.round(X * 997) + ',' + Math.round(Y * 997) + ',' + Math.round(Z * 997); let f = cache.get(kk); if (f == null) { f = 1 + (r2() - .5) * .38; cache.set(kk, f); } const l = Math.hypot(X, Y, Z) || 1; n.setXYZ(i, X / l, Y / l * .8 + .2, Z / l); p.setXYZ(i, X * f + x, Y * f * (sq || 1) + y, Z * f + z); } return g; };

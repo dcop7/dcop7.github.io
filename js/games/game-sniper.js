@@ -12,8 +12,10 @@
      • câmara do dardo em câmara lenta nos tiros bons;
      • guardas que notam colegas a dormir e dardos a cair perto,
        alarme, alvos que fogem (lancha, carro, helicóptero, comboio);
-     • 5 missões com mundos próprios: cais, festa da aldeia, telhados
-       ao pôr do sol, vivenda nas montanhas e estação à meia-noite.
+     • 30 missões em 7 capítulos: os 5 mundos originais (cais, festa da
+       aldeia, telhados, vivenda nas montanhas, estação) com variantes de
+       hora, tempo e objetivos (sniper-missions.js) e dois mundos novos,
+       Praia da Bigodeira e Terra da Neve.
 
    Ficheiros: sniper-people.js (gente articulada), sniper-kit.js
    (texturas, prédios, adereços, terreno) e este (jogo e missões).
@@ -31,7 +33,12 @@ const SniperGame = (function () {
   let _v3 = null, _v4 = null;
 
   /* ── progresso ── */
-  function prog() { try { return Object.assign({ u: 0, s: {}, b: {} }, JSON.parse(localStorage.getItem(SAVE) || '{}')); } catch (e) { return { u: 0, s: {}, b: {} }; } }
+  function prog() {
+    let p; try { p = Object.assign({ u: 0, s: {}, b: {} }, JSON.parse(localStorage.getItem(SAVE) || '{}')); } catch (e) { p = { u: 0, s: {}, b: {} }; }
+    /* quem já tinha acabado as 5 primeiras (antes de haver mais) fica com a seguinte aberta */
+    LEVELS.forEach((L, i) => { if (p.s[L.id]) p.u = Math.max(p.u, Math.min(LEVELS.length - 1, i + 1)); });
+    return p;
+  }
   function saveProg(p) { try { localStorage.setItem(SAVE, JSON.stringify(p)); } catch (e) {} }
 
   /* ════════════════════════════════════════════════════════════════
@@ -43,10 +50,11 @@ const SniperGame = (function () {
   const PANTS = ['#3a4a6a', '#2a3a5a', '#a89a70', '#3a3a3e', '#6a5a4a', '#4a5a3a', '#8a8a8a', '#283040'];
   function outfit(R, kind, o) {
     const pick = a => a[Math.floor(R() * a.length)], L = { skin: pick(SKIN), hairC: pick(HAIRC), shirt: pick(SHIRT), pants: pick(PANTS), shoes: pick(['#2b2622', '#5a3a26', '#e8e8e8', '#3a3a4a']), build: .92 + R() * .2, belly: 1 + R() * .15 };
-    const fem = R() < .48;
+    const fem = R() < .48; L.fem = fem;
     L.hair = fem ? pick(['long', 'bun', 'pony', 'long', 'curly']) : pick(['short', 'short', 'curly', null, 'short']);
     if (!fem && R() < .25) L.face = pick(['beard', 'mustache']);
     L.long = R() < .35;
+    if (kind === 'guard' || kind === 'henchman') L.fem = false;
     if (kind === 'guard') Object.assign(L, { shirt: '#23262c', pants: '#1d2026', long: true, over: 'lapel', glasses: 'sun', hair: 'short', hat: R() < .3 ? 'cap' : null, hatC: '#1d2026', shoes: '#111111', build: 1.05 + R() * .1, belly: 1, face: R() < .4 ? 'mustache' : null });
     /* capangas da Liga: farda azul-ardósia, boné com emblema, braçadeira vermelha e espingarda de dardos (ponta laranja) */
     if (kind === 'henchman') Object.assign(L, { shirt: '#3a4a66', pants: '#28303e', long: true, over: 'uniform', overC: '#3a4a66', band: 'red', bandC: '#e0342c', gun: 'rifle', glasses: R() < .5 ? 'sun' : null, hair: 'short', hat: 'guard', hatC: '#2c3548', shoes: '#151515', gloves: '#2a2a2a', build: 1.04 + R() * .1, belly: 1, face: R() < .45 ? 'mustache' : null });
@@ -57,6 +65,12 @@ const SniperGame = (function () {
     if (kind === 'tourist') Object.assign(L, { shorts: R() < .5, hat: R() < .4 ? pick(['straw', 'cap']) : null, hatC: pick(['#e0c880', '#f2f2f2']), over: R() < .4 ? 'backpack' : null, overC: pick(['#c83a3a', '#2a64b8', '#3a8a4a']) });
     if (kind === 'chef') Object.assign(L, { shirt: '#f4f4f0', over: 'apron', overC: '#f4f4f0', hat: 'chef', hatC: '#f8f8f8', long: true });
     if (kind === 'fisher') Object.assign(L, { shirt: pick(['#f2c230', '#2a64b8']), long: true, hat: 'beanie', hatC: pick(['#c83a3a', '#2a3a5a']), pants: '#2a3a4a', face: R() < .5 ? 'beard' : null });
+    /* praia: fato de banho (descalços), chapéu ou boné às vezes */
+    if (kind === 'beach') { const sw = pick(['#e83a5a', '#2a8ae8', '#f2c230', '#3ac07a', '#f08aa0', '#1a2a5a', '#ff8a3a', '#8a5ab0']); Object.assign(L, { shirt: fem ? sw : R() < .55 ? L.skin : pick(['#f4f4f0', '#5ab0c8', '#f2d24a', '#e86a6a']), pants: fem ? sw : pick(['#2a64b8', '#e83a3a', '#3a8a5a', '#f2c230', '#1a2a5a']), shorts: true, long: false, shoes: L.skin, face: fem ? null : L.face, hat: R() < .3 ? pick(['straw', 'cap']) : null, hatC: pick(['#f2e0b0', '#f4f4f4', '#e83a3a']), glasses: R() < .4 ? 'sun' : null, belly: 1 + R() * .1 }); }
+    /* inverno: casaco grosso, gorro ou boné, luvas */
+    if (kind === 'winter') Object.assign(L, { shirt: pick(['#c83a3a', '#2a64b8', '#3a8a5a', '#e8b030', '#5a3a8a', '#e86a3a', '#2a2a3a', '#d8d8d0']), pants: pick(['#2a2a32', '#3a4a6a', '#4a3a2a', '#1a1a1a']), long: true, shorts: false, hat: R() < .7 ? 'beanie' : null, hatC: pick(['#e83a3a', '#f4f4f4', '#2a64b8', '#f2c230', '#3a8a5a']), gloves: pick(['#2a2a2a', '#c83a3a', '#3a3a5a']), build: L.build + .08, belly: 1.1 + R() * .1, shoes: pick(['#3a2a1a', '#2a2a2a']) });
+    /* algumas senhoras de saia (pernas à mostra) */
+    if (L.fem && (kind === 'villager' || kind === 'tourist' || kind === 'vendor') && !(o && (o.pants || o.shorts != null || o.over || o.gun || o.band || o.long != null)) && R() < .38) Object.assign(L, { skirt: 'a', skirtC: pick(['#c83a5a', '#2a4a8a', '#e8b030', '#3a8a6a', '#8a5ab0', '#2a2a32', '#e86a3a', '#f0e6d6']), pants: L.skin, shorts: true });
     return Object.assign(L, o || {});
   }
 
@@ -66,7 +80,8 @@ const SniperGame = (function () {
   const LEVELS = [];
   /* ── 1. Cais do Nevoeiro ── */
   LEVELS.push({
-    id: 'cais', name: 'Cais do Nevoeiro', icon: '⚓', tod: 'morning', grad: ['#7fa6c8', '#2a4a6a'],
+    bot: ['guard', 'boss'],
+    id: 'cais', bseed: 7, pseed: 99, chapter: 0, name: 'Cais do Nevoeiro', icon: '⚓', tod: 'morning', grad: ['#7fa6c8', '#2a4a6a'],
     brief: 'A Liga dos Bigodes escondeu o Bolo-Rei roubado num contentor do cais. Adormece os guardas e depois o Chefe Bigodes, antes que fuja de lancha.',
     wind: [1, 2.5], windDir: 1.2, darts: 16,
     nest: { x: 0, y: 40, z: 0, yaw: 0, yawR: 1.15, pMin: -.55, pMax: .2, look: [0, 4, -215] },
@@ -146,7 +161,8 @@ const SniperGame = (function () {
 
   /* ── 2. Festa na Aldeia ── */
   LEVELS.push({
-    id: 'aldeia', name: 'Festa na Aldeia', icon: '🎪', tod: 'afternoon', grad: ['#f2c27a', '#8a4a2a'],
+    bot: ['thief'],
+    id: 'aldeia', bseed: 20, pseed: 100, chapter: 0, name: 'Festa na Aldeia', icon: '🎪', tod: 'afternoon', grad: ['#f2c27a', '#8a4a2a'],
     brief: 'Um gatuno da Liga anda a roubar carteiras na festa. Encontra-o com os binóculos — camisola às riscas e gorro — e adormece-o. Cuidado com a multidão!',
     wind: [2, 4], windDir: -.6, darts: 15, timer: 300,
     nest: { x: 0, y: 52, z: 0, yaw: 0, yawR: 1, pMin: -.5, pMax: .15, look: [0, 21, -222] },
@@ -214,10 +230,12 @@ const SniperGame = (function () {
 
   /* ── 3. Telhados ao Pôr do Sol ── */
   LEVELS.push({
-    id: 'telhados', name: 'Telhados ao Pôr do Sol', icon: '🌇', tod: 'sunset', grad: ['#ff9a5a', '#4a2a5a'],
+    bot: ['courier'],
+    id: 'telhados', bseed: 33, pseed: 101, chapter: 0, name: 'Telhados ao Pôr do Sol', icon: '🌇', tod: 'sunset', grad: ['#ff9a5a', '#4a2a5a'],
     brief: 'Bigodes Júnior leva a Receita Secreta numa mala pelos telhados. Adormece-o — mas há vigias com binóculos nos prédios à volta. Se derem o alarme, foge de carro!',
     wind: [3, 5], windDir: 2.2, darts: 16,
-    nest: { x: 0, y: 64, z: 0, yaw: 0, yawR: 1.05, pMin: -.6, pMax: .2, look: [0, 18, -300] },
+    /* câmara na beira do telhado da torre (a 1,5 m da beira, os tiros a pique batiam no parapeito do próprio telhado) */
+    nest: { x: 0, y: 64, z: -1.3, yaw: 0, yawR: 1.05, pMin: -.6, pMax: .2, look: [0, 18, -300] },
     fog: [420, 3400],
     terrain: { seed: 31, hills: 6, base: 2, size: 4400, n: 220, pal: { grass: '#6a7a4a', grass2: '#7a8a52' }, flats: [{ x: 0, z: -230, w: 1300, d: 700, h: 2, f: 80 }],
       fn: (x, z, h) => h + Math.max(0, Math.hypot(x, z + 230) - 1100) * .18 },
@@ -292,7 +310,8 @@ const SniperGame = (function () {
 
   /* ── 4. Vila do Barão ── */
   LEVELS.push({
-    id: 'vila', name: 'Vila do Barão', icon: '🏔️', tod: 'noon', grad: ['#7ac8f0', '#2a5a3a'],
+    bot: ['baron'],
+    id: 'vila', bseed: 46, pseed: 102, chapter: 0, name: 'Vila do Barão', icon: '🏔️', tod: 'noon', grad: ['#7ac8f0', '#2a5a3a'],
     brief: 'O Barão Bigodes apanha sol na vila do outro lado do vale, a mais de 500 m. Vento forte nas montanhas: mede a distância, acerta a zeragem e conta com o desvio. Se houver alarme, foge de helicóptero!',
     wind: [4, 7], windDir: 1.57, darts: 14,
     nest: { x: 0, y: 151.8, z: 0, yaw: 0, yawR: .7, pMin: -.4, pMax: .2, look: [0, 98, -520] },
@@ -369,7 +388,8 @@ const SniperGame = (function () {
 
   /* ── 5. Comboio da Meia-Noite ── */
   LEVELS.push({
-    id: 'estacao', name: 'Comboio da Meia-Noite', icon: '🚂', tod: 'night', grad: ['#2a3a7a', '#0a0e22'],
+    bot: ['madame'],
+    id: 'estacao', bseed: 59, pseed: 103, chapter: 0, name: 'Comboio da Meia-Noite', icon: '🚂', tod: 'night', grad: ['#2a3a7a', '#0a0e22'],
     brief: 'A Madame Bigodes vai apanhar o comboio da meia-noite com o Bolo-Rei. Adormece-a antes de o comboio partir — no cais ou pela janela. Usa a visão noturna (N).',
     wind: [1, 3], windDir: -2.4, darts: 16,
     nest: { x: 0, y: 35.2, z: -6, yaw: 0, yawR: 1.1, pMin: -.55, pMax: .2, look: [0, 3, -200] },
@@ -453,6 +473,12 @@ const SniperGame = (function () {
     ],
   });
 
+  /* ── missões 6–30 (sniper-missions.js): variantes dos 5 mundos e dois mundos novos ── */
+  if (typeof SniperMissions !== 'undefined') LEVELS.push(...SniperMissions({
+    worlds: { cais: LEVELS[0], aldeia: LEVELS[1], telhados: LEVELS[2], vila: LEVELS[3], estacao: LEVELS[4] },
+    outfit, hint, setPip, reveal, fail, sfx, emote, raiseAlarm, boatEscape, takeCar, isAwake: P => isAwake(P), float3, confetti, rand, clamp, lerp, TAU, K, PP, W,
+  }));
+
   /* revelar uma personagem escondida (sai de um edifício) */
   function reveal(G, tag, msg) { G.people.forEach(p => { if (p.tag === tag && p.hidden) { p.hidden = false; p.mode = null; p.marked = true; setPip(G, p, msg || p.name, 5, 2); } }); if (msg) hint(G, msg + ' Segue a seta amarela.', 4, true); }
 
@@ -502,8 +528,11 @@ const SniperGame = (function () {
     const water = Wd.buildWater({ water: L.water || '#2a6a80', shallow: L.shallow || '#4aa59c' }, env, { tile: 11, chop: .85, clear: 3, size: 16000, at: [L.nest.x, L.nest.z - 800], depth: G.r3.seaDepth });
     water.geometry.dispose(); water.geometry = new THREE.PlaneGeometry(16000, 16000, 24, 24); scene.add(water); G.r3.water = water; G.r3.waters = [water.material];
     /* mundo */
-    const B = K().Builder(scene, env, T.hAt, 7 + G.li * 13);
-    const specs = L.build(B, G);
+    const B = K().Builder(scene, env, T.hAt, L.bseed != null ? L.bseed : 7 + G.li * 13);
+    let specs = L.build(B, G);
+    /* variantes: trocam a gente (cast) e acrescentam cenário (more) por cima do mundo base */
+    if (L.cast) specs = L.cast(specs, B, G) || specs;
+    if (L.more) L.more(B, G);
     const lk0 = L.nest.look || [0, 0, -200];
     if (G.treeList) B.trees(G.treeList, uWind, uTime, [[L.nest.x, L.nest.z, 420], [lk0[0], lk0[2], 380]]);
     /* quem está sentado tem cadeira por baixo (os bancos de jardim já existem) */
@@ -518,16 +547,19 @@ const SniperGame = (function () {
     /* gente */
     const nDrivers = (G.carsDef || []).reduce((a, d) => a + (d.parked ? 0 : d.n), 0) + (G.movers || []).length;
     G.crowd = PP().Crowd(scene, specs.length + 4 + nDrivers, env);
-    const R = K().rng(99 + G.li);
+    const R = K().rng(L.pseed != null ? L.pseed : 99 + G.li);
     specs.forEach((s, i) => spawnPerson(G, s, R, i));
     /* carros (com condutor ao volante), empilhadores, aves, alvos extra */
     if (G.carsDef) G.carsDef.forEach(d => carsAlong(G, d));
-    G.cars.forEach(C => { if (C.parked) return; spawnPerson(G, { role: 'civ', tag: 'driver', name: 'Condutor', look: outfit(R, R() < .5 ? 'tourist' : 'villager', { hat: null, prop: null, over: null, long: true }), beh: { type: 'ride', obj: C.g, seat: C.seat, rot: Math.PI / 2, act: 'drive' }, s: .95 }, R, G.people.length); });
+    /* quem conduz fica ligado ao carro: se adormecer, o carro trava (antes continuava a andar com o condutor a dormir) */
+    G.cars.forEach(C => { if (C.parked) return; C.drv = spawnPerson(G, Object.assign({ role: 'civ', tag: 'driver', name: 'Condutor', look: outfit(R, R() < .5 ? 'tourist' : 'villager', { hat: null, prop: null, over: null, long: true }), s: .95 }, C.driver || {}, { beh: { type: 'ride', obj: C.g, seat: C.seat, rot: Math.PI / 2, act: 'drive' } }), R, G.people.length); });
     (G.movers || []).forEach(M => spawnPerson(G, { role: 'civ', tag: 'driver', name: 'Operador', look: outfit(R, 'worker'), beh: { type: 'ride', obj: M.fk.g, seat: M.fk.seat, rot: 0, act: 'drive' }, s: .95 }, R, G.people.length));
     if (G.birds) birdsSetup(G, G.birds);
     collectSetup(G);
     bellSetup(G);
     if (L.extra) L.extra(G, B);
+    if (L.post) L.post(G, B);
+    if (L.snow) G.snowK = L.snow;
     /* espingarda na primeira pessoa (cena à parte, por cima) */
     rifleSetup(G);
     /* objetivos */
@@ -576,12 +608,25 @@ const SniperGame = (function () {
     const b = s.beh || {}, P = Object.assign({ id: i, s: s.s || (s.look && s.look.build > 1.1 ? 1.04 : .94 + R() * .12), seed: R() * 100, t: R() * 50, yaw: b.yaw || 0, ph: R() * TAU, spd: 0, sleep: false, sleepT: 0, sus: 0, q: {} }, s);
     const st0 = b.steps && b.steps.find(q => q.go || q.x != null);
     if (b.x != null) { P.x = b.x; P.z = b.z; } else if (st0) { P.x = st0.go ? st0.go[0] : st0.x; P.z = st0.go ? st0.go[1] : st0.z; } else if (b.path) { P.x = b.path[0][0]; P.z = b.path[0][1]; P.wi = 1; } else if (b.area) { P.x = rand(b.area[0], b.area[2]); P.z = rand(b.area[1], b.area[3]); } else { P.x = 0; P.z = 0; }
-    P.fy = b.y; P.y = b.y != null ? b.y : G.hAt(P.x, P.z);
+    /* em cima de um telhado plano (a altura sai das caixas de colisão: as casas da cidade têm andares ao acaso) */
+    if (b.y === 'roof') b.y = roofY(G, P.x, P.z);
+    P.fy = b.y; P.y = b.y != null ? b.y : walkY(G, P.x, P.z);
     P.home = { x: P.x, z: P.z, yaw: P.yaw };
     G.crowd.add(P); G.people.push(P);
     return P;
   }
   const isAwake = P => !P.sleep && !P.hidden;
+  /* altura do chão para quem anda (o mundo pode ter estrados por cima do terreno: pontão, cais) */
+  function walkY(G, x, z) { const w = G.L.walkY && G.L.walkY(x, z); return w != null ? w : G.hAt(x, z); }
+  function roofY(G, x, z) {
+    let best = null;
+    for (const c of G.cols) {
+      if (c.k !== 'wall' || Math.abs(c.hy - .45) > .02) continue;
+      const dx = x - c.x, dz = z - c.z, lx = dx * c.c - dz * c.s, lz = dx * c.s + dz * c.c;
+      if (Math.abs(lx) < c.hx - .4 && Math.abs(lz) < c.hz - .4) { const y = c.y - c.hy + .06; if (best == null || y > best) best = y; }
+    }
+    return best != null ? best : G.hAt(x, z);
+  }
   /* ponto de chegada: anda, vira-se suavemente, evita outros */
   function moveTo(G, P, tx, tz, spd, dt) {
     const dx = tx - P.x, dz = tz - P.z, d = Math.hypot(dx, dz);
@@ -610,6 +655,7 @@ const SniperGame = (function () {
       if (r.k === 'shake') { P.mode = 'shake'; P.yaw += Ut.angDiff(Math.atan2(r.who.x - P.x, r.who.z - P.z), P.yaw) * dt * 4; if (r.t > 2.6) { r.k = 'radio'; r.t = 0; emote(G, P, 'radio'); sfx(G, 'radio'); setPip(G, P, `${P.name} está a chamar pelo rádio!`, 3.2, 2); } return; }
       if (r.k === 'radio') { P.mode = 'idle'; P.act = 'radio'; if (r.t > 3.2) { P.react = null; G.alarmBy = P; G.alarmByT = 7; raiseAlarm(G, P.name + ' deu o alarme!'); setPip(G, P, `🚨 ${P.name} deu o alarme!`, 3.5, 3); } return; }
       if (r.k === 'spot') { P.mode = 'idle'; P.act = 'point'; lookAt(P, r.x, r.z, dt); if (r.t > 1.4) { r.k = 'go'; r.t = 0; r.run = true; } return; }
+      if (r.k === 'spotAlly') { P.mode = 'idle'; P.act = 'point'; lookAt(P, r.who.x, r.who.z, dt); if (r.t > (G.diff === 'easy' ? 2.6 : 1.8)) fail(G, `${P.name} descobriu o ${r.who.name}!`); return; }
       if (r.k === 'check') { const d = Math.hypot(r.x - P.x, r.z - P.z); if (d > 2) { P.mode = 'walk'; moveTo(G, P, r.x, r.z, 2.4, dt); return; } P.mode = 'idle'; P.act = 'look'; if (r.t > 12) P.react = null; return; }
     }
     if (G.alarm && P.role === 'guard' && !b.alarmPath) { P.mode = 'crouch'; lookAt(P, G.nestX, G.nestZ, dt * .5); return; }
@@ -650,6 +696,7 @@ const SniperGame = (function () {
       case 'dance': P.mode = 'idle'; P.act = b.act; P.yaw = b.yaw + Math.sin(P.t * .5 + P.seed) * .4; P.x = b.x + Math.sin(P.t * .3 + P.seed) * .4; P.z = b.z + Math.cos(P.t * .25 + P.seed) * .3; break;
       case 'sit': P.mode = 'sit'; P.act = b.act; P.x = b.x; P.z = b.z; P.yaw = b.yaw; P.sitting = true; break;
       case 'recline': P.mode = 'recline'; P.x = b.x; P.z = b.z; P.yaw = b.yaw; break;
+      case 'kneel': P.mode = 'kneel'; P.act = b.act || 'dig'; P.x = b.x; P.z = b.z; P.yaw = b.yaw; break;
       case 'seat': P.mode = 'sit'; P.act = b.act || 'listen'; P.sitting = true; break;
       case 'seq': {   /* passos: {go:[x,z]} anda até lá; {do:'cup', d} fica; {recline/sit, x, z, yaw, d} */
         const st = b.steps[(P.si || 0) % b.steps.length];
@@ -675,8 +722,18 @@ const SniperGame = (function () {
   /* ── consciência dos guardas: colegas a dormir à vista ── */
   function awareness(G) {
     const sleepers = G.people.filter(p => p.sleep && p.sleepT > 1.2 && !p.found && !p.hidden);
-    if (!sleepers.length && !G.people.some(p => p.sus > 0)) return;
     const range = G.diff === 'hard' ? 1.25 : G.diff === 'easy' ? .75 : 1;
+    /* escolta: um guarda acordado que veja o colega da Coruja por perto denuncia-o */
+    const ally = G.people.find(p => p.role === 'ally' && isAwake(p) && !p.arrived && !p.safe);
+    if (ally && !(G.distract > 0)) G.people.forEach(P => {
+      if (!P.aware || P.role === 'civ' || P.role === 'ally' || !isAwake(P) || P.react) return;
+      const d = Math.hypot(ally.x - P.x, ally.z - P.z), R = (P.allyR || 26) * range; if (d > R) return;
+      if (Math.abs(Ut.angDiff(Math.atan2(ally.x - P.x, ally.z - P.z), P.yaw + (P.headYaw || 0))) > 1.05 && d > 5) return;
+      if (!los(G, { x: P.x, y: P.y + 1.6 * P.s, z: P.z }, { x: ally.x, y: ally.y + 1.4, z: ally.z })) return;
+      P.react = { k: 'spotAlly', t: 0, who: ally, x: ally.x, z: ally.z }; emote(G, P, '!'); sfx(G, 'spot'); P.marked = true;
+      setPip(G, P, `${P.name} está a ver o ${ally.name}!`, 3, 3); hint(G, `${P.name} viu o ${ally.name}! Adormece-o JÁ!`, 2.5, true);
+    });
+    if (!sleepers.length && !G.people.some(p => p.sus > 0)) return;
     G.people.forEach(P => {
       if (!P.aware || !isAwake(P) || (P.react && P.react.k !== 'look') || G.distract > 0) return;
       const eye = { x: P.x, y: P.y + 1.6 * P.s, z: P.z }, R = (P.range || 34) * range;
@@ -694,6 +751,7 @@ const SniperGame = (function () {
   function raiseAlarm(G, msg) {
     if (G.alarm || G.done || G.failed) return;
     G.alarm = true; G.alarmT = 0; G.sus = 1; sfx(G, 'alarm'); hint(G, '🚨 ' + msg, 4, true); G.api.flash('#ff3030', .25);
+    if (G.L.stealth) { G.stealthT = 1.4; return; }
     G.people.forEach(p => { if (p.role === 'guard' && isAwake(p)) emote(G, p, '!'); });
     if (G.L.onAlarm) G.L.onAlarm(G);
   }
@@ -737,7 +795,7 @@ const SniperGame = (function () {
     G.mag--; G.ammo--; G.stats.shots++;
     const d = aimDir(G, { x: 0, y: 0, z: 0 }, true);
     if (!G.scope) { const sp = .03; d.x += rand(-sp, sp); d.y += rand(-sp, sp); d.z += rand(-sp, sp); }
-    const Z = G.diff === 'easy' ? Math.max(30, G.range || 100) : G.zero;
+    const Z = G.diff === 'easy' ? autoZero(G, d) : G.zero;
     const v = launchVel(G, d, Z), c = G.r3.cam.position;
     const dart = { p: { x: c.x + d.x * .6, y: c.y + d.y * .6 - .05, z: c.z + d.z * .6 }, v, t: 0, trail: [], alive: true, from: { x: c.x, y: c.y, z: c.z } };
     G.darts.push(dart);
@@ -801,12 +859,52 @@ const SniperGame = (function () {
     }
     return null;
   }
-  /* trajetória para o ponto de impacto (ajuda no modo fácil) */
+  /* trajetória para o ponto de impacto (ajuda no modo fácil) — pára nas pessoas e nos brindes, não só nas paredes e no chão
+     (antes atravessava o alvo e o círculo vermelho aparecia no chão lá atrás, longe da cruz) */
   function impactPoint(G) {
-    const d = aimDir(G, { x: 0, y: 0, z: 0 }, true), Z = G.diff === 'easy' ? Math.max(30, G.range || 100) : G.zero, v = launchVel(G, d, Z), c = G.r3.cam.position;
-    const D = { p: { x: c.x, y: c.y, z: c.z }, v }, dt = 1 / 60;
-    for (let t = 0; t < 4; t += dt) { const a = dartStep(G, D, dt); const w = segWorld(G, a[0], a[1], a[2], a[3], a[4], a[5]); if (w) return { x: lerp(a[0], a[3], w.t), y: lerp(a[1], a[4], w.t), z: lerp(a[2], a[5], w.t) }; if (a[4] < G.hAt(a[3], a[5])) return { x: a[3], y: G.hAt(a[3], a[5]), z: a[5] }; D.p.x = a[3]; D.p.y = a[4]; D.p.z = a[5]; }
+    const d = aimDir(G, { x: 0, y: 0, z: 0 }, true), Z = G.diff === 'easy' ? autoZero(G, d) : G.zero, v = launchVel(G, d, Z), c = G.r3.cam.position;
+    const D = { p: { x: c.x + d.x * .6, y: c.y + d.y * .6 - .05, z: c.z + d.z * .6 }, v }, dt = 1 / 120;
+    for (let t = 0; t < 4; t += dt) {
+      const a = dartStep(G, D, dt), w = segWorld(G, a[0], a[1], a[2], a[3], a[4], a[5]), h = hitPeople(G, a, 0), tg = hitTargets(G, a);
+      let s = w ? w.t : 2; if (h && h.s < s) s = h.s; if (tg && tg.s < s) s = tg.s;
+      if (s <= 1) return { x: lerp(a[0], a[3], s), y: lerp(a[1], a[4], s), z: lerp(a[2], a[5], s), P: h && h.s === s ? h.P : null };
+      if (a[4] < G.hAt(a[3], a[5])) return { x: a[3], y: G.hAt(a[3], a[5]), z: a[5] };
+      D.p.x = a[3]; D.p.y = a[4]; D.p.z = a[5];
+    }
     return null;
+  }
+  /* distância ao que está na mira: paredes, chão e — com tolerância angular — pessoas e brindes.
+     Sem a tolerância, a mira um nadinha acima da cabeça media o monte lá atrás (800 m) e o dardo passava por cima */
+  const CAPS = [['hip', 'neck'], ['head', 'head'], ['knL', 'anL'], ['knR', 'anR'], ['hpL', 'knL'], ['hpR', 'knR']];
+  function aimRange(G, d, tol) {
+    const c = G.r3.cam.position, far = 2500, ex = c.x + d.x * far, ey = c.y + d.y * far, ez = c.z + d.z * far;
+    const w = segWorld(G, c.x, c.y, c.z, ex, ey, ez);
+    let best = w ? w.t * far : far;
+    for (let s = 2; s < best; s += Math.max(.5, s * .01)) { const x = c.x + d.x * s, y = c.y + d.y * s, z = c.z + d.z * s; if (y < Math.max(G.waterY || 0, G.hAt(x, z))) { best = s; break; } }
+    let snap = 0, sa = tol;
+    for (const P of G.people) {
+      if (P.hidden || !P.j) continue;
+      if (Ut.segDist(P.x, P.z, c.x, c.z, ex, ez) > 3 + far * tol) continue;
+      for (const [a, b] of CAPS) {
+        const p = P.j[a], q = P.j[b]; if (!p || !q) continue;
+        const [dd, s] = segSegDist(c.x, c.y, c.z, ex, ey, ez, p.x, p.y, p.z, q.x, q.y + (a === b ? .01 : 0), q.z), dist = s * far;
+        if (dist < 3 || dist > best + 2.5) continue;
+        const ang = Math.max(0, dd - .12) / dist; if (ang < sa) { sa = ang; snap = dist; }
+      }
+    }
+    for (const T of G.targets) {
+      if (T.done) continue; const p = T.pos(G, T);
+      const [dd, s] = segSegDist(c.x, c.y, c.z, ex, ey, ez, p.x, p.y, p.z, p.x, p.y + .01, p.z), dist = s * far;
+      if (dist < 3 || dist > best + 2.5) continue;
+      const ang = Math.max(0, dd - T.r) / dist; if (ang < sa) { sa = ang; snap = dist; }
+    }
+    return snap || (best < far ? best : 0);
+  }
+  /* zeragem automática do modo fácil: medida no instante e na direção exata da cruz (com a oscilação) */
+  function autoZero(G, d) {
+    const r = aimRange(G, d, .006);
+    if (r) G.lastZ = r;
+    return clamp(r || G.lastZ || 250, 30, 1500);
   }
   function dartsUpdate(G, dt) {
     for (const D of G.darts) {
@@ -840,6 +938,7 @@ const SniperGame = (function () {
     G.stats.hits++;
     G.crowd.stick(P, h.joint, x, y, z, D.v.x, D.v.y, D.v.z);
     if (P.sleep) { float3(G, x, y + .6, z, 'Já está a dormir!', '#cfd8ff'); return; }
+    if (P.role === 'ally') { P.sleep = true; P.sleepT = 0; P.fallSide = 1; P.react = null; P.mode = null; sfx(G, 'hit'); fail(G, `Adormeceste o ${P.name}, o teu colega!`); return; }
     const moving = P.spd > .6;
     P.sleep = true; P.sleepT = 0; P.fallSide = Math.random() < .5 ? -1 : 1; P.react = null; P.mode = null;
     G.stats.sleeps++; G.stats.longest = Math.max(G.stats.longest, dist);
@@ -930,6 +1029,19 @@ const SniperGame = (function () {
         const bdd = new THREE.Mesh(new THREE.ConeGeometry(.14, .28, 8), mt('#f4f4f4')); bdd.position.set(0, .56, .08); bdd.rotation.x = Math.PI; m.add(bdd);
         const ht = new THREE.Mesh(new THREE.ConeGeometry(.17, .45, 10), mt('#d82a2a')); ht.position.y = .95; m.add(ht);
         m.scale.setScalar(1.6); r = .6;
+      } else if (C.kind === 'ball') {
+        /* bola de praia: gomos de cores com tampas brancas */
+        m = new THREE.Group(); const cs = ['#ff3a4a', '#ffffff', '#3a8aff', '#ffd23a', '#ffffff', '#3ac07a'];
+        cs.forEach((c, k) => { const g = new THREE.SphereGeometry(.42, 6, 12, k / 6 * TAU, TAU / 6); m.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: c, roughness: .25, envMap: G.r3.env }))); });
+        r = .55;
+      } else if (C.kind === 'snowman') {
+        m = new THREE.Group(); const sn = new THREE.MeshStandardMaterial({ color: '#f6f8fc', roughness: .7 }), dk = new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: .5 });
+        [[.42, .4], [.3, 1.02], [.21, 1.48]].forEach(([rr, yy]) => { const b = new THREE.Mesh(new THREE.SphereGeometry(rr, 14, 10), sn); b.position.y = yy; m.add(b); });
+        const nose = new THREE.Mesh(new THREE.ConeGeometry(.045, .22, 8), new THREE.MeshStandardMaterial({ color: '#ff7a1a', roughness: .5 })); nose.rotation.x = Math.PI / 2; nose.position.set(0, 1.48, .27); m.add(nose);
+        [-1, 1].forEach(s => { const e = new THREE.Mesh(new THREE.SphereGeometry(.03, 6, 5), dk); e.position.set(s * .07, 1.56, .18); m.add(e); });
+        const hat = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, .24, 12), dk); hat.position.y = 1.78; m.add(hat); const br = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, .03, 14), dk); br.position.y = 1.66; m.add(br);
+        const sc = new THREE.Mesh(new THREE.TorusGeometry(.2, .05, 6, 14), new THREE.MeshStandardMaterial({ color: '#d82a3a', roughness: .8 })); sc.rotation.x = Math.PI / 2; sc.position.y = 1.27; m.add(sc);
+        r = .7;
       } else if (C.kind === 'lantern') {
         m = new THREE.Group(); const c = ['#ff5a3a', '#ffb03a', '#ff3a7a'][i % 3];
         const b = new THREE.Mesh(new THREE.SphereGeometry(.4, 14, 10), new THREE.MeshBasicMaterial({ color: c, toneMapped: false })); b.scale.y = 1.25; m.add(b);
@@ -954,8 +1066,8 @@ const SniperGame = (function () {
     T.done = true; G.got++; T.m.visible = false; if (T.gl) T.gl.visible = false;
     const p = T.m.position, C = G.collect;
     confetti(G, p.x, p.y, p.z); sfx(G, C.kind === 'duck' ? 'quack' : C.kind === 'balloon' ? 'pop' : 'chime');
-    G.score += 150; float3(G, p.x, p.y + .6, p.z, `${['Quack!', 'Pop!', 'Gnomo!', 'Lanterna!'][['duck', 'balloon', 'gnome', 'lantern'].indexOf(C.kind)] || 'Boa!'} +150  (${G.got}/${C.list.length})`, '#a8f0ff', 20);
-    if (C.kind === 'balloon') nearMiss(G, p.x, p.z);
+    G.score += 150; float3(G, p.x, p.y + .6, p.z, `${['Quack!', 'Pop!', 'Gnomo!', 'Lanterna!', 'Boing!', 'Puf!'][['duck', 'balloon', 'gnome', 'lantern', 'ball', 'snowman'].indexOf(C.kind)] || 'Boa!'} +150  (${G.got}/${C.list.length})`, '#a8f0ff', 20);
+    if (C.kind === 'balloon' || C.kind === 'ball') nearMiss(G, p.x, p.z);
   }
 
   /* ════════════════════════════════════════════════════════════════
@@ -974,7 +1086,7 @@ const SniperGame = (function () {
       /* vidros escurecidos de fábrica → vidro fumado transparente para se ver quem conduz */
       g.traverse(m => { if (m.isMesh && m.material && m.material.color && m.material.color.getHex() === 0x0b1424) m.material = G.carGlass || (G.carGlass = new THREE.MeshPhysicalMaterial({ color: '#2a3a4c', metalness: .3, roughness: .05, clearcoat: 1, transparent: true, opacity: .42, depthWrite: false, envMap: G.r3.env })); });
       const hs = { suv: .17, van: .2 }[type] || .13;
-      const C = { g, type, seat: [-.02, hs, -.095], path: d.path, L, s: (L / d.n) * i + rand(0, 6), dir: 1, ping: d.loop === 'ping', v: d.speed || 9, vmax: d.speed || 9, lane: d.lane != null ? d.lane : 2.2, stop: d.stop, tag: d.tag, flat: 0, parked: d.parked };
+      const C = { g, type, seat: [-.02, hs, -.095], path: d.path, L, s: (L / d.n) * i + rand(0, 6), dir: 1, ping: d.loop === 'ping', loop: d.loop === 'loop', v: d.speed || 9, vmax: d.speed || 9, lane: d.lane != null ? d.lane : 2.2, stop: d.stop, tag: d.tag, flat: 0, parked: d.parked, driver: d.driver };
       if (d.parked) { C.s = d.at || 0; C.v = 0; }
       G.cars.push(C);
       /* pneus como alvos (para o carro de fuga) */
@@ -988,7 +1100,7 @@ const SniperGame = (function () {
       if (C.parked && !C.go) { place(C); continue; }
       /* abranda atrás de outro carro ou de pessoas na passadeira */
       let want = C.vmax * (C.flat ? Math.max(0, 1 - C.flat * .6) : 1);
-      if (C.flat >= 2) want = 0;
+      if (C.flat >= 2 || (C.drv && C.drv.sleep) || C.hold) want = 0;
       for (const o of G.cars) if (o !== C && o.path === C.path && o.dir === C.dir) { const ds = (o.s - C.s) * C.dir; if (ds > 0 && ds < 11) want = Math.min(want, o.v * .9); }
       C.v = lerp(C.v, want, dt * (want < C.v ? 2.5 : .8));
       C.s += C.v * C.dir * dt;
@@ -1003,7 +1115,9 @@ const SniperGame = (function () {
       C.g.position.set(px, y, pz); C.g.rotation.y = Math.atan2(-uz, ux);
       if (dt) C.g.userData.wheels.forEach(w => { w.rotation.z -= C.v * dt / (.35); });
       C.x = px; C.z = pz; C.yaw = Math.atan2(ux, uz);
-      G.dyn.push({ x: px, y: y + .8, z: pz, hx: 1, hy: .8, hz: 2.2, c: Math.cos(C.yaw), s: Math.sin(C.yaw), k: 'car' });
+      /* caixa à medida do carro: na carrinha a cabeça do condutor passava por cima da caixa e o dardo atravessava o tejadilho */
+      const hy = C.type === 'van' ? 1.05 : C.type === 'suv' ? .95 : .8;
+      G.dyn.push({ x: px, y: y + hy, z: pz, hx: 1, hy, hz: C.type === 'van' ? 2.45 : 2.2, c: Math.cos(C.yaw), s: Math.sin(C.yaw), k: 'car' });
     }
   }
   function moversUpdate(G, dt) {
@@ -1129,18 +1243,19 @@ const SniperGame = (function () {
     ctx.globalAlpha = 1;
   }
   /* quem está a caminho de dar o alarme: marcador vermelho por cima da cabeça (ou seta na borda do ecrã) com o que está a fazer */
-  const THREAT = { spot: 'viu alguém a dormir!', go: 'vai ver o colega…', shake: 'a acordar o colega…', radio: 'a chamar pelo rádio!', check: 'desconfiado…' };
+  const THREAT = { spotAlly: 'descobriu o teu colega!', spot: 'viu alguém a dormir!', go: 'vai ver o colega…', shake: 'a acordar o colega…', radio: 'a chamar pelo rádio!', check: 'desconfiado…' };
   function threats(G, ctx, w, h) {
     const cam = G.r3.cam, v = _v3;
     for (const P of G.people) {
       let txt = null, prog = 0, red = false, arrowOnly = false;
-      if (isAwake(P) && P.react && THREAT[P.react.k]) { txt = THREAT[P.react.k]; red = P.react.k !== 'check'; prog = P.react.k === 'radio' ? P.react.t / 3.2 : P.react.k === 'shake' ? P.react.t / 2.6 : 0; }
+      if (isAwake(P) && P.react && THREAT[P.react.k]) { txt = THREAT[P.react.k]; red = P.react.k !== 'check'; prog = P.react.k === 'radio' ? P.react.t / 3.2 : P.react.k === 'shake' ? P.react.t / 2.6 : P.react.k === 'spotAlly' ? P.react.t / (G.diff === 'easy' ? 2.6 : 1.8) : 0; }
+      else if (P.role === 'ally' && isAwake(P) && !P.arrived) { txt = P.allyTxt || 'o teu colega'; arrowOnly = true; }
       else if (G.alarmBy === P && G.alarmByT > 0) { txt = 'deu o alarme'; red = true; }
       else if (P.vip && P.marked && !P.sleep && !P.hidden) { txt = P.fleeing ? 'a fugir!' : 'alvo'; arrowOnly = !P.fleeing; }
       if (!txt || !P.j) continue;
       v.set(P.j.head.x, P.j.head.y + .7, P.j.head.z).project(cam);
       const behind = v.z > 1; let sx = (v.x + 1) / 2 * w, sy = (1 - v.y) / 2 * h; if (behind) { sx = w - sx; sy = h - sy; }
-      const col = red ? '#ff4a4a' : '#ffcf2a', pulse = 1 + Math.sin(G.t * 9) * .12;
+      const col = red ? '#ff4a4a' : P.role === 'ally' ? '#5ae07a' : '#ffcf2a', pulse = 1 + Math.sin(G.t * 9) * .12;
       const off = behind || sx < 20 || sx > w - 20 || sy < 70 || sy > h - 30;
       if (off) {
         const cx = w / 2, cy = h / 2, a = Math.atan2(sy - cy, sx - cx), R = Math.min(w, h) * .44, ex = cx + Math.cos(a) * R, ey = cy + Math.sin(a) * R;
@@ -1213,7 +1328,7 @@ const SniperGame = (function () {
     /* telémetro: distância ao que está na mira */
     if ((G.fxFrame = (G.fxFrame || 0) + 1) % 6 === 0) G.range = rangeAt(G);
     /* pessoas */
-    G.people.forEach(P => { const ox = P.x, oz = P.z; think(G, P, dt); P.vx = (P.x - ox) / Math.max(1e-4, dt); P.vz = (P.z - oz) / Math.max(1e-4, dt); P.y = P.fy != null ? P.fy : G.hAt(P.x, P.z); });
+    G.people.forEach(P => { const ox = P.x, oz = P.z; think(G, P, dt); P.vx = (P.x - ox) / Math.max(1e-4, dt); P.vz = (P.z - oz) / Math.max(1e-4, dt); P.y = P.fy != null ? P.fy : walkY(G, P.x, P.z); });
     separate(G, dt);
     if (G.fxFrame % 15 === 0) awareness(G);
     G.distract = Math.max(0, (G.distract || 0) - dt);
@@ -1232,16 +1347,46 @@ const SniperGame = (function () {
     G.r3.smoke.update(dt); G.r3.spark.update(dt);
     if (G.L.script) G.L.script(G, dt);
     objectives(G, dt);
-    if (G.timer > 0 && !G.done && !G.failed) { G.timer -= dt; if (G.timer <= 0) { const tob = G.obj.find(o => o.timer && !o.done); if (tob) { const thief = G.people.find(p => p.vip && isAwake(p)); if (thief && G.escape) { thief.fleeing = true; thief.beh = { type: 'path', path: G.escape.slice(), speed: 3.2, end: 'escape' }; thief.wi = 0; hint(G, 'O tempo acabou — o gatuno está a fugir!', 3, true); } else fail(G, 'O tempo acabou.'); } } }
+    if (G.timer > 0 && !G.done && !G.failed) { G.timer -= dt; if (G.timer <= 0) { const tob = G.obj.find(o => o.timer && !o.done); if (tob) { if (G.L.onTimer) G.L.onTimer(G); else { const thief = G.people.find(p => p.vip && isAwake(p)); if (thief && G.escape) { thief.fleeing = true; thief.beh = { type: 'path', path: G.escape.slice(), speed: 3.2, end: 'escape' }; thief.wi = 0; hint(G, 'O tempo acabou — o gatuno está a fugir!', 3, true); } else fail(G, G.L.timeoutMsg || 'O tempo acabou.'); } } } }
     G.hints.forEach(h => { h.t += real; }); G.hints = G.hints.filter(h => h.t < h.d);
     if (G.pip) G.pip.t += real; if (G.alarmByT > 0) G.alarmByT -= real;
     G.fx.forEach(f => { f.t += real; }); G.fx = G.fx.filter(f => f.t < 1.8);
+    if (G.stealthT > 0) { G.stealthT -= real; if (G.stealthT <= 0) fail(G, 'Deram o alarme — esta missão tinha de ser silenciosa.'); }
+    if (G.snowK) snowfall(G, dt);
+    carryUpdate(G);
     if (G.endT != null) { G.endT -= real; if (G.endT <= 0) { G.endT = null; finish(G, api); } }
+  }
+  /* neve a cair à volta de onde se está a olhar (a mira só vê uns metros, não vale a pena encher o vale todo) */
+  function snowfall(G, dt) {
+    const c = G.r3.cam.position, ap = aimGround(G), r = clamp((G.range || 120) * Math.tan(G.r3.cam.fov * Math.PI / 360) * 1.3, 6, 90), w = windAt(G, G.gt);
+    const n = Math.min(40, dt * 160 * G.snowK) + (Math.random() < (dt * 160 * G.snowK) % 1 ? 1 : 0);
+    for (let i = 0; i < n; i++) {
+      /* metade perto do alvo, metade no caminho entre a Coruja e o alvo */
+      const k = Math.random() < .5 ? 1 : .15 + Math.random() * .85, rr = r * (k < 1 ? k : 1), x = lerp(c.x, ap.x, k) + rand(-rr, rr), z = lerp(c.z, ap.z, k) + rand(-rr, rr), y = lerp(c.y, ap.y, k) + rand(-2, rr * .9 + 4);
+      G.r3.smoke.spawn({ x, y, z, vx: w.x * .5 + rand(-.3, .3), vy: -rand(1, 1.8), vz: w.z * .5 + rand(-.3, .3), life: rand(2.5, 4), s0: .05 + rr * .0025, s1: .05 + rr * .0025, c0: '#ffffff', a: .8, drag: 0 });
+    }
+  }
+  /* carro de fuga: com 2 pneus furados pára e quem vai lá dentro sai a correr (runPath) */
+  function takeCar(G, P, car, failMsg, runPath) {
+    P.beh = { type: 'ride', obj: car.g, seat: car.seat, rot: Math.PI / 2, act: 'drive' }; P.marked = true; P.fleeing = true;
+    car.go = true; car.parked = false; car.v = car.v || 0; car.carrier = P; car.runPath = runPath; car.onEnd = G2 => { if (car.carrier && !car.carrier.sleep) fail(G2, failMsg || `${P.name} fugiu de carro!`); };
+  }
+  function carryUpdate(G) {
+    for (const car of G.cars) {
+      const C = car.carrier; if (!C || !car.go) continue;
+      if (C.sleep) { car.hold = true; continue; }
+      if (car.flat >= 2 && car.v < .3) {
+        car.carrier = null; C.hidden = false; C.sitting = false; C.x = car.x + Math.cos(car.yaw) * 1.6; C.z = car.z - Math.sin(car.yaw) * 1.6; C.fy = null;
+        const rp = car.runPath ? car.runPath(C) : [[C.x, C.z], [C.x + 10, C.z], [C.x + 120, C.z]];
+        C.beh = { type: 'path', speed: 3.4, path: [[C.x, C.z]].concat(rp), end: 'escape' }; C.wi = 1; hint(G, `${C.name} saiu do carro a correr — agora!`, 2.5, true);
+      }
+    }
   }
   /* pessoas não se atravessam */
   function separate(G, dt) {
     const L = G.people.filter(p => !p.hidden && !p.sleep && p.mode === 'walk');
-    for (const a of L) for (const b of G.people) { if (a === b || b.hidden) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), r = b.sleep ? .9 : .55; if (d < r && d > 1e-3) { const k = (r - d) * .5; a.x += dx / d * k; a.z += dz / d * k; } }
+    /* quem anda e esbarra em alguém parado desvia-se para o lado (antes, de frente, ficava preso a empurrar para trás) */
+    for (const a of L) for (const b of G.people) { if (a === b || b.hidden) continue; const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz), r = b.sleep ? .9 : .55; if (d < r && d > 1e-3) { const k = (r - d) * .5; a.x += dx / d * k; a.z += dz / d * k; if (b.mode !== 'walk') { const hx = Math.sin(a.yaw), hz = Math.cos(a.yaw), sd = (dx * hz - dz * hx) >= 0 ? 1 : -1; a.x += hz * sd * k * 1.6; a.z -= hx * sd * k * 1.6; } } }
   }
   function aimUpdate(G, dt) {
     const sc = G.scope || G.bino;
@@ -1266,13 +1411,10 @@ const SniperGame = (function () {
   function clampView(G) { const n = G.L.nest; G.yaw = clamp(G.yaw, n.yaw - n.yawR, n.yaw + n.yawR); G.pitch = clamp(G.pitch, n.pMin, n.pMax); }
   function rangeAt(G) {
     const d = aimDir(G, { x: 0, y: 0, z: 0 }, false), c = G.r3.cam.position, far = 1500;
-    const w = segWorld(G, c.x, c.y, c.z, c.x + d.x * far, c.y + d.y * far, c.z + d.z * far);
-    let best = w ? w.t * far : far;
-    /* chão: marcha ao longo do raio */
-    for (let s = 2; s < best; s += Math.max(1, s * .02)) { const x = c.x + d.x * s, y = c.y + d.y * s, z = c.z + d.z * s; if (y < Math.max(0, G.hAt(x, z))) { best = s; break; } }
-    /* pessoas */
-    for (const P of G.people) { if (P.hidden || !P.j) continue; const [dd, s] = segSegDist(c.x, c.y, c.z, c.x + d.x * far, c.y + d.y * far, c.z + d.z * far, P.j.hip.x, P.j.hip.y, P.j.hip.z, P.j.head.x, P.j.head.y, P.j.head.z); if (dd < .35 && s * far < best) { best = s * far; G.aimP = P; } }
-    return best < far ? best : 0;
+    /* quem está no centro (para os binóculos marcarem) */
+    G.aimP = null; let pb = far;
+    for (const P of G.people) { if (P.hidden || !P.j) continue; const [dd, s] = segSegDist(c.x, c.y, c.z, c.x + d.x * far, c.y + d.y * far, c.z + d.z * far, P.j.hip.x, P.j.hip.y, P.j.hip.z, P.j.head.x, P.j.head.y, P.j.head.z); if (dd < .35 + s * far * .0015 && s * far < pb) { pb = s * far; G.aimP = P; } }
+    return aimRange(G, d, G.diff === 'easy' ? .006 : .0025);
   }
   function hatsUpdate(G, dt) {
     G.hats.forEach(h => { if (h.rest) return; h.t += dt; h.v.y -= 9.8 * dt; h.m.position.x += h.v.x * dt; h.m.position.y += h.v.y * dt; h.m.position.z += h.v.z * dt; h.m.rotation.x += h.w.x * dt; h.m.rotation.y += h.w.y * dt; h.m.rotation.z += h.w.z * dt; const gy = Math.max(G.hAt(h.m.position.x, h.m.position.z), 0) + .05; if (h.m.position.y < gy) { h.m.position.y = gy; if (h.v.y < -2) { h.v.y *= -.3; h.v.x *= .5; h.v.z *= .5; h.w.x *= .4; h.w.z *= .4; } else { h.rest = true; h.m.rotation.x = 0; h.m.rotation.z = Math.PI * (Math.random() < .5 ? 1 : 0) * .0; } } });
@@ -1327,7 +1469,7 @@ const SniperGame = (function () {
     const p = prog(); p.u = Math.max(p.u, Math.min(LEVELS.length - 1, G.li + 1)); p.s[G.L.id] = Math.max(p.s[G.L.id] || 0, stars); p.b[G.L.id] = Math.max(p.b[G.L.id] || 0, score); saveProg(p);
     api.over({ won: true, score, stars, icon: '🦉', title: 'Missão cumprida!', sub: `${G.L.name}${stealth ? ' · sem alarme' : ''}`,
       stats: [['Adormecidos', s.sleeps], ['Pontaria', acc + '%'], ['Tiro mais longo', Math.round(s.longest) + ' m'], ['Chapéus ao ar', s.hats], ['Brindes', G.got + '/' + (G.collect ? G.collect.list.length : 0)], ['Civis', s.civ]],
-      html: G.li < LEVELS.length - 1 ? `<p style="margin:.4rem 0 0;font-size:.85rem;opacity:.85">Próxima missão desbloqueada: <b>${LEVELS[G.li + 1].name}</b></p>` : '<p style="margin:.4rem 0 0;font-size:.85rem;opacity:.85">A Liga dos Bigodes está toda a dormir. 🦉💤</p>' });
+      html: G.li < LEVELS.length - 1 ? `<p style="margin:.4rem 0 0;font-size:.85rem;opacity:.85">Próxima missão desbloqueada: <b>${LEVELS[G.li + 1].name}</b></p>` : '<p style="margin:.4rem 0 0;font-size:.85rem;opacity:.85">O Grão-Mestre e a Liga dos Bigodes estão todos a dormir. Fim da campanha! 🦉💤</p>' });
   }
   function hint(G, text, d, big) { G.hints = G.hints.filter(h => h.text !== text); G.hints.push({ text, t: 0, d: d || 3, big }); if (G.hints.length > 3) G.hints.shift(); }
 
@@ -1359,10 +1501,15 @@ const SniperGame = (function () {
     }
     cam.updateMatrixWorld();
     /* pessoas: poses */
-    const PPx = PP(), Q0 = {};
+    /* só se refaz a pose de quem se vê (com a mira quase ninguém está no ecrã); os outros a cada 8 imagens */
+    const PPx = PP(), fr = r3.frustum || (r3.frustum = new THREE.Frustum()), pm = r3.pm || (r3.pm = new THREE.Matrix4()), sph = r3.sph || (r3.sph = new THREE.Sphere(new THREE.Vector3(), 2.4));
+    pm.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse); fr.setFromProjectionMatrix(pm);
+    const pipP = G.pip && !G.dbgCam ? G.pip.P : null, tick = G.fxFrame || 0;
     for (const P of G.people) {
       if (P.hidden) { if (!P._hid) { G.crowd.hide(P); P._hid = true; } continue; }
       P._hid = false;
+      sph.center.set(P.x, P.y + .9, P.z);
+      if (P.j && !fr.intersectsSphere(sph) && !(pipP && Math.hypot(P.x - pipP.x, P.z - pipP.z) < 30) && (tick + P.id) % 8) { P.poseDt = (P.poseDt || 0) + G.dtv; continue; }
       const Q = pose(G, P, PPx);
       P.q = Q; G.crowd.pose(P, Q);
     }
@@ -1445,7 +1592,43 @@ const SniperGame = (function () {
   /* atividades que precisam das mãos: a espingarda vai para as costas */
   const GUN_HANDS = { radio: 1, bino: 1, point: 1, light: 1, talk: 1, cup: 1, phone: 1, vendor: 1, sweep: 1, wave: 1, cheer: 1, clap: 1, drive: 1 };
   /* pose de cada pessoa a partir do estado */
+  /* depois da pose: transição suave entre poses, pestanejar, tiques de quem está parado, passinhos a rodar no sítio */
+  const FIDGET_OK = { listen: 1, look: 1, arms: 1, hips: 1, back: 1, guard: 1, light: 1 }, FIDGETS = ['watch', 'scratch', 'shrug', 'watch', 'stretch'];
+  const QDEF = { eyes: 1 };
   function pose(G, P, X) {
+    const Q = rawPose(G, P, X), dt = Math.min(.25, (G.dtv || 0) + (P.poseDt || 0)); P.poseDt = 0;
+    const awake = !P.sleep;
+    /* pestanejar */
+    if (awake) { P.blk = (P.blk == null ? 1 + Math.random() * 4 : P.blk) - dt; if (P.blk < 0) { P.blk = 2.2 + Math.random() * 4.5; P.blkT = .13; } if (P.blkT > 0) { P.blkT -= dt; Q.eyes = Math.min(Q.eyes == null ? 1 : Q.eyes, .05); } }
+    /* tiques: ver as horas, coçar a cabeça, encolher os ombros, espreguiçar */
+    if (awake && P.mode === 'idle' && !P.react && FIDGET_OK[P.act || 'listen'] && (!Q.gun || Q.gun === 'back')) {
+      if (P.fid) { P.fid.t += dt; const f = P.fid, e = Math.min(1, f.t / .45, (f.d - f.t) / .45); if (f.t >= f.d) { P.fid = null; P.fidT = 7 + Math.random() * 16; } else { const F = {}; X.ACT[f.k](F, P.t, P.seed); const w = e * e * (3 - 2 * e); for (const k in F) Q[k] = lerp(Q[k] == null ? (QDEF[k] || 0) : Q[k], F[k], w); } }
+      else { P.fidT = (P.fidT == null ? 3 + Math.random() * 14 : P.fidT) - dt; if (P.fidT < 0) P.fid = { k: FIDGETS[Math.floor(Math.random() * FIDGETS.length)], t: 0, d: 2.2 + Math.random() * 1.2 }; }
+    } else if (P.fid) P.fid = null;
+    /* rodar no sítio: passinhos em vez de deslizar */
+    if (awake && (P.mode === 'idle' || P.mode == null)) {
+      const r = P.yawPrev == null ? 0 : Math.abs(Ut.angDiff(P.yaw, P.yawPrev)) / Math.max(1e-3, dt);
+      P.turnK = lerp(P.turnK || 0, r > .3 ? 1 : 0, Math.min(1, dt * 7));
+      if (P.turnK > .02) { P.tph = (P.tph || 0) + dt * 9; const a = Math.sin(P.tph), k = P.turnK; Q.lKn = (Q.lKn || 0) + Math.max(0, a) * .5 * k; Q.lHip = (Q.lHip || 0) + Math.max(0, a) * .32 * k; Q.rKn = (Q.rKn || 0) + Math.max(0, -a) * .5 * k; Q.rHip = (Q.rHip || 0) + Math.max(0, -a) * .32 * k; }
+    }
+    P.yawPrev = P.yaw;
+    if (P.beh && P.beh.type === 'ride') Q.noBlob = 1;
+    /* transição: ao mudar de pose, mistura a anterior com a nova durante ~0,3 s (antes saltava de uma para a outra) */
+    if (Q.lFt == null) Q.lFt = (Q.lKn || 0) - (Q.lHip || 0); if (Q.rFt == null) Q.rFt = (Q.rKn || 0) - (Q.rHip || 0);
+    const key = (P.sleep ? 'z' : '') + (P.mode || '') + '|' + (P.mode === 'walk' ? '' : P.act || '') + '|' + (Q.gun || '');
+    if (P.qKey !== key) { if (P.qKey != null && P.qPrev) { P.qFrom = Object.assign({}, P.qPrev); P.qW = 0; } P.qKey = key; }
+    if (P.qFrom) {
+      P.qW += dt / .3; if (P.qW >= 1) P.qFrom = null;
+      else {
+        const w = P.qW * P.qW * (3 - 2 * P.qW), A = P.qFrom;
+        for (const k in A) { const a = A[k]; if (typeof a === 'number') Q[k] = lerp(a, Q[k] == null ? (QDEF[k] || 0) : Q[k], w); else if (Array.isArray(a) && Array.isArray(Q[k])) Q[k] = Q[k].map((v, i) => lerp(a[i], v, w)); }
+        for (const k in Q) if (typeof Q[k] === 'number' && !(k in A)) Q[k] = lerp(QDEF[k] || 0, Q[k], w);
+      }
+    }
+    const pv = P.qPrev || (P.qPrev = {}); for (const k in pv) delete pv[k]; Object.assign(pv, Q);
+    return Q;
+  }
+  function rawPose(G, P, X) {
     const Q = {}, t = P.t, s = P.seed;
     if (P.sleep) {
       if (P.sitting && P.mode !== 'walk') { X.sit(Q, t, s); const k = clamp(P.sleepT / 1.6, 0, 1); Q.headP = .7 * k; Q.headR = .35 * k * P.fallSide; Q.side = .18 * k * P.fallSide; Q.eyes = 1 - k * .95; Q.yawn = Math.sin(clamp(P.sleepT / 1.2, 0, 1) * Math.PI); Q.lSh = .1; Q.rSh = .1; Q.lEl = .3; Q.rEl = .3; Q.breath = Math.sin(t * 1.1) * .5 + .5; }
@@ -1462,6 +1645,7 @@ const SniperGame = (function () {
     } else if (P.mode === 'sit') X.sit(Q, t, s, P.act);
     else if (P.mode === 'recline') X.recline(Q, t, s);
     else if (P.mode === 'shake') X.shake(Q, t);
+    else if (P.mode === 'kneel') { X.crouch(Q, t, s); Q.headY = 0; Q.headP = .35; if (X.ACT[P.act]) X.ACT[P.act](Q, t, s); }
     else if (P.mode === 'crouch') {
       X.crouch(Q, t, s);
       /* alarme: de joelho, a apontar a espingarda para o ninho */
@@ -1488,9 +1672,9 @@ const SniperGame = (function () {
     for (const P of G.people) {
       if (!P.marked || P.hidden || !P.j) continue;
       const p = proj(P.j.head.x, P.j.head.y + .55, P.j.head.z); if (!p || p.x < 0 || p.x > w || p.y < 0 || p.y > h) continue;
-      const c = P.sleep ? '#8ab0ff' : P.vip ? '#ffcf2a' : P.role === 'civ' ? '#9aa4b0' : '#ff5a4a', s = 7;
+      const c = P.role === 'ally' ? '#5ae07a' : P.sleep ? '#8ab0ff' : P.vip ? '#ffcf2a' : P.role === 'civ' ? '#9aa4b0' : '#ff5a4a', s = 7;
       ctx.fillStyle = c; ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p.x - s, p.y - s * 1.4); ctx.lineTo(p.x + s, p.y - s * 1.4); ctx.lineTo(p.x, p.y); ctx.closePath(); ctx.stroke(); ctx.fill();
-      if (G.scope || G.bino || P.vip) { ctx.font = `700 11px ${FONT}`; ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeText(P.sleep ? 'a dormir' : P.name, p.x, p.y - s * 1.4 - 5); ctx.fillText(P.sleep ? 'a dormir' : P.name, p.x, p.y - s * 1.4 - 5); }
+      if (G.scope || G.bino || P.vip || P.role === 'ally') { ctx.font = `700 11px ${FONT}`; ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeText(P.sleep ? 'a dormir' : P.name, p.x, p.y - s * 1.4 - 5); ctx.fillText(P.sleep ? 'a dormir' : P.name, p.x, p.y - s * 1.4 - 5); }
     }
     floats(G, ctx, proj);
     if (G.scope || G.bino) scopeHud(G, ctx, w, h, proj); else hipHud(G, ctx, w, h);
@@ -1502,6 +1686,7 @@ const SniperGame = (function () {
     ctx.fillStyle = 'rgba(8,14,22,.55)'; Ut.rr(ctx, ox, oy, bx, 14 + ob.length * 19 + (G.timer > 0 ? 18 : 0), 10); ctx.fill();
     ob.forEach((o, i) => { const y = oy + 19 + i * 19; ctx.fillStyle = o.done ? '#7ae08a' : o.opt ? '#c8d0dc' : '#ffffff'; ctx.textAlign = 'left'; ctx.fillText((o.done ? '✔ ' : o.opt ? '☆ ' : '▸ ') + o.text + (o.prog && !o.done ? '  ' + o.prog(G) : ''), ox + 10, y, bx - 18); });
     if (G.timer > 0) { const y = oy + 19 + ob.length * 19, m = Math.floor(G.timer / 60), s = Math.floor(G.timer % 60); ctx.fillStyle = G.timer < 30 ? '#ff8a7a' : '#ffd88a'; ctx.fillText(`⏱ ${m}:${String(s).padStart(2, '0')}`, ox + 10, y); }
+    if (G.L.stealth) { const y = oy + 14 + ob.length * 19 + (G.timer > 0 ? 18 : 0); ctx.fillStyle = 'rgba(8,14,22,.55)'; Ut.rr(ctx, ox, y + 4, 196, 22, 8); ctx.fill(); ctx.fillStyle = G.alarm ? '#ff8a7a' : '#bfe8ff'; ctx.font = `700 11px ${FONT}`; ctx.fillText('🤫 Missão silenciosa: nada de alarmes', ox + 10, y + 19); }
     /* alerta */
     if (G.alarm || G.sus > .05) {
       const cx = w / 2, y = 58, bwid = 150;
@@ -1568,8 +1753,16 @@ const SniperGame = (function () {
       for (let m = 1; m <= 10; m++) { const d = m * ppm * 2; if (d > R * .45) break; for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { ctx.beginPath(); ctx.arc(cx + a * d, cy + b * d, m % 5 ? 1.8 : 2.6, 0, TAU); ctx.fill(); } }
       ctx.font = `600 9px ${FONT}`; ctx.textAlign = 'left'; for (let m = 1; m <= 5; m++) { const d = m * 2 * ppm * 2; if (d > R * .45) break; ctx.fillText(String(m * 2 * 2), cx + 4, cy + d + 3); }
       ctx.fillStyle = '#ff2a4a'; ctx.beginPath(); ctx.arc(cx, cy, 1.8, 0, TAU); ctx.fill();
-      /* ponto de impacto previsto (fácil) */
-      if (G.diff === 'easy') { if (G.fxFrame % 3 === 0) G.ip = impactPoint(G); if (G.ip) { const p = proj(G.ip.x, G.ip.y, G.ip.z); if (p) { ctx.strokeStyle = '#ff3a5a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, TAU); ctx.stroke(); } } }
+      /* ponto de impacto previsto (fácil) e, se o alvo estiver a andar, onde apontar para o apanhar (losango) */
+      if (G.diff === 'easy') {
+        if (G.fxFrame % 3 === 0) G.ip = impactPoint(G);
+        if (G.ip) { const p = proj(G.ip.x, G.ip.y, G.ip.z); if (p) { ctx.strokeStyle = G.ip.P ? '#7aff9a' : '#ff3a5a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, TAU); ctx.stroke(); } }
+        const A = G.aimP; if (A && A.j && isAwake(A) && Math.hypot(A.vx || 0, A.vz || 0) > .5) {
+          const c = A.j.chest, d = Math.hypot(c.x - G.r3.cam.position.x, c.y - G.r3.cam.position.y, c.z - G.r3.cam.position.z), tof = d / DART_V * 1.02;
+          const p = proj(c.x + A.vx * tof, c.y, c.z + A.vz * tof), q = proj(c.x, c.y, c.z);
+          if (p && q && Math.hypot(p.x - q.x, p.y - q.y) > 4) { ctx.strokeStyle = 'rgba(255,230,120,.9)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(p.x, p.y - 7); ctx.lineTo(p.x + 7, p.y); ctx.lineTo(p.x, p.y + 7); ctx.lineTo(p.x - 7, p.y); ctx.closePath(); ctx.stroke(); }
+        }
+      }
     } else {
       ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx - 14, cy); ctx.lineTo(cx + 14, cy); ctx.moveTo(cx, cy - 14); ctx.lineTo(cx, cy + 14); ctx.stroke();
       /* marcar quem está no centro */
@@ -1577,7 +1770,7 @@ const SniperGame = (function () {
       if (P) { const p = proj(P.j.chest.x, P.j.chest.y, P.j.chest.z); if (p && Math.hypot(p.x - cx, p.y - cy) < 40) tgt = P; }
       if (tgt) { G.markT = (G.markP === tgt ? G.markT : 0) + G.dtv / Math.max(.05, G.timeScale); G.markP = tgt; const k = Math.min(1, G.markT / .45); ctx.strokeStyle = tgt.role === 'civ' ? '#c8d0dc' : '#ffcf2a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 26, -Math.PI / 2, -Math.PI / 2 + TAU * k); ctx.stroke(); if (k >= 1 && !tgt.marked) { tgt.marked = true; sfx(G, 'mark'); } ctx.font = `800 13px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.fillText(tgt.marked ? `${tgt.name}${tgt.role === 'civ' ? ' (civil)' : ''}` : 'a identificar…', cx, cy + 48); }
       else { G.markT = 0; G.markP = null; }
-      const C = G.collect; if (C && !tgt) { const nm = { duck: '🦆 Pato de borracha', balloon: '🎈 Balão', gnome: '🧙 Gnomo', lantern: '🏮 Lanterna' }[C.kind] || 'Brinde';
+      const C = G.collect; if (C && !tgt) { const nm = { duck: '🦆 Pato de borracha', balloon: '🎈 Balão', gnome: '🧙 Gnomo', lantern: '🏮 Lanterna', ball: '🏐 Bola de praia', snowman: '⛄ Boneco de neve' }[C.kind] || 'Brinde';
         for (const T of G.targets) { if (T.done || !T.m) continue; const p = proj(T.m.position.x, T.m.position.y, T.m.position.z); if (p && Math.hypot(p.x - cx, p.y - cy) < 46) { ctx.font = `800 13px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = '#a8f0ff'; ctx.fillText(nm + ' — acerta-lhe com um dardo!', cx, cy + 48); ctx.strokeStyle = '#a8f0ff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, TAU); ctx.stroke(); break; } } }
     }
     /* leituras */
@@ -1706,17 +1899,23 @@ const SniperGame = (function () {
   /* ════════════════════════════════════════════════════════════════
      registo no kit
   ════════════════════════════════════════════════════════════════ */
+  /* capítulos da campanha (as missões ficam agrupadas no menu) */
+  const CHAPTERS = ['A Liga dos Bigodes', 'Regresso ao Cais', 'Arraial e Mercado', 'A Cidade', 'Montanha e Carris', 'Praia da Bigodeira', 'Terra da Neve'];
   const picker = {
     html() {
-      const p = prog();
+      const p = prog(), done = LEVELS.filter(L => p.s[L.id]).length, stars = LEVELS.reduce((a, L) => a + (p.s[L.id] || 0), 0);
+      const groups = []; LEVELS.forEach((L, i) => { const c = L.chapter || 0; (groups[c] = groups[c] || []).push([L, i]); });
       return `<style>
+.sn-top{display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;margin:0 0 6px;font:700 .85rem 'Space Grotesk';opacity:.85}
+.sn-ch{margin:16px 0 8px;font:800 .78rem 'Space Grotesk';letter-spacing:.14em;text-transform:uppercase;opacity:.75}
 .sn-m{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
 .sn-c{position:relative;border:0;border-radius:18px;padding:16px 14px 14px;min-height:150px;color:#fff;font:inherit;text-align:left;cursor:pointer;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,.25);transition:transform .15s}
 .sn-c:hover:not([disabled]){transform:translateY(-3px)}.sn-c[disabled]{cursor:not-allowed;filter:grayscale(.8) brightness(.7)}
 .sn-c small{display:block;font:700 .64rem 'Space Grotesk';letter-spacing:.12em;text-transform:uppercase;opacity:.85}
 .sn-c b{display:block;font:800 1.08rem 'Space Grotesk';margin:3px 0 6px}.sn-c p{margin:0;font-size:.76rem;line-height:1.35;opacity:.92}
 .sn-c .st{position:absolute;top:12px;right:12px;font-size:.8rem;letter-spacing:1px}.sn-c .ic{position:absolute;right:10px;bottom:6px;font-size:2.4rem;opacity:.35}
-</style><div class="sn-m">${LEVELS.map((L, i) => { const lock = i > p.u, st = p.s[L.id] || 0; return `<button class="sn-c" data-m="${i}" ${lock ? 'disabled' : ''} style="background:linear-gradient(150deg,${L.grad[0]},${L.grad[1]})"><small>Missão ${i + 1}${lock ? ' · 🔒' : ''}</small><b>${L.name}</b><p>${L.brief.split('. ')[0]}.</p><span class="st">${lock ? '' : '⭐'.repeat(st) + '<span style="opacity:.3">' + '⭐'.repeat(3 - st) + '</span>'}</span><span class="ic">${L.icon}</span></button>`; }).join('')}</div>`;
+.sn-c .tag{display:inline-block;margin-top:6px;padding:1px 7px;border-radius:9px;background:rgba(0,0,0,.28);font:700 .62rem 'Space Grotesk';letter-spacing:.04em}
+</style><div class="sn-top"><span>🦉 ${done}/${LEVELS.length} missões</span><span>⭐ ${stars}/${LEVELS.length * 3}</span></div>${groups.map((gr, c) => gr ? `<div class="sn-ch">Capítulo ${c + 1} · ${CHAPTERS[c] || ''}</div><div class="sn-m">${gr.map(([L, i]) => { const lock = i > p.u, st = p.s[L.id] || 0; return `<button class="sn-c" data-m="${i}" ${lock ? 'disabled' : ''} style="background:linear-gradient(150deg,${L.grad[0]},${L.grad[1]})"><small>Missão ${i + 1}${lock ? ' · 🔒' : ''}</small><b>${L.name}</b><p>${L.brief.split('. ')[0]}.</p>${L.tags ? `<span class="tag">${L.tags}</span>` : ''}<span class="st">${lock ? '' : '⭐'.repeat(st) + '<span style="opacity:.3">' + '⭐'.repeat(3 - st) + '</span>'}</span><span class="ic">${L.icon}</span></button>`; }).join('')}</div>` : '').join('')}`;
     },
     wire(el, start) { el.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { if (!b.disabled) start(b.dataset.m); })); },
   };
@@ -1747,9 +1946,13 @@ const SniperGame = (function () {
     achievements: [
       { id: 'sniper.first', name: 'Boa Noite', icon: '🦉', desc: 'Completa a primeira missão da Operação Soneca.', test: c => c.result.won },
       { id: 'sniper.ghost', name: 'Fantasma', icon: '👻', desc: 'Completa uma missão da Operação Soneca sem alarme e sem civis a dormir (3 estrelas).', test: c => c.result.won && (c.result.score || 0) > 2000 },
+      { id: 'sniper.ten', name: 'Agente Coruja', icon: '🎯', desc: 'Completa 10 missões da Operação Soneca.', test: c => c.result.won && LEVELS.filter(L => prog().s[L.id]).length >= 10 },
+      { id: 'sniper.all', name: 'Grão-Coruja', icon: '🏆', desc: 'Completa as 30 missões da Operação Soneca.', test: c => c.result.won && LEVELS.every(L => prog().s[L.id]) },
     ],
   };
   const KIT = ArcadeKit.create(spec);
-  KIT._dbg = { LEVELS, fire, predict, hitPeople, measure, impactPoint, raiseAlarm };
+  /* testes: poses (e articulações para os dardos) sem desenhar */
+  function poseAll(G) { const X = PP(); for (const P of G.people) { if (P.hidden) continue; const Q = pose(G, P, X); P.q = Q; G.crowd.pose(P, Q); } }
+  KIT._dbg = { LEVELS, fire, predict, hitPeople, measure, impactPoint, raiseAlarm, los, segWorld, roofY, aimRange, poseAll };
   return KIT;
 })();
