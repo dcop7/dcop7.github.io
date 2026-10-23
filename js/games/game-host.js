@@ -83,7 +83,7 @@ const GameHost = (function () {
     { id: 'runner', name: 'Fuga na Selva', icon: '🐒', color: '#84cc16', group: 'Aventura',
       desc: 'Corrida sem fim: salta, desliza e trepa pelas lianas antes que a onda de bananas te apanhe.' },
     { id: 'drip', name: 'Gota a Gota', icon: '💧', color: '#3fb6ff', group: 'Aventura',
-      desc: 'Escava a terra para levar a água até ao Rebento. 40 níveis com lodo, lava, musgo, comportas e bombas.' },
+      desc: 'Escava a terra para levar a água até ao Rebento. 80 níveis em 8 capítulos com lodo, lava, musgo, vapor, comportas, válvulas e bombas.' },
     { id: 'mono-puzzle', name: 'Torres Impossíveis', icon: '🗼', color: '#f472b6', group: 'Aventura',
       desc: 'Puzzle 3D de perspetiva: roda torres, desliza pontes e usa ilusões para abrir caminho.' },
     { id: 'platformer-3d', name: 'Ilhas Flutuantes', icon: '🏝️', color: '#38bdf8', group: '3D',
@@ -91,7 +91,7 @@ const GameHost = (function () {
     { id: 'divine-wrath', name: 'Fúria Divina', icon: '☄️', color: '#ff7a3a', group: '3D',
       desc: 'Sandbox sem objetivos: uma cidade enorme para destruir à vontade com meteoros, tsunamis, vulcões, tornados e muito mais.' },
     { id: 'sniper', name: 'Operação Soneca', icon: '🦉', color: '#ff4a7a', group: '3D',
-      desc: 'Atirador furtivo sem violência: 5 missões, vento e queda do dardo, binóculos e câmara do dardo — os alvos adormecem a ressonar.' },
+      desc: 'Atirador furtivo sem violência: 30 missões em 7 mundos, vento e queda do dardo, binóculos e câmara do dardo — os alvos adormecem a ressonar.' },
     { id: 'demolition', name: 'Implosão', icon: '💥', color: '#ff7a1a', group: '3D',
       desc: 'Puzzle de demolição com física a sério: 36 níveis — põe cargas nos pilares, carrega em DETONAR e deita o prédio abaixo da linha sem tocar nos vizinhos.' },
     /* ── memória (out/2026) ── */
@@ -133,9 +133,9 @@ const GameHost = (function () {
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
     'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=4'] },
     'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=5'] },
-    drip:            { g: () => DripGame,        src: ['js/games/drip-sim.js?v=1', 'js/games/drip-levels.js?v=1', 'js/games/game-drip.js?v=1'] },
+    drip:            { g: () => DripGame,        src: ['js/games/drip-sim.js?v=1', 'js/games/drip-levels.js?v=2', 'js/games/game-drip.js?v=2'] },
     demolition:      { g: () => DemolitionGame,  src: ['js/games/demo-sim.js?v=1', 'js/games/demo-levels.js?v=1', 'js/games/game-demolition.js?v=1'] },
-    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=2', 'js/games/sniper-kit.js?v=3', 'js/games/game-sniper.js?v=3'] },
+    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=3', 'js/games/sniper-kit.js?v=4', 'js/games/sniper-missions.js?v=1', 'js/games/game-sniper.js?v=4'] },
   };
   const _loaded = new Map();
   function loadScript(src) {

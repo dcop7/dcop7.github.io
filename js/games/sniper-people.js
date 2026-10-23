@@ -91,6 +91,10 @@ const SniperPeople = (function () {
     G.pupils = merge([[S(.0105, 7, 5), '#ffffff', M(.036, .118, .0985, 0, 0, 0, 1, 1, .5)], [S(.0105, 7, 5), '#ffffff', M(-.036, .118, .0985, 0, 0, 0, 1, 1, .5)], [S(.0058, 5, 4), '#151515', M(.036, .118, .1035, 0, 0, 0, 1, 1, .5)], [S(.0058, 5, 4), '#151515', M(-.036, .118, .1035, 0, 0, 0, 1, 1, .5)]]);
     G.brows = merge([[C(.0055, .0055, .044, 6), 0, M(.037, .147, .095, 0, 0, Math.PI / 2 - .14)], [C(.0055, .0055, .044, 6), 0, M(-.037, .147, .095, 0, 0, Math.PI / 2 + .14)]]);
     G.mouth = merge([[S(.019, 8, 5), 0, M(0, .058, .097, 0, 0, 0, 1.25, .34, .5)]]);
+    /* pálpebras de cima (cor da pele): fecham por cima do olho a pestanejar e a dormir */
+    G.lids = merge([[S(.0182, 9, 6), 0, M(.036, 0, .087, 0, 0, 0, 1.06, 1, .78)], [S(.0182, 9, 6), 0, M(-.036, 0, .087, 0, 0, 0, 1.06, 1, .78)]]);
+    /* saia evasê (pivô na cintura) */
+    G.skirt = merge([[new THREE.LatheGeometry([[.255, -.445], [.262, -.43], [.235, -.3], [.19, -.1], [.168, .02], [.163, .075]].map(([r, y]) => new THREE.Vector2(r, y)), 18), 0, M(0, 0, 0, 0, 0, 0, 1, 1, .82)], [new THREE.TorusGeometry(.258, .012, 4, 18), '#e8e8e8', M(0, -.43, 0, Math.PI / 2, 0, 0, 1, .82, 1)]]);
     /* cabelos */
     const cap = (o) => [S(.114, 16, 8, 0, TAU, 0, Math.PI * (o || .52)), 0, M(0, .116, -.008, -.18, 0, 0, .98, 1.05, 1.06)];
     const fringe = [0, 1, 2, 3].map(k => [S(.04, 6, 4), 0, M(-.05 + k * .033, .19 - Math.abs(k - 1.5) * .006, .075, -.6, 0, (k - 1.5) * .25, 1.1, .5, .8)]);
@@ -170,7 +174,7 @@ const SniperPeople = (function () {
   /* ── catálogo de peças: geometria, material, articulação e de onde vem a cor ── */
   const PARTS = [
     ['pelvis', 'pelvis', 'cloth', 'pants'], ['belt', 'belt', 'cloth', 'belt', 1], ['torso', 'torso', 'cloth', 'shirt'], ['neck', 'neck', 'skin', 'skin'], ['head', 'head', 'skin', 'skin'],
-    ['eyes', 'eyes', 'eye', 'eyeW'], ['pupils', 'pupils', 'eye', 'eyeC'], ['brows', 'brows', 'hair', 'hair'], ['mouth', 'mouth', 'dark', 'lip'],
+    ['eyes', 'eyes', 'eye', 'eyeW'], ['pupils', 'pupils', 'eye', 'eyeC'], ['lids', 'lids', 'skin', 'skin'], ['brows', 'brows', 'hair', 'hair'], ['mouth', 'mouth', 'dark', 'lip'],
     ['uarmL', 'uarm', 'cloth', 'sleeveC'], ['uarmR', 'uarm', 'cloth', 'sleeveC'], ['farmL', 'farm', 'skin', 'farmC'], ['farmR', 'farm', 'skin', 'farmC'], ['handL', 'handL', 'skin', 'handC'], ['handR', 'hand', 'skin', 'handC'],
     ['thighL', 'thigh', 'cloth', 'pants'], ['thighR', 'thigh', 'cloth', 'pants'], ['shinL', 'shin', 'cloth', 'shinC'], ['shinR', 'shin', 'cloth', 'shinC'], ['shoeL', 'shoe', 'shoe', 'shoes'], ['shoeR', 'shoe', 'shoe', 'shoes'],
   ];
@@ -184,6 +188,7 @@ const SniperPeople = (function () {
     band: { red: 'armband' },
     prop: { phone: 'p_phone', cup: 'p_cup', ice: 'p_ice', radio: 'p_radio', case: 'p_case', light: 'p_light', balloon: 'p_balloon', guitar: 'p_guitar', bino: 'p_bino', broom: 'p_broom' },
     gun: { rifle: 'p_rifle' },
+    skirt: { a: 'skirt' },
   };
 
   /* ── materiais ── */
@@ -223,6 +228,11 @@ const SniperPeople = (function () {
     PARTS.forEach(([k, g, mt]) => mk(k, G[g], MT[mt], cap));
     Object.entries(OPT).forEach(([grp, v]) => Object.entries(v).forEach(([name, g]) => mk(grp + ':' + name, G[g], grp === 'prop' ? MT.prop : grp === 'gun' ? MT.gun : grp === 'hair' || grp === 'face' ? MT.hair : grp === 'glasses' ? MT.gloss : MT.cloth, grp === 'band' ? cap * 2 : cap)));
     const dartM = mk('dart', G.dart, MT.prop, cap * 3);
+    /* sombra de contacto debaixo de cada pessoa (à noite e com o céu nublado o sol quase não faz sombra e a gente parecia a flutuar) */
+    const blobTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 2, 32, 32, 31); g.addColorStop(0, 'rgba(0,0,0,.75)'); g.addColorStop(.55, 'rgba(0,0,0,.35)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); return t; })();
+    const blobG = new THREE.PlaneGeometry(1, 1); blobG.rotateX(-Math.PI / 2);
+    const blobM = new THREE.InstancedMesh(blobG, new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false, opacity: .55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -6 }), cap);
+    blobM.instanceMatrix.setUsage(THREE.DynamicDrawUsage); blobM.frustumCulled = false; blobM.renderOrder = 1; blobM.count = 0; scene.add(blobM); meshes.blob = blobM;
     const zero = new THREE.Matrix4().makeScale(0, 0, 0);
     const people = [];
     const col = new THREE.Color();
@@ -230,6 +240,7 @@ const SniperPeople = (function () {
     function add(P) {
       P.slots = {}; P.ix = people.length; people.push(P);
       PARTS.forEach(([k]) => { const m = meshes[k]; P.slots[k] = m.count++; });
+      P.slots.blob = meshes.blob.count++;
       Object.keys(OPT).forEach(grp => { let v = P.look[grp]; if (grp === 'hair' && P.look.hat && meshes['hair:' + v + '_h']) v += '_h'; if (v && meshes[grp + ':' + v]) { const m = meshes[grp + ':' + v]; P.slots[grp] = [m, m.count++]; if (grp === 'band') P.slots.band2 = [m, m.count++]; } });
       paint(P);
       return P;
@@ -239,7 +250,7 @@ const SniperPeople = (function () {
       const cs = { pants: L.pants, belt: L.belt || '#2a2420', shirt: L.shirt, skin: L.skin, eyeW: '#f4f1ea', eyeC: L.eyeC || '#4a3220', hair: L.hairC, lip: '#8a3a3a',
         sleeveC: L.shirt, farmC: L.long ? L.shirt : L.skin, handC: L.gloves || L.skin, shinC: L.shorts ? L.skin : L.pants, shoes: L.shoes || '#2b2622' };
       PARTS.forEach(([k, , , ck]) => { col.set(cs[ck] || '#ffffff'); meshes[k].setColorAt(P.slots[k], col); });
-      Object.keys(OPT).forEach(grp => { const s = P.slots[grp]; if (!s) return; const c = grp === 'gun' ? '#ffffff' : grp === 'band' ? (L.bandC || '#d8302a') : L[grp + 'C'] || (grp === 'hair' || grp === 'face' ? L.hairC : grp === 'glasses' ? '#15171c' : '#ffffff'); col.set(c); s[0].setColorAt(s[1], col); if (grp === 'band') s[0].setColorAt(P.slots.band2[1], col); });
+      Object.keys(OPT).forEach(grp => { const s = P.slots[grp]; if (!s) return; const c = grp === 'gun' ? '#ffffff' : grp === 'band' ? (L.bandC || '#d8302a') : L[grp + 'C'] || (grp === 'hair' || grp === 'face' ? L.hairC : grp === 'glasses' ? '#15171c' : grp === 'skirt' ? L.pants : '#ffffff'); col.set(c); s[0].setColorAt(s[1], col); if (grp === 'band') s[0].setColorAt(P.slots.band2[1], col); });
       Object.values(meshes).forEach(m => { if (m.instanceColor) m.instanceColor.needsUpdate = true; });
     }
 
@@ -260,16 +271,18 @@ const SniperPeople = (function () {
 
     /* pose → matrizes de todas as peças; guarda as articulações (caixas de colisão) */
     function pose(P, Q) {
-      const s = P.s || 1, L = P.look, bd = L.build || 1;
+      const s = P.s || 1, L = P.look, bd = L.build || 1, fem = L.fem ? 1 : 0;
       _e.set(0, P.yaw, 0); _q.setFromEuler(_e); _p.set(P.x, P.y + (Q.lift || 0) * s, P.z); _s.set(s, s, s); J.root.compose(_p, _q, _s);
       /* deitar: roda à volta dos pés (cai para o lado ou de costas) */
       if (Q.rollZ || Q.rollX) loc(J.root, J.root, 0, 0, 0, Q.rollX || 0, 0, Q.rollZ || 0, 'XYZ');
       const hipY = .93 - (Q.drop || 0) + (Q.bob || 0);
       loc(J.hip, J.root, Q.sway || 0, hipY, Q.hipZ || 0, Q.lean || 0, Q.twist || 0, Q.side || 0, 'YXZ');
-      put(P, 'pelvis', leafS(J.hip, bd, 1, bd));
-      put(P, 'belt', leafS(J.hip, bd, 1, bd));
+      /* corpo feminino: ancas um pouco mais largas, ombros e cintura mais estreitos */
+      put(P, 'pelvis', leafS(J.hip, bd * (1 + fem * .07), 1, bd));
+      put(P, 'belt', leafS(J.hip, bd * (1 + fem * .04), 1, bd));
+      if (P.slots.skirt) { const fa = ((Q.lHip || 0) + (Q.rHip || 0)) / 2, sp = Math.abs((Q.lHip || 0) - (Q.rHip || 0)); _m.compose(_p.set(0, 0, 0), _q.setFromEuler(_e.set(-clamp(fa, -.4, 1.6) * .62, 0, 0)), _s.set(bd * (1 + fem * .05), 1 - Math.min(.25, Math.max(0, fa) * .12), bd * (1 + sp * .45 + Math.max(0, fa) * .25))); J.tmp.multiplyMatrices(J.hip, _m); putOpt(P, 'skirt', J.tmp); }
       loc(J.spine, J.hip, 0, .06, 0, Q.spine || 0, Q.spineY || 0, Q.spineZ || 0, 'YXZ');
-      const bw = bd * (1 + (Q.breath || 0) * .03), bdp = bd * (L.belly || 1) * (1 + (Q.breath || 0) * .05);
+      const bw = bd * (1 + (Q.breath || 0) * .03) * (1 - fem * .07), bdp = bd * (L.belly || 1) * (1 + (Q.breath || 0) * .05) * (1 - fem * .04);
       put(P, 'torso', leafS(J.spine, bw, 1, bdp));
       putOpt(P, 'over', J.leaf);
       loc(J.neck, J.spine, 0, .49, .005, Q.neckP || 0, 0, 0);
@@ -277,8 +290,10 @@ const SniperPeople = (function () {
       loc(J.head, J.neck, 0, .08, 0, Q.headP || 0, Q.headY || 0, Q.headR || 0, 'YXZ');
       put(P, 'head', J.head); putOpt(P, 'hair', J.head); putOpt(P, 'face', J.head); putOpt(P, 'glasses', J.head);
       if (!P.hatOff) putOpt(P, 'hat', J.head); else { const s2 = P.slots.hat; if (s2) s2[0].setMatrixAt(s2[1], zero); }
-      const eo = clamp(Q.eyes == null ? 1 : Q.eyes, .08, 1);
-      _m.compose(_p.set(0, .118 * (1 - eo), 0), _q.identity(), _s.set(1, eo, 1)); J.tmp.multiplyMatrices(J.head, _m); put(P, 'eyes', J.tmp); put(P, 'pupils', eo < .3 ? zero : J.tmp);
+      /* olhos abertos; a pálpebra desce por cima (antes o olho achatava e parecia uma risca) */
+      const eo = clamp(Q.eyes == null ? 1 : Q.eyes, 0, 1.2), lk = clamp(1 - eo, 0, 1);
+      put(P, 'eyes', J.head); put(P, 'pupils', J.head);
+      if (lk < .02) put(P, 'lids', zero); else { _m.compose(_p.set(0, .118 + .0172 * (1 - lk), 0), _q.identity(), _s.set(1, lk + .02, 1)); J.tmp.multiplyMatrices(J.head, _m); put(P, 'lids', J.tmp); }
       put(P, 'brows', J.head);
       const yo = Q.yawn || 0; _m.compose(_p.set(0, -.058 * yo * 3.5, 0), _q.identity(), _s.set(1 + yo * .2, 1 + yo * 3.5, 1)); J.tmp.multiplyMatrices(J.head, _m); put(P, 'mouth', J.tmp);
       /* espingarda: ao peito, às costas ou a apontar → as mãos vão ao punho e ao guarda-mão */
@@ -293,7 +308,7 @@ const SniperPeople = (function () {
       }
       /* braços: flexão (x) e abdução (z); cotovelo dobra para a frente — ou IK para um alvo */
       const arm = (side, sh, el, ha, kU, kF, kH, f, ab, tw, eb, wr, tgt, pole, IK) => {
-        const sx = side * .185 * bd;
+        const sx = side * .185 * bd * (1 - fem * .08);
         if (tgt) { ik2(sx, .44, 0, tgt[0], tgt[1], tgt[2], pole[0], pole[1], pole[2], IK); _p.set(sx, .44, 0); _s.set(1, 1, 1); _m.compose(_p, IK.q, _s); J[sh].multiplyMatrices(J.spine, _m); eb = IK.eb; }
         else loc(J[sh], J.spine, sx, .44, 0, -f, tw * side, side * ab, 'ZYX');
         put(P, kU, J[sh]);
@@ -309,7 +324,7 @@ const SniperPeople = (function () {
       else putOpt(P, 'prop', J.haR);
       /* pernas: anca (x), abdução (z), joelho dobra para trás, pé compensa */
       const leg = (side, hp, kn, an, kT, kS, kF, f, ab, kb, fa) => {
-        loc(J[hp], J.hip, side * .092, -.03, 0, -f, 0, side * ab, 'ZYX');
+        loc(J[hp], J.hip, side * (.092 + fem * .008), -.03, 0, -f, 0, side * ab, 'ZYX');
         put(P, kT, J[hp]);
         loc(J[kn], J[hp], 0, -.43, 0, kb, 0, 0);
         put(P, kS, J[kn]);
@@ -324,11 +339,15 @@ const SniperPeople = (function () {
       wp('head', J.head, 0, .1, .01); wp('hat', J.head, 0, .2, 0); wp('neck', J.neck); wp('hip', J.hip); wp('chest', J.spine, 0, .3, 0);
       wp('shL', J.shL); wp('shR', J.shR); wp('elL', J.elL); wp('elR', J.elR); wp('haL', J.haL, 0, -.05, 0); wp('haR', J.haR, 0, -.05, 0);
       wp('knL', J.knL); wp('knR', J.knR); wp('anL', J.anL); wp('anR', J.anR); wp('hpL', J.hpL); wp('hpR', J.hpR);
+      /* sombra de contacto: por baixo da anca, mais comprida se estiver deitado; quem vai sentado num veículo não tem */
+      if (Q.noBlob) meshes.blob.setMatrixAt(P.slots.blob, zero);
+      else { const hx = W.hip.x, hz = W.hip.z, lying = (Q.rollZ || Q.rollX) ? 1 : 0, sz = (.62 + lying * .5) * s, a = P.yaw + (Q.rollZ ? Math.PI / 2 : 0); _q.setFromEuler(_e.set(0, a, 0)); _m.compose(_p.set(hx, P.y + .04, hz), _q, _s.set(sz * (lying ? .75 : 1), 1, sz * (lying ? 2 : 1))); meshes.blob.setMatrixAt(P.slots.blob, _m); }
       /* dardos espetados acompanham a peça onde acertaram */
       if (P.darts) P.darts.forEach(d => { const base = J[d.j] || J.spine; _m.compose(_p.set(d.lx, d.ly, d.lz), _q.setFromEuler(_e.set(d.rx, d.ry, d.rz)), _s.set(1, 1, 1)); J.tmp.multiplyMatrices(base, _m); dartM.setMatrixAt(d.slot, J.tmp); });
     }
     function hide(P) {
       PARTS.forEach(([k]) => meshes[k].setMatrixAt(P.slots[k], zero));
+      meshes.blob.setMatrixAt(P.slots.blob, zero);
       Object.keys(OPT).forEach(g => putOpt(P, g, zero));
       if (P.slots.band2) P.slots.band2[0].setMatrixAt(P.slots.band2[1], zero);
       if (P.darts) P.darts.forEach(d => dartM.setMatrixAt(d.slot, zero));
@@ -381,9 +400,9 @@ const SniperPeople = (function () {
   }
   /* atividades em pé (sobrepõem-se ao idle) */
   const ACT = {
-    talk(Q, t, s) { Q.rSh = .35 + Math.sin(t * 2.3 + s) * .25; Q.rEl = 1 + Math.sin(t * 3.1 + s) * .35; Q.rTw = -.3; Q.lSh = .15 + Math.max(0, Math.sin(t * 1.7 + s * 2)) * .4; Q.lEl = .7; Q.headR = Math.sin(t * 1.3 + s) * .06; Q.headP = Math.sin(t * 2.7 + s) * .05; },
+    talk(Q, t, s) { Q.rSh = .35 + Math.sin(t * 2.3 + s) * .25; Q.rEl = 1 + Math.sin(t * 3.1 + s) * .35; Q.rTw = -.3; Q.lSh = .15 + Math.max(0, Math.sin(t * 1.7 + s * 2)) * .4; Q.lEl = .7; Q.headR = Math.sin(t * 1.3 + s) * .06; Q.headP = Math.sin(t * 2.7 + s) * .05; Q.yawn = .05 + Math.abs(Math.sin(t * 8.3 + s)) * .14 * (Math.sin(t * .9 + s) > -.3 ? 1 : 0); },
     listen(Q, t, s) { Q.lSh = .1; Q.lEl = .25; Q.headP = .05 + Math.max(0, Math.sin(t * .9 + s)) * .12 * Math.max(0, Math.sin(t * 6)); },
-    phone(Q, t, s) { Q.rSh = .35; Q.rAb = .55; Q.rEl = 2.35; Q.rTw = -.5; Q.headR = .12; Q.lSh = .1 + Math.max(0, Math.sin(t * 1.5 + s)) * .3; Q.lEl = .9; Q.headY *= .3; },
+    phone(Q, t, s) { Q.rSh = .35; Q.rAb = .55; Q.rEl = 2.35; Q.rTw = -.5; Q.headR = .12; Q.lSh = .1 + Math.max(0, Math.sin(t * 1.5 + s)) * .3; Q.lEl = .9; Q.headY *= .3; Q.yawn = Math.sin(t * .7 + s) > 0 ? .04 + Math.abs(Math.sin(t * 9 + s)) * .12 : 0; },
     cup(Q, t, s) { const sip = Math.max(0, Math.sin(t * .5 + s)) > .93 ? 1 : 0, k = Q._cup = lerp(Q._cup || 0, sip, .1); Q.rSh = .55 + k * .5; Q.rEl = 1.5 + k * .6; Q.rTw = -.2; Q.headP = -k * .25; },
     ice(Q, t, s) { const lick = Math.max(0, Math.sin(t * .8 + s)); Q.rSh = .6 + lick * .25; Q.rEl = 1.6 + lick * .4; Q.rTw = -.25; Q.headP = -lick * .1; },
     arms(Q) { Q.lSh = .55; Q.rSh = .55; Q.lEl = 2; Q.rEl = 2; Q.lAb = -.25; Q.rAb = -.25; Q.lTw = .4; Q.rTw = .4; },
@@ -392,7 +411,7 @@ const SniperPeople = (function () {
     bino(Q, t, s) { Q.lSh = 1.15; Q.rSh = 1.15; Q.lAb = -.3; Q.rAb = -.3; Q.lEl = 2.05; Q.rEl = 2.05; Q.lTw = .3; Q.rTw = .3; Q.headY = Math.sin(t * .25 + s) * .5; Q.spineY = Q.headY * .5; Q.headP = -.05; },
     radio(Q, t, s) { Q.lSh = .4; Q.lAb = .6; Q.lEl = 2.4; Q.lTw = .5; Q.headR = -.12; Q.rSh = .3 + Math.sin(t * 2 + s) * .1; Q.rEl = .9; },
     clap(Q, t, s) { const c = Math.abs(Math.sin(t * 5.5 + s)); Q.lSh = .7; Q.rSh = .7; Q.lEl = 1.25; Q.rEl = 1.25; Q.lAb = -.35 + c * .3; Q.rAb = -.35 + c * .3; Q.lTw = .5; Q.rTw = .5; Q.headP = -.08; Q.bob += Math.abs(Math.sin(t * 2.75 + s)) * .015; },
-    cheer(Q, t, s) { const c = Math.sin(t * 4 + s); Q.lSh = 2.6 + c * .25; Q.rSh = 2.6 - c * .25; Q.lAb = .25; Q.rAb = .25; Q.lEl = .3; Q.rEl = .3; Q.headP = -.2; Q.bob += Math.abs(c) * .03; },
+    cheer(Q, t, s) { const c = Math.sin(t * 4 + s); Q.lSh = 2.6 + c * .25; Q.rSh = 2.6 - c * .25; Q.lAb = .25; Q.rAb = .25; Q.lEl = .3; Q.rEl = .3; Q.headP = -.2; Q.bob += Math.abs(c) * .03; Q.yawn = .3; },
     dance(Q, t, s) {
       const b = t * 4.2 + s, k = Math.sin(b), k2 = Math.sin(b * .5);
       Q.bob = -.03 + Math.abs(k) * .06; Q.lKn = .2 + Math.max(0, k) * .35; Q.rKn = .2 + Math.max(0, -k) * .35; Q.lHip = Q.lKn * .45; Q.rHip = Q.rKn * .45;
@@ -413,6 +432,15 @@ const SniperPeople = (function () {
     balloon(Q) { Q.rSh = .9; Q.rEl = .5; Q.rTw = -.2; },
     /* ao volante: as mãos no aro (IK) e a cabeça a olhar a estrada */
     drive(Q, t, s) { const st = Math.sin(t * .7 + s) * .03; Q.ikR = [.15, .34 + st, .37]; Q.ikL = [-.15, .34 - st, .37]; Q.headY = Math.sin(t * .4 + s) * .25; Q.headP = .05; Q.spine = -.1; },
+    /* nadar de bruços (só o tronco fora de água) */
+    swim(Q, t, s) { const k = t * 2.2 + s, a = Math.sin(k); Q.lSh = 1.5 + a * .25; Q.rSh = 1.5 + a * .25; Q.lAb = .3 + Math.max(0, a) * .9; Q.rAb = .3 + Math.max(0, a) * .9; Q.lEl = .4 + Math.max(0, -a) * 1.2; Q.rEl = .4 + Math.max(0, -a) * 1.2; Q.lTw = -.6; Q.rTw = -.6; Q.headP = -.25; Q.bob += Math.sin(k * 2) * .04; Q.spine = .2; },
+    /* de joelhos a escavar (castelos de areia, bonecos de neve) */
+    dig(Q, t, s) { const k = Math.sin(t * 3.1 + s); Q.rSh = .9 + k * .45; Q.rEl = .5 + Math.max(0, -k) * .7; Q.lSh = .7 - k * .3; Q.lEl = .8; Q.lTw = .3; Q.rTw = .3; Q.headP = .45; Q.spine = .35; },
+    /* tiques de quem está parado (o jogo mistura-os por cima da pose, de vez em quando) */
+    watch(Q, t, s) { Q.lSh = .95; Q.lAb = -.1; Q.lEl = 1.9; Q.lTw = .9; Q.headP = .35; Q.headY = .18; },
+    scratch(Q, t, s) { Q.rSh = 2.5; Q.rAb = .35; Q.rEl = 2.2; Q.rTw = -.4; Q.headR = -.12; Q.headP = .1; Q.rWr = Math.sin(t * 14) * .3; },
+    stretch(Q, t, s) { Q.lSh = 2.9; Q.rSh = 2.9; Q.lAb = .15; Q.rAb = .15; Q.lEl = .4; Q.rEl = .4; Q.headP = -.3; Q.spine = -.12; Q.yawn = .7; Q.eyes = .35; },
+    shrug(Q, t, s) { Q.lSh = .25; Q.rSh = .25; Q.lAb = .35; Q.rAb = .35; Q.lEl = 1.4; Q.rEl = 1.4; Q.lTw = -.9; Q.rTw = -.9; Q.headR = .14; Q.neckP = -.05; },
     /* guarda de sentinela: espingarda ao peito a rodar a cabeça */
     guard(Q, t, s) { Q.headY = Math.sin(t * .45 + s) * .7; Q.spineY = Q.headY * .2; Q.gun = 'held'; },
   };
@@ -456,7 +484,9 @@ const SniperPeople = (function () {
     Q[lo + 'Sh'] = lerp(0, 2.4, f); Q[lo + 'El'] = lerp(.5, 2.1, f); Q[lo + 'Ab'] = .1; Q[lo + 'Tw'] = .5;
     Q[hi + 'Sh'] = lerp(0, .9, f); Q[hi + 'El'] = lerp(.5, 1.1, f); Q[hi + 'Ab'] = -.1 * f;
     Q.headR = side * f * .35; Q.headP = .2 * f; Q.spine = .2 * f;
-    Q.breath = Math.sin(t * 1.1) * .5 + .5; Q.bob = 0;
+    Q.breath = Math.sin(t * 1.1) * .5 + .5; Q.bob = 0; Q.yawn = f * (.06 + Q.breath * .12);
+    /* de vez em quando mexe-se a dormir (encolhe a perna de cima) */
+    const tw = Math.max(0, Math.sin(t * .23 + (P.seed || 0))) ; if (tw > .96) { const k = (tw - .96) / .04; Q[hi + 'Sh'] += k * .3; Q.lHip += k * .15; }
     if (P.sitting) { Q.drop = .45 * (1 - f); }
   }
   /* guarda a abanar um colega adormecido (agachado) */
