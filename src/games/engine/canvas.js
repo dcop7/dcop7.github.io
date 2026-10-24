@@ -13,11 +13,15 @@ const CanvasEngine = (function () {
 
     function _scale() {
       _dpr = Math.min(window.devicePixelRatio || 1, opts.maxDpr || Infinity);
+      /* tamanho de layout (clientWidth), não o retângulo transformado: se o
+         canvas nasce durante uma animação com transform: scale(), o rect vem
+         encolhido e o ResizeObserver não volta a disparar quando ela acaba */
       const rect = canvas.getBoundingClientRect();
-      canvas.width  = Math.round(rect.width  * _dpr);
-      canvas.height = Math.round(rect.height * _dpr);
+      const w = canvas.clientWidth || rect.width, h = canvas.clientHeight || rect.height;
+      canvas.width  = Math.round(w * _dpr);
+      canvas.height = Math.round(h * _dpr);
       ctx.scale(_dpr, _dpr);
-      if (_onResize) _onResize(rect.width, rect.height);
+      if (_onResize) _onResize(w, h);
     }
 
     _scale();

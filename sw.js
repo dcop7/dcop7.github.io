@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v351';
+const CACHE = 'dcop7-v352';
 const STATIC = [
   '/',
   '/index.html',
@@ -206,6 +206,9 @@ const STATIC = [
   '/js/games/drip-sim.js',
   '/js/games/drip-levels.js',
   '/js/games/game-drip.js',
+  '/js/games/doodle-sim.js',
+  '/js/games/doodle-levels.js',
+  '/js/games/game-doodle.js',
   '/favicon.svg',
   '/manifest.json',
 ];

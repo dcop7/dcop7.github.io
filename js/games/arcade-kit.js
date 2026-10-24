@@ -372,8 +372,10 @@ const ArcadeKit = (function () {
 
       /* coordenadas: evento → lógicas */
       function toLogical(e) {
-        const r = (cv || stage).getBoundingClientRect();
-        return { x: (e.clientX - r.left - sess.ox) / sess.s, y: (e.clientY - r.top - sess.oy) / sess.s };
+        const el = cv || stage, r = el.getBoundingClientRect();
+        /* o rect pode vir transformado (animação de entrada): converte para px de layout */
+        const fx = el.clientWidth ? el.clientWidth / r.width : 1, fy = el.clientHeight ? el.clientHeight / r.height : 1;
+        return { x: ((e.clientX - r.left) * fx - sess.ox) / sess.s, y: ((e.clientY - r.top) * fy - sess.oy) / sess.s };
       }
 
       function begin() {
