@@ -1479,6 +1479,7 @@ const ALL_GAMES = [
   { id:'sniper', key:'game.sniper', icon:'🦉' },
   { id:'demolition', key:'game.demolition', icon:'💥' },
   { id:'drip', key:'game.drip', icon:'💧' },
+  { id:'doodle', key:'game.doodle', icon:'✏️' },
 ];
 const DEFAULT_FAV_GAMES = ['hangman','minesweeper','wordle','chess'];
 

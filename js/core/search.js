@@ -68,6 +68,7 @@ const Search = (function () {
     { label: 'Cadeia', id: 'games/memory-chain', icon: '🔗', tags: ['memória', 'cadeia', 'sequência', 'formas', 'memory chain'] },
     { label: 'Conta Blocos', id: 'games/block-count', icon: '🧮', tags: ['contar', 'blocos', 'atenção', 'memória', '3d', 'count'] },
     { label: 'Implosão', id: 'games/demolition', icon: '💥', tags: ['demolição', 'demolir', 'explosivos', 'dinamite', 'bombas', 'prédio', 'implosão', 'física', 'puzzle', '3d', 'destruir'] },
+    { label: 'Traço a Traço', id: 'games/doodle', icon: '✏️', tags: ['desenhar', 'desenho', 'física', 'puzzle', 'linhas', 'traços', 'lápis', 'pinos', 'cordas', 'gravidade', 'estrela', 'bolota', 'criatividade'] },
     { label: 'Gota a Gota', id: 'games/drip', icon: '💧', tags: ['água', 'escavar', 'cavar', 'puzzle', 'planta', 'turbinas', 'energia', 'lava', 'física', 'líquidos', 'rebento'] },
     { label: 'Operação Soneca', id: 'games/sniper', icon: '🦉', tags: ['sniper', 'atirador', 'furtivo', 'mira', 'dardos', 'binóculos', 'espionagem', 'missões', '3d'] },
     { label: 'Fúria Divina', id: 'games/divine-wrath', icon: '☄️', tags: ['destruição', 'sandbox', 'cidade', 'meteorito', 'tsunami', 'terramoto', 'vulcão', 'tornado', 'deus', 'catástrofes', 'stress', '3d'] },
