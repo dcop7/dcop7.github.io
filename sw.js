@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v353';
+const CACHE = 'dcop7-v354';
 const STATIC = [
   '/',
   '/index.html',
@@ -67,6 +67,7 @@ const STATIC = [
   '/js/explorer/explorer-sky.js',
   '/css/views/explain.css',
   '/css/views/sky.css',
+  '/css/views/portugal.css',
   '/js/explorer/ocorrencias.js',
   '/js/explorer/eventos.js',
   '/js/pages/noticias.js',
