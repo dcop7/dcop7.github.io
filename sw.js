@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v352';
+const CACHE = 'dcop7-v353';
 const STATIC = [
   '/',
   '/index.html',
@@ -62,6 +62,11 @@ const STATIC = [
   '/js/explorer/explorer-timeline-interactive.js',
   '/js/explorer/explore-kb.js',
   '/js/explorer/explorer-data.js',
+  '/js/explorer/explorer-explain.js',
+  '/js/explorer/sky-astro.js',
+  '/js/explorer/explorer-sky.js',
+  '/css/views/explain.css',
+  '/css/views/sky.css',
   '/js/explorer/ocorrencias.js',
   '/js/explorer/eventos.js',
   '/js/pages/noticias.js',
@@ -109,6 +114,9 @@ const STATIC = [
   '/data/photo/read.json',
   '/data/photo/colour.json',
   '/js/pages/humor.js',
+  '/js/pages/hoje.js',
+  '/js/core/daily.js',
+  '/css/views/hoje.css',
   '/js/pages/cheatsheets.js',
   /* Quiz */
   '/js/quiz/quiz-engine.js',

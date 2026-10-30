@@ -78,7 +78,8 @@ const Lazy = (function () {
     tools:       ['js/pages/dice3d.js', 'js/pages/tools.js'],
     links:       ['js/pages/links-page.js'],
     visual:      ['js/pages/visual.js'],
-    humor:       ['js/pages/humor.js'],
+    humor:       ['js/core/daily.js', 'js/pages/humor.js'],
+    hoje:        ['js/core/daily.js', 'src/games/engine/storage.js', 'js/games/game-progress.js', 'js/pages/hoje.js'],
     cheatsheets: ['js/pages/cheatsheets.js'],
     photography: [
       'js/pages/photo-illus.js',
@@ -103,6 +104,9 @@ const Lazy = (function () {
       'js/explorer/explore-kb.js',
       'js/explorer/explorer-timeline.js',
       'js/explorer/explorer-data.js',
+      'js/explorer/explorer-explain.js',
+      'js/explorer/sky-astro.js',
+      'js/explorer/explorer-sky.js',
     ],
     ocorrencias: ['js/explorer/ocorrencias.js'],
     eventos:     ['js/explorer/eventos.js'],
@@ -125,7 +129,7 @@ const Lazy = (function () {
      home (rota de entrada) · features (traz os `ph-*` de estado
      vazio e o modal partilhado, usados por meia dúzia de secções). */
   const CSS = {
-    explorer:    ['css/views/explorer.css', 'css/views/explore-kb.css', 'css/views/worlddata.css', 'css/views/explorer-body.css'],
+    explorer:    ['css/views/explorer.css', 'css/views/explore-kb.css', 'css/views/worlddata.css', 'css/views/explorer-body.css', 'css/views/explain.css', 'css/views/sky.css'],
     ocorrencias: ['css/views/ocorrencias.css'],
     eventos:     ['css/views/eventos.css'],
     noticias:    ['css/views/noticias.css', 'css/views/noticias-destaques.css'],
@@ -134,6 +138,7 @@ const Lazy = (function () {
     oss:         ['css/views/oss.css'],
     discovery:   ['css/views/discovery.css'],
     quiz:        ['css/views/quiz.css'],
+    hoje:        ['css/views/hoje.css'],
     games:       ['css/views/games.css'],
     /* games.css também define o lançador de dados (.dice-*), que vive
        nas Ferramentas — não é engano. */
