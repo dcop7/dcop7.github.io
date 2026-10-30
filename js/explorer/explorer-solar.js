@@ -266,8 +266,11 @@ const SolarExplorer = (function () {
   let _camFocusZT = 0;
 
   /* Animation */
-  let _speed   = 1;
+  let _speed   = 1;          /* dias simulados por segundo */
   let _paused  = false;
+  let _simT    = Date.now();  /* data simulada (ms) — arranca nas posições reais de hoje */
+  let _lastFrame = 0;
+  let _follow  = null;        /* {i,x,z} — última posição do planeta seguido */
   let _orbitLines    = [];
   let _orbitsVisible = true;
   let _moons         = [];     /* clickable moon meshes: {mesh, planetIdx, angle, dist, speed, color, data} */
@@ -283,6 +286,8 @@ const SolarExplorer = (function () {
   let _satellites    = [];     /* Earth satellites: {mesh, data, angle, dist, inc, speed} */
   let _glowTex       = null;   /* shared soft radial-glow texture (coma, etc.) */
   let _sunCorona     = null;
+  let _sunHalo       = null;
+  let _kuiper        = null;
   let _maxAniso      = 8;       /* GPU max anisotropy → sharper planet textures */
 
   /* Earth day/night: blend day + night (city lights) textures by the angle to
@@ -358,10 +363,19 @@ const SolarExplorer = (function () {
           <div class="ex-loading-spinner"></div>
           <div class="ex-solar-loading-txt">A inicializar Sistema Solar 3D…</div>
         </div>
+        <nav class="ss-nav" id="ss-nav" aria-label="Corpos do Sistema Solar">
+          <button data-body="sun" style="--c:#ffb340"><i></i>Sol</button>
+          ${PLANETS.map((p, i) => `<button data-body="${i}" style="--c:${p.color}"><i></i>${p.name}</button>`).join('')}
+        </nav>
+        <div class="ss-date" id="ss-date">
+          <span class="ss-date-lbl">Posições a</span>
+          <b id="ss-date-val">—</b>
+          <button id="ss-today" hidden>Hoje</button>
+        </div>
         <div class="ex-solar-controls">
           <button class="ex-solar-btn" id="ss-slower" title="Mais lento">⏪</button>
           <button class="ex-solar-btn" id="ss-pause"  title="Pausar/Continuar">⏸</button>
-          <span  class="ex-solar-speed" id="ss-speed">1×</span>
+          <span  class="ex-solar-speed" id="ss-speed">1 dia/s</span>
           <button class="ex-solar-btn" id="ss-faster" title="Mais rápido">⏩</button>
           <button class="ex-solar-btn" id="ss-reset"  title="Repor">↺</button>
           <div class="ex-solar-divider"></div>
@@ -383,7 +397,7 @@ const SolarExplorer = (function () {
           </div>
           <div class="ex-solar-panel-body" id="ss-panel-body"></div>
         </div>
-        <div class="ex-solar-hint" id="ss-hint">Selecciona um corpo celeste para explorar · Arrasta para rodar · Scroll para zoom</div>
+        <div class="ex-solar-hint" id="ss-hint">Escolhe um planeta em cima ou clica num corpo · Arrasta para rodar · Roda do rato para aproximar</div>
         <div class="ex-solar-credit">Texturas: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · CC BY 4.0</div>
       </div>`;
 
@@ -452,13 +466,9 @@ const SolarExplorer = (function () {
       _scene.background = tex;
     }, undefined, () => {});
 
-    /* Starfield */
-    const starCount = Math.round(5000 * _q);
-    const starPos   = new Float32Array(starCount * 3);
-    for (let i = 0; i < starCount * 3; i++) starPos[i] = (Math.random() - 0.5) * 2000;
-    const starGeo = new THREE.BufferGeometry();
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    _scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, sizeAttenuation: true })));
+    /* (A antiga nuvem de 5000 pontos aleatórios saiu: à volta da câmara
+       tornava-se granulado quadrado por cima do panorama real.) */
+    _scene.backgroundIntensity = 0.75;
 
     /* Lighting — neutral mid-ambient + non-decaying point sun so outer planets stay legible */
     _scene.add(new THREE.AmbientLight(0x404050, 1.4));
@@ -480,10 +490,13 @@ const SolarExplorer = (function () {
     _sunMesh = new THREE.Mesh(sunGeo, sunMat);
     _scene.add(_sunMesh);
 
-    /* Sun glow (additive sprite) */
-    const glowGeo = new THREE.SphereGeometry(12, 32, 32);
-    const glowMat = new THREE.MeshBasicMaterial({ color: 0xff9900, transparent: true, opacity: 0.15, side: THREE.FrontSide });
-    _scene.add(new THREE.Mesh(glowGeo, glowMat));
+    /* Brilho do Sol: dois sprites aditivos (halo quente largo + núcleo claro) */
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xff8a1f, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
+    halo.scale.setScalar(70);
+    const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0xfff1c4, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false }));
+    core.scale.setScalar(30);
+    _scene.add(halo); _scene.add(core);
+    _sunHalo = halo;
 
     /* Orbit lines */
     const orbitMat = new THREE.LineBasicMaterial({ color: 0x334466, transparent: true, opacity: 0.4 });
@@ -637,39 +650,49 @@ const SolarExplorer = (function () {
     const mars = PLANETS.find(p => p.id === 'mars');
     const jup  = PLANETS.find(p => p.id === 'jupiter');
     if (!mars || !jup) return;
-    const rMin = mars.orbitR + 5, rMax = jup.orbitR - 6;
-    const N = Math.round(2800 * _q);
-    const palette = [
-      [0.60, 0.56, 0.48], [0.52, 0.47, 0.40], [0.70, 0.64, 0.54],
-      [0.45, 0.42, 0.40], [0.66, 0.58, 0.46],
-    ];
-    /* Real 3D rocks instead of flat square points: a single chunky low-poly
-       geometry instanced N times with per-rock position, rotation, non-uniform
-       scale and a greyish-brown tint. Far more believable than dots. */
-    const geo = new THREE.DodecahedronGeometry(1, 0);
-    const mat = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, flatShading: true });
-    const mesh = new THREE.InstancedMesh(geo, mat, N);
-    const dummy = new THREE.Object3D();
-    const color = new THREE.Color();
-    for (let i = 0; i < N; i++) {
-      const a = Math.random() * Math.PI * 2;
-      /* Bias toward the middle of the belt (denser core, sparse edges). */
-      const t = (Math.random() + Math.random()) / 2;
-      const r = rMin + t * (rMax - rMin);
-      const spread = 2 + (r - rMin) / (rMax - rMin) * 3;
-      dummy.position.set(Math.cos(a) * r, (Math.random() - 0.5) * spread, Math.sin(a) * r);
-      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-      const s = 0.28 + Math.pow(Math.random(), 2.2) * 1.0;        /* mostly small, a few larger */
-      dummy.scale.set(s * (0.7 + Math.random() * 0.6), s * (0.7 + Math.random() * 0.6), s * (0.7 + Math.random() * 0.6));
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
-      const c = palette[(Math.random() * palette.length) | 0];
-      color.setRGB(c[0], c[1], c[2]); mesh.setColorAt(i, color);
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    _beltPoints = mesh;
+    /* A cintura real é quase vazia: milhões de corpos, mas separados por
+       milhões de km. Vista de fora lê-se como uma poeira ténue — por isso
+       pontos pequenos e suaves (não pedregulhos), mais densos no meio e
+       com as lacunas de Kirkwood como faixas mais pobres. */
+    _beltPoints = _dustRing(mars.orbitR + 6, jup.orbitR - 8, Math.round(9000 * _q), 3.5, [[0.78, 0.72, 0.62], [0.62, 0.58, 0.52], [0.86, 0.8, 0.7]], 0.6, 0.6, true);
     _scene.add(_beltPoints);
+    /* Cintura de Kuiper — para lá de Neptuno: gelada, larga e ainda mais ténue */
+    const nep = PLANETS.find(p => p.id === 'neptune');
+    _kuiper = _dustRing(nep.orbitR + 18, nep.orbitR + 75, Math.round(7000 * _q), 14, [[0.62, 0.72, 0.86], [0.55, 0.62, 0.74], [0.75, 0.8, 0.9]], 1.1, 0.45, false);
+    _scene.add(_kuiper);
+  }
+
+  function _dustRing(rMin, rMax, N, thick, palette, size, opacity, kirkwood) {
+    const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+    let n = 0;
+    while (n < N) {
+      const t = (Math.random() + Math.random() + Math.random()) / 3;      /* núcleo mais denso */
+      if (kirkwood && ((t > 0.27 && t < 0.31) || (t > 0.58 && t < 0.61)) && Math.random() < 0.8) continue;
+      const r = rMin + t * (rMax - rMin), a = Math.random() * Math.PI * 2;
+      const h = (Math.random() + Math.random() - 1) * thick * (0.5 + t);
+      pos[n * 3] = Math.cos(a) * r; pos[n * 3 + 1] = h; pos[n * 3 + 2] = Math.sin(a) * r;
+      const c = palette[(Math.random() * palette.length) | 0], k = 0.55 + Math.random() * 0.45;
+      col[n * 3] = c[0] * k; col[n * 3 + 1] = c[1] * k; col[n * 3 + 2] = c[2] * k;
+      n++;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    return new THREE.Points(geo, new THREE.PointsMaterial({ size, map: _dotTexture(), vertexColors: true, transparent: true, opacity,
+      sizeAttenuation: true, depthWrite: false, alphaTest: 0.02 }));
+  }
+
+  /* ponto redondo com bordo suave (os PointsMaterial sem textura são quadrados) */
+  let _dotTex = null;
+  function _dotTexture() {
+    if (_dotTex) return _dotTex;
+    const s = 32, cv = document.createElement('canvas');
+    cv.width = cv.height = s;
+    const ctx = cv.getContext('2d'), g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.45, 'rgba(255,255,255,.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+    _dotTex = new THREE.CanvasTexture(cv);
+    return _dotTex;
   }
 
   /* Named asteroids (Ceres, Vesta…) as small clickable bodies in the belt. */
@@ -839,11 +862,11 @@ const SolarExplorer = (function () {
       const dustN = Math.round(c.tailLen * 0.9);
       const ionGeo = new THREE.BufferGeometry();
       ionGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(ionN * 3), 3));
-      const ion = new THREE.Points(ionGeo, new THREE.PointsMaterial({ color: 0x8fc4ff, size: 1.4, transparent: true, opacity: 0.6, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const ion = new THREE.Points(ionGeo, new THREE.PointsMaterial({ map: _dotTexture(), color: 0x8fc4ff, size: 1.4, transparent: true, opacity: 0.6, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
 
       const dustGeo = new THREE.BufferGeometry();
       dustGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(dustN * 3), 3));
-      const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xf3e6c8, size: 1.9, transparent: true, opacity: 0.42, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ map: _dotTexture(), color: 0xf3e6c8, size: 1.9, transparent: true, opacity: 0.42, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
 
       _scene.add(ion); _scene.add(dust);
       _comets.push({ data: c, head, coma, ion, dust, ionN, dustN, angle: c.phase, a: c.a, b: c.b, inc: c.inc, speed: c.speed, tailLen: c.tailLen });
@@ -881,21 +904,83 @@ const SolarExplorer = (function () {
   }
 
   /* ═════════════════════════════ ANIMATION ══════════════════════════ */
+  const _MS_DAY = 86400000;
+  function _syncAngles() {
+    const d = new Date(_simT);
+    PLANETS.forEach((p, i) => {
+      if (typeof SkyAstro !== 'undefined' && SkyAstro.helio) {
+        const h = SkyAstro.helio(p.id, d);
+        _angles[i] = Math.atan2(h.y, h.x);
+      } else {
+        _angles[i] = (_simT / _MS_DAY) / p.period * Math.PI * 2;
+      }
+    });
+  }
+
+  const _MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  let _dateShown = '';
+  function _updateDate() {
+    const d = new Date(_simT), txt = `${d.getDate()} ${_MESES[d.getMonth()]} ${d.getFullYear()}`;
+    if (txt === _dateShown || !_container) return;
+    _dateShown = txt;
+    const el = _container.querySelector('#ss-date-val');
+    if (el) el.textContent = txt;
+    const off = Math.abs(_simT - Date.now()) > 1.5 * _MS_DAY;
+    const btn = _container.querySelector('#ss-today');
+    if (btn) btn.hidden = !off;
+    _container.querySelector('#ss-date')?.classList.toggle('is-now', !off);
+    if (_selBody && _curTab === 'overview' && PLANETS.includes(_selBody)) _renderLive(_container);
+  }
+
+  /* distância real ao Sol e à Terra na data simulada (UA) */
+  function _liveDist(p) {
+    if (typeof SkyAstro === 'undefined' || !SkyAstro.helio) return null;
+    const d = new Date(_simT), h = SkyAstro.helio(p.id, d), e = SkyAstro.helio('earth', d);
+    const sun = Math.hypot(h.x, h.y, h.z);
+    const earth = p.id === 'earth' ? null : Math.hypot(h.x - e.x, h.y - e.y, h.z - e.z);
+    return { sun, earth };
+  }
+  function _renderLive(container) {
+    const el = container.querySelector('#ss-live');
+    const p = _selBody;
+    if (!el || !p) return;
+    const L = _liveDist(p);
+    if (!L) { el.remove(); return; }
+    const km = ua => (ua * 149.598).toLocaleString('pt-PT', { maximumFractionDigits: ua < 2 ? 1 : 0 }) + ' milhões de km';
+    const light = ua => { const m = ua * 499.005 / 60; return m < 60 ? `${Math.round(m)} min` : `${Math.floor(m / 60)} h ${Math.round(m % 60)} min`; };
+    el.innerHTML = `
+      <div class="ss-live-hd">Nesta data</div>
+      <div class="ss-live-row"><span>Distância ao Sol</span><b>${L.sun.toLocaleString('pt-PT', { maximumFractionDigits: 2 })} UA</b><small>${km(L.sun)}</small></div>
+      ${L.earth != null ? `<div class="ss-live-row"><span>Distância à Terra</span><b>${km(L.earth)}</b><small>a luz demora ${light(L.earth)}</small></div>` : ''}`;
+  }
+
   function _start() {
+    _lastFrame = 0;
     function tick() {
       _raf = requestAnimationFrame(tick);
       if (!_renderer || !_scene || !_camera) return;
 
-      /* Update planet positions (frozen under reduced-motion / pause) */
+      /* Tempo simulado: _speed dias por segundo real (parado em pausa ou
+         com movimento reduzido). As longitudes vêm dos elementos orbitais da
+         JPL (SkyAstro.helio), por isso a configuração é a verdadeira para a
+         data mostrada; as distâncias ao Sol é que estão comprimidas. */
       const animate = !_paused && !_reducedMotion();
+      const nowMs = performance.now();
+      const dt = _lastFrame ? Math.min(0.1, (nowMs - _lastFrame) / 1000) : 0;
+      _lastFrame = nowMs;
+      if (animate) _simT += dt * _speed * 86400000;
+      /* movimentos decorativos (rotação, luas, cometas) ficam limitados para
+         não estroboscopar quando a data corre a anos por segundo */
+      const _vs = Math.min(_speed, 20);
+      _syncAngles();
+      _updateDate();
       PLANETS.forEach((p, i) => {
-        if (animate) _angles[i] += 0.0003 * _speed * (365 / p.period);
         const mesh = _planetMeshes[i];
         if (mesh) {
           mesh.position.x = Math.cos(_angles[i]) * p.orbitR;
-          mesh.position.z = Math.sin(_angles[i]) * p.orbitR;
+          mesh.position.z = -Math.sin(_angles[i]) * p.orbitR;   /* sentido direto visto do norte */
           /* Spin about the planet's own (tilted) axis, preserving axial tilt. */
-          if (animate) mesh.rotateY(0.002 * _speed);
+          if (animate) mesh.rotateY(0.002 * _vs);
         }
       });
 
@@ -903,7 +988,7 @@ const SolarExplorer = (function () {
       for (const mo of _moons) {
         const pm = _planetMeshes[mo.planetIdx];
         if (!pm) continue;
-        if (animate) mo.angle += mo.speed * _speed * 0.1;
+        if (animate) mo.angle += mo.speed * _vs * 0.1;
         mo.mesh.position.set(
           pm.position.x + Math.cos(mo.angle) * mo.dist,
           pm.position.y + Math.sin(mo.angle) * mo.dist * 0.18,
@@ -927,11 +1012,13 @@ const SolarExplorer = (function () {
       }
 
       /* Asteroid belt slowly precesses (visible only when animating). */
-      if (_beltPoints && animate) _beltPoints.rotation.y += 0.00012 * _speed;
+      if (_beltPoints && animate) _beltPoints.rotation.y += 0.00012 * _vs;
+      if (_kuiper && animate) _kuiper.rotation.y += 0.00002 * _vs;
+      if (_sunHalo) _sunHalo.material.opacity = 0.5 + Math.sin(t * 0.9) * 0.06;
 
       /* Named asteroids orbit within the belt. */
       for (const as of _asteroids) {
-        if (animate) { as.angle += as.speed * _speed; as.mesh.rotateY(0.004 * _speed); }
+        if (animate) { as.angle += as.speed * _vs; as.mesh.rotateY(0.004 * _vs); }
         as.mesh.position.set(Math.cos(as.angle) * as.orbitR, Math.sin(as.angle * 1.7) * 2, Math.sin(as.angle) * as.orbitR);
       }
 
@@ -941,7 +1028,7 @@ const SolarExplorer = (function () {
         const em = _planetMeshes[ei];
         if (em) {
           for (const s of _satellites) {
-            if (animate) s.angle += s.speed * _speed;
+            if (animate) s.angle += s.speed * _vs;
             const cx = Math.cos(s.angle) * s.dist;
             const cz = Math.sin(s.angle) * s.dist;
             s.mesh.position.set(
@@ -956,7 +1043,7 @@ const SolarExplorer = (function () {
       /* Comets: glide along inclined ellipses; ion tail straight anti-sunward,
          dust tail wider and slightly fanned. Both fade with distance. */
       for (const cm of _comets) {
-        if (animate) cm.angle += cm.speed * _speed;
+        if (animate) cm.angle += cm.speed * _vs;
         const a = cm.angle;
         const hx = Math.cos(a) * cm.a;
         const hz = Math.sin(a) * cm.b;
@@ -992,6 +1079,18 @@ const SolarExplorer = (function () {
         _camThetaT += 0.0006;
       }
 
+      /* A câmara acompanha o planeta escolhido: o deslocamento do planeta é
+         somado ao foco atual e ao alvo (com um lerp simples, a anos por
+         segundo a câmara ficava para trás e acabava dentro do Sol) */
+      if (typeof _sel === 'number' && _planetMeshes[_sel]) {
+        const pp = _planetMeshes[_sel].position;
+        if (_follow && _follow.i === _sel) {
+          const dx = pp.x - _follow.x, dz = pp.z - _follow.z;
+          _camFocusX += dx; _camFocusZ += dz; _camFocusXT += dx; _camFocusZT += dz;
+        }
+        _follow = { i: _sel, x: pp.x, z: pp.z };
+      } else _follow = null;
+
       /* Lerp camera towards target */
       const lf = 0.06;
       _camDist   += (_camDistT   - _camDist)   * lf;
@@ -1017,14 +1116,14 @@ const SolarExplorer = (function () {
       el.className = 'ss-planet-label';
       el.textContent = p.name;
       el.dataset.idx = PLANETS.indexOf(p);
-      el.style.cssText = 'position:absolute;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-size:.7rem;font-family:var(--font-sans);font-weight:600;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.8);transition:color .2s,font-size .15s;z-index:5;';
+      el.style.setProperty('--c', p.color);
       viewport.appendChild(el);
       return el;
     });
     _sunLabelEl = document.createElement('div');
-    _sunLabelEl.className = 'ss-planet-label';
-    _sunLabelEl.textContent = '☀ Sol';
-    _sunLabelEl.style.cssText = 'position:absolute;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-size:.75rem;font-family:var(--font-sans);font-weight:700;color:rgba(255,215,0,.9);text-shadow:0 1px 6px rgba(255,140,0,.6);z-index:5;';
+    _sunLabelEl.className = 'ss-planet-label ss-sun-label';
+    _sunLabelEl.textContent = 'Sol';
+    _sunLabelEl.style.setProperty('--c', '#ffb340');
     viewport.appendChild(_sunLabelEl);
   }
 
@@ -1043,22 +1142,28 @@ const SolarExplorer = (function () {
       };
     };
 
-    PLANETS.forEach((p, i) => {
-      const el  = _labelEls[i];
-      const mesh = _planetMeshes[i];
+    /* etiquetas que se sobrepõem: fica a do planeta escolhido/sob o rato e
+       depois a do maior (os interiores amontoam-se na vista geral) */
+    const placed = [];
+    const order = PLANETS.map((p, i) => i).sort((a, b) =>
+      ((_sel === b || _hovered === b) - (_sel === a || _hovered === a)) || PLANETS[b].displayR - PLANETS[a].displayR);
+    order.forEach(i => {
+      const p = PLANETS[i], el = _labelEls[i], mesh = _planetMeshes[i];
       if (!el || !mesh) return;
       const sc = project(mesh.position.x, mesh.position.y + p.displayR * 1.5, mesh.position.z);
       if (sc.behind) { el.style.display = 'none'; return; }
       el.style.display = '';
       el.style.left = sc.x + 'px';
       el.style.top  = sc.y + 'px';
-      const isHov = _hovered === i;
-      el.style.color    = isHov ? p.color : 'rgba(255,255,255,.65)';
-      el.style.fontSize = isHov ? '.8rem' : '.7rem';
+      const w = p.name.length * 6.5 + 12, box = [sc.x - w / 2, sc.y - 14, sc.x + w / 2, sc.y];
+      const hit = placed.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
+      if (!hit) placed.push(box);
+      el.style.opacity = hit ? '0' : '';
+      el.classList.toggle('hov', _hovered === i || _sel === i);
     });
 
     if (_sunLabelEl && _sunMesh) {
-      const sc = project(0, 10, 0);
+      const sc = project(0, 13, 0);
       if (sc.behind) { _sunLabelEl.style.display = 'none'; }
       else {
         _sunLabelEl.style.display = '';
@@ -1252,20 +1357,29 @@ const SolarExplorer = (function () {
 
       /* Click empty: deselect */
       _sel = null; _selMoon = null; _selBody = null;
+      _markNav(container);
       container.querySelector('#ss-panel')?.classList.remove('open');
     });
   }
 
   /* ═════════════════════════════ CONTROLS ═══════════════════════════ */
   function _wireControls(container) {
-    container.querySelector('#ss-slower').onclick = () => {
-      _speed = Math.max(0.25, _speed / 2);
+    const SPEEDS = [1 / 24, 0.25, 1, 7, 30, 120, 365, 1461];
+    const step = dir => {
+      let i = SPEEDS.findIndex(v => v >= _speed - 1e-9);
+      if (i < 0) i = SPEEDS.length - 1;
+      _speed = SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, i + dir))];
       _updateSpeedLabel(container);
     };
-    container.querySelector('#ss-faster').onclick = () => {
-      _speed = Math.min(1000, _speed * 2);
-      _updateSpeedLabel(container);
-    };
+    container.querySelector('#ss-slower').onclick = () => step(-1);
+    container.querySelector('#ss-faster').onclick = () => step(1);
+    container.querySelector('#ss-today').onclick = () => { _simT = Date.now(); _dateShown = ''; };
+    container.querySelector('#ss-nav').addEventListener('click', e => {
+      const b = e.target.closest('[data-body]'); if (!b || !_scene) return;
+      if (b.dataset.body === 'sun') { _sel = 'sun'; _focusSun(); _openPanel(SUN, container); }
+      else { const i = +b.dataset.body; _sel = i; _focusPlanet(i); _openPanel(PLANETS[i], container); }
+      _markNav(container);
+    });
     container.querySelector('#ss-orbits').onclick = e => {
       _orbitsVisible = !_orbitsVisible;
       _orbitLines.forEach(l => { l.visible = _orbitsVisible; });
@@ -1279,12 +1393,13 @@ const SolarExplorer = (function () {
     container.querySelector('#ss-zoom-in').onclick  = () => { _camDistT = Math.max(20, _camDistT * 0.7); };
     container.querySelector('#ss-zoom-out').onclick = () => { _camDistT = Math.min(600, _camDistT * 1.4); };
     container.querySelector('#ss-reset').onclick = () => {
-      _angles   = PLANETS.map(() => Math.random() * Math.PI * 2);
+      _simT     = Date.now(); _dateShown = '';
       _speed    = 1;
       _camThetaT = 0.3; _camPhiT = 1.1; _camDistT = 280;
       _camFocusXT = 0; _camFocusYT = 0; _camFocusZT = 0;
       _sel = null; _selBody = null;
       container.querySelector('#ss-panel')?.classList.remove('open');
+      _markNav(container);
       _updateSpeedLabel(container);
     };
     container.querySelector('#ss-pause').onclick = e => {
@@ -1293,9 +1408,19 @@ const SolarExplorer = (function () {
     };
   }
 
+  function _markNav(container) {
+    container.querySelectorAll('#ss-nav [data-body]').forEach(b => {
+      const on = b.dataset.body === 'sun' ? _sel === 'sun' : +b.dataset.body === _sel;
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+    });
+  }
+
   function _updateSpeedLabel(container) {
     const el = container.querySelector('#ss-speed');
-    if (el) el.textContent = `${_speed}×`;
+    if (!el) return;
+    const v = _speed;
+    el.textContent = v < 1 ? `${Math.round(v * 24)} h/s` : v < 7 ? `${v} dia${v > 1 ? 's' : ''}/s` : v < 30 ? `${v / 7} sem./s`
+      : v < 365 ? `${v / 30} ${v / 30 > 1 ? 'meses' : 'mês'}/s` : `${+(v / 365).toFixed(1)} ano${v >= 730 ? 's' : ''}/s`;
   }
 
   /* ═════════════════════════════ PANEL ══════════════════════════════ */
@@ -1311,6 +1436,7 @@ const SolarExplorer = (function () {
     const closeBtn = container.querySelector('#ss-panel-close');
     if (closeBtn) closeBtn.onclick = () => {
       _sel = null; _selMoon = null; _selBody = null;
+      _markNav(container);
       const tabs = container.querySelector('#ss-panel-tabs');
       if (tabs) tabs.style.display = '';   /* restore for next planet/sun */
       container.querySelector('#ss-panel')?.classList.remove('open');
@@ -1341,6 +1467,7 @@ const SolarExplorer = (function () {
 
   function _openPanel(body, container) {
     _selMoon = null;
+    setTimeout(() => _markNav(container), 0);
     _selBody = body;
     const hint = container.querySelector('#ss-hint');
     if (hint) hint.style.display = 'none';
@@ -1401,7 +1528,7 @@ const SolarExplorer = (function () {
 
     if (_curTab === 'overview') {
       const LABELS = {
-        dist: 'Distância ao Sol', radius: 'Raio médio', mass: 'Massa',
+        dist: 'Distância média ao Sol', radius: 'Raio médio', mass: 'Massa',
         period: 'Período orbital', day: 'Duração do dia',
         temp: 'Temperatura', moons: 'Nº de luas', gravity: 'Gravidade superficial',
         atmos: 'Atmosfera', type: 'Tipo', age: 'Idade',
@@ -1416,7 +1543,9 @@ const SolarExplorer = (function () {
            <span>${v}</span>
          </div>`
       ).join('');
-      bodyEl.innerHTML = `<div class="ex-solar-overview">${rows}</div>`;
+      const live = PLANETS.includes(body) ? `<div class="ss-live" id="ss-live"></div>` : '';
+      bodyEl.innerHTML = `${live}<div class="ex-solar-overview">${rows}</div>`;
+      if (live) _renderLive(container);
 
     } else if (_curTab === 'moons') {
       if (!body.moonList?.length) {
