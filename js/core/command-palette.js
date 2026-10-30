@@ -20,6 +20,7 @@ const CommandPalette = (function () {
     { name: 'Sites Úteis',       desc: 'Bookmarks organizados',            icon: '🔗', type: 'nav', action: () => Nav.go('links') },
     { name: 'Ferramentas',       desc: 'Utilitários e dev tools',          icon: '🔧', type: 'nav', action: () => Nav.go('tools') },
     { name: 'Cheatsheets',       desc: 'Comandos e referências',           icon: '📋', type: 'nav', action: () => Nav.go('cheatsheets') },
+    { name: 'Hoje',              desc: 'Quiz, piada e jogo do dia',        icon: '☀️', type: 'nav', action: () => Nav.go('hoje') },
     { name: 'Jogos',             desc: 'Xadrez, Wordle, Uno e mais',       icon: '🎮', type: 'nav', action: () => Nav.go('games') },
     { name: 'Quizzes',           desc: 'Aprender a brincar',               icon: '🧩', type: 'nav', action: () => Nav.go('quiz') },
     { name: 'Humor',             desc: 'Piadas e adivinhas',               icon: '😂', type: 'nav', action: () => Nav.go('humor') },

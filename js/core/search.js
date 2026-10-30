@@ -19,6 +19,9 @@ const Search = (function () {
     { label: 'Terra em Tempo Real', id: 'explorer/realtime', icon: '🛰', tags: ['terra em tempo real','live earth','sismos','earthquakes','terramotos','vulcões','volcanoes','incêndios','wildfires','fires','tempestades','furacões','storms','hurricanes','nuvens','clouds','temperatura','dia/noite','tsunamis','aviões','flights','usgs','eonet','gibs','opensky'] },
     { label: 'Sistema Solar',id: 'explorer/solar',   icon: '☀', tags: ['sistema solar','solar system','planetas','planets','cometas','comets','asteroides','asteroids','satélites','iss','sol','sun','lua'] },
     { label: 'Via Láctea',   id: 'explorer/galaxy',  icon: '🌌', tags: ['via láctea','milky way','galáxia','galaxy','galaxias','constelações','constellations','estrelas','stars','nebulosas','nebulae','andrómeda','andromeda','espaço','space'] },
+    { label: 'Céu Esta Noite', id: 'explorer/sky',   icon: '🌙', tags: ['céu','ceu','céu esta noite','esta noite','tonight','sky','planetas visíveis','lua','fase da lua','moon','iss','estação espacial','passagens','chuva de estrelas','meteoros','perseidas','gemínidas','constelações','mapa do céu','observar','astronomia','pôr do sol'] },
+    { label: 'Explicações Interativas', id: 'explorer/explain', icon: '🧪', tags: ['explicações','explicacoes','interativas','juros compostos','juros','poupança','regra dos 72','euromilhões','euromilhoes','lotaria','probabilidade','epidemia','vacinas','imunidade de grupo','monty hall','portas','paradoxo do aniversário','aniversários','matemática'] },
+    { label: 'Hoje',         id: 'hoje',             icon: '☀️', tags: ['hoje','quiz do dia','quiz diário','piada do dia','jogo do dia','desafio diário','diário','today','daily'] },
   ];
 
   const GAMES = [

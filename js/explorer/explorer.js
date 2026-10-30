@@ -706,6 +706,11 @@ const ExplorerPage = (function () {
               <div class="ex-feature-card-title">${_t('Milky Way', 'Via Láctea')}</div>
               <div class="ex-feature-card-desc">${_t('Fly through our galaxy: spiral arms, the Sun, bright stars and constellations, nebulae and other galaxies.', 'Voa pela nossa galáxia: braços em espiral, o Sol, estrelas e constelações, nebulosas e outras galáxias.')}</div>
             </div>
+            <div class="ex-feature-card ex-feature-card--sky" data-tab="sky">
+              <span class="ex-feature-card-icon">🌙</span>
+              <div class="ex-feature-card-title">${_t('Tonight’s Sky', 'Céu Esta Noite')}</div>
+              <div class="ex-feature-card-desc">${_t('What you can see from where you are: planets, the Moon, the ISS passing overhead and a live star map.', 'O que dá para ver de onde estás: planetas, a Lua, a ISS a passar e um mapa do céu em tempo real.')}</div>
+            </div>
           </div>
         </div>
         <div class="ex-cat-group">
@@ -738,6 +743,11 @@ const ExplorerPage = (function () {
               <span class="ex-feature-card-icon">⏳</span>
               <div class="ex-feature-card-title">${_t('Timeline', 'Linha do Tempo')}</div>
               <div class="ex-feature-card-desc">${_t('Travel from the Big Bang to today on a single interactive timeline — searchable and filterable.', 'Viaja do Big Bang até hoje numa linha do tempo interativa única — com pesquisa e filtros.')}</div>
+            </div>
+            <div class="ex-feature-card ex-feature-card--explain" data-tab="explain">
+              <span class="ex-feature-card-icon">🧪</span>
+              <div class="ex-feature-card-title">${_t('Interactive explainers', 'Explicações Interativas')}</div>
+              <div class="ex-feature-card-desc">${_t('Compound interest, lottery odds, epidemics, Monty Hall and the birthday paradox — learn by playing with them.', 'Juros compostos, Euromilhões, epidemias, Monty Hall e o paradoxo do aniversário — aprende a mexer.')}</div>
             </div>
           </div>
         </div>
@@ -1630,7 +1640,9 @@ const ExplorerPage = (function () {
 
   /* ════════════════════════════════ DISCOVER ════════════════════════ */
   function _discoverRandom() {
-    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy', 'realtime', 'timeline'];
+    const modes = ['map', 'globe', 'portugal', 'solar', 'galaxy', 'realtime', 'timeline', 'sky', 'explain'];
+    if (typeof SkyTonight === 'undefined') modes.splice(modes.indexOf('sky'), 1);
+    if (typeof ExplainExplorer === 'undefined') modes.splice(modes.indexOf('explain'), 1);
     if (typeof PortugalExplorer === 'undefined') modes.splice(modes.indexOf('portugal'), 1);
     if (typeof MilkyWayExplorer === 'undefined') modes.splice(modes.indexOf('galaxy'), 1);
     if (typeof RealtimeEarth === 'undefined') modes.splice(modes.indexOf('realtime'), 1);
@@ -1651,6 +1663,10 @@ const ExplorerPage = (function () {
       _go('galaxy');
     } else if (mode === 'realtime') {
       _go('realtime');
+    } else if (mode === 'sky') {
+      _go('sky');
+    } else if (mode === 'explain') {
+      ExplainExplorer.discoverRandom();
     } else if (mode === 'timeline' && typeof TimelineExplorer !== 'undefined') {
       _go('timeline');
       setTimeout(() => TimelineExplorer.discoverRandom(), 500);
@@ -1692,9 +1708,11 @@ const ExplorerPage = (function () {
     ['realtime', '🛰', _t('Live Earth', 'Terra em Tempo Real')],
     ['solar', '☀', _t('Solar System', 'Sistema Solar')],
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
+    ['sky', '🌙', _t('Tonight’s Sky', 'Céu Esta Noite')],
     ['body', '🧬', _t('Human Body', 'Corpo Humano')],
     ['kb', '🧭', _t('Topics', 'Temas')],
     ['timeline', '⏳', _t('Timeline', 'Linha do Tempo')],
+    ['explain', '🧪', _t('Explainers', 'Explicações')],
     ['data', '📊', _t('World Data', 'Dados do Mundo')],
   ];
 
@@ -1758,6 +1776,8 @@ const ExplorerPage = (function () {
     if (tab !== 'timeline' && _curTab === 'timeline' && typeof TimelineExplorer !== 'undefined') TimelineExplorer.stop();
     if (tab !== 'data' && _curTab === 'data' && typeof WorldDataExplorer !== 'undefined') WorldDataExplorer.stop();
     if (tab !== 'kb' && _curTab === 'kb' && typeof ExploreKB !== 'undefined') ExploreKB.stop();
+    if (tab !== 'sky' && _curTab === 'sky' && typeof SkyTonight !== 'undefined') SkyTonight.stop();
+    if (tab !== 'explain' && _curTab === 'explain' && typeof ExplainExplorer !== 'undefined') ExplainExplorer.stop();
     /* Pause/resume the globe.gl render loop so it only runs while its tab is shown. */
     if (_globeGL) {
       try { if (tab === 'globe') _globeGL.resumeAnimation(); else _globeGL.pauseAnimation(); } catch (_) {}
@@ -1825,6 +1845,16 @@ const ExplorerPage = (function () {
         if (!sub.querySelector('.kb-wrap')) ExploreKB.mount(sub);
         else ExploreKB.resume();
       }
+    } else if (tab === 'sky') {
+      if (typeof SkyTonight !== 'undefined') {
+        if (!sub.querySelector('.sk-wrap')) SkyTonight.mount(sub);
+        else SkyTonight.resume();
+      }
+    } else if (tab === 'explain') {
+      if (typeof ExplainExplorer !== 'undefined') {
+        if (!sub.querySelector('.xp-wrap')) ExplainExplorer.mount(sub);
+        else ExplainExplorer.resume();
+      }
     }
   }
 
@@ -1866,6 +1896,8 @@ const ExplorerPage = (function () {
     if (typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     if (typeof TimelineExplorer !== 'undefined') TimelineExplorer.stop();
+    if (typeof SkyTonight !== 'undefined') SkyTonight.stop();
+    if (typeof ExplainExplorer !== 'undefined') ExplainExplorer.stop();
     _closeModal();
   });
 

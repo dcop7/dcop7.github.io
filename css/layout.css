@@ -312,6 +312,7 @@ body.light .sb-nav-item.active { background: linear-gradient(90deg, rgba(var(--r
 .sb-nav-item[data-route="links"]       { --rt: 251,146,60; }
 .sb-nav-item[data-route="tools"]       { --rt: 129,140,248; }
 .sb-nav-item[data-route="cheatsheets"] { --rt: 167,139,250; }
+.sb-nav-item[data-route="hoje"]        { --rt: 251,146,60; }
 .sb-nav-item[data-route="games"]       { --rt: 52,211,153; }
 .sb-nav-item[data-route="quiz"]        { --rt: 34,211,238; }
 .sb-nav-item[data-route="humor"]       { --rt: 250,204,21; }

@@ -386,14 +386,10 @@ const GameHost = (function () {
     if (GP) GP.registerIds(GAMES.map(g => g.id));
     const favs = favList();
 
-    /* Daily challenge: a deterministic game-of-the-day from a daily-friendly pool */
-    const dailyPool = ['wordle', 'minesweeper', 'memory', 'bomb', 'reaction', 'sudoku'].filter(id => GAMES.some(g => g.id === id));
-    let dailyGame = null, dailyDone = false;
-    if (dailyPool.length) {
-      const idx = GP ? Math.floor(GP.rng(GP.dailySeed('hub'))() * dailyPool.length) : 0;
-      dailyGame = GAMES.find(g => g.id === dailyPool[idx]);
-      dailyDone = GP ? GP.isDailyDone(dailyGame.id) : false;
-    }
+    /* Daily challenge: a deterministic game-of-the-day (same pick as the Hoje page) */
+    const dailyId = GP && GP.dailyGameId ? GP.dailyGameId(GAMES.map(g => g.id)) : null;
+    const dailyGame = dailyId ? GAMES.find(g => g.id === dailyId) : null;
+    const dailyDone = dailyGame && GP ? GP.isDailyDone(dailyGame.id) : false;
 
     hub.innerHTML = `
       <div class="page-head">

@@ -147,6 +147,14 @@ const GameProgress = (function () {
   }
   function isDailyDone(gameId) { return !!_gget('daily:' + todayKey(), {})[gameId]; }
 
+  /* Jogo do dia — um só sorteio para o hub dos Jogos e para a página Hoje,
+     senão as duas podiam anunciar jogos diferentes no mesmo dia. */
+  const DAILY_POOL = ['wordle', 'minesweeper', 'memory', 'bomb', 'reaction', 'sudoku'];
+  function dailyGameId(available) {
+    const pool = available ? DAILY_POOL.filter(id => available.includes(id)) : DAILY_POOL;
+    return pool.length ? pool[Math.floor(rng(dailySeed('hub'))() * pool.length)] : null;
+  }
+
   /* ── favoritos (até 5, só neste browser) ───────────────────────────
      Guardados por ordem de marcação em 'gp:favs'. Ids que deixaram de
      existir (jogo removido) caem fora na próxima leitura. */
@@ -291,7 +299,7 @@ const GameProgress = (function () {
     store, stats, allStats, bestScore, record,
     defineAchievements, isUnlocked, achievementCount, totalAchievements, unlockedMap,
     todayKey, dailySeed, rng, hashStr, streak,
-    isDailyDone, registerIds, distinctPlayedCount, totalPlays,
+    isDailyDone, dailyGameId, registerIds, distinctPlayedCount, totalPlays,
     favorites, isFavorite, toggleFavorite, MAX_FAVS,
     toast, badgesHTML, openStats,
   };

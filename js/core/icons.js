@@ -84,6 +84,13 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="m7.4 8.2 2.4 2.2-2.4 2.2" stroke="C2"/>
       <path d="M11.8 12.6h4.6M7.6 16.6h8.8" stroke="G" opacity=".85"/>`, { sx: 16.6, sy: 5.4, ss: .75 }),
 
+    /* sol a nascer sobre a linha do dia — o encontro diário (grupo Diversão) */
+    hoje: duo('hoje', '#fb923c', '#fdba74', `
+      <path d="M3 17.6h18" stroke="G" stroke-width="1.7"/>
+      <path d="M6.6 17.6a5.4 5.4 0 0 1 10.8 0z" fill="G" fill-opacity=".16" stroke="G"/>
+      <path d="M12 6.2v2.1M5.2 9.4l1.5 1.5M18.8 9.4l-1.5 1.5M2.8 14.2h1.9M19.3 14.2h1.9" stroke="C2"/>
+      <path d="M8.4 21h7.2" stroke="C2" opacity=".7"/>`),
+
     games: duo('games', '#fb923c', '#fdba74', `
       <rect x="2.2" y="6.4" width="19.6" height="11.6" rx="4.4" fill="G" fill-opacity=".14" stroke="G"/>
       <path d="M7.6 10.2v4M5.6 12.2h4" stroke="G" stroke-width="1.7"/>

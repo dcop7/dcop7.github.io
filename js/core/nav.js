@@ -96,6 +96,7 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
           <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${navIcon('cheatsheets')}<span>${TN('nav.cheatsheets')}</span></a>
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
+          <a class="sb-nav-item" data-route="hoje"         href="#hoje">${navIcon('hoje')}<span>${TN('nav.hoje')}</span></a>
           <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
           <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
@@ -176,7 +177,7 @@ const Nav = (function () {
   const VIEW_OF = {
     cheatsheets: 'view-cheatsheets', games: 'view-games', links: 'view-links',
     tools: 'view-tools', visual: 'view-visual', photography: 'view-photography',
-    settings: 'view-settings', quiz: 'view-quiz', humor: 'view-humor',
+    settings: 'view-settings', quiz: 'view-quiz', humor: 'view-humor', hoje: 'view-hoje',
     explorer: 'view-explorer', ocorrencias: 'view-ocorrencias',
     eventos: 'view-eventos', cidadao: 'view-cidadao', f1: 'view-f1',
     oss: 'view-oss', discovery: 'view-discovery', search: 'view-search',
@@ -258,6 +259,9 @@ const Nav = (function () {
     } else if (page === 'quiz') {
       document.getElementById('view-quiz')?.classList.add('active');
       typeof QuizPage !== 'undefined' && QuizPage.show(sub || null);
+    } else if (page === 'hoje') {
+      document.getElementById('view-hoje')?.classList.add('active');
+      typeof HojePage !== 'undefined' && HojePage.show();
     } else if (page === 'humor') {
       document.getElementById('view-humor')?.classList.add('active');
       typeof HumorPage !== 'undefined' && HumorPage.show();
@@ -349,7 +353,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','hoje','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
       if (el) el.textContent = TN(`nav.${r.replace(/-/g, '')}`);

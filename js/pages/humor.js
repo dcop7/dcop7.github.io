@@ -222,12 +222,9 @@ const HumorPage = (function () {
     const idx = await loadIndex();
     const el = root.querySelector('#hm-daily-card');
     if (!idx.length || !el) return;
-    const d = new Date();
-    const seed = d.getFullYear() * 1000 + Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
-    const cat = idx[seed % idx.length];
-    const jokes = await loadCat(cat.id);
-    if (!jokes.length || !root.querySelector('#hm-daily-card')) return;
-    const j = jokes[seed % jokes.length];
+    /* Sorteio partilhado com a página Hoje (js/core/daily.js). */
+    const j = await Daily.jokeOfDay(idx, loadCat);
+    if (!j || !root.querySelector('#hm-daily-card')) return;
     el.innerHTML = jokeCard(j, { big: true });
     wireCards(el);
   }
