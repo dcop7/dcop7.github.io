@@ -362,656 +362,669 @@ const PortugalExplorer = (function () {
 
   function _wikiPt(title) { return `https://pt.wikipedia.org/wiki/${encodeURIComponent(title)}`; }
 
-  /* ── State ── */
-  let _map       = null;
-  let _inited    = false;
-  let _markers   = [];
-  let _capitalMarkers = [];
-  let _geoLayer  = null;
-  let _selected  = null;
-  let _container = null;
-  let _baseTile  = null;
-  let _baseStyle = 'standard';
-  /* ── Concelho (municipality) drilldown ── */
-  let _concelhoData   = null;   /* parsed pt-concelhos.geojson FeatureCollection */
-  let _concelhoLayer  = null;   /* Leaflet layer for the active district's concelhos */
-  let _concelhoSel    = null;   /* selected concelho feature */
-  let _concelhoLoading = false;
+  /* ══════════════════════════════════════════════════════════════════
+     INTERFACE (redesenho out/2026)
+     ──────────────────────────────────────────────────────────────────
+     Mapa temático: os distritos (ou os 278 concelhos) pintados pela
+     métrica escolhida — população, densidade, idosos, jovens, área,
+     altitude ou simplesmente a região — com legenda, ranking lateral e
+     um painel com separadores (Resumo · Concelhos · Cultura).
 
-  /* ── District boundaries (bundled locally, simplified) — property "name"
-     matches the district names in DISTRICTS exactly. ── */
+     Dados: Censos 2021 do INE por concelho (data/pt-concelhos-stats.json,
+     gerado por tools/pt/build-concelhos-stats.mjs) + CAOP (área,
+     freguesias, altitude) no próprio GeoJSON. Os totais de distrito são
+     somas dos concelhos, por isso batem sempre certo com o mapa.
+     A Wikipédia (resumo + foto) é pedida ao vivo, só ao abrir um painel.
+     ══════════════════════════════════════════════════════════════════ */
   const PT_GEOJSON = 'data/pt-districts.geojson';
   const PT_CONCELHOS = 'data/pt-concelhos.geojson';
+  const PT_STATS = 'data/pt-concelhos-stats.json';
+  const ISLANDS = new Set(['madeira', 'acores']);
+  const ISLAND_BOUNDS = { acores: [[36.9, -31.3], [39.75, -24.95]], madeira: [[32.6, -17.3], [33.12, -16.25]] };
 
-  /* District capitals — used to flag the capital concelho with extra context.
-     Authentic, hand-checked; everything else uses the official CAOP stats only. */
-  const CAPITAL_IDS = {
-    aveiro:'Aveiro', beja:'Beja', braga:'Braga', braganca:'Braganca', 'castelo-branco':'Castelo Branco',
-    coimbra:'Coimbra', evora:'Evora', faro:'Faro', guarda:'Guarda', leiria:'Leiria', lisboa:'Lisboa',
-    portalegre:'Portalegre', porto:'Porto', santarem:'Santarem', setubal:'Setubal',
-    'viana-do-castelo':'Viana Do Castelo', 'vila-real':'Vila Real', viseu:'Viseu',
+  const REGION = {
+    Norte:    { name: 'Norte',    col: '#3b82f6' },
+    Centro:   { name: 'Centro',   col: '#22c55e' },
+    AML:      { name: 'Área Metropolitana de Lisboa', col: '#f43f5e' },
+    Alentejo: { name: 'Alentejo', col: '#f59e0b' },
+    Algarve:  { name: 'Algarve',  col: '#06b6d4' },
+    RAA:      { name: 'Açores',   col: '#8b5cf6' },
+    RAM:      { name: 'Madeira',  col: '#ec4899' },
   };
 
-  /* ── Leaflet lazy load ── */
+  const nf0 = n => Math.round(n).toLocaleString('pt-PT');
+  const nf1 = n => n.toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const METRICS = {
+    district: { label: 'Cores', kind: 'cat' },
+    region:   { label: 'Regiões',   kind: 'cat' },
+    pop:      { label: 'População', kind: 'seq', fmt: nf0, unit: ' hab.', rank: 'mais populoso', desc: 'Residentes nos Censos 2021' },
+    dens:     { label: 'Densidade', kind: 'seq', fmt: nf0, unit: ' hab/km²', rank: 'mais denso', desc: 'Habitantes por km²' },
+    old:      { label: 'Idosos',    kind: 'seq', fmt: nf1, unit: '%', rank: 'mais envelhecido', desc: 'Percentagem com 65 ou mais anos' },
+    young:    { label: 'Jovens',    kind: 'seq', fmt: nf1, unit: '%', rank: 'mais jovem', desc: 'Percentagem com menos de 15 anos' },
+    area:     { label: 'Área',      kind: 'seq', fmt: nf0, unit: ' km²', rank: 'maior', desc: 'Área total' },
+    alt:      { label: 'Altitude',  kind: 'seq', fmt: nf0, unit: ' m', rank: 'mais alto', desc: 'Ponto mais alto' },
+  };
+  /* rampa sequencial (azul-noite → amarelo), legível nos dois temas */
+  const RAMP = ['#1d3b6a', '#1e5f8f', '#178aa3', '#2fb09a', '#7fcf73', '#e7e163'];
+
+  /* ── estado ── */
+  let _map = null, _container = null, _wrap = null;
+  let _base = null, _baseStyle = 'clean';
+  let _distLayer = null, _concLayer = null, _labelLayer = null, _islandMarkers = [];
+  let _concData = null, _stats = null;
+  let _dRec = {}, _cRecs = [], _nat = null;
+  let _level = 'district', _metric = 'district';
+  let _selected = null, _selConc = null, _tab = 'resumo', _concSort = 'pop';
+  let _themeObs = null;
+  try {
+    _baseStyle = localStorage.getItem('pt-basemap2') || 'clean';
+    _metric = localStorage.getItem('pt-metric') || 'district';
+    if (!METRICS[_metric]) _metric = 'district';
+  } catch (e) {}
+
+  const _norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  /* o GeoJSON traz "Vila Nova De Gaia" — em português as partículas ficam em minúscula */
+  const _ptName = s => s.replace(/ (Da|De|Do|Das|Dos|E)(?= )/g, m => m.toLowerCase());
+  const _isDark = () => !document.body.classList.contains('light');
+  const D = id => DISTRICTS.find(d => d.id === id);
+  function _findDistrict(name) { const n = _norm(name); return DISTRICTS.find(d => _norm(d.name) === n) || null; }
+
+  /* ── Leaflet (lazy) ── */
   async function _loadLeaflet() {
     if (window.L) return;
     return new Promise((resolve, reject) => {
       if (!document.querySelector('link[href*="leaflet"]')) {
-        const link = Object.assign(document.createElement('link'),
-          { rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' });
-        document.head.appendChild(link);
+        document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' }));
       }
-      const s = Object.assign(document.createElement('script'),
-        { src: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' });
+      const s = Object.assign(document.createElement('script'), { src: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' });
       s.onload = resolve; s.onerror = reject;
       document.head.appendChild(s);
     });
   }
+  async function _json(url) { const r = await fetch(url); if (!r.ok) throw new Error(url); return r.json(); }
 
-  function _isDark() { return !document.body.classList.contains('light'); }
-
-  /* Selectable basemap styles (atlas-style detail: roads, places, terrain). */
-  const PT_BASEMAPS = {
-    /* CARTO now watermarks keyless tiles ("API KEY REQUIRED") → OSM + Esri. */
-    standard:  { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', sub: '', attr: '© OpenStreetMap' },
-    dark:      { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', sub: '', attr: '© Esri, HERE, Garmin, © OpenStreetMap', native: 16 },
-    satellite: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: '', attr: '© Esri, Maxar' },
-    terrain:   { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',  sub: '', attr: '© Esri' },
-  };
-
-  function _setBasemap(style) {
-    if (!_map || !PT_BASEMAPS[style]) return;
-    _baseStyle = style;
-    try { localStorage.setItem('pt-basemap', style); } catch (e) {}
-    if (_baseTile) { _map.removeLayer(_baseTile); _baseTile = null; }
-    const b = PT_BASEMAPS[style];
-    _baseTile = L.tileLayer(b.url, { attribution: b.attr, subdomains: b.sub, maxZoom: 18, maxNativeZoom: b.native || 19 }).addTo(_map);
-    _baseTile.bringToBack();
-    const el = document.getElementById('pt-leaflet-map');
-    if (el) el.classList.toggle('pt-sat', style === 'satellite');
-    document.querySelectorAll('.pt-basemap-btn').forEach(x => {
-      const on = x.dataset.base === style;
-      x.classList.toggle('active', on);
-      x.setAttribute('aria-pressed', on ? 'true' : 'false');
+  /* ── registos (distrito e concelho) com todas as métricas ── */
+  function _buildRecords() {
+    const st = (_stats && _stats.c) || {};
+    _cRecs = _concData.features.map(f => {
+      const p = f.properties, k = p.d + '|' + _norm(p.c), s = st[k] || [];
+      const area = (p.ha || 0) / 100;
+      return { kind: 'c', f, name: _ptName(p.c), d: p.d, nf: p.nf, area, alt: p.am, pop: s[0] || null,
+        young: s[1] ?? null, old: s[2] ?? null, dens: s[0] && area ? s[0] / area : null };
     });
-    _onZoom(); // refresh capital-label visibility for the new style
+    const agg = {};
+    for (const c of _cRecs) {
+      const a = agg[c.d] = agg[c.d] || { pop: 0, area: 0, y: 0, o: 0, n: 0, alt: 0 };
+      a.pop += c.pop || 0; a.area += c.area; a.y += (c.young || 0) * (c.pop || 0); a.o += (c.old || 0) * (c.pop || 0); a.n++; a.alt = Math.max(a.alt, c.alt || 0);
+    }
+    _dRec = {};
+    for (const d of DISTRICTS) {
+      const a = agg[d.id];
+      _dRec[d.id] = a
+        ? { kind: 'd', d, name: d.name, pop: a.pop, area: a.area, dens: a.pop / a.area, young: a.y / a.pop, old: a.o / a.pop, munic: a.n, alt: a.alt }
+        : _islandRec(d);
+    }
+    const tot = Object.values(agg).reduce((s, a) => ({ pop: s.pop + a.pop, area: s.area + a.area, y: s.y + a.y, o: s.o + a.o }), { pop: 0, area: 0, y: 0, o: 0 });
+    _nat = { pop: tot.pop, dens: tot.pop / tot.area, young: tot.y / tot.pop, old: tot.o / tot.pop };
+  }
+  /* ilhas: totais dos Censos 2021 (INE, NUTS 30/20); área e concelhos dos dados do distrito */
+  function _islandRec(d) {
+    const s = ((_stats && _stats.isl) || {})[d.id];
+    const pop = s ? s[0] : d.pop;
+    return { kind: 'd', d, name: d.name, pop, area: d.area, dens: pop / d.area, young: s ? s[1] : null, old: s ? s[2] : null,
+      munic: d.munic, alt: d.id === 'acores' ? 2351 : 1862, island: true };
+  }
+  const val = (rec, m) => rec ? (m === 'district' || m === 'region' ? null : rec[m]) : null;
+
+  /* escala por quantis (a população é muito assimétrica — com intervalos
+     iguais, Lisboa e Porto ficavam com uma cor e o resto do país com outra) */
+  function _scale(recs, m) {
+    const v = recs.map(r => val(r, m)).filter(x => x != null && isFinite(x)).sort((a, b) => a - b);
+    if (!v.length) return { color: () => '#64748b', breaks: [] };
+    const k = RAMP.length, breaks = [];
+    for (let i = 1; i < k; i++) breaks.push(v[Math.min(v.length - 1, Math.floor(i * v.length / k))]);
+    return {
+      min: v[0], max: v[v.length - 1], breaks,
+      color: x => (x == null || !isFinite(x)) ? '#475569' : RAMP[breaks.filter(b => x >= b).length],
+    };
+  }
+  function _catColor(rec) {
+    const d = rec.kind === 'd' ? rec.d : D(rec.d);
+    return _metric === 'region' ? (REGION[d.nuts2] || {}).col || '#64748b' : d.color;
   }
 
-  /* ── Mount ── */
+  /* ════════════════════════════ MOUNT ════════════════════════════ */
   async function mount(container) {
     _container = container;
     container.innerHTML = `
-      <div class="pt-explorer-wrap">
-        <div class="pt-map-area" id="pt-map-area">
-          <div id="pt-leaflet-map"></div>
-          <div class="pt-basemap-bar" id="pt-basemap-bar" role="group" aria-label="Estilo do mapa">
-            <button class="pt-basemap-btn active" data-base="standard" aria-pressed="true">Político</button>
-            <button class="pt-basemap-btn" data-base="terrain" aria-pressed="false">Relevo</button>
-            <button class="pt-basemap-btn" data-base="satellite" aria-pressed="false">Satélite</button>
-            <button class="pt-basemap-btn" data-base="dark" aria-pressed="false">Escuro</button>
-          </div>
-          <div class="pt-loading" id="pt-loading">
-            <div class="pt-loading-spinner"></div>
-            <div class="pt-loading-txt">A carregar mapa de Portugal…</div>
-          </div>
-        </div>
-
-        <div class="pt-sidebar" id="pt-sidebar">
-          <div class="pt-sidebar-header">
-            <div class="pt-sidebar-title">
-              <span class="pt-sidebar-flag">🇵🇹</span>
-              <span>Explorar Portugal</span>
+      <div class="pt-explorer-wrap ptx">
+        <aside class="ptx-side">
+          <div class="ptx-side-hd">
+            <h2>Explorar Portugal</h2>
+            <p>18 distritos, 278 concelhos e as ilhas — com os números dos Censos 2021.</p>
+            <div class="ptx-search">
+              <input id="ptx-q" type="search" placeholder="Distrito ou concelho…" autocomplete="off" aria-label="Pesquisar distrito ou concelho" aria-controls="ptx-qres">
+              <button id="ptx-rand" class="ptx-icon-btn" title="Descobrir um sítio ao calhas" aria-label="Descobrir um sítio ao calhas">🎲</button>
+              <div class="ptx-qres" id="ptx-qres" role="listbox" hidden></div>
             </div>
-            <div class="pt-search-bar">
-              <input class="pt-search-input" id="pt-search" type="text" placeholder="Pesquisar distrito…" autocomplete="off" aria-label="Pesquisar distrito"/>
-              <button class="pt-discover-btn" id="pt-discover" title="Descobrir distrito aleatório" aria-label="Descobrir distrito aleatório">🎲</button>
+            <div class="ptx-seg ptx-level" role="group" aria-label="Ver o mapa por">
+              <button data-level="district" class="${_level === 'district' ? 'on' : ''}">Distritos</button>
+              <button data-level="concelho" class="${_level === 'concelho' ? 'on' : ''}">Concelhos</button>
             </div>
           </div>
+          <div class="ptx-rank-hd"><span id="ptx-rank-ttl">Distritos</span><small id="ptx-rank-sub"></small></div>
+          <ol class="ptx-rank" id="ptx-rank"></ol>
+        </aside>
 
-          <div class="pt-district-list" id="pt-district-list">
-            ${DISTRICTS.map(d => `
-              <button class="pt-district-chip" data-id="${d.id}">
-                <span class="pt-dc-emoji">${d.emoji}</span>
-                <span class="pt-dc-name">${d.name}</span>
-                <span class="pt-dc-region">${d.region}</span>
-              </button>`).join('')}
+        <div class="ptx-mapcol">
+          <div class="ptx-toolbar">
+            <div class="ptx-metrics" role="group" aria-label="Colorir o mapa por">
+              ${Object.entries(METRICS).map(([k, m]) => `<button data-metric="${k}" class="${k === _metric ? 'on' : ''}" aria-pressed="${k === _metric}">${m.label}</button>`).join('')}
+            </div>
           </div>
+          <div class="ptx-seg ptx-base" role="group" aria-label="Fundo do mapa">
+            ${[['clean', 'Mapa'], ['topo', 'Relevo'], ['satellite', 'Satélite']].map(([k, l]) => `<button data-base="${k}" class="${k === _baseStyle ? 'on' : ''}">${l}</button>`).join('')}
+          </div>
+          <div class="ptx-map" id="ptx-map"></div>
+          <div class="ptx-legend" id="ptx-legend"></div>
+          <div class="ptx-islands" role="group" aria-label="Regiões autónomas">
+            <button data-island="acores">🌋 Açores</button><button data-island="madeira">🌺 Madeira</button>
+          </div>
+          <div class="ptx-loading" id="ptx-loading"><span></span>A carregar o mapa de Portugal…</div>
         </div>
 
-        <div class="pt-info-panel" id="pt-info-panel" role="region" aria-label="Informação do distrito" tabindex="-1">
-          <button class="pt-info-close" id="pt-info-close" aria-label="Fechar painel">✕</button>
-          <div class="pt-info-content" id="pt-info-content"></div>
-        </div>
+        <section class="ptx-panel" id="ptx-panel" aria-label="Informação" tabindex="-1">
+          <button class="ptx-close" id="ptx-close" aria-label="Fechar painel">✕</button>
+          <div class="ptx-panel-body" id="ptx-pbody"></div>
+        </section>
       </div>`;
+    _wrap = container.querySelector('.pt-explorer-wrap');
 
-    await _loadLeaflet();
-    _initMap(container);
-    _wireSearch(container);
-    _wireSidebar(container);
-    container.querySelectorAll('.pt-basemap-btn').forEach(btn => {
-      btn.addEventListener('click', () => _setBasemap(btn.dataset.base));
-    });
-    document.getElementById('pt-loading')?.remove();
-    _inited = true;
+    try {
+      await _loadLeaflet();
+      [, _concData, _stats] = await Promise.all([null, _json(PT_CONCELHOS), _json(PT_STATS).catch(() => null)]);
+      _buildRecords();
+      const gj = await _json(PT_GEOJSON);
+      _initMap(gj);
+    } catch (e) {
+      container.querySelector('#ptx-loading').innerHTML = 'Não foi possível carregar o mapa. Verifica a ligação e volta a abrir este separador.';
+      return;
+    }
+    container.querySelector('#ptx-loading')?.remove();
+    _wireUI();
+    _refresh();
   }
 
-  function resume() {
-    setTimeout(() => _map?.invalidateSize(), 80);
-  }
-
+  function resume() { setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 80); }
   function stop() {}
 
-  /* ── Map init ── */
-  function _initMap(container) {
-    const el = container.querySelector('#pt-leaflet-map');
-    if (!el) return;
-
-    _map = L.map(el, {
-      center: [39.6, -8.0], zoom: 7, minZoom: 6, maxZoom: 13,
-      zoomControl: false,
-    });
+  /* ════════════════════════════ MAPA ════════════════════════════ */
+  function _initMap(gj) {
+    const el = _container.querySelector('#ptx-map');
+    _map = L.map(el, { center: [39.6, -8.0], zoom: 7, minZoom: 5, maxZoom: 13, zoomControl: false, zoomSnap: 0.25 });
     L.control.zoom({ position: 'bottomright' }).addTo(_map);
-    /* Restore saved style; default to the detailed political map (atlas feel). */
-    let _savedBase; try { _savedBase = localStorage.getItem('pt-basemap'); } catch (e) {}
-    _setBasemap((_savedBase && PT_BASEMAPS[_savedBase]) ? _savedBase : 'standard');
+    _map.createPane('ptLabels'); _map.getPane('ptLabels').style.zIndex = 650; _map.getPane('ptLabels').style.pointerEvents = 'none';
+    _setBase(_baseStyle);
+    _fitMainland(false);
 
-    _addDistrictMarkers();
-    _addCapitalLabels();
-
-    /* As the user zooms in, fade the district fills so the underlying roads,
-       labels and terrain stay readable (was a fixed, heavy overlay). */
-    _map.on('zoomend', _onZoom);
-
-    /* Try loading GeoJSON boundaries */
-    _tryLoadGeoJSON();
-  }
-
-  /* District fill opacity — deliberately light so the basemap (roads, cities,
-     terrain, coastlines) stays readable. The selection is conveyed mainly by a
-     coloured border, not a solid block (think "Google Maps selected area"). */
-  function _fillFor(selected) {
-    const z = _map ? _map.getZoom() : 7;
-    if (selected) return z >= 10 ? 0.12 : z >= 8 ? 0.20 : 0.28;
-    return z >= 10 ? 0.02 : z >= 8 ? 0.05 : 0.08;
-  }
-
-  function _onZoom() {
-    if (!_geoLayer) return;
-    _geoLayer.eachLayer(layer => {
-      const props = layer.feature?.properties || {};
-      const d = _findDistrict(Object.values(props).find(v => typeof v === 'string'));
-      layer.setStyle({ fillOpacity: _fillFor(d === _selected) });
-    });
-    /* Capital labels only on satellite imagery (no built-in labels there);
-       every other basemap already prints place names, so showing our own would
-       duplicate them. Also gated by zoom to stay useful and uncluttered. */
-    const showCaps = _map.getZoom() >= 8 && _baseStyle === 'satellite';
-    _capitalMarkers.forEach(m => {
-      const el = m.getElement();
-      if (el) el.style.display = showCaps ? '' : 'none';
-    });
-  }
-
-  /* Permanent capital labels (real coordinates from district data — no fabrication). */
-  function _addCapitalLabels() {
-    DISTRICTS.forEach(d => {
-      const m = L.marker([d.lat, d.lon], {
-        interactive: false, keyboard: false,
-        icon: L.divIcon({
-          className: 'pt-capital-label',
-          html: `<span class="pt-cap-dot"></span><span class="pt-cap-name">${d.capital}</span>`,
-          iconSize: [0, 0],
-        }),
-      }).addTo(_map);
-      const el = m.getElement(); if (el) el.style.display = 'none';
-      _capitalMarkers.push(m);
-    });
-  }
-
-  function _addDistrictMarkers() {
-    DISTRICTS.forEach(d => {
-      const m = L.circleMarker([d.lat, d.lon], {
-        radius: _markerRadius(d),
-        fillColor: d.color,
-        color: d.color,
-        weight: 2,
-        opacity: 0.85,
-        fillOpacity: 0.35,
-      }).addTo(_map);
-      m.bindTooltip(d.name, { permanent: false, direction: 'top', offset: [0, -8] });
-      m.on('click', () => _select(d));
-      _markers.push({ dist: d, marker: m });
-    });
-  }
-
-  function _markerRadius(d) {
-    const base = Math.sqrt(d.pop / 1000);
-    return Math.max(8, Math.min(28, base));
-  }
-
-  async function _tryLoadGeoJSON() {
-    try {
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 20000);
-      const r = await fetch(PT_GEOJSON, { signal: ctrl.signal });
-      clearTimeout(tid);
-      if (!r.ok) return;
-      const gj = await r.json();
-
-      /* Find which property has district names */
-      const sample = gj.features?.[0]?.properties || {};
-      const nameKey = ['name','NAME_1','Dico','DICO','Distrito','distrito','NME','NOME','Desig'].find(k => k in sample);
-      if (!nameKey) return;
-
-      _geoLayer = L.geoJSON(gj, {
-        style(feature) {
-          const d = _findDistrict(feature.properties[nameKey]);
-          const base = d ? d.color : '#6366f1';
-          return {
-            fillColor: base,
-            color: _isDark() ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.25)',
-            weight: 1.2,
-            fillOpacity: _fillFor(d === _selected),
-          };
-        },
-        onEachFeature(feature, layer) {
-          const rawName = feature.properties[nameKey];
-          const d = _findDistrict(rawName);
-          if (!d) return;
-          layer.bindTooltip(d.name, { sticky: true, direction: 'top', className: 'pt-geo-tooltip' });
-          layer.on({
-            mouseover(e) {
-              if (d !== _selected) {
-                e.target.setStyle({ fillOpacity: 0.38, weight: 2 });
-                e.target.bringToFront();
-              }
-            },
-            mouseout(e) {
-              if (d !== _selected) _geoLayer?.resetStyle(e.target);
-            },
-            click() { _select(d); },
-          });
-        },
-      }).addTo(_map);
-
-      /* Once GeoJSON loads, shrink circle markers to small accent dots */
-      _markers.forEach(({ marker }) => {
-        marker.setStyle({ radius: 5, fillOpacity: 0.6, weight: 1 });
-        marker.bringToFront();
-      });
-
-    } catch (e) {
-      /* Silently fail — markers remain the interactive fallback */
-    }
-  }
-
-  function _normalizeStr(s) {
-    return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-  }
-
-  function _findDistrict(name) {
-    const n = _normalizeStr(name);
-    return DISTRICTS.find(d => _normalizeStr(d.name) === n) || null;
-  }
-
-  /* ── Selection ── */
-  function _select(d) {
-    _selected = d;
-    _clearConcelhos();   /* leaving any previous district's drilldown */
-
-    /* Highlight / reset circle markers */
-    const hasGeo = !!_geoLayer;
-    _markers.forEach(({ dist, marker }) => {
-      if (hasGeo) {
-        /* GeoJSON loaded — markers are small accent dots */
-        marker.setStyle({
-          radius:      dist === d ? 8 : 5,
-          fillOpacity: dist === d ? 1 : 0.6,
-          weight:      dist === d ? 2 : 1,
-        });
-      } else {
-        marker.setStyle({
-          fillOpacity: dist === d ? 0.75 : 0.35,
-          weight:      dist === d ? 3    : 2,
-          radius:      dist === d ? _markerRadius(dist) + 4 : _markerRadius(dist),
-        });
-      }
-    });
-
-    /* Re-style GeoJSON polygons; capture the selected layer for fit-to-bounds. */
-    let selLayer = null;
-    if (_geoLayer) {
-      _geoLayer.eachLayer(layer => {
-        const props = layer.feature?.properties || {};
-        const fd = _findDistrict(Object.values(props).find(v => typeof v === 'string'));
-        const isSelected = fd === d;
-        const base = fd ? fd.color : '#6366f1';
-        layer.setStyle({
-          fillColor: base,
-          fillOpacity: _fillFor(isSelected),
-          /* Selected = bright coloured outline; others = subtle hairline. */
-          color: isSelected ? base : (_isDark() ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.25)'),
-          weight: isSelected ? 3 : 1.2,
-          opacity: isSelected ? 0.95 : 0.6,
-        });
-        if (isSelected) { selLayer = layer; layer.bringToFront(); }
-      });
-    }
-
-    /* Render + open the info panel (third grid column on desktop, bottom sheet
-       on mobile). Opening resizes the map area, so invalidate + fit after. */
-    _renderInfo(d);
-    const wrap = _container?.querySelector('.pt-explorer-wrap');
-    wrap?.classList.add('pt-info-open');
-    _fitDistrict(d, selLayer);
-    setTimeout(() => { try { _map?.invalidateSize(); _fitDistrict(d, selLayer); } catch (e) {} }, 340);
-
-    /* Highlight list item */
-    document.querySelectorAll('.pt-district-chip').forEach(c => {
-      const on = c.dataset.id === d.id;
-      c.classList.toggle('active', on);
-      if (on) c.setAttribute('aria-current', 'true'); else c.removeAttribute('aria-current');
-    });
-  }
-
-  /* Close the info panel (shared by the ✕ button and the Escape key). */
-  function _closePanel() {
-    const wrap = _container?.querySelector('.pt-explorer-wrap');
-    if (!wrap || !wrap.classList.contains('pt-info-open')) return;
-    wrap.classList.remove('pt-info-open');
-    _clearConcelhos();
-    _selected = null;
-    _markers.forEach(({ dist, marker }) => {
-      marker.setStyle({ fillOpacity: 0.35, weight: 2, radius: _markerRadius(dist) });
-    });
-    document.querySelectorAll('.pt-district-chip').forEach(c => { c.classList.remove('active'); c.removeAttribute('aria-current'); });
-    setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 340);
-  }
-
-  /* Auto-zoom to fit the selected district's bounds (smooth, capped so it
-     never zooms in excessively); falls back to a centred view. */
-  function _fitDistrict(d, layer) {
-    if (!_map) return;
-    try {
-      const sz = _map.getSize();
-      if (sz.x <= 0 || sz.y <= 0) { _map.setView([d.lat, d.lon], 9); return; }
-      if (layer && layer.getBounds && layer.getBounds().isValid()) {
-        _map.flyToBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 11, duration: 0.8 });
-      } else {
-        _map.flyTo([d.lat, d.lon], 9, { duration: 0.8 });
-      }
-    } catch (e) { try { _map.setView([d.lat, d.lon], 9); } catch (e2) {} }
-  }
-
-  /* ════════════════════ CONCELHO (MUNICIPALITY) DRILLDOWN ════════════════════ */
-
-  /* Lazy-load the bundled concelhos GeoJSON once. */
-  async function _loadConcelhos() {
-    if (_concelhoData || _concelhoLoading) return _concelhoData;
-    _concelhoLoading = true;
-    try {
-      const ctrl = new AbortController();
-      const tid = setTimeout(() => ctrl.abort(), 20000);
-      const r = await fetch(PT_CONCELHOS, { signal: ctrl.signal });
-      clearTimeout(tid);
-      if (r.ok) _concelhoData = await r.json();
-    } catch (e) { /* drilldown unavailable — district view still works */ }
-    _concelhoLoading = false;
-    return _concelhoData;
-  }
-
-  function _clearConcelhos() {
-    if (_concelhoLayer) { _concelhoLayer.remove(); _concelhoLayer = null; }
-    _concelhoSel = null;
-  }
-
-  /* Draw the clickable concelhos for the active district on top of the map. */
-  async function _showConcelhos(d) {
-    await _loadConcelhos();
-    if (!_concelhoData || !_map || _selected !== d) return;
-    _clearConcelhos();
-
-    const feats = _concelhoData.features.filter(f => f.properties.d === d.id);
-    if (!feats.length) return;
-
-    _concelhoLayer = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
-      style: () => ({
-        fillColor: d.color,
-        color: _isDark() ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.4)',
-        weight: 1,
-        fillOpacity: 0.12,
-      }),
-      onEachFeature(feature, layer) {
-        const name = feature.properties.c;
-        layer.bindTooltip(name, { sticky: true, direction: 'top', className: 'pt-geo-tooltip' });
+    _distLayer = L.geoJSON(gj, {
+      onEachFeature(f, layer) {
+        const d = _findDistrict(f.properties.name);
+        if (!d) return;
+        layer._d = d;
         layer.on({
-          mouseover(e) { if (feature !== _concelhoSel) { e.target.setStyle({ fillOpacity: 0.32, weight: 1.6 }); e.target.bringToFront(); } },
-          mouseout(e)  { if (feature !== _concelhoSel) _concelhoLayer?.resetStyle(e.target); },
-          click(e) { L.DomEvent.stopPropagation(e); _selectConcelho(feature, layer, d); },
+          mouseover: e => _hover(e.target, true),
+          mouseout: e => _hover(e.target, false),
+          click: () => _select(d),
         });
+        layer.bindTooltip(() => _tipHTML(_dRec[d.id]), { sticky: true, direction: 'top', className: 'ptx-tip', opacity: 1 });
       },
     }).addTo(_map);
 
-    /* Fade the district outline so concelhos read clearly. */
-    if (_concelhoLayer.getBounds && _concelhoLayer.getBounds().isValid()) {
-      _map.flyToBounds(_concelhoLayer.getBounds(), { padding: [30, 30], maxZoom: 11, duration: 0.7 });
+    _concLayer = L.geoJSON(_concData, {
+      onEachFeature(f, layer) {
+        const rec = _cRecs.find(r => r.f === f);
+        layer._c = rec;
+        layer.on({
+          mouseover: e => _hover(e.target, true),
+          mouseout: e => _hover(e.target, false),
+          click: e => { L.DomEvent.stopPropagation(e); _selectConcelho(rec); },
+        });
+        layer.bindTooltip(() => _tipHTML(rec), { sticky: true, direction: 'top', className: 'ptx-tip', opacity: 1 });
+      },
+    });
+
+    /* ilhas: marcadores (o GeoJSON só cobre o continente) */
+    _islandMarkers = ['madeira', 'acores'].map(id => {
+      const d = D(id);
+      return L.circleMarker([d.lat, d.lon], { radius: 9, weight: 2, color: '#fff', fillColor: d.color, fillOpacity: .9 })
+        .bindTooltip(() => _tipHTML(_dRec[id]), { direction: 'top', className: 'ptx-tip', opacity: 1 })
+        .on('click', () => _select(d)).addTo(_map);
+    });
+
+    _map.on('zoomend', _labels);
+    if (!_themeObs) {
+      _themeObs = new MutationObserver(() => { if (_baseStyle === 'clean') _setBase('clean'); _refresh(); });
+      _themeObs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
   }
 
-  function _selectConcelho(feature, layer, d) {
-    _concelhoSel = feature;
-    if (_concelhoLayer) {
-      _concelhoLayer.eachLayer(l => {
-        const on = l.feature === feature;
-        l.setStyle({ fillOpacity: on ? 0.5 : 0.12, weight: on ? 2.4 : 1, color: on ? d.color : (_isDark() ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.4)') });
+  function _fitMainland(anim = true) {
+    try { _map.fitBounds([[36.95, -9.6], [42.16, -6.18]], { paddingTopLeft: [16, 56], paddingBottomRight: [16, 40], animate: anim }); } catch (e) {}
+  }
+
+  function _setBase(style) {
+    _baseStyle = style;
+    try { localStorage.setItem('pt-basemap2', style); } catch (e) {}
+    if (_base) _map.removeLayer(_base);
+    const name = style === 'clean' ? (_isDark() ? 'dark' : 'light') : style;
+    /* "Mapa" fica sem nomes do fornecedor: as nossas etiquetas (distritos e,
+       ao abrir um distrito, os concelhos) não se duplicam com as dele */
+    _base = Basemaps.layer(name, { labels: style === 'satellite', labelsPane: 'ptLabels' }).addTo(_map);
+    if (_base.bringToBack) _base.bringToBack();
+    _wrap.classList.toggle('ptx-sat', style === 'satellite');
+    _container.querySelectorAll('[data-base]').forEach(b => b.classList.toggle('on', b.dataset.base === style));
+    if (_distLayer) _paint();
+  }
+
+  /* ── pintura ── */
+  function _fillOpacity() { return _baseStyle === 'satellite' ? 0.55 : _baseStyle === 'topo' ? 0.6 : 0.78; }
+  function _hi() { return _isDark() ? '#ffffff' : '#0f172a'; }
+  function _edge() { return _isDark() ? 'rgba(8,12,20,.85)' : 'rgba(255,255,255,.95)'; }
+
+  function _paint() {
+    const m = METRICS[_metric], op = _fillOpacity();
+    const dRecs = Object.values(_dRec).filter(r => !r.island);
+    const showConc = _level === 'concelho' || !!_selected;
+    const concSet = _level === 'concelho' ? _cRecs : _cRecs.filter(r => _selected && r.d === _selected.id);
+    const sD = m.kind === 'seq' ? _scale(dRecs, _metric) : null;
+    const sC = m.kind === 'seq' ? _scale(concSet, _metric) : null;
+    _sc = showConc ? sC : sD;
+
+    _distLayer.eachLayer(l => {
+      const d = l._d; if (!d) return;
+      const rec = _dRec[d.id], sel = _selected === d;
+      if (showConc) {
+        /* por baixo dos concelhos só ficam os contornos dos distritos */
+        const dim = _selected && !sel;
+        l.setStyle({ fillColor: _isDark() ? '#0b1220' : '#e2e8f0', fillOpacity: dim ? (_baseStyle === 'clean' ? .55 : .35) : 0,
+          color: sel ? _hi() : (_isDark() ? 'rgba(255,255,255,.55)' : 'rgba(15,23,42,.55)'), weight: sel ? 2.6 : 1.3, opacity: 1 });
+      } else {
+        l.setStyle({ fillColor: m.kind === 'seq' ? sD.color(val(rec, _metric)) : _catColor(rec), fillOpacity: op, color: _edge(), weight: 1.4, opacity: 1 });
+      }
+    });
+
+    if (showConc) {
+      if (!_map.hasLayer(_concLayer)) _concLayer.addTo(_map);
+      _concLayer.eachLayer(l => {
+        const r = l._c, inSet = _level === 'concelho' || r.d === (_selected && _selected.id);
+        const on = _selConc === r;
+        l.setStyle(inSet
+          ? { fillColor: m.kind === 'seq' ? sC.color(val(r, _metric)) : _catColor(r), fillOpacity: on ? Math.min(.95, op + .15) : op,
+              color: on ? _hi() : _edge(), weight: on ? 3 : .7, opacity: 1 }
+          : { fillOpacity: 0, opacity: 0, weight: 0 });
         if (on) l.bringToFront();
       });
+      _distLayer.bringToFront();
+      _distLayer.eachLayer(l => { l.options.interactive = false; if (l._path) l._path.style.pointerEvents = 'none'; });
+    } else {
+      if (_map.hasLayer(_concLayer)) _map.removeLayer(_concLayer);
+      _distLayer.eachLayer(l => { l.options.interactive = true; if (l._path) l._path.style.pointerEvents = ''; });
     }
-    try {
-      if (layer.getBounds && layer.getBounds().isValid()) _map.flyToBounds(layer.getBounds(), { padding: [50, 50], maxZoom: 12, duration: 0.7 });
-    } catch (e) {}
-    _renderConcelhoInfo(feature, d);
-    _container?.querySelector('.pt-explorer-wrap')?.classList.add('pt-info-open');
-    setTimeout(() => { try { _map?.invalidateSize(); } catch (e) {} }, 320);
+    _islandMarkers.forEach((mk, i) => {
+      const rec = _dRec[['madeira', 'acores'][i]];
+      mk.setStyle({ fillColor: m.kind === 'seq' ? (val(rec, _metric) == null ? '#475569' : (sD ? sD.color(val(rec, _metric)) : '#64748b')) : _catColor(rec) });
+    });
+    _legend();
+    _labels();
+  }
+  let _sc = null;
+
+  function _hover(layer, on) {
+    if (on) {
+      layer.setStyle({ weight: 2.6, color: _hi() });
+      layer.bringToFront();
+    } else {
+      _paint();
+    }
   }
 
-  /* ── Info panel ── */
-  function _renderInfo(d) {
-    const el = document.getElementById('pt-info-content');
-    if (!el) return;
+  function _tipHTML(rec) {
+    if (!rec) return '';
+    const m = METRICS[_metric];
+    const v = val(rec, _metric);
+    const sub = rec.kind === 'c' ? `Concelho · ${esc(D(rec.d).name)}` : (rec.island ? 'Região autónoma' : `Distrito · ${esc((REGION[rec.d.nuts2] || {}).name || '')}`);
+    const line = m.kind === 'seq'
+      ? (v == null ? '<span class="ptx-tip-v">sem dados</span>' : `<span class="ptx-tip-v">${m.fmt(v)}${m.unit}</span> <span class="ptx-tip-m">${esc(m.label.toLowerCase())}</span>`)
+      : `<span class="ptx-tip-m">${rec.pop ? nf0(rec.pop) + ' habitantes' : ''}</span>`;
+    return `<b>${esc(rec.name)}</b><small>${sub}</small>${line}`;
+  }
 
-    const pop  = (d.pop || 0).toLocaleString('pt');
-    const area = (d.area || 0).toLocaleString('pt') + ' km²';
-    const density = (d.pop && d.area)
-      ? Math.round(d.pop / d.area).toLocaleString('pt') + ' hab/km²' : '—';
+  /* ── etiquetas próprias (só no fundo "Mapa", que não tem nomes até ao zoom 9) ── */
+  function _labels() {
+    if (!_map) return;
+    if (_labelLayer) { _map.removeLayer(_labelLayer); _labelLayer = null; }
+    const z = _map.getZoom(), out = [];
+    if (_baseStyle !== 'clean' && _baseStyle !== 'topo') { /* satélite já traz nomes */ }
+    else if (_selected && !ISLANDS.has(_selected.id) && z >= 8.5) {
+      _concLayer.eachLayer(l => { if (l._c.d === _selected.id) out.push([l.getBounds().getCenter(), l._c.name, 'c']); });
+    } else if (!_selected && _level === 'district' && z < 9) {
+      _distLayer.eachLayer(l => { if (l._d) out.push([_labelPoint(l._d, l), l._d.name, 'd']); });
+    }
+    if (!out.length) return;
+    _labelLayer = L.layerGroup(out.map(([ll, name, k]) => L.marker(ll, { interactive: false, keyboard: false, pane: 'ptLabels',
+      icon: L.divIcon({ className: 'ptx-lbl ptx-lbl-' + k, html: `<span>${esc(name)}</span>`, iconSize: [0, 0] }) }))).addTo(_map);
+  }
+  /* centro do retângulo, mas puxado para a capital nos distritos de forma estranha (Setúbal, Lisboa) */
+  const LABEL_AT = { setubal: [38.25, -8.62], lisboa: [38.98, -9.18], porto: [41.22, -8.4], 'viana-do-castelo': [41.88, -8.5] };
+  function _labelPoint(d, l) { return LABEL_AT[d.id] || l.getBounds().getCenter(); }
+
+  /* ── legenda ── */
+  function _legend() {
+    const el = _container.querySelector('#ptx-legend'), m = METRICS[_metric];
+    if (m.kind === 'cat') {
+      el.innerHTML = _metric === 'region'
+        ? `<div class="ptx-lg-ttl">Regiões (NUTS II)</div>${Object.values(REGION).map(r => `<div class="ptx-lg-row"><i style="background:${r.col}"></i>${esc(r.name)}</div>`).join('')}`
+        : `<div class="ptx-lg-ttl">Cada distrito com a sua cor</div><div class="ptx-lg-hint">Escolhe uma métrica para comparar</div>`;
+      return;
+    }
+    const s = _sc;
+    if (!s || !s.breaks.length) { el.innerHTML = ''; return; }
+    const edges = [s.min, ...s.breaks, s.max];
+    const scope = _level === 'concelho' ? 'todos os concelhos' : _selected ? `concelhos de ${_selected.name}` : 'distritos';
+    el.innerHTML = `<div class="ptx-lg-ttl">${esc(m.label)} <small>· ${esc(scope)}</small></div>
+      <div class="ptx-lg-ramp">${RAMP.map((c, i) => `<div><i style="background:${c}"></i><span>${i === RAMP.length - 1 ? '≥ ' : ''}${m.fmt(edges[i])}</span></div>`).join('')}</div>
+      <div class="ptx-lg-hint">${esc(m.desc)} · cada cor junta ⅙ dos sítios</div>`;
+  }
+
+  /* ════════════════════════════ RANKING ════════════════════════════ */
+  function _rank() {
+    const m = METRICS[_metric];
+    let recs, ttl;
+    if (_selected && !ISLANDS.has(_selected.id)) { recs = _cRecs.filter(r => r.d === _selected.id); ttl = `Concelhos de ${_selected.name}`; }
+    else if (_level === 'concelho') { recs = _cRecs; ttl = 'Todos os concelhos'; }
+    else { recs = Object.values(_dRec); ttl = 'Distritos e ilhas'; }
+    const key = m.kind === 'seq' ? _metric : 'pop';
+    recs = recs.slice().sort((a, b) => (val(b, key) ?? -1) - (val(a, key) ?? -1));
+    const max = Math.max(...recs.map(r => val(r, key) || 0));
+    const mm = METRICS[key];
+    _container.querySelector('#ptx-rank-ttl').textContent = ttl;
+    _container.querySelector('#ptx-rank-sub').textContent = `por ${mm.label.toLowerCase()}`;
+    const ol = _container.querySelector('#ptx-rank');
+    ol.innerHTML = recs.map((r, i) => {
+      const v = val(r, key), on = (r.kind === 'd' && _selected === r.d) || (r.kind === 'c' && _selConc === r);
+      const col = m.kind === 'seq' && _sc ? _sc.color(v) : _catColor(r);
+      return `<li><button class="${on ? 'on' : ''}" data-${r.kind}="${r.kind === 'd' ? r.d.id : _cRecs.indexOf(r)}">
+        <span class="ptx-rk-n">${i + 1}</span>
+        <span class="ptx-rk-body"><span class="ptx-rk-name">${esc(r.name)}</span>
+          <span class="ptx-rk-bar"><i style="width:${max ? Math.max(2, (v || 0) / max * 100) : 0}%;background:${col}"></i></span></span>
+        <span class="ptx-rk-v">${v == null ? '—' : mm.fmt(v) + (mm.unit === '%' ? '%' : '')}</span>
+      </button></li>`;
+    }).join('');
+    ol.querySelector('button.on')?.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* ════════════════════════════ SELEÇÃO ════════════════════════════ */
+  function _select(d, opts) {
+    _selected = d; _selConc = null; _tab = (opts && opts.tab) || 'resumo';
+    if (ISLANDS.has(d.id)) {
+      _map.flyToBounds(ISLAND_BOUNDS[d.id], { padding: [30, 30], duration: .8 });
+    } else {
+      let lay = null; _distLayer.eachLayer(l => { if (l._d === d) lay = l; });
+      if (lay) _map.flyToBounds(lay.getBounds(), { padding: [30, 30], maxZoom: 10, duration: .8 });
+    }
+    _openPanel(); _renderDistrict(d); _refresh();
+  }
+  function _selectConcelho(rec) {
+    const d = D(rec.d);
+    if (_selected !== d) _selected = d;
+    _selConc = rec;
+    let lay = null; _concLayer.eachLayer(l => { if (l._c === rec) lay = l; });
+    if (lay) _map.flyToBounds(lay.getBounds(), { padding: [60, 60], maxZoom: 11, duration: .8 });
+    _openPanel(); _renderConcelho(rec); _refresh();
+  }
+  function _clear() {
+    _selected = null; _selConc = null;
+    _wrap.classList.remove('ptx-open');
+    setTimeout(() => { try { _map.invalidateSize(); } catch (e) {} }, 320);
+    _fitMainland(); _refresh();
+  }
+  function _openPanel() {
+    const was = _wrap.classList.contains('ptx-open');
+    _wrap.classList.add('ptx-open');
+    if (!was) setTimeout(() => { try { _map.invalidateSize(); } catch (e) {} }, 320);
+    _container.querySelector('#ptx-pbody').scrollTop = 0;
+  }
+  function _refresh() { if (!_distLayer) return; _paint(); _rank(); }
+
+  /* ── posição num ranking ── */
+  function _rankOf(rec, key, pool) {
+    const v = val(rec, key); if (v == null) return null;
+    const vs = pool.map(r => val(r, key)).filter(x => x != null);
+    return { pos: vs.filter(x => x > v).length + 1, of: vs.length };
+  }
+
+  /* ── painel: distrito ── */
+  function _stat(label, value, sub) { return `<div class="ptx-stat"><span class="ptx-stat-v">${value}</span><span class="ptx-stat-l">${label}</span>${sub ? `<span class="ptx-stat-s">${sub}</span>` : ''}</div>`; }
+  function _ageBar(rec) {
+    if (rec.young == null) return '';
+    const y = rec.young, o = rec.old, a = 100 - y - o;
+    const natO = _nat.old;
+    return `<div class="ptx-age">
+      <div class="ptx-age-ttl">Idades <small>· Censos 2021</small></div>
+      <div class="ptx-age-bar" role="img" aria-label="${nf1(y)}% jovens, ${nf1(a)}% entre 15 e 64, ${nf1(o)}% idosos">
+        <i class="y" style="width:${y}%"></i><i class="a" style="width:${a}%"></i><i class="o" style="width:${o}%"></i>
+        <b style="left:${100 - natO}%" title="Média nacional de idosos: ${nf1(natO)}%"></b>
+      </div>
+      <div class="ptx-age-lg"><span><i class="y"></i>Menos de 15: ${nf1(y)}%</span><span><i class="a"></i>15–64: ${nf1(a)}%</span><span><i class="o"></i>65 ou mais: ${nf1(o)}%</span><span><i class="nat"></i>média do país</span></div>
+      <p class="ptx-age-note">${o > natO + 3 ? `Mais envelhecido do que o país (${nf1(natO)}% de idosos no continente).` : o < natO - 3 ? `Mais jovem do que o país (${nf1(natO)}% de idosos no continente).` : `Perto da média do continente (${nf1(natO)}% de idosos).`}</p>
+    </div>`;
+  }
+
+  function _renderDistrict(d) {
+    const el = _container.querySelector('#ptx-pbody'), rec = _dRec[d.id];
+    const pool = Object.values(_dRec).filter(r => !r.island);
+    const rk = k => { if (rec.island) return ''; const r = _rankOf(rec, k, pool); return r ? `${r.pos}.º de ${r.of}` : ''; };
     const extra = DISTRICT_MON[d.id] || {};
-    /* Merge curated landmarks with the extra points of interest (de-duped). */
     const pois = [...(d.landmarks || []), ...((extra.poi || []).filter(p => !(d.landmarks || []).includes(p)))];
-
+    const concs = _cRecs.filter(r => r.d === d.id);
+    const reg = REGION[d.nuts2] || { name: d.region, col: d.color };
     el.innerHTML = `
-      <div class="pt-info-hero" style="--dist-color:${d.color}">
-        <div class="pt-info-emoji">${d.emoji}</div>
-        <div class="pt-info-title-group">
-          <div class="pt-info-name">${d.name}</div>
-          <div class="pt-info-tagline">${d.tagline}</div>
+      <header class="ptx-hero" style="--c:${d.color}">
+        <div class="ptx-hero-img" id="ptx-hero-img"></div>
+        <div class="ptx-hero-txt">
+          <span class="ptx-chip" style="--c:${reg.col}">${esc(reg.name)}</span>
+          <h2>${esc(d.name)}</h2>
+          <p>${esc(d.tagline)}</p>
         </div>
+      </header>
+      <div class="ptx-stats">
+        ${_stat('habitantes', nf0(rec.pop), rk('pop'))}
+        ${_stat('km²', nf0(rec.area), rk('area'))}
+        ${_stat('hab/km²', nf0(rec.dens), rk('dens'))}
+        ${_stat(rec.island ? 'concelhos' : 'concelhos', rec.munic, `capital: ${esc(d.capital)}`)}
       </div>
-
-      <div class="pt-info-stats">
-        <div class="pt-info-stat"><span class="pt-stat-val">${pop}</span><span class="pt-stat-lbl">habitantes</span></div>
-        <div class="pt-info-stat"><span class="pt-stat-val">${area}</span><span class="pt-stat-lbl">área</span></div>
-        <div class="pt-info-stat"><span class="pt-stat-val">${d.munic}</span><span class="pt-stat-lbl">concelhos</span></div>
-        <div class="pt-info-stat"><span class="pt-stat-val">${d.region}</span><span class="pt-stat-lbl">região</span></div>
+      ${_ageBar(rec)}
+      <div class="ptx-tabs" role="tablist">
+        ${[['resumo', 'Resumo'], ...(concs.length ? [['concelhos', `Concelhos (${concs.length})`]] : []), ['cultura', 'Cultura']].map(([k, l]) =>
+          `<button role="tab" data-tab="${k}" aria-selected="${_tab === k}" class="${_tab === k ? 'on' : ''}">${l}</button>`).join('')}
       </div>
-
-      <div class="pt-info-rows">
-        <div class="pt-info-row"><span class="pt-row-icon">🏙</span><span class="pt-row-lbl">Capital</span><span class="pt-row-val">${d.capital}</span></div>
-        <div class="pt-info-row"><span class="pt-row-icon">👣</span><span class="pt-row-lbl">Densidade</span><span class="pt-row-val">${density}</span></div>
-        <div class="pt-info-row"><span class="pt-row-icon">🌍</span><span class="pt-row-lbl">NUTS II</span><span class="pt-row-val">${d.nuts2}</span></div>
-      </div>
-
-      <button class="pt-drill-btn" id="pt-drill" data-id="${d.id}">🔎 Explorar concelhos (${d.munic})</button>
-
-      ${extra.mon && extra.mon.length ? `
-      <div class="pt-info-section">
-        <div class="pt-section-title">🏛 Monumentos Históricos</div>
-        <div class="pt-links-wrap">
-          ${extra.mon.map(m => `<a class="pt-mon-link" href="${_wikiPt(m[1])}" target="_blank" rel="noopener">${m[0]} ↗</a>`).join('')}
-        </div>
-      </div>` : ''}
-
-      <div class="pt-info-section">
-        <div class="pt-section-title">📍 Pontos de Interesse</div>
-        <div class="pt-tags-wrap">${pois.map(l => `<span class="pt-tag">${l}</span>`).join('')}</div>
-      </div>
-
-      <div class="pt-info-section">
-        <div class="pt-section-title">🍽 Gastronomia</div>
-        <div class="pt-tags-wrap">${(d.food || []).map(f => `<span class="pt-tag food">${f}</span>`).join('')}</div>
-      </div>
-
-      <div class="pt-info-section">
-        <div class="pt-section-title">🎉 Tradições</div>
-        <div class="pt-tags-wrap">${(d.traditions || []).map(t => `<span class="pt-tag trad">${t}</span>`).join('')}</div>
-      </div>
-
-      <div class="pt-info-section">
-        <div class="pt-section-title">📖 História</div>
-        <p class="pt-history-text">${d.history}</p>
-      </div>
-
-      <div class="pt-info-section">
-        <div class="pt-section-title">💡 Sabia que…</div>
-        <div class="pt-facts-list">
-          ${(d.facts || []).map(f => `<div class="pt-fact-item">• ${f}</div>`).join('')}
-        </div>
-      </div>`;
-
-    el.querySelector('#pt-drill')?.addEventListener('click', () => _showConcelhos(d));
+      <div class="ptx-tabbody" id="ptx-tabbody"></div>
+      <p class="ptx-src">Dados: INE, Censos 2021 · CAOP (DGT)${rec.island ? ' · valores aproximados para as ilhas' : ''}.</p>`;
+    const body = el.querySelector('#ptx-tabbody');
+    const paintTab = () => {
+      el.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === _tab; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+      if (_tab === 'concelhos') body.innerHTML = _concTable(concs), _wireConcTable(body, concs);
+      else if (_tab === 'cultura') body.innerHTML = `
+        ${extra.mon && extra.mon.length ? `<h3>🏛 Monumentos</h3><div class="ptx-links">${extra.mon.map(m => `<a href="${_wikiPt(m[1])}" target="_blank" rel="noopener">${esc(m[0])} ↗</a>`).join('')}</div>` : ''}
+        <h3>📍 Pontos de interesse</h3><div class="ptx-tags">${pois.map(x => `<span>${esc(x)}</span>`).join('')}</div>
+        <h3>🍽 Gastronomia</h3><div class="ptx-tags food">${(d.food || []).map(x => `<span>${esc(x)}</span>`).join('')}</div>
+        <h3>🎉 Tradições</h3><div class="ptx-tags trad">${(d.traditions || []).map(x => `<span>${esc(x)}</span>`).join('')}</div>`;
+      else body.innerHTML = `
+        <p class="ptx-text">${esc(d.history)}</p>
+        ${(d.facts || []).length ? `<h3>💡 Sabias que…</h3><ul class="ptx-facts">${d.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
+        ${concs.length ? `<button class="btn btn-sm" data-goto="concelhos">Ver os ${concs.length} concelhos →</button>` : ''}`;
+      body.querySelector('[data-goto]')?.addEventListener('click', () => { _tab = 'concelhos'; paintTab(); });
+    };
+    el.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { _tab = b.dataset.tab; paintTab(); }));
+    paintTab();
+    _wikiHero(el.querySelector('#ptx-hero-img'), d.capital, d.name, true);
   }
 
-  /* Concelho info panel — uses ONLY authentic CAOP figures (freguesias, area,
-     max altitude) plus a Wikipedia link. No invented cultural data per concelho. */
-  function _renderConcelhoInfo(feature, d) {
-    const el = document.getElementById('pt-info-content');
-    if (!el) return;
-    const p = feature.properties;
-    const areaKm = p.ha ? (p.ha / 100).toLocaleString('pt', { maximumFractionDigits: 1 }) + ' km²' : '—';
-    const isCapital = CAPITAL_IDS[d.id] && _normalizeStr(CAPITAL_IDS[d.id]) === _normalizeStr(p.c);
-    const wiki = `https://pt.wikipedia.org/wiki/${encodeURIComponent(p.c.replace(/ /g, '_'))}`;
-    /* Curated local info (no API call). Null when this concelho isn't covered. */
-    const info = (typeof PT_CONCELHO_INFO !== 'undefined') ? PT_CONCELHO_INFO.get(p.c) : null;
+  function _concTable(concs) {
+    const cols = [['name', 'Concelho'], ['pop', 'Pop.'], ['dens', 'hab/km²'], ['old', '65+']];
+    const s = _concSort;
+    const list = concs.slice().sort((a, b) => s === 'name' ? a.name.localeCompare(b.name, 'pt') : (val(b, s) ?? -1) - (val(a, s) ?? -1));
+    const max = Math.max(...concs.map(r => r.pop || 0));
+    return `<table class="ptx-ctable"><thead><tr>${cols.map(([k, l]) => `<th><button data-sort="${k}" class="${s === k ? 'on' : ''}">${l}${s === k ? ' ↓' : ''}</button></th>`).join('')}</tr></thead>
+      <tbody>${list.map(r => `<tr data-ci="${_cRecs.indexOf(r)}">
+        <td><span class="ptx-ct-name">${esc(r.name)}${_norm(r.name) === _norm(D(r.d).capital) ? ' <small>capital</small>' : ''}</span><span class="ptx-ct-bar"><i style="width:${(r.pop || 0) / max * 100}%"></i></span></td>
+        <td>${r.pop ? nf0(r.pop) : '—'}</td><td>${r.dens ? nf0(r.dens) : '—'}</td><td>${r.old != null ? nf1(r.old) + '%' : '—'}</td></tr>`).join('')}</tbody></table>`;
+  }
+  function _wireConcTable(body, concs) {
+    body.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => { _concSort = b.dataset.sort; body.innerHTML = _concTable(concs); _wireConcTable(body, concs); }));
+    body.querySelectorAll('tr[data-ci]').forEach(tr => tr.addEventListener('click', () => _selectConcelho(_cRecs[+tr.dataset.ci])));
+  }
 
+  /* ── painel: concelho ── */
+  function _cmp(v, nat, unit, more, less) {
+    if (v == null || nat == null) return '';
+    const dlt = v - nat;
+    if (unit === '%') return Math.abs(dlt) < 1 ? 'na média do país' : `${nf1(Math.abs(dlt))} p.p. ${dlt > 0 ? more : less} que o país`;
+    const r = v / nat;
+    return r > 1.15 ? `${nf1(r)}× a média do país` : r < 0.87 ? `${nf0(100 - r * 100)}% abaixo da média` : 'perto da média do país';
+  }
+  function _renderConcelho(rec) {
+    const d = D(rec.d), el = _container.querySelector('#ptx-pbody');
+    const pool = _cRecs.filter(r => r.d === rec.d);
+    const rk = k => { const r = _rankOf(rec, k, pool); return r ? `${r.pos}.º de ${r.of} no distrito` : ''; };
+    const capital = _norm(rec.name) === _norm(d.capital);
+    const info = (typeof PT_CONCELHO_INFO !== 'undefined') ? PT_CONCELHO_INFO.get(rec.name) : null;
     el.innerHTML = `
-      <button class="pt-back-btn" id="pt-back">← ${d.name}</button>
-      <div class="pt-info-hero" style="--dist-color:${d.color}">
-        <div class="pt-info-emoji">${isCapital ? '⭐' : '🏘'}</div>
-        <div class="pt-info-title-group">
-          <div class="pt-info-name">${p.c}</div>
-          <div class="pt-info-tagline">${isCapital ? `Capital de distrito · ${d.name}` : `Concelho · distrito de ${d.name}`}</div>
+      <button class="ptx-back" id="ptx-back">← ${esc(d.name)}</button>
+      <header class="ptx-hero" style="--c:${d.color}">
+        <div class="ptx-hero-img" id="ptx-hero-img"></div>
+        <div class="ptx-hero-txt">
+          <span class="ptx-chip" style="--c:${d.color}">${capital ? '⭐ Capital de distrito' : 'Concelho'} · ${esc(d.name)}</span>
+          <h2>${esc(rec.name)}</h2>
         </div>
+      </header>
+      <div class="ptx-stats">
+        ${_stat('habitantes', rec.pop ? nf0(rec.pop) : '—', rk('pop'))}
+        ${_stat('hab/km²', rec.dens ? nf0(rec.dens) : '—', _cmp(rec.dens, _nat.dens))}
+        ${_stat('km²', nf1(rec.area), rk('area'))}
+        ${_stat('freguesias', rec.nf ?? '—', '')}
+        ${_stat('m de altitude máx.', rec.alt ? nf0(rec.alt) : '—', rk('alt'))}
+        ${_stat('% com 65 ou mais', rec.old != null ? nf1(rec.old) + '%' : '—', _cmp(rec.old, _nat.old, '%', 'mais', 'menos'))}
       </div>
-
-      <div class="pt-info-stats">
-        <div class="pt-info-stat"><span class="pt-stat-val">${p.nf ?? '—'}</span><span class="pt-stat-lbl">freguesias</span></div>
-        <div class="pt-info-stat"><span class="pt-stat-val">${areaKm}</span><span class="pt-stat-lbl">área</span></div>
-        <div class="pt-info-stat"><span class="pt-stat-val">${p.am ? p.am + ' m' : '—'}</span><span class="pt-stat-lbl">altitude máx.</span></div>
-        <div class="pt-info-stat"><span class="pt-stat-val">${d.name}</span><span class="pt-stat-lbl">distrito</span></div>
-      </div>
-
+      ${_ageBar(rec)}
+      <div class="ptx-wiki" id="ptx-wiki"><p class="ptx-muted">A procurar na Wikipédia…</p></div>
       ${info ? `
-        <div class="pt-info-section">
-          <div class="pt-section-title">📖 História</div>
-          <p class="pt-history-text">${info.hist}</p>
-        </div>
-        ${info.poi && info.poi.length ? `
-        <div class="pt-info-section">
-          <div class="pt-section-title">📍 Pontos de Interesse</div>
-          <div class="pt-tags-wrap">${info.poi.map(x => `<span class="pt-tag">${x}</span>`).join('')}</div>
-        </div>` : ''}
-        ${info.food && info.food.length ? `
-        <div class="pt-info-section">
-          <div class="pt-section-title">🍽 Gastronomia</div>
-          <div class="pt-tags-wrap">${info.food.map(x => `<span class="pt-tag food">${x}</span>`).join('')}</div>
-        </div>` : ''}
-        ${info.trad && info.trad.length ? `
-        <div class="pt-info-section">
-          <div class="pt-section-title">🎉 Tradições</div>
-          <div class="pt-tags-wrap">${info.trad.map(x => `<span class="pt-tag trad">${x}</span>`).join('')}</div>
-        </div>` : ''}
-        <div class="pt-info-section">
-          <div class="pt-section-title">🔗 Saber mais</div>
-          <a class="pt-wiki-link" href="${wiki}" target="_blank" rel="noopener">Wikipédia: ${p.c} ↗</a>
-        </div>`
-      : `
-        <div class="pt-info-section">
-          <div class="pt-section-title">📖 Sobre o concelho</div>
-          <p class="pt-history-text">${p.c} é um concelho do distrito de ${d.name}, na região ${d.region}.${isCapital ? ` É a capital do distrito.` : ''} Os dados oficiais (freguesias, área e altitude) são da Carta Administrativa Oficial de Portugal (CAOP, Direção-Geral do Território).</p>
-        </div>
-        <div class="pt-info-section">
-          <div class="pt-section-title">🔗 Saber mais</div>
-          <a class="pt-wiki-link" href="${wiki}" target="_blank" rel="noopener">Wikipédia: ${p.c} ↗</a>
-        </div>
-        <div class="pt-info-note">Informação cultural detalhada para este concelho ainda não está disponível — vê o nível do distrito de <strong>${d.name}</strong> em “← ${d.name}”.</div>`}`;
-
-    el.querySelector('#pt-back')?.addEventListener('click', () => _backToDistrict(d));
+        ${info.poi && info.poi.length ? `<h3>📍 Pontos de interesse</h3><div class="ptx-tags">${info.poi.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}
+        ${info.food && info.food.length ? `<h3>🍽 Gastronomia</h3><div class="ptx-tags food">${info.food.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}
+        ${info.trad && info.trad.length ? `<h3>🎉 Tradições</h3><div class="ptx-tags trad">${info.trad.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}
+        ${info.hist ? `<h3>📖 História</h3><p class="ptx-text">${esc(info.hist)}</p>` : ''}` : ''}
+      <p class="ptx-src">Dados: INE, Censos 2021 · CAOP (DGT) · Wikipédia.</p>`;
+    el.querySelector('#ptx-back').addEventListener('click', () => { _selConc = null; _tab = 'concelhos'; _select(d, { tab: 'concelhos' }); });
+    _wikiHero(el.querySelector('#ptx-hero-img'), rec.name, d.name, false, el.querySelector('#ptx-wiki'));
   }
 
-  /* Return from a concelho to its parent district view. */
-  function _backToDistrict(d) {
-    _concelhoSel = null;
-    if (_concelhoLayer) {
-      _concelhoLayer.eachLayer(l => l.setStyle({ fillOpacity: 0.12, weight: 1, color: _isDark() ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.4)' }));
+  /* ── Wikipédia ao vivo (resumo + foto), com cache na sessão ── */
+  async function _wiki(name, dname) {
+    const key = 'ptwiki2:' + name + '|' + dname;
+    try { const c = sessionStorage.getItem(key); if (c) return JSON.parse(c); } catch (e) {}
+    const api = 'https://pt.wikipedia.org/w/api.php?action=query&list=search&srlimit=5&format=json&origin=*&srsearch=';
+    const s = await fetch(api + encodeURIComponent(`${name} município distrito de ${dname}`)).then(r => r.json());
+    const hits = ((s.query || {}).search || []).map(h => h.title);
+    const n = _norm(name);
+    const title = hits.find(t => _norm(t) === n) || hits.find(t => _norm(t).startsWith(n + ' (')) || hits.find(t => _norm(t).startsWith(n)) || null;
+    if (!title) return null;
+    const sum = await fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title.replace(/ /g, '_'))).then(r => (r.ok ? r.json() : null));
+    if (!sum || sum.type === 'disambiguation') return null;
+    /* o Wikimedia só serve miniaturas em larguras-padrão (330, 500, 960…) —
+       pedir 640px dá erro 400 */
+    const th = sum.thumbnail, ow = (sum.originalimage || {}).width || 0;
+    const img = th ? th.source.replace(/\/\d+px-/, '/' + (ow >= 960 ? 960 : ow >= 500 ? 500 : th.width) + 'px-') : null;
+    const out = { title: sum.title, extract: sum.extract, img, thumb: th ? th.source : null, url: ((sum.content_urls || {}).desktop || {}).page || _wikiPt(title) };
+    try { sessionStorage.setItem(key, JSON.stringify(out)); } catch (e) {}
+    return out;
+  }
+  async function _wikiHero(imgEl, name, dname, heroOnly, textEl) {
+    let w = null;
+    try { w = await _wiki(name, dname); } catch (e) {}
+    if (imgEl && imgEl.isConnected && w && w.img) {
+      const im = new Image();
+      im.alt = ''; im.decoding = 'async';
+      im.onload = () => { if (!imgEl.isConnected) return; imgEl.replaceChildren(im); imgEl.insertAdjacentHTML('beforeend', '<span class="ptx-credit">Foto: Wikipédia</span>'); imgEl.parentElement.classList.add('has-img'); };
+      im.onerror = () => { if (w.thumb && im.src !== w.thumb) im.src = w.thumb; };
+      im.src = w.img;
     }
-    _renderInfo(d);
-    if (_concelhoLayer && _concelhoLayer.getBounds && _concelhoLayer.getBounds().isValid()) {
-      _map.flyToBounds(_concelhoLayer.getBounds(), { padding: [30, 30], maxZoom: 11, duration: 0.6 });
+    if (!heroOnly && textEl && textEl.isConnected) {
+      textEl.innerHTML = w && w.extract
+        ? `<p class="ptx-text">${esc(w.extract)}</p><a class="ptx-wlink" href="${esc(w.url)}" target="_blank" rel="noopener">Ler mais na Wikipédia ↗</a>`
+        : `<a class="ptx-wlink" href="${_wikiPt(name)}" target="_blank" rel="noopener">Procurar ${esc(name)} na Wikipédia ↗</a>`;
     }
   }
 
-  /* ── Search + controls ── */
-  function _wireSearch(container) {
-    const input = container.querySelector('#pt-search');
-    if (!input) return;
-    input.addEventListener('input', () => {
-      const q = _normalizeStr(input.value);
-      container.querySelectorAll('.pt-district-chip').forEach(c => {
-        const name = _normalizeStr(c.querySelector('.pt-dc-name')?.textContent || '');
-        c.style.display = !q || name.includes(q) ? '' : 'none';
-      });
+  /* ════════════════════════════ UI ════════════════════════════ */
+  function _wireUI() {
+    const c = _container;
+    c.querySelectorAll('[data-level]').forEach(b => b.addEventListener('click', () => {
+      _level = b.dataset.level;
+      c.querySelectorAll('[data-level]').forEach(x => x.classList.toggle('on', x === b));
+      if (_level === 'concelho' && _metric === 'district') _setMetric('pop');
+      if (_level === 'concelho' && !_selected) _fitMainland();
+      _refresh();
+    }));
+    c.querySelectorAll('[data-metric]').forEach(b => b.addEventListener('click', () => _setMetric(b.dataset.metric)));
+    c.querySelectorAll('[data-base]').forEach(b => b.addEventListener('click', () => { _setBase(b.dataset.base); _labels(); }));
+    c.querySelectorAll('[data-island]').forEach(b => b.addEventListener('click', () => _select(D(b.dataset.island))));
+    c.querySelector('#ptx-close').addEventListener('click', _clear);
+    c.querySelector('#ptx-rank').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.d) _select(D(b.dataset.d)); else if (b.dataset.c) _selectConcelho(_cRecs[+b.dataset.c]);
     });
+    c.querySelector('#ptx-rand').addEventListener('click', discoverRandom);
 
-    container.querySelector('#pt-discover')?.addEventListener('click', () => {
-      const d = DISTRICTS[Math.floor(Math.random() * DISTRICTS.length)];
-      _select(d);
-    });
+    /* pesquisa: distritos e concelhos */
+    const q = c.querySelector('#ptx-q'), res = c.querySelector('#ptx-qres');
+    let hits = [];
+    const run = () => {
+      const s = _norm(q.value);
+      if (!s) { res.hidden = true; return; }
+      const ds = DISTRICTS.filter(d => _norm(d.name).includes(s)).map(d => ({ t: 'd', d, name: d.name, sub: 'Distrito' }));
+      const cs = _cRecs.filter(r => _norm(r.name).includes(s)).sort((a, b) => _norm(a.name).indexOf(s) - _norm(b.name).indexOf(s)).map(r => ({ t: 'c', r, name: r.name, sub: `Concelho · ${D(r.d).name}` }));
+      hits = [...ds, ...cs].slice(0, 8);
+      res.innerHTML = hits.length ? hits.map((h, i) => `<button role="option" data-i="${i}"><b>${esc(h.name)}</b><small>${esc(h.sub)}</small></button>`).join('') : '<div class="ptx-qnone">Nada encontrado</div>';
+      res.hidden = false;
+    };
+    const go = h => { if (!h) return; q.value = ''; res.hidden = true; if (h.t === 'd') _select(h.d); else _selectConcelho(h.r); };
+    q.addEventListener('input', run);
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(hits[0]); } if (e.key === 'Escape') { q.value = ''; res.hidden = true; } });
+    res.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) go(hits[+b.dataset.i]); });
+    document.addEventListener('click', e => { if (!c.contains(e.target) || !e.target.closest('.ptx-search')) res.hidden = true; });
 
-    container.querySelector('#pt-info-close')?.addEventListener('click', _closePanel);
-
-    /* Escape closes the open info panel (bind once, even across re-mounts). */
-    if (!_ptEscBound) {
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && _container && _container.offsetParent !== null) _closePanel();
-      });
-      _ptEscBound = true;
+    if (!_escBound) {
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && _container && _container.offsetParent !== null && _wrap.classList.contains('ptx-open')) _clear(); });
+      _escBound = true;
     }
   }
-  let _ptEscBound = false;
+  let _escBound = false;
 
-  function _wireSidebar(container) {
-    container.querySelectorAll('.pt-district-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const d = DISTRICTS.find(x => x.id === chip.dataset.id);
-        if (d) _select(d);
-      });
-    });
+  function _setMetric(k) {
+    _metric = k;
+    try { localStorage.setItem('pt-metric', k); } catch (e) {}
+    _container.querySelectorAll('[data-metric]').forEach(b => { const on = b.dataset.metric === k; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    _refresh();
   }
 
-  /* ── Public discover ── */
   function discoverRandom() {
-    const d = DISTRICTS[Math.floor(Math.random() * DISTRICTS.length)];
-    _select(d);
-    return d.name;
+    if (!_cRecs.length) return;
+    if (Math.random() < 0.35) { const d = DISTRICTS[Math.floor(Math.random() * DISTRICTS.length)]; _select(d); return d.name; }
+    const r = _cRecs[Math.floor(Math.random() * _cRecs.length)];
+    _selectConcelho(r);
+    return r.name;
   }
 
   return { mount, resume, stop, discoverRandom };
