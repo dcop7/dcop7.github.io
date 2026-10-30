@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-30T05:13:16.972Z",
+ "generated": "2026-10-30T12:32:16.201Z",
  "total": 84,
  "broken": 0,
  "unknown": 28,
@@ -157,8 +157,8 @@
   {
    "id": "apoios:medidas-emprego",
    "url": "https://www.iefp.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:programa-regressar",
@@ -391,8 +391,8 @@
   {
    "id": "calendario:superior-1fase",
    "url": "https://www.dges.gov.pt/online/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:bolsas-dges",
