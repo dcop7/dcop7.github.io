@@ -81,18 +81,27 @@ console.log('Electricity (OMIE)…');
     if (!t || !/MARGINALPDBCPT/i.test(t)) return null;
     const vals = t.split('\n').map(l => l.split(';')).filter(c => c.length >= 5 && /^\d{4}$/.test(c[0])).map(c => parseFloat(c[4])).filter(v => isFinite(v));
     if (!vals.length) return null;
-    return { avg: vals.reduce((a, b) => a + b, 0) / vals.length, min: Math.min(...vals), max: Math.max(...vals) };
+    /* desde out/2025 o OMIE publica períodos de 15 min (96; 92/100 nos dias
+       de mudança de hora) — agrega-se por hora para o gráfico da homepage */
+    const per = vals.length > 30 ? 4 : 1, hours = [];
+    for (let i = 0; i < vals.length; i += per) { const g = vals.slice(i, i + per); hours.push(g.reduce((a, b) => a + b, 0) / g.length); }
+    return { avg: vals.reduce((a, b) => a + b, 0) / vals.length, min: Math.min(...vals), max: Math.max(...vals), hours };
   }
-  const today = new Date(); const yest = new Date(Date.now() - 86400000);
-  let cur = await omieAvg(today); let base = await omieAvg(yest);
-  if (!cur) { cur = base; base = await omieAvg(new Date(Date.now() - 2 * 86400000)); }
+  const iso = d => d.toISOString().slice(0, 10);
+  const today = new Date(); const yest = new Date(Date.now() - 86400000); const tomorrow = new Date(Date.now() + 86400000);
+  let cur = await omieAvg(today); let base = await omieAvg(yest); let curDate = todayISO;
+  if (!cur) { cur = base; curDate = iso(yest); base = await omieAvg(new Date(Date.now() - 2 * 86400000)); }
+  const nxt = await omieAvg(tomorrow);           /* o OMIE publica o dia seguinte por volta das 13h */
   if (cur) {
     const LOSSES = 1.10, TAR = 0.04, EXTRA = 0.012, IVA = 0.23;
+    const toBill = mwh => +(((mwh / 1000) * LOSSES + TAR + EXTRA) * (1 + IVA) * 100).toFixed(1);
     const omieC = +(cur.avg / 10).toFixed(2);
-    const bill = +(((cur.avg / 1000) * LOSSES + TAR + EXTRA) * (1 + IVA) * 100).toFixed(1);
-    const prevBill = base ? +(((base.avg / 1000) * LOSSES + TAR + EXTRA) * (1 + IVA) * 100).toFixed(1) : null;
+    const bill = toBill(cur.avg);
+    const prevBill = base ? toBill(base.avg) : null;
     out.electricity = {
-      date: todayISO, omie: omieC, bill, prevBill,
+      date: curDate, omie: omieC, bill, prevBill,
+      hours: cur.hours.map(toBill),
+      next: nxt ? { date: iso(tomorrow), bill: toBill(nxt.avg), hours: nxt.hours.map(toBill) } : null,
       min: +(cur.min / 10).toFixed(1), max: +(cur.max / 10).toFixed(1),
       trend: prevBill == null ? 'flat' : (bill > prevBill + 0.1 ? 'up' : bill < prevBill - 0.1 ? 'down' : 'flat'),
     };

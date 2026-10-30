@@ -588,3 +588,63 @@ body.light .uw-sk-lab { text-shadow: 0 1px 3px rgba(255,255,255,.8); }
 .hm-name { font-size: .88rem; font-weight: 700; color: var(--text); }
 .hm-sub { font-size: .72rem; color: var(--muted); text-transform: capitalize; }
 .hm-reason { font-size: .72rem; color: var(--muted); margin-top: .2rem; line-height: 1.4; }
+
+/* ── popup da meteorologia: saída suave, seta para o dia (out/2026) ── */
+.uw-fc-wrap { position: relative; }
+.uw-pop { transition: opacity .16s ease, transform .16s ease; }
+.uw-pop.uw-closing { opacity: 0; transform: translateY(4px); pointer-events: none; }
+.uw-fc-wrap.uw-arrow-on::before { content: ''; position: absolute; z-index: 26; bottom: calc(100% + .4rem - 6px); left: var(--ax, 50%);
+  width: 11px; height: 11px; background: var(--card-solid); border-right: 1px solid var(--border2); border-bottom: 1px solid var(--border2);
+  transform: translateX(-50%) rotate(45deg); pointer-events: none; }
+.uw-pop:not([data-pinned]) .uw-pop-x { opacity: .45; }
+
+/* ── combustíveis: mini-gráfico + variação em cêntimos ── */
+.util-fuel .uf-row { gap: .55rem; }
+.uf-l { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.uf-spark { width: 46px; height: 16px; flex: none; overflow: visible; }
+.uf-spark polyline { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.uf-spark.up polyline { stroke: var(--red-txt); } .uf-spark.dn polyline { stroke: var(--green-txt); }
+.uf-p { font-variant-numeric: tabular-nums; }
+.uf-d { min-width: 0; padding: .12rem .4rem; border-radius: 999px; font-size: .64rem; white-space: nowrap; }
+.uf-d.up { background: rgba(239,68,68,.12); } .uf-d.dn { background: rgba(34,197,94,.12); }
+.uf-d.flat { color: var(--muted); background: var(--card2); }
+.uf-tank { margin-top: .5rem; font-size: .7rem; color: var(--muted); }
+.uf-tank b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ── energia: preço do dia + 24 barras horárias ── */
+.ue-now { flex-wrap: wrap; align-items: center; row-gap: .25rem; }
+.ue-vs { font-size: .66rem; font-weight: 700; padding: .12rem .45rem; border-radius: 999px; white-space: nowrap; }
+.ue-vs.up { color: var(--red-txt); background: rgba(239,68,68,.12); }
+.ue-vs.dn { color: var(--green-txt); background: rgba(34,197,94,.12); }
+.ue-vs.flat { color: var(--muted); background: var(--card2); }
+.ue-chart { display: flex; align-items: flex-end; gap: 2px; height: 46px; margin-top: .7rem; }
+.ue-b { flex: 1; min-width: 0; border-radius: 2px 2px 0 0; background: color-mix(in srgb, var(--accent) 45%, transparent); position: relative; }
+.ue-b.cheap { background: #22c55e; }
+.ue-b.dear { background: color-mix(in srgb, #f97316 75%, transparent); }
+.ue-b.now { outline: 2px solid var(--text); outline-offset: 1px; z-index: 1; }
+.ue-b:hover { filter: brightness(1.25); }
+.ue-axis { display: flex; justify-content: space-between; font-size: .56rem; color: var(--muted); margin-top: .2rem; font-variant-numeric: tabular-nums; }
+.ue-tip { margin-top: .4rem; font-size: .68rem; color: var(--text2); line-height: 1.5; }
+.ue-tip b { color: var(--text); } .ue-tip small { color: var(--muted); }
+.ue-dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: .25rem; vertical-align: 0; }
+.ue-dot.cheap { background: #22c55e; } .ue-dot.dear { background: #f97316; }
+.ue-sep { margin: 0 .3rem; color: var(--muted); }
+.util-fuel { container-type: inline-size; }
+
+/* popup compacto (out/2026): 1 gráfico + indicadores em linha */
+.uw-pop { padding: .6rem .75rem .65rem; }
+.uw-spark { height: 58px; }
+.uw-chart-t { display: flex; justify-content: space-between; align-items: baseline; }
+.uw-pop-grid { grid-template-columns: repeat(3, 1fr); gap: .3rem; }
+.uw-cell { flex-direction: row; align-items: baseline; gap: .3rem; padding: .3rem .45rem; flex-wrap: wrap; }
+.uw-cell-i { font-size: .74rem; }
+.uw-cell-v { font-size: .74rem; }
+.uw-cell-l { font-size: .58rem; text-transform: none; letter-spacing: 0; }
+/* combustíveis em duas linhas: nome + variação / preço + tendência */
+.util-fuel .uf-row { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "l d" "p s"; align-items: center; row-gap: .1rem; column-gap: .5rem; }
+.util-fuel .uf-l { grid-area: l; font-size: .74rem; color: var(--text2); }
+.util-fuel .uf-d { grid-area: d; justify-self: end; }
+.util-fuel .uf-p { grid-area: p; margin-left: 0; font-size: 1.05rem; }
+.util-fuel .uf-spark { grid-area: s; justify-self: end; width: 56px; height: 18px; }
+.ue-tip { display: flex; flex-direction: column; gap: .1rem; }
+.ue-tip small { margin-left: .2rem; }
