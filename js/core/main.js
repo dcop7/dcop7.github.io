@@ -764,52 +764,41 @@ function _dayWorstWarn(dateStr, warns) {
 }
 
 /* 24h temperature curve with labelled max/min markers (procedural SVG) */
-function _uwSpark(hT) {
+/* Um só gráfico para o dia: curva da temperatura com as barras da
+   probabilidade de chuva por baixo, no mesmo eixo das horas (eram dois
+   gráficos empilhados e o popup ficava maior do que o próprio cartão). */
+function _uwChart(hT, hP) {
   const l = lang();
   const pts = (hT || []).filter(v => v != null);
   if (pts.length < 6) return '';
-  const W = 240, H = 44, lo = Math.min(...pts), hi = Math.max(...pts), rng = (hi - lo) || 1;
+  const W = 240, H = 58, TOP = 6, TB = 34;   /* faixa da temperatura: TOP..TB */
+  const lo = Math.min(...pts), hi = Math.max(...pts), rng = (hi - lo) || 1;
   const step = W / (pts.length - 1);
-  const xy = pts.map((v, i) => [i * step, H - 9 - ((v - lo) / rng) * (H - 22)]);
+  const xy = pts.map((v, i) => [i * step, TB - ((v - lo) / rng) * (TB - TOP - 6)]);
   const line = xy.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
-  const area = `0,${H} ` + line + ` ${W},${H}`;
+  const area = `0,${TB + 4} ` + line + ` ${W},${TB + 4}`;
   const hiIx = pts.indexOf(hi), loIx = pts.indexOf(lo);
-  /* value labels as HTML overlays: SVG <text> gets squashed by the
-     non-uniform preserveAspectRatio="none" scaling. Each label carries the
-     hour, so it's clear WHEN the max/min happens. */
+  const rp = (hP || []).map(v => (v == null ? 0 : v)), hasRain = (hP || []).some(v => v != null);
+  const n = rp.length || 24, bw = W / n - 1.2, RB = H - 1, RH = 16;
+  const bars = hasRain ? rp.map((v, i) => {
+    const h = Math.max((v / 100) * RH, 1);
+    return `<rect x="${(i * (W / n) + .6).toFixed(1)}" y="${(RB - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1" fill="${v > 0 ? '#38bdf8' : 'rgba(148,163,184,.2)'}" opacity="${v > 0 ? (0.45 + v / 200).toFixed(2) : 1}"/>`;
+  }).join('') : '';
   const pc = (x, min, max) => Math.min(Math.max(x, min), max).toFixed(1) + '%';
   const lab = (ix, cls) =>
-    `<span class="uw-sk-lab ${cls}" style="left:${pc(xy[ix][0] / W * 100, 7, 93)};top:${pc(xy[ix][1] / H * 100, 4, 96)}">${Math.round(pts[ix])}° · ${ix}h</span>`;
+    `<span class="uw-sk-lab ${cls}" style="left:${pc(xy[ix][0] / W * 100, 8, 92)};top:${pc(xy[ix][1] / H * 100, 6, 90)}">${Math.round(pts[ix])}° · ${ix}h</span>`;
+  const rmax = hasRain ? Math.max(...rp) : null;
   return `<div class="uw-chart">
-    <div class="uw-chart-t">🌡️ ${l === 'pt' ? 'Temperatura ao longo do dia' : 'Temperature through the day'}</div>
+    <div class="uw-chart-t"><span>🌡️ ${l === 'pt' ? 'Temperatura' : 'Temperature'}</span>${hasRain ? `<small>💧 ${l === 'pt' ? 'chuva' : 'rain'} ${rmax}% ${l === 'pt' ? 'máx' : 'max'}</small>` : ''}</div>
     <div class="uw-chart-sv">
       <svg class="uw-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-        <defs><linearGradient id="uwsa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgba(99,102,241,.35)"/><stop offset="1" stop-color="rgba(99,102,241,0)"/></linearGradient></defs>
+        <defs><linearGradient id="uwsa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgba(99,102,241,.32)"/><stop offset="1" stop-color="rgba(99,102,241,0)"/></linearGradient></defs>
         <polygon points="${area}" fill="url(#uwsa)"/>
-        <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <circle cx="${xy[hiIx][0].toFixed(1)}" cy="${xy[hiIx][1].toFixed(1)}" r="2.4" fill="#ef4444"/>
-        <circle cx="${xy[loIx][0].toFixed(1)}" cy="${xy[loIx][1].toFixed(1)}" r="2.4" fill="#3b82f6"/>
+        <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        ${bars}
       </svg>
       ${lab(hiIx, 'max')}${lab(loIx, 'min')}
     </div>
-    <div class="uw-spark-x"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div>
-  </div>`;
-}
-
-/* 24h rain-probability bars */
-function _uwRainBars(hP) {
-  const l = lang();
-  const pts = (hP || []).map(v => (v == null ? 0 : v));
-  if (!(hP || []).some(v => v != null)) return '';
-  const W = 240, H = 26, n = pts.length, bw = W / n - 1;
-  const bars = pts.map((v, i) =>
-    `<rect x="${(i * (W / n) + .5).toFixed(1)}" y="${(H - Math.max((v / 100) * H, 1)).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max((v / 100) * H, 1).toFixed(1)}" rx="1" fill="${v > 0 ? 'url(#uwrb)' : 'rgba(148,163,184,.18)'}"/>`).join('');
-  return `<div class="uw-chart">
-    <div class="uw-chart-t">💧 ${l === 'pt' ? 'Probabilidade de chuva' : 'Rain probability'} <small>${Math.max(...pts)}% ${l === 'pt' ? 'máx' : 'max'}</small></div>
-    <svg class="uw-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="uwrb" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
-      ${bars}
-    </svg>
     <div class="uw-spark-x"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div>
   </div>`;
 }
@@ -820,22 +809,14 @@ function _uwDayHTML(di) {
   const l = lang(), dt = new Date(d.date + 'T00:00'), dw = wmo(d.code, 1);
   const fmt1 = v => String((+v).toFixed(1)).replace('.', l === 'pt' ? ',' : '.');
   const cell = (ico, lbl, val) => val == null ? '' :
-    `<div class="uw-cell"><span class="uw-cell-i">${ico}</span><span class="uw-cell-l">${lbl}</span><span class="uw-cell-v">${val}</span></div>`;
-  /* daylight duration */
-  let dayLen = null;
-  if (d.sunrise && d.sunset) {
-    const msl = Date.parse(d.sunset) - Date.parse(d.sunrise);
-    if (msl > 0) dayLen = `${Math.floor(msl / 36e5)} h ${String(Math.round(msl % 36e5 / 6e4)).padStart(2, '0')}`;
-  }
+    `<div class="uw-cell" title="${lbl}"><span class="uw-cell-i">${ico}</span><span class="uw-cell-v">${val}</span><span class="uw-cell-l">${lbl}</span></div>`;
   const cells = [
-    cell('💧', l === 'pt' ? 'Prob. chuva' : 'Rain prob.', d.pop != null ? `${d.pop}%` : null),
-    cell('🌧️', l === 'pt' ? 'Precipitação' : 'Precip.', d.rain != null ? `${fmt1(d.rain)} mm` : null),
-    cell('💨', l === 'pt' ? 'Vento máx.' : 'Max wind', d.windMax != null ? `${d.windMax} km/h` : null),
-    cell('☀️', 'UV', d.uv != null ? `${d.uv} · ${uvLevel(d.uv)}` : null),
-    cell('🌡️', l === 'pt' ? 'Sensação máx.' : 'Feels like max', d.feelsMax != null ? `${d.feelsMax}°` : null),
-    cell('🌅', l === 'pt' ? 'Nascer' : 'Sunrise', d.sunrise ? d.sunrise.slice(11, 16) : null),
-    cell('🌇', l === 'pt' ? 'Pôr do sol' : 'Sunset', d.sunset ? d.sunset.slice(11, 16) : null),
-    cell('⏱️', l === 'pt' ? 'Duração do dia' : 'Daylight', dayLen),
+    cell('💧', l === 'pt' ? 'chuva' : 'rain', d.pop != null ? `${d.pop}%` : null),
+    cell('🌧️', l === 'pt' ? 'precipitação' : 'precip.', d.rain != null ? `${fmt1(d.rain)} mm` : null),
+    cell('💨', l === 'pt' ? 'vento máx.' : 'max wind', d.windMax != null ? `${d.windMax} km/h` : null),
+    cell('☀️', 'UV ' + (d.uv != null ? uvLevel(d.uv) : ''), d.uv != null ? `${d.uv}` : null),
+    cell('🌡️', l === 'pt' ? 'sensação' : 'feels like', d.feelsMax != null ? `${d.feelsMax}°` : null),
+    cell('🌅', l === 'pt' ? 'sol' : 'sun', d.sunrise && d.sunset ? `${d.sunrise.slice(11, 16)}–${d.sunset.slice(11, 16)}` : null),
   ].join('');
 
   /* IPMA warnings overlapping THIS day — from the FULL warning list (the
@@ -873,8 +854,7 @@ function _uwDayHTML(di) {
       <div><b>${wd()[dt.getDay()]}, ${dt.getDate()} ${ms()[dt.getMonth()]}</b><small>${dw.text} · <span class="uw-max">▲ ${d.max}°</span> <span class="uw-min">▼ ${d.min}°</span></small></div>
       <button type="button" class="uw-pop-x" aria-label="Fechar">✕</button></div>
     ${warnBox}
-    ${_uwSpark(d.hT)}
-    ${_uwRainBars(d.hP)}
+    ${_uwChart(d.hT, d.hP)}
     ${rainLine}
     <div class="uw-pop-grid">${cells}</div>`;
 }
@@ -905,17 +885,52 @@ function _uwClampPop(pop) {
      the popup while we measure, which would under-correct by up to 8px */
   const top = wrap.getBoundingClientRect().top + pop.offsetTop;
   const over = minTop - top;
-  if (over > 0) pop.style.bottom = `calc(100% + .4rem - ${Math.round(over)}px)`;
+  if (over > 0) { pop.style.bottom = `calc(100% + .4rem - ${Math.round(over)}px)`; wrap.classList.remove('uw-arrow-on'); }
 }
-function _uwOpenPop(pop, html) {
+/* O popup do dia: abre ao passar o rato (pré-visualização) ou com clique
+   (fica fixo até se fechar). Antes desaparecia de repente quando o rato saía
+   do chip, mudava de altura de dia para dia e não mostrava a que dia se
+   referia. Agora: zona de hover = chips + popup, saída com fade, altura que
+   não encolhe enquanto está aberto e uma seta a apontar para o dia. */
+function _uwOpenPop(pop, html, anchor) {
+  clearTimeout(pop._uwT3);
+  pop.classList.remove('uw-closing');
+  const was = !pop.hidden ? pop.offsetHeight : 0;
   pop.innerHTML = html;
   pop.hidden = false;
+  if (was) pop.style.minHeight = Math.max(was, parseFloat(pop.style.minHeight) || 0) + 'px';
+  _uwArrow(pop, anchor);
   /* one-shot measurement is not enough: late webfont/image loads reflow the
      page (moving the anchor) after the first frame — re-clamp a few times */
   requestAnimationFrame(() => _uwClampPop(pop));
   clearTimeout(pop._uwT1); clearTimeout(pop._uwT2);
   pop._uwT1 = setTimeout(() => { if (!pop.hidden) _uwClampPop(pop); }, 200);
   pop._uwT2 = setTimeout(() => { if (!pop.hidden) _uwClampPop(pop); }, 650);
+}
+/* a seta vive no contentor (o popup tem overflow e cortava-a) */
+function _uwArrow(pop, anchor) {
+  const wrap = pop.parentElement; if (!wrap) return;
+  if (!anchor || !anchor.closest('.uw-fc')) { wrap.classList.remove('uw-arrow-on'); return; }
+  const a = anchor.getBoundingClientRect(), r = wrap.getBoundingClientRect();
+  wrap.style.setProperty('--ax', Math.round(a.left + a.width / 2 - r.left) + 'px');
+  wrap.classList.add('uw-arrow-on');
+}
+function _uwHidePop(pop, now) {
+  if (!pop || pop.hidden) return;
+  delete pop.dataset.pinned;
+  pop.parentElement?.classList.remove('uw-arrow-on');
+  const done = () => {
+    pop.hidden = true; pop.classList.remove('uw-closing'); pop.style.minHeight = '';
+    document.querySelectorAll('.uw-day.on').forEach(b => b.classList.remove('on'));
+  };
+  if (now || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { done(); return; }
+  pop.classList.add('uw-closing');
+  clearTimeout(pop._uwT3); pop._uwT3 = setTimeout(done, 160);
+}
+function _uwShowDay(pop, day, pin) {
+  _uwOpenPop(pop, _uwDayHTML(+day.dataset.di), day);
+  if (pin) pop.dataset.pinned = '1';
+  document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
 }
 
 function _wireWeatherWidget() {
@@ -927,29 +942,27 @@ function _wireWeatherWidget() {
     const drop = document.getElementById('uw-city-drop');
     if (ev.target.closest('#uw-city-btn')) {
       if (drop) { drop.hidden = !drop.hidden; if (!drop.hidden) { drop.querySelector('#uw-city-filter')?.focus(); } }
-      if (pop) pop.hidden = true;
+      _uwHidePop(pop, true);
       return;
     }
     const opt = ev.target.closest('.uw-city-opt');
     if (opt) { setWeatherCity(PT_CITIES[+opt.dataset.ci]); return; }
     if (drop && !drop.hidden && !ev.target.closest('#uw-city-drop')) drop.hidden = true;
-    if (ev.target.closest('.uw-pop-x')) { if (pop) pop.hidden = true; return; }
+    if (ev.target.closest('.uw-pop-x')) { _uwHidePop(pop); return; }
     const day = ev.target.closest('.uw-day[data-di]');
     if (day && pop) {
-      _uwOpenPop(pop, _uwDayHTML(+day.dataset.di));
-      document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
+      /* clicar no dia já fixado fecha; noutro dia (ou no pré-visualizado) fixa */
+      if (pop.dataset.pinned && day.classList.contains('on')) { _uwHidePop(pop); return; }
+      _uwShowDay(pop, day, true);
       return;
     }
     const pill = ev.target.closest('.uw-w[data-wi]');
-    if (pill && pop) { _uwOpenPop(pop, _uwWarnHTML(+pill.dataset.wi)); return; }
-    if (pop && !pop.hidden && !ev.target.closest('#uw-pop')) {
-      pop.hidden = true;
-      document.querySelectorAll('.uw-day.on').forEach(b => b.classList.remove('on'));
-    }
+    if (pill && pop) { _uwOpenPop(pop, _uwWarnHTML(+pill.dataset.wi), pill); pop.dataset.pinned = '1'; return; }
+    if (pop && !pop.hidden && !ev.target.closest('#uw-pop')) _uwHidePop(pop);
   });
   document.addEventListener('keydown', ev => {
     if (ev.key !== 'Escape') return;
-    const pop = document.getElementById('uw-pop'); if (pop) pop.hidden = true;
+    _uwHidePop(document.getElementById('uw-pop'));
     const drop = document.getElementById('uw-city-drop'); if (drop) drop.hidden = true;
   });
   document.addEventListener('input', ev => {
@@ -958,38 +971,33 @@ function _wireWeatherWidget() {
     document.querySelectorAll('#uw-city-drop .uw-city-opt').forEach(b => { b.hidden = q && !b.textContent.toLowerCase().includes(q); });
   });
 
-  /* pointer devices: the detail opens on hover — no click needed
-     (click/tap still works everywhere, and is the only path on touch) */
+  /* rato: pré-visualização ao passar (o clique fixa; no toque só há clique) */
   if (window.matchMedia && matchMedia('(hover: hover)').matches) {
-    let hideT = null, curDi = null;
+    let hideT = null, showT = null;
+    const inZone = el => !!(el && el.closest && (el.closest('.uw-fc-wrap') || el.closest('.uw-mm') || el.closest('.uw-w')));
     document.addEventListener('mouseover', ev => {
       const pop = document.getElementById('uw-pop');
-      if (!pop) return;
+      if (!pop || pop.dataset.pinned) return;
+      if (inZone(ev.target)) { clearTimeout(hideT); hideT = null; }
       const day = ev.target.closest('.uw-day[data-di]');
       const pill = ev.target.closest('.uw-w[data-wi]');
-      if (day || pill || ev.target.closest('#uw-pop')) { clearTimeout(hideT); hideT = null; }
-      if (day) {
-        const di = +day.dataset.di;
-        if (di !== curDi || pop.hidden) {
-          curDi = di;
-          _uwOpenPop(pop, _uwDayHTML(di));
-          document.querySelectorAll('.uw-day').forEach(b => b.classList.toggle('on', b === day));
-        }
+      clearTimeout(showT);
+      if (day && (pop.hidden || !day.classList.contains('on'))) {
+        /* pequena espera ao abrir: atravessar a fila não acende popups;
+           com um já aberto, trocar de dia é imediato */
+        showT = setTimeout(() => _uwShowDay(pop, day, false), pop.hidden ? 140 : 0);
       } else if (pill) {
-        curDi = null;
-        _uwOpenPop(pop, _uwWarnHTML(+pill.dataset.wi));
+        showT = setTimeout(() => _uwOpenPop(pop, _uwWarnHTML(+pill.dataset.wi), pill), pop.hidden ? 140 : 0);
       }
     });
     document.addEventListener('mouseout', ev => {
       const pop = document.getElementById('uw-pop');
-      if (!pop || pop.hidden) return;
-      const to = ev.relatedTarget;
-      if (to && (to.closest?.('.uw-day') || to.closest?.('#uw-pop') || to.closest?.('.uw-w'))) return;
+      if (!pop) return;
+      if (inZone(ev.relatedTarget)) return;
+      clearTimeout(showT);
+      if (pop.hidden || pop.dataset.pinned) return;
       clearTimeout(hideT);
-      hideT = setTimeout(() => {
-        pop.hidden = true; curDi = null;
-        document.querySelectorAll('.uw-day.on').forEach(b => b.classList.remove('on'));
-      }, 220);
+      hideT = setTimeout(() => _uwHidePop(pop), 300);
     });
   }
 }
@@ -1083,36 +1091,79 @@ async function renderUtility() {
   let fuelCard = '';
   if (u && u.fuel) {
     const f = u.fuel;
-    const row = (label, o, wk) => {
+    const hist = f.history || [];
+    /* cada linha: nome · preço · mini-gráfico dos últimos dias · variação
+       em cêntimos (mais fácil de ler do que "▼ 0,005") — verde se desceu */
+    const row = (key, label, o, wk) => {
       if (!o || o.price == null) return '';
       const d = wk != null ? wk : o.delta;
+      const ct = d == null ? null : Math.round(d * 1000) / 10;
       let dl = '';
-      if (d != null && Math.abs(d) >= 0.001) { const up = d > 0; dl = `<span class="uf-d ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'} ${num(Math.abs(d), 3)}</span>`; }
-      else if (d != null) dl = `<span class="uf-d flat">=</span>`;
-      return `<div class="uf-row"><span class="uf-l">${label}</span><span class="uf-p">${num(o.price, 3)} €<small>/L</small></span>${dl}</div>`;
+      if (ct != null && Math.abs(ct) >= 0.1) {
+        const up = ct > 0;
+        dl = `<span class="uf-d ${up ? 'up' : 'dn'}" title="${l === 'pt' ? 'variação em 7 dias' : '7-day change'}">${up ? '+' : '−'}${num(Math.abs(ct), 1)} ${l === 'pt' ? 'cênt.' : 'ct'}</span>`;
+      } else if (ct != null) dl = `<span class="uf-d flat">${l === 'pt' ? 'estável' : 'flat'}</span>`;
+      const pts = hist.map(h => h[key]).filter(v => v != null);
+      let spark = '';
+      if (pts.length >= 3) {
+        const mn = Math.min(...pts), mx = Math.max(...pts), rg = mx - mn || 0.001;
+        const xy = pts.map((v, i) => `${(i / (pts.length - 1) * 60).toFixed(1)},${(16 - (v - mn) / rg * 14).toFixed(1)}`).join(' ');
+        spark = `<svg class="uf-spark ${ct > 0 ? 'up' : ct < 0 ? 'dn' : ''}" viewBox="-1 0 62 18" aria-hidden="true"><polyline points="${xy}"/></svg>`;
+      }
+      return `<div class="uf-row"><span class="uf-l">${label}</span>${dl}<span class="uf-p">${num(o.price, 3)}<small> €/L</small></span>${spark}</div>`;
     };
     const wk = f.week || {};
-    const foot = f.weekFrom
-      ? (l === 'pt' ? `Variação vs ${f.weekFrom.slice(8, 10)}/${f.weekFrom.slice(5, 7)} · DGEG` : `Change vs ${f.weekFrom.slice(8, 10)}/${f.weekFrom.slice(5, 7)} · DGEG`)
-      : (l === 'pt' ? 'Média nacional · DGEG' : 'National avg · DGEG');
+    const tank = f.gasolina95 && f.gasolina95.price != null
+      ? `<div class="uf-tank">${l === 'pt' ? 'Atestar 50 L' : 'Fill 50 L'}: <b>${Math.round(f.gasolina95.price * 50)} €</b> ${l === 'pt' ? 'gasolina' : 'petrol'}${f.gasoleo && f.gasoleo.price != null ? ` · <b>${Math.round(f.gasoleo.price * 50)} €</b> ${l === 'pt' ? 'gasóleo' : 'diesel'}` : ''}</div>` : '';
+    const foot = l === 'pt'
+      ? `Médias nacionais DGEG${f.weekFrom ? ` · variação desde ${f.weekFrom.slice(8, 10)}/${f.weekFrom.slice(5, 7)}` : ''}`
+      : `DGEG national averages${f.weekFrom ? ` · change since ${f.weekFrom.slice(8, 10)}/${f.weekFrom.slice(5, 7)}` : ''}`;
     fuelCard = `<section class="util-card util-fuel">
       <div class="util-h"><span class="util-ico">⛽</span><h2>${l === 'pt' ? 'Combustíveis' : 'Fuel'}</h2><span class="util-tag">${l === 'pt' ? 'Continente' : 'Mainland'}</span></div>
-      ${row('Gasolina 95', f.gasolina95, wk.gasolina95)}${row(l === 'pt' ? 'Gasóleo' : 'Diesel', f.gasoleo, wk.gasoleo)}${row('GPL Auto', f.gpl, wk.gpl)}
-      <div class="util-foot">${foot}<br>${more('https://precoscombustiveis.dgeg.gov.pt/', l === 'pt' ? 'Mapa de preços' : 'Price map')}</div></section>`;
+      ${row('gasolina95', 'Gasolina 95', f.gasolina95, wk.gasolina95)}${row('gasoleo', l === 'pt' ? 'Gasóleo' : 'Diesel', f.gasoleo, wk.gasoleo)}${row('gpl', 'GPL Auto', f.gpl, wk.gpl)}
+      ${tank}
+      <div class="util-foot">${foot}<br>${more('https://precoscombustiveis.dgeg.gov.pt/', l === 'pt' ? 'Postos mais baratos' : 'Cheapest stations')}</div></section>`;
   }
 
   /* ── Energia: eletricidade (estimativa na fatura) + gás natural ── */
   let elecCard = '';
   if (u && u.electricity) {
     const el = u.electricity;
-    const trI = el.trend === 'up' ? '<span class="ue-t up">▲</span>' : el.trend === 'down' ? '<span class="ue-t dn">▼</span>' : '';
+    /* se o Action correu ontem à tarde, o "amanhã" de então é o hoje de agora */
+    const todayK = AppTime.dayKey ? AppTime.dayKey() : new Date().toISOString().slice(0, 10);
+    const day = (el.next && el.next.date === todayK) ? el.next : el;
+    const prevBill = day === el.next ? el.bill : el.prevBill;
+    const diff = prevBill != null ? day.bill - prevBill : null;
+    const vs = diff == null || Math.abs(diff) < 0.1 ? (diff == null ? '' : `<span class="ue-vs flat">${l === 'pt' ? 'igual a ontem' : 'same as yesterday'}</span>`)
+      : `<span class="ue-vs ${diff > 0 ? 'up' : 'dn'}">${diff > 0 ? '+' : '−'}${num(Math.abs(diff), 1)} ${l === 'pt' ? 'vs ontem' : 'vs yesterday'}</span>`;
+    /* 24 barras com o preço estimado de cada hora; a hora atual marcada e
+       o bloco de 3 h mais barato destacado — é o que ajuda a decidir quando
+       ligar a máquina */
+    let hoursHtml = '';
+    const hs = day.hours && day.hours.length >= 20 ? day.hours.slice(0, 24) : null;
+    if (hs) {
+      const mn = Math.min(...hs), mx = Math.max(...hs), rg = mx - mn || 1;
+      let best = 0, bestV = Infinity;
+      for (let i = 0; i + 3 <= hs.length; i++) { const v = hs[i] + hs[i + 1] + hs[i + 2]; if (v < bestV) { bestV = v; best = i; } }
+      const hiI = hs.indexOf(mx), nowH = (day.date === todayK) ? AppTime.now().getHours() : -1;
+      const hh = h => String(h).padStart(2, '0') + 'h';
+      const bars = hs.map((v, i) => {
+        const t = (v - mn) / rg, cls = i >= best && i < best + 3 ? ' cheap' : t > 0.75 ? ' dear' : '';
+        return `<i class="ue-b${cls}${i === nowH ? ' now' : ''}" style="height:${(22 + t * 78).toFixed(0)}%" title="${hh(i)}–${hh((i + 1) % 24)} · ${num(v, 1)} c€/kWh"></i>`;
+      }).join('');
+      hoursHtml = `<div class="ue-chart" role="img" aria-label="${l === 'pt' ? 'Preço por hora' : 'Price by hour'}">${bars}</div>
+        <div class="ue-axis"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div>
+        <div class="ue-tip"><span><span class="ue-dot cheap"></span>${l === 'pt' ? 'Mais barato' : 'Cheapest'} <b>${hh(best)}–${hh(best + 3)}</b> <small>${num(bestV / 3, 1)}</small></span>
+          <span><span class="ue-dot dear"></span>${l === 'pt' ? 'Mais caro' : 'Priciest'} <b>${hh(hiI)}–${hh(hiI + 1)}</b> <small>${num(mx, 1)}</small></span></div>`;
+    }
     const gas = u.gas ? `<div class="ue-gas"><span class="ue-gas-l">🔥 ${l === 'pt' ? 'Gás natural' : 'Natural gas'}</span><span class="ue-gas-v"><b>${num(u.gas.price, 2)}</b> c€/kWh</span><small>${e(u.gas.label)}</small></div>` : '';
     elecCard = `<section class="util-card util-elec">
-      <div class="util-h"><span class="util-ico">⚡</span><h2>${l === 'pt' ? 'Energia' : 'Energy'}</h2></div>
-      <div class="ue-now"><span class="ue-price">${num(el.bill, 1)}<small> c€/kWh</small></span>${trI}</div>
-      <div class="ue-sub">${l === 'pt' ? 'Eletricidade · estimativa indexada (c/ IVA)' : 'Electricity · indexed estimate (incl. VAT)'}</div>
+      <div class="util-h"><span class="util-ico">⚡</span><h2>${l === 'pt' ? 'Energia' : 'Energy'}</h2><span class="util-tag">${day.date === todayK ? (l === 'pt' ? 'hoje' : 'today') : day.date.slice(8, 10) + '/' + day.date.slice(5, 7)}</span></div>
+      <div class="ue-now"><span class="ue-price">${num(day.bill, 1)}<small> ${l === 'pt' ? 'cênt./kWh' : 'ct/kWh'}</small></span>${vs}</div>
+      <div class="ue-sub">${l === 'pt' ? 'Eletricidade em tarifa indexada · média do dia, com IVA' : 'Indexed electricity tariff · daily avg, incl. VAT'}</div>
+      ${hoursHtml}
       ${gas}
-      <div class="util-foot">OMIE ${num(el.omie, 2)} c€/kWh · ${num(el.min, 1)}–${num(el.max, 1)}<br>${more('https://www.erse.pt/simuladores/', l === 'pt' ? 'Simular fatura (ERSE)' : 'Bill simulator (ERSE)')}</div></section>`;
+      <div class="util-foot" title="${l === 'pt' ? `Estimativa: preço OMIE (${num(el.omie, 2)} c€/kWh hoje) + perdas, redes e IVA` : `Estimate: OMIE price + losses, grid fees and VAT`}">${l === 'pt' ? 'Estimativa a partir do OMIE' : 'Estimated from OMIE'} · ${more('https://www.erse.pt/simuladores/', l === 'pt' ? 'Simular fatura (ERSE)' : 'Bill simulator (ERSE)')}</div></section>`;
   }
 
   /* ── Holidays (next 3 + modal with year navigation) ── */
