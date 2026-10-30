@@ -120,8 +120,8 @@ const MilkyWayExplorer = (function () {
           <div class="ex-solar-panel-body" id="gx-panel-body"></div>
         </div>
 
-        <div class="ex-solar-hint" id="gx-hint">Pesquisa, arrasta para rodar, scroll para zoom · clica num objeto</div>
-        <div class="ex-solar-credit">Dados astronómicos aproximados · posições estilizadas para clareza</div>
+        <div class="ex-solar-hint" id="gx-hint">Pesquisa ou clica num objeto · Arrasta para rodar · Roda do rato para aproximar</div>
+        <div class="ex-solar-credit">Direções reais (coordenadas galácticas) · distâncias comprimidas e vizinhança do Sol ampliada</div>
       </div>`;
 
     _mounted = true;
@@ -324,6 +324,16 @@ const MilkyWayExplorer = (function () {
       .forEach(l => { const sp = _sprite(new THREE.Color(l.color), l.scale, l.opacity); sp.userData.base = l.scale; _galaxyGroup.add(sp); _coreSprites.push(sp); });
   }
 
+  /* órbita do Sol à volta do centro (uma volta ≈ 230 milhões de anos) */
+  function _buildSunOrbit(r) {
+    const pts = [];
+    for (let i = 0; i <= 160; i++) { const a = i / 160 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r)); }
+    const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineDashedMaterial({ color: 0xffd27a, transparent: true, opacity: 0.28, dashSize: 3, gapSize: 3, depthWrite: false }));
+    line.computeLineDistances();
+    _galaxyGroup.add(line);
+  }
+
   /* ── markers ── */
   function _addMarker(data, cat, x, y, z, baseR, glowScale, color, parent) {
     const col = new THREE.Color(color || data.color || '#fff0d0');
@@ -391,30 +401,93 @@ const MilkyWayExplorer = (function () {
     _markers.push(mk); _byId[data.id] = mk;
   }
 
-  /* RA/Dec → unit direction; neighborhood placement around the Sun. */
-  function _dir(ra, dec) { const a = (ra || 0) * D2R, d = (dec || 0) * D2R; return { x: Math.cos(d) * Math.cos(a), y: Math.sin(d), z: Math.cos(d) * Math.sin(a) }; }
+  /* ── posições: direções reais, distâncias comprimidas ──
+     RA/Dec (J2000) → coordenadas galácticas (l, b). O Sol está a ~26 000
+     anos-luz do centro (1 unidade = 250 a.l.; o disco tem 200 = 50 000 a.l.).
+     A vizinhança até 3000 a.l. é ampliada em escala logarítmica (senão
+     Sírio e Proxima ficavam em cima do Sol); para lá disso a escala é real. */
+  const LY_PER_U = 250;
+  const SKY = {   /* coordenadas que faltam no catálogo (J2000, graus) */
+    orion: [83.82, -5.39], horsehead: [85.25, -2.46], lagoon: [270.92, -24.38], trifid: [270.6, -23.03],
+    eagle: [274.7, -13.81], rosette: [97.98, 4.94], crab: [83.63, 22.01], carina: [161.27, -59.87],
+    helix: [337.41, -20.84], cygx1: [299.59, 35.2], 'proxima-b': [217.4, -62.68],
+    andromeda: [10.68, 41.27], triangulum: [23.46, 30.66], lmc: [80.89, -69.76], smc: [13.19, -72.83],
+    whirlpool: [202.47, 47.2], sombrero: [189.99, -11.62],
+  };
+  function _galactic(ra, dec) {
+    const a = ra * D2R, d = dec * D2R, aN = 192.85948 * D2R, dN = 27.12825 * D2R, lN = 122.93192 * D2R;
+    const sb = Math.sin(d) * Math.sin(dN) + Math.cos(d) * Math.cos(dN) * Math.cos(a - aN);
+    const l = lN - Math.atan2(Math.cos(d) * Math.sin(a - aN), Math.sin(d) * Math.cos(dN) - Math.cos(d) * Math.sin(dN) * Math.cos(a - aN));
+    return { l: ((l % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI), b: Math.asin(sb) };
+  }
+  /* base local do Sol: _U0 → centro galáctico (l=0), _U90 → sentido da rotação */
+  let _U0 = null, _U90 = null;
+  function _sunFrame() {
+    _U0 = _SUN.clone().setY(0).multiplyScalar(-1).normalize();
+    _U90 = new THREE.Vector3(_SUN.z, 0, -_SUN.x).normalize();
+  }
+  function _skyOf(o) {
+    if (o.ra != null && o.dec != null) return [o.ra, o.dec];
+    return SKY[o.id] || null;
+  }
+  function _localDist(ly) {
+    return ly <= 3000 ? 6 + 24 * Math.log10(1 + ly) / Math.log10(3001) : 30 + (ly - 3000) / LY_PER_U;
+  }
   function _neighborPos(o) {
-    const dir = _dir(o.ra, o.dec);
-    const sd = 7 + 70 * (Math.log10(1 + (o.distLy || 0)) / Math.log10(1 + 3000));
-    return new THREE.Vector3(_SUN.x + dir.x * sd, _SUN.y + dir.y * sd * 0.55, _SUN.z + dir.z * sd);
+    const sky = _skyOf(o);
+    if (!sky) return _SUN.clone().add(new THREE.Vector3(8, 2, 8));
+    const g = _galactic(sky[0], sky[1]), sd = _localDist(o.distLy || 10);
+    const h = Math.cos(g.b) * sd;
+    return _SUN.clone()
+      .addScaledVector(_U0, Math.cos(g.l) * h)
+      .addScaledVector(_U90, Math.sin(g.l) * h)
+      .add(new THREE.Vector3(0, Math.sin(g.b) * sd * 0.55, 0));
   }
   function _discPos(o, i, n) {
+    if (_skyOf(o)) return _neighborPos(o);
     if (o.r != null && o.ang != null) return new THREE.Vector3(Math.cos(o.ang) * o.r, _g() * 6, Math.sin(o.ang) * o.r);
     const a = (i / n) * Math.PI * 2 + 0.6, r = 55 + (i % 3) * 45;
     return new THREE.Vector3(Math.cos(a) * r, (Math.random() - 0.5) * 14, Math.sin(a) * r);
+  }
+  /* galáxias: direção real vista daqui, distância em escala log (Magalhães
+     perto, M51/M104 longe) — fora do disco */
+  function _galaxyPos(o, i, n) {
+    const sky = _skyOf(o);
+    const mly = o.distMly || (o.id === 'lmc' ? 0.16 : o.id === 'smc' ? 0.2 : 2.5);
+    const R = GAL_R + 60 + Math.log10(1 + mly * 10) * 150;
+    if (!sky) { const a = (i / n) * Math.PI * 2 + 0.3; return new THREE.Vector3(Math.cos(a) * R, 60, Math.sin(a) * R); }
+    const g = _galactic(sky[0], sky[1]);
+    const dir = new THREE.Vector3().addScaledVector(_U0, Math.cos(g.l) * Math.cos(g.b)).addScaledVector(_U90, Math.sin(g.l) * Math.cos(g.b));
+    dir.y = Math.sin(g.b);
+    return _SUN.clone().addScaledVector(dir.normalize(), R);
+  }
+  /* texto "onde fica" para o painel */
+  function _whereText(o, cat) {
+    if (o.sun) return 'No braço de Órion, a ~26 000 anos-luz do centro';
+    if (o.center) return 'No centro exato da galáxia';
+    if (cat === 'galaxy') return 'Fora da Via Láctea';
+    const sky = _skyOf(o); if (!sky) return '';
+    const l = _galactic(sky[0], sky[1]).l / D2R;
+    if ((o.distLy || 0) < 100) return 'Mesmo ao lado do Sol, na nossa bolha local';
+    if (l < 45 || l > 315) return 'Do lado do centro da galáxia';
+    if (l > 135 && l < 225) return 'Para a periferia (do lado oposto ao centro)';
+    return 'Ao longo do braço, no sentido ' + (l < 180 ? 'da rotação' : 'contrário à rotação');
   }
 
   function _placeObjects() {
     const c = CAT || FALLBACK;
 
     /* Sun marker — on the Orion arm; centre of the solar neighborhood. */
-    const sunR = GAL_R * 0.62, sunA = 0.9;
+    const sunR = 26000 / LY_PER_U, sunA = 0.9;
     _SUN = new THREE.Vector3(Math.cos(sunA) * sunR, 2, Math.sin(sunA) * sunR);
+    _sunFrame();
+    _buildSunOrbit(sunR);
 
     /* Stars — Sun at its disc spot; the rest in the neighborhood bubble. */
     (c.stars || []).forEach(s => {
-      const col = starColor(s), baseR = starBaseR(s);
-      const glow = baseR * (s.radiusSun > 100 ? 7 : 5);
+      /* marcadores contidos: de perto, halos grandes tapavam a vizinhança */
+      const col = starColor(s), baseR = starBaseR(s) * 0.7;
+      const glow = baseR * (s.radiusSun > 100 ? 4.2 : 3.4);
       const p = s.sun ? _SUN.clone() : _neighborPos(s);
       _addMarker(s, 'star', p.x, p.y, p.z, baseR, glow, col, _galaxyGroup);
     });
@@ -422,7 +495,7 @@ const MilkyWayExplorer = (function () {
     /* Nebulae — curated spots in the disc, with a volumetric puff. */
     (c.nebulae || []).forEach((nb, i) => {
       const p = _discPos(nb, i, (c.nebulae || []).length);
-      const mk = _addMarker(nb, 'nebula', p.x, p.y, p.z, 2.2, 15, nb.color, _galaxyGroup);
+      const mk = _addMarker(nb, 'nebula', p.x, p.y, p.z, 1.6, 10, nb.color, _galaxyGroup);
       mk.detail = _nebulaPuff(nb.color || '#ff9ad2', 9 + Math.min(18, (nb.sizeLy || 20) / 12), _galaxyGroup, p.x, p.y, p.z);
     });
 
@@ -445,9 +518,8 @@ const MilkyWayExplorer = (function () {
 
     /* Galaxies — mini-spirals beyond the disc. */
     (c.galaxies || []).forEach((gx, i) => {
-      const a = (i / (c.galaxies || []).length) * Math.PI * 2 + 0.3;
-      const r = GAL_R + 110 + (i % 3) * 80, y = (i % 2 ? 1 : -1) * (80 + (i % 3) * 55), size = 22 + (i % 3) * 8;
-      _buildMiniGalaxy(gx, Math.cos(a) * r, y, Math.sin(a) * r, size);
+      const p = _galaxyPos(gx, i, (c.galaxies || []).length), size = gx.id === 'andromeda' ? 34 : /lmc|smc/.test(gx.id) ? 18 : 24;
+      _buildMiniGalaxy(gx, p.x, p.y, p.z, size);
     });
   }
 
@@ -506,11 +578,13 @@ const MilkyWayExplorer = (function () {
     _markers.forEach(mk => {
       const el = document.createElement('div');
       el.className = 'gx-label gx-tier' + (mk.tier || 2);
-      el.innerHTML = `<span class="gx-label-ic">${CATS[mk.cat] ? CATS[mk.cat].emoji : '•'}</span>${esc(mk.data.name)}`;
+      const nm = mk.data.sun ? mk.data.name + ' · estás aqui' : mk.data.name;
+      el.innerHTML = `<span class="gx-label-ic">${CATS[mk.cat] ? CATS[mk.cat].emoji : '•'}</span>${esc(nm)}`;
+      if (mk.data.sun) el.classList.add('gx-sun');
       el.style.display = 'none';
       viewport.appendChild(el);
       mk.labelEl = el;
-      mk.labelW = mk.data.name.length * 6.4 + 22;   /* rough px width incl. icon */
+      mk.labelW = (mk.data.sun ? mk.data.name.length + 14 : mk.data.name.length) * 6.4 + 22;   /* rough px width incl. icon */
     });
   }
 
@@ -523,7 +597,7 @@ const MilkyWayExplorer = (function () {
     const canvas = _renderer.domElement;
     const W = canvas.clientWidth || canvas.width, H = canvas.clientHeight || canvas.height;
     const mobile = Math.min(W, H) < 640;
-    const fh = mobile ? 15 : 17;
+    const fh = mobile ? 16 : 19;
     const v = new THREE.Vector3();
     const cands = [];
     for (const mk of _markers) {
@@ -734,7 +808,7 @@ const MilkyWayExplorer = (function () {
       'Tipo espectral': o.spectral, 'Temperatura': o.tempK != null ? nf(o.tempK) + ' K' : '',
       'Raio': o.radiusSun != null ? (o.radiusSun < 2 ? nf(o.radiusSun) + ' × o Sol' : '~' + nf(Math.round(o.radiusSun)) + ' × o raio do Sol') : '',
       'Massa': o.massSun != null ? '~' + nf(o.massSun) + ' × o Sol' : '',
-      'Distância': fDist(o.distLy), 'Idade': o.ageGyr != null ? (o.ageGyr >= 1 ? nf(o.ageGyr) + ' mil M anos' : nf(Math.round(o.ageGyr * 1000)) + ' M anos') : '',
+      'Distância': o.distLy ? fDist(o.distLy) : '', 'Idade': o.ageGyr != null ? (o.ageGyr >= 1 ? nf(o.ageGyr) + ' mil M anos' : nf(Math.round(o.ageGyr * 1000)) + ' M anos') : '',
       'Magnitude': o.mag != null ? nf(o.mag) : '', 'Constelação': o.constellation && o.constellation !== '—' ? o.constellation : '',
     };
     if (cat === 'nebula') return { 'Tipo': o.nebType, 'Distância': fDist(o.distLy), 'Dimensão': o.sizeLy != null ? '~' + fLy(o.sizeLy) : '', 'Constelação': o.constellation };
@@ -778,7 +852,8 @@ const MilkyWayExplorer = (function () {
     if (!bodyEl || !body) return;
     cat = cat || container.querySelector('#gx-panel')?.dataset.cat || 'star';
     if (_curTab === 'overview') {
-      const rows = Object.entries(_infoRows(body, cat)).filter(([, v]) => v != null && v !== '')
+      const where = _whereText(body, cat);
+      const rows = Object.entries({ 'Onde fica': where, ..._infoRows(body, cat) }).filter(([, v]) => v != null && v !== '')
         .map(([k, v]) => `<div class="ex-solar-info-row"><span class="ex-solar-info-label">${esc(k)}</span><span>${esc(v)}</span></div>`).join('');
       const desc = body.desc ? `<p class="gx-desc">${esc(body.desc)}</p>` : '';
       bodyEl.innerHTML = `${desc}<div class="ex-solar-overview">${rows || '<div class="ex-solar-empty">Sem dados.</div>'}</div>`;

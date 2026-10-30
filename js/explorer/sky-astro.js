@@ -359,7 +359,7 @@ const SkyAstro = (function () {
 
   return {
     D2R, R2D, norm, jd, gmst, lst, precess, toHorizon, refract, eclToEq, obliquity,
-    planet, sun, moon, moonGeo, nightInfo, riseSet, crossings, nextPhase,
+    helio, planet, sun, moon, moonGeo, nightInfo, riseSet, crossings, nextPhase,
     sunAlt, moonAlt, planetAlt,
     parseTLE, satECI, satLook, sunlit, subPoint, passes,
   };
