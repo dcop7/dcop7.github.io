@@ -275,8 +275,9 @@ const RealtimeEarth = (function () {
       kind, icon, title: `${type} · ${d.title || type}`,
       rows: [
         ['Tipo', type],
-        d.sizeLabel ? ['Porte', d.sizeLabel] : null,
-        d.mag != null ? ['Intensidade', `${d.mag} ${d.magUnit || ''}`.trim()] : null,
+        d.sizeLabel && kind !== 'storm' ? ['Porte', d.sizeLabel] : null,
+        d.mag != null ? ['Intensidade', kind === 'storm' && /kts/i.test(d.magUnit || '') ? `${_stormClass(d.mag).name} · ${Math.round(d.mag * 1.852)} km/h` : `${d.mag} ${d.magUnit || ''}`.trim()] : null,
+        kind === 'storm' && d.track ? ['Trajeto', `${d.track.length} posições registadas`] : null,
         d.startMs ? ['Início', _fmtTime(d.startMs)] : null,
         d.lastMs ? ['Última atividade', _fmtTime(d.lastMs)] : null,
         ['Coords', `${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°`],
@@ -699,9 +700,20 @@ const RealtimeEarth = (function () {
       sp.userData = { base, ph: Math.random() * Math.PI * 2 };
       g.add(sp); g.userData.sprites.push(sp);
     }
-    /* Smoke plume drifting up from the fire. */
-    const smoke = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0x6b6358, transparent: true, opacity: 0.3, depthWrite: false }));
-    smoke.scale.setScalar(S * 1.3); smoke.position.y = S * 1.1; g.add(smoke);
+    /* Fumo: três novelos que sobem, crescem e desvanecem em ciclo */
+    g.userData.smoke = [];
+    for (let i = 0; i < 3; i++) {
+      const sm = new THREE.Sprite(new THREE.SpriteMaterial({ map: _glowTexture(), color: 0x6b6358, transparent: true, opacity: 0.3, depthWrite: false }));
+      sm.userData = { p: i / 3 }; g.add(sm); g.userData.smoke.push(sm);
+    }
+    /* Fagulhas a subir */
+    const EN = _q < 0.7 ? 10 : 18;
+    const epos = new Float32Array(EN * 3), eprog = new Float32Array(EN), eang = new Float32Array(EN);
+    for (let i = 0; i < EN; i++) { eprog[i] = Math.random(); eang[i] = Math.random() * Math.PI * 2; }
+    const eg = new THREE.BufferGeometry(); eg.setAttribute('position', new THREE.BufferAttribute(epos, 3));
+    const embers = new THREE.Points(eg, new THREE.PointsMaterial({ map: _glowTexture(), color: 0xffb347, size: S * 0.28, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    g.add(embers);
+    Object.assign(g.userData, { S, embers, eprog, eang, EN });
     g.children.forEach(o => { o.raycast = _noRay; });
     _addHit(g, 1.5 * S, S * 0.5);
     _orient(g, d.lat, d.lng, 0.002, 'y');
@@ -709,37 +721,126 @@ const RealtimeEarth = (function () {
     _fires.push(g);
   }
 
-  /* Severe storm / hurricane: a rotating spiral cloud disc tangent to the surface. */
-  let _spiralTex = null;
-  function _spiralTexture() {
-    if (_spiralTex) return _spiralTex;
-    const s = 128, cv = document.createElement('canvas'); cv.width = cv.height = s;
-    const ctx = cv.getContext('2d'); ctx.translate(s / 2, s / 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-    for (let arm = 0; arm < 2; arm++) {
-      ctx.beginPath();
-      for (let t = 0; t < 60; t++) {
-        const a = arm * Math.PI + t * 0.18, r = t * 0.95;
-        const x = Math.cos(a) * r, y = Math.sin(a) * r;
-        t === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  /* ── Tempestades / furacões ──
+     Antes: um disco plano com duas linhas em espiral. Agora:
+     · textura procedimental com bandas de nuvens fofas, nuvem central densa
+       e — nos mais fortes — olho limpo com parede do olho brilhante;
+     · duas camadas que rodam a velocidades diferentes (o centro gira mais
+       depressa) e uma sombra difusa no mar por baixo, para dar volume;
+     · sentido real: anti-horário no hemisfério norte, horário no sul;
+     · tamanho pela categoria de Saffir-Simpson (vento do EONET em nós);
+     · o trajeto já percorrido desenhado no globo, a desvanecer para trás. */
+  const _stormTex = {};
+  function _stormClass(kts) {
+    if (kts == null) return { cat: 0, name: 'Tempestade' };
+    if (kts < 34) return { cat: 0, name: 'Depressão tropical' };
+    if (kts < 64) return { cat: 0.5, name: 'Tempestade tropical' };
+    const c = kts < 83 ? 1 : kts < 96 ? 2 : kts < 113 ? 3 : kts < 137 ? 4 : 5;
+    return { cat: c, name: `Furacão cat. ${c}` };
+  }
+  function _hurricaneTexture(eye) {
+    if (_stormTex[eye]) return _stormTex[eye];
+    const S = 512, cv = document.createElement('canvas'); cv.width = cv.height = S;
+    const ctx = cv.getContext('2d'), R = S / 2;
+    ctx.translate(R, R);
+    let seed = eye ? 7 : 3;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    const puff = (x, y, r, a) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.55, `rgba(240,246,255,${a * 0.55})`); g.addColorStop(1, 'rgba(230,238,250,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    };
+    /* nuvem central densa */
+    puff(0, 0, R * 0.42, 0.95);
+    /* bandas em espiral logarítmica (sentido anti-horário visto de cima) */
+    const ARMS = 4;
+    for (let arm = 0; arm < ARMS; arm++) {
+      const a0 = arm / ARMS * Math.PI * 2;
+      for (let k = 0; k < 150; k++) {
+        const t = k / 150, r = R * (0.12 + t * 0.86);
+        /* (y do canvas aponta para baixo: ângulo a crescer = sentido horário à vista)
+           para fora as bandas rodam no sentido horário, logo enrolam para dentro
+           no anti-horário, como num ciclone do hemisfério norte */
+        const ang = a0 + Math.log(r / (R * 0.12)) * 2.1 + (rnd() - 0.5) * 0.35;
+        const w = R * (0.05 + t * 0.09) * (0.7 + rnd() * 0.6);
+        const fade = Math.pow(1 - t, 1.3);
+        puff(Math.cos(ang) * r, Math.sin(ang) * r, w, 0.16 + 0.5 * fade * (0.6 + rnd() * 0.4));
       }
-      ctx.stroke();
     }
-    ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.beginPath(); ctx.arc(0, 0, 6, 0, 7); ctx.fill();
-    _spiralTex = new THREE.CanvasTexture(cv); return _spiralTex;
+    /* fiapos soltos na periferia (fluxo de saída) */
+    for (let i = 0; i < 90; i++) {
+      const r = R * (0.55 + rnd() * 0.42), ang = rnd() * Math.PI * 2;
+      puff(Math.cos(ang) * r, Math.sin(ang) * r, R * (0.03 + rnd() * 0.05), 0.08 + rnd() * 0.1);
+    }
+    if (eye) {
+      /* parede do olho (anel brilhante) e o olho limpo */
+      ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = R * 0.05;
+      ctx.beginPath(); ctx.arc(0, 0, R * 0.085, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalCompositeOperation = 'destination-out';
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.075);
+      g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(0.7, 'rgba(0,0,0,0.85)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 0.075, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    const tex = new THREE.CanvasTexture(cv);
+    if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+    _stormTex[eye] = tex;
+    return tex;
   }
   function _buildStorm(d) {
     const g = new THREE.Group();
-    const disc = new THREE.Mesh(
-      new THREE.PlaneGeometry(14, 14),
-      new THREE.MeshBasicMaterial({ map: _spiralTexture(), transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide }));
-    g.add(disc);
-    disc.raycast = _noRay;
-    _addHit(g, 6, 0);
-    g.userData = { disc, d, meta: _eonetMeta(d, 'storm'), lat: d.lat, lng: d.lng, alt: 0.01, axis: 'z' };
+    const cls = _stormClass(/kts/i.test(d.magUnit || '') ? d.mag : null);
+    d.sizeLabel = cls.name;
+    const D = 9 + (cls.cat || (d.signif || 0) * 2) * 2.6;       /* diâmetro em unidades do globo */
+    const south = d.lat < 0, eye = cls.cat >= 2;
+    const mat = (tex, op) => new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: op, depthWrite: false, side: THREE.DoubleSide });
+    /* sombra difusa no mar */
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(D * 0.46, 40),
+      new THREE.MeshBasicMaterial({ map: _glowTexture(), color: 0x000814, transparent: true, opacity: 0.45, depthWrite: false }));
+    shadow.position.set(D * 0.05, -D * 0.05, -0.15);
+    g.add(shadow);
+    const outer = new THREE.Mesh(new THREE.PlaneGeometry(D, D), mat(_hurricaneTexture(false), 0.78));
+    const inner = new THREE.Mesh(new THREE.PlaneGeometry(D * 0.62, D * 0.62), mat(_hurricaneTexture(eye), 0.92));
+    inner.position.z = 0.25;
+    if (south) { outer.scale.x = -1; inner.scale.x = -1; }   /* espelho: as bandas enrolam ao contrário */
+    g.add(outer); g.add(inner);
+    [shadow, outer, inner].forEach(o => { o.raycast = _noRay; });
+    _addHit(g, D * 0.3, 0);
+    g.userData = { disc: inner, outer, d, dir: south ? -1 : 1, ph: Math.random() * 6.28, meta: _eonetMeta(d, 'storm'), lat: d.lat, lng: d.lng, alt: 0.01, axis: 'z' };
     _orient(g, d.lat, d.lng, 0.01, 'z');
+    if (d.track && d.track.length > 1) _stormTrack(g, d.track);
     _scene().add(g);
     _storms.push(g);
+  }
+  /* trajeto já percorrido: linha à superfície, do mais antigo (ténue) ao atual */
+  function _stormTrack(g, track) {
+    const pts = [], cols = [];
+    g.updateMatrixWorld(true);
+    const c0 = new THREE.Color(0x1e3a5f), c1 = new THREE.Color(0x9fe3ff), tmp = new THREE.Color();
+    const n = track.length;
+    for (let i = 0; i < n - 1; i++) {
+      const [la0, lo0] = track[i], [la1, lo1] = track[i + 1];
+      let dlo = lo1 - lo0; if (dlo > 180) dlo -= 360; if (dlo < -180) dlo += 360;
+      for (let k = 0; k < 4; k++) {
+        const f = k / 4, la = la0 + (la1 - la0) * f, lo = lo0 + dlo * f;
+        const c = _globe.getCoords(la, lo, 0.004);
+        pts.push(g.worldToLocal(new THREE.Vector3(c.x, c.y, c.z)));
+        tmp.copy(c0).lerp(c1, (i + f) / (n - 1)); cols.push(tmp.r, tmp.g, tmp.b);
+      }
+    }
+    const cl = _globe.getCoords(track[n - 1][0], track[n - 1][1], 0.004);
+    pts.push(g.worldToLocal(new THREE.Vector3(cl.x, cl.y, cl.z))); cols.push(c1.r, c1.g, c1.b);
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false }));
+    line.raycast = _noRay;
+    g.add(line);
+    /* pontos das posições registadas */
+    const dots = new THREE.Points(new THREE.BufferGeometry().setFromPoints(track.map(([la, lo]) => {
+      const c = _globe.getCoords(la, lo, 0.005); return g.worldToLocal(new THREE.Vector3(c.x, c.y, c.z));
+    })), new THREE.PointsMaterial({ map: _glowTexture(), color: 0xbfeaff, size: 1.3, transparent: true, opacity: 0.7, depthWrite: false }));
+    dots.raycast = _noRay;
+    g.add(dots);
   }
 
   function _clear(arr) {
@@ -853,6 +954,7 @@ const RealtimeEarth = (function () {
           startMs, lastMs, signif,
           mag: last.magnitudeValue != null ? last.magnitudeValue : null,
           magUnit: last.magnitudeUnit || '',
+          track: geom.length > 1 ? geom.slice(-80).map(g => [g.coordinates[1], g.coordinates[0]]) : null,
           url: src.url || `https://eonet.gsfc.nasa.gov/api/v3/events/${ev.id}`,
         };
       }).filter(Boolean).filter(e => isFinite(e.lat) && isFinite(e.lng));
@@ -1015,7 +1117,7 @@ const RealtimeEarth = (function () {
       const items = arr.map(g => g.userData).filter(u => u && u.d)
         .sort((a, b) => (b.d.signif || 0) - (a.d.signif || 0) || (b.d.lastMs || 0) - (a.d.lastMs || 0))
         .slice(0, n).map(u => ({
-          icon, title: u.d.title || label, sub: _rel(u.d.lastMs) + (u.d.sizeLabel ? ` · porte ${u.d.sizeLabel}` : ''),
+          icon, title: u.d.title || label, sub: _rel(u.d.lastMs) + (u.d.sizeLabel ? (u.meta && u.meta.kind === 'storm' ? ` · ${u.d.sizeLabel}` : ` · porte ${u.d.sizeLabel}`) : ''),
           lat: u.lat, lng: u.lng, meta: u.meta }));
       if (items.length) groups.push([label, items]);
     };
@@ -1129,13 +1231,38 @@ const RealtimeEarth = (function () {
         if (u.glow) { u.glow.material.opacity = 0.55 + 0.4 * pulse; u.glow.scale.setScalar(S * (4.6 + 0.9 * pulse)); }
       }
       /* Fire flicker. */
-      for (const f of _fires) for (const sp of f.userData.sprites) {
-        const s = sp.userData.base * (0.8 + 0.35 * Math.sin(t * 0.012 + sp.userData.ph));
-        sp.scale.setScalar(s);
-        sp.material.opacity = 0.6 + 0.3 * Math.sin(t * 0.01 + sp.userData.ph);
+      for (const f of _fires) {
+        const u = f.userData;
+        for (const sp of u.sprites) {
+          const s = sp.userData.base * (0.8 + 0.35 * Math.sin(t * 0.012 + sp.userData.ph));
+          sp.scale.setScalar(s);
+          sp.material.opacity = 0.6 + 0.3 * Math.sin(t * 0.01 + sp.userData.ph);
+        }
+        if (u.smoke) for (const sm of u.smoke) {
+          sm.userData.p = (sm.userData.p + dt * 0.12) % 1;
+          const p = sm.userData.p;
+          sm.position.set(u.S * 0.35 * p, u.S * (0.7 + p * 2.6), 0);
+          sm.scale.setScalar(u.S * (0.8 + p * 1.8));
+          sm.material.opacity = 0.34 * Math.sin(p * Math.PI);
+        }
+        if (u.embers) {
+          const ep = u.embers.geometry.attributes.position;
+          for (let i = 0; i < u.EN; i++) {
+            u.eprog[i] += dt * 0.5; if (u.eprog[i] > 1) { u.eprog[i] -= 1; u.eang[i] = Math.random() * Math.PI * 2; }
+            const p = u.eprog[i], r = u.S * (0.15 + p * 0.5);
+            ep.setXYZ(i, Math.cos(u.eang[i]) * r + Math.sin(t * 0.004 + i) * u.S * 0.08, u.S * (0.3 + p * 2.2), Math.sin(u.eang[i]) * r);
+          }
+          ep.needsUpdate = true;
+          u.embers.material.opacity = 0.75 + 0.2 * Math.sin(t * 0.02);
+        }
       }
       /* Hurricane spin (around its tangent normal = local Z). */
-      for (const s of _storms) s.userData.disc.rotation.z -= dt * 1.2;
+      for (const s of _storms) {
+        const u = s.userData;
+        u.disc.rotation.z += dt * 0.9 * u.dir;          /* núcleo mais rápido */
+        u.outer.rotation.z += dt * 0.32 * u.dir;
+        u.disc.material.opacity = 0.86 + 0.08 * Math.sin(t * 0.002 + u.ph);
+      }
   }
 
   /* ═════════════════════════════ HOVER / PICK ══════════════════════ */
