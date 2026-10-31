@@ -1,0 +1,9 @@
+{
+  "name": "universe-build",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only pipeline: catálogos astronómicos (NASA HEASARC, SDSS, JPL, NASA Exoplanet Archive, WMAP/LAMBDA, McConnachie 2012, Reid 2019) → data/universe/*. Not part of the site.",
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}

@@ -4941,6 +4941,24 @@
     "classification": "SAFE"
   },
   {
+    "file": "data/universe/cmb.webp",
+    "type": "texture",
+    "source": "WMAP 9-year ILC map (NASA LAMBDA), reprojected + own colour palette by tools/universe/build.mjs",
+    "license": "Public domain (NASA)",
+    "attribution": "NASA / WMAP Science Team (credited in data/universe/SOURCES.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "data/universe/cmb-lo.webp",
+    "type": "texture",
+    "source": "WMAP 9-year ILC map (NASA LAMBDA), reprojected + own colour palette by tools/universe/build.mjs",
+    "license": "Public domain (NASA)",
+    "attribution": "NASA / WMAP Science Team (credited in data/universe/SOURCES.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
     "type": "remote",
     "file": "{s}.basemaps.cartocdn.com/* (voyager/dark_matter/dark_all/light_all)",
     "source": "CARTO + OpenStreetMap",

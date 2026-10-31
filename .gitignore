@@ -23,3 +23,6 @@ tools/photogen/_*.mjs
 _studio_harness.html
 tools/studio/_src/
 tools/studio/node_modules/
+
+tools/universe/_src/
+tools/universe/node_modules/
