@@ -290,6 +290,8 @@ const BallBlastGame = (function () {
     blocks.castShadow = true; blocks.receiveShadow = true; blocks.frustumCulled = false;
     const shardM = new THREE.InstancedMesh(Arcade3D.roundBox(.22), new THREE.MeshStandardMaterial({ roughness: .35 }), 300);
     shardM.castShadow = true; shardM.frustumCulled = false; shardM.count = 0;
+    /* cor por instância criada já: se só aparecer no 1.º estilhaço, o shader muda e o jogo para ~0,1 s */
+    shardM.setColorAt(0, new THREE.Color(1, 1, 1));
     const balls = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#c4b5fd', emissiveIntensity: .55, roughness: .15, metalness: .2 }), 900);
     balls.castShadow = true; balls.frustumCulled = false; balls.count = 0;
     const launcher = new THREE.Sprite(Arcade3D.glowSprite('#a78bfa')); scene.add(launcher);

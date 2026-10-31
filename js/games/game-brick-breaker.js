@@ -378,6 +378,8 @@ const BrickBreakerGame = (function () {
     metal.castShadow = true; metal.frustumCulled = false;
     const shardM = new THREE.InstancedMesh(Arcade3D.roundBox(.22), new THREE.MeshStandardMaterial({ roughness: .35, metalness: .05 }), 260);
     shardM.castShadow = true; shardM.frustumCulled = false; shardM.count = 0;
+    /* cor por instância criada já: se só aparecer no 1.º estilhaço, o shader muda e o jogo para ~0,1 s */
+    shardM.setColorAt(0, new THREE.Color(1, 1, 1));
     const paddle = new THREE.Mesh(new THREE.CapsuleGeometry(1, 1, 6, 16), new THREE.MeshStandardMaterial({ color: '#93c5fd', roughness: .2, metalness: .6, emissive: '#1d4ed8', emissiveIntensity: .35 }));
     paddle.castShadow = true; scene.add(paddle);
     const pglow = new THREE.Sprite(new THREE.SpriteMaterial({ map: Arcade3D.glowTex(), color: '#60a5fa', blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, toneMapped: false })); scene.add(pglow);

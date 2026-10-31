@@ -442,6 +442,8 @@ const SniperGame = (function () {
       /* luzes a sério ao longo do cais (sem sombras) */
       for (let i = 0; i < 6; i++) { const l = new THREE.PointLight('#ffcf90', 60, 34, 1.4); l.position.set(-90 + i * 36, 7, -199); G.r3.scene.add(l); }
       G.r3.hemi.intensity *= 1.35;
+      /* luz da carruagem da Madame: criada já (apagada) — acrescentar uma luz a meio obriga a recompilar todos os shaders (~1 s parado) */
+      G.trainLight = new THREE.PointLight('#ffe0a8', 0, 9, 1.5); G.r3.scene.add(G.trainLight);
     },
     script(G, dt) {
       const T = G.train; if (!T) return; T.t += dt;
@@ -460,7 +462,7 @@ const SniperGame = (function () {
       }
       if (T.st === 'leave') { T.v = Math.min(26, T.v + dt * 1.6); T.x -= T.v * dt; if (M && !M.sleep && M.boarded && T.x < -60) fail(G, 'A Madame Bigodes fugiu de comboio!'); }
       T.g.position.x = T.x;
-      if (M && M.boarded) { const s = T.seats[M.seatI]; M.beh.seat = [s[0] + .05, 1.92, s[2]]; if (!G.trainLight) { G.trainLight = new THREE.PointLight('#ffe0a8', 40, 9, 1.5); G.r3.scene.add(G.trainLight); } G.trainLight.position.set(M.x, 6, M.z); }
+      if (M && M.boarded) { const s = T.seats[M.seatI]; M.beh.seat = [s[0] + .05, 1.92, s[2]]; G.trainLight.intensity = 40; G.trainLight.position.set(M.x, 6, M.z); }
       /* lanternas dos guardas: brilho no chão à frente */
       G.people.forEach(p => { if (p.look.prop !== 'light') return; if (!p.lamp) { p.lamp = new THREE.Mesh(new THREE.CircleGeometry(2.2, 18), new THREE.MeshBasicMaterial({ map: Arcade3D.glowTex(), color: '#fff2c0', transparent: true, opacity: .55, depthWrite: false, blending: THREE.AdditiveBlending })); p.lamp.rotation.x = -Math.PI / 2; G.r3.scene.add(p.lamp); p.lampS = new THREE.Sprite(Arcade3D.glowSprite('#fff6d0')); p.lampS.scale.setScalar(1.2); G.r3.scene.add(p.lampS); }
         const on = !p.sleep && !p.hidden; p.lamp.visible = p.lampS.visible = on; if (!on) return;
@@ -568,7 +570,15 @@ const SniperGame = (function () {
     sprites(G);
     const lk = G.L.nest.look; if (lk) { const n = G.L.nest, dx = lk[0] - n.x, dy = lk[1] - n.y, dz = lk[2] - n.z; G.yaw = Math.atan2(-dx, -dz); G.pitch = Math.atan2(dy, Math.hypot(dx, dz)); }
     G.nestX = G.L.nest.x; G.nestZ = G.L.nest.z;
-    G.ok = true;
+    dofSetup(G);
+    /* só arranca com os shaders compilados (sem congelar a página: ver Arcade3D.warm) */
+    Promise.all([Arcade3D.warm(scene, cam), Arcade3D.warm(G.fp.scene, G.fp.cam), Arcade3D.warm(G.r3.dof.qs, G.r3.dof.qc)])
+      .then(() => {
+        if (G.dead || !G.r3) return;
+        /* um frame escondido atrás do ecrã "A preparar": compila também os shaders das sombras */
+        G.r3.renderer.render(scene, cam);
+        requestAnimationFrame(() => { if (!G.dead && G.r3) G.ok = true; });
+      });
   }
 
   /* ── grelha de colisões (caixas orientadas) ── */
@@ -1232,6 +1242,76 @@ const SniperGame = (function () {
     ren.toneMappingExposure = e; ren.shadowMap.autoUpdate = au; ren.setScissorTest(false); ren.setViewport(0, 0, W, H);
     pp.rect = [px, py, pw, ph];
   }
+  /* ── profundidade de campo na mira ──
+     Uma mira é uma teleobjetiva: o que está muito à frente ou muito atrás da
+     distância focada desfoca. Ótica de lente fina em ângulo: um ponto à
+     distância z, com a mira focada em s, espalha-se num disco de
+     D·|1/z − 1/s| radianos, onde D é a pupila de entrada (a objetiva de 50 mm,
+     ou ampliação × pupila do olho, se for menor: ~4 mm de dia, ~6 mm de noite —
+     por isso a 4× quase não se nota, a 14× já se vê e à noite desfoca mais). A mira foca sozinha a
+     distância do telémetro (como o botão de paralaxe), com um pequeno atraso.
+     A cena vai para um alvo com profundidade marcado como "XR": o three.js r160
+     aplica-lhe a mesma curva de tons e sRGB do ecrã, por isso os shaders são
+     os mesmos (não há segunda compilação) e as cores ficam iguais. */
+  const SCOPE_OBJ = .05;
+  function dofSetup(G) {
+    const coarse = G.r3.coarse, N = coarse ? 20 : 32;
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { tColor: { value: null }, tDepth: { value: null }, res: { value: new THREE.Vector2() }, near: { value: 1 }, far: { value: 9000 }, invS: { value: 1 / 150 }, cocK: { value: 0 }, maxCoc: { value: 12 } },
+      vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+      fragmentShader: `
+        uniform sampler2D tColor, tDepth; uniform vec2 res; uniform float near, far, invS, cocK, maxCoc; varying vec2 vUv;
+        float lin(float d){ float z = d * 2.0 - 1.0; return 2.0 * near * far / (far + near - z * (far - near)); }
+        float coc(vec2 uv){ return min(maxCoc, cocK * abs(1.0 / lin(texture2D(tDepth, uv).x) - invS)); }
+        vec3 dec(vec3 c){ return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
+        void main(){
+          float c0 = coc(vUv);
+          vec3 col = dec(texture2D(tColor, vUv).rgb);
+          if (c0 > 0.5) {
+            vec3 acc = col; float ws = 1.0;
+            for (int i = 1; i < ${N}; i++) {
+              float r = sqrt((float(i) + 0.5) / ${N}.0) * c0, a = float(i) * 2.39996323;
+              vec2 uv = vUv + vec2(cos(a), sin(a)) * r / res;
+              /* só conta se o disco da amostra chega a este píxel: o alvo nítido não borra o fundo */
+              float w = clamp(coc(uv) - r + 1.0, 0.0, 1.0);
+              acc += dec(texture2D(tColor, uv).rgb) * w; ws += w;
+            }
+            col = acc / ws;
+          }
+          gl_FragColor = vec4(col, 1.0);
+          #include <colorspace_fragment>
+        }`,
+      depthTest: false, depthWrite: false, toneMapped: false,
+    });
+    const q = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat); q.frustumCulled = false;
+    const qs = new THREE.Scene(); qs.add(q);
+    G.r3.dof = { mat, qs, qc: new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), rt: null, f: 0, t: 0, sz: new THREE.Vector2() };
+  }
+  function dofTarget(D, w, h) {
+    if (D.rt && D.rt.width === w && D.rt.height === h) return D.rt;
+    if (D.rt) { D.rt.depthTexture.dispose(); D.rt.dispose(); }
+    const depth = new THREE.DepthTexture(w, h); depth.type = THREE.UnsignedIntType;
+    const rt = new THREE.WebGLRenderTarget(w, h, { samples: 4, depthTexture: depth, colorSpace: THREE.SRGBColorSpace });
+    rt.texture.internalFormat = 'RGBA8';   /* guarda os valores já em sRGB (como o ecrã); o shader descodifica */
+    rt.isXRRenderTarget = true;            /* r160: mesma curva de tons e espaço de cor do ecrã → mesmos shaders */
+    return (D.rt = rt);
+  }
+  function dofRender(G, ren, cam) {
+    const D = G.r3.dof, sz = ren.getDrawingBufferSize(D.sz), u = D.mat.uniforms;
+    /* ao abrir a mira já vem focada; depois segue o telémetro com ~0,1 s de atraso */
+    const now = performance.now(), gap = !D.t || now - D.t > 250, dt = Math.min(.1, (now - D.t) / 1000); D.t = now;
+    const want = clamp(G.range || 150, 5, 1500);
+    D.f = gap ? want : D.f + (want - D.f) * (1 - Math.exp(-dt / .12));
+    const zoom = ZOOMS[G.zi] || 1, pupil = Math.min(SCOPE_OBJ, zoom * (G.r3.night ? .006 : .004));
+    u.cocK.value = .5 * pupil * sz.y / (cam.fov * Math.PI / 180);
+    u.invS.value = 1 / D.f; u.near.value = cam.near; u.far.value = cam.far;
+    u.maxCoc.value = 9 * (G.r3.dpr || 1); u.res.value.copy(sz);
+    const rt = dofTarget(D, sz.x, sz.y);
+    ren.setRenderTarget(rt); ren.clear(); ren.render(G.r3.scene, cam);
+    ren.setRenderTarget(null); ren.clear();
+    u.tColor.value = rt.texture; u.tDepth.value = rt.depthTexture;
+    ren.render(D.qs, D.qc);
+  }
   function pipHud(G, ctx) {
     const pp = G.pip; if (!pp || !pp.rect) return; const [x, y, w, h] = pp.rect, k = clamp(Math.min(pp.t * 6, (pp.d - pp.t) * 4), 0, 1);
     ctx.clearRect(x, y, w, h);   /* destapa a imagem 3D da câmara (a máscara da mira pinta o ecrã todo de preto) */
@@ -1536,8 +1616,9 @@ const SniperGame = (function () {
     const nv = G.nv && (G.scope || G.bino) && !dcam;
     r3.renderer.toneMappingExposure = r3.sky.exp * (nv ? 5 : 1);
     const ren = r3.renderer;
-    ren.autoClear = false; ren.clear();
-    ren.render(r3.scene, cam);
+    ren.autoClear = false;
+    if (G.scope && !dcam && !G.dbgCam) dofRender(G, ren, cam);
+    else { ren.clear(); ren.render(r3.scene, cam); }
     if (G.pip && !dcam && !G.dbgCam) pipRender(G, ren);
     /* espingarda (só sem mira) */
     if (!G.scope && !G.bino && !dcam && !G.dbgCam) {
@@ -1940,7 +2021,7 @@ const SniperGame = (function () {
       hint(G, G.L.brief, 6, true);
     },
     update, draw, down, move, up, key, keyup,
-    destroy: G => { G.dead = 1; if (document.pointerLockElement) try { document.exitPointerLock(); } catch (e) {} if (G._off) G._off(); if (G.ui) G.ui.remove(); if (G.r3) { G.r3.renderer.toneMappingExposure = 1.08; G.r3.renderer.autoClear = true; Arcade3D.disposeOwn(G.r3.scene); if (G.fp) Arcade3D.disposeOwn(G.fp.scene); G.r3.env && G.r3.env.dispose(); Arcade3D.detach(); G.r3 = null; } },
+    destroy: G => { G.dead = 1; if (document.pointerLockElement) try { document.exitPointerLock(); } catch (e) {} if (G._off) G._off(); if (G.ui) G.ui.remove(); if (G.r3) { G.r3.renderer.toneMappingExposure = 1.08; G.r3.renderer.autoClear = true; Arcade3D.disposeOwn(G.r3.scene); if (G.fp) Arcade3D.disposeOwn(G.fp.scene); const D = G.r3.dof; if (D) { D.mat.dispose(); D.qs.children[0].geometry.dispose(); if (D.rt) { D.rt.depthTexture.dispose(); D.rt.dispose(); } } G.r3.env && G.r3.env.dispose(); Arcade3D.detach(); G.r3 = null; } },
     hud: G => [['Missão', (G.li + 1) + '/' + LEVELS.length], ['Pontos', G.score], ['Dardos', G.ammo]],
     pauseButtons: (G, api) => [{ label: 'Ecrã inteiro', fn: () => { try { if (document.fullscreenElement) document.exitFullscreen(); else api.stage.requestFullscreen && api.stage.requestFullscreen().catch(() => {}); } catch (e) {} api.resume(); } }, { label: 'Escolher missão', fn: () => api.menu() }],
     achievements: [
