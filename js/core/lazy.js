@@ -143,7 +143,7 @@ const Lazy = (function () {
     /* games.css também define o lançador de dados (.dice-*), que vive
        nas Ferramentas — não é engano. */
     tools:       ['css/views/tools.css', 'css/views/games.css'],
-    photography: ['css/views/photo-learn.css', 'css/views/photo-cheats.css'],
+    photography: ['css/views/photo-learn.css', 'css/views/photo-cheats.css', 'css/views/photo-studio.css'],
   };
 
   const _script = Object.create(null);   // src → Promise (resolve-once)

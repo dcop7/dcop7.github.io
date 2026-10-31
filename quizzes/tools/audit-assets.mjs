@@ -68,6 +68,14 @@ add({ file: 'quizzes/{...}/simbolos.json (inline SVG)', type: 'svg-inline', sour
 add({ file: 'index.html / *.js (inline UI/nav SVG icons)', type: 'svg-inline', source: 'original (this repository)',
   license: 'project-owned', attribution: 'none', verified: true, classification: 'SAFE' });
 
+/* 4b) Estúdio virtual da Fotografia — sujeito 3D montado a partir de assets
+   MakeHuman (CC0 1.0) por tools/studio/ (ver assets/models/studio/CREDITS.md) */
+const studioDir = join(ROOT, 'assets', 'models', 'studio');
+for (const f of (existsSync(studioDir) ? [...await readdir(studioDir), ...(existsSync(join(studioDir, 'tex')) ? (await readdir(join(studioDir, 'tex'))).map(x => 'tex/' + x) : [])] : []).filter(x => /\.(glb|webp)$/i.test(x))) {
+  add({ file: `assets/models/studio/${f}`, type: f.endsWith('.glb') ? 'model' : 'texture', source: 'MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/',
+    license: 'CC0-1.0', attribution: 'none required (credited in CREDITS.md)', verified: true, classification: 'SAFE' });
+}
+
 /* 5) Remote references (textures / tiles / images loaded at runtime) */
 const remote = [
   /* The 3D globe's realistic + day/night Earth now uses LOCAL Solar System Scope

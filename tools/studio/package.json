@@ -1,0 +1,14 @@
+{
+  "name": "studio-build",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only pipeline: MakeHuman CC0 assets → studio subject GLB + textures. Not part of the site.",
+  "devDependencies": {
+    "@gltf-transform/core": "^4.1.0",
+    "@gltf-transform/extensions": "^4.1.0",
+    "@gltf-transform/functions": "^4.1.0",
+    "meshoptimizer": "^0.22.0",
+    "sharp": "^0.33.5",
+    "yauzl": "^3.2.0"
+  }
+}

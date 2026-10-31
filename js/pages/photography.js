@@ -2969,16 +2969,36 @@ const PhotographyPage = (function () {
     }
   }
 
+  /* ── Estúdio virtual (3D) ─────────────────────────────────────────
+     Módulos ES em js/pages/studio/ (three.js via esm.sh, como o Corpo
+     Humano). Monta-se uma vez; ao sair do separador o próprio estúdio
+     pausa o render (IntersectionObserver), por isso não é desmontado. */
+  let _studio = null;
+  function buildEstudio(panel) {
+    if (_studio) return;
+    panel.innerHTML = `<div class="ph-studio-host"></div>`;
+    const host = panel.querySelector('.ph-studio-host');
+    _studio = import('/js/pages/studio/st-app.mjs')
+      .then(m => m.mount(host))
+      .catch(err => {
+        console.error(err);
+        _studio = null;
+        host.innerHTML = `<div class="empty-state"><p>O estúdio 3D precisa de WebGL 2 e de ligação para carregar o three.js.</p><button class="btn btn-sm" type="button">Tentar de novo</button></div>`;
+        host.querySelector('button').onclick = () => buildEstudio(panel);
+      });
+  }
+
   // ── Main ──────────────────────────────────────────────────────────
   const PH_TABS = [
     { id: 'generos',     label: '🎯 Géneros' },
     { id: 'cheats',      label: '📋 Cheatsheets' },
     { id: 'equipamento', label: '🎒 Equipamento' },
+    { id: 'estudio',     label: '💡 Estúdio' },
     { id: 'edicao',      label: '🎨 Edição' },
     { id: 'aprender',    label: '📚 Aprender' },
     { id: 'ferramentas', label: '🧮 Ferramentas' },
   ];
-  const TAB_ROUTE = { generos: 'photography', cheats: 'photography/cheatsheets', equipamento: 'photography/equipamento', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+  const TAB_ROUTE = { generos: 'photography', cheats: 'photography/cheatsheets', equipamento: 'photography/equipamento', estudio: 'photography/estudio', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
 
   /* Contexto entregue ao PhotoCheats: dá-lhe acesso ao DB, aos assets, à
      classe de câmara e ao router de ligações cruzadas sem que ele precise
@@ -3023,6 +3043,7 @@ const PhotographyPage = (function () {
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
           else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
         else if (id === 'equipamento') buildEquipamento(panel, arg);
+        else if (id === 'estudio') buildEstudio(panel);
         else if (id === 'edicao') buildEdicao(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
         else buildFerramentas(panel);
@@ -3045,6 +3066,7 @@ const PhotographyPage = (function () {
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
       else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
       else if (a === 'edicao')               { tab = 'edicao'; arg = rest || null; }
+      else if (a === 'estudio')              tab = 'estudio';
       else if (a === 'cheatsheets' || a === 'cs') { tab = 'cheats'; arg = rest || null; }
       else if (a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
       else if (a === 'cenarios')             tab = 'generos';

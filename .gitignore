@@ -20,3 +20,6 @@ _rembrandt/
 _teste-luz/
 assets/photo/_test-*/
 tools/photogen/_*.mjs
+_studio_harness.html
+tools/studio/_src/
+tools/studio/node_modules/

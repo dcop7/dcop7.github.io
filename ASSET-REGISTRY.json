@@ -4851,6 +4851,96 @@
     "classification": "SAFE"
   },
   {
+    "file": "assets/models/studio/subject.glb",
+    "type": "model",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/brows.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/clothes-ao.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/clothes-n.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/clothes.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/eye.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/hair.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/lashes.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/shoes.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
+    "file": "assets/models/studio/tex/skin.webp",
+    "type": "texture",
+    "source": "MakeHuman system assets + base mesh (makehumancommunity.org), assembled by tools/studio/",
+    "license": "CC0-1.0",
+    "attribution": "none required (credited in CREDITS.md)",
+    "verified": true,
+    "classification": "SAFE"
+  },
+  {
     "type": "remote",
     "file": "{s}.basemaps.cartocdn.com/* (voyager/dark_matter/dark_all/light_all)",
     "source": "CARTO + OpenStreetMap",
