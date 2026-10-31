@@ -129,7 +129,7 @@ const Lazy = (function () {
      home (rota de entrada) · features (traz os `ph-*` de estado
      vazio e o modal partilhado, usados por meia dúzia de secções). */
   const CSS = {
-    explorer:    ['css/views/explorer.css', 'css/views/explore-kb.css', 'css/views/worlddata.css', 'css/views/explorer-body.css', 'css/views/explain.css', 'css/views/sky.css', 'css/views/portugal.css', 'css/views/universe.css'],
+    explorer:    ['css/views/explorer.css', 'css/views/explore-kb.css', 'css/views/worlddata.css', 'css/views/explorer-body.css', 'css/views/explain.css', 'css/views/sky.css', 'css/views/portugal.css', 'css/views/universe.css', 'css/views/ocean.css'],
     ocorrencias: ['css/views/ocorrencias.css'],
     eventos:     ['css/views/eventos.css'],
     noticias:    ['css/views/noticias.css', 'css/views/noticias-destaques.css'],
