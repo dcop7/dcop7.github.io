@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v358';
+const CACHE = 'dcop7-v359';
 const STATIC = [
   '/',
   '/index.html',
@@ -23,6 +23,7 @@ const STATIC = [
   '/css/views/oss.css',
   '/css/views/quiz.css',
   '/css/views/photo-learn.css',
+  '/css/views/photo-studio.css',
   '/css/views/photo-cheats.css',
   '/data/countries.json',
   '/data/worlddata/indicators.json',
@@ -101,6 +102,14 @@ const STATIC = [
   '/js/pages/photo-lightart.js',
   '/js/pages/photo-cards.js',
   '/js/pages/photo-cheats.js',
+  '/js/pages/studio/st-core.mjs',
+  '/js/pages/studio/st-gear.mjs',
+  '/js/pages/studio/st-lights.mjs',
+  '/js/pages/studio/st-post.mjs',
+  '/js/pages/studio/st-scene.mjs',
+  '/js/pages/studio/st-plan.mjs',
+  '/js/pages/studio/st-presets.mjs',
+  '/js/pages/studio/st-app.mjs',
   '/js/pages/photography.js',
   '/data/photo/gear.json',
   '/data/photo/genres.json',
@@ -263,7 +272,7 @@ self.addEventListener('fetch', e => {
      keep returning a 10-min-stale file even on a hard reload — which is exactly
      why fixes appeared "not to show up" on the live site. Cache is offline
      fallback only. */
-  const isCode = e.request.mode === 'navigate' || /\.(?:js|css|html)$/.test(url.pathname);
+  const isCode = e.request.mode === 'navigate' || /\.(?:m?js|css|html)$/.test(url.pathname);
   if (isCode) {
     e.respondWith(
       fetch(e.request, { cache: 'reload' })
