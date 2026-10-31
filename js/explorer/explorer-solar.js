@@ -288,6 +288,7 @@ const SolarExplorer = (function () {
   let _sunCorona     = null;
   let _sunHalo       = null;
   let _kuiper        = null;
+  let _sky           = null;   /* background sky: Milky Way glow + catalogue stars */
   let _maxAniso      = 8;       /* GPU max anisotropy → sharper planet textures */
 
   /* Earth day/night: blend day + night (city lights) textures by the angle to
@@ -398,7 +399,7 @@ const SolarExplorer = (function () {
           <div class="ex-solar-panel-body" id="ss-panel-body"></div>
         </div>
         <div class="ex-solar-hint" id="ss-hint">Escolhe um planeta em cima ou clica num corpo · Arrasta para rodar · Roda do rato para aproximar</div>
-        <div class="ex-solar-credit">Texturas: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · CC BY 4.0</div>
+        <div class="ex-solar-credit">Texturas: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> · Via Láctea: <a href="https://www.eso.org/public/images/eso0932a/" target="_blank" rel="noopener">ESO/S. Brunier</a> · CC BY 4.0 · Estrelas: Yale BSC5</div>
       </div>`;
 
     _mounted = true;
@@ -440,7 +441,7 @@ const SolarExplorer = (function () {
     const H = viewport.clientHeight || 600;
     _orbitLines = [];   /* reset so re-mounts don't keep stale orbit refs */
     _earthDN = null; _earthMesh = null; _sunCorona = null;
-    _comets = []; _asteroids = []; _satellites = []; _beltPoints = null;
+    _comets = []; _asteroids = []; _satellites = []; _beltPoints = null; _sky = null;
 
     /* Renderer */
     _q = _quality();
@@ -454,21 +455,12 @@ const SolarExplorer = (function () {
     /* Scene */
     _scene = new THREE.Scene();
 
-    /* Space background — the real Milky Way star sky (ESO/S.Brunier panorama,
-       CC-BY 4.0, bundled locally). This is exactly the right viewpoint: from
-       inside the Solar System we look out at our own galaxy. Solid colour shows
-       until the texture loads, and stays as the fallback if it fails. */
-    _scene.background = new THREE.Color(0x05060f);
-    new THREE.TextureLoader().load('assets/space/milkyway.jpg', tex => {
-      tex.mapping = THREE.EquirectangularReflectionMapping;
-      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = _maxAniso || 1;
-      _scene.background = tex;
-    }, undefined, () => {});
-
-    /* (A antiga nuvem de 5000 pontos aleatórios saiu: à volta da câmara
-       tornava-se granulado quadrado por cima do panorama real.) */
-    _scene.backgroundIntensity = 0.75;
+    /* Space background — the real Milky Way (ESO/S.Brunier panorama, CC BY 4.0)
+       in two layers so it stays sharp at any zoom: the diffuse glow (stars
+       removed, tools/space/build-glow.py) and the catalogue stars as crisp
+       points (tools/space/build-bgstars.mjs). See _buildSky. */
+    _scene.background = new THREE.Color(0x020308);
+    _buildSky();
 
     /* Lighting — neutral mid-ambient + non-decaying point sun so outer planets stay legible */
     _scene.add(new THREE.AmbientLight(0x404050, 1.4));
@@ -660,6 +652,114 @@ const SolarExplorer = (function () {
     const nep = PLANETS.find(p => p.id === 'neptune');
     _kuiper = _dustRing(nep.orbitR + 18, nep.orbitR + 75, Math.round(7000 * _q), 14, [[0.62, 0.72, 0.86], [0.55, 0.62, 0.74], [0.75, 0.8, 0.9]], 1.1, 0.45, false);
     _scene.add(_kuiper);
+  }
+
+  /* Céu de fundo na orientação verdadeira: a cena usa a eclíptica (x → equinócio,
+     −z → 90° de longitude, y → polo norte da eclíptica), por isso a Via Láctea
+     aparece inclinada ~60°, como no céu. Galáctico → equatorial (J2000) →
+     eclíptico (ε = 23,4393°). */
+  const _GAL_EQ = [   /* equatorial → galáctico (J2000); a transposta faz o inverso */
+    [-0.0548755604, -0.8734370902, -0.4838350155],
+    [ 0.4941094279, -0.4448296300,  0.7469822445],
+    [-0.8676661490, -0.1980763734,  0.4559837762]];
+  const _EPS = 23.4393 * Math.PI / 180;
+  function _galToScene(gx, gy, gz) {
+    const M = _GAL_EQ;
+    const qx = M[0][0] * gx + M[1][0] * gy + M[2][0] * gz;
+    const qy = M[0][1] * gx + M[1][1] * gy + M[2][1] * gz;
+    const qz = M[0][2] * gx + M[1][2] * gy + M[2][2] * gz;
+    const ey = qy * Math.cos(_EPS) + qz * Math.sin(_EPS), ez = -qy * Math.sin(_EPS) + qz * Math.cos(_EPS);
+    return [qx, ez, -ey];
+  }
+  /* cena → galáctico, como mat3 (colunas = imagem de cada eixo da cena) */
+  function _sceneToGalMat() {
+    const cols = [[1, 0, 0], [0, 1, 0], [0, 0, 1]].map(([sx, sy, sz]) => {
+      const ex = sx, ey = -sz, ez = sy;
+      const qx = ex, qy = ey * Math.cos(_EPS) - ez * Math.sin(_EPS), qz = ey * Math.sin(_EPS) + ez * Math.cos(_EPS);
+      const M = _GAL_EQ;
+      return [0, 1, 2].map(r => M[r][0] * qx + M[r][1] * qy + M[r][2] * qz);
+    });
+    return new THREE.Matrix3().set(cols[0][0], cols[1][0], cols[2][0], cols[0][1], cols[1][1], cols[2][1], cols[0][2], cols[1][2], cols[2][2]);
+  }
+  function _bvColor(bv) {
+    const T = [[-0.3, 0.62, 0.72, 1], [0, 0.8, 0.86, 1], [0.3, 0.94, 0.95, 1], [0.6, 1, 0.95, 0.86], [1, 1, 0.84, 0.64], [1.5, 1, 0.72, 0.46], [2, 1, 0.62, 0.36]];
+    if (bv <= T[0][0]) return T[0].slice(1);
+    for (let i = 1; i < T.length; i++) if (bv <= T[i][0]) {
+      const a = T[i - 1], b = T[i], k = (bv - a[0]) / (b[0] - a[0]);
+      return [a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3] + (b[3] - a[3]) * k];
+    }
+    return T[T.length - 1].slice(1);
+  }
+  /* Duas camadas que acompanham a câmara:
+     • brilho difuso da Via Láctea (panorama ESO sem estrelas) numa esfera; o
+       shader calcula (l, b) por píxel, por isso não há costura nem distorção;
+     • estrelas do catálogo (BSC5 + CNS3 até V 7) como pontos nítidos. */
+  function _buildSky() {
+    const scene = _scene;
+    _sky = new THREE.Group(); _sky.renderOrder = -20;
+    scene.add(_sky);
+    const sky = _sky;
+    new THREE.TextureLoader().load(_q >= 0.72 ? 'assets/space/milkyway-glow-4k.webp' : 'assets/space/milkyway-glow-2k.webp', tex => {
+      if (_sky !== sky) { tex.dispose(); return; }
+      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter; tex.wrapS = THREE.RepeatWrapping;
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { tGlow: { value: tex }, uToGal: { value: _sceneToGalMat() }, uK: { value: 1.3 } },
+        vertexShader: `varying vec3 vDir; void main() { vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+        fragmentShader: `uniform sampler2D tGlow; uniform mat3 uToGal; uniform float uK; varying vec3 vDir;
+          void main() {
+            vec3 g = normalize(uToGal * vDir);
+            float l = atan(g.y, g.x), b = asin(clamp(g.z, -1.0, 1.0));
+            vec2 uv = vec2(0.5 - l / 6.28318531, 0.5 + b / 3.14159265);
+            gl_FragColor = vec4(texture2D(tGlow, uv).rgb * uK, 1.0);
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
+          }`,
+        side: THREE.BackSide, depthWrite: false, depthTest: false,
+      });
+      const m = new THREE.Mesh(new THREE.SphereGeometry(2500, 48, 24), mat);
+      m.renderOrder = -20; m.frustumCulled = false;
+      sky.add(m);
+    }, undefined, () => {});
+    fetch('assets/space/bgstars.bin').then(r => r.ok ? r.arrayBuffer() : Promise.reject(r.status)).then(buf => {
+      if (_sky !== sky) return;
+      const dv = new DataView(buf), N = buf.byteLength / 8, R = 2400;
+      const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), mag = new Float32Array(N);
+      for (let i = 0; i < N; i++) {
+        const o = i * 8, v = _galToScene(dv.getInt16(o, true) / 32767, dv.getInt16(o + 2, true) / 32767, dv.getInt16(o + 4, true) / 32767);
+        pos[i * 3] = v[0] * R; pos[i * 3 + 1] = v[1] * R; pos[i * 3 + 2] = v[2] * R;
+        mag[i] = (dv.getUint8(o + 6) - 40) / 20;
+        const c = _bvColor(dv.getUint8(o + 7) / 100 - 0.5);
+        col[i * 3] = c[0]; col[i * 3 + 1] = c[1]; col[i * 3 + 2] = c[2];
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      geo.setAttribute('aMag', new THREE.BufferAttribute(mag, 1));
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { uPR: { value: _renderer.getPixelRatio() } },
+        vertexShader: `attribute float aMag; attribute vec3 color; uniform float uPR; varying vec3 vCol; varying float vA;
+          void main() {
+            float s = clamp(7.0 - aMag, 0.0, 8.5);
+            vA = clamp(0.22 + s * 0.17, 0.22, 1.0);
+            vCol = color;
+            gl_PointSize = (1.8 + s * 0.6 + max(0.0, 1.5 - aMag) * 1.8) * uPR;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }`,
+        fragmentShader: `varying vec3 vCol; varying float vA;
+          void main() {
+            vec2 p = gl_PointCoord * 2.0 - 1.0; float d2 = dot(p, p);
+            if (d2 > 1.0) discard;
+            float a = (exp(-d2 * 8.0) + exp(-d2 * 2.5) * 0.2) * vA;
+            gl_FragColor = vec4(vCol * a * 1.6, a);
+            #include <colorspace_fragment>
+          }`,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      });
+      const pts = new THREE.Points(geo, mat);
+      pts.frustumCulled = false; pts.renderOrder = -10;
+      sky.add(pts);
+    }).catch(() => {});
   }
 
   function _dustRing(rMin, rMax, N, thick, palette, size, opacity, kirkwood) {
@@ -1101,6 +1201,7 @@ const SolarExplorer = (function () {
       _camFocusZ += (_camFocusZT - _camFocusZ) * lf;
       _updateCamera();
       _updateLabels();
+      if (_sky) _sky.position.copy(_camera.position);
 
       _renderer.render(_scene, _camera);
     }
