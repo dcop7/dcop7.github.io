@@ -76,6 +76,13 @@ for (const f of (existsSync(studioDir) ? [...await readdir(studioDir), ...(exist
     license: 'CC0-1.0', attribution: 'none required (credited in CREDITS.md)', verified: true, classification: 'SAFE' });
 }
 
+/* 4c) Universo observável — mapa da radiação cósmica de fundo (WMAP, NASA) com paleta nossa;
+   os restantes ficheiros de data/universe/ são catálogos factuais (ver data/universe/SOURCES.md) */
+for (const f of ['cmb.webp', 'cmb-lo.webp']) {
+  if (existsSync(join(ROOT, 'data', 'universe', f))) add({ file: `data/universe/${f}`, type: 'texture', source: 'WMAP 9-year ILC map (NASA LAMBDA), reprojected + own colour palette by tools/universe/build.mjs',
+    license: 'Public domain (NASA)', attribution: 'NASA / WMAP Science Team (credited in data/universe/SOURCES.md)', verified: true, classification: 'SAFE' });
+}
+
 /* 5) Remote references (textures / tiles / images loaded at runtime) */
 const remote = [
   /* The 3D globe's realistic + day/night Earth now uses LOCAL Solar System Scope

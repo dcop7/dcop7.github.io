@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v359';
+const CACHE = 'dcop7-v360';
 const STATIC = [
   '/',
   '/index.html',
@@ -68,6 +68,7 @@ const STATIC = [
   '/js/explorer/explorer-sky.js',
   '/css/views/explain.css',
   '/css/views/sky.css',
+  '/css/views/universe.css',
   '/css/views/portugal.css',
   '/js/explorer/ocorrencias.js',
   '/js/explorer/eventos.js',
@@ -110,6 +111,13 @@ const STATIC = [
   '/js/pages/studio/st-plan.mjs',
   '/js/pages/studio/st-presets.mjs',
   '/js/pages/studio/st-app.mjs',
+  '/js/explorer/universe/u-core.mjs',
+  '/js/explorer/universe/u-engine.mjs',
+  '/js/explorer/universe/u-near.mjs',
+  '/js/explorer/universe/u-stars.mjs',
+  '/js/explorer/universe/u-galaxy.mjs',
+  '/js/explorer/universe/u-cosmos.mjs',
+  '/js/explorer/universe/u-app.mjs',
   '/js/pages/photography.js',
   '/data/photo/gear.json',
   '/data/photo/genres.json',

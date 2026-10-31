@@ -706,6 +706,11 @@ const ExplorerPage = (function () {
               <div class="ex-feature-card-title">${_t('Milky Way', 'Via Láctea')}</div>
               <div class="ex-feature-card-desc">${_t('Fly through our galaxy: spiral arms, the Sun, bright stars and constellations, nebulae and other galaxies.', 'Voa pela nossa galáxia: braços em espiral, o Sol, estrelas e constelações, nebulosas e outras galáxias.')}</div>
             </div>
+            <div class="ex-feature-card" data-tab="universe">
+              <span class="ex-feature-card-icon">🔭</span>
+              <div class="ex-feature-card-title">${_t('Observable Universe', 'Universo Observável')}</div>
+              <div class="ex-feature-card-desc">${_t('Travel from the Earth to the cosmic microwave background through real catalogues: stars, galaxies, quasars and the cosmic web.', 'Viaja da Terra até à radiação cósmica de fundo, com catálogos reais: estrelas, galáxias, quasares e a teia cósmica.')}</div>
+            </div>
             <div class="ex-feature-card ex-feature-card--sky" data-tab="sky">
               <span class="ex-feature-card-icon">🌙</span>
               <div class="ex-feature-card-title">${_t('Tonight’s Sky', 'Céu Esta Noite')}</div>
@@ -1708,6 +1713,7 @@ const ExplorerPage = (function () {
     ['realtime', '🛰', _t('Live Earth', 'Terra em Tempo Real')],
     ['solar', '☀', _t('Solar System', 'Sistema Solar')],
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
+    ['universe', '🔭', _t('Universe', 'Universo')],
     ['sky', '🌙', _t('Tonight’s Sky', 'Céu Esta Noite')],
     ['body', '🧬', _t('Human Body', 'Corpo Humano')],
     ['kb', '🧭', _t('Topics', 'Temas')],
@@ -1765,11 +1771,13 @@ const ExplorerPage = (function () {
     else _switchTab(tab);
   }
 
+  let _universe = null;
   function _switchTab(tab) {
     if (!_shell) return;
     _closeModal();
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
     if (tab !== 'galaxy' && _curTab === 'galaxy' && typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
+    if (tab !== 'universe' && _curTab === 'universe' && _universe) _universe.stop();
     if (tab !== 'realtime' && _curTab === 'realtime' && typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     if (tab !== 'body' && _curTab === 'body' && typeof HumanBodyExplorer !== 'undefined') HumanBodyExplorer.stop();
@@ -1819,6 +1827,14 @@ const ExplorerPage = (function () {
       if (typeof MilkyWayExplorer !== 'undefined') {
         if (!sub.querySelector('.ex-solar-wrap')) MilkyWayExplorer.mount(sub);
         else MilkyWayExplorer.resume();
+      }
+    } else if (tab === 'universe') {
+      /* módulo ES (three.js 0.160 via esm.sh), carregado só quando se abre */
+      if (_universe) { if (!sub.querySelector('.uv')) _universe.mount(sub); else _universe.resume(); }
+      else {
+        sub.innerHTML = '<div class="empty-state"><p>A carregar o Universo…</p></div>';
+        import('/js/explorer/universe/u-app.mjs').then(m => { _universe = m; if (_curTab === 'universe') m.mount(sub); })
+          .catch(() => { sub.innerHTML = `<div class="empty-state"><p>${_t('Could not load the Universe.', 'Não foi possível carregar o Universo.')}</p><button class="btn" type="button">${_t('Try again', 'Tentar de novo')}</button></div>`; sub.querySelector('button').onclick = () => _switchTab('universe'); });
       }
     } else if (tab === 'realtime') {
       if (typeof RealtimeEarth !== 'undefined') {
