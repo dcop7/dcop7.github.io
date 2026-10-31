@@ -5,7 +5,7 @@
    dispose }. Tudo o que é estado vive no Studio (st-scene); a interface
    só lê e escreve nesse estado e pede um novo frame.
    ══════════════════════════════════════════════════════════════════════ */
-import { Studio, SYNC } from './st-scene.mjs';
+import { Studio, SYNC, MAX_LIGHTS } from './st-scene.mjs';
 import { Plan, ROLE_COLOR } from './st-plan.mjs';
 import { PRESETS, DEFAULT_CAM, APERTURES, SHUTTERS, ISOS, FOCALS, fmtShutter, fmtF, fmtPower } from './st-presets.mjs';
 import { MODIFIERS, SURFACES, PAPERS } from './st-gear.mjs';
@@ -176,7 +176,6 @@ export async function mount(host) {
     console.error(e);
     return { pause() {}, resume() {}, dispose() {} };
   }
-  $('.sts-loading').hidden = true;
   const ro = new ResizeObserver(resize); ro.observe(stage);
   resize();
 
@@ -226,7 +225,7 @@ export async function mount(host) {
       accent: { mod: 'snoot', az: 110, el: 20, dist: 1.6, power: -3 },
       bounce: { surface: 'silver', az: 60, el: -10, dist: 0.9 },
     }[role];
-    if (st.lights.length >= 8) { toast('Máximo de 8 luzes — cada uma custa um mapa de sombras.'); return; }
+    if (st.lights.length >= MAX_LIGHTS) { toast(`Máximo de ${MAX_LIGHTS} luzes — cada uma custa um mapa de sombras.`); return; }
     const l = st.addLight({ role, ...D });
     modified = true; renderLights(); select(l);
   });
@@ -652,6 +651,7 @@ export async function mount(host) {
   /* ── ligação ao motor ───────────────────────────────────────────── */
   let planT = 0;
   st.on((what, detail) => {
+    if (what === 'compiling') { if (detail) toast('A preparar sombras para mais de 4 luzes (só desta vez)…'); return; }
     if (what === 'frame') {
       hud(detail);
       if (tab === 'camera') meterBox(); else if (tab === 'light') lightReadout();
@@ -675,6 +675,9 @@ export async function mount(host) {
   setTab('light');
   if (!mobile) select(st.lights[0]);
   syncPlan();
+  $('.sts-loading p').textContent = 'A preparar a luz…';
+  try { await st.precompile(); } catch (e) { console.warn('[studio] precompile', e); }
+  $('.sts-loading').hidden = true;
   st.start();
   window.__studio = st;           // útil para testes e depuração
 

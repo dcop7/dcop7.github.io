@@ -2971,20 +2971,39 @@ const PhotographyPage = (function () {
 
   /* ── Estúdio virtual (3D) ─────────────────────────────────────────
      Módulos ES em js/pages/studio/ (three.js via esm.sh, como o Corpo
-     Humano). Monta-se uma vez; ao sair do separador o próprio estúdio
-     pausa o render (IntersectionObserver), por isso não é desmontado. */
-  let _studio = null;
+     Humano). Dois locais: o estúdio de luz (st-app) e a rua (ext-app),
+     onde se vê o que o estúdio não mostra bem — bokeh, movimento, ISO.
+     Só um está montado de cada vez (um contexto WebGL); ao sair do
+     separador o próprio módulo pausa o render (IntersectionObserver). */
+  let _studio = null, _studioMode = null;
+  const STUDIO_MODS = { studio: '/js/pages/studio/st-app.mjs', ext: '/js/pages/studio/ext-app.mjs' };
   function buildEstudio(panel) {
     if (_studio) return;
-    panel.innerHTML = `<div class="ph-studio-host"></div>`;
+    let mode = 'studio';
+    try { if (localStorage.getItem('ph-studio-mode') === 'ext') mode = 'ext'; } catch {}
+    panel.innerHTML = `<div class="ph-studio-modes" role="tablist" aria-label="Local">
+        <button type="button" role="tab" class="ph-sm" data-sm="studio"><b>Estúdio de luz</b><span>flashes, modificadores, esquemas</span></button>
+        <button type="button" role="tab" class="ph-sm" data-sm="ext"><b>Na rua</b><span>abertura, obturador, ISO, bokeh</span></button>
+      </div>
+      <div class="ph-studio-host"></div>`;
+    panel.querySelectorAll('.ph-sm').forEach(b => b.onclick = () => switchStudio(panel, b.dataset.sm));
+    switchStudio(panel, mode);
+  }
+  function switchStudio(panel, mode) {
+    if (_studioMode === mode && _studio) return;
+    _studioMode = mode;
+    try { localStorage.setItem('ph-studio-mode', mode); } catch {}
+    panel.querySelectorAll('.ph-sm').forEach(b => { const on = b.dataset.sm === mode; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
     const host = panel.querySelector('.ph-studio-host');
-    _studio = import('/js/pages/studio/st-app.mjs')
+    const prev = _studio;
+    _studio = (prev ? prev.then(app => app?.dispose?.()).catch(() => {}) : Promise.resolve())
+      .then(() => { host.innerHTML = ''; return import(STUDIO_MODS[mode]); })
       .then(m => m.mount(host))
       .catch(err => {
         console.error(err);
-        _studio = null;
+        _studio = null; _studioMode = null;
         host.innerHTML = `<div class="empty-state"><p>O estúdio 3D precisa de WebGL 2 e de ligação para carregar o three.js.</p><button class="btn btn-sm" type="button">Tentar de novo</button></div>`;
-        host.querySelector('button').onclick = () => buildEstudio(panel);
+        host.querySelector('button').onclick = () => switchStudio(panel, mode);
       });
   }
 

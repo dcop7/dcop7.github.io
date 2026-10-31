@@ -60,16 +60,15 @@ export class StudioLight {
     this.head = null;
 
     /* par de luzes */
-    this.spot = new THREE.SpotLight(0xffffff, 0, 0, 0.6, 0.6, 2);
-    this.spot.castShadow = true;
+    /* par de luzes emprestado de uma ranhura fixa do estúdio (ver Studio.slots) */
+    this.slot = studio.takeSlot();
+    this.spot = this.slot.spot;
     this.spot.shadow.bias = -0.00025;
     this.spot.shadow.normalBias = 0.0025;
     this.spot.shadow.camera.near = 0.15;
     this.spot.shadow.camera.far = 14;
-    this.target = new THREE.Object3D();
-    this.spot.target = this.target;
-    this.rect = new THREE.RectAreaLight(0xffffff, 0, 0.5, 0.5);
-    this.group.add(this.spot, this.target, this.rect);
+    this.target = this.slot.target;
+    this.rect = this.slot.rect;
     this.shadowSize(studio.quality.shadow);
     /* "pega" para o gizmo de transformação: coincide com a face emissora */
     this.handle = new THREE.Object3D();
@@ -235,7 +234,7 @@ export class StudioLight {
 
   dispose() {
     this.group.removeFromParent();
-    this.spot.shadow.map?.dispose();
+    this.studio.releaseSlot(this.slot);
     this.group.traverse(o => { o.geometry?.dispose?.(); });
   }
 }
