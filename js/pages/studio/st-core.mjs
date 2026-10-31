@@ -67,10 +67,16 @@ function patchedChunks() {
 	#if defined( USE_SHADOWMAP ) && NUM_SPOT_LIGHT_SHADOWS > 0
 	float stSh[ NUM_SPOT_LIGHT_SHADOWS ];
 	SpotLightShadow stSls;
+	float stOn;
 	#pragma unroll_loop_start
 	for ( int i = 0; i < NUM_SPOT_LIGHT_SHADOWS; i ++ ) {
 		stSls = spotLightShadows[ i ];
-		stSh[ i ] = receiveShadow ? getShadow( spotShadowMap[ i ], stSls.shadowMapSize, stSls.shadowBias, stSls.shadowRadius, vSpotLightCoord[ i ] ) : 1.0;
+		/* ranhuras livres (cor 0) não gastam as 16 amostras de sombra */
+		stOn = dot( spotLights[ i ].color, vec3( 1.0 ) );
+		#if ( UNROLLED_LOOP_INDEX < NUM_RECT_AREA_LIGHTS )
+			stOn += dot( rectAreaLights[ i ].color, vec3( 1.0 ) );
+		#endif
+		stSh[ i ] = ( receiveShadow && stOn > 0.0 ) ? getShadow( spotShadowMap[ i ], stSls.shadowMapSize, stSls.shadowBias, stSls.shadowRadius, vSpotLightCoord[ i ] ) : 1.0;
 	}
 	#pragma unroll_loop_end
 	#endif
@@ -80,7 +86,7 @@ function patchedChunks() {
   if (okSpot && okRect) {
     lf = lf.replace('#if ( NUM_SPOT_LIGHTS > 0 )', pre + '#if ( NUM_SPOT_LIGHTS > 0 )');
     lf = lf.replace(spotShadowCall, 'directLight.color *= directLight.visible ? stSh[ i ] : 1.0;');
-    lf = lf.replace(rectLoop, `{
+    lf = lf.replace(rectLoop, `if ( rectAreaLight.color != vec3( 0.0 ) ) {
 			vec3 stD0 = reflectedLight.directDiffuse, stS0 = reflectedLight.directSpecular;
 			${rectLoop}
 			#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )
@@ -120,7 +126,7 @@ export function studioMaterial(mat, { skin = false } = {}) {
       .replace('#include <lights_physical_pars_fragment>', ch.lp);
     if (skin) sh.fragmentShader = '#define ST_SKIN\n' + sh.fragmentShader;
   };
-  mat.customProgramCacheKey = () => 'st1' + (skin ? 's' : '');
+  mat.customProgramCacheKey = () => 'st2' + (skin ? 's' : '');
   return mat;
 }
 

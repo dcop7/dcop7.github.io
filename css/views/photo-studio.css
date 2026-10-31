@@ -211,3 +211,58 @@
 @media (prefers-reduced-motion: reduce) {
   .sts * { transition: none !important; animation: none !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Local do estúdio (Estúdio de luz | Na rua) e o Exterior (ext-app.mjs)
+   ══════════════════════════════════════════════════════════════════════ */
+.ph-studio-modes { display: flex; gap: 8px; margin: 0 0 10px; }
+.ph-sm { appearance: none; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border, rgba(255,255,255,.1)); background: var(--surface, rgba(255,255,255,.03)); color: var(--text-secondary, #a9b0bd); font: inherit; cursor: pointer; text-align: left; transition: border-color .15s, background .15s, color .15s; }
+.ph-sm b { font-size: 13.5px; color: var(--text, #e8eaef); }
+.ph-sm span { font-size: 11.5px; }
+.ph-sm:hover { border-color: rgba(242,179,68,.45); }
+.ph-sm.on { border-color: rgba(242,179,68,.75); background: rgba(242,179,68,.1); }
+.ph-sm.on b { color: #f2b344; }
+.ph-sm:focus-visible { outline: 2px solid #f2b344; outline-offset: 2px; }
+
+.ext-title { margin-right: auto; display: flex; align-items: baseline; gap: 2px; font-size: 13px; }
+.ext-title b { font-weight: 700; }
+.ext-title span { color: var(--st-muted); }
+.ext-scenes { display: grid; grid-template-columns: 1fr; gap: 5px; }
+.ext-scene { appearance: none; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 7px 10px; border-radius: 9px; border: 1px solid var(--st-line); background: rgba(255,255,255,.025); color: var(--st-text); font: inherit; text-align: left; cursor: pointer; transition: background .12s, border-color .12s; }
+.ext-scene small { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--st-muted); }
+.ext-scene b { font-size: 12.5px; font-weight: 600; }
+.ext-scene:hover { background: rgba(255,255,255,.06); }
+.ext-scene.on { border-color: rgba(var(--st-acc-rgb), .65); background: rgba(var(--st-acc-rgb), .1); }
+.ext-scene.on b { color: var(--st-acc); }
+.ext-h2 { margin-top: 16px; }
+.ext-dl { margin: 0; display: flex; flex-direction: column; gap: 11px; }
+.ext-dl dt { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--st-muted); margin-bottom: 1px; }
+.ext-dl dd { margin: 0; }
+.ext-dl dd b { display: block; font-weight: 600; font-size: 12.5px; color: var(--st-text); }
+.ext-dl dd span { display: block; font-size: 11.5px; color: var(--st-muted); line-height: 1.45; margin-top: 2px; }
+.sts-field.is-auto input[type=range] { opacity: .45; cursor: default; }
+.sts-fl label em, .ext-a { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--st-acc); margin-left: 4px; }
+.sts-lcd .ext-a { position: relative; top: -5px; margin-left: 2px; font-size: 9px; }
+.sts-toggles label.is-dim { opacity: .45; }
+.ext-flag { margin: 10px 0 0; font-size: 11.5px; color: #ffb4a8; }
+.ext-progress { position: absolute; left: 50%; top: 10px; width: 160px; margin-left: -80px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.1); overflow: hidden; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.ext-progress.on { opacity: 1; }
+.ext-progress i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); background: var(--st-acc); }
+.ext-focus-hint { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); margin: 0; padding: 3px 9px; border-radius: 7px; background: rgba(12,13,16,.7); color: var(--st-muted); font-size: 11px; pointer-events: none; }
+.ext-stage .sts-gl { cursor: crosshair; }
+.ext-plan-wrap { aspect-ratio: 1 / 1.35; }
+.ext-plan { width: 100%; height: 100%; display: block; cursor: crosshair; }
+@media (max-width: 900px) {
+  .ph-studio-modes { gap: 6px; }
+  .ph-sm { flex: 1; padding: 7px 10px; }
+  .ph-sm span { display: none; }
+  .sts-ext .sts-sec[data-mpanel="lights"] { display: none; }
+  .sts-ext[data-mtab="lights"] .sts-sec[data-mpanel="lights"] { display: block; }
+  .ext-scenes { grid-template-columns: 1fr 1fr; }
+  .ext-focus-hint { display: none; }
+  .ext-title span { display: none; }
+}
+@media (max-width: 900px) {
+  .sts-ext .sts-ab .sts-btn span { display: inline; }
+  .sts-ext .sts-ab .sts-btn { padding: 0 9px; font-size: 12px; }
+}

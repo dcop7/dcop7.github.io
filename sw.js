@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v360';
+const CACHE = 'dcop7-v361';
 const STATIC = [
   '/',
   '/index.html',
@@ -111,6 +111,10 @@ const STATIC = [
   '/js/pages/studio/st-plan.mjs',
   '/js/pages/studio/st-presets.mjs',
   '/js/pages/studio/st-app.mjs',
+  '/js/pages/studio/st-subject.mjs',
+  '/js/pages/studio/ext-city.mjs',
+  '/js/pages/studio/ext-optics.mjs',
+  '/js/pages/studio/ext-app.mjs',
   '/js/explorer/universe/u-core.mjs',
   '/js/explorer/universe/u-engine.mjs',
   '/js/explorer/universe/u-near.mjs',

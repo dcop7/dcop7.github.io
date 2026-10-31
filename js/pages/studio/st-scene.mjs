@@ -9,14 +9,16 @@
    Só se renderiza quando algo muda (render a pedido) — parado, o estúdio
    não gasta GPU nem bateria.
    ══════════════════════════════════════════════════════════════════════ */
-import { THREE, GLTFLoader, OrbitControls, TransformControls, RoomEnvironment, studioMaterial, canvasTex, noiseField, DEG, clamp, kelvinRGB } from './st-core.mjs';
+import { THREE, OrbitControls, TransformControls, RoomEnvironment, studioMaterial, DEG, clamp, kelvinRGB } from './st-core.mjs';
 import { buildCamera, buildBackdrop, buildRoom, PAPERS, initMaterials, MAT } from './st-gear.mjs';
 import { StudioLight, updateBounce, dirFrom } from './st-lights.mjs';
 import { createPost, cocFactor } from './st-post.mjs';
+import { loadSubject } from './st-subject.mjs';
 
-const BASE = '/assets/models/studio/';
 export const SYNC = 1 / 200;                  // velocidade de sincronização típica
 const ROOM_LUX = 45;                          // luz ambiente da sala (lâmpadas de serviço)
+export const MAX_LIGHTS = 8;                  // = máximo da interface; ver as ranhuras no construtor
+const SLOTS_START = 4;                        // ranhuras iniciais; crescem para MAX_LIGHTS uma vez, se for preciso
 
 export class Studio {
   constructor(canvas, { mobile = false } = {}) {
@@ -40,6 +42,16 @@ export class Studio {
     pm.dispose();
     this.hemi = new THREE.HemisphereLight(0xdfe6ef, 0x3a3631, 0);
     this.scene.add(this.hemi);
+
+    /* Ranhuras de luz FIXAS: o número de luzes faz parte da chave de cada shader, por isso
+       acrescentar ou tirar uma luz recompilava todos os materiais (5–9 s com a página parada).
+       Há sempre SLOTS_START (4, chega para todos os esquemas) ou MAX_LIGHTS pares spot+área na
+       cena; as livres ficam com intensidade 0 e sem
+       atualização de sombra (o patch de st-core salta-as). Cada par vive no mesmo grupo, por
+       isso a luz de área i continua emparelhada com a sombra da spot i. */
+    this.slots = [];
+    this.slotPool = new THREE.Group(); this.slotPool.name = 'light-slots'; this.scene.add(this.slotPool);
+    this.growSlots(SLOTS_START);
 
     this.room = buildRoom(); this.scene.add(this.room);
     this.backdrop = buildBackdrop(); this.scene.add(this.backdrop);
@@ -90,53 +102,12 @@ export class Studio {
     this.stats = { frames: 0, ms: 0 };
   }
 
-  /* ── carregamento do sujeito ──────────────────────────────────────── */
+  /* ── carregamento do sujeito (st-subject.mjs, partilhado com o Exterior) ── */
   async load(onProgress) {
-    const tl = new THREE.TextureLoader();
-    const tex = (n, srgb = true) => new Promise(res => tl.load(BASE + 'tex/' + n + '.webp', t => {
-      t.flipY = false; if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; onProgress?.(); res(t);
-    }, undefined, () => res(null)));
-    const [gltf, skin, eye, hair, brows, lashes, clothes, clothesN, clothesAO, shoes] = await Promise.all([
-      new GLTFLoader().loadAsync(BASE + 'subject.glb'),
-      tex('skin'), tex('eye'), tex('hair'), tex('brows'), tex('lashes'), tex('clothes'), tex('clothes-n', false), tex('clothes-ao', false), tex('shoes'),
-    ]);
-    const ex = gltf.scene.userData || {};
-    if (ex.ref) this.ref = ex.ref;
-    /* poros: mapa de normais procedural muito fino, repetido */
-    const pores = canvasTex(256, 256, (c, w, h) => {
-      const n = noiseField(w, h, 2, 77), m = noiseField(w, h, 6, 78);
-      const im = c.createImageData(w, h);
-      const H = (x, y) => n[((y + h) % h) * w + ((x + w) % w)] * 0.7 + m[((y + h) % h) * w + ((x + w) % w)] * 0.3;
-      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-        const dx = H(x + 1, y) - H(x - 1, y), dy = H(x, y + 1) - H(x, y - 1);
-        const nx = -dx * 2.2, ny = -dy * 2.2, nz = 1, l = Math.hypot(nx, ny, nz);
-        im.data.set([(nx / l * 0.5 + 0.5) * 255, (ny / l * 0.5 + 0.5) * 255, (nz / l * 0.5 + 0.5) * 255, 255], (y * w + x) * 4);
-      }
-      c.putImageData(im, 0, 0);
-    }, { srgb: false, repeat: [24, 24] });
-    const M = {
-      body: studioMaterial(new THREE.MeshPhysicalMaterial({ map: skin, roughness: 0.5, normalMap: pores, normalScale: new THREE.Vector2(0.06, 0.06), sheen: 0.25, sheenRoughness: 0.55, sheenColor: new THREE.Color(0.55, 0.38, 0.33), envMapIntensity: 0 }), { skin: true }),
-      eyes: studioMaterial(new THREE.MeshStandardMaterial({ map: eye, roughness: 0.35, envMapIntensity: 0 })),
-      cornea: new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.035, metalness: 0, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, envMapIntensity: 0 }),
-      hair: studioMaterial(new THREE.MeshStandardMaterial({ map: hair, alphaTest: 0.45, alphaToCoverage: true, side: THREE.DoubleSide, roughness: 0.42, envMapIntensity: 0 })),
-      brows: studioMaterial(new THREE.MeshStandardMaterial({ map: brows, transparent: true, depthWrite: false, roughness: 0.7, envMapIntensity: 0, polygonOffset: true, polygonOffsetFactor: -2 })),
-      lashes: studioMaterial(new THREE.MeshStandardMaterial({ map: lashes, transparent: true, depthWrite: false, side: THREE.DoubleSide, roughness: 0.7, envMapIntensity: 0 })),
-      clothes: studioMaterial(new THREE.MeshStandardMaterial({ map: clothes, normalMap: clothesN, aoMap: clothesAO, aoMapIntensity: 0.8, roughness: 0.88, envMapIntensity: 0 })),
-      shoes: studioMaterial(new THREE.MeshStandardMaterial({ map: shoes, roughness: 0.55, envMapIntensity: 0 })),
-    };
-    /* a córnea só soma especular: shading normal mas sem sombra própria */
-    studioMaterial(M.cornea);
-    this.subjectMats = M;
-    gltf.scene.traverse(o => {
-      if (!o.isMesh) return;
-      o.material = M[o.name] || M.body;
-      o.castShadow = !['cornea', 'brows', 'lashes'].includes(o.name);
-      o.receiveShadow = true;
-      o.userData.subject = true;
-      if (o.name === 'brows' || o.name === 'lashes') o.renderOrder = 2;
-      if (o.name === 'cornea') o.renderOrder = 3;
-    });
-    this.subject.add(gltf.scene);
+    const { group, mats, ref } = await loadSubject({ wrap: studioMaterial, onProgress });
+    if (ref) this.ref = ref;
+    this.subjectMats = mats;
+    this.subject.add(group);
     this.invalidate('subject');
   }
 
@@ -160,6 +131,35 @@ export class Studio {
     this.scene.add(l.group);
     this.invalidate('lights');
     return l;
+  }
+  growSlots(n) {
+    while (this.slots.length < n) {
+      const g = new THREE.Group();
+      const spot = new THREE.SpotLight(0xffffff, 0, 0, 0.6, 0.6, 2);
+      spot.castShadow = true; spot.shadow.autoUpdate = false;
+      const target = new THREE.Object3D(); spot.target = target;
+      const rect = new THREE.RectAreaLight(0xffffff, 0, 0.5, 0.5);
+      g.add(spot, target, rect); this.slotPool.add(g);
+      this.slots.push({ spot, target, rect, free: true });
+    }
+  }
+  takeSlot() {
+    let sl = this.slots.find(x => x.free);
+    if (!sl) {
+      /* 5.ª luz: o número de luzes muda → shaders novos. Compilam em segundo plano
+         (frame() não desenha até estarem prontos) em vez de congelar a página. */
+      this.growSlots(MAX_LIGHTS);
+      this._needCompile = true;
+      sl = this.slots.find(x => x.free);
+    }
+    if (!sl) throw new Error('sem ranhuras de luz livres');
+    sl.free = false; sl.spot.shadow.autoUpdate = true;
+    return sl;
+  }
+  releaseSlot(sl) {
+    sl.free = true;
+    sl.spot.intensity = 0; sl.rect.intensity = 0;
+    sl.spot.shadow.autoUpdate = false;
   }
   removeLight(l) {
     if (this.gizmo.object === l.handle) this.gizmo.detach();
@@ -342,6 +342,22 @@ export class Studio {
     this._dirty = true;
   }
 
+  /** Compila os shaders das duas vistas antes do primeiro frame. A foto (alvo HDR, sem tone
+      mapping) e o editor (ecrã, ACES) são variantes diferentes de cada material; compilá-las no
+      primeiro render bloqueava a página ~3,5 s. Com KHR_parallel_shader_compile o driver compila
+      em paralelo e a página continua a responder. */
+  async precompile() {
+    const r = this.renderer;
+    this.updateScene();
+    const L = this.layout();
+    this.ensureTargets(L.photo?.w || 64, L.photo?.h || 64);
+    const tm = r.toneMapping;
+    r.setRenderTarget(this.hdr); r.toneMapping = THREE.NoToneMapping;
+    const a = r.compileAsync(this.scene, this.photoCam);
+    r.setRenderTarget(null); r.toneMapping = tm;
+    await Promise.all([a, r.compileAsync(this.scene, this.edCam)]);
+  }
+
   /** desenha a fotografia no alvo `out` (sem apresentar) */
   renderPhoto(rect, meter) {
     const r = this.renderer, c = this.cam;
@@ -360,7 +376,8 @@ export class Studio {
     d.res.value.set(this.hdr.width, this.hdr.height);
     const focus = this.photoCam.position.distanceTo(this.eyeWorld(this.cam.az > 0 ? 'R' : 'L'));
     d.focusD.value = focus;
-    d.cocK.value = cocFactor({ focal: c.focal, fnum: c.fnum, focus, sensorH: c.orient === 'portrait' ? 36 : 24, imageH: this.hdr.height }) * focus;
+    /* raio (px) = metade do diâmetro do círculo de confusão da lente fina — o mesmo do Exterior */
+    d.cocK.value = cocFactor({ focal: c.focal, fnum: c.fnum, focus, sensorH: c.orient === 'portrait' ? 36 : 24, imageH: this.hdr.height }) * 0.5;
     d.maxCoc.value = Math.min(28, this.hdr.height * 0.035);
     d.dofOn.value = c.dof ? 1 : 0;
     d.exposure.value = Math.PI * c.iso / (250 * c.fnum * c.fnum);
@@ -420,6 +437,15 @@ export class Studio {
   frame() {
     this._raf = requestAnimationFrame(() => this.frame());
     if (this.paused) return;
+    if (this._needCompile && !this._compiling) {
+      this._needCompile = false; this._compiling = true;
+      for (const fn of this.listeners) fn('compiling', true);
+      this.precompile().catch(e => console.warn('[studio] precompile', e)).finally(() => {
+        this._compiling = false; this._dirty = true;
+        for (const fn of this.listeners) fn('compiling', false);
+      });
+    }
+    if (this._compiling) return;
     const ctl = this.controls.update();
     if (this.tick) this.tick();
     if (!this._dirty && !ctl) return;
@@ -459,6 +485,6 @@ export class Studio {
     this.controls.dispose(); this.gizmo.dispose();
     this.scene.traverse(o => { o.geometry?.dispose?.(); });
     this.hdr?.dispose(); this.out?.dispose(); this.snap?.dispose();
-    this.renderer.dispose();
+    this.renderer.dispose(); this.renderer.forceContextLoss();
   }
 }
