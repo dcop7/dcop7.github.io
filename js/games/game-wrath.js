@@ -186,7 +186,8 @@ const WrathGame = (function () {
     G.r3.clouds = Wd.buildClouds(Wd.SKIES.noon, 5, coarse ? .6 : 1, { area: 6000, alt: [900, 1500], R: [140, 360], n: 34 }); scene.add(G.r3.clouds.mesh);
     debrisSetup(G);
     syncSkyFx(G);
-    G.ok = true;
+    /* só arranca com os shaders compilados (sem congelar a página: ver Arcade3D.warm) */
+    Arcade3D.warm(scene, cam).then(() => { if (!G.dead && G.r3) G.ok = true; });
     say(G, 'Fúria Divina', 'Escolhe um poder à esquerda e clica na cidade.', 4);
   }
 

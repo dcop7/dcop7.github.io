@@ -238,7 +238,8 @@ const SkyAceGame = (function () {
     if (G.M.kind === 'mission') { G.phase = G.cp - 1; nextPhase(G, api, true); }
     else if (G.M.kind === 'arena') { G.wave = 0; G.waveT = 2.5; radio(G, SENA, 'Arena aberta. As vagas não param — aguenta o mais que puderes.'); }
     else { freeRings(G); radio(G, SENA, 'Voo livre em ' + map.name + '. Explora à vontade — há anéis para quem quiser.'); }
-    G.ok = true;
+    /* só arranca com os shaders compilados (sem congelar a página: ver Arcade3D.warm) */
+    Arcade3D.warm(scene, cam).then(() => { if (!G.dead && G.r3) G.ok = true; });
     audioInit(G);
   }
   function canyonStart() { const X = W().canyonX, z = 9900, sl = (X(z - 50) - X(z + 50)) / 100; return [X(z), 0, z, Math.atan2(sl, 1) / DEG]; }

@@ -37,15 +37,78 @@ const Arcade3D = (function () {
     R.outputColorSpace = THREE.SRGBColorSpace;
     R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.08;
     R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+    warmRender(R);
     R.domElement.className = 'ak3d';
     R.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none';
     return R;
   }
 
+  /* Aquecimento de shaders. Na primeira vez que uma cena é desenhada, o three.js
+     compila todos os materiais de uma vez e a página congela (0,3–1,5 s medidos
+     nos jogos). Aqui essa primeira vez passa a ser compileAsync: os shaders
+     compilam em paralelo (KHR_parallel_shader_compile) e, enquanto não estão
+     prontos, render() dessa cena não desenha nada — o resto do jogo continua a
+     correr. O alvo conta (ecrã ≠ render target muda o shader), por isso há um
+     estado para cada. compile() percorre também os objetos invisíveis: efeitos
+     criados escondidos à partida ficam logo prontos. */
+  function warmRender(r) {
+    const draw = r.render.bind(r);
+    r.render = (scene, cam) => {
+      const w = scene.userData[warmKey()];
+      if (w === 1) return draw(scene, cam);
+      if (!w) warm(scene, cam);
+    };
+  }
+  /* um alvo marcado como XR usa os shaders do ecrã (r160) — conta como ecrã */
+  const warmKey = () => { const t = R.getRenderTarget(); return t && !t.isXRRenderTarget ? '_warmT' : '_warmS'; };
+  /* compila sem bloquear para o alvo atual; a promessa resolve com os shaders prontos */
+  function warm(scene, cam) {
+    const k = warmKey(), u = scene.userData;
+    if (u[k] === 1) return Promise.resolve();
+    if (u[k + 'P']) return u[k + 'P'];
+    u[k] = 2;
+    const done = () => { u[k] = 1; u[k + 'P'] = null; };
+    return (u[k + 'P'] = compileAsync(scene, cam).then(done));
+  }
+  /* o compileAsync do r160 rebenta (e nunca resolve) se um material for libertado
+     enquanto compila; esta versão ignora-os e desiste ao fim de 8 s */
+  function compileAsync(scene, cam) {
+    let mats;
+    try { mats = R.compile(scene, cam); } catch (e) { console.warn('[3d] compile', e); return Promise.resolve(); }
+    const par = !!R.extensions.get('KHR_parallel_shader_compile'), t0 = performance.now();
+    return new Promise(res => {
+      const tick = () => {
+        for (const m of mats) { const p = R.properties.get(m).currentProgram; if (!p || p.isReady()) mats.delete(m); }
+        if (!mats.size || performance.now() - t0 > 8000) res(); else setTimeout(tick, 10);
+      };
+      if (par) tick(); else setTimeout(tick, 10);
+    });
+  }
+  /* Objetos criados a meio do jogo (moedas, ondas de choque, inimigos novos):
+     se trazem um shader que ainda não existe, compila-se em paralelo e o objeto
+     fica escondido até estar pronto (~0,1 s, só na primeira vez) em vez de
+     parar o jogo. Se o shader já existe, aparece logo. */
+  let _wcam = null;
+  function coldCheck(obj, scene) {
+    if (!R || !R.properties) return;
+    if (!_wcam) _wcam = new THREE.Camera();
+    let mats;
+    try { mats = R.compile(obj, _wcam, scene); } catch (e) { return; }
+    const pending = () => { for (const m of mats) { const p = R.properties.get(m).currentProgram; if (!p || p.isReady()) mats.delete(m); } return mats.size > 0; };
+    if (!pending()) return;
+    obj.userData._cold = true; const t0 = performance.now();
+    const tick = () => { if (pending() && performance.now() - t0 < 4000) setTimeout(tick, 10); else obj.userData._cold = false; };
+    setTimeout(tick, 10);
+  }
+
+  /* true quando a cena já foi aquecida para o ecrã (os jogos podem esperar por isto) */
+  const warmed = scene => scene.userData._warmS === 1;
+
   /* põe o canvas WebGL no palco, por baixo do canvas 2D do kit */
   function attach(stage) {
     const r = renderer();
     stage.insertBefore(r.domElement, stage.firstChild);
+    r.setRenderTarget(null); r.clear();          /* não mostrar o último frame do jogo anterior enquanto este aquece */
     const cv2d = stage.querySelector('.ak-cv'); if (cv2d) { cv2d.style.position = 'absolute'; cv2d.style.zIndex = '1'; }
     r._w = r._h = 0;
     return r;
@@ -185,8 +248,8 @@ const Arcade3D = (function () {
       get(key, make) {
         let g = groups.get(key); if (!g) groups.set(key, g = { list: [], used: 0 });
         let m = g.list[g.used];
-        if (!m) { m = make(); scene.add(m); g.list.push(m); }
-        m.visible = true; g.used++;
+        if (!m) { m = make(); scene.add(m); g.list.push(m); coldCheck(m, scene); }
+        m.visible = !m.userData._cold; g.used++;
         return m;
       },
       end() { groups.forEach(g => { for (let i = g.used; i < g.list.length; i++) g.list[i].visible = false; }); },
@@ -558,7 +621,7 @@ const Arcade3D = (function () {
   }
   const outlineRes = (w, h) => { if (OL_RES.value) OL_RES.value.set(w, h); };
 
-  return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse,
+  return { load, attach, fit, detach, disposeScene, disposeOwn, toScreen, coarse, warm, warmed,
     stdScene, sunAt, roundBox, env, mat, std, glowMat, glowTex, glowSprite, emojiTex, pool, car, CAR_T, mergeStatic,
     noTile, water, waterDepth, waterTick, waterWaves, outline, outlineRes };
 })();

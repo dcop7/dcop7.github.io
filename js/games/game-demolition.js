@@ -335,7 +335,11 @@ varying vec3 vTint; varying vec3 vLoc; varying vec3 vLocN; varying float vIn;`).
     };
     Promise.all([Arcade3D.load(), loadPhysics()]).then(([, R]) => {
       if (G.dead) return;
-      try { G.R = R; build3D(G, api); newSim(G); G.ok = true; G.phase = 'intro'; G.introT = 0; }
+      try {
+        G.R = R; build3D(G, api); newSim(G);
+        /* só arranca com os shaders compilados (sem congelar a página: ver Arcade3D.warm) */
+        Arcade3D.warm(G.r3.scene, G.r3.cam).then(() => { if (!G.dead && G.r3) { G.ok = true; G.phase = 'intro'; G.introT = 0; } });
+      }
       catch (e) { console.warn('[implosão] falhou', e); G.fail3d = 'Erro: ' + (e && e.message || e); }
     }).catch(e => { G.fail3d = 'Não foi possível carregar o motor 3D/física.'; console.warn(e); });
     return G;
@@ -620,6 +624,8 @@ varying vec3 vTint; varying vec3 vLoc; varying vec3 vLocN; varying float vIn;`).
     const geo = new THREE.IcosahedronGeometry(.5, 0);
     const m = new THREE.MeshStandardMaterial({ roughness: .9, flatShading: true });
     const im = new THREE.InstancedMesh(geo, m, N); im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); im.count = 0; im.castShadow = true; im.frustumCulled = false; scene.add(im);
+    /* cor por instância criada já: se só aparecer no 1.º destroço, o shader muda e o jogo para ~0,1 s */
+    im.setColorAt(0, new THREE.Color(1, 1, 1));
     const gm = new THREE.MeshStandardMaterial({ color: '#cfefff', roughness: .05, metalness: .8, transparent: true, opacity: .75, envMapIntensity: 2 });
     const gi = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(.5), gm, 900); gi.instanceMatrix.setUsage(THREE.DynamicDrawUsage); gi.count = 0; gi.frustumCulled = false; scene.add(gi);
     const P = [], Q = [], d = new THREE.Object3D(), col = new THREE.Color();

@@ -133,12 +133,12 @@ const GameHost = (function () {
     'pattern-recall': { g: () => PatternRecallGame, src: MEMO.concat('js/games/game-pattern-recall.js') },
     'memory-chain':  { g: () => MemoryChainGame, src: MEMO.concat('js/games/game-memory-chain.js') },
     'block-count':   { g: () => BlockCountGame,  src: MEMO.concat('js/games/game-block-count.js') },
-    'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=4'] },
-    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=5'] },
+    'sky-ace':       { g: () => SkyAceGame,      src: [WORLD3D, 'js/games/game-sky-ace.js?v=5'] },
+    'divine-wrath':  { g: () => WrathGame,       src: [WORLD3D, 'js/games/game-wrath.js?v=6'] },
     doodle:          { g: () => DoodleGame,      src: ['js/vendor/planck.min.js', 'js/games/doodle-sim.js?v=1', 'js/games/doodle-levels.js?v=1', 'js/games/game-doodle.js?v=1'] },
     drip:            { g: () => DripGame,        src: ['js/games/drip-sim.js?v=1', 'js/games/drip-levels.js?v=2', 'js/games/game-drip.js?v=2'] },
-    demolition:      { g: () => DemolitionGame,  src: ['js/games/demo-sim.js?v=1', 'js/games/demo-levels.js?v=1', 'js/games/game-demolition.js?v=1'] },
-    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=3', 'js/games/sniper-kit.js?v=4', 'js/games/sniper-missions.js?v=1', 'js/games/game-sniper.js?v=4'] },
+    demolition:      { g: () => DemolitionGame,  src: ['js/games/demo-sim.js?v=1', 'js/games/demo-levels.js?v=1', 'js/games/game-demolition.js?v=2'] },
+    sniper:          { g: () => SniperGame,      src: [WORLD3D, 'js/games/sniper-people.js?v=3', 'js/games/sniper-kit.js?v=4', 'js/games/sniper-missions.js?v=1', 'js/games/game-sniper.js?v=5'] },
   };
   const _loaded = new Map();
   function loadScript(src) {
