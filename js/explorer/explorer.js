@@ -674,6 +674,11 @@ const ExplorerPage = (function () {
               <div class="ex-feature-card-title">${_t('Live Earth', 'Terra em Tempo Real')}</div>
               <div class="ex-feature-card-desc">${_t('Live earthquakes, volcanoes, wildfires, storms, clouds, temperature and flights — with time travel.', 'Sismos, vulcões, incêndios, tempestades, nuvens, temperatura e aviões em tempo real — com viagem no tempo.')}</div>
             </div>
+            <div class="ex-feature-card" data-tab="ocean">
+              <span class="ex-feature-card-icon">🌊</span>
+              <div class="ex-feature-card-title">${_t('Deep Ocean', 'Oceano Profundo')}</div>
+              <div class="ex-feature-card-desc">${_t('Dive from the surface to the Challenger Deep, a hydrothermal vent field and an abyssal plain — real seafloor, depth-by-depth life and bioluminescence.', 'Mergulha da superfície até à Challenger Deep, a fontes hidrotermais e a uma planície abissal — relevo real, vida a cada profundidade e bioluminescência.')}</div>
+            </div>
             <div class="ex-feature-card ex-feature-card--portugal" data-tab="portugal">
               <!-- Castelo, não a bandeira: o Windows não tem glifo para os
                    pares de indicadores regionais e desenha “PT” em letras — a
@@ -1711,6 +1716,7 @@ const ExplorerPage = (function () {
     ['globe', '🌍', _t('Globe', 'Globo')],
     ['portugal', '🏰', 'Portugal'],
     ['realtime', '🛰', _t('Live Earth', 'Terra em Tempo Real')],
+    ['ocean', '🌊', _t('Deep Ocean', 'Oceano')],
     ['solar', '☀', _t('Solar System', 'Sistema Solar')],
     ['galaxy', '🌌', _t('Milky Way', 'Via Láctea')],
     ['universe', '🔭', _t('Universe', 'Universo')],
@@ -1771,13 +1777,14 @@ const ExplorerPage = (function () {
     else _switchTab(tab);
   }
 
-  let _universe = null;
+  let _universe = null, _ocean = null;
   function _switchTab(tab) {
     if (!_shell) return;
     _closeModal();
     if (tab !== 'solar' && _curTab === 'solar' && typeof SolarExplorer !== 'undefined') SolarExplorer.stop();
     if (tab !== 'galaxy' && _curTab === 'galaxy' && typeof MilkyWayExplorer !== 'undefined') MilkyWayExplorer.stop();
     if (tab !== 'universe' && _curTab === 'universe' && _universe) _universe.stop();
+    if (tab !== 'ocean' && _curTab === 'ocean' && _ocean) _ocean.stop();
     if (tab !== 'realtime' && _curTab === 'realtime' && typeof RealtimeEarth !== 'undefined') RealtimeEarth.stop();
     if (tab !== 'portugal' && _curTab === 'portugal' && typeof PortugalExplorer !== 'undefined') PortugalExplorer.stop();
     if (tab !== 'body' && _curTab === 'body' && typeof HumanBodyExplorer !== 'undefined') HumanBodyExplorer.stop();
@@ -1835,6 +1842,14 @@ const ExplorerPage = (function () {
         sub.innerHTML = '<div class="empty-state"><p>A carregar o Universo…</p></div>';
         import('/js/explorer/universe/u-app.mjs').then(m => { _universe = m; if (_curTab === 'universe') m.mount(sub); })
           .catch(() => { sub.innerHTML = `<div class="empty-state"><p>${_t('Could not load the Universe.', 'Não foi possível carregar o Universo.')}</p><button class="btn" type="button">${_t('Try again', 'Tentar de novo')}</button></div>`; sub.querySelector('button').onclick = () => _switchTab('universe'); });
+      }
+    } else if (tab === 'ocean') {
+      /* módulo ES (three.js 0.160 via esm.sh), carregado só quando se abre */
+      if (_ocean) { if (!sub.querySelector('.oc')) _ocean.mount(sub); else _ocean.resume(); }
+      else {
+        sub.innerHTML = '<div class="empty-state"><p>A carregar o Oceano…</p></div>';
+        import('/js/explorer/ocean/o-app.mjs').then(m => { _ocean = m; if (_curTab === 'ocean') m.mount(sub); })
+          .catch(() => { sub.innerHTML = `<div class="empty-state"><p>${_t('Could not load the Ocean.', 'Não foi possível carregar o Oceano.')}</p><button class="btn" type="button">${_t('Try again', 'Tentar de novo')}</button></div>`; sub.querySelector('button').onclick = () => _switchTab('ocean'); });
       }
     } else if (tab === 'realtime') {
       if (typeof RealtimeEarth !== 'undefined') {
