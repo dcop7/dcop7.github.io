@@ -4,6 +4,9 @@
 const ExplorerPage = (function () {
   'use strict';
 
+  /* Cover versions for replaced hub images (cache-busting, see the hub cards). */
+  const COVER_V = { solar: 2 };
+
   /* ── Shared data ── */
   let _countries   = [];
   let _geoJson     = null;
@@ -786,9 +789,10 @@ const ExplorerPage = (function () {
       card.tabIndex = 0;
       const label = card.querySelector('.ex-feature-card-title')?.textContent?.trim();
       if (label) card.setAttribute('aria-label', label);
-      /* AI-generated cover image behind each card (graceful if missing). */
+      /* AI-generated cover image behind each card (graceful if missing).
+         The SW serves images cache-first: bump COVER_V[tab] when a cover is replaced. */
       if (card.dataset.tab) card.insertAdjacentHTML('afterbegin',
-        `<img class="ex-feat-img" src="assets/explorer/${card.dataset.tab}.jpg" alt="" loading="lazy" onerror="this.remove()">`);
+        `<img class="ex-feat-img" src="assets/explorer/${card.dataset.tab}.jpg${COVER_V[card.dataset.tab] ? '?v=' + COVER_V[card.dataset.tab] : ''}" alt="" loading="lazy" onerror="this.remove()">`);
       card.onclick = () => _go(card.dataset.tab);
       card.onkeydown = e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _go(card.dataset.tab); }
