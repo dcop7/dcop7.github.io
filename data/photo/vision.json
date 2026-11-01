@@ -1275,6 +1275,56 @@
         }
       ],
       "trap": "Fotografar o reflexo por ser um reflexo. A técnica é imediatamente visível e por isso engana — sem ideia por baixo, fica um truque."
+    },
+    "bebes": {
+      "hook": "Fotografar o que vai desaparecer",
+      "lead": "Um bebé muda todas as semanas. A fotografia que fica mostra o que vai deixar de existir: o tamanho, os gestos, quem o segura.",
+      "why": "Nenhum outro assunto muda tão depressa. A cara do primeiro mês já não existe no terceiro, e o que mais se esquece não é a cara — é a escala: como cabia numa mão, como os dedos não davam a volta a um dedo de adulto. Por isso a fotografia mais valiosa raramente é o bebé sozinho e perfeito; é o bebé em relação a alguma coisa.",
+      "subject": "A pequenez e a relação: o bebé à escala de quem o segura — mãos, pés, colo, o olhar dos pais.",
+      "compare": {
+        "strong": "Perto, luz de janela de lado, a cara ocupa o enquadramento: percebe-se o tamanho e a calma.",
+        "flat": "Bebé pequeno no meio da cama, com almofadas, candeeiro e roupa à volta a competir: fica um registo, não um momento."
+      },
+      "gap": [
+        {
+          "ord": "Bebé sozinho no meio da cama.",
+          "mem": "Bebé nas mãos de quem o segura — escala e relação."
+        },
+        {
+          "ord": "Só fotografias a olhar para a câmara.",
+          "mem": "Bocejos, espreguiços, mãos a agarrar — gestos que passam numa semana."
+        },
+        {
+          "ord": "Um adereço novo em cada fotografia.",
+          "mem": "Uma manta lisa e luz de janela. O bebé chega."
+        }
+      ],
+      "ask": [
+        "Daqui a um ano, o que é que já não vai ser assim?",
+        "Está quente, alimentado e confortável? Se não, pára — nenhuma fotografia vale um bebé a chorar.",
+        "Há sempre uma mão a menos de um palmo dele?"
+      ],
+      "language": [
+        {
+          "n": "Mãos de adulto no enquadramento",
+          "m": "escala: mostra o quão pequeno é, sem precisar de régua"
+        },
+        {
+          "n": "Olhos fechados, a dormir",
+          "m": "calma e intimidade"
+        },
+        {
+          "n": "Olhos abertos para a câmara",
+          "m": "presença — o primeiro contacto"
+        },
+        {
+          "n": "De cima, numa manta lisa",
+          "m": "retrato limpo, quase gráfico; tudo o resto desaparece"
+        }
+      ],
+      "trap": "Transformar a sessão numa produção: adereços, poses e horas de tentativas. Um bebé cansa-se em minutos — as fotografias que ficam são as simples.",
+      "ethic": "Segurança primeiro: nunca o deixes sozinho numa superfície alta, apoia sempre a cabeça e o pescoço e não forces posições. E pensa antes de publicar — o bebé não pode dizer se quer estar na internet. Fotografias sem roupa ficam em casa.",
+      "series": "Mesma manta, mesmo sítio, uma vez por mês durante o primeiro ano. A série mostra o crescimento melhor do que qualquer fotografia sozinha."
     }
   },
   "principles": [
@@ -1610,7 +1660,8 @@
         "viagem",
         "eventos",
         "familia",
-        "desporto"
+        "desporto",
+        "bebes"
       ],
       "body": [
         {

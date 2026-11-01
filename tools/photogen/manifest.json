@@ -23,7 +23,9 @@
     "edit_demo": "photorealistic landscape photograph, wide dynamic range scene, bright detailed sky with textured clouds, sunlit mountains in the distance, dark rocky foreground with visible texture, a lake with reflections, rich but natural colours, green vegetation and warm rock tones, deep shadows retaining some detail, sharp focus throughout, golden hour side light, shot on 24mm f/8, high detail, no people",
     "vision_strong": "photorealistic photograph, natural colours, excellent light, intentional composition, award winning, high detail, no text, no watermark",
     "vision_flat": "photorealistic amateur snapshot, technically correct exposure but visually uninspired, flat lighting, no intention, ordinary phone photo, no text, no watermark",
-    "portrait_natural": "close up head and shoulders portrait, the head fills most of the frame, photorealistic photograph, natural skin texture with visible pores, sharp focus on the eyes, shot on 85mm f2, high detail"
+    "portrait_natural": "close up head and shoulders portrait, the head fills most of the frame, photorealistic photograph, natural skin texture with visible pores, sharp focus on the eyes, shot on 85mm f2, high detail",
+    "baby_illus": "stylized 3D animated feature film still, appealing stylized characters with simplified features, smooth soft toy-like shading, warm tender mood, soft cinematic lighting, clearly a 3D animation and not a photograph, no text, no watermark",
+    "vision_bw": "black and white photograph, monochrome, rich tonal range, excellent light, intentional composition, award winning, high detail, no text, no watermark"
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
@@ -3899,11 +3901,1262 @@
       ],
       "negative": "empty space, negative space, minimalism, sky, fog, emptiness, isolated subject, wide open landscape, plain background, simple composition, text, watermark, signature, letters, low quality, blurry, deformed, ugly, extra limbs",
       "prompt": "a lone figure in a long dark coat completely surrounded and pressed in by a dense crowd, the frame packed edge to edge with people, market stalls, signs and hanging lanterns, absolutely no empty space anywhere in the picture, cluttered busy chaotic composition, cold misty daylight, cinematic semi-realistic digital illustration, stylized concept art, dramatic atmospheric lighting, rich saturated colors, painterly detail, beautiful, no text, no watermark"
+    },
+    {
+      "id": "gico-bebes",
+      "group": "bebes",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "maxWidth": 256,
+      "seed": 880131,
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
+      "prompt": "a sleeping newborn baby curled up in a blanket, simple silhouette seen from the side",
+      "caption": "bebes"
+    },
+    {
+      "id": "vis-bebes",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 710021,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "close-up of one tiny newborn baby asleep, swaddled in a cream knitted blanket, the peaceful face fills the frame, soft window light from the left side, gentle shadows, softly blurred warm home in the background"
+    },
+    {
+      "id": "vis-bebes-flat",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 710031,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "one tiny newborn baby asleep, swaddled in a cream knitted blanket, lying small in the middle of a big unmade double bed, wide shot, pillows, a bedside lamp, a ball and folded laundry around, evenly lit, ordinary snapshot"
+    },
+    {
+      "id": "comp-bebes-thirds",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 720001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "top-down view of one swaddled newborn baby asleep on a plain cream blanket, the baby lying along the right third of the frame with its face on the upper right third intersection, calm empty blanket on the left",
+      "_nota": "publicado com recorte [16,155,900,616] (finalize.mjs): olhos no terço superior direito"
+    },
+    {
+      "id": "comp-bebes-framing",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 720003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "top-down view of one swaddled newborn baby asleep inside a round woven wicker basket lined with a cream blanket, the dark basket rim forms a frame around the baby, wooden floor around"
+    },
+    {
+      "id": "idea-bebes-3",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 730003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "one newborn baby asleep, swaddled in a cream knitted blanket, held in a parent's arms, the parent seen from behind the shoulder so only the shoulder and arms are visible, warm window light"
+    },
+    {
+      "id": "idea-bebes-4",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 740032,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "a little boy of four sitting next to a crib, gently looking at his newborn sibling asleep, the baby fully dressed in a cream onesie and covered by a blanket, seen from the side at the height of the crib, soft daylight from a window, warm home"
+    },
+    {
+      "id": "idea-paisagem-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750000,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a tiny hiker standing on a rocky ridge in a vast mountain landscape, the person very small in the frame to show scale, dramatic side light, layered mountains fading into haze"
+    },
+    {
+      "id": "idea-paisagem-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750001,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "close-up detail of cracked dry earth and lichen covered rock texture in low raking sunlight"
+    },
+    {
+      "id": "idea-nascer-por-sol-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750002,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouette of a person standing inside a huge setting sun disc on a distant hilltop, telephoto compression, deep orange sky"
+    },
+    {
+      "id": "idea-nascer-por-sol-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750003,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "complete mirror reflection of a colourful sunrise sky in a calm tidal pool on a rocky shore"
+    },
+    {
+      "id": "idea-nascer-por-sol-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750004,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "sunburst star of the sun shining through the leaves of a tree, backlit foliage, sharp sunstar rays"
+    },
+    {
+      "id": "idea-praia-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750005,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "long exposure seascape, silky misty sea water flowing around a sharp dark rock, blue hour"
+    },
+    {
+      "id": "idea-praia-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750006,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouettes of people walking along the waterline against a sunset reflected on wet sand"
+    },
+    {
+      "id": "idea-praia-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750007,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "mirror reflection of people and sky on wet sand at low tide, beach like a mirror"
+    },
+    {
+      "id": "idea-nevoeiro-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750008,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a lone small figure walking on a path in dense fog, the person small in the frame, muted grey tones, trees fading into the mist"
+    },
+    {
+      "id": "idea-nevoeiro-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750009,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "sun rays streaming between tall trees in a foggy forest at sunrise"
+    },
+    {
+      "id": "idea-nevoeiro-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750010,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a valley filled with a sea of fog seen from a mountain top above, hilltops poking out, soft morning light"
+    },
+    {
+      "id": "idea-chuva-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 760051,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a woman seen from outside through a window pane covered in raindrops, the sharp water drops on the glass in the foreground, her face softly blurred behind the wet glass, moody blue evening light"
+    },
+    {
+      "id": "idea-chuva-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750012,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouette of a person with an umbrella crossing a beam of street light in the rain at night, rain streaks visible"
+    },
+    {
+      "id": "idea-chuva-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750013,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "neon sign reflections in wet black asphalt on a city street at night after rain"
+    },
+    {
+      "id": "idea-flores-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750014,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a single red tulip lit by a beam of sunlight against a pure black background"
+    },
+    {
+      "id": "idea-flores-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750015,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "backlit red poppy petals glowing translucent in the late sun"
+    },
+    {
+      "id": "idea-flores-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750016,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "macro of water droplets on a pink rose petal, extremely close"
+    },
+    {
+      "id": "idea-macro-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750017,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "macro photograph of a water droplet hanging on a grass blade acting as a lens, a small upside down flower refracted inside the droplet"
+    },
+    {
+      "id": "idea-macro-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750018,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "extreme macro of the compound eye of a fly, detailed facets"
+    },
+    {
+      "id": "idea-macro-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750019,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "macro of a green leaf in backlight with glowing veins"
+    },
+    {
+      "id": "idea-vida-selvagem-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750020,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a white egret in flight against a clean blue sky, wings spread, frozen motion, telephoto"
+    },
+    {
+      "id": "idea-vida-selvagem-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750021,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a small red fox in a wide snowy meadow, the fox small in the frame, environmental wildlife photograph"
+    },
+    {
+      "id": "idea-vida-selvagem-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750022,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "extreme close-up of an owl eye with a bright catchlight reflection"
+    },
+    {
+      "id": "idea-retrato-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750023,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "portrait of a young woman backlit by the low evening sun, glowing rim light in her hair, warm golden tones"
+    },
+    {
+      "id": "idea-retrato-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750024,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "environmental portrait of a baker in her small bakery at dawn holding a loaf of bread, shelves of bread behind her"
+    },
+    {
+      "id": "idea-retrato-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750025,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "tight close-up of a man eyes only, the frame cropped across the eyes, sharp eyelashes, soft light"
+    },
+    {
+      "id": "idea-familia-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750027,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouette of a child standing against a large bright window, backlit, home interior"
+    },
+    {
+      "id": "idea-familia-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750028,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a messy family breakfast table seen from inside the action, hands reaching for food, cups and plates, candid, warm morning light"
+    },
+    {
+      "id": "idea-animais-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 760031,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "extreme close-up of a cat face, one big green cat eye with a vertical slit pupil, a bright window reflected in the eye, whiskers and fur visible"
+    },
+    {
+      "id": "idea-animais-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750030,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a dog sleeping curled up on a sofa in soft window light"
+    },
+    {
+      "id": "idea-animais-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750031,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a dog running on a beach frozen in mid air, ears flying"
+    },
+    {
+      "id": "idea-autorretrato-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750032,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouette of a person standing in front of a bright window, backlit, dark interior seen from inside the room"
+    },
+    {
+      "id": "idea-autorretrato-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750033,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "close-up of hands kneading bread dough on a floured wooden table, soft side light"
+    },
+    {
+      "id": "idea-autorretrato-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750034,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a person taking a self portrait in a mirror at home, holding a camera in front of the face, the camera visible"
+    },
+    {
+      "id": "idea-eventos-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750035,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouette of a concert crowd with raised hands against bright colourful stage lights"
+    },
+    {
+      "id": "idea-eventos-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750036,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "close-up of hands playing an acoustic guitar on stage, warm stage light"
+    },
+    {
+      "id": "idea-eventos-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750037,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "candid reaction of a woman in a theatre audience laughing genuinely, dim light, other people blurred"
+    },
+    {
+      "id": "idea-desporto-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750038,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "panning shot of a racing cyclist, the cyclist sharp and the background streaked with motion blur"
+    },
+    {
+      "id": "idea-desporto-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750039,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "basketball player frozen at the peak of a slam dunk jump, indoor arena"
+    },
+    {
+      "id": "idea-desporto-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750040,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "close-up of a runner face showing intense effort and determination, sweat"
+    },
+    {
+      "id": "idea-rua-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750041,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a pedestrian walking through a rectangle of sunlight between deep shadows on a city street, high contrast"
+    },
+    {
+      "id": "idea-rua-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750043,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a long shadow of a person cast on a sunlit pavement, the person outside the frame, only the shadow"
+    },
+    {
+      "id": "idea-arquitetura-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750044,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a facade pattern of identical windows filling the entire frame, modern building, repetition"
+    },
+    {
+      "id": "idea-arquitetura-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750045,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a symmetric classical building perfectly reflected in a still pool of water"
+    },
+    {
+      "id": "idea-arquitetura-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750046,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a tiny person walking in front of an enormous concrete facade, sense of scale"
+    },
+    {
+      "id": "idea-viagem-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750047,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a colourful old wooden door framed by azulejo tiles on an old street, detail"
+    },
+    {
+      "id": "idea-viagem-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750048,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "portrait of a fishmonger working at a busy local market stall, environmental portrait"
+    },
+    {
+      "id": "idea-viagem-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750049,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a street food vendor cooking noodles in a wok at a market stall, steam, warm light"
+    },
+    {
+      "id": "idea-automovel-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750050,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "panning shot of a sports car driving fast, the car sharp, background streaked with motion blur"
+    },
+    {
+      "id": "idea-automovel-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750051,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "detail of a car headlight and chrome in low raking light"
+    },
+    {
+      "id": "idea-automovel-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750052,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a small car on an empty road in a vast mountain landscape, wide shot"
+    },
+    {
+      "id": "idea-astro-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750053,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "the Milky Way core rising behind a lone tree in a dark field, night sky full of stars"
+    },
+    {
+      "id": "idea-astro-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750054,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "circular star trails around the pole star above a mountain silhouette"
+    },
+    {
+      "id": "idea-astro-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750055,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silhouette of a person with a headlamp standing under a starry sky with the Milky Way"
+    },
+    {
+      "id": "idea-noturna-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750056,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "light trails of cars on a city avenue at night, long exposure, red and white streaks"
+    },
+    {
+      "id": "idea-noturna-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750057,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a person lit by the warm glow of a shop window on a dark street at night"
+    },
+    {
+      "id": "idea-noturna-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750058,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "city skyline at blue hour seen from above, lights turning on"
+    },
+    {
+      "id": "idea-festividades-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750059,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "portrait of a smiling woman in front of a Christmas tree, the tree lights blurred into big bokeh circles"
+    },
+    {
+      "id": "idea-festividades-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750060,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "hands wrapping a gift lit only by a single candle, warm dark room"
+    },
+    {
+      "id": "idea-festividades-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750061,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "profile of a child looking at Christmas lights in wonder, lights reflecting on the face"
+    },
+    {
+      "id": "idea-produto-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750062,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a perfume bottle isolated on a pure white seamless background, studio light"
+    },
+    {
+      "id": "idea-produto-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750063,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "hands holding a ceramic coffee cup, product in use, soft light"
+    },
+    {
+      "id": "idea-produto-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750064,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "macro detail of leather texture and stitching of a brown wallet"
+    },
+    {
+      "id": "idea-gastronomia-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750065,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "top-down flat lay of a composed dinner table with several dishes, plates, glasses and cutlery"
+    },
+    {
+      "id": "idea-gastronomia-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750066,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "steam rising from a bowl of hot soup against a dark background, backlit"
+    },
+    {
+      "id": "idea-gastronomia-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750067,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "hands cutting fresh bread on a wooden board, close-up"
+    },
+    {
+      "id": "idea-imobiliario-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750068,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a bright living room photographed from the corner, window light, straight verticals, interior design"
+    },
+    {
+      "id": "idea-imobiliario-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750069,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a large window with a view to a green garden, the window as the subject, interior"
+    },
+    {
+      "id": "idea-imobiliario-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750070,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a modern house exterior at blue hour with warm interior lights on"
+    },
+    {
+      "id": "idea-pb-1",
+      "group": "ideas",
+      "style": "vision_bw",
+      "matte": false,
+      "seed": 750071,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity, colour, color",
+      "prompt": "black and white portrait with hard side light, only half of the face lit, deep shadows"
+    },
+    {
+      "id": "idea-pb-2",
+      "group": "ideas",
+      "style": "vision_bw",
+      "matte": false,
+      "seed": 750072,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity, colour, color",
+      "prompt": "black and white photograph of modern architecture reduced to geometric curves and lines"
+    },
+    {
+      "id": "idea-pb-3",
+      "group": "ideas",
+      "style": "vision_bw",
+      "matte": false,
+      "seed": 750073,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity, colour, color",
+      "prompt": "black and white photograph of long shadows of people on a sunlit plaza, the shadows as the subject"
+    },
+    {
+      "id": "idea-longa-exposicao-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750074,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "silky long exposure waterfall flowing over sharp mossy rocks"
+    },
+    {
+      "id": "idea-longa-exposicao-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750075,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "streaking clouds over a modern tower, long exposure motion blur in the sky"
+    },
+    {
+      "id": "idea-longa-exposicao-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750076,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "sea turned into smooth mist around dark rocks, long exposure"
+    },
+    {
+      "id": "idea-light-painting-2",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750077,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "light painting, a glowing outline of light around a person standing still in a dark field at night"
+    },
+    {
+      "id": "idea-light-painting-3",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750078,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "steel wool spinning creating a circle of orange sparks at night"
+    },
+    {
+      "id": "idea-light-painting-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750079,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "light painting selectively illuminating parts of an old stone ruin at night under stars"
+    },
+    {
+      "id": "idea-reflexos-1",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750080,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "a whole building reflected in a small puddle on the street, camera close to the ground"
+    },
+    {
+      "id": "idea-reflexos-4",
+      "group": "ideas",
+      "style": "vision_strong",
+      "matte": false,
+      "seed": 750082,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 720,
+      "negative": "deformed face, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, uncanny eyes, cartoon, 3d render, cgi, illustration, painting, watermark, text, letters, logo, signature, frame, border, low quality, jpeg artifacts, nudity",
+      "prompt": "reflection of a colourful house partially broken by ripples in water"
+    },
+    {
+      "id": "comp-bebes-symmetry",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 740002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "high overhead shot from far above looking straight down, one tiny swaddled newborn baby asleep, the baby is very small and placed in the lower left corner, a vast empty plain smooth light grey blanket fills almost the whole frame, minimalist, lots of empty space",
+      "_nota": "o modelo ignorou o canto e centrou o bebé — serve a Simetria (eixo vertical medido a 0.49)"
+    },
+    {
+      "id": "comp-bebes-golden",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 770001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "top-down view of one newborn baby asleep wearing a long-sleeved cream knitted onesie that covers the whole body, arms and legs, lying diagonally on a plain beige knitted blanket, the baby small in the frame, lots of empty blanket around, soft window light from the left",
+      "_nota": "publicado com recorte [7,0,930,636] (finalize.mjs): cara no ponto phi superior esquerdo [0.382,0.382]"
     }
   ],
   "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em js/pages/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los.",
   "_nota_luz_natural": "lp-window / lp-window-reflector: o par foi refeito (ago/2026). As primeiras versoes tinham luz frontal chapada e nao ensinavam nada. O que destrava a luz direcional neste checkpoint e descrever a FOTOGRAFIA e nao a luz: \"chiaroscuro\", \"dark unlit room\", \"deep shadow covering the right half of her face\". Os dois partilham a seed 662001 de proposito - so muda o refletor, e por isso podem entrar num comparador lado a lado.",
   "_nota_luz_frontal": "light-frontal foi refeito duas vezes. A 2.a versao (pedido \"two big softboxes either side of the camera\") continuava a sair com relevo — o modelo le \"either side\" como luz LATERAL e devolvia sombra do nariz e da bochecha, ou seja, ilustrava exatamente o contrario do cartao; e o pedido de luz plana clareava tambem o FUNDO, o que quebrava o \"mesmo fundo\" prometido na legenda do par. A versao que resulta pede um RING LIGHT no eixo da objetiva (uma so fonte, frontal por definicao), nomeia o fundo escuro no positivo e poe no negativo tudo o que e lateral E o fundo claro. Nota util: \"two softboxes\" em prompts com pessoas tambem convida o modelo a desenhar DUAS pessoas — aconteceu em 3 de 4 sementes de teste.",
   "_nota_contraexemplos": "REGRA: um contraexemplo tem de ser a AUSENCIA do principio, nao uma variacao dele. comp-converging-bad tinha uma arcada em fuga e comp-negative-bad tinha MAIS vazio do que o exemplo bom — os dois ensinavam o contrario do que diziam. O que destrava: pedir a ausencia de forma absoluta no positivo (\"flat elevation, no depth at all\", \"absolutely no empty space anywhere\") E por o principio todo no negativo (\"perspective, vanishing point, converging lines\" / \"empty space, negative space, minimalism, sky\").",
-  "_nota_anatomia": "Defeitos de anatomia que este checkpoint produz e que NAO se veem numa miniatura: membros fundidos com objectos (uma pessoa cuja metade de baixo era um tripe, em seq-amb-3) e maos que desaparecem dentro do corpo (vis-desporto). O negativo generico \"bad anatomy, extra limbs\" nao chega — e preciso nomear o defeito concreto (\"legs merging with a tripod\", \"arm ending without a hand\") E pedir o contrario no positivo (\"both legs clearly visible and separate from the tripods\", \"both arms clearly separated from the body with the hands fully visible). Rever sempre a tamanho real, nunca em contact sheet."
+  "_nota_anatomia": "Defeitos de anatomia que este checkpoint produz e que NAO se veem numa miniatura: membros fundidos com objectos (uma pessoa cuja metade de baixo era um tripe, em seq-amb-3) e maos que desaparecem dentro do corpo (vis-desporto). O negativo generico \"bad anatomy, extra limbs\" nao chega — e preciso nomear o defeito concreto (\"legs merging with a tripod\", \"arm ending without a hand\") E pedir o contrario no positivo (\"both legs clearly visible and separate from the tripods\", \"both arms clearly separated from the body with the hands fully visible). Rever sempre a tamanho real, nunca em contact sheet.",
+  "_nota_ideas": "Grupo ideas (nov/2026): idea-<género>-<n>, n = posição da ideia em genres.json (1-based); a página do género mostra em galeria as ideias que têm imagem. Publicadas com finalize.mjs: recorte uniforme [36,0,1143,782] (o modelo inventa marcas de água no canto inferior), exceto idea-autorretrato-4 [0,0,997,682] e idea-rua-4 [160,222,890,609]. Rejeitadas por não mostrarem o que a legenda diz: familia-2, rua-2, reflexos-3, bebes-1/2 (pés e mão de bebé saem com anatomia de adulto). Bebés: estilo baby_illus (3D estilizado, nunca fotorrealista — pedido do user)."
 }

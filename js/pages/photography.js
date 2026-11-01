@@ -257,10 +257,10 @@ const PhotographyPage = (function () {
             <input type="number" class="ph-input" id="fl-d" value="3" step="0.1" min="0.1">
           </div>
         </div>
-        <div class="t-row" style="gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem">
-          <button class="t-btn t-btn-ghost" id="fl-calc-d">→ Calcular distância</button>
-          <button class="t-btn t-btn-ghost" id="fl-calc-ap">→ Calcular abertura</button>
-          <button class="t-btn t-btn-ghost" id="fl-calc-gn">→ Calcular GN</button>
+        <div class="t-row" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem">
+          <button class="btn btn-sm" id="fl-calc-d">→ Calcular distância</button>
+          <button class="btn btn-sm" id="fl-calc-ap">→ Calcular abertura</button>
+          <button class="btn btn-sm" id="fl-calc-gn">→ Calcular GN</button>
         </div>
         <div id="fl-result" class="ph-result" style="display:none"></div>
       </div>`;
@@ -338,7 +338,7 @@ const PhotographyPage = (function () {
             <input type="date" class="ph-input" id="gh-date">
           </div>
           <div class="ph-field">
-            <button class="t-btn t-btn-ghost" id="gh-locate" style="width:100%">📍 Usar a minha localização</button>
+            <button class="btn btn-sm" id="gh-locate" style="width:100%">📍 Usar a minha localização</button>
           </div>
         </div>
         <div id="gh-result" class="ph-result"></div>
@@ -547,6 +547,13 @@ const PhotographyPage = (function () {
       hole:[0.356,0.125,0.70,0.93], subj:[0.53,0.74],
       draw(ctx,W,H){
         const k=this.hole||[0.2,0.15,0.8,0.9], s2=this.subj||[0.5,0.6];
+        if(this.ellipse){ // abertura redonda (cesto, janela circular)
+          const e=this.ellipse, el=()=>{ctx.beginPath();ctx.ellipse(W*e[0],H*e[1],W*e[2],H*e[3],0,0,Math.PI*2);};
+          ctx.fillStyle='rgba(4,10,20,.4)';el();ctx.rect(0,0,W,H);ctx.fill('evenodd');
+          ctx.strokeStyle='rgba(34,197,94,.8)';ctx.lineWidth=2;el();ctx.stroke();
+          ctx.beginPath();ctx.arc(W*s2[0],H*s2[1],Math.min(W,H)*0.055,0,Math.PI*2);ctx.stroke();
+          return;
+        }
         const x=W*k[0],y=H*k[1],w2=W*(k[2]-k[0]),h2=H*(k[3]-k[1]);
         // escurece TUDO menos a abertura: e o que a moldura faz ao olhar
         ctx.fillStyle='rgba(4,10,20,.4)';
@@ -673,6 +680,7 @@ const PhotographyPage = (function () {
   function drawCompOverlay(canvas, comp, opts = {}) {
     const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
+    if (!comp) return;
     if (opts.bg) { ctx.fillStyle = document.body.classList.contains('light') ? '#dbe3ef' : '#0b1020'; ctx.fillRect(0, 0, W, H); }
     ctx.save();
     /* Halo escuro por baixo de cada traço. Sem ele, uma linha âmbar de 1px
@@ -698,6 +706,24 @@ const PhotographyPage = (function () {
 
   const compSlug = name => (COMP_ASSET[name] || '').replace(/^comp-/, '');
   const genreCompAsset = (genre, comp) => genre ? assetPath('comp-' + genre + '-' + compSlug(comp.name)) : null;
+  /* Marcações sobre a imagem PRÓPRIA de um género. As composições 'traced'
+     (moldura, eixo, linhas, espiral…) foram medidas na ilustração geral; por
+     cima de outra fotografia caíam ao lado do que lá existe. Só se desenham
+     quando há geometria medida para essa imagem — sem ela, a imagem fica
+     sem marcações em vez de mostrar uma relação inexistente. As grelhas
+     (terços, phi) não dependem do conteúdo e continuam sempre. */
+  const COMP_GENRE_GEOM = {
+    'bebes-thirds':   { anchor: [2 / 3, 1 / 3] },          // olhos no terço superior direito
+    'bebes-golden':   { anchor: [0.382, 0.382] },          // cara no ponto phi superior esquerdo
+    'bebes-symmetry': { axis: ['v', 0.49] },
+    'bebes-framing':  { ellipse: [0.51, 0.49, 0.27, 0.405], subj: [0.525, 0.32] },
+  };
+  function compFor(comp, genreId) {
+    if (!genreId || !genreCompAsset(genreId, comp)) return comp;
+    const o = COMP_GENRE_GEOM[genreId + '-' + compSlug(comp.name)];
+    if (o) return Object.assign(Object.create(comp), o);
+    return comp.traced ? null : comp;
+  }
 
   function openCompModal(comp, genreId) {
     _compGenre = genreId || null;
@@ -798,7 +824,7 @@ const PhotographyPage = (function () {
         const w = frame.clientWidth || 560;
         const h = frame.clientHeight || Math.round(w * 832 / 1216);
         cv.width = w; cv.height = h;
-        drawCompOverlay(cv, comp, { bg: !asset });
+        drawCompOverlay(cv, gAsset ? compFor(comp, _compGenre) : comp, { bg: !asset });
       });
     };
     requestAnimationFrame(drawOv);
@@ -843,7 +869,7 @@ const PhotographyPage = (function () {
     /* Dito uma vez, aqui em cima, e não repetido dentro de cada comparação:
        sem esta ressalva os pares leem-se como um julgamento de qualidade, que
        é exactamente o que não são. */
-    root.innerHTML = `<h2 class="ph-section-title">🖼️ Composição</h2>
+    root.innerHTML = `<h2 class="ph-section-title">Composição</h2>
       <p class="ph-section-sub">Como se organizam os elementos dentro do enquadramento — as regras clássicas, cada uma com exemplo, grelha e o que comunica. Toca para explorar.</p>
       <p class="ph-comp-note">⚖️ <b>Isto são ferramentas, não leis.</b> Em cada par, as duas fotografias são válidas: uma usa o princípio e a outra, na mesma cena, não o usa. Muita fotografia excelente ignora estas regras de propósito — saber usá-las é também saber quando as deixar de lado.</p>
       <div class="ph-comp-grid2"><p class="ph-section-sub">A carregar…</p></div>
@@ -1186,23 +1212,44 @@ const PhotographyPage = (function () {
   function setProfile(p) { try { localStorage.setItem('ph-profile', p); } catch (_) {} }
   function profileDef(id) { return (_DB && _DB.profiles.find(p => p.id === (id || profile()))) || null; }
 
-  /* Barra de contexto: aparece no topo de todos os ecrãs que dependem destas
-     escolhas, para o utilizador perceber sempre em nome de quem o portal fala. */
+  /* Contexto (câmara · perfil) — v5: era uma barra com 9 botões em dois
+     grupos, repetida no topo de cada ecrã, a empurrar o conteúdo para
+     baixo. Uma escolha que se faz uma vez não precisa de estar sempre
+     aberta: passa a um chip "APS-C · Entusiasta  Alterar" que mostra em
+     nome de quem o portal fala e abre as opções só quando se pede. */
+  const CTX_ICO = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.4-2h6.2L16.5 7h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.8" r="3.4"/></svg>';
+  let _ctxSeq = 0;
   function contextBarHTML() {
     const cls = gearClass(), pr = profile();
+    const c = classDef(cls) || {}, p = profileDef(pr) || {};
+    const pid = 'ph-ctx-pop-' + (++_ctxSeq);
     return `<div class="ph-ctx">
-      <div class="ph-ctx-grp" role="group" aria-label="Tipo de câmara">
-        <span class="ph-ctx-lbl">Câmara</span>
-        ${(_DB ? _DB.classes : []).map(c => `<button class="ph-ctx-btn${c.id === cls ? ' active' : ''}" data-class="${c.id}" title="${c.oneLine}">${c.icon} ${c.short}</button>`).join('')}
-      </div>
-      <div class="ph-ctx-grp" role="group" aria-label="Perfil de fotografia">
-        <span class="ph-ctx-lbl">Perfil</span>
-        ${(_DB ? _DB.profiles : []).map(p => `<button class="ph-ctx-btn${p.id === pr ? ' active' : ''}" data-profile="${p.id}" title="${p.tagline}">${p.icon} ${p.name}</button>`).join('')}
-        <button class="ph-ctx-info" data-profile-info aria-label="O que muda entre perfis">?</button>
+      <button type="button" class="ph-ctx-chip" aria-expanded="false" aria-controls="${pid}" data-ctx-toggle>
+        ${CTX_ICO}<span class="ph-ctx-now"><b>${c.short || c.name || ''}</b> · ${p.name || ''}</span><span class="ph-ctx-edit">Alterar</span>
+      </button>
+      <div class="ph-ctx-pop" id="${pid}" hidden>
+        <div class="ph-ctx-grp" role="group" aria-label="Tipo de câmara">
+          <span class="ph-ctx-lbl">Câmara</span>
+          ${(_DB ? _DB.classes : []).map(x => `<button type="button" class="ph-ctx-btn${x.id === cls ? ' active' : ''}" aria-pressed="${x.id === cls}" data-class="${x.id}" title="${x.oneLine}">${x.short}</button>`).join('')}
+        </div>
+        <div class="ph-ctx-grp" role="group" aria-label="Perfil de fotografia">
+          <span class="ph-ctx-lbl">Perfil</span>
+          ${(_DB ? _DB.profiles : []).map(x => `<button type="button" class="ph-ctx-btn${x.id === pr ? ' active' : ''}" aria-pressed="${x.id === pr}" data-profile="${x.id}" title="${x.tagline}">${x.name}</button>`).join('')}
+          <button type="button" class="ph-ctx-info" data-profile-info>O que muda?</button>
+        </div>
+        <p class="ph-ctx-hint">As definições, objetivas e conselhos de edição adaptam-se a estas duas escolhas.</p>
       </div>
     </div>`;
   }
   function wireContextBar(panel, rerender) {
+    panel.querySelectorAll('.ph-ctx').forEach(ctx => {
+      const tg = ctx.querySelector('[data-ctx-toggle]'), pop = ctx.querySelector('.ph-ctx-pop');
+      if (!tg || tg.dataset.wired) return;
+      tg.dataset.wired = '1';
+      const set = open => { pop.hidden = !open; tg.setAttribute('aria-expanded', open); };
+      tg.addEventListener('click', () => set(pop.hidden));
+      ctx.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { set(false); tg.focus(); } });
+    });
     panel.querySelectorAll('[data-class]').forEach(b => b.addEventListener('click', () => {
       if (b.dataset.class === gearClass()) return;
       setGearClass(b.dataset.class); rerender();
@@ -1211,7 +1258,7 @@ const PhotographyPage = (function () {
       if (b.dataset.profile === profile()) return;
       setProfile(b.dataset.profile); rerender();
     }));
-    panel.querySelector('[data-profile-info]')?.addEventListener('click', openProfileModal);
+    panel.querySelectorAll('[data-profile-info]').forEach(b => b.addEventListener('click', openProfileModal));
   }
 
   /* Modal comparativo dos perfis — o utilizador tem de perceber o que muda
@@ -1278,10 +1325,9 @@ const PhotographyPage = (function () {
      para outra sem saber nada sobre rotas — sem isto, cada secção nova teria
      de reimplementar a mesma tabela e o portal voltava a ser um conjunto de
      páginas isoladas em vez de um sistema. */
-  let _pendingLearn = null;   // {seg, id} — cartão a abrir ao chegar a Aprender
   function plGo(target) {
     const [kind, arg] = String(target || '').split(':');
-    if (kind === 'g' && arg) { _portalSec = 'visao'; return Nav.go('photography/g/' + arg); }
+    if (kind === 'g' && arg) { _portalSec = 'ideia'; return Nav.go('photography/g/' + arg); }
     if (kind === 'gsec' && arg) {                    // g:<id>/<secção>
       const [gid, sec] = arg.split('/');
       if (sec) _portalSec = sec;
@@ -1290,22 +1336,22 @@ const PhotographyPage = (function () {
     if (kind === 'look' || kind === 'tec' || kind === 'ler' || kind === 'know') {
       const seg = kind === 'look' ? 'estilos' : kind === 'tec' ? 'tecnicas'
         : kind === 'know' ? 'fundamentos' : 'ler';
-      _pendingLearn = { seg, id: arg };
-      return Nav.go('photography/aprender/' + seg);
+      // cada item tem página própria: o chip leva diretamente a ela
+      return Nav.go('photography/aprender/' + seg + (arg ? '/' + arg : ''));
     }
     if (kind === 'apr') return Nav.go('photography/aprender/' + arg);
     // cs:            → hub dos cheatsheets
     // cs:<id>        → cartão
     // cs:g/<genero>  → cartão de um género
-    if (kind === 'cs') return Nav.go('photography/cheatsheets' + (arg ? '/' + arg : ''));
+    if (kind === 'cs') return Nav.go('photography/consulta' + (arg ? '/' + arg : ''));
     // rota histórica: agora:<género> → cheatsheet do género
-    if (kind === 'agora') return Nav.go('photography/cheatsheets' + (arg ? '/g/' + arg : ''));
+    if (kind === 'agora') return Nav.go('photography/consulta' + (arg ? '/g/' + arg : ''));
     if (kind === 'comp' && arg) {
       const comp = COMPOSITIONS.find(c => c.name === arg);
       if (comp) return openCompModal(comp);
       return Nav.go('photography/aprender/composicao');
     }
-    if (kind === 'tool' && arg) { _pendingCalc = arg; return Nav.go('photography/ferramentas'); }
+    if (kind === 'tool' && arg) { _pendingCalc = arg; return Nav.go('photography/laboratorio'); }
     if (kind === 'etool' && arg) return gotoTool(arg);
     if (kind === 'edicao') return Nav.go('photography/edicao');
   }
@@ -1319,18 +1365,18 @@ const PhotographyPage = (function () {
         ${contextBarHTML()}
         <button class="ph-field-cta" id="ph-goto-field">
           <span class="ph-field-cta-ico">📋</span>
-          <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Cheatsheets: lente, definições e erros a evitar — numa página, a olhar</small></span>
+          <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Consulta rápida: lente, definições e erros a evitar — para ver de relance</small></span>
           <span class="ph-field-cta-go">→</span>
         </button>
         <h2 class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</h2>
-        <p class="ph-section-sub">Escolhe o que vais fotografar — cada portal junta equipamento, definições, luz, composição, checklist e edição.</p>
+        <p class="ph-section-sub">Escolhe o que vais fotografar: a ideia, as definições, onde te pões, a composição e os erros a evitar — numa página.</p>
         <div class="ph-genre-search">
           <input type="search" id="ph-genre-q" class="ph-genre-q" placeholder="Procurar género (praia, nevoeiro, retrato…)" aria-label="Procurar género" autocomplete="off">
         </div>
         <div id="ph-genre-grid">${genreGroupsHTML(db.genres)}</div>
         <p class="ph-section-sub ph-genre-empty" id="ph-genre-none" hidden>Nenhum género corresponde à procura.</p>`;
       wireContextBar(panel, () => buildGeneros(panel));
-      panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/cheatsheets'));
+      panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/consulta'));
       panel.querySelectorAll('[data-genre]').forEach(c =>
         c.addEventListener('click', () => Nav.go('photography/g/' + c.dataset.genre)));
       wireGenreSearch(panel);
@@ -1406,309 +1452,230 @@ const PhotographyPage = (function () {
         <span class="ph-comp-card-name">${name}</span></button>`;
     }).join('')}</div>`;
   }
-  /* ══ PORTAL DE GÉNERO ═══════════════════════════════════════════════════
-     Antes era uma página única e muito longa. Agora é um portal com secções
-     navegáveis: consultas "Erros" ou "A cena" sem percorrer tudo.
-     As secções são as MESMAS em todos os géneros — a previsibilidade é o que
-     torna a consulta rápida. */
-  const PORTAL_SECS = [
-    { id: 'visao',      icon: '🧠', label: 'Visão' },
-    { id: 'essencial',  icon: '🎯', label: 'Essencial' },
-    { id: 'cena',       icon: '👁️', label: 'A cena' },
-    { id: 'luz',        icon: '💡', label: 'Luz' },
+  /* ══ PÁGINA DE GÉNERO (v4 · nov/2026) ═══════════════════════════════════
+     Uma página só, lida de cima a baixo, com um índice fixo que salta para
+     cada parte. Substitui nove separadores: vários tinham uma lista curta,
+     e o resto vivia atrás de acordeões e de "toca para revelar" — clicar
+     para ler uma frase não justifica o clique.
+
+     Regras desta versão (pedido explícito do user):
+       • nada escondido — o que está na página lê-se sem clicar;
+       • listas curtas e tabelas em vez de parágrafos;
+       • imagens à frente (o par com/sem intenção, composições, ideias);
+       • a teoria geral (altura, ângulo, direção da luz…) NÃO se repete em
+         29 páginas — vive em Aprender › Composição, a um link de distância;
+       • nada de caixas para marcar: uma lista de verificação é uma lista. */
+  const GP_SECS = [
+    { id: 'ideia',      icon: '🧠', label: 'A ideia' },
+    { id: 'definicoes', icon: '⚙️', label: 'Definições' },
+    { id: 'local',      icon: '📍', label: 'No local' },
     { id: 'composicao', icon: '🖼️', label: 'Composição' },
-    { id: 'ideias',     icon: '💭', label: 'Ideias' },
+    { id: 'ideias',     icon: '💡', label: 'Ideias' },
     { id: 'erros',      icon: '⚠️', label: 'Erros' },
-    { id: 'praticar',   icon: '🎓', label: 'Praticar' },
     { id: 'edicao',     icon: '✏️', label: 'Edição' },
   ];
-  /* Visão é a secção inicial de propósito: a intenção antes das definições.
-     Quem quer só os números tem o cheatsheet do género a um toque. */
-  let _portalSec = 'visao';
+  // Ligações antigas (data-go="gsec:<género>/<secção>") → âncora nova.
+  const OLD_SEC = { visao: 'ideia', essencial: 'definicoes', cena: 'local', luz: 'local',
+    composicao: 'composicao', ideias: 'ideias', praticar: 'ideias', erros: 'erros', edicao: 'edicao' };
+  let _portalSec = 'ideia', _keepScroll = null;
 
-  /* Cartão de equipamento: focal equivalente primeiro (universal), depois a
-     tradução para a câmara escolhida, e só no fim o exemplo pessoal. */
-  function gearCardHTML(g) {
-    const cls = classDef(), ll = lensLine(g);
-    const note = (g.gear.byClass || {})[gearClass()];
-    const noteTxt = typeof note === 'string' ? note : (note && note.note) || '';
-    const phone = gearClass() === 'phone' ? (g.gear.byClass || {}).phone : null;
-    const pmode = phone && typeof phone === 'object' ? phone.mode : null;
-    return `<div class="ph-gear-card">
-      <div class="ph-gear-hd">
-        <span class="ph-gear-cls">${cls ? cls.icon + ' ' + cls.name : ''}</span>
-        <span class="ph-gear-lensname">${ll.name}</span>
-      </div>
-      <div class="ph-gear-focal">${ll.eq}</div>
-      <div class="ph-gear-concrete">${cls ? cls.icon : ''} No teu equipamento: <b>${ll.concrete}</b></div>
-      <p class="ph-gear-why">${g.gear.why}</p>
-      ${pmode ? `<div class="ph-kit-mode">✨ ${pmode}</div>` : ''}
-      ${noteTxt ? `<div class="ph-gear-note">${noteTxt}</div>` : ''}
-      <div class="ph-kv-grid">${(g.gear.settings || []).map(kvHTML).join('')}</div>
-      ${g.gear.af ? `<div class="ph-kit-af"><b>Foco:</b> ${g.gear.af}</div>` : ''}
-      ${g.gear.alt ? `<div class="ph-kit-alt"><b>Alternativa:</b> ${g.gear.alt}</div>` : ''}
-      ${(g.gear.limits || []).length ? `<div class="ph-kit-lims"><b>⚠️ Limites reais</b><ul>${g.gear.limits.map(li).join('')}</ul></div>` : ''}
-      ${g.gear.mine ? `<div class="ph-gear-mine"><b>🎒 No meu equipamento</b> ${g.gear.mine}</div>` : ''}
-    </div>`;
-  }
-
-  /* Bloco de formato — a materialização visível do perfil escolhido. */
-  function formatBlockHTML(g) {
-    const a = formatAdvice(g), b = RAW_BADGE[a.level] || RAW_BADGE.medium, p = profileDef();
-    return `<div class="ph-fmt ph-fmt-${b.c}">
-      <div class="ph-fmt-hd">
-        <span class="ph-fmt-lbl">${p ? p.icon : ''} ${a.label}</span>
-        <span class="ph-fmt-badge ${b.c}">${b.t}</span>
-      </div>
-      <p class="ph-fmt-txt">${a.text}</p>
-      ${a.why ? `<p class="ph-fmt-why"><b>Porquê neste género:</b> ${a.why}.</p>` : ''}
-    </div>`;
-  }
-
-  /* Módulo de ofício + aplicação ao género. O princípio universal vive em
-     craft.json e ensina-se uma vez; o género só acrescenta o caso concreto. */
+  /* Módulo de ofício + aplicação ao género. Já não aparece na página do
+     género (lá fica só a aplicação, numa linha); continua a ser a peça de
+     Aprender › Composição › As decisões. */
   function craftBlockHTML(mod, applied) {
     if (!mod) return '';
     const vis = (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(mod.visual))
       ? `<div class="ph-craft-vis">${PhotoIllus.svg(mod.visual)}</div>` : '';
-    return `<details class="ph-craft" data-craft="${mod.id}">
-      <summary class="ph-craft-sum">
+    return `<article class="ph-craft" data-craft="${mod.id}">
+      <header class="ph-craft-sum">
         <span class="ph-craft-ico">${mod.icon}</span>
         <span class="ph-craft-ttl">${mod.name}</span>
-        <span class="ph-craft-applied">${applied || ''}</span>
-      </summary>
+        ${applied ? `<span class="ph-craft-applied">${applied}</span>` : ''}
+      </header>
       <div class="ph-craft-body">
         ${vis}
-        <p class="ph-craft-prin">${mod.principle}</p>
-        <div class="ph-craft-opts">${(mod.options || []).map(o => `<div class="ph-craft-opt">
-          <b>${o.label}</b><span class="ph-craft-eff">${o.effect}</span><span class="ph-craft-when">${o.when}</span>
-        </div>`).join('')}</div>
-        ${(mod.mistakes || []).length ? `<div class="ph-craft-mist"><b>⚠️ Erros comuns</b><ul>${mod.mistakes.map(li).join('')}</ul></div>` : ''}
-        ${mod.drill ? `<div class="ph-craft-drill"><b>🎓 Exercício</b> ${mod.drill}</div>` : ''}
+        <div class="ph-craft-txt">
+          <p class="ph-craft-prin">${mod.principle}</p>
+          <div class="ph-craft-opts">${(mod.options || []).map(o => `<div class="ph-craft-opt">
+            <b>${o.label}</b><span class="ph-craft-eff">${o.effect}</span><span class="ph-craft-when">${o.when}</span>
+          </div>`).join('')}</div>
+          ${(mod.mistakes || []).length ? `<div class="ph-craft-mist"><b>⚠️ Erros comuns</b><ul>${mod.mistakes.map(li).join('')}</ul></div>` : ''}
+          ${mod.drill ? `<p class="ph-craft-drill"><b>🎓 Exercício</b> ${mod.drill}</p>` : ''}
+        </div>
       </div>
-    </details>`;
+    </article>`;
   }
   const craftMod = id => (_DB && _DB.craft.find(m => m.id === id)) || null;
 
-  function sceneSectionHTML(g) {
-    const s = g.scene || {};
-    return `
-      <div class="ph-scn-grid2">
-        <div class="ph-info-card"><b>🔎 O que procurar</b><ul>${(s.look || []).map(li).join('')}</ul></div>
-        <div class="ph-info-card"><b>📍 Onde te colocares</b><p>${s.position || ''}</p></div>
-      </div>
-      <div class="ph-craft-list">
-        ${craftBlockHTML(craftMod('height'), s.height)}
-        ${craftBlockHTML(craftMod('angle'), (s.angles || []).join(' · '))}
-        ${craftBlockHTML(craftMod('distance'), s.approach)}
-        ${craftBlockHTML(craftMod('foreground'), (s.foreground || []).join(' · '))}
-        ${craftBlockHTML(craftMod('background'), '')}
-        ${craftBlockHTML(craftMod('simplify'), '')}
-      </div>`;
-  }
-
-  function lightSectionHTML(g) {
-    const lm = craftMod('lightdir');
-    return `
-      <div class="ph-light-box">${g.light}</div>
-      <div class="ph-lc-grid">${(g.lightConditions || []).map(l => `<div class="ph-lc">
-        <span class="ph-lc-when">${l.when}</span><span class="ph-lc-what">${l.what}</span>
-      </div>`).join('')}</div>
-      <div class="ph-craft-list">${craftBlockHTML(lm, '')}${craftBlockHTML(craftMod('moment'), '')}</div>`;
-  }
-
-  function ideasSectionHTML(g) {
-    return `
-      <div class="ph-info-card ph-ideas"><b>💭 Ideias para experimentar aqui</b><ul>${(g.ideas || []).map(li).join('')}</ul></div>
-      <div class="ph-info-card ph-tricks"><b>🎩 Truques de quem já lá esteve</b><ul>${(g.tricks || []).map(li).join('')}</ul></div>`;
-  }
-
-  function errorsSectionHTML(g) {
-    return `
-      <div class="ph-mist-list">${(g.mistakes || []).map(m => `<div class="ph-mist">
-        <div class="ph-mist-err"><span class="ph-mist-tag">Erro</span>${m.err}</div>
-        <div class="ph-mist-fix"><span class="ph-mist-tag ok">Correção</span>${m.fix}</div>
-      </div>`).join('')}</div>
-      <div class="ph-scn-cols">
-        <section class="ph-scn-sec"><h4>✅ Fazer</h4><ul class="ph-do">${(g.dos || []).map(li).join('')}</ul></section>
-        <section class="ph-scn-sec"><h4>⛔ Evitar</h4><ul class="ph-dont">${(g.donts || []).map(li).join('')}</ul></section>
-      </div>`;
-  }
-
-  function practiceSectionHTML(g) {
-    return `
-      <div class="ph-info-card"><b>🎓 Objetivos para praticar</b>
-        <p class="ph-section-sub">Exercícios concretos para este género. Fazer um de cada vez ensina mais do que ler tudo.</p>
-        <ul class="ph-drills">${(g.drills || []).map(li).join('')}</ul></div>
-      <section class="ph-scn-sec"><h4>☑️ Checklist antes de sair</h4>
-        <ul class="ph-check">${(g.checklist || []).map(c => `<li><label><input type="checkbox"><span>${c}</span></label></li>`).join('')}</ul>
-      </section>
-      ${(g.tools || []).length ? `<section class="ph-scn-sec"><h4>🧮 Ferramentas para este género</h4>
-        <div class="ph-chips">${g.tools.map(tid => TOOL_META[tid] ? `<button class="ph-chip ph-chip-link" data-tool="${tid}">🧮 ${TOOL_META[tid].label}</button>` : '').join('')}</div>
-      </section>` : ''}`;
-  }
-
-  /* A secção Edição do género diz APENAS a intenção artística — "preservar a
-     atmosfera", "não matar o céu". O COMO fazer vive na secção Edição, e cada
-     ferramenta mencionada abre lá diretamente. Sem isto, a explicação da mesma
-     ferramenta apareceria repetida em 28 páginas. */
-  /* Índice inverso: estilos e técnicas que declaram este género. Sem ele as
-     ligações só existiam num sentido — um estilo sabia onde se aplica, mas o
-     género não sabia que estilos lhe assentam, e quem entra por um género
-     nunca descobria a secção Estilos (Parte 8). */
+  /* Índice inverso: estilos e técnicas que declaram este género. */
   function genreCross(gid, kind, max = 4) {
     const list = (_DB && _DB[kind === 'look' ? 'looks' : 'techniques']) || [];
     return list.filter(x => (x.genres || []).includes(gid)).slice(0, max)
       .map(x => ({ go: kind + ':' + x.id, icon: x.icon, label: x.name }));
   }
-
-  function editSectionHTML(g) {
-    const p = profileDef(), depth = p ? p.editDepth : 'selective';
-    const goals = (g.edit && g.edit.goals) || [];
-    const profNote = p ? `<div class="ph-fmt ph-fmt-${depth === 'minimal' ? 'lo' : 'md'}"><b>${p.icon} ${p.name}:</b> ${p.edit}</div>` : '';
-    /* O estilo é a camada acima do "como se faz": a secção Edição ensina os
-       controlos, e estes chips dizem que aspeto vale a pena procurar aqui. */
-    const styles = PhotoLearn.chips(genreCross(g.id, 'look'), '🎨 Estilos que assentam neste género');
-    if (depth === 'minimal') {
-      return `${profNote}<div class="ph-scn-blurb">${g.edit.intro}</div>
-        <div class="ph-info-card"><b>🎯 O que interessa mesmo aqui</b>
-          <ul>${goals.slice(0, 3).map(o => li(o.text)).join('')}</ul></div>
-        ${styles}
-        <button class="ph-goto-edit" data-goedit>🎨 Ver como se faz, na secção Edição →</button>`;
-    }
-    return `<div class="ph-scn-blurb">${g.edit.intro}</div>${profNote}
-      <div class="ph-goal-list">${goals.map(o => `<div class="ph-goal-item">
-        <span class="ph-goal-name">✓ ${o.text}</span>
-        ${(o.tools || []).length ? `<span class="ph-goal-tools">${o.tools.map(t =>
-          `<button class="ph-chip ph-chip-link" data-etool="${t.id}">${t.label} →</button>`).join('')}</span>` : ''}
-      </div>`).join('') || '<p class="ph-section-sub">—</p>'}</div>
-      ${styles}
-      <button class="ph-goto-edit" data-goedit>🎨 Aprender edição de raiz, na secção Edição →</button>`;
-  }
-
-  /* ══ VISÃO ══════════════════════════════════════════════════════════════
-     A camada criativa do género: porque é que se fotografa aquilo e o que se
-     está a tentar dizer. Deliberadamente NÃO fala de equipamento, exposição,
-     grelhas nem edição — isso já existe nas outras secções.
-
-     Reescrita para deixar de se ler como artigo. O conteúdo é o mesmo; o que
-     mudou foi a ORDEM e o estado inicial de cada peça:
-
-       • o par de fotografias sobe para primeiro lugar (antes vinha depois de
-         um parágrafo de quatro linhas, e quem lê num telemóvel raramente
-         chegava lá);
-       • o "porquê" passa a `<details>` — continua inteiro, mas fechado, para
-         quem quer o argumento e não a explicação;
-       • o quadro banal→memorável vira toca-para-revelar: a mesma informação,
-         mas com uma pergunta de um segundo antes da resposta;
-       • o vocabulário visual esconde o significado até ao toque, pela mesma
-         razão — uma lista de definições lê-se de enfiada e não se fixa;
-       • armadilha, ética e série passam a acordeões: uma linha visível cada.
-
-     Resultado: o ecrã inicial de uma Visão passou de ~15 linhas de texto para
-     uma pergunta, duas fotografias e três frases.
-
-     A comparação usa PhotoLearn.compare em modo LADO A LADO por omissão. A
-     cortina antiga mostrava metade de cada fotografia, e nestes pares as duas
-     imagens não estão alinhadas — a decisão que se quer comparar ficava
-     precisamente tapada. A cortina continua disponível no seletor.
-     Todos os campos são opcionais — é assim que cada género tem voz própria
-     em vez de 28 páginas com o mesmo esqueleto. */
   const visionOf = g => (_DB && _DB.vision && _DB.vision[g.id]) || null;
 
-  /* Géneros que partilham um princípio criativo com este — a ponte para o
-     capítulo geral funcionar nos dois sentidos (Parte 8). */
-  function visionSiblings(gid, max = 4) {
-    if (!_DB || !_DB.principles) return [];
-    const seen = new Set([gid]), out = [];
-    _DB.principles.forEach(p => {
-      if (!(p.genres || []).includes(gid)) return;
-      (p.genres || []).forEach(id => {
-        if (seen.has(id) || out.length >= max) return;
-        const g = _DB.genres.find(x => x.id === id);
-        if (!g) return;
-        seen.add(id);
-        out.push({ go: 'g:' + id, icon: g.icon, label: `${g.name} · ${p.name.toLowerCase()}` });
-      });
-    });
-    return out;
+  // ── peças pequenas, partilhadas pelas secções ──
+  const gpList = (arr, cls = '') => (arr || []).length ? `<ul class="gp-list ${cls}">${arr.map(li).join('')}</ul>` : '';
+  function gpSec(id, title, body, sub) {
+    const s = GP_SECS.find(x => x.id === id);
+    return `<section class="gp-sec" id="gp-${id}" data-gpsec="${id}">
+      <h3 class="gp-h"><span class="gp-h-ico" aria-hidden="true">${s ? s.icon : ''}</span>${title}</h3>
+      ${sub ? `<p class="gp-sub">${sub}</p>` : ''}
+      ${body}
+    </section>`;
+  }
+  // Tabela de duas colunas — "isto → aquilo". Lê-se de uma vez, sem cliques.
+  function gpTable(rows, a, b, cls = '') {
+    if (!(rows || []).length) return '';
+    return `<div class="gp-tbl ${cls}" role="table">
+      <div class="gp-tr gp-th" role="row"><span role="columnheader">${a}</span><span role="columnheader">${b}</span></div>
+      ${rows.map(r => `<div class="gp-tr" role="row"><span role="cell">${r[0]}</span><span role="cell">${r[1]}</span></div>`).join('')}
+    </div>`;
   }
 
-  function visionSectionHTML(g) {
-    const v = visionOf(g);
-    if (!v) return `<p class="ph-section-sub">A camada de visão deste género ainda não está escrita.</p>`;
+  // ── 1 · A ideia ──
+  function gpIdeia(g) {
+    const v = visionOf(g) || {};
     const strong = assetPath('vis-' + g.id), flat = assetPath('vis-' + g.id + '-flat');
     const cmp = v.compare || {};
+    const shot = (src, tag, txt, good) => `<figure class="gp-shot${good ? ' good' : ''}">
+      <div class="gp-shot-img"><img src="${src}" alt="${tag}: ${txt || ''}" loading="lazy" decoding="async"><span class="gp-shot-tag">${tag}</span></div>
+      ${txt ? `<figcaption>${txt}</figcaption>` : ''}</figure>`;
+    const pair = strong && flat
+      ? `<div class="gp-pair">${shot(strong, 'Com intenção', cmp.strong, true)}${shot(flat, 'Sem intenção', cmp.flat)}</div>
+         <p class="gp-pair-note">As duas estão bem expostas e focadas. A diferença são decisões, não técnica.</p>`
+      : (strong ? `<div class="gp-pair one">${shot(strong, 'Exemplo', cmp.strong, true)}</div>` : '');
 
-    const visual = (strong && flat)
-      ? PhotoLearn.compare({
-          fam: 'visao', mode: 'side', a: strong, b: flat,
-          aAlt: 'Exemplo com intenção', bAlt: 'Exemplo tecnicamente correto mas sem intenção',
-          /* `neutral` porque as duas fotografias são competentes: marcar a
-             segunda com um ✗ vermelho contradiz a legenda logo abaixo
-             ("nenhuma diferença aqui é técnica") e ensina o observador a
-             ler isto como um erro de execução, que não é. A diferença é
-             de DECISÃO, e os marcadores têm de o dizer. */
-          neutral: true,
-          aTag: 'Com intenção', bTag: 'Sem intenção',
-          aWhy: cmp.strong || '', bWhy: cmp.flat || '',
-          q: 'Antes de leres: as duas estão bem expostas e focadas. O que é que separa uma da outra?',
-          caption: 'Nenhuma diferença aqui é técnica. Todas são decisões.',
-          label: 'Comparar a versão com intenção e a versão banal',
-        })
-      : (strong ? `<figure class="pl-cmp"><div class="pl-frame"><img src="${strong}" alt=""></div></figure>` : '');
+    const notes = [
+      v.trap && `<p class="gp-note trap"><b>🪤 A armadilha</b>${v.trap}</p>`,
+      v.ethic && `<p class="gp-note ethic"><b>⚖️ Responsabilidade</b>${v.ethic}</p>`,
+      v.series && `<p class="gp-note series"><b>🎞️ Em série</b>${v.series}</p>`,
+    ].filter(Boolean).join('');
 
     const body = `
-      ${v.subject ? `<div class="ph-vis-subject"><b>🎯 Qual é o verdadeiro assunto</b><p>${v.subject}</p></div>` : ''}
-      ${(v.gap || []).length ? `<section class="ph-vis-sec">
-        <h4>↗️ De banal a memorável</h4>
-        <p class="ph-section-sub">Cada linha mostra o hábito. Toca para ver o que se faz em vez disso.</p>
-        <div class="pl-revs">${v.gap.map(x => PhotoLearn.reveal({ q: x.ord, a: x.mem })).join('')}</div>
-      </section>` : ''}
-      ${(v.ask || []).length ? `<section class="ph-vis-sec">
-        <h4>❓ Antes de disparar, pergunta</h4>
-        <ol class="ph-vis-ask">${v.ask.map(li).join('')}</ol>
-      </section>` : ''}
-      ${(v.language || []).length ? `<section class="ph-vis-sec">
-        <h4>🗣️ Vocabulário visual deste género</h4>
-        <p class="ph-section-sub">Cada escolha diz alguma coisa a quem vê. Toca para saber o quê.</p>
-        <div class="pl-revs">${v.language.map(x => PhotoLearn.reveal({ q: `<b>${x.n}</b>`, a: x.m })).join('')}</div>
-      </section>` : ''}
-      ${v.trap ? `<details class="ph-vis-acc trap"><summary><b>🪤 A armadilha deste género</b></summary><p>${v.trap}</p></details>` : ''}
-      ${v.ethic ? `<details class="ph-vis-acc ethic"><summary><b>⚖️ A responsabilidade de quem fotografa</b></summary><p>${v.ethic}</p></details>` : ''}
-      ${v.series ? `<details class="ph-vis-acc series"><summary><b>🎞️ Pensar em série, não em fotografia</b></summary><p>${v.series}</p></details>` : ''}`;
-
-    const sib = visionSiblings(g.id);
-    return PhotoLearn.lesson({
-      kicker: v.hook || 'Visão',
-      hook: v.lead || '',
-      visual,
-      more: v.why || '',
-      moreLabel: 'Porquê é que isto acontece neste género',
-      body,
-      /* Um exercício fecha a lição. O primeiro drill do género já existia na
-         secção Praticar, mas lá chega-se depois de percorrer tudo — aqui
-         aparece no momento em que a intenção acabou de ser explicada, que é
-         quando faz diferença. Continua a ser o mesmo texto, não outro. */
-      drill: (g.drills || []).length ? PhotoLearn.drill({ key: 'vis-' + g.id, t: g.drills[0] }) : '',
-      links: `${PhotoLearn.chips(sib, '🔗 A mesma ideia treina-se também em')}
-        <p class="ph-vis-foot">Percebida a intenção, o <b>como</b> está nas secções seguintes: 🎯 Essencial, 👁️ A cena, 💡 Luz, 🖼️ Composição.
-          <button class="ph-chip ph-chip-link" data-goprinc>🧠 Princípios transversais a todos os géneros →</button></p>`,
-    });
+      ${v.lead ? `<p class="gp-lead">${v.lead}</p>` : ''}
+      ${pair}
+      ${v.subject ? `<p class="gp-subject"><b>O verdadeiro assunto</b>${v.subject}</p>` : ''}
+      <div class="gp-cols">
+        <div>
+          ${(v.gap || []).length ? `<h4 class="gp-h4">De banal a memorável</h4>${gpTable(v.gap.map(x => [x.ord, x.mem]), 'Banal', 'Memorável', 'gp-gap')}` : ''}
+          ${(v.ask || []).length ? `<h4 class="gp-h4">Antes de disparar, pergunta</h4><ol class="gp-list gp-ol">${v.ask.map(li).join('')}</ol>` : ''}
+        </div>
+        <div>
+          ${(v.language || []).length ? `<h4 class="gp-h4">O que cada escolha diz</h4>
+            <dl class="gp-dl">${v.language.map(x => `<div><dt>${x.n}</dt><dd>${x.m}</dd></div>`).join('')}</dl>` : ''}
+          ${notes}
+        </div>
+      </div>`;
+    return gpSec('ideia', v.hook || 'A ideia', body);
   }
 
-  function portalSectionHTML(g, sec) {
-    if (sec === 'visao') return visionSectionHTML(g);
-    if (sec === 'essencial') return `${formatBlockHTML(g)}${gearCardHTML(g)}`;
-    if (sec === 'cena') return sceneSectionHTML(g);
-    if (sec === 'luz') return lightSectionHTML(g);
-    if (sec === 'composicao') return `<p class="ph-section-sub">As composições que melhor funcionam neste género. Toca para ver o exemplo e a grelha.</p>${compCardsHTML(g.composition, g.id)}
-      ${PhotoLearn.chips(genreCross(g.id, 'tec'), '🧪 Técnicas criativas que costumam entrar aqui')}`;
-    if (sec === 'ideias') return ideasSectionHTML(g);
-    if (sec === 'erros') return errorsSectionHTML(g);
-    if (sec === 'praticar') return practiceSectionHTML(g);
-    if (sec === 'edicao') return editSectionHTML(g);
-    return '';
+  // ── 2 · Definições ──
+  function gpDefinicoes(g) {
+    const cls = classDef(), ll = lensLine(g), a = formatAdvice(g), b = RAW_BADGE[a.level] || RAW_BADGE.medium;
+    const note = (g.gear.byClass || {})[gearClass()];
+    const noteTxt = typeof note === 'string' ? note : (note && note.note) || '';
+    const pmode = note && typeof note === 'object' ? note.mode : null;
+    const facts = [
+      ['Porquê esta objetiva', g.gear.why],
+      [cls ? `${cls.icon} ${cls.short || cls.name}` : '', noteTxt],
+      ['Modo do telemóvel', pmode],
+      ['Foco', g.gear.af],
+      ['Alternativa', g.gear.alt],
+      ['Formato', `<span class="gp-badge ${b.c}">${b.t}</span> ${a.why ? a.why.charAt(0).toUpperCase() + a.why.slice(1) + '.' : ''}`],
+    ].filter(f => f[0] && f[1]);
+    const body = `
+      <div class="gp-set">
+        <div class="gp-focal">
+          <span class="gp-k">Objetiva</span>
+          <b class="gp-focal-v">${ll.eq}</b>
+          <span class="gp-focal-n">${ll.name}</span>
+          <span class="gp-focal-c">${cls ? cls.icon : ''} No teu equipamento: <b>${ll.concrete}</b></span>
+        </div>
+        <div class="gp-tiles">${(g.gear.settings || []).map(s => `<div class="gp-tile"><span class="gp-k">${s.k}</span><b>${s.v}</b></div>`).join('')}</div>
+      </div>
+      <dl class="gp-facts">${facts.map(f => `<div><dt>${f[0]}</dt><dd>${f[1]}</dd></div>`).join('')}</dl>
+      ${(g.gear.limits || []).length ? `<div class="gp-warn"><b>⚠️ Limites reais</b>${gpList(g.gear.limits)}</div>` : ''}
+      ${g.gear.mine ? `<p class="gp-mine"><b>🎒 No meu equipamento</b> ${g.gear.mine}</p>` : ''}`;
+    return gpSec('definicoes', 'Definições', body);
+  }
+
+  // ── 3 · No local (cena + luz) ──
+  function gpLocal(g) {
+    const s = g.scene || {};
+    const card = (ico, t, content) => content ? `<div class="gp-card"><b class="gp-card-t"><span aria-hidden="true">${ico}</span> ${t}</b>${content}</div>` : '';
+    const txt = x => x ? `<p>${x}</p>` : '';
+    const body = `
+      <div class="gp-grid">
+        ${card('🔎', 'O que procurar', gpList(s.look))}
+        ${card('🧍', 'Onde te pões', txt(s.position))}
+        ${card('📏', 'Altura da câmara', txt(s.height))}
+        ${card('📐', 'Ângulos', gpList(s.angles))}
+        ${card('🤝', 'Aproximação', txt(s.approach))}
+        ${card('🌿', 'Primeiro plano', gpList(s.foreground))}
+      </div>
+      <h4 class="gp-h4">💡 Luz</h4>
+      ${g.light ? `<p class="gp-light">${g.light}</p>` : ''}
+      ${gpTable((g.lightConditions || []).map(l => [`<b>${l.when}</b>`, l.what]), 'Situação', 'O que fazer', 'gp-lc')}
+      ${PhotoLearn.chips([{ go: 'apr:composicao', icon: '🎚️', label: 'Porque é que altura, ângulo e luz mudam tudo' }])}`;
+    return gpSec('local', 'No local', body);
+  }
+
+  // ── 4 · Composição ──
+  function gpComposicao(g) {
+    const body = `${compCardsHTML(g.composition, g.id)}
+      ${PhotoLearn.chips(genreCross(g.id, 'tec'), '🧪 Técnicas que costumam entrar aqui')}`;
+    return gpSec('composicao', 'Composição', body, 'As arrumações que melhor funcionam neste género. Toca numa para ver o exemplo com a grelha.');
+  }
+
+  // ── 5 · Ideias, truques e treino ──
+  /* Uma ideia ganha imagem quando existe `idea-<género>-<n>` (n a partir de
+     1, pela ordem de g.ideas). As que não têm imagem ficam numa lista. */
+  function gpIdeias(g) {
+    const ideas = g.ideas || [];
+    const withImg = ideas.map((t, i) => ({ t, src: assetPath(`idea-${g.id}-${i + 1}`) }));
+    const gal = withImg.filter(x => x.src);
+    const rest = withImg.filter(x => !x.src).map(x => x.t);
+    const body = `
+      ${gal.length ? `<div class="gp-gal">${gal.map(x => `<figure class="gp-gal-it">
+        <img src="${x.src}" alt="${x.t}" loading="lazy" decoding="async"><figcaption>${x.t}</figcaption></figure>`).join('')}</div>` : ''}
+      <div class="gp-cols gp-cols-3">
+        ${rest.length ? `<div><h4 class="gp-h4">${gal.length ? 'Mais ideias' : 'Ideias para experimentar'}</h4>${gpList(rest)}</div>` : ''}
+        ${(g.tricks || []).length ? `<div><h4 class="gp-h4">🎩 Truques</h4>${gpList(g.tricks)}</div>` : ''}
+        ${(g.drills || []).length ? `<div><h4 class="gp-h4">🎓 Para treinar</h4>${gpList(g.drills)}</div>` : ''}
+        ${(g.checklist || []).length ? `<div><h4 class="gp-h4">🎒 Antes de sair</h4>${gpList(g.checklist, 'gp-ticks')}</div>` : ''}
+      </div>`;
+    return gpSec('ideias', 'Ideias', body);
+  }
+
+  // ── 6 · Erros ──
+  function gpErros(g) {
+    const body = `
+      ${gpTable((g.mistakes || []).map(m => [m.err, m.fix]), '✗ Erro', '✓ Em vez disso', 'gp-err')}
+      <div class="gp-cols">
+        ${(g.dos || []).length ? `<div><h4 class="gp-h4 ok">✅ Fazer</h4>${gpList(g.dos, 'gp-do')}</div>` : ''}
+        ${(g.donts || []).length ? `<div><h4 class="gp-h4 no">⛔ Evitar</h4>${gpList(g.donts, 'gp-dont')}</div>` : ''}
+      </div>`;
+    return gpSec('erros', 'Erros comuns', body);
+  }
+
+  // ── 7 · Edição (só intenção; o "como" vive na secção Edição) ──
+  function gpEdicao(g) {
+    const p = profileDef(), depth = p ? p.editDepth : 'selective';
+    const goals = ((g.edit && g.edit.goals) || []).slice(0, depth === 'minimal' ? 3 : 99);
+    const body = `
+      ${g.edit && g.edit.intro ? `<p class="gp-light">${g.edit.intro}</p>` : ''}
+      <div class="gp-goals">${goals.map(o => `<div class="gp-goal">
+        <span class="gp-goal-t">${o.text}</span>
+        ${(o.tools || []).length ? `<span class="gp-goal-tools">${o.tools.map(t =>
+          `<button class="ph-chip ph-chip-link" data-etool="${t.id}">${t.label} →</button>`).join('')}</span>` : ''}
+      </div>`).join('')}</div>
+      ${p ? `<p class="gp-mine"><b>${p.icon} ${p.name}</b> ${p.edit}</p>` : ''}
+      ${PhotoLearn.chips(genreCross(g.id, 'look'), '🎨 Estilos que assentam aqui')}
+      ${(g.tools || []).length ? `<div class="pl-links"><b class="pl-links-h">🧮 Calculadoras úteis</b><div class="pl-links-row">${g.tools.map(tid => TOOL_META[tid]
+        ? `<button class="ph-chip ph-chip-link" data-tool="${tid}">${TOOL_META[tid].label} →</button>` : '').join('')}</div></div>` : ''}`;
+    return gpSec('edicao', 'Edição', body, 'O que procurar na edição deste género. Cada ferramenta abre a explicação na secção Edição.');
   }
 
   function renderPortal(panel, id) {
@@ -1717,7 +1684,8 @@ const PhotographyPage = (function () {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
       const g = db.genres.find(x => x.id === id);
       if (!g) { Nav.go('photography'); return; }
-      if (!PORTAL_SECS.some(s => s.id === _portalSec)) _portalSec = 'essencial';
+      const target = OLD_SEC[_portalSec] || (GP_SECS.some(s => s.id === _portalSec) ? _portalSec : 'ideia');
+      _portalSec = 'ideia';
 
       panel.innerHTML = `
         <div class="ph-portal-top"><button class="ph-back" id="ph-back">← Géneros</button></div>
@@ -1726,48 +1694,58 @@ const PhotographyPage = (function () {
           <div><h2 class="ph-portal-name">${g.name}</h2><p class="ph-portal-goal">${g.goal}</p></div>
         </div>
         ${contextBarHTML()}
-        <div class="ph-secnav" role="tablist" aria-label="Secções do género">
-          ${PORTAL_SECS.map(s => `<button class="ph-secnav-btn${s.id === _portalSec ? ' active' : ''}" role="tab" aria-selected="${s.id === _portalSec}" data-sec="${s.id}">${s.icon} ${s.label}</button>`).join('')}
+        <nav class="gp-toc" aria-label="Partes desta página">
+          ${GP_SECS.map(s => `<a class="gp-toc-b" href="#gp-${s.id}" data-toc="${s.id}">${s.label}</a>`).join('')}
+        </nav>
+        <div class="gp-page">
+          ${gpIdeia(g)}${gpDefinicoes(g)}${gpLocal(g)}${gpComposicao(g)}${gpIdeias(g)}${gpErros(g)}${gpEdicao(g)}
         </div>
-        <div class="ph-secbody" id="ph-secbody">${portalSectionHTML(g, _portalSec)}</div>
         <button class="ph-field-cta small" data-cscta="${g.id}">
           <span class="ph-field-cta-ico">📋</span>
-          <span class="ph-field-cta-txt"><b>Cheatsheet: ${g.name}</b><small>Definições, cena e erros numa página — para consultar com a câmara na mão</small></span>
+          <span class="ph-field-cta-txt"><b>Consulta rápida: ${g.name}</b><small>Definições, cena e erros numa página — para consultar com a câmara na mão</small></span>
           <span class="ph-field-cta-go">→</span>
         </button>`;
 
-      const body = panel.querySelector('#ph-secbody');
-      const wireBody = () => {
-        panel.querySelectorAll('[data-comp]').forEach(ch => {
-          const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
-          if (!comp) return;
-          const cv = ch.querySelector('.ph-comp-card-cv'); if (cv) requestAnimationFrame(() => drawCompOverlay(cv, comp));
-          ch.addEventListener('click', () => openCompModal(comp, g.id));
-        });
-        panel.querySelectorAll('[data-etool]').forEach(ch => ch.addEventListener('click', () => gotoTool(ch.dataset.etool)));
-        panel.querySelector('[data-goedit]')?.addEventListener('click', () => Nav.go('photography/edicao'));
-        panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
-          _pendingCalc = ch.dataset.tool; Nav.go('photography/ferramentas');
-        }));
-        PhotoLearn.wire(body, plGo);
-        panel.querySelector('[data-goprinc]')?.addEventListener('click', () => Nav.go('photography/aprender/visao'));
-      };
-      wireBody();
+      // As tabs da Fotografia são sticky e mudam de altura: o índice cola-se
+      // logo por baixo delas, por isso a altura é medida, não adivinhada.
+      const nav = document.querySelector('.ph-nav');
+      if (nav) panel.style.setProperty('--gp-navh', (getComputedStyle(nav).position === 'sticky' ? nav.offsetHeight : 0) + 'px');
 
-      panel.querySelectorAll('[data-sec]').forEach(b => b.addEventListener('click', () => {
-        _portalSec = b.dataset.sec;
-        panel.querySelectorAll('[data-sec]').forEach(x => {
-          const on = x.dataset.sec === _portalSec;
-          x.classList.toggle('active', on); x.setAttribute('aria-selected', on);
-        });
-        body.innerHTML = portalSectionHTML(g, _portalSec);
-        wireBody();
-        b.scrollIntoView({ inline: 'center', block: 'nearest' });
+      panel.querySelectorAll('[data-comp]').forEach(ch => {
+        const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
+        if (!comp) return;
+        const cv = ch.querySelector('.ph-comp-card-cv'); if (cv) requestAnimationFrame(() => drawCompOverlay(cv, compFor(comp, g.id)));
+        ch.addEventListener('click', () => openCompModal(comp, g.id));
+      });
+      panel.querySelectorAll('[data-etool]').forEach(ch => ch.addEventListener('click', () => gotoTool(ch.dataset.etool)));
+      panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
+        _pendingCalc = ch.dataset.tool; Nav.go('photography/laboratorio');
       }));
+      PhotoLearn.wire(panel, plGo);
+
+      // Índice: os links são âncoras (funcionam sem JS e com teclado); o JS
+      // só evita mexer no hash da rota e marca a parte que está à vista.
+      const secOf = id2 => panel.querySelector('#gp-' + id2);
+      panel.querySelectorAll('[data-toc]').forEach(a => a.addEventListener('click', e => {
+        e.preventDefault();
+        secOf(a.dataset.toc)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }));
+      const tocBtns = [...panel.querySelectorAll('[data-toc]')];
+      const mark = sid => tocBtns.forEach(b => b.classList.toggle('active', b.dataset.toc === sid));
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(ents => {
+          ents.forEach(en => { if (en.isIntersecting) mark(en.target.dataset.gpsec); });
+        }, { rootMargin: '-35% 0px -60% 0px' });
+        panel.querySelectorAll('[data-gpsec]').forEach(s => io.observe(s));
+      }
+      mark(target);
+
       panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
-      wireContextBar(panel, () => renderPortal(panel, id));
-      panel.querySelector('[data-cscta]').addEventListener('click', () => Nav.go('photography/cheatsheets/g/' + g.id));
-      window.scrollTo({ top: 0 });
+      wireContextBar(panel, () => { _keepScroll = window.scrollY; renderPortal(panel, id); });
+      panel.querySelector('[data-cscta]').addEventListener('click', () => Nav.go('photography/consulta/g/' + g.id));
+      if (_keepScroll != null) { const y = _keepScroll; _keepScroll = null; requestAnimationFrame(() => window.scrollTo({ top: y })); }
+      else if (target !== 'ideia') requestAnimationFrame(() => secOf(target)?.scrollIntoView({ block: 'start' }));
+      else window.scrollTo({ top: 0 });
     });
   }
 
@@ -1826,59 +1804,88 @@ const PhotographyPage = (function () {
       <div class="ph-detail-head"><span class="ph-detail-ico">${t.icon || ''}</span><h3 class="ph-detail-title">${t.name}</h3></div>
       ${art}<div class="ph-detail-body">${sections}</div>`;
   }
-  // Grelha expansível reutilizável (mata os modais de Aprender): ao clicar num
-  // cartão abre um painel inline em largura total logo a seguir a esse cartão.
-  /* `opt.split` — em ecrã largo, lista à esquerda e ficha à direita, com a
-     ficha colada ao topo. O padrão anterior (ficha inserida a seguir ao
-     cartão) empurrava os restantes itens para baixo da ficha inteira: com
-     seis câmaras na grelha, abrir a primeira escondia as outras cinco.
-     Em ecrã estreito não há espaço para duas colunas e mantém-se o
-     acordeão, que aí é o comportamento certo. */
-  const SPLIT_MQ = '(min-width: 1000px)';
+  /* ── Grelha de cartões + página do item (v5 · nov/2026) ──────────────────
+     Substitui o padrão "lista à esquerda + ficha à direita", que abria com o
+     painel da direita vazio ("Escolhe um item à esquerda"), metia a ficha
+     num scroll interno (o texto longo ficava cortado) e não mudava o URL —
+     não dava para partilhar uma ficha nem voltar com o botão "atrás".
+
+     Agora: a grelha de cartões é a página do capítulo, e cada item é uma
+     página com o seu URL (`<base>/<id>`), voltar, e anterior/seguinte. O
+     router chama `gridShow(base, id)`; a grelha regista-se em `_gridCtl`
+     quando acaba de carregar e lê o pedido pendente em `_gridWant` — os
+     capítulos constroem-se de forma assíncrona e só uma vez.
+
+     `opt.page` é o elemento cujos outros filhos se escondem enquanto um
+     item está aberto (em Ler, a grelha é só uma parte do capítulo). */
+  const _gridCtl = {}, _gridWant = {};
+  function gridShow(base, id) {
+    _gridWant[base] = id || null;
+    if (_gridCtl[base]) _gridCtl[base](id || null);
+  }
   function expandableGrid(box, items, opt) {
-    const split = !!opt.split;
-    box.innerHTML = `${opt.head || ''}${split
-      ? `<div class="ph-md"><div class="ph-md-list"><div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div></div><div class="ph-md-detail"></div></div>`
-      : `<div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div>`}`;
-    const grid = box.querySelector('.ph-learn-grid');
-    const host = box.querySelector('.ph-md-detail');
-    const wide = () => split && window.matchMedia(SPLIT_MQ).matches;
-    const detail = document.createElement('div');
-    detail.className = 'ph-learn-detail'; detail.hidden = true;
-    let sel = null;
-    const close = () => {
-      sel = null; detail.hidden = true; detail.innerHTML = '';
-      grid.querySelectorAll('.ph-learn-card').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-expanded', 'false'); });
-    };
+    const base = opt.base;
+    box.innerHTML = `<div class="ph-gv-list">${opt.head || ''}<div class="ph-learn-grid${opt.compact ? ' compact' : ''}"></div></div>
+      <div class="ph-gv-item" hidden></div>`;
+    const list = box.querySelector('.ph-gv-list');
+    const grid = list.querySelector('.ph-learn-grid');
+    const view = box.querySelector('.ph-gv-item');
+    const page = opt.page || box;
+    let lastId = null;
+
     items.forEach(t => {
-      const card = document.createElement('button');
-      card.type = 'button';
+      const card = document.createElement('a');
+      card.href = '#' + base + '/' + t.id;
+      card.dataset.item = t.id;
       const th = opt.compact ? '' : opt.thumb(t);
       card.className = 'ph-learn-card' + (opt.compact ? ' compact' : th ? '' : ' no-art');
-      card.setAttribute('aria-expanded', 'false');
-      // `compact` omite o bloco da miniatura em vez de o deixar vazio: reservar
-      // um 21:10 só para centrar um emoji dava cartões altos e ocos.
+      // `compact` omite o bloco da miniatura em vez de o deixar vazio.
       card.innerHTML = `${opt.compact ? '' : `<span class="ph-learn-thumb">${th || `<span class="ph-learn-ico">${t.icon || '📷'}</span>`}</span>`}
         <span class="ph-learn-info"><span class="ph-learn-name">${t.icon ? t.icon + ' ' : ''}${t.name}</span>
         <span class="ph-scn-blurb-sm">${opt.blurb(t)}</span></span><span class="ph-learn-caret" aria-hidden="true"></span>`;
-      card.addEventListener('click', () => {
-        if (sel === t) { close(); return; }
-        sel = t;
-        grid.querySelectorAll('.ph-learn-card').forEach(c => { const on = c === card; c.classList.toggle('active', on); c.setAttribute('aria-expanded', on); });
-        detail.innerHTML = opt.detail(t);
-        if (wide()) host.appendChild(detail); else card.after(detail);
-        detail.hidden = false;
-        if (typeof PhotoIllus !== 'undefined') PhotoIllus.wire(detail);
-        opt.afterOpen && opt.afterOpen(detail, t);
-        detail.querySelector('.ph-detail-close')?.addEventListener('click', () => { close(); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
-        // Em coluna dupla a ficha já está à vista: rolar até ela salta a página sem razão.
-        if (!wide()) requestAnimationFrame(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
-      });
+      card.addEventListener('click', e => { e.preventDefault(); Nav.go(base + '/' + t.id); });
       grid.appendChild(card);
       opt.afterCard && opt.afterCard(card, t);
     });
-    return { grid, close };
+
+    const go = id => Nav.go(base + (id ? '/' + id : ''));
+    function showItem(id) {
+      const i = id ? items.findIndex(x => x.id === id) : -1;
+      const open = i >= 0;
+      [...page.children].forEach(ch => {
+        if (ch === list || ch === view || ch.contains(box)) return;
+        ch.classList.toggle('ph-gv-hide', open);
+      });
+      list.hidden = open; view.hidden = !open;
+      page.closest('.ph-apr-ch, .ph-panel')?.classList.toggle('ph-item-open', open);
+      if (!open) {
+        view.innerHTML = '';
+        // volta ao cartão de onde se saiu, não ao topo da grelha
+        const back = lastId && grid.querySelector(`[data-item="${CSS.escape(lastId)}"]`);
+        lastId = null;
+        if (back) requestAnimationFrame(() => back.scrollIntoView({ block: 'center' }));
+        return;
+      }
+      lastId = id;
+      const t = items[i], prev = items[i - 1], next = items[i + 1];
+      const pn = (x, cls, lbl) => x
+        ? `<a class="ph-gv-pn-b ${cls}" href="#${base}/${x.id}" data-gv="${x.id}"><small>${lbl}</small><b>${x.name}</b></a>`
+        : '<span></span>';
+      view.innerHTML = `<div class="ph-gv-top">
+          <a class="ph-back" href="#${base}" data-gv="">← ${opt.title || 'Voltar'}</a>
+          <span class="ph-gv-count">${i + 1} de ${items.length}</span>
+        </div>
+        <article class="ph-learn-detail ph-gv-detail">${opt.detail(t)}</article>
+        <nav class="ph-gv-pn" aria-label="Item anterior e seguinte">${pn(prev, 'prev', '← Anterior')}${pn(next, 'next', 'Seguinte →')}</nav>`;
+      view.querySelectorAll('[data-gv]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); go(a.dataset.gv); }));
+      if (typeof PhotoIllus !== 'undefined') PhotoIllus.wire(view);
+      opt.afterOpen && opt.afterOpen(view, t);
+      requestAnimationFrame(() => view.scrollIntoView({ block: 'start' }));
+    }
+    if (base) { _gridCtl[base] = showItem; if (_gridWant[base]) showItem(_gridWant[base]); }
+    return { grid, close: () => showItem(null) };
   }
+
   /* ══ SECÇÃO EDIÇÃO ══════════════════════════════════════════════════════
      Área própria, separada dos géneros. Os géneros dizem O QUE se pretende
      ("preservar a atmosfera do nevoeiro"); esta secção ensina COMO se lá
@@ -2104,7 +2111,7 @@ const PhotographyPage = (function () {
         : (sec.tools || []).map(toolDetailHTML).join('');
 
       panel.innerHTML = `
-        <h2 class="ph-section-title">🎨 Edição</h2>
+        <h2 class="ph-section-title">Edição</h2>
         <p class="ph-section-sub">Conceitos de edição que valem em qualquer programa. Primeiro o que a ferramenta faz e porquê; a equivalência em Lightroom, Camera Raw, darktable, RawTherapee, Snapseed e RapidRAW fica no fim de cada ficha.</p>
         <div class="ph-secnav" role="tablist" aria-label="Secções de edição">
           ${db.sections.map(s => `<button class="ph-secnav-btn${s.id === sec.id ? ' active' : ''}" role="tab" aria-selected="${s.id === sec.id}" data-esec="${s.id}">${s.icon} ${s.name}</button>`).join('')}
@@ -2252,44 +2259,48 @@ const PhotographyPage = (function () {
         ${resolveLinks(it.links, '🔗 Onde é que isto se usa')}
       </div>`;
   }
+  /* Equipamento é um capítulo de Aprender (Técnica) — vive no seu painel,
+     mas com o mesmo caminho e "capítulo seguinte" dos outros. Rotas:
+     aprender/equipamento[/<categoria>[/<item>]]. Mudar de item NÃO
+     reconstrói a categoria: só a grelha é avisada. */
   function buildEquipamento(panel, sub) {
+    const [want, item] = String(sub || '').split('/');
+    if (panel.dataset.eqBuilt && panel.dataset.eqBuilt === (want || _eqCat)) {
+      gridShow('photography/aprender/equipamento/' + panel.dataset.eqBuilt, item || null);
+      if (!item) window.scrollTo({ top: 0 });
+      return;
+    }
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
     Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildEquipamento(panel, sub)); return; }
       const cats = db.equipment;
-      let cat = cats.find(c => c.id === (sub || _eqCat)) || cats[0];
+      const cat = cats.find(c => c.id === (want || _eqCat)) || cats[0];
       _eqCat = cat.id;
-      panel.innerHTML = `
-        <h2 class="ph-section-title">🎒 Equipamento</h2>
-        <p class="ph-section-sub">Conceitos que continuam válidos daqui a dez anos, sem marcas nem modelos. Cada item explica o problema que resolve — e quando não vale a pena.</p>
-        <div class="ph-secnav" role="tablist" aria-label="Categorias de equipamento">
-          ${cats.map(c => `<button class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" role="tab" aria-selected="${c.id === cat.id}" data-eqcat="${c.id}">${c.icon} ${c.name}</button>`).join('')}
+      panel.dataset.eqBuilt = cat.id;
+      const base = 'photography/aprender/equipamento/' + cat.id;
+      gridShow(base, item || null);
+      panel.innerHTML = `${aprCrumbHTML('equipamento')}
+        <div class="ph-eq-page">
+          <h2 class="ph-section-title">Equipamento</h2>
+          <p class="ph-section-sub">Conceitos que continuam válidos daqui a dez anos, sem marcas nem modelos. Cada item explica o problema que resolve — e quando não vale a pena.</p>
+          <nav class="ph-secnav" aria-label="Categorias de equipamento">
+            ${cats.map(c => `<a class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" href="#photography/aprender/equipamento/${c.id}"${c.id === cat.id ? ' aria-current="page"' : ''} data-eqcat="${c.id}">${c.name}</a>`).join('')}
+          </nav>
+          <p class="ph-eq-intro">${cat.intro}</p>
+          ${assetPath('eqi-' + cat.id)
+            ? `<div class="ph-eq-hero ph-eq-hero-img"><img loading="lazy" decoding="async" alt="" src="${assetPath('eqi-' + cat.id)}"></div>`
+            : (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(cat.visual))
+              ? `<div class="ph-eq-hero">${PhotoIllus.svg(cat.visual)}</div>` : ''}
+          <div id="ph-eq-body"></div>
+          <div class="ph-eq-mine" id="ph-eq-mine"></div>
         </div>
-        <p class="ph-eq-intro">${cat.intro}</p>
-        ${assetPath('eqi-' + cat.id)
-          ? `<div class="ph-eq-hero ph-eq-hero-img"><img loading="lazy" decoding="async" alt="" src="${assetPath('eqi-' + cat.id)}"></div>`
-          : (typeof PhotoIllus !== 'undefined' && PhotoIllus.has(cat.visual))
-            ? `<div class="ph-eq-hero">${PhotoIllus.svg(cat.visual)}</div>` : ''}
-        <div id="ph-eq-body"></div>
-        <div class="ph-eq-mine" id="ph-eq-mine"></div>`;
+        ${aprNextHTML('equipamento')}`;
+      wireCrumbs(panel);
       const body = panel.querySelector('#ph-eq-body');
-      expandableGrid(body, cat.items, {
-        // Cartões compactos de propósito. As ilustrações são por FAMÍLIA, não
-        // por item: em 4 das 7 categorias os cartões mostravam todos exatamente
-        // a ilustração do hero que está logo acima, e a 275×130 as legendas nem
-        // se leem. A ilustração continua onde ensina — grande no hero e grande
-        // na ficha aberta; a grelha passa a caber de uma vez no ecrã.
-        compact: true,
-        split: true,
-        thumb: () => '',
-        blurb: it => it.tag || '',
-        detail: eqDetailHTML,
-        afterOpen: detail => PhotoLearn.wire(detail, plGo),
-      });
       // O equipamento pessoal fica no fim e claramente separado: é exemplo, não norma.
       if (cat.id === 'cameras' && db.mine) {
         panel.querySelector('#ph-eq-mine').innerHTML = `
-          <h2 class="ph-section-title" style="margin-top:1.5rem">🎒 ${db.mine.label}</h2>
+          <h2 class="ph-section-title" style="margin-top:1.5rem">${db.mine.label}</h2>
           <p class="ph-section-sub">O equipamento com que este portal é escrito. Aparece como exemplo concreto — as recomendações acima aplicam-se a qualquer câmara.</p>
           <div class="ph-mine-grid">${db.mine.bodies.map(b => `<div class="ph-mine-card">
             <div class="ph-mine-hd">${b.icon} ${b.name} <span class="ph-eq-tag">${(db.classes.find(c => c.id === b.class) || {}).name || ''}</span></div>
@@ -2298,11 +2309,23 @@ const PhotographyPage = (function () {
             <ul class="ph-tip-list">${b.notes.map(li).join('')}</ul>
           </div>`).join('')}</div>`;
       }
-      panel.querySelectorAll('[data-eqcat]').forEach(b => b.addEventListener('click', () => {
-        _eqCat = b.dataset.eqcat;
-        buildEquipamento(panel, _eqCat);
+      expandableGrid(body, cat.items, {
+        // Cartões compactos de propósito. As ilustrações são por FAMÍLIA, não
+        // por item: em 4 das 7 categorias os cartões mostravam todos exatamente
+        // a ilustração do hero que está logo acima, e a 275×130 as legendas nem
+        // se leem. A ilustração continua onde ensina — grande no hero e grande
+        // na ficha aberta; a grelha passa a caber de uma vez no ecrã.
+        compact: true, base, title: cat.name, page: panel.querySelector('.ph-eq-page'),
+        thumb: () => '',
+        blurb: it => it.tag || '',
+        detail: eqDetailHTML,
+        afterOpen: detail => PhotoLearn.wire(detail, plGo),
+      });
+      panel.querySelectorAll('[data-eqcat]').forEach(b => b.addEventListener('click', e => {
+        e.preventDefault();
+        Nav.go('photography/aprender/equipamento/' + b.dataset.eqcat);
       }));
-      window.scrollTo({ top: 0 });
+      if (!item) window.scrollTo({ top: 0 });
     });
   }
 
@@ -2368,7 +2391,7 @@ const PhotographyPage = (function () {
     return PhotoLearn.sequence({ mode: sq.mode, q: sq.q, nextLabel: sq.nextLabel, items, after: sq.after });
   }
 
-  const APR_HEAD = `<h2 class="ph-section-title">📖 Fundamentos</h2>
+  const APR_HEAD = `<h2 class="ph-section-title">Fundamentos</h2>
     <p class="ph-section-sub">Como a fotografia funciona tecnicamente. Cada conceito abre com uma ilustração e termina com onde o vais usar.</p>`;
   function buildFundamentos(box) {
     box.innerHTML = `${APR_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
@@ -2378,7 +2401,7 @@ const PhotographyPage = (function () {
       const secHTML = s => (s.dyn === 'crop' ? cropSectionHTML()
         : `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`);
       const grid = expandableGrid(box, db.know, {
-        head, split: true,
+        head, base: 'photography/aprender/fundamentos', title: 'Fundamentos',
         thumb: t => conceptThumb(t.id),
         blurb: t => t.blurb,
         detail: t => conceptDetailHTML(t,
@@ -2386,7 +2409,6 @@ const PhotographyPage = (function () {
         afterOpen: detail => PhotoLearn.wire(detail, plGo),
       });
       wireContextBar(box, () => buildFundamentos(box));
-      openPending(box, 'fundamentos', db.know, grid);
     });
   }
 
@@ -2396,7 +2418,7 @@ const PhotographyPage = (function () {
      géneros (intenção, subtração, escala, momento, ambiguidade, série…).
      Cada princípio liga aos géneros onde mais se treina — é a ponte entre o
      capítulo geral e a prática concreta. */
-  const APR_VIS_HEAD = `<h2 class="ph-section-title">🧠 Visão</h2>
+  const APR_VIS_HEAD = `<h2 class="ph-section-title">Visão</h2>
     <p class="ph-section-sub">Os princípios criativos que valem em qualquer género — o que se decide antes de haver definições. Cada um liga aos géneros onde melhor se treina.</p>`;
   function buildVisaoAprender(box) {
     box.innerHTML = `${APR_VIS_HEAD}<div class="ph-learn-grid"><p class="ph-section-sub">A carregar…</p></div>`;
@@ -2405,7 +2427,7 @@ const PhotographyPage = (function () {
       if (!db || !(db.principles || []).length) return fail();
       const named = id => (db.genres.find(x => x.id === id) || {});
       expandableGrid(box, db.principles, {
-        head: APR_VIS_HEAD, split: true,
+        head: APR_VIS_HEAD, base: 'photography/aprender/visao', title: 'Visão',
         thumb: p => { const src = assetPath(p.thumb); return src ? `<span class="ph-vis ph-learn-art"><img loading="lazy" decoding="async" alt="" src="${src}"></span>` : ''; },
         blurb: p => p.blurb,
         detail: p => {
@@ -2440,7 +2462,7 @@ const PhotographyPage = (function () {
         afterOpen: detail => {
           PhotoLearn.wire(detail, plGo);
           detail.querySelectorAll('[data-vgenre]').forEach(b =>
-            b.addEventListener('click', () => { _portalSec = 'visao'; Nav.go('photography/g/' + b.dataset.vgenre); }));
+            b.addEventListener('click', () => { _portalSec = 'ideia'; Nav.go('photography/g/' + b.dataset.vgenre); }));
         },
       });
     });
@@ -2456,7 +2478,7 @@ const PhotographyPage = (function () {
      campos "onde funciona" e "quando se gasta" deixam de ser avisos escritos
      e passam a ser demonstráveis — aplicar Noir a uma praia ao meio-dia
      explica o limite melhor do que qualquer parágrafo. */
-  const APR_LOOK_HEAD = `<h2 class="ph-section-title">🎨 Estilos</h2>
+  const APR_LOOK_HEAD = `<h2 class="ph-section-title">Estilos</h2>
     <p class="ph-section-sub">Os looks que se reconhecem à distância — porque existem, o que dizem a quem vê e que decisões os criam. Cada um aplica-se ao vivo: mexe na dose e troca a fotografia para ver onde funciona e onde falha.</p>`;
 
   function lookBases(item, db) {
@@ -2474,14 +2496,13 @@ const PhotographyPage = (function () {
       // estilos e não fotografias (ver PhotoLearn.paintThumb)
       const swatch = assetPath('look-retrato') || (lookBases(db.looks[0], db)[0] || {}).src;
       const grid = expandableGrid(box, db.looks, {
-        head: APR_LOOK_HEAD, split: true,
+        head: APR_LOOK_HEAD, base: 'photography/aprender/estilos', title: 'Estilos',
         thumb: () => (swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : ''),
         blurb: l => l.blurb,
         detail: l => lookDetailHTML(l, db),
         afterCard: (card, l) => PhotoLearn.paintThumb(card.querySelector('.ph-look-thumb'), swatch, l.recipe),
         afterOpen: detail => PhotoLearn.wire(detail, plGo),
       });
-      openPending(box, 'estilos', db.looks, grid);
     });
   }
 
@@ -2521,7 +2542,7 @@ const PhotographyPage = (function () {
      foi tomada antes de haver ficheiro. Todas respondem a "o que é que isto
      comunica" antes de dizerem como se faz — é o que separa esta secção da
      secção Edição, que ensina os controlos. */
-  const APR_TEC_HEAD = `<h2 class="ph-section-title">🧪 Técnicas</h2>
+  const APR_TEC_HEAD = `<h2 class="ph-section-title">Técnicas</h2>
     <p class="ph-section-sub">O que cada técnica DIZ a quem vê, e não só que cursor a produz. As de revelação aplicam-se aqui mesmo; as de captação comparam-se com o par de fotografias que as separa.</p>`;
 
   function buildTecnicas(box) {
@@ -2535,7 +2556,7 @@ const PhotographyPage = (function () {
       const swatch = assetPath('look-retrato');
       const capSrc = t => (t.compare && assetPath(t.compare.a)) || (t.single && assetPath(t.single.src));
       const grid = expandableGrid(box, db.techniques, {
-        head: APR_TEC_HEAD, split: true,
+        head: APR_TEC_HEAD, base: 'photography/aprender/tecnicas', title: 'Técnicas',
         thumb: t => {
           if (t.kind === 'revelacao') return swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : '';
           const s = capSrc(t);
@@ -2550,7 +2571,6 @@ const PhotographyPage = (function () {
         },
         afterOpen: detail => PhotoLearn.wire(detail, plGo),
       });
-      openPending(box, 'tecnicas', db.techniques, grid);
     });
   }
 
@@ -2604,7 +2624,7 @@ const PhotographyPage = (function () {
      Os exercícios de escolha são GERADOS a partir dos pares de vision.json:
      28 géneros já têm o par memorável/banal e a explicação de cada lado, por
      isso duplicá-los aqui só criaria duas versões da mesma frase para manter. */
-  const APR_LER_HEAD = `<h2 class="ph-section-title">🔍 Ler fotografias</h2>
+  const APR_LER_HEAD = `<h2 class="ph-section-title">Ler fotografias</h2>
     <p class="ph-section-sub">Perceber porque é que uma fotografia funciona ensina mais depressa do que tirar outra. Aqui aponta-se, escolhe-se e corta-se — não se lê uma análise.</p>`;
 
   let _lerSeed = 0;
@@ -2672,7 +2692,7 @@ const PhotographyPage = (function () {
     const holder = document.createElement('div');
     host.replaceWith(holder);
     expandableGrid(holder, (db.readAnalyses || []).filter(a => assetPath(a.src)), {
-      head: '', split: true,
+      head: '', base: 'photography/aprender/ler', title: 'Ler fotografias', page: box,
       thumb: a => `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${assetPath(a.src)}"></span>`,
       blurb: a => a.blurb,
       detail: a => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
@@ -2753,20 +2773,6 @@ const PhotographyPage = (function () {
     return PhotoLearn.chips(out, '🔗 Onde isto volta a aparecer');
   }
 
-  /* Um chip noutra secção pediu um cartão concreto: abre-o e leva-o ao ecrã.
-     Sem isto, "ver a técnica X" deixava o utilizador numa grelha de vinte
-     cartões à procura do que tinha acabado de pedir. */
-  function openPending(box, seg, items, grid) {
-    if (!_pendingLearn || _pendingLearn.seg !== seg) return;
-    const id = _pendingLearn.id; _pendingLearn = null;
-    if (!id) return;
-    const i = items.findIndex(x => x.id === id);
-    if (i < 0) return;
-    const card = (grid && grid.grid ? grid.grid : box).querySelectorAll('.ph-learn-card')[i];
-    if (!card) return;
-    setTimeout(() => { card.click(); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
-  }
-
   /* ══ APRENDER ▸ CORES ════════════════════════════════════════════════════
      A roda já existia e mostra RELAÇÕES; a Edição ensina os controlos (temp,
      saturação, HSL, gradação) e os Estilos são receitas prontas. Faltava a
@@ -2780,7 +2786,7 @@ const PhotographyPage = (function () {
               diferentes provariam nada; o cursor sobre a mesma imagem prova tudo.
        pair — dominante, ponto de atenção, relação e paleta são propriedades da
               CENA. Não se demonstram com um cursor, porque não se resolvem com um. */
-  const APR_COR_HEAD = `<h2 class="ph-section-title">🌈 Cores</h2>
+  const APR_COR_HEAD = `<h2 class="ph-section-title">Cores</h2>
     <p class="ph-section-sub">O que a cor faz a quem vê — e porque é que um fotógrafo escolhe uma relação de cor em vez de outra. Os controlos que produzem estes resultados vivem na secção Edição; aqui trata-se de decidir.</p>`;
 
   function colourLessonHTML(l, db) {
@@ -2847,7 +2853,7 @@ const PhotographyPage = (function () {
     Promise.all([loadDB(), loadAssets(), loadEditDB()]).then(([db]) => {
       if (!db || !(db.colour || []).length) { box.innerHTML = `${APR_COR_HEAD}<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
       const grid = expandableGrid(box, db.colour, {
-        head: APR_COR_HEAD, split: true,
+        head: APR_COR_HEAD, base: 'photography/aprender/cores', title: 'Cores',
         thumb: l => {
           // a lição de laboratório mostra-se já tratada; a de par mostra o lado
           // que a demonstra — a miniatura tem de ser a própria lição
@@ -2873,19 +2879,34 @@ const PhotographyPage = (function () {
       box.appendChild(extra);
       buildColorWheel(extra.querySelector('#ph-cw-inner'));
       PhotoLearn.wire(extra, plGo);
-      openPending(box, 'cores', db.colour, grid);
     });
   }
 
-  const APR_SEGS = [
-    { id: 'visao',       label: '🧠 Visão' },
-    { id: 'ler',         label: '🔍 Ler' },
-    { id: 'fundamentos', label: '📖 Fundamentos' },
-    { id: 'composicao',  label: '🖼️ Composição' },
-    { id: 'estilos',     label: '🎨 Estilos' },
-    { id: 'tecnicas',    label: '🧪 Técnicas' },
-    { id: 'cores',       label: '🌈 Cores' },
+  /* ══ APRENDER (v5 · nov/2026) ═══════════════════════════════════════════
+     Eram 7 separadores num segundo nível, por baixo dos 7 do topo — 14
+     separadores e a barra de câmara antes de qualquer conteúdo. Passa a
+     haver uma PÁGINA DE ENTRADA com três blocos (Olhar · Linguagem ·
+     Técnica) e cada capítulo é uma página com caminho (Aprender › bloco ›
+     capítulo) e "capítulo seguinte" no fim. O Equipamento entrou aqui como
+     capítulo de Técnica (é conhecimento, não uma tarefa). */
+  const APR_BLOCKS = [
+    { id: 'olhar',     name: 'Olhar',     blurb: 'O que fotografar e porquê — antes de qualquer definição.', chapters: ['visao', 'ler', 'composicao', 'cores'] },
+    { id: 'linguagem', name: 'Linguagem', blurb: 'Os looks e as técnicas que mudam o que a fotografia diz.', chapters: ['estilos', 'tecnicas'] },
+    { id: 'tecnica',   name: 'Técnica',   blurb: 'Como a câmara funciona e que equipamento vale a pena.',     chapters: ['fundamentos', 'equipamento'] },
   ];
+  const APR_CHAPTERS = {
+    visao:       { name: 'Visão',           cover: 'api-visao',       blurb: 'Princípios criativos que valem em qualquer género.' },
+    ler:         { name: 'Ler fotografias', cover: 'api-ler',         blurb: 'Porque é que uma fotografia funciona — aponta, escolhe, corta.' },
+    composicao:  { name: 'Composição',      cover: 'api-composicao',  blurb: 'Onde pôr as coisas, e de onde fotografar.' },
+    cores:       { name: 'Cores',           cover: 'api-cores',       blurb: 'O que a cor faz a quem vê.' },
+    estilos:     { name: 'Estilos',         cover: 'api-estilos',     blurb: 'Cinemático, filme, noir… aplicados ao vivo.' },
+    tecnicas:    { name: 'Técnicas',        cover: 'api-tecnicas',    blurb: 'Grão, silhueta, panning, longa exposição.' },
+    fundamentos: { name: 'Fundamentos',     cover: 'api-fundamentos', blurb: 'Exposição, foco, abertura, ISO, luz.' },
+    equipamento: { name: 'Equipamento',     cover: 'eqi-cameras',     blurb: 'Câmaras, objetivas, filtros — e quando não vale a pena.' },
+  };
+  const APR_ORDER = APR_BLOCKS.flatMap(b => b.chapters);
+  const aprRoute = id => 'photography/aprender/' + id;
+  const aprBlockOf = id => APR_BLOCKS.find(b => b.chapters.includes(id));
   const APR_BUILDERS = {
     visao(box) { buildVisaoAprender(box); },
     ler(box) { buildLer(box); },
@@ -2895,31 +2916,82 @@ const PhotographyPage = (function () {
     tecnicas(box) { buildTecnicas(box); },
     cores(box) { buildCores(box); },
   };
-  let _aprBuilt = false, _aprActivate = null;
-  function buildAprender(panel, seg) {
+
+  // Caminho no topo de cada capítulo e "seguinte" no fim — partilhados com
+  // o Equipamento, que vive noutro painel mas é capítulo de Aprender.
+  function aprCrumbHTML(id) {
+    const b = aprBlockOf(id), c = APR_CHAPTERS[id];
+    return `<nav class="ph-crumb" aria-label="Caminho">
+      <a href="#photography/aprender" data-crumb="">Aprender</a><span aria-hidden="true">›</span>
+      <span>${b ? b.name : ''}</span><span aria-hidden="true">›</span>
+      <b aria-current="page">${c ? c.name : ''}</b>
+    </nav>`;
+  }
+  function aprNextHTML(id) {
+    const i = APR_ORDER.indexOf(id);
+    const prev = APR_ORDER[i - 1], next = APR_ORDER[i + 1];
+    const a = (x, cls, lbl) => x
+      ? `<a class="ph-gv-pn-b ${cls}" href="#${aprRoute(x)}" data-crumb="${x}"><small>${lbl}</small><b>${APR_CHAPTERS[x].name}</b></a>`
+      : '<span></span>';
+    return `<nav class="ph-gv-pn ph-apr-next" aria-label="Capítulos">${a(prev, 'prev', '← Capítulo anterior')}${a(next, 'next', 'Capítulo seguinte →')}</nav>`;
+  }
+  function wireCrumbs(root) {
+    root.querySelectorAll('[data-crumb]').forEach(a => {
+      if (a.dataset.crumbWired) return;
+      a.dataset.crumbWired = '1';
+      a.addEventListener('click', e => { e.preventDefault(); Nav.go(a.dataset.crumb ? aprRoute(a.dataset.crumb) : 'photography/aprender'); });
+    });
+  }
+
+  function aprHomeHTML() {
+    const card = id => {
+      const c = APR_CHAPTERS[id], src = assetPath(c.cover);
+      return `<a class="ph-apr-card" href="#${aprRoute(id)}" data-crumb="${id}">
+        <span class="ph-apr-cover">${src ? `<img loading="lazy" decoding="async" alt="" src="${src}">` : ''}</span>
+        <span class="ph-apr-txt"><b>${c.name}</b><small>${c.blurb}</small></span>
+      </a>`;
+    };
+    return `<div class="ph-apr-home">
+      <p class="ph-section-sub ph-apr-lead">Oito capítulos em três blocos. Não há ordem obrigatória — começa pelo que te faz falta.</p>
+      ${APR_BLOCKS.map(b => `<section class="ph-apr-block">
+        <h2 class="ph-apr-block-t">${b.name}<small>${b.blurb}</small></h2>
+        <div class="ph-apr-cards">${b.chapters.map(card).join('')}</div>
+      </section>`).join('')}
+    </div>`;
+  }
+
+  let _aprBuilt = false;
+  function buildAprender(panel, arg) {
+    const [seg, item] = String(arg || '').split('/');
+    if (seg === 'equipamento') return Nav.go(aprRoute('equipamento'));
     if (!_aprBuilt) {
       _aprBuilt = true;
-      panel.innerHTML = `
-        <div class="seg ph-apr-seg" role="tablist" aria-label="Aprender">
-          ${APR_SEGS.map(s => `<button class="seg-btn" data-seg="${s.id}" role="tab">${s.label}</button>`).join('')}
-        </div>
-        ${APR_SEGS.map(s => `<div class="ph-apr-panel ph-section-box" data-apr="${s.id}" hidden></div>`).join('')}`;
-      const done = new Set();
-      _aprActivate = (id) => {
-        if (!APR_BUILDERS[id]) id = 'visao';
-        panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.seg === id));
-        panel.querySelectorAll('.ph-apr-panel').forEach(p => { p.hidden = p.dataset.apr !== id; });
-        if (!done.has(id)) { done.add(id); APR_BUILDERS[id](panel.querySelector(`.ph-apr-panel[data-apr="${id}"]`)); }
-        // com 7 segmentos, o ativo pode estar fora do ecrã num telemóvel
-        panel.querySelector(`.ph-apr-seg .seg-btn[data-seg="${id}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' });
-        try { localStorage.setItem('ph-apr-seg', id); } catch (_) {}
-      };
-      panel.querySelectorAll('.ph-apr-seg .seg-btn').forEach(b =>
-        b.addEventListener('click', () => _aprActivate(b.dataset.seg)));
+      panel.innerHTML = `<div class="ph-apr-homebox"></div>
+        ${Object.keys(APR_BUILDERS).map(id => `<section class="ph-apr-ch" data-apr="${id}" hidden>
+          ${aprCrumbHTML(id)}
+          <div class="ph-apr-panel ph-section-box"></div>
+          ${aprNextHTML(id)}
+        </section>`).join('')}`;
+      wireCrumbs(panel);
     }
-    let initial = seg;
-    if (!initial) { try { initial = localStorage.getItem('ph-apr-seg'); } catch (_) {} }
-    _aprActivate(initial || 'visao');
+    const home = panel.querySelector('.ph-apr-homebox');
+    const id = APR_BUILDERS[seg] ? seg : null;
+    home.hidden = !!id;
+    panel.querySelectorAll('.ph-apr-ch').forEach(s => { s.hidden = s.dataset.apr !== id; });
+    if (!id) {
+      if (!home.dataset.built) {
+        home.innerHTML = `<p class="ph-section-sub">A carregar…</p>`;
+        loadAssets().then(() => { home.dataset.built = '1'; home.innerHTML = aprHomeHTML(); wireCrumbs(home); });
+      }
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    // o pedido do item tem de ficar registado ANTES de o capítulo se construir
+    gridShow(aprRoute(id), item || null);
+    const sec = panel.querySelector(`.ph-apr-ch[data-apr="${id}"]`);
+    const box = sec.querySelector('.ph-apr-panel');
+    if (!box.dataset.built) { box.dataset.built = '1'; APR_BUILDERS[id](box); }
+    if (!item) window.scrollTo({ top: 0 });
   }
 
   // ── Ferramentas (calculadoras) ──
@@ -2938,8 +3010,16 @@ const PhotographyPage = (function () {
     if (!_toolsBuilt) {
       _toolsBuilt = true;
       panel.innerHTML = `
-        <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Calculadoras de exposição e ótica — os resultados atualizam automaticamente. O crop vem pré-selecionado a partir do tipo de câmara que escolheste (${(classDef() || {}).name || 'APS-C'}); podes trocá-lo em qualquer campo.</p>
+        <a class="ph-lab-hero" href="#photography/estudio" data-lab-studio>
+          <span class="ph-lab-hero-img">${assetPath('eqi-light') ? `<img loading="lazy" decoding="async" alt="" src="${assetPath('eqi-light')}">` : ''}</span>
+          <span class="ph-lab-hero-txt"><small>Laboratório</small><b>Estúdio virtual 3D</b>
+            <span>Monta a luz de um retrato ou fotografa na rua e vê o que muda com a abertura, o obturador e o ISO.</span>
+            <span class="ph-lab-hero-cta">Abrir o estúdio →</span></span>
+        </a>
+        <h2 class="ph-section-title">Calculadoras</h2>
+        <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Exposição e ótica — os resultados atualizam sozinhos. O crop vem do tipo de câmara que escolheste (${(classDef() || {}).name || 'APS-C'}); podes trocá-lo em qualquer campo.</p>
         <div class="ph-grid"></div>`;
+      panel.querySelector('[data-lab-studio]').addEventListener('click', e => { e.preventDefault(); Nav.go('photography/estudio'); });
       const grid = panel.querySelector('.ph-grid');
       Object.keys(TOOL_META).forEach(key => {
         const wrapper = document.createElement('div');
@@ -2981,11 +3061,13 @@ const PhotographyPage = (function () {
     if (_studio) return;
     let mode = 'studio';
     try { if (localStorage.getItem('ph-studio-mode') === 'ext') mode = 'ext'; } catch {}
-    panel.innerHTML = `<div class="ph-studio-modes" role="tablist" aria-label="Local">
+    panel.innerHTML = `<a class="ph-back ph-lab-back" href="#photography/laboratorio" data-lab-back>← Laboratório</a>
+      <div class="ph-studio-modes" role="tablist" aria-label="Local">
         <button type="button" role="tab" class="ph-sm" data-sm="studio"><b>Estúdio de luz</b><span>flashes, modificadores, esquemas</span></button>
         <button type="button" role="tab" class="ph-sm" data-sm="ext"><b>Na rua</b><span>abertura, obturador, ISO, bokeh</span></button>
       </div>
       <div class="ph-studio-host"></div>`;
+    panel.querySelector('[data-lab-back]').addEventListener('click', e => { e.preventDefault(); Nav.go('photography/laboratorio'); });
     panel.querySelectorAll('.ph-sm').forEach(b => b.onclick = () => switchStudio(panel, b.dataset.sm));
     switchStudio(panel, mode);
   }
@@ -3008,16 +3090,30 @@ const PhotographyPage = (function () {
   }
 
   // ── Main ──────────────────────────────────────────────────────────
-  const PH_TABS = [
-    { id: 'generos',     label: '🎯 Géneros' },
-    { id: 'cheats',      label: '📋 Cheatsheets' },
-    { id: 'equipamento', label: '🎒 Equipamento' },
-    { id: 'estudio',     label: '💡 Estúdio' },
-    { id: 'edicao',      label: '🎨 Edição' },
-    { id: 'aprender',    label: '📚 Aprender' },
-    { id: 'ferramentas', label: '🧮 Ferramentas' },
+  /* Arrumação v5 (nov/2026). Eram 7 separadores de natureza diferente
+     (Géneros · Cheatsheets · Equipamento · Estúdio · Edição · Aprender ·
+     Ferramentas) — sem ordem natural entre eles e cortados no telemóvel.
+     Passam a 4, cada um a responder a uma pergunta:
+       Fotografar  — "vou fotografar X"     → géneros + consulta rápida
+       Aprender    — "quero perceber"        → capítulos + equipamento
+       Editar      — "tenho a foto, e agora?"→ edição
+       Laboratório — "quero experimentar"    → calculadoras + estúdio 3D
+     Os PAINÉIS continuam os mesmos (e as rotas antigas também valem): o que
+     muda é a que grupo cada painel pertence. Ícones SVG de traço — o
+     sistema de design do site não usa emojis na navegação. */
+  const SVG = d => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const PH_GROUPS = [
+    { id: 'fotografar',  label: 'Fotografar',  route: 'photography',             panels: ['generos', 'cheats'],
+      ico: SVG('<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.4-2h6.2L16.5 7h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.8" r="3.4"/>') },
+    { id: 'aprender',    label: 'Aprender',    route: 'photography/aprender',    panels: ['aprender', 'equipamento'],
+      ico: SVG('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/>') },
+    { id: 'editar',      label: 'Editar',      route: 'photography/edicao',      panels: ['edicao'],
+      ico: SVG('<path d="M5 6h9M18 6h1M5 12h3M12 12h7M5 18h11M20 18h-1"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>') },
+    { id: 'laboratorio', label: 'Laboratório', route: 'photography/laboratorio', panels: ['ferramentas', 'estudio'],
+      ico: SVG('<path d="M9.5 3.5h5M10.5 3.5v5.2L5.2 18a1.7 1.7 0 0 0 1.5 2.5h10.6a1.7 1.7 0 0 0 1.5-2.5l-5.3-9.3V3.5"/><path d="M7.6 14.5h8.8"/>') },
   ];
-  const TAB_ROUTE = { generos: 'photography', cheats: 'photography/cheatsheets', equipamento: 'photography/equipamento', estudio: 'photography/estudio', edicao: 'photography/edicao', aprender: 'photography/aprender', ferramentas: 'photography/ferramentas' };
+  const PANELS = ['generos', 'cheats', 'aprender', 'equipamento', 'edicao', 'ferramentas', 'estudio'];
+  const groupOf = panel => PH_GROUPS.find(g => g.panels.includes(panel)) || PH_GROUPS[0];
 
   /* Contexto entregue ao PhotoCheats: dá-lhe acesso ao DB, aos assets, à
      classe de câmara e ao router de ligações cruzadas sem que ele precise
@@ -3041,26 +3137,27 @@ const PhotographyPage = (function () {
             <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
             <div class="ph-titles">
               <h1 class="ph-title">Fotografia</h1>
-              <p class="ph-sub">Escola de fotografia: 28 géneros, estilos e técnicas aplicados ao vivo, cheatsheets de consulta rápida, exercícios de leitura de imagem e ferramentas — adaptado à tua câmara e ao teu perfil</p>
+              <p class="ph-sub">Escola de fotografia: 29 géneros, o que aprender, como editar e calculadoras — adaptada à tua câmara</p>
             </div>
           </div>
-          <div class="ph-nav seg" role="tablist" aria-label="Secções de fotografia">
-            ${PH_TABS.map(t => `<button class="ph-nav-btn seg-btn" role="tab" data-tab="${t.id}" aria-selected="false">${t.label}</button>`).join('')}
-          </div>
-          ${PH_TABS.map(t => `<div class="ph-panel" data-panel="${t.id}" role="tabpanel"></div>`).join('')}
+          <nav class="ph-nav seg" aria-label="Secções de fotografia">
+            ${PH_GROUPS.map(g => `<a class="ph-nav-btn seg-btn" href="#${g.route}" data-group="${g.id}">${g.ico}<span>${g.label}</span></a>`).join('')}
+          </nav>
+          ${PANELS.map(id => `<div class="ph-panel" data-panel="${id}"></div>`).join('')}
         </div>`;
 
       _activate = (id, arg) => {
         _curTab = id; _curArg = arg || null;
+        const grp = groupOf(id);
         view.querySelectorAll('.ph-nav-btn').forEach(b => {
-          const on = b.dataset.tab === id;
+          const on = b.dataset.group === grp.id;
           b.classList.toggle('active', on);
-          b.setAttribute('aria-selected', on);
+          if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
         });
         view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
-          else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
+        else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
         else if (id === 'equipamento') buildEquipamento(panel, arg);
         else if (id === 'estudio') buildEstudio(panel);
         else if (id === 'edicao') buildEdicao(panel, arg);
@@ -3068,31 +3165,34 @@ const PhotographyPage = (function () {
         else buildFerramentas(panel);
       };
 
-      view.querySelectorAll('.ph-nav-btn').forEach(b =>
-        b.addEventListener('click', () => Nav.go(TAB_ROUTE[b.dataset.tab])));
+      view.querySelectorAll('.ph-nav-btn').forEach(b => b.addEventListener('click', e => {
+        e.preventDefault();
+        Nav.go(PH_GROUPS.find(g => g.id === b.dataset.group).route);
+      }));
     }
 
-    /* rota → tab/argumento (com mapeamento das rotas antigas) */
+    /* rota → painel/argumento (com mapeamento das rotas antigas) */
     let tab = null, arg = null;
     if (sub) {
       const seg = sub.split('/');
       const a = seg[0], rest = seg.slice(1).join('/');
       if (a === 'g' && rest)                 { tab = 'generos'; arg = rest; }
-      /* "No Terreno" foi absorvido pelos Cheatsheets: a página de um género já
-         abre com o cartão de bolso (Definições · Na cena · Compõe · Evita) e
-         com as fichas visuais por baixo. As rotas antigas continuam a valer. */
+      /* "No Terreno" foi absorvido pela Consulta rápida: a página de um género
+         já abre com o cartão de bolso. As rotas antigas continuam a valer. */
       else if (a === 'agora')                { tab = 'cheats'; arg = rest ? 'g/' + rest : null; }
+      /* Equipamento passou a capítulo de Aprender; as duas rotas valem. */
+      else if (a === 'aprender' && seg[1] === 'equipamento') { tab = 'equipamento'; arg = seg.slice(2).join('/') || null; }
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
       else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
       else if (a === 'edicao')               { tab = 'edicao'; arg = rest || null; }
       else if (a === 'estudio')              tab = 'estudio';
-      else if (a === 'cheatsheets' || a === 'cs') { tab = 'cheats'; arg = rest || null; }
-      else if (a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
+      else if (a === 'cheatsheets' || a === 'cs' || a === 'consulta') { tab = 'cheats'; arg = rest || null; }
+      else if (a === 'laboratorio' || a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
       else if (a === 'cenarios')             tab = 'generos';
       else if (a === 'composicao' || a === 'cores') { tab = 'aprender'; arg = a; }
     }
-    /* Rota "nua" #photography é sempre a home de Géneros — não restaurar a última
-       tab (isso impedia voltar a Géneros; ver histórico do bug de navegação). */
+    /* Rota "nua" #photography é sempre a home de Fotografar — não restaurar a
+       última tab (isso impedia voltar ao início; ver histórico do bug). */
     _activate(tab || 'generos', arg);
   }
 

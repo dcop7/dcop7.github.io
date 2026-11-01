@@ -201,37 +201,21 @@
 .pl-crop-verdict.ok { color: #34d399; } .pl-crop-verdict.bad { color: #f87171; }
 
 /* ── revelar ────────────────────────────────────────────────────────── */
-/* Uma linha larga e cinzenta lia-se como campo de formulário vazio, não como
-   pergunta. Texto ao nível do corpo, largura limitada e a marca encostada ao
-   texto: o convite a tocar tem de estar onde os olhos já estão. */
-.pl-rev { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: .55rem; width: 100%;
-  max-width: 72ch; font: inherit; text-align: left; cursor: pointer; background: var(--card2);
-  border: 1px solid var(--border); border-left: 3px solid transparent;
-  border-radius: var(--radius); padding: .55rem .7rem;
-  transition: border-color var(--ease), background var(--ease); }
-.pl-rev:hover { border-color: var(--border2); border-left-color: var(--border2); background: var(--card); }
-.pl-rev.open { border-left-color: var(--accent); }
-.pl-rev-q { font-size: .82rem; line-height: 1.5; color: var(--text2); }
+/* Estático desde nov/2026: pergunta à esquerda, resposta à direita, sem
+   cliques — clicar para ler uma frase não justificava o clique. */
+.pl-rev { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: .75rem; max-width: 80ch;
+  padding: .5rem 0; border-bottom: 1px dashed var(--border); }
+.pl-rev-q { font-size: .84rem; line-height: 1.5; color: var(--muted); }
 .pl-rev-q b { color: var(--text); }
-.pl-rev-go { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
-  font-size: .72rem; font-weight: 800; color: var(--accent-txt); background: var(--accent-fill);
-  border: 1px solid var(--accent); }
-.pl-rev.open .pl-rev-go { color: #34d399; background: transparent; border-color: #34d39966; }
-.pl-rev-a { grid-column: 1 / -1; margin-top: .35rem; padding-top: .35rem; border-top: 1px dashed var(--border);
-  font-size: .82rem; line-height: 1.55; font-weight: 600; color: var(--text);
-  animation: pl-fade .2s var(--ease-out-fn, ease); }
-.pl-revs { display: flex; flex-direction: column; gap: .35rem; }
+.pl-rev-a { font-size: .84rem; line-height: 1.5; font-weight: 600; color: var(--text); }
+.pl-revs { display: flex; flex-direction: column; }
+@media (max-width: 640px) { .pl-rev { grid-template-columns: 1fr; gap: .15rem; } }
 
-/* ── exercício ──────────────────────────────────────────────────────── */
-.pl-drill { display: grid; grid-template-columns: auto 1fr; gap: .55rem; align-items: start;
-  cursor: pointer; background: var(--card2); border: 1px solid var(--border);
+/* ── exercício (texto, sem caixa de marcar) ─────────────────────────── */
+.pl-drill { display: flex; flex-direction: column; gap: .12rem; background: var(--card2); border: 1px solid var(--border);
   border-left: 3px solid #a78bfa; border-radius: var(--radius); padding: .6rem .75rem; margin: .7rem 0 0; }
-.pl-drill input { accent-color: var(--accent); width: 16px; height: 16px; margin-top: .15rem; cursor: pointer; }
-.pl-drill-body { display: flex; flex-direction: column; gap: .12rem; }
-.pl-drill-body b { font-size: .78rem; color: #a78bfa; }
-.pl-drill-body span { font-size: .81rem; line-height: 1.6; color: var(--text2); }
-.pl-drill.done { opacity: .62; }
-.pl-drill.done .pl-drill-body span { text-decoration: line-through; }
+.pl-drill b { font-size: .78rem; color: #a78bfa; }
+.pl-drill span { font-size: .84rem; line-height: 1.6; color: var(--text2); }
 
 /* ── ligações cruzadas ──────────────────────────────────────────────── */
 .pl-links { margin-top: .85rem; padding-top: .6rem; border-top: 1px dashed var(--border); }

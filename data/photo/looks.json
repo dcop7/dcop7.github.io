@@ -185,7 +185,8 @@
         "retrato",
         "rua",
         "familia",
-        "festividades"
+        "festividades",
+        "bebes"
       ],
       "techniques": [
         "grao",
@@ -577,7 +578,8 @@
         "produto",
         "gastronomia",
         "flores",
-        "retrato"
+        "retrato",
+        "bebes"
       ],
       "techniques": [],
       "comp": "Espaço Negativo"

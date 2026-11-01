@@ -80,6 +80,33 @@ novo, os dois prompts têm de descrever a **mesma cena**: só muda a intenção
 a lição é precisamente que a diferença não está na técnica. Os `id` casam com
 os `genres[].id` de `data/photo/genres.json`.
 
+### Grupo `ideas` (galeria "Ideias" da página de género)
+
+`idea-<genero>-<n>`, com `n` = posição da ideia em `genres[].ideas` (a contar
+de 1). A página mostra em galeria as ideias que têm imagem e as restantes em
+lista — não é preciso cobrir todas. Regra: a imagem tem de mostrar o que a
+frase diz; se não mostra, apaga-se (não se reescreve a ideia para caber na
+imagem). Publicadas a 720px com `finalize.mjs` e um recorte uniforme que tira
+a faixa de baixo — o SDXL inventa marcas de água "©…" no canto inferior.
+
+### Grupo `bebes` — nunca fotorrealista
+
+Pedido explícito do user: imagens de bebés **não** podem parecer fotografias
+reais. Estilo `baby_illus` (3D estilizado, tipo filme de animação) com o
+estilo também à cabeça (`lead`) e `photograph, photorealistic, naked, nude` no
+negativo. Bebés sempre vestidos ou enrolados numa manta. Pés e mãos de bebé
+em grande plano saem com anatomia de adulto — desistiu-se dessas duas ideias.
+
+### `finalize.mjs` — escolher um candidato, recortar, espelhar
+
+`node tools/photogen/finalize.mjs spec.json` promove um PNG de `out/` a asset
+(id, pasta, `crop` em píxeis do PNG cru, `flop`, `maxWidth`) e atualiza o
+`index.json`. Serve para os casos em que a lição se resolve com um recorte da
+MESMA imagem (pôr os olhos no terço/ponto phi) ou em que se escolhe um
+candidato gerado com outro id. As marcações dessas imagens são declaradas em
+`COMP_GENRE_GEOM` (photography.js) — sem geometria medida, uma composição
+"traced" fica sem marcações sobre a imagem própria do género.
+
 ### Grupo `lightpat` — SÓ luz natural (não voltar a tentar o estúdio)
 
 São quatro: `lp-window`, `lp-window-reflector`, `lp-golden-back`, `lp-open-shade`.

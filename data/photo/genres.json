@@ -1969,7 +1969,7 @@
       "checklist": [
         "Local com fundo limpo e distante",
         "Luz suave identificada (janela/sombra)",
-        "Eye AF ativo (Canon) / foco no olho (S26)",
+        "Deteção de olhos ativa",
         "Velocidade ≥ 1/200 confirmada",
         "Poses de referência vistas",
         "Conversa preparada — pessoa à vontade"
@@ -2266,6 +2266,237 @@
       ]
     },
     {
+      "id": "bebes",
+      "name": "Bebés & Recém-nascidos",
+      "icon": "👶",
+      "group": "Pessoas & Vida",
+      "blurb": "Luz de janela, velocidade alta e segurança acima de tudo.",
+      "goal": "Um bebé à escala do mundo dele: luz suave, os detalhes que mudam em semanas e nenhum risco por causa de uma fotografia.",
+      "gear": {
+        "focal": "35mm eq para contexto · 85mm eq para detalhes",
+        "lensClass": "normal",
+        "why": "Uma 35–50mm eq mostra o bebé com quem o segura; para mãos, pés e pestanas, uma tele curta enche o enquadramento sem pores a câmara em cima dele.",
+        "alt": "Uma objetiva macro (ou o modo macro do telemóvel) para pestanas, dedos e unhas.",
+        "settings": [
+          {
+            "k": "Modo",
+            "v": "Av"
+          },
+          {
+            "k": "Abertura",
+            "v": "f/2.8 – f/4 · a f/1.8, de perto, só um olho fica nítido"
+          },
+          {
+            "k": "Velocidade",
+            "v": "≥ 1/250 acordado · ≥ 1/125 a dormir"
+          },
+          {
+            "k": "ISO",
+            "v": "Auto até 3200–6400"
+          },
+          {
+            "k": "AF",
+            "v": "Deteção de rosto · ponto único no olho mais próximo"
+          },
+          {
+            "k": "Obturador",
+            "v": "Silencioso — não o acorda"
+          }
+        ],
+        "af": "A deteção de olhos precisa de olhos abertos: com o bebé a dormir, usa a deteção de rosto ou um ponto único sobre as pestanas mais próximas. De perto a margem é de milímetros — fecha para f/4 se a cara toda tiver de ficar nítida.",
+        "limits": [
+          "As casas são escuras: mesmo junto à janela, de dia, conta com ISO 1600–3200.",
+          "Um bebé acordado mexe-se aos esticões — abaixo de 1/250 as mãos saem tremidas.",
+          "O obturador silencioso pode fazer faixas com luz LED ou fluorescente: apaga as luzes e usa só a janela."
+        ],
+        "tips": [
+          "Aquece o quarto antes de começar — um bebé com frio não dorme.",
+          "Fotografa logo a seguir a mamar: é quando dorme mais fundo.",
+          "Põe-te ao nível do bebé, não de pé por cima dele.",
+          "Rajada para bocejos e espreguiços."
+        ],
+        "byClass": {
+          "phone": "Câmara 1× junto à janela e flash desligado. Para detalhes, a tele 3× a meio metro em vez de encostar o telemóvel. No modo retrato, confirma o recorte no cabelo fino.",
+          "apsc": "Uma 50mm (75–80mm eq) faz detalhes e retratos; uma 22–24mm faz o contexto com os pais.",
+          "ff": "Uma 35mm e uma 85mm cobrem tudo; o ISO alto limpo ajuda nas casas escuras."
+        },
+        "mine": "Na M50 II, a 22mm f/2 (35mm eq) para cenas com os pais e a EF 50mm f/1.8 (80mm eq) para detalhes; no S26+, a 1× junto à janela."
+      },
+      "raw": {
+        "value": "medium",
+        "why": "a luz de janela misturada com candeeiros pede acertar a cor depois, mas são fotografias para partilhar com a família depressa"
+      },
+      "scene": {
+        "look": [
+          "Uma janela grande sem sol direto",
+          "Uma manta lisa de cor neutra",
+          "O bebé alimentado, quente e com sono",
+          "As mãos dos pais por perto — dão escala"
+        ],
+        "position": "O bebé a 1–2 m da janela, com a luz a vir de lado. Tu do lado oposto ou em ângulo — nunca entre a janela e o bebé.",
+        "height": "Ao nível do bebé: ajoelha-te ou deita-te. Para mantas e cestos, de cima, a direito.",
+        "angles": [
+          "De cima, a direito — limpo e gráfico",
+          "Ao nível dos olhos — mais íntimo",
+          "Por cima do ombro dos pais — o ponto de vista deles"
+        ],
+        "approach": "Sessões curtas, com pausas para mamar e mudar a fralda. Os pais seguram e ajeitam o bebé; tu fotografas.",
+        "foreground": [
+          "O ombro ou a mão de um dos pais, desfocado",
+          "A orla de uma manta ou de um cesto",
+          "Nada — uma manta lisa chega"
+        ]
+      },
+      "light": "Luz de janela de lado, suave e sem sol direto. Apaga os candeeiros para não misturar cores. Nada de flash direto.",
+      "lightConditions": [
+        {
+          "when": "Janela lateral",
+          "what": "A melhor luz para bebés. Roda a manta até as sombras ficarem suaves."
+        },
+        {
+          "when": "Sol a entrar",
+          "what": "Cortina fina ou lençol branco na janela — vira um softbox."
+        },
+        {
+          "when": "Fim de tarde",
+          "what": "Pouca luz: sobe o ISO e aceita algum ruído, em vez de baixar a velocidade."
+        },
+        {
+          "when": "Só candeeiros",
+          "what": "Luz amarela e dura. Serve para ambiente, não para a cara."
+        }
+      ],
+      "composition": [
+        "Regra dos Terços",
+        "Simetria & Reflexo",
+        "Enquadramento Natural",
+        "Proporção Áurea (Phi)"
+      ],
+      "ideas": [
+        "Pés pequenos nas mãos de um adulto",
+        "A mão do bebé agarrada a um dedo",
+        "Ao colo de um dos pais, junto à janela",
+        "O irmão mais velho a conhecer o bebé",
+        "A mesma manta todos os meses — o primeiro ano numa série",
+        "Bocejos e espreguiços, em rajada"
+      ],
+      "tricks": [
+        "Os primeiros 15 minutos depois de mamar são o sono mais fundo.",
+        "Ruído branco (ventoinha, aplicação) ajuda-o a continuar a dormir.",
+        "Um pano branco do lado contrário à janela faz de refletor.",
+        "Pede aos pais roupa lisa e escura: mãos e braços passam a moldura."
+      ],
+      "mistakes": [
+        {
+          "err": "Flash direto na cara",
+          "fix": "Acorda-o e deixa a pele plana. Janela grande e ISO mais alto."
+        },
+        {
+          "err": "f/1.8 a 30 cm da cara",
+          "fix": "Fica um olho nítido e o resto não. f/2.8–f/4 para a cara inteira."
+        },
+        {
+          "err": "Bebé sozinho em cima de uma cama ou mesa",
+          "fix": "Uma mão sempre ao alcance, ou fotografa no chão sobre uma manta."
+        },
+        {
+          "err": "Copiar poses de revista",
+          "fix": "As poses com a cabeça apoiada nas mãos são montagens de duas fotografias. Só posições naturais."
+        }
+      ],
+      "dos": [
+        "Mãos lavadas e quentes antes de pegar no bebé",
+        "Sessões curtas, com pausas",
+        "Fotografar ao nível do bebé",
+        "Incluir as mãos e o colo dos pais"
+      ],
+      "donts": [
+        "Deixar o bebé sozinho numa superfície alta",
+        "Forçar posições ou dobrar o pescoço",
+        "Adereços que possam cair ou entalar",
+        "Publicar fotografias sem roupa na internet"
+      ],
+      "drills": [
+        "Fotografa os pés do bebé ao lado da mão de um adulto, com luz de janela.",
+        "Faz a mesma fotografia, no mesmo sítio, uma vez por mês.",
+        "Apanha um bocejo em rajada sem acordar o bebé."
+      ],
+      "checklist": [
+        "Quarto quente e luzes apagadas",
+        "Manta lisa e janela escolhida",
+        "Bebé alimentado e com fralda limpa",
+        "Flash desligado, obturador silencioso",
+        "Mãos lavadas e quentes",
+        "Um adulto sempre ao alcance do bebé"
+      ],
+      "edit": {
+        "intro": "Pele suave e natural, cores calmas. Nos primeiros dias a pele é avermelhada e tem manchas — atenua, não apagues.",
+        "goals": [
+          {
+            "text": "Pele com tom natural — nem laranja nem magenta",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "tint",
+                "label": "Tonalidade"
+              }
+            ]
+          },
+          {
+            "text": "Atenuar a vermelhidão sem plastificar",
+            "tools": [
+              {
+                "id": "hsl",
+                "label": "HSL"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
+          },
+          {
+            "text": "Luz suave, sombras abertas",
+            "tools": [
+              {
+                "id": "shadows",
+                "label": "Sombras"
+              },
+              {
+                "id": "curve",
+                "label": "Curvas"
+              }
+            ]
+          },
+          {
+            "text": "Fundo calmo, sem distrações",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              }
+            ]
+          }
+        ]
+      },
+      "techniques": [
+        "wb",
+        "realces-sombras",
+        "sat-vib"
+      ],
+      "tools": [
+        "dof",
+        "exposure"
+      ]
+    },
+    {
       "id": "animais",
       "name": "Animais de Estimação",
       "icon": "🐶",
@@ -2410,7 +2641,7 @@
         "Usar flash direto",
         "Fotografar de pé, de cima para baixo",
         "Forçar o animal a posar até se stressar",
-        "Contar com Eye-AF (não existe para animais na M50 II)",
+        "Contar com a deteção de olhos de animais sem confirmar que a tua câmara a tem",
         "Fundos com trelas, tigelas e brinquedos espalhados"
       ],
       "drills": [
@@ -5545,7 +5776,7 @@
       ],
       "checklist": [
         "RAW ativo",
-        "Pré-visualização mono (Canon)",
+        "Pré-visualização a preto e branco ligada no ecrã",
         "Dia de luz dura ou nevoeiro aproveitado",
         "Texturas e linhas no radar",
         "Conversão por canais planeada"

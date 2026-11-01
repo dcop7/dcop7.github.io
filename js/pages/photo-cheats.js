@@ -466,7 +466,7 @@ const PhotoCheats = (function () {
 
   function headHTML(s, crumb) {
     return `
-      <button class="ph-back cs-back" data-back>← Todos os cheatsheets</button>
+      <button class="ph-back cs-back" data-back>← Consulta rápida</button>
       ${crumb ? `<p class="cs-crumb">${crumb}</p>` : ''}
       <div class="cs-head">
         <span class="cs-head-ico">${s.icon || '📋'}</span>
@@ -599,13 +599,13 @@ const PhotoCheats = (function () {
     return `
       <div class="cs-intro">
         <p class="cs-intro-lead">Cartões de <b>consulta rápida</b>: uma imagem, um valor e uma linha. Feitos para se abrirem com a câmara na mão e se perceberem num relance — não para se lerem.</p>
-        <p class="cs-intro-map"><b>📋 Aqui:</b> “preciso desta resposta agora”<span>·</span><b>📚 Aprender:</b> “quero perceber isto a fundo”<span>·</span><b>🧮 Ferramentas:</b> “quero calcular isto”</p>
+        <p class="cs-intro-map"><b>Aqui:</b> “preciso desta resposta agora”<span>·</span><b>Aprender:</b> “quero perceber isto a fundo”<span>·</span><b>Laboratório:</b> “quero calcular ou experimentar”</p>
       </div>
 
       <div class="cs-search">
-        <input type="search" id="cs-q" placeholder="Procurar (abertura, shutter speed, ISO, retrato…)" aria-label="Procurar cheatsheet" autocomplete="off">
+        <input type="search" id="cs-q" placeholder="Procurar (abertura, shutter speed, ISO, retrato…)" aria-label="Procurar na consulta rápida" autocomplete="off">
       </div>
-      <p class="cs-empty" id="cs-none" hidden>Nenhum cheatsheet corresponde à procura.</p>
+      <p class="cs-empty" id="cs-none" hidden>Nada corresponde à procura. Tenta outra palavra — por exemplo, o nome de um género.</p>
 
       ${groups.map(gr => {
         const cards = data.sheets.filter(s => s.level === gr.id).map(s => cardHTML({
@@ -679,7 +679,7 @@ const PhotoCheats = (function () {
     panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
     Promise.all([loadAll(), _ctx.loadDB(), _ctx.loadAssets()]).then(([all, db]) => {
       if (!all || !db) {
-        panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">Não foi possível carregar os cheatsheets. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p></div>`;
+        panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">Não foi possível carregar a consulta rápida. <button class="ph-chip ph-chip-link" data-retry>Tentar novamente</button></p></div>`;
         panel.querySelector('[data-retry]')?.addEventListener('click', () => build(panel, arg, ctx));
         return;
       }
@@ -729,7 +729,8 @@ const PhotoCheats = (function () {
          são elas próprias sticky e mudam de altura (embrulham em ecrãs
          estreitos). A altura medida vira variável CSS. */
       const nav = document.querySelector('#view-photography .ph-nav');
-      if (nav) panel.style.setProperty('--cs-navh', nav.offsetHeight + 'px');
+      // no telemóvel as tabs deixam de ser sticky (v5): aí não há nada a compensar
+      if (nav) panel.style.setProperty('--cs-navh', (getComputedStyle(nav).position === 'sticky' ? nav.offsetHeight : 0) + 'px');
       if (after) after(panel);
 
       /* data-open = "cs:<id>" | "gen:<genero>" | "gs:<genero>:<ficha>" */

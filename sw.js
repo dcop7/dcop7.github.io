@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v365';
+const CACHE = 'dcop7-v367';
 const STATIC = [
   '/',
   '/index.html',
@@ -23,6 +23,7 @@ const STATIC = [
   '/css/views/oss.css',
   '/css/views/quiz.css',
   '/css/views/photo-learn.css',
+  '/css/views/photo-genre.css',
   '/css/views/photo-studio.css',
   '/css/views/photo-cheats.css',
   '/data/countries.json',
