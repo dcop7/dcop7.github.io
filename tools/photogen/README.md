@@ -89,13 +89,19 @@ frase diz; se não mostra, apaga-se (não se reescreve a ideia para caber na
 imagem). Publicadas a 720px com `finalize.mjs` e um recorte uniforme que tira
 a faixa de baixo — o SDXL inventa marcas de água "©…" no canto inferior.
 
-### Grupo `bebes` — nunca fotorrealista
+### Grupos `recem-nascidos` e `bebes` — nunca fotorrealistas
 
 Pedido explícito do user: imagens de bebés **não** podem parecer fotografias
 reais. Estilo `baby_illus` (3D estilizado, tipo filme de animação) com o
 estilo também à cabeça (`lead`) e `photograph, photorealistic, naked, nude` no
 negativo. Bebés sempre vestidos ou enrolados numa manta. Pés e mãos de bebé
 em grande plano saem com anatomia de adulto — desistiu-se dessas duas ideias.
+
+São dois géneros (nov/2026): **Recém-nascidos** (0–3 meses, a dormir,
+enrolados) e **Bebés** (6 meses – 2 anos: gatinham, põem-se de pé, brincam).
+Os bebés usam sempre o mesmo boneco (1 ano, macacão mostarda, meias brancas)
+para a galeria parecer uma só criança, e `newborn, swaddled, siblings` no
+negativo. Sem irmãos nas ideias: muitas famílias têm um filho só.
 
 ### `finalize.mjs` — escolher um candidato, recortar, espelhar
 

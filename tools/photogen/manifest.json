@@ -3903,8 +3903,8 @@
       "prompt": "a lone figure in a long dark coat completely surrounded and pressed in by a dense crowd, the frame packed edge to edge with people, market stalls, signs and hanging lanterns, absolutely no empty space anywhere in the picture, cluttered busy chaotic composition, cold misty daylight, cinematic semi-realistic digital illustration, stylized concept art, dramatic atmospheric lighting, rich saturated colors, painterly detail, beautiful, no text, no watermark"
     },
     {
-      "id": "gico-bebes",
-      "group": "bebes",
+      "id": "gico-recem-nascidos",
+      "group": "genre-ico",
       "style": "genre_icon",
       "matte": false,
       "size": [
@@ -3915,11 +3915,11 @@
       "seed": 880131,
       "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, noise",
       "prompt": "a sleeping newborn baby curled up in a blanket, simple silhouette seen from the side",
-      "caption": "bebes"
+      "caption": "recem-nascidos"
     },
     {
-      "id": "vis-bebes",
-      "group": "bebes",
+      "id": "vis-recem-nascidos",
+      "group": "recem-nascidos",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -3932,8 +3932,8 @@
       "prompt": "close-up of one tiny newborn baby asleep, swaddled in a cream knitted blanket, the peaceful face fills the frame, soft window light from the left side, gentle shadows, softly blurred warm home in the background"
     },
     {
-      "id": "vis-bebes-flat",
-      "group": "bebes",
+      "id": "vis-recem-nascidos-flat",
+      "group": "recem-nascidos",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -3946,8 +3946,8 @@
       "prompt": "one tiny newborn baby asleep, swaddled in a cream knitted blanket, lying small in the middle of a big unmade double bed, wide shot, pillows, a bedside lamp, a ball and folded laundry around, evenly lit, ordinary snapshot"
     },
     {
-      "id": "comp-bebes-thirds",
-      "group": "bebes",
+      "id": "comp-recem-nascidos-thirds",
+      "group": "recem-nascidos",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -3961,8 +3961,8 @@
       "_nota": "publicado com recorte [16,155,900,616] (finalize.mjs): olhos no terço superior direito"
     },
     {
-      "id": "comp-bebes-framing",
-      "group": "bebes",
+      "id": "comp-recem-nascidos-framing",
+      "group": "recem-nascidos",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -3975,8 +3975,8 @@
       "prompt": "top-down view of one swaddled newborn baby asleep inside a round woven wicker basket lined with a cream blanket, the dark basket rim forms a frame around the baby, wooden floor around"
     },
     {
-      "id": "idea-bebes-3",
-      "group": "bebes",
+      "id": "idea-recem-nascidos-3",
+      "group": "ideas",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -3986,21 +3986,8 @@
         832
       ],
       "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
-      "prompt": "one newborn baby asleep, swaddled in a cream knitted blanket, held in a parent's arms, the parent seen from behind the shoulder so only the shoulder and arms are visible, warm window light"
-    },
-    {
-      "id": "idea-bebes-4",
-      "group": "bebes",
-      "style": "baby_illus",
-      "lead": "stylized 3D animated movie still",
-      "matte": false,
-      "seed": 740032,
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
-      "prompt": "a little boy of four sitting next to a crib, gently looking at his newborn sibling asleep, the baby fully dressed in a cream onesie and covered by a blanket, seen from the side at the height of the crib, soft daylight from a window, warm home"
+      "prompt": "one newborn baby asleep, swaddled in a cream knitted blanket, held in a parent's arms, the parent seen from behind the shoulder so only the shoulder and arms are visible, warm window light",
+      "maxWidth": 720
     },
     {
       "id": "idea-paisagem-2",
@@ -5123,8 +5110,8 @@
       "prompt": "reflection of a colourful house partially broken by ripples in water"
     },
     {
-      "id": "comp-bebes-symmetry",
-      "group": "bebes",
+      "id": "comp-recem-nascidos-symmetry",
+      "group": "recem-nascidos",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -5138,8 +5125,8 @@
       "_nota": "o modelo ignorou o canto e centrou o bebé — serve a Simetria (eixo vertical medido a 0.49)"
     },
     {
-      "id": "comp-bebes-golden",
-      "group": "bebes",
+      "id": "comp-recem-nascidos-golden",
+      "group": "recem-nascidos",
       "style": "baby_illus",
       "lead": "stylized 3D animated movie still",
       "matte": false,
@@ -5151,6 +5138,211 @@
       "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
       "prompt": "top-down view of one newborn baby asleep wearing a long-sleeved cream knitted onesie that covers the whole body, arms and legs, lying diagonally on a plain beige knitted blanket, the baby small in the frame, lots of empty blanket around, soft window light from the left",
       "_nota": "publicado com recorte [7,0,930,636] (finalize.mjs): cara no ponto phi superior esquerdo [0.382,0.382]"
+    },
+    {
+      "id": "vis-bebes",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810001,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "ground-level view at the baby's eye height, one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, crawling on a plain cream rug straight toward the camera, curious happy face, soft window light from the left side, softly blurred calm living room in the background, shallow depth of field"
+    },
+    {
+      "id": "vis-bebes-flat",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810011,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "high angle view from a standing adult looking straight down, one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, sitting on a busy patterned rug and looking up, mostly the top of the head visible, cluttered living room floor with scattered toys, a sofa, a laundry basket and shoes around, evenly lit, ordinary snapshot"
+    },
+    {
+      "id": "comp-bebes-thirds",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810021,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "eye-level view from the floor, one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, sitting on a plain light wooden floor playing with wooden stacking blocks, the baby placed on the right third of the frame, calm empty softly blurred wall on the left, soft window light",
+      "_nota": "publicado com recorte [0,0,1150,787] (finalize.mjs): olhos no terço superior direito"
+    },
+    {
+      "id": "comp-bebes-diagonal",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810052,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "low angle view, one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, crawling along a long narrow striped runner rug that crosses the frame diagonally from the bottom left corner to the top right corner, wooden floor, soft window light"
+    },
+    {
+      "id": "idea-bebes-1",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810062,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "camera lying on the floor, extreme low angle at floor level, one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, crawling straight toward the camera very close, face sharp, the wooden floor surface blurred in the foreground, wide angle, window light",
+      "maxWidth": 720
+    },
+    {
+      "id": "idea-bebes-4",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810091,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, playing peekaboo, peeking out from behind a soft cream curtain, half of the face visible, big delighted laugh, soft window light",
+      "maxWidth": 720
+    },
+    {
+      "id": "idea-bebes-6",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 810111,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, taking first steps on a wooden floor, holding up both arms to the hands of an adult who is outside the frame, only the adult's hands and wrists visible at the top edge, side view at the baby's height, window light",
+      "maxWidth": 720
+    },
+    {
+      "id": "comp-bebes-negative",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 820003,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "extremely wide shot from high above, a tiny one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks crawling far away across a huge empty plain light wooden floor, the baby is very small, occupying a small fraction of the frame in the lower right, vast empty floor all around, minimalist composition"
+    },
+    {
+      "id": "comp-bebes-framing",
+      "group": "bebes",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 820013,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "floor-level view from inside a dim room looking through an open white doorway, one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, crawling through the doorway toward the camera with a happy face, the white door frame surrounds the baby on both sides and above, bright sunny room behind the baby"
+    },
+    {
+      "id": "idea-bebes-3",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 820033,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts",
+      "prompt": "one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, sitting in a white baby high chair with a tray, eating by himself with a little spoon, face and hands messy with orange puree, laughing, kitchen window light",
+      "maxWidth": 720
+    },
+    {
+      "id": "gico-bebes",
+      "group": "genre-ico",
+      "style": "genre_icon",
+      "matte": false,
+      "size": [
+        1024,
+        1024
+      ],
+      "maxWidth": 256,
+      "seed": 880301,
+      "negative": "text, letters, words, watermark, signature, logo, picture frame, decorative frame, inner border, border line, outline box, matted print, vignette frame, margins, intricate details, many small elements, busy, cluttered, complex scene, multiple subjects, collage, low quality, blurry, jpeg artifacts, naked, nude, bare skin",
+      "prompt": "a baby wearing a long-sleeved romper and socks crawling on all fours, simple silhouette seen from the side",
+      "caption": "bebes"
+    },
+    {
+      "id": "idea-recem-nascidos-4",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "size": [
+        1216,
+        832
+      ],
+      "seed": 830001,
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, toddler, two babies, twins, big cartoon eyes, staring eyes, adult face, cables, wires, phone, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, low quality, blurry, jpeg artifacts",
+      "prompt": "one tiny newborn baby asleep, tightly swaddled in a soft cream knitted blanket like a little bundle, only the small peaceful face showing, lying on a plain light grey blanket, seen from slightly above, soft window light from the left",
+      "maxWidth": 720
+    },
+    {
+      "id": "idea-bebes-5",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 840002,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts, knife, blade, weapon, stick",
+      "prompt": "one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, sitting on green grass in a garden in the shade, leaning forward and running both small hands over the grass, looking down at the grass with curiosity, soft daylight, blurred trees behind",
+      "maxWidth": 720
+    },
+    {
+      "id": "idea-bebes-2",
+      "group": "ideas",
+      "style": "baby_illus",
+      "lead": "stylized 3D animated movie still",
+      "matte": false,
+      "seed": 840013,
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts, knife, blade, weapon, stick",
+      "prompt": "one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, leaning against the front of a low grey sofa with both hands pressed flat on the sofa seat to keep balance, standing on wobbly legs on the floor, chest touching the sofa, looking over his shoulder at the camera with a proud face, soft window light",
+      "maxWidth": 720
     }
   ],
   "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em js/pages/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los.",

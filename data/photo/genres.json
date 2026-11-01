@@ -2266,12 +2266,12 @@
       ]
     },
     {
-      "id": "bebes",
-      "name": "Bebés & Recém-nascidos",
+      "id": "recem-nascidos",
+      "name": "Recém-nascidos",
       "icon": "👶",
       "group": "Pessoas & Vida",
-      "blurb": "Luz de janela, velocidade alta e segurança acima de tudo.",
-      "goal": "Um bebé à escala do mundo dele: luz suave, os detalhes que mudam em semanas e nenhum risco por causa de uma fotografia.",
+      "blurb": "As primeiras semanas: luz de janela, sono fundo e segurança acima de tudo.",
+      "goal": "Um recém-nascido à escala do mundo dele: luz suave, os detalhes que mudam em semanas e nenhum risco por causa de uma fotografia.",
       "gear": {
         "focal": "35mm eq para contexto · 85mm eq para detalhes",
         "lensClass": "normal",
@@ -2376,8 +2376,8 @@
         "Pés pequenos nas mãos de um adulto",
         "A mão do bebé agarrada a um dedo",
         "Ao colo de um dos pais, junto à janela",
-        "O irmão mais velho a conhecer o bebé",
-        "A mesma manta todos os meses — o primeiro ano numa série",
+        "Embrulhado numa manta, só a cara de fora",
+        "A mesma manta todas as semanas do primeiro mês",
         "Bocejos e espreguiços, em rajada"
       ],
       "tricks": [
@@ -2418,7 +2418,7 @@
       ],
       "drills": [
         "Fotografa os pés do bebé ao lado da mão de um adulto, com luz de janela.",
-        "Faz a mesma fotografia, no mesmo sítio, uma vez por mês.",
+        "Faz a mesma fotografia, no mesmo sítio, uma vez por semana durante o primeiro mês.",
         "Apanha um bocejo em rajada sem acordar o bebé."
       ],
       "checklist": [
@@ -2481,6 +2481,238 @@
               {
                 "id": "vibrance",
                 "label": "Vibrância"
+              }
+            ]
+          }
+        ]
+      },
+      "techniques": [
+        "wb",
+        "realces-sombras",
+        "sat-vib"
+      ],
+      "tools": [
+        "dof",
+        "exposure"
+      ]
+    },
+    {
+      "id": "bebes",
+      "name": "Bebés",
+      "icon": "🧸",
+      "group": "Pessoas & Vida",
+      "blurb": "Dos 6 meses aos 2 anos: gatinham, riem, agarram tudo — e não param quietos.",
+      "goal": "Um bebé a descobrir o mundo: ao nível do chão, a meio de uma brincadeira, com velocidade para o gesto que dura meio segundo.",
+      "gear": {
+        "focal": "35–50mm eq no chão · 85mm eq para expressões",
+        "lensClass": "normal",
+        "why": "Um bebé que gatinha muda de sítio em segundos: uma 35–50mm eq deixa-te segui-lo de perto, ao nível do chão, e mostra o que ele está a explorar. Uma tele curta apanha expressões sem ele vir agarrar a câmara.",
+        "alt": "Uma grande angular (24mm eq) no chão, para o mostrar pequeno no meio do mundo dele.",
+        "settings": [
+          {
+            "k": "Modo",
+            "v": "Av — ou M com ISO automático"
+          },
+          {
+            "k": "Abertura",
+            "v": "f/2.8 – f/4 · ele aproxima-se e afasta-se o tempo todo"
+          },
+          {
+            "k": "Velocidade",
+            "v": "≥ 1/500 a gatinhar · ≥ 1/250 sentado"
+          },
+          {
+            "k": "ISO",
+            "v": "Auto até 6400"
+          },
+          {
+            "k": "AF",
+            "v": "Contínuo (AF-C / Servo) com deteção de olhos"
+          },
+          {
+            "k": "Disparo",
+            "v": "Rajada — as gargalhadas duram meio segundo"
+          }
+        ],
+        "af": "AF contínuo com deteção de olhos: o bebé vem e vai, e o AF único fica sempre atrasado. Quando gatinha na tua direção, é a profundidade de campo que te salva — f/4 em vez de f/1.8.",
+        "limits": [
+          "Em casa, 1/500 obriga a ISO 3200–6400 mesmo de dia. Aceita o ruído: tremido não se corrige.",
+          "A f/1.8 e a 1 m, basta ele avançar 5 cm para a cara sair desfocada.",
+          "Vai querer agarrar a câmara, a alça e a tampa da objetiva — nada pequeno ao alcance dele."
+        ],
+        "tips": [
+          "Desce ao chão: deita-te de barriga para baixo, à altura dele.",
+          "Um adulto brinca, tu fotografas — não peças poses.",
+          "Depois da sesta e da comida está bem-disposto; antes, não.",
+          "Rajada nas gargalhadas e nos primeiros passos."
+        ],
+        "byClass": {
+          "phone": "O modo retrato não acompanha um bebé a gatinhar: usa a câmara 1× e rajada (mantém o botão premido). Pousa o telemóvel no chão para o ângulo baixo.",
+          "apsc": "Uma 24mm (35–38mm eq) no chão e uma 50mm (80mm eq) para expressões, com AF Servo e deteção de olhos.",
+          "ff": "Uma 35mm e uma 85mm. O ISO alto limpo deixa manter 1/500 dentro de casa."
+        },
+        "mine": "Na M50 II, a 22mm f/2 no chão com Servo AF e a EF 50mm f/1.8 a f/2.8 para expressões; no S26+, a 1× em rajada."
+      },
+      "raw": {
+        "value": "medium",
+        "why": "a luz de casa é mista e o RAW salva a cor, mas numa sessão disparas centenas e só guardas algumas"
+      },
+      "scene": {
+        "look": [
+          "Chão livre junto a uma janela",
+          "Um tapete ou manta de cor lisa",
+          "Um brinquedo de que ele goste — um só",
+          "Um adulto a brincar com ele"
+        ],
+        "position": "Tu no chão, a 1–2 m, com a janela de lado. Deixa-o vir ter contigo: a gatinhar na direção da câmara rende mais do que qualquer pose.",
+        "height": "À altura dos olhos dele — no chão, deitado. De pé, por cima, só se vê o topo da cabeça.",
+        "angles": [
+          "Ao nível do chão, de frente — o mundo à altura dele",
+          "De lado, a gatinhar — mostra o movimento",
+          "De cima, sentado a brincar — ele e o que tem nas mãos"
+        ],
+        "approach": "Segue-o em vez de o pôr no sítio. Um adulto chama, faz cucu ou cócegas; tu esperas pela reação e disparas em rajada.",
+        "foreground": [
+          "Um brinquedo desfocado no chão",
+          "A mão do adulto que o chama",
+          "A orla do tapete"
+        ]
+      },
+      "light": "Luz de janela de lado, num chão livre perto dela. Com o bebé sempre a mexer-se, a luz suave perdoa onde quer que ele pare. Flash só refletido no teto, nunca direto.",
+      "lightConditions": [
+        {
+          "when": "Janela lateral",
+          "what": "A melhor luz dentro de casa. Põe o tapete a 1–2 m da janela."
+        },
+        {
+          "when": "Sol a entrar",
+          "what": "Manchas de sol no chão atraem-no — expõe para a pele, não para o chão."
+        },
+        {
+          "when": "Jardim à sombra",
+          "what": "Sombra aberta: luz suave e muito mais velocidade do que dentro de casa."
+        },
+        {
+          "when": "Noite em casa",
+          "what": "Candeeiros amarelos: ISO alto e balanço de brancos acertado, ou flash refletido no teto."
+        }
+      ],
+      "composition": [
+        "Regra dos Terços",
+        "Espaço Negativo",
+        "Enquadramento Natural",
+        "Diagonal Principal"
+      ],
+      "ideas": [
+        "A gatinhar na tua direção, com a câmara pousada no chão",
+        "De pé pela primeira vez, agarrado ao sofá",
+        "A comer sozinho, de colher na mão",
+        "A espreitar no jogo do cucu",
+        "Sentado na relva a descobrir tudo com as mãos",
+        "Os primeiros passos, de braços abertos para se equilibrar",
+        "O mesmo sítio todos os meses — de gatinhar a andar"
+      ],
+      "tricks": [
+        "Pousa a câmara no chão e dispara pelo ecrã articulado ou pela app — ângulo baixo sem te deitares.",
+        "Um brinquedo com som ao lado da objetiva faz com que ele olhe para a câmara.",
+        "Tapete liso e brinquedos arrumados: o fundo de uma sala cheia rouba a fotografia.",
+        "Pede a quem brinca com ele para se pôr atrás de ti — ele olha na tua direção."
+      ],
+      "mistakes": [
+        {
+          "err": "Fotografar de pé, de cima",
+          "fix": "Fica-se com o topo da cabeça. Desce à altura dos olhos dele."
+        },
+        {
+          "err": "1/125 dentro de casa",
+          "fix": "Um bebé a gatinhar sai tremido. ≥ 1/500 e ISO alto."
+        },
+        {
+          "err": "Esperar que olhe e sorria para a câmara",
+          "fix": "As melhores são a meio da brincadeira, sem olhar."
+        },
+        {
+          "err": "AF único no rosto",
+          "fix": "Quando disparas ele já avançou. AF contínuo com deteção de olhos."
+        }
+      ],
+      "dos": [
+        "Ficar ao nível do chão",
+        "Fotografar a brincadeira, não poses",
+        "Rajada nos gestos rápidos",
+        "Sessões curtas, quando está bem-disposto"
+      ],
+      "donts": [
+        "Pô-lo em cima de móveis para a fotografia",
+        "Deixar objetos pequenos ou cabos ao alcance",
+        "Insistir quando já está cansado",
+        "Publicar fotografias sem roupa na internet"
+      ],
+      "drills": [
+        "Deita-te no chão e fotografa-o a gatinhar na tua direção, a 1/500.",
+        "Uma sessão inteira sem lhe pedir para olhar: só a brincadeira.",
+        "Apanha uma gargalhada em rajada e escolhe a melhor de dez."
+      ],
+      "checklist": [
+        "Chão livre e seguro, janela escolhida",
+        "Bebé descansado e alimentado",
+        "AF contínuo e deteção de olhos",
+        "Velocidade ≥ 1/500, ISO automático",
+        "Rajada ligada",
+        "Um adulto para brincar com ele"
+      ],
+      "edit": {
+        "intro": "Cores vivas mas naturais e pele com tom real. O ruído do ISO alto atenua-se — não se apaga até ficar plástico.",
+        "goals": [
+          {
+            "text": "Pele com tom natural sob luz de casa",
+            "tools": [
+              {
+                "id": "temp",
+                "label": "Temperatura"
+              },
+              {
+                "id": "tint",
+                "label": "Tonalidade"
+              }
+            ]
+          },
+          {
+            "text": "Ruído do ISO alto, sem pele de plástico",
+            "tools": [
+              {
+                "id": "noise",
+                "label": "Redução de ruído"
+              },
+              {
+                "id": "texture",
+                "label": "Textura"
+              }
+            ]
+          },
+          {
+            "text": "Olhos e expressão em destaque",
+            "tools": [
+              {
+                "id": "mask-radial",
+                "label": "Radial"
+              },
+              {
+                "id": "exposure",
+                "label": "Exposição"
+              }
+            ]
+          },
+          {
+            "text": "Fundo mais calmo que o bebé",
+            "tools": [
+              {
+                "id": "vibrance",
+                "label": "Vibrância"
+              },
+              {
+                "id": "hsl",
+                "label": "HSL"
               }
             ]
           }
