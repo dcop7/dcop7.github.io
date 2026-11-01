@@ -101,7 +101,14 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
           <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
           <div class="sb-grp" data-grp="photo">${TN('nav.grp.photo')}</div>
-          <a class="sb-nav-item" data-route="photography"  href="#photography">${navIcon('photography')}<span>${TN('nav.photography')}</span></a>
+          <!-- Fotografia (v5): as quatro áreas vivem aqui em vez de tabs dentro
+               da página. O item ativo é decidido pela própria Fotografia
+               (PhotographyPage): Equipamento é de Aprender, o Estúdio do
+               Laboratório, um género de Fotografar. -->
+          <a class="sb-nav-item" data-route="photography"             href="#photography">${navIcon('photography')}<span data-tn="nav.photo.shoot">${TN('nav.photo.shoot')}</span></a>
+          <a class="sb-nav-item" data-route="photography/aprender"    href="#photography/aprender">${navIcon('photo-learn')}<span data-tn="nav.photo.learn">${TN('nav.photo.learn')}</span></a>
+          <a class="sb-nav-item" data-route="photography/edicao"      href="#photography/edicao">${navIcon('photo-edit')}<span data-tn="nav.photo.edit">${TN('nav.photo.edit')}</span></a>
+          <a class="sb-nav-item" data-route="photography/laboratorio" href="#photography/laboratorio">${navIcon('photo-lab')}<span data-tn="nav.photo.lab">${TN('nav.photo.lab')}</span></a>
           <!-- Definições saiu da navegação: as preferências rápidas vivem no
                painel do header (a página/rota #settings mantém-se no código). -->
         </nav>
@@ -355,9 +362,10 @@ const Nav = (function () {
   document.addEventListener('langchange', () => {
     const routes = ['home','links','tools','cheatsheets','hoje','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','photography','visual','settings'];
     routes.forEach(r => {
-      const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span`);
+      const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span:not([data-tn])`);
       if (el) el.textContent = TN(`nav.${r.replace(/-/g, '')}`);
     });
+    document.querySelectorAll('.sb-nav-item [data-tn]').forEach(el => { el.textContent = TN(el.dataset.tn); });
     /* Sidebar group labels. */
     document.querySelectorAll('.sb-grp').forEach(el => { el.textContent = TN(`nav.grp.${el.dataset.grp}`); });
   });

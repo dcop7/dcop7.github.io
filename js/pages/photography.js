@@ -1212,44 +1212,26 @@ const PhotographyPage = (function () {
   function setProfile(p) { try { localStorage.setItem('ph-profile', p); } catch (_) {} }
   function profileDef(id) { return (_DB && _DB.profiles.find(p => p.id === (id || profile()))) || null; }
 
-  /* Contexto (câmara · perfil) — v5: era uma barra com 9 botões em dois
-     grupos, repetida no topo de cada ecrã, a empurrar o conteúdo para
-     baixo. Uma escolha que se faz uma vez não precisa de estar sempre
-     aberta: passa a um chip "APS-C · Entusiasta  Alterar" que mostra em
-     nome de quem o portal fala e abre as opções só quando se pede. */
-  const CTX_ICO = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.4-2h6.2L16.5 7h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.8" r="3.4"/></svg>';
-  let _ctxSeq = 0;
+  /* Contexto (câmara · perfil). v5.1: o user não quis um botão "APS-C ·
+     Entusiasta · Alterar" — quer ver sempre as opções e qual está escolhida.
+     Dois controlos segmentados lado a lado (um em cima do outro no
+     telemóvel), sem emojis, com o escolhido preenchido. */
   function contextBarHTML() {
     const cls = gearClass(), pr = profile();
-    const c = classDef(cls) || {}, p = profileDef(pr) || {};
-    const pid = 'ph-ctx-pop-' + (++_ctxSeq);
+    const seg = (label, list, key, cur, title) => `<div class="ph-ctx-grp">
+        <span class="ph-ctx-lbl" id="ph-ctx-${key}-${++_ctxSeq}">${label}</span>
+        <div class="ph-ctx-seg" role="group" aria-labelledby="ph-ctx-${key}-${_ctxSeq}">
+          ${list.map(x => `<button type="button" class="ph-ctx-btn${x.id === cur ? ' active' : ''}" aria-pressed="${x.id === cur}" data-${key}="${x.id}" title="${title(x)}">${key === 'class' ? x.short : x.name}</button>`).join('')}
+        </div>
+      </div>`;
     return `<div class="ph-ctx">
-      <button type="button" class="ph-ctx-chip" aria-expanded="false" aria-controls="${pid}" data-ctx-toggle>
-        ${CTX_ICO}<span class="ph-ctx-now"><b>${c.short || c.name || ''}</b> · ${p.name || ''}</span><span class="ph-ctx-edit">Alterar</span>
-      </button>
-      <div class="ph-ctx-pop" id="${pid}" hidden>
-        <div class="ph-ctx-grp" role="group" aria-label="Tipo de câmara">
-          <span class="ph-ctx-lbl">Câmara</span>
-          ${(_DB ? _DB.classes : []).map(x => `<button type="button" class="ph-ctx-btn${x.id === cls ? ' active' : ''}" aria-pressed="${x.id === cls}" data-class="${x.id}" title="${x.oneLine}">${x.short}</button>`).join('')}
-        </div>
-        <div class="ph-ctx-grp" role="group" aria-label="Perfil de fotografia">
-          <span class="ph-ctx-lbl">Perfil</span>
-          ${(_DB ? _DB.profiles : []).map(x => `<button type="button" class="ph-ctx-btn${x.id === pr ? ' active' : ''}" aria-pressed="${x.id === pr}" data-profile="${x.id}" title="${x.tagline}">${x.name}</button>`).join('')}
-          <button type="button" class="ph-ctx-info" data-profile-info>O que muda?</button>
-        </div>
-        <p class="ph-ctx-hint">As definições, objetivas e conselhos de edição adaptam-se a estas duas escolhas.</p>
-      </div>
+      ${seg('Câmara', _DB ? _DB.classes : [], 'class', cls, x => x.oneLine)}
+      ${seg('Perfil', _DB ? _DB.profiles : [], 'profile', pr, x => x.tagline)}
+      <button type="button" class="ph-ctx-info" data-profile-info>O que muda entre perfis?</button>
     </div>`;
   }
+  let _ctxSeq = 0;
   function wireContextBar(panel, rerender) {
-    panel.querySelectorAll('.ph-ctx').forEach(ctx => {
-      const tg = ctx.querySelector('[data-ctx-toggle]'), pop = ctx.querySelector('.ph-ctx-pop');
-      if (!tg || tg.dataset.wired) return;
-      tg.dataset.wired = '1';
-      const set = open => { pop.hidden = !open; tg.setAttribute('aria-expanded', open); };
-      tg.addEventListener('click', () => set(pop.hidden));
-      ctx.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { set(false); tg.focus(); } });
-    });
     panel.querySelectorAll('[data-class]').forEach(b => b.addEventListener('click', () => {
       if (b.dataset.class === gearClass()) return;
       setGearClass(b.dataset.class); rerender();
@@ -1706,10 +1688,6 @@ const PhotographyPage = (function () {
           <span class="ph-field-cta-go">→</span>
         </button>`;
 
-      // As tabs da Fotografia são sticky e mudam de altura: o índice cola-se
-      // logo por baixo delas, por isso a altura é medida, não adivinhada.
-      const nav = document.querySelector('.ph-nav');
-      if (nav) panel.style.setProperty('--gp-navh', (getComputedStyle(nav).position === 'sticky' ? nav.offsetHeight : 0) + 'px');
 
       panel.querySelectorAll('[data-comp]').forEach(ch => {
         const comp = COMPOSITIONS.find(c => c.name === ch.dataset.comp);
@@ -3101,17 +3079,26 @@ const PhotographyPage = (function () {
      Os PAINÉIS continuam os mesmos (e as rotas antigas também valem): o que
      muda é a que grupo cada painel pertence. Ícones SVG de traço — o
      sistema de design do site não usa emojis na navegação. */
-  const SVG = d => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  /* v5.1: as quatro áreas passaram para a sidebar do site (o user pediu).
+     A página deixa de ter tabs próprias; o cabeçalho diz em que área se está
+     e a Fotografia acende o item certo da sidebar (ver syncSidebar). */
   const PH_GROUPS = [
     { id: 'fotografar',  label: 'Fotografar',  route: 'photography',             panels: ['generos', 'cheats'],
-      ico: SVG('<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.4-2h6.2L16.5 7h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.8" r="3.4"/>') },
+      sub: '29 géneros — a ideia, as definições, onde te pões e os erros a evitar — e a consulta rápida para ter à mão.' },
     { id: 'aprender',    label: 'Aprender',    route: 'photography/aprender',    panels: ['aprender', 'equipamento'],
-      ico: SVG('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/>') },
+      sub: 'Olhar, linguagem e técnica: oito capítulos, sem ordem obrigatória.' },
     { id: 'editar',      label: 'Editar',      route: 'photography/edicao',      panels: ['edicao'],
-      ico: SVG('<path d="M5 6h9M18 6h1M5 12h3M12 12h7M5 18h11M20 18h-1"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>') },
+      sub: 'Da fotografia tirada à fotografia acabada: o que mexer, por que ordem e em que programa.' },
     { id: 'laboratorio', label: 'Laboratório', route: 'photography/laboratorio', panels: ['ferramentas', 'estudio'],
-      ico: SVG('<path d="M9.5 3.5h5M10.5 3.5v5.2L5.2 18a1.7 1.7 0 0 0 1.5 2.5h10.6a1.7 1.7 0 0 0 1.5-2.5l-5.3-9.3V3.5"/><path d="M7.6 14.5h8.8"/>') },
+      sub: 'Experimentar sem sair de casa: estúdio 3D e calculadoras de exposição e ótica.' },
   ];
+  function syncSidebar(grp) {
+    document.querySelectorAll('#sidebar .sb-nav-item[data-route^="photography"]').forEach(a => {
+      const on = a.dataset.route === grp.route;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
   const PANELS = ['generos', 'cheats', 'aprender', 'equipamento', 'edicao', 'ferramentas', 'estudio'];
   const groupOf = panel => PH_GROUPS.find(g => g.panels.includes(panel)) || PH_GROUPS[0];
 
@@ -3136,24 +3123,20 @@ const PhotographyPage = (function () {
           <div class="page-head">
             <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
             <div class="ph-titles">
-              <h1 class="ph-title">Fotografia</h1>
-              <p class="ph-sub">Escola de fotografia: 29 géneros, o que aprender, como editar e calculadoras — adaptada à tua câmara</p>
+              <p class="ph-kicker">Fotografia</p>
+              <h1 class="ph-title"></h1>
+              <p class="ph-sub"></p>
             </div>
           </div>
-          <nav class="ph-nav seg" aria-label="Secções de fotografia">
-            ${PH_GROUPS.map(g => `<a class="ph-nav-btn seg-btn" href="#${g.route}" data-group="${g.id}">${g.ico}<span>${g.label}</span></a>`).join('')}
-          </nav>
           ${PANELS.map(id => `<div class="ph-panel" data-panel="${id}"></div>`).join('')}
         </div>`;
 
       _activate = (id, arg) => {
         _curTab = id; _curArg = arg || null;
         const grp = groupOf(id);
-        view.querySelectorAll('.ph-nav-btn').forEach(b => {
-          const on = b.dataset.group === grp.id;
-          b.classList.toggle('active', on);
-          if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
-        });
+        view.querySelector('.ph-title').textContent = grp.label;
+        view.querySelector('.ph-sub').textContent = grp.sub;
+        syncSidebar(grp);
         view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
@@ -3165,10 +3148,6 @@ const PhotographyPage = (function () {
         else buildFerramentas(panel);
       };
 
-      view.querySelectorAll('.ph-nav-btn').forEach(b => b.addEventListener('click', e => {
-        e.preventDefault();
-        Nav.go(PH_GROUPS.find(g => g.id === b.dataset.group).route);
-      }));
     }
 
     /* rota → painel/argumento (com mapeamento das rotas antigas) */
