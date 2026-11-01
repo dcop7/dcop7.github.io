@@ -631,44 +631,19 @@ const PhotoLearn = (function () {
     show(0);
   }
 
-  /* ══ REVELAR ═══════════════════════════════════════════════════════════
-     Uma tabela de duas colunas ("banal → memorável") lê-se de uma vez e
-     não se fixa. Escondendo o lado direito, cada linha vira uma pergunta
-     de um segundo — e a resposta passa a ser lembrada por ter sido
-     antecipada. */
+  /* ══ PAR PERGUNTA → RESPOSTA ══════════════════════════════════════════
+     Foi um "toca para revelar" e deixou de o ser (nov/2026, pedido do user):
+     clicar para ler uma frase não justifica o clique. Ficam as duas metades
+     visíveis, lado a lado — a pergunta/hábito e a resposta. */
   function reveal(o) {
-    return `<button type="button" class="pl-rev" data-pl="reveal">
-      <span class="pl-rev-q">${o.q}</span>
-      <span class="pl-rev-go" aria-hidden="true">?</span>
-      <span class="pl-rev-a" hidden>${o.a}</span>
-    </button>`;
-  }
-  function wireReveal(b) {
-    b.addEventListener('click', () => {
-      const a = b.querySelector('.pl-rev-a'), go = b.querySelector('.pl-rev-go');
-      const open = !a.hidden;
-      a.hidden = open; b.classList.toggle('open', !open);
-      if (go) go.textContent = open ? '?' : '✓';
-    });
+    return `<div class="pl-rev"><span class="pl-rev-q">${o.q}</span><span class="pl-rev-a">${o.a}</span></div>`;
   }
 
-  /* ══ LISTA DE TAREFAS ══════════════════════════════════════════════════
-     Um exercício só conta quando é feito. O estado fica em localStorage por
-     `key`, para que voltar à lição mostre o que já foi treinado. */
+  /* ══ EXERCÍCIO ═════════════════════════════════════════════════════════
+     Uma sugestão para fazer com a câmara na mão, não uma tarefa para marcar
+     no ecrã — a caixa de verificação foi retirada (nov/2026). */
   function drill(o) {
-    const k = 'ph-drill-' + o.key;
-    const done = store.get(k, '') === '1';
-    return `<label class="pl-drill${done ? ' done' : ''}" data-pl="drill" data-key="${esc(k)}">
-      <input type="checkbox" ${done ? 'checked' : ''}>
-      <span class="pl-drill-body"><b>🎓 ${o.title || 'Exercício'}</b><span>${o.t}</span></span>
-    </label>`;
-  }
-  function wireDrill(el) {
-    const cb = el.querySelector('input');
-    cb.addEventListener('change', () => {
-      el.classList.toggle('done', cb.checked);
-      store.set(el.dataset.key, cb.checked ? '1' : '0');
-    });
+    return `<p class="pl-drill"><b>🎓 ${o.title || 'Exercício'}</b><span>${o.t}</span></p>`;
   }
 
   /* ══ LIGAÇÕES CRUZADAS ═════════════════════════════════════════════════
@@ -707,7 +682,7 @@ const PhotoLearn = (function () {
   /* ══ LIGAR TUDO ════════════════════════════════════════════════════════ */
   const WIRERS = {
     compare: wireCompare, hotspots: wireHotspots, pick: wirePick,
-    look: wireLook, crop: wireCrop, reveal: wireReveal, drill: wireDrill,
+    look: wireLook, crop: wireCrop,
     sequence: wireSequence,
   };
   function wire(scope, onGo) {
