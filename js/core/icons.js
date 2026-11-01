@@ -113,6 +113,24 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <circle cx="12" cy="13.4" r="1.4" fill="C2" fill-opacity=".7" stroke="none"/>
       <circle cx="18.7" cy="9.6" r=".8" fill="C2" stroke="none"/>`, { noSpark: true }),
 
+    /* Fotografia v5: as áreas Aprender / Editar / Laboratório também estão na
+       sidebar, na mesma família dourada do item Fotografia (Fotografar). */
+    'photo-learn': duo('photo-learn', '#f2b344', '#fbc75f', `
+      <path d="M3 5.6A1.6 1.6 0 0 1 4.6 4H11v15.6H4.6A1.6 1.6 0 0 0 3 21.2z" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="M21 5.6A1.6 1.6 0 0 0 19.4 4H13v15.6h6.4a1.6 1.6 0 0 1 1.6 1.6z" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="M6 8.4h2.6M6 11.4h2.6M15.4 8.4h2.6" stroke="C2"/>`, { noSpark: true }),
+
+    'photo-edit': duo('photo-edit', '#f2b344', '#fbc75f', `
+      <path d="M4 6.5h9M17.5 6.5H20M4 12h3M11 12h9M4 17.5h11M19 17.5h1" stroke="G"/>
+      <circle cx="15.2" cy="6.5" r="2.2" fill="C2" fill-opacity=".35" stroke="C2"/>
+      <circle cx="9" cy="12" r="2.2" fill="C2" fill-opacity=".35" stroke="C2"/>
+      <circle cx="17" cy="17.5" r="2.2" fill="C2" fill-opacity=".35" stroke="C2"/>`, { noSpark: true }),
+
+    'photo-lab': duo('photo-lab', '#f2b344', '#fbc75f', `
+      <path d="M9.4 3.4h5.2M10.4 3.4v5.4L4.9 18.3a1.8 1.8 0 0 0 1.6 2.7h11a1.8 1.8 0 0 0 1.6-2.7l-5.5-9.5V3.4" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="M7.2 15h9.6" stroke="C2"/>
+      <circle cx="10.6" cy="17.6" r=".9" fill="C2" stroke="none"/><circle cx="13.8" cy="16.9" r=".7" fill="C2" stroke="none"/>`, { noSpark: true }),
+
     visual: duo('visual', '#f87171', '#fca5a5', `
       <rect x="3" y="3.6" width="18" height="16.8" rx="2.2" fill="G" fill-opacity=".12" stroke="G"/>
       <path d="M12 4v16M3.4 12h17.2" stroke="G" opacity=".8"/>

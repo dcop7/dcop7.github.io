@@ -245,7 +245,7 @@
    As fichas vêm todas empilhadas e a barra de saltos fica colada ao topo
    enquanto se rola: consulta rápida não pode custar três cliques e um
    "voltar atrás". A barra rola na horizontal no telemóvel. */
-.cs-jump { position: sticky; top: calc(var(--hdr-h) + var(--cs-navh, 3rem)); z-index: 4;
+.cs-jump { position: sticky; top: calc(var(--hdr-h) + 0px); z-index: 4;
   display: flex; gap: .35rem; margin: 0 0 .8rem; padding: .45rem .1rem;
   overflow-x: auto; scrollbar-width: thin;
   background: linear-gradient(var(--bg) 68%, transparent); }
@@ -257,8 +257,8 @@
   border-color: rgba(var(--pg-accent-rgb), .55); background: rgba(var(--pg-accent-rgb), .12); }
 
 .cs-ficha { margin: 1.6rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--border);
-  scroll-margin-top: calc(var(--hdr-h) + var(--cs-navh, 3rem) + 3.4rem); }
-.cs-answer { scroll-margin-top: calc(var(--hdr-h) + var(--cs-navh, 3rem) + 3.4rem); }
+  scroll-margin-top: calc(var(--hdr-h) + 0px + 3.4rem); }
+.cs-answer { scroll-margin-top: calc(var(--hdr-h) + 0px + 3.4rem); }
 .cs-ficha-h { display: flex; align-items: flex-start; gap: .55rem; margin: 0 0 .7rem; }
 .cs-ficha-ico { font-size: 1.3rem; line-height: 1.2; }
 .cs-ficha-t { margin: 0; font-family: var(--font-head); font-size: 1.02rem; font-weight: 700; color: var(--text); }
@@ -335,7 +335,7 @@
    fotografia do género ocupa-a e faz o trabalho que o texto não faz:
    dizer com que se parece o resultado. */
 .cs-ghead { display: grid; gap: .6rem; grid-template-columns: 1fr; margin: 0 0 .8rem;
-  scroll-margin-top: calc(var(--hdr-h) + var(--cs-navh, 3rem) + 3.4rem); }
+  scroll-margin-top: calc(var(--hdr-h) + 0px + 3.4rem); }
 /* 38% e nao o centro: nestas fotografias o assunto (rosto, horizonte) vive
    no terco superior e um `cover` centrado decapitava-o no telemovel. */
 .cs-ghero { display: block; width: 100%; height: 132px; object-fit: cover; object-position: 50% 38%;

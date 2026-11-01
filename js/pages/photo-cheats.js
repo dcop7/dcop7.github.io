@@ -725,12 +725,6 @@ const PhotoCheats = (function () {
       }
 
       panel.innerHTML = `<div class="cs-wrap">${html}</div>`;
-      /* A barra de saltos cola-se por baixo das tabs da Fotografia, que
-         são elas próprias sticky e mudam de altura (embrulham em ecrãs
-         estreitos). A altura medida vira variável CSS. */
-      const nav = document.querySelector('#view-photography .ph-nav');
-      // no telemóvel as tabs deixam de ser sticky (v5): aí não há nada a compensar
-      if (nav) panel.style.setProperty('--cs-navh', (getComputedStyle(nav).position === 'sticky' ? nav.offsetHeight : 0) + 'px');
       if (after) after(panel);
 
       /* data-open = "cs:<id>" | "gen:<genero>" | "gs:<genero>:<ficha>" */
