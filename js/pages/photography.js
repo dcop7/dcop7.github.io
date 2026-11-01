@@ -571,7 +571,7 @@ const PhotographyPage = (function () {
          a volta da figura, medida na fotografia. */
       subj:[0.35,0.66],
       draw(ctx,W,H){
-        const s2=this.subj||[0.5,0.6], r=Math.min(W,H)*0.13;
+        const s2=this.subj||[0.5,0.6], r=Math.min(W,H)*(this.r||0.13);
         ctx.save();
         ctx.fillStyle='rgba(99,102,241,.13)';
         ctx.beginPath();ctx.rect(0,0,W,H);
@@ -713,10 +713,14 @@ const PhotographyPage = (function () {
      sem marcações em vez de mostrar uma relação inexistente. As grelhas
      (terços, phi) não dependem do conteúdo e continuam sempre. */
   const COMP_GENRE_GEOM = {
-    'bebes-thirds':   { anchor: [2 / 3, 1 / 3] },          // olhos no terço superior direito
-    'bebes-golden':   { anchor: [0.382, 0.382] },          // cara no ponto phi superior esquerdo
-    'bebes-symmetry': { axis: ['v', 0.49] },
-    'bebes-framing':  { ellipse: [0.51, 0.49, 0.27, 0.405], subj: [0.525, 0.32] },
+    'recem-nascidos-thirds':   { anchor: [2 / 3, 1 / 3] },          // olhos no terço superior direito
+    'recem-nascidos-golden':   { anchor: [0.382, 0.382] },          // cara no ponto phi superior esquerdo
+    'recem-nascidos-symmetry': { axis: ['v', 0.49] },
+    'recem-nascidos-framing':  { ellipse: [0.51, 0.49, 0.27, 0.405], subj: [0.525, 0.32] },
+    'bebes-thirds':   { anchor: [0.656, 0.306] },        // olhos no terço superior direito (recorte)
+    'bebes-negative': { subj: [0.43, 0.49], r: 0.3 },      // bebé a meio de um chão vazio
+    'bebes-framing':  { hole: [0.19, 0, 0.83, 0.91], subj: [0.42, 0.42] }, // ombreiras da porta
+    'bebes-diagonal': { line: [[0, 0.55], [1, 0.98]] },    // a passadeira às riscas
   };
   function compFor(comp, genreId) {
     if (!genreId || !genreCompAsset(genreId, comp)) return comp;
@@ -3084,7 +3088,7 @@ const PhotographyPage = (function () {
      e a Fotografia acende o item certo da sidebar (ver syncSidebar). */
   const PH_GROUPS = [
     { id: 'fotografar',  label: 'Fotografar',  route: 'photography',             panels: ['generos', 'cheats'],
-      sub: '29 géneros — a ideia, as definições, onde te pões e os erros a evitar — e a consulta rápida para ter à mão.' },
+      sub: '30 géneros — a ideia, as definições, onde te pões e os erros a evitar — e a consulta rápida para ter à mão.' },
     { id: 'aprender',    label: 'Aprender',    route: 'photography/aprender',    panels: ['aprender', 'equipamento'],
       sub: 'Olhar, linguagem e técnica: oito capítulos, sem ordem obrigatória.' },
     { id: 'editar',      label: 'Editar',      route: 'photography/edicao',      panels: ['edicao'],

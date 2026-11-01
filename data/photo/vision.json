@@ -1276,9 +1276,9 @@
       ],
       "trap": "Fotografar o reflexo por ser um reflexo. A técnica é imediatamente visível e por isso engana — sem ideia por baixo, fica um truque."
     },
-    "bebes": {
+    "recem-nascidos": {
       "hook": "Fotografar o que vai desaparecer",
-      "lead": "Um bebé muda todas as semanas. A fotografia que fica mostra o que vai deixar de existir: o tamanho, os gestos, quem o segura.",
+      "lead": "Um recém-nascido muda todas as semanas. A fotografia que fica mostra o que vai deixar de existir: o tamanho, os gestos, quem o segura.",
       "why": "Nenhum outro assunto muda tão depressa. A cara do primeiro mês já não existe no terceiro, e o que mais se esquece não é a cara — é a escala: como cabia numa mão, como os dedos não davam a volta a um dedo de adulto. Por isso a fotografia mais valiosa raramente é o bebé sozinho e perfeito; é o bebé em relação a alguma coisa.",
       "subject": "A pequenez e a relação: o bebé à escala de quem o segura — mãos, pés, colo, o olhar dos pais.",
       "compare": {
@@ -1324,7 +1324,57 @@
       ],
       "trap": "Transformar a sessão numa produção: adereços, poses e horas de tentativas. Um bebé cansa-se em minutos — as fotografias que ficam são as simples.",
       "ethic": "Segurança primeiro: nunca o deixes sozinho numa superfície alta, apoia sempre a cabeça e o pescoço e não forces posições. E pensa antes de publicar — o bebé não pode dizer se quer estar na internet. Fotografias sem roupa ficam em casa.",
-      "series": "Mesma manta, mesmo sítio, uma vez por mês durante o primeiro ano. A série mostra o crescimento melhor do que qualquer fotografia sozinha."
+      "series": "Mesma manta, mesmo sítio, uma vez por semana durante o primeiro mês. A série mostra o crescimento melhor do que qualquer fotografia sozinha."
+    },
+    "bebes": {
+      "hook": "Fotografar a descoberta",
+      "lead": "Entre os seis meses e os dois anos, um bebé descobre o mundo com as mãos e com a boca. A fotografia que fica mostra essa descoberta — não um bebé quieto a olhar para a câmara.",
+      "why": "Nesta idade tudo é a primeira vez: gatinhar, pôr-se de pé, provar uma comida nova. E tudo dura pouco — a gargalhada, o equilíbrio de um segundo. Quem fotografa de pé, à espera de uma pose, fica com o topo da cabeça e uma cara a olhar para cima. Quem desce ao chão e espera pela brincadeira fica com o bebé a fazer alguma coisa.",
+      "subject": "O bebé a fazer alguma coisa — gatinhar, agarrar, provar, reagir — e aquilo que lhe prende a atenção.",
+      "compare": {
+        "strong": "Ao nível do chão, a gatinhar em direção à câmara, luz de janela de lado: percebe-se o movimento e a vontade.",
+        "flat": "De pé, de cima, sentado no tapete a olhar para cima, com a sala cheia à volta: vê-se o topo da cabeça e mais nada."
+      },
+      "gap": [
+        {
+          "ord": "De pé, de cima, a olhar para cima.",
+          "mem": "Deitado no chão, à altura dos olhos dele."
+        },
+        {
+          "ord": "À espera de um sorriso para a câmara.",
+          "mem": "A meio da brincadeira, sem olhar — a reação verdadeira."
+        },
+        {
+          "ord": "Sentado e posto no sítio.",
+          "mem": "A gatinhar, a pôr-se de pé, a provar — o que ele está a aprender."
+        }
+      ],
+      "ask": [
+        "O que é que ele aprendeu este mês?",
+        "Estou à altura dos olhos dele?",
+        "Está bem-disposto? Se não, guarda a câmara — amanhã há outra oportunidade."
+      ],
+      "language": [
+        {
+          "n": "Ao nível do chão",
+          "m": "o mundo visto por ele; o bebé deixa de ser pequeno"
+        },
+        {
+          "n": "A gatinhar para a câmara",
+          "m": "vontade, movimento, vem ter contigo"
+        },
+        {
+          "n": "De cima, sentado a brincar",
+          "m": "o que tem nas mãos passa a ser o assunto"
+        },
+        {
+          "n": "Pequeno num chão grande",
+          "m": "o tamanho dele no mundo — e a curiosidade"
+        }
+      ],
+      "trap": "Querer a fotografia perfeita e acabar a pedir poses a quem não as percebe. Um bebé desta idade não espera: fotografa o que ele já está a fazer.",
+      "ethic": "O chão primeiro: nada de o pôr em cima de móveis ou superfícies altas para a fotografia, e nada pequeno ao alcance dele. E pensa antes de publicar — ele não pode dizer se quer estar na internet.",
+      "series": "O mesmo sítio, uma vez por mês, do sexto mês aos dois anos: de sentado a gatinhar, de pé, a andar. A série conta o que nenhuma fotografia sozinha conta."
     }
   },
   "principles": [
@@ -1661,6 +1711,7 @@
         "eventos",
         "familia",
         "desporto",
+        "recem-nascidos",
         "bebes"
       ],
       "body": [
