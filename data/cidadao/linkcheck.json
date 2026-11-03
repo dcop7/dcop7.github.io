@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-03T03:24:41.640Z",
+ "generated": "2026-11-03T11:46:46.326Z",
  "total": 84,
  "broken": 0,
  "unknown": 29,
@@ -157,8 +157,8 @@
   {
    "id": "apoios:medidas-emprego",
    "url": "https://www.iefp.pt/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "apoios:programa-regressar",
@@ -397,8 +397,8 @@
   {
    "id": "calendario:bolsas-dges",
    "url": "https://www.dges.gov.pt/pt",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:passe-sub23",
