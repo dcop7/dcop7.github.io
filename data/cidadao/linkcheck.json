@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-04T08:52:09.048Z",
+ "generated": "2026-11-04T17:53:52.981Z",
  "total": 84,
  "broken": 0,
- "unknown": 27,
+ "unknown": 29,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -469,8 +469,8 @@
   {
    "id": "municipio:leiria:cartao-senior-leiria",
    "url": "https://www.cm-leiria.pt/areas-de-atividade/desenvolvimento-social/programas-de-apoio-ao-municipe",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "municipio:leiria:apoio-municipe-leiria",
