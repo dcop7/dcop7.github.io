@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-09T05:40:48.193Z",
+ "generated": "2026-11-09T15:47:05.927Z",
  "total": 84,
  "broken": 0,
- "unknown": 4,
+ "unknown": 3,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -391,8 +391,8 @@
   {
    "id": "calendario:superior-1fase",
    "url": "https://www.dges.gov.pt/online/",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:bolsas-dges",
