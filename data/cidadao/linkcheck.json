@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-11T05:37:34.231Z",
+ "generated": "2026-11-11T13:55:39.309Z",
  "total": 84,
- "broken": 0,
- "unknown": 3,
+ "broken": 1,
+ "unknown": 4,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -127,8 +127,8 @@
   {
    "id": "apoios:cartao-jovem",
    "url": "https://cartaojovem.pt/",
-   "status": 200,
-   "ok": true
+   "status": 404,
+   "ok": false
   },
   {
    "id": "apoios:bolsa-merito-secundario",
@@ -391,8 +391,8 @@
   {
    "id": "calendario:superior-1fase",
    "url": "https://www.dges.gov.pt/online/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:bolsas-dges",
