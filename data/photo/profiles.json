@@ -1,5 +1,5 @@
 {
-  "_doc": "Perfil de fotografia. Adapta as recomendações do portal ao objetivo de quem fotografa, em vez de assumir que toda a gente quer o máximo de qualidade técnica. O motor está em js/pages/photography.js (profile(), fmtForGenre(), profileNote()). Regra editorial: NUNCA empurrar RAW por defeito — o RAW é uma ferramenta para quando há vantagem real, e essa vantagem deve ser explicada.",
+  "_doc": "Perfil de fotografia. Adapta as recomendações do portal ao objetivo de quem fotografa, em vez de assumir que toda a gente quer o máximo de qualidade técnica. O motor está em photography/js/photography.js (profile(), fmtForGenre(), profileNote()). Regra editorial: NUNCA empurrar RAW por defeito — o RAW é uma ferramenta para quando há vantagem real, e essa vantagem deve ser explicada.",
   "default": "entusiasta",
   "profiles": [
     {

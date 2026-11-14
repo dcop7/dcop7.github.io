@@ -1,0 +1,157 @@
+/* ══════════════════════════════════════════════════════════════════
+   DCOP7 Photography — design tokens
+   ──────────────────────────────────────────────────────────────────
+   Direção: CÂMARA ESCURA EDITORIAL. Preto quente (não azul), texto marfim,
+   UM acento âmbar de luz de segurança. Tipografia: serifa de display
+   (Instrument Serif) para os títulos grandes, sans da mesma família
+   (Instrument Sans) para tudo o que é interface, mono (IBM Plex Mono)
+   para metadados ao estilo EXIF. Geometria quase reta (cantos de 2–4px),
+   filetes finos em vez de caixas, a fotografia é que tem cor.
+
+   Duas camadas:
+   1. vocabulário próprio  (--dp-*)  — usado pelo shell novo;
+   2. compatibilidade      (--bg, --card, --accent…) — os nomes que os
+      capítulos herdados do portal já consomem, aqui com a paleta nova.
+      Assim os capítulos funcionam no microsite sem reescrever 4 000 linhas
+      de CSS, e mudam de identidade só por mudarem os valores.
+
+   Tema claro = "prova em papel" (body.light — o hook que o código antigo
+   já testa). O escuro é a predefinição: é a identidade do site.
+
+   ATENÇÃO: os tokens declaram-se em `:root, body` e não só em :root. Um
+   `--text: var(--dp-paper)` declarado em :root é RESOLVIDO em :root (com o
+   --dp-paper escuro) e o body herda o valor já calculado — redefinir
+   --dp-paper em body.light não o mudava, e o texto dos capítulos ficava
+   marfim sobre papel. Declarados também em body, resolvem-se lá, depois
+   dos overrides de body.light.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root, body {
+  color-scheme: dark;
+
+  /* ── paleta: câmara escura ── */
+  --dp-ink:      #0f0d0a;   /* fundo: preto quente */
+  --dp-ink-2:    #16130f;   /* banda alternada */
+  --dp-ink-3:    #1d1914;   /* superfície sólida */
+  --dp-paper:    #efe7d8;   /* texto principal (marfim) — 15:1 */
+  --dp-paper-2:  #d6ccba;   /* texto secundário — 11:1 */
+  --dp-dim:      #a39885;   /* texto discreto — 6.6:1 sobre --dp-ink */
+  --dp-line:     rgba(239,231,216,.10);
+  --dp-line-2:   rgba(239,231,216,.20);
+  --dp-safe:     #e9a649;   /* luz de segurança — 9:1 sobre --dp-ink */
+  --dp-safe-hi:  #f3bd6b;   /* âmbar para TEXTO pequeno */
+  --dp-safe-rgb: 233,166,73;
+  --dp-on-safe:  #1a1206;   /* texto sobre preenchimento âmbar — 9.6:1 */
+  --dp-red:      #d9573f;   /* vermelho de câmara escura: só para avisos/erros */
+
+  /* ── tipografia ── */
+  --dp-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --dp-sans:    'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --dp-mono:    'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --dp-fs-hero: clamp(2.9rem, 7.2vw, 6.4rem);
+  --dp-fs-h1:   clamp(2.2rem, 4.6vw, 3.8rem);
+  --dp-fs-h2:   clamp(1.6rem, 2.8vw, 2.3rem);
+  --dp-fs-meta: .72rem;
+
+  /* ── espaço e forma ── */
+  --dp-gutter:  clamp(16px, 4vw, 56px);
+  --dp-max:     1320px;
+  --dp-r:       3px;
+  --hdr-h:      64px;       /* altura do cabeçalho — índices presos colam-se aqui */
+
+  /* ── movimento ── */
+  --dp-ease:    cubic-bezier(.22,.9,.32,1);
+
+  /* ── compatibilidade com os capítulos herdados ── */
+  --bg: var(--dp-ink);
+  --bg2: var(--dp-ink-2);
+  --surface: var(--dp-ink-2);
+  --card: rgba(239,231,216,.028);
+  --card2: rgba(239,231,216,.05);
+  --card-solid: var(--dp-ink-3);
+  --border: var(--dp-line);
+  --border2: var(--dp-line-2);
+  --text: var(--dp-paper);
+  --text2: var(--dp-paper-2);
+  --text-secondary: var(--dp-paper-2);
+  --muted: var(--dp-dim);
+  --accent: var(--dp-safe);
+  --accent-txt: var(--dp-safe-hi);
+  --accent-fill: var(--dp-safe);
+  --on-accent: var(--dp-on-safe);
+  --accent2: #8fb8c9;          /* azul de hora azul — segundo acento, raro */
+  --accent2-txt: #8fb8c9;
+  --accent-rgb: var(--dp-safe-rgb);
+  --accent-soft: rgba(var(--dp-safe-rgb),.11);
+  --accent-glow: rgba(var(--dp-safe-rgb),.22);
+  --pg-accent: var(--dp-safe);
+  --pg-accent-rgb: var(--dp-safe-rgb);
+  --red: var(--dp-red);
+  --red-txt: #ec7a63;
+  --green: #7fb07a;
+  --green-txt: #94c28f;
+  --amber: var(--dp-safe);
+  --amber-txt: var(--dp-safe-hi);
+  --blue-txt: #8fb8c9;
+  --ink: var(--dp-paper);
+
+  --radius: 4px;
+  --radius-sm: 3px;
+  --radius-xs: 2px;
+  --radius-lg: 6px;
+  --r-pill: 3px;
+
+  --font-sans: var(--dp-sans);
+  --font-body: var(--dp-sans);
+  --font-head: var(--dp-sans);
+  --font-mono: var(--dp-mono);
+
+  --fs-xs: .74rem; --fs-sm: .84rem; --fs-md: .94rem; --fs-lg: 1.06rem;
+  --fs-xl: clamp(1.3rem, 2.6vw, 1.6rem);
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,.35);
+  --shadow-2: 0 6px 20px rgba(0,0,0,.4);
+  --shadow-3: 0 18px 50px rgba(0,0,0,.55);
+  --ring: 0 0 0 3px rgba(var(--dp-safe-rgb),.35);
+
+  --ease: 160ms ease;
+  --ease-out: 220ms cubic-bezier(.4,0,.2,1);
+  --ease-fn: ease;
+  --ease-out-fn: cubic-bezier(.4,0,.2,1);
+
+  --glass: rgba(15,13,10,.9);
+  --glass-strong: rgba(15,13,10,.96);
+  --den: 1;
+
+  /* manequim vetorial (Poses / Onde cortar) */
+  --mq-hi: #d8cdb8; --mq-lo: #8a7f6c; --mq-edge: #3a332a; --mq-joint: #e9a649;
+}
+
+/* ── tema claro: prova em papel ── */
+body.light {
+  color-scheme: light;
+  --dp-ink:      #f3eee4;
+  --dp-ink-2:    #ebe4d6;
+  --dp-ink-3:    #fbf8f2;
+  --dp-paper:    #1b1712;   /* 15:1 */
+  --dp-paper-2:  #3d362c;   /* 10:1 */
+  --dp-dim:      #6a604f;   /* 5.6:1 sobre --dp-ink */
+  --dp-line:     rgba(27,23,18,.12);
+  --dp-line-2:   rgba(27,23,18,.24);
+  --dp-safe:     #985608;   /* âmbar torrado — 4.9:1 sobre o papel */
+  --dp-safe-hi:  #8f520a;   /* texto — 5.3:1 */
+  --dp-safe-rgb: 152,86,8;
+  --dp-on-safe:  #fffaf2;   /* branco sobre âmbar torrado — 5.4:1 */
+  --dp-red:      #b23a26;
+
+  --card: rgba(255,255,255,.55);
+  --card2: rgba(27,23,18,.04);
+  --accent2: #2f6e86; --accent2-txt: #2f6e86;
+  --red-txt: #a3321f; --green-txt: #3f7a3a; --blue-txt: #2f6e86;
+  --shadow-1: 0 1px 2px rgba(40,30,15,.08);
+  --shadow-2: 0 6px 20px rgba(40,30,15,.1);
+  --shadow-3: 0 18px 50px rgba(40,30,15,.16);
+  --glass: rgba(243,238,228,.92);
+  --glass-strong: rgba(243,238,228,.97);
+  --mq-hi: #6f6555; --mq-lo: #b4a993; --mq-edge: #ded5c3; --mq-joint: #985608;
+}

@@ -5,7 +5,7 @@
    DEV-ONLY. Corre na tua máquina, fala com o ComfyUI em 127.0.0.1:8188 e
    escreve ficheiros estáticos otimizados em assets/photo/. NUNCA corre no
    browser nem em produção — o site continua 100% estático e funciona sem
-   isto (as ilustrações procedurais em js/pages/photo-illus.js são o fallback).
+   isto (as ilustrações procedurais em photography/js/photo-illus.js são o fallback).
 
    Uso:
      node tools/photogen/generate.mjs               # gera o que falta

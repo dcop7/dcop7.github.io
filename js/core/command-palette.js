@@ -24,7 +24,7 @@ const CommandPalette = (function () {
     { name: 'Jogos',             desc: 'Xadrez, Wordle, Uno e mais',       icon: '🎮', type: 'nav', action: () => Nav.go('games') },
     { name: 'Quizzes',           desc: 'Aprender a brincar',               icon: '🧩', type: 'nav', action: () => Nav.go('quiz') },
     { name: 'Humor',             desc: 'Piadas e adivinhas',               icon: '😂', type: 'nav', action: () => Nav.go('humor') },
-    { name: 'Fotografia',        desc: 'Cheat sheets de captura e edição', icon: '📷', type: 'nav', action: () => Nav.go('photography') },
+    { name: 'Fotografia',        desc: 'DCOP7 Photography: géneros, aprender, editar', icon: '📷', type: 'nav', action: () => { location.href = '/photography/'; } },
     { name: 'Visual',            desc: 'Matriz, SWOT, mapas mentais',      icon: '🧠', type: 'nav', action: () => Nav.go('visual') },
     { name: 'Definições',        desc: 'Tema, língua, cidade',             icon: '⚙️', type: 'nav', action: () => Nav.go('settings') },
   ];

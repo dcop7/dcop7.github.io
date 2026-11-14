@@ -42,7 +42,7 @@ const PhotoCheats = (function () {
     if (_data && _gen) return Promise.resolve({ data: _data, gen: _gen });
     if (_p) return _p;
     const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u); return r.json(); });
-    _p = Promise.all([get('data/photo/cheats.json'), get('data/photo/cheats-genre.json')])
+    _p = Promise.all([get('/data/photo/cheats.json'), get('/data/photo/cheats-genre.json')])
       .then(([a, b]) => { _data = a; _gen = b; return { data: a, gen: b }; })
       .catch(() => { _p = null; return null; });
     return _p;

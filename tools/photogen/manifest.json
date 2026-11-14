@@ -25,9 +25,10 @@
     "vision_flat": "photorealistic amateur snapshot, technically correct exposure but visually uninspired, flat lighting, no intention, ordinary phone photo, no text, no watermark",
     "portrait_natural": "close up head and shoulders portrait, the head fills most of the frame, photorealistic photograph, natural skin texture with visible pores, sharp focus on the eyes, shot on 85mm f2, high detail",
     "baby_illus": "stylized 3D animated feature film still, appealing stylized characters with simplified features, smooth soft toy-like shading, warm tender mood, soft cinematic lighting, clearly a 3D animation and not a photograph, no text, no watermark",
-    "vision_bw": "black and white photograph, monochrome, rich tonal range, excellent light, intentional composition, award winning, high detail, no text, no watermark"
+    "vision_bw": "black and white photograph, monochrome, rich tonal range, excellent light, intentional composition, award winning, high detail, no text, no watermark",
+    "site_editorial": "cinematic editorial photograph, shot on 35mm film, subtle film grain, low key lighting, rich deep blacks, warm amber highlights, muted natural palette, intentional composition, high detail, no text, no watermark"
   },
-  "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (js/pages/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
+  "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (photography/js/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
     {
       "group": "poses",
@@ -5343,12 +5344,83 @@
       "negative": "photograph, photorealistic, real photo, realistic skin texture, naked, nude, bare torso, shirtless, diaper only, newborn, swaddled, two babies, twins, siblings, big cartoon eyes, adult face, cables, wires, deformed, disfigured, extra limbs, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, creepy, uncanny, text, watermark, logo, signature, low quality, blurry, jpeg artifacts, knife, blade, weapon, stick",
       "prompt": "one chubby baby about one year old with short light brown hair, wearing a mustard yellow long-sleeved cotton romper and white socks, leaning against the front of a low grey sofa with both hands pressed flat on the sofa seat to keep balance, standing on wobbly legs on the floor, chest touching the sofa, looking over his shoulder at the camera with a proud face, soft window light",
       "maxWidth": 720
+    },
+    {
+      "id": "site-hero",
+      "group": "site",
+      "style": "site_editorial",
+      "matte": false,
+      "seed": 710106,
+      "size": [
+        1536,
+        640
+      ],
+      "maxWidth": 1536,
+      "negative": "text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, blurry, jpeg artifacts",
+      "prompt": "blue hour seascape, a solitary lighthouse on dark rocky cliffs, long exposure silky ocean, last warm amber glow on the horizon, the lighthouse small on the right third, vast quiet dark sky with negative space on the left"
+    },
+    {
+      "id": "site-area-fotografar",
+      "group": "site",
+      "style": "site_editorial",
+      "matte": false,
+      "seed": 720111,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1100,
+      "negative": "text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, blurry, jpeg artifacts",
+      "prompt": "close-up of hands raising a vintage film camera to eye level on a sunlit old street at golden hour, the photographer's face hidden behind the camera, warm rim light, shallow depth of field, soft city bokeh"
+    },
+    {
+      "id": "site-area-aprender",
+      "group": "site",
+      "style": "site_editorial",
+      "matte": false,
+      "seed": 720210,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1100,
+      "negative": "text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, blurry, jpeg artifacts",
+      "prompt": "overhead view of a dark wooden desk with open photography books full of photographs, a notebook with simple pencil grid sketches, film canisters, a camera lens and a cup of coffee, soft window light from the left, no legible writing"
+    },
+    {
+      "id": "site-area-editar",
+      "group": "site",
+      "style": "site_editorial",
+      "matte": false,
+      "seed": 720208,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1100,
+      "negative": "text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, blurry, jpeg artifacts",
+      "prompt": "black and white photographic prints hanging on a line to dry in a darkroom under deep red safelight, developing trays below with a print emerging in the developer, quiet and atmospheric"
+    },
+    {
+      "id": "site-area-laboratorio",
+      "group": "site",
+      "style": "site_editorial",
+      "matte": false,
+      "seed": 720112,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1100,
+      "negative": "text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, blurry, jpeg artifacts",
+      "prompt": "an empty photography studio, a large octagonal softbox and a strip light on stands aimed at a wooden stool in front of a grey seamless paper backdrop, a camera on a tripod in the foreground, moody low key light"
     }
   ],
-  "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em js/pages/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los.",
+  "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em photography/js/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los.",
   "_nota_luz_natural": "lp-window / lp-window-reflector: o par foi refeito (ago/2026). As primeiras versoes tinham luz frontal chapada e nao ensinavam nada. O que destrava a luz direcional neste checkpoint e descrever a FOTOGRAFIA e nao a luz: \"chiaroscuro\", \"dark unlit room\", \"deep shadow covering the right half of her face\". Os dois partilham a seed 662001 de proposito - so muda o refletor, e por isso podem entrar num comparador lado a lado.",
   "_nota_luz_frontal": "light-frontal foi refeito duas vezes. A 2.a versao (pedido \"two big softboxes either side of the camera\") continuava a sair com relevo — o modelo le \"either side\" como luz LATERAL e devolvia sombra do nariz e da bochecha, ou seja, ilustrava exatamente o contrario do cartao; e o pedido de luz plana clareava tambem o FUNDO, o que quebrava o \"mesmo fundo\" prometido na legenda do par. A versao que resulta pede um RING LIGHT no eixo da objetiva (uma so fonte, frontal por definicao), nomeia o fundo escuro no positivo e poe no negativo tudo o que e lateral E o fundo claro. Nota util: \"two softboxes\" em prompts com pessoas tambem convida o modelo a desenhar DUAS pessoas — aconteceu em 3 de 4 sementes de teste.",
   "_nota_contraexemplos": "REGRA: um contraexemplo tem de ser a AUSENCIA do principio, nao uma variacao dele. comp-converging-bad tinha uma arcada em fuga e comp-negative-bad tinha MAIS vazio do que o exemplo bom — os dois ensinavam o contrario do que diziam. O que destrava: pedir a ausencia de forma absoluta no positivo (\"flat elevation, no depth at all\", \"absolutely no empty space anywhere\") E por o principio todo no negativo (\"perspective, vanishing point, converging lines\" / \"empty space, negative space, minimalism, sky\").",
   "_nota_anatomia": "Defeitos de anatomia que este checkpoint produz e que NAO se veem numa miniatura: membros fundidos com objectos (uma pessoa cuja metade de baixo era um tripe, em seq-amb-3) e maos que desaparecem dentro do corpo (vis-desporto). O negativo generico \"bad anatomy, extra limbs\" nao chega — e preciso nomear o defeito concreto (\"legs merging with a tripod\", \"arm ending without a hand\") E pedir o contrario no positivo (\"both legs clearly visible and separate from the tripods\", \"both arms clearly separated from the body with the hands fully visible). Rever sempre a tamanho real, nunca em contact sheet.",
-  "_nota_ideas": "Grupo ideas (nov/2026): idea-<género>-<n>, n = posição da ideia em genres.json (1-based); a página do género mostra em galeria as ideias que têm imagem. Publicadas com finalize.mjs: recorte uniforme [36,0,1143,782] (o modelo inventa marcas de água no canto inferior), exceto idea-autorretrato-4 [0,0,997,682] e idea-rua-4 [160,222,890,609]. Rejeitadas por não mostrarem o que a legenda diz: familia-2, rua-2, reflexos-3, bebes-1/2 (pés e mão de bebé saem com anatomia de adulto). Bebés: estilo baby_illus (3D estilizado, nunca fotorrealista — pedido do user)."
+  "_nota_ideas": "Grupo ideas (nov/2026): idea-<género>-<n>, n = posição da ideia em genres.json (1-based); a página do género mostra em galeria as ideias que têm imagem. Publicadas com finalize.mjs: recorte uniforme [36,0,1143,782] (o modelo inventa marcas de água no canto inferior), exceto idea-autorretrato-4 [0,0,997,682] e idea-rua-4 [160,222,890,609]. Rejeitadas por não mostrarem o que a legenda diz: familia-2, rua-2, reflexos-3, bebes-1/2 (pés e mão de bebé saem com anatomia de adulto). Bebés: estilo baby_illus (3D estilizado, nunca fotorrealista — pedido do user).",
+  "_nota_site": "Grupo site (nov/2026): imagens editoriais do microsite /photography/ (hero da home + capas das 4 áreas). Candidatos -a/-b; os rejeitados são apagados do manifesto e do disco (ids repetidos = gotcha). Escolhidos (14 nov 2026): hero = farol na hora azul (coast seed 710106; darkroom saiu genérico, com candeeiros em vez de luz de segurança; street tinha parede texturada por trás do título); áreas fotografar-a, aprender-b, editar-b, laboratorio-a."
 }

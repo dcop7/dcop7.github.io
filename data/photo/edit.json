@@ -1,5 +1,5 @@
 {
-  "_doc": "Secção Edição — ensina CONCEITOS de edição, independentes de software. Regra de ouro: primeiro o que a ferramenta faz e que problema resolve; só no fim 'Nos principais programas'. Cada ferramenta tem nome em português E o termo internacional (para procurar tutoriais). O campo 'demo' liga ao motor de píxeis PhotoLab (js/pages/photo-lab.js): as demonstrações aplicam mesmo o ajuste, não são imagens pré-feitas.",
+  "_doc": "Secção Edição — ensina CONCEITOS de edição, independentes de software. Regra de ouro: primeiro o que a ferramenta faz e que problema resolve; só no fim 'Nos principais programas'. Cada ferramenta tem nome em português E o termo internacional (para procurar tutoriais). O campo 'demo' liga ao motor de píxeis PhotoLab (photography/js/photo-lab.js): as demonstrações aplicam mesmo o ajuste, não são imagens pré-feitas.",
   "software": [
     {
       "id": "lightroom",

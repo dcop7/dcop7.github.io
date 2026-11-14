@@ -4,7 +4,7 @@ Gera **imagens estáticas** para a secção Fotografia usando o teu **ComfyUI lo
 É uma ferramenta de *desenvolvimento*: corre na tua máquina, escreve ficheiros
 em `assets/photo/` e mais nada. O site continua **100% estático** e funciona
 sem estes assets — as ilustrações são desenhadas por código em
-`js/pages/photo-illus.js` (SVG) e os diagramas de pose em `js/pages/photography.js`.
+`photography/js/photo-illus.js` (SVG) e os diagramas de pose em `photography/js/photography.js`.
 Os assets foto-reais só **substituem** esses fallbacks quando existem.
 
 ```
@@ -48,6 +48,10 @@ node tools/photogen/generate.mjs --group poses      # só as poses
 node tools/photogen/generate.mjs --group vision     # só os pares da Visão
 node tools/photogen/generate.mjs --steps 10         # rascunho rápido p/ testar prompts
 
+# miniaturas da folha de contactos do microsite /photography/ (sem ComfyUI)
+node tools/photogen/thumbs.mjs           # assets/photo/thumbs/vis-<género>.webp + thumb-* no índice
+# NÃO correr ao mesmo tempo que o generate.mjs: os dois reescrevem o index.json
+
 # host alternativo
 COMFY_HOST=http://127.0.0.1:8188 node tools/photogen/generate.mjs
 ```
@@ -68,7 +72,7 @@ Saída:
   - `false` — sem recorte (cenas/retratos de luz).
   - `matteOpts` afina os limiares do recorte por asset.
 
-Os `id` das poses casam com o array `POSES` em `js/pages/photography.js`.
+Os `id` das poses casam com o array `POSES` em `photography/js/photography.js`.
 
 ### Grupo `vision` (secção Visão)
 
@@ -117,7 +121,7 @@ candidato gerado com outro id. As marcações dessas imagens são declaradas em
 
 São quatro: `lp-window`, `lp-window-reflector`, `lp-golden-back`, `lp-open-shade`.
 Alimentam a grelha de "Luz de retrato" nos Cheatsheets
-(`js/pages/photo-cheats.js`).
+(`photography/js/photo-cheats.js`).
 
 **Os 16 padrões de estúdio foram tentados e removidos.** O SDXL/Juggernaut não
 desenha Rembrandt, split, butterfly nem loop: devolve sempre luz de beleza
@@ -128,7 +132,7 @@ guarda-roupa da personagem e deriva para nu artístico. Como todas as células
 sairiam parecidas (e algumas erradas), a lição morria.
 
 Esses padrões passaram a ser **desenhados por código** em
-`js/pages/photo-lightart.js`: planta vista de cima + rosto com a sombra exata.
+`photography/js/photo-lightart.js`: planta vista de cima + rosto com a sombra exata.
 A geometria está sempre certa e é consistente entre as 20 células. Se
 aparecer um IPAdapter/InstantID ou um ControlNet de normais na instalação,
 vale a pena reavaliar; até lá, **não regerar o estúdio**.

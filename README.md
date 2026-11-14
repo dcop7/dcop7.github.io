@@ -21,7 +21,7 @@ Este README serve de *knowledge base* do projeto: o que o site contém, como est
 
 ## Secções do site
 
-Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **Diversão** e **Fotografia**:
+Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas** e **Diversão**. A **Fotografia** é um site à parte em [`/photography/`](photography/README.md), com ligação na sidebar:
 
 | Rota | Secção | Conteúdo |
 |------|--------|----------|
@@ -41,7 +41,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas**, **
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), 17 categorias (incl. piropos e cúmulos) organizadas por grupos, centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
-| `#photography` | **Fotografia** | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S26+ / ambos), Cheatsheets visuais de consulta rápida (15 gerais + 8 géneros com fichas próprias + cartão de bolso dos restantes 20), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
+| `/photography/` | **Fotografia** (microsite DCOP7 Photography — rotas antigas `#photography/…` redirecionam) | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S26+ / ambos), Cheatsheets visuais de consulta rápida (15 gerais + 8 géneros com fichas próprias + cartão de bolso dos restantes 20), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
 | `#settings` | **Preferências** | Tema, tamanho de letra, língua, bookmarks, cidade da meteo |
 
@@ -66,7 +66,7 @@ dcop7.github.io/
 │   └── views/                 ← um CSS por secção (home, games, explorer, noticias, f1, …)
 ├── js/
 │   ├── core/                  ← i18n, nav, main, time (AppTime), search, settings, icons, command-palette, otd-lib, parallax, motion (Anime.js)
-│   ├── pages/                 ← tools, cheatsheets, photography, visual, links, noticias, humor, oss, discovery, rss
+│   ├── pages/                 ← tools, cheatsheets, visual, links, noticias, humor, oss, discovery, rss
 │   ├── explorer/              ← explorer hub + realtime, solar, galaxy, body, portugal, timeline, data (mundo), kb, eventos, ocorrencias
 │   ├── games/                 ← game-host + jogos (game-*.js) + game-progress + vendor (chess.js)
 │   ├── quiz/                  ← quiz-engine, quiz-data, quiz-providers, quiz-page
@@ -104,7 +104,7 @@ Comunicação entre módulos via esses globais (`Nav.go('tools')`, `I18n.t('key'
 
 ### Routing
 
-Hash-based via `js/core/nav.js`. Rotas: `home · links · tools · cheatsheets · games · quiz · humor · explorer · ocorrencias · eventos · noticias · f1 · oss · discovery · photography · visual · settings`. Suporta sub-rotas (`#oss/owner/name`, `#discovery/gaming`, `#explorer/kb`). Cada rota ativa uma `.view` e o estado da sidebar. **Não existe bottom-nav mobile** (removido de propósito — não reintroduzir).
+Hash-based via `js/core/nav.js`. Rotas: `home · links · tools · cheatsheets · games · quiz · humor · explorer · ocorrencias · eventos · noticias · f1 · oss · discovery · visual · settings` (`#photography/…` redireciona para o microsite `/photography/#…`). Suporta sub-rotas (`#oss/owner/name`, `#discovery/gaming`, `#explorer/kb`). Cada rota ativa uma `.view` e o estado da sidebar. **Não existe bottom-nav mobile** (removido de propósito — não reintroduzir).
 
 ### Núcleo partilhado
 
@@ -116,8 +116,8 @@ Hash-based via `js/core/nav.js`. Rotas: `home · links · tools · cheatsheets �
 | `Particles` / `GameAudio` / `GameInput` | partículas, sons Web Audio, teclado + D-pad touch |
 | `GameStorage` / `GameProgress` | highscores, níveis, stats unificados por jogo |
 | `otd-lib` (`js/core/otd-lib.js`) | reconstrói o painel de descoberta em direto a partir da Wikimedia quando o `today.json` está desatualizado |
-| `PhotoLab` (`js/pages/photo-lab.js`) | motor de revelação em canvas: exposição, tonalidade, curva, HSL por banda, tonalidade separada e primitivas de *look* (`fade`, `grain`, `bloom`, `halation`, `vignette`) |
-| `PhotoLearn` (`js/pages/photo-learn.js`) | componentes de aprendizagem visual da Fotografia (ver abaixo) |
+| `PhotoLab` (`photography/js/photo-lab.js`) | motor de revelação em canvas: exposição, tonalidade, curva, HSL por banda, tonalidade separada e primitivas de *look* (`fade`, `grain`, `bloom`, `halation`, `vignette`) |
+| `PhotoLearn` (`photography/js/photo-learn.js`) | componentes de aprendizagem visual da Fotografia (ver abaixo) |
 
 #### PhotoLearn — componentes de aprendizagem visual
 
@@ -160,7 +160,7 @@ o texto é uma linha**. Se um bloco precisa de um parágrafo, pertence a Aprende
 | **Aprender** | "quero perceber isto" |
 | **Ferramentas** | "quero calcular isto" |
 
-- **Motor visual:** `js/pages/photo-cards.js` (`PhotoCard`) — primitivas SVG
+- **Motor visual:** `photography/js/photo-cards.js` (`PhotoCard`) — primitivas SVG
   parametrizadas + 8 tipos de bloco (`strip · grid · versus · diagram · rules ·
   steps · table · note`) pedidos pelo JSON. Cai para o `PhotoIllus` quando a
   ilustração já existe, para não redesenhar o que o portal já sabe desenhar.

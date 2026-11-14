@@ -8,11 +8,11 @@
   margin: .2rem 0 .4rem; padding: .45rem 0 .55rem; background: var(--bg); }
 .gp-toc::-webkit-scrollbar { display: none; }
 .gp-toc-b { flex: none; display: inline-flex; align-items: center; gap: .3rem; min-height: 34px;
-  padding: .3rem .75rem; border-radius: 999px; white-space: nowrap; text-decoration: none;
+  padding: .3rem .75rem; border-radius: var(--r-pill); white-space: nowrap; text-decoration: none;
   font-size: .8rem; font-weight: 600; color: var(--text2);
   background: var(--card2); border: 1px solid var(--border); transition: all var(--ease); }
 .gp-toc-b:hover, .gp-toc-b:focus-visible { color: var(--text); border-color: var(--accent); }
-.gp-toc-b.active { color: #fff; background: var(--accent-fill); border-color: var(--accent); }
+.gp-toc-b.active { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent); }
 
 .gp-page { display: flex; flex-direction: column; }
 .gp-sec { padding: 1.6rem 0 .4rem; border-top: 1px solid var(--border);
@@ -53,9 +53,9 @@
 .gp-shot-img { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--radius);
   background: var(--card2); border: 1px solid var(--border); }
 .gp-shot-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gp-shot-tag { position: absolute; top: .55rem; left: .55rem; padding: .2rem .55rem; border-radius: 999px;
+.gp-shot-tag { position: absolute; top: .55rem; left: .55rem; padding: .2rem .55rem; border-radius: var(--r-pill);
   font-size: .72rem; font-weight: 800; color: #fff; background: rgba(15, 18, 30, .78); backdrop-filter: blur(4px); }
-.gp-shot.good .gp-shot-tag { background: rgba(37, 99, 235, .88); }
+.gp-shot.good .gp-shot-tag { background: var(--dp-safe); color: var(--dp-on-safe); }
 .gp-shot figcaption { margin-top: .45rem; font-size: .82rem; line-height: 1.45; color: var(--text2); }
 .gp-pair-note { margin: .5rem 0 0; font-size: .78rem; color: var(--muted); }
 .gp-subject { margin: 1rem 0 0; padding: .7rem .9rem; border-radius: var(--radius);
@@ -103,7 +103,7 @@
 .gp-facts div:first-child { border-top: 0; }
 .gp-facts dt { font-size: .78rem; font-weight: 800; color: var(--text2); }
 .gp-facts dd { margin: 0; font-size: .86rem; line-height: 1.5; color: var(--text2); }
-.gp-badge { display: inline-block; margin-right: .3rem; padding: .08rem .45rem; border-radius: 999px; border: 1px solid;
+.gp-badge { display: inline-block; margin-right: .3rem; padding: .08rem .45rem; border-radius: var(--r-pill); border: 1px solid;
   font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; vertical-align: 1px; }
 .gp-badge.hi { color: #f59e0b; border-color: #f59e0b66; background: #f59e0b1a; }
 .gp-badge.md { color: var(--accent-txt); border-color: var(--border); background: var(--card2); }

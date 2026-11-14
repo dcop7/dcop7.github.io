@@ -1,5 +1,5 @@
 {
-  "_doc": "Guia de equipamento intemporal. NÃO é um catálogo de marcas/modelos — são conceitos que continuam válidos daqui a 10 anos. Cada item responde: que problema resolve · quando usar · quando NÃO vale a pena · erros de iniciante. O campo 'visual' é um id de PhotoIllus (js/pages/photo-illus.js) ou de assets/photo/index.json.",
+  "_doc": "Guia de equipamento intemporal. NÃO é um catálogo de marcas/modelos — são conceitos que continuam válidos daqui a 10 anos. Cada item responde: que problema resolve · quando usar · quando NÃO vale a pena · erros de iniciante. O campo 'visual' é um id de PhotoIllus (photography/js/photo-illus.js) ou de assets/photo/index.json.",
   "categories": [
     {
       "id": "cameras",

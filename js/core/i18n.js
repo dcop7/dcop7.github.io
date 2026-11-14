@@ -7,9 +7,9 @@ const I18n = (function () {
       'nav.home':'Home','nav.games':'Games','nav.links':'Useful Sites',
       'nav.tools':'Tools',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
-      'nav.photography':'Photography','nav.photo.shoot':'Shoot','nav.photo.learn':'Learn','nav.photo.edit':'Edit','nav.photo.lab':'Lab','nav.settings':'Settings',
+      'nav.photography':'Photography','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.hoje':'Today','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News','nav.cidadao':'Citizen','nav.f1':'Formula 1','nav.oss':'Tech Discovery','nav.discovery':'Gaming Deals',
-      'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun','nav.grp.photo':'Photography',
+      'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
       // Theme panel + header tooltips
       'theme.title':'Theme','theme.dark':'Dark','theme.light':'Light',
@@ -115,9 +115,9 @@ const I18n = (function () {
       'nav.home':'Início','nav.games':'Jogos','nav.links':'Sites Úteis',
       'nav.tools':'Ferramentas',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
-      'nav.photography':'Fotografia','nav.photo.shoot':'Fotografar','nav.photo.learn':'Aprender','nav.photo.edit':'Editar','nav.photo.lab':'Laboratório','nav.settings':'Definições',
+      'nav.photography':'Fotografia','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.hoje':'Hoje','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias','nav.cidadao':'Cidadão','nav.f1':'Fórmula 1','nav.oss':'Descobrir Tech','nav.discovery':'Gaming Deals',
-      'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão','nav.grp.photo':'Fotografia',
+      'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
       // Painel de tema + dicas do cabeçalho
       'theme.title':'Tema','theme.dark':'Escuro','theme.light':'Claro',
