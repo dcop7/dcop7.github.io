@@ -131,6 +131,13 @@ ${body.replaceAll('G', `url(#ig-${id})`).replaceAll('C2', c2).replaceAll('C1', c
       <path d="M7.2 15h9.6" stroke="C2"/>
       <circle cx="10.6" cy="17.6" r=".9" fill="C2" stroke="none"/><circle cx="13.8" cy="16.9" r=".7" fill="C2" stroke="none"/>`, { noSpark: true }),
 
+    /* Produtividade (microsite): folha com visto e um separador — família azul das ferramentas. */
+    productivity: duo('productivity', '#3b82f6', '#60a5fa', `
+      <rect x="4" y="3" width="13.4" height="18" rx="2.2" fill="G" fill-opacity=".13" stroke="G"/>
+      <path d="M17.4 6.4h1.8a1 1 0 0 1 1 1v3.2a1 1 0 0 1-1 1h-1.8" stroke="C2"/>
+      <path d="M7.4 7.6h6.4" stroke="G" stroke-opacity=".6"/>
+      <path d="M7.6 13.4l2.4 2.4 4.4-4.8" stroke="C2" stroke-width="1.8"/>`, { noSpark: true }),
+
     visual: duo('visual', '#f87171', '#fca5a5', `
       <rect x="3" y="3.6" width="18" height="16.8" rx="2.2" fill="G" fill-opacity=".12" stroke="G"/>
       <path d="M12 4v16M3.4 12h17.2" stroke="G" opacity=".8"/>

@@ -1,0 +1,124 @@
+/* ══════════════════════════════════════════════════════════════════
+   DCOP7 Productivity — design tokens
+   ──────────────────────────────────────────────────────────────────
+   Direção: MESA DE TRABALHO — papel e tinta. Fundo de papel quente, tinta
+   azul-noite, filetes finos, cantos pequenos (6px, o vocabulário das
+   ferramentas que se ensinam aqui). A cor só existe com FUNÇÃO: as quatro
+   espécies de coisas do sistema têm uma cor cada uma, e essa cor é a mesma
+   em todo o site (mapa, exercícios, playground, diretório):
+
+     Ações       → vermelho-tomate   (fazer, insistir, verificar)
+     Informação  → azul              (ouvi, decidi, aprendi)
+     Hoje        → amarelo marcador  (o foco do dia, descartável)
+     Estrutura   → verde-petróleo    (projetos, equipas, pessoas)
+
+   Tipo: Fraunces (títulos, serifa suave de caderno), Inter (interface — a
+   mesma do portal) e JetBrains Mono (consultas, filtros, quick-add — a
+   mesma do portal).
+
+   Tema: segue o sistema; a escolha manual fica em localStorage['pr-theme']
+   e aplica-se com body.light / body.dark (body.light é o hook que o
+   components.css do portal também conhece).
+
+   Tokens declarados em `:root, body` (lição da Fotografia): os aliases de
+   compatibilidade têm de se resolver no body, depois dos overrides.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root, body {
+  color-scheme: light;
+  --pr-paper:   #f7f4ee;
+  --pr-paper-2: #efeae0;
+  --pr-sheet:   #fffdf9;
+  --pr-ink:     #1c2230;
+  --pr-ink-2:   #3d4658;
+  --pr-dim:     #5d6676;
+  --pr-line:    rgba(28,34,48,.12);
+  --pr-line-2:  rgba(28,34,48,.22);
+  --pr-hover:   rgba(28,34,48,.05);
+  --pr-shadow:  0 1px 2px rgba(28,34,48,.06), 0 8px 24px rgba(28,34,48,.07);
+  --pr-shadow-lg: 0 18px 50px rgba(28,34,48,.18);
+
+  /* as quatro espécies: --k-*-tx para texto (≥4.5:1), --k-* para formas */
+  --k-act:     #d0482b;  --k-act-tx:  #b0371b;  --k-act-bg:  rgba(208,72,43,.10);
+  --k-info:    #2f66cc;  --k-info-tx: #2155b5;  --k-info-bg: rgba(47,102,204,.10);
+  --k-today:   #e9b21f;  --k-today-tx:#855a00;  --k-today-bg:rgba(233,178,31,.18);
+  --k-str:     #13806f;  --k-str-tx:  #0d6f60;  --k-str-bg:  rgba(19,128,111,.10);
+
+  --pr-focus:  #2f66cc;
+  --pr-ok:     #13806f;
+  --pr-warn:   #855a00;
+  --pr-bad:    #b0371b;
+
+  --pr-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --pr-sans:    'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --pr-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --pr-fs-hero: clamp(2.5rem, 6.4vw, 5.2rem);
+  --pr-fs-h1:   clamp(2rem, 4.2vw, 3.2rem);
+  --pr-fs-h2:   clamp(1.35rem, 2.4vw, 1.85rem);
+
+  --pr-gutter:  clamp(16px, 4vw, 48px);
+  --pr-max:     1240px;
+  --pr-read:    68ch;
+  --pr-r:       6px;
+  --hdr-h:      60px;
+  --pr-ease:    cubic-bezier(.22,.9,.32,1);
+
+  /* ── compatibilidade com /css/components.css do portal ── */
+  --bg: var(--pr-paper);
+  --bg2: var(--pr-paper-2);
+  --card: var(--pr-sheet);
+  --card2: var(--pr-paper-2);
+  --card-solid: var(--pr-sheet);
+  --border: var(--pr-line);
+  --border2: var(--pr-line-2);
+  --text: var(--pr-ink);
+  --text2: var(--pr-ink-2);
+  --muted: var(--pr-dim);
+  --accent: var(--pr-ink);
+  --accent-txt: var(--pr-ink);
+  --accent-fill: var(--pr-ink);
+  --accent-rgb: 28,34,48;
+  --accent-soft: rgba(28,34,48,.07);
+  --pg-accent: var(--pr-ink);
+  --pg-accent-rgb: 28,34,48;
+  --radius: 8px; --radius-sm: 6px; --radius-xs: 4px; --radius-lg: 10px;
+  --sp-1: .25rem; --sp-2: .5rem; --sp-3: .75rem; --sp-4: 1rem; --sp-5: 1.5rem; --sp-6: 2rem; --sp-7: 3rem;
+  --fs-xs: .74rem; --fs-sm: .84rem; --fs-md: .94rem; --fs-lg: 1.06rem;
+  --fs-xl: clamp(1.25rem, 2.6vw, 1.55rem);
+  --font-sans: var(--pr-sans); --font-head: var(--pr-display); --font-mono: var(--pr-mono);
+  --shadow-1: 0 1px 2px rgba(28,34,48,.08); --shadow-2: var(--pr-shadow); --shadow-3: var(--pr-shadow-lg);
+  --ring: 0 0 0 3px rgba(47,102,204,.25);
+  --ease: 150ms ease; --ease-out: 200ms cubic-bezier(.4,0,.2,1);
+  --ease-fn: ease; --ease-out-fn: cubic-bezier(.4,0,.2,1);
+  --den: 1; --den-pad: 1rem; --den-gap: 1rem;
+  --red: var(--k-act); --green: var(--k-str); --amber: var(--k-today);
+  --red-txt: var(--k-act-tx); --green-txt: var(--k-str-tx); --amber-txt: var(--k-today-tx); --blue-txt: var(--k-info-tx);
+}
+
+/* ── noite: a mesma mesa, com a luz apagada ── */
+body.dark {
+  color-scheme: dark;
+  --pr-paper:   #14171d;
+  --pr-paper-2: #1b1f27;
+  --pr-sheet:   #1d2129;
+  --pr-ink:     #ebe7df;
+  --pr-ink-2:   #c9c5bc;
+  --pr-dim:     #9ba3b1;
+  --pr-line:    rgba(235,231,223,.11);
+  --pr-line-2:  rgba(235,231,223,.22);
+  --pr-hover:   rgba(235,231,223,.05);
+  --pr-shadow:  0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  --pr-shadow-lg: 0 18px 50px rgba(0,0,0,.5);
+  --k-act:     #ec7457;  --k-act-tx:  #f2896f;  --k-act-bg:  rgba(236,116,87,.14);
+  --k-info:    #6f98ee;  --k-info-tx: #8db0f6;  --k-info-bg: rgba(111,152,238,.14);
+  --k-today:   #f0c24a;  --k-today-tx:#f0c24a;  --k-today-bg:rgba(240,194,74,.14);
+  --k-str:     #3fb7a1;  --k-str-tx:  #5ccbb5;  --k-str-bg:  rgba(63,183,161,.14);
+  --pr-focus:  #8db0f6;
+  --pr-ok:     #5ccbb5;
+  --pr-warn:   #f0c24a;
+  --pr-bad:    #f2896f;
+  --accent-rgb: 235,231,223;
+  --accent-soft: rgba(235,231,223,.08);
+  --pg-accent-rgb: 235,231,223;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+}

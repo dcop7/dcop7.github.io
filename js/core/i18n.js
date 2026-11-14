@@ -7,7 +7,7 @@ const I18n = (function () {
       'nav.home':'Home','nav.games':'Games','nav.links':'Useful Sites',
       'nav.tools':'Tools',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
-      'nav.photography':'Photography','nav.settings':'Settings',
+      'nav.photography':'Photography','nav.productivity':'Productivity','nav.settings':'Settings',
       'nav.quiz':'Quizzes','nav.hoje':'Today','nav.humor':'Humour','nav.explorer':'Explore','nav.ocorrencias':'PT Incidents','nav.eventos':'Events','nav.noticias':'News','nav.cidadao':'Citizen','nav.f1':'Formula 1','nav.oss':'Tech Discovery','nav.discovery':'Gaming Deals',
       'nav.grp.discover':'Discover','nav.grp.tools':'Tools','nav.grp.fun':'Fun',
       'nav.games.label':'Games','nav.links.label':'Useful Sites',
@@ -115,7 +115,7 @@ const I18n = (function () {
       'nav.home':'Início','nav.games':'Jogos','nav.links':'Sites Úteis',
       'nav.tools':'Ferramentas',
       'nav.cheatsheets':'Cheatsheets','nav.visual':'Visual',
-      'nav.photography':'Fotografia','nav.settings':'Definições',
+      'nav.photography':'Fotografia','nav.productivity':'Produtividade','nav.settings':'Definições',
       'nav.quiz':'Quizzes','nav.hoje':'Hoje','nav.humor':'Humor','nav.explorer':'Explorar','nav.ocorrencias':'Ocorrências PT','nav.eventos':'Eventos','nav.noticias':'Notícias','nav.cidadao':'Cidadão','nav.f1':'Fórmula 1','nav.oss':'Descobrir Tech','nav.discovery':'Gaming Deals',
       'nav.grp.discover':'Descobrir','nav.grp.tools':'Ferramentas','nav.grp.fun':'Diversão',
       'nav.games.label':'Jogos','nav.links.label':'Sites Úteis',
@@ -246,11 +246,18 @@ const I18n = (function () {
     document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
   }
 
+  /* Dicionários extra (ex.: o microsite /productivity/ regista os seus
+     textos aqui em vez de engordar este ficheiro). { pt:{…}, en:{…} } */
+  function add(dicts) {
+    Object.keys(dicts || {}).forEach(l => { T[l] = Object.assign(T[l] || {}, dicts[l]); });
+    applyStatic();
+  }
+
   function getLang() { return _lang; }
   function toggle()  { setLang(_lang === 'en' ? 'pt' : 'en'); }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyStatic);
   else applyStatic();
 
-  return { t, setLang, getLang, toggle };
+  return { t, setLang, getLang, toggle, add };
 })();

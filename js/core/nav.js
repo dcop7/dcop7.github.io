@@ -99,6 +99,8 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="tools"        href="#tools">${navIcon('tools')}<span>${TN('nav.tools')}</span></a>
           <a class="sb-nav-item" data-route="visual"       href="#visual">${navIcon('visual')}<span>${TN('nav.visual')}</span></a>
           <a class="sb-nav-item" data-route="cheatsheets"  href="#cheatsheets">${navIcon('cheatsheets')}<span>${TN('nav.cheatsheets')}</span></a>
+          <!-- Produtividade é um microsite (/productivity/, nov/2026), como a Fotografia. -->
+          <a class="sb-nav-item sb-nav-ext" href="/productivity/">${navIcon('productivity')}<span data-tn="nav.productivity">${TN('nav.productivity')}</span><span class="sb-ext" aria-hidden="true">↗</span></a>
           <div class="sb-grp" data-grp="fun">${TN('nav.grp.fun')}</div>
           <a class="sb-nav-item" data-route="hoje"         href="#hoje">${navIcon('hoje')}<span>${TN('nav.hoje')}</span></a>
           <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
@@ -214,6 +216,13 @@ const Nav = (function () {
     if (hash === 'photography' || hash.startsWith('photography/')) {
       const sub = hash.startsWith('photography/') ? hash.slice('photography/'.length) : '';
       location.replace('/photography/' + (sub ? '#' + sub : ''));
+      return;
+    }
+
+    /* Produtividade: microsite /productivity/ (nov/2026), mesmo padrão. */
+    if (/^(produtividade|productivity)(\/|$)/.test(hash)) {
+      const sub = hash.replace(/^(produtividade|productivity)\/?/, '');
+      location.replace('/productivity/' + (sub ? '#' + sub : ''));
       return;
     }
 

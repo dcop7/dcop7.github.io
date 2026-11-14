@@ -1,0 +1,25 @@
+{
+  "id": "/productivity/",
+  "name": "DCOP7 Productivity",
+  "short_name": "Productivity",
+  "description": "Um sistema pessoal de produtividade que se aprende a fazer: capturar, triar e rever. Simulação local, sem contas. Funciona offline.",
+  "lang": "pt-PT",
+  "start_url": "/productivity/",
+  "scope": "/productivity/",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#1c2230",
+  "orientation": "any",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/productivity/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/productivity/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/productivity/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/productivity/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Playground de bases de dados", "url": "/productivity/#experimentar/notion", "description": "Propriedades, vistas, relações e rollups" },
+    { "name": "Uma semana no sistema", "url": "/productivity/#aplicar/semana", "description": "Big 3, chegadas e revisão semanal" },
+    { "name": "Diretório de ferramentas", "url": "/productivity/#explorar/ferramentas", "description": "Planos grátis verificados, por papel" }
+  ]
+}
