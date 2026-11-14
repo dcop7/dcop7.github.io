@@ -17,7 +17,7 @@
    Não há dados remotos: o mundo de exemplo vive no código e no
    localStorage do visitante. Mudar CACHE quando muda código.
    ══════════════════════════════════════════════════════════════════ */
-const CACHE = 'prod-v1';
+const CACHE = 'prod-v2';
 const FONTS = 'prod-fonts-v1';
 
 const STATIC = [
@@ -32,11 +32,13 @@ const STATIC = [
   '/productivity/css/pr-notion.css',
   '/productivity/css/pr-explore.css',
   '/productivity/css/pr-apply.css',
+  '/productivity/css/pr-mind.css',
   '/productivity/js/pr-i18n.js',
   '/productivity/js/pr-core.js',
   '/productivity/js/pr-seed.js',
   '/productivity/js/pr-world.js',
   '/productivity/js/pr-learn-content.js',
+  '/productivity/js/pr-mind-content.js',
   '/productivity/js/pr-learn.js',
   '/productivity/js/pr-notion.js',
   '/productivity/js/pr-capture.js',
@@ -44,6 +46,8 @@ const STATIC = [
   '/productivity/js/pr-explore.js',
   '/productivity/js/pr-week.js',
   '/productivity/js/pr-apply.js',
+  '/productivity/js/pr-mind.js',
+  '/productivity/js/pr-mind-dir.js',
   '/productivity/js/pr-app.js',
   '/productivity/js/pr-shell.js',
   '/js/core/i18n.js',

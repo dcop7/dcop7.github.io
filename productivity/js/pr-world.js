@@ -33,6 +33,7 @@ const PrWorld = (function () {
     rev:  { pt: 'Revisão semanal', en: 'Weekly review', href: '#aplicar/revisao' },
     proj: { pt: 'Construir um projeto', en: 'Build a project', href: '#aplicar/projeto' },
     lad:  { pt: 'Escada da graduação', en: 'Graduation ladder', href: '#experimentar/pagina-ou-base' },
+    mind: { pt: 'Laboratórios de execução e direção', en: 'Executing & directing labs', href: '#experimentar' },
   };
 
   let _sc = Pr.store.get(SC_KEY, 'work');

@@ -202,6 +202,7 @@ const PrWeek = (function () {
         return `<p class="rv-what">${esc(tx('O que estiver solto — em papel, na cabeça — vai para a lista de tarefas ou para as Notas. Depois, acabou.', 'Anything loose — on paper, in your head — goes to the task list or Notes. Then you are done.'))}</p>
           <div class="rv-loose"><input type="text" maxlength="160" data-loose placeholder="${esc(tx('Ex.: Enviar a ata ao Rui #Trabalho-Geral segunda', 'E.g. Send the minutes to Rui #Work-General mon'))}">
           <button type="button" class="btn btn-sm" data-loose-t>${esc(tx('→ Tarefa', '→ Task'))}</button><button type="button" class="btn btn-sm" data-loose-n>${esc(tx('→ Nota', '→ Note'))}</button></div>
+          <p class="pr-sub">${esc(tx('Depois das tarefas, dez minutos sobre ti:', 'After the tasks, ten minutes about you:'))} <a href="#aplicar/revisao-pessoal">${esc(tx('revisão pessoal →', 'personal review →'))}</a></p>
           <div class="rv-sum"><p class="pr-kicker">${esc(tx('Nesta revisão', 'In this review'))}</p>${S.log.length ? `<ul>${S.log.slice(-12).map(x => `<li>${esc(x)}</li>`).join('')}</ul>${S.log.length > 12 ? `<p class="pr-sub">+${S.log.length - 12}</p>` : ''}` : `<p class="pr-sub">${esc(tx('Ainda nada mudou.', 'Nothing changed yet.'))}</p>`}</div>`;
       }
       return '';

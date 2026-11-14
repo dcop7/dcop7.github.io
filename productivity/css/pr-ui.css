@@ -135,6 +135,10 @@ main:focus { outline: none; }
 .src-tag.est { border-color: color-mix(in srgb, var(--k-str) 50%, transparent); color: var(--k-str-tx); }
 .src-tag.own { border-color: color-mix(in srgb, var(--k-today) 70%, transparent); color: var(--k-today-tx); }
 .src-tag.chk { border-style: dashed; }
+.src-tag.res { border-color: color-mix(in srgb, var(--k-info) 55%, transparent); color: var(--k-info-tx); }
+.src-tag.auth { border-color: color-mix(in srgb, var(--k-act) 45%, transparent); color: var(--k-act-tx); }
+.src-tag.tip { border-color: var(--pr-line-2); color: var(--pr-ink-2); }
+.src-tag.weak { border-style: dotted; color: var(--pr-dim); text-decoration: line-through; text-decoration-thickness: 1px; }
 
 /* ── home ── */
 .pr-hero { position: relative; padding: clamp(2.6rem, 7vw, 5.5rem) 0 clamp(2rem, 5vw, 3.5rem); overflow: hidden;

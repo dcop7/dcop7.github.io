@@ -11,30 +11,45 @@ const PrLearn = (function () {
   const B = (pt, en) => ({ pt, en });
 
   const chapters = () => CH;
+  /* dois percursos: Organizar (os blocos originais) e Executar e dirigir
+     (acrescentado por pr-mind-content.js). Um bloco sem track é 'org'. */
+  const trackOf = b => (b && b.track) || 'org';
+  const tracks = () => PrLearnContent.TRACKS || [{ id: 'org' }];
+  const trackCh = t => CH.filter(c => trackOf(BLOCKS.find(b => b.id === c.block)) === t);
+  const kinds = c => (c.kinds || []).map(kindTag).join('');
   function indexHtml() {
-    let n = 0;
-    return BLOCKS.map(b => `<div class="pr-blockhead"><h2>${esc(L(b.name))}</h2><p>${esc(L(b.d))}</p></div>
+    const multi = tracks().length > 1;
+    return tracks().map(t => { let n = 0;
+      return `${multi ? `<section class="pr-track" id="track-${t.id}"><div class="pr-trackhead"><p class="pr-kicker">${esc(tx('Percurso', 'Track'))} ${esc(t.n || '')}</p><h2>${esc(L(t.name))}</h2><p>${esc(L(t.d))}</p></div>` : ''}
+      ${BLOCKS.filter(b => trackOf(b) === t.id).map(b => `<div class="pr-blockhead"><h2>${esc(L(b.name))}</h2><p>${esc(L(b.d))}</p></div>
       <ol class="pr-index">${CH.filter(c => c.block === b.id).map(c => { n++; return `<li><a href="#aprender/${c.id}"><span class="n">${String(n).padStart(2, '0')}</span><b>${esc(L(c.title))}</b>
-        <span class="meta">${c.kinds.map(kindTag).join('')}<span class="pr-mono" style="color:var(--pr-dim)">${c.min} min</span></span><p>${esc(L(c.lede))}</p></a></li>`; }).join('')}</ol>`).join('');
+        <span class="meta">${kinds(c)}<span class="pr-mono" style="color:var(--pr-dim)">${c.min} min</span></span><p>${esc(L(c.lede))}</p></a></li>`; }).join('')}</ol>`).join('')}${multi ? '</section>' : ''}`; }).join('');
   }
 
   function chapter(id, el) {
-    const i = CH.findIndex(c => c.id === id);
+    const c0 = CH.find(c => c.id === id);
+    const tid = c0 ? trackOf(BLOCKS.find(b => b.id === c0.block)) : 'org', TCH = trackCh(tid), track = tracks().find(t => t.id === tid) || {};
+    const i = TCH.findIndex(c => c.id === id);
     if (i < 0) { el.innerHTML = `<div class="pr-wrap pr-page"><div class="empty-state"><p class="es-title">${esc(tx('Capítulo não encontrado.', 'Chapter not found.'))}</p><a class="btn" href="#aprender">${esc(tx('Ver os capítulos', 'See the chapters'))}</a></div></div>`; return; }
-    const c = CH[i], prev = CH[i - 1], next = CH[i + 1];
+    const c = TCH[i], prev = TCH[i - 1], next = TCH[i + 1];
+    const other = tracks().find(t => t.id !== tid);
     const blk = BLOCKS.find(b => b.id === c.block);
     PrShell.setArea('aprender', L(c.title));
     el.innerHTML = `<div class="pr-wrap pr-page lr-layout">
       <aside class="lr-aside" aria-label="${esc(tx('Capítulos', 'Chapters'))}">
-        ${BLOCKS.map(b => `<p class="pr-kicker">${esc(L(b.name))}</p><ol>${CH.filter(x => x.block === b.id).map(x =>
+        ${track.name && tracks().length > 1 ? `<p class="lr-track">${esc(L(track.name))}</p>` : ''}
+        ${BLOCKS.filter(b => trackOf(b) === tid).map(b => `<p class="pr-kicker">${esc(L(b.name))}</p><ol>${CH.filter(x => x.block === b.id).map(x =>
           `<li><a href="#aprender/${x.id}" ${x.id === c.id ? 'aria-current="page" class="on"' : ''}>${esc(L(x.title))}</a></li>`).join('')}</ol>`).join('')}
+        ${other && other.name ? `<p class="lr-other"><a href="#aprender/${(trackCh(other.id)[0] || {}).id}">${esc(tx('Outro percurso: ', 'Other track: '))}${esc(L(other.name))} →</a></p>` : ''}
       </aside>
       <article class="lr-article">
-        ${crumbs([{ label: tx('Aprender', 'Learn'), href: '#aprender' }, { label: L(blk.name) }, { label: L(c.title) }])}
-        <header class="pr-head"><p class="pr-kicker">${String(i + 1).padStart(2, '0')} · ${c.min} min ${c.kinds.map(kindTag).join(' ')}</p>
+        ${crumbs([{ label: tx('Aprender', 'Learn'), href: '#aprender' }].concat(track.name && tracks().length > 1 ? [{ label: L(track.name), href: '#aprender' }] : []).concat([{ label: L(blk.name) }, { label: L(c.title) }]))}
+        <header class="pr-head"><p class="pr-kicker">${String(i + 1).padStart(2, '0')} · ${c.min} min ${(c.kinds || []).map(kindTag).join(' ')}</p>
           <h1>${esc(L(c.title))}</h1><p class="lede">${esc(L(c.lede))}</p></header>
-        <div class="lr-legend">${srcTag('est')} ${esc(tx('vem da literatura', 'from the literature'))} · ${srcTag('own')} ${esc(tx('decisão do sistema de referência', 'decision of the reference system'))} · ${srcTag('chk')} ${esc(tx('depende do produto', 'depends on the product'))}</div>
+        <div class="lr-legend">${tid === 'org' ? `${srcTag('est')} ${esc(tx('vem da literatura', 'from the literature'))} · ${srcTag('own')} ${esc(tx('decisão do sistema de referência', 'decision of the reference system'))} · ${srcTag('chk')} ${esc(tx('depende do produto', 'depends on the product'))}`
+          : `${srcTag('res')} ${esc(tx('estudos publicados', 'published studies'))} · ${srcTag('est')} ${esc(tx('enquadramento reconhecido', 'recognised framework'))} · ${srcTag('auth')} ${esc(tx('modelo de um autor', "one author's model"))} · ${srcTag('tip')} ${esc(tx('conselho deste site', "this site's advice"))} · ${srcTag('weak')} ${esc(tx('evidência fraca', 'weak evidence'))}`}</div>
         <div class="lr-body">${L(c.body)}</div>
+        ${c.refs ? `<section class="lr-refs"><p class="pr-kicker">${esc(tx('Fontes deste capítulo', 'Sources for this chapter'))}</p><ol>${c.refs.map(r => `<li>${r}</li>`).join('')}</ol></section>` : ''}
         <section class="lr-take"><p class="pr-kicker">${esc(tx('Para levar', 'Takeaways'))}</p><ul>${L(c.take).map(t => `<li>${esc(t)}</li>`).join('')}</ul>
           ${(c.next || []).length ? `<div class="pr-row" style="margin-top:1rem">${c.next.map(n => `<a class="btn" href="${n.href}">${esc(L(n.l))} ${ICON.arrow}</a>`).join('')}</div>` : ''}</section>
         <nav class="pr-pager" aria-label="${esc(tx('Capítulos', 'Chapters'))}">
@@ -446,5 +461,5 @@ const PrLearn = (function () {
   /* ════════════════ rota ════════════════ */
   Pr.route('aprender', (rest, el) => chapter(rest.split('/')[0], el));
 
-  return { chapters, indexHtml, decisionCount, taskLi, DEMOS };
+  return { chapters, indexHtml, decisionCount, taskLi, DEMOS, trackOf, trackCh };
 })();
