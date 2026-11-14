@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- DCOP7 Productivity: uma folha com os quatro separadores do sistema
+       (Ações, Informação, Hoje, Estrutura) e um visto. Desenho original. -->
+  <rect width="64" height="64" rx="14" fill="#1c2230"/>
+  <rect x="47" y="10" width="9" height="10" rx="2.5" fill="#d0482b"/>
+  <rect x="47" y="21.5" width="9" height="10" rx="2.5" fill="#2f66cc"/>
+  <rect x="47" y="33" width="9" height="10" rx="2.5" fill="#e9b21f"/>
+  <rect x="47" y="44.5" width="9" height="10" rx="2.5" fill="#13806f"/>
+  <rect x="9" y="8" width="41" height="48" rx="5" fill="#f7f4ee"/>
+  <path d="M16 20h20M16 27h14" stroke="#c9c2b4" stroke-width="3" stroke-linecap="round"/>
+  <path d="M17.5 39.5l6 6 12-13" fill="none" stroke="#1c2230" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

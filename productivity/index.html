@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>DCOP7 Productivity — um sistema pessoal de produtividade</title>
+<meta name="description" content="Aprender, explorar, experimentar e aplicar um sistema pessoal de produtividade: capturar, triar e rever; GTD e PARA; um playground de bases de dados ao estilo do Notion; diretório de ferramentas com planos grátis verificados. Funciona offline."/>
+<meta name="theme-color" content="#f7f4ee"/>
+<meta name="color-scheme" content="light dark"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="DCOP7 Productivity"/>
+<meta property="og:description" content="Capturar, triar, rever — um sistema pessoal de produtividade que se aprende a fazer."/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="DCOP7 Productivity"/>
+<link rel="icon" type="image/svg+xml" href="/productivity/icon.svg"/>
+<link rel="apple-touch-icon" href="/productivity/icon-192.png"/>
+<link rel="manifest" href="/productivity/manifest.webmanifest"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/productivity/css/pr-tokens.css"/>
+<link rel="stylesheet" href="/css/components.css"/>
+<link rel="stylesheet" href="/productivity/css/pr-ui.css"/>
+<link rel="stylesheet" href="/productivity/css/pr-learn.css"/>
+<link rel="stylesheet" href="/productivity/css/pr-notion.css"/>
+<link rel="stylesheet" href="/productivity/css/pr-explore.css"/>
+<link rel="stylesheet" href="/productivity/css/pr-apply.css"/>
+</head>
+<body>
+<script>
+/* antes do 1.º paint: tema guardado (ou o do sistema) */
+(function () {
+  var t = null; try { t = localStorage.getItem('pr-theme'); } catch (e) {}
+  if (!t) t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  document.body.classList.add(t === 'dark' ? 'dark' : 'light');
+})();
+</script>
+
+<a class="pr-skip" href="#main" data-i18n="pr.skip">Saltar para o conteúdo</a>
+
+<header class="pr-top">
+  <div class="pr-top-in">
+    <a class="pr-brand" href="#" aria-label="DCOP7 Productivity">
+      <img src="/productivity/icon.svg" alt="" width="30" height="30"/>
+      <span class="pr-brand-txt"><span class="pr-brand-dc">DCOP7</span><span class="pr-brand-nm">Productivity</span></span>
+    </a>
+    <nav class="pr-nav" aria-label="Áreas" data-i18n-aria="pr.nav.areas">
+      <a href="#aprender" data-area="aprender"><span class="pr-n">01</span><span data-i18n="pr.area.learn">Aprender</span></a>
+      <a href="#explorar" data-area="explorar"><span class="pr-n">02</span><span data-i18n="pr.area.explore">Explorar</span></a>
+      <a href="#experimentar" data-area="experimentar"><span class="pr-n">03</span><span data-i18n="pr.area.experiment">Experimentar</span></a>
+      <a href="#aplicar" data-area="aplicar"><span class="pr-n">04</span><span data-i18n="pr.area.apply">Aplicar</span></a>
+    </nav>
+    <div class="pr-tools">
+      <button class="pr-icon-btn pr-lang" type="button" data-lang-toggle aria-label="Mudar língua" data-i18n-title="pr.lang.title" title="Língua">EN</button>
+      <button class="pr-icon-btn" type="button" data-theme-toggle aria-label="Tema" data-i18n-title="pr.theme" title="Tema">
+        <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      </button>
+      <a class="pr-portal" href="/" data-i18n-title="pr.portal.title" title="Voltar ao Diogo Universe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Diogo Universe</span>
+      </a>
+      <button class="pr-icon-btn pr-menu-btn" type="button" data-menu-open aria-label="Abrir índice" aria-expanded="false" aria-controls="pr-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="pr-menu" id="pr-menu" role="dialog" aria-modal="true" aria-label="Índice" hidden>
+  <div class="pr-menu-head">
+    <span class="pr-brand"><img src="/productivity/icon.svg" alt="" width="30" height="30"/><span class="pr-brand-txt"><span class="pr-brand-dc">DCOP7</span><span class="pr-brand-nm">Productivity</span></span></span>
+    <button class="pr-icon-btn" type="button" data-menu-close aria-label="Fechar índice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <ol class="pr-menu-list">
+    <li><a href="#aprender" data-area="aprender"><span class="pr-n">01</span><b data-i18n="pr.area.learn">Aprender</b><small data-i18n="pr.area.learn.d">O modelo, os métodos e a estrutura</small></a></li>
+    <li><a href="#explorar" data-area="explorar"><span class="pr-n">02</span><b data-i18n="pr.area.explore">Explorar</b><small data-i18n="pr.area.explore.d">Mapa do sistema, relações e ferramentas</small></a></li>
+    <li><a href="#experimentar" data-area="experimentar"><span class="pr-n">03</span><b data-i18n="pr.area.experiment">Experimentar</b><small data-i18n="pr.area.experiment.d">Playground de bases de dados e captura</small></a></li>
+    <li><a href="#aplicar" data-area="aplicar"><span class="pr-n">04</span><b data-i18n="pr.area.apply">Aplicar</b><small data-i18n="pr.area.apply.d">Uma semana no sistema e o teu próprio sistema</small></a></li>
+  </ol>
+  <div class="pr-menu-foot">
+    <button class="btn" type="button" data-lang-toggle data-i18n="pr.lang.switch">English</button>
+    <button class="btn" type="button" data-theme-toggle data-i18n="pr.theme.switch">Tema claro / escuro</button>
+    <a class="btn" href="/">← Diogo Universe</a>
+  </div>
+</div>
+
+<main id="main" tabindex="-1">
+  <div id="pr-view"><div class="pr-wrap pr-page"><p class="pr-sub">A carregar…</p></div></div>
+  <noscript><div class="pr-wrap pr-page"><p>Este site precisa de JavaScript para mostrar os capítulos e os exercícios.</p></div></noscript>
+</main>
+
+<footer class="pr-foot">
+  <div class="pr-foot-in">
+    <div>
+      <h2>DCOP7 Productivity</h2>
+      <p data-i18n="pr.foot.about">Um sistema pessoal de produtividade que se aprende a fazer: capturar, triar e rever. Os exemplos são fictícios e tudo corre no teu browser — não há contas, sincronização nem ligação às tuas ferramentas. Funciona offline.</p>
+    </div>
+    <div>
+      <p class="pr-foot-k" data-i18n="pr.foot.areas">Áreas</p>
+      <ul>
+        <li><a href="#aprender">01 <span data-i18n="pr.area.learn">Aprender</span></a></li>
+        <li><a href="#explorar">02 <span data-i18n="pr.area.explore">Explorar</span></a></li>
+        <li><a href="#experimentar">03 <span data-i18n="pr.area.experiment">Experimentar</span></a></li>
+        <li><a href="#aplicar">04 <span data-i18n="pr.area.apply">Aplicar</span></a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="pr-foot-k" data-i18n="pr.foot.short">Atalhos</p>
+      <ul>
+        <li><a href="#experimentar/notion" data-i18n="pr.x.notion">Playground de bases de dados</a></li>
+        <li><a href="#aplicar/semana" data-i18n="pr.a.week">Uma semana no sistema</a></li>
+        <li><a href="#explorar/ferramentas" data-i18n="pr.e.tools">Diretório de ferramentas</a></li>
+        <li><a href="/">← Diogo Universe</a></li>
+      </ul>
+    </div>
+    <div class="pr-foot-base"><span data-i18n="pr.foot.base">DCOP7 Productivity · parte do Diogo Universe</span><span data-i18n="pr.foot.local">Simulação local · sem contas</span></div>
+  </div>
+</footer>
+
+<div class="pr-toast" id="pr-toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/js/core/i18n.js" defer></script>
+<script src="/js/vendor/anime.min.js" defer></script>
+<script src="/productivity/js/pr-i18n.js" defer></script>
+<script src="/productivity/js/pr-core.js" defer></script>
+<script src="/productivity/js/pr-seed.js" defer></script>
+<script src="/productivity/js/pr-world.js" defer></script>
+<script src="/productivity/js/pr-learn-content.js" defer></script>
+<script src="/productivity/js/pr-learn.js" defer></script>
+<script src="/productivity/js/pr-notion.js" defer></script>
+<script src="/productivity/js/pr-capture.js" defer></script>
+<script src="/productivity/js/pr-tools-data.js" defer></script>
+<script src="/productivity/js/pr-explore.js" defer></script>
+<script src="/productivity/js/pr-week.js" defer></script>
+<script src="/productivity/js/pr-apply.js" defer></script>
+<script src="/productivity/js/pr-app.js" defer></script>
+<script src="/productivity/js/pr-shell.js" defer></script>
+</body>
+</html>
