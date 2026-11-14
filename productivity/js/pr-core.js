@@ -73,6 +73,10 @@ const Pr = (function () {
   function srcTag(kind) {
     if (kind === 'est') return `<span class="src-tag est" title="${esc(tx('Vem da literatura (GTD, PARA, BuJo…)', 'Comes from the literature (GTD, PARA, BuJo…)'))}">${esc(tx('conceito', 'concept'))}</span>`;
     if (kind === 'own') return `<span class="src-tag own" title="${esc(tx('Uma decisão de desenho do sistema de referência — adapta-a', 'A design decision of the reference system — adapt it'))}">${esc(tx('escolha do sistema', 'system choice'))}</span>`;
+    if (kind === 'res') return `<span class="src-tag res" title="${esc(tx('Resultado de investigação publicada (estudos ou meta-análises citados no capítulo)', 'A published research finding (studies or meta-analyses cited in the chapter)'))}">${esc(tx('investigação', 'research'))}</span>`;
+    if (kind === 'auth') return `<span class="src-tag auth" title="${esc(tx('O modelo de um autor: útil, mas não testado como um todo', "One author's model: useful, but not tested as a whole"))}">${esc(tx('modelo de autor', "author's model"))}</span>`;
+    if (kind === 'tip') return `<span class="src-tag tip" title="${esc(tx('Conselho prático deste site — experimenta e ajusta', "This site's practical advice — try it and adjust"))}">${esc(tx('conselho prático', 'practical advice'))}</span>`;
+    if (kind === 'weak') return `<span class="src-tag weak" title="${esc(tx('Ideia popular com evidência fraca, contestada ou que não se replicou', 'A popular idea with weak, disputed or failed-to-replicate evidence'))}">${esc(tx('evidência fraca', 'weak evidence'))}</span>`;
     return `<span class="src-tag chk" title="${esc(tx('Depende do produto e muda com o tempo', 'Depends on the product and changes over time'))}">${esc(tx('confirmar na app', 'check in the app'))}</span>`;
   }
 

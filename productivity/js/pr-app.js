@@ -10,17 +10,17 @@ const PrApp = (function () {
 
   const AREAS = {
     aprender: { n: '01', name: B('Aprender', 'Learn'), q: B('Quero perceber', 'I want to understand'),
-      d: B('O modelo das quatro espécies, o ciclo capturar → triar → rever, GTD, PARA e as bases de dados — com uma pequena demonstração em cada capítulo.',
-           'The four-kinds model, the capture → triage → review loop, GTD, PARA and databases — with a small live demo in every chapter.') },
+      d: B('Dois percursos. Organizar: as quatro espécies, o ciclo capturar → triar → rever, GTD, PARA e as bases de dados. Executar e dirigir: hábitos, adiar, foco, decisões, motivação e prioridades — com o que diz a investigação e o que é só opinião de autor.',
+           'Two tracks. Organizing: the four kinds, the capture → triage → review loop, GTD, PARA and databases. Executing & directing: habits, procrastination, focus, decisions, motivation and priorities — with what research says and what is just an author’s view.') },
     explorar: { n: '02', name: B('Explorar', 'Explore'), q: B('Quero ver como encaixa', 'I want to see how it fits'),
       d: B('Mapas vivos do sistema: por onde passa cada coisa, como as bases de dados se ligam, e que ferramentas fazem cada papel.',
            'Live maps of the system: where each thing travels, how the databases link, and which tools play each role.') },
     experimentar: { n: '03', name: B('Experimentar', 'Experiment'), q: B('Quero mexer', 'I want to tinker'),
-      d: B('Um playground de bases de dados ao estilo do Notion, um laboratório de captura e o teste "página ou base de dados".',
-           'A Notion-style database playground, a capture lab and the "page or database" test.') },
+      d: B('Um playground de bases de dados ao estilo do Notion e o laboratório de captura — e seis laboratórios sobre o lado humano: hábitos, adiar, foco, decisões, motivação e prioridades, com as tuas próprias coisas.',
+           'A Notion-style database playground and the capture lab — plus six labs on the human side: habits, procrastination, focus, decisions, motivation and priorities, with your own things.') },
     aplicar: { n: '04', name: B('Aplicar', 'Apply'), q: B('Quero praticar', 'I want to practise'),
-      d: B('Uma semana inteira no sistema, a revisão semanal, exercícios de triagem e PARA, e o desenho do teu próprio sistema.',
-           'A whole week in the system, the weekly review, triage and PARA drills, and the design of your own system.') },
+      d: B('Uma semana inteira no sistema, a revisão semanal e a revisão pessoal, exercícios de triagem e PARA, e o desenho do teu próprio sistema.',
+           'A whole week in the system, the weekly and personal reviews, triage and PARA drills, and the design of your own system.') },
   };
 
   const ENTRIES = {
@@ -41,12 +41,26 @@ const PrApp = (function () {
         d: B('Escreve uma tarefa numa linha ao estilo quick-add e vê os três filtros a mudar; escreve uma nota e vê se resiste a três meses.', 'Type a task in one quick-add line and watch the three filters change; write a note and see if it survives three months.') },
       { id: 'pagina-ou-base', name: B('Página ou base de dados?', 'Page or database?'), kinds: ['str'],
         d: B('As quatro perguntas, a escada da graduação e a regra de três — com as notas do mundo de exemplo.', 'The four questions, the graduation ladder and the rule of three — using the sample world\'s notes.') },
+      { id: 'habito', track: 'ed', name: B('Laboratório de hábitos', 'Habit lab'), kinds: ['today'],
+        d: B('Desenha um hábito teu (deixa, sítio, versão pequena), mexe nas condições e vê as repetições necessárias; depois regista os dias reais. Também para quebrar um.', 'Design a habit of your own (cue, place, small version), change the conditions and see the repetitions needed; then log the real days. Also for breaking one.') },
+      { id: 'adiar', track: 'ed', name: B('Porque estou a adiar isto?', 'Why am I putting this off?'), kinds: ['act'],
+        d: B('Uma tarefa tua ou do mundo de exemplo, o que sentes em relação a ela, e quando a vontade vence a alternativa. Experimenta intervenções e sai com o primeiro passo.', 'A task of yours or from the sample world, how you feel about it, and when the urge beats the alternative. Try interventions and leave with the first step.') },
+      { id: 'foco', track: 'ed', name: B('Laboratório de foco', 'Focus lab'), kinds: ['today'],
+        d: B('Mede em ti o custo de trocar de regra; desenha um dia com notificações, reuniões e um bloco protegido.', 'Measure your own cost of switching rules; design a day with notifications, meetings and a protected block.') },
+      { id: 'decidir', track: 'ed', name: B('Laboratório de decisões', 'Decision lab'), kinds: ['act'],
+        d: B('Calibra as tuas estimativas com o teu histórico, vê o enquadramento a atuar em ti, e faz um pré-mortem que vira tarefas.', 'Calibrate your estimates with your track record, watch framing act on you, and run a premortem that turns into tasks.') },
+      { id: 'motivacao', track: 'ed', name: B('Redesenhar uma tarefa', 'Redesign a task'), kinds: ['act'],
+        d: B('Avalia uma tarefa em escolha, competência, ligação e porquê; aplica mudanças pequenas. E o que os prémios fazem à motivação.', 'Rate a task on choice, competence, connection and why; apply small changes. And what rewards do to motivation.') },
+      { id: 'prioridades', track: 'ed', name: B('O que depende de mim', 'What is up to me'), kinds: ['act', 'str'],
+        d: B('Controlo, influência ou largar; a armadilha da urgência; e planear de trás para a frente até à ação de hoje.', 'Control, influence or let go; the urgency trap; and planning backwards to today\'s action.') },
     ],
     aplicar: [
       { id: 'semana', name: B('Uma semana no sistema', 'A week in the system'), core: true, kinds: ['act', 'info', 'today', 'str'],
         d: B('De segunda a sexta: os Big 3 de manhã, o que chega durante o dia, o fecho à noite e a revisão de sexta. Tudo fica no mundo de exemplo.', 'Monday to Friday: the morning Big 3, what arrives during the day, the evening close and the Friday review. Everything lands in the sample world.') },
       { id: 'revisao', name: B('Revisão semanal', 'Weekly review'), core: true, kinds: ['act', 'info', 'str'],
         d: B('Os sete passos, cerca de 20 minutos, sobre o estado atual do mundo. Com o modo "semana má" de 5 minutos.', 'The seven steps, about 20 minutes, on the current state of the world. With the 5-minute "bad week" mode.') },
+      { id: 'revisao-pessoal', track: 'ed', name: B('Revisão pessoal', 'Personal review'), kinds: ['today'],
+        d: B('Dez minutos depois da revisão semanal: os teus hábitos, quando trabalhaste bem, o que adiaste e o que importa a seguir. Fica só neste browser.', 'Ten minutes after the weekly review: your habits, when you worked well, what you put off and what matters next. It stays only in this browser.') },
       { id: 'hoje', name: B('Hoje e os Big 3', 'Today and the Big 3'), kinds: ['today', 'act'],
         d: B('Ver a capacidade, escolher três coisas da lista e fechar o dia com ✓ → ✕.', 'Check capacity, pick three things from the list and close the day with ✓ → ✕.') },
       { id: 'triagem', name: B('Para onde vai isto?', 'Where does this go?'), kinds: ['act', 'info', 'today', 'str'],
@@ -251,8 +265,16 @@ const PrApp = (function () {
     PrShell.setArea(id, L(a.name));
     let list = '';
     if (id === 'aprender') list = typeof PrLearn !== 'undefined' ? PrLearn.indexHtml() : '';
-    else list = `<ol class="pr-index">${ENTRIES[id].map((e, i) => `<li><a href="#${id}/${e.id}"><span class="n">${String(i + 1).padStart(2, '0')}</span><b>${esc(L(e.name))}</b>
-      <span class="meta">${e.core ? `<span class="core">${esc(tx('essencial', 'core'))}</span>` : ''}${kindsMeta(e.kinds)}</span><p>${esc(L(e.d))}</p></a></li>`).join('')}</ol>`;
+    else {
+      const li = (e, i) => `<li><a href="#${id}/${e.id}"><span class="n">${String(i + 1).padStart(2, '0')}</span><b>${esc(L(e.name))}</b>
+      <span class="meta">${e.core ? `<span class="core">${esc(tx('essencial', 'core'))}</span>` : ''}${kindsMeta(e.kinds)}</span><p>${esc(L(e.d))}</p></a></li>`;
+      const TR = (typeof PrLearnContent !== 'undefined' && PrLearnContent.TRACKS) || [];
+      const groups = TR.map(t => ({ t, es: ENTRIES[id].filter(e => (e.track || 'org') === t.id) })).filter(g => g.es.length);
+      list = groups.length > 1
+        ? groups.map(g => `<section class="pr-track" id="track-${g.t.id}"><div class="pr-trackhead"><p class="pr-kicker">${esc(tx('Percurso', 'Track'))} ${esc(g.t.n)}</p><h2>${esc(L(g.t.name))}</h2></div>
+            <ol class="pr-index">${g.es.map(li).join('')}</ol></section>`).join('')
+        : `<ol class="pr-index">${ENTRIES[id].map(li).join('')}</ol>`;
+    }
     el.innerHTML = `<div class="pr-wrap pr-page">
       <header class="pr-head"><p class="pr-kicker">${a.n} — ${esc(L(a.name))}</p><h1>${esc(L(a.q))}</h1><p class="lede">${esc(L(a.d))}</p></header>
       ${list}
