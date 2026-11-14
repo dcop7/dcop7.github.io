@@ -1,0 +1,1167 @@
+/* ══════════════════════════════════════════════════════════════════
+   DCOP7 Photography — capítulos (ph-*)
+   Regras que viviam em css/views/features.css (secção Fotografia do portal)
+   e passaram para o microsite /photography/ em nov/2026. Consomem os nomes
+   de variável do portal (--card, --accent…), que o microsite define em
+   ph-tokens.css com a paleta própria (câmara escura).
+   ══════════════════════════════════════════════════════════════════ */
+/* ── PHOTOGRAPHY PAGE ── */
+/* As áreas (Fotografar · Aprender · Editar · Laboratório) estão na sidebar
+   do site desde a v5.1 — a página não tem tabs. O cabeçalho diz a área. */
+#view-photography .ph-kicker { margin: 0 0 .1rem; font-size: .68rem; font-weight: 800; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--muted); }
+.ph-panel { display: none; }
+.ph-panel.active { display: block; animation: view-in .15s ease; }
+
+.ph-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1rem; }
+.ph-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.15rem; }
+.ph-section-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+/* Real headings (h2 / h3.sub) — reset the UA margins so the rhythm is ours. */
+.ph-section-title { font-family: var(--font-head); font-size: .95rem; font-weight: 700; margin: 0 0 .85rem; }
+.ph-card-title { font-family: var(--font-head); font-size: .88rem; font-weight: 700; margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem; }
+.ph-field { margin-bottom: .6rem; }
+.ph-label { font-size: .7rem; font-weight: 600; color: var(--muted); margin-bottom: .28rem; display: block; }
+.ph-input, .ph-select {
+  width: 100%; background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  font-size: .82rem; padding: .4rem .65rem; border-radius: var(--radius-sm);
+  outline: none; transition: border-color var(--ease); font-family: var(--font-sans);
+}
+.ph-input:focus { border-color: rgba(var(--accent-rgb),.4); }
+.ph-select { appearance: none; cursor: pointer; }
+/* A lista aberta de um <select> é desenhada pelo sistema, não herda os
+   tokens: em tema escuro os <optgroup> saíam com fundo branco e texto
+   cinzento-claro, praticamente ilegíveis. Estas três regras são o que o
+   Chrome/Edge respeitam na lista. */
+.ph-select option, .ph-select optgroup { background: var(--card-solid); color: var(--text); }
+.ph-select optgroup { font-weight: 700; color: var(--accent-txt); }
+.ph-select option { font-weight: 400; padding: .2rem .3rem; }
+.ph-result {
+  background: rgba(var(--accent-rgb),.06); border: 1px solid rgba(var(--accent-rgb),.15);
+  border-radius: var(--radius-sm); padding: .65rem .85rem; margin-top: .6rem;
+}
+.ph-result-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; color: var(--accent-txt); }
+.ph-result-desc { font-size: .72rem; color: var(--muted); margin-top: .2rem; line-height: 1.5; }
+.ph-gh-grid { display: grid; grid-template-columns: auto auto; gap: .35rem .75rem; margin-top: .4rem; align-items: baseline; }
+.ph-row { display: flex; gap: .5rem; align-items: flex-end; margin-bottom: .6rem; }
+.ph-row .ph-field { flex: 1; margin-bottom: 0; }
+.ph-exp-triangle { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin: .65rem 0; }
+.ph-exp-cell { text-align: center; padding: .6rem .3rem; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.ph-exp-icon { font-size: 1.3rem; margin-bottom: .2rem; }
+.ph-exp-name { font-size: .62rem; font-weight: 700; margin-bottom: .2rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.ph-exp-val { font-size: .78rem; font-weight: 700; color: var(--accent-txt); font-family: var(--font-mono); }
+.ph-comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .65rem; }
+.ph-comp-item {
+  display: block; width: 100%; text-align: left; font: inherit; color: var(--text);
+  padding: 0; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  overflow: hidden; transition: all .2s;
+}
+.ph-comp-item:hover, .ph-comp-item:focus-visible { border-color: rgba(var(--accent-rgb),.4); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.25); outline: none; }
+.ph-comp-canvas-wrap { width: 100%; aspect-ratio: 3/2; position: relative; overflow: hidden; }
+.ph-comp-canvas { width: 100%; height: 100%; }
+.ph-comp-name { font-size: .76rem; font-weight: 700; padding: .45rem .6rem .2rem; }
+.ph-comp-desc {
+  font-size: .65rem; color: var(--muted); padding: 0 .6rem .55rem; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Photography modal */
+body.ph-modal-open { overflow: hidden; }
+.ph-modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.ph-modal-overlay[hidden] { display: none; }
+.ph-modal-box { background: var(--card-solid); border: 1px solid var(--border2); border-radius: var(--radius); max-width: 760px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
+.ph-modal-hdr { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.ph-modal-title { font-family: var(--font-head); font-size: .95rem; font-weight: 700; }
+.ph-modal-close { background: transparent; border: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; padding: .2rem .5rem; border-radius: 4px; transition: color var(--ease); }
+.ph-modal-close:hover { color: var(--text); }
+.ph-modal-canvas { width: 100%; display: block; aspect-ratio: 4/3; }
+.ph-modal-tips { padding: .6rem .75rem; background: var(--accent-soft); border-radius: var(--radius-sm); font-size: .78rem; color: var(--text2); line-height: 1.55; }
+
+/* Composition detail modal */
+.ph-comp-box { max-width: 820px; }
+.ph-comp-modal-grid { display: grid; grid-template-columns: 1fr 1fr; overflow: auto; min-height: 0; }
+.ph-comp-modal-canvas-wrap { border-right: 1px solid var(--border); align-self: start; }
+.ph-comp-modal-info { padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+.ph-comp-modal-desc { font-size: .82rem; color: var(--text2); line-height: 1.6; }
+.ph-comp-modal-examples { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+@media (max-width: 640px) {
+  .ph-comp-modal-grid { grid-template-columns: 1fr; }
+  .ph-comp-modal-canvas-wrap { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* Cheat sheet por cenário + técnicas de edição */
+.ph-section-sub { font-size: .74rem; color: var(--muted); margin: -.4rem 0 .85rem; line-height: 1.5; }
+.ph-scn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: .6rem; }
+.ph-scn-card { display: flex; flex-direction: column; align-items: flex-start; gap: .18rem; text-align: left; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .7rem .8rem; cursor: pointer; font: inherit; color: var(--text); transition: all var(--ease); }
+.ph-scn-card:hover { border-color: rgba(var(--accent-rgb),.45); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+/* O `display:flex` acima ganha ao `display:none` do [hidden] do browser, e sem
+   isto a procura por género esconde os grupos mas não os cartões. */
+.ph-scn-card[hidden] { display: none; }
+.ph-scn-ico { font-size: 1.5rem; }
+.ph-scn-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; }
+.ph-scn-blurb-sm {
+  font-size: .66rem; color: var(--muted); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* Gancho da Visão no cartão do género: a razão antes da descrição. */
+.ph-scn-hook {
+  font-size: .68rem; font-weight: 600; color: var(--accent-txt); line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.ph-scn-box { max-width: 880px; }
+.ph-scn-tabs { display: flex; gap: .4rem; padding: .65rem 1rem 0; }
+.ph-tab { background: transparent; border: 1px solid var(--border); border-radius: var(--r-pill); padding: .34rem .9rem; font: inherit; font-size: .76rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: all var(--ease); }
+.ph-tab.active { background: var(--accent-soft); border-color: rgba(var(--accent-rgb),.5); color: var(--accent-txt); }
+.ph-scn-modal-body { padding: 1rem 1.15rem; max-height: 78vh; overflow: auto; display: flex; flex-direction: column; gap: 1rem; }
+.ph-scn-blurb { font-size: .8rem; color: var(--text2); line-height: 1.55; }
+.ph-scn-sec h4 { font-family: var(--font-head); font-size: .8rem; margin: 0 0 .45rem; font-weight: 700; }
+.ph-scn-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.ph-kv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .4rem; }
+.ph-kv { display: flex; flex-direction: column; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .4rem .55rem; }
+.ph-kv-k { font-size: .6rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+.ph-kv-v { font-size: .76rem; color: var(--text); font-weight: 600; }
+.ph-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ph-chip { background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .3rem .7rem; font: inherit; font-size: .72rem; color: var(--text2); }
+.ph-chip-link { cursor: pointer; color: var(--accent-txt); border-color: rgba(var(--accent-rgb),.4); }
+.ph-chip-link:hover { background: var(--accent-soft); }
+.ph-chip[disabled] { cursor: default; }
+.ph-light-box { background: var(--accent-soft); border-radius: var(--radius-sm); padding: .6rem .75rem; font-size: .78rem; color: var(--text2); line-height: 1.55; }
+.ph-do, .ph-dont { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .35rem; font-size: .76rem; line-height: 1.45; }
+.ph-do li, .ph-dont li { padding-left: 1.3rem; position: relative; color: var(--text2); }
+.ph-do li::before { content: '✓'; position: absolute; left: 0; color: #34d399; font-weight: 700; }
+.ph-dont li::before { content: '✗'; position: absolute; left: 0; color: #f87171; font-weight: 700; }
+
+.ph-illus-block { border-top: 1px solid var(--border); padding-top: .85rem; }
+.ph-illus-title { font-family: var(--font-head); font-size: .8rem; font-weight: 700; margin-bottom: .5rem; }
+.ph-illus { display: flex; justify-content: center; background: var(--card2); border-radius: var(--radius-sm); padding: .6rem; }
+.ph-illus-cap { font-size: .7rem; color: var(--muted); margin-top: .4rem; line-height: 1.45; }
+.ph-pose-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: .5rem; }
+.ph-pose { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem; }
+.ph-pose svg { display: block; height: 120px; margin: 0 auto; }
+.ph-pose-vis { display: block; }
+
+/* ── Manequim vetorial (poses + "Onde cortar") ── */
+:root { --mq-hi: #c3cee0; --mq-lo: #7a879f; --mq-edge: rgba(10,16,28,.28); --mq-joint: rgba(18,26,42,.42); }
+body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); --mq-joint: rgba(18,26,42,.34); }
+.mq-svg { display: block; width: 100%; height: auto; }
+.ph-pose .mq-svg { height: 188px; width: auto; margin: 0 auto; }
+.ph-crop-illus { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .8rem 1rem; }
+.ph-crop-illus .mq-crop { max-width: 460px; width: 100%; margin: 0 auto; }
+.mq-crop-line { cursor: pointer; }
+.mq-crop-line .mq-line { transition: stroke-width .12s ease; }
+.mq-crop-line:hover .mq-line, .mq-crop-line.hot .mq-line { stroke-width: 3; stroke-dasharray: none; }
+.mq-crop-line:hover text, .mq-crop-line.hot text { font-weight: 800; }
+.mq-crop-line:focus-visible { outline: none; }
+.mq-crop-dim { transition: height .12s ease; }
+
+/* "Onde cortar" sobre personagem estilizada + exemplos práticos de corte */
+.ph-crop-illus .ph-cropp { max-width: 480px; }
+.ph-cropp-line { cursor: pointer; }
+.ph-cropp-rule { transition: stroke-width .12s ease; }
+.ph-cropp-line:hover .ph-cropp-rule, .ph-cropp-line.hot .ph-cropp-rule { stroke-width: 3; stroke-dasharray: none; }
+.ph-cropp-line:hover text:last-child, .ph-cropp-line.hot text:last-child { font-weight: 800; }
+.ph-cropp-line:focus-visible { outline: none; }
+.ph-cropp-dim { transition: height .12s ease; }
+.ph-cropex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: .7rem; }
+.ph-cropex-card { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .6rem .7rem .7rem; }
+.ph-cropex-title { font-family: var(--font-head); font-weight: 700; font-size: .8rem; text-align: center; margin-bottom: .5rem; }
+.ph-cropex-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.ph-cropex-shot { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+.ph-cropex-badge { font-size: .6rem; font-weight: 800; text-align: center; padding: .14rem; border-radius: 4px; letter-spacing: .02em; }
+.ph-cropex-shot.ok .ph-cropex-badge { color: #34d399; background: rgba(52,211,153,.12); }
+.ph-cropex-shot.bad .ph-cropex-badge { color: #f87171; background: rgba(248,113,113,.12); }
+.ph-cropex-frame { display: block; overflow: hidden; border-radius: .35rem; background: #0b1020; }
+.ph-cropex-shot.ok .ph-cropex-frame { box-shadow: 0 0 0 2px #34d399 inset; }
+.ph-cropex-shot.bad .ph-cropex-frame { box-shadow: 0 0 0 2px #f87171 inset; }
+.ph-cropex-frame img { width: 100%; display: block; }
+.ph-cropex-shot figcaption { font-size: .62rem; color: var(--muted); text-align: center; line-height: 1.32; }
+.ph-pose-img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+/* Poses foto-reais (PNG/WebP com transparência) ficam maiores e com um fundo
+   subtil de estúdio para assentarem no cartão. */
+.ph-pose.has-img { background: radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.05), transparent 70%), var(--card2); }
+.ph-pose-grid:has(.has-img) { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.ph-pose-cap { font-size: .64rem; color: var(--text2); text-align: center; margin-top: .3rem; line-height: 1.35; }
+.ph-tip-list { margin: 0; padding-left: 1.1rem; font-size: .76rem; color: var(--text2); line-height: 1.55; display: flex; flex-direction: column; gap: .3rem; }
+
+/* ── Aprender visual-first: grelha expansível + ilustrações inline ── */
+.ph-vis, .ph-svg { display: block; width: 100%; height: auto; }
+.ph-vis-img, .ph-vis canvas { display: block; width: 100%; height: auto; }
+.ph-learn-thumb .ph-comp-thumb { aspect-ratio: 21 / 10; }
+.ph-comp-detail-art canvas { display: block; width: 100%; height: auto; }
+.ph-learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: .7rem; align-items: start; }
+.ph-learn-card {
+  display: flex; flex-direction: column; text-align: left; font: inherit; color: var(--text);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer; padding: 0; position: relative; transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
+}
+.ph-learn-card:hover { border-color: rgba(var(--accent-rgb), .45); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.28); }
+.ph-learn-card.active { border-color: rgba(var(--accent-rgb), .7); box-shadow: 0 0 0 1px rgba(var(--accent-rgb), .5) inset; transform: none; }
+.ph-learn-thumb { display: block; width: 100%; background: #0a1220; border-bottom: 1px solid var(--border); }
+.ph-learn-thumb .ph-svg, .ph-learn-thumb .ph-vis { aspect-ratio: 21 / 10; }
+.ph-learn-card.no-art .ph-learn-thumb { aspect-ratio: 21 / 10; display: flex; align-items: center; justify-content: center; }
+/* Variante sem miniatura (Equipamento): cartão só de texto, para caberem
+   muitos itens curtos por linha em vez de uma parede de imagens repetidas. */
+.ph-learn-grid.compact { grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); }
+.ph-learn-card.compact .ph-learn-info { padding: .6rem 2rem .65rem .75rem; }
+.ph-learn-card.compact .ph-learn-caret { top: .5rem; }
+.ph-learn-ico { font-size: 2.4rem; opacity: .85; }
+.ph-learn-info { padding: .6rem .75rem .7rem; display: flex; flex-direction: column; gap: .2rem; }
+.ph-learn-name { font-family: var(--font-head); font-size: .84rem; font-weight: 700; line-height: 1.25; }
+.ph-learn-caret {
+  position: absolute; top: .5rem; right: .5rem; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(6,12,22,.62); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; transition: transform var(--ease), background var(--ease);
+}
+.ph-learn-caret::before, .ph-learn-caret::after { content: ''; position: absolute; background: var(--ink, #eaf1fb); border-radius: 2px; }
+.ph-learn-caret::before { width: 10px; height: 2px; }
+.ph-learn-caret::after { width: 2px; height: 10px; transition: transform var(--ease), opacity var(--ease); }
+.ph-learn-card.active .ph-learn-caret { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent); }
+.ph-learn-card.active .ph-learn-caret::after { transform: scaleY(0); opacity: 0; }
+
+.ph-learn-detail {
+  grid-column: 1 / -1; position: relative; margin: .1rem 0 .3rem;
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), .06), transparent 60%), var(--card);
+  border: 1px solid rgba(var(--accent-rgb), .4); border-radius: var(--radius); padding: 1rem 1.15rem 1.15rem;
+  animation: ph-detail-in .28s var(--ease-out-fn, ease);
+}
+@keyframes ph-detail-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.ph-detail-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; padding-right: 2rem; }
+.ph-detail-ico { font-size: 1.3rem; }
+.ph-detail-title { font-family: var(--font-head); font-size: 1.02rem; font-weight: 700; margin: 0; }
+.ph-detail-art { border-radius: var(--radius-sm); overflow: hidden; background: #0a1220; margin-bottom: 1rem; max-width: 640px; }
+.ph-detail-body { display: flex; flex-direction: column; gap: .85rem; max-width: 720px; }
+.ph-detail-close {
+  position: absolute; top: .7rem; right: .7rem; width: 26px; height: 26px; border-radius: 6px;
+  background: var(--card2); border: 1px solid var(--border); color: var(--muted); cursor: pointer;
+  font-size: .8rem; display: flex; align-items: center; justify-content: center; transition: all var(--ease); font-family: inherit;
+}
+.ph-detail-close:hover { color: var(--text); border-color: var(--border2); }
+.ph-know-sec h4 { font-family: var(--font-head); font-size: .82rem; font-weight: 700; margin: 0 0 .3rem; }
+.ph-know-sec p { font-size: .8rem; color: var(--text2); line-height: 1.6; margin: 0; }
+
+/* ── Laboratório de Edição (objetivo → técnica → software) ── */
+.ph-edit-cats { display: flex; flex-direction: column; gap: 1rem; margin-top: .9rem; }
+.ph-edit-cat-hd { display: flex; align-items: baseline; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
+.ph-edit-cat-hd span { font-family: var(--font-head); font-weight: 700; font-size: .9rem; }
+.ph-edit-cat-hd small { color: var(--muted); font-size: .7rem; }
+.ph-goal-chip { background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .42rem .9rem; font: inherit; font-size: .78rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all var(--ease); }
+.ph-goal-chip:hover { border-color: rgba(var(--accent-rgb), .5); color: var(--accent-txt); background: var(--accent-soft); transform: translateY(-1px); }
+.ph-goal-list { display: flex; flex-direction: column; gap: .4rem; }
+.ph-goal-row { display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; font: inherit; color: var(--text); background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .55rem .75rem; cursor: pointer; transition: all var(--ease); }
+.ph-goal-row:hover { border-color: rgba(var(--accent-rgb), .45); transform: translateX(2px); }
+.ph-goal-name { font-weight: 700; font-size: .8rem; color: #34d399; flex-shrink: 0; }
+.ph-goal-why { font-size: .72rem; color: var(--muted); flex: 1; line-height: 1.4; }
+.ph-goal-go { color: var(--accent-txt); font-weight: 700; flex-shrink: 0; }
+.ph-edit-concept { display: flex; flex-direction: column; gap: .7rem; margin-bottom: .6rem; }
+.ph-edit-impl { border: 1px solid rgba(var(--accent-rgb), .3); border-radius: var(--radius-sm); overflow: hidden; margin: .5rem 0; }
+.ph-edit-impl-hd { font-family: var(--font-head); font-weight: 700; font-size: .8rem; padding: .55rem .75rem; background: var(--accent-soft); }
+.ph-sw-tabs { display: flex; gap: .3rem; padding: .5rem .6rem 0; flex-wrap: wrap; }
+.ph-sw-tab { background: transparent; border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; padding: .32rem .75rem; font: inherit; font-size: .74rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: all var(--ease); }
+.ph-sw-tab.active { color: #fff; background: var(--sw, var(--accent)); border-color: var(--sw, var(--accent)); }
+.ph-sw-bodies { padding: .65rem .8rem .8rem; border-top: 1px solid var(--border); }
+.ph-sw-impl { font-size: .8rem; color: var(--text2); line-height: 1.6; }
+.ph-sw-steps { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: .32rem; }
+.ph-sw-steps li { padding-left: .15rem; }
+.ph-sw-steps li::marker { color: var(--accent-txt); font-weight: 700; }
+/* Modal de edição (mini-Laboratório a partir dos portais de género) */
+.ph-edit-modal-box { max-width: 720px; }
+.ph-edit-modal-body { padding: 1rem 1.15rem 1.15rem; overflow: auto; min-height: 0; }
+.ph-edit-modal-body .ph-portal-head { margin-top: .2rem; }
+.ph-edit-modal-body .ph-edit-cats { margin-top: .4rem; }
+
+/* ── Composição: cartões com ilustração + modal premium ── */
+.ph-comp-grid2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .7rem; }
+.ph-comp-card { display: flex; flex-direction: column; text-align: left; font: inherit; color: var(--text); background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; padding: 0; transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease); }
+.ph-comp-card:hover { border-color: rgba(var(--accent-rgb), .45); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.28); }
+.ph-comp-card-frame { position: relative; aspect-ratio: 1216 / 832; background: #0b1020; display: block; }
+.ph-comp-card-img, .ph-comp-card-cv { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ph-comp-card-img { object-fit: cover; }
+.ph-comp-card-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; padding: .5rem .7rem .12rem; }
+.ph-comp-card-desc { font-size: .68rem; color: var(--muted); padding: 0 .7rem .6rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ph-comp-grid-sm { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: .55rem; }
+.ph-comp-grid-sm .ph-comp-card-name { padding: .4rem .55rem .5rem; font-size: .72rem; }
+
+.ph-comp2-box { max-width: 840px; }
+.ph-comp2-seg { margin: 0 auto; }
+.ph-comp2-body { padding: 1rem 1.15rem 1.15rem; overflow: auto; min-height: 0; }
+.ph-comp2-stage { display: flex; align-items: center; gap: .5rem; }
+.ph-comp2-nav { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--card2); border: 1px solid var(--border); color: var(--text2); font-size: 1.35rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--ease); }
+.ph-comp2-nav:hover { border-color: rgba(var(--accent-rgb), .5); color: var(--accent-txt); }
+.ph-comp2-frames { display: flex; gap: .6rem; flex: 1; min-width: 0; }
+.ph-comp2-shot { flex: 1; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: .35rem; }
+.ph-comp2-shot figcaption { font-size: .68rem; color: var(--muted); text-align: center; line-height: 1.4; }
+.ph-comp2-badge { font-size: .68rem; font-weight: 800; text-align: center; padding: .16rem; border-radius: 5px; letter-spacing: .02em; }
+.ph-comp2-badge.ok { color: #34d399; background: rgba(52,211,153,.12); }
+.ph-comp2-badge.bad { color: #f87171; background: rgba(248,113,113,.12); }
+.ph-comp2-shot.ok .ph-comp2-frame { box-shadow: 0 0 0 2px rgba(52,211,153,.55) inset; }
+.ph-comp2-shot.bad .ph-comp2-frame { box-shadow: 0 0 0 2px rgba(248,113,113,.5) inset; }
+.ph-comp2-frame { position: relative; width: 100%; aspect-ratio: 1216 / 832; background: #0b1020; border-radius: .6rem; overflow: hidden; border: 1px solid var(--border); }
+.ph-comp2-img, .ph-comp2-canvas { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .2s; }
+.ph-comp2-img { object-fit: cover; }
+.ph-comp2-stage[data-view="example"] .ph-comp2-canvas { opacity: 0; }
+.ph-comp2-stage[data-view="grid"] .ph-comp2-img { opacity: 0; }
+.ph-comp2-anim { animation: comp-wipe .55s cubic-bezier(.4,0,.2,1); }
+@keyframes comp-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.ph-comp2-count { text-align: center; font-size: .68rem; color: var(--muted); font-family: var(--font-mono); margin: .45rem 0 0; }
+.ph-comp2-info { margin-top: .7rem; display: flex; flex-direction: column; gap: .7rem; }
+.ph-comp2-desc { font-size: .84rem; color: var(--text2); line-height: 1.6; margin: 0; }
+@media (max-width: 560px) { .ph-comp2-seg { order: 3; width: 100%; margin-top: .3rem; } }
+
+/* Comparação foto-real (ex.: qualidade da luz) — miniatura + galeria 3-up */
+.ph-learn-thumb .ph-photo-thumb { aspect-ratio: 21 / 10; }
+.ph-photo-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; display: block; }
+.ph-detail-art.ph-photo-art { background: transparent; }
+.ph-detail-art > img { width: 100%; height: auto; display: block; border-radius: var(--radius-sm); }
+.ph-photo-gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
+.ph-photo-cell { margin: 0; }
+.ph-photo-cell img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: var(--radius-sm); display: block; }
+.ph-photo-cell figcaption { font-size: .68rem; color: var(--muted); text-align: center; margin-top: .35rem; line-height: 1.35; }
+@media (max-width: 520px) { .ph-photo-gal { grid-template-columns: 1fr; } }
+
+.ph-estep { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .65rem .75rem; background: var(--card2); }
+.ph-estep + .ph-estep { margin-top: .6rem; }
+.ph-estep-idea { font-size: .8rem; font-weight: 700; color: var(--text); margin-bottom: .5rem; }
+.ph-estep-rows { display: flex; flex-direction: column; gap: .35rem; }
+.ph-estep-row { display: flex; gap: .5rem; font-size: .74rem; color: var(--text2); line-height: 1.45; align-items: flex-start; }
+.ph-sw { flex: 0 0 auto; width: 74px; font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; padding: .2rem .3rem; border-radius: 4px; text-align: center; color: #fff; }
+.ph-sw-rr { background: #2563eb; }
+.ph-sw-dt { background: #7c3aed; }
+.ph-sw-sg { background: #0891b2; }
+.ph-edit-note { font-size: .7rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+@media (max-width: 600px) {
+  .ph-scn-cols { grid-template-columns: 1fr; }
+  .ph-estep-row { flex-direction: column; gap: .12rem; }
+  .ph-sw { width: auto; align-self: flex-start; }
+}
+
+/* Color wheel */
+.cw-root { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; }
+.cw-canvas-col { display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+.cw-size-row { display: flex; gap: .4rem; margin-bottom: .3rem; }
+.cw-canvas { cursor: crosshair; display: block; border-radius: 50%; box-shadow: 0 4px 20px rgba(0,0,0,.3); touch-action: none; }
+.cw-info-col { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: .6rem; }
+.cw-preview-row { display: flex; gap: .7rem; align-items: center; }
+.cw-preview { width: 64px; height: 64px; border-radius: 12px; border: 2px solid var(--border); flex-shrink: 0; transition: background .15s; }
+.cw-color-info { display: flex; flex-direction: column; gap: .2rem; }
+.cw-color-name { font-weight: 700; font-size: .9rem; }
+.cw-color-val { font-family: var(--font-mono); font-size: .75rem; color: var(--text2); }
+.cw-color-val2 { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
+.cw-harmony-swatches { display: flex; gap: .35rem; flex-wrap: wrap; }
+.cw-swatch { width: 28px; height: 28px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; transition: transform .15s; flex-shrink: 0; }
+.cw-swatch:hover { transform: scale(1.15); }
+.cw-copy-row { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+
+/* ══ FOTOGRAFIA · portal de géneros (v2) ═════════════════════════════
+   Seletor de equipamento, portais por género e
+   fundamentos. Reutiliza ph-scn-card/ph-kv/ph-chips/ph-do/ph-dont. */
+.ph-gearbar { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin-bottom: .9rem; }
+.ph-gearbar-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; margin-right: .2rem; }
+.ph-gear-btn {
+  font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+  color: var(--text2); background: var(--card2); border: 1px solid var(--border);
+  border-radius: var(--r-pill); padding: .38rem .85rem; transition: all var(--ease);
+}
+.ph-gear-btn:hover { border-color: rgba(var(--accent-rgb), .45); }
+.ph-gear-btn.active { background: var(--accent-fill); border-color: var(--accent); color: var(--on-accent); }
+
+/* CTA do modo terreno */
+.ph-field-cta {
+  display: flex; align-items: center; gap: .8rem; width: 100%; text-align: left;
+  font: inherit; color: var(--text); cursor: pointer; margin: .2rem 0 1rem;
+  background: linear-gradient(120deg, rgba(var(--accent-rgb), .16), rgba(var(--accent-rgb), .05));
+  border: 1px solid rgba(var(--accent-rgb), .4); border-radius: var(--radius); padding: .85rem 1rem;
+  transition: transform var(--ease), border-color var(--ease);
+}
+.ph-field-cta:hover { transform: translateY(-1px); border-color: var(--accent); }
+.ph-field-cta.small { margin-top: 1.1rem; }
+.ph-field-cta-ico { font-size: 1.5rem; }
+.ph-field-cta-txt { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+.ph-field-cta-txt b { font-family: var(--font-head); font-size: .92rem; }
+.ph-field-cta-txt small { font-size: .74rem; color: var(--muted); }
+.ph-field-cta-go { margin-left: auto; font-size: 1.1rem; color: var(--accent-txt); }
+
+/* portal de género */
+.ph-portal-top { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin-bottom: .9rem; }
+.ph-portal-top .ph-gearbar { margin-bottom: 0; }
+.ph-back {
+  font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+  color: var(--text2); background: var(--card2); border: 1px solid var(--border);
+  border-radius: var(--r-pill); padding: .4rem .9rem; transition: all var(--ease);
+}
+.ph-back:hover { color: var(--text); border-color: rgba(var(--accent-rgb), .45); }
+.ph-portal-head { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: 1rem; }
+.ph-portal-ico { font-size: 2rem; line-height: 1.1; }
+.ph-portal-name { font-family: var(--font-head); font-size: 1.25rem; margin: 0 0 .15rem; }
+.ph-portal-goal { margin: 0; font-size: .84rem; color: var(--muted); line-height: 1.55; max-width: 62ch; }
+
+/* cartões de equipamento */
+.ph-kit-wrap { display: grid; gap: .9rem; margin-bottom: 1.1rem; }
+.ph-kit-wrap.both { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.ph-kit { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; border-top: 3px solid rgba(var(--accent-rgb), .55); }
+.ph-kit-head { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--muted); margin-bottom: .5rem; }
+.ph-kit-lens { font-family: var(--font-head); font-size: .95rem; font-weight: 700; margin-bottom: .3rem; }
+.ph-kit-why { font-size: .8rem; color: var(--text2); line-height: 1.55; margin-bottom: .6rem; }
+.ph-kit-mode { font-size: .78rem; color: var(--accent-txt); font-weight: 600; margin-bottom: .6rem; }
+.ph-kit .ph-kv-grid { margin-bottom: .65rem; }
+.ph-kit-af, .ph-kit-alt { font-size: .76rem; color: var(--text2); line-height: 1.55; margin-bottom: .5rem; }
+.ph-kit-lims { background: rgba(239, 68, 68, .07); border: 1px solid rgba(239, 68, 68, .22); border-radius: var(--radius-sm); padding: .55rem .7rem; margin-bottom: .55rem; }
+.ph-kit-lims b { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--red); }
+.ph-kit-lims ul { margin: .3rem 0 0; padding-left: 1.05rem; }
+.ph-kit-lims li { font-size: .76rem; color: var(--text2); line-height: 1.55; margin-bottom: .2rem; }
+
+/* checklist interativa */
+.ph-check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .35rem; }
+.ph-check label { display: flex; gap: .55rem; align-items: flex-start; cursor: pointer; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .5rem .65rem; font-size: .78rem; line-height: 1.45; transition: all var(--ease); }
+.ph-check input { accent-color: var(--accent); margin-top: .05rem; flex-shrink: 0; width: 18px; height: 18px; cursor: pointer; }
+.ph-check input:checked + span { color: var(--muted); text-decoration: line-through; }
+
+/* aprender + fundamentos */
+.ph-apr-panel[hidden] { display: none; }
+.ph-know-sec { margin-bottom: .9rem; text-align: left; }
+.ph-know-sec h4 { margin: 0 0 .25rem; font-size: .84rem; font-family: var(--font-head); }
+.ph-know-sec p { margin: 0; font-size: .8rem; line-height: 1.65; color: var(--text2); }
+
+/* âncora de calculadora vinda de um portal */
+.ph-calc-flash > .ph-card, .ph-calc-flash { animation: phCalcFlash 1.6s ease; border-radius: var(--radius); }
+@keyframes phCalcFlash { 0%, 60% { box-shadow: 0 0 0 2px var(--accent), 0 0 22px rgba(var(--accent-rgb), .45); } 100% { box-shadow: none; } }
+
+@media (max-width: 640px) {
+  .ph-portal-top { flex-direction: column; align-items: flex-start; }
+  .ph-check { grid-template-columns: 1fr; }
+}
+
+/* géneros agrupados + procura (28 géneros: grelha plana deixou de funcionar) */
+.ph-genre-search { margin: .75rem 0 .25rem; }
+.ph-genre-q { width: 100%; max-width: 380px; font: inherit; font-size: .88rem; color: var(--text); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .5rem .95rem; transition: border-color var(--ease); }
+.ph-genre-q:focus-visible { outline: none; border-color: var(--accent); }
+.ph-genre-q::placeholder { color: var(--muted); }
+.ph-genre-group + .ph-genre-group { margin-top: 1.25rem; }
+.ph-genre-group-title { display: flex; align-items: center; gap: .5rem; font-family: var(--font-head); font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 1rem 0 .55rem; }
+.ph-genre-group-n { font-size: .72rem; font-weight: 700; letter-spacing: 0; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .05rem .45rem; }
+.ph-genre-empty { margin-top: .75rem; }
+
+/* ícones de género gerados (miniatura) — emoji continua a ser o fallback */
+.ph-scn-ico-img, .ph-portal-ico-img { display: block; overflow: hidden; border-radius: 10px; border: 1px solid var(--border); background: var(--card2); }
+.ph-scn-ico-img { width: 46px; height: 46px; }
+.ph-portal-ico-img { width: 60px; height: 60px; border-radius: 12px; flex-shrink: 0; }
+.ph-scn-ico-img img, .ph-portal-ico-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-scn-card:hover .ph-scn-ico-img { border-color: var(--accent); }
+
+/* ══ v3: perfil + classe de câmara, portal seccionado, equipamento ══════ */
+
+/* barra de contexto (câmara + perfil) — presente em todos os ecrãs dependentes */
+/* contexto câmara · perfil (v5.1): opções sempre à vista, a escolhida
+   preenchida — controlo segmentado, não pílulas soltas */
+.ph-ctx { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.4rem; margin: .5rem 0 1rem; }
+.ph-ctx-grp { display: flex; align-items: center; gap: .55rem; min-width: 0; }
+.ph-ctx-lbl { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.ph-ctx-seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--card2); border: 1px solid var(--border); border-radius: 10px; }
+.ph-ctx-btn { font: inherit; font-size: .79rem; font-weight: 600; cursor: pointer; color: var(--text2); background: none;
+  border: 0; border-radius: 7px; padding: .4rem .75rem; min-height: 32px; white-space: nowrap; transition: background var(--ease), color var(--ease); }
+.ph-ctx-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+.ph-ctx-btn.active { background: var(--accent-fill); color: var(--on-accent); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.ph-ctx-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ph-ctx-info { font: inherit; font-size: .76rem; font-weight: 700; cursor: pointer; color: var(--accent-txt); background: none; border: 0;
+  padding: .3rem 0; text-decoration: underline; text-underline-offset: 2px; }
+.ph-ctx-info:hover { color: var(--text); }
+
+/* modal comparativo de perfis */
+.ph-prof-box { max-width: 900px; }
+.ph-prof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .7rem; margin-top: .8rem; }
+.ph-prof-card { display: flex; flex-direction: column; gap: .4rem; text-align: left; font: inherit; cursor: pointer; padding: .85rem; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); transition: all var(--ease); }
+.ph-prof-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.ph-prof-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.ph-prof-top { display: flex; align-items: center; gap: .4rem; }
+.ph-prof-ico { font-size: 1.2rem; }
+.ph-prof-name { font-family: var(--font-head); font-size: 1rem; font-weight: 800; color: var(--text); }
+.ph-prof-cur { font-size: .62rem; font-weight: 700; text-transform: uppercase; color: var(--on-accent); background: var(--accent-fill); border-radius: var(--r-pill); padding: .1rem .4rem; }
+.ph-prof-tag { font-size: .8rem; font-weight: 600; color: var(--accent-txt); }
+.ph-prof-fmt { font-size: .74rem; font-weight: 700; color: var(--text2); background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: .25rem .5rem; }
+.ph-prof-who, .ph-prof-phil { font-size: .78rem; color: var(--text2); line-height: 1.5; }
+.ph-prof-phil { color: var(--muted); }
+.ph-prof-cols { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: .2rem; }
+.ph-prof-col b { font-size: .7rem; color: var(--text2); }
+.ph-prof-col ul { margin: .2rem 0 0; padding-left: .9rem; font-size: .72rem; color: var(--muted); line-height: 1.45; }
+
+/* navegação por secções (portal de género e equipamento) */
+.ph-secnav { display: flex; gap: .35rem; overflow-x: auto; padding: .15rem 0 .6rem; margin-bottom: .5rem; scrollbar-width: none; }
+.ph-secnav::-webkit-scrollbar { display: none; }
+.ph-secnav-btn { flex-shrink: 0; font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .42rem .85rem; transition: all var(--ease); }
+.ph-secnav-btn:hover { border-color: var(--accent); color: var(--text); }
+.ph-secnav-btn.active { background: var(--accent-fill); border-color: var(--accent); color: var(--on-accent); }
+.ph-secbody { animation: ph-fade .22s var(--ease-fn); }
+@keyframes ph-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* bloco de formato (perfil × exigência do género) */
+.ph-fmt { border: 1px solid var(--border); border-left-width: 3px; border-radius: var(--radius); padding: .7rem .85rem; margin-bottom: .8rem; background: var(--card2); }
+.ph-fmt-hi { border-left-color: #f59e0b; }
+.ph-fmt-md { border-left-color: var(--accent); }
+.ph-fmt-lo { border-left-color: #34d399; }
+.ph-fmt-hd { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-bottom: .35rem; }
+.ph-fmt-lbl { font-family: var(--font-head); font-size: .95rem; font-weight: 800; color: var(--text); }
+.ph-fmt-badge { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: var(--r-pill); padding: .18rem .5rem; border: 1px solid; }
+.ph-fmt-badge.hi { color: #f59e0b; border-color: #f59e0b55; background: #f59e0b1a; }
+.ph-fmt-badge.md { color: var(--accent-txt); border-color: var(--border); background: var(--card); }
+.ph-fmt-badge.lo { color: #34d399; border-color: #34d39955; background: #34d3991a; }
+.ph-fmt-txt { font-size: .84rem; color: var(--text2); line-height: 1.55; margin: 0; }
+.ph-fmt-why { font-size: .78rem; color: var(--muted); line-height: 1.5; margin: .35rem 0 0; }
+
+/* cartão de equipamento do género */
+.ph-gear-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.05rem; }
+.ph-gear-hd { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-bottom: .3rem; }
+.ph-gear-cls { font-size: .76rem; font-weight: 700; color: var(--text2); }
+.ph-gear-lensname { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.ph-gear-focal { font-family: var(--font-head); font-size: 1.25rem; font-weight: 800; color: var(--accent-txt); line-height: 1.2; }
+.ph-gear-concrete { font-size: .82rem; color: var(--text2); margin: .3rem 0 .5rem; }
+.ph-gear-concrete b { color: var(--text); }
+.ph-gear-why { font-size: .84rem; color: var(--text2); line-height: 1.55; margin: 0 0 .55rem; }
+.ph-gear-note { font-size: .8rem; color: var(--text2); line-height: 1.5; background: var(--card2); border-left: 2px solid var(--accent); border-radius: 0 6px 6px 0; padding: .45rem .6rem; margin-bottom: .6rem; }
+.ph-gear-mine { font-size: .78rem; color: var(--muted); line-height: 1.5; margin-top: .7rem; padding-top: .6rem; border-top: 1px dashed var(--border); }
+.ph-gear-mine b { color: var(--text2); display: block; margin-bottom: .15rem; }
+
+/* "A cena": cartões de informação + módulos de ofício */
+.ph-scn-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .7rem; margin-bottom: .8rem; }
+.ph-info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem .9rem; }
+.ph-info-card > b { display: block; font-family: var(--font-head); font-size: .9rem; font-weight: 800; color: var(--text); margin-bottom: .4rem; }
+.ph-info-card ul { margin: 0; padding-left: 1.05rem; font-size: .82rem; color: var(--text2); line-height: 1.6; }
+.ph-info-card p { margin: 0; font-size: .82rem; color: var(--text2); line-height: 1.6; }
+/* Módulos de ofício: sempre abertos desde nov/2026 (eram acordeões). Em ecrã
+   largo, ilustração à esquerda e texto à direita — metade da altura. */
+.ph-craft-list { display: flex; flex-direction: column; gap: .7rem; }
+.ph-craft { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.ph-craft-sum { display: flex; align-items: baseline; gap: .5rem; padding: .65rem .8rem; }
+.ph-craft-ico { font-size: 1rem; }
+.ph-craft-ttl { font-family: var(--font-head); font-size: .95rem; font-weight: 800; color: var(--text); flex-shrink: 0; }
+.ph-craft-applied { font-size: .78rem; color: var(--muted); line-height: 1.4; }
+.ph-craft-body { padding: 0 .8rem .8rem; border-top: 1px solid var(--border); }
+@media (min-width: 900px) { .ph-craft-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 1rem; align-items: start; } }
+.ph-craft-vis { margin: .7rem 0; }
+.ph-craft-vis svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+.ph-craft-prin { font-size: .84rem; color: var(--text2); line-height: 1.6; margin: .6rem 0; }
+.ph-craft-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .5rem; }
+.ph-craft-opt { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: .5rem .6rem; display: flex; flex-direction: column; gap: .18rem; }
+.ph-craft-opt b { font-size: .8rem; color: var(--accent-txt); }
+.ph-craft-eff { font-size: .76rem; color: var(--text2); line-height: 1.45; }
+.ph-craft-when { font-size: .72rem; color: var(--muted); line-height: 1.4; }
+.ph-craft-mist { margin-top: .6rem; }
+.ph-craft-mist b { font-size: .78rem; color: #f87171; }
+.ph-craft-mist ul { margin: .25rem 0 0; padding-left: 1rem; font-size: .78rem; color: var(--text2); line-height: 1.5; }
+.ph-craft-drill { margin-top: .6rem; font-size: .78rem; color: var(--text2); line-height: 1.5; background: var(--card2); border-left: 2px solid #34d399; border-radius: 0 6px 6px 0; padding: .45rem .6rem; }
+.ph-craft-drill b { color: #34d399; }
+
+/* condições de luz */
+.ph-lc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .5rem; margin: .7rem 0; }
+.ph-lc { background: var(--card); border: 1px solid var(--border); border-left: 3px solid #f5b74a; border-radius: 0 var(--radius) var(--radius) 0; padding: .55rem .7rem; display: flex; flex-direction: column; gap: .2rem; }
+.ph-lc-when { font-size: .8rem; font-weight: 700; color: var(--text); }
+.ph-lc-what { font-size: .78rem; color: var(--text2); line-height: 1.5; }
+
+/* erros comuns: erro → correção */
+.ph-mist-list { display: flex; flex-direction: column; gap: .5rem; margin-bottom: .9rem; }
+.ph-mist { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.ph-mist-err, .ph-mist-fix { display: flex; gap: .5rem; align-items: baseline; padding: .55rem .7rem; font-size: .82rem; line-height: 1.5; }
+.ph-mist-err { color: var(--text); background: #f8717112; }
+.ph-mist-fix { color: var(--text2); border-top: 1px solid var(--border); }
+.ph-mist-tag { flex-shrink: 0; font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: var(--r-pill); padding: .15rem .45rem; color: #f87171; border: 1px solid #f8717155; }
+.ph-mist-tag.ok { color: #34d399; border-color: #34d39955; }
+.ph-drills { margin: 0; padding-left: 1.05rem; font-size: .84rem; color: var(--text2); line-height: 1.7; }
+.ph-ideas ul li, .ph-tricks ul li { margin-bottom: .25rem; }
+
+/* ══ visualizador de composição ═══════════════════════════════════════ */
+.ph-cv-box { max-width: 860px; }
+.ph-cv-controls { display: flex; align-items: center; justify-content: center; gap: .8rem; margin-bottom: .5rem; }
+.ph-cv-nav { font: inherit; font-size: 1.3rem; line-height: 1; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: 50%; width: 34px; height: 34px; transition: all var(--ease); }
+.ph-cv-nav:hover { background: var(--accent-fill); border-color: var(--accent); color: var(--on-accent); }
+.ph-cv-count { font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ph-cv-toggle { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; font-weight: 600; color: var(--text2); cursor: pointer; user-select: none; }
+.ph-cv-toggle input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+.ph-cv-frame { position: relative; width: 100%; aspect-ratio: 1216 / 832; border-radius: var(--radius); overflow: hidden; background: var(--card2); touch-action: none; cursor: ew-resize; }
+.ph-cv-frame:not([data-wipe]) { cursor: default; }
+.ph-cv-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ph-cv-ok { overflow: hidden; }
+.ph-cv-ok img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-cv-noimg { background: var(--card2); }
+.ph-cv-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity .22s var(--ease); }
+.ph-cv-ov.off { opacity: 0; }
+.ph-cv-tag { position: absolute; top: .5rem; font-size: .68rem; font-weight: 700; border-radius: var(--r-pill); padding: .2rem .55rem; pointer-events: none; }
+.ph-cv-tag.ok { left: .5rem; color: #34d399; background: #04121fcc; border: 1px solid #34d39966; }
+.ph-cv-tag.bad { right: .5rem; color: #f87171; background: #04121fcc; border: 1px solid #f8717166; }
+.ph-cv-handle { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 0 1px #0006; transform: translateX(-1px); pointer-events: none; }
+.ph-cv-grip { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; background: #fff; color: #04121f; font-size: .8rem; display: grid; place-items: center; box-shadow: 0 2px 8px #0006; }
+.ph-cv-range { width: 100%; margin: .5rem 0 .2rem; accent-color: var(--accent); }
+.ph-cv-why { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .6rem; }
+.ph-cv-why-ok, .ph-cv-why-bad { font-size: .76rem; line-height: 1.45; color: var(--text2); }
+.ph-cv-why-ok b { color: #34d399; }
+.ph-cv-why-bad b { color: #f87171; }
+.ph-cv-info { display: flex; flex-direction: column; gap: .5rem; }
+.ph-cv-sec { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: .6rem .75rem; }
+.ph-cv-sec.apply { border-left: 3px solid var(--accent); }
+.ph-cv-sec b { display: block; font-size: .8rem; color: var(--text); margin-bottom: .2rem; }
+.ph-cv-sec p { margin: 0; font-size: .8rem; color: var(--text2); line-height: 1.55; }
+.ph-cv-rail { display: flex; gap: .4rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+.ph-cv-thumb { flex-shrink: 0; width: 84px; font: inherit; cursor: pointer; background: none; border: none; padding: 0; display: flex; flex-direction: column; gap: .2rem; opacity: .55; transition: opacity var(--ease); }
+.ph-cv-thumb:hover, .ph-cv-thumb.active { opacity: 1; }
+.ph-cv-thumb img, .ph-cv-thumb-no { width: 84px; height: 57px; object-fit: cover; border-radius: 5px; border: 2px solid transparent; background: var(--card2); display: block; }
+.ph-cv-thumb.active img, .ph-cv-thumb.active .ph-cv-thumb-no { border-color: var(--accent); }
+.ph-cv-thumb-n { font-size: .6rem; color: var(--muted); line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* ══ secção Visão (camada criativa de cada género) ════════════════════ */
+.ph-vis-lead { margin: 0 0 .8rem; padding-left: .85rem; border-left: 3px solid var(--accent);
+  font-family: var(--font-head); font-size: 1.06rem; font-weight: 700; line-height: 1.45; color: var(--text); }
+.ph-vis-why { margin: 0 0 .9rem; font-size: .87rem; line-height: 1.72; color: var(--text2); max-width: 74ch; }
+/* O par de imagens é argumento, não decoração: limitado para não engolir o texto. */
+.ph-vis-stage { max-width: 720px; margin: 0 0 .3rem; }
+.ph-vis-cap { margin: 0 0 1rem; font-size: .74rem; line-height: 1.5; color: var(--muted); text-align: center; }
+.ph-vis-subject { background: var(--card2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); padding: .65rem .8rem; margin-bottom: .9rem; }
+.ph-vis-subject b { display: block; font-size: .8rem; color: var(--accent-txt); margin-bottom: .2rem; }
+.ph-vis-subject p { margin: 0; font-size: .84rem; color: var(--text2); line-height: 1.6; }
+
+.ph-vis-sec { margin-bottom: .9rem; }
+.ph-vis-sec h4 { margin: 0 0 .35rem; font-family: var(--font-head); font-size: .88rem; font-weight: 800; color: var(--text); }
+.ph-vis-sec > .ph-section-sub { margin: -.15rem 0 .45rem; }
+
+.ph-vis-gap { display: flex; flex-direction: column; gap: .4rem; }
+.ph-vis-gap-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .55rem;
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: .55rem .7rem; }
+.ph-vis-ord { font-size: .8rem; line-height: 1.5; color: var(--muted); }
+.ph-vis-arrow { font-size: .9rem; color: var(--accent-txt); }
+.ph-vis-mem { font-size: .8rem; line-height: 1.5; color: var(--text); font-weight: 600; }
+
+.ph-vis-ask { margin: 0; padding-left: 1.2rem; font-size: .84rem; color: var(--text2); line-height: 1.7; }
+.ph-vis-ask li { margin-bottom: .3rem; }
+.ph-vis-ask li::marker { color: var(--accent-txt); font-weight: 700; }
+
+.ph-vis-lang { display: flex; flex-direction: column; gap: .3rem; }
+.ph-vis-lang-row { display: grid; grid-template-columns: minmax(150px, 30%) 1fr; gap: .6rem; align-items: baseline;
+  background: var(--card2); border-radius: 6px; padding: .45rem .6rem; }
+.ph-vis-lang-n { font-size: .79rem; font-weight: 700; color: var(--text); }
+.ph-vis-lang-m { font-size: .79rem; line-height: 1.55; color: var(--text2); }
+
+/* Armadilha, ética e série passaram a acordeões: continuam inteiras, mas o
+   ecrã inicial da Visão deixou de mostrar três parágrafos que quase ninguém
+   lia de seguida. Uma linha visível cada, e abre quem quiser. */
+.ph-vis-acc { border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .55rem .8rem; margin-bottom: .5rem; background: var(--card2); }
+.ph-vis-acc.trap { border-left: 3px solid #f59e0b; }
+.ph-vis-acc.ethic { border-left: 3px solid #38bdf8; }
+.ph-vis-acc.series { border-left: 3px solid #a78bfa; }
+.ph-vis-acc > summary { cursor: pointer; list-style: none; display: flex; align-items: center;
+  justify-content: space-between; gap: .5rem; font-size: .8rem; }
+.ph-vis-acc > summary::-webkit-details-marker { display: none; }
+.ph-vis-acc > summary::after { content: '＋'; color: var(--muted); font-size: .85rem; }
+.ph-vis-acc[open] > summary::after { content: '−'; }
+.ph-vis-acc.trap b { color: #f59e0b; }
+.ph-vis-acc.ethic b { color: #38bdf8; }
+.ph-vis-acc.series b { color: #a78bfa; }
+.ph-vis-acc p { margin: .4rem 0 0; font-size: .82rem; color: var(--text2); line-height: 1.62; }
+.ph-vis-foot { margin: .9rem 0 0; padding-top: .6rem; border-top: 1px dashed var(--border);
+  font-size: .78rem; line-height: 1.6; color: var(--muted); }
+.ph-vis-foot b { color: var(--text2); }
+
+/* ══ Aprender ▸ Estilos e Técnicas ════════════════════════════════════
+   As três perguntas (o que diz / onde resulta / quando se gasta) ficam
+   lado a lado de propósito: é a comparação entre elas que impede um
+   estilo de ser lido como receita a aplicar em tudo. */
+.ph-look-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .55rem; margin: .9rem 0; }
+.ph-info-card.says { border-left: 3px solid #a78bfa; } .ph-info-card.says b { color: #a78bfa; }
+.ph-info-card.works { border-left: 3px solid #34d399; } .ph-info-card.works b { color: #34d399; }
+.ph-info-card.over { border-left: 3px solid #f59e0b; } .ph-info-card.over b { color: #f59e0b; }
+/* a grelha das marcações de composição precisa de cobrir a moldura do
+   PhotoLearn tal como cobria a antiga */
+.pl-frame > .ph-cv-ov { position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; transition: opacity .22s var(--ease); z-index: 1; }
+.pl-frame > .ph-cv-ov.off { opacity: 0; }
+
+/* ══ Aprender ▸ Ler fotografias ═══════════════════════════════════════ */
+.ph-section-title.sub { margin-top: 1.6rem; }
+.ph-read-method { margin-bottom: .4rem; }
+.ph-read-steps { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .5rem; }
+.ph-read-steps li::marker { color: var(--accent-txt); font-weight: 800; }
+.ph-read-steps b { display: block; font-size: .84rem; color: var(--text); margin-bottom: .1rem; }
+.ph-read-steps span { font-size: .81rem; line-height: 1.6; color: var(--text2); }
+.ph-read-crop { margin-bottom: 1.2rem; }
+.ph-read-crop h4 { margin: 0 0 .4rem; font-family: var(--font-head); font-size: .88rem; font-weight: 800; }
+.ph-eye-card { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .8rem .9rem; }
+.ph-eye-genre { margin: 0 0 .5rem; font-size: .74rem; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--muted); }
+.ph-eye-actions { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
+
+/* ══ secção Equipamento ═══════════════════════════════════════════════ */
+.ph-eq-intro { font-size: .85rem; color: var(--text2); line-height: 1.6; margin: .2rem 0 .9rem; max-width: 72ch; }
+.ph-eq-tag { font-size: .68rem; font-weight: 600; color: var(--muted); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .15rem .5rem; }
+.ph-eq-what, .ph-eq-why, .ph-eq-effect { margin-bottom: .65rem; }
+.ph-eq-what b, .ph-eq-why b, .ph-eq-effect b { display: block; font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .15rem; }
+.ph-eq-what p, .ph-eq-why p, .ph-eq-effect p { margin: 0; font-size: .84rem; color: var(--text2); line-height: 1.6; }
+.ph-eq-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .6rem; margin-bottom: .65rem; }
+.ph-eq-sec { border-radius: var(--radius); padding: .55rem .7rem; border: 1px solid var(--border); background: var(--card2); }
+.ph-eq-sec b { display: block; font-size: .78rem; margin-bottom: .2rem; }
+.ph-eq-sec ul { margin: 0; padding-left: 1rem; font-size: .79rem; color: var(--text2); line-height: 1.55; }
+.ph-eq-sec.ok { border-left: 3px solid #34d399; } .ph-eq-sec.ok b { color: #34d399; }
+.ph-eq-sec.no { border-left: 3px solid #f87171; } .ph-eq-sec.no b { color: #f87171; }
+.ph-eq-sec.mist { border-left: 3px solid #f59e0b; } .ph-eq-sec.mist b { color: #f59e0b; }
+.ph-eq-sec.tips { border-left: 3px solid var(--accent); } .ph-eq-sec.tips b { color: var(--accent-txt); }
+.ph-mine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: .7rem; }
+.ph-mine-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .85rem .95rem; }
+.ph-mine-hd { font-family: var(--font-head); font-size: .95rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin-bottom: .35rem; }
+.ph-mine-body { font-size: .78rem; color: var(--text2); line-height: 1.55; margin: 0 0 .5rem; }
+.ph-mine-lenses { list-style: none; margin: 0 0 .5rem; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+.ph-mine-lenses li { font-size: .78rem; color: var(--text2); background: var(--card2); border-radius: 6px; padding: .35rem .5rem; }
+.ph-mine-eq { color: var(--accent-txt); font-weight: 600; margin-left: .3rem; }
+.ph-mine-tr { display: block; font-size: .72rem; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .ph-ctx { flex-direction: column; align-items: stretch; gap: .5rem; }
+  .ph-ctx-grp { flex-direction: column; align-items: stretch; gap: .25rem; }
+  .ph-ctx-seg { display: flex; }
+  .ph-ctx-btn { flex: 1 1 0; min-width: 0; padding: .4rem .3rem; white-space: normal; line-height: 1.2; }
+  .ph-ctx-info { align-self: flex-start; }
+  .ph-prof-cols { grid-template-columns: 1fr; }
+  .ph-cv-why { grid-template-columns: 1fr; }
+  .ph-vis-gap-row { grid-template-columns: 1fr; gap: .15rem; }
+  .ph-vis-arrow { transform: rotate(90deg); justify-self: start; }
+  .ph-vis-lang-row { grid-template-columns: 1fr; gap: .1rem; }
+  .ph-craft-applied { display: none; }
+  .ph-eq-cols, .ph-scn-grid2 { grid-template-columns: 1fr; }
+}
+
+.ph-eq-hero { margin: 0 0 1rem; max-width: 620px; }
+.ph-eq-hero svg { width: 100%; height: auto; display: block; border-radius: var(--radius); border: 1px solid var(--border); background: var(--card); }
+
+/* ══ secção Edição: fichas de ferramenta + demonstrações interativas ══════ */
+.ph-tool { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: 1rem; scroll-margin-top: 1rem; }
+.ph-tool.flash { animation: ph-toolflash 1.6s var(--ease-fn); }
+@keyframes ph-toolflash { 0%, 100% { box-shadow: none; } 20%, 60% { box-shadow: 0 0 0 2px var(--accent); } }
+.ph-tool-hd { display: flex; align-items: flex-start; gap: .7rem; margin-bottom: .8rem; }
+.ph-tool-ico { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+.ph-tool-name { font-family: var(--font-head); font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0; }
+.ph-tool-en { font-size: .82rem; font-weight: 600; color: var(--accent-txt); margin-left: .35rem; }
+.ph-tool-tag { font-size: .74rem; color: var(--muted); }
+.ph-tool-concept { margin-bottom: .9rem; }
+.ph-tool-pe { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .3rem; }
+.ph-tool-p { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: .5rem .65rem; }
+.ph-tool-p b { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .15rem; }
+.ph-tool-p p { margin: 0; font-size: .8rem; color: var(--text2); line-height: 1.5; }
+.ph-tool-demo { margin: .9rem 0; }
+
+/* "Nos principais programas" — deliberadamente fechado por omissão: o conceito
+   vem primeiro, a tradução para cada app é consulta. */
+.ph-apps { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card2); margin-top: .9rem; }
+.ph-apps summary { display: flex; align-items: baseline; gap: .5rem; cursor: pointer; padding: .6rem .8rem; list-style: none; font-size: .86rem; font-weight: 700; color: var(--text); }
+.ph-apps summary::-webkit-details-marker { display: none; }
+.ph-apps summary::after { content: "▾"; margin-left: auto; color: var(--muted); transition: transform var(--ease); }
+.ph-apps[open] summary::after { transform: rotate(180deg); }
+.ph-apps summary small { font-weight: 500; color: var(--muted); font-size: .74rem; }
+.ph-apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .4rem; padding: 0 .8rem .8rem; }
+.ph-app { display: flex; flex-direction: column; gap: .1rem; background: var(--card); border: 1px solid var(--border); border-radius: 7px; padding: .45rem .6rem; }
+.ph-app-n { font-size: .74rem; font-weight: 700; color: var(--accent-txt); }
+.ph-app-v { font-size: .78rem; color: var(--text2); line-height: 1.4; }
+
+/* fluxo de trabalho */
+.ph-wf { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+.ph-wf-step { display: flex; gap: .7rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .7rem .85rem; }
+.ph-wf-n { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-fill); color: var(--on-accent); font-size: .8rem; font-weight: 800; display: grid; place-items: center; }
+.ph-wf-body b { font-family: var(--font-head); font-size: .92rem; color: var(--text); }
+.ph-wf-what { margin: .15rem 0 .3rem; font-size: .82rem; color: var(--text2); line-height: 1.5; }
+.ph-wf-why { margin: 0; font-size: .78rem; color: var(--muted); line-height: 1.5; }
+.ph-wf-why span { color: var(--accent-txt); font-weight: 700; }
+
+/* exportação */
+.ph-exp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .7rem; margin-bottom: .9rem; }
+.ph-exp { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem .9rem; }
+.ph-exp-hd { font-family: var(--font-head); font-size: .95rem; font-weight: 800; color: var(--text); margin-bottom: .5rem; }
+.ph-exp-dl { display: grid; grid-template-columns: auto 1fr; gap: .2rem .6rem; margin: 0 0 .5rem; font-size: .78rem; }
+.ph-exp-dl dt { color: var(--muted); }
+.ph-exp-dl dd { margin: 0; color: var(--text); font-weight: 600; }
+.ph-exp-notes { margin: 0; padding-left: 1rem; font-size: .76rem; color: var(--text2); line-height: 1.5; }
+
+/* objetivos de edição do género (só intenção + atalhos) */
+.ph-goal-item { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: .6rem .75rem; margin-bottom: .45rem; }
+.ph-goal-tools { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .4rem; }
+.ph-goto-edit { display: block; width: 100%; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; color: var(--accent-txt); background: var(--card2); border: 1px dashed var(--border); border-radius: var(--radius); padding: .7rem; margin-top: .7rem; transition: all var(--ease); }
+.ph-goto-edit:hover { border-color: var(--accent); background: var(--card); }
+
+/* ══ EditLab: componentes interativos ═════════════════════════════════ */
+/* A fotografia é apoio ao conceito: nunca cresce livremente. Cada família de
+   ferramenta define --stage-h e a imagem ajusta-se à altura (centrada), em vez
+   de à largura — é o que impede uma ficha de virar um ecrã inteiro de foto. */
+.el-stage { position: relative; display: grid; place-items: center; width: fit-content; max-width: 100%; border-radius: var(--radius); overflow: hidden; background: var(--card2); border: 1px solid var(--border); }
+.el-canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: var(--stage-h, 260px); }
+.el-controls { margin-top: .5rem; display: flex; flex-direction: column; gap: .4rem; }
+/* controlos encostados à imagem: a coluna é estreita, logo rótulo e valor
+   partilham a linha e o cursor fica por baixo, à largura toda. */
+.el-lab-side .el-controls { margin-top: 0; }
+.el-lab .el-row { grid-template-columns: 1fr auto; grid-template-areas: "lbl val" "rng rng"; gap: .1rem .4rem; }
+.el-lab .el-lbl { grid-area: lbl; font-size: .74rem; }
+.el-lab .el-val { grid-area: val; }
+.el-lab .el-range { grid-area: rng; }
+.el-row { display: grid; grid-template-columns: minmax(90px, auto) 1fr minmax(46px, auto); align-items: center; gap: .6rem; }
+.el-lbl { font-size: .78rem; font-weight: 600; color: var(--text2); }
+.el-range { width: 100%; accent-color: var(--accent); cursor: pointer; min-height: 30px; }
+.el-val { font-size: .78rem; font-weight: 700; color: var(--accent-txt); text-align: right; font-variant-numeric: tabular-nums; }
+.el-actions { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+.el-btn { font: inherit; font-size: .75rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .42rem .75rem; min-height: 32px; transition: all var(--ease); user-select: none; }
+.el-btn:hover { border-color: var(--accent); color: var(--text); }
+.el-btn:active { background: var(--accent-fill); color: var(--on-accent); }
+.el-check { display: inline-flex; align-items: center; gap: .4rem; font-size: .75rem; color: var(--text2); cursor: pointer; min-height: 32px; }
+.el-check input { accent-color: var(--accent); cursor: pointer; width: 17px; height: 17px; }
+.el-note { font-size: .78rem; color: var(--muted); line-height: 1.55; margin: .6rem 0 0; }
+.el-loading { font-size: .8rem; color: var(--muted); padding: 1.5rem; text-align: center; background: var(--card2); border: 1px dashed var(--border); border-radius: var(--radius); margin: 0; }
+
+.el-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .5rem; }
+.el-cmp { margin: 0; display: flex; flex-direction: column; align-items: center; }
+.el-cmp figcaption { font-size: .74rem; color: var(--text2); text-align: center; margin-top: .3rem; }
+.el-cmp figcaption b { color: var(--accent-txt); }
+
+/* Curvas: é o gráfico que ensina, não a foto — por isso vem primeiro e não
+   encolhe; a fotografia serve de confirmação do que a curva já dizia. */
+.el-curve-wrap { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .8rem; align-items: start; }
+.el-curve-main { min-width: 0; display: flex; flex-direction: column; gap: .4rem; }
+.el-curve { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); touch-action: none; cursor: crosshair; display: block; }
+.el-curve-side { display: flex; flex-direction: column; gap: .4rem; }
+.el-presets { display: flex; flex-wrap: wrap; gap: .3rem; max-width: 240px; }
+.el-chip { font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .4rem .7rem; min-height: 32px; transition: all var(--ease); }
+.el-chip:hover { border-color: var(--accent); }
+.el-chip.active { background: var(--accent-fill); border-color: var(--accent); color: var(--on-accent); }
+
+.el-bands { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .6rem; }
+.el-band { display: inline-flex; align-items: center; gap: .3rem; font: inherit; font-size: .72rem; font-weight: 600; cursor: pointer; color: var(--text2); background: var(--card2); border: 1px solid var(--border); border-radius: var(--r-pill); padding: .4rem .7rem; min-height: 32px; transition: all var(--ease); }
+.el-band span { width: 10px; height: 10px; border-radius: 50%; background: var(--bc); }
+.el-band.active { border-color: var(--bc); color: var(--text); box-shadow: 0 0 0 1px var(--bc) inset; }
+
+@media (max-width: 640px) {
+  .ph-tool-pe { grid-template-columns: 1fr; }
+  .el-curve { margin: 0 auto; }
+  .el-presets { max-width: none; }
+  .el-row { grid-template-columns: 1fr auto; grid-template-areas: "lbl val" "rng rng"; gap: .1rem .4rem; }
+  .el-lbl { grid-area: lbl; } .el-val { grid-area: val; } .el-range { grid-area: rng; }
+}
+
+/* ══ Edição v2: laboratório visual ═══════════════════════════════════════ */
+
+/* "Em 20 segundos" — a ideia inteira antes de qualquer parágrafo */
+.ph-quick { display: grid; grid-template-columns: 1fr auto; gap: .6rem 1rem; align-items: center;
+  background: linear-gradient(90deg, var(--card2), transparent); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0; padding: .7rem .9rem; margin-bottom: .9rem; }
+.ph-quick-badge { grid-column: 1; font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--accent-txt); border: 1px solid var(--accent); border-radius: var(--r-pill); padding: .1rem .45rem; justify-self: start; }
+.ph-quick-txt { grid-column: 1; margin: 0; font-size: .95rem; font-weight: 600; color: var(--text); line-height: 1.5; }
+.ph-quick-vis { grid-column: 2; grid-row: 1 / 3; display: flex; gap: .35rem; }
+.ph-qv { margin: 0; }
+.ph-qv canvas { display: block; width: 92px; height: auto; border-radius: 6px; border: 1px solid var(--border); }
+.ph-qv figcaption { font-size: .58rem; color: var(--muted); text-align: center; margin-top: .15rem; }
+.ph-qv.b figcaption { color: var(--accent-txt); font-weight: 700; }
+
+/* laboratório: demonstração + painel lateral de leitura */
+.el-lab { display: grid; grid-template-columns: 1fr 262px; gap: .7rem; align-items: start; }
+.el-lab-main { min-width: 0; }
+.el-lab-main .el-stage { max-width: none; }
+.el-lab-side { display: flex; flex-direction: column; gap: .5rem; }
+
+/* histograma ao vivo */
+.el-histo { margin: 0; }
+.el-histo-cv { display: block; width: 100%; height: 58px; background: #060d18; border: 1px solid var(--border); border-radius: 8px; }
+.el-histo figcaption { display: flex; justify-content: space-between; font-size: .58rem; color: var(--muted); margin-top: .2rem; }
+.el-histo-lo { color: #60a5fa; } .el-histo-hi { color: #f87171; }
+
+/* lupa 1:1 */
+.el-loupe { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+.el-loupe figure { margin: 0; }
+.el-loupe canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; border-radius: 6px; border: 1px solid var(--border); background: #060d18; }
+.el-loupe figcaption { font-size: .58rem; color: var(--muted); text-align: center; margin-top: .15rem; }
+.el-loupe figure:last-of-type figcaption { color: var(--accent-txt); font-weight: 700; }
+.el-loupe-hint { grid-column: 1 / -1; margin: 0; font-size: .6rem; color: var(--muted); text-align: center; line-height: 1.3; }
+.el-lab.has-loupe .el-stage { cursor: crosshair; }
+.el-marks { display: flex; flex-wrap: wrap; gap: .25rem; }
+
+/* ── variantes de layout ──────────────────────────────────────────────
+   Cada família dá o destaque ao elemento que melhor explica a ferramenta.
+   --stage-h é a única coisa que muda a "presença" da fotografia. */
+
+/* demo à esquerda, orientação à direita: imagem, cursor, usar, evitar e erros
+   ficam todos no mesmo ecrã. É o molde das ferramentas de leitura rápida. */
+/* stretch + centrar: a fotografia cresce (ver fitStage) até quase fechar a
+   folga, e o que sobrar reparte-se acima e abaixo em vez de cair todo numa
+   goteira por baixo da imagem. */
+.ph-tgrid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: .85rem; align-items: stretch; }
+.ph-tgrid-demo, .ph-tgrid-guide { min-width: 0; }
+.ph-tgrid-demo { display: flex; flex-direction: column; justify-content: center; }
+.ph-tgrid-demo > .ph-tool-demo { width: 100%; }
+.ph-tgrid-guide .ph-guide { grid-template-columns: 1fr; gap: .45rem; }
+
+/* usar / evitar / erros — uma só faixa, lado a lado */
+.ph-guide { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; margin-bottom: .6rem; }
+
+/* tonais (exposição, contraste, realces, sombras, brancos, pretos, temp,
+   matiz, vibrância, gradação): o efeito lê-se num instante. Foto pequena,
+   histograma ao vivo e cursor por baixo. */
+.ph-tool-tonal { --stage-h: 200px; }
+/* piso na coluna do histograma: sem ele, a foto (que agora cresce para
+   ocupar a folga) esmagava o cursor e os rótulos do histograma um sobre o
+   outro. A fotografia cede a largura, não o contrário. */
+.ph-tool-tonal .el-lab { grid-template-columns: auto minmax(215px, 1fr); gap: .6rem; }
+/* a foto cresce para ocupar a folga vertical e precisa da largura a condizer;
+   o piso de 215px acima garante que é ela a ceder, não o histograma. */
+.ph-tool-tonal .ph-tgrid { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+/* A foto tonal é limitada pela LARGURA da coluna, por isso crescer em altura
+   deixa de fechar a folga a certa altura. O que sobra vai para o histograma
+   — que nestas ferramentas é precisamente o que se está a aprender a ler. */
+.ph-tool-tonal .ph-tgrid-demo > .ph-tool-demo,
+.ph-tool-detail .ph-tgrid-demo > .ph-tool-demo { flex: 1 1 auto; display: flex; }
+.ph-tool-tonal .ph-tgrid-demo .el-lab,
+.ph-tool-detail .ph-tgrid-demo .el-lab { flex: 1; align-items: stretch; }
+.ph-tool-tonal .ph-tgrid-demo .el-lab-side,
+.ph-tool-detail .ph-tgrid-demo .el-lab-side { min-height: 0; }
+/* O histograma tem altura DEFINIDA, de propósito. Com `flex:1 1 auto` +
+   `height:auto` a altura saía do atributo `height` do próprio canvas — e o
+   attachHisto escreve esse atributo a partir da altura medida, por isso cada
+   "input" do cursor media mais alto, escrevia mais alto e voltava a crescer
+   até bater no teto do palco. Além do ciclo, uma distribuição de 256 valores
+   lê-se pela largura: esticada até ficar quadrada só exagera os picos.
+   A folga que sobra fica no fim da coluna, que se lê como margem — empurrar
+   os controlos para baixo abria um buraco a meio, pior que a folga. */
+.ph-tool-tonal .ph-tgrid-demo .el-histo,
+.ph-tool-detail .ph-tgrid-demo .el-histo { flex: 0 0 auto; display: flex; flex-direction: column; min-height: 0; }
+.ph-tool-tonal .ph-tgrid-demo .el-histo-cv,
+.ph-tool-detail .ph-tgrid-demo .el-histo-cv { flex: 0 0 auto; height: 104px; min-height: 0; }
+
+/* detalhe (nitidez, textura, clarity, dehaze, ruído): ajustado ao ecrã não se
+   vê nada. Manda a lupa 1:1; a foto fica reduzida a navegador. */
+.ph-tool-detail { --stage-h: 180px; }
+/* piso largo: a lupa 1:1 é o que ensina esta família e são dois recortes lado
+   a lado — abaixo disto o grão deixa de se ler. */
+.ph-tool-detail .el-lab { grid-template-columns: minmax(0, auto) minmax(250px, 1fr); }
+/* a lupa e a foto precisam de largura: a demonstração leva a coluna maior */
+.ph-tool-detail .ph-tgrid, .ph-tool-mask .ph-tgrid { grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); }
+/* a lupa é o elemento principal, mas ampliada sem limite vira mancha: 2× de
+   zoom sobre um recorte de 95 px é o ponto onde o grão ainda se lê. */
+.ph-tool-detail .el-loupe { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: start; gap: .45rem; }
+.ph-tool-detail .el-loupe figcaption { font-size: .64rem; }
+.ph-tool-detail .el-histo { max-width: 385px; }
+
+/* gráfico (curvas, HSL): o diagrama explica melhor que ampliar a foto */
+.ph-tool-graph { --stage-h: 215px; }
+.ph-tool-graph .el-lab { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); }
+.ph-tool-graph .el-lab-main { display: flex; flex-direction: column; gap: .4rem; }
+
+/* máscaras: o efeito é espacial (onde a seleção começa e acaba) — é a única
+   família em que ampliar a foto ensina mesmo mais. */
+.ph-tool-mask { --stage-h: 290px; }
+/* Nas máscaras é a área da foto que ensina (é onde se vê a seleção começar e
+   acabar), por isso os controlos passam para baixo e a imagem leva a coluna
+   inteira — ao lado ficavam esmagados numa tira de texto vertical. */
+.ph-tool-mask .el-lab { grid-template-columns: minmax(0, 1fr); }
+.ph-tool-mask .el-lab-side { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: .6rem; }
+.ph-tool-mask .el-lab-side .el-controls { flex: 1 1 200px; }
+.ph-tool-mask .el-lab-side .el-note { flex: 1 1 220px; margin: 0; }
+
+/* par (saturação vs vibrância): três miniaturas chegam — o que importa é a
+   diferença entre elas, não o detalhe de cada uma */
+.ph-tool-pair { --stage-h: 155px; }
+
+.ph-tool-more { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card2); margin-top: .8rem; }
+.ph-tool-more summary { cursor: pointer; padding: .55rem .8rem; font-size: .82rem; font-weight: 700; color: var(--text2); list-style: none; }
+.ph-tool-more summary::-webkit-details-marker { display: none; }
+.ph-tool-more summary::after { content: " ▾"; color: var(--muted); }
+.ph-tool-more[open] summary::after { content: " ▴"; }
+.ph-tool-more .ph-tool-concept { padding: 0 .8rem .8rem; margin: 0; }
+
+/* relações entre ferramentas — aprender por associação */
+.ph-rel { margin-top: 1rem; }
+.ph-rel-hd, .ph-tgen-hd { display: block; font-size: .78rem; font-weight: 700; color: var(--text2); margin-bottom: .4rem; }
+.ph-rel-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .4rem; }
+.ph-rel-item { display: grid; grid-template-columns: 1fr auto; gap: .1rem .5rem; text-align: left; font: inherit; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--border); border-left: 2px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: .5rem .6rem; transition: all var(--ease); }
+.ph-rel-item:hover { border-color: var(--accent); transform: translateX(2px); }
+.ph-rel-n { font-size: .8rem; font-weight: 700; color: var(--accent-txt); text-transform: capitalize; }
+.ph-rel-w { grid-column: 1 / -1; font-size: .74rem; color: var(--text2); line-height: 1.45; }
+.ph-rel-go { color: var(--muted); font-size: .8rem; }
+
+/* onde a ferramenta aparece, por género */
+.ph-tgen { margin-top: .9rem; }
+.ph-tgen-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ph-tgen-item { display: flex; flex-direction: column; gap: .1rem; text-align: left; font: inherit; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: .4rem .6rem;
+  flex: 1 1 200px; transition: all var(--ease); }
+.ph-tgen-item:hover { border-color: var(--accent); }
+.ph-tgen-n { font-size: .76rem; font-weight: 700; color: var(--text); }
+.ph-tgen-w { font-size: .7rem; color: var(--muted); line-height: 1.4; }
+
+@media (max-width: 900px) {
+  /* uma coluna: a foto continua limitada em altura, logo empilhar não faz a
+     página crescer muito — e a orientação fica logo a seguir ao cursor. */
+  .el-lab,
+  .ph-tool-tonal .el-lab, .ph-tool-detail .el-lab,
+  .ph-tool-graph .el-lab, .ph-tool-mask .el-lab { grid-template-columns: 1fr; }
+  .el-lab-side { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+  .el-histo { flex: 1 1 200px; }
+  .el-loupe { flex: 1 1 240px; }
+  .el-lab-side .el-controls { flex: 1 1 240px; }
+  /* qualificadas por família porque as variantes acima também o são */
+  .ph-tgrid, .ph-tool-mask .ph-tgrid, .ph-tool-detail .ph-tgrid,
+  .ph-tool-tonal .ph-tgrid { grid-template-columns: 1fr; }
+  .ph-tgrid-guide .ph-guide { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .el-curve-wrap { grid-template-columns: 1fr; }
+  .el-curve { width: 100%; height: auto; max-width: 260px; }
+}
+@media (max-width: 640px) {
+  .ph-quick { grid-template-columns: 1fr; }
+  .ph-quick-vis { grid-column: 1; grid-row: auto; }
+  .ph-qv canvas { width: 100%; }
+  .ph-rel-list { grid-template-columns: 1fr; }
+  .ph-guide, .ph-tgrid-guide .ph-guide { grid-template-columns: 1fr; }
+  .ph-tool-mask { --stage-h: 240px; }
+}
+
+/* miniatura de estilo/técnica pintada em canvas pelo PhotoLab */
+.ph-look-thumb { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ph-learn-thumb .ph-photo-thumb:has(.ph-look-thumb) { aspect-ratio: 21 / 10; overflow: hidden; }
+.ph-photo-thumb .ph-look-thumb { width: 100%; height: 100%; }
+/* significado e limite de um arranjo de composição (vindos das antigas fichas
+   de Técnicas: mesmo vocabulário de cor que Estilos/Técnicas usam) */
+.ph-cv-sec.says { border-left: 3px solid #a78bfa; } .ph-cv-sec.says b { color: #a78bfa; }
+.ph-cv-sec.over { border-left: 3px solid #f59e0b; } .ph-cv-sec.over b { color: #f59e0b; }
+/* nota de âmbito: diz de que câmara são os números que estão a ser mostrados */
+.ph-know-scope { margin-top: .35rem !important; font-size: .76rem !important; color: var(--muted) !important; }
+
+/* Ler ▸ o método aplicado: a fotografia e as perguntas lado a lado, para que
+   a resposta se possa confirmar na imagem sem rolar. */
+.ph-read-walk { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .9rem; align-items: start; margin: .2rem 0 .3rem; }
+.ph-read-walk-img { margin: 0; position: sticky; top: .5rem; }
+.ph-read-walk-img img { width: 100%; height: auto; display: block; border-radius: var(--radius); }
+.ph-read-walk-img figcaption { margin-top: .35rem; font-size: .76rem; line-height: 1.5; color: var(--muted); }
+.ph-read-walk-qs .pl-rev { max-width: none; }
+.ph-read-walk-close { margin: .6rem 0 0; font-size: .8rem; line-height: 1.55; color: var(--text2);
+  border-left: 3px solid var(--accent); padding-left: .7rem; }
+@media (max-width: 760px) {
+  /* empilhar mantém a fotografia grande; sticky deixaria a imagem a tapar
+     metade do ecrã enquanto se lê, que é o oposto do que se quer */
+  .ph-read-walk { grid-template-columns: 1fr; }
+  .ph-read-walk-img { position: static; }
+}
+
+/* ressalva das regras de composição — dita uma vez no topo da secção */
+.ph-comp-note { margin: -.3rem 0 .9rem; font-size: .81rem; line-height: 1.6; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-left: 3px solid #f59e0b;
+  border-radius: var(--radius); padding: .6rem .8rem; max-width: 78ch; }
+.ph-comp-note b { color: #f59e0b; }
+
+/* cadeia intenção → cor → estilo → edição (Aprender ▸ Cores) */
+.ph-chain { display: flex; flex-direction: column; gap: .5rem; }
+.ph-chain-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: .4rem; }
+.ph-chain-step { display: flex; flex-direction: column; gap: .1rem; flex: 1 1 170px;
+  font: inherit; text-align: left; font-size: .79rem; line-height: 1.45; color: var(--text2);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: .5rem .65rem; }
+.ph-chain-step b { font-size: .66rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.ph-chain-step.want { border-left: 3px solid #a78bfa; } .ph-chain-step.want b { color: #a78bfa; }
+.ph-chain-step.go { cursor: pointer; transition: all var(--ease); }
+.ph-chain-step.go:hover { color: var(--on-accent); border-color: var(--accent); background: var(--accent-fill); }
+.ph-chain-arrow { align-self: center; color: var(--accent-txt); font-size: .9rem; }
+@media (max-width: 700px) { .ph-chain-arrow { display: none; } }
+
+
+/* ── Capas gráficas (grupo genre_icon do photogen) ────────────────────
+   Equipamento e Ferramentas passaram a ter a mesma linguagem visual dos
+   ícones de género e das capas dos Cheatsheets: o portal inteiro lê-se
+   como um sistema só, em vez de alternar entre fotografia, diagrama e
+   texto puro conforme a secção. */
+.ph-eq-hero-img { overflow: hidden; border-radius: var(--radius); aspect-ratio: 21 / 6; }
+.ph-eq-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-tool-cover { display: block; overflow: hidden; margin: -1.15rem -1.15rem .85rem;
+  aspect-ratio: 12 / 5; border-radius: var(--radius) var(--radius) 0 0; background: #0a1421; }
+.ph-tool-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── Grelha → página do item (v5 · nov/2026) ──────────────────────────
+   Substitui a "lista + ficha em duas colunas": essa abria com a coluna da
+   direita vazia ("Escolhe um item…"), punha a ficha num scroll interno e
+   não tinha URL. Agora a grelha é a página do capítulo e cada item tem a
+   sua (voltar · "3 de 12" · anterior/seguinte). O cartão é um link: a
+   seta diz "abre uma página", não "expande aqui". */
+a.ph-learn-card { text-decoration: none; color: var(--text); }
+a.ph-learn-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ph-learn-caret::before { width: 7px; height: 7px; background: none; border-radius: 0;
+  border-right: 1.8px solid var(--ink, #eaf1fb); border-top: 1.8px solid var(--ink, #eaf1fb);
+  transform: rotate(45deg) translate(-1px, 1px); }
+.ph-learn-caret::after { display: none; }
+.ph-learn-card:hover .ph-learn-caret { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent); }
+.ph-gv-hide, .ph-gv-list[hidden], .ph-gv-item[hidden] { display: none !important; }
+/* abre-se com scrollIntoView: sem isto o topo (voltar, título) ficava por
+   baixo do header fixo */
+.ph-gv-item { scroll-margin-top: calc(var(--hdr-h) + .8rem); }
+.ph-gv-top { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin: 0 0 .7rem; }
+.ph-gv-top .ph-back, .ph-lab-back { text-decoration: none; display: inline-flex; }
+.ph-gv-count { font-size: .74rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ph-gv-detail { margin: 0; animation: none; }
+.ph-gv-detail .ph-detail-close { display: none; }
+.ph-gv-detail .ph-detail-head { padding-right: 0; }
+.ph-gv-detail .ph-detail-title { font-size: 1.2rem; }
+.ph-gv-pn { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: .9rem 0 .2rem; }
+.ph-gv-pn-b { display: flex; flex-direction: column; gap: .12rem; text-decoration: none; color: var(--text);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: .6rem .8rem; transition: border-color var(--ease), background var(--ease); min-width: 0; }
+.ph-gv-pn-b:hover { border-color: rgba(var(--accent-rgb), .5); background: var(--card); }
+.ph-gv-pn-b.next { text-align: right; }
+.ph-gv-pn-b small { font-size: .7rem; font-weight: 700; color: var(--muted); }
+.ph-gv-pn-b b { font-family: var(--font-head); font-size: .86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Aprender: entrada em três blocos + caminho + capítulo seguinte ── */
+.ph-apr-lead { margin: 0 0 1.1rem; }
+.ph-apr-block { margin: 0 0 1.5rem; }
+.ph-apr-block-t { font-family: var(--font-head); font-size: 1.05rem; margin: 0 0 .65rem; display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; }
+.ph-apr-block-t small { font-family: var(--font-body, inherit); font-size: .8rem; font-weight: 500; color: var(--muted); }
+.ph-apr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: .75rem; }
+.ph-apr-card { display: flex; flex-direction: column; text-decoration: none; color: var(--text);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+  transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease); }
+.ph-apr-card:hover { border-color: rgba(var(--accent-rgb), .5); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.28); }
+.ph-apr-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ph-apr-cover { display: block; aspect-ratio: 16 / 7; background: #0a1220; overflow: hidden; border-bottom: 1px solid var(--border); }
+.ph-apr-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-apr-txt { display: flex; flex-direction: column; gap: .2rem; padding: .65rem .8rem .8rem; }
+.ph-apr-txt b { font-family: var(--font-head); font-size: .95rem; }
+.ph-apr-txt small { font-size: .78rem; line-height: 1.45; color: var(--text2); }
+.ph-apr-ch[hidden], .ph-apr-homebox[hidden] { display: none; }
+.ph-crumb { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; font-size: .78rem; color: var(--muted); margin: 0 0 .8rem; }
+.ph-crumb a { color: var(--accent-txt); text-decoration: none; font-weight: 700; }
+.ph-crumb a:hover { text-decoration: underline; }
+.ph-crumb b { color: var(--text); font-weight: 700; }
+.ph-apr-next { margin-top: 1.6rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.ph-item-open > .ph-apr-next, .ph-item-open > .ph-crumb { display: none; }
+
+/* ── Laboratório: estúdio em destaque por cima das calculadoras ── */
+.ph-lab-hero { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); max-width: 980px; text-decoration: none; color: var(--text);
+  background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 0 0 1.4rem;
+  transition: border-color var(--ease); }
+.ph-lab-hero:hover { border-color: rgba(var(--accent-rgb), .5); }
+.ph-lab-hero-img { display: block; height: 180px; background: #0a1220; }
+.ph-lab-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-lab-hero-txt { display: flex; flex-direction: column; gap: .35rem; padding: 1rem 1.15rem; justify-content: center; }
+.ph-lab-hero-txt small { font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ph-lab-hero-txt b { font-family: var(--font-head); font-size: 1.15rem; }
+.ph-lab-hero-txt > span { font-size: .82rem; line-height: 1.5; color: var(--text2); }
+.ph-lab-hero-txt .ph-lab-hero-cta { color: var(--accent-txt); font-weight: 700; margin-top: .2rem; }
+.ph-lab-back { margin: 0 0 .8rem; }
+@media (max-width: 640px) {
+  .ph-lab-hero { grid-template-columns: 1fr; }
+  .ph-lab-hero-img { height: auto; aspect-ratio: 16 / 7; }
+  .ph-gv-pn-b b { white-space: normal; }
+}
+/* telemóvel: os capítulos em linhas (miniatura | texto) — oito capas em
+   coluna davam 2400px antes de se chegar a Técnica */
+@media (max-width: 560px) {
+  .ph-apr-cards { grid-template-columns: 1fr; gap: .5rem; }
+  .ph-apr-card { flex-direction: row; align-items: stretch; }
+  .ph-apr-cover { flex: 0 0 104px; aspect-ratio: auto; min-height: 76px; border-bottom: 0; border-right: 1px solid var(--border); }
+  .ph-apr-txt { padding: .55rem .7rem; justify-content: center; }
+  .ph-apr-block { margin-bottom: 1.1rem; }
+}
+
+/* Nenhuma ilustração de ficha passa de meia dobra: uma imagem de 500px a
+   abrir uma ficha empurra o texto todo para fora do ecrã e faz a página
+   parecer um poster em vez de uma explicação. */
+.ph-detail-art { max-width: 620px; }
+.ph-detail-art img, .ph-detail-art svg { max-height: 320px; width: auto; max-width: 100%; }
+.ph-detail-art.ph-photo-art img { object-fit: cover; }

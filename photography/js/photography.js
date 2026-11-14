@@ -405,7 +405,7 @@ const PhotographyPage = (function () {
       tips:'Horizontes: coloca na linha 1/3 superior (céu dramático) ou inferior (terra/água em destaque). Rostos: olho mais próximo no cruzamento superior. Sujeitos em movimento: posiciona-os no terço oposto à direção do movimento — dá espaço de respiração.',
       examples:'Fotografia de paisagem (horizonte a 1/3), retratos (olhos no cruzamento superior), fotografia de street (sujeito no terço lateral).',
       draw(ctx,W,H){
-        ctx.strokeStyle='rgba(99,102,241,.55)';ctx.lineWidth=1;
+        ctx.strokeStyle='rgba(233,166,73,.55)';ctx.lineWidth=1;
         [1/3,2/3].forEach(f=>{
           ctx.beginPath();ctx.moveTo(W*f,0);ctx.lineTo(W*f,H);ctx.stroke();
           ctx.beginPath();ctx.moveTo(0,H*f);ctx.lineTo(W,H*f);ctx.stroke();
@@ -418,12 +418,12 @@ const PhotographyPage = (function () {
         const a=(this.anchor||[1/3,1/3]);
         [1/3,2/3].forEach(x=>[1/3,2/3].forEach(y=>{
           ctx.beginPath();ctx.arc(W*x,H*y,4.5,0,2*Math.PI);
-          ctx.fillStyle='rgba(99,102,241,.7)';ctx.fill();
+          ctx.fillStyle='rgba(233,166,73,.7)';ctx.fill();
           ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.4;ctx.stroke();
         }));
-        ctx.strokeStyle='rgba(99,102,241,.95)';ctx.lineWidth=2;
+        ctx.strokeStyle='rgba(233,166,73,.95)';ctx.lineWidth=2;
         ctx.beginPath();ctx.arc(W*a[0],H*a[1],13,0,2*Math.PI);ctx.stroke();
-        ctx.strokeStyle='rgba(99,102,241,.55)';ctx.lineWidth=1;
+        ctx.strokeStyle='rgba(233,166,73,.55)';ctx.lineWidth=1;
       }},
     { name:'Proporção Áurea (Phi)', anchor:[0.618,0.618], short:'Como os terços, com as linhas mais chegadas ao centro.', desc:'Proporção 1:1.618 (número phi) — ligeiramente diferente dos terços mas considerada a mais harmoniosa pela natureza. As linhas divisórias criam a mesma proporção entre os segmentos que se encontra em conchas, galáxias e flores. Os 4 pontos de cruzamento são mais precisos e naturais que os dos terços.',
       tips:'Mais subtil e elegante que os terços. Ideal para retratos formais, fotografia de produto e composições arquitetónicas. A divisão phi não está a 1/3 (33.3%) mas a 38.2% e 61.8% do lado — note a diferença subtil mas importante.',
@@ -512,13 +512,13 @@ const PhotographyPage = (function () {
       vp:[0.505,0.555],
       draw(ctx,W,H){
         const v=this.vp||[0.5,0.38];const vx=W*v[0],vy=H*v[1];
-        ctx.strokeStyle='rgba(99,102,241,.6)';ctx.lineWidth=1.4;
+        ctx.strokeStyle='rgba(233,166,73,.6)';ctx.lineWidth=1.4;
         [[0,H],[W*0.22,H],[W*0.44,H],[W*0.56,H],[W*0.78,H],[W,H],[0,H*0.7],[W,H*0.7]].forEach(([px,py])=>{
           ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(vx,vy);ctx.stroke();
         });
-        ctx.fillStyle='rgba(99,102,241,.85)';ctx.beginPath();ctx.arc(vx,vy,6,0,2*Math.PI);ctx.fill();
+        ctx.fillStyle='rgba(233,166,73,.85)';ctx.beginPath();ctx.arc(vx,vy,6,0,2*Math.PI);ctx.fill();
         ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;ctx.stroke();
-        ctx.strokeStyle='rgba(99,102,241,.2)';ctx.lineWidth=0.8;ctx.setLineDash([4,4]);
+        ctx.strokeStyle='rgba(233,166,73,.2)';ctx.lineWidth=0.8;ctx.setLineDash([4,4]);
         ctx.beginPath();ctx.moveTo(0,vy);ctx.lineTo(W,vy);ctx.stroke();ctx.setLineDash([]);
       }},
     { name:'Simetria & Reflexo', traced:1, short:'Eixo exato — ou é rigorosa, ou lê-se como descuido.', desc:'Simetria perfeita cria equilíbrio e harmonia. Reflexos em água duplicam o sujeito. Quebrar a simetria com um elemento cria interesse.',
@@ -573,12 +573,12 @@ const PhotographyPage = (function () {
       draw(ctx,W,H){
         const s2=this.subj||[0.5,0.6], r=Math.min(W,H)*(this.r||0.13);
         ctx.save();
-        ctx.fillStyle='rgba(99,102,241,.13)';
+        ctx.fillStyle='rgba(233,166,73,.13)';
         ctx.beginPath();ctx.rect(0,0,W,H);
         ctx.arc(W*s2[0],H*s2[1],r,0,Math.PI*2,true);
         ctx.fill('evenodd');
         ctx.restore();
-        ctx.strokeStyle='rgba(99,102,241,.8)';ctx.lineWidth=2;
+        ctx.strokeStyle='rgba(233,166,73,.8)';ctx.lineWidth=2;
         ctx.beginPath();ctx.arc(W*s2[0],H*s2[1],r,0,Math.PI*2);ctx.stroke();
       }},
     { name:'Curva em S', traced:1, short:'O olho percorre a cena a passear, não a correr.', desc:'Linhas sinuosas em forma de S (ou C) guiam o olhar suavemente pelo enquadramento, criando fluidez, elegância e profundidade.',
@@ -681,7 +681,7 @@ const PhotographyPage = (function () {
     const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
     if (!comp) return;
-    if (opts.bg) { ctx.fillStyle = document.body.classList.contains('light') ? '#dbe3ef' : '#0b1020'; ctx.fillRect(0, 0, W, H); }
+    if (opts.bg) { ctx.fillStyle = document.body.classList.contains('light') ? '#e6dfd1' : '#16130f'; ctx.fillRect(0, 0, W, H); }
     ctx.save();
     /* Halo escuro por baixo de cada traço. Sem ele, uma linha âmbar de 1px
        sobre areia clara ou céu queimado é invisível — e uma marcação que
@@ -1100,7 +1100,7 @@ const PhotographyPage = (function () {
   function loadDB() {
     if (_DB) return Promise.resolve(_DB);
     if (_dbPromise) return _dbPromise;
-    const grab = f => fetch('data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
+    const grab = f => fetch('/data/photo/' + f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
     _dbPromise = Promise.all([grab('gear.json'), grab('genres.json'), grab('know.json'),
                               grab('profiles.json'), grab('craft.json'), grab('equipment.json'),
                               grab('vision.json'), grab('looks.json'), grab('techniques.json'),
@@ -1159,13 +1159,13 @@ const PhotographyPage = (function () {
   function loadAssets() {
     if (_assets) return Promise.resolve(_assets);
     if (_assetsP) return _assetsP;
-    _assetsP = fetch('assets/photo/index.json')
+    _assetsP = fetch('/assets/photo/index.json')
       .then(r => (r.ok ? r.json() : {}))
       .then(j => { _assets = j || {}; shareSubject(); return _assets; })
       .catch(() => (_assets = {}));
     return _assetsP;
   }
-  function assetPath(id) { return (_assets && _assets[id]) ? 'assets/photo/' + _assets[id] : null; }
+  function assetPath(id) { return (_assets && _assets[id]) ? '/assets/photo/' + _assets[id] : null; }
   /* Os motores de ilustração desenham pessoas. Em vez de um boneco
      vetorial, usam a personagem recortada do portal — é entregue uma vez,
      assim que os assets existem, para nenhum deles precisar de saber o
@@ -1313,58 +1313,74 @@ const PhotographyPage = (function () {
      páginas isoladas em vez de um sistema. */
   function plGo(target) {
     const [kind, arg] = String(target || '').split(':');
-    if (kind === 'g' && arg) { _portalSec = 'ideia'; return Nav.go('photography/g/' + arg); }
+    if (kind === 'g' && arg) { _portalSec = 'ideia'; return PhNav.go('g/' + arg); }
     if (kind === 'gsec' && arg) {                    // g:<id>/<secção>
       const [gid, sec] = arg.split('/');
       if (sec) _portalSec = sec;
-      return Nav.go('photography/g/' + gid);
+      return PhNav.go('g/' + gid);
     }
     if (kind === 'look' || kind === 'tec' || kind === 'ler' || kind === 'know') {
       const seg = kind === 'look' ? 'estilos' : kind === 'tec' ? 'tecnicas'
         : kind === 'know' ? 'fundamentos' : 'ler';
       // cada item tem página própria: o chip leva diretamente a ela
-      return Nav.go('photography/aprender/' + seg + (arg ? '/' + arg : ''));
+      return PhNav.go('aprender/' + seg + (arg ? '/' + arg : ''));
     }
-    if (kind === 'apr') return Nav.go('photography/aprender/' + arg);
+    if (kind === 'apr') return PhNav.go('aprender/' + arg);
     // cs:            → hub dos cheatsheets
     // cs:<id>        → cartão
     // cs:g/<genero>  → cartão de um género
-    if (kind === 'cs') return Nav.go('photography/consulta' + (arg ? '/' + arg : ''));
+    if (kind === 'cs') return PhNav.go('consulta' + (arg ? '/' + arg : ''));
     // rota histórica: agora:<género> → cheatsheet do género
-    if (kind === 'agora') return Nav.go('photography/consulta' + (arg ? '/g/' + arg : ''));
+    if (kind === 'agora') return PhNav.go('consulta' + (arg ? '/g/' + arg : ''));
     if (kind === 'comp' && arg) {
       const comp = COMPOSITIONS.find(c => c.name === arg);
       if (comp) return openCompModal(comp);
-      return Nav.go('photography/aprender/composicao');
+      return PhNav.go('aprender/composicao');
     }
-    if (kind === 'tool' && arg) { _pendingCalc = arg; return Nav.go('photography/laboratorio'); }
+    if (kind === 'tool' && arg) { _pendingCalc = arg; return PhNav.go('laboratorio'); }
     if (kind === 'etool' && arg) return gotoTool(arg);
-    if (kind === 'edicao') return Nav.go('photography/edicao');
+    if (kind === 'edicao') return PhNav.go('edicao');
   }
 
-  // ── home: grelha de géneros ──
+  // ── home: folha de contactos dos géneros ──
+  /* Microsite (nov/2026): os 30 géneros passaram de cartões com ícone a uma
+     FOLHA DE CONTACTOS — cada género é um fotograma com a sua fotografia
+     "com intenção" (vis-<id>, miniatura de 560px em assets/photo/thumbs),
+     número do fotograma e, na margem do negativo, a focal equivalente que o
+     género pede. A imagem mostra o género melhor do que um pictograma; o
+     ícone gerado e o emoji continuam como fallback. */
   function buildGeneros(panel) {
-    panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
+    panel.innerHTML = `<p class="ph-section-sub">A carregar…</p>`;
     Promise.all([loadDB(), loadAssets()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildGeneros(panel)); return; }
+      const nGroups = new Set(db.genres.map(g => g.group || 'Outros')).size;
       panel.innerHTML = `
-        ${contextBarHTML()}
-        <button class="ph-field-cta" id="ph-goto-field">
-          <span class="ph-field-cta-ico">📋</span>
-          <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Consulta rápida: lente, definições e erros a evitar — para ver de relance</small></span>
-          <span class="ph-field-cta-go">→</span>
-        </button>
-        <h2 class="ph-section-title" style="margin-top:1rem">🎯 Géneros fotográficos</h2>
-        <p class="ph-section-sub">Escolhe o que vais fotografar: a ideia, as definições, onde te pões, a composição e os erros a evitar — numa página.</p>
-        <div class="ph-genre-search">
-          <input type="search" id="ph-genre-q" class="ph-genre-q" placeholder="Procurar género (praia, nevoeiro, retrato…)" aria-label="Procurar género" autocomplete="off">
-        </div>
-        <div id="ph-genre-grid">${genreGroupsHTML(db.genres)}</div>
-        <p class="ph-section-sub ph-genre-empty" id="ph-genre-none" hidden>Nenhum género corresponde à procura.</p>`;
-      wireContextBar(panel, () => buildGeneros(panel));
-      panel.querySelector('#ph-goto-field').addEventListener('click', () => Nav.go('photography/consulta'));
+        <section id="folha" class="dp-sheet" aria-labelledby="dp-sheet-t" style="scroll-margin-top:calc(var(--hdr-h) + 1rem)">
+          <div class="dp-sheet-head">
+            <div>
+              <p class="dp-mono" style="color:var(--dp-dim);margin-bottom:.6rem">01 — Fotografar · ${db.genres.length} géneros · ${nGroups} famílias</p>
+              <h2 id="dp-sheet-t">O que vais fotografar?</h2>
+              <p>Cada fotograma abre uma página com a ideia, as definições, onde te pões, a composição e os erros a evitar.</p>
+            </div>
+          </div>
+          ${contextBarHTML()}
+          <div class="dp-sheet-tools">
+            <div class="ph-genre-search">
+              <input type="search" id="ph-genre-q" class="ph-genre-q" placeholder="Procurar género (praia, nevoeiro, retrato…)" aria-label="Procurar género" autocomplete="off">
+            </div>
+          </div>
+          <button class="ph-field-cta" id="ph-goto-field">
+            <span class="ph-field-cta-ico" aria-hidden="true">📋</span>
+            <span class="ph-field-cta-txt"><b>Estou a fotografar agora</b><small>Consulta rápida: lente, definições e erros a evitar, para ver de relance</small></span>
+            <span class="ph-field-cta-go" aria-hidden="true">→</span>
+          </button>
+          <div id="ph-genre-grid">${genreGroupsHTML(db.genres)}</div>
+          <p class="ph-section-sub ph-genre-empty" id="ph-genre-none" hidden>Nenhum género corresponde à procura.</p>
+        </section>`;
+      wireContextBar(panel, () => { const y = window.scrollY; buildGeneros(panel); requestAnimationFrame(() => window.scrollTo({ top: y })); });
+      panel.querySelector('#ph-goto-field').addEventListener('click', () => PhNav.go('consulta'));
       panel.querySelectorAll('[data-genre]').forEach(c =>
-        c.addEventListener('click', () => Nav.go('photography/g/' + c.dataset.genre)));
+        c.addEventListener('click', () => PhNav.go('g/' + c.dataset.genre)));
       wireGenreSearch(panel);
     });
   }
@@ -1378,7 +1394,16 @@ const PhotographyPage = (function () {
       : `<span class="${cls}">${g.icon}</span>`;
   }
 
-  // Géneros agrupados por família (28 cartões numa grelha plana era ilegível).
+  // Focal equivalente para a margem do negativo: só o primeiro intervalo
+  // ("24–35mm eq — tele para…" → "24–35 MM"); sem focal útil, nada.
+  function focalTag(g) {
+    const f = (g.gear && g.gear.focal) || '';
+    const m = f.match(/(\d+(?:[–-]\d+)?)\s?mm/);
+    if (m) return m[1] + ' mm';
+    return /1:1/.test(f) ? '1:1' : '';
+  }
+
+  // Géneros agrupados por família — cada família é uma tira da folha.
   // A ordem dos grupos segue a 1ª ocorrência no JSON, por isso é controlada nos dados.
   function genreGroupsHTML(genres) {
     const groups = [];
@@ -1388,17 +1413,25 @@ const PhotographyPage = (function () {
       if (!grp) groups.push(grp = { key, items: [] });
       grp.items.push(g);
     });
-    return groups.map(grp => `<section class="ph-genre-group" data-group="${grp.key}">
-      <h3 class="ph-genre-group-title">${grp.key} <span class="ph-genre-group-n">${grp.items.length}</span></h3>
-      <div class="ph-scn-grid">
+    let n = 0;
+    return groups.map(grp => `<section class="dp-strip ph-genre-group" data-group="${grp.key}">
+      <h3 class="dp-strip-title">${grp.key} <span>${grp.items.length}</span></h3>
+      <div class="dp-frames">
         ${grp.items.map(g => {
           // O gancho da Visão vem antes do resumo técnico: ao escolher um género
           // interessa primeiro porque é que vale a pena, e só depois o que é.
           const hook = (visionOf(g) || {}).hook || '';
-          return `<button class="ph-scn-card" data-genre="${g.id}" data-search="${(g.name + ' ' + g.blurb + ' ' + hook + ' ' + grp.key).toLowerCase()}">
-            ${genreIcoHTML(g, 'ph-scn-ico')}<span class="ph-scn-name">${g.name}</span>
-            ${hook ? `<span class="ph-scn-hook">${hook}</span>` : ''}
-            <span class="ph-scn-blurb-sm">${g.blurb}</span></button>`;
+          const no = String(++n).padStart(2, '0');
+          const src = assetPath('thumb-vis-' + g.id) || assetPath('vis-' + g.id);
+          const ico = assetPath('gico-' + g.id);
+          const pic = src ? `<img src="${src}" alt="" loading="lazy" decoding="async" width="560" height="383">`
+            : ico ? `<span class="dp-frame-ico"><img src="${ico}" alt="" loading="lazy" decoding="async" style="width:56px;height:56px"></span>`
+            : `<span class="dp-frame-ico" aria-hidden="true">${g.icon}</span>`;
+          const ft = focalTag(g);
+          return `<button type="button" class="dp-frame" data-genre="${g.id}" data-search="${(g.name + ' ' + g.blurb + ' ' + hook + ' ' + grp.key).toLowerCase().replace(/"/g, '&quot;')}">
+            <span class="dp-frame-img">${pic}<span class="dp-frame-no" aria-hidden="true">${no}</span>${ft ? `<span class="dp-frame-kd" aria-hidden="true">${ft}</span>` : ''}</span>
+            <span class="dp-frame-name">${g.name}</span>
+            <span class="dp-frame-hook">${hook || g.blurb}</span></button>`;
         }).join('')}
       </div>
     </section>`).join('');
@@ -1669,7 +1702,8 @@ const PhotographyPage = (function () {
     Promise.all([loadDB(), loadAssets(), loadEditDB()]).then(([db]) => {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => renderPortal(panel, id)); return; }
       const g = db.genres.find(x => x.id === id);
-      if (!g) { Nav.go('photography'); return; }
+      if (!g) { PhNav.go('', { replace: true }); return; }
+      if (typeof PhShell !== 'undefined') PhShell.setArea('fotografar', g.name);
       const target = OLD_SEC[_portalSec] || (GP_SECS.some(s => s.id === _portalSec) ? _portalSec : 'ideia');
       _portalSec = 'ideia';
 
@@ -1701,7 +1735,7 @@ const PhotographyPage = (function () {
       });
       panel.querySelectorAll('[data-etool]').forEach(ch => ch.addEventListener('click', () => gotoTool(ch.dataset.etool)));
       panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
-        _pendingCalc = ch.dataset.tool; Nav.go('photography/laboratorio');
+        _pendingCalc = ch.dataset.tool; PhNav.go('laboratorio');
       }));
       PhotoLearn.wire(panel, plGo);
 
@@ -1722,9 +1756,9 @@ const PhotographyPage = (function () {
       }
       mark(target);
 
-      panel.querySelector('#ph-back').addEventListener('click', () => Nav.go('photography'));
+      panel.querySelector('#ph-back').addEventListener('click', () => PhNav.go(''));
       wireContextBar(panel, () => { _keepScroll = window.scrollY; renderPortal(panel, id); });
-      panel.querySelector('[data-cscta]').addEventListener('click', () => Nav.go('photography/consulta/g/' + g.id));
+      panel.querySelector('[data-cscta]').addEventListener('click', () => PhNav.go('consulta/g/' + g.id));
       if (_keepScroll != null) { const y = _keepScroll; _keepScroll = null; requestAnimationFrame(() => window.scrollTo({ top: y })); }
       else if (target !== 'ideia') requestAnimationFrame(() => secOf(target)?.scrollIntoView({ block: 'start' }));
       else window.scrollTo({ top: 0 });
@@ -1825,12 +1859,12 @@ const PhotographyPage = (function () {
       card.innerHTML = `${opt.compact ? '' : `<span class="ph-learn-thumb">${th || `<span class="ph-learn-ico">${t.icon || '📷'}</span>`}</span>`}
         <span class="ph-learn-info"><span class="ph-learn-name">${t.icon ? t.icon + ' ' : ''}${t.name}</span>
         <span class="ph-scn-blurb-sm">${opt.blurb(t)}</span></span><span class="ph-learn-caret" aria-hidden="true"></span>`;
-      card.addEventListener('click', e => { e.preventDefault(); Nav.go(base + '/' + t.id); });
+      card.addEventListener('click', e => { e.preventDefault(); PhNav.go(base + '/' + t.id); });
       grid.appendChild(card);
       opt.afterCard && opt.afterCard(card, t);
     });
 
-    const go = id => Nav.go(base + (id ? '/' + id : ''));
+    const go = id => PhNav.go(base + (id ? '/' + id : ''));
     function showItem(id) {
       const i = id ? items.findIndex(x => x.id === id) : -1;
       const open = i >= 0;
@@ -1880,7 +1914,7 @@ const PhotographyPage = (function () {
   function loadEditDB() {
     if (_EDITDB) return Promise.resolve(_EDITDB);
     if (_editDbP) return _editDbP;
-    _editDbP = fetch('data/photo/edit.json').then(r => { if (!r.ok) throw 0; return r.json(); })
+    _editDbP = fetch('/data/photo/edit.json').then(r => { if (!r.ok) throw 0; return r.json(); })
       .then(j => (_EDITDB = j)).catch(() => { _editDbP = null; return null; });
     return _editDbP;
   }
@@ -2103,7 +2137,7 @@ const PhotographyPage = (function () {
 
       panel.querySelectorAll('[data-esec]').forEach(b => b.addEventListener('click', () => {
         _editSec = b.dataset.esec;
-        try { history.replaceState(null, '', '#photography/edicao/' + _editSec); } catch (_) {}
+        try { history.replaceState(null, '', '#edicao/' + _editSec); } catch (_) {}
         buildEdicao(panel, _editSec);
       }));
 
@@ -2165,7 +2199,7 @@ const PhotographyPage = (function () {
       // Ligações entre ferramentas e para os géneros.
       panel.querySelectorAll('[data-etool]').forEach(b => b.addEventListener('click', () => gotoTool(b.dataset.etool)));
       panel.querySelectorAll('[data-genre-link]').forEach(b =>
-        b.addEventListener('click', () => Nav.go('photography/g/' + b.dataset.genreLink)));
+        b.addEventListener('click', () => PhNav.go('g/' + b.dataset.genreLink)));
       // Nomes bonitos dos géneros (o JSON só guarda o id).
       loadDB().then(gdb => {
         if (!gdb) return;
@@ -2187,7 +2221,7 @@ const PhotographyPage = (function () {
   }
 
   /* Atalho usado pelos géneros: abre a secção Edição já na ferramenta certa. */
-  function gotoTool(id) { _editTool = id; Nav.go('photography/edicao/' + id); }
+  function gotoTool(id) { _editTool = id; PhNav.go('edicao/' + id); }
 
   /* ══ EQUIPAMENTO ════════════════════════════════════════════════════════
      Guia intemporal, deliberadamente sem marcas nem modelos. Cada item
@@ -2248,7 +2282,7 @@ const PhotographyPage = (function () {
   function buildEquipamento(panel, sub) {
     const [want, item] = String(sub || '').split('/');
     if (panel.dataset.eqBuilt && panel.dataset.eqBuilt === (want || _eqCat)) {
-      gridShow('photography/aprender/equipamento/' + panel.dataset.eqBuilt, item || null);
+      gridShow('aprender/equipamento/' + panel.dataset.eqBuilt, item || null);
       if (!item) window.scrollTo({ top: 0 });
       return;
     }
@@ -2259,14 +2293,14 @@ const PhotographyPage = (function () {
       const cat = cats.find(c => c.id === (want || _eqCat)) || cats[0];
       _eqCat = cat.id;
       panel.dataset.eqBuilt = cat.id;
-      const base = 'photography/aprender/equipamento/' + cat.id;
+      const base = 'aprender/equipamento/' + cat.id;
       gridShow(base, item || null);
       panel.innerHTML = `${aprCrumbHTML('equipamento')}
         <div class="ph-eq-page">
           <h2 class="ph-section-title">Equipamento</h2>
           <p class="ph-section-sub">Conceitos que continuam válidos daqui a dez anos, sem marcas nem modelos. Cada item explica o problema que resolve — e quando não vale a pena.</p>
           <nav class="ph-secnav" aria-label="Categorias de equipamento">
-            ${cats.map(c => `<a class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" href="#photography/aprender/equipamento/${c.id}"${c.id === cat.id ? ' aria-current="page"' : ''} data-eqcat="${c.id}">${c.name}</a>`).join('')}
+            ${cats.map(c => `<a class="ph-secnav-btn${c.id === cat.id ? ' active' : ''}" href="#aprender/equipamento/${c.id}"${c.id === cat.id ? ' aria-current="page"' : ''} data-eqcat="${c.id}">${c.name}</a>`).join('')}
           </nav>
           <p class="ph-eq-intro">${cat.intro}</p>
           ${assetPath('eqi-' + cat.id)
@@ -2305,7 +2339,7 @@ const PhotographyPage = (function () {
       });
       panel.querySelectorAll('[data-eqcat]').forEach(b => b.addEventListener('click', e => {
         e.preventDefault();
-        Nav.go('photography/aprender/equipamento/' + b.dataset.eqcat);
+        PhNav.go('aprender/equipamento/' + b.dataset.eqcat);
       }));
       if (!item) window.scrollTo({ top: 0 });
     });
@@ -2383,7 +2417,7 @@ const PhotographyPage = (function () {
       const secHTML = s => (s.dyn === 'crop' ? cropSectionHTML()
         : `<div class="ph-know-sec"><h4>${s.h}</h4><p>${s.t}</p></div>`);
       const grid = expandableGrid(box, db.know, {
-        head, base: 'photography/aprender/fundamentos', title: 'Fundamentos',
+        head, base: 'aprender/fundamentos', title: 'Fundamentos',
         thumb: t => conceptThumb(t.id),
         blurb: t => t.blurb,
         detail: t => conceptDetailHTML(t,
@@ -2409,7 +2443,7 @@ const PhotographyPage = (function () {
       if (!db || !(db.principles || []).length) return fail();
       const named = id => (db.genres.find(x => x.id === id) || {});
       expandableGrid(box, db.principles, {
-        head: APR_VIS_HEAD, base: 'photography/aprender/visao', title: 'Visão',
+        head: APR_VIS_HEAD, base: 'aprender/visao', title: 'Visão',
         thumb: p => { const src = assetPath(p.thumb); return src ? `<span class="ph-vis ph-learn-art"><img loading="lazy" decoding="async" alt="" src="${src}"></span>` : ''; },
         blurb: p => p.blurb,
         detail: p => {
@@ -2444,7 +2478,7 @@ const PhotographyPage = (function () {
         afterOpen: detail => {
           PhotoLearn.wire(detail, plGo);
           detail.querySelectorAll('[data-vgenre]').forEach(b =>
-            b.addEventListener('click', () => { _portalSec = 'ideia'; Nav.go('photography/g/' + b.dataset.vgenre); }));
+            b.addEventListener('click', () => { _portalSec = 'ideia'; PhNav.go('g/' + b.dataset.vgenre); }));
         },
       });
     });
@@ -2478,7 +2512,7 @@ const PhotographyPage = (function () {
       // estilos e não fotografias (ver PhotoLearn.paintThumb)
       const swatch = assetPath('look-retrato') || (lookBases(db.looks[0], db)[0] || {}).src;
       const grid = expandableGrid(box, db.looks, {
-        head: APR_LOOK_HEAD, base: 'photography/aprender/estilos', title: 'Estilos',
+        head: APR_LOOK_HEAD, base: 'aprender/estilos', title: 'Estilos',
         thumb: () => (swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : ''),
         blurb: l => l.blurb,
         detail: l => lookDetailHTML(l, db),
@@ -2538,7 +2572,7 @@ const PhotographyPage = (function () {
       const swatch = assetPath('look-retrato');
       const capSrc = t => (t.compare && assetPath(t.compare.a)) || (t.single && assetPath(t.single.src));
       const grid = expandableGrid(box, db.techniques, {
-        head: APR_TEC_HEAD, base: 'photography/aprender/tecnicas', title: 'Técnicas',
+        head: APR_TEC_HEAD, base: 'aprender/tecnicas', title: 'Técnicas',
         thumb: t => {
           if (t.kind === 'revelacao') return swatch ? `<span class="ph-vis ph-photo-thumb"><canvas class="ph-look-thumb"></canvas></span>` : '';
           const s = capSrc(t);
@@ -2674,7 +2708,7 @@ const PhotographyPage = (function () {
     const holder = document.createElement('div');
     host.replaceWith(holder);
     expandableGrid(holder, (db.readAnalyses || []).filter(a => assetPath(a.src)), {
-      head: '', base: 'photography/aprender/ler', title: 'Ler fotografias', page: box,
+      head: '', base: 'aprender/ler', title: 'Ler fotografias', page: box,
       thumb: a => `<span class="ph-vis ph-photo-thumb"><img loading="lazy" decoding="async" alt="" src="${assetPath(a.src)}"></span>`,
       blurb: a => a.blurb,
       detail: a => `<button class="ph-detail-close" aria-label="Fechar">✕</button>
@@ -2835,7 +2869,7 @@ const PhotographyPage = (function () {
     Promise.all([loadDB(), loadAssets(), loadEditDB()]).then(([db]) => {
       if (!db || !(db.colour || []).length) { box.innerHTML = `${APR_COR_HEAD}<p class="ph-section-sub">Sem ligação — tenta novamente mais tarde.</p>`; return; }
       const grid = expandableGrid(box, db.colour, {
-        head: APR_COR_HEAD, base: 'photography/aprender/cores', title: 'Cores',
+        head: APR_COR_HEAD, base: 'aprender/cores', title: 'Cores',
         thumb: l => {
           // a lição de laboratório mostra-se já tratada; a de par mostra o lado
           // que a demonstra — a miniatura tem de ser a própria lição
@@ -2887,7 +2921,7 @@ const PhotographyPage = (function () {
     equipamento: { name: 'Equipamento',     cover: 'eqi-cameras',     blurb: 'Câmaras, objetivas, filtros — e quando não vale a pena.' },
   };
   const APR_ORDER = APR_BLOCKS.flatMap(b => b.chapters);
-  const aprRoute = id => 'photography/aprender/' + id;
+  const aprRoute = id => 'aprender/' + id;
   const aprBlockOf = id => APR_BLOCKS.find(b => b.chapters.includes(id));
   const APR_BUILDERS = {
     visao(box) { buildVisaoAprender(box); },
@@ -2904,7 +2938,7 @@ const PhotographyPage = (function () {
   function aprCrumbHTML(id) {
     const b = aprBlockOf(id), c = APR_CHAPTERS[id];
     return `<nav class="ph-crumb" aria-label="Caminho">
-      <a href="#photography/aprender" data-crumb="">Aprender</a><span aria-hidden="true">›</span>
+      <a href="#aprender" data-crumb="">Aprender</a><span aria-hidden="true">›</span>
       <span>${b ? b.name : ''}</span><span aria-hidden="true">›</span>
       <b aria-current="page">${c ? c.name : ''}</b>
     </nav>`;
@@ -2921,7 +2955,7 @@ const PhotographyPage = (function () {
     root.querySelectorAll('[data-crumb]').forEach(a => {
       if (a.dataset.crumbWired) return;
       a.dataset.crumbWired = '1';
-      a.addEventListener('click', e => { e.preventDefault(); Nav.go(a.dataset.crumb ? aprRoute(a.dataset.crumb) : 'photography/aprender'); });
+      a.addEventListener('click', e => { e.preventDefault(); PhNav.go(a.dataset.crumb ? aprRoute(a.dataset.crumb) : 'aprender'); });
     });
   }
 
@@ -2945,7 +2979,7 @@ const PhotographyPage = (function () {
   let _aprBuilt = false;
   function buildAprender(panel, arg) {
     const [seg, item] = String(arg || '').split('/');
-    if (seg === 'equipamento') return Nav.go(aprRoute('equipamento'));
+    if (seg === 'equipamento') return PhNav.go(aprRoute('equipamento'));
     if (!_aprBuilt) {
       _aprBuilt = true;
       panel.innerHTML = `<div class="ph-apr-homebox"></div>
@@ -2992,7 +3026,7 @@ const PhotographyPage = (function () {
     if (!_toolsBuilt) {
       _toolsBuilt = true;
       panel.innerHTML = `
-        <a class="ph-lab-hero" href="#photography/estudio" data-lab-studio>
+        <a class="ph-lab-hero" href="#estudio" data-lab-studio>
           <span class="ph-lab-hero-img">${assetPath('eqi-light') ? `<img loading="lazy" decoding="async" alt="" src="${assetPath('eqi-light')}">` : ''}</span>
           <span class="ph-lab-hero-txt"><small>Laboratório</small><b>Estúdio virtual 3D</b>
             <span>Monta a luz de um retrato ou fotografa na rua e vê o que muda com a abertura, o obturador e o ISO.</span>
@@ -3001,7 +3035,7 @@ const PhotographyPage = (function () {
         <h2 class="ph-section-title">Calculadoras</h2>
         <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Exposição e ótica — os resultados atualizam sozinhos. O crop vem do tipo de câmara que escolheste (${(classDef() || {}).name || 'APS-C'}); podes trocá-lo em qualquer campo.</p>
         <div class="ph-grid"></div>`;
-      panel.querySelector('[data-lab-studio]').addEventListener('click', e => { e.preventDefault(); Nav.go('photography/estudio'); });
+      panel.querySelector('[data-lab-studio]').addEventListener('click', e => { e.preventDefault(); PhNav.go('estudio'); });
       const grid = panel.querySelector('.ph-grid');
       Object.keys(TOOL_META).forEach(key => {
         const wrapper = document.createElement('div');
@@ -3038,18 +3072,18 @@ const PhotographyPage = (function () {
      Só um está montado de cada vez (um contexto WebGL); ao sair do
      separador o próprio módulo pausa o render (IntersectionObserver). */
   let _studio = null, _studioMode = null;
-  const STUDIO_MODS = { studio: '/js/pages/studio/st-app.mjs', ext: '/js/pages/studio/ext-app.mjs' };
+  const STUDIO_MODS = { studio: '/photography/js/studio/st-app.mjs', ext: '/photography/js/studio/ext-app.mjs' };
   function buildEstudio(panel) {
     if (_studio) return;
     let mode = 'studio';
     try { if (localStorage.getItem('ph-studio-mode') === 'ext') mode = 'ext'; } catch {}
-    panel.innerHTML = `<a class="ph-back ph-lab-back" href="#photography/laboratorio" data-lab-back>← Laboratório</a>
+    panel.innerHTML = `<a class="ph-back ph-lab-back" href="#laboratorio" data-lab-back>← Laboratório</a>
       <div class="ph-studio-modes" role="tablist" aria-label="Local">
         <button type="button" role="tab" class="ph-sm" data-sm="studio"><b>Estúdio de luz</b><span>flashes, modificadores, esquemas</span></button>
         <button type="button" role="tab" class="ph-sm" data-sm="ext"><b>Na rua</b><span>abertura, obturador, ISO, bokeh</span></button>
       </div>
       <div class="ph-studio-host"></div>`;
-    panel.querySelector('[data-lab-back]').addEventListener('click', e => { e.preventDefault(); Nav.go('photography/laboratorio'); });
+    panel.querySelector('[data-lab-back]').addEventListener('click', e => { e.preventDefault(); PhNav.go('laboratorio'); });
     panel.querySelectorAll('.ph-sm').forEach(b => b.onclick = () => switchStudio(panel, b.dataset.sm));
     switchStudio(panel, mode);
   }
@@ -3083,25 +3117,26 @@ const PhotographyPage = (function () {
      Os PAINÉIS continuam os mesmos (e as rotas antigas também valem): o que
      muda é a que grupo cada painel pertence. Ícones SVG de traço — o
      sistema de design do site não usa emojis na navegação. */
-  /* v5.1: as quatro áreas passaram para a sidebar do site (o user pediu).
-     A página deixa de ter tabs próprias; o cabeçalho diz em que área se está
-     e a Fotografia acende o item certo da sidebar (ver syncSidebar). */
+  /* Microsite (nov/2026): a Fotografia saiu do portal para /photography/,
+     com navegação própria no topo (01–04). As quatro áreas continuam as
+     mesmas; cada uma tem agora um título editorial e o shell (ph-shell.js)
+     acende o item certo e dá título à página. */
   const PH_GROUPS = [
-    { id: 'fotografar',  label: 'Fotografar',  route: 'photography',             panels: ['generos', 'cheats'],
+    { id: 'fotografar',  num: '01', label: 'Fotografar',  route: '',            panels: ['generos', 'cheats'],
+      title: 'Fotografar com intenção.',
       sub: '30 géneros — a ideia, as definições, onde te pões e os erros a evitar — e a consulta rápida para ter à mão.' },
-    { id: 'aprender',    label: 'Aprender',    route: 'photography/aprender',    panels: ['aprender', 'equipamento'],
+    { id: 'aprender',    num: '02', label: 'Aprender',    route: 'aprender',    panels: ['aprender', 'equipamento'],
+      title: 'Aprender a ver.',
       sub: 'Olhar, linguagem e técnica: oito capítulos, sem ordem obrigatória.' },
-    { id: 'editar',      label: 'Editar',      route: 'photography/edicao',      panels: ['edicao'],
-      sub: 'Da fotografia tirada à fotografia acabada: o que mexer, por que ordem e em que programa.' },
-    { id: 'laboratorio', label: 'Laboratório', route: 'photography/laboratorio', panels: ['ferramentas', 'estudio'],
-      sub: 'Experimentar sem sair de casa: estúdio 3D e calculadoras de exposição e ótica.' },
+    { id: 'editar',      num: '03', label: 'Editar',      route: 'edicao',      panels: ['edicao'],
+      title: 'Da foto tirada à foto acabada.',
+      sub: 'O que mexer, por que ordem e em que programa — cada ajuste aplicado ao vivo, com histograma.' },
+    { id: 'laboratorio', num: '04', label: 'Laboratório', route: 'laboratorio', panels: ['ferramentas', 'estudio'],
+      title: 'Experimentar antes de sair de casa.',
+      sub: 'Um estúdio 3D com flashes e uma rua à noite, e as calculadoras de exposição e ótica.' },
   ];
-  function syncSidebar(grp) {
-    document.querySelectorAll('#sidebar .sb-nav-item[data-route^="photography"]').forEach(a => {
-      const on = a.dataset.route === grp.route;
-      a.classList.toggle('active', on);
-      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-    });
+  function syncArea(grp) {
+    if (typeof PhShell !== 'undefined') PhShell.setArea(grp.id, grp.label);
   }
   const PANELS = ['generos', 'cheats', 'aprender', 'equipamento', 'edicao', 'ferramentas', 'estudio'];
   const groupOf = panel => PH_GROUPS.find(g => g.panels.includes(panel)) || PH_GROUPS[0];
@@ -3124,23 +3159,23 @@ const PhotographyPage = (function () {
       _built = true;
       view.innerHTML = `
         <div class="view-inner">
-          <div class="page-head">
-            <span class="ph-ico">${AppIcons.icon('photography', 22)}</span>
-            <div class="ph-titles">
-              <p class="ph-kicker">Fotografia</p>
-              <h1 class="ph-title"></h1>
-              <p class="ph-sub"></p>
-            </div>
-          </div>
+          <header class="dp-head">
+            <p class="dp-head-k dp-mono"><b class="dp-head-n"></b><a class="dp-head-a" href="#"></a></p>
+            <h1 class="dp-head-t"></h1>
+            <p class="dp-head-s"></p>
+          </header>
           ${PANELS.map(id => `<div class="ph-panel" data-panel="${id}"></div>`).join('')}
         </div>`;
 
       _activate = (id, arg) => {
         _curTab = id; _curArg = arg || null;
         const grp = groupOf(id);
-        view.querySelector('.ph-title').textContent = grp.label;
-        view.querySelector('.ph-sub').textContent = grp.sub;
-        syncSidebar(grp);
+        view.querySelector('.dp-head-n').textContent = grp.num;
+        const ha = view.querySelector('.dp-head-a');
+        ha.textContent = grp.label; ha.setAttribute('href', '#' + grp.route);
+        view.querySelector('.dp-head-t').textContent = grp.title;
+        view.querySelector('.dp-head-s').textContent = grp.sub;
+        syncArea(grp);
         view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
         if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));

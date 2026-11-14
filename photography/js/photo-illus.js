@@ -36,7 +36,7 @@ const PhotoIllus = (function () {
     const w = (opt.w != null) ? opt.w : (String(txt).length * 5.4 + 12);
     const h = opt.h || 15, anchor = opt.anchor || 'start';
     const rx = x - (anchor === 'end' ? w : anchor === 'middle' ? w / 2 : 0);
-    const bg = opt.bg || 'rgba(6,12,22,.72)';
+    const bg = opt.bg || 'rgba(16,13,10,.72)';
     const fg = opt.fg || C.ink;
     return `<g>
       <rect x="${rx}" y="${y - h + 3}" width="${w}" height="${h}" rx="4" fill="${bg}"/>

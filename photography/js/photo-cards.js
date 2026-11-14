@@ -51,7 +51,7 @@ const PhotoCard = (function () {
     blue: '#3b82f6', cyan: '#22d3ee', gold: '#f5b74a', warm: '#ffd98a',
     good: '#34d399', bad: '#f87171', ink: '#eaf1fb',
     line: 'rgba(255,255,255,.55)', dim: 'rgba(255,255,255,.3)',
-    stage: '#0d1b2c', stage2: '#0a1421',
+    stage: '#1a1612', stage2: '#120f0c',
   };
 
   /* ══ 1. PRIMITIVAS ═══════════════════════════════════════════════════
@@ -65,7 +65,7 @@ const PhotoCard = (function () {
     const w = opt.w != null ? opt.w : t.length * 5.3 + 12;
     const h = opt.h || 15, anchor = opt.anchor || 'start';
     const rx = x - (anchor === 'end' ? w : anchor === 'middle' ? w / 2 : 0);
-    return `<g><rect x="${n(rx)}" y="${n(y - h + 3)}" width="${n(w)}" height="${h}" rx="4" fill="${opt.bg || 'rgba(6,12,22,.78)'}"/>
+    return `<g><rect x="${n(rx)}" y="${n(y - h + 3)}" width="${n(w)}" height="${h}" rx="4" fill="${opt.bg || 'rgba(16,13,10,.78)'}"/>
       <text x="${n(anchor === 'end' ? x - 6 : anchor === 'middle' ? x : x + 6)}" y="${n(y - 2)}"
         text-anchor="${anchor === 'middle' ? 'middle' : anchor === 'end' ? 'end' : 'start'}"
         font-family="var(--font-sans, sans-serif)" font-size="${opt.fs || 9}" font-weight="700"
@@ -270,7 +270,7 @@ const PhotoCard = (function () {
       ${swap(P.t, P.l, '−1 ⇄ +1', C.cyan, -30, 2)}
       ${swap(P.t, P.r, '−1 ⇄ +1', C.gold, 30, 2)}
       ${swap(P.l, P.r, '−1 ⇄ +1', C.good, 0, 15)}
-      <circle cx="${cx}" cy="${(top + bot) / 2 + 14}" r="48" fill="rgba(6,12,22,.88)" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+      <circle cx="${cx}" cy="${(top + bot) / 2 + 14}" r="48" fill="rgba(16,13,10,.88)" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
       <text x="${cx}" y="${(top + bot) / 2 - 2}" text-anchor="middle" font-family="var(--font-head,sans-serif)"
         font-size="13" font-weight="800" fill="${C.ink}">1 stop</text>
       ${['= o dobro ou metade', 'da luz. Tirado a um,', 'devolve-se a outro.']

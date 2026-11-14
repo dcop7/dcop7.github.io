@@ -41,6 +41,6 @@ Para regenerar: `cd tools/studio && npm i && node fetch.mjs && node build-subjec
 
 Flashes, modificadores (softbox, octabox, stripbox, sombrinhas, beauty dish,
 refletor, grelha, snoot), rebatedor 5-em-1, tripés, girafa, câmara, fundo de
-papel e sala são **geometria procedural original** (`js/pages/studio/st-gear.mjs`).
+papel e sala são **geometria procedural original** (`photography/js/studio/st-gear.mjs`).
 As texturas do chão, do papel e dos poros da pele são geradas por código. Não há
 modelos, texturas ou HDRIs de terceiros no estúdio.

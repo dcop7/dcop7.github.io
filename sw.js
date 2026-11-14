@@ -1,4 +1,4 @@
-const CACHE = 'dcop7-v369';
+const CACHE = 'dcop7-v370';
 const STATIC = [
   '/',
   '/index.html',
@@ -22,10 +22,6 @@ const STATIC = [
   '/css/views/f1.css',
   '/css/views/oss.css',
   '/css/views/quiz.css',
-  '/css/views/photo-learn.css',
-  '/css/views/photo-genre.css',
-  '/css/views/photo-studio.css',
-  '/css/views/photo-cheats.css',
   '/data/countries.json',
   '/data/worlddata/indicators.json',
   '/data/worlddata/values.json',
@@ -97,26 +93,6 @@ const STATIC = [
   '/js/pages/dice3d.js',
   '/js/vendor/three.min.js',
   '/js/pages/visual.js',
-  '/js/pages/photo-illus.js',
-  '/js/pages/photo-mannequin.js',
-  '/js/pages/photo-lab.js',
-  '/js/pages/photo-editlab.js',
-  '/js/pages/photo-learn.js',
-  '/js/pages/photo-lightart.js',
-  '/js/pages/photo-cards.js',
-  '/js/pages/photo-cheats.js',
-  '/js/pages/studio/st-core.mjs',
-  '/js/pages/studio/st-gear.mjs',
-  '/js/pages/studio/st-lights.mjs',
-  '/js/pages/studio/st-post.mjs',
-  '/js/pages/studio/st-scene.mjs',
-  '/js/pages/studio/st-plan.mjs',
-  '/js/pages/studio/st-presets.mjs',
-  '/js/pages/studio/st-app.mjs',
-  '/js/pages/studio/st-subject.mjs',
-  '/js/pages/studio/ext-city.mjs',
-  '/js/pages/studio/ext-optics.mjs',
-  '/js/pages/studio/ext-app.mjs',
   '/js/explorer/universe/u-core.mjs',
   '/js/explorer/universe/u-engine.mjs',
   '/js/explorer/universe/u-near.mjs',
@@ -134,19 +110,6 @@ const STATIC = [
   '/js/explorer/ocean/o-relief.mjs',
   '/js/explorer/ocean/o-sound.mjs',
   '/js/explorer/ocean/o-app.mjs',
-  '/js/pages/photography.js',
-  '/data/photo/gear.json',
-  '/data/photo/genres.json',
-  '/data/photo/know.json',
-  '/data/photo/edit.json',
-  '/data/photo/profiles.json',
-  '/data/photo/craft.json',
-  '/data/photo/equipment.json',
-  '/data/photo/vision.json',
-  '/data/photo/looks.json',
-  '/data/photo/techniques.json',
-  '/data/photo/read.json',
-  '/data/photo/colour.json',
   '/js/pages/humor.js',
   '/js/pages/hoje.js',
   '/js/core/daily.js',
@@ -272,7 +235,10 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      /* só as caches DESTE SW (dcop7-*). O microsite /photography/ tem SW e
+         caches próprios (foto-*) e apagá-los aqui deixava-o sem offline a
+         cada versão nova do portal. */
+      Promise.all(keys.filter(k => k.startsWith('dcop7-') && k !== CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });

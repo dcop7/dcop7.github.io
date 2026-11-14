@@ -1,5 +1,5 @@
 {
-  "_nota": "Cheatsheets = INFOGRAFIAS de consulta rápida. Regra editorial: o visual manda, o valor vem em grande, o texto é uma linha. Se um bloco precisa de um parágrafo a explicar, pertence a Aprender (know.json, craft.json…) e não aqui; as contas vivem em Ferramentas. Blocos disponíveis (js/pages/photo-cards.js): strip · grid · versus · diagram · rules · steps · table · note. `art` refere uma primitiva do PhotoCard OU um id do PhotoIllus. `recipe` é passada ao motor de píxeis (PhotoLab) sobre a fotografia `base` — a mesma imagem, uma só variável a mudar. `coc: \"auto\"` é substituído em runtime pelo círculo de confusão da câmara escolhida.",
+  "_nota": "Cheatsheets = INFOGRAFIAS de consulta rápida. Regra editorial: o visual manda, o valor vem em grande, o texto é uma linha. Se um bloco precisa de um parágrafo a explicar, pertence a Aprender (know.json, craft.json…) e não aqui; as contas vivem em Ferramentas. Blocos disponíveis (photography/js/photo-cards.js): strip · grid · versus · diagram · rules · steps · table · note. `art` refere uma primitiva do PhotoCard OU um id do PhotoIllus. `recipe` é passada ao motor de píxeis (PhotoLab) sobre a fotografia `base` — a mesma imagem, uma só variável a mudar. `coc: \"auto\"` é substituído em runtime pelo círculo de confusão da câmara escolhida.",
   "groups": [
     {
       "id": "camara",

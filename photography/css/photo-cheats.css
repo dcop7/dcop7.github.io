@@ -66,7 +66,7 @@
 .cs-card-name { font-family: var(--font-head); font-size: .82rem; font-weight: 700; color: var(--text); }
 .cs-card-blurb { font-size: .72rem; line-height: 1.45; color: var(--muted); }
 .cs-card-badge { align-self: flex-start; margin-left: auto; flex: none; padding: .1rem .35rem;
-  border-radius: 999px; font-size: .62rem; font-weight: 700; letter-spacing: .02em;
+  border-radius: var(--r-pill); font-size: .62rem; font-weight: 700; letter-spacing: .02em;
   color: var(--accent-txt); background: var(--accent-soft); border: 1px solid rgba(var(--accent-rgb), .3); }
 .cs-grid-sm .cs-card-vis { aspect-ratio: 2 / 1; }
 .cs-grid-sm .cs-card-name { font-size: .78rem; }
@@ -108,7 +108,7 @@
 .cc-hint { font-size: .74rem; line-height: 1.45; color: var(--muted); }
 /* Selo de honestidade: estas tiras são a MESMA fotografia processada ao
    vivo, e o leitor tem direito a saber que não são cinco fotografias. */
-.cc-sim { margin-left: auto; flex: none; padding: .08rem .38rem; border-radius: 999px;
+.cc-sim { margin-left: auto; flex: none; padding: .08rem .38rem; border-radius: var(--r-pill);
   font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
   color: var(--muted); background: var(--card2); border: 1px solid var(--border2); cursor: help; }
 
@@ -129,7 +129,7 @@
    quem lia tentava (em vão) clicar nas outras. Fica só um filete. */
 .cc-cell.mark { border-color: rgba(245, 183, 74, .3); }
 .cc-cell.mark .cc-v { color: #f5b74a; }
-.cc-mark { justify-self: start; padding: .05rem .38rem; border-radius: 999px;
+.cc-mark { justify-self: start; padding: .05rem .38rem; border-radius: var(--r-pill);
   font-size: .63rem; font-weight: 700; letter-spacing: .01em; color: #f5b74a;
   background: rgba(245, 183, 74, .12); border: 1px solid rgba(245, 183, 74, .3); }
 
@@ -250,7 +250,7 @@
   overflow-x: auto; scrollbar-width: thin;
   background: linear-gradient(var(--bg) 68%, transparent); }
 .cs-jump-b { flex: none; display: inline-flex; align-items: center; gap: .3rem;
-  min-height: 34px; padding: .3rem .6rem; border-radius: 999px; white-space: nowrap;
+  min-height: 34px; padding: .3rem .6rem; border-radius: var(--r-pill); white-space: nowrap;
   font-size: .75rem; font-weight: 600; text-decoration: none; color: var(--text2);
   background: var(--card2); border: 1px solid var(--border); transition: all var(--ease); }
 .cs-jump-b:hover, .cs-jump-b:focus-visible { color: var(--text);

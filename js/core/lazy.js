@@ -15,8 +15,8 @@
    Ordem: os scripts inseridos por JS são `async` por omissão. Com
    `async = false` mantêm a semântica do `defer` — descarregam em
    paralelo mas executam pela ordem de inserção, que é o que os IIFE
-   deste projeto precisam (o `game-host` depende dos `game-*`, o
-   `photography` depende do `photo-lab`, etc.).
+   deste projeto precisam (o `game-host` depende dos `game-*`,
+   etc.). A Fotografia já não passa por aqui: é o microsite /photography/.
    ══════════════════════════════════════════════════════════════════ */
 const Lazy = (function () {
   'use strict';
@@ -81,17 +81,6 @@ const Lazy = (function () {
     humor:       ['js/core/daily.js', 'js/pages/humor.js'],
     hoje:        ['js/core/daily.js', 'src/games/engine/storage.js', 'js/games/game-progress.js', 'js/pages/hoje.js'],
     cheatsheets: ['js/pages/cheatsheets.js'],
-    photography: [
-      'js/pages/photo-illus.js',
-      'js/pages/photo-mannequin.js',
-      'js/pages/photo-lab.js',
-      'js/pages/photo-editlab.js',
-      'js/pages/photo-learn.js',
-      'js/pages/photo-lightart.js',
-      'js/pages/photo-cards.js',
-      'js/pages/photo-cheats.js',
-      'js/pages/photography.js',
-    ],
     explorer: [
       'js/explorer/pt-concelhos-info.js',
       'js/explorer/explorer-portugal.js',
@@ -143,7 +132,6 @@ const Lazy = (function () {
     /* games.css também define o lançador de dados (.dice-*), que vive
        nas Ferramentas — não é engano. */
     tools:       ['css/views/tools.css', 'css/views/games.css'],
-    photography: ['css/views/photo-learn.css', 'css/views/photo-genre.css', 'css/views/photo-cheats.css', 'css/views/photo-studio.css'],
   };
 
   const _script = Object.create(null);   // src → Promise (resolve-once)

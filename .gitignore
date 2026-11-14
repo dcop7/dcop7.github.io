@@ -28,3 +28,6 @@ tools/universe/_src/
 tools/universe/node_modules/
 tools/ocean/_src/
 tools/ocean/node_modules/
+
+# notas pessoais locais (não versionar)
+personal-productivity-system.md

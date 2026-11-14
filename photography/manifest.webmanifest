@@ -1,0 +1,26 @@
+{
+  "id": "/photography/",
+  "name": "DCOP7 Photography",
+  "short_name": "DCOP7 Photo",
+  "description": "Escola visual de fotografia: géneros, aprender a ver, edição ao vivo e laboratório. Funciona offline.",
+  "lang": "pt-PT",
+  "start_url": "/photography/",
+  "scope": "/photography/",
+  "display": "standalone",
+  "background_color": "#0f0d0a",
+  "theme_color": "#0f0d0a",
+  "orientation": "any",
+  "categories": ["education", "photo"],
+  "icons": [
+    { "src": "/photography/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/photography/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/photography/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/photography/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Consulta rápida", "url": "/photography/#consulta", "description": "Lente, definições e erros a evitar" },
+    { "name": "Aprender", "url": "/photography/#aprender", "description": "Capítulos para aprender a ver" },
+    { "name": "Editar", "url": "/photography/#edicao", "description": "Edição explicada e aplicada ao vivo" },
+    { "name": "Laboratório", "url": "/photography/#laboratorio", "description": "Estúdio 3D e calculadoras" }
+  ]
+}

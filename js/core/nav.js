@@ -83,6 +83,10 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="home"         href="#home">${navIcon('home')}<span>${TN('nav.home')}</span></a>
           <div class="sb-grp" data-grp="discover">${TN('nav.grp.discover')}</div>
           <a class="sb-nav-item" data-route="explorer"    href="#explorer">${navIcon('explorer')}<span>${TN('nav.explorer')}</span></a>
+          <!-- Fotografia é um site à parte desde nov/2026 (/photography/, com
+               navegação, tema e service worker próprios): é uma ligação normal,
+               sem data-route, e o ↗ diz que se sai do portal. -->
+          <a class="sb-nav-item sb-nav-ext" href="/photography/">${navIcon('photography')}<span data-tn="nav.photography">${TN('nav.photography')}</span><span class="sb-ext" aria-hidden="true">↗</span></a>
           <a class="sb-nav-item" data-route="noticias"    href="#noticias">${navIcon('noticias')}<span>${TN('nav.noticias')}</span></a>
           <a class="sb-nav-item" data-route="cidadao"     href="#cidadao">${navIcon('cidadao')}<span>${TN('nav.cidadao')}</span></a>
           <a class="sb-nav-item" data-route="eventos"     href="#eventos">${navIcon('eventos')}<span>${TN('nav.eventos')}</span></a>
@@ -100,15 +104,6 @@ const Nav = (function () {
           <a class="sb-nav-item" data-route="games"        href="#games">${navIcon('games')}<span>${TN('nav.games')}</span></a>
           <a class="sb-nav-item" data-route="quiz"         href="#quiz">${navIcon('quiz')}<span>${TN('nav.quiz')}</span></a>
           <a class="sb-nav-item" data-route="humor"        href="#humor">${navIcon('humor')}<span>${TN('nav.humor')}</span></a>
-          <div class="sb-grp" data-grp="photo">${TN('nav.grp.photo')}</div>
-          <!-- Fotografia (v5): as quatro áreas vivem aqui em vez de tabs dentro
-               da página. O item ativo é decidido pela própria Fotografia
-               (PhotographyPage): Equipamento é de Aprender, o Estúdio do
-               Laboratório, um género de Fotografar. -->
-          <a class="sb-nav-item" data-route="photography"             href="#photography">${navIcon('photography')}<span data-tn="nav.photo.shoot">${TN('nav.photo.shoot')}</span></a>
-          <a class="sb-nav-item" data-route="photography/aprender"    href="#photography/aprender">${navIcon('photo-learn')}<span data-tn="nav.photo.learn">${TN('nav.photo.learn')}</span></a>
-          <a class="sb-nav-item" data-route="photography/edicao"      href="#photography/edicao">${navIcon('photo-edit')}<span data-tn="nav.photo.edit">${TN('nav.photo.edit')}</span></a>
-          <a class="sb-nav-item" data-route="photography/laboratorio" href="#photography/laboratorio">${navIcon('photo-lab')}<span data-tn="nav.photo.lab">${TN('nav.photo.lab')}</span></a>
           <!-- Definições saiu da navegação: as preferências rápidas vivem no
                painel do header (a página/rota #settings mantém-se no código). -->
         </nav>
@@ -183,7 +178,7 @@ const Nav = (function () {
      a secção anterior enquanto o bundle desce. */
   const VIEW_OF = {
     cheatsheets: 'view-cheatsheets', games: 'view-games', links: 'view-links',
-    tools: 'view-tools', visual: 'view-visual', photography: 'view-photography',
+    tools: 'view-tools', visual: 'view-visual',
     settings: 'view-settings', quiz: 'view-quiz', humor: 'view-humor', hoje: 'view-hoje',
     explorer: 'view-explorer', ocorrencias: 'view-ocorrencias',
     eventos: 'view-eventos', cidadao: 'view-cidadao', f1: 'view-f1',
@@ -209,6 +204,17 @@ const Nav = (function () {
     if (hash === 'noticias-ai' || hash.startsWith('noticias-ai/')) {
       hash = 'noticias/destaques' + hash.slice('noticias-ai'.length);
       history.replaceState(null, '', '#' + hash);
+    }
+
+    /* A Fotografia saiu para o microsite /photography/ (nov/2026). Rotas
+       antigas (#photography, #photography/g/retrato…), resultados da pesquisa
+       e da paleta caem aqui e seguem para lá com a mesma sub-rota. replace()
+       e não assign(): a entrada #photography/… morre, e o "voltar" do
+       microsite regressa à página do portal de onde se saiu. */
+    if (hash === 'photography' || hash.startsWith('photography/')) {
+      const sub = hash.startsWith('photography/') ? hash.slice('photography/'.length) : '';
+      location.replace('/photography/' + (sub ? '#' + sub : ''));
+      return;
     }
 
     /* Favoritos e links antigos para uma secção desativada abrem a Home. */
@@ -255,11 +261,6 @@ const Nav = (function () {
     } else if (page === 'visual') {
       document.getElementById('view-visual')?.classList.add('active');
       typeof VisualPage !== 'undefined' && VisualPage.show();
-    } else if (page === 'photography') {
-      document.getElementById('view-photography')?.classList.add('active');
-      /* sub completo (multi-segmento): "g/retrato", "agora/rua", "aprender/cores"… */
-      const phSub = path.startsWith('photography/') ? path.slice(12) : null;
-      typeof PhotographyPage !== 'undefined' && PhotographyPage.show(phSub);
     } else if (page === 'settings') {
       document.getElementById('view-settings')?.classList.add('active');
       typeof SettingsPage !== 'undefined' && SettingsPage.show();
@@ -360,7 +361,7 @@ const Nav = (function () {
   else init();
 
   document.addEventListener('langchange', () => {
-    const routes = ['home','links','tools','cheatsheets','hoje','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','photography','visual','settings'];
+    const routes = ['home','links','tools','cheatsheets','hoje','games','quiz','humor','explorer','ocorrencias','eventos','noticias','cidadao','f1','oss','discovery','visual','settings'];
     routes.forEach(r => {
       const el = document.querySelector(`.sb-nav-item[data-route="${r}"] span:not([data-tn])`);
       if (el) el.textContent = TN(`nav.${r.replace(/-/g, '')}`);

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>DCOP7 Photography — escola visual de fotografia</title>
+<meta name="description" content="Escola visual de fotografia: 30 géneros com definições, composição e erros a evitar; capítulos para aprender a ver; laboratório de edição ao vivo e estúdio 3D. Funciona offline."/>
+<meta name="theme-color" content="#0f0d0a"/>
+<meta name="color-scheme" content="dark light"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="DCOP7 Photography"/>
+<meta property="og:description" content="Fotografar com intenção — géneros, aprender a ver, edição e laboratório."/>
+<meta property="og:image" content="https://dcop7.github.io/assets/photo/site/og.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="DCOP7 Photo"/>
+<link rel="icon" type="image/svg+xml" href="/photography/icon.svg"/>
+<link rel="apple-touch-icon" href="/photography/icon-192.png"/>
+<link rel="manifest" href="/photography/manifest.webmanifest"/>
+<link rel="preload" as="image" href="/assets/photo/site/site-hero.webp" fetchpriority="high"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/photography/css/ph-tokens.css"/>
+<link rel="stylesheet" href="/photography/css/ph-chapters.css"/>
+<link rel="stylesheet" href="/photography/css/photo-learn.css"/>
+<link rel="stylesheet" href="/photography/css/photo-genre.css"/>
+<link rel="stylesheet" href="/photography/css/photo-cheats.css"/>
+<link rel="stylesheet" href="/photography/css/photo-studio.css"/>
+<link rel="stylesheet" href="/photography/css/ph-ui.css"/>
+</head>
+<body data-route="home">
+<script>
+/* antes do 1.º paint: tema guardado, e uma ligação direta (#g/retrato…) não
+   mostra o hero da home enquanto o JS ainda não correu */
+try { if (localStorage.getItem('dp-theme') === 'light') document.body.classList.add('light'); } catch (e) {}
+if (location.hash.length > 1 && location.hash !== '#fotografar') document.body.dataset.route = 'page';
+</script>
+
+<a class="dp-skip" href="#main">Saltar para o conteúdo</a>
+
+<header class="dp-top">
+  <div class="dp-top-in">
+    <a class="dp-brand" href="#" data-home aria-label="DCOP7 Photography — início">
+      <img src="/photography/icon.svg" alt="" width="30" height="30"/>
+      <span class="dp-brand-txt"><span class="dp-brand-dc">DCOP7</span><span class="dp-brand-ph">Photography</span></span>
+    </a>
+    <nav class="dp-nav" aria-label="Áreas">
+      <a href="#" data-area="fotografar"><span class="dp-n">01</span>Fotografar</a>
+      <a href="#aprender" data-area="aprender"><span class="dp-n">02</span>Aprender</a>
+      <a href="#edicao" data-area="editar"><span class="dp-n">03</span>Editar</a>
+      <a href="#laboratorio" data-area="laboratorio"><span class="dp-n">04</span>Laboratório</a>
+    </nav>
+    <div class="dp-tools">
+      <button class="dp-icon-btn" type="button" data-theme-toggle aria-label="Mudar para tema claro" title="Tema">
+        <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      </button>
+      <a class="dp-portal" href="/" title="Voltar ao Diogo Universe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Diogo Universe</span>
+      </a>
+      <button class="dp-icon-btn dp-menu-btn" type="button" data-menu-open aria-label="Abrir índice" aria-expanded="false" aria-controls="dp-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="dp-menu" id="dp-menu" role="dialog" aria-modal="true" aria-label="Índice" hidden>
+  <div class="dp-menu-head">
+    <span class="dp-brand"><img src="/photography/icon.svg" alt="" width="30" height="30"/><span class="dp-brand-txt"><span class="dp-brand-dc">DCOP7</span><span class="dp-brand-ph">Photography</span></span></span>
+    <button class="dp-icon-btn" type="button" data-menu-close aria-label="Fechar índice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <ol class="dp-menu-list">
+    <li><a href="#" data-area="fotografar"><span class="dp-n">01</span><b>Fotografar</b><small>30 géneros e a consulta rápida</small></a></li>
+    <li><a href="#aprender" data-area="aprender"><span class="dp-n">02</span><b>Aprender</b><small>Olhar, linguagem e técnica</small></a></li>
+    <li><a href="#edicao" data-area="editar"><span class="dp-n">03</span><b>Editar</b><small>Da foto tirada à foto acabada</small></a></li>
+    <li><a href="#laboratorio" data-area="laboratorio"><span class="dp-n">04</span><b>Laboratório</b><small>Estúdio 3D e calculadoras</small></a></li>
+  </ol>
+  <div class="dp-menu-foot">
+    <button class="btn" type="button" data-theme-toggle>Tema claro / escuro</button>
+    <a class="dp-portal" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span>Diogo Universe</span></a>
+  </div>
+</div>
+
+<main id="main" tabindex="-1">
+  <section class="dp-hero" data-home-only aria-labelledby="dp-hero-t">
+    <img class="dp-hero-img" src="/assets/photo/site/site-hero.webp" alt="Farol iluminado num promontório, ao fim da tarde, com o mar em longa exposição" width="1536" height="640" fetchpriority="high"/>
+    <div class="dp-hero-in">
+      <p class="dp-hero-kicker dp-mono">Escola visual de fotografia</p>
+      <h1 id="dp-hero-t">Fotografar com <em>intenção.</em></h1>
+      <p class="dp-hero-lede">Trinta géneros, cada um numa página: a ideia, as definições, onde te pões e os erros a evitar. Depois, aprender a ver, editar e experimentar, sem contas e também offline.</p>
+      <div class="dp-hero-cta">
+        <a class="btn btn-primary" href="#folha" data-scroll>Escolher o que vou fotografar</a>
+        <a class="btn btn-ghost" href="#aprender">Aprender a ver</a>
+      </div>
+      <p class="dp-hero-cap dp-mono">Fig. 1 — Farol na hora azul · imagem gerada localmente</p>
+    </div>
+  </section>
+
+  <section class="dp-band" data-home-only aria-labelledby="dp-areas-t">
+    <div class="dp-band-head">
+      <h2 id="dp-areas-t">Quatro maneiras de entrar</h2>
+      <p>Cada área responde a uma pergunta diferente. Começa pela que tens agora.</p>
+    </div>
+    <div class="dp-areas">
+      <a class="dp-area" href="#folha" data-scroll>
+        <span class="dp-area-n dp-mono">01 — Fotografar</span>
+        <span class="dp-area-img"><img src="/assets/photo/site/site-area-fotografar.webp" alt="" loading="lazy" decoding="async" width="1100" height="753"/></span>
+        <h3>Vou fotografar…</h3>
+        <p>Escolhe o género: definições, composição, luz e erros a evitar, numa só página.</p>
+        <span class="dp-area-go">Ver os 30 géneros ↓</span>
+      </a>
+      <a class="dp-area" href="#aprender">
+        <span class="dp-area-n dp-mono">02 — Aprender</span>
+        <span class="dp-area-img"><img src="/assets/photo/site/site-area-aprender.webp" alt="" loading="lazy" decoding="async" width="1100" height="753"/></span>
+        <h3>Quero perceber</h3>
+        <p>Visão, ler fotografias, composição, cores, estilos, técnicas e equipamento.</p>
+        <span class="dp-area-go">Abrir os capítulos →</span>
+      </a>
+      <a class="dp-area" href="#edicao">
+        <span class="dp-area-n dp-mono">03 — Editar</span>
+        <span class="dp-area-img"><img src="/assets/photo/site/site-area-editar.webp" alt="" loading="lazy" decoding="async" width="1100" height="753"/></span>
+        <h3>Tenho a foto. E agora?</h3>
+        <p>Cada ajuste explicado e aplicado ao vivo, com histograma e lupa a 100%.</p>
+        <span class="dp-area-go">Ir para a edição →</span>
+      </a>
+      <a class="dp-area" href="#laboratorio">
+        <span class="dp-area-n dp-mono">04 — Laboratório</span>
+        <span class="dp-area-img"><img src="/assets/photo/site/site-area-laboratorio.webp" alt="" loading="lazy" decoding="async" width="1100" height="753"/></span>
+        <h3>Quero experimentar</h3>
+        <p>Um estúdio 3D com flashes e rua, e as calculadoras de exposição e ótica.</p>
+        <span class="dp-area-go">Entrar no laboratório →</span>
+      </a>
+    </div>
+  </section>
+
+  <div id="view-photography">
+    <div class="view-inner"><p class="ph-section-sub" style="margin:0">A carregar…</p></div>
+  </div>
+  <noscript><div class="view-inner"><p>Este site precisa de JavaScript para mostrar os géneros e os capítulos.</p></div></noscript>
+</main>
+
+<footer class="dp-foot">
+  <div class="dp-foot-in">
+    <div>
+      <h2>DCOP7 Photography</h2>
+      <p>Uma escola visual de fotografia que ensina a decidir e não a decorar definições. As imagens foram geradas localmente com o ComfyUI ou desenhadas por código. Não há contas nem rastreio, e funciona offline.</p>
+    </div>
+    <div>
+      <p class="dp-foot-k dp-mono">Áreas</p>
+      <ul>
+        <li><a href="#">01 Fotografar</a></li>
+        <li><a href="#aprender">02 Aprender</a></li>
+        <li><a href="#edicao">03 Editar</a></li>
+        <li><a href="#laboratorio">04 Laboratório</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="dp-foot-k dp-mono">Atalhos</p>
+      <ul>
+        <li><a href="#consulta">Consulta rápida</a></li>
+        <li><a href="#aprender/composicao">Composição</a></li>
+        <li><a href="#estudio">Estúdio 3D</a></li>
+        <li><a href="/">← Diogo Universe</a></li>
+      </ul>
+    </div>
+    <div class="dp-foot-base dp-mono"><span>DCOP7 Photography · parte do Diogo Universe</span><span>pt-PT</span></div>
+  </div>
+</footer>
+
+<div class="dp-toast" id="dp-toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/photography/js/ph-shell.js" defer></script>
+<script src="/photography/js/photo-illus.js" defer></script>
+<script src="/photography/js/photo-mannequin.js" defer></script>
+<script src="/photography/js/photo-lab.js" defer></script>
+<script src="/photography/js/photo-editlab.js" defer></script>
+<script src="/photography/js/photo-learn.js" defer></script>
+<script src="/photography/js/photo-lightart.js" defer></script>
+<script src="/photography/js/photo-cards.js" defer></script>
+<script src="/photography/js/photo-cheats.js" defer></script>
+<script src="/photography/js/photography.js" defer></script>
+</body>
+</html>

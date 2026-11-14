@@ -1,5 +1,5 @@
 {
-  "_nota": "Estilos visuais (Aprender ▸ Estilos). Cada estilo é uma RECEITA aplicada ao vivo pelo PhotoLab a uma fotografia de base, com cursor de dose e troca de base — trocar a base é o que ensina 'onde funciona' e 'quando se torna gasto'. Campos: why (porque existe), says (o que comunica), works (onde resulta), overused (quando se gasta), decisions[] (as decisões visuais que o criam). `recipe` usa os parâmetros do PhotoLab (js/pages/photo-lab.js); `curvePts` é convertido em LUT e escalado pela dose. `bases` são ids de assets/photo/index.json. `genres` e `techniques` são as ligações cruzadas.",
+  "_nota": "Estilos visuais (Aprender ▸ Estilos). Cada estilo é uma RECEITA aplicada ao vivo pelo PhotoLab a uma fotografia de base, com cursor de dose e troca de base — trocar a base é o que ensina 'onde funciona' e 'quando se torna gasto'. Campos: why (porque existe), says (o que comunica), works (onde resulta), overused (quando se gasta), decisions[] (as decisões visuais que o criam). `recipe` usa os parâmetros do PhotoLab (photography/js/photo-lab.js); `curvePts` é convertido em LUT e escalado pela dose. `bases` são ids de assets/photo/index.json. `genres` e `techniques` são as ligações cruzadas.",
   "bases": [
     {
       "id": "look-retrato",
