@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-14T08:48:44.065Z",
+ "generated": "2026-11-14T16:29:27.589Z",
  "total": 84,
  "broken": 0,
- "unknown": 3,
+ "unknown": 5,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -337,8 +337,8 @@
   {
    "id": "calendario:inspecao",
    "url": "https://www.imt-ip.pt/sites/IMTT/Portugues/Veiculos/InspecaoVeiculos/Paginas/InspeccaodeVeiculos.aspx",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:cc-renovar",
@@ -349,8 +349,8 @@
   {
    "id": "calendario:carta-revalidar",
    "url": "https://www.imt-ip.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:ss-prova-escolar",
