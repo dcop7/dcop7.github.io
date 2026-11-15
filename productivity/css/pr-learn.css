@@ -208,3 +208,24 @@
 .lr-dbt li > span { width: 1.4rem; height: 1.4rem; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--pr-line-2); font-size: .74rem; flex-shrink: 0; }
 .lr-dbt li.ok { color: var(--pr-ink); } .lr-dbt li.ok > span { background: var(--k-str-bg); color: var(--k-str-tx); border-color: var(--k-str); }
 .lr-dbt li.no { color: var(--pr-ink); } .lr-dbt li.no > span { background: var(--k-act-bg); color: var(--k-act-tx); border-color: var(--k-act); }
+
+/* ── capítulo 0 · Antes de começar: camadas, chave das etiquetas, glossário ── */
+.lr-layers { list-style: none; margin: 1rem 0 1.4rem; padding: 0; display: grid; gap: .5rem; }
+.lr-layers > li { position: relative; display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: .2rem 1.1rem; align-items: start;
+  padding: .85rem 1rem .85rem 1.15rem; background: var(--pr-sheet); border: 1px solid var(--pr-line); border-radius: 8px; }
+.lr-layers > li::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 8px 0 0 8px; background: var(--ly, var(--pr-line-2)); }
+.lr-layers .ly-k { grid-row: span 3; font-family: var(--pr-mono); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--pr-dim); padding-top: .2rem; }
+.lr-layers b { font-size: 1rem; }
+.lr-layers p { margin: 0; color: var(--pr-ink-2); font-size: .92rem; line-height: 1.5; }
+.lr-layers a { font-size: .82rem; justify-self: start; }
+.lr-layers .ly-dir { --ly: var(--k-today); } .lr-layers .ly-hab { --ly: var(--k-str); } .lr-layers .ly-met { --ly: var(--k-info); } .lr-layers .ly-tool { --ly: var(--k-act); }
+@media (max-width: 640px) { .lr-layers > li { grid-template-columns: minmax(0, 1fr); } .lr-layers .ly-k { grid-row: auto; } }
+.lr-tagkey { list-style: none; padding: 0; margin: .6rem 0 1.2rem; display: grid; gap: .45rem; }
+.lr-tagkey li { color: var(--pr-ink-2); font-size: .94rem; }
+.lr-gloss { display: grid; grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); margin: .8rem 0 0; border-top: 1px solid var(--pr-line); }
+.lr-gloss dt, .lr-gloss dd { margin: 0; padding: .6rem 0; border-bottom: 1px solid var(--pr-line); }
+.lr-gloss dt { font-weight: 700; padding-right: 1rem; }
+.lr-gloss dd { color: var(--pr-ink-2); font-size: .94rem; }
+.lr-gloss dd a { font-size: .82rem; white-space: nowrap; margin-left: .25rem; }
+@media (max-width: 560px) { .lr-gloss { grid-template-columns: minmax(0, 1fr); } .lr-gloss dt { border-bottom: 0; padding-bottom: 0; } }
+.lr-legend a { color: var(--pr-dim); }

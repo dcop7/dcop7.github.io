@@ -27,7 +27,8 @@
 /* barra lateral */
 .nb-side { background: var(--pr-paper-2); border-right: 1px solid var(--pr-line); padding: .8rem .5rem; font-size: .85rem; display: flex; flex-direction: column; gap: .05rem; }
 .nb-sh { font-size: .7rem; font-weight: 700; color: var(--pr-dim); padding: .6rem .5rem .25rem; letter-spacing: .02em; }
-.nb-sh:first-child { padding-top: 0; }
+.nb-sh:first-child, .nb-favs > .nb-sh { padding-top: 0; }
+.nb-favs { display: flex; flex-direction: column; gap: .05rem; }
 .nb-fold { font-size: .82rem; font-weight: 600; color: var(--pr-ink-2); padding: .35rem .5rem .15rem; }
 .nb-in { padding-left: .7rem; display: flex; flex-direction: column; gap: .05rem; }
 .nb-si { display: flex; align-items: center; gap: .45rem; width: 100%; text-align: left; padding: .32rem .5rem; border-radius: 5px; color: var(--pr-ink-2); font-size: .85rem; line-height: 1.3; }
@@ -46,6 +47,7 @@ button.nb-si:hover { background: var(--pr-hover); color: var(--pr-ink); }
   .nb-side { flex-direction: row; flex-wrap: wrap; gap: .25rem; padding: .6rem; }
   .nb-side .nb-sh, .nb-side .nb-fold, .nb-page-i, .nb-dim { display: none; }
   .nb-in { display: contents; }
+  .nb-favs { display: none; } /* os favoritos repetem as bases do PARA: em chips, cada base aparece uma vez */
   .nb-si { width: auto; border: 1px solid var(--pr-line); background: var(--pr-sheet); }
   .nb-side-foot { flex-direction: row; flex-wrap: wrap; align-items: center; width: 100%; margin-top: .3rem; padding-top: .5rem; }
   .nb-clock { flex-direction: row; align-items: center; padding: 0; gap: .5rem; flex-wrap: wrap; }
@@ -219,3 +221,19 @@ body.dark .c-purple { background: #3d2f55; color: #dacbf2; } body.dark .c-pink {
 
 .nb-table .nb-chip, .nb-card .nb-chip, .nb-list .nb-chip { max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
 .nb-more { font-family: var(--pr-mono); font-size: .72rem; color: var(--pr-dim); }
+
+/* missões compactas: só a próxima mostra a explicação; o playground fica acima da dobra */
+.nb-missions li:not(.cur) p { display: none; }
+.nb-missions li:not(.cur) > div { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.nb-missions li:not(.cur) .btn { margin-top: 0; }
+.nb-missions li.cur b { color: var(--pr-ink); }
+.nb-missions li.cur { background: linear-gradient(90deg, var(--k-info-bg), transparent 80%); margin: 0 -.8rem; padding-left: .8rem; padding-right: .8rem; }
+/* primeiras palavras do Notion, para quem nunca lhe mexeu */
+.nb-primer { margin-top: .9rem; max-width: 70ch; font-size: .86rem; }
+.nb-primer summary { cursor: pointer; color: var(--pr-ink-2); padding: .2rem 0; }
+.nb-primer dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem 1.2rem; margin: .6rem 0 .5rem; }
+@media (max-width: 560px) { .nb-primer dl { grid-template-columns: minmax(0, 1fr); } }
+.nb-primer dt { font-weight: 700; color: var(--pr-ink); }
+.nb-primer dd { margin: .1rem 0 0; color: var(--pr-ink-2); line-height: 1.45; }
+.nb-primer > a { font-size: .82rem; display: inline-flex; gap: .3rem; align-items: center; }
+.nb-primer > a svg { width: 14px; height: 14px; }

@@ -17,7 +17,7 @@
    Não há dados remotos: o mundo de exemplo vive no código e no
    localStorage do visitante. Mudar CACHE quando muda código.
    ══════════════════════════════════════════════════════════════════ */
-const CACHE = 'prod-v2';
+const CACHE = 'prod-v3';
 const FONTS = 'prod-fonts-v1';
 
 const STATIC = [

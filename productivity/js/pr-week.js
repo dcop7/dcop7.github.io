@@ -32,7 +32,7 @@ const PrWeek = (function () {
       const picked = d.big3.slice();
       el.innerHTML = `<div class="wk-b3">
         <div class="wk-b3-h"><p class="pr-kicker">${esc(tx('Manhã · 2 min', 'Morning · 2 min'))}</p><h3 class="pr-h3">${esc(tx('Abre "Próximos 7 dias" e escolhe três', 'Open "Due in 7 days" and pick three'))}</h3>
-          ${capBar(list.length)}${prevDraft ? `<p class="wk-draft">✎ ${esc(tx('Rascunho de ontem: ', "Yesterday's draft: "))}<i>${esc(prevDraft)}</i></p>` : ''}</div>
+          ${capBar(list.length)}<p class="wk-how">${esc(tx('Como escolher: primeiro o que está atrasado ou tem prazo real; depois pelo menos uma coisa importante que nenhum prazo está a empurrar.', 'How to choose: first what is overdue or has a real deadline; then at least one important thing no deadline is pushing.'))} <a href="#aprender/importante">${esc(tx('Porquê', 'Why'))}</a></p>${prevDraft ? `<p class="wk-draft">✎ ${esc(tx('Rascunho de ontem: ', "Yesterday's draft: "))}<i>${esc(prevDraft)}</i></p>` : ''}</div>
         <ul class="wk-pick">${list.map(t => `<li><label><input type="checkbox" data-b3="${t.id}" ${picked.includes(t.id) ? 'checked' : ''} ${!picked.includes(t.id) && picked.length >= 3 ? 'disabled' : ''}>
           ${PrLearn.taskLi(t, now).replace(/^<li>|<\/li>$/g, '')}</label></li>`).join('') || `<li class="pr-sub">${esc(tx('A lista dos próximos 7 dias está vazia.', 'The next-7-days list is empty.'))}</li>`}</ul>
         <div class="pr-row"><button type="button" class="btn btn-primary" data-b3-go ${picked.length ? '' : 'disabled'}>${esc(tx(`Escrever no caderno (${picked.length}/3)`, `Write in the notebook (${picked.length}/3)`))}</button>

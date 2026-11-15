@@ -111,7 +111,7 @@ main:focus { outline: none; }
 .pr-h2 { font-family: var(--pr-display); font-size: var(--pr-fs-h2); font-weight: 600; letter-spacing: -.01em; line-height: 1.15; margin: 0 0 .6rem; }
 .pr-h3 { font-size: 1.02rem; font-weight: 700; margin: 0 0 .35rem; }
 .pr-sub { color: var(--pr-dim); font-size: .92rem; }
-.pr-section { margin: 3rem 0 0; }
+.pr-section { margin-top: 3rem; } /* só margin-top: em .pr-wrap.pr-section a margem lateral auto (centrar) tem de sobreviver */
 .pr-section:first-child { margin-top: 0; }
 .pr-row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
 .pr-spacer { flex: 1; }
@@ -260,3 +260,19 @@ main:focus { outline: none; }
 /* fantasma de Pr.fly */
 .pr-ghost { background: var(--pr-sheet); border: 1px solid var(--pr-line-2); border-radius: var(--pr-r); padding: .4rem .6rem; font-size: .8rem; box-shadow: var(--pr-shadow-lg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pr-ghost.k-act { border-color: var(--k-act); } .pr-ghost.k-info { border-color: var(--k-info); } .pr-ghost.k-str { border-color: var(--k-str); } .pr-ghost.k-today { border-color: var(--k-today); }
+
+/* ── home · por onde começar (caminhos por objetivo) ── */
+.pr-goals { margin-bottom: 3rem; }
+.pr-goal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin-top: 1.2rem; }
+@media (max-width: 980px) { .pr-goal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .pr-goal-grid { grid-template-columns: minmax(0, 1fr); } }
+.pr-goal { background: var(--pr-sheet); border: 1px solid var(--pr-line); border-radius: 10px; padding: 1rem 1.1rem 1.05rem; display: flex; flex-direction: column; }
+.pr-goal h3 { font-family: var(--pr-display); font-size: 1.15rem; font-weight: 600; margin: 0 0 .2rem; }
+.pr-goal > p { color: var(--pr-dim); font-size: .86rem; margin: 0 0 .7rem; }
+.pr-goal ol { list-style: none; counter-reset: g; margin: auto 0 0; padding: 0; border-top: 1px solid var(--pr-line); }
+.pr-goal li { counter-increment: g; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); align-items: baseline; border-bottom: 1px solid var(--pr-line); }
+.pr-goal li:last-child { border-bottom: 0; }
+.pr-goal li::before { content: counter(g); font-family: var(--pr-mono); font-size: .72rem; color: var(--pr-dim); }
+.pr-goal li a { display: block; padding: .45rem 0; min-height: 24px; font-size: .9rem; font-weight: 500; color: var(--pr-ink); text-decoration: none; }
+.pr-goal li a:hover { text-decoration: underline; }
+.pr-goal li a:focus-visible { outline: 2px solid var(--pr-focus, currentColor); outline-offset: 2px; border-radius: 3px; }

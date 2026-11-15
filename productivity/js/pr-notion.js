@@ -51,8 +51,8 @@ const PrNotion = (function () {
   }
 
   /* ── estado da página ── */
-  let mOpen = null;
-  document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('nb-missions')) mOpen = e.target.open; }, true);
+  let mOpen = null, pOpen = null;
+  document.addEventListener('toggle', e => { if (!e.target.classList) return; if (e.target.classList.contains('nb-missions')) mOpen = e.target.open; if (e.target.classList.contains('nb-primer')) pOpen = e.target.open; }, true);
   let el = null, cur = { db: 'notes', view: null }, peek = null, panel = null, mode = 'db', delArm = null, fresh = null;
   const vlist = db => W.state().views[db] || [];
   const curView = () => vlist(cur.db).find(v => v.id === cur.view) || vlist(cur.db)[0];
@@ -83,15 +83,29 @@ const PrNotion = (function () {
   function shell() {
     const m = missionsDone();
     const nDone = MISSIONS.filter(x => m[x.id]).length;
+    const curM = (MISSIONS.find(x => !m[x.id]) || {}).id;
+    const first = nDone === 0 && !Pr.store.get('pr-nb-seen', 0);
+    const wide = matchMedia('(min-width: 901px)').matches;
     el.innerHTML = `<div class="pr-wrap pr-page nb-page">
       ${crumbs([{ label: tx('Experimentar', 'Experiment'), href: '#experimentar' }, { label: tx('Playground de bases de dados', 'Database playground') }])}
       <header class="nb-head">
         <div><h1 class="pr-h2" style="font-size:clamp(1.6rem,3vw,2.3rem)">${esc(tx('Playground de bases de dados', 'Database playground'))}</h1>
           <p class="pr-sub" style="max-width:70ch">${esc(tx('Um espaço de trabalho ao estilo do Notion com o mundo de exemplo. Mexe à vontade: as alterações ficam só neste browser e repõem-se a qualquer momento.',
-            'A Notion-style workspace with the sample world. Change anything: changes stay in this browser and can be reset at any time.'))}</p></div>
-        <details class="nb-missions" ${(mOpen != null ? mOpen : nDone === 0 && !Pr.store.get('pr-nb-seen', 0)) ? 'open' : ''}>
+            'A Notion-style workspace with the sample world. Change anything: changes stay in this browser and can be reset at any time.'))}</p>
+          <details class="nb-primer" ${pOpen != null ? (pOpen ? 'open' : '') : (first && wide ? 'open' : '')}>
+            <summary><b>${esc(tx('Antes de mexer: seis palavras', 'Before you start: six words'))}</b></summary>
+            <dl>${[[tx('Base de dados', 'Database'), tx('Uma tabela de páginas com os mesmos campos. À esquerda tens as do sistema.', 'A table of pages with the same fields. The system’s ones are on the left.')],
+              [tx('Linha = página', 'Row = page'), tx('Cada linha abre uma página completa: toca no título.', 'Every row opens a full page: tap its title.')],
+              [tx('Propriedade', 'Property'), tx('Uma coluna com tipo: data, seleção, caixa…', 'A typed column: date, select, checkbox…')],
+              [tx('Vista', 'View'), tx('Filtro + ordenação + formato. São os separadores por cima da tabela; não mudam os dados.', 'Filter + sort + layout. They are the tabs above the table; they do not change the data.')],
+              [tx('Relação ↗', 'Relation ↗'), tx('Uma coluna que liga a linhas de outra base (uma nota à sua equipa).', 'A column that links to rows of another database (a note to its team).')],
+              [tx('Rollup Σ', 'Rollup Σ'), tx('Uma conta sobre as linhas ligadas (quantas notas tem a equipa).', 'A calculation over the linked rows (how many notes the team has).')]]
+              .map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>
+            <a href="#aprender/bases">${esc(tx('Explicação completa: Bases de dados, peça a peça', 'Full explanation: Databases, piece by piece'))} ${ICON.arrow}</a>
+          </details></div>
+        <details class="nb-missions" ${(mOpen != null ? mOpen : first) ? 'open' : ''}>
           <summary><b>${esc(tx('Missões', 'Missions'))}</b> <span class="pr-mono">${nDone}/${MISSIONS.length}</span></summary>
-          <ol>${MISSIONS.map(x => `<li class="${m[x.id] ? 'ok' : ''}"><span class="nb-mk">${m[x.id] ? ICON.check : ''}</span><div><b>${esc(L(x.t))}</b><p>${esc(L(x.d))}</p>
+          <ol>${MISSIONS.map(x => `<li class="${m[x.id] ? 'ok' : ''} ${x.id === curM ? 'cur' : ''}"><span class="nb-mk">${m[x.id] ? ICON.check : ''}</span><div><b>${esc(L(x.t))}</b><p>${esc(L(x.d))}</p>
             ${x.go && !m[x.id] ? `<button type="button" class="btn btn-sm btn-ghost" data-act="mgo" data-db="${x.go[0]}" data-v="${x.go[1]}">${esc(tx('Ir', 'Go'))} ${ICON.arrow}</button>` : ''}</div></li>`).join('')}</ol>
           ${nDone ? `<button type="button" class="btn btn-sm btn-ghost" data-act="mreset">${esc(tx('Recomeçar as missões', 'Restart missions'))}</button>` : ''}
         </details>
@@ -119,7 +133,7 @@ const PrNotion = (function () {
     const favs = st.dbs.filter(db => S[db].fav);
     const res = st.resources || [];
     const hasDec = !!S.decisions;
-    return `<p class="nb-sh">⭐ ${esc(tx('Favoritos', 'Favorites'))}</p>${favs.map(item).join('')}
+    return `<div class="nb-favs"><p class="nb-sh">⭐ ${esc(tx('Favoritos', 'Favorites'))}</p>${favs.map(item).join('')}</div>
       <p class="nb-sh">${esc(tx('PARA', 'PARA'))}</p>
       ${item('projects')}
       <p class="nb-fold">🟩 ${esc(tx('Áreas', 'Areas'))}</p>
@@ -492,7 +506,7 @@ const PrNotion = (function () {
         return `<g class="edge ${e.two ? 'two' : 'one'} ${on ? 'on' : ''} ${sel && !on ? 'dim' : ''}"><path d="M${a[0]} ${a[1]} L${b[0]} ${b[1]}" marker-end="url(#nbm)" ${e.two ? 'marker-start="url(#nbm)"' : ''}/>
           <text x="${mx}" y="${my}" text-anchor="middle">${esc(L(e.p.name))}</text></g>`; }).join('')}
       ${dbs.map(d => { const [x, y] = pos[d], h = bh(d), rp = S[d].props.filter(p => p.type === 'rel' || p.type === 'rollup');
-        return `<a href="#experimentar/notion/${d}" data-act="db" data-db="${d}" class="node ${d === 'teams' ? 'hub' : ''} ${sel === d ? 'on' : ''} ${sel && sel !== d && !edges.some(e => (e.from === sel && e.to === d) || (e.to === sel && e.from === d)) ? 'dim' : ''}">
+        return `<a href="#experimentar/notion/${d}" data-act="db" data-db="${d}" aria-label="${esc(L(S[d].name))}" class="node ${d === 'teams' ? 'hub' : ''} ${sel === d ? 'on' : ''} ${sel && sel !== d && !edges.some(e => (e.from === sel && e.to === d) || (e.to === sel && e.from === d)) ? 'dim' : ''}">
           <rect x="${x - bw / 2}" y="${y - h / 2}" width="${bw}" height="${h}" rx="7"/>
           <text x="${x}" y="${y - h / 2 + 22}" text-anchor="middle" class="nm">${S[d].icon} ${esc(L(S[d].name))} · ${W.recs(d).length}</text>
           ${rp.map((p, i) => `<text x="${x - bw / 2 + 10}" y="${y - h / 2 + 40 + i * 15}" class="pp ${p.type}">${p.type === 'rollup' ? 'Σ' : p.back ? '↩' : '↗'} ${esc(L(p.name).slice(0, 20))}</text>`).join('')}</a>`; }).join('')}

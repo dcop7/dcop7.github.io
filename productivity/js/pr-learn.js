@@ -46,23 +46,39 @@ const PrLearn = (function () {
         ${crumbs([{ label: tx('Aprender', 'Learn'), href: '#aprender' }].concat(track.name && tracks().length > 1 ? [{ label: L(track.name), href: '#aprender' }] : []).concat([{ label: L(blk.name) }, { label: L(c.title) }]))}
         <header class="pr-head"><p class="pr-kicker">${String(i + 1).padStart(2, '0')} · ${c.min} min ${(c.kinds || []).map(kindTag).join(' ')}</p>
           <h1>${esc(L(c.title))}</h1><p class="lede">${esc(L(c.lede))}</p></header>
-        <div class="lr-legend">${tid === 'org' ? `${srcTag('est')} ${esc(tx('vem da literatura', 'from the literature'))} · ${srcTag('own')} ${esc(tx('decisão do sistema de referência', 'decision of the reference system'))} · ${srcTag('chk')} ${esc(tx('depende do produto', 'depends on the product'))}`
-          : `${srcTag('res')} ${esc(tx('estudos publicados', 'published studies'))} · ${srcTag('est')} ${esc(tx('enquadramento reconhecido', 'recognised framework'))} · ${srcTag('auth')} ${esc(tx('modelo de um autor', "one author's model"))} · ${srcTag('tip')} ${esc(tx('conselho deste site', "this site's advice"))} · ${srcTag('weak')} ${esc(tx('evidência fraca', 'weak evidence'))}`}</div>
+        ${legend(L(c.body))}
         <div class="lr-body">${L(c.body)}</div>
         ${c.refs ? `<section class="lr-refs"><p class="pr-kicker">${esc(tx('Fontes deste capítulo', 'Sources for this chapter'))}</p><ol>${c.refs.map(r => `<li>${r}</li>`).join('')}</ol></section>` : ''}
         <section class="lr-take"><p class="pr-kicker">${esc(tx('Para levar', 'Takeaways'))}</p><ul>${L(c.take).map(t => `<li>${esc(t)}</li>`).join('')}</ul>
           ${(c.next || []).length ? `<div class="pr-row" style="margin-top:1rem">${c.next.map(n => `<a class="btn" href="${n.href}">${esc(L(n.l))} ${ICON.arrow}</a>`).join('')}</div>` : ''}</section>
         <nav class="pr-pager" aria-label="${esc(tx('Capítulos', 'Chapters'))}">
           ${prev ? `<a href="#aprender/${prev.id}"><small>← ${esc(tx('anterior', 'previous'))}</small><b>${esc(L(prev.title))}</b></a>` : '<span></span>'}
-          ${next ? `<a class="next" href="#aprender/${next.id}"><small>${esc(tx('seguinte', 'next'))} →</small><b>${esc(L(next.title))}</b></a>` : ''}
+          ${next ? `<a class="next" href="#aprender/${next.id}"><small>${esc(tx('seguinte', 'next'))} →</small><b>${esc(L(next.title))}</b></a>`
+            : tid === 'org' && other ? `<a class="next" href="#aprender/${(trackCh(other.id)[0] || {}).id}"><small>${esc(tx('percurso 2', 'track 2'))} →</small><b>${esc(L(other.name))}: ${esc(L((trackCh(other.id)[0] || {}).title || ''))}</b></a>`
+            : `<a class="next" href="#aplicar/sistema"><small>${esc(tx('fim do percurso · aplicar', 'end of track · apply'))} →</small><b>${esc(tx('Desenhar o teu sistema', 'Design your system'))}</b></a>`}
         </nav>
       </article></div>`;
     $$('[data-src]', el).forEach(s => { s.outerHTML = srcTag(s.dataset.src); });
     $$('[data-demo]', el).forEach(d => { const f = DEMOS[d.dataset.demo]; d.classList.add('lr-demo'); if (['kinds', 'para4'].includes(d.dataset.demo)) d.classList.add('lr-bare'); if (f) f(d); });
   }
 
+  /* legenda: só as etiquetas que o capítulo usa, com o mesmo significado nos dois percursos */
+  const TAG_D = {
+    res: ['estudos publicados', 'published studies'], est: ['conceito ou prática reconhecida', 'recognised concept or practice'],
+    auth: ['modelo de um autor', "one author's model"], own: ['escolha do sistema de exemplo — adapta-a', 'a choice of the example system — adapt it'],
+    chk: ['depende do produto — confirma na app', 'depends on the product — check in the app'], tip: ['conselho deste site', "this site's advice"], weak: ['evidência fraca', 'weak evidence'],
+  };
+  function legend(body) {
+    const used = Object.keys(TAG_D).filter(k => body.includes(`data-src="${k}"`));
+    if (!used.length) return '';
+    return `<div class="lr-legend">${used.map(k => `${srcTag(k)} ${esc(tx(TAG_D[k][0], TAG_D[k][1]))}`).join(' · ')} · <a href="#aprender/comecar">${esc(tx('o que querem dizer', 'what they mean'))}</a></div>`;
+  }
+
   /* ════════════════ demonstrações ════════════════ */
   const DEMOS = {};
+
+  /* 0 · escolher o cenário do mundo de exemplo, dentro do capítulo */
+  DEMOS.scenario = el => { el.innerHTML = PrApp.worldBar(null); el.classList.add('lr-bare'); };
   const demoHead = (t, sub) => `<div class="lr-demo-h"><span class="lr-demo-k">${esc(tx('Demonstração', 'Demo'))}</span><b>${esc(t)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}</div>`;
 
   /* 1 · as quatro espécies, com exemplos do cenário atual */

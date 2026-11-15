@@ -5,7 +5,7 @@
    Review" (documento de referência do projeto). Reorganizado para ensinar:
    cada capítulo tem uma ideia central, uma demonstração ao vivo e o que
    levar. Marcadores no texto:
-     <span data-src="est"></span>  conceito estabelecido (GTD, PARA, BuJo…)
+     <span data-src="auth"></span>  conceito estabelecido (GTD, PARA, BuJo…)
      <span data-src="own"></span>  escolha de desenho do sistema de referência
      <span data-src="chk"></span>  depende do produto — confirmar na app
      <div data-demo="id"></div>    demonstração (pr-learn.js)
@@ -22,6 +22,115 @@ const PrLearnContent = (function () {
   ];
 
   const CH = [
+  /* ───────────────────────── 0 · antes de começar ───────────────────────── */
+  { id: 'comecar', block: 'modelo', min: 6, kinds: [],
+    title: B('Antes de começar: o que é um sistema', 'Before you start: what a system is'),
+    lede: B('Um sistema de produtividade não é uma app. É um pequeno conjunto de lugares, regras e rotinas que te deixa parar de guardar compromissos de cabeça — e escolher melhor o que fazer a seguir.',
+            'A productivity system is not an app. It is a small set of places, rules and routines that lets you stop keeping commitments in your head — and choose better what to do next.'),
+    body: {
+      pt: `
+<h2>O problema que resolve</h2>
+<p>Pedidos, prazos, ideias e factos chegam o dia todo: uma mensagem, um "podes ver isto até sexta?", uma ideia no duche. Se a única cópia está na tua cabeça, ela lembra-te na altura errada e esquece-se na altura certa. Há investigação a apoiar uma parte disto: objetivos por cumprir tendem a gerar pensamentos intrusivos, e fazer um plano concreto para eles reduz essa interferência <span data-src="res"></span>. Um sistema é o sítio fora da cabeça em que confias o suficiente para largar.</p>
+<h2>Quatro camadas — não as confundas</h2>
+<ol class="lr-layers">
+<li class="ly-dir"><span class="ly-k">Direção · para onde</span><b>O que merece o teu tempo</b><p>Escolher o que é importante, não só o que é urgente. Sem isto, um sistema impecável faz-te eficiente nas coisas erradas.</p><a href="#aprender/importante">Percurso 2 · Dirigir</a></li>
+<li class="ly-hab"><span class="ly-k">Hábitos e rituais · quando</span><b>O que mantém o sistema vivo</b><p>Capturar sempre, escolher os Big 3 de manhã, a revisão semanal. Sem rotina, qualquer sistema vira cemitério em poucas semanas.</p><a href="#aprender/habitos">Percurso 2 · Executar</a></li>
+<li class="ly-met"><span class="ly-k">Método · o quê</span><b>Regras para cada coisa</b><p>O que fazer com uma tarefa, uma nota, um projeto. Exemplos: <b>GTD</b> (Getting Things Done, de David Allen) para as ações; <b>PARA</b> (de Tiago Forte) para arrumar informação. Um método funciona em papel.</p><a href="#aprender/quatro">Percurso 1 · Organizar</a></li>
+<li class="ly-tool"><span class="ly-k">Ferramenta · onde</span><b>A app ou o caderno</b><p>Todoist, Notion, um caderno. A ferramenta executa o método — não o substitui. Trocar de app sem mudar o método dá a mesma confusão noutro ecrã.</p><a href="#explorar/ferramentas">Diretório de ferramentas</a></li>
+</ol>
+<h2>Devo aprender GTD antes de escolher uma app?</h2>
+<p>Não precisas do livro inteiro, mas precisas de meia dúzia de regras antes de mudar de app — senão a app nova vira só uma lista maior. Uma app sem método enche-se e é abandonada; um método sem app funciona num caderno. A ordem que este site sugere <span data-src="tip"></span>: perceber as quatro espécies e o ciclo (cerca de 15 minutos), escolher uma ferramenta por papel, e só depois afinar com o resto.</p>
+<h2>Os dois percursos</h2>
+<table class="lr-table"><tbody>
+<tr><td><b>1 · Organizar</b></td><td>Onde as coisas vivem e como se ligam: tarefas, notas, projetos, bases de dados e a revisão semanal. Responde a "onde está?" e "o que tenho de fazer?".</td></tr>
+<tr><td><b>2 · Executar e dirigir</b></td><td>O lado humano: porque adiamos, como se fazem hábitos, foco, decisões, motivação e prioridades. Responde a "porque não o faço?" e "devia fazê-lo?".</td></tr>
+</tbody></table>
+<p>Um sem o outro falha: organizar sem o segundo dá uma lista perfeita que não se faz; o segundo sem o primeiro dá boas intenções sem sítio para viver. Podes começar por qualquer um.</p>
+<h2>Como ler este site</h2>
+<p>Cada afirmação importante tem uma etiqueta que diz de onde vem:</p>
+<ul class="lr-tagkey">
+<li><span data-src="res"></span> estudos publicados — com a referência no fim do capítulo.</li>
+<li><span data-src="est"></span> um conceito ou prática reconhecida por muitos, não só por um autor.</li>
+<li><span data-src="auth"></span> o modelo de um autor (Allen, Forte, Clear, Covey…) — útil, mas não testado como um todo.</li>
+<li><span data-src="own"></span> uma escolha do sistema de exemplo (ver abaixo) — adapta-a à tua vida.</li>
+<li><span data-src="chk"></span> depende do produto e pode mudar — confirma na tua app.</li>
+<li><span data-src="tip"></span> conselho prático deste site.</li>
+<li><span data-src="weak"></span> uma ideia popular com evidência fraca ou que não se replicou.</li>
+</ul>
+<p><b>O sistema de exemplo.</b> Para mostrar tudo a funcionar, o site segue um sistema concreto — o "sistema de referência", tirado de um documento escrito por alguém que lidera equipas de engenharia. É um exemplo pensado com cuidado, não a única forma certa.</p>
+<p><b>O mundo de exemplo.</b> Os laboratórios mexem num mundo fictício partilhado. No cenário <b>Trabalho</b> lideras três equipas (Atlas, Beacon e Cobalt), com pessoas como a Ana e a Elena e projetos como a "Migração da BD". No cenário <b>Estudos</b> és uma estudante com um part-time. Se o trabalho de engenharia não te diz nada, muda para Estudos — os princípios são os mesmos:</p>
+<div data-demo="scenario"></div>
+<h2>Glossário mínimo</h2>
+<dl class="lr-gloss">
+<dt>Capturar</dt><dd>Escrever uma coisa num sítio de confiança, em segundos, sem decidir já onde fica. <a href="#aprender/ciclo">O ciclo</a></dd>
+<dt>Triar</dt><dd>Decidir, em lote, o destino de cada coisa capturada. <a href="#aprender/ciclo">O ciclo</a></dd>
+<dt>Revisão semanal</dt><dd>Cerca de 20 minutos por semana para esvaziar as caixas de entrada e olhar para a semana seguinte. <a href="#aprender/rituais">Rituais</a></dd>
+<dt>Próxima ação</dt><dd>O próximo passo físico e visível ("Ligar à Ana"), não o objetivo ("Mudar de casa"). <a href="#aprender/gtd">GTD</a></dd>
+<dt>Projeto</dt><dd>Um resultado que pede mais do que uma ação e tem fim. Vive numa página; na lista só está a próxima ação. <a href="#aprender/gtd">GTD</a></dd>
+<dt>Big 3</dt><dd>As três tarefas da lista em que te focas hoje, escolhidas de manhã. <a href="#aprender/hoje">Hoje</a></dd>
+<dt>PARA</dt><dd>Projetos, Áreas, Recursos, Arquivo: arrumar pela proximidade da ação, não pelo assunto. <a href="#aprender/para">PARA</a></dd>
+<dt>Base de dados</dt><dd>Uma coleção de páginas com os mesmos campos — como uma tabela em que cada linha abre uma página. <a href="#aprender/bases">Bases de dados</a></dd>
+<dt>Propriedade</dt><dd>Um campo de uma base de dados: data, estado, equipa…</dd>
+<dt>Vista</dt><dd>Uma forma guardada de ver a mesma base: filtro + ordenação + formato. Mudar de vista não muda os dados.</dd>
+<dt>Relação</dt><dd>Uma propriedade que liga uma linha a linhas de outra base (uma nota à sua equipa).</dd>
+<dt>Rollup</dt><dd>Uma conta sobre as linhas ligadas por uma relação (quantos projetos tem esta equipa?).</dd>
+<dt>Quick-add</dt><dd>Escrever uma tarefa numa só linha, com data e lista, e a app interpreta. <a href="#experimentar/captura">Laboratório de captura</a></dd>
+</dl>`,
+      en: `
+<h2>The problem it solves</h2>
+<p>Requests, deadlines, ideas and facts arrive all day: a message, a "can you look at this by Friday?", an idea in the shower. If the only copy is in your head, it reminds you at the wrong moment and forgets at the right one. Research supports part of this: unfulfilled goals tend to produce intrusive thoughts, and making a concrete plan for them reduces that interference <span data-src="res"></span>. A system is the place outside your head that you trust enough to let go.</p>
+<h2>Four layers — do not mix them up</h2>
+<ol class="lr-layers">
+<li class="ly-dir"><span class="ly-k">Direction · where to</span><b>What deserves your time</b><p>Choosing what is important, not just what is urgent. Without it, a flawless system makes you efficient at the wrong things.</p><a href="#aprender/importante">Track 2 · Directing</a></li>
+<li class="ly-hab"><span class="ly-k">Habits and rituals · when</span><b>What keeps the system alive</b><p>Always capturing, picking the Big 3 in the morning, the weekly review. Without routine, any system becomes a graveyard within weeks.</p><a href="#aprender/habitos">Track 2 · Executing</a></li>
+<li class="ly-met"><span class="ly-k">Method · what</span><b>Rules for each thing</b><p>What to do with a task, a note, a project. Examples: <b>GTD</b> (Getting Things Done, by David Allen) for actions; <b>PARA</b> (by Tiago Forte) for filing information. A method works on paper.</p><a href="#aprender/quatro">Track 1 · Organizing</a></li>
+<li class="ly-tool"><span class="ly-k">Tool · where</span><b>The app or the notebook</b><p>Todoist, Notion, a notebook. The tool runs the method — it does not replace it. Switching apps without changing the method gives you the same mess on another screen.</p><a href="#explorar/ferramentas">Tool directory</a></li>
+</ol>
+<h2>Should I learn GTD before choosing an app?</h2>
+<p>You do not need the whole book, but you need half a dozen rules before switching apps — otherwise the new app just becomes a bigger list. An app without a method fills up and gets abandoned; a method without an app works in a notebook. The order this site suggests <span data-src="tip"></span>: understand the four kinds and the loop (about 15 minutes), pick one tool per role, and only then fine-tune with the rest.</p>
+<h2>The two tracks</h2>
+<table class="lr-table"><tbody>
+<tr><td><b>1 · Organizing</b></td><td>Where things live and how they connect: tasks, notes, projects, databases and the weekly review. It answers "where is it?" and "what do I have to do?".</td></tr>
+<tr><td><b>2 · Executing &amp; directing</b></td><td>The human side: why we put things off, how habits form, focus, decisions, motivation and priorities. It answers "why am I not doing it?" and "should I be doing it?".</td></tr>
+</tbody></table>
+<p>One without the other fails: organizing without the second gives a perfect list nobody does; the second without the first gives good intentions with nowhere to live. You can start with either.</p>
+<h2>How to read this site</h2>
+<p>Every important claim carries a label that says where it comes from:</p>
+<ul class="lr-tagkey">
+<li><span data-src="res"></span> published studies — with the reference at the end of the chapter.</li>
+<li><span data-src="est"></span> a concept or practice recognised widely, not just by one author.</li>
+<li><span data-src="auth"></span> one author's model (Allen, Forte, Clear, Covey…) — useful, but not tested as a whole.</li>
+<li><span data-src="own"></span> a choice of the example system (see below) — adapt it to your life.</li>
+<li><span data-src="chk"></span> depends on the product and may change — check in your app.</li>
+<li><span data-src="tip"></span> this site's practical advice.</li>
+<li><span data-src="weak"></span> a popular idea with weak evidence or that failed to replicate.</li>
+</ul>
+<p><b>The example system.</b> To show everything working, the site follows one concrete system — the "reference system", taken from a document written by someone who leads engineering teams. It is a carefully thought-out example, not the only right way.</p>
+<p><b>The sample world.</b> The labs work on a shared fictional world. In the <b>Work</b> scenario you lead three teams (Atlas, Beacon and Cobalt), with people like Ana and Elena and projects like the "DB migration". In the <b>Studies</b> scenario you are a student with a part-time job. If engineering work means nothing to you, switch to Studies — the principles are the same:</p>
+<div data-demo="scenario"></div>
+<h2>A minimal glossary</h2>
+<dl class="lr-gloss">
+<dt>Capture</dt><dd>Writing something down in a trusted place, in seconds, without deciding yet where it belongs. <a href="#aprender/ciclo">The loop</a></dd>
+<dt>Triage</dt><dd>Deciding, in batch, where each captured thing goes. <a href="#aprender/ciclo">The loop</a></dd>
+<dt>Weekly review</dt><dd>About 20 minutes a week to empty the inboxes and look at the week ahead. <a href="#aprender/rituais">Rituals</a></dd>
+<dt>Next action</dt><dd>The next physical, visible step ("Call Ana"), not the goal ("Move house"). <a href="#aprender/gtd">GTD</a></dd>
+<dt>Project</dt><dd>An outcome that takes more than one action and has an end. It lives on a page; only its next action is in the list. <a href="#aprender/gtd">GTD</a></dd>
+<dt>Big 3</dt><dd>The three tasks from the list you focus on today, picked in the morning. <a href="#aprender/hoje">Today</a></dd>
+<dt>PARA</dt><dd>Projects, Areas, Resources, Archive: filing by how close something is to action, not by topic. <a href="#aprender/para">PARA</a></dd>
+<dt>Database</dt><dd>A collection of pages with the same fields — like a table where every row opens a page. <a href="#aprender/bases">Databases</a></dd>
+<dt>Property</dt><dd>A field of a database: date, status, team…</dd>
+<dt>View</dt><dd>A saved way of looking at the same database: filter + sort + layout. Changing views does not change the data.</dd>
+<dt>Relation</dt><dd>A property that links a row to rows of another database (a note to its team).</dd>
+<dt>Rollup</dt><dd>A calculation over the rows linked by a relation (how many projects does this team have?).</dd>
+<dt>Quick-add</dt><dd>Typing a task in a single line, with date and list, and letting the app parse it. <a href="#experimentar/captura">Capture lab</a></dd>
+</dl>`,
+    },
+    take: B(['Sistema = método + ferramenta + hábitos, apontado para o que importa.', 'Uma app não é um sistema; um método funciona em papel.', 'As etiquetas dizem de onde vem cada afirmação.'],
+            ['System = method + tool + habits, pointed at what matters.', 'An app is not a system; a method works on paper.', 'The labels tell you where each claim comes from.']),
+    refs: ['Masicampo, E. J. & Baumeister, R. (2011). Consider it done! Plan making can eliminate the cognitive effects of unfulfilled goals. <i>JPSP</i>, 101(4), 667–683. <a href="https://pubmed.ncbi.nlm.nih.gov/21688924/" target="_blank" rel="noopener noreferrer">↗</a>'],
+    next: [{ href: '#aprender/habitos', l: B('Prefiro começar pelos hábitos', 'I would rather start with habits') }],
+  },
+
   /* ───────────────────────── 1 ───────────────────────── */
   { id: 'quatro', block: 'modelo', min: 5, kinds: ['act', 'info', 'today', 'str'],
     title: B('Quatro espécies, quatro lugares', 'Four kinds, four places'),
@@ -34,6 +143,7 @@ const PrLearnContent = (function () {
 <h2>Tudo o que te pede atenção é uma de quatro coisas</h2>
 <p>Cada espécie tem um lugar, e cada lugar tem um só trabalho. <span data-src="own"></span></p>
 <div data-demo="kinds"></div>
+<p class="lr-note"><b>Big 3</b> são as três tarefas da lista em que decides focar-te hoje — o capítulo <a href="#aprender/hoje">Hoje</a> explica como se escolhem.</p>
 <p>Os nomes das ferramentas são exemplos de <em>categorias</em>, não recomendações testadas. O que importa é que cada lugar consiga fazer o seu trabalho:</p>
 <table class="lr-table"><thead><tr><th>Papel</th><th>Tem de ter</th><th>É bom ter</th></tr></thead><tbody>
 <tr><td><span class="k-tag k-act">Ações</span></td><td>Adicionar a partir do ecrã inicial do telemóvel; datas e horas em linguagem natural; lembretes a uma hora; pesquisa; tarefas recorrentes</td><td>Filtros guardados; subtarefas</td></tr>
@@ -51,6 +161,7 @@ const PrLearnContent = (function () {
 <h2>Everything that asks for your attention is one of four kinds</h2>
 <p>Each kind gets one place, and each place has one job. <span data-src="own"></span></p>
 <div data-demo="kinds"></div>
+<p class="lr-note">The <b>Big 3</b> are the three tasks from the list you decide to focus on today — the <a href="#aprender/hoje">Today</a> chapter explains how to pick them.</p>
 <p>Tool names are examples of <em>categories</em>, not tested recommendations. What matters is that each place can do its job:</p>
 <table class="lr-table"><thead><tr><th>Role</th><th>Must have</th><th>Nice to have</th></tr></thead><tbody>
 <tr><td><span class="k-tag k-act">Actions</span></td><td>Quick add from the phone's home screen; natural-language dates and times; reminders at a time; search; recurring tasks</td><td>Saved filters; subtasks</td></tr>
@@ -76,24 +187,24 @@ const PrLearnContent = (function () {
     body: {
       pt: `
 <h2>Duas caixas de entrada, não uma nem doze</h2>
-<p>O GTD pede poucos pontos de captura, esvaziados com regularidade <span data-src="est"></span>. O <em>Building a Second Brain</em> diz o mesmo de outra maneira: capturar primeiro, organizar depois — e as ações vão para o gestor de tarefas, as notas para a app de notas <span data-src="est"></span>. Daí as duas caixas: <b>ações</b> numa lista de tarefas, <b>informação</b> numa caixa de notas. Uma nota nunca é um "a fazer", e um "a fazer" nunca é uma nota.</p>
+<p>O GTD pede poucos pontos de captura, esvaziados com regularidade <span data-src="auth"></span>. O <em>Building a Second Brain</em> (o livro de Tiago Forte, 2022) diz o mesmo de outra maneira: capturar primeiro, organizar depois — e as ações vão para o gestor de tarefas, as notas para a app de notas <span data-src="auth"></span>. Daí as duas caixas: <b>ações</b> numa lista de tarefas, <b>informação</b> numa caixa de notas. Uma nota nunca é um "a fazer", e um "a fazer" nunca é uma nota.</p>
 <p>O caderno do dia <em>não</em> é uma caixa de entrada: é foco. Uma ideia que chega a meio do dia vai para a lista (se for ação) ou para as Notas (se for informação) — nunca para a página, onde morreria com ela.</p>
 <h2>A revisão semanal é o motor</h2>
-<p>Uma reunião contigo, com agenda fixa e limite de tempo, cerca de 20 minutos <span data-src="own"></span>. A revisão é o "fator crítico de sucesso" do GTD — e é também onde mais vezes falha, sobretudo quando cresce <span data-src="est"></span>. Por isso há uma versão mínima para semanas más.</p>
+<p>Uma reunião contigo, com agenda fixa e limite de tempo, cerca de 20 minutos <span data-src="own"></span>. A revisão é o "fator crítico de sucesso" do GTD — e é também onde mais vezes falha, sobretudo quando cresce <span data-src="auth"></span>. Por isso há uma versão mínima para semanas más.</p>
 <h2>Cada nota acaba algures</h2>
 <p>Na revisão, cada nota nova recebe <b>um</b> destino. Nada fica a envelhecer no meio. <span data-src="own"></span></p>
 <div data-demo="fates"></div>
-<p class="lr-note">A regra dos dois minutos — se demora menos de dois minutos, faz já — pertence ao passo de <em>clarificar</em>, não à captura <span data-src="est"></span>. Durante o dia, só capturas; na triagem é que decides se é coisa de dois minutos.</p>`,
+<p class="lr-note">A regra dos dois minutos — se demora menos de dois minutos, faz já — pertence ao passo de <em>clarificar</em>, não à captura <span data-src="auth"></span>. Durante o dia, só capturas; na triagem é que decides se é coisa de dois minutos.</p>`,
       en: `
 <h2>Two inboxes, not one and not twelve</h2>
-<p>GTD asks for few capture points, emptied regularly <span data-src="est"></span>. <em>Building a Second Brain</em> says the same in other words: capture first, organize later — and action items go to the task manager, notes to the notes app <span data-src="est"></span>. Hence two inboxes: <b>actions</b> in a task list, <b>information</b> in a notes inbox. A note is never a to-do, and a to-do is never a note.</p>
+<p>GTD asks for few capture points, emptied regularly <span data-src="auth"></span>. <em>Building a Second Brain</em> (Tiago Forte's 2022 book) says the same in other words: capture first, organize later — and action items go to the task manager, notes to the notes app <span data-src="auth"></span>. Hence two inboxes: <b>actions</b> in a task list, <b>information</b> in a notes inbox. A note is never a to-do, and a to-do is never a note.</p>
 <p>The day notebook is <em>not</em> an inbox: it is focus. A thought that arrives mid-day goes to the list (if it is an action) or to Notes (if it is information) — never onto the page, where it would die with it.</p>
 <h2>The weekly review is the engine</h2>
-<p>One meeting with yourself, with a fixed agenda and a time limit, about 20 minutes <span data-src="own"></span>. The review is GTD's critical success factor — and also where it most often breaks down, especially as it grows <span data-src="est"></span>. That is why there is a minimum version for bad weeks.</p>
+<p>One meeting with yourself, with a fixed agenda and a time limit, about 20 minutes <span data-src="own"></span>. The review is GTD's critical success factor — and also where it most often breaks down, especially as it grows <span data-src="auth"></span>. That is why there is a minimum version for bad weeks.</p>
 <h2>Every note ends somewhere</h2>
 <p>At the review, each new note gets <b>one</b> fate. Nothing ages in the middle. <span data-src="own"></span></p>
 <div data-demo="fates"></div>
-<p class="lr-note">The two-minute rule — if it takes less than two minutes, do it now — belongs to the <em>clarify</em> step, not to capture <span data-src="est"></span>. During the day you only capture; at triage you decide whether it is a two-minute thing.</p>`,
+<p class="lr-note">The two-minute rule — if it takes less than two minutes, do it now — belongs to the <em>clarify</em> step, not to capture <span data-src="auth"></span>. During the day you only capture; at triage you decide whether it is a two-minute thing.</p>`,
     },
     take: B(['Captura sem classificar; classifica em lote.', 'Duas caixas: ações e informação. O caderno é foco, não captura.', 'Cada nota recebe um destino na revisão.'],
             ['Capture without classifying; classify in batch.', 'Two inboxes: actions and information. The notebook is focus, not capture.', 'Every note gets a fate at the review.']),
@@ -108,17 +219,17 @@ const PrLearnContent = (function () {
     body: {
       pt: `
 <ol class="lr-ideas">
-<li><b>Capturar sem classificar.</b> Escrever tem de custar segundos. Onde fica, decide-se depois, em lote. <span data-src="est"></span></li>
-<li><b>Duas caixas de entrada.</b> Ações numa, informação na outra. <span data-src="est"></span></li>
+<li><b>Capturar sem classificar.</b> Escrever tem de custar segundos. Onde fica, decide-se depois, em lote. <span data-src="auth"></span></li>
+<li><b>Duas caixas de entrada.</b> Ações numa, informação na outra. <span data-src="auth"></span></li>
 <li><b>Uma casa por coisa; ligar pelo nome, não copiar.</b> Se os dados verdadeiros vivem noutro sítio (um ticket, um painel), guarda a definição e a ligação. Uma cópia de um número fica desatualizada no dia seguinte. <span data-src="own"></span></li>
 <li><b>Nomear em palavras inteiras.</b> Títulos que se percebem sozinhos, e o projeto chamado pelo próprio nome em todo o lado. Esse hábito deixa a pesquisa arrumar por ti. <span data-src="own"></span></li>
-<li><b>A revisão semanal é o motor.</b> Sem ela, cada caixa vira cemitério. <span data-src="est"></span></li>
+<li><b>A revisão semanal é o motor.</b> Sem ela, cada caixa vira cemitério. <span data-src="auth"></span></li>
 <li><b>Cada nota acaba algures.</b> Agir, guardar, arquivar no sítio, graduar ou deitar fora. <span data-src="own"></span></li>
 <li><b>A estrutura merece-se.</b> Começa com poucas bases de dados; uma nova só aparece depois de o mesmo tipo de nota surgir três vezes — a regra de três. <span data-src="own"></span></li>
 <li><b>Limitar compromissos olhando, não com tetos.</b> Cada revisão inclui uma verificação rápida de capacidade, e um bloco protegido por semana vai para o que mais importa. <span data-src="own"></span></li>
 </ol>
 <h2>Pesquisar antes de estruturar</h2>
-<p>Num estudo de campo da IBM com 345 utilizadores de email e cerca de 85 000 ações de reencontrar mensagens, quem arrumava em pastas não encontrava as coisas com mais sucesso do que quem pesquisava <span data-src="est"></span>. É email, não notas — trata-o como indício, não prova. A regra prática é a mesma a que outros praticantes chegam: arruma só o que a pesquisa não encontra.</p>
+<p>Num estudo de campo da IBM com 345 utilizadores de email e cerca de 85 000 ações de reencontrar mensagens, quem arrumava em pastas não encontrava as coisas com mais sucesso do que quem pesquisava (Whittaker e colegas, 2011) <span data-src="res"></span>. É email, não notas — trata-o como indício, não prova. A regra prática é a mesma a que outros praticantes chegam: arruma só o que a pesquisa não encontra.</p>
 <p>Este sistema leva isto à letra: o elo entre uma tarefa, uma nota e um projeto é só <b>o nome do projeto, escrito como o dizes</b>, entre parênteses no fim do título. Experimenta pesquisar no mundo de exemplo:</p>
 <div data-demo="search"></div>
 <p class="lr-note">O documento de referência observou que a pesquisa do Notion só encontrou palavras inteiras ("tes" não encontrou "test") <span data-src="chk"></span>. Esta demonstração imita esse comportamento, para veres porque é que <em>armazém</em> funciona e <em>arm</em> não.</p>
@@ -131,17 +242,17 @@ const PrLearnContent = (function () {
 </tbody></table>`,
       en: `
 <ol class="lr-ideas">
-<li><b>Capture without classifying.</b> Writing it down must cost seconds. Where it lives is decided later, in batch. <span data-src="est"></span></li>
-<li><b>Two inboxes.</b> Actions in one, information in the other. <span data-src="est"></span></li>
+<li><b>Capture without classifying.</b> Writing it down must cost seconds. Where it lives is decided later, in batch. <span data-src="auth"></span></li>
+<li><b>Two inboxes.</b> Actions in one, information in the other. <span data-src="auth"></span></li>
 <li><b>One home per thing; link by name, don't copy.</b> If the real data lives elsewhere (a ticket, a dashboard), keep the definition and a link. A copied number is out of date the next day. <span data-src="own"></span></li>
 <li><b>Name things in whole words.</b> Titles that stand alone, and a project referred to by its own name everywhere. That habit lets search do the filing for you. <span data-src="own"></span></li>
-<li><b>The weekly review is the engine.</b> Without it, every inbox becomes a graveyard. <span data-src="est"></span></li>
+<li><b>The weekly review is the engine.</b> Without it, every inbox becomes a graveyard. <span data-src="auth"></span></li>
 <li><b>Every note ends somewhere.</b> Act, keep, file, graduate or toss. <span data-src="own"></span></li>
 <li><b>Structure is earned.</b> Start with a handful of databases; a new one appears only after the same kind of note has shown up three times — the rule of three. <span data-src="own"></span></li>
 <li><b>Limit commitments by looking, not by caps.</b> Each review includes a quick capacity check, and one protected block each week goes to what matters most. <span data-src="own"></span></li>
 </ol>
 <h2>Search before structure</h2>
-<p>In an IBM field study of 345 email users and about 85,000 re-finding actions, people who filed into folders were no more successful at finding things than people who searched <span data-src="est"></span>. It is email, not notes — treat it as supporting evidence, not proof. The practical rule is the one other practitioners reach: organize only what search cannot find.</p>
+<p>In an IBM field study of 345 email users and about 85,000 re-finding actions, people who filed into folders were no more successful at finding things than people who searched (Whittaker et al., 2011) <span data-src="res"></span>. It is email, not notes — treat it as supporting evidence, not proof. The practical rule is the one other practitioners reach: organize only what search cannot find.</p>
 <p>This system takes that literally: the link between a task, a note and a project is just <b>the project's name, written the way you say it</b>, in brackets at the end of the title. Try searching the sample world:</p>
 <div data-demo="search"></div>
 <p class="lr-note">The reference document observed that Notion search only found whole words ("tes" did not find "test") <span data-src="chk"></span>. This demo imitates that behaviour, so you can see why <em>warehouse</em> works and <em>ware</em> does not.</p>
@@ -161,15 +272,23 @@ const PrLearnContent = (function () {
   /* ───────────────────────── 4 ───────────────────────── */
   { id: 'gtd', block: 'metodos', min: 9, kinds: ['act'],
     title: B('GTD: ações que não voltam para a cabeça', 'GTD: actions that stay out of your head'),
-    lede: B('Tudo o que tem a tua atenção e não está num sistema em que confias cria um "ciclo aberto". O GTD fecha esses ciclos em cinco etapas.',
-            'Anything that has your attention but is not captured in a system you trust creates an "open loop". GTD closes those loops in five stages.'),
+    lede: B('GTD (Getting Things Done) é o método de David Allen, publicado em 2001. A ideia de partida: tudo o que tem a tua atenção e não está num sistema em que confias cria um "ciclo aberto". O GTD fecha esses ciclos em cinco etapas.',
+            'GTD (Getting Things Done) is David Allen\'s method, first published in 2001. Its starting point: anything that has your attention but is not captured in a system you trust creates an "open loop". GTD closes those loops in five stages.'),
     body: {
       pt: `
 <div data-demo="gtd5"></div>
 <h2>Clarificar: começa sempre por um verbo</h2>
-<p>O GTD define a "próxima ação" como uma atividade física e visível <span data-src="est"></span>. "Reunião com fornecedor" fica ambíguo em poucos dias: era para marcar? preparar? só aparecer? "Marcar reunião com fornecedor" nunca perde o sentido, porque o verbo <em>é</em> a clarificação.</p>
+<p>O GTD define a "próxima ação" como uma atividade física e visível <span data-src="auth"></span>. "Reunião com fornecedor" fica ambíguo em poucos dias: era para marcar? preparar? só aparecer? "Marcar reunião com fornecedor" nunca perde o sentido, porque o verbo <em>é</em> a clarificação.</p>
 <div data-demo="verbfirst"></div>
 <p>Um vocabulário pequeno e estável de verbos ajuda. Dois carregam quase todo o peso dos compromissos <span data-src="own"></span>: <b>Verificar</b> (confirmar que algo de outra pessoa ficou mesmo feito) e <b>Insistir</b> (estás à espera de alguém; a data é quando vais voltar a perguntar).</p>
+<h2>Tarefa, projeto e próxima ação</h2>
+<p>No GTD, um <b>projeto</b> é qualquer resultado que pede mais do que uma ação — "Mudar de casa", "Migração da BD" <span data-src="auth"></span>. Um projeto não se "faz": faz-se a sua <b>próxima ação</b>. Por isso os dois vivem em sítios diferentes:</p>
+<table class="lr-table"><tbody>
+<tr><td><b>Projeto</b></td><td>O resultado, o plano e as decisões — numa página (aqui, uma linha da base Projetos). Diz <em>para onde</em> vais.</td></tr>
+<tr><td><b>Tarefa</b></td><td>Um passo físico e visível, na lista de tarefas, com o nome do projeto no fim do título: <code>Pedir orçamentos a duas transportadoras (Mudar de casa)</code>. Diz <em>o que fazes a seguir</em>.</td></tr>
+</tbody></table>
+<p>A regra que os liga: <b>cada projeto ativo tem pelo menos uma próxima ação na lista</b>. Um projeto sem nenhuma está parado sem ninguém dar por isso — é o que o passo 3 da <a href="#aprender/rituais">revisão semanal</a> verifica <span data-src="own"></span>.</p>
+<p class="lr-note">Cuidado com a palavra: nas apps de tarefas (Todoist e outras), um "projeto" é só uma lista. Os contentores abaixo são listas desse tipo — não são projetos no sentido do GTD.</p>
 <h2>Organizar: três contentores, pelo nível de atenção</h2>
 <p>A pergunta que divide os contentores de trabalho é <b>o que acontece se me esquecer disto?</b> <span data-src="own"></span></p>
 <table class="lr-table"><tbody>
@@ -179,7 +298,7 @@ const PrLearnContent = (function () {
 </tbody></table>
 <p>Sem subprojetos e sem etiquetas: o nome do projeto no título faz o trabalho de uma etiqueta, em texto simples, sem esquema para manter.</p>
 <h2>À espera: a lista "Insistir"</h2>
-<p>O GTD guarda uma lista "À espera" de tudo o que depende de outra pessoa <span data-src="est"></span>. O truque que funciona em qualquer gestor: regista o seguimento como uma ação com data — <b>a data em que vais verificar, não a data em que esperas o resultado</b>. Aqui é uma tarefa que começa por "Insistir"; um filtro que pesquisa "Insistir" é a lista inteira.</p>
+<p>O GTD guarda uma lista "À espera" de tudo o que depende de outra pessoa <span data-src="auth"></span>. O truque que funciona em qualquer gestor: regista o seguimento como uma ação com data — <b>a data em que vais verificar, não a data em que esperas o resultado</b>. Aqui é uma tarefa que começa por "Insistir"; um filtro que pesquisa "Insistir" é a lista inteira.</p>
 <h2>Prioridade: só quando é verdade</h2>
 <p>Quase tudo fica sem prioridade. Marcar P1 por hábito recria o ruído de "tudo é importante" que a prioridade devia cortar. Na maioria dos dias nada está marcado — e isso é o sistema a funcionar. <span data-src="own"></span></p>
 <h2>Envolver: três filtros fixados no topo</h2>
@@ -190,9 +309,17 @@ const PrLearnContent = (function () {
       en: `
 <div data-demo="gtd5"></div>
 <h2>Clarify: always start with a verb</h2>
-<p>GTD defines a "next action" as a physical, visible activity <span data-src="est"></span>. "Vendor meeting" is ambiguous within days: was it to schedule it? prepare? just show up? "Schedule vendor meeting" never loses its meaning, because the verb <em>is</em> the clarification.</p>
+<p>GTD defines a "next action" as a physical, visible activity <span data-src="auth"></span>. "Vendor meeting" is ambiguous within days: was it to schedule it? prepare? just show up? "Schedule vendor meeting" never loses its meaning, because the verb <em>is</em> the clarification.</p>
 <div data-demo="verbfirst"></div>
 <p>A small, stable vocabulary of verbs helps. Two carry most of the weight for commitments <span data-src="own"></span>: <b>Verify</b> (check that something someone else owns was actually done) and <b>Chase</b> (you are waiting on someone; the date is when you will ask again).</p>
+<h2>Task, project and next action</h2>
+<p>In GTD, a <b>project</b> is any outcome that takes more than one action — "Move house", "DB migration" <span data-src="auth"></span>. You cannot "do" a project: you do its <b>next action</b>. So the two live in different places:</p>
+<table class="lr-table"><tbody>
+<tr><td><b>Project</b></td><td>The outcome, the plan and the decisions — on a page (here, a row in the Projects database). It says <em>where</em> you are going.</td></tr>
+<tr><td><b>Task</b></td><td>One physical, visible step, in the task list, with the project name at the end of the title: <code>Get quotes from two movers (Move house)</code>. It says <em>what you do next</em>.</td></tr>
+</tbody></table>
+<p>The rule that links them: <b>every active project has at least one next action in the list</b>. A project with none has stalled without anyone noticing — that is what step 3 of the <a href="#aprender/rituais">weekly review</a> checks <span data-src="own"></span>.</p>
+<p class="lr-note">Watch the word: in task apps (Todoist and others), a "project" is just a list. The containers below are lists of that kind — not projects in the GTD sense.</p>
 <h2>Organize: three containers, by attention level</h2>
 <p>The question that splits the work containers is <b>what happens if I forget this?</b> <span data-src="own"></span></p>
 <table class="lr-table"><tbody>
@@ -202,7 +329,7 @@ const PrLearnContent = (function () {
 </tbody></table>
 <p>No sub-projects and no labels: the project name in the title does a label's job, as plain text, with no schema to maintain.</p>
 <h2>Waiting For: the "Chase" list</h2>
-<p>GTD keeps a Waiting For list of everything you depend on someone else for <span data-src="est"></span>. The trick that works in any task manager: record the follow-up as a dated action — <b>the date you will check, not the date you expect the result</b>. Here it is a task starting with "Chase"; a filter that searches "Chase" is the whole list.</p>
+<p>GTD keeps a Waiting For list of everything you depend on someone else for <span data-src="auth"></span>. The trick that works in any task manager: record the follow-up as a dated action — <b>the date you will check, not the date you expect the result</b>. Here it is a task starting with "Chase"; a filter that searches "Chase" is the whole list.</p>
 <h2>Priority: only when it is true</h2>
 <p>Almost everything stays unprioritized. Flagging P1 as a habit recreates the "everything is important" noise priority exists to cut. Most days nothing is flagged — and that is the system working. <span data-src="own"></span></p>
 <h2>Engage: three saved filters, pinned to the top</h2>
@@ -225,9 +352,10 @@ const PrLearnContent = (function () {
       pt: `
 <h2>Os Big 3</h2>
 <p>Três coisas, escolhidas de manhã a partir do filtro "Próximos 7 dias" (que também mostra o que está atrasado). É uma <b>lista curta</b>, não um segundo sítio onde as tarefas vivem: a tarefa continua na lista e é lá que se conclui. O caderno só ilumina três para o dia ter um centro. <span data-src="own"></span></p>
+<p class="lr-note">Como escolher as três: primeiro o que está atrasado ou tem prazo real; depois pelo menos uma coisa importante que nenhum prazo está a empurrar. Porquê — e como a urgência nos engana — está em <a href="#aprender/importante">O que merece o teu tempo</a>. Se três nunca cabem no dia, <a href="#aprender/decidir">Como julgamos</a> explica a falácia do planeamento.</p>
 <p>Porquê papel? Na experiência do autor, é um sítio para trabalhar e pensar <em>longe do computador</em>, sem email nem notificações, e onde se desenha à mão. São observações pessoais, não resultados de investigação — trata-as como tal.</p>
 <h2>Símbolos: o mínimo, mas expressivos</h2>
-<p>O criador do Bullet Journal, Ryder Carroll, recomenda reduzir os sinais personalizados ao mínimo: quantos mais inventas, mais lento ficas <span data-src="est"></span>. Este sistema usa quatro <span data-src="own"></span>. Toca nos itens para os fechar e vê o que acontece na lista de tarefas:</p>
+<p>O criador do Bullet Journal, Ryder Carroll, recomenda reduzir os sinais personalizados ao mínimo: quantos mais inventas, mais lento ficas <span data-src="auth"></span>. Este sistema usa quatro <span data-src="own"></span>. Toca nos itens para os fechar e vê o que acontece na lista de tarefas:</p>
 <div data-demo="notebook"></div>
 <p>A seta e a cruz separam duas razões diferentes para uma coisa não fechar. <b>→</b> quer dizer que continua viva na lista, só não foi hoje — não há nada a fazer. <b>✕</b> quer dizer que já não faz sentido, e isso tem de ser refletido na lista também, ou volta a aparecer onde já não pertence.</p>
 <h2>Opcional: um rascunho de amanhã</h2>
@@ -235,9 +363,10 @@ const PrLearnContent = (function () {
       en: `
 <h2>The Big 3</h2>
 <p>Three items, picked each morning from the "Due in 7 days" filter (which also shows anything overdue). It is a <b>shortlist</b>, not a second place where tasks live: the task stays on the list and is completed there. The notebook just spotlights three so the day has a centre. <span data-src="own"></span></p>
+<p class="lr-note">How to pick the three: first what is overdue or has a real deadline; then at least one important thing no deadline is pushing. Why — and how urgency fools us — is in <a href="#aprender/importante">What deserves your time</a>. If three never fit in the day, <a href="#aprender/decidir">How we judge</a> explains the planning fallacy.</p>
 <p>Why paper? In the author's experience it is a place to work and think <em>away from the computer</em>, with no email or notifications, where you can draw by hand. These are personal observations, not research findings — treat them that way.</p>
 <h2>Symbols: minimal, but expressive</h2>
-<p>The creator of the Bullet Journal, Ryder Carroll, recommends keeping custom signifiers to a minimum: the more you invent, the slower you get <span data-src="est"></span>. This system uses four <span data-src="own"></span>. Tap the items to close them and see what happens on the task list:</p>
+<p>The creator of the Bullet Journal, Ryder Carroll, recommends keeping custom signifiers to a minimum: the more you invent, the slower you get <span data-src="auth"></span>. This system uses four <span data-src="own"></span>. Tap the items to close them and see what happens on the task list:</p>
 <div data-demo="notebook"></div>
 <p>The arrow and the cross separate two different reasons an item does not close. <b>→</b> means it is still alive on the list, just not today — nothing to do. <b>✕</b> means it no longer makes sense, and that has to be reflected on the list too, or it keeps resurfacing where it no longer belongs.</p>
 <h2>Optional: draft tomorrow</h2>
@@ -271,7 +400,7 @@ const PrLearnContent = (function () {
 <p>Abre a vista <b>Sem equipa</b> e dá a cada linha exatamente um destino, em cerca de cinco minutos: <b>Guardar</b> (definir a equipa), <b>Agir</b> (vira tarefa; a nota apaga-se se não tiver mais nada), <b>Deitar fora</b>, <b>Graduar</b> (passa para uma base de dados ou página). Como a vista é "equipa vazia", "vazia" quer sempre dizer "ainda não tratei" — por isso as notas transversais recebem a equipa <i>Toda a organização</i>. <span data-src="own"></span></p>
 <h2>Cinco semanas depois: arquivar no sítio, deixar ou arquivar</h2>
 <p>Uma nota guardada que nunca mais é vista é a forma como uma caixa vira cemitério. A vista <b>Revisão</b> mostra as notas criadas há 30–37 dias: uma fatia de uma semana, por isso cada nota aparece exatamente uma vez, sem marca de "revista". Cada uma recebe um de três destinos: <b>arquivar no sítio</b> (copiar a linha para a página a que pertence e arquivar a nota), <b>deixar</b>, ou <b>arquivar</b> (uma caixa de verificação, não uma mudança de sítio). <span data-src="own"></span></p>
-<p class="lr-note">Ahrens (<em>How to Take Smart Notes</em>) pede que as notas efémeras sejam processadas em um ou dois dias <span data-src="est"></span>. Este sistema usa uma passagem semanal porque a maioria das notas de trabalho é <em>referência</em> — um facto, uma data, uma decisão — e não ideias por desenvolver. Se a fila passar ~30 linhas, faz triagem duas vezes por semana.</p>
+<p class="lr-note">Ahrens (<em>How to Take Smart Notes</em>) pede que as notas efémeras sejam processadas em um ou dois dias <span data-src="auth"></span>. Este sistema usa uma passagem semanal porque a maioria das notas de trabalho é <em>referência</em> — um facto, uma data, uma decisão — e não ideias por desenvolver. Se a fila passar ~30 linhas, faz triagem duas vezes por semana.</p>
 <h2>O que não vai para as Notas</h2>
 <table class="lr-table"><tbody>
 <tr><td>Uma ação</td><td>Lista de tarefas</td></tr>
@@ -297,7 +426,7 @@ const PrLearnContent = (function () {
 <p>Open the <b>No team</b> view and give each row exactly one fate, in about five minutes: <b>Keep</b> (set the team), <b>Act</b> (it becomes a task; the note is deleted unless it holds more), <b>Toss</b>, <b>Graduate</b> (it moves into a database or a page). Because the view is "team is empty", empty always means "not handled yet" — so cross-team notes get the team <i>Org-wide</i>. <span data-src="own"></span></p>
 <h2>Five weeks later: file, leave or archive</h2>
 <p>A kept note that is never looked at again is how an inbox becomes a graveyard. The <b>Review</b> view shows notes created 30–37 days ago: a one-week slice, so each note comes up exactly once, with no "reviewed" marker. Each gets one of three fates: <b>file</b> (copy the line into the page it belongs to and archive the note), <b>leave</b>, or <b>archive</b> (a checkbox, not a move). <span data-src="own"></span></p>
-<p class="lr-note">Ahrens (<em>How to Take Smart Notes</em>) asks for fleeting notes to be processed within a day or two <span data-src="est"></span>. This system uses a weekly pass because most work notes are <em>reference</em> — a fact, a date, a decision — not raw ideas to develop. If the queue passes ~30 rows, triage twice a week.</p>
+<p class="lr-note">Ahrens (<em>How to Take Smart Notes</em>) asks for fleeting notes to be processed within a day or two <span data-src="auth"></span>. This system uses a weekly pass because most work notes are <em>reference</em> — a fact, a date, a decision — not raw ideas to develop. If the queue passes ~30 rows, triage twice a week.</p>
 <h2>What does not go in Notes</h2>
 <table class="lr-table"><tbody>
 <tr><td>An action</td><td>Task list</td></tr>
@@ -319,25 +448,25 @@ const PrLearnContent = (function () {
             "Tiago Forte's PARA files things by how close to action they are — never by subject. The question is not 'what is this about?' but 'how ready for action is this?'."),
     body: {
       pt: `
-<p>O PARA é o passo "Organizar" de um ciclo maior do <em>Building a Second Brain</em>, chamado CODE: Capturar, Organizar, Destilar, Expressar <span data-src="est"></span>. O GTD governa o fluxo das <em>ações</em>; o PARA governa a estrutura do <em>conhecimento</em>. Não competem: cobrem metades diferentes do mesmo problema.</p>
+<p>O PARA é o passo "Organizar" de um ciclo maior do <em>Building a Second Brain</em>, chamado CODE: Capturar, Organizar, Destilar, Expressar <span data-src="auth"></span>. O GTD governa o fluxo das <em>ações</em>; o PARA governa a estrutura do <em>conhecimento</em>. Não competem: cobrem metades diferentes do mesmo problema.</p>
 <div data-demo="para4"></div>
 <h2>As coisas mudam de categoria</h2>
-<p>Um recurso vira projeto no momento em que decides agir; um projeto vira arquivo quando acaba; uma área pode ficar inativa. Arrasta o tempo e segue três coisas: <span data-src="est"></span></p>
+<p>Um recurso vira projeto no momento em que decides agir; um projeto vira arquivo quando acaba; uma área pode ficar inativa. Arrasta o tempo e segue três coisas: <span data-src="auth"></span></p>
 <div data-demo="paraflow"></div>
 <h2>"Arquivar" pode ser um estado, não uma mudança de sítio</h2>
 <p>No modelo original, arquivar é mover para uma pasta. Para páginas soltas, funciona. Mas uma <em>base de dados</em> já tem algo que uma pasta não tem: um campo Estado que pode dizer "acabado". Tirar a linha da base deitava fora exatamente a estrutura que a torna útil. Por isso, nas bases: <b>o estado arquiva, e a vista divide-se</b> — "Estado não é Done" no dia a dia, "Estado é Done" como registo do que se entregou. A pasta Arquivo fica para o que não tem estado próprio. <span data-src="own"></span></p>
-<blockquote class="lr-quote">Nunca cries uma pasta, etiqueta ou base de dados vazia antes de teres conteúdo real para ela. <cite>— a regra de ouro, segundo Tiago Forte <span data-src="est"></span></cite></blockquote>
+<blockquote class="lr-quote">Nunca cries uma pasta, etiqueta ou base de dados vazia antes de teres conteúdo real para ela. <cite>— a regra de ouro, segundo Tiago Forte <span data-src="auth"></span></cite></blockquote>
 <h2>Porque é que o PARA encaixa no Notion</h2>
 <p>Cada linha de uma base de dados no Notion é, por baixo, uma página completa. Não tens de escolher entre "lista estruturada" e "conteúdo livre": uma linha tem propriedades filtráveis <em>e</em> uma página aberta. É exatamente o que o PARA precisa.</p>`,
       en: `
-<p>PARA is the "Organize" step of a larger loop in <em>Building a Second Brain</em>, called CODE: Capture, Organize, Distill, Express <span data-src="est"></span>. GTD governs the flow of <em>actions</em>; PARA governs the structure of <em>knowledge</em>. They do not compete: they cover different halves of the same problem.</p>
+<p>PARA is the "Organize" step of a larger loop in <em>Building a Second Brain</em>, called CODE: Capture, Organize, Distill, Express <span data-src="auth"></span>. GTD governs the flow of <em>actions</em>; PARA governs the structure of <em>knowledge</em>. They do not compete: they cover different halves of the same problem.</p>
 <div data-demo="para4"></div>
 <h2>Things change category</h2>
-<p>A resource becomes a project the moment you decide to act; a project becomes archive when it ends; an area can go inactive. Drag time forward and follow three things: <span data-src="est"></span></p>
+<p>A resource becomes a project the moment you decide to act; a project becomes archive when it ends; an area can go inactive. Drag time forward and follow three things: <span data-src="auth"></span></p>
 <div data-demo="paraflow"></div>
 <h2>"Archive" can be a status, not a move</h2>
 <p>In the original model, archiving means moving into a folder. For loose pages, that works. But a <em>database</em> already has something a folder does not: a Status field that can say "finished". Pulling the row out would throw away exactly the structure that makes it useful. So in databases: <b>the status archives, and the view splits</b> — "Status is not Done" for day to day, "Status is Done" as a record of what shipped. The Archive folder is for things with no status of their own. <span data-src="own"></span></p>
-<blockquote class="lr-quote">Never create an empty folder, tag or database before you have real content for it. <cite>— the golden rule, per Tiago Forte <span data-src="est"></span></cite></blockquote>
+<blockquote class="lr-quote">Never create an empty folder, tag or database before you have real content for it. <cite>— the golden rule, per Tiago Forte <span data-src="auth"></span></cite></blockquote>
 <h2>Why PARA fits Notion</h2>
 <p>Every Notion database row is, underneath, a full page. You never choose between "structured list" and "free content": a row has filterable properties <em>and</em> an open page. Exactly what PARA needs.</p>`,
     },
@@ -395,6 +524,7 @@ const PrLearnContent = (function () {
 <h2>Relações: a base central</h2>
 <p>Pessoas, 1:1, Reuniões, Projetos e Notas precisam todas de saber "de que equipa". Sem uma base própria, a mesma lista de nomes ficava duplicada como seleção em até dez sítios — e divergia na primeira mudança de nome. A base <b>Equipas</b> é o único sítio onde os nomes existem; as outras apontam para ela com uma <b>relação</b>. <span data-src="own"></span></p>
 <p>Uma relação de <b>duas vias</b> faz aparecer, na página da equipa, uma propriedade por cada base ligada — Notas, Projetos, Pessoas… — com os itens ligados. Custa zero e responde a "o que está ligado a esta equipa?". Mas é só uma lista: sem filtros nem ordenação.</p>
+<p><b>Relação não é o mesmo que um link.</b> Um link (ou uma menção com @) é texto dentro do corpo de uma página: leva-te à outra página, e o Notion mostra-o como "backlink" do outro lado <span data-src="chk"></span>. Mas não é um campo — não podes filtrar "notas da equipa Atlas" por ele, nem contar quantas há. Uma relação é uma <em>propriedade</em>: estruturada, igual em todas as linhas, visível dos dois lados, e é ela que permite filtros por equipa e rollups. Regra prática: link para "vê também"; relação quando vais querer filtrar ou contar.</p>
 <p>Uma regra simples para todas as bases: <b>cada linha tem uma equipa</b>. O que é de ninguém em particular recebe <i>Toda a organização</i>; o que é de várias recebe todas. Assim, "equipa vazia" quer sempre dizer "alguém se esqueceu" — e uma vista "Equipa está vazia" em cada base é uma verificação de saúde gratuita.</p>
 <h2>Rollups: contas sobre o que está ligado</h2>
 <p>Um rollup segue uma relação e calcula algo sobre as linhas do outro lado: contar, contar as caixas por marcar, a data mais recente… "Notas vivas" na página de uma equipa é um rollup: segue a relação Notas e conta as que não estão arquivadas.</p>
@@ -412,6 +542,7 @@ const PrLearnContent = (function () {
 <h2>Relations: the hub database</h2>
 <p>Persons, 1:1s, Meetings, Projects and Notes all need to know "which team". Without a database of its own, the same list of names would be duplicated as a select in up to ten places — and drift at the first rename. The <b>Teams</b> database is the only place team names exist; the others point to it with a <b>relation</b>. <span data-src="own"></span></p>
 <p>A <b>two-way</b> relation makes the team page gain one property per linked database — Notes, Projects, Persons… — listing the linked items. It costs nothing and answers "what is linked to this team?". But it is only a list: no filtering, no sorting.</p>
+<p><b>A relation is not the same as a link.</b> A link (or an @-mention) is text inside a page body: it takes you to the other page, and Notion shows it as a "backlink" on the other side <span data-src="chk"></span>. But it is not a field — you cannot filter "notes of team Atlas" by it, or count them. A relation is a <em>property</em>: structured, the same on every row, visible from both sides, and it is what makes team filters and rollups possible. Rule of thumb: a link for "see also"; a relation when you will want to filter or count.</p>
 <p>One rule for every database: <b>every row has a team</b>. Something that belongs to no single team gets <i>Org-wide</i>; something spanning several gets all of them. Then "team is empty" always means "someone forgot" — and a "Team is empty" view in each database is a free health check.</p>
 <h2>Rollups: maths over what is linked</h2>
 <p>A rollup follows a relation and computes something over the rows on the other side: count, count unchecked boxes, the latest date… "Live notes" on a team page is a rollup: it follows the Notes relation and counts the ones not archived.</p>
@@ -446,7 +577,7 @@ const PrLearnContent = (function () {
 <table class="lr-table"><tbody>
 <tr><td><b>Semana má</b></td><td>Revisão mínima de 5 minutos: só os passos 1 e 2.</td></tr>
 <tr><td><b>Saltaste uma semana</b></td><td>Não recuperes. Faz a revisão normal; se "Sem equipa" passar ~30 linhas, faz o passo 4 duas vezes nessa semana.</td></tr>
-<tr><td><b>Demora demasiado</b></td><td>Corta, não estiques. A revisão é a parte do GTD que mais se abandona, e abandona-se quando cresce <span data-src="est"></span>.</td></tr>
+<tr><td><b>Demora demasiado</b></td><td>Corta, não estiques. A revisão é a parte do GTD que mais se abandona, e abandona-se quando cresce <span data-src="auth"></span>.</td></tr>
 <tr><td><b>Gatilho</b></td><td>Tarefa recorrente, hora fixa. Junta-lhe algo de que gostas (um café).</td></tr>
 <tr><td><b>Bloco protegido</b></td><td>Pelo menos 30 minutos, à medida da tarefa e móvel quando a semana muda. Um empréstimo leve do <em>time blocking</em>, não agendar todas as horas.</td></tr>
 </tbody></table>
@@ -465,7 +596,7 @@ const PrLearnContent = (function () {
 <table class="lr-table"><tbody>
 <tr><td><b>Bad week</b></td><td>A 5-minute minimum review: steps 1 and 2 only.</td></tr>
 <tr><td><b>Skipped a week</b></td><td>Don't catch up. Run the normal review; if "No team" passes ~30 rows, run step 4 twice that week.</td></tr>
-<tr><td><b>Takes too long</b></td><td>Cut, don't extend. The review is the part of GTD people most often drop, and it gets dropped when it grows <span data-src="est"></span>.</td></tr>
+<tr><td><b>Takes too long</b></td><td>Cut, don't extend. The review is the part of GTD people most often drop, and it gets dropped when it grows <span data-src="auth"></span>.</td></tr>
 <tr><td><b>Trigger</b></td><td>A recurring task, fixed time. Pair it with something you like (coffee).</td></tr>
 <tr><td><b>Protected block</b></td><td>At least 30 minutes, sized to the task and movable when the week changes. A light borrow from time blocking, not scheduling every hour.</td></tr>
 </tbody></table>
@@ -527,51 +658,67 @@ const PrLearnContent = (function () {
   /* ───────────────────────── 12 ───────────────────────── */
   { id: 'fontes', block: 'estrutura', min: 4, kinds: [],
     title: B('Fontes, escolhas e limites', 'Sources, choices and limits'),
-    lede: B('O que é conceito estabelecido, o que é escolha deste sistema, e o que o documento de referência deixa por resolver.',
-            'What is an established concept, what is a choice of this system, and what the reference document leaves unresolved.'),
+    lede: B('De onde vem cada ideia — investigação, método de autor ou escolha deste sistema —, quão forte é a evidência, e o que o documento de referência deixa por resolver.',
+            'Where each idea comes from — research, an author\'s method or a choice of this system —, how strong the evidence is, and what the reference document leaves unresolved.'),
     body: {
       pt: `
-<h2>Conceitos estabelecidos <span data-src="est"></span></h2>
+<h2>Métodos de autor <span data-src="auth"></span></h2>
+<p>Os métodos deste percurso são de praticantes: livros escritos a partir de experiência, muito usados, mas não testados como um todo em estudos controlados. Isso não os torna errados — torna-os modelos úteis, a adaptar e a pôr à prova contigo.</p>
 <ul>
-<li><b>GTD</b> (David Allen): ciclos abertos; capturar, clarificar, organizar, refletir, envolver; próxima ação; lista "À espera"; regra dos dois minutos; revisão semanal.</li>
-<li><b>PARA e CODE</b> (Tiago Forte, <em>Building a Second Brain</em>): Projetos, Áreas, Recursos, Arquivo; capturar primeiro, organizar depois; nada de estrutura vazia.</li>
-<li><b>Bullet Journal</b> (Ryder Carroll): poucos sinais.</li>
-<li><b>Notas efémeras</b> (Sönke Ahrens, <em>How to Take Smart Notes</em>).</li>
-<li><b>Roadmap Now-Next-Later</b> (Janna Bastow), <b>ADR</b> (registos de decisão), <b>RAID</b>, <b>Technology Radar</b> (Thoughtworks), <b>SLO e orçamento de erro</b> (Google SRE), <b>métricas DORA</b>.</li>
-<li>O estudo da IBM sobre reencontrar email (pastas vs. pesquisa).</li>
+<li><b>GTD</b> (David Allen, <em>Getting Things Done</em>, 2001; ed. revista 2015): ciclos abertos; capturar, clarificar, organizar, refletir, envolver; projeto e próxima ação; lista "À espera"; regra dos dois minutos; revisão semanal.</li>
+<li><b>PARA e CODE</b> (Tiago Forte, <em>Building a Second Brain</em>, 2022): Projetos, Áreas, Recursos, Arquivo; capturar primeiro, organizar depois; nada de estrutura vazia.</li>
+<li><b>Bullet Journal</b> (Ryder Carroll, 2018): poucos sinais.</li>
+<li><b>Notas efémeras</b> (Sönke Ahrens, <em>How to Take Smart Notes</em>, 2017).</li>
+</ul>
+<h2>O que a investigação diz <span data-src="res"></span></h2>
+<ul>
+<li><b>Pastas vs. pesquisa:</b> num estudo de campo com 345 utilizadores de email, arrumar em pastas não ajudou a reencontrar mensagens face a pesquisar (Whittaker, Matthews, Cerruti, Badenes e Tang, 2011, CHI). É email, não notas.</li>
+<li><b>Ciclos abertos:</b> objetivos por cumprir geravam pensamentos intrusivos, e fazer um plano concreto para eles reduziu a interferência (Masicampo e Baumeister, 2011, <em>JPSP</em>). Apoia a ideia de capturar e definir a próxima ação — não prova o GTD inteiro. Mais no capítulo <a href="#aprender/foco">Foco</a>.</li>
+<li><b>Uma leitura teórica do GTD:</b> Heylighen e Vidal (2008, <em>Long Range Planning</em> 41(6), 585–605) explicam, à luz da ciência cognitiva, porque o método deve funcionar. É uma análise, não um ensaio com pessoas.</li>
+</ul>
+<h2>Práticas reconhecidas <span data-src="est"></span></h2>
+<ul>
+<li><b>Roadmap Now-Next-Later</b> (Janna Bastow), <b>ADR</b> (registos de decisão), <b>RAID</b>, <b>Technology Radar</b> (Thoughtworks), <b>SLO e orçamento de erro</b> (Google SRE), <b>métricas DORA</b> — só nas bases opcionais do cenário de trabalho.</li>
 </ul>
 <h2>Escolhas do sistema de referência <span data-src="own"></span></h2>
 <p>Funcionam, mas são decisões de desenho — adapta-as: os três contentores por nível de atenção; o nome do projeto entre parênteses no título; os verbos "Verificar" e "Insistir"; os quatro símbolos do caderno; a revisão de ~20 minutos com sete passos; a janela de 30–37 dias; a equipa "Toda a organização"; "arquivar é um estado"; a escada da graduação com a regra de três; os veredictos sobre bases opcionais.</p>
 <h2>O que o documento deixa por resolver</h2>
 <ul>
 <li><b>O rollup "Último 1:1" não funciona como descrito.</b> A base 1:1 tem uma linha por pessoa (sem datas por sessão) e nenhuma relação a Pessoas é definida. No playground acrescentámos a relação "Ficha da pessoa" e o rollup usa a "Última edição" da página de 1:1 — e assinalamos a diferença.</li>
-<li><b>Ficheiros em falta:</b> o documento remete para <code>example-workspace.md</code> e <code>cheatsheet.md</code>, que não existem no projeto. O mundo de exemplo foi construído a partir dos exemplos espalhados no próprio documento.</li>
 <li><b>Escrito para quem lidera equipas de engenharia.</b> As bases opcionais (Catálogo de serviços, SLO, Radar) só fazem sentido nesse papel. O cenário "Estudos" mostra os mesmos princípios fora desse contexto.</li>
 <li><b>Limites de produtos.</b> Números como "5 projetos grátis" ou "3 filtros" mudam com o tempo. Aqui não os repetimos como factos: o <a href="#explorar/ferramentas">diretório</a> tem cada limite com a fonte e a data em que foi verificado.</li>
 <li><b>Pontos que o próprio documento marca "a verificar na app"</b> — pesquisa por parte de palavra, ações de botões no plano grátis, atalhos no iPhone/Android — ficam com o rótulo <span data-src="chk"></span>.</li>
 </ul>`,
       en: `
-<h2>Established concepts <span data-src="est"></span></h2>
+<h2>Author methods <span data-src="auth"></span></h2>
+<p>The methods in this track come from practitioners: books written from experience, widely used, but not tested as a whole in controlled studies. That does not make them wrong — it makes them useful models, to adapt and to test on yourself.</p>
 <ul>
-<li><b>GTD</b> (David Allen): open loops; capture, clarify, organize, reflect, engage; next action; Waiting For; the two-minute rule; the weekly review.</li>
-<li><b>PARA and CODE</b> (Tiago Forte, <em>Building a Second Brain</em>): Projects, Areas, Resources, Archive; capture first, organize later; no empty structure.</li>
-<li><b>Bullet Journal</b> (Ryder Carroll): few signifiers.</li>
-<li><b>Fleeting notes</b> (Sönke Ahrens, <em>How to Take Smart Notes</em>).</li>
-<li><b>Now-Next-Later roadmaps</b> (Janna Bastow), <b>ADRs</b> (decision records), <b>RAID</b>, the <b>Technology Radar</b> (Thoughtworks), <b>SLOs and error budgets</b> (Google SRE), <b>DORA metrics</b>.</li>
-<li>The IBM study on re-finding email (folders vs search).</li>
+<li><b>GTD</b> (David Allen, <em>Getting Things Done</em>, 2001; revised 2015): open loops; capture, clarify, organize, reflect, engage; project and next action; Waiting For; the two-minute rule; the weekly review.</li>
+<li><b>PARA and CODE</b> (Tiago Forte, <em>Building a Second Brain</em>, 2022): Projects, Areas, Resources, Archive; capture first, organize later; no empty structure.</li>
+<li><b>Bullet Journal</b> (Ryder Carroll, 2018): few signifiers.</li>
+<li><b>Fleeting notes</b> (Sönke Ahrens, <em>How to Take Smart Notes</em>, 2017).</li>
+</ul>
+<h2>What research says <span data-src="res"></span></h2>
+<ul>
+<li><b>Folders vs search:</b> in a field study of 345 email users, filing into folders did not help people re-find messages compared with searching (Whittaker, Matthews, Cerruti, Badenes &amp; Tang, 2011, CHI). It is email, not notes.</li>
+<li><b>Open loops:</b> unfulfilled goals produced intrusive thoughts, and making a concrete plan for them reduced the interference (Masicampo &amp; Baumeister, 2011, <em>JPSP</em>). It supports capturing and defining the next action — it does not prove GTD as a whole. More in the <a href="#aprender/foco">Focus</a> chapter.</li>
+<li><b>A theoretical reading of GTD:</b> Heylighen &amp; Vidal (2008, <em>Long Range Planning</em> 41(6), 585–605) explain, in terms of cognitive science, why the method should work. It is an analysis, not a trial with people.</li>
+</ul>
+<h2>Recognised practices <span data-src="est"></span></h2>
+<ul>
+<li><b>Now-Next-Later roadmaps</b> (Janna Bastow), <b>ADRs</b> (decision records), <b>RAID</b>, the <b>Technology Radar</b> (Thoughtworks), <b>SLOs and error budgets</b> (Google SRE), <b>DORA metrics</b> — only in the work scenario's optional databases.</li>
 </ul>
 <h2>Choices of the reference system <span data-src="own"></span></h2>
 <p>They work, but they are design decisions — adapt them: the three containers by attention level; the project name in brackets in the title; the verbs "Verify" and "Chase"; the four notebook symbols; the ~20-minute, seven-step review; the 30–37-day window; the "Org-wide" team; "archive is a status"; the graduation ladder with the rule of three; the verdicts on optional databases.</p>
 <h2>What the document leaves unresolved</h2>
 <ul>
 <li><b>The "Last 1:1" rollup cannot work as described.</b> The 1:1 database has one row per person (no per-session dates) and no relation to Persons is defined. In the playground we added a "Person record" relation and the rollup uses the 1:1 page's "Last edited time" — and we flag the difference.</li>
-<li><b>Missing files:</b> the document refers to <code>example-workspace.md</code> and <code>cheatsheet.md</code>, which do not exist in the project. The sample world was built from the examples scattered through the document itself.</li>
 <li><b>Written for someone leading engineering teams.</b> The optional databases (Service Catalog, SLOs, Radar) only make sense in that role. The "Studies" scenario shows the same principles outside that context.</li>
 <li><b>Product limits.</b> Numbers like "5 free projects" or "3 filters" change over time. We do not repeat them as facts here: the <a href="#explorar/ferramentas">directory</a> has each limit with its source and the date it was verified.</li>
 <li><b>Points the document itself marks "to verify in-app"</b> — partial-word search, button actions on the free plan, iPhone/Android shortcuts — keep the <span data-src="chk"></span> label.</li>
 </ul>`,
     },
-    take: B(['Conceitos são gerais; escolhas adaptam-se.', 'Limites de produtos têm data.'], ['Concepts are general; choices are adaptable.', 'Product limits have dates.']),
+    take: B(['Métodos de autor são modelos úteis, não leis: adapta-os.', 'A investigação apoia peças (capturar, planear a próxima ação, pesquisar) — não o sistema inteiro.', 'Limites de produtos têm data.'], ['Author methods are useful models, not laws: adapt them.', 'Research supports pieces (capturing, planning the next action, searching) — not the whole system.', 'Product limits have dates.']),
     next: [{ href: '#aplicar/sistema', l: B('Desenhar o teu sistema', 'Design your system') }],
   },
   ];

@@ -123,12 +123,27 @@ const PrApp = (function () {
 
   /* ═════════════ home ═════════════ */
   const ROUTER_EX = [
-    { s: B('“Verificar se o teste de recuo passou em staging”', '“Verify the rollback test passed in staging”'), k: 'act', why: B('Começa por um verbo e alguém fica à espera do resultado: é uma ação, vai para a lista de tarefas.', 'It starts with a verb and someone is waiting for the result: an action, it goes to the task list.') },
-    { s: B('A Ana diz que o atraso de replicação dispara no fim do mês', 'Ana says replication lag spikes at month-end'), k: 'info', why: B('Ouviste um facto. Não há nada para fazer já: uma linha na caixa de Notas, triada na sexta.', 'You heard a fact. Nothing to do right now: one line in the Notes inbox, triaged on Friday.') },
-    { s: B('“Hoje tenho mesmo de acabar o runbook”', '“Today I really must finish the runbook”'), k: 'today', why: B('A tarefa já existe. Isto é escolher o foco do dia: um dos Big 3 do caderno.', 'The task already exists. This is choosing the day\'s focus: one of the notebook Big 3.') },
-    { s: B('Uma iniciativa nova: reduzir 20% o custo da cloud até junho', 'A new initiative: cut cloud cost by 20% by June'), k: 'str', why: B('Tem resultado, fim e várias sessões: uma linha na base Projetos, ligada à equipa.', 'It has an outcome, an end and several sessions: a row in the Projects database, linked to the team.') },
+    { s: B('“Enviar o orçamento à Joana até quinta”', '“Send Joana the quote by Thursday”'), k: 'act', why: B('Começa por um verbo e tem prazo: é uma ação, vai para a lista de tarefas, com data.', 'It starts with a verb and has a deadline: an action, it goes to the task list, with a date.') },
+    { s: B('A Ana diz que a reunião de equipa passa para as terças', 'Ana says the team meeting moves to Tuesdays'), k: 'info', why: B('Ouviste um facto. Não há nada para fazer já: uma linha na caixa de Notas, triada na sexta.', 'You heard a fact. Nothing to do right now: one line in the Notes inbox, triaged on Friday.') },
+    { s: B('“Hoje tenho mesmo de acabar o relatório”', '“Today I really must finish the report”'), k: 'today', why: B('A tarefa já existe. Isto é escolher o foco do dia: um dos Big 3 — as três tarefas do dia — no caderno.', 'The task already exists. This is choosing the day\'s focus: one of the Big 3 — the day\'s three tasks — in the notebook.') },
+    { s: B('Uma coisa nova: organizar a mudança de casa até março', 'Something new: organise the house move by March'), k: 'str', why: B('Tem resultado, fim e muitos passos: é um projeto — uma linha na base Projetos, com a próxima ação na lista.', 'It has an outcome, an end and many steps: a project — a row in the Projects database, with its next action in the list.') },
     { s: B('O teste-t entra no exame, a ANOVA não', 'The t-test is in the exam, ANOVA is not'), k: 'info', why: B('Uma coisa que aprendeste e vais querer encontrar: Notas, com o nome do projeto no fim.', 'Something you learned and will want to find: Notes, with the project name at the end.') },
-    { s: B('Ler o rascunho da Inês até quarta', "Read Inês's draft by Wednesday"), k: 'act', why: B('Verbo + prazo real: tarefa com data, em #Projetos.', 'Verb + a real deadline: a dated task in #Projects.') },
+    { s: B('Ler o rascunho da Inês até quarta', "Read Inês's draft by Wednesday"), k: 'act', why: B('Verbo + prazo real: tarefa com data.', 'Verb + a real deadline: a dated task.') },
+  ];
+  /* por onde começar, pelo objetivo de quem chega (não pela arquitetura do site) */
+  const GOALS = [
+    { t: B('Sou novo nisto', "I'm new to this"), d: B('Uso listas e um calendário, mas nunca ouvi falar de GTD nem de PARA.', 'I use lists and a calendar, but have never heard of GTD or PARA.'),
+      s: [['#aprender/comecar', B('O que é um sistema', 'What a system is')], ['#aprender/quatro', B('Quatro espécies, quatro lugares', 'Four kinds, four places')], ['#aprender/ciclo', B('O ciclo: capturar, triar, rever', 'The loop: capture, triage, review')], ['#aplicar/semana', B('Viver uma semana no sistema', 'Live a week in the system')]] },
+    { t: B('Ando a afogar-me em coisas', "I'm drowning in stuff"), d: B('Tarefas a meio, notas espalhadas, compromissos esquecidos.', 'Half-done tasks, scattered notes, forgotten commitments.'),
+      s: [['#aprender/ciclo', B('Capturar agora, arrumar depois', 'Capture now, sort later')], ['#experimentar/captura', B('Laboratório de captura', 'Capture lab')], ['#aplicar/hoje', B('Escolher só três por dia', 'Pick only three a day')], ['#aplicar/revisao', B('A revisão semanal', 'The weekly review')]] },
+    { t: B('Tenho apps a mais', 'I have too many apps'), d: B('Uso Notion, Todoist e outras, mas nada se liga.', 'I use Notion, Todoist and more, but nothing connects.'),
+      s: [['#aprender/comecar', B('Método, ferramenta, hábito', 'Method, tool, habit')], ['#explorar/mapa', B('Que papel faz cada lugar', 'What role each place plays')], ['#explorar/combinar', B('Uma ferramenta por papel', 'One tool per role')], ['#aplicar/sistema', B('Desenhar o teu sistema', 'Design your system')]] },
+    { t: B('Quero hábitos que durem', 'I want habits that stick'), d: B('Começo bem e desisto; adio o que importa.', 'I start well and give up; I put off what matters.'),
+      s: [['#aprender/habitos', B('Como se faz um hábito', 'How a habit forms')], ['#experimentar/habito', B('Desenhar um hábito teu', 'Design a habit of yours')], ['#aprender/adiar', B('Porque adiamos', 'Why we put things off')], ['#aplicar/revisao-pessoal', B('A revisão pessoal', 'The personal review')]] },
+    { t: B('Desconfio de conselhos', 'I distrust advice'), d: B('Quero saber o que tem investigação por trás e o que é opinião.', 'I want to know what is backed by research and what is opinion.'),
+      s: [['#aprender/comecar', B('Como ler as etiquetas', 'How to read the labels')], ['#aprender/fontes', B('Quão forte é a evidência do GTD e PARA', 'How strong the evidence is for GTD and PARA')], ['#aprender/habitos', B('Hábitos: 66 dias, não 21', 'Habits: 66 days, not 21')], ['#aprender/decidir', B('Vieses que replicaram', 'Biases that replicated')]] },
+    { t: B('Já tenho um sistema', 'I already have a system'), d: B('Quero afinar, não recomeçar do zero.', 'I want to tune it, not start from scratch.'),
+      s: [['#aprender/ideias', B('Oito ideias que fazem funcionar', 'Eight ideas that make it work')], ['#aprender/principios', B('Desenhar qualquer base de dados', 'Design any database')], ['#explorar/relacoes', B('Relações e rollups', 'Relations and rollups')], ['#aprender/importante', B('O que merece o teu tempo', 'What deserves your time')]] },
   ];
   let _routerT = 0, _routerI = 0, _routerUser = false;
 
@@ -144,7 +159,7 @@ const PrApp = (function () {
           <p class="lede">${esc(tx('Tudo o que te pede atenção é uma de quatro coisas. Cada uma tem um lugar e cada lugar tem um só trabalho. Aqui aprendes o modelo, vês como as peças se ligam, mexes numa base de dados a sério e montas o teu — sem contas, também offline.',
             'Everything that asks for your attention is one of four kinds. Each kind gets one place, and each place has one job. Here you learn the model, see how the parts connect, work with a real database and build your own — no accounts, offline too.'))}</p>
           <div class="pr-hero-cta">
-            <a class="btn btn-primary" href="#aprender/quatro">${esc(tx('Começar pelo modelo', 'Start with the model'))}</a>
+            <a class="btn btn-primary" href="#aprender/comecar">${esc(tx('Começar do início', 'Start at the beginning'))}</a>
             <a class="btn" href="#aplicar/semana">${esc(tx('Viver uma semana no sistema', 'Live a week in the system'))}</a>
             <a class="btn btn-ghost" href="#experimentar/notion">${esc(tx('Abrir o playground', 'Open the playground'))} ${ICON.arrow}</a>
           </div>
@@ -162,6 +177,13 @@ const PrApp = (function () {
           </div>
         </div>
       </div>
+    </section>
+    <section class="pr-wrap pr-goals" aria-labelledby="pr-goals-h">
+      <p class="pr-kicker">${esc(tx('Por onde começar', 'Where to start'))}</p>
+      <h2 class="pr-h2" id="pr-goals-h">${esc(tx('O que te trouxe aqui?', 'What brought you here?'))}</h2>
+      <p class="pr-sub" style="max-width:62ch">${esc(tx('Escolhe o que mais se parece contigo. Cada caminho tem quatro passos, por ordem — podes sair dele quando quiseres.', 'Pick the one that sounds most like you. Each path has four steps, in order — leave it whenever you like.'))}</p>
+      <div class="pr-goal-grid">${GOALS.map(g => `<article class="pr-goal"><h3>${esc(L(g.t))}</h3><p>${esc(L(g.d))}</p>
+        <ol>${g.s.map(([h, l]) => `<li><a href="${h}">${esc(L(l))}</a></li>`).join('')}</ol></article>`).join('')}</div>
     </section>
     <div class="pr-wrap"><nav class="pr-areas" aria-label="${esc(tx('Áreas', 'Areas'))}">
       ${Object.keys(AREAS).map(id => {
@@ -181,21 +203,22 @@ const PrApp = (function () {
           ${loopSvg()}
         </div>
         <div>
-          <p class="pr-kicker">${esc(tx('Um caminho para começar', 'A path to start'))}</p>
+          <p class="pr-kicker">${esc(tx('Como se ligam as quatro áreas', 'How the four areas connect'))}</p>
           <ol class="pr-steps">
-            <li><b><a href="#aprender/quatro">${esc(tx('Quatro espécies, quatro lugares', 'Four kinds, four places'))}</a></b><p>${esc(tx('O modelo inteiro em cinco minutos.', 'The whole model in five minutes.'))}</p></li>
-            <li><b><a href="#aplicar/semana">${esc(tx('Uma semana no sistema', 'A week in the system'))}</a></b><p>${esc(tx('Capturar, escolher o foco, fechar o dia e rever — com consequências.', 'Capture, pick the focus, close the day and review — with consequences.'))}</p></li>
-            <li><b><a href="#experimentar/notion">${esc(tx('O playground de bases de dados', 'The database playground'))}</a></b><p>${esc(tx('Vê o que a semana deixou: notas por equipa, relações, rollups.', 'See what the week left behind: notes by team, relations, rollups.'))}</p></li>
-            <li><b><a href="#aplicar/sistema">${esc(tx('Desenhar o teu sistema', 'Design your system'))}</a></b><p>${esc(tx('Uma ferramenta por papel e um plano para a semana 1.', 'One tool per role and a plan for week 1.'))}</p></li>
+            <li><b><a href="#aprender">${esc(tx('Aprender', 'Learn'))}</a></b><p>${esc(tx('Um conceito de cada vez, com o que diz a investigação e o que é só opinião.', 'One concept at a time, with what research says and what is only opinion.'))}</p></li>
+            <li><b><a href="#explorar">${esc(tx('Explorar', 'Explore'))}</a></b><p>${esc(tx('Vê o conceito no mapa do sistema: por onde passa cada coisa e que ferramenta faz cada papel.', 'See the concept on the system map: where each thing travels and which tool plays each role.'))}</p></li>
+            <li><b><a href="#experimentar">${esc(tx('Experimentar', 'Experiment'))}</a></b><p>${esc(tx('Mexe-lhe num laboratório, com o mundo de exemplo ou com as tuas coisas.', 'Handle it in a lab, with the sample world or with your own things.'))}</p></li>
+            <li><b><a href="#aplicar">${esc(tx('Aplicar', 'Apply'))}</a></b><p>${esc(tx('Usa-o numa semana inteira e desenha o teu próprio sistema.', 'Use it for a whole week and design your own system.'))}</p></li>
           </ol>
+          <p class="pr-sub" style="margin-top:.8rem">${esc(tx('Cada capítulo acaba com ligações para o laboratório e o exercício certos — não precisas de saber onde está cada coisa.', 'Every chapter ends with links to the right lab and exercise — you do not need to know where everything lives.'))}</p>
         </div>
       </div>
     </section>
     <section class="pr-wrap pr-section">
       <p class="pr-kicker">${esc(tx('O mundo de exemplo', 'The sample world'))}</p>
       <h2 class="pr-h2">${esc(tx('Dois cenários, a mesma estrutura', 'Two scenarios, the same structure'))}</h2>
-      <p class="pr-sub" style="max-width:64ch;margin-bottom:1rem">${esc(tx('O exemplo principal é o do documento de referência: alguém que lidera três equipas, com projetos, pessoas e reuniões. O segundo é uma estudante com um part-time. Muda de cenário quando quiseres — cada um guarda as suas alterações.',
-        "The main example is the reference document's: someone who leads three teams, with projects, people and meetings. The second is a student with a part-time job. Switch whenever you like — each one keeps its own changes."))}</p>
+      <p class="pr-sub" style="max-width:64ch;margin-bottom:1rem">${esc(tx('Os laboratórios mexem num mundo fictício. O cenário principal é o do sistema que o site segue: alguém que lidera três equipas, com projetos, pessoas e reuniões. O segundo é uma estudante com um part-time — mais perto do dia a dia de muita gente. Muda de cenário quando quiseres; cada um guarda as suas alterações.',
+        "The labs work on a fictional world. The main scenario is the one from the system this site follows: someone who leads three teams, with projects, people and meetings. The second is a student with a part-time job — closer to many people's everyday life. Switch whenever you like; each one keeps its own changes."))}</p>
       ${worldBar(null)}
     </section>`;
     startRouter(el);

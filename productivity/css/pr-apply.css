@@ -234,3 +234,4 @@
 .ap-dn li { padding: .3rem 0; border-bottom: 1px solid var(--pr-line); }
 .ap-ladder li .btn { grid-column: 2; justify-self: start; margin-top: .4rem; }
 .cp-in, .cp-out { min-width: 0; }
+.wk-how { font-size: .84rem; color: var(--pr-ink-2); margin: .45rem 0 .2rem; max-width: 72ch; }

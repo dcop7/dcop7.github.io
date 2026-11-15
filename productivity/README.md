@@ -2,13 +2,19 @@
 
 A microsite inside Diogo Universe that teaches visitors to build a personal productivity system: capture, triage, review; GTD and PARA; Notion-style databases. It is static, has no build step and works offline. Everything a visitor does stays in their own browser (`localStorage`). There are no accounts, nothing syncs, and it connects to no external tool.
 
-The conceptual source is the local file `personal-productivity-system.md` (in `.gitignore`, never committed). The site keeps its principles and terms, and labels each idea as an **established concept** (`est`), a **choice of the reference system** (`own`) or **product-dependent** (`chk`). The "Fontes" chapter lists the gaps found in the document.
+The conceptual source is the local file `personal-productivity-system.md` (in `.gitignore`, never committed). The site keeps its principles and terms. Both tracks use the same evidence labels (`Pr.srcTag`): `res` published research · `est` recognised concept or practice · `auth` one author's model (GTD, PARA, Bullet Journal, Ahrens, Clear, Covey…) · `own` a choice of the reference system · `chk` product-dependent · `tip` this site's advice · `weak` weak evidence. A chapter's legend lists only the labels it uses and links to `#aprender/comecar`, which explains them. The "Fontes" chapter separates author methods, research and recognised practices, and lists the gaps found in the document.
+
+## Orientation for first-time visitors
+
+- Home: "O que te trouxe aqui?" — six goal-based paths (new, overwhelmed, too many apps, habits, sceptical, experienced), four steps each (`GOALS` in `pr-app.js`).
+- `#aprender/comecar` (chapter 0): what a system is, the four layers (direction, habits, method, tool), "GTD before an app?", the two tracks, how to read the labels, the sample world (with a scenario switch) and a glossary.
+- The last chapter of track 1 pages on to track 2; the last of track 2 pages on to `#aplicar/sistema`.
 
 ## Areas and routes (hash router)
 
 | Area | Routes |
 |---|---|
-| 01 Aprender | `#aprender`, `#aprender/<chapter>` — track 1 *Organizar* (12 chapters + `fontes`), track 2 *Executar e dirigir* (`habitos`, `adiar`, `foco`, `decidir`, `motivacao`, `importante`) |
+| 01 Aprender | `#aprender`, `#aprender/<chapter>` — track 1 *Organizar* (`comecar` orientation chapter + 11 chapters + `fontes`), track 2 *Executar e dirigir* (`habitos`, `adiar`, `foco`, `decidir`, `motivacao`, `importante`) |
 | 02 Explorar | `#explorar/mapa`, `#explorar/relacoes`, `#explorar/ferramentas[/<tool>\|/@<role>]`, `#explorar/combinar` |
 | 03 Experimentar | `#experimentar/notion[/<db>[/<view>[/<rec>]]]`, `#experimentar/notion/mapa`, `#experimentar/captura`, `#experimentar/pagina-ou-base`; track 2 labs: `#experimentar/habito[/quebrar]`, `#experimentar/adiar`, `#experimentar/foco[/dia]`, `#experimentar/decidir[/enquadramento\|/premortem]`, `#experimentar/motivacao`, `#experimentar/prioridades[/urgencia\|/tras]` |
 | 04 Aplicar | `#aplicar/semana`, `#aplicar/revisao`, `#aplicar/hoje`, `#aplicar/triagem`, `#aplicar/para`, `#aplicar/projeto`, `#aplicar/sistema`, `#aplicar/revisao-pessoal` |

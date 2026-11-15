@@ -150,6 +150,13 @@ const PrExplore = (function () {
       ${head('explorar', tx('Como as bases de dados se ligam', 'How the databases connect'), ['str'], tx('Como as bases de dados se ligam', 'How the databases connect'),
         tx('Desenhado ao vivo a partir do mundo de exemplo. Se acrescentares uma relação ou um rollup no playground, aparece aqui.', 'Drawn live from the sample world. Add a relation or a rollup in the playground and it shows up here.'))}
       ${PrApp.worldBar('nb')}
+      <div class="ex-rel-intro">
+        <p>${esc(tx('Cada caixa é uma base de dados. Cada seta é uma relação: uma coluna numa base que aponta para linhas de outra — como a coluna Equipa de uma nota. Equipas está no centro porque é a base central: os nomes das equipas só existem lá, e as outras apontam para ela em vez de repetirem a lista.', 'Each box is a database. Each arrow is a relation: a column in one database that points to rows of another — like a note’s Team column. Teams sits in the middle because it is the hub: team names only exist there, and the others point to it instead of repeating the list.'))}</p>
+        <ul class="nb-legend"><li><span class="lg two"></span>${esc(tx('Duas vias: a ligação vê-se dos dois lados (↗ ida, ↩ volta)', 'Two-way: the link shows on both sides (↗ forward, ↩ back)'))}</li>
+          <li><span class="lg one"></span>${esc(tx('Uma via: só se vê de onde parte', 'One-way: only visible where it starts'))}</li>
+          <li><b>Σ</b> ${esc(tx('Rollup: uma conta sobre o que está do outro lado', 'Rollup: a calculation over what is on the other side'))}</li></ul>
+        <p class="ex-scroll-hint">${esc(tx('O mapa é largo: desliza-o para os lados — ou lê a lista por baixo, que diz o mesmo por palavras.', 'The map is wide: swipe it sideways — or read the list below, which says the same in words.'))}</p>
+      </div>
       <div class="ex-rel-g"><div class="pr-sheet ex-rel-map">${PrNotion.schemaSvg()}</div>
       <div><p class="pr-kicker">${esc(tx('Cada ligação, em português corrente', 'Every link, in plain words'))}</p>
         <ul class="ex-rels">${rows.map(r => r.k === 'rel'
@@ -159,6 +166,8 @@ const PrExplore = (function () {
           : `<li><span class="ex-rk">Σ</span><div><b>${esc(dn(r.from))} · ${esc(L(r.p.name))}</b><span>${esc(rollPhrase(r))}</span>${r.p.q ? `<small>${esc(tx('Pergunta: ', 'Question: '))}${esc(L(r.p.q))}</small>` : ''}</div></li>`).join('')}</ul>
         <a class="btn btn-sm" href="#experimentar/notion/mapa">${esc(tx('Mexer no playground', 'Play in the playground'))} →</a></div></div>
       ${Pr.localNote()}</div>`;
+    /* em ecrã estreito o mapa desliza: começa centrado na base central */
+    const mp = $('.ex-rel-map', el); if (mp && mp.scrollWidth > mp.clientWidth) mp.scrollLeft = (mp.scrollWidth - mp.clientWidth) / 2;
   }
   function rollPhrase(r) {
     const W = PrWorld, st = W.state(), rel = st.schema[r.from].props.find(q => q.id === r.p.roll.rel);
