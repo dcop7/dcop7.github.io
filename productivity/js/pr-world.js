@@ -36,8 +36,11 @@ const PrWorld = (function () {
     mind: { pt: 'Laboratórios de execução e direção', en: 'Executing & directing labs', href: '#experimentar' },
   };
 
-  let _sc = Pr.store.get(SC_KEY, 'work');
-  if (!PrSeed[_sc] || !PrSeed[_sc].records) _sc = 'work';
+  /* quem chega pela primeira vez começa no dia a dia (estudos, casa, saúde, dinheiro); o cenário de
+     trabalho em equipa fica como exemplo avançado. Quem já tinha alterações no mundo de trabalho continua lá. */
+  const hadWork = (() => { try { return localStorage.getItem(KEY + 'work') != null; } catch (e) { return false; } })();
+  let _sc = Pr.store.get(SC_KEY, hadWork ? 'work' : 'study');
+  if (!PrSeed[_sc] || !PrSeed[_sc].records) _sc = 'study';
   let _log = load();
   let _st = null;
 

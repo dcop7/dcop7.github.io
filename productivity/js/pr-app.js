@@ -41,17 +41,17 @@ const PrApp = (function () {
         d: B('Escreve uma tarefa numa linha ao estilo quick-add e vê os três filtros a mudar; escreve uma nota e vê se resiste a três meses.', 'Type a task in one quick-add line and watch the three filters change; write a note and see if it survives three months.') },
       { id: 'pagina-ou-base', name: B('Página ou base de dados?', 'Page or database?'), kinds: ['str'],
         d: B('As quatro perguntas, a escada da graduação e a regra de três — com as notas do mundo de exemplo.', 'The four questions, the graduation ladder and the rule of three — using the sample world\'s notes.') },
-      { id: 'habito', track: 'ed', name: B('Laboratório de hábitos', 'Habit lab'), kinds: ['today'],
+      { id: 'habito', track: 'ed', name: B('Laboratório de hábitos', 'Habit lab'), topics: ['hab'],
         d: B('Desenha um hábito teu (deixa, sítio, versão pequena), mexe nas condições e vê as repetições necessárias; depois regista os dias reais. Também para quebrar um.', 'Design a habit of your own (cue, place, small version), change the conditions and see the repetitions needed; then log the real days. Also for breaking one.') },
-      { id: 'adiar', track: 'ed', name: B('Porque estou a adiar isto?', 'Why am I putting this off?'), kinds: ['act'],
+      { id: 'adiar', track: 'ed', name: B('Porque estou a adiar isto?', 'Why am I putting this off?'), topics: ['proc'],
         d: B('Uma tarefa tua ou do mundo de exemplo, o que sentes em relação a ela, e quando a vontade vence a alternativa. Experimenta intervenções e sai com o primeiro passo.', 'A task of yours or from the sample world, how you feel about it, and when the urge beats the alternative. Try interventions and leave with the first step.') },
-      { id: 'foco', track: 'ed', name: B('Laboratório de foco', 'Focus lab'), kinds: ['today'],
+      { id: 'foco', track: 'ed', name: B('Laboratório de foco', 'Focus lab'), topics: ['foc'],
         d: B('Mede em ti o custo de trocar de regra; desenha um dia com notificações, reuniões e um bloco protegido.', 'Measure your own cost of switching rules; design a day with notifications, meetings and a protected block.') },
-      { id: 'decidir', track: 'ed', name: B('Laboratório de decisões', 'Decision lab'), kinds: ['act'],
+      { id: 'decidir', track: 'ed', name: B('Laboratório de decisões', 'Decision lab'), topics: ['dec'],
         d: B('Calibra as tuas estimativas com o teu histórico, vê o enquadramento a atuar em ti, e faz um pré-mortem que vira tarefas.', 'Calibrate your estimates with your track record, watch framing act on you, and run a premortem that turns into tasks.') },
-      { id: 'motivacao', track: 'ed', name: B('Redesenhar uma tarefa', 'Redesign a task'), kinds: ['act'],
+      { id: 'motivacao', track: 'ed', name: B('Redesenhar uma tarefa', 'Redesign a task'), topics: ['mot'],
         d: B('Avalia uma tarefa em escolha, competência, ligação e porquê; aplica mudanças pequenas. E o que os prémios fazem à motivação.', 'Rate a task on choice, competence, connection and why; apply small changes. And what rewards do to motivation.') },
-      { id: 'prioridades', track: 'ed', name: B('O que depende de mim', 'What is up to me'), kinds: ['act', 'str'],
+      { id: 'prioridades', track: 'ed', name: B('O que depende de mim', 'What is up to me'), topics: ['eff', 'dec'],
         d: B('Controlo, influência ou largar; a armadilha da urgência; e planear de trás para a frente até à ação de hoje.', 'Control, influence or let go; the urgency trap; and planning backwards to today\'s action.') },
     ],
     aplicar: [
@@ -59,7 +59,7 @@ const PrApp = (function () {
         d: B('De segunda a sexta: os Big 3 de manhã, o que chega durante o dia, o fecho à noite e a revisão de sexta. Tudo fica no mundo de exemplo.', 'Monday to Friday: the morning Big 3, what arrives during the day, the evening close and the Friday review. Everything lands in the sample world.') },
       { id: 'revisao', name: B('Revisão semanal', 'Weekly review'), core: true, kinds: ['act', 'info', 'str'],
         d: B('Os sete passos, cerca de 20 minutos, sobre o estado atual do mundo. Com o modo "semana má" de 5 minutos.', 'The seven steps, about 20 minutes, on the current state of the world. With the 5-minute "bad week" mode.') },
-      { id: 'revisao-pessoal', track: 'ed', name: B('Revisão pessoal', 'Personal review'), kinds: ['today'],
+      { id: 'revisao-pessoal', track: 'ed', name: B('Revisão pessoal', 'Personal review'), topics: ['rev', 'hab'],
         d: B('Dez minutos depois da revisão semanal: os teus hábitos, quando trabalhaste bem, o que adiaste e o que importa a seguir. Fica só neste browser.', 'Ten minutes after the weekly review: your habits, when you worked well, what you put off and what matters next. It stays only in this browser.') },
       { id: 'hoje', name: B('Hoje e os Big 3', 'Today and the Big 3'), kinds: ['today', 'act'],
         d: B('Ver a capacidade, escolher três coisas da lista e fechar o dia com ✓ → ✕.', 'Check capacity, pick three things from the list and close the day with ✓ → ✕.') },
@@ -88,7 +88,7 @@ const PrApp = (function () {
     return `<div class="pr-wbar" data-wbar="${esc(src || '')}">
       <div class="pr-wbar-sc" role="group" aria-label="${esc(tx('Mundo de exemplo', 'Sample world'))}">
         <span class="pr-kicker">${esc(tx('Mundo', 'World'))}</span>
-        ${['work', 'study'].map(id => `<button type="button" class="chip" data-wb-sc="${id}" aria-pressed="${sc === id}">${esc(L(PrSeed[id].short))}</button>`).join('')}
+        ${['study', 'work'].map(id => `<button type="button" class="chip" data-wb-sc="${id}" aria-pressed="${sc === id}">${esc(L(PrSeed[id].short))}</button>`).join('')}
       </div>
       ${src ? `<div class="pr-reset"><span class="cnt" data-wb-cnt>${esc(n === 1 ? tx('1 alteração aqui', '1 change here') : tx(`${n} alterações aqui`, `${n} changes here`))}</span>
         <button type="button" class="btn btn-sm" data-wb-reset="${esc(src)}" ${n ? '' : 'disabled'}>${ICON.reset}${esc(tx('Repor esta experiência', 'Reset this experiment'))}</button></div>` : ''}
@@ -217,8 +217,8 @@ const PrApp = (function () {
     <section class="pr-wrap pr-section">
       <p class="pr-kicker">${esc(tx('O mundo de exemplo', 'The sample world'))}</p>
       <h2 class="pr-h2">${esc(tx('Dois cenários, a mesma estrutura', 'Two scenarios, the same structure'))}</h2>
-      <p class="pr-sub" style="max-width:64ch;margin-bottom:1rem">${esc(tx('Os laboratórios mexem num mundo fictício. O cenário principal é o do sistema que o site segue: alguém que lidera três equipas, com projetos, pessoas e reuniões. O segundo é uma estudante com um part-time — mais perto do dia a dia de muita gente. Muda de cenário quando quiseres; cada um guarda as suas alterações.',
-        "The labs work on a fictional world. The main scenario is the one from the system this site follows: someone who leads three teams, with projects, people and meetings. The second is a student with a part-time job — closer to many people's everyday life. Switch whenever you like; each one keeps its own changes."))}</p>
+      <p class="pr-sub" style="max-width:64ch;margin-bottom:1rem">${esc(tx('Os laboratórios mexem num mundo fictício. Começas no Dia a dia: uma estudante com um part-time, um exame, um trabalho de grupo, uma mudança de casa, contas e um objetivo de corrida. O cenário Trabalho em equipa é o exemplo avançado — o do sistema que o site segue, de alguém que lidera três equipas de engenharia, com mais ligações entre projetos, pessoas e reuniões. Muda quando quiseres; cada um guarda as suas alterações.',
+        "The labs work on a fictional world. You start in Everyday: a student with a part-time job, an exam, a group paper, a house move, bills and a running goal. The Team work scenario is the advanced example — the one from the system this site follows, of someone leading three engineering teams, with more links between projects, people and meetings. Switch whenever you like; each one keeps its own changes."))}</p>
       ${worldBar(null)}
     </section>`;
     startRouter(el);
@@ -282,7 +282,7 @@ const PrApp = (function () {
   }
 
   /* ═════════════ índices das áreas ═════════════ */
-  function kindsMeta(kinds) { return (kinds || []).map(k => kindTag(k)).join(''); }
+  function kindsMeta(kinds, topics) { return (kinds || []).map(k => kindTag(k)).join('') + (topics || []).map(t => Pr.topicTag(t)).join(''); }
   function areaIndex(id, el) {
     const a = AREAS[id];
     PrShell.setArea(id, L(a.name));
@@ -290,7 +290,7 @@ const PrApp = (function () {
     if (id === 'aprender') list = typeof PrLearn !== 'undefined' ? PrLearn.indexHtml() : '';
     else {
       const li = (e, i) => `<li><a href="#${id}/${e.id}"><span class="n">${String(i + 1).padStart(2, '0')}</span><b>${esc(L(e.name))}</b>
-      <span class="meta">${e.core ? `<span class="core">${esc(tx('essencial', 'core'))}</span>` : ''}${kindsMeta(e.kinds)}</span><p>${esc(L(e.d))}</p></a></li>`;
+      <span class="meta">${e.core ? `<span class="core">${esc(tx('essencial', 'core'))}</span>` : ''}${kindsMeta(e.kinds, e.topics)}</span><p>${esc(L(e.d))}</p></a></li>`;
       const TR = (typeof PrLearnContent !== 'undefined' && PrLearnContent.TRACKS) || [];
       const groups = TR.map(t => ({ t, es: ENTRIES[id].filter(e => (e.track || 'org') === t.id) })).filter(g => g.es.length);
       list = groups.length > 1

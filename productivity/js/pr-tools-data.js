@@ -51,6 +51,16 @@ const PrTools = (function () {
     gcal_appt: { u: 'https://support.google.com/calendar/answer/10729749?hl=en', d: D },
     ncal_h: { u: 'https://www.notion.com/product/calendar', d: D },
     bujo: { u: 'https://bulletjournal.com/pages/learn', d: null },
+    /* re-verificação de 15/11/2026: as ferramentas de tarefas mais comuns */
+    todoist_widget: { u: 'https://www.todoist.com/help/todoist/features/use-a-todoist-widget-on-an-apple-device-ptRdme', d: '2026-11-15' },
+    todoist_search: { u: 'https://www.todoist.com/help/todoist/features/introduction-to-search-fAfiDSAp', d: '2026-11-15' },
+    todoist_sub: { u: 'https://www.todoist.com/help/todoist/features/use-sub-tasks-in-todoist-kMamDo', d: '2026-11-15' },
+    mstodo_due: { u: 'https://support.microsoft.com/en-us/office/add-due-dates-and-reminders-in-microsoft-to-do-064d9696-08d1-4433-bfdd-f661dc97491f', d: '2026-11-15' },
+    mstodo_nlp: { u: 'https://support.microsoft.com/en-us/office/smart-due-date-reminder-recognition-in-microsoft-to-do-b8cde14b-28da-42e1-9ce8-d75cc3717993', d: '2026-11-15' },
+    mstodo_short: { u: 'https://support.microsoft.com/en-us/todo/adding-home-screen-shortcuts-on-android', d: '2026-11-15' },
+    mstodo_steps: { u: 'https://support.microsoft.com/en-us/todo/add-steps-importance-notes-tags-and-categories-to-your-tasks', d: '2026-11-15' },
+    gtasks_widget: { u: 'https://support.google.com/tasks/answer/10478781?hl=en&co=GENIE.Platform%3DAndroid', d: '2026-11-15' },
+    gtasks_add: { u: 'https://support.google.com/tasks/answer/7675838?hl=en&co=GENIE.Platform%3DDesktop', d: '2026-11-15' },
   };
 
   /* papéis e requisitos. must = "Must have", nice = "Nice to have".
@@ -112,7 +122,7 @@ const PrTools = (function () {
         [B('Datas recorrentes em linguagem natural ("every Monday") no plano grátis', 'Natural-language recurring dates ("every Monday") on the free plan'), 'todoist_rec'],
       ],
       paid: [[B('Pro: 5 USD/mês (anual) ou 7 USD (mensal) — 300 projetos, 150 filtros, calendário, lembretes personalizados, duração', 'Pro: USD 5/month (yearly) or USD 7 (monthly) — 300 projects, 150 filters, calendar, custom reminders, duration'), 'todoist_p']],
-      req: { act: { quick: C(), nlp: Y('todoist_rec'), remind: Lm('todoist_p', B('lembretes de tarefa; personalizados só no Pro', 'task reminders; custom ones Pro only')), search: C(), recur: Y('todoist_rec'), filters: Lm('todoist_p', B('3 filtros', '3 filters')), sub: C() } } },
+      req: { act: { quick: Y('todoist_widget', B('widget "Adicionar tarefa" em todos os planos', '"Add Task" widget on every plan')), nlp: Y('todoist_rec'), remind: Lm('todoist_p', B('lembretes de tarefa; personalizados só no Pro', 'task reminders; custom ones Pro only')), search: Y('todoist_search', B('a ajuda não indica restrição de plano', 'the help page states no plan restriction')), recur: Y('todoist_rec'), filters: Lm('todoist_p', B('3 filtros', '3 filters')), sub: Y('todoist_sub', B('em todos os planos', 'on every plan')) } } },
     { id: 'ticktick', name: 'TickTick', kind: 'app', roles: ['act', 'cal'],
       fit: B('Lista de tarefas com calendário básico e hábitos na mesma app.', 'A task list with a basic calendar and habits in the same app.'),
       feel: B('9 listas e 99 tarefas por lista; 2 lembretes por tarefa.', '9 lists and 99 tasks per list; 2 reminders per task.'),
@@ -132,11 +142,13 @@ const PrTools = (function () {
       free: [
         [B('Disponível no Calendar, na app Tasks e no painel lateral do Gmail, Drive e Docs', 'Available in Calendar, the Tasks app and the side panel of Gmail, Drive and Docs'), 'gtasks_h'],
         [B('Subtarefas e datas com notificações', 'Subtasks and due dates with notifications'), 'gtasks_h'],
+        [B('Data e hora numa tarefa: notifica à hora marcada (sem hora, às 9h). Tarefas com subtarefas não se repetem', 'Date and time on a task: notifies at that time (no time: 9 AM). Tasks with subtasks cannot repeat'), 'gtasks_add'],
+        [B('Widget no ecrã principal para criar e gerir tarefas', 'Home-screen widget to create and manage tasks'), 'gtasks_widget'],
         [B('Tarefas que se repetem (no Tasks e no Calendar)', 'Repeating tasks (in Tasks and Calendar)'), 'gtasks_rep'],
         [B('Contas de trabalho/escola: o administrador controla o acesso', 'Work/school accounts: the administrator controls access'), 'gtasks_h'],
       ],
       paid: [],
-      req: { act: { quick: C(), nlp: C(), remind: Y('gtasks_h', B('notificações por data', 'due-date notifications')), search: C(), recur: Y('gtasks_rep'), filters: C(), sub: Y('gtasks_h') } } },
+      req: { act: { quick: Y('gtasks_widget', B('widget', 'widget')), nlp: C(), remind: Y('gtasks_add', B('à hora marcada', 'at the set time')), search: C(B('a ajuda não descreve pesquisa de tarefas', 'the help pages describe no task search')), recur: Y('gtasks_rep'), filters: C(), sub: Y('gtasks_h') } } },
     { id: 'mstodo', name: 'Microsoft To Do', kind: 'app', roles: ['act'],
       fit: B('Se usas o Outlook: "O meu dia" e as tarefas aparecem no Outlook.', 'If you use Outlook: "My Day" and the tasks show up in Outlook.'),
       feel: B('Listas partilhadas só entre contas pessoais, ou dentro da mesma organização.', 'Shared lists only between personal accounts, or within the same organisation.'),
@@ -144,9 +156,13 @@ const PrTools = (function () {
         [B('App grátis (Microsoft Store)', 'Free app (Microsoft Store)'), 'mstodo_store'],
         [B('"O meu dia" para o foco diário; integração com o Outlook', '"My Day" for daily focus; Outlook integration'), 'mstodo_help'],
         [B('Partilhar listas entre contas pessoais, ou dentro da mesma organização; só listas criadas por ti', 'Share lists between personal accounts, or within one organisation; only lists you created'), 'mstodo_share'],
+        [B('Data, lembrete a uma hora escolhida e repetição (diária, dias úteis, semanal, mensal, anual, personalizada)', 'Due date, a reminder at a chosen time and repeats (daily, weekdays, weekly, monthly, yearly, custom)'), 'mstodo_due'],
+        [B('Datas e repetições escritas no título ("tomorrow 5pm"): só na app Windows 2.66+ (em inglês) e na de iOS', 'Dates and repeats typed in the title ("tomorrow 5pm"): only in the Windows app 2.66+ (English) and the iOS app'), 'mstodo_nlp'],
+        [B('Passos dentro de uma tarefa; etiquetas com #', 'Steps inside a task; # tags'), 'mstodo_steps'],
+        [B('Android: atalhos no ecrã principal para "Adicionar tarefa" e "Pesquisar"', 'Android: home-screen shortcuts to "Add a new task" and "Search"'), 'mstodo_short'],
       ],
       paid: [],
-      req: { act: { quick: C(), nlp: C(), remind: C(), search: C(), recur: C(), filters: C(), sub: C() } } },
+      req: { act: { quick: Y('mstodo_short', B('atalho no Android', 'Android shortcut')), nlp: Y('mstodo_nlp', B('só Windows (inglês) e iOS', 'Windows (English) and iOS only')), remind: Y('mstodo_due'), search: Y('mstodo_short'), recur: Y('mstodo_due'), filters: C(), sub: Y('mstodo_steps', B('“passos”', '“steps”')) } } },
 
     /* ── Informação (e estrutura) ── */
     { id: 'notion', name: 'Notion', kind: 'app', roles: ['info', 'str'], ref: true,

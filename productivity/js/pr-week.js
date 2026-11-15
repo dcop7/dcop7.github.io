@@ -167,7 +167,7 @@ const PrWeek = (function () {
         const rows = W.recs('notes').filter(r => !(r.team || []).length);
         const hubRecs = W.recs('teams');
         const hasDec = !!W.schemaOf('decisions');
-        return `<p class="rv-what">${esc(tx('Vista "Sem equipa". Um destino por linha: Guardar (dar-lhe equipa), Agir (vira tarefa), Deitar fora, Graduar (para uma base).', '"No team" view. One fate per row: Keep (give it a team), Act (it becomes a task), Toss, Graduate (into a database).'))}</p>
+        return `<p class="rv-what">${esc(tx(`Vista "Sem ${L(W.hub().oneLower)}". Um destino por linha: Guardar (dar-lhe ${L(W.hub().oneLower)}), Agir (vira tarefa), Deitar fora, Graduar (para uma base).`, `"No ${L(W.hub().oneLower)}" view. One fate per row: Keep (give it an area or team), Act (it becomes a task), Toss, Graduate (into a database).`))}</p>
           <ul class="rv-list rv-notes">${rows.map(r => { const h = hintOf(r.id); return `<li data-row="${r.id}"><div>${esc(W.title('notes', r))}<small>${esc(Pr.relDay(r.cr, n))}</small>${S.hintShown[r.id] && h ? `<p class="rv-hint">${esc(L(h[2]))}</p>` : ''}</div>
             <span class="rv-acts rv-fates"><span class="rv-keep"><select data-keep-sel="${r.id}" aria-label="${esc(L(W.hub().prop))}"><option value="">${esc(L(W.hub().prop))}…</option>${hubRecs.map(x => `<option value="${x.id}" ${h && h[0] === 'keep' && h[1] === x.id && S.hintShown[r.id] ? 'selected' : ''}>${esc(W.title('teams', x))}</option>`).join('')}</select><button type="button" class="btn btn-sm" data-keep="${r.id}">${esc(tx('Guardar', 'Keep'))}</button></span>
               <button type="button" class="btn btn-sm" data-act-n="${r.id}">${esc(tx('Agir', 'Act'))}</button><button type="button" class="btn btn-sm" data-toss="${r.id}">${esc(tx('Deitar fora', 'Toss'))}</button>
@@ -312,7 +312,7 @@ const PrWeek = (function () {
     el.innerHTML = `<div class="pr-wrap pr-page" style="max-width:1060px">
       ${crumbs([{ label: tx('Aplicar', 'Apply'), href: '#aplicar' }, { label: tx('Revisão semanal', 'Weekly review') }])}
       <header class="pr-head"><p class="pr-kicker">${Pr.kindTag('act')} ${Pr.kindTag('info')} ${Pr.kindTag('str')}</p><h1>${esc(tx('Uma reunião contigo, com agenda', 'One meeting with yourself, with an agenda'))}</h1>
-        <p class="lede">${esc(tx('Sete passos sobre o estado atual do mundo de exemplo. O que fizeres aqui fica: as notas triadas aparecem nas equipas do playground, as tarefas mudam nos filtros.', 'Seven steps over the current state of the sample world. What you do here sticks: triaged notes show up on the playground teams, tasks change in the filters.'))}</p></header>
+        <p class="lede">${esc(tx(`Sete passos sobre o estado atual do mundo de exemplo. O que fizeres aqui fica: as notas triadas aparecem em ${L(W.hub().db)} no playground, as tarefas mudam nos filtros.`, `Seven steps over the current state of the sample world. What you do here sticks: triaged notes show up under ${L(W.hub().db)} in the playground, tasks change in the filters.`))}</p></header>
       ${PrApp.worldBar('rev')}
       <div class="pr-sheet wk-card" data-rvhost></div>${Pr.localNote()}</div>`;
     review($('[data-rvhost]', el), 'rev', { onDone: log => { Pr.toast(tx(`Revisão feita: ${log.length} alterações.`, `Review done: ${log.length} changes.`)); PrNav.go('experimentar/notion/teams/all'); } });
@@ -418,7 +418,7 @@ const PrWeek = (function () {
     return tx('Vago: falta o quê, quem ou o projeto. Um título tem de se perceber sozinho daqui a três meses.', 'Vague: it lacks the what, who or the project. A title must stand alone in three months.');
   };
   function captureLabel(e) { return { task: tx('Capturar na lista', 'Capture to the list'), note: tx('Capturar nas Notas', 'Capture to Notes'), today: tx('Pôr nos Big 3 de hoje', "Put it in today's Big 3"), meeting: tx('Escrever na página da reunião', 'Write on the meeting page'), project: e.existing ? tx('Mudar o projeto para Next', 'Move the project to Next') : tx('Criar a linha em Projetos', 'Create the Projects row') }[e.dest]; }
-  function captureToast(e) { return { task: tx('Na lista de tarefas.', 'On the task list.'), note: tx('Nas Notas, sem equipa — triagem na sexta.', 'In Notes, no team — triage on Friday.'), today: tx('Nos Big 3 de hoje.', "In today's Big 3."), meeting: tx('Entrada datada na página da reunião.', 'Dated entry on the meeting page.'), project: tx('Projeto atualizado.', 'Project updated.') }[e.dest]; }
+  function captureToast(e) { return { task: tx('Na lista de tarefas.', 'On the task list.'), note: tx(`Nas Notas, sem ${L(W.hub().oneLower)} — triagem na sexta.`, `In Notes, no ${L(W.hub().oneLower)} — triage on Friday.`), today: tx('Nos Big 3 de hoje.', "In today's Big 3."), meeting: tx('Entrada datada na página da reunião.', 'Dated entry on the meeting page.'), project: tx('Projeto atualizado.', 'Project updated.') }[e.dest]; }
   function previewHtml(e, today) {
     if (e.dest === 'task') { const box = W.box(e.box); const line = `${L(e.titles[e.good])} ${L(box.l)}${e.due != null ? ' ' + Pr.fmtDay(wk().start + e.due).split(' ')[0] : ''}`;
       return `<p class="wk-prev"><span class="pr-kicker">quick-add</span><code>${esc(line)}</code></p>`; }
@@ -447,8 +447,8 @@ const PrWeek = (function () {
       <ul class="wk-stats"><li><b>${first}<small>/${caught}</small></b>${esc(tx('chegadas arrumadas à primeira (sítio e título)', 'arrivals filed right first time (place and title)'))}</li><li><b>${done}</b>${esc(tx('itens dos Big 3 concluídos', 'Big 3 items completed'))}</li><li><b>${(s.log || []).length}</b>${esc(tx('alterações na revisão', 'changes at the review'))}</li></ul>
       ${(s.log || []).length ? `<details><summary>${esc(tx('Registo da revisão', 'Review log'))}</summary><ul class="wk-log">${s.log.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>` : ''}
       <p class="pr-kicker" style="margin-top:1.2rem">${esc(tx('Vai ver', 'Go and see'))}</p>
-      <div class="pr-row"><a class="btn" href="#experimentar/notion/teams/all">${esc(tx('As equipas no playground (notas ligadas, rollups)', 'Teams in the playground (linked notes, rollups)'))}</a>
-        <a class="btn" href="#experimentar/notion/notes/byteam">${esc(tx('Notas por equipa', 'Notes by team'))}</a><a class="btn" href="#experimentar/notion">${esc(tx('A base opcional Decisões', 'The optional Decisions database'))}</a>
+      <div class="pr-row"><a class="btn" href="#experimentar/notion/teams/all">${esc(tx(`${L(W.hub().db)} no playground (notas ligadas, rollups)`, `${L(W.hub().db)} in the playground (linked notes, rollups)`))}</a>
+        <a class="btn" href="#experimentar/notion/notes/byteam">${esc(tx(`Notas por ${L(W.hub().oneLower)}`, `Notes by ${L(W.hub().oneLower)}`))}</a><a class="btn" href="#experimentar/notion">${esc(tx('A base opcional Decisões', 'The optional Decisions database'))}</a>
         <a class="btn" href="#experimentar/captura">${esc(tx('Os filtros de tarefas', 'The task filters'))}</a></div>
       <p class="pr-sub" style="margin-top:1rem">${esc(tx('Queres repetir? "Repor esta experiência" (acima) devolve o mundo ao estado de antes da semana — o resto fica.', 'Want to go again? "Reset this experiment" (above) takes the world back to before the week — the rest stays.'))}</p></div>`;
   }

@@ -205,8 +205,8 @@ const PrSeed = (function () {
   };
   const W = {
     id: 'work',
-    label: B('Trabalho — liderar várias equipas', 'Work — leading several teams'),
-    short: B('Trabalho', 'Work'),
+    label: B('Trabalho — liderar várias equipas (avançado)', 'Work — leading several teams (advanced)'),
+    short: B('Trabalho em equipa', 'Team work'),
     boxes: [
       { id: 'wp', l: B('#Trabalho-Projetos', '#Work-Projects'), d: B('Compromissos e verificações — nome do projeto no fim do título', 'Commitments and checks — project name at the end of the title') },
       { id: 'wg', l: B('#Trabalho-Geral', '#Work-General'), d: B('Lembretes leves, sem projeto', 'Light reminders, no project') },
@@ -325,8 +325,8 @@ const PrSeed = (function () {
   };
   const S = {
     id: 'study',
-    label: B('Estudos e vida pessoal', 'Studies and personal life'),
-    short: B('Estudos', 'Studies'),
+    label: B('Dia a dia — estudos, casa, saúde e dinheiro', 'Everyday — studies, home, health and money'),
+    short: B('Dia a dia', 'Everyday'),
     boxes: [
       { id: 'wp', l: B('#Projetos', '#Projects'), d: B('Compromissos de um projeto — nome do projeto no fim do título', 'Project commitments — project name at the end of the title') },
       { id: 'wg', l: B('#Geral', '#General'), d: B('Lembretes leves', 'Light reminders') },

@@ -39,7 +39,7 @@ const PrExplore = (function () {
     cal: { x: 330, y: 390, l: B('Calendário', 'Calendar'), c: 'cal', role: 'cal' },
     rev: { x: 590, y: 220, l: B('Revisão semanal', 'Weekly review'), c: 'rev' },
     done: { x: 850, y: 50, l: B('Feito ✓', 'Done ✓'), c: 'end' },
-    kept: { x: 850, y: 118, l: B('Notas, com equipa', 'Notes, with a team'), c: 'end' },
+    kept: { x: 850, y: 118, l: B('Notas, com área', 'Notes, with an area'), c: 'end' },
     filed: { x: 850, y: 186, l: B('A página a que pertence', 'The page it belongs to'), c: 'end' },
     rec: { x: 850, y: 254, l: B('Um registo estruturado', 'A structured record'), c: 'end' },
     out: { x: 850, y: 322, l: B('Arquivo ou lixo', 'Archive or bin'), c: 'end' },
@@ -48,15 +48,15 @@ const PrExplore = (function () {
   const ITEMS = [
     { id: 'promise', s: B('Prometes enviar os diapositivos ao Rui até amanhã', 'You promise to send Rui the slides by tomorrow'), path: ['in', 'act', 'done'],
       steps: [B('Quick-add em segundos: "Enviar os diapositivos ao Rui amanhã".', 'Quick-add in seconds: "Send the slides to Rui tomorrow".'), B('Aparece no filtro Hoje amanhã; fazes e marcas. Nunca passa pela revisão.', 'It shows in the Today filter tomorrow; you do it and tick it. It never needs the review.')] },
-    { id: 'fact', s: B('Ouves que os portáteis novos chegam com 32 GB', 'You hear the new laptops come with 32 GB'), path: ['in', 'info', 'rev', 'kept'],
-      steps: [B('Uma linha nas Notas, sem equipa — capturar não exige decidir.', 'One line in Notes, no team — capturing does not require deciding.'), B('Sexta: na vista "Sem equipa" recebe um destino.', 'Friday: in the "No team" view it gets a fate.'), B('Guardar: ganha equipa e sai da fila. Volta a aparecer uma vez, 30 dias depois.', 'Keep: it gets a team and leaves the queue. It comes up once more, 30 days later.')] },
+    { id: 'fact', s: B('Ouves que a biblioteca abre até à meia-noite em época de exames', 'You hear the library stays open until midnight during exams'), path: ['in', 'info', 'rev', 'kept'],
+      steps: [B('Uma linha nas Notas, sem área — capturar não exige decidir.', 'One line in Notes, no area — capturing does not require deciding.'), B('Sexta: na fila da triagem ("Sem área") recebe um destino.', 'Friday: in the triage queue ("No area") it gets a fate.'), B('Guardar: ganha equipa e sai da fila. Volta a aparecer uma vez, 30 dias depois.', 'Keep: it gets a team and leaves the queue. It comes up once more, 30 days later.')] },
     { id: 'decision', s: B('A Ana diz que está decidido: PostgreSQL gerido', 'Ana says it is decided: managed PostgreSQL'), path: ['in', 'info', 'rev', 'rec'],
       steps: [B('"Decisão: …" nas Notas.', '"Decision: …" in Notes.'), B('Na revisão, é a terceira nota de decisão.', 'At the review, it is the third decision note.'), B('Graduar: a regra de três pede uma base Decisões — vira um registo com Estado e Confiança.', 'Graduate: the rule of three calls for a Decisions database — it becomes a record with Status and Confidence.')] },
-    { id: 'meeting', s: B('Na reunião semanal adia-se o congelamento', 'At the weekly sync the freeze is pushed back'), path: ['in', 'meet', 'filed'],
-      steps: [B('Dito numa reunião marcada: entrada datada na página da reunião.', 'Said in a scheduled meeting: a dated entry on the meeting page.'), B('Já está onde pertence — não precisa de triagem.', 'It is already where it belongs — no triage needed.')] },
-    { id: 'focus', s: B('Hoje tem mesmo de sair a resposta à auditoria', 'The audit reply really must go out today'), path: ['in', 'today', 'done'],
+    { id: 'meeting', s: B('Na aula, o professor diz que o capítulo 7 também sai no exame', 'In class, the lecturer says chapter 7 is also in the exam'), path: ['in', 'meet', 'filed'],
+      steps: [B('Dito numa aula ou reunião marcada: entrada datada na página dessa aula.', 'Said in a scheduled class or meeting: a dated entry on that class\'s page.'), B('Já está onde pertence — não precisa de triagem.', 'It is already where it belongs — no triage needed.')] },
+    { id: 'focus', s: B('Hoje tem mesmo de sair a candidatura à Clínica Sol', 'The Sol Clinic application really must go out today'), path: ['in', 'today', 'done'],
       steps: [B('A tarefa já existe: escreves-a nos Big 3 de manhã.', 'The task already exists: you write it in the morning Big 3.'), B('À noite: ✓ no caderno e ✓ na lista. A página morre.', 'In the evening: ✓ in the notebook and ✓ on the list. The page dies.')] },
-    { id: 'project', s: B('A direção pede para reduzir 20% o custo da cloud até junho', 'Leadership asks to cut cloud cost 20% by June'), path: ['in', 'str', 'rev', 'next'],
+    { id: 'project', s: B('Decides mudar de casa até março', 'You decide to move house by March'), path: ['in', 'str', 'rev', 'next'],
       steps: [B('Uma linha em Projetos (Next), com o modelo de página.', 'A Projects row (Next), with the page template.'), B('Na revisão: este projeto tem uma tarefa aberta?', 'At the review: does this project have an open task?'), B('Se não: a próxima ação vai para a lista, com o nome do projeto no fim.', 'If not: the next action goes on the list, with the project name at the end.')] },
     { id: 'appt', s: B('A clínica marca consulta para terça às 15h', 'The clinic books you in for Tuesday at 3pm'), path: ['in', 'cal', 'done'],
       steps: [B('Tem hora: calendário. Não é uma tarefa.', 'It has a time: calendar. It is not a task.'), B('Acontece. Se houver algo para preparar, isso sim é uma tarefa.', 'It happens. If there is something to prepare, that is a task.')] },
@@ -151,7 +151,7 @@ const PrExplore = (function () {
         tx('Desenhado ao vivo a partir do mundo de exemplo. Se acrescentares uma relação ou um rollup no playground, aparece aqui.', 'Drawn live from the sample world. Add a relation or a rollup in the playground and it shows up here.'))}
       ${PrApp.worldBar('nb')}
       <div class="ex-rel-intro">
-        <p>${esc(tx('Cada caixa é uma base de dados. Cada seta é uma relação: uma coluna numa base que aponta para linhas de outra — como a coluna Equipa de uma nota. Equipas está no centro porque é a base central: os nomes das equipas só existem lá, e as outras apontam para ela em vez de repetirem a lista.', 'Each box is a database. Each arrow is a relation: a column in one database that points to rows of another — like a note’s Team column. Teams sits in the middle because it is the hub: team names only exist there, and the others point to it instead of repeating the list.'))}</p>
+        <p>${esc(tx(`Cada caixa é uma base de dados. Cada seta é uma relação: uma coluna numa base que aponta para linhas de outra — como a coluna ${L(W.hub().prop)} de uma nota. ${L(W.hub().db)} está no centro porque é a base central: os nomes só existem lá, e as outras apontam para ela em vez de repetirem a lista.`, `Each box is a database. Each arrow is a relation: a column in one database that points to rows of another — like a note’s ${L(W.hub().prop)} column. ${L(W.hub().db)} sits in the middle because it is the hub: the names only exist there, and the others point to it instead of repeating the list.`))}</p>
         <ul class="nb-legend"><li><span class="lg two"></span>${esc(tx('Duas vias: a ligação vê-se dos dois lados (↗ ida, ↩ volta)', 'Two-way: the link shows on both sides (↗ forward, ↩ back)'))}</li>
           <li><span class="lg one"></span>${esc(tx('Uma via: só se vê de onde parte', 'One-way: only visible where it starts'))}</li>
           <li><b>Σ</b> ${esc(tx('Rollup: uma conta sobre o que está do outro lado', 'Rollup: a calculation over what is on the other side'))}</li></ul>

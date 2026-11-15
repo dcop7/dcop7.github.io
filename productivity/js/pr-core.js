@@ -68,6 +68,13 @@ const Pr = (function () {
              place: { pt: 'Bases de dados', en: 'Databases' } },
   };
   const kindTag = k => `<span class="k-tag ${KINDS[k].cls}">${esc(L(KINDS[k].name))}</span>`;
+  /* temas do percurso 2 (o lado humano): não são lugares do sistema, por isso não usam as quatro espécies */
+  const TOPICS = {
+    hab: { pt: 'Hábitos', en: 'Habits' }, proc: { pt: 'Adiar', en: 'Procrastination' }, foc: { pt: 'Foco e energia', en: 'Focus & energy' },
+    dec: { pt: 'Decisões', en: 'Decisions' }, mot: { pt: 'Motivação', en: 'Motivation' }, eff: { pt: 'Eficácia pessoal', en: 'Personal effectiveness' },
+    rev: { pt: 'Reflexão', en: 'Reflection' },
+  };
+  const topicTag = t => TOPICS[t] ? `<span class="k-tag t-topic">${esc(L(TOPICS[t]))}</span>` : '';
 
   /* rótulos de origem: conceito estabelecido / escolha deste sistema / a verificar */
   function srcTag(kind) {
@@ -154,6 +161,6 @@ const Pr = (function () {
   const routes = {};
   const route = (prefix, render) => { routes[prefix] = render; };
 
-  return { routes, route, esc, L, t, tx, lang, $, $$, uid, clone, BASE, dateOf, fmtDay, relDay, weekday, KINDS, kindTag, srcTag, ICON, localNote,
+  return { routes, route, esc, L, t, tx, lang, $, $$, uid, clone, BASE, dateOf, fmtDay, relDay, weekday, KINDS, kindTag, TOPICS, topicTag, srcTag, ICON, localNote,
     motionOk, pop, stagger, fly, toast, store, crumbs };
 })();

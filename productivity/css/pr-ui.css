@@ -276,3 +276,7 @@ main:focus { outline: none; }
 .pr-goal li a { display: block; padding: .45rem 0; min-height: 24px; font-size: .9rem; font-weight: 500; color: var(--pr-ink); text-decoration: none; }
 .pr-goal li a:hover { text-decoration: underline; }
 .pr-goal li a:focus-visible { outline: 2px solid var(--pr-focus, currentColor); outline-offset: 2px; border-radius: 3px; }
+
+/* temas do percurso 2: neutros, com anel em vez de quadrado — não se confundem com as quatro espécies */
+.k-tag.t-topic { color: var(--pr-ink-2); background: var(--pr-paper-2); }
+.k-tag.t-topic::before { border-radius: 50%; background: transparent; border: 1.5px solid currentColor; width: .5em; height: .5em; box-sizing: border-box; }

@@ -34,13 +34,15 @@ const PrNotion = (function () {
 
   /* ── missões guiadas (estado à parte do mundo) ── */
   const MISSIONS = [
-    { id: 'view', t: { pt: 'Muda de vista', en: 'Switch views' }, d: { pt: 'Nas Notas, abre a vista "Sem equipa": é a fila da triagem de sexta.', en: 'In Notes, open the "No team" view: it is Friday\'s triage queue.' }, go: ['notes', 'noteam'] },
+    { id: 'view', t: { pt: 'Muda de vista', en: 'Switch views' }, d: { pt: 'Nas Notas, abre a vista "Sem {one}": é a fila da triagem de sexta.', en: 'In Notes, open the "No {one}" view: it is Friday\'s triage queue.' }, go: ['notes', 'noteam'] },
     { id: 'filter', t: { pt: 'Constrói um filtro', en: 'Build a filter' }, d: { pt: 'Em qualquer vista, acrescenta um filtro e lê a frase que o explica.', en: 'In any view, add a filter and read the sentence that explains it.' } },
-    { id: 'rel', t: { pt: 'Segue uma relação', en: 'Follow a relation' }, d: { pt: 'Abre uma equipa e toca numa das notas ligadas — vais parar à outra base.', en: 'Open a team and tap one of its linked notes — you land in the other database.' }, go: ['teams', 'all'] },
-    { id: 'rollup', t: { pt: 'Cria um rollup', en: 'Create a rollup' }, d: { pt: 'Em Equipas, acrescenta uma propriedade Rollup (ex.: contar Projetos).', en: 'In Teams, add a Rollup property (e.g. count Projects).' }, go: ['teams', 'all'] },
+    { id: 'rel', t: { pt: 'Segue uma relação', en: 'Follow a relation' }, d: { pt: 'Em {db}, abre uma linha e toca numa das notas ligadas — vais parar à outra base.', en: 'In {db}, open a row and tap one of its linked notes — you land in the other database.' }, go: ['teams', 'all'] },
+    { id: 'rollup', t: { pt: 'Cria um rollup', en: 'Create a rollup' }, d: { pt: 'Em {db}, acrescenta uma propriedade Rollup (ex.: contar Projetos).', en: 'In {db}, add a Rollup property (e.g. count Projects).' }, go: ['teams', 'all'] },
     { id: 'tpl', t: { pt: 'Usa um modelo', en: 'Use a template' }, d: { pt: 'Em Projetos, cria uma linha a partir do "Modelo de projeto".', en: 'In Projects, create a row from the "Project template".' }, go: ['projects', 'active'] },
     { id: 'clock', t: { pt: 'Avança o relógio', en: 'Move the clock' }, d: { pt: 'Avança uma semana e vê notas novas entrarem na vista "Revisão" (30–37 dias).', en: 'Move forward a week and watch new notes enter the "Review" view (30–37 days).' }, go: ['notes', 'review'] },
   ];
+  /* {one}/{db}: o nome da base central do cenário aberto (área/Áreas ou equipa/Equipas) */
+  const hubText = t => t.split('{one}').join(L(W.hub().oneLower)).split('{db}').join(L(W.hub().db));
   const MKEY = 'pr-nb-missions';
   const missionsDone = () => Pr.store.get(MKEY, {});
   function done(id) {
@@ -98,14 +100,14 @@ const PrNotion = (function () {
               [tx('Linha = página', 'Row = page'), tx('Cada linha abre uma página completa: toca no título.', 'Every row opens a full page: tap its title.')],
               [tx('Propriedade', 'Property'), tx('Uma coluna com tipo: data, seleção, caixa…', 'A typed column: date, select, checkbox…')],
               [tx('Vista', 'View'), tx('Filtro + ordenação + formato. São os separadores por cima da tabela; não mudam os dados.', 'Filter + sort + layout. They are the tabs above the table; they do not change the data.')],
-              [tx('Relação ↗', 'Relation ↗'), tx('Uma coluna que liga a linhas de outra base (uma nota à sua equipa).', 'A column that links to rows of another database (a note to its team).')],
-              [tx('Rollup Σ', 'Rollup Σ'), tx('Uma conta sobre as linhas ligadas (quantas notas tem a equipa).', 'A calculation over the linked rows (how many notes the team has).')]]
+              [tx('Relação ↗', 'Relation ↗'), hubText(tx('Uma coluna que liga a linhas de outra base (uma nota à sua {one}).', 'A column that links to rows of another database (a note to its {one}).'))],
+              [tx('Rollup Σ', 'Rollup Σ'), hubText(tx('Uma conta sobre as linhas ligadas (quantas notas tem cada {one}).', 'A calculation over the linked rows (how many notes each {one} has).'))]]
               .map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>
             <a href="#aprender/bases">${esc(tx('Explicação completa: Bases de dados, peça a peça', 'Full explanation: Databases, piece by piece'))} ${ICON.arrow}</a>
           </details></div>
         <details class="nb-missions" ${(mOpen != null ? mOpen : first) ? 'open' : ''}>
           <summary><b>${esc(tx('Missões', 'Missions'))}</b> <span class="pr-mono">${nDone}/${MISSIONS.length}</span></summary>
-          <ol>${MISSIONS.map(x => `<li class="${m[x.id] ? 'ok' : ''} ${x.id === curM ? 'cur' : ''}"><span class="nb-mk">${m[x.id] ? ICON.check : ''}</span><div><b>${esc(L(x.t))}</b><p>${esc(L(x.d))}</p>
+          <ol>${MISSIONS.map(x => `<li class="${m[x.id] ? 'ok' : ''} ${x.id === curM ? 'cur' : ''}"><span class="nb-mk">${m[x.id] ? ICON.check : ''}</span><div><b>${esc(L(x.t))}</b><p>${esc(hubText(L(x.d)))}</p>
             ${x.go && !m[x.id] ? `<button type="button" class="btn btn-sm btn-ghost" data-act="mgo" data-db="${x.go[0]}" data-v="${x.go[1]}">${esc(tx('Ir', 'Go'))} ${ICON.arrow}</button>` : ''}</div></li>`).join('')}</ol>
           ${nDone ? `<button type="button" class="btn btn-sm btn-ghost" data-act="mreset">${esc(tx('Recomeçar as missões', 'Restart missions'))}</button>` : ''}
         </details>
@@ -486,30 +488,47 @@ const PrNotion = (function () {
   /* ════════════════ mapa das relações ════════════════ */
   function schemaSvg(opts) {
     const st = W.state(), dbs = st.dbs, S = st.schema;
-    const Wd = 900, Ht = 560, cx = 450, cy = 270;
+    /* em ecrã de telemóvel, um desenho em retrato: cabe na largura sem deslizar e o texto fica legível */
+    const compact = opts && opts.compact != null ? opts.compact : matchMedia('(max-width: 600px)').matches;
+    const Wd = compact ? 420 : 900, cx = Wd / 2;
+    let Ht = 560;
     const ORDER = ['notes', 'projects', 'decisions', 'meetings', 'persons', 'oneonones'];
     const others = dbs.filter(d => d !== 'teams').sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
-    const pos = { teams: [cx, cy] };
-    others.forEach((d, i) => { const a = -Math.PI / 2 + (i / others.length) * Math.PI * 2; pos[d] = [cx + Math.cos(a) * 330, cy + Math.sin(a) * 205]; });
-    const bw = 168, bh = d => 40 + S[d].props.filter(p => p.type === 'rel' || p.type === 'rollup').length * 15;
+    const bw = compact ? 196 : 168, lh = compact ? 17 : 15, bh = d => 40 + S[d].props.filter(p => p.type === 'rel' || p.type === 'rollup').length * lh;
+    const pos = {};
+    if (!compact) {
+      pos.teams = [cx, 270];
+      others.forEach((d, i) => { const a = -Math.PI / 2 + (i / others.length) * Math.PI * 2; pos[d] = [cx + Math.cos(a) * 330, 270 + Math.sin(a) * 205]; });
+    } else {
+      /* grelha em retrato: duas colunas acima da base central, duas abaixo — as caixas nunca se tapam */
+      const UP = ['notes', 'projects', 'decisions'], up = others.filter(d => UP.includes(d)), down = others.filter(d => !UP.includes(d))
+        .sort((a, b) => ['persons', 'meetings', 'oneonones'].indexOf(a) - ['persons', 'meetings', 'oneonones'].indexOf(b));
+      const pairs = l => { const r = []; for (let i = 0; i < l.length; i += 2) r.push(l.slice(i, i + 2)); return r; };
+      const rows = [...pairs(up), ['teams'], ...pairs(down)];
+      let y = 14;
+      rows.forEach(r => { const h = Math.max(...r.map(bh));
+        r.forEach((d, j) => { pos[d] = [r.length === 1 ? cx : j ? Wd - 6 - bw / 2 : 6 + bw / 2, y + h / 2]; });
+        y += h + 70; });
+      Ht = y - 70 + 14;
+    }
     const edges = [];
     dbs.forEach(d => S[d].props.forEach(p => { if (p.type === 'rel' && !p.back && S[p.rel.db]) edges.push({ from: d, to: p.rel.db, p, two: !!p.rel.two }); }));
     const sel = opts && opts.sel;
     const clip = (a, b, d) => { const [x1, y1] = a, [x2, y2] = b; const hw = bw / 2, hh = bh(d) / 2; const dx = x2 - x1, dy = y2 - y1;
       const t = Math.min(Math.abs(hw / (dx || 1e-6)), Math.abs(hh / (dy || 1e-6))); return [x1 + dx * t, y1 + dy * t]; };
-    return `<svg class="nb-schema" viewBox="0 0 ${Wd} ${Ht}" role="img" aria-label="${esc(tx('Mapa das bases de dados e relações', 'Map of databases and relations'))}">
+    return `<svg class="nb-schema ${compact ? 'compact' : ''}" viewBox="0 0 ${Wd} ${Ht}" role="img" aria-label="${esc(tx('Mapa das bases de dados e relações', 'Map of databases and relations'))}">
       <defs><marker id="nbm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
       ${edges.map((e, i) => { const a = clip(pos[e.from], pos[e.to], e.from), b = clip(pos[e.to], pos[e.from], e.to);
         const self = e.from === e.to; if (self) return '';
         const on = sel && (sel === e.from || sel === e.to);
-        const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + (i % 2 ? 8 : -6);
+        const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + (i % 2 ? 8 : -6), vert = compact && Math.abs(a[0] - b[0]) < 1;
         return `<g class="edge ${e.two ? 'two' : 'one'} ${on ? 'on' : ''} ${sel && !on ? 'dim' : ''}"><path d="M${a[0]} ${a[1]} L${b[0]} ${b[1]}" marker-end="url(#nbm)" ${e.two ? 'marker-start="url(#nbm)"' : ''}/>
-          <text x="${mx}" y="${my}" text-anchor="middle">${esc(L(e.p.name))}</text></g>`; }).join('')}
+          <text x="${vert ? mx + 6 : mx}" y="${my}" text-anchor="${vert ? 'start' : 'middle'}">${esc(L(e.p.name))}</text></g>`; }).join('')}
       ${dbs.map(d => { const [x, y] = pos[d], h = bh(d), rp = S[d].props.filter(p => p.type === 'rel' || p.type === 'rollup');
         return `<a href="#experimentar/notion/${d}" data-act="db" data-db="${d}" aria-label="${esc(L(S[d].name))}" class="node ${d === 'teams' ? 'hub' : ''} ${sel === d ? 'on' : ''} ${sel && sel !== d && !edges.some(e => (e.from === sel && e.to === d) || (e.to === sel && e.from === d)) ? 'dim' : ''}">
           <rect x="${x - bw / 2}" y="${y - h / 2}" width="${bw}" height="${h}" rx="7"/>
           <text x="${x}" y="${y - h / 2 + 22}" text-anchor="middle" class="nm">${S[d].icon} ${esc(L(S[d].name))} · ${W.recs(d).length}</text>
-          ${rp.map((p, i) => `<text x="${x - bw / 2 + 10}" y="${y - h / 2 + 40 + i * 15}" class="pp ${p.type}">${p.type === 'rollup' ? 'Σ' : p.back ? '↩' : '↗'} ${esc(L(p.name).slice(0, 20))}</text>`).join('')}</a>`; }).join('')}
+          ${rp.map((p, i) => `<text x="${x - bw / 2 + 10}" y="${y - h / 2 + 40 + i * lh}" class="pp ${p.type}">${p.type === 'rollup' ? 'Σ' : p.back ? '↩' : '↗'} ${esc(L(p.name).slice(0, compact ? 17 : 20))}</text>`).join('')}</a>`; }).join('')}
     </svg>`;
   }
   function schemaPane() {

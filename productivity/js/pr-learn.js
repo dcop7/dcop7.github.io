@@ -16,7 +16,7 @@ const PrLearn = (function () {
   const trackOf = b => (b && b.track) || 'org';
   const tracks = () => PrLearnContent.TRACKS || [{ id: 'org' }];
   const trackCh = t => CH.filter(c => trackOf(BLOCKS.find(b => b.id === c.block)) === t);
-  const kinds = c => (c.kinds || []).map(kindTag).join('');
+  const kinds = c => (c.kinds || []).map(kindTag).join('') + (c.topics || []).map(Pr.topicTag).join('');
   function indexHtml() {
     const multi = tracks().length > 1;
     return tracks().map(t => { let n = 0;
@@ -44,7 +44,7 @@ const PrLearn = (function () {
       </aside>
       <article class="lr-article">
         ${crumbs([{ label: tx('Aprender', 'Learn'), href: '#aprender' }].concat(track.name && tracks().length > 1 ? [{ label: L(track.name), href: '#aprender' }] : []).concat([{ label: L(blk.name) }, { label: L(c.title) }]))}
-        <header class="pr-head"><p class="pr-kicker">${String(i + 1).padStart(2, '0')} · ${c.min} min ${(c.kinds || []).map(kindTag).join(' ')}</p>
+        <header class="pr-head"><p class="pr-kicker">${String(i + 1).padStart(2, '0')} · ${c.min} min ${(c.kinds || []).map(kindTag).join(' ')}${(c.topics || []).map(Pr.topicTag).join(' ')}</p>
           <h1>${esc(L(c.title))}</h1><p class="lede">${esc(L(c.lede))}</p></header>
         ${legend(L(c.body))}
         <div class="lr-body">${L(c.body)}</div>
@@ -79,6 +79,7 @@ const PrLearn = (function () {
 
   /* 0 · escolher o cenário do mundo de exemplo, dentro do capítulo */
   DEMOS.scenario = el => { el.innerHTML = PrApp.worldBar(null); el.classList.add('lr-bare'); };
+  const anEn = w => (/^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;
   const demoHead = (t, sub) => `<div class="lr-demo-h"><span class="lr-demo-k">${esc(tx('Demonstração', 'Demo'))}</span><b>${esc(t)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}</div>`;
 
   /* 1 · as quatro espécies, com exemplos do cenário atual */
@@ -92,10 +93,10 @@ const PrLearn = (function () {
 
   /* 2 · triagem rápida em quatro espécies */
   const SORT_ITEMS = [
-    { s: B('A Marta pede-te para rever o plano de piquete até sexta', 'Marta asks you to review the on-call plan by Friday'), k: 'act', why: B('Verbo + prazo: tarefa com data.', 'Verb + deadline: a dated task.') },
-    { s: B('Ouves que o fornecedor de email vai mudar de preços em janeiro', 'You hear the email vendor changes prices in January'), k: 'info', why: B('Um facto para encontrar depois: uma linha nas Notas.', 'A fact to find later: one line in Notes.') },
-    { s: B('Decides que hoje o foco é fechar o runbook', 'You decide today\'s focus is closing the runbook'), k: 'today', why: B('A tarefa já existe; isto é foco — um dos Big 3.', 'The task already exists; this is focus — one of the Big 3.') },
-    { s: B('Uma equipa nova, "Delta", passa a reportar-te', 'A new team, "Delta", now reports to you'), k: 'str', why: B('Uma linha nova na base central (Equipas). Os nomes das equipas só existem lá.', 'A new row in the hub database (Teams). Team names only live there.') },
+    { s: B('A tua chefe pede-te o resumo da reunião com o cliente até sexta', 'Your manager asks for the client-meeting summary by Friday'), k: 'act', why: B('Verbo + prazo: tarefa com data.', 'Verb + deadline: a dated task.') },
+    { s: B('O ginásio avisa que a mensalidade sobe em janeiro', 'The gym says the monthly fee goes up in January'), k: 'info', why: B('Um facto para encontrar depois: uma linha nas Notas, na área Finanças ou Saúde.', 'A fact to find later: one line in Notes, in the Money or Health area.') },
+    { s: B('Decides que hoje o foco é acabar a carta de motivação', "You decide today's focus is finishing the cover letter"), k: 'today', why: B('A tarefa já existe; isto é foco — um dos Big 3.', 'The task already exists; this is focus — one of the Big 3.') },
+    { s: B('Decides procurar emprego a sério: vai haver candidaturas, entrevistas e contactos', 'You decide to job-hunt properly: there will be applications, interviews and contacts'), k: 'str', why: B('Tem resultado, fim e muitos passos: uma linha nova em Projetos ("Procura de emprego"), com a próxima ação na lista. Se as candidaturas chegarem às dezenas, a regra de três pode pedir-lhes uma base própria.', 'It has an outcome, an end and many steps: a new Projects row ("Job search"), with its next action on the list. If applications reach dozens, the rule of three may ask for a database of their own.') },
     { s: B('Lembras-te de que tens de renovar o passaporte', 'You remember you need to renew your passport'), k: 'act', why: B('Uma ação pessoal, sem data inventada.', 'A personal action, no invented date.') },
     { s: B('O professor diz que o exame passa para 15 de janeiro', 'The lecturer says the exam moves to 15 January'), k: 'info', why: B('Informação — e se foi dito numa aula marcada, vai para a página dessa aula.', 'Information — and if it was said in a scheduled class, it goes on that class\'s page.') },
   ];
@@ -120,13 +121,14 @@ const PrLearn = (function () {
 
   /* 3 · o destino de uma nota */
   const FATE_NOTES = [
-    { t: B('Lembrar de ver a cache', 'Remember to check cache'), best: 'act', why: B('Esconde uma ação. Vira tarefa ("Verificar se a cache recuperou (Renovação do CI)") e a nota apaga-se.', 'It hides an action. It becomes a task ("Verify the build cache recovered (CI revamp)") and the note is deleted.') },
-    { t: B('Atlas: a Ana assinalou picos de atraso de replicação no fim do mês (Migração da BD)', 'Atlas: Ana flagged replication lag spikes at month-end (DB migration)'), best: 'keep', why: B('Vale a pena encontrar depois. Guarda-se: define-se a equipa (Atlas) e sai da fila.', 'Worth finding later. Keep it: set the team (Atlas) and it leaves the queue.') },
-    { t: B('Coisa do Kafka', 'Kafka thing'), best: 'toss', why: B('Ninguém vai voltar a perceber isto. Deita-se fora.', 'Nobody will understand this again. Toss it.') },
-    { t: B('Decisão: os modelos de CI vivem num só repositório (Renovação do CI)', 'Decision: CI templates live in one repository (CI revamp)'), best: 'grad', why: B('Pertence a algo estruturado: quando houver a base Decisões (à terceira decisão), passa para lá.', 'It belongs to something structured: once a Decisions database exists (at the third decision), it moves there.') },
+    { t: B('Lembrar da garantia da máquina de lavar', 'Remember the washing machine warranty'), best: 'act', why: B('Esconde uma ação. Vira tarefa ("Verificar se a garantia da máquina de lavar cobre a avaria") e a nota apaga-se.', 'It hides an action. It becomes a task ("Check whether the washing machine warranty covers the fault") and the note is deleted.') },
+    { t: B('Casa: o senhorio aceita visitas ao fim de semana (Mudança de casa)', 'Home: the landlord allows viewings at weekends (Moving house)'), best: 'keep', why: B('Vale a pena encontrar depois. Guarda-se: define-se a área (Casa) e sai da fila.', 'Worth finding later. Keep it: set the area (Home) and it leaves the queue.') },
+    { t: B('Coisa do Excel', 'Excel thing'), best: 'toss', why: B('Ninguém vai voltar a perceber isto. Deita-se fora.', 'Nobody will understand this again. Toss it.') },
+    { t: B('Candidatura: assistente administrativa na Clínica Sol, enviada a 3 nov (Procura de emprego)', 'Application: admin assistant at Sol Clinic, sent 3 Nov (Job search)'), best: 'grad', why: B('É a terceira nota "Candidatura:" com empresa, data e estado: um padrão. Pertence a algo estruturado — uma base Candidaturas, onde cada uma tem estado (enviada, entrevista, resposta).', 'It is the third "Application:" note with company, date and status: a pattern. It belongs somewhere structured — an Applications database, where each one has a status (sent, interview, answer).') },
+    { t: B('Atlas: a Ana assinalou picos de atraso de replicação no fim do mês (Migração da BD)', 'Atlas: Ana flagged replication lag spikes at month-end (DB migration)'), best: 'keep', why: B('No trabalho em equipa é igual: vale a pena encontrar depois; define-se a equipa (Atlas) e sai da fila.', 'Team work is the same: worth finding later; set the team (Atlas) and it leaves the queue.') },
   ];
   const FATES = { keep: B('Guardar', 'Keep'), act: B('Agir', 'Act'), toss: B('Deitar fora', 'Toss'), grad: B('Graduar', 'Graduate') };
-  const FATE_DEST = { keep: B('Fica nas Notas, com equipa', 'Stays in Notes, with a team'), act: B('Lista de tarefas', 'Task list'), toss: B('Lixo', 'Bin'), grad: B('Uma base de dados', 'A database') };
+  const FATE_DEST = { keep: B('Fica nas Notas, com área', 'Stays in Notes, with an area'), act: B('Lista de tarefas', 'Task list'), toss: B('Lixo', 'Bin'), grad: B('Uma base de dados', 'A database') };
   DEMOS.fates = el => {
     let i = 0;
     const draw = () => {
@@ -161,7 +163,7 @@ const PrLearn = (function () {
     const inp = $('input', el), out = $('.lr-search-out', el);
     const run = () => {
       const q = inp.value.trim();
-      if (!q) { out.innerHTML = `<p class="pr-sub">${esc(tx('Experimenta o nome de um projeto, uma equipa, ou um pedaço de palavra.', 'Try a project name, a team, or part of a word.'))}</p>`; return; }
+      if (!q) { out.innerHTML = `<p class="pr-sub">${esc(tx(`Experimenta o nome de um projeto, uma ${L(PrWorld.hub().oneLower)}, ou um pedaço de palavra.`, `Try a project name, ${anEn(L(PrWorld.hub().oneLower))}, or part of a word.`))}</p>`; return; }
       const r = PrWorld.search(q), part = PrWorld.partial(q);
       const groups = {};
       r.forEach(x => { const g = x.kind === 'task' ? tx('Tarefas', 'Tasks') : L(PrWorld.schemaOf(x.db).name); (groups[g] = groups[g] || []).push(x); });
@@ -195,10 +197,10 @@ const PrLearn = (function () {
 
   /* 6 · verbo primeiro */
   const VERBS = [
+    [B('Dentista', 'Dentist'), B('<em>Marcar</em> consulta no dentista para depois do dia 20', '<em>Book</em> a dentist appointment for after the 20th')],
+    [B('Trabalho de grupo', 'Group paper'), B('<em>Enviar</em> à Inês a minha parte do trabalho (Trabalho de Sociologia)', "<em>Send</em> Inês my part of the paper (Sociology paper)")],
+    [B('À espera da Clínica Sol', 'Waiting on Sol Clinic'), B('<em>Insistir</em> com a Clínica Sol pela resposta à candidatura (Procura de emprego)', '<em>Chase</em> Sol Clinic for an answer on the application (Job search)')],
     [B('Reunião com fornecedor', 'Vendor meeting'), B('<em>Marcar</em> reunião com o fornecedor', '<em>Schedule</em> vendor meeting')],
-    [B('Proposta de atualização do cluster', 'Cluster upgrade proposal'), B('<em>Rever</em> a proposta de atualização do cluster (Atualização do k8s)', '<em>Review</em> cluster upgrade proposal (k8s upgrade)')],
-    [B('Diapositivos do roadmap', 'Roadmap slides'), B('<em>Atualizar</em> os diapositivos do roadmap', '<em>Update</em> roadmap slides')],
-    [B('À espera dos números da Ana', "Waiting for Ana's numbers"), B('<em>Insistir</em> com a Ana pelos números do atraso (Migração da BD)', '<em>Chase</em> Ana for replication lag numbers (DB migration)')],
     [B('O teste de recuo passou?', 'Did the rollback test pass?'), B('<em>Verificar</em> se o teste de recuo passou em staging (Migração da BD)', '<em>Verify</em> rollback test passed in staging (DB migration)')],
   ];
   DEMOS.verbfirst = el => {
@@ -261,9 +263,12 @@ const PrLearn = (function () {
   const ACTION_VERBS = /^(ver|verificar|ligar|enviar|marcar|lembrar|comprar|falar|pedir|rever|fazer|tratar|check|call|send|book|remember|buy|ask|review|do|email|chase|insistir|schedule|update|atualizar)\b/i;
   const VAGUE = /\b(coisa|isto|aquilo|cena|thing|stuff|this|that|something|algo)\b/i;
   DEMOS.notelint = el => {
-    const ex = [
+    const ex = PrWorld.scenario() === 'work' ? [
       B('Falar do congelamento', 'Talk about the freeze'), B('Atlas: o ensaio da migração precisa de 4 h de congelamento (Migração da BD)', 'Atlas: cutover rehearsal needs a 4h freeze window (DB migration)'),
       B('Lembrar de ver a cache', 'Remember to check cache'), B('A Ana disse uma coisa importante sobre a BD', 'Ana said something important about the DB'),
+    ] : [
+      B('Falar com o senhorio', 'Talk to the landlord'), B('Casa: o contrato atual acaba a 31 de março (Mudança de casa)', 'Home: the current lease ends on 31 March (Moving house)'),
+      B('Lembrar de pagar a renda', 'Remember to pay the rent'), B('O professor disse uma coisa importante sobre o exame', 'The lecturer said something important about the exam'),
     ];
     el.innerHTML = demoHead(tx('Esta nota resiste a três meses?', 'Will this note survive three months?')) +
       `<label class="lr-search-in lr-lint-in"><input type="text" maxlength="200" aria-label="${esc(tx('Título da nota', 'Note title'))}" placeholder="${esc(tx('Escreve uma nota numa linha…', 'Write a note in one line…'))}"></label>
@@ -279,7 +284,7 @@ const PrLearn = (function () {
       const kindPrefix = /^(decis[aã]o|decision|risco|risk|ideia|idea)$/i.test(pref);
       const checks = [
         { ok: s.split(/\s+/).length >= 5 && s.length <= 140, t: tx('Uma linha com conteúdo (5+ palavras, até ~140 caracteres)', 'One line with substance (5+ words, up to ~140 characters)') },
-        { ok: !!m && (teamNames.includes(pref) || kindPrefix), warn: !!m, t: m ? (teamNames.includes(pref) ? tx(`Equipa primeiro: «${m[1]}»`, `Team first: «${m[1]}»`) : kindPrefix ? tx(`Tipo primeiro: «${m[1]}» (bom para a regra de três)`, `Kind first: «${m[1]}» (good for the rule of three)`) : tx(`Prefixo «${m[1]}» não é uma equipa do mundo de exemplo`, `Prefix «${m[1]}» is not a team in the sample world`)) : tx('Sem equipa à frente — tudo bem se for transversal ou desconhecida', 'No team prefix — fine if it is cross-team or unknown') },
+        { ok: !!m && (teamNames.includes(pref) || kindPrefix), warn: !!m, t: m ? (teamNames.includes(pref) ? tx(`${L(PrWorld.hub().prop)} primeiro: «${m[1]}»`, `${L(PrWorld.hub().prop)} first: «${m[1]}»`) : kindPrefix ? tx(`Tipo primeiro: «${m[1]}» (bom para a regra de três)`, `Kind first: «${m[1]}» (good for the rule of three)`) : tx(`Prefixo «${m[1]}» não é uma ${L(PrWorld.hub().oneLower)} do mundo de exemplo`, `Prefix «${m[1]}» is not a ${L(PrWorld.hub().oneLower)} in the sample world`)) : tx(`Sem ${L(PrWorld.hub().oneLower)} à frente — tudo bem se for transversal ou desconhecida`, `No ${L(PrWorld.hub().oneLower)} prefix — fine if it is cross-cutting or unknown`) },
         { ok: !!PrWorld.projOf(s), soft: true, t: PrWorld.projOf(s) ? tx(`Nome do projeto no fim: «${PrWorld.projOf(s)}»`, `Project name last: «${PrWorld.projOf(s)}»`) : tx('Sem projeto no fim — só é preciso se a nota for sobre um projeto', 'No project at the end — only needed if the note is about a project') },
         { ok: !VAGUE.test(s), t: VAGUE.test(s) ? tx('Palavra vaga ("coisa", "isto"): daqui a três meses não vais saber o que era', 'Vague word ("thing", "this"): in three months you will not know what it was') : tx('Sem palavras vagas', 'No vague words') },
         { ok: !ACTION_VERBS.test(s.replace(/^[^:]{2,30}:\s*/, '')), t: ACTION_VERBS.test(s.replace(/^[^:]{2,30}:\s*/, '')) ? tx('Começa por um verbo de ação: isto parece uma TAREFA, não uma nota', 'Starts with an action verb: this looks like a TASK, not a note') : tx('Não é uma ação disfarçada', 'Not a disguised action') },
@@ -307,7 +312,7 @@ const PrLearn = (function () {
   const FLOW = [
     { t: B('Correr', 'Running'), steps: [[0, 'r', B('Um interesse: artigos sobre corrida.', 'An interest: running articles.')], [3, 'p', B('Semana 3: inscreves-te nos 10 km de abril — agora há um resultado e um fim.', 'Week 3: you sign up for the April 10 km — now there is an outcome and an end.')], [10, 'x', B('Semana 10: a prova acabou. Numa base de dados, Estado = Done; a linha fica.', 'Week 10: the race is over. In a database, Status = Done; the row stays.')]] },
     { t: B('Exame de Estatística', 'Statistics exam'), steps: [[0, 'p', B('Um projeto com data: 15 de janeiro.', 'A project with a date: 15 January.')], [8, 'x', B('Semana 8: exame feito. Estado = Done.', 'Week 8: exam done. Status = Done.')]] },
-    { t: B('Equipa Beacon', 'Team Beacon'), steps: [[0, 'a', B('Uma área: lideras a equipa, sem fim à vista.', 'An area: you lead the team, no end in sight.')], [6, 'x', B('Semana 6: a equipa funde-se com outra. A página da área vai para o Arquivo.', 'Week 6: the team merges into another. The area page goes to the Archive.')]] },
+    { t: B('Voluntariado', 'Volunteering'), steps: [[0, 'a', B('Uma área: dás duas tardes por mês ao banco alimentar, sem fim à vista.', 'An area: you give two afternoons a month to the food bank, no end in sight.')], [6, 'x', B('Semana 6: deixas o voluntariado. A página da área vai para o Arquivo — não se apaga.', 'Week 6: you stop volunteering. The area page goes to the Archive — it is not deleted.')]] },
   ];
   DEMOS.paraflow = el => {
     el.innerHTML = demoHead(tx('O tempo a passar', 'Time passing')) +
@@ -335,10 +340,10 @@ const PrLearn = (function () {
     { q: B('É uma estrutura que se repete muito?', 'Is it a structure that repeats often?'), p: B('Não', 'No'), d: B('Sim, e duplicá-la à mão é chato', 'Yes, and duplicating it by hand is annoying') },
   ];
   const FOURQ_EX = [
-    { n: B('Runbooks (5, cada um diferente)', 'Runbooks (5, each different)'), a: ['p', 'p', 'p', 'p'] },
-    { n: B('Reuniões (uma por série)', 'Meetings (one per series)'), a: ['d', 'd', 'd', 'd'] },
-    { n: B('Métricas que acompanho (6)', 'Metrics I watch (6)'), a: ['p', 'd', 'p', 'p'] },
-    { n: B('Decisões (a crescer)', 'Decisions (growing)'), a: ['d', 'd', 'd', 'p'] },
+    { n: B('Guias da casa (5: caldeira, alarme…, cada um diferente)', 'Home guides (5: boiler, alarm…, each different)'), a: ['p', 'p', 'p', 'p'] },
+    { n: B('Candidaturas a emprego (a crescer)', 'Job applications (growing)'), a: ['d', 'd', 'd', 'd'] },
+    { n: B('Contas que acompanho (6: luz, água, renda…)', 'Bills I track (6: power, water, rent…)'), a: ['p', 'd', 'p', 'p'] },
+    { n: B('Decisões de trabalho (a crescer)', 'Work decisions (growing)'), a: ['d', 'd', 'd', 'p'] },
   ];
   DEMOS.fourq = el => {
     let a = [null, null, null, null];
@@ -380,15 +385,19 @@ const PrLearn = (function () {
   /* 14 · seleção vs relação: renomear uma equipa */
   DEMOS.selectrel = el => {
     let renamed = false, fixed = 0;
-    const dbs = [tx('Notas', 'Notes'), tx('Projetos', 'Projects'), tx('Pessoas', 'Persons'), tx('Reuniões', 'Meetings'), '1:1'];
+    const w = PrWorld.scenario() === 'work';
+    const dbs = w ? [tx('Notas', 'Notes'), tx('Projetos', 'Projects'), tx('Pessoas', 'Persons'), tx('Reuniões', 'Meetings'), '1:1']
+      : [tx('Notas', 'Notes'), tx('Projetos', 'Projects'), tx('Pessoas', 'People'), tx('Aulas e encontros', 'Classes & meetups')];
+    const n0 = w ? 'Atlas' : tx('Finanças', 'Money'), n1 = w ? 'Atlas Platform' : tx('Dinheiro e contas', 'Money and bills');
+    const one = L(PrWorld.hub().oneLower), hubDb = L(PrWorld.hub().db);
     const draw = () => {
-      const nm = renamed ? 'Atlas Platform' : 'Atlas';
-      el.innerHTML = demoHead(tx('Renomear uma equipa', 'Rename a team'), tx('a mesma mudança, dois desenhos', 'the same change, two designs')) +
-        `<div class="lr-sr"><div><p class="pr-kicker">${esc(tx('Seleção em cada base', 'A select in each database'))}</p><ul>${dbs.map((d, i) => `<li><span>${esc(d)}</span><code class="${renamed && i >= fixed ? 'stale' : ''}">${esc(renamed && i >= fixed ? 'Atlas' : nm)}</code></li>`).join('')}</ul>
+      const nm = renamed ? n1 : n0;
+      el.innerHTML = demoHead(tx(`Renomear uma ${one}`, `Rename ${anEn(one)}`), tx('a mesma mudança, dois desenhos', 'the same change, two designs')) +
+        `<div class="lr-sr"><div><p class="pr-kicker">${esc(tx('Seleção em cada base', 'A select in each database'))}</p><ul>${dbs.map((d, i) => `<li><span>${esc(d)}</span><code class="${renamed && i >= fixed ? 'stale' : ''}">${esc(renamed && i >= fixed ? n0 : nm)}</code></li>`).join('')}</ul>
           ${renamed && fixed < dbs.length ? `<button type="button" class="btn btn-sm" data-fix>${esc(tx(`Corrigir à mão (${dbs.length - fixed} por corrigir)`, `Fix by hand (${dbs.length - fixed} left)`))}</button>` : ''}</div>
-        <div><p class="pr-kicker">${esc(tx('Relação para Equipas', 'A relation to Teams'))}</p><ul>${dbs.map(d => `<li><span>${esc(d)}</span><code>→ ${esc(nm)}</code></li>`).join('')}</ul>
+        <div><p class="pr-kicker">${esc(tx(`Relação para ${hubDb}`, `A relation to ${hubDb}`))}</p><ul>${dbs.map(d => `<li><span>${esc(d)}</span><code>→ ${esc(nm)}</code></li>`).join('')}</ul>
           <p class="pr-sub">${esc(tx('O nome existe num só sítio. Renomear é uma edição.', 'The name lives in one place. Renaming is one edit.'))}</p></div></div>
-        <button type="button" class="btn btn-sm" data-ren>${esc(renamed ? tx('Voltar a "Atlas"', 'Back to "Atlas"') : tx('Renomear "Atlas" para "Atlas Platform"', 'Rename "Atlas" to "Atlas Platform"'))}</button>`;
+        <button type="button" class="btn btn-sm" data-ren>${esc(renamed ? tx(`Voltar a "${n0}"`, `Back to "${n0}"`) : tx(`Renomear "${n0}" para "${n1}"`, `Rename "${n0}" to "${n1}"`))}</button>`;
     };
     draw();
     el.addEventListener('click', e => {
@@ -421,7 +430,7 @@ const PrLearn = (function () {
     [B('Tarefas', 'Tasks'), 3, B('"Próximos 7 dias". Atrasadas: fazer, reagendar ou apagar. Capacidade: mais de ~15? Empurra as menos importantes ANTES de acrescentar.', '"Due in 7 days". Overdue: do, reschedule or delete. Capacity: more than ~15? Push the least important out BEFORE adding.')],
     [B('Seguimentos', 'Follow-ups'), 2, B('"Seguimentos". Enviar os lembretes devidos, nova data, fechar o que chegou.', '"Follow-ups". Send due nudges, set the next date, close what arrived.')],
     [B('Projetos', 'Projects'), 3, B('Cada projeto "Now": atualizar o estado, pesquisar o nome na lista — há pelo menos uma tarefa aberta? Se não: próxima ação, ou On Hold / Done.', 'Each "Now" project: update status, search its name in the list — at least one open task? If not: next action, or On Hold / Done.')],
-    [B('Notas novas', 'New notes'), 4, B('"Sem equipa": guardar / agir / deitar fora / graduar.', '"No team": keep / act / toss / graduate.')],
+    [B('Notas novas', 'New notes'), 4, B('A fila da triagem ("Sem área"; "Sem equipa" no trabalho): guardar / agir / deitar fora / graduar.', 'The triage queue ("No area"; "No team" at work): keep / act / toss / graduate.')],
     [B('Notas antigas', 'Old notes'), 3, B('"Revisão" (30–37 dias): arquivar no sítio / deixar / arquivar.', '"Review" (30–37 days): file / leave / archive.')],
     [B('Próxima semana', 'Next week'), 3, B('Calendário + "Próximos 7 dias". UMA coisa para um bloco protegido de 30+ min, marcado.', 'Calendar + "Due in 7 days". ONE thing for a protected 30+ min focus block, booked.')],
     [B('Fechar', 'Close'), 1, B('O que estiver solto (papel, cabeça) → lista ou Notas.', 'Anything loose (paper, head) → list or Notes.')],
@@ -447,6 +456,9 @@ const PrLearn = (function () {
 
   /* 17 · o teste das bases opcionais */
   const DBT = [
+    { n: B('Candidaturas', 'Applications'), r: [1, 1, 1, 1], v: B('✅ Base opcional — à terceira candidatura. Mesmos campos (empresa, data, estado), comparas e filtras ("à espera de resposta"), e os dados vivem aqui.', '✅ Optional database — at the third application. Same fields (company, date, status), you compare and filter ("awaiting reply"), and the data lives here.') },
+    { n: B('Ideias de presentes', 'Gift ideas'), r: [1, 0, 0, 0], v: B('❌ Ainda não se repetiu: são três linhas numa nota. Uma etiqueta chega até haver um padrão.', '❌ It has not recurred yet: three lines in one note. A tag is enough until there is a pattern.') },
+    { n: B('Despesas da casa', 'Household spending'), r: [1, 1, 1, 0], v: B('❌ Os números verdadeiros vivem no banco ou numa app de finanças: guarda a ligação e uma nota por mês, não uma cópia.', '❌ The real numbers live in the bank or a finance app: keep the link and one note a month, not a copy.') },
     { n: B('Decisões', 'Decisions'), r: [1, 1, 1, 1], v: B('✅ Base opcional — cria-se à terceira nota "Decisão:". Mesmo formato sempre (ADR), com estado e substituição.', '✅ Optional database — created at the third "Decision:" note. Same shape every time (ADR), with status and supersession.') },
     { n: B('Riscos e dívida', 'Risks and debt'), r: [1, 1, 1, 1], v: B('✅ UMA base com um campo Tipo (Risco/Problema/Dívida), não três: partilham quase tudo.', '✅ ONE database with a Type field (Risk/Issue/Debt), not three: they share almost everything.') },
     { n: B('Radar tecnológico', 'Technology radar'), r: [1, 1, 1, 1], v: B('🟡 Condicional — só se defines direção técnica para várias equipas. É uma posição (Adopt/Trial/Assess/Hold), não um inventário.', '🟡 Conditional — only if you set technical direction across teams. A stance (Adopt/Trial/Assess/Hold), not an inventory.') },

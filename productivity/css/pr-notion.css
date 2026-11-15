@@ -237,3 +237,9 @@ body.dark .c-purple { background: #3d2f55; color: #dacbf2; } body.dark .c-pink {
 .nb-primer dd { margin: .1rem 0 0; color: var(--pr-ink-2); line-height: 1.45; }
 .nb-primer > a { font-size: .82rem; display: inline-flex; gap: .3rem; align-items: center; }
 .nb-primer > a svg { width: 14px; height: 14px; }
+
+/* mapa das relações em retrato (telemóvel): sem largura mínima, texto maior em unidades do SVG */
+.nb-schema.compact { min-width: 0; }
+.nb-schema.compact .nm { font-size: 16px; }
+.nb-schema.compact .pp { font-size: 13.5px; }
+.nb-schema.compact .edge text { font-size: 12.5px; }

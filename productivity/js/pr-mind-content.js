@@ -34,7 +34,7 @@
 
   C.CH.push(
   /* ───────────────────────── hábitos ───────────────────────── */
-  { id: 'habitos', block: 'executar', min: 9, kinds: [],
+  { id: 'habitos', block: 'executar', min: 9, kinds: [], topics: ['hab'],
     title: B('Hábitos: o sistema que se mantém sozinho', 'Habits: the system that keeps itself going'),
     lede: B('A revisão semanal e os Big 3 só funcionam se acontecerem sem negociação. Isso não é força de vontade — é hábito, e os hábitos fazem-se com contexto e repetição.',
             'The weekly review and the Big 3 only work if they happen without negotiation. That is not willpower — it is habit, and habits are built from context and repetition.'),
@@ -94,7 +94,7 @@
     ] },
 
   /* ───────────────────────── adiar ───────────────────────── */
-  { id: 'adiar', block: 'executar', min: 8, kinds: [],
+  { id: 'adiar', block: 'executar', min: 8, kinds: [], topics: ['proc', 'mot'],
     title: B('Agora contra depois: porque adiamos', 'Now versus later: why we put things off'),
     lede: B('Adiar raramente é preguiça ou má gestão do tempo. É, muitas vezes, fugir a um mau bocado agora — e passar a conta ao "eu" de amanhã.',
             'Putting things off is rarely laziness or poor time management. It is often escaping a bad moment now — and handing the bill to tomorrow\'s self.'),
@@ -151,7 +151,7 @@
     ] },
 
   /* ───────────────────────── foco ───────────────────────── */
-  { id: 'foco', block: 'executar', min: 8, kinds: [],
+  { id: 'foco', block: 'executar', min: 8, kinds: [], topics: ['foc'],
     title: B('Foco, interrupções e energia', 'Focus, interruptions and energy'),
     lede: B('Cada troca de tarefa custa alguma coisa, e uma tarefa mal fechada continua a ocupar a cabeça. O foco protege-se com o desenho do dia — e com descanso a sério.',
             'Every task switch costs something, and a task left half-closed keeps occupying your mind. Focus is protected by how the day is designed — and by real rest.'),
@@ -201,7 +201,7 @@
     ] },
 
   /* ───────────────────────── decidir ───────────────────────── */
-  { id: 'decidir', block: 'dirigir', min: 9, kinds: [],
+  { id: 'decidir', block: 'dirigir', min: 9, kinds: [], topics: ['dec'],
     title: B('Como julgamos: rápido, devagar, e otimista demais', 'How we judge: fast, slow, and too optimistic'),
     lede: B('Planear é prever — e as previsões humanas falham de formas conhecidas. Saber quais é a melhor defesa: não confiar menos em ti, mas pôr o sistema a corrigir-te.',
             'Planning is forecasting — and human forecasts fail in known ways. Knowing which is the best defence: not trusting yourself less, but letting the system correct you.'),
@@ -245,7 +245,7 @@
     ] },
 
   /* ───────────────────────── motivação ───────────────────────── */
-  { id: 'motivacao', block: 'dirigir', min: 8, kinds: [],
+  { id: 'motivacao', block: 'dirigir', min: 8, kinds: [], topics: ['mot'],
     title: B('O que nos move', 'What moves us'),
     lede: B('Uma rotina que dependa só de prémios e de disciplina acaba por se partir. As que duram costumam ter escolha, progresso visível e uma razão que interessa.',
             'A routine that depends only on rewards and discipline eventually breaks. The ones that last usually have choice, visible progress and a reason that matters.'),
@@ -293,7 +293,7 @@
     ] },
 
   /* ───────────────────────── importante ───────────────────────── */
-  { id: 'importante', block: 'dirigir', min: 8, kinds: [],
+  { id: 'importante', block: 'dirigir', min: 8, kinds: [], topics: ['eff'],
     title: B('O que merece o teu tempo', 'What deserves your time'),
     lede: B('Um sistema bem organizado pode deixar-te muito eficiente a fazer as coisas erradas. Esta é a parte que escolhe para onde o sistema aponta.',
             'A well-organised system can make you very efficient at doing the wrong things. This is the part that chooses where the system points.'),

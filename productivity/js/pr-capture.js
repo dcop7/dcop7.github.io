@@ -143,11 +143,11 @@ const PrCapture = (function () {
         <li><code>${esc(tx('às 8 · 14h30', 'at 8 · 2pm'))}</code> · <code>p1 p2 p3</code></li></ul></details>`;
   }
   function noteForm() {
-    return `<label class="cp-label" for="cp-n">${esc(tx('Uma linha para as Notas', 'One line for Notes'))} <span class="pr-sub">${esc(tx('equipa primeiro, projeto no fim', 'team first, project last'))}</span></label>
+    return `<label class="cp-label" for="cp-n">${esc(tx('Uma linha para as Notas', 'One line for Notes'))} <span class="pr-sub">${esc(tx(`${L(W.hub().oneLower)} primeiro, projeto no fim`, `${L(W.hub().oneLower)} first, project last`))}</span></label>
       <input id="cp-n" class="cp-q" type="text" autocomplete="off" maxlength="200" placeholder="${esc(EX_NOTE()[0])}">
       <ul class="lr-lint cp-lint" data-lint></ul>
       <div class="pr-row"><button type="button" class="btn btn-primary" data-addn disabled>${ICON.plus} ${esc(tx('Capturar nota', 'Capture note'))}</button>
-        <span class="pr-sub">${esc(tx('Sem equipa, etiquetas nem propriedades — a triagem trata disso.', 'No team, tags or properties — triage handles that.'))}</span></div>
+        <span class="pr-sub">${esc(tx(`Sem ${L(W.hub().oneLower)}, etiquetas nem propriedades — a triagem trata disso.`, `No ${L(W.hub().oneLower)}, tags or properties — triage handles that.`))}</span></div>
       <p class="pr-kicker" style="margin-top:1.1rem">${esc(tx('Experimenta', 'Try'))}</p>
       <div class="cp-ex">${EX_NOTE().map((x, i) => `<button type="button" class="cp-exb" data-exn="${i}">${esc(x)}</button>`).join('')}</div>`;
   }
@@ -160,7 +160,7 @@ const PrCapture = (function () {
         <p class="lr-q pr-mono">${esc(L(F[filt].q))}</p>
         <ul class="lr-tasks" data-tasks>${list.map(t => taskRow(t, now)).join('') || `<li class="pr-sub">${esc(tx('Nada aqui.', 'Nothing here.'))}</li>`}</ul>
         ${(() => { const nd = W.tasks().filter(t => t.due == null); return nd.length ? `<p class="pr-sub">${esc(tx(`+ ${nd.length} sem data — ficam no contentor e aparecem nas passagens normais.`, `+ ${nd.length} undated — they sit in their container and come up in normal passes.`))}</p>` : ''; })()}</div>
-      <div class="pr-sheet cp-box" data-noteq><div class="cp-box-h"><b>${esc(tx('Notas › Sem equipa', 'Notes › No team'))}</b><span class="pr-mono">${nt.rows.length}</span></div>
+      <div class="pr-sheet cp-box" data-noteq><div class="cp-box-h"><b>${esc(tx(`Notas › Sem ${L(W.hub().oneLower)}`, `Notes › No ${L(W.hub().oneLower)}`))}</b><span class="pr-mono">${nt.rows.length}</span></div>
         <ul class="lr-mini">${nt.rows.slice(-5).reverse().map(r => `<li class="${r.id === last ? 'cp-new' : ''}"><span>${esc(W.title('notes', r))}</span><small>${esc(Pr.relDay(r.cr, now))}</small></li>`).join('')}</ul>
         <a class="btn btn-sm btn-ghost" href="#experimentar/notion/notes/noteam">${esc(tx('Ver no playground', 'See it in the playground'))} ${ICON.arrow}</a></div>`;
   }
@@ -194,7 +194,7 @@ const PrCapture = (function () {
     out.innerHTML = [
       li(!r.action, r.action ? tx('Isto é uma AÇÃO: vai para a lista de tarefas, não para as Notas.', 'This is an ACTION: it belongs on the task list, not in Notes.') : tx('Não é uma ação disfarçada.', 'Not a disguised action.')),
       li(!r.vague && !r.short, r.vague ? tx('Palavra vaga: daqui a três meses não vais saber o que era.', 'Vague word: in three months you will not know what it was.') : r.short ? tx('Muito curta para se perceber sozinha.', 'Too short to stand alone.') : tx('Percebe-se sozinha.', 'Stands on its own.')),
-      li(!!(r.team || r.kind), r.team ? tx(`Equipa primeiro: «${r.team}».`, `Team first: «${r.team}».`) : r.kind ? tx(`Tipo primeiro: «${r.kind}».`, `Kind first: «${r.kind}».`) : r.badPrefix ? tx(`«${r.badPrefix}» não é uma equipa do mundo de exemplo.`, `«${r.badPrefix}» is not a team in the sample world.`) : tx('Sem prefixo — bem, se for transversal.', 'No prefix — fine if cross-team.'), !r.badPrefix),
+      li(!!(r.team || r.kind), r.team ? tx(`${L(W.hub().prop)} primeiro: «${r.team}».`, `${L(W.hub().prop)} first: «${r.team}».`) : r.kind ? tx(`Tipo primeiro: «${r.kind}».`, `Kind first: «${r.kind}».`) : r.badPrefix ? tx(`«${r.badPrefix}» não é uma ${L(W.hub().oneLower)} do mundo de exemplo.`, `«${r.badPrefix}» is not one of the sample world's ${L(W.hub().db).toLowerCase()}.`) : tx('Sem prefixo — bem, se for transversal.', 'No prefix — fine if cross-team.'), !r.badPrefix),
       li(!!r.project, r.project ? tx(`Projeto no fim: «${r.project}».`, `Project last: «${r.project}».`) : tx('Sem projeto — só se for sobre um.', 'No project — only if it is about one.'), true),
     ].join('');
   }
