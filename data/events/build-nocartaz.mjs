@@ -4,8 +4,8 @@
    (https://www.nocartaz.pt/events.json — ~9000 events, all districts,
    updated several times a day). NoCartaz serves CORS locked to its own
    origin, so the browser cannot fetch it live from dcop7.github.io; we
-   bundle a snapshot at build time instead (Node has no CORS). This is a
-   MANUAL refresh tool (no CI), like build-places.mjs — re-run to refresh:
+   bundle a snapshot at build time instead (Node has no CORS). Refreshed
+   daily by .github/workflows/refresh-daily.yml; to run it by hand:
        node data/events/build-nocartaz.mjs
    Source: NoCartaz (agregador independente, dados abertos). Atribuição.
 ══════════════════════════════════════════════════════════════════ */
@@ -22,11 +22,26 @@ const now = new Date();
 const today = new Date(now); today.setHours(0, 0, 0, 0);
 const horizon = new Date(today.getTime() + HORIZON_DAYS * 86400000);
 
+/* Exit 75 (EX_TEMPFAIL) = "the SOURCE is unavailable", as opposed to 1 = "this
+   script is broken". Nov 2026: nocartaz.pt went down whole-site (Vercel 402
+   DEPLOYMENT_DISABLED) and every refresh run failed six times a day over
+   something no code here could fix. .github/scripts/run-build.sh reports 75
+   as "fonte indisponível" and keeps the previous snapshot — it is future-only
+   and stays useful for weeks — raising an alert only once it is 14 days old.
+   Nothing is written on 75. */
+const SOURCE_DOWN = 75;
+const down = (why) => { console.error('Fonte indisponível:', why); process.exit(SOURCE_DOWN); };
+
 console.log('Fetching', SRC, '…');
-const res = await fetch(SRC, { headers: { 'Accept': 'application/json' } });
-if (!res.ok) { console.error('HTTP', res.status); process.exit(1); }
-const raw = await res.json();
+let raw;
+try {
+  const res = await fetch(SRC, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(120000) });
+  if (!res.ok) down(`HTTP ${res.status} ${res.headers.get('x-vercel-error') || ''}`.trim());
+  raw = await res.json();
+} catch (err) { down(err.message); }
 const all = Array.isArray(raw) ? raw : (raw.events || []);
+/* An empty feed is an outage too — never overwrite a good snapshot with nothing. */
+if (!all.length) down('feed vazio');
 console.log('Total events from source:', all.length);
 
 const clean = (s) => (s || '').toString().replace(/\s+/g, ' ').trim();

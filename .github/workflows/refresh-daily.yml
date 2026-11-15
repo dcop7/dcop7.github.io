@@ -5,7 +5,7 @@ name: Refresh ▸ dados diários
 # separate workflows — five runner start-ups, five checkouts and five racing
 # pushes — with one run and one commit.
 #
-# Three rules make this reliable:
+# Four rules make this reliable:
 #
 #  1. Nothing is gated on the hour of day. GitHub delays cron runs by minutes
 #     to HOURS, so "is it 07h in Lisbon?" silently skipped whole days — which
@@ -15,27 +15,31 @@ name: Refresh ▸ dados diários
 #     the work, the rest cost ~20 s and commit nothing.
 #
 #  2. Each build is independent. One failing source must not cost the site the
-#     other four, so every step continues on error, everything that did
-#     succeed is committed, and the run is marked failed at the end so a real
-#     breakage is still visible.
+#     others, and everything that did succeed is committed.
 #
-#  3. NO STEP MAY SPEND THE JOB'S TIME BUDGET. `continue-on-error` protects
-#     the job from a step that FAILS; it does nothing about a step that simply
-#     runs long, and a job killed by its own timeout-minutes skips every
-#     remaining step — including the commit. That is not theory: when these
-#     five builds were merged into one job, "Descobrir Tech" (a ~30 min build
-#     that used to run alone under the 6 h default) landed under a 20 min
-#     ceiling, so from 25/08 to 31/08 EVERY run was cancelled mid-oss and
-#     pushed nothing. today.json, f1 and eventos were built correctly on all
-#     23 of those runs and thrown away unpublished, and the homepage sat on
-#     24/08 data for a week while the browser refetched Wikimedia live on
-#     every first paint.
+#  3. NO STEP MAY SPEND THE JOB'S TIME BUDGET. A job killed by its own
+#     timeout-minutes skips every remaining step — including the commit. From
+#     25/08 to 31/08 "Descobrir Tech" overran a 20 min ceiling on EVERY run
+#     and today.json, f1 and eventos were built 23 times and thrown away
+#     unpublished. So every build runs under its own limit (run-build.sh's
+#     `timeout`, with the step's timeout-minutes as a backstop just above it),
+#     the job ceiling stays above all of them added together, the expensive
+#     build runs LAST, and the commit runs under always().
 #
-#     So: every build carries its OWN timeout-minutes, the job ceiling stays
-#     above all of them added together (a step must always be what gets cut,
-#     never the job), the expensive build runs LAST so an overrun costs only
-#     itself, and the commit runs under always() so even a cancelled job
-#     still publishes what it managed to build.
+#  4. THE ALARM IS THE DATA, NOT THE EXIT CODE. External sources go down
+#     (14/11/2026: nocartaz.pt vanished behind a Vercel 402 and this run failed
+#     six times a day for something no code here could fix). run-build.sh
+#     rolls a failed build back and keeps the previous snapshot; only once a
+#     snapshot outlives its grace period does report.sh open ONE issue, which
+#     closes itself when the data is fresh again. A source's bad hour is a
+#     warning in the run, never a notification.
+#
+# Grace periods (how long the site may live on the previous snapshot):
+#   homepage 48 h — the browser already rebuilds a stale day from Wikimedia
+#   útil     48 h — fuel/electricity/weather lose their point after a day or two
+#   f1       96 h — changes once per race weekend
+#   eventos 336 h — future-only, so a two-week-old snapshot is still mostly right
+#   oss     168 h — a catalogue; a week behind is fine
 #
 # A manual run rebuilds everything, gates included.
 
@@ -46,6 +50,7 @@ on:
 
 permissions:
   contents: write
+  issues: write        # report.sh opens/closes the "[refresh] …" alert issues
 
 concurrency:
   group: refresh-daily
@@ -54,13 +59,13 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    # A BACKSTOP, not a budget: it has to stay above the sum of the step
-    # timeouts below (5+5+5+6+38 = 59) plus checkout, setup and the commit,
-    # so a slow build is cut by its own step timeout while the job survives
-    # to publish. Lower it under that sum and rule 3 above stops holding.
-    timeout-minutes: 70
+    # A BACKSTOP, not a budget: it stays above the sum of the step timeouts
+    # below (6+6+6+7+38 = 63) plus checkout, setup, commit and report, so a slow
+    # build is cut by its own limit while the job survives to publish.
+    timeout-minutes: 75
     env:
       FORCE: ${{ github.event_name != 'schedule' }}
+      REFRESH_REPORT_DIR: ${{ runner.temp }}/refresh-report
     steps:
       - uses: actions/checkout@v7
 
@@ -70,20 +75,16 @@ jobs:
 
       # GROQ_KEY only ranks the three "on this day" sections (ids in, ids out
       # — no text is generated). Without it the build still succeeds and those
-      # sections keep their heuristic order, so a missing or rejected secret
-      # degrades the homepage rather than breaking it.
-      # ~70 s observed; the ceiling leaves room for Groq retrying all three.
+      # sections keep their heuristic order. ~70 s observed.
       - name: Homepage ▸ today.json
         id: home
         continue-on-error: true
-        timeout-minutes: 5
+        timeout-minutes: 6
         env:
           GROQ_KEY: ${{ secrets.GROQ_KEY }}
-        run: |
-          [ "$(node .github/scripts/stale.mjs data/home/today.json day)" = true ] || {
-            echo "Já é de hoje — nada a fazer."; exit 0; }
-          node data/home/build-home.mjs
-          echo "built=yes" >> "$GITHUB_OUTPUT"
+        run: >
+          bash .github/scripts/run-build.sh homepage data/home/today.json day 48 4
+          "data/home" -- node data/home/build-home.mjs
 
       # Fuel (DGEG), electricity (OMIE day-ahead) and the weather fallback.
       # The 4 h window is what gives this one several passes a day, so the
@@ -91,48 +92,33 @@ jobs:
       - name: Útil hoje ▸ utility.json
         id: utility
         continue-on-error: true
-        timeout-minutes: 5
-        run: |
-          [ "$(node .github/scripts/stale.mjs data/home/utility.json 4)" = true ] || {
-            echo "Construído há menos de 4 h — nada a fazer."; exit 0; }
-          node data/home/build-utility.mjs
-          echo "built=yes" >> "$GITHUB_OUTPUT"
+        timeout-minutes: 6
+        run: >
+          bash .github/scripts/run-build.sh útil data/home/utility.json 4 48 4
+          "data/home" -- node data/home/build-utility.mjs
 
       - name: Fórmula 1 ▸ classificações e calendário
         id: f1
         continue-on-error: true
-        timeout-minutes: 5
-        run: |
-          [ "$(node .github/scripts/stale.mjs data/f1/cache.json day)" = true ] || {
-            echo "Já é de hoje — nada a fazer."; exit 0; }
-          node data/f1/build-f1.mjs
-          echo "built=yes" >> "$GITHUB_OUTPUT"
+        timeout-minutes: 6
+        run: >
+          bash .github/scripts/run-build.sh f1 data/f1/cache.json day 96 4
+          "data/f1" -- node data/f1/build-f1.mjs
 
+      # data/events covers nocartaz.json AND home.json (the Home card's slice).
       - name: Eventos ▸ snapshot nacional NoCartaz
         id: events
         continue-on-error: true
-        timeout-minutes: 6
-        run: |
-          [ "$(node .github/scripts/stale.mjs data/events/nocartaz.json day)" = true ] || {
-            echo "Já é de hoje — nada a fazer."; exit 0; }
-          node data/events/build-nocartaz.mjs
-          echo "built=yes" >> "$GITHUB_OUTPUT"
+        timeout-minutes: 7
+        run: >
+          bash .github/scripts/run-build.sh eventos data/events/nocartaz.json day 336 5
+          "data/events" -- node data/events/build-nocartaz.mjs
 
-      # LAST ON PURPOSE. This one is minutes where the others are seconds:
-      # ~30 min, almost all of it deliberate pacing — ~155 spaced Search calls
-      # plus ~800 sequential repo lookups for the Awesome/HN orphans, kept
-      # slow to stay inside the search and secondary rate limits. Running it
-      # after the cheap builds means the four fast snapshots are already on
-      # disk — and, thanks to always() below, still get committed — however
-      # this one ends. build-oss.mjs writes nothing until it finishes, so a
-      # step cut here leaves the previous catalog intact, never a half one.
-      #
-      # By late September the full build ran 27–38 min against this 38 min
-      # ceiling, so about a third of the builds were cut and the catalog went days
-      # without updating. Two things keep it inside now: GraphQL enrichment is
-      # cached for 7 days per project (≈1/7 of the catalog re-queried a day),
+      # LAST ON PURPOSE. Minutes where the others are seconds: ~155 spaced
+      # Search calls plus ~800 sequential repo lookups, kept slow to stay inside
+      # the rate limits. GraphQL enrichment is cached for 7 days per project,
       # and OSS_BUDGET_MIN is a soft deadline — past it the build stops
-      # fetching and writes what it has, leaving ~6 min before the hard cut.
+      # fetching and writes what it has, well before run-build.sh's 36 min cut.
       - name: Descobrir Tech ▸ catálogo open-source
         id: oss
         continue-on-error: true
@@ -141,16 +127,13 @@ jobs:
           # Automatic, repo-scoped token (no user-managed secret). Lifts rate
           # limits and enables GraphQL enrichment (languages, watchers).
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OSS_BUDGET_MIN: 32
-        run: |
-          [ "$(node .github/scripts/stale.mjs data/oss/index.json day)" = true ] || {
-            echo "Já é de hoje — nada a fazer."; exit 0; }
-          node data/oss/build-oss.mjs
-          echo "built=yes" >> "$GITHUB_OUTPUT"
+          OSS_BUDGET_MIN: 31
+        run: >
+          bash .github/scripts/run-build.sh oss data/oss/index.json day 168 36
+          "data/oss" -- node data/oss/build-oss.mjs
 
-      # always(): if the job is cancelled — its own timeout, or a hand on the
-      # stop button — this still has to run, or the commit below inherits an
-      # empty subject.
+      # always(): if the job is cancelled this still has to run, or the commit
+      # below inherits an empty subject.
       - name: Assunto do commit
         id: msg
         if: always()
@@ -165,45 +148,28 @@ jobs:
           done
           echo "text=chore(data): refresh ${list:-nada}" >> "$GITHUB_OUTPUT"
 
-      # data/events covers nocartaz.json AND home.json — the old workflow
-      # staged only the first, so the second never reached the site.
-      #
       # always() is what makes rule 3 hold: whatever was built before the job
-      # ran out of time is published anyway. Committing a partial set is safe
-      # because every build writes its file in one go at the end — a step that
-      # was cut leaves the previous snapshot alone, never a truncated one.
+      # ran out of time is published anyway. A failed build was already rolled
+      # back by run-build.sh, so only complete, valid snapshots are staged.
+      # continue-on-error: a lost push is retried by the next cron (the gates
+      # still see the old data); report.sh raises it if it keeps happening.
       - uses: ./.github/actions/commit-push
+        id: publish
         if: always()
+        continue-on-error: true
         with:
           paths: data/home data/oss data/f1 data/events
           message: "${{ steps.msg.outputs.text || 'chore(data): refresh parcial' }}"
 
-      - name: Resumo
+      - name: Resumo e alertas
         if: always()
-        run: |
-          rows=("homepage:${{ steps.home.outcome }}:${{ steps.home.outputs.built }}"
-                "útil:${{ steps.utility.outcome }}:${{ steps.utility.outputs.built }}"
-                "f1:${{ steps.f1.outcome }}:${{ steps.f1.outputs.built }}"
-                "eventos:${{ steps.events.outcome }}:${{ steps.events.outputs.built }}"
-                "oss:${{ steps.oss.outcome }}:${{ steps.oss.outputs.built }}")
-
-          echo "| build | estado |"        >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|"                 >> "$GITHUB_STEP_SUMMARY"
-          failed=""
-          for row in "${rows[@]}"; do
-            name="${row%%:*}"; rest="${row#*:}"; outcome="${rest%%:*}"; built="${rest##*:}"
-            if   [ "$outcome" = failure   ]; then state="❌ falhou";                 failed="$failed $name"
-            elif [ "$outcome" = cancelled ]; then state="⏱️ cortado no tempo limite"; failed="$failed $name"
-            elif [ "$built"   = yes       ]; then state="✅ reconstruído"
-            else                                  state="⏭️ ainda fresco"
-            fi
-            echo "| $name | $state |" >> "$GITHUB_STEP_SUMMARY"
-          done
-
-          # Everything that worked is already committed. Fail the run anyway,
-          # so a source that is genuinely broken cannot hide behind the ones
-          # that still work.
-          if [ -n "$failed" ]; then
-            echo "::error::builds falhados:$failed"
-            exit 1
-          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          bash .github/scripts/report.sh
+          "homepage:${{ steps.home.outcome }}:${{ steps.home.outputs.state }}"
+          "útil:${{ steps.utility.outcome }}:${{ steps.utility.outputs.state }}"
+          "f1:${{ steps.f1.outcome }}:${{ steps.f1.outputs.state }}"
+          "eventos:${{ steps.events.outcome }}:${{ steps.events.outputs.state }}"
+          "oss:${{ steps.oss.outcome }}:${{ steps.oss.outputs.state }}"
+          --publish "${{ steps.publish.outcome }}"

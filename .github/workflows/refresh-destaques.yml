@@ -27,6 +27,7 @@ on:
 
 permissions:
   contents: write
+  issues: write        # report.sh opens/closes the "[refresh] …" alert issues
 
 # Never two curations at once: they would spend the same Groq minute
 # budget against each other and race for the same commit. With the job
@@ -45,9 +46,10 @@ jobs:
     # This ceiling exists so a slow day (sources timing out, Groq throttling
     # harder than usual) ends in a published partial edition rather than in
     # a killed job — a killed job writes nothing at all.
-    timeout-minutes: 60
+    timeout-minutes: 65
     env:
       FORCE: ${{ github.event_name != 'schedule' }}
+      REFRESH_REPORT_DIR: ${{ runner.temp }}/refresh-report
     steps:
       - uses: actions/checkout@v7
 
@@ -55,8 +57,13 @@ jobs:
         with:
           node-version: '24'
 
+      # Curation and schema check run as ONE command under run-build.sh (see
+      # refresh-daily.yml): a result that fails the check is rolled back like
+      # any other failure, and only a curation older than 48 h raises an alert.
       - name: Curar as histórias do dia → JSON estático
         id: curate
+        continue-on-error: true
+        timeout-minutes: 57
         env:
           # Free-tier Groq key. Secret only — never echoed, never written into
           # the generated JSON, never shipped to the browser.
@@ -72,15 +79,9 @@ jobs:
           # live. The remaining ~10 min cover validation, rollups, the
           # commit and the rebase-retry against a busy main.
           CURATE_DEADLINE_MIN: '50'
-        run: |
-          [ "$(node .github/scripts/stale.mjs data/news/curated/latest.json day)" = true ] || {
-            echo "Já curado hoje — nada a fazer."; exit 0; }
-          node data/news/build-curated.mjs
-          echo "built=yes" >> "$GITHUB_OUTPUT"
-
-      - name: Validar o resultado contra o esquema
-        if: steps.curate.outputs.built == 'yes'
-        run: node data/news/build-curated.mjs --check
+        run: >
+          bash .github/scripts/run-build.sh destaques data/news/curated/latest.json day 48 55
+          "data/news" -- bash -c 'node data/news/build-curated.mjs && node data/news/build-curated.mjs --check'
 
       # build-curated.mjs writes data/news/curated/** AND the
       # data/news/sources-resolved.json acquisition cache. The old workflow
@@ -89,7 +90,18 @@ jobs:
       # the whole data/news tree is safe: the rebase replays this job's diff
       # only, so the topic files refresh-often.yml owns are left alone.
       - uses: ./.github/actions/commit-push
+        id: publish
         if: steps.curate.outputs.built == 'yes'
+        continue-on-error: true
         with:
           paths: data/news
           message: 'chore(destaques): refresh curadoria diária'
+
+      - name: Resumo e alertas
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          bash .github/scripts/report.sh
+          "destaques:${{ steps.curate.outcome }}:${{ steps.curate.outputs.state }}"
+          --publish "${{ steps.publish.outcome }}"

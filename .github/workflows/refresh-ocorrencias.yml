@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  issues: write        # report.sh opens/closes the "[refresh] …" alert issues
 
 concurrency:
   group: refresh-ocorrencias
@@ -29,7 +30,9 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
+    env:
+      REFRESH_REPORT_DIR: ${{ runner.temp }}/refresh-report
     steps:
       - uses: actions/checkout@v7
 
@@ -37,10 +40,30 @@ jobs:
         with:
           node-version: '24'
 
+      # Same contract as every refresh (see refresh-daily.yml): own time limit,
+      # rollback on failure, alert issue only once the snapshot is >2 h old.
+      # Gate 0.01 h = rebuild on every run; this data is live by nature.
       - name: Snapshot das ocorrências ativas → JSON estático
-        run: node data/ocorrencias/build-ocorrencias.mjs
+        id: occ
+        continue-on-error: true
+        timeout-minutes: 7
+        run: >
+          bash .github/scripts/run-build.sh ocorrências data/ocorrencias/ocorrencias.json 0.01 2 5
+          "data/ocorrencias" -- node data/ocorrencias/build-ocorrencias.mjs
 
       - uses: ./.github/actions/commit-push
+        id: publish
+        if: steps.occ.outputs.built == 'yes'
+        continue-on-error: true
         with:
           paths: data/ocorrencias
           message: 'chore(ocorrencias): refresh incidents snapshot'
+
+      - name: Resumo e alertas
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          bash .github/scripts/report.sh
+          "ocorrências:${{ steps.occ.outcome }}:${{ steps.occ.outputs.state }}"
+          --publish "${{ steps.publish.outcome }}"
