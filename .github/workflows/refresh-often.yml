@@ -35,7 +35,6 @@ jobs:
     timeout-minutes: 35
     env:
       FORCE: ${{ github.event_name != 'schedule' }}
-      REFRESH_REPORT_DIR: ${{ runner.temp }}/refresh-report
     steps:
       - uses: actions/checkout@v7
 
