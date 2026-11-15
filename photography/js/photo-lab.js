@@ -47,6 +47,13 @@ const PhotoLab = (function () {
       defocusCx: 0.5, defocusCy: 0.55,   // onde está focado, em fração da imagem
       defocusR: 0.24,       // raio nítido (fração da meia-diagonal)
       defocusFeather: 0.55, // quão depressa o desfoque cresce a partir daí
+      // ── primitivas do SIMULADOR (laboratório) ─────────────────────────
+      // Aqui o desfoque e o arrasto já não são "0..100": vêm em PÍXEIS, saídos
+      // das contas da câmara (ph-sim.js), e podem valer só numa zona.
+      blurMap: null,        // Float32Array w×h: raio de desfoque por píxel (px)
+      blurMax: 0,           // o maior raio do mapa
+      motions: null,        // [{ len (px), angle (°), mask (Float32 0..1) | null }]
+      noiseStable: false,   // ruído de sensor determinístico e mais forte nas sombras
       curve: null,          // LUT (Uint8Array 256) ou null
       hsl: null,            // { redHue, redSat, redLum, ... } por banda
       splitShadow: null, splitHigh: null,  // color grading: [r,g,b] -1..1
@@ -182,6 +189,69 @@ const PhotoLab = (function () {
     return blendLevels(S, A, B, mask, w * h);
   }
 
+  /* ── primitivas do simulador ──────────────────────────────────────
+     Arrasto com o comprimento em píxeis (o motionBlur acima recebe uma dose
+     0..100 e converte-a ele próprio). */
+  function motionBlurPx(S, w, h, len, angleDeg) {
+    return motionBlur(S, w, h, (len / (w * 0.18)) * 100, angleDeg);
+  }
+  /* Arrasto de UMA camada (o sujeito recortado, ou o fundo sem ele).
+     Arrastar a imagem inteira e depois misturar pela máscara dava dois
+     defeitos: no panning as cores do sujeito escorriam para o fundo (um halo
+     à volta dele), e num sujeito em movimento o arrasto ficava preso dentro
+     da silhueta. Aqui arrasta-se só a camada — cor pré-multiplicada pelo
+     peso e dividida pelo peso arrastado — e:
+       'bg'  o fundo é substituído pelo fundo arrastado; o sujeito fica intacto
+       'fg'  o sujeito arrastado espalha-se para fora da própria silhueta */
+  function motionLayer(S, w, h, m) {
+    const P = new Uint8ClampedArray(S.length), Wt = new Uint8ClampedArray(S.length);
+    for (let i = 0, p = 0; i < S.length; i += 4, p++) {
+      const k = m.mask[p];
+      P[i] = S[i] * k; P[i + 1] = S[i + 1] * k; P[i + 2] = S[i + 2] * k; P[i + 3] = 255;
+      Wt[i] = Wt[i + 1] = Wt[i + 2] = k * 255; Wt[i + 3] = 255;
+    }
+    const Pb = motionBlurPx(P, w, h, m.len, m.angle), Wb = motionBlurPx(Wt, w, h, m.len, m.angle);
+    const out = new Uint8ClampedArray(S.length);
+    for (let i = 0, p = 0; i < S.length; i += 4, p++) {
+      const a = Wb[i] / 255;
+      const k = m.layer === 'fg' ? Math.max(a, m.mask[p]) : m.mask[p];
+      if (a > 0.004 && k > 0) {
+        out[i] = S[i] + (Pb[i] / a - S[i]) * k; out[i + 1] = S[i + 1] + (Pb[i + 1] / a - S[i + 1]) * k; out[i + 2] = S[i + 2] + (Pb[i + 2] / a - S[i + 2]) * k;
+      } else { out[i] = S[i]; out[i + 1] = S[i + 1]; out[i + 2] = S[i + 2]; }
+      out[i + 3] = S[i + 3];
+    }
+    return out;
+  }
+  /* Mistura A→B por máscara (0 = A, 1 = B). */
+  function mixMask(A, B, mask) {
+    const out = new Uint8ClampedArray(A.length);
+    for (let i = 0, p = 0; i < A.length; i += 4, p++) {
+      const m = mask[p];
+      out[i] = A[i] + (B[i] - A[i]) * m; out[i + 1] = A[i + 1] + (B[i + 1] - A[i + 1]) * m;
+      out[i + 2] = A[i + 2] + (B[i + 2] - A[i + 2]) * m; out[i + 3] = A[i + 3];
+    }
+    return out;
+  }
+  /* Desfoque com um raio por píxel: quatro níveis de nitidez (0, ⅓, ⅔ e o
+     máximo) e interpolação entre os dois vizinhos. Duas passagens de caixa
+     por nível aproximam um disco sem o custo de uma convolução. */
+  function mapBlur(S, w, h, map, max) {
+    const lv = [S];
+    for (const k of [1 / 3, 2 / 3, 1]) {
+      const r = Math.max(1, Math.round(max * k * 0.7));
+      lv.push(boxBlur(boxBlur(S, w, h, r), w, h, Math.max(1, Math.round(r * 0.6))));
+    }
+    const out = new Uint8ClampedArray(S.length);
+    for (let i = 0, p = 0; i < S.length; i += 4, p++) {
+      const t = Math.min(1, map[p] / max) * 3;
+      const a = t >= 3 ? 2 : t | 0, f = t - a;
+      const lo = lv[a], hi = lv[a + 1];
+      out[i] = lo[i] + (hi[i] - lo[i]) * f; out[i + 1] = lo[i + 1] + (hi[i + 1] - lo[i + 1]) * f;
+      out[i + 2] = lo[i + 2] + (hi[i + 2] - lo[i + 2]) * f; out[i + 3] = S[i + 3];
+    }
+    return out;
+  }
+
   const LUMA = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
   /* ── HSL por banda de matiz ───────────────────────────────────────── */
@@ -264,6 +334,15 @@ const PhotoLab = (function () {
        ISO alto ficaria borrado com ela, que é o contrário do que se vê. */
     if (par.motion > 0) S = motionBlur(S, w, h, par.motion, par.motionAngle);
     if (par.defocus > 0) S = defocusBlur(S, w, h, par);
+    // simulador: primeiro o que se move na cena, depois o tremido da câmara,
+    // depois a ótica (o desfoque também desfoca o que já vem arrastado)
+    if (par.motions) for (const m of par.motions) {
+      if (!(m.len >= 1)) continue;
+      if (m.layer && m.mask) { S = motionLayer(S, w, h, m); continue; }
+      const B = motionBlurPx(S, w, h, m.len, m.angle);
+      S = m.mask ? mixMask(S, B, m.mask) : B;
+    }
+    if (par.blurMap && par.blurMax >= 0.7) S = mapBlur(S, w, h, par.blurMap, par.blurMax);
 
     // Pré-cálculos que dependem da imagem inteira
     const needBlur = par.clarity || par.dehaze || par.sharpen || par.texture || par.denoise;
@@ -399,9 +478,21 @@ const PhotoLab = (function () {
 
       // 12. ruído sintético (para demonstrar ISO alto)
       if (nzK) {
-        const n = (Math.random() - 0.5) * nzK * 110;
-        const nc = (Math.random() - 0.5) * nzK * 55;   // ruído de cor
-        r += n + nc; g += n; b += n - nc;
+        if (par.noiseStable) {
+          /* Ruído de sensor: o mesmo desenho a cada render (senão a imagem
+             "ferve" enquanto se mexe noutro controlo) e mais forte onde há
+             menos luz — é nas sombras que o ISO alto se vê primeiro. */
+          const px = (i >> 2) % w, py = (i >> 2) / w | 0;
+          const L = LUMA(r, g, b) / 255;
+          const wgt = 1.25 - Math.min(1, L) * 0.75;
+          const n = grainAt(px, py, 1) * nzK * 150 * wgt;
+          const nc = grainAt(px + 7919, py + 104729, 2) * nzK * 80 * wgt;
+          r += n + nc; g += n - nc * 0.4; b += n - nc;
+        } else {
+          const n = (Math.random() - 0.5) * nzK * 110;
+          const nc = (Math.random() - 0.5) * nzK * 55;   // ruído de cor
+          r += n + nc; g += n; b += n - nc;
+        }
       }
 
       /* ── camada de LOOK ───────────────────────────────────────────────
