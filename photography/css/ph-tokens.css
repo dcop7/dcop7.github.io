@@ -54,10 +54,14 @@
   --dp-fs-meta: .72rem;
 
   /* ── espaço e forma ── */
-  --dp-gutter:  clamp(16px, 4vw, 56px);
+  /* a margem lateral nunca é menor do que a zona do entalhe (telemóvel deitado) */
+  --dp-gutter:  max(clamp(16px, 4vw, 56px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   --dp-max:     1320px;
   --dp-r:       3px;
-  --hdr-h:      64px;       /* altura do cabeçalho — índices presos colam-se aqui */
+  /* altura do cabeçalho — índices presos colam-se aqui. Inclui a barra de
+     estado: na PWA instalada no iOS (viewport-fit=cover + barra translúcida)
+     a página começa por baixo dela. */
+  --hdr-h:      calc(64px + env(safe-area-inset-top, 0px));
 
   /* ── movimento ── */
   --dp-ease:    cubic-bezier(.22,.9,.32,1);

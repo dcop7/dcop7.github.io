@@ -397,3 +397,6 @@
   /* Numa tira de duas células não vale a pena arrastar: cabem lado a lado. */
   .cc-strip[data-cells="2"] .cc-track { grid-auto-columns: 1fr; grid-template-columns: repeat(2, 1fr); grid-auto-flow: row; overflow-x: visible; }
 }
+
+/* iOS amplia a página ao focar um campo com letra abaixo de 16px */
+@media (max-width: 900px) { .cs-search input { font-size: 16px; } }

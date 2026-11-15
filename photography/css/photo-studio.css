@@ -316,3 +316,5 @@
   .sts { border-left: 0; border-right: 0; border-radius: 0 !important; }
 }
 @media (max-width: 900px) { .ph-sm { align-items: center; } }
+/* ── margens seguras: o estúdio vai de lado a lado, por isso afasta-se ele do entalhe ── */
+body.st-on .view-inner { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }

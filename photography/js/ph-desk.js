@@ -29,6 +29,13 @@ const PhDesk = (function () {
   const mobile = () => matchMedia('(max-width: 900px)').matches;
 
   let _data = null, _worker = null, cur = null, _go = null;
+  /* geração dos pedidos: única em TODO o módulo e não por bancada. Com um
+     contador por bancada, ao passar da câmara escura para a mesa as duas
+     estavam na geração 1 e o render ainda em curso da primeira era pintado
+     na segunda (via-se o fotograma desfocado do simulador na mesa). */
+  let _gen = 0;
+  let _carry = null;      // fotografia do utilizador a passar de uma bancada para a outra
+  let _wFail = 0;         // quando o worker falhou pela última vez
 
   /* ── dados: fotografias do autor + cenas do laboratório + estilos ── */
   function loadData() {
@@ -51,17 +58,30 @@ const PhDesk = (function () {
 
   function worker() {
     if (_worker) return _worker;
-    _worker = new Worker('/photography/js/ph-lab-worker.js');
-    _worker.onmessage = e => {
+    const w = _worker = new Worker('/photography/js/ph-lab-worker.js');
+    w.onmessage = e => {
       const m = e.data, c = cur;
-      if (!c) return;
+      if (!c || w !== _worker) return;
       c.busy = false;
       if (m.gen === c.gen) { if (m.error) console.warn('[desk]', m.error); else paint(c, m); }
-      if (c.next) { const n = c.next; c.next = null; c.busy = true; _worker.postMessage(n); }
+      if (c.next) { const n = c.next; c.next = null; c.busy = true; w.postMessage(n); }
     };
-    _worker.onerror = e => { console.error('[desk worker]', e.message); if (cur) cur.busy = false; };
-    return _worker;
+    /* O worker não carregou (rede em baixo) ou morreu. Antes ficava
+       `busy` para sempre e a mesa deixava de responder até recarregar a
+       página. Agora deita-se fora, avisa-se uma vez, e o próximo gesto (ou
+       a ligação a voltar) cria outro e volta a entregar-lhe a fotografia. */
+    w.onerror = e => {
+      console.error('[desk worker]', e && e.message);
+      if (e && e.preventDefault) e.preventDefault();
+      if (w === _worker) { try { w.terminate(); } catch (_) {} _worker = null; }
+      _wFail = Date.now();
+      const c = cur; if (!c) return;
+      c.busy = false; c.next = null; c.wdead = true;
+      if (!c.warned) { c.warned = true; toast('O motor de imagem não carregou. Verifica a ligação: a mesa volta a tentar quando mexeres num controlo.'); }
+    };
+    return w;
   }
+  window.addEventListener('online', () => { if (cur && cur.wdead) { _wFail = 0; render(cur, false); } });
 
   /* ══ definições dos painéis ═══════════════════════════════════════ */
   /* Mesa de revelação: os mesmos cursores das lições, pela ordem do fluxo. */
@@ -259,7 +279,7 @@ const PhDesk = (function () {
       <div class="dk-field dk-focus"><span class="dk-field-l">Foco <output class="dk-focus-v"></output></span>
         <div class="dk-track"><input type="range" min="0" max="100" step="1" data-focus aria-label="Distância de foco"/></div>
         <p class="dk-hint">${I('focus')}Ou toca na fotografia no sítio onde queres focar.</p></div>`)
-    + secHTML('leitura', 'Leitura', 'meter', `<ul class="dk-reads"></ul>`)
+    + secHTML('leitura', 'Leitura', 'meter', `<ul class="dk-reads"></ul><p class="dk-hint dk-model">${I('help')}<span></span></p>`)
     + secHTML('exp', 'Experiências', 'flask', `<div class="dk-try"></div><p class="dk-try-why" hidden></p>
       <div class="dk-actions">
         <button type="button" class="dk-btn dk-wide" data-act="reset">${I('reset')}<span>Como foi tirada</span></button>
@@ -320,6 +340,13 @@ const PhDesk = (function () {
       if (cur !== c) return;
       c.data = d;
       buildLeft(c);
+      /* "Revelar esta fotografia" com um ficheiro do utilizador aberto na
+         câmara escura: a fotografia vem com ele (antes abria outra). */
+      if (_carry && !arg) {
+        c.user = Object.assign({}, _carry, { lesson: '' }); _carry = null;
+        return select(c, 'user', true);
+      }
+      _carry = null;
       const want = arg || (mode === 'sim' ? prefs.sim : prefs.dev);
       select(c, d.byId.has(want) ? want : d.scenes[0].id, true);
     }).catch(err => {
@@ -387,7 +414,7 @@ const PhDesk = (function () {
     const scene = id === 'user' ? c.user : c.data.byId.get(id);
     if (!scene) return;
     c.scene = scene;
-    c.gen++; c.next = null; c.matte = null;
+    c.gen = ++_gen; c.next = null; c.matte = null;
     c.root.querySelectorAll('.dk-scene').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === id));
     c.root.querySelector('.dk-title-s').textContent = scene.title;
     c.root.querySelector('.dk-hud-cam').textContent = scene.camera || 'Fotografia sem EXIF';
@@ -426,26 +453,14 @@ const PhDesk = (function () {
       const W0 = img.naturalWidth || img.width, H0 = img.naturalHeight || img.height;
       c.ar = W0 / H0;
       root.style.setProperty('--ar', c.ar);
-      const long = Math.min(Math.max(W0, H0), mobile() ? 960 : 1280);
-      const w = worker(), sizes = {};
-      for (const [key, L] of [['hi', long], ['lo', Math.max(360, Math.round(long / 2))]]) {
-        const k = L / Math.max(W0, H0), cw = Math.round(W0 * k), ch = Math.round(H0 * k);
-        const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
-        const x = cv.getContext('2d', { willReadFrequently: true });
-        x.drawImage(img, 0, 0, cw, ch);
-        const id = x.getImageData(0, 0, cw, ch);
-        if (key === 'hi') { c.orig = id; c.origHist = PhotoLab.histogram(id); }
-        sizes[key] = [cw, ch];
-        const buf = id.data.buffer.slice(0);
-        w.postMessage({ type: 'image', key, w: cw, h: ch, buf }, [buf]);
-      }
-      c.sizes = sizes;
+      c.img = img;
+      c.long = Math.min(Math.max(W0, H0), mobile() ? 960 : 1280);
+      const sizes = pushImages(c);
       const cv = root.querySelector('.dk-cv');
       cv.width = sizes.hi[0]; cv.height = sizes.hi[1];
       cv.getContext('2d').putImageData(c.orig, 0, 0);
       const src = scene.blob || scene.src;
       root.querySelector('.dk-orig').src = src; root.querySelector('.dk-side-img').src = src;
-      c.img = img;
       root.dataset.ready = '1';
       if (scene.matte) loadMatte(c, scene, gen);
       if (c.mode === 'dev') paintLooks(c);
@@ -457,6 +472,23 @@ const PhDesk = (function () {
     img.onload = () => done(img);
     img.onerror = () => { if (cur === c && c.gen === gen) root.querySelector('.dk-loading').textContent = 'Não foi possível carregar esta fotografia.'; };
     img.src = scene.src;
+  }
+  /* a fotografia de trabalho, em dois tamanhos, entregue ao worker */
+  function pushImages(c) {
+    const img = c.img, W0 = img.naturalWidth || img.width, H0 = img.naturalHeight || img.height;
+    const w = worker(), sizes = {};
+    for (const [key, L] of [['hi', c.long], ['lo', Math.max(360, Math.round(c.long / 2))]]) {
+      const k = L / Math.max(W0, H0), cw = Math.max(1, Math.round(W0 * k)), ch = Math.max(1, Math.round(H0 * k));
+      const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+      const x = cv.getContext('2d', { willReadFrequently: true });
+      x.drawImage(img, 0, 0, cw, ch);
+      const id = x.getImageData(0, 0, cw, ch);
+      if (key === 'hi') { c.orig = id; c.origHist = PhotoLab.histogram(id); }
+      sizes[key] = [cw, ch];
+      const buf = id.data.buffer.slice(0);
+      w.postMessage({ type: 'image', key, w: cw, h: ch, buf }, [buf]);
+    }
+    return c.sizes = sizes;
   }
   /* recorte do sujeito (cenas de treino): canal vermelho de um PNG/WebP → Float32 */
   function loadMatte(c, scene, gen) {
@@ -487,6 +519,12 @@ const PhDesk = (function () {
   }
   function render(c, fast) {
     if (!c.sizes) return;
+    if (c.wdead) {                                   // o worker caiu: outro, com a fotografia outra vez
+      if (Date.now() - _wFail < 1200) return;
+      c.wdead = false; c.busy = false; c.next = null;
+      pushImages(c);
+      if (c.scene.matte) loadMatte(c, c.scene, c.gen);   // o recorte volta a pedir o render quando chegar; se não chegar, fica o de baixo
+    }
     const msg = { type: 'render', id: ++c.rid, gen: c.gen, key: fast ? 'lo' : 'hi', mode: c.mode };
     if (c.mode === 'sim') { msg.scene = scenePlain(c.scene); msg.st = simState(c); }
     else msg.params = devParams(c.p);
@@ -586,6 +624,12 @@ const PhDesk = (function () {
         (c.prefs.sec = c.prefs.sec || {})[c.mode + ':' + sec.dataset.sec] = open; store.set('ph-desk', c.prefs);
       }
     });
+    /* um cursor tocado sem querer ao deslizar o painel foi reposto pelo shell
+       (ph-shell.js › guardRanges): a entrada que isso deixou no histórico não
+       desfaz nada, sai */
+    root.addEventListener('ph:range-revert', () => {
+      if (c.mode === 'dev' && c.undo.length && c.undo[c.undo.length - 1] === JSON.stringify(c.p)) { c.undo.pop(); syncHistory(c); }
+    });
     /* manter premido: original */
     const hold = $('.dk-hold');
     const on = () => { root.dataset.hold = '1'; }, off = () => { delete root.dataset.hold; };
@@ -683,7 +727,11 @@ const PhDesk = (function () {
     else if (a === 'reset') {
       if (c.mode === 'sim') { c.st = S.shotOf(c.scene); c.focusPt = null; root.querySelector('.dk-reticle').hidden = true; clearTry(c); syncSim(c); render(c, false); }
       else { commit(c); c.p = devNeutral(); syncDev(c); saveDev(c); render(c, false); }
-    } else if (a === 'todev') _go && _go('edicao/mesa/' + (c.scene.id === 'user' ? '' : c.scene.id));
+    } else if (a === 'todev') {
+      const mine = c.scene.id === 'user';
+      if (mine) _carry = c.user;
+      _go && _go('edicao/mesa' + (mine ? '' : '/' + c.scene.id));
+    }
     else if (a === 'tosim') _go && _go('laboratorio/camara/' + c.scene.id);
     else if (a === 'undo' || a === 'redo') {
       const from = a === 'undo' ? c.undo : c.redo, to = a === 'undo' ? c.redo : c.undo;
@@ -753,6 +801,14 @@ const PhDesk = (function () {
       applyTry(c, c.scene.try[+b.dataset.i], b);
     });
     secs.querySelector('.dk-focus').hidden = !c.scene.depth;
+    /* o que é dado e o que é estimativa: dito em todas as cenas, junto dos números.
+       (Antes só duas cenas o diziam, na legenda, e as distâncias liam-se como factos.) */
+    const sc = c.scene;
+    secs.querySelector('.dk-model span').textContent = sc.id === 'user'
+      ? 'Do teu ficheiro vêm a câmara, a focal, a abertura, o tempo e o ISO. Não há modelo de profundidade nem de movimento: só a exposição, o tremido e o ruído são simulados.'
+      : sc.generated
+        ? 'Cena de treino: a imagem é gerada e as definições de disparo foram-lhe atribuídas. As distâncias e as velocidades são as declaradas para a cena; o desfoque, o arrasto e o ruído são calculados por um modelo.'
+        : 'Do EXIF vêm a câmara, a focal, a abertura, o tempo e o ISO. A distância de foco, as distâncias dos planos e a velocidade do que se move são estimativas feitas para esta cena. O desfoque, o arrasto e o ruído são calculados sobre a fotografia já tirada: é uma simulação, não uma medição.';
     syncSim(c);
   }
   function clearTry(c) {
@@ -861,7 +917,7 @@ const PhDesk = (function () {
       row('info', 'ruler', 'Profundidade de campo',
         flat ? `O motivo está todo longe: nítido de ${S.fmtDist(f.near)} ao infinito, a abertura quase não muda a nitidez.`
           : `Focado a ${S.fmtDist(st.focus)}: nítido de ${S.fmtDist(f.near)} a ${farTxt}. Hiperfocal: ${S.fmtDist(f.H)}.`,
-        dofRuler(f, st.focus) + `<p class="dk-read-n">${cam.name} · focal real ${(Math.round(cam.f * 10) / 10).toString().replace('.', ',')} mm · ${S.fmtAperture(st.N)}</p>`);
+        dofRuler(f, st.focus) + `<p class="dk-read-n">${cam.name} · focal real ${(Math.round(cam.f * 10) / 10).toString().replace('.', ',')} mm · ${S.fmtAperture(st.N)} · distâncias estimadas</p>`);
     } else row('info', 'ruler', 'Profundidade de campo', 'Esta fotografia não tem modelo de profundidade: a abertura só muda a exposição e a difração.');
 
     const nz = S.noise(sc, st);
@@ -1035,7 +1091,10 @@ const PhDesk = (function () {
 
   /* ══ ficheiro do utilizador ═══════════════════════════════════════ */
   async function openFile(c, file) {
-    if (!/^image\//.test(file.type)) return toast('Esse ficheiro não é uma imagem.');
+    /* há browsers e seletores de ficheiros que não dizem o tipo (no WebKit um
+       .webp chegava com tipo vazio e era recusado): só se recusa à partida o
+       que declara NÃO ser imagem; o resto decide-se ao descodificar */
+    if (file.type && !/^image\//.test(file.type)) return toast('Esse ficheiro não é uma imagem.');
     let ex = null, bmp;
     try {
       ex = PhExif.parse(await file.arrayBuffer());
@@ -1047,8 +1106,12 @@ const PhDesk = (function () {
     }
     /* reduzir para trabalhar (e exportar) a um tamanho razoável */
     const L = Math.min(Math.max(bmp.width, bmp.height), 2400), k = L / Math.max(bmp.width, bmp.height);
-    const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
-    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+    const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(bmp.width * k)); cv.height = Math.max(1, Math.round(bmp.height * k));
+    /* fundo branco: um PNG com transparência ficava transparente na mesa e
+       preto no "original" e no JPEG exportado */
+    const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+    cx.drawImage(bmp, 0, 0, cv.width, cv.height);
+    if (bmp.close) bmp.close();
     if (c.user && c.user.blob) URL.revokeObjectURL(c.user.blob);
     const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.92));
     let cls = 'apsc'; try { cls = localStorage.getItem('ph-class') || 'apsc'; } catch (_) {}
@@ -1089,7 +1152,10 @@ const PhDesk = (function () {
       }, 'image/jpeg', 0.92);
     };
     w.postMessage({ type: 'image', key: 'x', w: W0, h: H0, buf: src.data.buffer }, [src.data.buffer]);
-    w.postMessage({ type: 'render', id: 1, gen: 0, key: 'x', mode: 'dev', params: devParams(c.p) });
+    /* os efeitos de detalhe têm raio em píxeis: a exportação é maior do que
+       a imagem do ecrã, por isso o raio cresce na mesma proporção */
+    const par = devParams(c.p); par.detailScale = Math.max(W0, H0) / (c.long || Math.max(W0, H0));
+    w.postMessage({ type: 'render', id: 1, gen: 0, key: 'x', mode: 'dev', params: par });
   }
 
   function toast(msg) { if (typeof PhShell !== 'undefined') PhShell.toast(msg, 4200); }

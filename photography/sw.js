@@ -16,11 +16,14 @@
    • *.json (/data/photo e o índice de assets) → rede primeiro;
    • imagens e o resto → cache primeiro + revalidação em fundo;
    • tipos de letra → alojados em /photography/fonts/ (precache); o ramo
-     das Google Fonts fica só para caches antigas.
+     das Google Fonts fica só para caches antigas;
+   • three.js do estúdio 3D (esm.sh, versão fixa) → cache primeiro, guardado
+     na primeira vez que o estúdio abre com ligação (cache foto-libs-*).
    Mudar CACHE quando muda código para forçar o precache novo.
    ══════════════════════════════════════════════════════════════════ */
-const CACHE = 'foto-v3';
+const CACHE = 'foto-v4';
 const FONTS = 'foto-fonts-v1';
+const LIBS = 'foto-libs-v1';      // three.js do estúdio (esm.sh), guardado ao primeiro uso
 
 const STATIC = [
   '/photography/',
@@ -118,7 +121,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k.startsWith('foto-') && k !== CACHE && k !== FONTS).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k.startsWith('foto-') && k !== CACHE && k !== FONTS && k !== LIBS).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -141,6 +144,16 @@ self.addEventListener('fetch', e => {
       const net = fetch(req).then(res => put(FONTS, req, res)).catch(() => hit);
       return hit || net;
     })));
+    return;
+  }
+  /* three.js do estúdio 3D: vem do esm.sh com a versão no URL, por isso é
+     imutável → cache primeiro. Antes o SW ignorava tudo o que não fosse da
+     própria origem e o estúdio nunca abria offline, nem depois de usado. */
+  if (url.hostname === 'esm.sh') {
+    e.respondWith(caches.open(LIBS).then(c => c.match(req).then(hit => hit || fetch(req).then(res => {
+      if (res.ok && res.type === 'cors') c.put(req, res.clone());
+      return res;
+    }))));
     return;
   }
   if (url.origin !== location.origin) return;

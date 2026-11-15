@@ -179,7 +179,7 @@ o texto é uma linha**. Se um bloco precisa de um parágrafo, pertence a Aprende
 - **Fichas de género só existem se a resposta mudar** por ser aquele género
   (`data/photo/cheats-genre.json`, 8 géneros). Repetir o cartão geral dentro de
   um género é conteúdo a mais, não conteúdo específico.
-- **Capas:** grupos `cheat-ico`, `apr-ico`, `eq-ico` e `tool-ico` do photogen,
+- **Capas:** grupos `cheat-ico`, `apr-ico` e `eq-ico` do photogen,
   todos no estilo `genre_icon` — o mesmo dos ícones de género, para o portal
   inteiro ler como um sistema só. **A fronteira:** este estilo serve para
   IDENTIDADE (capas, ícones, tiles). As imagens que **são** a lição — pares de
