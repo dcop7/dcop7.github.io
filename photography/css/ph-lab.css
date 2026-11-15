@@ -208,3 +208,6 @@ i.in-gh-b { background: #4f76b8; }
   .lab-strip { grid-auto-columns: 104px; margin-right: calc(-1 * var(--dp-gutter)); }
   .lab-thumb span { opacity: 1; }
 }
+
+/* iOS amplia a página ao focar um campo com letra abaixo de 16px */
+@media (max-width: 900px) { .in-sel { font-size: 16px; } }

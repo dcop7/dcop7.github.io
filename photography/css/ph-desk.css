@@ -391,13 +391,42 @@ body.light .dk { --dk-bg: #dcd5c6; }
 }
 /* telemóvel deitado: a fotografia à esquerda, o painel à direita */
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
-  .dk { grid-template-rows: 40px minmax(0, 1fr); grid-template-columns: minmax(0, 1fr) 64px; }
+  .dk { grid-template-rows: 40px minmax(0, 1fr); }
   .dk-bar { grid-column: 1 / -1; }
   .dk-body { flex-direction: row; flex-wrap: nowrap; }
   .dk-stage { flex: 1 1 55%; }
   .dk-sec { max-height: none; width: 45%; flex: 0 0 45%; border-top: 0; border-left: 1px solid var(--dk-line); }
   .dk-tabs { flex-direction: column; overflow-y: auto; border-top: 0; border-left: 1px solid var(--dk-line); }
-  .dk-tabs button { height: 52px; min-width: 0; flex: 0 0 auto; }
+  .dk-tabs button { height: 56px; min-width: 0; flex: 0 0 auto; white-space: normal; line-height: 1.15; text-align: center; padding: 0 .2rem; font-size: .62rem; }
+  /* deitado: o histograma fica sobre a fotografia (estava por cima do painel e tapava o modo S),
+     e a coluna de separadores alarga para os nomes caberem */
+  .dk { grid-template-columns: minmax(0, 1fr) 76px; }
+  .dk-histo { top: 10px; right: calc(45% + 10px); width: 96px; }
 }
 
 @media (prefers-reduced-motion: reduce) { .dk-reticle-in { animation: none; } .dk-meter-n { transition: none; } }
+
+/* ── margens seguras: no telemóvel a bancada ocupa o ecrã todo (o cabeçalho
+   do site sai), por isso é ela que se afasta da barra de estado e do entalhe ── */
+.dk { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }   /* também nos telemóveis deitados com mais de 900px */
+@media (max-width: 900px) {
+  .dk { padding-top: env(safe-area-inset-top, 0px); }
+}
+/* ── barra em ecrãs estreitos: na mesa de revelação a barra precisava de 391px.
+   Em 360px (a maioria dos Android) e 375px (iPhone SE/mini) o Exportar ficava
+   fora do ecrã e a página alargava. Abaixo de 400px sai o botão de ampliar
+   (beliscar e duplo toque fazem o mesmo) e o resto aperta. ── */
+@media (max-width: 400px) {
+  .dk-bar { gap: .2rem; padding: 0 .25rem; }
+  .dk-bar [data-act="zoom"] { display: none; }
+  .dk[data-mode="dev"] .dk-title { display: none; }   /* sobravam 20px: um título de uma letra só faz ruído */
+  .dk-bar-mid { gap: .2rem; }
+  .dk-bar-end { gap: .1rem; }
+}
+@media (max-width: 345px) {
+  .dk-ico { width: 30px; }
+  .dk-cmp button { padding: 0 .38rem; }
+  .dk-hold { padding: 0 .4rem; }
+  .dk-primary { width: 34px; margin-left: 0; }
+  .dk-back { padding: .5rem .1rem; }
+}

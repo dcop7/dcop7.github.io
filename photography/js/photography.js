@@ -2738,8 +2738,12 @@ const PhotographyPage = (function () {
       .catch(err => {
         console.error(err);
         _studio = null; _studioMode = null;
-        host.innerHTML = `<div class="empty-state"><p>O estúdio 3D precisa de WebGL 2 e de ligação para carregar o three.js.</p><button class="btn btn-sm" type="button">Tentar de novo</button></div>`;
-        host.querySelector('button').onclick = () => switchStudio(panel, mode);
+        host.innerHTML = `<div class="empty-state"><p>O estúdio 3D precisa de WebGL 2 e, na primeira vez, de ligação para descarregar o motor 3D e o modelo. Depois de aberto uma vez, fica disponível sem rede.</p><button class="btn btn-sm" type="button">Tentar de novo</button></div>`;
+        /* recarregar, e não voltar a chamar o import: um módulo que falhou
+           (o three.js sem rede) fica marcado como falhado no mapa de módulos
+           desta página e todas as tentativas seguintes devolvem o mesmo erro,
+           mesmo com a ligação de volta. A rota #estudio mantém-se no URL. */
+        host.querySelector('button').onclick = () => location.reload();
       });
   }
 

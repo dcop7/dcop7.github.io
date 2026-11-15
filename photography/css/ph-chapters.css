@@ -999,6 +999,11 @@ body.light { --mq-hi: #b0bccf; --mq-lo: #66738f; --mq-edge: rgba(10,16,28,.2); -
   .ph-tool-graph .el-lab, .ph-tool-mask .el-lab { grid-template-columns: 1fr; }
   .el-lab-side { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
   .el-histo { flex: 1 1 200px; }
+  /* qualificado pela família, como as regras de cima: o `flex: 0 0 auto` delas
+     ganhava a esta e, em fila, o histograma ficava com a largura do próprio
+     canvas (350px) — em ecrãs abaixo de 385px a página inteira alargava. */
+  .ph-tool-tonal .ph-tgrid-demo .el-histo { flex: 1 1 200px; min-width: 0; max-width: 100%; }
+  .ph-tool-detail .ph-tgrid-demo .el-histo { flex: 1 1 200px; min-width: 0; max-width: min(385px, 100%); }
   .el-loupe { flex: 1 1 240px; }
   .el-lab-side .el-controls { flex: 1 1 240px; }
   /* qualificadas por família porque as variantes acima também o são */

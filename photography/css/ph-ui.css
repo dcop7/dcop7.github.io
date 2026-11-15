@@ -191,6 +191,7 @@ body[data-route="home"] .view-inner { padding-top: clamp(2.6rem, 6vw, 4.6rem); }
 /* dentro de um item (género, capítulo, ferramenta) a cabeça sai: a página do
    item já tem título e "voltar" próprios, e a área continua acesa no topo */
 body[data-depth="deep"] .dp-head { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+body[data-depth="deep"] .dp-head-k, body[data-depth="deep"] .dp-head-s { display: none; }   /* só o <h1> fica para leitores de ecrã: a ligação da área recebia foco sem se ver */
 body[data-route="home"] .dp-head { display: none; }
 @media (max-width: 760px) { .dp-head { grid-template-columns: 1fr; gap: .6rem; } }
 
@@ -318,7 +319,12 @@ body.ph-modal-open { overflow: hidden; }
 .dp-menu-btn { display: grid; }
 @media (max-width: 1180px) { .dp-search-btn span, .dp-search-btn kbd { display: none; } .dp-search-btn { width: 38px; padding: 0; justify-content: center; background: transparent; border-color: transparent; color: var(--dp-paper-2); } }
 @media (max-width: 900px) { .dp-top-in { gap: .6rem; } .dp-tools { gap: .1rem; } }
+/* telemóveis grandes deitados (932×430): com as margens do entalhe de cada lado, o cabeçalho de
+   computador (com as quatro áreas) não cabia e o botão do índice ia parar debaixo do entalhe */
+@media (max-width: 1000px) and (max-height: 520px) { .dp-nav, .dp-portal { display: none; } .dp-tools { margin-left: auto; } }
 @media (max-width: 380px) { .dp-brand-dc { display: none; } }
+/* 320px: com a estrela de guardar (4 botões) o cabeçalho passava 6px do ecrã e a página alargava */
+@media (max-width: 345px) { .dp-brand-ph { font-size: 1.2rem; } .dp-brand { gap: .45rem; } }
 
 /* ── índice do site ── */
 .dp-menu { padding: 0; }
@@ -454,7 +460,7 @@ button .ic-e, .ph-chip .ic-e, .pl-chip .ic-e, a .ic-e { color: currentColor; opa
    foram geradas em azul/ciano sobre navy, que era a paleta do portal. Aqui
    passam a duotone âmbar sobre preto: o desenho é o mesmo, a cor é a da
    câmara escura. Para as repor a cores basta apagar esta regra. */
-img[src*="/apr-ico/"], img[src*="/cheat-ico/"], img[src*="/eq-ico/"], img[src*="/genre-ico/"], img[src*="/tool-ico/"] {
+img[src*="/apr-ico/"], img[src*="/cheat-ico/"], img[src*="/eq-ico/"], img[src*="/genre-ico/"] {
   filter: grayscale(1) sepia(1) hue-rotate(-12deg) saturate(1.7) brightness(.8) contrast(1.12);
 }
 body.light img[src*="/apr-ico/"], body.light img[src*="/cheat-ico/"], body.light img[src*="/eq-ico/"], body.light img[src*="/genre-ico/"] {
@@ -506,4 +512,15 @@ body.light img[src*="/apr-ico/"], body.light img[src*="/cheat-ico/"], body.light
   .st-bar .dk-back { width: 40px; height: 40px; justify-content: center; padding: 0; }
   .sts .seg-btn { min-height: 38px; }
   .gp-toc-b, .ph-chip, .pl-chip { min-height: 38px; }
+}
+
+/* ── margens seguras: nada de controlos debaixo da barra de estado nem do entalhe ── */
+.dp-top, .dp-menu-head { padding-top: env(safe-area-inset-top, 0px); }
+@media (max-width: 600px) {
+  .ps { padding-top: env(safe-area-inset-top, 0px); }
+  .ps-box { height: auto; align-self: stretch; }
+}
+/* iOS amplia a página ao focar um campo com letra abaixo de 16px */
+@media (max-width: 900px) {
+  .ph-genre-q { font-size: 16px; }   /* os outros dois campos (.cs-search input, .in-sel) estão nas folhas deles, que carregam depois desta */
 }

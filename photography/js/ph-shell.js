@@ -205,8 +205,32 @@ const PhShell = (function () {
     if (ms) _toastT = setTimeout(() => { t.hidden = true; }, ms);
   }
 
+  /* Deslizar a página com o dedo a começar em cima de um cursor: o browser
+     muda logo o valor (toque na calha) e só depois percebe que era scroll,
+     altura em que cancela o gesto (pointercancel). Sem isto, percorrer um
+     painel cheio de cursores no telemóvel mudava definições sem querer.
+     Guarda-se o valor ao tocar e, se o gesto for cancelado para scroll,
+     repõe-se — com os eventos normais, para quem ouve o cursor redesenhar. */
+  function guardRanges() {
+    let held = null;
+    document.addEventListener('pointerdown', e => {
+      const t = e.target;
+      held = e.pointerType === 'touch' && t && t.matches && t.matches('input[type="range"]') ? { el: t, v: t.value } : null;
+    }, true);
+    document.addEventListener('pointerup', () => { held = null; }, true);
+    document.addEventListener('pointercancel', e => {
+      const h = held; held = null;
+      if (!h || e.target !== h.el || h.el.value === h.v) return;
+      h.el.value = h.v;
+      h.el.dispatchEvent(new Event('input', { bubbles: true }));
+      h.el.dispatchEvent(new Event('change', { bubbles: true }));
+      h.el.dispatchEvent(new CustomEvent('ph:range-revert', { bubbles: true }));
+    }, true);
+  }
+
   function init() {
     syncTheme();
+    guardRanges();
     $$('[data-theme-toggle]').forEach(b => b.addEventListener('click', toggleTheme));
     $('[data-fav-toggle]')?.addEventListener('click', toggleFav);
     document.addEventListener('ph:favs', renderFavs);

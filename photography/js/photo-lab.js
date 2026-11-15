@@ -37,6 +37,7 @@ const PhotoLab = (function () {
       fade: 0,              // pretos levantados (matte/film): 0..100
       grain: 0,             // grão de filme (luminância, estável entre frames)
       grainSize: 1,         // 1 = fino, 2..3 = grosso (ISO alto / 35mm push)
+      detailScale: 1,       // exportação: quantas vezes a imagem é maior do que a do ecrã (ver process)
       bloom: 0,             // halo difuso a partir das altas luzes
       halation: 0,          // o mesmo halo, tingido de vermelho (filme)
       vignette: 0,          // -100 (cantos claros) .. 100 (cantos escuros)
@@ -347,8 +348,14 @@ const PhotoLab = (function () {
     // Pré-cálculos que dependem da imagem inteira
     const needBlur = par.clarity || par.dehaze || par.sharpen || par.texture || par.denoise;
     const blurBig = (par.clarity || par.dehaze) ? boxBlur(S, w, h, Math.max(4, Math.round(Math.min(w, h) / 40))) : null;
-    const blurSmall = (par.sharpen || par.texture) ? boxBlur(S, w, h, 1) : null;
-    const blurDen = par.denoise ? boxBlur(S, w, h, 2) : null;
+    /* Nitidez, textura, redução de ruído e grão têm o raio em PÍXEIS. No ecrã
+       a mesa trabalha a ~960–1280 px e exporta a fotografia inteira (até
+       2400 px): com o mesmo raio, o efeito ficava 2–2,5× mais fino no ficheiro
+       e chegava com metade da força que se tinha visto. `detailScale` diz
+       quantas vezes a imagem é maior do que a do ecrã, e o raio acompanha. */
+    const ds = par.detailScale > 1 ? par.detailScale : 1;
+    const blurSmall = (par.sharpen || par.texture) ? boxBlur(S, w, h, Math.max(1, Math.round(ds))) : null;
+    const blurDen = par.denoise ? boxBlur(S, w, h, Math.max(1, Math.round(2 * ds))) : null;
 
     const expK = Math.pow(2, par.exposure);
     const conK = 1 + par.contrast / 100;
@@ -364,7 +371,7 @@ const PhotoLab = (function () {
     const ss = par.splitShadow, sh2 = par.splitHigh;
 
     // primitivas de look
-    const fadeK = par.fade / 100, grK = par.grain / 100, grSz = Math.max(1, par.grainSize | 0);
+    const fadeK = par.fade / 100, grK = par.grain / 100, grSz = Math.max(1, Math.round((par.grainSize || 1) * ds));
     const blK2 = par.bloom / 100, haK = par.halation / 100, vgK = par.vignette / 100;
     const glow = (blK2 || haK) ? highlightGlow(S, w, h, 0.62) : null;
     // raio da vinheta em coordenadas normalizadas (1 = canto)
