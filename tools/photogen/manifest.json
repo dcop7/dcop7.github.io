@@ -26,7 +26,8 @@
     "portrait_natural": "close up head and shoulders portrait, the head fills most of the frame, photorealistic photograph, natural skin texture with visible pores, sharp focus on the eyes, shot on 85mm f2, high detail",
     "baby_illus": "stylized 3D animated feature film still, appealing stylized characters with simplified features, smooth soft toy-like shading, warm tender mood, soft cinematic lighting, clearly a 3D animation and not a photograph, no text, no watermark",
     "vision_bw": "black and white photograph, monochrome, rich tonal range, excellent light, intentional composition, award winning, high detail, no text, no watermark",
-    "site_editorial": "cinematic editorial photograph, shot on 35mm film, subtle film grain, low key lighting, rich deep blacks, warm amber highlights, muted natural palette, intentional composition, high detail, no text, no watermark"
+    "site_editorial": "cinematic editorial photograph, shot on 35mm film, subtle film grain, low key lighting, rich deep blacks, warm amber highlights, muted natural palette, intentional composition, high detail, no text, no watermark",
+    "lab_deep": "photorealistic photograph, natural colours, deep depth of field, everything in sharp focus from foreground to background, f/16, high detail, no text, no watermark"
   },
   "_nota": "Poses de Retrato (fotos reais, preferência do user) + retratos de qualidade da luz. O manequim vetorial (photography/js/photo-mannequin.js) é o fallback e serve o 'Onde cortar'.",
   "assets": [
@@ -5414,6 +5415,48 @@
       "maxWidth": 1100,
       "negative": "text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, blurry, jpeg artifacts",
       "prompt": "an empty photography studio, a large octagonal softbox and a strip light on stands aimed at a wooden stool in front of a grey seamless paper backdrop, a camera on a tripod in the foreground, moody low key light"
+    },
+    {
+      "id": "lab-retrato",
+      "group": "lab",
+      "style": "lab_deep",
+      "matte": false,
+      "seed": 6167717,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1216,
+      "negative": "bokeh, blurred background, shallow depth of field, out of focus, motion blur, noise, grain, text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, jpeg artifacts, old woman, wrinkles, sunglasses, hat",
+      "prompt": "waist-up portrait of a young woman with dark hair in a mustard yellow wool coat standing on the left side of a narrow old european street, calm expression looking at the camera, soft overcast daylight, a long row of colourful old houses, doors and street lamps receding into the distance behind her, the whole street in crisp sharp focus from front to back"
+    },
+    {
+      "id": "lab-ciclista",
+      "group": "lab",
+      "style": "lab_deep",
+      "matte": false,
+      "seed": 6167753,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1216,
+      "negative": "bokeh, blurred background, shallow depth of field, out of focus, motion blur, noise, grain, text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, jpeg artifacts, two cyclists, crowd, cars, fused limbs, missing wheel, extra wheel",
+      "prompt": "side view of a cyclist in a red jersey and white helmet riding a road racing bicycle from left to right along a coastal road, the whole cyclist and both wheels fully visible, sharp frozen action, crisp wheel spokes, bright sunny day, blue sea and low stone wall behind, everything in sharp focus"
+    },
+    {
+      "id": "lab-noite",
+      "group": "lab",
+      "style": "lab_deep",
+      "matte": false,
+      "seed": 6167773,
+      "size": [
+        1216,
+        832
+      ],
+      "maxWidth": 1216,
+      "negative": "bokeh, blurred background, shallow depth of field, out of focus, motion blur, noise, grain, text, letters, words, watermark, logo, signature, deformed, disfigured, extra limbs, extra fingers, mutated hands, bad anatomy, cartoon, illustration, 3d render, cgi, painting, oversaturated, hdr, low quality, jpeg artifacts, people, person, cars, crowd",
+      "prompt": "empty narrow old town street at blue hour just after sunset, wet cobblestones reflecting warm light, glowing shop windows and wrought iron street lamps, deep blue sky, no people, photographed on a tripod, clean image, everything in sharp focus from the cobblestones in front to the far end of the street"
     }
   ],
   "_nota_lightpat": "Grupo lightpat = SÓ luz natural. Os padrões de estúdio (Rembrandt, split, butterfly…) foram testados e o SDXL NÃO os desenha: devolve sempre luz de beleza plana, e quando se força com \"chiaroscuro/film noir\" perde o guarda-roupa. Esses padrões são desenhados por código em photography/js/photo-cheats.js (diagrama + rosto com a sombra exata). Não voltar a tentar gerá-los.",
@@ -5422,5 +5465,6 @@
   "_nota_contraexemplos": "REGRA: um contraexemplo tem de ser a AUSENCIA do principio, nao uma variacao dele. comp-converging-bad tinha uma arcada em fuga e comp-negative-bad tinha MAIS vazio do que o exemplo bom — os dois ensinavam o contrario do que diziam. O que destrava: pedir a ausencia de forma absoluta no positivo (\"flat elevation, no depth at all\", \"absolutely no empty space anywhere\") E por o principio todo no negativo (\"perspective, vanishing point, converging lines\" / \"empty space, negative space, minimalism, sky\").",
   "_nota_anatomia": "Defeitos de anatomia que este checkpoint produz e que NAO se veem numa miniatura: membros fundidos com objectos (uma pessoa cuja metade de baixo era um tripe, em seq-amb-3) e maos que desaparecem dentro do corpo (vis-desporto). O negativo generico \"bad anatomy, extra limbs\" nao chega — e preciso nomear o defeito concreto (\"legs merging with a tripod\", \"arm ending without a hand\") E pedir o contrario no positivo (\"both legs clearly visible and separate from the tripods\", \"both arms clearly separated from the body with the hands fully visible). Rever sempre a tamanho real, nunca em contact sheet.",
   "_nota_ideas": "Grupo ideas (nov/2026): idea-<género>-<n>, n = posição da ideia em genres.json (1-based); a página do género mostra em galeria as ideias que têm imagem. Publicadas com finalize.mjs: recorte uniforme [36,0,1143,782] (o modelo inventa marcas de água no canto inferior), exceto idea-autorretrato-4 [0,0,997,682] e idea-rua-4 [160,222,890,609]. Rejeitadas por não mostrarem o que a legenda diz: familia-2, rua-2, reflexos-3, bebes-1/2 (pés e mão de bebé saem com anatomia de adulto). Bebés: estilo baby_illus (3D estilizado, nunca fotorrealista — pedido do user).",
-  "_nota_site": "Grupo site (nov/2026): imagens editoriais do microsite /photography/ (hero da home + capas das 4 áreas). Candidatos -a/-b; os rejeitados são apagados do manifesto e do disco (ids repetidos = gotcha). Escolhidos (14 nov 2026): hero = farol na hora azul (coast seed 710106; darkroom saiu genérico, com candeeiros em vez de luz de segurança; street tinha parede texturada por trás do título); áreas fotografar-a, aprender-b, editar-b, laboratorio-a."
+  "_nota_site": "Grupo site (nov/2026): imagens editoriais do microsite /photography/ (hero da home + capas das 4 áreas). Candidatos -a/-b; os rejeitados são apagados do manifesto e do disco (ids repetidos = gotcha). Escolhidos (14 nov 2026): hero = farol na hora azul (coast seed 710106; darkroom saiu genérico, com candeeiros em vez de luz de segurança; street tinha parede texturada por trás do título); áreas fotografar-a, aprender-b, editar-b, laboratorio-a.",
+  "_nota_lab": "Grupo `lab`: cenas de treino do Laboratório › Câmara escura. Geradas com TUDO nítido de propósito (estilo lab_deep): o desfoque, o arrasto e o ruído são acrescentados pelo simulador (photography/js/ph-sim.js) a partir das definições. Os recortes lab-*-matte.webp (sujeito a branco) saem do matte-cli.mjs sobre o PNG cru — ver tools/photogen/README.md (grupo `lab`)."
 }

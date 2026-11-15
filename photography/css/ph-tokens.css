@@ -106,7 +106,7 @@
   --font-head: var(--dp-sans);
   --font-mono: var(--dp-mono);
 
-  --fs-xs: .74rem; --fs-sm: .84rem; --fs-md: .94rem; --fs-lg: 1.06rem;
+  --fs-xs: .78rem; --fs-sm: .88rem; --fs-md: .97rem; --fs-lg: 1.08rem;
   --fs-xl: clamp(1.3rem, 2.6vw, 1.6rem);
 
   --shadow-1: 0 1px 2px rgba(0,0,0,.35);

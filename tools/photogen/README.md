@@ -52,6 +52,10 @@ node tools/photogen/generate.mjs --steps 10         # rascunho rápido p/ testar
 node tools/photogen/thumbs.mjs           # assets/photo/thumbs/vis-<género>.webp + thumb-* no índice
 # NÃO correr ao mesmo tempo que o generate.mjs: os dois reescrevem o index.json
 
+# fotografias do autor (sem ComfyUI): my_photos/ → assets/photo/own/ + data/photo/own.json
+node tools/photogen/own.mjs              # 1600px + miniaturas 520px, SEM metadados (EXIF/GPS fora)
+node tools/photogen/own.mjs --hero       # também o hero do microsite e o og.jpg
+
 # host alternativo
 COMFY_HOST=http://127.0.0.1:8188 node tools/photogen/generate.mjs
 ```
@@ -140,6 +144,32 @@ vale a pena reavaliar; até lá, **não regerar o estúdio**.
 O campo `lead` do manifesto existe por causa desta experiência: põe texto à
 cabeça do prompt, antes da personagem e do estilo, porque os primeiros tokens
 do CLIP pesam mais.
+
+### Grupo `lab` — cenas de treino da Câmara escura
+
+Três cenas (`lab-retrato`, `lab-ciclista`, `lab-noite`) com o estilo
+`lab_deep`: **tudo nítido, sem bokeh, sem arrasto, sem grão**. É de propósito.
+O simulador (`photography/js/ph-sim.js`) acrescenta o desfoque, o movimento e
+o ruído a partir da abertura, do tempo e do ISO; uma base já desfocada não
+deixava mostrar f/16.
+
+- As seeds no manifesto são as vencedoras de uma ronda de candidatos revista
+  a olho (anatomia, rodas da bicicleta, nitidez do fundo).
+- `lab-retrato` e `lab-ciclista` têm um recorte do sujeito
+  (`lab-*-matte.webp`, sujeito a branco, 760px): corre-se o `matte-cli.mjs`
+  sobre o PNG cru e guarda-se só o canal alfa. O simulador usa-o para
+  desfocar o fundo sem tocar no sujeito e para arrastar só um dos dois.
+- A descrição de cada cena (plano de foco, profundidade, zonas em movimento,
+  luz, experiências) está em `data/photo/lab.json`, não no manifesto.
+
+### `own.mjs` — fotografias do autor
+
+Lê `my_photos/` (pasta **fora do git**, ver `.gitignore`) e escreve cópias
+para publicar: `assets/photo/own/own-NN.webp` (1600px), `own/t/` (520px) e
+`data/photo/own.json`. O `sharp` não copia metadados, por isso o que vai para
+o GitHub **não tem EXIF nem GPS**; o JSON guarda só câmara, objetiva, focal,
+abertura, tempo, ISO e ano, lidos por `photography/js/ph-exif.js` (que nem
+sequer lê o bloco GPS). Estas fotografias são © do autor, não CC0.
 
 ## Notas de qualidade (importante)
 

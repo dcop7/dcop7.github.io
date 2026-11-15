@@ -1,0 +1,882 @@
+{
+ "_nota": "Cenas do laboratório (photography/js/ph-desk.js). As definições de disparo das fotografias do autor vêm de own.json (EXIF real); aqui fica só o que o EXIF não diz: o modelo de profundidade (chão plano até ao horizonte, objetos a uma distância), a distância focada, o que se move e a que velocidade (fração da largura por segundo), se houve tripé e os estabilizadores (stops). Coordenadas em fração da imagem (x→direita, y→baixo). 'try' = experiências prontas: mudam definições e 'balance' diz que variável a câmara ajusta para manter a exposição.",
+ "groups": [
+  {
+   "id": "drill",
+   "label": "Situações de treino",
+   "sub": "Cenas montadas para isolar um efeito — imagens geradas"
+  },
+  {
+   "id": "own",
+   "label": "Fotografias do autor",
+   "sub": "Com as definições reais de cada disparo"
+  }
+ ],
+ "scenes": [
+  {
+   "id": "own-18",
+   "group": "own",
+   "focus": 30,
+   "is": 3,
+   "tripod": false,
+   "light": "Sol alto com nuvens",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.2,
+    "near": 12,
+    "objects": [
+     {
+      "x": 0.14,
+      "y": 0.4,
+      "w": 0.34,
+      "h": 0.86,
+      "dist": 1.1,
+      "key": "warm",
+      "feather": 0.06
+     },
+     {
+      "x": 0.5,
+      "y": 0.93,
+      "w": 1.1,
+      "h": 0.2,
+      "dist": 1.1,
+      "key": "warm",
+      "feather": 0.05
+     },
+     {
+      "x": 0.92,
+      "y": 0.88,
+      "w": 0.24,
+      "h": 0.3,
+      "dist": 1.3,
+      "key": "warm",
+      "feather": 0.06
+     }
+    ]
+   },
+   "motion": [
+    {
+     "what": "a rebentação",
+     "region": {
+      "x": 0.58,
+      "y": 0.58,
+      "w": 0.9,
+      "h": 0.66,
+      "feather": 0.06,
+      "key": "cool"
+     },
+     "speed": 0.07,
+     "angle": 6,
+     "silk": true
+    }
+   ],
+   "lesson": "1/500 chegou para congelar a espuma no ar. As rochas que fazem de moldura estão a um metro da objetiva: a f/9 já ficam macias, e é isso que empurra o olhar para o mar.",
+   "try": [
+    {
+     "label": "Água em seda",
+     "why": "2 s com tripé e um ND de 10 stops: a rebentação vira névoa.",
+     "set": {
+      "t": 2,
+      "nd": 10,
+      "tripod": true
+     },
+     "balance": "N"
+    },
+    {
+     "label": "Tudo nítido",
+     "why": "f/22 dá mais nitidez às rochas da frente; o tempo cai para 1/80 e a difração já amolece tudo um pouco.",
+     "set": {
+      "N": 22
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Moldura desfeita",
+     "why": "A f/2,8 as rochas da frente derretem e deixam de ser moldura.",
+     "set": {
+      "N": 2.8
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "own-19",
+   "group": "own",
+   "focus": 400,
+   "is": 3,
+   "tripod": false,
+   "light": "Pôr do sol, contraluz",
+   "depth": {
+    "type": "far",
+    "dist": 400
+   },
+   "lesson": "A 320 mm equivalentes a regra manda 1/320 à mão. Foi tirada a 1/250: quem a salvou foi a estabilização da objetiva. Medir pelo céu deixou os troncos a preto — a silhueta é uma decisão de exposição.",
+   "try": [
+    {
+     "label": "Tremida",
+     "why": "1/4 s à mão a 320 mm (com um ND para a luz caber): nem a estabilização segura.",
+     "set": {
+      "t": 0.25,
+      "nd": 6
+     },
+     "balance": "N"
+    },
+    {
+     "label": "Salvar as sombras",
+     "why": "+2 EV mostra o chão do pinhal e queima o sol: perde-se a silhueta.",
+     "set": {
+      "t": 0.016
+     }
+    },
+    {
+     "label": "ISO 3200",
+     "why": "Dá 1/8000 de sobra e enche o céu liso de ruído.",
+     "set": {
+      "iso": 3200
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "own-21",
+   "group": "own",
+   "focus": 4000,
+   "is": 0,
+   "tripod": true,
+   "light": "Noite sem lua",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.86,
+    "near": 25
+   },
+   "motion": [
+    {
+     "what": "as estrelas",
+     "region": {
+      "x": 0.5,
+      "y": 0.4,
+      "w": 1.2,
+      "h": 0.86,
+      "feather": 0.04
+     },
+     "speed": 0.000111,
+     "angle": 32
+    }
+   ],
+   "lesson": "Regra dos 500: 500 ÷ 35 mm = 14 s antes de as estrelas virarem traços. Foi tirada a 13 s. Com f/2 já no limite da objetiva, o que falta em luz só pode vir do ISO.",
+   "try": [
+    {
+     "label": "Estrelas em traço",
+     "why": "4 minutos: a Terra roda e cada estrela desenha um risco.",
+     "set": {
+      "t": 240,
+      "iso": 100
+     }
+    },
+    {
+     "label": "ISO 6400",
+     "why": "Bastam 3 s e as estrelas ficam pontos perfeitos, à custa de ruído.",
+     "set": {
+      "iso": 6400
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Sem tripé",
+     "why": "13 s à mão não é fotografia, é um borrão.",
+     "set": {
+      "tripod": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "own-14",
+   "group": "own",
+   "focus": 40,
+   "is": 3,
+   "tripod": true,
+   "light": "Noite urbana",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.33,
+    "near": 9
+   },
+   "baked": "Os rastos de luz são os próprios 30 s. A simulação muda a exposição, o ruído e a nitidez, mas não consegue apagar um rasto que já está na fotografia.",
+   "lesson": "30 s deixam cada carro desenhar a faixa inteira. f/11 serve para duas coisas: fecha a luz para o tempo caber e transforma os candeeiros em estrelas.",
+   "try": [
+    {
+     "label": "Mesma luz, ISO alto",
+     "why": "f/2,8 e ISO 3200 pedem só 1/15 s: na rua real os carros seriam traços curtos.",
+     "set": {
+      "N": 2.8,
+      "iso": 3200
+     },
+     "balance": "t"
+    },
+    {
+     "label": "+1 stop",
+     "why": "60 s: os rastos enchem e os prédios queimam.",
+     "set": {
+      "t": 60
+     }
+    }
+   ]
+  },
+  {
+   "id": "own-17",
+   "group": "own",
+   "focus": 1.8,
+   "is": 3,
+   "tripod": true,
+   "light": "Meio-dia, sol entre nuvens",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.27,
+    "near": 0.9
+   },
+   "baked": "A água lisa e as nuvens arrastadas são os 8 s. Ao meio-dia, f/14 e ISO 100 pedem cerca de 1/80: para chegar aos 8 s foi preciso um filtro ND de uns 10 stops.",
+   "lesson": "Longa exposição em pleno dia. A 24 mm equivalentes e f/14, focar no banco deixa nítido de 70 cm até ao infinito — é para isto que serve a hiperfocal.",
+   "try": [
+    {
+     "label": "f/3,5, focar no banco",
+     "why": "A 15 mm até aberta a objetiva segura quase tudo: grande angular dá profundidade de campo de borla.",
+     "set": {
+      "N": 3.5,
+      "focus": 1.8
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Em Full Frame",
+     "why": "O mesmo enquadramento num sensor maior: o fundo começa a ceder.",
+     "set": {
+      "sensor": "ff",
+      "N": 2.8,
+      "focus": 1.5
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "own-15",
+   "group": "own",
+   "focus": 300,
+   "is": 3,
+   "tripod": false,
+   "light": "Sol alto",
+   "depth": {
+    "type": "far",
+    "dist": 300
+   },
+   "motion": [
+    {
+     "what": "as ondas",
+     "region": {
+      "x": 0.36,
+      "y": 0.5,
+      "w": 0.8,
+      "h": 1.1,
+      "feather": 0.1,
+      "key": "cool",
+      "keyLo": 0.1,
+      "keyHi": 0.3
+     },
+     "speed": 0.035,
+     "angle": 24,
+     "silk": true
+    }
+   ],
+   "lesson": "Tele a comprimir a linha de costa. Está tudo a centenas de metros, por isso a abertura quase não mexe na nitidez: f/11 foi escolhido pela qualidade da objetiva, não pela profundidade de campo.",
+   "try": [
+    {
+     "label": "Espuma em seda",
+     "why": "1 s com tripé e um ND de 10 stops: a água alisa e a areia fica igual.",
+     "set": {
+      "t": 1,
+      "nd": 10,
+      "tripod": true
+     },
+     "balance": "N"
+    },
+    {
+     "label": "f/4,5",
+     "why": "Abrir aqui só muda o tempo: o motivo está todo no infinito.",
+     "set": {
+      "N": 4.5
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "own-10",
+   "group": "own",
+   "focus": 80,
+   "is": 3,
+   "tripod": false,
+   "light": "Fim de tarde",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.42,
+    "near": 7,
+    "objects": [
+     {
+      "x": 0.11,
+      "y": 0.3,
+      "w": 0.14,
+      "h": 0.22,
+      "dist": 160
+     }
+    ]
+   },
+   "motion": [
+    {
+     "what": "o mar",
+     "region": {
+      "x": 0.86,
+      "y": 0.86,
+      "w": 0.34,
+      "h": 0.32,
+      "feather": 0.06,
+      "key": "cool"
+     },
+     "speed": 0.05,
+     "angle": 0,
+     "silk": true
+    }
+   ],
+   "lesson": "A tele do telemóvel (52 mm equivalentes) com um sensor minúsculo: a abertura é fixa e mesmo a f/2,4 fica tudo nítido das rochas ao farol.",
+   "try": [
+    {
+     "label": "O mesmo em Full Frame",
+     "why": "52 mm reais a f/2,4, focado no farol: as rochas da frente já não acompanham.",
+     "set": {
+      "sensor": "ff",
+      "focus": 160
+     }
+    },
+    {
+     "label": "ISO 800 no telemóvel",
+     "why": "Quatro stops de ISO num sensor de telemóvel: o céu enche de ruído. É o que acontece quando a luz acaba.",
+     "set": {
+      "iso": 800
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "own-09",
+   "group": "own",
+   "focus": 6,
+   "is": 3,
+   "tripod": false,
+   "light": "Fim de tarde, sol baixo",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.35,
+    "near": 1.1
+   },
+   "lesson": "Linhas que levam o olhar para dentro. No telemóvel está tudo nítido da primeira tábua ao horizonte; toca na fotografia para mudar o ponto de foco e experimenta noutro sensor.",
+   "try": [
+    {
+     "label": "Full Frame, f/1,8",
+     "why": "Focar na primeira tábua: o caminho desfoca-se à medida que se afasta.",
+     "set": {
+      "sensor": "ff",
+      "N": 1.8,
+      "focus": 1.5
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Full Frame, hiperfocal",
+     "why": "f/11 focado a 2 m: nítido de 1 m ao infinito outra vez.",
+     "set": {
+      "sensor": "ff",
+      "N": 11,
+      "focus": 2
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "own-02",
+   "group": "own",
+   "focus": 30,
+   "is": 3,
+   "tripod": false,
+   "light": "Tarde, sol filtrado",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.33,
+    "near": 4,
+    "objects": [
+     {
+      "x": 0.2,
+      "y": 0.8,
+      "w": 0.4,
+      "h": 0.42,
+      "dist": 2
+     }
+    ]
+   },
+   "motion": [
+    {
+     "what": "a rebentação",
+     "region": {
+      "x": 0.5,
+      "y": 0.47,
+      "w": 1.1,
+      "h": 0.26,
+      "feather": 0.05,
+      "key": "cool",
+      "keyLo": 0.12,
+      "keyHi": 0.3
+     },
+     "speed": 0.05,
+     "angle": 0,
+     "silk": true
+    }
+   ],
+   "lesson": "Com tanta luz, o telemóvel escolheu ISO 50 e 1/1600: a espuma ficou parada e não há ruído nenhum.",
+   "try": [
+    {
+     "label": "Água em seda",
+     "why": "Pouco mais de meio segundo, com um ND de 10 stops e tripé, já alisa a rebentação. Num telemóvel, só com o modo Pro.",
+     "set": {
+      "t": 0.6,
+      "nd": 10,
+      "tripod": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "own-03",
+   "group": "own",
+   "focus": 40,
+   "is": 0,
+   "tripod": false,
+   "light": "Pôr do sol",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.4,
+    "near": 5
+   },
+   "motion": [
+    {
+     "what": "as ondas",
+     "region": {
+      "x": 0.62,
+      "y": 0.62,
+      "w": 0.8,
+      "h": 0.3,
+      "feather": 0.08
+     },
+     "speed": 0.04,
+     "angle": -8,
+     "silk": true
+    }
+   ],
+   "lesson": "Ultra grande angular (13 mm equivalentes) contra o sol. Expor para o céu guarda as cores; as sombras da encosta recuperam-se depois."
+  },
+  {
+   "id": "own-04",
+   "group": "own",
+   "focus": 3,
+   "is": 0,
+   "tripod": false,
+   "light": "Crepúsculo",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.3,
+    "near": 1.1
+   },
+   "lesson": "Primeiro plano a um metro e vale ao fundo. A 13 mm equivalentes tudo cabe na profundidade de campo; 1/60 sem estabilização está no limite do que se segura."
+  },
+  {
+   "id": "own-05",
+   "group": "own",
+   "focus": 2.5,
+   "is": 0,
+   "tripod": false,
+   "light": "Crepúsculo",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.4,
+    "near": 1
+   },
+   "lesson": "Com a luz a acabar, o telemóvel subiu para ISO 160 e desceu para 1/50. O muro leva o olhar do canto até ao horizonte."
+  },
+  {
+   "id": "own-06",
+   "group": "own",
+   "focus": 30,
+   "is": 3,
+   "tripod": false,
+   "light": "Sol baixo, contraluz",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.43,
+    "near": 4
+   },
+   "motion": [
+    {
+     "what": "o mar",
+     "region": {
+      "x": 0.6,
+      "y": 0.6,
+      "w": 0.8,
+      "h": 0.2,
+      "feather": 0.06
+     },
+     "speed": 0.05,
+     "angle": -10,
+     "silk": true
+    }
+   ],
+   "lesson": "Sol dentro do enquadramento: 1/3200 e ISO 50 são a câmara a proteger as altas luzes."
+  },
+  {
+   "id": "own-07",
+   "group": "own",
+   "focus": 200,
+   "is": 3,
+   "tripod": false,
+   "light": "Sol baixo, contraluz",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.66,
+    "near": 8
+   },
+   "motion": [
+    {
+     "what": "o mar",
+     "region": {
+      "x": 0.5,
+      "y": 0.86,
+      "w": 1.1,
+      "h": 0.3,
+      "feather": 0.06
+     },
+     "speed": 0.04,
+     "angle": 0,
+     "silk": true
+    }
+   ],
+   "lesson": "Subexposta de propósito: o disco do sol fica redondo e o céu escurece até virar cenário."
+  },
+  {
+   "id": "own-08",
+   "group": "own",
+   "focus": 10,
+   "is": 0,
+   "tripod": false,
+   "light": "Sol alto",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.68,
+    "near": 1.6
+   },
+   "lesson": "1/8000 é o telemóvel no limite do obturador: sol dentro do enquadramento e abertura fixa não deixam outra saída."
+  },
+  {
+   "id": "own-11",
+   "group": "own",
+   "focus": 4,
+   "is": 3,
+   "tripod": false,
+   "light": "Tarde nublada",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.22,
+    "near": 1
+   },
+   "lesson": "Câmara baixa e primeiro plano dominante. O céu carregado dá o contraste que o sol alto tiraria."
+  },
+  {
+   "id": "own-12",
+   "group": "own",
+   "focus": 8,
+   "is": 3,
+   "tripod": false,
+   "light": "Tarde, sombra aberta",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.45,
+    "near": 2,
+    "objects": [
+     {
+      "x": 0.07,
+      "y": 0.5,
+      "w": 0.15,
+      "h": 1,
+      "dist": 1.6
+     },
+     {
+      "x": 0.93,
+      "y": 0.5,
+      "w": 0.15,
+      "h": 1,
+      "dist": 1.6
+     },
+     {
+      "x": 0.5,
+      "y": 0.03,
+      "w": 1,
+      "h": 0.07,
+      "dist": 1.6
+     }
+    ]
+   },
+   "lesson": "Moldura dentro da moldura. Medir pela zona de fora deixa o betão escuro e o mar com cor."
+  },
+  {
+   "id": "own-13",
+   "group": "own",
+   "focus": 5000,
+   "is": 3,
+   "tripod": false,
+   "light": "Sol alto, acima das nuvens",
+   "depth": {
+    "type": "far"
+   },
+   "lesson": "Tudo no infinito: aqui a abertura não muda nada na nitidez. O que conta é um tempo curto, por causa da vibração do avião."
+  },
+  {
+   "id": "own-16",
+   "group": "own",
+   "focus": 6,
+   "is": 3,
+   "tripod": false,
+   "light": "Pôr do sol",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.33,
+    "near": 2
+   },
+   "lesson": "A abertura variável do telemóvel abriu para f/1,5 e nem assim o fundo desfoca: com 4 mm de focal real, a profundidade de campo é enorme."
+  },
+  {
+   "id": "own-20",
+   "group": "own",
+   "focus": 400,
+   "is": 3,
+   "tripod": false,
+   "light": "Pôr do sol, contraluz",
+   "depth": {
+    "type": "far",
+    "dist": 400
+   },
+   "lesson": "A mesma tarde, ao alto. A 300 mm equivalentes o sol ocupa o que numa grande angular seria um ponto."
+  },
+  {
+   "id": "own-01",
+   "group": "own",
+   "focus": 12,
+   "is": 3,
+   "tripod": false,
+   "light": "Sombra de floresta",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.67,
+    "near": 2,
+    "sky": 30
+   },
+   "lesson": "Debaixo das árvores, ao fim da tarde, há uns 8 stops menos de luz do que num dia de sol. 1/25 à mão só resultou porque o telemóvel tem estabilização ótica."
+  },
+  {
+   "id": "lab-retrato",
+   "group": "drill",
+   "title": "Retrato na rua",
+   "genre": "retrato",
+   "src": "/assets/photo/lab/lab-retrato.webp",
+   "thumb": "/assets/photo/lab/lab-retrato-t.webp",
+   "matte": "/assets/photo/lab/lab-retrato-matte.webp",
+   "camera": "Full Frame, 85 mm",
+   "cls": "ff",
+   "crop": 1,
+   "focal35": 85,
+   "f": 16,
+   "t": 0.008,
+   "iso": 800,
+   "focus": 2.5,
+   "is": 0,
+   "tripod": false,
+   "light": "Céu encoberto",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.52,
+    "near": 2.2,
+    "sky": 25,
+    "subject": 2.5
+   },
+   "lesson": "Cena montada com tudo nítido (f/16), para seres tu a decidir quanto do fundo fica. A pessoa está a 2,5 m; a rua continua dezenas de metros para lá dela.",
+   "try": [
+    {
+     "label": "Retrato clássico: f/1,8",
+     "why": "f/1,8 a 85 mm: a rua desfaz-se e a pessoa destaca-se. É para isto que serve uma objetiva luminosa.",
+     "set": {
+      "N": 1.8,
+      "iso": 200
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Meio-termo: f/5,6",
+     "why": "A rua ainda se lê, mas já não compete com a pessoa: é o retrato ambiental.",
+     "set": {
+      "N": 5.6,
+      "iso": 200
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Foco no fundo",
+     "why": "O erro clássico: o autofoco agarra a rua e é a pessoa que fica desfocada.",
+     "set": {
+      "N": 1.8,
+      "iso": 200,
+      "focus": 25
+     },
+     "balance": "t"
+    },
+    {
+     "label": "No telemóvel",
+     "why": "O mesmo enquadramento num sensor de telemóvel: a f/1,8 o fundo quase não cede. O modo retrato dos telemóveis imita por software o que aqui falta.",
+     "set": {
+      "sensor": "phone",
+      "N": 1.8,
+      "iso": 200
+     },
+     "balance": "t"
+    }
+   ]
+  },
+  {
+   "id": "lab-ciclista",
+   "group": "drill",
+   "title": "Ciclista na estrada",
+   "genre": "desporto",
+   "src": "/assets/photo/lab/lab-ciclista.webp",
+   "thumb": "/assets/photo/lab/lab-ciclista-t.webp",
+   "matte": "/assets/photo/lab/lab-ciclista-matte.webp",
+   "camera": "APS-C, 105 mm eq.",
+   "cls": "apsc",
+   "crop": 1.6,
+   "focal35": 105,
+   "f": 8,
+   "t": 0.0005,
+   "iso": 400,
+   "focus": 8,
+   "is": 3,
+   "tripod": false,
+   "light": "Sol direto",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.175,
+    "near": 5,
+    "subject": 8
+   },
+   "motion": [
+    {
+     "what": "o ciclista",
+     "mask": "matte",
+     "speed": 3.3,
+     "angle": 0
+    }
+   ],
+   "lesson": "1/2000 congela tudo, até os raios das rodas, e por isso a bicicleta parece parada. A velocidade só se vê quando alguma coisa arrasta.",
+   "try": [
+    {
+     "label": "Rodas a girar: 1/250",
+     "why": "1/250 ainda segura o ciclista, mas o arrasto já se nota: é o tempo que dá vida às rodas.",
+     "set": {
+      "t": 0.004
+     },
+     "balance": "N"
+    },
+    {
+     "label": "Arrastado: 1/30",
+     "why": "1/30 com a câmara parada: o ciclista vira um borrão a atravessar um cenário nítido.",
+     "set": {
+      "t": 0.0333,
+      "nd": 3
+     },
+     "balance": "N"
+    },
+    {
+     "label": "Panning: 1/30",
+     "why": "O mesmo 1/30 a acompanhar o ciclista com a câmara: ele fica nítido e é o fundo que corre. É assim que se mostra velocidade.",
+     "set": {
+      "t": 0.0333,
+      "nd": 3,
+      "pan": true
+     },
+     "balance": "N"
+    }
+   ]
+  },
+  {
+   "id": "lab-noite",
+   "group": "drill",
+   "title": "Rua à noite",
+   "genre": "noturna",
+   "src": "/assets/photo/lab/lab-noite.webp",
+   "thumb": "/assets/photo/lab/lab-noite-t.webp",
+   "camera": "APS-C, 24 mm eq.",
+   "cls": "apsc",
+   "crop": 1.6,
+   "focal35": 24,
+   "f": 8,
+   "t": 4,
+   "iso": 100,
+   "focus": 6,
+   "is": 0,
+   "tripod": true,
+   "light": "Hora azul, luz de montras",
+   "depth": {
+    "type": "ground",
+    "horizon": 0.57,
+    "near": 1.2,
+    "sky": 20
+   },
+   "lesson": "Tripé, f/8, ISO 100, 4 s: a versão limpa. Sem tripé, cada stop que tiras ao tempo tens de o ir buscar à abertura ou ao ISO.",
+   "try": [
+    {
+     "label": "À mão, sem mudar nada",
+     "why": "4 s à mão: um borrão. À noite, ou há tripé ou há outra combinação.",
+     "set": {
+      "tripod": false
+     }
+    },
+    {
+     "label": "À mão: f/2, ISO 6400",
+     "why": "Dá 1/250 e a câmara segura-se sem esforço. O preço é o ruído e menos profundidade de campo.",
+     "set": {
+      "tripod": false,
+      "N": 2,
+      "iso": 6400
+     },
+     "balance": "t"
+    },
+    {
+     "label": "Compromisso: f/2,8, ISO 1600",
+     "why": "1/30 a 24 mm ainda se segura à mão, com muito menos ruído. É o equilíbrio habitual da rua à noite.",
+     "set": {
+      "tripod": false,
+      "N": 2.8,
+      "iso": 1600
+     },
+     "balance": "t"
+    }
+   ]
+  }
+ ]
+}

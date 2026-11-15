@@ -29,18 +29,29 @@ const PhNav = (function () {
   }
   const head = r => r.split('/')[0];
 
+  /* Transição de página nativa (View Transitions, Baseline desde o Firefox
+     144): um cruzamento curto em vez de um corte. Sem suporte, ou com
+     movimento reduzido, a página troca como sempre trocou. */
+  const _noMotion = matchMedia('(prefers-reduced-motion: reduce)');
   function apply(r, how) {
+    const sameArea = _cur !== null && head(_cur) === head(r);
+    if (how === 'push' && !sameArea && document.startViewTransition && !_noMotion.matches && !document.body.classList.contains('dk-on')) {
+      document.startViewTransition(() => paint(r, how));
+    } else paint(r, how);
+  }
+  function paint(r, how) {
     const home = r === '';
     if (_cur !== null) _scroll[_cur] = window.scrollY;
     const prev = _cur;
     _cur = r;
 
     document.body.dataset.route = home ? 'home' : 'page';
-    document.body.dataset.depth = TOP.has(r) ? 'top' : 'deep';
+    document.body.dataset.depth = TOP.has(r) || /^laboratorio\/(?!camara)[a-z]+$/.test(r) ? 'top' : 'deep';
     document.querySelectorAll('[data-home-only]').forEach(el => { el.hidden = !home; });
     PhShell.closeMenu();
 
     if (typeof PhotographyPage !== 'undefined') PhotographyPage.show(r || null);
+    PhShell.routeChanged(r);
 
     if (how === 'pop') {
       /* atrás/à frente: devolver a página onde estava (o render é síncrono
@@ -96,6 +107,7 @@ const PhShell = (function () {
       a.classList.toggle('active', on);
       if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    _area = label || '';
     document.title = (document.body.dataset.route === 'home' || !label) ? SITE + ' — escola visual de fotografia' : label + ' · ' + SITE;
   }
 
@@ -146,6 +158,45 @@ const PhShell = (function () {
     if (!go()) { let n = 0; const t = setInterval(() => { if (go() || ++n > 40) clearInterval(t); }, 80); }
   }
 
+  /* ── página guardada + título da página ── */
+  let _area = '';
+  function routeChanged(r) {
+    const b = $('[data-fav-toggle]');
+    if (b) {
+      const on = PhFav.has(r);
+      b.hidden = r === '';
+      b.setAttribute('aria-pressed', on);
+      b.setAttribute('aria-label', on ? 'Tirar esta página dos guardados' : 'Guardar esta página');
+      b.title = on ? 'Guardada — clica para tirar' : 'Guardar esta página';
+    }
+    if (!r) return;
+    /* o título do separador passa a dizer a página e não só a área */
+    PhSearch.titleFor(r).then(it => {
+      if (!it || PhNav.current() !== r) return;
+      document.title = it.t + ' · ' + SITE;
+      /* dentro de um item o <h1> da área fica escondido à vista: passa a dizer
+         o nome da página, para quem navega por cabeçalhos */
+      const h1 = $('.dp-head-t');
+      if (h1 && document.body.dataset.depth === 'deep') h1.textContent = it.t;
+    });
+  }
+  function toggleFav() {
+    const r = PhNav.current(); if (!r) return;
+    PhSearch.titleFor(r).then(it => {
+      const added = PhFav.toggle({ r, t: it ? it.t : (document.title.split(' · ')[0] || r), s: it ? it.s : _area });
+      routeChanged(r);
+      toast(added ? 'Guardada. Encontras as páginas guardadas no índice e na pesquisa.' : 'Tirada dos guardados.', 2600);
+    });
+  }
+  function renderFavs() {
+    const favs = PhFav.all();
+    const html = favs.map(f => `<a href="#${f.r}"><b>${f.t.replace(/[&<>"]/g, '')}</b><small>${(f.s || '').replace(/[&<>"]/g, '')}</small></a>`).join('');
+    $$('.dp-menu-fav, .dp-favs').forEach(box => {
+      box.hidden = !favs.length;
+      const l = box.querySelector('.dp-menu-fav-list, .dp-favs-list'); if (l) l.innerHTML = html;
+    });
+  }
+
   let _toastT = 0;
   function toast(msg, ms) {
     const t = $('#dp-toast'); if (!t) return;
@@ -157,13 +208,26 @@ const PhShell = (function () {
   function init() {
     syncTheme();
     $$('[data-theme-toggle]').forEach(b => b.addEventListener('click', toggleTheme));
+    $('[data-fav-toggle]')?.addEventListener('click', toggleFav);
+    document.addEventListener('ph:favs', renderFavs);
+    renderFavs();
+    /* atalho de pesquisa: ⌘K nos Mac */
+    if (/Mac|iPhone|iPad/.test(navigator.platform || '')) $$('.dp-search-btn kbd').forEach(k => { k.textContent = '⌘K'; });
     $('[data-menu-open]')?.addEventListener('click', openMenu);
     $('[data-menu-close]')?.addEventListener('click', closeMenu);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') return closeMenu();
+      const m = $('#dp-menu');
+      if (e.key !== 'Tab' || !m || m.hidden) return;
+      const f = $$('a[href], button:not([disabled])', m).filter(el => el.offsetParent !== null);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    });
     /* um clique num item do índice que já é a rota atual não dispara
        hashchange — fechar o índice à mesma */
-    $$('.dp-menu-list a').forEach(a => a.addEventListener('click', closeMenu));
-    $$('[data-scroll]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); scrollToSheet(); }));
+    $$('.dp-menu-list a, .dp-menu-fav-list').forEach(a => a.addEventListener('click', closeMenu));
+    $$('[data-scroll]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); closeMenu(); scrollToSheet(); }));
     /* Ligações internas (#rota) passam pelo router como navegação NOVA
        (pushState + topo da página). Assim o hashchange/popstate fica só para
        atrás/à frente, que restauram a posição. Corre em bubbling, depois dos
@@ -183,6 +247,9 @@ const PhShell = (function () {
       closeMenu();
       PhNav.go(href);
     });
+
+    /* emojis herdados → ícones de traço, em tudo o que os capítulos desenharem */
+    PhIcon.watch(document.body);
 
     window.addEventListener('hashchange', () => PhNav.fromLocation('pop'));
     window.addEventListener('popstate', () => PhNav.fromLocation('pop'));
@@ -207,5 +274,5 @@ const PhShell = (function () {
   if (document.readyState === 'complete') setTimeout(init);
   else document.addEventListener('DOMContentLoaded', init);
 
-  return { setArea, closeMenu, toast };
+  return { setArea, closeMenu, toast, routeChanged, renderFavs };
 })();

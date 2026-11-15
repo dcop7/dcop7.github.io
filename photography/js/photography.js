@@ -2,402 +2,12 @@ const PhotographyPage = (function () {
   'use strict';
 
   let _built = false;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  // ── Exposure Triangle ──────────────────────────────────────────────
-  const SHUTTER_STOPS = ['1/8000','1/4000','1/2000','1/1000','1/500','1/250','1/125','1/60','1/30','1/15','1/8','1/4','1/2','1s','2s','4s','8s','15s','30s'];
-  const APERTURE_STOPS = ['f/1.0','f/1.4','f/2.0','f/2.8','f/4','f/5.6','f/8','f/11','f/16','f/22','f/32'];
-  const ISO_STOPS = ['50','100','200','400','800','1600','3200','6400','12800','25600','51200'];
-
-  function shutterSec(s) {
-    if (s.endsWith('s')) return parseFloat(s);
-    const p = s.split('/'); return p.length===2 ? parseFloat(p[0])/parseFloat(p[1]) : parseFloat(s);
-  }
-  function evFromSettings(ss, ap, iso) {
-    return Math.log2(ap*ap/shutterSec(ss)) - Math.log2(iso/100);
-  }
-
-  function buildExposure(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">📐 Triângulo de Exposição</div>
-        <div class="ph-exp-triangle">
-          <div class="ph-exp-cell">
-            <div class="ph-exp-icon">⏱</div>
-            <div class="ph-exp-name">Velocidade</div>
-            <select class="ph-select" id="et-ss">
-              ${SHUTTER_STOPS.map(s=>`<option${s==='1/125'?' selected':''}>${s}</option>`).join('')}
-            </select>
-            <div class="ph-exp-val" id="et-ss-val">1/125s</div>
-          </div>
-          <div class="ph-exp-cell">
-            <div class="ph-exp-icon">🔵</div>
-            <div class="ph-exp-name">Abertura</div>
-            <select class="ph-select" id="et-ap">
-              ${APERTURE_STOPS.map(s=>`<option${s==='f/8'?' selected':''}>${s}</option>`).join('')}
-            </select>
-            <div class="ph-exp-val" id="et-ap-val">f/8</div>
-          </div>
-          <div class="ph-exp-cell">
-            <div class="ph-exp-icon">☀️</div>
-            <div class="ph-exp-name">ISO</div>
-            <select class="ph-select" id="et-iso">
-              ${ISO_STOPS.map(s=>`<option${s==='100'?' selected':''}>${s}</option>`).join('')}
-            </select>
-            <div class="ph-exp-val" id="et-iso-val">ISO 100</div>
-          </div>
-        </div>
-        <div class="ph-result">
-          <div class="ph-result-val" id="et-ev">EV —</div>
-          <div class="ph-result-desc" id="et-desc">Seleciona velocidade, abertura e ISO para calcular o valor de exposição.</div>
-        </div>
-      </div>`;
-
-    function update() {
-      const ss=root.querySelector('#et-ss').value, ap=root.querySelector('#et-ap').value, iso=root.querySelector('#et-iso').value;
-      root.querySelector('#et-ss-val').textContent=ss;
-      root.querySelector('#et-ap-val').textContent=ap;
-      root.querySelector('#et-iso-val').textContent='ISO '+iso;
-      const apN=parseFloat(ap.replace('f/',''));
-      const ev=evFromSettings(ss,apN,+iso);
-      root.querySelector('#et-ev').textContent=`EV ${ev.toFixed(1)}`;
-      let desc='';
-      if(ev<0) desc='Expõe corretamente cenas muito escuras — astrofotografia, Via Láctea, light painting.';
-      else if(ev<5) desc='Expõe corretamente noite urbana e interiores muito escuros.';
-      else if(ev<8) desc='Expõe corretamente interiores com luz artificial.';
-      else if(ev<11) desc='Expõe corretamente interiores bem iluminados, montras e palcos.';
-      else if(ev<13) desc='Expõe corretamente exterior muito nublado ou sombra fechada.';
-      else if(ev<15) desc='Expõe corretamente exterior nublado / sombra aberta.';
-      else if(ev<16) desc='Expõe corretamente sol direto (regra Sunny 16: f/16, 1/ISO).';
-      else desc='Expõe corretamente luz muito intensa — praia, neve, contraluz solar.';
-      root.querySelector('#et-desc').textContent=desc;
-    }
-    root.querySelectorAll('select').forEach(s=>s.addEventListener('change',update));
-    update();
-  }
-
-  // ── DOF Calculator ────────────────────────────────────────────────
-  function buildDof(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">🔭 Profundidade de Campo</div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Distância focal (mm)</label>
-            <input type="number" class="ph-input" id="dof-fl" value="50" min="1" max="2000">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Abertura (f/)</label>
-            <input type="number" class="ph-input" id="dof-ap" value="1.8" min="0.7" max="64" step="0.1">
-          </div>
-        </div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Distância ao sujeito (m)</label>
-            <input type="number" class="ph-input" id="dof-dist" value="3" min="0.1" max="10000" step="0.1">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Sensor (círculo de confusão, mm)</label>
-            <select class="ph-select" id="dof-coc">
-              ${[['0.03', 'Full Frame 35mm (0.03mm)'], ['0.019', 'APS-C (0.019mm)'],
-                 ['0.015', 'Micro 4/3 (0.015mm)'], ['0.010', '1" sensor (0.010mm)'],
-                 ['0.006', 'Telemóvel 1/1.5" (0.006mm)'], ['0.005', 'Telemóvel 1/2.3" (0.005mm)']]
-                .map(([v, t]) => `<option value="${v}"${v === classCoC() ? ' selected' : ''}>${t}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div id="dof-result" class="ph-result"></div>
-      </div>`;
-
-    function calcDof(){
-      const fl=parseFloat(root.querySelector('#dof-fl').value);
-      const ap=parseFloat(root.querySelector('#dof-ap').value);
-      const d=parseFloat(root.querySelector('#dof-dist').value)*1000;
-      const coc=parseFloat(root.querySelector('#dof-coc').value);
-      const res=root.querySelector('#dof-result');
-      if(!(fl>0)||!(ap>0)||!(d>0)){res.innerHTML='<div class="ph-result-desc">Preenche focal, abertura e distância.</div>';return;}
-      const H=(fl*fl)/(ap*coc)+fl;
-      const near=d*H/(H+(d-fl));
-      const far=d*H/(H-(d-fl));
-      const dof=far>0&&H>d-fl?(far-near)/1000:Infinity;
-      res.innerHTML=`
-        <div class="ph-result-val">DOF: ${dof===Infinity?'∞':`${dof.toFixed(2)} m`}</div>
-        <div class="ph-result-desc">
-          Plano próximo: ${(near/1000).toFixed(2)} m | Plano distante: ${far>1e6||far<=0?'∞':(far/1000).toFixed(2)+' m'}<br>
-          Distância hiperfocal: ${(H/1000).toFixed(2)} m
-        </div>`;
-    }
-    root.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calcDof));
-    calcDof();
-  }
-
-  // ── Focal Length & Crop Factor ────────────────────────────────────
-  function buildFocal(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">📷 Focal + Crop Factor</div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Focal real (mm)</label>
-            <input type="number" class="ph-input" id="fc-fl" value="35" min="1">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Crop factor</label>
-            <select class="ph-select" id="fc-crop">
-              ${[['1', 'Full Frame (1×)'], ['1.5', 'APS-C Nikon/Sony (1.5×)'],
-                 ['1.6', 'APS-C Canon (1.6×)'], ['2', 'Micro 4/3 (2×)'],
-                 ['2.7', '1" sensor (2.7×)'], ['4.7', 'Telemóvel 1/1.5" (4.7×)'],
-                 ['5.6', 'Telemóvel 1/2.3" (5.6×)']]
-                .map(([v, t]) => `<option value="${v}"${v === classCrop() ? ' selected' : ''}>${t}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div id="fc-result" class="ph-result"></div>
-      </div>`;
-
-    function calcFc() {
-      const fl=+root.querySelector('#fc-fl').value, crop=+root.querySelector('#fc-crop').value;
-      const eq=fl*crop;
-      root.querySelector('#fc-result').innerHTML=`
-        <div class="ph-result-val">${eq.toFixed(0)} mm equivalente FF</div>
-        <div class="ph-result-desc">Ângulo de visão como ${eq.toFixed(0)}mm numa câmara full frame. Factor de crop: ${crop}×</div>`;
-    }
-    root.querySelectorAll('#fc-fl,#fc-crop').forEach(el=>el.addEventListener('input',calcFc));
-    calcFc();
-  }
-
-  /* ── Distância Hiperfocal ──────────────────────────────────────────
-     Cartão próprio. Vivia dentro do Focal + Crop, e era a única ficha com
-     duas calculadoras: ficava o dobro da altura das vizinhas e desalinhava
-     a grelha toda. O CoC vem da classe de câmara, como o crop. */
-  function buildHyperfocal(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">🎯 Distância Hiperfocal</div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Focal (mm)</label>
-            <input type="number" class="ph-input" id="hf-fl" value="35" min="1">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">f/</label>
-            <input type="number" class="ph-input" id="hf-ap" value="8" min="0.7" max="64" step="0.1">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">CoC (mm)</label>
-            <input type="number" class="ph-input" id="hf-coc" value="${classCoC()}" step="0.001" min="0.001">
-          </div>
-        </div>
-        <div id="hf-result" class="ph-result"></div>
-      </div>`;
-
-    function calcHf() {
-      const fl=+root.querySelector('#hf-fl').value, ap=+root.querySelector('#hf-ap').value, coc=+root.querySelector('#hf-coc').value;
-      const H=(fl*fl)/(ap*coc)/1000;
-      root.querySelector('#hf-result').innerHTML=`
-        <div class="ph-result-val">${H.toFixed(2)} m</div>
-        <div class="ph-result-desc">Foca a ${H.toFixed(2)} m → tudo de ${(H/2).toFixed(2)} m ao infinito em foco.</div>`;
-    }
-    root.querySelectorAll('#hf-fl,#hf-ap,#hf-coc').forEach(el=>el.addEventListener('input',calcHf));
-    calcHf();
-  }
-
-  // ── ND Filter ─────────────────────────────────────────────────────
-  function buildNd(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">⬛ Filtro ND</div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Velocidade sem ND</label>
-            <select class="ph-select" id="nd-ss">
-              ${SHUTTER_STOPS.map(s=>`<option${s==='1/250'?' selected':''}>${s}</option>`).join('')}
-            </select>
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Filtro ND</label>
-            <select class="ph-select" id="nd-filter">
-              ${[[2,1,'ND2'],[4,2,'ND4'],[8,3,'ND8'],[16,4,'ND16'],[32,5,'ND32'],[64,6,'ND64'],[128,7,'ND128'],[256,8,'ND256'],[512,9,'ND512'],[1000,10,'ND1000'],[4000,12,'ND4000'],[64000,16,'ND64000']].map(([n,s,l])=>`<option value="${s}">${l} (${n}×, −${s} stops)</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div id="nd-result" class="ph-result"></div>
-      </div>`;
-
-    function calcNd() {
-      const ss=root.querySelector('#nd-ss').value, stops=+root.querySelector('#nd-filter').value;
-      const baseSec=shutterSec(ss);
-      const newSec=baseSec*Math.pow(2,stops);
-      let display='';
-      if(newSec<1) display=`1/${Math.round(1/newSec)}s`;
-      else if(newSec<60) display=`${newSec.toFixed(1)}s`;
-      else if(newSec<3600) display=`${(newSec/60).toFixed(1)} min`;
-      else display=`${(newSec/3600).toFixed(2)} h`;
-      root.querySelector('#nd-result').innerHTML=`<div class="ph-result-val">${display}</div><div class="ph-result-desc">De ${ss} → ${display} com o filtro aplicado</div>`;
-    }
-    root.querySelectorAll('select').forEach(s=>s.addEventListener('change',calcNd));
-    calcNd();
-  }
-
-  // ── Flash GN ──────────────────────────────────────────────────────
-  function buildFlash(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">⚡ Flash — Número Guia</div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Número Guia (GN)</label>
-            <input type="number" class="ph-input" id="fl-gn" value="58" min="1">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Abertura (f/)</label>
-            <input type="number" class="ph-input" id="fl-ap" value="5.6" step="0.1" min="0.7">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Distância (m)</label>
-            <input type="number" class="ph-input" id="fl-d" value="3" step="0.1" min="0.1">
-          </div>
-        </div>
-        <div class="t-row" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem">
-          <button class="btn btn-sm" id="fl-calc-d">→ Calcular distância</button>
-          <button class="btn btn-sm" id="fl-calc-ap">→ Calcular abertura</button>
-          <button class="btn btn-sm" id="fl-calc-gn">→ Calcular GN</button>
-        </div>
-        <div id="fl-result" class="ph-result" style="display:none"></div>
-      </div>`;
-
-    function show(val,desc){const r=root.querySelector('#fl-result');r.style.display='';r.innerHTML=`<div class="ph-result-val">${val}</div><div class="ph-result-desc">${desc}</div>`;}
-    const gn=()=>+root.querySelector('#fl-gn').value, ap=()=>+root.querySelector('#fl-ap').value, d=()=>+root.querySelector('#fl-d').value;
-    root.querySelector('#fl-calc-d').addEventListener('click',()=>show(`${(gn()/ap()).toFixed(2)} m`,`GN(${gn()}) ÷ f/${ap()} = distância máxima`));
-    root.querySelector('#fl-calc-ap').addEventListener('click',()=>show(`f/${(gn()/d()).toFixed(1)}`,`GN(${gn()}) ÷ ${d()}m = abertura necessária`));
-    root.querySelector('#fl-calc-gn').addEventListener('click',()=>show(`GN ${(ap()*d()).toFixed(0)}`,`f/${ap()} × ${d()}m = Número Guia`));
-  }
-
-  // ── Long Exposure ─────────────────────────────────────────────────
-  function buildLongExposure(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">🌊 Longa Exposição</div>
-        <p style="font-size:.75rem;color:var(--muted);margin-bottom:.65rem">Estima o tempo de exposição com base no efeito desejado.</p>
-        <div class="ph-field">
-          <label class="ph-label">Efeito desejado</label>
-          <select class="ph-select" id="le-effect">
-            <option value="60">Água sedosa suave (rio lento) — ~60s</option>
-            <option value="120">Água sedosa intensa (cascata) — ~2 min</option>
-            <option value="10">Nuvens em movimento — ~10s</option>
-            <option value="300">Trilhos de luz (carros) — ~5 min</option>
-            <option value="900">Trilhos de estrelas (Polaris) — 15 min</option>
-            <option value="3600">Light painting — 1h</option>
-          </select>
-        </div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Velocidade actual (sem ND)</label>
-            <select class="ph-select" id="le-base">
-              ${SHUTTER_STOPS.filter(s=>shutterSec(s)<=1/30).map(s=>`<option${s==='1/250'?' selected':''}>${s}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div id="le-result" class="ph-result"></div>
-      </div>`;
-
-    function calcLe(){
-      const target=+root.querySelector('#le-effect').value, base=shutterSec(root.querySelector('#le-base').value);
-      const ratio=target/base;
-      const stops=Math.log2(ratio);
-      const nd=Math.round(stops);
-      let ndLabel='';
-      const ndMap={1:'ND2',2:'ND4',3:'ND8',4:'ND16',5:'ND32',6:'ND64',7:'ND128',8:'ND256',9:'ND512',10:'ND1000',12:'ND4000'};
-      for(let s=nd;s<=nd+2;s++){if(ndMap[s]){ndLabel=ndMap[s]+` (−${s} stops)`;break;}}
-      let timeStr=target<60?`${target}s`:target<3600?`${(target/60).toFixed(0)} min`:`${(target/3600).toFixed(1)} h`;
-      root.querySelector('#le-result').innerHTML=`
-        <div class="ph-result-val">${timeStr}</div>
-        <div class="ph-result-desc">Filtro recomendado: ${ndLabel||'ND'+Math.round(Math.pow(2,nd))}<br>Reduza a apertura e ISO ao máximo antes de usar ND.</div>`;
-    }
-    root.querySelectorAll('select').forEach(s=>s.addEventListener('change',calcLe));
-    calcLe();
-  }
-
-  // ── Golden Hour ───────────────────────────────────────────────────
-  function buildGoldenHour(root) {
-    root.innerHTML=`
-      <div class="ph-card">
-        <div class="ph-card-title">🌅 Hora Dourada & Azul</div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Latitude</label>
-            <input type="number" class="ph-input" id="gh-lat" value="38.72" step="0.01" min="-90" max="90">
-          </div>
-          <div class="ph-field">
-            <label class="ph-label">Longitude</label>
-            <input type="number" class="ph-input" id="gh-lon" value="-9.14" step="0.01" min="-180" max="180">
-          </div>
-        </div>
-        <div class="ph-row">
-          <div class="ph-field">
-            <label class="ph-label">Data</label>
-            <input type="date" class="ph-input" id="gh-date">
-          </div>
-          <div class="ph-field">
-            <button class="btn btn-sm" id="gh-locate" style="width:100%">📍 Usar a minha localização</button>
-          </div>
-        </div>
-        <div id="gh-result" class="ph-result"></div>
-      </div>`;
-
-    root.querySelector('#gh-date').value=new Date().toISOString().split('T')[0];
-
-    function calcGh(){
-      const latDeg=+root.querySelector('#gh-lat').value, lonDeg=+root.querySelector('#gh-lon').value;
-      const dateStr=root.querySelector('#gh-date').value;
-      const res=root.querySelector('#gh-result');
-      if(!dateStr||!isFinite(latDeg)||!isFinite(lonDeg)){res.innerHTML='<div class="ph-result-desc">Indica latitude, longitude e data.</div>';return;}
-      const lat=latDeg*Math.PI/180;
-      const d=new Date(dateStr+'T12:00:00');
-      const J=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);
-      const dec=-23.45*Math.PI/180*Math.cos(2*Math.PI/365*(J+10));
-      // Equation of time (minutes) + longitude correction → solar noon in local clock time
-      const B=2*Math.PI*(J-81)/364;
-      const eot=9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B);
-      const tzH=-d.getTimezoneOffset()/60;
-      const noon=12-lonDeg/15-eot/60+tzH;
-
-      // Hours from solar noon until the sun is at the given altitude (deg)
-      function ha(altDeg){
-        const a=altDeg*Math.PI/180;
-        const cos=(Math.sin(a)-Math.sin(lat)*Math.sin(dec))/(Math.cos(lat)*Math.cos(dec));
-        if(cos<-1||cos>1) return null;
-        return Math.acos(cos)*180/Math.PI/15;
-      }
-      function hhmm(h){if(h==null)return'—';const tot=((h%24)+24)%24;const hr=Math.floor(tot);const mn=Math.round((tot-hr)*60);return `${String(mn===60?hr+1:hr).padStart(2,'0')}:${String(mn===60?0:mn).padStart(2,'0')}`;}
-      const range=(h1,h2)=>h1==null||h2==null?'—':`${hhmm(h1)}–${hhmm(h2)}`;
-
-      const hSun=ha(-0.8333), hBlue=ha(-6), hGoldLo=ha(-4), hGoldHi=ha(6);
-      const row=(ico,lbl,val,color)=>`<span>${ico} ${lbl}</span><span style="color:${color};font-family:var(--font-mono)">${val}</span>`;
-      res.innerHTML=`<div class="ph-result-val">${latDeg.toFixed(2)}°, ${lonDeg.toFixed(2)}° · UTC${tzH>=0?'+':''}${tzH}</div>
-        <div class="ph-result-desc ph-gh-grid">
-          ${row('🌑','Hora azul manhã:',range(noon-hBlue,noon-hGoldLo),'var(--accent2)')}
-          ${row('🌅','Hora dourada manhã:',range(noon-hGoldLo,noon-hGoldHi),'var(--amber)')}
-          ${row('☀️','Nascer do sol:',hhmm(hSun==null?null:noon-hSun),'var(--accent-txt)')}
-          ${row('🌇','Pôr do sol:',hhmm(hSun==null?null:noon+hSun),'var(--accent-txt)')}
-          ${row('🌆','Hora dourada tarde:',range(noon+hGoldHi,noon+hGoldLo),'var(--amber)')}
-          ${row('🌑','Hora azul tarde:',range(noon+hGoldLo,noon+hBlue),'var(--accent2)')}
-        </div>`;
-    }
-
-    root.querySelector('#gh-locate').addEventListener('click',()=>{
-      if(!navigator.geolocation) return;
-      const btn=root.querySelector('#gh-locate');
-      btn.disabled=true;btn.textContent='A localizar…';
-      navigator.geolocation.getCurrentPosition(pos=>{
-        root.querySelector('#gh-lat').value=pos.coords.latitude.toFixed(2);
-        root.querySelector('#gh-lon').value=pos.coords.longitude.toFixed(2);
-        btn.disabled=false;btn.textContent='📍 Usar a minha localização';
-        calcGh();
-      },()=>{btn.disabled=false;btn.textContent='📍 Usar a minha localização';});
-    });
-    root.querySelectorAll('input').forEach(el=>el.addEventListener('input',calcGh));
-    calcGh();
-  }
+  /* As calculadoras (exposição, profundidade de campo, focal, hiperfocal,
+     ND, flash, longa exposição, hora dourada) viviam aqui como oito
+     formulários. São agora a bancada de instrumentos do Laboratório:
+     photography/js/ph-instruments.js. */
 
   // ── Composition Guides ────────────────────────────────────────────
   const COMPOSITIONS = [
@@ -1294,16 +904,15 @@ const PhotographyPage = (function () {
 
   // ── ferramentas: metadados p/ chips contextuais e âncoras ──
   const TOOL_META = {
-    exposure: { fn: buildExposure,     label: 'Exposição' },
-    dof:      { fn: buildDof,          label: 'Prof. de campo' },
-    focal:    { fn: buildFocal,        label: 'Focal & crop' },
-    hf:       { fn: buildHyperfocal,   label: 'Hiperfocal' },
-    nd:       { fn: buildNd,           label: 'Filtro ND' },
-    flash:    { fn: buildFlash,        label: 'Flash' },
-    le:       { fn: buildLongExposure, label: 'Longa exposição' },
-    gh:       { fn: buildGoldenHour,   label: 'Hora dourada' },
+    exposure: { label: 'Exposição' },
+    dof:      { label: 'Prof. de campo' },
+    focal:    { label: 'Focal & crop' },
+    hf:       { label: 'Hiperfocal' },
+    nd:       { label: 'Filtro ND' },
+    flash:    { label: 'Flash' },
+    le:       { label: 'Longa exposição' },
+    gh:       { label: 'Hora dourada' },
   };
-  let _pendingCalc = null;
 
   /* ── router das ligações cruzadas ─────────────────────────────────────────
      Todos os componentes do PhotoLearn emitem chips com data-go="<alvo>", e é
@@ -1337,7 +946,9 @@ const PhotographyPage = (function () {
       if (comp) return openCompModal(comp);
       return PhNav.go('aprender/composicao');
     }
-    if (kind === 'tool' && arg) { _pendingCalc = arg; return PhNav.go('laboratorio'); }
+    if (kind === 'tool' && arg) return PhNav.go('laboratorio/' + arg);
+    if (kind === 'sim') return PhNav.go('laboratorio/camara' + (arg ? '/' + arg : ''));
+    if (kind === 'mesa') return PhNav.go('edicao/mesa' + (arg ? '/' + arg : ''));
     if (kind === 'etool' && arg) return gotoTool(arg);
     if (kind === 'edicao') return PhNav.go('edicao');
   }
@@ -1355,6 +966,7 @@ const PhotographyPage = (function () {
       if (!db) { panel.innerHTML = dbErrorHTML(); wireRetry(panel, () => buildGeneros(panel)); return; }
       const nGroups = new Set(db.genres.map(g => g.group || 'Outros')).size;
       panel.innerHTML = `
+        <div class="dp-favs" hidden><p class="dp-mono">Guardados</p><div class="dp-favs-list"></div></div>
         <section id="folha" class="dp-sheet" aria-labelledby="dp-sheet-t" style="scroll-margin-top:calc(var(--hdr-h) + 1rem)">
           <div class="dp-sheet-head">
             <div>
@@ -1382,6 +994,7 @@ const PhotographyPage = (function () {
       panel.querySelectorAll('[data-genre]').forEach(c =>
         c.addEventListener('click', () => PhNav.go('g/' + c.dataset.genre)));
       wireGenreSearch(panel);
+      if (typeof PhShell !== "undefined") PhShell.renderFavs();
     });
   }
 
@@ -1734,9 +1347,7 @@ const PhotographyPage = (function () {
         ch.addEventListener('click', () => openCompModal(comp, g.id));
       });
       panel.querySelectorAll('[data-etool]').forEach(ch => ch.addEventListener('click', () => gotoTool(ch.dataset.etool)));
-      panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => {
-        _pendingCalc = ch.dataset.tool; PhNav.go('laboratorio');
-      }));
+      panel.querySelectorAll('[data-tool]').forEach(ch => ch.addEventListener('click', () => PhNav.go('laboratorio/' + ch.dataset.tool)));
       PhotoLearn.wire(panel, plGo);
 
       // Índice: os links são âncoras (funcionam sem JS e com teclado); o JS
@@ -2127,6 +1738,12 @@ const PhotographyPage = (function () {
         : (sec.tools || []).map(toolDetailHTML).join('');
 
       panel.innerHTML = `
+        <a class="lab-band" href="#edicao/mesa">
+          <span class="lab-band-img"><img src="/assets/photo/own/t/own-16.webp" alt="" width="438" height="520" loading="lazy" decoding="async"/></span>
+          <span class="lab-band-txt"><small class="dp-mono">Ferramenta</small><b>Mesa de revelação</b>
+            <span>Todos os ajustes destas lições numa só fotografia, nossa ou tua: estilos, curva, cor por banda, histograma e exportação.</span></span>
+          <span class="lab-go">Abrir a mesa ${PhIcon.svg('arrow')}</span>
+        </a>
         <h2 class="ph-section-title">Edição</h2>
         <p class="ph-section-sub">Conceitos de edição que valem em qualquer programa. Primeiro o que a ferramenta faz e porquê; a equivalência em Lightroom, Camera Raw, darktable, RawTherapee, Snapseed e RapidRAW fica no fim de cada ficha.</p>
         <div class="ph-secnav" role="tablist" aria-label="Secções de edição">
@@ -3010,59 +2627,77 @@ const PhotographyPage = (function () {
     if (!item) window.scrollTo({ top: 0 });
   }
 
-  // ── Ferramentas (calculadoras) ──
-  let _toolsBuilt = false;
-  function buildFerramentas(panel) {
-    // O crop pré-selecionado depende da classe de câmara, e gearClass() só a
-    // sabe validar depois do DB carregar — sem esperar, quem tem Full Frame
-    // escolhido apanhava o valor de omissão numa carga fria desta secção.
-    // (E os assets têm de estar carregados também, senão as capas das
-    // calculadoras não existem ainda quando as fichas se desenham.)
-    if (!_toolsBuilt && (!_DB || !_assets)) {
-      panel.innerHTML = `<div class="ph-section-box"><p class="ph-section-sub">A carregar…</p></div>`;
-      Promise.all([loadDB(), loadAssets()]).then(() => buildFerramentas(panel));
+  // ── Laboratório: câmara escura + estúdio 3D + bancada de instrumentos ──
+  /* Era uma grelha de oito formulários com capas decorativas. Agora a página
+     abre com a fotografia: a entrada da câmara escura (PhDesk, simulador de
+     exposição sobre fotografias reais), o estúdio 3D nos seus dois locais e,
+     por baixo, a bancada de instrumentos (PhInstruments). `arg` = id de um
+     instrumento (rota laboratorio/<id>, e os chips tool:<id> dos géneros). */
+  let _inst = null;
+  const LAB_QUICK = [['own-18', 'Água em seda'], ['lab-retrato', 'Fundo desfocado'], ['lab-ciclista', 'Panning'], ['own-21', 'Estrelas em traço'], ['lab-noite', 'Noite à mão']];
+  function buildFerramentas(panel, arg) {
+    if (!_inst && (!_DB || !_assets)) {
+      panel.innerHTML = `<p class="ph-section-sub">A carregar…</p>`;
+      Promise.all([loadDB(), loadAssets()]).then(() => buildFerramentas(panel, arg));
       return;
     }
-    if (!_toolsBuilt) {
-      _toolsBuilt = true;
+    if (!_inst) {
+      const I = n => PhIcon.svg(n);
       panel.innerHTML = `
-        <a class="ph-lab-hero" href="#estudio" data-lab-studio>
-          <span class="ph-lab-hero-img">${assetPath('eqi-light') ? `<img loading="lazy" decoding="async" alt="" src="${assetPath('eqi-light')}">` : ''}</span>
-          <span class="ph-lab-hero-txt"><small>Laboratório</small><b>Estúdio virtual 3D</b>
-            <span>Monta a luz de um retrato ou fotografa na rua e vê o que muda com a abertura, o obturador e o ISO.</span>
-            <span class="ph-lab-hero-cta">Abrir o estúdio →</span></span>
-        </a>
-        <h2 class="ph-section-title">Calculadoras</h2>
-        <p class="ph-section-sub" style="margin:.1rem 0 .9rem">Exposição e ótica — os resultados atualizam sozinhos. O crop vem do tipo de câmara que escolheste (${(classDef() || {}).name || 'APS-C'}); podes trocá-lo em qualquer campo.</p>
-        <div class="ph-grid"></div>`;
-      panel.querySelector('[data-lab-studio]').addEventListener('click', e => { e.preventDefault(); PhNav.go('estudio'); });
-      const grid = panel.querySelector('.ph-grid');
-      Object.keys(TOOL_META).forEach(key => {
-        const wrapper = document.createElement('div');
-        wrapper.id = 'ph-calc-' + key;
-        TOOL_META[key].fn(wrapper);
-        /* Capa gráfica da calculadora (grupo `tool-ico`): a grelha era só
-           texto e números e não se distinguia uma ficha da outra de
-           relance. A capa é injetada depois de a ficha se desenhar para
-           as calculadoras não precisarem de saber que ela existe. */
-        const cover = assetPath('tli-' + key);
-        const title = cover && wrapper.querySelector('.ph-card-title');
-        if (title) title.insertAdjacentHTML('beforebegin',
-          `<span class="ph-tool-cover"><img loading="lazy" decoding="async" alt="" src="${cover}"></span>`);
-        grid.appendChild(wrapper);
+        <section class="lab-feature" aria-labelledby="lab-f-t">
+          <a class="lab-feature-img" href="#laboratorio/camara" aria-label="Abrir a câmara escura">
+            <img src="/assets/photo/own/own-15.webp" alt="Linha de rebentação vista de cima, entre o mar verde e a areia" width="1600" height="1093" fetchpriority="high"/>
+            <span class="lab-feature-hud dp-mono"><b>f/11</b><b>1/400</b><b>ISO 100</b><i>187 mm eq.</i></span>
+          </a>
+          <div class="lab-feature-txt">
+            <p class="lab-k dp-mono">Simulador de exposição</p>
+            <h2 id="lab-f-t">Câmara escura</h2>
+            <p>Fotografias reais, com as definições com que foram tiradas. Muda a abertura, o tempo e o ISO e vê o que cada escolha custa: fundo, movimento, ruído.</p>
+            <a class="btn btn-primary" href="#laboratorio/camara">Abrir a câmara escura</a>
+            <div class="lab-quick"><span class="dp-mono">Experimenta</span>${LAB_QUICK.map(([id, l]) => `<a href="#laboratorio/camara/${id}">${l}</a>`).join('')}</div>
+          </div>
+        </section>
+        <div class="lab-strip" aria-label="Cenas da câmara escura"></div>
+
+        <section class="lab-sec" aria-labelledby="lab-s-t">
+          <header class="lab-sec-h"><h2 id="lab-s-t">Estúdio 3D</h2><p>Dois locais em três dimensões, para o que uma fotografia já tirada não deixa experimentar: mudar a luz de sítio e andar à volta da cena.</p></header>
+          <div class="lab-studios">
+            <a class="lab-studio" href="#estudio" data-studio="studio">
+              <span class="lab-studio-img"><img src="/assets/photo/site/lab-studio.webp" alt="" loading="lazy" decoding="async" width="1100" height="619"/></span>
+              <span class="lab-studio-n dp-mono">Luz</span><h3>Estúdio de luz</h3>
+              <p>Flashes, modificadores e 12 esquemas de retrato. Move cada luz e vê a fotografia mudar.</p><span class="lab-go">Entrar ${I('arrow')}</span></a>
+            <a class="lab-studio" href="#estudio" data-studio="ext">
+              <span class="lab-studio-img"><img src="/assets/photo/site/lab-street.webp" alt="" loading="lazy" decoding="async" width="1100" height="619"/></span>
+              <span class="lab-studio-n dp-mono">Câmara</span><h3>Na rua</h3>
+              <p>Uma rua a quatro horas do dia: bokeh, movimento e ISO com a câmara na mão, em M, A ou S.</p><span class="lab-go">Entrar ${I('arrow')}</span></a>
+          </div>
+        </section>
+
+        <section class="lab-sec" id="lab-inst" aria-labelledby="lab-i-t">
+          <header class="lab-sec-h"><h2 id="lab-i-t">Instrumentos</h2><p>As contas de exposição e de ótica. O sensor vem do tipo de câmara que escolheste (${esc((classDef() || {}).name || 'APS-C')}) e podes trocá-lo em cada instrumento.</p></header>
+          <div class="lab-bench"></div>
+        </section>`;
+      panel.querySelectorAll('[data-studio]').forEach(a => a.addEventListener('click', e => {
+        e.preventDefault();
+        try { localStorage.setItem('ph-studio-mode', a.dataset.studio); } catch (_) {}
+        if (_studio) switchStudio(document.querySelector('.ph-panel[data-panel="estudio"]'), a.dataset.studio);
+        PhNav.go('estudio');
+      }));
+      _inst = PhInstruments.mount(panel.querySelector('.lab-bench'), {
+        id: arg, cls: gearClass(),
+        onOpen: id => { try { history.replaceState(null, '', '#laboratorio/' + id); } catch (_) {} },
       });
-    }
-    if (_pendingCalc) {
-      const target = panel.querySelector('#ph-calc-' + _pendingCalc);
-      _pendingCalc = null;
-      if (target) {
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          target.classList.add('ph-calc-flash');
-          setTimeout(() => target.classList.remove('ph-calc-flash'), 1800);
-        }, 80);
-      }
-    }
+      PhDesk.loadData().then(d => {
+        const strip = panel.querySelector('.lab-strip');
+        strip.innerHTML = d.scenes.slice(0, 12).map(sc => `<a class="lab-thumb" href="#laboratorio/camara/${sc.id}" title="${esc(sc.title)}">
+          <img src="${sc.thumb}" alt="${esc(sc.title)}" loading="lazy" decoding="async"/><span class="dp-mono">${PhSim.fmtAperture(sc.f)} · ${PhSim.fmtShutter(sc.t)}</span></a>`).join('')
+          + `<a class="lab-thumb lab-thumb-all" href="#laboratorio/camara"><span>Todas as ${d.scenes.length} cenas</span>${PhIcon.svg('arrow')}</a>`;
+      }).catch(() => {});
+    } else if (arg) _inst.open(arg);
+    if (arg) setTimeout(() => {
+      const el = panel.querySelector('#lab-inst');
+      if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    }, 60);
   }
 
   /* ── Estúdio virtual (3D) ─────────────────────────────────────────
@@ -3077,10 +2712,13 @@ const PhotographyPage = (function () {
     if (_studio) return;
     let mode = 'studio';
     try { if (localStorage.getItem('ph-studio-mode') === 'ext') mode = 'ext'; } catch {}
-    panel.innerHTML = `<a class="ph-back ph-lab-back" href="#laboratorio" data-lab-back>← Laboratório</a>
-      <div class="ph-studio-modes" role="tablist" aria-label="Local">
-        <button type="button" role="tab" class="ph-sm" data-sm="studio"><b>Estúdio de luz</b><span>flashes, modificadores, esquemas</span></button>
-        <button type="button" role="tab" class="ph-sm" data-sm="ext"><b>Na rua</b><span>abertura, obturador, ISO, bokeh</span></button>
+    panel.innerHTML = `<div class="st-bar">
+        <a class="dk-back" href="#laboratorio" data-lab-back>${PhIcon.svg('back')}<span>Laboratório</span></a>
+        <b class="st-bar-t">Estúdio 3D</b>
+        <div class="ph-studio-modes" role="tablist" aria-label="Local">
+          <button type="button" role="tab" class="ph-sm" data-sm="studio"><b>Estúdio de luz</b><span>flashes e esquemas</span></button>
+          <button type="button" role="tab" class="ph-sm" data-sm="ext"><b>Na rua</b><span>abertura, tempo, ISO</span></button>
+        </div>
       </div>
       <div class="ph-studio-host"></div>`;
     panel.querySelector('[data-lab-back]').addEventListener('click', e => { e.preventDefault(); PhNav.go('laboratorio'); });
@@ -3130,16 +2768,20 @@ const PhotographyPage = (function () {
       sub: 'Olhar, linguagem e técnica: oito capítulos, sem ordem obrigatória.' },
     { id: 'editar',      num: '03', label: 'Editar',      route: 'edicao',      panels: ['edicao'],
       title: 'Da foto tirada à foto acabada.',
-      sub: 'O que mexer, por que ordem e em que programa — cada ajuste aplicado ao vivo, com histograma.' },
+      sub: 'O que mexer, por que ordem e em que programa: cada ajuste aplicado ao vivo, e uma mesa de revelação para os juntar.' },
     { id: 'laboratorio', num: '04', label: 'Laboratório', route: 'laboratorio', panels: ['ferramentas', 'estudio'],
       title: 'Experimentar antes de sair de casa.',
-      sub: 'Um estúdio 3D com flashes e uma rua à noite, e as calculadoras de exposição e ótica.' },
+      sub: 'Uma câmara escura para simular a exposição em fotografias reais, um estúdio 3D e os instrumentos de exposição e ótica.' },
   ];
   function syncArea(grp) {
     if (typeof PhShell !== 'undefined') PhShell.setArea(grp.id, grp.label);
   }
-  const PANELS = ['generos', 'cheats', 'aprender', 'equipamento', 'edicao', 'ferramentas', 'estudio'];
-  const groupOf = panel => PH_GROUPS.find(g => g.panels.includes(panel)) || PH_GROUPS[0];
+  /* 'mesa' = a mesa de trabalho (PhDesk): câmara escura do laboratório ou
+     mesa de revelação da edição, conforme o modo pedido pela rota. */
+  const PANELS = ['generos', 'cheats', 'aprender', 'equipamento', 'edicao', 'ferramentas', 'estudio', 'mesa'];
+  const groupOf = (panel, arg) => panel === 'mesa'
+    ? PH_GROUPS[arg && arg.mode === 'dev' ? 2 : 3]
+    : PH_GROUPS.find(g => g.panels.includes(panel)) || PH_GROUPS[0];
 
   /* Contexto entregue ao PhotoCheats: dá-lhe acesso ao DB, aos assets, à
      classe de câmara e ao router de ligações cruzadas sem que ele precise
@@ -3169,7 +2811,7 @@ const PhotographyPage = (function () {
 
       _activate = (id, arg) => {
         _curTab = id; _curArg = arg || null;
-        const grp = groupOf(id);
+        const grp = groupOf(id, arg);
         view.querySelector('.dp-head-n').textContent = grp.num;
         const ha = view.querySelector('.dp-head-a');
         ha.textContent = grp.label; ha.setAttribute('href', '#' + grp.route);
@@ -3178,13 +2820,16 @@ const PhotographyPage = (function () {
         syncArea(grp);
         view.querySelectorAll('.ph-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
         const panel = view.querySelector(`.ph-panel[data-panel="${id}"]`);
-        if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
+        if (typeof PhDesk !== 'undefined') { if (id === 'mesa') PhDesk.enter(); else PhDesk.leave(); }
+        document.body.classList.toggle('st-on', id === 'estudio');
+        if (id === 'mesa') PhDesk.mount(panel, arg.mode, arg.id, r => PhNav.go(r));
+        else if (id === 'generos') (arg ? renderPortal(panel, arg) : buildGeneros(panel));
         else if (id === 'cheats') PhotoCheats.build(panel, arg, cheatsCtx());
         else if (id === 'equipamento') buildEquipamento(panel, arg);
         else if (id === 'estudio') buildEstudio(panel);
         else if (id === 'edicao') buildEdicao(panel, arg);
         else if (id === 'aprender') buildAprender(panel, arg);
-        else buildFerramentas(panel);
+        else buildFerramentas(panel, arg);
       };
 
     }
@@ -3201,11 +2846,13 @@ const PhotographyPage = (function () {
       /* Equipamento passou a capítulo de Aprender; as duas rotas valem. */
       else if (a === 'aprender' && seg[1] === 'equipamento') { tab = 'equipamento'; arg = seg.slice(2).join('/') || null; }
       else if (a === 'aprender')             { tab = 'aprender'; arg = rest || null; }
+      else if (a === 'laboratorio' && seg[1] === 'camara') { tab = 'mesa'; arg = { mode: 'sim', id: seg[2] || null }; }
+      else if (a === 'edicao' && seg[1] === 'mesa')        { tab = 'mesa'; arg = { mode: 'dev', id: seg[2] || null }; }
       else if (a === 'equipamento')          { tab = 'equipamento'; arg = rest || null; }
       else if (a === 'edicao')               { tab = 'edicao'; arg = rest || null; }
       else if (a === 'estudio')              tab = 'estudio';
       else if (a === 'cheatsheets' || a === 'cs' || a === 'consulta') { tab = 'cheats'; arg = rest || null; }
-      else if (a === 'laboratorio' || a === 'ferramentas' || a === 'calc') tab = 'ferramentas';
+      else if (a === 'laboratorio' || a === 'ferramentas' || a === 'calc') { tab = 'ferramentas'; arg = PhInstruments.IDS.includes(seg[1]) ? seg[1] : null; }
       else if (a === 'cenarios')             tab = 'generos';
       else if (a === 'composicao' || a === 'cores') { tab = 'aprender'; arg = a; }
     }
@@ -3214,5 +2861,49 @@ const PhotographyPage = (function () {
     _activate(tab || 'generos', arg);
   }
 
-  return { show };
+  /* ── índice da pesquisa global (PhSearch) ─────────────────────────────
+     Tudo o que tem página: áreas, capítulos, géneros, itens de cada capítulo,
+     ferramentas de edição, cartões da consulta, instrumentos e cenas. Sai dos
+     mesmos JSON que as páginas usam — um item novo nos dados aparece na
+     pesquisa sem tocar aqui. `w` = peso (as páginas de entrada primeiro). */
+  let _searchIx = null;
+  function searchIndex() {
+    if (_searchIx) return _searchIx;
+    const get = f => fetch('/data/photo/' + f).then(r => r.ok ? r.json() : null).catch(() => null);
+    _searchIx = Promise.all([loadDB(), loadEditDB(), get('cheats.json'), PhDesk.loadData().catch(() => null)]).then(([db, ed, ch, lab]) => {
+      const out = [], add = (t, s, r, k, w) => out.push({ t, s, r, k: k || '', w: w || 0 });
+      PH_GROUPS.forEach(g => add(g.label, 'Área ' + g.num, g.route, g.sub, 40));
+      add('Consulta rápida', 'Fotografar · cartões de bolso', 'consulta', 'cheatsheets definições no terreno', 30);
+      add('Câmara escura', 'Laboratório · simulador de exposição', 'laboratorio/camara', 'abertura tempo obturador iso simular exif', 34);
+      add('Mesa de revelação', 'Editar · todos os ajustes numa fotografia', 'edicao/mesa', 'editor revelar exportar estilos presets abrir foto', 34);
+      add('Estúdio 3D', 'Laboratório · luz de estúdio e rua', 'estudio', 'flash softbox esquemas rembrandt bokeh', 30);
+      APR_ORDER.forEach(id => add(APR_CHAPTERS[id].name, 'Aprender · capítulo', aprRoute(id), APR_CHAPTERS[id].blurb, 28));
+      PhInstruments.TOOLS.forEach(t => add(t.name, 'Laboratório · instrumento', 'laboratorio/' + t.id, t.sub + ' calculadora', 18));
+      if (db) {
+        db.genres.forEach(g => add(g.name, 'Género · ' + (g.group || ''), 'g/' + g.id, (g.blurb || '') + ' ' + (g.goal || ''), 24));
+        db.genres.forEach(g => add(g.name + ': consulta rápida', 'Cartão de bolso do género', 'consulta/g/' + g.id, 'definições erros', 4));
+        db.know.forEach(t => add(t.name, 'Fundamentos', 'aprender/fundamentos/' + t.id, t.blurb, 14));
+        (db.principles || []).forEach(t => add(t.name, 'Visão', 'aprender/visao/' + t.id, t.blurb, 10));
+        (db.looks || []).forEach(t => add(t.name, 'Estilo', 'aprender/estilos/' + t.id, t.blurb, 12));
+        (db.techniques || []).forEach(t => add(t.name, 'Técnica', 'aprender/tecnicas/' + t.id, t.blurb, 12));
+        (db.colour || []).forEach(t => add(t.name, 'Cores', 'aprender/cores/' + t.id, t.blurb, 10));
+        (db.readAnalyses || []).forEach(t => add(t.title || t.name, 'Ler fotografias', 'aprender/ler/' + t.id, '', 8));
+        (db.equipment || []).forEach(c => {
+          add(c.name, 'Equipamento · categoria', 'aprender/equipamento/' + c.id, '', 10);
+          (c.items || []).forEach(it => add(it.name, 'Equipamento · ' + c.name, 'aprender/equipamento/' + c.id + '/' + it.id, it.blurb || '', 8));
+        });
+      }
+      COMPOSITIONS.forEach(c => add(c.name, 'Composição', 'aprender/composicao', c.short, 12));
+      if (ed) ed.sections.forEach(sc => {
+        add(sc.name, 'Editar · secção', 'edicao/' + sc.id, sc.intro || '', 12);
+        (sc.tools || []).forEach(t => add(t.name + (t.en ? ' (' + t.en + ')' : ''), 'Editar · ' + sc.name, 'edicao/' + t.id, t.quick || t.what || '', 14));
+      });
+      if (ch) (ch.sheets || []).forEach(sh => add(sh.name, 'Consulta rápida', 'consulta/' + sh.id, (sh.blurb || '') + ' ' + (sh.q || ''), 12));
+      if (lab) lab.scenes.forEach(sc => add(sc.title, sc.generated ? 'Câmara escura · cena de treino' : 'Câmara escura · fotografia do autor', 'laboratorio/camara/' + sc.id, (sc.light || '') + ' ' + (sc.camera || ''), 6));
+      return out.filter(it => it.t);
+    });
+    return _searchIx;
+  }
+
+  return { show, searchIndex };
 })();
