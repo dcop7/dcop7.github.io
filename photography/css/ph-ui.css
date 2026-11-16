@@ -53,9 +53,10 @@ img { display: block; max-width: 100%; }
   display: flex; align-items: center; gap: 2rem; }
 .dp-brand { display: flex; align-items: center; gap: .65rem; flex-shrink: 0; }
 .dp-brand img { width: 30px; height: 30px; border-radius: 6px; }
-.dp-brand-txt { display: flex; align-items: baseline; gap: .45rem; line-height: 1; }
-.dp-brand-dc { font-family: var(--dp-mono); font-size: .74rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--dp-safe-hi); }
-.dp-brand-ph { font-family: var(--dp-display); font-style: italic; font-size: 1.42rem; letter-spacing: -.005em; color: var(--dp-paper); }
+.dp-brand-txt { display: flex; align-items: baseline; gap: .3em; line-height: 1; font-family: var(--dp-display); font-style: italic; font-size: 1.42rem; letter-spacing: -.005em; color: var(--dp-paper); }
+/* como "Diogo Universe": as duas palavras na mesma letra e tamanho (a Instrument Serif só tem peso 400 — nada de negrito falso) */
+.dp-brand-dc { font-weight: 400; }
+.dp-brand-ph { font-weight: 400; }
 
 .dp-nav { display: flex; align-items: stretch; height: 100%; gap: .2rem; margin-left: auto; }
 .dp-nav a { position: relative; display: flex; align-items: center; gap: .45rem; padding: 0 .85rem;
@@ -322,9 +323,9 @@ body.ph-modal-open { overflow: hidden; }
 /* telemóveis grandes deitados (932×430): com as margens do entalhe de cada lado, o cabeçalho de
    computador (com as quatro áreas) não cabia e o botão do índice ia parar debaixo do entalhe */
 @media (max-width: 1000px) and (max-height: 520px) { .dp-nav, .dp-portal { display: none; } .dp-tools { margin-left: auto; } }
-@media (max-width: 380px) { .dp-brand-dc { display: none; } }
+@media (max-width: 380px) { .dp-brand-txt { font-size: 1.24rem; } }
 /* 320px: com a estrela de guardar (4 botões) o cabeçalho passava 6px do ecrã e a página alargava */
-@media (max-width: 345px) { .dp-brand-ph { font-size: 1.2rem; } .dp-brand { gap: .45rem; } }
+@media (max-width: 345px) { .dp-brand-txt { font-size: 1.1rem; } .dp-brand { gap: .45rem; } }
 
 /* ── índice do site ── */
 .dp-menu { padding: 0; }

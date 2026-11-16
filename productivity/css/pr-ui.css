@@ -55,9 +55,12 @@ img, svg { display: block; max-width: 100%; }
   display: flex; align-items: center; gap: 1.5rem; }
 .pr-brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; flex-shrink: 0; }
 .pr-brand img { width: 30px; height: 30px; }
-.pr-brand-txt { display: flex; align-items: baseline; gap: .4rem; line-height: 1; }
-.pr-brand-dc { font-family: var(--pr-mono); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--pr-dim); }
-.pr-brand-nm { font-family: var(--pr-display); font-size: 1.32rem; font-weight: 600; letter-spacing: -.01em; }
+.pr-brand-txt { display: flex; align-items: baseline; gap: .3em; line-height: 1; font-family: var(--pr-display); font-size: 1.32rem; letter-spacing: -.01em; }
+/* como "Diogo Universe": as duas palavras na mesma letra e tamanho, "Diogo" mais forte */
+.pr-brand-dc { font-weight: 700; }
+.pr-brand-nm { font-weight: 600; }
+@media (max-width: 380px) { .pr-brand-txt { font-size: 1.14rem; } .pr-brand { gap: .45rem; } }
+@media (max-width: 345px) { .pr-brand-txt { font-size: 1.02rem; } }
 .pr-nav { display: flex; align-items: stretch; height: 100%; margin-left: auto; gap: .1rem; }
 .pr-nav a { display: flex; align-items: center; gap: .45rem; padding: 0 .85rem; text-decoration: none; font-size: .9rem; font-weight: 600;
   color: var(--pr-ink-2); position: relative; }

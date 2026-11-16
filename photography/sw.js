@@ -21,7 +21,7 @@
      na primeira vez que o estúdio abre com ligação (cache foto-libs-*).
    Mudar CACHE quando muda código para forçar o precache novo.
    ══════════════════════════════════════════════════════════════════ */
-const CACHE = 'foto-v5';
+const CACHE = 'foto-v6';
 const FONTS = 'foto-fonts-v1';
 const LIBS = 'foto-libs-v1';      // three.js do estúdio (esm.sh), guardado ao primeiro uso
 
