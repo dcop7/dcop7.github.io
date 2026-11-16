@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — laboratórios "Dirigir" + revisão pessoal
+   Diogo Productivity — laboratórios "Dirigir" + revisão pessoal
    ──────────────────────────────────────────────────────────────────
      experimentar/decidir       calibrar estimativas · enquadramento · pré-mortem
      experimentar/motivacao     redesenhar uma tarefa (autonomia, competência…)

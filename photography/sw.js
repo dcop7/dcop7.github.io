@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Photography — service worker (âmbito /photography/)
+   Diogo Photography — service worker (âmbito /photography/)
    ──────────────────────────────────────────────────────────────────
    Convive com o /sw.js do portal: para páginas em /photography/ o browser
    escolhe o registo com o âmbito MAIS específico, este. Um SW controla
@@ -21,7 +21,7 @@
      na primeira vez que o estúdio abre com ligação (cache foto-libs-*).
    Mudar CACHE quando muda código para forçar o precache novo.
    ══════════════════════════════════════════════════════════════════ */
-const CACHE = 'foto-v4';
+const CACHE = 'foto-v5';
 const FONTS = 'foto-fonts-v1';
 const LIBS = 'foto-libs-v1';      // three.js do estúdio (esm.sh), guardado ao primeiro uso
 

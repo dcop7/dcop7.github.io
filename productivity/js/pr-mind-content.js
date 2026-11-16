@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — percurso "Executar e dirigir" (conteúdo)
+   Diogo Productivity — percurso "Executar e dirigir" (conteúdo)
    ──────────────────────────────────────────────────────────────────
    Acrescenta ao PrLearnContent um segundo percurso de capítulos, ao lado
    de "Organizar" (os capítulos originais). Não é um resumo de livros: cada

@@ -41,7 +41,7 @@ Navegação lateral (hash-based), agrupada em **Descobrir**, **Ferramentas** e *
 | `#quiz` | **Quizzes** | Quizzes offline data-driven: `quizzes/<id>/<lang>/<dificuldade>.json`, cada pergunta com facto explicativo (`exp`), sem APIs |
 | `#humor` | **Humor** | Piadas por categoria, data-driven (`data/humor/*.json`), 17 categorias (incl. piropos e cúmulos) organizadas por grupos, centenas de entradas |
 | `#links` | **Links** | Biblioteca de recursos por categoria |
-| `/photography/` | **Fotografia** (microsite DCOP7 Photography — rotas antigas `#photography/…` redirecionam) | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S26+ / ambos), Cheatsheets visuais de consulta rápida (15 gerais + 8 géneros com fichas próprias + cartão de bolso dos restantes 20), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
+| `/photography/` | **Fotografia** (microsite Diogo Photography — rotas antigas `#photography/…` redirecionam) | Escola por géneros (28 portais: paisagem, retrato, rua, astro, …) com recomendações adaptadas ao equipamento real (Canon M50 II / Galaxy S26+ / ambos), Cheatsheets visuais de consulta rápida (15 gerais + 8 géneros com fichas próprias + cartão de bolso dos restantes 20), Aprender (Visão, Ler fotografias, Fundamentos, Composição, Estilos, Técnicas, Cores), 12 técnicas de edição RapidRAW/darktable/Snapseed e 8 calculadoras (`data/photo/*.json`) |
 | `#visual` | **Visual** | Whiteboard (Excalidraw), matriz de Eisenhower, SWOT |
 | `#settings` | **Preferências** | Tema, tamanho de letra, língua, bookmarks, cidade da meteo |
 

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — Explorar + "Desenhar o teu sistema"
+   Diogo Productivity — Explorar + "Desenhar o teu sistema"
    ──────────────────────────────────────────────────────────────────
      explorar/mapa                 segue uma coisa pelo sistema (SVG)
      explorar/relacoes             o esquema ao vivo, explicado
@@ -396,7 +396,7 @@ const PrExplore = (function () {
     return `# ${tx('O meu sistema', 'My system')}\n\n` +
       ['act', 'info', 'today', 'str', 'cal'].map(r => `- **${roleName(r)}:** ${T.tool(p[r]) ? nm(T.tool(p[r])) : '—'}`).join('\n') + '\n\n' +
       planData(st).map(s => `## ${s.h}\n\n${s.items.map(i => `- [ ] ${i}`).join('\n')}`).join('\n\n') +
-      `\n\n---\n${tx('Feito em DCOP7 Productivity. Limites dos planos grátis verificados em ', 'Made with DCOP7 Productivity. Free-plan limits checked on ')}${T.VERIFIED}.\n`;
+      `\n\n---\n${tx('Feito em Diogo Productivity. Limites dos planos grátis verificados em ', 'Made with Diogo Productivity. Free-plan limits checked on ')}${T.VERIFIED}.\n`;
   }
 
   Pr.route('explorar/mapa', mapPage);

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — o ciclo em prática (global `PrWeek`)
+   Diogo Productivity — o ciclo em prática (global `PrWeek`)
    ──────────────────────────────────────────────────────────────────
    Três componentes que escrevem no mundo de exemplo, cada um com o src
    de quem o usa (a semana guiada passa 'week'; as páginas soltas usam

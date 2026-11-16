@@ -1,4 +1,4 @@
-# DCOP7 Photography — `/photography/`
+# Diogo Photography — `/photography/`
 
 Escola visual de fotografia, servida como site independente dentro do mesmo
 repositório e do mesmo GitHub Pages que o Diogo Universe. Tem navegação,

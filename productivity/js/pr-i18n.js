@@ -1,4 +1,4 @@
-/* DCOP7 Productivity — textos do shell, registados no I18n partilhado do
+/* Diogo Productivity — textos do shell, registados no I18n partilhado do
    portal (mesma preferência de língua: localStorage['site-lang']). Os
    textos longos de cada página vivem junto do módulo, em {pt,en}. */
 (function () {
@@ -14,7 +14,7 @@
       'pr.theme': 'Mudar o tema', 'pr.theme.switch': 'Tema claro / escuro', 'pr.portal.title': 'Voltar ao Diogo Universe',
       'pr.menu.open': 'Abrir índice', 'pr.menu.close': 'Fechar índice',
       'pr.foot.about': 'Um sistema pessoal de produtividade que se aprende a fazer: capturar, triar e rever. Os exemplos são fictícios e tudo corre no teu browser — não há contas, sincronização nem ligação às tuas ferramentas. Funciona offline.',
-      'pr.foot.areas': 'Áreas', 'pr.foot.short': 'Atalhos', 'pr.foot.base': 'DCOP7 Productivity · parte do Diogo Universe', 'pr.foot.local': 'Simulação local · sem contas',
+      'pr.foot.areas': 'Áreas', 'pr.foot.short': 'Atalhos', 'pr.foot.base': 'Diogo Productivity · parte do Diogo Universe', 'pr.foot.local': 'Simulação local · sem contas',
       'pr.x.notion': 'Playground de bases de dados', 'pr.a.week': 'Uma semana no sistema', 'pr.e.tools': 'Diretório de ferramentas',
       'pr.offline': 'Sem ligação. O que já abriste continua disponível.', 'pr.online': 'Ligação restabelecida.',
       'pr.site.tag': 'um sistema pessoal de produtividade',
@@ -28,7 +28,7 @@
       'pr.theme': 'Change theme', 'pr.theme.switch': 'Light / dark theme', 'pr.portal.title': 'Back to Diogo Universe',
       'pr.menu.open': 'Open index', 'pr.menu.close': 'Close index',
       'pr.foot.about': 'A personal productivity system you learn by doing: capture, triage and review. The examples are fictional and everything runs in your browser — no accounts, no sync, no connection to your tools. Works offline.',
-      'pr.foot.areas': 'Areas', 'pr.foot.short': 'Shortcuts', 'pr.foot.base': 'DCOP7 Productivity · part of Diogo Universe', 'pr.foot.local': 'Local simulation · no accounts',
+      'pr.foot.areas': 'Areas', 'pr.foot.short': 'Shortcuts', 'pr.foot.base': 'Diogo Productivity · part of Diogo Universe', 'pr.foot.local': 'Local simulation · no accounts',
       'pr.x.notion': 'Database playground', 'pr.a.week': 'A week in the system', 'pr.e.tools': 'Tool directory',
       'pr.offline': 'Offline. What you have already opened is still available.', 'pr.online': 'Back online.',
       'pr.site.tag': 'a personal productivity system',

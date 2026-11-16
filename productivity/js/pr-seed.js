@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — o mundo de exemplo (sementes)
+   Diogo Productivity — o mundo de exemplo (sementes)
    ──────────────────────────────────────────────────────────────────
    Dois cenários com a MESMA estrutura (é essa a lição: os princípios
    não dependem do contexto):

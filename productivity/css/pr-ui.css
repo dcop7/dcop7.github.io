@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — shell e primitivas partilhadas
+   Diogo Productivity — shell e primitivas partilhadas
    Cabeçalho, índice móvel, home, cabeça de página, blocos de leitura,
    etiquetas das quatro espécies, rodapé. Os componentes .btn/.chip/.seg/
    .empty-state vêm do /css/components.css do portal (só se afinam aqui).
@@ -56,7 +56,7 @@ img, svg { display: block; max-width: 100%; }
 .pr-brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; flex-shrink: 0; }
 .pr-brand img { width: 30px; height: 30px; }
 .pr-brand-txt { display: flex; align-items: baseline; gap: .4rem; line-height: 1; }
-.pr-brand-dc { font-family: var(--pr-mono); font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--pr-dim); }
+.pr-brand-dc { font-family: var(--pr-mono); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--pr-dim); }
 .pr-brand-nm { font-family: var(--pr-display); font-size: 1.32rem; font-weight: 600; letter-spacing: -.01em; }
 .pr-nav { display: flex; align-items: stretch; height: 100%; margin-left: auto; gap: .1rem; }
 .pr-nav a { display: flex; align-items: center; gap: .45rem; padding: 0 .85rem; text-decoration: none; font-size: .9rem; font-weight: 600;

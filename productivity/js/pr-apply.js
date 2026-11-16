@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — exercícios de Aplicar + laboratório da escada
+   Diogo Productivity — exercícios de Aplicar + laboratório da escada
    ──────────────────────────────────────────────────────────────────
      aplicar/triagem          12 coisas → o sítio certo (autónomo)
      aplicar/para             arrumar por acionabilidade + o tempo passa

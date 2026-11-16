@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — Aprender: capítulo + demonstrações
+   Diogo Productivity — Aprender: capítulo + demonstrações
    ══════════════════════════════════════════════════════════════════ */
 .lr-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
 .lr-aside { position: sticky; top: calc(var(--hdr-h) + 1.5rem); max-height: calc(100vh - var(--hdr-h) - 3rem); overflow: auto; font-size: .84rem; padding-right: .5rem; }

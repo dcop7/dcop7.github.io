@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Photography — shell do microsite (/photography/)
+   Diogo Photography — shell do microsite (/photography/)
    ──────────────────────────────────────────────────────────────────
    Substitui o que o portal dava à secção Fotografia: router (o Nav.go do
    portal), item ativo da navegação, tema, índice móvel e service worker.
@@ -96,7 +96,7 @@ const PhNav = (function () {
 
 const PhShell = (function () {
   'use strict';
-  const SITE = 'DCOP7 Photography';
+  const SITE = 'Diogo Photography';
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
 

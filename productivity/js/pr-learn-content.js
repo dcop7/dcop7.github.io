@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — conteúdo dos capítulos (Aprender)
+   Diogo Productivity — conteúdo dos capítulos (Aprender)
    ──────────────────────────────────────────────────────────────────
    Base conceptual: "A Personal Productivity System: Capture, Triage,
    Review" (documento de referência do projeto). Reorganizado para ensinar:

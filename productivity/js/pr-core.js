@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — utilitários partilhados (global `Pr`)
+   Diogo Productivity — utilitários partilhados (global `Pr`)
    ──────────────────────────────────────────────────────────────────
    • esc / L / t      — escapar HTML, texto bilingue {pt,en}, I18n.t
    • dias simulados   — o mundo de exemplo tem um calendário fixo e

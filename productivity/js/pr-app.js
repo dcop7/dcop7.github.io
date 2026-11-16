@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — páginas de topo (global `PrApp`)
+   Diogo Productivity — páginas de topo (global `PrApp`)
    Home, índices das quatro áreas, gestão do mundo de exemplo, e o
    despacho de rotas para os módulos (Pr.routes).
    ══════════════════════════════════════════════════════════════════ */
@@ -312,7 +312,7 @@ const PrApp = (function () {
     const st = PrWorld.state();
     const nRec = st.dbs.reduce((s, db) => s + PrWorld.recs(db).length, 0);
     el.innerHTML = `<div class="pr-wrap pr-page" style="max-width:860px">
-      ${crumbs([{ label: 'DCOP7 Productivity', href: '#' }, { label: tx('Mundo de exemplo', 'Sample world') }])}
+      ${crumbs([{ label: 'Diogo Productivity', href: '#' }, { label: tx('Mundo de exemplo', 'Sample world') }])}
       <header class="pr-head"><p class="pr-kicker">${esc(tx('Partilhado por todas as experiências', 'Shared by every experiment'))}</p><h1>${esc(tx('O mundo de exemplo', 'The sample world'))}</h1>
         <p class="lede">${esc(tx('As experiências que mexem em dados usam todas o mesmo mundo: o que fazes numa vê-se nas outras. Cada alteração fica registada com a experiência que a fez, por isso podes desfazer só uma experiência, ou voltar tudo ao início.',
           'The experiments that change data all share one world: what you do in one shows up in the others. Every change is recorded with the experiment that made it, so you can undo just one experiment, or take everything back to the start.'))}</p></header>

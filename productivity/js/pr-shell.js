@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — shell do microsite (/productivity/)
+   Diogo Productivity — shell do microsite (/productivity/)
    ──────────────────────────────────────────────────────────────────
    Mesmo padrão do microsite da Fotografia: router por HASH (o GitHub
    Pages não reescreve caminhos), área ativa na navegação 01–04, tema,
@@ -57,7 +57,7 @@ const PrNav = (function () {
 
 const PrShell = (function () {
   'use strict';
-  const SITE = 'DCOP7 Productivity';
+  const SITE = 'Diogo Productivity';
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
 

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — service worker (âmbito /productivity/)
+   Diogo Productivity — service worker (âmbito /productivity/)
    ──────────────────────────────────────────────────────────────────
    Mesmo desenho do SW da Fotografia: para páginas em /productivity/ o
    browser escolhe o registo de âmbito mais específico (este), e este SW
@@ -17,7 +17,7 @@
    Não há dados remotos: o mundo de exemplo vive no código e no
    localStorage do visitante. Mudar CACHE quando muda código.
    ══════════════════════════════════════════════════════════════════ */
-const CACHE = 'prod-v6';
+const CACHE = 'prod-v7';
 const FONTS = 'prod-fonts-v1';
 
 const STATIC = [

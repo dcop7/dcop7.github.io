@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — diretório de ferramentas (dados, global `PrTools`)
+   Diogo Productivity — diretório de ferramentas (dados, global `PrTools`)
    ──────────────────────────────────────────────────────────────────
    Regras deste ficheiro:
    · Sem pontuações. Cada ferramenta é comparada com os REQUISITOS de cada

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — laboratórios "Executar" (percurso 2)
+   Diogo Productivity — laboratórios "Executar" (percurso 2)
    ──────────────────────────────────────────────────────────────────
      experimentar/habito     desenhar / quebrar um hábito + registo
      experimentar/adiar      porque estou a adiar isto? (TMT ilustrativa)

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — Aprender (global `PrLearn`)
+   Diogo Productivity — Aprender (global `PrLearn`)
    Índice por blocos, página de capítulo (com índice lateral e
    anterior/seguinte) e as demonstrações embutidas (data-demo).
    As demos LEEM o mundo de exemplo, nunca o alteram.

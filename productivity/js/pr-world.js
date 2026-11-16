@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — o mundo partilhado (global `PrWorld`)
+   Diogo Productivity — o mundo partilhado (global `PrWorld`)
    ──────────────────────────────────────────────────────────────────
    Todas as experiências leem e escrevem o MESMO mundo de exemplo, por
    isso uma nota triada na revisão semanal aparece na página da equipa

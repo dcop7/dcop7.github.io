@@ -1,4 +1,4 @@
-# DCOP7 Productivity (`/productivity/`)
+# Diogo Productivity (`/productivity/`)
 
 A microsite inside Diogo Universe that teaches visitors to build a personal productivity system: capture, triage, review; GTD and PARA; Notion-style databases. It is static, has no build step and works offline. Everything a visitor does stays in their own browser (`localStorage`). There are no accounts, nothing syncs, and it connects to no external tool.
 

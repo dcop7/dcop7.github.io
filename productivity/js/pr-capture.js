@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — Laboratório de captura (global `PrCapture`)
+   Diogo Productivity — Laboratório de captura (global `PrCapture`)
    ──────────────────────────────────────────────────────────────────
    • parse(linha)   — quick-add ao estilo do Todoist: título, #contentor,
                       data em linguagem natural (pt/en), hora, p1–p3.

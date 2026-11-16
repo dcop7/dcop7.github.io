@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Photography — shell e componentes próprios
+   Diogo Photography — shell e componentes próprios
    Cabeçalho, índice móvel, hero, índice de áreas, cabeça de página,
    folha de contactos dos géneros, botões, rodapé. Os capítulos herdados
    vivem em ph-chapters.css + photo-*.css e consomem os mesmos tokens.
@@ -54,7 +54,7 @@ img { display: block; max-width: 100%; }
 .dp-brand { display: flex; align-items: center; gap: .65rem; flex-shrink: 0; }
 .dp-brand img { width: 30px; height: 30px; border-radius: 6px; }
 .dp-brand-txt { display: flex; align-items: baseline; gap: .45rem; line-height: 1; }
-.dp-brand-dc { font-family: var(--dp-mono); font-size: .74rem; font-weight: 600; letter-spacing: .14em; color: var(--dp-safe-hi); }
+.dp-brand-dc { font-family: var(--dp-mono); font-size: .74rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--dp-safe-hi); }
 .dp-brand-ph { font-family: var(--dp-display); font-style: italic; font-size: 1.42rem; letter-spacing: -.005em; color: var(--dp-paper); }
 
 .dp-nav { display: flex; align-items: stretch; height: 100%; gap: .2rem; margin-left: auto; }

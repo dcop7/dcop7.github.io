@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   DCOP7 Productivity — Playground de bases de dados (global `PrNotion`)
+   Diogo Productivity — Playground de bases de dados (global `PrNotion`)
    ──────────────────────────────────────────────────────────────────
    Um espaço de trabalho ao estilo do Notion, sobre o mundo de exemplo:
    barra lateral (Favoritos + PARA), vistas (tabela/quadro/lista),
