@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-26T18:21:26.085Z",
+ "generated": "2026-11-27T02:45:46.128Z",
  "total": 84,
  "broken": 1,
- "unknown": 4,
+ "unknown": 3,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -397,8 +397,8 @@
   {
    "id": "calendario:bolsas-dges",
    "url": "https://www.dges.gov.pt/pt",
-   "status": 0,
-   "ok": null
+   "status": 200,
+   "ok": true
   },
   {
    "id": "calendario:passe-sub23",
