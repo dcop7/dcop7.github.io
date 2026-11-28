@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-28T07:27:58.009Z",
+ "generated": "2026-11-28T16:47:29.718Z",
  "total": 84,
  "broken": 0,
- "unknown": 4,
+ "unknown": 11,
  "results": [
   {
    "id": "apoios:irs-jovem",
@@ -133,8 +133,8 @@
   {
    "id": "apoios:bolsa-merito-secundario",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:transporte-doentes",
@@ -175,8 +175,8 @@
   {
    "id": "apoios:ase-escolar",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:passe-ferroviario-verde",
@@ -187,8 +187,8 @@
   {
    "id": "apoios:passes-jovens-gratis",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:rsi",
@@ -271,8 +271,8 @@
   {
    "id": "apoios:trabalhador-estudante",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "apoios:cartao-europeu-saude",
@@ -343,8 +343,8 @@
   {
    "id": "calendario:cc-renovar",
    "url": "https://www.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:carta-revalidar",
@@ -397,14 +397,14 @@
   {
    "id": "calendario:bolsas-dges",
    "url": "https://www.dges.gov.pt/pt",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:passe-sub23",
    "url": "https://eportugal.gov.pt/",
-   "status": 200,
-   "ok": true
+   "status": 0,
+   "ok": null
   },
   {
    "id": "calendario:gripe-vacina",
